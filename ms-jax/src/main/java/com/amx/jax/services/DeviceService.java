@@ -11,15 +11,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.constants.DeviceState;
 import com.amx.jax.constants.DeviceStateDataType;
 import com.amx.jax.dao.DeviceDao;
 import com.amx.jax.dbmodel.Device;
 import com.amx.jax.dbmodel.DeviceStateInfo;
 import com.amx.jax.dbmodel.JaxConfig;
-import com.amx.jax.device.SignaturePadRemittanceInfo;
+import com.amx.jax.device.SignaturePadRemittanceMetaInfo;
+import com.amx.jax.dict.UserClient.DeviceType;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.manager.DeviceManager;
 import com.amx.jax.model.request.DeviceRegistrationRequest;
@@ -52,6 +53,7 @@ public class DeviceService extends AbstractService {
 
 	public DeviceDto registerNewDevice(DeviceRegistrationRequest request) {
 		logger.info("In register device with request: {}", request);
+		deviceValidation.validateDeviceRegRequest(request);
 		DeviceDto newDevice = deviceDao.saveDevice(request);
 		deviceDao.saveDeviceState(newDevice, DeviceState.REGISTERED);
 		logger.info("device registered with id: {}", newDevice.getRegistrationId());
@@ -63,10 +65,10 @@ public class DeviceService extends AbstractService {
 		return null;
 	}
 
-	public BooleanResponse activateDevice(Integer countryBranchSystemInventoryId, String deviceType) {
+	public BoolRespModel activateDevice(Integer countryBranchSystemInventoryId, DeviceType deviceType) {
 		logger.info("In activateDevice with countryBranchSystemInventoryId: {}", countryBranchSystemInventoryId);
 		deviceManager.activateDevice(countryBranchSystemInventoryId, deviceType);
-		return new BooleanResponse(Boolean.TRUE);
+		return new BoolRespModel(Boolean.TRUE);
 	}
 
 	public DevicePairOtpResponse sendOtpForPairing(Integer deviceRegId) {
@@ -78,14 +80,15 @@ public class DeviceService extends AbstractService {
 		return response;
 	}
 
-	public BooleanResponse validateOtpForPairing(Integer countryBranchSystemInventoryId, String otp) {
+	public BoolRespModel validateOtpForPairing(DeviceType deviceType, Integer countryBranchSystemInventoryId,
+			String otp) {
 		deviceValidation.validateOtp(otp);
-		Device device = deviceDao.findDevice(new BigDecimal(countryBranchSystemInventoryId));
+		Device device = deviceDao.findDevice(new BigDecimal(countryBranchSystemInventoryId), deviceType);
 		deviceValidation.validateDevice(device);
 		deviceValidation.validateDeviceToken(device, otp);
 		// device login success
 		createSession(device);
-		return new BooleanResponse(Boolean.TRUE);
+		return new BoolRespModel(Boolean.TRUE);
 	}
 
 	private void createSession(Device device) {
@@ -114,10 +117,15 @@ public class DeviceService extends AbstractService {
 		DeviceStatusInfoDto dto = new DeviceStatusInfoDto();
 		dto.setStateDataType(deviceStateInfo.getStateDataType());
 		dto.setDeviceState(deviceStateInfo.getState());
+		if (!deviceManager.isLoggedIn(device)) {
+			dto.setDeviceState(DeviceState.REGISTERED);
+		}
 		if (deviceStateInfo.getStateDataType() != null) {
 			switch (deviceStateInfo.getStateDataType()) {
 			case REMITTANCE:
-				dto.setStateData(JsonUtil.fromJson(deviceStateInfo.getStateData(), SignaturePadRemittanceInfo.class));
+				SignaturePadRemittanceMetaInfo stateData = JsonUtil.fromJson(deviceStateInfo.getStateData(),
+						SignaturePadRemittanceMetaInfo.class);
+				dto.setStateData(deviceManager.getRemittanceData(stateData.getRemittanceTransactionId()));
 				break;
 			default:
 				break;
@@ -126,9 +134,9 @@ public class DeviceService extends AbstractService {
 		return dto;
 	}
 
-	public BooleanResponse updateDeviceState(Integer countryBranchSystemInventoryId, IDeviceStateData deviceStateData,
-			DeviceStateDataType type) {
-		Device device = deviceDao.findDevice(new BigDecimal(countryBranchSystemInventoryId));
+	public BoolRespModel updateDeviceState(DeviceType deviceType, Integer countryBranchSystemInventoryId,
+			IDeviceStateData deviceStateData, DeviceStateDataType type) {
+		Device device = deviceDao.findDevice(new BigDecimal(countryBranchSystemInventoryId), deviceType);
 		deviceValidation.validateDevice(device);
 		DeviceStateInfo deviceStateInfo = deviceDao.getDeviceStateInfo(device);
 		deviceManager.validateLogIn(device);
@@ -136,7 +144,8 @@ public class DeviceService extends AbstractService {
 		String deviceStateDataStr = JsonUtil.toJson(deviceStateData);
 		deviceStateInfo.setStateData(deviceStateDataStr);
 		deviceStateInfo.setStateDataType(type);
-		return new BooleanResponse(Boolean.TRUE);
+		deviceDao.saveDeviceInfo(deviceStateInfo);
+		return new BoolRespModel(Boolean.TRUE);
 
 	}
 }

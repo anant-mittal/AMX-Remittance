@@ -14,6 +14,7 @@ import com.amx.jax.constants.DeviceState;
 import com.amx.jax.dbmodel.BranchSystemDetail;
 import com.amx.jax.dbmodel.Device;
 import com.amx.jax.dbmodel.DeviceStateInfo;
+import com.amx.jax.dict.UserClient.DeviceType;
 import com.amx.jax.model.request.DeviceRegistrationRequest;
 import com.amx.jax.model.response.DeviceDto;
 import com.amx.jax.repository.DeviceRepository;
@@ -60,7 +61,7 @@ public class DeviceDao {
 		deviceStateRepository.save(deviceState);
 	}
 
-	public Device findDevice(BigDecimal branchSystemInvId, String deviceType) {
+	public Device findDevice(BigDecimal branchSystemInvId, DeviceType deviceType) {
 		return deviceRepository.findByBranchSystemInventoryIdAndDeviceType(branchSystemInvId, deviceType);
 	}
 

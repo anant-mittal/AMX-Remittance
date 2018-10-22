@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.dict.UserClient.DeviceType;
 import com.amx.jax.model.request.DeviceRegistrationRequest;
 import com.amx.jax.model.response.DeviceDto;
 
@@ -27,7 +28,7 @@ public class DeviceClientTest extends AbstractClientTest {
 		request.setBranchSystemIp("192.178.0.1");
 		request.setCountryBranchId(78);
 		request.setDeviceId("did");
-		request.setDeviceType("tab");
+		request.setDeviceType(DeviceType.IPAD);
 		response = client.registerNewDevice(request);
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());

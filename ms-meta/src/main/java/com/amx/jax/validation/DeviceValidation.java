@@ -1,5 +1,7 @@
 package com.amx.jax.validation;
 
+import java.math.BigDecimal;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -7,9 +9,12 @@ import org.springframework.stereotype.Component;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.DeviceDao;
+import com.amx.jax.dbmodel.BranchSystemDetail;
 import com.amx.jax.dbmodel.Device;
 import com.amx.jax.dbmodel.DeviceStateInfo;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.model.request.DeviceRegistrationRequest;
+import com.amx.jax.service.BranchDetailService;
 import com.amx.jax.util.CryptoUtil;
 
 @Component
@@ -19,6 +24,8 @@ public class DeviceValidation {
 	DeviceDao deviceDao;
 	@Autowired
 	CryptoUtil cryptoUtil;
+	@Autowired
+	BranchDetailService branchDetailService;
 
 	public void validateDevice(Device device) {
 
@@ -34,7 +41,10 @@ public class DeviceValidation {
 
 		DeviceStateInfo deviceStateInfo = deviceDao.getDeviceStateInfo(device);
 		String pairTokendb = deviceStateInfo.getPairToken();
-		String pairToken = cryptoUtil.getHash(device.getRegistrationId().toString(), otp);
+		if(pairTokendb == null) {
+			throw new GlobalException("Opt not generated");
+		}
+		String pairToken = cryptoUtil.generateHash(device.getRegistrationId().toString(), otp);
 		if (!pairToken.equals(pairTokendb)) {
 			throw new GlobalException("Invalid pair otp");
 		}
@@ -46,6 +56,16 @@ public class DeviceValidation {
 		}
 		if (otp.length() != 6) {
 			throw new GlobalException("otp lenght should be 6");
+		}
+	}
+
+	public void validateDeviceRegRequest(DeviceRegistrationRequest request) {
+		BranchSystemDetail branchSystem = branchDetailService
+				.findBranchSystemByIp(new BigDecimal(request.getCountryBranchId()), request.getBranchSystemIp());
+		Device existing = deviceDao.findDevice(branchSystem.getCountryBranchSystemInventoryId(),
+				request.getDeviceType());
+		if (existing != null) {
+			throw new GlobalException("Device already registered", JaxError.DEVICE_ALREADY_REGISTERED);
 		}
 	}
 

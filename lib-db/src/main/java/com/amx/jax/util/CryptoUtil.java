@@ -44,6 +44,25 @@ public class CryptoUtil {
 		}
 		return newpassoword;
 	}
+	
+	public String generateHash(String salt, String key) {
+
+		byte[] output = null;
+		String newpassoword = null;
+
+		try {
+			MessageDigest md = MessageDigest.getInstance("SHA-256");
+			salt = new StringBuffer(salt).reverse().toString();
+			newpassoword = null;
+			newpassoword = addSalt(key, salt);
+			md.update(newpassoword.getBytes());
+			output = md.digest();
+			newpassoword = bytesToHex(output);
+		} catch (Exception e) {
+			log.error("error in gethash", e);
+		}
+		return newpassoword;
+	}
 
 	public String addSalt(String password, String salt) {
 		final int aLength = password.length();

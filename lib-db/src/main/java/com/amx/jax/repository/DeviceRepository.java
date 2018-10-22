@@ -9,6 +9,8 @@ import java.math.BigDecimal;
 import org.springframework.data.repository.CrudRepository;
 
 import com.amx.jax.dbmodel.Device;
+import com.amx.jax.dict.UserClient.DeviceType;
+
 
 /**
  * @author Prashant
@@ -16,5 +18,5 @@ import com.amx.jax.dbmodel.Device;
  */
 public interface DeviceRepository extends CrudRepository<Device, Serializable> {
 
-	public Device findByBranchSystemInventoryIdAndDeviceType(BigDecimal brachSystemInvId, String deviceType);
+	public Device findByBranchSystemInventoryIdAndDeviceType(BigDecimal brachSystemInvId, DeviceType deviceType);
 }

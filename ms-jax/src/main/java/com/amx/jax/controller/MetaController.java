@@ -1,7 +1,5 @@
 package com.amx.jax.controller;
 
-import static com.amx.amxlib.constant.ApiEndpoint.META_API_ENDPOINT;
-
 import java.math.BigDecimal;
 
 import org.apache.log4j.Logger;
@@ -88,8 +86,6 @@ public class MetaController {
 
 	private static final Logger LOGGER = Logger.getLogger(MetaController.class);
 
-	private static final Logger LOGGER = Logger.getLogger(MetaController.class);
-	
 	@Autowired
 	CountryService countryService;
 
@@ -419,7 +415,8 @@ public class MetaController {
 	public AmxApiResponse<BranchSystemDetail, Object> getBranchSystemList(
 			@PathVariable("countryBranchId") BigDecimal countryBranchId) {
 		return branchDetailService.getBranchSystemDetailResponse(countryBranchId);
-
+	}
+	
 	@Deprecated
 	@RequestMapping(value = "/payg-error/", method = RequestMethod.GET)
 	public AmxApiResponse<PaygErrorMaster, Object> getPaygErrorList() {

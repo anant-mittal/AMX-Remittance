@@ -1,16 +1,8 @@
 package com.amx.jax.controller;
 
-import static com.amx.amxlib.constant.ApiEndpoint.META_API_ENDPOINT;
-
-import java.math.BigDecimal;
-
 import javax.validation.Valid;
-import javax.validation.constraints.Digits;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,11 +10,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.amx.amxlib.model.response.BooleanResponse;
+import com.amx.amxlib.constant.ApiEndpoint.MetaApi;
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.IDeviceService;
 import com.amx.jax.constants.DeviceStateDataType;
-import com.amx.jax.device.SignaturePadRemittanceInfo;
+import com.amx.jax.device.SignaturePadRemittanceMetaInfo;
+import com.amx.jax.dict.UserClient.DeviceType;
 import com.amx.jax.model.request.DeviceRegistrationRequest;
 import com.amx.jax.model.request.DeviceStateInfoChangeRequest;
 import com.amx.jax.model.response.DeviceDto;
@@ -31,7 +25,7 @@ import com.amx.jax.model.response.DeviceStatusInfoDto;
 import com.amx.jax.services.DeviceService;
 
 @RestController
-@RequestMapping(META_API_ENDPOINT + "/device")
+@RequestMapping(MetaApi.PREFIX + "/device")
 public class DeviceController implements IDeviceService {
 
 	@Autowired
@@ -46,14 +40,15 @@ public class DeviceController implements IDeviceService {
 	}
 
 	@RequestMapping(value = DEVICE_STATE, method = RequestMethod.POST)
-	public AmxApiResponse<DeviceDto, Object> updateDeviceState(@Valid DeviceStateInfoChangeRequest request) {
+	public AmxApiResponse<DeviceDto, Object> updateDeviceState(
+			@Valid @RequestBody DeviceStateInfoChangeRequest request) {
 		return deviceService.updateDeviceState(request);
 	}
 
 	@RequestMapping(value = DEVICE_ACTIVATE, method = RequestMethod.GET)
-	public AmxApiResponse<BooleanResponse, Object> activateDevice(@RequestParam Integer countryBranchSystemInventoryId,
-			@RequestParam String deviceType) {
-		BooleanResponse response = deviceService.activateDevice(countryBranchSystemInventoryId, deviceType);
+	public AmxApiResponse<BoolRespModel, Object> activateDevice(@RequestParam Integer countryBranchSystemInventoryId,
+			@RequestParam DeviceType deviceType) {
+		BoolRespModel response = deviceService.activateDevice(countryBranchSystemInventoryId, deviceType);
 		return AmxApiResponse.build(response);
 	}
 
@@ -64,9 +59,9 @@ public class DeviceController implements IDeviceService {
 	}
 
 	@RequestMapping(value = DEVICE_VALIDATE_PAIR_OTP, method = RequestMethod.GET)
-	public AmxApiResponse<BooleanResponse, Object> validateOtpForPairing(
-			@RequestParam Integer countryBranchSystemInventoryId, String otp) {
-		BooleanResponse otpResponse = deviceService.validateOtpForPairing(countryBranchSystemInventoryId,
+	public AmxApiResponse<BoolRespModel, Object> validateOtpForPairing(@RequestParam DeviceType deviceType,
+			@RequestParam Integer countryBranchSystemInventoryId, @RequestParam String otp) {
+		BoolRespModel otpResponse = deviceService.validateOtpForPairing(deviceType, countryBranchSystemInventoryId,
 				otp.toString());
 		return AmxApiResponse.build(otpResponse);
 	}
@@ -78,11 +73,11 @@ public class DeviceController implements IDeviceService {
 		return AmxApiResponse.build(otpResponse);
 	}
 
-	@RequestMapping(value = DEVICE_STATE_REMITTANCE_UPDATE, method = RequestMethod.GET)
-	public AmxApiResponse<BooleanResponse, Object> updateRemittanceState(
+	@RequestMapping(value = DEVICE_STATE_REMITTANCE_UPDATE, method = RequestMethod.POST)
+	public AmxApiResponse<BoolRespModel, Object> updateRemittanceState(@RequestParam DeviceType deviceType,
 			@RequestParam Integer countryBranchSystemInventoryId,
-			@RequestBody SignaturePadRemittanceInfo signaturePadRemittanceInfo) {
-		BooleanResponse otpResponse = deviceService.updateDeviceState(countryBranchSystemInventoryId,
+			@Valid @RequestBody SignaturePadRemittanceMetaInfo signaturePadRemittanceInfo) {
+		BoolRespModel otpResponse = deviceService.updateDeviceState(deviceType, countryBranchSystemInventoryId,
 				signaturePadRemittanceInfo, DeviceStateDataType.REMITTANCE);
 		return AmxApiResponse.build(otpResponse);
 	}

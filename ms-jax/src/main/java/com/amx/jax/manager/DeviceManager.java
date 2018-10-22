@@ -16,8 +16,11 @@ import com.amx.jax.dao.DeviceDao;
 import com.amx.jax.dbmodel.Device;
 import com.amx.jax.dbmodel.DeviceStateInfo;
 import com.amx.jax.dbmodel.JaxConfig;
+import com.amx.jax.device.SignaturePadRemittanceManager;
+import com.amx.jax.dict.UserClient.DeviceType;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.model.response.DeviceStatusInfoDto;
+import com.amx.jax.model.response.IDeviceStateData;
 import com.amx.jax.services.DeviceService;
 import com.amx.jax.services.JaxConfigService;
 import com.amx.jax.util.CryptoUtil;
@@ -40,6 +43,8 @@ public class DeviceManager {
 	CryptoUtil cryptoUtil;
 	@Autowired
 	JaxConfigService jaxConfigService;
+	@Autowired
+	SignaturePadRemittanceManager signaturePadRemittanceManager;
 
 	/**
 	 * activates device
@@ -48,7 +53,7 @@ public class DeviceManager {
 	 * @param deviceType
 	 * 
 	 */
-	public void activateDevice(Integer countryBranchSystemInventoryId, String deviceType) {
+	public void activateDevice(Integer countryBranchSystemInventoryId, DeviceType deviceType) {
 		Device device = deviceDao.findDevice(new BigDecimal(countryBranchSystemInventoryId), deviceType);
 		if (device == null) {
 			throw new GlobalException("No device found");
@@ -68,7 +73,7 @@ public class DeviceManager {
 		String otp = Random.randomNumeric(6);
 		logger.debug("generated otp for device {} otp {}", device.getRegistrationId(), otp);
 		DeviceStateInfo deviceInfo = deviceDao.getDeviceStateInfo(device);
-		String otpHash = cryptoUtil.getHash(device.getRegistrationId().toString(), otp);
+		String otpHash = cryptoUtil.generateHash(device.getRegistrationId().toString(), otp);
 		deviceInfo.setPairToken(otpHash);
 		deviceDao.saveDeviceInfo(deviceInfo);
 		return otp;
@@ -101,5 +106,9 @@ public class DeviceManager {
 		if (!isLoggedIn(device)) {
 			throw new GlobalException("Device not logged in", JaxError.DEVICE_NOT_LOGGGED_IN);
 		}
+	}
+	
+	public IDeviceStateData getRemittanceData(BigDecimal remittanceTransactionId) {
+		return signaturePadRemittanceManager.getRemittanceReceiptData(remittanceTransactionId);
 	}
 }

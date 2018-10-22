@@ -5,11 +5,15 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+
+import com.amx.jax.dict.UserClient.DeviceType;
 
 @Entity
 @Table(name = "JAX_DEVICE")
@@ -25,7 +29,8 @@ public class Device {
 	String deviceId;
 
 	@Column(name = "DEVICE_TYPE")
-	String deviceType;
+	@Enumerated(value=EnumType.STRING)
+	DeviceType deviceType;
 
 	@Column(name = "STATUS")
 	String status;
@@ -56,14 +61,6 @@ public class Device {
 
 	public void setDeviceId(String deviceId) {
 		this.deviceId = deviceId;
-	}
-
-	public String getDeviceType() {
-		return deviceType;
-	}
-
-	public void setDeviceType(String deviceType) {
-		this.deviceType = deviceType;
 	}
 
 	public String getStatus() {
@@ -104,6 +101,14 @@ public class Device {
 
 	public void setBranchSystemInventoryId(BigDecimal branchSystemInventoryId) {
 		this.branchSystemInventoryId = branchSystemInventoryId;
+	}
+
+	public DeviceType getDeviceType() {
+		return deviceType;
+	}
+
+	public void setDeviceType(DeviceType deviceType) {
+		this.deviceType = deviceType;
 	}
 
 }
