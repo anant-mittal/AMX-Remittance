@@ -5,7 +5,10 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @Entity
@@ -13,6 +16,8 @@ import javax.persistence.Table;
 public class Device {
 
 	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "JAX_DEVICE_SEQ")
+	@SequenceGenerator(name = "JAX_DEVICE_SEQ", sequenceName = "JAX_DEVICE_SEQ", allocationSize = 1)
 	@Column(name = "REGISTRATION_ID")
 	BigDecimal registrationId;
 

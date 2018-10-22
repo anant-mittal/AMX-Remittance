@@ -94,6 +94,7 @@ public class DeviceService extends AbstractService {
 		String hmacToken = CryptoUtil.generateHMAC(deviceManager.getDeviceSessionTimeout(), "DEVICE_SESSION_SALT",
 				device.getRegistrationId().toString());
 		deviceInfo.setSessionToken(hmacToken);
+		deviceInfo.setState(DeviceState.PAIRED);
 		deviceDao.saveDeviceInfo(deviceInfo);
 	}
 
@@ -113,12 +114,14 @@ public class DeviceService extends AbstractService {
 		DeviceStatusInfoDto dto = new DeviceStatusInfoDto();
 		dto.setStateDataType(deviceStateInfo.getStateDataType());
 		dto.setDeviceState(deviceStateInfo.getState());
-		switch (deviceStateInfo.getStateDataType()) {
-		case REMITTANCE:
-			dto.setStateData(JsonUtil.fromJson(deviceStateInfo.getStateData(), SignaturePadRemittanceInfo.class));
-			break;
-		default:
-			break;
+		if (deviceStateInfo.getStateDataType() != null) {
+			switch (deviceStateInfo.getStateDataType()) {
+			case REMITTANCE:
+				dto.setStateData(JsonUtil.fromJson(deviceStateInfo.getStateData(), SignaturePadRemittanceInfo.class));
+				break;
+			default:
+				break;
+			}
 		}
 		return dto;
 	}

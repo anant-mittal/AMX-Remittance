@@ -1,6 +1,5 @@
 package com.amx.jax.client;
 
-
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
@@ -13,6 +12,7 @@ import com.amx.jax.exception.AbstractJaxException;
 import com.amx.jax.exception.JaxSystemError;
 import com.amx.jax.model.request.DeviceRegistrationRequest;
 import com.amx.jax.model.response.DeviceDto;
+import com.amx.jax.model.response.DeviceStatusInfoDto;
 import com.amx.jax.rest.RestService;
 
 @Component
@@ -42,6 +42,23 @@ public class DeviceClient implements IDeviceService {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in registerNewDevice : ", e);
+			throw new JaxSystemError();
+		}
+	}
+
+	@Override
+	public AmxApiResponse<DeviceStatusInfoDto, Object> getStatus(Integer registrationId) {
+		try {
+			LOGGER.info("in getStatus");
+
+			String url = appConfig.getJaxURL() + END_POINT_JAX_DEVICE + DEVICE_STATUS_GET;
+			return restService.ajax(url).get().header("registrationId", registrationId.toString())
+					.as(new ParameterizedTypeReference<AmxApiResponse<DeviceStatusInfoDto, Object>>() {
+					});
+		} catch (AbstractJaxException ae) {
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in getStatus : ", e);
 			throw new JaxSystemError();
 		}
 	}
