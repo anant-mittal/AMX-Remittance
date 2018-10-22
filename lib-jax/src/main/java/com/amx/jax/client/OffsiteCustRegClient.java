@@ -4,7 +4,7 @@ import java.util.List;
 import java.text.ParseException;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
@@ -50,7 +50,7 @@ public class OffsiteCustRegClient implements ICustRegService {
 	@Autowired
 	AppConfig appConfig;
 
-	protected HttpHeaders getHeader() {
+	public HttpHeaders getHeader() {
 
 		HttpHeaders headers = new HttpHeaders();
 		try {
