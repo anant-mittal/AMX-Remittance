@@ -11,4 +11,6 @@ public class SWAdapterService implements ApplicationRunner {
 	public void run(ApplicationArguments args) throws Exception {
 		System.out.println("Adapter Started");
 	}
+	
+	
 }
