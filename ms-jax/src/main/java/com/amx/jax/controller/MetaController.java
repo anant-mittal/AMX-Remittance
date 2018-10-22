@@ -57,7 +57,6 @@ import com.amx.jax.service.FinancialService;
 import com.amx.jax.service.MetaService;
 import com.amx.jax.service.MultiCountryService;
 import com.amx.jax.service.ParameterService;
-import com.amx.jax.service.PayGErrorService;
 import com.amx.jax.service.PrefixService;
 import com.amx.jax.service.PurposeOfRemittanceService;
 import com.amx.jax.service.QuestionAnswerService;
@@ -152,8 +151,6 @@ public class MetaController {
 	@Autowired
 	BranchDetailService branchDetailService;
 
-	@Autowired
-	PayGErrorService payGErrorService;
 
 	@RequestMapping(value = MetaApi.API_COUNTRY, method = RequestMethod.GET)
 	public AmxApiResponse<CountryMasterView, Object> getCountryListResponse() {
