@@ -7,6 +7,7 @@ import javax.transaction.Transactional;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.constant.ConstantDocument;
@@ -68,6 +69,11 @@ public class DeviceDao {
 	public Device findDevice(BigDecimal branchSystemInvId, DeviceType deviceType) {
 		return deviceRepository.findByBranchSystemInventoryIdAndDeviceTypeAndStatus(branchSystemInvId, deviceType,
 				ConstantDocument.Yes);
+	}
+
+	public Device findLatestDevice(BigDecimal branchSystemInvId, DeviceType deviceType) {
+		return deviceRepository.findFirst1ByBranchSystemInventoryIdAndDeviceType(branchSystemInvId, deviceType,
+				new Sort("deviceId"));
 	}
 
 	public void saveDevice(Device device) {

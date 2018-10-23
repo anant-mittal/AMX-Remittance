@@ -2,6 +2,8 @@ package com.amx.jax.services;
 
 import java.math.BigDecimal;
 
+import javax.transaction.Transactional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +53,7 @@ public class DeviceService extends AbstractService {
 
 	public static final long DEVICE_SESSION_TIMEOUT = 8 * 60 * 60; // in seconds
 
+	@Transactional
 	public DeviceDto registerNewDevice(DeviceRegistrationRequest request) {
 		logger.info("In register device with request: {}", request);
 		deviceValidation.validateDeviceRegRequest(request);
@@ -67,6 +70,7 @@ public class DeviceService extends AbstractService {
 
 	public BoolRespModel activateDevice(Integer countryBranchSystemInventoryId, DeviceType deviceType) {
 		logger.info("In activateDevice with countryBranchSystemInventoryId: {}", countryBranchSystemInventoryId);
+		deviceManager.validateDeviceActivationRequest(countryBranchSystemInventoryId, deviceType);
 		deviceManager.activateDevice(countryBranchSystemInventoryId, deviceType);
 		return new BoolRespModel(Boolean.TRUE);
 	}

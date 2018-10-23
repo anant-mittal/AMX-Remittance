@@ -59,7 +59,7 @@ public class DeviceManager {
 	 */
 	@Transactional
 	public void activateDevice(Integer countryBranchSystemInventoryId, DeviceType deviceType) {
-		Device device = deviceDao.findDevice(new BigDecimal(countryBranchSystemInventoryId), deviceType);
+		Device device = deviceDao.findLatestDevice(new BigDecimal(countryBranchSystemInventoryId), deviceType);
 		if (device == null) {
 			throw new GlobalException("No device found");
 		}
@@ -129,5 +129,12 @@ public class DeviceManager {
 		String hmacToken = com.amx.utils.CryptoUtil.generateHMAC(getDeviceSessionTimeout(), "DEVICE_SESSION_SALT",
 				device.getRegistrationId().toString());
 		return hmacToken;
+	}
+
+	public void validateDeviceActivationRequest(Integer countryBranchSystemInventoryId, DeviceType deviceType) {
+		Device device = deviceDao.findDevice(new BigDecimal(countryBranchSystemInventoryId), deviceType);
+		if (device != null) {
+			throw new GlobalException("Device already active", JaxError.DEVICE_ALREADY_ACTIVE);
+		}
 	}
 }
