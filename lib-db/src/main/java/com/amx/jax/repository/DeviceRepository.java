@@ -11,12 +11,12 @@ import org.springframework.data.repository.CrudRepository;
 import com.amx.jax.dbmodel.Device;
 import com.amx.jax.dict.UserClient.DeviceType;
 
-
 /**
  * @author Prashant
  *
  */
 public interface DeviceRepository extends CrudRepository<Device, Serializable> {
 
-	public Device findByBranchSystemInventoryIdAndDeviceType(BigDecimal brachSystemInvId, DeviceType deviceType);
+	public Device findByBranchSystemInventoryIdAndDeviceTypeAndStatus(BigDecimal brachSystemInvId,
+			DeviceType deviceType, String status);
 }

@@ -20,6 +20,7 @@ import com.amx.jax.model.response.DeviceDto;
 import com.amx.jax.repository.DeviceRepository;
 import com.amx.jax.repository.DeviceStateRepository;
 import com.amx.jax.service.BranchDetailService;
+import com.amx.jax.util.CryptoUtil;
 
 @Component
 public class DeviceDao {
@@ -30,6 +31,8 @@ public class DeviceDao {
 	DeviceRepository deviceRepository;
 	@Autowired
 	DeviceStateRepository deviceStateRepository;
+	@Autowired
+	CryptoUtil cryptoUtil;
 
 	public DeviceDto saveDevice(DeviceRegistrationRequest request) {
 
@@ -57,12 +60,14 @@ public class DeviceDao {
 		deviceState.setCreatedDate(new Date());
 		deviceState.setDeviceRegId(newDevice.getRegistrationId());
 		deviceState.setState(state);
-
+		deviceState.setPairToken(cryptoUtil.generateHash("DEVICE_PAIR", newDevice.getRegistrationId().toString()));
 		deviceStateRepository.save(deviceState);
+		newDevice.setPairToken(deviceState.getPairToken());
 	}
 
 	public Device findDevice(BigDecimal branchSystemInvId, DeviceType deviceType) {
-		return deviceRepository.findByBranchSystemInventoryIdAndDeviceType(branchSystemInvId, deviceType);
+		return deviceRepository.findByBranchSystemInventoryIdAndDeviceTypeAndStatus(branchSystemInvId, deviceType,
+				ConstantDocument.Yes);
 	}
 
 	public void saveDevice(Device device) {
@@ -79,6 +84,14 @@ public class DeviceDao {
 
 	public void saveDeviceInfo(DeviceStateInfo deviceInfo) {
 		deviceStateRepository.save(deviceInfo);
-		
+
+	}
+
+	public DeviceStateInfo getDeviceStateInfoByPaireToken(String pairToken, Integer registrationId) {
+		return deviceStateRepository.findByPairTokenAndDeviceRegId(pairToken, new BigDecimal(registrationId));
+	}
+
+	public DeviceStateInfo findBySessionToken(String sessionToken, Integer registrationId) {
+		return deviceStateRepository.findBySessionTokenAndDeviceRegId(sessionToken, new BigDecimal(registrationId));
 	}
 }

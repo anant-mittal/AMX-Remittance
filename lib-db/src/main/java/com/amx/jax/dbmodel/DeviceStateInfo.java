@@ -5,6 +5,8 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -35,13 +37,17 @@ public class DeviceStateInfo {
 	String stateData;
 
 	@Column(name = "STATE_DATA_TYPE")
+	@Enumerated(value = EnumType.STRING)
 	DeviceStateDataType stateDataType;
+
+	@Column(name = "PAIR_TOKEN")
+	String pairToken;
 
 	@Column(name = "SESSION_TOKEN")
 	String sessionToken;
 
-	@Column(name = "PAIR_TOKEN")
-	String pairToken;
+	@Column(name = "OTP_TOKEN")
+	String otpToken;
 
 	public BigDecimal getDeviceRegId() {
 		return deviceRegId;
@@ -91,14 +97,6 @@ public class DeviceStateInfo {
 		this.sessionToken = sessionToken;
 	}
 
-	public String getPairToken() {
-		return pairToken;
-	}
-
-	public void setPairToken(String pairToken) {
-		this.pairToken = pairToken;
-	}
-
 	public String getStateData() {
 		return stateData;
 	}
@@ -113,6 +111,22 @@ public class DeviceStateInfo {
 
 	public void setStateDataType(DeviceStateDataType stateDataType) {
 		this.stateDataType = stateDataType;
+	}
+
+	public String getOtpToken() {
+		return otpToken;
+	}
+
+	public void setOtpToken(String otpToken) {
+		this.otpToken = otpToken;
+	}
+
+	public String getPairToken() {
+		return pairToken;
+	}
+
+	public void setPairToken(String pairToken) {
+		this.pairToken = pairToken;
 	}
 
 }

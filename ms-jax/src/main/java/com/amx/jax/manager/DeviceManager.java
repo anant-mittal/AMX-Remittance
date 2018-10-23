@@ -2,6 +2,8 @@ package com.amx.jax.manager;
 
 import java.math.BigDecimal;
 
+import javax.transaction.Transactional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.constants.DeviceState;
 import com.amx.jax.dao.DeviceDao;
 import com.amx.jax.dbmodel.Device;
 import com.amx.jax.dbmodel.DeviceStateInfo;
@@ -19,6 +22,7 @@ import com.amx.jax.dbmodel.JaxConfig;
 import com.amx.jax.device.SignaturePadRemittanceManager;
 import com.amx.jax.dict.UserClient.DeviceType;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.model.response.DevicePairOtpResponse;
 import com.amx.jax.model.response.DeviceStatusInfoDto;
 import com.amx.jax.model.response.IDeviceStateData;
 import com.amx.jax.services.DeviceService;
@@ -53,12 +57,16 @@ public class DeviceManager {
 	 * @param deviceType
 	 * 
 	 */
+	@Transactional
 	public void activateDevice(Integer countryBranchSystemInventoryId, DeviceType deviceType) {
 		Device device = deviceDao.findDevice(new BigDecimal(countryBranchSystemInventoryId), deviceType);
 		if (device == null) {
 			throw new GlobalException("No device found");
 		}
 		device.setStatus(ConstantDocument.Yes);
+		DeviceStateInfo deviceStateInfo = deviceDao.getDeviceStateInfo(device);
+		deviceStateInfo.setState(DeviceState.DEVICE_PAIRED);
+		deviceDao.saveDeviceInfo(deviceStateInfo);
 		deviceDao.saveDevice(device);
 	}
 
@@ -69,14 +77,19 @@ public class DeviceManager {
 	 * @return otp
 	 * 
 	 */
-	public String generateOtp(Device device) {
+	public DevicePairOtpResponse generateOtp(Device device) {
 		String otp = Random.randomNumeric(6);
 		logger.debug("generated otp for device {} otp {}", device.getRegistrationId(), otp);
 		DeviceStateInfo deviceInfo = deviceDao.getDeviceStateInfo(device);
 		String otpHash = cryptoUtil.generateHash(device.getRegistrationId().toString(), otp);
-		deviceInfo.setPairToken(otpHash);
+		deviceInfo.setOtpToken(otpHash);
+		String sessionPairToken = generateSessionPairToken(device);
+		deviceInfo.setSessionToken(sessionPairToken);
 		deviceDao.saveDeviceInfo(deviceInfo);
-		return otp;
+		DevicePairOtpResponse resp = new DevicePairOtpResponse();
+		resp.setOtp(otp);
+		resp.setSessionPairToken(sessionPairToken);
+		return resp;
 	}
 
 	public boolean isLoggedIn(Device device) {
@@ -107,8 +120,14 @@ public class DeviceManager {
 			throw new GlobalException("Device not logged in", JaxError.DEVICE_NOT_LOGGGED_IN);
 		}
 	}
-	
+
 	public IDeviceStateData getRemittanceData(BigDecimal remittanceTransactionId) {
 		return signaturePadRemittanceManager.getRemittanceReceiptData(remittanceTransactionId);
+	}
+
+	public String generateSessionPairToken(Device device) {
+		String hmacToken = com.amx.utils.CryptoUtil.generateHMAC(getDeviceSessionTimeout(), "DEVICE_SESSION_SALT",
+				device.getRegistrationId().toString());
+		return hmacToken;
 	}
 }

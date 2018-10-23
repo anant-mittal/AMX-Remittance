@@ -22,6 +22,7 @@ public interface IDeviceService extends IJaxService {
 
 	AmxApiResponse<DeviceDto, Object> registerNewDevice(DeviceRegistrationRequest request);
 
-	AmxApiResponse<DeviceStatusInfoDto, Object> getStatus(Integer registrationId);
+	AmxApiResponse<DeviceStatusInfoDto, Object> getStatus(Integer registrationId, String paireToken,
+			String sessionToken);
 
 }

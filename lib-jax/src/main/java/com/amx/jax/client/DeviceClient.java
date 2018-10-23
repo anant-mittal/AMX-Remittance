@@ -47,12 +47,14 @@ public class DeviceClient implements IDeviceService {
 	}
 
 	@Override
-	public AmxApiResponse<DeviceStatusInfoDto, Object> getStatus(Integer registrationId) {
+	public AmxApiResponse<DeviceStatusInfoDto, Object> getStatus(Integer registrationId, String paireToken,
+			String sessionToken) {
 		try {
 			LOGGER.info("in getStatus");
 
 			String url = appConfig.getJaxURL() + END_POINT_JAX_DEVICE + DEVICE_STATUS_GET;
 			return restService.ajax(url).get().header("registrationId", registrationId.toString())
+					.header("paireToken", paireToken).header("sessionToken", sessionToken)
 					.as(new ParameterizedTypeReference<AmxApiResponse<DeviceStatusInfoDto, Object>>() {
 					});
 		} catch (AbstractJaxException ae) {

@@ -53,8 +53,9 @@ public class DeviceController implements IDeviceService {
 	}
 
 	@RequestMapping(value = DEVICE_SEND_PAIR_OTP, method = RequestMethod.GET)
-	public AmxApiResponse<DevicePairOtpResponse, Object> sendOtpForPairing(@RequestParam Integer deviceRegId) {
-		DevicePairOtpResponse otpResponse = deviceService.sendOtpForPairing(deviceRegId);
+	public AmxApiResponse<DevicePairOtpResponse, Object> sendOtpForPairing(@RequestHeader Integer deviceRegId,
+			@RequestHeader String paireToken) {
+		DevicePairOtpResponse otpResponse = deviceService.sendOtpForPairing(deviceRegId, paireToken);
 		return AmxApiResponse.build(otpResponse);
 	}
 
@@ -68,8 +69,9 @@ public class DeviceController implements IDeviceService {
 
 	@Override
 	@RequestMapping(value = DEVICE_STATUS_GET, method = RequestMethod.GET)
-	public AmxApiResponse<DeviceStatusInfoDto, Object> getStatus(@RequestHeader Integer registrationId) {
-		DeviceStatusInfoDto otpResponse = deviceService.getStatus(registrationId);
+	public AmxApiResponse<DeviceStatusInfoDto, Object> getStatus(@RequestHeader Integer registrationId,
+			@RequestHeader String paireToken, @RequestHeader String sessionToken) {
+		DeviceStatusInfoDto otpResponse = deviceService.getStatus(registrationId, paireToken, sessionToken);
 		return AmxApiResponse.build(otpResponse);
 	}
 

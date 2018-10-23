@@ -9,6 +9,8 @@ public class DeviceDto {
 	String deviceId;
 
 	String deviceType;
+	
+	String pairToken;
 
 	public BigDecimal getRegistrationId() {
 		return registrationId;
@@ -32,6 +34,14 @@ public class DeviceDto {
 
 	public void setDeviceType(String deviceType) {
 		this.deviceType = deviceType;
+	}
+
+	public String getPairToken() {
+		return pairToken;
+	}
+
+	public void setPairToken(String pairToken) {
+		this.pairToken = pairToken;
 	}
 
 }

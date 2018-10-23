@@ -40,8 +40,8 @@ public class DeviceValidation {
 	public void validateDeviceToken(Device device, String otp) {
 
 		DeviceStateInfo deviceStateInfo = deviceDao.getDeviceStateInfo(device);
-		String pairTokendb = deviceStateInfo.getPairToken();
-		if(pairTokendb == null) {
+		String pairTokendb = deviceStateInfo.getOtpToken();
+		if (pairTokendb == null) {
 			throw new GlobalException("Opt not generated");
 		}
 		String pairToken = cryptoUtil.generateHash(device.getRegistrationId().toString(), otp);
@@ -67,6 +67,21 @@ public class DeviceValidation {
 		if (existing != null) {
 			throw new GlobalException("Device already registered", JaxError.DEVICE_ALREADY_REGISTERED);
 		}
+	}
+
+	public void validatePaireToken(String paireToken, Integer registrationId) {
+		DeviceStateInfo deviceStateInfo = deviceDao.getDeviceStateInfoByPaireToken(paireToken, registrationId);
+		if (deviceStateInfo == null) {
+			throw new GlobalException("Invalid paire token", JaxError.DEVICE_INVALID_PAIR_TOKEN);
+		}
+	}
+
+	public void validateSessionToken(String sessionToken, Integer registrationId) {
+		DeviceStateInfo deviceStateInfo = deviceDao.findBySessionToken(sessionToken, registrationId);
+		if (deviceStateInfo == null) {
+			throw new GlobalException("Invalid session token", JaxError.DEVICE_INVALID_SESSION_TOKEN);
+		}
+
 	}
 
 }

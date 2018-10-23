@@ -71,12 +71,11 @@ public class DeviceService extends AbstractService {
 		return new BoolRespModel(Boolean.TRUE);
 	}
 
-	public DevicePairOtpResponse sendOtpForPairing(Integer deviceRegId) {
+	public DevicePairOtpResponse sendOtpForPairing(Integer deviceRegId, String paireToken) {
 		Device device = deviceDao.findDevice(new BigDecimal(deviceRegId));
+		deviceValidation.validatePaireToken(paireToken, deviceRegId);
 		deviceValidation.validateDevice(device);
-		DevicePairOtpResponse response = new DevicePairOtpResponse();
-		String otp = deviceManager.generateOtp(device);
-		response.setOtp(otp);
+		DevicePairOtpResponse response = deviceManager.generateOtp(device);
 		return response;
 	}
 
@@ -94,23 +93,24 @@ public class DeviceService extends AbstractService {
 	private void createSession(Device device) {
 
 		DeviceStateInfo deviceInfo = deviceDao.getDeviceStateInfo(device);
-		String hmacToken = CryptoUtil.generateHMAC(deviceManager.getDeviceSessionTimeout(), "DEVICE_SESSION_SALT",
-				device.getRegistrationId().toString());
-		deviceInfo.setSessionToken(hmacToken);
-		deviceInfo.setState(DeviceState.PAIRED);
+		deviceInfo.setState(DeviceState.SESSION_PAIRED);
 		deviceDao.saveDeviceInfo(deviceInfo);
 	}
 
 	/**
 	 * @param registrationId
+	 * @param sessionToken
+	 * @param paireToken
 	 * @return device's status like loggedIn, signing etc
 	 * 
 	 */
-	public DeviceStatusInfoDto getStatus(Integer registrationId) {
+	public DeviceStatusInfoDto getStatus(Integer registrationId, String paireToken, String sessionToken) {
 
 		if (registrationId == null) {
 			throw new GlobalException("Device registration id can not be blank");
 		}
+		deviceValidation.validatePaireToken(paireToken, registrationId);
+		deviceValidation.validateSessionToken(sessionToken, registrationId);
 		Device device = deviceDao.findDevice(new BigDecimal(registrationId));
 		deviceValidation.validateDevice(device);
 		DeviceStateInfo deviceStateInfo = deviceDao.getDeviceStateInfo(device);
