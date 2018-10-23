@@ -54,6 +54,7 @@ public class DeviceController implements IDeviceService {
 	}
 
 	@RequestMapping(value = DEVICE_SEND_PAIR_OTP, method = RequestMethod.GET)
+	@Override
 	public AmxApiResponse<DevicePairOtpResponse, Object> sendOtpForPairing(@RequestHeader Integer deviceRegId,
 			@RequestHeader String paireToken) {
 		DevicePairOtpResponse otpResponse = deviceService.sendOtpForPairing(deviceRegId, paireToken);

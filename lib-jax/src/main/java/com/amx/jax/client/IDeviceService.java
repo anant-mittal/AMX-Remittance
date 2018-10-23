@@ -4,6 +4,7 @@ import com.amx.jax.IJaxService;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.model.request.DeviceRegistrationRequest;
 import com.amx.jax.model.response.DeviceDto;
+import com.amx.jax.model.response.DevicePairOtpResponse;
 import com.amx.jax.model.response.DeviceStatusInfoDto;
 
 public interface IDeviceService extends IJaxService {
@@ -24,5 +25,7 @@ public interface IDeviceService extends IJaxService {
 
 	AmxApiResponse<DeviceStatusInfoDto, Object> getStatus(Integer registrationId, String paireToken,
 			String sessionToken);
+
+	AmxApiResponse<DevicePairOtpResponse, Object> sendOtpForPairing(Integer deviceRegId, String paireToken);
 
 }

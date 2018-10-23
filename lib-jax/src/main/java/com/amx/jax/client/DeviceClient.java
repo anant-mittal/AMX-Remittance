@@ -12,6 +12,7 @@ import com.amx.jax.exception.AbstractJaxException;
 import com.amx.jax.exception.JaxSystemError;
 import com.amx.jax.model.request.DeviceRegistrationRequest;
 import com.amx.jax.model.response.DeviceDto;
+import com.amx.jax.model.response.DevicePairOtpResponse;
 import com.amx.jax.model.response.DeviceStatusInfoDto;
 import com.amx.jax.rest.RestService;
 
@@ -61,6 +62,24 @@ public class DeviceClient implements IDeviceService {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getStatus : ", e);
+			throw new JaxSystemError();
+		}
+	}
+
+	@Override
+	public AmxApiResponse<DevicePairOtpResponse, Object> sendOtpForPairing(Integer deviceRegId, String paireToken) {
+		try {
+			LOGGER.info("in sendOtpForPairing");
+
+			String url = appConfig.getJaxURL() + END_POINT_JAX_DEVICE + DEVICE_STATUS_GET;
+			return restService.ajax(url).get().header("deviceRegId", deviceRegId.toString())
+					.header("paireToken", paireToken)
+					.as(new ParameterizedTypeReference<AmxApiResponse<DevicePairOtpResponse, Object>>() {
+					});
+		} catch (AbstractJaxException ae) {
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in sendOtpForPairing : ", e);
 			throw new JaxSystemError();
 		}
 	}
