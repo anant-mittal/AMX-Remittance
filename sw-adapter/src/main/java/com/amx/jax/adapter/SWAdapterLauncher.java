@@ -16,15 +16,23 @@ public class SWAdapterLauncher {
 	public static boolean ENABLE_CLI = false;
 	public static boolean ENABLE_GUI = false;
 
-	public static SWAdapterGUI GUI = null;
-
 	public static void main(String[] args) throws Exception {
+		boolean cli = false;
+
 		if (args.length > 0) {
+			for (String str : args) {
+				if (str.contains("-cli")) {
+					cli = true;
+				}
+			}
+		}
+
+		if (cli) {
 			ENABLE_CLI = true;
-			System.out.println("Starting Commond Line Tool");
+			System.out.println("Starting Commond Line Tool with args" + args[0]);
 			SpringApplication app = new SpringApplication(SWAdapterGUI.class);
 			app.setBannerMode(Banner.Mode.OFF);
-			GUI = new SWAdapterGUI();
+			SWAdapterGUI.CONTEXT = new SWAdapterGUI();
 			app.run(args);
 		} else {
 			ENABLE_GUI = true;
@@ -33,10 +41,28 @@ public class SWAdapterLauncher {
 					.run(args);
 			EventQueue.invokeLater(() -> {
 				SWAdapterGUI ex = ctx.getBean(SWAdapterGUI.class);
-				GUI = ex;
+				SWAdapterGUI.CONTEXT = ex;
 				ex.setVisible(true);
 			});
 		}
 
 	}
+
+	/**
+	private String allPassword = "123";
+
+	@Bean
+	public String templatetKeyStore(RestTemplate restTemplate) throws KeyManagementException, UnrecoverableKeyException,
+			NoSuchAlgorithmException, KeyStoreException, CertificateException, FileNotFoundException, IOException {
+		File fl = FileUtil.getExternalFile("ext-resources/truststore.jks");
+		SSLContext sslContext = SSLContextBuilder.create()
+				.loadKeyMaterial(fl, allPassword.toCharArray(), allPassword.toCharArray())
+				.loadTrustMaterial(fl, allPassword.toCharArray()).build();
+
+		HttpClient client = HttpClients.custom().setSSLContext(sslContext).build();
+
+		restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory(client));
+		return allPassword;
+	}
+	**/
 }
