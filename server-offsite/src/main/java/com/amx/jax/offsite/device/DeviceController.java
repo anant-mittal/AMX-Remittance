@@ -15,12 +15,15 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.device.CardData;
 import com.amx.jax.device.CardReader;
 import com.amx.jax.device.DeviceConstants;
+import com.amx.jax.device.DeviceRestModels;
+import com.amx.jax.device.DeviceRestModels.DevicePairingRequest;
+import com.amx.jax.device.DeviceRestModels.DevicePairingResponse;
+import com.amx.jax.device.DeviceRestModels.SessionPairingRequest;
+import com.amx.jax.device.DeviceRestModels.SessionPairingResponse;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.offsite.OffsiteMvcConfig.CardBox;
-import com.amx.jax.offsite.device.DevicePairingModels.DeviceReqResp;
-import com.amx.jax.offsite.device.DevicePairingModels.PairingRequest;
-import com.amx.jax.offsite.device.DevicePairingModels.PairingResponse;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.Random;
 
 import io.swagger.annotations.Api;
 
@@ -29,6 +32,19 @@ import io.swagger.annotations.Api;
 public class DeviceController {
 
 	private static final Logger LOGGER = LoggerService.getLogger(DeviceController.class);
+
+	@RequestMapping(value = { DeviceConstants.DEVICE_PAIR }, method = { RequestMethod.POST })
+	public AmxApiResponse<DevicePairingResponse, Object> pairDevice(@RequestBody DevicePairingRequest req) {
+		DevicePairingResponse creds = DeviceRestModels.get();
+		creds.setDevicePairingToken(Random.randomAlphaNumeric(10).toLowerCase());
+		creds.setDeviceRegId(Random.randomNumeric(2));
+		return AmxApiResponse.build(creds);
+	}
+
+	@RequestMapping(value = { DeviceConstants.SESSION_PAIR }, method = { RequestMethod.POST })
+	public AmxApiResponse<SessionPairingResponse, Object> pairSession(@RequestBody SessionPairingRequest req) {
+		return AmxApiResponse.build(DeviceRestModels.get());
+	}
 
 	@Autowired
 	CardBox cardBox;
@@ -62,11 +78,6 @@ public class DeviceController {
 			cardBox.fastRemove(systemid);
 		}
 		return AmxApiResponse.build(data);
-	}
-
-	@RequestMapping(value = { DeviceConstants.DEVICE_PAIR }, method = { RequestMethod.POST })
-	public AmxApiResponse<PairingResponse, Object> pairDevice(@RequestBody PairingRequest req) {
-		return AmxApiResponse.build(new DeviceReqResp());
 	}
 
 }
