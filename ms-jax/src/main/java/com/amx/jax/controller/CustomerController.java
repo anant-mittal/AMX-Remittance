@@ -20,6 +20,8 @@ import com.amx.amxlib.constant.CommunicationChannel;
 import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.services.CustomerDataVerificationService;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.ConverterUtil;
@@ -34,19 +36,18 @@ public class CustomerController {
 
 	@Autowired
 	private UserService userService;
-	
+
 	@Autowired
 	private CustomerDataVerificationService customerDataVerificationService;
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
-	
-	
-   @RequestMapping(value = "/logged/in/", method = RequestMethod.POST)
-    public ApiResponse loginUser(@RequestBody CustomerModel customerModel) {
-        logger.info("loginUser Request: usreid: " + customerModel.getLoginId());
-        ApiResponse response = userService.customerLoggedIn(customerModel);
-        return response;
-    }
+
+	@RequestMapping(value = "/logged/in/", method = RequestMethod.POST)
+	public ApiResponse loginUser(@RequestBody CustomerModel customerModel) {
+		logger.info("loginUser Request: usreid: " + customerModel.getLoginId());
+		ApiResponse response = userService.customerLoggedIn(customerModel);
+		return response;
+	}
 
 	@RequestMapping(method = RequestMethod.POST)
 	public ApiResponse saveCust(@RequestBody CustomerModel customerModel) {
@@ -124,10 +125,9 @@ public class CustomerController {
 	}
 
 	@RequestMapping(value = UPDATE_CUSTOMER_PASSWORD_ENDPOINT, method = RequestMethod.PUT)
-	public ApiResponse updatePassword(@RequestBody CustomerModel model) {
+	public AmxApiResponse<BoolRespModel, Object> updatePassword(@RequestBody CustomerModel model) {
 		logger.info("updatePassword Request: " + model.toString());
-		ApiResponse response = userService.updatePassword(model);
-		return response;
+		return userService.updatePassword(model);
 	}
 
 	@RequestMapping(value = "/unlock/", method = RequestMethod.GET)
@@ -189,7 +189,7 @@ public class CustomerController {
 		customerDataVerificationService.setAdditionalData(response.getResults());
 		return response;
 	}
-	
+
 	@RequestMapping(value = "/random-data-verification-questions/", method = RequestMethod.POST)
 	public ApiResponse saveDataVerificationQuestions(@RequestBody CustomerModel model) {
 		logger.info("in saveDataVerificationQuestions ");
