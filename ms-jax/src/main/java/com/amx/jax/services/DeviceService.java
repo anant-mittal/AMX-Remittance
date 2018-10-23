@@ -21,6 +21,7 @@ import com.amx.jax.dao.DeviceDao;
 import com.amx.jax.dbmodel.Device;
 import com.amx.jax.dbmodel.DeviceStateInfo;
 import com.amx.jax.dbmodel.JaxConfig;
+import com.amx.jax.device.SignaturePadRemittanceInfo;
 import com.amx.jax.device.SignaturePadRemittanceMetaInfo;
 import com.amx.jax.dict.UserClient.DeviceType;
 import com.amx.jax.error.JaxError;
@@ -127,9 +128,9 @@ public class DeviceService extends AbstractService {
 		if (deviceStateInfo.getStateDataType() != null) {
 			switch (deviceStateInfo.getStateDataType()) {
 			case REMITTANCE:
-				SignaturePadRemittanceMetaInfo stateData = JsonUtil.fromJson(deviceStateInfo.getStateData(),
-						SignaturePadRemittanceMetaInfo.class);
-				dto.setStateData(deviceManager.getRemittanceData(stateData.getRemittanceTransactionId()));
+				SignaturePadRemittanceInfo stateData = JsonUtil.fromJson(deviceStateInfo.getStateData(),
+						SignaturePadRemittanceInfo.class);
+				dto.setStateData(stateData);
 				break;
 			default:
 				break;

@@ -15,6 +15,7 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.IDeviceService;
 import com.amx.jax.constants.DeviceStateDataType;
+import com.amx.jax.device.SignaturePadRemittanceInfo;
 import com.amx.jax.device.SignaturePadRemittanceMetaInfo;
 import com.amx.jax.dict.UserClient.DeviceType;
 import com.amx.jax.model.request.DeviceRegistrationRequest;
@@ -78,7 +79,7 @@ public class DeviceController implements IDeviceService {
 	@RequestMapping(value = DEVICE_STATE_REMITTANCE_UPDATE, method = RequestMethod.POST)
 	public AmxApiResponse<BoolRespModel, Object> updateRemittanceState(@RequestParam DeviceType deviceType,
 			@RequestParam Integer countryBranchSystemInventoryId,
-			@Valid @RequestBody SignaturePadRemittanceMetaInfo signaturePadRemittanceInfo) {
+			@Valid @RequestBody SignaturePadRemittanceInfo signaturePadRemittanceInfo) {
 		BoolRespModel otpResponse = deviceService.updateDeviceState(deviceType, countryBranchSystemInventoryId,
 				signaturePadRemittanceInfo, DeviceStateDataType.REMITTANCE);
 		return AmxApiResponse.build(otpResponse);

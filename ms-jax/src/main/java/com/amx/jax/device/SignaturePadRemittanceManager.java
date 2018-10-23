@@ -53,6 +53,7 @@ public class SignaturePadRemittanceManager extends ASignaturePadManager {
 
 	}
 
+	@Deprecated
 	public IDeviceStateData getRemittanceReceiptData(BigDecimal remittanceTransactionId) {
 		RemittanceTransaction remittanceTransaction = remitAppDao.getRemittanceTransactionById(remittanceTransactionId);
 		logger.debug("inside getRemittanceReceiptData with remittanceTransactionId: {} ", remittanceTransactionId);
@@ -62,8 +63,8 @@ public class SignaturePadRemittanceManager extends ASignaturePadManager {
 		trxnDto.setApplicationCountryId(metaData.getCountryId());
 		reportManagerService.generatePersonalRemittanceReceiptReportDetails(trxnDto, Boolean.FALSE);
 		List<RemittanceReceiptSubreport> rrsrl = reportManagerService.getRemittanceReceiptSubreportList();
-		SignaturePadRemittanceInfo info = new SignaturePadRemittanceInfo(rrsrl.get(0));
-		return info;
+		//SignaturePadRemittanceInfo info = new SignaturePadRemittanceInfo(rrsrl.get(0));
+		return null;
 	}
 
 }
