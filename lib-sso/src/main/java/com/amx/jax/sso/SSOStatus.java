@@ -60,27 +60,27 @@ public class SSOStatus extends IStatusCodeListPlugin<SSOServerCodes, ApiSSOStatu
 	 * @author lalittanwar
 	 *
 	 */
-	public static class OffsiteServerError extends AmxApiException {
+	public static class SSOServerError extends AmxApiException {
 
 		private static final long serialVersionUID = 1L;
 
-		public OffsiteServerError(AmxApiError error) {
+		public SSOServerError(AmxApiError error) {
 			super(error);
 		}
 
-		public OffsiteServerError() {
+		public SSOServerError() {
 			super("Offsite Server error occured");
 			this.setError(SSOServerCodes.AUTH_REQUIRED);
 		}
 
-		public OffsiteServerError(Exception e) {
+		public SSOServerError(Exception e) {
 			super(e);
 			this.setError(SSOServerCodes.AUTH_REQUIRED);
 		}
 
 		@Override
 		public AmxApiException getInstance(AmxApiError apiError) {
-			return new OffsiteServerError(apiError);
+			return new SSOServerError(apiError);
 		}
 
 		@Override
@@ -89,10 +89,10 @@ public class SSOStatus extends IStatusCodeListPlugin<SSOServerCodes, ApiSSOStatu
 		}
 
 		public static <T> T evaluate(Exception e) {
-			if (e instanceof OffsiteServerError) {
-				throw (OffsiteServerError) e;
+			if (e instanceof SSOServerError) {
+				throw (SSOServerError) e;
 			} else {
-				throw new OffsiteServerError(e);
+				throw new SSOServerError(e);
 			}
 		}
 

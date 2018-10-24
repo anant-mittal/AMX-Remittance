@@ -3,8 +3,6 @@ package com.amx.jax.dao;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import javax.transaction.Transactional;
-
 import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -15,7 +13,7 @@ import com.amx.jax.constants.DeviceState;
 import com.amx.jax.dbmodel.BranchSystemDetail;
 import com.amx.jax.dbmodel.Device;
 import com.amx.jax.dbmodel.DeviceStateInfo;
-import com.amx.jax.dict.UserClient.DeviceType;
+import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.model.request.DeviceRegistrationRequest;
 import com.amx.jax.model.response.DeviceDto;
 import com.amx.jax.repository.DeviceRepository;
@@ -66,12 +64,12 @@ public class DeviceDao {
 		newDevice.setPairToken(deviceState.getPairToken());
 	}
 
-	public Device findDevice(BigDecimal branchSystemInvId, DeviceType deviceType) {
+	public Device findDevice(BigDecimal branchSystemInvId, ClientType deviceType) {
 		return deviceRepository.findByBranchSystemInventoryIdAndDeviceTypeAndStatus(branchSystemInvId, deviceType,
 				ConstantDocument.Yes);
 	}
 
-	public Device findLatestDevice(BigDecimal branchSystemInvId, DeviceType deviceType) {
+	public Device findLatestDevice(BigDecimal branchSystemInvId, ClientType deviceType) {
 		return deviceRepository.findFirst1ByBranchSystemInventoryIdAndDeviceType(branchSystemInvId, deviceType,
 				new Sort("deviceId"));
 	}

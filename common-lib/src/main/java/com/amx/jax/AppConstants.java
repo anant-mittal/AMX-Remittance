@@ -16,11 +16,16 @@ public class AppConstants extends Constants {
 	}
 
 	public static final String AUTH_KEY_XKEY = "x-app-auth-key";
+	public static final String AUTH_CLIENT_KEY_XKEY = "x-client-auth-key";
 	public static final String SESSION_ID_XKEY = "x-session-id";
 	public static final String TRACE_ID_XKEY = "x-trace-id";
 	public static final String TRACE_TIME_XKEY = "x-time-id";
 	public static final String REQUEST_TYPE_XKEY = "x-request-type";
 	public static final String TRANX_ID_XKEY = "x-tranx-id";
+	public static final String DEVICE_REG_KEY_XKEY = "x-device-reg-id";
+	public static final String DEVICE_REG_TOKEN_XKEY = "x-device-reg-token";
+	public static final String DEVICE_REQ_KEY_XKEY = "x-device-req-key";
+	public static final String DEVICE_REQ_TOKEN_XKEY = "x-device-req-token";
 	public static final String META_XKEY = "meta-info";
 	public static final String TRANX_ID_XKEY_CLEAN = TRANX_ID_XKEY.replaceAll("[-]", "_");
 	public static final String ACTOR_ID_XKEY = "x-actor-id";

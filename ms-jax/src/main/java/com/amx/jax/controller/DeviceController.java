@@ -16,8 +16,7 @@ import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.IDeviceService;
 import com.amx.jax.constants.DeviceStateDataType;
 import com.amx.jax.device.SignaturePadRemittanceInfo;
-import com.amx.jax.device.SignaturePadRemittanceMetaInfo;
-import com.amx.jax.dict.UserClient.DeviceType;
+import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.model.request.DeviceRegistrationRequest;
 import com.amx.jax.model.request.DeviceStateInfoChangeRequest;
 import com.amx.jax.model.response.DeviceDto;
@@ -48,7 +47,7 @@ public class DeviceController implements IDeviceService {
 
 	@RequestMapping(value = DEVICE_ACTIVATE, method = RequestMethod.GET)
 	public AmxApiResponse<BoolRespModel, Object> activateDevice(@RequestParam Integer countryBranchSystemInventoryId,
-			@RequestParam DeviceType deviceType) {
+			@RequestParam ClientType deviceType) {
 		BoolRespModel response = deviceService.activateDevice(countryBranchSystemInventoryId, deviceType);
 		return AmxApiResponse.build(response);
 	}
@@ -62,7 +61,7 @@ public class DeviceController implements IDeviceService {
 	}
 
 	@RequestMapping(value = DEVICE_VALIDATE_PAIR_OTP, method = RequestMethod.GET)
-	public AmxApiResponse<BoolRespModel, Object> validateOtpForPairing(@RequestParam DeviceType deviceType,
+	public AmxApiResponse<BoolRespModel, Object> validateOtpForPairing(@RequestParam ClientType deviceType,
 			@RequestParam Integer countryBranchSystemInventoryId, @RequestParam String otp) {
 		BoolRespModel otpResponse = deviceService.validateOtpForPairing(deviceType, countryBranchSystemInventoryId,
 				otp.toString());
@@ -78,7 +77,7 @@ public class DeviceController implements IDeviceService {
 	}
 
 	@RequestMapping(value = DEVICE_STATE_REMITTANCE_UPDATE, method = RequestMethod.POST)
-	public AmxApiResponse<BoolRespModel, Object> updateRemittanceState(@RequestParam DeviceType deviceType,
+	public AmxApiResponse<BoolRespModel, Object> updateRemittanceState(@RequestParam ClientType deviceType,
 			@RequestParam Integer countryBranchSystemInventoryId,
 			@Valid @RequestBody SignaturePadRemittanceInfo signaturePadRemittanceInfo) {
 		BoolRespModel otpResponse = deviceService.updateDeviceState(deviceType, countryBranchSystemInventoryId,

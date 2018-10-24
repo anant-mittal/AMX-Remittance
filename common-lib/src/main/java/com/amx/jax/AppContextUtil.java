@@ -20,10 +20,8 @@ public class AppContextUtil {
 
 	/**
 	 * 
-	 * @param generate
-	 *            - create new token if not present
-	 * @param override
-	 *            - create new token anyway
+	 * @param generate - create new token if not present
+	 * @param override - create new token anyway
 	 * @return -returns current token
 	 */
 	public static String generateTraceId(boolean generate, boolean override) {
@@ -118,6 +116,24 @@ public class AppContextUtil {
 
 	public static void setRequestType(RequestType reqType) {
 		ContextUtil.map().put(AppConstants.REQUEST_TYPE_XKEY, reqType);
+	}
+
+	// Device
+	public static void setDeviceRegKey(String deviceRegKey) {
+		ContextUtil.map().put(AppConstants.DEVICE_REG_KEY_XKEY, deviceRegKey);
+	}
+
+	public static void setDeviceRegToken(String deviceRegToken) {
+		ContextUtil.map().put(AppConstants.DEVICE_REG_TOKEN_XKEY, deviceRegToken);
+	}
+
+	// Device
+	public static String getDeviceRegKey() {
+		return (String) ContextUtil.map().get(AppConstants.DEVICE_REG_KEY_XKEY);
+	}
+
+	public static String getDeviceRegToken(String deviceRegToken) {
+		return (String) ContextUtil.map().get(AppConstants.DEVICE_REG_TOKEN_XKEY);
 	}
 
 	public static void init() {

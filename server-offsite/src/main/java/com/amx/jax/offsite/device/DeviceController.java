@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.client.DeviceClient;
 import com.amx.jax.device.CardData;
 import com.amx.jax.device.CardReader;
 import com.amx.jax.device.DeviceConstants;
@@ -20,8 +21,14 @@ import com.amx.jax.device.DeviceRestModels.DevicePairingRequest;
 import com.amx.jax.device.DeviceRestModels.DevicePairingResponse;
 import com.amx.jax.device.DeviceRestModels.SessionPairingRequest;
 import com.amx.jax.device.DeviceRestModels.SessionPairingResponse;
+import com.amx.jax.dict.UserClient.ClientType;
+import com.amx.jax.http.CommonHttpRequest;
+import com.amx.jax.http.CommonHttpRequest.CommonMediaType;
 import com.amx.jax.logger.LoggerService;
-import com.amx.jax.offsite.OffsiteMvcConfig.CardBox;
+import com.amx.jax.model.request.DeviceRegistrationRequest;
+import com.amx.jax.offsite.OffsiteStatus.OffsiteServerCodes;
+import com.amx.jax.offsite.OffsiteStatus.OffsiteServerError;
+import com.amx.jax.offsite.device.DeviceConfigs.CardBox;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Random;
 
@@ -33,7 +40,35 @@ public class DeviceController {
 
 	private static final Logger LOGGER = LoggerService.getLogger(DeviceController.class);
 
-	@RequestMapping(value = { DeviceConstants.DEVICE_PAIR }, method = { RequestMethod.POST })
+	@Autowired
+	DeviceClient deviceClient;
+
+	@Autowired
+	CommonHttpRequest commonHttpRequest;
+
+	@RequestMapping(value = { DeviceConstants.DEVICE_PAIR }, method = { RequestMethod.GET, RequestMethod.POST })
+	public AmxApiResponse<DevicePairingResponse, Object> pairDevice(
+			@RequestParam(required = false) String deivceTerminalId,
+			@RequestParam(required = false) ClientType deivceClientType) {
+		if (ArgUtil.isEmpty(deivceTerminalId) || ArgUtil.isEmpty(deivceClientType)) {
+			throw new OffsiteServerError(OffsiteServerCodes.DEVICE_NOT_PAIRED);
+		}
+
+		// validate Device with jax
+		DeviceRegistrationRequest deviceRegistrationRequest = new DeviceRegistrationRequest();
+		deviceRegistrationRequest.setDeviceType(deivceClientType);
+		deviceRegistrationRequest.setBranchSystemIp(deivceTerminalId);
+		deviceRegistrationRequest.setDeviceId(commonHttpRequest.getDeviceId());
+		deviceClient.registerNewDevice(deviceRegistrationRequest);
+
+		DevicePairingResponse creds = DeviceRestModels.get();
+		creds.setDevicePairingToken(Random.randomAlphaNumeric(10).toLowerCase());
+		creds.setDeviceRegId(Random.randomNumeric(2));
+		return AmxApiResponse.build(creds);
+	}
+
+	@RequestMapping(value = { DeviceConstants.DEVICE_PAIR }, method = { RequestMethod.POST }, produces = {
+			CommonMediaType.APPLICATION_JSON_VALUE, CommonMediaType.APPLICATION_V0_JSON_VALUE })
 	public AmxApiResponse<DevicePairingResponse, Object> pairDevice(@RequestBody DevicePairingRequest req) {
 		DevicePairingResponse creds = DeviceRestModels.get();
 		creds.setDevicePairingToken(Random.randomAlphaNumeric(10).toLowerCase());

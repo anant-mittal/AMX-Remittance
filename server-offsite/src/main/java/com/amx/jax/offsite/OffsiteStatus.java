@@ -30,7 +30,7 @@ public class OffsiteStatus extends IStatusCodeListPlugin<OffsiteServerCodes, Api
 	 *
 	 */
 	public static enum OffsiteServerCodes implements IExceptionEnum {
-		OFFSITE_SERVER_ERROR, DOTP_REQUIRED, MOTP_REQUIRED, EOTP_REQUIRED;
+		DEVICE_NOT_PAIRED, OFFSITE_SERVER_ERROR, DOTP_REQUIRED, MOTP_REQUIRED, EOTP_REQUIRED;
 
 		@Override
 		public String getStatusKey() {
@@ -73,6 +73,10 @@ public class OffsiteStatus extends IStatusCodeListPlugin<OffsiteServerCodes, Api
 		public OffsiteServerError() {
 			super("Offsite Server error occured");
 			this.setError(OffsiteServerCodes.OFFSITE_SERVER_ERROR);
+		}
+
+		public OffsiteServerError(OffsiteServerCodes statusCode) {
+			super(statusCode);
 		}
 
 		public OffsiteServerError(Exception e) {

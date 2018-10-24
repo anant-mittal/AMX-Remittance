@@ -10,7 +10,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.CrudRepository;
 
 import com.amx.jax.dbmodel.Device;
-import com.amx.jax.dict.UserClient.DeviceType;
+import com.amx.jax.dict.UserClient.ClientType;
 
 /**
  * @author Prashant
@@ -19,8 +19,8 @@ import com.amx.jax.dict.UserClient.DeviceType;
 public interface DeviceRepository extends CrudRepository<Device, Serializable> {
 
 	public Device findByBranchSystemInventoryIdAndDeviceTypeAndStatus(BigDecimal brachSystemInvId,
-			DeviceType deviceType, String status);
+			ClientType deviceType, String status);
 
-	public Device findFirst1ByBranchSystemInventoryIdAndDeviceType(BigDecimal brachSystemInvId,
-			DeviceType deviceType, Sort sort);
+	public Device findFirst1ByBranchSystemInventoryIdAndDeviceType(BigDecimal brachSystemInvId, ClientType deviceType,
+			Sort sort);
 }

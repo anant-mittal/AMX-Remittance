@@ -111,6 +111,34 @@ public class CommonHttpRequest {
 		return deviceId;
 	}
 
+	public String getDeviceRegKey() {
+		String deviceRegKey = null;
+		if (request != null) {
+			deviceRegKey = request.getHeader(AppConstants.DEVICE_REG_KEY_XKEY);
+			if (ArgUtil.isEmpty(deviceRegKey)) {
+				Cookie cookie = WebUtils.getCookie(request, AppConstants.DEVICE_REG_KEY_XKEY);
+				if (cookie != null) {
+					deviceRegKey = cookie.getValue();
+				}
+			}
+		}
+		return deviceRegKey;
+	}
+
+	public String getDeviceRegToken() {
+		String deviceRegToken = null;
+		if (request != null) {
+			deviceRegToken = request.getHeader(AppConstants.DEVICE_REG_TOKEN_XKEY);
+			if (ArgUtil.isEmpty(deviceRegToken)) {
+				Cookie cookie = WebUtils.getCookie(request, AppConstants.DEVICE_REG_TOKEN_XKEY);
+				if (cookie != null) {
+					deviceRegToken = cookie.getValue();
+				}
+			}
+		}
+		return deviceRegToken;
+	}
+
 	public void clearSessionCookie() {
 		Cookie cookie = WebUtils.getCookie(request, AppConstants.SESSIONID);
 		if (cookie != null) {

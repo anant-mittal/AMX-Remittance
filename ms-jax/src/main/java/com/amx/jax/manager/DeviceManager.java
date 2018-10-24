@@ -20,10 +20,9 @@ import com.amx.jax.dbmodel.Device;
 import com.amx.jax.dbmodel.DeviceStateInfo;
 import com.amx.jax.dbmodel.JaxConfig;
 import com.amx.jax.device.SignaturePadRemittanceManager;
-import com.amx.jax.dict.UserClient.DeviceType;
+import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.model.response.DevicePairOtpResponse;
-import com.amx.jax.model.response.DeviceStatusInfoDto;
 import com.amx.jax.model.response.IDeviceStateData;
 import com.amx.jax.services.DeviceService;
 import com.amx.jax.services.JaxConfigService;
@@ -58,7 +57,7 @@ public class DeviceManager {
 	 * 
 	 */
 	@Transactional
-	public void activateDevice(Integer countryBranchSystemInventoryId, DeviceType deviceType) {
+	public void activateDevice(Integer countryBranchSystemInventoryId, ClientType deviceType) {
 		Device device = deviceDao.findLatestDevice(new BigDecimal(countryBranchSystemInventoryId), deviceType);
 		if (device == null) {
 			throw new GlobalException("No device found");
@@ -131,7 +130,7 @@ public class DeviceManager {
 		return hmacToken;
 	}
 
-	public void validateDeviceActivationRequest(Integer countryBranchSystemInventoryId, DeviceType deviceType) {
+	public void validateDeviceActivationRequest(Integer countryBranchSystemInventoryId, ClientType deviceType) {
 		Device device = deviceDao.findDevice(new BigDecimal(countryBranchSystemInventoryId), deviceType);
 		if (device != null) {
 			throw new GlobalException("Device already active", JaxError.DEVICE_ALREADY_ACTIVE);

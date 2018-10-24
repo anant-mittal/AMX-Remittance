@@ -1,11 +1,10 @@
 package com.amx.jax.model.request;
 
-
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
-import com.amx.jax.dict.UserClient.DeviceType;
+import com.amx.jax.dict.UserClient.ClientType;
 
 public class DeviceRegistrationRequest {
 
@@ -14,7 +13,7 @@ public class DeviceRegistrationRequest {
 	String deviceId;
 
 	@NotNull
-	DeviceType deviceType;
+	ClientType deviceType;
 
 	@NotNull
 	@Pattern(regexp = "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$", message = "Invalid branch system Ip")
@@ -47,11 +46,11 @@ public class DeviceRegistrationRequest {
 		this.countryBranchId = countryBranchId;
 	}
 
-	public DeviceType getDeviceType() {
+	public ClientType getDeviceType() {
 		return deviceType;
 	}
 
-	public void setDeviceType(DeviceType deviceType) {
+	public void setDeviceType(ClientType deviceType) {
 		this.deviceType = deviceType;
 	}
 }

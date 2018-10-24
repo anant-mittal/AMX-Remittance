@@ -13,7 +13,7 @@ import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-import com.amx.jax.dict.UserClient.DeviceType;
+import com.amx.jax.dict.UserClient.ClientType;
 
 @Entity
 @Table(name = "JAX_DEVICE")
@@ -29,8 +29,8 @@ public class Device {
 	String deviceId;
 
 	@Column(name = "DEVICE_TYPE")
-	@Enumerated(value=EnumType.STRING)
-	DeviceType deviceType;
+	@Enumerated(value = EnumType.STRING)
+	ClientType deviceType;
 
 	@Column(name = "STATUS")
 	String status;
@@ -103,11 +103,11 @@ public class Device {
 		this.branchSystemInventoryId = branchSystemInventoryId;
 	}
 
-	public DeviceType getDeviceType() {
+	public ClientType getDeviceType() {
 		return deviceType;
 	}
 
-	public void setDeviceType(DeviceType deviceType) {
+	public void setDeviceType(ClientType deviceType) {
 		this.deviceType = deviceType;
 	}
 

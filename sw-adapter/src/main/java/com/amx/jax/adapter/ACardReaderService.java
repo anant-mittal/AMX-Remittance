@@ -12,6 +12,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.thavam.util.concurrent.blockingMap.BlockingHashMap;
 
+import com.amx.jax.AppConstants;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.device.CardData;
 import com.amx.jax.device.CardReader;
@@ -55,6 +56,8 @@ public abstract class ACardReaderService {
 	String serverUrl;
 	@Value("${device.terminal.id}")
 	String terminalId;
+	@Value("${device.reset.date}")
+	String resetDate;
 
 	@Autowired
 	RestService restService;
@@ -89,14 +92,13 @@ public abstract class ACardReaderService {
 			}
 		}
 		try {
-			String passwordEncd = keyring.getPassword("amx-adapter", terminalId);
+			String passwordEncd = keyring.getPassword("amx-adapter", terminalId + "#" + resetDate);
 			byte[] terminalCredsByts = Base64.getDecoder().decode(passwordEncd);
 			String terminalCredsStrs = new String(terminalCredsByts);
 			DevicePairingResponse dpr = JsonUtil.fromJson(terminalCredsStrs, DevicePairingResponse.class);
 			if (!ArgUtil.isEmpty(dpr) && !ArgUtil.isEmpty(dpr.getDeviceRegId())) {
 				devicePairingCreds = dpr;
 			}
-
 		} catch (LockException ex) {
 			LOGGER.error("pairing Exception:LockException", ex);
 		} catch (PasswordRetrievalException ex) {
@@ -117,7 +119,7 @@ public abstract class ACardReaderService {
 					String passwordEncd = Base64.getEncoder().encodeToString(terminalCredsStrs.getBytes());
 
 					try {
-						keyring.setPassword("amx-adapter", terminalId, passwordEncd);
+						keyring.setPassword("amx-adapter", terminalId + "#" + resetDate, passwordEncd);
 						status(DeviceStatus.PAIRED);
 					} catch (LockException ex) {
 						LOGGER.error("pairing Exception:LockException", ex);
@@ -147,7 +149,10 @@ public abstract class ACardReaderService {
 				lastreadtime = reader.getCardActiveTime();
 				status(DataStatus.SYNCING);
 				restService.ajax(serverUrl).path(DeviceConstants.DEVICE_INFO_URL)
-						.pathParam(DeviceConstants.PARAM_SYSTEM_ID, terminalId).post(reader).asObject();
+						.pathParam(DeviceConstants.PARAM_SYSTEM_ID, terminalId)
+						.header(AppConstants.DEVICE_REG_KEY_XKEY, devicePairingCreds.getDeviceRegId())
+						.header(AppConstants.DEVICE_REG_TOKEN_XKEY, devicePairingCreds.getDevicePairingToken())
+						.post(reader).asObject();
 				status(DataStatus.SYNCED);
 			}
 		} catch (InterruptedException e) {
