@@ -17,6 +17,9 @@ import com.amx.jax.client.IDeviceService;
 import com.amx.jax.constants.DeviceStateDataType;
 import com.amx.jax.device.SignaturePadRemittanceInfo;
 import com.amx.jax.dict.UserClient.ClientType;
+import com.amx.jax.device.SignaturePadFCPurchaseSaleInfo;
+import com.amx.jax.device.SignaturePadRemittanceMetaInfo;
+import com.amx.jax.dict.UserClient.DeviceType;
 import com.amx.jax.model.request.DeviceRegistrationRequest;
 import com.amx.jax.model.request.DeviceStateInfoChangeRequest;
 import com.amx.jax.model.response.DeviceDto;
@@ -82,6 +85,24 @@ public class DeviceController implements IDeviceService {
 			@Valid @RequestBody SignaturePadRemittanceInfo signaturePadRemittanceInfo) {
 		BoolRespModel otpResponse = deviceService.updateDeviceState(deviceType, countryBranchSystemInventoryId,
 				signaturePadRemittanceInfo, DeviceStateDataType.REMITTANCE);
+		return AmxApiResponse.build(otpResponse);
+	}
+	
+	@RequestMapping(value = DEVICE_FC_PURCHASE, method = RequestMethod.POST)
+	public AmxApiResponse<BoolRespModel, Object> getFcPurchase(@RequestParam DeviceType deviceType,
+			@RequestParam Integer countryBranchSystemInventoryId,
+			@Valid @RequestBody SignaturePadFCPurchaseSaleInfo signaturePadPurchseInfo) {
+		BoolRespModel otpResponse = deviceService.updateDeviceState(deviceType, countryBranchSystemInventoryId,
+				signaturePadPurchseInfo, DeviceStateDataType.FC_PURCHASE);
+		return AmxApiResponse.build(otpResponse);
+	}
+	
+	@RequestMapping(value = DEVICE_FC_SALE, method = RequestMethod.POST)
+	public AmxApiResponse<BoolRespModel, Object> getFcSale(@RequestParam DeviceType deviceType,
+			@RequestParam Integer countryBranchSystemInventoryId,
+			@Valid @RequestBody SignaturePadFCPurchaseSaleInfo signaturePadSaleInfo) {
+		BoolRespModel otpResponse = deviceService.updateDeviceState(deviceType, countryBranchSystemInventoryId,
+				signaturePadSaleInfo, DeviceStateDataType.FC_SALE);
 		return AmxApiResponse.build(otpResponse);
 	}
 }
