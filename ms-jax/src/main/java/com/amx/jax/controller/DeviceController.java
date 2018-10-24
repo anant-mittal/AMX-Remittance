@@ -43,9 +43,12 @@ public class DeviceController implements IDeviceService {
 	}
 
 	@RequestMapping(value = DEVICE_STATE, method = RequestMethod.POST)
-	public AmxApiResponse<DeviceDto, Object> updateDeviceState(
-			@Valid @RequestBody DeviceStateInfoChangeRequest request) {
-		return deviceService.updateDeviceState(request);
+	@Override
+	public AmxApiResponse<BoolRespModel, Object> updateDeviceState(
+			@Valid @RequestBody DeviceStateInfoChangeRequest request, @RequestHeader Integer registrationId,
+			@RequestHeader String paireToken, @RequestHeader String sessionToken) {
+		BoolRespModel response = deviceService.updateDeviceState(request, registrationId, paireToken, sessionToken);
+		return AmxApiResponse.build(response);
 	}
 
 	@RequestMapping(value = DEVICE_ACTIVATE, method = RequestMethod.GET)
@@ -83,7 +86,7 @@ public class DeviceController implements IDeviceService {
 	public AmxApiResponse<BoolRespModel, Object> updateRemittanceState(@RequestParam ClientType deviceType,
 			@RequestParam Integer countryBranchSystemInventoryId,
 			@Valid @RequestBody SignaturePadRemittanceInfo signaturePadRemittanceInfo) {
-		BoolRespModel otpResponse = deviceService.updateDeviceState(deviceType, countryBranchSystemInventoryId,
+		BoolRespModel otpResponse = deviceService.updateDeviceStateData(deviceType, countryBranchSystemInventoryId,
 				signaturePadRemittanceInfo, DeviceStateDataType.REMITTANCE);
 		return AmxApiResponse.build(otpResponse);
 	}

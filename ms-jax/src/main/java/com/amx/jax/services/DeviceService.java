@@ -70,9 +70,19 @@ public class DeviceService extends AbstractService {
 		return newDevice;
 	}
 
-	public AmxApiResponse<DeviceDto, Object> updateDeviceState(DeviceStateInfoChangeRequest request) {
-		// TODO Auto-generated method stub
-		return null;
+	public BoolRespModel updateDeviceState(DeviceStateInfoChangeRequest request, Integer registrationId,
+			String paireToken, String sessionToken) {
+		if (registrationId == null) {
+			throw new GlobalException("Device registration id can not be blank");
+		}
+		deviceValidation.validatePaireToken(paireToken, registrationId);
+		deviceValidation.validateSessionToken(sessionToken, registrationId);
+		Device device = deviceDao.findDevice(new BigDecimal(registrationId));
+		deviceValidation.validateDevice(device);
+		DeviceStateInfo deviceStateInfo = deviceDao.getDeviceStateInfo(device);
+		deviceStateInfo.setState(request.getState());
+		deviceDao.saveDeviceInfo(deviceStateInfo);
+		return new BoolRespModel(Boolean.TRUE);
 	}
 
 	public BoolRespModel activateDevice(Integer countryBranchSystemInventoryId, ClientType deviceType) {
@@ -158,7 +168,7 @@ public class DeviceService extends AbstractService {
 		return dto;
 	}
 
-	public BoolRespModel updateDeviceState(ClientType deviceType, Integer countryBranchSystemInventoryId,
+	public BoolRespModel updateDeviceStateData(ClientType deviceType, Integer countryBranchSystemInventoryId,
 			IDeviceStateData deviceStateData, DeviceStateDataType type) {
 		Device device = deviceDao.findDevice(new BigDecimal(countryBranchSystemInventoryId), deviceType);
 		deviceValidation.validateDevice(device);

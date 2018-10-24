@@ -8,9 +8,11 @@ import org.springframework.stereotype.Component;
 
 import com.amx.jax.AppConfig;
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.exception.AbstractJaxException;
 import com.amx.jax.exception.JaxSystemError;
 import com.amx.jax.model.request.DeviceRegistrationRequest;
+import com.amx.jax.model.request.DeviceStateInfoChangeRequest;
 import com.amx.jax.model.response.DeviceDto;
 import com.amx.jax.model.response.DevicePairOtpResponse;
 import com.amx.jax.model.response.DeviceStatusInfoDto;
@@ -80,6 +82,25 @@ public class DeviceClient implements IDeviceService {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in sendOtpForPairing : ", e);
+			throw new JaxSystemError();
+		}
+	}
+
+	@Override
+	public AmxApiResponse<BoolRespModel, Object> updateDeviceState(DeviceStateInfoChangeRequest request,
+			Integer registrationId, String paireToken, String sessionToken) {
+		try {
+			LOGGER.info("in updateDeviceState");
+
+			String url = appConfig.getJaxURL() + END_POINT_JAX_DEVICE + DEVICE_STATUS_GET;
+			return restService.ajax(url).post(request).header("deviceRegId", registrationId.toString())
+					.header("paireToken", paireToken)
+					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
+					});
+		} catch (AbstractJaxException ae) {
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in updateDeviceState : ", e);
 			throw new JaxSystemError();
 		}
 	}
