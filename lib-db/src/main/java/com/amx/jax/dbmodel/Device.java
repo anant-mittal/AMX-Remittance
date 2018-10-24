@@ -10,6 +10,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.PrePersist;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -109,6 +110,11 @@ public class Device {
 
 	public void setDeviceType(ClientType deviceType) {
 		this.deviceType = deviceType;
+	}
+	
+	@PrePersist
+	public void prePersist() {
+		this.modifiedDate = new Date();
 	}
 
 }

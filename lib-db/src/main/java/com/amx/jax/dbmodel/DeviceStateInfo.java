@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Id;
+import javax.persistence.PrePersist;
 import javax.persistence.Table;
 
 import com.amx.jax.constants.DeviceState;
@@ -129,4 +130,8 @@ public class DeviceStateInfo {
 		this.pairToken = pairToken;
 	}
 
+	@PrePersist
+	public void prePersist() {
+		this.modifiedDate = new Date();
+	}
 }

@@ -2,6 +2,8 @@ package com.amx.jax.client;
 
 import com.amx.jax.IJaxService;
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.error.JaxError;
+import com.amx.jax.error.ApiJaxStatusBuilder.ApiJaxStatus;
 import com.amx.jax.model.request.DeviceRegistrationRequest;
 import com.amx.jax.model.response.DeviceDto;
 import com.amx.jax.model.response.DevicePairOtpResponse;
@@ -21,11 +23,15 @@ public interface IDeviceService extends IJaxService {
 	public static final String DEVICE_STATE_CUSTOMER_REG_UPDATE = "/updatestatecustreg";
 	public static final String DEVICE_STATE_FC_SALE_UPDATE = "/updatestatefcsale";
 
+	@ApiJaxStatus({ JaxError.DEVICE_ALREADY_REGISTERED })
 	AmxApiResponse<DeviceDto, Object> registerNewDevice(DeviceRegistrationRequest request);
 
+	@ApiJaxStatus({ JaxError.JAX_FIELD_VALIDATION_FAILURE, JaxError.DEVICE_INVALID_PAIR_TOKEN,
+			JaxError.DEVICE_INVALID_SESSION_TOKEN })
 	AmxApiResponse<DeviceStatusInfoDto, Object> getStatus(Integer registrationId, String paireToken,
 			String sessionToken);
 
+	@ApiJaxStatus({ JaxError.DEVICE_INVALID_PAIR_TOKEN, JaxError.DEVICE_NOT_FOUND, JaxError.DEVICE_NOT_ACTIVE })
 	AmxApiResponse<DevicePairOtpResponse, Object> sendOtpForPairing(Integer deviceRegId, String paireToken);
 
 }
