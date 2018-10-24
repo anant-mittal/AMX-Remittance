@@ -2,19 +2,28 @@ package com.amx.amxlib.meta.model;
 
 import java.math.BigDecimal;
 import java.util.Date;
-
+import javax.validation.constraints.NotNull;
+import org.hibernate.validator.constraints.Range;
 import com.amx.jax.model.AbstractModel;
 
 public class CustomerRatingDTO extends AbstractModel {
 	
 	private static final long serialVersionUID = -254755940678862078L;
+	
 	private BigDecimal customerId;
 	private BigDecimal ratingId;
 	private BigDecimal applicationCountryId;
+	
+	@NotNull(message="remittanceApplicationId may not be null")
 	private BigDecimal remittanceApplicationId;
+	
 	private BigDecimal remittanceTransactionId;
 	private Date createdDate;
+	
+	@NotNull
+	@Range(min=1, max=10,message="rating should be between 1 and 10 range")
 	private BigDecimal rating;
+	
 	private String ratingRemark;
 
 	@Override

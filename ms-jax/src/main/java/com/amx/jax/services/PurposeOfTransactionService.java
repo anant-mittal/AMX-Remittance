@@ -166,6 +166,7 @@ public class PurposeOfTransactionService extends AbstractService {
 								adddata.setRenderInputText(false);
 								adddata.setRenderSelect(true);
 								adddata.setRenderOneSelect(false);
+
 								adddata.setListadditionAmiecData(convertViewModel(listAdditionaView));
 							}
 						}

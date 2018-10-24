@@ -20,6 +20,8 @@ import com.amx.amxlib.constant.CommunicationChannel;
 import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.services.CustomerDataVerificationService;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.ConverterUtil;
@@ -34,19 +36,18 @@ public class CustomerController {
 
 	@Autowired
 	private UserService userService;
-	
+
 	@Autowired
 	private CustomerDataVerificationService customerDataVerificationService;
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
-	
-	
-   @RequestMapping(value = "/logged/in/", method = RequestMethod.POST)
-    public ApiResponse loginUser(@RequestBody CustomerModel customerModel) {
-        logger.info("loginUser Request: usreid: " + customerModel.getLoginId());
-        ApiResponse response = userService.customerLoggedIn(customerModel);
-        return response;
-    }
+
+	@RequestMapping(value = "/logged/in/", method = RequestMethod.POST)
+	public ApiResponse loginUser(@RequestBody CustomerModel customerModel) {
+		logger.info("loginUser Request: usreid: " + customerModel.getLoginId());
+		ApiResponse response = userService.customerLoggedIn(customerModel);
+		return response;
+	}
 
 	@RequestMapping(method = RequestMethod.POST)
 	public ApiResponse saveCust(@RequestBody CustomerModel customerModel) {
@@ -71,10 +72,9 @@ public class CustomerController {
 
 	@RequestMapping(value = "/{civil-id}/send-reset-otp/", method = RequestMethod.GET)
 	public ApiResponse sendResetCredentialsOtp(@PathVariable("civil-id") String civilId) {
-		logger.info("send Request:civilId" + civilId);
+		logger.info("Send OTP Request : civilId - " + civilId);
 		List<CommunicationChannel> channel = new ArrayList<>();
-		channel.add(CommunicationChannel.EMAIL);
-		channel.add(CommunicationChannel.MOBILE);
+		channel.add(CommunicationChannel.EMAIL_AS_MOBILE);
 		ApiResponse response = userService.sendOtpForCivilId(civilId, channel, null, null);
 		return response;
 	}
@@ -89,7 +89,7 @@ public class CustomerController {
 	@RequestMapping(value = "/{civil-id}/validate-otp/", method = RequestMethod.GET)
 	public ApiResponse validateOtp(@PathVariable("civil-id") String civilId, @RequestParam("mOtp") String mOtp,
 			@RequestParam(name = "eOtp", required = false) String eOtp) {
-		logger.info("validateOtp Request:civilId" + civilId + " mOtp:" + mOtp + " eOtp:" + eOtp);
+		logger.info("validateOtp Request : civilId - " + civilId + " mOtp: " + mOtp + " eOtp: " + eOtp);
 		ApiResponse response = userService.validateOtp(civilId, mOtp, eOtp);
 		return response;
 	}
@@ -125,10 +125,9 @@ public class CustomerController {
 	}
 
 	@RequestMapping(value = UPDATE_CUSTOMER_PASSWORD_ENDPOINT, method = RequestMethod.PUT)
-	public ApiResponse updatePassword(@RequestBody CustomerModel model) {
+	public AmxApiResponse<BoolRespModel, Object> updatePassword(@RequestBody CustomerModel model) {
 		logger.info("updatePassword Request: " + model.toString());
-		ApiResponse response = userService.updatePassword(model);
-		return response;
+		return userService.updatePassword(model);
 	}
 
 	@RequestMapping(value = "/unlock/", method = RequestMethod.GET)
@@ -190,7 +189,7 @@ public class CustomerController {
 		customerDataVerificationService.setAdditionalData(response.getResults());
 		return response;
 	}
-	
+
 	@RequestMapping(value = "/random-data-verification-questions/", method = RequestMethod.POST)
 	public ApiResponse saveDataVerificationQuestions(@RequestBody CustomerModel model) {
 		logger.info("in saveDataVerificationQuestions ");

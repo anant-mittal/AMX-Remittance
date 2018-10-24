@@ -15,6 +15,7 @@ import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.response.BooleanResponse;
+import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.model.AuthState;
@@ -59,8 +60,7 @@ public class LoginService {
 	/**
 	 * Gets the random security question.
 	 *
-	 * @param customerModel
-	 *            the customer model
+	 * @param customerModel the customer model
 	 * @return the random security question
 	 */
 	private AuthData getRandomSecurityQuestion(CustomerModel customerModel) {
@@ -88,10 +88,8 @@ public class LoginService {
 	/**
 	 * Login.
 	 *
-	 * @param identity
-	 *            the identity
-	 * @param password
-	 *            the password
+	 * @param identity the identity
+	 * @param password the password
 	 * @return the response wrapper
 	 */
 	public ResponseWrapper<AuthResponse> login(String identity, String password) {
@@ -115,10 +113,8 @@ public class LoginService {
 	/**
 	 * Login sec ques.
 	 *
-	 * @param guestanswer
-	 *            the guestanswer
-	 * @param mOtp
-	 *            the m otp
+	 * @param guestanswer the guestanswer
+	 * @param mOtp        the m otp
 	 * @return the response wrapper
 	 */
 	public ResponseWrapper<AuthResponse> loginSecQues(SecurityQuestionModel guestanswer, String mOtp) {
@@ -192,10 +188,8 @@ public class LoginService {
 	/**
 	 * Send OTP.
 	 *
-	 * @param identity
-	 *            the identity
-	 * @param motp
-	 *            the motp
+	 * @param identity the identity
+	 * @param motp     the motp
 	 * @return the response wrapper
 	 */
 	public ResponseWrapper<AuthResponse> sendOTP(String identity, String motp) {
@@ -217,8 +211,7 @@ public class LoginService {
 	/**
 	 * Inits the reset password.
 	 *
-	 * @param identity
-	 *            the identity
+	 * @param identity the identity
 	 * @return the response wrapper
 	 */
 	public ResponseWrapper<AuthResponse> initResetPassword(String identity) {
@@ -240,12 +233,9 @@ public class LoginService {
 	/**
 	 * Verify reset password.
 	 *
-	 * @param identity
-	 *            the identity
-	 * @param motp
-	 *            the motp
-	 * @param eotp
-	 *            the eotp
+	 * @param identity the identity
+	 * @param motp     the motp
+	 * @param eotp     the eotp
 	 * @return the response wrapper
 	 */
 	public ResponseWrapper<AuthResponse> verifyResetPassword(String identity, String motp, String eotp) {
@@ -268,12 +258,9 @@ public class LoginService {
 	/**
 	 * Updatepwd.
 	 *
-	 * @param password
-	 *            the password
-	 * @param mOtp
-	 *            the m otp
-	 * @param eOtp
-	 *            the e otp
+	 * @param password the password
+	 * @param mOtp     the m otp
+	 * @param eOtp     the e otp
 	 * @return the response wrapper
 	 */
 	public ResponseWrapper<UserUpdateData> updatepwd(String password, String mOtp, String eOtp) {
@@ -286,8 +273,7 @@ public class LoginService {
 		if (!sessionService.getUserSession().isValid()) {
 			// throw new HttpUnauthorizedException(HttpUnauthorizedException.UN_AUTHORIZED);
 		}
-		BooleanResponse model = jaxService.setDefaults().getUserclient().updatePassword(password, mOtp, eOtp)
-				.getResult();
+		BoolRespModel model = jaxService.setDefaults().getUserclient().updatePassword(password, mOtp, eOtp).getResult();
 		if (model.isSuccess()) {
 			wrapper.setMessage(WebResponseStatus.USER_UPDATE_SUCCESS, "Password Updated Succesfully");
 			sessionService.getGuestSession().endStep(AuthStep.CREDS_SET);
