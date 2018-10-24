@@ -20,13 +20,13 @@ public class DeviceRestModels {
 	@JsonDeserialize(as = DeviceRestModel.class)
 	public interface DevicePairingResponse {
 
-		void setDevicePairingToken(String devicePairingToken);
+		void setDeviceRegToken(String devicePairingToken);
 
-		String getDevicePairingToken();
+		String getDeviceRegToken();
 
-		String getDeviceRegId();
+		String getDeviceRegKey();
 
-		void setDeviceRegId(String deviceRegId);
+		void setDeviceRegKey(String deviceRegId);
 
 	}
 
@@ -42,13 +42,13 @@ public class DeviceRestModels {
 
 		String getSessionPairingToken();
 
-		String getSessionClientKey();
-
 		String getSessionOTP();
 
-		void setSessionClientKey(String sessionClientKey);
-
 		void setSessionOTP(String sessionOTP);
+
+		void setDeviceRequestKey(String deviceRequestKey);
+
+		String getDeviceRequestKey();
 
 	}
 
@@ -58,14 +58,12 @@ public class DeviceRestModels {
 		String deivceTerminalId;
 		ClientType deivceClientType;
 
-		String devicePairingToken;
-		String deviceRegId;
+		String deviceRegToken;
+		String deviceRegKey;
 
 		String sessionPairingToken;
 		String sessionOTP;
-		String sessionClientKey;
-
-		String requestToken;
+		String deviceRequestKey;
 
 		@Override
 		public String getDeivceTerminalId() {
@@ -88,23 +86,23 @@ public class DeviceRestModels {
 		}
 
 		@Override
-		public String getDevicePairingToken() {
-			return devicePairingToken;
+		public String getDeviceRegToken() {
+			return deviceRegToken;
 		}
 
 		@Override
-		public void setDevicePairingToken(String devicePairingToken) {
-			this.devicePairingToken = devicePairingToken;
+		public void setDeviceRegToken(String devicePairingToken) {
+			this.deviceRegToken = devicePairingToken;
 		}
 
 		@Override
-		public String getDeviceRegId() {
-			return deviceRegId;
+		public String getDeviceRegKey() {
+			return deviceRegKey;
 		}
 
 		@Override
-		public void setDeviceRegId(String deviceRegId) {
-			this.deviceRegId = deviceRegId;
+		public void setDeviceRegKey(String deviceRegId) {
+			this.deviceRegKey = deviceRegId;
 		}
 
 		@Override
@@ -128,22 +126,15 @@ public class DeviceRestModels {
 		}
 
 		@Override
-		public String getSessionClientKey() {
-			return sessionClientKey;
+		public void setDeviceRequestKey(String deviceRequestKey) {
+			this.deviceRequestKey = deviceRequestKey;
 		}
 
 		@Override
-		public void setSessionClientKey(String sessionClientKey) {
-			this.sessionClientKey = sessionClientKey;
+		public String getDeviceRequestKey() {
+			return this.deviceRequestKey;
 		}
 
-		public String getRequestToken() {
-			return requestToken;
-		}
-
-		public void setRequestToken(String requestToken) {
-			this.requestToken = requestToken;
-		}
 	}
 
 	public static DeviceRestModel get() {

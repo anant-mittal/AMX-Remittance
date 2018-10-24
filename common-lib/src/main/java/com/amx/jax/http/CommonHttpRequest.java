@@ -16,6 +16,7 @@ import org.springframework.web.util.WebUtils;
 
 import com.amx.jax.AppConfig;
 import com.amx.jax.AppConstants;
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.dict.Language;
 import com.amx.jax.dict.UserClient;
 import com.amx.jax.dict.UserClient.AppType;
@@ -27,6 +28,7 @@ import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
 import com.amx.utils.HttpUtils;
 
+import ch.qos.logback.core.util.ContextUtil;
 import eu.bitwalker.useragentutils.Browser;
 import eu.bitwalker.useragentutils.OperatingSystem;
 import eu.bitwalker.useragentutils.UserAgent;
@@ -111,32 +113,19 @@ public class CommonHttpRequest {
 		return deviceId;
 	}
 
-	public String getDeviceRegKey() {
-		String deviceRegKey = null;
+	public String get(String contextKey) {
+		String value = AppContextUtil.get(contextKey);
 		if (request != null) {
-			deviceRegKey = request.getHeader(AppConstants.DEVICE_REG_KEY_XKEY);
-			if (ArgUtil.isEmpty(deviceRegKey)) {
-				Cookie cookie = WebUtils.getCookie(request, AppConstants.DEVICE_REG_KEY_XKEY);
+			value = request.getHeader(contextKey);
+			if (ArgUtil.isEmpty(contextKey)) {
+				Cookie cookie = WebUtils.getCookie(request, contextKey);
 				if (cookie != null) {
-					deviceRegKey = cookie.getValue();
+					value = cookie.getValue();
 				}
 			}
+			AppContextUtil.set(contextKey, value);
 		}
-		return deviceRegKey;
-	}
-
-	public String getDeviceRegToken() {
-		String deviceRegToken = null;
-		if (request != null) {
-			deviceRegToken = request.getHeader(AppConstants.DEVICE_REG_TOKEN_XKEY);
-			if (ArgUtil.isEmpty(deviceRegToken)) {
-				Cookie cookie = WebUtils.getCookie(request, AppConstants.DEVICE_REG_TOKEN_XKEY);
-				if (cookie != null) {
-					deviceRegToken = cookie.getValue();
-				}
-			}
-		}
-		return deviceRegToken;
+		return value;
 	}
 
 	public void clearSessionCookie() {

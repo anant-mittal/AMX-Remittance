@@ -12,7 +12,6 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.thavam.util.concurrent.blockingMap.BlockingHashMap;
 
-import com.amx.jax.AppConstants;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.device.CardData;
 import com.amx.jax.device.CardReader;
@@ -20,6 +19,8 @@ import com.amx.jax.device.DeviceConstants;
 import com.amx.jax.device.DeviceRestModels;
 import com.amx.jax.device.DeviceRestModels.DevicePairingRequest;
 import com.amx.jax.device.DeviceRestModels.DevicePairingResponse;
+import com.amx.jax.device.DeviceRestModels.SessionPairingResponse;
+import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.rest.RestService;
 import com.amx.utils.ArgUtil;
@@ -63,6 +64,7 @@ public abstract class ACardReaderService {
 	RestService restService;
 
 	DevicePairingResponse devicePairingCreds;
+	SessionPairingResponse sessionPairingCreds;
 
 	boolean readerStarted = false;
 	private long lastreadtime = 0L;
@@ -96,7 +98,7 @@ public abstract class ACardReaderService {
 			byte[] terminalCredsByts = Base64.getDecoder().decode(passwordEncd);
 			String terminalCredsStrs = new String(terminalCredsByts);
 			DevicePairingResponse dpr = JsonUtil.fromJson(terminalCredsStrs, DevicePairingResponse.class);
-			if (!ArgUtil.isEmpty(dpr) && !ArgUtil.isEmpty(dpr.getDeviceRegId())) {
+			if (!ArgUtil.isEmpty(dpr) && !ArgUtil.isEmpty(dpr.getDeviceRegKey())) {
 				devicePairingCreds = dpr;
 			}
 		} catch (LockException ex) {
@@ -107,13 +109,15 @@ public abstract class ACardReaderService {
 
 		if (ArgUtil.isEmpty(devicePairingCreds)) {
 			DevicePairingRequest req = DeviceRestModels.get();
+			req.setDeivceTerminalId(terminalId);
+			req.setDeivceClientType(ClientType.BRANCH_ADAPTER);
 			AmxApiResponse<DevicePairingResponse, Object> resp = restService.ajax(serverUrl)
-					.path(DeviceConstants.DEVICE_PAIR).post(req)
+					.path(DeviceConstants.Path.DEVICE_PAIR).post(req)
 					.as(new ParameterizedTypeReference<AmxApiResponse<DevicePairingResponse, Object>>() {
 					});
 			if (resp.getResults().size() > 0) {
 				DevicePairingResponse dpr = resp.getResult();
-				if (!ArgUtil.isEmpty(dpr) && !ArgUtil.isEmpty(dpr.getDeviceRegId())) {
+				if (!ArgUtil.isEmpty(dpr) && !ArgUtil.isEmpty(dpr.getDeviceRegKey())) {
 					devicePairingCreds = dpr;
 					String terminalCredsStrs = JsonUtil.toJson(dpr);
 					String passwordEncd = Base64.getEncoder().encodeToString(terminalCredsStrs.getBytes());
@@ -132,13 +136,31 @@ public abstract class ACardReaderService {
 		return devicePairingCreds;
 	}
 
+	private SessionPairingResponse getSessionPairingCreds() {
+		if (sessionPairingCreds != null) {
+			return sessionPairingCreds;
+		}
+		if (getDevicePairingCreds() == null) {
+			return null;
+		}
+
+		AmxApiResponse<SessionPairingResponse, Object> resp = restService.ajax(serverUrl)
+				.path(DeviceConstants.Path.SESSION_PAIR)
+				.header(DeviceConstants.Keys.DEVICE_REG_KEY_XKEY, devicePairingCreds.getDeviceRegKey())
+				.header(DeviceConstants.Keys.DEVICE_REG_TOKEN_XKEY, devicePairingCreds.getDeviceRegToken()).get()
+				.as(new ParameterizedTypeReference<AmxApiResponse<SessionPairingResponse, Object>>() {
+				});
+
+		return sessionPairingCreds;
+	}
+
 	@Scheduled(fixedDelay = 1000)
 	public void readTask() {
 		LOGGER.debug("ACardReaderService:readTask");
 		if (SWAdapterGUI.CONTEXT == null) {
 			return;
 		}
-		if (getDevicePairingCreds() == null) {
+		if (getSessionPairingCreds() == null) {
 			return;
 		}
 		try {
@@ -148,10 +170,12 @@ public abstract class ACardReaderService {
 				LOGGER.debug("ACardReaderService:readTask:TIME");
 				lastreadtime = reader.getCardActiveTime();
 				status(DataStatus.SYNCING);
-				restService.ajax(serverUrl).path(DeviceConstants.DEVICE_INFO_URL)
-						.pathParam(DeviceConstants.PARAM_SYSTEM_ID, terminalId)
-						.header(AppConstants.DEVICE_REG_KEY_XKEY, devicePairingCreds.getDeviceRegId())
-						.header(AppConstants.DEVICE_REG_TOKEN_XKEY, devicePairingCreds.getDevicePairingToken())
+				restService.ajax(serverUrl).path(DeviceConstants.Path.DEVICE_INFO_URL)
+						.pathParam(DeviceConstants.Params.PARAM_SYSTEM_ID, terminalId)
+						.header(DeviceConstants.Keys.DEVICE_REG_KEY_XKEY, devicePairingCreds.getDeviceRegKey())
+						.header(DeviceConstants.Keys.DEVICE_REG_TOKEN_XKEY, devicePairingCreds.getDeviceRegToken())
+						.header(DeviceConstants.Keys.DEVICE_REQ_TOKEN_XKEY,
+								DeviceConstants.generateDeviceReqToken(null, devicePairingCreds.getDeviceRegKey()))
 						.post(reader).asObject();
 				status(DataStatus.SYNCED);
 			}

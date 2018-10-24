@@ -30,7 +30,7 @@ public class OffsiteStatus extends IStatusCodeListPlugin<OffsiteServerCodes, Api
 	 *
 	 */
 	public static enum OffsiteServerCodes implements IExceptionEnum {
-		DEVICE_NOT_PAIRED, OFFSITE_SERVER_ERROR, DOTP_REQUIRED, MOTP_REQUIRED, EOTP_REQUIRED;
+		DEVICE_NOT_REGISTERED, DEVICE_CREDS_MISSING, OFFSITE_SERVER_ERROR, DOTP_REQUIRED, MOTP_REQUIRED, EOTP_REQUIRED;
 
 		@Override
 		public String getStatusKey() {

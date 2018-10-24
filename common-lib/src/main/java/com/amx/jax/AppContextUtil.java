@@ -118,22 +118,13 @@ public class AppContextUtil {
 		ContextUtil.map().put(AppConstants.REQUEST_TYPE_XKEY, reqType);
 	}
 
-	// Device
-	public static void setDeviceRegKey(String deviceRegKey) {
-		ContextUtil.map().put(AppConstants.DEVICE_REG_KEY_XKEY, deviceRegKey);
+	public static <T> void set(String contextKey, T value) {
+		ContextUtil.map().put(contextKey, value);
 	}
 
-	public static void setDeviceRegToken(String deviceRegToken) {
-		ContextUtil.map().put(AppConstants.DEVICE_REG_TOKEN_XKEY, deviceRegToken);
-	}
-
-	// Device
-	public static String getDeviceRegKey() {
-		return (String) ContextUtil.map().get(AppConstants.DEVICE_REG_KEY_XKEY);
-	}
-
-	public static String getDeviceRegToken(String deviceRegToken) {
-		return (String) ContextUtil.map().get(AppConstants.DEVICE_REG_TOKEN_XKEY);
+	@SuppressWarnings("unchecked")
+	public static <T> T get(String contextKey) {
+		return (T) ContextUtil.map().get(contextKey);
 	}
 
 	public static void init() {

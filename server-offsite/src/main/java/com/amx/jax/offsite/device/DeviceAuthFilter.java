@@ -14,12 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.amx.jax.AppContextUtil;
 import com.amx.jax.device.DeviceConstants;
-import com.amx.jax.http.CommonHttpRequest;
-import com.amx.jax.offsite.device.DeviceConfigs.DeviceBox;
-import com.amx.jax.offsite.device.DeviceConfigs.DeviceData;
-import com.amx.utils.ArgUtil;
 
 /**
  * The Class WebAuthFilter.
@@ -27,12 +22,8 @@ import com.amx.utils.ArgUtil;
 @Component
 public class DeviceAuthFilter implements Filter {
 
-	/** The session service. */
 	@Autowired
-	CommonHttpRequest commonHttpRequest;
-
-	@Autowired
-	DeviceBox deviceBox;
+	DeviceRequestValidator deviceRequestValidator;
 
 	/*
 	 * (non-Javadoc)
@@ -55,19 +46,11 @@ public class DeviceAuthFilter implements Filter {
 			throws IOException, ServletException {
 
 		HttpServletRequest request = (HttpServletRequest) req;
-
-		String deviceKey = commonHttpRequest.getDeviceRegKey();
 		String requestURI = request.getRequestURI();
-		if (!ArgUtil.isEmpty(deviceKey) && !requestURI.startsWith(DeviceConstants.DEVICE_PAIR)) {
-			AppContextUtil.setDeviceRegKey(deviceKey);
-			DeviceData deviceData = deviceBox.get(deviceKey);
-			if (deviceData == null) {
-				HttpServletResponse response = ((HttpServletResponse) resp);
-				response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
-				response.setHeader("Location", DeviceConstants.DEVICE_PAIR);
-			} else {
-				chain.doFilter(req, resp);
-			}
+		if (deviceRequestValidator.isRequired(requestURI) && !deviceRequestValidator.isValid()) {
+			HttpServletResponse response = ((HttpServletResponse) resp);
+			response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
+			response.setHeader("Location", DeviceConstants.Path.SESSION_PAIR);
 		} else {
 			chain.doFilter(req, resp);
 		}
