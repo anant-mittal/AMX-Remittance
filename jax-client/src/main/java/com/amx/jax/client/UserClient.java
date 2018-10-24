@@ -31,6 +31,8 @@ import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
+import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.model.UserDevice;
 import com.amx.jax.rest.RestService;
@@ -203,12 +205,9 @@ public class UserClient extends AbstractJaxServiceClient {
 	/**
 	 * saves customer's login id and password
 	 * 
-	 * @param email
-	 *            Customer's email id
-	 * @param mOtp
-	 *            mobile otp
-	 * @param eOtp
-	 *            email otp
+	 * @param email Customer's email id
+	 * @param mOtp  mobile otp
+	 * @param eOtp  email otp
 	 */
 	public ApiResponse<CustomerModel> saveCredentials(String loginId, String password, String mOtp, String eOtp,
 			String email) throws AlreadyExistsException {
@@ -237,8 +236,7 @@ public class UserClient extends AbstractJaxServiceClient {
 	}
 
 	/**
-	 * @param size:
-	 *            specify how many questions you need
+	 * @param size: specify how many questions you need
 	 */
 	public ApiResponse<CustomerModel> fetchRandomQuestoins(int size) {
 		try {
@@ -326,7 +324,7 @@ public class UserClient extends AbstractJaxServiceClient {
 
 	}
 
-	public ApiResponse<BooleanResponse> updatePassword(String password, String mOtp, String eOtp)
+	public AmxApiResponse<BoolRespModel, Object> updatePassword(String password, String mOtp, String eOtp)
 			throws IncorrectInputException, CustomerValidationException, LimitExeededException {
 		try {
 			String endpoint = CUSTOMER_ENDPOINT + UPDATE_CUSTOMER_PASSWORD_ENDPOINT;
@@ -337,9 +335,10 @@ public class UserClient extends AbstractJaxServiceClient {
 			String updatePasswordUrl = this.getBaseUrl() + endpoint + "?password=" + password;
 			HttpEntity<CustomerModel> requestEntity = new HttpEntity<CustomerModel>(custModel, getHeader());
 			LOGGER.info("calling updatePassword api: " + updatePasswordUrl);
-			return restService.ajax(updatePasswordUrl).put(requestEntity)
-					.as(new ParameterizedTypeReference<ApiResponse<BooleanResponse>>() {
+			AmxApiResponse<BoolRespModel, Object> resp = restService.ajax(updatePasswordUrl).put(requestEntity)
+					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
 					});
+			return resp;
 		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {

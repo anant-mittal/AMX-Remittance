@@ -38,6 +38,8 @@ import com.amx.amxlib.model.UserVerificationCheckListDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.auditlog.CustomerAuditEvent;
 import com.amx.jax.auditlog.JaxUserAuditEvent;
 import com.amx.jax.constant.ConstantDocument;
@@ -144,15 +146,15 @@ public class UserService extends AbstractUserService {
 
 	@Autowired
 	CustomerVerificationService customerVerificationService;
-	
+
 	@Autowired
 	TenantContext<CustomerValidation> tenantContext;
 
 	@Autowired
 	private CustomerRepository repo;
 
-    @Autowired
-    AuditService auditService;
+	@Autowired
+	AuditService auditService;
 
 	@Override
 	public ApiResponse registerUser(AbstractUserModel userModel) {
@@ -207,7 +209,7 @@ public class UserService extends AbstractUserService {
 			personinfo.setMobile(customer.getMobile());
 			model.setPersoninfo(personinfo);
 		} catch (Exception e) {
-		    logger.error("Exception while populating PersonInfo : ",e);
+			logger.error("Exception while populating PersonInfo : ", e);
 		}
 		return model;
 	}
@@ -234,13 +236,13 @@ public class UserService extends AbstractUserService {
 		setCustomerStatus(onlineCust, model, cust);
 		checkListManager.updateCustomerChecks(onlineCust, model);
 		ApiResponse response = getBlackApiResponse();
-		
+
 		if (model.getLoginId() != null || model.getPassword() != null) { // after this step flow is going to login
 			afterLoginSteps(onlineCust);
 		}
-		
+
 		CustomerModel outputModel = convert(onlineCust);
-		
+
 		response.getData().getValues().add(outputModel);
 		response.getData().setType(outputModel.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);
@@ -269,8 +271,8 @@ public class UserService extends AbstractUserService {
 			if (model.getEmail() != null && ConstantDocument.Yes.equals(cv.getVerificationStatus())) {
 				updateEmail(cust.getCustomerId(), model.getEmail());
 			}
-		}		
-		
+		}
+
 	}
 
 	// password not null flag indicates it is final step in registration
@@ -287,7 +289,7 @@ public class UserService extends AbstractUserService {
 			onlineCust.setStatus(ConstantDocument.Yes);
 			custDao.saveOnlineCustomer(onlineCust);
 		}
-		
+
 	}
 
 	private boolean isNewUserRegistrationSuccess(CustomerModel model, CustomerOnlineRegistration onlineCust) {
@@ -340,7 +342,7 @@ public class UserService extends AbstractUserService {
 			civilId = custDao.getCustById(customerId).getIdentityInt();
 		}
 		if (customerId == null && civilId != null) {
-		    userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(civilId, JaxApiFlow.SIGNUP_ONLINE);
+			userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(civilId, JaxApiFlow.SIGNUP_ONLINE);
 			Customer customer = custDao.getCustomerByCivilId(civilId);
 			if (customer == null && !Boolean.TRUE.equals(initRegistration)) {
 				throw new GlobalException("Invalid civil Id passed", JaxError.INVALID_CIVIL_ID);
@@ -348,25 +350,25 @@ public class UserService extends AbstractUserService {
 			if (customer != null) {
 				customerId = customer.getCustomerId();
 			}
-			
-			//---- check for blacklisted customer ----
+
+			// ---- check for blacklisted customer ----
 			userValidationService.validateBlackListedCustomerForLogin(customer);
 		}
 		logger.info("customerId is --> " + customerId);
 		userValidationService.validateCustomerVerification(customerId);
 		userValidationService.validateCivilId(civilId);
-		
+
 		CivilIdOtpModel model = new CivilIdOtpModel();
 
 		CustomerOnlineRegistration onlineCustReg = custDao.getOnlineCustByCustomerId(customerId);
-		
+
 		if (onlineCustReg != null) {
 			logger.info("validating customer lock count.");
 			userValidationService.validateCustomerLockCount(onlineCustReg);
 		} else {
 			logger.info("onlineCustReg is null");
 		}
-		
+
 		CustomerOnlineRegistration onlineCust = verifyCivilId(civilId, model);
 		userValidationService.validateActiveCustomer(onlineCustReg, initRegistration);
 
@@ -419,13 +421,12 @@ public class UserService extends AbstractUserService {
 
 		jaxNotificationService.sendOtpSms(personinfo, model);
 
-		if (channels != null && (channels.contains(CommunicationChannel.EMAIL) || 
-				channels.contains(CommunicationChannel.EMAIL_AS_MOBILE))) {
+		if (channels != null && (channels.contains(CommunicationChannel.EMAIL)
+				|| channels.contains(CommunicationChannel.EMAIL_AS_MOBILE))) {
 			jaxNotificationService.sendOtpEmail(personinfo, model);
 		}
 		return response;
 	}
-
 
 	public void generateToken(String userId, CivilIdOtpModel model, List<CommunicationChannel> channels) {
 		String randmOtp = util.createRandomPassword(6);
@@ -441,15 +442,15 @@ public class UserService extends AbstractUserService {
 			model.seteOtpPrefix(Random.randomAlpha(3));
 			logger.info("Generated otp for civilid email- " + userId + " is " + randeOtp);
 		}
-		
-		//set e-otp same as m-otp
-        if (channels != null && channels.contains(CommunicationChannel.EMAIL_AS_MOBILE)) {
-            model.setHashedeOtp(hashedmOtp);
-            model.seteOtp(randmOtp);
-            model.seteOtpPrefix(model.getmOtpPrefix());
-            logger.info("Generated otp for civilid email- " + userId + " is " + randmOtp);
-        }
-        
+
+		// set e-otp same as m-otp
+		if (channels != null && channels.contains(CommunicationChannel.EMAIL_AS_MOBILE)) {
+			model.setHashedeOtp(hashedmOtp);
+			model.seteOtp(randmOtp);
+			model.seteOtpPrefix(model.getmOtpPrefix());
+			logger.info("Generated otp for civilid email- " + userId + " is " + randmOtp);
+		}
+
 		logger.info("Generated otp for civilid mobile- " + userId + " is " + randmOtp);
 	}
 
@@ -459,11 +460,11 @@ public class UserService extends AbstractUserService {
 
 	/**
 	 * validate otp
+	 * 
 	 * @param civilId
 	 * @param mOtp
 	 * @param eOtp
-	 * @return
-	 *  apiresponse
+	 * @return apiresponse
 	 */
 	public ApiResponse validateOtp(String civilId, String mOtp, String eOtp) {
 		logger.info("in validateopt of civilid: " + civilId);
@@ -518,12 +519,14 @@ public class UserService extends AbstractUserService {
 		userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(userId, JaxApiFlow.LOGIN);
 		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustomerByLoginIdOrUserName(userId);
 		if (onlineCustomer == null) {
-			throw new GlobalException("User with userId: " + userId + " is not registered",JaxError.USER_NOT_REGISTERED);
+			throw new GlobalException("User with userId: " + userId + " is not registered",
+					JaxError.USER_NOT_REGISTERED);
 		}
 		Customer customer = custDao.getCustById(onlineCustomer.getCustomerId());
-		//userValidationService.validateCustomerVerification(onlineCustomer.getCustomerId());
+		// userValidationService.validateCustomerVerification(onlineCustomer.getCustomerId());
 		if (!ConstantDocument.Yes.equals(onlineCustomer.getStatus())) {
-			throw new GlobalException("User with userId: " + userId + " is not registered or not active",JaxError.USER_NOT_REGISTERED);
+			throw new GlobalException("User with userId: " + userId + " is not registered or not active",
+					JaxError.USER_NOT_REGISTERED);
 		}
 
 		userValidationService.validateCustomerLockCount(onlineCustomer);
@@ -564,15 +567,17 @@ public class UserService extends AbstractUserService {
 		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(new BigDecimal(customerId));
 		ApiResponse response = getBlackApiResponse();
 		try {
-		List<QuestModelDTO> result = secQmanager.generateRandomQuestions(onlineCustomer, size, customerId);
-		response.getData().getValues().addAll(result);
-		}catch(GlobalException e) {
-		    auditService.log (createUserServiceEvent(new BigDecimal(customerId), JaxUserAuditEvent.Type.SEC_QUE_GENERATE_EXCEPTION));
-		    throw e;
+			List<QuestModelDTO> result = secQmanager.generateRandomQuestions(onlineCustomer, size, customerId);
+			response.getData().getValues().addAll(result);
+		} catch (GlobalException e) {
+			auditService.log(createUserServiceEvent(new BigDecimal(customerId),
+					JaxUserAuditEvent.Type.SEC_QUE_GENERATE_EXCEPTION));
+			throw e;
 		}
 		response.getData().setType("quest");
 		response.setResponseStatus(ResponseStatus.OK);
-		auditService.log (createUserServiceEvent(new BigDecimal(customerId), JaxUserAuditEvent.Type.SEC_QUE_GENERATE_SUCCESS));
+		auditService.log(
+				createUserServiceEvent(new BigDecimal(customerId), JaxUserAuditEvent.Type.SEC_QUE_GENERATE_SUCCESS));
 		return response;
 	}
 
@@ -595,53 +600,52 @@ public class UserService extends AbstractUserService {
 		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(model.getCustomerId());
 		ApiResponse response = getBlackApiResponse();
 		try {
-		userValidationService.validateCustomerLockCount(onlineCustomer);
-		}catch(GlobalException e) {
-            auditService.log (createUserServiceEvent(model, JaxUserAuditEvent.Type.SEC_QUE_VALIDATE_USER_LOGIN_ATTEMPT_EXCEEDED));
-            throw e;
-        }
-		//commented trailing s and special characters removal
+			userValidationService.validateCustomerLockCount(onlineCustomer);
+		} catch (GlobalException e) {
+			auditService.log(
+					createUserServiceEvent(model, JaxUserAuditEvent.Type.SEC_QUE_VALIDATE_USER_LOGIN_ATTEMPT_EXCEEDED));
+			throw e;
+		}
+		// commented trailing s and special characters removal
 		simplifyAnswers(model.getSecurityquestions());
 		try {
-		userValidationService.validateCustomerSecurityQuestions(model.getSecurityquestions(), onlineCustomer);
-		}catch(GlobalException e) {
-	        auditService.log (createUserServiceEvent(model, JaxUserAuditEvent.Type.SEC_QUE_VALIDATE_INCORRECT_ANS));
-		    throw e;
-		}		
+			userValidationService.validateCustomerSecurityQuestions(model.getSecurityquestions(), onlineCustomer);
+		} catch (GlobalException e) {
+			auditService.log(createUserServiceEvent(model, JaxUserAuditEvent.Type.SEC_QUE_VALIDATE_INCORRECT_ANS));
+			throw e;
+		}
 		this.unlockCustomer(onlineCustomer);
 		afterLoginSteps(onlineCustomer);
 		CustomerModel responseModel = convert(onlineCustomer);
 		response.getData().getValues().add(responseModel);
 		response.getData().setType(responseModel.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);
-		auditService.log (createUserServiceEvent(model, JaxUserAuditEvent.Type.SEC_QUE_VALIDATE_SUCCESS));
+		auditService.log(createUserServiceEvent(model, JaxUserAuditEvent.Type.SEC_QUE_VALIDATE_SUCCESS));
 		return response;
 	}
 
-	public ApiResponse updatePassword(CustomerModel model) {
+	public AmxApiResponse<BoolRespModel, Object> updatePassword(CustomerModel model) {
 		BigDecimal custId = (model.getCustomerId() == null) ? metaData.getCustomerId() : null;
 		if (custId == null) {
-			auditService.log (createUserServiceEvent(model, JaxUserAuditEvent.Type.CUSTOMER_PASSWORD_UPDATE_CUSTOMER_ID_NULL));
+			auditService.log(
+					createUserServiceEvent(model, JaxUserAuditEvent.Type.CUSTOMER_PASSWORD_UPDATE_CUSTOMER_ID_NULL));
 			throw new GlobalException("Null customer id passed ", JaxError.NULL_CUSTOMER_ID.getCode());
 		}
 		try {
-		userValidationService.validateOtpFlow(model);
-		}catch (InvalidOtpException e) {
-	        auditService.log (createUserServiceEvent(model, JaxUserAuditEvent.Type.CUSTOMER_PASSWORD_UPDATE_INVALID_OTP));
-		    throw e;
+			userValidationService.validateOtpFlow(model);
+		} catch (InvalidOtpException e) {
+			auditService
+					.log(createUserServiceEvent(model, JaxUserAuditEvent.Type.CUSTOMER_PASSWORD_UPDATE_INVALID_OTP));
+			throw e;
 		}
 		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(custId);
 		onlineCustomer.setPassword(cryptoUtil.getHash(onlineCustomer.getUserName(), model.getPassword()));
 		custDao.saveOnlineCustomer(onlineCustomer);
-		ApiResponse response = getBlackApiResponse();
-		BooleanResponse responseModel = new BooleanResponse(true);
-		response.getData().getValues().add(responseModel);
-		response.getData().setType(responseModel.getModelType());
-		response.setResponseStatus(ResponseStatus.OK);
-		auditService.log (createUserServiceEvent(model, JaxUserAuditEvent.Type.CUSTOMER_PASSWORD_UPDATE_SUCCESS));
-		return response;
+		BoolRespModel responseModel = new BoolRespModel(true);
+		auditService.log(createUserServiceEvent(model, JaxUserAuditEvent.Type.CUSTOMER_PASSWORD_UPDATE_SUCCESS));
+		return AmxApiResponse.build(responseModel);
 	}
-	
+
 	public void updateEmail(BigDecimal customerId, String email) {
 		logger.info("Updating customer's email address " + email);
 		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(customerId);
@@ -667,22 +671,23 @@ public class UserService extends AbstractUserService {
 	protected LoginLogoutHistory getLoginLogoutHistoryByUserName(String userName) {
 
 		Sort sort = new Sort(Direction.DESC, "loginLogoutId");
-		List<LoginLogoutHistory> last2HistoryList = loginLogoutHistoryRepositoryRepo.findFirst2ByuserName(userName, sort);
-		LoginLogoutHistory output=null;
-		
-		if (last2HistoryList!= null && last2HistoryList.size()>1) {
-		    output = last2HistoryList.get(1);
+		List<LoginLogoutHistory> last2HistoryList = loginLogoutHistoryRepositoryRepo.findFirst2ByuserName(userName,
+				sort);
+		LoginLogoutHistory output = null;
+
+		if (last2HistoryList != null && last2HistoryList.size() > 1) {
+			output = last2HistoryList.get(1);
 		}
 		return output;
 	}
 
 	protected void saveLoginLogoutHistoryByUserName(String userName) {
-		  LoginLogoutHistory output = new LoginLogoutHistory();
-		  output = new LoginLogoutHistory();
-          output.setLoginType("C");
-          output.setUserName(userName);
-          output.setLoginTime(new Timestamp(new Date().getTime()));
-          loginLogoutHistoryRepositoryRepo.save(output);
+		LoginLogoutHistory output = new LoginLogoutHistory();
+		output = new LoginLogoutHistory();
+		output.setLoginType("C");
+		output.setUserName(userName);
+		output.setLoginTime(new Timestamp(new Date().getTime()));
+		loginLogoutHistoryRepositoryRepo.save(output);
 	}
 
 	/**
@@ -763,9 +768,10 @@ public class UserService extends AbstractUserService {
 			dto.setIdentityExpiredDate(model.getIdentityExpiredDate());
 			dto.setEmail(model.getEmail() == null ? "" : model.getEmail());
 			dto.setMobile(model.getMobile() == null ? "" : model.getMobile());
-			if(model.getLoyaltyPoints()!=null) {
-				dto.setLoyaltyPoints(model.getLoyaltyPoints().compareTo(BigDecimal.ZERO) <= 0 ? BigDecimal.ZERO : model.getLoyaltyPoints());
-			}else {
+			if (model.getLoyaltyPoints() != null) {
+				dto.setLoyaltyPoints(model.getLoyaltyPoints().compareTo(BigDecimal.ZERO) <= 0 ? BigDecimal.ZERO
+						: model.getLoyaltyPoints());
+			} else {
 				dto.setLoyaltyPoints(BigDecimal.ZERO);
 			}
 			dto.setDateOfBirth(model.getDateOfBirth());
@@ -801,7 +807,8 @@ public class UserService extends AbstractUserService {
 		BigDecimal customerId = metaData.getCustomerId();
 		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(customerId);
 		if (onlineCustomer == null) {
-			auditService.log (createUserServiceEvent(customerId,JaxUserAuditEvent.Type.CUSTOMER_UNLOCK_USER_NOT_REGISTERED));
+			auditService.log(
+					createUserServiceEvent(customerId, JaxUserAuditEvent.Type.CUSTOMER_UNLOCK_USER_NOT_REGISTERED));
 			throw new GlobalException("User with userId: " + customerId + " is not registered or not active",
 					JaxError.USER_NOT_REGISTERED);
 		}
@@ -810,7 +817,7 @@ public class UserService extends AbstractUserService {
 		response.getData().getValues().add(responseModel);
 		response.getData().setType(responseModel.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);
-		auditService.log (createUserServiceEvent(customerId,JaxUserAuditEvent.Type.CUSTOMER_UNLOCK_SUCCESS));
+		auditService.log(createUserServiceEvent(customerId, JaxUserAuditEvent.Type.CUSTOMER_UNLOCK_SUCCESS));
 		return response;
 
 	}
@@ -831,7 +838,7 @@ public class UserService extends AbstractUserService {
 		response.getData().getValues().add(responseModel);
 		response.getData().setType(responseModel.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);
-		auditService.log (createUserServiceEvent(customerId,JaxUserAuditEvent.Type.CUSTOMER_DEACTIVATE_SUCCESS));
+		auditService.log(createUserServiceEvent(customerId, JaxUserAuditEvent.Type.CUSTOMER_DEACTIVATE_SUCCESS));
 		return response;
 
 	}
@@ -851,7 +858,8 @@ public class UserService extends AbstractUserService {
 
 		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(customerId);
 		if (onlineCustomer == null) {
-			auditService.log (createUserServiceEvent(customerId,JaxUserAuditEvent.Type.CUSTOMER_UNLOCK_USER_NOT_REGISTERED));
+			auditService.log(
+					createUserServiceEvent(customerId, JaxUserAuditEvent.Type.CUSTOMER_UNLOCK_USER_NOT_REGISTERED));
 			throw new GlobalException("User with userId: " + customerId + " is not registered or not active",
 					JaxError.USER_NOT_REGISTERED);
 		}
@@ -860,7 +868,7 @@ public class UserService extends AbstractUserService {
 		response.getData().getValues().add(responseModel);
 		response.getData().setType(responseModel.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);
-		auditService.log (createUserServiceEvent(customerId,JaxUserAuditEvent.Type.CUSTOMER_UNLOCK_SUCCESS));
+		auditService.log(createUserServiceEvent(customerId, JaxUserAuditEvent.Type.CUSTOMER_UNLOCK_SUCCESS));
 		return response;
 	}
 
@@ -886,7 +894,7 @@ public class UserService extends AbstractUserService {
 		response.getData().getValues().add(responseModel);
 		response.getData().setType(responseModel.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);
-		auditService.log (createUserServiceEvent(customerId,JaxUserAuditEvent.Type.CUSTOMER_DEACTIVATE_SUCCESS));
+		auditService.log(createUserServiceEvent(customerId, JaxUserAuditEvent.Type.CUSTOMER_DEACTIVATE_SUCCESS));
 		return response;
 
 	}
@@ -897,7 +905,7 @@ public class UserService extends AbstractUserService {
 		userValidationService.isMobileExist(cust, custModel.getMobile());
 
 	} // end of validateMobile
-	
+
 	public PersonInfo getPersonInfo(BigDecimal customerId) {
 		PersonInfo personInfo = null;
 		try {
@@ -911,56 +919,56 @@ public class UserService extends AbstractUserService {
 		}
 		return personInfo;
 	}
-	
-	   public ApiResponse customerLoggedIn(CustomerModel customerModel) {
-	        CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(customerModel.getCustomerId());
-	        ApiResponse response = getBlackApiResponse();
-	        CustomerModel cusModel = convert(onlineCustomer);
-	        //afterLoginSteps(onlineCustomer);
-	        response.getData().getValues().add(cusModel);
-	        response.getData().setType(cusModel.getModelType());
-	        response.setResponseStatus(ResponseStatus.OK);
-	        auditService.log (createUserServiceEvent(customerModel,JaxUserAuditEvent.Type.CUSTOMER_LOGIN_SUCCESS));
-	        return response;
-	    }
 
-		private void addMyProfileAuditLog(CustomerModel model) {
-		    List<SecurityQuestionModel> secQuestions = model.getSecurityquestions();
-		    if (!CollectionUtils.isEmpty(secQuestions)) {
-		        auditService.log (createUserServiceEvent(model, JaxUserAuditEvent.Type.MY_PROFILE_SEC_QUE_UPDATE));
-		    }
-		    if (model.getCaption() != null) {
-		        auditService.log (createUserServiceEvent(model, JaxUserAuditEvent.Type.MY_PROFILE_CAPTION_UPDATE));
-		    }
-		    if (model.getImageUrl() != null) {
-		        auditService.log (createUserServiceEvent(model, JaxUserAuditEvent.Type.MY_PROFILE_IMAGE_URL_UPDATE));
-		    }
+	public ApiResponse customerLoggedIn(CustomerModel customerModel) {
+		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(customerModel.getCustomerId());
+		ApiResponse response = getBlackApiResponse();
+		CustomerModel cusModel = convert(onlineCustomer);
+		// afterLoginSteps(onlineCustomer);
+		response.getData().getValues().add(cusModel);
+		response.getData().setType(cusModel.getModelType());
+		response.setResponseStatus(ResponseStatus.OK);
+		auditService.log(createUserServiceEvent(customerModel, JaxUserAuditEvent.Type.CUSTOMER_LOGIN_SUCCESS));
+		return response;
+	}
 
-		    if (model.getLoginId() != null) {
-		        auditService.log (createUserServiceEvent(model, JaxUserAuditEvent.Type.MY_PROFILE_LOG_IN_ID_UPDATE));
-		    }
-		    
-		    if (model.getPassword() != null) {
-		        auditService.log (createUserServiceEvent(model, JaxUserAuditEvent.Type.MY_PROFILE_PASSWORD_UPDATE));
-		    }
-		    
-		    //update new email id
-		    if (model.getEmail() != null) {
-		        auditService.log (createUserServiceEvent(model, JaxUserAuditEvent.Type.MY_PROFILE_EMAIL_UPDATE));
-		    }
+	private void addMyProfileAuditLog(CustomerModel model) {
+		List<SecurityQuestionModel> secQuestions = model.getSecurityquestions();
+		if (!CollectionUtils.isEmpty(secQuestions)) {
+			auditService.log(createUserServiceEvent(model, JaxUserAuditEvent.Type.MY_PROFILE_SEC_QUE_UPDATE));
 		}
-	   
-	    private AuditEvent createUserServiceEvent(CustomerModel model, JaxUserAuditEvent.Type type) {
-	        AuditEvent beneAuditEvent = new CustomerAuditEvent(type,model);
-	        return beneAuditEvent;
-	    }	
-	    
-       private AuditEvent createUserServiceEvent(BigDecimal customerId, JaxUserAuditEvent.Type type) {
-            AuditEvent beneAuditEvent = new CustomerAuditEvent(type,customerId);
-            return beneAuditEvent;
-        }
-
-	   public Customer getCustById(BigDecimal id) {
-			return repo.findOne(id);
+		if (model.getCaption() != null) {
+			auditService.log(createUserServiceEvent(model, JaxUserAuditEvent.Type.MY_PROFILE_CAPTION_UPDATE));
 		}
+		if (model.getImageUrl() != null) {
+			auditService.log(createUserServiceEvent(model, JaxUserAuditEvent.Type.MY_PROFILE_IMAGE_URL_UPDATE));
+		}
+
+		if (model.getLoginId() != null) {
+			auditService.log(createUserServiceEvent(model, JaxUserAuditEvent.Type.MY_PROFILE_LOG_IN_ID_UPDATE));
+		}
+
+		if (model.getPassword() != null) {
+			auditService.log(createUserServiceEvent(model, JaxUserAuditEvent.Type.MY_PROFILE_PASSWORD_UPDATE));
+		}
+
+		// update new email id
+		if (model.getEmail() != null) {
+			auditService.log(createUserServiceEvent(model, JaxUserAuditEvent.Type.MY_PROFILE_EMAIL_UPDATE));
+		}
+	}
+
+	private AuditEvent createUserServiceEvent(CustomerModel model, JaxUserAuditEvent.Type type) {
+		AuditEvent beneAuditEvent = new CustomerAuditEvent(type, model);
+		return beneAuditEvent;
+	}
+
+	private AuditEvent createUserServiceEvent(BigDecimal customerId, JaxUserAuditEvent.Type type) {
+		AuditEvent beneAuditEvent = new CustomerAuditEvent(type, customerId);
+		return beneAuditEvent;
+	}
+
+	public Customer getCustById(BigDecimal id) {
+		return repo.findOne(id);
+	}
 }
