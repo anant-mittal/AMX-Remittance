@@ -26,6 +26,7 @@ import com.amx.jax.dict.UserClient.DeviceType;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.dbmodel.JaxConfig;
 import com.amx.jax.device.SignaturePadFCPurchaseSaleInfo;
+import com.amx.jax.device.SignaturePadRemittanceInfo;
 import com.amx.jax.device.SignaturePadRemittanceMetaInfo;
 import com.amx.jax.dict.UserClient.DeviceType;
 import com.amx.jax.error.JaxError;
@@ -40,6 +41,7 @@ import com.amx.jax.services.AbstractService;
 import com.amx.jax.validation.DeviceValidation;
 import com.amx.utils.CryptoUtil;
 import com.amx.utils.JsonUtil;
+import com.amx.jax.dict.UserClient.ClientType;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
