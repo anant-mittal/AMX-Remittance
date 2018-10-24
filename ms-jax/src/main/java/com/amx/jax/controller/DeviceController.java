@@ -95,7 +95,7 @@ public class DeviceController implements IDeviceService {
 	public AmxApiResponse<BoolRespModel, Object> getFcPurchase(@RequestParam ClientType deviceType,
 			@RequestParam Integer countryBranchSystemInventoryId,
 			@Valid @RequestBody SignaturePadFCPurchaseSaleInfo signaturePadPurchseInfo) {
-		BoolRespModel otpResponse = deviceService.updateDeviceState(deviceType, countryBranchSystemInventoryId,
+		BoolRespModel otpResponse = deviceService.updateDeviceStateData(deviceType, countryBranchSystemInventoryId,
 				signaturePadPurchseInfo, DeviceStateDataType.FC_PURCHASE);
 		return AmxApiResponse.build(otpResponse);
 	}
@@ -104,7 +104,7 @@ public class DeviceController implements IDeviceService {
 	public AmxApiResponse<BoolRespModel, Object> getFcSale(@RequestParam ClientType deviceType,
 			@RequestParam Integer countryBranchSystemInventoryId,
 			@Valid @RequestBody SignaturePadFCPurchaseSaleInfo signaturePadSaleInfo) {
-		BoolRespModel otpResponse = deviceService.updateDeviceState(deviceType, countryBranchSystemInventoryId,
+		BoolRespModel otpResponse = deviceService.updateDeviceStateData(deviceType, countryBranchSystemInventoryId,
 				signaturePadSaleInfo, DeviceStateDataType.FC_SALE);
 		return AmxApiResponse.build(otpResponse);
 	}
