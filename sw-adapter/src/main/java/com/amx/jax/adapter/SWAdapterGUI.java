@@ -172,7 +172,7 @@ public class SWAdapterGUI extends JFrame {
 	}
 
 	public void log(String message) {
-		// labelDescription.setText(message);
+		labelDescription.setText(message);
 	}
 
 }

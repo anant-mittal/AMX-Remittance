@@ -22,8 +22,8 @@ public class DeviceConstants {
 	public static class Path {
 		public static final String DEVICE_PAIR = "/pub/device/pair";
 		public static final String SESSION_PAIR = "/pub/device/session";
-		public static final String DEVICE_STATUS = "/pub/device/status";
-		public static final String DEVICE_INFO_URL = "/pub/device/card/{systemid}";
+		public static final String DEVICE_STATUS_ACTIVITY = "/pub/device/status/activity";
+		public static final String DEVICE_STATUS_CARD = "/pub/device/status/card";
 	}
 
 	public static class Params {

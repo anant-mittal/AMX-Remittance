@@ -28,6 +28,7 @@ import com.amx.jax.logger.LoggerService;
 import com.amx.jax.model.request.DeviceRegistrationRequest;
 import com.amx.jax.model.response.DeviceDto;
 import com.amx.jax.model.response.DevicePairOtpResponse;
+import com.amx.jax.model.response.DeviceStatusInfoDto;
 import com.amx.jax.offsite.OffsiteStatus.ApiOffisteStatus;
 import com.amx.jax.offsite.OffsiteStatus.OffsiteServerCodes;
 import com.amx.jax.offsite.OffsiteStatus.OffsiteServerError;
@@ -95,32 +96,20 @@ public class DeviceController {
 			throw new OffsiteServerError(OffsiteServerCodes.DEVICE_CREDS_MISSING);
 		}
 
-		DevicePairOtpResponse resp = deviceClient.sendOtpForPairing(ArgUtil.parseAsInteger(deviceRegKey), deviceRegKey)
-				.getResult();
+		DevicePairOtpResponse resp = deviceClient
+				.sendOtpForPairing(ArgUtil.parseAsInteger(deviceRegKey), deviceRegToken).getResult();
 		SessionPairingResponse creds = deviceRequestValidator.validate(resp.getSessionPairToken(), resp.getOtp());
 		return AmxApiResponse.build(creds);
 	}
 
-	@RequestMapping(value = { DeviceConstants.Path.DEVICE_STATUS }, method = { RequestMethod.GET })
-	public AmxApiResponse<CardData, Object> getStatus(@RequestBody CardReader reader,
+	@RequestMapping(value = { DeviceConstants.Path.DEVICE_STATUS_ACTIVITY }, method = { RequestMethod.GET })
+	public AmxApiResponse<DeviceStatusInfoDto, Object> getStatus(@RequestBody CardReader reader,
 			@PathVariable(value = DeviceConstants.Params.PARAM_SYSTEM_ID) String systemid) {
-		
-		String deviceRegKey = commonHttpRequest.get(DeviceConstants.Keys.DEVICE_REG_KEY_XKEY);
-		String deviceRegToken = commonHttpRequest.get(DeviceConstants.Keys.DEVICE_REG_TOKEN_XKEY);
-		
-		
-		if (ArgUtil.isEmpty(reader.getData())) {
-			cardBox.fastRemove(systemid);
-		} else {
-			cardBox.put(systemid, reader.getData());
-		}
-		//deviceClient.getStatus(deviceRegKey, deviceRegToken, sessionToken);
-		
-		return AmxApiResponse.build(reader.getData());
+		return deviceClient.getStatus(ArgUtil.parseAsInteger(deviceRequestValidator.getDeviceRegKey()),
+				deviceRequestValidator.getDeviceRegToken(), deviceRequestValidator.getDeviceSessionToken());
 	}
-	
-	
-	@RequestMapping(value = { DeviceConstants.Path.DEVICE_INFO_URL }, method = { RequestMethod.POST })
+
+	@RequestMapping(value = { DeviceConstants.Path.DEVICE_STATUS_CARD }, method = { RequestMethod.POST })
 	public AmxApiResponse<CardData, Object> saveCardDetails(@RequestBody CardReader reader,
 			@PathVariable(value = DeviceConstants.Params.PARAM_SYSTEM_ID) String systemid) {
 		if (ArgUtil.isEmpty(reader.getData())) {
@@ -131,7 +120,7 @@ public class DeviceController {
 		return AmxApiResponse.build(reader.getData());
 	}
 
-	@RequestMapping(value = { DeviceConstants.Path.DEVICE_INFO_URL }, method = { RequestMethod.GET })
+	@RequestMapping(value = { DeviceConstants.Path.DEVICE_STATUS_CARD }, method = { RequestMethod.GET })
 	public AmxApiResponse<CardData, Object> getCardDetails(
 			@PathVariable(value = DeviceConstants.Params.PARAM_SYSTEM_ID) String systemid,
 			@RequestParam(required = false) Boolean wait, @RequestParam(required = false) Boolean flush)

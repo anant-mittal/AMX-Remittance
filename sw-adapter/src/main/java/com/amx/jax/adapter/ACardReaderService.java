@@ -237,7 +237,7 @@ public abstract class ACardReaderService {
 				LOGGER.debug("ACardReaderService:readTask:TIME");
 				lastreadtime = reader.getCardActiveTime();
 				status(DataStatus.SYNCING);
-				restService.ajax(serverUrl).path(DeviceConstants.Path.DEVICE_INFO_URL)
+				restService.ajax(serverUrl).path(DeviceConstants.Path.DEVICE_STATUS_CARD)
 						.pathParam(DeviceConstants.Params.PARAM_SYSTEM_ID, terminalId)
 						.header(AppConstants.DEVICE_ID_XKEY, address.getMac())
 						.header(AppConstants.DEVICE_IP_LOCAL_XKEY, address.getLocalIp())
