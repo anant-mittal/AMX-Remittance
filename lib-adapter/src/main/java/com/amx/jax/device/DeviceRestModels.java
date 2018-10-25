@@ -38,9 +38,9 @@ public class DeviceRestModels {
 	@JsonDeserialize(as = DeviceRestModel.class)
 	public interface SessionPairingResponse {
 
-		void setSessionPairingToken(String sessionPairingToken);
+		void setDeviceSessionToken(String sessionPairingToken);
 
-		String getSessionPairingToken();
+		String getDeviceSessionToken();
 
 		String getSessionOTP();
 
@@ -61,7 +61,7 @@ public class DeviceRestModels {
 		String deviceRegToken;
 		String deviceRegKey;
 
-		String sessionPairingToken;
+		String deviceSessionToken;
 		String sessionOTP;
 		String deviceRequestKey;
 
@@ -106,13 +106,13 @@ public class DeviceRestModels {
 		}
 
 		@Override
-		public String getSessionPairingToken() {
-			return sessionPairingToken;
+		public String getDeviceSessionToken() {
+			return deviceSessionToken;
 		}
 
 		@Override
-		public void setSessionPairingToken(String sessionPairingToken) {
-			this.sessionPairingToken = sessionPairingToken;
+		public void setDeviceSessionToken(String deviceSessionToken) {
+			this.deviceSessionToken = deviceSessionToken;
 		}
 
 		@Override

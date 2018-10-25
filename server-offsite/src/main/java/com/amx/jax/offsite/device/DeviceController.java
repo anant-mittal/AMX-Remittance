@@ -51,14 +51,14 @@ public class DeviceController {
 	private CommonHttpRequest commonHttpRequest;
 
 	@Autowired
-	private DeviceRequestValidator deviceRequestValidator;
+	private DeviceRequest deviceRequestValidator;
 
 	@Autowired
 	private CardBox cardBox;
 
 	@ApiOffisteStatus({ OffsiteServerCodes.DEVICE_NOT_REGISTERED })
 	@RequestMapping(value = { DeviceConstants.Path.DEVICE_PAIR }, method = { RequestMethod.GET, RequestMethod.POST })
-	public AmxApiResponse<DevicePairingResponse, Object> pairDevice(
+	public AmxApiResponse<DevicePairingResponse, Object> registerNewDevice(
 			@RequestParam(required = false) String deivceTerminalId,
 			@RequestParam(required = false) ClientType deivceClientType) {
 		if (ArgUtil.isEmpty(deivceTerminalId) || ArgUtil.isEmpty(deivceClientType)) {
@@ -78,14 +78,16 @@ public class DeviceController {
 		return AmxApiResponse.build(creds);
 	}
 
+	@ApiOffisteStatus({ OffsiteServerCodes.DEVICE_NOT_REGISTERED })
 	@RequestMapping(value = { DeviceConstants.Path.DEVICE_PAIR }, method = { RequestMethod.POST }, produces = {
 			CommonMediaType.APPLICATION_JSON_VALUE, CommonMediaType.APPLICATION_V0_JSON_VALUE })
-	public AmxApiResponse<DevicePairingResponse, Object> pairDevice(@RequestBody DevicePairingRequest req) {
-		return pairDevice(req.getDeivceTerminalId(), req.getDeivceClientType());
+	public AmxApiResponse<DevicePairingResponse, Object> registerNewDevice(@RequestBody DevicePairingRequest req) {
+		return registerNewDevice(req.getDeivceTerminalId(), req.getDeivceClientType());
 	}
 
+	@ApiOffisteStatus({ OffsiteServerCodes.DEVICE_CREDS_MISSING })
 	@RequestMapping(value = { DeviceConstants.Path.SESSION_PAIR }, method = { RequestMethod.GET })
-	public AmxApiResponse<SessionPairingResponse, Object> pairSession() {
+	public AmxApiResponse<SessionPairingResponse, Object> sendOtpForPairing() {
 		String deviceRegKey = commonHttpRequest.get(DeviceConstants.Keys.DEVICE_REG_KEY_XKEY);
 		String deviceRegToken = commonHttpRequest.get(DeviceConstants.Keys.DEVICE_REG_TOKEN_XKEY);
 
@@ -99,6 +101,25 @@ public class DeviceController {
 		return AmxApiResponse.build(creds);
 	}
 
+	@RequestMapping(value = { DeviceConstants.Path.DEVICE_STATUS }, method = { RequestMethod.GET })
+	public AmxApiResponse<CardData, Object> getStatus(@RequestBody CardReader reader,
+			@PathVariable(value = DeviceConstants.Params.PARAM_SYSTEM_ID) String systemid) {
+		
+		String deviceRegKey = commonHttpRequest.get(DeviceConstants.Keys.DEVICE_REG_KEY_XKEY);
+		String deviceRegToken = commonHttpRequest.get(DeviceConstants.Keys.DEVICE_REG_TOKEN_XKEY);
+		
+		
+		if (ArgUtil.isEmpty(reader.getData())) {
+			cardBox.fastRemove(systemid);
+		} else {
+			cardBox.put(systemid, reader.getData());
+		}
+		//deviceClient.getStatus(deviceRegKey, deviceRegToken, sessionToken);
+		
+		return AmxApiResponse.build(reader.getData());
+	}
+	
+	
 	@RequestMapping(value = { DeviceConstants.Path.DEVICE_INFO_URL }, method = { RequestMethod.POST })
 	public AmxApiResponse<CardData, Object> saveCardDetails(@RequestBody CardReader reader,
 			@PathVariable(value = DeviceConstants.Params.PARAM_SYSTEM_ID) String systemid) {

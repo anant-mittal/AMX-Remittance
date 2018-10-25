@@ -243,6 +243,8 @@ public abstract class ACardReaderService {
 						.header(AppConstants.DEVICE_IP_LOCAL_XKEY, address.getLocalIp())
 						.header(DeviceConstants.Keys.DEVICE_REG_KEY_XKEY, devicePairingCreds.getDeviceRegKey())
 						.header(DeviceConstants.Keys.DEVICE_REG_TOKEN_XKEY, devicePairingCreds.getDeviceRegToken())
+						.header(DeviceConstants.Keys.DEVICE_SESSION_TOKEN_XKEY,
+								sessionPairingCreds.getDeviceSessionToken())
 						.header(DeviceConstants.Keys.DEVICE_REQ_TOKEN_XKEY,
 								DeviceConstants.generateDeviceReqToken(null, devicePairingCreds.getDeviceRegKey()))
 						.post(reader).asObject();
