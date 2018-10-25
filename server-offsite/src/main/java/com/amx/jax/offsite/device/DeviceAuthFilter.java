@@ -23,7 +23,7 @@ import com.amx.jax.device.DeviceConstants;
 public class DeviceAuthFilter implements Filter {
 
 	@Autowired
-	DeviceRequestValidator deviceRequestValidator;
+	DeviceRequest deviceRequestValidator;
 
 	/*
 	 * (non-Javadoc)

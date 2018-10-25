@@ -16,7 +16,7 @@ import com.amx.utils.ArgUtil;
 import com.amx.utils.Random;
 
 @Component
-public class DeviceRequestValidator {
+public class DeviceRequest {
 
 	@Autowired
 	CommonHttpRequest commonHttpRequest;
@@ -29,6 +29,22 @@ public class DeviceRequestValidator {
 
 	@Autowired(required = false)
 	HttpServletResponse response;
+
+	public String getDeviceRegKey() {
+		return commonHttpRequest.get(DeviceConstants.Keys.DEVICE_REG_KEY_XKEY);
+	}
+
+	public String getDeviceRegToken() {
+		return commonHttpRequest.get(DeviceConstants.Keys.DEVICE_REG_TOKEN_XKEY);
+	}
+
+	public String getDeviceSessionToken() {
+		return commonHttpRequest.get(DeviceConstants.Keys.DEVICE_SESSION_TOKEN_XKEY);
+	}
+
+	public String setDeviceRequestToken() {
+		return commonHttpRequest.get(DeviceConstants.Keys.DEVICE_REQ_TOKEN_XKEY);
+	}
 
 	public boolean isRequired(String requestURI) {
 		String deviceRegKey = commonHttpRequest.get(DeviceConstants.Keys.DEVICE_REG_KEY_XKEY);
@@ -79,7 +95,7 @@ public class DeviceRequestValidator {
 		// Prepare Response
 		SessionPairingResponse creds = DeviceRestModels.get();
 		creds.setSessionOTP(sessionOtp);
-		creds.setSessionPairingToken(sessionPairToken);
+		creds.setDeviceSessionToken(sessionPairToken);
 		creds.setDeviceRequestKey(deviceData.getDeviceReqKey());
 
 		return creds;

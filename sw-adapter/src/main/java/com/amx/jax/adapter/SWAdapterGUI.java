@@ -1,6 +1,7 @@
 package com.amx.jax.adapter;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -17,6 +18,7 @@ import org.springframework.context.annotation.ComponentScan;
 import com.amx.jax.adapter.ACardReaderService.CardStatus;
 import com.amx.jax.adapter.ACardReaderService.DataStatus;
 import com.amx.jax.adapter.ACardReaderService.DeviceStatus;
+import com.amx.utils.Constants;
 
 @ComponentScan("com.amx.jax")
 public class SWAdapterGUI extends JFrame {
@@ -27,10 +29,18 @@ public class SWAdapterGUI extends JFrame {
 		initUI();
 	}
 
-	JLabel statusPing = new JLabel("•");
-	JLabel statusDevice = new JLabel("Device");
-	JLabel statusCard = new JLabel("Card");
-	JLabel statusData = new JLabel("Data");
+	public static final String DOT = "|";
+	public static final String STAT_FORMAT_PRE = "%-10s";
+	public static final String STAT_FORMAT_SUF = ":%30s";
+	public static final String STAT_FORMAT_DEVICE = String.format(STAT_FORMAT_PRE, "Device") + STAT_FORMAT_SUF;
+	public static final String STAT_FORMAT_CARD = String.format(STAT_FORMAT_PRE, "Card") + STAT_FORMAT_SUF;
+	public static final String STAT_FORMAT_DATA = String.format(STAT_FORMAT_PRE, "Data") + STAT_FORMAT_SUF;
+
+	JLabel statusPing = new JLabel(DOT);
+	JLabel statusDevice = new JLabel(String.format(STAT_FORMAT_DEVICE, Constants.BLANK));
+	JLabel statusCard = new JLabel(String.format(STAT_FORMAT_CARD, Constants.BLANK));
+	JLabel statusData = new JLabel(String.format(STAT_FORMAT_DATA, Constants.BLANK));
+	Font font = new Font("monospaced", Font.PLAIN, 12);
 
 	JLabel labelDescription = new JLabel("....");
 	public static SWAdapterGUI CONTEXT = null;
@@ -45,10 +55,12 @@ public class SWAdapterGUI extends JFrame {
 		// create a new panel with GridBagLayout manager
 		JPanel newPanel = new JPanel();
 		newPanel.setLayout(new GridBagLayout());
+		newPanel.setFont(font);
 
 		GridBagConstraints constraints = new GridBagConstraints();
 		constraints.anchor = GridBagConstraints.WEST;
 		constraints.insets = new Insets(10, 10, 10, 10);
+		constraints.gridwidth = 4;
 
 		// add components to the panel
 		constraints.gridx = 0;
@@ -71,6 +83,7 @@ public class SWAdapterGUI extends JFrame {
 		constraints.gridy = 4;
 		constraints.anchor = GridBagConstraints.CENTER;
 		constraints.gridwidth = 4;
+		labelDescription.setFont(font);
 		newPanel.add(labelDescription, constraints);
 
 		// Button
@@ -86,10 +99,13 @@ public class SWAdapterGUI extends JFrame {
 
 		statusDevice.setEnabled(false);
 		statusDevice.setBackground(Color.LIGHT_GRAY);
+		statusDevice.setFont(font);
 		statusCard.setEnabled(false);
 		statusCard.setBackground(Color.LIGHT_GRAY);
+		statusCard.setFont(font);
 		statusData.setEnabled(false);
 		statusData.setBackground(Color.LIGHT_GRAY);
+		statusData.setFont(font);
 
 		newPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Card Reader Status"));
 		add(newPanel);
@@ -99,7 +115,7 @@ public class SWAdapterGUI extends JFrame {
 	private String getDots(int count) {
 		StringBuilder sb = new StringBuilder(count);
 		for (int i = 0; i < count; i++) {
-			sb.append("•");
+			sb.append(DOT);
 		}
 		return sb.toString();
 	}
@@ -114,7 +130,7 @@ public class SWAdapterGUI extends JFrame {
 		statusData.setOpaque(false);
 		JLabel currentLabel = statusDevice;
 		if (deviceStatus.ordinal() < DeviceStatus.CONNECTED.ordinal()) {
-			statusPing.setForeground(Color.MAGENTA);
+			statusPing.setForeground(Color.RED);
 			currentLabel = statusDevice;
 		} else if (cardStatusValue.ordinal() < CardStatus.NOCARD.ordinal()) {
 			statusPing.setForeground(Color.RED);
@@ -142,17 +158,17 @@ public class SWAdapterGUI extends JFrame {
 
 	public void foundDevice(DeviceStatus status) {
 		statusDevice.setEnabled(status.ordinal() >= DeviceStatus.CONNECTED.ordinal());
-		statusDevice.setText(String.format("%-20s : %s", "Device", status.toString()));
+		statusDevice.setText(String.format(STAT_FORMAT_DEVICE, status.toString()));
 	}
 
 	public void foundCard(CardStatus status) {
 		statusCard.setEnabled(status.ordinal() >= CardStatus.FOUND.ordinal());
-		statusCard.setText(String.format("%-20s : %s", "Card", status.toString()));
+		statusCard.setText(String.format(STAT_FORMAT_CARD, status.toString()));
 		statusData.setEnabled(status.ordinal() >= CardStatus.READING.ordinal());
 	}
 
 	public void foundData(DataStatus status) {
-		statusData.setText(String.format("%-20s : %s", "Data", status.toString()));
+		statusData.setText(String.format(STAT_FORMAT_DATA, status.toString()));
 	}
 
 	public void log(String message) {
