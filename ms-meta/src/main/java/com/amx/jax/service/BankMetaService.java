@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -103,7 +104,7 @@ public class BankMetaService extends AbstractService {
 		String ifsc = request.getIfscCode();
 		String swift = request.getSwift();
 		String branchName = request.getBranchName();
-		Set<BankBranchView> branchesList = new HashSet<>();
+		Set<BankBranchView> branchesList = new LinkedHashSet<>();
 		boolean isparametersSet = false;
 		Sort sortByBranchName = new Sort("branchFullName");
 		if (StringUtils.isNotBlank(ifsc)) {
