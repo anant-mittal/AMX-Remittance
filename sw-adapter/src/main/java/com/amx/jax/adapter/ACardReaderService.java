@@ -46,7 +46,8 @@ public abstract class ACardReaderService {
 	protected static BlockingHashMap<String, CardData> MAP = new BlockingHashMap<String, CardData>();
 
 	public static enum DeviceStatus {
-		ERROR, TIMEOUT, DISCONNECTED, NOT_PAIRED, PAIRED, CONNECTING, CONNECTED;
+		ERROR, TIMEOUT, DEVICE_PAIRING_ERROR, SESSION_PAIRING_ERROR, DISCONNECTED, NOT_PAIRED, PAIRED, CONNECTING,
+		CONNECTED;
 	}
 
 	public static enum CardStatus {
@@ -147,12 +148,16 @@ public abstract class ACardReaderService {
 							keyring.setPassword("amx-adapter", terminalId + "#" + resetDate, passwordEncd);
 							status(DeviceStatus.PAIRED);
 						} catch (LockException ex) {
+							status(DeviceStatus.DEVICE_PAIRING_ERROR);
 							SWAdapterGUI.CONTEXT.log(ex.getMessage());
 							LOGGER.error("pairing Exception:LockException", ex);
 						} catch (PasswordSaveException ex) {
+							status(DeviceStatus.DEVICE_PAIRING_ERROR);
 							SWAdapterGUI.CONTEXT.log("PAIRING_KEYS_CANNOT_SAVED");
 						}
 					}
+				} else {
+					SWAdapterGUI.CONTEXT.log("NOT_ABLE_TO_PAIR");
 				}
 			} catch (AmxApiException e) {
 				SWAdapterGUI.CONTEXT.log(e.getErrorKey());
