@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -104,26 +105,27 @@ public class BankMetaService extends AbstractService {
 		String branchName = request.getBranchName();
 		Set<BankBranchView> branchesList = new HashSet<>();
 		boolean isparametersSet = false;
+		Sort sortByBranchName = new Sort("branchFullName");
 		if (StringUtils.isNotBlank(ifsc)) {
 			ifsc = "%" + ifsc + "%";
 			branchesList.addAll(
-					vwBankBranchRepository.findByCountryIdAndBankIdAndIfscCodeIgnoreCaseLike(countryId, bankId, ifsc));
+					vwBankBranchRepository.findByCountryIdAndBankIdAndIfscCodeIgnoreCaseLike(countryId, bankId, ifsc, sortByBranchName));
 			isparametersSet = true;
 		}
 		if (StringUtils.isNotBlank(swift)) {
 			swift = "%" + swift + "%";
 			branchesList.addAll(
-					vwBankBranchRepository.findByCountryIdAndBankIdAndSwiftIgnoreCaseLike(countryId, bankId, swift));
+					vwBankBranchRepository.findByCountryIdAndBankIdAndSwiftIgnoreCaseLike(countryId, bankId, swift, sortByBranchName));
 			isparametersSet = true;
 		}
 		if (StringUtils.isNotBlank(branchName)) {
 			branchName = "%" + branchName + "%";
 			branchesList.addAll(vwBankBranchRepository
-					.findByCountryIdAndBankIdAndBranchFullNameIgnoreCaseLike(countryId, bankId, branchName));
+					.findByCountryIdAndBankIdAndBranchFullNameIgnoreCaseLike(countryId, bankId, branchName, sortByBranchName));
 			isparametersSet = true;
 		}
 		if (!isparametersSet) {
-			branchesList.addAll(vwBankBranchRepository.findByCountryIdAndBankId(countryId, bankId));
+			branchesList.addAll(vwBankBranchRepository.findByCountryIdAndBankId(countryId, bankId, sortByBranchName));
 		}
 
 		if (branchesList.isEmpty()) {
