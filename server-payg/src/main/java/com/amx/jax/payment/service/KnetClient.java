@@ -177,7 +177,7 @@ public class KnetClient implements PayGClient {
 		gatewayResponse.setErrorCategory(knetCodes.getCategory());
 
 		LOGGER.info("Result from response Values ---> " + gatewayResponse.getErrorCategory());
-		gatewayResponse.setError(resultResponse);
+		/*gatewayResponse.setError(resultResponse);*/
 
 		PaymentResponseDto resdto = paymentService.capturePayment(gatewayResponse);
 		// Capturing JAX Response
