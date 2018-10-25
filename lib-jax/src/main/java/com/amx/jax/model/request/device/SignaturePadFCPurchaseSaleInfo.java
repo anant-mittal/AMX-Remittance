@@ -1,4 +1,4 @@
-package com.amx.jax.device;
+package com.amx.jax.model.request.device;
 
 import javax.validation.constraints.NotNull;
 

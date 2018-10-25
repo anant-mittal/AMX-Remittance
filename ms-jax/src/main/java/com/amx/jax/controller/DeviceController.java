@@ -15,13 +15,13 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.IDeviceService;
 import com.amx.jax.constants.DeviceStateDataType;
-import com.amx.jax.device.SignaturePadRemittanceInfo;
 import com.amx.jax.dict.UserClient.ClientType;
-import com.amx.jax.device.SignaturePadFCPurchaseSaleInfo;
-import com.amx.jax.device.SignaturePadRemittanceMetaInfo;
 import com.amx.jax.dict.UserClient.DeviceType;
 import com.amx.jax.model.request.DeviceRegistrationRequest;
 import com.amx.jax.model.request.DeviceStateInfoChangeRequest;
+import com.amx.jax.model.request.device.SignaturePadCustomerRegStateMetaInfo;
+import com.amx.jax.model.request.device.SignaturePadFCPurchaseSaleInfo;
+import com.amx.jax.model.request.device.SignaturePadRemittanceInfo;
 import com.amx.jax.model.response.DeviceDto;
 import com.amx.jax.model.response.DevicePairOtpResponse;
 import com.amx.jax.model.response.DeviceStatusInfoDto;
@@ -90,7 +90,7 @@ public class DeviceController implements IDeviceService {
 				signaturePadRemittanceInfo, DeviceStateDataType.REMITTANCE);
 		return AmxApiResponse.build(otpResponse);
 	}
-	
+
 	@RequestMapping(value = DEVICE_FC_PURCHASE, method = RequestMethod.POST)
 	public AmxApiResponse<BoolRespModel, Object> getFcPurchase(@RequestParam ClientType deviceType,
 			@RequestParam Integer countryBranchSystemInventoryId,
@@ -99,13 +99,22 @@ public class DeviceController implements IDeviceService {
 				signaturePadPurchseInfo, DeviceStateDataType.FC_PURCHASE);
 		return AmxApiResponse.build(otpResponse);
 	}
-	
+
 	@RequestMapping(value = DEVICE_FC_SALE, method = RequestMethod.POST)
 	public AmxApiResponse<BoolRespModel, Object> getFcSale(@RequestParam ClientType deviceType,
 			@RequestParam Integer countryBranchSystemInventoryId,
 			@Valid @RequestBody SignaturePadFCPurchaseSaleInfo signaturePadSaleInfo) {
 		BoolRespModel otpResponse = deviceService.updateDeviceStateData(deviceType, countryBranchSystemInventoryId,
 				signaturePadSaleInfo, DeviceStateDataType.FC_SALE);
+		return AmxApiResponse.build(otpResponse);
+	}
+
+	@RequestMapping(value = DEVICE_STATE_CUSTOMER_REG_UPDATE, method = RequestMethod.POST)
+	public AmxApiResponse<BoolRespModel, Object> updateCustomerRegStateData(@RequestParam ClientType deviceType,
+			@RequestParam Integer countryBranchSystemInventoryId,
+			@Valid @RequestBody SignaturePadCustomerRegStateMetaInfo metaInfo) {
+		BoolRespModel otpResponse = deviceService.updateDeviceStateData(deviceType, countryBranchSystemInventoryId,
+				metaInfo, DeviceStateDataType.FC_SALE);
 		return AmxApiResponse.build(otpResponse);
 	}
 }

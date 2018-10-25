@@ -10,6 +10,8 @@ import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.dbmodel.Customer;
+import com.amx.jax.model.response.customer.CustomerContactDto;
+import com.amx.jax.repository.IContactDetailDao;
 import com.amx.jax.repository.ICustomerRepository;
 import com.amx.jax.services.AbstractService;
 
@@ -18,7 +20,8 @@ public class CustomerService extends AbstractService {
 	
 	@Autowired
 	ICustomerRepository customerRepository;
-	
+	@Autowired
+	IContactDetailDao contactDetailRepository;
 	
 	public ApiResponse  getCustomer(BigDecimal countryId,String userId){
 		List<Customer> customerList =customerRepository.getCustomer(countryId, userId);
@@ -77,8 +80,9 @@ public class CustomerService extends AbstractService {
 		return customerRepository.getCustomerDetails(loginId);
 	}
 	
-	/*public void updateLoyaltyPoint(BigDecimal loyaltyPoint,BigDecimal countryId,BigDecimal companyId,BigDecimal customerId) {
-		customerRepository.updateLoyaltyPoints(loyaltyPoint, companyId, countryId, customerId);
-	}*/
+	public List<CustomerContactDto> getCustomerContactDto(BigDecimal customerId){
+		return null;
+		
+	} 
 	
 }

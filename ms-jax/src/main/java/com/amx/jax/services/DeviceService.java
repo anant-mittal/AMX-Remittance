@@ -21,22 +21,23 @@ import com.amx.jax.dao.DeviceDao;
 import com.amx.jax.dbmodel.Device;
 import com.amx.jax.dbmodel.DeviceStateInfo;
 import com.amx.jax.dbmodel.JaxConfig;
-import com.amx.jax.device.SignaturePadRemittanceMetaInfo;
 import com.amx.jax.dict.UserClient.DeviceType;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.dbmodel.JaxConfig;
-import com.amx.jax.device.SignaturePadFCPurchaseSaleInfo;
-import com.amx.jax.device.SignaturePadRemittanceInfo;
-import com.amx.jax.device.SignaturePadRemittanceMetaInfo;
 import com.amx.jax.dict.UserClient.DeviceType;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.manager.DeviceManager;
 import com.amx.jax.model.request.DeviceRegistrationRequest;
 import com.amx.jax.model.request.DeviceStateInfoChangeRequest;
+import com.amx.jax.model.request.device.SignaturePadCustomerRegStateInfo;
+import com.amx.jax.model.request.device.SignaturePadCustomerRegStateMetaInfo;
+import com.amx.jax.model.request.device.SignaturePadFCPurchaseSaleInfo;
+import com.amx.jax.model.request.device.SignaturePadRemittanceInfo;
 import com.amx.jax.model.response.DeviceDto;
 import com.amx.jax.model.response.DevicePairOtpResponse;
 import com.amx.jax.model.response.DeviceStatusInfoDto;
 import com.amx.jax.model.response.IDeviceStateData;
+import com.amx.jax.service.CustomerService;
 import com.amx.jax.services.AbstractService;
 import com.amx.jax.validation.DeviceValidation;
 import com.amx.utils.CryptoUtil;
@@ -57,6 +58,8 @@ public class DeviceService extends AbstractService {
 	DeviceValidation deviceValidation;
 	@Autowired
 	JaxConfigService jaxConfigService;
+	@Autowired
+	CustomerService customerService;
 
 	public static final long DEVICE_SESSION_TIMEOUT = 8 * 60 * 60; // in seconds
 
@@ -148,24 +151,35 @@ public class DeviceService extends AbstractService {
 						SignaturePadRemittanceInfo.class);
 				dto.setStateData(stateData);
 				break;
-			
+
 			case FC_PURCHASE:
 				SignaturePadFCPurchaseSaleInfo stateDataPurchase = JsonUtil.fromJson(deviceStateInfo.getStateData(),
 						SignaturePadFCPurchaseSaleInfo.class);
 				dto.setStateData(stateDataPurchase);
 				break;
-				
+
 			case FC_SALE:
 				SignaturePadFCPurchaseSaleInfo stateDataSale = JsonUtil.fromJson(deviceStateInfo.getStateData(),
 						SignaturePadFCPurchaseSaleInfo.class);
 				dto.setStateData(stateDataSale);
-				break;	
-				
+				break;
+			case CUSTOMER_REGISTRATION:
+				SignaturePadCustomerRegStateMetaInfo metaInfo = JsonUtil.fromJson(deviceStateInfo.getStateData(),
+						SignaturePadCustomerRegStateMetaInfo.class);
+				dto.setStateData(getCustomerRegData(metaInfo.getCustomerId()));
+				break;
 			default:
 				break;
 			}
 		}
 		return dto;
+	}
+
+	private SignaturePadCustomerRegStateInfo getCustomerRegData(Integer customerId) {
+
+		SignaturePadCustomerRegStateInfo info = new SignaturePadCustomerRegStateInfo();
+		customerService.getCustomerContactDto(new BigDecimal(customerId));
+		return info;
 	}
 
 	public BoolRespModel updateDeviceStateData(ClientType deviceType, Integer countryBranchSystemInventoryId,
