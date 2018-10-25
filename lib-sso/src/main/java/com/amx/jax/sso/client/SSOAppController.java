@@ -2,6 +2,7 @@ package com.amx.jax.sso.client;
 
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -110,5 +111,26 @@ public class SSOAppController {
 					CommonMediaType.APPLICATION_V0_JSON_VALUE })
 	public String loggedinJson() throws MalformedURLException, URISyntaxException {
 		return JsonUtil.toJson(AmxApiResponse.build(ssoUser.getUserDetails()));
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = SSOConstants.APP_LOGOUT_URL, method = { RequestMethod.GET }, produces = { CommonMediaType.APPLICATION_JSON_VALUE, CommonMediaType.APPLICATION_V0_JSON_VALUE })
+	public String logout(
+			Model model, 
+			HttpServletResponse response,
+			@RequestParam(required = false) Boolean redirect
+			) throws MalformedURLException, URISyntaxException {
+		redirect = ArgUtil.parseAsBoolean(redirect, true);
+		sSOTranx.clear(ssoUser.ssoTranxId());
+		SecurityContextHolder.getContext().setAuthentication(null);
+		ssoUser.setAuthDone(false);
+		AmxApiResponse<Object, Model> result = AmxApiResponse.buildMeta(model);
+		String redirectUrl = SSOConstants.APP_LOGIN_URL_CHECK;
+		result.setRedirectUrl(redirectUrl);
+		if (redirect) {
+			response.setHeader("Location", redirectUrl);
+			response.setStatus(302);
+		}
+		return JsonUtil.toJson(result);
 	}
 }
