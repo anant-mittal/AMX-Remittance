@@ -39,7 +39,7 @@ public abstract class AmxAdvice {
 		return new ResponseEntity<AmxApiError>(error, getHttpStatus(ex));
 	}
 
-	private HttpStatus getHttpStatus(AmxApiException exp) {
+	public HttpStatus getHttpStatus(AmxApiException exp) {
 		return exp.getHttpStatus();
 	}
 
@@ -87,12 +87,9 @@ public abstract class AmxAdvice {
 	/**
 	 * Handle.
 	 *
-	 * @param ex
-	 *            the ex
-	 * @param request
-	 *            the request
-	 * @param response
-	 *            the response
+	 * @param ex       the ex
+	 * @param request  the request
+	 * @param response the response
 	 * @return the response entity
 	 */
 	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
@@ -111,8 +108,7 @@ public abstract class AmxAdvice {
 	/**
 	 * Handle.
 	 *
-	 * @param exception
-	 *            the exception
+	 * @param exception the exception
 	 * @return the response entity
 	 */
 	@ExceptionHandler(ConstraintViolationException.class)
