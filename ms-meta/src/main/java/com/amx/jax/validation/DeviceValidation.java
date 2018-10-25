@@ -60,8 +60,7 @@ public class DeviceValidation {
 	}
 
 	public void validateDeviceRegRequest(DeviceRegistrationRequest request) {
-		BranchSystemDetail branchSystem = branchDetailService
-				.findBranchSystemByIp(new BigDecimal(request.getCountryBranchId()), request.getBranchSystemIp());
+		BranchSystemDetail branchSystem = branchDetailService.findBranchSystemByIp(request.getBranchSystemIp());
 		Device existing = deviceDao.findDevice(branchSystem.getCountryBranchSystemInventoryId(),
 				request.getDeviceType());
 		if (existing != null) {
