@@ -74,7 +74,7 @@ public class DeviceClient implements IDeviceService {
 		try {
 			LOGGER.info("in sendOtpForPairing");
 
-			String url = appConfig.getJaxURL() + END_POINT_JAX_DEVICE + DEVICE_STATUS_GET;
+			String url = appConfig.getJaxURL() + END_POINT_JAX_DEVICE + DEVICE_SEND_PAIR_OTP;
 			return restService.ajax(url).get().header("deviceRegId", deviceRegId.toString())
 					.header("paireToken", paireToken)
 					.as(new ParameterizedTypeReference<AmxApiResponse<DevicePairOtpResponse, Object>>() {
@@ -93,7 +93,7 @@ public class DeviceClient implements IDeviceService {
 		try {
 			LOGGER.info("in updateDeviceState");
 
-			String url = appConfig.getJaxURL() + END_POINT_JAX_DEVICE + DEVICE_STATUS_GET;
+			String url = appConfig.getJaxURL() + END_POINT_JAX_DEVICE + DEVICE_STATE;
 			return restService.ajax(url).post(request).header("deviceRegId", registrationId.toString())
 					.header("paireToken", paireToken)
 					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
