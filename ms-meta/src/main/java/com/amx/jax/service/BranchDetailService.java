@@ -64,8 +64,8 @@ public class BranchDetailService extends AbstractService {
 		return AmxApiResponse.buildList(branchDetailList);
 	}
 
-	public BranchSystemDetail findBranchSystemByIp(BigDecimal countryBranchId, String branchSystemIp) {
-		BranchSystemDetail branchSystemDetail = branchDetailDao.getBranchSystemDetail(countryBranchId, branchSystemIp);
+	public BranchSystemDetail findBranchSystemByIp(String branchSystemIp) {
+		BranchSystemDetail branchSystemDetail = branchDetailDao.getBranchSystemDetail( branchSystemIp);
 		if (branchSystemDetail == null) {
 			throw new GlobalException("No  branch system found for given IP ", JaxError.BRANCH_SYSTEM_NOT_FOUND);
 		}

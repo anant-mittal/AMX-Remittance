@@ -46,7 +46,7 @@ public class BranchDetailDao {
 		return branchSystemDetailRepository.findByIsActiveAndCountryBranchId(ConstantDocument.Yes, countryBranchId);
 	}
 
-	public BranchSystemDetail getBranchSystemDetail(BigDecimal countryBranchId, String ipAddress) {
-		return branchSystemDetailRepository.findByIpAddressAndCountryBranchId(ipAddress, countryBranchId);
+	public BranchSystemDetail getBranchSystemDetail(String ipAddress) {
+		return branchSystemDetailRepository.findByIpAddress(ipAddress);
 	}
 }

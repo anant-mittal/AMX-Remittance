@@ -26,7 +26,6 @@ public class DeviceClientTest extends AbstractClientTest {
 		AmxApiResponse<DeviceDto, Object> response = null;
 		DeviceRegistrationRequest request = new DeviceRegistrationRequest();
 		request.setBranchSystemIp("192.178.0.1");
-		request.setCountryBranchId(78);
 		request.setDeviceId("did");
 		request.setDeviceType(ClientType.SIGNATURE_PAD);
 		response = client.registerNewDevice(request);
