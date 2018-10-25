@@ -46,8 +46,16 @@ public abstract class ACardReaderService {
 	protected static BlockingHashMap<String, CardData> MAP = new BlockingHashMap<String, CardData>();
 
 	public static enum DeviceStatus {
-		ERROR, TIMEOUT, DEVICE_PAIRING_ERROR, SESSION_PAIRING_ERROR, DISCONNECTED, NOT_PAIRED, PAIRED, CONNECTING,
-		CONNECTED;
+		ERROR, TIMEOUT,
+		// KEYRINGExceptions
+		KEYRING_EXCEPTION, KEYRING_FILE_EXCEPTION, PAIRING_KEYS_FOUND_ERROR, PAIRING_KEYS_NOT_FOUND,
+		DEVICE_PAIRING_ERROR, PAIRING_KEY_SAVE_ERROR, PAIRING_ERROR, NOT_PAIRED,
+		// Session Exceptions
+		SESSION_ERROR,
+		// Default Errors
+		DISCONNECTED,
+		// Positive Cases
+		SESSION_CREATED, PAIRED, CONNECTING, CONNECTED, PAIRING_KEYS_FOUND;
 	}
 
 	public static enum CardStatus {
@@ -100,6 +108,7 @@ public abstract class ACardReaderService {
 		} catch (BackendNotSupportedException ex) {
 			SWAdapterGUI.CONTEXT.log(ex.getMessage());
 			LOGGER.error("pairing Exception", ex);
+			status(DeviceStatus.KEYRING_EXCEPTION);
 			return null;
 		}
 
@@ -108,6 +117,7 @@ public abstract class ACardReaderService {
 				File keyStoreFile = File.createTempFile("keystore", ".keystore");
 				keyring.setKeyStorePath(keyStoreFile.getPath());
 			} catch (IOException ex) {
+				status(DeviceStatus.KEYRING_FILE_EXCEPTION);
 				SWAdapterGUI.CONTEXT.log(ex.getMessage());
 				LOGGER.error("pairing Exception:IOException", ex);
 			}
@@ -119,11 +129,14 @@ public abstract class ACardReaderService {
 			DevicePairingResponse dpr = JsonUtil.fromJson(terminalCredsStrs, DevicePairingResponse.class);
 			if (!ArgUtil.isEmpty(dpr) && !ArgUtil.isEmpty(dpr.getDeviceRegKey())) {
 				devicePairingCreds = dpr;
+				status(DeviceStatus.PAIRING_KEYS_FOUND);
 			}
 		} catch (LockException ex) {
 			SWAdapterGUI.CONTEXT.log(ex.getMessage());
+			status(DeviceStatus.PAIRING_KEYS_FOUND_ERROR);
 			LOGGER.error("pairing Exception:LockException", ex);
 		} catch (PasswordRetrievalException ex) {
+			status(DeviceStatus.PAIRING_KEYS_NOT_FOUND);
 			SWAdapterGUI.CONTEXT.log("PAIRING_KEYS_NOT_FOUND");
 		}
 
@@ -148,22 +161,29 @@ public abstract class ACardReaderService {
 							keyring.setPassword("amx-adapter", terminalId + "#" + resetDate, passwordEncd);
 							status(DeviceStatus.PAIRED);
 						} catch (LockException ex) {
-							status(DeviceStatus.DEVICE_PAIRING_ERROR);
+							status(DeviceStatus.PAIRING_KEY_SAVE_ERROR);
 							SWAdapterGUI.CONTEXT.log(ex.getMessage());
 							LOGGER.error("pairing Exception:LockException", ex);
 						} catch (PasswordSaveException ex) {
-							status(DeviceStatus.DEVICE_PAIRING_ERROR);
+							status(DeviceStatus.PAIRING_KEY_SAVE_ERROR);
 							SWAdapterGUI.CONTEXT.log("PAIRING_KEYS_CANNOT_SAVED");
+						} catch (Exception e) {
+							status(DeviceStatus.PAIRING_KEY_SAVE_ERROR);
+							SWAdapterGUI.CONTEXT.log(e.getMessage());
 						}
 					}
 				} else {
+					status(DeviceStatus.NOT_PAIRED);
 					SWAdapterGUI.CONTEXT.log("NOT_ABLE_TO_PAIR");
 				}
 			} catch (AmxApiException e) {
+				status(DeviceStatus.PAIRING_ERROR);
 				SWAdapterGUI.CONTEXT.log(e.getErrorKey());
 			} catch (AmxException e) {
+				status(DeviceStatus.PAIRING_ERROR);
 				SWAdapterGUI.CONTEXT.log(e.getStatusKey());
 			} catch (Exception e) {
+				status(DeviceStatus.PAIRING_ERROR);
 				SWAdapterGUI.CONTEXT.log(e.getMessage());
 			}
 		}
@@ -186,11 +206,15 @@ public abstract class ACardReaderService {
 					.header(DeviceConstants.Keys.DEVICE_REG_TOKEN_XKEY, devicePairingCreds.getDeviceRegToken()).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<SessionPairingResponse, Object>>() {
 					}).getResult();
+			status(DeviceStatus.SESSION_CREATED);
 		} catch (AmxApiException e) {
+			status(DeviceStatus.SESSION_ERROR);
 			SWAdapterGUI.CONTEXT.log(e.getErrorKey());
 		} catch (AmxException e) {
+			status(DeviceStatus.SESSION_ERROR);
 			SWAdapterGUI.CONTEXT.log(e.getStatusKey());
 		} catch (Exception e) {
+			status(DeviceStatus.SESSION_ERROR);
 			SWAdapterGUI.CONTEXT.log(e.getMessage());
 		}
 
