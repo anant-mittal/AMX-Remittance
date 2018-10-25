@@ -66,7 +66,7 @@ public class BrokerService {
 		for (EventNotificationView current_event_record : event_list) {
 			AppContextUtil.setTenant(Tenant.KWT);
 			AppContextUtil.setSessionId(sessionId);
-			AppContextUtil.generateTraceId(true, true);
+			AppContextUtil.getTraceId(true, true);
 			AppContextUtil.init();
 			try {
 				logger.debug("------------------ current_event_record DB Data --------------------");

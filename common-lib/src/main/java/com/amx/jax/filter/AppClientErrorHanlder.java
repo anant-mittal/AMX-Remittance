@@ -49,7 +49,7 @@ public class AppClientErrorHanlder implements ResponseErrorHandler {
 			throw new AmxHttpNotFoundException(statusCode);
 		}
 
-		boolean hasExceptionHeader = ArgUtil.isEmpty(response.getHeaders().getFirst(AppConstants.EXCEPTION_HEADER_KEY));
+		boolean hasExceptionHeader = !ArgUtil.isEmpty(response.getHeaders().getFirst(AppConstants.EXCEPTION_HEADER_KEY));
 
 		if (response.getStatusCode().series() == HttpStatus.Series.SERVER_ERROR || hasExceptionHeader) {
 			String body = IoUtils.inputstream_to_string(response.getBody());

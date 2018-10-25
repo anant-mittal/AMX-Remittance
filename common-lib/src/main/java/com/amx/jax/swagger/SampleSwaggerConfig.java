@@ -50,7 +50,7 @@ public class SampleSwaggerConfig {
 			Parameter parameter = new ParameterBuilder().name(mockParam.getName())
 					.description(mockParam.getDescription()).defaultValue(mockParam.getDefaultValue())
 					.modelRef(new ModelRef(PARAM_STRING)).parameterType(mockParam.getType().toString().toLowerCase())
-					.allowableValues(allowableValues).required(true).build();
+					.allowableValues(allowableValues).required(mockParam.isRequired()).build();
 			operationParameters.add(parameter);
 		}
 

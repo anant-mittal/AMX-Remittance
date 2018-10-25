@@ -24,7 +24,7 @@ public class AppContextUtil {
 	 * @param override - create new token anyway
 	 * @return -returns current token
 	 */
-	public static String generateTraceId(boolean generate, boolean override) {
+	public static String getTraceId(boolean generate, boolean override) {
 		String sessionId = getSessionId();
 		if (override) {
 			if (ArgUtil.isEmpty(sessionId)) {
@@ -39,8 +39,12 @@ public class AppContextUtil {
 		return traceId;
 	}
 
+	public static String getTraceId(boolean generate) {
+		return getTraceId(generate, false);
+	}
+
 	public static String getTraceId() {
-		return generateTraceId(true, false);
+		return getTraceId(true, false);
 	}
 
 	public static String getTranxId() {
@@ -207,6 +211,16 @@ public class AppContextUtil {
 				setTranxId(tranxids.get(0));
 			}
 		}
+		String traceId = getTraceId(false);
+		if (ArgUtil.isEmpty(traceId)) {
+			if (httpHeaders.containsKey(AppConstants.TRACE_ID_XKEY)) {
+				List<String> traceIds = httpHeaders.get(AppConstants.TRACE_ID_XKEY);
+				if (traceIds.size() >= 0) {
+					setTranceId(traceIds.get(0));
+				}
+			}
+		}
+
 	}
 
 }
