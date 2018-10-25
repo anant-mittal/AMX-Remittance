@@ -178,13 +178,13 @@ public abstract class ACardReaderService {
 				}
 			} catch (AmxApiException e) {
 				status(DeviceStatus.PAIRING_ERROR);
-				SWAdapterGUI.CONTEXT.log(e.getErrorKey());
+				SWAdapterGUI.CONTEXT.log("SERVICE ERROR : " + e.getErrorKey());
 			} catch (AmxException e) {
 				status(DeviceStatus.PAIRING_ERROR);
-				SWAdapterGUI.CONTEXT.log(e.getStatusKey());
+				SWAdapterGUI.CONTEXT.log("SERVICE ERROR : " + e.getMessage());
 			} catch (Exception e) {
 				status(DeviceStatus.PAIRING_ERROR);
-				SWAdapterGUI.CONTEXT.log(e.getMessage());
+				SWAdapterGUI.CONTEXT.log("CLIENT ERROR : " + e.getMessage());
 			}
 		}
 		return devicePairingCreds;
@@ -209,13 +209,13 @@ public abstract class ACardReaderService {
 			status(DeviceStatus.SESSION_CREATED);
 		} catch (AmxApiException e) {
 			status(DeviceStatus.SESSION_ERROR);
-			SWAdapterGUI.CONTEXT.log(e.getErrorKey());
+			SWAdapterGUI.CONTEXT.log("SERVICE ERROR : " + e.getErrorKey());
 		} catch (AmxException e) {
 			status(DeviceStatus.SESSION_ERROR);
-			SWAdapterGUI.CONTEXT.log(e.getStatusKey());
+			SWAdapterGUI.CONTEXT.log("SERVICE ERROR : " + e.getMessage());
 		} catch (Exception e) {
 			status(DeviceStatus.SESSION_ERROR);
-			SWAdapterGUI.CONTEXT.log(e.getMessage());
+			SWAdapterGUI.CONTEXT.log("CLIENT ERROR : " + e.getMessage());
 		}
 
 		return sessionPairingCreds;
