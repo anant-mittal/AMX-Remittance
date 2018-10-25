@@ -48,15 +48,14 @@ public class DeviceConfigs {
 	@Bean
 	public MockParam deviceRegKey() {
 		return new MockParamBuilder().name(DeviceConstants.Keys.DEVICE_REG_KEY_XKEY).description("Device Reg Key")
-				.defaultValue("1234").parameterType(MockParamBuilder.MockParamType.HEADER).required(false).build();
+				.parameterType(MockParamBuilder.MockParamType.HEADER).required(false).build();
 
 	}
 
 	@Bean
 	public MockParam deviceRegToken() {
 		return new MockParamBuilder().name(DeviceConstants.Keys.DEVICE_REG_TOKEN_XKEY).description("Device Reg Token")
-				.defaultValue("djhk33434nkjj34").parameterType(MockParamBuilder.MockParamType.HEADER).required(false)
-				.build();
+				.parameterType(MockParamBuilder.MockParamType.HEADER).required(false).build();
 
 	}
 }
