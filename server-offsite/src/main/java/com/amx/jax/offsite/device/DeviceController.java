@@ -84,6 +84,9 @@ public class DeviceController {
 	@ApiOffisteStatus({ OffsiteServerCodes.DEVICE_CREDS_MISSING })
 	@RequestMapping(value = { DeviceConstants.Path.SESSION_PAIR }, method = { RequestMethod.GET })
 	public AmxApiResponse<SessionPairingResponse, Object> sendOtpForPairing() {
+
+		deviceRequestValidator.validateRequest();
+
 		String deviceRegKey = commonHttpRequest.get(DeviceConstants.Keys.DEVICE_REG_KEY_XKEY);
 		String deviceRegToken = commonHttpRequest.get(DeviceConstants.Keys.DEVICE_REG_TOKEN_XKEY);
 
@@ -93,13 +96,14 @@ public class DeviceController {
 
 		DevicePairOtpResponse resp = deviceClient
 				.sendOtpForPairing(ArgUtil.parseAsInteger(deviceRegKey), deviceRegToken).getResult();
-		SessionPairingResponse creds = deviceRequestValidator.validate(resp.getSessionPairToken(), resp.getOtp());
+		SessionPairingResponse creds = deviceRequestValidator.createSession(resp.getSessionPairToken(), resp.getOtp());
 		return AmxApiResponse.build(creds);
 	}
 
 	@ApiDeviceHeaders
 	@RequestMapping(value = { DeviceConstants.Path.DEVICE_STATUS_ACTIVITY }, method = { RequestMethod.GET })
 	public AmxApiResponse<DeviceStatusInfoDto, Object> getStatus() {
+		deviceRequestValidator.validateRequest();
 		return deviceClient.getStatus(ArgUtil.parseAsInteger(deviceRequestValidator.getDeviceRegKey()),
 				deviceRequestValidator.getDeviceRegToken(), deviceRequestValidator.getDeviceSessionToken());
 	}
@@ -108,6 +112,7 @@ public class DeviceController {
 	@RequestMapping(value = { DeviceConstants.Path.DEVICE_STATUS_CARD }, method = { RequestMethod.POST })
 	public AmxApiResponse<CardData, Object> saveCardDetails(@RequestBody CardReader reader,
 			@PathVariable(value = DeviceConstants.Params.PARAM_SYSTEM_ID) String systemid) {
+		deviceRequestValidator.validateRequest();
 		if (ArgUtil.isEmpty(reader.getData())) {
 			cardBox.fastRemove(systemid);
 		} else {

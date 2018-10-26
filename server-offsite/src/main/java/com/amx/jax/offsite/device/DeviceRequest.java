@@ -28,7 +28,7 @@ public class DeviceRequest {
 	private HttpServletRequest request;
 
 	@Autowired(required = false)
-	HttpServletResponse response;
+	private HttpServletResponse response;
 
 	public String getDeviceRegKey() {
 		return commonHttpRequest.get(DeviceConstants.Keys.DEVICE_REG_KEY_XKEY);
@@ -72,12 +72,17 @@ public class DeviceRequest {
 		if (!DeviceConstants.validateDeviceReqToken(deviceData.getDeviceReqKey(), deviceRegToken, deviceReqToken)) {
 			return false;
 		}
-
 		return true;
-
 	}
 
-	public SessionPairingResponse validate(String sessionPairToken, String sessionOtp) {
+	public void validateRequest() {
+		if (!isValid()) {
+			response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
+			response.setHeader("Location", DeviceConstants.Path.SESSION_PAIR);
+		}
+	}
+
+	public SessionPairingResponse createSession(String sessionPairToken, String sessionOtp) {
 
 		String deviceRegKey = commonHttpRequest.get(DeviceConstants.Keys.DEVICE_REG_KEY_XKEY);
 		DeviceData deviceData = new DeviceData();
