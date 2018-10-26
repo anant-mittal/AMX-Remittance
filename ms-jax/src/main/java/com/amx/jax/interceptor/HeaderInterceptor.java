@@ -21,6 +21,7 @@ import com.amx.jax.dbmodel.ViewCompanyDetails;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.service.CompanyService;
 import com.amx.jax.service.CountryBranchService;
+import com.amx.jax.service.CurrencyMasterService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
@@ -34,6 +35,8 @@ public class HeaderInterceptor extends HandlerInterceptorAdapter {
 	
 	@Autowired
 	CompanyService companyService;
+	@Autowired
+	CurrencyMasterService currencyMasterService ;
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -62,9 +65,12 @@ public class HeaderInterceptor extends HandlerInterceptorAdapter {
 				metaData.setCountryBranchId(cb.getCountryBranchId());
 			}
 		}
-		if(metaData.getLanguageId() != null) {
+		if (metaData.getLanguageId() != null) {
 			ViewCompanyDetails company = companyService.getCompanyDetail(metaData.getLanguageId());
 			metaData.setCompanyId(company.getCompanyId());
+			BigDecimal defaultCurrencyId = currencyMasterService
+					.getCurrencyMasterByCountryId(company.getApplicationCountryId()).get(0).getCurrencyId();
+			metaData.setDefaultCurrencyId(defaultCurrencyId);
 		}
 
 	}
