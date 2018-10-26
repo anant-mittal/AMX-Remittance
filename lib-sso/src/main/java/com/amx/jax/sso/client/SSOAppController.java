@@ -125,7 +125,7 @@ public class SSOAppController {
 		SecurityContextHolder.getContext().setAuthentication(null);
 		ssoUser.setAuthDone(false);
 		AmxApiResponse<Object, Model> result = AmxApiResponse.buildMeta(model);
-		String redirectUrl = SSOConstants.APP_LOGIN_URL_CHECK;
+		String redirectUrl = "/";
 		result.setRedirectUrl(redirectUrl);
 		if (redirect) {
 			response.setHeader("Location", redirectUrl);
