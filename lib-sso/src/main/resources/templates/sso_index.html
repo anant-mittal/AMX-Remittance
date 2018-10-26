@@ -524,11 +524,10 @@
 				if(resp.redirectUrl){
 					window.location.href = resp.redirectUrl;
 				}
-				if(resp.motpPrefix){
-					$(".prefix").text(resp.motpPrefix);
+				if(resp.meta.mOtpPrefix){
+					$(".prefix").text(resp.meta.mOtpPrefix);
 				}
 			}).fail(function(jqXHR, y, z){
-				console.log(">>>>>>>>>>>>>> ", jqXHR, y, z);
 				if (jqXHR.getResponseHeader('Location') != null) { 
 					window.Location= jqXHR.getResponseHeader('Location');
 				}
