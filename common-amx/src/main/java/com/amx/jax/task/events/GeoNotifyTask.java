@@ -2,9 +2,9 @@ package com.amx.jax.task.events;
 
 import java.math.BigDecimal;
 
-import com.amx.jax.tunnel.ITunnelEvent;
+import com.amx.jax.tunnel.TunnelEvent;
 
-public class GeoNotifyTask extends ITunnelEvent {
+public class GeoNotifyTask extends TunnelEvent {
 
 	private static final long serialVersionUID = 7415624585226619390L;
 
