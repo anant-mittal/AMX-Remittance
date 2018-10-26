@@ -13,17 +13,17 @@ import com.amx.jax.repository.employee.AmgEmployeeRepository;
 
 @Component
 public class EmployeeDao {
-
+	
 	@Autowired
-	private EmployeeRepository repo;
+	private EmployeeRepository repo;	
 
 	@Autowired
 	AmgEmployeeRepository amgEmployeeRepository;
 
 	public Employee getEmployeeDetails(String civilId, BigDecimal ecNumber) {
-
-		return repo.getEmployeeDetails(civilId, ecNumber, ConstantDocument.Deleted);
-	}
+		
+		return repo.getEmployeeDetails(civilId,ecNumber,ConstantDocument.Deleted);
+	}	
 
 	/**
 	 * @param civilId

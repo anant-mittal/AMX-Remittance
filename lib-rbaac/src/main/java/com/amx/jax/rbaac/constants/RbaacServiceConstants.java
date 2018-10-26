@@ -9,16 +9,41 @@ package com.amx.jax.rbaac.constants;
  */
 public final class RbaacServiceConstants {
 
-	public static enum DEVICE_TYPE {
-		MOBILE, PC;
+	private RbaacServiceConstants() {
+		// Not Allowed
+		super();
 	}
+
+//	public static enum DEVICE_TYPE {
+//		MOBILE, PC;
+//	}
 
 	public static enum ACCESS_KEY {
 		YES, NO, VIEW, EDIT, CREATE, READ, UPDATE, DELETE, RESET, VERIFY, ADD, CANCEL;
 	}
 
 	public static enum SCOPE {
-		GLOBAL, COUNTRY, AREA, BRANCH;
+		GLOBAL(1), COUNTRY(2), AREA(3), BRANCH(4);
+
+		// Custom Ordinal
+		private int scopeIndex;
+
+		private SCOPE(int scopeIndex) {
+			this.scopeIndex = scopeIndex;
+		}
+
+		public int getScopeIndex() {
+			return scopeIndex;
+		}
+
+		public boolean isWithinMyScope(SCOPE toScope) {
+			if (this.scopeIndex <= toScope.getScopeIndex()) {
+				return true;
+			}
+
+			return false;
+		}
+
 	}
 
 	public static enum PERM_KEY {

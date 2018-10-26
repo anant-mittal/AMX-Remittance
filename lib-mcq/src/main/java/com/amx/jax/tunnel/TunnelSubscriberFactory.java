@@ -20,6 +20,7 @@ import com.amx.jax.AppContext;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.logger.client.AuditServiceClient;
 import com.amx.jax.logger.events.RequestTrackEvent;
+import com.amx.utils.ArgUtil;
 import com.amx.utils.TimeUtils;
 
 @Service
@@ -54,8 +55,11 @@ public class TunnelSubscriberFactory {
 		} else {
 			for (ITunnelSubscriber listener : listeners) {
 				Class<?> c = AopProxyUtils.ultimateTargetClass(listener);
-				TunnelEvent tunnelEvent = getAnnotationProxyReady(c, TunnelEvent.class);
+				TunnelEventMapping tunnelEvent = getAnnotationProxyReady(c, TunnelEventMapping.class);
 				String eventTopic = tunnelEvent.topic();
+				if (ArgUtil.isEmpty(eventTopic)) {
+					eventTopic = tunnelEvent.byEvent().getName();
+				}
 				boolean integrity = tunnelEvent.integrity();
 				TunnelEventXchange scheme = tunnelEvent.scheme();
 				if (scheme == TunnelEventXchange.TASK_WORKER) {

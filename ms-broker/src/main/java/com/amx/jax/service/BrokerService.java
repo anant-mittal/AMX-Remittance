@@ -17,7 +17,7 @@ import com.amx.jax.broker.BrokerConstants;
 import com.amx.jax.dbmodel.EventNotificationEntity;
 import com.amx.jax.dbmodel.EventNotificationView;
 import com.amx.jax.dict.Tenant;
-import com.amx.jax.event.Event;
+import com.amx.jax.event.DBEvents;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.service.dao.EventNotificationDao;
 import com.amx.jax.tunnel.TunnelService;
@@ -76,8 +76,8 @@ public class BrokerService {
 						BrokerConstants.KEY_VALUE_SEPARATOR_CHAR, current_event_record.getEvent_data());
 
 				// Push to Message Queue
-				Event event = new Event();
-				event.setEvent_code(current_event_record.getEvent_code());
+				DBEvents event = new DBEvents();
+				event.setEventCode(current_event_record.getEvent_code());
 				event.setPriority(current_event_record.getEvent_priority());
 				event.setData(event_data_map);
 				event.setDescription(current_event_record.getEvent_desc());

@@ -17,7 +17,7 @@ import org.springframework.web.context.WebApplicationContext;
 import com.amx.amxlib.constant.AuthType;
 import com.amx.amxlib.meta.model.BeneficiaryErrorStatusDto;
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
-import com.amx.jax.amxlib.model.JaxMetaInfo;
+import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.dao.BlackListDao;
 import com.amx.jax.dbmodel.AuthenticationLimitCheckView;
 import com.amx.jax.dbmodel.BanksView;
@@ -124,7 +124,7 @@ public class BeneficiaryCheckService extends AbstractService {
 			if (blist != null && !blist.isEmpty()) {
 
 				beneDto.setUpdateNeeded(true);
-				errorDesc = "English name Of beneficary matching with black listed customer";
+				errorDesc = "English name Of beneficiary matching with black listed customer";
 				errorStatusDto = this.setBeneError(JaxError.BLACK_LISTED_CUSTOMER.toString(), errorDesc);
 
 				errorListDto.add(errorStatusDto);
@@ -135,7 +135,7 @@ public class BeneficiaryCheckService extends AbstractService {
 			if (blist != null && !blist.isEmpty()) {
 
 				beneDto.setUpdateNeeded(true);
-				errorDesc = "Arabic name Of beneficary matching with black listed customer";
+				errorDesc = "Arabic name Of beneficiary matching with black listed customer";
 				errorStatusDto = this.setBeneError(JaxError.BLACK_LISTED_CUSTOMER.toString(), errorDesc);
 
 				errorListDto.add(errorStatusDto);

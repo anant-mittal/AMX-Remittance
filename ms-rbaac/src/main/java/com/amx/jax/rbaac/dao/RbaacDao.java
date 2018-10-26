@@ -121,6 +121,10 @@ public class RbaacDao {
 		return userRoleMappingRepository.findByEmployeeIdIn(employeeIdList);
 	}
 
+	public UserRoleMapping getUserRoleMappingByEmployeeId(BigDecimal employeeId) {
+		return userRoleMappingRepository.findByEmployeeId(employeeId);
+	}
+
 	/**
 	 * Saves Single Entity of User Role Mapping
 	 * 

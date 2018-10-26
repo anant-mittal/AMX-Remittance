@@ -1,9 +1,7 @@
 package com.amx.jax.logger.events;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.amx.jax.logger.AuditEvent;
+import com.amx.jax.model.UserDevice;
 
 public class SessionEvent extends AuditEvent {
 
@@ -21,7 +19,7 @@ public class SessionEvent extends AuditEvent {
 		}
 	}
 
-	Map<String, Object> device = new HashMap<String, Object>();
+	UserDevice device = new UserDevice();;
 	String userKey = null;
 	String sessionId = null;
 
@@ -41,11 +39,11 @@ public class SessionEvent extends AuditEvent {
 		this.userKey = userKey;
 	}
 
-	public Map<String, Object> getDevice() {
+	public UserDevice getDevice() {
 		return device;
 	}
 
-	public void setDevice(Map<String, Object> device) {
+	public void setDevice(UserDevice device) {
 		this.device = device;
 	}
 

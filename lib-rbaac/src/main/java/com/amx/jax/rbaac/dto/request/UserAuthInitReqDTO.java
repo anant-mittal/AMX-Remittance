@@ -5,7 +5,11 @@ package com.amx.jax.rbaac.dto.request;
 
 import java.io.Serializable;
 
-import com.amx.jax.rbaac.constants.RbaacServiceConstants;
+import javax.validation.constraints.NotNull;
+
+import org.hibernate.validator.constraints.NotBlank;
+
+import com.amx.jax.dict.UserClient.DeviceType;
 
 /**
  * The Class UserAuthInitReqDTO.
@@ -18,19 +22,23 @@ public class UserAuthInitReqDTO implements Serializable {
 	private static final long serialVersionUID = -2594412775985894857L;
 
 	/** The employee no. */
+	@NotBlank(message = "Employee Number Can not be Null or Empty")
 	private String employeeNo;
 
 	/** The identity. */
+	@NotBlank(message = "Employee Identity Can not be Null or Empty")
 	private String identity;
 
 	/** The ip address. */
+	@NotBlank(message = "Ip Address Can not be Null or Empty")
 	private String ipAddress;
 
 	/** The device id. */
 	private String deviceId;
 
 	/** The device type. */
-	private RbaacServiceConstants.DEVICE_TYPE deviceType;
+	@NotNull(message = "Device Type Can not be Null or Empty")
+	private DeviceType deviceType;
 
 	/**
 	 * Gets the employee no.
@@ -89,7 +97,6 @@ public class UserAuthInitReqDTO implements Serializable {
 		this.ipAddress = ipAddress;
 	}
 
-
 	/**
 	 * Gets the device id.
 	 *
@@ -114,11 +121,11 @@ public class UserAuthInitReqDTO implements Serializable {
 	 *
 	 * @return the device type
 	 */
-	public RbaacServiceConstants.DEVICE_TYPE getDeviceType() {
+	public DeviceType getDeviceType() {
 		return deviceType;
 	}
 
-	public void setDeviceType(RbaacServiceConstants.DEVICE_TYPE deviceType) {
+	public void setDeviceType(DeviceType deviceType) {
 		this.deviceType = deviceType;
 	}
 

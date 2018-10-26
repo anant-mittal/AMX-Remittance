@@ -51,7 +51,7 @@ public class PdfService {
 
 		PDFConverter conv = file.getConverter();
 		if (conv == null) {
-			conv = file.getTemplate().getConverter();
+			conv = file.getITemplate().getConverter();
 			if (conv == null) {
 				conv = pDFConverter;
 			}

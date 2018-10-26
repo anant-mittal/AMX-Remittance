@@ -121,6 +121,7 @@ public class AuditServiceClient implements AuditService {
 
 	public static AuditLoggerResponse logAbstractEvent(Marker marker, AbstractEvent event, boolean capture) {
 		event.setComponent(APP_NAME);
+		event.clean();
 		String json = JsonUtil.toJson(event);
 
 		String marketName = marker.getName();
@@ -148,7 +149,7 @@ public class AuditServiceClient implements AuditService {
 			captureDetails(event);
 			return logAbstractEvent(marker, event, capture);
 		} catch (Exception e) {
-			LOGGER2.error("Exception while logAuditEvent {}", JsonUtil.toJson(event));
+			LOGGER2.error("Exception while logAuditEvent {}", JsonUtil.toJson(event),e);
 		}
 		return null;
 	}
@@ -192,7 +193,7 @@ public class AuditServiceClient implements AuditService {
 	public static AuditLoggerResponse logStatic(AuditEvent event) {
 		EventType eventType = event.getType();
 		if (eventType == null) {
-			LOGGER2.error("Exception while logAuditEvent {}", JsonUtil.toJson(event));
+			LOGGER2.error("Exception while logStatic {}", JsonUtil.toJson(event));
 			return null;
 		}
 		EventMarker eventMarker = eventType.marker();

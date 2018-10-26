@@ -26,7 +26,7 @@ import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.Notipy;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.SupportEmail;
-import com.amx.jax.postman.model.Templates;
+import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.postman.service.PostManServiceImpl;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;
@@ -78,7 +78,7 @@ public class PostManController {
 	 */
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = PostManUrls.PROCESS_TEMPLATE, method = RequestMethod.POST)
-	public AmxApiResponse<File, Object> processTemplate(@RequestParam Templates template,
+	public AmxApiResponse<File, Object> processTemplate(@RequestParam TemplatesMX template,
 			@RequestParam(required = false) String data, @RequestParam(required = false) String fileName,
 			@RequestParam(required = false) File.Type fileType) {
 
@@ -86,7 +86,7 @@ public class PostManController {
 		File file = new File();
 		file.setLang(lang);
 
-		file.setTemplate(template);
+		file.setITemplate(template);
 		file.setType(fileType);
 		file.setModel(JsonUtil.fromJson(data, Map.class));
 		return postManService.processTemplate(file);

@@ -3,7 +3,7 @@
   */
 package com.amx.jax.payment.model.url;
 
-import com.amx.amxlib.meta.model.PaymentResponseDto;
+import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.payment.response.AResponseDataModel;
 
 /**

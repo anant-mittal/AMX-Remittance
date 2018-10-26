@@ -1179,6 +1179,6 @@
 		"subReport": null,
 		"fcsaleApplicationCheck": null,
 		"remittanceReceiptCheck": true,
-		"label1": "بيانات الراسل"
+		"label1":"بيانات الراسل"
 	}
 }

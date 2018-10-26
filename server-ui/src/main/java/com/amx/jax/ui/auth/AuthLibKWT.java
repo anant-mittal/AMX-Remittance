@@ -30,8 +30,7 @@ public class AuthLibKWT implements AuthLib {
 	/**
 	 * Check login step.
 	 *
-	 * @param authState
-	 *            the auth state
+	 * @param authState the auth state
 	 * @return the auth state. auth step
 	 */
 	private AuthState.AuthStep checkLoginStep(AuthState authState) {
@@ -51,8 +50,7 @@ public class AuthLibKWT implements AuthLib {
 	/**
 	 * Check reset step.
 	 *
-	 * @param authState
-	 *            the auth state
+	 * @param authState the auth state
 	 * @return the auth state. auth step
 	 */
 	private AuthState.AuthStep checkResetStep(AuthState authState) {
@@ -61,8 +59,12 @@ public class AuthLibKWT implements AuthLib {
 		}
 		switch (authState.cStep) {
 		case IDVALID:
-			return AuthState.AuthStep.DOTPVFY;
-		case DOTPVFY:
+			return AuthState.AuthStep.MOTPVFY;
+		case MOTPVFY:
+			return AuthState.AuthStep.SECQUES;
+		case SECQUES:
+			return AuthState.AuthStep.CREDS_SET;
+		case CREDS_SET:
 			return AuthState.AuthStep.COMPLETED;
 		default:
 			return authState.cStep;
@@ -92,8 +94,7 @@ public class AuthLibKWT implements AuthLib {
 	/**
 	 * Check reg step.
 	 *
-	 * @param authState
-	 *            the auth state
+	 * @param authState the auth state
 	 * @return the auth state. auth step
 	 */
 	private AuthState.AuthStep checkRegStep(AuthState authState) {
@@ -121,8 +122,7 @@ public class AuthLibKWT implements AuthLib {
 	/**
 	 * Check activation step.
 	 *
-	 * @param authState
-	 *            the auth state
+	 * @param authState the auth state
 	 * @return the auth state. auth step
 	 */
 	private AuthState.AuthStep checkActivationStep(AuthState authState) {

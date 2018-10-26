@@ -1,5 +1,7 @@
 package com.amx.jax.payment.gateway;
 
+import com.amx.jax.payg.PayGCodes.CodeCategory;
+
 public class PayGResponse {
 
 	public static enum PayGStatus {
@@ -22,6 +24,7 @@ public class PayGResponse {
 	String countryId = null;
 	String errorText = null;
 	String error = null;
+	CodeCategory errorCategory = null;
 	
 	String collectionFinYear;
 	String collectionDocNumber;
@@ -181,7 +184,8 @@ public class PayGResponse {
     }
 
     /**
-     * @param errorText the errorText to set
+	 * @param errorText
+	 *            the errorText to set
      */
     public void setErrorText(String errorText) {
         this.errorText = errorText;
@@ -195,9 +199,19 @@ public class PayGResponse {
 		this.error = error;
 	}
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
+	public CodeCategory getErrorCategory() {
+		return errorCategory;
+	}
+
+	public void setErrorCategory(CodeCategory codeCategory) {
+		this.errorCategory = codeCategory;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
     @Override
     public String toString() {
         return "PayGResponse [paymentId=" + paymentId + ", result=" + result + ", auth=" + auth + ", ref=" + ref

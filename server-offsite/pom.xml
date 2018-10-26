@@ -3,18 +3,18 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.amx.jax</groupId>
+	<!-- <groupId>com.amx.jax</groupId> -->
+	<!-- <version>0.0.1-SNAPSHOT</version> -->
 	<artifactId>server-offsite</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>server-offsite</name>
 	<description>Admin related services.</description>
 
 	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>1.5.8.RELEASE</version>
+		<groupId>com.amx.jax</groupId>
+		<artifactId>amxeco</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath> <!-- lookup parent from repository -->
 	</parent>
 
@@ -32,14 +32,8 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-thymeleaf</artifactId>
+			<groupId>com.amx.jax</groupId>
+			<artifactId>lib-rbaac</artifactId>
 		</dependency>
 
 		<dependency>
@@ -50,20 +44,23 @@
 
 		<dependency>
 			<groupId>com.amx.jax</groupId>
-			<artifactId>lib-postman</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<artifactId>lib-jax</artifactId>
 		</dependency>
 
 		<dependency>
 			<groupId>com.amx.jax</groupId>
-			<artifactId>lib-jax</artifactId>
+			<artifactId>jax-client</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.amx.jax</groupId>
+			<artifactId>lib-sso</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
 			<groupId>com.amx.jax</groupId>
 			<artifactId>jax-client</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 
 	</dependencies>

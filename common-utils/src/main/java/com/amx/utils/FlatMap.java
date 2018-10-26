@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+
 /**
  * The Class FlatMap.
  */
@@ -74,8 +75,7 @@ public class FlatMap {
 	/**
 	 * Gets the flat map.
 	 *
-	 * @param key
-	 *            the key
+	 * @param key the key
 	 * @return the flat map
 	 */
 	public FlatMap getFlatMap(String key) {
@@ -112,8 +112,7 @@ public class FlatMap {
 	/**
 	 * Sets the map.
 	 *
-	 * @param map
-	 *            the map
+	 * @param map the map
 	 */
 	public void setMap(Map<String, Object> map) {
 		this.map = map;
