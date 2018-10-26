@@ -6,7 +6,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.amx.amxlib.model.CustomerNotificationDTO;
 import com.amx.jax.client.JaxPushNotificationClient;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.dict.Language;
@@ -56,19 +55,12 @@ public class PromoNotifyTaskWorker implements ITunnelSubscriber<PromoNotifyTask>
 		msg.setMessage(task.getMessage());
 		msg.setSubject(task.getTitle());
 
-		CustomerNotificationDTO customerNotification = new CustomerNotificationDTO();
-		customerNotification.setMessage(task.getMessage());
-		customerNotification.setTitle(task.getTitle());
-
 		if (task.getNationality() == Nations.ALL) {
 			msg.addTopic(String.format(PushMessage.FORMAT_TO_ALL, tnt.toString().toLowerCase()));
-			customerNotification.setCountryId(tnt.getBDCode());
 		} else {
 			msg.addTopic(String.format(PushMessage.FORMAT_TO_NATIONALITY, tnt.toString().toLowerCase(),
 					task.getNationality().getCode()));
-			customerNotification.setNationalityId(new BigDecimal(task.getNationality().getCode()));
 		}
-		notificationClient.save(customerNotification);
 		pushNotifyClient.sendDirect(msg).getResult();
 
 	}

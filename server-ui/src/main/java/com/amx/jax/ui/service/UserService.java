@@ -13,6 +13,7 @@ import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.jax.AppContextUtil;
+import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.ui.model.AuthDataInterface.UserUpdateResponse;
 import com.amx.jax.ui.model.UserBean;
@@ -55,8 +56,7 @@ public class UserService {
 	/**
 	 * Gets the notify topics.
 	 *
-	 * @param prefix
-	 *            the prefix
+	 * @param prefix the prefix
 	 * @return the notify topics
 	 */
 	public List<String> getNotifyTopics(String prefix) {
@@ -85,12 +85,9 @@ public class UserService {
 	/**
 	 * Update email.
 	 *
-	 * @param email
-	 *            the email
-	 * @param mOtp
-	 *            the m otp
-	 * @param eOtp
-	 *            the e otp
+	 * @param email the email
+	 * @param mOtp  the m otp
+	 * @param eOtp  the e otp
 	 * @return the response wrapper
 	 */
 	public ResponseWrapper<UserUpdateResponse> updateEmail(String email, String mOtp, String eOtp) {
@@ -112,12 +109,9 @@ public class UserService {
 	/**
 	 * Update phone.
 	 *
-	 * @param phone
-	 *            the phone
-	 * @param mOtp
-	 *            the m otp
-	 * @param eOtp
-	 *            the e otp
+	 * @param phone the phone
+	 * @param mOtp  the m otp
+	 * @param eOtp  the e otp
 	 * @return the response wrapper
 	 */
 	public ResponseWrapper<UserUpdateResponse> updatePhone(String phone, String mOtp, String eOtp) {
@@ -139,12 +133,9 @@ public class UserService {
 	/**
 	 * Update sec ques.
 	 *
-	 * @param securityquestions
-	 *            the securityquestions
-	 * @param mOtp
-	 *            the m otp
-	 * @param eOtp
-	 *            the e otp
+	 * @param securityquestions the securityquestions
+	 * @param mOtp              the m otp
+	 * @param eOtp              the e otp
 	 * @return the response wrapper
 	 */
 	public ResponseWrapper<UserUpdateResponse> updateSecQues(List<SecurityQuestionModel> securityquestions, String mOtp,
@@ -158,14 +149,10 @@ public class UserService {
 	/**
 	 * Update phising.
 	 *
-	 * @param imageUrl
-	 *            the image url
-	 * @param caption
-	 *            the caption
-	 * @param mOtp
-	 *            the m otp
-	 * @param eOtp
-	 *            the e otp
+	 * @param imageUrl the image url
+	 * @param caption  the caption
+	 * @param mOtp     the m otp
+	 * @param eOtp     the e otp
 	 * @return the response wrapper
 	 */
 	public ResponseWrapper<UserUpdateData> updatePhising(String imageUrl, String caption, String mOtp, String eOtp) {
@@ -178,18 +165,14 @@ public class UserService {
 	/**
 	 * Updatepwd.
 	 *
-	 * @param password
-	 *            the password
-	 * @param mOtp
-	 *            the m otp
-	 * @param eOtp
-	 *            the e otp
+	 * @param password the password
+	 * @param mOtp     the m otp
+	 * @param eOtp     the e otp
 	 * @return the response wrapper
 	 */
 	public ResponseWrapper<UserUpdateResponse> updatepwd(String password, String mOtp, String eOtp) {
 		ResponseWrapper<UserUpdateResponse> wrapper = new ResponseWrapper<UserUpdateResponse>(new UserUpdateData());
-		BooleanResponse model = jaxService.setDefaults().getUserclient().updatePassword(password, mOtp, eOtp)
-				.getResult();
+		BoolRespModel model = jaxService.setDefaults().getUserclient().updatePassword(password, mOtp, eOtp).getResult();
 		if (model.isSuccess()) {
 			wrapper.setMessage(WebResponseStatus.USER_UPDATE_SUCCESS, "Password Updated Succesfully");
 		}

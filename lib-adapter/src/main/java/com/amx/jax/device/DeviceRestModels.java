@@ -3,14 +3,18 @@ package com.amx.jax.device;
 import com.amx.jax.dict.UserClient.ClientType;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
+import io.swagger.annotations.ApiModelProperty;
+
 public class DeviceRestModels {
 
 	@JsonDeserialize(as = DeviceRestModel.class)
 	public interface DevicePairingRequest {
+		@ApiModelProperty(example = "192.168.14.162")
 		String getDeivceTerminalId();
 
 		void setDeivceTerminalId(String deivceTerminalId);
 
+		@ApiModelProperty(example = "SIGNATURE_PAD")
 		ClientType getDeivceClientType();
 
 		void setDeivceClientType(ClientType deivceClientType);
@@ -42,6 +46,7 @@ public class DeviceRestModels {
 
 		String getDeviceSessionToken();
 
+		@ApiModelProperty(example = "654321")
 		String getSessionOTP();
 
 		void setSessionOTP(String sessionOTP);
@@ -62,7 +67,9 @@ public class DeviceRestModels {
 		String deviceRegKey;
 
 		String deviceSessionToken;
+
 		String sessionOTP;
+
 		String deviceRequestKey;
 
 		@Override

@@ -9,6 +9,7 @@ public class SSOConstants {
 	public static final String APP_LOGGEDIN_URL = "/sso/loggedin/default";
 	public static final String APP_LOGGEDIN_URL_JSON = "/sso/loggedin/{json}";
 	public static final String APP_LOGGEDIN_URL_HTML = "/sso/loggedin/{html}";
+	public static final String APP_LOGOUT_URL = "/sso/logout";
 
 	public static final String APP_LOGIN_URL = "/sso/login";
 	public static final String APP_LOGIN_URL_JSON = "/sso/login/{jsonstep}";

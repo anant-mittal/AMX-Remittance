@@ -25,6 +25,8 @@ import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
+import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.config.JaxConfig;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.client.util.ConverterUtility;
@@ -74,7 +76,7 @@ public class JaxClientApplicationTests extends AbstractTestClient {
 		otp = response.getResult().getmOtp();
 	}
 
-	//@Test
+	// @Test
 	public void testvalidateotpapi() throws IOException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
@@ -102,7 +104,7 @@ public class JaxClientApplicationTests extends AbstractTestClient {
 		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
 		ApiResponse<CustomerModel> response = null;
 		try {
-			response = client.saveCredentials("289072104474", "amx@123", otp,null, null);
+			response = client.saveCredentials("289072104474", "amx@123", otp, null, null);
 		} catch (AlreadyExistsException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -110,8 +112,8 @@ public class JaxClientApplicationTests extends AbstractTestClient {
 		logger.info("response of testsavecustapi:" + util.marshall(response));
 		assertNotNull("Response is null", response);
 	}
-	
-	//@Test
+
+	// @Test
 	public void testSaveCustomerApiWithEmail() throws IOException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
@@ -133,7 +135,7 @@ public class JaxClientApplicationTests extends AbstractTestClient {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
 		jaxMetaInfo.setCustomerId(new BigDecimal(309945));
-		ApiResponse<BooleanResponse> response = client.updatePassword("Amx@123456", otp, null);
+		AmxApiResponse<BoolRespModel, Object> response = client.updatePassword("Amx@123456", otp, null);
 		logger.info("response of updatepasswordapi:" + util.marshall(response));
 		assertNotNull("Response is null", response);
 		assertNotNull("\"Response is null", response.getResult());
@@ -146,55 +148,58 @@ public class JaxClientApplicationTests extends AbstractTestClient {
 		this.testSendotpapi();
 		this.updatepasswordapi();
 	}
-	
-	//@Test
-	public void saveSecurityQuestions() throws IncorrectInputException, CustomerValidationException, LimitExeededException {
+
+	// @Test
+	public void saveSecurityQuestions()
+			throws IncorrectInputException, CustomerValidationException, LimitExeededException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
 		jaxMetaInfo.setCustomerId(new BigDecimal(309945));
 		String mOtp = "381834";
-		
-		SecurityQuestionModel m0 =new SecurityQuestionModel(new BigDecimal(0),"test");
-		SecurityQuestionModel m1 =new SecurityQuestionModel(new BigDecimal(1),"test");
-		SecurityQuestionModel m2 =new SecurityQuestionModel(new BigDecimal(2),"test");
-		SecurityQuestionModel m3 =new SecurityQuestionModel(new BigDecimal(3),"test");
-		SecurityQuestionModel m4 =new SecurityQuestionModel(new BigDecimal(4),"test");
-		
+
+		SecurityQuestionModel m0 = new SecurityQuestionModel(new BigDecimal(0), "test");
+		SecurityQuestionModel m1 = new SecurityQuestionModel(new BigDecimal(1), "test");
+		SecurityQuestionModel m2 = new SecurityQuestionModel(new BigDecimal(2), "test");
+		SecurityQuestionModel m3 = new SecurityQuestionModel(new BigDecimal(3), "test");
+		SecurityQuestionModel m4 = new SecurityQuestionModel(new BigDecimal(4), "test");
+
 		List<SecurityQuestionModel> list = new ArrayList<SecurityQuestionModel>();
 		list.add(m0);
 		list.add(m1);
 		list.add(m2);
 		list.add(m3);
 		list.add(m4);
-		
-		ApiResponse<CustomerModel> response = client.saveSecurityQuestions(list, mOtp,null);
+
+		ApiResponse<CustomerModel> response = client.saveSecurityQuestions(list, mOtp, null);
 		logger.info("response of updatepasswordapi:" + util.marshall(response));
 		assertNotNull("Response is null", response);
 		assertNotNull("\"Response is null", response.getResult());
 	}
-	
-	//@Test
-	public void sendOtpForEmailUpdate() throws IncorrectInputException, CustomerValidationException, LimitExeededException {
+
+	// @Test
+	public void sendOtpForEmailUpdate()
+			throws IncorrectInputException, CustomerValidationException, LimitExeededException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
 		jaxMetaInfo.setCustomerId(new BigDecimal(309945));
 		String email = "viki.sangani@gmail.com";
-		
+
 		ApiResponse<CivilIdOtpModel> response = client.sendOtpForEmailUpdate(email);
 		logger.info("response of updatepasswordapi:" + util.marshall(response));
 		assertNotNull("Response is null", response);
 		assertNotNull("\"Response is null", response.getResult());
 	}
-	
+
 	@Test
-	public void sendOtpForMobileUpdate() throws IncorrectInputException, CustomerValidationException, LimitExeededException {
+	public void sendOtpForMobileUpdate()
+			throws IncorrectInputException, CustomerValidationException, LimitExeededException {
 		setBahrainDefaults();
 		String mobile = "9920027200";
-		
+
 		ApiResponse<CivilIdOtpModel> response = client.sendOtpForMobileUpdate(mobile);
 		logger.info("response of updatepasswordapi:" + util.marshall(response));
 		assertNotNull("Response is null", response);
 		assertNotNull("\"Response is null", response.getResult());
 	}
-	
+
 }

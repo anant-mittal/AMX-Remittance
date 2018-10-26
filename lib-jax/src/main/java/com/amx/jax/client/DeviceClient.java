@@ -17,7 +17,6 @@ import com.amx.jax.model.response.DeviceDto;
 import com.amx.jax.model.response.DevicePairOtpResponse;
 import com.amx.jax.model.response.DeviceStatusInfoDto;
 import com.amx.jax.rest.RestService;
-import com.amx.jax.swagger.IStatusCodeListPlugin.ApiStatusService;
 
 @Component
 public class DeviceClient implements IDeviceService {

@@ -8,10 +8,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.amx.jax.AppConstants;
-import com.amx.jax.def.MockParamBuilder;
-import com.amx.jax.def.MockParamBuilder.MockParam;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.scope.TenantContextHolder;
+import com.amx.jax.swagger.MockParamBuilder.MockParam;
 
 import springfox.documentation.builders.ParameterBuilder;
 import springfox.documentation.builders.RequestHandlerSelectors;

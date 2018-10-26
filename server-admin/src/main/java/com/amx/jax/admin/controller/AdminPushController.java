@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.amxlib.model.CustomerNotificationDTO;
 import com.amx.jax.client.JaxPushNotificationClient;
 import com.amx.jax.dict.BranchesBHR;
 import com.amx.jax.dict.BranchesKWT;
@@ -19,6 +20,7 @@ import com.amx.jax.dict.Nations;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.client.PushNotifyClient;
+import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.task.events.PromoNotifyTask;
 import com.amx.jax.tunnel.TunnelService;
 
@@ -32,10 +34,7 @@ public class AdminPushController {
 	private Logger logger = Logger.getLogger(AdminPushController.class);
 
 	@Autowired
-	PushNotifyClient pushNotifyClient;
-
-	@Autowired
-	JaxPushNotificationClient notificationClient;
+	private PushNotifyClient pushNotifyClient;
 
 	@RequestMapping(value = "/pub/list/tenant", method = RequestMethod.POST)
 	public List<Tenant> listOfTenants() throws PostManException, InterruptedException, ExecutionException {
