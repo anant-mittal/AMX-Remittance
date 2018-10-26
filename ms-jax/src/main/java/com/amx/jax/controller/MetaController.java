@@ -43,7 +43,6 @@ import com.amx.jax.dbmodel.PrefixModel;
 import com.amx.jax.dbmodel.PurposeOfRemittanceViewModel;
 import com.amx.jax.dbmodel.UserFinancialYear;
 import com.amx.jax.dbmodel.ViewOnlineEmailMobileCheck;
-import com.amx.jax.dbmodel.meta.PaygErrorMaster;
 import com.amx.jax.manager.JaxNotificationManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.service.ApplicationCountryService;
@@ -59,7 +58,6 @@ import com.amx.jax.service.FinancialService;
 import com.amx.jax.service.MetaService;
 import com.amx.jax.service.MultiCountryService;
 import com.amx.jax.service.ParameterService;
-import com.amx.jax.service.PayGErrorService;
 import com.amx.jax.service.PrefixService;
 import com.amx.jax.service.PurposeOfRemittanceService;
 import com.amx.jax.service.QuestionAnswerService;
@@ -153,9 +151,6 @@ public class MetaController {
 
 	@Autowired
 	BranchDetailService branchDetailService;
-
-	@Autowired
-	PayGErrorService payGErrorService;
 
 	@RequestMapping(value = MetaApi.API_COUNTRY, method = RequestMethod.GET)
 	public AmxApiResponse<CountryMasterView, Object> getCountryListResponse() {
