@@ -7,6 +7,7 @@ import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.ResponseErrorHandler;
 
+import com.amx.jax.AppConstants;
 import com.amx.jax.exception.AmxApiError;
 import com.amx.jax.exception.AmxApiException;
 import com.amx.jax.exception.AmxHttpExceptions.AmxHttpClientException;
@@ -25,8 +26,12 @@ public class AppClientErrorHanlder implements ResponseErrorHandler {
 		if (response.getStatusCode() != HttpStatus.OK) {
 			return true;
 		}
-		String apiErrorJson = (String) response.getHeaders().getFirst("apiErrorJson");
+		String apiErrorJson = (String) response.getHeaders().getFirst(AppConstants.ERROR_HEADER_KEY);
 		if (!ArgUtil.isEmpty(apiErrorJson)) {
+			return true;
+		}
+		Object hasExceptionHeader = response.getHeaders().getFirst(AppConstants.EXCEPTION_HEADER_KEY);
+		if (!ArgUtil.isEmpty(hasExceptionHeader)) {
 			return true;
 		}
 		return false;
@@ -37,14 +42,16 @@ public class AppClientErrorHanlder implements ResponseErrorHandler {
 
 		HttpStatus statusCode = response.getStatusCode();
 		String statusText = response.getStatusText();
-		String apiErrorJson = ArgUtil.parseAsString(response.getHeaders().getFirst("apiErrorJson"));
+		String apiErrorJson = ArgUtil.parseAsString(response.getHeaders().getFirst(AppConstants.ERROR_HEADER_KEY));
 		AmxApiError apiError = throwError(apiErrorJson);
 
 		if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
 			throw new AmxHttpNotFoundException(statusCode);
 		}
 
-		if (response.getStatusCode().series() == HttpStatus.Series.SERVER_ERROR) {
+		boolean hasExceptionHeader = !ArgUtil.isEmpty(response.getHeaders().getFirst(AppConstants.EXCEPTION_HEADER_KEY));
+
+		if (response.getStatusCode().series() == HttpStatus.Series.SERVER_ERROR || hasExceptionHeader) {
 			String body = IoUtils.inputstream_to_string(response.getBody());
 			apiError = throwError(body);
 			throw new AmxHttpServerException(statusCode, apiError);

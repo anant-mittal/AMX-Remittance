@@ -16,7 +16,6 @@ public class JaxProperties {
 
 	@Value("${jax.properties.cash.disable}")
 	Boolean cashDisable;
-	
 
 	@Value("${jax.properties.bene.threecountrycheck.enable}")
 	Boolean beneThreeCountryCheck;

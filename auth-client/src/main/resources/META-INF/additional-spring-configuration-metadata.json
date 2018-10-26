@@ -1,5 +1,0 @@
-{"properties": [{
-  "name": "spservice.url",
-  "type": "java.lang.String",
-  "description": "URL for sp server"
-}]}

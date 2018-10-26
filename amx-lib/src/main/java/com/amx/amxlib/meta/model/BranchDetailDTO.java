@@ -28,6 +28,7 @@ public class BranchDetailDTO implements Serializable {
 	private String country;
 	private String postalCode;
 	private String branchTiming;
+	private BigDecimal countryBranchId;
 
 	public BranchDetailDTO() {
 		super();
@@ -151,6 +152,14 @@ public class BranchDetailDTO implements Serializable {
 
 	public void setBranchTiming(String branchTiming) {
 		this.branchTiming = branchTiming;
+	}
+
+	public BigDecimal getCountryBranchId() {
+		return countryBranchId;
+	}
+
+	public void setCountryBranchId(BigDecimal countryBranchId) {
+		this.countryBranchId = countryBranchId;
 	}
 	
 }

@@ -29,7 +29,7 @@ import com.fss.plugin.iPayPipe;
 public class OmannetClient implements PayGClient {
 
 	private static final Logger LOGGER = Logger.getLogger(OmannetClient.class);
-
+	
 	@Value("${omannet.certificate.path}")
 	String OmemnetCertpath;
 
@@ -44,22 +44,23 @@ public class OmannetClient implements PayGClient {
 
 	@Value("${omannet.language.code}")
 	String OmemnetLanguageCode;
-
+		
 	@Value("${omannet.callback.url}")
 	String OmemnetCallbackUrl;
 
+	
 	@Autowired
 	HttpServletResponse response;
 
 	@Autowired
 	HttpServletRequest request;
-
+	
 	@Autowired
 	PayGConfig payGConfig;
-
+	
 	@Autowired
 	private PaymentService paymentService;
-
+	
 	@Override
 	public PayGServiceCode getClientCode() {
 		return PayGServiceCode.OMANNET;
@@ -67,23 +68,23 @@ public class OmannetClient implements PayGClient {
 
 	@Override
 	public void initialize(PayGParams payGParams) {
-
-		Map<String, Object> configMap = new HashMap<String, Object>();
-
+		
+	 Map<String, Object> configMap = new HashMap<String, Object>();
+	 
 		configMap.put("action", OmemnetAction);
 		configMap.put("currency", OmemnetCurrency);
 		configMap.put("languageCode", OmemnetLanguageCode);
 		configMap.put("responseUrl", OmemnetCallbackUrl + "/app/capture/OMANNET/" + payGParams.getTenant() + "/"
 				+ payGParams.getChannel() + "/");
-		// configMap.put("responseUrl",
-		// OmemnetCallbackUrl+"/app/capture/OMANNET/" + payGParams.getTenant() + "/");
+//		configMap.put("responseUrl",
+//				OmemnetCallbackUrl+"/app/capture/OMANNET/" + payGParams.getTenant() + "/");
 		configMap.put("resourcePath", OmemnetCertpath);
 		configMap.put("keystorePath", OmemnetCertpath);
 		configMap.put("aliasName", OmemnetAliasName);
 
 		LOGGER.info("Oman omannet payment configuration : " + JsonUtil.toJson(configMap));
 
-		iPayPipe pipe = new iPayPipe();
+		iPayPipe pipe = new iPayPipe();	
 		HashMap<String, String> responseMap = new HashMap<String, String>();
 
 		try {
@@ -92,7 +93,7 @@ public class OmannetClient implements PayGClient {
 			pipe.setCurrency((String) configMap.get("currency"));
 			pipe.setLanguage((String) configMap.get("languageCode"));
 			pipe.setResponseURL((String) configMap.get("responseUrl"));
-			pipe.setErrorURL((String) configMap.get("responseUrl"));
+		    pipe.setErrorURL((String) configMap.get("responseUrl"));
 			pipe.setResourcePath((String) configMap.get("resourcePath"));
 			pipe.setKeystorePath((String) configMap.get("keystorePath"));
 			pipe.setAlias((String) configMap.get("aliasName"));
@@ -109,19 +110,19 @@ public class OmannetClient implements PayGClient {
 				LOGGER.debug(pipe.getDebugMsg());
 				throw new RuntimeException("Problem while sending transaction to Oman.");
 			}
-			LOGGER.info("Generated web address is ---> " + pipe.getWebAddress());
-			payGParams.setRedirectUrl(pipe.getWebAddress());
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new RuntimeException(e);
-		}
-
+			LOGGER.info("Generated web address is ---> "+pipe.getWebAddress());
+			payGParams.setRedirectUrl( pipe.getWebAddress());
+		
+	    } catch (Exception e) {
+		e.printStackTrace();
+		throw new RuntimeException(e);
+	    }
+		
 	}
 
 	@SuppressWarnings("finally")
 	@Override
-	public PayGResponse capture(PayGResponse gatewayResponse, Channel channel) {
+	public PayGResponse capture(PayGResponse gatewayResponse,Channel channel) {
 
 		// Capturing GateWay Response
 		gatewayResponse.setPaymentId(request.getParameter("paymentid"));
@@ -134,18 +135,18 @@ public class OmannetClient implements PayGClient {
 		gatewayResponse.setUdf5(request.getParameter("udf5"));
 		gatewayResponse.setCountryId(Tenant.OMN.getCode());
 
-		iPayPipe pipe = new iPayPipe();
-		// Initialization
-		pipe.setResourcePath(OmemnetCertpath);
+		iPayPipe pipe = new iPayPipe(); 
+		//Initialization 
+		pipe.setResourcePath(OmemnetCertpath); 
 		pipe.setKeystorePath(OmemnetCertpath);
-		pipe.setAlias(OmemnetAliasName);
-
+		pipe.setAlias(OmemnetAliasName); 
+		 
 		String errorText = request.getParameter("ErrorText");
-		String tranresult = request.getParameter("result");
+	    String tranresult = request.getParameter("result"); 
 		String tranData = request.getParameter("trandata");
-		LOGGER.info("tranData : " + tranData);
-		int result = 0;
-
+	    LOGGER.info("tranData : " +tranData);
+		int result = 0; 
+		
 		if (tranData != null) {
 			result = pipe.parseEncryptedRequest(request.getParameter("trandata"));
 		}
@@ -172,14 +173,18 @@ public class OmannetClient implements PayGClient {
 			gatewayResponse.setTranxId(pipe.getTransId());
 			gatewayResponse.setUdf3(pipe.getUdf3());
 			gatewayResponse.setPaymentId(pipe.getPaymentId());
-			if (resultResponse.equals("CAPTURED")) {
+			if (resultResponse.equals("CAPTURED") || resultResponse.equals("NOT CAPTURED")) {
 				gatewayResponse.setError(pipe.getError());
 				gatewayResponse.setErrorText(pipe.getError_text());
+				gatewayResponse.setResult(resultResponse);
+			} else if (resultResponse.contains("cancelled")) {
+				gatewayResponse.setResult("CANCELLED");
 			} else {
 				gatewayResponse.setError(pipe.getResult());
 				gatewayResponse.setErrorText(pipe.getResult());
+				gatewayResponse.setResult("NOT CAPTURED");
 			}
-
+	
 			LOGGER.info("resultResponse ---> " + resultResponse);
 			OmanNetCodes statusCode = (OmanNetCodes) PayGCodes.getPayGCode(resultResponse, OmanNetCodes.UNKNOWN);
 			gatewayResponse.setErrorCategory(statusCode.getCategory());
@@ -187,15 +192,15 @@ public class OmannetClient implements PayGClient {
 			LOGGER.info("Result from response Values ---> " + gatewayResponse.getErrorCategory());
 			gatewayResponse.setError(resultResponse);
 		}
-
+		 
 		LOGGER.info("Params captured from OMANNET : " + JsonUtil.toJson(gatewayResponse));
 
 		if (channel.equals(Channel.ONLINE)) {
-			PaymentResponseDto resdto = paymentService.capturePayment(gatewayResponse);
-			// Capturing JAX Response
-			gatewayResponse.setCollectionFinYear(resdto.getCollectionFinanceYear().toString());
-			gatewayResponse.setCollectionDocCode(resdto.getCollectionDocumentCode().toString());
-			gatewayResponse.setCollectionDocNumber(resdto.getCollectionDocumentNumber().toString());
+	        PaymentResponseDto resdto = paymentService.capturePayment(gatewayResponse);
+	        // Capturing JAX Response
+	        gatewayResponse.setCollectionFinYear(resdto.getCollectionFinanceYear().toString());
+	        gatewayResponse.setCollectionDocCode(resdto.getCollectionDocumentCode().toString());
+	        gatewayResponse.setCollectionDocNumber(resdto.getCollectionDocumentNumber().toString());  
 		}
 
 		if ("CAPTURED".equalsIgnoreCase(gatewayResponse.getResult())) {
@@ -207,5 +212,5 @@ public class OmannetClient implements PayGClient {
 		}
 		return gatewayResponse;
 	}
-
+	
 }

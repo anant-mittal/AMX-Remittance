@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.amx.amxlib.model.PlaceOrderNotificationDTO;
+import com.amx.jax.client.JaxPushNotificationClient;
 import com.amx.jax.client.PlaceOrderClient;
 import com.amx.jax.event.AmxTunnelEvents;
 import com.amx.jax.postman.PostManException;
@@ -19,22 +20,22 @@ import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.postman.model.TemplatesMX;
-import com.amx.jax.tunnel.ITunnelEvent;
 import com.amx.jax.tunnel.ITunnelSubscriber;
+import com.amx.jax.tunnel.TunnelEvent;
 import com.amx.jax.tunnel.TunnelEventMapping;
 import com.amx.jax.tunnel.TunnelEventXchange;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;
 
 @TunnelEventMapping(topic = AmxTunnelEvents.Names.XRATE_BEST_RATE_CHANGE, scheme = TunnelEventXchange.TASK_WORKER)
-public class PlaceOrderListner implements ITunnelSubscriber<ITunnelEvent> {
+public class PlaceOrderListner implements ITunnelSubscriber<TunnelEvent> {
 
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
 	public static final String PIPSMASTERID = "PIPS_MASTER_ID";
 
 	@Override
-	public void onMessage(String channel, ITunnelEvent event) {
+	public void onMessage(String channel, TunnelEvent event) {
 		LOGGER.info("======onMessage1==={} ====  {}", channel, JsonUtil.toJson(event));
 		BigDecimal pipsMasterId = ArgUtil.parseAsBigDecimal(event.getData().get(PIPSMASTERID));
 		this.rateAlertPlaceOrder(pipsMasterId);
@@ -62,12 +63,16 @@ public class PlaceOrderListner implements ITunnelSubscriber<ITunnelEvent> {
 	@Autowired
 	private PushNotifyClient pushNotifyClient;
 
+	@Autowired
+	JaxPushNotificationClient notificationClient;
+
 	public void sendBatchNotification(List<PlaceOrderNotificationDTO> placeorderNotDTO) {
 
 		List<Email> emailList = new ArrayList<Email>();
 		List<PushMessage> notificationsList = new ArrayList<PushMessage>();
 		for (PlaceOrderNotificationDTO placeorderNot : placeorderNotDTO) {
 			LOGGER.info("Sending rate alert to " + placeorderNot.getEmail());
+
 			Email email = new Email();
 			email.setSubject("AMX Rate Alert");
 			email.addTo(placeorderNot.getEmail());
@@ -75,11 +80,13 @@ public class PlaceOrderListner implements ITunnelSubscriber<ITunnelEvent> {
 			email.setHtml(true);
 			email.getModel().put(RESP_DATA_KEY, placeorderNot);
 			emailList.add(email);
+
 			PushMessage pushMessage = new PushMessage();
 			pushMessage.setITemplate(TemplatesMX.RATE_ALERT);
 			pushMessage.addToUser(placeorderNot.getCustomerId());
 			pushMessage.getModel().put(RESP_DATA_KEY, placeorderNot);
 			notificationsList.add(pushMessage);
+
 		}
 		try {
 			postManClient.sendEmailBulk(emailList);

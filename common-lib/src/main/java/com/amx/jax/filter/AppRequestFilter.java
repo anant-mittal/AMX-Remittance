@@ -50,7 +50,7 @@ public class AppRequestFilter implements Filter {
 	private boolean doesTokenMatch(HttpServletRequest req, HttpServletResponse resp, String traceId) {
 		String authToken = req.getHeader(AppConstants.AUTH_KEY_XKEY);
 		if (StringUtils.isEmpty(authToken)
-				|| (CryptoUtil.validateHMAC(appConfig.getAppAuthKey(), authToken, traceId) == false)) {
+				|| (CryptoUtil.validateHMAC(appConfig.getAppAuthKey(), traceId, authToken) == false)) {
 			return false;
 		}
 		return true;

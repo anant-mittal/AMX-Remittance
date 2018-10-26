@@ -1,6 +1,5 @@
 package com.amx.jax.branch.controller;
 
-import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -13,16 +12,15 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.amx.amxlib.model.CustomerNotificationDTO;
 import com.amx.jax.api.AmxApiResponse;
-import com.amx.jax.client.JaxPushNotificationClient;
 import com.amx.jax.dict.BranchesBHR;
 import com.amx.jax.dict.BranchesKWT;
 import com.amx.jax.dict.Nations;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.client.PushNotifyClient;
-import com.amx.jax.postman.model.PushMessage;
+import com.amx.jax.task.events.PromoNotifyTask;
+import com.amx.jax.tunnel.TunnelService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
@@ -34,10 +32,10 @@ public class PushController {
 	private Logger logger = Logger.getLogger(PushController.class);
 
 	@Autowired
-	PushNotifyClient pushNotifyClient;
+	private PushNotifyClient pushNotifyClient;
 
 	@Autowired
-	JaxPushNotificationClient notificationClient;
+	private TunnelService tunnelService;
 
 	@RequestMapping(value = "/pub/list/tenant", method = RequestMethod.POST)
 	public List<Tenant> listOfTenants() throws PostManException, InterruptedException, ExecutionException {
@@ -62,46 +60,29 @@ public class PushController {
 	}
 
 	@RequestMapping(value = "/api/notify/all", method = RequestMethod.POST)
-	public AmxApiResponse<PushMessage, Object> notifyAll(
+	public AmxApiResponse<PromoNotifyTask, Object> notifyAll(
 			@ApiParam(required = true, allowableValues = "KWT,BHR", value = "Select Tenant") @RequestParam Tenant tenant,
 			@RequestParam String message, @RequestParam String title) throws PostManException {
-		PushMessage msg = new PushMessage();
-		msg.setMessage(message);
-		msg.setSubject(title);
-		msg.addTopic(String.format(PushMessage.FORMAT_TO_ALL, tenant.toString().toLowerCase()));
 
-		CustomerNotificationDTO customerNotification = new CustomerNotificationDTO();
-		customerNotification.setMessage(message);
-		customerNotification.setTitle(title);
-		notificationClient.save(customerNotification);
-
-		return pushNotifyClient.sendDirect(msg);
-	} 
+		PromoNotifyTask task = new PromoNotifyTask();
+		task.setNationality(Nations.ALL);
+		task.setTitle(title);
+		task.setMessage(message);
+		tunnelService.task(task);
+		return AmxApiResponse.build(task);
+	}
 
 	@RequestMapping(value = "/api/notify/nationality", method = RequestMethod.POST)
-	public AmxApiResponse<PushMessage, Object> notifyNational(
+	public AmxApiResponse<PromoNotifyTask, Object> notifyNational(
 			@ApiParam(required = true, allowableValues = "KWT,BHR", value = "Select Tenant") @RequestParam Tenant tenant,
 			@RequestParam Nations nationality, @RequestParam String message, @RequestParam String title)
 			throws PostManException {
-		PushMessage msg = new PushMessage();
-		msg.setMessage(message);
-		msg.setSubject(title);
-
-		CustomerNotificationDTO customerNotification = new CustomerNotificationDTO();
-		customerNotification.setMessage(message);
-		customerNotification.setTitle(title);
-
-		if (nationality == Nations.ALL) {
-			msg.addTopic(String.format(PushMessage.FORMAT_TO_ALL, tenant.toString().toLowerCase()));
-			customerNotification.setCountryId(tenant.getBDCode());
-		} else {
-			msg.addTopic(String.format(PushMessage.FORMAT_TO_NATIONALITY, tenant.toString().toLowerCase(),
-					nationality.getCode()));
-			customerNotification.setNationalityId(new BigDecimal(nationality.getCode()));
-		}
-		notificationClient.save(customerNotification);
-
-		return pushNotifyClient.sendDirect(msg);
+		PromoNotifyTask task = new PromoNotifyTask();
+		task.setNationality(nationality);
+		task.setTitle(title);
+		task.setMessage(message);
+		tunnelService.task(task);
+		return AmxApiResponse.build(task);
 	}
 
 	@RequestMapping(value = "/api/subscribe/{topic}", method = RequestMethod.POST)
@@ -112,4 +93,3 @@ public class PushController {
 	}
 
 }
-

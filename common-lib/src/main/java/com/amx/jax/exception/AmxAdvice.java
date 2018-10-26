@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import com.amx.jax.AppConstants;
 import com.amx.jax.api.AmxFieldError;
 import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.logger.LoggerService;
@@ -31,15 +32,16 @@ public abstract class AmxAdvice {
 	@ResponseBody
 	public ResponseEntity<AmxApiError> handle(AmxApiException ex, HttpServletRequest request,
 			HttpServletResponse response) {
-		AmxApiError error = ex.createAmxApiError();
-		error.setException(ex.getClass().getName());
-		error.setStatusEnum(ex.getError());
-		error.setMeta(ex.getMeta());
+		AmxApiError apiError = ex.createAmxApiError();
+		apiError.setException(ex.getClass().getName());
+		apiError.setStatusEnum(ex.getError());
+		apiError.setMeta(ex.getMeta());
 		alert(ex);
-		return new ResponseEntity<AmxApiError>(error, getHttpStatus(ex));
+		response.setHeader(AppConstants.EXCEPTION_HEADER_KEY, apiError.getException());
+		return new ResponseEntity<AmxApiError>(apiError, getHttpStatus(ex));
 	}
 
-	private HttpStatus getHttpStatus(AmxApiException exp) {
+	public HttpStatus getHttpStatus(AmxApiException exp) {
 		return exp.getHttpStatus();
 	}
 
@@ -59,6 +61,7 @@ public abstract class AmxAdvice {
 		apiError.setHttpStatus(HttpStatus.BAD_REQUEST);
 		apiError.setErrors(errors);
 		apiError.setException(ex.getClass().getName());
+		response.setHeader(AppConstants.EXCEPTION_HEADER_KEY, apiError.getException());
 		return new ResponseEntity<AmxApiError>(apiError, HttpStatus.BAD_REQUEST);
 	}
 
@@ -87,12 +90,9 @@ public abstract class AmxAdvice {
 	/**
 	 * Handle.
 	 *
-	 * @param ex
-	 *            the ex
-	 * @param request
-	 *            the request
-	 * @param response
-	 *            the response
+	 * @param ex       the ex
+	 * @param request  the request
+	 * @param response the response
 	 * @return the response entity
 	 */
 	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
@@ -111,8 +111,7 @@ public abstract class AmxAdvice {
 	/**
 	 * Handle.
 	 *
-	 * @param exception
-	 *            the exception
+	 * @param exception the exception
 	 * @return the response entity
 	 */
 	@ExceptionHandler(ConstraintViolationException.class)

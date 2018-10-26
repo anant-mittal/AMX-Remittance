@@ -12,30 +12,102 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.client.DeviceClient;
+import com.amx.jax.client.IDeviceService;
 import com.amx.jax.device.CardData;
 import com.amx.jax.device.CardReader;
 import com.amx.jax.device.DeviceConstants;
+import com.amx.jax.device.DeviceRestModels;
+import com.amx.jax.device.DeviceRestModels.DevicePairingRequest;
+import com.amx.jax.device.DeviceRestModels.DevicePairingResponse;
+import com.amx.jax.device.DeviceRestModels.SessionPairingResponse;
+import com.amx.jax.dict.UserClient.ClientType;
+import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.logger.LoggerService;
-import com.amx.jax.offsite.OffsiteMvcConfig.CardBox;
-import com.amx.jax.offsite.device.DevicePairingModels.DeviceReqResp;
-import com.amx.jax.offsite.device.DevicePairingModels.PairingRequest;
-import com.amx.jax.offsite.device.DevicePairingModels.PairingResponse;
+import com.amx.jax.model.request.DeviceRegistrationRequest;
+import com.amx.jax.model.response.DeviceDto;
+import com.amx.jax.model.response.DevicePairOtpResponse;
+import com.amx.jax.model.response.DeviceStatusInfoDto;
+import com.amx.jax.offsite.OffsiteStatus.ApiOffisteStatus;
+import com.amx.jax.offsite.OffsiteStatus.OffsiteServerCodes;
+import com.amx.jax.offsite.OffsiteStatus.OffsiteServerError;
+import com.amx.jax.offsite.device.DeviceConfigs.CardBox;
+import com.amx.jax.swagger.IStatusCodeListPlugin.ApiStatusService;
 import com.amx.utils.ArgUtil;
 
 import io.swagger.annotations.Api;
 
 @RestController
 @Api(value = "Device APIs")
+@ApiStatusService(IDeviceService.class)
 public class DeviceController {
 
 	private static final Logger LOGGER = LoggerService.getLogger(DeviceController.class);
 
 	@Autowired
-	CardBox cardBox;
+	private DeviceClient deviceClient;
 
-	@RequestMapping(value = { DeviceConstants.DEVICE_INFO_URL }, method = { RequestMethod.POST })
+	@Autowired
+	private CommonHttpRequest commonHttpRequest;
+
+	@Autowired
+	private DeviceRequest deviceRequestValidator;
+
+	@Autowired
+	private CardBox cardBox;
+
+	@ApiOffisteStatus({ OffsiteServerCodes.DEVICE_NOT_REGISTERED })
+	@RequestMapping(value = { DeviceConstants.Path.DEVICE_PAIR }, method = { RequestMethod.POST })
+	public AmxApiResponse<DevicePairingResponse, Object> registerNewDevice(@RequestBody DevicePairingRequest req) {
+
+		String deivceTerminalId = req.getDeivceTerminalId();
+		ClientType deivceClientType = req.getDeivceClientType();
+
+		if (ArgUtil.isEmpty(deivceTerminalId) || ArgUtil.isEmpty(deivceClientType)) {
+			throw new OffsiteServerError(OffsiteServerCodes.DEVICE_NOT_REGISTERED);
+		}
+
+		// validate Device with jax
+		DeviceRegistrationRequest deviceRegistrationRequest = new DeviceRegistrationRequest();
+		deviceRegistrationRequest.setDeviceType(deivceClientType);
+		deviceRegistrationRequest.setBranchSystemIp(deivceTerminalId);
+		deviceRegistrationRequest.setDeviceId(commonHttpRequest.getDeviceId());
+		DeviceDto deviceDto = deviceClient.registerNewDevice(deviceRegistrationRequest).getResult();
+
+		DevicePairingResponse creds = DeviceRestModels.get();
+		creds.setDeviceRegToken(deviceDto.getPairToken());
+		creds.setDeviceRegKey(ArgUtil.parseAsString(deviceDto.getRegistrationId()));
+		return AmxApiResponse.build(creds);
+	}
+
+	@ApiDeviceHeaders
+	@ApiOffisteStatus({ OffsiteServerCodes.DEVICE_CREDS_MISSING })
+	@RequestMapping(value = { DeviceConstants.Path.SESSION_PAIR }, method = { RequestMethod.GET })
+	public AmxApiResponse<SessionPairingResponse, Object> sendOtpForPairing() {
+		String deviceRegKey = commonHttpRequest.get(DeviceConstants.Keys.DEVICE_REG_KEY_XKEY);
+		String deviceRegToken = commonHttpRequest.get(DeviceConstants.Keys.DEVICE_REG_TOKEN_XKEY);
+
+		if (ArgUtil.isEmpty(deviceRegKey) || ArgUtil.isEmpty(deviceRegToken)) {
+			throw new OffsiteServerError(OffsiteServerCodes.DEVICE_CREDS_MISSING);
+		}
+
+		DevicePairOtpResponse resp = deviceClient
+				.sendOtpForPairing(ArgUtil.parseAsInteger(deviceRegKey), deviceRegToken).getResult();
+		SessionPairingResponse creds = deviceRequestValidator.validate(resp.getSessionPairToken(), resp.getOtp());
+		return AmxApiResponse.build(creds);
+	}
+
+	@ApiDeviceHeaders
+	@RequestMapping(value = { DeviceConstants.Path.DEVICE_STATUS_ACTIVITY }, method = { RequestMethod.GET })
+	public AmxApiResponse<DeviceStatusInfoDto, Object> getStatus() {
+		return deviceClient.getStatus(ArgUtil.parseAsInteger(deviceRequestValidator.getDeviceRegKey()),
+				deviceRequestValidator.getDeviceRegToken(), deviceRequestValidator.getDeviceSessionToken());
+	}
+
+	@ApiDeviceHeaders
+	@RequestMapping(value = { DeviceConstants.Path.DEVICE_STATUS_CARD }, method = { RequestMethod.POST })
 	public AmxApiResponse<CardData, Object> saveCardDetails(@RequestBody CardReader reader,
-			@PathVariable(value = DeviceConstants.PARAM_SYSTEM_ID) String systemid) {
+			@PathVariable(value = DeviceConstants.Params.PARAM_SYSTEM_ID) String systemid) {
 		if (ArgUtil.isEmpty(reader.getData())) {
 			cardBox.fastRemove(systemid);
 		} else {
@@ -44,9 +116,9 @@ public class DeviceController {
 		return AmxApiResponse.build(reader.getData());
 	}
 
-	@RequestMapping(value = { DeviceConstants.DEVICE_INFO_URL }, method = { RequestMethod.GET })
+	@RequestMapping(value = { DeviceConstants.Path.DEVICE_STATUS_CARD }, method = { RequestMethod.GET })
 	public AmxApiResponse<CardData, Object> getCardDetails(
-			@PathVariable(value = DeviceConstants.PARAM_SYSTEM_ID) String systemid,
+			@PathVariable(value = DeviceConstants.Params.PARAM_SYSTEM_ID) String systemid,
 			@RequestParam(required = false) Boolean wait, @RequestParam(required = false) Boolean flush)
 			throws InterruptedException {
 		wait = ArgUtil.parseAsBoolean(wait, Boolean.FALSE);
@@ -62,11 +134,6 @@ public class DeviceController {
 			cardBox.fastRemove(systemid);
 		}
 		return AmxApiResponse.build(data);
-	}
-
-	@RequestMapping(value = { DeviceConstants.DEVICE_PAIR }, method = { RequestMethod.POST })
-	public AmxApiResponse<PairingResponse, Object> pairDevice(@RequestBody PairingRequest req) {
-		return AmxApiResponse.build(new DeviceReqResp());
 	}
 
 }

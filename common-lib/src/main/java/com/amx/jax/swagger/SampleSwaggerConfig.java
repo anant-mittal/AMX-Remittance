@@ -8,10 +8,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.amx.jax.AppConstants;
-import com.amx.jax.def.MockParamBuilder;
-import com.amx.jax.def.MockParamBuilder.MockParam;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.scope.TenantContextHolder;
+import com.amx.jax.swagger.MockParamBuilder.MockParam;
 
 import springfox.documentation.builders.ParameterBuilder;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -50,7 +49,7 @@ public class SampleSwaggerConfig {
 			Parameter parameter = new ParameterBuilder().name(mockParam.getName())
 					.description(mockParam.getDescription()).defaultValue(mockParam.getDefaultValue())
 					.modelRef(new ModelRef(PARAM_STRING)).parameterType(mockParam.getType().toString().toLowerCase())
-					.allowableValues(allowableValues).required(true).build();
+					.allowableValues(allowableValues).required(mockParam.isRequired()).build();
 			operationParameters.add(parameter);
 		}
 

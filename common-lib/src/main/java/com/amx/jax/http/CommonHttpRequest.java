@@ -16,6 +16,7 @@ import org.springframework.web.util.WebUtils;
 
 import com.amx.jax.AppConfig;
 import com.amx.jax.AppConstants;
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.dict.Language;
 import com.amx.jax.dict.UserClient;
 import com.amx.jax.dict.UserClient.AppType;
@@ -27,6 +28,7 @@ import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
 import com.amx.utils.HttpUtils;
 
+import ch.qos.logback.core.util.ContextUtil;
 import eu.bitwalker.useragentutils.Browser;
 import eu.bitwalker.useragentutils.OperatingSystem;
 import eu.bitwalker.useragentutils.UserAgent;
@@ -109,6 +111,21 @@ public class CommonHttpRequest {
 			}
 		}
 		return deviceId;
+	}
+
+	public String get(String contextKey) {
+		String value = AppContextUtil.get(contextKey);
+		if (request != null) {
+			value = request.getHeader(contextKey);
+			if (ArgUtil.isEmpty(contextKey)) {
+				Cookie cookie = WebUtils.getCookie(request, contextKey);
+				if (cookie != null) {
+					value = cookie.getValue();
+				}
+			}
+			AppContextUtil.set(contextKey, value);
+		}
+		return value;
 	}
 
 	public void clearSessionCookie() {

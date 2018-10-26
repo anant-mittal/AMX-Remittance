@@ -35,7 +35,7 @@ public abstract class AmxApiException extends AmxException {
 		} catch (Exception e) {
 		}
 		this.errorKey = amxApiError.getErrorId();
-		this.errorMessage = amxApiError.getErrorMessage();
+		this.errorMessage = amxApiError.getMessage();
 	}
 
 	public AmxApiException(String errorMessage) {

@@ -115,7 +115,6 @@
 
 		<module>server-ui</module>
 		<module>server-offsite</module>
-		<module>server-staff</module>
 		<!-- <module>server-stomp</module> -->
 
 		<module>sw-adapter</module>
