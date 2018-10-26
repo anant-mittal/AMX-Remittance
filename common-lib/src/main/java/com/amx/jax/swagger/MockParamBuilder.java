@@ -1,8 +1,10 @@
-package com.amx.jax.def;
+package com.amx.jax.swagger;
 
 import java.util.List;
 
 public class MockParamBuilder {
+
+	public static final String HEADER_VALUE = "header";
 
 	public static enum MockParamType {
 		HEADER, COOKIE, BODY, QUERY
