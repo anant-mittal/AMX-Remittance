@@ -103,59 +103,56 @@ public class MetaController {
 
 	@Autowired
 	EmailMobileCheckService emailMobileCheckService;
-	
 
 	@Autowired
 	FinancialService financialService;
 	@Autowired
 	ParameterService parameterService;
-	
+
 	@Autowired
 	CompanyService companyService;
-	
+
 	@Autowired
 	MultiCountryService multiCountryService;
-	
+
 	@Autowired
 	ViewDistrictService districtService;
-	
+
 	@Autowired
 	ViewStateService stateService;
-	
+
 	@Autowired
 	MetaService metaService;
-	
+
 	@Autowired
 	MetaData metaData;
-	
+
 	@Autowired
 	CurrencyMasterService currencyMasterService;
-	
+
 	@Autowired
 	PurposeOfRemittanceService purposeOfRemittanceService;
-	
+
 	@Autowired
 	CollectionDetailViewService collectionDetailViewService;
-	
-	
+
 	@Autowired
 	CollectionPaymentDetailsViewService collectionPaymentDetailsViewService;
-	
+
 	@Autowired
 	BankMetaService bankMasterService;
-	
+
 	@Autowired
 	JaxNotificationManager jaxNotificationManager;
-	
+
 	@Autowired
 	BankBranchSearchRequestlValidator bankBranchSearchRequestlValidator;
-	
+
 	@Autowired
 	PrefixService prefixService;
-	
+
 	@Autowired
 	BranchDetailService branchDetailService;
-	
 
 	@Autowired
 	PayGErrorService payGErrorService;
@@ -163,16 +160,6 @@ public class MetaController {
 	@RequestMapping(value = MetaApi.API_COUNTRY, method = RequestMethod.GET)
 	public AmxApiResponse<CountryMasterView, Object> getCountryListResponse() {
 		return countryService.getCountryListResponse();
-	}	
-	
-	@RequestMapping(value = "/country/{languageId}", method = RequestMethod.GET)
-	public AmxApiResponse<CountryMasterView, Object> getCountryByLanguageIdResponse(@PathVariable("languageId") BigDecimal languageId) {
-		return countryService.getCountryListByLanguageIdResponse(languageId);
-	}	
-	
-	@RequestMapping(value = "/country/{languageId}/{countryId}", method = RequestMethod.GET)
-	public AmxApiResponse<CountryMasterView, Object> getCountryByLanguageIdAndCountryIdResponse(@PathVariable("languageId") BigDecimal languageId, @PathVariable("countryId") BigDecimal countryId) {
-		return countryService.getCountryByLanguageIdAndCountryIdResponse(languageId, countryId);
 	}
 
 	@RequestMapping(value = MetaApi.API_COUNTRY_BY_lANG_ID, method = RequestMethod.GET)
@@ -416,10 +403,10 @@ public class MetaController {
 			@PathVariable("countryBranchId") BigDecimal countryBranchId) {
 		return branchDetailService.getBranchSystemDetailResponse(countryBranchId);
 	}
-	
-	@Deprecated
+
+/*	@Deprecated
 	@RequestMapping(value = "/payg-error/", method = RequestMethod.GET)
 	public AmxApiResponse<PaygErrorMaster, Object> getPaygErrorList() {
 		return payGErrorService.getPaygErrorResponse();
-	}
+	}*/
 }

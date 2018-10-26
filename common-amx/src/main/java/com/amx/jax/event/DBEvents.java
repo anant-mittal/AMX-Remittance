@@ -1,8 +1,8 @@
 package com.amx.jax.event;
 
-import com.amx.jax.tunnel.ITunnelEvent;
+import com.amx.jax.tunnel.TunnelEvent;
 
-public class DBEvents extends ITunnelEvent {
+public class DBEvents extends TunnelEvent {
 	private static final long serialVersionUID = 1426912782817649062L;
 
 	private String priority;

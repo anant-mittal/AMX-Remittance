@@ -18,7 +18,7 @@ public @interface TunnelEventMapping {
 
 	String topic() default Constants.BLANK;
 
-	Class<?> byEvent() default ITunnelEvent.class;
+	Class<?> byEvent() default TunnelEvent.class;
 
 	boolean integrity() default true;
 
