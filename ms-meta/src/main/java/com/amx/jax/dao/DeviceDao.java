@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.config.JaxProperties;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constants.DeviceState;
 import com.amx.jax.dbmodel.BranchSystemDetail;
@@ -32,6 +33,8 @@ public class DeviceDao {
 	DeviceStateRepository deviceStateRepository;
 	@Autowired
 	CryptoUtil cryptoUtil;
+	@Autowired
+	JaxProperties jaxProperties ; 
 
 	public DeviceDto saveDevice(DeviceRegistrationRequest request) {
 
@@ -43,6 +46,9 @@ public class DeviceDao {
 		device.setDeviceId(request.getDeviceId());
 		device.setDeviceType(request.getDeviceType());
 		device.setStatus(ConstantDocument.No);
+		if (Boolean.TRUE.equals(jaxProperties.getDeviceAutoActivate())) {
+			device.setStatus(ConstantDocument.Yes);
+		}
 		deviceRepository.save(device);
 		DeviceDto dto = new DeviceDto();
 		try {
