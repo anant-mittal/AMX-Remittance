@@ -2,6 +2,8 @@ package com.amx.jax.offsite.device;
 
 import java.util.concurrent.TimeUnit;
 
+import javax.validation.Valid;
+
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -58,13 +60,14 @@ public class DeviceController {
 
 	@ApiOffisteStatus({ OffsiteServerCodes.DEVICE_UNKNOWN })
 	@RequestMapping(value = { DeviceConstants.Path.DEVICE_PAIR }, method = { RequestMethod.POST })
-	public AmxApiResponse<DevicePairingResponse, Object> registerNewDevice(@RequestBody DevicePairingRequest req) {
+	public AmxApiResponse<DevicePairingResponse, Object> registerNewDevice(
+			@Valid @RequestBody DevicePairingRequest req) {
 
 		String deivceTerminalId = req.getDeivceTerminalId();
 		ClientType deivceClientType = req.getDeivceClientType();
 
 		if (ArgUtil.isEmpty(deivceTerminalId) || ArgUtil.isEmpty(deivceClientType)) {
-			throw new OffsiteServerError(OffsiteServerCodes.DEVICE_UNKNOWN);
+			// throw new OffsiteServerError(OffsiteServerCodes.DEVICE_UNKNOWN,"hoho");
 		}
 
 		// validate Device with jax

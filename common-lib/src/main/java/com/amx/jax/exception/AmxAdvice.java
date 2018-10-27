@@ -23,6 +23,7 @@ import com.amx.jax.AppConstants;
 import com.amx.jax.api.AmxFieldError;
 import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.logger.LoggerService;
+import com.amx.utils.ArgUtil;
 
 public abstract class AmxAdvice {
 
@@ -36,8 +37,10 @@ public abstract class AmxAdvice {
 		apiError.setException(ex.getClass().getName());
 		apiError.setStatusEnum(ex.getError());
 		apiError.setMeta(ex.getMeta());
-		alert(ex);
+		apiError.setMessage(ArgUtil.ifNotEmpty(ex.getMessage(), ex.getErrorMessage()));
+		apiError.setPath(request.getRequestURI());
 		response.setHeader(AppConstants.EXCEPTION_HEADER_KEY, apiError.getException());
+		alert(ex);
 		return new ResponseEntity<AmxApiError>(apiError, getHttpStatus(ex));
 	}
 

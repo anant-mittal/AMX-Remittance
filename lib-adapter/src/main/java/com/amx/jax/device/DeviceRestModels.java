@@ -1,5 +1,7 @@
 package com.amx.jax.device;
 
+import javax.validation.constraints.NotNull;
+
 import com.amx.jax.dict.UserClient.ClientType;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
@@ -60,6 +62,7 @@ public class DeviceRestModels {
 	public static class DeviceRestModel
 			implements DevicePairingRequest, DevicePairingResponse, SessionPairingRequest, SessionPairingResponse {
 
+		@NotNull
 		String deivceTerminalId;
 		ClientType deivceClientType;
 

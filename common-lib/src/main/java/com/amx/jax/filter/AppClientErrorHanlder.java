@@ -10,9 +10,9 @@ import org.springframework.web.client.ResponseErrorHandler;
 import com.amx.jax.AppConstants;
 import com.amx.jax.exception.AmxApiError;
 import com.amx.jax.exception.AmxApiException;
-import com.amx.jax.exception.AmxHttpExceptions.AmxHttpClientException;
-import com.amx.jax.exception.AmxHttpExceptions.AmxHttpNotFoundException;
-import com.amx.jax.exception.AmxHttpExceptions.AmxHttpServerException;
+import com.amx.jax.exception.ApiHttpExceptions.ApiHttpClientException;
+import com.amx.jax.exception.ApiHttpExceptions.ApiHttpNotFoundException;
+import com.amx.jax.exception.ApiHttpExceptions.ApiHttpServerException;
 import com.amx.jax.exception.ExceptionFactory;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.IoUtils;
@@ -46,7 +46,7 @@ public class AppClientErrorHanlder implements ResponseErrorHandler {
 		AmxApiError apiError = throwError(apiErrorJson);
 
 		if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
-			throw new AmxHttpNotFoundException(statusCode);
+			throw new ApiHttpNotFoundException(statusCode);
 		}
 
 		boolean hasExceptionHeader = !ArgUtil.isEmpty(response.getHeaders().getFirst(AppConstants.EXCEPTION_HEADER_KEY));
@@ -54,11 +54,11 @@ public class AppClientErrorHanlder implements ResponseErrorHandler {
 		if (response.getStatusCode().series() == HttpStatus.Series.SERVER_ERROR || hasExceptionHeader) {
 			String body = IoUtils.inputstream_to_string(response.getBody());
 			apiError = throwError(body);
-			throw new AmxHttpServerException(statusCode, apiError);
+			throw new ApiHttpServerException(statusCode, apiError);
 		} else if (response.getStatusCode().series() == HttpStatus.Series.CLIENT_ERROR) {
 			String body2 = IoUtils.inputstream_to_string(response.getBody());
 			apiError = throwError(body2);
-			throw new AmxHttpClientException(statusCode, apiError);
+			throw new ApiHttpClientException(statusCode, apiError);
 		}
 
 	}
