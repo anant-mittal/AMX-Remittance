@@ -578,7 +578,7 @@ public class UserValidationService {
 	public void validateNonActiveOrNonRegisteredCustomerStatus(String identityInt, JaxApiFlow apiFlow) {
 		List<Customer> customers = null;
 		if (apiFlow == JaxApiFlow.LOGIN) {
-			customers = custDao.getCustomersForLogin(identityInt);
+			customers = custDao.findActiveCustomers(identityInt);
 		} else {
 			customers = custDao.getCustomerByIdentityInt(identityInt);
 		}
@@ -588,9 +588,14 @@ public class UserValidationService {
 		if (CollectionUtils.isEmpty(customers) && apiFlow != JaxApiFlow.SIGNUP_DEFAULT) {
 			throw new GlobalException("Customer not registered in branch ", JaxError.CUSTOMER_NOT_REGISTERED_BRANCH);
 		}
+		// duplicate records check
 		if (customers != null && customers.size() > 1) {
-			throw new GlobalException("Customer not active in branch, please visit branch",
-					JaxError.DUPLICATE_CUSTOMER_NOT_ACTIVE_BRANCH);
+			customers = custDao.findActiveCustomers(identityInt);
+			boolean isSingleRecord = (customers != null && customers.size() == 1);
+			if (!isSingleRecord) {
+				throw new GlobalException("Customer not active in branch, please visit branch",
+						JaxError.DUPLICATE_CUSTOMER_NOT_ACTIVE_BRANCH);
+			}
 		}
 		switch (apiFlow) {
 		case SIGNUP_ONLINE:

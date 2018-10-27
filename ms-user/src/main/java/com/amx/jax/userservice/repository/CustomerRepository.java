@@ -23,8 +23,9 @@ public interface CustomerRepository extends CrudRepository<Customer, BigDecimal>
 	@Query("select c from Customer c where email=?1")
 	public List<Customer> getCustomerByEmailId(String emailId);
 	
-	public List<Customer> findByIdentityIntAndIsActiveIsNotIn(String identityInt, String... isActive);
-	
+	@Query("select c from Customer c where identityInt =?1 and isActive ='Y'")
+	public List<Customer> findActiveCustomers(String identityInt);
+
 	@Query("select c from Customer c where identityInt =?1")
 	public List<Customer> getCustomerByIdentityInt(String identityInt);
 	
