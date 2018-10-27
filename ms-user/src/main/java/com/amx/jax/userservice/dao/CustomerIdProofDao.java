@@ -25,4 +25,9 @@ public class CustomerIdProofDao {
 				identityTypeId);
 		return idProofList;
 	}
+	
+	public List<CustomerIdProof> getCustomerIdProofsExpiry(BigDecimal customerId) {
+		List<CustomerIdProof> idProofList = customerIdProofRepository.getCustomerIdProofExpiryByCustomerId(customerId);
+		return idProofList;
+	}
 }
