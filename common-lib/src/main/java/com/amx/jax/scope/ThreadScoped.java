@@ -8,7 +8,7 @@ import org.springframework.context.annotation.ScopedProxyMode;
 
 import com.amx.jax.AppConstants;
 
-@Scope(value = AppConstants.Scopes.TENANT, proxyMode = ScopedProxyMode.TARGET_CLASS)
+@Scope(value = AppConstants.Scopes.THREAD, proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface TenantScoped {
+public @interface ThreadScoped {
 }

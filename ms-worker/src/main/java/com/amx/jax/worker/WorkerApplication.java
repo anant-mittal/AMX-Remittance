@@ -27,7 +27,7 @@ public class WorkerApplication {
 	 * @return the jax meta info
 	 */
 	@Bean
-	@Scope(value = "thread", proxyMode = ScopedProxyMode.TARGET_CLASS)
+	@Scope(value = "threaded", proxyMode = ScopedProxyMode.TARGET_CLASS)
 	public JaxMetaInfo jaxMetaInfo() {
 		return new JaxMetaInfo();
 	}
@@ -35,8 +35,8 @@ public class WorkerApplication {
 	@Bean
 	public CustomScopeConfigurer customScopeConfigurer() {
 		CustomScopeConfigurer customScopeConfigurer = new CustomScopeConfigurer();
-		org.springframework.beans.factory.config.Scope customScope = new ThreadScope();
-		customScopeConfigurer.addScope("thread", customScope);
+		org.springframework.beans.factory.config.Scope customScope = new OldThreadScope();
+		customScopeConfigurer.addScope("threaded", customScope);
 		return customScopeConfigurer;
 	}
 }
