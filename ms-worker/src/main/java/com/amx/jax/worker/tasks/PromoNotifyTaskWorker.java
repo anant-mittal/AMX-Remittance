@@ -1,18 +1,11 @@
 package com.amx.jax.worker.tasks;
 
-import java.math.BigDecimal;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.amx.jax.client.JaxPushNotificationClient;
-import com.amx.jax.client.configs.JaxMetaInfo;
-import com.amx.jax.dict.Language;
 import com.amx.jax.dict.Nations;
 import com.amx.jax.dict.Tenant;
-import com.amx.jax.logger.AuditService;
-import com.amx.jax.postman.client.PostManClient;
 import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.scope.TenantContextHolder;
@@ -27,29 +20,12 @@ public class PromoNotifyTaskWorker implements ITunnelSubscriber<PromoNotifyTask>
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
 	@Autowired
-	PostManClient postManClient;
-
-	@Autowired
 	private PushNotifyClient pushNotifyClient;
-
-	@Autowired
-	JaxPushNotificationClient notificationClient;
-
-	@Autowired
-	protected JaxMetaInfo jaxMetaInfo;
-
-	@Autowired
-	AuditService auditService;
 
 	@Override
 	public void onMessage(String channel, PromoNotifyTask task) {
 
 		Tenant tnt = TenantContextHolder.currentSite();
-		jaxMetaInfo.setCountryId(tnt.getBDCode());
-		jaxMetaInfo.setTenant(tnt);
-		jaxMetaInfo.setLanguageId(Language.DEFAULT.getBDCode());
-		jaxMetaInfo.setCompanyId(new BigDecimal(JaxMetaInfo.DEFAULT_COMPANY_ID));
-		jaxMetaInfo.setCountryBranchId(new BigDecimal(JaxMetaInfo.DEFAULT_COUNTRY_BRANCH_ID));
 
 		PushMessage msg = new PushMessage();
 		msg.setMessage(task.getMessage());

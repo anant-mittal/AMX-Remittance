@@ -15,6 +15,12 @@ public class AppConstants extends Constants {
 		public static final String EMAIL = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$";
 	}
 
+	public static class Scopes {
+		public static final String SESSION = "session";
+		public static final String TENANT = "tenant";
+		public static final String THREAD = "thread";
+	}
+
 	public static final String AUTH_KEY_XKEY = "x-app-auth-key";
 	public static final String AUTH_CLIENT_KEY_XKEY = "x-client-auth-key";
 	public static final String SESSION_ID_XKEY = "x-session-id";
