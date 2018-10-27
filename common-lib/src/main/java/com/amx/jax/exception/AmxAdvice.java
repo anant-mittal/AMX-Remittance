@@ -39,7 +39,7 @@ public abstract class AmxAdvice {
 		apiError.setException(ex.getClass().getName());
 		apiError.setStatusEnum(ex.getError());
 		apiError.setMeta(ex.getMeta());
-		apiError.setMessage(ArgUtil.ifNotEmpty(ex.getMessage(), ex.getErrorMessage()));
+		apiError.setMessage(ArgUtil.ifNotEmpty(apiError.getMessage(), ex.getMessage(), ex.getErrorMessage()));
 		apiError.setPath(request.getRequestURI());
 		response.setHeader(AppConstants.EXCEPTION_HEADER_KEY, apiError.getException());
 		alert(ex);

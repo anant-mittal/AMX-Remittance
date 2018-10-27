@@ -113,9 +113,10 @@ public abstract class AResponse<M> {
 	public void setHttpStatus(HttpStatus status) {
 		if (status.is5xxServerError() || status.is4xxClientError() || status.is3xxRedirection()) {
 			this.statusKey = status.series().name();
+			this.error = status.getReasonPhrase();
 		}
 		this.status = ArgUtil.parseAsString(status.value());
-		this.message = status.getReasonPhrase();
+
 	}
 
 	/**
