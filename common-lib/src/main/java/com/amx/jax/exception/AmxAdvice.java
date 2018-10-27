@@ -21,6 +21,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 
 import com.amx.jax.AppConstants;
 import com.amx.jax.api.AmxFieldError;
+import com.amx.jax.exception.ApiHttpExceptions.ApiHttpArgException;
 import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.logger.LoggerService;
 import com.amx.utils.ArgUtil;
@@ -63,7 +64,7 @@ public abstract class AmxAdvice {
 		AmxApiError apiError = new AmxApiError();
 		apiError.setHttpStatus(HttpStatus.BAD_REQUEST);
 		apiError.setErrors(errors);
-		apiError.setException(ex.getClass().getName());
+		apiError.setException(ApiHttpArgException.class.getName());
 		response.setHeader(AppConstants.EXCEPTION_HEADER_KEY, apiError.getException());
 		return new ResponseEntity<AmxApiError>(apiError, HttpStatus.BAD_REQUEST);
 	}

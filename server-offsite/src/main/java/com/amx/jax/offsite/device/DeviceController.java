@@ -61,7 +61,7 @@ public class DeviceController {
 	@ApiOffisteStatus({ OffsiteServerCodes.DEVICE_UNKNOWN })
 	@RequestMapping(value = { DeviceConstants.Path.DEVICE_PAIR }, method = { RequestMethod.POST })
 	public AmxApiResponse<DevicePairingResponse, Object> registerNewDevice(
-			@Valid @RequestBody DevicePairingRequest req) {
+			 @RequestBody DevicePairingRequest req) {
 
 		String deivceTerminalId = req.getDeivceTerminalId();
 		ClientType deivceClientType = req.getDeivceClientType();
