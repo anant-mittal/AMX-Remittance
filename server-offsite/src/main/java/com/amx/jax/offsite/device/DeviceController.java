@@ -85,7 +85,7 @@ public class DeviceController {
 	@RequestMapping(value = { DeviceConstants.Path.SESSION_PAIR }, method = { RequestMethod.GET })
 	public AmxApiResponse<SessionPairingResponse, Object> sendOtpForPairing() {
 
-		deviceRequestValidator.validateRequest();
+		deviceRequestValidator.validateDevice();
 
 		String deviceRegKey = deviceRequestValidator.getDeviceRegKey();
 		String deviceRegToken = deviceRequestValidator.getDeviceRegToken();
