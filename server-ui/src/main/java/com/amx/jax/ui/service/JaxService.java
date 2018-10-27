@@ -33,8 +33,6 @@ public class JaxService extends RestMetaRequestOutFilter<JaxMetaInfo> {
 
 	public static final String DEFAULT_COMPANY_ID = "1";
 
-	public static final String DEFAULT_CURRENCY_ID = "1";
-
 	public static final String DEFAULT_COUNTRY_BRANCH_ID = "78"; // online
 
 	@Autowired
