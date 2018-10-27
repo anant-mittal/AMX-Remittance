@@ -64,8 +64,10 @@ public class ApiHttpExceptions {
 
 		private static final long serialVersionUID = 1L;
 
-		public ApiHttpArgException(AmxApiError error) {
-			super(error);
+		AmxApiError apiError;
+
+		public ApiHttpArgException(AmxApiError apiError) {
+			this.apiError = apiError;
 		}
 
 		public ApiHttpArgException() {
@@ -84,6 +86,11 @@ public class ApiHttpExceptions {
 		public ApiHttpArgException(Exception e) {
 			super(e);
 			this.setError(ApiHttpCodes.PARAM_INVALID);
+		}
+
+		@Override
+		public AmxApiError createAmxApiError() {
+			return this.apiError;
 		}
 
 		@Override
@@ -106,7 +113,7 @@ public class ApiHttpExceptions {
 
 		@Override
 		public boolean isReportable() {
-			return true;
+			return false;
 		}
 
 	}
