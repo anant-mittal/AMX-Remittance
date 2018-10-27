@@ -301,9 +301,7 @@ public class RemittController {
 			ExchangeRateResponseModel resp;
 			try {
 				resp = jaxService.setDefaults().getxRateClient()
-						.getExchangeRate(new BigDecimal(JaxService.DEFAULT_CURRENCY_ID), forCurcy.getCurrencyId(),
-								domAmount, null)
-						.getResult();
+						.getExchangeRate(domCur.getCurrencyId(), forCurcy.getCurrencyId(), domAmount, null).getResult();
 				wrapper.getData().setForXRate(resp.getExRateBreakup().getInverseRate());
 				wrapper.getData().setDomXRate(resp.getExRateBreakup().getRate());
 				wrapper.getData().setForAmount(resp.getExRateBreakup().getConvertedFCAmount());
