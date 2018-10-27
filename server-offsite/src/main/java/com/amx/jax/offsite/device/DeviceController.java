@@ -56,7 +56,7 @@ public class DeviceController {
 	@Autowired
 	private CardBox cardBox;
 
-	@ApiOffisteStatus({ OffsiteServerCodes.DEVICE_NOT_REGISTERED })
+	@ApiOffisteStatus({ OffsiteServerCodes.DEVICE_UNKNOWN })
 	@RequestMapping(value = { DeviceConstants.Path.DEVICE_PAIR }, method = { RequestMethod.POST })
 	public AmxApiResponse<DevicePairingResponse, Object> registerNewDevice(@RequestBody DevicePairingRequest req) {
 
@@ -64,7 +64,7 @@ public class DeviceController {
 		ClientType deivceClientType = req.getDeivceClientType();
 
 		if (ArgUtil.isEmpty(deivceTerminalId) || ArgUtil.isEmpty(deivceClientType)) {
-			throw new OffsiteServerError(OffsiteServerCodes.DEVICE_NOT_REGISTERED);
+			throw new OffsiteServerError(OffsiteServerCodes.DEVICE_UNKNOWN);
 		}
 
 		// validate Device with jax
@@ -81,18 +81,14 @@ public class DeviceController {
 	}
 
 	@ApiDeviceHeaders
-	@ApiOffisteStatus({ OffsiteServerCodes.DEVICE_CREDS_MISSING })
+	@ApiOffisteStatus({ OffsiteServerCodes.DEVICE_UNKNOWN })
 	@RequestMapping(value = { DeviceConstants.Path.SESSION_PAIR }, method = { RequestMethod.GET })
 	public AmxApiResponse<SessionPairingResponse, Object> sendOtpForPairing() {
 
 		deviceRequestValidator.validateRequest();
 
-		String deviceRegKey = commonHttpRequest.get(DeviceConstants.Keys.DEVICE_REG_KEY_XKEY);
-		String deviceRegToken = commonHttpRequest.get(DeviceConstants.Keys.DEVICE_REG_TOKEN_XKEY);
-
-		if (ArgUtil.isEmpty(deviceRegKey) || ArgUtil.isEmpty(deviceRegToken)) {
-			throw new OffsiteServerError(OffsiteServerCodes.DEVICE_CREDS_MISSING);
-		}
+		String deviceRegKey = deviceRequestValidator.getDeviceRegKey();
+		String deviceRegToken = deviceRequestValidator.getDeviceRegToken();
 
 		DevicePairOtpResponse resp = deviceClient
 				.sendOtpForPairing(ArgUtil.parseAsInteger(deviceRegKey), deviceRegToken).getResult();
