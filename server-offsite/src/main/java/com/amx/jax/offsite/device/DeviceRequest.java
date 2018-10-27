@@ -10,6 +10,8 @@ import com.amx.jax.device.DeviceConstants;
 import com.amx.jax.device.DeviceRestModels;
 import com.amx.jax.device.DeviceRestModels.SessionPairingResponse;
 import com.amx.jax.http.CommonHttpRequest;
+import com.amx.jax.offsite.OffsiteStatus.OffsiteServerCodes;
+import com.amx.jax.offsite.OffsiteStatus.OffsiteServerError;
 import com.amx.jax.offsite.device.DeviceConfigs.DeviceBox;
 import com.amx.jax.offsite.device.DeviceConfigs.DeviceData;
 import com.amx.utils.ArgUtil;
@@ -77,8 +79,7 @@ public class DeviceRequest {
 
 	public void validateRequest() {
 		if (!isValid()) {
-			response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
-			response.setHeader("Location", DeviceConstants.Path.SESSION_PAIR);
+			throw new OffsiteServerError(OffsiteServerCodes.INVALID_DEVICE);
 		}
 	}
 
