@@ -41,11 +41,9 @@ public class DeviceClient implements IDeviceService {
 			return restService.ajax(url).post(requestEntity)
 					.as(new ParameterizedTypeReference<AmxApiResponse<DeviceDto, Object>>() {
 					});
-		} catch (AbstractJaxException ae) {
-			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in registerNewDevice : ", e);
-			throw new JaxSystemError();
+			return JaxSystemError.evaluate(e);
 		}
 	}
 
