@@ -64,6 +64,7 @@ public abstract class AmxAdvice {
 			HttpServletRequest request, HttpServletResponse response, ApiHttpCodes statusKey) {
 		AmxApiError apiError = new AmxApiError();
 		apiError.setHttpStatus(HttpStatus.BAD_REQUEST);
+		apiError.setMessage(ex.getMessage());
 		apiError.setStatusKey(statusKey.toString());
 		apiError.setErrors(errors);
 		apiError.setException(ApiHttpArgException.class.getName());
