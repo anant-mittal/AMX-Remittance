@@ -1,6 +1,8 @@
 package com.amx.jax.api;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The Class ResponseError.
@@ -12,6 +14,31 @@ public class AmxFieldError implements Serializable {
 
 	/** The obzect. */
 	String obzect = null;
+	String field = null;
+	String description = null;
+	String code = null;
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
+
+	List<String> codes = null;
+
+	public AmxFieldError() {
+		this.codes = new ArrayList<String>();
+	}
+
+	public List<String> getCodes() {
+		return codes;
+	}
+
+	public void setCodes(List<String> codes) {
+		this.codes = codes;
+	}
 
 	/**
 	 * Gets the obzect.
@@ -25,18 +52,11 @@ public class AmxFieldError implements Serializable {
 	/**
 	 * Sets the obzect.
 	 *
-	 * @param obzect
-	 *            the new obzect
+	 * @param obzect the new obzect
 	 */
 	public void setObzect(String obzect) {
 		this.obzect = obzect;
 	}
-
-	/** The field. */
-	String field = null;
-
-	/** The description. */
-	String description = null;
 
 	/**
 	 * Gets the description.
@@ -50,8 +70,7 @@ public class AmxFieldError implements Serializable {
 	/**
 	 * Sets the description.
 	 *
-	 * @param description
-	 *            the new description
+	 * @param description the new description
 	 */
 	public void setDescription(String description) {
 		this.description = description;
@@ -69,8 +88,7 @@ public class AmxFieldError implements Serializable {
 	/**
 	 * Sets the field.
 	 *
-	 * @param field
-	 *            the new field
+	 * @param field the new field
 	 */
 	public void setField(String field) {
 		this.field = field;

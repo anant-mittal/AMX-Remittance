@@ -41,6 +41,7 @@ public abstract class AmxAdvice {
 		apiError.setMeta(ex.getMeta());
 		apiError.setMessage(ArgUtil.ifNotEmpty(apiError.getMessage(), ex.getMessage(), ex.getErrorMessage()));
 		apiError.setPath(request.getRequestURI());
+		ExceptionMessageKey.resolveLocalMessage(apiError);
 		response.setHeader(AppConstants.EXCEPTION_HEADER_KEY, apiError.getException());
 		alert(ex);
 		return new ResponseEntity<AmxApiError>(apiError, getHttpStatus(ex));
@@ -64,10 +65,11 @@ public abstract class AmxAdvice {
 			HttpServletRequest request, HttpServletResponse response, ApiHttpCodes statusKey) {
 		AmxApiError apiError = new AmxApiError();
 		apiError.setHttpStatus(HttpStatus.BAD_REQUEST);
-		apiError.setMessage(ex.getMessage());
+		// apiError.setMessage(ex.getMessage());
 		apiError.setStatusKey(statusKey.toString());
 		apiError.setErrors(errors);
 		apiError.setException(ApiHttpArgException.class.getName());
+		ExceptionMessageKey.resolveLocalMessage(apiError);
 		response.setHeader(AppConstants.EXCEPTION_HEADER_KEY, apiError.getException());
 		return new ResponseEntity<AmxApiError>(apiError, HttpStatus.BAD_REQUEST);
 	}
@@ -81,8 +83,10 @@ public abstract class AmxAdvice {
 		List<AmxFieldError> errors = new ArrayList<AmxFieldError>();
 		for (FieldError error : ex.getBindingResult().getFieldErrors()) {
 			AmxFieldError newError = new AmxFieldError();
+			newError.setObzect(error.getObjectName());
 			newError.setField(error.getField());
 			newError.setDescription(CommonHttpRequest.sanitze(error.getDefaultMessage()));
+			newError.setCode(error.getCode());
 			errors.add(newError);
 		}
 		for (ObjectError error : ex.getBindingResult().getGlobalErrors()) {
