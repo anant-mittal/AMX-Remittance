@@ -58,7 +58,7 @@ public class AppParamController {
 
 	@RequestMapping(value = "/pub/amx/hmac", method = RequestMethod.GET)
 	public String hmac(@RequestParam Long inteval, @RequestParam String secret, @RequestParam String message) {
-		return CryptoUtil.generateHMAC(secret, message);
+		return CryptoUtil.generateHMAC(inteval, secret, message);
 	}
 
 }
