@@ -103,7 +103,7 @@ public class PushController {
 			msg.addTopic(String.format(PushMessage.FORMAT_TO_NATIONALITY, tnt.toString().toLowerCase(),
 					task.getNationality().getCode()));
 		}
-		pushNotifyClient.sendDirect(msg).getResult();
+		pushNotifyClient.sendDirect(msg);
 
 	}
 
