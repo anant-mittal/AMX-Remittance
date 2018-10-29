@@ -145,7 +145,7 @@ public class BeneficiaryCheckService extends AbstractService {
 					.getBeneRelationshipByBeneMasterId(beneDto.getBeneficaryMasterSeqId(), beneDto.getCustomerId());
 			if (beneRelationship.isEmpty()) {
 
-				errorDesc = "RELATIONSHIP NOT UPDATED FOR THIS CUSTOMER AND BENEFICARY.PLEASE UPDATE THE SAME";
+				errorDesc = "RELATIONSHIP NOT UPDATED FOR THIS CUSTOMER AND BENEFICIARY.PLEASE UPDATE THE SAME";
 				errorStatusDto = this.setBeneError(JaxError.RECORD_NOT_FOUND.toString(), errorDesc);
 
 				errorListDto.add(errorStatusDto);
