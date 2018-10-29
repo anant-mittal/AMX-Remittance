@@ -103,4 +103,5 @@ public class DeviceDao {
 	public DeviceStateInfo findBySessionToken(String sessionToken, Integer registrationId) {
 		return deviceStateRepository.findBySessionTokenAndDeviceRegId(sessionToken, new BigDecimal(registrationId));
 	}
+	
 }

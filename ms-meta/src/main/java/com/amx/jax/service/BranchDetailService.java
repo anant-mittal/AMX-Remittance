@@ -74,6 +74,16 @@ public class BranchDetailService extends AbstractService {
 		}
 		return branchSystemDetail;
 	}
+	
+	public BranchSystemDetail findBranchSystemByInventoryId(BigDecimal countryBranchSystemInventoryId) {
+		BranchSystemDetail branchSystemDetail = branchDetailDao
+				.getBranchSystemDetailByInventoryId(countryBranchSystemInventoryId);
+		if (branchSystemDetail == null) {
+			throw new GlobalException("No  branch system found for given inv id ", JaxError.BRANCH_SYSTEM_NOT_FOUND);
+		}
+
+		return branchSystemDetail;
+	}
 
 	@Override
 	public String getModelType() {

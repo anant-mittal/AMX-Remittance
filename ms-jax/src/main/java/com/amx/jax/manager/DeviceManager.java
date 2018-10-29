@@ -24,6 +24,7 @@ import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.model.response.DevicePairOtpResponse;
 import com.amx.jax.model.response.IDeviceStateData;
+import com.amx.jax.service.BranchDetailService;
 import com.amx.jax.services.DeviceService;
 import com.amx.jax.services.JaxConfigService;
 import com.amx.jax.util.CryptoUtil;
@@ -48,6 +49,8 @@ public class DeviceManager {
 	JaxConfigService jaxConfigService;
 	@Autowired
 	SignaturePadRemittanceManager signaturePadRemittanceManager;
+	@Autowired
+	BranchDetailService branchDetailService;
 
 	/**
 	 * activates device
@@ -87,8 +90,13 @@ public class DeviceManager {
 		deviceDao.saveDeviceInfo(deviceInfo);
 		DevicePairOtpResponse resp = new DevicePairOtpResponse();
 		resp.setOtp(otp);
+		resp.setTermialId(getTerminalId(device));
 		resp.setSessionPairToken(sessionPairToken);
 		return resp;
+	}
+
+	private String getTerminalId(Device device) {
+		return branchDetailService.findBranchSystemByInventoryId(device.getBranchSystemInventoryId()).getIpAddress();
 	}
 
 	public boolean isLoggedIn(Device device) {
