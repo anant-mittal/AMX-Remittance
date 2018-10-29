@@ -158,11 +158,4 @@ public class DeviceRestModels {
 		return model;
 	}
 
-	public static SessionPairingCreds getSessionPairingCreds(String deviceRegId, String deviceRegToken) {
-		SessionPairingCreds model = new DeviceRestModel();
-		model.setDeviceRegKey(deviceRegId);
-		model.setDeviceRegToken(deviceRegToken);
-		return model;
-	}
-
 }
