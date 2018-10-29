@@ -123,7 +123,7 @@ public class BeneficiaryCheckService extends AbstractService {
 			List<BlackListModel> blist = blackListDao.getBlackByName(beneDto.getBenificaryName());
 			if (blist != null && !blist.isEmpty()) {
 
-				errorDesc = "English name Of beneficary matching with black listed customer";
+				errorDesc = "English name Of beneficiary matching with black listed customer";
 				errorStatusDto = this.setBeneError(JaxError.BLACK_LISTED_CUSTOMER.toString(), errorDesc);
 
 				errorListDto.add(errorStatusDto);
@@ -133,7 +133,7 @@ public class BeneficiaryCheckService extends AbstractService {
 			List<BlackListModel> blist = blackListDao.getBlackByLocalName(beneDto.getBenificaryName());
 			if (blist != null && !blist.isEmpty()) {
 
-				errorDesc = "Arabic name Of beneficary matching with black listed customer";
+				errorDesc = "Arabic name Of beneficiary matching with black listed customer";
 				errorStatusDto = this.setBeneError(JaxError.BLACK_LISTED_CUSTOMER.toString(), errorDesc);
 
 				errorListDto.add(errorStatusDto);
@@ -160,7 +160,7 @@ public class BeneficiaryCheckService extends AbstractService {
 			List<BeneficaryMaster> beneMasterList = beneficiaryMasterDao
 					.getBeneficiaryByBeneMasterId(beneDto.getBeneficaryMasterSeqId());
 			if (beneMasterList.isEmpty()) {
-				errorDesc = "INVALID BENEFICARY MASTER";
+				errorDesc = "INVALID BENEFICIARY MASTER";
 				errorStatusDto = this.setBeneError(JaxError.RECORD_NOT_FOUND.toString(), errorDesc);
 
 				errorListDto.add(errorStatusDto);
@@ -416,14 +416,14 @@ public class BeneficiaryCheckService extends AbstractService {
 
 				if (minLength > 0 && benePhoneLength < minLength) {
 					beneDto.setUpdateNeeded(true);
-					errorDesc = "BENEFICARY TELEPHONE NUMBER - MINIMUM LENGTH MUST BE ||" + minLength
+					errorDesc = "BENEFICIARY TELEPHONE NUMBER - MINIMUM LENGTH MUST BE ||" + minLength
 							+ " || AND MAXIMUM LENGTH MUST BE ||" + maxLength;
 					errorStatusDto = this.setBeneError(JaxError.INVALID_MOB_TELE.toString(), errorDesc);
 					errorListDto.add(errorStatusDto);
 				}
 				if (maxLength > 0 && benePhoneLength > maxLength) {
 					beneDto.setUpdateNeeded(true);
-					errorDesc = "BENEFICARY TELEPHONE NUMBER - MINIMUM LENGTH MUST BE ||" + minLength
+					errorDesc = "BENEFICIARY TELEPHONE NUMBER - MINIMUM LENGTH MUST BE ||" + minLength
 							+ " || AND MAXIMUM LENGTH MUST BE ||" + maxLength;
 					errorStatusDto = this.setBeneError(JaxError.INVALID_MOB_TELE.toString(), errorDesc);
 					errorListDto.add(errorStatusDto);
