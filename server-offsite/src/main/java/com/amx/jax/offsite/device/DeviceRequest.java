@@ -1,6 +1,5 @@
 package com.amx.jax.offsite.device;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,9 +25,6 @@ public class DeviceRequest {
 
 	@Autowired
 	DeviceBox deviceBox;
-
-	@Autowired(required = false)
-	private HttpServletRequest request;
 
 	@Autowired(required = false)
 	private HttpServletResponse response;

@@ -19,8 +19,8 @@ import com.amx.jax.device.CardData;
 import com.amx.jax.device.CardReader;
 import com.amx.jax.device.DeviceConstants;
 import com.amx.jax.device.DeviceRestModels;
-import com.amx.jax.device.DeviceRestModels.DevicePairingRequest;
 import com.amx.jax.device.DeviceRestModels.DevicePairingCreds;
+import com.amx.jax.device.DeviceRestModels.DevicePairingRequest;
 import com.amx.jax.device.DeviceRestModels.SessionPairingCreds;
 import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.http.CommonHttpRequest;
@@ -59,8 +59,7 @@ public class DeviceController {
 
 	@ApiOffisteStatus({ OffsiteServerCodes.DEVICE_UNKNOWN })
 	@RequestMapping(value = { DeviceConstants.Path.DEVICE_PAIR }, method = { RequestMethod.POST })
-	public AmxApiResponse<DevicePairingCreds, Object> registerNewDevice(
-			@Valid @RequestBody DevicePairingRequest req) {
+	public AmxApiResponse<DevicePairingCreds, Object> registerNewDevice(@Valid @RequestBody DevicePairingRequest req) {
 
 		String deivceTerminalId = req.getDeivceTerminalId();
 		ClientType deivceClientType = req.getDeivceClientType();

@@ -251,8 +251,8 @@ public abstract class ACardReaderService {
 						.header(DeviceConstants.Keys.DEVICE_REG_TOKEN_XKEY, devicePairingCreds.getDeviceRegToken())
 						.header(DeviceConstants.Keys.DEVICE_SESSION_TOKEN_XKEY,
 								sessionPairingCreds.getDeviceSessionToken())
-						.header(DeviceConstants.Keys.DEVICE_REQ_TOKEN_XKEY, DeviceConstants.generateDeviceReqToken(
-								sessionPairingCreds.getDeviceRequestKey(), devicePairingCreds.getDeviceRegToken()))
+						.header(DeviceConstants.Keys.DEVICE_REQ_TOKEN_XKEY,
+								DeviceConstants.generateDeviceReqToken(sessionPairingCreds, devicePairingCreds))
 						.post(reader).asObject();
 				status(DataStatus.SYNCED);
 			}

@@ -1,5 +1,7 @@
 package com.amx.jax.device;
 
+import com.amx.jax.device.DeviceRestModels.DevicePairingCreds;
+import com.amx.jax.device.DeviceRestModels.SessionPairingCreds;
 import com.amx.utils.CryptoUtil;
 
 public class DeviceConstants {
@@ -36,6 +38,12 @@ public class DeviceConstants {
 		return CryptoUtil.generateHMAC(DeviceConstants.Config.REQUEST_TOKEN_VALIDITY, deviceReqKey, deviceRegToken);
 	}
 
+	public static String generateDeviceReqToken(SessionPairingCreds sessionPairingCreds,
+			DevicePairingCreds devicePairingCreds) {
+		return generateDeviceReqToken(sessionPairingCreds.getDeviceRequestKey(),
+				devicePairingCreds.getDeviceRegToken());
+	}
+
 	public static boolean validateDeviceReqToken(String deviceReqKey, String deviceRegToken, String deviceReqToken) {
 		return CryptoUtil.validateHMAC(DeviceConstants.Config.REQUEST_TOKEN_VALIDITY, deviceReqKey, deviceRegToken,
 				deviceReqToken);
@@ -51,4 +59,5 @@ public class DeviceConstants {
 		return CryptoUtil.validateHMAC(DeviceConstants.Config.SESSION_TOKEN_VALIDITY, deviceRegKey, sessionPairingToken,
 				sessionPairingTokenX);
 	}
+
 }
