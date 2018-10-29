@@ -24,9 +24,9 @@ public class DeviceRestModels {
 	}
 
 	@JsonDeserialize(as = DeviceRestModel.class)
-	public interface DevicePairingResponse {
+	public interface DevicePairingCreds {
 
-		void setDeviceRegToken(String devicePairingToken);
+		void setDeviceRegToken(String deviceRegToken);
 
 		String getDeviceRegToken();
 
@@ -37,12 +37,12 @@ public class DeviceRestModels {
 	}
 
 	@JsonDeserialize(as = DeviceRestModel.class)
-	public interface SessionPairingRequest extends DevicePairingResponse {
+	public interface SessionPairingRequest extends DevicePairingCreds {
 
 	}
 
 	@JsonDeserialize(as = DeviceRestModel.class)
-	public interface SessionPairingResponse {
+	public interface SessionPairingCreds {
 
 		void setDeviceSessionToken(String sessionPairingToken);
 
@@ -60,7 +60,7 @@ public class DeviceRestModels {
 	}
 
 	public static class DeviceRestModel
-			implements DevicePairingRequest, DevicePairingResponse, SessionPairingRequest, SessionPairingResponse {
+			implements DevicePairingRequest, DevicePairingCreds, SessionPairingRequest, SessionPairingCreds {
 
 		@NotNull
 		String deivceTerminalId;
@@ -149,6 +149,20 @@ public class DeviceRestModels {
 
 	public static DeviceRestModel get() {
 		return new DeviceRestModel();
+	}
+
+	public static DevicePairingCreds getDevicePairingCreds(String deviceRegId, String deviceRegToken) {
+		DevicePairingCreds model = new DeviceRestModel();
+		model.setDeviceRegKey(deviceRegId);
+		model.setDeviceRegToken(deviceRegToken);
+		return model;
+	}
+
+	public static SessionPairingCreds getSessionPairingCreds(String deviceRegId, String deviceRegToken) {
+		SessionPairingCreds model = new DeviceRestModel();
+		model.setDeviceRegKey(deviceRegId);
+		model.setDeviceRegToken(deviceRegToken);
+		return model;
 	}
 
 }

@@ -20,8 +20,8 @@ import com.amx.jax.device.CardReader;
 import com.amx.jax.device.DeviceConstants;
 import com.amx.jax.device.DeviceRestModels;
 import com.amx.jax.device.DeviceRestModels.DevicePairingRequest;
-import com.amx.jax.device.DeviceRestModels.DevicePairingResponse;
-import com.amx.jax.device.DeviceRestModels.SessionPairingResponse;
+import com.amx.jax.device.DeviceRestModels.DevicePairingCreds;
+import com.amx.jax.device.DeviceRestModels.SessionPairingCreds;
 import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.logger.LoggerService;
@@ -59,7 +59,7 @@ public class DeviceController {
 
 	@ApiOffisteStatus({ OffsiteServerCodes.DEVICE_UNKNOWN })
 	@RequestMapping(value = { DeviceConstants.Path.DEVICE_PAIR }, method = { RequestMethod.POST })
-	public AmxApiResponse<DevicePairingResponse, Object> registerNewDevice(
+	public AmxApiResponse<DevicePairingCreds, Object> registerNewDevice(
 			@Valid @RequestBody DevicePairingRequest req) {
 
 		String deivceTerminalId = req.getDeivceTerminalId();
@@ -76,7 +76,7 @@ public class DeviceController {
 		deviceRegistrationRequest.setDeviceId(commonHttpRequest.getDeviceId());
 		DeviceDto deviceDto = deviceClient.registerNewDevice(deviceRegistrationRequest).getResult();
 
-		DevicePairingResponse creds = DeviceRestModels.get();
+		DevicePairingCreds creds = DeviceRestModels.get();
 		creds.setDeviceRegToken(deviceDto.getPairToken());
 		creds.setDeviceRegKey(ArgUtil.parseAsString(deviceDto.getRegistrationId()));
 		return AmxApiResponse.build(creds);
@@ -85,7 +85,7 @@ public class DeviceController {
 	@ApiDeviceHeaders
 	@ApiOffisteStatus({ OffsiteServerCodes.DEVICE_UNKNOWN })
 	@RequestMapping(value = { DeviceConstants.Path.SESSION_PAIR }, method = { RequestMethod.GET })
-	public AmxApiResponse<SessionPairingResponse, Object> sendOtpForPairing() {
+	public AmxApiResponse<SessionPairingCreds, Object> sendOtpForPairing() {
 
 		deviceRequestValidator.validateDevice();
 
@@ -94,7 +94,7 @@ public class DeviceController {
 
 		DevicePairOtpResponse resp = deviceClient
 				.sendOtpForPairing(ArgUtil.parseAsInteger(deviceRegKey), deviceRegToken).getResult();
-		SessionPairingResponse creds = deviceRequestValidator.createSession(resp.getSessionPairToken(), resp.getOtp(),
+		SessionPairingCreds creds = deviceRequestValidator.createSession(resp.getSessionPairToken(), resp.getOtp(),
 				resp.getTermialId());
 		return AmxApiResponse.build(creds);
 	}

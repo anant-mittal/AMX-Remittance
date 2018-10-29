@@ -56,7 +56,8 @@ public final class CryptoUtil {
 	 * @return
 	 */
 	public static String generateHMAC(long interval, String secretKey, String message) {
-		return generateHMAC(interval, secretKey, message, System.currentTimeMillis());
+		String publicToken = generateHMAC(interval, secretKey, message, System.currentTimeMillis());
+		return publicToken;
 	}
 
 	public static String generateHMAC(String secretKey, String message, long currentTime) {
@@ -68,11 +69,13 @@ public final class CryptoUtil {
 	}
 
 	public static boolean validateHMAC(long interval, String secretKey, String message, String publicToken) {
-		if (generateHMAC(secretKey, message).equals(publicToken)) {
+		if (generateHMAC(interval, secretKey, message).equals(publicToken)) {
 			return true;
-		} else if (generateHMAC(secretKey, message, System.currentTimeMillis() - interval * 1000).equals(publicToken)) {
+		} else if (generateHMAC(interval, secretKey, message, System.currentTimeMillis() - interval * 1000)
+				.equals(publicToken)) {
 			return true;
-		} else if (generateHMAC(secretKey, message, System.currentTimeMillis() + interval * 1000).equals(publicToken)) {
+		} else if (generateHMAC(interval, secretKey, message, System.currentTimeMillis() + interval * 1000)
+				.equals(publicToken)) {
 			return true;
 		}
 		return false;

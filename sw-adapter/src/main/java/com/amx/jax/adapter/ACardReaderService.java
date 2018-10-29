@@ -19,9 +19,9 @@ import com.amx.jax.device.CardData;
 import com.amx.jax.device.CardReader;
 import com.amx.jax.device.DeviceConstants;
 import com.amx.jax.device.DeviceRestModels;
+import com.amx.jax.device.DeviceRestModels.DevicePairingCreds;
 import com.amx.jax.device.DeviceRestModels.DevicePairingRequest;
-import com.amx.jax.device.DeviceRestModels.DevicePairingResponse;
-import com.amx.jax.device.DeviceRestModels.SessionPairingResponse;
+import com.amx.jax.device.DeviceRestModels.SessionPairingCreds;
 import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.exception.AmxApiException;
 import com.amx.jax.exception.AmxException;
@@ -75,8 +75,8 @@ public abstract class ACardReaderService {
 	RestService restService;
 
 	boolean devicePairingCredsValid = true;
-	DevicePairingResponse devicePairingCreds;
-	SessionPairingResponse sessionPairingCreds;
+	DevicePairingCreds devicePairingCreds;
+	SessionPairingCreds sessionPairingCreds;
 
 	boolean readerStarted = false;
 	private long lastreadtime = 0L;
@@ -91,7 +91,7 @@ public abstract class ACardReaderService {
 		return address;
 	}
 
-	private DevicePairingResponse getDevicePairingCreds() {
+	private DevicePairingCreds getDevicePairingCreds() {
 
 		if (getAddress() == null) {
 			return null;
@@ -127,7 +127,7 @@ public abstract class ACardReaderService {
 				String passwordEncd = keyring.getPassword("amx-adapter", terminalId);
 				byte[] terminalCredsByts = Base64.getDecoder().decode(passwordEncd);
 				String terminalCredsStrs = new String(terminalCredsByts);
-				DevicePairingResponse dpr = JsonUtil.fromJson(terminalCredsStrs, DevicePairingResponse.class);
+				DevicePairingCreds dpr = JsonUtil.fromJson(terminalCredsStrs, DevicePairingCreds.class);
 				if (!ArgUtil.isEmpty(dpr) && !ArgUtil.isEmpty(dpr.getDeviceRegKey())) {
 					devicePairingCreds = dpr;
 					status(DeviceStatus.PAIRING_KEYS_FOUND);
@@ -147,13 +147,13 @@ public abstract class ACardReaderService {
 			req.setDeivceTerminalId(terminalId);
 			req.setDeivceClientType(ClientType.BRANCH_ADAPTER);
 			try {
-				AmxApiResponse<DevicePairingResponse, Object> resp = restService.ajax(serverUrl)
+				AmxApiResponse<DevicePairingCreds, Object> resp = restService.ajax(serverUrl)
 						.path(DeviceConstants.Path.DEVICE_PAIR).header(AppConstants.DEVICE_ID_XKEY, address.getMac())
 						.header(AppConstants.DEVICE_IP_LOCAL_XKEY, address.getLocalIp()).post(req)
-						.as(new ParameterizedTypeReference<AmxApiResponse<DevicePairingResponse, Object>>() {
+						.as(new ParameterizedTypeReference<AmxApiResponse<DevicePairingCreds, Object>>() {
 						});
 				if (resp.getResults().size() > 0) {
-					DevicePairingResponse dpr = resp.getResult();
+					DevicePairingCreds dpr = resp.getResult();
 					if (!ArgUtil.isEmpty(dpr) && !ArgUtil.isEmpty(dpr.getDeviceRegKey())) {
 						devicePairingCreds = dpr;
 						devicePairingCredsValid = true;
@@ -193,7 +193,7 @@ public abstract class ACardReaderService {
 		return devicePairingCreds;
 	}
 
-	private SessionPairingResponse getSessionPairingCreds() {
+	private SessionPairingCreds getSessionPairingCreds() {
 		if (sessionPairingCreds != null) {
 			return sessionPairingCreds;
 		}
@@ -207,7 +207,7 @@ public abstract class ACardReaderService {
 					.header(AppConstants.DEVICE_IP_LOCAL_XKEY, address.getLocalIp())
 					.header(DeviceConstants.Keys.DEVICE_REG_KEY_XKEY, devicePairingCreds.getDeviceRegKey())
 					.header(DeviceConstants.Keys.DEVICE_REG_TOKEN_XKEY, devicePairingCreds.getDeviceRegToken()).get()
-					.as(new ParameterizedTypeReference<AmxApiResponse<SessionPairingResponse, Object>>() {
+					.as(new ParameterizedTypeReference<AmxApiResponse<SessionPairingCreds, Object>>() {
 					}).getResult();
 			status(DeviceStatus.SESSION_CREATED);
 		} catch (AmxApiException e) {
@@ -218,7 +218,7 @@ public abstract class ACardReaderService {
 			}
 		} catch (AmxException e) {
 			status(DeviceStatus.SESSION_ERROR);
-			SWAdapterGUI.CONTEXT.log("SERVICE ERROR : " + e.getMessage() + e.getStatusKey());
+			SWAdapterGUI.CONTEXT.log("SERVICE ERROR : " + e.getMessage());
 		} catch (Exception e) {
 			status(DeviceStatus.SESSION_ERROR);
 			SWAdapterGUI.CONTEXT.log("CLIENT ERROR : " + e.getMessage());
@@ -251,11 +251,17 @@ public abstract class ACardReaderService {
 						.header(DeviceConstants.Keys.DEVICE_REG_TOKEN_XKEY, devicePairingCreds.getDeviceRegToken())
 						.header(DeviceConstants.Keys.DEVICE_SESSION_TOKEN_XKEY,
 								sessionPairingCreds.getDeviceSessionToken())
-						.header(DeviceConstants.Keys.DEVICE_REQ_TOKEN_XKEY,
-								DeviceConstants.generateDeviceReqToken(null, devicePairingCreds.getDeviceRegKey()))
+						.header(DeviceConstants.Keys.DEVICE_REQ_TOKEN_XKEY, DeviceConstants.generateDeviceReqToken(
+								sessionPairingCreds.getDeviceRequestKey(), devicePairingCreds.getDeviceRegToken()))
 						.post(reader).asObject();
 				status(DataStatus.SYNCED);
 			}
+		} catch (AmxApiException e) {
+			status(DataStatus.SYNC_ERROR);
+			SWAdapterGUI.CONTEXT.log("SERVICE ERROR : " + e.getErrorKey());
+		} catch (AmxException e) {
+			status(DataStatus.SYNC_ERROR);
+			SWAdapterGUI.CONTEXT.log("SERVICE ERROR : " + e.getMessage());
 		} catch (InterruptedException e) {
 			status(DataStatus.SYNC_ERROR);
 			LOGGER.error(serverUrl, e);
