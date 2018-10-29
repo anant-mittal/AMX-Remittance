@@ -6,7 +6,7 @@ public class ApiHttpExceptions {
 
 	public static enum ApiHttpCodes implements IExceptionEnum {
 
-		HTTP_CLIENT_ERROR, HTTP_SERVER_ERROR(500),
+		HTTP_CLIENT_ERROR, HTTP_SERVER_ERROR(500), API_ERROR(500),
 
 		HTTP_NOT_FOUND(404),
 
@@ -57,17 +57,36 @@ public class ApiHttpExceptions {
 
 		public ApiHttpServerException(HttpStatus statusCode, AmxApiError apiError) {
 			super(statusCode, apiError.getMessage());
+
 		}
+	}
+
+	public static class ApiErrorException extends AmxApiException {
+
+		private static final long serialVersionUID = -7306148895312312163L;
+
+		public ApiErrorException(AmxApiError apiError) {
+			super(apiError);
+		}
+
+		@Override
+		public IExceptionEnum getErrorIdEnum(String errorId) {
+			return ApiHttpCodes.API_ERROR;
+		}
+
+		@Override
+		public boolean isReportable() {
+			return false;
+		}
+
 	}
 
 	public static class ApiHttpArgException extends AmxApiException {
 
 		private static final long serialVersionUID = 1L;
 
-		AmxApiError apiError;
-
 		public ApiHttpArgException(AmxApiError apiError) {
-			this.apiError = apiError;
+			super(apiError);
 		}
 
 		public ApiHttpArgException() {
@@ -86,11 +105,6 @@ public class ApiHttpExceptions {
 		public ApiHttpArgException(Exception e) {
 			super(e);
 			this.setError(ApiHttpCodes.PARAM_INVALID);
-		}
-
-		@Override
-		public AmxApiError createAmxApiError() {
-			return this.apiError;
 		}
 
 		@Override

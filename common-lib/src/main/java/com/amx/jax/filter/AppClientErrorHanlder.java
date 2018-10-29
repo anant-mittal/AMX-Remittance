@@ -10,6 +10,7 @@ import org.springframework.web.client.ResponseErrorHandler;
 import com.amx.jax.AppConstants;
 import com.amx.jax.exception.AmxApiError;
 import com.amx.jax.exception.AmxApiException;
+import com.amx.jax.exception.ApiHttpExceptions.ApiErrorException;
 import com.amx.jax.exception.ApiHttpExceptions.ApiHttpClientException;
 import com.amx.jax.exception.ApiHttpExceptions.ApiHttpNotFoundException;
 import com.amx.jax.exception.ApiHttpExceptions.ApiHttpServerException;
@@ -49,9 +50,10 @@ public class AppClientErrorHanlder implements ResponseErrorHandler {
 			throw new ApiHttpNotFoundException(statusCode);
 		}
 
-		boolean hasExceptionHeader = !ArgUtil.isEmpty(response.getHeaders().getFirst(AppConstants.EXCEPTION_HEADER_KEY));
+		boolean hasExceptionHeader = !ArgUtil
+				.isEmpty(response.getHeaders().getFirst(AppConstants.EXCEPTION_HEADER_KEY));
 
-		if (response.getStatusCode().series() == HttpStatus.Series.SERVER_ERROR || hasExceptionHeader) {
+		if (response.getStatusCode().series() == HttpStatus.Series.SERVER_ERROR) {
 			String body = IoUtils.inputstream_to_string(response.getBody());
 			apiError = throwError(body);
 			throw new ApiHttpServerException(statusCode, apiError);
@@ -59,6 +61,10 @@ public class AppClientErrorHanlder implements ResponseErrorHandler {
 			String body2 = IoUtils.inputstream_to_string(response.getBody());
 			apiError = throwError(body2);
 			throw new ApiHttpClientException(statusCode, apiError);
+		} else if (hasExceptionHeader) {
+			String body = IoUtils.inputstream_to_string(response.getBody());
+			apiError = throwError(body);
+			throw new ApiErrorException(apiError);
 		}
 
 	}

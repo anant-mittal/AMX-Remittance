@@ -70,12 +70,11 @@ public abstract class ACardReaderService {
 	String serverUrl;
 	@Value("${device.terminal.id}")
 	String terminalId;
-	@Value("${device.reset.date}")
-	String resetDate;
 
 	@Autowired
 	RestService restService;
 
+	boolean devicePairingCredsValid = true;
 	DevicePairingResponse devicePairingCreds;
 	SessionPairingResponse sessionPairingCreds;
 
@@ -122,22 +121,25 @@ public abstract class ACardReaderService {
 				LOGGER.error("pairing Exception:IOException", ex);
 			}
 		}
-		try {
-			String passwordEncd = keyring.getPassword("amx-adapter", terminalId + "#" + resetDate);
-			byte[] terminalCredsByts = Base64.getDecoder().decode(passwordEncd);
-			String terminalCredsStrs = new String(terminalCredsByts);
-			DevicePairingResponse dpr = JsonUtil.fromJson(terminalCredsStrs, DevicePairingResponse.class);
-			if (!ArgUtil.isEmpty(dpr) && !ArgUtil.isEmpty(dpr.getDeviceRegKey())) {
-				devicePairingCreds = dpr;
-				status(DeviceStatus.PAIRING_KEYS_FOUND);
+
+		if (devicePairingCredsValid) {
+			try {
+				String passwordEncd = keyring.getPassword("amx-adapter", terminalId);
+				byte[] terminalCredsByts = Base64.getDecoder().decode(passwordEncd);
+				String terminalCredsStrs = new String(terminalCredsByts);
+				DevicePairingResponse dpr = JsonUtil.fromJson(terminalCredsStrs, DevicePairingResponse.class);
+				if (!ArgUtil.isEmpty(dpr) && !ArgUtil.isEmpty(dpr.getDeviceRegKey())) {
+					devicePairingCreds = dpr;
+					status(DeviceStatus.PAIRING_KEYS_FOUND);
+				}
+			} catch (LockException ex) {
+				SWAdapterGUI.CONTEXT.log(ex.getMessage());
+				status(DeviceStatus.PAIRING_KEYS_FOUND_ERROR);
+				LOGGER.error("pairing Exception:LockException", ex);
+			} catch (PasswordRetrievalException ex) {
+				status(DeviceStatus.PAIRING_KEYS_NOT_FOUND);
+				SWAdapterGUI.CONTEXT.log("PAIRING_KEYS_NOT_FOUND");
 			}
-		} catch (LockException ex) {
-			SWAdapterGUI.CONTEXT.log(ex.getMessage());
-			status(DeviceStatus.PAIRING_KEYS_FOUND_ERROR);
-			LOGGER.error("pairing Exception:LockException", ex);
-		} catch (PasswordRetrievalException ex) {
-			status(DeviceStatus.PAIRING_KEYS_NOT_FOUND);
-			SWAdapterGUI.CONTEXT.log("PAIRING_KEYS_NOT_FOUND");
 		}
 
 		if (ArgUtil.isEmpty(devicePairingCreds)) {
@@ -154,11 +156,12 @@ public abstract class ACardReaderService {
 					DevicePairingResponse dpr = resp.getResult();
 					if (!ArgUtil.isEmpty(dpr) && !ArgUtil.isEmpty(dpr.getDeviceRegKey())) {
 						devicePairingCreds = dpr;
+						devicePairingCredsValid = true;
 						String terminalCredsStrs = JsonUtil.toJson(dpr);
 						String passwordEncd = Base64.getEncoder().encodeToString(terminalCredsStrs.getBytes());
 
 						try {
-							keyring.setPassword("amx-adapter", terminalId + "#" + resetDate, passwordEncd);
+							keyring.setPassword("amx-adapter", terminalId, passwordEncd);
 							status(DeviceStatus.PAIRED);
 						} catch (LockException ex) {
 							status(DeviceStatus.PAIRING_KEY_SAVE_ERROR);
@@ -209,10 +212,13 @@ public abstract class ACardReaderService {
 			status(DeviceStatus.SESSION_CREATED);
 		} catch (AmxApiException e) {
 			status(DeviceStatus.SESSION_ERROR);
-			SWAdapterGUI.CONTEXT.log("SERVICE ERROR : " + e.getErrorKey());
+			SWAdapterGUI.CONTEXT.log(e.getErrorKey() + " - REGID : " + devicePairingCreds.getDeviceRegKey());
+			if ("DEVICE_INVALID_PAIR_TOKEN".equals(devicePairingCreds.getDeviceRegKey())) {
+				devicePairingCredsValid = false;
+			}
 		} catch (AmxException e) {
 			status(DeviceStatus.SESSION_ERROR);
-			SWAdapterGUI.CONTEXT.log("SERVICE ERROR : " + e.getMessage());
+			SWAdapterGUI.CONTEXT.log("SERVICE ERROR : " + e.getMessage() + e.getStatusKey());
 		} catch (Exception e) {
 			status(DeviceStatus.SESSION_ERROR);
 			SWAdapterGUI.CONTEXT.log("CLIENT ERROR : " + e.getMessage());

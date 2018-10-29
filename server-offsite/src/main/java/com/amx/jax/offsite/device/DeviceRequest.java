@@ -83,7 +83,7 @@ public class DeviceRequest {
 		return deviceData;
 	}
 
-	public void validateRequest() {
+	public DeviceData validateRequest() {
 		DeviceData deviceData = validateSession();
 
 		String deviceRegToken = commonHttpRequest.get(DeviceConstants.Keys.DEVICE_REG_TOKEN_XKEY);
@@ -93,13 +93,15 @@ public class DeviceRequest {
 		if (!DeviceConstants.validateDeviceReqToken(deviceData.getDeviceReqKey(), deviceRegToken, deviceReqToken)) {
 			throw new OffsiteServerError(OffsiteServerCodes.INVALID_DEVICE_REQUEST);
 		}
+		return deviceData;
 	}
 
-	public SessionPairingResponse createSession(String sessionPairToken, String sessionOtp) {
+	public SessionPairingResponse createSession(String sessionPairToken, String sessionOtp, String terminalId) {
 
 		String deviceRegKey = commonHttpRequest.get(DeviceConstants.Keys.DEVICE_REG_KEY_XKEY);
 		DeviceData deviceData = new DeviceData();
 
+		deviceData.setTerminalId(terminalId);
 		// Session Request Key
 		deviceData.setDeviceReqKey(Random.randomAlphaNumeric(10));
 

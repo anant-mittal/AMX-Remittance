@@ -6,7 +6,6 @@ import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -32,8 +31,8 @@ import com.amx.jax.model.response.DevicePairOtpResponse;
 import com.amx.jax.model.response.DeviceStatusInfoDto;
 import com.amx.jax.offsite.OffsiteStatus.ApiOffisteStatus;
 import com.amx.jax.offsite.OffsiteStatus.OffsiteServerCodes;
-import com.amx.jax.offsite.OffsiteStatus.OffsiteServerError;
 import com.amx.jax.offsite.device.DeviceConfigs.CardBox;
+import com.amx.jax.offsite.device.DeviceConfigs.DeviceData;
 import com.amx.jax.swagger.IStatusCodeListPlugin.ApiStatusService;
 import com.amx.utils.ArgUtil;
 
@@ -95,7 +94,8 @@ public class DeviceController {
 
 		DevicePairOtpResponse resp = deviceClient
 				.sendOtpForPairing(ArgUtil.parseAsInteger(deviceRegKey), deviceRegToken).getResult();
-		SessionPairingResponse creds = deviceRequestValidator.createSession(resp.getSessionPairToken(), resp.getOtp());
+		SessionPairingResponse creds = deviceRequestValidator.createSession(resp.getSessionPairToken(), resp.getOtp(),
+				resp.getTermialId());
 		return AmxApiResponse.build(creds);
 	}
 
@@ -109,20 +109,19 @@ public class DeviceController {
 
 	@ApiDeviceHeaders
 	@RequestMapping(value = { DeviceConstants.Path.DEVICE_STATUS_CARD }, method = { RequestMethod.POST })
-	public AmxApiResponse<CardData, Object> saveCardDetails(@RequestBody CardReader reader,
-			@PathVariable(value = DeviceConstants.Params.PARAM_SYSTEM_ID) String systemid) {
-		deviceRequestValidator.validateRequest();
+	public AmxApiResponse<CardData, Object> saveCardDetails(@RequestBody CardReader reader) {
+		DeviceData deviceData = deviceRequestValidator.validateRequest();
 		if (ArgUtil.isEmpty(reader.getData())) {
-			cardBox.fastRemove(systemid);
+			cardBox.fastRemove(deviceData.getTerminalId());
 		} else {
-			cardBox.put(systemid, reader.getData());
+			cardBox.put(deviceData.getTerminalId(), reader.getData());
 		}
 		return AmxApiResponse.build(reader.getData());
 	}
 
 	@RequestMapping(value = { DeviceConstants.Path.DEVICE_STATUS_CARD }, method = { RequestMethod.GET })
 	public AmxApiResponse<CardData, Object> getCardDetails(
-			@PathVariable(value = DeviceConstants.Params.PARAM_SYSTEM_ID) String systemid,
+			@RequestParam(value = DeviceConstants.Params.PARAM_SYSTEM_ID) String systemid,
 			@RequestParam(required = false) Boolean wait, @RequestParam(required = false) Boolean flush)
 			throws InterruptedException {
 		wait = ArgUtil.parseAsBoolean(wait, Boolean.FALSE);

@@ -2,7 +2,6 @@ package com.amx.jax.offsite.device;
 
 import java.io.Serializable;
 
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
@@ -17,6 +16,16 @@ public class DeviceConfigs {
 
 	public static class DeviceData implements Serializable {
 		private static final long serialVersionUID = 2981932845270868040L;
+		private String terminalId;
+
+		public String getTerminalId() {
+			return terminalId;
+		}
+
+		public void setTerminalId(String terminalId) {
+			this.terminalId = terminalId;
+		}
+
 		private String deviceReqKey;
 		private String sessionPairingTokenX;
 
