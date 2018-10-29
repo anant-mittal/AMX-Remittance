@@ -902,24 +902,4 @@ public class Customer implements java.io.Serializable {
 		this.fsIncomeRangeMaster = fsIncomeRangeMaster;
 	}
 
-	@Column(name = "ISSUE_DATE")
-	public Date getIssueDate() {
-		return issueDate;
-	}
-
-	public void setIssueDate(Date issueDate) {
-		this.issueDate = issueDate;
-	}
-
-	@Column(name = "EXPIRY_DATE")
-	public Date getExpiryDate() {
-		return expiryDate;
-	}
-
-	public void setExpiryDate(Date expiryDate) {
-		this.expiryDate = expiryDate;
-	}
-	
-	
-
 }
