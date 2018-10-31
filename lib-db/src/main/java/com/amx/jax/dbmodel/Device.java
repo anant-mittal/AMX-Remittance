@@ -17,7 +17,7 @@ import javax.persistence.Table;
 import com.amx.jax.dict.UserClient.ClientType;
 
 @Entity
-@Table(name = "JAX_DEVICE")
+@Table(name = "JAX_DEVICE_CLIENT")
 public class Device {
 
 	@Id
@@ -26,10 +26,10 @@ public class Device {
 	@Column(name = "REGISTRATION_ID")
 	BigDecimal registrationId;
 
-	@Column(name = "DEVICE_ID")
+	@Column(name = "DEVICE_CLIENT_ID")
 	String deviceId;
 
-	@Column(name = "DEVICE_TYPE")
+	@Column(name = "DEVICE_CLIENT_TYPE")
 	@Enumerated(value = EnumType.STRING)
 	ClientType deviceType;
 

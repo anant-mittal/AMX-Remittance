@@ -15,14 +15,15 @@ import com.amx.jax.constants.DeviceState;
 import com.amx.jax.constants.DeviceStateDataType;
 
 @Entity
-@Table(name = "JAX_DEVICE_STATE")
+@Table(name = "JAX_DEVICE_CLIENT_STATE")
 public class DeviceStateInfo {
 
 	@Id
-	@Column(name = "DEVICE_REG_ID")
+	@Column(name = "DEVICE_CLIENT_REG_ID")
 	BigDecimal deviceRegId;
 
 	@Column(name = "STATE")
+	@Enumerated(value = EnumType.STRING)
 	DeviceState state;
 
 	@Column(name = "CREATED_DATE")

@@ -137,6 +137,7 @@ public class DeviceService extends AbstractService {
 		if (registrationId == null) {
 			throw new GlobalException("Device registration id can not be blank");
 		}
+		deviceValidation.validateDevice(registrationId);
 		deviceValidation.validatePaireToken(paireToken, registrationId);
 		deviceManager.validateSessionToken(sessionToken, registrationId);
 		Device device = deviceDao.findDevice(new BigDecimal(registrationId));
