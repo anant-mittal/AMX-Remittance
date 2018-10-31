@@ -131,6 +131,8 @@ public abstract class ACardReaderService {
 				if (!ArgUtil.isEmpty(dpr) && !ArgUtil.isEmpty(dpr.getDeviceRegId())) {
 					devicePairingCreds = dpr;
 					status(DeviceStatus.PAIRING_KEYS_FOUND);
+				} else {
+					devicePairingCredsValid = false;
 				}
 			} catch (LockException ex) {
 				SWAdapterGUI.CONTEXT.log(ex.getMessage());
