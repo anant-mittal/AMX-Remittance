@@ -33,6 +33,7 @@ import com.amx.jax.offsite.OffsiteStatus.ApiOffisteStatus;
 import com.amx.jax.offsite.OffsiteStatus.OffsiteServerCodes;
 import com.amx.jax.offsite.device.DeviceConfigs.CardBox;
 import com.amx.jax.offsite.device.DeviceConfigs.DeviceData;
+import com.amx.jax.sso.SSOTranx;
 import com.amx.jax.swagger.IStatusCodeListPlugin.ApiStatusService;
 import com.amx.utils.ArgUtil;
 
@@ -56,6 +57,9 @@ public class DeviceController {
 
 	@Autowired
 	private CardBox cardBox;
+
+	@Autowired
+	private SSOTranx sSOTranx;
 
 	@ApiOffisteStatus({ OffsiteServerCodes.CLIENT_UNKNOWN })
 	@RequestMapping(value = { DeviceConstants.Path.DEVICE_PAIR }, method = { RequestMethod.POST })
@@ -96,6 +100,15 @@ public class DeviceController {
 		SessionPairingCreds creds = deviceRequestValidator.createSession(resp.getSessionPairToken(), resp.getOtp(),
 				resp.getTermialId());
 		return AmxApiResponse.build(creds);
+	}
+
+	@RequestMapping(value = { DeviceConstants.Path.TERMINAL_PAIRING }, method = { RequestMethod.GET })
+	public AmxApiResponse<SessionPairingCreds, Object> webAppLogin() {
+		DeviceData deviceData = deviceRequestValidator.validateRequest();
+		String terminalId = deviceData.getTerminalId();
+		sSOTranx.get().setTerminalId(terminalId);
+		sSOTranx.save();
+		return AmxApiResponse.build();
 	}
 
 	@ApiDeviceHeaders

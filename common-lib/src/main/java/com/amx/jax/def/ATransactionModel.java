@@ -46,9 +46,18 @@ public abstract class ATransactionModel<T> {
 		getCacheBox().put(getTranxId(), model);
 		return model;
 	}
-	
+
+	public T save() {
+		T model = this.get(null);
+		if (model == null) {
+			return null;
+		}
+		this.save(model);
+		return model;
+	}
+
 	public void clear(String tranxId) {
-		getCacheBox().remove(tranxId);		
+		getCacheBox().remove(tranxId);
 	}
 
 	public T get() {

@@ -23,7 +23,7 @@ public class KWTCardController {
 	}
 
 	@RequestMapping(value = "/pub/script/validation.js", method = RequestMethod.GET)
-	public String makesession(@RequestParam String tanx) throws InterruptedException {
+	public String makesession(@RequestParam String tranx) throws InterruptedException {
 		return "var _ba_ = true";
 	}
 
