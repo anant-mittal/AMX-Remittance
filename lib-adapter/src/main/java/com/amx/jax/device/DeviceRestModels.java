@@ -30,9 +30,9 @@ public class DeviceRestModels {
 
 		String getDeviceRegToken();
 
-		String getDeviceRegKey();
+		String getDeviceRegId();
 
-		void setDeviceRegKey(String deviceRegId);
+		void setDeviceRegId(String deviceRegId);
 
 	}
 
@@ -67,7 +67,7 @@ public class DeviceRestModels {
 		ClientType deivceClientType;
 
 		String deviceRegToken;
-		String deviceRegKey;
+		String deviceRegId;
 
 		String deviceSessionToken;
 
@@ -106,13 +106,13 @@ public class DeviceRestModels {
 		}
 
 		@Override
-		public String getDeviceRegKey() {
-			return deviceRegKey;
+		public String getDeviceRegId() {
+			return deviceRegId;
 		}
 
 		@Override
-		public void setDeviceRegKey(String deviceRegId) {
-			this.deviceRegKey = deviceRegId;
+		public void setDeviceRegId(String deviceRegId) {
+			this.deviceRegId = deviceRegId;
 		}
 
 		@Override
@@ -153,7 +153,7 @@ public class DeviceRestModels {
 
 	public static DevicePairingCreds getDevicePairingCreds(String deviceRegId, String deviceRegToken) {
 		DevicePairingCreds model = new DeviceRestModel();
-		model.setDeviceRegKey(deviceRegId);
+		model.setDeviceRegId(deviceRegId);
 		model.setDeviceRegToken(deviceRegToken);
 		return model;
 	}

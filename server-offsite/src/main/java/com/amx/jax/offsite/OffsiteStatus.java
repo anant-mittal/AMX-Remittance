@@ -30,9 +30,9 @@ public class OffsiteStatus extends IStatusCodeListPlugin<OffsiteServerCodes, Api
 	 *
 	 */
 	public static enum OffsiteServerCodes implements IExceptionEnum {
-		DEVICE_UNKNOWN,
+		CLIENT_UNKNOWN,
 
-		DEVICE_CREDS_MISSING, INVALID_DEVICE_SESSION, INVALID_DEVICE_REQUEST,
+		CLIENT_CREDS_MISSING, INVALID_CLIENT_SESSION, INVALID_CLIENT_REQUEST,
 
 		OFFSITE_SERVER_ERROR, DOTP_REQUIRED, MOTP_REQUIRED, EOTP_REQUIRED;
 

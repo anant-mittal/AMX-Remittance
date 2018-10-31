@@ -12,13 +12,13 @@ public class DeviceConstants {
 	}
 
 	public static class Keys {
-		public static final String DEVICE_REG_KEY_XKEY = "x-device-reg-id";
-		public static final String DEVICE_REG_TOKEN_XKEY = "x-device-reg-token";
+		public static final String CLIENT_REG_KEY_XKEY = "x-device-reg-id";
+		public static final String CLIENT_REG_TOKEN_XKEY = "x-device-reg-token";
 
-		public static final String DEVICE_SESSION_TOKEN_XKEY = "x-device-session-token";
+		public static final String CLIENT_SESSION_TOKEN_XKEY = "x-device-session-token";
 
 		public static final String DEVICE_REQ_KEY_XKEY = "x-device-req-key";
-		public static final String DEVICE_REQ_TOKEN_XKEY = "x-device-req-token";
+		public static final String CLIENT_REQ_TOKEN_XKEY = "x-device-req-token";
 	}
 
 	public static class Path {

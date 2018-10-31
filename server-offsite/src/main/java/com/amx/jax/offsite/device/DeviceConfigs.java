@@ -59,14 +59,14 @@ public class DeviceConfigs {
 
 	// @Bean
 	public MockParam deviceRegKey() {
-		return new MockParamBuilder().name(DeviceConstants.Keys.DEVICE_REG_KEY_XKEY).description("Device Reg Key")
+		return new MockParamBuilder().name(DeviceConstants.Keys.CLIENT_REG_KEY_XKEY).description("Device Reg Key")
 				.parameterType(MockParamBuilder.MockParamType.HEADER).required(false).build();
 
 	}
 
 	// @Bean
 	public MockParam deviceRegToken() {
-		return new MockParamBuilder().name(DeviceConstants.Keys.DEVICE_REG_TOKEN_XKEY).description("Device Reg Token")
+		return new MockParamBuilder().name(DeviceConstants.Keys.CLIENT_REG_TOKEN_XKEY).description("Device Reg Token")
 				.parameterType(MockParamBuilder.MockParamType.HEADER).required(false).build();
 
 	}

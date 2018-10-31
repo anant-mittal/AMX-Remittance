@@ -30,26 +30,26 @@ public class DeviceRequest {
 	private HttpServletResponse response;
 
 	public String getDeviceRegKey() {
-		return commonHttpRequest.get(DeviceConstants.Keys.DEVICE_REG_KEY_XKEY);
+		return commonHttpRequest.get(DeviceConstants.Keys.CLIENT_REG_KEY_XKEY);
 	}
 
 	public String getDeviceRegToken() {
-		return commonHttpRequest.get(DeviceConstants.Keys.DEVICE_REG_TOKEN_XKEY);
+		return commonHttpRequest.get(DeviceConstants.Keys.CLIENT_REG_TOKEN_XKEY);
 	}
 
 	public String getDeviceSessionToken() {
-		return commonHttpRequest.get(DeviceConstants.Keys.DEVICE_SESSION_TOKEN_XKEY);
+		return commonHttpRequest.get(DeviceConstants.Keys.CLIENT_SESSION_TOKEN_XKEY);
 	}
 
 	public String getDeviceRequestToken() {
-		return commonHttpRequest.get(DeviceConstants.Keys.DEVICE_REQ_TOKEN_XKEY);
+		return commonHttpRequest.get(DeviceConstants.Keys.CLIENT_REQ_TOKEN_XKEY);
 	}
 
 	public DevicePairingCreds validateDevice() {
 		String deviceRegKey = getDeviceRegKey();
 		String deviceRegToken = getDeviceRegToken();
 		if (ArgUtil.isEmpty(deviceRegKey) || ArgUtil.isEmpty(deviceRegToken)) {
-			throw new OffsiteServerError(OffsiteServerCodes.DEVICE_CREDS_MISSING);
+			throw new OffsiteServerError(OffsiteServerCodes.CLIENT_CREDS_MISSING);
 		}
 		return DeviceRestModels.getDevicePairingCreds(deviceRegKey, deviceRegToken);
 	}
@@ -60,17 +60,17 @@ public class DeviceRequest {
 		String sessionPairToken = getDeviceSessionToken();
 
 		if (ArgUtil.isEmpty(sessionPairToken)) {
-			throw new OffsiteServerError(OffsiteServerCodes.INVALID_DEVICE_SESSION, "Missing SessionPairingToken");
+			throw new OffsiteServerError(OffsiteServerCodes.INVALID_CLIENT_SESSION, "Missing SessionPairingToken");
 		}
 
-		DeviceData deviceData = deviceBox.get(devicePairingCreds.getDeviceRegKey());
+		DeviceData deviceData = deviceBox.get(devicePairingCreds.getDeviceRegId());
 		if (deviceData == null) {
-			throw new OffsiteServerError(OffsiteServerCodes.INVALID_DEVICE_SESSION, "Invalid Device");
+			throw new OffsiteServerError(OffsiteServerCodes.INVALID_CLIENT_SESSION, "Invalid Device");
 		}
 
-		if (!DeviceConstants.validateSessionPairingTokenX(devicePairingCreds.getDeviceRegKey(), sessionPairToken,
+		if (!DeviceConstants.validateSessionPairingTokenX(devicePairingCreds.getDeviceRegId(), sessionPairToken,
 				deviceData.getSessionPairingTokenX())) {
-			throw new OffsiteServerError(OffsiteServerCodes.INVALID_DEVICE_SESSION, "Invalid SessionPairingToken");
+			throw new OffsiteServerError(OffsiteServerCodes.INVALID_CLIENT_SESSION, "Invalid SessionPairingToken");
 		}
 		return deviceData;
 	}
@@ -80,7 +80,7 @@ public class DeviceRequest {
 		// Same logic on client side
 		if (!DeviceConstants.validateDeviceReqToken(deviceData.getDeviceReqKey(), getDeviceRegToken(),
 				getDeviceRequestToken())) {
-			throw new OffsiteServerError(OffsiteServerCodes.INVALID_DEVICE_REQUEST);
+			throw new OffsiteServerError(OffsiteServerCodes.INVALID_CLIENT_REQUEST);
 		}
 		return deviceData;
 	}
