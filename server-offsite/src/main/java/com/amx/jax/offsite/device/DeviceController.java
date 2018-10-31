@@ -57,7 +57,7 @@ public class DeviceController {
 	@Autowired
 	private CardBox cardBox;
 
-	@ApiOffisteStatus({ OffsiteServerCodes.DEVICE_UNKNOWN })
+	@ApiOffisteStatus({ OffsiteServerCodes.CLIENT_UNKNOWN })
 	@RequestMapping(value = { DeviceConstants.Path.DEVICE_PAIR }, method = { RequestMethod.POST })
 	public AmxApiResponse<DevicePairingCreds, Object> registerNewDevice(@Valid @RequestBody DevicePairingRequest req) {
 
@@ -77,12 +77,12 @@ public class DeviceController {
 
 		DevicePairingCreds creds = DeviceRestModels.get();
 		creds.setDeviceRegToken(deviceDto.getPairToken());
-		creds.setDeviceRegKey(ArgUtil.parseAsString(deviceDto.getRegistrationId()));
+		creds.setDeviceRegId(ArgUtil.parseAsString(deviceDto.getRegistrationId()));
 		return AmxApiResponse.build(creds);
 	}
 
 	@ApiDeviceHeaders
-	@ApiOffisteStatus({ OffsiteServerCodes.DEVICE_UNKNOWN })
+	@ApiOffisteStatus({ OffsiteServerCodes.CLIENT_UNKNOWN })
 	@RequestMapping(value = { DeviceConstants.Path.SESSION_PAIR }, method = { RequestMethod.GET })
 	public AmxApiResponse<SessionPairingCreds, Object> sendOtpForPairing() {
 

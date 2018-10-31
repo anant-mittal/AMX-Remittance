@@ -28,19 +28,19 @@ public interface IDeviceService extends IJaxService {
 	public static final String DEVICE_FC_PURCHASE = "/fcpurchase";
 	public static final String DEVICE_FC_SALE = "/fcsale";
 
-	@ApiJaxStatus({ JaxError.DEVICE_ALREADY_REGISTERED })
+	@ApiJaxStatus({ JaxError.CLIENT_ALREADY_REGISTERED })
 	AmxApiResponse<DeviceDto, Object> registerNewDevice(DeviceRegistrationRequest request);
 
-	@ApiJaxStatus({ JaxError.JAX_FIELD_VALIDATION_FAILURE, JaxError.DEVICE_INVALID_PAIR_TOKEN,
-			JaxError.DEVICE_INVALID_SESSION_TOKEN })
+	@ApiJaxStatus({ JaxError.JAX_FIELD_VALIDATION_FAILURE, JaxError.CLIENT_INVALID_PAIR_TOKEN,
+			JaxError.CLIENT_INVALID_SESSION_TOKEN })
 	AmxApiResponse<DeviceStatusInfoDto, Object> getStatus(Integer registrationId, String paireToken,
 			String sessionToken);
 
-	@ApiJaxStatus({ JaxError.DEVICE_INVALID_PAIR_TOKEN, JaxError.DEVICE_NOT_FOUND, JaxError.DEVICE_NOT_ACTIVE })
+	@ApiJaxStatus({ JaxError.CLIENT_INVALID_PAIR_TOKEN, JaxError.CLIENT_NOT_FOUND, JaxError.CLIENT_NOT_ACTIVE })
 	AmxApiResponse<DevicePairOtpResponse, Object> sendOtpForPairing(Integer deviceRegId, String paireToken);
 
-	@ApiJaxStatus({ JaxError.JAX_FIELD_VALIDATION_FAILURE, JaxError.DEVICE_INVALID_PAIR_TOKEN,
-			JaxError.DEVICE_INVALID_SESSION_TOKEN })
+	@ApiJaxStatus({ JaxError.JAX_FIELD_VALIDATION_FAILURE, JaxError.CLIENT_INVALID_PAIR_TOKEN,
+			JaxError.CLIENT_INVALID_SESSION_TOKEN })
 	AmxApiResponse<BoolRespModel, Object> updateDeviceState(DeviceStateInfoChangeRequest request,
 			Integer registrationId, String paireToken, String sessionToken);
 

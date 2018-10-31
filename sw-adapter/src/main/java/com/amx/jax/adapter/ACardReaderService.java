@@ -128,7 +128,7 @@ public abstract class ACardReaderService {
 				byte[] terminalCredsByts = Base64.getDecoder().decode(passwordEncd);
 				String terminalCredsStrs = new String(terminalCredsByts);
 				DevicePairingCreds dpr = JsonUtil.fromJson(terminalCredsStrs, DevicePairingCreds.class);
-				if (!ArgUtil.isEmpty(dpr) && !ArgUtil.isEmpty(dpr.getDeviceRegKey())) {
+				if (!ArgUtil.isEmpty(dpr) && !ArgUtil.isEmpty(dpr.getDeviceRegId())) {
 					devicePairingCreds = dpr;
 					status(DeviceStatus.PAIRING_KEYS_FOUND);
 				}
@@ -154,7 +154,7 @@ public abstract class ACardReaderService {
 						});
 				if (resp.getResults().size() > 0) {
 					DevicePairingCreds dpr = resp.getResult();
-					if (!ArgUtil.isEmpty(dpr) && !ArgUtil.isEmpty(dpr.getDeviceRegKey())) {
+					if (!ArgUtil.isEmpty(dpr) && !ArgUtil.isEmpty(dpr.getDeviceRegId())) {
 						devicePairingCreds = dpr;
 						devicePairingCredsValid = true;
 						String terminalCredsStrs = JsonUtil.toJson(dpr);
@@ -205,15 +205,15 @@ public abstract class ACardReaderService {
 			sessionPairingCreds = restService.ajax(serverUrl).path(DeviceConstants.Path.SESSION_PAIR)
 					.header(AppConstants.DEVICE_ID_XKEY, address.getMac())
 					.header(AppConstants.DEVICE_IP_LOCAL_XKEY, address.getLocalIp())
-					.header(DeviceConstants.Keys.DEVICE_REG_KEY_XKEY, devicePairingCreds.getDeviceRegKey())
-					.header(DeviceConstants.Keys.DEVICE_REG_TOKEN_XKEY, devicePairingCreds.getDeviceRegToken()).get()
+					.header(DeviceConstants.Keys.CLIENT_REG_KEY_XKEY, devicePairingCreds.getDeviceRegId())
+					.header(DeviceConstants.Keys.CLIENT_REG_TOKEN_XKEY, devicePairingCreds.getDeviceRegToken()).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<SessionPairingCreds, Object>>() {
 					}).getResult();
 			status(DeviceStatus.SESSION_CREATED);
 		} catch (AmxApiException e) {
 			status(DeviceStatus.SESSION_ERROR);
-			SWAdapterGUI.CONTEXT.log(e.getErrorKey() + " - REGID : " + devicePairingCreds.getDeviceRegKey());
-			if ("DEVICE_INVALID_PAIR_TOKEN".equals(devicePairingCreds.getDeviceRegKey())) {
+			SWAdapterGUI.CONTEXT.log(e.getErrorKey() + " - REGID : " + devicePairingCreds.getDeviceRegId());
+			if ("CLIENT_INVALID_PAIR_TOKEN".equals(devicePairingCreds.getDeviceRegId())) {
 				devicePairingCredsValid = false;
 			}
 		} catch (AmxException e) {
@@ -247,11 +247,11 @@ public abstract class ACardReaderService {
 						.pathParam(DeviceConstants.Params.PARAM_SYSTEM_ID, terminalId)
 						.header(AppConstants.DEVICE_ID_XKEY, address.getMac())
 						.header(AppConstants.DEVICE_IP_LOCAL_XKEY, address.getLocalIp())
-						.header(DeviceConstants.Keys.DEVICE_REG_KEY_XKEY, devicePairingCreds.getDeviceRegKey())
-						.header(DeviceConstants.Keys.DEVICE_REG_TOKEN_XKEY, devicePairingCreds.getDeviceRegToken())
-						.header(DeviceConstants.Keys.DEVICE_SESSION_TOKEN_XKEY,
+						.header(DeviceConstants.Keys.CLIENT_REG_KEY_XKEY, devicePairingCreds.getDeviceRegId())
+						.header(DeviceConstants.Keys.CLIENT_REG_TOKEN_XKEY, devicePairingCreds.getDeviceRegToken())
+						.header(DeviceConstants.Keys.CLIENT_SESSION_TOKEN_XKEY,
 								sessionPairingCreds.getDeviceSessionToken())
-						.header(DeviceConstants.Keys.DEVICE_REQ_TOKEN_XKEY,
+						.header(DeviceConstants.Keys.CLIENT_REQ_TOKEN_XKEY,
 								DeviceConstants.generateDeviceReqToken(sessionPairingCreds, devicePairingCreds))
 						.post(reader).asObject();
 				status(DataStatus.SYNCED);
