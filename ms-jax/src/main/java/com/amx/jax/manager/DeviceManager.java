@@ -124,7 +124,7 @@ public class DeviceManager {
 
 	public void validateLogIn(Device device) {
 		if (!isLoggedIn(device)) {
-			throw new GlobalException("Device not logged in", JaxError.DEVICE_NOT_LOGGGED_IN);
+			throw new GlobalException("Device not logged in", JaxError.CLIENT_NOT_LOGGGED_IN);
 		}
 	}
 
@@ -141,7 +141,7 @@ public class DeviceManager {
 	public void validateDeviceActivationRequest(Integer countryBranchSystemInventoryId, ClientType deviceType) {
 		Device device = deviceDao.findDevice(new BigDecimal(countryBranchSystemInventoryId), deviceType);
 		if (device != null) {
-			throw new GlobalException("Device already active", JaxError.DEVICE_ALREADY_ACTIVE);
+			throw new GlobalException("Device already active", JaxError.CLIENT_ALREADY_ACTIVE);
 		}
 	}
 }

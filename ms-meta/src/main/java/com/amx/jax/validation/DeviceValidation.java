@@ -1,7 +1,5 @@
 package com.amx.jax.validation;
 
-import java.math.BigDecimal;
-
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -30,10 +28,10 @@ public class DeviceValidation {
 	public void validateDevice(Device device) {
 
 		if (device == null) {
-			throw new GlobalException("No device found", JaxError.DEVICE_NOT_FOUND);
+			throw new GlobalException("No device found", JaxError.CLIENT_NOT_FOUND);
 		}
 		if (!device.getStatus().equals(ConstantDocument.Yes)) {
-			throw new GlobalException("Device is not active", JaxError.DEVICE_NOT_ACTIVE);
+			throw new GlobalException("Device is not active", JaxError.CLIENT_NOT_ACTIVE);
 		}
 	}
 
@@ -64,21 +62,21 @@ public class DeviceValidation {
 		Device existing = deviceDao.findDevice(branchSystem.getCountryBranchSystemInventoryId(),
 				request.getDeviceType());
 		if (existing != null) {
-			throw new GlobalException("Device already registered", JaxError.DEVICE_ALREADY_REGISTERED);
+			throw new GlobalException("Device already registered", JaxError.CLIENT_ALREADY_REGISTERED);
 		}
 	}
 
 	public void validatePaireToken(String paireToken, Integer registrationId) {
 		DeviceStateInfo deviceStateInfo = deviceDao.getDeviceStateInfoByPaireToken(paireToken, registrationId);
 		if (deviceStateInfo == null) {
-			throw new GlobalException("Invalid paire token", JaxError.DEVICE_INVALID_PAIR_TOKEN);
+			throw new GlobalException("Invalid paire token", JaxError.CLIENT_INVALID_PAIR_TOKEN);
 		}
 	}
 
 	public void validateSessionToken(String sessionToken, Integer registrationId) {
 		DeviceStateInfo deviceStateInfo = deviceDao.findBySessionToken(sessionToken, registrationId);
 		if (deviceStateInfo == null) {
-			throw new GlobalException("Invalid session token", JaxError.DEVICE_INVALID_SESSION_TOKEN);
+			throw new GlobalException("Invalid session token", JaxError.CLIENT_INVALID_SESSION_TOKEN);
 		}
 
 	}
