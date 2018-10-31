@@ -114,7 +114,7 @@ public class DeviceController implements IDeviceService {
 			@RequestParam Integer countryBranchSystemInventoryId,
 			@Valid @RequestBody SignaturePadCustomerRegStateMetaInfo metaInfo) {
 		BoolRespModel otpResponse = deviceService.updateDeviceStateData(deviceType, countryBranchSystemInventoryId,
-				metaInfo, DeviceStateDataType.FC_SALE);
+				metaInfo, DeviceStateDataType.CUSTOMER_REGISTRATION);
 		return AmxApiResponse.build(otpResponse);
 	}
 }

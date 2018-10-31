@@ -74,6 +74,15 @@ public class BizcomponentDao {
 
 	}
 	
+	public BizComponentDataDesc getBizComponentDataDescByComponmentId(BigDecimal componentDataId) {
+		BizComponentData bizComponentData = new BizComponentData(componentDataId);
+		LanguageType langId = new LanguageType(metaData.getLanguageId());
+		List<BizComponentDataDesc> bizComDesc = iBizDataDecReporsitory
+				.findByFsBizComponentDataAndFsLanguageType(bizComponentData, langId);
+		return bizComDesc.get(0);
+
+	}
+	
 	
 	public List<BizComponentDataDesc> getBizComponentDataDescListByComponmentId() {
 				LanguageType langId = new LanguageType(metaData.getLanguageId());				

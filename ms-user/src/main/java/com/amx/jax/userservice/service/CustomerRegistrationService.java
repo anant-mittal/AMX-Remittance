@@ -22,7 +22,6 @@ import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.model.dto.SendOtpModel;
 import com.amx.jax.model.request.CustomerPersonalDetail;
 import com.amx.jax.repository.IApplicationCountryRepository;
-import com.amx.jax.service.CustomerService;
 import com.amx.jax.services.AbstractService;
 import com.amx.jax.services.JaxNotificationService;
 import com.amx.jax.trnx.CustomerRegistrationTrnxModel;
@@ -64,11 +63,11 @@ public class CustomerRegistrationService extends AbstractService {
 	@Autowired
 	CountryMetaValidation countryMetaValidation;	
 	@Autowired
-	CustomerService customerService;
-	@Autowired
 	JaxNotificationService jaxNotificationService;
 	@Autowired
 	IApplicationCountryRepository applicationSetup;
+	@Autowired
+	UserService userService ; 
 	
 	/**
 	 * Sends otp initiating trnx
@@ -137,7 +136,7 @@ public class CustomerRegistrationService extends AbstractService {
 		customerRegistrationManager.saveLoginDetail(customerCredential);
 		customerCredentialValidator.validate(customerRegistrationManager.get(),  null);
 		customerRegistrationManager.commit();
-		Customer customerDetails = customerService.getCustomerDetails(customerCredential.getLoginId());
+		Customer customerDetails = userService.getCustomerDetails(customerCredential.getLoginId());
 		ApplicationSetup applicationSetupData = applicationSetup.getApplicationSetupDetails();
 		PersonInfo personinfo = new PersonInfo();
 		try {

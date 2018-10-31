@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.jax.customer.service.CustomerService;
 import com.amx.jax.service.BlackMasterService;
-import com.amx.jax.service.CustomerService;
 import com.amx.jax.service.OnlineCustomerService;
 
 /**

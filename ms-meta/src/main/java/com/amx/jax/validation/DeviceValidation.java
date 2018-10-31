@@ -75,12 +75,4 @@ public class DeviceValidation {
 		}
 	}
 
-	public void validateSessionToken(String sessionToken, Integer registrationId) {
-		DeviceStateInfo deviceStateInfo = deviceDao.findBySessionToken(sessionToken, registrationId);
-		if (deviceStateInfo == null) {
-			throw new GlobalException("Invalid session token", JaxError.DEVICE_INVALID_SESSION_TOKEN);
-		}
-
-	}
-
 }

@@ -971,4 +971,8 @@ public class UserService extends AbstractUserService {
 	public Customer getCustById(BigDecimal id) {
 		return repo.findOne(id);
 	}
+	
+	public Customer getCustomerDetails(String loginId) {
+		return repo.getCustomerDetails(loginId);
+	}
 }

@@ -92,7 +92,6 @@ import com.amx.jax.repository.IUserFinancialYearRepo;
 import com.amx.jax.repository.JaxConditionalFieldRuleRepository;
 import com.amx.jax.repository.ProfessionRepository;
 import com.amx.jax.scope.TenantContext;
-import com.amx.jax.service.CustomerService;
 import com.amx.jax.service.PrefixService;
 import com.amx.jax.services.AbstractService;
 import com.amx.jax.services.JaxNotificationService;

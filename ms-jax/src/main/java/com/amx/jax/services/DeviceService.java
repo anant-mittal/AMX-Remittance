@@ -15,8 +15,10 @@ import org.springframework.web.context.WebApplicationContext;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
+import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constants.DeviceState;
 import com.amx.jax.constants.DeviceStateDataType;
+import com.amx.jax.customer.service.CustomerService;
 import com.amx.jax.dao.DeviceDao;
 import com.amx.jax.dbmodel.Device;
 import com.amx.jax.dbmodel.DeviceStateInfo;
@@ -37,7 +39,9 @@ import com.amx.jax.model.response.DeviceDto;
 import com.amx.jax.model.response.DevicePairOtpResponse;
 import com.amx.jax.model.response.DeviceStatusInfoDto;
 import com.amx.jax.model.response.IDeviceStateData;
-import com.amx.jax.service.CustomerService;
+import com.amx.jax.model.response.customer.CustomerContactDto;
+import com.amx.jax.model.response.customer.CustomerDto;
+import com.amx.jax.model.response.customer.CustomerIdProofDto;
 import com.amx.jax.services.AbstractService;
 import com.amx.jax.validation.DeviceValidation;
 import com.amx.utils.CryptoUtil;
@@ -79,7 +83,7 @@ public class DeviceService extends AbstractService {
 			throw new GlobalException("Device registration id can not be blank");
 		}
 		deviceValidation.validatePaireToken(paireToken, registrationId);
-		deviceValidation.validateSessionToken(sessionToken, registrationId);
+		deviceManager.validateSessionToken(sessionToken, registrationId);
 		Device device = deviceDao.findDevice(new BigDecimal(registrationId));
 		deviceValidation.validateDevice(device);
 		DeviceStateInfo deviceStateInfo = deviceDao.getDeviceStateInfo(device);
@@ -134,7 +138,7 @@ public class DeviceService extends AbstractService {
 			throw new GlobalException("Device registration id can not be blank");
 		}
 		deviceValidation.validatePaireToken(paireToken, registrationId);
-		deviceValidation.validateSessionToken(sessionToken, registrationId);
+		deviceManager.validateSessionToken(sessionToken, registrationId);
 		Device device = deviceDao.findDevice(new BigDecimal(registrationId));
 		deviceValidation.validateDevice(device);
 		DeviceStateInfo deviceStateInfo = deviceDao.getDeviceStateInfo(device);
@@ -178,7 +182,12 @@ public class DeviceService extends AbstractService {
 	private SignaturePadCustomerRegStateInfo getCustomerRegData(Integer customerId) {
 
 		SignaturePadCustomerRegStateInfo info = new SignaturePadCustomerRegStateInfo();
-		customerService.getCustomerContactDto(new BigDecimal(customerId));
+		BigDecimal customerIdBd = new BigDecimal(customerId);
+		info.setCustomerContactDto(customerService.getCustomerContactDto(customerIdBd));
+		info.setCustomerDto(customerService.getCustomerDto(customerIdBd));
+		info.setCustomerIdProofDto(
+				customerService.getCustomerIdProofDto(customerIdBd, ConstantDocument.BIZ_COMPONENT_ID_CIVIL_ID));
+		info.setCustomerIncomeRangeDto(customerService.getCustomerIncomeRangeDto(customerIdBd));
 		return info;
 	}
 
