@@ -47,6 +47,9 @@ public class ExceptionMessageKey extends Dnum<ExceptionMessageKey> implements IM
 	}
 
 	public static ExceptionMessageKey valueOf(String name) {
+		if (ArgUtil.isEmpty(name)) {
+			return null;
+		}
 		String exceptionMessageKeyStr = MAP.get(name.toLowerCase());
 		if (!ArgUtil.isEmpty(exceptionMessageKeyStr)) {
 			return fromString(ExceptionMessageKey.class, exceptionMessageKeyStr);

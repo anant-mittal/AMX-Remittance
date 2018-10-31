@@ -48,8 +48,8 @@ public abstract class ACardReaderService {
 	public static enum DeviceStatus {
 		ERROR, TIMEOUT,
 		// KEYRINGExceptions
-		KEYRING_EXCEPTION, KEYRING_FILE_EXCEPTION, PAIRING_KEYS_FOUND_ERROR, PAIRING_KEYS_NOT_FOUND,
-		DEVICE_PAIRING_ERROR, PAIRING_KEY_SAVE_ERROR, PAIRING_ERROR, NOT_PAIRED,
+		KEYRING_EXCEPTION, KEYRING_FILE_EXCEPTION, PAIRING_KEYS_EXCEPTION, PAIRING_KEYS_FOUND_ERROR,
+		PAIRING_KEYS_NOT_FOUND, DEVICE_PAIRING_ERROR, PAIRING_KEY_SAVE_ERROR, PAIRING_ERROR, NOT_PAIRED,
 		// Session Exceptions
 		SESSION_ERROR,
 		// Default Errors
@@ -135,10 +135,14 @@ public abstract class ACardReaderService {
 			} catch (LockException ex) {
 				SWAdapterGUI.CONTEXT.log(ex.getMessage());
 				status(DeviceStatus.PAIRING_KEYS_FOUND_ERROR);
-				LOGGER.error("pairing Exception:LockException", ex);
 			} catch (PasswordRetrievalException ex) {
 				status(DeviceStatus.PAIRING_KEYS_NOT_FOUND);
-				SWAdapterGUI.CONTEXT.log("PAIRING_KEYS_NOT_FOUND");
+				SWAdapterGUI.CONTEXT.log(DeviceStatus.PAIRING_KEYS_NOT_FOUND.toString());
+			} catch (Exception e) {
+				status(DeviceStatus.PAIRING_KEYS_EXCEPTION);
+				SWAdapterGUI.CONTEXT.log(DeviceStatus.PAIRING_KEYS_EXCEPTION.toString());
+				LOGGER.error("pairing Exception", e);
+				devicePairingCredsValid = false;
 			}
 		}
 

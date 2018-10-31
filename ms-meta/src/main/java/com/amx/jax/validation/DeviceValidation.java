@@ -75,10 +75,12 @@ public class DeviceValidation {
 		}
 	}
 
-	public void validateDevice(Integer deviceRegId) {
-		Device device = deviceDao.findDevice(new BigDecimal(deviceRegId));
-		if (device == null) {
-			throw new GlobalException("No device found for given device Reg Id", JaxError.CLIENT_NOT_FOUND);
+	public void validateSessionToken(String sessionToken, Integer registrationId) {
+		DeviceStateInfo deviceStateInfo = deviceDao.findBySessionToken(sessionToken, registrationId);
+		if (deviceStateInfo == null) {
+			throw new GlobalException("Invalid session token", JaxError.CLIENT_INVALID_SESSION_TOKEN);
 		}
+
 	}
+
 }
