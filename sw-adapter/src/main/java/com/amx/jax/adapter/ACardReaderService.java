@@ -142,6 +142,7 @@ public abstract class ACardReaderService {
 				status(DeviceStatus.PAIRING_KEYS_EXCEPTION);
 				SWAdapterGUI.CONTEXT.log(DeviceStatus.PAIRING_KEYS_EXCEPTION.toString());
 				LOGGER.error("pairing Exception", e);
+				devicePairingCredsValid = false;
 			}
 		}
 
