@@ -148,12 +148,12 @@ public class DeviceManager {
 	public void validateSessionToken(String sessionToken, Integer registrationId) {
 		DeviceStateInfo deviceStateInfo = deviceDao.findBySessionToken(sessionToken, registrationId);
 		if (deviceStateInfo == null) {
-			throw new GlobalException("Invalid session token", JaxError.DEVICE_INVALID_SESSION_TOKEN);
+			throw new GlobalException("Invalid session token", JaxError.CLIENT_INVALID_SESSION_TOKEN);
 		}
 		Device device = deviceDao.findDevice(new BigDecimal(registrationId));
 		String sessionTokenGen = generateSessionPairToken(device);
 		if (!sessionToken.equals(sessionTokenGen)) {
-			throw new GlobalException("Session token is expired", JaxError.DEVICE_EXPIRED_SESSION_TOKEN);
+			throw new GlobalException("Session token is expired", JaxError.CLIENT_EXPIRED_SESSION_TOKEN);
 		}
 	}
 }

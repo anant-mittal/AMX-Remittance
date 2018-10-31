@@ -83,4 +83,12 @@ public class DeviceValidation {
 
 	}
 
+	public void validateDevice(Integer deviceRegId) {
+
+		Device device = deviceDao.findDevice(new BigDecimal(deviceRegId));
+		if (device == null) {
+			throw new GlobalException("device not found with given reg id", JaxError.CLIENT_NOT_FOUND);
+		}
+	}
+
 }
