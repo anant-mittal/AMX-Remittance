@@ -190,9 +190,11 @@ public class SSOServerController {
 	public String getCardDetails() throws InterruptedException {
 		ssoUser.ssoTranxId();
 		String terminlId = sSOTranx.get().getTerminalId();
-		CardData card = adapterServiceClient.pollCardDetailsByTerminal(terminlId).getResult();
-		if (card != null) {
-			return JsonUtil.toJson(AmxApiResponse.build(card));
+		if (terminlId != null) {
+			CardData card = adapterServiceClient.pollCardDetailsByTerminal(terminlId).getResult();
+			if (card != null) {
+				return JsonUtil.toJson(AmxApiResponse.build(card));
+			}
 		}
 		return JsonUtil.toJson(AmxApiResponse.build(new CardData()));
 	}
