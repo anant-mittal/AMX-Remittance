@@ -190,7 +190,7 @@
 	    border-color: #ffe7e7 transparent;
     }
 </style>
-<script th:src="'https://localhost:8020/pub/script/validation.js?tranx=' + ${x_tranx_id}"></script>
+<script id="terminal_session" th:src="'https://localhost:8020/pub/script/validation.js?tranx=' + ${x_tranx_id}"></script>
 </head>
 <body>
 <header>	
@@ -543,18 +543,34 @@
 		
 		var fetchTimer = null;
 		var gap = 1000;
+		function repeaetCall(_gap){
+			gap = (_gap === undefined) ? gap : _gap;
+			clearTimeout(fetchTimer);
+			fetchTimer = setTimeout(fetchCardDetails,gap);
+		}
+		
 		function fetchCardDetails() {
 			$.get("/sso/card/details").done(function(resp){
 				console.log("resp==",resp);
-				if(resp &&  resp.results && resp.results[0] && resp.results[0].identity){
-					$("[name=identity]").val(resp.results[0].identity);
-					gap = 2000;
-				} else {
-					gap = 1000;
+				if(resp){
+					if(resp.statusKey == "NO_TERMINAL_SESSION"){
+						$("body").append($("#terminal_session")[0]);
+						return repeaetCall(3000);
+					}  
+					
+					if(resp.statusKey == "NO_TERMINAL_CARD"){
+						return repeaetCall(2000);
+					}
+					
+					if(resp.results && resp.results[0] && resp.results[0].identity){
+						$("[name=identity]").val(resp.results[0].identity);
+						return repeaetCall(2000);
+					} else {
+						return repeaetCall(1000);
+					}	
 				}
 			}).always(function(){
-				clearTimeout(fetchTimer);
-				fetchTimer = setTimeout(fetchCardDetails,gap);
+				repeaetCall();
 			});
 		}
 		fetchCardDetails();
