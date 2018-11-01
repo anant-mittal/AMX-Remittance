@@ -542,12 +542,19 @@
 		});
 		
 		var fetchTimer = null;
+		var gap = 1000;
 		function fetchCardDetails() {
 			$.get("/sso/card/details").done(function(resp){
 				console.log("resp==",resp);
+				if(resp &&  resp.results && resp.results[0] && resp.results[0].identity){
+					$("[name=identity]").val(resp.results[0].identity);
+					gap = 2000;
+				} else {
+					gap = 1000;
+				}
 			}).always(function(){
 				clearTimeout(fetchTimer);
-				fetchTimer = setTimeout(fetchCardDetails,1000);
+				fetchTimer = setTimeout(fetchCardDetails,gap);
 			});
 		}
 		fetchCardDetails();
