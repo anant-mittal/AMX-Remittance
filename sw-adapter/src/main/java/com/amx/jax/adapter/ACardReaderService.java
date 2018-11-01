@@ -372,7 +372,7 @@ public abstract class ACardReaderService {
 		LOGGER.debug("KWTCardReader:clear:END");
 	}
 
-	private void reset() {
+	public void reset() {
 		LOGGER.debug("KWTCardReader:reset");
 		deviceStatus = DeviceStatus.DISCONNECTED;
 	}
