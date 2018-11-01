@@ -116,7 +116,7 @@ public class CustRegController implements ICustRegService {
 	}
 
 	@RequestMapping(value = CustRegApiEndPoints.SAVE_CUST_INFO, method = RequestMethod.POST)
-	public AmxApiResponse<CustomerInfo, Object> saveCustomerInfo(@RequestBody CustomerInfoRequest model) {
+	public AmxApiResponse<CustomerInfo, Object> saveCustomerInfo(@RequestBody @Valid CustomerInfoRequest model) {
 		return offsiteCustRegService.saveCustomerInfo(model);
 	}
 
