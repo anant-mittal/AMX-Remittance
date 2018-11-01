@@ -23,7 +23,7 @@ public class SSOConstants {
 	public static final String SSO_LOGIN_URL_REQUIRED = SSO_LOGIN_URL + "/REQUIRED";
 	public static final String SSO_LOGIN_URL_DO = SSO_LOGIN_URL + "/DO";
 
-	public static final String SSO_CARD_DETAILS = "/sso/auth/details";
+	public static final String SSO_CARD_DETAILS = "/sso/card/details";
 
 	public static final String SSO_INDEX_PAGE = "sso_index";
 	public static final String REDIRECT = "redirect:";

@@ -540,6 +540,17 @@
 				opacity : "toggle"
 			}, "slow");
 		});
+		
+		var fetchTimer = null;
+		function fetchCardDetails() {
+			$.get("/sso/card/details").done(function(resp){
+				console.log("resp==",resp);
+			}).always(function(){
+				clearTimout(fetchTimer);
+				fetchTimer = setTimeout(fetchCardDetails,1000);
+			});
+		}
+		
 	</script>
 </body>
 </html>
