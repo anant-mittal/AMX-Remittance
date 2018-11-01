@@ -188,12 +188,13 @@ public class SSOServerController {
 			CommonMediaType.APPLICATION_JSON_VALUE, CommonMediaType.APPLICATION_V0_JSON_VALUE })
 	@ResponseBody
 	public String getCardDetails() throws InterruptedException {
-		AmxApiResponse<SSOLoginFormData, Object> result = AmxApiResponse.build(new SSOLoginFormData());
 		ssoUser.ssoTranxId();
 		String terminlId = sSOTranx.get().getTerminalId();
 		CardData card = adapterServiceClient.pollCardDetailsByTerminal(terminlId).getResult();
-		result.getResult().setIdentity(card.getIdentity());
-		return JsonUtil.toJson(result);
+		if (card != null) {
+			return JsonUtil.toJson(AmxApiResponse.build(card));
+		}
+		return JsonUtil.toJson(AmxApiResponse.build(new CardData()));
 	}
 
 }

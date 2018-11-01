@@ -36,6 +36,7 @@ public final class CryptoUtil {
 			Long epoch = Math.round(currentTime / 1000.0);
 			String elapsed = Long.toString(epoch / interval);
 			String password = String.join(PASS_DELIMITER, elapsed, secretKey, message);
+			System.out.println(interval + " " + secretKey + " " + message + " " + currentTime + " " + password);
 			MessageDigest md = MessageDigest.getInstance(SHA2);
 			ByteArrayOutputStream pwsalt = new ByteArrayOutputStream();
 			pwsalt.write(password.getBytes(DEFAULT_ENCODING));
