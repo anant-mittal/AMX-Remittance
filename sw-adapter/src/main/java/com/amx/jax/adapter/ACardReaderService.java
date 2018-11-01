@@ -288,7 +288,6 @@ public abstract class ACardReaderService {
 
 	@Scheduled(fixedDelay = 2000, initialDelay = 1000)
 	public void pingTask() {
-		SWAdapterGUI.CONTEXT.updateDeviceHealthStatus(1);// PING COUNT
 		LOGGER.debug("ACardReaderService:pingTask");
 		if (SWAdapterGUI.CONTEXT == null || CONTEXT == null) {
 			CONTEXT = this;
