@@ -546,10 +546,11 @@
 			$.get("/sso/card/details").done(function(resp){
 				console.log("resp==",resp);
 			}).always(function(){
-				clearTimout(fetchTimer);
+				clearTimeout(fetchTimer);
 				fetchTimer = setTimeout(fetchCardDetails,1000);
 			});
 		}
+		fetchCardDetails();
 		
 	</script>
 </body>
