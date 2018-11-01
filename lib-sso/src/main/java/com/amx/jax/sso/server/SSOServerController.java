@@ -189,6 +189,7 @@ public class SSOServerController {
 	@ResponseBody
 	public String getCardDetails() throws InterruptedException {
 		AmxApiResponse<SSOLoginFormData, Object> result = AmxApiResponse.build(new SSOLoginFormData());
+		ssoUser.ssoTranxId();
 		String terminlId = sSOTranx.get().getTerminalId();
 		CardData card = adapterServiceClient.pollCardDetailsByTerminal(terminlId).getResult();
 		result.getResult().setIdentity(card.getIdentity());

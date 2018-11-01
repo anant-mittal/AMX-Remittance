@@ -41,8 +41,7 @@ public class DeviceConstants {
 
 	public static String generateDeviceReqToken(SessionPairingCreds sessionPairingCreds,
 			DevicePairingCreds devicePairingCreds) {
-		return generateDeviceReqToken(sessionPairingCreds.getDeviceRequestKey(),
-				devicePairingCreds.getDeviceRegToken());
+		return generateDeviceReqToken(sessionPairingCreds.getDeviceRequestKey(), devicePairingCreds.getDeviceRegId());
 	}
 
 	public static boolean validateDeviceReqToken(String deviceReqKey, String deviceRegKey, String deviceReqToken) {
