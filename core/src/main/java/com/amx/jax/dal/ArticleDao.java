@@ -77,12 +77,18 @@ public class ArticleDao {
 
 	public List<Map<String, Object>> getIncomeRangeForCustomer(Customer customer) {
 
-		String sql = "select FADD.article_detail_desc, FAMD.ARTICLE_DESC, FIRM.MONTHLY_INCOME from FS_ARTICLE_DETAILS_desc FADD, FS_ARTICLE_MASTER_DESC FAMD, "
-				+ "FS_INCOME_RANGE_MASTER FIRM where " + "FADD.ARTICLE_DETAILS_ID=? and FADD.LANGUAGE_ID=? "
-				+ "and FADD.ARTICLE_DETAILS_DESC_ID= FAMD.ARTICLE_DESC_ID "
-				+ "and FADD.ARTICLE_DETAILS_DESC_ID=FIRM.ARTICLE_DETAIL_ID " + "and FIRM.INCOME_RANGE_ID=?";
+		String sql = "select FADD.article_detail_desc, FAMD.ARTICLE_DESC, FIRM.MONTHLY_INCOME from  "
+				+ "                FS_ARTICLE_DETAILS_desc FADD, " + "                FS_ARTICLE_MASTER_DESC FAMD, "
+				+ "                FS_ARTICLE_DETAILS FAD, " + "				FS_INCOME_RANGE_MASTER FIRM "
+				+ "                where FAMD.LANGUAGE_ID=? " + "                and FADD.LANGUAGE_ID=? "
+				+ "                and FADD.ARTICLE_DETAILS_ID=? "
+				+ "				and FAD.ARTICLE_ID= FAMD.ARTICLE_ID  "
+				+ "                and FAD.ARTICLE_DETAIL_ID = FADD.ARTICLE_DETAILS_ID "
+				+ "				and FADD.ARTICLE_DETAILS_DESC_ID=FIRM.ARTICLE_DETAIL_ID  "
+				+ "                and FIRM.INCOME_RANGE_ID=?";
 		List<Map<String, Object>> incomeRangeList = jdbcTemplate.queryForList(sql,
-				new Object[] { customer.getFsArticleDetails().getArticleDetailId(), metaData.getLanguageId(),
+				new Object[] { metaData.getLanguageId(), metaData.getLanguageId(),
+						customer.getFsArticleDetails().getArticleDetailId(),
 						customer.getFsIncomeRangeMaster().getIncomeRangeId() });
 		return incomeRangeList;
 	}
