@@ -2,14 +2,20 @@ package com.amx.jax.model.response;
 
 import com.amx.jax.constants.DeviceState;
 import com.amx.jax.constants.DeviceStateDataType;
+import com.amx.jax.model.request.device.SignaturePadCustomerRegStateInfo;
+import com.amx.jax.model.request.device.SignaturePadFCPurchaseSaleInfo;
+import com.amx.jax.model.request.device.SignaturePadRemittanceInfo;
 
 public class DeviceStatusInfoDto {
 
 	DeviceState deviceState;
 
-	IDeviceStateData stateData;
-
 	DeviceStateDataType stateDataType;
+
+	SignaturePadCustomerRegStateInfo signaturePadCustomerRegStateInfo;
+	SignaturePadFCPurchaseSaleInfo signaturePadFCSaleInfo;
+	SignaturePadFCPurchaseSaleInfo signaturePadFCPurchaseInfo;
+	SignaturePadRemittanceInfo signaturePadRemittanceInfo;
 
 	public DeviceState getDeviceState() {
 		return deviceState;
@@ -19,7 +25,6 @@ public class DeviceStatusInfoDto {
 		this.deviceState = deviceState;
 	}
 
-
 	public DeviceStateDataType getStateDataType() {
 		return stateDataType;
 	}
@@ -28,11 +33,36 @@ public class DeviceStatusInfoDto {
 		this.stateDataType = stateDataType;
 	}
 
-	public IDeviceStateData getStateData() {
-		return stateData;
+	public SignaturePadCustomerRegStateInfo getSignaturePadCustomerRegStateInfo() {
+		return signaturePadCustomerRegStateInfo;
 	}
 
-	public void setStateData(IDeviceStateData stateData) {
-		this.stateData = stateData;
+	public void setSignaturePadCustomerRegStateInfo(SignaturePadCustomerRegStateInfo signaturePadCustomerRegStateInfo) {
+		this.signaturePadCustomerRegStateInfo = signaturePadCustomerRegStateInfo;
 	}
+
+	public SignaturePadFCPurchaseSaleInfo getSignaturePadFCSaleInfo() {
+		return signaturePadFCSaleInfo;
+	}
+
+	public void setSignaturePadFCSaleInfo(SignaturePadFCPurchaseSaleInfo signaturePadFCSaleInfo) {
+		this.signaturePadFCSaleInfo = signaturePadFCSaleInfo;
+	}
+
+	public SignaturePadFCPurchaseSaleInfo getSignaturePadFCPurchaseInfo() {
+		return signaturePadFCPurchaseInfo;
+	}
+
+	public void setSignaturePadFCPurchaseInfo(SignaturePadFCPurchaseSaleInfo signaturePadFCPurchaseInfo) {
+		this.signaturePadFCPurchaseInfo = signaturePadFCPurchaseInfo;
+	}
+
+	public SignaturePadRemittanceInfo getSignaturePadRemittanceInfo() {
+		return signaturePadRemittanceInfo;
+	}
+
+	public void setSignaturePadRemittanceInfo(SignaturePadRemittanceInfo signaturePadRemittanceInfo) {
+		this.signaturePadRemittanceInfo = signaturePadRemittanceInfo;
+	}
+
 }

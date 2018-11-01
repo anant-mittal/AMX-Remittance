@@ -160,24 +160,24 @@ public class DeviceService extends AbstractService {
 			case REMITTANCE:
 				SignaturePadRemittanceInfo stateData = JsonUtil.fromJson(deviceStateInfo.getStateData(),
 						SignaturePadRemittanceInfo.class);
-				dto.setStateData(stateData);
+				dto.setSignaturePadRemittanceInfo(stateData);
 				break;
 
 			case FC_PURCHASE:
 				SignaturePadFCPurchaseSaleInfo stateDataPurchase = JsonUtil.fromJson(deviceStateInfo.getStateData(),
 						SignaturePadFCPurchaseSaleInfo.class);
-				dto.setStateData(stateDataPurchase);
+				dto.setSignaturePadFCPurchaseInfo(stateDataPurchase);
 				break;
 
 			case FC_SALE:
 				SignaturePadFCPurchaseSaleInfo stateDataSale = JsonUtil.fromJson(deviceStateInfo.getStateData(),
 						SignaturePadFCPurchaseSaleInfo.class);
-				dto.setStateData(stateDataSale);
+				dto.setSignaturePadFCSaleInfo(stateDataSale);
 				break;
 			case CUSTOMER_REGISTRATION:
 				SignaturePadCustomerRegStateMetaInfo metaInfo = JsonUtil.fromJson(deviceStateInfo.getStateData(),
 						SignaturePadCustomerRegStateMetaInfo.class);
-				dto.setStateData(getCustomerRegData(metaInfo.getCustomerId()));
+				dto.setSignaturePadCustomerRegStateInfo(getCustomerRegData(metaInfo.getCustomerId()));
 				break;
 			default:
 				break;
