@@ -3,6 +3,8 @@ package com.amx.jax.sso.server;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,6 +42,7 @@ import com.amx.jax.sso.SSOStatus.SSOServerCodes;
 import com.amx.jax.sso.SSOTranx;
 import com.amx.jax.sso.SSOUser;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.CollectionUtil;
 import com.amx.utils.JsonUtil;
 import com.amx.utils.Urly;
 
@@ -184,19 +187,25 @@ public class SSOServerController {
 		return JsonUtil.toJson(result);
 	}
 
+	@ApiSSOStatus({ SSOServerCodes.NO_TERMINAL_SESSION, SSOServerCodes.AUTH_DONE })
 	@RequestMapping(value = SSOConstants.SSO_CARD_DETAILS, method = RequestMethod.GET, produces = {
 			CommonMediaType.APPLICATION_JSON_VALUE, CommonMediaType.APPLICATION_V0_JSON_VALUE })
 	@ResponseBody
 	public String getCardDetails() throws InterruptedException {
+		AmxApiResponse<CardData, Object> resp = AmxApiResponse.build(new CardData());
 		ssoUser.ssoTranxId();
 		String terminlId = sSOTranx.get().getTerminalId();
 		if (terminlId != null) {
 			CardData card = adapterServiceClient.pollCardDetailsByTerminal(terminlId).getResult();
 			if (card != null) {
-				return JsonUtil.toJson(AmxApiResponse.build(card));
+				resp.setResults(Collections.singletonList(card));
+			} else {
+				resp.setStatusEnum(SSOServerCodes.NO_TERMINAL_CARD);
 			}
+		} else {
+			resp.setStatusEnum(SSOServerCodes.NO_TERMINAL_SESSION);
 		}
-		return JsonUtil.toJson(AmxApiResponse.build(new CardData()));
+		return JsonUtil.toJson(resp);
 	}
 
 }
