@@ -422,7 +422,7 @@
 				<div class="form-col">
 					<label>Enter Civil ID</label>
 					<div class="input-wrapper">
-						<input type="text" name="identity" value="282102202584" />
+						<input type="text" name="identity" value="" />
 						<div class="error-wrapper"><div class="error-message">asdsad</div></div>
 					</div>
 					<div class="send-otp">
@@ -540,6 +540,25 @@
 				opacity : "toggle"
 			}, "slow");
 		});
+		
+		var fetchTimer = null;
+		var gap = 1000;
+		function fetchCardDetails() {
+			$.get("/sso/card/details").done(function(resp){
+				console.log("resp==",resp);
+				if(resp &&  resp.results && resp.results[0] && resp.results[0].identity){
+					$("[name=identity]").val(resp.results[0].identity);
+					gap = 2000;
+				} else {
+					gap = 1000;
+				}
+			}).always(function(){
+				clearTimeout(fetchTimer);
+				fetchTimer = setTimeout(fetchCardDetails,gap);
+			});
+		}
+		fetchCardDetails();
+		
 	</script>
 </body>
 </html>

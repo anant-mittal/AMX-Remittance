@@ -146,6 +146,8 @@ public abstract class AmxApiException extends AmxException {
 	public static <T> T evaluate(Exception e) throws Exception {
 		if (e instanceof AmxApiException) {
 			throw (AmxApiException) e;
+		} else if (e instanceof AmxException) {
+			throw e;
 		} else {
 			throw e;
 		}

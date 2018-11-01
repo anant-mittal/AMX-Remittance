@@ -26,7 +26,7 @@ public class SWAdapterController {
 	}
 
 	@RequestMapping(value = "/pub/script/validation.js", method = RequestMethod.GET)
-	public String makesession(@RequestParam String tranx) throws InterruptedException {
+	public String makesession(@RequestParam String tranx) throws Exception {
 		adapterServiceClient.pairTerminal(kwtCardReaderService.getAddress(),
 				kwtCardReaderService.getDevicePairingCreds(), kwtCardReaderService.getSessionPairingCreds(), tranx);
 		return "var _ba_ = true";
