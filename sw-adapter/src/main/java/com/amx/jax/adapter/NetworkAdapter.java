@@ -7,28 +7,9 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Enumeration;
 
+import com.amx.jax.device.DeviceRestModels.NetAddress;
+
 public class NetworkAdapter {
-
-	public static class NetAddress {
-		String mac;
-		String localIp;
-
-		public String getMac() {
-			return mac;
-		}
-
-		public void setMac(String mac) {
-			this.mac = mac;
-		}
-
-		public String getLocalIp() {
-			return localIp;
-		}
-
-		public void setLocalIp(String localIp) {
-			this.localIp = localIp;
-		}
-	}
 
 	public static NetAddress getAddress() {
 
@@ -44,10 +25,8 @@ public class NetworkAdapter {
 				NetworkInterface element = net.nextElement();
 				Enumeration<InetAddress> addresses = element.getInetAddresses();
 
-				while (addresses.hasMoreElements() 
-						&& element.getHardwareAddress() != null
-						&& element.getHardwareAddress().length > 0
-						&& !isVMMac(element.getHardwareAddress())) {
+				while (addresses.hasMoreElements() && element.getHardwareAddress() != null
+						&& element.getHardwareAddress().length > 0 && !isVMMac(element.getHardwareAddress())) {
 					InetAddress ip = addresses.nextElement();
 					if (ip instanceof Inet4Address) {
 

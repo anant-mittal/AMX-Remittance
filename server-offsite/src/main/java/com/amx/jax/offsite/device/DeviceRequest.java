@@ -29,7 +29,7 @@ public class DeviceRequest {
 	@Autowired(required = false)
 	private HttpServletResponse response;
 
-	public String getDeviceRegKey() {
+	public String getDeviceRegId() {
 		return commonHttpRequest.get(DeviceConstants.Keys.CLIENT_REG_KEY_XKEY);
 	}
 
@@ -46,7 +46,7 @@ public class DeviceRequest {
 	}
 
 	public DevicePairingCreds validateDevice() {
-		String deviceRegKey = getDeviceRegKey();
+		String deviceRegKey = getDeviceRegId();
 		String deviceRegToken = getDeviceRegToken();
 		if (ArgUtil.isEmpty(deviceRegKey) || ArgUtil.isEmpty(deviceRegToken)) {
 			throw new OffsiteServerError(OffsiteServerCodes.CLIENT_CREDS_MISSING);
@@ -78,7 +78,7 @@ public class DeviceRequest {
 	public DeviceData validateRequest() {
 		DeviceData deviceData = validateSession();
 		// Same logic on client side
-		if (!DeviceConstants.validateDeviceReqToken(deviceData.getDeviceReqKey(), getDeviceRegToken(),
+		if (!DeviceConstants.validateDeviceReqToken(deviceData.getDeviceReqKey(), getDeviceRegId(),
 				getDeviceRequestToken())) {
 			throw new OffsiteServerError(OffsiteServerCodes.INVALID_CLIENT_REQUEST);
 		}
@@ -87,7 +87,7 @@ public class DeviceRequest {
 
 	public SessionPairingCreds createSession(String sessionPairToken, String sessionOtp, String terminalId) {
 
-		String deviceRegKey = getDeviceRegKey();
+		String deviceRegKey = getDeviceRegId();
 		DeviceData deviceData = new DeviceData();
 
 		deviceData.setTerminalId(terminalId);

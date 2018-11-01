@@ -13,7 +13,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.thavam.util.concurrent.blockingMap.BlockingHashMap;
 
 import com.amx.jax.AppConstants;
-import com.amx.jax.adapter.NetworkAdapter.NetAddress;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.device.CardData;
 import com.amx.jax.device.CardReader;
@@ -21,6 +20,7 @@ import com.amx.jax.device.DeviceConstants;
 import com.amx.jax.device.DeviceRestModels;
 import com.amx.jax.device.DeviceRestModels.DevicePairingCreds;
 import com.amx.jax.device.DeviceRestModels.DevicePairingRequest;
+import com.amx.jax.device.DeviceRestModels.NetAddress;
 import com.amx.jax.device.DeviceRestModels.SessionPairingCreds;
 import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.exception.AmxApiException;
@@ -66,7 +66,7 @@ public abstract class ACardReaderService {
 		READ_ERROR, SYNC_ERROR, EMPTY, VALID_DATA, SYNCING, SYNCED;
 	}
 
-	@Value("${device.server.url}")
+	@Value("${jax.offsite.url}")
 	String serverUrl;
 	@Value("${device.terminal.id}")
 	String terminalId;
@@ -83,15 +83,21 @@ public abstract class ACardReaderService {
 	protected DeviceStatus deviceStatus = DeviceStatus.DISCONNECTED;
 	protected CardStatus cardStatusValue = CardStatus.NOCARD;
 	protected DataStatus dataStatusValue = DataStatus.EMPTY;
+	private Object lock = new Object();
 
 	private NetAddress address = null;
 
-	private NetAddress getAddress() {
-		address = NetworkAdapter.getAddress();
+	public NetAddress getAddress() {
+		if (address != null) {
+			return address;
+		}
+		synchronized (lock) {
+			address = NetworkAdapter.getAddress();
+		}
 		return address;
 	}
 
-	private DevicePairingCreds getDevicePairingCreds() {
+	public DevicePairingCreds getDevicePairingCreds() {
 
 		if (getAddress() == null) {
 			return null;
@@ -101,105 +107,108 @@ public abstract class ACardReaderService {
 			return devicePairingCreds;
 		}
 
-		Keyring keyring;
-		try {
-			keyring = Keyring.create();
-		} catch (BackendNotSupportedException ex) {
-			SWAdapterGUI.CONTEXT.log(ex.getMessage());
-			LOGGER.error("pairing Exception", ex);
-			status(DeviceStatus.KEYRING_EXCEPTION);
-			return null;
-		}
-
-		if (keyring.isKeyStorePathRequired()) {
+		synchronized (lock) {
+			Keyring keyring;
 			try {
-				File keyStoreFile = File.createTempFile("keystore", ".keystore");
-				keyring.setKeyStorePath(keyStoreFile.getPath());
-			} catch (IOException ex) {
-				status(DeviceStatus.KEYRING_FILE_EXCEPTION);
+				keyring = Keyring.create();
+			} catch (BackendNotSupportedException ex) {
 				SWAdapterGUI.CONTEXT.log(ex.getMessage());
-				LOGGER.error("pairing Exception:IOException", ex);
+				LOGGER.error("pairing Exception", ex);
+				status(DeviceStatus.KEYRING_EXCEPTION);
+				return null;
 			}
-		}
 
-		if (devicePairingCredsValid) {
-			try {
-				String passwordEncd = keyring.getPassword("amx-adapter", terminalId);
-				byte[] terminalCredsByts = Base64.getDecoder().decode(passwordEncd);
-				String terminalCredsStrs = new String(terminalCredsByts);
-				DevicePairingCreds dpr = JsonUtil.fromJson(terminalCredsStrs, DevicePairingCreds.class);
-				if (!ArgUtil.isEmpty(dpr) && !ArgUtil.isEmpty(dpr.getDeviceRegId())) {
-					devicePairingCreds = dpr;
-					status(DeviceStatus.PAIRING_KEYS_FOUND);
-				} else {
-					devicePairingCredsValid = false;
+			if (keyring.isKeyStorePathRequired()) {
+				try {
+					File keyStoreFile = File.createTempFile("keystore", ".keystore");
+					keyring.setKeyStorePath(keyStoreFile.getPath());
+				} catch (IOException ex) {
+					status(DeviceStatus.KEYRING_FILE_EXCEPTION);
+					SWAdapterGUI.CONTEXT.log(ex.getMessage());
+					LOGGER.error("pairing Exception:IOException", ex);
 				}
-			} catch (LockException ex) {
-				SWAdapterGUI.CONTEXT.log(ex.getMessage());
-				status(DeviceStatus.PAIRING_KEYS_FOUND_ERROR);
-			} catch (PasswordRetrievalException ex) {
-				status(DeviceStatus.PAIRING_KEYS_NOT_FOUND);
-				SWAdapterGUI.CONTEXT.log(DeviceStatus.PAIRING_KEYS_NOT_FOUND.toString());
-			} catch (Exception e) {
-				status(DeviceStatus.PAIRING_KEYS_EXCEPTION);
-				SWAdapterGUI.CONTEXT.log(DeviceStatus.PAIRING_KEYS_EXCEPTION.toString());
-				LOGGER.error("pairing Exception", e);
-				devicePairingCredsValid = false;
 			}
-		}
 
-		if (ArgUtil.isEmpty(devicePairingCreds)) {
-			DevicePairingRequest req = DeviceRestModels.get();
-			req.setDeivceTerminalId(terminalId);
-			req.setDeivceClientType(ClientType.BRANCH_ADAPTER);
-			try {
-				AmxApiResponse<DevicePairingCreds, Object> resp = restService.ajax(serverUrl)
-						.path(DeviceConstants.Path.DEVICE_PAIR).header(AppConstants.DEVICE_ID_XKEY, address.getMac())
-						.header(AppConstants.DEVICE_IP_LOCAL_XKEY, address.getLocalIp()).post(req)
-						.as(new ParameterizedTypeReference<AmxApiResponse<DevicePairingCreds, Object>>() {
-						});
-				if (resp.getResults().size() > 0) {
-					DevicePairingCreds dpr = resp.getResult();
+			if (devicePairingCredsValid) {
+				try {
+					String passwordEncd = keyring.getPassword("amx-adapter", terminalId);
+					byte[] terminalCredsByts = Base64.getDecoder().decode(passwordEncd);
+					String terminalCredsStrs = new String(terminalCredsByts);
+					DevicePairingCreds dpr = JsonUtil.fromJson(terminalCredsStrs, DevicePairingCreds.class);
 					if (!ArgUtil.isEmpty(dpr) && !ArgUtil.isEmpty(dpr.getDeviceRegId())) {
 						devicePairingCreds = dpr;
-						devicePairingCredsValid = true;
-						String terminalCredsStrs = JsonUtil.toJson(dpr);
-						String passwordEncd = Base64.getEncoder().encodeToString(terminalCredsStrs.getBytes());
-
-						try {
-							keyring.setPassword("amx-adapter", terminalId, passwordEncd);
-							status(DeviceStatus.PAIRED);
-						} catch (LockException ex) {
-							status(DeviceStatus.PAIRING_KEY_SAVE_ERROR);
-							SWAdapterGUI.CONTEXT.log(ex.getMessage());
-							LOGGER.error("pairing Exception:LockException", ex);
-						} catch (PasswordSaveException ex) {
-							status(DeviceStatus.PAIRING_KEY_SAVE_ERROR);
-							SWAdapterGUI.CONTEXT.log("PAIRING_KEYS_CANNOT_SAVED");
-						} catch (Exception e) {
-							status(DeviceStatus.PAIRING_KEY_SAVE_ERROR);
-							SWAdapterGUI.CONTEXT.log(e.getMessage());
-						}
+						status(DeviceStatus.PAIRING_KEYS_FOUND);
+					} else {
+						devicePairingCredsValid = false;
 					}
-				} else {
-					status(DeviceStatus.NOT_PAIRED);
-					SWAdapterGUI.CONTEXT.log("NOT_ABLE_TO_PAIR");
+				} catch (LockException ex) {
+					SWAdapterGUI.CONTEXT.log(ex.getMessage());
+					status(DeviceStatus.PAIRING_KEYS_FOUND_ERROR);
+				} catch (PasswordRetrievalException ex) {
+					status(DeviceStatus.PAIRING_KEYS_NOT_FOUND);
+					SWAdapterGUI.CONTEXT.log(DeviceStatus.PAIRING_KEYS_NOT_FOUND.toString());
+				} catch (Exception e) {
+					status(DeviceStatus.PAIRING_KEYS_EXCEPTION);
+					SWAdapterGUI.CONTEXT.log(DeviceStatus.PAIRING_KEYS_EXCEPTION.toString());
+					LOGGER.error("pairing Exception", e);
+					devicePairingCredsValid = false;
 				}
-			} catch (AmxApiException e) {
-				status(DeviceStatus.PAIRING_ERROR);
-				SWAdapterGUI.CONTEXT.log("SERVICE ERROR : " + e.getErrorKey());
-			} catch (AmxException e) {
-				status(DeviceStatus.PAIRING_ERROR);
-				SWAdapterGUI.CONTEXT.log("SERVICE ERROR : " + e.getMessage());
-			} catch (Exception e) {
-				status(DeviceStatus.PAIRING_ERROR);
-				SWAdapterGUI.CONTEXT.log("CLIENT ERROR : " + e.getMessage());
+			}
+
+			if (ArgUtil.isEmpty(devicePairingCreds)) {
+				DevicePairingRequest req = DeviceRestModels.get();
+				req.setDeivceTerminalId(terminalId);
+				req.setDeivceClientType(ClientType.BRANCH_ADAPTER);
+				try {
+					AmxApiResponse<DevicePairingCreds, Object> resp = restService.ajax(serverUrl)
+							.path(DeviceConstants.Path.DEVICE_PAIR)
+							.header(AppConstants.DEVICE_ID_XKEY, address.getMac())
+							.header(AppConstants.DEVICE_IP_LOCAL_XKEY, address.getLocalIp()).post(req)
+							.as(new ParameterizedTypeReference<AmxApiResponse<DevicePairingCreds, Object>>() {
+							});
+					if (resp.getResults().size() > 0) {
+						DevicePairingCreds dpr = resp.getResult();
+						if (!ArgUtil.isEmpty(dpr) && !ArgUtil.isEmpty(dpr.getDeviceRegId())) {
+							devicePairingCreds = dpr;
+							devicePairingCredsValid = true;
+							String terminalCredsStrs = JsonUtil.toJson(dpr);
+							String passwordEncd = Base64.getEncoder().encodeToString(terminalCredsStrs.getBytes());
+
+							try {
+								keyring.setPassword("amx-adapter", terminalId, passwordEncd);
+								status(DeviceStatus.PAIRED);
+							} catch (LockException ex) {
+								status(DeviceStatus.PAIRING_KEY_SAVE_ERROR);
+								SWAdapterGUI.CONTEXT.log(ex.getMessage());
+								LOGGER.error("pairing Exception:LockException", ex);
+							} catch (PasswordSaveException ex) {
+								status(DeviceStatus.PAIRING_KEY_SAVE_ERROR);
+								SWAdapterGUI.CONTEXT.log("PAIRING_KEYS_CANNOT_SAVED");
+							} catch (Exception e) {
+								status(DeviceStatus.PAIRING_KEY_SAVE_ERROR);
+								SWAdapterGUI.CONTEXT.log(e.getMessage());
+							}
+						}
+					} else {
+						status(DeviceStatus.NOT_PAIRED);
+						SWAdapterGUI.CONTEXT.log("NOT_ABLE_TO_PAIR");
+					}
+				} catch (AmxApiException e) {
+					status(DeviceStatus.PAIRING_ERROR);
+					SWAdapterGUI.CONTEXT.log("SERVICE ERROR : " + e.getErrorKey());
+				} catch (AmxException e) {
+					status(DeviceStatus.PAIRING_ERROR);
+					SWAdapterGUI.CONTEXT.log("SERVICE ERROR : " + e.getMessage());
+				} catch (Exception e) {
+					status(DeviceStatus.PAIRING_ERROR);
+					SWAdapterGUI.CONTEXT.log("CLIENT ERROR : " + e.getMessage());
+				}
 			}
 		}
 		return devicePairingCreds;
 	}
 
-	private SessionPairingCreds getSessionPairingCreds() {
+	public SessionPairingCreds getSessionPairingCreds() {
 		if (sessionPairingCreds != null) {
 			return sessionPairingCreds;
 		}
@@ -207,27 +216,30 @@ public abstract class ACardReaderService {
 			return null;
 		}
 
-		try {
-			sessionPairingCreds = restService.ajax(serverUrl).path(DeviceConstants.Path.SESSION_PAIR)
-					.header(AppConstants.DEVICE_ID_XKEY, address.getMac())
-					.header(AppConstants.DEVICE_IP_LOCAL_XKEY, address.getLocalIp())
-					.header(DeviceConstants.Keys.CLIENT_REG_KEY_XKEY, devicePairingCreds.getDeviceRegId())
-					.header(DeviceConstants.Keys.CLIENT_REG_TOKEN_XKEY, devicePairingCreds.getDeviceRegToken()).get()
-					.as(new ParameterizedTypeReference<AmxApiResponse<SessionPairingCreds, Object>>() {
-					}).getResult();
-			status(DeviceStatus.SESSION_CREATED);
-		} catch (AmxApiException e) {
-			status(DeviceStatus.SESSION_ERROR);
-			SWAdapterGUI.CONTEXT.log(e.getErrorKey() + " - REGID : " + devicePairingCreds.getDeviceRegId());
-			if ("CLIENT_INVALID_PAIR_TOKEN".equals(devicePairingCreds.getDeviceRegId())) {
-				devicePairingCredsValid = false;
+		synchronized (lock) {
+			try {
+				sessionPairingCreds = restService.ajax(serverUrl).path(DeviceConstants.Path.SESSION_PAIR)
+						.header(AppConstants.DEVICE_ID_XKEY, address.getMac())
+						.header(AppConstants.DEVICE_IP_LOCAL_XKEY, address.getLocalIp())
+						.header(DeviceConstants.Keys.CLIENT_REG_KEY_XKEY, devicePairingCreds.getDeviceRegId())
+						.header(DeviceConstants.Keys.CLIENT_REG_TOKEN_XKEY, devicePairingCreds.getDeviceRegToken())
+						.get().as(new ParameterizedTypeReference<AmxApiResponse<SessionPairingCreds, Object>>() {
+						}).getResult();
+				status(DeviceStatus.SESSION_CREATED);
+			} catch (AmxApiException e) {
+				status(DeviceStatus.SESSION_ERROR);
+				SWAdapterGUI.CONTEXT.log(e.getErrorKey() + " - REGID : " + devicePairingCreds.getDeviceRegId());
+				if ("CLIENT_INVALID_PAIR_TOKEN".equals(devicePairingCreds.getDeviceRegId())) {
+					devicePairingCredsValid = false;
+				}
+			} catch (AmxException e) {
+				status(DeviceStatus.SESSION_ERROR);
+				SWAdapterGUI.CONTEXT.log("SERVICE ERROR : " + e.getMessage());
+			} catch (Exception e) {
+				status(DeviceStatus.SESSION_ERROR);
+				SWAdapterGUI.CONTEXT.log("CLIENT ERROR : " + e.getMessage());
 			}
-		} catch (AmxException e) {
-			status(DeviceStatus.SESSION_ERROR);
-			SWAdapterGUI.CONTEXT.log("SERVICE ERROR : " + e.getMessage());
-		} catch (Exception e) {
-			status(DeviceStatus.SESSION_ERROR);
-			SWAdapterGUI.CONTEXT.log("CLIENT ERROR : " + e.getMessage());
+
 		}
 
 		return sessionPairingCreds;

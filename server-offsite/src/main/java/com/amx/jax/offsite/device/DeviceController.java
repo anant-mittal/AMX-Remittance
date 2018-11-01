@@ -1,7 +1,5 @@
 package com.amx.jax.offsite.device;
 
-import java.util.concurrent.TimeUnit;
-
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
@@ -12,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.jax.adapter.ICardService;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.DeviceClient;
 import com.amx.jax.client.IDeviceService;
@@ -31,7 +30,6 @@ import com.amx.jax.model.response.DevicePairOtpResponse;
 import com.amx.jax.model.response.DeviceStatusInfoDto;
 import com.amx.jax.offsite.OffsiteStatus.ApiOffisteStatus;
 import com.amx.jax.offsite.OffsiteStatus.OffsiteServerCodes;
-import com.amx.jax.offsite.device.DeviceConfigs.CardBox;
 import com.amx.jax.offsite.device.DeviceConfigs.DeviceData;
 import com.amx.jax.sso.SSOTranx;
 import com.amx.jax.swagger.IStatusCodeListPlugin.ApiStatusService;
@@ -56,10 +54,10 @@ public class DeviceController {
 	private DeviceRequest deviceRequestValidator;
 
 	@Autowired
-	private CardBox cardBox;
+	private SSOTranx sSOTranx;
 
 	@Autowired
-	private SSOTranx sSOTranx;
+	private ICardService iCardService;
 
 	@ApiOffisteStatus({ OffsiteServerCodes.CLIENT_UNKNOWN })
 	@RequestMapping(value = { DeviceConstants.Path.DEVICE_PAIR }, method = { RequestMethod.POST })
@@ -92,7 +90,7 @@ public class DeviceController {
 
 		deviceRequestValidator.validateDevice();
 
-		String deviceRegKey = deviceRequestValidator.getDeviceRegKey();
+		String deviceRegKey = deviceRequestValidator.getDeviceRegId();
 		String deviceRegToken = deviceRequestValidator.getDeviceRegToken();
 
 		DevicePairOtpResponse resp = deviceClient
@@ -115,7 +113,7 @@ public class DeviceController {
 	@RequestMapping(value = { DeviceConstants.Path.DEVICE_STATUS_ACTIVITY }, method = { RequestMethod.GET })
 	public AmxApiResponse<DeviceStatusInfoDto, Object> getStatus() {
 		deviceRequestValidator.validateRequest();
-		return deviceClient.getStatus(ArgUtil.parseAsInteger(deviceRequestValidator.getDeviceRegKey()),
+		return deviceClient.getStatus(ArgUtil.parseAsInteger(deviceRequestValidator.getDeviceRegId()),
 				deviceRequestValidator.getDeviceRegToken(), deviceRequestValidator.getDeviceSessionToken());
 	}
 
@@ -123,11 +121,7 @@ public class DeviceController {
 	@RequestMapping(value = { DeviceConstants.Path.DEVICE_STATUS_CARD }, method = { RequestMethod.POST })
 	public AmxApiResponse<CardData, Object> saveCardDetails(@RequestBody CardReader reader) {
 		DeviceData deviceData = deviceRequestValidator.validateRequest();
-		if (ArgUtil.isEmpty(reader.getData())) {
-			cardBox.fastRemove(deviceData.getTerminalId());
-		} else {
-			cardBox.put(deviceData.getTerminalId(), reader.getData());
-		}
+		iCardService.saveCardDetailsByTerminal(deviceData.getTerminalId(), reader.getData());
 		return AmxApiResponse.build(reader.getData());
 	}
 
@@ -138,16 +132,9 @@ public class DeviceController {
 			throws InterruptedException {
 		wait = ArgUtil.parseAsBoolean(wait, Boolean.FALSE);
 		flush = ArgUtil.parseAsBoolean(flush, Boolean.FALSE);
-		CardData data = null;
-		if (wait) {
-			data = cardBox.take(systemid, 15, TimeUnit.SECONDS);
-		} else {
-			data = cardBox.get(systemid);
-		}
 
-		if (flush) {
-			cardBox.fastRemove(systemid);
-		}
+		CardData data = iCardService.getCardDetailsByTerminal(systemid, wait, flush);
+
 		return AmxApiResponse.build(data);
 	}
 

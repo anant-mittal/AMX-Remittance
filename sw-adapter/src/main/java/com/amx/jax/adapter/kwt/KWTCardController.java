@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.jax.adapter.AdapterServiceClient;
 import com.amx.jax.device.CardReader;
 
 @RestController
@@ -17,6 +18,9 @@ public class KWTCardController {
 	@Autowired
 	KWTCardReaderService kwtCardReaderService;
 
+	@Autowired
+	AdapterServiceClient adapterServiceClient;
+
 	@RequestMapping(value = "/pub/card/kwt/read", method = RequestMethod.GET)
 	public CardReader readCard() throws InterruptedException {
 		return kwtCardReaderService.read();
@@ -24,6 +28,8 @@ public class KWTCardController {
 
 	@RequestMapping(value = "/pub/script/validation.js", method = RequestMethod.GET)
 	public String makesession(@RequestParam String tranx) throws InterruptedException {
+		adapterServiceClient.pairTerminal(kwtCardReaderService.getAddress(),
+				kwtCardReaderService.getDevicePairingCreds(), kwtCardReaderService.getSessionPairingCreds(), tranx);
 		return "var _ba_ = true";
 	}
 

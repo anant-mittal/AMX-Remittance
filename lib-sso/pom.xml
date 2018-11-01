@@ -59,6 +59,12 @@
 			<artifactId>lib-rbaac</artifactId>
 		</dependency>
 
+		<dependency>
+			<groupId>com.amx.jax</groupId>
+			<artifactId>lib-adapter</artifactId>
+			<version>${jax.version}</version>
+		</dependency>
+
 	</dependencies>
 
 </project>

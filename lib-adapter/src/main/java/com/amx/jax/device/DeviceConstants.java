@@ -45,8 +45,8 @@ public class DeviceConstants {
 				devicePairingCreds.getDeviceRegToken());
 	}
 
-	public static boolean validateDeviceReqToken(String deviceReqKey, String deviceRegToken, String deviceReqToken) {
-		return CryptoUtil.validateHMAC(DeviceConstants.Config.REQUEST_TOKEN_VALIDITY, deviceReqKey, deviceRegToken,
+	public static boolean validateDeviceReqToken(String deviceReqKey, String deviceRegKey, String deviceReqToken) {
+		return CryptoUtil.validateHMAC(DeviceConstants.Config.REQUEST_TOKEN_VALIDITY, deviceReqKey, deviceRegKey,
 				deviceReqToken);
 	}
 
