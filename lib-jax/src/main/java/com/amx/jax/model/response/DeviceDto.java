@@ -2,6 +2,8 @@ package com.amx.jax.model.response;
 
 import java.math.BigDecimal;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class DeviceDto {
 
 	BigDecimal registrationId;
@@ -11,6 +13,9 @@ public class DeviceDto {
 	String deviceType;
 	
 	String pairToken;
+	
+	@JsonIgnore
+	String status;
 
 	public BigDecimal getRegistrationId() {
 		return registrationId;
@@ -42,6 +47,15 @@ public class DeviceDto {
 
 	public void setPairToken(String pairToken) {
 		this.pairToken = pairToken;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	@JsonIgnore
+	public void setStatus(String status) {
+		this.status = status;
 	}
 
 }

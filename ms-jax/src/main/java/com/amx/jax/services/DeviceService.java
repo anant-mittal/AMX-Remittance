@@ -72,7 +72,13 @@ public class DeviceService extends AbstractService {
 		logger.info("In register device with request: {}", request);
 		deviceValidation.validateDeviceRegRequest(request);
 		DeviceDto newDevice = deviceDao.saveDevice(request);
-		deviceDao.saveDeviceState(newDevice, DeviceState.REGISTERED);
+		DeviceState deviceState;
+		if (ConstantDocument.Yes.equals(newDevice.getStatus())) {
+			deviceState = DeviceState.REGISTERED;
+		} else {
+			deviceState = DeviceState.REGISTERED_NOT_ACTIVE;
+		}
+		deviceDao.saveDeviceState(newDevice, deviceState);
 		logger.info("device registered with id: {}", newDevice.getRegistrationId());
 		return newDevice;
 	}
