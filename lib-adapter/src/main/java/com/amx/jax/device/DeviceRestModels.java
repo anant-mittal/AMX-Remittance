@@ -9,6 +9,27 @@ import io.swagger.annotations.ApiModelProperty;
 
 public class DeviceRestModels {
 
+	public static class NetAddress {
+		String mac;
+		String localIp;
+
+		public String getMac() {
+			return mac;
+		}
+
+		public void setMac(String mac) {
+			this.mac = mac;
+		}
+
+		public String getLocalIp() {
+			return localIp;
+		}
+
+		public void setLocalIp(String localIp) {
+			this.localIp = localIp;
+		}
+	}
+
 	@JsonDeserialize(as = DeviceRestModel.class)
 	public interface DevicePairingRequest {
 		@ApiModelProperty(example = "192.168.14.162")

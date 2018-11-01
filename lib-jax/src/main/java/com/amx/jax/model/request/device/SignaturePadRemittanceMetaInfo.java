@@ -8,6 +8,8 @@ import com.amx.jax.model.response.IDeviceStateData;
 
 public class SignaturePadRemittanceMetaInfo implements IDeviceStateData {
 
+	private static final long serialVersionUID = -5336542874871758699L;
+
 	@NotNull
 	private BigDecimal employeeId;
 

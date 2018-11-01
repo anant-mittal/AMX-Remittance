@@ -14,7 +14,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,7 +21,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.amx.jax.AppConstants;
 import com.amx.jax.AppContextUtil;
+import com.amx.jax.adapter.AdapterServiceClient;
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.device.CardData;
 import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.http.CommonHttpRequest.CommonMediaType;
 import com.amx.jax.model.UserDevice;
@@ -63,6 +64,9 @@ public class SSOServerController {
 
 	@Autowired
 	RbaacServiceClient rbaacServiceClient;
+
+	@Autowired
+	AdapterServiceClient adapterServiceClient;
 
 	private Map<String, Object> getModelMap() {
 		ssoUser.ssoTranxId();
@@ -148,9 +152,18 @@ public class SSOServerController {
 				result.setStatusEnum(SSOServerCodes.OTP_REQUIRED);
 
 			} else if ((SSOAuthStep.OTP == json) && formdata.getMotp() != null) {
+
+				String terminalId = sSOTranx.get().getTerminalId();
+
 				UserAuthorisationReqDTO auth = new UserAuthorisationReqDTO();
 				auth.setEmployeeNo(formdata.getEcnumber());
-				auth.setIpAddress(userDevice.getIp());
+
+				if (ArgUtil.isEmpty(terminalId)) {
+					auth.setIpAddress(userDevice.getIp());
+				} else {
+					auth.setIpAddress(terminalId);
+				}
+
 				auth.setDeviceId(userDevice.getFingerprint());
 				auth.setmOtp(formdata.getMotp());
 				EmployeeDetailsDTO empDto = rbaacServiceClient.authoriseUser(auth).getResult();
@@ -168,6 +181,18 @@ public class SSOServerController {
 				}
 			}
 		}
+		return JsonUtil.toJson(result);
+	}
+
+	@RequestMapping(value = SSOConstants.SSO_CARD_DETAILS, method = RequestMethod.GET, produces = {
+			CommonMediaType.APPLICATION_JSON_VALUE, CommonMediaType.APPLICATION_V0_JSON_VALUE })
+	@ResponseBody
+	public String getCardDetails() throws InterruptedException {
+		AmxApiResponse<SSOLoginFormData, Object> result = AmxApiResponse.build(new SSOLoginFormData());
+		ssoUser.ssoTranxId();
+		String terminlId = sSOTranx.get().getTerminalId();
+		CardData card = adapterServiceClient.pollCardDetailsByTerminal(terminlId).getResult();
+		result.getResult().setIdentity(card.getIdentity());
 		return JsonUtil.toJson(result);
 	}
 

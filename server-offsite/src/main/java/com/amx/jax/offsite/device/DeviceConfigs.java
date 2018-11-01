@@ -7,9 +7,6 @@ import org.springframework.stereotype.Component;
 
 import com.amx.jax.cache.CacheBox;
 import com.amx.jax.device.CardData;
-import com.amx.jax.device.DeviceConstants;
-import com.amx.jax.swagger.MockParamBuilder;
-import com.amx.jax.swagger.MockParamBuilder.MockParam;
 
 @Configuration
 public class DeviceConfigs {
@@ -57,17 +54,4 @@ public class DeviceConfigs {
 
 	}
 
-	// @Bean
-	public MockParam deviceRegKey() {
-		return new MockParamBuilder().name(DeviceConstants.Keys.CLIENT_REG_KEY_XKEY).description("Device Reg Key")
-				.parameterType(MockParamBuilder.MockParamType.HEADER).required(false).build();
-
-	}
-
-	// @Bean
-	public MockParam deviceRegToken() {
-		return new MockParamBuilder().name(DeviceConstants.Keys.CLIENT_REG_TOKEN_XKEY).description("Device Reg Token")
-				.parameterType(MockParamBuilder.MockParamType.HEADER).required(false).build();
-
-	}
 }

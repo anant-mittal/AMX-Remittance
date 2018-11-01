@@ -1,5 +1,7 @@
 package com.amx.jax.model.response;
 
-public interface IDeviceStateData {
+import java.io.Serializable;
+
+public interface IDeviceStateData extends Serializable {
 
 }

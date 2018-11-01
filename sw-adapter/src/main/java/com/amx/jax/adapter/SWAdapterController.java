@@ -1,4 +1,4 @@
-package com.amx.jax.adapter.kwt;
+package com.amx.jax.adapter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,13 +9,16 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.jax.device.CardReader;
 
 @RestController
-public class KWTCardController {
+public class SWAdapterController {
 
 	public static final String PUB_AMX_PREFIX = "/pub/amx";
 	public static final String PARAM_URL = PUB_AMX_PREFIX + "/params";
 
 	@Autowired
-	KWTCardReaderService kwtCardReaderService;
+	ACardReaderService kwtCardReaderService;
+
+	@Autowired
+	AdapterServiceClient adapterServiceClient;
 
 	@RequestMapping(value = "/pub/card/kwt/read", method = RequestMethod.GET)
 	public CardReader readCard() throws InterruptedException {
@@ -23,7 +26,9 @@ public class KWTCardController {
 	}
 
 	@RequestMapping(value = "/pub/script/validation.js", method = RequestMethod.GET)
-	public String makesession(@RequestParam String tanx) throws InterruptedException {
+	public String makesession(@RequestParam String tranx) throws InterruptedException {
+		adapterServiceClient.pairTerminal(kwtCardReaderService.getAddress(),
+				kwtCardReaderService.getDevicePairingCreds(), kwtCardReaderService.getSessionPairingCreds(), tranx);
 		return "var _ba_ = true";
 	}
 
