@@ -6,6 +6,7 @@ import com.amx.jax.model.response.IDeviceStateData;
 
 public class SignaturePadRemittanceInfo implements IDeviceStateData {
 
+	private static final long serialVersionUID = -7854220164059468609L;
 	@NotNull
 	String name;
 	@NotNull
