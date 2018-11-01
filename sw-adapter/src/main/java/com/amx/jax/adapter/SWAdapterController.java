@@ -1,4 +1,4 @@
-package com.amx.jax.adapter.kwt;
+package com.amx.jax.adapter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -6,17 +6,16 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.amx.jax.adapter.AdapterServiceClient;
 import com.amx.jax.device.CardReader;
 
 @RestController
-public class KWTCardController {
+public class SWAdapterController {
 
 	public static final String PUB_AMX_PREFIX = "/pub/amx";
 	public static final String PARAM_URL = PUB_AMX_PREFIX + "/params";
 
 	@Autowired
-	KWTCardReaderService kwtCardReaderService;
+	ACardReaderService kwtCardReaderService;
 
 	@Autowired
 	AdapterServiceClient adapterServiceClient;

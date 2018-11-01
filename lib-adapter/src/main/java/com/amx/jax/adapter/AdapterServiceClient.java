@@ -7,6 +7,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.ParameterizedTypeReference;
 
 import com.amx.jax.AppConstants;
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.device.CardData;
 import com.amx.jax.device.DeviceConstants;
@@ -53,8 +54,18 @@ public class AdapterServiceClient {
 	public AmxApiResponse<CardData, Object> pairTerminal(NetAddress address, DevicePairingCreds devicePairingCreds,
 			SessionPairingCreds sessionPairingCreds, String tranxId) throws InterruptedException {
 		return restService.ajax(offSiteUrl).path(DeviceConstants.Path.TERMINAL_PAIRING)
-				.header(AppConstants.TRANX_ID_XKEY, tranxId).get()
-				.as(new ParameterizedTypeReference<AmxApiResponse<CardData, Object>>() {
+				.header(AppConstants.TRANX_ID_XKEY, tranxId)
+
+				.header(AppConstants.DEVICE_ID_XKEY, address.getMac())
+				.header(AppConstants.DEVICE_IP_LOCAL_XKEY, address.getLocalIp())
+
+				.header(DeviceConstants.Keys.CLIENT_REG_KEY_XKEY, devicePairingCreds.getDeviceRegId())
+				.header(DeviceConstants.Keys.CLIENT_REG_TOKEN_XKEY, devicePairingCreds.getDeviceRegToken())
+
+				.header(DeviceConstants.Keys.CLIENT_SESSION_TOKEN_XKEY, sessionPairingCreds.getDeviceSessionToken())
+				.header(DeviceConstants.Keys.CLIENT_REQ_TOKEN_XKEY,
+						DeviceConstants.generateDeviceReqToken(sessionPairingCreds, devicePairingCreds))
+				.get().as(new ParameterizedTypeReference<AmxApiResponse<CardData, Object>>() {
 				});
 	}
 
