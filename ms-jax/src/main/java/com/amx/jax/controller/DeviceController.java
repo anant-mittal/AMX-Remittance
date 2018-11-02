@@ -52,6 +52,7 @@ public class DeviceController implements IDeviceService {
 	}
 
 	@RequestMapping(value = DEVICE_ACTIVATE, method = RequestMethod.GET)
+	@Override
 	public AmxApiResponse<BoolRespModel, Object> activateDevice(@RequestParam Integer countryBranchSystemInventoryId,
 			@RequestParam ClientType deviceType) {
 		BoolRespModel response = deviceService.activateDevice(countryBranchSystemInventoryId, deviceType);
@@ -83,6 +84,7 @@ public class DeviceController implements IDeviceService {
 	}
 
 	@RequestMapping(value = DEVICE_STATE_REMITTANCE_UPDATE, method = RequestMethod.POST)
+	@Override
 	public AmxApiResponse<BoolRespModel, Object> updateRemittanceState(@RequestParam ClientType deviceType,
 			@RequestParam Integer countryBranchSystemInventoryId,
 			@Valid @RequestBody SignaturePadRemittanceInfo signaturePadRemittanceInfo) {
@@ -92,6 +94,7 @@ public class DeviceController implements IDeviceService {
 	}
 
 	@RequestMapping(value = DEVICE_FC_PURCHASE, method = RequestMethod.POST)
+	@Override
 	public AmxApiResponse<BoolRespModel, Object> getFcPurchase(@RequestParam ClientType deviceType,
 			@RequestParam Integer countryBranchSystemInventoryId,
 			@Valid @RequestBody SignaturePadFCPurchaseSaleInfo signaturePadPurchseInfo) {
@@ -101,6 +104,7 @@ public class DeviceController implements IDeviceService {
 	}
 
 	@RequestMapping(value = DEVICE_FC_SALE, method = RequestMethod.POST)
+	@Override
 	public AmxApiResponse<BoolRespModel, Object> getFcSale(@RequestParam ClientType deviceType,
 			@RequestParam Integer countryBranchSystemInventoryId,
 			@Valid @RequestBody SignaturePadFCPurchaseSaleInfo signaturePadSaleInfo) {
@@ -110,6 +114,7 @@ public class DeviceController implements IDeviceService {
 	}
 
 	@RequestMapping(value = DEVICE_STATE_CUSTOMER_REG_UPDATE, method = RequestMethod.POST)
+	@Override
 	public AmxApiResponse<BoolRespModel, Object> updateCustomerRegStateData(@RequestParam ClientType deviceType,
 			@RequestParam Integer countryBranchSystemInventoryId,
 			@Valid @RequestBody SignaturePadCustomerRegStateMetaInfo metaInfo) {

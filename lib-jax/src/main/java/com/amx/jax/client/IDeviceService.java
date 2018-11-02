@@ -3,10 +3,14 @@ package com.amx.jax.client;
 import com.amx.jax.IJaxService;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
+import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.error.ApiJaxStatusBuilder.ApiJaxStatus;
 import com.amx.jax.model.request.DeviceRegistrationRequest;
 import com.amx.jax.model.request.DeviceStateInfoChangeRequest;
+import com.amx.jax.model.request.device.SignaturePadCustomerRegStateMetaInfo;
+import com.amx.jax.model.request.device.SignaturePadFCPurchaseSaleInfo;
+import com.amx.jax.model.request.device.SignaturePadRemittanceInfo;
 import com.amx.jax.model.response.DeviceDto;
 import com.amx.jax.model.response.DevicePairOtpResponse;
 import com.amx.jax.model.response.DeviceStatusInfoDto;
@@ -43,5 +47,19 @@ public interface IDeviceService extends IJaxService {
 			JaxError.CLIENT_INVALID_SESSION_TOKEN })
 	AmxApiResponse<BoolRespModel, Object> updateDeviceState(DeviceStateInfoChangeRequest request,
 			Integer registrationId, String paireToken, String sessionToken);
+
+	AmxApiResponse<BoolRespModel, Object> activateDevice(Integer countryBranchSystemInventoryId, ClientType deviceType);
+
+	AmxApiResponse<BoolRespModel, Object> updateRemittanceState(ClientType deviceType,
+			Integer countryBranchSystemInventoryId, SignaturePadRemittanceInfo signaturePadRemittanceInfo);
+
+	AmxApiResponse<BoolRespModel, Object> getFcPurchase(ClientType deviceType, Integer countryBranchSystemInventoryId,
+			SignaturePadFCPurchaseSaleInfo signaturePadPurchseInfo);
+
+	AmxApiResponse<BoolRespModel, Object> getFcSale(ClientType deviceType, Integer countryBranchSystemInventoryId,
+			SignaturePadFCPurchaseSaleInfo signaturePadSaleInfo);
+
+	AmxApiResponse<BoolRespModel, Object> updateCustomerRegStateData(ClientType deviceType,
+			Integer countryBranchSystemInventoryId, SignaturePadCustomerRegStateMetaInfo metaInfo);
 
 }
