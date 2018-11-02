@@ -288,7 +288,6 @@ public abstract class ACardReaderService {
 
 	@Scheduled(fixedDelay = 2000, initialDelay = 1000)
 	public void pingTask() {
-		SWAdapterGUI.CONTEXT.updateDeviceHealthStatus(1);// PING COUNT
 		LOGGER.debug("ACardReaderService:pingTask");
 		if (SWAdapterGUI.CONTEXT == null || CONTEXT == null) {
 			CONTEXT = this;
@@ -373,7 +372,7 @@ public abstract class ACardReaderService {
 		LOGGER.debug("KWTCardReader:clear:END");
 	}
 
-	private void reset() {
+	public void reset() {
 		LOGGER.debug("KWTCardReader:reset");
 		deviceStatus = DeviceStatus.DISCONNECTED;
 	}
