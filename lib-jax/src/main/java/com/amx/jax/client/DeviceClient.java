@@ -145,7 +145,7 @@ public class DeviceClient implements IDeviceService {
 	}
 
 	@Override
-	public AmxApiResponse<BoolRespModel, Object> getFcPurchase(ClientType deviceType,
+	public AmxApiResponse<BoolRespModel, Object> updateFcPurchase(ClientType deviceType,
 			Integer countryBranchSystemInventoryId, SignaturePadFCPurchaseSaleInfo signaturePadPurchseInfo) {
 		try {
 			LOGGER.info("in getFcPurchase");
@@ -164,7 +164,7 @@ public class DeviceClient implements IDeviceService {
 	}
 
 	@Override
-	public AmxApiResponse<BoolRespModel, Object> getFcSale(ClientType deviceType,
+	public AmxApiResponse<BoolRespModel, Object> updateFcSale(ClientType deviceType,
 			Integer countryBranchSystemInventoryId, SignaturePadFCPurchaseSaleInfo signaturePadSaleInfo) {
 		try {
 			LOGGER.info("in getFcSale");

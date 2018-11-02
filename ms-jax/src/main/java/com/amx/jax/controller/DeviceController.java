@@ -95,7 +95,7 @@ public class DeviceController implements IDeviceService {
 
 	@RequestMapping(value = DEVICE_FC_PURCHASE, method = RequestMethod.POST)
 	@Override
-	public AmxApiResponse<BoolRespModel, Object> getFcPurchase(@RequestParam ClientType deviceType,
+	public AmxApiResponse<BoolRespModel, Object> updateFcPurchase(@RequestParam ClientType deviceType,
 			@RequestParam Integer countryBranchSystemInventoryId,
 			@Valid @RequestBody SignaturePadFCPurchaseSaleInfo signaturePadPurchseInfo) {
 		BoolRespModel otpResponse = deviceService.updateDeviceStateData(deviceType, countryBranchSystemInventoryId,
@@ -105,7 +105,7 @@ public class DeviceController implements IDeviceService {
 
 	@RequestMapping(value = DEVICE_FC_SALE, method = RequestMethod.POST)
 	@Override
-	public AmxApiResponse<BoolRespModel, Object> getFcSale(@RequestParam ClientType deviceType,
+	public AmxApiResponse<BoolRespModel, Object> updateFcSale(@RequestParam ClientType deviceType,
 			@RequestParam Integer countryBranchSystemInventoryId,
 			@Valid @RequestBody SignaturePadFCPurchaseSaleInfo signaturePadSaleInfo) {
 		BoolRespModel otpResponse = deviceService.updateDeviceStateData(deviceType, countryBranchSystemInventoryId,

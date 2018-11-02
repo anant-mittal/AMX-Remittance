@@ -53,10 +53,10 @@ public interface IDeviceService extends IJaxService {
 	AmxApiResponse<BoolRespModel, Object> updateRemittanceState(ClientType deviceType,
 			Integer countryBranchSystemInventoryId, SignaturePadRemittanceInfo signaturePadRemittanceInfo);
 
-	AmxApiResponse<BoolRespModel, Object> getFcPurchase(ClientType deviceType, Integer countryBranchSystemInventoryId,
+	AmxApiResponse<BoolRespModel, Object> updateFcPurchase(ClientType deviceType, Integer countryBranchSystemInventoryId,
 			SignaturePadFCPurchaseSaleInfo signaturePadPurchseInfo);
 
-	AmxApiResponse<BoolRespModel, Object> getFcSale(ClientType deviceType, Integer countryBranchSystemInventoryId,
+	AmxApiResponse<BoolRespModel, Object> updateFcSale(ClientType deviceType, Integer countryBranchSystemInventoryId,
 			SignaturePadFCPurchaseSaleInfo signaturePadSaleInfo);
 
 	AmxApiResponse<BoolRespModel, Object> updateCustomerRegStateData(ClientType deviceType,
