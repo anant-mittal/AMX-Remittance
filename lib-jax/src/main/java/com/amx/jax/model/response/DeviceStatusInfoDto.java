@@ -1,5 +1,7 @@
 package com.amx.jax.model.response;
 
+import java.util.Date;
+
 import com.amx.jax.constants.DeviceState;
 import com.amx.jax.constants.DeviceStateDataType;
 import com.amx.jax.model.request.device.SignaturePadCustomerRegStateInfo;
@@ -16,6 +18,8 @@ public class DeviceStatusInfoDto {
 	SignaturePadFCPurchaseSaleInfo signaturePadFCSaleInfo;
 	SignaturePadFCPurchaseSaleInfo signaturePadFCPurchaseInfo;
 	SignaturePadRemittanceInfo signaturePadRemittanceInfo;
+
+	Date branchPcLogoutTime;
 
 	public DeviceState getDeviceState() {
 		return deviceState;
@@ -63,6 +67,14 @@ public class DeviceStatusInfoDto {
 
 	public void setSignaturePadRemittanceInfo(SignaturePadRemittanceInfo signaturePadRemittanceInfo) {
 		this.signaturePadRemittanceInfo = signaturePadRemittanceInfo;
+	}
+
+	public Date getBranchPcLogoutTime() {
+		return branchPcLogoutTime;
+	}
+
+	public void setBranchPcLogoutTime(Date branchPcLogoutTime) {
+		this.branchPcLogoutTime = branchPcLogoutTime;
 	}
 
 }

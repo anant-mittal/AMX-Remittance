@@ -67,7 +67,7 @@ public class DeviceManager {
 		}
 		device.setStatus(ConstantDocument.Yes);
 		DeviceStateInfo deviceStateInfo = deviceDao.getDeviceStateInfo(device);
-		deviceStateInfo.setState(DeviceState.DEVICE_PAIRED);
+		deviceStateInfo.setState(DeviceState.REGISTERED);
 		deviceDao.saveDeviceInfo(deviceStateInfo);
 		deviceDao.saveDevice(device);
 	}
