@@ -109,6 +109,7 @@ public class DeviceController {
 		return AmxApiResponse.build();
 	}
 
+	@Deprecated
 	@ApiDeviceHeaders
 	@RequestMapping(value = { DeviceConstants.Path.DEVICE_STATUS_ACTIVITY }, method = { RequestMethod.GET })
 	public AmxApiResponse<DeviceStatusInfoDto, Object> getStatus() {

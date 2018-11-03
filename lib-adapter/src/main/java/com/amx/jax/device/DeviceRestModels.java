@@ -45,7 +45,7 @@ public class DeviceRestModels {
 	}
 
 	@JsonDeserialize(as = DeviceRestModel.class)
-	public interface DevicePairingCreds {
+	public interface DevicePairingCreds extends DevicePairingRequest {
 
 		void setDeviceRegToken(String deviceRegToken);
 

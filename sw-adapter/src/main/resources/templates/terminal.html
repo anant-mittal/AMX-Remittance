@@ -1,0 +1,11 @@
+<center>
+	<div th:if="${TERMINAL_ID == null}">
+		<form method="post">
+			<input name="terminalId" placeholder="Terminal ID" />
+			<button type="submit">Save</button>
+		</form>
+	</div>
+	<div th:if="${REG_ID != null}">
+		REG ID : <span th:text="${REG_ID}"></span>
+	</div>
+</center>

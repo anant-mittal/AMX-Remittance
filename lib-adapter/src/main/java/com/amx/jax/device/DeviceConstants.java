@@ -25,8 +25,10 @@ public class DeviceConstants {
 		public static final String DEVICE_PAIR = "/pub/device/pair";
 		public static final String SESSION_PAIR = "/pub/device/session";
 		public static final String TERMINAL_PAIRING = "/pub/device/terminal";
-		public static final String DEVICE_STATUS_ACTIVITY = "/pub/device/status/activity";
 		public static final String DEVICE_STATUS_CARD = "/pub/device/status/card";
+
+		@Deprecated
+		public static final String DEVICE_STATUS_ACTIVITY = "/pub/device/status/activity";
 	}
 
 	public static class Params {

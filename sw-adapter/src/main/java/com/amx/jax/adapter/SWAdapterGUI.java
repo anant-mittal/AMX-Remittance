@@ -13,14 +13,14 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.springframework.context.annotation.ComponentScan;
+import org.springframework.stereotype.Component;
 
 import com.amx.jax.adapter.ACardReaderService.CardStatus;
 import com.amx.jax.adapter.ACardReaderService.DataStatus;
 import com.amx.jax.adapter.ACardReaderService.DeviceStatus;
 import com.amx.utils.Constants;
 
-@ComponentScan("com.amx.jax")
+@Component
 public class SWAdapterGUI extends JFrame {
 
 	private static final long serialVersionUID = 2703873832309041808L;

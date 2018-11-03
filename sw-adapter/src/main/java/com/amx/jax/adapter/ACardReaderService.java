@@ -68,8 +68,17 @@ public abstract class ACardReaderService {
 
 	@Value("${jax.offsite.url}")
 	String serverUrl;
-	@Value("${device.terminal.id}")
+
+	// @Value("${device.terminal.id}")
 	String terminalId;
+
+	public String getTerminalId() {
+		return terminalId;
+	}
+
+	public void setTerminalId(String terminalId) {
+		this.terminalId = terminalId;
+	}
 
 	@Autowired
 	RestService restService;
@@ -107,6 +116,10 @@ public abstract class ACardReaderService {
 			return devicePairingCreds;
 		}
 
+		if (ArgUtil.isEmpty(terminalId)) {
+			return null;
+		}
+
 		synchronized (lock) {
 			Keyring keyring;
 			try {
@@ -137,6 +150,7 @@ public abstract class ACardReaderService {
 					DevicePairingCreds dpr = JsonUtil.fromJson(terminalCredsStrs, DevicePairingCreds.class);
 					if (!ArgUtil.isEmpty(dpr) && !ArgUtil.isEmpty(dpr.getDeviceRegId())) {
 						devicePairingCreds = dpr;
+						terminalId = devicePairingCreds.getDeivceTerminalId();
 						status(DeviceStatus.PAIRING_KEYS_FOUND);
 					} else {
 						devicePairingCredsValid = false;
@@ -169,6 +183,8 @@ public abstract class ACardReaderService {
 					if (resp.getResults().size() > 0) {
 						DevicePairingCreds dpr = resp.getResult();
 						if (!ArgUtil.isEmpty(dpr) && !ArgUtil.isEmpty(dpr.getDeviceRegId())) {
+							dpr.setDeivceTerminalId(terminalId);
+							dpr.setDeivceClientType(ClientType.BRANCH_ADAPTER);
 							devicePairingCreds = dpr;
 							devicePairingCredsValid = true;
 							String terminalCredsStrs = JsonUtil.toJson(dpr);
@@ -245,7 +261,7 @@ public abstract class ACardReaderService {
 		return sessionPairingCreds;
 	}
 
-	@Scheduled(fixedDelay = 1000)
+	@Scheduled(fixedDelay = 1000, initialDelay = 4000)
 	public void readTask() {
 		LOGGER.debug("ACardReaderService:readTask");
 		if (SWAdapterGUI.CONTEXT == null) {
@@ -286,7 +302,7 @@ public abstract class ACardReaderService {
 		}
 	}
 
-	@Scheduled(fixedDelay = 2000, initialDelay = 1000)
+	@Scheduled(fixedDelay = 2000, initialDelay = 5000)
 	public void pingTask() {
 		LOGGER.debug("ACardReaderService:pingTask");
 		if (SWAdapterGUI.CONTEXT == null || CONTEXT == null) {

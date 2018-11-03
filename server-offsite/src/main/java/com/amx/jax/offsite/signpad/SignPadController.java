@@ -42,7 +42,7 @@ public class SignPadController {
 				deviceRequestValidator.getDeviceRegToken(), deviceRequestValidator.getDeviceSessionToken());
 	}
 
-	@RequestMapping(value = { SingPadConstants.Path.SIGNPAD_STATUS_REMIT }, method = { RequestMethod.GET })
+	@RequestMapping(value = { SingPadConstants.Path.SIGNPAD_STATUS_REMIT }, method = { RequestMethod.POST })
 	public AmxApiResponse<BoolRespModel, Object> updateRemittanceState(
 			@RequestParam Integer countryBranchSystemInventoryId,
 			@RequestBody SignaturePadRemittanceInfo signaturePadRemittanceInfo) {
@@ -51,7 +51,7 @@ public class SignPadController {
 				signaturePadRemittanceInfo);
 	}
 
-	@RequestMapping(value = { SingPadConstants.Path.SIGNPAD_STATUS_FCPURCHASE }, method = { RequestMethod.GET })
+	@RequestMapping(value = { SingPadConstants.Path.SIGNPAD_STATUS_FCPURCHASE }, method = { RequestMethod.POST })
 	public AmxApiResponse<BoolRespModel, Object> updateFcPurchase(@RequestParam Integer countryBranchSystemInventoryId,
 			@RequestBody SignaturePadFCPurchaseSaleInfo signaturePadRemittanceInfo) {
 		deviceRequestValidator.validateRequest();
@@ -59,7 +59,7 @@ public class SignPadController {
 				signaturePadRemittanceInfo);
 	}
 
-	@RequestMapping(value = { SingPadConstants.Path.SIGNPAD_STATUS_FCSALE }, method = { RequestMethod.GET })
+	@RequestMapping(value = { SingPadConstants.Path.SIGNPAD_STATUS_FCSALE }, method = { RequestMethod.POST })
 	public AmxApiResponse<BoolRespModel, Object> updateFcSale(@RequestParam Integer countryBranchSystemInventoryId,
 			@RequestBody SignaturePadFCPurchaseSaleInfo signaturePadRemittanceInfo) {
 		deviceRequestValidator.validateRequest();
@@ -67,7 +67,7 @@ public class SignPadController {
 				signaturePadRemittanceInfo);
 	}
 
-	@RequestMapping(value = { SingPadConstants.Path.SIGNPAD_STATUS_CUST_REG }, method = { RequestMethod.GET })
+	@RequestMapping(value = { SingPadConstants.Path.SIGNPAD_STATUS_CUST_REG }, method = { RequestMethod.POST })
 	public AmxApiResponse<BoolRespModel, Object> updateCustomerRegStateData(
 			@RequestParam Integer countryBranchSystemInventoryId,
 			@RequestBody SignaturePadCustomerRegStateMetaInfo signaturePadRemittanceInfo) {
