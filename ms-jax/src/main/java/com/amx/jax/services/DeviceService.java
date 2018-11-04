@@ -1,9 +1,13 @@
 package com.amx.jax.services;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
+import java.net.URL;
 
 import javax.transaction.Transactional;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -211,5 +215,19 @@ public class DeviceService extends AbstractService {
 		deviceDao.saveDeviceInfo(deviceStateInfo);
 		return new BoolRespModel(Boolean.TRUE);
 
+	}
+
+	public BoolRespModel updateSignatureStateData(Integer deviceRegId, String imageUrlStr) {
+		URL imageUrl = deviceValidation.validateImageUrl(imageUrlStr);
+		Device device = deviceDao.findDevice(new BigDecimal(deviceRegId));
+		DeviceStateInfo deviceStateInfo = deviceDao.getDeviceStateInfo(device);
+		try {
+			InputStream stream = imageUrl.openStream();
+			deviceStateInfo.setSignature(IOUtils.toByteArray(stream));
+			deviceDao.saveDeviceInfo(deviceStateInfo);
+		} catch (IOException e) {
+			logger.error("error in updateSignatureStateData url", e);
+		}
+		return new BoolRespModel(Boolean.TRUE);
 	}
 }

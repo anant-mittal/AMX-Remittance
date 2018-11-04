@@ -1,6 +1,7 @@
 package com.amx.jax.dbmodel;
 
 import java.math.BigDecimal;
+import java.sql.Clob;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -8,6 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.PrePersist;
 import javax.persistence.Table;
 
@@ -50,6 +52,18 @@ public class DeviceStateInfo {
 
 	@Column(name = "OTP_TOKEN")
 	String otpToken;
+	
+	@Column(name = "SIGNATURE")
+	@Lob
+	byte[] signature ;
+
+	public byte[] getSignature() {
+		return signature;
+	}
+
+	public void setSignature(byte[] signature) {
+		this.signature = signature;
+	}
 
 	public BigDecimal getDeviceRegId() {
 		return deviceRegId;

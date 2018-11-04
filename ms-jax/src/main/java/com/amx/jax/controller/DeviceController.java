@@ -122,4 +122,11 @@ public class DeviceController implements IDeviceService {
 				metaInfo, DeviceStateDataType.CUSTOMER_REGISTRATION);
 		return AmxApiResponse.build(otpResponse);
 	}
+	
+	@RequestMapping(value = DEVICE_STATE_SIGNATURE_UPDATE, method = RequestMethod.POST)
+	@Override
+	public AmxApiResponse<BoolRespModel, Object> updateSignatureStateData(@RequestHeader Integer deviceRegId, @RequestParam String imageUrl) {
+		BoolRespModel otpResponse = deviceService.updateSignatureStateData(deviceRegId, imageUrl);
+		return AmxApiResponse.build(otpResponse);
+	}
 }

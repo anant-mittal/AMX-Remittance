@@ -28,6 +28,7 @@ public interface IDeviceService extends IJaxService {
 	public static final String DEVICE_STATE_REMITTANCE_UPDATE = "/updatestateremittance";
 	public static final String DEVICE_STATE_CUSTOMER_REG_UPDATE = "/updatestatecustreg";
 	public static final String DEVICE_STATE_FC_SALE_UPDATE = "/updatestatefcsale";
+	public static final String DEVICE_STATE_SIGNATURE_UPDATE = "/updatesignature";
 	
 	public static final String DEVICE_FC_PURCHASE = "/fcpurchase";
 	public static final String DEVICE_FC_SALE = "/fcsale";
@@ -61,5 +62,7 @@ public interface IDeviceService extends IJaxService {
 
 	AmxApiResponse<BoolRespModel, Object> updateCustomerRegStateData(ClientType deviceType,
 			Integer countryBranchSystemInventoryId, SignaturePadCustomerRegStateMetaInfo metaInfo);
+
+	AmxApiResponse<BoolRespModel, Object> updateSignatureStateData(Integer deviceRegId, String imageUrl);
 
 }

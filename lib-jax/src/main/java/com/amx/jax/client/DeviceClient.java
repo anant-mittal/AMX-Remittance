@@ -199,4 +199,10 @@ public class DeviceClient implements IDeviceService {
 		}
 	}
 
+	@Override
+	public AmxApiResponse<BoolRespModel, Object> updateSignatureStateData(Integer deviceRegId, String imageUrl) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
