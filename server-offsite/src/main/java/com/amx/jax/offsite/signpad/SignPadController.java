@@ -48,7 +48,7 @@ public class SignPadController {
 			@RequestBody SignaturePadRemittanceInfo signaturePadRemittanceInfo) {
 		deviceRequestValidator.validateRequest();
 		return deviceClient.updateRemittanceState(ClientType.SIGNATURE_PAD, countryBranchSystemInventoryId,
-				signaturePadRemittanceInfo);
+				signaturePadRemittanceInfo, null);
 	}
 
 	@RequestMapping(value = { SingPadConstants.Path.SIGNPAD_STATUS_FCPURCHASE }, method = { RequestMethod.POST })
@@ -56,7 +56,7 @@ public class SignPadController {
 			@RequestBody SignaturePadFCPurchaseSaleInfo signaturePadRemittanceInfo) {
 		deviceRequestValidator.validateRequest();
 		return deviceClient.updateFcPurchase(ClientType.SIGNATURE_PAD, countryBranchSystemInventoryId,
-				signaturePadRemittanceInfo);
+				signaturePadRemittanceInfo, null);
 	}
 
 	@RequestMapping(value = { SingPadConstants.Path.SIGNPAD_STATUS_FCSALE }, method = { RequestMethod.POST })
@@ -64,7 +64,7 @@ public class SignPadController {
 			@RequestBody SignaturePadFCPurchaseSaleInfo signaturePadRemittanceInfo) {
 		deviceRequestValidator.validateRequest();
 		return deviceClient.updateFcSale(ClientType.SIGNATURE_PAD, countryBranchSystemInventoryId,
-				signaturePadRemittanceInfo);
+				signaturePadRemittanceInfo, null);
 	}
 
 	@RequestMapping(value = { SingPadConstants.Path.SIGNPAD_STATUS_CUST_REG }, method = { RequestMethod.POST })
@@ -73,7 +73,7 @@ public class SignPadController {
 			@RequestBody SignaturePadCustomerRegStateMetaInfo signaturePadRemittanceInfo) {
 		deviceRequestValidator.validateRequest();
 		return deviceClient.updateCustomerRegStateData(ClientType.SIGNATURE_PAD, countryBranchSystemInventoryId,
-				signaturePadRemittanceInfo);
+				signaturePadRemittanceInfo, null);
 	}
 
 }
