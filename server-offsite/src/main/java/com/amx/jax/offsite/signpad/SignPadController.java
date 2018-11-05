@@ -1,5 +1,7 @@
 package com.amx.jax.offsite.signpad;
 
+import java.text.ParseException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,6 +14,7 @@ import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.DeviceClient;
 import com.amx.jax.client.IDeviceService;
 import com.amx.jax.dict.UserClient.ClientType;
+import com.amx.jax.model.request.ImageSubmissionRequest;
 import com.amx.jax.model.request.device.SignaturePadCustomerRegStateMetaInfo;
 import com.amx.jax.model.request.device.SignaturePadFCPurchaseSaleInfo;
 import com.amx.jax.model.request.device.SignaturePadRemittanceInfo;
@@ -74,6 +77,12 @@ public class SignPadController {
 		deviceRequestValidator.validateRequest();
 		return deviceClient.updateCustomerRegStateData(ClientType.SIGNATURE_PAD, countryBranchSystemInventoryId,
 				signaturePadRemittanceInfo, null);
+	}
+
+	@RequestMapping(value = SingPadConstants.Path.SIGNPAD_STATUS_SUBMIT, method = { RequestMethod.POST })
+	public AmxApiResponse<String, Object> saveCustomerSignature(@RequestBody ImageSubmissionRequest modelData)
+			throws ParseException {
+		return null;
 	}
 
 }
