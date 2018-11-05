@@ -1,5 +1,7 @@
 package com.amx.jax.controller;
 
+import java.math.BigDecimal;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,7 +89,8 @@ public class DeviceController implements IDeviceService {
 	@Override
 	public AmxApiResponse<BoolRespModel, Object> updateRemittanceState(@RequestParam ClientType deviceType,
 			@RequestParam Integer countryBranchSystemInventoryId,
-			@Valid @RequestBody SignaturePadRemittanceInfo signaturePadRemittanceInfo) {
+			@Valid @RequestBody SignaturePadRemittanceInfo signaturePadRemittanceInfo,
+			@RequestParam BigDecimal employeeId) {
 		BoolRespModel otpResponse = deviceService.updateDeviceStateData(deviceType, countryBranchSystemInventoryId,
 				signaturePadRemittanceInfo, DeviceStateDataType.REMITTANCE);
 		return AmxApiResponse.build(otpResponse);
@@ -97,7 +100,8 @@ public class DeviceController implements IDeviceService {
 	@Override
 	public AmxApiResponse<BoolRespModel, Object> updateFcPurchase(@RequestParam ClientType deviceType,
 			@RequestParam Integer countryBranchSystemInventoryId,
-			@Valid @RequestBody SignaturePadFCPurchaseSaleInfo signaturePadPurchseInfo) {
+			@Valid @RequestBody SignaturePadFCPurchaseSaleInfo signaturePadPurchseInfo,
+			@RequestParam BigDecimal employeeId) {
 		BoolRespModel otpResponse = deviceService.updateDeviceStateData(deviceType, countryBranchSystemInventoryId,
 				signaturePadPurchseInfo, DeviceStateDataType.FC_PURCHASE);
 		return AmxApiResponse.build(otpResponse);
@@ -107,7 +111,8 @@ public class DeviceController implements IDeviceService {
 	@Override
 	public AmxApiResponse<BoolRespModel, Object> updateFcSale(@RequestParam ClientType deviceType,
 			@RequestParam Integer countryBranchSystemInventoryId,
-			@Valid @RequestBody SignaturePadFCPurchaseSaleInfo signaturePadSaleInfo) {
+			@Valid @RequestBody SignaturePadFCPurchaseSaleInfo signaturePadSaleInfo,
+			@RequestParam BigDecimal employeeId) {
 		BoolRespModel otpResponse = deviceService.updateDeviceStateData(deviceType, countryBranchSystemInventoryId,
 				signaturePadSaleInfo, DeviceStateDataType.FC_SALE);
 		return AmxApiResponse.build(otpResponse);
@@ -117,16 +122,17 @@ public class DeviceController implements IDeviceService {
 	@Override
 	public AmxApiResponse<BoolRespModel, Object> updateCustomerRegStateData(@RequestParam ClientType deviceType,
 			@RequestParam Integer countryBranchSystemInventoryId,
-			@Valid @RequestBody SignaturePadCustomerRegStateMetaInfo metaInfo) {
+			@Valid @RequestBody SignaturePadCustomerRegStateMetaInfo metaInfo, @RequestParam BigDecimal employeeId) {
 		BoolRespModel otpResponse = deviceService.updateDeviceStateData(deviceType, countryBranchSystemInventoryId,
 				metaInfo, DeviceStateDataType.CUSTOMER_REGISTRATION);
 		return AmxApiResponse.build(otpResponse);
 	}
-	
+
 	@RequestMapping(value = DEVICE_STATE_SIGNATURE_UPDATE, method = RequestMethod.POST)
 	@Override
-	public AmxApiResponse<BoolRespModel, Object> updateSignatureStateData(@RequestHeader Integer deviceRegId, @RequestParam String imageUrl) {
-		BoolRespModel otpResponse = deviceService.updateSignatureStateData(deviceRegId, imageUrl);
+	public AmxApiResponse<BoolRespModel, Object> updateSignatureStateData(@RequestHeader Integer deviceRegId,
+			@RequestParam String signatureImageClob) {
+		BoolRespModel otpResponse = deviceService.updateSignatureStateData(deviceRegId, signatureImageClob);
 		return AmxApiResponse.build(otpResponse);
 	}
 }

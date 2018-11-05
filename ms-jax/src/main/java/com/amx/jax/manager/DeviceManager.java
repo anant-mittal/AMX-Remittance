@@ -86,6 +86,7 @@ public class DeviceManager {
 		String otpHash = cryptoUtil.generateHash(device.getRegistrationId().toString(), otp);
 		deviceInfo.setOtpToken(otpHash);
 		String sessionPairToken = generateSessionPairToken(device);
+		deviceInfo.setState(DeviceState.SESSION_CREATED);
 		deviceInfo.setSessionToken(sessionPairToken);
 		deviceDao.saveDeviceInfo(deviceInfo);
 		DevicePairOtpResponse resp = new DevicePairOtpResponse();

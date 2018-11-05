@@ -1,13 +1,9 @@
 package com.amx.jax.services;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.math.BigDecimal;
-import java.net.URL;
 
 import javax.transaction.Transactional;
 
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +23,7 @@ import com.amx.jax.dao.DeviceDao;
 import com.amx.jax.dbmodel.Device;
 import com.amx.jax.dbmodel.DeviceStateInfo;
 import com.amx.jax.dbmodel.JaxConfig;
+import com.amx.jax.dbmodel.LoginLogoutHistory;
 import com.amx.jax.dict.UserClient.DeviceType;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.dbmodel.JaxConfig;
@@ -47,10 +44,13 @@ import com.amx.jax.model.response.customer.CustomerContactDto;
 import com.amx.jax.model.response.customer.CustomerDto;
 import com.amx.jax.model.response.customer.CustomerIdProofDto;
 import com.amx.jax.services.AbstractService;
+import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.validation.DeviceValidation;
 import com.amx.utils.CryptoUtil;
+import com.amx.utils.IoUtils;
 import com.amx.utils.JsonUtil;
 import com.amx.jax.dict.UserClient.ClientType;
+import com.amx.jax.customer.dao.EmployeeDao;;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -68,6 +68,10 @@ public class DeviceService extends AbstractService {
 	JaxConfigService jaxConfigService;
 	@Autowired
 	CustomerService customerService;
+	@Autowired
+	EmployeeDao employeeDao;
+	@Autowired
+	UserService userService;
 
 	public static final long DEVICE_SESSION_TIMEOUT = 8 * 60 * 60; // in seconds
 
@@ -187,7 +191,18 @@ public class DeviceService extends AbstractService {
 				break;
 			}
 		}
+		setBranchPcLogoutTime(dto,deviceStateInfo.getEmployeeId());
 		return dto;
+	}
+
+	private void setBranchPcLogoutTime(DeviceStatusInfoDto dto, BigDecimal employeeId) {
+		if (employeeId != null) {
+			String userName = employeeDao.getEmployeeDetails(employeeId).getUserName();
+			LoginLogoutHistory logoutHistory = userService.getLastLogoutHistoryByUserName(userName);
+			if (logoutHistory != null) {
+				dto.setBranchPcLastLogoutTime(logoutHistory.getLogoutTime());
+			}
+		}
 	}
 
 	private SignaturePadCustomerRegStateInfo getCustomerRegData(Integer customerId) {
@@ -218,16 +233,11 @@ public class DeviceService extends AbstractService {
 	}
 
 	public BoolRespModel updateSignatureStateData(Integer deviceRegId, String imageUrlStr) {
-		URL imageUrl = deviceValidation.validateImageUrl(imageUrlStr);
 		Device device = deviceDao.findDevice(new BigDecimal(deviceRegId));
 		DeviceStateInfo deviceStateInfo = deviceDao.getDeviceStateInfo(device);
-		try {
-			InputStream stream = imageUrl.openStream();
-			deviceStateInfo.setSignature(IOUtils.toByteArray(stream));
-			deviceDao.saveDeviceInfo(deviceStateInfo);
-		} catch (IOException e) {
-			logger.error("error in updateSignatureStateData url", e);
-		}
+		deviceStateInfo.setSignature(imageUrlStr);
+		deviceDao.saveDeviceInfo(deviceStateInfo);
+
 		return new BoolRespModel(Boolean.TRUE);
 	}
 }

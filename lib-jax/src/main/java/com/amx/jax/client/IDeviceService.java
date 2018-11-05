@@ -1,5 +1,7 @@
 package com.amx.jax.client;
 
+import java.math.BigDecimal;
+
 import com.amx.jax.IJaxService;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
@@ -52,16 +54,16 @@ public interface IDeviceService extends IJaxService {
 	AmxApiResponse<BoolRespModel, Object> activateDevice(Integer countryBranchSystemInventoryId, ClientType deviceType);
 
 	AmxApiResponse<BoolRespModel, Object> updateRemittanceState(ClientType deviceType,
-			Integer countryBranchSystemInventoryId, SignaturePadRemittanceInfo signaturePadRemittanceInfo);
+			Integer countryBranchSystemInventoryId, SignaturePadRemittanceInfo signaturePadRemittanceInfo, BigDecimal employeeId);
 
 	AmxApiResponse<BoolRespModel, Object> updateFcPurchase(ClientType deviceType, Integer countryBranchSystemInventoryId,
-			SignaturePadFCPurchaseSaleInfo signaturePadPurchseInfo);
+			SignaturePadFCPurchaseSaleInfo signaturePadPurchseInfo, BigDecimal employeeId);
 
 	AmxApiResponse<BoolRespModel, Object> updateFcSale(ClientType deviceType, Integer countryBranchSystemInventoryId,
-			SignaturePadFCPurchaseSaleInfo signaturePadSaleInfo);
+			SignaturePadFCPurchaseSaleInfo signaturePadSaleInfo, BigDecimal employeeId);
 
 	AmxApiResponse<BoolRespModel, Object> updateCustomerRegStateData(ClientType deviceType,
-			Integer countryBranchSystemInventoryId, SignaturePadCustomerRegStateMetaInfo metaInfo);
+			Integer countryBranchSystemInventoryId, SignaturePadCustomerRegStateMetaInfo metaInfo, BigDecimal employeeId);
 
 	AmxApiResponse<BoolRespModel, Object> updateSignatureStateData(Integer deviceRegId, String imageUrl);
 

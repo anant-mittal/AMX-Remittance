@@ -52,18 +52,12 @@ public class DeviceStateInfo {
 
 	@Column(name = "OTP_TOKEN")
 	String otpToken;
+
+	@Column(name = "SIGNATURE_CLOB")
+	String signature;
 	
-	@Column(name = "SIGNATURE")
-	@Lob
-	byte[] signature ;
-
-	public byte[] getSignature() {
-		return signature;
-	}
-
-	public void setSignature(byte[] signature) {
-		this.signature = signature;
-	}
+	@Column(name = "EMPLOYEE_ID")
+	BigDecimal employeeId;
 
 	public BigDecimal getDeviceRegId() {
 		return deviceRegId;
@@ -149,4 +143,21 @@ public class DeviceStateInfo {
 	public void prePersist() {
 		this.modifiedDate = new Date();
 	}
+
+	public String getSignature() {
+		return signature;
+	}
+
+	public void setSignature(String signature) {
+		this.signature = signature;
+	}
+
+	public BigDecimal getEmployeeId() {
+		return employeeId;
+	}
+
+	public void setEmployeeId(BigDecimal employeeId) {
+		this.employeeId = employeeId;
+	}
+
 }

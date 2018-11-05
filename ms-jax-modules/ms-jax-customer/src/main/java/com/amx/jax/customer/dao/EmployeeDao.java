@@ -25,6 +25,10 @@ public class EmployeeDao {
 		return repo.getEmployeeDetails(civilId,ecNumber,ConstantDocument.Deleted);
 	}	
 
+	public Employee getEmployeeDetails(BigDecimal employeeId) {
+		
+		return repo.findByEmployeeId(employeeId);
+	}	
 	/**
 	 * @param civilId
 	 * @return AmgEmployee object which belong to table which is superset of all
