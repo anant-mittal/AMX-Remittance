@@ -6,6 +6,8 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import com.amx.jax.dbmodel.CurrencyMasterModel;
 /**
@@ -24,4 +26,9 @@ public interface ICurrencyDao extends JpaRepository<CurrencyMasterModel, Seriali
 	public List<CurrencyMasterModel> getCurrencyListByCountryId(BigDecimal countryId);
 	
 	public List<CurrencyMasterModel> findByisactive(String isActive);
+	
+	@Query("select cm from CurrencyMasterModel cm where cm.countryId <>:countryid and cm.isactive ='Y' and cm.isAllowFcSale='Y'")
+	public List<CurrencyMasterModel> getfcCurrencyList(@Param("countryid") BigDecimal countryid);
+	
 }
+

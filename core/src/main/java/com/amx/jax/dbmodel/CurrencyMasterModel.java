@@ -55,8 +55,11 @@ public class CurrencyMasterModel implements java.io.Serializable {
 	private Date approvedDate;
 	private String remarks;
 	private BigDecimal countryId;
+	private String isAllowFcSale ;
 
 	
+
+
 	public CurrencyMasterModel() {
 	}
 
@@ -275,6 +278,15 @@ public class CurrencyMasterModel implements java.io.Serializable {
 
 	public void setCountryId(BigDecimal countryId) {
 		this.countryId = countryId;
+	}
+	
+	@Column(name="ALLOW_FC_SALE")
+	public String getIsAllowFcSale() {
+		return isAllowFcSale;
+	}
+
+	public void setIsAllowFcSale(String isAllowFcSale) {
+		this.isAllowFcSale = isAllowFcSale;
 	}
 
 }

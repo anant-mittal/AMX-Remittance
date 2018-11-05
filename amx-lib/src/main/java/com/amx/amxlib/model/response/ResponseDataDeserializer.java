@@ -16,6 +16,7 @@ import com.amx.amxlib.meta.model.CountryMasterDTO;
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.meta.model.CustomerDto;
 import com.amx.amxlib.meta.model.EmployeeDetailsDTO;
+import com.amx.amxlib.meta.model.FxExchangeRateDto;
 import com.amx.amxlib.meta.model.JaxMetaParameter;
 import com.amx.amxlib.meta.model.PrefixDTO;
 import com.amx.amxlib.meta.model.QuestModelDTO;
@@ -42,6 +43,7 @@ import com.amx.amxlib.model.MinMaxExRateDTO;
 import com.amx.amxlib.model.OnlineConfigurationDto;
 import com.amx.amxlib.model.PlaceOrderDTO;
 import com.amx.amxlib.model.PlaceOrderNotificationDTO;
+import com.amx.amxlib.model.PurposeOfTransactionDto;
 import com.amx.amxlib.model.RateAlertDTO;
 import com.amx.amxlib.model.UserModel;
 import com.amx.amxlib.model.UserVerificationCheckListDTO;
@@ -310,6 +312,18 @@ public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {
 			models = new ObjectMapper().readValue(values, new TypeReference<List<UserDetailsDTO>>() {
 			});
 			break;
+		case "fx-purpose-of-trnx":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<PurposeOfTransactionDto>>() {
+			});
+			break;
+		case "fc_sale_xrate":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<FxExchangeRateDto>>() {
+			});
+			break;
+			
+			
+			
+			
 	}
 		responseData.setValues(models);
 		return responseData;
