@@ -218,7 +218,7 @@ public class DeviceService extends AbstractService {
 	}
 
 	public BoolRespModel updateDeviceStateData(ClientType deviceType, Integer countryBranchSystemInventoryId,
-			IDeviceStateData deviceStateData, DeviceStateDataType type) {
+			IDeviceStateData deviceStateData, DeviceStateDataType type, BigDecimal employeeId) {
 		Device device = deviceDao.findDevice(new BigDecimal(countryBranchSystemInventoryId), deviceType);
 		deviceValidation.validateDevice(device);
 		DeviceStateInfo deviceStateInfo = deviceDao.getDeviceStateInfo(device);
@@ -227,6 +227,7 @@ public class DeviceService extends AbstractService {
 		String deviceStateDataStr = JsonUtil.toJson(deviceStateData);
 		deviceStateInfo.setStateData(deviceStateDataStr);
 		deviceStateInfo.setStateDataType(type);
+		deviceStateInfo.setEmployeeId(employeeId);
 		deviceDao.saveDeviceInfo(deviceStateInfo);
 		return new BoolRespModel(Boolean.TRUE);
 

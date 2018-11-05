@@ -262,7 +262,7 @@ public class Employee implements java.io.Serializable {
 	public void setLockDt(Date lockDt) {
 		this.lockDt = lockDt;
 	}
-	@Column(name = "TOKEN_DATE")
+	/*@Column(name = "TOKEN_DATE")
 	public Date getTokenDate() {
 		return tokenDate;
 	}
@@ -293,6 +293,6 @@ public class Employee implements java.io.Serializable {
 
 	public void setSmsToken(String smsToken) {
 		this.smsToken = smsToken;
-	}
+	}*/
 
 }

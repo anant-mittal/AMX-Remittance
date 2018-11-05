@@ -92,7 +92,7 @@ public class DeviceController implements IDeviceService {
 			@Valid @RequestBody SignaturePadRemittanceInfo signaturePadRemittanceInfo,
 			@RequestParam BigDecimal employeeId) {
 		BoolRespModel otpResponse = deviceService.updateDeviceStateData(deviceType, countryBranchSystemInventoryId,
-				signaturePadRemittanceInfo, DeviceStateDataType.REMITTANCE);
+				signaturePadRemittanceInfo, DeviceStateDataType.REMITTANCE, employeeId);
 		return AmxApiResponse.build(otpResponse);
 	}
 
@@ -103,7 +103,7 @@ public class DeviceController implements IDeviceService {
 			@Valid @RequestBody SignaturePadFCPurchaseSaleInfo signaturePadPurchseInfo,
 			@RequestParam BigDecimal employeeId) {
 		BoolRespModel otpResponse = deviceService.updateDeviceStateData(deviceType, countryBranchSystemInventoryId,
-				signaturePadPurchseInfo, DeviceStateDataType.FC_PURCHASE);
+				signaturePadPurchseInfo, DeviceStateDataType.FC_PURCHASE, employeeId);
 		return AmxApiResponse.build(otpResponse);
 	}
 
@@ -114,7 +114,7 @@ public class DeviceController implements IDeviceService {
 			@Valid @RequestBody SignaturePadFCPurchaseSaleInfo signaturePadSaleInfo,
 			@RequestParam BigDecimal employeeId) {
 		BoolRespModel otpResponse = deviceService.updateDeviceStateData(deviceType, countryBranchSystemInventoryId,
-				signaturePadSaleInfo, DeviceStateDataType.FC_SALE);
+				signaturePadSaleInfo, DeviceStateDataType.FC_SALE, employeeId);
 		return AmxApiResponse.build(otpResponse);
 	}
 
@@ -124,7 +124,7 @@ public class DeviceController implements IDeviceService {
 			@RequestParam Integer countryBranchSystemInventoryId,
 			@Valid @RequestBody SignaturePadCustomerRegStateMetaInfo metaInfo, @RequestParam BigDecimal employeeId) {
 		BoolRespModel otpResponse = deviceService.updateDeviceStateData(deviceType, countryBranchSystemInventoryId,
-				metaInfo, DeviceStateDataType.CUSTOMER_REGISTRATION);
+				metaInfo, DeviceStateDataType.CUSTOMER_REGISTRATION, employeeId);
 		return AmxApiResponse.build(otpResponse);
 	}
 
