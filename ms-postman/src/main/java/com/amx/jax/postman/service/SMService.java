@@ -16,6 +16,7 @@ import com.amx.jax.AppContextUtil;
 import com.amx.jax.logger.AuditEvent.Result;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.LoggerService;
+import com.amx.jax.postman.PostManConfig;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.audit.PMGaugeEvent;
 import com.amx.jax.postman.model.SMS;
@@ -96,6 +97,9 @@ public class SMService {
 	AppConfig appConfig;
 
 	@Autowired
+	PostManConfig postManConfig;
+
+	@Autowired
 	ContactCleanerService contactService;
 
 	/** The template service. */
@@ -132,7 +136,7 @@ public class SMService {
 			to = sms.getTo() != null ? sms.getTo().get(0) : null;
 
 			if (sms.getTemplate() != null) {
-				Context context = new Context(new Locale(sms.getLang().toString()));
+				Context context = new Context(postManConfig.getLocal(sms));
 				context.setVariables(sms.getModel());
 				sms.setMessage(templateService.processHtml(sms.getITemplate(), context));
 			}
