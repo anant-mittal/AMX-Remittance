@@ -200,16 +200,17 @@ public class MetaClientTest extends AbstractTestClient {
 		assertNotNull(response.getResults());
 	}
 
-	// @Test
+	@Test
 	public void testGetAllBranchDetail() {
-		setDefaults();
+		//setDefaults();
+		setBahrainDefaults();
 		AmxApiResponse<BranchDetailDTO, Object> response = null;
 		response = metaclient.getAllBranchDetail();
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResults());
 	}
 
-	@Test
+	//@Test
 	public void testGetCountryListResponse() {
 		setDefaults();
 		AmxApiResponse<ApplicationSetupDTO, Object> response = null;
