@@ -60,6 +60,12 @@
 			<groupId>com.amx.jax</groupId>
 			<artifactId>lib-monitor</artifactId>
 		</dependency>
+		
+		<dependency>
+			<groupId>com.amx.jax</groupId>
+			<artifactId>lib-pricer</artifactId>
+		</dependency>	
+		
 	</dependencies>
 
 	<build>
