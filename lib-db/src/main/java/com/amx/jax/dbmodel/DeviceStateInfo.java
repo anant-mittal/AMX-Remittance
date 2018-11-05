@@ -52,7 +52,10 @@ public class DeviceStateInfo {
 
 	@Column(name = "OTP_TOKEN")
 	String otpToken;
-
+	
+	@Column(name = "OTP_TOKEN_CREATED_DATE")
+	Date otpTokenCreatedDate;
+	
 	@Column(name = "SIGNATURE_CLOB")
 	String signature;
 	
@@ -158,6 +161,14 @@ public class DeviceStateInfo {
 
 	public void setEmployeeId(BigDecimal employeeId) {
 		this.employeeId = employeeId;
+	}
+
+	public Date getOtpTokenCreatedDate() {
+		return otpTokenCreatedDate;
+	}
+
+	public void setOtpTokenCreatedDate(Date otpTokenCreatedDate) {
+		this.otpTokenCreatedDate = otpTokenCreatedDate;
 	}
 
 }

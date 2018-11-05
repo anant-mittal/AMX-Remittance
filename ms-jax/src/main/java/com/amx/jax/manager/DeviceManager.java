@@ -1,6 +1,8 @@
 package com.amx.jax.manager;
 
 import java.math.BigDecimal;
+import java.util.Calendar;
+import java.util.Date;
 
 import javax.transaction.Transactional;
 
@@ -88,6 +90,7 @@ public class DeviceManager {
 		String sessionPairToken = generateSessionPairToken(device);
 		deviceInfo.setState(DeviceState.SESSION_CREATED);
 		deviceInfo.setSessionToken(sessionPairToken);
+		deviceInfo.setOtpTokenCreatedDate(Calendar.getInstance().getTime());
 		deviceDao.saveDeviceInfo(deviceInfo);
 		DevicePairOtpResponse resp = new DevicePairOtpResponse();
 		resp.setOtp(otp);
@@ -145,7 +148,7 @@ public class DeviceManager {
 			throw new GlobalException("Device already active", JaxError.CLIENT_ALREADY_ACTIVE);
 		}
 	}
-	
+
 	public void validateSessionToken(String sessionToken, Integer registrationId) {
 		DeviceStateInfo deviceStateInfo = deviceDao.findBySessionToken(sessionToken, registrationId);
 		if (deviceStateInfo == null) {
@@ -155,6 +158,22 @@ public class DeviceManager {
 		String sessionTokenGen = generateSessionPairToken(device);
 		if (!sessionToken.equals(sessionTokenGen)) {
 			throw new GlobalException("Session token is expired", JaxError.CLIENT_EXPIRED_SESSION_TOKEN);
+		}
+	}
+
+	public void validateOtpValidationTimeLimit(BigDecimal deviceRegId) {
+		Device device = deviceDao.findDevice(deviceRegId);
+		DeviceStateInfo deviceInfo = deviceDao.getDeviceStateInfo(device);
+		String configValueStr = jaxConfigService.getConfigValue("DEVICE_OTP_VALIDITY_MINS", "15");
+		int configValue = Integer.parseInt(configValueStr);
+		Date otpTokenCreationDate = deviceInfo.getOtpTokenCreatedDate();
+		if (otpTokenCreationDate != null && !DeviceState.SESSION_PAIRED.equals(deviceInfo.getState())) {
+			Date now = Calendar.getInstance().getTime();
+			long timeDiff = (now.getTime() - otpTokenCreationDate.getTime());
+			if ((timeDiff / 60000) > configValue) {
+				throw new GlobalException("Session token otp is not yet validated for " + configValue + " min",
+						JaxError.CLIENT_EXPIRED_VALIDATE_OTP_TIME);
+			}
 		}
 	}
 }
