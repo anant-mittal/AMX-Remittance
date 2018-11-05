@@ -11,10 +11,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
+import com.amx.jax.api.FileSubmitRequestModel;
 import com.amx.jax.client.DeviceClient;
 import com.amx.jax.client.IDeviceService;
 import com.amx.jax.dict.UserClient.ClientType;
-import com.amx.jax.model.request.ImageSubmissionRequest;
 import com.amx.jax.model.request.device.SignaturePadCustomerRegStateMetaInfo;
 import com.amx.jax.model.request.device.SignaturePadFCPurchaseSaleInfo;
 import com.amx.jax.model.request.device.SignaturePadRemittanceInfo;
@@ -41,47 +41,67 @@ public class SignPadController {
 	@RequestMapping(value = { SingPadConstants.Path.SIGNPAD_STATUS_ACTIVITY }, method = { RequestMethod.GET })
 	public AmxApiResponse<DeviceStatusInfoDto, Object> getStatus() {
 		deviceRequestValidator.validateRequest();
-		return deviceClient.getStatus(ArgUtil.parseAsInteger(deviceRequestValidator.getDeviceRegId()),
-				deviceRequestValidator.getDeviceRegToken(), deviceRequestValidator.getDeviceSessionToken());
+		return deviceClient.getStatus(
+				ArgUtil.parseAsInteger(deviceRequestValidator.getDeviceRegId()),
+				deviceRequestValidator.getDeviceRegToken(), deviceRequestValidator.getDeviceSessionToken()
+		);
 	}
 
 	@RequestMapping(value = { SingPadConstants.Path.SIGNPAD_STATUS_REMIT }, method = { RequestMethod.POST })
 	public AmxApiResponse<BoolRespModel, Object> updateRemittanceState(
 			@RequestParam Integer countryBranchSystemInventoryId,
-			@RequestBody SignaturePadRemittanceInfo signaturePadRemittanceInfo) {
+			@RequestBody SignaturePadRemittanceInfo signaturePadRemittanceInfo
+	) {
 		deviceRequestValidator.validateRequest();
-		return deviceClient.updateRemittanceState(ClientType.SIGNATURE_PAD, countryBranchSystemInventoryId,
-				signaturePadRemittanceInfo, null);
+		return deviceClient.updateRemittanceState(
+				ClientType.SIGNATURE_PAD, countryBranchSystemInventoryId,
+				signaturePadRemittanceInfo, null
+		);
 	}
 
 	@RequestMapping(value = { SingPadConstants.Path.SIGNPAD_STATUS_FCPURCHASE }, method = { RequestMethod.POST })
-	public AmxApiResponse<BoolRespModel, Object> updateFcPurchase(@RequestParam Integer countryBranchSystemInventoryId,
-			@RequestBody SignaturePadFCPurchaseSaleInfo signaturePadRemittanceInfo) {
+	public AmxApiResponse<BoolRespModel, Object> updateFcPurchase(
+			@RequestParam Integer countryBranchSystemInventoryId,
+			@RequestBody SignaturePadFCPurchaseSaleInfo signaturePadRemittanceInfo
+	) {
 		deviceRequestValidator.validateRequest();
-		return deviceClient.updateFcPurchase(ClientType.SIGNATURE_PAD, countryBranchSystemInventoryId,
-				signaturePadRemittanceInfo, null);
+		return deviceClient.updateFcPurchase(
+				ClientType.SIGNATURE_PAD, countryBranchSystemInventoryId,
+				signaturePadRemittanceInfo, null
+		);
 	}
 
 	@RequestMapping(value = { SingPadConstants.Path.SIGNPAD_STATUS_FCSALE }, method = { RequestMethod.POST })
-	public AmxApiResponse<BoolRespModel, Object> updateFcSale(@RequestParam Integer countryBranchSystemInventoryId,
-			@RequestBody SignaturePadFCPurchaseSaleInfo signaturePadRemittanceInfo) {
+	public AmxApiResponse<BoolRespModel, Object> updateFcSale(
+			@RequestParam Integer countryBranchSystemInventoryId,
+			@RequestBody SignaturePadFCPurchaseSaleInfo signaturePadRemittanceInfo
+	) {
 		deviceRequestValidator.validateRequest();
-		return deviceClient.updateFcSale(ClientType.SIGNATURE_PAD, countryBranchSystemInventoryId,
-				signaturePadRemittanceInfo, null);
+		return deviceClient.updateFcSale(
+				ClientType.SIGNATURE_PAD, countryBranchSystemInventoryId,
+				signaturePadRemittanceInfo, null
+		);
 	}
 
 	@RequestMapping(value = { SingPadConstants.Path.SIGNPAD_STATUS_CUST_REG }, method = { RequestMethod.POST })
 	public AmxApiResponse<BoolRespModel, Object> updateCustomerRegStateData(
 			@RequestParam Integer countryBranchSystemInventoryId,
-			@RequestBody SignaturePadCustomerRegStateMetaInfo signaturePadRemittanceInfo) {
+			@RequestBody SignaturePadCustomerRegStateMetaInfo signaturePadRemittanceInfo
+	) {
 		deviceRequestValidator.validateRequest();
-		return deviceClient.updateCustomerRegStateData(ClientType.SIGNATURE_PAD, countryBranchSystemInventoryId,
-				signaturePadRemittanceInfo, null);
+		return deviceClient.updateCustomerRegStateData(
+				ClientType.SIGNATURE_PAD, countryBranchSystemInventoryId,
+				signaturePadRemittanceInfo, null
+		);
 	}
 
 	@RequestMapping(value = SingPadConstants.Path.SIGNPAD_STATUS_SUBMIT, method = { RequestMethod.POST })
-	public AmxApiResponse<String, Object> saveCustomerSignature(@RequestBody ImageSubmissionRequest modelData)
+	public AmxApiResponse<String, Object> updateSignatureStateData(@RequestBody FileSubmitRequestModel file)
 			throws ParseException {
+		deviceRequestValidator.validateRequest();
+		deviceClient.updateSignatureStateData(
+				ArgUtil.parseAsInteger(deviceRequestValidator.getDeviceRegId()), file.getData()
+		);
 		return null;
 	}
 
