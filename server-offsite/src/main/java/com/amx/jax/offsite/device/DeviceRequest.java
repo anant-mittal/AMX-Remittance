@@ -45,6 +45,19 @@ public class DeviceRequest {
 		return commonHttpRequest.get(DeviceConstants.Keys.CLIENT_REQ_TOKEN_XKEY);
 	}
 
+	public DeviceData getDeviceData() {
+		DeviceData deviceData = deviceBox.get(this.getDeviceRegId());
+		if (deviceData == null) {
+			return deviceBox.put(this.getDeviceRegId(), new DeviceData());
+		}
+		return deviceData;
+	}
+
+	public void save() {
+		DeviceData deviceData = deviceBox.get(this.getDeviceRegId());
+		deviceBox.put(this.getDeviceRegId(), deviceData);
+	}
+
 	public DevicePairingCreds validateDevice() {
 		String deviceRegKey = getDeviceRegId();
 		String deviceRegToken = getDeviceRegToken();
@@ -68,8 +81,10 @@ public class DeviceRequest {
 			throw new OffsiteServerError(OffsiteServerCodes.INVALID_CLIENT_SESSION, "Invalid Device");
 		}
 
-		if (!DeviceConstants.validateSessionPairingTokenX(devicePairingCreds.getDeviceRegId(), sessionPairToken,
-				deviceData.getSessionPairingTokenX())) {
+		if (!DeviceConstants.validateSessionPairingTokenX(
+				devicePairingCreds.getDeviceRegId(), sessionPairToken,
+				deviceData.getSessionPairingTokenX()
+		)) {
 			throw new OffsiteServerError(OffsiteServerCodes.INVALID_CLIENT_SESSION, "Invalid SessionPairingToken");
 		}
 		return deviceData;
@@ -78,8 +93,10 @@ public class DeviceRequest {
 	public DeviceData validateRequest() {
 		DeviceData deviceData = validateSession();
 		// Same logic on client side
-		if (!DeviceConstants.validateDeviceReqToken(deviceData.getDeviceReqKey(), getDeviceRegId(),
-				getDeviceRequestToken())) {
+		if (!DeviceConstants.validateDeviceReqToken(
+				deviceData.getDeviceReqKey(), getDeviceRegId(),
+				getDeviceRequestToken()
+		)) {
 			throw new OffsiteServerError(OffsiteServerCodes.INVALID_CLIENT_REQUEST);
 		}
 		return deviceData;

@@ -5,6 +5,7 @@ import java.io.Serializable;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.api.FileSubmitRequestModel;
 import com.amx.jax.cache.CacheBox;
 import com.amx.jax.device.CardData;
 
@@ -14,6 +15,16 @@ public class DeviceConfigs {
 	public static class DeviceData implements Serializable {
 		private static final long serialVersionUID = 2981932845270868040L;
 		private String terminalId;
+
+		FileSubmitRequestModel signature;
+
+		public FileSubmitRequestModel getSignature() {
+			return signature;
+		}
+
+		public void setSignature(FileSubmitRequestModel signature) {
+			this.signature = signature;
+		}
 
 		public String getTerminalId() {
 			return terminalId;
