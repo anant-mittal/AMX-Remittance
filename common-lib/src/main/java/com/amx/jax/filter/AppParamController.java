@@ -14,6 +14,7 @@ import com.amx.jax.model.UserDevice;
 import com.amx.jax.types.DigitsDnum;
 import com.amx.jax.types.Pnum;
 import com.amx.jax.types.WritersPnum;
+import com.amx.utils.CryptoUtil;
 
 @RestController
 public class AppParamController {
@@ -53,6 +54,11 @@ public class AppParamController {
 	public DigitsDnum geoLocation(@RequestParam(required = false) DigitsDnum id) {
 		new DigitsDnum("FOUR", 3);
 		return id;
+	}
+
+	@RequestMapping(value = "/pub/amx/hmac", method = RequestMethod.GET)
+	public String hmac(@RequestParam Long inteval, @RequestParam String secret, @RequestParam String message) {
+		return CryptoUtil.generateHMAC(secret, message);
 	}
 
 }

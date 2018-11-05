@@ -20,6 +20,7 @@ import com.amx.jax.AppContext;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.logger.client.AuditServiceClient;
 import com.amx.jax.logger.events.RequestTrackEvent;
+import com.amx.utils.ArgUtil;
 import com.amx.utils.TimeUtils;
 
 @Service
@@ -54,8 +55,11 @@ public class TunnelSubscriberFactory {
 		} else {
 			for (ITunnelSubscriber listener : listeners) {
 				Class<?> c = AopProxyUtils.ultimateTargetClass(listener);
-				TunnelEvent tunnelEvent = getAnnotationProxyReady(c, TunnelEvent.class);
+				TunnelEventMapping tunnelEvent = getAnnotationProxyReady(c, TunnelEventMapping.class);
 				String eventTopic = tunnelEvent.topic();
+				if (ArgUtil.isEmpty(eventTopic)) {
+					eventTopic = tunnelEvent.byEvent().getName();
+				}
 				boolean integrity = tunnelEvent.integrity();
 				TunnelEventXchange scheme = tunnelEvent.scheme();
 				if (scheme == TunnelEventXchange.TASK_WORKER) {
@@ -186,8 +190,15 @@ public class TunnelSubscriberFactory {
 			public void onMessage(String channel, String msgId) {
 				RQueue<TunnelMessage<M>> topicMessageQueue = redisson
 						.getQueue(TunnelEventXchange.TASK_WORKER.getQueue(topic));
+				onMessage(channel, topicMessageQueue);
+			}
+
+			private void onMessage(String channel, RQueue<TunnelMessage<M>> topicMessageQueue) {
 				TunnelMessage<M> msg = topicMessageQueue.poll();
-				if (msg != null && !TimeUtils.isDead(msg.getTimestamp(), TIME_TO_EXPIRE_MILLIS)) {
+				if (msg == null) {
+					return;
+				}
+				if (!TimeUtils.isDead(msg.getTimestamp(), TIME_TO_EXPIRE_MILLIS)) {
 					AppContext context = msg.getContext();
 					AppContextUtil.setContext(context);
 					AppContextUtil.init();
@@ -198,7 +209,9 @@ public class TunnelSubscriberFactory {
 						LOGGER.error("EXCEPTION EVENT " + channel + " : " + msg.getId(), e);
 					}
 				}
+				onMessage(channel, topicMessageQueue);
 			}
+
 		});
 	}
 
@@ -210,6 +223,10 @@ public class TunnelSubscriberFactory {
 			public void onMessage(String channel, String msgId) {
 				RQueue<TunnelMessage<M>> topicMessageQueue = redisson
 						.getQueue(TunnelEventXchange.AUDIT.getQueue(topic));
+				onMessage(channel, topicMessageQueue);
+			}
+
+			private void onMessage(String channel, RQueue<TunnelMessage<M>> topicMessageQueue) {
 				TunnelMessage<M> msg = topicMessageQueue.poll();
 				if (msg != null) {
 					AppContext context = msg.getContext();
@@ -220,6 +237,7 @@ public class TunnelSubscriberFactory {
 					} catch (Exception e) {
 						LOGGER.error("EXCEPTION EVENT " + channel + " : " + msg.getId(), e);
 					}
+					onMessage(channel, topicMessageQueue);
 				}
 			}
 		});

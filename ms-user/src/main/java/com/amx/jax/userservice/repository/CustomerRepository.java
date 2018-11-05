@@ -23,10 +23,11 @@ public interface CustomerRepository extends CrudRepository<Customer, BigDecimal>
 	@Query("select c from Customer c where email=?1")
 	public List<Customer> getCustomerByEmailId(String emailId);
 	
-	//public Customer findByIdentityIntAndIsActiveIsNotIn(String identityInt, String... isActive);
-	
+	@Query("select c from Customer c where identityInt =?1 and isActive ='Y'")
+	public List<Customer> findActiveCustomers(String identityInt);
+
 	@Query("select c from Customer c where identityInt =?1")
-	public Customer findByIdentityIntAndIsActiveIsNotIn(String identityInt);
+	public List<Customer> getCustomerByIdentityInt(String identityInt);
 	
 	@Query("select new com.amx.amxlib.model.placeorder.PlaceOrderCustomer(c.customerId, c.firstName, c.middleName, c.lastName, c.email)  from Customer c where c.customerId in (?1)")
 	public List<PlaceOrderCustomer> findPOCustomersByIds(List<BigDecimal> customerIds);

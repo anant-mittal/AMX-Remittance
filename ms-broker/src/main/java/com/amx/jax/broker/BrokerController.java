@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.event.AmxTunnelEvents;
-import com.amx.jax.event.Event;
+import com.amx.jax.tunnel.TunnelEvent;
 import com.amx.jax.tunnel.TunnelEventXchange;
 import com.amx.jax.tunnel.TunnelService;
 
@@ -29,9 +29,9 @@ public class BrokerController {
 	 * @return the response wrapper
 	 */
 	@RequestMapping(value = "/pub/task/{scheme}/{topic}", method = { RequestMethod.POST })
-	public AmxApiResponse<Event, ?> initTask(@RequestBody Event event, @PathVariable AmxTunnelEvents topic,
+	public AmxApiResponse<TunnelEvent, ?> initTask(@RequestBody TunnelEvent event, @PathVariable AmxTunnelEvents topic,
 			@PathVariable TunnelEventXchange scheme) {
-		event.setEvent_code(topic.toString());
+		event.setEventCode(topic.toString());
 		if (scheme == TunnelEventXchange.SEND_LISTNER) {
 			tunnelService.send(topic.toString(), event);
 		} else if (scheme == TunnelEventXchange.TASK_WORKER) {

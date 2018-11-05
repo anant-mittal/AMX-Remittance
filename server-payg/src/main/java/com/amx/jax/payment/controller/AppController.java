@@ -3,6 +3,8 @@
   */
 package com.amx.jax.payment.controller;
 
+
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,6 +20,8 @@ import com.amx.jax.payment.gateway.PayGSession;
 @Controller
 public class AppController {
 
+	private static final Logger LOGGER = Logger.getLogger(AppController.class);
+	
 	@Autowired
 	private PayGSession payGSession;
 
@@ -34,7 +38,7 @@ public class AppController {
 	/*	if (payGSession.getCallback() != null && !Constants.defaultString.equals(payGSession.getCallback())) {
 			return "redirect:" + payGSession.getCallback();
 		}*/
-		
+		LOGGER.info("payGSession getCallback ------->"+payGSession.getCallback());
 		if (payGSession.getCallback() != null) {
 			return "redirect:" + payGSession.getCallback();
 		}

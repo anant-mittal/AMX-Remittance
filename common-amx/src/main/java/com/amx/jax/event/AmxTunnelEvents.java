@@ -1,8 +1,8 @@
 package com.amx.jax.event;
 
-import com.amx.jax.tunnel.ITunnelEvents;
+import com.amx.jax.tunnel.ITunnelEventsDict;
 
-public enum AmxTunnelEvents implements ITunnelEvents {
+public enum AmxTunnelEvents implements ITunnelEventsDict {
 	CIVIL_ID_EXPIRY, CUSTOMER_BIRTHDATE_GREETING, XRATE_BEST_RATE_CHANGE, TRNX_BENE_CREDIT,
 	// tests events
 	TEST_EVENT, PING_SEND, PING_SHOUT, PING_TASK;
