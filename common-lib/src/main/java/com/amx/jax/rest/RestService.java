@@ -125,8 +125,8 @@ public class RestService {
 			return this;
 		}
 
-		public Ajax field(String paramKey, String paramValue) {
-			parameters.add(paramKey, paramValue);
+		public Ajax field(String paramKey, Object paramValue) {
+			parameters.add(paramKey, ArgUtil.parseAsString(paramValue));
 			return this;
 		}
 
@@ -143,8 +143,8 @@ public class RestService {
 			return this;
 		}
 
-		public Ajax header(String paramKey, String paramValue) {
-			headers.add(paramKey, paramValue);
+		public Ajax header(String paramKey, Object paramValue) {
+			headers.add(paramKey, ArgUtil.parseAsString(paramValue));
 			return this;
 		}
 

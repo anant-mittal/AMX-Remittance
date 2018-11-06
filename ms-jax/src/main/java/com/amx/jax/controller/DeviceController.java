@@ -130,7 +130,7 @@ public class DeviceController implements IDeviceService {
 
 	@RequestMapping(value = DEVICE_STATE_SIGNATURE_UPDATE, method = RequestMethod.POST)
 	@Override
-	public AmxApiResponse<BoolRespModel, Object> updateSignatureStateData(@RequestHeader Integer deviceRegId,
+	public AmxApiResponse<BoolRespModel, Object> updateSignatureStateData(@RequestParam Integer deviceRegId,
 			@RequestParam String signatureImageClob) {
 		BoolRespModel otpResponse = deviceService.updateSignatureStateData(deviceRegId, signatureImageClob);
 		return AmxApiResponse.build(otpResponse);
