@@ -94,7 +94,7 @@ public class CustomerPersonalDetail extends AbstractModel {
 	@ApiModelProperty(example="2018-09-12")
 	private Date expiryDate;
 
-	@NotNull(message="Mobile may not be null")
+	@NotNull(message="dateOfBirth may not be null")
 	@ApiModelProperty(example="2018-09-12")
 	private Date dateOfBirth;
 
