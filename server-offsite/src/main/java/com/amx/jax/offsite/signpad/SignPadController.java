@@ -116,8 +116,8 @@ public class SignPadController {
 	@RequestMapping(value = SingPadConstants.Path.SIGNPAD_STATUS_SIGNATURE, method = { RequestMethod.POST })
 	public AmxApiResponse<BoolRespModel, Object> updateSignatureStateData(@RequestBody FileSubmitRequestModel file)
 			throws ParseException {
-		DeviceData deviceData = deviceRequestValidator.getDeviceData();
-		// DeviceData deviceData = deviceRequestValidator.validateRequest();
+		//DeviceData deviceData = deviceRequestValidator.getDeviceData();
+		DeviceData deviceData = deviceRequestValidator.validateRequest();
 		deviceData.setSignature(file);
 		deviceRequestValidator.save();
 		return deviceClient.updateSignatureStateData(
