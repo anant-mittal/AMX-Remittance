@@ -2,7 +2,6 @@ package com.amx.jax.postman.service;
 
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 import org.slf4j.Logger;
