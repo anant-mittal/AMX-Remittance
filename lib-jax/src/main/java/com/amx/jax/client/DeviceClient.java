@@ -232,7 +232,7 @@ public class DeviceClient implements IDeviceService {
 			LOGGER.info("in updateSignatureStateData");
 			String url = appConfig.getJaxURL() + END_POINT_JAX_DEVICE + DEVICE_STATE_SIGNATURE_UPDATE;
 			return restService.ajax(url).field("deviceRegId", deviceRegId)
-					.field("signatureImageClob", signatureImageClob).post()
+					.field("signatureImageClob", signatureImageClob).postForm()
 					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
 					});
 		} catch (AbstractJaxException ae) {
