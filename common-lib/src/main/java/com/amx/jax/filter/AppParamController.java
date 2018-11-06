@@ -21,6 +21,7 @@ public class AppParamController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AppParamController.class);
 	public static final String PUB_AMX_PREFIX = "/pub/amx";
+	public static final String PUBG_AMX_PREFIX = "/pubg/";
 	public static final String PARAM_URL = PUB_AMX_PREFIX + "/params";
 
 	static {
