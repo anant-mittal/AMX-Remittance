@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.dict.Tenant;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
@@ -49,24 +50,26 @@ public class WebTenantFilter implements Filter {
 	public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain)
 			throws IOException, ServletException {
 		HttpServletRequest request = ((HttpServletRequest) req);
-		String siteId = request.getParameter(TenantContextHolder.TENANT);
-		if (siteId == null) {
-			siteId = Urly.getSubDomainName(request.getServerName());
-		}
+		Tenant tnt = TenantContextHolder.currentSite(false);
+
 		HttpSession session = request.getSession(false);
 		/**
 		 * Not able to use session scoped bean here hence using typical session
 		 * attribute;
 		 */
-		if (siteId == null && session != null) {
-			siteId = ArgUtil.parseAsString(session.getAttribute(TenantContextHolder.TENANT));
+		if (tnt == null && session != null) {
+			String tntStr = ArgUtil.parseAsString(session.getAttribute(TenantContextHolder.TENANT));
+			tnt = TenantContextHolder.fromString(tntStr, null);
+			if (tnt != null) {
+				request.getSession().setAttribute(TenantContextHolder.TENANT, tnt.toString());
+			}
 		}
 
-		if (siteId != null && !Constants.BLANK.equals(siteId) && session != null) {
-			request.getSession().setAttribute(TenantContextHolder.TENANT, siteId);
-			TenantContextHolder.setCurrent(siteId);
-		} else {
+		if (tnt == null) {
 			TenantContextHolder.setDefault();
+		} else {
+			TenantContextHolder.setCurrent(tnt);
+
 		}
 		chain.doFilter(req, resp);
 	}
