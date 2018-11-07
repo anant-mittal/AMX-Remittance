@@ -50,7 +50,7 @@ public class FcSaleOrderController {
 		return response;
 	}
 	
-
+/** To get the FC Sale currency List**/
 	@RequestMapping(value = "/fc-currency-list/", method = RequestMethod.GET)
 	public ApiResponse fcCurrencyList() {
 		BigDecimal countryId = metaData.getCountryId();
@@ -59,11 +59,37 @@ public class FcSaleOrderController {
 	}
 	
 	
+	/** To get the FC Sale currency wise exchnage rate **/
 	@RequestMapping(value = "/fc-sale-xrate/", method = RequestMethod.GET)
 	public ApiResponse fcExchangeRate(@RequestParam(value = "fxCurrencyId", required = true) BigDecimal fxCurrencyId) {
 		BigDecimal applicationCountryId = metaData.getCountryId();
 		BigDecimal countryBranchId = metaData.getCountryBranchId();
 		ApiResponse response = fcSaleService.getFcSaleExchangeRate(applicationCountryId, countryBranchId, fxCurrencyId);
+		return response;
+	}
+	
+	
+	/** To calculate   FC Sale currency wise exchnage rate **/
+	
+	@RequestMapping(value = "/fc-sale-cal-xrate/", method = RequestMethod.GET)
+	public ApiResponse fcExchangeRate(@RequestParam(value = "fxCurrencyId", required = true) BigDecimal fxCurrencyId,
+									  @RequestParam(value = "fxAmount", required = true) BigDecimal fcAmount) {
+		BigDecimal applicationCountryId = metaData.getCountryId();
+		BigDecimal countryBranchId = metaData.getCountryBranchId();
+		ApiResponse response = fcSaleService.getFCSaleLcAndFcAmount(applicationCountryId, countryBranchId, fxCurrencyId,fcAmount);
+		return response;
+	}
+	
+	
+	/** to display the default api **/
+	
+	
+	@RequestMapping(value = "/fc-sale-default/", method = RequestMethod.GET)
+	public ApiResponse fcSaleDefaultApi() {
+		BigDecimal applicationCountryId = metaData.getCountryId();
+		BigDecimal countryBranchId = metaData.getCountryBranchId();
+		BigDecimal languageId = metaData.getLanguageId();
+		ApiResponse response = fcSaleService.getDefaultFsSale(applicationCountryId,countryBranchId,languageId);
 		return response;
 	}
 	
