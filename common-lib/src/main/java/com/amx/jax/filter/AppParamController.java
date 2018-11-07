@@ -1,5 +1,8 @@
 package com.amx.jax.filter;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,8 +12,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.AppParam;
+import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.model.UserDevice;
+import com.amx.jax.scope.TenantContextHolder;
 import com.amx.jax.types.DigitsDnum;
 import com.amx.jax.types.Pnum;
 import com.amx.jax.types.WritersPnum;
@@ -41,8 +46,13 @@ public class AppParamController {
 	}
 
 	@RequestMapping(value = "/pub/amx/device", method = RequestMethod.GET)
-	public UserDevice userDevice() {
-		return commonHttpRequest.getUserDevice();
+	public AmxApiResponse<UserDevice, Map<String, Object>> userDevice() {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put(TenantContextHolder.TENANT, TenantContextHolder.currentSite(false));
+		AmxApiResponse<UserDevice, Map<String, Object>> resp = new AmxApiResponse<UserDevice, Map<String, Object>>();
+		resp.setMeta(map);
+		resp.setData(commonHttpRequest.getUserDevice());
+		return resp;
 	}
 
 	@RequestMapping(value = "/pub/amx/pnum", method = RequestMethod.GET)
