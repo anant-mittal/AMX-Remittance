@@ -1,8 +1,14 @@
 package com.amx.jax.service;
 
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.apache.commons.beanutils.BeanUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -17,6 +23,7 @@ import com.amx.jax.dbmodel.BranchDetailModel;
 import com.amx.jax.dbmodel.BranchSystemDetail;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.response.BranchSystemDetailDto;
 import com.amx.jax.services.AbstractService;
 import com.amx.jax.validation.BranchDetailValidation;
 import com.amx.utils.NumberUtil;
@@ -37,6 +44,8 @@ public class BranchDetailService extends AbstractService {
 
 	@Autowired
 	BranchDetailValidation branchDetailValidation;
+
+	Logger logger = LoggerFactory.getLogger(getClass());
 
 	/**
 	 * @return branch details
@@ -65,7 +74,7 @@ public class BranchDetailService extends AbstractService {
 	}
 
 	public BranchSystemDetail findBranchSystemByIp(String branchSystemIp) {
-		BranchSystemDetail branchSystemDetail = branchDetailDao.getBranchSystemDetail( branchSystemIp);
+		BranchSystemDetail branchSystemDetail = branchDetailDao.getBranchSystemDetail(branchSystemIp);
 		if (branchSystemDetail == null) {
 			throw new GlobalException("No  branch system found for given IP ", JaxError.BRANCH_SYSTEM_NOT_FOUND);
 		}
@@ -74,7 +83,7 @@ public class BranchDetailService extends AbstractService {
 		}
 		return branchSystemDetail;
 	}
-	
+
 	public BranchSystemDetail findBranchSystemByInventoryId(BigDecimal countryBranchSystemInventoryId) {
 		BranchSystemDetail branchSystemDetail = branchDetailDao
 				.getBranchSystemDetailByInventoryId(countryBranchSystemInventoryId);
@@ -85,9 +94,31 @@ public class BranchDetailService extends AbstractService {
 		return branchSystemDetail;
 	}
 
+	public List<BranchSystemDetail> listBranchSystemDetail() {
+		return branchDetailDao.listBranchSystemDetail();
+	}
+
+	public List<BranchSystemDetailDto> listBranchSystemDetailDto() {
+		List<BranchSystemDetail> branchSystemDetailList = listBranchSystemDetail();
+		List<BranchSystemDetailDto> dtos = branchSystemDetailList.stream().map(i -> {
+			BranchSystemDetailDto dto = new BranchSystemDetailDto();
+			try {
+				BeanUtils.copyProperties(dto, i);
+			} catch (Exception e) {
+				logger.error("error in copy branchsystem detail dto , " + e.getMessage());
+			}
+			return dto;
+		}).collect(Collectors.toList());
+		return dtos;
+	}
+
 	@Override
 	public String getModelType() {
 		return "branch-detail";
+	}
+
+	public AmxApiResponse<BranchSystemDetailDto, Object> listBranchSystemInventory() {
+		return AmxApiResponse.buildList(listBranchSystemDetailDto());
 	}
 
 }

@@ -19,7 +19,7 @@ public class DeviceStatusInfoDto {
 	SignaturePadFCPurchaseSaleInfo signaturePadFCPurchaseInfo;
 	SignaturePadRemittanceInfo signaturePadRemittanceInfo;
 
-	Date branchPcLogoutTime;
+	Date branchPcLastLogoutTime;
 
 	public DeviceState getDeviceState() {
 		return deviceState;
@@ -69,12 +69,14 @@ public class DeviceStatusInfoDto {
 		this.signaturePadRemittanceInfo = signaturePadRemittanceInfo;
 	}
 
-	public Date getBranchPcLogoutTime() {
-		return branchPcLogoutTime;
+	public Date getBranchPcLastLogoutTime() {
+		return branchPcLastLogoutTime;
 	}
 
-	public void setBranchPcLogoutTime(Date branchPcLogoutTime) {
-		this.branchPcLogoutTime = branchPcLogoutTime;
+	public void setBranchPcLastLogoutTime(Date branchPcLastLogoutTime) {
+		this.branchPcLastLogoutTime = branchPcLastLogoutTime;
 	}
+
+
 
 }

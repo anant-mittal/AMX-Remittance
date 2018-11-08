@@ -56,8 +56,10 @@ public class AppRequestFilter implements Filter {
 		return true;
 	}
 
-	private boolean isRequestValid(RequestType reqType, HttpServletRequest req, HttpServletResponse resp,
-			String traceId) {
+	private boolean isRequestValid(
+			RequestType reqType, HttpServletRequest req, HttpServletResponse resp,
+			String traceId
+	) {
 		if (reqType.isAuth() && appConfig.isAppAuthEnabled() && !doesTokenMatch(req, resp, traceId)) {
 			return false;
 		} else {
@@ -119,8 +121,10 @@ public class AppRequestFilter implements Filter {
 				if (session == null) {
 					sessionID = UniqueID.generateString();
 				} else {
-					sessionID = ArgUtil.parseAsString(session.getAttribute(AppConstants.SESSION_ID_XKEY),
-							UniqueID.generateString());
+					sessionID = ArgUtil.parseAsString(
+							session.getAttribute(AppConstants.SESSION_ID_XKEY),
+							UniqueID.generateString()
+					);
 				}
 
 				AppContextUtil.setSessionId(sessionID);

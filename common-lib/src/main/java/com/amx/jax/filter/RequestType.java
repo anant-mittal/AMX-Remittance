@@ -8,7 +8,7 @@ import com.amx.jax.AppConstants;
 import com.amx.utils.ArgUtil;
 
 public enum RequestType {
-	DEFAULT(true, true), POLL(true, false), PING(true, false);
+	DEFAULT(true, true), POLL(false, false), PING(true, false), PUBG(true, false);
 	boolean track = false;
 	boolean auth = true;
 
@@ -29,6 +29,10 @@ public enum RequestType {
 		if (req.getRequestURI().contains(AppParamController.PUB_AMX_PREFIX)) {
 			return PING;
 		}
+		if (req.getRequestURI().contains(AppParamController.PUBG_AMX_PREFIX)) {
+			return PUBG;
+		}
+
 		RequestType reqType = RequestType.DEFAULT;
 		String reqTypeStr = req.getHeader(AppConstants.REQUEST_TYPE_XKEY);
 		if (!StringUtils.isEmpty(reqTypeStr)) {

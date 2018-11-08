@@ -23,6 +23,7 @@ import com.amx.jax.dao.DeviceDao;
 import com.amx.jax.dbmodel.Device;
 import com.amx.jax.dbmodel.DeviceStateInfo;
 import com.amx.jax.dbmodel.JaxConfig;
+import com.amx.jax.dbmodel.LoginLogoutHistory;
 import com.amx.jax.dict.UserClient.DeviceType;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.dbmodel.JaxConfig;
@@ -43,10 +44,13 @@ import com.amx.jax.model.response.customer.CustomerContactDto;
 import com.amx.jax.model.response.customer.CustomerDto;
 import com.amx.jax.model.response.customer.CustomerIdProofDto;
 import com.amx.jax.services.AbstractService;
+import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.validation.DeviceValidation;
 import com.amx.utils.CryptoUtil;
+import com.amx.utils.IoUtils;
 import com.amx.utils.JsonUtil;
 import com.amx.jax.dict.UserClient.ClientType;
+import com.amx.jax.customer.dao.EmployeeDao;;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -64,6 +68,10 @@ public class DeviceService extends AbstractService {
 	JaxConfigService jaxConfigService;
 	@Autowired
 	CustomerService customerService;
+	@Autowired
+	EmployeeDao employeeDao;
+	@Autowired
+	UserService userService;
 
 	public static final long DEVICE_SESSION_TIMEOUT = 8 * 60 * 60; // in seconds
 
@@ -146,6 +154,7 @@ public class DeviceService extends AbstractService {
 		deviceValidation.validateDevice(registrationId);
 		deviceValidation.validatePaireToken(paireToken, registrationId);
 		deviceManager.validateSessionToken(sessionToken, registrationId);
+		deviceManager.validateOtpValidationTimeLimit(new BigDecimal(registrationId));
 		Device device = deviceDao.findDevice(new BigDecimal(registrationId));
 		deviceValidation.validateDevice(device);
 		DeviceStateInfo deviceStateInfo = deviceDao.getDeviceStateInfo(device);
@@ -183,7 +192,18 @@ public class DeviceService extends AbstractService {
 				break;
 			}
 		}
+		setBranchPcLogoutTime(dto,deviceStateInfo.getEmployeeId());
 		return dto;
+	}
+
+	private void setBranchPcLogoutTime(DeviceStatusInfoDto dto, BigDecimal employeeId) {
+		if (employeeId != null) {
+			String userName = employeeDao.getEmployeeDetails(employeeId).getUserName();
+			LoginLogoutHistory logoutHistory = userService.getLastLogoutHistoryByUserName(userName);
+			if (logoutHistory != null) {
+				dto.setBranchPcLastLogoutTime(logoutHistory.getLogoutTime());
+			}
+		}
 	}
 
 	private SignaturePadCustomerRegStateInfo getCustomerRegData(Integer customerId) {
@@ -199,7 +219,7 @@ public class DeviceService extends AbstractService {
 	}
 
 	public BoolRespModel updateDeviceStateData(ClientType deviceType, Integer countryBranchSystemInventoryId,
-			IDeviceStateData deviceStateData, DeviceStateDataType type) {
+			IDeviceStateData deviceStateData, DeviceStateDataType type, BigDecimal employeeId) {
 		Device device = deviceDao.findDevice(new BigDecimal(countryBranchSystemInventoryId), deviceType);
 		deviceValidation.validateDevice(device);
 		DeviceStateInfo deviceStateInfo = deviceDao.getDeviceStateInfo(device);
@@ -208,8 +228,18 @@ public class DeviceService extends AbstractService {
 		String deviceStateDataStr = JsonUtil.toJson(deviceStateData);
 		deviceStateInfo.setStateData(deviceStateDataStr);
 		deviceStateInfo.setStateDataType(type);
+		deviceStateInfo.setEmployeeId(employeeId);
 		deviceDao.saveDeviceInfo(deviceStateInfo);
 		return new BoolRespModel(Boolean.TRUE);
 
+	}
+
+	public BoolRespModel updateSignatureStateData(Integer deviceRegId, String imageUrlStr) {
+		Device device = deviceDao.findDevice(new BigDecimal(deviceRegId));
+		DeviceStateInfo deviceStateInfo = deviceDao.getDeviceStateInfo(device);
+		deviceStateInfo.setSignature(imageUrlStr);
+		deviceDao.saveDeviceInfo(deviceStateInfo);
+
+		return new BoolRespModel(Boolean.TRUE);
 	}
 }

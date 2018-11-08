@@ -14,6 +14,7 @@ import com.amx.jax.adapter.ICardService;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.DeviceClient;
 import com.amx.jax.client.IDeviceService;
+import com.amx.jax.client.MetaClient;
 import com.amx.jax.device.CardData;
 import com.amx.jax.device.CardReader;
 import com.amx.jax.device.DeviceConstants;
@@ -25,6 +26,7 @@ import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.model.request.DeviceRegistrationRequest;
+import com.amx.jax.model.response.BranchSystemDetailDto;
 import com.amx.jax.model.response.DeviceDto;
 import com.amx.jax.model.response.DevicePairOtpResponse;
 import com.amx.jax.model.response.DeviceStatusInfoDto;
@@ -48,6 +50,9 @@ public class DeviceController {
 	private DeviceClient deviceClient;
 
 	@Autowired
+	private MetaClient metaClient;
+
+	@Autowired
 	private CommonHttpRequest commonHttpRequest;
 
 	@Autowired
@@ -58,6 +63,11 @@ public class DeviceController {
 
 	@Autowired
 	private ICardService iCardService;
+
+	@RequestMapping(value = { DeviceConstants.Path.DEVICE_TERMINALS }, method = { RequestMethod.GET })
+	public AmxApiResponse<BranchSystemDetailDto, Object> getTerminals() {
+		return metaClient.listBranchSystemInventory();
+	}
 
 	@ApiOffisteStatus({ OffsiteServerCodes.CLIENT_UNKNOWN })
 	@RequestMapping(value = { DeviceConstants.Path.DEVICE_PAIR }, method = { RequestMethod.POST })
@@ -95,8 +105,10 @@ public class DeviceController {
 
 		DevicePairOtpResponse resp = deviceClient
 				.sendOtpForPairing(ArgUtil.parseAsInteger(deviceRegKey), deviceRegToken).getResult();
-		SessionPairingCreds creds = deviceRequestValidator.createSession(resp.getSessionPairToken(), resp.getOtp(),
-				resp.getTermialId());
+		SessionPairingCreds creds = deviceRequestValidator.createSession(
+				resp.getSessionPairToken(), resp.getOtp(),
+				resp.getTermialId()
+		);
 		return AmxApiResponse.build(creds);
 	}
 
@@ -114,8 +126,10 @@ public class DeviceController {
 	@RequestMapping(value = { DeviceConstants.Path.DEVICE_STATUS_ACTIVITY }, method = { RequestMethod.GET })
 	public AmxApiResponse<DeviceStatusInfoDto, Object> getStatus() {
 		deviceRequestValidator.validateRequest();
-		return deviceClient.getStatus(ArgUtil.parseAsInteger(deviceRequestValidator.getDeviceRegId()),
-				deviceRequestValidator.getDeviceRegToken(), deviceRequestValidator.getDeviceSessionToken());
+		return deviceClient.getStatus(
+				ArgUtil.parseAsInteger(deviceRequestValidator.getDeviceRegId()),
+				deviceRequestValidator.getDeviceRegToken(), deviceRequestValidator.getDeviceSessionToken()
+		);
 	}
 
 	@ApiDeviceHeaders
@@ -129,7 +143,8 @@ public class DeviceController {
 	@RequestMapping(value = { DeviceConstants.Path.DEVICE_STATUS_CARD }, method = { RequestMethod.GET })
 	public AmxApiResponse<CardData, Object> getCardDetails(
 			@RequestParam(value = DeviceConstants.Params.PARAM_SYSTEM_ID) String systemid,
-			@RequestParam(required = false) Boolean wait, @RequestParam(required = false) Boolean flush)
+			@RequestParam(required = false) Boolean wait, @RequestParam(required = false) Boolean flush
+	)
 			throws InterruptedException {
 		wait = ArgUtil.parseAsBoolean(wait, Boolean.FALSE);
 		flush = ArgUtil.parseAsBoolean(flush, Boolean.FALSE);

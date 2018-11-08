@@ -1,6 +1,8 @@
 package com.amx.jax.validation;
 
 import java.math.BigDecimal;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,6 +90,16 @@ public class DeviceValidation {
 		Device device = deviceDao.findDevice(new BigDecimal(deviceRegId));
 		if (device == null) {
 			throw new GlobalException("device not found with given reg id", JaxError.CLIENT_NOT_FOUND);
+		}
+	}
+
+	public URL validateImageUrl(String imageUrl) {
+
+		try {
+			URL url = new URL(imageUrl);
+			return url;
+		} catch (MalformedURLException e) {
+			throw new GlobalException("image url is not valid");
 		}
 	}
 

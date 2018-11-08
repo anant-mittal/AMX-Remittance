@@ -45,6 +45,7 @@ import com.amx.jax.dbmodel.UserFinancialYear;
 import com.amx.jax.dbmodel.ViewOnlineEmailMobileCheck;
 import com.amx.jax.manager.JaxNotificationManager;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.response.BranchSystemDetailDto;
 import com.amx.jax.service.ApplicationCountryService;
 import com.amx.jax.service.BankMetaService;
 import com.amx.jax.service.BranchDetailService;
@@ -398,7 +399,12 @@ public class MetaController {
 			@PathVariable("countryBranchId") BigDecimal countryBranchId) {
 		return branchDetailService.getBranchSystemDetailResponse(countryBranchId);
 	}
-
+	
+	@RequestMapping(value = MetaApi.API_BRANCH_SYSTEM_INV_LIST, method = RequestMethod.GET)
+	public AmxApiResponse<BranchSystemDetailDto, Object> listBranchSystemInventory() {
+		return branchDetailService.listBranchSystemInventory();
+	}
+	
 /*	@Deprecated
 	@RequestMapping(value = "/payg-error/", method = RequestMethod.GET)
 	public AmxApiResponse<PaygErrorMaster, Object> getPaygErrorList() {

@@ -1,10 +1,13 @@
 package com.amx.jax.client;
 
+import java.math.BigDecimal;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.amx.jax.AppConfig;
 import com.amx.jax.api.AmxApiResponse;
@@ -52,8 +55,10 @@ public class DeviceClient implements IDeviceService {
 	}
 
 	@Override
-	public AmxApiResponse<DeviceStatusInfoDto, Object> getStatus(Integer registrationId, String paireToken,
-			String sessionToken) {
+	public AmxApiResponse<DeviceStatusInfoDto, Object> getStatus(
+			Integer registrationId, String paireToken,
+			String sessionToken
+	) {
 		try {
 			LOGGER.info("in getStatus");
 
@@ -88,8 +93,10 @@ public class DeviceClient implements IDeviceService {
 	}
 
 	@Override
-	public AmxApiResponse<BoolRespModel, Object> updateDeviceState(DeviceStateInfoChangeRequest request,
-			Integer registrationId, String paireToken, String sessionToken) {
+	public AmxApiResponse<BoolRespModel, Object> updateDeviceState(
+			DeviceStateInfoChangeRequest request,
+			Integer registrationId, String paireToken, String sessionToken
+	) {
 		try {
 			LOGGER.info("in updateDeviceState");
 
@@ -107,8 +114,10 @@ public class DeviceClient implements IDeviceService {
 	}
 
 	@Override
-	public AmxApiResponse<BoolRespModel, Object> activateDevice(Integer countryBranchSystemInventoryId,
-			ClientType deviceType) {
+	public AmxApiResponse<BoolRespModel, Object> activateDevice(
+			Integer countryBranchSystemInventoryId,
+			ClientType deviceType
+	) {
 		try {
 			LOGGER.info("in activateDevice");
 
@@ -126,14 +135,18 @@ public class DeviceClient implements IDeviceService {
 	}
 
 	@Override
-	public AmxApiResponse<BoolRespModel, Object> updateRemittanceState(ClientType deviceType,
-			Integer countryBranchSystemInventoryId, SignaturePadRemittanceInfo signaturePadRemittanceInfo) {
+	public AmxApiResponse<BoolRespModel, Object> updateRemittanceState(
+			ClientType deviceType,
+			Integer countryBranchSystemInventoryId, SignaturePadRemittanceInfo signaturePadRemittanceInfo,
+			BigDecimal employeeId
+	) {
 		try {
 			LOGGER.info("in updateRemittanceState");
 
 			String url = appConfig.getJaxURL() + END_POINT_JAX_DEVICE + DEVICE_STATE_REMITTANCE_UPDATE;
 			return restService.ajax(url).queryParam("countryBranchSystemInventoryId", countryBranchSystemInventoryId)
-					.queryParam("deviceType", deviceType).post(signaturePadRemittanceInfo)
+					.queryParam("deviceType", deviceType).queryParam("employeeId", employeeId)
+					.post(signaturePadRemittanceInfo)
 					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
 					});
 		} catch (AbstractJaxException ae) {
@@ -145,14 +158,18 @@ public class DeviceClient implements IDeviceService {
 	}
 
 	@Override
-	public AmxApiResponse<BoolRespModel, Object> updateFcPurchase(ClientType deviceType,
-			Integer countryBranchSystemInventoryId, SignaturePadFCPurchaseSaleInfo signaturePadPurchseInfo) {
+	public AmxApiResponse<BoolRespModel, Object> updateFcPurchase(
+			ClientType deviceType,
+			Integer countryBranchSystemInventoryId, SignaturePadFCPurchaseSaleInfo signaturePadPurchseInfo,
+			BigDecimal employeeId
+	) {
 		try {
 			LOGGER.info("in getFcPurchase");
 
 			String url = appConfig.getJaxURL() + END_POINT_JAX_DEVICE + DEVICE_FC_PURCHASE;
 			return restService.ajax(url).queryParam("countryBranchSystemInventoryId", countryBranchSystemInventoryId)
-					.queryParam("deviceType", deviceType).post(signaturePadPurchseInfo)
+					.queryParam("deviceType", deviceType).queryParam("employeeId", employeeId)
+					.post(signaturePadPurchseInfo)
 					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
 					});
 		} catch (AbstractJaxException ae) {
@@ -164,13 +181,17 @@ public class DeviceClient implements IDeviceService {
 	}
 
 	@Override
-	public AmxApiResponse<BoolRespModel, Object> updateFcSale(ClientType deviceType,
-			Integer countryBranchSystemInventoryId, SignaturePadFCPurchaseSaleInfo signaturePadSaleInfo) {
+	public AmxApiResponse<BoolRespModel, Object> updateFcSale(
+			ClientType deviceType,
+			Integer countryBranchSystemInventoryId, SignaturePadFCPurchaseSaleInfo signaturePadSaleInfo,
+			BigDecimal employeeId
+	) {
 		try {
 			LOGGER.info("in getFcSale");
 			String url = appConfig.getJaxURL() + END_POINT_JAX_DEVICE + DEVICE_FC_SALE;
 			return restService.ajax(url).queryParam("countryBranchSystemInventoryId", countryBranchSystemInventoryId)
-					.queryParam("deviceType", deviceType).post(signaturePadSaleInfo)
+					.queryParam("deviceType", deviceType).queryParam("employeeId", employeeId)
+					.post(signaturePadSaleInfo)
 					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
 					});
 		} catch (AbstractJaxException ae) {
@@ -182,19 +203,42 @@ public class DeviceClient implements IDeviceService {
 	}
 
 	@Override
-	public AmxApiResponse<BoolRespModel, Object> updateCustomerRegStateData(ClientType deviceType,
-			Integer countryBranchSystemInventoryId, SignaturePadCustomerRegStateMetaInfo metaInfo) {
+	public AmxApiResponse<BoolRespModel, Object> updateCustomerRegStateData(
+			ClientType deviceType,
+			Integer countryBranchSystemInventoryId, SignaturePadCustomerRegStateMetaInfo metaInfo,
+			BigDecimal employeeId
+	) {
 		try {
 			LOGGER.info("in updateCustomerRegStateData");
 			String url = appConfig.getJaxURL() + END_POINT_JAX_DEVICE + DEVICE_STATE_CUSTOMER_REG_UPDATE;
 			return restService.ajax(url).queryParam("countryBranchSystemInventoryId", countryBranchSystemInventoryId)
-					.queryParam("deviceType", deviceType).post(metaInfo)
+					.queryParam("deviceType", deviceType).queryParam("employeeId", employeeId).post(metaInfo)
 					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
 					});
 		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in updateCustomerRegStateData : ", e);
+			throw new JaxSystemError();
+		}
+	}
+
+	@Override
+	public AmxApiResponse<BoolRespModel, Object> updateSignatureStateData(
+			Integer deviceRegId,
+			String signatureImageClob
+	) {
+		try {
+			LOGGER.info("in updateSignatureStateData");
+			String url = appConfig.getJaxURL() + END_POINT_JAX_DEVICE + DEVICE_STATE_SIGNATURE_UPDATE;
+			return restService.ajax(url).field("deviceRegId", deviceRegId)
+					.field("signatureImageClob", signatureImageClob).postForm()
+					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
+					});
+		} catch (AbstractJaxException ae) {
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in updateSignatureStateData : ", e);
 			throw new JaxSystemError();
 		}
 	}
