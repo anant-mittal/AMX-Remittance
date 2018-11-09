@@ -205,7 +205,7 @@ public class File {
 		String[] strings = base64String.split(",");
 		Type extension;
 		String dataPart;
-		if (strings.length > 0) {
+		if (strings.length > 1) {
 			dataPart = strings[1];
 			switch (strings[0]) {// check image's extension
 			case "data:image/jpeg;base64":

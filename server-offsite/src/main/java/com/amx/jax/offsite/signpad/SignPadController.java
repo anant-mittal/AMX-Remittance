@@ -125,7 +125,7 @@ public class SignPadController {
 				ArgUtil.parseAsInteger(deviceRequestValidator.getDeviceRegId()), file.getData()
 		);
 	}
-
+ 
 	@ApiDeviceHeaders
 	@RequestMapping(
 			value = SingPadConstants.Path.SIGNPAD_STATUS_SIGNATURE, method = { RequestMethod.GET,
