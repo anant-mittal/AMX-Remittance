@@ -14,9 +14,9 @@ import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
 @ComponentScan(value = "com.amx.jax")
-@EnableAutoConfiguration(exclude = { DataSourceAutoConfiguration.class
-
-		, JmxAutoConfiguration.class
+@EnableAutoConfiguration(exclude = {
+		
+		JmxAutoConfiguration.class
 
 		, WebSocketAutoConfiguration.class
 
@@ -27,10 +27,10 @@ import org.springframework.context.annotation.ComponentScan;
 		, ValidationAutoConfiguration.class
 
 })
-public class SWAdapterLauncher {
+public class TestSizeApp {
 
 	public static void main(String[] args) throws Exception {
-		ConfigurableApplicationContext ctx = new SpringApplicationBuilder(SWAdapterLauncher.class).headless(false)
+		ConfigurableApplicationContext ctx = new SpringApplicationBuilder(TestSizeApp.class)
 				.run(args);
 
 	}
