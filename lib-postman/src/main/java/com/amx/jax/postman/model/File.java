@@ -198,6 +198,10 @@ public class File {
 	}
 
 	public static File fromBase64(String base64String) {
+		return fromBase64(base64String, Type.TEXT);
+	}
+
+	public static File fromBase64(String base64String, Type defaultType) {
 		String[] strings = base64String.split(",");
 		Type extension;
 		String dataPart;
@@ -215,7 +219,7 @@ public class File {
 				break;
 			}
 		} else {
-			extension = Type.TEXT;
+			extension = defaultType;
 			dataPart = strings[0];
 		}
 		File file = new File();

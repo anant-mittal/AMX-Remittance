@@ -29,6 +29,7 @@ import com.amx.jax.offsite.device.ApiDeviceHeaders;
 import com.amx.jax.offsite.device.DeviceConfigs.DeviceData;
 import com.amx.jax.offsite.device.DeviceRequest;
 import com.amx.jax.postman.model.File;
+import com.amx.jax.postman.model.File.Type;
 import com.amx.jax.swagger.IStatusCodeListPlugin.ApiStatusService;
 import com.amx.utils.ArgUtil;
 
@@ -116,7 +117,7 @@ public class SignPadController {
 	@RequestMapping(value = SingPadConstants.Path.SIGNPAD_STATUS_SIGNATURE, method = { RequestMethod.POST })
 	public AmxApiResponse<BoolRespModel, Object> updateSignatureStateData(@RequestBody FileSubmitRequestModel file)
 			throws ParseException {
-		//DeviceData deviceData = deviceRequestValidator.getDeviceData();
+		// DeviceData deviceData = deviceRequestValidator.getDeviceData();
 		DeviceData deviceData = deviceRequestValidator.validateRequest();
 		deviceData.setSignature(file);
 		deviceRequestValidator.save();
@@ -128,13 +129,13 @@ public class SignPadController {
 	@ApiDeviceHeaders
 	@RequestMapping(
 			value = SingPadConstants.Path.SIGNPAD_STATUS_SIGNATURE, method = { RequestMethod.GET,
-			}, produces = MediaType.IMAGE_JPEG_VALUE
+			}, produces = MediaType.IMAGE_PNG_VALUE
 	)
 	public ResponseEntity<byte[]> getSignatureStateData(HttpServletResponse response)
 			throws ParseException, IOException {
 		DeviceData deviceData = deviceRequestValidator.getDeviceData();
 		String sourceData = deviceData.getSignature().getData();
-		File file = File.fromBase64(sourceData);
+		File file = File.fromBase64(sourceData, Type.PNG);
 		file.setName(deviceData.getSignature().getName());
 		return ResponseEntity.ok().contentLength(file.getBody().length)
 				.contentType(MediaType.valueOf(file.getType().getContentType())).body(file.getBody());
