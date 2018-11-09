@@ -40,11 +40,11 @@ public interface IDeviceService extends IJaxService {
 
 	public static class Params {
 
-		static final String TERMINAL_ID = "countryBranchSystemInventoryId";
-		static final String EMPLOYEE_ID = "employeeId";
-		static final String DEVICE_TYPE = "deviceType";
-		static final String DEVICE_REG_ID = "deviceRegId";
-		static final String SESSION_TOKEN = "sessionToken";
+		public static final String TERMINAL_ID = "countryBranchSystemInventoryId";
+		public static final String EMPLOYEE_ID = "employeeId";
+		public static final String DEVICE_TYPE = "deviceType";
+		public static final String DEVICE_REG_ID = "deviceRegId";
+		public static final String SESSION_TOKEN = "sessionToken";
 		public static final String PAIRE_TOKEN = "paireToken";
 
 	}
