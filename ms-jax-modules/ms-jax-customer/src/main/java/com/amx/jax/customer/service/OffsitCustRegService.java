@@ -92,7 +92,6 @@ import com.amx.jax.repository.IUserFinancialYearRepo;
 import com.amx.jax.repository.JaxConditionalFieldRuleRepository;
 import com.amx.jax.repository.ProfessionRepository;
 import com.amx.jax.scope.TenantContext;
-import com.amx.jax.service.CustomerService;
 import com.amx.jax.service.PrefixService;
 import com.amx.jax.services.AbstractService;
 import com.amx.jax.services.JaxNotificationService;
@@ -626,12 +625,13 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		customer.setMedicalInsuranceInd(customerDetails.getInsurance());
 		if (customerDetails.getIdentityTypeId().toString().equals("204")) {
 			customer.setIdentityExpiredDate(null);
-			customer.setExpiryDate(customerDetails.getExpiryDate());
-			customer.setIssueDate(customerDetails.getIssueDate());
+			// commented by Prashant
+			//customer.setExpiryDate(customerDetails.getExpiryDate());
+			//customer.setIssueDate(customerDetails.getIssueDate());
 		} else {
 			customer.setIdentityExpiredDate(customerDetails.getExpiryDate());
-			customer.setExpiryDate(null);
-			customer.setIssueDate(null);
+			//customer.setExpiryDate(null);
+			//customer.setIssueDate(null);
 		}
 		customer.setIdentityInt(customerDetails.getIdentityInt());
 		if (customerEmploymentDetails != null) {
@@ -830,13 +830,13 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 	public AmxApiResponse<CardDetail, Object> cardScan(CardDetail cardDetail) {
 		return AmxApiResponse.build(cardDetail);
 	}
-
+ 
 	public AmxApiResponse<CustomerCredential, Object> saveLoginDetailOffsite(CustomerCredential customerCredential) {
 		customerRegistrationManager.saveLoginDetail(customerCredential);
 		customerCredentialValidator.validate(customerRegistrationManager.get(),  null);
 		
 		CustomerRegistrationTrnxModel model = customerRegistrationManager.get();
-		Customer customer = customerDao.getCustomerByIdentityInt(model.getCustomerPersonalDetail().getIdentityInt());
+		Customer customer = customerDao.getCustomerByIdentityInt(model.getCustomerPersonalDetail().getIdentityInt()).get(0);
 		commitOnlineCustomer(model, customer);		
 		
 		Customer customerDetails = customerService.getCustomerDetails(customerCredential.getLoginId());

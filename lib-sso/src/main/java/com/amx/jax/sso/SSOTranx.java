@@ -18,6 +18,16 @@ public class SSOTranx extends TransactionModel<SSOModel> {
 		private String returnUrl = SSOConstants.APP_LOGGEDIN_URL;
 		private String appToken = null;
 		private String motp = null;
+		private String terminalId = null;
+
+		public String getTerminalId() {
+			return terminalId;
+		}
+
+		public void setTerminalId(String terminalId) {
+			this.terminalId = terminalId;
+		}
+
 		private EmployeeDetailsDTO userDetails = null;
 
 		public String getReturnUrl() {
@@ -75,6 +85,7 @@ public class SSOTranx extends TransactionModel<SSOModel> {
 	public SSOModel setReturnUrl(String returnUrl) {
 		SSOModel msg = this.get();
 		msg.setReturnUrl(returnUrl);
+		this.save(msg);
 		return msg;
 	}
 
@@ -99,11 +110,6 @@ public class SSOTranx extends TransactionModel<SSOModel> {
 		msg.setMotp(motp);
 		this.save(msg);
 		return msg;
-	}
-
-	@Override
-	public SSOModel commit() {
-		return this.get();
 	}
 
 }

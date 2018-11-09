@@ -12,7 +12,8 @@ import org.slf4j.LoggerFactory;
 public final class CryptoUtil {
 	private static final Logger LOGGER = LoggerFactory.getLogger(CryptoUtil.class);
 
-	private final static int interval = 30;
+	private final static int INTERVAL = 30; // 30 secs
+	private final static int INTERVAL_MILLIS = INTERVAL * 1000;
 	private final static String ALGO_SHA1 = "SHA1";
 	private final static String PASS_DELIMITER = "#";
 	private final static String DEFAULT_ENCODING = "UTF-8";
@@ -30,12 +31,13 @@ public final class CryptoUtil {
 	/** The Constant SHA2. */
 	private static final String SHA2 = "SHA-256";
 
-	public static String generateHMAC(String publicKey, String message, long currentTime) {
+	public static String generateHMAC(long interval, String secretKey, String message, long currentTime) {
 		try {
 			Long epoch = Math.round(currentTime / 1000.0);
 			String elapsed = Long.toString(epoch / interval);
-			String password = String.join(PASS_DELIMITER, elapsed, publicKey, message);
-			MessageDigest md = MessageDigest.getInstance(ALGO_SHA1);
+			String password = String.join(PASS_DELIMITER, elapsed, secretKey, message);
+			//System.out.println(interval + " " + secretKey + " " + message + " " + currentTime + " " + password);
+			MessageDigest md = MessageDigest.getInstance(SHA2);
 			ByteArrayOutputStream pwsalt = new ByteArrayOutputStream();
 			pwsalt.write(password.getBytes(DEFAULT_ENCODING));
 			byte[] unhashedBytes = pwsalt.toByteArray();
@@ -47,19 +49,41 @@ public final class CryptoUtil {
 		return null;
 	}
 
-	public static String generateHMAC(String publicKey, String message) {
-		return generateHMAC(publicKey, message, System.currentTimeMillis());
+	/**
+	 * 
+	 * @param interval  in seconds
+	 * @param secretKey
+	 * @param message
+	 * @return
+	 */
+	public static String generateHMAC(long interval, String secretKey, String message) {
+		String publicToken = generateHMAC(interval, secretKey, message, System.currentTimeMillis());
+		return publicToken;
 	}
 
-	public static boolean validateHMAC(String publicKey, String publicToken, String message) {
-		if (generateHMAC(publicKey, message).equals(publicToken)) {
+	public static String generateHMAC(String secretKey, String message, long currentTime) {
+		return generateHMAC(INTERVAL, secretKey, message, currentTime);
+	}
+
+	public static String generateHMAC(String secretKey, String message) {
+		return generateHMAC(secretKey, message, System.currentTimeMillis());
+	}
+
+	public static boolean validateHMAC(long interval, String secretKey, String message, String publicToken) {
+		if (generateHMAC(interval, secretKey, message).equals(publicToken)) {
 			return true;
-		} else if (generateHMAC(publicKey, message, System.currentTimeMillis() - interval).equals(publicToken)) {
+		} else if (generateHMAC(interval, secretKey, message, System.currentTimeMillis() - interval * 1000)
+				.equals(publicToken)) {
 			return true;
-		} else if (generateHMAC(publicKey, message, System.currentTimeMillis() + interval).equals(publicToken)) {
+		} else if (generateHMAC(interval, secretKey, message, System.currentTimeMillis() + interval * 1000)
+				.equals(publicToken)) {
 			return true;
 		}
 		return false;
+	}
+
+	public static boolean validateHMAC(String secretKey, String message, String publicToken) {
+		return validateHMAC(INTERVAL, secretKey, message, publicToken);
 	}
 
 	private static String bytesToHex(byte[] bytes) {
@@ -75,11 +99,9 @@ public final class CryptoUtil {
 	/**
 	 * Gets the m d5 hash.
 	 *
-	 * @param str
-	 *            the str
+	 * @param str the str
 	 * @return md5 hashed string
-	 * @throws NoSuchAlgorithmException
-	 *             the no such algorithm exception
+	 * @throws NoSuchAlgorithmException the no such algorithm exception
 	 */
 	public static String getMD5Hash(String str) throws NoSuchAlgorithmException {
 		return getMD5Hash(str.getBytes());
@@ -88,11 +110,9 @@ public final class CryptoUtil {
 	/**
 	 * Gets the m d5 hash.
 	 *
-	 * @param byteArray
-	 *            the byte array
+	 * @param byteArray the byte array
 	 * @return md5 hashed string
-	 * @throws NoSuchAlgorithmException
-	 *             the no such algorithm exception
+	 * @throws NoSuchAlgorithmException the no such algorithm exception
 	 */
 	public static String getMD5Hash(byte[] byteArray) throws NoSuchAlgorithmException {
 		return getHashedStrFor(byteArray, MD5);
@@ -101,11 +121,9 @@ public final class CryptoUtil {
 	/**
 	 * Gets the SH a1 hash.
 	 *
-	 * @param str
-	 *            the str
+	 * @param str the str
 	 * @return sha1 hashed string
-	 * @throws NoSuchAlgorithmException
-	 *             the no such algorithm exception
+	 * @throws NoSuchAlgorithmException the no such algorithm exception
 	 */
 	public static String getSHA1Hash(String str) throws NoSuchAlgorithmException {
 		return getSHA1Hash(str.getBytes());
@@ -114,11 +132,9 @@ public final class CryptoUtil {
 	/**
 	 * Gets the SH a1 hash.
 	 *
-	 * @param byteArray
-	 *            the byte array
+	 * @param byteArray the byte array
 	 * @return sha1 hashed string
-	 * @throws NoSuchAlgorithmException
-	 *             the no such algorithm exception
+	 * @throws NoSuchAlgorithmException the no such algorithm exception
 	 */
 	public static String getSHA1Hash(byte[] byteArray) throws NoSuchAlgorithmException {
 		return getHashedStrFor(byteArray, SHA1);
@@ -127,11 +143,9 @@ public final class CryptoUtil {
 	/**
 	 * Gets the SH a2 hash.
 	 *
-	 * @param str
-	 *            the str
+	 * @param str the str
 	 * @return sha2 hashed string
-	 * @throws NoSuchAlgorithmException
-	 *             the no such algorithm exception
+	 * @throws NoSuchAlgorithmException the no such algorithm exception
 	 */
 	public static String getSHA2Hash(String str) throws NoSuchAlgorithmException {
 		return getSHA1Hash(str.getBytes());
@@ -140,11 +154,9 @@ public final class CryptoUtil {
 	/**
 	 * Gets the SH a2 hash.
 	 *
-	 * @param byteArray
-	 *            the byte array
+	 * @param byteArray the byte array
 	 * @return sha2 hashed string
-	 * @throws NoSuchAlgorithmException
-	 *             the no such algorithm exception
+	 * @throws NoSuchAlgorithmException the no such algorithm exception
 	 */
 	public static String getSHA2Hash(byte[] byteArray) throws NoSuchAlgorithmException {
 		return getHashedStrFor(byteArray, SHA2);
@@ -153,13 +165,10 @@ public final class CryptoUtil {
 	/**
 	 * Gets the hashed str for.
 	 *
-	 * @param byteArray
-	 *            the byte array
-	 * @param algorithm
-	 *            the algorithm
+	 * @param byteArray the byte array
+	 * @param algorithm the algorithm
 	 * @return the hashed str for
-	 * @throws NoSuchAlgorithmException
-	 *             the no such algorithm exception
+	 * @throws NoSuchAlgorithmException the no such algorithm exception
 	 */
 	private static String getHashedStrFor(byte[] byteArray, String algorithm) throws NoSuchAlgorithmException {
 

@@ -1,5 +1,6 @@
 package com.bootloaderjs;
 
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 import com.amx.utils.CryptoUtil;
@@ -15,10 +16,12 @@ public class App { // Noncompliant
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		String lalit = "lalit.tanwar07@gmail.com";
-		String amit = "amitt.n.tanwar07@gmail.com";
-		System.out.println("HASH=" + StringUtils.hash(lalit, 99));
-		System.out.println("HASH=" + StringUtils.hash(amit, 99));
+		long timeout = 100L;
+		System.out.println("DIV=" + (TimeUnit.NANOSECONDS.toSeconds(timeout) - 1));
+		// String lalit = "lalit.tanwar07@gmail.com";
+		// String amit = "amitt.n.tanwar07@gmail.com";
+		// System.out.println("HASH=" + StringUtils.hash(lalit, 99));
+		// System.out.println("HASH=" + StringUtils.hash(amit, 99));
 
 	}
 

@@ -16,6 +16,7 @@ import org.springframework.web.util.WebUtils;
 
 import com.amx.jax.AppConfig;
 import com.amx.jax.AppConstants;
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.dict.Language;
 import com.amx.jax.dict.UserClient;
 import com.amx.jax.dict.UserClient.AppType;
@@ -111,6 +112,24 @@ public class CommonHttpRequest {
 		return deviceId;
 	}
 
+	public String get(String contextKey) {
+		String value = AppContextUtil.get(contextKey);
+		if (request != null) {
+			value = request.getParameter(contextKey);
+			if (ArgUtil.isEmpty(value)) {
+				value = request.getHeader(contextKey);
+				if (ArgUtil.isEmpty(value)) {
+					Cookie cookie = WebUtils.getCookie(request, contextKey);
+					if (cookie != null) {
+						value = cookie.getValue();
+					}
+				}
+			}
+			AppContextUtil.set(contextKey, value);
+		}
+		return value;
+	}
+
 	public void clearSessionCookie() {
 		Cookie cookie = WebUtils.getCookie(request, AppConstants.SESSIONID);
 		if (cookie != null) {
@@ -156,10 +175,13 @@ public class CommonHttpRequest {
 		UserAgent userAgent = this.getUserAgent();
 
 		if (currentDevice != null) {
-			userDevice.setType((currentDevice.isMobile() ? UserClient.DeviceType.MOBILE
-					: (currentDevice.isTablet() ? UserClient.DeviceType.TABLET : UserClient.DeviceType.COMPUTER)));
+			userDevice.setType(
+					(currentDevice.isMobile() ? UserClient.DeviceType.MOBILE
+							: (currentDevice.isTablet() ? UserClient.DeviceType.TABLET
+									: UserClient.DeviceType.COMPUTER))
+					);
 
-			DevicePlatform devicePlatform = DevicePlatform.UNKNOWN;
+					DevicePlatform devicePlatform = DevicePlatform.UNKNOWN;
 			if (currentDevice.getDevicePlatform() == org.springframework.mobile.device.DevicePlatform.ANDROID
 					|| userAgent.getOperatingSystem().getGroup() == OperatingSystem.ANDROID) {
 				devicePlatform = DevicePlatform.ANDROID;

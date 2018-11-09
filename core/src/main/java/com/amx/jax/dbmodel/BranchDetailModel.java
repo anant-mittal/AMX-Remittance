@@ -25,6 +25,7 @@ public class BranchDetailModel implements java.io.Serializable
 	private String country;
 	private String postalCode;
 	private String branchTiming;
+	private BigDecimal countryBranchId;
 	
 	
 	public BranchDetailModel() {
@@ -168,5 +169,13 @@ public class BranchDetailModel implements java.io.Serializable
 
 	public void setBranchTiming(String branchTiming) {
 		this.branchTiming = branchTiming;
+	}
+
+	public BigDecimal getCountryBranchId() {
+		return countryBranchId;
+	}
+
+	public void setCountryBranchId(BigDecimal countryBranchId) {
+		this.countryBranchId = countryBranchId;
 	}	
 }

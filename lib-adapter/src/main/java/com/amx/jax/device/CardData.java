@@ -5,6 +5,15 @@ import java.io.Serializable;
 public class CardData implements Serializable {
 
 	private static final long serialVersionUID = -3850651340742417281L;
+	long timestamp;
+	public long getTimestamp() {
+		return timestamp;
+	}
+
+	public void setTimestamp(long timestamp) {
+		this.timestamp = timestamp;
+	}
+
 	boolean valid;
 	boolean genuine;
 	private String title;
@@ -47,6 +56,10 @@ public class CardData implements Serializable {
 	private String localUnitType;
 	private String fullName;
 	private int photoLength = 0;
+
+	public CardData() {
+		this.timestamp = System.currentTimeMillis();
+	}
 
 	public boolean isValid() {
 		return valid;

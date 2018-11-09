@@ -30,6 +30,7 @@ import com.amx.amxlib.model.OnlineConfigurationDto;
 import com.amx.amxlib.model.request.GetBankBranchRequest;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.configs.JaxMetaInfo;
+import com.amx.jax.model.response.BranchSystemDetailDto;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes=JaxServiceClientApplication.class)
@@ -208,8 +209,17 @@ public class MetaClientTest extends AbstractTestClient {
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResults());
 	}
-
+	
 	@Test
+	public void testlistBranchSystemInventory() {
+		setDefaults();
+		AmxApiResponse<BranchSystemDetailDto, Object> response = null;
+		response = metaclient.listBranchSystemInventory();
+		assertNotNull("Response is null", response);
+		assertNotNull(response.getResults());
+	}
+	
+	//@Test
 	public void testGetCountryListResponse() {
 		setDefaults();
 		AmxApiResponse<ApplicationSetupDTO, Object> response = null;

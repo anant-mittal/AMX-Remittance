@@ -1,11 +1,14 @@
 package com.amx.jax.client;
 
+import java.util.List;
 import java.text.ParseException;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.AppConfig;
@@ -13,6 +16,7 @@ import com.amx.jax.CustomerCredential;
 import com.amx.jax.ICustRegService;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.configs.JaxMetaInfo;
+import com.amx.jax.exception.AbstractJaxException;
 import com.amx.jax.exception.JaxSystemError;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.model.CardDetail;
@@ -31,6 +35,9 @@ import com.amx.jax.model.response.FieldListDto;
 import com.amx.jax.model.response.IncomeRangeDto;
 import com.amx.jax.rest.RestMetaRequestOutFilter;
 import com.amx.jax.rest.RestService;
+import com.amx.jax.scope.TenantContextHolder;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
 public class OffsiteCustRegClient implements ICustRegService {
@@ -43,6 +50,23 @@ public class OffsiteCustRegClient implements ICustRegService {
 	@Autowired
 	AppConfig appConfig;
 
+	public HttpHeaders getHeader() {
+
+		HttpHeaders headers = new HttpHeaders();
+		try {
+
+			JaxMetaInfo metaInfo = new JaxMetaInfo();
+			metaInfo.setCountryId(TenantContextHolder.currentSite().getBDCode());
+			metaInfo.setTenant(TenantContextHolder.currentSite());
+			headers.add("meta-info", new ObjectMapper().writeValueAsString(metaInfo.copy()));
+		} catch (JsonProcessingException e) {
+			LOGGER.error("error in getheader of jaxclient", e);
+		}
+		return headers;
+	}
+
+	public static final String OFFSITE_CUSTOMER_REG = "/offsite-cust-reg";
+
 	@Autowired(required = false)
 	RestMetaRequestOutFilter<JaxMetaInfo> metaFilter;
 
@@ -51,6 +75,8 @@ public class OffsiteCustRegClient implements ICustRegService {
 			return restService.ajax(appConfig.getJaxURL()).path(CustRegApiEndPoints.GET_DYNAMIC_FIELDS).post(model)
 					.as(new ParameterizedTypeReference<AmxApiResponse<Map<String, FieldListDto>, Object>>() {
 					});
+		} catch (AbstractJaxException ae) {
+			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getFieldList : ", e);
 			return JaxSystemError.evaluate(e);
@@ -64,6 +90,8 @@ public class OffsiteCustRegClient implements ICustRegService {
 					.filter(metaFilter).post(model)
 					.as(new ParameterizedTypeReference<AmxApiResponse<IncomeRangeDto, Object>>() {
 					});
+		} catch (AbstractJaxException ae) {
+			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getIncomeRangeResponse : ", e);
 			return JaxSystemError.evaluate(e);
@@ -77,6 +105,8 @@ public class OffsiteCustRegClient implements ICustRegService {
 					.path(CustRegApiEndPoints.GET_DESIGNATION_LIST).post(model)
 					.as(new ParameterizedTypeReference<AmxApiResponse<ArticleDetailsDescDto, Object>>() {
 					});
+		} catch (AbstractJaxException ae) {
+			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getDesignationListResponse : ", e);
 			return JaxSystemError.evaluate(e);
@@ -89,6 +119,8 @@ public class OffsiteCustRegClient implements ICustRegService {
 			return restService.ajax(appConfig.getJaxURL()).filter(metaFilter).path(CustRegApiEndPoints.GET_ARTICLE_LIST)
 					.post().as(new ParameterizedTypeReference<AmxApiResponse<ArticleMasterDescDto, Object>>() {
 					});
+		} catch (AbstractJaxException ae) {
+			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getArticleListResponse : ", e);
 			return JaxSystemError.evaluate(e);
@@ -102,6 +134,8 @@ public class OffsiteCustRegClient implements ICustRegService {
 			return restService.ajax(appConfig.getJaxURL()).filter(metaFilter).path(CustRegApiEndPoints.VALIDATE_OTP)
 					.post(offsiteCustRegModel).as(new ParameterizedTypeReference<AmxApiResponse<String, Object>>() {
 					});
+		} catch (AbstractJaxException ae) {
+			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in validateOtpForEmailAndMobile : ", e);
 			return JaxSystemError.evaluate(e);
@@ -115,6 +149,8 @@ public class OffsiteCustRegClient implements ICustRegService {
 					.path(CustRegApiEndPoints.GET_EMPLOYMENT_TYPE_LIST).post()
 					.as(new ParameterizedTypeReference<AmxApiResponse<ComponentDataDto, Object>>() {
 					});
+		} catch (AbstractJaxException ae) {
+			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in sendEmploymentTypeList : ", e);
 			return JaxSystemError.evaluate(e);
@@ -128,6 +164,8 @@ public class OffsiteCustRegClient implements ICustRegService {
 					.path(CustRegApiEndPoints.GET_PROFESSION_LIST).post()
 					.as(new ParameterizedTypeReference<AmxApiResponse<ComponentDataDto, Object>>() {
 					});
+		} catch (AbstractJaxException ae) {
+			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in sendProfessionList : ", e);
 			return JaxSystemError.evaluate(e);
@@ -140,6 +178,8 @@ public class OffsiteCustRegClient implements ICustRegService {
 			return restService.ajax(appConfig.getJaxURL()).filter(metaFilter).path(CustRegApiEndPoints.GET_ID_TYPES)
 					.post().as(new ParameterizedTypeReference<AmxApiResponse<ComponentDataDto, Object>>() {
 					});
+		} catch (AbstractJaxException ae) {
+			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in sendIdTypes : ", e);
 			return JaxSystemError.evaluate(e);
@@ -153,6 +193,8 @@ public class OffsiteCustRegClient implements ICustRegService {
 					.post(customerPersonalDetail)
 					.as(new ParameterizedTypeReference<AmxApiResponse<SendOtpModel, Object>>() {
 					});
+		} catch (AbstractJaxException ae) {
+			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in sendOtp : ", e);
 			return JaxSystemError.evaluate(e);

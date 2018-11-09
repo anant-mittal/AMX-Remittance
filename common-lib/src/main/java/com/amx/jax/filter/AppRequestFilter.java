@@ -50,10 +50,21 @@ public class AppRequestFilter implements Filter {
 	private boolean doesTokenMatch(HttpServletRequest req, HttpServletResponse resp, String traceId) {
 		String authToken = req.getHeader(AppConstants.AUTH_KEY_XKEY);
 		if (StringUtils.isEmpty(authToken)
-				|| (CryptoUtil.validateHMAC(appConfig.getAppAuthKey(), authToken, traceId) == false)) {
+				|| (CryptoUtil.validateHMAC(appConfig.getAppAuthKey(), traceId, authToken) == false)) {
 			return false;
 		}
 		return true;
+	}
+
+	private boolean isRequestValid(
+			RequestType reqType, HttpServletRequest req, HttpServletResponse resp,
+			String traceId
+	) {
+		if (reqType.isAuth() && appConfig.isAppAuthEnabled() && !doesTokenMatch(req, resp, traceId)) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 
 	@Override
@@ -110,8 +121,10 @@ public class AppRequestFilter implements Filter {
 				if (session == null) {
 					sessionID = UniqueID.generateString();
 				} else {
-					sessionID = ArgUtil.parseAsString(session.getAttribute(AppConstants.SESSION_ID_XKEY),
-							UniqueID.generateString());
+					sessionID = ArgUtil.parseAsString(
+							session.getAttribute(AppConstants.SESSION_ID_XKEY),
+							UniqueID.generateString()
+					);
 				}
 
 				AppContextUtil.setSessionId(sessionID);
@@ -133,10 +146,10 @@ public class AppRequestFilter implements Filter {
 				AuditServiceClient.trackStatic(new RequestTrackEvent(req));
 			}
 			try {
-				if (reqType.isAuth() && appConfig.isAppAuthEnabled() && !doesTokenMatch(req, resp, traceId)) {
-					resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
-				} else {
+				if (isRequestValid(reqType, req, resp, traceId)) {
 					chain.doFilter(request, new AppResponseWrapper(resp));
+				} else {
+					resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
 				}
 			} finally {
 				if (reqType.isTrack()) {

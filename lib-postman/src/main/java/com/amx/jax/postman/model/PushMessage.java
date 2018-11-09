@@ -1,6 +1,7 @@
 package com.amx.jax.postman.model;
 
 import java.math.BigDecimal;
+import java.util.regex.Pattern;
 
 import com.amx.jax.scope.TenantContextHolder;
 
@@ -11,6 +12,10 @@ public class PushMessage extends Message {
 	public static final String FORMAT_TO_NATIONALITY = "%s-nationality-%s";
 	public static final String FORMAT_TO_USER = "%s-user-%s";
 	public static final String CONDITION_SEPRATOR = " || ";
+
+	public static final Pattern FORMAT_TO_ALL_PATTERN = Pattern.compile("/topics/(.+)-all$");
+	public static final Pattern FORMAT_TO_NATIONALITY_PATTERN = Pattern.compile("/topics/(.+)-nationality-(.+)$");
+	public static final Pattern FORMAT_TO_USER_PATTERN = Pattern.compile("/topics/(.+)-user-(.+)$");
 
 	private static final long serialVersionUID = -1354844357577261297L;
 

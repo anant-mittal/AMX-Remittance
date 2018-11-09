@@ -69,7 +69,14 @@ public class UserClient {
 	}
 
 	public enum ClientType {
-		BROWSER, SIGNATURE_PAD, BRANCH_ADAPTER, OFFSITE_PAD, KIOSK;
+		// branch cleints
+		BRANCH_WEB, SIGNATURE_PAD, BRANCH_ADAPTER,
+
+		// Other Channels
+		OFFSITE_PAD, KIOSK,
+
+		// Customer Facing interfaces
+		ONLINE_WEB, ONLINE_ANDROID, ONLINE_IOS;
 	}
 
 }

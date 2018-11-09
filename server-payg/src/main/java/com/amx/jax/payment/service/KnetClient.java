@@ -148,7 +148,6 @@ public class KnetClient implements PayGClient {
 
 	}
 
-	@SuppressWarnings("finally")
 	@Override
 	public PayGResponse capture(PayGResponse gatewayResponse, Channel channel) {
 
@@ -177,13 +176,22 @@ public class KnetClient implements PayGClient {
 		gatewayResponse.setErrorCategory(knetCodes.getCategory());
 
 		LOGGER.info("Result from response Values ---> " + gatewayResponse.getErrorCategory());
-		gatewayResponse.setError(resultResponse);
+		/* gatewayResponse.setError(resultResponse); */
 
 		PaymentResponseDto resdto = paymentService.capturePayment(gatewayResponse);
 		// Capturing JAX Response
-		gatewayResponse.setCollectionFinYear(resdto.getCollectionFinanceYear().toString());
-		gatewayResponse.setCollectionDocCode(resdto.getCollectionDocumentCode().toString());
-		gatewayResponse.setCollectionDocNumber(resdto.getCollectionDocumentNumber().toString());
+
+		if (resdto.getCollectionFinanceYear() != null) {
+			gatewayResponse.setCollectionFinYear(resdto.getCollectionFinanceYear().toString());
+		}
+
+		if (resdto.getCollectionDocumentCode() != null) {
+			gatewayResponse.setCollectionDocCode(resdto.getCollectionDocumentCode().toString());
+		}
+
+		if (resdto.getCollectionDocumentNumber() != null) {
+			gatewayResponse.setCollectionDocNumber(resdto.getCollectionDocumentNumber().toString());
+		}
 
 		if ("CAPTURED".equalsIgnoreCase(gatewayResponse.getResult())) {
 			gatewayResponse.setPayGStatus(PayGStatus.CAPTURED);

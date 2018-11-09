@@ -4,9 +4,13 @@ public class CardReader {
 
 	private CardData data = null;
 	int totalReaders = 0;
-	String[] readers;
-	int readerCount = 0;
-	long timestamp;
+	String reader;
+	long deviceActiveTime;
+	long cardActiveTime;
+
+	public CardReader() {
+		this.cardActiveTime = System.currentTimeMillis();
+	}
 
 	public CardData getData() {
 		return data;
@@ -14,14 +18,6 @@ public class CardReader {
 
 	public void setData(CardData data) {
 		this.data = data;
-	}
-
-	public int getReaderCount() {
-		return readerCount;
-	}
-
-	public void setReaderCount(int readerCount) {
-		this.readerCount = readerCount;
 	}
 
 	public int getTotalReaders() {
@@ -32,19 +28,28 @@ public class CardReader {
 		this.totalReaders = totalReaders;
 	}
 
-	public void setReaders(String[] readers) {
-		this.readers = readers;
+	public void setReader(String reader) {
+		this.reader = reader;
 	}
 
-	public String[] getReaders() {
-		return readers;
+	public String getReader() {
+		return reader;
 	}
 
-	public long getTimestamp() {
-		return timestamp;
+	public long getDeviceActiveTime() {
+		return deviceActiveTime;
 	}
 
-	public void setTimestamp(long timestamp) {
-		this.timestamp = timestamp;
+	public void setDeviceActiveTime(long deviceActiveTime) {
+		this.deviceActiveTime = deviceActiveTime;
 	}
+
+	public long getCardActiveTime() {
+		return cardActiveTime;
+	}
+
+	public void setCardActiveTime(long cardActiveTime) {
+		this.cardActiveTime = cardActiveTime;
+	}
+
 }

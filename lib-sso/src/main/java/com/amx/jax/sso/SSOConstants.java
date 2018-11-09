@@ -9,6 +9,7 @@ public class SSOConstants {
 	public static final String APP_LOGGEDIN_URL = "/sso/loggedin/default";
 	public static final String APP_LOGGEDIN_URL_JSON = "/sso/loggedin/{json}";
 	public static final String APP_LOGGEDIN_URL_HTML = "/sso/loggedin/{html}";
+	public static final String APP_LOGOUT_URL = "/sso/logout";
 
 	public static final String APP_LOGIN_URL = "/sso/login";
 	public static final String APP_LOGIN_URL_JSON = "/sso/login/{jsonstep}";
@@ -21,6 +22,8 @@ public class SSOConstants {
 	public static final String SSO_LOGIN_URL_HTML = SSO_LOGIN_URL + "/{htmlstep}";
 	public static final String SSO_LOGIN_URL_REQUIRED = SSO_LOGIN_URL + "/REQUIRED";
 	public static final String SSO_LOGIN_URL_DO = SSO_LOGIN_URL + "/DO";
+
+	public static final String SSO_CARD_DETAILS = "/sso/card/details";
 
 	public static final String SSO_INDEX_PAGE = "sso_index";
 	public static final String REDIRECT = "redirect:";

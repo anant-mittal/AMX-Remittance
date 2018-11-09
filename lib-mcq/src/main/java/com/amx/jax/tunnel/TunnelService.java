@@ -52,7 +52,7 @@ public class TunnelService implements ITunnelService {
 	/**
 	 * For broadcast purpose, it will send event to all the listeners which are
 	 * listening, actively, messages are QUEUED, so there's guarantee of messages
-	 * being deliver if client goes down at the time of send was triggered.
+	 * being deliver if client goes down at the time of SEND was triggered.
 	 * 
 	 * Though all the listeners can be informed, qualification is done based on
 	 * {@link TunnelEventXchange}
@@ -75,6 +75,13 @@ public class TunnelService implements ITunnelService {
 		return topicQueue.publish(message);
 	}
 
+	/**
+	 * To assign a job to one of the worker
+	 * 
+	 * @param topic          - name of task
+	 * @param messagePayload - data to be used for task
+	 * @return
+	 */
 	public <T> long task(String topic, T messagePayload) {
 		if (redisson == null) {
 			return 0L;
@@ -91,6 +98,13 @@ public class TunnelService implements ITunnelService {
 		return topicQueue.publish(message.getId());
 	}
 
+	/**
+	 * To assign a job to one of the worker, based on TaskEvent class, no need to
+	 * pass task name, each TaskEvent class is treated as unique task
+	 * 
+	 * @param event - task event it has be unique
+	 * @return
+	 */
 	public <E extends ITunnelEvent> long task(E event) {
 		return this.task(event.getClass().getName(), event);
 	}

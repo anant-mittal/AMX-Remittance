@@ -18,7 +18,9 @@ import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.audit.PMGaugeEvent;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.PushMessage;
+import com.amx.jax.postman.model.UserMessageEvent;
 import com.amx.jax.rest.RestService;
+import com.amx.jax.tunnel.TunnelService;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
 import com.amx.utils.JsonPath;
@@ -52,6 +54,9 @@ public class FBPushServiceImpl implements IPushNotifyService {
 
 	@Autowired
 	private FileService fileService;
+
+	@Autowired
+	private TunnelService tunnelService;
 
 	/** The Constant MAIN_TOPIC. */
 	private static final JsonPath MAIN_TOPIC = new JsonPath("/to");
@@ -128,7 +133,21 @@ public class FBPushServiceImpl implements IPushNotifyService {
 					map.remove("_image");
 				}
 
+				String link = ArgUtil.parseAsString(map.get("url"));
+				if (!ArgUtil.isEmptyString(link)) {
+					msg.setLink(link);
+					//map.remove("url");
+				}
+
 			}
+
+			UserMessageEvent userMessageEvent = new UserMessageEvent();
+			userMessageEvent.setTo(msg.getTo());
+			userMessageEvent.setSubject(msg.getSubject());
+			userMessageEvent.setMessage(msg.getMessage());
+			userMessageEvent.setImage(msg.getImage());
+			userMessageEvent.setLink(msg.getLink());
+			userMessageEvent.setTemplate(msg.getTemplate());
 
 			String topic = msg.getTo().get(0);
 			StringBuilder androidTopic = new StringBuilder();
@@ -167,6 +186,7 @@ public class FBPushServiceImpl implements IPushNotifyService {
 					}
 				}
 			}
+			tunnelService.task(userMessageEvent);
 		} catch (PostManException e) {
 			auditServiceClient.log(
 					new PMGaugeEvent(PMGaugeEvent.Type.NOTIFCATION).set(Result.FAIL).set(msg, msg.getMessage(), null));
@@ -181,14 +201,10 @@ public class FBPushServiceImpl implements IPushNotifyService {
 	/**
 	 * Send.
 	 *
-	 * @param type
-	 *            the type
-	 * @param topic
-	 *            the topic
-	 * @param msg
-	 *            the msg
-	 * @param message
-	 *            the message
+	 * @param type    the type
+	 * @param topic   the topic
+	 * @param msg     the msg
+	 * @param message the message
 	 */
 	@Async
 	private void send(PMGaugeEvent.Type type, String topic, PushMessage msg, String message) {
@@ -216,12 +232,9 @@ public class FBPushServiceImpl implements IPushNotifyService {
 	/**
 	 * Send android.
 	 *
-	 * @param topic
-	 *            the topic
-	 * @param msg
-	 *            the msg
-	 * @param message
-	 *            the message
+	 * @param topic   the topic
+	 * @param msg     the msg
+	 * @param message the message
 	 * @return the string
 	 */
 	private String sendAndroid(String topic, PushMessage msg, String message) {
@@ -240,12 +253,9 @@ public class FBPushServiceImpl implements IPushNotifyService {
 	/**
 	 * Send IOS.
 	 *
-	 * @param topic
-	 *            the topic
-	 * @param msg
-	 *            the msg
-	 * @param message
-	 *            the message
+	 * @param topic   the topic
+	 * @param msg     the msg
+	 * @param message the message
 	 * @return the string
 	 */
 	private String sendIOS(String topic, PushMessage msg, String message) {
@@ -267,12 +277,9 @@ public class FBPushServiceImpl implements IPushNotifyService {
 	/**
 	 * Send web.
 	 *
-	 * @param topic
-	 *            the topic
-	 * @param msg
-	 *            the msg
-	 * @param message
-	 *            the message
+	 * @param topic   the topic
+	 * @param msg     the msg
+	 * @param message the message
 	 * @return the string
 	 */
 	private String sendWeb(String topic, PushMessage msg, String message) {

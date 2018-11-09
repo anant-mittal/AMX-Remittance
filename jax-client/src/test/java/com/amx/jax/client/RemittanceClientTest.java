@@ -36,7 +36,7 @@ import com.amx.jax.scope.TenantContextHolder;
 import com.amx.utils.JsonUtil;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes=JaxServiceClientApplication.class)
+@SpringBootTest(classes = JaxServiceClientApplication.class)
 public class RemittanceClientTest {
 
 	@Autowired
@@ -65,7 +65,7 @@ public class RemittanceClientTest {
 		assertNotNull(response.getResult().getModelType());
 	}
 
-	//@Test
+	// @Test
 	public void getOldPurposeOfTransactions() throws IOException, ResourceNotFoundException, InvalidInputException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
@@ -79,7 +79,7 @@ public class RemittanceClientTest {
 		assertNotNull(response.getResult().getModelType());
 	}
 
-	//@Test
+	// @Test
 	public void testsaveTxn() throws IOException, ResourceNotFoundException, InvalidInputException,
 			RemittanceTransactionValidationException, LimitExeededException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
@@ -136,7 +136,7 @@ public class RemittanceClientTest {
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
 		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
 		jaxMetaInfo.setCustomerId(new BigDecimal(184466));
-		jaxMetaInfo.setTenant(Tenant.KWT2);
+		TenantContextHolder.setCurrent(Tenant.KWT2);
 		ApiResponse<RemittanceTransactionResponsetModel> response = null;
 		RemittanceTransactionRequestModel request = new RemittanceTransactionRequestModel();
 		request.setBeneId(new BigDecimal(68213));
@@ -197,7 +197,7 @@ public class RemittanceClientTest {
 		assertNotNull(response.getResult().getModelType());
 	}
 
-    @Test
+	@Test
 	public void testfetchTransactionDetails() throws IOException, ResourceNotFoundException, InvalidInputException,
 			RemittanceTransactionValidationException, LimitExeededException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));

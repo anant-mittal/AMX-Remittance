@@ -126,7 +126,7 @@
 
 	<profiles>
 		<profile>
-			<id>knetDev</id>
+			<id>dev</id>
 			<dependencies>
 				<dependency>
 					<groupId>com.knet.test</groupId>
@@ -135,11 +135,11 @@
 				</dependency>
 			</dependencies>
 			<build>
-				<finalName>${project.artifactId}-${project.version}-knet-dev</finalName>
+				<finalName>${project.artifactId}-${project.version}-dev</finalName>
 			</build>
 		</profile>
 		<profile>
-			<id>knetProd</id>
+			<id>prod</id>
 			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>
@@ -151,7 +151,7 @@
 				</dependency>
 			</dependencies>
 			<build>
-				<finalName>${project.artifactId}-${project.version}-knet-prod</finalName>
+				<finalName>${project.artifactId}-${project.version}-prod</finalName>
 			</build>
 		</profile>
 	</profiles>

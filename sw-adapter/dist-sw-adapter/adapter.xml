@@ -1,0 +1,46 @@
+<!-- This is an example of a minimal Windows Service Wrapper configuration, 
+	which includes only mandatiory options. This configuration file should be 
+	placed near the WinSW executable, the name should be the same. E.g. for myapp.exe 
+	the configuration file name should be myapp.xml You can find more information 
+	about the configuration options here: https://github.com/kohsuke/winsw/blob/master/doc/xmlConfigFile.md 
+	Full example: https://github.com/kohsuke/winsw/blob/sample-config-file/examples/allOptions.xml 
+	https://medium.com/@k32y/deploying-spring-boot-apps-as-windows-services-44978efb7bf4 -->
+<configuration>
+
+	<!-- ID of the service. It should be unique accross the Windows system -->
+	<id>adapter</id>
+
+	<!-- Display name of the service -->
+	<name>Branch Adapter</name>
+
+	<!-- Service description -->
+	<description>
+		This service is a service created from a minimal
+		configuration
+	</description>
+
+	<workingdirectory>%BASE%\</workingdirectory>
+
+	<logpath>%BASE%\logs</logpath>
+
+	<logmode>rotate</logmode>
+
+	<!-- Path to the executable, which should be started -->
+	<executable>java</executable>
+
+	<!-- <startargument>-Dspring.application.admin.enabled=true</startargument> 
+		<startargument>-Dcom.sun.management.jmxremote.port=54321 </startargument> 
+		<startargument>-Dcom.sun.management.jmxremote.authenticate=false </startargument> 
+		<startargument>-Dcom.sun.management.jmxremote.ssl=false</startargument> -->
+
+
+	<startargument>-jar</startargument>
+
+	<startargument>sw-adapter.jar</startargument>
+
+	<startargument>-cli</startargument>
+
+	<!-- <stopexecutable>java</stopexecutable> <stopargument>-jar</stopargument> 
+		<stopargument>SpringBootStopper.jar</stopargument> <stopargument>54321</stopargument> -->
+
+</configuration>

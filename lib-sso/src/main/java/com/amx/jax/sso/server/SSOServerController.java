@@ -3,6 +3,8 @@ package com.amx.jax.sso.server;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,7 +16,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,7 +23,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.amx.jax.AppConstants;
 import com.amx.jax.AppContextUtil;
+import com.amx.jax.adapter.AdapterServiceClient;
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.device.CardData;
 import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.http.CommonHttpRequest.CommonMediaType;
 import com.amx.jax.model.UserDevice;
@@ -38,6 +41,8 @@ import com.amx.jax.sso.SSOStatus.ApiSSOStatus;
 import com.amx.jax.sso.SSOStatus.SSOServerCodes;
 import com.amx.jax.sso.SSOTranx;
 import com.amx.jax.sso.SSOUser;
+import com.amx.utils.ArgUtil;
+import com.amx.utils.CollectionUtil;
 import com.amx.utils.JsonUtil;
 import com.amx.utils.Urly;
 
@@ -62,6 +67,9 @@ public class SSOServerController {
 
 	@Autowired
 	RbaacServiceClient rbaacServiceClient;
+
+	@Autowired
+	AdapterServiceClient adapterServiceClient;
 
 	private Map<String, Object> getModelMap() {
 		ssoUser.ssoTranxId();
@@ -110,7 +118,11 @@ public class SSOServerController {
 	@ResponseBody
 	public String loginJson(@RequestBody SSOLoginFormData formdata,
 			@PathVariable(required = false, value = "jsonstep") @ApiParam(defaultValue = "CREDS") SSOAuthStep json,
-			HttpServletResponse resp) throws URISyntaxException, IOException {
+			HttpServletResponse resp,
+
+			@RequestParam(required = false) Boolean redirect) throws URISyntaxException, IOException {
+
+		redirect = ArgUtil.parseAsBoolean(redirect, true);
 
 		if (json == SSOAuthStep.DO) {
 			json = formdata.getStep();
@@ -143,9 +155,18 @@ public class SSOServerController {
 				result.setStatusEnum(SSOServerCodes.OTP_REQUIRED);
 
 			} else if ((SSOAuthStep.OTP == json) && formdata.getMotp() != null) {
+
+				String terminalId = sSOTranx.get().getTerminalId();
+
 				UserAuthorisationReqDTO auth = new UserAuthorisationReqDTO();
 				auth.setEmployeeNo(formdata.getEcnumber());
-				auth.setIpAddress(userDevice.getIp());
+
+				if (ArgUtil.isEmpty(terminalId)) {
+					auth.setIpAddress(userDevice.getIp());
+				} else {
+					auth.setIpAddress(terminalId);
+				}
+
 				auth.setDeviceId(userDevice.getFingerprint());
 				auth.setmOtp(formdata.getMotp());
 				EmployeeDetailsDTO empDto = rbaacServiceClient.authoriseUser(auth).getResult();
@@ -155,13 +176,36 @@ public class SSOServerController {
 						.addParameter(SSOConstants.PARAM_STEP, SSOAuthStep.DONE)
 						.addParameter(SSOConstants.PARAM_SOTP, sSOTranx.get().getAppToken()).getURL();
 				model.put(SSOConstants.PARAM_REDIRECT, redirectUrl);
-				// resp.sendRedirect(redirectUrl);
-				result.setStatusEnum(SSOServerCodes.AUTH_DONE);
-				resp.setHeader("Location", redirectUrl);
-				resp.setStatus(302);
+				result.setRedirectUrl(redirectUrl);
+				if (redirect) {
+					result.setStatusEnum(SSOServerCodes.AUTH_DONE);
+					resp.setHeader("Location", redirectUrl);
+					resp.setStatus(302);
+				}
 			}
 		}
 		return JsonUtil.toJson(result);
+	}
+
+	@ApiSSOStatus({ SSOServerCodes.NO_TERMINAL_SESSION, SSOServerCodes.AUTH_DONE })
+	@RequestMapping(value = SSOConstants.SSO_CARD_DETAILS, method = RequestMethod.GET, produces = {
+			CommonMediaType.APPLICATION_JSON_VALUE, CommonMediaType.APPLICATION_V0_JSON_VALUE })
+	@ResponseBody
+	public String getCardDetails() throws InterruptedException {
+		AmxApiResponse<CardData, Object> resp = AmxApiResponse.build(new CardData());
+		ssoUser.ssoTranxId();
+		String terminlId = sSOTranx.get().getTerminalId();
+		if (terminlId != null) {
+			CardData card = adapterServiceClient.pollCardDetailsByTerminal(terminlId).getResult();
+			if (card != null) {
+				resp.setResults(Collections.singletonList(card));
+			} else {
+				resp.setStatusEnum(SSOServerCodes.NO_TERMINAL_CARD);
+			}
+		} else {
+			resp.setStatusEnum(SSOServerCodes.NO_TERMINAL_SESSION);
+		}
+		return JsonUtil.toJson(resp);
 	}
 
 }
