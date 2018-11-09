@@ -26,6 +26,7 @@ import com.amx.jax.AppContextUtil;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.logger.client.AuditServiceClient;
 import com.amx.jax.logger.events.RequestTrackEvent;
+import com.amx.jax.rest.RestService;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.CryptoUtil;
@@ -33,7 +34,6 @@ import com.amx.utils.UniqueID;
 import com.amx.utils.Urly;
 
 @Component
-// @PropertySource("classpath:application-logger.properties")
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class AppRequestFilter implements Filter {
 
@@ -41,11 +41,14 @@ public class AppRequestFilter implements Filter {
 
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
-		// TODO Auto-generated method stub
+		LOGGER.info("Filter Intialzed");
 	}
 
 	@Autowired
 	AppConfig appConfig;
+
+	@Autowired
+	RestService restService;
 
 	private boolean doesTokenMatch(HttpServletRequest req, HttpServletResponse resp, String traceId) {
 		String authToken = req.getHeader(AppConstants.AUTH_KEY_XKEY);
@@ -147,6 +150,7 @@ public class AppRequestFilter implements Filter {
 			}
 			try {
 				if (isRequestValid(reqType, req, resp, traceId)) {
+					restService.importMetaFromStatic(req);
 					chain.doFilter(request, new AppResponseWrapper(resp));
 				} else {
 					resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
@@ -167,7 +171,7 @@ public class AppRequestFilter implements Filter {
 
 	@Override
 	public void destroy() {
-		// TODO Auto-generated method stub
+		LOGGER.info("Filter Destroyed");
 	}
 
 }

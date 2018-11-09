@@ -9,7 +9,7 @@ import org.springframework.web.client.RestTemplate;
 import com.amx.jax.AppConfig;
 import com.amx.jax.client.config.JaxConfig;
 import com.amx.jax.client.configs.JaxMetaInfo;
-import com.amx.jax.rest.RestMetaRequestOutFilter;
+import com.amx.jax.rest.IMetaRequestOutFilter;
 import com.amx.jax.scope.TenantContextHolder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -32,7 +32,7 @@ public abstract class AbstractJaxServiceClient {
 	protected AppConfig appConfig;
 
 	@Autowired(required = false)
-	protected RestMetaRequestOutFilter<JaxMetaInfo> metaFilter;
+	protected IMetaRequestOutFilter<JaxMetaInfo> metaFilter;
 
 	public String getBaseUrl() {
 		return jaxConfig.getSpServiceUrl();

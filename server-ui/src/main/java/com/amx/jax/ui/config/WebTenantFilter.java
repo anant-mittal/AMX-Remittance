@@ -18,8 +18,6 @@ import org.springframework.stereotype.Component;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.utils.ArgUtil;
-import com.amx.utils.Constants;
-import com.amx.utils.Urly;
 
 /**
  * The Class WebTenantFilter.

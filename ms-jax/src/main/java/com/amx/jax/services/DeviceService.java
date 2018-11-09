@@ -13,22 +13,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constants.DeviceState;
 import com.amx.jax.constants.DeviceStateDataType;
+import com.amx.jax.customer.dao.EmployeeDao;
 import com.amx.jax.customer.service.CustomerService;
 import com.amx.jax.dao.DeviceDao;
 import com.amx.jax.dbmodel.Device;
 import com.amx.jax.dbmodel.DeviceStateInfo;
-import com.amx.jax.dbmodel.JaxConfig;
 import com.amx.jax.dbmodel.LoginLogoutHistory;
-import com.amx.jax.dict.UserClient.DeviceType;
-import com.amx.jax.error.JaxError;
-import com.amx.jax.dbmodel.JaxConfig;
-import com.amx.jax.dict.UserClient.DeviceType;
-import com.amx.jax.error.JaxError;
+import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.manager.DeviceManager;
 import com.amx.jax.model.request.DeviceRegistrationRequest;
 import com.amx.jax.model.request.DeviceStateInfoChangeRequest;
@@ -40,17 +35,9 @@ import com.amx.jax.model.response.DeviceDto;
 import com.amx.jax.model.response.DevicePairOtpResponse;
 import com.amx.jax.model.response.DeviceStatusInfoDto;
 import com.amx.jax.model.response.IDeviceStateData;
-import com.amx.jax.model.response.customer.CustomerContactDto;
-import com.amx.jax.model.response.customer.CustomerDto;
-import com.amx.jax.model.response.customer.CustomerIdProofDto;
-import com.amx.jax.services.AbstractService;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.validation.DeviceValidation;
-import com.amx.utils.CryptoUtil;
-import com.amx.utils.IoUtils;
-import com.amx.utils.JsonUtil;
-import com.amx.jax.dict.UserClient.ClientType;
-import com.amx.jax.customer.dao.EmployeeDao;;
+import com.amx.utils.JsonUtil;;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -91,8 +78,10 @@ public class DeviceService extends AbstractService {
 		return newDevice;
 	}
 
-	public BoolRespModel updateDeviceState(DeviceStateInfoChangeRequest request, Integer registrationId,
-			String paireToken, String sessionToken) {
+	public BoolRespModel updateDeviceState(
+			DeviceStateInfoChangeRequest request, Integer registrationId,
+			String paireToken, String sessionToken
+	) {
 		if (registrationId == null) {
 			throw new GlobalException("Device registration id can not be blank");
 		}
@@ -121,8 +110,10 @@ public class DeviceService extends AbstractService {
 		return response;
 	}
 
-	public BoolRespModel validateOtpForPairing(ClientType deviceType, Integer countryBranchSystemInventoryId,
-			String otp) {
+	public BoolRespModel validateOtpForPairing(
+			ClientType deviceType, Integer countryBranchSystemInventoryId,
+			String otp
+	) {
 		deviceValidation.validateOtp(otp);
 		Device device = deviceDao.findDevice(new BigDecimal(countryBranchSystemInventoryId), deviceType);
 		deviceValidation.validateDevice(device);
@@ -167,32 +158,40 @@ public class DeviceService extends AbstractService {
 		if (deviceStateInfo.getStateDataType() != null) {
 			switch (deviceStateInfo.getStateDataType()) {
 			case REMITTANCE:
-				SignaturePadRemittanceInfo stateData = JsonUtil.fromJson(deviceStateInfo.getStateData(),
-						SignaturePadRemittanceInfo.class);
+				SignaturePadRemittanceInfo stateData = JsonUtil.fromJson(
+						deviceStateInfo.getStateData(),
+						SignaturePadRemittanceInfo.class
+				);
 				dto.setSignaturePadRemittanceInfo(stateData);
 				break;
 
 			case FC_PURCHASE:
-				SignaturePadFCPurchaseSaleInfo stateDataPurchase = JsonUtil.fromJson(deviceStateInfo.getStateData(),
-						SignaturePadFCPurchaseSaleInfo.class);
+				SignaturePadFCPurchaseSaleInfo stateDataPurchase = JsonUtil.fromJson(
+						deviceStateInfo.getStateData(),
+						SignaturePadFCPurchaseSaleInfo.class
+				);
 				dto.setSignaturePadFCPurchaseInfo(stateDataPurchase);
 				break;
 
 			case FC_SALE:
-				SignaturePadFCPurchaseSaleInfo stateDataSale = JsonUtil.fromJson(deviceStateInfo.getStateData(),
-						SignaturePadFCPurchaseSaleInfo.class);
+				SignaturePadFCPurchaseSaleInfo stateDataSale = JsonUtil.fromJson(
+						deviceStateInfo.getStateData(),
+						SignaturePadFCPurchaseSaleInfo.class
+				);
 				dto.setSignaturePadFCSaleInfo(stateDataSale);
 				break;
 			case CUSTOMER_REGISTRATION:
-				SignaturePadCustomerRegStateMetaInfo metaInfo = JsonUtil.fromJson(deviceStateInfo.getStateData(),
-						SignaturePadCustomerRegStateMetaInfo.class);
+				SignaturePadCustomerRegStateMetaInfo metaInfo = JsonUtil.fromJson(
+						deviceStateInfo.getStateData(),
+						SignaturePadCustomerRegStateMetaInfo.class
+				);
 				dto.setSignaturePadCustomerRegStateInfo(getCustomerRegData(metaInfo.getCustomerId()));
 				break;
 			default:
 				break;
 			}
 		}
-		setBranchPcLogoutTime(dto,deviceStateInfo.getEmployeeId());
+		setBranchPcLogoutTime(dto, deviceStateInfo.getEmployeeId());
 		return dto;
 	}
 
@@ -213,13 +212,16 @@ public class DeviceService extends AbstractService {
 		info.setCustomerContactDto(customerService.getCustomerContactDto(customerIdBd));
 		info.setCustomerDto(customerService.getCustomerDto(customerIdBd));
 		info.setCustomerIdProofDto(
-				customerService.getCustomerIdProofDto(customerIdBd, ConstantDocument.BIZ_COMPONENT_ID_CIVIL_ID));
+				customerService.getCustomerIdProofDto(customerIdBd, ConstantDocument.BIZ_COMPONENT_ID_CIVIL_ID)
+		);
 		info.setCustomerIncomeRangeDto(customerService.getCustomerIncomeRangeDto(customerIdBd));
 		return info;
 	}
 
-	public BoolRespModel updateDeviceStateData(ClientType deviceType, Integer countryBranchSystemInventoryId,
-			IDeviceStateData deviceStateData, DeviceStateDataType type, BigDecimal employeeId) {
+	public BoolRespModel updateDeviceStateData(
+			ClientType deviceType, Integer countryBranchSystemInventoryId,
+			IDeviceStateData deviceStateData, DeviceStateDataType type, BigDecimal employeeId
+	) {
 		Device device = deviceDao.findDevice(new BigDecimal(countryBranchSystemInventoryId), deviceType);
 		deviceValidation.validateDevice(device);
 		DeviceStateInfo deviceStateInfo = deviceDao.getDeviceStateInfo(device);

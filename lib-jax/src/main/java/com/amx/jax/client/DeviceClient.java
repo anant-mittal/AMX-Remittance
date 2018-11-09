@@ -5,15 +5,13 @@ import java.math.BigDecimal;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.amx.jax.AppConfig;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
+import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.dict.UserClient.ClientType;
-import com.amx.jax.exception.AbstractJaxException;
 import com.amx.jax.exception.JaxSystemError;
 import com.amx.jax.model.request.DeviceRegistrationRequest;
 import com.amx.jax.model.request.DeviceStateInfoChangeRequest;
@@ -41,11 +39,9 @@ public class DeviceClient implements IDeviceService {
 	@Override
 	public AmxApiResponse<DeviceDto, Object> registerNewDevice(DeviceRegistrationRequest request) {
 		try {
-			LOGGER.info("in registerNewDevice");
-
+			LOGGER.debug("in registerNewDevice");
 			String url = appConfig.getJaxURL() + END_POINT_JAX_DEVICE + DEVICE_REG;
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(request, getHeader());
-			return restService.ajax(url).post(requestEntity)
+			return restService.ajax(url).meta(new JaxMetaInfo()).post(request)
 					.as(new ParameterizedTypeReference<AmxApiResponse<DeviceDto, Object>>() {
 					});
 		} catch (Exception e) {
@@ -60,35 +56,30 @@ public class DeviceClient implements IDeviceService {
 			String sessionToken
 	) {
 		try {
-			LOGGER.info("in getStatus");
-
+			LOGGER.debug("in getStatus");
 			String url = appConfig.getJaxURL() + END_POINT_JAX_DEVICE + DEVICE_STATUS_GET;
-			return restService.ajax(url).header("registrationId", registrationId.toString())
-					.header("paireToken", paireToken).header("sessionToken", sessionToken).get()
+			return restService.ajax(url).queryParam("registrationId", registrationId.toString())
+					.queryParam("paireToken", paireToken).queryParam("sessionToken", sessionToken).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<DeviceStatusInfoDto, Object>>() {
 					});
-		} catch (AbstractJaxException ae) {
-			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getStatus : ", e);
-			throw new JaxSystemError();
+			return JaxSystemError.evaluate(e);
 		}
 	}
 
 	@Override
 	public AmxApiResponse<DevicePairOtpResponse, Object> sendOtpForPairing(Integer deviceRegId, String paireToken) {
 		try {
-			LOGGER.info("in sendOtpForPairing");
-
+			LOGGER.debug("in sendOtpForPairing");
 			String url = appConfig.getJaxURL() + END_POINT_JAX_DEVICE + DEVICE_SEND_PAIR_OTP;
-			return restService.ajax(url).header("deviceRegId", deviceRegId.toString()).header("paireToken", paireToken)
+			return restService.ajax(url).queryParam("deviceRegId", deviceRegId.toString())
+					.queryParam("paireToken", paireToken)
 					.get().as(new ParameterizedTypeReference<AmxApiResponse<DevicePairOtpResponse, Object>>() {
 					});
-		} catch (AbstractJaxException ae) {
-			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in sendOtpForPairing : ", e);
-			throw new JaxSystemError();
+			return JaxSystemError.evaluate(e);
 		}
 	}
 
@@ -98,18 +89,15 @@ public class DeviceClient implements IDeviceService {
 			Integer registrationId, String paireToken, String sessionToken
 	) {
 		try {
-			LOGGER.info("in updateDeviceState");
-
+			LOGGER.debug("in updateDeviceState");
 			String url = appConfig.getJaxURL() + END_POINT_JAX_DEVICE + DEVICE_STATUS_GET;
-			return restService.ajax(url).header("deviceRegId", registrationId.toString())
-					.header("paireToken", paireToken).post(request)
+			return restService.ajax(url).queryParam("deviceRegId", registrationId.toString())
+					.queryParam("paireToken", paireToken).post(request)
 					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
 					});
-		} catch (AbstractJaxException ae) {
-			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in updateDeviceState : ", e);
-			throw new JaxSystemError();
+			return JaxSystemError.evaluate(e);
 		}
 	}
 
@@ -119,18 +107,15 @@ public class DeviceClient implements IDeviceService {
 			ClientType deviceType
 	) {
 		try {
-			LOGGER.info("in activateDevice");
-
+			LOGGER.debug("in activateDevice");
 			String url = appConfig.getJaxURL() + END_POINT_JAX_DEVICE + DEVICE_ACTIVATE;
 			return restService.ajax(url).queryParam("countryBranchSystemInventoryId", countryBranchSystemInventoryId)
 					.queryParam("deviceType", deviceType).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
 					});
-		} catch (AbstractJaxException ae) {
-			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in activateDevice : ", e);
-			throw new JaxSystemError();
+			return JaxSystemError.evaluate(e);
 		}
 	}
 
@@ -141,19 +126,16 @@ public class DeviceClient implements IDeviceService {
 			BigDecimal employeeId
 	) {
 		try {
-			LOGGER.info("in updateRemittanceState");
-
+			LOGGER.debug("in updateRemittanceState");
 			String url = appConfig.getJaxURL() + END_POINT_JAX_DEVICE + DEVICE_STATE_REMITTANCE_UPDATE;
 			return restService.ajax(url).queryParam("countryBranchSystemInventoryId", countryBranchSystemInventoryId)
 					.queryParam("deviceType", deviceType).queryParam("employeeId", employeeId)
 					.post(signaturePadRemittanceInfo)
 					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
 					});
-		} catch (AbstractJaxException ae) {
-			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in updateRemittanceState : ", e);
-			throw new JaxSystemError();
+			return JaxSystemError.evaluate(e);
 		}
 	}
 
@@ -164,19 +146,16 @@ public class DeviceClient implements IDeviceService {
 			BigDecimal employeeId
 	) {
 		try {
-			LOGGER.info("in getFcPurchase");
-
+			LOGGER.debug("in getFcPurchase");
 			String url = appConfig.getJaxURL() + END_POINT_JAX_DEVICE + DEVICE_FC_PURCHASE;
 			return restService.ajax(url).queryParam("countryBranchSystemInventoryId", countryBranchSystemInventoryId)
 					.queryParam("deviceType", deviceType).queryParam("employeeId", employeeId)
 					.post(signaturePadPurchseInfo)
 					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
 					});
-		} catch (AbstractJaxException ae) {
-			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getFcPurchase : ", e);
-			throw new JaxSystemError();
+			return JaxSystemError.evaluate(e);
 		}
 	}
 
@@ -187,18 +166,16 @@ public class DeviceClient implements IDeviceService {
 			BigDecimal employeeId
 	) {
 		try {
-			LOGGER.info("in getFcSale");
+			LOGGER.debug("in getFcSale");
 			String url = appConfig.getJaxURL() + END_POINT_JAX_DEVICE + DEVICE_FC_SALE;
 			return restService.ajax(url).queryParam("countryBranchSystemInventoryId", countryBranchSystemInventoryId)
 					.queryParam("deviceType", deviceType).queryParam("employeeId", employeeId)
 					.post(signaturePadSaleInfo)
 					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
 					});
-		} catch (AbstractJaxException ae) {
-			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getFcSale : ", e);
-			throw new JaxSystemError();
+			return JaxSystemError.evaluate(e);
 		}
 	}
 
@@ -209,17 +186,15 @@ public class DeviceClient implements IDeviceService {
 			BigDecimal employeeId
 	) {
 		try {
-			LOGGER.info("in updateCustomerRegStateData");
+			LOGGER.debug("in updateCustomerRegStateData");
 			String url = appConfig.getJaxURL() + END_POINT_JAX_DEVICE + DEVICE_STATE_CUSTOMER_REG_UPDATE;
 			return restService.ajax(url).queryParam("countryBranchSystemInventoryId", countryBranchSystemInventoryId)
 					.queryParam("deviceType", deviceType).queryParam("employeeId", employeeId).post(metaInfo)
 					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
 					});
-		} catch (AbstractJaxException ae) {
-			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in updateCustomerRegStateData : ", e);
-			throw new JaxSystemError();
+			return JaxSystemError.evaluate(e);
 		}
 	}
 
@@ -229,17 +204,15 @@ public class DeviceClient implements IDeviceService {
 			String signatureImageClob
 	) {
 		try {
-			LOGGER.info("in updateSignatureStateData");
+			LOGGER.debug("in updateSignatureStateData");
 			String url = appConfig.getJaxURL() + END_POINT_JAX_DEVICE + DEVICE_STATE_SIGNATURE_UPDATE;
 			return restService.ajax(url).field("deviceRegId", deviceRegId)
 					.field("signatureImageClob", signatureImageClob).postForm()
 					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
 					});
-		} catch (AbstractJaxException ae) {
-			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in updateSignatureStateData : ", e);
-			throw new JaxSystemError();
+			return JaxSystemError.evaluate(e);
 		}
 	}
 

@@ -4,11 +4,11 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.amx.utils.JsonUtil;
 
-public abstract class RestMetaRequestInFilter<T> {
+public interface IMetaRequestInFilter<T extends RequestMetaInfo> {
 
-	public abstract Class<T> getMetaClass();
+	public Class<T> getMetaClass();
 
-	public T export(String metaString) {
+	default T export(String metaString) {
 		return JsonUtil.fromJson(metaString, getMetaClass());
 	}
 
@@ -18,6 +18,8 @@ public abstract class RestMetaRequestInFilter<T> {
 	 * @param req
 	 * @throws Exception
 	 */
-	public abstract void importMeta(T meta, HttpServletRequest req) throws Exception;
+	public void importMeta(T meta, HttpServletRequest req);
+
+	public void inFilter(T requestMeta);
 
 }

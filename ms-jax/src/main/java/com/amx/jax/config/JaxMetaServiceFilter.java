@@ -1,5 +1,7 @@
 package com.amx.jax.config;
 
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 
 import javax.servlet.http.HttpServletRequest;
@@ -18,14 +20,15 @@ import com.amx.jax.constants.JaxChannel;
 import com.amx.jax.dbmodel.CountryBranch;
 import com.amx.jax.dbmodel.ViewCompanyDetails;
 import com.amx.jax.meta.MetaData;
-import com.amx.jax.rest.RestMetaRequestInFilter;
+import com.amx.jax.rest.IMetaRequestInFilter;
 import com.amx.jax.service.CompanyService;
 import com.amx.jax.service.CountryBranchService;
 import com.amx.jax.service.CurrencyMasterService;
+import com.amx.utils.ArgUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
-public class JaxMetaServiceFilter extends RestMetaRequestInFilter<JaxMetaInfo> {
+public class JaxMetaServiceFilter implements IMetaRequestInFilter<JaxMetaInfo> {
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -37,18 +40,41 @@ public class JaxMetaServiceFilter extends RestMetaRequestInFilter<JaxMetaInfo> {
 
 	@Autowired
 	CompanyService companyService;
-	@Autowired
-	CurrencyMasterService currencyMasterService ;
 
-	public void importMeta(JaxMetaInfo meta, HttpServletRequest req) throws Exception {
+	@Autowired
+	CurrencyMasterService currencyMasterService;
+
+	public void importMeta(JaxMetaInfo meta, HttpServletRequest req) {
 		String metaInfo = req.getHeader(AppConstants.META_XKEY);
 
 		if (!StringUtils.isEmpty(metaInfo)) {
-			JaxMetaInfo metaInfoMap = new ObjectMapper().readValue(metaInfo, JaxMetaInfo.class);
-			metaData.setDefaultCurrencyId(new BigDecimal(1));// TODO: get currencyId from above countryId from db
-			BeanUtils.copyProperties(metaData, metaInfoMap);
-			MDC.put("customer-id", metaData.getCustomerId());
-			logger.debug("Referrer = {}", metaData.getReferrer());
+			JaxMetaInfo metaInfoMap;
+			try {
+				metaInfoMap = new ObjectMapper().readValue(metaInfo, JaxMetaInfo.class);
+				metaData.setDefaultCurrencyId(new BigDecimal(1));// TODO: get currencyId from above countryId from db
+				BeanUtils.copyProperties(metaData, metaInfoMap);
+				MDC.put("customer-id", metaData.getCustomerId());
+				logger.debug("Referrer = {}", metaData.getReferrer());
+			} catch (IOException | IllegalAccessException | InvocationTargetException e) {
+				logger.error("Meta Exception", e);
+			}
+
+		}
+		resolveMetaDataFields();
+	}
+
+	@Override
+	public void inFilter(JaxMetaInfo metaInfoMap) {
+		if (!ArgUtil.isEmpty(metaInfoMap)) {
+			try {
+				metaData.setDefaultCurrencyId(new BigDecimal(1));// TODO: get currencyId from above countryId from db
+				BeanUtils.copyProperties(metaData, metaInfoMap);
+				MDC.put("customer-id", metaData.getCustomerId());
+				logger.debug("Referrer = {}", metaData.getReferrer());
+			} catch (IllegalAccessException | InvocationTargetException e) {
+				logger.error("Meta Exception", e);
+			}
+
 		}
 		resolveMetaDataFields();
 	}

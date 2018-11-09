@@ -17,6 +17,7 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.device.CardData;
 import com.amx.jax.device.CardReader;
 import com.amx.jax.device.DeviceConstants;
+import com.amx.jax.device.DeviceMetaInfo;
 import com.amx.jax.device.DeviceRestModels;
 import com.amx.jax.device.DeviceRestModels.DevicePairingCreds;
 import com.amx.jax.device.DeviceRestModels.DevicePairingRequest;
@@ -69,7 +70,7 @@ public abstract class ACardReaderService {
 	@Value("${jax.offsite.url}")
 	String serverUrl;
 
-	// @Value("${device.terminal.id}")
+	@Value("${device.terminal.id}")
 	String terminalId;
 
 	public String getTerminalId() {
@@ -175,6 +176,7 @@ public abstract class ACardReaderService {
 				req.setDeivceClientType(ClientType.BRANCH_ADAPTER);
 				try {
 					AmxApiResponse<DevicePairingCreds, Object> resp = restService.ajax(serverUrl)
+							.meta(new DeviceMetaInfo())
 							.path(DeviceConstants.Path.DEVICE_PAIR)
 							.header(AppConstants.DEVICE_ID_XKEY, address.getMac())
 							.header(AppConstants.DEVICE_IP_LOCAL_XKEY, address.getLocalIp()).post(req)
@@ -234,7 +236,9 @@ public abstract class ACardReaderService {
 
 		synchronized (lock) {
 			try {
-				sessionPairingCreds = restService.ajax(serverUrl).path(DeviceConstants.Path.SESSION_PAIR)
+				sessionPairingCreds = restService.ajax(serverUrl)
+						.meta(new DeviceMetaInfo())
+						.path(DeviceConstants.Path.SESSION_PAIR)
 						.header(AppConstants.DEVICE_ID_XKEY, address.getMac())
 						.header(AppConstants.DEVICE_IP_LOCAL_XKEY, address.getLocalIp())
 						.header(DeviceConstants.Keys.CLIENT_REG_KEY_XKEY, devicePairingCreds.getDeviceRegId())
@@ -254,6 +258,7 @@ public abstract class ACardReaderService {
 			} catch (Exception e) {
 				status(DeviceStatus.SESSION_ERROR);
 				SWAdapterGUI.CONTEXT.log("CLIENT ERROR : " + e.getMessage());
+				LOGGER.error("getSessionPairingCreds",e);
 			}
 
 		}
@@ -277,16 +282,22 @@ public abstract class ACardReaderService {
 				LOGGER.debug("ACardReaderService:readTask:TIME");
 				lastreadtime = reader.getCardActiveTime();
 				status(DataStatus.SYNCING);
-				restService.ajax(serverUrl).path(DeviceConstants.Path.DEVICE_STATUS_CARD)
+				restService.ajax(serverUrl)
+						.meta(new DeviceMetaInfo())
+						.path(DeviceConstants.Path.DEVICE_STATUS_CARD)
 						.pathParam(DeviceConstants.Params.PARAM_SYSTEM_ID, terminalId)
 						.header(AppConstants.DEVICE_ID_XKEY, address.getMac())
 						.header(AppConstants.DEVICE_IP_LOCAL_XKEY, address.getLocalIp())
 						.header(DeviceConstants.Keys.CLIENT_REG_KEY_XKEY, devicePairingCreds.getDeviceRegId())
 						.header(DeviceConstants.Keys.CLIENT_REG_TOKEN_XKEY, devicePairingCreds.getDeviceRegToken())
-						.header(DeviceConstants.Keys.CLIENT_SESSION_TOKEN_XKEY,
-								sessionPairingCreds.getDeviceSessionToken())
-						.header(DeviceConstants.Keys.CLIENT_REQ_TOKEN_XKEY,
-								DeviceConstants.generateDeviceReqToken(sessionPairingCreds, devicePairingCreds))
+						.header(
+								DeviceConstants.Keys.CLIENT_SESSION_TOKEN_XKEY,
+								sessionPairingCreds.getDeviceSessionToken()
+						)
+						.header(
+								DeviceConstants.Keys.CLIENT_REQ_TOKEN_XKEY,
+								DeviceConstants.generateDeviceReqToken(sessionPairingCreds, devicePairingCreds)
+						)
 						.post(reader).asObject();
 				status(DataStatus.SYNCED);
 			}

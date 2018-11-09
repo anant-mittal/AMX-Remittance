@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 
 import com.amx.jax.dict.Tenant;
 
-public class RestMetaInfo {
+public class RequestMetaInfo {
 	private BigDecimal countryId;
 	private Tenant tenant = Tenant.DEFAULT;
 	private BigDecimal companyId;

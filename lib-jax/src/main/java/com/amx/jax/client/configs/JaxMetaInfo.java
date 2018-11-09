@@ -3,9 +3,9 @@ package com.amx.jax.client.configs;
 import java.math.BigDecimal;
 
 import com.amx.jax.constants.JaxChannel;
-import com.amx.jax.rest.RestMetaInfo;
+import com.amx.jax.rest.RequestMetaInfo;
 
-public class JaxMetaInfo extends RestMetaInfo {
+public class JaxMetaInfo extends RequestMetaInfo {
 
 	public static final String DEFAULT_COMPANY_ID = "1";
 

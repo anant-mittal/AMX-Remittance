@@ -17,7 +17,7 @@ import com.amx.jax.client.RateAlertClient;
 import com.amx.jax.client.RemitClient;
 import com.amx.jax.client.UserClient;
 import com.amx.jax.client.configs.JaxMetaInfo;
-import com.amx.jax.rest.RestMetaRequestOutFilter;
+import com.amx.jax.rest.IMetaRequestOutFilter;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.jax.ui.WebAppConfig;
 import com.amx.utils.ArgUtil;
@@ -27,7 +27,7 @@ import com.amx.utils.ContextUtil;
  * The Class JaxService.
  */
 @Component
-public class JaxService extends RestMetaRequestOutFilter<JaxMetaInfo> {
+public class JaxService implements IMetaRequestOutFilter<JaxMetaInfo> {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 
@@ -203,6 +203,11 @@ public class JaxService extends RestMetaRequestOutFilter<JaxMetaInfo> {
 		JaxMetaInfo jaxMetaInfo = new JaxMetaInfo();
 		populateCommon(jaxMetaInfo);
 		return jaxMetaInfo;
+	}
+
+	@Override
+	public void outFilter(JaxMetaInfo requestMeta) {
+		// TODO Auto-generated method stub
 	}
 
 }

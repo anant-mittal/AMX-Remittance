@@ -8,12 +8,12 @@ import org.springframework.stereotype.Component;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.offsite.OffsiteAppConfig;
-import com.amx.jax.rest.RestMetaRequestOutFilter;
+import com.amx.jax.rest.IMetaRequestOutFilter;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.utils.ContextUtil;
 
 @Component
-public class JaxClientMetaFilter extends RestMetaRequestOutFilter<JaxMetaInfo> {
+public class JaxClientMetaFilter implements IMetaRequestOutFilter<JaxMetaInfo> {
 
 	@Autowired
 	OffsiteAppConfig offsiteAppConfig;
@@ -41,6 +41,11 @@ public class JaxClientMetaFilter extends RestMetaRequestOutFilter<JaxMetaInfo> {
 		jaxMetaInfo.setEmployeeId(new BigDecimal(265));
 
 		return jaxMetaInfo;
+	}
+
+	@Override
+	public void outFilter(JaxMetaInfo requestMeta) {
+
 	}
 
 }
