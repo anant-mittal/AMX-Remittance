@@ -26,8 +26,6 @@ import com.amx.jax.rest.RestService;
 @Component
 public class DeviceClient implements IDeviceService {
 
-	private static final String END_POINT_JAX_DEVICE = "/meta/device";
-
 	private static final Logger LOGGER = Logger.getLogger(DeviceClient.class);
 
 	@Autowired
@@ -40,7 +38,7 @@ public class DeviceClient implements IDeviceService {
 	public AmxApiResponse<DeviceDto, Object> registerNewDevice(DeviceRegistrationRequest request) {
 		try {
 			LOGGER.debug("in registerNewDevice");
-			String url = appConfig.getJaxURL() + END_POINT_JAX_DEVICE + DEVICE_REG;
+			String url = appConfig.getJaxURL() + Path.PREFIX + Path.DEVICE_REG;
 			return restService.ajax(url).meta(new JaxMetaInfo()).post(request)
 					.as(new ParameterizedTypeReference<AmxApiResponse<DeviceDto, Object>>() {
 					});
@@ -57,9 +55,9 @@ public class DeviceClient implements IDeviceService {
 	) {
 		try {
 			LOGGER.debug("in getStatus");
-			String url = appConfig.getJaxURL() + END_POINT_JAX_DEVICE + DEVICE_STATUS_GET;
+			String url = appConfig.getJaxURL() + Path.PREFIX + Path.DEVICE_STATUS_GET;
 			return restService.ajax(url).queryParam("registrationId", registrationId.toString())
-					.queryParam("paireToken", paireToken).queryParam("sessionToken", sessionToken).get()
+					.queryParam(Params.PAIRE_TOKEN, paireToken).queryParam(Params.SESSION_TOKEN, sessionToken).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<DeviceStatusInfoDto, Object>>() {
 					});
 		} catch (Exception e) {
@@ -72,9 +70,9 @@ public class DeviceClient implements IDeviceService {
 	public AmxApiResponse<DevicePairOtpResponse, Object> sendOtpForPairing(Integer deviceRegId, String paireToken) {
 		try {
 			LOGGER.debug("in sendOtpForPairing");
-			String url = appConfig.getJaxURL() + END_POINT_JAX_DEVICE + DEVICE_SEND_PAIR_OTP;
-			return restService.ajax(url).queryParam("deviceRegId", deviceRegId.toString())
-					.queryParam("paireToken", paireToken)
+			String url = appConfig.getJaxURL() + Path.PREFIX + Path.DEVICE_SEND_PAIR_OTP;
+			return restService.ajax(url).queryParam(Params.DEVICE_REG_ID, deviceRegId.toString())
+					.queryParam(Params.PAIRE_TOKEN, paireToken)
 					.get().as(new ParameterizedTypeReference<AmxApiResponse<DevicePairOtpResponse, Object>>() {
 					});
 		} catch (Exception e) {
@@ -90,9 +88,9 @@ public class DeviceClient implements IDeviceService {
 	) {
 		try {
 			LOGGER.debug("in updateDeviceState");
-			String url = appConfig.getJaxURL() + END_POINT_JAX_DEVICE + DEVICE_STATUS_GET;
-			return restService.ajax(url).queryParam("deviceRegId", registrationId.toString())
-					.queryParam("paireToken", paireToken).post(request)
+			String url = appConfig.getJaxURL() + Path.PREFIX + Path.DEVICE_STATUS_GET;
+			return restService.ajax(url).queryParam(Params.DEVICE_REG_ID, registrationId.toString())
+					.queryParam(Params.PAIRE_TOKEN, paireToken).post(request)
 					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
 					});
 		} catch (Exception e) {
@@ -108,9 +106,9 @@ public class DeviceClient implements IDeviceService {
 	) {
 		try {
 			LOGGER.debug("in activateDevice");
-			String url = appConfig.getJaxURL() + END_POINT_JAX_DEVICE + DEVICE_ACTIVATE;
-			return restService.ajax(url).queryParam("countryBranchSystemInventoryId", countryBranchSystemInventoryId)
-					.queryParam("deviceType", deviceType).get()
+			String url = appConfig.getJaxURL() + Path.PREFIX + Path.DEVICE_ACTIVATE;
+			return restService.ajax(url).queryParam(Params.TERMINAL_ID, countryBranchSystemInventoryId)
+					.queryParam(Params.DEVICE_TYPE, deviceType).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
 					});
 		} catch (Exception e) {
@@ -127,9 +125,9 @@ public class DeviceClient implements IDeviceService {
 	) {
 		try {
 			LOGGER.debug("in updateRemittanceState");
-			String url = appConfig.getJaxURL() + END_POINT_JAX_DEVICE + DEVICE_STATE_REMITTANCE_UPDATE;
-			return restService.ajax(url).queryParam("countryBranchSystemInventoryId", countryBranchSystemInventoryId)
-					.queryParam("deviceType", deviceType).queryParam("employeeId", employeeId)
+			String url = appConfig.getJaxURL() + Path.PREFIX + Path.DEVICE_STATE_REMITTANCE_UPDATE;
+			return restService.ajax(url).queryParam(Params.TERMINAL_ID, countryBranchSystemInventoryId)
+					.queryParam(Params.DEVICE_TYPE, deviceType).queryParam(Params.EMPLOYEE_ID, employeeId)
 					.post(signaturePadRemittanceInfo)
 					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
 					});
@@ -147,9 +145,9 @@ public class DeviceClient implements IDeviceService {
 	) {
 		try {
 			LOGGER.debug("in getFcPurchase");
-			String url = appConfig.getJaxURL() + END_POINT_JAX_DEVICE + DEVICE_FC_PURCHASE;
-			return restService.ajax(url).queryParam("countryBranchSystemInventoryId", countryBranchSystemInventoryId)
-					.queryParam("deviceType", deviceType).queryParam("employeeId", employeeId)
+			String url = appConfig.getJaxURL() + Path.PREFIX + Path.DEVICE_FC_PURCHASE;
+			return restService.ajax(url).queryParam(Params.TERMINAL_ID, countryBranchSystemInventoryId)
+					.queryParam(Params.DEVICE_TYPE, deviceType).queryParam(Params.EMPLOYEE_ID, employeeId)
 					.post(signaturePadPurchseInfo)
 					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
 					});
@@ -167,9 +165,9 @@ public class DeviceClient implements IDeviceService {
 	) {
 		try {
 			LOGGER.debug("in getFcSale");
-			String url = appConfig.getJaxURL() + END_POINT_JAX_DEVICE + DEVICE_FC_SALE;
-			return restService.ajax(url).queryParam("countryBranchSystemInventoryId", countryBranchSystemInventoryId)
-					.queryParam("deviceType", deviceType).queryParam("employeeId", employeeId)
+			String url = appConfig.getJaxURL() + Path.PREFIX + Path.DEVICE_FC_SALE;
+			return restService.ajax(url).queryParam(Params.TERMINAL_ID, countryBranchSystemInventoryId)
+					.queryParam(Params.DEVICE_TYPE, deviceType).queryParam(Params.EMPLOYEE_ID, employeeId)
 					.post(signaturePadSaleInfo)
 					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
 					});
@@ -187,9 +185,9 @@ public class DeviceClient implements IDeviceService {
 	) {
 		try {
 			LOGGER.debug("in updateCustomerRegStateData");
-			String url = appConfig.getJaxURL() + END_POINT_JAX_DEVICE + DEVICE_STATE_CUSTOMER_REG_UPDATE;
-			return restService.ajax(url).queryParam("countryBranchSystemInventoryId", countryBranchSystemInventoryId)
-					.queryParam("deviceType", deviceType).queryParam("employeeId", employeeId).post(metaInfo)
+			String url = appConfig.getJaxURL() + Path.PREFIX + Path.DEVICE_STATE_CUSTOMER_REG_UPDATE;
+			return restService.ajax(url).queryParam(Params.TERMINAL_ID, countryBranchSystemInventoryId)
+					.queryParam(Params.DEVICE_TYPE, deviceType).queryParam(Params.EMPLOYEE_ID, employeeId).post(metaInfo)
 					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
 					});
 		} catch (Exception e) {
@@ -205,8 +203,8 @@ public class DeviceClient implements IDeviceService {
 	) {
 		try {
 			LOGGER.debug("in updateSignatureStateData");
-			String url = appConfig.getJaxURL() + END_POINT_JAX_DEVICE + DEVICE_STATE_SIGNATURE_UPDATE;
-			return restService.ajax(url).field("deviceRegId", deviceRegId)
+			String url = appConfig.getJaxURL() + Path.PREFIX + Path.DEVICE_STATE_SIGNATURE_UPDATE;
+			return restService.ajax(url).field(Params.DEVICE_REG_ID, deviceRegId)
 					.field("signatureImageClob", signatureImageClob).postForm()
 					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
 					});

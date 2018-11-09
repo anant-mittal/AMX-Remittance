@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.amx.amxlib.constant.ApiEndpoint.MetaApi;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.IDeviceService;
@@ -28,13 +27,13 @@ import com.amx.jax.model.response.DeviceStatusInfoDto;
 import com.amx.jax.services.DeviceService;
 
 @RestController
-@RequestMapping(MetaApi.PREFIX + "/device")
+@RequestMapping(IDeviceService.Path.PREFIX)
 public class DeviceController implements IDeviceService {
 
 	@Autowired
 	DeviceService deviceService;
 
-	@RequestMapping(value = DEVICE_REG, method = RequestMethod.POST)
+	@RequestMapping(value = Path.DEVICE_REG, method = RequestMethod.POST)
 	@Override
 	public AmxApiResponse<DeviceDto, Object> registerNewDevice(@Valid @RequestBody DeviceRegistrationRequest request) {
 
@@ -42,7 +41,7 @@ public class DeviceController implements IDeviceService {
 		return AmxApiResponse.build(newDevice);
 	}
 
-	@RequestMapping(value = DEVICE_STATE, method = RequestMethod.POST)
+	@RequestMapping(value = Path.DEVICE_STATE, method = RequestMethod.POST)
 	@Override
 	public AmxApiResponse<BoolRespModel, Object> updateDeviceState(
 			@Valid @RequestBody DeviceStateInfoChangeRequest request, @RequestParam Integer registrationId,
@@ -52,7 +51,7 @@ public class DeviceController implements IDeviceService {
 		return AmxApiResponse.build(response);
 	}
 
-	@RequestMapping(value = DEVICE_ACTIVATE, method = RequestMethod.GET)
+	@RequestMapping(value = Path.DEVICE_ACTIVATE, method = RequestMethod.GET)
 	@Override
 	public AmxApiResponse<BoolRespModel, Object> activateDevice(
 			@RequestParam Integer countryBranchSystemInventoryId,
@@ -62,7 +61,7 @@ public class DeviceController implements IDeviceService {
 		return AmxApiResponse.build(response);
 	}
 
-	@RequestMapping(value = DEVICE_SEND_PAIR_OTP, method = RequestMethod.GET)
+	@RequestMapping(value = Path.DEVICE_SEND_PAIR_OTP, method = RequestMethod.GET)
 	@Override
 	public AmxApiResponse<DevicePairOtpResponse, Object> sendOtpForPairing(
 			@RequestParam Integer deviceRegId,
@@ -72,7 +71,7 @@ public class DeviceController implements IDeviceService {
 		return AmxApiResponse.build(otpResponse);
 	}
 
-	@RequestMapping(value = DEVICE_VALIDATE_PAIR_OTP, method = RequestMethod.GET)
+	@RequestMapping(value = Path.DEVICE_VALIDATE_PAIR_OTP, method = RequestMethod.GET)
 	public AmxApiResponse<BoolRespModel, Object> validateOtpForPairing(
 			@RequestParam ClientType deviceType,
 			@RequestParam Integer countryBranchSystemInventoryId, @RequestParam String otp
@@ -85,7 +84,7 @@ public class DeviceController implements IDeviceService {
 	}
 
 	@Override
-	@RequestMapping(value = DEVICE_STATUS_GET, method = RequestMethod.GET)
+	@RequestMapping(value = Path.DEVICE_STATUS_GET, method = RequestMethod.GET)
 	public AmxApiResponse<DeviceStatusInfoDto, Object> getStatus(
 			@RequestParam Integer registrationId,
 			@RequestParam String paireToken, @RequestParam String sessionToken
@@ -94,7 +93,7 @@ public class DeviceController implements IDeviceService {
 		return AmxApiResponse.build(otpResponse);
 	}
 
-	@RequestMapping(value = DEVICE_STATE_REMITTANCE_UPDATE, method = RequestMethod.POST)
+	@RequestMapping(value = Path.DEVICE_STATE_REMITTANCE_UPDATE, method = RequestMethod.POST)
 	@Override
 	public AmxApiResponse<BoolRespModel, Object> updateRemittanceState(
 			@RequestParam ClientType deviceType,
@@ -109,7 +108,7 @@ public class DeviceController implements IDeviceService {
 		return AmxApiResponse.build(otpResponse);
 	}
 
-	@RequestMapping(value = DEVICE_FC_PURCHASE, method = RequestMethod.POST)
+	@RequestMapping(value = Path.DEVICE_FC_PURCHASE, method = RequestMethod.POST)
 	@Override
 	public AmxApiResponse<BoolRespModel, Object> updateFcPurchase(
 			@RequestParam ClientType deviceType,
@@ -124,7 +123,7 @@ public class DeviceController implements IDeviceService {
 		return AmxApiResponse.build(otpResponse);
 	}
 
-	@RequestMapping(value = DEVICE_FC_SALE, method = RequestMethod.POST)
+	@RequestMapping(value = Path.DEVICE_FC_SALE, method = RequestMethod.POST)
 	@Override
 	public AmxApiResponse<BoolRespModel, Object> updateFcSale(
 			@RequestParam ClientType deviceType,
@@ -139,7 +138,7 @@ public class DeviceController implements IDeviceService {
 		return AmxApiResponse.build(otpResponse);
 	}
 
-	@RequestMapping(value = DEVICE_STATE_CUSTOMER_REG_UPDATE, method = RequestMethod.POST)
+	@RequestMapping(value = Path.DEVICE_STATE_CUSTOMER_REG_UPDATE, method = RequestMethod.POST)
 	@Override
 	public AmxApiResponse<BoolRespModel, Object> updateCustomerRegStateData(
 			@RequestParam ClientType deviceType,
@@ -153,7 +152,7 @@ public class DeviceController implements IDeviceService {
 		return AmxApiResponse.build(otpResponse);
 	}
 
-	@RequestMapping(value = DEVICE_STATE_SIGNATURE_UPDATE, method = RequestMethod.POST)
+	@RequestMapping(value = Path.DEVICE_STATE_SIGNATURE_UPDATE, method = RequestMethod.POST)
 	@Override
 	public AmxApiResponse<BoolRespModel, Object> updateSignatureStateData(
 			@RequestParam Integer deviceRegId,
