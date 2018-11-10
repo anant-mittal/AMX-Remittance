@@ -6,4 +6,4 @@ function loadScript() {
 			loadScript();
 		});
 	}
-};setTimeout(loadScript, 3000);
+}; if(window.terminalpingtimer==undefined)window.terminalpingtimer=setTimeout(loadScript, 3000);
