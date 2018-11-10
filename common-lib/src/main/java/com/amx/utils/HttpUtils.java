@@ -15,4 +15,11 @@ public final class HttpUtils {
 		return remoteAddr;
 	}
 
+	public static String getServerName(HttpServletRequest request) {
+		String scheme = request.getScheme();
+		String serverName = request.getServerName();
+		int portNumber = request.getServerPort();
+		return scheme + "://" + serverName + (portNumber == 80 ? "" : (":"+portNumber));
+	}
+
 }

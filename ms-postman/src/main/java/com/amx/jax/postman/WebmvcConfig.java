@@ -103,7 +103,7 @@ public class WebmvcConfig extends WebMvcConfigurerAdapter {
 		theResourceTemplateResolver.setSuffix(".json");
 		theResourceTemplateResolver.setTemplateMode(TemplateMode.TEXT);
 		theResourceTemplateResolver.setCharacterEncoding("UTF-8");
-		theResourceTemplateResolver.setCacheable(false);
+		theResourceTemplateResolver.setCacheable(true);
 		theResourceTemplateResolver.setOrder(1);
 		return theResourceTemplateResolver;
 	}
@@ -119,7 +119,8 @@ public class WebmvcConfig extends WebMvcConfigurerAdapter {
 	 */
 	@Bean
 	public SpringTemplateEngine messageTemplateEngine(
-			final Collection<SpringResourceTemplateResolver> inTemplateResolvers) {
+			final Collection<SpringResourceTemplateResolver> inTemplateResolvers
+	) {
 		final SpringTemplateEngine theTemplateEngine = new SpringTemplateEngine();
 		for (SpringResourceTemplateResolver theTemplateResolver : inTemplateResolvers) {
 			theTemplateEngine.addTemplateResolver(theTemplateResolver);

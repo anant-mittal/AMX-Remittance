@@ -145,7 +145,7 @@ public class DeviceClient implements IDeviceService {
 	) {
 		try {
 			LOGGER.debug("in getFcPurchase");
-			String url = appConfig.getJaxURL() + Path.DEVICE_FC_PURCHASE;
+			String url = appConfig.getJaxURL() + Path.DEVICE_FC_PURCHASE_UPDATE;
 			return restService.ajax(url).queryParam(Params.TERMINAL_ID, countryBranchSystemInventoryId)
 					.queryParam(Params.DEVICE_TYPE, deviceType).queryParam(Params.EMPLOYEE_ID, employeeId)
 					.post(signaturePadPurchseInfo)
@@ -165,7 +165,7 @@ public class DeviceClient implements IDeviceService {
 	) {
 		try {
 			LOGGER.debug("in getFcSale");
-			String url = appConfig.getJaxURL() + Path.DEVICE_FC_SALE;
+			String url = appConfig.getJaxURL() + Path.DEVICE_FC_SALE_UPDATE;
 			return restService.ajax(url).queryParam(Params.TERMINAL_ID, countryBranchSystemInventoryId)
 					.queryParam(Params.DEVICE_TYPE, deviceType).queryParam(Params.EMPLOYEE_ID, employeeId)
 					.post(signaturePadSaleInfo)

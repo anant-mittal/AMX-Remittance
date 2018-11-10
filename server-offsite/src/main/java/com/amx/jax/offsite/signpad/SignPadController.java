@@ -2,24 +2,30 @@ package com.amx.jax.offsite.signpad;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.text.ParseException;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.api.FileSubmitRequestModel;
 import com.amx.jax.client.DeviceClient;
 import com.amx.jax.client.IDeviceService;
+import com.amx.jax.constants.DeviceStateDataType;
 import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.model.request.device.SignaturePadCustomerRegStateMetaInfo;
 import com.amx.jax.model.request.device.SignaturePadFCPurchaseSaleInfo;
@@ -32,11 +38,13 @@ import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.File.Type;
 import com.amx.jax.swagger.IStatusCodeListPlugin.ApiStatusService;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.HttpUtils;
+import com.amx.utils.Urly;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-@RestController
+@Controller
 @Api(value = "SignPad APIs")
 @ApiStatusService(IDeviceService.class)
 public class SignPadController {
@@ -48,6 +56,7 @@ public class SignPadController {
 	private DeviceRequest deviceRequestValidator;
 
 	@ApiDeviceHeaders
+	@ResponseBody
 	@RequestMapping(value = { SingPadConstants.Path.SIGNPAD_STATUS_ACTIVITY }, method = { RequestMethod.GET })
 	public AmxApiResponse<DeviceStatusInfoDto, Object> getStatus() {
 		deviceRequestValidator.validateRequest();
@@ -61,10 +70,27 @@ public class SignPadController {
 			/// data.getBranchPcLastLogoutTime()
 
 		}
-
 		return devResp;
 	}
 
+	@RequestMapping(
+			value = { SingPadConstants.Path.SIGNPAD_STATUS_PING }, method = { RequestMethod.GET }
+	)
+	public String getPing(
+			@RequestParam DeviceStateDataType state, @RequestParam String terminalId,
+			Model model, HttpServletResponse response, HttpServletRequest request
+	) throws MalformedURLException, URISyntaxException {
+		model.addAttribute(
+				"url", Urly.parse(
+						HttpUtils.getServerName(request)
+				).setPath(SingPadConstants.Path.SIGNPAD_STATUS_PING)
+						.addParameter("terminalId", terminalId)
+						.addParameter("state", state).getURL()
+		);
+		return "js/signpad";
+	}
+
+	@ResponseBody
 	@ApiOperation("To update the status of Remitance")
 	@RequestMapping(value = { SingPadConstants.Path.SIGNPAD_STATUS_REMIT }, method = { RequestMethod.POST })
 	public AmxApiResponse<BoolRespModel, Object> updateRemittanceState(
@@ -79,6 +105,7 @@ public class SignPadController {
 		);
 	}
 
+	@ResponseBody
 	@ApiOperation("To update the status of FC_PURCHASE")
 	@RequestMapping(value = { SingPadConstants.Path.SIGNPAD_STATUS_FCPURCHASE }, method = { RequestMethod.POST })
 	public AmxApiResponse<BoolRespModel, Object> updateFcPurchase(
@@ -93,6 +120,7 @@ public class SignPadController {
 		);
 	}
 
+	@ResponseBody
 	@ApiOperation("To update the status of FC_SALE")
 	@RequestMapping(value = { SingPadConstants.Path.SIGNPAD_STATUS_FCSALE }, method = { RequestMethod.POST })
 	public AmxApiResponse<BoolRespModel, Object> updateFcSale(
@@ -107,6 +135,7 @@ public class SignPadController {
 		);
 	}
 
+	@ResponseBody
 	@ApiOperation("To update the status of Customer Registration")
 	@RequestMapping(value = { SingPadConstants.Path.SIGNPAD_STATUS_CUST_REG }, method = { RequestMethod.POST })
 	public AmxApiResponse<BoolRespModel, Object> updateCustomerRegStateData(
@@ -121,6 +150,7 @@ public class SignPadController {
 		);
 	}
 
+	@ResponseBody
 	@ApiDeviceHeaders
 	@RequestMapping(value = SingPadConstants.Path.SIGNPAD_STATUS_SIGNATURE, method = { RequestMethod.POST })
 	public AmxApiResponse<BoolRespModel, Object> updateSignatureStateData(@RequestBody FileSubmitRequestModel file)
@@ -134,6 +164,7 @@ public class SignPadController {
 		);
 	}
 
+	@ResponseBody
 	@ApiDeviceHeaders
 	@RequestMapping(
 			value = SingPadConstants.Path.SIGNPAD_STATUS_SIGNATURE, method = { RequestMethod.GET,

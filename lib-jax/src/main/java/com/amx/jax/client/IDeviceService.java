@@ -32,9 +32,9 @@ public interface IDeviceService extends IJaxService {
 		public static final String DEVICE_STATE_REMITTANCE_UPDATE = PUBG + PREFIX + "/updatestateremittance";
 		public static final String DEVICE_STATE_CUSTOMER_REG_UPDATE = PUBG + PREFIX + "/updatestatecustreg";
 		public static final String DEVICE_STATE_FC_SALE_UPDATE = PUBG + PREFIX + "/updatestatefcsale";
-		public static final String DEVICE_STATE_SIGNATURE_UPDATE = PUBG + PREFIX + "/updatesignature";
-		public static final String DEVICE_FC_PURCHASE = PREFIX + "/fcpurchase";
-		public static final String DEVICE_FC_SALE = PREFIX + "/fcsale";
+		public static final String DEVICE_STATE_SIGNATURE_UPDATE = PREFIX + "/updatesignature";
+		public static final String DEVICE_FC_PURCHASE_UPDATE = PUBG + PREFIX + "/fcpurchase";
+		public static final String DEVICE_FC_SALE_UPDATE = PUBG + PREFIX + "/fcsale";
 		public static final String DEVICE_STATE = PREFIX + "/state";
 		public static final String DEVICE_REG = PREFIX + "/register";
 	}

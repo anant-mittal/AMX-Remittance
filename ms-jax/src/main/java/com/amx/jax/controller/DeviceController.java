@@ -107,7 +107,7 @@ public class DeviceController implements IDeviceService {
 		return AmxApiResponse.build(otpResponse);
 	}
 
-	@RequestMapping(value = Path.DEVICE_FC_PURCHASE, method = RequestMethod.POST)
+	@RequestMapping(value = Path.DEVICE_FC_PURCHASE_UPDATE, method = RequestMethod.POST)
 	@Override
 	public AmxApiResponse<BoolRespModel, Object> updateFcPurchase(
 			@RequestParam ClientType deviceType,
@@ -122,7 +122,7 @@ public class DeviceController implements IDeviceService {
 		return AmxApiResponse.build(otpResponse);
 	}
 
-	@RequestMapping(value = Path.DEVICE_FC_SALE, method = RequestMethod.POST)
+	@RequestMapping(value = Path.DEVICE_FC_SALE_UPDATE, method = RequestMethod.POST)
 	@Override
 	public AmxApiResponse<BoolRespModel, Object> updateFcSale(
 			@RequestParam ClientType deviceType,
