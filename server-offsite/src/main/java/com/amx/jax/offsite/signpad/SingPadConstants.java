@@ -3,7 +3,7 @@ package com.amx.jax.offsite.signpad;
 public class SingPadConstants {
 	public static class Path {
 		public static final String SIGNPAD_STATUS_ACTIVITY = "/pub/signpad/status/activity";
-		public static final String SIGNPAD_STATUS_PING = "/pub/signpad/status/ping.js";
+		public static final String SIGNPAD_STATUS_PING = "/pub/terminal/status.pong";
 		public static final String SIGNPAD_STATUS_REMIT = "/pub/signpad/status/remit";
 		public static final String SIGNPAD_STATUS_FCPURCHASE = "/pub/signpad/status/fcpurchase";
 		public static final String SIGNPAD_STATUS_FCSALE = "/pub/signpad/status/fcsale";
