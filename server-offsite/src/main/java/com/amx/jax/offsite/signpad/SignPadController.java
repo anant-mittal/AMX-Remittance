@@ -51,10 +51,18 @@ public class SignPadController {
 	@RequestMapping(value = { SingPadConstants.Path.SIGNPAD_STATUS_ACTIVITY }, method = { RequestMethod.GET })
 	public AmxApiResponse<DeviceStatusInfoDto, Object> getStatus() {
 		deviceRequestValidator.validateRequest();
-		return deviceClient.getStatus(
+		AmxApiResponse<DeviceStatusInfoDto, Object> devResp = deviceClient.getStatus(
 				ArgUtil.parseAsInteger(deviceRequestValidator.getDeviceRegId()),
 				deviceRequestValidator.getDeviceRegToken(), deviceRequestValidator.getDeviceSessionToken()
 		);
+
+		if (!ArgUtil.isEmpty(devResp) && !ArgUtil.isEmpty(devResp.getResult())) {
+			DeviceStatusInfoDto data = devResp.getResult();
+			/// data.getBranchPcLastLogoutTime()
+
+		}
+
+		return devResp;
 	}
 
 	@ApiOperation("To update the status of Remitance")
@@ -125,7 +133,7 @@ public class SignPadController {
 				ArgUtil.parseAsInteger(deviceRequestValidator.getDeviceRegId()), file.getData()
 		);
 	}
- 
+
 	@ApiDeviceHeaders
 	@RequestMapping(
 			value = SingPadConstants.Path.SIGNPAD_STATUS_SIGNATURE, method = { RequestMethod.GET,

@@ -12,6 +12,24 @@ public class DeviceRestModels {
 	public static class NetAddress {
 		String mac;
 		String localIp;
+		String hostName;
+		String userName;
+
+		public String getHostName() {
+			return hostName;
+		}
+
+		public void setHostName(String hostName) {
+			this.hostName = hostName;
+		}
+
+		public String getUserName() {
+			return userName;
+		}
+
+		public void setUserName(String userName) {
+			this.userName = userName;
+		}
 
 		public String getMac() {
 			return mac;
