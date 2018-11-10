@@ -22,20 +22,21 @@ public interface IDeviceService extends IJaxService {
 	public static class Path {
 
 		public static final String PREFIX = "/meta/device";
+		private static final String PUBG = "/pubg";
 
-		public static final String DEVICE_ACTIVATE = "/activate";
-		public static final String DEVICE_SEND_PAIR_OTP = "/sendpairotp";
-		public static final String DEVICE_VALIDATE_PAIR_OTP = "/validatepairotp";
-		public static final String DEVICE_STATE_UPDATE = "/updatedevicestate";
-		public static final String DEVICE_STATUS_GET = "/getdevicestatus";
-		public static final String DEVICE_STATE_REMITTANCE_UPDATE = "/updatestateremittance";
-		public static final String DEVICE_STATE_CUSTOMER_REG_UPDATE = "/updatestatecustreg";
-		public static final String DEVICE_STATE_FC_SALE_UPDATE = "/updatestatefcsale";
-		public static final String DEVICE_STATE_SIGNATURE_UPDATE = "/updatesignature";
-		public static final String DEVICE_FC_PURCHASE = "/fcpurchase";
-		public static final String DEVICE_FC_SALE = "/fcsale";
-		public static final String DEVICE_STATE = "/state";
-		public static final String DEVICE_REG = "/register";
+		public static final String DEVICE_ACTIVATE = PREFIX + "/activate";
+		public static final String DEVICE_SEND_PAIR_OTP = PREFIX + "/sendpairotp";
+		public static final String DEVICE_VALIDATE_PAIR_OTP = PUBG + PREFIX + "/validatepairotp";
+		public static final String DEVICE_STATE_UPDATE = PREFIX + "/updatedevicestate";
+		public static final String DEVICE_STATUS_GET = PREFIX + "/getdevicestatus";
+		public static final String DEVICE_STATE_REMITTANCE_UPDATE = PUBG + PREFIX + "/updatestateremittance";
+		public static final String DEVICE_STATE_CUSTOMER_REG_UPDATE = PUBG + PREFIX + "/updatestatecustreg";
+		public static final String DEVICE_STATE_FC_SALE_UPDATE = PUBG + PREFIX + "/updatestatefcsale";
+		public static final String DEVICE_STATE_SIGNATURE_UPDATE = PUBG + PREFIX + "/updatesignature";
+		public static final String DEVICE_FC_PURCHASE = PREFIX + "/fcpurchase";
+		public static final String DEVICE_FC_SALE = PREFIX + "/fcsale";
+		public static final String DEVICE_STATE = PREFIX + "/state";
+		public static final String DEVICE_REG = PREFIX + "/register";
 	}
 
 	public static class Params {

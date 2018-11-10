@@ -19,15 +19,12 @@ import com.amx.jax.interceptor.TenantInterceptor;
 @Configuration
 public class WebMvcConfig extends WebMvcConfigurerAdapter {
 
-	@Autowired
-	private AppRequestInterceptor appRequestInterceptor;
 
 	@Autowired
 	private TenantInterceptor tenantInterceptor;
 
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
-		registry.addInterceptor(appRequestInterceptor);
 		registry.addInterceptor(tenantInterceptor);
 	}
 

@@ -17,7 +17,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import com.amx.jax.dao.DocumentSerialityNumberDao;
 import com.amx.jax.dbmodel.meta.DocLocModel;
 import com.amx.jax.dict.Tenant;
-import com.amx.jax.multitenant.TenantContext;
+import com.amx.jax.scope.TenantContextHolder;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = JaxServiceApplication.class)
@@ -29,7 +29,8 @@ public class MetaServiceTest {
 
 	@Before
 	public void contextLoads() {
-		TenantContext.setCurrentTenant(Tenant.KWT.toString());
+		TenantContextHolder.setCurrent(Tenant.KWT);
+		//TenantContext.setCurrentTenant(Tenant.KWT.toString());
 	}
 
 	@Test

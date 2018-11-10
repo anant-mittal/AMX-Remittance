@@ -47,9 +47,6 @@ public class AppRequestFilter implements Filter {
 	@Autowired
 	AppConfig appConfig;
 
-	@Autowired
-	RestService restService;
-
 	private boolean doesTokenMatch(HttpServletRequest req, HttpServletResponse resp, String traceId) {
 		String authToken = req.getHeader(AppConstants.AUTH_KEY_XKEY);
 		if (StringUtils.isEmpty(authToken)
@@ -150,7 +147,6 @@ public class AppRequestFilter implements Filter {
 			}
 			try {
 				if (isRequestValid(reqType, req, resp, traceId)) {
-					restService.importMetaFromStatic(req);
 					chain.doFilter(request, new AppResponseWrapper(resp));
 				} else {
 					resp.setStatus(HttpServletResponse.SC_FORBIDDEN);

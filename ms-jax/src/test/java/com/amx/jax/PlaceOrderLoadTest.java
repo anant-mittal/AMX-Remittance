@@ -26,6 +26,7 @@ import com.amx.jax.dict.Tenant;
 import com.amx.jax.exrateservice.dao.PipsMasterDao;
 import com.amx.jax.multitenant.TenantContext;
 import com.amx.jax.prop.PlaceOrderProperties;
+import com.amx.jax.scope.TenantContextHolder;
 import com.amx.jax.services.BeneficiaryService;
 import com.amx.jax.services.PlaceOrderService;
 import com.amx.jax.util.PlaceOrderUtil;
@@ -49,12 +50,14 @@ public class PlaceOrderLoadTest {
 
 	@Before
 	public void contextLoads() {
-		TenantContext.setCurrentTenant(Tenant.KWT.toString());
+		TenantContextHolder.setCurrent(Tenant.KWT);
+		//TenantContext.setCurrentTenant(Tenant.KWT.toString());
 	}
 
 	@Test
 	public void loadTestPlaceOrder() {
-		TenantContext.setCurrentTenant(Tenant.KWT.toString());
+		TenantContextHolder.setCurrent(Tenant.KWT);
+		//TenantContext.setCurrentTenant(Tenant.KWT.toString());
 		logger.info("in loadTestPlaceOrder with params: ");
 		logger.info("currency id: " + placeOrderProperties.getCurrencyId());
 		logger.info("No of place orders: " + placeOrderProperties.getNoOfPlaceOrders());

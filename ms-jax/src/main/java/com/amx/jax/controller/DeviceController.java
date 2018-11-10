@@ -27,7 +27,6 @@ import com.amx.jax.model.response.DeviceStatusInfoDto;
 import com.amx.jax.services.DeviceService;
 
 @RestController
-@RequestMapping(IDeviceService.Path.PREFIX)
 public class DeviceController implements IDeviceService {
 
 	@Autowired

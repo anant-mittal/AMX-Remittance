@@ -3,8 +3,16 @@ package com.amx.jax.multitenant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.amx.jax.scope.TenantContextHolder;
+
+/**
+ * 
+ * @deprecated use {@link TenantContextHolder}
+ *
+ */
+@Deprecated
 public class TenantContext {
-	
+
 	private static Logger logger = LoggerFactory.getLogger(TenantContext.class.getName());
 
 	private static ThreadLocal<String> currentTenant = new ThreadLocal<>();
