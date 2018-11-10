@@ -1,9 +1,13 @@
 function loadScript() {
-	if(window.$ && window.$.getScript){
+	if (window.$ && window.$.getScript) {
 		$.getScript("[(${url})]").done(function(script, textStatus) {
-			loadScript();
+			clearTimeout(window.terminalpingtimer);
+			window.terminalpingtimer = setTimeout(loadScript, 3000);
 		}).fail(function(jqxhr, settings, exception) {
-			loadScript();
+			clearTimeout(window.terminalpingtimer);
+			window.terminalpingtimer = setTimeout(loadScript, 3000);
 		});
 	}
-}; if(window.terminalpingtimer==undefined)window.terminalpingtimer=setTimeout(loadScript, 3000);
+};
+if (window.terminalpingtimer == undefined)
+	window.terminalpingtimer = setTimeout(loadScript, 3000);
