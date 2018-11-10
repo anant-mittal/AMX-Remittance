@@ -19,7 +19,11 @@ public final class HttpUtils {
 		String scheme = request.getScheme();
 		String serverName = request.getServerName();
 		int portNumber = request.getServerPort();
-		return scheme + "://" + serverName + (portNumber == 80 ? "" : (":"+portNumber));
+		String portStr = "";
+		if (portNumber != 80 && portNumber != 443) {
+			portStr = ":" + portNumber;
+		}
+		return scheme + "://" + serverName + portStr;
 	}
 
 }
