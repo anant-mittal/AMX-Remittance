@@ -1,17 +1,13 @@
-package com.amx.jax.offsite.signpad;
+package com.amx.jax.offsite.terminal;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
-import java.text.ParseException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,7 +18,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
-import com.amx.jax.api.FileSubmitRequestModel;
 import com.amx.jax.client.DeviceClient;
 import com.amx.jax.client.IDeviceService;
 import com.amx.jax.constants.DeviceStateDataType;
@@ -30,14 +25,9 @@ import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.model.request.device.SignaturePadCustomerRegStateMetaInfo;
 import com.amx.jax.model.request.device.SignaturePadFCPurchaseSaleInfo;
 import com.amx.jax.model.request.device.SignaturePadRemittanceInfo;
-import com.amx.jax.model.response.DeviceStatusInfoDto;
-import com.amx.jax.offsite.device.ApiDeviceHeaders;
-import com.amx.jax.offsite.device.DeviceConfigs.DeviceData;
 import com.amx.jax.offsite.device.DeviceRequest;
-import com.amx.jax.postman.model.File;
-import com.amx.jax.postman.model.File.Type;
+import com.amx.jax.offsite.terminal.TerminalConstants.Path;
 import com.amx.jax.swagger.IStatusCodeListPlugin.ApiStatusService;
-import com.amx.utils.ArgUtil;
 import com.amx.utils.HttpUtils;
 import com.amx.utils.Urly;
 
@@ -45,9 +35,9 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 @Controller
-@Api(value = "SignPad APIs")
+@Api(value = "Terminal APIs")
 @ApiStatusService(IDeviceService.class)
-public class SignPadController {
+public class TerminalController {
 
 	@Autowired
 	private DeviceClient deviceClient;
@@ -55,35 +45,18 @@ public class SignPadController {
 	@Autowired
 	private DeviceRequest deviceRequestValidator;
 
-	@ApiDeviceHeaders
-	@ResponseBody
-	@RequestMapping(value = { SingPadConstants.Path.SIGNPAD_STATUS_ACTIVITY }, method = { RequestMethod.GET })
-	public AmxApiResponse<DeviceStatusInfoDto, Object> getStatus() {
-		deviceRequestValidator.validateRequest();
-		AmxApiResponse<DeviceStatusInfoDto, Object> devResp = deviceClient.getStatus(
-				ArgUtil.parseAsInteger(deviceRequestValidator.getDeviceRegId()),
-				deviceRequestValidator.getDeviceRegToken(), deviceRequestValidator.getDeviceSessionToken()
-		);
-
-		if (!ArgUtil.isEmpty(devResp) && !ArgUtil.isEmpty(devResp.getResult())) {
-			DeviceStatusInfoDto data = devResp.getResult();
-			/// data.getBranchPcLastLogoutTime()
-
-		}
-		return devResp;
-	}
-
 	@RequestMapping(
-			value = { SingPadConstants.Path.SIGNPAD_STATUS_PING }, method = { RequestMethod.GET }
+			value = { Path.TERMINAL_STATUS_PING }, method = { RequestMethod.GET }
 	)
 	public String getPing(
 			@RequestParam DeviceStateDataType state, @RequestParam String terminalId,
 			Model model, HttpServletResponse response, HttpServletRequest request
 	) throws MalformedURLException, URISyntaxException {
+
 		model.addAttribute(
 				"url", Urly.parse(
 						HttpUtils.getServerName(request)
-				).setPath(SingPadConstants.Path.SIGNPAD_STATUS_PING)
+				).setPath(Path.TERMINAL_STATUS_PING)
 						.addParameter("terminalId", terminalId)
 						.addParameter("state", state).getURL()
 		);
@@ -92,13 +65,14 @@ public class SignPadController {
 
 	@ResponseBody
 	@ApiOperation("To update the status of Remitance")
-	@RequestMapping(value = { SingPadConstants.Path.SIGNPAD_STATUS_REMIT }, method = { RequestMethod.POST })
+	@RequestMapping(value = { Path.TERMINAL_STATUS_REMIT }, method = { RequestMethod.POST })
 	public AmxApiResponse<BoolRespModel, Object> updateRemittanceState(
 			@RequestParam Integer countryBranchSystemInventoryId,
 			@RequestParam BigDecimal employeeId,
 			@RequestBody SignaturePadRemittanceInfo signaturePadRemittanceInfo
 	) {
 		deviceRequestValidator.validateRequest();
+
 		return deviceClient.updateRemittanceState(
 				ClientType.SIGNATURE_PAD, countryBranchSystemInventoryId,
 				signaturePadRemittanceInfo, employeeId
@@ -107,7 +81,7 @@ public class SignPadController {
 
 	@ResponseBody
 	@ApiOperation("To update the status of FC_PURCHASE")
-	@RequestMapping(value = { SingPadConstants.Path.SIGNPAD_STATUS_FCPURCHASE }, method = { RequestMethod.POST })
+	@RequestMapping(value = { Path.TERMINAL_STATUS_FCPURCHASE }, method = { RequestMethod.POST })
 	public AmxApiResponse<BoolRespModel, Object> updateFcPurchase(
 			@RequestParam Integer countryBranchSystemInventoryId,
 			@RequestParam BigDecimal employeeId,
@@ -122,7 +96,7 @@ public class SignPadController {
 
 	@ResponseBody
 	@ApiOperation("To update the status of FC_SALE")
-	@RequestMapping(value = { SingPadConstants.Path.SIGNPAD_STATUS_FCSALE }, method = { RequestMethod.POST })
+	@RequestMapping(value = { Path.TERMINAL_STATUS_FCSALE }, method = { RequestMethod.POST })
 	public AmxApiResponse<BoolRespModel, Object> updateFcSale(
 			@RequestParam Integer countryBranchSystemInventoryId,
 			@RequestParam BigDecimal employeeId,
@@ -137,7 +111,7 @@ public class SignPadController {
 
 	@ResponseBody
 	@ApiOperation("To update the status of Customer Registration")
-	@RequestMapping(value = { SingPadConstants.Path.SIGNPAD_STATUS_CUST_REG }, method = { RequestMethod.POST })
+	@RequestMapping(value = { Path.TERMINAL_STATUS_CUST_REG }, method = { RequestMethod.POST })
 	public AmxApiResponse<BoolRespModel, Object> updateCustomerRegStateData(
 			@RequestParam Integer countryBranchSystemInventoryId,
 			@RequestParam BigDecimal employeeId,
@@ -148,36 +122,6 @@ public class SignPadController {
 				ClientType.SIGNATURE_PAD, countryBranchSystemInventoryId,
 				signaturePadRemittanceInfo, employeeId
 		);
-	}
-
-	@ResponseBody
-	@ApiDeviceHeaders
-	@RequestMapping(value = SingPadConstants.Path.SIGNPAD_STATUS_SIGNATURE, method = { RequestMethod.POST })
-	public AmxApiResponse<BoolRespModel, Object> updateSignatureStateData(@RequestBody FileSubmitRequestModel file)
-			throws ParseException {
-		// DeviceData deviceData = deviceRequestValidator.getDeviceData();
-		DeviceData deviceData = deviceRequestValidator.validateRequest();
-		deviceData.setSignature(file);
-		deviceRequestValidator.save();
-		return deviceClient.updateSignatureStateData(
-				ArgUtil.parseAsInteger(deviceRequestValidator.getDeviceRegId()), file.getData()
-		);
-	}
-
-	@ResponseBody
-	@ApiDeviceHeaders
-	@RequestMapping(
-			value = SingPadConstants.Path.SIGNPAD_STATUS_SIGNATURE, method = { RequestMethod.GET,
-			}, produces = MediaType.IMAGE_PNG_VALUE
-	)
-	public ResponseEntity<byte[]> getSignatureStateData(HttpServletResponse response)
-			throws ParseException, IOException {
-		DeviceData deviceData = deviceRequestValidator.getDeviceData();
-		String sourceData = deviceData.getSignature().getData();
-		File file = File.fromBase64(sourceData, Type.PNG);
-		file.setName(deviceData.getSignature().getName());
-		return ResponseEntity.ok().contentLength(file.getBody().length)
-				.contentType(MediaType.valueOf(file.getType().getContentType())).body(file.getBody());
 	}
 
 }
