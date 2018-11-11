@@ -1,27 +1,17 @@
 package com.amx.jax.services;
 
+/**
+ * @author rabil
+ * Date : 03/11/2018
+ *
+ */
+
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+import org.apache.commons.beanutils.BeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,11 +26,10 @@ import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.meta.model.FxExchangeRateDto;
 import com.amx.amxlib.meta.model.SourceOfIncomeDto;
 import com.amx.amxlib.model.PurposeOfTransactionDto;
-import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
+import com.amx.amxlib.model.request.FcSaleOrderTransactionRequestModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.FcSaleOrderApplicationResponseModel;
 import com.amx.amxlib.model.response.FcSaleOrderDefaultResponseModel;
-import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.FcSaleExchangeRateDao;
@@ -50,19 +39,12 @@ import com.amx.jax.dbmodel.ParameterDetails;
 import com.amx.jax.dbmodel.PurposeOfTransaction;
 import com.amx.jax.dbmodel.SourceOfIncomeView;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.manager.FcSaleApplicationTransactionManager;
 import com.amx.jax.manager.FcSaleOrderTransactionManager;
 import com.amx.jax.repository.ICurrencyDao;
 import com.amx.jax.repository.IPurposeOfTrnxDao;
 import com.amx.jax.repository.ISourceOfIncomeDao;
 
-import org.apache.commons.beanutils.BeanUtils;
-import org.hibernate.mapping.DenormalizedTable;
-/**
- * 
- * @author rabil
- * Date : 03/11/2018
- *
- */
 
 
 
@@ -87,6 +69,9 @@ public class FcSaleService extends AbstractService{
 	
 	@Autowired
 	ISourceOfIncomeDao sourceOfIncomeDao;
+	
+	@Autowired
+	FcSaleApplicationTransactionManager applTrnxManager;
 	
 
 	
@@ -193,7 +178,6 @@ public class FcSaleService extends AbstractService{
 			responseModel.setSourcOfIncomeList(convertSourceOfIncome(sourceOfIncomeList));
 		}
 		
-		
 		response.getData().getValues().add(responseModel);
 		response.setResponseStatus(ResponseStatus.OK);
 		response.getData().setType(responseModel.getModelType());
@@ -201,6 +185,19 @@ public class FcSaleService extends AbstractService{
 	}
 	
 	
+	
+	/**
+	 * To save Application
+	 */
+	
+	public ApiResponse saveApplication(FcSaleOrderTransactionRequestModel fcSalerequestModel){
+		ApiResponse response = getBlackApiResponse();
+		FcSaleOrderApplicationResponseModel fcSaleAppResponseModel =  applTrnxManager.saveApplication(fcSalerequestModel);
+		response.getData().getValues().add(fcSaleAppResponseModel);
+		response.setResponseStatus(ResponseStatus.OK);
+		response.getData().setType(fcSaleAppResponseModel.getModelType());
+		return response;
+	}
 	
 	
 	
@@ -243,8 +240,6 @@ public class FcSaleService extends AbstractService{
 		}
 		return dto;
 	}
-
-	
 	private List<FxExchangeRateDto> convertExchangeRateModelToDto(List<FxExchangeRateView> fxSaleRateList ){
 		List<FxExchangeRateDto> output = new ArrayList<>();
 		fxSaleRateList.forEach(exchnage -> output.add(convertExchangeModel(exchnage)));
@@ -262,7 +257,6 @@ public class FcSaleService extends AbstractService{
 		return dto;
 	}
 	
-	
 	public List<CurrencyDenominationTypeDto> convertCurrDenoType(List<ParameterDetails> denominationTypeList){
 		List<CurrencyDenominationTypeDto> dto = new ArrayList<>();
 		for(ParameterDetails pdetails: denominationTypeList){
@@ -273,9 +267,6 @@ public class FcSaleService extends AbstractService{
 		
 		return dto;
 	}
-	
-	
-	
 	public List<SourceOfIncomeDto> convertSourceOfIncome(List<SourceOfIncomeView> sourceOfIncomeList) {
 		List<SourceOfIncomeDto> list = new ArrayList<>();
 		for (SourceOfIncomeView model : sourceOfIncomeList) {

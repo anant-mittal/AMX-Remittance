@@ -9,8 +9,10 @@ import org.springframework.stereotype.Component;
 
 import com.amx.jax.dbmodel.FxExchangeRateView;
 import com.amx.jax.dbmodel.ParameterDetails;
+import com.amx.jax.dbmodel.ShoppingCartDetails;
 import com.amx.jax.repository.FcSaleExchangeRateRepository;
 import com.amx.jax.repository.ParameterDetailsRespository;
+import com.amx.jax.repository.ShoppingCartRepository;
 
 
 @Component
@@ -22,6 +24,8 @@ public class FcSaleExchangeRateDao {
 	@Autowired
 	ParameterDetailsRespository parameterDetailsRespository;
 	
+	@Autowired
+	ShoppingCartRepository shoppingCartRepository;
 	
 	public List<FxExchangeRateView> getFcSaleExchangeRate(BigDecimal applicationCountryId,BigDecimal countryBranchId,BigDecimal fxCurrencyId){
 		return fcSaleExchangeRateRepository.findByApplicationCountryIdAndCountryBranchIdAndFxCurrencyId(applicationCountryId, countryBranchId, fxCurrencyId);
@@ -33,4 +37,7 @@ public class FcSaleExchangeRateDao {
 	}
 	
 
+	public List<ShoppingCartDetails> getShoppingCartDetails(BigDecimal applicationcountryId,BigDecimal companyId,BigDecimal customerId){
+		return shoppingCartRepository.findByApplicationCountryIdAndCompanyIdAndCustomerId(applicationcountryId,companyId,customerId);
+	}
 }

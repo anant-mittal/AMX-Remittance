@@ -7,25 +7,24 @@ package com.amx.jax.controller;
 import static com.amx.amxlib.constant.ApiEndpoint.FC_SALE_ENDPOINT;
 
 import java.math.BigDecimal;
-import java.util.List;
+
+import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.amx.amxlib.meta.model.CurrencyMasterDTO;
-import com.amx.amxlib.model.PurposeOfTransactionDto;
+import com.amx.amxlib.model.request.FcSaleOrderTransactionRequestModel;
 import com.amx.amxlib.model.response.ApiResponse;
-import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.constant.JaxEvent;
 import com.amx.jax.meta.MetaData;
-import com.amx.jax.model.response.DevicePairOtpResponse;
 import com.amx.jax.services.FcSaleService;
+import com.amx.jax.util.JaxContextUtil;
 
 @RestController
 @RequestMapping(FC_SALE_ENDPOINT)
@@ -92,6 +91,21 @@ public class FcSaleOrderController {
 		ApiResponse response = fcSaleService.getDefaultFsSale(applicationCountryId,countryBranchId,languageId);
 		return response;
 	}
+	
+	
+
+	
+	
+	@RequestMapping(value = "/fcsale-save-application/", method = RequestMethod.POST)
+	public ApiResponse saveApplication(@RequestBody @Valid FcSaleOrderTransactionRequestModel model) {
+		JaxContextUtil.setJaxEvent(JaxEvent.CREATE_APPLICATION);
+		JaxContextUtil.setRequestModel(model);
+		logger.info("In Fc Sale Save-Application with parameters" + model.toString());
+		ApiResponse response = fcSaleService.saveApplication(model);
+		return response;
+	}
+	
+	
 	
 	
 }
