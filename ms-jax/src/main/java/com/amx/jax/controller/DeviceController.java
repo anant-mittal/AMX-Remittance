@@ -37,6 +37,8 @@ public class DeviceController implements IDeviceService {
 
 	@Autowired
 	DeviceService deviceService;
+	
+	Logger logger = LoggerFactory.getLogger(getClass());
 
 	@RequestMapping(value = Path.DEVICE_REG, method = RequestMethod.POST)
 	@Override
