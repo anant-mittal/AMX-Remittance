@@ -141,8 +141,9 @@ public class RemittanceTransactionService extends AbstractService {
 		return response;
 	}
 	
-	public ApiResponse calcEquivalentAmount(@RequestBody RemittanceTransactionRequestModel model) {
-		ApiResponse response = getBlackApiResponse();
+	@SuppressWarnings("unchecked")
+	public ApiResponse<RemittanceTransactionResponsetModel> calcEquivalentAmount(@RequestBody RemittanceTransactionRequestModel model) {
+		ApiResponse<RemittanceTransactionResponsetModel> response = getBlackApiResponse();
 		RemittanceTransactionResponsetModel respModel = remittanceTxnManger.validateTransactionData(model);
 		BigDecimal fcCurrencyId = beneficiaryService.getBeneByIdNo(model.getBeneId()).getCurrencyId();
 		BigDecimal fcDecimalNumber = currencyMasterService.getCurrencyMasterById(fcCurrencyId).getDecinalNumber();
