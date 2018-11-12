@@ -31,7 +31,7 @@ public abstract class AbstractJaxServiceClient {
 	@Autowired
 	protected AppConfig appConfig;
 
-	@Autowired
+	@Autowired(required = false)
 	protected RestMetaRequestOutFilter<JaxMetaInfo> metaFilter;
 
 	public String getBaseUrl() {

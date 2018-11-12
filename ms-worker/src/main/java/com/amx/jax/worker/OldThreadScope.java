@@ -6,7 +6,7 @@ import java.util.Map;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.config.Scope;
 
-public class ThreadScope implements Scope {
+public class OldThreadScope implements Scope {
 	private final ThreadLocal threadScope = new ThreadLocal() {
 		protected Object initialValue() {
 			return new HashMap();

@@ -20,12 +20,12 @@ public class ContactCleanerService {
 	Map<String, String> mapMobiles = new HashMap<String, String>();
 	Map<String, String> mapWhatsApp = new HashMap<String, String>();
 
-	public ContactCleanerService(@Value("${app.test.email}") List<String> appTestEmails,
-			@Value("${app.test.mobile}") List<String> appTestMobile,
-			@Value("${app.test.whatsapp}") List<String> appTestWhatsApp) {
+	public ContactCleanerService(@Value("${app.test.email}") String[] appTestEmails,
+			@Value("${app.test.mobile}") String[] appTestMobile,
+			@Value("${app.test.whatsapp}") String[] appTestWhatsApp) {
 		totaltEmails = 0;
-		for (int e = 0; e < appTestEmails.size(); e++) {
-			String emailId = appTestEmails.get(e);
+		for (int e = 0; e < appTestEmails.length; e++) {
+			String emailId = appTestEmails[e];
 			if (!ArgUtil.isEmpty(emailId)) {
 				mapEmails.put(String.valueOf(totaltEmails), emailId);
 				mapEmails.put(emailId, emailId);
@@ -33,8 +33,8 @@ public class ContactCleanerService {
 			}
 		}
 		totaltMobiles = 0;
-		for (int m = 0; m < appTestMobile.size(); m++) {
-			String mobileId = appTestMobile.get(m);
+		for (int m = 0; m < appTestMobile.length; m++) {
+			String mobileId = appTestMobile[m];
 			if (!ArgUtil.isEmpty(mobileId)) {
 				mapMobiles.put(String.valueOf(totaltMobiles), mobileId);
 				mapMobiles.put(mobileId, mobileId);
@@ -42,8 +42,8 @@ public class ContactCleanerService {
 			}
 		}
 		totaltWhatsApp = 0;
-		for (int w = 0; w < appTestWhatsApp.size(); w++) {
-			String waId = appTestWhatsApp.get(w);
+		for (int w = 0; w < appTestWhatsApp.length; w++) {
+			String waId = appTestWhatsApp[w];
 			if (!ArgUtil.isEmpty(waId)) {
 				mapWhatsApp.put(String.valueOf(totaltWhatsApp), waId);
 				mapWhatsApp.put(waId, waId);
@@ -86,8 +86,9 @@ public class ContactCleanerService {
 	}
 
 	public String[] getEmail(List<String> tos) {
-		String[] array = new String[tos.size()];
-		for (int i = 0; i < array.length; i++) {
+		int length = tos.size();
+		String[] array = new String[length];
+		for (int i = 0; i < length; i++) {
 			array[i] = getEmail(tos.get(i));
 		}
 		return array;
