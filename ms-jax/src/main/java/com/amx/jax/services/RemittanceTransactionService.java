@@ -141,19 +141,21 @@ public class RemittanceTransactionService extends AbstractService {
 		return response;
 	}
 	
-	public ApiResponse calcEquivalentAmount(@RequestBody RemittanceTransactionRequestModel model) {
-		ApiResponse response = getBlackApiResponse();
+	@SuppressWarnings("unchecked")
+	public ApiResponse<RemittanceTransactionResponsetModel> calcEquivalentAmount(
+			@RequestBody RemittanceTransactionRequestModel model) {
+		ApiResponse<RemittanceTransactionResponsetModel> response = getBlackApiResponse();
 		RemittanceTransactionResponsetModel respModel = remittanceTxnManger.validateTransactionData(model);
 		BigDecimal fcCurrencyId = beneficiaryService.getBeneByIdNo(model.getBeneId()).getCurrencyId();
 		BigDecimal fcDecimalNumber = currencyMasterService.getCurrencyMasterById(fcCurrencyId).getDecinalNumber();
-
-		if (model.getDomXRate() != null) {
-			ExchangeRateBreakup exRateBreakup = newExchangeRateService.calcEquivalentAmount(model,
-					fcDecimalNumber.intValue());
-			exRateBreakup.setFcDecimalNumber(respModel.getExRateBreakup().getFcDecimalNumber());
-			exRateBreakup.setLcDecimalNumber(respModel.getExRateBreakup().getLcDecimalNumber());
-			respModel.setExRateBreakup(exRateBreakup);
+		if (model.getDomXRate() == null) {
+			model.setDomXRate(respModel.getExRateBreakup().getRate());
 		}
+		ExchangeRateBreakup exRateBreakup = newExchangeRateService.calcEquivalentAmount(model,
+				fcDecimalNumber.intValue());
+		exRateBreakup.setFcDecimalNumber(respModel.getExRateBreakup().getFcDecimalNumber());
+		exRateBreakup.setLcDecimalNumber(respModel.getExRateBreakup().getLcDecimalNumber());
+		respModel.setExRateBreakup(exRateBreakup);
 		response.getData().getValues().add(respModel);
 		response.setResponseStatus(ResponseStatus.OK);
 		response.getData().setType(respModel.getModelType());
