@@ -32,7 +32,6 @@ import com.amx.jax.model.response.DeviceStatusInfoDto;
 import com.amx.jax.services.DeviceService;
 
 @RestController
-@RequestMapping(MetaApi.PREFIX + "/device")
 public class DeviceController implements IDeviceService {
 
 	@Autowired
