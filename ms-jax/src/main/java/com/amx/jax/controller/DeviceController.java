@@ -4,18 +4,23 @@ import java.math.BigDecimal;
 
 import javax.validation.Valid;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.amxlib.constant.ApiEndpoint.MetaApi;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.IDeviceService;
 import com.amx.jax.constants.DeviceStateDataType;
 import com.amx.jax.dict.UserClient.ClientType;
+import com.amx.jax.dict.UserClient.DeviceType;
 import com.amx.jax.model.request.DeviceRegistrationRequest;
 import com.amx.jax.model.request.DeviceStateInfoChangeRequest;
 import com.amx.jax.model.request.device.SignaturePadCustomerRegStateMetaInfo;
@@ -27,6 +32,7 @@ import com.amx.jax.model.response.DeviceStatusInfoDto;
 import com.amx.jax.services.DeviceService;
 
 @RestController
+@RequestMapping(MetaApi.PREFIX + "/device")
 public class DeviceController implements IDeviceService {
 
 	@Autowired
@@ -88,6 +94,8 @@ public class DeviceController implements IDeviceService {
 			@RequestParam Integer registrationId,
 			@RequestParam String paireToken, @RequestParam String sessionToken
 	) {
+	logger.debug("in get Device status api with params reg id:  {} , pairetoken: {} , sessionToken: {}",
+				registrationId, paireToken, sessionToken);
 		DeviceStatusInfoDto otpResponse = deviceService.getStatus(registrationId, paireToken, sessionToken);
 		return AmxApiResponse.build(otpResponse);
 	}

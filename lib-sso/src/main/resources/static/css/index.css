@@ -1,0 +1,270 @@
+@import url('https://fonts.googleapis.com/css?family=Open+Sans:400,700');
+
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	list-style: none;
+	font-family: 'Open Sans', sans-serif;
+}
+
+input[type="text"] {
+	/* Rectangle 6: */
+	background: #FFFFFF;
+	border: 1px solid #C9C9C9;
+	border-radius: 4px;
+	height: 40px;
+	line-height: 40px;
+	width: 100%;
+	padding-left: 10px;
+	font-size: 14px;
+}
+
+input[readonly] {
+	background: #F1F1F1
+}
+
+.radio {
+	display: inline-block;
+	position: relative;
+	width: 20px;
+	height: 20px;
+}
+
+input.invalid {
+	border-color: #e29a9a
+}
+
+.radio span {
+	border-radius: 100%;
+	width: 100%;
+	height: 100%;
+	transition: all 0.2s;
+	background: #D8D8D8;
+	border: 2px solid #D8D8D8;
+	display: inline-block;
+	position: absolute;
+	left: 0;
+	top: 0;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+.radio span:after {
+	content: "";
+	border-radius: 100%;
+	display: block;
+	width: calc(100% - 4px);
+	height: calc(100% - 4px);
+	transition: all 0.2s;
+	position: absolute;
+	left: 2px;
+	top: 2px;
+	transform: scale(0);
+	background: #33bb55;
+}
+
+.radio [type=radio] {
+	visibility: hidden;
+	position: absolute;
+}
+
+.radio [type=radio]:checked+span {
+	cursor: default;
+}
+
+.radio [type=radio]:checked+span:after {
+	transform: scale(1);
+}
+
+.button, .button.inline {
+	border-radius: 96px;
+	height: 43px;
+	line-height: 43px;
+	text-align: center;
+	padding: 0 10px;
+	font-size: 16px;
+	font-weight: 700;
+	cursor: pointer;
+}
+
+.button, .button.inline:hover {
+	background: #01B849;
+	color: #fff;
+}
+
+.button.inline, .button:hover {
+	border: 1px solid #01B849;
+	border-radius: 96px;
+	background: transparent;
+	color: #000;
+}
+
+.button.small {
+	height: 24px;
+	line-height: 24px;
+	display: inline-block;
+	font-size: 12px;
+	font-weight: normal;
+}
+
+header {
+	height: 62px;
+	background: #FFFFFF;
+	box-shadow: 8px 0 7px -3px rgba(0, 0, 0, 0.50);
+	padding: 9px 11px;
+}
+
+.login-form {
+	display: flex;
+	flex-wrap: wrap;
+	flex-direction: row;
+	justify-content: flex-start;
+	align-items: stretch;
+	max-width: 1260px;
+	margin: 0 auto;
+	padding: 60px;
+}
+
+.left-panel {
+	order: 1;
+	flex-basis: 100%;
+	border-right: 1px dotted #C9C9C9;
+}
+
+.left-panel .tip-list li .img-wrapper{
+	width: 44px;	
+	display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.right-panel {
+	order: 1;
+	flex-basis: 100%;
+}
+
+@media screen and (min-width:600px) {
+	.login-form {
+		flex-wrap: nowrap;
+	}
+	.left-panel {
+		flex-basis: 1;
+		order: 1;
+	}
+	.right-panel {
+		flex-basis: 1;
+		order: 2;
+	}
+}
+
+h4 {
+	font-size: 16px;
+	color: #000;
+	font-weight: 700;
+	padding-bottom: 30px;
+}
+
+.left-panel li {
+	padding-bottom: 30px;
+	font-size: 14px;
+	display: flex;
+	flex-wrap: wrap;
+	flex-direction: row;
+	justify-content: flex-start;
+	align-items: stretch;
+}
+
+.left-panel li svg {
+	flex-basis: 50px;
+}
+
+.left-panel li span {
+	padding-left: 20px;
+}
+
+.right-panel {
+	padding: 0 0 0 60px;
+	font-size: 14px;
+}
+
+.form-row {
+	padding-bottom: 15px;
+	display: flex;
+	flex-wrap: nowrap;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: stretch;
+	min-height: 50px;
+}
+
+.form-row .form-col>label {
+	padding: 0 0 10px;
+	display: block;
+	font-weight: 700;
+}
+
+.form-row.two-col .form-col {
+	flex-basis: 49%;
+}
+
+.form-row .form-col {
+	flex-basis: 100%;
+}
+
+.form-row .radio {
+	top: 3px;
+	margin-right: 5px;
+}
+
+.send-otp {
+	text-align: right;
+	padding: 5px;
+}
+
+.button-wrapper {
+	padding-top: 10px;
+}
+
+.t-a-r {
+	text-align: right;
+}
+
+.disabled {
+	opacity: 0.14
+}
+
+.error-wrapper {
+	position: relative;
+	z-index: 1;
+}
+
+.error-message {
+	position: absolute;
+	padding: 15px;
+	margin: 1em 0 3em;
+	color: #000;
+	top: 0px;
+	background: #ffe7e7;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+	min-width: 100px;
+	z-index: 10;
+	display: none;
+}
+
+.error-message:after {
+	content: "";
+	position: absolute;
+	border-style: solid;
+	display: block;
+	width: 0;
+	top: -10px;
+	left: 50px;
+	bottom: auto;
+	left: auto;
+	border-width: 0 15px 15px;
+	border-color: #ffe7e7 transparent;
+}
