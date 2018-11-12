@@ -1,10 +1,10 @@
-package com.amx.jax.tpc.models;
+package com.amx.jax.proto.tpc.models;
 
 import java.math.BigDecimal;
 
 import io.swagger.annotations.ApiModelProperty;
 
-public class ModelCustomerBene {
+public class CustomerBeneDTO {
 
 	@ApiModelProperty(example = "1234")
 	public BigDecimal id;

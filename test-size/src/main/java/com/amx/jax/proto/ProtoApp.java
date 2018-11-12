@@ -1,4 +1,4 @@
-package com.amx.jax.adapter;
+package com.amx.jax.proto;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -14,23 +14,14 @@ import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
 @ComponentScan(value = "com.amx.jax")
-@EnableAutoConfiguration(exclude = { DataSourceAutoConfiguration.class
-
-		, JmxAutoConfiguration.class
-
-		, WebSocketAutoConfiguration.class
-
-		, SitePreferenceAutoConfiguration.class
-
-		, SpringApplicationAdminJmxAutoConfiguration.class
-
-		, ValidationAutoConfiguration.class
-
+@EnableAutoConfiguration(exclude = { DataSourceAutoConfiguration.class, JmxAutoConfiguration.class,
+		WebSocketAutoConfiguration.class, SitePreferenceAutoConfiguration.class,
+		SpringApplicationAdminJmxAutoConfiguration.class, ValidationAutoConfiguration.class
 })
-public class SWAdapterLauncher {
+public class ProtoApp {
 
 	public static void main(String[] args) throws Exception {
-		ConfigurableApplicationContext ctx = new SpringApplicationBuilder(SWAdapterLauncher.class).headless(false)
+		ConfigurableApplicationContext ctx = new SpringApplicationBuilder(ProtoApp.class)
 				.run(args);
 
 	}
