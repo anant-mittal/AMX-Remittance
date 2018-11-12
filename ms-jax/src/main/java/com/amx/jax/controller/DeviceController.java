@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 
 import javax.validation.Valid;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -35,6 +37,7 @@ public class DeviceController implements IDeviceService {
 
 	@Autowired
 	DeviceService deviceService;
+	Logger logger = LoggerFactory.getLogger(getClass());
 
 	@RequestMapping(value = DEVICE_REG, method = RequestMethod.POST)
 	@Override
@@ -81,6 +84,8 @@ public class DeviceController implements IDeviceService {
 	@RequestMapping(value = DEVICE_STATUS_GET, method = RequestMethod.GET)
 	public AmxApiResponse<DeviceStatusInfoDto, Object> getStatus(@RequestHeader Integer registrationId,
 			@RequestHeader String paireToken, @RequestHeader String sessionToken) {
+		logger.debug("in get Device status api with params reg id:  {} , pairetoken: {} , sessionToken: {}",
+				registrationId, paireToken, sessionToken);
 		DeviceStatusInfoDto otpResponse = deviceService.getStatus(registrationId, paireToken, sessionToken);
 		return AmxApiResponse.build(otpResponse);
 	}
