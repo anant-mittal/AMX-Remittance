@@ -30,8 +30,11 @@ public class TPCStatus extends IStatusCodeListPlugin<TPCServerCodes, ApiTPCStatu
 	public static enum TPCServerCodes
 			implements
 			IExceptionEnum {
-		INVALID_CLIENT_AUTH, INVALID_CUSTOMER_AUTH,
-		INVALID_CUSTOMER_TOKEN, CUSTOMER_AUTH_SUCCESS,
+		INVALID_CLIENT_CREDS,
+		INVALID_SESSION_TOKEN,
+		INVALID_CUSTOMER_TOKEN,
+
+		NO_DATA_FOUND,
 		UNKNOWN_ERROR;
 
 		@Override

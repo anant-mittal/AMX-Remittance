@@ -32,55 +32,66 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 @RestController
-@Api(value = "Third Party Client APIs")
+@Api(value = "Third Party Client APIs",
+	tags = "Tags : List of APIs to communicate with AMX Service")
 @RequestMapping(produces = {
-		CommonMediaType.APPLICATION_JSON_VALUE, CommonMediaType.APPLICATION_V0_JSON_VALUE })
+		CommonMediaType.APPLICATION_JSON_VALUE })
 public class TPCApiController {
 
 	@ApiOperation(value = "Client Authentication")
+	@ApiTPCStatus({ TPCServerCodes.INVALID_CLIENT_CREDS })
 	@RequestMapping(value = { TPCApiConstants.Path.CLIENT_AUTH }, method = { RequestMethod.POST })
 	public ApiMetaResponse<ClientAuthResponse> auth(@RequestBody ClientAuthRequest authRequest) {
 		return AmxApiResponse.buildMeta(new ClientAuthResponse());
 	}
 
 	@ApiOperation(
-		value = "Client is required to call this api to inititate customer login and redirect customer to url received in response")
+		value = "Customer Authentication",
+		notes = "Client is required to call this api to inititate customer login and redirect customer to url received in response")
+	@ApiTPCStatus({ TPCServerCodes.INVALID_SESSION_TOKEN })
 	@TPCApiClientHeaders
 	@RequestMapping(value = { TPCApiConstants.Path.CUSTOMER_LOGIN }, method = { RequestMethod.GET })
 	public ApiMetaResponse<CustomerAuthResponse> customerLogin(@RequestBody CustomerAuthRequest auth) {
 		return AmxApiResponse.buildMeta(new CustomerAuthResponse());
 	}
 
-	@ApiOperation(value = "To fetch customer details and defaults")
+	@ApiOperation(value = "Customer Defaults", notes = "To fetch customer details and defaults")
+	@ApiTPCStatus({ TPCServerCodes.INVALID_SESSION_TOKEN, TPCServerCodes.INVALID_CUSTOMER_TOKEN })
 	@TPCApiCustomerHeaders
-	@ApiTPCStatus({ TPCServerCodes.INVALID_CUSTOMER_TOKEN, TPCServerCodes.CUSTOMER_AUTH_SUCCESS })
 	@RequestMapping(value = { TPCApiConstants.Path.CUSTOMER_DETAILS }, method = { RequestMethod.GET })
 	public ApiMetaResponse<CustomerDetails> customerDetails() {
 		return AmxApiResponse.buildMeta(new CustomerDetails());
 	}
 
-	@ApiOperation(value = "To fetch list of beneficaries for customer")
+	@ApiOperation(value = "Beneficiary List", notes = "To fetch list of beneficaries for customer")
+	@ApiTPCStatus({ TPCServerCodes.INVALID_SESSION_TOKEN, TPCServerCodes.INVALID_CUSTOMER_TOKEN,
+			TPCServerCodes.NO_DATA_FOUND })
 	@TPCApiCustomerHeaders
 	@RequestMapping(value = { TPCApiConstants.Path.CUSTOMER_BENE_LIST }, method = { RequestMethod.GET })
 	public ApiResultsResponse<CustomerBeneDTO> fetchBeneficiaryList() {
 		return AmxApiResponse.build(new CustomerBeneDTO());
 	}
 
-	@ApiOperation(value = "To fetch list of applicable sources of income")
+	@ApiOperation(value = "Income Sources List", notes = "To fetch list of applicable sources of income")
+	@ApiTPCStatus({ TPCServerCodes.INVALID_SESSION_TOKEN, TPCServerCodes.INVALID_CUSTOMER_TOKEN,
+			TPCServerCodes.NO_DATA_FOUND })
 	@TPCApiCustomerHeaders
 	@RequestMapping(value = { TPCApiConstants.Path.CUSTOMER_SOURCE_LIST }, method = { RequestMethod.GET })
 	public ApiResultsResponse<SourceOfFundDTO> fetchFundSourceList() {
 		return AmxApiResponse.build(new SourceOfFundDTO());
 	}
 
-	@ApiOperation(value = "To fetch list of applicable purpose of transaction")
+	@ApiOperation(value = "Purpose Trnx List", notes = "To fetch list of applicable purpose of transaction")
+	@ApiTPCStatus({ TPCServerCodes.INVALID_CUSTOMER_TOKEN, TPCServerCodes.INVALID_SESSION_TOKEN,
+			TPCServerCodes.NO_DATA_FOUND })
 	@TPCApiCustomerHeaders
 	@RequestMapping(value = { TPCApiConstants.Path.CUSTOMER_PURPOSE_LIST }, method = { RequestMethod.GET })
 	public ApiResultsResponse<PurposeOfTrnxDTO> fetchPurposeList() {
 		return AmxApiResponse.build(new PurposeOfTrnxDTO());
 	}
 
-	@ApiOperation(value = "To fetch the exchange rate for inputs provided")
+	@ApiOperation(value = "Remitence Inquiry", notes = "To fetch the exchange rate for inputs provided")
+	@ApiTPCStatus({ TPCServerCodes.INVALID_CUSTOMER_TOKEN, TPCServerCodes.INVALID_SESSION_TOKEN })
 	@TPCApiCustomerHeaders
 	@RequestMapping(value = { TPCApiConstants.Path.CUSTOMER_REMIT_INQUIRY }, method = { RequestMethod.POST })
 	public ApiDataResponse<RemitInquiryResponse> inquireRemitTranx(
@@ -89,7 +100,8 @@ public class TPCApiController {
 		return AmxApiResponse.buildData(new RemitInquiryResponse());
 	}
 
-	@ApiOperation(value = "To intiate remit transaction. OTP will be sent to customer on his registered mobile.")
+	@ApiOperation(value = "Confirm Remitence", notes = "To intiate remit transaction.")
+	@ApiTPCStatus({ TPCServerCodes.INVALID_CUSTOMER_TOKEN, TPCServerCodes.INVALID_SESSION_TOKEN })
 	@TPCApiCustomerHeaders
 	@RequestMapping(value = { TPCApiConstants.Path.CUSTOMER_REMIT_CONFIRM }, method = { RequestMethod.POST })
 	public ApiDataResponse<RemitConfirmResponse> confirmRemitTranx(
@@ -98,7 +110,8 @@ public class TPCApiController {
 		return AmxApiResponse.buildData(new RemitConfirmResponse());
 	}
 
-	@ApiOperation(value = "To verify and complete remit transaction")
+	@ApiOperation(value = "Verify Trnx", notes = "To verify and complete remit transaction")
+	@ApiTPCStatus({ TPCServerCodes.INVALID_CUSTOMER_TOKEN, TPCServerCodes.INVALID_SESSION_TOKEN })
 	@TPCApiCustomerHeaders
 	@RequestMapping(value = { TPCApiConstants.Path.CUSTOMER_REMIT_VERIFY }, method = { RequestMethod.POST })
 	public ApiDataResponse<RemitVerifyResponse> verifyRemitTranx(@RequestBody RemitVerifyRequest remitVerifyRequest) {

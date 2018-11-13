@@ -13,7 +13,7 @@ public class RemittenceModels {
 		public BigDecimal applicationId;
 
 		@ApiModelProperty(example = "345678", value = "OTP recieved by Customer on his mobile", required = true)
-		public BigDecimal mOtp;
+		private BigDecimal mOtp;
 	}
 
 	public static class RemitVerifyResponse {
@@ -28,7 +28,7 @@ public class RemittenceModels {
 		public BigDecimal applicationId;
 
 		@ApiModelProperty(example = "ZXY", value = "Prefix for OTP recieved by customer on his mobile", required = true)
-		public String mOtpPrefix;
+		private String mOtpPrefix;
 
 	}
 
