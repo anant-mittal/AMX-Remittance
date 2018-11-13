@@ -47,6 +47,7 @@ public interface IDeviceService extends IJaxService {
 		public static final String DEVICE_REG_ID = "deviceRegId";
 		public static final String SESSION_TOKEN = "sessionToken";
 		public static final String PAIRE_TOKEN = "paireToken";
+		public static final String OTP = "otp";
 
 	}
 
@@ -74,29 +75,38 @@ public interface IDeviceService extends IJaxService {
 			Integer registrationId, String paireToken, String sessionToken
 	);
 
+	@ApiJaxStatus(
+			{ JaxError.CLIENT_ALREADY_ACTIVE, JaxError.JAX_FIELD_VALIDATION_FAILURE }
+		)
 	AmxApiResponse<BoolRespModel, Object> activateDevice(Integer countryBranchSystemInventoryId, ClientType deviceType);
 
-	AmxApiResponse<BoolRespModel, Object> updateRemittanceState(
-			ClientType deviceType,
+	@ApiJaxStatus({ JaxError.CLIENT_NOT_FOUND, JaxError.CLIENT_NOT_ACTIVE, JaxError.CLIENT_NOT_LOGGGED_IN,
+			JaxError.JAX_FIELD_VALIDATION_FAILURE })
+	AmxApiResponse<BoolRespModel, Object> updateRemittanceState(ClientType deviceType,
 			Integer countryBranchSystemInventoryId, SignaturePadRemittanceInfo signaturePadRemittanceInfo,
-			BigDecimal employeeId
-	);
+			BigDecimal employeeId);
 
+	@ApiJaxStatus(
+			{JaxError.CLIENT_NOT_FOUND, JaxError.CLIENT_NOT_ACTIVE ,JaxError.CLIENT_NOT_LOGGGED_IN  }
+		)
 	AmxApiResponse<BoolRespModel, Object> updateFcPurchase(
 			ClientType deviceType, Integer countryBranchSystemInventoryId,
 			SignaturePadFCPurchaseSaleInfo signaturePadPurchseInfo, BigDecimal employeeId
 	);
 
-	AmxApiResponse<BoolRespModel, Object> updateFcSale(
-			ClientType deviceType, Integer countryBranchSystemInventoryId,
-			SignaturePadFCPurchaseSaleInfo signaturePadSaleInfo, BigDecimal employeeId
-	);
+	@ApiJaxStatus({ JaxError.CLIENT_NOT_FOUND, JaxError.CLIENT_NOT_ACTIVE, JaxError.CLIENT_NOT_LOGGGED_IN })
+	AmxApiResponse<BoolRespModel, Object> updateFcSale(ClientType deviceType, Integer countryBranchSystemInventoryId,
+			SignaturePadFCPurchaseSaleInfo signaturePadSaleInfo, BigDecimal employeeId);
 
-	AmxApiResponse<BoolRespModel, Object> updateCustomerRegStateData(
-			ClientType deviceType,
-			Integer countryBranchSystemInventoryId, SignaturePadCustomerRegStateMetaInfo metaInfo, BigDecimal employeeId
-	);
+	@ApiJaxStatus({ JaxError.CLIENT_NOT_LOGGGED_IN, JaxError.CLIENT_NOT_FOUND, JaxError.CLIENT_NOT_ACTIVE })
+	AmxApiResponse<BoolRespModel, Object> updateCustomerRegStateData(ClientType deviceType,
+			Integer countryBranchSystemInventoryId, SignaturePadCustomerRegStateMetaInfo metaInfo,
+			BigDecimal employeeId);
 
 	AmxApiResponse<BoolRespModel, Object> updateSignatureStateData(Integer deviceRegId, String imageUrl);
+
+	@ApiJaxStatus({ JaxError.CLIENT_NOT_LOGGGED_IN, JaxError.CLIENT_NOT_FOUND, JaxError.JAX_FIELD_VALIDATION_FAILURE })
+	AmxApiResponse<BoolRespModel, Object> validateOtpForPairing(ClientType deviceType,
+			Integer countryBranchSystemInventoryId, String otp);
 
 }

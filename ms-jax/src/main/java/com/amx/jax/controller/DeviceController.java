@@ -77,6 +77,7 @@ public class DeviceController implements IDeviceService {
 		return AmxApiResponse.build(otpResponse);
 	}
 
+	@Override
 	@RequestMapping(value = Path.DEVICE_VALIDATE_PAIR_OTP, method = RequestMethod.GET)
 	public AmxApiResponse<BoolRespModel, Object> validateOtpForPairing(
 			@RequestParam ClientType deviceType,

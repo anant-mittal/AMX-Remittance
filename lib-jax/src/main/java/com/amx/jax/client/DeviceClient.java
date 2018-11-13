@@ -214,4 +214,20 @@ public class DeviceClient implements IDeviceService {
 		}
 	}
 
+	@Override
+	public AmxApiResponse<BoolRespModel, Object> validateOtpForPairing(ClientType deviceType,
+			Integer countryBranchSystemInventoryId, String otp) {
+		try {
+			LOGGER.debug("in validateOtpForPairing");
+			String url = appConfig.getJaxURL() + Path.DEVICE_VALIDATE_PAIR_OTP;
+			return restService.ajax(url).field(Params.DEVICE_TYPE, deviceType)
+					.field(Params.TERMINAL_ID, countryBranchSystemInventoryId).field(Params.OTP, otp).postForm()
+					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in validateOtpForPairing : ", e);
+			return JaxSystemError.evaluate(e);
+		}
+	}
+
 }
