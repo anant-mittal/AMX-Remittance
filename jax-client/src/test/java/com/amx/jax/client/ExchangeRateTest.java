@@ -15,12 +15,12 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import com.amx.amxlib.exception.InvalidInputException;
 import com.amx.amxlib.exception.ResourceNotFoundException;
-import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.model.MinMaxExRateDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ExchangeRateResponseModel;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.configs.JaxMetaInfo;
+import com.amx.jax.model.response.CurrencyMasterDTO;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest

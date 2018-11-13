@@ -12,7 +12,6 @@ import java.util.Map;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
-import org.hibernate.result.Output;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,18 +21,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.meta.model.CurrencyMasterDTO;
-import com.amx.amxlib.meta.model.ShoppingCartDetailsDto;
-import com.amx.amxlib.model.request.FcSaleOrderTransactionRequestModel;
 import com.amx.amxlib.model.response.ExchangeRateBreakup;
-import com.amx.amxlib.model.response.FcSaleOrderApplicationResponseModel;
 import com.amx.jax.AbstractModel;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.ApplicationProcedureDao;
 import com.amx.jax.dao.FcSaleApplicationDao;
 import com.amx.jax.dao.FcSaleExchangeRateDao;
 import com.amx.jax.dbmodel.CountryBranch;
-import com.amx.jax.dbmodel.CurrencyMasterModel;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.FxExchangeRateView;
 import com.amx.jax.dbmodel.ParameterDetails;
@@ -42,8 +36,10 @@ import com.amx.jax.dbmodel.ShoppingCartDetails;
 import com.amx.jax.dbmodel.UserFinancialYear;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.request.FcSaleOrderTransactionRequestModel;
+import com.amx.jax.model.response.FcSaleOrderApplicationResponseModel;
+import com.amx.jax.model.response.ShoppingCartDetailsDto;
 import com.amx.jax.repository.ICustomerRepository;
-import com.amx.jax.repository.ReceiptPaymentAppRepository;
 import com.amx.jax.service.BankMetaService;
 import com.amx.jax.service.CurrencyMasterService;
 import com.amx.jax.service.FinancialService;
@@ -99,6 +95,7 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 		mapAllDetailApplSave.put("EX_APPL_RECEIPT",receiptPayment);
 		fsSaleapplicationDao.saveAllApplicationData(mapAllDetailApplSave);
 		List<ShoppingCartDetailsDto> cartDetails= fetchApplicationDetails();
+		fetchCustomerAddressDetails();
 		responeModel.setCartDetails(cartDetails);
 		return responeModel; 
 		}catch(Exception e){
@@ -137,11 +134,8 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 				customerName = customerName+ " "+ customerList.get(0).getLastName();
 			}
 			
-			
 			receiptPaymentAppl.setCustomerName(customerName);
 		}
-		
-		
 		
 		CountryBranch countryBranch = bankMetaService.getCountryBranchById((metaData.getCountryBranchId()));
 		if(countryBranch != null){
@@ -286,6 +280,17 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 		
 		return cartListDto;
 	}
+	
+	
+	public void fetchCustomerAddressDetails(){
+		BigDecimal customerId = metaData.getCustomerId();
+		BigDecimal applciationCountryid = metaData.getCountryId();
+		BigDecimal companyId = metaData.getCompanyId();
+		
+		
+	}
+	
+	
 	
 	public BigDecimal generateDocumentNumber(CountryBranch countryBranch, String processInd,BigDecimal finYear) {
 		BigDecimal appCountryId = metaData.getCountryId()==null?BigDecimal.ZERO:metaData.getCountryId();

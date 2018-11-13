@@ -1,4 +1,4 @@
-package com.amx.amxlib.model.response;
+package com.amx.jax.model.response;
 /**
  * Author :Rabil
  * Puspose : FC Sale default API gto display 
@@ -11,11 +11,9 @@ package com.amx.amxlib.model.response;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.amx.amxlib.meta.model.CurrencyDenominationTypeDto;
-import com.amx.amxlib.meta.model.CurrencyMasterDTO;
-import com.amx.amxlib.meta.model.FxExchangeRateDto;
-import com.amx.amxlib.meta.model.SourceOfIncomeDto;
-import com.amx.amxlib.model.PurposeOfTransactionDto;
+
+import com.amx.jax.model.response.PurposeOfTransactionDto;
+
 import com.amx.jax.model.AbstractModel;
 
 

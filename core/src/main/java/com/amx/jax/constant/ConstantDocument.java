@@ -68,6 +68,9 @@ public class ConstantDocument {
 	public static final String S = "S";	
 	public static final BigDecimal DOCUMENT_CODE_FOR_FCSALE_APPLICATION =new BigDecimal(1);
 	public static final BigDecimal DOCUMENT_CODE_FOR_FCSALE = new BigDecimal(74);
+	public static final String PR = "PR";
+	public static final String FS = "FS";
+	public static final String FP = "FP";
 	/** end Here **/
 
 }

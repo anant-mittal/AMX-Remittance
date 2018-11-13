@@ -1,8 +1,8 @@
 package com.amx.jax.manager;
 
 /**
- * Author : Rabil
- * Date		: 05/11/2018
+ * @Author : Rabil
+ * @Date		: 05/11/2018
  */
 import java.math.BigDecimal;
 
@@ -21,13 +21,14 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.model.response.ExchangeRateBreakup;
-import com.amx.amxlib.model.response.FcSaleOrderApplicationResponseModel;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.FcSaleExchangeRateDao;
 import com.amx.jax.dbmodel.FxExchangeRateView;
 import com.amx.jax.dbmodel.ParameterDetails;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.AbstractModel;
+import com.amx.jax.model.response.FcSaleOrderApplicationResponseModel;
+import com.amx.jax.model.response.FxExchangeRateBreakup;
 import com.amx.jax.service.CurrencyMasterService;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.RoundUtil;
@@ -57,7 +58,7 @@ public class FcSaleOrderTransactionManager extends AbstractModel{
 		BigDecimal maxExchangeRate = BigDecimal.ZERO;
 		logger.info("calculateTrnxRate fc currencyId :"+fcCurrencyId+"\t fcAmount :"+fcAmount+"\t countryId :"+countryId+"\t countryBracnhId :"+countryBracnhId);
 		FcSaleOrderApplicationResponseModel responseModel = new FcSaleOrderApplicationResponseModel();
-		ExchangeRateBreakup breakup = new ExchangeRateBreakup();
+		FxExchangeRateBreakup breakup = new FxExchangeRateBreakup();
 		List<FxExchangeRateView> fxSaleRateList = fcSaleExchangeRateDao.getFcSaleExchangeRate(countryId, countryBracnhId, fcCurrencyId);
 		List<ParameterDetails> parameterList 	= fcSaleExchangeRateDao.getParameterDetails(ConstantDocument.FX_DC, ConstantDocument.Yes);
 		BigDecimal localCurrencyId = meta.getDefaultCurrencyId();

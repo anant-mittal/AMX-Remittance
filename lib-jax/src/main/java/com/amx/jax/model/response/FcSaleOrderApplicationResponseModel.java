@@ -1,4 +1,4 @@
-package com.amx.amxlib.model.response;
+package com.amx.jax.model.response;
 /**
  * Author :Rabil
  */
@@ -6,8 +6,7 @@ package com.amx.amxlib.model.response;
 import java.math.BigDecimal;
 import java.util.List;
 
-import com.amx.amxlib.meta.model.ShoppingCartDetailsDto;
-import com.amx.amxlib.model.CivilIdOtpModel;
+
 import com.amx.jax.dict.PayGServiceCode;
 import com.amx.jax.model.AbstractModel;
 
@@ -16,7 +15,7 @@ public class FcSaleOrderApplicationResponseModel extends AbstractModel {
 	
 	private static final long serialVersionUID = 9184782859804476157L;
 	private BigDecimal txnFee;
-	private ExchangeRateBreakup exRateBreakup;
+	private FxExchangeRateBreakup exRateBreakup;
 	private String denominationType;
 	private BigDecimal purposeOfTrnxId;
 	private BigDecimal sourceOffundId;
@@ -27,7 +26,7 @@ public class FcSaleOrderApplicationResponseModel extends AbstractModel {
 	private BigDecimal documentFinancialYear;
 	private BigDecimal netPayableAmount;
 	private BigDecimal merchantTrackId;
-	private CivilIdOtpModel civilIdOtpModel;
+
 
 	private List<ShoppingCartDetailsDto> cartDetails;
 	private PayGServiceCode pgCode = PayGServiceCode.DEFAULT;
@@ -43,10 +42,10 @@ public class FcSaleOrderApplicationResponseModel extends AbstractModel {
 	public void setTxnFee(BigDecimal txnFee) {
 		this.txnFee = txnFee;
 	}
-	public ExchangeRateBreakup getExRateBreakup() {
+	public FxExchangeRateBreakup getExRateBreakup() {
 		return exRateBreakup;
 	}
-	public void setExRateBreakup(ExchangeRateBreakup exRateBreakup) {
+	public void setExRateBreakup(FxExchangeRateBreakup exRateBreakup) {
 		this.exRateBreakup = exRateBreakup;
 	}
 	public String getDenominationType() {
@@ -108,13 +107,7 @@ public class FcSaleOrderApplicationResponseModel extends AbstractModel {
 		this.merchantTrackId = merchantTrackId;
 	}
 
-	public CivilIdOtpModel getCivilIdOtpModel() {
-		return civilIdOtpModel;
-	}
 
-	public void setCivilIdOtpModel(CivilIdOtpModel civilIdOtpModel) {
-		this.civilIdOtpModel = civilIdOtpModel;
-	}
 
 	public PayGServiceCode getPgCode() {
 		return pgCode;

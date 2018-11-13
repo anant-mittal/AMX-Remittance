@@ -1,13 +1,15 @@
 package com.amx.jax.auditlog;
 /**
- * Authod :Rabil
+ * @Authod :Rabil
  * Date : 04/11/2018
  */
 
 import java.math.BigDecimal;
 
-import com.amx.amxlib.meta.model.CurrencyMasterDTO;
-import com.amx.amxlib.model.PurposeOfTransactionDto;
+import com.amx.jax.model.response.CurrencyMasterDTO;
+import com.amx.jax.model.response.PurposeOfTransactionDto;
+
+
 
 
 

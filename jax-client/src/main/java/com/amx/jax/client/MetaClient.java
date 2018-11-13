@@ -22,7 +22,6 @@ import com.amx.amxlib.meta.model.BankBranchDto;
 import com.amx.amxlib.meta.model.BankMasterDTO;
 import com.amx.amxlib.meta.model.BranchDetailDTO;
 import com.amx.amxlib.meta.model.CountryMasterDTO;
-import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.meta.model.JaxMetaParameter;
 import com.amx.amxlib.meta.model.MultiCountryDTO;
 import com.amx.amxlib.meta.model.PrefixDTO;
@@ -38,6 +37,7 @@ import com.amx.amxlib.model.OnlineConfigurationDto;
 import com.amx.amxlib.model.request.GetBankBranchRequest;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.configs.JaxMetaInfo;
+import com.amx.jax.model.response.CurrencyMasterDTO;
 import com.amx.jax.rest.RestService;
 
 /**
@@ -536,4 +536,15 @@ public class MetaClient extends AbstractJaxServiceClient {
 		} // end of try-catch
 	}
 
+	
+	
+	public AmxApiResponse<TermsAndConditionDTO, Object> getTermsAndConditionAsPerCountryForFxOrder() {
+		try {
+			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.API_TERMS_BY_lANG_COUNTRY_ID_FOR_FX).filter(metaFilter).get().as(new ParameterizedTypeReference<AmxApiResponse<TermsAndConditionDTO, Object>>() {});
+		} catch (Exception ae) {
+			LOGGER.error("exception in getTermsAndConditionAsPerCountry : ", ae);
+			return JaxSystemError.evaluate(ae);
+		}
+	}
+	
 }

@@ -1,8 +1,10 @@
 package com.amx.jax.client;
 
-import static com.amx.amxlib.constant.ApiEndpoint.FC_SALE_ENDPOINT;
-import static com.amx.amxlib.constant.ApiEndpoint.REMIT_API_ENDPOINT;
-
+/**
+ * @author	:Rabil
+ * @Date	: 03/11/2018
+ * @Purpose	: Fx Order Delivery Client
+ */
 import java.math.BigDecimal;
 
 import org.apache.log4j.Logger;
@@ -12,46 +14,37 @@ import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.amx.amxlib.constant.ApiEndpoint.MetaApi;
-import com.amx.amxlib.exception.AbstractJaxException;
-import com.amx.amxlib.exception.JaxSystemError;
-import com.amx.amxlib.exception.LimitExeededException;
-import com.amx.amxlib.exception.RemittanceTransactionValidationException;
-import com.amx.amxlib.meta.model.CurrencyMasterDTO;
-import com.amx.amxlib.meta.model.CustomerRatingDTO;
-import com.amx.amxlib.meta.model.FxExchangeRateDto;
-import com.amx.amxlib.meta.model.QuestModelDTO;
-import com.amx.amxlib.model.PurposeOfTransactionDto;
-import com.amx.amxlib.model.request.FcSaleOrderTransactionRequestModel;
-import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
-import com.amx.amxlib.model.response.ApiResponse;
-import com.amx.amxlib.model.response.FcSaleOrderApplicationResponseModel;
-import com.amx.amxlib.model.response.FcSaleOrderDefaultResponseModel;
-import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
+
+import com.amx.jax.AppConfig;
+import com.amx.jax.IJaxService;
 import com.amx.jax.api.AmxApiResponse;
-import com.amx.jax.client.configs.JaxMetaInfo;
-import com.amx.jax.client.util.ConverterUtility;
+import com.amx.jax.exception.AbstractJaxException;
+import com.amx.jax.exception.JaxSystemError;
+import com.amx.jax.model.request.CustomerShippingAddressRequestModel;
+import com.amx.jax.model.request.FcSaleOrderTransactionRequestModel;
+import com.amx.jax.model.response.CurrencyMasterDTO;
+import com.amx.jax.model.response.FcSaleOrderApplicationResponseModel;
+import com.amx.jax.model.response.FcSaleOrderDefaultResponseModel;
+import com.amx.jax.model.response.FxExchangeRateDto;
+import com.amx.jax.model.response.PurposeOfTransactionDto;
+import com.amx.jax.model.response.ShippingAddressDto;
 import com.amx.jax.rest.RestService;
 
-/**
- * 
- * @author	:Rabil
- * Date		: 03/11/2018
- *
- */
+
+
 @Component
-public class FcSaleOrderClient extends AbstractJaxServiceClient {
+public class FcSaleOrderClient implements IJaxService{
 	
+	private static final String FC_SALE_ENDPOINT = "/fc/sale/";
 	private static final Logger LOGGER = Logger.getLogger(FcSaleOrderClient.class);
 
-/*	@Autowired
-	private JaxMetaInfo jaxMetaInfo;
-*/
-	@Autowired
-	private ConverterUtility util;
 
 	@Autowired
 	RestService restService;
+	
+	@Autowired
+	AppConfig appConfig;
+
 	
 	/**
 	 * 
@@ -60,8 +53,9 @@ public class FcSaleOrderClient extends AbstractJaxServiceClient {
 	public AmxApiResponse<PurposeOfTransactionDto, Object> getFcPurposeofTrnx() {
 		try {
 			LOGGER.info("in getFcPurposeofTrnx :");
-			String url = this.getBaseUrl() + FC_SALE_ENDPOINT + "/fc-purposeof-trnx/";
+			String url = appConfig.getJaxURL() +  FC_SALE_ENDPOINT + "/fc-purposeof-trnx/";
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
+			
 			return restService.ajax(url).get(requestEntity).as(new ParameterizedTypeReference<AmxApiResponse<PurposeOfTransactionDto, Object>>(){});
 		} catch (AbstractJaxException ae) {
 			throw ae;
@@ -81,7 +75,7 @@ public class FcSaleOrderClient extends AbstractJaxServiceClient {
 	public AmxApiResponse<CurrencyMasterDTO, Object> getFcCurrencyList() {
 		try {
 			LOGGER.info("in getFcPurposeofTrnx :");
-			String url = this.getBaseUrl() + FC_SALE_ENDPOINT + "/fc-currency-list/";
+			String url = appConfig.getJaxURL()+ FC_SALE_ENDPOINT + "/fc-currency-list/";
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 			return restService.ajax(url).get(requestEntity).as(new ParameterizedTypeReference<AmxApiResponse<CurrencyMasterDTO, Object>>(){});
 		} catch (AbstractJaxException ae) {
@@ -102,7 +96,7 @@ public class FcSaleOrderClient extends AbstractJaxServiceClient {
 	public AmxApiResponse<FxExchangeRateDto, Object> getFcXRate(BigDecimal fxCurrencyId) {
 		try {
 			LOGGER.info("in getFcXRate :"+fxCurrencyId);
-			String url = this.getBaseUrl() + FC_SALE_ENDPOINT + "/fc-sale-xrate/" + fxCurrencyId;
+			String url = appConfig.getJaxURL()  + FC_SALE_ENDPOINT + "/fc-sale-xrate/" + fxCurrencyId;
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 			return restService.ajax(url).get(requestEntity).as(new ParameterizedTypeReference<AmxApiResponse<FxExchangeRateDto, Object>>(){});
 		} catch (AbstractJaxException ae) {
@@ -125,7 +119,7 @@ public class FcSaleOrderClient extends AbstractJaxServiceClient {
 	public AmxApiResponse<FxExchangeRateDto, Object> calculateXRate(BigDecimal fxCurrencyId,BigDecimal fcAmount) {
 		try {
 			LOGGER.info("in getFcXRate :"+fxCurrencyId+"\t fcAmount :"+fcAmount);
-			String url = this.getBaseUrl() + FC_SALE_ENDPOINT + "/fc-sale-cal-xrate/";
+			String url = appConfig.getJaxURL()  + FC_SALE_ENDPOINT + "/fc-sale-cal-xrate/";
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 			UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url).queryParam("fxCurrencyId", fxCurrencyId).queryParam("fcAmount", fcAmount);
 			return restService.ajax(url).get(requestEntity).as(new ParameterizedTypeReference<AmxApiResponse<FxExchangeRateDto, Object>>(){});
@@ -138,16 +132,10 @@ public class FcSaleOrderClient extends AbstractJaxServiceClient {
 
 	}
 	
-	
-	
-	
-	
-	
-	
 	public AmxApiResponse<FcSaleOrderDefaultResponseModel, Object> getFcSaleDefaultApi() {
 		try {
 			LOGGER.info("getFcSaleDefaultApi client :");
-			String url = this.getBaseUrl() + FC_SALE_ENDPOINT + "/fc-sale-default/";
+			String url =appConfig.getJaxURL()  + FC_SALE_ENDPOINT + "/fc-sale-default/";
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 			return restService.ajax(url).get(requestEntity).as(new ParameterizedTypeReference<AmxApiResponse<FcSaleOrderDefaultResponseModel, Object>>(){});
 		} catch (AbstractJaxException ae) {
@@ -160,12 +148,11 @@ public class FcSaleOrderClient extends AbstractJaxServiceClient {
 	}
 	
 	
-	public AmxApiResponse<FcSaleOrderApplicationResponseModel, Object> getSaveApplication(FcSaleOrderTransactionRequestModel requestModel) throws RemittanceTransactionValidationException, LimitExeededException {
+	public AmxApiResponse<FcSaleOrderApplicationResponseModel, Object> getSaveApplication(FcSaleOrderTransactionRequestModel requestModel) throws Exception {
 		try {
 			LOGGER.info(" Fc Sale create application :" + requestModel.toString());
-			
 			HttpEntity<FcSaleOrderTransactionRequestModel> requestEntity = new HttpEntity<FcSaleOrderTransactionRequestModel>(requestModel,getHeader());
-			String url = this.getBaseUrl() + FC_SALE_ENDPOINT + "/fcsale-save-application/";
+			String url = appConfig.getJaxURL()  + FC_SALE_ENDPOINT + "/fcsale-save-application/";
 			return restService.ajax(url).post(requestEntity).as(new ParameterizedTypeReference<AmxApiResponse<FcSaleOrderApplicationResponseModel, Object>>(){});
 		} catch (AbstractJaxException ae) {
 			throw ae;
@@ -176,22 +163,19 @@ public class FcSaleOrderClient extends AbstractJaxServiceClient {
 
 	}
 	
-	/*
-	 
-	 public ApiResponse<RemittanceApplicationResponseModel> saveTransaction(
-			RemittanceTransactionRequestModel transactionRequestModel)
-			throws RemittanceTransactionValidationException, LimitExeededException {
+	
+	
+	
+	public AmxApiResponse<ShippingAddressDto, Object> getFcSaleAddress() {
 		try {
-			HttpEntity<RemittanceTransactionRequestModel> requestEntity = new HttpEntity<RemittanceTransactionRequestModel>(
-					transactionRequestModel, getHeader());
-			String url = this.getBaseUrl() + REMIT_API_ENDPOINT + "/save-application/";
-			return restService.ajax(url).post(requestEntity)
-					.as(new ParameterizedTypeReference<ApiResponse<RemittanceApplicationResponseModel>>() {
-					});
+			LOGGER.info("getFcSale shipping Address client :");
+			String url = appConfig.getJaxURL()  + FC_SALE_ENDPOINT + "/fc-sale-address/";
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
+			return restService.ajax(url).get(requestEntity).as(new ParameterizedTypeReference<AmxApiResponse<ShippingAddressDto, Object>>(){});
 		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
-			LOGGER.error("exception in saveTransaction : ", e);
+			LOGGER.error("exception in getCurrencyByCountryId : ", e);
 			throw new JaxSystemError();
 		} // end of try-catch
 
@@ -200,29 +184,26 @@ public class FcSaleOrderClient extends AbstractJaxServiceClient {
 	
 	
 	
-	
-	---------
-	
-	public AmxApiResponse<CustomerRatingDTO, ?> saveCustomerRating(CustomerRatingDTO customerRatingDTO)
-			throws RemittanceTransactionValidationException, LimitExeededException {
-
+	/** 
+	 * @purpose : Save FC Sale shipping address
+	  				CustomerShippingAddressRequestModel 
+	 **/
+	public AmxApiResponse<CustomerShippingAddressRequestModel, Object> saveFcSaleShippingAddress(CustomerShippingAddressRequestModel requestModel) throws Exception {
 		try {
-			HttpEntity<CustomerRatingDTO> requestEntity = new HttpEntity<CustomerRatingDTO>(customerRatingDTO,
-					getHeader());
-
-			String url = this.getBaseUrl() + REMIT_API_ENDPOINT + "/save-customer-rating/";
-			LOGGER.info(" Calling customer rating :" + customerRatingDTO.toString());
-			return restService.ajax(url).post(requestEntity).asApiResponse(CustomerRatingDTO.class);
+			LOGGER.info(" Fc Sale shipping address save :" + requestModel.toString());
+			HttpEntity<CustomerShippingAddressRequestModel> requestEntity = new HttpEntity<CustomerShippingAddressRequestModel>(requestModel,getHeader());
+			String url = appConfig.getJaxURL() + FC_SALE_ENDPOINT + "/fc-save-shipping-addr/";
+			return restService.ajax(url).post(requestEntity).as(new ParameterizedTypeReference<AmxApiResponse<CustomerShippingAddressRequestModel, Object>>(){});
 		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
-			LOGGER.error("exception in customer rating : ", e);
+			LOGGER.error("exception in shipping address save : ", e);
 			throw new JaxSystemError();
 		} // end of try-catch
+	}
 
-	 
-	 
-	 */
+	
+
 	
 }
 

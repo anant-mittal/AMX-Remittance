@@ -18,7 +18,6 @@ import com.amx.amxlib.meta.model.BankBranchDto;
 import com.amx.amxlib.meta.model.BankMasterDTO;
 import com.amx.amxlib.meta.model.BranchDetailDTO;
 import com.amx.amxlib.meta.model.CountryMasterDTO;
-import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.meta.model.JaxMetaParameter;
 import com.amx.amxlib.meta.model.PrefixDTO;
 import com.amx.amxlib.meta.model.ServiceGroupMasterDescDto;
@@ -30,6 +29,7 @@ import com.amx.amxlib.model.OnlineConfigurationDto;
 import com.amx.amxlib.model.request.GetBankBranchRequest;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.configs.JaxMetaInfo;
+import com.amx.jax.model.response.CurrencyMasterDTO;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes=JaxServiceClientApplication.class)

@@ -2,7 +2,9 @@ package com.amx.jax.dbmodel;
 
 import java.math.BigDecimal;
 
-import com.amx.amxlib.meta.model.CurrencyMasterDTO;
+import com.amx.jax.model.response.CurrencyMasterDTO;
+
+
 
 /**
  * @author Subodh Bhoir

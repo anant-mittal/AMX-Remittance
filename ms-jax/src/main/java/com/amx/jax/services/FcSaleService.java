@@ -2,7 +2,7 @@ package com.amx.jax.services;
 
 /**
  * @author rabil
- * Date : 03/11/2018
+ * @Date : 03/11/2018
  *
  */
 
@@ -21,15 +21,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.meta.model.CurrencyDenominationTypeDto;
-import com.amx.amxlib.meta.model.CurrencyMasterDTO;
-import com.amx.amxlib.meta.model.FxExchangeRateDto;
-import com.amx.amxlib.meta.model.SourceOfIncomeDto;
-import com.amx.amxlib.model.PurposeOfTransactionDto;
-import com.amx.amxlib.model.request.FcSaleOrderTransactionRequestModel;
+import com.amx.amxlib.meta.model.TermsAndConditionDTO;
 import com.amx.amxlib.model.response.ApiResponse;
-import com.amx.amxlib.model.response.FcSaleOrderApplicationResponseModel;
-import com.amx.amxlib.model.response.FcSaleOrderDefaultResponseModel;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.FcSaleExchangeRateDao;
@@ -39,11 +32,24 @@ import com.amx.jax.dbmodel.ParameterDetails;
 import com.amx.jax.dbmodel.PurposeOfTransaction;
 import com.amx.jax.dbmodel.SourceOfIncomeView;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.manager.FcSaleAddressManager;
 import com.amx.jax.manager.FcSaleApplicationTransactionManager;
 import com.amx.jax.manager.FcSaleOrderTransactionManager;
+import com.amx.jax.model.request.CustomerShippingAddressRequestModel;
+import com.amx.jax.model.request.FcSaleOrderTransactionRequestModel;
+import com.amx.jax.model.response.CurrencyDenominationTypeDto;
+import com.amx.jax.model.response.CurrencyMasterDTO;
+import com.amx.jax.model.response.FcSaleOrderApplicationResponseModel;
+import com.amx.jax.model.response.FcSaleOrderDefaultResponseModel;
+import com.amx.jax.model.response.FxExchangeRateDto;
+import com.amx.jax.model.response.PurposeOfTransactionDto;
+import com.amx.jax.model.response.ShippingAddressDto;
+import com.amx.jax.model.response.SourceOfIncomeDto;
 import com.amx.jax.repository.ICurrencyDao;
 import com.amx.jax.repository.IPurposeOfTrnxDao;
 import com.amx.jax.repository.ISourceOfIncomeDao;
+import com.amx.jax.repository.ITermsAndConditionRepository;
+import com.amx.jax.validation.FxOrderValidation;
 
 
 
@@ -73,6 +79,15 @@ public class FcSaleService extends AbstractService{
 	@Autowired
 	FcSaleApplicationTransactionManager applTrnxManager;
 	
+	@Autowired
+	FcSaleAddressManager fcSaleAddresManager;
+	
+	@Autowired
+	FxOrderValidation validation;
+	
+	@Autowired
+	ITermsAndConditionRepository termsAndCondition;
+	
 
 	
 	
@@ -100,6 +115,7 @@ public class FcSaleService extends AbstractService{
 	 */
 	public ApiResponse getFcSalecurrencyList(BigDecimal countryId){
 		ApiResponse response = getBlackApiResponse();
+		validation.fcsalecurrencyList(countryId);
 		List<CurrencyMasterModel> currencyList = currencyDao.getfcCurrencyList(countryId);
 		if(currencyList.isEmpty()){
 			throw new GlobalException("No data found",JaxError.NO_RECORD_FOUND);
@@ -120,6 +136,7 @@ public class FcSaleService extends AbstractService{
 	
 	public ApiResponse getFcSaleExchangeRate(BigDecimal applicationCountryId,BigDecimal countryBranchId,BigDecimal fxCurrencyId){
 		ApiResponse response = getBlackApiResponse();
+		validation.fcSaleExchangeRate(applicationCountryId,countryBranchId,fxCurrencyId);
 		List<FxExchangeRateView> fxSaleRateList = fcSaleExchangeRateDao.getFcSaleExchangeRate(applicationCountryId, countryBranchId, fxCurrencyId);
 		if(fxSaleRateList.isEmpty()){
 			throw new GlobalException("No data found",JaxError.NO_RECORD_FOUND);
@@ -201,6 +218,36 @@ public class FcSaleService extends AbstractService{
 	
 	
 	
+	/**
+	 * Fetch address for Fc Sale
+	 */
+	
+	public ApiResponse fetchFcSaleAddress(){
+		ApiResponse response = getBlackApiResponse();
+		ShippingAddressDto dto = new ShippingAddressDto();
+		List<ShippingAddressDto> shippingAddressList = fcSaleAddresManager.fetchShippingAddress();
+		response.getData().getValues().add(shippingAddressList);
+		response.setResponseStatus(ResponseStatus.OK);
+		response.getData().setType(dto.getModelType());
+		return response;
+	}
+	
+	
+	/**
+	 * Save shipping address
+	 */
+	
+	public ApiResponse saveShippingAddress(CustomerShippingAddressRequestModel requestModel){
+		ApiResponse response = getBlackApiResponse();
+		fcSaleAddresManager.saveShippingAddress(requestModel);
+		response.getData().getValues().add(requestModel);
+		response.setResponseStatus(ResponseStatus.OK);
+		response.getData().setType(requestModel.getModelType());
+		return response;
+	}
+	
+	
+
 	
 	/**
 	 * 

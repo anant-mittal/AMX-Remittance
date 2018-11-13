@@ -17,7 +17,7 @@ import com.amx.amxlib.meta.model.ApplicationSetupDTO;
 import com.amx.amxlib.meta.model.AuthenticationLimitCheckDTO;
 import com.amx.amxlib.meta.model.BankBranchDto;
 import com.amx.amxlib.meta.model.BankMasterDTO;
-import com.amx.amxlib.meta.model.CurrencyMasterDTO;
+import com.amx.jax.model.response.CurrencyMasterDTO;
 import com.amx.amxlib.meta.model.JaxMetaParameter;
 import com.amx.amxlib.meta.model.MultiCountryDTO;
 import com.amx.amxlib.meta.model.QuestModelDTO;
@@ -398,6 +398,15 @@ public class MetaController {
 			@PathVariable("countryBranchId") BigDecimal countryBranchId) {
 		return branchDetailService.getBranchSystemDetailResponse(countryBranchId);
 	}
+	
+	
+	/** 
+	  @Paurpose : Terms and condtion for FX Order
+	 **/
+		@RequestMapping(value = MetaApi.API_TERMS_BY_lANG_COUNTRY_ID_FOR_FX, method = RequestMethod.GET)
+		public AmxApiResponse<TermsAndConditionDTO, Object> getTermsAndConditionAsPerCountryResponseforFxOrder() {
+			return termsAndConditionService.getTermsAndConditionAsPerCountryForFxOrder(metaData.getLanguageId(),metaData.getCountryId());
+		}
 
 /*	@Deprecated
 	@RequestMapping(value = "/payg-error/", method = RequestMethod.GET)

@@ -1,13 +1,12 @@
-package com.amx.amxlib.model.request;
+package com.amx.jax.model.request;
 
 
 
 import java.math.BigDecimal;
 
 import javax.validation.constraints.NotNull;
-
-import com.amx.amxlib.model.response.ExchangeRateBreakup;
 import com.amx.jax.model.AbstractModel;
+import com.amx.jax.model.response.FxExchangeRateBreakup;
 
 public class FcSaleOrderTransactionRequestModel extends AbstractModel {
 
@@ -30,7 +29,7 @@ public class FcSaleOrderTransactionRequestModel extends AbstractModel {
 	
 	
 	@NotNull
-	private ExchangeRateBreakup exRateBreakup;
+	private FxExchangeRateBreakup exRateBreakup;
 	private BigDecimal domXRate;
 	public BigDecimal getSourceOfFundId() {
 		return sourceOfFundId;
@@ -62,10 +61,10 @@ public class FcSaleOrderTransactionRequestModel extends AbstractModel {
 	public void setCurrencyDenominationType(String currencyDenominationType) {
 		this.currencyDenominationType = currencyDenominationType;
 	}
-	public ExchangeRateBreakup getExRateBreakup() {
+	public FxExchangeRateBreakup getExRateBreakup() {
 		return exRateBreakup;
 	}
-	public void setExRateBreakup(ExchangeRateBreakup exRateBreakup) {
+	public void setExRateBreakup(FxExchangeRateBreakup exRateBreakup) {
 		this.exRateBreakup = exRateBreakup;
 	}
 	public BigDecimal getDomXRate() {

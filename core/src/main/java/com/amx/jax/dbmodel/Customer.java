@@ -132,8 +132,8 @@ public class Customer implements java.io.Serializable {
 	private String identityInt;
 	private BigDecimal identityFor;
 	private BigDecimal identityTypeId;
-	private Date issueDate;
-	private Date expiryDate;
+	//private Date issueDate;
+	//private Date expiryDate;
 	
 	private IncomeRangeMaster fsIncomeRangeMaster;
 	
@@ -902,7 +902,7 @@ public class Customer implements java.io.Serializable {
 		this.fsIncomeRangeMaster = fsIncomeRangeMaster;
 	}
 
-	@Column(name = "ISSUE_DATE")
+	/*@Column(name = "ISSUE_DATE")
 	public Date getIssueDate() {
 		return issueDate;
 	}
@@ -918,7 +918,7 @@ public class Customer implements java.io.Serializable {
 
 	public void setExpiryDate(Date expiryDate) {
 		this.expiryDate = expiryDate;
-	}
+	}*/
 	
 	
 

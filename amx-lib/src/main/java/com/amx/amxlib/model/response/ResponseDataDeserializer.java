@@ -12,11 +12,8 @@ import com.amx.amxlib.meta.model.BankMasterDTO;
 import com.amx.amxlib.meta.model.BeneCountryDTO;
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.amxlib.meta.model.BranchDetailDTO;
-import com.amx.amxlib.meta.model.CountryMasterDTO;
-import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.meta.model.CustomerDto;
 import com.amx.amxlib.meta.model.EmployeeDetailsDTO;
-import com.amx.amxlib.meta.model.FxExchangeRateDto;
 import com.amx.amxlib.meta.model.JaxMetaParameter;
 import com.amx.amxlib.meta.model.PrefixDTO;
 import com.amx.amxlib.meta.model.QuestModelDTO;
@@ -24,7 +21,6 @@ import com.amx.amxlib.meta.model.RemittancePageDto;
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
 import com.amx.amxlib.meta.model.RoutingBankMasterDTO;
 import com.amx.amxlib.meta.model.ServiceGroupMasterDescDto;
-import com.amx.amxlib.meta.model.SourceOfIncomeDto;
 import com.amx.amxlib.meta.model.TermsAndConditionDTO;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.meta.model.UserDetailsDTO;
@@ -43,7 +39,6 @@ import com.amx.amxlib.model.MinMaxExRateDTO;
 import com.amx.amxlib.model.OnlineConfigurationDto;
 import com.amx.amxlib.model.PlaceOrderDTO;
 import com.amx.amxlib.model.PlaceOrderNotificationDTO;
-import com.amx.amxlib.model.PurposeOfTransactionDto;
 import com.amx.amxlib.model.RateAlertDTO;
 import com.amx.amxlib.model.UserModel;
 import com.amx.amxlib.model.UserVerificationCheckListDTO;
@@ -57,6 +52,10 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import com.amx.jax.model.response.CurrencyMasterDTO;
+import com.amx.jax.model.response.FxExchangeRateDto;
+import com.amx.jax.model.response.PurposeOfTransactionDto;
+import com.amx.jax.model.response.SourceOfIncomeDto;
 
 @Deprecated
 public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {
@@ -102,7 +101,7 @@ public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {
 			});
 			break;
 		case "country":
-			models = new ObjectMapper().readValue(values, new TypeReference<List<CountryMasterDTO>>() {
+			models = new ObjectMapper().readValue(values, new TypeReference<List<CurrencyMasterDTO>>() {
 			});
 			break;	
 			

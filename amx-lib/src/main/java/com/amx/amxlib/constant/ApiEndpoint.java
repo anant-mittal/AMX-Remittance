@@ -44,6 +44,7 @@ public class ApiEndpoint {
 		public static final String API_COUNTRY_BC = "/country/bc/";
 		public static final String API_TERMS_BY_lANG_ID = "/terms/lang";
 		public static final String API_TERMS_BY_lANG_COUNTRY_ID = "/terms/langcountry";
+		public static final String API_TERMS_BY_lANG_COUNTRY_ID_FOR_FX = "/terms/langcountry/fx";
 		public static final String API_WHY = "/why/";
 		public static final String EMAIL_CHECK = "/emailcheck/{emailId}";
 		public static final String API_FYEAR = "/fyear";
