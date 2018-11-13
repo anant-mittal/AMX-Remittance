@@ -46,10 +46,10 @@ public class TerminalController {
 	private DeviceRequest deviceRequestValidator;
 
 	@RequestMapping(
-			value = { Path.TERMINAL_STATUS_PING }, method = { RequestMethod.GET }
-	)
+		value = { Path.TERMINAL_STATUS_PING }, method = { RequestMethod.GET })
 	public String getPing(
 			@RequestParam DeviceStateDataType state, @RequestParam String terminalId,
+			@RequestParam(required = false) String status,
 			Model model, HttpServletResponse response, HttpServletRequest request
 	) throws MalformedURLException, URISyntaxException {
 

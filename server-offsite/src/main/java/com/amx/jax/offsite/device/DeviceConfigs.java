@@ -52,6 +52,9 @@ public class DeviceConfigs {
 		public void setDeviceReqKey(String deviceReqKey) {
 			this.deviceReqKey = deviceReqKey;
 		}
+	}
+
+	public static class SignPadData {
 
 	}
 
@@ -62,6 +65,11 @@ public class DeviceConfigs {
 
 	@Component
 	public class CardBox extends CacheBox<CardData> {
+
+	}
+
+	@Component
+	public class SignPadBox extends CacheBox<SignPadData> {
 
 	}
 
