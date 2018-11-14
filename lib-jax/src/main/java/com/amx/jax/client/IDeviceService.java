@@ -22,21 +22,23 @@ public interface IDeviceService extends IJaxService {
 	public static class Path {
 
 		public static final String PREFIX = "/meta/device";
+		private static final String PUBG = "/pubg";
 
 		public static final String DEVICE_ACTIVATE = PREFIX + "/activate";
 		public static final String DEVICE_SEND_PAIR_OTP = PREFIX + "/sendpairotp";
-		public static final String DEVICE_VALIDATE_PAIR_OTP = PREFIX + "/validatepairotp";
+		public static final String DEVICE_VALIDATE_PAIR_OTP = PUBG + PREFIX + "/validatepairotp";
 		public static final String DEVICE_STATE_UPDATE = PREFIX + "/updatedevicestate";
 		public static final String DEVICE_STATUS_GET = PREFIX + "/getdevicestatus";
-		public static final String DEVICE_STATE_REMITTANCE_UPDATE = PREFIX + "/updatestateremittance";
-		public static final String DEVICE_STATE_CUSTOMER_REG_UPDATE = PREFIX + "/updatestatecustreg";
-		public static final String DEVICE_STATE_FC_SALE_UPDATE = PREFIX + "/updatestatefcsale";
+		public static final String DEVICE_STATE_REMITTANCE_UPDATE = PUBG + PREFIX + "/updatestateremittance";
+		public static final String DEVICE_STATE_CUSTOMER_REG_UPDATE = PUBG + PREFIX + "/updatestatecustreg";
+		public static final String DEVICE_STATE_FC_SALE_UPDATE = PUBG + PREFIX + "/updatestatefcsale";
 		public static final String DEVICE_STATE_SIGNATURE_UPDATE = PREFIX + "/updatesignature";
-		public static final String DEVICE_FC_PURCHASE_UPDATE = PREFIX + "/fcpurchase";
-		public static final String DEVICE_FC_SALE_UPDATE = PREFIX + "/fcsale";
+		public static final String DEVICE_FC_PURCHASE_UPDATE = PUBG + PREFIX + "/fcpurchase";
+		public static final String DEVICE_FC_SALE_UPDATE = PUBG + PREFIX + "/fcsale";
 		public static final String DEVICE_STATE = PREFIX + "/state";
 		public static final String DEVICE_REG = PREFIX + "/register";
 	}
+
 
 	public static class Params {
 
