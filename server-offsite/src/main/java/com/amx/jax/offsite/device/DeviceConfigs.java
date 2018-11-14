@@ -9,6 +9,8 @@ import com.amx.jax.api.FileSubmitRequestModel;
 import com.amx.jax.cache.CacheBox;
 import com.amx.jax.device.CardData;
 import com.amx.jax.model.response.DeviceStatusInfoDto;
+import com.amx.jax.offsite.device.DeviceConfigs.TerminalData;
+import com.amx.utils.ArgUtil;
 
 @Configuration
 public class DeviceConfigs {
@@ -50,6 +52,15 @@ public class DeviceConfigs {
 		String status;
 		long livestamp;
 		long changestamp;
+		long updatestamp;
+
+		public long getUpdatestamp() {
+			return updatestamp;
+		}
+
+		public void setUpdatestamp(long updatestamp) {
+			this.updatestamp = updatestamp;
+		}
 
 		public long getChangestamp() {
 			return changestamp;
@@ -120,6 +131,19 @@ public class DeviceConfigs {
 		@Override
 		public TerminalData getDefault() {
 			return new TerminalData();
+		}
+
+		/**
+		 * This method is requried to called whenever there is change in status/state of
+		 * terminal
+		 * 
+		 * @param terminalId
+		 */
+		public void updateChangeStamp(Object terminalId) {
+			String terminalIdStr = ArgUtil.parseAsString(terminalId);
+			TerminalData terminalData = this.getOrDefault(terminalIdStr);
+			terminalData.setChangestamp(System.currentTimeMillis());
+			this.fastPut(terminalIdStr, terminalData);
 		}
 	}
 

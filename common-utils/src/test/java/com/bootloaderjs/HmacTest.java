@@ -25,11 +25,11 @@ public class HmacTest { // Noncompliant
 			int cint = hashChars[i];
 			totalInt = (cint * cint * i) + totalInt;
 		}
-		long hashCode = (totalInt % Math.round(Math.pow(10, passLen)));
+		long hashCode = Math.max(totalInt % Math.round(Math.pow(10, passLen)), 2);
 		int passLenDiff = (passLen - String.valueOf(hashCode).length());
-		long passLenFill = Math.round(Math.pow(10, passLenDiff)) - 1;
+		long passLenFill = Math.max(Math.round(Math.pow(10, passLenDiff)) - 1, 1);
 
-		System.out.println(hashCode + "*" +passLenFill +" "+ (hashCode * passLenFill));
+		System.out.println(String.format("%s %s %s %s", passLenDiff, hashCode, passLenFill, (hashCode * passLenFill)));
 
 	}
 

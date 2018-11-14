@@ -65,8 +65,8 @@ public class TerminalController {
 		terminalData.setState(state);
 		terminalData.setStatus(status);
 		terminalData.setLivestamp(System.currentTimeMillis());
-
 		terminalBox.fastPut(terminalId, terminalData);
+
 		model.addAttribute(
 				"url", Urly.parse(
 						HttpUtils.getServerName(request)
@@ -85,6 +85,7 @@ public class TerminalController {
 			@RequestParam BigDecimal employeeId,
 			@RequestBody SignaturePadRemittanceInfo signaturePadRemittanceInfo
 	) {
+		terminalBox.updateChangeStamp(countryBranchSystemInventoryId);
 
 		return deviceClient.updateRemittanceState(
 				ClientType.SIGNATURE_PAD, countryBranchSystemInventoryId,
@@ -100,6 +101,8 @@ public class TerminalController {
 			@RequestParam BigDecimal employeeId,
 			@RequestBody SignaturePadFCPurchaseSaleInfo signaturePadRemittanceInfo
 	) {
+		terminalBox.updateChangeStamp(countryBranchSystemInventoryId);
+
 		return deviceClient.updateFcPurchase(
 				ClientType.SIGNATURE_PAD, countryBranchSystemInventoryId,
 				signaturePadRemittanceInfo, employeeId
@@ -114,6 +117,8 @@ public class TerminalController {
 			@RequestParam BigDecimal employeeId,
 			@RequestBody SignaturePadFCPurchaseSaleInfo signaturePadRemittanceInfo
 	) {
+		terminalBox.updateChangeStamp(countryBranchSystemInventoryId);
+
 		return deviceClient.updateFcSale(
 				ClientType.SIGNATURE_PAD, countryBranchSystemInventoryId,
 				signaturePadRemittanceInfo, employeeId
@@ -128,6 +133,8 @@ public class TerminalController {
 			@RequestParam BigDecimal employeeId,
 			@RequestBody SignaturePadCustomerRegStateMetaInfo signaturePadRemittanceInfo
 	) {
+		terminalBox.updateChangeStamp(countryBranchSystemInventoryId);
+
 		return deviceClient.updateCustomerRegStateData(
 				ClientType.SIGNATURE_PAD, countryBranchSystemInventoryId,
 				signaturePadRemittanceInfo, employeeId
