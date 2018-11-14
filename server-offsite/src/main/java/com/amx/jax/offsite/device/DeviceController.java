@@ -100,15 +100,13 @@ public class DeviceController {
 
 		deviceRequestValidator.validateDevice();
 
-		String deviceRegKey = deviceRequestValidator.getDeviceRegId();
+		String deviceRegId = deviceRequestValidator.getDeviceRegId();
 		String deviceRegToken = deviceRequestValidator.getDeviceRegToken();
 
-		DevicePairOtpResponse resp = deviceClient
-				.sendOtpForPairing(ArgUtil.parseAsInteger(deviceRegKey), deviceRegToken).getResult();
-		SessionPairingCreds creds = deviceRequestValidator.createSession(
-				resp.getSessionPairToken(), resp.getOtp(),
-				resp.getTermialId()
-		);
+		DevicePairOtpResponse resp = deviceClient.sendOtpForPairing(ArgUtil.parseAsInteger(deviceRegId), deviceRegToken)
+				.getResult();
+		SessionPairingCreds creds = deviceRequestValidator.createSession(resp.getSessionPairToken(), resp.getOtp(),
+				resp.getTermialId());
 		return AmxApiResponse.build(creds);
 	}
 
@@ -119,17 +117,6 @@ public class DeviceController {
 		sSOTranx.get().setTerminalId(terminalId);
 		sSOTranx.save();
 		return AmxApiResponse.build();
-	}
-
-	@Deprecated
-	@ApiDeviceHeaders
-	@RequestMapping(value = { DeviceConstants.Path.DEVICE_STATUS_ACTIVITY }, method = { RequestMethod.GET })
-	public AmxApiResponse<DeviceStatusInfoDto, Object> getStatus() {
-		deviceRequestValidator.validateRequest();
-		return deviceClient.getStatus(
-				ArgUtil.parseAsInteger(deviceRequestValidator.getDeviceRegId()),
-				deviceRequestValidator.getDeviceRegToken(), deviceRequestValidator.getDeviceSessionToken()
-		);
 	}
 
 	@ApiDeviceHeaders
@@ -143,8 +130,7 @@ public class DeviceController {
 	@RequestMapping(value = { DeviceConstants.Path.DEVICE_STATUS_CARD }, method = { RequestMethod.GET })
 	public AmxApiResponse<CardData, Object> getCardDetails(
 			@RequestParam(value = DeviceConstants.Params.PARAM_SYSTEM_ID) String systemid,
-			@RequestParam(required = false) Boolean wait, @RequestParam(required = false) Boolean flush
-	)
+			@RequestParam(required = false) Boolean wait, @RequestParam(required = false) Boolean flush)
 			throws InterruptedException {
 		wait = ArgUtil.parseAsBoolean(wait, Boolean.FALSE);
 		flush = ArgUtil.parseAsBoolean(flush, Boolean.FALSE);

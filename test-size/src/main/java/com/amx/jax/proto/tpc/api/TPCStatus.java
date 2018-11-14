@@ -27,15 +27,10 @@ public class TPCStatus extends IStatusCodeListPlugin<TPCServerCodes, ApiTPCStatu
 	 * @author lalittanwar
 	 *
 	 */
-	public static enum TPCServerCodes
-			implements
-			IExceptionEnum {
-		INVALID_CLIENT_CREDS,
-		INVALID_SESSION_TOKEN,
-		INVALID_CUSTOMER_TOKEN,
+	public static enum TPCServerCodes implements IExceptionEnum {
+		INVALID_CLIENT_CREDS, INVALID_SESSION_TOKEN, INVALID_CUSTOMER_TOKEN,
 
-		NO_DATA_FOUND,
-		UNKNOWN_ERROR;
+		NO_DATA_FOUND, UNKNOWN_ERROR;
 
 		@Override
 		public String getStatusKey() {
@@ -59,8 +54,7 @@ public class TPCStatus extends IStatusCodeListPlugin<TPCServerCodes, ApiTPCStatu
 	@Target(ElementType.METHOD)
 	@Retention(RetentionPolicy.RUNTIME)
 	public @interface ApiTPCStatus {
-		TPCServerCodes[] value() default { TPCServerCodes.UNKNOWN_ERROR
-		};
+		TPCServerCodes[] value() default { TPCServerCodes.UNKNOWN_ERROR };
 	}
 
 	/**
