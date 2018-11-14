@@ -100,7 +100,7 @@ public class DeviceManager {
 	}
 
 	private String getTerminalId(Device device) {
-		return branchDetailService.findBranchSystemByInventoryId(device.getBranchSystemInventoryId()).getIpAddress();
+		return device.getBranchSystemInventoryId().toString();
 	}
 
 	public boolean isLoggedIn(Device device) {
