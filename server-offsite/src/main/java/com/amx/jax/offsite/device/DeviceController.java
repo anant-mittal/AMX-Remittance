@@ -119,15 +119,6 @@ public class DeviceController {
 		return AmxApiResponse.build();
 	}
 
-	@Deprecated
-	@ApiDeviceHeaders
-	@RequestMapping(value = { DeviceConstants.Path.DEVICE_STATUS_ACTIVITY }, method = { RequestMethod.GET })
-	public AmxApiResponse<DeviceStatusInfoDto, Object> getStatus() {
-		deviceRequestValidator.validateRequest();
-		return deviceClient.getStatus(ArgUtil.parseAsInteger(deviceRequestValidator.getDeviceRegId()),
-				deviceRequestValidator.getDeviceRegToken(), deviceRequestValidator.getDeviceSessionToken());
-	}
-
 	@ApiDeviceHeaders
 	@RequestMapping(value = { DeviceConstants.Path.DEVICE_STATUS_CARD }, method = { RequestMethod.POST })
 	public AmxApiResponse<CardData, Object> saveCardDetails(@RequestBody CardReader reader) {
