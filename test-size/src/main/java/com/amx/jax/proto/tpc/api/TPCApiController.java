@@ -32,10 +32,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 @RestController
-@Api(value = "Third Party Client APIs",
-	tags = "Tags : List of APIs to communicate with AMX Service")
-@RequestMapping(produces = {
-		CommonMediaType.APPLICATION_JSON_VALUE })
+@Api(value = "Third Party Client APIs", tags = "Tags : List of APIs to communicate with AMX Service")
+@RequestMapping(produces = { CommonMediaType.APPLICATION_JSON_VALUE })
 public class TPCApiController {
 
 	@ApiOperation(value = "Client Authentication")
@@ -45,9 +43,8 @@ public class TPCApiController {
 		return AmxApiResponse.buildMeta(new ClientAuthResponse());
 	}
 
-	@ApiOperation(
-		value = "Customer Authentication",
-		notes = "Client is required to call this api to inititate customer login and redirect customer to url received in response")
+	@ApiOperation(value = "Customer Authentication Customer Authentication",
+			notes = "Client is required to call this api to inititate customer login and redirect customer to url received in response")
 	@ApiTPCStatus({ TPCServerCodes.INVALID_SESSION_TOKEN })
 	@TPCApiClientHeaders
 	@RequestMapping(value = { TPCApiConstants.Path.CUSTOMER_LOGIN }, method = { RequestMethod.GET })
@@ -95,8 +92,7 @@ public class TPCApiController {
 	@TPCApiCustomerHeaders
 	@RequestMapping(value = { TPCApiConstants.Path.CUSTOMER_REMIT_INQUIRY }, method = { RequestMethod.POST })
 	public ApiDataResponse<RemitInquiryResponse> inquireRemitTranx(
-			@RequestBody RemitInquiryRequest remitInquiryRequest
-	) {
+			@RequestBody RemitInquiryRequest remitInquiryRequest) {
 		return AmxApiResponse.buildData(new RemitInquiryResponse());
 	}
 
@@ -105,8 +101,7 @@ public class TPCApiController {
 	@TPCApiCustomerHeaders
 	@RequestMapping(value = { TPCApiConstants.Path.CUSTOMER_REMIT_CONFIRM }, method = { RequestMethod.POST })
 	public ApiDataResponse<RemitConfirmResponse> confirmRemitTranx(
-			@RequestBody RemitInquiryRequest remitInquiryRequest
-	) {
+			@RequestBody RemitInquiryRequest remitInquiryRequest) {
 		return AmxApiResponse.buildData(new RemitConfirmResponse());
 	}
 
