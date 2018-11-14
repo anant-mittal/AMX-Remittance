@@ -599,6 +599,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 			tenantContext.get().validateCivilId(customerDetails.getIdentityInt());
 		}
 		tenantContext.get().validateEmailId(customerDetails.getEmail());
+		tenantContext.get().validateDuplicateMobile(customerDetails.getMobile());
 		countryMetaValidation.validateMobileNumber(customerDetails.getCountryId(), customerDetails.getMobile());
 		countryMetaValidation.validateMobileNumberLength(customerDetails.getCountryId(), customerDetails.getMobile());
 		jaxUtil.convert(customerDetails, customer);
@@ -794,6 +795,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 			tenantContext.get().validateCivilId(customerPersonalDetail.getIdentityInt());
 		}
 		tenantContext.get().validateEmailId(customerPersonalDetail.getEmail());
+		tenantContext.get().validateDuplicateMobile(customerPersonalDetail.getMobile());
 		countryMetaValidation.validateMobileNumber(customerPersonalDetail.getCountryId(),
 				customerPersonalDetail.getMobile());
 		countryMetaValidation.validateMobileNumberLength(customerPersonalDetail.getCountryId(),

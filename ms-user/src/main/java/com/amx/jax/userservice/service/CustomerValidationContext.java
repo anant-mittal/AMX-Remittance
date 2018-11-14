@@ -24,6 +24,8 @@ public class CustomerValidationContext extends TenantContext<CustomerValidation>
 		
 		public void validateEmailId(String emailId);
 		
+		public void validateDuplicateMobile(String mobileNo);
+		
 	}
 
 }

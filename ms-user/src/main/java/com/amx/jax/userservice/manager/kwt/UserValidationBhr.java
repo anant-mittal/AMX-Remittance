@@ -65,4 +65,13 @@ public class UserValidationBhr implements CustomerValidation {
 		
 	}
 
+	@Override
+	public void validateDuplicateMobile(String mobileNo) {
+		List<Customer> list = customerRepo.getCustomerByMobileCheck(mobileNo);
+		if (list != null && list.size()!=0) {
+			throw new GlobalException("Mobile Number already exist", JaxError.ALREADY_EXIST_MOBILE);
+		}
+		
+	}
+
 }

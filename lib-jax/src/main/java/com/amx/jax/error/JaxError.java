@@ -114,6 +114,7 @@ public enum JaxError implements IExceptionEnum {
     BANK_BRANCH_SEARCH_EMPTY,
     INVALID_INPUT,
 	ALREADY_EXIST_EMAIL,
+	ALREADY_EXIST_MOBILE,
     
 	/*place order*/
 	PLACE_ORDER_ID_NOT_FOUND,
