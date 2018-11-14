@@ -9,7 +9,6 @@ import com.amx.jax.api.FileSubmitRequestModel;
 import com.amx.jax.cache.CacheBox;
 import com.amx.jax.device.CardData;
 import com.amx.jax.model.response.DeviceStatusInfoDto;
-import com.amx.jax.offsite.device.DeviceConfigs.TerminalData;
 import com.amx.utils.ArgUtil;
 
 @Configuration
@@ -47,7 +46,8 @@ public class DeviceConfigs {
 		}
 	}
 
-	public static class TerminalData {
+	public static class TerminalData implements Serializable {
+		private static final long serialVersionUID = 5690691652113911181L;
 		String state;
 		String status;
 		long livestamp;
@@ -95,7 +95,8 @@ public class DeviceConfigs {
 		}
 	}
 
-	public static class SignPadData {
+	public static class SignPadData implements Serializable {
+		private static final long serialVersionUID = -6489044552822849830L;
 		FileSubmitRequestModel signature;
 		DeviceStatusInfoDto stateData;
 
