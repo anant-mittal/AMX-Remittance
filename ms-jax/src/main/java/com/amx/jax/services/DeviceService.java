@@ -104,8 +104,8 @@ public class DeviceService extends AbstractService {
 
 	public DevicePairOtpResponse sendOtpForPairing(Integer deviceRegId, String paireToken) {
 		Device device = deviceDao.findDevice(new BigDecimal(deviceRegId));
-		deviceValidation.validatePaireToken(paireToken, deviceRegId);
 		deviceValidation.validateDevice(device);
+		deviceValidation.validatePaireToken(paireToken, deviceRegId);
 		DevicePairOtpResponse response = deviceManager.generateOtp(device);
 		return response;
 	}
