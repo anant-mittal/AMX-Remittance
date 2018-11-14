@@ -20,14 +20,16 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.DeviceClient;
 import com.amx.jax.client.IDeviceService;
-import com.amx.jax.constants.DeviceStateDataType;
 import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.model.request.device.SignaturePadCustomerRegStateMetaInfo;
 import com.amx.jax.model.request.device.SignaturePadFCPurchaseSaleInfo;
 import com.amx.jax.model.request.device.SignaturePadRemittanceInfo;
+import com.amx.jax.offsite.device.DeviceConfigs.TerminalBox;
+import com.amx.jax.offsite.device.DeviceConfigs.TerminalData;
 import com.amx.jax.offsite.device.DeviceRequest;
 import com.amx.jax.offsite.terminal.TerminalConstants.Path;
 import com.amx.jax.swagger.IStatusCodeListPlugin.ApiStatusService;
+import com.amx.utils.ArgUtil;
 import com.amx.utils.HttpUtils;
 import com.amx.utils.Urly;
 
@@ -45,14 +47,26 @@ public class TerminalController {
 	@Autowired
 	private DeviceRequest deviceRequestValidator;
 
+	@Autowired
+	TerminalBox terminalBox;
+
 	@RequestMapping(
 		value = { Path.TERMINAL_STATUS_PING }, method = { RequestMethod.GET })
 	public String getPing(
-			@RequestParam DeviceStateDataType state, @RequestParam String terminalId,
+			@RequestParam String state, @RequestParam String terminalId,
 			@RequestParam(required = false) String status,
 			Model model, HttpServletResponse response, HttpServletRequest request
 	) throws MalformedURLException, URISyntaxException {
 
+		TerminalData terminalData = terminalBox.getOrDefault(terminalId);
+		if (!ArgUtil.areEqual(terminalData.getStatus(), status) || !ArgUtil.areEqual(terminalData.getState(), state)) {
+			terminalData.setChangestamp(System.currentTimeMillis());
+		}
+		terminalData.setState(state);
+		terminalData.setStatus(status);
+		terminalData.setLivestamp(System.currentTimeMillis());
+
+		terminalBox.fastPut(terminalId, terminalData);
 		model.addAttribute(
 				"url", Urly.parse(
 						HttpUtils.getServerName(request)
@@ -71,7 +85,6 @@ public class TerminalController {
 			@RequestParam BigDecimal employeeId,
 			@RequestBody SignaturePadRemittanceInfo signaturePadRemittanceInfo
 	) {
-		deviceRequestValidator.validateRequest();
 
 		return deviceClient.updateRemittanceState(
 				ClientType.SIGNATURE_PAD, countryBranchSystemInventoryId,
@@ -87,7 +100,6 @@ public class TerminalController {
 			@RequestParam BigDecimal employeeId,
 			@RequestBody SignaturePadFCPurchaseSaleInfo signaturePadRemittanceInfo
 	) {
-		deviceRequestValidator.validateRequest();
 		return deviceClient.updateFcPurchase(
 				ClientType.SIGNATURE_PAD, countryBranchSystemInventoryId,
 				signaturePadRemittanceInfo, employeeId
@@ -102,7 +114,6 @@ public class TerminalController {
 			@RequestParam BigDecimal employeeId,
 			@RequestBody SignaturePadFCPurchaseSaleInfo signaturePadRemittanceInfo
 	) {
-		deviceRequestValidator.validateRequest();
 		return deviceClient.updateFcSale(
 				ClientType.SIGNATURE_PAD, countryBranchSystemInventoryId,
 				signaturePadRemittanceInfo, employeeId
@@ -117,7 +128,6 @@ public class TerminalController {
 			@RequestParam BigDecimal employeeId,
 			@RequestBody SignaturePadCustomerRegStateMetaInfo signaturePadRemittanceInfo
 	) {
-		deviceRequestValidator.validateRequest();
 		return deviceClient.updateCustomerRegStateData(
 				ClientType.SIGNATURE_PAD, countryBranchSystemInventoryId,
 				signaturePadRemittanceInfo, employeeId

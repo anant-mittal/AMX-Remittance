@@ -135,4 +135,14 @@ public class CacheBox<T> implements ICacheBox<T> {
 		return item;
 	}
 
+	@Override
+	public T getOrDefault(String key) {
+		return getOrDefault(key, getDefault());
+	}
+
+	@Override
+	public T getDefault() {
+		return null;
+	}
+
 }

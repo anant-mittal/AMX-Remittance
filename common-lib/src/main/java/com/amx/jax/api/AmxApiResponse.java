@@ -30,7 +30,8 @@ public class AmxApiResponse<T, M> extends AResponse<M>
 	/**
 	 * Instantiates a new amx api response.
 	 *
-	 * @param resultList the result list
+	 * @param resultList
+	 *            the result list
 	 */
 	public AmxApiResponse(List<T> resultList) {
 		super();
@@ -41,8 +42,10 @@ public class AmxApiResponse<T, M> extends AResponse<M>
 	/**
 	 * Instantiates a new amx api response.
 	 *
-	 * @param resultList the result list
-	 * @param meta       the meta
+	 * @param resultList
+	 *            the result list
+	 * @param meta
+	 *            the meta
 	 */
 	public AmxApiResponse(List<T> resultList, M meta) {
 		super();
@@ -64,7 +67,8 @@ public class AmxApiResponse<T, M> extends AResponse<M>
 	/**
 	 * Sets the data.
 	 *
-	 * @param data the new data
+	 * @param data
+	 *            the new data
 	 */
 	@Override
 	public void setData(T data) {
@@ -85,6 +89,11 @@ public class AmxApiResponse<T, M> extends AResponse<M>
 			return results.get(0);
 		}
 		return null;
+	}
+
+	@JsonIgnore
+	public void setResult(T result) {
+		this.results.add(0, result);
 	}
 
 	public void addResult(T result) {
@@ -130,8 +139,10 @@ public class AmxApiResponse<T, M> extends AResponse<M>
 	/**
 	 * Builds the list.
 	 *
-	 * @param            <TS> the generic type
-	 * @param resultList the result list
+	 * @param <TS>
+	 *            the generic type
+	 * @param resultList
+	 *            the result list
 	 * @return the amx api response
 	 */
 	public static <TS> AmxApiResponse<TS, Object> buildList(List<TS> resultList) {
@@ -141,10 +152,14 @@ public class AmxApiResponse<T, M> extends AResponse<M>
 	/**
 	 * Builds the list.
 	 *
-	 * @param            <TS> the generic type
-	 * @param            <MS> the generic type
-	 * @param resultList the result list
-	 * @param meta       the meta
+	 * @param <TS>
+	 *            the generic type
+	 * @param <MS>
+	 *            the generic type
+	 * @param resultList
+	 *            the result list
+	 * @param meta
+	 *            the meta
 	 * @return the amx api response
 	 */
 	public static <TS, MS> AmxApiResponse<TS, MS> buildList(List<TS> resultList, MS meta) {
