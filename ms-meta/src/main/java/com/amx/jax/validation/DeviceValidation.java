@@ -91,6 +91,9 @@ public class DeviceValidation {
 		if (device == null) {
 			throw new GlobalException("device not found with given reg id", JaxError.CLIENT_NOT_FOUND);
 		}
+		if (!ConstantDocument.Yes.equals(device.getStatus())) {
+			throw new GlobalException("device not active", JaxError.CLIENT_NOT_ACTIVE);
+		}
 	}
 
 	public URL validateImageUrl(String imageUrl) {
