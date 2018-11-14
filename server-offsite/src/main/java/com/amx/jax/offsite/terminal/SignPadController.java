@@ -71,16 +71,14 @@ public class SignPadController {
 
 		AmxApiResponse<DeviceStatusInfoDto, Object> devResp = deviceClient.getStatus(
 				ArgUtil.parseAsInteger(deviceRequestValidator.getDeviceRegId()),
-				deviceRequestValidator.getDeviceRegToken(), deviceRequestValidator.getDeviceSessionToken()
-		);
+				deviceRequestValidator.getDeviceRegToken(), deviceRequestValidator.getDeviceSessionToken());
 
 		if (!ArgUtil.isEmpty(devResp) && !ArgUtil.isEmpty(devResp.getResult())
 				&& !ArgUtil.isEmpty(devResp.getResult().getStateDataType())) {
 			String actualStatus = devResp.getResult().getStateDataType().toString()
 					+ (ArgUtil.isEmpty(terminalData.getStatus()) ? Constants.BLANK : terminalData.getStatus());
 
-			defaultRespo
-					.setStatusKey(actualStatus);
+			defaultRespo.setStatusKey(actualStatus);
 			defaultRespo.addResult(devResp.getResult());
 			/// data.getBranchPcLastLogoutTime()
 		}
@@ -99,15 +97,13 @@ public class SignPadController {
 		signPadData.setSignature(file);
 		signPadBox.fastPut(deviceData.getTerminalId(), signPadData);
 
-		return deviceClient.updateSignatureStateData(
-				ArgUtil.parseAsInteger(deviceRequestValidator.getDeviceRegId()), file.getData()
-		);
+		return deviceClient.updateSignatureStateData(ArgUtil.parseAsInteger(deviceRequestValidator.getDeviceRegId()),
+				file.getData());
 	}
 
 	@ApiDeviceHeaders
-	@RequestMapping(
-		value = Path.SIGNPAD_STATUS_SIGNATURE, method = { RequestMethod.GET,
-		}, produces = MediaType.IMAGE_PNG_VALUE)
+	@RequestMapping(value = Path.SIGNPAD_STATUS_SIGNATURE, method = { RequestMethod.GET, },
+			produces = MediaType.IMAGE_PNG_VALUE)
 	public ResponseEntity<byte[]> getSignatureStateData(HttpServletResponse response)
 			throws ParseException, IOException {
 		DeviceData deviceData = deviceRequestValidator.getDeviceData();
