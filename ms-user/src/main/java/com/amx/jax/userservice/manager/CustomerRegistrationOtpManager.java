@@ -89,16 +89,20 @@ public class CustomerRegistrationOtpManager {
 			logger.info("otp data not found in trnx, creating new one");
 			otpData = new OtpData();
 		}
-		String eOtp = Random.randomNumeric(6);
-		String hashedeOtp = cryptoUtil.getHash(userId, eOtp);
-		sendOtpModel.seteOtpPrefix(Random.randomAlpha(3));
-		sendOtpModel.seteOtp(eOtp);
-		otpData.seteOtp(eOtp);
-		otpData.setHashedeOtp(hashedeOtp);
-		otpData.seteOtpPrefix(sendOtpModel.geteOtpPrefix());
-
+		
+		String emailId = customerRegistrationManager.get().getCustomerPersonalDetail().getEmail();
+		if(!StringUtils.isBlank(emailId)) {
+			String eOtp = Random.randomNumeric(6);
+			String hashedeOtp = cryptoUtil.getHash(userId, eOtp);
+			sendOtpModel.seteOtpPrefix(Random.randomAlpha(3));
+			sendOtpModel.seteOtp(eOtp);
+			otpData.seteOtp(eOtp);
+			otpData.setHashedeOtp(hashedeOtp);
+			otpData.seteOtpPrefix(sendOtpModel.geteOtpPrefix());
+		}
+		
 		String mOtp = Random.randomNumeric(6);
-		String hashedmOtp = cryptoUtil.getHash(userId, eOtp);
+		String hashedmOtp = cryptoUtil.getHash(userId, mOtp);
 		sendOtpModel.setmOtp(mOtp);
 		sendOtpModel.setmOtpPrefix(Random.randomAlpha(3));
 		otpData.setmOtp(mOtp);

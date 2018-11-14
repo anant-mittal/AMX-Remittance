@@ -247,8 +247,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 
 		OtpData otpData = customerRegistrationManager.get().getOtpData();
 		try {
-			if (StringUtils.isBlank(offsiteCustRegModel.geteOtp())
-					|| StringUtils.isBlank(offsiteCustRegModel.getmOtp())) {
+			if (StringUtils.isBlank(offsiteCustRegModel.getmOtp())) {
 				auditService.excep(new CustomerAuditEvent(Type.VALIDATE_OTP, offsiteCustRegModel),
 						new GlobalException("Otp field is required", JaxError.MISSING_OTP));
 				throw new GlobalException("Otp field is required", JaxError.MISSING_OTP);
@@ -263,11 +262,18 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 						"Sorry, you cannot proceed to register. Please try to register after 12 midnight",
 						JaxError.VALIDATE_OTP_LIMIT_EXCEEDED);
 			}
+			
 			// actual validation logic
-			if (!otpData.geteOtp().equals(offsiteCustRegModel.geteOtp())
-					|| !otpData.getmOtp().equals(offsiteCustRegModel.getmOtp())) {
+			if (!otpData.getmOtp().equals(offsiteCustRegModel.getmOtp())) {
 				otpMismatch(otpData);
 			}
+			
+			if (!StringUtils.isBlank(offsiteCustRegModel.geteOtp())) {
+				if (!otpData.geteOtp().equals(offsiteCustRegModel.geteOtp())) {
+					otpMismatch(otpData);
+				}
+			}
+				
 			otpData.setOtpValidated(true);
 			otpData.resetCounts();
 		} finally {
