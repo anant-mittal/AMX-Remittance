@@ -38,7 +38,7 @@ public abstract class AResponse<M> implements ApiMetaResponse<M> {
 	protected String messageKey;
 
 	/** The status key. */
-	protected String statusKey = "SUCCESS";
+	protected String statusKey = ApiStatusCodes.SUCCESS.toString();
 
 	// Amx Specs
 	protected M meta;
