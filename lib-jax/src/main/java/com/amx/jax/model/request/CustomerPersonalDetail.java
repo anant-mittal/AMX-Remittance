@@ -28,86 +28,86 @@ public class CustomerPersonalDetail extends AbstractModel {
 	/**
 	 * Residence country
 	 */
-	@ApiMockModelProperty(example="91")
-	@NotNull(message="CountryId may not be null")
+	@ApiMockModelProperty(example = "91")
+	@NotNull(message = "CountryId may not be null")
 	private BigDecimal countryId;
 
 	/**
 	 * nationality
 	 */
-	@ApiMockModelProperty(example="91")
-	@NotNull(message="NationalityId may not be null")
+	@ApiMockModelProperty(example = "91")
+	@NotNull(message = "NationalityId may not be null")
 	private BigDecimal nationalityId;
 
 	/**
 	 * Civil id
 	 */
-	@NotNull(message="IdentityInt may not be null")
+	@NotNull(message = "IdentityInt may not be null")
 	@NumberFormat
-	@ApiMockModelProperty(example="268020406638")
+	@ApiMockModelProperty(example = "268020406638")
 	private String identityInt;
 
 	/**
 	 * Prefix/title
 	 */
-	@NotNull(message="Title may not be null")
-	@ApiMockModelProperty(example="180")
+	@NotNull(message = "Title may not be null")
+	@ApiMockModelProperty(example = "180")
 	private String title;
 
-	@NotNull(message="FirstName may not be null")
+	@NotNull(message = "FirstName may not be null")
 	@Size(min = 1)
-	@ApiMockModelProperty(example="Rakesh")
+	@ApiMockModelProperty(example = "Rakesh")
 	private String firstName;
 
-	@NotNull(message="LastName may not be null")
+	@NotNull(message = "LastName may not be null")
 	@Size(min = 1)
-	@ApiMockModelProperty(example="Parmar")
+	@ApiMockModelProperty(example = "Parmar")
 	private String lastName;
 
 	/** email id */
-	@NotNull(message="Email may not be null")
+	@NotNull(message = "Email may not be null")
 	@Email
-	@ApiMockModelProperty(example="rakesh@gmail.com")
+	@ApiMockModelProperty(example = "rakesh@gmail.com", required = false)
 	private String email;
 
 	/** mobile without country tel prefix code */
-	@NotNull(message="Mobile may not be null")
+	@NotNull(message = "Mobile may not be null")
 	@Size(min = 1)
 	@NumberFormat
-	@ApiMockModelProperty(example="98714345")
+	@ApiMockModelProperty(example = "98714345")
 	private String mobile;
 
 	/** country telephone prefix */
-	@NotNull(message="TelPrefix may not be null")
+	@NotNull(message = "TelPrefix may not be null")
 	@NumberFormat
-	@ApiMockModelProperty(example="965")
+	@ApiMockModelProperty(example = "965")
 	private String telPrefix;
 
-	@ApiMockModelProperty(example="يبلءيا")
+	@ApiMockModelProperty(example = "يبلءيا")
 	private String firstNameLocal;
 
-	@ApiMockModelProperty(example="ءسيقبا")
+	@ApiMockModelProperty(example = "ءسيقبا")
 	private String lastNameLocal;
 
-	@ApiMockModelProperty(example="2018-09-12")
+	@ApiMockModelProperty(example = "2018-09-12")
 	private Date issueDate;
 
-	@ApiMockModelProperty(example="2018-09-12")
+	@ApiMockModelProperty(example = "2018-09-12")
 	private Date expiryDate;
 
-	@ApiMockModelProperty(example="2018-09-12")
+	@ApiMockModelProperty(example = "2018-09-12")
 	private Date dateOfBirth;
 
-	@ApiMockModelProperty(example="198")
+	@ApiMockModelProperty(example = "198")
 	private BigDecimal identityTypeId;
-	
-	@ApiMockModelProperty(example="Y")
+
+	@ApiMockModelProperty(example = "Y")
 	private String insurance;
-	
-	@ApiMockModelProperty(example="91")
+
+	@ApiMockModelProperty(example = "91")
 	private String watsAppTelePrefix;
-	
-	@ApiMockModelProperty(example="9321484252")
+
+	@ApiMockModelProperty(example = "9321484252")
 	private String watsAppMobileNo;
 
 	public BigDecimal getCountryId() {
@@ -264,5 +264,4 @@ public class CustomerPersonalDetail extends AbstractModel {
 				+ ", watsAppTelePrefix=" + watsAppTelePrefix + ", watsAppMobileNo=" + watsAppMobileNo + "]";
 	}
 
-	
 }
