@@ -56,7 +56,7 @@ public class ApiStatusBuilder extends IStatusCodeListPlugin<ApiStatusCodes, ApiS
 
 			for (ApiMockParam apiImplicitParam : params) {
 				Parameter parameter = new ParameterBuilder().name(apiImplicitParam.name())
-						.modelRef(new ModelRef(SampleSwaggerConfig.PARAM_STRING)).description(apiImplicitParam.value())
+						.modelRef(new ModelRef(DefaultSwaggerConfig.PARAM_STRING)).description(apiImplicitParam.value())
 						.defaultValue(apiImplicitParam.defaultValue())
 						.parameterType(apiImplicitParam.paramType().toString().toLowerCase())
 						.required(apiImplicitParam.required()).build();
@@ -70,7 +70,7 @@ public class ApiStatusBuilder extends IStatusCodeListPlugin<ApiStatusCodes, ApiS
 			ApiMockParam[] params = annotation.get().value();
 			for (ApiMockParam apiImplicitParam : params) {
 				Parameter parameter = new ParameterBuilder().name(apiImplicitParam.name())
-						.modelRef(new ModelRef(SampleSwaggerConfig.PARAM_STRING)).description(apiImplicitParam.value())
+						.modelRef(new ModelRef(DefaultSwaggerConfig.PARAM_STRING)).description(apiImplicitParam.value())
 						.defaultValue(apiImplicitParam.defaultValue())
 						.parameterType(apiImplicitParam.paramType().toString().toLowerCase())
 						.required(apiImplicitParam.required()).build();

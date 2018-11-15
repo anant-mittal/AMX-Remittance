@@ -29,7 +29,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @Configuration
 @EnableSwagger2
 @ConditionalOnProperty("app.swagger")
-public class SampleSwaggerConfig {
+public class DefaultSwaggerConfig {
 
 	public static final String PARAM_STRING = "string";
 	public static final String PARAM_HEADER = "header";
