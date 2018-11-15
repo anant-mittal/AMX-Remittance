@@ -32,15 +32,15 @@ import com.amx.jax.AppConstants;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.filter.AppClientInterceptor;
 import com.amx.utils.ArgUtil;
-import com.amx.utils.ClassUtil;
+import com.amx.utils.ClazzUtil;
 import com.amx.utils.JsonUtil;
 
 @Component
 public class RestService {
 
-	public static final Pattern PATTERN_OUT = ClassUtil.getGenericTypePattern(IMetaRequestOutFilter.class);
+	public static final Pattern PATTERN_OUT = ClazzUtil.getGenericTypePattern(IMetaRequestOutFilter.class);
 
-	public static final Pattern PATTERN_IN = ClassUtil.getGenericTypePattern(IMetaRequestInFilter.class);
+	public static final Pattern PATTERN_IN = ClazzUtil.getGenericTypePattern(IMetaRequestInFilter.class);
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(RestService.class);
 	private static boolean OUT_FILTER_MAP_DONE = false;
@@ -383,8 +383,7 @@ public class RestService {
 	}
 
 	public static <T extends RequestMetaInfo> void exportMetaToStatic(
-			IMetaRequestOutFilter<T> restMetaFilter, HttpHeaders httpHeaders
-	) {
+			IMetaRequestOutFilter<T> restMetaFilter, HttpHeaders httpHeaders) {
 		if (restMetaFilter != null) {
 			T meta = restMetaFilter.exportMeta();
 			httpHeaders.add(AppConstants.META_XKEY, JsonUtil.toJson(meta));
@@ -424,7 +423,7 @@ public class RestService {
 				IMetaRequestInFilter<RequestMetaInfo> filter = IN_FILTERS_MAP.get(metaClass);
 				try {
 					String metaStr = req.getHeader(metaClass);
-					Class<RequestMetaInfo> clzz = ClassUtil.fromName(metaClass);
+					Class<RequestMetaInfo> clzz = ClazzUtil.fromName(metaClass);
 					if (filter != null && metaStr != null && clzz != null) {
 						RequestMetaInfo meta = JsonUtil.fromJson(metaStr, clzz);
 						filter.inFilter(meta);

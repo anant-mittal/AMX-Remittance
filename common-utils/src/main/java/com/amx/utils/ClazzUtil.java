@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-public class ClassUtil {
+public class ClazzUtil {
 
 	private final static Map<String, Class<?>> cache = new HashMap<String, Class<?>>();
 
