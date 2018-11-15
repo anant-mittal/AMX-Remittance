@@ -28,7 +28,7 @@ public class ProtoSwaggerConfig {
 	@Bean
 	public Docket productApi() {
 		Docket docket = new Docket(DocumentationType.SWAGGER_2).select()
-				.apis(RequestHandlerSelectors.basePackage("com.amx.jax.proto"))
+				.apis(RequestHandlerSelectors.basePackage("com.amx.jax"))
 				// .paths(regex("/product.*"))
 				.build();
 

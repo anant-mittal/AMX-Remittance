@@ -2,17 +2,17 @@ package com.amx.jax.proto.tpc.models;
 
 import java.math.BigDecimal;
 
-import io.swagger.annotations.ApiModelProperty;
+import com.amx.jax.swagger.ApiMockModelProperty;
 
 public class PurposeOfTrnxDTO {
 
-	@ApiModelProperty(example = "1234")
+	@ApiMockModelProperty(example = "1234")
 	public BigDecimal id;
 
-	@ApiModelProperty(example = "SALARY")
+	@ApiMockModelProperty(example = "SALARY")
 	public String code;
 
-	@ApiModelProperty(example = "Salary Income")
+	@ApiMockModelProperty(example = "Salary Income")
 	public String description;
 
 }

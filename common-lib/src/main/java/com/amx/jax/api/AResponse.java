@@ -7,10 +7,9 @@ import org.springframework.http.HttpStatus;
 import com.amx.jax.api.AmxResponseSchemes.ApiMetaResponse;
 import com.amx.jax.exception.ApiHttpExceptions.ApiStatusCodes;
 import com.amx.jax.exception.IExceptionEnum;
+import com.amx.jax.swagger.ApiMockModelProperty;
 import com.amx.utils.ArgUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import io.swagger.annotations.ApiModelProperty;
 
 public abstract class AResponse<M> implements ApiMetaResponse<M> {
 
@@ -22,10 +21,10 @@ public abstract class AResponse<M> implements ApiMetaResponse<M> {
 	protected String exception; // org.springframework.http.converter.HttpMessageNotReadableException
 	protected String message;// JSON parse error
 
-	@ApiModelProperty(example = "/postman/email/send")
+	@ApiMockModelProperty(example = "/postman/email/send")
 	protected String path;
 
-	@ApiModelProperty(example = "/go/to/some/other/url.html")
+	@ApiMockModelProperty(example = "/go/to/some/other/url.html")
 	protected String redirectUrl;
 
 	public String getRedirectUrl() {

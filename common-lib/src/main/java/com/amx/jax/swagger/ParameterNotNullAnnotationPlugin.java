@@ -1,97 +1,69 @@
 package com.amx.jax.swagger;
 
-import java.lang.annotation.Annotation;
+import static com.amx.jax.swagger.ApiMockModelProperties.findApiModePropertyAnnotation;
+import static com.amx.jax.swagger.ApiMockModelProperties.toAllowableValues;
+import static com.amx.jax.swagger.ApiMockModelProperties.toDescription;
+import static com.amx.jax.swagger.ApiMockModelProperties.toExample;
+import static com.amx.jax.swagger.ApiMockModelProperties.toHidden;
+import static com.amx.jax.swagger.ApiMockModelProperties.toIsReadOnly;
+import static com.amx.jax.swagger.ApiMockModelProperties.toIsRequired;
+import static com.amx.jax.swagger.ApiMockModelProperties.toPosition;
+import static com.amx.jax.swagger.ApiMockModelProperties.toType;
+import static springfox.documentation.schema.Annotations.findPropertyAnnotation;
 
-import javax.validation.constraints.NotNull;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.core.MethodParameter;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 
-import springfox.documentation.service.ResolvedMethodParameter;
 import springfox.documentation.spi.DocumentationType;
-import springfox.documentation.spi.service.ParameterBuilderPlugin;
-import springfox.documentation.spi.service.contexts.ParameterContext;
+import springfox.documentation.spi.schema.ModelPropertyBuilderPlugin;
+import springfox.documentation.spi.schema.contexts.ModelPropertyContext;
+import springfox.documentation.swagger.common.SwaggerPluginSupport;
 
 @Component
 @Order(Ordered.LOWEST_PRECEDENCE)
-public class ParameterNotNullAnnotationPlugin implements ParameterBuilderPlugin {
+public class ParameterNotNullAnnotationPlugin implements ModelPropertyBuilderPlugin {
+	@Override
+	public void apply(ModelPropertyContext context) {
+		Optional<ApiMockModelProperty> annotation = Optional.absent();
 
-	private static final Logger LOG = LoggerFactory
-			.getLogger(ParameterNotNullAnnotationPlugin.class);
+		if (context.getAnnotatedElement().isPresent()) {
+			annotation = annotation.or(findApiModePropertyAnnotation(context.getAnnotatedElement().get()));
+		}
+		if (context.getBeanPropertyDefinition().isPresent()) {
+			annotation = annotation.or(findPropertyAnnotation(
+					context.getBeanPropertyDefinition().get(), ApiMockModelProperty.class));
+		}
+		if (annotation.isPresent()) {
+			context.getBuilder()
+					.allowableValues(annotation.transform(toAllowableValues()).orNull())
+					.required(annotation.transform(toIsRequired()).or(true))
+					// .required(true)
+					.readOnly(annotation.transform(toIsReadOnly()).or(false))
+					.description(annotation.transform(toDescription()).orNull())
+					.isHidden(annotation.transform(toHidden()).or(false))
+					.type(annotation.transform(toType(context.getResolver())).orNull())
+					.position(annotation.transform(toPosition()).or(0))
+					.example(annotation.transform(toExample()).orNull());
+		} else {
+			context.getBuilder()
+					//.allowableValues(annotation.transform(toAllowableValues()).orNull())
+					.required(annotation.transform(toIsRequired()).or(true))
+					// .required(true)
+					//.readOnly(annotation.transform(toIsReadOnly()).or(false))
+					//.description(annotation.transform(toDescription()).orNull())
+					//.isHidden(annotation.transform(toHidden()).or(false))
+					//.type(annotation.transform(toType(context.getResolver())).orNull())
+					//.position(annotation.transform(toPosition()).or(0))
+					//.example(annotation.transform(toExample()).orNull())
+					;
+		}
+	}
 
 	@Override
 	public boolean supports(DocumentationType delimiter) {
-		// we simply support all documentationTypes!
-		return true;
+		return SwaggerPluginSupport.pluginDoesApply(delimiter);
 	}
-
-	@Override
-	public void apply(ParameterContext context) {
-
-		Optional<RequestParam> requestParam = extractRequestParamAnnotation(context);
-
-		if (requestParam.isPresent()) {
-			RequestParam requestParamValue = requestParam.get();
-
-			if (requestParamValue.required() == true) {
-				LOG.info("@RequestParam.required=true: setting parameter as required");
-				context.parameterBuilder().required(true);
-			}
-
-		} else {
-			Optional<PathVariable> pathVariableParam = extractPathVariableAnnotation(context);
-			if (pathVariableParam.isPresent()) {
-				LOG.info("@PathVariable present: setting parameter as required");
-				context.parameterBuilder().required(true);
-
-			} else {
-				Optional<NotNull> notNull = extractAnnotation(context);
-
-				if (notNull.isPresent()) {
-					LOG.info("@NotNull present: setting parameter as required");
-					context.parameterBuilder().required(true);
-				}
-			}
-
-		}
-
-	}
-
-	@VisibleForTesting
-	Optional<NotNull> extractAnnotation(ParameterContext context) {
-		return validatorFromField(context, NotNull.class);
-	}
-
-	@VisibleForTesting
-	Optional<RequestParam> extractRequestParamAnnotation(ParameterContext context) {
-		return validatorFromField(context, RequestParam.class);
-	}
-
-	@VisibleForTesting
-	Optional<PathVariable> extractPathVariableAnnotation(ParameterContext context) {
-		return validatorFromField(context, PathVariable.class);
-	}
-
-	public static <T extends Annotation> Optional<T> validatorFromField(
-			ParameterContext context, Class<T> annotationType) {
-
-		ResolvedMethodParameter methodParam = context.resolvedMethodParameter();
-
-		Optional<T> annotatedElement = methodParam.findAnnotation(annotationType);
-		Optional<T> annotationValue = Optional.absent();
-		if (annotatedElement.isPresent()) {
-			annotationValue = Optional.fromNullable(annotatedElement.get());
-		}
-		return annotationValue;
-	}
-
 }

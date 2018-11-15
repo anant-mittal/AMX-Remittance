@@ -2,7 +2,7 @@ package com.amx.jax.api;
 
 import java.util.List;
 
-import io.swagger.annotations.ApiModelProperty;
+import com.amx.jax.swagger.ApiMockModelProperty;
 
 public class AmxResponseSchemes {
 
@@ -10,25 +10,25 @@ public class AmxResponseSchemes {
 
 		public void setTimestamp(Long timestamp);
 
-		@ApiModelProperty(example = "1541276788518")
+		@ApiMockModelProperty(example = "1541276788518")
 		public Long getTimestamp();
 
-		@ApiModelProperty(example = "200")
+		@ApiMockModelProperty(example = "200")
 		public String getStatus();
 
 		public void setStatus(String status);
 
-		@ApiModelProperty(example = "SUCCESS")
+		@ApiMockModelProperty(example = "SUCCESS")
 		public String getStatusKey();
 
 		public void setStatusKey(String statusKey);
 
-		@ApiModelProperty(example = "This is success message in plain english")
+		@ApiMockModelProperty(example = "This is success message in plain english")
 		public String getMessage();
 
 		public void setMessage(String message);
 
-		@ApiModelProperty(example = "TRANX_SUCCESS:480:KWD")
+		@ApiMockModelProperty(example = "TRANX_SUCCESS:480:KWD")
 		public String getMessageKey();
 
 		public void setMessageKey(String messageKey);

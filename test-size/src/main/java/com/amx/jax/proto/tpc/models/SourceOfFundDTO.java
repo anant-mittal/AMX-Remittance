@@ -2,17 +2,17 @@ package com.amx.jax.proto.tpc.models;
 
 import java.math.BigDecimal;
 
-import io.swagger.annotations.ApiModelProperty;
+import com.amx.jax.swagger.ApiMockModelProperty;
 
 public class SourceOfFundDTO {
 
-	@ApiModelProperty(example = "1234")
+	@ApiMockModelProperty(example = "1234")
 	public BigDecimal id;
 
-	@ApiModelProperty(example = "INVEST_LOAN")
+	@ApiMockModelProperty(example = "INVEST_LOAN")
 	public String code;
 
-	@ApiModelProperty(example = "Invest in Loan")
+	@ApiMockModelProperty(example = "Invest in Loan")
 	public String description;
 
 }

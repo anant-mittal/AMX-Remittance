@@ -13,7 +13,6 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
-import com.amx.jax.filter.AppRequestInterceptor;
 import com.amx.jax.interceptor.TenantInterceptor;
 
 @Configuration

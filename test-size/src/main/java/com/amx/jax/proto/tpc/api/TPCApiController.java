@@ -18,21 +18,21 @@ import com.amx.jax.proto.tpc.models.ClientAuth.ClientAuthRequest;
 import com.amx.jax.proto.tpc.models.ClientAuth.ClientAuthResponse;
 import com.amx.jax.proto.tpc.models.CustomerAuth.CustomerAuthRequest;
 import com.amx.jax.proto.tpc.models.CustomerAuth.CustomerAuthResponse;
-import com.amx.jax.proto.tpc.models.CustomerDetails;
 import com.amx.jax.proto.tpc.models.CustomerBeneDTO;
+import com.amx.jax.proto.tpc.models.CustomerDetails;
 import com.amx.jax.proto.tpc.models.PurposeOfTrnxDTO;
-import com.amx.jax.proto.tpc.models.SourceOfFundDTO;
-import com.amx.jax.proto.tpc.models.RemittenceModels.RemitInquiryRequest;
-import com.amx.jax.proto.tpc.models.RemittenceModels.RemitVerifyRequest;
 import com.amx.jax.proto.tpc.models.RemittenceModels.RemitConfirmResponse;
+import com.amx.jax.proto.tpc.models.RemittenceModels.RemitInquiryRequest;
 import com.amx.jax.proto.tpc.models.RemittenceModels.RemitInquiryResponse;
+import com.amx.jax.proto.tpc.models.RemittenceModels.RemitVerifyRequest;
 import com.amx.jax.proto.tpc.models.RemittenceModels.RemitVerifyResponse;
+import com.amx.jax.proto.tpc.models.SourceOfFundDTO;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 @RestController
-@Api(value = "Third Party Client APIs", tags = "Tags : List of APIs to communicate with AMX Service")
+@Api(value = "Third Party Client APIs", tags = "List of APIs to communicate with AMX Service")
 @RequestMapping(produces = { CommonMediaType.APPLICATION_JSON_VALUE })
 public class TPCApiController {
 

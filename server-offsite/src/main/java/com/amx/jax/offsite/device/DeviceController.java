@@ -29,7 +29,6 @@ import com.amx.jax.model.request.DeviceRegistrationRequest;
 import com.amx.jax.model.response.BranchSystemDetailDto;
 import com.amx.jax.model.response.DeviceDto;
 import com.amx.jax.model.response.DevicePairOtpResponse;
-import com.amx.jax.model.response.DeviceStatusInfoDto;
 import com.amx.jax.offsite.OffsiteStatus.ApiOffisteStatus;
 import com.amx.jax.offsite.OffsiteStatus.OffsiteServerCodes;
 import com.amx.jax.offsite.device.DeviceConfigs.DeviceData;

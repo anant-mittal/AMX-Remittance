@@ -3,9 +3,8 @@ package com.amx.jax.device;
 import javax.validation.constraints.NotNull;
 
 import com.amx.jax.dict.UserClient.ClientType;
+import com.amx.jax.swagger.ApiMockModelProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-
-import io.swagger.annotations.ApiModelProperty;
 
 public class DeviceRestModels {
 
@@ -50,12 +49,12 @@ public class DeviceRestModels {
 
 	@JsonDeserialize(as = DeviceRestModel.class)
 	public interface DevicePairingRequest {
-		@ApiModelProperty(example = "192.168.14.162")
+		@ApiMockModelProperty(example = "192.168.14.162")
 		String getDeivceTerminalId();
 
 		void setDeivceTerminalId(String deivceTerminalId);
 
-		@ApiModelProperty(example = "SIGNATURE_PAD")
+		@ApiMockModelProperty(example = "SIGNATURE_PAD")
 		ClientType getDeivceClientType();
 
 		void setDeivceClientType(ClientType deivceClientType);
@@ -87,7 +86,7 @@ public class DeviceRestModels {
 
 		String getDeviceSessionToken();
 
-		@ApiModelProperty(example = "654321")
+		@ApiMockModelProperty(example = "654321")
 		String getSessionOTP();
 
 		void setSessionOTP(String sessionOTP);

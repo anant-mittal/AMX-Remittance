@@ -16,7 +16,6 @@ import com.amx.jax.dao.JaxEmployeeDao;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.manager.PromotionManager;
 import com.amx.jax.meta.MetaData;
-import com.amx.jax.multitenant.TenantContext;
 import com.amx.jax.scope.TenantContextHolder;
 
 @RunWith(SpringRunner.class)

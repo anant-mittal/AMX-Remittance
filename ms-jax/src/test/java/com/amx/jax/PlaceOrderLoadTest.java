@@ -24,7 +24,6 @@ import com.amx.jax.dbmodel.PipsMaster;
 import com.amx.jax.dbmodel.PlaceOrder;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.exrateservice.dao.PipsMasterDao;
-import com.amx.jax.multitenant.TenantContext;
 import com.amx.jax.prop.PlaceOrderProperties;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.jax.services.BeneficiaryService;

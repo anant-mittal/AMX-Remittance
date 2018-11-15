@@ -3,7 +3,6 @@ package com.amx.jax.sso.server;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -42,7 +41,6 @@ import com.amx.jax.sso.SSOStatus.SSOServerCodes;
 import com.amx.jax.sso.SSOTranx;
 import com.amx.jax.sso.SSOUser;
 import com.amx.utils.ArgUtil;
-import com.amx.utils.CollectionUtil;
 import com.amx.utils.JsonUtil;
 import com.amx.utils.Urly;
 
