@@ -95,10 +95,11 @@ public class DeviceService extends AbstractService {
 		return new BoolRespModel(Boolean.TRUE);
 	}
 
-	public BoolRespModel activateDevice(Integer countryBranchSystemInventoryId, ClientType deviceType) {
-		logger.info("In activateDevice with countryBranchSystemInventoryId: {}", countryBranchSystemInventoryId);
-		deviceManager.validateDeviceActivationRequest(countryBranchSystemInventoryId, deviceType);
-		deviceManager.activateDevice(countryBranchSystemInventoryId, deviceType);
+	public BoolRespModel activateDevice(Integer deviceRegId) {
+		logger.info("In activateDevice with deviceRegId: {}", deviceRegId);
+		Device device = deviceDao.findDevice(new BigDecimal(deviceRegId));
+		deviceValidation.validateDeviceForActivation(device);
+		deviceManager.activateDevice(device);
 		return new BoolRespModel(Boolean.TRUE);
 	}
 

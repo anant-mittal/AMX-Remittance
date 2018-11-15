@@ -103,16 +103,14 @@ public class DeviceClient implements IDeviceService {
 
 	@Override
 	public AmxApiResponse<BoolRespModel, Object> activateDevice(
-			Integer countryBranchSystemInventoryId,
-			ClientType deviceType,
+			Integer deviceRegId,
 			String mOtp
 	) {
 		try {
 			LOGGER.debug("in activateDevice");
 			String url = appConfig.getJaxURL() + Path.DEVICE_ACTIVATE;
 			return restService.ajax(url).meta(new JaxMetaInfo())
-					.queryParam(Params.TERMINAL_ID, countryBranchSystemInventoryId)
-					.queryParam(Params.DEVICE_TYPE, deviceType).get()
+					.field(Params.DEVICE_REG_ID, deviceRegId).postForm()
 					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
 					});
 		} catch (Exception e) {

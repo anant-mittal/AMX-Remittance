@@ -62,11 +62,7 @@ public class DeviceManager {
 	 * 
 	 */
 	@Transactional
-	public void activateDevice(Integer countryBranchSystemInventoryId, ClientType deviceType) {
-		Device device = deviceDao.findLatestDevice(new BigDecimal(countryBranchSystemInventoryId), deviceType);
-		if (device == null) {
-			throw new GlobalException("No device found");
-		}
+	public void activateDevice(Device device) {
 		device.setStatus(ConstantDocument.Yes);
 		DeviceStateInfo deviceStateInfo = deviceDao.getDeviceStateInfo(device);
 		deviceStateInfo.setState(DeviceState.REGISTERED);
@@ -176,4 +172,5 @@ public class DeviceManager {
 			}
 		}
 	}
+
 }

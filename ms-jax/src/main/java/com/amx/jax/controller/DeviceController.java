@@ -54,13 +54,10 @@ public class DeviceController implements IDeviceService {
 		return AmxApiResponse.build(response);
 	}
 
-	@RequestMapping(value = Path.DEVICE_ACTIVATE, method = RequestMethod.GET)
+	@RequestMapping(value = Path.DEVICE_ACTIVATE, method = RequestMethod.POST)
 	@Override
-	public AmxApiResponse<BoolRespModel, Object> activateDevice(
-			@RequestParam Integer countryBranchSystemInventoryId,
-			@RequestParam ClientType deviceType
-	) {
-		BoolRespModel response = deviceService.activateDevice(countryBranchSystemInventoryId, deviceType);
+	public AmxApiResponse<BoolRespModel, Object> activateDevice(@RequestParam Integer deviceRegId) {
+		BoolRespModel response = deviceService.activateDevice(deviceRegId);
 		return AmxApiResponse.build(response);
 	}
 

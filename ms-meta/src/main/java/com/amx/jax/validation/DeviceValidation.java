@@ -106,4 +106,10 @@ public class DeviceValidation {
 		}
 	}
 
+	public void validateDeviceForActivation(Device device) {
+		if (device == null) {
+			throw new GlobalException("No device found", JaxError.CLIENT_NOT_FOUND);
+		}
+	}
+
 }
