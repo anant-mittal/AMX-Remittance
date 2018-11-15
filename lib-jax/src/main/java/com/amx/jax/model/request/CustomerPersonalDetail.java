@@ -37,7 +37,6 @@ public class CustomerPersonalDetail extends AbstractModel {
 	 * nationality
 	 */
 	@ApiModelProperty(example="91")
-	@NotNull(message="NationalityId may not be null")
 	private BigDecimal nationalityId;
 
 	/**
@@ -66,7 +65,6 @@ public class CustomerPersonalDetail extends AbstractModel {
 	private String lastName;
 
 	/** email id */
-	@NotNull(message="Email may not be null")
 	@Email
 	@ApiModelProperty(example="rakesh@gmail.com")
 	private String email;
@@ -96,6 +94,7 @@ public class CustomerPersonalDetail extends AbstractModel {
 	@ApiModelProperty(example="2018-09-12")
 	private Date expiryDate;
 
+	@NotNull(message="dateOfBirth may not be null")
 	@ApiModelProperty(example="2018-09-12")
 	private Date dateOfBirth;
 
