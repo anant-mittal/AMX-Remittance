@@ -24,7 +24,9 @@ public class DeviceConstants {
 	public static class Path {
 		public static final String DEVICE_TERMINALS = "/pub/device/terminal/list";
 		public static final String DEVICE_PAIR = "/pub/device/pair";
+		public static final String DEVICE_PAIR_VALIDATE = "/pub/device/pair/validate";
 		public static final String SESSION_PAIR = "/pub/device/session";
+		public static final String SESSION_PAIR_VALIDATE = "/pub/device/session/validate";
 		public static final String TERMINAL_PAIRING = "/pub/device/terminal";
 		public static final String DEVICE_STATUS_CARD = "/pub/device/status/card";
 
@@ -44,33 +46,28 @@ public class DeviceConstants {
 
 	public static String generateDeviceReqToken(
 			SessionPairingCreds sessionPairingCreds,
-			DevicePairingCreds devicePairingCreds
-	) {
+			DevicePairingCreds devicePairingCreds) {
 		return generateDeviceReqToken(sessionPairingCreds.getDeviceRequestKey(), devicePairingCreds.getDeviceRegId());
 	}
 
 	public static boolean validateDeviceReqToken(String deviceReqKey, String deviceRegKey, String deviceReqToken) {
 		return CryptoUtil.validateHMAC(
 				DeviceConstants.Config.REQUEST_TOKEN_VALIDITY, deviceReqKey, deviceRegKey,
-				deviceReqToken
-		);
+				deviceReqToken);
 	}
 
 	public static String generateSessionPairingTokenX(String deviceRegToken, String sessionPairingToken) {
 		return CryptoUtil.generateHMAC(
 				DeviceConstants.Config.SESSION_TOKEN_VALIDITY, deviceRegToken,
-				sessionPairingToken
-		);
+				sessionPairingToken);
 	}
 
 	public static boolean validateSessionPairingTokenX(
 			String deviceRegKey, String sessionPairingToken,
-			String sessionPairingTokenX
-	) {
+			String sessionPairingTokenX) {
 		return CryptoUtil.validateHMAC(
 				DeviceConstants.Config.SESSION_TOKEN_VALIDITY, deviceRegKey, sessionPairingToken,
-				sessionPairingTokenX
-		);
+				sessionPairingTokenX);
 	}
 
 }

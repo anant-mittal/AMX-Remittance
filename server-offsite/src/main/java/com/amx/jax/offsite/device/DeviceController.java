@@ -12,9 +12,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.adapter.ICardService;
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.DeviceClient;
 import com.amx.jax.client.IDeviceService;
 import com.amx.jax.client.MetaClient;
+import com.amx.jax.client.IDeviceService.Path;
 import com.amx.jax.device.CardData;
 import com.amx.jax.device.CardReader;
 import com.amx.jax.device.DeviceConstants;
@@ -92,6 +94,14 @@ public class DeviceController {
 		return AmxApiResponse.build(creds);
 	}
 
+	@ApiOffisteStatus({ OffsiteServerCodes.CLIENT_UNKNOWN })
+	@RequestMapping(value = { DeviceConstants.Path.DEVICE_PAIR_VALIDATE }, method = { RequestMethod.GET })
+	public AmxApiResponse<BoolRespModel, Object> activateDevice(
+			@RequestParam Integer countryBranchSystemInventoryId,
+			@RequestParam ClientType deviceType) {
+		return deviceClient.activateDevice(countryBranchSystemInventoryId, deviceType);
+	}
+
 	@ApiDeviceHeaders
 	@ApiOffisteStatus({ OffsiteServerCodes.CLIENT_UNKNOWN })
 	@RequestMapping(value = { DeviceConstants.Path.SESSION_PAIR }, method = { RequestMethod.GET })
@@ -107,6 +117,15 @@ public class DeviceController {
 		SessionPairingCreds creds = deviceRequestValidator.createSession(resp.getSessionPairToken(), resp.getOtp(),
 				resp.getTermialId());
 		return AmxApiResponse.build(creds);
+	}
+
+	@RequestMapping(value = DeviceConstants.Path.SESSION_PAIR_VALIDATE, method = RequestMethod.GET)
+	public AmxApiResponse<BoolRespModel, Object> validateOtpForPairing(
+			@RequestParam ClientType deviceType,
+			@RequestParam Integer countryBranchSystemInventoryId, @RequestParam(required = false) String otp) {
+		return deviceClient.validateOtpForPairing(
+				deviceType, countryBranchSystemInventoryId,
+				otp.toString());
 	}
 
 	@RequestMapping(value = { DeviceConstants.Path.TERMINAL_PAIRING }, method = { RequestMethod.GET })
