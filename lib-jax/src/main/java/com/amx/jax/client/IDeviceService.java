@@ -73,7 +73,8 @@ public interface IDeviceService extends IJaxService {
 	);
 
 	@ApiJaxStatus({ JaxError.CLIENT_NOT_FOUND })
-	AmxApiResponse<BoolRespModel, Object> activateDevice(Integer deviceRegId);
+	AmxApiResponse<BoolRespModel, Object> activateDevice(Integer deviceRegId,
+			String mOtp);
 
 	@ApiJaxStatus({ JaxError.CLIENT_NOT_FOUND, JaxError.CLIENT_NOT_ACTIVE, JaxError.CLIENT_NOT_LOGGGED_IN,
 			JaxError.JAX_FIELD_VALIDATION_FAILURE })
