@@ -56,8 +56,10 @@ public class DefaultSwaggerConfig {
 		}
 
 		operationParameters.add(new ParameterBuilder().name(AppConstants.TRANX_ID_XKEY).description("Transaction Id")
+				.defaultValue("TST-1d59nub55kbgg-1d59nub5827sx")
 				.modelRef(new ModelRef(PARAM_STRING)).parameterType(PARAM_HEADER).required(false).build());
 		operationParameters.add(new ParameterBuilder().name(AppConstants.TRACE_ID_XKEY).description("Trace Id")
+				.defaultValue("TST-1d59nub55kbgg-1d59nub5827sx")
 				.modelRef(new ModelRef(PARAM_STRING)).parameterType(PARAM_HEADER).required(false).build());
 		docket.globalOperationParameters(operationParameters);
 		docket.apiInfo(metaData());
