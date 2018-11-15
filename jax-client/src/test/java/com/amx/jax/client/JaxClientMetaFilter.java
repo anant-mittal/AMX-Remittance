@@ -21,7 +21,7 @@ public class JaxClientMetaFilter implements IMetaRequestOutFilter<JaxMetaInfo> {
 		jaxMetaInfo.setTenant(TenantContextHolder.currentSite());
 		jaxMetaInfo.setTraceId(ContextUtil.getTraceId());
 
-		jaxMetaInfo.setCountryId(new BigDecimal(91));
+		jaxMetaInfo.setCountryId(jaxMetaInfo.getTenant().getBDCode());
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
 		jaxMetaInfo.setLanguageId(new BigDecimal(1));
 		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
