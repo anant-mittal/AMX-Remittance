@@ -114,7 +114,7 @@ public abstract class AResponse<M> implements ApiMetaResponse<M> {
 	 */
 	@Override
 	public void setStatusKey(String statusKey) {
-		this.setStatusEnum(ApiStatusCodes.NO_STATUS);
+		// this.setStatusEnum(ApiStatusCodes.NO_STATUS);
 		this.statusKey = statusKey;
 	}
 
