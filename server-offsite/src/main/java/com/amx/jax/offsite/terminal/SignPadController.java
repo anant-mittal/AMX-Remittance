@@ -62,7 +62,13 @@ public class SignPadController {
 		AmxApiResponse<DeviceStatusInfoDto, Object> defaultRespo = AmxApiResponse.build(new DeviceStatusInfoDto());
 
 		TerminalData terminalData = terminalBox.getOrDefault(deviceData.getTerminalId());
+		SignPadData signPadData = signPadBox.getOrDefault(deviceData.getTerminalId());
 		defaultRespo.setStatusEnum(ApiStatusCodes.NO_STATUS);
+
+		if (!ArgUtil.isEmpty(signPadData)) {
+			defaultRespo.getResult().setDeviceState(signPadData.getDeviceState());
+		}
+
 		if (TimeUtils.isDead(terminalData.getLivestamp(), 15000)) {
 			return defaultRespo;
 		} else if (Constants.Common.SUCCESS.equalsIgnoreCase(terminalData.getStatus())
