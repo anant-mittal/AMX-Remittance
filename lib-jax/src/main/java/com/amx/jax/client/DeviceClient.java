@@ -104,7 +104,8 @@ public class DeviceClient implements IDeviceService {
 	@Override
 	public AmxApiResponse<BoolRespModel, Object> activateDevice(
 			Integer countryBranchSystemInventoryId,
-			ClientType deviceType
+			ClientType deviceType,
+			String mOtp
 	) {
 		try {
 			LOGGER.debug("in activateDevice");

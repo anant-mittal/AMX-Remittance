@@ -95,16 +95,16 @@ public class DeviceController {
 	}
 
 	@ApiOffisteStatus({ OffsiteServerCodes.CLIENT_UNKNOWN })
-	@RequestMapping(value = { DeviceConstants.Path.DEVICE_PAIR_VALIDATE }, method = { RequestMethod.GET })
+	@RequestMapping(value = { DeviceConstants.Path.DEVICE_ACTIVATE }, method = { RequestMethod.POST })
 	public AmxApiResponse<BoolRespModel, Object> activateDevice(
-			@RequestParam Integer countryBranchSystemInventoryId,
-			@RequestParam ClientType deviceType) {
-		return deviceClient.activateDevice(countryBranchSystemInventoryId, deviceType);
+			@RequestParam Integer deviceRegId,
+			@RequestParam ClientType deviceType, @RequestParam(required = false) String mOtp) {
+		return deviceClient.activateDevice(deviceRegId, deviceType, mOtp);
 	}
 
 	@ApiDeviceHeaders
 	@ApiOffisteStatus({ OffsiteServerCodes.CLIENT_UNKNOWN })
-	@RequestMapping(value = { DeviceConstants.Path.SESSION_PAIR }, method = { RequestMethod.GET })
+	@RequestMapping(value = { DeviceConstants.Path.SESSION_CREATE }, method = { RequestMethod.GET })
 	public AmxApiResponse<SessionPairingCreds, Object> sendOtpForPairing() {
 
 		deviceRequestValidator.validateDevice();
@@ -119,13 +119,13 @@ public class DeviceController {
 		return AmxApiResponse.build(creds);
 	}
 
-	@RequestMapping(value = DeviceConstants.Path.SESSION_PAIR_VALIDATE, method = RequestMethod.GET)
+	@RequestMapping(value = DeviceConstants.Path.SESSION_PAIR, method = RequestMethod.POST)
 	public AmxApiResponse<BoolRespModel, Object> validateOtpForPairing(
 			@RequestParam ClientType deviceType,
-			@RequestParam Integer countryBranchSystemInventoryId, @RequestParam(required = false) String otp) {
+			@RequestParam Integer deviceRegId, @RequestParam(required = false) String mOtp) {
 		return deviceClient.validateOtpForPairing(
-				deviceType, countryBranchSystemInventoryId,
-				otp.toString());
+				deviceType, deviceRegId,
+				mOtp);
 	}
 
 	@RequestMapping(value = { DeviceConstants.Path.TERMINAL_PAIRING }, method = { RequestMethod.GET })

@@ -24,9 +24,9 @@ public class DeviceConstants {
 	public static class Path {
 		public static final String DEVICE_TERMINALS = "/pub/device/terminal/list";
 		public static final String DEVICE_PAIR = "/pub/device/pair";
-		public static final String DEVICE_PAIR_VALIDATE = "/pub/device/pair/validate";
-		public static final String SESSION_PAIR = "/pub/device/session";
-		public static final String SESSION_PAIR_VALIDATE = "/pub/device/session/validate";
+		public static final String DEVICE_ACTIVATE = "/pub/device/activate";
+		public static final String SESSION_CREATE = "/pub/device/session";
+		public static final String SESSION_PAIR = "/pub/device/session/pair";
 		public static final String TERMINAL_PAIRING = "/pub/device/terminal";
 		public static final String DEVICE_STATUS_CARD = "/pub/device/status/card";
 

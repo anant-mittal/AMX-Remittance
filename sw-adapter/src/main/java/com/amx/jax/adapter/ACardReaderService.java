@@ -238,7 +238,7 @@ public abstract class ACardReaderService {
 			try {
 				sessionPairingCreds = restService.ajax(serverUrl)
 						.meta(new DeviceMetaInfo())
-						.path(DeviceConstants.Path.SESSION_PAIR)
+						.path(DeviceConstants.Path.SESSION_CREATE)
 						.header(AppConstants.DEVICE_ID_XKEY, address.getMac())
 						.header(AppConstants.DEVICE_IP_LOCAL_XKEY, address.getLocalIp())
 						.header(DeviceConstants.Keys.CLIENT_REG_KEY_XKEY, devicePairingCreds.getDeviceRegId())
@@ -258,7 +258,7 @@ public abstract class ACardReaderService {
 			} catch (Exception e) {
 				status(DeviceStatus.SESSION_ERROR);
 				SWAdapterGUI.CONTEXT.log("CLIENT ERROR : " + e.getMessage());
-				LOGGER.error("getSessionPairingCreds",e);
+				LOGGER.error("getSessionPairingCreds", e);
 			}
 
 		}
@@ -292,12 +292,10 @@ public abstract class ACardReaderService {
 						.header(DeviceConstants.Keys.CLIENT_REG_TOKEN_XKEY, devicePairingCreds.getDeviceRegToken())
 						.header(
 								DeviceConstants.Keys.CLIENT_SESSION_TOKEN_XKEY,
-								sessionPairingCreds.getDeviceSessionToken()
-						)
+								sessionPairingCreds.getDeviceSessionToken())
 						.header(
 								DeviceConstants.Keys.CLIENT_REQ_TOKEN_XKEY,
-								DeviceConstants.generateDeviceReqToken(sessionPairingCreds, devicePairingCreds)
-						)
+								DeviceConstants.generateDeviceReqToken(sessionPairingCreds, devicePairingCreds))
 						.post(reader).asObject();
 				status(DataStatus.SYNCED);
 			}
