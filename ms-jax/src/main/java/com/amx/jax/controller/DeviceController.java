@@ -56,7 +56,7 @@ public class DeviceController implements IDeviceService {
 
 	@RequestMapping(value = Path.DEVICE_ACTIVATE, method = RequestMethod.POST)
 	@Override
-	public AmxApiResponse<BoolRespModel, Object> activateDevice(@RequestParam Integer deviceRegId, @RequestParam String mOtp) {
+	public AmxApiResponse<BoolRespModel, Object> activateDevice(@RequestParam Integer deviceRegId, @RequestParam(required=false) String mOtp) {
 		BoolRespModel response = deviceService.activateDevice(deviceRegId);
 		return AmxApiResponse.build(response);
 	}
