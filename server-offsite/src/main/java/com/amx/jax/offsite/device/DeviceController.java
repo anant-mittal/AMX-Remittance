@@ -99,7 +99,7 @@ public class DeviceController {
 	public AmxApiResponse<BoolRespModel, Object> activateDevice(
 			@RequestParam Integer deviceRegId,
 			@RequestParam ClientType deviceType, @RequestParam(required = false) String mOtp) {
-		return deviceClient.activateDevice(deviceRegId, deviceType, mOtp);
+		return deviceClient.activateDevice(deviceRegId, mOtp);
 	}
 
 	@ApiDeviceHeaders
