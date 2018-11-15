@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 
 import com.amx.jax.api.AmxResponseSchemes.ApiMetaResponse;
+import com.amx.jax.exception.ApiHttpExceptions.ApiStatusCodes;
 import com.amx.jax.exception.IExceptionEnum;
 import com.amx.utils.ArgUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -114,6 +115,7 @@ public abstract class AResponse<M> implements ApiMetaResponse<M> {
 	 */
 	@Override
 	public void setStatusKey(String statusKey) {
+		this.setStatusEnum(ApiStatusCodes.UNKNOWN);
 		this.statusKey = statusKey;
 	}
 

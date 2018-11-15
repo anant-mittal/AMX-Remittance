@@ -4,21 +4,28 @@ import org.springframework.http.HttpStatus;
 
 public class ApiHttpExceptions {
 
-	public static enum ApiHttpCodes implements IExceptionEnum {
+	public static enum ApiStatusCodes implements IExceptionEnum {
 
-		HTTP_CLIENT_ERROR, HTTP_SERVER_ERROR(500), API_ERROR(500),
+		SUCCESS(200), NO_CONTENT(204),
 
+		HTTP_CLIENT_ERROR, HTTP_SERVER_ERROR(500), API_ERROR(500), FAIL(500),
+
+		PARAM_INVALID(400), PARAM_MISSING(400), PARAM_ILLEGAL(400), PARAM_TYPE_MISMATCH(400),
+
+		UNAUTORIZED(401),
 		HTTP_NOT_FOUND(404),
 
-		PARAM_INVALID, PARAM_MISSING, PARAM_ILLEGAL, PARAM_TYPE_MISMATCH;
+		OTP_REQUIRED(461), MOTP_REQUIRED(461), EOTP_REQUIRED(463), DOTP_REQUIRED(464),
+
+		UNKNOWN(520);
 
 		int statusCode;
 
-		ApiHttpCodes(int statusCode) {
+		ApiStatusCodes(int statusCode) {
 			this.statusCode = statusCode;
 		}
 
-		ApiHttpCodes() {
+		ApiStatusCodes() {
 			this(400);
 		}
 
@@ -71,7 +78,7 @@ public class ApiHttpExceptions {
 
 		@Override
 		public IExceptionEnum getErrorIdEnum(String errorId) {
-			return ApiHttpCodes.API_ERROR;
+			return ApiStatusCodes.API_ERROR;
 		}
 
 		@Override
@@ -91,20 +98,20 @@ public class ApiHttpExceptions {
 
 		public ApiHttpArgException() {
 			super("Http Argument Exception");
-			this.setError(ApiHttpCodes.PARAM_INVALID);
+			this.setError(ApiStatusCodes.PARAM_INVALID);
 		}
 
-		public ApiHttpArgException(ApiHttpCodes statusCode) {
+		public ApiHttpArgException(ApiStatusCodes statusCode) {
 			super(statusCode);
 		}
 
-		public ApiHttpArgException(ApiHttpCodes statusCode, String message) {
+		public ApiHttpArgException(ApiStatusCodes statusCode, String message) {
 			super(statusCode, message);
 		}
 
 		public ApiHttpArgException(Exception e) {
 			super(e);
-			this.setError(ApiHttpCodes.PARAM_INVALID);
+			this.setError(ApiStatusCodes.PARAM_INVALID);
 		}
 
 		@Override
@@ -114,7 +121,7 @@ public class ApiHttpExceptions {
 
 		@Override
 		public IExceptionEnum getErrorIdEnum(String errorId) {
-			return ApiHttpCodes.PARAM_INVALID;
+			return ApiStatusCodes.PARAM_INVALID;
 		}
 
 		public static <T> T evaluate(Exception e) {

@@ -18,6 +18,7 @@ import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.api.FileSubmitRequestModel;
 import com.amx.jax.client.DeviceClient;
 import com.amx.jax.client.IDeviceService;
+import com.amx.jax.exception.ApiHttpExceptions.ApiStatusCodes;
 import com.amx.jax.model.response.DeviceStatusInfoDto;
 import com.amx.jax.offsite.device.ApiDeviceHeaders;
 import com.amx.jax.offsite.device.DeviceConfigs.DeviceData;
@@ -61,7 +62,7 @@ public class SignPadController {
 		AmxApiResponse<DeviceStatusInfoDto, Object> defaultRespo = AmxApiResponse.build(new DeviceStatusInfoDto());
 
 		TerminalData terminalData = terminalBox.getOrDefault(deviceData.getTerminalId());
-
+		defaultRespo.setStatusEnum(ApiStatusCodes.UNKNOWN);
 		if (TimeUtils.isDead(terminalData.getLivestamp(), 15000)) {
 			return defaultRespo;
 		} else if (Constants.Common.SUCCESS.equalsIgnoreCase(terminalData.getStatus())

@@ -26,7 +26,6 @@ import com.amx.jax.model.request.device.SignaturePadFCPurchaseSaleInfo;
 import com.amx.jax.model.request.device.SignaturePadRemittanceInfo;
 import com.amx.jax.offsite.device.DeviceConfigs.TerminalBox;
 import com.amx.jax.offsite.device.DeviceConfigs.TerminalData;
-import com.amx.jax.offsite.device.DeviceRequest;
 import com.amx.jax.offsite.terminal.TerminalConstants.Path;
 import com.amx.jax.swagger.IStatusCodeListPlugin.ApiStatusService;
 import com.amx.utils.ArgUtil;
@@ -45,10 +44,7 @@ public class TerminalController {
 	private DeviceClient deviceClient;
 
 	@Autowired
-	private DeviceRequest deviceRequestValidator;
-
-	@Autowired
-	TerminalBox terminalBox;
+	private TerminalBox terminalBox;
 
 	@RequestMapping(value = { Path.TERMINAL_STATUS_PING }, method = { RequestMethod.GET })
 	public String getPing(@RequestParam String state, @RequestParam String terminalId,
@@ -71,7 +67,8 @@ public class TerminalController {
 
 		model.addAttribute("url",
 				Urly.parse(HttpUtils.getServerName(request)).setPath(Path.TERMINAL_STATUS_PING)
-						.addParameter("terminalId", terminalId).addParameter("state", state).addParameter("time", time)
+						.addParameter("terminalId", terminalId).addParameter("state", state)
+						.addParameter("status", status).addParameter("time", time)
 						.getURL());
 		return "js/signpad";
 	}

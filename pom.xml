@@ -115,7 +115,6 @@
 		<!-- <module>server-stomp</module> -->
 
 		<module>sw-adapter</module>
-		<module>server-admin</module>
 		<module>server-branch</module>
 		<module>test-size</module>
 		<!-- <module>server-kiosk</module> -->
