@@ -635,12 +635,13 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		customer.setMedicalInsuranceInd(customerDetails.getInsurance());
 		if (customerDetails.getIdentityTypeId().toString().equals("204")) {
 			customer.setIdentityExpiredDate(null);
-			customer.setExpiryDate(customerDetails.getExpiryDate());
-			customer.setIssueDate(customerDetails.getIssueDate());
+			// commented by Prashant
+			//customer.setExpiryDate(customerDetails.getExpiryDate());
+			//customer.setIssueDate(customerDetails.getIssueDate());
 		} else {
 			customer.setIdentityExpiredDate(customerDetails.getExpiryDate());
-			customer.setExpiryDate(null);
-			customer.setIssueDate(null);
+			//customer.setExpiryDate(null);
+			//customer.setIssueDate(null);
 		}
 		customer.setIdentityInt(customerDetails.getIdentityInt());
 		if (customerEmploymentDetails != null) {

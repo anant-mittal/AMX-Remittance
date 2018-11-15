@@ -2,12 +2,19 @@ package com.amx.jax.tunnel;
 
 public enum TunnelEventXchange {
 	/**
-	 * Event will be delivered to Only Component
+	 * Event will be delivered to ALL Components
 	 */
 	SHOUT_LISTNER("SD"),
 
+	/**
+	 * Event will be delivered to Only ONE Component
+	 */
 	SEND_LISTNER("SH"),
 
+	/**
+	 * Only one worker will start working
+	 * 
+	 */
 	TASK_WORKER("TW"),
 	/**
 	 * For Audit purpose only

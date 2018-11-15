@@ -18,6 +18,7 @@ import com.amx.jax.payment.gateway.PayGResponse;
 import com.amx.jax.rest.RestMetaInfo;
 import com.amx.jax.rest.RestService;
 import com.amx.jax.scope.TenantContextHolder;
+import com.amx.utils.ArgUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
@@ -99,6 +100,13 @@ public class PaymentService {
 		paymentResponseDto.setTransactionId(payGServiceResponse.getTranxId());
 		paymentResponseDto.setResultCode(payGServiceResponse.getResult());
 		paymentResponseDto.setPostDate(payGServiceResponse.getPostDate());
+
+		paymentResponseDto
+				.setCollectionFinanceYear(ArgUtil.parseAsBigDecimal(payGServiceResponse.getCollectionFinYear()));
+		paymentResponseDto
+				.setCollectionDocumentCode(ArgUtil.parseAsBigDecimal(payGServiceResponse.getCollectionDocCode()));
+		paymentResponseDto
+				.setCollectionDocumentNumber(ArgUtil.parseAsBigDecimal(payGServiceResponse.getCollectionDocNumber()));
 
 		if (payGServiceResponse.getTrackId() != null) {
 			paymentResponseDto.setCustomerId(new BigDecimal(payGServiceResponse.getTrackId()));

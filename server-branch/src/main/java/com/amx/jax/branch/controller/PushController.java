@@ -19,6 +19,8 @@ import com.amx.jax.dict.Nations;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.client.PushNotifyClient;
+import com.amx.jax.postman.model.PushMessage;
+import com.amx.jax.scope.TenantContextHolder;
 import com.amx.jax.task.events.PromoNotifyTask;
 import com.amx.jax.tunnel.TunnelService;
 
@@ -33,9 +35,6 @@ public class PushController {
 
 	@Autowired
 	private PushNotifyClient pushNotifyClient;
-
-	@Autowired
-	private TunnelService tunnelService;
 
 	@RequestMapping(value = "/pub/list/tenant", method = RequestMethod.POST)
 	public List<Tenant> listOfTenants() throws PostManException, InterruptedException, ExecutionException {
@@ -68,7 +67,7 @@ public class PushController {
 		task.setNationality(Nations.ALL);
 		task.setTitle(title);
 		task.setMessage(message);
-		tunnelService.task(task);
+		onMessage(task);
 		return AmxApiResponse.build(task);
 	}
 
@@ -81,7 +80,7 @@ public class PushController {
 		task.setNationality(nationality);
 		task.setTitle(title);
 		task.setMessage(message);
-		tunnelService.task(task);
+		onMessage(task);
 		return AmxApiResponse.build(task);
 	}
 
@@ -90,6 +89,22 @@ public class PushController {
 			throws PostManException, InterruptedException, ExecutionException {
 		pushNotifyClient.subscribe(token, topic);
 		return topic;
+	}
+
+	public void onMessage(PromoNotifyTask task) {
+		Tenant tnt = TenantContextHolder.currentSite();
+		PushMessage msg = new PushMessage();
+		msg.setMessage(task.getMessage());
+		msg.setSubject(task.getTitle());
+
+		if (task.getNationality() == Nations.ALL) {
+			msg.addTopic(String.format(PushMessage.FORMAT_TO_ALL, tnt.toString().toLowerCase()));
+		} else {
+			msg.addTopic(String.format(PushMessage.FORMAT_TO_NATIONALITY, tnt.toString().toLowerCase(),
+					task.getNationality().getCode()));
+		}
+		pushNotifyClient.sendDirect(msg).getResult();
+
 	}
 
 }

@@ -190,8 +190,15 @@ public class TunnelSubscriberFactory {
 			public void onMessage(String channel, String msgId) {
 				RQueue<TunnelMessage<M>> topicMessageQueue = redisson
 						.getQueue(TunnelEventXchange.TASK_WORKER.getQueue(topic));
+				onMessage(channel, topicMessageQueue);
+			}
+
+			private void onMessage(String channel, RQueue<TunnelMessage<M>> topicMessageQueue) {
 				TunnelMessage<M> msg = topicMessageQueue.poll();
-				if (msg != null && !TimeUtils.isDead(msg.getTimestamp(), TIME_TO_EXPIRE_MILLIS)) {
+				if (msg == null) {
+					return;
+				}
+				if (!TimeUtils.isDead(msg.getTimestamp(), TIME_TO_EXPIRE_MILLIS)) {
 					AppContext context = msg.getContext();
 					AppContextUtil.setContext(context);
 					AppContextUtil.init();
@@ -202,7 +209,9 @@ public class TunnelSubscriberFactory {
 						LOGGER.error("EXCEPTION EVENT " + channel + " : " + msg.getId(), e);
 					}
 				}
+				onMessage(channel, topicMessageQueue);
 			}
+
 		});
 	}
 
@@ -214,6 +223,10 @@ public class TunnelSubscriberFactory {
 			public void onMessage(String channel, String msgId) {
 				RQueue<TunnelMessage<M>> topicMessageQueue = redisson
 						.getQueue(TunnelEventXchange.AUDIT.getQueue(topic));
+				onMessage(channel, topicMessageQueue);
+			}
+
+			private void onMessage(String channel, RQueue<TunnelMessage<M>> topicMessageQueue) {
 				TunnelMessage<M> msg = topicMessageQueue.poll();
 				if (msg != null) {
 					AppContext context = msg.getContext();
@@ -224,6 +237,7 @@ public class TunnelSubscriberFactory {
 					} catch (Exception e) {
 						LOGGER.error("EXCEPTION EVENT " + channel + " : " + msg.getId(), e);
 					}
+					onMessage(channel, topicMessageQueue);
 				}
 			}
 		});

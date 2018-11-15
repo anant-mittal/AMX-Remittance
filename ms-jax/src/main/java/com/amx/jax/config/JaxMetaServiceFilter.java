@@ -21,6 +21,7 @@ import com.amx.jax.meta.MetaData;
 import com.amx.jax.rest.RestMetaRequestInFilter;
 import com.amx.jax.service.CompanyService;
 import com.amx.jax.service.CountryBranchService;
+import com.amx.jax.service.CurrencyMasterService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
@@ -36,6 +37,8 @@ public class JaxMetaServiceFilter extends RestMetaRequestInFilter<JaxMetaInfo> {
 
 	@Autowired
 	CompanyService companyService;
+	@Autowired
+	CurrencyMasterService currencyMasterService ;
 
 	public void importMeta(JaxMetaInfo meta, HttpServletRequest req) throws Exception {
 		String metaInfo = req.getHeader(AppConstants.META_XKEY);
@@ -60,6 +63,9 @@ public class JaxMetaServiceFilter extends RestMetaRequestInFilter<JaxMetaInfo> {
 		if (metaData.getLanguageId() != null) {
 			ViewCompanyDetails company = companyService.getCompanyDetail(metaData.getLanguageId());
 			metaData.setCompanyId(company.getCompanyId());
+			BigDecimal defaultCurrencyId = currencyMasterService
+					.getCurrencyMasterByCountryId(company.getApplicationCountryId()).get(0).getCurrencyId();
+			metaData.setDefaultCurrencyId(defaultCurrencyId);
 		}
 
 	}

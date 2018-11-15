@@ -100,7 +100,7 @@ public class PromotionManager {
 			}
 			return dto;
 		} catch (Exception e) {
-			logger.error("error occured in get promo dto", e);
+			logger.debug("error occured in get promo dto", e);
 			return null;
 		}
 	}
