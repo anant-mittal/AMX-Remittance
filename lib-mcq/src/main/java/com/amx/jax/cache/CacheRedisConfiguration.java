@@ -76,7 +76,7 @@ public class CacheRedisConfiguration
 			}
 			singleServerConfig.setIdleConnectionTimeout(2 * 60 * 1000);
 		}
-		config.setCodec(new org.redisson.codec.FstCodec());
+		//config.setCodec(new org.redisson.codec.FstCodec());
 		return Redisson.create(config);
 	}
 
