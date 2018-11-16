@@ -66,15 +66,19 @@ public class SignPadController {
 
 		TerminalData terminalData = terminalBox.getOrDefault(deviceData.getTerminalId());
 		SignPadData signPadData = signPadBox.getOrDefault(deviceData.getTerminalId());
-		defaultRespo.setStatusEnum(ApiStatusCodes.NO_STATUS);
+		// defaultRespo.setStatusEnum(ApiStatusCodes.NO_STATUS);
 
 		if (!ArgUtil.isEmpty(signPadData)) {
 			defaultRespo.getResult().setDeviceState(signPadData.getDeviceState());
+			defaultRespo.setStatusKey(
+					ArgUtil.parseAsString(signPadData.getDeviceState()));
+
 		}
 
 		if (TimeUtils.isDead(terminalData.getLivestamp(), 15000)
 				|| (Constants.Common.SUCCESS.equalsIgnoreCase(terminalData.getStatus())
-						&& TimeUtils.isDead(terminalData.getChangestamp(), 5000))) {
+						&& TimeUtils.isDead(terminalData.getChangestamp(), 10000))) {
+
 			return defaultRespo;
 		}
 

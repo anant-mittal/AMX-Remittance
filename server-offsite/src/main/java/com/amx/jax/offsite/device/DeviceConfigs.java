@@ -11,6 +11,7 @@ import com.amx.jax.constants.DeviceState;
 import com.amx.jax.device.CardData;
 import com.amx.jax.model.response.DeviceStatusInfoDto;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.Constants;
 
 @Configuration
 public class DeviceConfigs {
@@ -84,7 +85,7 @@ public class DeviceConfigs {
 		}
 
 		public void setState(String state) {
-			this.state = state;
+			this.state = ArgUtil.parseAsString(state, Constants.BLANK).toUpperCase();
 		}
 
 		public String getStatus() {
@@ -92,7 +93,7 @@ public class DeviceConfigs {
 		}
 
 		public void setStatus(String status) {
-			this.status = status;
+			this.status = ArgUtil.parseAsString(status, Constants.BLANK).toUpperCase();
 		}
 	}
 
