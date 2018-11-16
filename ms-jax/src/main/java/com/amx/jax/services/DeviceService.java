@@ -99,6 +99,7 @@ public class DeviceService extends AbstractService {
 		logger.info("In activateDevice with deviceRegId: {}", deviceRegId);
 		Device device = deviceDao.findDevice(new BigDecimal(deviceRegId));
 		deviceValidation.validateDeviceForActivation(device);
+		deviceValidation.validateSystemInventoryForDuplicateDevice(device);
 		deviceManager.activateDevice(device);
 		return new BoolRespModel(Boolean.TRUE);
 	}

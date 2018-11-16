@@ -5,6 +5,7 @@ package com.amx.jax.repository;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.List;
 
 import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.CrudRepository;
@@ -18,7 +19,7 @@ import com.amx.jax.dict.UserClient.ClientType;
  */
 public interface DeviceRepository extends CrudRepository<Device, Serializable> {
 
-	public Device findByBranchSystemInventoryIdAndDeviceTypeAndStatus(BigDecimal brachSystemInvId,
+	public List<Device> findByBranchSystemInventoryIdAndDeviceTypeAndStatus(BigDecimal brachSystemInvId,
 			ClientType deviceType, String status);
 
 	public Device findFirst1ByBranchSystemInventoryIdAndDeviceType(BigDecimal brachSystemInvId, ClientType deviceType,
