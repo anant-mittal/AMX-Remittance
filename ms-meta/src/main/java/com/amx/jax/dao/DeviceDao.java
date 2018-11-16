@@ -81,10 +81,14 @@ public class DeviceDao {
 	public Device findDevice(BigDecimal branchSystemInvId, ClientType deviceType) {
 		List<Device> devices = deviceRepository.findByBranchSystemInventoryIdAndDeviceTypeAndStatus(branchSystemInvId,
 				deviceType, ConstantDocument.Yes);
+		Device device = null;
 		if (devices != null && devices.size() > 1) {
 			throw new GlobalException("Too many devices activated", JaxError.CLIENT_TOO_MANY_ACTIVE);
 		}
-		return devices.get(0);
+		if (devices != null && devices.size() == 1) {
+			device = devices.get(0);
+		}
+		return device;
 	}
 
 	public Device findLatestDevice(BigDecimal branchSystemInvId, ClientType deviceType) {
