@@ -72,10 +72,9 @@ public class SignPadController {
 			defaultRespo.getResult().setDeviceState(signPadData.getDeviceState());
 		}
 
-		if (TimeUtils.isDead(terminalData.getLivestamp(), 15000)) {
-			return defaultRespo;
-		} else if (Constants.Common.SUCCESS.equalsIgnoreCase(terminalData.getStatus())
-				&& TimeUtils.isDead(terminalData.getChangestamp(), 5000)) {
+		if (TimeUtils.isDead(terminalData.getLivestamp(), 15000)
+				|| (Constants.Common.SUCCESS.equalsIgnoreCase(terminalData.getStatus())
+						&& TimeUtils.isDead(terminalData.getChangestamp(), 5000))) {
 			return defaultRespo;
 		}
 
@@ -86,7 +85,7 @@ public class SignPadController {
 		if (!ArgUtil.isEmpty(devResp) && !ArgUtil.isEmpty(devResp.getResult())
 				&& !ArgUtil.isEmpty(devResp.getResult().getStateDataType())) {
 			String actualStatus = devResp.getResult().getStateDataType().toString()
-					+ (ArgUtil.isEmpty(terminalData.getStatus()) ? Constants.BLANK : terminalData.getStatus());
+					+ (ArgUtil.isEmpty(terminalData.getStatus()) ? Constants.BLANK : ("_" + terminalData.getStatus()));
 
 			defaultRespo.setStatusKey(actualStatus);
 			defaultRespo.setResult(devResp.getResult());
