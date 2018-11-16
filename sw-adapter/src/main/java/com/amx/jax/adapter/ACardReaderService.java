@@ -70,7 +70,7 @@ public abstract class ACardReaderService {
 	@Value("${jax.offsite.url}")
 	String serverUrl;
 
-	@Value("${device.terminal.id}")
+	// @Value("${device.terminal.id}")
 	String terminalId;
 
 	public String getTerminalId() {
@@ -249,8 +249,11 @@ public abstract class ACardReaderService {
 			} catch (AmxApiException e) {
 				status(DeviceStatus.SESSION_ERROR);
 				SWAdapterGUI.CONTEXT.log(e.getErrorKey() + " - REGID : " + devicePairingCreds.getDeviceRegId());
-				if ("CLIENT_INVALID_PAIR_TOKEN".equals(devicePairingCreds.getDeviceRegId())) {
+				if ("CLIENT_INVALID_PAIR_TOKEN".equals(e.getErrorKey())) {
 					devicePairingCredsValid = false;
+				} else if ("CLIENT_NOT_FOUND".equals(e.getErrorKey())) {
+					devicePairingCredsValid = false;
+					terminalId = null;
 				}
 			} catch (AmxException e) {
 				status(DeviceStatus.SESSION_ERROR);
@@ -261,6 +264,9 @@ public abstract class ACardReaderService {
 				LOGGER.error("getSessionPairingCreds", e);
 			}
 
+			if (!devicePairingCredsValid) {
+				devicePairingCreds = null;
+			}
 		}
 
 		return sessionPairingCreds;
