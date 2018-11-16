@@ -186,6 +186,7 @@
 		<module>lib-rbaac</module>
 		<module>lib-sso</module>
 		<module>lib-jax</module>
+		<module>lib-pricer</module>
 
 		<module>lib-postman</module>
 		<module>ms-postman</module>
@@ -201,6 +202,7 @@
 		<module>ms-rbaac</module>
 		<module>ms-broker</module>
 		<module>ms-worker</module>
+		<module>ms-pricer</module>
 
 		<module>server-payg</module>
 		<module>server-ui</module>
