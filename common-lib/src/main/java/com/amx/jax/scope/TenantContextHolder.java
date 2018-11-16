@@ -23,12 +23,20 @@ public class TenantContextHolder {
 		ContextUtil.map().put(TENANT, Tenant.KWT);
 	}
 
-	public static Tenant currentSite() {
+	public static Tenant currentSite(boolean returnDefault) {
 		Object site = ContextUtil.map().get(TENANT);
 		if (site == null) {
-			return Tenant.KWT;
+			if (returnDefault) {
+				return Tenant.KWT;
+			} else {
+				return null;
+			}
 		}
 		return (Tenant) site;
+	}
+
+	public static Tenant currentSite() {
+		return currentSite(true);
 	}
 
 	public static Tenant fromString(String siteId, Tenant defaultTnt) {

@@ -7,12 +7,15 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.meta.model.CustomerDto;
+import com.amx.amxlib.model.CivilIdOtpModel;
+import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.CustomerNotificationDTO;
 import com.amx.jax.AppConfig;
 import com.amx.jax.AppContextUtil;
@@ -24,11 +27,15 @@ import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.ui.WebAppConfig;
 import com.amx.jax.ui.model.AuthDataInterface.AuthResponse;
+import com.amx.jax.ui.model.AuthDataInterface.AuthResponseOTPprefix;
 import com.amx.jax.ui.model.AuthDataInterface.UserUpdateRequest;
 import com.amx.jax.ui.model.AuthDataInterface.UserUpdateResponse;
+import com.amx.jax.ui.model.AuthData;
 import com.amx.jax.ui.model.UserMetaData;
 import com.amx.jax.ui.model.UserUpdateData;
 import com.amx.jax.ui.response.ResponseWrapper;
+import com.amx.jax.ui.response.ResponseWrapperM;
+import com.amx.jax.ui.response.WebResponseStatus;
 import com.amx.jax.ui.service.GeoHotPoints;
 import com.amx.jax.ui.service.HotPointService;
 import com.amx.jax.ui.service.JaxService;
@@ -236,9 +243,24 @@ public class UserController {
 	 */
 	@ApiOperation(value = "new API to update password with Object")
 	@RequestMapping(value = "/api/user/password/**", method = { RequestMethod.POST })
-	public ResponseWrapper<UserUpdateResponse> changePasswordJSON(@RequestBody UserUpdateRequest userUpdateRequest) {
-		return userService.updatepwd(userUpdateRequest.getPassword(), userUpdateRequest.getmOtp(),
-				userUpdateRequest.geteOtp());
+	public ResponseWrapperM<Object, AuthResponseOTPprefix> changePasswordJSON(
+			@RequestHeader(value = "mOtp", required = false) String mOtpHeader,
+			@RequestParam(required = false) String mOtp,
+			@RequestBody UserUpdateRequest userUpdateRequest
+			) {
+		ResponseWrapperM<Object, AuthResponseOTPprefix> wrapper = new ResponseWrapperM<>();
+		mOtp = (mOtp == null) ? (mOtpHeader == null ? userUpdateRequest.getmOtp() : mOtpHeader) : mOtp;
+		if (mOtp == null) {
+			wrapper.setMeta(new AuthData());
+			wrapper.getMeta().setmOtpPrefix(loginService.sendOTP(null, null).getData().getmOtpPrefix());
+			wrapper.setStatus(WebResponseStatus.MOTP_REQUIRED);
+		} else {
+			wrapper.setData(userService.updatepwd(userUpdateRequest.getPassword(), mOtp, null));
+			wrapper.setStatus(WebResponseStatus.USER_UPDATE_SUCCESS);
+		}
+		return wrapper;
+//		return userService.updatepwd(userUpdateRequest.getPassword(), userUpdateRequest.getmOtp(),
+//				userUpdateRequest.geteOtp());
 	}
 
 	/**
@@ -268,9 +290,28 @@ public class UserController {
 	 * @return the response wrapper
 	 */
 	@RequestMapping(value = "/api/user/email/**", method = { RequestMethod.POST })
-	public ResponseWrapper<UserUpdateResponse> updateEmailJSON(@RequestBody UserUpdateRequest userUpdateRequest) {
-		return userService.updateEmail(userUpdateRequest.getEmail(), userUpdateRequest.getmOtp(),
-				userUpdateRequest.geteOtp());
+	public ResponseWrapperM<Object, AuthResponseOTPprefix> updateEmailJSON(
+			@RequestHeader(value = "mOtp", required = false) String mOtpHeader,
+			@RequestHeader(value = "eOtp", required = false) String eOtpHeader,
+			@RequestParam(required = false) String mOtp, @RequestParam(required = false) String eOtp,
+			@RequestBody UserUpdateRequest userUpdateRequest
+			) {
+		mOtp = (mOtp == null) ? (mOtpHeader == null ? userUpdateRequest.getmOtp() : mOtpHeader) : mOtp;
+		eOtp = (eOtp == null) ? (eOtpHeader == null ? userUpdateRequest.geteOtp() : eOtpHeader) : eOtp;
+		ResponseWrapperM<Object, AuthResponseOTPprefix> wrapper = new ResponseWrapperM<>();
+		if (mOtp == null && eOtp == null) {
+			CivilIdOtpModel model = jaxService.setDefaults().getUserclient().sendOtpForEmailUpdate(userUpdateRequest.getEmail()).getResult();
+			wrapper.setMeta(new AuthData());
+			wrapper.getMeta().setmOtpPrefix(model.getmOtpPrefix());
+			wrapper.getMeta().seteOtpPrefix(model.geteOtpPrefix());
+			wrapper.setStatus(WebResponseStatus.DOTP_REQUIRED);
+		} else {
+			CustomerModel model = jaxService.setDefaults().getUserclient().saveEmail(userUpdateRequest.getEmail(), mOtp, eOtp).getResult();
+			sessionService.getUserSession().getCustomerModel().setEmail(model.getEmail());
+			sessionService.getUserSession().getCustomerModel().getPersoninfo().setEmail(model.getEmail());
+			wrapper.setStatus(WebResponseStatus.USER_UPDATE_SUCCESS);
+		}
+		return wrapper;
 	}
 
 	/**
@@ -300,9 +341,28 @@ public class UserController {
 	 * @return the response wrapper
 	 */
 	@RequestMapping(value = "/api/user/phone/**", method = { RequestMethod.POST })
-	public ResponseWrapper<UserUpdateResponse> updatePhoneJSON(@RequestBody UserUpdateRequest userUpdateRequest) {
-		return userService.updatePhone(userUpdateRequest.getPhone(), userUpdateRequest.getmOtp(),
-				userUpdateRequest.geteOtp());
+	public ResponseWrapperM<Object, AuthResponseOTPprefix> updatePhoneJSON(
+			@RequestHeader(value = "mOtp", required = false) String mOtpHeader,
+			@RequestHeader(value = "eOtp", required = false) String eOtpHeader,
+			@RequestParam(required = false) String mOtp, @RequestParam(required = false) String eOtp,
+			@RequestBody UserUpdateRequest userUpdateRequest
+			) {
+		mOtp = (mOtp == null) ? (mOtpHeader == null ? userUpdateRequest.getmOtp() : mOtpHeader) : mOtp;
+		eOtp = (eOtp == null) ? (eOtpHeader == null ? userUpdateRequest.geteOtp() : eOtpHeader) : eOtp;
+		ResponseWrapperM<Object, AuthResponseOTPprefix> wrapper = new ResponseWrapperM<>();
+		if (mOtp == null && eOtp == null) {
+			CivilIdOtpModel model = jaxService.setDefaults().getUserclient().sendOtpForMobileUpdate(userUpdateRequest.getPhone()).getResult();
+			wrapper.setMeta(new AuthData());
+			wrapper.getMeta().setmOtpPrefix(model.getmOtpPrefix());
+			wrapper.getMeta().seteOtpPrefix(model.geteOtpPrefix());
+			wrapper.setStatus(WebResponseStatus.DOTP_REQUIRED);
+		} else {
+			CustomerModel model = jaxService.setDefaults().getUserclient().saveMobile(userUpdateRequest.getPhone(), mOtp, eOtp).getResult();
+			sessionService.getUserSession().getCustomerModel().setMobile(model.getMobile());
+			sessionService.getUserSession().getCustomerModel().getPersoninfo().setMobile(model.getMobile());
+			wrapper.setStatus(WebResponseStatus.USER_UPDATE_SUCCESS);
+		}
+		return wrapper;
 	}
 
 	/**
@@ -313,9 +373,22 @@ public class UserController {
 	 * @return the response wrapper
 	 */
 	@RequestMapping(value = "/api/user/secques", method = { RequestMethod.POST })
-	public ResponseWrapper<UserUpdateResponse> regSecQues(@RequestBody UserUpdateRequest userUpdateData) {
-		return userService.updateSecQues(userUpdateData.getSecQuesAns(), userUpdateData.getmOtp(),
-				userUpdateData.geteOtp());
+	public ResponseWrapperM<Object, AuthResponseOTPprefix> regSecQues(
+			@RequestHeader(value = "mOtp", required = false) String mOtpHeader,
+			@RequestParam(required = false) String mOtp,
+			@RequestBody UserUpdateRequest userUpdateData
+			) {
+		ResponseWrapperM<Object, AuthResponseOTPprefix> wrapper = new ResponseWrapperM<>();
+		mOtp = (mOtp == null) ? (mOtpHeader == null ? userUpdateData.getmOtp() : mOtpHeader) : mOtp;
+		if (mOtp == null) {
+			wrapper.setMeta(new AuthData());
+			wrapper.getMeta().setmOtpPrefix(loginService.sendOTP(null, null).getData().getmOtpPrefix());
+			wrapper.setStatus(WebResponseStatus.MOTP_REQUIRED);
+		} else {
+			wrapper.setData(userService.updateSecQues(userUpdateData.getSecQuesAns(), mOtp, null));
+			wrapper.setStatus(WebResponseStatus.USER_UPDATE_SUCCESS);
+		}
+		return wrapper;
 	}
 
 	/**
@@ -326,9 +399,23 @@ public class UserController {
 	 * @return the response wrapper
 	 */
 	@RequestMapping(value = "/api/user/phising", method = { RequestMethod.POST })
-	public ResponseWrapper<UserUpdateData> updatePhising(@RequestBody UserUpdateRequest userUpdateData) {
-		return userService.updatePhising(userUpdateData.getImageUrl(), userUpdateData.getCaption(),
-				userUpdateData.getmOtp(), userUpdateData.geteOtp());
+	public ResponseWrapperM<Object, AuthResponseOTPprefix> updatePhising(
+			@RequestHeader(value = "mOtp", required = false) String mOtpHeader,
+			@RequestParam(required = false) String mOtp,
+			@RequestBody UserUpdateRequest userUpdateData
+			) {
+		ResponseWrapperM<Object, AuthResponseOTPprefix> wrapper = new ResponseWrapperM<>();
+		mOtp = (mOtp == null) ? (mOtpHeader == null ? userUpdateData.getmOtp() : mOtpHeader) : mOtp;
+		if (mOtp == null) {
+			wrapper.setMeta(new AuthData());
+			wrapper.getMeta().setmOtpPrefix(loginService.sendOTP(null, null).getData().getmOtpPrefix());
+			wrapper.setStatus(WebResponseStatus.MOTP_REQUIRED);
+		} else {
+			wrapper.setData(userService.updatePhising(userUpdateData.getImageUrl(), userUpdateData.getCaption(),
+				mOtp, null));
+			wrapper.setStatus(WebResponseStatus.USER_UPDATE_SUCCESS);
+		}
+		return wrapper;
 	}
 
 	/**
@@ -340,6 +427,7 @@ public class UserController {
 	 *            the e otp
 	 * @return the response wrapper
 	 */
+	@Deprecated
 	@RequestMapping(value = "/api/user/otpsend", method = { RequestMethod.POST })
 	public ResponseWrapper<AuthResponse> sendOTP(@RequestParam(required = false) String mOtp,
 			@RequestParam(required = false) String eOtp) {
