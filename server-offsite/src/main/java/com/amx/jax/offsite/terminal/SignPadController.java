@@ -89,7 +89,7 @@ public class SignPadController {
 					+ (ArgUtil.isEmpty(terminalData.getStatus()) ? Constants.BLANK : terminalData.getStatus());
 
 			defaultRespo.setStatusKey(actualStatus);
-			defaultRespo.addResult(devResp.getResult());
+			defaultRespo.setResult(devResp.getResult());
 			/// data.getBranchPcLastLogoutTime()
 		}
 
