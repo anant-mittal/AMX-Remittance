@@ -113,7 +113,7 @@ public class DeviceValidation {
 	}
 
 	public void validateSystemInventoryForDuplicateDevice(Device device) {
-		Device activeDevice = deviceDao.findDevice(device.getRegistrationId(), device.getDeviceType());
+		Device activeDevice = deviceDao.findDevice(device.getBranchSystemInventoryId(), device.getDeviceType());
 		if (activeDevice != null) {
 			throw new GlobalException("Another device client already active", JaxError.CLIENT_ANOTHER_ALREADY_ACTIVE);
 		}
