@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.AppParam;
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.http.ApiRequest;
 import com.amx.jax.http.CommonHttpRequest;
+import com.amx.jax.http.RequestType;
 import com.amx.jax.model.UserDevice;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.jax.types.DigitsDnum;
@@ -37,6 +39,7 @@ public class AppParamController {
 	@Autowired
 	CommonHttpRequest commonHttpRequest;
 
+	@ApiRequest(type = RequestType.PING)
 	@RequestMapping(value = PARAM_URL, method = RequestMethod.GET)
 	public AppParam[] geoLocation(@RequestParam(required = false) AppParam id) {
 		if (id != null) {

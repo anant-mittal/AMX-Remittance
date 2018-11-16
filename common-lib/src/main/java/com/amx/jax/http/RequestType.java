@@ -1,10 +1,11 @@
-package com.amx.jax.filter;
+package com.amx.jax.http;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.util.StringUtils;
 
 import com.amx.jax.AppConstants;
+import com.amx.jax.filter.AppParamController;
 import com.amx.utils.ArgUtil;
 
 public enum RequestType {

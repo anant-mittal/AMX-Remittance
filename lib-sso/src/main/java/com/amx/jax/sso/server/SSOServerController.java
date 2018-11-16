@@ -25,8 +25,10 @@ import com.amx.jax.AppContextUtil;
 import com.amx.jax.adapter.AdapterServiceClient;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.device.CardData;
+import com.amx.jax.http.ApiRequest;
 import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.http.CommonHttpRequest.CommonMediaType;
+import com.amx.jax.http.RequestType;
 import com.amx.jax.model.UserDevice;
 import com.amx.jax.rbaac.RbaacServiceClient;
 import com.amx.jax.rbaac.dto.request.UserAuthInitReqDTO;
@@ -185,6 +187,7 @@ public class SSOServerController {
 		return JsonUtil.toJson(result);
 	}
 
+	@ApiRequest(type = RequestType.POLL)
 	@ApiSSOStatus({ SSOServerCodes.NO_TERMINAL_SESSION, SSOServerCodes.AUTH_DONE })
 	@RequestMapping(value = SSOConstants.SSO_CARD_DETAILS, method = RequestMethod.GET, produces = {
 			CommonMediaType.APPLICATION_JSON_VALUE, CommonMediaType.APPLICATION_V0_JSON_VALUE })

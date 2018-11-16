@@ -19,6 +19,8 @@ import com.amx.jax.api.FileSubmitRequestModel;
 import com.amx.jax.client.DeviceClient;
 import com.amx.jax.client.IDeviceService;
 import com.amx.jax.exception.ApiHttpExceptions.ApiStatusCodes;
+import com.amx.jax.http.ApiRequest;
+import com.amx.jax.http.RequestType;
 import com.amx.jax.model.response.DeviceStatusInfoDto;
 import com.amx.jax.offsite.device.ApiDeviceHeaders;
 import com.amx.jax.offsite.device.DeviceConfigs.DeviceData;
@@ -54,6 +56,7 @@ public class SignPadController {
 	@Autowired
 	private TerminalBox terminalBox;
 
+	@ApiRequest(type = RequestType.POLL)
 	@ApiDeviceHeaders
 	@RequestMapping(value = { Path.SIGNPAD_STATUS_ACTIVITY }, method = { RequestMethod.GET })
 	public AmxApiResponse<DeviceStatusInfoDto, Object> getStatus() {
