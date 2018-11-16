@@ -18,7 +18,6 @@ import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.api.FileSubmitRequestModel;
 import com.amx.jax.client.DeviceClient;
 import com.amx.jax.client.IDeviceService;
-import com.amx.jax.exception.ApiHttpExceptions.ApiStatusCodes;
 import com.amx.jax.http.ApiRequest;
 import com.amx.jax.http.RequestType;
 import com.amx.jax.model.response.DeviceStatusInfoDto;
@@ -66,7 +65,6 @@ public class SignPadController {
 
 		TerminalData terminalData = terminalBox.getOrDefault(deviceData.getTerminalId());
 		SignPadData signPadData = signPadBox.getOrDefault(deviceData.getTerminalId());
-		// defaultRespo.setStatusEnum(ApiStatusCodes.NO_STATUS);
 
 		if (!ArgUtil.isEmpty(signPadData)) {
 			defaultRespo.getResult().setDeviceState(signPadData.getDeviceState());
@@ -93,6 +91,9 @@ public class SignPadController {
 
 			defaultRespo.setStatusKey(actualStatus);
 			defaultRespo.setResult(devResp.getResult());
+
+			signPadData.setStateData(devResp.getResult());
+			signPadBox.fastPut(deviceData.getTerminalId(), signPadData);
 			/// data.getBranchPcLastLogoutTime()
 		}
 
