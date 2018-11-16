@@ -22,7 +22,7 @@ public interface IDeviceService extends IJaxService {
 	public static class Path {
 
 		public static final String PREFIX = "/meta/device";
-		private static final String PUBG = "/pubg";
+		private static final String PUBG = "";
 
 		public static final String DEVICE_ACTIVATE = PREFIX + "/activate";
 		public static final String DEVICE_SEND_PAIR_OTP = PREFIX + "/sendpairotp";

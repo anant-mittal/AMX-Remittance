@@ -77,35 +77,35 @@ public class TerminalController {
 	@ApiOperation("To update the status of Remitance")
 	@RequestMapping(value = { Path.TERMINAL_STATUS_REMIT }, method = { RequestMethod.POST })
 	public AmxApiResponse<BoolRespModel, Object> updateRemittanceState(
-			@RequestParam Integer countryBranchSystemInventoryId, @RequestParam BigDecimal employeeId,
+			@RequestParam Integer terminalId, @RequestParam BigDecimal employeeId,
 			@RequestBody SignaturePadRemittanceInfo signaturePadRemittanceInfo) {
-		terminalBox.updateChangeStamp(countryBranchSystemInventoryId);
+		terminalBox.updateChangeStamp(terminalId);
 
-		return deviceClient.updateRemittanceState(ClientType.SIGNATURE_PAD, countryBranchSystemInventoryId,
+		return deviceClient.updateRemittanceState(ClientType.SIGNATURE_PAD, terminalId,
 				signaturePadRemittanceInfo, employeeId);
 	}
 
 	@ResponseBody
 	@ApiOperation("To update the status of FC_PURCHASE")
 	@RequestMapping(value = { Path.TERMINAL_STATUS_FCPURCHASE }, method = { RequestMethod.POST })
-	public AmxApiResponse<BoolRespModel, Object> updateFcPurchase(@RequestParam Integer countryBranchSystemInventoryId,
+	public AmxApiResponse<BoolRespModel, Object> updateFcPurchase(@RequestParam Integer terminalId,
 			@RequestParam BigDecimal employeeId,
 			@RequestBody SignaturePadFCPurchaseSaleInfo signaturePadRemittanceInfo) {
-		terminalBox.updateChangeStamp(countryBranchSystemInventoryId);
+		terminalBox.updateChangeStamp(terminalId);
 
-		return deviceClient.updateFcPurchase(ClientType.SIGNATURE_PAD, countryBranchSystemInventoryId,
+		return deviceClient.updateFcPurchase(ClientType.SIGNATURE_PAD, terminalId,
 				signaturePadRemittanceInfo, employeeId);
 	}
 
 	@ResponseBody
 	@ApiOperation("To update the status of FC_SALE")
 	@RequestMapping(value = { Path.TERMINAL_STATUS_FCSALE }, method = { RequestMethod.POST })
-	public AmxApiResponse<BoolRespModel, Object> updateFcSale(@RequestParam Integer countryBranchSystemInventoryId,
+	public AmxApiResponse<BoolRespModel, Object> updateFcSale(@RequestParam Integer terminalId,
 			@RequestParam BigDecimal employeeId,
 			@RequestBody SignaturePadFCPurchaseSaleInfo signaturePadRemittanceInfo) {
-		terminalBox.updateChangeStamp(countryBranchSystemInventoryId);
+		terminalBox.updateChangeStamp(terminalId);
 
-		return deviceClient.updateFcSale(ClientType.SIGNATURE_PAD, countryBranchSystemInventoryId,
+		return deviceClient.updateFcSale(ClientType.SIGNATURE_PAD, terminalId,
 				signaturePadRemittanceInfo, employeeId);
 	}
 
@@ -113,11 +113,11 @@ public class TerminalController {
 	@ApiOperation("To update the status of Customer Registration")
 	@RequestMapping(value = { Path.TERMINAL_STATUS_CUST_REG }, method = { RequestMethod.POST })
 	public AmxApiResponse<BoolRespModel, Object> updateCustomerRegStateData(
-			@RequestParam Integer countryBranchSystemInventoryId, @RequestParam BigDecimal employeeId,
+			@RequestParam Integer terminalId, @RequestParam BigDecimal employeeId,
 			@RequestBody SignaturePadCustomerRegStateMetaInfo signaturePadRemittanceInfo) {
-		terminalBox.updateChangeStamp(countryBranchSystemInventoryId);
+		terminalBox.updateChangeStamp(terminalId);
 
-		return deviceClient.updateCustomerRegStateData(ClientType.SIGNATURE_PAD, countryBranchSystemInventoryId,
+		return deviceClient.updateCustomerRegStateData(ClientType.SIGNATURE_PAD, terminalId,
 				signaturePadRemittanceInfo, employeeId);
 	}
 

@@ -76,7 +76,8 @@ public class CacheRedisConfiguration
 			}
 			singleServerConfig.setIdleConnectionTimeout(2 * 60 * 1000);
 		}
-		//config.setCodec(new org.redisson.codec.FstCodec());
+		// Commenting this as we dont want to use session sharing across applications
+		config.setCodec(new org.redisson.codec.FstCodec());
 		return Redisson.create(config);
 	}
 

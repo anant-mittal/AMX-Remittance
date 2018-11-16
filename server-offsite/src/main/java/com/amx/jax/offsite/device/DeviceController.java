@@ -122,9 +122,9 @@ public class DeviceController {
 	@RequestMapping(value = DeviceConstants.Path.SESSION_PAIR, method = RequestMethod.POST)
 	public AmxApiResponse<BoolRespModel, Object> validateOtpForPairing(
 			@RequestParam ClientType deviceType,
-			@RequestParam Integer deviceRegId, @RequestParam(required = false) String mOtp) {
+			@RequestParam Integer terminalId, @RequestParam(required = false) String mOtp) {
 		return deviceClient.validateOtpForPairing(
-				deviceType, deviceRegId,
+				deviceType, terminalId,
 				mOtp);
 	}
 
