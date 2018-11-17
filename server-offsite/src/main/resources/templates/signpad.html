@@ -120,7 +120,18 @@ table {
 	localStorage.setItem("terminalId", terminalIP);
 	var deviceRegId = localStorage.getItem("deviceRegId");
 	var deviceRegToken = localStorage.getItem("deviceRegToken");
+	var did = localStorage.getItem("did") || guid();
+	localStorage.setItem("did", did);
 
+	function guid() {
+		  function s4() {
+		    return Math.floor((1 + Math.random()) * 0x10000)
+		      .toString(16)
+		      .substring(1);
+		  }
+		  return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+		}
+	
 	function pairDevice() {
 		var dfd = jQuery.Deferred();
 		if (deviceRegToken && deviceRegId) {
@@ -138,6 +149,9 @@ table {
 			method : 'POST',
 			dataType : 'json',
 			contentType : "application/json",
+			headers : {
+				'x-did' : did
+			},
 			data : JSON.stringify({
 				deivceTerminalId : terminalIP,
 				deivceClientType : "SIGNATURE_PAD"
