@@ -283,7 +283,7 @@ table {
 											resp.results[0].stateDataType);
 								}
 							}).always(function() {
-						$("#signature").attr("src", "/pub/signpad/signature");
+						$("#signature").attr("src", "/pub/signpad/signature?x-device-reg-id="+deviceRegId);
 						setTimeout(poll, 3000);
 					})
 				});
