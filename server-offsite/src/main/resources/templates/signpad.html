@@ -158,7 +158,7 @@ table {
 			})
 		}).then(function(resp) {
 			$(".device #statusKey").text(resp.statusKey);
-			if (resp && resp.results[0]) {
+			if (resp && resp.results && resp.results[0]) {
 				deviceRegId = resp.results[0].deviceRegId;
 				deviceRegToken = resp.results[0].deviceRegToken;
 				localStorage.setItem("deviceRegId", deviceRegId);
@@ -220,7 +220,7 @@ table {
 				dataType : 'json'
 			}).then(function(resp) {
 				$(".session #statusKey").text(resp.statusKey);
-				if (resp && resp.results[0]) {
+				if (resp && resp.results && resp.results[0]) {
 					deviceSessionToken = resp.results[0].deviceSessionToken;
 					deviceRequestKey = resp.results[0].deviceRequestKey;
 					sessionOTP = resp.results[0].sessionOTP;
