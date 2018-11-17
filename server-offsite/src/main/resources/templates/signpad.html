@@ -106,7 +106,7 @@ table {
 						<td id="data">--</td>
 					</tr>
 					<tr>
-						<td id=signature><img alt="" src="signature.png"></td>
+						<td id=signature><img alt="" src="signature.png"/></td>
 					</tr>
 				</table>
 			</td>
@@ -283,7 +283,7 @@ table {
 											resp.results[0].stateDataType);
 								}
 							}).always(function() {
-						$("#signature").attr("src", "/pub/signpad/signature?x-device-reg-id="+deviceRegId);
+						$("#signature img").attr("src", "/pub/signpad/signature?x-device-reg-id="+deviceRegId);
 						setTimeout(poll, 3000);
 					})
 				});

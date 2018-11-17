@@ -130,6 +130,10 @@ public class SignPadController {
 		DeviceData deviceData = deviceRequestValidator.getDeviceData();
 
 		SignPadData signPadData = signPadBox.getOrDefault(deviceData.getTerminalId());
+		if(ArgUtil.isEmpty(signPadData.getSignature())) {
+			return ResponseEntity.noContent().build();
+		}
+		
 		String sourceData = signPadData.getSignature().getData();
 
 		File file = File.fromBase64(sourceData, Type.PNG);
