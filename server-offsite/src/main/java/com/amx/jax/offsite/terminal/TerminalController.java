@@ -79,7 +79,7 @@ public class TerminalController {
 	public AmxApiResponse<BoolRespModel, Object> updateRemittanceState(
 			@RequestParam Integer terminalId, @RequestParam BigDecimal employeeId,
 			@RequestBody SignaturePadRemittanceInfo signaturePadRemittanceInfo) {
-		terminalBox.updateChangeStamp(terminalId);
+		terminalBox.updateStamp(terminalId);
 
 		return deviceClient.updateRemittanceState(ClientType.SIGNATURE_PAD, terminalId,
 				signaturePadRemittanceInfo, employeeId);
@@ -91,7 +91,7 @@ public class TerminalController {
 	public AmxApiResponse<BoolRespModel, Object> updateFcPurchase(@RequestParam Integer terminalId,
 			@RequestParam BigDecimal employeeId,
 			@RequestBody SignaturePadFCPurchaseSaleInfo signaturePadRemittanceInfo) {
-		terminalBox.updateChangeStamp(terminalId);
+		terminalBox.updateStamp(terminalId);
 
 		return deviceClient.updateFcPurchase(ClientType.SIGNATURE_PAD, terminalId,
 				signaturePadRemittanceInfo, employeeId);
@@ -103,7 +103,7 @@ public class TerminalController {
 	public AmxApiResponse<BoolRespModel, Object> updateFcSale(@RequestParam Integer terminalId,
 			@RequestParam BigDecimal employeeId,
 			@RequestBody SignaturePadFCPurchaseSaleInfo signaturePadRemittanceInfo) {
-		terminalBox.updateChangeStamp(terminalId);
+		terminalBox.updateStamp(terminalId);
 
 		return deviceClient.updateFcSale(ClientType.SIGNATURE_PAD, terminalId,
 				signaturePadRemittanceInfo, employeeId);
@@ -115,7 +115,7 @@ public class TerminalController {
 	public AmxApiResponse<BoolRespModel, Object> updateCustomerRegStateData(
 			@RequestParam Integer terminalId, @RequestParam BigDecimal employeeId,
 			@RequestBody SignaturePadCustomerRegStateMetaInfo signaturePadRemittanceInfo) {
-		terminalBox.updateChangeStamp(terminalId);
+		terminalBox.updateStamp(terminalId);
 
 		return deviceClient.updateCustomerRegStateData(ClientType.SIGNATURE_PAD, terminalId,
 				signaturePadRemittanceInfo, employeeId);

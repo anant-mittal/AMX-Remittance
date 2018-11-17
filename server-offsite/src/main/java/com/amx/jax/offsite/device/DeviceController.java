@@ -116,7 +116,7 @@ public class DeviceController {
 				.getResult();
 		SessionPairingCreds creds = deviceRequestValidator.createSession(resp.getSessionPairToken(), resp.getOtp(),
 				resp.getTermialId());
-		return AmxApiResponse.build(creds);
+		return AmxApiResponse.build(creds,resp.getTermialId());
 	}
 
 	@RequestMapping(value = DeviceConstants.Path.SESSION_PAIR, method = RequestMethod.POST)

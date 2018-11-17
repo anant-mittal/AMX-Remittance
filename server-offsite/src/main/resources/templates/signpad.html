@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+<head>
+<!-- Static content -->
+
+<title>SIGNPAD</title>
+
+<style type="text/css">
+table, th, td {
+	border: 1px solid black;
+}
+
+table {
+	margin-left: auto;
+	margin-right: auto;
+	border-spacing: 2px;
+}
+</style>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"
+	integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+	crossorigin="anonymous"></script>
+
+</head>
+<body>
+	<h1 align="center">Welcome to Al Mulla Admin Panel !!!</h1>
+	<hr />
+	<br />
+	<br />
+
+	<table>
+		<tr>
+			<th>OTP</th>
+			<th id="otp">--</th>
+		</tr>
+		<tr>
+			<th>statusKey</th>
+			<th id="statusKey">--</th>
+		</tr>
+		<tr>
+			<th>deviceState</th>
+			<th id="deviceState">--</th>
+		</tr>
+		<tr>
+			<th>stateDataType</th>
+			<th id="stateDataType">--</th>
+		</tr>
+		<tr>
+			<th>data</th>
+			<th id="data">--</th>
+		</tr>
+	</table>
+</body>
+<script>
+	var terminalIP = localStorage.getItem("terminalId")
+			|| window.prompt("Enter Terminal");
+	localStorage.setItem("terminalId", terminalIP);
+	var deviceRegId = localStorage.getItem("deviceRegId");
+	var deviceRegToken = localStorage.getItem("deviceRegToken");
+
+	function pairDevice() {
+		var dfd = jQuery.Deferred();
+		if (deviceRegToken && deviceRegId) {
+			setTimeout(function() {
+				dfd.resolve({
+					deviceRegId : deviceRegId,
+					deviceRegToken : deviceRegToken
+				});
+			}, 0);
+			return dfd.promise();
+		}
+		return $.ajax({
+			url : "/pub/device/pair",
+			method : 'POST',
+			dataType : 'json',
+			contentType : "application/json",
+			data : JSON.stringify({
+				deivceTerminalId : terminalIP,
+				deivceClientType : "SIGNATURE_PAD"
+			})
+		}).then(function(resp) {
+			$("#statusKey").text(resp.statusKey);
+			if (resp && resp.results[0]) {
+				deviceRegId = resp.results[0].deviceRegId;
+				deviceRegToken = resp.results[0].deviceRegToken;
+				localStorage.setItem("deviceRegId", deviceRegId);
+				localStorage.setItem("deviceRegToken", deviceRegToken);
+				return resp.results[0];
+			}
+		});
+	}
+	
+	function activateDevice() {
+		return $.ajax({
+			url : "/pub/device/activate",
+			method : 'POST',
+			dataType : 'json',
+			//contentType : "application/json",
+			data : {
+				deviceRegId : deviceRegId,
+				deviceType : "SIGNATURE_PAD"
+			}
+		});
+	}
+
+	var terminalId, deviceSessionToken, deviceRequestKey, deviceRequestToken, sessionOTP;
+
+	function pairSession() {
+		return pairDevice().then(function(){
+			return activateDevice();
+		}).then(function() {
+			if (deviceSessionToken && deviceRequestKey) {
+				var dfd = jQuery.Deferred();
+				setTimeout(function() {
+					dfd.resolve({
+						deviceSessionToken : deviceSessionToken,
+						deviceRequestKey : deviceRequestKey
+					});
+				}, 0);
+				return dfd.promise();
+			}
+			return $.ajax({
+				url : '/pub/device/session',
+				headers : {
+					'x-device-reg-id' : deviceRegId,
+					'x-device-reg-token' : deviceRegToken
+				},
+				method : 'GET',
+				dataType : 'json'
+			}).then(function(resp) {
+				$("#statusKey").text(resp.statusKey);
+				if (resp && resp.results[0]) {
+					deviceSessionToken = resp.results[0].deviceSessionToken;
+					deviceRequestKey = resp.results[0].deviceRequestKey;
+					sessionOTP = resp.results[0].sessionOTP;
+					$("#otp").text(sessionOTP);
+				}
+				terminalId = resp.meta;
+				validateSession();
+			});
+
+		})
+	}
+	function validateSession() {
+		return $.ajax({
+			url : "/pub/device/session/pair",
+			method : 'POST',
+			dataType : 'json',
+			//contentType : "application/json",
+			data : {
+				terminalIP : terminalIP,
+				terminalId : terminalId,
+				deviceType : "SIGNATURE_PAD",
+				mOtp : sessionOTP
+			}
+		});
+	}
+	function hmac() {
+		return $.getJSON("/pub/amx/hmac", {
+			interval : 30,
+			secret : deviceRequestKey,
+			message : deviceRegId,
+			length : 6
+		});
+	}
+	function poll() {
+		pairSession().then(function() {
+			return hmac();
+		}).then(function(resp) {
+			return $.ajax({
+				url : '/pub/signpad/status/activity',
+				headers : {
+					'x-device-reg-id' : deviceRegId,
+					'x-device-reg-token' : deviceRegToken,
+					'x-device-session-token' : deviceSessionToken,
+					'x-device-req-token' : resp.hmac
+				},
+				method : 'GET',
+				dataType : 'json'
+			}).then(function() {
+				$("#statusKey").text(resp.statusKey);
+				if (resp && resp.results[0]) {
+					$("#deviceState").text(resp.results[0].deviceState);
+					$("#stateDataType").text(resp.results[0].stateDataType);
+				}
+			}).always(function() {
+				setTimeout(poll, 1000);
+			})
+		});
+	}
+	poll();
+</script>
+</html>

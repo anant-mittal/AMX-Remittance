@@ -102,6 +102,15 @@ public class DeviceConfigs {
 		FileSubmitRequestModel signature;
 		DeviceStatusInfoDto stateData;
 		DeviceState deviceState;
+		long updatestamp;
+
+		public long getUpdatestamp() {
+			return updatestamp;
+		}
+
+		public void setUpdatestamp(long updatestamp) {
+			this.updatestamp = updatestamp;
+		}
 
 		public DeviceState getDeviceState() {
 			return deviceState;
@@ -152,10 +161,10 @@ public class DeviceConfigs {
 		 * 
 		 * @param terminalId
 		 */
-		public void updateChangeStamp(Object terminalId) {
+		public void updateStamp(Object terminalId) {
 			String terminalIdStr = ArgUtil.parseAsString(terminalId);
 			TerminalData terminalData = this.getOrDefault(terminalIdStr);
-			terminalData.setChangestamp(System.currentTimeMillis());
+			terminalData.setUpdatestamp(System.currentTimeMillis());
 			this.fastPut(terminalIdStr, terminalData);
 		}
 	}

@@ -18,6 +18,7 @@ import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.api.FileSubmitRequestModel;
 import com.amx.jax.client.DeviceClient;
 import com.amx.jax.client.IDeviceService;
+import com.amx.jax.constants.DeviceState;
 import com.amx.jax.http.ApiRequest;
 import com.amx.jax.http.RequestType;
 import com.amx.jax.model.response.DeviceStatusInfoDto;
@@ -66,37 +67,41 @@ public class SignPadController {
 		TerminalData terminalData = terminalBox.getOrDefault(deviceData.getTerminalId());
 		SignPadData signPadData = signPadBox.getOrDefault(deviceData.getTerminalId());
 
-		if (!ArgUtil.isEmpty(signPadData)) {
-			defaultRespo.getResult().setDeviceState(signPadData.getDeviceState());
-			defaultRespo.setStatusKey(
-					ArgUtil.parseAsString(signPadData.getDeviceState()));
-		} else {
+		if (ArgUtil.isEmpty(signPadData)
+				|| ArgUtil.isEmpty(signPadData.getDeviceState())
+				|| signPadData.getUpdatestamp() < terminalData.getUpdatestamp()) {
+
 			AmxApiResponse<DeviceStatusInfoDto, Object> devResp = deviceClient.getStatus(
 					ArgUtil.parseAsInteger(deviceRequestValidator.getDeviceRegId()),
 					deviceRequestValidator.getDeviceRegToken(), deviceRequestValidator.getDeviceSessionToken());
 
 			if (!ArgUtil.isEmpty(devResp) && !ArgUtil.isEmpty(devResp.getResult())
 					&& !ArgUtil.isEmpty(devResp.getResult().getStateDataType())) {
-				String actualStatus = devResp.getResult().getStateDataType().toString()
-						+ (ArgUtil.isEmpty(terminalData.getStatus()) ? Constants.BLANK
-								: ("_" + terminalData.getStatus()));
-
-				defaultRespo.setStatusKey(actualStatus);
-				defaultRespo.setResult(devResp.getResult());
 				signPadData.setStateData(devResp.getResult());
+				signPadData.setUpdatestamp(terminalData.getUpdatestamp());
 				signPadBox.fastPut(deviceData.getTerminalId(), signPadData);
 				/// data.getBranchPcLastLogoutTime()
 			}
-
 		}
 
-		if (TimeUtils.isDead(terminalData.getLivestamp(), 15000)
+		if (signPadData.getDeviceState() != DeviceState.SESSION_PAIRED
+				|| TimeUtils.isDead(terminalData.getLivestamp(), 15000)
 				|| (Constants.Common.SUCCESS.equalsIgnoreCase(terminalData.getStatus())
-						&& TimeUtils.isDead(terminalData.getChangestamp(), 10000))) {
+						&& TimeUtils.isDead(terminalData.getChangestamp(), 10000))
+				|| TimeUtils.isDead(terminalData.getChangestamp(), 60000)) {
+
 			defaultRespo.setStatusKey(
 					ArgUtil.parseAsString(signPadData.getDeviceState()));
 			defaultRespo.getResult().setStateDataType(null);
-			return defaultRespo;
+
+		} else {
+
+			String actualStatus = signPadData.getStateData().getStateDataType().toString()
+					+ (ArgUtil.isEmpty(terminalData.getStatus()) ? Constants.BLANK
+							: ("_" + terminalData.getStatus()));
+			defaultRespo.setStatusKey(actualStatus);
+			defaultRespo.setResult(signPadData.getStateData());
+
 		}
 
 		return defaultRespo;
