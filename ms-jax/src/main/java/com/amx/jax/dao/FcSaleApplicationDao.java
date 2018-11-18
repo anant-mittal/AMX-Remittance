@@ -5,6 +5,7 @@ package com.amx.jax.dao;
  */
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -51,16 +52,25 @@ public class FcSaleApplicationDao {
 			ReceiptPaymentApp applDeac = receiptPaymentApplRespo.findOne(appl.getReceiptId());
 			applDeac.setIsActive(ConstantDocument.Deleted);
 			receiptPaymentApplRespo.save(applDeac);
-			
 		}
 		}catch (Exception e) {
 			e.printStackTrace();
 			throw new GlobalException("deActivateApplication faliled for custoemr:"+customerId);
 		}
-	
-	
 	}
 	
 	
+	public void removeItemFromCart(BigDecimal applId){
+	try {
+			ReceiptPaymentApp applDeac = receiptPaymentApplRespo.findOne(applId);
+			applDeac.setIsActive(ConstantDocument.Deleted);
+			applDeac.setModifiedDate(new Date());
+			receiptPaymentApplRespo.save(applDeac);
+		}catch (Exception e) {
+			e.printStackTrace();
+			throw new GlobalException("Remove item from cart faliled for custoemr:"+applId);
+		}
+		
+	}
 	
 }

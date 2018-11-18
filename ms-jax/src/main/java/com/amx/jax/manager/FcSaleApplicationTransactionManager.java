@@ -27,8 +27,10 @@ import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.ApplicationProcedureDao;
 import com.amx.jax.dao.FcSaleApplicationDao;
 import com.amx.jax.dao.FcSaleExchangeRateDao;
+import com.amx.jax.dbmodel.ApplicationSetup;
 import com.amx.jax.dbmodel.CountryBranch;
 import com.amx.jax.dbmodel.Customer;
+import com.amx.jax.dbmodel.FxDeliveryTimeSlotMaster;
 import com.amx.jax.dbmodel.FxExchangeRateView;
 import com.amx.jax.dbmodel.ParameterDetails;
 import com.amx.jax.dbmodel.ReceiptPaymentApp;
@@ -38,7 +40,13 @@ import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.FcSaleOrderTransactionRequestModel;
 import com.amx.jax.model.response.FcSaleOrderApplicationResponseModel;
+import com.amx.jax.model.response.FxDeliveryTimeSlotDto;
 import com.amx.jax.model.response.ShoppingCartDetailsDto;
+import com.amx.jax.repository.CountryBranchRepository;
+import com.amx.jax.repository.FxOrderDeliveryTimeSlotRepository;
+import com.amx.jax.repository.IApplicationCountryRepository;
+import com.amx.jax.repository.ICompanyDAO;
+import com.amx.jax.repository.ICurrencyDao;
 import com.amx.jax.repository.ICustomerRepository;
 import com.amx.jax.service.BankMetaService;
 import com.amx.jax.service.CurrencyMasterService;
@@ -46,6 +54,7 @@ import com.amx.jax.service.FinancialService;
 import com.amx.jax.util.DateUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.RoundUtil;
+import com.amx.jax.validation.FxOrderValidation;
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Component
@@ -75,7 +84,23 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 	@Autowired
 	ICustomerRepository customerDao;
 	
-
+	@Autowired
+	FxOrderDeliveryTimeSlotRepository fcSaleOrderTimeSlotDao;
+	
+	@Autowired
+	FxOrderValidation validation;
+	
+	@Autowired
+	ICurrencyDao currencyDao;
+	
+	@Autowired
+	ICompanyDAO compDao;
+	
+	@Autowired
+	IApplicationCountryRepository applCountryRepos;
+	
+	@Autowired
+	private CountryBranchRepository countryBranchRepository;
 	
 	
 	/**
@@ -96,6 +121,8 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 		fsSaleapplicationDao.saveAllApplicationData(mapAllDetailApplSave);
 		List<ShoppingCartDetailsDto> cartDetails= fetchApplicationDetails();
 		fetchCustomerAddressDetails();
+		List<String> fxOrderTimeSlot = fetchTimeSlot(null);
+		responeModel.setTimeSlot(fxOrderTimeSlot);
 		responeModel.setCartDetails(cartDetails);
 		return responeModel; 
 		}catch(Exception e){
@@ -110,14 +137,20 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 		try{
 		ReceiptPaymentApp receiptPaymentAppl = new ReceiptPaymentApp();
 		BigDecimal locCode =   BigDecimal.ZERO;
-		BigDecimal localCurrencyId = metaData.getDefaultCurrencyId();
 		BigDecimal applciationCountryid = metaData.getCountryId();
-		BigDecimal countryBranchId = metaData.getCountryBranchId();
+		BigDecimal localCurrencyId = metaData.getDefaultCurrencyId();
 		BigDecimal companyId = metaData.getCompanyId();
+		BigDecimal countryBranchId = metaData.getCountryBranchId();
+		ApplicationSetup appl = applCountryRepos.getApplicationSetupDetails();
+		if(appl!= null){
+			applciationCountryid = appl.getApplicationCountryId();
+			companyId =appl.getCompanyId();
+		}
+		if(!currencyDao.getCurrencyListByCountryId(applciationCountryid).isEmpty()) {
+			localCurrencyId = currencyDao.getCurrencyListByCountryId(applciationCountryid).get(0).getCurrencyId();
+		}	
 		BigDecimal customerId = metaData.getCustomerId();
 		String customerName = new String();
-		
-		
 		receiptPaymentAppl.setCompanyId(companyId);
 		receiptPaymentAppl.setCountryId(applciationCountryid);
 		receiptPaymentAppl.setCustomerId(customerId);
@@ -127,22 +160,25 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 			if(customerList.get(0).getFirstName() !=null){
 				customerName = customerList.get(0).getFirstName(); 
 			}
-			if(StringUtils.isEmpty(customerList.get(0).getMiddleName())){
+			if(!StringUtils.isEmpty(customerList.get(0).getMiddleName())){
 				customerName = customerName +" "+customerList.get(0).getMiddleName();
 			}
-			if(StringUtils.isEmpty(customerList.get(0).getLastName())){
+			if(!StringUtils.isEmpty(customerList.get(0).getLastName())){
 				customerName = customerName+ " "+ customerList.get(0).getLastName();
 			}
 			
 			receiptPaymentAppl.setCustomerName(customerName);
+		}else{
+				logger.error("Customer is not registered"+customerId);
+				throw new GlobalException("Customer is not registered", JaxError.CUSTOMER_NOT_REGISTERED_ONLINE.getStatusKey());
 		}
 		
-		CountryBranch countryBranch = bankMetaService.getCountryBranchById((metaData.getCountryBranchId()));
+		CountryBranch countryBranch = countryBranchRepository.findByBranchId(ConstantDocument.ONLINE_BRANCH_LOC_CODE);
 		if(countryBranch != null){
 			locCode = countryBranch.getBranchId();
+			countryBranchId =countryBranch.getCountryBranchId(); 
 		}
-		
-		
+		validation.validateHeaderInfo();
 		
 		ExchangeRateBreakup exchbreakUpRate = getExchangeRateFcSaleOrder(applciationCountryid, countryBranchId, fcSalerequestModel.getForeignCurrencyId(), fcSalerequestModel.getForeignAmount());
 		
@@ -263,10 +299,23 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 		BigDecimal companyId = metaData.getCompanyId();
 		BigDecimal customerId = metaData.getCustomerId();
 		BigDecimal foreignCurrencyId = fcSalerequestModel.getForeignCurrencyId();
-		
 		fsSaleapplicationDao.deActiveUnUsedapplication(customerId,foreignCurrencyId);
 	}
 	
+	
+	public FcSaleOrderApplicationResponseModel removeitemFromCart(BigDecimal applId){
+		FcSaleOrderApplicationResponseModel responeModel = new FcSaleOrderApplicationResponseModel();
+	try{
+		fsSaleapplicationDao.removeItemFromCart(applId);
+		List<ShoppingCartDetailsDto> cartDetails= fetchApplicationDetails();
+		responeModel.setCartDetails(cartDetails);
+	}catch(Exception e){
+		e.printStackTrace();
+		logger.error("removeitemFromCart ", e.getMessage()+"applId :"+applId);
+	}
+	return responeModel;
+		
+	}
 	
 	public List<ShoppingCartDetailsDto> fetchApplicationDetails(){
 		List<ShoppingCartDetailsDto> cartListDto = new ArrayList<>();
@@ -287,7 +336,6 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 		BigDecimal applciationCountryid = metaData.getCountryId();
 		BigDecimal companyId = metaData.getCompanyId();
 		
-		
 	}
 	
 	
@@ -301,6 +349,25 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 		return (BigDecimal) output.get("P_DOC_NO");
 	}
 
+	
+	
+	public List<String> fetchTimeSlot(String date){
+		List<String> timeSlotList = new ArrayList<>();
+		BigDecimal appCountryId = metaData.getCountryId()==null?BigDecimal.ZERO:metaData.getCountryId();
+		BigDecimal companyId = metaData.getCompanyId()==null?BigDecimal.ZERO:metaData.getCompanyId();
+		List<FxDeliveryTimeSlotMaster> list = fcSaleOrderTimeSlotDao.findByCountryIdAndCompanyIdAndIsActive(appCountryId, companyId, ConstantDocument.Yes);
+		
+		if(!list.isEmpty()){
+			BigDecimal  startTime = list.get(0).getStartTime()==null?BigDecimal.ZERO:list.get(0).getStartTime();
+			BigDecimal  endTime = list.get(0).getEndTime()==null?BigDecimal.ZERO:list.get(0).getEndTime();
+			BigDecimal  timeInterval = list.get(0).getTimeInterval()==null?BigDecimal.ZERO:list.get(0).getTimeInterval();
+			timeSlotList =DateUtil.getTimeSlotRange(date,startTime.intValue(),endTime.intValue(),timeInterval.intValue());
+		}
+		return timeSlotList;
+	}
+	
+	
+	
 	
 	public  List<ShoppingCartDetailsDto>  convertShopingCartDto(List<ShoppingCartDetails> cartDetailList){
 		List<ShoppingCartDetailsDto> cartListDto = new ArrayList<>();

@@ -24,6 +24,7 @@ import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.TermsAndConditionDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.FcSaleExchangeRateDao;
 import com.amx.jax.dbmodel.CurrencyMasterModel;
@@ -44,6 +45,7 @@ import com.amx.jax.model.response.FcSaleOrderDefaultResponseModel;
 import com.amx.jax.model.response.FxExchangeRateDto;
 import com.amx.jax.model.response.PurposeOfTransactionDto;
 import com.amx.jax.model.response.ShippingAddressDto;
+import com.amx.jax.model.response.ShoppingCartDetailsDto;
 import com.amx.jax.model.response.SourceOfIncomeDto;
 import com.amx.jax.repository.ICurrencyDao;
 import com.amx.jax.repository.IPurposeOfTrnxDao;
@@ -152,12 +154,15 @@ public class FcSaleService extends AbstractService{
 	/** Calculate fc and lc amount */
 	public ApiResponse getFCSaleLcAndFcAmount(BigDecimal applicationCountryId,BigDecimal countryBranchId,BigDecimal fxCurrencyId,BigDecimal fcAmount){
 		ApiResponse response = getBlackApiResponse();
+		validation.validateHeaderInfo();
 		FcSaleOrderApplicationResponseModel responseModel =trnxManager.calculateTrnxRate(applicationCountryId, countryBranchId, fxCurrencyId, fcAmount); 
 		response.getData().getValues().add(responseModel);
 		response.setResponseStatus(ResponseStatus.OK);
 		response.getData().setType(responseModel.getModelType());
 		return response;
 	}
+	
+	
 	
 	
 
@@ -173,6 +178,7 @@ public class FcSaleService extends AbstractService{
 	
 	public ApiResponse getDefaultFsSale(BigDecimal applicationCountryId,BigDecimal countryBranchId,BigDecimal languageId){
 		ApiResponse response = getBlackApiResponse();
+		validation.validateHeaderInfo();
 		FcSaleOrderDefaultResponseModel responseModel = new FcSaleOrderDefaultResponseModel(); 
 		List<PurposeOfTransaction> purposeofTrnxList = purposetrnxDao.getPurposeOfTrnx();
 		List<CurrencyMasterModel> currencyList = currencyDao.getfcCurrencyList(applicationCountryId);
@@ -208,6 +214,7 @@ public class FcSaleService extends AbstractService{
 	 */
 	
 	public ApiResponse saveApplication(FcSaleOrderTransactionRequestModel fcSalerequestModel){
+		validation.validateHeaderInfo();
 		ApiResponse response = getBlackApiResponse();
 		FcSaleOrderApplicationResponseModel fcSaleAppResponseModel =  applTrnxManager.saveApplication(fcSalerequestModel);
 		response.getData().getValues().add(fcSaleAppResponseModel);
@@ -223,6 +230,7 @@ public class FcSaleService extends AbstractService{
 	 */
 	
 	public ApiResponse fetchFcSaleAddress(){
+		validation.validateHeaderInfo();
 		ApiResponse response = getBlackApiResponse();
 		ShippingAddressDto dto = new ShippingAddressDto();
 		List<ShippingAddressDto> shippingAddressList = fcSaleAddresManager.fetchShippingAddress();
@@ -238,6 +246,7 @@ public class FcSaleService extends AbstractService{
 	 */
 	
 	public ApiResponse saveShippingAddress(CustomerShippingAddressRequestModel requestModel){
+		validation.validateHeaderInfo();
 		ApiResponse response = getBlackApiResponse();
 		fcSaleAddresManager.saveShippingAddress(requestModel);
 		response.getData().getValues().add(requestModel);
@@ -251,10 +260,38 @@ public class FcSaleService extends AbstractService{
 	
 	/**
 	 * 
-	 * @param : to get the 
+	 * @param : to get the time slot for fx order
 	 * @return
 	 */
 	
+	
+	public AmxApiResponse fetchTimeSlot(String date){
+		List<String> timeSlotList = applTrnxManager.fetchTimeSlot(date); 
+		if(timeSlotList.isEmpty()){
+			throw new GlobalException("No data found",JaxError.NO_RECORD_FOUND);
+		}
+		return AmxApiResponse.buildList(timeSlotList);
+	}
+	
+	/**
+	 * 
+	 * @param   :Remove item from cart
+	 * @returnFcSaleOrderApplicationResponseModel
+	 */
+	
+	public AmxApiResponse removeitemFromCart(BigDecimal applicationId){		
+		FcSaleOrderApplicationResponseModel fcSaleAppResponseModel =  applTrnxManager.removeitemFromCart(applicationId);
+		return AmxApiResponse.build(fcSaleAppResponseModel);
+		
+	}
+	
+	
+
+	public AmxApiResponse fetchShoppingCartList(){
+		List<ShoppingCartDetailsDto> shoppingCartDetails =  applTrnxManager.fetchApplicationDetails();
+		return AmxApiResponse.buildList(shoppingCartDetails);
+		}
+
 	
 			
 	public List<PurposeOfTransactionDto> convertPurposeOfTrnxDto(List<PurposeOfTransaction> purposeofTrnxList){

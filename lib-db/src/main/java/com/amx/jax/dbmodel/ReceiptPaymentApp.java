@@ -69,6 +69,7 @@ public class ReceiptPaymentApp implements Serializable{
 	private String transactionIPAddress;
 	private BigDecimal deliveryCharges;
 	private String denominationType;
+	private String pgPaymentId;
 	
 	public ReceiptPaymentApp() {
 		
@@ -481,5 +482,14 @@ public class ReceiptPaymentApp implements Serializable{
 
 	public void setDenominationType(String denominationType) {
 		this.denominationType = denominationType;
+	}
+
+	@Column(name="PG_PAYMENT_ID")
+	public String getPgPaymentId() {
+		return pgPaymentId;
+	}
+
+	public void setPgPaymentId(String pgPaymentId) {
+		this.pgPaymentId = pgPaymentId;
 	}
 }

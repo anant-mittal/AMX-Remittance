@@ -132,7 +132,23 @@ public class FcSaleOrderController {
 			return AmxApiResponse.build(response);
 		}
 
-
+		/**@ String date
+		 * @ To fetch time slot for Fx order delviery */
+		@RequestMapping(value = "/fc-sale-time-slot/", method = RequestMethod.GET)
+		public AmxApiResponse fetchTimeSlot(@RequestParam(value = "fxdate", required = true) String fxdate) {
+			return fcSaleService.fetchTimeSlot(fxdate);
+		}
 		
-	
+		
+		@RequestMapping(value = "/fc-sale-remove-item/", method = RequestMethod.POST)
+		public AmxApiResponse removeItemFromCart(@RequestParam(value = "receiptApplId", required = true) BigDecimal receiptApplId) {
+			return fcSaleService.removeitemFromCart(receiptApplId);
+		}
+		
+		@RequestMapping(value = "/fc-sale-shopping-cart/", method = RequestMethod.GET)
+		public AmxApiResponse shoppingCartDetails() {
+			return fcSaleService.fetchShoppingCartList();
+		}	
+		
+		
 }

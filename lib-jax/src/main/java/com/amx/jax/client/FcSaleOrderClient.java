@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
 
+
 import com.amx.jax.AppConfig;
 import com.amx.jax.IJaxService;
 import com.amx.jax.api.AmxApiResponse;
@@ -28,6 +29,7 @@ import com.amx.jax.model.response.FcSaleOrderDefaultResponseModel;
 import com.amx.jax.model.response.FxExchangeRateDto;
 import com.amx.jax.model.response.PurposeOfTransactionDto;
 import com.amx.jax.model.response.ShippingAddressDto;
+import com.amx.jax.model.response.ShoppingCartDetailsDto;
 import com.amx.jax.rest.RestService;
 
 
@@ -203,7 +205,60 @@ public class FcSaleOrderClient implements IJaxService{
 	}
 
 	
-
 	
+	
+
+	/** @ To fetch the time slot **/
+	public AmxApiResponse<String, Object> getTimeSlot(String  fxDate) {
+		try {
+			LOGGER.info("in getTime slot client :"+fxDate);
+			String url = appConfig.getJaxURL()  + FC_SALE_ENDPOINT + "/fc-sale-time-slot/" + fxDate;
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
+			return restService.ajax(url).get(requestEntity).as(new ParameterizedTypeReference<AmxApiResponse<String, Object>>(){});
+		} catch (AbstractJaxException ae) {
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in getCurrencyByCountryId : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
+
+	}
+	
+	
+	
+	/** @ Remove cart from list by passing application id **/
+	public AmxApiResponse<FcSaleOrderApplicationResponseModel, Object> removeItemFromCart(BigDecimal applicationId) throws Exception {
+		try {
+			LOGGER.info(" Fc Sale create application :" + applicationId);
+			String url = appConfig.getJaxURL()  + FC_SALE_ENDPOINT + "/fc-sale-remove-item/"+applicationId;
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
+			return restService.ajax(url).post(requestEntity).as(new ParameterizedTypeReference<AmxApiResponse<FcSaleOrderApplicationResponseModel, Object>>(){});
+		} catch (AbstractJaxException ae) {
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in getCurrencyByCountryId : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
+
+	}
+	
+	
+	
+	
+	/** @ To fetch the time slot **/
+	public AmxApiResponse<ShoppingCartDetailsDto, Object> fetchShoppingCartList() {
+		try {
+			LOGGER.info("in fetchShoppingCartList  client :");
+			String url = appConfig.getJaxURL()  + FC_SALE_ENDPOINT + "/fc-sale-shopping-cart/";
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
+			return restService.ajax(url).get(requestEntity).as(new ParameterizedTypeReference<AmxApiResponse<ShoppingCartDetailsDto, Object>>(){});
+		} catch (AbstractJaxException ae) {
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in getCurrencyByCountryId : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
+
+	}
 }
 

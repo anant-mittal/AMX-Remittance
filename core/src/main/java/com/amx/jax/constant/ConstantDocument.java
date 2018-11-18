@@ -71,6 +71,8 @@ public class ConstantDocument {
 	public static final String PR = "PR";
 	public static final String FS = "FS";
 	public static final String FP = "FP";
+	public static final BigDecimal ONLINE_BRANCH_LOC_CODE = new BigDecimal(90);
+	
 	/** end Here **/
 
 }

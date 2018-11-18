@@ -27,6 +27,7 @@ public class FcSaleOrderApplicationResponseModel extends AbstractModel {
 	private BigDecimal netPayableAmount;
 	private BigDecimal merchantTrackId;
 
+	private List<String> timeSlot;
 
 	private List<ShoppingCartDetailsDto> cartDetails;
 	private PayGServiceCode pgCode = PayGServiceCode.DEFAULT;
@@ -123,6 +124,14 @@ public class FcSaleOrderApplicationResponseModel extends AbstractModel {
 
 	public void setCartDetails(List<ShoppingCartDetailsDto> cartDetails) {
 		this.cartDetails = cartDetails;
+	}
+
+	public List<String> getTimeSlot() {
+		return timeSlot;
+	}
+
+	public void setTimeSlot(List<String> timeSlot) {
+		this.timeSlot = timeSlot;
 	}
 	
 

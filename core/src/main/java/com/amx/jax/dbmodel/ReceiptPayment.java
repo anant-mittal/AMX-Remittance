@@ -114,6 +114,7 @@ public class ReceiptPayment implements Serializable {
 	private String wuSenderMessage;
 	private String wuPurposeOfTransaction;
 	private String transactionIPAddress;
+
 	
 	
 	private CurrencyWiseDenomination exCurrencyWiseDenomination;

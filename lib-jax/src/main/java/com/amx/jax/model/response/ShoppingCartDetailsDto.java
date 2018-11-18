@@ -61,6 +61,8 @@ public class ShoppingCartDetailsDto {
 	private String  denominationType;
 	private String paymentId;
 	private BigDecimal applicationCountryId;
+	private String pgPaymentId;
+	
 	
 	public BigDecimal getRemittanceAppBeneficiaryId() {
 		return remittanceAppBeneficiaryId;
@@ -373,5 +375,11 @@ public class ShoppingCartDetailsDto {
 	}
 	public void setApplicationCountryId(BigDecimal applicationCountryId) {
 		this.applicationCountryId = applicationCountryId;
+	}
+	public String getPgPaymentId() {
+		return pgPaymentId;
+	}
+	public void setPgPaymentId(String pgPaymentId) {
+		this.pgPaymentId = pgPaymentId;
 	}
 }

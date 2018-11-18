@@ -4,14 +4,18 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.time.DateUtils;
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
+
 
 /*
  * Auth: Rabil
@@ -19,6 +23,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class DateUtil {
+	private static Logger logger = Logger.getLogger(DateUtil.class);
 
 	public static String todaysDateWithDDMMYY(Date date, String action) {
 		// action ->1 today Date else user defind date
@@ -137,6 +142,48 @@ public class DateUtil {
 			return null;
 		}
 	}
+	
+	/**
+	 * @Auth :Rabil
+	 * @Date:  Time slot
+	 */
+	
+	public static List<String> getTimeSlotRange(String date,int startTime,int endTime,int timeIntVal){
+		logger.info("getTimeRange for Fx Order date :"+date+"\t startTime :"+startTime+"\t endTime:"+endTime+"\t timeIntVal :"+timeIntVal);
+		List<String> timeSlotList = new ArrayList<>();
+		Date d = new Date();
+		SimpleDateFormat dateStr = new SimpleDateFormat("dd/MM/yyyy");
+	    SimpleDateFormat sdf = new SimpleDateFormat("h");
+	    String todayDate = dateStr.format(d);
+	    int hour = Integer.parseInt(sdf.format(d));
+	    int j =0;
+	    String meridienAm=" am";
+	    String meridienPm=" pm";
+	    String defaultZero =":00";
+	   
+	    
+	    if(date !=null && !date.equalsIgnoreCase(todayDate)){
+	    	todayDate = date;
+	    	for (int i =startTime;i<endTime;  i = i+timeIntVal){
+				 j = i+timeIntVal;
+				 String str = "";
+				 str = String.valueOf(i)+defaultZero+(i<12?meridienAm:meridienPm)+ "-"+String.valueOf(j)+defaultZero+(j<12?meridienAm:meridienPm);
+				 timeSlotList.add(str);
+	    	}
+	    }else{
+	    	 if (hour>startTime){
+	    	    	startTime =hour; 
+	    	    }
+	    	for (int i =startTime;i<endTime;  i = i+timeIntVal){
+				 j = i+timeIntVal;
+				 String str = "";
+				 str = String.valueOf(i)+defaultZero+(i<12?meridienAm:meridienPm)+ "-"+String.valueOf(j)+defaultZero+(j<12?meridienAm:meridienPm);
+				 timeSlotList.add(str);
+			}
+	    }
+	    timeSlotList.add("delivery date :"+todayDate);
+		return timeSlotList;
+		}
 	
 	
 }
