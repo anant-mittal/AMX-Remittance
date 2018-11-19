@@ -1,6 +1,8 @@
 package com.amx.jax.customer.service;
 
 import java.math.BigDecimal;
+import java.sql.Blob;
+import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -13,7 +15,10 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import javax.sql.rowset.serial.SerialException;
+
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -111,6 +116,7 @@ import com.amx.jax.util.DateUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.validation.CountryMetaValidation;
 import com.amx.utils.Constants;
+
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -726,11 +732,26 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		documentDetails.setDocBlobID(mappingData.getDocBlobId());
 		documentDetails.setDocFinYear(mappingData.getFinancialYear());
 		documentDetails.setSeqNo(new BigDecimal(1));
-		documentDetails.setDocContent(image.getBytes());
+		//documentDetails.setDocContent(image.getBytes());
+		
+		try {
+			Blob documentContent = new javax.sql.rowset.serial.SerialBlob(decodeImage(image));
+			documentDetails.setDocContent(documentContent);
+		} catch (SerialException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}	
+		
 		documentDetails.setCreatedOn(new Date());
 		documentDetails.setCreatedBy(metaData.getCustomerId().toString());
 		return documentDetails;
 	}
+	
+	public static byte[] decodeImage(String imageDataString) {
+        return Base64.decodeBase64(imageDataString);
+        //return null;
+    }
 
 	private DmsApplMapping getDmsApplMappingData(Customer model) throws ParseException {
 		DmsApplMapping mappingData = new DmsApplMapping();

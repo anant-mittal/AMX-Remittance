@@ -1,6 +1,7 @@
 package com.amx.jax.dbmodel;
 
 import java.math.BigDecimal;
+import java.sql.Blob;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -20,7 +21,8 @@ public class DocBlobUpload implements java.io.Serializable {
 	private BigDecimal cntryCd;
 	private BigDecimal seqNo;
 	private BigDecimal docFinYear;
-	private byte[] docContent;
+	//private byte[] docContent;
+	private Blob docContent;
 	private String createdBy;
 	private Date createdOn;
 	private Date updatedDate;
@@ -75,14 +77,14 @@ public class DocBlobUpload implements java.io.Serializable {
 		this.docFinYear = docFinYear;
 	}
 
-	@Column(name = "DOC_CONTENT")
+	/*@Column(name = "DOC_CONTENT")
 	public byte[] getDocContent() {
 		return docContent;
 	}
 
 	public void setDocContent(byte[] fileContent) {
 		this.docContent = fileContent;
-	}
+	}*/
 
 	@Column(name = "CRE_BY")
 	public String getCreatedBy() {
@@ -119,5 +121,15 @@ public class DocBlobUpload implements java.io.Serializable {
 	public void setUpdateBy(String updateBy) {
 		this.updateBy = updateBy;
 	}
+
+	@Column(name = "DOC_CONTENT")
+	public Blob getDocContent() {
+		return docContent;
+	}
+
+	public void setDocContent(Blob docContent) {
+		this.docContent = docContent;
+	}
+	
 
 }
