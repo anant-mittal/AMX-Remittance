@@ -117,10 +117,6 @@ public abstract class ACardReaderService {
 			return devicePairingCreds;
 		}
 
-		if (ArgUtil.isEmpty(terminalId)) {
-			return null;
-		}
-
 		synchronized (lock) {
 			Keyring keyring;
 			try {
@@ -145,7 +141,7 @@ public abstract class ACardReaderService {
 
 			if (devicePairingCredsValid) {
 				try {
-					String passwordEncd = keyring.getPassword("amx-adapter", terminalId);
+					String passwordEncd = keyring.getPassword("amx-adapter", ClientType.BRANCH_ADAPTER.toString());
 					byte[] terminalCredsByts = Base64.getDecoder().decode(passwordEncd);
 					String terminalCredsStrs = new String(terminalCredsByts);
 					DevicePairingCreds dpr = JsonUtil.fromJson(terminalCredsStrs, DevicePairingCreds.class);
@@ -171,6 +167,9 @@ public abstract class ACardReaderService {
 			}
 
 			if (ArgUtil.isEmpty(devicePairingCreds)) {
+				if (ArgUtil.isEmpty(terminalId)) {
+					return null;
+				}
 				DevicePairingRequest req = DeviceRestModels.get();
 				req.setDeivceTerminalId(terminalId);
 				req.setDeivceClientType(ClientType.BRANCH_ADAPTER);
@@ -193,7 +192,7 @@ public abstract class ACardReaderService {
 							String passwordEncd = Base64.getEncoder().encodeToString(terminalCredsStrs.getBytes());
 
 							try {
-								keyring.setPassword("amx-adapter", terminalId, passwordEncd);
+								keyring.setPassword("amx-adapter", ClientType.BRANCH_ADAPTER.toString(), passwordEncd);
 								status(DeviceStatus.PAIRED);
 							} catch (LockException ex) {
 								status(DeviceStatus.PAIRING_KEY_SAVE_ERROR);
