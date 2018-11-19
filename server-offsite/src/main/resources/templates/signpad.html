@@ -103,7 +103,7 @@ table {
 					</tr>
 					<tr>
 						<td>data</td>
-						<td id="data">--</td>
+						<td id="data"><textarea rows="12" cols="100" readonly=readonly></textarea></td>
 					</tr>
 					<tr>
 						<td id=signature><img alt="" src="signature.png" /></td>
@@ -291,8 +291,8 @@ table {
 											resp.results[0].deviceState);
 									$(".status #stateDataType").text(
 											resp.results[0].stateDataType);
-									$(".status #data").text(
-											JSON.stringify(resp.results[0], null, "\t"));
+									$(".status #data textarea").val(
+											JSON.stringify(resp.results[0], null, 4));
 								}
 							}).always(
 							function() {
