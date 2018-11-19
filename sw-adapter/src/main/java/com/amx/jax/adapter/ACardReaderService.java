@@ -40,6 +40,7 @@ import net.east301.keyring.util.LockException;
 
 public abstract class ACardReaderService {
 
+	private static final String SERVICE_NAME = "amx-adapter";
 	public static String CARD_READER_KEY = CardData.class.getName();
 	private static final Logger LOGGER = LoggerService.getLogger(ACardReaderService.class);
 	public static ACardReaderService CONTEXT = null;
@@ -141,7 +142,7 @@ public abstract class ACardReaderService {
 
 			if (devicePairingCredsValid) {
 				try {
-					String passwordEncd = keyring.getPassword("amx-adapter", ClientType.BRANCH_ADAPTER.toString());
+					String passwordEncd = keyring.getPassword(SERVICE_NAME, ClientType.BRANCH_ADAPTER.toString());
 					byte[] terminalCredsByts = Base64.getDecoder().decode(passwordEncd);
 					String terminalCredsStrs = new String(terminalCredsByts);
 					DevicePairingCreds dpr = JsonUtil.fromJson(terminalCredsStrs, DevicePairingCreds.class);
@@ -164,6 +165,10 @@ public abstract class ACardReaderService {
 					LOGGER.error("pairing Exception", e);
 					devicePairingCredsValid = false;
 				}
+			} else {
+				// keyring.setPassword(SERVICE_NAME, ClientType.BRANCH_ADAPTER.toString(),
+				// null);
+				// devicePairingCredsValid
 			}
 
 			if (ArgUtil.isEmpty(devicePairingCreds)) {
@@ -192,7 +197,7 @@ public abstract class ACardReaderService {
 							String passwordEncd = Base64.getEncoder().encodeToString(terminalCredsStrs.getBytes());
 
 							try {
-								keyring.setPassword("amx-adapter", ClientType.BRANCH_ADAPTER.toString(), passwordEncd);
+								keyring.setPassword(SERVICE_NAME, ClientType.BRANCH_ADAPTER.toString(), passwordEncd);
 								status(DeviceStatus.PAIRED);
 							} catch (LockException ex) {
 								status(DeviceStatus.PAIRING_KEY_SAVE_ERROR);
