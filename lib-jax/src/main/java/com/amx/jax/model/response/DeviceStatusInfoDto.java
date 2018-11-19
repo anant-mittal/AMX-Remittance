@@ -23,6 +23,7 @@ public class DeviceStatusInfoDto implements Serializable {
 	SignaturePadRemittanceInfo signaturePadRemittanceInfo;
 
 	Date branchPcLastLogoutTime;
+	Date lastUpdatedTime;
 
 	public DeviceState getDeviceState() {
 		return deviceState;
@@ -78,6 +79,14 @@ public class DeviceStatusInfoDto implements Serializable {
 
 	public void setBranchPcLastLogoutTime(Date branchPcLastLogoutTime) {
 		this.branchPcLastLogoutTime = branchPcLastLogoutTime;
+	}
+
+	public Date getLastUpdatedTime() {
+		return lastUpdatedTime;
+	}
+
+	public void setLastUpdatedTime(Date lastUpdatedTime) {
+		this.lastUpdatedTime = lastUpdatedTime;
 	}
 
 }

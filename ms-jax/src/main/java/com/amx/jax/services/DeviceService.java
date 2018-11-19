@@ -192,6 +192,7 @@ public class DeviceService extends AbstractService {
 			}
 		}
 		setBranchPcLogoutTime(dto, deviceStateInfo.getEmployeeId());
+		dto.setLastUpdatedTime(deviceStateInfo.getModifiedDate());
 		return dto;
 	}
 
