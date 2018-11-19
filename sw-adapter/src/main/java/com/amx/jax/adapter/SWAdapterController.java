@@ -15,6 +15,10 @@ import com.amx.jax.device.CardReader;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.FileUtil;
 
+import net.east301.keyring.BackendNotSupportedException;
+import net.east301.keyring.PasswordSaveException;
+import net.east301.keyring.util.LockException;
+
 @Controller
 public class SWAdapterController {
 
@@ -48,12 +52,13 @@ public class SWAdapterController {
 	@RequestMapping(value = { "/**", "/*", "/" }, method = { RequestMethod.GET, RequestMethod.POST })
 	public String home(@RequestParam(required = false) String terminalId, Model model,
 			@RequestParam(required = false) String reset)
-			throws InterruptedException, IOException {
+			throws InterruptedException, IOException, BackendNotSupportedException, LockException,
+			PasswordSaveException {
 		if (!ArgUtil.isEmpty(terminalId)) {
 			kwtCardReaderService.setTerminalId(terminalId);
 		}
 		if (!ArgUtil.isEmpty(reset)) {
-			kwtCardReaderService.setTerminalId(null);
+			kwtCardReaderService.resetTerminalPairing();
 		}
 
 		if (ArgUtil.isEmpty(kwtCardReaderService.getTerminalId())) {
@@ -61,7 +66,11 @@ public class SWAdapterController {
 		} else if (!ArgUtil.isEmpty(kwtCardReaderService.getDevicePairingCreds())) {
 			return FileUtil.read(applicationContext.getResource("classpath:templates/regid.html").getURL()).replace(
 					"${REG_ID}",
-					kwtCardReaderService.getDevicePairingCreds().getDeviceRegId());
+					kwtCardReaderService.getDevicePairingCreds().getDeviceRegId())
+
+					.replace("${HOST_NAME}", kwtCardReaderService.getAddress().getHostName())
+					.replace("${USER_NAME}", kwtCardReaderService.getAddress().getUserName())
+					.replace("${LOCAL_IP}", kwtCardReaderService.getAddress().getLocalIp());
 		} else {
 			return FileUtil.read(applicationContext.getResource("classpath:templates/index.html").getURL());
 		}
