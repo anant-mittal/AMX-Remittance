@@ -163,10 +163,12 @@ public class DeviceConfigs {
 		 * @param deviceRegid
 		 */
 		public void updateStamp(Object deviceRegid) {
-			String deviceRegidStr = ArgUtil.parseAsString(deviceRegid);
-			DeviceData deviceData = this.getOrDefault(deviceRegidStr);
-			deviceData.setUpdatestamp(System.currentTimeMillis());
-			this.fastPut(deviceRegidStr, deviceData);
+			if (!ArgUtil.isEmpty(deviceRegid)) {
+				String deviceRegidStr = ArgUtil.parseAsString(deviceRegid);
+				DeviceData deviceData = this.getOrDefault(deviceRegidStr);
+				deviceData.setUpdatestamp(System.currentTimeMillis());
+				this.fastPut(deviceRegidStr, deviceData);
+			}
 		}
 	}
 
@@ -189,10 +191,12 @@ public class DeviceConfigs {
 		 * @param terminalId
 		 */
 		public void updateStamp(Object terminalId) {
-			String terminalIdStr = ArgUtil.parseAsString(terminalId);
-			TerminalData terminalData = this.getOrDefault(terminalIdStr);
-			terminalData.setUpdatestamp(System.currentTimeMillis());
-			this.fastPut(terminalIdStr, terminalData);
+			if (!ArgUtil.isEmpty(terminalId)) {
+				String terminalIdStr = ArgUtil.parseAsString(terminalId);
+				TerminalData terminalData = this.getOrDefault(terminalIdStr);
+				terminalData.setUpdatestamp(System.currentTimeMillis());
+				this.fastPut(terminalIdStr, terminalData);
+			}
 		}
 	}
 
