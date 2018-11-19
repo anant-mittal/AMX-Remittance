@@ -681,6 +681,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 			custProof.setIdentityExpiryDate(customer.getIdentityExpiredDate());
 		}
 		custProof.setIdentityFor(ConstantDocument.IDENTITY_FOR_ID_PROOF);
+		custProof.setScanSystem(Constants.CUST_DB_SCAN);
 		customerIdProofRepository.save(custProof);
 	}
 

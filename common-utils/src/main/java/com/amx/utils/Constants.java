@@ -75,6 +75,9 @@ public class Constants {
 	public static final String COMPONENT_NAME = "Identity Type";
 
 	public static final String NO = "N";
+	
+	/** The Constant CUST_DB_SCAN. */
+	public static final String CUST_DB_SCAN = "D";
 
 	public static class Common {
 		public static final String SUCCESS = "SUCCESS";
