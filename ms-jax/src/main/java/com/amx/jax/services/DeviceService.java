@@ -119,12 +119,11 @@ public class DeviceService extends AbstractService {
 		Device device = deviceDao.findDevice(new BigDecimal(countryBranchSystemInventoryId), deviceType);
 		deviceValidation.validateDevice(device);
 		deviceValidation.validateDeviceToken(device, otp);
-
+		// device login success
+		createSession(device);
 		DevicePairOtpResponse resp = new DevicePairOtpResponse();
 		resp.setDeviceRegId(device.getRegistrationId());
 		resp.setTermialId(ArgUtil.parseAsString(device.getBranchSystemInventoryId()));
-		// device login success
-		createSession(device);
 		return resp;
 	}
 

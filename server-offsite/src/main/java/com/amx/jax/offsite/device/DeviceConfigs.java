@@ -149,6 +149,12 @@ public class DeviceConfigs {
 
 	@Component
 	public class DeviceBox extends CacheBox<DeviceData> {
+
+		@Override
+		public DeviceData getDefault() {
+			return new DeviceData();
+		}
+
 		/**
 		 * 
 		 * This method is requried to called whenever there is change in status/state of
