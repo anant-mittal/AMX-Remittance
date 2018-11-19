@@ -76,9 +76,11 @@ public class SignPadController {
 					ArgUtil.parseAsInteger(deviceRequestValidator.getDeviceRegId()),
 					deviceRequestValidator.getDeviceRegToken(), deviceRequestValidator.getDeviceSessionToken());
 
-			if (!ArgUtil.isEmpty(devResp) && !ArgUtil.isEmpty(devResp.getResult())
-					&& !ArgUtil.isEmpty(devResp.getResult().getStateDataType())) {
+			if (!ArgUtil.isEmpty(devResp) && !ArgUtil.isEmpty(devResp.getResult())) {
+				// if (!ArgUtil.isEmpty(devResp.getResult().getStateDataType())) {
 				signPadData.setStateData(devResp.getResult());
+				// }
+				// signPadData.setDeviceState(devResp.getResult().getDeviceState());
 				signPadData.setUpdatestamp(terminalData.getUpdatestamp());
 				signPadBox.fastPut(deviceData.getTerminalId(), signPadData);
 				/// data.getBranchPcLastLogoutTime()
@@ -93,9 +95,9 @@ public class SignPadController {
 
 			defaultRespo.setStatusKey(
 					ArgUtil.parseAsString(signPadData.getDeviceState()));
-			defaultRespo.getResult().setStateDataType(null);
+			// defaultRespo.getResult().setStateDataType(null);
 
-		} else {
+		} else { // DeviceState : SESSION_PAIRED
 
 			String actualStatus = signPadData.getStateData().getStateDataType().toString()
 					+ (ArgUtil.isEmpty(terminalData.getStatus()) ? Constants.BLANK

@@ -10,14 +10,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.amx.jax.adapter.ICardService;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.DeviceClient;
 import com.amx.jax.client.IDeviceService;
 import com.amx.jax.client.MetaClient;
-import com.amx.jax.device.CardData;
-import com.amx.jax.device.CardReader;
 import com.amx.jax.device.DeviceConstants;
 import com.amx.jax.device.DeviceRestModels;
 import com.amx.jax.device.DeviceRestModels.DevicePairingCreds;
@@ -60,9 +57,6 @@ public class DeviceController {
 
 	@Autowired
 	private SSOTranx sSOTranx;
-
-	@Autowired
-	private ICardService iCardService;
 
 	@RequestMapping(value = { DeviceConstants.Path.DEVICE_TERMINALS }, method = { RequestMethod.GET })
 	public AmxApiResponse<BranchSystemDetailDto, Object> getTerminals() {
@@ -130,34 +124,13 @@ public class DeviceController {
 		return resp;
 	}
 
-	@RequestMapping(value = { DeviceConstants.Path.TERMINAL_PAIRING }, method = { RequestMethod.GET })
+	@RequestMapping(value = { DeviceConstants.Path.SESSION_TERMINAL }, method = { RequestMethod.GET })
 	public AmxApiResponse<SessionPairingCreds, Object> webAppLogin() {
 		DeviceData deviceData = deviceRequestValidator.validateRequest();
 		String terminalId = deviceData.getTerminalId();
 		sSOTranx.get().setTerminalId(terminalId);
 		sSOTranx.save();
 		return AmxApiResponse.build();
-	}
-
-	@ApiDeviceHeaders
-	@RequestMapping(value = { DeviceConstants.Path.DEVICE_STATUS_CARD }, method = { RequestMethod.POST })
-	public AmxApiResponse<CardData, Object> saveCardDetails(@RequestBody CardReader reader) {
-		DeviceData deviceData = deviceRequestValidator.validateRequest();
-		iCardService.saveCardDetailsByTerminal(deviceData.getTerminalId(), reader.getData());
-		return AmxApiResponse.build(reader.getData());
-	}
-
-	@RequestMapping(value = { DeviceConstants.Path.DEVICE_STATUS_CARD }, method = { RequestMethod.GET })
-	public AmxApiResponse<CardData, Object> getCardDetails(
-			@RequestParam(value = DeviceConstants.Params.PARAM_SYSTEM_ID) String systemid,
-			@RequestParam(required = false) Boolean wait, @RequestParam(required = false) Boolean flush)
-			throws InterruptedException {
-		wait = ArgUtil.parseAsBoolean(wait, Boolean.FALSE);
-		flush = ArgUtil.parseAsBoolean(flush, Boolean.FALSE);
-
-		CardData data = iCardService.getCardDetailsByTerminal(systemid, wait, flush);
-
-		return AmxApiResponse.build(data);
 	}
 
 }

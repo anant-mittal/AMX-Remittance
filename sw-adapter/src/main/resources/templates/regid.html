@@ -2,4 +2,10 @@
 	<div>
 		REG ID : <span>${REG_ID}</span>
 	</div>
+	<div th:if="${TERMINAL_ID == null}">
+		<form method="post">
+			<input name="reset" type=hidden />
+			<button type="submit">Reset</button>
+		</form>
+	</div>
 </center>

@@ -58,7 +58,7 @@ public class AdapterServiceClient {
 	public AmxApiResponse<CardData, Object> pairTerminal(NetAddress address, DevicePairingCreds devicePairingCreds,
 			SessionPairingCreds sessionPairingCreds, String tranxId) throws Exception {
 		try {
-			return restService.ajax(offSiteUrl).path(DeviceConstants.Path.TERMINAL_PAIRING)
+			return restService.ajax(offSiteUrl).path(DeviceConstants.Path.SESSION_TERMINAL)
 					.header(AppConstants.TRANX_ID_XKEY, tranxId)
 
 					.header(AppConstants.DEVICE_ID_XKEY, address.getMac())
@@ -73,7 +73,7 @@ public class AdapterServiceClient {
 					.get().as(new ParameterizedTypeReference<AmxApiResponse<CardData, Object>>() {
 					});
 		} catch (Exception e) {
-			LOGGER.error(DeviceConstants.Path.TERMINAL_PAIRING, e);
+			LOGGER.error(DeviceConstants.Path.SESSION_TERMINAL, e);
 			return AmxApiException.evaluate(e);
 		}
 	}
