@@ -25,6 +25,7 @@ public interface IDeviceService extends IJaxService {
 		private static final String PUBG = "";
 
 		public static final String DEVICE_ACTIVATE = PREFIX + "/activate";
+		public static final String DEVICE_DEACTIVATE = PREFIX + "/deactivate";
 		public static final String DEVICE_SEND_PAIR_OTP = PREFIX + "/sendpairotp";
 		public static final String DEVICE_VALIDATE_PAIR_OTP = PUBG + PREFIX + "/validatepairotp";
 		public static final String DEVICE_STATE_UPDATE = PREFIX + "/updatedevicestate";
@@ -98,5 +99,7 @@ public interface IDeviceService extends IJaxService {
 	@ApiJaxStatus({ JaxError.CLIENT_NOT_LOGGGED_IN, JaxError.CLIENT_NOT_FOUND, JaxError.JAX_FIELD_VALIDATION_FAILURE })
 	AmxApiResponse<DevicePairOtpResponse, BoolRespModel> validateOtpForPairing(ClientType deviceType,
 			Integer countryBranchSystemInventoryId, String otp);
+
+	AmxApiResponse<BoolRespModel, Object> deactivateDevice(Integer deviceRegId);
 
 }

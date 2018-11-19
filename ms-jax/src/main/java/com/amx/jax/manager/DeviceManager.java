@@ -2,10 +2,13 @@ package com.amx.jax.manager;
 
 import java.math.BigDecimal;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 import javax.transaction.Transactional;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,6 +69,15 @@ public class DeviceManager {
 		device.setStatus(ConstantDocument.Yes);
 		DeviceStateInfo deviceStateInfo = deviceDao.getDeviceStateInfo(device);
 		deviceStateInfo.setState(DeviceState.REGISTERED);
+		List<Device> devices = deviceDao.findAllActiveDevices(device.getBranchSystemInventoryId(), device.getDeviceType());
+		if (!CollectionUtils.isEmpty(devices)) {
+			for (Device d : devices) {
+				if (!d.equals(device)) {
+					d.setStatus(ConstantDocument.No);
+				}
+			}
+			deviceDao.saveDevices(devices);
+		}
 		deviceDao.saveDeviceInfo(deviceStateInfo);
 		deviceDao.saveDevice(device);
 	}
@@ -171,6 +183,11 @@ public class DeviceManager {
 						JaxError.CLIENT_EXPIRED_VALIDATE_OTP_TIME);
 			}
 		}
+	}
+
+	public void deactivateDevice(Device device) {
+		device.setStatus(ConstantDocument.No);
+		deviceDao.saveDevice(device);
 	}
 
 }

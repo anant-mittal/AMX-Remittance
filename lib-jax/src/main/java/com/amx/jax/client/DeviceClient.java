@@ -229,4 +229,18 @@ public class DeviceClient implements IDeviceService {
 		}
 	}
 
+	@Override
+	public AmxApiResponse<BoolRespModel, Object> deactivateDevice(Integer deviceRegId) {
+		try {
+			LOGGER.debug("in deactivateDevice");
+			String url = appConfig.getJaxURL() + Path.DEVICE_DEACTIVATE;
+			return restService.ajax(url).field(Params.DEVICE_REG_ID, deviceRegId).postForm()
+					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in deactivateDevice : ", e);
+			return JaxSystemError.evaluate(e);
+		}
+	}
+
 }

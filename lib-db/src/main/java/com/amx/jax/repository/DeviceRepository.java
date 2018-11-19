@@ -24,4 +24,7 @@ public interface DeviceRepository extends CrudRepository<Device, Serializable> {
 
 	public Device findFirst1ByBranchSystemInventoryIdAndDeviceType(BigDecimal brachSystemInvId, ClientType deviceType,
 			Sort sort);
+	
+	public List<Device> findByBranchSystemInventoryIdAndDeviceType(BigDecimal brachSystemInvId,
+			ClientType deviceType);
 }

@@ -61,6 +61,13 @@ public class DeviceController implements IDeviceService {
 		return AmxApiResponse.build(response);
 	}
 
+	@RequestMapping(value = Path.DEVICE_DEACTIVATE, method = RequestMethod.POST)
+	@Override
+	public AmxApiResponse<BoolRespModel, Object> deactivateDevice(@RequestParam Integer deviceRegId) {
+		BoolRespModel response = deviceService.deactivateDevice(deviceRegId);
+		return AmxApiResponse.build(response);
+	}
+	
 	@RequestMapping(value = Path.DEVICE_SEND_PAIR_OTP, method = RequestMethod.GET)
 	@Override
 	public AmxApiResponse<DevicePairOtpResponse, Object> sendOtpForPairing(

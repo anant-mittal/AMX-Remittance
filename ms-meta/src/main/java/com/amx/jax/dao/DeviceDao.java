@@ -90,6 +90,12 @@ public class DeviceDao {
 		}
 		return device;
 	}
+	
+	public List<Device> findAllActiveDevices(BigDecimal branchSystemInvId, ClientType deviceType) {
+		List<Device> devices = deviceRepository.findByBranchSystemInventoryIdAndDeviceTypeAndStatus(branchSystemInvId,
+				deviceType, ConstantDocument.Yes);
+		return devices;
+	}
 
 	public Device findLatestDevice(BigDecimal branchSystemInvId, ClientType deviceType) {
 		return deviceRepository.findFirst1ByBranchSystemInventoryIdAndDeviceType(branchSystemInvId, deviceType,
@@ -100,6 +106,10 @@ public class DeviceDao {
 		deviceRepository.save(device);
 	}
 
+	public void saveDevices(List<Device> devices) {
+		deviceRepository.save(devices);
+	}
+	
 	public DeviceStateInfo getDeviceStateInfo(Device device) {
 		return deviceStateRepository.findOne(device.getRegistrationId());
 	}
