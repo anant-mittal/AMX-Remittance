@@ -1,10 +1,22 @@
 package com.amx.jax.model.response;
 
+import java.math.BigDecimal;
+
 public class DevicePairOtpResponse {
 
 	String otp;
 
 	String termialId;
+
+	BigDecimal deviceRegId;
+
+	public BigDecimal getDeviceRegId() {
+		return deviceRegId;
+	}
+
+	public void setDeviceRegId(BigDecimal deviceRegId) {
+		this.deviceRegId = deviceRegId;
+	}
 
 	public String getTermialId() {
 		return termialId;

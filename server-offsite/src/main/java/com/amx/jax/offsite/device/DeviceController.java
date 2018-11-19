@@ -16,7 +16,6 @@ import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.DeviceClient;
 import com.amx.jax.client.IDeviceService;
 import com.amx.jax.client.MetaClient;
-import com.amx.jax.client.IDeviceService.Path;
 import com.amx.jax.device.CardData;
 import com.amx.jax.device.CardReader;
 import com.amx.jax.device.DeviceConstants;
@@ -99,6 +98,7 @@ public class DeviceController {
 	public AmxApiResponse<BoolRespModel, Object> activateDevice(
 			@RequestParam Integer deviceRegId,
 			@RequestParam ClientType deviceType, @RequestParam(required = false) String mOtp) {
+		deviceRequestValidator.updateStamp(deviceRegId);
 		return deviceClient.activateDevice(deviceRegId, mOtp);
 	}
 
@@ -116,16 +116,18 @@ public class DeviceController {
 				.getResult();
 		SessionPairingCreds creds = deviceRequestValidator.createSession(resp.getSessionPairToken(), resp.getOtp(),
 				resp.getTermialId());
-		return AmxApiResponse.build(creds,resp.getTermialId());
+		return AmxApiResponse.build(creds, resp.getTermialId());
 	}
 
 	@RequestMapping(value = DeviceConstants.Path.SESSION_PAIR, method = RequestMethod.POST)
-	public AmxApiResponse<BoolRespModel, Object> validateOtpForPairing(
+	public AmxApiResponse<DevicePairOtpResponse, BoolRespModel> validateOtpForPairing(
 			@RequestParam ClientType deviceType,
 			@RequestParam Integer terminalId, @RequestParam(required = false) String mOtp) {
-		return deviceClient.validateOtpForPairing(
+		AmxApiResponse<DevicePairOtpResponse, BoolRespModel> resp = deviceClient.validateOtpForPairing(
 				deviceType, terminalId,
 				mOtp);
+		deviceRequestValidator.updateStamp(resp.getResult().getDeviceRegId());
+		return resp;
 	}
 
 	@RequestMapping(value = { DeviceConstants.Path.TERMINAL_PAIRING }, method = { RequestMethod.GET })

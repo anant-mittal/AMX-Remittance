@@ -39,7 +39,6 @@ public interface IDeviceService extends IJaxService {
 		public static final String DEVICE_REG = PREFIX + "/register";
 	}
 
-
 	public static class Params {
 
 		public static final String TERMINAL_ID = "countryBranchSystemInventoryId";
@@ -59,8 +58,7 @@ public interface IDeviceService extends IJaxService {
 			JaxError.CLIENT_INVALID_SESSION_TOKEN })
 	AmxApiResponse<DeviceStatusInfoDto, Object> getStatus(
 			Integer registrationId, String paireToken,
-			String sessionToken
-	);
+			String sessionToken);
 
 	@ApiJaxStatus({ JaxError.CLIENT_INVALID_PAIR_TOKEN, JaxError.CLIENT_NOT_FOUND, JaxError.CLIENT_NOT_ACTIVE })
 	AmxApiResponse<DevicePairOtpResponse, Object> sendOtpForPairing(Integer deviceRegId, String paireToken);
@@ -69,8 +67,7 @@ public interface IDeviceService extends IJaxService {
 			JaxError.CLIENT_INVALID_SESSION_TOKEN })
 	AmxApiResponse<BoolRespModel, Object> updateDeviceState(
 			DeviceStateInfoChangeRequest request,
-			Integer registrationId, String paireToken, String sessionToken
-	);
+			Integer registrationId, String paireToken, String sessionToken);
 
 	@ApiJaxStatus({ JaxError.CLIENT_NOT_FOUND })
 	AmxApiResponse<BoolRespModel, Object> activateDevice(Integer deviceRegId,
@@ -82,13 +79,10 @@ public interface IDeviceService extends IJaxService {
 			Integer countryBranchSystemInventoryId, SignaturePadRemittanceInfo signaturePadRemittanceInfo,
 			BigDecimal employeeId);
 
-	@ApiJaxStatus(
-			{JaxError.CLIENT_NOT_FOUND, JaxError.CLIENT_NOT_ACTIVE ,JaxError.CLIENT_NOT_LOGGGED_IN  }
-		)
+	@ApiJaxStatus({ JaxError.CLIENT_NOT_FOUND, JaxError.CLIENT_NOT_ACTIVE, JaxError.CLIENT_NOT_LOGGGED_IN })
 	AmxApiResponse<BoolRespModel, Object> updateFcPurchase(
 			ClientType deviceType, Integer countryBranchSystemInventoryId,
-			SignaturePadFCPurchaseSaleInfo signaturePadPurchseInfo, BigDecimal employeeId
-	);
+			SignaturePadFCPurchaseSaleInfo signaturePadPurchseInfo, BigDecimal employeeId);
 
 	@ApiJaxStatus({ JaxError.CLIENT_NOT_FOUND, JaxError.CLIENT_NOT_ACTIVE, JaxError.CLIENT_NOT_LOGGGED_IN })
 	AmxApiResponse<BoolRespModel, Object> updateFcSale(ClientType deviceType, Integer countryBranchSystemInventoryId,
@@ -102,7 +96,7 @@ public interface IDeviceService extends IJaxService {
 	AmxApiResponse<BoolRespModel, Object> updateSignatureStateData(Integer deviceRegId, String imageUrl);
 
 	@ApiJaxStatus({ JaxError.CLIENT_NOT_LOGGGED_IN, JaxError.CLIENT_NOT_FOUND, JaxError.JAX_FIELD_VALIDATION_FAILURE })
-	AmxApiResponse<BoolRespModel, Object> validateOtpForPairing(ClientType deviceType,
+	AmxApiResponse<DevicePairOtpResponse, BoolRespModel> validateOtpForPairing(ClientType deviceType,
 			Integer countryBranchSystemInventoryId, String otp);
 
 }

@@ -97,6 +97,10 @@ public class DeviceRequest {
 		}
 		return deviceData;
 	}
+	
+	public void updateStamp(Object deviceRegId) {
+		deviceBox.updateStamp(deviceRegId);
+	}
 
 	public SessionPairingCreds createSession(String sessionPairToken, String sessionOtp, String terminalId) {
 
@@ -110,6 +114,7 @@ public class DeviceRequest {
 		// Generate and Save Encrypted version of SessionPairing Key
 		deviceData
 				.setSessionPairingTokenX(DeviceConstants.generateSessionPairingTokenX(deviceRegKey, sessionPairToken));
+		deviceData.setUpdatestamp(System.currentTimeMillis());
 		deviceBox.put(deviceRegKey, deviceData);
 		response.setHeader(DeviceConstants.Keys.DEVICE_REQ_KEY_XKEY, deviceData.getDeviceReqKey());
 

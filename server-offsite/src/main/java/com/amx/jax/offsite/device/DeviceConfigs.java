@@ -19,6 +19,15 @@ public class DeviceConfigs {
 	public static class DeviceData implements Serializable {
 		private static final long serialVersionUID = 2981932845270868040L;
 		private String terminalId;
+		private long updatestamp;
+
+		public long getUpdatestamp() {
+			return updatestamp;
+		}
+
+		public void setUpdatestamp(long updatestamp) {
+			this.updatestamp = updatestamp;
+		}
 
 		public String getTerminalId() {
 			return terminalId;
@@ -140,7 +149,19 @@ public class DeviceConfigs {
 
 	@Component
 	public class DeviceBox extends CacheBox<DeviceData> {
-
+		/**
+		 * 
+		 * This method is requried to called whenever there is change in status/state of
+		 * device
+		 * 
+		 * @param deviceRegid
+		 */
+		public void updateStamp(Object deviceRegid) {
+			String deviceRegidStr = ArgUtil.parseAsString(deviceRegid);
+			DeviceData deviceData = this.getOrDefault(deviceRegidStr);
+			deviceData.setUpdatestamp(System.currentTimeMillis());
+			this.fastPut(deviceRegidStr, deviceData);
+		}
 	}
 
 	@Component

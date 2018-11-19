@@ -291,6 +291,8 @@ table {
 											resp.results[0].deviceState);
 									$(".status #stateDataType").text(
 											resp.results[0].stateDataType);
+									$(".status #data").text(
+											JSON.stringify(resp.results[0], null, "\t"));
 								}
 							}).always(
 							function() {

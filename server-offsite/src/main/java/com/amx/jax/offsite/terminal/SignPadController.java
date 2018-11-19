@@ -69,7 +69,8 @@ public class SignPadController {
 
 		if (ArgUtil.isEmpty(signPadData)
 				|| ArgUtil.isEmpty(signPadData.getDeviceState())
-				|| signPadData.getUpdatestamp() < terminalData.getUpdatestamp()) {
+				|| signPadData.getUpdatestamp() < terminalData.getUpdatestamp()
+				|| deviceData.getUpdatestamp() > signPadData.getUpdatestamp()) {
 
 			AmxApiResponse<DeviceStatusInfoDto, Object> devResp = deviceClient.getStatus(
 					ArgUtil.parseAsInteger(deviceRequestValidator.getDeviceRegId()),
@@ -130,10 +131,10 @@ public class SignPadController {
 		DeviceData deviceData = deviceRequestValidator.getDeviceData();
 
 		SignPadData signPadData = signPadBox.getOrDefault(deviceData.getTerminalId());
-		if(ArgUtil.isEmpty(signPadData.getSignature())) {
+		if (ArgUtil.isEmpty(signPadData.getSignature())) {
 			return ResponseEntity.noContent().build();
 		}
-		
+
 		String sourceData = signPadData.getSignature().getData();
 
 		File file = File.fromBase64(sourceData, Type.PNG);

@@ -37,6 +37,7 @@ import com.amx.jax.model.response.DeviceStatusInfoDto;
 import com.amx.jax.model.response.IDeviceStateData;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.validation.DeviceValidation;
+import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;;
 
 @Service
@@ -80,8 +81,7 @@ public class DeviceService extends AbstractService {
 
 	public BoolRespModel updateDeviceState(
 			DeviceStateInfoChangeRequest request, Integer registrationId,
-			String paireToken, String sessionToken
-	) {
+			String paireToken, String sessionToken) {
 		if (registrationId == null) {
 			throw new GlobalException("Device registration id can not be blank");
 		}
@@ -112,17 +112,20 @@ public class DeviceService extends AbstractService {
 		return response;
 	}
 
-	public BoolRespModel validateOtpForPairing(
+	public DevicePairOtpResponse validateOtpForPairing(
 			ClientType deviceType, Integer countryBranchSystemInventoryId,
-			String otp
-	) {
+			String otp) {
 		deviceValidation.validateOtp(otp);
 		Device device = deviceDao.findDevice(new BigDecimal(countryBranchSystemInventoryId), deviceType);
 		deviceValidation.validateDevice(device);
 		deviceValidation.validateDeviceToken(device, otp);
+
+		DevicePairOtpResponse resp = new DevicePairOtpResponse();
+		resp.setDeviceRegId(device.getRegistrationId());
+		resp.setTermialId(ArgUtil.parseAsString(device.getBranchSystemInventoryId()));
 		// device login success
 		createSession(device);
-		return new BoolRespModel(Boolean.TRUE);
+		return resp;
 	}
 
 	private void createSession(Device device) {
@@ -162,31 +165,27 @@ public class DeviceService extends AbstractService {
 			case REMITTANCE:
 				SignaturePadRemittanceInfo stateData = JsonUtil.fromJson(
 						deviceStateInfo.getStateData(),
-						SignaturePadRemittanceInfo.class
-				);
+						SignaturePadRemittanceInfo.class);
 				dto.setSignaturePadRemittanceInfo(stateData);
 				break;
 
 			case FC_PURCHASE:
 				SignaturePadFCPurchaseSaleInfo stateDataPurchase = JsonUtil.fromJson(
 						deviceStateInfo.getStateData(),
-						SignaturePadFCPurchaseSaleInfo.class
-				);
+						SignaturePadFCPurchaseSaleInfo.class);
 				dto.setSignaturePadFCPurchaseInfo(stateDataPurchase);
 				break;
 
 			case FC_SALE:
 				SignaturePadFCPurchaseSaleInfo stateDataSale = JsonUtil.fromJson(
 						deviceStateInfo.getStateData(),
-						SignaturePadFCPurchaseSaleInfo.class
-				);
+						SignaturePadFCPurchaseSaleInfo.class);
 				dto.setSignaturePadFCSaleInfo(stateDataSale);
 				break;
 			case CUSTOMER_REGISTRATION:
 				SignaturePadCustomerRegStateMetaInfo metaInfo = JsonUtil.fromJson(
 						deviceStateInfo.getStateData(),
-						SignaturePadCustomerRegStateMetaInfo.class
-				);
+						SignaturePadCustomerRegStateMetaInfo.class);
 				dto.setSignaturePadCustomerRegStateInfo(getCustomerRegData(metaInfo.getCustomerId()));
 				break;
 			default:
@@ -214,16 +213,14 @@ public class DeviceService extends AbstractService {
 		info.setCustomerContactDto(customerService.getCustomerContactDto(customerIdBd));
 		info.setCustomerDto(customerService.getCustomerDto(customerIdBd));
 		info.setCustomerIdProofDto(
-				customerService.getCustomerIdProofDto(customerIdBd, ConstantDocument.BIZ_COMPONENT_ID_CIVIL_ID)
-		);
+				customerService.getCustomerIdProofDto(customerIdBd, ConstantDocument.BIZ_COMPONENT_ID_CIVIL_ID));
 		info.setCustomerIncomeRangeDto(customerService.getCustomerIncomeRangeDto(customerIdBd));
 		return info;
 	}
 
 	public BoolRespModel updateDeviceStateData(
 			ClientType deviceType, Integer countryBranchSystemInventoryId,
-			IDeviceStateData deviceStateData, DeviceStateDataType type, BigDecimal employeeId
-	) {
+			IDeviceStateData deviceStateData, DeviceStateDataType type, BigDecimal employeeId) {
 		Device device = deviceDao.findDevice(new BigDecimal(countryBranchSystemInventoryId), deviceType);
 		deviceValidation.validateDevice(device);
 		DeviceStateInfo deviceStateInfo = deviceDao.getDeviceStateInfo(device);

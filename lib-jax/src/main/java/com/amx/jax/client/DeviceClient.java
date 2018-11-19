@@ -51,8 +51,7 @@ public class DeviceClient implements IDeviceService {
 	@Override
 	public AmxApiResponse<DeviceStatusInfoDto, Object> getStatus(
 			Integer registrationId, String paireToken,
-			String sessionToken
-	) {
+			String sessionToken) {
 		try {
 			LOGGER.debug("in getStatus");
 			String url = appConfig.getJaxURL() + Path.DEVICE_STATUS_GET;
@@ -85,8 +84,7 @@ public class DeviceClient implements IDeviceService {
 	@Override
 	public AmxApiResponse<BoolRespModel, Object> updateDeviceState(
 			DeviceStateInfoChangeRequest request,
-			Integer registrationId, String paireToken, String sessionToken
-	) {
+			Integer registrationId, String paireToken, String sessionToken) {
 		try {
 			LOGGER.debug("in updateDeviceState");
 			String url = appConfig.getJaxURL() + Path.DEVICE_STATUS_GET;
@@ -104,8 +102,7 @@ public class DeviceClient implements IDeviceService {
 	@Override
 	public AmxApiResponse<BoolRespModel, Object> activateDevice(
 			Integer deviceRegId,
-			String mOtp
-	) {
+			String mOtp) {
 		try {
 			LOGGER.debug("in activateDevice");
 			String url = appConfig.getJaxURL() + Path.DEVICE_ACTIVATE;
@@ -123,8 +120,7 @@ public class DeviceClient implements IDeviceService {
 	public AmxApiResponse<BoolRespModel, Object> updateRemittanceState(
 			ClientType deviceType,
 			Integer countryBranchSystemInventoryId, SignaturePadRemittanceInfo signaturePadRemittanceInfo,
-			BigDecimal employeeId
-	) {
+			BigDecimal employeeId) {
 		try {
 			LOGGER.debug("in updateRemittanceState");
 			String url = appConfig.getJaxURL() + Path.DEVICE_STATE_REMITTANCE_UPDATE;
@@ -144,8 +140,7 @@ public class DeviceClient implements IDeviceService {
 	public AmxApiResponse<BoolRespModel, Object> updateFcPurchase(
 			ClientType deviceType,
 			Integer countryBranchSystemInventoryId, SignaturePadFCPurchaseSaleInfo signaturePadPurchseInfo,
-			BigDecimal employeeId
-	) {
+			BigDecimal employeeId) {
 		try {
 			LOGGER.debug("in getFcPurchase");
 			String url = appConfig.getJaxURL() + Path.DEVICE_FC_PURCHASE_UPDATE;
@@ -165,8 +160,7 @@ public class DeviceClient implements IDeviceService {
 	public AmxApiResponse<BoolRespModel, Object> updateFcSale(
 			ClientType deviceType,
 			Integer countryBranchSystemInventoryId, SignaturePadFCPurchaseSaleInfo signaturePadSaleInfo,
-			BigDecimal employeeId
-	) {
+			BigDecimal employeeId) {
 		try {
 			LOGGER.debug("in getFcSale");
 			String url = appConfig.getJaxURL() + Path.DEVICE_FC_SALE_UPDATE;
@@ -186,14 +180,14 @@ public class DeviceClient implements IDeviceService {
 	public AmxApiResponse<BoolRespModel, Object> updateCustomerRegStateData(
 			ClientType deviceType,
 			Integer countryBranchSystemInventoryId, SignaturePadCustomerRegStateMetaInfo metaInfo,
-			BigDecimal employeeId
-	) {
+			BigDecimal employeeId) {
 		try {
 			LOGGER.debug("in updateCustomerRegStateData");
 			String url = appConfig.getJaxURL() + Path.DEVICE_STATE_CUSTOMER_REG_UPDATE;
 			return restService.ajax(url).meta(new JaxMetaInfo())
 					.queryParam(Params.TERMINAL_ID, countryBranchSystemInventoryId)
-					.queryParam(Params.DEVICE_TYPE, deviceType).queryParam(Params.EMPLOYEE_ID, employeeId).post(metaInfo)
+					.queryParam(Params.DEVICE_TYPE, deviceType).queryParam(Params.EMPLOYEE_ID, employeeId)
+					.post(metaInfo)
 					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
 					});
 		} catch (Exception e) {
@@ -205,8 +199,7 @@ public class DeviceClient implements IDeviceService {
 	@Override
 	public AmxApiResponse<BoolRespModel, Object> updateSignatureStateData(
 			Integer deviceRegId,
-			String signatureImageClob
-	) {
+			String signatureImageClob) {
 		try {
 			LOGGER.debug("in updateSignatureStateData");
 			String url = appConfig.getJaxURL() + Path.DEVICE_STATE_SIGNATURE_UPDATE;
@@ -221,14 +214,14 @@ public class DeviceClient implements IDeviceService {
 	}
 
 	@Override
-	public AmxApiResponse<BoolRespModel, Object> validateOtpForPairing(ClientType deviceType,
+	public AmxApiResponse<DevicePairOtpResponse, BoolRespModel> validateOtpForPairing(ClientType deviceType,
 			Integer countryBranchSystemInventoryId, String otp) {
 		try {
 			LOGGER.debug("in validateOtpForPairing");
 			String url = appConfig.getJaxURL() + Path.DEVICE_VALIDATE_PAIR_OTP;
 			return restService.ajax(url).field(Params.DEVICE_TYPE, deviceType)
 					.field(Params.TERMINAL_ID, countryBranchSystemInventoryId).field(Params.OTP, otp).postForm()
-					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
+					.as(new ParameterizedTypeReference<AmxApiResponse<DevicePairOtpResponse, BoolRespModel>>() {
 					});
 		} catch (Exception e) {
 			LOGGER.error("exception in validateOtpForPairing : ", e);
