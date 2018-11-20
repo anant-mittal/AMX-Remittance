@@ -1,8 +1,9 @@
 package com.amx.jax.model.response.customer;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class CustomerIdProofDto {
+public class CustomerIdProofDto  implements Serializable {
 
 	String identityType;
 	String identityInt;
