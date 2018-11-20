@@ -39,6 +39,7 @@ import com.amx.jax.amxlib.config.OtpSettings;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxApiFlow;
+import com.amx.jax.constants.CustomerRegistrationType;
 import com.amx.jax.customer.CustomerAuditEvent;
 import com.amx.jax.customer.CustomerAuditEvent.Type;
 import com.amx.jax.dal.ArticleDao;
@@ -648,6 +649,8 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 			//customer.setIssueDate(null);
 		}
 		customer.setIdentityInt(customerDetails.getIdentityInt());
+		
+		customer.setCustomerRegistrationType(CustomerRegistrationType.OFF_CUSTOMER);
 		if (customerEmploymentDetails != null) {
 			customer.setFsArticleDetails(
 					articleDao.getArticleDetailsByArticleDetailId(customerEmploymentDetails.getArticleDetailsId()));

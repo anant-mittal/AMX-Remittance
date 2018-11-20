@@ -40,6 +40,7 @@ public class DocBlobUpload implements java.io.Serializable {
 		this.temSeqNo = temSeqNo;
 	}*/
 
+	@Id
 	@Column(name = "DOC_BLOB_ID")
 	public BigDecimal getDocBlobID() {
 		return docBlobID;
@@ -58,7 +59,6 @@ public class DocBlobUpload implements java.io.Serializable {
 		this.cntryCd = cntryCd;
 	}
 
-	@Id
 	@Column(name = "SEQ_NO")
 	public BigDecimal getSeqNo() {
 		return seqNo;
