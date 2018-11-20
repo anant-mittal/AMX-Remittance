@@ -16,14 +16,18 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 
 
+
+
 import com.amx.jax.AppConfig;
 import com.amx.jax.IJaxService;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.exception.AbstractJaxException;
 import com.amx.jax.exception.JaxSystemError;
 import com.amx.jax.model.request.CustomerShippingAddressRequestModel;
+import com.amx.jax.model.request.FcSaleOrderPaynowRequestModel;
 import com.amx.jax.model.request.FcSaleOrderTransactionRequestModel;
 import com.amx.jax.model.response.CurrencyMasterDTO;
+import com.amx.jax.model.response.FcSaleApplPaymentReponseModel;
 import com.amx.jax.model.response.FcSaleOrderApplicationResponseModel;
 import com.amx.jax.model.response.FcSaleOrderDefaultResponseModel;
 import com.amx.jax.model.response.FxExchangeRateDto;
@@ -260,5 +264,25 @@ public class FcSaleOrderClient implements IJaxService{
 		} // end of try-catch
 
 	}
+	
+	
+	
+	
+	
+	public AmxApiResponse<FcSaleApplPaymentReponseModel, Object> getSavePayNowApplication(FcSaleOrderPaynowRequestModel requestModel) throws Exception {
+		try {
+			LOGGER.info(" Fc Sale create application :" + requestModel.toString());
+			HttpEntity<FcSaleOrderPaynowRequestModel> requestEntity = new HttpEntity<FcSaleOrderPaynowRequestModel>(requestModel,getHeader());
+			String url = appConfig.getJaxURL()  + FC_SALE_ENDPOINT + "/fcsale-save-paynow/";
+			return restService.ajax(url).post(requestEntity).as(new ParameterizedTypeReference<AmxApiResponse<FcSaleApplPaymentReponseModel, Object>>(){});
+		} catch (AbstractJaxException ae) {
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in getCurrencyByCountryId : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
+
+	}
+	
 }
 

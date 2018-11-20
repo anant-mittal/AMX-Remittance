@@ -121,6 +121,10 @@ public class ReceiptPayment implements Serializable {
 	private List<PurposeOfTransaction> exPurposeOfTransaction= new ArrayList<PurposeOfTransaction>();
 	private List<SourceOfIncome> exSourceOfIncome = new ArrayList<SourceOfIncome>();
 
+	
+	private BigDecimal shippingAddressId;
+	private Date deliveryDate;
+	private String deleveryTime;
 
 	@Id
 	@GeneratedValue(generator="ex_receipt_payment_seq",strategy=GenerationType.SEQUENCE)
@@ -767,6 +771,30 @@ public class ReceiptPayment implements Serializable {
 	public void setTransactionIPAddress(String transactionIPAddress) {
 		this.transactionIPAddress = transactionIPAddress;
 	}
-	
+	@Column(name="SHIPPING_ADDRESS_ID")
+	public BigDecimal getShippingAddressId() {
+		return shippingAddressId;
+	}
+
+	public void setShippingAddressId(BigDecimal shippingAddressId) {
+		this.shippingAddressId = shippingAddressId;
+	}
+
+	@Column(name="DELIVERY_DATE")
+	public Date getDeliveryDate() {
+		return deliveryDate;
+	}
+
+	public void setDeliveryDate(Date deliveryDate) {
+		this.deliveryDate = deliveryDate;
+	}
+	@Column(name="DELIVERY_TIME")
+	public String getDeleveryTime() {
+		return deleveryTime;
+	}
+
+	public void setDeleveryTime(String deleveryTime) {
+		this.deleveryTime = deleveryTime;
+	}
 	
 }

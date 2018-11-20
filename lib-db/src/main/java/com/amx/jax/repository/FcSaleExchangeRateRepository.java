@@ -1,7 +1,7 @@
 package com.amx.jax.repository;
 
 /**
- * Author :Rabil
+ * @author :Rabil
  * Date   :04/11/2018
  * purpose :to get the fc sale exchange rate
  */

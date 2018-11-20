@@ -26,6 +26,7 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.constant.JaxEvent;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.CustomerShippingAddressRequestModel;
+import com.amx.jax.model.request.FcSaleOrderPaynowRequestModel;
 import com.amx.jax.model.request.FcSaleOrderTransactionRequestModel;
 import com.amx.jax.repository.ITermsAndConditionRepository;
 import com.amx.jax.service.TermsAndConditionService;
@@ -117,6 +118,17 @@ public class FcSaleOrderController {
 	
 	
 	
+	
+	@RequestMapping(value = "/fcsale-save-paynow/", method = RequestMethod.POST)
+	public AmxApiResponse fcSaleApplicationPayment(@RequestBody @Valid FcSaleOrderPaynowRequestModel requestmodel) {
+		JaxContextUtil.setJaxEvent(JaxEvent.CREATE_APPLICATION);
+		JaxContextUtil.setRequestModel(requestmodel);
+		logger.info("In Fc Sale Save-Application with parameters" + requestmodel.toString());
+		return fcSaleService.saveApplicationPayment(requestmodel);
+		
+	}
+	
+	
 	@RequestMapping(value = "/fc-sale-address/", method = RequestMethod.GET)
 	public AmxApiResponse fetchFcSaleAddress() {
 		ApiResponse response = fcSaleService.fetchFcSaleAddress();
@@ -149,6 +161,8 @@ public class FcSaleOrderController {
 		public AmxApiResponse shoppingCartDetails() {
 			return fcSaleService.fetchShoppingCartList();
 		}	
+		
+		
 		
 		
 }

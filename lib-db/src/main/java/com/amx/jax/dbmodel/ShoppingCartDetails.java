@@ -9,6 +9,7 @@ package com.amx.jax.dbmodel;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.Clob;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -73,6 +74,12 @@ public class ShoppingCartDetails implements Serializable {
 	private String  denominationType;
 	private String paymentId;
 	private BigDecimal applicationCountryId;
+	private BigDecimal pgPaymentSeqDtlId;
+	private BigDecimal deliveryDetSeqId;
+	private Date travelStartDate;
+	private Date travelEndDate;
+	private BigDecimal travelCountryId;
+	private String travelCountryName;
 	
 	
 	public ShoppingCartDetails() {
@@ -510,6 +517,71 @@ public class ShoppingCartDetails implements Serializable {
 
 	public void setApplicationCountryId(BigDecimal applicationCountryId) {
 		this.applicationCountryId = applicationCountryId;
+	}
+
+
+	@Column(name="PAYG_TRNX_DTLS_ID")
+	public BigDecimal getPgPaymentSeqDtlId() {
+		return pgPaymentSeqDtlId;
+	}
+
+
+	public void setPgPaymentSeqDtlId(BigDecimal pgPaymentSeqDtlId) {
+		this.pgPaymentSeqDtlId = pgPaymentSeqDtlId;
+	}
+
+	@Column(name="DELIVERY_DET_SEQ_ID")
+	public BigDecimal getDeliveryDetSeqId() {
+		return deliveryDetSeqId;
+	}
+
+
+	public void setDeliveryDetSeqId(BigDecimal deliveryDetSeqId) {
+		this.deliveryDetSeqId = deliveryDetSeqId;
+	}
+
+	
+	
+
+	@Column(name="START_DATE")
+	public Date getTravelStartDate() {
+		return travelStartDate;
+	}
+
+
+	public void setTravelStartDate(Date travelStartDate) {
+		this.travelStartDate = travelStartDate;
+	}
+
+	@Column(name="END_DATE")
+	public Date getTravelEndDate() {
+		return travelEndDate;
+	}
+
+
+	public void setTravelEndDate(Date travelEndDate) {
+		this.travelEndDate = travelEndDate;
+	}
+
+	@Column(name="TRAVEL_COUNTRY_ID")
+	public BigDecimal getTravelCountryId() {
+		return travelCountryId;
+	}
+
+
+	public void setTravelCountryId(BigDecimal travelCountryId) {
+		this.travelCountryId = travelCountryId;
+	}
+
+
+	@Column(name="TRAVEL_COUNTRY_NAME")
+	public String getTravelCountryName() {
+		return travelCountryName;
+	}
+
+
+	public void setTravelCountryName(String travelCountryName) {
+		this.travelCountryName = travelCountryName;
 	}
 
 

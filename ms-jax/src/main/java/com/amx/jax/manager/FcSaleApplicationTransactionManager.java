@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -30,17 +31,20 @@ import com.amx.jax.dao.FcSaleExchangeRateDao;
 import com.amx.jax.dbmodel.ApplicationSetup;
 import com.amx.jax.dbmodel.CountryBranch;
 import com.amx.jax.dbmodel.Customer;
+import com.amx.jax.dbmodel.FxDeliveryDetailsModel;
 import com.amx.jax.dbmodel.FxDeliveryTimeSlotMaster;
 import com.amx.jax.dbmodel.FxExchangeRateView;
 import com.amx.jax.dbmodel.ParameterDetails;
+import com.amx.jax.dbmodel.PaygDetailsModel;
 import com.amx.jax.dbmodel.ReceiptPaymentApp;
 import com.amx.jax.dbmodel.ShoppingCartDetails;
 import com.amx.jax.dbmodel.UserFinancialYear;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.request.FcSaleOrderPaynowRequestModel;
 import com.amx.jax.model.request.FcSaleOrderTransactionRequestModel;
+import com.amx.jax.model.response.FcSaleApplPaymentReponseModel;
 import com.amx.jax.model.response.FcSaleOrderApplicationResponseModel;
-import com.amx.jax.model.response.FxDeliveryTimeSlotDto;
 import com.amx.jax.model.response.ShoppingCartDetailsDto;
 import com.amx.jax.repository.CountryBranchRepository;
 import com.amx.jax.repository.FxOrderDeliveryTimeSlotRepository;
@@ -48,6 +52,7 @@ import com.amx.jax.repository.IApplicationCountryRepository;
 import com.amx.jax.repository.ICompanyDAO;
 import com.amx.jax.repository.ICurrencyDao;
 import com.amx.jax.repository.ICustomerRepository;
+import com.amx.jax.repository.ReceiptPaymentAppRepository;
 import com.amx.jax.service.BankMetaService;
 import com.amx.jax.service.CurrencyMasterService;
 import com.amx.jax.service.FinancialService;
@@ -55,6 +60,8 @@ import com.amx.jax.util.DateUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.RoundUtil;
 import com.amx.jax.validation.FxOrderValidation;
+
+import java.util.Comparator;
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Component
@@ -101,7 +108,9 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 	
 	@Autowired
 	private CountryBranchRepository countryBranchRepository;
-	
+
+	@Autowired
+	ReceiptPaymentAppRepository rcptPaymentAppl;
 	
 	/**
 	 * 
@@ -131,6 +140,51 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 			throw new GlobalException("FC Sale application creation failed", JaxError.FS_APPLIATION_CREATION_FAILED);
 		}
 	}
+	
+	
+	/** Save application payment **/
+	public FcSaleApplPaymentReponseModel saveApplicationPayment(FcSaleOrderPaynowRequestModel requestmodel){
+		FcSaleApplPaymentReponseModel responeModel = new FcSaleApplPaymentReponseModel();
+		PaygDetailsModel pgDetails = createPgDetails(requestmodel);
+		FxDeliveryDetailsModel deliveryDetailsModel = createDeliveryDeetails(requestmodel);
+		List<ParameterDetails> parameterList 	= fcSaleExchangeRateDao.getParameterDetails(ConstantDocument.FX_DC, ConstantDocument.Yes);
+		HashMap<String, Object> mapAllDetailApplSave = new HashMap<String, Object>();
+		mapAllDetailApplSave.put("EX_PAYG_DETAILS", pgDetails);
+		mapAllDetailApplSave.put("EX_DELIVERY_DETAILS", deliveryDetailsModel);
+		mapAllDetailApplSave.put("requestmodel", requestmodel);
+		fsSaleapplicationDao.saveAllAppDetails(mapAllDetailApplSave);
+		BigDecimal knetamount= BigDecimal.ZERO;
+		List<ShoppingCartDetailsDto> listShoppingCart = requestmodel.getCartDetailList();
+		if(!listShoppingCart.isEmpty()){
+		for(ShoppingCartDetailsDto shoppingCart:listShoppingCart){
+			ReceiptPaymentApp rcptAppl = rcptPaymentAppl.findOne(shoppingCart.getApplicationId());
+			if(rcptAppl!=null && rcptAppl.getIsActive().equalsIgnoreCase(ConstantDocument.Yes) 
+					&& rcptAppl.getApplicationStatus().equalsIgnoreCase(ConstantDocument.S)){
+				knetamount=knetamount.add(rcptAppl.getLocalTrnxAmount());
+				responeModel.setRemittanceAppId(rcptAppl.getReceiptId());
+				responeModel.setMerchantTrackId(metaData.getCustomerId());
+				responeModel.setDocumentIdForPayment(rcptAppl.getPgPaymentSeqDtlId()==null?"":rcptAppl.getPgPaymentSeqDtlId().toString());
+				UserFinancialYear userFinancialYear = finanacialService.getUserFinancialYear();
+				if(userFinancialYear!=null){
+					responeModel.setDocumentFinancialYear(userFinancialYear.getFinancialYear());
+				}
+			}
+		} //end of for Loop.
+		}else{
+			
+		}
+		
+		logger.info("Total knet amount without delivery charges: "+knetamount);
+		if(!parameterList.isEmpty()){
+			logger.info("Delivery charges: "+parameterList.get(0).getNumericField1());
+			knetamount = knetamount.add(parameterList.get(0).getNumericField1());
+		}
+		responeModel.setNetPayableAmount(knetamount);
+		logger.info("Total knet amount with delivery charges: "+knetamount);
+		return responeModel; 
+	}
+	
+	
 	
 	
 	public ReceiptPaymentApp  createFcSaleReceiptApplication(FcSaleOrderTransactionRequestModel fcSalerequestModel){
@@ -217,6 +271,10 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 		receiptPaymentAppl.setDocumentDate(new Date());
 		receiptPaymentAppl.setGeneralLegerDate(new Date());
 		receiptPaymentAppl.setCreatedDate(new Date());
+		
+		receiptPaymentAppl.setTravelCountryId(fcSalerequestModel.getTravelCountryId());
+		receiptPaymentAppl.setTravelStartDate(fcSalerequestModel.getStartDate()==null?new Date():new Date(fcSalerequestModel.getStartDate()));
+		receiptPaymentAppl.setTravelEndDate(fcSalerequestModel.getEndDate()==null?new Date():new Date(fcSalerequestModel.getEndDate()));
 		
 		
 		if(!StringUtils.isBlank(metaData.getReferrer())){
@@ -385,8 +443,112 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 		return dto;
 	}
 	
+	/**
+	 * Pay now update in appl receipt payment
+	 */
+	@SuppressWarnings("deprecation")
+	public FcSaleApplPaymentReponseModel updateApplReceiptPayDetails(FcSaleOrderPaynowRequestModel requestmodel){
+		
+		FcSaleApplPaymentReponseModel responseModel =new FcSaleApplPaymentReponseModel();
+		/*
+		List<ShoppingCartDetailsDto> listShoppingCart = requestmodel.getCartDetailList();
+		BigDecimal documentNo = BigDecimal.ZERO;
+		BigDecimal applicationId = BigDecimal.ZERO;
+		BigDecimal paygNetAmount = BigDecimal.ZERO;
+		int i = 0;
+		if(!listShoppingCart.isEmpty()){
+			listShoppingCart.sort(Comparator.comparing(ShoppingCartDetailsDto::getApplicationId));
+			documentNo = listShoppingCart.get(0).getDocumentNo();
+			applicationId = listShoppingCart.get(0).getApplicationId();
+			logger.info("paygdocumentNo :"+documentNo);
+		}
+		for(ShoppingCartDetailsDto shoppingCart:listShoppingCart){
+			i++;
+			ReceiptPaymentApp rcptAppl = rcptPaymentAppl.findOne(shoppingCart.getApplicationId());
+			if(rcptAppl!=null && i==1){
+				rcptAppl.setPgPaymentId(rcptAppl.getDocumentNo().toString());
+			}
+			rcptAppl.setShippingAddressId(requestmodel.getShippingAddressId());
+			rcptAppl.setDeliveryDate(new Date(requestmodel.getDeliveryDate()));
+			rcptAppl.setDeleveryTime(requestmodel.getTimeSlot());
+			if(i==1){
+				paygNetAmount  =rcptAppl.getLocalTrnxAmount().add(rcptAppl.getDeliveryCharges());
+			}else{
+				paygNetAmount.add(rcptAppl.getLocalTrnxAmount());
+			}
+			rcptAppl.setApplicationStatus(ConstantDocument.S);
+			fsSaleapplicationDao.updateCartDetails(rcptAppl);*/
+		//} //end of for Loop.
+		
+		
+		/*responseModel.setNetPayableAmount(paygNetAmount);
+		responseModel.setRemittanceAppId(applicationId);
+		responseModel.setMerchantTrackId(metaData.getCustomerId());
+		if(documentNo!=null){
+			responseModel.setDocumentIdForPayment(documentNo.toString());
+		}
+		UserFinancialYear userFinancialYear = finanacialService.getUserFinancialYear();
+		if(userFinancialYear!=null){
+			responseModel.setDocumentFinancialYear(userFinancialYear.getFinancialYear());
+		}*/
+		return responseModel;
+	}
 	
 	
+	public PaygDetailsModel createPgDetails(FcSaleOrderPaynowRequestModel requestmodel){
+		List<ShoppingCartDetailsDto> listShoppingCart = requestmodel.getCartDetailList();
+		PaygDetailsModel pgmodel = new PaygDetailsModel();
+		if(!listShoppingCart.isEmpty()){
+			listShoppingCart.sort(Comparator.comparing(ShoppingCartDetailsDto::getApplicationId));
+			pgmodel.setCollDocNumber(listShoppingCart.get(0).getDocumentNo());
+		}
+		UserFinancialYear userFinancialYear = finanacialService.getUserFinancialYear();
+		if(userFinancialYear!=null){
+			pgmodel.setCollDocFYear(userFinancialYear.getFinancialYear());
+		}
+		pgmodel.setCreationDate(new Date());
+		pgmodel.setCustomerId(metaData.getCustomerId());
+		pgmodel.setTrnxType(ConstantDocument.S);
+		if(!StringUtils.isBlank(metaData.getReferrer())){
+			pgmodel.setCreatedBy(metaData.getReferrer());
+		}else{
+			if(!StringUtils.isBlank(metaData.getAppType())){				
+				pgmodel.setCreatedBy(metaData.getAppType());
+			}else{
+				pgmodel.setCreatedBy("WEB");
+			 }
+		}
+		// fsSaleapplicationDao.savePaygDetails(pgmodel);
+		return pgmodel;
+		
+	}
+	
+	
+	public FxDeliveryDetailsModel createDeliveryDeetails (FcSaleOrderPaynowRequestModel requestmodel){
+		FxDeliveryDetailsModel deliveryDetails = new FxDeliveryDetailsModel();
+		StringBuffer appldocNo=new StringBuffer();
+		deliveryDetails.setCreatedDate(new Date());
+		deliveryDetails.setDeliveryDate(requestmodel.getDeliveryDate()==null?new Date():new Date(requestmodel.getDeliveryDate()));
+		deliveryDetails.setDeliveryTimeSlot(requestmodel.getTimeSlot());
+		deliveryDetails.setShippingAddressId(requestmodel.getShippingAddressId());
+		if(!requestmodel.getCartDetailList().isEmpty()){
+			for(ShoppingCartDetailsDto dto :requestmodel.getCartDetailList()){
+				appldocNo =appldocNo.append(dto.getApplicationId()).append(",");
+			}
+			deliveryDetails.setApplDocNo(appldocNo.toString());
+		}
+		deliveryDetails.setIsActive(ConstantDocument.Yes);
+		if(!StringUtils.isBlank(metaData.getReferrer())){
+			deliveryDetails.setCreatedBy(metaData.getReferrer());
+		}else{
+			if(!StringUtils.isBlank(metaData.getAppType())){				
+				deliveryDetails.setCreatedBy(metaData.getAppType());
+			}else{
+				deliveryDetails.setCreatedBy("WEB");
+			 }
+		}
+		return deliveryDetails;
+	}
 	
 	
 }

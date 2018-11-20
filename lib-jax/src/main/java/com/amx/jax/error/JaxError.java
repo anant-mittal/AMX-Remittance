@@ -156,7 +156,8 @@ public enum JaxError implements IExceptionEnum {
 	BLANK_COUNTRY_BRANCH,
 	BLANK_CUSTOMER_ID,
 	BLANK_LANGUAGE_ID,
-	BLANK_COMPANY_ID;
+	BLANK_COMPANY_ID,
+	NULL_APPLICATION_ID;
 
 
 	@Deprecated

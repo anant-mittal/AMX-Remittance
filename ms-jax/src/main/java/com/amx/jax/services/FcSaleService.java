@@ -37,9 +37,11 @@ import com.amx.jax.manager.FcSaleAddressManager;
 import com.amx.jax.manager.FcSaleApplicationTransactionManager;
 import com.amx.jax.manager.FcSaleOrderTransactionManager;
 import com.amx.jax.model.request.CustomerShippingAddressRequestModel;
+import com.amx.jax.model.request.FcSaleOrderPaynowRequestModel;
 import com.amx.jax.model.request.FcSaleOrderTransactionRequestModel;
 import com.amx.jax.model.response.CurrencyDenominationTypeDto;
 import com.amx.jax.model.response.CurrencyMasterDTO;
+import com.amx.jax.model.response.FcSaleApplPaymentReponseModel;
 import com.amx.jax.model.response.FcSaleOrderApplicationResponseModel;
 import com.amx.jax.model.response.FcSaleOrderDefaultResponseModel;
 import com.amx.jax.model.response.FxExchangeRateDto;
@@ -185,6 +187,7 @@ public class FcSaleService extends AbstractService{
 		List<ParameterDetails> denominationTypeList = fcSaleExchangeRateDao.getParameterDetails(ConstantDocument.FX_CD, ConstantDocument.Yes);
 		List<SourceOfIncomeView> sourceOfIncomeList = sourceOfIncomeDao.getSourceofIncome(languageId);
 		
+		
 		if(purposeofTrnxList!= null && !purposeofTrnxList.isEmpty()){
 			responseModel.setPurposeOfTrnxList(convertPurposeOfTrnxDto(purposeofTrnxList));
 		}
@@ -279,7 +282,10 @@ public class FcSaleService extends AbstractService{
 	 * @returnFcSaleOrderApplicationResponseModel
 	 */
 	
-	public AmxApiResponse removeitemFromCart(BigDecimal applicationId){		
+	public AmxApiResponse removeitemFromCart(BigDecimal applicationId){	
+		if(applicationId==null || applicationId.compareTo(BigDecimal.ZERO)==0){
+			throw new GlobalException("Application id should not be blank",JaxError.NULL_APPLICATION_ID);
+		}
 		FcSaleOrderApplicationResponseModel fcSaleAppResponseModel =  applTrnxManager.removeitemFromCart(applicationId);
 		return AmxApiResponse.build(fcSaleAppResponseModel);
 		
@@ -292,6 +298,17 @@ public class FcSaleService extends AbstractService{
 		return AmxApiResponse.buildList(shoppingCartDetails);
 		}
 
+	
+	
+	/** Pay now save **/
+	
+	public AmxApiResponse saveApplicationPayment(FcSaleOrderPaynowRequestModel requestmodel){
+		if(requestmodel.getCartDetailList().isEmpty()){
+			throw new GlobalException("Mandatory field is missing",JaxError.NULL_APPLICATION_ID);
+		}
+		FcSaleApplPaymentReponseModel responseModel = applTrnxManager.saveApplicationPayment(requestmodel);
+		return AmxApiResponse.build(responseModel);
+	}
 	
 			
 	public List<PurposeOfTransactionDto> convertPurposeOfTrnxDto(List<PurposeOfTransaction> purposeofTrnxList){

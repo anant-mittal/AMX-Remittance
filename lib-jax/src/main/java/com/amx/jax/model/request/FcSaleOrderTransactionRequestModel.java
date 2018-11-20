@@ -24,12 +24,12 @@ public class FcSaleOrderTransactionRequestModel extends AbstractModel {
 	private BigDecimal foreignCurrencyId;
 	private String remarks;
 	private BigDecimal deliveryCharges;
-	
+	private BigDecimal travelCountryId;
+	private String startDate;
+	private String endDate;
 	private String errorMessage;
 	
-	
-	@NotNull
-	private FxExchangeRateBreakup exRateBreakup;
+
 	private BigDecimal domXRate;
 	public BigDecimal getSourceOfFundId() {
 		return sourceOfFundId;
@@ -61,12 +61,12 @@ public class FcSaleOrderTransactionRequestModel extends AbstractModel {
 	public void setCurrencyDenominationType(String currencyDenominationType) {
 		this.currencyDenominationType = currencyDenominationType;
 	}
-	public FxExchangeRateBreakup getExRateBreakup() {
+	/*public FxExchangeRateBreakup getExRateBreakup() {
 		return exRateBreakup;
 	}
 	public void setExRateBreakup(FxExchangeRateBreakup exRateBreakup) {
 		this.exRateBreakup = exRateBreakup;
-	}
+	}*/
 	public BigDecimal getDomXRate() {
 		return domXRate;
 	}
@@ -96,6 +96,24 @@ public class FcSaleOrderTransactionRequestModel extends AbstractModel {
 	}
 	public void setErrorMessage(String errorMessage) {
 		this.errorMessage = errorMessage;
+	}
+	public BigDecimal getTravelCountryId() {
+		return travelCountryId;
+	}
+	public void setTravelCountryId(BigDecimal travelCountryId) {
+		this.travelCountryId = travelCountryId;
+	}
+	public String getStartDate() {
+		return startDate;
+	}
+	public void setStartDate(String startDate) {
+		this.startDate = startDate;
+	}
+	public String getEndDate() {
+		return endDate;
+	}
+	public void setEndDate(String endDate) {
+		this.endDate = endDate;
 	}
 	
 	

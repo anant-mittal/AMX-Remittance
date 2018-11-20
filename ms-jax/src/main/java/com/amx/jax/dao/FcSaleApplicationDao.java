@@ -20,8 +20,14 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.dbmodel.FxDeliveryDetailsModel;
+import com.amx.jax.dbmodel.PaygDetailsModel;
 import com.amx.jax.dbmodel.ReceiptPaymentApp;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
+import com.amx.jax.model.request.FcSaleOrderPaynowRequestModel;
+import com.amx.jax.model.response.ShoppingCartDetailsDto;
+import com.amx.jax.repository.FxDeliveryDetailsRepository;
+import com.amx.jax.repository.PaygDetailsRepository;
 import com.amx.jax.repository.ReceiptPaymentAppRepository;
 
 @Component
@@ -35,12 +41,45 @@ public class FcSaleApplicationDao {
 	@Autowired
 	ReceiptPaymentAppRepository receiptPaymentApplRespo;
 	
+	@Autowired
+	PaygDetailsRepository pgRepository;
+	
+	@Autowired
+	FxDeliveryDetailsRepository fxDeliveryDetailsRepository;
+	
 	
 	@Transactional
 	public void saveAllApplicationData(HashMap<String, Object> mapAllDetailApplSave){
 		ReceiptPaymentApp receiptAppl= (ReceiptPaymentApp)mapAllDetailApplSave.get("EX_APPL_RECEIPT");
 		if(receiptPaymentApplRespo!=null){
 			receiptPaymentApplRespo.save(receiptAppl);
+		}
+	}
+	
+	@Transactional
+	public void saveAllAppDetails(HashMap<String, Object> mapAllDetailApplSave){
+		
+		PaygDetailsModel paygDetailsModel = (PaygDetailsModel)mapAllDetailApplSave.get("EX_PAYG_DETAILS");
+		FxDeliveryDetailsModel fxDeliveryModel =(FxDeliveryDetailsModel)mapAllDetailApplSave.get("EX_DELIVERY_DETAILS");
+		FcSaleOrderPaynowRequestModel requestmodel =(FcSaleOrderPaynowRequestModel)mapAllDetailApplSave.get("requestmodel");
+		
+		if(paygDetailsModel!=null){
+			pgRepository.save(paygDetailsModel);
+		}
+		if(fxDeliveryModel!=null){
+			fxDeliveryDetailsRepository.save(fxDeliveryModel);
+		}
+		
+		if(paygDetailsModel !=null && fxDeliveryModel!= null && requestmodel!=null){
+			for(ShoppingCartDetailsDto dto :requestmodel.getCartDetailList()){
+				ReceiptPaymentApp applDeac = receiptPaymentApplRespo.findOne(dto.getApplicationId());
+				if(applDeac!=null && applDeac.getIsActive().equalsIgnoreCase(ConstantDocument.Yes)){
+				applDeac.setApplicationStatus(ConstantDocument.S);
+				applDeac.setPgPaymentSeqDtlId(paygDetailsModel.getPaygTrnxSeqId());
+				applDeac.setDeliveryDetSeqId(fxDeliveryModel.getDeleviryDelSeqId());
+				receiptPaymentApplRespo.save(applDeac);
+				}
+			}
 		}
 	}
 	
@@ -51,6 +90,7 @@ public class FcSaleApplicationDao {
 		for(ReceiptPaymentApp appl : listOfAppl){
 			ReceiptPaymentApp applDeac = receiptPaymentApplRespo.findOne(appl.getReceiptId());
 			applDeac.setIsActive(ConstantDocument.Deleted);
+			applDeac.setApplicationStatus(null);
 			receiptPaymentApplRespo.save(applDeac);
 		}
 		}catch (Exception e) {
@@ -64,11 +104,31 @@ public class FcSaleApplicationDao {
 	try {
 			ReceiptPaymentApp applDeac = receiptPaymentApplRespo.findOne(applId);
 			applDeac.setIsActive(ConstantDocument.Deleted);
+			applDeac.setApplicationStatus(null);
 			applDeac.setModifiedDate(new Date());
 			receiptPaymentApplRespo.save(applDeac);
 		}catch (Exception e) {
 			e.printStackTrace();
 			throw new GlobalException("Remove item from cart faliled for custoemr:"+applId);
+		}
+		
+	}
+	
+	public void savePaygDetails(PaygDetailsModel pgModel){
+		try {
+			pgRepository.save(pgModel);
+		}catch (Exception e) {
+			e.printStackTrace();
+			throw new GlobalException("saving pg details :"+pgModel);
+		}
+	}
+	/**
+	 * 
+	 * @param :update shippiong address, time slot.
+	 */
+	public void updateCartDetails(ReceiptPaymentApp rcpt){
+		if(rcpt!=null){
+			receiptPaymentApplRespo.save(rcpt);
 		}
 		
 	}

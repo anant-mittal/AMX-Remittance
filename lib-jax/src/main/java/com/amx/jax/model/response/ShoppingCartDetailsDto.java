@@ -6,6 +6,7 @@ package com.amx.jax.model.response;
  */
 import java.math.BigDecimal;
 import java.sql.Clob;
+import java.util.Date;
 
 public class ShoppingCartDetailsDto {
 
@@ -44,7 +45,7 @@ public class ShoppingCartDetailsDto {
 	private String spldeal;
 	private String applicationTypeDesc;
 	private String customerSignature;
-	private Clob customerSignatureClob;
+	//private Clob customerSignatureClob;
 	private String sourceofincome;
 	private String BeneCityName;
 	private String BeneStateName;
@@ -62,6 +63,12 @@ public class ShoppingCartDetailsDto {
 	private String paymentId;
 	private BigDecimal applicationCountryId;
 	private String pgPaymentId;
+	private BigDecimal pgPaymentSeqDtlId;
+	private BigDecimal deliveryDetSeqId;
+	private Date travelStartDate;
+	private Date travelEndDate;
+	private BigDecimal travelCountryId;
+	private String travelCountryName;
 	
 	
 	public BigDecimal getRemittanceAppBeneficiaryId() {
@@ -274,12 +281,12 @@ public class ShoppingCartDetailsDto {
 	public void setCustomerSignature(String customerSignature) {
 		this.customerSignature = customerSignature;
 	}
-	public Clob getCustomerSignatureClob() {
+	/*public Clob getCustomerSignatureClob() {
 		return customerSignatureClob;
 	}
 	public void setCustomerSignatureClob(Clob customerSignatureClob) {
 		this.customerSignatureClob = customerSignatureClob;
-	}
+	}*/
 	public String getSourceofincome() {
 		return sourceofincome;
 	}
@@ -381,5 +388,42 @@ public class ShoppingCartDetailsDto {
 	}
 	public void setPgPaymentId(String pgPaymentId) {
 		this.pgPaymentId = pgPaymentId;
+	}
+	public BigDecimal getPgPaymentSeqDtlId() {
+		return pgPaymentSeqDtlId;
+	}
+	public void setPgPaymentSeqDtlId(BigDecimal pgPaymentSeqDtlId) {
+		this.pgPaymentSeqDtlId = pgPaymentSeqDtlId;
+	}
+	public BigDecimal getDeliveryDetSeqId() {
+		return deliveryDetSeqId;
+	}
+	public void setDeliveryDetSeqId(BigDecimal deliveryDetSeqId) {
+		this.deliveryDetSeqId = deliveryDetSeqId;
+	}
+	
+	public BigDecimal getTravelCountryId() {
+		return travelCountryId;
+	}
+	public void setTravelCountryId(BigDecimal travelCountryId) {
+		this.travelCountryId = travelCountryId;
+	}
+	public String getTravelCountryName() {
+		return travelCountryName;
+	}
+	public void setTravelCountryName(String travelCountryName) {
+		this.travelCountryName = travelCountryName;
+	}
+	public Date getTravelStartDate() {
+		return travelStartDate;
+	}
+	public void setTravelStartDate(Date travelStartDate) {
+		this.travelStartDate = travelStartDate;
+	}
+	public Date getTravelEndDate() {
+		return travelEndDate;
+	}
+	public void setTravelEndDate(Date travelEndDate) {
+		this.travelEndDate = travelEndDate;
 	}
 }

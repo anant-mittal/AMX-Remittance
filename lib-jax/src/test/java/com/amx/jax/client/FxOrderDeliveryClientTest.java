@@ -16,7 +16,7 @@ public class FxOrderDeliveryClientTest  extends AbstractClientTest {
 	@Autowired
 	FcSaleOrderClient fxOrderClient;
 	
-	@Test
+	/*@Test
 	public void currencyList(){
 		setDefaults();
 		AmxApiResponse<CurrencyMasterDTO, Object> response = null;
@@ -24,6 +24,6 @@ public class FxOrderDeliveryClientTest  extends AbstractClientTest {
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());
 	
-	}
+	}*/
 
 }
