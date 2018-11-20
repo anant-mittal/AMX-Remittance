@@ -101,6 +101,11 @@ public interface IDeviceService extends IJaxService {
 	AmxApiResponse<DevicePairOtpResponse, BoolRespModel> validateOtpForPairing(ClientType deviceType,
 			Integer countryBranchSystemInventoryId, String otp);
 
+	@ApiJaxStatus(JaxError.CLIENT_NOT_FOUND)
 	AmxApiResponse<BoolRespModel, Object> deactivateDevice(Integer deviceRegId);
+	
+	@ApiJaxStatus({JaxError.CLIENT_NOT_FOUND, JaxError.CLIENT_NOT_ACTIVE})
+	AmxApiResponse<BoolRespModel, Object> clearDeviceState(Integer registrationId, String paireToken,
+			String sessionToken);
 
 }

@@ -253,4 +253,17 @@ public class DeviceService extends AbstractService {
 		deviceManager.deactivateDevice(device);
 		return new BoolRespModel(Boolean.TRUE);
 	}
+
+	public BoolRespModel clearDeviceState(Integer registrationId, String paireToken, String sessionToken) {
+		Device device = deviceDao.findDevice(new BigDecimal(registrationId));
+		deviceValidation.validateDevice(device);
+		DeviceStateInfo deviceStateInfo = deviceDao.getDeviceStateInfo(device);
+		deviceManager.validateLogIn(device);
+		logger.debug("clearDeviceState D id {} ", device.getRegistrationId());
+		deviceStateInfo.setStateData(null);
+		deviceStateInfo.setSignature(null);
+		deviceStateInfo.setState(DeviceState.SESSION_PAIRED);
+		deviceDao.saveDeviceInfo(deviceStateInfo);
+		return new BoolRespModel(Boolean.TRUE);
+	}
 }
