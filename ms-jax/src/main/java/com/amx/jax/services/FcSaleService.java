@@ -295,6 +295,9 @@ public class FcSaleService extends AbstractService{
 
 	public AmxApiResponse fetchShoppingCartList(){
 		List<ShoppingCartDetailsDto> shoppingCartDetails =  applTrnxManager.fetchApplicationDetails();
+		if(shoppingCartDetails.isEmpty()){
+			throw new GlobalException("No data found",JaxError.NO_RECORD_FOUND);
+		}
 		return AmxApiResponse.buildList(shoppingCartDetails);
 		}
 
