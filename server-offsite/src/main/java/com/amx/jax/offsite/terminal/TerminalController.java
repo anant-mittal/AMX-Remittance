@@ -29,6 +29,7 @@ import com.amx.jax.offsite.device.DeviceConfigs.TerminalData;
 import com.amx.jax.offsite.terminal.TerminalConstants.Path;
 import com.amx.jax.swagger.IStatusCodeListPlugin.ApiStatusService;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.Constants;
 import com.amx.utils.HttpUtils;
 import com.amx.utils.Random;
 import com.amx.utils.UniqueID;
@@ -50,7 +51,7 @@ public class TerminalController {
 
 	@RequestMapping(value = { Path.TERMINAL_STATUS_PING }, method = { RequestMethod.GET })
 	public String getPing(@RequestParam String state, @RequestParam String terminalId,
-			@RequestParam(required = false) String status, @RequestParam(required = false) Long time,
+			@RequestParam(required = false) String status, @RequestParam(required = false) Long pageStamp,
 			@RequestParam(required = false) Long startStamp,
 			Model model,
 			HttpServletResponse response, HttpServletRequest request) throws MalformedURLException, URISyntaxException {
@@ -63,21 +64,21 @@ public class TerminalController {
 				startStamp = System.currentTimeMillis();
 			}
 		}
-		if (ArgUtil.isEmpty(time)) {
-			time = System.currentTimeMillis();
+		if (ArgUtil.isEmpty(pageStamp)) {
+			pageStamp = System.currentTimeMillis();
 		}
 
 		terminalData.setState(state);
 		terminalData.setStatus(status);
 		terminalData.setLivestamp(System.currentTimeMillis());
-		terminalData.setPagestamp(time);
+		terminalData.setPagestamp(pageStamp);
 		terminalData.setStartStamp(startStamp);
 		terminalBox.fastPut(terminalId, terminalData);
 
 		model.addAttribute("url",
 				Urly.parse(HttpUtils.getServerName(request)).setPath(Path.TERMINAL_STATUS_PING)
 						.addParameter("terminalId", terminalId).addParameter("state", state)
-						.addParameter("status", status).addParameter("time", time)
+						.addParameter("status", status).addParameter("pageStamp", pageStamp)
 						.addParameter("startStamp", startStamp)
 						.getURL());
 		return "js/signpad";

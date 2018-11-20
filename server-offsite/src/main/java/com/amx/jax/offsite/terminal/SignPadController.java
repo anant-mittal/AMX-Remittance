@@ -120,6 +120,15 @@ public class SignPadController {
 
 		}
 
+		if (Constants.Common.SUCCESS.equalsIgnoreCase(terminalData.getStatus())
+				&& !ArgUtil.isEmpty(signPadData.getStateData())
+				&& !ArgUtil.isEmpty(signPadData.getStateData().getStateDataType())) {
+			deviceClient.clearDeviceState(ArgUtil.parseAsInteger(deviceRequestValidator.getDeviceRegId()),
+					deviceRequestValidator.getDeviceRegToken(),
+					deviceRequestValidator.getDeviceSessionToken());
+			signPadData.setStateData(new DeviceStatusInfoDto());
+		}
+
 		return defaultRespo;
 	}
 
