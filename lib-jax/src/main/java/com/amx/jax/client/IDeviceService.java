@@ -38,6 +38,7 @@ public interface IDeviceService extends IJaxService {
 		public static final String DEVICE_FC_SALE_UPDATE = PUBG + PREFIX + "/fcsale";
 		public static final String DEVICE_STATE = PREFIX + "/state";
 		public static final String DEVICE_REG = PREFIX + "/register";
+		public static final String DEVICE_STATE_CLEAR = PUBG + PREFIX + "/clearstate";
 	}
 
 	public static class Params {

@@ -1,6 +1,7 @@
 package com.amx.jax.services;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 import javax.transaction.Transactional;
 
@@ -192,7 +193,7 @@ public class DeviceService extends AbstractService {
 			}
 		}
 		setBranchPcLogoutTime(dto, deviceStateInfo.getEmployeeId());
-		dto.setLastUpdatedTime(deviceStateInfo.getModifiedDate());
+		dto.setLastUpdatedTime(deviceStateInfo.getStateDataModifiedDate());
 		return dto;
 	}
 
@@ -228,6 +229,7 @@ public class DeviceService extends AbstractService {
 		logger.debug("updating device state D id {} ", device.getRegistrationId());
 		String deviceStateDataStr = JsonUtil.toJson(deviceStateData);
 		deviceStateInfo.setStateData(deviceStateDataStr);
+		deviceStateInfo.setStateDataModifiedDate(new Date());
 		deviceStateInfo.setStateDataType(type);
 		deviceStateInfo.setEmployeeId(employeeId);
 		deviceDao.saveDeviceInfo(deviceStateInfo);

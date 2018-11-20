@@ -61,6 +61,9 @@ public class DeviceStateInfo {
 	
 	@Column(name = "EMPLOYEE_ID")
 	BigDecimal employeeId;
+	
+	@Column(name = "STATE_DATA_MODIFIED_DATE")
+	Date stateDataModifiedDate;
 
 	public BigDecimal getDeviceRegId() {
 		return deviceRegId;
@@ -169,6 +172,14 @@ public class DeviceStateInfo {
 
 	public void setOtpTokenCreatedDate(Date otpTokenCreatedDate) {
 		this.otpTokenCreatedDate = otpTokenCreatedDate;
+	}
+
+	public Date getStateDataModifiedDate() {
+		return stateDataModifiedDate;
+	}
+
+	public void setStateDataModifiedDate(Date stateDataModifiedDate) {
+		this.stateDataModifiedDate = stateDataModifiedDate;
 	}
 
 }
