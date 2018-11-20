@@ -1,8 +1,6 @@
 package com.amx.jax.adapter;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.Base64;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
@@ -21,6 +19,7 @@ import com.amx.jax.device.DeviceMetaInfo;
 import com.amx.jax.device.DeviceRestModels;
 import com.amx.jax.device.DeviceRestModels.DevicePairingCreds;
 import com.amx.jax.device.DeviceRestModels.DevicePairingRequest;
+import com.amx.jax.device.DeviceRestModels.DeviceRestModel;
 import com.amx.jax.device.DeviceRestModels.NetAddress;
 import com.amx.jax.device.DeviceRestModels.SessionPairingCreds;
 import com.amx.jax.dict.UserClient.ClientType;
@@ -29,7 +28,6 @@ import com.amx.jax.exception.AmxException;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.rest.RestService;
 import com.amx.utils.ArgUtil;
-import com.amx.utils.JsonUtil;
 import com.amx.utils.TimeUtils;
 
 import net.east301.keyring.BackendNotSupportedException;
@@ -40,7 +38,6 @@ import net.east301.keyring.util.LockException;
 
 public abstract class ACardReaderService {
 
-	private static final String SERVICE_NAME = "amx-adapter";
 	public static String CARD_READER_KEY = CardData.class.getName();
 	private static final Logger LOGGER = LoggerService.getLogger(ACardReaderService.class);
 	public static ACardReaderService CONTEXT = null;
@@ -121,31 +118,22 @@ public abstract class ACardReaderService {
 		synchronized (lock) {
 			Keyring keyring;
 			try {
-				keyring = Keyring.create();
+				keyring = KeyUtil.getKeyRing();
 			} catch (BackendNotSupportedException ex) {
 				SWAdapterGUI.CONTEXT.log(ex.getMessage());
 				LOGGER.error("pairing Exception", ex);
 				status(DeviceStatus.KEYRING_EXCEPTION);
 				return null;
+			} catch (IOException ex) {
+				status(DeviceStatus.KEYRING_FILE_EXCEPTION);
+				SWAdapterGUI.CONTEXT.log(ex.getMessage());
+				LOGGER.error("pairing Exception:IOException", ex);
+				return null;
 			}
 
-			if (keyring.isKeyStorePathRequired()) {
-				try {
-					File keyStoreFile = File.createTempFile("keystore", ".keystore");
-					keyring.setKeyStorePath(keyStoreFile.getPath());
-				} catch (IOException ex) {
-					status(DeviceStatus.KEYRING_FILE_EXCEPTION);
-					SWAdapterGUI.CONTEXT.log(ex.getMessage());
-					LOGGER.error("pairing Exception:IOException", ex);
-				}
-			}
-
-			if (devicePairingCredsValid) {
-				try {
-					String passwordEncd = keyring.getPassword(SERVICE_NAME, ClientType.BRANCH_ADAPTER.toString());
-					byte[] terminalCredsByts = Base64.getDecoder().decode(passwordEncd);
-					String terminalCredsStrs = new String(terminalCredsByts);
-					DevicePairingCreds dpr = JsonUtil.fromJson(terminalCredsStrs, DevicePairingCreds.class);
+			try {
+				if (devicePairingCredsValid) {
+					DevicePairingCreds dpr = KeyUtil.getDevicePairingCreds();
 					if (!ArgUtil.isEmpty(dpr) && !ArgUtil.isEmpty(dpr.getDeviceRegId())) {
 						devicePairingCreds = dpr;
 						terminalId = devicePairingCreds.getDeivceTerminalId();
@@ -153,22 +141,18 @@ public abstract class ACardReaderService {
 					} else {
 						devicePairingCredsValid = false;
 					}
-				} catch (LockException ex) {
-					SWAdapterGUI.CONTEXT.log(ex.getMessage());
-					status(DeviceStatus.PAIRING_KEYS_FOUND_ERROR);
-				} catch (PasswordRetrievalException ex) {
-					status(DeviceStatus.PAIRING_KEYS_NOT_FOUND);
-					SWAdapterGUI.CONTEXT.log(DeviceStatus.PAIRING_KEYS_NOT_FOUND.toString());
-				} catch (Exception e) {
-					status(DeviceStatus.PAIRING_KEYS_EXCEPTION);
-					SWAdapterGUI.CONTEXT.log(DeviceStatus.PAIRING_KEYS_EXCEPTION.toString());
-					LOGGER.error("pairing Exception", e);
-					devicePairingCredsValid = false;
 				}
-			} else {
-				// keyring.setPassword(SERVICE_NAME, ClientType.BRANCH_ADAPTER.toString(),
-				// null);
-				// devicePairingCredsValid
+			} catch (LockException ex) {
+				SWAdapterGUI.CONTEXT.log(ex.getMessage());
+				status(DeviceStatus.PAIRING_KEYS_FOUND_ERROR);
+			} catch (PasswordRetrievalException ex) {
+				status(DeviceStatus.PAIRING_KEYS_NOT_FOUND);
+				SWAdapterGUI.CONTEXT.log(DeviceStatus.PAIRING_KEYS_NOT_FOUND.toString());
+			} catch (Exception e) {
+				status(DeviceStatus.PAIRING_KEYS_EXCEPTION);
+				SWAdapterGUI.CONTEXT.log(DeviceStatus.PAIRING_KEYS_EXCEPTION.toString());
+				LOGGER.error("pairing Exception", e);
+				devicePairingCredsValid = false;
 			}
 
 			if (ArgUtil.isEmpty(devicePairingCreds)) {
@@ -193,11 +177,9 @@ public abstract class ACardReaderService {
 							dpr.setDeivceClientType(ClientType.BRANCH_ADAPTER);
 							devicePairingCreds = dpr;
 							devicePairingCredsValid = true;
-							String terminalCredsStrs = JsonUtil.toJson(dpr);
-							String passwordEncd = Base64.getEncoder().encodeToString(terminalCredsStrs.getBytes());
 
 							try {
-								keyring.setPassword(SERVICE_NAME, ClientType.BRANCH_ADAPTER.toString(), passwordEncd);
+								KeyUtil.setDevicePairingCreds(dpr);
 								status(DeviceStatus.PAIRED);
 							} catch (LockException ex) {
 								status(DeviceStatus.PAIRING_KEY_SAVE_ERROR);
@@ -274,6 +256,15 @@ public abstract class ACardReaderService {
 		}
 
 		return sessionPairingCreds;
+	}
+
+	public void resetTerminalPairing()
+			throws BackendNotSupportedException, LockException, PasswordSaveException, IOException {
+		KeyUtil.getKeyRing();
+		KeyUtil.setDevicePairingCreds(new DeviceRestModel());
+		devicePairingCreds = null;
+		sessionPairingCreds = null;
+		terminalId = null;
 	}
 
 	@Scheduled(fixedDelay = 1000, initialDelay = 4000)

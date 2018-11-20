@@ -64,6 +64,15 @@ public class DeviceConfigs {
 		long livestamp;
 		long changestamp;
 		long updatestamp;
+		long pagestamp;
+
+		public long getPagestamp() {
+			return pagestamp;
+		}
+
+		public void setPagestamp(long pagestamp) {
+			this.pagestamp = pagestamp;
+		}
 
 		public long getUpdatestamp() {
 			return updatestamp;

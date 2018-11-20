@@ -62,7 +62,7 @@ public class TerminalController {
 		terminalData.setState(state);
 		terminalData.setStatus(status);
 		terminalData.setLivestamp(System.currentTimeMillis());
-		terminalData.setChangestamp(time);
+		terminalData.setPagestamp(time);
 		terminalBox.fastPut(terminalId, terminalData);
 
 		model.addAttribute("url",
