@@ -250,7 +250,7 @@ public class DeviceClient implements IDeviceService {
 			LOGGER.debug("in clearDeviceState");
 			String url = appConfig.getJaxURL() + Path.DEVICE_STATE_CLEAR;
 			return restService.ajax(url).meta(new JaxMetaInfo()).field(Params.DEVICE_REG_ID, deviceRegId)
-					.field(Params.PAIRE_TOKEN, paireToken).field(Params.SESSION_TOKEN, sessionToken).post()
+					.field(Params.PAIRE_TOKEN, paireToken).field(Params.SESSION_TOKEN, sessionToken).postForm()
 					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
 					});
 		} catch (Exception e) {
