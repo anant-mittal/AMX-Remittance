@@ -262,7 +262,7 @@ public class DeviceService extends AbstractService {
 		logger.debug("clearDeviceState D id {} ", device.getRegistrationId());
 		deviceStateInfo.setStateData(null);
 		deviceStateInfo.setSignature(null);
-		deviceStateInfo.setState(DeviceState.SESSION_PAIRED);
+		deviceStateInfo.setStateDataType(null);
 		deviceDao.saveDeviceInfo(deviceStateInfo);
 		return new BoolRespModel(Boolean.TRUE);
 	}
