@@ -105,12 +105,17 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 		BeneficaryMaster beneMaster = commitBeneMaster(beneficiaryTrnxModel);
 		commitBeneContact(beneficiaryTrnxModel, beneMaster.getBeneficaryMasterSeqId());
 		BeneficaryAccount beneAccount = commitBeneAccount(beneficiaryTrnxModel, beneMaster.getBeneficaryMasterSeqId());
-		commitBeneRelationship(beneficiaryTrnxModel, beneMaster.getBeneficaryMasterSeqId(),
-				beneAccount.getBeneficaryAccountSeqId());
+		BeneficaryRelationship beneRelationship = commitBeneRelationship(beneficiaryTrnxModel,
+				beneMaster.getBeneficaryMasterSeqId(), beneAccount.getBeneficaryAccountSeqId());
 		logger.info("commit done");
 		populateOldEmosData(beneficiaryTrnxModel, beneMaster.getBeneficaryMasterSeqId(),
 				beneAccount.getBeneficaryAccountSeqId());
-
+		beneRelationship = beneficiaryRelationshipDao.findOne(beneRelationship.getBeneficaryRelationshipId());
+		if (beneRelationship.getMapSequenceId() == null) {
+			logger.info("Map sequence is null for bene rel seq id: {}", beneRelationship.getBeneficaryRelationshipId());
+			populateOldEmosData(beneficiaryTrnxModel, beneMaster.getBeneficaryMasterSeqId(),
+					beneAccount.getBeneficaryAccountSeqId());
+		}
 		return beneficiaryTrnxModel;
 	}
 
@@ -208,9 +213,10 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 	 * @param beneficiaryTrnxModel
 	 * @param beneficaryMasterId
 	 * @param beneficaryAccountId
+	 * @return 
 	 * 
 	 */
-	private void commitBeneRelationship(BeneficiaryTrnxModel beneficiaryTrnxModel, BigDecimal beneficaryMasterId,
+	private BeneficaryRelationship commitBeneRelationship(BeneficiaryTrnxModel beneficiaryTrnxModel, BigDecimal beneficaryMasterId,
 			BigDecimal beneficaryAccountId) {
 		// TODO: set all 10 bene names in bene relationship
 		BenePersonalDetailModel beneDetaisl = beneficiaryTrnxModel.getBenePersonalDetailModel();
@@ -240,7 +246,7 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 		beneficaryRelationship.setDeviceType(metaData.getDeviceType());
 		
 		beneficiaryRelationshipDao.save(beneficaryRelationship);
-
+		return beneficaryRelationship;
 	}
 
 	/**
