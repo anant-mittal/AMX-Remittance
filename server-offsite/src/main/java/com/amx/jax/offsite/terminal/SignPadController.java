@@ -88,11 +88,19 @@ public class SignPadController {
 		}
 
 		if (signPadData.getDeviceState() != DeviceState.SESSION_PAIRED
-				|| !"SIGNATURE".equalsIgnoreCase(terminalData.getStatus())
+
+				|| (!"SIGNATURE".equalsIgnoreCase(terminalData.getStatus())
+						&& !Constants.Common.SUCCESS.equalsIgnoreCase(terminalData.getStatus()))
+
 				|| TimeUtils.isDead(terminalData.getLivestamp(), 15000)
+
 				|| (Constants.Common.SUCCESS.equalsIgnoreCase(terminalData.getStatus())
 						&& TimeUtils.isDead(terminalData.getChangestamp(), 5000))
-				|| TimeUtils.isDead(terminalData.getChangestamp(), 60000)
+
+			//	|| TimeUtils.isDead(terminalData.getChangestamp(), 180000)
+
+//				|| (!ArgUtil.isEmpty(signPadData.getStateData())
+//						&& TimeUtils.isDead(signPadData.getStateData().getLastUpdatedTime().getTime(), 180000))
 
 		) {
 
