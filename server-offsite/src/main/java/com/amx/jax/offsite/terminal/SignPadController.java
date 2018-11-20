@@ -97,7 +97,9 @@ public class SignPadController {
 				|| (Constants.Common.SUCCESS.equalsIgnoreCase(terminalData.getStatus())
 						&& TimeUtils.isDead(terminalData.getChangestamp(), 5000))
 
-			//	|| TimeUtils.isDead(terminalData.getChangestamp(), 180000)
+				|| terminalData.getUpdatestamp() < terminalData.getStartStamp()
+
+		// || TimeUtils.isDead(terminalData.getChangestamp(), 180000)
 
 //				|| (!ArgUtil.isEmpty(signPadData.getStateData())
 //						&& TimeUtils.isDead(signPadData.getStateData().getLastUpdatedTime().getTime(), 180000))
