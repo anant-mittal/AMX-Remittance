@@ -109,6 +109,7 @@
 		<module>ms-rbaac</module>
 		<module>ms-broker</module>
 		<module>ms-worker</module>
+		<module>ms-radar</module>
 
 		<module>server-ui</module>
 		<module>server-offsite</module>
