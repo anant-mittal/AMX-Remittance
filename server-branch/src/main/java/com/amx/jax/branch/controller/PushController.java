@@ -47,7 +47,8 @@ public class PushController {
 
 	@RequestMapping(value = "/pub/list/branches", method = RequestMethod.POST)
 	public List<?> listOfNations(
-			@ApiParam(required = true, allowableValues = "KWT,BHR", value = "Select Tenant") @RequestParam Tenant tenant)
+			@ApiParam(required = true, allowableValues = "KWT,BHR",
+					value = "Select Tenant") @RequestParam Tenant tenant)
 			throws PostManException, InterruptedException, ExecutionException {
 		if (tenant == Tenant.BHR) {
 			return Arrays.asList(BranchesBHR.values());
@@ -59,7 +60,8 @@ public class PushController {
 
 	@RequestMapping(value = "/api/notify/all", method = RequestMethod.POST)
 	public AmxApiResponse<PromoNotifyTask, Object> notifyAll(
-			@ApiParam(required = true, allowableValues = "KWT,BHR", value = "Select Tenant") @RequestParam Tenant tenant,
+			@ApiParam(required = true, allowableValues = "KWT,BHR",
+					value = "Select Tenant") @RequestParam Tenant tenant,
 			@RequestParam String message, @RequestParam String title) throws PostManException {
 
 		PromoNotifyTask task = new PromoNotifyTask();
@@ -72,7 +74,8 @@ public class PushController {
 
 	@RequestMapping(value = "/api/notify/nationality", method = RequestMethod.POST)
 	public AmxApiResponse<PromoNotifyTask, Object> notifyNational(
-			@ApiParam(required = true, allowableValues = "KWT,BHR", value = "Select Tenant") @RequestParam Tenant tenant,
+			@ApiParam(required = true, allowableValues = "KWT,BHR",
+					value = "Select Tenant") @RequestParam Tenant tenant,
 			@RequestParam Nations nationality, @RequestParam String message, @RequestParam String title)
 			throws PostManException {
 		PromoNotifyTask task = new PromoNotifyTask();
