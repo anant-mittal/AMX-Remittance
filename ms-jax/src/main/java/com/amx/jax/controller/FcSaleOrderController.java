@@ -88,7 +88,7 @@ public class FcSaleOrderController implements IFxOrderService {
 	@RequestMapping(value = Path.FC_SALE_CAL_XRATE, method = RequestMethod.GET)
 	public AmxApiResponse<FcSaleOrderApplicationResponseModel, Object> calculateXRate(
 			@RequestParam(value = Params.FX_CURRENCY_ID, required = true) BigDecimal fxCurrencyId,
-			@RequestParam(value = "fxAmount", required = true) BigDecimal fcAmount) {
+			@RequestParam(value = Params.FC_AMOUNT, required = true) BigDecimal fcAmount) {
 		BigDecimal applicationCountryId = metaData.getCountryId();
 		BigDecimal countryBranchId = metaData.getCountryBranchId();
 		return fcSaleService.getFCSaleLcAndFcAmount(applicationCountryId, countryBranchId, fxCurrencyId,
@@ -142,13 +142,13 @@ public class FcSaleOrderController implements IFxOrderService {
 	 * @ String date @ To fetch time slot for Fx order delviery
 	 */
 	@RequestMapping(value = Path.FC_SALE_TIME_SLOT, method = RequestMethod.GET)
-	public AmxApiResponse<String, Object> getTimeSlot(@RequestParam(value = "fxdate", required = true) String fxdate) {
+	public AmxApiResponse<String, Object> getTimeSlot(@RequestParam(value = Params.FXDATE2, required = true) String fxdate) {
 		return fcSaleService.fetchTimeSlot(fxdate);
 	}
 
 	@RequestMapping(value = Path.FC_SALE_REMOVE_ITEM, method = RequestMethod.POST)
 	public AmxApiResponse<FcSaleOrderApplicationResponseModel, Object> removeItemFromCart(
-			@RequestParam(value = "receiptApplId", required = true) BigDecimal receiptApplId) {
+			@RequestParam(value = Params.RECEIPT_APPL_ID, required = true) BigDecimal receiptApplId) {
 		return fcSaleService.removeitemFromCart(receiptApplId);
 	}
 

@@ -10,9 +10,7 @@ import java.math.BigDecimal;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import com.amx.jax.AppConfig;
 import com.amx.jax.api.AmxApiResponse;
@@ -89,10 +87,9 @@ public class FcSaleOrderClient implements IFxOrderService {
 	public AmxApiResponse<FxExchangeRateDto, Object> getFcXRate(BigDecimal fxCurrencyId) {
 		try {
 			LOGGER.debug("in getFcXRate :" + fxCurrencyId);
-			String url = appConfig.getJaxURL() + Path.FC_SALE_XRATE + fxCurrencyId;
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			return restService.ajax(url).meta(new JaxMetaInfo()).get(requestEntity)
-					.as(new ParameterizedTypeReference<AmxApiResponse<FxExchangeRateDto, Object>>() {
+			return restService.ajax(appConfig.getJaxURL() + Path.FC_SALE_XRATE).meta(new JaxMetaInfo())
+					.queryParam(Params.FX_CURRENCY_ID, fxCurrencyId)
+					.get().as(new ParameterizedTypeReference<AmxApiResponse<FxExchangeRateDto, Object>>() {
 					});
 		} catch (Exception e) {
 			LOGGER.error("exception in getCurrencyByCountryId : ", e);
@@ -112,11 +109,9 @@ public class FcSaleOrderClient implements IFxOrderService {
 			BigDecimal fcAmount) {
 		try {
 			LOGGER.debug("in getFcXRate :" + fxCurrencyId + "\t fcAmount :" + fcAmount);
-			String url = appConfig.getJaxURL() + Path.FC_SALE_CAL_XRATE;
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url)
-					.queryParam("fxCurrencyId", fxCurrencyId).queryParam("fcAmount", fcAmount);
-			return restService.ajax(url).meta(new JaxMetaInfo()).get(requestEntity)
+			return restService.ajax(appConfig.getJaxURL() + Path.FC_SALE_CAL_XRATE).meta(new JaxMetaInfo())
+					.queryParam(Params.FX_CURRENCY_ID, fxCurrencyId)
+					.queryParam(Params.FC_AMOUNT, fcAmount).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<FcSaleOrderApplicationResponseModel, Object>>() {
 					});
 		} catch (Exception e) {
@@ -130,9 +125,8 @@ public class FcSaleOrderClient implements IFxOrderService {
 	public AmxApiResponse<FcSaleOrderDefaultResponseModel, Object> getFcSaleDefaultApi() {
 		try {
 			LOGGER.debug("getFcSaleDefaultApi client :");
-			String url = appConfig.getJaxURL() + Path.FC_SALE_DEFAULT;
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			return restService.ajax(url).meta(new JaxMetaInfo()).get(requestEntity)
+			return restService.ajax(appConfig.getJaxURL() + Path.FC_SALE_DEFAULT).meta(new JaxMetaInfo())
+					.get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<FcSaleOrderDefaultResponseModel, Object>>() {
 					});
 		} catch (Exception e) {
@@ -147,10 +141,8 @@ public class FcSaleOrderClient implements IFxOrderService {
 			FcSaleOrderTransactionRequestModel requestModel) throws Exception {
 		try {
 			LOGGER.debug(" Fc Sale create application :" + requestModel.toString());
-			HttpEntity<FcSaleOrderTransactionRequestModel> requestEntity = new HttpEntity<FcSaleOrderTransactionRequestModel>(
-					requestModel, getHeader());
-			String url = appConfig.getJaxURL() + Path.FCSALE_SAVE_APPLICATION;
-			return restService.ajax(url).meta(new JaxMetaInfo()).post(requestEntity)
+			return restService.ajax(appConfig.getJaxURL() + Path.FCSALE_SAVE_APPLICATION).meta(new JaxMetaInfo())
+					.post(requestModel)
 					.as(new ParameterizedTypeReference<AmxApiResponse<FcSaleOrderApplicationResponseModel, Object>>() {
 					});
 		} catch (Exception e) {
@@ -164,9 +156,8 @@ public class FcSaleOrderClient implements IFxOrderService {
 	public AmxApiResponse<ShippingAddressDto, Object> getFcSaleAddress() {
 		try {
 			LOGGER.debug("getFcSale shipping Address client :");
-			String url = appConfig.getJaxURL() + Path.FC_SALE_ADDRESS;
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			return restService.ajax(url).meta(new JaxMetaInfo()).get(requestEntity)
+			return restService.ajax(appConfig.getJaxURL() + Path.FC_SALE_ADDRESS).meta(new JaxMetaInfo())
+					.get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<ShippingAddressDto, Object>>() {
 					});
 		} catch (Exception e) {
@@ -184,10 +175,8 @@ public class FcSaleOrderClient implements IFxOrderService {
 			CustomerShippingAddressRequestModel requestModel) throws Exception {
 		try {
 			LOGGER.debug(" Fc Sale shipping address save :" + requestModel.toString());
-			HttpEntity<CustomerShippingAddressRequestModel> requestEntity = new HttpEntity<CustomerShippingAddressRequestModel>(
-					requestModel, getHeader());
-			String url = appConfig.getJaxURL() + Path.FC_SAVE_SHIPPING_ADDR;
-			return restService.ajax(url).meta(new JaxMetaInfo()).post(requestEntity)
+			return restService.ajax(appConfig.getJaxURL() + Path.FC_SAVE_SHIPPING_ADDR).meta(new JaxMetaInfo())
+					.post(requestModel)
 					.as(new ParameterizedTypeReference<AmxApiResponse<CustomerShippingAddressRequestModel, Object>>() {
 					});
 		} catch (Exception e) {
@@ -201,10 +190,9 @@ public class FcSaleOrderClient implements IFxOrderService {
 	public AmxApiResponse<String, Object> getTimeSlot(String fxDate) {
 		try {
 			LOGGER.debug("in getTime slot client :" + fxDate);
-			String url = appConfig.getJaxURL() + Path.FC_SALE_TIME_SLOT + fxDate;
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			return restService.ajax(url).meta(new JaxMetaInfo()).get(requestEntity)
-					.as(new ParameterizedTypeReference<AmxApiResponse<String, Object>>() {
+			return restService.ajax(appConfig.getJaxURL() + Path.FC_SALE_TIME_SLOT)
+					.meta(new JaxMetaInfo()).queryParam(Params.FXDATE2, fxDate)
+					.get().as(new ParameterizedTypeReference<AmxApiResponse<String, Object>>() {
 					});
 		} catch (Exception e) {
 			LOGGER.error("exception in getCurrencyByCountryId : ", e);
@@ -219,9 +207,9 @@ public class FcSaleOrderClient implements IFxOrderService {
 			throws Exception {
 		try {
 			LOGGER.debug(" Fc Sale create application :" + applicationId);
-			String url = appConfig.getJaxURL() + Path.FC_SALE_REMOVE_ITEM + applicationId;
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			return restService.ajax(url).meta(new JaxMetaInfo()).post(requestEntity)
+			return restService.ajax(appConfig.getJaxURL() + Path.FC_SALE_REMOVE_ITEM).meta(new JaxMetaInfo())
+					.queryParam(Params.RECEIPT_APPL_ID, applicationId)
+					.post()
 					.as(new ParameterizedTypeReference<AmxApiResponse<FcSaleOrderApplicationResponseModel, Object>>() {
 					});
 		} catch (Exception e) {
@@ -236,9 +224,7 @@ public class FcSaleOrderClient implements IFxOrderService {
 	public AmxApiResponse<ShoppingCartDetailsDto, Object> fetchShoppingCartList() {
 		try {
 			LOGGER.debug("in fetchShoppingCartList  client :");
-			String url = appConfig.getJaxURL() + Path.FC_SALE_SHOPPING_CART;
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			return restService.ajax(url).meta(new JaxMetaInfo()).get(requestEntity)
+			return restService.ajax(appConfig.getJaxURL() + Path.FC_SALE_SHOPPING_CART).meta(new JaxMetaInfo()).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<ShoppingCartDetailsDto, Object>>() {
 					});
 		} catch (Exception e) {
@@ -253,10 +239,8 @@ public class FcSaleOrderClient implements IFxOrderService {
 			FcSaleOrderPaynowRequestModel requestModel) throws Exception {
 		try {
 			LOGGER.debug(" Fc Sale create application :" + requestModel.toString());
-			HttpEntity<FcSaleOrderPaynowRequestModel> requestEntity = new HttpEntity<FcSaleOrderPaynowRequestModel>(
-					requestModel, getHeader());
-			String url = appConfig.getJaxURL() + Path.FCSALE_SAVE_PAYNOW;
-			return restService.ajax(url).meta(new JaxMetaInfo()).post(requestEntity)
+			return restService.ajax(appConfig.getJaxURL() + Path.FCSALE_SAVE_PAYNOW).meta(new JaxMetaInfo())
+					.post(requestModel)
 					.as(new ParameterizedTypeReference<AmxApiResponse<FcSaleApplPaymentReponseModel, Object>>() {
 					});
 		} catch (Exception e) {

@@ -43,6 +43,9 @@ public interface IFxOrderService extends IJaxService {
 		public static final String TERMINAL_ID = "countryBranchSystemInventoryId";
 		public static final String EMPLOYEE_ID = "employeeId";
 		public static final String FX_CURRENCY_ID = "fxCurrencyId";
+		public static final String FC_AMOUNT = "fcAmount";
+		public static final String FXDATE2 = "fxdate";
+		public static final String RECEIPT_APPL_ID = "receiptApplId";
 
 	}
 
