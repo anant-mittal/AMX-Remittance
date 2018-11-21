@@ -57,23 +57,27 @@ public class TerminalController {
 			HttpServletResponse response, HttpServletRequest request) throws MalformedURLException, URISyntaxException {
 
 		TerminalData terminalData = terminalBox.getOrDefault(terminalId);
-		startStamp = ArgUtil.ifNotEmpty(startStamp, terminalData.getStartStamp());
-		if (!ArgUtil.areEqual(terminalData.getStatus(), status) || !ArgUtil.areEqual(terminalData.getState(), state)) {
-			terminalData.setChangestamp(System.currentTimeMillis());
-			if ("START".equalsIgnoreCase(status)) {
-				startStamp = System.currentTimeMillis();
-			}
-		}
+
 		if (ArgUtil.isEmpty(pageStamp)) {
 			pageStamp = System.currentTimeMillis();
 		}
+		if (pageStamp >= terminalData.getPagestamp()) {
+			startStamp = ArgUtil.ifNotEmpty(startStamp, terminalData.getStartStamp());
+			if (!ArgUtil.areEqual(terminalData.getStatus(), status)
+					|| !ArgUtil.areEqual(terminalData.getState(), state)) {
+				terminalData.setChangestamp(System.currentTimeMillis());
+				if ("START".equalsIgnoreCase(status)) {
+					startStamp = System.currentTimeMillis();
+				}
+			}
 
-		terminalData.setState(state);
-		terminalData.setStatus(status);
-		terminalData.setLivestamp(System.currentTimeMillis());
-		terminalData.setPagestamp(pageStamp);
-		terminalData.setStartStamp(startStamp);
-		terminalBox.fastPut(terminalId, terminalData);
+			terminalData.setState(state);
+			terminalData.setStatus(status);
+			terminalData.setLivestamp(System.currentTimeMillis());
+			terminalData.setPagestamp(pageStamp);
+			terminalData.setStartStamp(startStamp);
+			terminalBox.fastPut(terminalId, terminalData);
+		}
 
 		model.addAttribute("url",
 				Urly.parse(HttpUtils.getServerName(request)).setPath(Path.TERMINAL_STATUS_PING)
