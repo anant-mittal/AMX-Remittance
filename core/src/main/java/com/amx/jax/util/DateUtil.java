@@ -153,7 +153,7 @@ public class DateUtil {
 		List<String> timeSlotList = new ArrayList<>();
 		Date d = new Date();
 		SimpleDateFormat dateStr = new SimpleDateFormat("dd/MM/yyyy");
-	    SimpleDateFormat sdf = new SimpleDateFormat("h");
+	    SimpleDateFormat sdf = new SimpleDateFormat("H");
 	    String todayDate = dateStr.format(d);
 	    int hour = Integer.parseInt(sdf.format(d));
 	    int j =0;

@@ -30,7 +30,7 @@ public class FcSaleOrderApplicationResponseModel extends AbstractModel {
 	private List<String> timeSlot;
 
 	private List<ShoppingCartDetailsDto> cartDetails;
-	private PayGServiceCode pgCode = PayGServiceCode.DEFAULT;
+
 	
 	@Override
 	public String getModelType() {
@@ -107,17 +107,6 @@ public class FcSaleOrderApplicationResponseModel extends AbstractModel {
 	public void setMerchantTrackId(BigDecimal merchantTrackId) {
 		this.merchantTrackId = merchantTrackId;
 	}
-
-
-
-	public PayGServiceCode getPgCode() {
-		return pgCode;
-	}
-
-	public void setPgCode(PayGServiceCode pgCode) {
-		this.pgCode = pgCode;
-	}
-
 	public List<ShoppingCartDetailsDto> getCartDetails() {
 		return cartDetails;
 	}

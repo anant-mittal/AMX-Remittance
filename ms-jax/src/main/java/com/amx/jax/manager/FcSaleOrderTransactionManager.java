@@ -5,6 +5,11 @@ package com.amx.jax.manager;
  * @Date		: 05/11/2018
  */
 import java.math.BigDecimal;
+
+
+
+
+
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -15,10 +20,13 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.amxlib.model.response.ExchangeRateBreakup;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.FcSaleExchangeRateDao;
 import com.amx.jax.dbmodel.FxExchangeRateView;
 import com.amx.jax.dbmodel.ParameterDetails;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.AbstractModel;
 import com.amx.jax.model.response.FcSaleOrderApplicationResponseModel;
@@ -54,6 +62,13 @@ public class FcSaleOrderTransactionManager extends AbstractModel{
 		FcSaleOrderApplicationResponseModel responseModel = new FcSaleOrderApplicationResponseModel();
 		FxExchangeRateBreakup breakup = new FxExchangeRateBreakup();
 		List<FxExchangeRateView> fxSaleRateList = fcSaleExchangeRateDao.getFcSaleExchangeRate(countryId, countryBracnhId, fcCurrencyId);
+		
+		if(fxSaleRateList!= null && !fxSaleRateList .isEmpty()){
+			maxExchangeRate = fxSaleRateList.get(0).getSalMaxRate();
+		}else{
+			throw new GlobalException("Application country id not found", JaxError.INVALID_APPLICATION_COUNTRY_ID);
+		}
+		
 		List<ParameterDetails> parameterList 	= fcSaleExchangeRateDao.getParameterDetails(ConstantDocument.FX_DC, ConstantDocument.Yes);
 		BigDecimal localCurrencyId = meta.getDefaultCurrencyId();
 		breakup.setFcDecimalNumber(currencyMasterService.getCurrencyMasterById(fcCurrencyId).getDecinalNumber());

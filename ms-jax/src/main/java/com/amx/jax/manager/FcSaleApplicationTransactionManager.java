@@ -186,8 +186,8 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 	
 	
 	public ReceiptPaymentApp  createFcSaleReceiptApplication(FcSaleOrderTransactionRequestModel fcSalerequestModel){
-		try{
 		ReceiptPaymentApp receiptPaymentAppl = new ReceiptPaymentApp();
+		try{
 		BigDecimal locCode =   BigDecimal.ZERO;
 		BigDecimal applciationCountryid = metaData.getCountryId();
 		BigDecimal localCurrencyId = metaData.getDefaultCurrencyId();
@@ -223,12 +223,14 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 		}else{
 				logger.error("Customer is not registered"+customerId);
 				throw new GlobalException("Customer is not registered", JaxError.CUSTOMER_NOT_REGISTERED_ONLINE.getStatusKey());
-		}
+			}
 		
 		CountryBranch countryBranch = countryBranchRepository.findByBranchId(ConstantDocument.ONLINE_BRANCH_LOC_CODE);
 		if(countryBranch != null){
 			locCode = countryBranch.getBranchId();
 			countryBranchId =countryBranch.getCountryBranchId(); 
+		}else{
+			throw new GlobalException("Country branch is not found", JaxError.INVALID_COUNTRY_BRANCH);
 		}
 		validation.validateHeaderInfo();
 		
@@ -291,11 +293,13 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 			logger.error("Error in saving application", e);
 		}
 		
-		return receiptPaymentAppl;
+		
 		}catch(Exception e){
 			logger.error("createFcSaleReceiptApplication", e.getMessage());
-			throw new GlobalException("FC Sale application creation failed", JaxError.FS_APPLIATION_CREATION_FAILED);
+			//throw new GlobalException("FC Sale application creation failed", JaxError.FS_APPLIATION_CREATION_FAILED);
 		}
+		
+		return receiptPaymentAppl;	
 	}
 	
 	
@@ -419,6 +423,8 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 			BigDecimal  endTime = list.get(0).getEndTime()==null?BigDecimal.ZERO:list.get(0).getEndTime();
 			BigDecimal  timeInterval = list.get(0).getTimeInterval()==null?BigDecimal.ZERO:list.get(0).getTimeInterval();
 			timeSlotList =DateUtil.getTimeSlotRange(date,startTime.intValue(),endTime.intValue(),timeInterval.intValue());
+		}else{
+			throw new GlobalException("No data found in DB", JaxError.FC_SALE_TIME_SLOT_SETUP_MISSING);
 		}
 		return timeSlotList;
 	}

@@ -55,34 +55,34 @@ public interface IFxOrderService extends IJaxService {
 	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND })
 	AmxApiResponse<CurrencyMasterDTO, Object> getFcCurrencyList();
 
-	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND })
+	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND,JaxError.INVALID_APPLICATION_COUNTRY_ID,JaxError.INVALID_CURRENCY_ID,JaxError.INVALID_COMPANY_ID})
 	AmxApiResponse<FxExchangeRateDto, Object> getFcXRate(BigDecimal fxCurrencyId);
 
-	AmxApiResponse<FcSaleOrderApplicationResponseModel, Object> calculateXRate(BigDecimal fxCurrencyId,
-			BigDecimal fcAmount);
-
-	AmxApiResponse<FcSaleOrderDefaultResponseModel, Object> getFcSaleDefaultApi();
-
-	AmxApiResponse<FcSaleOrderApplicationResponseModel, Object> getSaveApplication(
-			FcSaleOrderTransactionRequestModel requestModel) throws Exception;
-
-	AmxApiResponse<ShippingAddressDto, Object> getFcSaleAddress();
-
-	AmxApiResponse<CustomerShippingAddressRequestModel, Object> saveFcSaleShippingAddress(
-			CustomerShippingAddressRequestModel requestModel) throws Exception;
+	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND,JaxError.INVALID_APPLICATION_COUNTRY_ID,JaxError.INVALID_CURRENCY_ID,JaxError.INVALID_COMPANY_ID})
+	AmxApiResponse<FcSaleOrderApplicationResponseModel, Object> calculateXRate(BigDecimal fxCurrencyId,BigDecimal fcAmount);
 
 	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND })
+	AmxApiResponse<FcSaleOrderDefaultResponseModel, Object> getFcSaleDefaultApi();
+
+	@ApiJaxStatus({ JaxError.FS_APPLIATION_CREATION_FAILED,JaxError.INVALID_APPLICATION_COUNTRY_ID,JaxError.INVALID_COMPANY_ID,JaxError.INVALID_COUNTRY_BRANCH})
+	AmxApiResponse<FcSaleOrderApplicationResponseModel, Object> getSaveApplication(FcSaleOrderTransactionRequestModel requestModel) throws Exception;
+
+	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND })
+	AmxApiResponse<ShippingAddressDto, Object> getFcSaleAddress();
+
+	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND ,JaxError.INVALID_APPLICATION_COUNTRY_ID,JaxError.INVALID_COMPANY_ID})
+	AmxApiResponse<CustomerShippingAddressRequestModel, Object> saveFcSaleShippingAddress(CustomerShippingAddressRequestModel requestModel) throws Exception;
+
+	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND ,JaxError.INVALID_APPLICATION_COUNTRY_ID,JaxError.INVALID_COMPANY_ID,JaxError.FC_SALE_TIME_SLOT_SETUP_MISSING})
 	AmxApiResponse<String, Object> getTimeSlot(String fxDate);
 
 	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND })
 	AmxApiResponse<ShoppingCartDetailsDto, Object> fetchShoppingCartList();
 
 	@ApiJaxStatus({ JaxError.NULL_APPLICATION_ID })
-	AmxApiResponse<FcSaleApplPaymentReponseModel, Object> getSavePayNowApplication(
-			FcSaleOrderPaynowRequestModel requestModel) throws Exception;
+	AmxApiResponse<FcSaleApplPaymentReponseModel, Object> getSavePayNowApplication(FcSaleOrderPaynowRequestModel requestModel) throws Exception;
 
-	@ApiJaxStatus({ JaxError.NULL_APPLICATION_ID })
-	AmxApiResponse<FcSaleOrderApplicationResponseModel, Object> removeItemFromCart(BigDecimal applicationId)
-			throws Exception;
+	@ApiJaxStatus({ JaxError.NULL_APPLICATION_ID})
+	AmxApiResponse<FcSaleOrderApplicationResponseModel, Object> removeItemFromCart(BigDecimal applicationId)throws Exception;
 
 }

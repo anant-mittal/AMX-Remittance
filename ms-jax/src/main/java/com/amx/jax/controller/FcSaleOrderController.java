@@ -91,8 +91,7 @@ public class FcSaleOrderController implements IFxOrderService {
 			@RequestParam(value = Params.FC_AMOUNT, required = true) BigDecimal fcAmount) {
 		BigDecimal applicationCountryId = metaData.getCountryId();
 		BigDecimal countryBranchId = metaData.getCountryBranchId();
-		return fcSaleService.getFCSaleLcAndFcAmount(applicationCountryId, countryBranchId, fxCurrencyId,
-				fcAmount);
+		return fcSaleService.getFCSaleLcAndFcAmount(applicationCountryId, countryBranchId, fxCurrencyId,fcAmount);
 	}
 
 	/** to display the default api **/
