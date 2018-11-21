@@ -47,31 +47,36 @@ public class DeviceController implements IDeviceService {
 	@RequestMapping(value = Path.DEVICE_STATE, method = RequestMethod.POST)
 	@Override
 	public AmxApiResponse<BoolRespModel, Object> updateDeviceState(
-			@Valid @RequestBody DeviceStateInfoChangeRequest request, @RequestParam Integer registrationId,
-			@RequestParam String paireToken, @RequestParam String sessionToken) {
+			@Valid @RequestBody DeviceStateInfoChangeRequest request,
+			@RequestParam(name = Params.DEVICE_REG_ID) Integer registrationId,
+			@RequestParam(name = Params.PAIRE_TOKEN) String paireToken,
+			@RequestParam(name = Params.SESSION_TOKEN) String sessionToken) {
 		BoolRespModel response = deviceService.updateDeviceState(request, registrationId, paireToken, sessionToken);
 		return AmxApiResponse.build(response);
 	}
 
 	@RequestMapping(value = Path.DEVICE_ACTIVATE, method = RequestMethod.POST)
 	@Override
-	public AmxApiResponse<BoolRespModel, Object> activateDevice(@RequestParam Integer deviceRegId,
-			@RequestParam(required = false) String mOtp) {
+	public AmxApiResponse<BoolRespModel, Object> activateDevice(
+			@RequestParam(name = Params.DEVICE_REG_ID) Integer deviceRegId,
+			@RequestParam(name = Params.MOTP, required = false) String mOtp) {
 		BoolRespModel response = deviceService.activateDevice(deviceRegId);
 		return AmxApiResponse.build(response);
 	}
 
 	@RequestMapping(value = Path.DEVICE_DEACTIVATE, method = RequestMethod.POST)
 	@Override
-	public AmxApiResponse<BoolRespModel, Object> deactivateDevice(@RequestParam Integer deviceRegId) {
+	public AmxApiResponse<BoolRespModel, Object> deactivateDevice(
+			@RequestParam(name = Params.DEVICE_REG_ID) Integer deviceRegId) {
 		BoolRespModel response = deviceService.deactivateDevice(deviceRegId);
 		return AmxApiResponse.build(response);
 	}
 
 	@RequestMapping(value = Path.DEVICE_SEND_PAIR_OTP, method = RequestMethod.GET)
 	@Override
-	public AmxApiResponse<DevicePairOtpResponse, Object> sendOtpForPairing(@RequestParam Integer deviceRegId,
-			@RequestParam String paireToken) {
+	public AmxApiResponse<DevicePairOtpResponse, Object> sendOtpForPairing(
+			@RequestParam(name = Params.DEVICE_REG_ID) Integer deviceRegId,
+			@RequestParam(name = Params.PAIRE_TOKEN) String paireToken) {
 		DevicePairOtpResponse otpResponse = deviceService.sendOtpForPairing(deviceRegId, paireToken);
 		return AmxApiResponse.build(otpResponse);
 	}
@@ -79,8 +84,9 @@ public class DeviceController implements IDeviceService {
 	@Override
 	@RequestMapping(value = Path.DEVICE_VALIDATE_PAIR_OTP, method = RequestMethod.POST)
 	public AmxApiResponse<DevicePairOtpResponse, BoolRespModel> validateOtpForPairing(
-			@RequestParam ClientType deviceType, @RequestParam Integer countryBranchSystemInventoryId,
-			@RequestParam String otp) {
+			@RequestParam(name = Params.DEVICE_TYPE) ClientType deviceType,
+			@RequestParam(name = Params.TERMINAL_ID) Integer countryBranchSystemInventoryId,
+			@RequestParam(name = Params.OTP) String otp) {
 		DevicePairOtpResponse otpResponse = deviceService.validateOtpForPairing(deviceType,
 				countryBranchSystemInventoryId, otp.toString());
 		return AmxApiResponse.build(otpResponse, new BoolRespModel(Boolean.TRUE));
@@ -88,8 +94,10 @@ public class DeviceController implements IDeviceService {
 
 	@Override
 	@RequestMapping(value = Path.DEVICE_STATUS_GET, method = RequestMethod.GET)
-	public AmxApiResponse<DeviceStatusInfoDto, Object> getStatus(@RequestParam Integer registrationId,
-			@RequestParam String paireToken, @RequestParam String sessionToken) {
+	public AmxApiResponse<DeviceStatusInfoDto, Object> getStatus(
+			@RequestParam(name = Params.DEVICE_REG_ID) Integer registrationId,
+			@RequestParam(name = Params.PAIRE_TOKEN) String paireToken,
+			@RequestParam(name = Params.SESSION_TOKEN) String sessionToken) {
 		logger.debug("in get Device status api with params reg id:  {} , pairetoken: {} , sessionToken: {}",
 				registrationId, paireToken, sessionToken);
 		DeviceStatusInfoDto otpResponse = deviceService.getStatus(registrationId, paireToken, sessionToken);
@@ -98,10 +106,11 @@ public class DeviceController implements IDeviceService {
 
 	@RequestMapping(value = Path.DEVICE_STATE_REMITTANCE_UPDATE, method = RequestMethod.POST)
 	@Override
-	public AmxApiResponse<BoolRespModel, Object> updateRemittanceState(@RequestParam ClientType deviceType,
-			@RequestParam Integer countryBranchSystemInventoryId,
+	public AmxApiResponse<BoolRespModel, Object> updateRemittanceState(
+			@RequestParam(name = Params.DEVICE_TYPE) ClientType deviceType,
+			@RequestParam(name = Params.TERMINAL_ID) Integer countryBranchSystemInventoryId,
 			@Valid @RequestBody SignaturePadRemittanceInfo signaturePadRemittanceInfo,
-			@RequestParam BigDecimal employeeId) {
+			@RequestParam(name = Params.EMPLOYEE_ID) BigDecimal employeeId) {
 		BoolRespModel otpResponse = deviceService.updateDeviceStateData(deviceType, countryBranchSystemInventoryId,
 				signaturePadRemittanceInfo, DeviceStateDataType.REMITTANCE, employeeId);
 		return AmxApiResponse.build(otpResponse);
@@ -109,10 +118,11 @@ public class DeviceController implements IDeviceService {
 
 	@RequestMapping(value = Path.DEVICE_FC_PURCHASE_UPDATE, method = RequestMethod.POST)
 	@Override
-	public AmxApiResponse<BoolRespModel, Object> updateFcPurchase(@RequestParam ClientType deviceType,
-			@RequestParam Integer countryBranchSystemInventoryId,
+	public AmxApiResponse<BoolRespModel, Object> updateFcPurchase(
+			@RequestParam(name = Params.DEVICE_TYPE) ClientType deviceType,
+			@RequestParam(name = Params.TERMINAL_ID) Integer countryBranchSystemInventoryId,
 			@Valid @RequestBody SignaturePadFCPurchaseSaleInfo signaturePadPurchseInfo,
-			@RequestParam BigDecimal employeeId) {
+			@RequestParam(name = Params.EMPLOYEE_ID) BigDecimal employeeId) {
 		BoolRespModel otpResponse = deviceService.updateDeviceStateData(deviceType, countryBranchSystemInventoryId,
 				signaturePadPurchseInfo, DeviceStateDataType.FC_PURCHASE, employeeId);
 		return AmxApiResponse.build(otpResponse);
@@ -120,10 +130,11 @@ public class DeviceController implements IDeviceService {
 
 	@RequestMapping(value = Path.DEVICE_FC_SALE_UPDATE, method = RequestMethod.POST)
 	@Override
-	public AmxApiResponse<BoolRespModel, Object> updateFcSale(@RequestParam ClientType deviceType,
-			@RequestParam Integer countryBranchSystemInventoryId,
+	public AmxApiResponse<BoolRespModel, Object> updateFcSale(
+			@RequestParam(name = Params.DEVICE_TYPE) ClientType deviceType,
+			@RequestParam(name = Params.TERMINAL_ID) Integer countryBranchSystemInventoryId,
 			@Valid @RequestBody SignaturePadFCPurchaseSaleInfo signaturePadSaleInfo,
-			@RequestParam BigDecimal employeeId) {
+			@RequestParam(name = Params.EMPLOYEE_ID) BigDecimal employeeId) {
 		BoolRespModel otpResponse = deviceService.updateDeviceStateData(deviceType, countryBranchSystemInventoryId,
 				signaturePadSaleInfo, DeviceStateDataType.FC_SALE, employeeId);
 		return AmxApiResponse.build(otpResponse);
@@ -131,9 +142,11 @@ public class DeviceController implements IDeviceService {
 
 	@RequestMapping(value = Path.DEVICE_STATE_CUSTOMER_REG_UPDATE, method = RequestMethod.POST)
 	@Override
-	public AmxApiResponse<BoolRespModel, Object> updateCustomerRegStateData(@RequestParam ClientType deviceType,
-			@RequestParam Integer countryBranchSystemInventoryId,
-			@Valid @RequestBody SignaturePadCustomerRegStateMetaInfo metaInfo, @RequestParam BigDecimal employeeId) {
+	public AmxApiResponse<BoolRespModel, Object> updateCustomerRegStateData(
+			@RequestParam(name = Params.DEVICE_TYPE) ClientType deviceType,
+			@RequestParam(name = Params.TERMINAL_ID) Integer countryBranchSystemInventoryId,
+			@Valid @RequestBody SignaturePadCustomerRegStateMetaInfo metaInfo,
+			@RequestParam(name = Params.EMPLOYEE_ID) BigDecimal employeeId) {
 		BoolRespModel otpResponse = deviceService.updateDeviceStateData(deviceType, countryBranchSystemInventoryId,
 				metaInfo, DeviceStateDataType.CUSTOMER_REGISTRATION, employeeId);
 		return AmxApiResponse.build(otpResponse);
@@ -141,7 +154,8 @@ public class DeviceController implements IDeviceService {
 
 	@RequestMapping(value = Path.DEVICE_STATE_SIGNATURE_UPDATE, method = RequestMethod.POST)
 	@Override
-	public AmxApiResponse<BoolRespModel, Object> updateSignatureStateData(@RequestParam Integer deviceRegId,
+	public AmxApiResponse<BoolRespModel, Object> updateSignatureStateData(
+			@RequestParam(name = Params.DEVICE_REG_ID) Integer deviceRegId,
 			@RequestParam String signatureImageClob) {
 		BoolRespModel otpResponse = deviceService.updateSignatureStateData(deviceRegId, signatureImageClob);
 		return AmxApiResponse.build(otpResponse);
@@ -149,9 +163,11 @@ public class DeviceController implements IDeviceService {
 
 	@RequestMapping(value = Path.DEVICE_STATE_CLEAR, method = RequestMethod.POST)
 	@Override
-	public AmxApiResponse<BoolRespModel, Object> clearDeviceState(@RequestParam Integer registrationId,
-			@RequestParam String paireToken, @RequestParam String sessionToken) {
-		BoolRespModel response = deviceService.clearDeviceState(registrationId, paireToken, sessionToken);
+	public AmxApiResponse<BoolRespModel, Object> clearDeviceState(
+			@RequestParam(name = Params.DEVICE_REG_ID) Integer deviceRegId,
+			@RequestParam(name = Params.PAIRE_TOKEN) String paireToken,
+			@RequestParam(name = Params.SESSION_TOKEN) String sessionToken) {
+		BoolRespModel response = deviceService.clearDeviceState(deviceRegId, paireToken, sessionToken);
 		return AmxApiResponse.build(response);
 	}
 }

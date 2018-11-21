@@ -114,7 +114,7 @@ public class OffsiteStatus extends IStatusCodeListPlugin<OffsiteServerCodes, Api
 
 		@Override
 		public boolean isReportable() {
-			return true;
+			return false;
 		}
 
 	}

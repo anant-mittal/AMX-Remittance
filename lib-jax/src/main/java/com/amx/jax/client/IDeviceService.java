@@ -50,6 +50,7 @@ public interface IDeviceService extends IJaxService {
 		public static final String SESSION_TOKEN = "sessionToken";
 		public static final String PAIRE_TOKEN = "paireToken";
 		public static final String OTP = "otp";
+		public static final String MOTP = "mOtp";
 
 	}
 
@@ -103,8 +104,8 @@ public interface IDeviceService extends IJaxService {
 
 	@ApiJaxStatus(JaxError.CLIENT_NOT_FOUND)
 	AmxApiResponse<BoolRespModel, Object> deactivateDevice(Integer deviceRegId);
-	
-	@ApiJaxStatus({JaxError.CLIENT_NOT_FOUND, JaxError.CLIENT_NOT_ACTIVE})
+
+	@ApiJaxStatus({ JaxError.CLIENT_NOT_FOUND, JaxError.CLIENT_NOT_ACTIVE })
 	AmxApiResponse<BoolRespModel, Object> clearDeviceState(Integer registrationId, String paireToken,
 			String sessionToken);
 

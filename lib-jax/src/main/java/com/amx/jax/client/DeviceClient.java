@@ -107,6 +107,7 @@ public class DeviceClient implements IDeviceService {
 			LOGGER.debug("in activateDevice");
 			String url = appConfig.getJaxURL() + Path.DEVICE_ACTIVATE;
 			return restService.ajax(url).meta(new JaxMetaInfo())
+					.field(Params.MOTP, mOtp)
 					.field(Params.DEVICE_REG_ID, deviceRegId).postForm()
 					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
 					});
