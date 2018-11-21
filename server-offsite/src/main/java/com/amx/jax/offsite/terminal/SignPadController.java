@@ -87,6 +87,9 @@ public class SignPadController {
 			}
 		}
 
+		boolean isSuccessTimeout = (Constants.Common.SUCCESS.equalsIgnoreCase(terminalData.getStatus())
+				&& TimeUtils.isDead(terminalData.getChangestamp(), 5000));
+
 		if (signPadData.getDeviceState() != DeviceState.SESSION_PAIRED
 
 				|| (!"SIGNATURE".equalsIgnoreCase(terminalData.getStatus())
@@ -94,8 +97,7 @@ public class SignPadController {
 
 				|| TimeUtils.isDead(terminalData.getLivestamp(), 15000)
 
-				|| (Constants.Common.SUCCESS.equalsIgnoreCase(terminalData.getStatus())
-						&& TimeUtils.isDead(terminalData.getChangestamp(), 5000))
+				|| isSuccessTimeout
 
 				|| terminalData.getUpdatestamp() < terminalData.getStartStamp()
 
@@ -123,7 +125,7 @@ public class SignPadController {
 
 		}
 
-		if (Constants.Common.SUCCESS.equalsIgnoreCase(terminalData.getStatus())
+		if (isSuccessTimeout
 				&& !ArgUtil.isEmpty(signPadData.getStateData())
 				&& !ArgUtil.isEmpty(signPadData.getStateData().getStateDataType())) {
 			deviceClient.clearDeviceState(ArgUtil.parseAsInteger(deviceRequestValidator.getDeviceRegId()),
