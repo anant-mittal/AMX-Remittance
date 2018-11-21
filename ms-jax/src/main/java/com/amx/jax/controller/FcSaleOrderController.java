@@ -1,11 +1,5 @@
 package com.amx.jax.controller;
 
-/**
- * @Author : Rabil
- * @date		: 03/11/2018
- */
-import static com.amx.amxlib.constant.ApiEndpoint.FC_SALE_ENDPOINT;
-
 import java.math.BigDecimal;
 
 import javax.validation.Valid;
@@ -28,19 +22,13 @@ import com.amx.jax.model.request.CustomerShippingAddressRequestModel;
 import com.amx.jax.model.request.FcSaleOrderPaynowRequestModel;
 import com.amx.jax.model.request.FcSaleOrderTransactionRequestModel;
 import com.amx.jax.model.response.CurrencyMasterDTO;
-import com.amx.jax.model.response.FcSaleApplPaymentReponseModel;
-import com.amx.jax.model.response.FcSaleOrderApplicationResponseModel;
-import com.amx.jax.model.response.FcSaleOrderDefaultResponseModel;
 import com.amx.jax.model.response.FxExchangeRateDto;
 import com.amx.jax.model.response.PurposeOfTransactionDto;
-import com.amx.jax.model.response.ShippingAddressDto;
-import com.amx.jax.model.response.ShoppingCartDetailsDto;
 import com.amx.jax.service.TermsAndConditionService;
 import com.amx.jax.services.FcSaleService;
 import com.amx.jax.util.JaxContextUtil;
 
 @RestController
-@RequestMapping(FC_SALE_ENDPOINT)
 @SuppressWarnings("rawtypes")
 public class FcSaleOrderController implements IFxOrderService {
 
@@ -64,29 +52,29 @@ public class FcSaleOrderController implements IFxOrderService {
 	}
 
 	/**
-	 * To get the FC Sale currency List *
+	 * To get the FC Sale currency List
+	 * 
+	 * @return *
 	 */
-	@RequestMapping(value = "/fc-currency-list/", method = RequestMethod.GET)
-	public AmxApiResponse fcCurrencyList() {
+	@RequestMapping(value = Path.FC_CURRENCY_LIST, method = RequestMethod.GET)
+	public AmxApiResponse<CurrencyMasterDTO, Object> getFcCurrencyList() {
 		BigDecimal countryId = metaData.getCountryId();
-		ApiResponse response = fcSaleService.getFcSalecurrencyList(countryId);
-		return AmxApiResponse.build(response);
+		return fcSaleService.getFcSalecurrencyList(countryId);
 	}
 
 	/** To get the FC Sale currency wise exchnage rate **/
-	@RequestMapping(value = "/fc-sale-xrate/", method = RequestMethod.GET)
-	public AmxApiResponse fcExchangeRate(
+	@RequestMapping(value = Path.FC_SALE_XRATE, method = RequestMethod.GET)
+	public AmxApiResponse<FxExchangeRateDto, Object> getFcXRate(
 			@RequestParam(value = "fxCurrencyId", required = true) BigDecimal fxCurrencyId) {
 		BigDecimal applicationCountryId = metaData.getCountryId();
 		BigDecimal countryBranchId = metaData.getCountryBranchId();
-		ApiResponse response = fcSaleService.getFcSaleExchangeRate(applicationCountryId, countryBranchId, fxCurrencyId);
-		return AmxApiResponse.build(response);
+		return fcSaleService.getFcSaleExchangeRate(applicationCountryId, countryBranchId, fxCurrencyId);
 	}
 
 	/** To calculate FC Sale currency wise exchnage rate **/
 
-	@RequestMapping(value = "/fc-sale-cal-xrate/", method = RequestMethod.GET)
-	public AmxApiResponse fcExchangeRate(@RequestParam(value = "fxCurrencyId", required = true) BigDecimal fxCurrencyId,
+	@RequestMapping(value = Path.FC_SALE_CAL_XRATE, method = RequestMethod.GET)
+	public AmxApiResponse calculateXRate(@RequestParam(value = "fxCurrencyId", required = true) BigDecimal fxCurrencyId,
 			@RequestParam(value = "fxAmount", required = true) BigDecimal fcAmount) {
 		BigDecimal applicationCountryId = metaData.getCountryId();
 		BigDecimal countryBranchId = metaData.getCountryBranchId();
@@ -97,8 +85,8 @@ public class FcSaleOrderController implements IFxOrderService {
 
 	/** to display the default api **/
 
-	@RequestMapping(value = "/fc-sale-default/", method = RequestMethod.GET)
-	public AmxApiResponse fcSaleDefaultApi() {
+	@RequestMapping(value = Path.FC_SALE_DEFAULT, method = RequestMethod.GET)
+	public AmxApiResponse getFcSaleDefaultApi() {
 		BigDecimal applicationCountryId = metaData.getCountryId();
 		BigDecimal countryBranchId = metaData.getCountryBranchId();
 		BigDecimal languageId = metaData.getLanguageId();
@@ -108,8 +96,8 @@ public class FcSaleOrderController implements IFxOrderService {
 
 	/** To save fc sale application **/
 
-	@RequestMapping(value = "/fcsale-save-application/", method = RequestMethod.POST)
-	public AmxApiResponse saveApplication(@RequestBody @Valid FcSaleOrderTransactionRequestModel model) {
+	@RequestMapping(value = Path.FCSALE_SAVE_APPLICATION, method = RequestMethod.POST)
+	public AmxApiResponse getSaveApplication(@RequestBody @Valid FcSaleOrderTransactionRequestModel model) {
 		JaxContextUtil.setJaxEvent(JaxEvent.CREATE_APPLICATION);
 		JaxContextUtil.setRequestModel(model);
 		logger.info("In Fc Sale Save-Application with parameters" + model.toString());
@@ -117,8 +105,8 @@ public class FcSaleOrderController implements IFxOrderService {
 		return AmxApiResponse.build(response);
 	}
 
-	@RequestMapping(value = "/fcsale-save-paynow/", method = RequestMethod.POST)
-	public AmxApiResponse fcSaleApplicationPayment(@RequestBody @Valid FcSaleOrderPaynowRequestModel requestmodel) {
+	@RequestMapping(value = Path.FCSALE_SAVE_PAYNOW, method = RequestMethod.POST)
+	public AmxApiResponse getSavePayNowApplication(@RequestBody @Valid FcSaleOrderPaynowRequestModel requestmodel) {
 		JaxContextUtil.setJaxEvent(JaxEvent.CREATE_APPLICATION);
 		JaxContextUtil.setRequestModel(requestmodel);
 		logger.info("In Fc Sale Save-Application with parameters" + requestmodel.toString());
@@ -126,15 +114,15 @@ public class FcSaleOrderController implements IFxOrderService {
 
 	}
 
-	@RequestMapping(value = "/fc-sale-address/", method = RequestMethod.GET)
-	public AmxApiResponse fetchFcSaleAddress() {
+	@RequestMapping(value = Path.FC_SALE_ADDRESS, method = RequestMethod.GET)
+	public AmxApiResponse getFcSaleAddress() {
 		ApiResponse response = fcSaleService.fetchFcSaleAddress();
 		return AmxApiResponse.build(response);
 	}
 
 	/** Save shipping address */
-	@RequestMapping(value = "/fc-save-shipping-addr/", method = RequestMethod.POST)
-	public AmxApiResponse saveCustomerShippingAddress(
+	@RequestMapping(value = Path.FC_SAVE_SHIPPING_ADDR, method = RequestMethod.POST)
+	public AmxApiResponse saveFcSaleShippingAddress(
 			@RequestBody @Valid CustomerShippingAddressRequestModel requestModel) {
 		logger.info("in saveCustomerHomeAddress: {} ", requestModel);
 		ApiResponse response = fcSaleService.saveShippingAddress(requestModel);
@@ -144,85 +132,20 @@ public class FcSaleOrderController implements IFxOrderService {
 	/**
 	 * @ String date @ To fetch time slot for Fx order delviery
 	 */
-	@RequestMapping(value = "/fc-sale-time-slot/", method = RequestMethod.GET)
-	public AmxApiResponse fetchTimeSlot(@RequestParam(value = "fxdate", required = true) String fxdate) {
+	@RequestMapping(value = Path.FC_SALE_TIME_SLOT, method = RequestMethod.GET)
+	public AmxApiResponse getTimeSlot(@RequestParam(value = "fxdate", required = true) String fxdate) {
 		return fcSaleService.fetchTimeSlot(fxdate);
 	}
 
-	@RequestMapping(value = "/fc-sale-remove-item/", method = RequestMethod.POST)
+	@RequestMapping(value = Path.FC_SALE_REMOVE_ITEM, method = RequestMethod.POST)
 	public AmxApiResponse removeItemFromCart(
 			@RequestParam(value = "receiptApplId", required = true) BigDecimal receiptApplId) {
 		return fcSaleService.removeitemFromCart(receiptApplId);
 	}
 
-	@RequestMapping(value = "/fc-sale-shopping-cart/", method = RequestMethod.GET)
-	public AmxApiResponse shoppingCartDetails() {
+	@RequestMapping(value = Path.FC_SALE_SHOPPING_CART, method = RequestMethod.GET)
+	public AmxApiResponse fetchShoppingCartList() {
 		return fcSaleService.fetchShoppingCartList();
-	}
-
-	/////////// MTHODS to FIX
-
-	@Override
-	public AmxApiResponse<CurrencyMasterDTO, Object> getFcCurrencyList() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public AmxApiResponse<FxExchangeRateDto, Object> getFcXRate(BigDecimal fxCurrencyId) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public AmxApiResponse<FxExchangeRateDto, Object> calculateXRate(BigDecimal fxCurrencyId, BigDecimal fcAmount) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public AmxApiResponse<FcSaleOrderDefaultResponseModel, Object> getFcSaleDefaultApi() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public AmxApiResponse<FcSaleOrderApplicationResponseModel, Object> getSaveApplication(
-			FcSaleOrderTransactionRequestModel requestModel) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public AmxApiResponse<ShippingAddressDto, Object> getFcSaleAddress() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public AmxApiResponse<CustomerShippingAddressRequestModel, Object> saveFcSaleShippingAddress(
-			CustomerShippingAddressRequestModel requestModel) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public AmxApiResponse<String, Object> getTimeSlot(String fxDate) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public AmxApiResponse<ShoppingCartDetailsDto, Object> fetchShoppingCartList() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public AmxApiResponse<FcSaleApplPaymentReponseModel, Object> getSavePayNowApplication(
-			FcSaleOrderPaynowRequestModel requestModel) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 }

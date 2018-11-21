@@ -103,18 +103,13 @@ public class FcSaleService extends AbstractService {
 	 * 
 	 * @return : country Id
 	 */
-	public ApiResponse getFcSalecurrencyList(BigDecimal countryId) {
-		ApiResponse response = getBlackApiResponse();
+	public AmxApiResponse<CurrencyMasterDTO, Object> getFcSalecurrencyList(BigDecimal countryId) {
 		validation.fcsalecurrencyList(countryId);
 		List<CurrencyMasterModel> currencyList = currencyDao.getfcCurrencyList(countryId);
 		if (currencyList.isEmpty()) {
 			throw new GlobalException("No data found", JaxError.NO_RECORD_FOUND);
-		} else {
-			response.getData().getValues().addAll(convertToModelDto(currencyList));
-			response.setResponseStatus(ResponseStatus.OK);
 		}
-		response.getData().setType("currencyMaster");
-		return response;
+		return AmxApiResponse.buildList(convertToModelDto(currencyList));
 	}
 
 	/**
@@ -123,20 +118,16 @@ public class FcSaleService extends AbstractService {
 	 * @return
 	 */
 
-	public ApiResponse getFcSaleExchangeRate(BigDecimal applicationCountryId, BigDecimal countryBranchId,
+	public AmxApiResponse<FxExchangeRateDto, Object> getFcSaleExchangeRate(BigDecimal applicationCountryId,
+			BigDecimal countryBranchId,
 			BigDecimal fxCurrencyId) {
-		ApiResponse response = getBlackApiResponse();
 		validation.fcSaleExchangeRate(applicationCountryId, countryBranchId, fxCurrencyId);
 		List<FxExchangeRateView> fxSaleRateList = fcSaleExchangeRateDao.getFcSaleExchangeRate(applicationCountryId,
 				countryBranchId, fxCurrencyId);
 		if (fxSaleRateList.isEmpty()) {
 			throw new GlobalException("No data found", JaxError.NO_RECORD_FOUND);
-		} else {
-			response.getData().getValues().addAll(convertExchangeRateModelToDto(fxSaleRateList));
-			response.setResponseStatus(ResponseStatus.OK);
 		}
-		response.getData().setType("fc_sale_xrate");
-		return response;
+		return AmxApiResponse.buildList(convertExchangeRateModelToDto(fxSaleRateList));
 	}
 
 	/** Calculate fc and lc amount */
