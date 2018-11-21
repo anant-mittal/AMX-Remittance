@@ -99,6 +99,9 @@ public class SignPadController {
 
 				|| terminalData.getUpdatestamp() < terminalData.getStartStamp()
 
+				|| ArgUtil.isEmpty(signPadData.getStateData())
+				|| ArgUtil.isEmpty(signPadData.getStateData().getStateDataType())
+
 		// || TimeUtils.isDead(terminalData.getChangestamp(), 180000)
 
 //				|| (!ArgUtil.isEmpty(signPadData.getStateData())
