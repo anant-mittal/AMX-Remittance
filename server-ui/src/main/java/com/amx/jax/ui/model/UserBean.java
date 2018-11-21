@@ -9,8 +9,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
-import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.jax.def.CacheForUser;
+import com.amx.jax.model.response.CurrencyMasterDTO;
 import com.amx.jax.ui.service.TenantService;
 import com.amx.jax.ui.session.UserSession;
 
