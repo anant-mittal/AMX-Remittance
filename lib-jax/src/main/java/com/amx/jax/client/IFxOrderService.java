@@ -42,6 +42,7 @@ public interface IFxOrderService extends IJaxService {
 
 		public static final String TERMINAL_ID = "countryBranchSystemInventoryId";
 		public static final String EMPLOYEE_ID = "employeeId";
+		public static final String FX_CURRENCY_ID = "fxCurrencyId";
 
 	}
 
@@ -52,7 +53,7 @@ public interface IFxOrderService extends IJaxService {
 
 	AmxApiResponse<FxExchangeRateDto, Object> getFcXRate(BigDecimal fxCurrencyId);
 
-	AmxApiResponse<FxExchangeRateDto, Object> calculateXRate(BigDecimal fxCurrencyId, BigDecimal fcAmount);
+	AmxApiResponse<FcSaleOrderApplicationResponseModel, Object> calculateXRate(BigDecimal fxCurrencyId, BigDecimal fcAmount);
 
 	AmxApiResponse<FcSaleOrderDefaultResponseModel, Object> getFcSaleDefaultApi();
 

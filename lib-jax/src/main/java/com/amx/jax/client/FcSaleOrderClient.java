@@ -108,7 +108,8 @@ public class FcSaleOrderClient implements IFxOrderService {
 	 */
 
 	@Override
-	public AmxApiResponse<FxExchangeRateDto, Object> calculateXRate(BigDecimal fxCurrencyId, BigDecimal fcAmount) {
+	public AmxApiResponse<FcSaleOrderApplicationResponseModel, Object> calculateXRate(BigDecimal fxCurrencyId,
+			BigDecimal fcAmount) {
 		try {
 			LOGGER.debug("in getFcXRate :" + fxCurrencyId + "\t fcAmount :" + fcAmount);
 			String url = appConfig.getJaxURL() + Path.FC_SALE_CAL_XRATE;
@@ -116,7 +117,7 @@ public class FcSaleOrderClient implements IFxOrderService {
 			UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url)
 					.queryParam("fxCurrencyId", fxCurrencyId).queryParam("fcAmount", fcAmount);
 			return restService.ajax(url).meta(new JaxMetaInfo()).get(requestEntity)
-					.as(new ParameterizedTypeReference<AmxApiResponse<FxExchangeRateDto, Object>>() {
+					.as(new ParameterizedTypeReference<AmxApiResponse<FcSaleOrderApplicationResponseModel, Object>>() {
 					});
 		} catch (Exception e) {
 			LOGGER.error("exception in getCurrencyByCountryId : ", e);

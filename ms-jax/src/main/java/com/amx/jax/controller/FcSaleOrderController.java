@@ -28,6 +28,7 @@ import com.amx.jax.model.request.CustomerShippingAddressRequestModel;
 import com.amx.jax.model.request.FcSaleOrderPaynowRequestModel;
 import com.amx.jax.model.request.FcSaleOrderTransactionRequestModel;
 import com.amx.jax.model.response.CurrencyMasterDTO;
+import com.amx.jax.model.response.FcSaleOrderApplicationResponseModel;
 import com.amx.jax.model.response.FxExchangeRateDto;
 import com.amx.jax.model.response.PurposeOfTransactionDto;
 import com.amx.jax.service.TermsAndConditionService;
@@ -74,7 +75,7 @@ public class FcSaleOrderController {
 	/** To get the FC Sale currency wise exchnage rate **/
 	@RequestMapping(value = Path.FC_SALE_XRATE, method = RequestMethod.GET)
 	public AmxApiResponse<FxExchangeRateDto, Object> getFcXRate(
-			@RequestParam(value = "fxCurrencyId", required = true) BigDecimal fxCurrencyId) {
+			@RequestParam(value = Params.FX_CURRENCY_ID, required = true) BigDecimal fxCurrencyId) {
 		BigDecimal applicationCountryId = metaData.getCountryId();
 		BigDecimal countryBranchId = metaData.getCountryBranchId();
 		return fcSaleService.getFcSaleExchangeRate(applicationCountryId, countryBranchId, fxCurrencyId);
@@ -83,13 +84,13 @@ public class FcSaleOrderController {
 	/** To calculate FC Sale currency wise exchnage rate **/
 
 	@RequestMapping(value = Path.FC_SALE_CAL_XRATE, method = RequestMethod.GET)
-	public AmxApiResponse calculateXRate(@RequestParam(value = "fxCurrencyId", required = true) BigDecimal fxCurrencyId,
+	public AmxApiResponse<FcSaleOrderApplicationResponseModel, Object> calculateXRate(
+			@RequestParam(value = Params.FX_CURRENCY_ID, required = true) BigDecimal fxCurrencyId,
 			@RequestParam(value = "fxAmount", required = true) BigDecimal fcAmount) {
 		BigDecimal applicationCountryId = metaData.getCountryId();
 		BigDecimal countryBranchId = metaData.getCountryBranchId();
-		ApiResponse response = fcSaleService.getFCSaleLcAndFcAmount(applicationCountryId, countryBranchId, fxCurrencyId,
+		return fcSaleService.getFCSaleLcAndFcAmount(applicationCountryId, countryBranchId, fxCurrencyId,
 				fcAmount);
-		return AmxApiResponse.build(response);
 	}
 
 	/** to display the default api **/
