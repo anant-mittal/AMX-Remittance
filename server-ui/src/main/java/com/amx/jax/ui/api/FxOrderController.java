@@ -33,17 +33,17 @@ public class FxOrderController {
 	@Autowired
 	private FcSaleOrderClient fcSaleOrderClient;
 
-	@RequestMapping(value = "/api/fco/purpose/list", method = { RequestMethod.GET })
+	@RequestMapping(value = "/api/fxo/purpose/list", method = { RequestMethod.GET })
 	public ResponseWrapper<List<PurposeOfTransactionDto>> getFcPurposeofTrnx() {
 		return ResponseWrapper.buildList(fcSaleOrderClient.getFcPurposeofTrnx());
 	}
 
-	@RequestMapping(value = "/api/fco/ccy/list", method = { RequestMethod.GET })
+	@RequestMapping(value = "/api/fxo/ccy/list", method = { RequestMethod.GET })
 	public ResponseWrapper<List<CurrencyMasterDTO>> getFcCurrencyList() {
 		return ResponseWrapper.buildList(fcSaleOrderClient.getFcCurrencyList());
 	}
 
-	@RequestMapping(value = "/api/fco/xrate", method = { RequestMethod.GET })
+	@RequestMapping(value = "/api/fxo/xrate", method = { RequestMethod.GET })
 	public ResponseWrapper<List<FxExchangeRateDto>> getFcXRate(@RequestParam BigDecimal forCur) {
 		return ResponseWrapper.buildList(fcSaleOrderClient.getFcXRate(forCur));
 	}

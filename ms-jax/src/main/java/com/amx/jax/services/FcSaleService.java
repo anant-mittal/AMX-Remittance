@@ -21,9 +21,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.meta.model.TermsAndConditionDTO;
-import com.amx.amxlib.model.response.ApiResponse;
-import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.FcSaleExchangeRateDao;
@@ -50,56 +47,49 @@ import com.amx.jax.model.response.PurposeOfTransactionDto;
 import com.amx.jax.model.response.ShippingAddressDto;
 import com.amx.jax.model.response.ShoppingCartDetailsDto;
 import com.amx.jax.model.response.SourceOfIncomeDto;
-import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.repository.ICurrencyDao;
 import com.amx.jax.repository.IPurposeOfTrnxDao;
 import com.amx.jax.repository.ISourceOfIncomeDao;
 import com.amx.jax.repository.ITermsAndConditionRepository;
 import com.amx.jax.validation.FxOrderValidation;
 
-
-
-
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 @SuppressWarnings("rawtypes")
-public class FcSaleService extends AbstractService{
-	
+public class FcSaleService extends AbstractService {
+
 	Logger logger = LoggerFactory.getLogger(FcSaleService.class);
 
 	@Autowired
 	IPurposeOfTrnxDao purposetrnxDao;
-	
+
 	@Autowired
 	ICurrencyDao currencyDao;
 
 	@Autowired
 	FcSaleExchangeRateDao fcSaleExchangeRateDao;
-	
+
 	@Autowired
 	FcSaleOrderTransactionManager trnxManager;
-	
+
 	@Autowired
 	ISourceOfIncomeDao sourceOfIncomeDao;
-	
+
 	@Autowired
 	FcSaleApplicationTransactionManager applTrnxManager;
-	
+
 	@Autowired
 	FcSaleAddressManager fcSaleAddresManager;
-	
+
 	@Autowired
 	FxOrderValidation validation;
-	
+
 	@Autowired
 	ITermsAndConditionRepository termsAndCondition;
-	
 
-	
 	@Autowired
-	FxOrderPaymentManager paymentManager; 
-	
-	
+	FxOrderPaymentManager paymentManager;
+
 	/**
 	 * @return :to get the fc sale purpose of Trnx
 	 */
@@ -111,7 +101,6 @@ public class FcSaleService extends AbstractService{
 		return AmxApiResponse.buildList(convertPurposeOfTrnxDto(purposeofTrnxList));
 	}
 
-	
 	/**
 	 * 
 	 * @return : country Id
@@ -137,43 +126,38 @@ public class FcSaleService extends AbstractService{
 			BigDecimal fxCurrencyId) {
 		validation.fcSaleExchangeRate(applicationCountryId, countryBranchId, fxCurrencyId);
 		validation.validateHeaderInfo();
-		List<FxExchangeRateView> fxSaleRateList = fcSaleExchangeRateDao.getFcSaleExchangeRate(applicationCountryId,countryBranchId, fxCurrencyId);
+		List<FxExchangeRateView> fxSaleRateList = fcSaleExchangeRateDao.getFcSaleExchangeRate(applicationCountryId,
+				countryBranchId, fxCurrencyId);
 		if (fxSaleRateList.isEmpty()) {
 			throw new GlobalException("No data found", JaxError.NO_RECORD_FOUND);
 		}
 		return AmxApiResponse.buildList(convertExchangeRateModelToDto(fxSaleRateList));
 	}
-	
-	
+
 	/** Calculate fc and lc amount */
-	public AmxApiResponse<FcSaleOrderApplicationResponseModel, Object> getFCSaleLcAndFcAmount(BigDecimal applicationCountryId, BigDecimal countryBranchId,BigDecimal fxCurrencyId, BigDecimal fcAmount) {
+	public AmxApiResponse<FcSaleOrderApplicationResponseModel, Object> getFCSaleLcAndFcAmount(
+			BigDecimal applicationCountryId, BigDecimal countryBranchId, BigDecimal fxCurrencyId, BigDecimal fcAmount) {
 		validation.validateHeaderInfo();
-		FcSaleOrderApplicationResponseModel responseModel = trnxManager.calculateTrnxRate(applicationCountryId,countryBranchId, fxCurrencyId, fcAmount);
+		FcSaleOrderApplicationResponseModel responseModel = trnxManager.calculateTrnxRate(applicationCountryId,
+				countryBranchId, fxCurrencyId, fcAmount);
 		return AmxApiResponse.build(responseModel);
 	}
-	
-	
-	
-	
 
-	
 	/**
-
-	 * Puspose : FC Sale default API to display 
-	 * 		1. Source of Income
-	 * 		2. Purpose of Transaction
-	 * 		3. Fc Currency list
-	 * 		4. Denomination type  
+	 * 
+	 * Puspose : FC Sale default API to display 1. Source of Income 2. Purpose of
+	 * Transaction 3. Fc Currency list 4. Denomination type
 	 */
 
-	public AmxApiResponse<FcSaleOrderDefaultResponseModel,Object> getDefaultFsSale(BigDecimal applicationCountryId,BigDecimal countryBranchId,BigDecimal languageId){
+	public AmxApiResponse<FcSaleOrderDefaultResponseModel, Object> getDefaultFsSale(BigDecimal applicationCountryId,
+			BigDecimal countryBranchId, BigDecimal languageId) {
 		validation.validateHeaderInfo();
 		FcSaleOrderDefaultResponseModel responseModel = new FcSaleOrderDefaultResponseModel();
 		List<PurposeOfTransaction> purposeofTrnxList = purposetrnxDao.getPurposeOfTrnx();
 		List<CurrencyMasterModel> currencyList = currencyDao.getfcCurrencyList(applicationCountryId);
-		List<ParameterDetails> denominationTypeList = fcSaleExchangeRateDao.getParameterDetails(ConstantDocument.FX_CD, ConstantDocument.Yes);
+		List<ParameterDetails> denominationTypeList = fcSaleExchangeRateDao.getParameterDetails(ConstantDocument.FX_CD,
+				ConstantDocument.Yes);
 		List<SourceOfIncomeView> sourceOfIncomeList = sourceOfIncomeDao.getSourceofIncome(languageId);
-		
 
 		if (purposeofTrnxList != null && !purposeofTrnxList.isEmpty()) {
 			responseModel.setPurposeOfTrnxList(convertPurposeOfTrnxDto(purposeofTrnxList));
@@ -193,20 +177,18 @@ public class FcSaleService extends AbstractService{
 
 		return AmxApiResponse.build(responseModel);
 	}
-	
-	
-	
+
 	/**
 	 * To save Application
 	 */
 
-	public AmxApiResponse<FcSaleOrderApplicationResponseModel,Object> saveApplication(FcSaleOrderTransactionRequestModel fcSalerequestModel) {
+	public AmxApiResponse<FcSaleOrderApplicationResponseModel, Object> saveApplication(
+			FcSaleOrderTransactionRequestModel fcSalerequestModel) {
 		validation.validateHeaderInfo();
-		FcSaleOrderApplicationResponseModel fcSaleAppResponseModel =  applTrnxManager.saveApplication(fcSalerequestModel);
+		FcSaleOrderApplicationResponseModel fcSaleAppResponseModel = applTrnxManager
+				.saveApplication(fcSalerequestModel);
 		return AmxApiResponse.build(fcSaleAppResponseModel);
 	}
-	
-	
 
 	/**
 	 * Fetch address for Fc Sale
@@ -214,7 +196,6 @@ public class FcSaleService extends AbstractService{
 
 	public AmxApiResponse<ShippingAddressDto, Object> fetchFcSaleAddress() {
 		validation.validateHeaderInfo();
-		ApiResponse response = getBlackApiResponse();
 		ShippingAddressDto dto = new ShippingAddressDto();
 		List<ShippingAddressDto> shippingAddressList = fcSaleAddresManager.fetchShippingAddress();
 		if (shippingAddressList.isEmpty()) {
@@ -223,21 +204,17 @@ public class FcSaleService extends AbstractService{
 		return AmxApiResponse.buildList(shippingAddressList);
 	}
 
-	
 	/**
 	 * Save shipping address
 	 */
 
-	public AmxApiResponse<CustomerShippingAddressRequestModel,Object> saveShippingAddress(CustomerShippingAddressRequestModel requestModel) {
+	public AmxApiResponse<CustomerShippingAddressRequestModel, Object> saveShippingAddress(
+			CustomerShippingAddressRequestModel requestModel) {
 		validation.validateHeaderInfo();
-		ApiResponse response = getBlackApiResponse();
 		fcSaleAddresManager.saveShippingAddress(requestModel);
 		return AmxApiResponse.build(requestModel);
 	}
 
-	
-
-	
 	/**
 	 * 
 	 * @param : to get the time slot for fx order
@@ -265,8 +242,6 @@ public class FcSaleService extends AbstractService{
 
 	}
 
-	
-
 	public AmxApiResponse<ShoppingCartDetailsDto, Object> fetchShoppingCartList() {
 		validation.validateHeaderInfo();
 		List<ShoppingCartDetailsDto> shoppingCartDetails = applTrnxManager.fetchApplicationDetails();
@@ -276,9 +251,10 @@ public class FcSaleService extends AbstractService{
 		return AmxApiResponse.buildList(shoppingCartDetails);
 	}
 
-	
 	/** Pay now save **/
-	public AmxApiResponse<FcSaleApplPaymentReponseModel, Object> saveApplicationPayment(FcSaleOrderPaynowRequestModel requestmodel) {
+
+	public AmxApiResponse<FcSaleApplPaymentReponseModel, Object> saveApplicationPayment(
+			FcSaleOrderPaynowRequestModel requestmodel) {
 		validation.validateHeaderInfo();
 		if (requestmodel.getCartDetailList().isEmpty()) {
 			throw new GlobalException("Mandatory field is missing", JaxError.NULL_APPLICATION_ID);
@@ -287,7 +263,6 @@ public class FcSaleService extends AbstractService{
 		return AmxApiResponse.build(responseModel);
 	}
 
-			
 	public List<PurposeOfTransactionDto> convertPurposeOfTrnxDto(List<PurposeOfTransaction> purposeofTrnxList) {
 		List<PurposeOfTransactionDto> dtoList = new ArrayList<>();
 		for (PurposeOfTransaction purofTrnx : purposeofTrnxList) {
@@ -324,8 +299,7 @@ public class FcSaleService extends AbstractService{
 		fxSaleRateList.forEach(exchnage -> output.add(convertExchangeModel(exchnage)));
 		return output;
 	}
-	
-	
+
 	public FxExchangeRateDto convertExchangeModel(FxExchangeRateView exchnage) {
 		FxExchangeRateDto dto = new FxExchangeRateDto();
 		try {
@@ -335,17 +309,18 @@ public class FcSaleService extends AbstractService{
 		}
 		return dto;
 	}
-	
-	public List<CurrencyDenominationTypeDto> convertCurrDenoType(List<ParameterDetails> denominationTypeList){
+
+	public List<CurrencyDenominationTypeDto> convertCurrDenoType(List<ParameterDetails> denominationTypeList) {
 		List<CurrencyDenominationTypeDto> dto = new ArrayList<>();
-		for(ParameterDetails pdetails: denominationTypeList){
+		for (ParameterDetails pdetails : denominationTypeList) {
 			CurrencyDenominationTypeDto currDto = new CurrencyDenominationTypeDto();
 			currDto.setCurrencyDenominationDesc(pdetails.getCharField1());
 			dto.add(currDto);
 		}
-		
+
 		return dto;
 	}
+
 	public List<SourceOfIncomeDto> convertSourceOfIncome(List<SourceOfIncomeView> sourceOfIncomeList) {
 		List<SourceOfIncomeDto> list = new ArrayList<>();
 		for (SourceOfIncomeView model : sourceOfIncomeList) {
@@ -359,9 +334,5 @@ public class FcSaleService extends AbstractService{
 		return list;
 
 	}
-	
 
 }
-		
-		
-
