@@ -1,6 +1,7 @@
 package com.amx.jax.services;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 import javax.transaction.Transactional;
 
@@ -13,21 +14,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constants.DeviceState;
 import com.amx.jax.constants.DeviceStateDataType;
+import com.amx.jax.customer.dao.EmployeeDao;
 import com.amx.jax.customer.service.CustomerService;
 import com.amx.jax.dao.DeviceDao;
 import com.amx.jax.dbmodel.Device;
 import com.amx.jax.dbmodel.DeviceStateInfo;
-import com.amx.jax.dbmodel.JaxConfig;
-import com.amx.jax.dict.UserClient.DeviceType;
-import com.amx.jax.error.JaxError;
-import com.amx.jax.dbmodel.JaxConfig;
-import com.amx.jax.dict.UserClient.DeviceType;
-import com.amx.jax.error.JaxError;
+import com.amx.jax.dbmodel.LoginLogoutHistory;
+import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.manager.DeviceManager;
 import com.amx.jax.model.request.DeviceRegistrationRequest;
 import com.amx.jax.model.request.DeviceStateInfoChangeRequest;
@@ -39,14 +36,10 @@ import com.amx.jax.model.response.DeviceDto;
 import com.amx.jax.model.response.DevicePairOtpResponse;
 import com.amx.jax.model.response.DeviceStatusInfoDto;
 import com.amx.jax.model.response.IDeviceStateData;
-import com.amx.jax.model.response.customer.CustomerContactDto;
-import com.amx.jax.model.response.customer.CustomerDto;
-import com.amx.jax.model.response.customer.CustomerIdProofDto;
-import com.amx.jax.services.AbstractService;
+import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.validation.DeviceValidation;
-import com.amx.utils.CryptoUtil;
-import com.amx.utils.JsonUtil;
-import com.amx.jax.dict.UserClient.ClientType;
+import com.amx.utils.ArgUtil;
+import com.amx.utils.JsonUtil;;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -64,6 +57,10 @@ public class DeviceService extends AbstractService {
 	JaxConfigService jaxConfigService;
 	@Autowired
 	CustomerService customerService;
+	@Autowired
+	EmployeeDao employeeDao;
+	@Autowired
+	UserService userService;
 
 	public static final long DEVICE_SESSION_TIMEOUT = 8 * 60 * 60; // in seconds
 
@@ -72,12 +69,19 @@ public class DeviceService extends AbstractService {
 		logger.info("In register device with request: {}", request);
 		deviceValidation.validateDeviceRegRequest(request);
 		DeviceDto newDevice = deviceDao.saveDevice(request);
-		deviceDao.saveDeviceState(newDevice, DeviceState.REGISTERED);
+		DeviceState deviceState;
+		if (ConstantDocument.Yes.equals(newDevice.getStatus())) {
+			deviceState = DeviceState.REGISTERED;
+		} else {
+			deviceState = DeviceState.REGISTERED_NOT_ACTIVE;
+		}
+		deviceDao.saveDeviceState(newDevice, deviceState);
 		logger.info("device registered with id: {}", newDevice.getRegistrationId());
 		return newDevice;
 	}
 
-	public BoolRespModel updateDeviceState(DeviceStateInfoChangeRequest request, Integer registrationId,
+	public BoolRespModel updateDeviceState(
+			DeviceStateInfoChangeRequest request, Integer registrationId,
 			String paireToken, String sessionToken) {
 		if (registrationId == null) {
 			throw new GlobalException("Device registration id can not be blank");
@@ -92,22 +96,25 @@ public class DeviceService extends AbstractService {
 		return new BoolRespModel(Boolean.TRUE);
 	}
 
-	public BoolRespModel activateDevice(Integer countryBranchSystemInventoryId, ClientType deviceType) {
-		logger.info("In activateDevice with countryBranchSystemInventoryId: {}", countryBranchSystemInventoryId);
-		deviceManager.validateDeviceActivationRequest(countryBranchSystemInventoryId, deviceType);
-		deviceManager.activateDevice(countryBranchSystemInventoryId, deviceType);
+	public BoolRespModel activateDevice(Integer deviceRegId) {
+		logger.info("In activateDevice with deviceRegId: {}", deviceRegId);
+		Device device = deviceDao.findDevice(new BigDecimal(deviceRegId));
+		deviceValidation.validateDeviceForActivation(device);
+		//deviceValidation.validateSystemInventoryForDuplicateDevice(device);
+		deviceManager.activateDevice(device);
 		return new BoolRespModel(Boolean.TRUE);
 	}
 
 	public DevicePairOtpResponse sendOtpForPairing(Integer deviceRegId, String paireToken) {
 		Device device = deviceDao.findDevice(new BigDecimal(deviceRegId));
-		deviceValidation.validatePaireToken(paireToken, deviceRegId);
 		deviceValidation.validateDevice(device);
+		deviceValidation.validatePaireToken(paireToken, deviceRegId);
 		DevicePairOtpResponse response = deviceManager.generateOtp(device);
 		return response;
 	}
 
-	public BoolRespModel validateOtpForPairing(ClientType deviceType, Integer countryBranchSystemInventoryId,
+	public DevicePairOtpResponse validateOtpForPairing(
+			ClientType deviceType, Integer countryBranchSystemInventoryId,
 			String otp) {
 		deviceValidation.validateOtp(otp);
 		Device device = deviceDao.findDevice(new BigDecimal(countryBranchSystemInventoryId), deviceType);
@@ -115,7 +122,10 @@ public class DeviceService extends AbstractService {
 		deviceValidation.validateDeviceToken(device, otp);
 		// device login success
 		createSession(device);
-		return new BoolRespModel(Boolean.TRUE);
+		DevicePairOtpResponse resp = new DevicePairOtpResponse();
+		resp.setDeviceRegId(device.getRegistrationId());
+		resp.setTermialId(ArgUtil.parseAsString(device.getBranchSystemInventoryId()));
+		return resp;
 	}
 
 	private void createSession(Device device) {
@@ -140,6 +150,7 @@ public class DeviceService extends AbstractService {
 		deviceValidation.validateDevice(registrationId);
 		deviceValidation.validatePaireToken(paireToken, registrationId);
 		deviceManager.validateSessionToken(sessionToken, registrationId);
+		deviceManager.validateOtpValidationTimeLimit(new BigDecimal(registrationId));
 		Device device = deviceDao.findDevice(new BigDecimal(registrationId));
 		deviceValidation.validateDevice(device);
 		DeviceStateInfo deviceStateInfo = deviceDao.getDeviceStateInfo(device);
@@ -152,32 +163,48 @@ public class DeviceService extends AbstractService {
 		if (deviceStateInfo.getStateDataType() != null) {
 			switch (deviceStateInfo.getStateDataType()) {
 			case REMITTANCE:
-				SignaturePadRemittanceInfo stateData = JsonUtil.fromJson(deviceStateInfo.getStateData(),
+				SignaturePadRemittanceInfo stateData = JsonUtil.fromJson(
+						deviceStateInfo.getStateData(),
 						SignaturePadRemittanceInfo.class);
-				dto.setStateData(stateData);
+				dto.setSignaturePadRemittanceInfo(stateData);
 				break;
 
 			case FC_PURCHASE:
-				SignaturePadFCPurchaseSaleInfo stateDataPurchase = JsonUtil.fromJson(deviceStateInfo.getStateData(),
+				SignaturePadFCPurchaseSaleInfo stateDataPurchase = JsonUtil.fromJson(
+						deviceStateInfo.getStateData(),
 						SignaturePadFCPurchaseSaleInfo.class);
-				dto.setStateData(stateDataPurchase);
+				dto.setSignaturePadFCPurchaseInfo(stateDataPurchase);
 				break;
 
 			case FC_SALE:
-				SignaturePadFCPurchaseSaleInfo stateDataSale = JsonUtil.fromJson(deviceStateInfo.getStateData(),
+				SignaturePadFCPurchaseSaleInfo stateDataSale = JsonUtil.fromJson(
+						deviceStateInfo.getStateData(),
 						SignaturePadFCPurchaseSaleInfo.class);
-				dto.setStateData(stateDataSale);
+				dto.setSignaturePadFCSaleInfo(stateDataSale);
 				break;
 			case CUSTOMER_REGISTRATION:
-				SignaturePadCustomerRegStateMetaInfo metaInfo = JsonUtil.fromJson(deviceStateInfo.getStateData(),
+				SignaturePadCustomerRegStateMetaInfo metaInfo = JsonUtil.fromJson(
+						deviceStateInfo.getStateData(),
 						SignaturePadCustomerRegStateMetaInfo.class);
-				dto.setStateData(getCustomerRegData(metaInfo.getCustomerId()));
+				dto.setSignaturePadCustomerRegStateInfo(getCustomerRegData(metaInfo.getCustomerId()));
 				break;
 			default:
 				break;
 			}
 		}
+		setBranchPcLogoutTime(dto, deviceStateInfo.getEmployeeId());
+		dto.setLastUpdatedTime(deviceStateInfo.getStateDataModifiedDate());
 		return dto;
+	}
+
+	private void setBranchPcLogoutTime(DeviceStatusInfoDto dto, BigDecimal employeeId) {
+		if (employeeId != null) {
+			String userName = employeeDao.getEmployeeDetails(employeeId).getUserName();
+			LoginLogoutHistory logoutHistory = userService.getLastLogoutHistoryByUserName(userName);
+			if (logoutHistory != null) {
+				dto.setBranchPcLastLogoutTime(logoutHistory.getLogoutTime());
+			}
+		}
 	}
 
 	private SignaturePadCustomerRegStateInfo getCustomerRegData(Integer customerId) {
@@ -192,8 +219,9 @@ public class DeviceService extends AbstractService {
 		return info;
 	}
 
-	public BoolRespModel updateDeviceStateData(ClientType deviceType, Integer countryBranchSystemInventoryId,
-			IDeviceStateData deviceStateData, DeviceStateDataType type) {
+	public BoolRespModel updateDeviceStateData(
+			ClientType deviceType, Integer countryBranchSystemInventoryId,
+			IDeviceStateData deviceStateData, DeviceStateDataType type, BigDecimal employeeId) {
 		Device device = deviceDao.findDevice(new BigDecimal(countryBranchSystemInventoryId), deviceType);
 		deviceValidation.validateDevice(device);
 		DeviceStateInfo deviceStateInfo = deviceDao.getDeviceStateInfo(device);
@@ -201,9 +229,41 @@ public class DeviceService extends AbstractService {
 		logger.debug("updating device state D id {} ", device.getRegistrationId());
 		String deviceStateDataStr = JsonUtil.toJson(deviceStateData);
 		deviceStateInfo.setStateData(deviceStateDataStr);
+		deviceStateInfo.setStateDataModifiedDate(new Date());
 		deviceStateInfo.setStateDataType(type);
+		deviceStateInfo.setEmployeeId(employeeId);
 		deviceDao.saveDeviceInfo(deviceStateInfo);
 		return new BoolRespModel(Boolean.TRUE);
 
+	}
+
+	public BoolRespModel updateSignatureStateData(Integer deviceRegId, String imageUrlStr) {
+		Device device = deviceDao.findDevice(new BigDecimal(deviceRegId));
+		DeviceStateInfo deviceStateInfo = deviceDao.getDeviceStateInfo(device);
+		deviceStateInfo.setSignature(imageUrlStr);
+		deviceDao.saveDeviceInfo(deviceStateInfo);
+
+		return new BoolRespModel(Boolean.TRUE);
+	}
+
+	public BoolRespModel deactivateDevice(Integer deviceRegId) {
+		logger.info("In deactivateDevice with deviceRegId: {}", deviceRegId);
+		Device device = deviceDao.findDevice(new BigDecimal(deviceRegId));
+		deviceValidation.validateDeviceForActivation(device);
+		deviceManager.deactivateDevice(device);
+		return new BoolRespModel(Boolean.TRUE);
+	}
+
+	public BoolRespModel clearDeviceState(Integer registrationId, String paireToken, String sessionToken) {
+		Device device = deviceDao.findDevice(new BigDecimal(registrationId));
+		deviceValidation.validateDevice(device);
+		DeviceStateInfo deviceStateInfo = deviceDao.getDeviceStateInfo(device);
+		deviceManager.validateLogIn(device);
+		logger.debug("clearDeviceState D id {} ", device.getRegistrationId());
+		deviceStateInfo.setStateData(null);
+		deviceStateInfo.setSignature(null);
+		deviceStateInfo.setStateDataType(null);
+		deviceDao.saveDeviceInfo(deviceStateInfo);
+		return new BoolRespModel(Boolean.TRUE);
 	}
 }

@@ -13,14 +13,14 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.springframework.context.annotation.ComponentScan;
+import org.springframework.stereotype.Component;
 
 import com.amx.jax.adapter.ACardReaderService.CardStatus;
 import com.amx.jax.adapter.ACardReaderService.DataStatus;
 import com.amx.jax.adapter.ACardReaderService.DeviceStatus;
 import com.amx.utils.Constants;
 
-@ComponentScan("com.amx.jax")
+@Component
 public class SWAdapterGUI extends JFrame {
 
 	private static final long serialVersionUID = 2703873832309041808L;
@@ -91,11 +91,22 @@ public class SWAdapterGUI extends JFrame {
 		quitButton.addActionListener((ActionEvent event) -> {
 			System.exit(0);
 		});
-		constraints.gridx = 0;
+		constraints.gridx = 2;
 		constraints.gridy = 5;
-		constraints.gridwidth = 4;
+		constraints.gridwidth = 2;
 		constraints.anchor = GridBagConstraints.CENTER;
 		newPanel.add(quitButton, constraints);
+
+		JButton refreshButton = new JButton("Refresh");
+		refreshButton.addActionListener((ActionEvent event) -> {
+			ACardReaderService.CONTEXT.reset();
+		});
+
+		constraints.gridx = 0;
+		constraints.gridy = 5;
+		constraints.gridwidth = 2;
+		constraints.anchor = GridBagConstraints.CENTER;
+		newPanel.add(refreshButton, constraints);
 
 		statusDevice.setEnabled(false);
 		statusDevice.setBackground(Color.LIGHT_GRAY);

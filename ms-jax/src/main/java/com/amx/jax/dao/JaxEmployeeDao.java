@@ -1,16 +1,22 @@
 package com.amx.jax.dao;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.dbmodel.employee.AmgEmployee;
+import com.amx.jax.dbmodel.employee.UserSession;
 import com.amx.jax.repository.employee.AmgEmployeeRepository;
+import com.amx.jax.repository.employee.UserSessionRepository;
 
 @Component
 public class JaxEmployeeDao {
 
 	@Autowired
 	AmgEmployeeRepository amgEmployeeRepository;
+	@Autowired
+	UserSessionRepository userSessionRepository;
 
 	/**
 	 * @param civilId
@@ -28,5 +34,16 @@ public class JaxEmployeeDao {
 		} else {
 			return false;
 		}
+	}
+
+	/**
+	 * gives usersession object for branch user which is/was logged in latest
+	 * 
+	 * @param ipAddress
+	 * @return usersession
+	 * 
+	 */
+	public UserSession findUserSessionByIp(String ipAddress) {
+		return userSessionRepository.findFirstByIpAddress(ipAddress, new Sort(Direction.DESC, "ipAddress"));
 	}
 }

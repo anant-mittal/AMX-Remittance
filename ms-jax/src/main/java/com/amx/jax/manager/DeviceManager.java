@@ -1,9 +1,14 @@
 package com.amx.jax.manager;
 
 import java.math.BigDecimal;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 import javax.transaction.Transactional;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,14 +65,19 @@ public class DeviceManager {
 	 * 
 	 */
 	@Transactional
-	public void activateDevice(Integer countryBranchSystemInventoryId, ClientType deviceType) {
-		Device device = deviceDao.findLatestDevice(new BigDecimal(countryBranchSystemInventoryId), deviceType);
-		if (device == null) {
-			throw new GlobalException("No device found");
-		}
+	public void activateDevice(Device device) {
 		device.setStatus(ConstantDocument.Yes);
 		DeviceStateInfo deviceStateInfo = deviceDao.getDeviceStateInfo(device);
-		deviceStateInfo.setState(DeviceState.DEVICE_PAIRED);
+		deviceStateInfo.setState(DeviceState.REGISTERED);
+		List<Device> devices = deviceDao.findAllActiveDevices(device.getBranchSystemInventoryId(), device.getDeviceType());
+		if (!CollectionUtils.isEmpty(devices)) {
+			for (Device d : devices) {
+				if (!d.equals(device)) {
+					d.setStatus(ConstantDocument.No);
+				}
+			}
+			deviceDao.saveDevices(devices);
+		}
 		deviceDao.saveDeviceInfo(deviceStateInfo);
 		deviceDao.saveDevice(device);
 	}
@@ -86,7 +96,9 @@ public class DeviceManager {
 		String otpHash = cryptoUtil.generateHash(device.getRegistrationId().toString(), otp);
 		deviceInfo.setOtpToken(otpHash);
 		String sessionPairToken = generateSessionPairToken(device);
+		deviceInfo.setState(DeviceState.SESSION_CREATED);
 		deviceInfo.setSessionToken(sessionPairToken);
+		deviceInfo.setOtpTokenCreatedDate(Calendar.getInstance().getTime());
 		deviceDao.saveDeviceInfo(deviceInfo);
 		DevicePairOtpResponse resp = new DevicePairOtpResponse();
 		resp.setOtp(otp);
@@ -96,7 +108,7 @@ public class DeviceManager {
 	}
 
 	private String getTerminalId(Device device) {
-		return branchDetailService.findBranchSystemByInventoryId(device.getBranchSystemInventoryId()).getIpAddress();
+		return device.getBranchSystemInventoryId().toString();
 	}
 
 	public boolean isLoggedIn(Device device) {
@@ -144,7 +156,7 @@ public class DeviceManager {
 			throw new GlobalException("Device already active", JaxError.CLIENT_ALREADY_ACTIVE);
 		}
 	}
-	
+
 	public void validateSessionToken(String sessionToken, Integer registrationId) {
 		DeviceStateInfo deviceStateInfo = deviceDao.findBySessionToken(sessionToken, registrationId);
 		if (deviceStateInfo == null) {
@@ -156,4 +168,26 @@ public class DeviceManager {
 			throw new GlobalException("Session token is expired", JaxError.CLIENT_EXPIRED_SESSION_TOKEN);
 		}
 	}
+
+	public void validateOtpValidationTimeLimit(BigDecimal deviceRegId) {
+		Device device = deviceDao.findDevice(deviceRegId);
+		DeviceStateInfo deviceInfo = deviceDao.getDeviceStateInfo(device);
+		String configValueStr = jaxConfigService.getConfigValue("DEVICE_OTP_VALIDITY_MINS", "15");
+		int configValue = Integer.parseInt(configValueStr);
+		Date otpTokenCreationDate = deviceInfo.getOtpTokenCreatedDate();
+		if (otpTokenCreationDate != null && !DeviceState.SESSION_PAIRED.equals(deviceInfo.getState())) {
+			Date now = Calendar.getInstance().getTime();
+			long timeDiff = (now.getTime() - otpTokenCreationDate.getTime());
+			if ((timeDiff / 60000) > configValue) {
+				throw new GlobalException("Session token otp is not yet validated for " + configValue + " min",
+						JaxError.CLIENT_EXPIRED_VALIDATE_OTP_TIME);
+			}
+		}
+	}
+
+	public void deactivateDevice(Device device) {
+		device.setStatus(ConstantDocument.No);
+		deviceDao.saveDevice(device);
+	}
+
 }

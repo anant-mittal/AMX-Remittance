@@ -1,6 +1,8 @@
 package com.amx.jax.customer.service;
 
 import java.math.BigDecimal;
+import java.sql.Blob;
+import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -13,7 +15,10 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import javax.sql.rowset.serial.SerialException;
+
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +40,7 @@ import com.amx.jax.amxlib.config.OtpSettings;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxApiFlow;
+import com.amx.jax.constants.CustomerRegistrationType;
 import com.amx.jax.customer.CustomerAuditEvent;
 import com.amx.jax.customer.CustomerAuditEvent.Type;
 import com.amx.jax.dal.ArticleDao;
@@ -246,8 +252,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 
 		OtpData otpData = customerRegistrationManager.get().getOtpData();
 		try {
-			if (StringUtils.isBlank(offsiteCustRegModel.geteOtp())
-					|| StringUtils.isBlank(offsiteCustRegModel.getmOtp())) {
+			if (StringUtils.isBlank(offsiteCustRegModel.getmOtp())) {
 				auditService.excep(new CustomerAuditEvent(Type.VALIDATE_OTP, offsiteCustRegModel),
 						new GlobalException("Otp field is required", JaxError.MISSING_OTP));
 				throw new GlobalException("Otp field is required", JaxError.MISSING_OTP);
@@ -262,11 +267,18 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 						"Sorry, you cannot proceed to register. Please try to register after 12 midnight",
 						JaxError.VALIDATE_OTP_LIMIT_EXCEEDED);
 			}
+			
 			// actual validation logic
-			if (!otpData.geteOtp().equals(offsiteCustRegModel.geteOtp())
-					|| !otpData.getmOtp().equals(offsiteCustRegModel.getmOtp())) {
+			if (!otpData.getmOtp().equals(offsiteCustRegModel.getmOtp())) {
 				otpMismatch(otpData);
 			}
+			
+			if (!StringUtils.isBlank(offsiteCustRegModel.geteOtp())) {
+				if (!otpData.geteOtp().equals(offsiteCustRegModel.geteOtp())) {
+					otpMismatch(otpData);
+				}
+			}
+				
 			otpData.setOtpValidated(true);
 			otpData.resetCounts();
 		} finally {
@@ -478,14 +490,14 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		commitCustomerLocalContact(model.getLocalAddressDetails(), customer, customerDetails.getWatsAppMobileNo());
 		commitCustomerHomeContact(model.getHomeAddressDestails(), customer, customerDetails.getWatsAppMobileNo());
 		commitOnlineCustomerIdProof(model, customer);
-		commitEmploymentDetails(model.getCustomerEmploymentDetails(), customer);
+		commitEmploymentDetails(model.getCustomerEmploymentDetails(), customer, model.getLocalAddressDetails());
 		auditService.log(new CustomerAuditEvent(Type.CUST_INFO, model));
 		CustomerInfo info = new CustomerInfo();
 		info.setCustomerId(customer.getCustomerId());
 		return AmxApiResponse.build(info);
 	}
 
-	private void commitEmploymentDetails(CustomerEmploymentDetails customerEmploymentDetails, Customer customer) {
+	private void commitEmploymentDetails(CustomerEmploymentDetails customerEmploymentDetails, Customer customer, LocalAddressDetails localAddressDetails) {
 		if (customerEmploymentDetails != null) {
 			EmployeeDetails employeeModel = new EmployeeDetails();
 			employeeModel.setFsBizComponentDataByEmploymentTypeId(bizcomponentDao
@@ -493,16 +505,18 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 			employeeModel.setFsBizComponentDataByOccupationId(
 					bizcomponentDao.getBizComponentDataByComponmentDataId(customerEmploymentDetails.getProfessionId()));
 			employeeModel.setEmployerName(customerEmploymentDetails.getEmployer());
-			employeeModel.setBlock(customerEmploymentDetails.getBlock());
-			employeeModel.setStreet(customerEmploymentDetails.getStreet());
-			employeeModel.setArea(customerEmploymentDetails.getArea());
+			employeeModel.setBlock(localAddressDetails.getBlock());
+			employeeModel.setStreet(localAddressDetails.getStreet());
+			employeeModel.setArea(localAddressDetails.getStateId().toString());
 			employeeModel.setPostal(customerEmploymentDetails.getPostal());
 			employeeModel.setOfficeTelephone(customerEmploymentDetails.getOfficeTelephone());
+			/*employeeModel.setFsCountryMaster(
+					countryMasterRepository.getCountryMasterByCountryId(customerEmploymentDetails.getCountryId()));*/
 			employeeModel.setFsCountryMaster(
-					countryMasterRepository.getCountryMasterByCountryId(customerEmploymentDetails.getCountryId()));
-			employeeModel.setFsStateMaster(customerEmploymentDetails.getStateId());
-			employeeModel.setFsDistrictMaster(customerEmploymentDetails.getDistrictId());
-			employeeModel.setFsCityMaster(customerEmploymentDetails.getCityId());
+					countryMasterRepository.getCountryMasterByCountryId(localAddressDetails.getCountryId()));
+			employeeModel.setFsStateMaster(localAddressDetails.getStateId());
+			employeeModel.setFsDistrictMaster(localAddressDetails.getDistrictId());
+			employeeModel.setFsCityMaster(localAddressDetails.getCityId());
 			// employeeModel.setFsCompanyMaster(customerEmploymentDetails.getCompanyId());
 			employeeModel.setIsActive(ConstantDocument.Yes);
 			employeeModel.setCreatedBy(metaData.getEmployeeId().toString());
@@ -596,6 +610,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 			tenantContext.get().validateCivilId(customerDetails.getIdentityInt());
 		}
 		tenantContext.get().validateEmailId(customerDetails.getEmail());
+		tenantContext.get().validateDuplicateMobile(customerDetails.getMobile());
 		countryMetaValidation.validateMobileNumber(customerDetails.getCountryId(), customerDetails.getMobile());
 		countryMetaValidation.validateMobileNumberLength(customerDetails.getCountryId(), customerDetails.getMobile());
 		jaxUtil.convert(customerDetails, customer);
@@ -625,14 +640,17 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		customer.setMedicalInsuranceInd(customerDetails.getInsurance());
 		if (customerDetails.getIdentityTypeId().toString().equals("204")) {
 			customer.setIdentityExpiredDate(null);
-			/*customer.setExpiryDate(customerDetails.getExpiryDate());
-			customer.setIssueDate(customerDetails.getIssueDate());*/
+			// commented by Prashant
+			//customer.setExpiryDate(customerDetails.getExpiryDate());
+			//customer.setIssueDate(customerDetails.getIssueDate());
 		} else {
 			customer.setIdentityExpiredDate(customerDetails.getExpiryDate());
-			/*customer.setExpiryDate(null);
-			customer.setIssueDate(null);*/
+			//customer.setExpiryDate(null);
+			//customer.setIssueDate(null);
 		}
 		customer.setIdentityInt(customerDetails.getIdentityInt());
+		
+		customer.setCustomerRegistrationType(CustomerRegistrationType.OFF_CUSTOMER);
 		if (customerEmploymentDetails != null) {
 			customer.setFsArticleDetails(
 					articleDao.getArticleDetailsByArticleDetailId(customerEmploymentDetails.getArticleDetailsId()));
@@ -667,6 +685,12 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		custProof.setCreatedBy(customer.getIdentityInt());
 		custProof.setCreationDate(new Date());
 		custProof.setIdentityTypeId(customer.getIdentityTypeId());
+		
+		if(customer.getIdentityExpiredDate() != null) {
+			custProof.setIdentityExpiryDate(customer.getIdentityExpiredDate());
+		}
+		custProof.setIdentityFor(ConstantDocument.IDENTITY_FOR_ID_PROOF);
+		custProof.setScanSystem(Constants.CUST_DB_SCAN);
 		customerIdProofRepository.save(custProof);
 	}
 
@@ -711,10 +735,25 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		documentDetails.setDocBlobID(mappingData.getDocBlobId());
 		documentDetails.setDocFinYear(mappingData.getFinancialYear());
 		documentDetails.setSeqNo(new BigDecimal(1));
-		documentDetails.setDocContent(image.getBytes());
+		//documentDetails.setDocContent(image.getBytes());
+		
+		try {
+			Blob documentContent = new javax.sql.rowset.serial.SerialBlob(decodeImage(image));
+			documentDetails.setDocContent(documentContent);
+		} catch (SerialException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}	
+		
 		documentDetails.setCreatedOn(new Date());
 		documentDetails.setCreatedBy(metaData.getCustomerId().toString());
 		return documentDetails;
+	}
+	
+	public static byte[] decodeImage(String imageDataString) {
+        return Base64.decodeBase64(imageDataString);
+        //return null;
 	}
 
 	private DmsApplMapping getDmsApplMappingData(Customer model) throws ParseException {
@@ -791,6 +830,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 			tenantContext.get().validateCivilId(customerPersonalDetail.getIdentityInt());
 		}
 		tenantContext.get().validateEmailId(customerPersonalDetail.getEmail());
+		tenantContext.get().validateDuplicateMobile(customerPersonalDetail.getMobile());
 		countryMetaValidation.validateMobileNumber(customerPersonalDetail.getCountryId(),
 				customerPersonalDetail.getMobile());
 		countryMetaValidation.validateMobileNumberLength(customerPersonalDetail.getCountryId(),

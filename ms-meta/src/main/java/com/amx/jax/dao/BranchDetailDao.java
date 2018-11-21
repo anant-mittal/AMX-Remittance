@@ -49,8 +49,12 @@ public class BranchDetailDao {
 	public BranchSystemDetail getBranchSystemDetail(String ipAddress) {
 		return branchSystemDetailRepository.findByIpAddress(ipAddress);
 	}
-	
+
 	public BranchSystemDetail getBranchSystemDetailByInventoryId(BigDecimal countryBranchSystemInventoryId) {
 		return branchSystemDetailRepository.findOne(countryBranchSystemInventoryId);
+	}
+
+	public List<BranchSystemDetail> listBranchSystemDetail() {
+		return branchSystemDetailRepository.findByIsActive(ConstantDocument.Yes);
 	}
 }

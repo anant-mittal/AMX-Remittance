@@ -13,4 +13,6 @@ public interface BranchSystemDetailRepository extends CrudRepository<BranchSyste
 	public List<BranchSystemDetail> findByIsActiveAndCountryBranchId(String isActive, BigDecimal countryBranchId);
 
 	public BranchSystemDetail findByIpAddress(String ip);
+
+	public List<BranchSystemDetail> findByIsActive(String isActive);
 }

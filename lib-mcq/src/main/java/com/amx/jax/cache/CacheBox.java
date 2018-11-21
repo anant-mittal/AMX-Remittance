@@ -121,7 +121,11 @@ public class CacheBox<T> implements ICacheBox<T> {
 
 	@Override
 	public T getOrDefault(String key, T defaultValue) {
-		return this.map().getOrDefault(key, defaultValue);
+		try {
+			return this.map().getOrDefault(key, defaultValue);
+		} catch (Exception e) {
+			return defaultValue;
+		}
 	}
 
 	public T take(String key, long timeout, TimeUnit unit) throws InterruptedException {
@@ -133,6 +137,16 @@ public class CacheBox<T> implements ICacheBox<T> {
 			waiting--;
 		}
 		return item;
+	}
+
+	@Override
+	public T getOrDefault(String key) {
+		return getOrDefault(key, getDefault());
+	}
+
+	@Override
+	public T getDefault() {
+		return null;
 	}
 
 }

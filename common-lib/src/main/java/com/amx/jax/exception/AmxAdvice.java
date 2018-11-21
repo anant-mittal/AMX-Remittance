@@ -22,7 +22,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import com.amx.jax.AppConstants;
 import com.amx.jax.api.AmxFieldError;
 import com.amx.jax.exception.ApiHttpExceptions.ApiHttpArgException;
-import com.amx.jax.exception.ApiHttpExceptions.ApiHttpCodes;
+import com.amx.jax.exception.ApiHttpExceptions.ApiStatusCodes;
 import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.logger.LoggerService;
 import com.amx.utils.ArgUtil;
@@ -62,7 +62,7 @@ public abstract class AmxAdvice {
 	}
 
 	protected ResponseEntity<AmxApiError> badRequest(Exception ex, List<AmxFieldError> errors,
-			HttpServletRequest request, HttpServletResponse response, ApiHttpCodes statusKey) {
+			HttpServletRequest request, HttpServletResponse response, ApiStatusCodes statusKey) {
 		AmxApiError apiError = new AmxApiError();
 		apiError.setHttpStatus(HttpStatus.BAD_REQUEST);
 		// apiError.setMessage(ex.getMessage());
@@ -95,7 +95,7 @@ public abstract class AmxAdvice {
 			newError.setDescription(CommonHttpRequest.sanitze(error.getDefaultMessage()));
 			errors.add(newError);
 		}
-		return badRequest(ex, errors, request, response, ApiHttpCodes.PARAM_INVALID);
+		return badRequest(ex, errors, request, response, ApiStatusCodes.PARAM_INVALID);
 	}
 
 	/**
@@ -116,7 +116,7 @@ public abstract class AmxAdvice {
 		newError.setField(ex.getName());
 		newError.setDescription(CommonHttpRequest.sanitze(ex.getMessage()));
 		errors.add(newError);
-		return badRequest(ex, errors, request, response, ApiHttpCodes.PARAM_TYPE_MISMATCH);
+		return badRequest(ex, errors, request, response, ApiStatusCodes.PARAM_TYPE_MISMATCH);
 	}
 
 	/**
@@ -137,6 +137,6 @@ public abstract class AmxAdvice {
 			newError.setDescription(CommonHttpRequest.sanitze(responseError.getMessage()));
 			errors.add(newError);
 		}
-		return badRequest(exception, errors, request, response, ApiHttpCodes.PARAM_ILLEGAL);
+		return badRequest(exception, errors, request, response, ApiStatusCodes.PARAM_ILLEGAL);
 	}
 }

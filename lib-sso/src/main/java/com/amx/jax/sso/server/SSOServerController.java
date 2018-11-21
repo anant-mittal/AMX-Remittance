@@ -3,6 +3,7 @@ package com.amx.jax.sso.server;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,8 +25,10 @@ import com.amx.jax.AppContextUtil;
 import com.amx.jax.adapter.AdapterServiceClient;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.device.CardData;
+import com.amx.jax.http.ApiRequest;
 import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.http.CommonHttpRequest.CommonMediaType;
+import com.amx.jax.http.RequestType;
 import com.amx.jax.model.UserDevice;
 import com.amx.jax.rbaac.RbaacServiceClient;
 import com.amx.jax.rbaac.dto.request.UserAuthInitReqDTO;
@@ -184,15 +187,26 @@ public class SSOServerController {
 		return JsonUtil.toJson(result);
 	}
 
+	@ApiRequest(type = RequestType.POLL)
+	@ApiSSOStatus({ SSOServerCodes.NO_TERMINAL_SESSION, SSOServerCodes.AUTH_DONE })
 	@RequestMapping(value = SSOConstants.SSO_CARD_DETAILS, method = RequestMethod.GET, produces = {
 			CommonMediaType.APPLICATION_JSON_VALUE, CommonMediaType.APPLICATION_V0_JSON_VALUE })
 	@ResponseBody
 	public String getCardDetails() throws InterruptedException {
-		AmxApiResponse<SSOLoginFormData, Object> result = AmxApiResponse.build(new SSOLoginFormData());
+		AmxApiResponse<CardData, Object> resp = AmxApiResponse.build(new CardData());
+		ssoUser.ssoTranxId();
 		String terminlId = sSOTranx.get().getTerminalId();
-		CardData card = adapterServiceClient.pollCardDetailsByTerminal(terminlId).getResult();
-		result.getResult().setIdentity(card.getIdentity());
-		return JsonUtil.toJson(result);
+		if (terminlId != null) {
+			CardData card = adapterServiceClient.pollCardDetailsByTerminal(terminlId).getResult();
+			if (card != null) {
+				resp.setResults(Collections.singletonList(card));
+			} else {
+				resp.setStatusEnum(SSOServerCodes.NO_TERMINAL_CARD);
+			}
+		} else {
+			resp.setStatusEnum(SSOServerCodes.NO_TERMINAL_SESSION);
+		}
+		return JsonUtil.toJson(resp);
 	}
 
 }

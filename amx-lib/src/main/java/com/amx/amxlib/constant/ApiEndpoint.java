@@ -52,6 +52,7 @@ public class ApiEndpoint {
 		public static final String API_PREFIX = "/prefix/";
 		public static final String SERVICE_GROUP = "/service-group/";
 		public static final String API_BRANCH_DETAIL = "/branchdetail/";
+		public static final String API_BRANCH_SYSTEM_INV_LIST = "/branchsysteminventory/list/";
 		public static final String META_PARAMETER = "/meta-parameter/";
 		public static final String CURRENCY_BENE_SERVICE = "/currency/beneservice/";
 		public static final String API_ONLINE_CONFIG = "/onlineconfig/";

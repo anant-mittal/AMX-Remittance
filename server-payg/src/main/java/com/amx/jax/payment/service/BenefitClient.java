@@ -206,9 +206,19 @@ public class BenefitClient extends TransactionModel<PaymentResponseDto> implemen
 		if ("CAPTURED".equalsIgnoreCase(gatewayResponse.getResult())) {
 			gatewayResponse.setPayGStatus(PayGStatus.CAPTURED);
 			// Capturing JAX Response
-			gatewayResponse.setCollectionFinYear(resdto.getCollectionFinanceYear().toString());
-			gatewayResponse.setCollectionDocCode(resdto.getCollectionDocumentCode().toString());
-			gatewayResponse.setCollectionDocNumber(resdto.getCollectionDocumentNumber().toString());
+
+			if (resdto.getCollectionFinanceYear() != null) {
+				gatewayResponse.setCollectionFinYear(resdto.getCollectionFinanceYear().toString());
+			}
+
+			if (resdto.getCollectionDocumentCode() != null) {
+				gatewayResponse.setCollectionDocCode(resdto.getCollectionDocumentCode().toString());
+			}
+
+			if (resdto.getCollectionDocumentNumber() != null) {
+				gatewayResponse.setCollectionDocNumber(resdto.getCollectionDocumentNumber().toString());
+			}
+
 		} else if ("CANCELED".equalsIgnoreCase(gatewayResponse.getResult())) {
 			gatewayResponse.setPayGStatus(PayGStatus.CANCELLED);
 		} else if ("NOT CAPTURED".equalsIgnoreCase(gatewayResponse.getResult())) {

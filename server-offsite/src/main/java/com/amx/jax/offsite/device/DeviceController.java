@@ -10,12 +10,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.amx.jax.adapter.ICardService;
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.DeviceClient;
 import com.amx.jax.client.IDeviceService;
-import com.amx.jax.device.CardData;
-import com.amx.jax.device.CardReader;
+import com.amx.jax.client.MetaClient;
 import com.amx.jax.device.DeviceConstants;
 import com.amx.jax.device.DeviceRestModels;
 import com.amx.jax.device.DeviceRestModels.DevicePairingCreds;
@@ -25,9 +24,9 @@ import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.model.request.DeviceRegistrationRequest;
+import com.amx.jax.model.response.BranchSystemDetailDto;
 import com.amx.jax.model.response.DeviceDto;
 import com.amx.jax.model.response.DevicePairOtpResponse;
-import com.amx.jax.model.response.DeviceStatusInfoDto;
 import com.amx.jax.offsite.OffsiteStatus.ApiOffisteStatus;
 import com.amx.jax.offsite.OffsiteStatus.OffsiteServerCodes;
 import com.amx.jax.offsite.device.DeviceConfigs.DeviceData;
@@ -48,6 +47,9 @@ public class DeviceController {
 	private DeviceClient deviceClient;
 
 	@Autowired
+	private MetaClient metaClient;
+
+	@Autowired
 	private CommonHttpRequest commonHttpRequest;
 
 	@Autowired
@@ -56,8 +58,10 @@ public class DeviceController {
 	@Autowired
 	private SSOTranx sSOTranx;
 
-	@Autowired
-	private ICardService iCardService;
+	@RequestMapping(value = { DeviceConstants.Path.DEVICE_TERMINALS }, method = { RequestMethod.GET })
+	public AmxApiResponse<BranchSystemDetailDto, Object> getTerminals() {
+		return metaClient.listBranchSystemInventory();
+	}
 
 	@ApiOffisteStatus({ OffsiteServerCodes.CLIENT_UNKNOWN })
 	@RequestMapping(value = { DeviceConstants.Path.DEVICE_PAIR }, method = { RequestMethod.POST })
@@ -83,59 +87,50 @@ public class DeviceController {
 		return AmxApiResponse.build(creds);
 	}
 
+	@ApiOffisteStatus({ OffsiteServerCodes.CLIENT_UNKNOWN })
+	@RequestMapping(value = { DeviceConstants.Path.DEVICE_ACTIVATE }, method = { RequestMethod.POST })
+	public AmxApiResponse<BoolRespModel, Object> activateDevice(
+			@RequestParam Integer deviceRegId,
+			@RequestParam ClientType deviceType, @RequestParam(required = false) String mOtp) {
+		deviceRequestValidator.updateStamp(deviceRegId);
+		return deviceClient.activateDevice(deviceRegId, mOtp);
+	}
+
 	@ApiDeviceHeaders
 	@ApiOffisteStatus({ OffsiteServerCodes.CLIENT_UNKNOWN })
-	@RequestMapping(value = { DeviceConstants.Path.SESSION_PAIR }, method = { RequestMethod.GET })
+	@RequestMapping(value = { DeviceConstants.Path.SESSION_CREATE }, method = { RequestMethod.GET })
 	public AmxApiResponse<SessionPairingCreds, Object> sendOtpForPairing() {
 
 		deviceRequestValidator.validateDevice();
 
-		String deviceRegKey = deviceRequestValidator.getDeviceRegId();
+		String deviceRegId = deviceRequestValidator.getDeviceRegId();
 		String deviceRegToken = deviceRequestValidator.getDeviceRegToken();
 
-		DevicePairOtpResponse resp = deviceClient
-				.sendOtpForPairing(ArgUtil.parseAsInteger(deviceRegKey), deviceRegToken).getResult();
+		DevicePairOtpResponse resp = deviceClient.sendOtpForPairing(ArgUtil.parseAsInteger(deviceRegId), deviceRegToken)
+				.getResult();
 		SessionPairingCreds creds = deviceRequestValidator.createSession(resp.getSessionPairToken(), resp.getOtp(),
 				resp.getTermialId());
-		return AmxApiResponse.build(creds);
+		return AmxApiResponse.build(creds, resp.getTermialId());
 	}
 
-	@RequestMapping(value = { DeviceConstants.Path.TERMINAL_PAIRING }, method = { RequestMethod.GET })
+	@RequestMapping(value = DeviceConstants.Path.SESSION_PAIR, method = RequestMethod.POST)
+	public AmxApiResponse<DevicePairOtpResponse, BoolRespModel> validateOtpForPairing(
+			@RequestParam ClientType deviceType,
+			@RequestParam Integer terminalId, @RequestParam(required = false) String mOtp) {
+		AmxApiResponse<DevicePairOtpResponse, BoolRespModel> resp = deviceClient.validateOtpForPairing(
+				deviceType, terminalId,
+				mOtp);
+		deviceRequestValidator.updateStamp(resp.getResult().getDeviceRegId());
+		return resp;
+	}
+
+	@RequestMapping(value = { DeviceConstants.Path.SESSION_TERMINAL }, method = { RequestMethod.GET })
 	public AmxApiResponse<SessionPairingCreds, Object> webAppLogin() {
 		DeviceData deviceData = deviceRequestValidator.validateRequest();
 		String terminalId = deviceData.getTerminalId();
 		sSOTranx.get().setTerminalId(terminalId);
 		sSOTranx.save();
 		return AmxApiResponse.build();
-	}
-
-	@ApiDeviceHeaders
-	@RequestMapping(value = { DeviceConstants.Path.DEVICE_STATUS_ACTIVITY }, method = { RequestMethod.GET })
-	public AmxApiResponse<DeviceStatusInfoDto, Object> getStatus() {
-		deviceRequestValidator.validateRequest();
-		return deviceClient.getStatus(ArgUtil.parseAsInteger(deviceRequestValidator.getDeviceRegId()),
-				deviceRequestValidator.getDeviceRegToken(), deviceRequestValidator.getDeviceSessionToken());
-	}
-
-	@ApiDeviceHeaders
-	@RequestMapping(value = { DeviceConstants.Path.DEVICE_STATUS_CARD }, method = { RequestMethod.POST })
-	public AmxApiResponse<CardData, Object> saveCardDetails(@RequestBody CardReader reader) {
-		DeviceData deviceData = deviceRequestValidator.validateRequest();
-		iCardService.saveCardDetailsByTerminal(deviceData.getTerminalId(), reader.getData());
-		return AmxApiResponse.build(reader.getData());
-	}
-
-	@RequestMapping(value = { DeviceConstants.Path.DEVICE_STATUS_CARD }, method = { RequestMethod.GET })
-	public AmxApiResponse<CardData, Object> getCardDetails(
-			@RequestParam(value = DeviceConstants.Params.PARAM_SYSTEM_ID) String systemid,
-			@RequestParam(required = false) Boolean wait, @RequestParam(required = false) Boolean flush)
-			throws InterruptedException {
-		wait = ArgUtil.parseAsBoolean(wait, Boolean.FALSE);
-		flush = ArgUtil.parseAsBoolean(flush, Boolean.FALSE);
-
-		CardData data = iCardService.getCardDetailsByTerminal(systemid, wait, flush);
-
-		return AmxApiResponse.build(data);
 	}
 
 }

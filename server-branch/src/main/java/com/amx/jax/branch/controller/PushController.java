@@ -22,7 +22,6 @@ import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.jax.task.events.PromoNotifyTask;
-import com.amx.jax.tunnel.TunnelService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;

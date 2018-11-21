@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -61,7 +60,7 @@ public Date getMidnightToday() {
 	return date.getTime();
 }
 
-public void validateTokenDate(Employee employeeDetails) {
+public void validateTokenDate(Employee employeeDetails) {/*
 
 	long otpValidTimeInMins = otpSettings.getOtpValidityTime().longValue();
 	Date tokenDate = employeeDetails.getTokenDate();
@@ -72,12 +71,12 @@ public void validateTokenDate(Employee employeeDetails) {
 			throw new GlobalException("Otp has been expired", JaxError.OTP_EXPIRED.getStatusKey());
 		}
 	}
-}
+*/}
 
-public void validateTokenSentCount(Employee employeeDetails) {
+public void validateTokenSentCount(Employee employeeDetails) {/*
 
 	Integer limit = otpSettings.getMaxSendOtpAttempts();
 	if (employeeDetails.getTokenSentCount() != null && employeeDetails.getTokenSentCount().intValue() >= limit) {
 		throw new GlobalException("Limit to send otp exceeded", JaxError.SEND_OTP_LIMIT_EXCEEDED.getStatusKey());
 	}
-}}
+*/}}

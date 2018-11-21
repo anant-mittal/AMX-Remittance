@@ -4,11 +4,14 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 
+import com.amx.jax.api.AmxResponseSchemes.ApiMetaResponse;
+import com.amx.jax.exception.ApiHttpExceptions.ApiStatusCodes;
 import com.amx.jax.exception.IExceptionEnum;
+import com.amx.jax.swagger.ApiMockModelProperty;
 import com.amx.utils.ArgUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public abstract class AResponse<M> {
+public abstract class AResponse<M> implements ApiMetaResponse<M> {
 
 	protected Long timestamp;
 
@@ -17,7 +20,11 @@ public abstract class AResponse<M> {
 	protected String error; // Bad Request
 	protected String exception; // org.springframework.http.converter.HttpMessageNotReadableException
 	protected String message;// JSON parse error
-	protected String path; // postman/email/send
+
+	@ApiMockModelProperty(example = "/postman/email/send")
+	protected String path;
+
+	@ApiMockModelProperty(example = "/go/to/some/other/url.html")
 	protected String redirectUrl;
 
 	public String getRedirectUrl() {
@@ -31,7 +38,7 @@ public abstract class AResponse<M> {
 	protected String messageKey;
 
 	/** The status key. */
-	protected String statusKey = "SUCCESS";
+	protected String statusKey = ApiStatusCodes.SUCCESS.toString();
 
 	// Amx Specs
 	protected M meta;
@@ -47,6 +54,7 @@ public abstract class AResponse<M> {
 	 *
 	 * @return the timestamp
 	 */
+	@Override
 	public Long getTimestamp() {
 		return timestamp;
 	}
@@ -56,6 +64,7 @@ public abstract class AResponse<M> {
 	 *
 	 * @param timestamp the new timestamp
 	 */
+	@Override
 	public void setTimestamp(Long timestamp) {
 		this.timestamp = timestamp;
 	}
@@ -65,6 +74,7 @@ public abstract class AResponse<M> {
 	 * 
 	 * @return
 	 */
+	@Override
 	public String getStatus() {
 		return status;
 	}
@@ -74,6 +84,7 @@ public abstract class AResponse<M> {
 	 * 
 	 * @param status
 	 */
+	@Override
 	public void setStatus(String status) {
 		this.status = status;
 	}
@@ -91,6 +102,7 @@ public abstract class AResponse<M> {
 	 *
 	 * @return the status key
 	 */
+	@Override
 	public String getStatusKey() {
 		return statusKey;
 	}
@@ -100,7 +112,9 @@ public abstract class AResponse<M> {
 	 *
 	 * @param statusKey the new status key
 	 */
+	@Override
 	public void setStatusKey(String statusKey) {
+		// this.setStatusEnum(ApiStatusCodes.NO_STATUS);
 		this.statusKey = statusKey;
 	}
 
@@ -160,6 +174,7 @@ public abstract class AResponse<M> {
 	 * 
 	 * @return
 	 */
+	@Override
 	public String getMessage() {
 		return message;
 	}
@@ -169,6 +184,7 @@ public abstract class AResponse<M> {
 	 * 
 	 * @param message
 	 */
+	@Override
 	public void setMessage(String message) {
 		this.message = message;
 	}
@@ -191,10 +207,12 @@ public abstract class AResponse<M> {
 		this.path = path;
 	}
 
+	@Override
 	public M getMeta() {
 		return meta;
 	}
 
+	@Override
 	public void setMeta(M meta) {
 		this.meta = meta;
 	}
@@ -217,10 +235,12 @@ public abstract class AResponse<M> {
 		this.errors = errors;
 	}
 
+	@Override
 	public String getMessageKey() {
 		return messageKey;
 	}
 
+	@Override
 	public void setMessageKey(String messageKey) {
 		this.messageKey = messageKey;
 	}

@@ -45,13 +45,26 @@ public class DeviceRequest {
 		return commonHttpRequest.get(DeviceConstants.Keys.CLIENT_REQ_TOKEN_XKEY);
 	}
 
+	public DeviceData getDeviceData() {
+		DeviceData deviceData = deviceBox.get(this.getDeviceRegId());
+		if (deviceData == null) {
+			return deviceBox.put(this.getDeviceRegId(), new DeviceData());
+		}
+		return deviceData;
+	}
+
+	public void save() {
+		DeviceData deviceData = deviceBox.get(this.getDeviceRegId());
+		deviceBox.put(this.getDeviceRegId(), deviceData);
+	}
+
 	public DevicePairingCreds validateDevice() {
-		String deviceRegKey = getDeviceRegId();
+		String deviceRegId = getDeviceRegId();
 		String deviceRegToken = getDeviceRegToken();
-		if (ArgUtil.isEmpty(deviceRegKey) || ArgUtil.isEmpty(deviceRegToken)) {
+		if (ArgUtil.isEmpty(deviceRegId) || ArgUtil.isEmpty(deviceRegToken)) {
 			throw new OffsiteServerError(OffsiteServerCodes.CLIENT_CREDS_MISSING);
 		}
-		return DeviceRestModels.getDevicePairingCreds(deviceRegKey, deviceRegToken);
+		return DeviceRestModels.getDevicePairingCreds(deviceRegId, deviceRegToken);
 	}
 
 	public DeviceData validateSession() {
@@ -84,6 +97,10 @@ public class DeviceRequest {
 		}
 		return deviceData;
 	}
+	
+	public void updateStamp(Object deviceRegId) {
+		deviceBox.updateStamp(deviceRegId);
+	}
 
 	public SessionPairingCreds createSession(String sessionPairToken, String sessionOtp, String terminalId) {
 
@@ -97,6 +114,7 @@ public class DeviceRequest {
 		// Generate and Save Encrypted version of SessionPairing Key
 		deviceData
 				.setSessionPairingTokenX(DeviceConstants.generateSessionPairingTokenX(deviceRegKey, sessionPairToken));
+		deviceData.setUpdatestamp(System.currentTimeMillis());
 		deviceBox.put(deviceRegKey, deviceData);
 		response.setHeader(DeviceConstants.Keys.DEVICE_REQ_KEY_XKEY, deviceData.getDeviceReqKey());
 

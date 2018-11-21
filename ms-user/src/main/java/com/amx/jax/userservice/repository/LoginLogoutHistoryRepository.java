@@ -15,4 +15,6 @@ public interface LoginLogoutHistoryRepository extends CrudRepository<LoginLogout
 
 	List<LoginLogoutHistory> findFirst2ByuserName(String userName, Sort sort);
 	
+	LoginLogoutHistory findFirstByuserNameAndLogoutTimeIsNotNull(String userName, Sort sort);
+	
 }

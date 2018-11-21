@@ -6,22 +6,24 @@ import com.amx.jax.model.response.IDeviceStateData;
 
 public class SignaturePadFCPurchaseSaleInfo implements IDeviceStateData {
 
-	@NotNull(message="Source of Funds may not be null")
+	private static final long serialVersionUID = 3747803007432987595L;
+
+	@NotNull(message = "Source of Funds may not be null")
 	private String sourceOfFunds;
-	
-	@NotNull(message="Purpose of Txn may not be null")
+
+	@NotNull(message = "Purpose of Txn may not be null")
 	private String purposeOfTxn;
-	
-	@NotNull(message="CCY and Amt may not be null")
+
+	@NotNull(message = "CCY and Amt may not be null")
 	private String ccyAndAmt;
-	
-	@NotNull(message="Exchange Rate may not be null")
+
+	@NotNull(message = "Exchange Rate may not be null")
 	private String exchangeRate;
-	
-	@NotNull(message="Kd Amount may not be null")
+
+	@NotNull(message = "Kd Amount may not be null")
 	private String kdAmount;
-	
-	@NotNull(message="Total Amount may not be null")
+
+	@NotNull(message = "Total Amount may not be null")
 	private String totalAmount;
 
 	public String getSourceOfFunds() {

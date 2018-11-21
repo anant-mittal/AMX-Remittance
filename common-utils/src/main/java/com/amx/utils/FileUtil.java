@@ -16,8 +16,6 @@ import java.net.URL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-
 /**
  * The Class FileUtil.
  */
@@ -31,10 +29,10 @@ public final class FileUtil {
 
 	/** The Constant FILE_PREFIX. */
 	public static final String FILE_PREFIX = "file://";
-	
+
 	/** The Constant FILE_PREFIX2. */
 	public static final String FILE_PREFIX2 = "file:/";
-	
+
 	/** The Constant CLASSPATH_PREFIX. */
 	public static final String CLASSPATH_PREFIX = "classpath:";
 
@@ -48,8 +46,7 @@ public final class FileUtil {
 	/**
 	 * Read file.
 	 *
-	 * @param filename
-	 *            the filename
+	 * @param filename the filename
 	 * @return the string
 	 */
 	@SuppressWarnings(RESOURCE)
@@ -86,12 +83,9 @@ public final class FileUtil {
 	/**
 	 * Write the data into file.
 	 *
-	 * @param fileLocation
-	 *            Path of file
-	 * @param content
-	 *            Content
-	 * @throws IOException
-	 *             Signals that an I/O exception has occurred.
+	 * @param fileLocation Path of file
+	 * @param content      Content
+	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public static void saveToFile(String fileLocation, String content) throws IOException {
 		Writer output = null;
@@ -113,12 +107,9 @@ public final class FileUtil {
 	/**
 	 * Save to file.
 	 *
-	 * @param fileLocation
-	 *            the file location
-	 * @param content
-	 *            the content
-	 * @throws IOException
-	 *             Signals that an I/O exception has occurred.
+	 * @param fileLocation the file location
+	 * @param content      the content
+	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public static void saveToFile(String fileLocation, byte[] content) throws IOException {
 		BufferedOutputStream bos = null;
@@ -142,11 +133,36 @@ public final class FileUtil {
 		}
 	}
 
+	public static String read(URL url) {
+		StringBuilder sb = new StringBuilder();
+		InputStream in = null;
+		BufferedReader reader = null;
+
+		try {
+			in = url.openStream();
+			if (in == null) {
+				return null;
+			}
+			reader = new BufferedReader(new InputStreamReader(in));
+			String line = null;
+			while ((line = reader.readLine()) != null) {
+				sb.append(line).append('\n');
+			}
+
+		} catch (IOException e) {
+			LOG.error("cannot load  file " + url.toString(), e);
+		} finally {
+			CloseUtil.close(reader);
+			CloseUtil.close(in);
+		}
+		return sb.toString();
+	}
+
 	/**
 	 * Can be used to load file inside classpath ie: src/resources.
 	 *
 	 * @param filePath the file path
-	 * @param clazz the clazz
+	 * @param clazz    the clazz
 	 * @return the resource
 	 */
 	public static URL getResource(String filePath, Class<?> clazz) {
@@ -203,7 +219,7 @@ public final class FileUtil {
 	 * Gets the external resource.
 	 *
 	 * @param filePath the file path
-	 * @param clazz the clazz
+	 * @param clazz    the clazz
 	 * @return the external resource
 	 */
 	public static URL getExternalResource(String filePath, Class<?> clazz) {
@@ -241,7 +257,7 @@ public final class FileUtil {
 	 * Is used to load file relative to project or jar.
 	 *
 	 * @param filePath the file path
-	 * @param clazz the clazz
+	 * @param clazz    the clazz
 	 * @return the external file
 	 */
 	public static File getExternalFile(String filePath, Class<?> clazz) {
@@ -297,7 +313,7 @@ public final class FileUtil {
 	 * Gets the external resource as stream.
 	 *
 	 * @param filePath the file path
-	 * @param clazz the clazz
+	 * @param clazz    the clazz
 	 * @return the external resource as stream
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */

@@ -1,8 +1,6 @@
 package com.amx.jax.adapter;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.Base64;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
@@ -17,9 +15,11 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.device.CardData;
 import com.amx.jax.device.CardReader;
 import com.amx.jax.device.DeviceConstants;
+import com.amx.jax.device.DeviceMetaInfo;
 import com.amx.jax.device.DeviceRestModels;
 import com.amx.jax.device.DeviceRestModels.DevicePairingCreds;
 import com.amx.jax.device.DeviceRestModels.DevicePairingRequest;
+import com.amx.jax.device.DeviceRestModels.DeviceRestModel;
 import com.amx.jax.device.DeviceRestModels.NetAddress;
 import com.amx.jax.device.DeviceRestModels.SessionPairingCreds;
 import com.amx.jax.dict.UserClient.ClientType;
@@ -28,7 +28,6 @@ import com.amx.jax.exception.AmxException;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.rest.RestService;
 import com.amx.utils.ArgUtil;
-import com.amx.utils.JsonUtil;
 import com.amx.utils.TimeUtils;
 
 import net.east301.keyring.BackendNotSupportedException;
@@ -68,8 +67,17 @@ public abstract class ACardReaderService {
 
 	@Value("${jax.offsite.url}")
 	String serverUrl;
-	@Value("${device.terminal.id}")
+
+	// @Value("${device.terminal.id}")
 	String terminalId;
+
+	public String getTerminalId() {
+		return terminalId;
+	}
+
+	public void setTerminalId(String terminalId) {
+		this.terminalId = terminalId;
+	}
 
 	@Autowired
 	RestService restService;
@@ -110,57 +118,53 @@ public abstract class ACardReaderService {
 		synchronized (lock) {
 			Keyring keyring;
 			try {
-				keyring = Keyring.create();
+				keyring = KeyUtil.getKeyRing();
 			} catch (BackendNotSupportedException ex) {
 				SWAdapterGUI.CONTEXT.log(ex.getMessage());
 				LOGGER.error("pairing Exception", ex);
 				status(DeviceStatus.KEYRING_EXCEPTION);
 				return null;
+			} catch (IOException ex) {
+				status(DeviceStatus.KEYRING_FILE_EXCEPTION);
+				SWAdapterGUI.CONTEXT.log(ex.getMessage());
+				LOGGER.error("pairing Exception:IOException", ex);
+				return null;
 			}
 
-			if (keyring.isKeyStorePathRequired()) {
-				try {
-					File keyStoreFile = File.createTempFile("keystore", ".keystore");
-					keyring.setKeyStorePath(keyStoreFile.getPath());
-				} catch (IOException ex) {
-					status(DeviceStatus.KEYRING_FILE_EXCEPTION);
-					SWAdapterGUI.CONTEXT.log(ex.getMessage());
-					LOGGER.error("pairing Exception:IOException", ex);
-				}
-			}
-
-			if (devicePairingCredsValid) {
-				try {
-					String passwordEncd = keyring.getPassword("amx-adapter", terminalId);
-					byte[] terminalCredsByts = Base64.getDecoder().decode(passwordEncd);
-					String terminalCredsStrs = new String(terminalCredsByts);
-					DevicePairingCreds dpr = JsonUtil.fromJson(terminalCredsStrs, DevicePairingCreds.class);
+			try {
+				if (devicePairingCredsValid) {
+					DevicePairingCreds dpr = KeyUtil.getDevicePairingCreds();
 					if (!ArgUtil.isEmpty(dpr) && !ArgUtil.isEmpty(dpr.getDeviceRegId())) {
 						devicePairingCreds = dpr;
+						terminalId = devicePairingCreds.getDeivceTerminalId();
 						status(DeviceStatus.PAIRING_KEYS_FOUND);
 					} else {
 						devicePairingCredsValid = false;
 					}
-				} catch (LockException ex) {
-					SWAdapterGUI.CONTEXT.log(ex.getMessage());
-					status(DeviceStatus.PAIRING_KEYS_FOUND_ERROR);
-				} catch (PasswordRetrievalException ex) {
-					status(DeviceStatus.PAIRING_KEYS_NOT_FOUND);
-					SWAdapterGUI.CONTEXT.log(DeviceStatus.PAIRING_KEYS_NOT_FOUND.toString());
-				} catch (Exception e) {
-					status(DeviceStatus.PAIRING_KEYS_EXCEPTION);
-					SWAdapterGUI.CONTEXT.log(DeviceStatus.PAIRING_KEYS_EXCEPTION.toString());
-					LOGGER.error("pairing Exception", e);
-					devicePairingCredsValid = false;
 				}
+			} catch (LockException ex) {
+				SWAdapterGUI.CONTEXT.log(ex.getMessage());
+				status(DeviceStatus.PAIRING_KEYS_FOUND_ERROR);
+			} catch (PasswordRetrievalException ex) {
+				status(DeviceStatus.PAIRING_KEYS_NOT_FOUND);
+				SWAdapterGUI.CONTEXT.log(DeviceStatus.PAIRING_KEYS_NOT_FOUND.toString());
+			} catch (Exception e) {
+				status(DeviceStatus.PAIRING_KEYS_EXCEPTION);
+				SWAdapterGUI.CONTEXT.log(DeviceStatus.PAIRING_KEYS_EXCEPTION.toString());
+				LOGGER.error("pairing Exception", e);
+				devicePairingCredsValid = false;
 			}
 
 			if (ArgUtil.isEmpty(devicePairingCreds)) {
+				if (ArgUtil.isEmpty(terminalId)) {
+					return null;
+				}
 				DevicePairingRequest req = DeviceRestModels.get();
 				req.setDeivceTerminalId(terminalId);
 				req.setDeivceClientType(ClientType.BRANCH_ADAPTER);
 				try {
 					AmxApiResponse<DevicePairingCreds, Object> resp = restService.ajax(serverUrl)
+							.meta(new DeviceMetaInfo())
 							.path(DeviceConstants.Path.DEVICE_PAIR)
 							.header(AppConstants.DEVICE_ID_XKEY, address.getMac())
 							.header(AppConstants.DEVICE_IP_LOCAL_XKEY, address.getLocalIp()).post(req)
@@ -169,13 +173,13 @@ public abstract class ACardReaderService {
 					if (resp.getResults().size() > 0) {
 						DevicePairingCreds dpr = resp.getResult();
 						if (!ArgUtil.isEmpty(dpr) && !ArgUtil.isEmpty(dpr.getDeviceRegId())) {
+							dpr.setDeivceTerminalId(terminalId);
+							dpr.setDeivceClientType(ClientType.BRANCH_ADAPTER);
 							devicePairingCreds = dpr;
 							devicePairingCredsValid = true;
-							String terminalCredsStrs = JsonUtil.toJson(dpr);
-							String passwordEncd = Base64.getEncoder().encodeToString(terminalCredsStrs.getBytes());
 
 							try {
-								keyring.setPassword("amx-adapter", terminalId, passwordEncd);
+								KeyUtil.setDevicePairingCreds(dpr);
 								status(DeviceStatus.PAIRED);
 							} catch (LockException ex) {
 								status(DeviceStatus.PAIRING_KEY_SAVE_ERROR);
@@ -218,7 +222,9 @@ public abstract class ACardReaderService {
 
 		synchronized (lock) {
 			try {
-				sessionPairingCreds = restService.ajax(serverUrl).path(DeviceConstants.Path.SESSION_PAIR)
+				sessionPairingCreds = restService.ajax(serverUrl)
+						.meta(new DeviceMetaInfo())
+						.path(DeviceConstants.Path.SESSION_CREATE)
 						.header(AppConstants.DEVICE_ID_XKEY, address.getMac())
 						.header(AppConstants.DEVICE_IP_LOCAL_XKEY, address.getLocalIp())
 						.header(DeviceConstants.Keys.CLIENT_REG_KEY_XKEY, devicePairingCreds.getDeviceRegId())
@@ -229,8 +235,11 @@ public abstract class ACardReaderService {
 			} catch (AmxApiException e) {
 				status(DeviceStatus.SESSION_ERROR);
 				SWAdapterGUI.CONTEXT.log(e.getErrorKey() + " - REGID : " + devicePairingCreds.getDeviceRegId());
-				if ("CLIENT_INVALID_PAIR_TOKEN".equals(devicePairingCreds.getDeviceRegId())) {
+				if ("CLIENT_INVALID_PAIR_TOKEN".equals(e.getErrorKey())) {
 					devicePairingCredsValid = false;
+				} else if ("CLIENT_NOT_FOUND".equals(e.getErrorKey())) {
+					devicePairingCredsValid = false;
+					terminalId = null;
 				}
 			} catch (AmxException e) {
 				status(DeviceStatus.SESSION_ERROR);
@@ -238,14 +247,27 @@ public abstract class ACardReaderService {
 			} catch (Exception e) {
 				status(DeviceStatus.SESSION_ERROR);
 				SWAdapterGUI.CONTEXT.log("CLIENT ERROR : " + e.getMessage());
+				LOGGER.error("getSessionPairingCreds", e);
 			}
 
+			if (!devicePairingCredsValid) {
+				devicePairingCreds = null;
+			}
 		}
 
 		return sessionPairingCreds;
 	}
 
-	@Scheduled(fixedDelay = 1000)
+	public void resetTerminalPairing()
+			throws BackendNotSupportedException, LockException, PasswordSaveException, IOException {
+		KeyUtil.getKeyRing();
+		KeyUtil.setDevicePairingCreds(new DeviceRestModel());
+		devicePairingCreds = null;
+		sessionPairingCreds = null;
+		terminalId = null;
+	}
+
+	@Scheduled(fixedDelay = 1000, initialDelay = 4000)
 	public void readTask() {
 		LOGGER.debug("ACardReaderService:readTask");
 		if (SWAdapterGUI.CONTEXT == null) {
@@ -261,15 +283,19 @@ public abstract class ACardReaderService {
 				LOGGER.debug("ACardReaderService:readTask:TIME");
 				lastreadtime = reader.getCardActiveTime();
 				status(DataStatus.SYNCING);
-				restService.ajax(serverUrl).path(DeviceConstants.Path.DEVICE_STATUS_CARD)
+				restService.ajax(serverUrl)
+						.meta(new DeviceMetaInfo())
+						.path(DeviceConstants.Path.DEVICE_STATUS_CARD)
 						.pathParam(DeviceConstants.Params.PARAM_SYSTEM_ID, terminalId)
 						.header(AppConstants.DEVICE_ID_XKEY, address.getMac())
 						.header(AppConstants.DEVICE_IP_LOCAL_XKEY, address.getLocalIp())
 						.header(DeviceConstants.Keys.CLIENT_REG_KEY_XKEY, devicePairingCreds.getDeviceRegId())
 						.header(DeviceConstants.Keys.CLIENT_REG_TOKEN_XKEY, devicePairingCreds.getDeviceRegToken())
-						.header(DeviceConstants.Keys.CLIENT_SESSION_TOKEN_XKEY,
+						.header(
+								DeviceConstants.Keys.CLIENT_SESSION_TOKEN_XKEY,
 								sessionPairingCreds.getDeviceSessionToken())
-						.header(DeviceConstants.Keys.CLIENT_REQ_TOKEN_XKEY,
+						.header(
+								DeviceConstants.Keys.CLIENT_REQ_TOKEN_XKEY,
 								DeviceConstants.generateDeviceReqToken(sessionPairingCreds, devicePairingCreds))
 						.post(reader).asObject();
 				status(DataStatus.SYNCED);
@@ -286,9 +312,8 @@ public abstract class ACardReaderService {
 		}
 	}
 
-	@Scheduled(fixedDelay = 2000, initialDelay = 1000)
+	@Scheduled(fixedDelay = 2000, initialDelay = 5000)
 	public void pingTask() {
-		SWAdapterGUI.CONTEXT.updateDeviceHealthStatus(1);// PING COUNT
 		LOGGER.debug("ACardReaderService:pingTask");
 		if (SWAdapterGUI.CONTEXT == null || CONTEXT == null) {
 			CONTEXT = this;
@@ -373,7 +398,7 @@ public abstract class ACardReaderService {
 		LOGGER.debug("KWTCardReader:clear:END");
 	}
 
-	private void reset() {
+	public void reset() {
 		LOGGER.debug("KWTCardReader:reset");
 		deviceStatus = DeviceStatus.DISCONNECTED;
 	}

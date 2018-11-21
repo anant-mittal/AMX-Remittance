@@ -61,11 +61,7 @@
 	</dependencyManagement>
 
 	<dependencies>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
-		</dependency>
+
 	</dependencies>
 
 
@@ -119,8 +115,8 @@
 		<!-- <module>server-stomp</module> -->
 
 		<module>sw-adapter</module>
-		<module>server-admin</module>
 		<module>server-branch</module>
+		<module>test-size</module>
 		<!-- <module>server-kiosk</module> -->
 		<!-- <module>server-sample</module> -->
 	</modules>

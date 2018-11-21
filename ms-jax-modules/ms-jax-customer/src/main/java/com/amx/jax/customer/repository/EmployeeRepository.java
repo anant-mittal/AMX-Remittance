@@ -17,4 +17,6 @@ public interface EmployeeRepository extends CrudRepository<Employee, BigDecimal>
 
 	Employee getEmployeeByCivilId(String civilId);
 
+	Employee findByEmployeeId(BigDecimal empoloyeeId);
+
 }

@@ -5,6 +5,8 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -17,6 +19,8 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.Proxy;
+
+import com.amx.jax.constants.CustomerRegistrationType;
 
 
 @Entity
@@ -132,10 +136,13 @@ public class Customer implements java.io.Serializable {
 	private String identityInt;
 	private BigDecimal identityFor;
 	private BigDecimal identityTypeId;
-	//private Date issueDate;
-	//private Date expiryDate;
+	private Date issueDate;
+	private Date expiryDate;
 	
 	private IncomeRangeMaster fsIncomeRangeMaster;
+	
+	/* Registration Type added */
+	private CustomerRegistrationType customerRegistrationType;
 	
 
 	public Customer() {
@@ -902,24 +909,14 @@ public class Customer implements java.io.Serializable {
 		this.fsIncomeRangeMaster = fsIncomeRangeMaster;
 	}
 
-	/*@Column(name = "ISSUE_DATE")
-	public Date getIssueDate() {
-		return issueDate;
+	@Column(name = "REGISTRATION_TYPE")
+	@Enumerated(value = EnumType.STRING)
+	public CustomerRegistrationType getCustomerRegistrationType() {
+		return customerRegistrationType;
 	}
 
-	public void setIssueDate(Date issueDate) {
-		this.issueDate = issueDate;
+	public void setCustomerRegistrationType(CustomerRegistrationType customerRegistrationType) {
+		this.customerRegistrationType = customerRegistrationType;
 	}
-
-	@Column(name = "EXPIRY_DATE")
-	public Date getExpiryDate() {
-		return expiryDate;
-	}
-
-	public void setExpiryDate(Date expiryDate) {
-		this.expiryDate = expiryDate;
-	}*/
-	
-	
 
 }

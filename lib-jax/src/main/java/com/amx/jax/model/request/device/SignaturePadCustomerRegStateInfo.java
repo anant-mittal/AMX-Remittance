@@ -8,6 +8,7 @@ import com.amx.jax.model.response.customer.CustomerIncomeRangeDto;
 
 public class SignaturePadCustomerRegStateInfo implements IDeviceStateData {
 
+	private static final long serialVersionUID = -5695388111152939970L;
 	CustomerContactDto customerContactDto;
 	CustomerDto customerDto;
 	CustomerIdProofDto customerIdProofDto;

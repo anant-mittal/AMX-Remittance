@@ -136,7 +136,7 @@ public class FBPushServiceImpl implements IPushNotifyService {
 				String link = ArgUtil.parseAsString(map.get("url"));
 				if (!ArgUtil.isEmptyString(link)) {
 					msg.setLink(link);
-					map.remove("url");
+					//map.remove("url");
 				}
 
 			}

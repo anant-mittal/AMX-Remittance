@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.bind.DatatypeConverter;
 
 import org.slf4j.Logger;
 
@@ -21,10 +22,19 @@ public class File {
 	private static Logger LOGGER = LoggerService.getLogger(File.class);
 
 	public enum Type {
-		PDF("application/pdf"), CSV("text/csv"), PNG("image/png"), JSON("application/json"), HTML("text/html"), TEXT(
-				"text/plain");
+		PDF("application/pdf"), CSV("text/csv"),
+
+		PNG("image/png"), JPEG("image/jpeg"), JPG("image/jpg"),
+
+		JSON("application/json"), HTML("text/html"), TEXT(
+				"text/plain"
+		);
 
 		String contentType;
+
+		public String getContentType() {
+			return contentType;
+		}
 
 		Type(String contentType) {
 			this.contentType = contentType;
@@ -151,6 +161,12 @@ public class File {
 		response.setHeader("Cache-Control", "cache, must-revalidate");
 		if (this.type == Type.PDF) {
 			response.addHeader("Content-type", "application/pdf");
+		} else if (this.type == Type.PNG) {
+			response.addHeader("Content-type", "application/pdf");
+		} else if (this.type == Type.JPEG) {
+			response.addHeader("Content-type", "application/jpeg");
+		} else if (this.type == Type.JPG) {
+			response.addHeader("Content-type", "application/jpg");
 		}
 		if (download) {
 			response.addHeader("Content-Disposition", "attachment; filename=" + getName());
@@ -179,6 +195,37 @@ public class File {
 	@SuppressWarnings("unchecked")
 	public Map<String, Object> toMap() {
 		return JsonUtil.fromJson(this.content, Map.class);
+	}
+
+	public static File fromBase64(String base64String) {
+		return fromBase64(base64String, Type.TEXT);
+	}
+
+	public static File fromBase64(String base64String, Type defaultType) {
+		String[] strings = base64String.split(",");
+		Type extension;
+		String dataPart;
+		if (strings.length > 1) {
+			dataPart = strings[1];
+			switch (strings[0]) {// check image's extension
+			case "data:image/jpeg;base64":
+				extension = Type.JPEG;
+				break;
+			case "data:image/png;base64":
+				extension = Type.PNG;
+				break;
+			default:// should write cases for more images types
+				extension = Type.JPG;
+				break;
+			}
+		} else {
+			extension = defaultType;
+			dataPart = strings[0];
+		}
+		File file = new File();
+		file.setType(extension);
+		file.setBody(DatatypeConverter.parseBase64Binary(dataPart));
+		return file;
 	}
 
 }

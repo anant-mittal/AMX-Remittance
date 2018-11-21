@@ -18,6 +18,7 @@ import com.amx.amxlib.meta.model.BankBranchDto;
 import com.amx.amxlib.meta.model.BankMasterDTO;
 import com.amx.amxlib.meta.model.BranchDetailDTO;
 import com.amx.amxlib.meta.model.CountryMasterDTO;
+import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.meta.model.JaxMetaParameter;
 import com.amx.amxlib.meta.model.PrefixDTO;
 import com.amx.amxlib.meta.model.ServiceGroupMasterDescDto;
@@ -29,6 +30,7 @@ import com.amx.amxlib.model.OnlineConfigurationDto;
 import com.amx.amxlib.model.request.GetBankBranchRequest;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.configs.JaxMetaInfo;
+import com.amx.jax.model.response.BranchSystemDetailDto;
 import com.amx.jax.model.response.CurrencyMasterDTO;
 
 @RunWith(SpringRunner.class)
@@ -200,9 +202,10 @@ public class MetaClientTest extends AbstractTestClient {
 		assertNotNull(response.getResults());
 	}
 
-	// @Test
+	@Test
 	public void testGetAllBranchDetail() {
-		setDefaults();
+		//setDefaults();
+		setBahrainDefaults();
 		AmxApiResponse<BranchDetailDTO, Object> response = null;
 		response = metaclient.getAllBranchDetail();
 		assertNotNull("Response is null", response);
@@ -210,6 +213,15 @@ public class MetaClientTest extends AbstractTestClient {
 	}
 
 	@Test
+	public void testlistBranchSystemInventory() {
+		setDefaults();
+		AmxApiResponse<BranchSystemDetailDto, Object> response = null;
+		response = metaclient.listBranchSystemInventory();
+		assertNotNull("Response is null", response);
+		assertNotNull(response.getResults());
+	}
+	
+	//@Test
 	public void testGetCountryListResponse() {
 		setDefaults();
 		AmxApiResponse<ApplicationSetupDTO, Object> response = null;

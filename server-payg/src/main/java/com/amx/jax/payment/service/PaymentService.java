@@ -15,9 +15,10 @@ import com.amx.jax.exception.AmxApiException;
 import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.payment.gateway.PayGConfig;
 import com.amx.jax.payment.gateway.PayGResponse;
-import com.amx.jax.rest.RestMetaInfo;
+import com.amx.jax.rest.RequestMetaInfo;
 import com.amx.jax.rest.RestService;
 import com.amx.jax.scope.TenantContextHolder;
+import com.amx.utils.ArgUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
@@ -66,7 +67,7 @@ public class PaymentService {
 	public AmxApiResponse<PaymentResponseDto, Object> saveRemittanceTransaction(PaymentResponseDto paymentResponseDto)
 			throws Exception {
 		try {
-			RestMetaInfo metaInfo = new RestMetaInfo();
+			RequestMetaInfo metaInfo = new RequestMetaInfo();
 			HttpHeaders headers = new HttpHeaders();
 			metaInfo.setTenant(TenantContextHolder.currentSite());
 			metaInfo.setCountryId(paymentResponseDto.getApplicationCountryId());
@@ -99,6 +100,13 @@ public class PaymentService {
 		paymentResponseDto.setTransactionId(payGServiceResponse.getTranxId());
 		paymentResponseDto.setResultCode(payGServiceResponse.getResult());
 		paymentResponseDto.setPostDate(payGServiceResponse.getPostDate());
+
+		paymentResponseDto
+				.setCollectionFinanceYear(ArgUtil.parseAsBigDecimal(payGServiceResponse.getCollectionFinYear()));
+		paymentResponseDto
+				.setCollectionDocumentCode(ArgUtil.parseAsBigDecimal(payGServiceResponse.getCollectionDocCode()));
+		paymentResponseDto
+				.setCollectionDocumentNumber(ArgUtil.parseAsBigDecimal(payGServiceResponse.getCollectionDocNumber()));
 
 		if (payGServiceResponse.getTrackId() != null) {
 			paymentResponseDto.setCustomerId(new BigDecimal(payGServiceResponse.getTrackId()));

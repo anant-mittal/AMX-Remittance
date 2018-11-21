@@ -296,7 +296,7 @@ public class MetaController {
 	 *
 	 * @return the exchange branches
 	 */
-	@CacheForTenant
+	//@CacheForTenant
 	@RequestMapping(value = { "/pub/meta/branch/list" }, method = { RequestMethod.GET })
 	public ResponseWrapper<List<BranchDetailDTO>> getExchangeBranches() {
 		return new ResponseWrapper<List<BranchDetailDTO>>(

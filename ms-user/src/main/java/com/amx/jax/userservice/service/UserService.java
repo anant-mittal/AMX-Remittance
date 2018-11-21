@@ -680,6 +680,15 @@ public class UserService extends AbstractUserService {
 		}
 		return output;
 	}
+	
+	public LoginLogoutHistory getLastLogoutHistoryByUserName(String userName) {
+
+		Sort sort = new Sort(Direction.DESC, "logoutTime");
+		LoginLogoutHistory loginLogoutHistory = loginLogoutHistoryRepositoryRepo
+				.findFirstByuserNameAndLogoutTimeIsNotNull(userName, sort);
+
+		return loginLogoutHistory;
+	}
 
 	protected void saveLoginLogoutHistoryByUserName(String userName) {
 		LoginLogoutHistory output = new LoginLogoutHistory();

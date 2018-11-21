@@ -10,7 +10,7 @@ import org.apache.log4j.MDC;
 import org.springframework.http.HttpHeaders;
 
 import com.amx.jax.dict.Tenant;
-import com.amx.jax.filter.RequestType;
+import com.amx.jax.http.RequestType;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.ContextUtil;
