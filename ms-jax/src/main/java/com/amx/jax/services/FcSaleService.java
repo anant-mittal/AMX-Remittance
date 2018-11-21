@@ -117,10 +117,11 @@ public class FcSaleService extends AbstractService {
 
 	/**
 	 * 
-	 * @param country Id,country branch id ,currency id
+	 * @param applicationCountryId
+	 * @param countryBranchId
+	 * @param fxCurrencyId
 	 * @return
 	 */
-
 	public AmxApiResponse<FxExchangeRateDto, Object> getFcSaleExchangeRate(BigDecimal applicationCountryId,
 			BigDecimal countryBranchId,
 			BigDecimal fxCurrencyId) {

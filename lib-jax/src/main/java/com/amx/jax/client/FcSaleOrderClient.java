@@ -62,7 +62,6 @@ public class FcSaleOrderClient implements IFxOrderService {
 	 * 
 	 * @return :to get all the FC Sale currency
 	 */
-
 	@Override
 	public AmxApiResponse<CurrencyMasterDTO, Object> getFcCurrencyList() {
 		try {
@@ -82,7 +81,6 @@ public class FcSaleOrderClient implements IFxOrderService {
 	 * @return : fccurrency rate
 	 * 
 	 */
-
 	@Override
 	public AmxApiResponse<FxExchangeRateDto, Object> getFcXRate(BigDecimal fxCurrencyId) {
 		try {
@@ -99,11 +97,8 @@ public class FcSaleOrderClient implements IFxOrderService {
 	}
 
 	/**
-	 * 
-	 * @return : to get the exchange rate
-	 * 
+	 * {@inheritDoc}
 	 */
-
 	@Override
 	public AmxApiResponse<FcSaleOrderApplicationResponseModel, Object> calculateXRate(BigDecimal fxCurrencyId,
 			BigDecimal fcAmount) {
@@ -121,6 +116,10 @@ public class FcSaleOrderClient implements IFxOrderService {
 
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * 
+	 */
 	@Override
 	public AmxApiResponse<FcSaleOrderDefaultResponseModel, Object> getFcSaleDefaultApi() {
 		try {
@@ -138,7 +137,7 @@ public class FcSaleOrderClient implements IFxOrderService {
 
 	@Override
 	public AmxApiResponse<FcSaleOrderApplicationResponseModel, Object> getSaveApplication(
-			FcSaleOrderTransactionRequestModel requestModel) throws Exception {
+			FcSaleOrderTransactionRequestModel requestModel) {
 		try {
 			LOGGER.debug(" Fc Sale create application :" + requestModel.toString());
 			return restService.ajax(appConfig.getJaxURL() + Path.FCSALE_SAVE_APPLICATION).meta(new JaxMetaInfo())
@@ -172,7 +171,7 @@ public class FcSaleOrderClient implements IFxOrderService {
 	 **/
 	@Override
 	public AmxApiResponse<CustomerShippingAddressRequestModel, Object> saveFcSaleShippingAddress(
-			CustomerShippingAddressRequestModel requestModel) throws Exception {
+			CustomerShippingAddressRequestModel requestModel) {
 		try {
 			LOGGER.debug(" Fc Sale shipping address save :" + requestModel.toString());
 			return restService.ajax(appConfig.getJaxURL() + Path.FC_SAVE_SHIPPING_ADDR).meta(new JaxMetaInfo())
@@ -203,8 +202,7 @@ public class FcSaleOrderClient implements IFxOrderService {
 
 	/** @ Remove cart from list by passing application id **/
 	@Override
-	public AmxApiResponse<FcSaleOrderApplicationResponseModel, Object> removeItemFromCart(BigDecimal applicationId)
-			throws Exception {
+	public AmxApiResponse<FcSaleOrderApplicationResponseModel, Object> removeItemFromCart(BigDecimal applicationId) {
 		try {
 			LOGGER.debug(" Fc Sale create application :" + applicationId);
 			return restService.ajax(appConfig.getJaxURL() + Path.FC_SALE_REMOVE_ITEM).meta(new JaxMetaInfo())
@@ -236,7 +234,7 @@ public class FcSaleOrderClient implements IFxOrderService {
 
 	@Override
 	public AmxApiResponse<FcSaleApplPaymentReponseModel, Object> getSavePayNowApplication(
-			FcSaleOrderPaynowRequestModel requestModel) throws Exception {
+			FcSaleOrderPaynowRequestModel requestModel) {
 		try {
 			LOGGER.debug(" Fc Sale create application :" + requestModel.toString());
 			return restService.ajax(appConfig.getJaxURL() + Path.FCSALE_SAVE_PAYNOW).meta(new JaxMetaInfo())

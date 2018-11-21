@@ -1,9 +1,5 @@
 package com.amx.jax.controller;
 
-/**
- * @Author : Rabil
- * @date		: 03/11/2018
- */
 import static com.amx.amxlib.constant.ApiEndpoint.FC_SALE_ENDPOINT;
 
 import java.math.BigDecimal;
@@ -38,25 +34,29 @@ import com.amx.jax.service.TermsAndConditionService;
 import com.amx.jax.services.FcSaleService;
 import com.amx.jax.util.JaxContextUtil;
 
+/**
+ *
+ * @author : Rabil
+ * @date : 03/11/2018
+ */
 @RestController
 @RequestMapping(FC_SALE_ENDPOINT)
 public class FcSaleOrderController implements IFxOrderService {
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
-	
+
 	@Autowired
 	FcSaleService fcSaleService;
-	
+
 	@Autowired
 	MetaData metaData;
-	
+
 	@Autowired
 	TermsAndConditionService termsAndConditionService;
-	
 
-	
 	/**
-	 * @return : To get the fx purpose of trnx list
+	 * To get the fx purpose of trnx list
+	 * 
 	 */
 	@RequestMapping(value = Path.FC_PURPOSEOF_TRNX, method = RequestMethod.GET)
 	public AmxApiResponse<PurposeOfTransactionDto, Object> getFcPurposeofTrnx() {
@@ -91,11 +91,12 @@ public class FcSaleOrderController implements IFxOrderService {
 			@RequestParam(value = Params.FC_AMOUNT, required = true) BigDecimal fcAmount) {
 		BigDecimal applicationCountryId = metaData.getCountryId();
 		BigDecimal countryBranchId = metaData.getCountryBranchId();
-		return fcSaleService.getFCSaleLcAndFcAmount(applicationCountryId, countryBranchId, fxCurrencyId,fcAmount);
+		return fcSaleService.getFCSaleLcAndFcAmount(applicationCountryId, countryBranchId, fxCurrencyId, fcAmount);
 	}
 
-	/** to display the default api **/
-
+	/**
+	 * to display the default api
+	 */
 	@RequestMapping(value = Path.FC_SALE_DEFAULT, method = RequestMethod.GET)
 	public AmxApiResponse<FcSaleOrderDefaultResponseModel, Object> getFcSaleDefaultApi() {
 		BigDecimal applicationCountryId = metaData.getCountryId();
@@ -104,10 +105,12 @@ public class FcSaleOrderController implements IFxOrderService {
 		return fcSaleService.getDefaultFsSale(applicationCountryId, countryBranchId, languageId);
 	}
 
-	/** To save fc sale application **/
-
+	/**
+	 * To save fc sale application
+	 */
 	@RequestMapping(value = Path.FCSALE_SAVE_APPLICATION, method = RequestMethod.POST)
-	public AmxApiResponse<FcSaleOrderApplicationResponseModel, Object> getSaveApplication(@RequestBody @Valid FcSaleOrderTransactionRequestModel model) {
+	public AmxApiResponse<FcSaleOrderApplicationResponseModel, Object> getSaveApplication(
+			@RequestBody @Valid FcSaleOrderTransactionRequestModel model) {
 		JaxContextUtil.setJaxEvent(JaxEvent.CREATE_APPLICATION);
 		JaxContextUtil.setRequestModel(model);
 		logger.info("In Fc Sale Save-Application with parameters" + model.toString());
@@ -115,7 +118,8 @@ public class FcSaleOrderController implements IFxOrderService {
 	}
 
 	@RequestMapping(value = Path.FCSALE_SAVE_PAYNOW, method = RequestMethod.POST)
-	public AmxApiResponse<FcSaleApplPaymentReponseModel, Object> getSavePayNowApplication(@RequestBody @Valid FcSaleOrderPaynowRequestModel requestmodel) {
+	public AmxApiResponse<FcSaleApplPaymentReponseModel, Object> getSavePayNowApplication(
+			@RequestBody @Valid FcSaleOrderPaynowRequestModel requestmodel) {
 		JaxContextUtil.setJaxEvent(JaxEvent.CREATE_APPLICATION);
 		JaxContextUtil.setRequestModel(requestmodel);
 		logger.info("In Fc Sale Save-Application with parameters" + requestmodel.toString());
@@ -127,9 +131,10 @@ public class FcSaleOrderController implements IFxOrderService {
 	public AmxApiResponse<ShippingAddressDto, Object> getFcSaleAddress() {
 		return fcSaleService.fetchFcSaleAddress();
 	}
-	
 
-	/** Save shipping address */
+	/**
+	 * Save shipping address
+	 */
 	@RequestMapping(value = Path.FC_SAVE_SHIPPING_ADDR, method = RequestMethod.POST)
 	public AmxApiResponse<CustomerShippingAddressRequestModel, Object> saveFcSaleShippingAddress(
 			@RequestBody @Valid CustomerShippingAddressRequestModel requestModel) {
@@ -141,7 +146,8 @@ public class FcSaleOrderController implements IFxOrderService {
 	 * @ String date @ To fetch time slot for Fx order delviery
 	 */
 	@RequestMapping(value = Path.FC_SALE_TIME_SLOT, method = RequestMethod.GET)
-	public AmxApiResponse<String, Object> getTimeSlot(@RequestParam(value = Params.FXDATE2, required = true) String fxdate) {
+	public AmxApiResponse<String, Object> getTimeSlot(
+			@RequestParam(value = Params.FXDATE2, required = true) String fxdate) {
 		return fcSaleService.fetchTimeSlot(fxdate);
 	}
 
