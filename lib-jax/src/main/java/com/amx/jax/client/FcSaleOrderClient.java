@@ -14,14 +14,9 @@ import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
-
-
-
-
 import com.amx.jax.AppConfig;
-import com.amx.jax.IJaxService;
 import com.amx.jax.api.AmxApiResponse;
-import com.amx.jax.exception.AbstractJaxException;
+import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.exception.JaxSystemError;
 import com.amx.jax.model.request.CustomerShippingAddressRequestModel;
 import com.amx.jax.model.request.FcSaleOrderPaynowRequestModel;
@@ -36,253 +31,238 @@ import com.amx.jax.model.response.ShippingAddressDto;
 import com.amx.jax.model.response.ShoppingCartDetailsDto;
 import com.amx.jax.rest.RestService;
 
-
-
 @Component
-public class FcSaleOrderClient implements IJaxService{
-	
-	private static final String FC_SALE_ENDPOINT = "/fc/sale/";
-	private static final Logger LOGGER = Logger.getLogger(FcSaleOrderClient.class);
+public class FcSaleOrderClient implements IFxOrderService {
 
+	private static final Logger LOGGER = Logger.getLogger(FcSaleOrderClient.class);
 
 	@Autowired
 	RestService restService;
-	
+
 	@Autowired
 	AppConfig appConfig;
 
-	
 	/**
 	 * 
 	 * @return :to get the purpose of Trnx for FC Sale
 	 */
+	@Override
 	public AmxApiResponse<PurposeOfTransactionDto, Object> getFcPurposeofTrnx() {
 		try {
-			LOGGER.info("in getFcPurposeofTrnx :");
-			String url = appConfig.getJaxURL() +  FC_SALE_ENDPOINT + "/fc-purposeof-trnx/";
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			
-			return restService.ajax(url).get(requestEntity).as(new ParameterizedTypeReference<AmxApiResponse<PurposeOfTransactionDto, Object>>(){});
-		} catch (AbstractJaxException ae) {
-			throw ae;
+			LOGGER.debug("in getFcPurposeofTrnx :");
+			return restService.ajax(appConfig.getJaxURL() + Path.FC_PURPOSEOF_TRNX).get()
+					.as(new ParameterizedTypeReference<AmxApiResponse<PurposeOfTransactionDto, Object>>() {
+					});
 		} catch (Exception e) {
 			LOGGER.error("exception in getCurrencyByCountryId : ", e);
-			throw new JaxSystemError();
+			return JaxSystemError.evaluate(e);
 		} // end of try-catch
 
 	}
-	
+
 	/**
 	 * 
-	 * @return :to get all the  FC Sale currency 
+	 * @return :to get all the FC Sale currency
 	 */
-	
-	
+
+	@Override
 	public AmxApiResponse<CurrencyMasterDTO, Object> getFcCurrencyList() {
 		try {
-			LOGGER.info("in getFcPurposeofTrnx :");
-			String url = appConfig.getJaxURL()+ FC_SALE_ENDPOINT + "/fc-currency-list/";
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			return restService.ajax(url).get(requestEntity).as(new ParameterizedTypeReference<AmxApiResponse<CurrencyMasterDTO, Object>>(){});
-		} catch (AbstractJaxException ae) {
-			throw ae;
+			LOGGER.debug("in getFcPurposeofTrnx :");
+			return restService.ajax(appConfig.getJaxURL() + Path.FC_CURRENCY_LIST).meta(new JaxMetaInfo()).get()
+					.as(new ParameterizedTypeReference<AmxApiResponse<CurrencyMasterDTO, Object>>() {
+					});
 		} catch (Exception e) {
 			LOGGER.error("exception in getCurrencyByCountryId : ", e);
-			throw new JaxSystemError();
+			return JaxSystemError.evaluate(e);
 		} // end of try-catch
 
 	}
 
 	/**
 	 * 
-	 * @return : fccurrency  rate 
+	 * @return : fccurrency rate
 	 * 
 	 */
 
+	@Override
 	public AmxApiResponse<FxExchangeRateDto, Object> getFcXRate(BigDecimal fxCurrencyId) {
 		try {
-			LOGGER.info("in getFcXRate :"+fxCurrencyId);
-			String url = appConfig.getJaxURL()  + FC_SALE_ENDPOINT + "/fc-sale-xrate/" + fxCurrencyId;
+			LOGGER.debug("in getFcXRate :" + fxCurrencyId);
+			String url = appConfig.getJaxURL() + Path.FC_SALE_XRATE + fxCurrencyId;
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			return restService.ajax(url).get(requestEntity).as(new ParameterizedTypeReference<AmxApiResponse<FxExchangeRateDto, Object>>(){});
-		} catch (AbstractJaxException ae) {
-			throw ae;
+			return restService.ajax(url).meta(new JaxMetaInfo()).get(requestEntity)
+					.as(new ParameterizedTypeReference<AmxApiResponse<FxExchangeRateDto, Object>>() {
+					});
 		} catch (Exception e) {
 			LOGGER.error("exception in getCurrencyByCountryId : ", e);
-			throw new JaxSystemError();
+			return JaxSystemError.evaluate(e);
 		} // end of try-catch
 
 	}
-	
-	
-	
+
 	/**
 	 * 
 	 * @return : to get the exchange rate
 	 * 
 	 */
 
-	public AmxApiResponse<FxExchangeRateDto, Object> calculateXRate(BigDecimal fxCurrencyId,BigDecimal fcAmount) {
+	@Override
+	public AmxApiResponse<FxExchangeRateDto, Object> calculateXRate(BigDecimal fxCurrencyId, BigDecimal fcAmount) {
 		try {
-			LOGGER.info("in getFcXRate :"+fxCurrencyId+"\t fcAmount :"+fcAmount);
-			String url = appConfig.getJaxURL()  + FC_SALE_ENDPOINT + "/fc-sale-cal-xrate/";
+			LOGGER.debug("in getFcXRate :" + fxCurrencyId + "\t fcAmount :" + fcAmount);
+			String url = appConfig.getJaxURL() + Path.FC_SALE_CAL_XRATE;
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url).queryParam("fxCurrencyId", fxCurrencyId).queryParam("fcAmount", fcAmount);
-			return restService.ajax(url).get(requestEntity).as(new ParameterizedTypeReference<AmxApiResponse<FxExchangeRateDto, Object>>(){});
-		} catch (AbstractJaxException ae) {
-			throw ae;
+			UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url)
+					.queryParam("fxCurrencyId", fxCurrencyId).queryParam("fcAmount", fcAmount);
+			return restService.ajax(url).meta(new JaxMetaInfo()).get(requestEntity)
+					.as(new ParameterizedTypeReference<AmxApiResponse<FxExchangeRateDto, Object>>() {
+					});
 		} catch (Exception e) {
 			LOGGER.error("exception in getCurrencyByCountryId : ", e);
-			throw new JaxSystemError();
+			return JaxSystemError.evaluate(e);
 		} // end of try-catch
 
 	}
-	
+
+	@Override
 	public AmxApiResponse<FcSaleOrderDefaultResponseModel, Object> getFcSaleDefaultApi() {
 		try {
-			LOGGER.info("getFcSaleDefaultApi client :");
-			String url =appConfig.getJaxURL()  + FC_SALE_ENDPOINT + "/fc-sale-default/";
+			LOGGER.debug("getFcSaleDefaultApi client :");
+			String url = appConfig.getJaxURL() + Path.FC_SALE_DEFAULT;
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			return restService.ajax(url).get(requestEntity).as(new ParameterizedTypeReference<AmxApiResponse<FcSaleOrderDefaultResponseModel, Object>>(){});
-		} catch (AbstractJaxException ae) {
-			throw ae;
+			return restService.ajax(url).meta(new JaxMetaInfo()).get(requestEntity)
+					.as(new ParameterizedTypeReference<AmxApiResponse<FcSaleOrderDefaultResponseModel, Object>>() {
+					});
 		} catch (Exception e) {
 			LOGGER.error("exception in getCurrencyByCountryId : ", e);
-			throw new JaxSystemError();
+			return JaxSystemError.evaluate(e);
 		} // end of try-catch
 
 	}
-	
-	
-	public AmxApiResponse<FcSaleOrderApplicationResponseModel, Object> getSaveApplication(FcSaleOrderTransactionRequestModel requestModel) throws Exception {
+
+	@Override
+	public AmxApiResponse<FcSaleOrderApplicationResponseModel, Object> getSaveApplication(
+			FcSaleOrderTransactionRequestModel requestModel) throws Exception {
 		try {
-			LOGGER.info(" Fc Sale create application :" + requestModel.toString());
-			HttpEntity<FcSaleOrderTransactionRequestModel> requestEntity = new HttpEntity<FcSaleOrderTransactionRequestModel>(requestModel,getHeader());
-			String url = appConfig.getJaxURL()  + FC_SALE_ENDPOINT + "/fcsale-save-application/";
-			return restService.ajax(url).post(requestEntity).as(new ParameterizedTypeReference<AmxApiResponse<FcSaleOrderApplicationResponseModel, Object>>(){});
-		} catch (AbstractJaxException ae) {
-			throw ae;
+			LOGGER.debug(" Fc Sale create application :" + requestModel.toString());
+			HttpEntity<FcSaleOrderTransactionRequestModel> requestEntity = new HttpEntity<FcSaleOrderTransactionRequestModel>(
+					requestModel, getHeader());
+			String url = appConfig.getJaxURL() + Path.FCSALE_SAVE_APPLICATION;
+			return restService.ajax(url).meta(new JaxMetaInfo()).post(requestEntity)
+					.as(new ParameterizedTypeReference<AmxApiResponse<FcSaleOrderApplicationResponseModel, Object>>() {
+					});
 		} catch (Exception e) {
 			LOGGER.error("exception in getCurrencyByCountryId : ", e);
-			throw new JaxSystemError();
+			return JaxSystemError.evaluate(e);
 		} // end of try-catch
 
 	}
-	
-	
-	
-	
+
+	@Override
 	public AmxApiResponse<ShippingAddressDto, Object> getFcSaleAddress() {
 		try {
-			LOGGER.info("getFcSale shipping Address client :");
-			String url = appConfig.getJaxURL()  + FC_SALE_ENDPOINT + "/fc-sale-address/";
+			LOGGER.debug("getFcSale shipping Address client :");
+			String url = appConfig.getJaxURL() + Path.FC_SALE_ADDRESS;
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			return restService.ajax(url).get(requestEntity).as(new ParameterizedTypeReference<AmxApiResponse<ShippingAddressDto, Object>>(){});
-		} catch (AbstractJaxException ae) {
-			throw ae;
+			return restService.ajax(url).meta(new JaxMetaInfo()).get(requestEntity)
+					.as(new ParameterizedTypeReference<AmxApiResponse<ShippingAddressDto, Object>>() {
+					});
 		} catch (Exception e) {
 			LOGGER.error("exception in getCurrencyByCountryId : ", e);
-			throw new JaxSystemError();
+			return JaxSystemError.evaluate(e);
 		} // end of try-catch
 
 	}
-	
-	
-	
-	
-	/** 
-	 * @purpose : Save FC Sale shipping address
-	  				CustomerShippingAddressRequestModel 
+
+	/**
+	 * @purpose : Save FC Sale shipping address CustomerShippingAddressRequestModel
 	 **/
-	public AmxApiResponse<CustomerShippingAddressRequestModel, Object> saveFcSaleShippingAddress(CustomerShippingAddressRequestModel requestModel) throws Exception {
+	@Override
+	public AmxApiResponse<CustomerShippingAddressRequestModel, Object> saveFcSaleShippingAddress(
+			CustomerShippingAddressRequestModel requestModel) throws Exception {
 		try {
-			LOGGER.info(" Fc Sale shipping address save :" + requestModel.toString());
-			HttpEntity<CustomerShippingAddressRequestModel> requestEntity = new HttpEntity<CustomerShippingAddressRequestModel>(requestModel,getHeader());
-			String url = appConfig.getJaxURL() + FC_SALE_ENDPOINT + "/fc-save-shipping-addr/";
-			return restService.ajax(url).post(requestEntity).as(new ParameterizedTypeReference<AmxApiResponse<CustomerShippingAddressRequestModel, Object>>(){});
-		} catch (AbstractJaxException ae) {
-			throw ae;
+			LOGGER.debug(" Fc Sale shipping address save :" + requestModel.toString());
+			HttpEntity<CustomerShippingAddressRequestModel> requestEntity = new HttpEntity<CustomerShippingAddressRequestModel>(
+					requestModel, getHeader());
+			String url = appConfig.getJaxURL() + Path.FC_SAVE_SHIPPING_ADDR;
+			return restService.ajax(url).meta(new JaxMetaInfo()).post(requestEntity)
+					.as(new ParameterizedTypeReference<AmxApiResponse<CustomerShippingAddressRequestModel, Object>>() {
+					});
 		} catch (Exception e) {
 			LOGGER.error("exception in shipping address save : ", e);
-			throw new JaxSystemError();
+			return JaxSystemError.evaluate(e);
 		} // end of try-catch
 	}
-
-	
-	
-	
 
 	/** @ To fetch the time slot **/
-	public AmxApiResponse<String, Object> getTimeSlot(String  fxDate) {
+	@Override
+	public AmxApiResponse<String, Object> getTimeSlot(String fxDate) {
 		try {
-			LOGGER.info("in getTime slot client :"+fxDate);
-			String url = appConfig.getJaxURL()  + FC_SALE_ENDPOINT + "/fc-sale-time-slot/" + fxDate;
+			LOGGER.debug("in getTime slot client :" + fxDate);
+			String url = appConfig.getJaxURL() + Path.FC_SALE_TIME_SLOT + fxDate;
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			return restService.ajax(url).get(requestEntity).as(new ParameterizedTypeReference<AmxApiResponse<String, Object>>(){});
-		} catch (AbstractJaxException ae) {
-			throw ae;
+			return restService.ajax(url).meta(new JaxMetaInfo()).get(requestEntity)
+					.as(new ParameterizedTypeReference<AmxApiResponse<String, Object>>() {
+					});
 		} catch (Exception e) {
 			LOGGER.error("exception in getCurrencyByCountryId : ", e);
-			throw new JaxSystemError();
+			return JaxSystemError.evaluate(e);
 		} // end of try-catch
 
 	}
-	
-	
-	
+
 	/** @ Remove cart from list by passing application id **/
-	public AmxApiResponse<FcSaleOrderApplicationResponseModel, Object> removeItemFromCart(BigDecimal applicationId) throws Exception {
+	@Override
+	public AmxApiResponse<FcSaleOrderApplicationResponseModel, Object> removeItemFromCart(BigDecimal applicationId)
+			throws Exception {
 		try {
-			LOGGER.info(" Fc Sale create application :" + applicationId);
-			String url = appConfig.getJaxURL()  + FC_SALE_ENDPOINT + "/fc-sale-remove-item/"+applicationId;
+			LOGGER.debug(" Fc Sale create application :" + applicationId);
+			String url = appConfig.getJaxURL() + Path.FC_SALE_REMOVE_ITEM + applicationId;
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			return restService.ajax(url).post(requestEntity).as(new ParameterizedTypeReference<AmxApiResponse<FcSaleOrderApplicationResponseModel, Object>>(){});
-		} catch (AbstractJaxException ae) {
-			throw ae;
+			return restService.ajax(url).meta(new JaxMetaInfo()).post(requestEntity)
+					.as(new ParameterizedTypeReference<AmxApiResponse<FcSaleOrderApplicationResponseModel, Object>>() {
+					});
 		} catch (Exception e) {
 			LOGGER.error("exception in getCurrencyByCountryId : ", e);
-			throw new JaxSystemError();
+			return JaxSystemError.evaluate(e);
 		} // end of try-catch
 
 	}
-	
-	
-	
-	
+
 	/** @ To fetch the time slot **/
+	@Override
 	public AmxApiResponse<ShoppingCartDetailsDto, Object> fetchShoppingCartList() {
 		try {
-			LOGGER.info("in fetchShoppingCartList  client :");
-			String url = appConfig.getJaxURL()  + FC_SALE_ENDPOINT + "/fc-sale-shopping-cart/";
+			LOGGER.debug("in fetchShoppingCartList  client :");
+			String url = appConfig.getJaxURL() + Path.FC_SALE_SHOPPING_CART;
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			return restService.ajax(url).get(requestEntity).as(new ParameterizedTypeReference<AmxApiResponse<ShoppingCartDetailsDto, Object>>(){});
-		} catch (AbstractJaxException ae) {
-			throw ae;
+			return restService.ajax(url).meta(new JaxMetaInfo()).get(requestEntity)
+					.as(new ParameterizedTypeReference<AmxApiResponse<ShoppingCartDetailsDto, Object>>() {
+					});
 		} catch (Exception e) {
 			LOGGER.error("exception in getCurrencyByCountryId : ", e);
-			throw new JaxSystemError();
+			return JaxSystemError.evaluate(e);
 		} // end of try-catch
 
 	}
-	
-	
-	
-	
-	
-	public AmxApiResponse<FcSaleApplPaymentReponseModel, Object> getSavePayNowApplication(FcSaleOrderPaynowRequestModel requestModel) throws Exception {
+
+	@Override
+	public AmxApiResponse<FcSaleApplPaymentReponseModel, Object> getSavePayNowApplication(
+			FcSaleOrderPaynowRequestModel requestModel) throws Exception {
 		try {
-			LOGGER.info(" Fc Sale create application :" + requestModel.toString());
-			HttpEntity<FcSaleOrderPaynowRequestModel> requestEntity = new HttpEntity<FcSaleOrderPaynowRequestModel>(requestModel,getHeader());
-			String url = appConfig.getJaxURL()  + FC_SALE_ENDPOINT + "/fcsale-save-paynow/";
-			return restService.ajax(url).post(requestEntity).as(new ParameterizedTypeReference<AmxApiResponse<FcSaleApplPaymentReponseModel, Object>>(){});
-		} catch (AbstractJaxException ae) {
-			throw ae;
+			LOGGER.debug(" Fc Sale create application :" + requestModel.toString());
+			HttpEntity<FcSaleOrderPaynowRequestModel> requestEntity = new HttpEntity<FcSaleOrderPaynowRequestModel>(
+					requestModel, getHeader());
+			String url = appConfig.getJaxURL() + Path.FCSALE_SAVE_PAYNOW;
+			return restService.ajax(url).meta(new JaxMetaInfo()).post(requestEntity)
+					.as(new ParameterizedTypeReference<AmxApiResponse<FcSaleApplPaymentReponseModel, Object>>() {
+					});
 		} catch (Exception e) {
 			LOGGER.error("exception in getCurrencyByCountryId : ", e);
-			throw new JaxSystemError();
+			return JaxSystemError.evaluate(e);
 		} // end of try-catch
 
 	}
-	
-}
 
+}

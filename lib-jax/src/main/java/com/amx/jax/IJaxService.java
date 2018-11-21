@@ -3,7 +3,9 @@ package com.amx.jax;
 import org.apache.log4j.Logger;
 import org.springframework.http.HttpHeaders;
 
+import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.configs.JaxMetaInfo;
+import com.amx.jax.model.response.PurposeOfTransactionDto;
 import com.amx.jax.scope.TenantContextHolder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
