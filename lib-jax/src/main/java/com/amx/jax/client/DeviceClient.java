@@ -56,7 +56,8 @@ public class DeviceClient implements IDeviceService {
 		try {
 			LOGGER.debug("in getStatus");
 			String url = appConfig.getJaxURL() + Path.DEVICE_STATUS_GET;
-			return restService.ajax(url).meta(new JaxMetaInfo()).queryParam("registrationId", registrationId.toString())
+			return restService.ajax(url).meta(new JaxMetaInfo())
+					.queryParam(Params.DEVICE_REG_ID, registrationId.toString())
 					.queryParam(Params.PAIRE_TOKEN, paireToken).queryParam(Params.SESSION_TOKEN, sessionToken).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<DeviceStatusInfoDto, Object>>() {
 					});
