@@ -19,26 +19,28 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.api.AmxApiResponse;
-import com.amx.jax.client.IFxOrderService.Path;
+import com.amx.jax.client.IFxOrderService;
 import com.amx.jax.constant.JaxEvent;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.CustomerShippingAddressRequestModel;
 import com.amx.jax.model.request.FcSaleOrderPaynowRequestModel;
 import com.amx.jax.model.request.FcSaleOrderTransactionRequestModel;
 import com.amx.jax.model.response.CurrencyMasterDTO;
+import com.amx.jax.model.response.FcSaleApplPaymentReponseModel;
 import com.amx.jax.model.response.FcSaleOrderApplicationResponseModel;
+import com.amx.jax.model.response.FcSaleOrderDefaultResponseModel;
 import com.amx.jax.model.response.FxExchangeRateDto;
 import com.amx.jax.model.response.PurposeOfTransactionDto;
+import com.amx.jax.model.response.ShippingAddressDto;
+import com.amx.jax.model.response.ShoppingCartDetailsDto;
 import com.amx.jax.service.TermsAndConditionService;
 import com.amx.jax.services.FcSaleService;
 import com.amx.jax.util.JaxContextUtil;
 
 @RestController
 @RequestMapping(FC_SALE_ENDPOINT)
-@SuppressWarnings("rawtypes")
-public class FcSaleOrderController {
+public class FcSaleOrderController implements IFxOrderService {
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
 	
@@ -96,27 +98,25 @@ public class FcSaleOrderController {
 	/** to display the default api **/
 
 	@RequestMapping(value = Path.FC_SALE_DEFAULT, method = RequestMethod.GET)
-	public AmxApiResponse getFcSaleDefaultApi() {
+	public AmxApiResponse<FcSaleOrderDefaultResponseModel, Object> getFcSaleDefaultApi() {
 		BigDecimal applicationCountryId = metaData.getCountryId();
 		BigDecimal countryBranchId = metaData.getCountryBranchId();
 		BigDecimal languageId = metaData.getLanguageId();
-		ApiResponse response = fcSaleService.getDefaultFsSale(applicationCountryId, countryBranchId, languageId);
-		return AmxApiResponse.build(response);
+		return fcSaleService.getDefaultFsSale(applicationCountryId, countryBranchId, languageId);
 	}
 
 	/** To save fc sale application **/
 
 	@RequestMapping(value = Path.FCSALE_SAVE_APPLICATION, method = RequestMethod.POST)
-	public AmxApiResponse getSaveApplication(@RequestBody @Valid FcSaleOrderTransactionRequestModel model) {
+	public AmxApiResponse<FcSaleOrderApplicationResponseModel, Object> getSaveApplication(@RequestBody @Valid FcSaleOrderTransactionRequestModel model) {
 		JaxContextUtil.setJaxEvent(JaxEvent.CREATE_APPLICATION);
 		JaxContextUtil.setRequestModel(model);
 		logger.info("In Fc Sale Save-Application with parameters" + model.toString());
-		ApiResponse response = fcSaleService.saveApplication(model);
-		return AmxApiResponse.build(response);
+		return fcSaleService.saveApplication(model);
 	}
 
 	@RequestMapping(value = Path.FCSALE_SAVE_PAYNOW, method = RequestMethod.POST)
-	public AmxApiResponse getSavePayNowApplication(@RequestBody @Valid FcSaleOrderPaynowRequestModel requestmodel) {
+	public AmxApiResponse<FcSaleApplPaymentReponseModel, Object> getSavePayNowApplication(@RequestBody @Valid FcSaleOrderPaynowRequestModel requestmodel) {
 		JaxContextUtil.setJaxEvent(JaxEvent.CREATE_APPLICATION);
 		JaxContextUtil.setRequestModel(requestmodel);
 		logger.info("In Fc Sale Save-Application with parameters" + requestmodel.toString());
@@ -125,37 +125,35 @@ public class FcSaleOrderController {
 	}
 
 	@RequestMapping(value = Path.FC_SALE_ADDRESS, method = RequestMethod.GET)
-	public AmxApiResponse getFcSaleAddress() {
-		ApiResponse response = fcSaleService.fetchFcSaleAddress();
-		return AmxApiResponse.build(response);
+	public AmxApiResponse<ShippingAddressDto, Object> getFcSaleAddress() {
+		return fcSaleService.fetchFcSaleAddress();
 	}
 	
 
 	/** Save shipping address */
 	@RequestMapping(value = Path.FC_SAVE_SHIPPING_ADDR, method = RequestMethod.POST)
-	public AmxApiResponse saveFcSaleShippingAddress(
+	public AmxApiResponse<CustomerShippingAddressRequestModel, Object> saveFcSaleShippingAddress(
 			@RequestBody @Valid CustomerShippingAddressRequestModel requestModel) {
 		logger.info("in saveCustomerHomeAddress: {} ", requestModel);
-		ApiResponse response = fcSaleService.saveShippingAddress(requestModel);
-		return AmxApiResponse.build(response);
+		return fcSaleService.saveShippingAddress(requestModel);
 	}
 
 	/**
 	 * @ String date @ To fetch time slot for Fx order delviery
 	 */
 	@RequestMapping(value = Path.FC_SALE_TIME_SLOT, method = RequestMethod.GET)
-	public AmxApiResponse getTimeSlot(@RequestParam(value = "fxdate", required = true) String fxdate) {
+	public AmxApiResponse<String, Object> getTimeSlot(@RequestParam(value = "fxdate", required = true) String fxdate) {
 		return fcSaleService.fetchTimeSlot(fxdate);
 	}
 
 	@RequestMapping(value = Path.FC_SALE_REMOVE_ITEM, method = RequestMethod.POST)
-	public AmxApiResponse removeItemFromCart(
+	public AmxApiResponse<FcSaleOrderApplicationResponseModel, Object> removeItemFromCart(
 			@RequestParam(value = "receiptApplId", required = true) BigDecimal receiptApplId) {
 		return fcSaleService.removeitemFromCart(receiptApplId);
 	}
 
 	@RequestMapping(value = Path.FC_SALE_SHOPPING_CART, method = RequestMethod.GET)
-	public AmxApiResponse fetchShoppingCartList() {
+	public AmxApiResponse<ShoppingCartDetailsDto, Object> fetchShoppingCartList() {
 		return fcSaleService.fetchShoppingCartList();
 	}
 

@@ -23,7 +23,6 @@ import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.FxDeliveryDetailsModel;
 import com.amx.jax.dbmodel.PaygDetailsModel;
 import com.amx.jax.dbmodel.ReceiptPaymentApp;
-import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.model.request.FcSaleOrderPaynowRequestModel;
 import com.amx.jax.model.response.ShoppingCartDetailsDto;
 import com.amx.jax.payg.PaymentResponseDto;

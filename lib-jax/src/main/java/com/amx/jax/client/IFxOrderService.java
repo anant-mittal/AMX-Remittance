@@ -46,14 +46,17 @@ public interface IFxOrderService extends IJaxService {
 
 	}
 
-	@ApiJaxStatus({ JaxError.CLIENT_ALREADY_REGISTERED })
+	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND })
 	AmxApiResponse<PurposeOfTransactionDto, Object> getFcPurposeofTrnx();
 
+	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND })
 	AmxApiResponse<CurrencyMasterDTO, Object> getFcCurrencyList();
 
+	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND })
 	AmxApiResponse<FxExchangeRateDto, Object> getFcXRate(BigDecimal fxCurrencyId);
 
-	AmxApiResponse<FcSaleOrderApplicationResponseModel, Object> calculateXRate(BigDecimal fxCurrencyId, BigDecimal fcAmount);
+	AmxApiResponse<FcSaleOrderApplicationResponseModel, Object> calculateXRate(BigDecimal fxCurrencyId,
+			BigDecimal fcAmount);
 
 	AmxApiResponse<FcSaleOrderDefaultResponseModel, Object> getFcSaleDefaultApi();
 
@@ -65,13 +68,17 @@ public interface IFxOrderService extends IJaxService {
 	AmxApiResponse<CustomerShippingAddressRequestModel, Object> saveFcSaleShippingAddress(
 			CustomerShippingAddressRequestModel requestModel) throws Exception;
 
+	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND })
 	AmxApiResponse<String, Object> getTimeSlot(String fxDate);
 
+	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND })
 	AmxApiResponse<ShoppingCartDetailsDto, Object> fetchShoppingCartList();
 
+	@ApiJaxStatus({ JaxError.NULL_APPLICATION_ID })
 	AmxApiResponse<FcSaleApplPaymentReponseModel, Object> getSavePayNowApplication(
 			FcSaleOrderPaynowRequestModel requestModel) throws Exception;
 
+	@ApiJaxStatus({ JaxError.NULL_APPLICATION_ID })
 	AmxApiResponse<FcSaleOrderApplicationResponseModel, Object> removeItemFromCart(BigDecimal applicationId)
 			throws Exception;
 

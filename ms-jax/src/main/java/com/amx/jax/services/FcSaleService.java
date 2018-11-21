@@ -21,9 +21,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.meta.model.TermsAndConditionDTO;
 import com.amx.amxlib.model.response.ApiResponse;
-import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.FcSaleExchangeRateDao;
@@ -50,7 +48,6 @@ import com.amx.jax.model.response.PurposeOfTransactionDto;
 import com.amx.jax.model.response.ShippingAddressDto;
 import com.amx.jax.model.response.ShoppingCartDetailsDto;
 import com.amx.jax.model.response.SourceOfIncomeDto;
-import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.repository.ICurrencyDao;
 import com.amx.jax.repository.IPurposeOfTrnxDao;
 import com.amx.jax.repository.ISourceOfIncomeDao;
@@ -168,8 +165,7 @@ public class FcSaleService extends AbstractService {
 	 * 		4. Denomination type  
 	 */
 
-	public ApiResponse getDefaultFsSale(BigDecimal applicationCountryId,BigDecimal countryBranchId,BigDecimal languageId){
-		ApiResponse response = getBlackApiResponse();
+	public AmxApiResponse<FcSaleOrderDefaultResponseModel,Object> getDefaultFsSale(BigDecimal applicationCountryId,BigDecimal countryBranchId,BigDecimal languageId){
 		validation.validateHeaderInfo();
 		FcSaleOrderDefaultResponseModel responseModel = new FcSaleOrderDefaultResponseModel();
 		List<PurposeOfTransaction> purposeofTrnxList = purposetrnxDao.getPurposeOfTrnx();
@@ -194,10 +190,7 @@ public class FcSaleService extends AbstractService {
 			responseModel.setSourcOfIncomeList(convertSourceOfIncome(sourceOfIncomeList));
 		}
 
-		response.getData().getValues().add(responseModel);
-		response.setResponseStatus(ResponseStatus.OK);
-		response.getData().setType(responseModel.getModelType());
-		return response;
+		return AmxApiResponse.build(responseModel);
 	}
 
 	
@@ -206,14 +199,12 @@ public class FcSaleService extends AbstractService {
 	 * To save Application
 	 */
 
-	public ApiResponse saveApplication(FcSaleOrderTransactionRequestModel fcSalerequestModel) {
+	public AmxApiResponse<FcSaleOrderApplicationResponseModel,Object> saveApplication(FcSaleOrderTransactionRequestModel fcSalerequestModel) {
 		validation.validateHeaderInfo();
 		ApiResponse response = getBlackApiResponse();
 		FcSaleOrderApplicationResponseModel fcSaleAppResponseModel =  applTrnxManager.saveApplication(fcSalerequestModel);
 		response.getData().getValues().add(fcSaleAppResponseModel);
-		response.setResponseStatus(ResponseStatus.OK);
-		response.getData().setType(fcSaleAppResponseModel.getModelType());
-		return response;
+		return AmxApiResponse.build(fcSaleAppResponseModel);
 	}
 	
 	
@@ -222,15 +213,11 @@ public class FcSaleService extends AbstractService {
 	 * Fetch address for Fc Sale
 	 */
 
-	public ApiResponse fetchFcSaleAddress() {
+	public AmxApiResponse<ShippingAddressDto, Object> fetchFcSaleAddress() {
 		validation.validateHeaderInfo();
-		ApiResponse response = getBlackApiResponse();
 		ShippingAddressDto dto = new ShippingAddressDto();
 		List<ShippingAddressDto> shippingAddressList = fcSaleAddresManager.fetchShippingAddress();
-		response.getData().getValues().add(shippingAddressList);
-		response.setResponseStatus(ResponseStatus.OK);
-		response.getData().setType(dto.getModelType());
-		return response;
+		return AmxApiResponse.buildList(shippingAddressList);
 	}
 
 	
@@ -238,14 +225,10 @@ public class FcSaleService extends AbstractService {
 	 * Save shipping address
 	 */
 
-	public ApiResponse saveShippingAddress(CustomerShippingAddressRequestModel requestModel) {
+	public AmxApiResponse<CustomerShippingAddressRequestModel,Object> saveShippingAddress(CustomerShippingAddressRequestModel requestModel) {
 		validation.validateHeaderInfo();
-		ApiResponse response = getBlackApiResponse();
 		fcSaleAddresManager.saveShippingAddress(requestModel);
-		response.getData().getValues().add(requestModel);
-		response.setResponseStatus(ResponseStatus.OK);
-		response.getData().setType(requestModel.getModelType());
-		return response;
+		return AmxApiResponse.build(requestModel);
 	}
 
 	
@@ -256,9 +239,7 @@ public class FcSaleService extends AbstractService {
 	 * @param : to get the time slot for fx order
 	 * @return
 	 */
-
-	
-	public AmxApiResponse fetchTimeSlot(String date) {
+	public AmxApiResponse<String, Object> fetchTimeSlot(String date) {
 		List<String> timeSlotList = applTrnxManager.fetchTimeSlot(date);
 		if (timeSlotList.isEmpty()) {
 			throw new GlobalException("No data found", JaxError.NO_RECORD_FOUND);
@@ -272,7 +253,7 @@ public class FcSaleService extends AbstractService {
 	 * @returnFcSaleOrderApplicationResponseModel
 	 */
 
-	public AmxApiResponse removeitemFromCart(BigDecimal applicationId) {
+	public AmxApiResponse<FcSaleOrderApplicationResponseModel, Object> removeitemFromCart(BigDecimal applicationId) {
 		if (applicationId == null || applicationId.compareTo(BigDecimal.ZERO) == 0) {
 			throw new GlobalException("Application id should not be blank", JaxError.NULL_APPLICATION_ID);
 		}
@@ -283,7 +264,7 @@ public class FcSaleService extends AbstractService {
 
 	
 
-	public AmxApiResponse fetchShoppingCartList() {
+	public AmxApiResponse<ShoppingCartDetailsDto, Object> fetchShoppingCartList() {
 		List<ShoppingCartDetailsDto> shoppingCartDetails = applTrnxManager.fetchApplicationDetails();
 		if (shoppingCartDetails.isEmpty()) {
 			throw new GlobalException("No data found", JaxError.NO_RECORD_FOUND);
@@ -295,7 +276,7 @@ public class FcSaleService extends AbstractService {
 	
 	/** Pay now save **/
 
-	public AmxApiResponse saveApplicationPayment(FcSaleOrderPaynowRequestModel requestmodel) {
+	public AmxApiResponse<FcSaleApplPaymentReponseModel, Object> saveApplicationPayment(FcSaleOrderPaynowRequestModel requestmodel) {
 		if (requestmodel.getCartDetailList().isEmpty()) {
 			throw new GlobalException("Mandatory field is missing", JaxError.NULL_APPLICATION_ID);
 		}

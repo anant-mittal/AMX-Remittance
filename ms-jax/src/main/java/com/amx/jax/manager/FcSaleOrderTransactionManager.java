@@ -5,11 +5,6 @@ package com.amx.jax.manager;
  * @Date		: 05/11/2018
  */
 import java.math.BigDecimal;
-
-
-
-
-
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -20,7 +15,6 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.amx.amxlib.model.response.ExchangeRateBreakup;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.FcSaleExchangeRateDao;
 import com.amx.jax.dbmodel.FxExchangeRateView;
