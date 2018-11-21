@@ -4,9 +4,7 @@ package com.amx.jax.model.request;
 
 import java.math.BigDecimal;
 
-import javax.validation.constraints.NotNull;
 import com.amx.jax.model.AbstractModel;
-import com.amx.jax.model.response.FxExchangeRateBreakup;
 
 public class FcSaleOrderTransactionRequestModel extends AbstractModel {
 
@@ -25,6 +23,7 @@ public class FcSaleOrderTransactionRequestModel extends AbstractModel {
 	private String remarks;
 	private BigDecimal deliveryCharges;
 	private BigDecimal travelCountryId;
+	
 	private String startDate;
 	private String endDate;
 	private String errorMessage;

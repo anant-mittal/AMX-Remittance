@@ -626,8 +626,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		customer.setTitleLocal(getTitleLocal(prefixEnum.getTitleLocal()));
 		customer.setLoyaltyPoints(BigDecimal.ZERO);
 		customer.setCompanyId(metaData.getCompanyId());
-		customer.setCustomerTypeId(
-				bizcomponentDao.getBizComponentDataByComponmentCode(ConstantDocument.Individual).getComponentDataId());
+		customer.setCustomerTypeId(bizcomponentDao.getBizComponentDataByComponmentCode(ConstantDocument.Individual).getComponentDataId());
 		customer.setLanguageId(metaData.getLanguageId());
 		customer.setBranchCode(metaData.getCountryBranchId());
 		customer.setNationalityId(customerDetails.getNationalityId());
@@ -676,9 +675,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		custProof.setFsCustomer(customerData);
 		custProof.setLanguageId(metaData.getLanguageId());
 		BizComponentData customerType = new BizComponentData();
-		customerType.setComponentDataId(
-				bizcomponentDao.getComponentId(Constants.CUSTOMERTYPE_INDU, metaData.getLanguageId())
-						.getFsBizComponentData().getComponentDataId());
+		customerType.setComponentDataId(bizcomponentDao.getComponentId(Constants.CUSTOMERTYPE_INDU, metaData.getLanguageId()).getFsBizComponentData().getComponentDataId());
 		custProof.setFsBizComponentDataByCustomerTypeId(customerType);
 		custProof.setIdentityInt(customer.getIdentityInt());
 		custProof.setIdentityStatus(Constants.CUST_ACTIVE_INDICATOR);

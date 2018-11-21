@@ -72,6 +72,8 @@ public class ConstantDocument {
 	public static final String FS = "FS";
 	public static final String FP = "FP";
 	public static final BigDecimal ONLINE_BRANCH_LOC_CODE = new BigDecimal(90);
+	public static final String FC_SALE_RECEIPT_TYPE="01";
+	public static final String COLLECTION_RECEIPT_TYPE="70";
 	
 	/** end Here **/
 

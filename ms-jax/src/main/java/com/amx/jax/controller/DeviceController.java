@@ -36,13 +36,12 @@ public class DeviceController implements IDeviceService {
 
 	Logger logger = LoggerFactory.getLogger(getClass());
 
-	@RequestMapping(value = Path.DEVICE_REG, method = RequestMethod.POST)
+/*	@RequestMapping(value = Path.DEVICE_REG, method = RequestMethod.POST)
 	@Override
 	public AmxApiResponse<DeviceDto, Object> registerNewDevice(@Valid @RequestBody DeviceRegistrationRequest request) {
-
 		DeviceDto newDevice = deviceService.registerNewDevice(request);
 		return AmxApiResponse.build(newDevice);
-	}
+	}*/
 
 	@RequestMapping(value = Path.DEVICE_STATE, method = RequestMethod.POST)
 	@Override

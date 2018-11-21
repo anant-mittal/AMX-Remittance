@@ -58,6 +58,7 @@ public class RemittanceApplicationDao {
 	IFlexFiledView IFlexFiledView;
     @Autowired
     IPlaceOrderDao placeOrderdao;
+    
 	@Transactional
 	public void saveAllApplicationData(RemittanceApplication app, RemittanceAppBenificiary appBene,
 			List<AdditionalInstructionData> additionalInstrumentData) {

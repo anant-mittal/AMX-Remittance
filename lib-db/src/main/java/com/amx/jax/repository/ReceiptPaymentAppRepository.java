@@ -22,4 +22,7 @@ public interface ReceiptPaymentAppRepository extends CrudRepository<ReceiptPayme
 	public List<ReceiptPaymentApp> deActivateNotUsedApplication(@Param("customerId") BigDecimal customerId,@Param("currencyId") BigDecimal currencyId);
 
 
+	@Query("select appl from ReceiptPaymentApp appl where appl.customerId=:customerId and appl.pgPaymentSeqDtlId =:pgPaymentSeqDtlId and appl.isActive ='Y' and NVL(appl.applicationStatus,' ')='S' and trunc(sysdate)=trunc(appl.documentDate)")
+	public List<ReceiptPaymentApp> fetchreceiptPaymentAppl(@Param("customerId") BigDecimal customerId,@Param("pgPaymentSeqDtlId") BigDecimal pgPaymentSeqDtlId);
+	
 }

@@ -114,6 +114,14 @@ public class ReceiptPayment implements Serializable {
 	private String wuSenderMessage;
 	private String wuPurposeOfTransaction;
 	private String transactionIPAddress;
+	//private BigDecimal deliveryCharges;
+	private BigDecimal pgPaymentSeqDtlId;
+	private BigDecimal deliveryDetSeqId;
+	private Date travelStartDate;
+	private Date travelEndDate;
+	private BigDecimal travelCountryId;
+	private String denominationType;
+
 
 	
 	
@@ -771,30 +779,63 @@ public class ReceiptPayment implements Serializable {
 	public void setTransactionIPAddress(String transactionIPAddress) {
 		this.transactionIPAddress = transactionIPAddress;
 	}
-	@Column(name="SHIPPING_ADDRESS_ID")
-	public BigDecimal getShippingAddressId() {
-		return shippingAddressId;
-	}
 
-	public void setShippingAddressId(BigDecimal shippingAddressId) {
-		this.shippingAddressId = shippingAddressId;
+	/*@Column(name="DELIVERY_CHARGES")
+	public BigDecimal getDeliveryCharges() {
+		return deliveryCharges;
 	}
-
-	@Column(name="DELIVERY_DATE")
-	public Date getDeliveryDate() {
-		return deliveryDate;
-	}
-
-	public void setDeliveryDate(Date deliveryDate) {
-		this.deliveryDate = deliveryDate;
-	}
-	@Column(name="DELIVERY_TIME")
-	public String getDeleveryTime() {
-		return deleveryTime;
-	}
-
-	public void setDeleveryTime(String deleveryTime) {
-		this.deleveryTime = deleveryTime;
-	}
+	public void setDeliveryCharges(BigDecimal deliveryCharges) {
+		this.deliveryCharges = deliveryCharges;
+	}*/
 	
+	@Column(name="PAYG_TRNX_DTLS_ID")
+	public BigDecimal getPgPaymentSeqDtlId() {
+		return pgPaymentSeqDtlId;
+	}
+
+	public void setPgPaymentSeqDtlId(BigDecimal pgPaymentSeqDtlId) {
+		this.pgPaymentSeqDtlId = pgPaymentSeqDtlId;
+	}
+	@Column(name="DELIVERY_DET_SEQ_ID")
+	public BigDecimal getDeliveryDetSeqId() {
+		return deliveryDetSeqId;
+	}
+
+	public void setDeliveryDetSeqId(BigDecimal deliveryDetSeqId) {
+		this.deliveryDetSeqId = deliveryDetSeqId;
+	}
+
+	@Column(name="TRAVEL_START_DATE")
+	public Date getTravelStartDate() {
+		return travelStartDate;
+	}
+
+	public void setTravelStartDate(Date travelStartDate) {
+		this.travelStartDate = travelStartDate;
+	}
+
+	@Column(name="TRAVEL_END_DATE")
+	public Date getTravelEndDate() {
+		return travelEndDate;
+	}
+
+	public void setTravelEndDate(Date travelEndDate) {
+		this.travelEndDate = travelEndDate;
+	}
+
+	@Column(name="TRAVEL_COUNTRY_ID")
+	public BigDecimal getTravelCountryId() {
+		return travelCountryId;
+	}
+
+	public void setTravelCountryId(BigDecimal travelCountryId) {
+		this.travelCountryId = travelCountryId;
+	}
+	@Column(name="DENOMINATION_TYPE")
+	public String getDenominationType() {
+		return denominationType;
+	}
+	public void setDenominationType(String denominationType) {
+		this.denominationType = denominationType;
+	}
 }

@@ -24,13 +24,9 @@ public class FcSaleOrderPaynowRequestModel extends AbstractModel {
 	
 
 	
-
-	
 	public List<ShoppingCartDetailsDto> getCartDetailList() {
 		return cartDetailList;
 	}
-	
-	
 	
 	public void setCartDetailList(List<ShoppingCartDetailsDto> cartDetailList) {
 		this.cartDetailList = cartDetailList;

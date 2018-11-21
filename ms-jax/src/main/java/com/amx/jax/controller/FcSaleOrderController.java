@@ -1,5 +1,11 @@
 package com.amx.jax.controller;
 
+/**
+ * @Author : Rabil
+ * @date		: 03/11/2018
+ */
+import static com.amx.amxlib.constant.ApiEndpoint.FC_SALE_ENDPOINT;
+
 import java.math.BigDecimal;
 
 import javax.validation.Valid;
@@ -13,36 +19,38 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.amxlib.constant.ApiEndpoint.MetaApi;
+import com.amx.amxlib.meta.model.TermsAndConditionDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.api.AmxApiResponse;
-import com.amx.jax.client.IFxOrderService;
 import com.amx.jax.constant.JaxEvent;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.CustomerShippingAddressRequestModel;
 import com.amx.jax.model.request.FcSaleOrderPaynowRequestModel;
 import com.amx.jax.model.request.FcSaleOrderTransactionRequestModel;
-import com.amx.jax.model.response.CurrencyMasterDTO;
-import com.amx.jax.model.response.FxExchangeRateDto;
-import com.amx.jax.model.response.PurposeOfTransactionDto;
+import com.amx.jax.repository.ITermsAndConditionRepository;
 import com.amx.jax.service.TermsAndConditionService;
 import com.amx.jax.services.FcSaleService;
 import com.amx.jax.util.JaxContextUtil;
 
 @RestController
+@RequestMapping(FC_SALE_ENDPOINT)
 @SuppressWarnings("rawtypes")
-public class FcSaleOrderController implements IFxOrderService {
+public class FcSaleOrderController {
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
-
+	
 	@Autowired
 	FcSaleService fcSaleService;
-
+	
 	@Autowired
 	MetaData metaData;
-
+	
 	@Autowired
 	TermsAndConditionService termsAndConditionService;
+	
 
+	
 	/**
 	 * @return : To get the fx purpose of trnx list
 	 */
@@ -119,6 +127,7 @@ public class FcSaleOrderController implements IFxOrderService {
 		ApiResponse response = fcSaleService.fetchFcSaleAddress();
 		return AmxApiResponse.build(response);
 	}
+	
 
 	/** Save shipping address */
 	@RequestMapping(value = Path.FC_SAVE_SHIPPING_ADDR, method = RequestMethod.POST)

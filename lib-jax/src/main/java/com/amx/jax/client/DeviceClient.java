@@ -35,7 +35,7 @@ public class DeviceClient implements IDeviceService {
 	@Autowired
 	AppConfig appConfig;
 
-	@Override
+/*	@Override
 	public AmxApiResponse<DeviceDto, Object> registerNewDevice(DeviceRegistrationRequest request) {
 		try {
 			LOGGER.debug("in registerNewDevice");
@@ -48,7 +48,7 @@ public class DeviceClient implements IDeviceService {
 			return JaxSystemError.evaluate(e);
 		}
 	}
-
+*/
 	@Override
 	public AmxApiResponse<DeviceStatusInfoDto, Object> getStatus(
 			Integer registrationId, String paireToken,

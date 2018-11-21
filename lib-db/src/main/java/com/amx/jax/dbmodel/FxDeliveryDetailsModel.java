@@ -54,8 +54,14 @@ public class FxDeliveryDetailsModel implements Serializable{
 	private String updatedBy;
 	@Column(name="UPDATED_DATE")
 	private Date uopdateDate;
+	
 	@Column(name="REMARKS_ID")
 	private BigDecimal remarksId;
+	
+	
+	@Column(name="DELIVERY_CHARGES")
+    private BigDecimal deliveryCharges;
+	
 	
 	@Column(name="ISACTIVE")
 	private String isActive;
@@ -138,5 +144,15 @@ public class FxDeliveryDetailsModel implements Serializable{
 	public void setIsActive(String isActive) {
 		this.isActive = isActive;
 	}
+	
+	
+	public BigDecimal getDeliveryCharges() {
+		return deliveryCharges;
+	}
+
+	public void setDeliveryCharges(BigDecimal deliveryCharges) {
+		this.deliveryCharges = deliveryCharges;
+	}
+
 }
 

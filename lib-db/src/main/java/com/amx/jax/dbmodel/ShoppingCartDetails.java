@@ -70,7 +70,7 @@ public class ShoppingCartDetails implements Serializable {
 	private String loyaltsPointIndicator;
 	private String foreignCurrencyDesc;
 	private BigDecimal amtbCouponEncashed;
-	private BigDecimal deliveryCharges;
+	//private BigDecimal deliveryCharges;
 	private String  denominationType;
 	private String paymentId;
 	private BigDecimal applicationCountryId;
@@ -476,7 +476,7 @@ public class ShoppingCartDetails implements Serializable {
 	}
 
 
-	@Column(name="DELIVERY_CHARGES")
+	/*@Column(name="DELIVERY_CHARGES")
 	public BigDecimal getDeliveryCharges() {
 		return deliveryCharges;
 	}
@@ -485,7 +485,7 @@ public class ShoppingCartDetails implements Serializable {
 	public void setDeliveryCharges(BigDecimal deliveryCharges) {
 		this.deliveryCharges = deliveryCharges;
 	}
-
+*/
 
 	@Column(name="DENOMINATION_TYPE")
 	public String getDenominationType() {
@@ -543,7 +543,7 @@ public class ShoppingCartDetails implements Serializable {
 	
 	
 
-	@Column(name="START_DATE")
+	@Column(name="TRAVEL_START_DATE")
 	public Date getTravelStartDate() {
 		return travelStartDate;
 	}
@@ -553,7 +553,7 @@ public class ShoppingCartDetails implements Serializable {
 		this.travelStartDate = travelStartDate;
 	}
 
-	@Column(name="END_DATE")
+	@Column(name="TRAVEL_END_DATE")
 	public Date getTravelEndDate() {
 		return travelEndDate;
 	}

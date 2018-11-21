@@ -26,6 +26,7 @@ import com.amx.jax.dbmodel.ReceiptPaymentApp;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.model.request.FcSaleOrderPaynowRequestModel;
 import com.amx.jax.model.response.ShoppingCartDetailsDto;
+import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.repository.FxDeliveryDetailsRepository;
 import com.amx.jax.repository.PaygDetailsRepository;
 import com.amx.jax.repository.ReceiptPaymentAppRepository;
@@ -100,6 +101,9 @@ public class FcSaleApplicationDao {
 	}
 	
 	
+	
+	
+	
 	public void removeItemFromCart(BigDecimal applId){
 	try {
 			ReceiptPaymentApp applDeac = receiptPaymentApplRespo.findOne(applId);
@@ -132,5 +136,32 @@ public class FcSaleApplicationDao {
 		}
 		
 	}
+	
+	public void updatePaygDetails(List<ReceiptPaymentApp> listOfRecAppl,PaymentResponseDto paymentResponse){
+		try{
+			if(paymentResponse!= null && paymentResponse.getUdf3()!=null){
+				PaygDetailsModel pgModel =pgRepository.findOne(new BigDecimal(paymentResponse.getUdf3()));
+				pgModel.setResultCode(paymentResponse.getResultCode());
+				pgModel.setModifiedDate(new Date());
+				pgModel.setPgAuthCode(paymentResponse.getAuth_appNo());
+				pgModel.setPgErrorText(paymentResponse.getErrorText());
+				pgModel.setPgPaymentId(paymentResponse.getPaymentId());
+				pgModel.setPgReceiptDate(paymentResponse.getPostDate());
+				pgModel.setPgTransactionId(paymentResponse.getTransactionId());
+				pgModel.setPgReferenceId(paymentResponse.getReferenceId());
+				pgRepository.save(pgModel);
+			}else{
+				
+				throw new GlobalException("Update after PG details Payment Id :"+paymentResponse.getPaymentId()+"\t Udf 3--Pg trnx seq Id :"+paymentResponse.getUdf3()+"Result code :"+paymentResponse.getResultCode());
+			}
+			
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+			throw new GlobalException("Update after PG details Payment Id :"+paymentResponse.getPaymentId()+"\t Udf 3--Pg trnx seq Id :"+paymentResponse.getUdf3()+"Result code :"+paymentResponse.getResultCode());
+		}
+		
+	}
+	
 	
 }

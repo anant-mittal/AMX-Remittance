@@ -79,6 +79,7 @@ public class DeviceDao {
 	 * 
 	 */
 	public Device findDevice(BigDecimal branchSystemInvId, ClientType deviceType) {
+
 		List<Device> devices = deviceRepository.findByBranchSystemInventoryIdAndDeviceTypeAndStatus(branchSystemInvId,
 				deviceType, ConstantDocument.Yes);
 		Device device = null;
@@ -92,9 +93,9 @@ public class DeviceDao {
 	}
 	
 	public List<Device> findAllActiveDevices(BigDecimal branchSystemInvId, ClientType deviceType) {
-		List<Device> devices = deviceRepository.findByBranchSystemInventoryIdAndDeviceTypeAndStatus(branchSystemInvId,
-				deviceType, ConstantDocument.Yes);
+		List<Device> devices = deviceRepository.findByBranchSystemInventoryIdAndDeviceTypeAndStatus(branchSystemInvId,deviceType, ConstantDocument.Yes);
 		return devices;
+
 	}
 
 	public Device findLatestDevice(BigDecimal branchSystemInvId, ClientType deviceType) {

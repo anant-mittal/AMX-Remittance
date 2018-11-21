@@ -67,7 +67,7 @@ public class ReceiptPaymentApp implements Serializable{
 	private BigDecimal sourceOfIncomeid;
 	private Clob signatureSpacimenClob;
 	private String transactionIPAddress;
-	private BigDecimal deliveryCharges;
+	//private BigDecimal deliveryCharges;
 	private String denominationType;
 	private BigDecimal pgPaymentSeqDtlId;
 	private BigDecimal deliveryDetSeqId;
@@ -471,14 +471,14 @@ public class ReceiptPaymentApp implements Serializable{
 		this.transactionIPAddress = transactionIPAddress;
 	}
 
-	@Column(name="DELIVERY_CHARGES")
+	/*@Column(name="DELIVERY_CHARGES")
 	public BigDecimal getDeliveryCharges() {
 		return deliveryCharges;
 	}
 
 	public void setDeliveryCharges(BigDecimal deliveryCharges) {
 		this.deliveryCharges = deliveryCharges;
-	}
+	}*/
 
 	@Column(name="DENOMINATION_TYPE")
 	public String getDenominationType() {
@@ -507,7 +507,7 @@ public class ReceiptPaymentApp implements Serializable{
 		this.deliveryDetSeqId = deliveryDetSeqId;
 	}
 
-	@Column(name="START_DATE")
+	@Column(name="TRAVEL_START_DATE")
 	public Date getTravelStartDate() {
 		return travelStartDate;
 	}
@@ -516,7 +516,7 @@ public class ReceiptPaymentApp implements Serializable{
 		this.travelStartDate = travelStartDate;
 	}
 
-	@Column(name="END_DATE")
+	@Column(name="TRAVEL_END_DATE")
 	public Date getTravelEndDate() {
 		return travelEndDate;
 	}

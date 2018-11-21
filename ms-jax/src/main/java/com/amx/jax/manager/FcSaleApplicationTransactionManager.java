@@ -242,7 +242,7 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 		receiptPaymentAppl.setLocalTrnxAmount(exchbreakUpRate.getConvertedLCAmount() ==null?BigDecimal.ZERO:exchbreakUpRate.getConvertedLCAmount());
 		receiptPaymentAppl.setLocalNetAmount(exchbreakUpRate.getNetAmount()==null?BigDecimal.ZERO:exchbreakUpRate.getNetAmount());
 		receiptPaymentAppl.setTransactionActualRate(exchbreakUpRate.getRate()==null?BigDecimal.ZERO:exchbreakUpRate.getRate());
-		receiptPaymentAppl.setDeliveryCharges(exchbreakUpRate.getDeliveryCharges()==null?BigDecimal.ZERO:exchbreakUpRate.getDeliveryCharges());
+		//receiptPaymentAppl.setDeliveryCharges(exchbreakUpRate.getDeliveryCharges()==null?BigDecimal.ZERO:exchbreakUpRate.getDeliveryCharges());
 		receiptPaymentAppl.setBranchId(countryBranchId);
 		UserFinancialYear userFinancialYear = finanacialService.getUserFinancialYear();
 		if(userFinancialYear!=null){
@@ -338,7 +338,8 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 		}
 		breakup.setRate(maxExchangeRate);
 		if(JaxUtil.isNullZeroBigDecimalCheck(breakup.getConvertedLCAmount())){
-			breakup.setNetAmount(breakup.getConvertedLCAmount().add(breakup.getDeliveryCharges()));
+			breakup.setNetAmount(breakup.getConvertedLCAmount());
+			//breakup.setNetAmount(breakup.getConvertedLCAmount().add(breakup.getDeliveryCharges()));
 		}
 		
 		return breakup;
