@@ -2,7 +2,7 @@ package com.amx.jax.client;
 
 import java.math.BigDecimal;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
@@ -13,6 +13,7 @@ import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.exception.JaxSystemError;
+import com.amx.jax.logger.LoggerService;
 import com.amx.jax.model.request.DeviceRegistrationRequest;
 import com.amx.jax.model.request.DeviceStateInfoChangeRequest;
 import com.amx.jax.model.request.device.SignaturePadCustomerRegStateMetaInfo;
@@ -26,7 +27,7 @@ import com.amx.jax.rest.RestService;
 @Component
 public class DeviceClient implements IDeviceService {
 
-	private static final Logger LOGGER = Logger.getLogger(DeviceClient.class);
+	private static final Logger LOGGER = LoggerService.getLogger(DeviceClient.class);
 
 	@Autowired
 	RestService restService;
@@ -248,7 +249,7 @@ public class DeviceClient implements IDeviceService {
 	public AmxApiResponse<BoolRespModel, Object> clearDeviceState(Integer deviceRegId, String paireToken,
 			String sessionToken) {
 		try {
-			LOGGER.debug("in clearDeviceState");
+			LOGGER.debug("in clearDeviceState {}", deviceRegId);
 			String url = appConfig.getJaxURL() + Path.DEVICE_STATE_CLEAR;
 			return restService.ajax(url).meta(new JaxMetaInfo()).field(Params.DEVICE_REG_ID, deviceRegId)
 					.field(Params.PAIRE_TOKEN, paireToken).field(Params.SESSION_TOKEN, sessionToken).postForm()
