@@ -3,8 +3,6 @@ package com.amx.jax.services;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import javax.transaction.Transactional;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,12 +18,10 @@ import com.amx.jax.constants.DeviceStateDataType;
 import com.amx.jax.customer.dao.EmployeeDao;
 import com.amx.jax.customer.service.CustomerService;
 import com.amx.jax.dao.DeviceStateInfoDao;
-import com.amx.jax.dbmodel.Device;
 import com.amx.jax.dbmodel.DeviceStateInfo;
 import com.amx.jax.dbmodel.LoginLogoutHistory;
 import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.manager.DeviceManager;
-import com.amx.jax.model.request.DeviceRegistrationRequest;
 import com.amx.jax.model.request.device.SignaturePadCustomerRegStateInfo;
 import com.amx.jax.model.request.device.SignaturePadCustomerRegStateMetaInfo;
 import com.amx.jax.model.request.device.SignaturePadFCPurchaseSaleInfo;
@@ -34,7 +30,6 @@ import com.amx.jax.model.response.DeviceStatusInfoDto;
 import com.amx.jax.model.response.IDeviceStateData;
 import com.amx.jax.rbaac.DeviceAuthClient;
 import com.amx.jax.userservice.service.UserService;
-import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;;
 
 @Service
