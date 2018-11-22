@@ -204,8 +204,8 @@ public class JaxService implements IMetaRequestOutFilter<JaxMetaInfo> {
 
 	@Override
 	public void outFilter(JaxMetaInfo requestMeta) {
-		populateUser(jaxMetaInfo, getCustomerId());
 		populateCommon(requestMeta);
+		populateUser(requestMeta, getCustomerId());
 	}
 
 	@Override
