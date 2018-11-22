@@ -68,6 +68,7 @@ public class DeviceManager {
 		deviceDao.saveDevice(device);
 		DevicePairOtpResponse resp = generateDevicePaireOtpResponse(device); 
 		resp.setSessionPairToken(sessionPairToken);
+		resp.setOtp(otp);
 		return resp;
 	}
 

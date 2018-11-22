@@ -56,7 +56,7 @@ public class DeviceController implements IDeviceService {
 		return AmxApiResponse.build(response);
 	}
 
-	@RequestMapping(value = Path.DEVICE_CREATE_SESSION, method = RequestMethod.GET)
+	@RequestMapping(value = Path.DEVICE_CREATE_SESSION, method = RequestMethod.POST)
 	@Override
 	public AmxApiResponse<DevicePairOtpResponse, Object> createDeviceSession(
 			@RequestParam(name = Params.DEVICE_REG_ID) Integer deviceRegId,
