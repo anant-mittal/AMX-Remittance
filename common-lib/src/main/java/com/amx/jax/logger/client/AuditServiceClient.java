@@ -48,8 +48,10 @@ public class AuditServiceClient implements AuditService {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Autowired
-	public AuditServiceClient(AppConfig appConfig, List<AuditFilter> filters,
-			@Autowired(required = false) ITunnelService iTunnelService) {
+	public AuditServiceClient(
+			AppConfig appConfig, List<AuditFilter> filters,
+			@Autowired(required = false) ITunnelService iTunnelService
+	) {
 
 		String[] allowedMarkersList = appConfig.getPrintableAuditMarkers();
 		String[] skippedMarkersList = appConfig.getSkipAuditMarkers();
@@ -149,7 +151,7 @@ public class AuditServiceClient implements AuditService {
 			captureDetails(event);
 			return logAbstractEvent(marker, event, capture);
 		} catch (Exception e) {
-			LOGGER2.error("Exception while logAuditEvent {}", JsonUtil.toJson(event),e);
+			LOGGER2.error("Exception while logAuditEvent {}", JsonUtil.toJson(event), e);
 		}
 		return null;
 	}

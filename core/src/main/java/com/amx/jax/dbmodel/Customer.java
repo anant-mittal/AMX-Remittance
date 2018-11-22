@@ -5,6 +5,8 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -17,6 +19,8 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.Proxy;
+
+import com.amx.jax.constants.CustomerRegistrationType;
 
 
 @Entity
@@ -136,6 +140,9 @@ public class Customer implements java.io.Serializable {
 	private Date expiryDate;
 	
 	private IncomeRangeMaster fsIncomeRangeMaster;
+	
+	/* Registration Type added */
+	private CustomerRegistrationType customerRegistrationType;
 	
 
 	public Customer() {
@@ -900,6 +907,16 @@ public class Customer implements java.io.Serializable {
 
 	public void setFsIncomeRangeMaster(IncomeRangeMaster fsIncomeRangeMaster) {
 		this.fsIncomeRangeMaster = fsIncomeRangeMaster;
+	}
+
+	@Column(name = "REGISTRATION_TYPE")
+	@Enumerated(value = EnumType.STRING)
+	public CustomerRegistrationType getCustomerRegistrationType() {
+		return customerRegistrationType;
+	}
+
+	public void setCustomerRegistrationType(CustomerRegistrationType customerRegistrationType) {
+		this.customerRegistrationType = customerRegistrationType;
 	}
 
 }

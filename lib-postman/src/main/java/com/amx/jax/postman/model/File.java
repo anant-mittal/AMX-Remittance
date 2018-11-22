@@ -198,10 +198,14 @@ public class File {
 	}
 
 	public static File fromBase64(String base64String) {
+		return fromBase64(base64String, Type.TEXT);
+	}
+
+	public static File fromBase64(String base64String, Type defaultType) {
 		String[] strings = base64String.split(",");
 		Type extension;
 		String dataPart;
-		if (strings.length > 0) {
+		if (strings.length > 1) {
 			dataPart = strings[1];
 			switch (strings[0]) {// check image's extension
 			case "data:image/jpeg;base64":
@@ -215,7 +219,7 @@ public class File {
 				break;
 			}
 		} else {
-			extension = Type.TEXT;
+			extension = defaultType;
 			dataPart = strings[0];
 		}
 		File file = new File();

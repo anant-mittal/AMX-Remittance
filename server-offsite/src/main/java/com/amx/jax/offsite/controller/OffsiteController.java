@@ -169,10 +169,14 @@ public class OffsiteController {
 		OffsiteCustomerRegistrationRequest req = null;
 		customerSession.setTranxId(customerPersonalDetail.getIdentityInt());
 		AmxApiResponse<OffsiteCustomerRegistrationRequest, SendOtpModel> resp = new AmxApiResponse<OffsiteCustomerRegistrationRequest, SendOtpModel>();
-		if (mOtp == null && eOtp == null) {
+		if (mOtp == null) {
 			otpmodel = offsiteCustRegClient.sendOtp(customerPersonalDetail).getResult();
 			resp.setMeta(otpmodel);
-			resp.setStatusEnum(OffsiteServerCodes.DOTP_REQUIRED);
+			if (ArgUtil.isEmpty(customerPersonalDetail.getEmail())) {
+				resp.setStatusEnum(OffsiteServerCodes.MOTP_REQUIRED);
+			} else {
+				resp.setStatusEnum(OffsiteServerCodes.DOTP_REQUIRED);
+			}
 		} else {
 			OffsiteCustomerRegistrationRequest offsiteCustRegModel = new OffsiteCustomerRegistrationRequest();
 			offsiteCustRegModel.seteOtp(eOtp);

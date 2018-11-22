@@ -1,11 +1,25 @@
+<meta http-equiv="refresh" content="3;url=https://localhost:8020" />
+
 <center>
-	<div th:if="${TERMINAL_ID == null}">
-		<form method="post">
-			<input name="terminalId" placeholder="Terminal ID" />
-			<button type="submit">Save</button>
-		</form>
-	</div>
-	<div th:if="${REG_ID != null}">
-		REG ID : <span th:text="${REG_ID}"></span>
-	</div>
+	<table align="center" border=1>
+		<tr>
+			<th>Al Mulla Exchange : BranchAdapter</th>
+		</tr>
+		<tr>
+			<td align="center">
+				<div>&nbsp;
+				</div>
+				<form method="post">
+					<input name="terminalId" placeholder="Terminal ID" />
+					<button type="submit">Save</button>
+				</form>
+				<div>
+					REG ID : <span th:text="${REG_ID}"></span>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td></td>
+		</tr>
+	</table>
 </center>

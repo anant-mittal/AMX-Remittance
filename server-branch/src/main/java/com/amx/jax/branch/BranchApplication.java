@@ -11,8 +11,6 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.jax.client.configs.JaxMetaInfo;
-import com.amx.jax.swagger.MockParamBuilder;
-import com.amx.jax.swagger.MockParamBuilder.MockParam;
 
 @SpringBootApplication
 @ComponentScan("com.amx.jax")

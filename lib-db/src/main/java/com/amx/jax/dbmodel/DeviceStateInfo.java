@@ -13,7 +13,6 @@ import javax.persistence.Lob;
 import javax.persistence.PrePersist;
 import javax.persistence.Table;
 
-import com.amx.jax.constants.DeviceState;
 import com.amx.jax.constants.DeviceStateDataType;
 
 @Entity
@@ -23,10 +22,6 @@ public class DeviceStateInfo {
 	@Id
 	@Column(name = "DEVICE_CLIENT_REG_ID")
 	BigDecimal deviceRegId;
-
-	@Column(name = "STATE")
-	@Enumerated(value = EnumType.STRING)
-	DeviceState state;
 
 	@Column(name = "CREATED_DATE")
 	Date createdDate;
@@ -44,23 +39,18 @@ public class DeviceStateInfo {
 	@Enumerated(value = EnumType.STRING)
 	DeviceStateDataType stateDataType;
 
-	@Column(name = "PAIR_TOKEN")
-	String pairToken;
-
-	@Column(name = "SESSION_TOKEN")
-	String sessionToken;
-
-	@Column(name = "OTP_TOKEN")
-	String otpToken;
-	
-	@Column(name = "OTP_TOKEN_CREATED_DATE")
-	Date otpTokenCreatedDate;
-	
 	@Column(name = "SIGNATURE_CLOB")
 	String signature;
 	
 	@Column(name = "EMPLOYEE_ID")
 	BigDecimal employeeId;
+	
+	@Column(name = "STATE_DATA_MODIFIED_DATE")
+	Date stateDataModifiedDate;
+
+	public DeviceStateInfo(Integer registrationId) {
+		this.deviceRegId = new BigDecimal(registrationId);
+	}
 
 	public BigDecimal getDeviceRegId() {
 		return deviceRegId;
@@ -70,13 +60,6 @@ public class DeviceStateInfo {
 		this.deviceRegId = deviceRegId;
 	}
 
-	public DeviceState getState() {
-		return state;
-	}
-
-	public void setState(DeviceState state) {
-		this.state = state;
-	}
 
 	public Date getCreatedDate() {
 		return createdDate;
@@ -102,14 +85,6 @@ public class DeviceStateInfo {
 		this.createdBy = createdBy;
 	}
 
-	public String getSessionToken() {
-		return sessionToken;
-	}
-
-	public void setSessionToken(String sessionToken) {
-		this.sessionToken = sessionToken;
-	}
-
 	public String getStateData() {
 		return stateData;
 	}
@@ -124,22 +99,6 @@ public class DeviceStateInfo {
 
 	public void setStateDataType(DeviceStateDataType stateDataType) {
 		this.stateDataType = stateDataType;
-	}
-
-	public String getOtpToken() {
-		return otpToken;
-	}
-
-	public void setOtpToken(String otpToken) {
-		this.otpToken = otpToken;
-	}
-
-	public String getPairToken() {
-		return pairToken;
-	}
-
-	public void setPairToken(String pairToken) {
-		this.pairToken = pairToken;
 	}
 
 	@PrePersist
@@ -163,12 +122,12 @@ public class DeviceStateInfo {
 		this.employeeId = employeeId;
 	}
 
-	public Date getOtpTokenCreatedDate() {
-		return otpTokenCreatedDate;
+	public Date getStateDataModifiedDate() {
+		return stateDataModifiedDate;
 	}
 
-	public void setOtpTokenCreatedDate(Date otpTokenCreatedDate) {
-		this.otpTokenCreatedDate = otpTokenCreatedDate;
+	public void setStateDataModifiedDate(Date stateDataModifiedDate) {
+		this.stateDataModifiedDate = stateDataModifiedDate;
 	}
 
 }

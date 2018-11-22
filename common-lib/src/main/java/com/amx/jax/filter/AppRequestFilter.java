@@ -24,6 +24,8 @@ import com.amx.jax.AppConfig;
 import com.amx.jax.AppConstants;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.dict.Tenant;
+import com.amx.jax.http.CommonHttpRequest;
+import com.amx.jax.http.RequestType;
 import com.amx.jax.logger.client.AuditServiceClient;
 import com.amx.jax.logger.events.RequestTrackEvent;
 import com.amx.jax.scope.TenantContextHolder;
@@ -33,7 +35,6 @@ import com.amx.utils.UniqueID;
 import com.amx.utils.Urly;
 
 @Component
-// @PropertySource("classpath:application-logger.properties")
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class AppRequestFilter implements Filter {
 
@@ -41,11 +42,14 @@ public class AppRequestFilter implements Filter {
 
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
-		// TODO Auto-generated method stub
+		LOGGER.info("Filter Intialzed");
 	}
 
 	@Autowired
 	AppConfig appConfig;
+
+	@Autowired
+	CommonHttpRequest commonHttpRequest;
 
 	private boolean doesTokenMatch(HttpServletRequest req, HttpServletResponse resp, String traceId) {
 		String authToken = req.getHeader(AppConstants.AUTH_KEY_XKEY);
@@ -58,8 +62,7 @@ public class AppRequestFilter implements Filter {
 
 	private boolean isRequestValid(
 			RequestType reqType, HttpServletRequest req, HttpServletResponse resp,
-			String traceId
-	) {
+			String traceId) {
 		if (reqType.isAuth() && appConfig.isAppAuthEnabled() && !doesTokenMatch(req, resp, traceId)) {
 			return false;
 		} else {
@@ -74,7 +77,7 @@ public class AppRequestFilter implements Filter {
 		HttpServletRequest req = ((HttpServletRequest) request);
 		HttpServletResponse resp = ((HttpServletResponse) response);
 		try {
-			RequestType reqType = RequestType.from(req);
+			RequestType reqType = commonHttpRequest.getApiRequestType(req);
 			AppContextUtil.setRequestType(reqType);
 
 			// Tenant Tracking
@@ -123,8 +126,7 @@ public class AppRequestFilter implements Filter {
 				} else {
 					sessionID = ArgUtil.parseAsString(
 							session.getAttribute(AppConstants.SESSION_ID_XKEY),
-							UniqueID.generateString()
-					);
+							UniqueID.generateString());
 				}
 
 				AppContextUtil.setSessionId(sessionID);
@@ -167,7 +169,7 @@ public class AppRequestFilter implements Filter {
 
 	@Override
 	public void destroy() {
-		// TODO Auto-generated method stub
+		LOGGER.info("Filter Destroyed");
 	}
 
 }

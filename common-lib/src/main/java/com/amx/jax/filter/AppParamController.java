@@ -13,13 +13,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.AppParam;
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.http.ApiRequest;
 import com.amx.jax.http.CommonHttpRequest;
+import com.amx.jax.http.RequestType;
 import com.amx.jax.model.UserDevice;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.jax.types.DigitsDnum;
 import com.amx.jax.types.Pnum;
 import com.amx.jax.types.WritersPnum;
-import com.amx.utils.CryptoUtil;
+import com.amx.utils.CryptoUtil.HashBuilder;
 
 @RestController
 public class AppParamController {
@@ -37,6 +39,7 @@ public class AppParamController {
 	@Autowired
 	CommonHttpRequest commonHttpRequest;
 
+	@ApiRequest(type = RequestType.PING)
 	@RequestMapping(value = PARAM_URL, method = RequestMethod.GET)
 	public AppParam[] geoLocation(@RequestParam(required = false) AppParam id) {
 		if (id != null) {
@@ -68,8 +71,13 @@ public class AppParamController {
 	}
 
 	@RequestMapping(value = "/pub/amx/hmac", method = RequestMethod.GET)
-	public String hmac(@RequestParam Long inteval, @RequestParam String secret, @RequestParam String message) {
-		return CryptoUtil.generateHMAC(inteval, secret, message);
+	public Map<String, String> hmac(@RequestParam Long interval, @RequestParam String secret,
+			@RequestParam String message, @RequestParam Integer length) {
+		Map<String, String> map = new HashMap<String, String>();
+		HashBuilder builder = new HashBuilder().interval(interval).secret(secret).message(message);
+		map.put("hmac", builder.toHMAC().output());
+		map.put("numeric", builder.toNumeric(length).output());
+		return map;
 	}
 
 }

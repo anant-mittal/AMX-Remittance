@@ -39,43 +39,6 @@
 			</exclusions>
 		</dependency>
 
-		<dependency>
-			<groupId>com.github.sarveswaran-m</groupId>
-			<artifactId>util.concurrent.blockingMap</artifactId>
-			<version>0.91</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>net.east301</groupId>
-			<artifactId>java-keyring</artifactId>
-			<version>1.0.0</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.amx.jax</groupId>
-			<artifactId>lib-adapter</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.amx.jax</groupId>
-			<artifactId>lib-ext-jar</artifactId>
-			<type>pom</type>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>kw-card</groupId>
-			<artifactId>paci-card-library</artifactId>
-			<version>1.0</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>kw-card</groupId>
-			<artifactId>jna</artifactId>
-			<version>1.0</version>
-			<scope>provided</scope>
-		</dependency>
-
 	</dependencies>
 	<properties>
 		<java.version>1.8</java.version>

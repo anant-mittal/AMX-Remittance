@@ -1,7 +1,11 @@
 package com.amx.jax.model.response.customer;
 
-public class CustomerContactDto {
+import java.io.Serializable;
 
+public class CustomerContactDto implements Serializable {
+
+	private static final long serialVersionUID = -9000337990488461109L;
+	
 	String countryName;
 	String cityName;
 	String block;

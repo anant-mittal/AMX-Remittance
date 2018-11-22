@@ -26,7 +26,8 @@ public class CardService implements ICardService {
 	}
 
 	@Override
-	public CardData getCardDetailsByTerminal(String terminalId, Boolean wait, Boolean flush) throws InterruptedException {
+	public CardData getCardDetailsByTerminal(String terminalId, Boolean wait, Boolean flush)
+			throws InterruptedException {
 		CardData data = null;
 		if (wait) {
 			data = cardBox.take(terminalId, 15, TimeUnit.SECONDS);

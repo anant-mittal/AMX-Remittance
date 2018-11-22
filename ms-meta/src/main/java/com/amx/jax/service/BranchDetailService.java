@@ -1,8 +1,6 @@
 package com.amx.jax.service;
 
-import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,7 +24,6 @@ import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.response.BranchSystemDetailDto;
 import com.amx.jax.services.AbstractService;
 import com.amx.jax.validation.BranchDetailValidation;
-import com.amx.utils.NumberUtil;
 
 /**
  * @author Subodh Bhoir

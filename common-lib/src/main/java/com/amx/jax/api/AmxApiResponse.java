@@ -87,6 +87,12 @@ public class AmxApiResponse<T, M> extends AResponse<M>
 		return null;
 	}
 
+	@JsonIgnore
+	public void setResult(T result) {
+		this.results = new ArrayList<T>();
+		this.results.add(result);
+	}
+
 	public void addResult(T result) {
 		this.results.add(result);
 	}

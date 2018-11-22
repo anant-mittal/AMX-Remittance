@@ -59,12 +59,12 @@ public class DeviceRequest {
 	}
 
 	public DevicePairingCreds validateDevice() {
-		String deviceRegKey = getDeviceRegId();
+		String deviceRegId = getDeviceRegId();
 		String deviceRegToken = getDeviceRegToken();
-		if (ArgUtil.isEmpty(deviceRegKey) || ArgUtil.isEmpty(deviceRegToken)) {
+		if (ArgUtil.isEmpty(deviceRegId) || ArgUtil.isEmpty(deviceRegToken)) {
 			throw new OffsiteServerError(OffsiteServerCodes.CLIENT_CREDS_MISSING);
 		}
-		return DeviceRestModels.getDevicePairingCreds(deviceRegKey, deviceRegToken);
+		return DeviceRestModels.getDevicePairingCreds(deviceRegId, deviceRegToken);
 	}
 
 	public DeviceData validateSession() {
@@ -81,10 +81,8 @@ public class DeviceRequest {
 			throw new OffsiteServerError(OffsiteServerCodes.INVALID_CLIENT_SESSION, "Invalid Device");
 		}
 
-		if (!DeviceConstants.validateSessionPairingTokenX(
-				devicePairingCreds.getDeviceRegId(), sessionPairToken,
-				deviceData.getSessionPairingTokenX()
-		)) {
+		if (!DeviceConstants.validateSessionPairingTokenX(devicePairingCreds.getDeviceRegId(), sessionPairToken,
+				deviceData.getSessionPairingTokenX())) {
 			throw new OffsiteServerError(OffsiteServerCodes.INVALID_CLIENT_SESSION, "Invalid SessionPairingToken");
 		}
 		return deviceData;
@@ -93,13 +91,15 @@ public class DeviceRequest {
 	public DeviceData validateRequest() {
 		DeviceData deviceData = validateSession();
 		// Same logic on client side
-		if (!DeviceConstants.validateDeviceReqToken(
-				deviceData.getDeviceReqKey(), getDeviceRegId(),
-				getDeviceRequestToken()
-		)) {
+		if (!DeviceConstants.validateDeviceReqToken(deviceData.getDeviceReqKey(), getDeviceRegId(),
+				getDeviceRequestToken())) {
 			throw new OffsiteServerError(OffsiteServerCodes.INVALID_CLIENT_REQUEST);
 		}
 		return deviceData;
+	}
+	
+	public void updateStamp(Object deviceRegId) {
+		deviceBox.updateStamp(deviceRegId);
 	}
 
 	public SessionPairingCreds createSession(String sessionPairToken, String sessionOtp, String terminalId) {
@@ -114,6 +114,7 @@ public class DeviceRequest {
 		// Generate and Save Encrypted version of SessionPairing Key
 		deviceData
 				.setSessionPairingTokenX(DeviceConstants.generateSessionPairingTokenX(deviceRegKey, sessionPairToken));
+		deviceData.setUpdatestamp(System.currentTimeMillis());
 		deviceBox.put(deviceRegKey, deviceData);
 		response.setHeader(DeviceConstants.Keys.DEVICE_REQ_KEY_XKEY, deviceData.getDeviceReqKey());
 

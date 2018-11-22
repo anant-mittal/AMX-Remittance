@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 /**
  * The Class Constants.
  */
@@ -68,12 +67,26 @@ public class Constants {
 
 	/** The Constant IDENTITY_TYPE_ID. */
 	public static final String IDENTITY_TYPE_ID = "198";
-	
+
 	public static final String COMPNY_TYPE = "Corporate";
-	
+
 	public static final String COMMON_NATIONALITY = "ALL";
-	
+
 	public static final String COMPONENT_NAME = "Identity Type";
-	
+
 	public static final String NO = "N";
+	
+	/** The Constant CUST_DB_SCAN. */
+	public static final String CUST_DB_SCAN = "D";
+
+	public static class Common {
+		public static final String SUCCESS = "SUCCESS";
+		public static final String FAILED = "FAILED";
+		public static final String UNKNOWN = "UNKNOWN";
+		public static final String YES = "YES";
+		public static final String NO = "NO";
+		public static final String FALSE = "FALSE";
+		public static final String TRUE = "TRUE";
+	}
+
 }

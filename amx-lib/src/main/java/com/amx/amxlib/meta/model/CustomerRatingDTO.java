@@ -2,8 +2,11 @@ package com.amx.amxlib.meta.model;
 
 import java.math.BigDecimal;
 import java.util.Date;
+
 import javax.validation.constraints.NotNull;
+
 import org.hibernate.validator.constraints.Range;
+
 import com.amx.jax.model.AbstractModel;
 
 public class CustomerRatingDTO extends AbstractModel {
