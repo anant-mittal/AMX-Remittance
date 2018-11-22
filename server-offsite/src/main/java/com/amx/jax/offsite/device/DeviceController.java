@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
-import com.amx.jax.client.DeviceClient;
+import com.amx.jax.client.DeviceStateClient;
 import com.amx.jax.client.IDeviceService;
 import com.amx.jax.client.MetaClient;
 import com.amx.jax.device.DeviceConstants;
@@ -44,7 +44,7 @@ public class DeviceController {
 	private static final Logger LOGGER = LoggerService.getLogger(DeviceController.class);
 
 	@Autowired
-	private DeviceClient deviceClient;
+	private DeviceStateClient deviceClient;
 
 	@Autowired
 	private MetaClient metaClient;
@@ -106,7 +106,7 @@ public class DeviceController {
 		String deviceRegId = deviceRequestValidator.getDeviceRegId();
 		String deviceRegToken = deviceRequestValidator.getDeviceRegToken();
 
-		DevicePairOtpResponse resp = deviceClient.sendOtpForPairing(ArgUtil.parseAsInteger(deviceRegId), deviceRegToken)
+		DevicePairOtpResponse resp = deviceClient.createDeviceSession(ArgUtil.parseAsInteger(deviceRegId), deviceRegToken)
 				.getResult();
 		SessionPairingCreds creds = deviceRequestValidator.createSession(resp.getSessionPairToken(), resp.getOtp(),
 				resp.getTermialId());
@@ -117,7 +117,7 @@ public class DeviceController {
 	public AmxApiResponse<DevicePairOtpResponse, BoolRespModel> validateOtpForPairing(
 			@RequestParam ClientType deviceType,
 			@RequestParam Integer terminalId, @RequestParam(required = false) String mOtp) {
-		AmxApiResponse<DevicePairOtpResponse, BoolRespModel> resp = deviceClient.validateOtpForPairing(
+		AmxApiResponse<DevicePairOtpResponse, BoolRespModel> resp = deviceClient.pairDeviceSession(
 				deviceType, terminalId,
 				mOtp);
 		deviceRequestValidator.updateStamp(resp.getResult().getDeviceRegId());

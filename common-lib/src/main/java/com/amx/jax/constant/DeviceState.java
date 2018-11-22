@@ -1,4 +1,4 @@
-package com.amx.jax.constants;
+package com.amx.jax.constant;
 
 public enum DeviceState {
 

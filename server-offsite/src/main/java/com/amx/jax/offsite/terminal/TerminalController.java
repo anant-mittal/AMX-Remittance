@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
-import com.amx.jax.client.DeviceClient;
+import com.amx.jax.client.DeviceStateClient;
 import com.amx.jax.client.IDeviceService;
 import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.model.request.device.SignaturePadCustomerRegStateMetaInfo;
@@ -44,7 +44,7 @@ import io.swagger.annotations.ApiOperation;
 public class TerminalController {
 
 	@Autowired
-	private DeviceClient deviceClient;
+	private DeviceStateClient deviceClient;
 
 	@Autowired
 	private TerminalBox terminalBox;

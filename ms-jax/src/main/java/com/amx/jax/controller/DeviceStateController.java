@@ -19,78 +19,19 @@ import com.amx.jax.client.IDeviceService;
 import com.amx.jax.constants.DeviceStateDataType;
 import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.model.request.DeviceRegistrationRequest;
-import com.amx.jax.model.request.DeviceStateInfoChangeRequest;
 import com.amx.jax.model.request.device.SignaturePadCustomerRegStateMetaInfo;
 import com.amx.jax.model.request.device.SignaturePadFCPurchaseSaleInfo;
 import com.amx.jax.model.request.device.SignaturePadRemittanceInfo;
-import com.amx.jax.model.response.DeviceDto;
-import com.amx.jax.model.response.DevicePairOtpResponse;
 import com.amx.jax.model.response.DeviceStatusInfoDto;
-import com.amx.jax.services.DeviceService;
+import com.amx.jax.services.DeviceStateService;
 
 @RestController
-public class DeviceController implements IDeviceService {
+public class DeviceStateController implements IDeviceService {
 
 	@Autowired
-	DeviceService deviceService;
+	DeviceStateService deviceService;
 
 	Logger logger = LoggerFactory.getLogger(getClass());
-
-	@RequestMapping(value = Path.DEVICE_REG, method = RequestMethod.POST)
-	@Override
-	public AmxApiResponse<DeviceDto, Object> registerNewDevice(@Valid @RequestBody DeviceRegistrationRequest request) {
-
-		DeviceDto newDevice = deviceService.registerNewDevice(request);
-		return AmxApiResponse.build(newDevice);
-	}
-
-	@RequestMapping(value = Path.DEVICE_STATE, method = RequestMethod.POST)
-	@Override
-	public AmxApiResponse<BoolRespModel, Object> updateDeviceState(
-			@Valid @RequestBody DeviceStateInfoChangeRequest request,
-			@RequestParam(name = Params.DEVICE_REG_ID) Integer registrationId,
-			@RequestParam(name = Params.PAIRE_TOKEN) String paireToken,
-			@RequestParam(name = Params.SESSION_TOKEN) String sessionToken) {
-		BoolRespModel response = deviceService.updateDeviceState(request, registrationId, paireToken, sessionToken);
-		return AmxApiResponse.build(response);
-	}
-
-	@RequestMapping(value = Path.DEVICE_ACTIVATE, method = RequestMethod.POST)
-	@Override
-	public AmxApiResponse<BoolRespModel, Object> activateDevice(
-			@RequestParam(name = Params.DEVICE_REG_ID) Integer deviceRegId,
-			@RequestParam(name = Params.MOTP, required = false) String mOtp) {
-		BoolRespModel response = deviceService.activateDevice(deviceRegId);
-		return AmxApiResponse.build(response);
-	}
-
-	@RequestMapping(value = Path.DEVICE_DEACTIVATE, method = RequestMethod.POST)
-	@Override
-	public AmxApiResponse<BoolRespModel, Object> deactivateDevice(
-			@RequestParam(name = Params.DEVICE_REG_ID) Integer deviceRegId) {
-		BoolRespModel response = deviceService.deactivateDevice(deviceRegId);
-		return AmxApiResponse.build(response);
-	}
-
-	@RequestMapping(value = Path.DEVICE_SEND_PAIR_OTP, method = RequestMethod.GET)
-	@Override
-	public AmxApiResponse<DevicePairOtpResponse, Object> sendOtpForPairing(
-			@RequestParam(name = Params.DEVICE_REG_ID) Integer deviceRegId,
-			@RequestParam(name = Params.PAIRE_TOKEN) String paireToken) {
-		DevicePairOtpResponse otpResponse = deviceService.sendOtpForPairing(deviceRegId, paireToken);
-		return AmxApiResponse.build(otpResponse);
-	}
-
-	@Override
-	@RequestMapping(value = Path.DEVICE_VALIDATE_PAIR_OTP, method = RequestMethod.POST)
-	public AmxApiResponse<DevicePairOtpResponse, BoolRespModel> validateOtpForPairing(
-			@RequestParam(name = Params.DEVICE_TYPE) ClientType deviceType,
-			@RequestParam(name = Params.TERMINAL_ID) Integer countryBranchSystemInventoryId,
-			@RequestParam(name = Params.OTP) String otp) {
-		DevicePairOtpResponse otpResponse = deviceService.validateOtpForPairing(deviceType,
-				countryBranchSystemInventoryId, otp.toString());
-		return AmxApiResponse.build(otpResponse, new BoolRespModel(Boolean.TRUE));
-	}
 
 	@Override
 	@RequestMapping(value = Path.DEVICE_STATUS_GET, method = RequestMethod.GET)
@@ -155,8 +96,7 @@ public class DeviceController implements IDeviceService {
 	@RequestMapping(value = Path.DEVICE_STATE_SIGNATURE_UPDATE, method = RequestMethod.POST)
 	@Override
 	public AmxApiResponse<BoolRespModel, Object> updateSignatureStateData(
-			@RequestParam(name = Params.DEVICE_REG_ID) Integer deviceRegId,
-			@RequestParam String signatureImageClob) {
+			@RequestParam(name = Params.DEVICE_REG_ID) Integer deviceRegId, @RequestParam String signatureImageClob) {
 		BoolRespModel otpResponse = deviceService.updateSignatureStateData(deviceRegId, signatureImageClob);
 		return AmxApiResponse.build(otpResponse);
 	}
