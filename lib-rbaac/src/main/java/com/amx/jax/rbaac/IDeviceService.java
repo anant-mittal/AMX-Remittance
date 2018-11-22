@@ -20,8 +20,8 @@ public interface IDeviceService {
 
 		public static final String DEVICE_ACTIVATE = PREFIX + "/activate";
 		public static final String DEVICE_DEACTIVATE = PREFIX + "/deactivate";
-		public static final String DEVICE_SEND_PAIR_OTP = PREFIX + "/sendpairotp";
-		public static final String DEVICE_VALIDATE_PAIR_OTP = PUBG + PREFIX + "/validatepairotp";
+		public static final String DEVICE_CREATE_SESSION = PREFIX + "/createsession";
+		public static final String DEVICE_PAIR_SESSION = PUBG + PREFIX + "/pairsession";
 		public static final String DEVICE_VALIDATE_DEVICE_TOKEN = PUBG + PREFIX + "/validatedevicetoken";
 		public static final String DEVICE_VALIDATE_SESSION_TOKEN = PUBG + PREFIX + "/validatesessiontoken";
 		public static final String DEVICE_STATE_UPDATE = PREFIX + "/updatedevicestate";
@@ -54,9 +54,9 @@ public interface IDeviceService {
 	@RbaacApiStatus(RbaacServiceError.CLIENT_NOT_FOUND)
 	AmxApiResponse<BoolRespModel, Object> deactivateDevice(Integer deviceRegId);
 
-	AmxApiResponse<DevicePairOtpResponse, Object> sendOtpForPairing(Integer deviceRegId, String paireToken);
+	AmxApiResponse<DevicePairOtpResponse, Object> createDeviceSession(Integer deviceRegId, String paireToken);
 
-	AmxApiResponse<DevicePairOtpResponse, BoolRespModel> validateOtpForPairing(ClientType deviceType,
+	AmxApiResponse<DevicePairOtpResponse, BoolRespModel> pairDeviceSession(ClientType deviceType,
 			Integer countryBranchSystemInventoryId, String otp);
 
 	AmxApiResponse<BoolRespModel, Object> validateDeviceToken(BigDecimal deviceRegId,

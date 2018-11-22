@@ -35,7 +35,7 @@ public class DeviceDao {
 	@Autowired
 	AppConfig appConfig;
 
-	public DeviceDto saveDevice(DeviceRegistrationRequest request) {
+	public Device saveDevice(DeviceRegistrationRequest request) {
 
 		Device device = new Device();
 		BranchSystemDetail branchSystem = branchDetailService.findBranchSystemByIp(request.getBranchSystemIp());
@@ -46,17 +46,12 @@ public class DeviceDao {
 		device.setDeviceType(request.getDeviceType());
 		device.setStatus("N");
 		device.setState(DeviceState.REGISTERED_NOT_ACTIVE);
-		if (!appConfig.isProdMode()) {
+		if (appConfig.isDebug()) {
 			device.setStatus("Y");
 			device.setState(DeviceState.REGISTERED);
 		}
 		deviceRepository.save(device);
-		DeviceDto dto = new DeviceDto();
-		try {
-			BeanUtils.copyProperties(dto, device);
-		} catch (Exception e) {
-		}
-		return dto;
+		return device;
 	}
 
 	/**

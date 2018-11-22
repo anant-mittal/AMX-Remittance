@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -95,19 +96,23 @@ public class DeviceService extends AbstractService {
 	public DeviceDto registerNewDevice(DeviceRegistrationRequest request) {
 		logger.info("In register device with request: {}", request);
 		deviceValidation.validateDeviceRegRequest(request);
-		DeviceDto newDevice = deviceDao.saveDevice(request);
+		Device newDevice = deviceDao.saveDevice(request);
 		DeviceState deviceState;
 		if (RbaacConstants.YES.equals(newDevice.getStatus())) {
 			deviceState = DeviceState.REGISTERED;
 		} else {
 			deviceState = DeviceState.REGISTERED_NOT_ACTIVE;
 		}
-		Device device = deviceDao.findDevice(newDevice.getRegistrationId());
-		device.setState(deviceState);
-		device.setPairToken(cryptoUtil.generateHash("DEVICE_PAIR", newDevice.getRegistrationId().toString()));
-		deviceDao.saveDevice(device);
+		newDevice.setState(deviceState);
+		newDevice.setPairToken(cryptoUtil.generateHash("DEVICE_PAIR", newDevice.getRegistrationId().toString()));
+		deviceDao.saveDevice(newDevice);
 		logger.info("device registered with id: {}", newDevice.getRegistrationId());
-		return newDevice;
+		DeviceDto dto = new DeviceDto();
+		try {
+			BeanUtils.copyProperties(dto, newDevice);
+		} catch (Exception e) {
+		}
+		return dto;
 	}
 
 	public BoolRespModel activateDevice(Integer deviceRegId) {
@@ -161,7 +166,7 @@ public class DeviceService extends AbstractService {
 
 	public BigDecimal getDeviceRegIdByBranchInventoryId(ClientType deviceClientType,
 			BigDecimal countryBranchSystemInventoryId) {
-		// TODO Auto-generated method stub
-		return null;
+		return deviceDao.findAllActiveDevices(countryBranchSystemInventoryId, deviceClientType).get(0)
+				.getRegistrationId();
 	}
 }

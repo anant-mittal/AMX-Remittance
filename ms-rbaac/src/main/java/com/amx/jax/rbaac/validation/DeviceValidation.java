@@ -10,6 +10,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.config.RbaacConfig;
 import com.amx.jax.constant.DeviceState;
 import com.amx.jax.dbmodel.BranchSystemDetail;
 import com.amx.jax.dbmodel.Device;
@@ -31,6 +32,8 @@ public class DeviceValidation {
 	CryptoUtil cryptoUtil;
 	@Autowired
 	BranchSystemDetailService branchDetailService;
+	@Autowired
+	RbaacConfig rbaacConfig ; 
 
 	public void validateDevice(Device device) {
 
@@ -122,8 +125,7 @@ public class DeviceValidation {
 	 */
 	public void validateOtpValidationTimeLimit(BigDecimal deviceRegId) {
 		Device device = deviceDao.findDevice(deviceRegId);
-		String configValueStr = "15"; // jaxConfigService.getConfigValue("DEVICE_OTP_VALIDITY_MINS", "15");
-		int configValue = Integer.parseInt(configValueStr);
+		int configValue = (rbaacConfig.getPaireOtpvalidationTime()) == null ? 15: rbaacConfig.getPaireOtpvalidationTime();
 		Date otpTokenCreationDate = device.getOtpTokenCreatedDate();
 		if (otpTokenCreationDate != null && !DeviceState.SESSION_PAIRED.equals(device.getState())) {
 			Date now = Calendar.getInstance().getTime();

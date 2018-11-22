@@ -56,16 +56,16 @@ public class DeviceServiceClient implements IDeviceService {
 	}
 
 	@Override
-	public AmxApiResponse<DevicePairOtpResponse, Object> sendOtpForPairing(Integer deviceRegId, String paireToken) {
+	public AmxApiResponse<DevicePairOtpResponse, Object> createDeviceSession(Integer deviceRegId, String paireToken) {
 		LOGGER.debug("in deactivateDevice");
-		String url = appConfig.getAuthURL() + Path.DEVICE_SEND_PAIR_OTP;
+		String url = appConfig.getAuthURL() + Path.DEVICE_CREATE_SESSION;
 		return restService.ajax(url).field(Params.DEVICE_REG_ID, deviceRegId).field(Params.PAIRE_TOKEN, paireToken)
 				.postForm().as(new ParameterizedTypeReference<AmxApiResponse<DevicePairOtpResponse, Object>>() {
 				});
 	}
 
 	@Override
-	public AmxApiResponse<DevicePairOtpResponse, BoolRespModel> validateOtpForPairing(ClientType deviceType,
+	public AmxApiResponse<DevicePairOtpResponse, BoolRespModel> pairDeviceSession(ClientType deviceType,
 			Integer countryBranchSystemInventoryId, String otp) {
 		// TODO Auto-generated method stub
 		return null;

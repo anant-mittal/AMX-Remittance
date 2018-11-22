@@ -106,7 +106,7 @@ public class DeviceController {
 		String deviceRegId = deviceRequestValidator.getDeviceRegId();
 		String deviceRegToken = deviceRequestValidator.getDeviceRegToken();
 
-		DevicePairOtpResponse resp = deviceClient.sendOtpForPairing(ArgUtil.parseAsInteger(deviceRegId), deviceRegToken)
+		DevicePairOtpResponse resp = deviceClient.createDeviceSession(ArgUtil.parseAsInteger(deviceRegId), deviceRegToken)
 				.getResult();
 		SessionPairingCreds creds = deviceRequestValidator.createSession(resp.getSessionPairToken(), resp.getOtp(),
 				resp.getTermialId());
@@ -117,7 +117,7 @@ public class DeviceController {
 	public AmxApiResponse<DevicePairOtpResponse, BoolRespModel> validateOtpForPairing(
 			@RequestParam ClientType deviceType,
 			@RequestParam Integer terminalId, @RequestParam(required = false) String mOtp) {
-		AmxApiResponse<DevicePairOtpResponse, BoolRespModel> resp = deviceClient.validateOtpForPairing(
+		AmxApiResponse<DevicePairOtpResponse, BoolRespModel> resp = deviceClient.pairDeviceSession(
 				deviceType, terminalId,
 				mOtp);
 		deviceRequestValidator.updateStamp(resp.getResult().getDeviceRegId());

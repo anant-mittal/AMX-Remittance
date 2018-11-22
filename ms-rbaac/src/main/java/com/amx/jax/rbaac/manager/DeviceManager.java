@@ -12,6 +12,7 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.jax.config.RbaacConfig;
 import com.amx.jax.constant.DeviceState;
 import com.amx.jax.dbmodel.Device;
 import com.amx.jax.dbmodel.DeviceStateInfo;
@@ -44,6 +45,8 @@ public class DeviceManager {
 	CryptoUtil cryptoUtil;
 	@Autowired
 	BranchSystemDetailService branchDetailService;
+	@Autowired
+	RbaacConfig rbaacConfig;
 
 	/**
 	 * generates pairing opt and save in db
@@ -93,12 +96,11 @@ public class DeviceManager {
 	}
 
 	public long getDeviceSessionTimeout() {
-		/*
-		 * JaxConfig jaxConf = jaxConfigService.getConfig("DEVICE_SESISON_TIMEOUT"); if
-		 * (jaxConf != null) { return Long.parseLong(jaxConf.getValue()); } else {
-		 */
+		Long sessionTimeout = rbaacConfig.getDeviceSessionTimeout();
+		if (sessionTimeout != null) {
+			return sessionTimeout.longValue();
+		}
 		return DeviceService.DEVICE_SESSION_TIMEOUT;
-		/* } */
 	}
 
 	public void validateLogIn(Device device) {
