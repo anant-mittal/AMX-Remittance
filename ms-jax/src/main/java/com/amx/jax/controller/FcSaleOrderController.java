@@ -40,7 +40,6 @@ import com.amx.jax.util.JaxContextUtil;
  * @date : 03/11/2018
  */
 @RestController
-@RequestMapping(FC_SALE_ENDPOINT)
 public class FcSaleOrderController implements IFxOrderService {
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
