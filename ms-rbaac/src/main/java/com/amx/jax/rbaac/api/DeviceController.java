@@ -78,19 +78,19 @@ public class DeviceController implements IDeviceService {
 
 	@Override
 	@RequestMapping(value = Path.DEVICE_VALIDATE_DEVICE_TOKEN, method = RequestMethod.POST)
-	public AmxApiResponse<BoolRespModel, Object> validateDeviceToken(
+	public AmxApiResponse<DevicePairOtpResponse, Object> validateDeviceToken(
 			@RequestParam(name = Params.DEVICE_REG_ID) BigDecimal deviceRegId,
 			@RequestParam(name = Params.PAIRE_TOKEN) String devicePairToken) {
-		BoolRespModel otpResponse = deviceService.validateDevicePairToken(deviceRegId, devicePairToken);
+		DevicePairOtpResponse otpResponse = deviceService.validateDevicePairToken(deviceRegId, devicePairToken);
 		return AmxApiResponse.build(otpResponse);
 	}
-	
+
 	@Override
 	@RequestMapping(value = Path.DEVICE_VALIDATE_SESSION_TOKEN, method = RequestMethod.POST)
-	public AmxApiResponse<BoolRespModel, Object> validateDeviceSessionToken(
+	public AmxApiResponse<DevicePairOtpResponse, Object> validateDeviceSessionToken(
 			@RequestParam(name = Params.DEVICE_REG_ID) BigDecimal deviceRegId,
 			@RequestParam(name = Params.SESSION_TOKEN) String deviceSessionToken) {
-		BoolRespModel repsonse = deviceService.validateDeviceSessionPairToken(deviceRegId, deviceSessionToken);
+		DevicePairOtpResponse repsonse = deviceService.validateDeviceSessionPairToken(deviceRegId, deviceSessionToken);
 		return AmxApiResponse.build(repsonse);
 	}
 
@@ -99,7 +99,8 @@ public class DeviceController implements IDeviceService {
 	public AmxApiResponse<BigDecimal, Object> getDeviceRegIdByBranchInventoryId(
 			@RequestParam(name = Params.DEVICE_CLIENT_TYPE) ClientType deviceClientType,
 			@RequestParam(name = Params.DEVICE_SYS_INV_ID) BigDecimal countryBranchSystemInventoryId) {
-		BigDecimal response = deviceService.getDeviceRegIdByBranchInventoryId(deviceClientType, countryBranchSystemInventoryId);
+		BigDecimal response = deviceService.getDeviceRegIdByBranchInventoryId(deviceClientType,
+				countryBranchSystemInventoryId);
 		return AmxApiResponse.build(response);
 	}
 }

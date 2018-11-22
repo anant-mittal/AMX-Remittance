@@ -59,10 +59,10 @@ public interface IDeviceService {
 	AmxApiResponse<DevicePairOtpResponse, BoolRespModel> pairDeviceSession(ClientType deviceType,
 			Integer countryBranchSystemInventoryId, String otp);
 
-	AmxApiResponse<BoolRespModel, Object> validateDeviceToken(BigDecimal deviceRegId,
+	AmxApiResponse<DevicePairOtpResponse, Object> validateDeviceToken(BigDecimal deviceRegId,
 			String devicePairToken);
 
-	AmxApiResponse<BoolRespModel, Object> validateDeviceSessionToken(BigDecimal deviceRegId, String deviceSessionToken);
+	AmxApiResponse<DevicePairOtpResponse, Object> validateDeviceSessionToken(BigDecimal deviceRegId, String deviceSessionToken);
 
 	AmxApiResponse<BigDecimal, Object> getDeviceRegIdByBranchInventoryId(ClientType deviceClientType,
 			BigDecimal countryBranchSystemInventoryId);

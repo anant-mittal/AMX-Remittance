@@ -138,22 +138,20 @@ public class DeviceService extends AbstractService {
 		deviceValidation.validateDeviceToken(device, otp);
 		// session pair success
 		device.setState(DeviceState.SESSION_PAIRED);
-		DevicePairOtpResponse resp = new DevicePairOtpResponse();
-		resp.setDeviceRegId(device.getRegistrationId());
-		resp.setTermialId(ArgUtil.parseAsString(device.getBranchSystemInventoryId()));
+		DevicePairOtpResponse resp = deviceManager.generateDevicePaireOtpResponse(device);
 		return resp;
 	}
 
-	public BoolRespModel validateDevicePairToken(BigDecimal deviceRegId, String devicePairToken) {
+	public DevicePairOtpResponse validateDevicePairToken(BigDecimal deviceRegId, String devicePairToken) {
 		Device device = deviceDao.findDevice(deviceRegId);
 		deviceValidation.validateDevice(device);
 		if (!device.getPairToken().equals(devicePairToken)) {
 			throw new AuthServiceException("Invalid paire token", RbaacServiceError.CLIENT_INVALID_PAIR_TOKEN);
 		}
-		return new BoolRespModel(true);
+		return deviceManager.generateDevicePaireOtpResponse(device);
 	}
 
-	public BoolRespModel validateDeviceSessionPairToken(BigDecimal deviceRegId, String deviceSessionToken) {
+	public DevicePairOtpResponse validateDeviceSessionPairToken(BigDecimal deviceRegId, String deviceSessionToken) {
 		Device device = deviceDao.findDevice(deviceRegId);
 		deviceValidation.validateDevice(device);
 		String sessionTokenGen = deviceManager.generateSessionPairToken(device);
@@ -161,7 +159,7 @@ public class DeviceService extends AbstractService {
 			throw new AuthServiceException("Session token is expired", RbaacServiceError.CLIENT_EXPIRED_SESSION_TOKEN);
 		}
 		deviceValidation.validateOtpValidationTimeLimit(deviceRegId);
-		return new BoolRespModel(true);
+		return deviceManager.generateDevicePaireOtpResponse(device);
 	}
 
 	public BigDecimal getDeviceRegIdByBranchInventoryId(ClientType deviceClientType,

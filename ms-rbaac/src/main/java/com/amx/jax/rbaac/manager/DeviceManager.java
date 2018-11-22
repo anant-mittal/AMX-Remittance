@@ -26,6 +26,7 @@ import com.amx.jax.rbaac.exception.AuthServiceException;
 import com.amx.jax.rbaac.service.BranchSystemDetailService;
 import com.amx.jax.rbaac.service.DeviceService;
 import com.amx.jax.util.CryptoUtil;
+import com.amx.utils.ArgUtil;
 import com.amx.utils.Random;
 
 /**
@@ -65,9 +66,7 @@ public class DeviceManager {
 		device.setSessionToken(sessionPairToken);
 		device.setOtpTokenCreatedDate(Calendar.getInstance().getTime());
 		deviceDao.saveDevice(device);
-		DevicePairOtpResponse resp = new DevicePairOtpResponse();
-		resp.setOtp(otp);
-		resp.setTermialId(getTerminalId(device));
+		DevicePairOtpResponse resp = generateDevicePaireOtpResponse(device); 
 		resp.setSessionPairToken(sessionPairToken);
 		return resp;
 	}
@@ -76,10 +75,6 @@ public class DeviceManager {
 		String hmacToken = com.amx.utils.CryptoUtil.generateHMAC(getDeviceSessionTimeout(), "DEVICE_SESSION_SALT",
 				device.getRegistrationId().toString());
 		return hmacToken;
-	}
-
-	private String getTerminalId(Device device) {
-		return device.getBranchSystemInventoryId().toString();
 	}
 
 	public boolean isLoggedIn(Device device) {
@@ -131,5 +126,13 @@ public class DeviceManager {
 	public void deactivateDevice(Device device) {
 		device.setStatus(RbaacConstants.NO);
 		deviceDao.saveDevice(device);
+	}
+
+	public DevicePairOtpResponse generateDevicePaireOtpResponse(Device device) {
+		DevicePairOtpResponse resp = new DevicePairOtpResponse();
+		resp.setDeviceRegId(device.getRegistrationId());
+		resp.setTermialId(ArgUtil.parseAsString(device.getBranchSystemInventoryId()));
+		resp.setDeviceState(device.getState());
+		return resp;
 	}
 }
