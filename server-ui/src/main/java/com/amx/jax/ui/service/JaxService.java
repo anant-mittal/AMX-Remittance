@@ -162,16 +162,7 @@ public class JaxService implements IMetaRequestOutFilter<JaxMetaInfo> {
 		jaxMetaInfo.setCountryBranchId(webAppConfig.getCountrybranchId());
 	}
 
-	/**
-	 * Sets the defaults.
-	 *
-	 * @param customerId the customer id
-	 * @return the jax service
-	 */
-	public JaxService setDefaults(BigDecimal customerId) {
-
-		populateCommon(jaxMetaInfo);
-
+	private void populateUser(JaxMetaInfo jaxMetaInfo, BigDecimal customerId) {
 		jaxMetaInfo.setReferrer(sessionService.getUserSession().getReferrer());
 		jaxMetaInfo.setDeviceId(sessionService.getAppDevice().getFingerprint());
 		jaxMetaInfo.setDeviceIp(sessionService.getAppDevice().getIp());
@@ -179,7 +170,26 @@ public class JaxService implements IMetaRequestOutFilter<JaxMetaInfo> {
 		jaxMetaInfo.setAppType(ArgUtil.parseAsString(sessionService.getAppDevice().getAppType()));
 
 		jaxMetaInfo.setCustomerId(customerId);
+	}
 
+	private BigDecimal getCustomerId() {
+		if (sessionService.getUserSession().getCustomerModel() != null) {
+			return sessionService.getUserSession().getCustomerModel().getCustomerId();
+		} else if (sessionService.getGuestSession().getCustomerModel() != null) {
+			return sessionService.getGuestSession().getCustomerModel().getCustomerId();
+		}
+		return null;
+	}
+
+	/**
+	 * Sets the defaults.
+	 *
+	 * @param customerId the customer id
+	 * @return the jax service
+	 */
+	public JaxService setDefaults(BigDecimal customerId) {
+		populateCommon(jaxMetaInfo);
+		populateUser(jaxMetaInfo, customerId);
 		return this;
 	}
 
@@ -189,24 +199,20 @@ public class JaxService implements IMetaRequestOutFilter<JaxMetaInfo> {
 	 * @return the jax service
 	 */
 	public JaxService setDefaults() {
-		if (sessionService.getUserSession().getCustomerModel() != null) {
-			return this.setDefaults(sessionService.getUserSession().getCustomerModel().getCustomerId());
-		} else if (sessionService.getGuestSession().getCustomerModel() != null) {
-			return this.setDefaults(sessionService.getGuestSession().getCustomerModel().getCustomerId());
-		}
-		return this.setDefaults(null);
+		return this.setDefaults(getCustomerId());
+	}
+
+	@Override
+	public void outFilter(JaxMetaInfo requestMeta) {
+		populateUser(jaxMetaInfo, getCustomerId());
+		populateCommon(requestMeta);
 	}
 
 	@Override
 	public JaxMetaInfo exportMeta() {
 		JaxMetaInfo jaxMetaInfo = new JaxMetaInfo();
-		populateCommon(jaxMetaInfo);
+		outFilter(jaxMetaInfo);
 		return jaxMetaInfo;
-	}
-
-	@Override
-	public void outFilter(JaxMetaInfo requestMeta) {
-		populateCommon(requestMeta);
 	}
 
 }
