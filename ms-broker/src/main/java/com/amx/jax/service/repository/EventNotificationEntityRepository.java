@@ -6,7 +6,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
-import com.amx.jax.dbmodel.EventNotificationEntity;
+import com.amx.jax.service.entity.EventNotificationEntity;
 
 public interface EventNotificationEntityRepository extends CrudRepository<EventNotificationEntity, BigDecimal>{
 	

@@ -107,7 +107,6 @@
 
 		<module>ms-jax</module>
 		<module>ms-rbaac</module>
-		<module>ms-broker</module>
 		<module>ms-worker</module>
 		<module>ms-radar</module>
 

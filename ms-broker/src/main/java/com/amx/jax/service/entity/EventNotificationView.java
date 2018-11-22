@@ -1,4 +1,4 @@
-package com.amx.jax.dbmodel;
+package com.amx.jax.service.entity;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -6,23 +6,14 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Id;
 import javax.persistence.Table;
 
-@Entity
-@Table(name = "EX_EVENT_NOTIFICATION")
-public class EventNotificationEntity implements Serializable {
-	private static final long serialVersionUID = 1L;
+import org.springframework.data.annotation.Id;
 
-	/*
-	 * This table is created to hold notification records to any system component.
-	 * 
-	 * Table will be feeded by different system components (Oracle procedures, Java
-	 * service, etc.) Table will be consume by scheduled service that will push the
-	 * records into a Message Queue and delete it at later stage
-	 * 
-	 * 12th August 2018 Salman and Lalit
-	 */
+@Entity
+@Table(name = "VW_EVENT_NOTIFICATION") // This view created from the table EX_EVENT_NOTIFICATION and EX_EVENT_MASTER
+public class EventNotificationView implements Serializable {
+	private static final long serialVersionUID = 1L;
 
 	@Id
 	@Column(name = "EVENT_NOTIFICATION_ID")
@@ -31,18 +22,25 @@ public class EventNotificationEntity implements Serializable {
 	@Column(name = "EVENT_MASTER_ID")
 	private BigDecimal event_master_id; // Foreign key from the table EX_EVENT_MASTER
 
+	@Column(name = "EVENT_CODE")
+	private String event_code; // Alpha numeric event code for the event. Will be the key value to subscribe to
+								// Message Queue
+
+	@Column(name = "EVENT_DESC")
+	private String event_desc;
+
+	@Column(name = "EVENT_PRIORITY")
+	private String event_priority; // L: Low, M: Moderate, H: High
+
 	@Column(name = "EVENT_DATA")
 	private String event_data; // Data should strictly follow the format below
 								// Key1:value1;Key2:value2;Key3:value3
 
 	@Column(name = "STATUS")
-	private BigDecimal status;
+	private BigDecimal status; // Record status. 1: Success, 0: Failed, NULL: Newly created
 
 	@Column(name = "CREATE_DATE")
 	private Date create_date;
-
-	@Column(name = "CREATED_BY")
-	private String created_by;
 
 	public BigDecimal getEvent_notification_id() {
 		return event_notification_id;
@@ -58,6 +56,30 @@ public class EventNotificationEntity implements Serializable {
 
 	public void setEvent_master_id(BigDecimal event_master_id) {
 		this.event_master_id = event_master_id;
+	}
+
+	public String getEvent_code() {
+		return event_code;
+	}
+
+	public void setEvent_code(String event_code) {
+		this.event_code = event_code;
+	}
+
+	public String getEvent_desc() {
+		return event_desc;
+	}
+
+	public void setEvent_desc(String event_desc) {
+		this.event_desc = event_desc;
+	}
+
+	public String getEvent_priority() {
+		return event_priority;
+	}
+
+	public void setEvent_priority(String event_priority) {
+		this.event_priority = event_priority;
 	}
 
 	public String getEvent_data() {
@@ -84,18 +106,11 @@ public class EventNotificationEntity implements Serializable {
 		this.create_date = create_date;
 	}
 
-	public String getCreated_by() {
-		return created_by;
-	}
-
-	public void setCreated_by(String created_by) {
-		this.created_by = created_by;
-	}
-
 	@Override
 	public String toString() {
-		return "EventNotificationEntity [event_notification_id=" + event_notification_id + ", event_master_id="
-				+ event_master_id + ", event_data=" + event_data + ", status=" + status + ", create_date=" + create_date
-				+ ", created_by=" + created_by + "]";
+		return "EventNotificationView [event_notification_id=" + event_notification_id + ", event_master_id="
+				+ event_master_id + ", event_code=" + event_code + ", event_desc=" + event_desc + ", event_priority="
+				+ event_priority + ", event_data=" + event_data + ", status=" + status + ", create_date=" + create_date
+				+ "]";
 	}
 }
