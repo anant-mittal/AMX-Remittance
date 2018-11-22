@@ -17,7 +17,12 @@ public class JaxClientMetaFilter implements IMetaRequestOutFilter<JaxMetaInfo> {
 	@Override
 	public JaxMetaInfo exportMeta() {
 		JaxMetaInfo jaxMetaInfo = new JaxMetaInfo();
+		outFilter(jaxMetaInfo);
+		return jaxMetaInfo;
+	}
 
+	@Override
+	public void outFilter(JaxMetaInfo jaxMetaInfo) {
 		jaxMetaInfo.setTenant(TenantContextHolder.currentSite());
 		jaxMetaInfo.setTraceId(ContextUtil.getTraceId());
 
@@ -28,13 +33,6 @@ public class JaxClientMetaFilter implements IMetaRequestOutFilter<JaxMetaInfo> {
 		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
 
 		// jaxMetaInfo.setCountryBranchId(offsiteAppConfig.getCountrybranchId());
-
-		return jaxMetaInfo;
-	}
-
-	@Override
-	public void outFilter(JaxMetaInfo requestMeta) {
-		// TODO Auto-generated method stub
 	}
 
 }

@@ -62,7 +62,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 	public AmxApiResponse<ApplicationSetupDTO, Object> getApplicationCountry() {
 		try {
 			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.APPL_COUNTRY)
-					.filter(metaFilter).get()
+					.meta(new JaxMetaInfo()).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<ApplicationSetupDTO, Object>>() {
 					});
 		} catch (Exception ae) {
@@ -74,7 +74,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 	public AmxApiResponse<ApplicationSetupDTO, Object> getApplicationCountryByCountryAndCompany() {
 		try {
 			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.APPL_COUNTRY_COMP)
-					.filter(metaFilter).get()
+					.meta(new JaxMetaInfo()).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<ApplicationSetupDTO, Object>>() {
 					});
 		} catch (Exception ae) {
@@ -85,7 +85,8 @@ public class MetaClient extends AbstractJaxServiceClient {
 
 	public AmxApiResponse<CountryMasterDTO, Object> getAllCountry() {
 		try {
-			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.API_COUNTRY).filter(metaFilter)
+			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.API_COUNTRY)
+					.meta(new JaxMetaInfo())
 					.get().as(new ParameterizedTypeReference<AmxApiResponse<CountryMasterDTO, Object>>() {
 					});
 		} catch (Exception ae) {
@@ -98,7 +99,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 	public AmxApiResponse<CountryMasterDTO, Object> getAllCountryByLanguageId(String languageId) {
 		try {
 			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.API_COUNTRY_BY_lANG_ID)
-					.filter(metaFilter).get()
+					.meta(new JaxMetaInfo()).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<CountryMasterDTO, Object>>() {
 					});
 		} catch (Exception ae) {
@@ -110,7 +111,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 	public AmxApiResponse<CountryMasterDTO, Object> getAllCountryByLanguageId(String languageId, String countryId) {
 		try {
 			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.API_COUNTRY_BY_lANG_COUNTRY_ID)
-					.filter(metaFilter).get()
+					.meta(new JaxMetaInfo()).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<CountryMasterDTO, Object>>() {
 					});
 		} catch (Exception ae) {
@@ -122,7 +123,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 	public AmxApiResponse<CountryMasterDTO, Object> getBusinessCountry() {
 		try {
 			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.API_COUNTRY_BC)
-					.filter(metaFilter).get()
+					.meta(new JaxMetaInfo()).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<CountryMasterDTO, Object>>() {
 					});
 		} catch (Exception ae) {
@@ -134,7 +135,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 	public AmxApiResponse<QuestModelDTO, Object> getSequrityQuestion() {
 		try {
 			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.SEQ_QUEST_LIST)
-					.filter(metaFilter).get()
+					.meta(new JaxMetaInfo()).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<QuestModelDTO, Object>>() {
 					});
 		} catch (Exception ae) {
@@ -146,7 +147,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 	public AmxApiResponse<QuestModelDTO, Object> getSequrityQuestionById(String questionId) {
 		try {
 			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.SEQ_QUEST_BY_ID)
-					.pathParam(MetaApi.PARAM_QUEST_ID, questionId).filter(metaFilter).get()
+					.pathParam(MetaApi.PARAM_QUEST_ID, questionId).meta(new JaxMetaInfo()).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<QuestModelDTO, Object>>() {
 					});
 		} catch (Exception ae) {
@@ -161,7 +162,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 	public AmxApiResponse<TermsAndConditionDTO, Object> getTermsAndCondition() {
 		try {
 			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.API_TERMS_BY_lANG_ID)
-					.filter(metaFilter).get()
+					.meta(new JaxMetaInfo()).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<TermsAndConditionDTO, Object>>() {
 					});
 		} catch (Exception ae) {
@@ -173,7 +174,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 	public AmxApiResponse<TermsAndConditionDTO, Object> getTermsAndConditionAsPerCountry() {
 		try {
 			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.API_TERMS_BY_lANG_COUNTRY_ID)
-					.filter(metaFilter).get()
+					.meta(new JaxMetaInfo()).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<TermsAndConditionDTO, Object>>() {
 					});
 		} catch (Exception ae) {
@@ -184,7 +185,8 @@ public class MetaClient extends AbstractJaxServiceClient {
 
 	public AmxApiResponse<WhyDoAskInformationDTO, Object> getWhyAskInfo() {
 		try {
-			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.API_WHY).filter(metaFilter)
+			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.API_WHY)
+					.meta(new JaxMetaInfo())
 					.get().as(new ParameterizedTypeReference<AmxApiResponse<WhyDoAskInformationDTO, Object>>() {
 					});
 		} catch (Exception ae) {
@@ -195,7 +197,8 @@ public class MetaClient extends AbstractJaxServiceClient {
 
 	public AmxApiResponse<UserFinancialYearDTO, Object> getFinancialYear() {
 		try {
-			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.API_FYEAR).filter(metaFilter)
+			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.API_FYEAR)
+					.meta(new JaxMetaInfo())
 					.get().as(new ParameterizedTypeReference<AmxApiResponse<UserFinancialYearDTO, Object>>() {
 					});
 		} catch (Exception ae) {
@@ -207,7 +210,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 	public AmxApiResponse<AuthenticationLimitCheckDTO, Object> getContactUsTime() {
 		try {
 			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.HELP_DESK_TIME)
-					.filter(metaFilter).get()
+					.meta(new JaxMetaInfo()).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<AuthenticationLimitCheckDTO, Object>>() {
 					});
 		} catch (Exception ae) {
@@ -218,7 +221,8 @@ public class MetaClient extends AbstractJaxServiceClient {
 
 	public AmxApiResponse<AuthenticationLimitCheckDTO, Object> getHelpDeskNo() {
 		try {
-			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.API_HELP_NO).filter(metaFilter)
+			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.API_HELP_NO)
+					.meta(new JaxMetaInfo())
 					.get().as(new ParameterizedTypeReference<AmxApiResponse<AuthenticationLimitCheckDTO, Object>>() {
 					});
 		} catch (Exception ae) {
@@ -230,7 +234,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 	public AmxApiResponse<MultiCountryDTO, Object> getMultiCountryList() {
 		try {
 			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.MULTI_COUNTRY)
-					.filter(metaFilter).get()
+					.meta(new JaxMetaInfo()).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<MultiCountryDTO, Object>>() {
 					});
 		} catch (Exception ae) {
@@ -249,10 +253,9 @@ public class MetaClient extends AbstractJaxServiceClient {
 
 	/**
 	 * @param beneficiaryCountryId
-	 * @param serviceGroupId
-	 *            - bank or cash
-	 * @param routingBankId
-	 *            - service provider id in case of cash or bank id in case of bank
+	 * @param serviceGroupId       - bank or cash
+	 * @param routingBankId        - service provider id in case of cash or bank id
+	 *                             in case of bank
 	 * @return CurrencyMasterDTO
 	 */
 	public AmxApiResponse<CurrencyMasterDTO, Object> getBeneficiaryCurrency(BigDecimal beneficiaryCountryId,
@@ -282,7 +285,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 	public AmxApiResponse<CurrencyMasterDTO, Object> getAllOnlineCurrency() {
 		try {
 			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.CURRENCY_ONLINE)
-					.filter(metaFilter).get()
+					.meta(new JaxMetaInfo()).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<CurrencyMasterDTO, Object>>() {
 					});
 		} catch (Exception ae) {
@@ -295,7 +298,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 	public AmxApiResponse<CurrencyMasterDTO, Object> getAllExchangeRateCurrencyList() {
 		try {
 			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.EXCHANGE_RATE_CURRENCY_LIST)
-					.filter(metaFilter).get()
+					.meta(new JaxMetaInfo()).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<CurrencyMasterDTO, Object>>() {
 					});
 		} catch (Exception ae) {
@@ -325,7 +328,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 		try {
 			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.API_DISTRICTDESC)
 					.pathParam(MetaApi.PARAM_STATE_ID, stateId).pathParam(MetaApi.PARAM_DISTRICT_ID, districtId)
-					.filter(metaFilter).get()
+					.meta(new JaxMetaInfo()).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<ViewDistrictDto, Object>>() {
 					});
 		} catch (Exception ae) {
@@ -339,8 +342,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 	 * Gives the list of banks by country
 	 * </p>
 	 * 
-	 * @param countryId
-	 *            - Id value of country
+	 * @param countryId - Id value of country
 	 */
 	public AmxApiResponse<BankMasterDTO, Object> getBankListForCountry(BigDecimal countryId) {
 		try {
@@ -365,7 +367,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 	public AmxApiResponse<ViewDistrictDto, Object> getDistrictList(BigDecimal stateId) {
 		try {
 			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.API_DISTRICTLIST)
-					.pathParam(MetaApi.PARAM_STATE_ID, stateId).filter(metaFilter).get()
+					.pathParam(MetaApi.PARAM_STATE_ID, stateId).meta(new JaxMetaInfo()).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<ViewDistrictDto, Object>>() {
 					});
 		} catch (Exception ae) {
@@ -382,7 +384,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 				languageId = new BigDecimal(1);
 			}
 			String url = this.getBaseUrl() + MetaApi.PREFIX + "/statelist/" + countryId + "/";
-			return restService.ajax(url).filter(metaFilter).get().asApiResponse(ViewStateDto.class);
+			return restService.ajax(url).meta(new JaxMetaInfo()).get().asApiResponse(ViewStateDto.class);
 		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
@@ -396,7 +398,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 		try {
 			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.API_STATE_DESC)
 					.pathParam(MetaApi.PARAM_COUNTRY_ID, countryId).pathParam(MetaApi.PARAM_STATE_ID, stateId)
-					.filter(metaFilter).get()
+					.meta(new JaxMetaInfo()).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<ViewStateDto, Object>>() {
 					});
 		} catch (Exception ae) {
@@ -408,7 +410,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 	public AmxApiResponse<ViewCityDto, Object> getCitytList(BigDecimal districtId) {
 		try {
 			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.API_CITY_LIST)
-					.pathParam(MetaApi.PARAM_DISTRICT_ID, districtId).filter(metaFilter).get()
+					.pathParam(MetaApi.PARAM_DISTRICT_ID, districtId).meta(new JaxMetaInfo()).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<ViewCityDto, Object>>() {
 					});
 		} catch (Exception ae) {
@@ -421,7 +423,8 @@ public class MetaClient extends AbstractJaxServiceClient {
 		try {
 			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.API_CITY_DESC)
 					.pathParam(MetaApi.PARAM_DISTRICT_ID, districtId).pathParam(MetaApi.PARAM_CITY_ID, cityId)
-					.filter(metaFilter).get().as(new ParameterizedTypeReference<AmxApiResponse<ViewCityDto, Object>>() {
+					.meta(new JaxMetaInfo()).get()
+					.as(new ParameterizedTypeReference<AmxApiResponse<ViewCityDto, Object>>() {
 					});
 		} catch (Exception ae) {
 			LOGGER.error("exception in getCitytDesc : ", ae);
@@ -432,7 +435,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 	public AmxApiResponse<OnlineConfigurationDto, Object> getOnlineConfig(String ind) {
 		try {
 			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.API_ONLINE_CONFIG)
-					.pathParam(MetaApi.PARAM_IND, ind).filter(metaFilter).get()
+					.pathParam(MetaApi.PARAM_IND, ind).meta(new JaxMetaInfo()).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<OnlineConfigurationDto, Object>>() {
 					});
 		} catch (Exception ae) {
@@ -447,8 +450,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 	 * etc
 	 * </p>
 	 * 
-	 * @param object
-	 *            of type {@code GetBankBranchRequest}
+	 * @param object of type {@code GetBankBranchRequest}
 	 */
 	public AmxApiResponse<BankBranchDto, Object> getBankBranchList(GetBankBranchRequest request) {
 		try {
@@ -477,7 +479,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 	public AmxApiResponse<ServiceGroupMasterDescDto, Object> getServiceGroupList() {
 		try {
 			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.SERVICE_GROUP)
-					.filter(metaFilter).get()
+					.meta(new JaxMetaInfo()).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<ServiceGroupMasterDescDto, Object>>() {
 					});
 		} catch (Exception ae) {
@@ -495,7 +497,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 	public AmxApiResponse<JaxMetaParameter, Object> getJaxMetaParameter() {
 		try {
 			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.META_PARAMETER)
-					.filter(metaFilter).get()
+					.meta(new JaxMetaInfo()).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<JaxMetaParameter, Object>>() {
 					});
 		} catch (Exception ae) {
@@ -511,7 +513,8 @@ public class MetaClient extends AbstractJaxServiceClient {
 	 */
 	public AmxApiResponse<PrefixDTO, Object> getAllPrefix() {
 		try {
-			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.API_PREFIX).filter(metaFilter)
+			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.API_PREFIX)
+					.meta(new JaxMetaInfo())
 					.get().as(new ParameterizedTypeReference<AmxApiResponse<PrefixDTO, Object>>() {
 					});
 		} catch (Exception ae) {
@@ -528,7 +531,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 	public AmxApiResponse<BranchDetailDTO, Object> getAllBranchDetail() {
 		try {
 			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.API_BRANCH_DETAIL)
-					.filter(metaFilter).get()
+					.meta(new JaxMetaInfo()).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<BranchDetailDTO, Object>>() {
 					});
 		} catch (Exception ae) {
@@ -536,7 +539,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 			return JaxSystemError.evaluate(ae);
 		} // end of try-catch
 	}
-	
+
 	/**
 	 * 
 	 * @return To fetch list of Branch inventory details
@@ -545,7 +548,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 	public AmxApiResponse<BranchSystemDetailDto, Object> listBranchSystemInventory() {
 		try {
 			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.API_BRANCH_SYSTEM_INV_LIST)
-					.filter(metaFilter).get()
+					.meta(new JaxMetaInfo()).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<BranchSystemDetailDto, Object>>() {
 					});
 		} catch (Exception ae) {
@@ -556,7 +559,10 @@ public class MetaClient extends AbstractJaxServiceClient {
 
 	public AmxApiResponse<TermsAndConditionDTO, Object> getTermsAndConditionAsPerCountryForFxOrder() {
 		try {
-			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.API_TERMS_BY_lANG_COUNTRY_ID_FOR_FX).filter(metaFilter).get().as(new ParameterizedTypeReference<AmxApiResponse<TermsAndConditionDTO, Object>>() {});
+			return restService.ajax(appConfig.getJaxURL())
+					.path(MetaApi.PREFIX + MetaApi.API_TERMS_BY_lANG_COUNTRY_ID_FOR_FX).meta(new JaxMetaInfo()).get()
+					.as(new ParameterizedTypeReference<AmxApiResponse<TermsAndConditionDTO, Object>>() {
+					});
 		} catch (Exception ae) {
 			LOGGER.error("exception in getTermsAndConditionAsPerCountry : ", ae);
 			return JaxSystemError.evaluate(ae);

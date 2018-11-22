@@ -160,6 +160,7 @@ public class RestService {
 			builder = UriComponentsBuilder.fromUriString(uri.toString());
 		}
 
+		@Deprecated
 		public <T extends RequestMetaInfo> Ajax filter(IMetaRequestOutFilter<T> restMetaServiceFilter) {
 			RestService.exportMetaToStatic(restMetaServiceFilter, this.header());
 			return this;

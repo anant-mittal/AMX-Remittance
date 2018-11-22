@@ -12,13 +12,13 @@ public class JaxClientMetaFilter implements IMetaRequestOutFilter<JaxMetaInfo> {
 	@Override
 	public JaxMetaInfo exportMeta() {
 		JaxMetaInfo jaxMetaInfo = new JaxMetaInfo();
-		jaxMetaInfo.setTraceId(ContextUtil.getTraceId());
+		outFilter(jaxMetaInfo);
 		return jaxMetaInfo;
 	}
 
 	@Override
 	public void outFilter(JaxMetaInfo requestMeta) {
-		// TODO Auto-generated method stub
+		requestMeta.setTraceId(ContextUtil.getTraceId());
 	}
 
 }
