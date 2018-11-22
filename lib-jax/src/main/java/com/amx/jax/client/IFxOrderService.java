@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 
 import com.amx.jax.IJaxService;
 import com.amx.jax.api.AmxApiResponse;
-import com.amx.jax.client.IFxOrderService.Path;
 import com.amx.jax.error.ApiJaxStatusBuilder.ApiJaxStatus;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.model.request.CustomerShippingAddressRequestModel;
@@ -22,19 +21,19 @@ import com.amx.jax.model.response.ShoppingCartDetailsDto;
 public interface IFxOrderService extends IJaxService {
 
 	public static class Path {
-		public static final String PREFIX = "/fc/sale/";
+		public static final String PREFIX = "/fc/sale";
 		public static final String FC_PURPOSEOF_TRNX = PREFIX + "/fc-purposeof-trnx/";
-		public static final String FCSALE_SAVE_PAYNOW = "/fcsale-save-paynow/";
-		public static final String FC_SALE_SHOPPING_CART = "/fc-sale-shopping-cart/";
-		public static final String FC_SALE_REMOVE_ITEM = "/fc-sale-remove-item/";
-		public static final String FC_SALE_TIME_SLOT = "/fc-sale-time-slot/";
-		public static final String FC_SAVE_SHIPPING_ADDR = "/fc-save-shipping-addr/";
-		public static final String FC_SALE_ADDRESS = "/fc-sale-address/";
-		public static final String FCSALE_SAVE_APPLICATION = "/fcsale-save-application/";
-		public static final String FC_SALE_DEFAULT = "/fc-sale-default/";
-		public static final String FC_SALE_CAL_XRATE = "/fc-sale-cal-xrate/";
-		public static final String FC_SALE_XRATE = "/fc-sale-xrate/";
-		public static final String FC_CURRENCY_LIST = "/fc-currency-list/";
+		public static final String FCSALE_SAVE_PAYNOW = PREFIX + "/fcsale-save-paynow/";
+		public static final String FC_SALE_SHOPPING_CART = PREFIX + "/fc-sale-shopping-cart/";
+		public static final String FC_SALE_REMOVE_ITEM = PREFIX + "/fc-sale-remove-item/";
+		public static final String FC_SALE_TIME_SLOT = PREFIX + "/fc-sale-time-slot/";
+		public static final String FC_SAVE_SHIPPING_ADDR = "PREFIX +/fc-save-shipping-addr/";
+		public static final String FC_SALE_ADDRESS = PREFIX + "/fc-sale-address/";
+		public static final String FCSALE_SAVE_APPLICATION = PREFIX + "/fcsale-save-application/";
+		public static final String FC_SALE_DEFAULT = PREFIX + "/fc-sale-default/";
+		public static final String FC_SALE_CAL_XRATE = PREFIX + "/fc-sale-cal-xrate/";
+		public static final String FC_SALE_XRATE = PREFIX + "/fc-sale-xrate/";
+		public static final String FC_CURRENCY_LIST = PREFIX + "/fc-currency-list/";
 
 	}
 

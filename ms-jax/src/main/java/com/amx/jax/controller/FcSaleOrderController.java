@@ -1,7 +1,5 @@
 package com.amx.jax.controller;
 
-import static com.amx.amxlib.constant.ApiEndpoint.FC_SALE_ENDPOINT;
-
 import java.math.BigDecimal;
 
 import javax.validation.Valid;

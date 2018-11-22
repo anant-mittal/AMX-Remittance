@@ -165,8 +165,7 @@ public class JaxService implements IMetaRequestOutFilter<JaxMetaInfo> {
 	/**
 	 * Sets the defaults.
 	 *
-	 * @param customerId
-	 *            the customer id
+	 * @param customerId the customer id
 	 * @return the jax service
 	 */
 	public JaxService setDefaults(BigDecimal customerId) {
@@ -207,7 +206,7 @@ public class JaxService implements IMetaRequestOutFilter<JaxMetaInfo> {
 
 	@Override
 	public void outFilter(JaxMetaInfo requestMeta) {
-		// TODO Auto-generated method stub
+		populateCommon(requestMeta);
 	}
 
 }
