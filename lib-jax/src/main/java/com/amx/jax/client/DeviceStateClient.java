@@ -14,7 +14,6 @@ import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.exception.JaxSystemError;
 import com.amx.jax.logger.LoggerService;
-import com.amx.jax.model.request.DeviceRegistrationRequest;
 import com.amx.jax.model.request.device.SignaturePadCustomerRegStateMetaInfo;
 import com.amx.jax.model.request.device.SignaturePadFCPurchaseSaleInfo;
 import com.amx.jax.model.request.device.SignaturePadRemittanceInfo;
@@ -22,7 +21,7 @@ import com.amx.jax.model.response.DeviceStatusInfoDto;
 import com.amx.jax.rest.RestService;
 
 @Component
-public class DeviceStateClient implements IDeviceService {
+public class DeviceStateClient implements IDeviceStateService {
 
 	private static final Logger LOGGER = LoggerService.getLogger(DeviceStateClient.class);
 

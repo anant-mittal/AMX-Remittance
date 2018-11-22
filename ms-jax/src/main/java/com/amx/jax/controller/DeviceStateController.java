@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
-import com.amx.jax.client.IDeviceService;
+import com.amx.jax.client.IDeviceStateService;
 import com.amx.jax.constants.DeviceStateDataType;
 import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.model.request.DeviceRegistrationRequest;
@@ -26,7 +26,7 @@ import com.amx.jax.model.response.DeviceStatusInfoDto;
 import com.amx.jax.services.DeviceStateService;
 
 @RestController
-public class DeviceStateController implements IDeviceService {
+public class DeviceStateController implements IDeviceStateService {
 
 	@Autowired
 	DeviceStateService deviceService;

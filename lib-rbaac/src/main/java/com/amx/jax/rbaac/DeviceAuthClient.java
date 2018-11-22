@@ -16,9 +16,9 @@ import com.amx.jax.rbaac.dto.DevicePairOtpResponse;
 import com.amx.jax.rbaac.dto.request.DeviceRegistrationRequest;
 import com.amx.jax.rest.RestService;
 
-public class DeviceServiceClient implements IDeviceService {
+public class DeviceAuthClient implements IDeviceAuthService {
 
-	private static final Logger LOGGER = LoggerService.getLogger(DeviceServiceClient.class);
+	private static final Logger LOGGER = LoggerService.getLogger(DeviceAuthClient.class);
 
 	@Autowired
 	RestService restService;

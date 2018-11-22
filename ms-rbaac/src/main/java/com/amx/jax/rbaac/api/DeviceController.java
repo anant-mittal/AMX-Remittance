@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.dict.UserClient.ClientType;
-import com.amx.jax.rbaac.IDeviceService;
+import com.amx.jax.rbaac.IDeviceAuthService;
 import com.amx.jax.rbaac.dto.DeviceDto;
 import com.amx.jax.rbaac.dto.DevicePairOtpResponse;
 import com.amx.jax.rbaac.dto.request.DeviceRegistrationRequest;
@@ -24,7 +24,7 @@ import com.amx.jax.rbaac.service.AbstractService.BooleanResponse;
 import com.amx.jax.rbaac.service.DeviceService;
 
 @RestController
-public class DeviceController implements IDeviceService {
+public class DeviceController implements IDeviceAuthService {
 
 	@Autowired
 	DeviceService deviceService;

@@ -11,7 +11,7 @@ import com.amx.jax.rbaac.dto.request.DeviceRegistrationRequest;
 import com.amx.jax.rbaac.error.RbaacApiStatusBuilder.RbaacApiStatus;
 import com.amx.jax.rbaac.error.RbaacServiceError;
 
-public interface IDeviceService {
+public interface IDeviceAuthService {
 
 	public static class Path {
 
@@ -22,10 +22,7 @@ public interface IDeviceService {
 		public static final String DEVICE_DEACTIVATE = PREFIX + "/deactivate";
 		public static final String DEVICE_CREATE_SESSION = PREFIX + "/createsession";
 		public static final String DEVICE_PAIR_SESSION = PUBG + PREFIX + "/pairsession";
-		public static final String DEVICE_VALIDATE_DEVICE_TOKEN = PUBG + PREFIX + "/validatedevicetoken";
 		public static final String DEVICE_VALIDATE_SESSION_TOKEN = PUBG + PREFIX + "/validatesessiontoken";
-		public static final String DEVICE_STATE_UPDATE = PREFIX + "/updatedevicestate";
-		public static final String DEVICE_STATUS_GET = PREFIX + "/getdevicestatus";
 		public static final String DEVICE_REG = PREFIX + "/register";
 		public static final String DEVICE_GET_DEVICE_REG_ID = PUBG + PREFIX + "/getdeviceregid";
 	}
@@ -59,7 +56,8 @@ public interface IDeviceService {
 	AmxApiResponse<DevicePairOtpResponse, BoolRespModel> pairDeviceSession(ClientType deviceType,
 			Integer countryBranchSystemInventoryId, String otp);
 
-	AmxApiResponse<DevicePairOtpResponse, Object> validateDeviceSessionToken(BigDecimal deviceRegId, String deviceSessionToken);
+	AmxApiResponse<DevicePairOtpResponse, Object> validateDeviceSessionToken(BigDecimal deviceRegId,
+			String deviceSessionToken);
 
 	AmxApiResponse<BigDecimal, Object> getDeviceRegIdByBranchInventoryId(ClientType deviceClientType,
 			BigDecimal countryBranchSystemInventoryId);
