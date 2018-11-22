@@ -94,7 +94,7 @@ public class DeviceManager {
 	public long getDeviceSessionTimeout() {
 		Long sessionTimeout = rbaacConfig.getDeviceSessionTimeout();
 		if (sessionTimeout != null) {
-			return sessionTimeout.longValue();
+			return sessionTimeout.longValue() * 60;
 		}
 		return DeviceService.DEVICE_SESSION_TIMEOUT;
 	}

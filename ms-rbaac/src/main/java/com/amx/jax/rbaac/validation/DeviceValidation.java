@@ -45,14 +45,14 @@ public class DeviceValidation {
 		}
 	}
 
-	public void validateDeviceToken(Device device, String otp) {
+	public void validateDeviceOtpToken(Device device, String otp) {
 
-		String pairTokendb = device.getPairToken();
-		if (pairTokendb == null) {
+		String otpTokendb = device.getOtpToken();
+		if (otpTokendb == null) {
 			throw new AuthServiceException("Opt not generated");
 		}
 		String pairToken = cryptoUtil.generateHash(device.getRegistrationId().toString(), otp);
-		if (!pairToken.equals(pairTokendb)) {
+		if (!pairToken.equals(otpTokendb)) {
 			throw new AuthServiceException("Invalid pair otp");
 		}
 	}
