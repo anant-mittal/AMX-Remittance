@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.adapter.ICardService;
 import com.amx.jax.api.AmxApiResponse;
-import com.amx.jax.client.IDeviceService;
+import com.amx.jax.client.IDeviceStateService;
 import com.amx.jax.device.CardData;
 import com.amx.jax.device.CardReader;
 import com.amx.jax.device.DeviceConstants;
@@ -25,7 +25,7 @@ import io.swagger.annotations.Api;
 
 @RestController
 @Api(value = "Card Reader APIs")
-@ApiStatusService(IDeviceService.class)
+@ApiStatusService(IDeviceStateService.class)
 public class CardController {
 
 	private static final Logger LOGGER = LoggerService.getLogger(CardController.class);

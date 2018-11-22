@@ -32,7 +32,7 @@ import com.amx.jax.model.request.device.SignaturePadFCPurchaseSaleInfo;
 import com.amx.jax.model.request.device.SignaturePadRemittanceInfo;
 import com.amx.jax.model.response.DeviceStatusInfoDto;
 import com.amx.jax.model.response.IDeviceStateData;
-import com.amx.jax.rbaac.DeviceServiceClient;
+import com.amx.jax.rbaac.DeviceAuthClient;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;;
@@ -56,7 +56,7 @@ public class DeviceStateService extends AbstractService {
 	@Autowired
 	UserService userService;
 	@Autowired
-	DeviceServiceClient deviceServiceClient;
+	DeviceAuthClient deviceServiceClient;
 
 	/**
 	 * @param registrationId

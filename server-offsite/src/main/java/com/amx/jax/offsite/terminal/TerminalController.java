@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.DeviceStateClient;
-import com.amx.jax.client.IDeviceService;
+import com.amx.jax.client.IDeviceStateService;
 import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.model.request.device.SignaturePadCustomerRegStateMetaInfo;
 import com.amx.jax.model.request.device.SignaturePadFCPurchaseSaleInfo;
@@ -40,7 +40,7 @@ import io.swagger.annotations.ApiOperation;
 
 @Controller
 @Api(value = "Terminal APIs")
-@ApiStatusService(IDeviceService.class)
+@ApiStatusService(IDeviceStateService.class)
 public class TerminalController {
 
 	@Autowired

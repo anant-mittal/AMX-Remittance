@@ -152,7 +152,6 @@ public class DeviceConfigs {
 		}
 
 		public void setStateData(DeviceStatusInfoDto stateData) {
-			this.deviceState = stateData.getDeviceState();
 			this.stateData = stateData;
 		}
 
