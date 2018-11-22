@@ -9,12 +9,9 @@ import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.error.ApiJaxStatusBuilder.ApiJaxStatus;
 import com.amx.jax.model.request.DeviceRegistrationRequest;
-import com.amx.jax.model.request.DeviceStateInfoChangeRequest;
 import com.amx.jax.model.request.device.SignaturePadCustomerRegStateMetaInfo;
 import com.amx.jax.model.request.device.SignaturePadFCPurchaseSaleInfo;
 import com.amx.jax.model.request.device.SignaturePadRemittanceInfo;
-import com.amx.jax.model.response.DeviceDto;
-import com.amx.jax.model.response.DevicePairOtpResponse;
 import com.amx.jax.model.response.DeviceStatusInfoDto;
 
 public interface IDeviceService extends IJaxService {
@@ -37,6 +34,7 @@ public interface IDeviceService extends IJaxService {
 		public static final String DEVICE_FC_PURCHASE_UPDATE = PUBG + PREFIX + "/fcpurchase";
 		public static final String DEVICE_FC_SALE_UPDATE = PUBG + PREFIX + "/fcsale";
 		public static final String DEVICE_STATE = PREFIX + "/state";
+		public static final String DEVICE_STATUS = PREFIX + "/status";
 		public static final String DEVICE_REG = PREFIX + "/register";
 		public static final String DEVICE_STATE_CLEAR = PUBG + PREFIX + "/clearstate";
 	}
@@ -54,27 +52,13 @@ public interface IDeviceService extends IJaxService {
 
 	}
 
-	@ApiJaxStatus({ JaxError.CLIENT_ALREADY_REGISTERED })
-	AmxApiResponse<DeviceDto, Object> registerNewDevice(DeviceRegistrationRequest request);
-
+	
 	@ApiJaxStatus({ JaxError.JAX_FIELD_VALIDATION_FAILURE, JaxError.CLIENT_INVALID_PAIR_TOKEN,
 			JaxError.CLIENT_INVALID_SESSION_TOKEN })
 	AmxApiResponse<DeviceStatusInfoDto, Object> getStatus(
 			Integer registrationId, String paireToken,
 			String sessionToken);
 
-	@ApiJaxStatus({ JaxError.CLIENT_INVALID_PAIR_TOKEN, JaxError.CLIENT_NOT_FOUND, JaxError.CLIENT_NOT_ACTIVE })
-	AmxApiResponse<DevicePairOtpResponse, Object> sendOtpForPairing(Integer deviceRegId, String paireToken);
-
-	@ApiJaxStatus({ JaxError.JAX_FIELD_VALIDATION_FAILURE, JaxError.CLIENT_INVALID_PAIR_TOKEN,
-			JaxError.CLIENT_INVALID_SESSION_TOKEN })
-	AmxApiResponse<BoolRespModel, Object> updateDeviceState(
-			DeviceStateInfoChangeRequest request,
-			Integer registrationId, String paireToken, String sessionToken);
-
-	@ApiJaxStatus({ JaxError.CLIENT_NOT_FOUND })
-	AmxApiResponse<BoolRespModel, Object> activateDevice(Integer deviceRegId,
-			String mOtp);
 
 	@ApiJaxStatus({ JaxError.CLIENT_NOT_FOUND, JaxError.CLIENT_NOT_ACTIVE, JaxError.CLIENT_NOT_LOGGGED_IN,
 			JaxError.JAX_FIELD_VALIDATION_FAILURE })
@@ -98,15 +82,7 @@ public interface IDeviceService extends IJaxService {
 
 	AmxApiResponse<BoolRespModel, Object> updateSignatureStateData(Integer deviceRegId, String imageUrl);
 
-	@ApiJaxStatus({ JaxError.CLIENT_NOT_LOGGGED_IN, JaxError.CLIENT_NOT_FOUND, JaxError.JAX_FIELD_VALIDATION_FAILURE })
-	AmxApiResponse<DevicePairOtpResponse, BoolRespModel> validateOtpForPairing(ClientType deviceType,
-			Integer countryBranchSystemInventoryId, String otp);
-
-	@ApiJaxStatus(JaxError.CLIENT_NOT_FOUND)
-	AmxApiResponse<BoolRespModel, Object> deactivateDevice(Integer deviceRegId);
-
 	@ApiJaxStatus({ JaxError.CLIENT_NOT_FOUND, JaxError.CLIENT_NOT_ACTIVE })
 	AmxApiResponse<BoolRespModel, Object> clearDeviceState(Integer registrationId, String paireToken,
 			String sessionToken);
-
 }

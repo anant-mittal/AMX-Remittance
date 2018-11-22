@@ -1,4 +1,4 @@
-package com.amx.jax.model.response;
+package com.amx.jax.rbaac.dto;
 
 import java.math.BigDecimal;
 

@@ -16,9 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.api.FileSubmitRequestModel;
-import com.amx.jax.client.DeviceClient;
+import com.amx.jax.client.DeviceStateClient;
 import com.amx.jax.client.IDeviceService;
-import com.amx.jax.constants.DeviceState;
 import com.amx.jax.http.ApiRequest;
 import com.amx.jax.http.RequestType;
 import com.amx.jax.model.response.DeviceStatusInfoDto;
@@ -45,7 +44,7 @@ import io.swagger.annotations.Api;
 public class SignPadController {
 
 	@Autowired
-	private DeviceClient deviceClient;
+	private DeviceStateClient deviceClient;
 
 	@Autowired
 	private DeviceRequest deviceRequestValidator;

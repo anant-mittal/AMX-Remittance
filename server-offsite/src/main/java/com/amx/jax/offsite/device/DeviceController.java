@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
-import com.amx.jax.client.DeviceClient;
+import com.amx.jax.client.DeviceStateClient;
 import com.amx.jax.client.IDeviceService;
 import com.amx.jax.client.MetaClient;
 import com.amx.jax.device.DeviceConstants;
@@ -44,7 +44,7 @@ public class DeviceController {
 	private static final Logger LOGGER = LoggerService.getLogger(DeviceController.class);
 
 	@Autowired
-	private DeviceClient deviceClient;
+	private DeviceStateClient deviceClient;
 
 	@Autowired
 	private MetaClient metaClient;

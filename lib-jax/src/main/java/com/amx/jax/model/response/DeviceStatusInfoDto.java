@@ -3,7 +3,7 @@ package com.amx.jax.model.response;
 import java.io.Serializable;
 import java.util.Date;
 
-import com.amx.jax.constants.DeviceState;
+import com.amx.jax.constant.DeviceState;
 import com.amx.jax.constants.DeviceStateDataType;
 import com.amx.jax.model.request.device.SignaturePadCustomerRegStateInfo;
 import com.amx.jax.model.request.device.SignaturePadFCPurchaseSaleInfo;
@@ -12,8 +12,6 @@ import com.amx.jax.model.request.device.SignaturePadRemittanceInfo;
 public class DeviceStatusInfoDto implements Serializable {
 
 	private static final long serialVersionUID = -6352739842431809408L;
-
-	DeviceState deviceState;
 
 	DeviceStateDataType stateDataType;
 
@@ -24,14 +22,6 @@ public class DeviceStatusInfoDto implements Serializable {
 
 	Date branchPcLastLogoutTime;
 	Date lastUpdatedTime;
-
-	public DeviceState getDeviceState() {
-		return deviceState;
-	}
-
-	public void setDeviceState(DeviceState deviceState) {
-		this.deviceState = deviceState;
-	}
 
 	public DeviceStateDataType getStateDataType() {
 		return stateDataType;

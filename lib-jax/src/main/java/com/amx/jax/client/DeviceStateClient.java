@@ -15,39 +15,22 @@ import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.exception.JaxSystemError;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.model.request.DeviceRegistrationRequest;
-import com.amx.jax.model.request.DeviceStateInfoChangeRequest;
 import com.amx.jax.model.request.device.SignaturePadCustomerRegStateMetaInfo;
 import com.amx.jax.model.request.device.SignaturePadFCPurchaseSaleInfo;
 import com.amx.jax.model.request.device.SignaturePadRemittanceInfo;
-import com.amx.jax.model.response.DeviceDto;
-import com.amx.jax.model.response.DevicePairOtpResponse;
 import com.amx.jax.model.response.DeviceStatusInfoDto;
 import com.amx.jax.rest.RestService;
 
 @Component
-public class DeviceClient implements IDeviceService {
+public class DeviceStateClient implements IDeviceService {
 
-	private static final Logger LOGGER = LoggerService.getLogger(DeviceClient.class);
+	private static final Logger LOGGER = LoggerService.getLogger(DeviceStateClient.class);
 
 	@Autowired
 	RestService restService;
 
 	@Autowired
 	AppConfig appConfig;
-
-	@Override
-	public AmxApiResponse<DeviceDto, Object> registerNewDevice(DeviceRegistrationRequest request) {
-		try {
-			LOGGER.debug("in registerNewDevice");
-			String url = appConfig.getJaxURL() + Path.DEVICE_REG;
-			return restService.ajax(url).meta(new JaxMetaInfo()).post(request)
-					.as(new ParameterizedTypeReference<AmxApiResponse<DeviceDto, Object>>() {
-					});
-		} catch (Exception e) {
-			LOGGER.error("exception in registerNewDevice : ", e);
-			return JaxSystemError.evaluate(e);
-		}
-	}
 
 	@Override
 	public AmxApiResponse<DeviceStatusInfoDto, Object> getStatus(
@@ -67,57 +50,6 @@ public class DeviceClient implements IDeviceService {
 		}
 	}
 
-	@Override
-	public AmxApiResponse<DevicePairOtpResponse, Object> sendOtpForPairing(Integer deviceRegId, String paireToken) {
-		try {
-			LOGGER.debug("in sendOtpForPairing");
-			String url = appConfig.getJaxURL() + Path.DEVICE_SEND_PAIR_OTP;
-			return restService.ajax(url).meta(new JaxMetaInfo())
-					.queryParam(Params.DEVICE_REG_ID, deviceRegId.toString())
-					.queryParam(Params.PAIRE_TOKEN, paireToken)
-					.get().as(new ParameterizedTypeReference<AmxApiResponse<DevicePairOtpResponse, Object>>() {
-					});
-		} catch (Exception e) {
-			LOGGER.error("exception in sendOtpForPairing : ", e);
-			return JaxSystemError.evaluate(e);
-		}
-	}
-
-	@Override
-	public AmxApiResponse<BoolRespModel, Object> updateDeviceState(
-			DeviceStateInfoChangeRequest request,
-			Integer registrationId, String paireToken, String sessionToken) {
-		try {
-			LOGGER.debug("in updateDeviceState");
-			String url = appConfig.getJaxURL() + Path.DEVICE_STATUS_GET;
-			return restService.ajax(url).meta(new JaxMetaInfo())
-					.queryParam(Params.DEVICE_REG_ID, registrationId.toString())
-					.queryParam(Params.PAIRE_TOKEN, paireToken).post(request)
-					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
-					});
-		} catch (Exception e) {
-			LOGGER.error("exception in updateDeviceState : ", e);
-			return JaxSystemError.evaluate(e);
-		}
-	}
-
-	@Override
-	public AmxApiResponse<BoolRespModel, Object> activateDevice(
-			Integer deviceRegId,
-			String mOtp) {
-		try {
-			LOGGER.debug("in activateDevice");
-			String url = appConfig.getJaxURL() + Path.DEVICE_ACTIVATE;
-			return restService.ajax(url).meta(new JaxMetaInfo())
-					.field(Params.MOTP, mOtp)
-					.field(Params.DEVICE_REG_ID, deviceRegId).postForm()
-					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
-					});
-		} catch (Exception e) {
-			LOGGER.error("exception in activateDevice : ", e);
-			return JaxSystemError.evaluate(e);
-		}
-	}
 
 	@Override
 	public AmxApiResponse<BoolRespModel, Object> updateRemittanceState(
@@ -212,36 +144,6 @@ public class DeviceClient implements IDeviceService {
 					});
 		} catch (Exception e) {
 			LOGGER.error("exception in updateSignatureStateData : ", e);
-			return JaxSystemError.evaluate(e);
-		}
-	}
-
-	@Override
-	public AmxApiResponse<DevicePairOtpResponse, BoolRespModel> validateOtpForPairing(ClientType deviceType,
-			Integer countryBranchSystemInventoryId, String otp) {
-		try {
-			LOGGER.debug("in validateOtpForPairing");
-			String url = appConfig.getJaxURL() + Path.DEVICE_VALIDATE_PAIR_OTP;
-			return restService.ajax(url).field(Params.DEVICE_TYPE, deviceType)
-					.field(Params.TERMINAL_ID, countryBranchSystemInventoryId).field(Params.OTP, otp).postForm()
-					.as(new ParameterizedTypeReference<AmxApiResponse<DevicePairOtpResponse, BoolRespModel>>() {
-					});
-		} catch (Exception e) {
-			LOGGER.error("exception in validateOtpForPairing : ", e);
-			return JaxSystemError.evaluate(e);
-		}
-	}
-
-	@Override
-	public AmxApiResponse<BoolRespModel, Object> deactivateDevice(Integer deviceRegId) {
-		try {
-			LOGGER.debug("in deactivateDevice");
-			String url = appConfig.getJaxURL() + Path.DEVICE_DEACTIVATE;
-			return restService.ajax(url).field(Params.DEVICE_REG_ID, deviceRegId).postForm()
-					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
-					});
-		} catch (Exception e) {
-			LOGGER.error("exception in deactivateDevice : ", e);
 			return JaxSystemError.evaluate(e);
 		}
 	}
