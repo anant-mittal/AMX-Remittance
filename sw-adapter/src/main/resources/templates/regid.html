@@ -1,20 +1,37 @@
+<meta http-equiv="refresh" content="5;url=https://localhost:8020" />
+
 <center>
-	<div>
-		REG ID : <span>${REG_ID}</span>
-	</div>
-	<div>
-		USER_NAME : <span>${USER_NAME}</span>
-	</div>
-	<div>
-		HOST_NAME : <span>${HOST_NAME}</span>
-	</div>
-	<div>
-		LOCAL_IP : <span>${LOCAL_IP}</span>
-	</div>
-	<div th:if="${TERMINAL_ID == null}">
-		<form method="post">
-			<input name="reset" value=true type=hidden />
-			<button type="submit">Reset</button>
-		</form>
-	</div>
+	<table align="center" border=1>
+		<tr>
+			<th>Al Mulla Exchange : BranchAdapter</th>
+		</tr>
+		<tr>
+			<td align="center">
+				<div>&nbsp;</div>
+				<div>
+					REG ID : <span>${REG_ID}</span>
+				</div>
+				<div>
+					USER_NAME : <span>${USER_NAME}</span>
+				</div>
+				<div>
+					HOST_NAME : <span>${HOST_NAME}</span>
+				</div>
+				<div>
+					LOCAL_IP : <span>${LOCAL_IP}</span>
+				</div>
+				<div>&nbsp;</div>
+				<div>
+					<form method="post">
+						<input name="reset" value=true type=hidden />
+						<button type="submit">Reset</button>
+					</form>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td></td>
+		</tr>
+	</table>
 </center>
+

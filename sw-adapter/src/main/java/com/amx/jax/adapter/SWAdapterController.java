@@ -49,6 +49,13 @@ public class SWAdapterController {
 	}
 
 	@ResponseBody
+	@RequestMapping(value = "/pub/script/index.js", method = RequestMethod.GET)
+	public String indexJs() throws Exception {
+
+		return FileUtil.read(applicationContext.getResource("classpath:templates/index.js").getURL());
+	}
+
+	@ResponseBody
 	@RequestMapping(value = { "/**", "/*", "/" }, method = { RequestMethod.GET, RequestMethod.POST })
 	public String home(@RequestParam(required = false) String terminalId, Model model,
 			@RequestParam(required = false) String reset)
