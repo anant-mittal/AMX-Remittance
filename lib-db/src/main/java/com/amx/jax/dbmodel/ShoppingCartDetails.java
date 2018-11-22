@@ -15,6 +15,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+
+import com.amx.jax.dict.AmxEnums.DenominationType;
 @Entity
 @Table(name="JAX_VW_APPLICATION_DETAILS")
 public class ShoppingCartDetails implements Serializable {
@@ -71,7 +73,7 @@ public class ShoppingCartDetails implements Serializable {
 	private String foreignCurrencyDesc;
 	private BigDecimal amtbCouponEncashed;
 	//private BigDecimal deliveryCharges;
-	private String  denominationType;
+	private DenominationType  denominationType;
 	private String paymentId;
 	private BigDecimal applicationCountryId;
 	private BigDecimal pgPaymentSeqDtlId;
@@ -486,23 +488,20 @@ public class ShoppingCartDetails implements Serializable {
 		this.deliveryCharges = deliveryCharges;
 	}
 */
-
+	
 	@Column(name="DENOMINATION_TYPE")
-	public String getDenominationType() {
+	public DenominationType getDenominationType() {
 		return denominationType;
 	}
 
-
-	public void setDenominationType(String denominationType) {
+	public void setDenominationType(DenominationType denominationType) {
 		this.denominationType = denominationType;
 	}
-
 	
 	@Column(name="PAYMENT_ID")
 	public String getPaymentId() {
 		return paymentId;
 	}
-
 
 	public void setPaymentId(String paymentId) {
 		this.paymentId = paymentId;

@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import com.amx.jax.AbstractModel;
+import com.amx.jax.dict.AmxEnums.DenominationType;
 
 public class ShoppingCartDetailsDto extends AbstractModel {
 
@@ -61,7 +62,7 @@ public class ShoppingCartDetailsDto extends AbstractModel {
 	private String foreignCurrencyDesc;
 	private BigDecimal amtbCouponEncashed;
 	private BigDecimal deliveryCharges;
-	private String denominationType;
+	private DenominationType denominationType;
 	private String paymentId;
 	private BigDecimal applicationCountryId;
 	private String pgPaymentId;
@@ -461,11 +462,11 @@ public class ShoppingCartDetailsDto extends AbstractModel {
 		this.deliveryCharges = deliveryCharges;
 	}
 
-	public String getDenominationType() {
+	public DenominationType getDenominationType() {
 		return denominationType;
 	}
 
-	public void setDenominationType(String denominationType) {
+	public void setDenominationType(DenominationType denominationType) {
 		this.denominationType = denominationType;
 	}
 
