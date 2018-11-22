@@ -57,7 +57,7 @@ public class DeviceServiceClient implements IDeviceService {
 
 	@Override
 	public AmxApiResponse<DevicePairOtpResponse, Object> createDeviceSession(Integer deviceRegId, String paireToken) {
-		LOGGER.debug("in deactivateDevice");
+		LOGGER.debug("in createDeviceSession");
 		String url = appConfig.getAuthURL() + Path.DEVICE_CREATE_SESSION;
 		return restService.ajax(url).field(Params.DEVICE_REG_ID, deviceRegId).field(Params.PAIRE_TOKEN, paireToken)
 				.postForm().as(new ParameterizedTypeReference<AmxApiResponse<DevicePairOtpResponse, Object>>() {
@@ -67,28 +67,34 @@ public class DeviceServiceClient implements IDeviceService {
 	@Override
 	public AmxApiResponse<DevicePairOtpResponse, BoolRespModel> pairDeviceSession(ClientType deviceType,
 			Integer countryBranchSystemInventoryId, String otp) {
-		// TODO Auto-generated method stub
-		return null;
+		LOGGER.debug("in pairDeviceSession");
+		String url = appConfig.getAuthURL() + Path.DEVICE_PAIR_SESSION;
+		return restService.ajax(url).field(Params.DEVICE_TYPE, deviceType)
+				.field(Params.TERMINAL_ID, countryBranchSystemInventoryId).field(Params.OTP, otp).postForm()
+				.as(new ParameterizedTypeReference<AmxApiResponse<DevicePairOtpResponse, BoolRespModel>>() {
+				});
 	}
 
 	@Override
-	public AmxApiResponse<BoolRespModel, Object> validateDeviceToken(BigDecimal deviceRegId, String devicePairToken) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public AmxApiResponse<BoolRespModel, Object> validateDeviceSessionToken(BigDecimal deviceRegId,
+	public AmxApiResponse<DevicePairOtpResponse, Object> validateDeviceSessionToken(BigDecimal deviceRegId,
 			String deviceSessionToken) {
-		// TODO Auto-generated method stub
-		return null;
+		LOGGER.debug("in validateDeviceSessionToken");
+		String url = appConfig.getAuthURL() + Path.DEVICE_VALIDATE_SESSION_TOKEN;
+		return restService.ajax(url).field(Params.DEVICE_REG_ID, deviceRegId)
+				.field(Params.SESSION_TOKEN, deviceSessionToken).postForm()
+				.as(new ParameterizedTypeReference<AmxApiResponse<DevicePairOtpResponse, Object>>() {
+				});
 	}
 
 	@Override
 	public AmxApiResponse<BigDecimal, Object> getDeviceRegIdByBranchInventoryId(ClientType deviceClientType,
 			BigDecimal countryBranchSystemInventoryId) {
-		// TODO Auto-generated method stub
-		return null;
+		LOGGER.debug("in getDeviceRegIdByBranchInventoryId");
+		String url = appConfig.getAuthURL() + Path.DEVICE_GET_DEVICE_REG_ID;
+		return restService.ajax(url).field(Params.DEVICE_CLIENT_TYPE, deviceClientType)
+				.field(Params.DEVICE_SYS_INV_ID, countryBranchSystemInventoryId).postForm()
+				.as(new ParameterizedTypeReference<AmxApiResponse<BigDecimal, Object>>() {
+				});
 	}
 
 }

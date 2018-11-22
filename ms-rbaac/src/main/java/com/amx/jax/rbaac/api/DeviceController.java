@@ -76,14 +76,14 @@ public class DeviceController implements IDeviceService {
 		return AmxApiResponse.build(otpResponse, new BoolRespModel(Boolean.TRUE));
 	}
 
-	@Override
+	/*@Override
 	@RequestMapping(value = Path.DEVICE_VALIDATE_DEVICE_TOKEN, method = RequestMethod.POST)
 	public AmxApiResponse<DevicePairOtpResponse, Object> validateDeviceToken(
 			@RequestParam(name = Params.DEVICE_REG_ID) BigDecimal deviceRegId,
 			@RequestParam(name = Params.PAIRE_TOKEN) String devicePairToken) {
 		DevicePairOtpResponse otpResponse = deviceService.validateDevicePairToken(deviceRegId, devicePairToken);
 		return AmxApiResponse.build(otpResponse);
-	}
+	}*/
 
 	@Override
 	@RequestMapping(value = Path.DEVICE_VALIDATE_SESSION_TOKEN, method = RequestMethod.POST)
