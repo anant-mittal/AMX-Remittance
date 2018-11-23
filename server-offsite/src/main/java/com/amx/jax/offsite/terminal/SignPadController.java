@@ -6,7 +6,6 @@ import java.text.ParseException;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Role;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -62,7 +61,6 @@ public class SignPadController {
 	@Autowired
 	private TerminalBox terminalBox;
 
-	
 	@ApiRequest(type = RequestType.POLL)
 	@ApiDeviceHeaders
 	@RequestMapping(value = { Path.SIGNPAD_STATUS_ACTIVITY }, method = { RequestMethod.GET })
