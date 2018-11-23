@@ -92,7 +92,7 @@ public class SSOAppController {
 	@ResponseBody
 	@RequestMapping(value = SSOConstants.APP_LOGIN_URL_START, method = { RequestMethod.GET })
 	public String loginJSONStart(
-			@RequestParam String sotp, @RequestParam String returnUrld, HttpServletRequest request,
+			@RequestParam String sotp, @RequestParam(required = false) String returnUrld, HttpServletRequest request,
 			HttpServletResponse response) throws MalformedURLException, URISyntaxException {
 		AmxApiResponse<Object, Map<String, Object>> result = AmxApiResponse.buildMeta(new HashMap<String, Object>());
 		String tranxId = ssoUser.ssoTranxId();
@@ -102,11 +102,11 @@ public class SSOAppController {
 			byte[] decodedBytes = Base64.getDecoder().decode(returnUrld);
 			returnUrl = new String(decodedBytes);
 		}
+		sSOTranx.setAppReturnDetails(returnUrl, sotp);
+		
 		URLBuilder builder = new URLBuilder(HttpUtils.getServerName(request));
 		builder.setPath(SSOConstants.SSO_LOGIN_URL_REQUIRED).addParameter(AppConstants.TRANX_ID_XKEY, tranxId);
 		result.setRedirectUrl(builder.getURL());
-
-		sSOTranx.setAppReturnDetails(returnUrl, sotp);
 		return JsonUtil.toJson(result);
 	}
 
