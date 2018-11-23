@@ -24,6 +24,7 @@ import com.amx.jax.logger.LoggerService;
 import com.amx.jax.model.response.BranchSystemDetailDto;
 import com.amx.jax.offsite.OffsiteStatus.ApiOffisteStatus;
 import com.amx.jax.offsite.OffsiteStatus.OffsiteServerCodes;
+import com.amx.jax.offsite.OffsiteStatus.OffsiteServerError;
 import com.amx.jax.offsite.device.DeviceConfigs.DeviceData;
 import com.amx.jax.rbaac.IRbaacService;
 import com.amx.jax.rbaac.RbaacServiceClient;
@@ -70,8 +71,9 @@ public class DeviceController {
 		String deivceTerminalId = req.getDeivceTerminalId();
 		ClientType deivceClientType = req.getDeivceClientType();
 
-		if (ArgUtil.isEmpty(deivceTerminalId) || ArgUtil.isEmpty(deivceClientType)) {
-			// throw new OffsiteServerError(OffsiteServerCodes.DEVICE_UNKNOWN,"hoho");
+		if ((ArgUtil.isEmpty(deivceTerminalId) && ArgUtil.isEmpty(req.getIdentity()))
+				|| ArgUtil.isEmpty(deivceClientType)) {
+			throw new OffsiteServerError(OffsiteServerCodes.CLIENT_UNKNOWN, "hoho");
 		}
 
 		// validate Device with jax
@@ -79,6 +81,7 @@ public class DeviceController {
 		deviceRegistrationRequest.setDeviceType(deivceClientType);
 		deviceRegistrationRequest.setBranchSystemIp(deivceTerminalId);
 		deviceRegistrationRequest.setDeviceId(commonHttpRequest.getDeviceId());
+		deviceRegistrationRequest.setIdentityInt(req.getIdentity());
 		DeviceDto deviceDto = rbaacServiceClient.registerNewDevice(deviceRegistrationRequest).getResult();
 
 		DevicePairingCreds creds = DeviceRestModels.get();
