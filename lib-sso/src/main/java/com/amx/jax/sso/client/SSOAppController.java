@@ -34,6 +34,7 @@ import com.amx.jax.sso.SSOStatus.SSOServerCodes;
 import com.amx.jax.sso.SSOTranx;
 import com.amx.jax.sso.SSOUser;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.HttpUtils;
 import com.amx.utils.JsonUtil;
 import com.amx.utils.Random;
 import com.amx.utils.URLBuilder;
@@ -101,7 +102,7 @@ public class SSOAppController {
 			byte[] decodedBytes = Base64.getDecoder().decode(returnUrld);
 			returnUrl = new String(decodedBytes);
 		}
-		URLBuilder builder = new URLBuilder(appConfig.getSsoURL());
+		URLBuilder builder = new URLBuilder(HttpUtils.getServerName(request));
 		builder.setPath(SSOConstants.SSO_LOGIN_URL_REQUIRED).addParameter(AppConstants.TRANX_ID_XKEY, tranxId);
 		result.setRedirectUrl(builder.getURL());
 
