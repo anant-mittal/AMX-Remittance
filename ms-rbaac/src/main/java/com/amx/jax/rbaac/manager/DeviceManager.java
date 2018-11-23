@@ -64,7 +64,7 @@ public class DeviceManager {
 		device.setSessionToken(sessionPairToken);
 		device.setOtpTokenCreatedDate(Calendar.getInstance().getTime());
 		deviceDao.saveDevice(device);
-		DevicePairOtpResponse resp = generateDevicePaireOtpResponse(device); 
+		DevicePairOtpResponse resp = generateDevicePaireOtpResponse(device);
 		resp.setSessionPairToken(sessionPairToken);
 		resp.setOtp(otp);
 		return resp;
@@ -130,7 +130,12 @@ public class DeviceManager {
 	public DevicePairOtpResponse generateDevicePaireOtpResponse(Device device) {
 		DevicePairOtpResponse resp = new DevicePairOtpResponse();
 		resp.setDeviceRegId(device.getRegistrationId());
-		resp.setTermialId(ArgUtil.parseAsString(device.getBranchSystemInventoryId()));
+		if (device.getBranchSystemInventoryId() != null) {
+			resp.setTermialId(ArgUtil.parseAsString(device.getBranchSystemInventoryId()));
+		}
+		if (device.getEmployeeId() != null) {
+			resp.setTermialId(device.getEmployeeId().toString());
+		}
 		resp.setDeviceState(device.getState());
 		return resp;
 	}
