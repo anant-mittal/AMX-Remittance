@@ -23,9 +23,9 @@ import com.amx.jax.AppConstants;
 import com.amx.jax.api.AmxFieldError;
 import com.amx.jax.exception.ApiHttpExceptions.ApiHttpArgException;
 import com.amx.jax.exception.ApiHttpExceptions.ApiStatusCodes;
-import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.logger.LoggerService;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.HttpUtils;
 
 public abstract class AmxAdvice {
 
@@ -85,14 +85,14 @@ public abstract class AmxAdvice {
 			AmxFieldError newError = new AmxFieldError();
 			newError.setObzect(error.getObjectName());
 			newError.setField(error.getField());
-			newError.setDescription(CommonHttpRequest.sanitze(error.getDefaultMessage()));
+			newError.setDescription(HttpUtils.sanitze(error.getDefaultMessage()));
 			newError.setCode(error.getCode());
 			errors.add(newError);
 		}
 		for (ObjectError error : ex.getBindingResult().getGlobalErrors()) {
 			AmxFieldError newError = new AmxFieldError();
 			newError.setObzect(error.getObjectName());
-			newError.setDescription(CommonHttpRequest.sanitze(error.getDefaultMessage()));
+			newError.setDescription(HttpUtils.sanitze(error.getDefaultMessage()));
 			errors.add(newError);
 		}
 		return badRequest(ex, errors, request, response, ApiStatusCodes.PARAM_INVALID);
@@ -114,7 +114,7 @@ public abstract class AmxAdvice {
 		List<AmxFieldError> errors = new ArrayList<AmxFieldError>();
 		AmxFieldError newError = new AmxFieldError();
 		newError.setField(ex.getName());
-		newError.setDescription(CommonHttpRequest.sanitze(ex.getMessage()));
+		newError.setDescription(HttpUtils.sanitze(ex.getMessage()));
 		errors.add(newError);
 		return badRequest(ex, errors, request, response, ApiStatusCodes.PARAM_TYPE_MISMATCH);
 	}
@@ -134,7 +134,7 @@ public abstract class AmxAdvice {
 		for (ConstraintViolation<?> responseError : exception.getConstraintViolations()) {
 			AmxFieldError newError = new AmxFieldError();
 			newError.setField(responseError.getPropertyPath().toString());
-			newError.setDescription(CommonHttpRequest.sanitze(responseError.getMessage()));
+			newError.setDescription(HttpUtils.sanitze(responseError.getMessage()));
 			errors.add(newError);
 		}
 		return badRequest(exception, errors, request, response, ApiStatusCodes.PARAM_ILLEGAL);
