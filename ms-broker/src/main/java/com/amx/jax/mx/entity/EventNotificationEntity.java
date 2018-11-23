@@ -1,4 +1,4 @@
-package com.amx.jax.service.entity;
+package com.amx.jax.mx.entity;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -9,9 +9,12 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.amx.jax.ProjectConfig;
+
 @Entity
-@Table(name = "EX_EVENT_NOTIFICATION")
+@Table(name = ProjectConfig.TABLE_EVENT_NOTIFICATION)
 public class EventNotificationEntity implements Serializable {
+
 	private static final long serialVersionUID = 1L;
 
 	/*

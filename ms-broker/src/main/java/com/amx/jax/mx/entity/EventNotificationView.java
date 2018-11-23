@@ -1,4 +1,4 @@
-package com.amx.jax.service.entity;
+package com.amx.jax.mx.entity;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -10,8 +10,10 @@ import javax.persistence.Table;
 
 import org.springframework.data.annotation.Id;
 
+import com.amx.jax.ProjectConfig;
+
 @Entity
-@Table(name = "VW_EVENT_NOTIFICATION") // This view created from the table EX_EVENT_NOTIFICATION and EX_EVENT_MASTER
+@Table(name = ProjectConfig.TABLE_EVENT_NOTIFICATION) // This view created from the table EX_EVENT_NOTIFICATION and EX_EVENT_MASTER
 public class EventNotificationView implements Serializable {
 	private static final long serialVersionUID = 1L;
 
