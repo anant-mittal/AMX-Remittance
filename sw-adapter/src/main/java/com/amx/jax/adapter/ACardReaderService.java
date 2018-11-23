@@ -13,6 +13,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.thavam.util.concurrent.blockingMap.BlockingHashMap;
 
 import com.amx.jax.AppConstants;
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.device.CardData;
 import com.amx.jax.device.CardReader;
@@ -111,6 +112,7 @@ public abstract class ACardReaderService {
 	protected DeviceStatus deviceStatus = DeviceStatus.DISCONNECTED;
 	protected CardStatus cardStatusValue = CardStatus.NOCARD;
 	protected DataStatus dataStatusValue = DataStatus.EMPTY;
+
 	private Object lock = new Object();
 
 	private NetAddress address = null;
@@ -286,16 +288,22 @@ public abstract class ACardReaderService {
 		sessionPairingCreds = null;
 		terminalId = null;
 	}
-
+	
 	@Scheduled(fixedDelay = 1000, initialDelay = 4000)
 	public void readTask() {
+		
+		AppContextUtil.init();
+		
 		LOGGER.debug("ACardReaderService:readTask");
+		
 		if (SWAdapterGUI.CONTEXT == null) {
 			return;
 		}
+		
 		if (getSessionPairingCreds() == null) {
 			return;
 		}
+
 		try {
 			CardReader reader = read();
 			LOGGER.debug("ACardReaderService:readTask:GUI {} {}", reader.getCardActiveTime(), lastreadtime);
@@ -334,6 +342,9 @@ public abstract class ACardReaderService {
 
 	@Scheduled(fixedDelay = 2000, initialDelay = 5000)
 	public void pingTask() {
+
+		AppContextUtil.init();
+
 		LOGGER.debug("ACardReaderService:pingTask {} {}", tnt, env);
 		if (SWAdapterGUI.CONTEXT == null || CONTEXT == null) {
 			CONTEXT = this;
@@ -461,6 +472,18 @@ public abstract class ACardReaderService {
 		this.deviceStatus = deviceStatusvalue;
 		SWAdapterGUI.CONTEXT.foundDevice(deviceStatusvalue);
 		progress();
+	}
+
+	public DeviceStatus getDeviceStatus() {
+		return deviceStatus;
+	}
+
+	public CardStatus getCardStatusValue() {
+		return cardStatusValue;
+	}
+
+	public DataStatus getDataStatusValue() {
+		return dataStatusValue;
 	}
 
 }

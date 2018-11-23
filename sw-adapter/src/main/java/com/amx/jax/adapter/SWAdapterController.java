@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.amx.jax.device.CardReader;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.Constants;
 import com.amx.utils.FileUtil;
 
 import net.east301.keyring.BackendNotSupportedException;
@@ -51,7 +52,6 @@ public class SWAdapterController {
 	@ResponseBody
 	@RequestMapping(value = "/pub/script/index.js", method = RequestMethod.GET)
 	public String indexJs() throws Exception {
-
 		return FileUtil.read(applicationContext.getResource("classpath:templates/index.js").getURL());
 	}
 
@@ -68,20 +68,24 @@ public class SWAdapterController {
 			kwtCardReaderService.resetTerminalPairing();
 		}
 
+		String body = "";
 		if (ArgUtil.isEmpty(kwtCardReaderService.getTerminalId())) {
-			return FileUtil.read(applicationContext.getResource("classpath:templates/terminal.html").getURL());
+			body = FileUtil.read(applicationContext.getResource("classpath:templates/terminal.html").getURL());
 		} else if (!ArgUtil.isEmpty(kwtCardReaderService.getDevicePairingCreds())) {
-			return FileUtil.read(applicationContext.getResource("classpath:templates/regid.html").getURL()).replace(
-					"${REG_ID}",
-					kwtCardReaderService.getDevicePairingCreds().getDeviceRegId())
-
-					.replace("${HOST_NAME}", kwtCardReaderService.getAddress().getHostName())
-					.replace("${USER_NAME}", kwtCardReaderService.getAddress().getUserName())
-					.replace("${LOCAL_IP}", kwtCardReaderService.getAddress().getLocalIp());
+			body = FileUtil.read(applicationContext.getResource("classpath:templates/regid.html").getURL());
 		} else {
-			return FileUtil.read(applicationContext.getResource("classpath:templates/index.html").getURL());
+			body = FileUtil.read(applicationContext.getResource("classpath:templates/index.html").getURL());
 		}
-
+		return body.replace("${REG_ID}", ArgUtil.isEmpty(kwtCardReaderService.getDevicePairingCreds())
+				? Constants.BLANK
+				: kwtCardReaderService.getDevicePairingCreds().getDeviceRegId())
+				.replace("${HOST_NAME}", kwtCardReaderService.getAddress().getHostName())
+				.replace("${USER_NAME}", kwtCardReaderService.getAddress().getUserName())
+				.replace("${LOCAL_IP}", kwtCardReaderService.getAddress().getLocalIp())
+				.replace("${DEVICE_STATUS}", String.format("%s", kwtCardReaderService.getDeviceStatus()))
+				.replace("${CARD_STATUS}", String.format("%s", kwtCardReaderService.getCardStatusValue()))
+				.replace("${DATA_STATUS}", String.format("%s", kwtCardReaderService.getDataStatusValue()))
+				.replace("${LOG}", String.format("%s", SWAdapterGUI.CONTEXT.LOG));
 	}
 
 }
