@@ -88,6 +88,7 @@ public abstract class ACardReaderService {
 			if (ArgUtil.isEmpty(serverUrl)) {
 				serverUrl = environment.getProperty("server.url.local");
 			}
+			KeyUtil.SERVICE_NAME = serverUrl;
 		}
 		return serverUrl;
 	}
@@ -288,18 +289,18 @@ public abstract class ACardReaderService {
 		sessionPairingCreds = null;
 		terminalId = null;
 	}
-	
+
 	@Scheduled(fixedDelay = 1000, initialDelay = 4000)
 	public void readTask() {
-		
+
 		AppContextUtil.init();
-		
+
 		LOGGER.debug("ACardReaderService:readTask");
-		
+
 		if (SWAdapterGUI.CONTEXT == null) {
 			return;
 		}
-		
+
 		if (getSessionPairingCreds() == null) {
 			return;
 		}
