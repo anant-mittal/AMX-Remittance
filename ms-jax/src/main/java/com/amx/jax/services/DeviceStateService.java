@@ -28,7 +28,7 @@ import com.amx.jax.model.request.device.SignaturePadFCPurchaseSaleInfo;
 import com.amx.jax.model.request.device.SignaturePadRemittanceInfo;
 import com.amx.jax.model.response.DeviceStatusInfoDto;
 import com.amx.jax.model.response.IDeviceStateData;
-import com.amx.jax.rbaac.DeviceAuthClient;
+import com.amx.jax.rbaac.RbaacServiceClient;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.utils.JsonUtil;;
 
@@ -51,7 +51,7 @@ public class DeviceStateService extends AbstractService {
 	@Autowired
 	UserService userService;
 	@Autowired
-	DeviceAuthClient deviceServiceClient;
+	RbaacServiceClient rbaacServiceClient;
 
 	/**
 	 * @param registrationId
@@ -125,7 +125,7 @@ public class DeviceStateService extends AbstractService {
 
 	public BoolRespModel updateDeviceStateData(ClientType deviceType, Integer countryBranchSystemInventoryId,
 			IDeviceStateData deviceStateData, DeviceStateDataType type, BigDecimal employeeId) {
-		BigDecimal deviceRegId = deviceServiceClient
+		BigDecimal deviceRegId = rbaacServiceClient
 				.getDeviceRegIdByBranchInventoryId(deviceType, new BigDecimal(countryBranchSystemInventoryId))
 				.getResult();
 		DeviceStateInfo deviceStateInfo = deviceDao.getDeviceStateInfo(deviceRegId);

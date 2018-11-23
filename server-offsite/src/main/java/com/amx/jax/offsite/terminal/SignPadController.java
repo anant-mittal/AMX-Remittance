@@ -32,7 +32,7 @@ import com.amx.jax.offsite.device.DeviceRequest;
 import com.amx.jax.offsite.terminal.TerminalConstants.Path;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.File.Type;
-import com.amx.jax.rbaac.DeviceAuthClient;
+import com.amx.jax.rbaac.RbaacServiceClient;
 import com.amx.jax.rbaac.dto.DevicePairOtpResponse;
 import com.amx.jax.swagger.IStatusCodeListPlugin.ApiStatusService;
 import com.amx.utils.ArgUtil;
@@ -47,7 +47,7 @@ import io.swagger.annotations.Api;
 public class SignPadController {
 
 	@Autowired
-	private DeviceAuthClient deviceAuthClient;
+	private RbaacServiceClient rbaacServiceClient;
 
 	@Autowired
 	private DeviceStateClient deviceStateClient;
@@ -77,7 +77,7 @@ public class SignPadController {
 				|| signPadData.getUpdatestamp() < terminalData.getUpdatestamp()
 				|| deviceData.getUpdatestamp() > signPadData.getUpdatestamp()) {
 
-			DevicePairOtpResponse devAuthResp = deviceAuthClient.validateDeviceSessionToken(
+			DevicePairOtpResponse devAuthResp = rbaacServiceClient.validateDeviceSessionToken(
 					ArgUtil.parseAsBigDecimal(deviceRequestValidator.getDeviceRegId()),
 					deviceRequestValidator.getDeviceSessionToken()).getResult();
 
