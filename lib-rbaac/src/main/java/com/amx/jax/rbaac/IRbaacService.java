@@ -209,23 +209,70 @@ public interface IRbaacService {
 	public AmxApiResponse<String, Object> testPost();
 	
 	
+	/**
+	 * registers new device
+	 * @param request
+	 * @return
+	 * 
+	 */
 	@RbaacApiStatus({ RbaacServiceError.CLIENT_ALREADY_REGISTERED })
 	public AmxApiResponse<DeviceDto, Object> registerNewDevice(DeviceRegistrationRequest request);
 
+	/**
+	 * activates device
+	 * @param deviceRegId mandatory
+	 * @param mOtp optional
+	 * @return
+	 * 
+	 */
 	@RbaacApiStatus({ RbaacServiceError.CLIENT_NOT_FOUND })
 	public  AmxApiResponse<BoolRespModel, Object> activateDevice(Integer deviceRegId, String mOtp);
 
+	/**
+	 * @param deviceRegId
+	 * @return
+	 * 
+	 */
 	@RbaacApiStatus(RbaacServiceError.CLIENT_NOT_FOUND)
 	public  AmxApiResponse<BoolRespModel, Object> deactivateDevice(Integer deviceRegId);
 
+	/**
+	 * creates session
+	 * @param deviceRegId
+	 * @param paireToken
+	 * @return
+	 * 
+	 */
 	public  AmxApiResponse<DevicePairOtpResponse, Object> createDeviceSession(Integer deviceRegId, String paireToken);
 
+	/**
+	 * pair device session
+	 * @param deviceType
+	 * @param countryBranchSystemInventoryId
+	 * @param otp
+	 * @return
+	 * 
+	 */
 	public  AmxApiResponse<DevicePairOtpResponse, BoolRespModel> pairDeviceSession(ClientType deviceType,
 			Integer countryBranchSystemInventoryId, String otp);
 
+	/**
+	 * validates device session token
+	 * @param deviceRegId
+	 * @param deviceSessionToken
+	 * @return
+	 * 
+	 */
 	public  AmxApiResponse<DevicePairOtpResponse, Object> validateDeviceSessionToken(BigDecimal deviceRegId,
 			String deviceSessionToken);
 
+	/**
+	 * 
+	 * @param deviceClientType
+	 * @param countryBranchSystemInventoryId
+	 * @return device registration id
+	 * 
+	 */
 	public  AmxApiResponse<BigDecimal, Object> getDeviceRegIdByBranchInventoryId(ClientType deviceClientType,
 			BigDecimal countryBranchSystemInventoryId);
 

@@ -269,6 +269,9 @@ public class RbaacServiceApiController implements IRbaacService {
 		return AmxApiResponse.build("Success");
 	}
 	
+	/* (non-Javadoc)
+	 * @see com.amx.jax.rbaac.IRbaacService#registerNewDevice(com.amx.jax.rbaac.dto.request.DeviceRegistrationRequest)
+	 */
 	@RequestMapping(value = ApiEndPoints.DEVICE_REG, method = RequestMethod.POST)
 	@Override
 	public AmxApiResponse<DeviceDto, Object> registerNewDevice(@Valid @RequestBody DeviceRegistrationRequest request) {
@@ -277,6 +280,9 @@ public class RbaacServiceApiController implements IRbaacService {
 		return AmxApiResponse.build(newDevice);
 	}
 
+	/* (non-Javadoc)
+	 * @see com.amx.jax.rbaac.IRbaacService#activateDevice(java.lang.Integer, java.lang.String)
+	 */
 	@RequestMapping(value = ApiEndPoints.DEVICE_ACTIVATE, method = RequestMethod.POST)
 	@Override
 	public AmxApiResponse<BoolRespModel, Object> activateDevice(
@@ -286,6 +292,9 @@ public class RbaacServiceApiController implements IRbaacService {
 		return AmxApiResponse.build(response);
 	}
 
+	/* (non-Javadoc)
+	 * @see com.amx.jax.rbaac.IRbaacService#deactivateDevice(java.lang.Integer)
+	 */
 	@RequestMapping(value = ApiEndPoints.DEVICE_DEACTIVATE, method = RequestMethod.POST)
 	@Override
 	public AmxApiResponse<BoolRespModel, Object> deactivateDevice(
@@ -294,6 +303,9 @@ public class RbaacServiceApiController implements IRbaacService {
 		return AmxApiResponse.build(response);
 	}
 
+	/* (non-Javadoc)
+	 * @see com.amx.jax.rbaac.IRbaacService#createDeviceSession(java.lang.Integer, java.lang.String)
+	 */
 	@RequestMapping(value = ApiEndPoints.DEVICE_CREATE_SESSION, method = RequestMethod.POST)
 	@Override
 	public AmxApiResponse<DevicePairOtpResponse, Object> createDeviceSession(
@@ -303,6 +315,9 @@ public class RbaacServiceApiController implements IRbaacService {
 		return AmxApiResponse.build(otpResponse);
 	}
 
+	/* (non-Javadoc)
+	 * @see com.amx.jax.rbaac.IRbaacService#pairDeviceSession(com.amx.jax.dict.UserClient.ClientType, java.lang.Integer, java.lang.String)
+	 */
 	@Override
 	@RequestMapping(value = ApiEndPoints.DEVICE_PAIR_SESSION, method = RequestMethod.POST)
 	public AmxApiResponse<DevicePairOtpResponse, BoolRespModel> pairDeviceSession(
@@ -314,6 +329,9 @@ public class RbaacServiceApiController implements IRbaacService {
 		return AmxApiResponse.build(otpResponse, new BoolRespModel(Boolean.TRUE));
 	}
 
+	/* (non-Javadoc)
+	 * @see com.amx.jax.rbaac.IRbaacService#validateDeviceSessionToken(java.math.BigDecimal, java.lang.String)
+	 */
 	@Override
 	@RequestMapping(value = ApiEndPoints.DEVICE_VALIDATE_SESSION_TOKEN, method = RequestMethod.POST)
 	public AmxApiResponse<DevicePairOtpResponse, Object> validateDeviceSessionToken(
@@ -323,6 +341,9 @@ public class RbaacServiceApiController implements IRbaacService {
 		return AmxApiResponse.build(repsonse);
 	}
 
+	/* (non-Javadoc)
+	 * @see com.amx.jax.rbaac.IRbaacService#getDeviceRegIdByBranchInventoryId(com.amx.jax.dict.UserClient.ClientType, java.math.BigDecimal)
+	 */
 	@Override
 	@RequestMapping(value = ApiEndPoints.DEVICE_GET_DEVICE_REG_ID, method = RequestMethod.POST)
 	public AmxApiResponse<BigDecimal, Object> getDeviceRegIdByBranchInventoryId(
