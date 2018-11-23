@@ -1,7 +1,5 @@
 package com.amx.jax.device;
 
-import javax.validation.constraints.NotNull;
-
 import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.swagger.ApiMockModelProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -49,7 +47,13 @@ public class DeviceRestModels {
 
 	@JsonDeserialize(as = DeviceRestModel.class)
 	public interface DevicePairingRequest {
-		@ApiMockModelProperty(example = "192.168.14.162")
+
+		@ApiMockModelProperty(example = "284052306594", required = false)
+		String getIdentity();
+
+		void setIdentity(String identity);
+
+		@ApiMockModelProperty(example = "192.168.14.162", required = false)
 		String getDeivceTerminalId();
 
 		void setDeivceTerminalId(String deivceTerminalId);
@@ -100,7 +104,8 @@ public class DeviceRestModels {
 	public static class DeviceRestModel
 			implements DevicePairingRequest, DevicePairingCreds, SessionPairingRequest, SessionPairingCreds {
 
-		@NotNull
+		String identity;
+
 		String deivceTerminalId;
 		ClientType deivceClientType;
 
@@ -181,6 +186,16 @@ public class DeviceRestModels {
 		@Override
 		public String getDeviceRequestKey() {
 			return this.deviceRequestKey;
+		}
+
+		@Override
+		public String getIdentity() {
+			return this.identity;
+		}
+
+		@Override
+		public void setIdentity(String identity) {
+			this.identity = identity;
 		}
 
 	}
