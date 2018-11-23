@@ -79,6 +79,7 @@
 
 	</dependencies>
 
+
 	<build>
 		<plugins>
 			<!-- Package as an executable jar/war -->
@@ -87,7 +88,7 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
 					<outputDirectory>${basedir}/dist-sw-adapter/</outputDirectory>
-					<finalName>${project.name}</finalName>
+					<finalName>${project.name}-${env}-${tnt}</finalName>
 				</configuration>
 			</plugin>
 		</plugins>

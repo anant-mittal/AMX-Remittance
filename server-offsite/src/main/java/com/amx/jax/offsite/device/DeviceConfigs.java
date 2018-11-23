@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 import com.amx.jax.api.FileSubmitRequestModel;
 import com.amx.jax.cache.CacheBox;
-import com.amx.jax.constants.DeviceState;
+import com.amx.jax.constant.DeviceState;
 import com.amx.jax.device.CardData;
 import com.amx.jax.model.response.DeviceStatusInfoDto;
 import com.amx.utils.ArgUtil;
@@ -152,7 +152,6 @@ public class DeviceConfigs {
 		}
 
 		public void setStateData(DeviceStatusInfoDto stateData) {
-			this.deviceState = stateData.getDeviceState();
 			this.stateData = stateData;
 		}
 

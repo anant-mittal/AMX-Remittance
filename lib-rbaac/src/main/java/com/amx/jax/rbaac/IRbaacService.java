@@ -3,6 +3,11 @@ package com.amx.jax.rbaac;
 import java.math.BigDecimal;
 
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.api.BoolRespModel;
+import com.amx.jax.dict.UserClient.ClientType;
+import com.amx.jax.rbaac.dto.DeviceDto;
+import com.amx.jax.rbaac.dto.DevicePairOtpResponse;
+import com.amx.jax.rbaac.dto.request.DeviceRegistrationRequest;
 import com.amx.jax.rbaac.dto.request.EmployeeDetailsRequestDTO;
 import com.amx.jax.rbaac.dto.request.RoleRequestDTO;
 import com.amx.jax.rbaac.dto.request.UserAuthInitReqDTO;
@@ -64,6 +69,31 @@ public interface IRbaacService {
 
 		/** The Constant TEST_POST. */
 		public static final String TEST_POST = SERVICE_PREFIX + API_VERSION_V1 + "/test/post";
+		
+		public static final String DEVICE_PREFIX = SERVICE_PREFIX + API_VERSION_V1 + "/device";
+		
+		public static final String DEVICE_ACTIVATE = DEVICE_PREFIX + "/activate";
+		public static final String DEVICE_DEACTIVATE = DEVICE_PREFIX + "/deactivate";
+		public static final String DEVICE_CREATE_SESSION = DEVICE_PREFIX + "/createsession";
+		public static final String DEVICE_PAIR_SESSION =  DEVICE_PREFIX + "/pairsession";
+		public static final String DEVICE_VALIDATE_SESSION_TOKEN =  DEVICE_PREFIX + "/validatesessiontoken";
+		public static final String DEVICE_REG = DEVICE_PREFIX + "/register";
+		public static final String DEVICE_GET_DEVICE_REG_ID =  DEVICE_PREFIX + "/getdeviceregid";
+
+	}
+	
+	public static class Params {
+
+		public static final String TERMINAL_ID = "countryBranchSystemInventoryId";
+		public static final String EMPLOYEE_ID = "employeeId";
+		public static final String DEVICE_TYPE = "deviceType";
+		public static final String DEVICE_REG_ID = "deviceRegId";
+		public static final String SESSION_TOKEN = "sessionToken";
+		public static final String PAIRE_TOKEN = "paireToken";
+		public static final String DEVICE_CLIENT_TYPE = "deviceClientType";
+		public static final String DEVICE_SYS_INV_ID = "countryBranchSystemInventoryId";
+		public static final String OTP = "otp";
+		public static final String MOTP = "mOtp";
 
 	}
 
@@ -177,5 +207,73 @@ public interface IRbaacService {
 	 * @return the amx api response
 	 */
 	public AmxApiResponse<String, Object> testPost();
+	
+	
+	/**
+	 * registers new device
+	 * @param request
+	 * @return
+	 * 
+	 */
+	@RbaacApiStatus({ RbaacServiceError.CLIENT_ALREADY_REGISTERED })
+	public AmxApiResponse<DeviceDto, Object> registerNewDevice(DeviceRegistrationRequest request);
+
+	/**
+	 * activates device
+	 * @param deviceRegId mandatory
+	 * @param mOtp optional
+	 * @return
+	 * 
+	 */
+	@RbaacApiStatus({ RbaacServiceError.CLIENT_NOT_FOUND })
+	public  AmxApiResponse<BoolRespModel, Object> activateDevice(Integer deviceRegId, String mOtp);
+
+	/**
+	 * @param deviceRegId
+	 * @return
+	 * 
+	 */
+	@RbaacApiStatus(RbaacServiceError.CLIENT_NOT_FOUND)
+	public  AmxApiResponse<BoolRespModel, Object> deactivateDevice(Integer deviceRegId);
+
+	/**
+	 * creates session
+	 * @param deviceRegId
+	 * @param paireToken
+	 * @return
+	 * 
+	 */
+	public  AmxApiResponse<DevicePairOtpResponse, Object> createDeviceSession(Integer deviceRegId, String paireToken);
+
+	/**
+	 * pair device session
+	 * @param deviceType
+	 * @param countryBranchSystemInventoryId
+	 * @param otp
+	 * @return
+	 * 
+	 */
+	public  AmxApiResponse<DevicePairOtpResponse, BoolRespModel> pairDeviceSession(ClientType deviceType,
+			Integer countryBranchSystemInventoryId, String otp);
+
+	/**
+	 * validates device session token
+	 * @param deviceRegId
+	 * @param deviceSessionToken
+	 * @return
+	 * 
+	 */
+	public  AmxApiResponse<DevicePairOtpResponse, Object> validateDeviceSessionToken(BigDecimal deviceRegId,
+			String deviceSessionToken);
+
+	/**
+	 * 
+	 * @param deviceClientType
+	 * @param countryBranchSystemInventoryId
+	 * @return device registration id
+	 * 
+	 */
+	public  AmxApiResponse<BigDecimal, Object> getDeviceRegIdByBranchInventoryId(ClientType deviceClientType,
+			BigDecimal countryBranchSystemInventoryId);
 
 }

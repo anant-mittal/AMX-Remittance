@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.api.FileSubmitRequestModel;
-import com.amx.jax.client.DeviceClient;
-import com.amx.jax.client.IDeviceService;
-import com.amx.jax.constants.DeviceState;
+import com.amx.jax.client.DeviceStateClient;
+import com.amx.jax.client.IDeviceStateService;
+import com.amx.jax.constant.DeviceState;
 import com.amx.jax.http.ApiRequest;
 import com.amx.jax.http.RequestType;
 import com.amx.jax.model.response.DeviceStatusInfoDto;
@@ -32,6 +32,8 @@ import com.amx.jax.offsite.device.DeviceRequest;
 import com.amx.jax.offsite.terminal.TerminalConstants.Path;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.File.Type;
+import com.amx.jax.rbaac.RbaacServiceClient;
+import com.amx.jax.rbaac.dto.DevicePairOtpResponse;
 import com.amx.jax.swagger.IStatusCodeListPlugin.ApiStatusService;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
@@ -41,11 +43,14 @@ import io.swagger.annotations.Api;
 
 @RestController
 @Api(value = "SignPad APIs")
-@ApiStatusService(IDeviceService.class)
+@ApiStatusService(IDeviceStateService.class)
 public class SignPadController {
 
 	@Autowired
-	private DeviceClient deviceClient;
+	private RbaacServiceClient rbaacServiceClient;
+
+	@Autowired
+	private DeviceStateClient deviceStateClient;
 
 	@Autowired
 	private DeviceRequest deviceRequestValidator;
@@ -72,18 +77,22 @@ public class SignPadController {
 				|| signPadData.getUpdatestamp() < terminalData.getUpdatestamp()
 				|| deviceData.getUpdatestamp() > signPadData.getUpdatestamp()) {
 
-			AmxApiResponse<DeviceStatusInfoDto, Object> devResp = deviceClient.getStatus(
-					ArgUtil.parseAsInteger(deviceRequestValidator.getDeviceRegId()),
-					deviceRequestValidator.getDeviceRegToken(), deviceRequestValidator.getDeviceSessionToken());
+			DevicePairOtpResponse devAuthResp = rbaacServiceClient.validateDeviceSessionToken(
+					ArgUtil.parseAsBigDecimal(deviceRequestValidator.getDeviceRegId()),
+					deviceRequestValidator.getDeviceSessionToken()).getResult();
 
-			if (!ArgUtil.isEmpty(devResp) && !ArgUtil.isEmpty(devResp.getResult())) {
-				// if (!ArgUtil.isEmpty(devResp.getResult().getStateDataType())) {
-				signPadData.setStateData(devResp.getResult());
-				// }
-				// signPadData.setDeviceState(devResp.getResult().getDeviceState());
-				signPadData.setUpdatestamp(terminalData.getUpdatestamp());
+			if (!ArgUtil.isEmpty(devAuthResp)) {
+				signPadData.setDeviceState(devAuthResp.getDeviceState());
+				if (devAuthResp.getDeviceState() == DeviceState.SESSION_PAIRED) {
+					AmxApiResponse<DeviceStatusInfoDto, Object> devResp = deviceStateClient.getStatus(
+							ArgUtil.parseAsInteger(deviceRequestValidator.getDeviceRegId()),
+							deviceRequestValidator.getDeviceRegToken(), deviceRequestValidator.getDeviceSessionToken());
+					if (!ArgUtil.isEmpty(devResp) && !ArgUtil.isEmpty(devResp.getResult())) {
+						signPadData.setStateData(devResp.getResult());
+						signPadData.setUpdatestamp(terminalData.getUpdatestamp());
+					}
+				}
 				signPadBox.fastPut(deviceData.getTerminalId(), signPadData);
-				/// data.getBranchPcLastLogoutTime();
 			}
 		}
 
@@ -128,7 +137,7 @@ public class SignPadController {
 		if (isSuccessTimeout
 				&& !ArgUtil.isEmpty(signPadData.getStateData())
 				&& !ArgUtil.isEmpty(signPadData.getStateData().getStateDataType())) {
-			deviceClient.clearDeviceState(ArgUtil.parseAsInteger(deviceRequestValidator.getDeviceRegId()),
+			deviceStateClient.clearDeviceState(ArgUtil.parseAsInteger(deviceRequestValidator.getDeviceRegId()),
 					deviceRequestValidator.getDeviceRegToken(),
 					deviceRequestValidator.getDeviceSessionToken());
 			signPadData.setStateData(new DeviceStatusInfoDto());
@@ -148,7 +157,8 @@ public class SignPadController {
 		signPadData.setSignature(file);
 		signPadBox.fastPut(deviceData.getTerminalId(), signPadData);
 
-		return deviceClient.updateSignatureStateData(ArgUtil.parseAsInteger(deviceRequestValidator.getDeviceRegId()),
+		return deviceStateClient.updateSignatureStateData(
+				ArgUtil.parseAsInteger(deviceRequestValidator.getDeviceRegId()),
 				file.getData());
 	}
 

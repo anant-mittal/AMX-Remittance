@@ -44,6 +44,7 @@ import com.amx.jax.sso.SSOTranx;
 import com.amx.jax.sso.SSOUser;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;
+import com.amx.utils.Random;
 import com.amx.utils.Urly;
 
 import io.swagger.annotations.ApiParam;

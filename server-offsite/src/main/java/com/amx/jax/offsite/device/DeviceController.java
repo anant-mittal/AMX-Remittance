@@ -12,8 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
-import com.amx.jax.client.DeviceClient;
-import com.amx.jax.client.IDeviceService;
 import com.amx.jax.client.MetaClient;
 import com.amx.jax.device.DeviceConstants;
 import com.amx.jax.device.DeviceRestModels;
@@ -23,13 +21,16 @@ import com.amx.jax.device.DeviceRestModels.SessionPairingCreds;
 import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.logger.LoggerService;
-import com.amx.jax.model.request.DeviceRegistrationRequest;
 import com.amx.jax.model.response.BranchSystemDetailDto;
-import com.amx.jax.model.response.DeviceDto;
-import com.amx.jax.model.response.DevicePairOtpResponse;
 import com.amx.jax.offsite.OffsiteStatus.ApiOffisteStatus;
 import com.amx.jax.offsite.OffsiteStatus.OffsiteServerCodes;
+import com.amx.jax.offsite.OffsiteStatus.OffsiteServerError;
 import com.amx.jax.offsite.device.DeviceConfigs.DeviceData;
+import com.amx.jax.rbaac.IRbaacService;
+import com.amx.jax.rbaac.RbaacServiceClient;
+import com.amx.jax.rbaac.dto.DeviceDto;
+import com.amx.jax.rbaac.dto.DevicePairOtpResponse;
+import com.amx.jax.rbaac.dto.request.DeviceRegistrationRequest;
 import com.amx.jax.sso.SSOTranx;
 import com.amx.jax.swagger.IStatusCodeListPlugin.ApiStatusService;
 import com.amx.utils.ArgUtil;
@@ -38,13 +39,13 @@ import io.swagger.annotations.Api;
 
 @RestController
 @Api(value = "Device APIs")
-@ApiStatusService(IDeviceService.class)
+@ApiStatusService(IRbaacService.class)
 public class DeviceController {
 
 	private static final Logger LOGGER = LoggerService.getLogger(DeviceController.class);
 
 	@Autowired
-	private DeviceClient deviceClient;
+	private RbaacServiceClient rbaacServiceClient;
 
 	@Autowired
 	private MetaClient metaClient;
@@ -70,8 +71,9 @@ public class DeviceController {
 		String deivceTerminalId = req.getDeivceTerminalId();
 		ClientType deivceClientType = req.getDeivceClientType();
 
-		if (ArgUtil.isEmpty(deivceTerminalId) || ArgUtil.isEmpty(deivceClientType)) {
-			// throw new OffsiteServerError(OffsiteServerCodes.DEVICE_UNKNOWN,"hoho");
+		if ((ArgUtil.isEmpty(deivceTerminalId) && ArgUtil.isEmpty(req.getIdentity()))
+				|| ArgUtil.isEmpty(deivceClientType)) {
+			throw new OffsiteServerError(OffsiteServerCodes.CLIENT_UNKNOWN, "hoho");
 		}
 
 		// validate Device with jax
@@ -79,7 +81,8 @@ public class DeviceController {
 		deviceRegistrationRequest.setDeviceType(deivceClientType);
 		deviceRegistrationRequest.setBranchSystemIp(deivceTerminalId);
 		deviceRegistrationRequest.setDeviceId(commonHttpRequest.getDeviceId());
-		DeviceDto deviceDto = deviceClient.registerNewDevice(deviceRegistrationRequest).getResult();
+		deviceRegistrationRequest.setIdentityInt(req.getIdentity());
+		DeviceDto deviceDto = rbaacServiceClient.registerNewDevice(deviceRegistrationRequest).getResult();
 
 		DevicePairingCreds creds = DeviceRestModels.get();
 		creds.setDeviceRegToken(deviceDto.getPairToken());
@@ -93,7 +96,7 @@ public class DeviceController {
 			@RequestParam Integer deviceRegId,
 			@RequestParam ClientType deviceType, @RequestParam(required = false) String mOtp) {
 		deviceRequestValidator.updateStamp(deviceRegId);
-		return deviceClient.activateDevice(deviceRegId, mOtp);
+		return rbaacServiceClient.activateDevice(deviceRegId, mOtp);
 	}
 
 	@ApiDeviceHeaders
@@ -106,7 +109,8 @@ public class DeviceController {
 		String deviceRegId = deviceRequestValidator.getDeviceRegId();
 		String deviceRegToken = deviceRequestValidator.getDeviceRegToken();
 
-		DevicePairOtpResponse resp = deviceClient.sendOtpForPairing(ArgUtil.parseAsInteger(deviceRegId), deviceRegToken)
+		DevicePairOtpResponse resp = rbaacServiceClient
+				.createDeviceSession(ArgUtil.parseAsInteger(deviceRegId), deviceRegToken)
 				.getResult();
 		SessionPairingCreds creds = deviceRequestValidator.createSession(resp.getSessionPairToken(), resp.getOtp(),
 				resp.getTermialId());
@@ -117,7 +121,7 @@ public class DeviceController {
 	public AmxApiResponse<DevicePairOtpResponse, BoolRespModel> validateOtpForPairing(
 			@RequestParam ClientType deviceType,
 			@RequestParam Integer terminalId, @RequestParam(required = false) String mOtp) {
-		AmxApiResponse<DevicePairOtpResponse, BoolRespModel> resp = deviceClient.validateOtpForPairing(
+		AmxApiResponse<DevicePairOtpResponse, BoolRespModel> resp = rbaacServiceClient.pairDeviceSession(
 				deviceType, terminalId,
 				mOtp);
 		deviceRequestValidator.updateStamp(resp.getResult().getDeviceRegId());
