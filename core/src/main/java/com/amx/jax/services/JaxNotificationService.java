@@ -92,7 +92,8 @@ public class JaxNotificationService {
 		Email emailToOld = null;
 
 		if (customerModel.getPassword() != null) {
-			email.setSubject("Change Password Success");
+			//email.setSubject("Change Password Success");
+			email.setSubject(SUBJECT_ACCOUNT_UPDATE);
 			email.getModel().put("change_type", ChangeType.PASSWORD_CHANGE);
 
 		} else if (customerModel.getSecurityquestions() != null) {
