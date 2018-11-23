@@ -64,7 +64,7 @@ public class AuthServiceImpl implements AuthService {
 	UserOtpCache userOtpCache;
 
 	public Employee validateEmployeeData(String empcode, String identity, String ipAddress) {
-		Employee emp = rbaacDao.validateEmpDetails(empcode, identity, ipAddress);
+		Employee emp = rbaacDao.fetchEmpDetails(empcode, identity, ipAddress);
 		return emp;
 	}
 

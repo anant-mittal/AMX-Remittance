@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
@@ -15,8 +14,8 @@ import com.amx.jax.dbmodel.BranchSystemDetail;
 import com.amx.jax.dbmodel.Device;
 import com.amx.jax.dbmodel.DeviceStateInfo;
 import com.amx.jax.dict.UserClient.ClientType;
+import com.amx.jax.rbaac.dbmodel.Employee;
 import com.amx.jax.rbaac.dto.request.DeviceRegistrationRequest;
-import com.amx.jax.rbaac.dto.DeviceDto;
 import com.amx.jax.rbaac.error.RbaacServiceError;
 import com.amx.jax.rbaac.exception.AuthServiceException;
 import com.amx.jax.rbaac.repository.DeviceRepository;
@@ -34,12 +33,20 @@ public class DeviceDao {
 	CryptoUtil cryptoUtil;
 	@Autowired
 	AppConfig appConfig;
+	@Autowired
+	RbaacDao rbaacDao;
 
 	public Device saveDevice(DeviceRegistrationRequest request) {
 
 		Device device = new Device();
-		BranchSystemDetail branchSystem = branchDetailService.findBranchSystemByIp(request.getBranchSystemIp());
-		device.setBranchSystemInventoryId(branchSystem.getCountryBranchSystemInventoryId());
+		if (request.getBranchSystemIp() != null) {
+			BranchSystemDetail branchSystem = branchDetailService.findBranchSystemByIp(request.getBranchSystemIp());
+			device.setBranchSystemInventoryId(branchSystem.getCountryBranchSystemInventoryId());
+		}
+		if (request.getIdentityInt() != null) {
+			Employee employee = rbaacDao.fetchEmpDetails(request.getIdentityInt());
+			device.setEmployeeId(employee.getEmployeeId());
+		}
 		device.setCreatedBy("JOMAX_ONLINE");
 		device.setCreatedDate(new Date());
 		device.setDeviceId(request.getDeviceId());

@@ -64,6 +64,9 @@ public class Device {
 	
 	@Column(name = "OTP_TOKEN_CREATED_DATE")
 	Date otpTokenCreatedDate;
+	
+	@Column(name="EMPLOYEE_ID")
+	BigDecimal employeeId;
 
 	public BigDecimal getRegistrationId() {
 		return registrationId;
@@ -197,6 +200,14 @@ public class Device {
 
 	public void setOtpTokenCreatedDate(Date otpTokenCreatedDate) {
 		this.otpTokenCreatedDate = otpTokenCreatedDate;
+	}
+
+	public BigDecimal getEmployeeId() {
+		return employeeId;
+	}
+
+	public void setEmployeeId(BigDecimal employeeId) {
+		this.employeeId = employeeId;
 	}
 
 }

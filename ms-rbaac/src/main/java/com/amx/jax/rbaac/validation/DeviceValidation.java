@@ -17,6 +17,8 @@ import com.amx.jax.dbmodel.Device;
 import com.amx.jax.dbmodel.DeviceStateInfo;
 import com.amx.jax.rbaac.RbaacConstants;
 import com.amx.jax.rbaac.dao.DeviceDao;
+import com.amx.jax.rbaac.dao.RbaacDao;
+import com.amx.jax.rbaac.dbmodel.Employee;
 import com.amx.jax.rbaac.dto.request.DeviceRegistrationRequest;
 import com.amx.jax.rbaac.error.RbaacServiceError;
 import com.amx.jax.rbaac.exception.AuthServiceException;
@@ -33,7 +35,9 @@ public class DeviceValidation {
 	@Autowired
 	BranchSystemDetailService branchDetailService;
 	@Autowired
-	RbaacConfig rbaacConfig ; 
+	RbaacConfig rbaacConfig;
+	@Autowired
+	RbaacDao rbaacDao;
 
 	public void validateDevice(Device device) {
 
@@ -66,10 +70,25 @@ public class DeviceValidation {
 		}
 	}
 
+	/**
+	 * validates device reg request
+	 * 
+	 * @param request
+	 * 
+	 */
 	public void validateDeviceRegRequest(DeviceRegistrationRequest request) {
-		BranchSystemDetail branchSystem = branchDetailService.findBranchSystemByIp(request.getBranchSystemIp());
-		Device existing = deviceDao.findDevice(branchSystem.getCountryBranchSystemInventoryId(),
-				request.getDeviceType());
+		Device existing = null;
+		if (request.getBranchSystemIp() != null) {
+			BranchSystemDetail branchSystem = branchDetailService.findBranchSystemByIp(request.getBranchSystemIp());
+			existing = deviceDao.findDevice(branchSystem.getCountryBranchSystemInventoryId(), request.getDeviceType());
+		} else if (request.getIdentityInt() != null) {
+			Employee employee = rbaacDao.fetchEmpDetails(request.getIdentityInt());
+			if(employee == null) {
+				throw new AuthServiceException("Employee not found");
+			}
+		} else {
+			throw new AuthServiceException("Either Ip address or identity must be present");
+		}
 		if (existing != null) {
 			throw new AuthServiceException("Device already registered", RbaacServiceError.CLIENT_ALREADY_REGISTERED);
 		}
@@ -117,15 +136,18 @@ public class DeviceValidation {
 					RbaacServiceError.CLIENT_ANOTHER_ALREADY_ACTIVE);
 		}
 	}
-	
+
 	/**
-	 * validates the whether session pair otp has been validated within last 15 mins(configurable)
+	 * validates the whether session pair otp has been validated within last 15
+	 * mins(configurable)
+	 * 
 	 * @param deviceRegId
 	 * 
 	 */
 	public void validateOtpValidationTimeLimit(BigDecimal deviceRegId) {
 		Device device = deviceDao.findDevice(deviceRegId);
-		int configValue = (rbaacConfig.getPaireOtpvalidationTime()) == null ? 15: rbaacConfig.getPaireOtpvalidationTime();
+		int configValue = (rbaacConfig.getPaireOtpvalidationTime()) == null ? 15
+				: rbaacConfig.getPaireOtpvalidationTime();
 		Date otpTokenCreationDate = device.getOtpTokenCreatedDate();
 		if (otpTokenCreationDate != null && !DeviceState.SESSION_PAIRED.equals(device.getState())) {
 			Date now = Calendar.getInstance().getTime();

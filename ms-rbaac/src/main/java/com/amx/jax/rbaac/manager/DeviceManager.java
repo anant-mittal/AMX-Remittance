@@ -2,7 +2,6 @@ package com.amx.jax.rbaac.manager;
 
 import java.math.BigDecimal;
 import java.util.Calendar;
-import java.util.Date;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +16,6 @@ import com.amx.jax.constant.DeviceState;
 import com.amx.jax.dbmodel.Device;
 import com.amx.jax.dbmodel.DeviceStateInfo;
 import com.amx.jax.dict.UserClient.ClientType;
-import com.amx.jax.model.response.IDeviceStateData;
 import com.amx.jax.rbaac.RbaacConstants;
 import com.amx.jax.rbaac.dao.DeviceDao;
 import com.amx.jax.rbaac.dto.DevicePairOtpResponse;

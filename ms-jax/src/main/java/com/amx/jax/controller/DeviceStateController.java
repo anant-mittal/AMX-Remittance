@@ -18,7 +18,6 @@ import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.IDeviceStateService;
 import com.amx.jax.constants.DeviceStateDataType;
 import com.amx.jax.dict.UserClient.ClientType;
-import com.amx.jax.model.request.DeviceRegistrationRequest;
 import com.amx.jax.model.request.device.SignaturePadCustomerRegStateMetaInfo;
 import com.amx.jax.model.request.device.SignaturePadFCPurchaseSaleInfo;
 import com.amx.jax.model.request.device.SignaturePadRemittanceInfo;

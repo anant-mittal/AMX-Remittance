@@ -23,5 +23,7 @@ public interface IEmployeeRepository extends JpaRepository<Employee, Serializabl
 	public Employee findByEmployeeNumber(String empNo);
 
 	public Employee findByEmployeeId(BigDecimal employeeId);
+	
+	public List<Employee> findByCivilId(String identity);
 
 }

@@ -88,7 +88,7 @@ public class LoginService extends AbstractService {
 	 * @return the employee
 	 */
 	public Employee validateEmployeeData(String empcode, String identity, String ipAddress) {
-		Employee emp = rbaacDao.validateEmpDetails(empcode, identity, ipAddress);
+		Employee emp = rbaacDao.fetchEmpDetails(empcode, identity, ipAddress);
 		return emp;
 	}
 

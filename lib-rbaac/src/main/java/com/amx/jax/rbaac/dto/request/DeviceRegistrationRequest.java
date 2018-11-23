@@ -15,9 +15,10 @@ public class DeviceRegistrationRequest {
 	@NotNull
 	ClientType deviceType;
 
-	@NotNull
 	@Pattern(regexp = "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$", message = "Invalid branch system Ip")
 	String branchSystemIp;
+	
+	String identityInt;
 
 	public String getDeviceId() {
 		return deviceId;
@@ -42,4 +43,13 @@ public class DeviceRegistrationRequest {
 	public void setDeviceType(ClientType deviceType) {
 		this.deviceType = deviceType;
 	}
+
+	public String getIdentityInt() {
+		return identityInt;
+	}
+
+	public void setIdentityInt(String identityInt) {
+		this.identityInt = identityInt;
+	}
+
 }

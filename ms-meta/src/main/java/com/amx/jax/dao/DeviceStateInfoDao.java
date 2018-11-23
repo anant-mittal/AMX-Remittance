@@ -17,7 +17,6 @@ import com.amx.jax.dbmodel.Device;
 import com.amx.jax.dbmodel.DeviceStateInfo;
 import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.error.JaxError;
-import com.amx.jax.model.request.DeviceRegistrationRequest;
 import com.amx.jax.repository.DeviceRepository;
 import com.amx.jax.repository.DeviceStateRepository;
 import com.amx.jax.service.BranchDetailService;

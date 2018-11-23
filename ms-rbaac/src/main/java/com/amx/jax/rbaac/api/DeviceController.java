@@ -20,7 +20,6 @@ import com.amx.jax.rbaac.IDeviceAuthService;
 import com.amx.jax.rbaac.dto.DeviceDto;
 import com.amx.jax.rbaac.dto.DevicePairOtpResponse;
 import com.amx.jax.rbaac.dto.request.DeviceRegistrationRequest;
-import com.amx.jax.rbaac.service.AbstractService.BooleanResponse;
 import com.amx.jax.rbaac.service.DeviceService;
 
 @RestController
@@ -75,15 +74,6 @@ public class DeviceController implements IDeviceAuthService {
 				countryBranchSystemInventoryId, otp.toString());
 		return AmxApiResponse.build(otpResponse, new BoolRespModel(Boolean.TRUE));
 	}
-
-	/*@Override
-	@RequestMapping(value = Path.DEVICE_VALIDATE_DEVICE_TOKEN, method = RequestMethod.POST)
-	public AmxApiResponse<DevicePairOtpResponse, Object> validateDeviceToken(
-			@RequestParam(name = Params.DEVICE_REG_ID) BigDecimal deviceRegId,
-			@RequestParam(name = Params.PAIRE_TOKEN) String devicePairToken) {
-		DevicePairOtpResponse otpResponse = deviceService.validateDevicePairToken(deviceRegId, devicePairToken);
-		return AmxApiResponse.build(otpResponse);
-	}*/
 
 	@Override
 	@RequestMapping(value = Path.DEVICE_VALIDATE_SESSION_TOKEN, method = RequestMethod.POST)

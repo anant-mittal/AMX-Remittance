@@ -18,9 +18,7 @@ import org.springframework.web.context.WebApplicationContext;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.constant.DeviceState;
 import com.amx.jax.dbmodel.Device;
-import com.amx.jax.dbmodel.DeviceStateInfo;
 import com.amx.jax.dict.UserClient.ClientType;
-import com.amx.jax.error.JaxError;
 import com.amx.jax.rbaac.RbaacConstants;
 import com.amx.jax.rbaac.dao.DeviceDao;
 import com.amx.jax.rbaac.dto.DeviceDto;
@@ -31,7 +29,6 @@ import com.amx.jax.rbaac.exception.AuthServiceException;
 import com.amx.jax.rbaac.manager.DeviceManager;
 import com.amx.jax.rbaac.validation.DeviceValidation;
 import com.amx.jax.util.CryptoUtil;
-import com.amx.utils.ArgUtil;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)

@@ -160,9 +160,18 @@ public class RbaacDao {
 		userRoleMappingRepository.deleteInBatch(urMappings);
 	}
 
-	public Employee validateEmpDetails(String empcode, String identity, String ipAddress) {
+	public Employee fetchEmpDetails(String empcode, String identity, String ipAddress) {
 		List<Employee> empList = employeeRepository.findByEmployeeNumberAndCivilIdAndIpAddress(empcode, identity,
 				ipAddress);
+		if (null != empList && !empList.isEmpty()) {
+			return empList.get(0);
+		}
+
+		return null;
+	}
+	
+	public Employee fetchEmpDetails(String identity) {
+		List<Employee> empList = employeeRepository.findByCivilId(identity);
 		if (null != empList && !empList.isEmpty()) {
 			return empList.get(0);
 		}
