@@ -1,4 +1,4 @@
-package com.amx.jax.model.response;
+package com.amx.jax.model.response.fx;
 
 import java.math.BigDecimal;
 import java.util.Date;

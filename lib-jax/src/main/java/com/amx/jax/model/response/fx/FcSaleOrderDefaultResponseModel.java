@@ -1,4 +1,4 @@
-package com.amx.jax.model.response;
+package com.amx.jax.model.response.fx;
 /**
  * Author :Rabil
  * Puspose : FC Sale default API gto display 
@@ -11,10 +11,9 @@ package com.amx.jax.model.response;
 import java.util.ArrayList;
 import java.util.List;
 
-
-import com.amx.jax.model.response.PurposeOfTransactionDto;
-
 import com.amx.jax.model.AbstractModel;
+import com.amx.jax.model.response.CurrencyMasterDTO;
+import com.amx.jax.model.response.SourceOfIncomeDto;
 
 
 public class FcSaleOrderDefaultResponseModel  extends AbstractModel {

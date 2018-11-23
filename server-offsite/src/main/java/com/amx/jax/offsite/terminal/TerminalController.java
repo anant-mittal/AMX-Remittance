@@ -29,10 +29,7 @@ import com.amx.jax.offsite.device.DeviceConfigs.TerminalData;
 import com.amx.jax.offsite.terminal.TerminalConstants.Path;
 import com.amx.jax.swagger.IStatusCodeListPlugin.ApiStatusService;
 import com.amx.utils.ArgUtil;
-import com.amx.utils.Constants;
 import com.amx.utils.HttpUtils;
-import com.amx.utils.Random;
-import com.amx.utils.UniqueID;
 import com.amx.utils.Urly;
 
 import io.swagger.annotations.Api;

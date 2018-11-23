@@ -7,7 +7,7 @@ package com.amx.jax.auditlog;
 import java.math.BigDecimal;
 
 import com.amx.jax.model.response.CurrencyMasterDTO;
-import com.amx.jax.model.response.PurposeOfTransactionDto;
+import com.amx.jax.model.response.fx.PurposeOfTransactionDto;
 
 
 

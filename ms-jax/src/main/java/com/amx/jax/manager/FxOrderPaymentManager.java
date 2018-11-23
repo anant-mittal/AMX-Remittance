@@ -34,7 +34,7 @@ import com.amx.jax.dbmodel.SourceOfIncome;
 import com.amx.jax.dbmodel.UserFinancialYear;
 import com.amx.jax.dbmodel.ViewCompanyDetails;
 import com.amx.jax.meta.MetaData;
-import com.amx.jax.model.response.ShoppingCartDetailsDto;
+import com.amx.jax.model.response.fx.ShoppingCartDetailsDto;
 import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.repository.CountryBranchRepository;
 import com.amx.jax.repository.FxDeliveryDetailsRepository;

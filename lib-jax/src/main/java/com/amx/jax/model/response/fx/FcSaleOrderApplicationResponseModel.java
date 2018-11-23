@@ -1,4 +1,4 @@
-package com.amx.jax.model.response;
+package com.amx.jax.model.response.fx;
 /**
  * Author :Rabil
  */
@@ -6,8 +6,6 @@ package com.amx.jax.model.response;
 import java.math.BigDecimal;
 import java.util.List;
 
-
-import com.amx.jax.dict.PayGServiceCode;
 import com.amx.jax.model.AbstractModel;
 
 

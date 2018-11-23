@@ -7,16 +7,16 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.error.ApiJaxStatusBuilder.ApiJaxStatus;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.model.request.CustomerShippingAddressRequestModel;
-import com.amx.jax.model.request.FcSaleOrderPaynowRequestModel;
-import com.amx.jax.model.request.FcSaleOrderTransactionRequestModel;
+import com.amx.jax.model.request.fx.FcSaleOrderPaynowRequestModel;
+import com.amx.jax.model.request.fx.FcSaleOrderTransactionRequestModel;
 import com.amx.jax.model.response.CurrencyMasterDTO;
-import com.amx.jax.model.response.FcSaleApplPaymentReponseModel;
-import com.amx.jax.model.response.FcSaleOrderApplicationResponseModel;
-import com.amx.jax.model.response.FcSaleOrderDefaultResponseModel;
-import com.amx.jax.model.response.FxExchangeRateDto;
-import com.amx.jax.model.response.PurposeOfTransactionDto;
-import com.amx.jax.model.response.ShippingAddressDto;
-import com.amx.jax.model.response.ShoppingCartDetailsDto;
+import com.amx.jax.model.response.fx.FcSaleApplPaymentReponseModel;
+import com.amx.jax.model.response.fx.FcSaleOrderApplicationResponseModel;
+import com.amx.jax.model.response.fx.FcSaleOrderDefaultResponseModel;
+import com.amx.jax.model.response.fx.FxExchangeRateDto;
+import com.amx.jax.model.response.fx.PurposeOfTransactionDto;
+import com.amx.jax.model.response.fx.ShippingAddressDto;
+import com.amx.jax.model.response.fx.ShoppingCartDetailsDto;
 
 public interface IFxOrderService extends IJaxService {
 

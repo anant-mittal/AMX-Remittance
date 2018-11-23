@@ -1,4 +1,4 @@
-package com.amx.jax.model.request;
+package com.amx.jax.model.request.fx;
 /**
  * @author	: Rabil
  * @date	: 18/11/2018
@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import com.amx.jax.model.AbstractModel;
-import com.amx.jax.model.response.ShoppingCartDetailsDto;
+import com.amx.jax.model.response.fx.ShoppingCartDetailsDto;
 
 public class FcSaleOrderPaynowRequestModel extends AbstractModel {
 	/**

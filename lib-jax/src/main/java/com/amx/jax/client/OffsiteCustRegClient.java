@@ -30,7 +30,6 @@ import com.amx.jax.model.response.ComponentDataDto;
 import com.amx.jax.model.response.CustomerInfo;
 import com.amx.jax.model.response.FieldListDto;
 import com.amx.jax.model.response.IncomeRangeDto;
-import com.amx.jax.rest.IMetaRequestOutFilter;
 import com.amx.jax.rest.RestService;
 import com.amx.jax.scope.TenantContextHolder;
 import com.fasterxml.jackson.core.JsonProcessingException;

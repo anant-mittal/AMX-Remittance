@@ -1,4 +1,4 @@
-package com.amx.jax.model.request;
+package com.amx.jax.model.request.fx;
 
 
 

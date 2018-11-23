@@ -44,6 +44,10 @@ import com.amx.amxlib.model.UserModel;
 import com.amx.amxlib.model.UserVerificationCheckListDTO;
 import com.amx.amxlib.model.trnx.BeneficiaryTrnxModel;
 import com.amx.jax.model.dto.SendOtpModel;
+import com.amx.jax.model.response.CurrencyMasterDTO;
+import com.amx.jax.model.response.SourceOfIncomeDto;
+import com.amx.jax.model.response.fx.FxExchangeRateDto;
+import com.amx.jax.model.response.fx.PurposeOfTransactionDto;
 import com.amx.jax.payg.PaymentResponseDto;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -52,10 +56,6 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import com.amx.jax.model.response.CurrencyMasterDTO;
-import com.amx.jax.model.response.FxExchangeRateDto;
-import com.amx.jax.model.response.PurposeOfTransactionDto;
-import com.amx.jax.model.response.SourceOfIncomeDto;
 
 @Deprecated
 public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {

@@ -5,11 +5,6 @@ package com.amx.jax.manager;
  * @Date		: 05/11/2018
  */
 import java.math.BigDecimal;
-
-
-
-
-
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -21,7 +16,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.model.response.ExchangeRateBreakup;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.FcSaleExchangeRateDao;
 import com.amx.jax.dbmodel.FxExchangeRateView;
@@ -29,8 +23,8 @@ import com.amx.jax.dbmodel.ParameterDetails;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.AbstractModel;
-import com.amx.jax.model.response.FcSaleOrderApplicationResponseModel;
-import com.amx.jax.model.response.FxExchangeRateBreakup;
+import com.amx.jax.model.response.fx.FcSaleOrderApplicationResponseModel;
+import com.amx.jax.model.response.fx.FxExchangeRateBreakup;
 import com.amx.jax.service.CurrencyMasterService;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.RoundUtil;

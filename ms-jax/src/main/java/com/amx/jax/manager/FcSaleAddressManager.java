@@ -31,7 +31,7 @@ import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.AbstractModel;
 import com.amx.jax.model.request.CustomerShippingAddressRequestModel;
-import com.amx.jax.model.response.ShippingAddressDto;
+import com.amx.jax.model.response.fx.ShippingAddressDto;
 import com.amx.jax.repository.CountryRepository;
 import com.amx.jax.repository.IContactDetailDao;
 import com.amx.jax.repository.ICustomerRepository;
