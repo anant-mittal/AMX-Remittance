@@ -77,6 +77,7 @@ public class SSOAppController {
 		URLBuilder builder = new URLBuilder(HttpUtils.getServerName(request));
 		builder.setPath(SSOConstants.SSO_LOGIN_URL_REQUIRED).addParameter(AppConstants.TRANX_ID_XKEY, tranxId);
 		result.setRedirectUrl(builder.getURL());
+		result.getMeta().put(AppConstants.TRANX_ID_XKEY, tranxId);
 		return JsonUtil.toJson(result);
 	}
 
