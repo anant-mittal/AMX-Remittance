@@ -94,7 +94,9 @@
 
 		<!-- Common Servers -->
 		<module>../ms-postman</module>
+		<module>../ms-broker</module>
 		<module>../server-payg</module>
 		<module>../server-monitor</module>
+		
 	</modules>
 </project>

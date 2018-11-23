@@ -1,4 +1,4 @@
-package com.amx.jax.event;
+package com.amx.jax.service;
 
 import com.amx.jax.tunnel.TunnelEvent;
 
