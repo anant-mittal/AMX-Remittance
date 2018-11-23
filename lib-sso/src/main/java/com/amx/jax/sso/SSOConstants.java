@@ -16,10 +16,12 @@ public class SSOConstants {
 	public static final String APP_LOGIN_URL_HTML = "/sso/login/{htmlstep}";
 	public static final String APP_LOGIN_URL_DONE = APP_LOGIN_URL + "/DONE";
 	public static final String APP_LOGIN_URL_CHECK = APP_LOGIN_URL + "/CHECK";
+	public static final String APP_LOGIN_URL_START = APP_LOGIN_URL + "/START";
 
 	public static final String SSO_LOGIN_URL = "/sso/auth/login";
 	public static final String SSO_LOGIN_URL_JSON = SSO_LOGIN_URL + "/{jsonstep}";
 	public static final String SSO_LOGIN_URL_HTML = SSO_LOGIN_URL + "/{htmlstep}";
+	
 	public static final String SSO_LOGIN_URL_REQUIRED = SSO_LOGIN_URL + "/REQUIRED";
 	public static final String SSO_LOGIN_URL_DO = SSO_LOGIN_URL + "/DO";
 
@@ -34,7 +36,7 @@ public class SSOConstants {
 	public static final String PARAM_SSO_LOGIN_URL = "SSO_LOGIN_URL";
 
 	public enum SSOAuthStep {
-		DO, DONE, REQUIRED, CHECK, CREDS, OTP
+		START, DO, DONE, REQUIRED, CHECK, CREDS, OTP
 	}
 
 }
