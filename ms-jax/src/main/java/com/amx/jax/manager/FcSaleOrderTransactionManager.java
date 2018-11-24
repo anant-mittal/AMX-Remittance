@@ -19,7 +19,6 @@ import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.FcSaleExchangeRateDao;
 import com.amx.jax.dbmodel.CurrencyMasterModel;
-import com.amx.jax.dbmodel.FxExchangeRateView;
 import com.amx.jax.dbmodel.ParameterDetails;
 import com.amx.jax.dbmodel.fx.FxExchangeRateView;
 import com.amx.jax.error.JaxError;

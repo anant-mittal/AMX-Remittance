@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.transaction.Transactional;
 
@@ -20,8 +21,10 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.constant.ConstantDocument;
-import com.amx.jax.dbmodel.FxDeliveryDetailsModel;
+import com.amx.jax.dbmodel.CollectDetailModel;
+import com.amx.jax.dbmodel.CollectionModel;
 import com.amx.jax.dbmodel.PaygDetailsModel;
+import com.amx.jax.dbmodel.ReceiptPayment;
 import com.amx.jax.dbmodel.ReceiptPaymentApp;
 import com.amx.jax.dbmodel.ShippingAddressDetail;
 import com.amx.jax.dbmodel.fx.FxDeliveryDetailsModel;
@@ -31,9 +34,12 @@ import com.amx.jax.model.request.fx.FcSaleOrderPaynowRequestModel;
 import com.amx.jax.model.response.fx.FxDeliveryDetailDto;
 import com.amx.jax.model.response.fx.ShoppingCartDetailsDto;
 import com.amx.jax.payg.PaymentResponseDto;
+import com.amx.jax.repository.ICollectionDetailRepository;
+import com.amx.jax.repository.ICollectionRepository;
 import com.amx.jax.repository.IShippingAddressRepository;
 import com.amx.jax.repository.PaygDetailsRepository;
 import com.amx.jax.repository.ReceiptPaymentAppRepository;
+import com.amx.jax.repository.ReceiptPaymentRespository;
 import com.amx.jax.repository.fx.FxDeliveryDetailsRepository;
 import com.amx.jax.repository.fx.FxDeliveryRemarkRepository;
 import com.amx.jax.repository.fx.VwFxDeliveryDetailsRepository;
@@ -212,6 +218,20 @@ public class FcSaleApplicationDao {
 			BigDecimal collectionDocumentNumber = cs.getBigDecimal(10);
 			BigDecimal collectionDocumentCode = cs.getBigDecimal(11);
 			String outMessage = cs.getString(12);
+
+			output.put("P_COLLECT_FINYR", collectionFinanceYear);
+			output.put("P_COLLECTION_NO", collectionDocumentNumber);
+			output.put("P_COLLECTION_DOCUMENT_CODE", collectionDocumentCode);
+			output.put("P_ERROR_MESG", outMessage);
+			*/
+			logger.info("output value : "+output.toString());
+			
+		}catch(Exception e){
+			e.printStackTrace();
+			logger.error("saveAll of FX Order :"+e.getMessage());
+		}
+		return output;
+	}
 
 	public List<VwFxDeliveryDetailsModel> listOrders(BigDecimal driverEmployeeId) {
 		return vwFxDeliveryDetailsRepository.findByDriverEmployeeIdAndDeliveryDate(driverEmployeeId, new Date());
