@@ -1,9 +1,11 @@
 package com.amx.jax.manager;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -14,9 +16,11 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.dao.ApplicationProcedureDao;
 import com.amx.jax.dao.FcSaleApplicationDao;
 import com.amx.jax.dao.FcSaleExchangeRateDao;
 import com.amx.jax.dbmodel.CollectDetailModel;
@@ -27,18 +31,21 @@ import com.amx.jax.dbmodel.CountryMaster;
 import com.amx.jax.dbmodel.CurrencyMasterModel;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.FxDeliveryDetailsModel;
+import com.amx.jax.dbmodel.PaymentMode;
 import com.amx.jax.dbmodel.PurposeOfTransaction;
 import com.amx.jax.dbmodel.ReceiptPayment;
 import com.amx.jax.dbmodel.ReceiptPaymentApp;
 import com.amx.jax.dbmodel.SourceOfIncome;
 import com.amx.jax.dbmodel.UserFinancialYear;
 import com.amx.jax.dbmodel.ViewCompanyDetails;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.response.fx.ShoppingCartDetailsDto;
 import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.repository.CountryBranchRepository;
 import com.amx.jax.repository.FxDeliveryDetailsRepository;
 import com.amx.jax.repository.IDocumentDao;
+import com.amx.jax.repository.PaymentModeRepository;
 import com.amx.jax.repository.ReceiptPaymentAppRepository;
 import com.amx.jax.service.CompanyService;
 import com.amx.jax.service.FinancialService;
@@ -86,6 +93,11 @@ public class FxOrderPaymentManager {
 	@Autowired
 	FcSaleExchangeRateDao fcSaleExchangeRateDao;
 	
+	@Autowired
+	ApplicationProcedureDao applicationProcedureDao;
+	
+	@Autowired
+	PaymentModeRepository payModeRepositoy;
 
 	
 	public ApiResponse paymentCapture(PaymentResponseDto paymentResponse) {
@@ -111,10 +123,8 @@ public class FxOrderPaymentManager {
 			 
 			 List<ReceiptPayment> receiptPayment=saveReceiptPayment(listOfRecAppl, paymentResponse);
 			 CollectionModel collection = saveCollection(listOfRecAppl, paymentResponse);
-			 CollectDetailModel collectDetail = saveCollectDetail(listOfRecAppl, paymentResponse);
-			 
-			 
-				}else{
+			 CollectDetailModel collectDetail = saveCollectDetail(listOfRecAppl, paymentResponse,collection);
+			}else{
 					logger.info("PaymentResponseDto "+paymentResponse.getPaymentId()+"\t Result :"+paymentResponse.getResultCode()+"\t Custoemr Id :"+paymentResponse.getCustomerId());
 					listOfRecAppl = receiptAppRepository.fetchreceiptPaymentAppl(paymentResponse.getCustomerId(), new BigDecimal(paymentResponse.getUdf3()));
 					if(!listOfRecAppl.isEmpty()) {
@@ -207,7 +217,7 @@ public class FxOrderPaymentManager {
 				 sourceOfIncome.setSourceId(applreceipt.getSourceofIncomeId());
 				 receiptPayment.setSourceOfIncome(sourceOfIncome);
 				 
-				// receiptPayment.setDeliveryCharges(applreceipt.getDeliveryCharges());
+			
 				 receiptPayment.setDenominationType(applreceipt.getDenominationType());
 				 
 				 
@@ -228,7 +238,6 @@ public class FxOrderPaymentManager {
 		 return receiptPaymentList;
 	 }
 	
-	 
 	 /**  Save collection **/
 	 public CollectionModel saveCollection(List<ReceiptPaymentApp> listOfRecAppl, PaymentResponseDto paymentResponse){
 		 CollectionModel collection  =new CollectionModel();
@@ -258,7 +267,7 @@ public class FxOrderPaymentManager {
 			 	 if(companyDetails!=null){
 			 	  collection.setCompanyCode(companyDetails.getCompanyCode());
 			 	 }else{
-			 		logger.error("save saveCollection company code is blank:");
+			 		throw new GlobalException("Invalid company code.", JaxError.INVALID_COMPANY_ID);
 			 	 }
 			 	 
 			 	 CountryBranch countryBranch = countryBranchRepository.findByCountryBranchId(appl.getBranchId());
@@ -275,13 +284,20 @@ public class FxOrderPaymentManager {
 			    collection.setDocumentFinanceYear(appl.getDocumentFinanceYear());
 			    collection.setDocumentCode(ConstantDocument.DOCUMENT_CODE_FOR_COLLECT_TRANSACTION);	
 			    collection.setDocumentId(documentDao.getDocumnetByCode(ConstantDocument.DOCUMENT_CODE_FOR_COLLECT_TRANSACTION).get(0).getDocumentID());
-				
+			    BigDecimal documentNo =generateDocumentNumber(countryBranch,appl.getCountryId(), companyDetails.getCompanyCode(), ConstantDocument.Update,appl.getDocumentFinanceYear(), ConstantDocument.DOCUMENT_CODE_FOR_COLLECT_TRANSACTION);
+			    if(documentNo!=null && documentNo.compareTo(BigDecimal.ZERO)!=0){
+			    	collection.setDocumentNo(documentNo);
+			    }else{
+			    	throw new GlobalException("Collection document should not be blank.", JaxError.INVALID_COLLECTION_DOCUMENT_NO);
+			    }
 			 	 
 				Customer customer = new Customer();
 				customer.setCustomerId(appl.getCustomerId());
 				collection.setFsCustomer(customer);
 				
 				collection.setNetAmount(totalcollectiontAmount);
+				collection.setPaidAmount(totalcollectiontAmount);
+				
 				
 				
 			 	if(!StringUtils.isBlank(metaData.getReferrer())){
@@ -296,6 +312,7 @@ public class FxOrderPaymentManager {
 				 
 			 }else{
 				 logger.error("save saveCollection listOfRecAppl is empty :");
+				 throw new GlobalException("NO record found", JaxError.NO_RECORD_FOUND);
 			 }
 			 
 		 }catch(Exception e){
@@ -307,10 +324,38 @@ public class FxOrderPaymentManager {
 		 
 	 }
 	 /**  Save CollectDetailModel **/
-	public  CollectDetailModel saveCollectDetail(List<ReceiptPaymentApp> listOfRecAppl, PaymentResponseDto paymentResponse){
+	public  CollectDetailModel saveCollectDetail(List<ReceiptPaymentApp> listOfRecAppl, PaymentResponseDto paymentResponse,CollectionModel collection){
 		CollectDetailModel collectDetail = new CollectDetailModel();
 		try{
-			 
+			collectDetail.setAcyymm(collection.getAccountMMYYYY());
+			collectDetail.setCompanyCode(collection.getCompanyCode());
+			collectDetail.setCreatedDate(new Date());
+			
+			collectDetail.setDocumentCode(collection.getDocumentCode());
+			collectDetail.setDocumentDate(new Date());
+			collectDetail.setDocumentFinanceYear(collection.getDocumentFinanceYear());
+			collectDetail.setDocumentId(collection.getDocumentId());
+			
+			collectDetail.setExCurrencyMaster(collection.getExCurrencyMaster());
+			collectDetail.setFsCustomer(collection.getFsCustomer());
+			collectDetail.setCashCollectionId(collection);
+			collectDetail.setCollAmt(collection.getNetAmount());
+			
+			collectDetail.setIsActive(ConstantDocument.Yes);
+			collectDetail.setCollectionMode(ConstantDocument.KNET_CODE);
+			PaymentMode pm = payModeRepositoy.findByPaymentModeCodeAndIsActive(ConstantDocument.KNET_CODE, ConstantDocument.Yes);
+			//collectDetail.setPaymentModeId(pm.equals(arg0)
+			collectDetail.setApprovalNo(paymentResponse.getAuth_appNo());
+			collectDetail.setRefId(paymentResponse.getReferenceId());
+			collectDetail.setTransId(paymentResponse.getTransactionId());
+			collectDetail.setKnetReceipt(paymentResponse.getPostDate());
+			collectDetail.setDocumentLineNo(new BigDecimal(1));
+			collectDetail.setAuthdate(new Date());
+			collectDetail.setKnetReceiptDateTime(new SimpleDateFormat("dd/MM/YYYY hh:mm").format(new Date()));
+			
+			
+			
+			
 		 }catch(Exception e){
 			 e.printStackTrace();
 			 logger.error("save collection details :"+e.getMessage());
@@ -318,4 +363,11 @@ public class FxOrderPaymentManager {
 		return collectDetail;
 	}
 	 
+	
+	public  BigDecimal generateDocumentNumber(CountryBranch countryBranch, BigDecimal appCountryId,BigDecimal companyId,String processInd,BigDecimal finYear,BigDecimal documentId) {
+		BigDecimal branchId = countryBranch.getBranchId()==null?ConstantDocument.ONLINE_BRANCH_LOC_CODE:countryBranch.getBranchId();
+		Map<String, Object> output = applicationProcedureDao.getDocumentSeriality(appCountryId, companyId, documentId,finYear, processInd, branchId);
+		return (BigDecimal) output.get("P_DOC_NO");
+	}
+
 }
