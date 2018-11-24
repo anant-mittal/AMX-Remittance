@@ -38,15 +38,6 @@ public class DeviceStateInfoDao {
 		deviceStateRepository.save(deviceInfo);
 
 	}
-
-	public DeviceStateInfo getDeviceStateInfoByPaireToken(String pairToken, Integer registrationId) {
-		return deviceStateRepository.findByPairTokenAndDeviceRegId(pairToken, new BigDecimal(registrationId));
-	}
-
-	public DeviceStateInfo findBySessionToken(String sessionToken, Integer registrationId) {
-		return deviceStateRepository.findBySessionTokenAndDeviceRegId(sessionToken, new BigDecimal(registrationId));
-	}
-
 	public DeviceStateInfo getDeviceStateInfo(BigDecimal registrationId) {
 		return deviceStateRepository.findOne(registrationId);
 	}

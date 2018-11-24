@@ -99,6 +99,14 @@ public class DeviceController {
 		return rbaacServiceClient.activateDevice(deviceRegId, mOtp);
 	}
 
+	@ApiOffisteStatus({ OffsiteServerCodes.CLIENT_UNKNOWN })
+	@RequestMapping(value = { DeviceConstants.Path.DEVICE_DEACTIVATE }, method = { RequestMethod.POST })
+	public AmxApiResponse<BoolRespModel, Object> deActivateDevice(
+			@RequestParam Integer deviceRegId, @RequestParam ClientType deviceType) {
+		deviceRequestValidator.updateStamp(deviceRegId);
+		return rbaacServiceClient.deactivateDevice(deviceRegId);
+	}
+
 	@ApiDeviceHeaders
 	@ApiOffisteStatus({ OffsiteServerCodes.CLIENT_UNKNOWN })
 	@RequestMapping(value = { DeviceConstants.Path.SESSION_CREATE }, method = { RequestMethod.GET })

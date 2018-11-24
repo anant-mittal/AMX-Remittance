@@ -2,7 +2,16 @@ package com.amx.utils;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.owasp.html.HtmlPolicyBuilder;
+import org.owasp.html.PolicyFactory;
+
 public final class HttpUtils {
+
+	private static final PolicyFactory POLICY = new HtmlPolicyBuilder().allowStandardUrlProtocols().toFactory();
+
+	public static String sanitze(String str) {
+		return POLICY.sanitize(str);
+	}
 
 	public static String getIPAddress(HttpServletRequest request) {
 		String remoteAddr = null;

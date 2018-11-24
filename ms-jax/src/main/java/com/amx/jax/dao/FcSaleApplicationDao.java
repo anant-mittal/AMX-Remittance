@@ -20,6 +20,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.dbmodel.FxDeliveryDetailsModel;
 import com.amx.jax.dbmodel.PaygDetailsModel;
 import com.amx.jax.dbmodel.ReceiptPaymentApp;
 import com.amx.jax.dbmodel.ShippingAddressDetail;
@@ -47,8 +48,10 @@ public class FcSaleApplicationDao {
 	
 	@Autowired
 	ReceiptPaymentAppRepository receiptPaymentApplRespo;
+	
 	@Autowired
 	PaygDetailsRepository pgRepository;
+	
 	@Autowired
 	FxDeliveryDetailsRepository fxDeliveryDetailsRepository;
 	@Autowired
@@ -57,6 +60,14 @@ public class FcSaleApplicationDao {
 	FxDeliveryRemarkRepository fxDeliveryRemarkRepository ; 
 	@Autowired
 	IShippingAddressRepository shippingAddressDao;
+	@Autowired
+	ReceiptPaymentRespository receiptPaymentRespository;
+	
+	@Autowired
+	ICollectionRepository collectionRepository;
+	
+	@Autowired
+	ICollectionDetailRepository collectionDetailRepository;
 	
 	
 	@Transactional
@@ -172,6 +183,35 @@ public class FcSaleApplicationDao {
 		}
 		
 	}
+	
+	@Transactional
+	public Map<String, Object> saveAll(HashMap<String,Object> hashMapToSaveAllInput){
+		Map<String, Object> output = new HashMap<>();
+		logger.info("Input value : "+hashMapToSaveAllInput.toString());
+		try{
+			BigDecimal collectionId= BigDecimal.ZERO;
+			 List<ReceiptPayment> receiptPaymentList=(List<ReceiptPayment>)hashMapToSaveAllInput.get("RCPT_PAY");
+			 CollectionModel collection =(CollectionModel)hashMapToSaveAllInput.get("COLLECTION");
+			 CollectDetailModel collectDetail =(CollectDetailModel)hashMapToSaveAllInput.get("COLL_DETAILS");
+			 List<ReceiptPaymentApp> listOfRecAppl = (List<ReceiptPaymentApp>)hashMapToSaveAllInput.get("LIST_RCPT_APPL");
+			 PaymentResponseDto	pgResponse =(PaymentResponseDto)hashMapToSaveAllInput.get("PG_RESP_DETAILS");
+			 
+			 if(receiptPaymentList.isEmpty()){
+				 for(ReceiptPayment rcpt : receiptPaymentList){
+					 receiptPaymentRespository.save(rcpt);
+				 }
+			 }
+			 
+			/* if(collection!=null){
+				 collectionId = collectionRepository.save(collection);
+			 }
+			 if(collection.getCollectionId()=)*/
+			 
+			
+		/*	BigDecimal collectionFinanceYear = cs.getBigDecimal(9);
+			BigDecimal collectionDocumentNumber = cs.getBigDecimal(10);
+			BigDecimal collectionDocumentCode = cs.getBigDecimal(11);
+			String outMessage = cs.getString(12);
 
 	public List<VwFxDeliveryDetailsModel> listOrders(BigDecimal driverEmployeeId) {
 		return vwFxDeliveryDetailsRepository.findByDriverEmployeeIdAndDeliveryDate(driverEmployeeId, new Date());

@@ -11,10 +11,14 @@ import org.springframework.core.ParameterizedTypeReference;
 import com.amx.jax.AppConstants;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.device.CardData;
+import com.amx.jax.device.CardReader;
 import com.amx.jax.device.DeviceConstants;
+import com.amx.jax.device.DeviceMetaInfo;
 import com.amx.jax.device.DeviceRestModels.DevicePairingCreds;
+import com.amx.jax.device.DeviceRestModels.DevicePairingRequest;
 import com.amx.jax.device.DeviceRestModels.NetAddress;
 import com.amx.jax.device.DeviceRestModels.SessionPairingCreds;
+import com.amx.jax.dict.UserClient;
 import com.amx.jax.exception.AmxApiException;
 import com.amx.jax.rest.RestService;
 
@@ -26,6 +30,14 @@ public class AdapterServiceClient {
 
 	@Value("${jax.offsite.url}")
 	String offSiteUrl;
+
+	public String getOffSiteUrl() {
+		return offSiteUrl;
+	}
+
+	public void setOffSiteUrl(String offSiteUrl) {
+		this.offSiteUrl = offSiteUrl;
+	}
 
 	@Autowired
 	RestService restService;
@@ -52,6 +64,82 @@ public class AdapterServiceClient {
 					});
 		} else {
 			return AmxApiResponse.build(iCardService.getCardDetailsByTerminal(terminalId, true, false));
+		}
+	}
+
+	public Object saveCardDetailsByTerminal(String terminalId, CardReader reader, NetAddress address,
+			DevicePairingCreds devicePairingCreds, SessionPairingCreds sessionPairingCreds) throws Exception {
+
+		try {
+			return restService.ajax(offSiteUrl)
+					.meta(new DeviceMetaInfo())
+					.path(DeviceConstants.Path.DEVICE_STATUS_CARD)
+					.pathParam(DeviceConstants.Params.PARAM_SYSTEM_ID, terminalId)
+					.header(AppConstants.DEVICE_ID_XKEY, address.getMac())
+					.header(AppConstants.DEVICE_IP_LOCAL_XKEY, address.getLocalIp())
+					.header(DeviceConstants.Keys.CLIENT_REG_KEY_XKEY, devicePairingCreds.getDeviceRegId())
+					.header(DeviceConstants.Keys.CLIENT_REG_TOKEN_XKEY, devicePairingCreds.getDeviceRegToken())
+					.header(
+							DeviceConstants.Keys.CLIENT_SESSION_TOKEN_XKEY,
+							sessionPairingCreds.getDeviceSessionToken())
+					.header(
+							DeviceConstants.Keys.CLIENT_REQ_TOKEN_XKEY,
+							DeviceConstants.generateDeviceReqToken(sessionPairingCreds, devicePairingCreds))
+					.post(reader).asObject();
+		} catch (Exception e) {
+			LOGGER.error(DeviceConstants.Path.DEVICE_STATUS_CARD, e);
+			return AmxApiException.evaluate(e);
+		}
+	}
+
+	public AmxApiResponse<DevicePairingCreds, Object> pairDevice(NetAddress address, DevicePairingRequest req)
+			throws Exception {
+		try {
+			return restService.ajax(offSiteUrl)
+					.meta(new DeviceMetaInfo())
+					.path(DeviceConstants.Path.DEVICE_PAIR)
+					.header(AppConstants.DEVICE_ID_XKEY, address.getMac())
+					.header(AppConstants.DEVICE_IP_LOCAL_XKEY, address.getLocalIp()).post(req)
+					.as(new ParameterizedTypeReference<AmxApiResponse<DevicePairingCreds, Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error(DeviceConstants.Path.DEVICE_PAIR, e);
+			return AmxApiException.evaluate(e);
+		}
+	}
+
+	public AmxApiResponse<DevicePairingCreds, Object> deActivateDevice(DevicePairingCreds req)
+			throws Exception {
+		try {
+			return restService.ajax(offSiteUrl)
+					.meta(new DeviceMetaInfo())
+					.path(DeviceConstants.Path.DEVICE_DEACTIVATE)
+					.queryParam(DeviceConstants.Params.PARAM_DEVICE_REG_ID, req.getDeviceRegId())
+					.queryParam(DeviceConstants.Params.PARAM_CLIENT_TYPE, UserClient.ClientType.BRANCH_ADAPTER)
+					.as(new ParameterizedTypeReference<AmxApiResponse<DevicePairingCreds, Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error(DeviceConstants.Path.DEVICE_DEACTIVATE, e);
+			return AmxApiException.evaluate(e);
+		}
+	}
+
+	public AmxApiResponse<SessionPairingCreds, Object> createSession(NetAddress address,
+			DevicePairingCreds devicePairingCreds)
+			throws Exception {
+		try {
+			return restService.ajax(offSiteUrl)
+					.meta(new DeviceMetaInfo())
+					.path(DeviceConstants.Path.SESSION_CREATE)
+					.header(AppConstants.DEVICE_ID_XKEY, address.getMac())
+					.header(AppConstants.DEVICE_IP_LOCAL_XKEY, address.getLocalIp())
+					.header(DeviceConstants.Keys.CLIENT_REG_KEY_XKEY, devicePairingCreds.getDeviceRegId())
+					.header(DeviceConstants.Keys.CLIENT_REG_TOKEN_XKEY, devicePairingCreds.getDeviceRegToken())
+					.get().as(new ParameterizedTypeReference<AmxApiResponse<SessionPairingCreds, Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error(DeviceConstants.Path.SESSION_CREATE, e);
+			return AmxApiException.evaluate(e);
 		}
 	}
 

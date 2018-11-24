@@ -25,6 +25,7 @@ public class DeviceConstants {
 		public static final String DEVICE_TERMINALS = "/pub/device/terminal/list";
 		public static final String DEVICE_PAIR = "/pub/device/pair";
 		public static final String DEVICE_ACTIVATE = "/pub/device/activate";
+		public static final String DEVICE_DEACTIVATE = "/pub/device/deactivate";
 		public static final String SESSION_CREATE = "/pub/device/session";
 		public static final String SESSION_PAIR = "/pub/device/session/pair";
 		public static final String SESSION_TERMINAL = "/pub/device/session/terminal";
@@ -38,6 +39,7 @@ public class DeviceConstants {
 		public static final String PARAM_CLIENT_TYPE = "clientType";
 		public static final String PARAM_CLIENT_ID = "clientId";
 		public static final String PARAM_SYSTEM_ID = "systemid";
+		public static final String PARAM_DEVICE_REG_ID = "deviceRegId";
 	}
 
 	public static String generateDeviceReqToken(String deviceReqKey, String deviceRegToken) {
