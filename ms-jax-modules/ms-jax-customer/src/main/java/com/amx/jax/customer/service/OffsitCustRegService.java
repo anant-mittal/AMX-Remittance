@@ -544,6 +544,8 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 			contactDetail.setLanguageId(customer.getLanguageId());
 			contactDetail.setCreatedBy(metaData.getEmployeeId().toString());
 			contactDetail.setCreationDate(customer.getCreationDate());
+			contactDetail.setMobile(customerDetails.getMobile());
+			contactDetail.setTelephoneCode(customerDetails.getTelPrefix());
 			
 			contactDetail.setIsWatsApp(customerDetails.getIsWatsApp());
 			contactDetail.setWatsAppTelePrefix(customerDetails.getWatsAppTelePrefix());
@@ -574,6 +576,8 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 			contactDetail.setLanguageId(customer.getLanguageId());
 			contactDetail.setCreatedBy(metaData.getEmployeeId().toString());
 			contactDetail.setCreationDate(customer.getCreationDate());
+			contactDetail.setMobile(customerDetails.getMobile());
+			contactDetail.setTelephoneCode(customerDetails.getTelPrefix());
 			
 			contactDetail.setIsWatsApp(customerDetails.getIsWatsApp());
 			contactDetail.setWatsAppTelePrefix(customerDetails.getWatsAppTelePrefix());
