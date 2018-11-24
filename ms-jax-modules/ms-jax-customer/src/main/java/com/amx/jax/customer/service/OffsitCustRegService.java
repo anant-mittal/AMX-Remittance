@@ -487,7 +487,6 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		CustomerPersonalDetail customerDetails = new CustomerPersonalDetail();
 		jaxUtil.convert(model.getCustomerPersonalDetail(), customerDetails);
 		Customer customer = commitCustomer(customerDetails, model.getCustomerEmploymentDetails());
-		//commitCustomerLocalContact(model.getLocalAddressDetails(), customer, customerDetails.getWatsAppMobileNo());
 		commitCustomerLocalContact(model.getLocalAddressDetails(), customer, customerDetails);
 		commitCustomerHomeContact(model.getHomeAddressDestails(), customer, customerDetails);
 		commitOnlineCustomerIdProof(model, customer);
@@ -545,7 +544,6 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 			contactDetail.setLanguageId(customer.getLanguageId());
 			contactDetail.setCreatedBy(metaData.getEmployeeId().toString());
 			contactDetail.setCreationDate(customer.getCreationDate());
-			//contactDetail.setWatsAppNo(watsAppMobileNo);
 			
 			contactDetail.setIsWatsApp(customerDetails.getIsWatsApp());
 			contactDetail.setWatsAppTelePrefix(customerDetails.getWatsAppTelePrefix());
@@ -576,7 +574,6 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 			contactDetail.setLanguageId(customer.getLanguageId());
 			contactDetail.setCreatedBy(metaData.getEmployeeId().toString());
 			contactDetail.setCreationDate(customer.getCreationDate());
-			//contactDetail.setWatsAppNo(watsAppMobileNo);
 			
 			contactDetail.setIsWatsApp(customerDetails.getIsWatsApp());
 			contactDetail.setWatsAppTelePrefix(customerDetails.getWatsAppTelePrefix());
