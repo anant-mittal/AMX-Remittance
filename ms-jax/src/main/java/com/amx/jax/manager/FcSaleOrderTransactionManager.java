@@ -5,11 +5,6 @@ package com.amx.jax.manager;
  * @Date		: 05/11/2018
  */
 import java.math.BigDecimal;
-
-
-
-
-
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -30,7 +25,6 @@ import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.AbstractModel;
 import com.amx.jax.model.response.fx.FcSaleOrderApplicationResponseModel;
-import com.amx.jax.model.response.fx.FcSaleOrderDefaultResponseModel;
 import com.amx.jax.model.response.fx.FxExchangeRateBreakup;
 import com.amx.jax.repository.ICurrencyDao;
 import com.amx.jax.service.CurrencyMasterService;

@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,7 +32,7 @@ import com.amx.jax.dbmodel.CountryMaster;
 import com.amx.jax.dbmodel.CurrencyMasterModel;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.FxDeliveryDetailsModel;
-import com.amx.jax.dbmodel.PaymentMode;
+import com.amx.jax.dbmodel.PaymentModeModel;
 import com.amx.jax.dbmodel.PurposeOfTransaction;
 import com.amx.jax.dbmodel.ReceiptPayment;
 import com.amx.jax.dbmodel.ReceiptPaymentApp;
@@ -107,7 +108,7 @@ public class FxOrderPaymentManager {
 		logger.info("Result code :"+paymentResponse.getResultCode()+"\t Auth Code :"+paymentResponse.getAuth_appNo());		
 		logger.info("paymment capture Payment ID :"+paymentResponse.getPaymentId()+"\t Merchant Track Id :"+paymentResponse.getTrackId()+"\t UDF 3 :"+paymentResponse.getUdf3()+"\t Udf 2 :"+paymentResponse.getUdf2());
 		
-		
+		HashMap<String, Object> mapAllDetailApplSave = new HashMap<String, Object>();
 		List<ShoppingCartDetailsDto>  fxOrdershoppingCartList = new ArrayList<>();
 		UserFinancialYear userFinancialYear = finanacialService.getUserFinancialYear();
 		List<ReceiptPaymentApp> listOfRecAppl =new ArrayList<>();
@@ -124,6 +125,14 @@ public class FxOrderPaymentManager {
 			 List<ReceiptPayment> receiptPayment=saveReceiptPayment(listOfRecAppl, paymentResponse);
 			 CollectionModel collection = saveCollection(listOfRecAppl, paymentResponse);
 			 CollectDetailModel collectDetail = saveCollectDetail(listOfRecAppl, paymentResponse,collection);
+			 //adding into map
+			 mapAllDetailApplSave.put("RCPT_PAY",receiptPayment);
+			 mapAllDetailApplSave.put("COLLECTION",collection);
+			 mapAllDetailApplSave.put("COLL_DETAILS", collectDetail);
+			 mapAllDetailApplSave.put("LIST_RCPT_APPL", listOfRecAppl);
+			 mapAllDetailApplSave.put("PG_RESP_DETAILS", paymentResponse);
+			 //saveAll(mapAllDetailApplSave);
+			 
 			}else{
 					logger.info("PaymentResponseDto "+paymentResponse.getPaymentId()+"\t Result :"+paymentResponse.getResultCode()+"\t Custoemr Id :"+paymentResponse.getCustomerId());
 					listOfRecAppl = receiptAppRepository.fetchreceiptPaymentAppl(paymentResponse.getCustomerId(), new BigDecimal(paymentResponse.getUdf3()));
@@ -331,6 +340,17 @@ public class FxOrderPaymentManager {
 			collectDetail.setCompanyCode(collection.getCompanyCode());
 			collectDetail.setCreatedDate(new Date());
 			
+		 	if(!StringUtils.isBlank(metaData.getReferrer())){
+		 		collectDetail.setCreatedBy(metaData.getReferrer());
+				}else{
+					if(!StringUtils.isBlank(metaData.getAppType())){				
+						collectDetail.setCreatedBy(metaData.getAppType());
+					}else{
+						collectDetail.setCreatedBy("WEB");
+					 }
+				} 
+			 
+			
 			collectDetail.setDocumentCode(collection.getDocumentCode());
 			collectDetail.setDocumentDate(new Date());
 			collectDetail.setDocumentFinanceYear(collection.getDocumentFinanceYear());
@@ -343,8 +363,13 @@ public class FxOrderPaymentManager {
 			
 			collectDetail.setIsActive(ConstantDocument.Yes);
 			collectDetail.setCollectionMode(ConstantDocument.KNET_CODE);
-			PaymentMode pm = payModeRepositoy.findByPaymentModeCodeAndIsActive(ConstantDocument.KNET_CODE, ConstantDocument.Yes);
-			//collectDetail.setPaymentModeId(pm.equals(arg0)
+			PaymentModeModel payModeModel = payModeRepositoy.getPaymentModeDetails(ConstantDocument.KNET_CODE);
+			if(payModeModel!=null){
+				collectDetail.setPaymentModeId(payModeModel.getPaymentModeId());
+			}else{
+			    	throw new GlobalException("Paymnet mode is not found.", JaxError.INVALID_PAYMENT_MODE);
+			    }
+		
 			collectDetail.setApprovalNo(paymentResponse.getAuth_appNo());
 			collectDetail.setRefId(paymentResponse.getReferenceId());
 			collectDetail.setTransId(paymentResponse.getTransactionId());
@@ -352,10 +377,6 @@ public class FxOrderPaymentManager {
 			collectDetail.setDocumentLineNo(new BigDecimal(1));
 			collectDetail.setAuthdate(new Date());
 			collectDetail.setKnetReceiptDateTime(new SimpleDateFormat("dd/MM/YYYY hh:mm").format(new Date()));
-			
-			
-			
-			
 		 }catch(Exception e){
 			 e.printStackTrace();
 			 logger.error("save collection details :"+e.getMessage());

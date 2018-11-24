@@ -27,7 +27,7 @@ public interface IFxOrderService extends IJaxService {
 		public static final String FC_SALE_SHOPPING_CART = PREFIX + "/fc-sale-shopping-cart/";
 		public static final String FC_SALE_REMOVE_ITEM = PREFIX + "/fc-sale-remove-item/";
 		public static final String FC_SALE_TIME_SLOT = PREFIX + "/fc-sale-time-slot/";
-		public static final String FC_SAVE_SHIPPING_ADDR = "PREFIX +/fc-save-shipping-addr/";
+		public static final String FC_SAVE_SHIPPING_ADDR = "/fc-save-shipping-addr/";
 		public static final String FC_SALE_ADDRESS = PREFIX + "/fc-sale-address/";
 		public static final String FCSALE_SAVE_APPLICATION = PREFIX + "/fcsale-save-application/";
 		public static final String FC_SALE_DEFAULT = PREFIX + "/fc-sale-default/";

@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.transaction.Transactional;
 
@@ -15,20 +16,27 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.dbmodel.CollectDetailModel;
+import com.amx.jax.dbmodel.CollectionModel;
 import com.amx.jax.dbmodel.FxDeliveryDetailsModel;
 import com.amx.jax.dbmodel.PaygDetailsModel;
+import com.amx.jax.dbmodel.ReceiptPayment;
 import com.amx.jax.dbmodel.ReceiptPaymentApp;
 import com.amx.jax.model.request.fx.FcSaleOrderPaynowRequestModel;
 import com.amx.jax.model.response.fx.ShoppingCartDetailsDto;
 import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.repository.FxDeliveryDetailsRepository;
+import com.amx.jax.repository.ICollectionDetailRepository;
+import com.amx.jax.repository.ICollectionRepository;
 import com.amx.jax.repository.PaygDetailsRepository;
 import com.amx.jax.repository.ReceiptPaymentAppRepository;
+import com.amx.jax.repository.ReceiptPaymentRespository;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -46,6 +54,15 @@ public class FcSaleApplicationDao {
 	
 	@Autowired
 	FxDeliveryDetailsRepository fxDeliveryDetailsRepository;
+	
+	@Autowired
+	ReceiptPaymentRespository receiptPaymentRespository;
+	
+	@Autowired
+	ICollectionRepository collectionRepository;
+	
+	@Autowired
+	ICollectionDetailRepository collectionDetailRepository;
 	
 	
 	@Transactional
@@ -150,11 +167,8 @@ public class FcSaleApplicationDao {
 				pgModel.setPgReferenceId(paymentResponse.getReferenceId());
 				pgRepository.save(pgModel);
 			}else{
-				
 				throw new GlobalException("Update after PG details Payment Id :"+paymentResponse.getPaymentId()+"\t Udf 3--Pg trnx seq Id :"+paymentResponse.getUdf3()+"Result code :"+paymentResponse.getResultCode());
 			}
-			
-			
 		}catch (Exception e) {
 			e.printStackTrace();
 			throw new GlobalException("Update after PG details Payment Id :"+paymentResponse.getPaymentId()+"\t Udf 3--Pg trnx seq Id :"+paymentResponse.getUdf3()+"Result code :"+paymentResponse.getResultCode());
@@ -162,5 +176,47 @@ public class FcSaleApplicationDao {
 		
 	}
 	
+	@Transactional
+	public Map<String, Object> saveAll(HashMap<String,Object> hashMapToSaveAllInput){
+		Map<String, Object> output = new HashMap<>();
+		logger.info("Input value : "+hashMapToSaveAllInput.toString());
+		try{
+			BigDecimal collectionId= BigDecimal.ZERO;
+			 List<ReceiptPayment> receiptPaymentList=(List<ReceiptPayment>)hashMapToSaveAllInput.get("RCPT_PAY");
+			 CollectionModel collection =(CollectionModel)hashMapToSaveAllInput.get("COLLECTION");
+			 CollectDetailModel collectDetail =(CollectDetailModel)hashMapToSaveAllInput.get("COLL_DETAILS");
+			 List<ReceiptPaymentApp> listOfRecAppl = (List<ReceiptPaymentApp>)hashMapToSaveAllInput.get("LIST_RCPT_APPL");
+			 PaymentResponseDto	pgResponse =(PaymentResponseDto)hashMapToSaveAllInput.get("PG_RESP_DETAILS");
+			 
+			 if(receiptPaymentList.isEmpty()){
+				 for(ReceiptPayment rcpt : receiptPaymentList){
+					 receiptPaymentRespository.save(rcpt);
+				 }
+			 }
+			 
+			/* if(collection!=null){
+				 collectionId = collectionRepository.save(collection);
+			 }
+			 if(collection.getCollectionId()=)*/
+			 
+			
+		/*	BigDecimal collectionFinanceYear = cs.getBigDecimal(9);
+			BigDecimal collectionDocumentNumber = cs.getBigDecimal(10);
+			BigDecimal collectionDocumentCode = cs.getBigDecimal(11);
+			String outMessage = cs.getString(12);
+
+			output.put("P_COLLECT_FINYR", collectionFinanceYear);
+			output.put("P_COLLECTION_NO", collectionDocumentNumber);
+			output.put("P_COLLECTION_DOCUMENT_CODE", collectionDocumentCode);
+			output.put("P_ERROR_MESG", outMessage);
+			*/
+			logger.info("output value : "+output.toString());
+			
+		}catch(Exception e){
+			e.printStackTrace();
+			logger.error("saveAll of FX Order :"+e.getMessage());
+		}
+		return output;
+	}
 	
 }
