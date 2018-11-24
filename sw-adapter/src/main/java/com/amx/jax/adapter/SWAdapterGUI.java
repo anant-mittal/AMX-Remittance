@@ -44,6 +44,7 @@ public class SWAdapterGUI extends JFrame {
 
 	JLabel labelDescription = new JLabel("....");
 	public static SWAdapterGUI CONTEXT = null;
+	public static String LOG = "";
 
 	private void initUI() {
 
@@ -183,6 +184,7 @@ public class SWAdapterGUI extends JFrame {
 	}
 
 	public void log(String message) {
+		LOG = message;
 		labelDescription.setText(message);
 	}
 

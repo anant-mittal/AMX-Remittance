@@ -77,6 +77,8 @@ public class SSOServerController {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put(AppConstants.TRANX_ID_XKEY_CLEAN, AppContextUtil.getTranxId());
 		map.put(SSOConstants.PARAM_SSO_LOGIN_URL, SSOConstants.SSO_LOGIN_URL_DO);
+		map.put(AppConstants.SECURITY_CODE_KEY, Random.randomAlpha(3));
+		map.put(AppConstants.PARTNER_SECURITY_CODE_KEY, Random.randomAlpha(3));
 		return map;
 	}
 

@@ -10,8 +10,6 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.owasp.html.HtmlPolicyBuilder;
-import org.owasp.html.PolicyFactory;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -77,8 +75,6 @@ public class CommonHttpRequest {
 	}
 
 	private static Logger LOGGER = LoggerService.getLogger(CommonHttpRequest.class);
-
-	private static final PolicyFactory policy = new HtmlPolicyBuilder().allowStandardUrlProtocols().toFactory();
 
 	@Autowired(required = false)
 	private HttpServletRequest request;
@@ -259,10 +255,6 @@ public class CommonHttpRequest {
 		}
 		userDevice.setAppType(appType);
 		return userDevice;
-	}
-
-	public static String sanitze(String str) {
-		return policy.sanitize(str);
 	}
 
 	private static Map<String, ApiRequest> apiRequestMap = Collections

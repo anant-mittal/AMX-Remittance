@@ -15,7 +15,7 @@ import net.east301.keyring.PasswordSaveException;
 import net.east301.keyring.util.LockException;
 
 public class KeyUtil {
-	static final String SERVICE_NAME = "amx-adapter";
+	public static String SERVICE_NAME = "amx-adapter";
 	public static Keyring KEYRING = null;
 
 	public static Keyring getKeyRing() throws BackendNotSupportedException, IOException {
