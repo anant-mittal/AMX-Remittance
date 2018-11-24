@@ -261,7 +261,10 @@ public abstract class ACardReaderService {
 	}
 
 	public void resetTerminalPairing()
-			throws BackendNotSupportedException, LockException, PasswordSaveException, IOException {
+			throws Exception {
+		if (!ArgUtil.isEmpty(this.getDevicePairingCreds())) {
+			adapterServiceClient.deActivateDevice(this.getDevicePairingCreds());
+		}
 		KeyUtil.getKeyRing();
 		KeyUtil.setDevicePairingCreds(new DeviceRestModel());
 		devicePairingCreds = null;

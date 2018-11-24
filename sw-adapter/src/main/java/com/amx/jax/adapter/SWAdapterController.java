@@ -65,7 +65,6 @@ public class SWAdapterController {
 		}
 		if (!ArgUtil.isEmpty(reset)) {
 			kwtCardReaderService.resetTerminalPairing();
-			adapterServiceClient.deActivateDevice(kwtCardReaderService.getDevicePairingCreds());
 		}
 
 		String body = "";
