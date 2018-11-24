@@ -37,6 +37,8 @@ public class DeviceConstants {
 
 	public static class Params {
 		public static final String PARAM_CLIENT_TYPE = "clientType";
+		@Deprecated
+		public static final String PARAM_DEVICE_TYPE = "deviceType";
 		public static final String PARAM_CLIENT_ID = "clientId";
 		public static final String PARAM_SYSTEM_ID = "systemid";
 		public static final String PARAM_DEVICE_REG_ID = "deviceRegId";
