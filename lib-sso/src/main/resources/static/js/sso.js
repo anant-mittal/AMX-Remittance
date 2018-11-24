@@ -13,7 +13,7 @@ function sendData(step){
 	var selectedMode = $("input[name='cardtype']:checked").val();
 	if(selectedMode === WITH_SMART_CARD){
 		var errorFields = 0;
-		$(".withSmartCard input[type='text']").each(function(){
+		$(".withSmartCard input[type='text']:not([readonly])").each(function(){
 			if($(this).val() === ""){
 				errorFields = errorFields + 1;
 				$(this).next().children().text('This field can\'t be empty').show();
@@ -47,6 +47,7 @@ function sendData(step){
 				$("input[name='partner-sec-code']").val(resp.meta.mOtpPrefix);
 			} else {
 				$(".prefix").text(resp.meta.mOtpPrefix);
+				$("[name=motp]").removeAttr("readonly")
 //				$("input[name='sec-code']").val(resp.meta.mOtpPrefix);
 			}
 		}
