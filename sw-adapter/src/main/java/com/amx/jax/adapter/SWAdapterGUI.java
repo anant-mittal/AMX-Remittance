@@ -33,10 +33,12 @@ public class SWAdapterGUI extends JFrame {
 	public static final String STAT_FORMAT_PRE = "%-10s";
 	public static final String STAT_FORMAT_SUF = ":%30s";
 	public static final String STAT_FORMAT_DEVICE = String.format(STAT_FORMAT_PRE, "Device") + STAT_FORMAT_SUF;
+	public static final String STAT_FORMAT_READER = String.format(STAT_FORMAT_PRE, "Reader") + STAT_FORMAT_SUF;
 	public static final String STAT_FORMAT_CARD = String.format(STAT_FORMAT_PRE, "Card") + STAT_FORMAT_SUF;
 	public static final String STAT_FORMAT_DATA = String.format(STAT_FORMAT_PRE, "Data") + STAT_FORMAT_SUF;
 
 	JLabel statusPing = new JLabel(DOT);
+	JLabel statusReader = new JLabel(String.format(STAT_FORMAT_READER, Constants.BLANK));
 	JLabel statusDevice = new JLabel(String.format(STAT_FORMAT_DEVICE, Constants.BLANK));
 	JLabel statusCard = new JLabel(String.format(STAT_FORMAT_CARD, Constants.BLANK));
 	JLabel statusData = new JLabel(String.format(STAT_FORMAT_DATA, Constants.BLANK));
@@ -66,22 +68,25 @@ public class SWAdapterGUI extends JFrame {
 		// add components to the panel
 		constraints.gridx = 0;
 		constraints.gridy = 0;
-		newPanel.add(statusDevice, constraints);
+		newPanel.add(statusReader, constraints);
 		constraints.gridx = 0;
 		constraints.gridy = 1;
-		newPanel.add(statusCard, constraints);
+		newPanel.add(statusDevice, constraints);
 		constraints.gridx = 0;
 		constraints.gridy = 2;
+		newPanel.add(statusCard, constraints);
+		constraints.gridx = 0;
+		constraints.gridy = 3;
 		newPanel.add(statusData, constraints);
 
 		constraints.gridx = 0;
-		constraints.gridy = 3;
+		constraints.gridy = 4;
 		constraints.gridwidth = 4;
 		statusPing.setForeground(Color.BLUE);
 		newPanel.add(statusPing, constraints);
 
 		constraints.gridx = 0;
-		constraints.gridy = 4;
+		constraints.gridy = 5;
 		constraints.anchor = GridBagConstraints.CENTER;
 		constraints.gridwidth = 4;
 		labelDescription.setFont(font);
@@ -93,7 +98,7 @@ public class SWAdapterGUI extends JFrame {
 			System.exit(0);
 		});
 		constraints.gridx = 2;
-		constraints.gridy = 5;
+		constraints.gridy = 6;
 		constraints.gridwidth = 2;
 		constraints.anchor = GridBagConstraints.CENTER;
 		newPanel.add(quitButton, constraints);
@@ -104,11 +109,14 @@ public class SWAdapterGUI extends JFrame {
 		});
 
 		constraints.gridx = 0;
-		constraints.gridy = 5;
+		constraints.gridy = 6;
 		constraints.gridwidth = 2;
 		constraints.anchor = GridBagConstraints.CENTER;
 		newPanel.add(refreshButton, constraints);
 
+		statusReader.setEnabled(false);
+		statusReader.setBackground(Color.LIGHT_GRAY);
+		statusReader.setFont(font);
 		statusDevice.setEnabled(false);
 		statusDevice.setBackground(Color.LIGHT_GRAY);
 		statusDevice.setFont(font);
@@ -183,6 +191,10 @@ public class SWAdapterGUI extends JFrame {
 		statusData.setText(String.format(STAT_FORMAT_DATA, status.toString()));
 	}
 
+	public void readerName(String name) {
+		statusReader.setText(String.format(STAT_FORMAT_READER, name));
+	}
+	
 	public void log(String message) {
 		LOG = message;
 		labelDescription.setText(message);

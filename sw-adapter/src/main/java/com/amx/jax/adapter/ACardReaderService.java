@@ -361,6 +361,7 @@ public abstract class ACardReaderService {
 		LOGGER.debug("ACardReaderService:pong");
 		status(DeviceStatus.CONNECTED);
 		READER.setReader(readerName);
+		SWAdapterGUI.CONTEXT.readerName(readerName);
 		READER.setDeviceActiveTime(System.currentTimeMillis());
 		SWAdapterGUI.CONTEXT.updateDeviceHealthStatus(4); // PING COUNT
 	}
