@@ -80,11 +80,15 @@ public abstract class ACardReaderService {
 
 	public String getServerUrl() {
 		if (ArgUtil.isEmpty(serverUrl)) {
-			serverUrl = environment.getProperty("server.url." + tnt + "." + env);
+			serverUrl = environment.getProperty("adapter." + tnt + "." + env + ".url");
+			String serverDB = environment.getProperty("adapter." + tnt + "." + env + ".db");
 			if (ArgUtil.isEmpty(serverUrl)) {
-				serverUrl = environment.getProperty("server.url.local");
+				serverUrl = environment.getProperty("adapter.local.url");
 			}
-			KeyUtil.SERVICE_NAME = serverUrl;
+			if (ArgUtil.isEmpty(serverDB)) {
+				serverDB = environment.getProperty("adapter.local.db");
+			}
+			KeyUtil.SERVICE_NAME = serverDB;
 			adapterServiceClient.setOffSiteUrl(serverUrl);
 		}
 		return serverUrl;
@@ -276,6 +280,7 @@ public abstract class ACardReaderService {
 	public void readTask() {
 
 		AppContextUtil.init();
+		getServerUrl();
 
 		LOGGER.debug("ACardReaderService:readTask");
 
