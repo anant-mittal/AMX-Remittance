@@ -48,46 +48,56 @@
 		<div class="form-wrapper">
 			<div class="form-row">
 				<div>
-					<label class="radio-container"><span class="radio"><input type="radio" name="cardtype" value="withSmartCard" checked/><span></span></span>Smart Card</label>&nbsp;&nbsp;&nbsp;
-					<label class="radio-container"><span class="radio"><input type="radio" name="cardtype" value="withoutSmartCard"/><span></span></span>Smart Card Not Available</label>
+					<label><span class="radio"><input type="radio" name="cardtype" value="withSmartCard"/><span></span></span>Smart Card</label>&nbsp;&nbsp;&nbsp;
+					<label><span class="radio"><input type="radio" name="cardtype" value="withoutSmartCard"/><span></span></span>Smart Card Not Available</label>
 				</div>
 			</div>
-			<div class="withSmartCard">
-				
-				<div class="form-row two-col">
-					<div class="form-col">
-						<label>EC Number</label>
-						<div class="input-wrapper">
-							<input type="text" name="ecnumber" value="235474" on-keyup="UI.ECNO"/>
-							<div class="error-wrapper"><div class="error-message" step="ECNO">asdsad</div></div>
-						</div>
-					</div>
-					<div class="form-col">
-						<label>Enter Civil ID</label>
-						<div class="input-wrapper">
-							<input type="text" name="identity" value="" on-keyup="CREDS" />
-							<div class="error-wrapper"><div class="error-message" step="CREDS">asdsad</div></div>
-						</div>
-						<!-- <div class="send-otp">
-							<div class="button small right" on-click="CREDS" >Send OTP</div>
-						</div> -->
+			<div class="form-row two-col">
+				<div class="form-col">
+					<label>EC Number</label>
+					<div class="input-wrapper">
+						<input type="text" name="ecnumber" value="235474"/>
+						<div class="error-wrapper"><div class="error-message">asdsad</div></div>
 					</div>
 				</div>
-				<div class="form-row">
-					<div class="form-col">
-						<label>Prefix - <span class="prefix">---</span></label>
-						<div class="input-wrapper">
-							<input type="text" name="motp" on-keyup="UI.OTP"/>
-							<div class="error-wrapper"><div class="error-message" step="OTP">asdsad</div></div>
-						</div>
-						<div class="t-a-r">Insert your smart card to get OTP</div>
+				<div class="form-col">
+					<label>Enter Civil ID</label>
+					<div class="input-wrapper">
+						<input type="text" name="identity" value="" />
+						<div class="error-wrapper"><div class="error-message">asdsad</div></div>
+					</div>
+					<div class="send-otp">
+						<div class="button small right" on-click="CREDS" >Send OTP</div>
 					</div>
 				</div>
-				
-			
 			</div>
+			<!-- <div class="form-row">
+				<div class="form-col">
+					<label>Prefix - <span class="prefix">---</span></label>
+					<div class="input-wrapper">
+						<input type="text" name="motp" class="invalid" />
+						<div class="error-wrapper"><div class="error-message">asdsad</div></div>
+					</div>
+					<div class="t-a-r">Insert your smart card to get OTP</div>
+				</div>
+			</div> -->
 			
-			
+			<div class="form-row two-col">
+				<div class="form-col">
+					<label>Security Code</label>
+					<div class="input-wrapper">
+						<input type="text" name="sec-code" value="" class="sec-code-input" readonly/>
+						<div class="error-wrapper"><div class="error-message">asdsad</div></div>
+					</div>
+				</div>
+				<div class="form-col">
+					<label>OTP</label>
+					<div class="input-wrapper">
+						<input type="text" name="otp" value=""/>
+						<div class="error-wrapper"><div class="error-message">asdsad</div></div>
+					</div>
+				</div>
+			</div>
 			
 			<div class="withoutSmartCard dn">
 			
@@ -121,7 +131,7 @@
 			
 			<div class="form-row two-col button-wrapper">
 				<div class="form-col ">
-					<div class="button inline" on-click="UI.CLEAR">Cancel</div>
+					<div class="button inline">Cancel</div>
 				</div>
 				<div class="form-col ">
 					<div class="button" on-click="OTP" >Submit</div>

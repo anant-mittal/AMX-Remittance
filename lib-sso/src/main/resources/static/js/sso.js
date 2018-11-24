@@ -9,8 +9,18 @@ var WITH_SMART_CARD = "withSmartCard";
 var WITHOUT_SMART_CARD = "withoutSmartCard";
 var WITHOUT_SMART_CARD_USER_VERIFIED = false;
 
-function doAction(action){
+function sendData(step){
 	var selectedMode = $("input[name='cardtype']:checked").val();
+	if(selectedMode === WITH_SMART_CARD){
+		var errorFields = 0;
+		$(".withSmartCard input[type='text']").each(function(){
+			if($(this).val() === ""){
+				errorFields = errorFields + 1;
+				$(this).next().children().text('This field can\'t be empty').show();
+			}
+		})
+		if(errorFields !== 0) return;
+	}
 	$.ajax({
 		type : "post",
 		contentType : "application/json",
@@ -25,7 +35,7 @@ function doAction(action){
 			ecnumber : $("[name=ecnumber]").val(),
 			identity : $("[name=identity]").val(),
 			motp : $("[name=motp]").val(),
-			step : $(e.target).attr("on-click")
+			step : step
 		})
 	}).done(function(resp) {
 		console.log(resp);
@@ -36,32 +46,59 @@ function doAction(action){
 			if(selectedMode == WITHOUT_SMART_CARD && WITHOUT_SMART_CARD_USER_VERIFIED){
 				$("input[name='partner-sec-code']").val(resp.meta.mOtpPrefix);
 			} else {
-				$("input[name='sec-code']").val(resp.meta.mOtpPrefix);
+				$(".prefix").text(resp.meta.mOtpPrefix);
+//				$("input[name='sec-code']").val(resp.meta.mOtpPrefix);
 			}
 		}
 	}).fail(function(jqXHR, y, z) {
+		console.log(jqXHR, y, z);
+		if(step === "CREDS") $(".prefix").text("---");
+		$(".error-message[step='"+step+"']").text(jqXHR.responseJSON.message).show();
 		if (jqXHR.getResponseHeader('Location') != null) {
 			window.Location = jqXHR.getResponseHeader('Location');
 		}
 	});
-
 }
 
+function uiAction(step){
+	switch(step){
+		case "UI.CLEAR":
+			$(".form-wrapper input[type='text']").val('');
+			$(".prefix").text("---")
+			break;
+	}
+}
+
+$(function(){
+	$(".form-wrapper input[type='text']").val('');
+})
+
 $("body").on("click", "[on-click]", function(e, b, c) {
-	var action = $(e.target).attr("on-click");
-	doAction(action);
+	var step = $(e.target).attr("on-click");
+	if(step.indexOf("UI.") === 0){
+		uiAction(step);
+	} else {
+		sendData(step);	
+	}
+	
 })
 
 $("body").on("input", "[on-keyup]", function(e, b, c) {
-	var action = $(e.target).attr("on-keyup");
-	if(String(e.target.value).length == CHAR_LENGTH_MAP[action]){
-		doAction(action);
+	var step = $(e.target).attr("on-keyup");
+	if(step.indexOf("UI.") === 0){
+		//potential UI methods
+		$("[step='"+ step.replace('UI.', '') +"'].error-message").text("").hide();
+		return;
+	}
+	$("[step='"+ step +"'].error-message").text("").hide();
+	if(String(e.target.value).length == CHAR_LENGTH_MAP[step]){
+		sendData(step);
 	}
 })
 
 $("input[name='cardtype']").on('change', function(e) {
 	var selectedMode = $("input[name='cardtype']:checked").val();
-	$(".form-wrapper input[type='text']").val('')
+	$(".form-wrapper input[type='text']").val('');
 	if(selectedMode === WITH_SMART_CARD){
 		$(".withoutSmartCard").addClass("dn");
 	} else {
