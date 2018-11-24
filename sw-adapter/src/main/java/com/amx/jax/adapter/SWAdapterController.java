@@ -59,13 +59,13 @@ public class SWAdapterController {
 	@RequestMapping(value = { "/**", "/*", "/" }, method = { RequestMethod.GET, RequestMethod.POST })
 	public String home(@RequestParam(required = false) String terminalId, Model model,
 			@RequestParam(required = false) String reset)
-			throws InterruptedException, IOException, BackendNotSupportedException, LockException,
-			PasswordSaveException {
+			throws Exception {
 		if (!ArgUtil.isEmpty(terminalId)) {
 			kwtCardReaderService.setTerminalId(terminalId);
 		}
 		if (!ArgUtil.isEmpty(reset)) {
 			kwtCardReaderService.resetTerminalPairing();
+			adapterServiceClient.deActivateDevice(kwtCardReaderService.getDevicePairingCreds());
 		}
 
 		String body = "";
