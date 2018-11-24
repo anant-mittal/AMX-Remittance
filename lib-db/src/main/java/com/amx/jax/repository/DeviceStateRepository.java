@@ -9,7 +9,4 @@ import com.amx.jax.dbmodel.DeviceStateInfo;
 
 public interface DeviceStateRepository extends CrudRepository<DeviceStateInfo, Serializable> {
 
-	public DeviceStateInfo findByPairTokenAndDeviceRegId(String pairToken, BigDecimal regId);
-
-	public DeviceStateInfo findBySessionTokenAndDeviceRegId(String sessionToken, BigDecimal regId);
-}
+	}
