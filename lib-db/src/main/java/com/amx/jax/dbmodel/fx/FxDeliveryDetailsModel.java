@@ -1,4 +1,4 @@
-package com.amx.jax.dbmodel;
+package com.amx.jax.dbmodel.fx;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -6,11 +6,17 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import com.amx.jax.constants.FxDeliveryStatus;
 
 @Entity
 @Table(name="EX_DELIVERY_DETAILS")
@@ -33,11 +39,13 @@ public class FxDeliveryDetailsModel implements Serializable{
 	private BigDecimal shippingAddressId;
 	
 	@Column(name="DELIVERY_DATE")
+	@Temporal(TemporalType.DATE)
 	private Date deliveryDate; 
 	@Column(name="DELIVERY_TIME")
 	private String deliveryTimeSlot;
 	@Column(name="DELIVERY_STATUS")
-	private String deliveryStatus;
+	@Enumerated(EnumType.STRING)
+	private FxDeliveryStatus deliveryStatus;
 	
 	@Column(name="DRIVER_EMPLOYEE_ID")
 	private BigDecimal driverEmployeeId;
@@ -55,7 +63,7 @@ public class FxDeliveryDetailsModel implements Serializable{
 	@Column(name="UPDATED_DATE")
 	private Date uopdateDate;
 	
-	@Column(name="REMARKS_ID")
+	@Column(name="EX_DELIVERY_REMARK_SEQ_ID")
 	private BigDecimal remarksId;
 	
 	
@@ -65,6 +73,9 @@ public class FxDeliveryDetailsModel implements Serializable{
 	
 	@Column(name="ISACTIVE")
 	private String isActive;
+	
+	@Column(name = "TRANSACTION_RECEIPT_CLOB")
+	String transactionReceipt;
 	
 	public BigDecimal getDeleviryDelSeqId() {
 		return deleviryDelSeqId;
@@ -90,12 +101,7 @@ public class FxDeliveryDetailsModel implements Serializable{
 	public void setDeliveryTimeSlot(String deliveryTimeSlot) {
 		this.deliveryTimeSlot = deliveryTimeSlot;
 	}
-	public String getDeliveryStatus() {
-		return deliveryStatus;
-	}
-	public void setDeliveryStatus(String deliveryStatus) {
-		this.deliveryStatus = deliveryStatus;
-	}
+	
 	public BigDecimal getDriverEmployeeId() {
 		return driverEmployeeId;
 	}
@@ -152,6 +158,18 @@ public class FxDeliveryDetailsModel implements Serializable{
 
 	public void setDeliveryCharges(BigDecimal deliveryCharges) {
 		this.deliveryCharges = deliveryCharges;
+	}
+	public String getTransactionReceipt() {
+		return transactionReceipt;
+	}
+	public void setTransactionReceipt(String transactionReceipt) {
+		this.transactionReceipt = transactionReceipt;
+	}
+	public FxDeliveryStatus getDeliveryStatus() {
+		return deliveryStatus;
+	}
+	public void setDeliveryStatus(FxDeliveryStatus deliveryStatus) {
+		this.deliveryStatus = deliveryStatus;
 	}
 
 }

@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.api.AmxApiResponse;
-import com.amx.jax.client.FcSaleOrderClient;
-import com.amx.jax.client.IFxOrderService;
-import com.amx.jax.client.IFxOrderService.Params;
+import com.amx.jax.client.fx.FcSaleOrderClient;
+import com.amx.jax.client.fx.IFxOrderService;
+import com.amx.jax.client.fx.IFxOrderService.Params;
 import com.amx.jax.model.request.CustomerShippingAddressRequestModel;
 import com.amx.jax.model.request.fx.FcSaleOrderTransactionRequestModel;
 import com.amx.jax.model.response.CurrencyMasterDTO;

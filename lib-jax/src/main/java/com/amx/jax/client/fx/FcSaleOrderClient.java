@@ -1,4 +1,4 @@
-package com.amx.jax.client;
+package com.amx.jax.client.fx;
 
 /**
  * @author	:Rabil
@@ -23,11 +23,13 @@ import com.amx.jax.model.response.CurrencyMasterDTO;
 import com.amx.jax.model.response.fx.FcSaleApplPaymentReponseModel;
 import com.amx.jax.model.response.fx.FcSaleOrderApplicationResponseModel;
 import com.amx.jax.model.response.fx.FcSaleOrderDefaultResponseModel;
+import com.amx.jax.model.response.fx.FxDeliveryDetailDto;
 import com.amx.jax.model.response.fx.FxExchangeRateDto;
 import com.amx.jax.model.response.fx.PurposeOfTransactionDto;
 import com.amx.jax.model.response.fx.ShippingAddressDto;
 import com.amx.jax.model.response.fx.ShoppingCartDetailsDto;
 import com.amx.jax.rest.RestService;
+import com.amx.jax.client.fx.IFxOrderService.Path;
 
 @Component
 public class FcSaleOrderClient implements IFxOrderService {

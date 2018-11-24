@@ -1,4 +1,4 @@
-package com.amx.jax.dbmodel;
+package com.amx.jax.dbmodel.fx;
 
 /**
  * @author 	:Rabil

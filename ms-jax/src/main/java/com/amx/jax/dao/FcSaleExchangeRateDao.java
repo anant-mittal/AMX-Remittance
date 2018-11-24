@@ -7,12 +7,12 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.amx.jax.dbmodel.FxExchangeRateView;
 import com.amx.jax.dbmodel.ParameterDetails;
 import com.amx.jax.dbmodel.ShoppingCartDetails;
-import com.amx.jax.repository.FcSaleExchangeRateRepository;
+import com.amx.jax.dbmodel.fx.FxExchangeRateView;
 import com.amx.jax.repository.ParameterDetailsRespository;
 import com.amx.jax.repository.ShoppingCartRepository;
+import com.amx.jax.repository.fx.FcSaleExchangeRateRepository;
 
 
 @Component

@@ -1,4 +1,4 @@
-package com.amx.jax.repository;
+package com.amx.jax.repository.fx;
 
 /**
  * @author :Rabil
@@ -11,7 +11,7 @@ import java.util.List;
 
 import org.springframework.data.repository.CrudRepository;
 
-import com.amx.jax.dbmodel.FxExchangeRateView;
+import com.amx.jax.dbmodel.fx.FxExchangeRateView;
 
 public interface FcSaleExchangeRateRepository extends CrudRepository<FxExchangeRateView, Serializable>{
 

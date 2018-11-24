@@ -7,6 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import static org.junit.Assert.assertNotNull;
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.client.fx.FcSaleOrderClient;
 import com.amx.jax.model.response.CurrencyMasterDTO;
 
 @RunWith(SpringRunner.class)

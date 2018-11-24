@@ -1,4 +1,4 @@
-package com.amx.jax.client;
+package com.amx.jax.client.fx;
 
 import java.math.BigDecimal;
 

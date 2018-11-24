@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.api.AmxApiResponse;
-import com.amx.jax.client.IFxOrderService;
+import com.amx.jax.client.fx.IFxOrderService;
 import com.amx.jax.constant.JaxEvent;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.CustomerShippingAddressRequestModel;
