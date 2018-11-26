@@ -44,5 +44,6 @@ public interface IUserRoleMappingRepository extends JpaRepository<UserRoleMappin
 	 * @return the list
 	 */
 	List<UserRoleMapping> findByIdIn(List<BigDecimal> ids);
+	
 
 }

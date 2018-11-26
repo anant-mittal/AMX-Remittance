@@ -15,6 +15,7 @@ import com.amx.jax.rbaac.dto.request.UserAuthorisationReqDTO;
 import com.amx.jax.rbaac.dto.request.UserRoleMappingsRequestDTO;
 import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
 import com.amx.jax.rbaac.dto.response.PermissionResposeDTO;
+import com.amx.jax.rbaac.dto.response.RoleMappingForEmployee;
 import com.amx.jax.rbaac.dto.response.RoleResponseDTO;
 import com.amx.jax.rbaac.dto.response.UserAuthInitResponseDTO;
 import com.amx.jax.rbaac.dto.response.UserRoleMappingDTO;
@@ -79,6 +80,9 @@ public interface IRbaacService {
 		public static final String DEVICE_VALIDATE_SESSION_TOKEN =  DEVICE_PREFIX + "/validatesessiontoken";
 		public static final String DEVICE_REG = DEVICE_PREFIX + "/register";
 		public static final String DEVICE_GET_DEVICE_REG_ID =  DEVICE_PREFIX + "/getdeviceregid";
+		
+		/** The Constant GET_ROLE_MAPPING_FOR_EMPLOYEE. */
+		public static final String GET_ROLE_MAPPING_FOR_EMPLOYEE = SERVICE_PREFIX + API_VERSION_V1 + "/roles/alloc/get_role_map_for_employee";
 
 	}
 	
@@ -275,5 +279,10 @@ public interface IRbaacService {
 	 */
 	public  AmxApiResponse<BigDecimal, Object> getDeviceRegIdByBranchInventoryId(ClientType deviceClientType,
 			BigDecimal countryBranchSystemInventoryId);
+	
+	
+	@RbaacApiStatus({})
+	public AmxApiResponse<RoleMappingForEmployee, Object> getRoleMappingsForEmployee(BigDecimal employeeId,
+			String ipAddr, String deviceId, Boolean filterRole);
 
 }

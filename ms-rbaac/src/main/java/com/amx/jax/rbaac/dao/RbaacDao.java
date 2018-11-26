@@ -304,4 +304,8 @@ public class RbaacDao {
 	public void saveRoleDefintionDetails(RoleDefinition roleDefinition) {
 		roleDefinitionRepositoryOld.save(roleDefinition);
 	}
+
+	public UserRoleMapping getUserRoleMappingsByEmployeeId(BigDecimal employeeId) {
+		return userRoleMappingRepository.findByEmployeeId(employeeId);
+	}
 }

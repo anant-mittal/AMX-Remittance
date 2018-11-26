@@ -26,6 +26,7 @@ import com.amx.jax.rbaac.dto.request.UserAuthorisationReqDTO;
 import com.amx.jax.rbaac.dto.request.UserRoleMappingsRequestDTO;
 import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
 import com.amx.jax.rbaac.dto.response.PermissionResposeDTO;
+import com.amx.jax.rbaac.dto.response.RoleMappingForEmployee;
 import com.amx.jax.rbaac.dto.response.RoleResponseDTO;
 import com.amx.jax.rbaac.dto.response.UserAuthInitResponseDTO;
 import com.amx.jax.rbaac.dto.response.UserRoleMappingDTO;
@@ -297,6 +298,19 @@ public class RbaacServiceClient implements IRbaacService {
 		return restService.ajax(url).field(Params.DEVICE_CLIENT_TYPE, deviceClientType)
 				.field(Params.DEVICE_SYS_INV_ID, countryBranchSystemInventoryId).postForm()
 				.as(new ParameterizedTypeReference<AmxApiResponse<BigDecimal, Object>>() {
+				});
+	}
+
+	@Override
+	public AmxApiResponse<RoleMappingForEmployee, Object> getRoleMappingsForEmployee(BigDecimal employeeId,
+			String ipAddress, String deviceId, Boolean filterRole) {
+		
+		LOGGER.debug("in getRoleMappingsForEmployee");
+		
+		return restService.ajax(appConfig.getAuthURL()).path(ApiEndPoints.GET_ROLE_MAPPING_FOR_EMPLOYEE)
+				.queryParam("employeeId", employeeId).queryParam("ipAddress", ipAddress)
+				.queryParam("deviceId", deviceId).queryParam("filterRole", filterRole).post()
+				.as(new ParameterizedTypeReference<AmxApiResponse<RoleMappingForEmployee, Object>>() {
 				});
 	}
 
