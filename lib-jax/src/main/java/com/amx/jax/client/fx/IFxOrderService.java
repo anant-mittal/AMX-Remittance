@@ -17,6 +17,7 @@ import com.amx.jax.model.response.fx.FxExchangeRateDto;
 import com.amx.jax.model.response.fx.PurposeOfTransactionDto;
 import com.amx.jax.model.response.fx.ShippingAddressDto;
 import com.amx.jax.model.response.fx.ShoppingCartDetailsDto;
+import com.amx.jax.payg.PaymentResponseDto;
 
 public interface IFxOrderService extends IJaxService {
 
@@ -34,6 +35,7 @@ public interface IFxOrderService extends IJaxService {
 		public static final String FC_SALE_CAL_XRATE = PREFIX + "/fc-sale-cal-xrate/";
 		public static final String FC_SALE_XRATE = PREFIX + "/fc-sale-xrate/";
 		public static final String FC_CURRENCY_LIST = PREFIX + "/fc-currency-list/";
+		public static final String FC_SALE_SAVE_PAYMENT_ID = PREFIX + "/fc_sale_save-payment-id/";
 
 	}
 
@@ -109,7 +111,9 @@ public interface IFxOrderService extends IJaxService {
 			FcSaleOrderPaynowRequestModel requestModel);
 
 	@ApiJaxStatus({ JaxError.NULL_APPLICATION_ID })
-	AmxApiResponse<FcSaleOrderApplicationResponseModel, Object> removeItemFromCart(BigDecimal applicationId)
-			throws Exception;
+	AmxApiResponse<FcSaleOrderApplicationResponseModel, Object> removeItemFromCart(BigDecimal applicationId)throws Exception;
+	
+	@ApiJaxStatus({ JaxError.NULL_APPLICATION_ID })
+	AmxApiResponse<PaymentResponseDto, Object> savePaymentId(PaymentResponseDto paymentRequestDto)throws Exception;
 
 }

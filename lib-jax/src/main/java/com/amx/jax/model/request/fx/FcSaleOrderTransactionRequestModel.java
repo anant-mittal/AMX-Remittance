@@ -15,18 +15,14 @@ public class FcSaleOrderTransactionRequestModel extends AbstractModel {
 
 	
 	private BigDecimal sourceOfFundId;
-	private BigDecimal localAmount;
 	private BigDecimal foreignAmount;
 	private BigDecimal purposeOfTrnx;
 	private String currencyDenominationType;
 	private BigDecimal foreignCurrencyId;
 	private String remarks;
-	private BigDecimal deliveryCharges;
 	private BigDecimal travelCountryId;
-	
 	private String startDate;
 	private String endDate;
-	private String errorMessage;
 	
 
 	private BigDecimal domXRate;
@@ -36,12 +32,7 @@ public class FcSaleOrderTransactionRequestModel extends AbstractModel {
 	public void setSourceOfFundId(BigDecimal sourceOfFundId) {
 		this.sourceOfFundId = sourceOfFundId;
 	}
-	public BigDecimal getLocalAmount() {
-		return localAmount;
-	}
-	public void setLocalAmount(BigDecimal localAmount) {
-		this.localAmount = localAmount;
-	}
+	
 	public BigDecimal getForeignAmount() {
 		return foreignAmount;
 	}
@@ -60,12 +51,7 @@ public class FcSaleOrderTransactionRequestModel extends AbstractModel {
 	public void setCurrencyDenominationType(String currencyDenominationType) {
 		this.currencyDenominationType = currencyDenominationType;
 	}
-	/*public FxExchangeRateBreakup getExRateBreakup() {
-		return exRateBreakup;
-	}
-	public void setExRateBreakup(FxExchangeRateBreakup exRateBreakup) {
-		this.exRateBreakup = exRateBreakup;
-	}*/
+
 	public BigDecimal getDomXRate() {
 		return domXRate;
 	}
@@ -83,18 +69,6 @@ public class FcSaleOrderTransactionRequestModel extends AbstractModel {
 	}
 	public void setRemarks(String remarks) {
 		this.remarks = remarks;
-	}
-	public BigDecimal getDeliveryCharges() {
-		return deliveryCharges;
-	}
-	public void setDeliveryCharges(BigDecimal deliveryCharges) {
-		this.deliveryCharges = deliveryCharges;
-	}
-	public String getErrorMessage() {
-		return errorMessage;
-	}
-	public void setErrorMessage(String errorMessage) {
-		this.errorMessage = errorMessage;
 	}
 	public BigDecimal getTravelCountryId() {
 		return travelCountryId;

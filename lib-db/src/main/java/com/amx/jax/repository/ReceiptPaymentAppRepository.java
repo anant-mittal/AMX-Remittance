@@ -1,6 +1,6 @@
 package com.amx.jax.repository;
 
-import java.io.Serializable;
+
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -24,5 +24,8 @@ public interface ReceiptPaymentAppRepository extends CrudRepository<ReceiptPayme
 
 	@Query("select appl from ReceiptPaymentApp appl where appl.customerId=:customerId and appl.pgPaymentSeqDtlId =:pgPaymentSeqDtlId and appl.isActive ='Y' and NVL(appl.applicationStatus,' ')='S' and trunc(sysdate)=trunc(appl.documentDate)")
 	public List<ReceiptPaymentApp> fetchreceiptPaymentAppl(@Param("customerId") BigDecimal customerId,@Param("pgPaymentSeqDtlId") BigDecimal pgPaymentSeqDtlId);
+	
+	@Query("select appl from ReceiptPaymentApp appl where appl.customerId=:customerId and appl.documentNo =:appldocNo and appl.documentFinanceYear =:applfyear and appl.isActive ='Y'")
+	public ReceiptPaymentApp getApplciationDetailsByDocNoFYear(@Param("customerId") BigDecimal customerId, @Param("appldocNo") BigDecimal appldocNo,@Param("applfyear") BigDecimal applfyear);
 	
 }

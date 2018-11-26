@@ -28,6 +28,7 @@ import com.amx.jax.model.response.fx.FxExchangeRateDto;
 import com.amx.jax.model.response.fx.PurposeOfTransactionDto;
 import com.amx.jax.model.response.fx.ShippingAddressDto;
 import com.amx.jax.model.response.fx.ShoppingCartDetailsDto;
+import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.rest.RestService;
 import com.amx.jax.client.fx.IFxOrderService.Path;
 
@@ -250,4 +251,16 @@ public class FcSaleOrderClient implements IFxOrderService {
 
 	}
 
+	
+	@Override
+	public AmxApiResponse<PaymentResponseDto, Object> savePaymentId(PaymentResponseDto requestModel) {
+		try {
+			LOGGER.debug("client Save pg details  :" + requestModel.toString());
+			return restService.ajax(appConfig.getJaxURL() + Path.FC_SALE_SAVE_PAYMENT_ID).meta(new JaxMetaInfo()).post(requestModel).as(new ParameterizedTypeReference<AmxApiResponse<PaymentResponseDto, Object>>() {});
+		} catch (Exception e) {
+			LOGGER.error("exception in getCurrencyByCountryId : ", e);
+			return JaxSystemError.evaluate(e);
+		} // end of try-catch
+
+	}
 }

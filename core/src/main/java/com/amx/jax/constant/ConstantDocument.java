@@ -75,7 +75,7 @@ public class ConstantDocument {
 	public static final String FC_SALE_RECEIPT_TYPE="01";
 	public static final String COLLECTION_RECEIPT_TYPE="70";
 	public static final String KNET_CODE="K";
-	
+	public static final String T="T";
 	/** end Here **/
 
 }

@@ -47,6 +47,7 @@ import com.amx.jax.model.response.fx.FxExchangeRateDto;
 import com.amx.jax.model.response.fx.PurposeOfTransactionDto;
 import com.amx.jax.model.response.fx.ShippingAddressDto;
 import com.amx.jax.model.response.fx.ShoppingCartDetailsDto;
+import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.repository.ICurrencyDao;
 import com.amx.jax.repository.IPurposeOfTrnxDao;
 import com.amx.jax.repository.ISourceOfIncomeDao;
@@ -263,6 +264,15 @@ public class FcSaleService extends AbstractService {
 		FcSaleApplPaymentReponseModel responseModel = applTrnxManager.saveApplicationPayment(requestmodel);
 		return AmxApiResponse.build(responseModel);
 	}
+	
+	
+	/** To save Knet details **/
+	public AmxApiResponse<PaymentResponseDto,Object> savePaymentId(PaymentResponseDto paymentRequestDto){
+		PaymentResponseDto paymentResponseDto =paymentManager.paymentCapture(paymentRequestDto); 
+		return AmxApiResponse.build(paymentResponseDto);
+	}
+	
+	
 
 	public List<PurposeOfTransactionDto> convertPurposeOfTrnxDto(List<PurposeOfTransaction> purposeofTrnxList) {
 		List<PurposeOfTransactionDto> dtoList = new ArrayList<>();

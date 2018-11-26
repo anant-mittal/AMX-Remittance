@@ -28,6 +28,7 @@ import com.amx.jax.model.response.fx.FxExchangeRateDto;
 import com.amx.jax.model.response.fx.PurposeOfTransactionDto;
 import com.amx.jax.model.response.fx.ShippingAddressDto;
 import com.amx.jax.model.response.fx.ShoppingCartDetailsDto;
+import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.service.TermsAndConditionService;
 import com.amx.jax.services.FcSaleService;
 import com.amx.jax.util.JaxContextUtil;
@@ -157,6 +158,14 @@ public class FcSaleOrderController implements IFxOrderService {
 	@RequestMapping(value = Path.FC_SALE_SHOPPING_CART, method = RequestMethod.GET)
 	public AmxApiResponse<ShoppingCartDetailsDto, Object> fetchShoppingCartList() {
 		return fcSaleService.fetchShoppingCartList();
+	}
+	
+	
+	@RequestMapping(value = Path.FC_SALE_SAVE_PAYMENT_ID, method = RequestMethod.POST)
+	public AmxApiResponse<PaymentResponseDto,Object> savePaymentId(@RequestBody PaymentResponseDto paymentResponse) {
+		logger.info("save-fcsale Controller :" + paymentResponse.getCustomerId() + "\t country ID :"+ paymentResponse.getApplicationCountryId() + "\t Compa Id:" + paymentResponse.getCompanyId());
+		return fcSaleService.savePaymentId(paymentResponse);
+		
 	}
 
 }

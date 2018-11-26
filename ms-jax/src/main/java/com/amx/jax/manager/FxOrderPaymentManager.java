@@ -1,5 +1,10 @@
 package com.amx.jax.manager;
 
+/**
+ * @author rabil 
+ * @date 25/11/2018
+ * @purpose : save all details	
+ */
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -18,8 +23,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.model.response.ApiResponse;
-import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.ApplicationProcedureDao;
 import com.amx.jax.dao.FcSaleApplicationDao;
@@ -52,6 +55,7 @@ import com.amx.jax.service.CompanyService;
 import com.amx.jax.service.FinancialService;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.repository.CustomerRepository;
+import com.amx.jax.util.JaxUtil;
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Component
 public class FxOrderPaymentManager {
@@ -99,19 +103,23 @@ public class FxOrderPaymentManager {
 	
 	@Autowired
 	PaymentModeRepository payModeRepositoy;
+	
+
 
 	
-	public ApiResponse paymentCapture(PaymentResponseDto paymentResponse) {
-		ApiResponse response = null;
+	public PaymentResponseDto paymentCapture(PaymentResponseDto paymentResponse) {
 		logger.info("paymment capture :"+paymentResponse.toString());
 		logger.info("Customer Id :"+paymentResponse.getCustomerId());
 		logger.info("Result code :"+paymentResponse.getResultCode()+"\t Auth Code :"+paymentResponse.getAuth_appNo());		
 		logger.info("paymment capture Payment ID :"+paymentResponse.getPaymentId()+"\t Merchant Track Id :"+paymentResponse.getTrackId()+"\t UDF 3 :"+paymentResponse.getUdf3()+"\t Udf 2 :"+paymentResponse.getUdf2());
 		
+	
 		HashMap<String, Object> mapAllDetailApplSave = new HashMap<String, Object>();
+		Map<String, Object> mapResopnseObject =new HashMap<String, Object>(); 
 		List<ShoppingCartDetailsDto>  fxOrdershoppingCartList = new ArrayList<>();
 		UserFinancialYear userFinancialYear = finanacialService.getUserFinancialYear();
 		List<ReceiptPaymentApp> listOfRecAppl =new ArrayList<>();
+		BigDecimal customerId =metaData.getCustomerId();
 		try{
 			
 			if(!StringUtils.isBlank(paymentResponse.getPaymentId()) && !StringUtils.isBlank(paymentResponse.getResultCode()) 
@@ -120,7 +128,12 @@ public class FxOrderPaymentManager {
 			/** update the payg details **/
 			rcptApplPaydao.updatePaygDetails(listOfRecAppl, paymentResponse);
 			/** To fetch the applciation **/
-			 listOfRecAppl = receiptAppRepository.fetchreceiptPaymentAppl(paymentResponse.getCustomerId(), new BigDecimal(paymentResponse.getUdf3()));
+			
+			if(JaxUtil.isNullZeroBigDecimalCheck(paymentResponse.getCustomerId())){
+				customerId = customerId;
+			}
+			
+			 listOfRecAppl = receiptAppRepository.fetchreceiptPaymentAppl(customerId, new BigDecimal(paymentResponse.getUdf3()));
 			 
 			 List<ReceiptPayment> receiptPayment=saveReceiptPayment(listOfRecAppl, paymentResponse);
 			 CollectionModel collection = saveCollection(listOfRecAppl, paymentResponse);
@@ -131,21 +144,31 @@ public class FxOrderPaymentManager {
 			 mapAllDetailApplSave.put("COLL_DETAILS", collectDetail);
 			 mapAllDetailApplSave.put("LIST_RCPT_APPL", listOfRecAppl);
 			 mapAllDetailApplSave.put("PG_RESP_DETAILS", paymentResponse);
-			 //saveAll(mapAllDetailApplSave);
+			 mapResopnseObject= rcptApplPaydao.finalSaveAll(mapAllDetailApplSave);
+			 logger.info("mapResopnseObject :"+mapResopnseObject.toString());
+			 if(mapResopnseObject != null && mapResopnseObject.get("P_ERROR_MESG")==null){
+				 paymentResponse.setCollectionDocumentNumber((BigDecimal)mapResopnseObject.get("P_COLLECTION_NO"));
+				 paymentResponse.setCollectionFinanceYear((BigDecimal)mapResopnseObject.get("P_COLLECT_FINYR"));
+				 paymentResponse.setCollectionDocumentCode((BigDecimal)mapResopnseObject.get("P_COLLECTION_DOCUMENT_CODE"));
+			 }else{
+				 logger.error("paymentCapture final save  finalSaveAll method :"+mapResopnseObject.toString());
+				 throw new GlobalException("Invalid collection document number /year", JaxError.PAYMENT_UPDATION_FAILED);
+			 }
 			 
 			}else{
-					logger.info("PaymentResponseDto "+paymentResponse.getPaymentId()+"\t Result :"+paymentResponse.getResultCode()+"\t Custoemr Id :"+paymentResponse.getCustomerId());
+					logger.info("Otehr than captured result  :paymentCapture else ***   : PaymentResponseDto "+paymentResponse.getPaymentId()+"\t Result :"+paymentResponse.getResultCode()+"\t Custoemr Id :"+paymentResponse.getCustomerId());
 					listOfRecAppl = receiptAppRepository.fetchreceiptPaymentAppl(paymentResponse.getCustomerId(), new BigDecimal(paymentResponse.getUdf3()));
 					if(!listOfRecAppl.isEmpty()) {
 						rcptApplPaydao.updatePaygDetails(listOfRecAppl, paymentResponse);
 					}
-					response.setResponseStatus(ResponseStatus.INTERNAL_ERROR);
+					
+					throw new GlobalException("else Payment capture failed", JaxError.PAYMENT_UPDATION_FAILED);
 				}
 		}catch(Exception e){
-			logger.error("paymentCapture :"+e.getMessage());
-			response.setResponseStatus(ResponseStatus.INTERNAL_ERROR);
+			logger.error("try--catch block paymentCapture :"+e.getMessage());
+			throw new GlobalException("catch Payment capture failed", JaxError.PAYMENT_UPDATION_FAILED);
 		}
-		return response;
+		return paymentResponse;
 	}
 	
 	/** Save ReceiptPayment 
@@ -225,11 +248,13 @@ public class FxOrderPaymentManager {
 				 SourceOfIncome sourceOfIncome = new SourceOfIncome();
 				 sourceOfIncome.setSourceId(applreceipt.getSourceofIncomeId());
 				 receiptPayment.setSourceOfIncome(sourceOfIncome);
-				 
-			
+				 receiptPayment.setTravelStartDate(applreceipt.getTravelStartDate());
+				 receiptPayment.setTravelEndDate(applreceipt.getTravelEndDate());
+				 receiptPayment.setTravelCountryId(applreceipt.getTravelCountryId());
+				 receiptPayment.setSourceofIncomeId(applreceipt.getSourceofIncomeId());
 				 receiptPayment.setDenominationType(applreceipt.getDenominationType());
 				 
-				 
+				 receiptPayment.setIsActive(ConstantDocument.Yes);
 				 if(!StringUtils.isBlank(metaData.getReferrer())){
 					 receiptPayment.setCreatedBy(metaData.getReferrer());
 					}else{
@@ -247,7 +272,6 @@ public class FxOrderPaymentManager {
 		 return receiptPaymentList;
 	 }
 	
-	 
 	 /**  Save collection **/
 	 public CollectionModel saveCollection(List<ReceiptPaymentApp> listOfRecAppl, PaymentResponseDto paymentResponse){
 		 CollectionModel collection  =new CollectionModel();
@@ -276,10 +300,11 @@ public class FxOrderPaymentManager {
 			 	 ViewCompanyDetails companyDetails = companyService.getCompanyDetailsById(appl.getCompanyId());
 			 	 if(companyDetails!=null){
 			 	  collection.setCompanyCode(companyDetails.getCompanyCode());
+			 	  
 			 	 }else{
 			 		throw new GlobalException("Invalid company code.", JaxError.INVALID_COMPANY_ID);
 			 	 }
-			 	 
+			 	collection.setFsCompanyMaster(new CompanyMaster(appl.getCompanyId()));
 			 	 CountryBranch countryBranch = countryBranchRepository.findByCountryBranchId(appl.getBranchId());
 				 if(countryBranch!=null){
 					 collection.setExBankBranch(countryBranch);
@@ -294,7 +319,7 @@ public class FxOrderPaymentManager {
 			    collection.setDocumentFinanceYear(appl.getDocumentFinanceYear());
 			    collection.setDocumentCode(ConstantDocument.DOCUMENT_CODE_FOR_COLLECT_TRANSACTION);	
 			    collection.setDocumentId(documentDao.getDocumnetByCode(ConstantDocument.DOCUMENT_CODE_FOR_COLLECT_TRANSACTION).get(0).getDocumentID());
-			    BigDecimal documentNo =generateDocumentNumber(countryBranch,appl.getCountryId(), companyDetails.getCompanyCode(), ConstantDocument.Update,appl.getDocumentFinanceYear(), ConstantDocument.DOCUMENT_CODE_FOR_COLLECT_TRANSACTION);
+			    BigDecimal documentNo =generateDocumentNumber(countryBranch,appl.getCountryId(), companyDetails.getCompanyId(), ConstantDocument.Update,appl.getDocumentFinanceYear(), ConstantDocument.DOCUMENT_CODE_FOR_COLLECT_TRANSACTION);
 			    if(documentNo!=null && documentNo.compareTo(BigDecimal.ZERO)!=0){
 			    	collection.setDocumentNo(documentNo);
 			    }else{
@@ -337,8 +362,17 @@ public class FxOrderPaymentManager {
 	public  CollectDetailModel saveCollectDetail(List<ReceiptPaymentApp> listOfRecAppl, PaymentResponseDto paymentResponse,CollectionModel collection){
 		CollectDetailModel collectDetail = new CollectDetailModel();
 		try{
+			
+			
+			
+			collectDetail.setFsCompanyMaster(collection.getFsCompanyMaster());
+			collectDetail.setFsCustomer(collection.getFsCustomer());
+			collectDetail.setExBankBranch(collection.getExBankBranch());
+			collectDetail.setLocCode(collection.getLocCode());
+			collectDetail.setFsCountryMaster(new CountryMaster(collection.getApplicationCountryId()));
 			collectDetail.setAcyymm(collection.getAccountMMYYYY());
 			collectDetail.setCompanyCode(collection.getCompanyCode());
+			
 			collectDetail.setCreatedDate(new Date());
 			
 		 	if(!StringUtils.isBlank(metaData.getReferrer())){
@@ -356,7 +390,7 @@ public class FxOrderPaymentManager {
 			collectDetail.setDocumentDate(new Date());
 			collectDetail.setDocumentFinanceYear(collection.getDocumentFinanceYear());
 			collectDetail.setDocumentId(collection.getDocumentId());
-			
+			collectDetail.setDocumentNo(collection.getDocumentNo());
 			collectDetail.setExCurrencyMaster(collection.getExCurrencyMaster());
 			collectDetail.setFsCustomer(collection.getFsCustomer());
 			collectDetail.setCashCollectionId(collection);
@@ -377,6 +411,7 @@ public class FxOrderPaymentManager {
 			collectDetail.setKnetReceipt(paymentResponse.getPostDate());
 			collectDetail.setDocumentLineNo(new BigDecimal(1));
 			collectDetail.setAuthdate(new Date());
+			collectDetail.setPayId(paymentResponse.getPaymentId());
 			collectDetail.setKnetReceiptDateTime(new SimpleDateFormat("dd/MM/YYYY hh:mm").format(new Date()));
 		 }catch(Exception e){
 			 e.printStackTrace();

@@ -7,8 +7,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.dbmodel.FxShoppingCartDetails;
 import com.amx.jax.dbmodel.ParameterDetails;
-import com.amx.jax.dbmodel.ShoppingCartDetails;
 import com.amx.jax.dbmodel.fx.FxExchangeRateView;
 import com.amx.jax.repository.ParameterDetailsRespository;
 import com.amx.jax.repository.ShoppingCartRepository;
@@ -37,7 +37,11 @@ public class FcSaleExchangeRateDao {
 	}
 	
 
-	public List<ShoppingCartDetails> getShoppingCartDetails(BigDecimal applicationcountryId,BigDecimal companyId,BigDecimal customerId){
+	public List<FxShoppingCartDetails> getShoppingCartDetails(BigDecimal applicationcountryId,BigDecimal companyId,BigDecimal customerId){
 		return shoppingCartRepository.findByApplicationCountryIdAndCompanyIdAndCustomerId(applicationcountryId,companyId,customerId);
+	}
+	
+	public List<FxShoppingCartDetails> getFcSaleShoppingCartDetails(BigDecimal applicationcountryId,BigDecimal companyId,BigDecimal customerId){
+		return shoppingCartRepository.fetchFcSaleApplicationDetails(applicationcountryId, companyId, customerId);
 	}
 }

@@ -30,6 +30,7 @@ import com.amx.jax.dbmodel.ShippingAddressDetail;
 import com.amx.jax.dbmodel.fx.FxDeliveryDetailsModel;
 import com.amx.jax.dbmodel.fx.FxDeliveryRemark;
 import com.amx.jax.dbmodel.fx.VwFxDeliveryDetailsModel;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.model.request.fx.FcSaleOrderPaynowRequestModel;
 import com.amx.jax.model.response.fx.FxDeliveryDetailDto;
 import com.amx.jax.model.response.fx.ShoppingCartDetailsDto;
@@ -43,6 +44,7 @@ import com.amx.jax.repository.ReceiptPaymentRespository;
 import com.amx.jax.repository.fx.FxDeliveryDetailsRepository;
 import com.amx.jax.repository.fx.FxDeliveryRemarkRepository;
 import com.amx.jax.repository.fx.VwFxDeliveryDetailsRepository;
+import com.amx.jax.util.JaxUtil;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -178,22 +180,24 @@ public class FcSaleApplicationDao {
 				pgModel.setPgReferenceId(paymentResponse.getReferenceId());
 				pgRepository.save(pgModel);
 			}else{
-				
-				throw new GlobalException("Update after PG details Payment Id :"+paymentResponse.getPaymentId()+"\t Udf 3--Pg trnx seq Id :"+paymentResponse.getUdf3()+"Result code :"+paymentResponse.getResultCode());
+				logger.error("Update after PG details Payment Id :"+paymentResponse.getPaymentId()+"\t Udf 3--Pg trnx seq Id :"+paymentResponse.getUdf3()+"Result code :"+paymentResponse.getResultCode());
+				throw new GlobalException("PG updatio failed",JaxError.PAYMENT_UPDATION_FAILED);
 			}
 			
 			
 		}catch (Exception e) {
 			e.printStackTrace();
-			throw new GlobalException("Update after PG details Payment Id :"+paymentResponse.getPaymentId()+"\t Udf 3--Pg trnx seq Id :"+paymentResponse.getUdf3()+"Result code :"+paymentResponse.getResultCode());
+			logger.error("catch Update after PG details Payment Id :"+paymentResponse.getPaymentId()+"\t Udf 3--Pg trnx seq Id :"+paymentResponse.getUdf3()+"Result code :"+paymentResponse.getResultCode());
+			throw new GlobalException("PG updatio failed",JaxError.PAYMENT_UPDATION_FAILED);
 		}
 		
 	}
 	
 	@Transactional
-	public Map<String, Object> saveAll(HashMap<String,Object> hashMapToSaveAllInput){
+	public Map<String, Object> finalSaveAll(HashMap<String,Object> hashMapToSaveAllInput){
 		Map<String, Object> output = new HashMap<>();
 		logger.info("Input value : "+hashMapToSaveAllInput.toString());
+		String outMessage = "";
 		try{
 			BigDecimal collectionId= BigDecimal.ZERO;
 			 List<ReceiptPayment> receiptPaymentList=(List<ReceiptPayment>)hashMapToSaveAllInput.get("RCPT_PAY");
@@ -202,14 +206,43 @@ public class FcSaleApplicationDao {
 			 List<ReceiptPaymentApp> listOfRecAppl = (List<ReceiptPaymentApp>)hashMapToSaveAllInput.get("LIST_RCPT_APPL");
 			 PaymentResponseDto	pgResponse =(PaymentResponseDto)hashMapToSaveAllInput.get("PG_RESP_DETAILS");
 			 
-			 if(receiptPaymentList.isEmpty()){
-				 for(ReceiptPayment rcpt : receiptPaymentList){
-					 receiptPaymentRespository.save(rcpt);
-				 }
+			 if(collection!=null){
+				 collectionRepository.save(collection);
+			 } else{
+				 output.put("P_ERROR_MESG", "ERROR_WHILE_SAVING_COLLECTION");
+			 }
+			 if(collection!= null && collection.getCollectionId()!=null)
+			 {
+				 collectionDetailRepository.save(collectDetail);
+			 }else{
+				 output.put("P_ERROR_MESG", "ERROR_WHILE_SAVING_COLLECTION_DETAILS");
 			 }
 			 
-			/* if(collection!=null){
-				 collectionId = collectionRepository.save(collection);
+			 if(!receiptPaymentList.isEmpty()){
+				 for(ReceiptPayment rcpt : receiptPaymentList){
+					 rcpt.setColDocNo(collection.getDocumentNo());
+					 rcpt.setColDocFyr(collection.getDocumentFinanceYear());
+					 rcpt.setColDocCode(collection.getDocumentCode());
+					 receiptPaymentRespository.save(rcpt);
+					 //Update the Application Receipt
+					 updateAppicationReceiptPayment(rcpt);
+				 }//end of for loop.
+			 }else{
+				 output.put("P_ERROR_MESG", "ERROR_RCPT_APPLICATION_SAVE");
+			 }
+			 
+			 
+		    BigDecimal collectionFinanceYear = collection.getDocumentFinanceYear();
+			BigDecimal collectionDocumentNumber = collection.getDocumentNo();
+			BigDecimal collectionDocumentCode = collection.getDocumentCode();
+			 
+			 if(pgResponse!=null && JaxUtil.isNullZeroBigDecimalCheck(new BigDecimal(pgResponse.getUdf3()))){
+				 PaygDetailsModel pgModel =pgRepository.findOne(new BigDecimal(pgResponse.getUdf3()));
+				 pgModel.setCollDocNumber(collectionDocumentNumber);
+				 pgModel.setCollDocFYear(collectionFinanceYear);
+				 savePaygDetails(pgModel);
+			 }else{
+				 output.put("P_ERROR_MESG", "RCPT_APPLICATION_NOT_FOUND");
 			 }
 			 if(collection.getCollectionId()=)*/
 			 
@@ -222,16 +255,41 @@ public class FcSaleApplicationDao {
 			output.put("P_COLLECT_FINYR", collectionFinanceYear);
 			output.put("P_COLLECTION_NO", collectionDocumentNumber);
 			output.put("P_COLLECTION_DOCUMENT_CODE", collectionDocumentCode);
-			output.put("P_ERROR_MESG", outMessage);
-			*/
-			logger.info("output value : "+output.toString());
+		
 			
 		}catch(Exception e){
 			e.printStackTrace();
 			logger.error("saveAll of FX Order :"+e.getMessage());
+			outMessage = e.getMessage();
+			output.put("P_ERROR_MESG", outMessage);
 		}
+		logger.info("output value : "+output.toString());
 		return output;
 	}
+	
+	public void updateAppicationReceiptPayment(ReceiptPayment rcpt){
+		if(rcpt!=null){
+			BigDecimal applicationDocumentNo = rcpt.getApplicationDocumentNo();
+			BigDecimal applicationFinanceYear= rcpt.getApplicationFinanceYear();
+			BigDecimal customerId            = rcpt.getFsCustomer().getCustomerId();  
+			if(JaxUtil.isNullZeroBigDecimalCheck(applicationDocumentNo) && JaxUtil.isNullZeroBigDecimalCheck(applicationFinanceYear)){
+				ReceiptPaymentApp rcptAppl = receiptPaymentApplRespo.getApplciationDetailsByDocNoFYear(customerId,applicationDocumentNo,applicationFinanceYear);
+				if(rcptAppl!=null){
+					rcptAppl.setReceiptId(rcptAppl.getReceiptId());
+					rcptAppl.setApplicationStatus(ConstantDocument.T);
+					rcptAppl.setTransactionRefNo(rcpt.getDocumentNo());
+					rcptAppl.setTransactionFinanceYear(rcpt.getDocumentFinanceYear());
+					rcptAppl.setColDocNo(rcpt.getColDocNo());
+					rcptAppl.setColDocFyr(rcpt.getColDocFyr());
+					rcptAppl.setColDocCode(rcpt.getColDocCode());
+					receiptPaymentApplRespo.save(rcptAppl);
+				}
+			}
+					
+			
+		}
+	}
+	
 
 	public List<VwFxDeliveryDetailsModel> listOrders(BigDecimal driverEmployeeId) {
 		return vwFxDeliveryDetailsRepository.findByDriverEmployeeIdAndDeliveryDate(driverEmployeeId, new Date());

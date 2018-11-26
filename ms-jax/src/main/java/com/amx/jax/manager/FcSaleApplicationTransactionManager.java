@@ -22,7 +22,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.model.response.ExchangeRateBreakup;
+
 import com.amx.jax.AbstractModel;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.ApplicationProcedureDao;
@@ -31,28 +31,29 @@ import com.amx.jax.dao.FcSaleExchangeRateDao;
 import com.amx.jax.dbmodel.ApplicationSetup;
 import com.amx.jax.dbmodel.CountryBranch;
 import com.amx.jax.dbmodel.Customer;
-import com.amx.jax.dbmodel.ParameterDetails;
-import com.amx.jax.dbmodel.PaygDetailsModel;
-import com.amx.jax.dbmodel.ReceiptPaymentApp;
-import com.amx.jax.dbmodel.ShoppingCartDetails;
-import com.amx.jax.dbmodel.UserFinancialYear;
 import com.amx.jax.dbmodel.fx.FxDeliveryDetailsModel;
 import com.amx.jax.dbmodel.fx.FxDeliveryTimeSlotMaster;
 import com.amx.jax.dbmodel.fx.FxExchangeRateView;
+import com.amx.jax.dbmodel.ParameterDetails;
+import com.amx.jax.dbmodel.PaygDetailsModel;
+import com.amx.jax.dbmodel.ReceiptPaymentApp;
+import com.amx.jax.dbmodel.FxShoppingCartDetails;
+import com.amx.jax.dbmodel.UserFinancialYear;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.fx.FcSaleOrderPaynowRequestModel;
 import com.amx.jax.model.request.fx.FcSaleOrderTransactionRequestModel;
 import com.amx.jax.model.response.fx.FcSaleApplPaymentReponseModel;
 import com.amx.jax.model.response.fx.FcSaleOrderApplicationResponseModel;
+import com.amx.jax.model.response.fx.FxExchangeRateBreakup;
 import com.amx.jax.model.response.fx.ShoppingCartDetailsDto;
 import com.amx.jax.repository.CountryBranchRepository;
+import com.amx.jax.repository.fx.FxOrderDeliveryTimeSlotRepository;
 import com.amx.jax.repository.IApplicationCountryRepository;
 import com.amx.jax.repository.ICompanyDAO;
 import com.amx.jax.repository.ICurrencyDao;
 import com.amx.jax.repository.ICustomerRepository;
 import com.amx.jax.repository.ReceiptPaymentAppRepository;
-import com.amx.jax.repository.fx.FxOrderDeliveryTimeSlotRepository;
 import com.amx.jax.service.BankMetaService;
 import com.amx.jax.service.CurrencyMasterService;
 import com.amx.jax.service.FinancialService;
@@ -131,11 +132,12 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 		List<String> fxOrderTimeSlot = fetchTimeSlot(null);
 		responeModel.setTimeSlot(fxOrderTimeSlot);
 		responeModel.setCartDetails(cartDetails);
+		responeModel.setDeliveryCharges(getDeliveryChargesFromParameter()); 
 		return responeModel; 
 		}catch(Exception e){
 			e.printStackTrace();
 			logger.error("saveApplication", e.getMessage());
-			throw new GlobalException("FC Sale application creation failed", JaxError.FS_APPLIATION_CREATION_FAILED);
+			throw new GlobalException("FC Sale application creation failed");
 		}
 	}
 	
@@ -176,6 +178,9 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 		if(!parameterList.isEmpty()){
 			logger.info("Delivery charges: "+parameterList.get(0).getNumericField1());
 			knetamount = knetamount.add(parameterList.get(0).getNumericField1());
+		}else{
+			logger.info("Delivery charges: "+parameterList.get(0).getNumericField1());
+			throw new GlobalException("Fc Delivery not defined", JaxError.FC_CURRENCY_DELIVERY_CHARGES_NOT_FOUND);
 		}
 		responeModel.setNetPayableAmount(knetamount);
 		logger.info("Total knet amount with delivery charges: "+knetamount);
@@ -234,7 +239,7 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 		}
 		validation.validateHeaderInfo();
 		
-		ExchangeRateBreakup exchbreakUpRate = getExchangeRateFcSaleOrder(applciationCountryid, countryBranchId, fcSalerequestModel.getForeignCurrencyId(), fcSalerequestModel.getForeignAmount());
+		FxExchangeRateBreakup exchbreakUpRate = getExchangeRateFcSaleOrder(applciationCountryid, countryBranchId, fcSalerequestModel.getForeignCurrencyId(), fcSalerequestModel.getForeignAmount());
 		
 		receiptPaymentAppl.setLocalCurrencyId(localCurrencyId);
 		receiptPaymentAppl.setForeignCurrencyId(fcSalerequestModel.getForeignCurrencyId());
@@ -305,8 +310,8 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 	
 	
 	
-	public ExchangeRateBreakup getExchangeRateFcSaleOrder(BigDecimal countryId,BigDecimal countryBracnhId ,BigDecimal fcCurrencyId,BigDecimal fcAmount){
-		ExchangeRateBreakup breakup = new ExchangeRateBreakup();
+	public FxExchangeRateBreakup getExchangeRateFcSaleOrder(BigDecimal countryId,BigDecimal countryBracnhId ,BigDecimal fcCurrencyId,BigDecimal fcAmount){
+		FxExchangeRateBreakup breakup = new FxExchangeRateBreakup();
 		
 		try{
 		
@@ -327,7 +332,6 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 		
 		if(parameterList != null && !parameterList.isEmpty()){
 			breakup.setDeliveryCharges(RoundUtil.roundBigDecimal(parameterList.get(0).getNumericField1()==null?BigDecimal.ZERO:parameterList.get(0).getNumericField1(),breakup.getLcDecimalNumber().intValue()));
-			
 		}		
 		if(JaxUtil.isNullZeroBigDecimalCheck(maxExchangeRate) && JaxUtil.isNullZeroBigDecimalCheck(fcAmount)){
 			breakup.setConvertedLCAmount(maxExchangeRate.multiply(fcAmount));
@@ -383,7 +387,7 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 		BigDecimal customerId = metaData.getCustomerId();
 		BigDecimal applciationCountryid = metaData.getCountryId();
 		BigDecimal companyId = metaData.getCompanyId();
-		List<ShoppingCartDetails>  shoppingCartList  = fcSaleExchangeRateDao.getShoppingCartDetails(applciationCountryid,companyId,customerId);
+		List<FxShoppingCartDetails>  shoppingCartList  = fcSaleExchangeRateDao.getFcSaleShoppingCartDetails(applciationCountryid, companyId, customerId);
 		if(!shoppingCartList.isEmpty()){
 			cartListDto = convertShopingCartDto(shoppingCartList);
 		}
@@ -432,13 +436,13 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 	
 	
 	
-	public  List<ShoppingCartDetailsDto>  convertShopingCartDto(List<ShoppingCartDetails> cartDetailList){
+	public  List<ShoppingCartDetailsDto>  convertShopingCartDto(List<FxShoppingCartDetails> cartDetailList){
 		List<ShoppingCartDetailsDto> cartListDto = new ArrayList<>();
 		cartDetailList.forEach(cartDetails->cartListDto.add(convertCartDto(cartDetails)));
 		return cartListDto;
 	}
 	
-	public ShoppingCartDetailsDto convertCartDto(ShoppingCartDetails cartDetails){
+	public ShoppingCartDetailsDto convertCartDto(FxShoppingCartDetails cartDetails){
 		ShoppingCartDetailsDto  dto = new ShoppingCartDetailsDto ();
 		try {
 			BeanUtils.copyProperties(dto, cartDetails);
@@ -448,57 +452,7 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 		return dto;
 	}
 	
-	/**
-	 * Pay now update in appl receipt payment
-	 */
-	@SuppressWarnings("deprecation")
-	public FcSaleApplPaymentReponseModel updateApplReceiptPayDetails(FcSaleOrderPaynowRequestModel requestmodel){
-		
-		FcSaleApplPaymentReponseModel responseModel =new FcSaleApplPaymentReponseModel();
-		/*
-		List<ShoppingCartDetailsDto> listShoppingCart = requestmodel.getCartDetailList();
-		BigDecimal documentNo = BigDecimal.ZERO;
-		BigDecimal applicationId = BigDecimal.ZERO;
-		BigDecimal paygNetAmount = BigDecimal.ZERO;
-		int i = 0;
-		if(!listShoppingCart.isEmpty()){
-			listShoppingCart.sort(Comparator.comparing(ShoppingCartDetailsDto::getApplicationId));
-			documentNo = listShoppingCart.get(0).getDocumentNo();
-			applicationId = listShoppingCart.get(0).getApplicationId();
-			logger.info("paygdocumentNo :"+documentNo);
-		}
-		for(ShoppingCartDetailsDto shoppingCart:listShoppingCart){
-			i++;
-			ReceiptPaymentApp rcptAppl = rcptPaymentAppl.findOne(shoppingCart.getApplicationId());
-			if(rcptAppl!=null && i==1){
-				rcptAppl.setPgPaymentId(rcptAppl.getDocumentNo().toString());
-			}
-			rcptAppl.setShippingAddressId(requestmodel.getShippingAddressId());
-			rcptAppl.setDeliveryDate(new Date(requestmodel.getDeliveryDate()));
-			rcptAppl.setDeleveryTime(requestmodel.getTimeSlot());
-			if(i==1){
-				paygNetAmount  =rcptAppl.getLocalTrnxAmount().add(rcptAppl.getDeliveryCharges());
-			}else{
-				paygNetAmount.add(rcptAppl.getLocalTrnxAmount());
-			}
-			rcptAppl.setApplicationStatus(ConstantDocument.S);
-			fsSaleapplicationDao.updateCartDetails(rcptAppl);*/
-		//} //end of for Loop.
-		
-		
-		/*responseModel.setNetPayableAmount(paygNetAmount);
-		responseModel.setRemittanceAppId(applicationId);
-		responseModel.setMerchantTrackId(metaData.getCustomerId());
-		if(documentNo!=null){
-			responseModel.setDocumentIdForPayment(documentNo.toString());
-		}
-		UserFinancialYear userFinancialYear = finanacialService.getUserFinancialYear();
-		if(userFinancialYear!=null){
-			responseModel.setDocumentFinancialYear(userFinancialYear.getFinancialYear());
-		}*/
-		return responseModel;
-	}
-	
+
 	
 	public PaygDetailsModel createPgDetails(FcSaleOrderPaynowRequestModel requestmodel){
 		List<ShoppingCartDetailsDto> listShoppingCart = requestmodel.getCartDetailList();
@@ -535,6 +489,7 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 		deliveryDetails.setCreatedDate(new Date());
 		deliveryDetails.setDeliveryDate(requestmodel.getDeliveryDate()==null?new Date():new Date(requestmodel.getDeliveryDate()));
 		deliveryDetails.setDeliveryTimeSlot(requestmodel.getTimeSlot());
+		deliveryDetails.setDeliveryCharges(getDeliveryChargesFromParameter());
 		deliveryDetails.setShippingAddressId(requestmodel.getShippingAddressId());
 		if(!requestmodel.getCartDetailList().isEmpty()){
 			for(ShoppingCartDetailsDto dto :requestmodel.getCartDetailList()){
@@ -555,5 +510,15 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 		return deliveryDetails;
 	}
 	
+	public BigDecimal 	getDeliveryChargesFromParameter(){
+		List<ParameterDetails> parameterList 	= fcSaleExchangeRateDao.getParameterDetails(ConstantDocument.FX_DC, ConstantDocument.Yes);
+	   BigDecimal delicharges = BigDecimal.ZERO;
+	   BigDecimal localCurrencyId = metaData.getDefaultCurrencyId();
+	   BigDecimal localDecimalCurr =currencyMasterService.getCurrencyMasterById(localCurrencyId).getDecinalNumber();
+		if(parameterList != null && !parameterList.isEmpty()){
+			delicharges =RoundUtil.roundBigDecimal(parameterList.get(0).getNumericField1()==null?BigDecimal.ZERO:parameterList.get(0).getNumericField1(),localDecimalCurr==null?0:localDecimalCurr.intValue());
+		}	
+		return delicharges; 
+	}
 	
 }

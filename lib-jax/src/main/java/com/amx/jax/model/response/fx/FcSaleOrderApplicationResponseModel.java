@@ -17,13 +17,12 @@ public class FcSaleOrderApplicationResponseModel extends AbstractModel {
 	private String denominationType;
 	private BigDecimal purposeOfTrnxId;
 	private BigDecimal sourceOffundId;
-	
-	
 	private BigDecimal remittanceAppId;
 	private String documentIdForPayment;
 	private BigDecimal documentFinancialYear;
 	private BigDecimal netPayableAmount;
 	private BigDecimal merchantTrackId;
+	private BigDecimal deliveryCharges;
 
 	private List<String> timeSlot;
 
@@ -119,6 +118,14 @@ public class FcSaleOrderApplicationResponseModel extends AbstractModel {
 
 	public void setTimeSlot(List<String> timeSlot) {
 		this.timeSlot = timeSlot;
+	}
+
+	public BigDecimal getDeliveryCharges() {
+		return deliveryCharges;
+	}
+
+	public void setDeliveryCharges(BigDecimal deliveryCharges) {
+		this.deliveryCharges = deliveryCharges;
 	}
 	
 
