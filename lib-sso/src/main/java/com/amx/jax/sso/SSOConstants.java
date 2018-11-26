@@ -35,6 +35,7 @@ public class SSOConstants {
 	public static final String PARAM_SOTP = "sotp";
 	public static final String PARAM_STEP = "step";
 	public static final String PARAM_SSO_LOGIN_URL = "SSO_LOGIN_URL";
+	public static final String PARAM_SSO_LOGIN_PREFIX = "SSO_LOGIN_PREFIX";
 
 	public enum SSOAuthStep {
 		START, DO, DONE, REQUIRED, CHECK, CREDS, OTP, VERIFY

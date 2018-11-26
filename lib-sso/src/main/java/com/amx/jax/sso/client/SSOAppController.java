@@ -27,7 +27,6 @@ import com.amx.jax.AppConfig;
 import com.amx.jax.AppConstants;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.http.CommonHttpRequest.CommonMediaType;
-import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
 import com.amx.jax.sso.SSOConstants;
 import com.amx.jax.sso.SSOConstants.SSOAuthStep;
 import com.amx.jax.sso.SSOStatus.ApiSSOStatus;
@@ -118,7 +117,8 @@ public class SSOAppController {
 			LOGGER.debug("ssoUser.isAuthDone() is false");
 			sSOTranx.setAppReturnDetails(request.getRequestURL().toString(), Random.randomAlphaNumeric(6));
 			URLBuilder builder = new URLBuilder(appConfig.getSsoURL());
-			builder.setPath(SSOConstants.SSO_LOGIN_URL_REQUIRED).addParameter(AppConstants.TRANX_ID_XKEY, tranxId);
+			builder.setPath(SSOConstants.SSO_LOGIN_URL_REQUIRED)
+					.addParameter(AppConstants.TRANX_ID_XKEY, tranxId);
 			return SSOConstants.REDIRECT + builder.getURL();
 		}
 		return SSOConstants.REDIRECT + sSOTranx.get().getReturnUrl();
@@ -133,7 +133,7 @@ public class SSOAppController {
 			@RequestParam(required = false) String sotp, Model model, HttpServletRequest request,
 			HttpServletResponse response) throws MalformedURLException, URISyntaxException {
 		String redirectUrl = this.loginJPage(step, sotp, model, request, response);
-		response.setHeader("Location", redirectUrl.replace(SSOConstants.REDIRECT, ""));
+		response.setHeader("Location", (appConfig.getAppPrefix() + redirectUrl.replace(SSOConstants.REDIRECT, "")));
 		response.setStatus(302);
 		return JsonUtil.toJson(AmxApiResponse.build());
 	}
