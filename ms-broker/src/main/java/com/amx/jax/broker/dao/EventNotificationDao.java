@@ -1,4 +1,4 @@
-package com.amx.jax.mx.dao;
+package com.amx.jax.broker.dao;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -8,10 +8,10 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.amx.jax.mx.entity.EventNotificationEntity;
-import com.amx.jax.mx.entity.EventNotificationView;
-import com.amx.jax.mx.repository.EventNotificationEntityRepository;
-import com.amx.jax.mx.repository.EventNotificationViewRepository;
+import com.amx.jax.broker.entity.EventNotificationEntity;
+import com.amx.jax.broker.entity.EventNotificationView;
+import com.amx.jax.broker.repository.EventNotificationEntityRepository;
+import com.amx.jax.broker.repository.EventNotificationViewRepository;
 
 @Component
 public class EventNotificationDao {

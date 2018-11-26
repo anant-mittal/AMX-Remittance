@@ -13,11 +13,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import com.amx.jax.AppContextUtil;
+import com.amx.jax.broker.dao.EventNotificationDao;
+import com.amx.jax.broker.entity.EventNotificationEntity;
+import com.amx.jax.broker.entity.EventNotificationView;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.logger.LoggerService;
-import com.amx.jax.mx.dao.EventNotificationDao;
-import com.amx.jax.mx.entity.EventNotificationEntity;
-import com.amx.jax.mx.entity.EventNotificationView;
 import com.amx.jax.tunnel.TunnelService;
 import com.amx.utils.StringUtils;
 import com.amx.utils.TimeUtils;
