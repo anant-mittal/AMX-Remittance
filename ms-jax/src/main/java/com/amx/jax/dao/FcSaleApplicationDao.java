@@ -249,4 +249,11 @@ public class FcSaleApplicationDao {
 		return vwFxDeliveryDetailsRepository.findOne(deliveryDetailSeqId);
 	}
 	
+	public void saveDeliveryDetail(FxDeliveryDetailsModel model) {
+		fxDeliveryDetailsRepository.save(model);
+	}
+	
+	public FxDeliveryDetailsModel getDeliveryDetailModel(BigDecimal deliveryDetailSeqId) {
+		return fxDeliveryDetailsRepository.findOne(deliveryDetailSeqId);
+	}
 }

@@ -6,14 +6,19 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.fx.IFxOrderDelivery;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.request.fx.FcSaleDeliveryDetailUpdateReceiptRequest;
+import com.amx.jax.model.request.fx.FcSaleDeliveryMarkDeliveredRequest;
+import com.amx.jax.model.request.fx.FcSaleDeliveryMarkNotDeliveredRequest;
 import com.amx.jax.model.response.fx.FxDeliveryDetailDto;
 import com.amx.jax.model.response.fx.PurposeOfTransactionDto;
 import com.amx.jax.services.FcSaleDeliveryService;
@@ -47,4 +52,28 @@ public class FcSaleDeliveryController implements IFxOrderDelivery {
 		return AmxApiResponse.build(result);
 	}
 
+	@RequestMapping(value = Path.FX_DELIVERY_MARK_DELIVERED, method = RequestMethod.POST)
+	@Override
+	public AmxApiResponse<BoolRespModel, Object> markDelivered(
+			@RequestBody FcSaleDeliveryMarkDeliveredRequest fcSaleDeliveryMarkDeliveredRequest) {
+		BoolRespModel result = fcSaleDeliveryService.markDelivered(fcSaleDeliveryMarkDeliveredRequest);
+		return AmxApiResponse.build(result);
+	}
+	
+	@RequestMapping(value = Path.FX_DELIVERY_MARK_NOT_DELIVERED, method = RequestMethod.POST)
+	@Override
+	public AmxApiResponse<BoolRespModel, Object> markNotDelivered(
+			@RequestBody FcSaleDeliveryMarkNotDeliveredRequest fcSaleDeliveryMarkNotDeliveredRequest) {
+		BoolRespModel result = fcSaleDeliveryService.markNotDelivered(fcSaleDeliveryMarkNotDeliveredRequest);
+		return AmxApiResponse.build(result);
+	}
+	
+	@RequestMapping(value = Path.FX_DELIVERY_TRANSACTION_RECEIPT, method = RequestMethod.POST)
+	@Override
+	public AmxApiResponse<BoolRespModel, Object> updateTransactionReceipt(
+			@RequestBody FcSaleDeliveryDetailUpdateReceiptRequest fcSaleDeliveryDetailUpdateReceiptRequest) {
+		BoolRespModel result = fcSaleDeliveryService.updateTransactionReceipt(fcSaleDeliveryDetailUpdateReceiptRequest);
+		return AmxApiResponse.build(result);
+	}
+	
 }

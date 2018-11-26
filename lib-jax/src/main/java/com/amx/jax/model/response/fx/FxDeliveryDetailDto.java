@@ -5,7 +5,7 @@ public class FxDeliveryDetailDto {
 	String customerName;
 	String mobile;
 	String deliveryTimeSlot;
-	ShippingAddressDto address;//
+	ShippingAddressDto address;
 	String transactionRefId;
 	String inventoryId;//
 	String deliveryStatus;
