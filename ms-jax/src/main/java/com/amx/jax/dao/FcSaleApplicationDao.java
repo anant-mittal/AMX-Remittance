@@ -23,27 +23,26 @@ import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.CollectDetailModel;
 import com.amx.jax.dbmodel.CollectionModel;
+import com.amx.jax.dbmodel.fx.FxDeliveryDetailsModel;
 import com.amx.jax.dbmodel.PaygDetailsModel;
 import com.amx.jax.dbmodel.ReceiptPayment;
 import com.amx.jax.dbmodel.ReceiptPaymentApp;
 import com.amx.jax.dbmodel.ShippingAddressDetail;
-import com.amx.jax.dbmodel.fx.FxDeliveryDetailsModel;
 import com.amx.jax.dbmodel.fx.FxDeliveryRemark;
 import com.amx.jax.dbmodel.fx.VwFxDeliveryDetailsModel;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.model.request.fx.FcSaleOrderPaynowRequestModel;
-import com.amx.jax.model.response.fx.FxDeliveryDetailDto;
 import com.amx.jax.model.response.fx.ShoppingCartDetailsDto;
 import com.amx.jax.payg.PaymentResponseDto;
+import com.amx.jax.repository.fx.FxDeliveryDetailsRepository;
+import com.amx.jax.repository.fx.FxDeliveryRemarkRepository;
+import com.amx.jax.repository.fx.VwFxDeliveryDetailsRepository;
 import com.amx.jax.repository.ICollectionDetailRepository;
 import com.amx.jax.repository.ICollectionRepository;
 import com.amx.jax.repository.IShippingAddressRepository;
 import com.amx.jax.repository.PaygDetailsRepository;
 import com.amx.jax.repository.ReceiptPaymentAppRepository;
 import com.amx.jax.repository.ReceiptPaymentRespository;
-import com.amx.jax.repository.fx.FxDeliveryDetailsRepository;
-import com.amx.jax.repository.fx.FxDeliveryRemarkRepository;
-import com.amx.jax.repository.fx.VwFxDeliveryDetailsRepository;
 import com.amx.jax.util.JaxUtil;
 
 @Component
@@ -62,12 +61,10 @@ public class FcSaleApplicationDao {
 	
 	@Autowired
 	FxDeliveryDetailsRepository fxDeliveryDetailsRepository;
-	@Autowired
-	VwFxDeliveryDetailsRepository vwFxDeliveryDetailsRepository;
-	@Autowired
-	FxDeliveryRemarkRepository fxDeliveryRemarkRepository ; 
+	
 	@Autowired
 	IShippingAddressRepository shippingAddressDao;
+	
 	@Autowired
 	ReceiptPaymentRespository receiptPaymentRespository;
 	
@@ -76,6 +73,12 @@ public class FcSaleApplicationDao {
 	
 	@Autowired
 	ICollectionDetailRepository collectionDetailRepository;
+	
+	@Autowired
+	VwFxDeliveryDetailsRepository vwFxDeliveryDetailsRepository;
+	
+	@Autowired
+	FxDeliveryRemarkRepository fxDeliveryRemarkRepository ;
 	
 	
 	@Transactional
@@ -183,8 +186,6 @@ public class FcSaleApplicationDao {
 				logger.error("Update after PG details Payment Id :"+paymentResponse.getPaymentId()+"\t Udf 3--Pg trnx seq Id :"+paymentResponse.getUdf3()+"Result code :"+paymentResponse.getResultCode());
 				throw new GlobalException("PG updatio failed",JaxError.PAYMENT_UPDATION_FAILED);
 			}
-			
-			
 		}catch (Exception e) {
 			e.printStackTrace();
 			logger.error("catch Update after PG details Payment Id :"+paymentResponse.getPaymentId()+"\t Udf 3--Pg trnx seq Id :"+paymentResponse.getUdf3()+"Result code :"+paymentResponse.getResultCode());
@@ -244,14 +245,6 @@ public class FcSaleApplicationDao {
 			 }else{
 				 output.put("P_ERROR_MESG", "RCPT_APPLICATION_NOT_FOUND");
 			 }
-			 if(collection.getCollectionId()=)*/
-			 
-			
-		/*	BigDecimal collectionFinanceYear = cs.getBigDecimal(9);
-			BigDecimal collectionDocumentNumber = cs.getBigDecimal(10);
-			BigDecimal collectionDocumentCode = cs.getBigDecimal(11);
-			String outMessage = cs.getString(12);
-
 			output.put("P_COLLECT_FINYR", collectionFinanceYear);
 			output.put("P_COLLECTION_NO", collectionDocumentNumber);
 			output.put("P_COLLECTION_DOCUMENT_CODE", collectionDocumentCode);
@@ -286,8 +279,7 @@ public class FcSaleApplicationDao {
 				}
 			}
 					
-			
-		}
+		}	
 	}
 	
 
