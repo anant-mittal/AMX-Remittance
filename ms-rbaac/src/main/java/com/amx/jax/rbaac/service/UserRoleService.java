@@ -452,21 +452,25 @@ public class UserRoleService {
 		
 		// put Employee Info by Employee Id 
 		Employee employee = rbaacDao.getEmployeeByEmployeeId(employeeId);
-		if(employee != null) {
-			Map<BigDecimal, EmployeeDetailsDTO> employeeInfoMap = new HashMap<BigDecimal, EmployeeDetailsDTO>();			
+		Map<BigDecimal, EmployeeDetailsDTO> employeeInfoMap = new HashMap<BigDecimal, EmployeeDetailsDTO>();
+		if(employee != null) {						
 			List<BigDecimal> empIdList = new ArrayList<BigDecimal>();
 			
 			empIdList.add(employee.getEmployeeId());
 
 			employeeInfoMap.put(employee.getEmployeeId(), ObjectConverter.convertEmployeeToEmpDetailsDTO(employee));
 			rmForEmployee.setEmployeeInfoMap(employeeInfoMap);
+		}else {
+			rmForEmployee.setEmployeeInfoMap(employeeInfoMap);
 		}
 		
 		// put role mapping list for that particular Employee Id
 		UserRoleMapping userRoleMappingList = rbaacDao.getUserRoleMappingsByEmployeeId(employeeId);
+		Map<BigDecimal, UserRoleMappingDTO> userRoleMappingInfoMap = new HashMap<BigDecimal, UserRoleMappingDTO>();
 		if(userRoleMappingList != null) {
-			Map<BigDecimal, UserRoleMappingDTO> userRoleMappingInfoMap = new HashMap<BigDecimal, UserRoleMappingDTO>();
 			userRoleMappingInfoMap.put(userRoleMappingList.getEmployeeId(),ObjectConverter.convertUrmToUrmDTO(userRoleMappingList));
+			rmForEmployee.setUserRoleMappingInfoMap(userRoleMappingInfoMap);
+		}else {
 			rmForEmployee.setUserRoleMappingInfoMap(userRoleMappingInfoMap);
 		}
 		

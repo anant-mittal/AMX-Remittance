@@ -11,13 +11,6 @@ public class RoleMappingForEmployee implements Serializable {
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 7204846177787386980L;
 	
-	/** The ip addr. */
-	@NotBlank(message = "IP Address Can not be Blank.")
-	private String ipAddr;
-
-	/** The device id. */
-	private String deviceId;
-	
 	/** The employee info map. */
 	Map<BigDecimal, EmployeeDetailsDTO> employeeInfoMap;
 	
@@ -27,22 +20,6 @@ public class RoleMappingForEmployee implements Serializable {
 	/** The role info map. */
 	Map<BigDecimal, RoleResponseDTO> roleInfoMap;
 		
-	public String getIpAddr() {
-		return ipAddr;
-	}
-
-	public void setIpAddr(String ipAddr) {
-		this.ipAddr = ipAddr;
-	}
-
-	public String getDeviceId() {
-		return deviceId;
-	}
-
-	public void setDeviceId(String deviceId) {
-		this.deviceId = deviceId;
-	}
-
 	public Map<BigDecimal, EmployeeDetailsDTO> getEmployeeInfoMap() {
 		return employeeInfoMap;
 	}
