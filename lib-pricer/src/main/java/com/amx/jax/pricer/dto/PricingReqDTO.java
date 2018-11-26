@@ -2,8 +2,10 @@ package com.amx.jax.pricer.dto;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.List;
 
 import com.amx.jax.dict.UserClient.Channel;
+import com.amx.jax.pricer.var.PricerServiceConstants.PRICE_BY;
 
 public class PricingReqDTO implements Serializable {
 
@@ -14,12 +16,26 @@ public class PricingReqDTO implements Serializable {
 
 	private BigDecimal customerId;
 	private BigDecimal beneId;
-	private BigDecimal sourceOfFund;
+	private BigDecimal lCountryId;
+	private BigDecimal fcCountryId;
+
 	private BigDecimal localAmount;
 	private BigDecimal foreignAmount;
-	private BigDecimal defaultCurrencyId;
+
+	private BigDecimal localCurrencyId;
+	private BigDecimal foreignCurrencyId;
+
 	private BigDecimal countryBranchId;
-	private boolean availLoyalityPoints;
+
+	private List<BigDecimal> routingBankIds;
+
+
+	private PRICE_BY pricingLevel;
+
+	/**
+	 * Required by EX_EXchange_rate_master_APRDET;
+	 */
+	private BigDecimal serviceIndicatorId;
 	private Channel channel;
 
 	public BigDecimal getCustomerId() {
@@ -38,12 +54,12 @@ public class PricingReqDTO implements Serializable {
 		this.beneId = beneId;
 	}
 
-	public BigDecimal getSourceOfFund() {
-		return sourceOfFund;
+	public BigDecimal getFcCountryId() {
+		return fcCountryId;
 	}
 
-	public void setSourceOfFund(BigDecimal sourceOfFund) {
-		this.sourceOfFund = sourceOfFund;
+	public void setFcCountryId(BigDecimal fcCountryId) {
+		this.fcCountryId = fcCountryId;
 	}
 
 	public BigDecimal getLocalAmount() {
@@ -62,14 +78,6 @@ public class PricingReqDTO implements Serializable {
 		this.foreignAmount = foreignAmount;
 	}
 
-	public boolean isAvailLoyalityPoints() {
-		return availLoyalityPoints;
-	}
-
-	public void setAvailLoyalityPoints(boolean availLoyalityPoints) {
-		this.availLoyalityPoints = availLoyalityPoints;
-	}
-
 	public Channel getChannel() {
 		return channel;
 	}
@@ -79,11 +87,11 @@ public class PricingReqDTO implements Serializable {
 	}
 
 	public BigDecimal getDefaultCurrencyId() {
-		return defaultCurrencyId;
+		return localCurrencyId;
 	}
 
 	public void setDefaultCurrencyId(BigDecimal defaultCurrencyId) {
-		this.defaultCurrencyId = defaultCurrencyId;
+		this.localCurrencyId = defaultCurrencyId;
 	}
 
 	public BigDecimal getCountryBranchId() {
@@ -92,6 +100,54 @@ public class PricingReqDTO implements Serializable {
 
 	public void setCountryBranchId(BigDecimal countryBranchId) {
 		this.countryBranchId = countryBranchId;
+	}
+
+	public BigDecimal getLocalCurrencyId() {
+		return localCurrencyId;
+	}
+
+	public void setLocalCurrencyId(BigDecimal localCurrencyId) {
+		this.localCurrencyId = localCurrencyId;
+	}
+
+	public BigDecimal getForeignCurrencyId() {
+		return foreignCurrencyId;
+	}
+
+	public void setForeignCurrencyId(BigDecimal foreignCurrencyId) {
+		this.foreignCurrencyId = foreignCurrencyId;
+	}
+
+	public BigDecimal getServiceIndicatorId() {
+		return serviceIndicatorId;
+	}
+
+	public void setServiceIndicatorId(BigDecimal serviceIndicatorId) {
+		this.serviceIndicatorId = serviceIndicatorId;
+	}
+
+	public List<BigDecimal> getRoutingBankIds() {
+		return routingBankIds;
+	}
+
+	public void setRoutingBankIds(List<BigDecimal> routingBankIds) {
+		this.routingBankIds = routingBankIds;
+	}
+
+	public BigDecimal getCountryId() {
+		return lCountryId;
+	}
+
+	public void setCountryId(BigDecimal countryId) {
+		this.lCountryId = countryId;
+	}
+
+	public PRICE_BY getPricingLevel() {
+		return pricingLevel;
+	}
+
+	public void setPricingLevel(PRICE_BY pricingLevel) {
+		this.pricingLevel = pricingLevel;
 	}
 
 }

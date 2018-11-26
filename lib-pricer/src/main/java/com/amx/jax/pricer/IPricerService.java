@@ -17,11 +17,11 @@ public interface IPricerService {
 		private static final String API_VERSION_V1 = "/v1";
 
 		/** The Constant INIT_AUTH. */
-		public static final String FETCH = SERVICE_PREFIX + API_VERSION_V1 + "/fetch";
+		public static final String FETCH_PRICE_CUSTOMER = SERVICE_PREFIX + API_VERSION_V1 + "/fetch-price-customer";
 
 	}
 
 	@PricerApiStatus({ PricerServiceError.INVALID_USER_DETAILS, PricerServiceError.INCOMPATIBLE_DATA_TYPE })
-	public AmxApiResponse<PricingRespDTO, Object> initAuthForUser(PricingReqDTO pricingReqDTO);
+	public AmxApiResponse<PricingRespDTO, Object> fetchPriceForCustomer(PricingReqDTO pricingReqDTO);
 
 }

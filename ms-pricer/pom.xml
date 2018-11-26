@@ -66,11 +66,11 @@
 			<artifactId>lib-pricer</artifactId>
 		</dependency>
 
-		<dependency>
+		<!-- dependency>
 			<groupId>com.amx.jax</groupId>
 			<artifactId>ms-exchangerate</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
+		</dependency-->
 	</dependencies>
 
 	<build>

@@ -5,4 +5,4 @@
  * @author abhijeet
  *
  */
-package com.amx.jax.service;
+package com.amx.jax.pricer.manager;
