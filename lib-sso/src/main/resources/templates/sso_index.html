@@ -63,9 +63,9 @@
 						</div>
 					</div>
 					<div class="form-col">
-						<label>Enter Civil ID</label>
+						<label>Scan Smart Card</label>
 						<div class="input-wrapper">
-							<input type="text" name="identity" value="" on-keyup="UI.CREDS" />
+							<input type="text" class="scan-input" name="identity" value="" on-keyup="UI.CREDS" readonly/>
 							<div class="error-wrapper"><div class="error-message" step="CREDS">asdsad</div></div>
 						</div>
 						<div class="send-otp">
@@ -118,7 +118,7 @@
 					<div class="form-col">
 						<label>Civil ID (Partner’s Civil ID)</label>
 						<div class="input-wrapper">
-							<input type="text" name="partner-identity" readonly="readonly" on-keyup="CREDS"/>
+							<input type="text" class="scan-input" name="partner-identity" readonly="readonly" on-keyup="CREDS"/>
 							<div class="error-wrapper"><div class="error-message">asdsad</div></div>
 						</div>
 						<div class="send-otp">

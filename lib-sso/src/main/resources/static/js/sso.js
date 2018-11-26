@@ -7,13 +7,13 @@ var CHAR_LENGTH_MAP = {
 }
 var WITH_SMART_CARD = "withSmartCard";
 var WITHOUT_SMART_CARD = "withoutSmartCard";
-var WITHOUT_SMART_CARD_USER_VERIFIED = false;
 
 function sendData(step){
 	var selectedMode = $("input[name='cardtype']:checked").val();
 	if(selectedMode === WITH_SMART_CARD){
 		var errorFields = 0;
-		$(".withSmartCard input[type='text']:not([readonly])").each(function(){
+		$(".withSmartCard input[type='text']:not([readonly]), .withSmartCard input.scan-input").each(function(){
+			$(this).attr('')
 			if($(this).val() === ""){
 				errorFields = errorFields + 1;
 				$(this).next().children().text('This field can\'t be empty').show();
@@ -43,7 +43,7 @@ function sendData(step){
 			window.location.href = resp.redirectUrl;
 		}
 		if (resp.meta.mOtpPrefix) {
-			if(selectedMode == WITHOUT_SMART_CARD && WITHOUT_SMART_CARD_USER_VERIFIED){
+			if(selectedMode == WITHOUT_SMART_CARD){
 				$("input[name='partner-sec-code']").val(resp.meta.mOtpPrefix);
 			} else {
 				$("[name=motp]").removeAttr("readonly")
