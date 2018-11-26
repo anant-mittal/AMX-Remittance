@@ -65,6 +65,7 @@ public class DeviceStateService extends AbstractService {
 		if (registrationId == null) {
 			throw new GlobalException("Device registration id can not be blank");
 		}
+		checkAndInitDeviceStateData(new BigDecimal(registrationId));
 		DeviceStateInfo deviceStateInfo = deviceDao.getDeviceStateInfo(new BigDecimal(registrationId));
 		DeviceStatusInfoDto dto = new DeviceStatusInfoDto();
 		dto.setStateDataType(deviceStateInfo.getStateDataType());
@@ -125,9 +126,11 @@ public class DeviceStateService extends AbstractService {
 
 	public BoolRespModel updateDeviceStateData(ClientType deviceType, Integer countryBranchSystemInventoryId,
 			IDeviceStateData deviceStateData, DeviceStateDataType type, BigDecimal employeeId) {
+
 		BigDecimal deviceRegId = rbaacServiceClient
 				.getDeviceRegIdByBranchInventoryId(deviceType, new BigDecimal(countryBranchSystemInventoryId))
 				.getResult();
+		checkAndInitDeviceStateData(deviceRegId);
 		DeviceStateInfo deviceStateInfo = deviceDao.getDeviceStateInfo(deviceRegId);
 		logger.debug("updating device state D id {} ", deviceRegId);
 		String deviceStateDataStr = JsonUtil.toJson(deviceStateData);
@@ -141,6 +144,7 @@ public class DeviceStateService extends AbstractService {
 	}
 
 	public BoolRespModel updateSignatureStateData(Integer deviceRegId, String imageUrlStr) {
+		checkAndInitDeviceStateData(new BigDecimal(deviceRegId));
 		DeviceStateInfo deviceStateInfo = deviceDao.getDeviceStateInfo(new BigDecimal(deviceRegId));
 		deviceStateInfo.setSignature(imageUrlStr);
 		deviceDao.saveDeviceInfo(deviceStateInfo);
@@ -149,6 +153,7 @@ public class DeviceStateService extends AbstractService {
 	}
 
 	public BoolRespModel clearDeviceState(Integer registrationId, String paireToken, String sessionToken) {
+		checkAndInitDeviceStateData(new BigDecimal(registrationId));
 		DeviceStateInfo deviceStateInfo = deviceDao.getDeviceStateInfo(new BigDecimal(registrationId));
 		logger.debug("clearDeviceState D id {} ", registrationId);
 		deviceStateInfo.setStateData(null);
@@ -158,4 +163,9 @@ public class DeviceStateService extends AbstractService {
 		return new BoolRespModel(Boolean.TRUE);
 	}
 
+	public void checkAndInitDeviceStateData(BigDecimal registrationId) {
+		logger.debug("init device state info D id {} ", registrationId);
+		DeviceStateInfo deviceStateInfo = new DeviceStateInfo(registrationId);
+		deviceDao.saveDeviceInfo(deviceStateInfo);
+	}
 }
