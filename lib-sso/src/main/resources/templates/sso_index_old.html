@@ -54,7 +54,7 @@
 			</div>
 			<div class="withSmartCard">
 				
-				<div class="form-row two-col" style="padding-bottom: 0">
+				<div class="form-row two-col">
 					<div class="form-col">
 						<label>EC Number</label>
 						<div class="input-wrapper">
@@ -73,20 +73,14 @@
 						</div> 
 					</div>
 				</div>
-				<div class="form-row two-col">
+				<div class="form-row">
 					<div class="form-col">
-						<label>Security Code</label>
-						<div class="input-wrapper">
-							<input type="text" name="sec-code" value="" class="sec-code-input" readonly/>
-							<div class="error-wrapper"><div class="error-message">asdsad</div></div>
-						</div>
-					</div>
-					<div class="form-col">
-						<label>OTP</label>
+						<label>Prefix - <span class="prefix">---</span></label>
 						<div class="input-wrapper">
 							<input type="text" name="motp" on-keyup="UI.OTP" readonly/>
 							<div class="error-wrapper"><div class="error-message" step="OTP">asdsad</div></div>
 						</div>
+						<div class="t-a-r">Insert your smart card to get OTP</div>
 					</div>
 				</div>
 				
@@ -97,49 +91,12 @@
 			
 			<div class="withoutSmartCard dn">
 			
-				<div class="form-row two-col">
-					<div class="form-col">
-						<label>EC Number</label>
-						<div class="input-wrapper">
-							<input type="text" name="ecnumber" value="235474" on-keyup="UI.ECNO"/>
-							<div class="error-wrapper"><div class="error-message" step="ECNO">asdsad</div></div>
-						</div>
-					</div>
-					<div class="form-col">
-						<label>Enter Civil ID</label>
-						<div class="input-wrapper">
-							<input type="text" name="identity" value="" on-keyup="UI.CREDS" />
-							<div class="error-wrapper"><div class="error-message" step="CREDS">asdsad</div></div>
-						</div>
-					</div>
-				</div>
-			
-				<div class="form-row">
+				<div class="form-row disabled">
 					<div class="form-col">
 						<label>Civil ID (Partner’s Civil ID)</label>
 						<div class="input-wrapper">
 							<input type="text" name="partner-identity" readonly="readonly" on-keyup="CREDS"/>
 							<div class="error-wrapper"><div class="error-message">asdsad</div></div>
-						</div>
-						<div class="send-otp">
-							<div class="button small right" on-click="CREDS" >Send OTP</div>
-						</div> 
-					</div>
-				</div>
-				
-				<div class="form-row two-col disabled">
-					<div class="form-col">
-						<label>Security Code</label>
-						<div class="input-wrapper">
-							<input type="text" name="sec-code" value="" class="sec-code-input" readonly/>
-							<div class="error-wrapper"><div class="error-message">asdsad</div></div>
-						</div>
-					</div>
-					<div class="form-col">
-						<label>OTP</label>
-						<div class="input-wrapper">
-							<input type="text" name="motp" on-keyup="UI.OTP" readonly/>
-							<div class="error-wrapper"><div class="error-message" step="OTP">asdsad</div></div>
 						</div>
 					</div>
 				</div>
