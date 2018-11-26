@@ -109,7 +109,6 @@ public class FcSaleOrderController implements IFxOrderService {
 	@RequestMapping(value = Path.FCSALE_SAVE_APPLICATION, method = RequestMethod.POST)
 	public AmxApiResponse<FcSaleOrderApplicationResponseModel, Object> getSaveApplication(
 			@RequestBody @Valid FcSaleOrderTransactionRequestModel model) {
-		JaxContextUtil.setJaxEvent(JaxEvent.CREATE_APPLICATION);
 		JaxContextUtil.setRequestModel(model);
 		logger.info("In Fc Sale Save-Application with parameters" + model.toString());
 		return fcSaleService.saveApplication(model);
@@ -118,7 +117,6 @@ public class FcSaleOrderController implements IFxOrderService {
 	@RequestMapping(value = Path.FCSALE_SAVE_PAYNOW, method = RequestMethod.POST)
 	public AmxApiResponse<FcSaleApplPaymentReponseModel, Object> getSavePayNowApplication(
 			@RequestBody @Valid FcSaleOrderPaynowRequestModel requestmodel) {
-		JaxContextUtil.setJaxEvent(JaxEvent.CREATE_APPLICATION);
 		JaxContextUtil.setRequestModel(requestmodel);
 		logger.info("In Fc Sale Save-Application with parameters" + requestmodel.toString());
 		return fcSaleService.saveApplicationPayment(requestmodel);
