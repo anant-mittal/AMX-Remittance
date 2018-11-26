@@ -174,6 +174,7 @@ public class SSOServerController {
 				auth.setmOtp(formdata.getMotp());
 				EmployeeDetailsDTO empDto = rbaacServiceClient.authoriseUser(auth).getResult();
 				sSOTranx.setUserDetails(empDto);
+				
 				String redirectUrl = Urly.parse(sSOTranx.get().getAppUrl())
 						.addParameter(AppConstants.TRANX_ID_XKEY, AppContextUtil.getTranxId())
 						.addParameter(SSOConstants.PARAM_STEP, SSOAuthStep.DONE)

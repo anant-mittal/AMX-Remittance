@@ -88,7 +88,7 @@ public class SSOAppController {
 			@RequestParam String sotp, HttpServletRequest request,
 			HttpServletResponse response) throws MalformedURLException, URISyntaxException {
 		String tranxId = ssoUser.ssoTranxId();
-		if (ssoUser.isAuthDone() && sotp.equalsIgnoreCase(sSOTranx.get().getAppToken())) {
+		if (!ArgUtil.isEmpty(sSOTranx.get().getUserDetails()) && sotp.equalsIgnoreCase(sSOTranx.get().getAppToken())) {
 			return JsonUtil.toJson(AmxApiResponse.buildData(sSOTranx.get().getUserDetails()));
 		}
 		return JsonUtil.toJson(AmxApiResponse.build());
