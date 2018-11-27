@@ -25,6 +25,7 @@ import com.amx.jax.model.response.fx.FcSaleApplPaymentReponseModel;
 import com.amx.jax.model.response.fx.FcSaleOrderApplicationResponseModel;
 import com.amx.jax.model.response.fx.FcSaleOrderDefaultResponseModel;
 import com.amx.jax.model.response.fx.FxExchangeRateDto;
+import com.amx.jax.model.response.fx.FxOrderReportResponseDto;
 import com.amx.jax.model.response.fx.FxOrderTransactionHistroyDto;
 import com.amx.jax.model.response.fx.PurposeOfTransactionDto;
 import com.amx.jax.model.response.fx.ShippingAddressDto;
@@ -172,4 +173,10 @@ public class FcSaleOrderController implements IFxOrderService {
 		return fcSaleService.getFxOrderTransactionHistroy();
 	}
 
+	@RequestMapping(value = Path.FC_SALE_ORDER_TRNX_REPORT, method = RequestMethod.POST)
+	public AmxApiResponse<FxOrderReportResponseDto, Object> getFxOrderTransactionReport(@RequestParam(value = Params.COLLECTION_DOC_NO, required = true) BigDecimal collectionDocNo,
+			@RequestParam(value = Params.COLLECTION_FYEAR, required = true) BigDecimal collectionFyear) 
+			throws Exception {
+		return fcSaleService.getFxOrderTransactionReport(collectionDocNo, collectionFyear);
+	}
 }

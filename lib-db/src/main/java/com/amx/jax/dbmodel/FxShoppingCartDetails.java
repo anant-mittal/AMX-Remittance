@@ -80,6 +80,10 @@ public class FxShoppingCartDetails implements Serializable {
 	private String purposeOftrnxDesc;
 	@Column(name="FOREIGN_CURRENCY_DESC")
 	private String foreignCurrencyDesc;
+	@Column(name="QUOTE_NAME")
+	private String quoteName;
+	@Column(name="FOXRATE")
+	private BigDecimal forXRate;
 	
 	public FxShoppingCartDetails() {
 		
@@ -326,6 +330,18 @@ public class FxShoppingCartDetails implements Serializable {
 	}
 	public void setDenominationTypeDesc(String denominationTypeDesc) {
 		this.denominationTypeDesc = denominationTypeDesc;
+	}
+	public String getQuoteName() {
+		return quoteName;
+	}
+	public void setQuoteName(String quoteName) {
+		this.quoteName = quoteName;
+	}
+	public BigDecimal getForXRate() {
+		return forXRate;
+	}
+	public void setForXRate(BigDecimal forXRate) {
+		this.forXRate = forXRate;
 	}
 
 

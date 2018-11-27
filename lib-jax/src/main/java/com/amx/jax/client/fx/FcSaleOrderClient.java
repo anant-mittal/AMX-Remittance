@@ -25,6 +25,7 @@ import com.amx.jax.model.response.fx.FcSaleOrderApplicationResponseModel;
 import com.amx.jax.model.response.fx.FcSaleOrderDefaultResponseModel;
 import com.amx.jax.model.response.fx.FxDeliveryDetailDto;
 import com.amx.jax.model.response.fx.FxExchangeRateDto;
+import com.amx.jax.model.response.fx.FxOrderReportResponseDto;
 import com.amx.jax.model.response.fx.FxOrderTransactionHistroyDto;
 import com.amx.jax.model.response.fx.PurposeOfTransactionDto;
 import com.amx.jax.model.response.fx.ShippingAddressDto;
@@ -273,5 +274,17 @@ public class FcSaleOrderClient implements IFxOrderService {
 				.as(new ParameterizedTypeReference<AmxApiResponse<FxOrderTransactionHistroyDto, Object>>() {
 				});
 
+	}
+	
+
+	@Override
+	public AmxApiResponse<FxOrderReportResponseDto, Object> getFxOrderTransactionReport(BigDecimal collectionDocNo,BigDecimal collectionFyear)throws Exception {
+		LOGGER.debug("in FxOrderReportResponseDto  client :");
+		return restService.ajax(appConfig.getJaxURL() + Path.FC_SALE_ORDER_TRNX_REPORT).meta(new JaxMetaInfo())
+				.queryParam(Params.COLLECTION_DOC_NO, collectionDocNo)
+				.queryParam(Params.COLLECTION_FYEAR, collectionFyear)
+				.get().as(new ParameterizedTypeReference<AmxApiResponse<FxOrderReportResponseDto, Object>>() {
+				});
+		
 	}
 }

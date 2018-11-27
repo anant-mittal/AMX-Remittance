@@ -5,10 +5,10 @@ import java.util.List;
 
 import com.amx.jax.payg.PaymentResponseDto;
 
-public class FxOrderReportResponseModel {
+public class FxOrderReportResponseDto {
 	
 	 List<FxOrderTransactionHistroyDto> fxOrderTrnxList = new ArrayList<>();
-	 FxDeliveryDetailDto  deliveryDetailList = new FxDeliveryDetailDto();
+	 FxDeliveryReportDetailDto  deliveryDetailReport = new FxDeliveryReportDetailDto();
 	 ShippingAddressDto shippingAddressdto =new ShippingAddressDto();
 	 PaygDetailsDto payg = new PaygDetailsDto();
 	
@@ -26,17 +26,19 @@ public class FxOrderReportResponseModel {
 	public void setPayg(PaygDetailsDto payg) {
 		this.payg = payg;
 	}
-	public FxDeliveryDetailDto getDeliveryDetailList() {
-		return deliveryDetailList;
-	}
-	public void setDeliveryDetailList(FxDeliveryDetailDto deliveryDetailList) {
-		this.deliveryDetailList = deliveryDetailList;
-	}
+	
 	public ShippingAddressDto getShippingAddressdto() {
 		return shippingAddressdto;
 	}
 	public void setShippingAddressdto(ShippingAddressDto shippingAddressdto) {
 		this.shippingAddressdto = shippingAddressdto;
+	}
+	public FxDeliveryReportDetailDto getDeliveryDetailReport() {
+		return deliveryDetailReport;
+	}
+	public void setDeliveryDetailReport(
+			FxDeliveryReportDetailDto deliveryDetailReport) {
+		this.deliveryDetailReport = deliveryDetailReport;
 	}
 	 
 	

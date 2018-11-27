@@ -10,6 +10,7 @@ public class FxDeliveryDetailDto {
 	String inventoryId;//
 	String deliveryRemark;
 	String orderStatus;
+	
 
 	public String getMobile() {
 		return mobile;
@@ -74,5 +75,7 @@ public class FxDeliveryDetailDto {
 	public void setOrderStatus(String orderStatus) {
 		this.orderStatus = orderStatus;
 	}
+
+
 
 }

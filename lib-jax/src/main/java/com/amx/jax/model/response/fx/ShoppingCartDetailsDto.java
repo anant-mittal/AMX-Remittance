@@ -60,6 +60,8 @@ public class ShoppingCartDetailsDto extends AbstractModel {
 	private String travelCountryName;
 	private String purposeOftrnxId;
 	private String purposeOftrnxDesc;
+	private String quoteName;
+	private BigDecimal forXRate;
 	public BigDecimal getApplicationId() {
 		return applicationId;
 	}
@@ -317,6 +319,18 @@ public class ShoppingCartDetailsDto extends AbstractModel {
 	}
 	public void setPurposeOftrnxDesc(String purposeOftrnxDesc) {
 		this.purposeOftrnxDesc = purposeOftrnxDesc;
+	}
+	public String getQuoteName() {
+		return quoteName;
+	}
+	public void setQuoteName(String quoteName) {
+		this.quoteName = quoteName;
+	}
+	public BigDecimal getForXRate() {
+		return forXRate;
+	}
+	public void setForXRate(BigDecimal forXRate) {
+		this.forXRate = forXRate;
 	}
 
 	

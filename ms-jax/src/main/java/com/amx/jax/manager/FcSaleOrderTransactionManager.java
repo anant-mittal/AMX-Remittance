@@ -108,7 +108,7 @@ public class FcSaleOrderTransactionManager extends AbstractModel{
 		}
 	
 		if(JaxUtil.isNullZeroBigDecimalCheck(maxExchangeRate)){
-			breakup.setInverseRate(RoundUtil.roundBigDecimal(new BigDecimal(1).divide(maxExchangeRate, 10, RoundingMode.HALF_UP),breakup.getLcDecimalNumber().intValue()));
+			breakup.setInverseRate(RoundUtil.roundBigDecimal(new BigDecimal(1).divide(maxExchangeRate, 10, RoundingMode.HALF_UP),breakup.getFcDecimalNumber().intValue()));
 		}
 		responseModel.setExRateBreakup(breakup);
 		

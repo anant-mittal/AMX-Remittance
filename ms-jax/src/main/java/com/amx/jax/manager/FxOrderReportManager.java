@@ -1,11 +1,18 @@
 package com.amx.jax.manager;
-
+/**
+ * @author rabil
+ *
+ */
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.List;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.stereotype.Component;
+import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.jax.dbmodel.CountryMasterView;
 import com.amx.jax.dbmodel.Customer;
@@ -19,7 +26,8 @@ import com.amx.jax.dbmodel.fx.FxDeliveryDetailsModel;
 import com.amx.jax.dbmodel.fx.FxOrderTransactionModel;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.response.fx.FxDeliveryDetailDto;
-import com.amx.jax.model.response.fx.FxOrderReportResponseModel;
+import com.amx.jax.model.response.fx.FxDeliveryReportDetailDto;
+import com.amx.jax.model.response.fx.FxOrderReportResponseDto;
 import com.amx.jax.model.response.fx.FxOrderTransactionHistroyDto;
 import com.amx.jax.model.response.fx.PaygDetailsDto;
 import com.amx.jax.model.response.fx.ShippingAddressDto;
@@ -35,8 +43,9 @@ import com.amx.jax.repository.PaygDetailsRepository;
 import com.amx.jax.repository.fx.FxDeliveryDetailsRepository;
 import com.amx.jax.repository.fx.FxOrderTransactionRespository;
 
+@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
+@Component
 public class FxOrderReportManager {
-	
 	@Autowired
 	MetaData metaData;
 	
@@ -82,12 +91,12 @@ public class FxOrderReportManager {
 	IViewArea areaDao;
 	
 	
-	public FxOrderReportResponseModel getReportDetails(BigDecimal collNo,BigDecimal collFyr){
-		FxOrderReportResponseModel reportModel = new FxOrderReportResponseModel();
+	public FxOrderReportResponseDto getReportDetails(BigDecimal collNo,BigDecimal collFyr){
+		FxOrderReportResponseDto reportModel = new FxOrderReportResponseDto();
 		BigDecimal custoemrId = metaData.getCustomerId();
 		
 		List<FxOrderTransactionModel> fxOrderTrnxList =  fxTransactionHistroyDao.getFxOrderTrnxListByCollectionDocNumber(custoemrId,collNo,collFyr);
-	    if(fxOrderTrnxList.isEmpty()){
+	    if(!fxOrderTrnxList.isEmpty()){
 	    	List<FxOrderTransactionHistroyDto> fxOrderTrnxListDto = applTrnxManager.convertFxHistDto(fxOrderTrnxList);
 	    	reportModel.setFxOrderTrnxList(fxOrderTrnxListDto);
 	    	BigDecimal deliveryDetSeqId =fxOrderTrnxList.get(0).getDeliveryDetSeqId() ;
@@ -96,8 +105,8 @@ public class FxOrderReportManager {
 	    	PaygDetailsModel pgDetailsModel = payGDeatilsRepos.findOne(paygSeqId);
 	    	
 	    	if(fxDelDetailModel!=null){
-	    		FxDeliveryDetailDto delDto = convertFxDeliveryDto(fxDelDetailModel);
-	    		reportModel.setDeliveryDetailList(delDto);
+	    		FxDeliveryReportDetailDto delDto = convertFxDeliveryDto(fxDelDetailModel);
+	    		reportModel.setDeliveryDetailReport(delDto);
 	    		ShippingAddressDetail shippAddDetails = shippingAddressDao.findOne(fxDelDetailModel.getShippingAddressId());
 	    		ShippingAddressDto shippingAddressDto = getShippingaddressDetails(shippAddDetails);
 	    		reportModel.setShippingAddressdto(shippingAddressDto);
@@ -117,8 +126,8 @@ public class FxOrderReportManager {
 	 ShippingAddressDto shippingAddressdto =new ShippingAddressDto();
 	 PaygDetailsDto payg = new PaygDetailsDto();
 	
-	public FxDeliveryDetailDto convertFxDeliveryDto(FxDeliveryDetailsModel delDetails){
-		FxDeliveryDetailDto  dto = new FxDeliveryDetailDto();
+	public FxDeliveryReportDetailDto convertFxDeliveryDto(FxDeliveryDetailsModel delDetails){
+		FxDeliveryReportDetailDto  dto = new FxDeliveryReportDetailDto();
 		try {
 			BeanUtils.copyProperties(dto, delDetails);
 		} catch (IllegalAccessException | InvocationTargetException e) {

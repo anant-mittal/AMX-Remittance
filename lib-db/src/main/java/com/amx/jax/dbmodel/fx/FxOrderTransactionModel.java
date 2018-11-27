@@ -91,6 +91,11 @@ public class FxOrderTransactionModel implements Serializable {
 	
 	@Column(name="DELIVERY_TIME")
 	private String deliveryTime;
+	
+	
+	@Column(name="CUSTOMER_NAME")
+	private String customerName;
+	
 
 	public BigDecimal getIdno() {
 		return idno;
@@ -276,6 +281,14 @@ public class FxOrderTransactionModel implements Serializable {
 
 	public void setDeliveryTime(String deliveryTime) {
 		this.deliveryTime = deliveryTime;
+	}
+
+	public String getCustomerName() {
+		return customerName;
+	}
+
+	public void setCustomerName(String customerName) {
+		this.customerName = customerName;
 	}
 
 }

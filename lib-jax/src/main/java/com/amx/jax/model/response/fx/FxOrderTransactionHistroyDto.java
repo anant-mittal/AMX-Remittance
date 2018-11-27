@@ -70,6 +70,8 @@ public class FxOrderTransactionHistroyDto {
 	private Date deliveryDate;
 
 	private String deliveryTime;
+	
+	private String customerName;
 
 	public BigDecimal getIdno() {
 		return idno;
@@ -261,5 +263,13 @@ public class FxOrderTransactionHistroyDto {
 
 	public void setDeliveryTime(String deliveryTime) {
 		this.deliveryTime = deliveryTime;
+	}
+
+	public String getCustomerName() {
+		return customerName;
+	}
+
+	public void setCustomerName(String customerName) {
+		this.customerName = customerName;
 	}
 }

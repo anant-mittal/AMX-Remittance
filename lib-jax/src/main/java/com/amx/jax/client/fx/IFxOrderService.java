@@ -14,6 +14,7 @@ import com.amx.jax.model.response.fx.FcSaleApplPaymentReponseModel;
 import com.amx.jax.model.response.fx.FcSaleOrderApplicationResponseModel;
 import com.amx.jax.model.response.fx.FcSaleOrderDefaultResponseModel;
 import com.amx.jax.model.response.fx.FxExchangeRateDto;
+import com.amx.jax.model.response.fx.FxOrderReportResponseDto;
 import com.amx.jax.model.response.fx.FxOrderTransactionHistroyDto;
 import com.amx.jax.model.response.fx.PurposeOfTransactionDto;
 import com.amx.jax.model.response.fx.ShippingAddressDto;
@@ -38,7 +39,7 @@ public interface IFxOrderService extends IJaxService {
 		public static final String FC_CURRENCY_LIST = PREFIX + "/fc-currency-list/";
 		public static final String FC_SALE_SAVE_PAYMENT_ID = PREFIX + "/fc_sale_save-payment-id/";
 		public static final String FC_SALE_ORDER_TRNX_HIST = PREFIX + "/fc-sale-order-trnx-hist/";
-
+		public static final String FC_SALE_ORDER_TRNX_REPORT = PREFIX + "/fc-sale-order-trnx-report/";
 	}
 
 	public static class Params {
@@ -49,6 +50,9 @@ public interface IFxOrderService extends IJaxService {
 		public static final String FC_AMOUNT = "fcAmount";
 		public static final String FXDATE2 = "fxdate";
 		public static final String RECEIPT_APPL_ID = "receiptApplId";
+		public static final String COLLECTION_DOC_NO = "collectionDocNo";
+		public static final String COLLECTION_FYEAR = "collectionFyear";
+		
 
 	}
 
@@ -120,5 +124,8 @@ public interface IFxOrderService extends IJaxService {
 	
 	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND })
 	AmxApiResponse<FxOrderTransactionHistroyDto, Object> getFxOrderTransactionHistroy()throws Exception;
+	
+	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND })
+	AmxApiResponse<FxOrderReportResponseDto, Object> getFxOrderTransactionReport(BigDecimal collectionDocNo,BigDecimal collectionFyear)throws Exception;
 
 }

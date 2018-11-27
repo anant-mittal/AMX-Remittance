@@ -35,6 +35,7 @@ import com.amx.jax.manager.FcSaleAddressManager;
 import com.amx.jax.manager.FcSaleApplicationTransactionManager;
 import com.amx.jax.manager.FcSaleOrderTransactionManager;
 import com.amx.jax.manager.FxOrderPaymentManager;
+import com.amx.jax.manager.FxOrderReportManager;
 import com.amx.jax.model.request.CustomerShippingAddressRequestModel;
 import com.amx.jax.model.request.fx.FcSaleOrderPaynowRequestModel;
 import com.amx.jax.model.request.fx.FcSaleOrderTransactionRequestModel;
@@ -45,6 +46,7 @@ import com.amx.jax.model.response.fx.FcSaleApplPaymentReponseModel;
 import com.amx.jax.model.response.fx.FcSaleOrderApplicationResponseModel;
 import com.amx.jax.model.response.fx.FcSaleOrderDefaultResponseModel;
 import com.amx.jax.model.response.fx.FxExchangeRateDto;
+import com.amx.jax.model.response.fx.FxOrderReportResponseDto;
 import com.amx.jax.model.response.fx.FxOrderTransactionHistroyDto;
 import com.amx.jax.model.response.fx.PurposeOfTransactionDto;
 import com.amx.jax.model.response.fx.ShippingAddressDto;
@@ -94,6 +96,9 @@ public class FcSaleService extends AbstractService {
 
 	@Autowired
 	FxOrderPaymentManager paymentManager;
+	
+	@Autowired
+	FxOrderReportManager reportManager;
 	
 
 
@@ -286,6 +291,11 @@ public class FcSaleService extends AbstractService {
 		return AmxApiResponse.buildList(listDto);
 	}
 	
+	
+	public AmxApiResponse<FxOrderReportResponseDto, Object> getFxOrderTransactionReport(BigDecimal collNo,BigDecimal collFyr){
+		FxOrderReportResponseDto reportResponseDto = reportManager.getReportDetails(collNo, collFyr);
+		return AmxApiResponse.build(reportResponseDto);
+	}
 
 	public List<PurposeOfTransactionDto> convertPurposeOfTrnxDto(List<PurposeOfTransaction> purposeofTrnxList) {
 		List<PurposeOfTransactionDto> dtoList = new ArrayList<>();
