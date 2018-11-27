@@ -106,8 +106,6 @@ public class FxOrderReportManager {
 	    		PaygDetailsDto pgdto = convertFxPgDetailsDto(pgDetailsModel);
 	    		reportModel.setPayg(pgdto);
 	    	}
-	    	
-	    	
 	    }
 	    
 		return reportModel; 

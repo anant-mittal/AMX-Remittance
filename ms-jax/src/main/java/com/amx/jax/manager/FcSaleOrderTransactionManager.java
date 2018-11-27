@@ -5,6 +5,7 @@ package com.amx.jax.manager;
  * @Date		: 05/11/2018
  */
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -104,6 +105,10 @@ public class FcSaleOrderTransactionManager extends AbstractModel{
 		breakup.setRate(maxExchangeRate);
 		if(JaxUtil.isNullZeroBigDecimalCheck(breakup.getConvertedLCAmount())){
 			breakup.setNetAmount(breakup.getConvertedLCAmount().add(responseModel.getTxnFee()));
+		}
+	
+		if(JaxUtil.isNullZeroBigDecimalCheck(maxExchangeRate)){
+			breakup.setInverseRate(RoundUtil.roundBigDecimal(new BigDecimal(1).divide(maxExchangeRate, 10, RoundingMode.HALF_UP),breakup.getLcDecimalNumber().intValue()));
 		}
 		responseModel.setExRateBreakup(breakup);
 		
