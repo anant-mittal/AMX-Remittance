@@ -1,6 +1,8 @@
 
 package com.amx.jax.broker;
 
+import java.math.BigDecimal;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -9,7 +11,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.api.AmxApiResponse;
-import com.amx.jax.tunnel.ITunnelEventsDict;
+import com.amx.jax.http.ApiRequest;
+import com.amx.jax.http.RequestType;
 import com.amx.jax.tunnel.TunnelEvent;
 import com.amx.jax.tunnel.TunnelEventXchange;
 import com.amx.jax.tunnel.TunnelService;
@@ -41,6 +44,16 @@ public class BrokerController {
 			tunnelService.shout(topic, event);
 		}
 		return AmxApiResponse.build(event);
+	}
+
+	@Autowired
+	private BrokerService brokerService;
+
+	@ApiRequest(type = RequestType.POLL)
+	@RequestMapping(value = "/pub/task/{scheme}/{topic}", method = { RequestMethod.POST })
+	public AmxApiResponse<Object, Object> pollEvents(BigDecimal eventId) {
+		brokerService.pushNewEventNotifications();
+		return AmxApiResponse.build();
 	}
 
 }
