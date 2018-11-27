@@ -26,9 +26,10 @@ public class PricerServiceApiController implements IPricerService {
 	@RequestMapping(value = ApiEndPoints.FETCH_PRICE_CUSTOMER, method = RequestMethod.POST)
 	public AmxApiResponse<PricingRespDTO, Object> fetchPriceForCustomer(PricingReqDTO pricingReqDTO) {
 
-		pricingService.fetchRemitPricesForCustomer(pricingReqDTO);
+		PricingRespDTO pricingRespDTO = pricingService.fetchRemitPricesForCustomer(pricingReqDTO);
 
-		return null;
+		return AmxApiResponse.build(pricingRespDTO);
+
 	}
 
 }

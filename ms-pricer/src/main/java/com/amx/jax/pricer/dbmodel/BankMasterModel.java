@@ -1,4 +1,6 @@
 package com.amx.jax.pricer.dbmodel;
+
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -10,14 +12,12 @@ import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-
-
 @Entity
 @Table(name = "EX_BANK_MASTER")
-public class BankMasterModel implements java.io.Serializable {
+public class BankMasterModel implements Serializable {
 
 	/**
-	 * Generated Serial UID 
+	 * Generated Serial UID
 	 */
 	private static final long serialVersionUID = 3948079494013331401L;
 	private BigDecimal bankId;
@@ -45,26 +45,24 @@ public class BankMasterModel implements java.io.Serializable {
 	private Date createDate;
 	private Date updateDate;
 	private String modifier;
-	private String micrCode;	
+	private String micrCode;
 	private String allowNoBank;
 	private String approvedBy;
 	private Date approvedDate;
 	private String remarks;
 	private String splitIndicator;
 	private BigDecimal bankCountryId;
-	
+
 	public BankMasterModel() {
 	}
 
 	public BankMasterModel(BigDecimal bankId) {
 		this.bankId = bankId;
 	}
-	
-	
-	
+
 	@Id
-	@GeneratedValue(generator="ex_bank_master_seq",strategy=GenerationType.SEQUENCE)
-	@SequenceGenerator(name="ex_bank_master_seq",sequenceName="EX_BANK_MASTER_SEQ",allocationSize=1)
+	@GeneratedValue(generator = "ex_bank_master_seq", strategy = GenerationType.SEQUENCE)
+	@SequenceGenerator(name = "ex_bank_master_seq", sequenceName = "EX_BANK_MASTER_SEQ", allocationSize = 1)
 	@Column(name = "BANK_ID", unique = true, nullable = false, precision = 22, scale = 0)
 	public BigDecimal getBankId() {
 		return this.bankId;
@@ -83,7 +81,7 @@ public class BankMasterModel implements java.io.Serializable {
 		this.bankCode = bankCode;
 	}
 
-	@Column(name = "BANK_FULL_NAME", unique=true, length = 150)
+	@Column(name = "BANK_FULL_NAME", unique = true, length = 150)
 	public String getBankFullName() {
 		return this.bankFullName;
 	}
@@ -159,10 +157,10 @@ public class BankMasterModel implements java.io.Serializable {
 	public String getRecordStatus() {
 		return this.recordStatus;
 	}
+
 	public void setRecordStatus(String recordStatus) {
 		this.recordStatus = recordStatus;
 	}
-	
 
 	@Column(name = "ALLOW_NO_BANK", length = 1)
 	public String getAllowNoBank() {
@@ -172,7 +170,6 @@ public class BankMasterModel implements java.io.Serializable {
 	public void setAllowNoBank(String allowNoBank) {
 		this.allowNoBank = allowNoBank;
 	}
-	
 
 	@Column(name = "BANK_FULL_NAME_AR", length = 150)
 	public String getBankFullNameAr() {
@@ -300,7 +297,6 @@ public class BankMasterModel implements java.io.Serializable {
 		this.modifier = modifier;
 	}
 
-	
 	@Column(name = "MICR_CODE")
 	public String getMicrCode() {
 		return micrCode;
@@ -309,7 +305,7 @@ public class BankMasterModel implements java.io.Serializable {
 	public void setMicrCode(String micrCode) {
 		this.micrCode = micrCode;
 	}
-	
+
 	@Column(name = "APPROVED_BY")
 	public String getApprovedBy() {
 		return approvedBy;
@@ -318,7 +314,7 @@ public class BankMasterModel implements java.io.Serializable {
 	public void setApprovedBy(String approvedBy) {
 		this.approvedBy = approvedBy;
 	}
-	
+
 	@Column(name = "APPROVED_DATE")
 	public Date getApprovedDate() {
 		return approvedDate;
@@ -327,7 +323,7 @@ public class BankMasterModel implements java.io.Serializable {
 	public void setApprovedDate(Date approvedDate) {
 		this.approvedDate = approvedDate;
 	}
-	
+
 	@Column(name = "REMARKS")
 	public String getRemarks() {
 		return remarks;
@@ -336,6 +332,7 @@ public class BankMasterModel implements java.io.Serializable {
 	public void setRemarks(String remarks) {
 		this.remarks = remarks;
 	}
+
 	@Column(name = "SPLIT_INDICATOR")
 	public String getSplitIndicator() {
 		return splitIndicator;
@@ -564,7 +561,5 @@ public class BankMasterModel implements java.io.Serializable {
 			return false;
 		return true;
 	}
-	 
-	 
-	
+
 }

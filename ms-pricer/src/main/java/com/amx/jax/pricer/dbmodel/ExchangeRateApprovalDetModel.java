@@ -290,7 +290,7 @@ public class ExchangeRateApprovalDetModel implements Serializable{
 	}
 
 	@JoinColumn(name = "BANK_ID")
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	public BankMasterModel getBankMaster() {
 		return bankMaster;
 	}

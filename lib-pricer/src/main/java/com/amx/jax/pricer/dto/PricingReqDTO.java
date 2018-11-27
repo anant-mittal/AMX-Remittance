@@ -32,10 +32,6 @@ public class PricingReqDTO implements Serializable {
 
 	private PRICE_BY pricingLevel;
 
-	/**
-	 * Required by EX_EXchange_rate_master_APRDET;
-	 */
-	private BigDecimal serviceIndicatorId;
 	private Channel channel;
 
 	public BigDecimal getCustomerId() {
@@ -116,14 +112,6 @@ public class PricingReqDTO implements Serializable {
 
 	public void setForeignCurrencyId(BigDecimal foreignCurrencyId) {
 		this.foreignCurrencyId = foreignCurrencyId;
-	}
-
-	public BigDecimal getServiceIndicatorId() {
-		return serviceIndicatorId;
-	}
-
-	public void setServiceIndicatorId(BigDecimal serviceIndicatorId) {
-		this.serviceIndicatorId = serviceIndicatorId;
 	}
 
 	public List<BigDecimal> getRoutingBankIds() {

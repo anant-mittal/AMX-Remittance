@@ -872,5 +872,547 @@ public class Customer implements java.io.Serializable {
 	public void setIdentityTypeId(BigDecimal identityTypeId) {
 		this.identityTypeId = identityTypeId;
 	}
+
+	@Override
+	public String toString() {
+		return "Customer [customerId=" + customerId + ", companyId=" + companyId + ", countryId=" + countryId
+				+ ", languageId=" + languageId + ", shortName=" + shortName + ", shortNameLocal=" + shortNameLocal
+				+ ", amlStatus=" + amlStatus + ", numberOfHits=" + numberOfHits + ", verificationBy=" + verificationBy
+				+ ", verificationDate=" + verificationDate + ", amlStatusUpdatedBy=" + amlStatusUpdatedBy
+				+ ", amlStatusLastUpdated=" + amlStatusLastUpdated + ", branchCode=" + branchCode + ", activatedInd="
+				+ activatedInd + ", activatedDate=" + activatedDate + ", inactivatedDate=" + inactivatedDate
+				+ ", title=" + title + ", firstName=" + firstName + ", middleName=" + middleName + ", lastName="
+				+ lastName + ", titleLocal=" + titleLocal + ", firstNameLocal=" + firstNameLocal + ", middleNameLocal="
+				+ middleNameLocal + ", lastNameLocal=" + lastNameLocal + ", gender=" + gender + ", dateOfBirth="
+				+ dateOfBirth + ", alterEmailId=" + alterEmailId + ", mobile=" + mobile + ", signatureSpecimen="
+				+ signatureSpecimen + ", fingerPrintImg=" + fingerPrintImg + ", introducedBy=" + introducedBy
+				+ ", medicalInsuranceInd=" + medicalInsuranceInd + ", companyName=" + companyName
+				+ ", companyNameLocal=" + companyNameLocal + ", email=" + email + ", crNo=" + crNo + ", placeOfBirth="
+				+ placeOfBirth + ", countryOfBirth=" + countryOfBirth + ", fatherName=" + fatherName + ", createdBy="
+				+ createdBy + ", updatedBy=" + updatedBy + ", creationDate=" + creationDate + ", lastUpdated="
+				+ lastUpdated + ", tokenKey=" + tokenKey + ", contactPerson=" + contactPerson + ", contactNumber="
+				+ contactNumber + ", isActive=" + isActive + ", amlRemarks=" + amlRemarks + ", bcoRemarks=" + bcoRemarks
+				+ ", emosCustomer=" + emosCustomer + ", auditStatementDate=" + auditStatementDate
+				+ ", auditGrossIncome=" + auditGrossIncome + ", signatureSpecimenClob=" + signatureSpecimenClob
+				+ ", remarks=" + remarks + ", sundryDebtorReference=" + sundryDebtorReference + ", deactivatedBy="
+				+ deactivatedBy + ", deactivatedDate=" + deactivatedDate + ", kioskPin=" + kioskPin + ", nationalityId="
+				+ nationalityId + ", isOnlineUser=" + isOnlineUser + ", customerTypeId=" + customerTypeId
+				+ ", identityExpiredDate=" + identityExpiredDate + ", dailyLimit=" + dailyLimit + ", weeklyLimit="
+				+ weeklyLimit + ", quaterlyLimit=" + quaterlyLimit + ", montlyLimit=" + montlyLimit + ", halfYearly="
+				+ halfYearly + ", annualLimit=" + annualLimit + ", verificationTokenId=" + verificationTokenId
+				+ ", loyaltyPoints=" + loyaltyPoints + ", customerReference=" + customerReference
+				+ ", smartCardIndicator=" + smartCardIndicator + ", introducedDate=" + introducedDate
+				+ ", lastTransactionDate=" + lastTransactionDate + ", pepsIndicator=" + pepsIndicator
+				+ ", interComcode=" + interComcode + ", interTrnfyr=" + interTrnfyr + ", interTrnref=" + interTrnref
+				+ ", identityInt=" + identityInt + ", identityFor=" + identityFor + ", identityTypeId=" + identityTypeId
+				+ "]";
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((activatedDate == null) ? 0 : activatedDate.hashCode());
+		result = prime * result + ((activatedInd == null) ? 0 : activatedInd.hashCode());
+		result = prime * result + ((alterEmailId == null) ? 0 : alterEmailId.hashCode());
+		result = prime * result + ((amlRemarks == null) ? 0 : amlRemarks.hashCode());
+		result = prime * result + ((amlStatus == null) ? 0 : amlStatus.hashCode());
+		result = prime * result + ((amlStatusLastUpdated == null) ? 0 : amlStatusLastUpdated.hashCode());
+		result = prime * result + ((amlStatusUpdatedBy == null) ? 0 : amlStatusUpdatedBy.hashCode());
+		result = prime * result + ((annualLimit == null) ? 0 : annualLimit.hashCode());
+		result = prime * result + ((auditGrossIncome == null) ? 0 : auditGrossIncome.hashCode());
+		result = prime * result + ((auditStatementDate == null) ? 0 : auditStatementDate.hashCode());
+		result = prime * result + ((bcoRemarks == null) ? 0 : bcoRemarks.hashCode());
+		result = prime * result + ((branchCode == null) ? 0 : branchCode.hashCode());
+		result = prime * result + ((companyId == null) ? 0 : companyId.hashCode());
+		result = prime * result + ((companyName == null) ? 0 : companyName.hashCode());
+		result = prime * result + ((companyNameLocal == null) ? 0 : companyNameLocal.hashCode());
+		result = prime * result + ((contactNumber == null) ? 0 : contactNumber.hashCode());
+		result = prime * result + ((contactPerson == null) ? 0 : contactPerson.hashCode());
+		result = prime * result + ((countryId == null) ? 0 : countryId.hashCode());
+		result = prime * result + ((countryOfBirth == null) ? 0 : countryOfBirth.hashCode());
+		result = prime * result + ((crNo == null) ? 0 : crNo.hashCode());
+		result = prime * result + ((createdBy == null) ? 0 : createdBy.hashCode());
+		result = prime * result + ((creationDate == null) ? 0 : creationDate.hashCode());
+		result = prime * result + ((customerId == null) ? 0 : customerId.hashCode());
+		result = prime * result + ((customerReference == null) ? 0 : customerReference.hashCode());
+		result = prime * result + ((customerTypeId == null) ? 0 : customerTypeId.hashCode());
+		result = prime * result + ((dailyLimit == null) ? 0 : dailyLimit.hashCode());
+		result = prime * result + ((dateOfBirth == null) ? 0 : dateOfBirth.hashCode());
+		result = prime * result + ((deactivatedBy == null) ? 0 : deactivatedBy.hashCode());
+		result = prime * result + ((deactivatedDate == null) ? 0 : deactivatedDate.hashCode());
+		result = prime * result + ((email == null) ? 0 : email.hashCode());
+		result = prime * result + ((emosCustomer == null) ? 0 : emosCustomer.hashCode());
+		result = prime * result + ((fatherName == null) ? 0 : fatherName.hashCode());
+		result = prime * result + ((fingerPrintImg == null) ? 0 : fingerPrintImg.hashCode());
+		result = prime * result + ((firstName == null) ? 0 : firstName.hashCode());
+		result = prime * result + ((firstNameLocal == null) ? 0 : firstNameLocal.hashCode());
+		result = prime * result + ((gender == null) ? 0 : gender.hashCode());
+		result = prime * result + ((halfYearly == null) ? 0 : halfYearly.hashCode());
+		result = prime * result + ((identityExpiredDate == null) ? 0 : identityExpiredDate.hashCode());
+		result = prime * result + ((identityFor == null) ? 0 : identityFor.hashCode());
+		result = prime * result + ((identityInt == null) ? 0 : identityInt.hashCode());
+		result = prime * result + ((identityTypeId == null) ? 0 : identityTypeId.hashCode());
+		result = prime * result + ((inactivatedDate == null) ? 0 : inactivatedDate.hashCode());
+		result = prime * result + ((interComcode == null) ? 0 : interComcode.hashCode());
+		result = prime * result + ((interTrnfyr == null) ? 0 : interTrnfyr.hashCode());
+		result = prime * result + ((interTrnref == null) ? 0 : interTrnref.hashCode());
+		result = prime * result + ((introducedBy == null) ? 0 : introducedBy.hashCode());
+		result = prime * result + ((introducedDate == null) ? 0 : introducedDate.hashCode());
+		result = prime * result + ((isActive == null) ? 0 : isActive.hashCode());
+		result = prime * result + ((isOnlineUser == null) ? 0 : isOnlineUser.hashCode());
+		result = prime * result + ((kioskPin == null) ? 0 : kioskPin.hashCode());
+		result = prime * result + ((languageId == null) ? 0 : languageId.hashCode());
+		result = prime * result + ((lastName == null) ? 0 : lastName.hashCode());
+		result = prime * result + ((lastNameLocal == null) ? 0 : lastNameLocal.hashCode());
+		result = prime * result + ((lastTransactionDate == null) ? 0 : lastTransactionDate.hashCode());
+		result = prime * result + ((lastUpdated == null) ? 0 : lastUpdated.hashCode());
+		result = prime * result + ((loyaltyPoints == null) ? 0 : loyaltyPoints.hashCode());
+		result = prime * result + ((medicalInsuranceInd == null) ? 0 : medicalInsuranceInd.hashCode());
+		result = prime * result + ((middleName == null) ? 0 : middleName.hashCode());
+		result = prime * result + ((middleNameLocal == null) ? 0 : middleNameLocal.hashCode());
+		result = prime * result + ((mobile == null) ? 0 : mobile.hashCode());
+		result = prime * result + ((montlyLimit == null) ? 0 : montlyLimit.hashCode());
+		result = prime * result + ((nationalityId == null) ? 0 : nationalityId.hashCode());
+		result = prime * result + ((numberOfHits == null) ? 0 : numberOfHits.hashCode());
+		result = prime * result + ((pepsIndicator == null) ? 0 : pepsIndicator.hashCode());
+		result = prime * result + ((placeOfBirth == null) ? 0 : placeOfBirth.hashCode());
+		result = prime * result + ((quaterlyLimit == null) ? 0 : quaterlyLimit.hashCode());
+		result = prime * result + ((remarks == null) ? 0 : remarks.hashCode());
+		result = prime * result + ((shortName == null) ? 0 : shortName.hashCode());
+		result = prime * result + ((shortNameLocal == null) ? 0 : shortNameLocal.hashCode());
+		result = prime * result + ((signatureSpecimen == null) ? 0 : signatureSpecimen.hashCode());
+		result = prime * result + ((signatureSpecimenClob == null) ? 0 : signatureSpecimenClob.hashCode());
+		result = prime * result + ((smartCardIndicator == null) ? 0 : smartCardIndicator.hashCode());
+		result = prime * result + ((sundryDebtorReference == null) ? 0 : sundryDebtorReference.hashCode());
+		result = prime * result + ((title == null) ? 0 : title.hashCode());
+		result = prime * result + ((titleLocal == null) ? 0 : titleLocal.hashCode());
+		result = prime * result + ((tokenKey == null) ? 0 : tokenKey.hashCode());
+		result = prime * result + ((updatedBy == null) ? 0 : updatedBy.hashCode());
+		result = prime * result + ((verificationBy == null) ? 0 : verificationBy.hashCode());
+		result = prime * result + ((verificationDate == null) ? 0 : verificationDate.hashCode());
+		result = prime * result + ((verificationTokenId == null) ? 0 : verificationTokenId.hashCode());
+		result = prime * result + ((weeklyLimit == null) ? 0 : weeklyLimit.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Customer other = (Customer) obj;
+		if (activatedDate == null) {
+			if (other.activatedDate != null)
+				return false;
+		} else if (!activatedDate.equals(other.activatedDate))
+			return false;
+		if (activatedInd == null) {
+			if (other.activatedInd != null)
+				return false;
+		} else if (!activatedInd.equals(other.activatedInd))
+			return false;
+		if (alterEmailId == null) {
+			if (other.alterEmailId != null)
+				return false;
+		} else if (!alterEmailId.equals(other.alterEmailId))
+			return false;
+		if (amlRemarks == null) {
+			if (other.amlRemarks != null)
+				return false;
+		} else if (!amlRemarks.equals(other.amlRemarks))
+			return false;
+		if (amlStatus == null) {
+			if (other.amlStatus != null)
+				return false;
+		} else if (!amlStatus.equals(other.amlStatus))
+			return false;
+		if (amlStatusLastUpdated == null) {
+			if (other.amlStatusLastUpdated != null)
+				return false;
+		} else if (!amlStatusLastUpdated.equals(other.amlStatusLastUpdated))
+			return false;
+		if (amlStatusUpdatedBy == null) {
+			if (other.amlStatusUpdatedBy != null)
+				return false;
+		} else if (!amlStatusUpdatedBy.equals(other.amlStatusUpdatedBy))
+			return false;
+		if (annualLimit == null) {
+			if (other.annualLimit != null)
+				return false;
+		} else if (!annualLimit.equals(other.annualLimit))
+			return false;
+		if (auditGrossIncome == null) {
+			if (other.auditGrossIncome != null)
+				return false;
+		} else if (!auditGrossIncome.equals(other.auditGrossIncome))
+			return false;
+		if (auditStatementDate == null) {
+			if (other.auditStatementDate != null)
+				return false;
+		} else if (!auditStatementDate.equals(other.auditStatementDate))
+			return false;
+		if (bcoRemarks == null) {
+			if (other.bcoRemarks != null)
+				return false;
+		} else if (!bcoRemarks.equals(other.bcoRemarks))
+			return false;
+		if (branchCode == null) {
+			if (other.branchCode != null)
+				return false;
+		} else if (!branchCode.equals(other.branchCode))
+			return false;
+		if (companyId == null) {
+			if (other.companyId != null)
+				return false;
+		} else if (!companyId.equals(other.companyId))
+			return false;
+		if (companyName == null) {
+			if (other.companyName != null)
+				return false;
+		} else if (!companyName.equals(other.companyName))
+			return false;
+		if (companyNameLocal == null) {
+			if (other.companyNameLocal != null)
+				return false;
+		} else if (!companyNameLocal.equals(other.companyNameLocal))
+			return false;
+		if (contactNumber == null) {
+			if (other.contactNumber != null)
+				return false;
+		} else if (!contactNumber.equals(other.contactNumber))
+			return false;
+		if (contactPerson == null) {
+			if (other.contactPerson != null)
+				return false;
+		} else if (!contactPerson.equals(other.contactPerson))
+			return false;
+		if (countryId == null) {
+			if (other.countryId != null)
+				return false;
+		} else if (!countryId.equals(other.countryId))
+			return false;
+		if (countryOfBirth == null) {
+			if (other.countryOfBirth != null)
+				return false;
+		} else if (!countryOfBirth.equals(other.countryOfBirth))
+			return false;
+		if (crNo == null) {
+			if (other.crNo != null)
+				return false;
+		} else if (!crNo.equals(other.crNo))
+			return false;
+		if (createdBy == null) {
+			if (other.createdBy != null)
+				return false;
+		} else if (!createdBy.equals(other.createdBy))
+			return false;
+		if (creationDate == null) {
+			if (other.creationDate != null)
+				return false;
+		} else if (!creationDate.equals(other.creationDate))
+			return false;
+		if (customerId == null) {
+			if (other.customerId != null)
+				return false;
+		} else if (!customerId.equals(other.customerId))
+			return false;
+		if (customerReference == null) {
+			if (other.customerReference != null)
+				return false;
+		} else if (!customerReference.equals(other.customerReference))
+			return false;
+		if (customerTypeId == null) {
+			if (other.customerTypeId != null)
+				return false;
+		} else if (!customerTypeId.equals(other.customerTypeId))
+			return false;
+		if (dailyLimit == null) {
+			if (other.dailyLimit != null)
+				return false;
+		} else if (!dailyLimit.equals(other.dailyLimit))
+			return false;
+		if (dateOfBirth == null) {
+			if (other.dateOfBirth != null)
+				return false;
+		} else if (!dateOfBirth.equals(other.dateOfBirth))
+			return false;
+		if (deactivatedBy == null) {
+			if (other.deactivatedBy != null)
+				return false;
+		} else if (!deactivatedBy.equals(other.deactivatedBy))
+			return false;
+		if (deactivatedDate == null) {
+			if (other.deactivatedDate != null)
+				return false;
+		} else if (!deactivatedDate.equals(other.deactivatedDate))
+			return false;
+		if (email == null) {
+			if (other.email != null)
+				return false;
+		} else if (!email.equals(other.email))
+			return false;
+		if (emosCustomer == null) {
+			if (other.emosCustomer != null)
+				return false;
+		} else if (!emosCustomer.equals(other.emosCustomer))
+			return false;
+		if (fatherName == null) {
+			if (other.fatherName != null)
+				return false;
+		} else if (!fatherName.equals(other.fatherName))
+			return false;
+		if (fingerPrintImg == null) {
+			if (other.fingerPrintImg != null)
+				return false;
+		} else if (!fingerPrintImg.equals(other.fingerPrintImg))
+			return false;
+		if (firstName == null) {
+			if (other.firstName != null)
+				return false;
+		} else if (!firstName.equals(other.firstName))
+			return false;
+		if (firstNameLocal == null) {
+			if (other.firstNameLocal != null)
+				return false;
+		} else if (!firstNameLocal.equals(other.firstNameLocal))
+			return false;
+		if (gender == null) {
+			if (other.gender != null)
+				return false;
+		} else if (!gender.equals(other.gender))
+			return false;
+		if (halfYearly == null) {
+			if (other.halfYearly != null)
+				return false;
+		} else if (!halfYearly.equals(other.halfYearly))
+			return false;
+		if (identityExpiredDate == null) {
+			if (other.identityExpiredDate != null)
+				return false;
+		} else if (!identityExpiredDate.equals(other.identityExpiredDate))
+			return false;
+		if (identityFor == null) {
+			if (other.identityFor != null)
+				return false;
+		} else if (!identityFor.equals(other.identityFor))
+			return false;
+		if (identityInt == null) {
+			if (other.identityInt != null)
+				return false;
+		} else if (!identityInt.equals(other.identityInt))
+			return false;
+		if (identityTypeId == null) {
+			if (other.identityTypeId != null)
+				return false;
+		} else if (!identityTypeId.equals(other.identityTypeId))
+			return false;
+		if (inactivatedDate == null) {
+			if (other.inactivatedDate != null)
+				return false;
+		} else if (!inactivatedDate.equals(other.inactivatedDate))
+			return false;
+		if (interComcode == null) {
+			if (other.interComcode != null)
+				return false;
+		} else if (!interComcode.equals(other.interComcode))
+			return false;
+		if (interTrnfyr == null) {
+			if (other.interTrnfyr != null)
+				return false;
+		} else if (!interTrnfyr.equals(other.interTrnfyr))
+			return false;
+		if (interTrnref == null) {
+			if (other.interTrnref != null)
+				return false;
+		} else if (!interTrnref.equals(other.interTrnref))
+			return false;
+		if (introducedBy == null) {
+			if (other.introducedBy != null)
+				return false;
+		} else if (!introducedBy.equals(other.introducedBy))
+			return false;
+		if (introducedDate == null) {
+			if (other.introducedDate != null)
+				return false;
+		} else if (!introducedDate.equals(other.introducedDate))
+			return false;
+		if (isActive == null) {
+			if (other.isActive != null)
+				return false;
+		} else if (!isActive.equals(other.isActive))
+			return false;
+		if (isOnlineUser == null) {
+			if (other.isOnlineUser != null)
+				return false;
+		} else if (!isOnlineUser.equals(other.isOnlineUser))
+			return false;
+		if (kioskPin == null) {
+			if (other.kioskPin != null)
+				return false;
+		} else if (!kioskPin.equals(other.kioskPin))
+			return false;
+		if (languageId == null) {
+			if (other.languageId != null)
+				return false;
+		} else if (!languageId.equals(other.languageId))
+			return false;
+		if (lastName == null) {
+			if (other.lastName != null)
+				return false;
+		} else if (!lastName.equals(other.lastName))
+			return false;
+		if (lastNameLocal == null) {
+			if (other.lastNameLocal != null)
+				return false;
+		} else if (!lastNameLocal.equals(other.lastNameLocal))
+			return false;
+		if (lastTransactionDate == null) {
+			if (other.lastTransactionDate != null)
+				return false;
+		} else if (!lastTransactionDate.equals(other.lastTransactionDate))
+			return false;
+		if (lastUpdated == null) {
+			if (other.lastUpdated != null)
+				return false;
+		} else if (!lastUpdated.equals(other.lastUpdated))
+			return false;
+		if (loyaltyPoints == null) {
+			if (other.loyaltyPoints != null)
+				return false;
+		} else if (!loyaltyPoints.equals(other.loyaltyPoints))
+			return false;
+		if (medicalInsuranceInd == null) {
+			if (other.medicalInsuranceInd != null)
+				return false;
+		} else if (!medicalInsuranceInd.equals(other.medicalInsuranceInd))
+			return false;
+		if (middleName == null) {
+			if (other.middleName != null)
+				return false;
+		} else if (!middleName.equals(other.middleName))
+			return false;
+		if (middleNameLocal == null) {
+			if (other.middleNameLocal != null)
+				return false;
+		} else if (!middleNameLocal.equals(other.middleNameLocal))
+			return false;
+		if (mobile == null) {
+			if (other.mobile != null)
+				return false;
+		} else if (!mobile.equals(other.mobile))
+			return false;
+		if (montlyLimit == null) {
+			if (other.montlyLimit != null)
+				return false;
+		} else if (!montlyLimit.equals(other.montlyLimit))
+			return false;
+		if (nationalityId == null) {
+			if (other.nationalityId != null)
+				return false;
+		} else if (!nationalityId.equals(other.nationalityId))
+			return false;
+		if (numberOfHits == null) {
+			if (other.numberOfHits != null)
+				return false;
+		} else if (!numberOfHits.equals(other.numberOfHits))
+			return false;
+		if (pepsIndicator == null) {
+			if (other.pepsIndicator != null)
+				return false;
+		} else if (!pepsIndicator.equals(other.pepsIndicator))
+			return false;
+		if (placeOfBirth == null) {
+			if (other.placeOfBirth != null)
+				return false;
+		} else if (!placeOfBirth.equals(other.placeOfBirth))
+			return false;
+		if (quaterlyLimit == null) {
+			if (other.quaterlyLimit != null)
+				return false;
+		} else if (!quaterlyLimit.equals(other.quaterlyLimit))
+			return false;
+		if (remarks == null) {
+			if (other.remarks != null)
+				return false;
+		} else if (!remarks.equals(other.remarks))
+			return false;
+		if (shortName == null) {
+			if (other.shortName != null)
+				return false;
+		} else if (!shortName.equals(other.shortName))
+			return false;
+		if (shortNameLocal == null) {
+			if (other.shortNameLocal != null)
+				return false;
+		} else if (!shortNameLocal.equals(other.shortNameLocal))
+			return false;
+		if (signatureSpecimen == null) {
+			if (other.signatureSpecimen != null)
+				return false;
+		} else if (!signatureSpecimen.equals(other.signatureSpecimen))
+			return false;
+		if (signatureSpecimenClob == null) {
+			if (other.signatureSpecimenClob != null)
+				return false;
+		} else if (!signatureSpecimenClob.equals(other.signatureSpecimenClob))
+			return false;
+		if (smartCardIndicator == null) {
+			if (other.smartCardIndicator != null)
+				return false;
+		} else if (!smartCardIndicator.equals(other.smartCardIndicator))
+			return false;
+		if (sundryDebtorReference == null) {
+			if (other.sundryDebtorReference != null)
+				return false;
+		} else if (!sundryDebtorReference.equals(other.sundryDebtorReference))
+			return false;
+		if (title == null) {
+			if (other.title != null)
+				return false;
+		} else if (!title.equals(other.title))
+			return false;
+		if (titleLocal == null) {
+			if (other.titleLocal != null)
+				return false;
+		} else if (!titleLocal.equals(other.titleLocal))
+			return false;
+		if (tokenKey == null) {
+			if (other.tokenKey != null)
+				return false;
+		} else if (!tokenKey.equals(other.tokenKey))
+			return false;
+		if (updatedBy == null) {
+			if (other.updatedBy != null)
+				return false;
+		} else if (!updatedBy.equals(other.updatedBy))
+			return false;
+		if (verificationBy == null) {
+			if (other.verificationBy != null)
+				return false;
+		} else if (!verificationBy.equals(other.verificationBy))
+			return false;
+		if (verificationDate == null) {
+			if (other.verificationDate != null)
+				return false;
+		} else if (!verificationDate.equals(other.verificationDate))
+			return false;
+		if (verificationTokenId == null) {
+			if (other.verificationTokenId != null)
+				return false;
+		} else if (!verificationTokenId.equals(other.verificationTokenId))
+			return false;
+		if (weeklyLimit == null) {
+			if (other.weeklyLimit != null)
+				return false;
+		} else if (!weeklyLimit.equals(other.weeklyLimit))
+			return false;
+		return true;
+	}
+	
+	
 	
 }
