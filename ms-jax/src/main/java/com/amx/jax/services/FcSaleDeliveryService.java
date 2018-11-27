@@ -15,6 +15,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.amxlib.model.CivilIdOtpModel;
+import com.amx.amxlib.model.PersonInfo;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.constants.FxDeliveryStatus;
 import com.amx.jax.dao.FcSaleApplicationDao;
@@ -30,6 +32,8 @@ import com.amx.jax.model.request.fx.FcSaleDeliveryMarkNotDeliveredRequest;
 import com.amx.jax.model.response.fx.FxDeliveryDetailDto;
 import com.amx.jax.model.response.fx.ShippingAddressDto;
 import com.amx.jax.repository.fx.VwFxDeliveryDetailsRepository;
+import com.amx.jax.util.CryptoUtil;
+import com.amx.utils.Random;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -41,6 +45,10 @@ public class FcSaleDeliveryService {
 	MetaData metaData;
 	@Autowired
 	FcSaleApplicationDao fcSaleApplicationDao;
+	@Autowired
+	JaxNotificationService jaxNotificationService;
+	@Autowired
+	CryptoUtil cryptoUtil;
 
 	/**
 	 * @return today's order to be delivered for logged in driver
@@ -80,7 +88,7 @@ public class FcSaleDeliveryService {
 			throw new GlobalException("deliveryDetailSeqId can't be blank");
 		}
 		VwFxDeliveryDetailsModel deliveryDetailModel = fcSaleApplicationDao.getDeliveryDetail(deliveryDetailSeqId);
-		if(deliveryDetailModel == null) {
+		if (deliveryDetailModel == null) {
 			throw new GlobalException("Delivery detail not found", JaxError.FC_CURRENCY_DELIVERY_DETAIL_NOT_FOUND);
 		}
 		return createFxDeliveryDetailDto(deliveryDetailModel);
@@ -110,6 +118,14 @@ public class FcSaleDeliveryService {
 		return deliveryDetail;
 	}
 
+	private VwFxDeliveryDetailsModel validatetDeliveryDetailView(BigDecimal deliveryDetailSeqId) {
+		VwFxDeliveryDetailsModel deliveryDetailModel = fcSaleApplicationDao.getDeliveryDetail(deliveryDetailSeqId);
+		if (deliveryDetailModel == null) {
+			throw new GlobalException("Delivery detail not found", JaxError.FC_CURRENCY_DELIVERY_DETAIL_NOT_FOUND);
+		}
+		return deliveryDetailModel;
+	}
+
 	public BoolRespModel updateTransactionReceipt(
 			FcSaleDeliveryDetailUpdateReceiptRequest fcSaleDeliveryDetailUpdateReceiptRequest) {
 
@@ -117,6 +133,32 @@ public class FcSaleDeliveryService {
 				fcSaleDeliveryDetailUpdateReceiptRequest.getDeliveryDetailSeqId());
 		deliveryDetail.setTransactionReceipt(fcSaleDeliveryDetailUpdateReceiptRequest.getTransactionRecieptImageClob());
 		fcSaleApplicationDao.saveDeliveryDetail(deliveryDetail);
+		return new BoolRespModel(true);
+	}
+
+	/**
+	 * sends the otp for fcdelivery
+	 * 
+	 * @param deliveryDetailSeqId
+	 * @return
+	 * 
+	 */
+	public BoolRespModel sendOtp(BigDecimal deliveryDetailSeqId) {
+		VwFxDeliveryDetailsModel vwFxDeliveryDetailsMode = validatetDeliveryDetailView(deliveryDetailSeqId);
+		FxDeliveryDetailsModel fxDeliveryDetailsMode = validateFxDeliveryModel(deliveryDetailSeqId);
+		PersonInfo pinfo = new PersonInfo();
+		pinfo.setFirstName(vwFxDeliveryDetailsMode.getCustomerName());
+		pinfo.setMobile(vwFxDeliveryDetailsMode.getMobile());
+		CivilIdOtpModel model = new CivilIdOtpModel();
+		// generating otp
+		String mOtp = Random.randomNumeric(6);
+		String hashedmOtp = cryptoUtil.getHash(deliveryDetailSeqId.toString(), mOtp);
+		fxDeliveryDetailsMode.setOtpToken(hashedmOtp);
+		fcSaleApplicationDao.saveDeliveryDetail(fxDeliveryDetailsMode);
+		model.setmOtp(mOtp);
+		model.setmOtpPrefix(Random.randomAlpha(3));
+		logger.debug("sending otp for fcsale delivery");
+		jaxNotificationService.sendOtpSms(pinfo, model);
 		return new BoolRespModel(true);
 	}
 }

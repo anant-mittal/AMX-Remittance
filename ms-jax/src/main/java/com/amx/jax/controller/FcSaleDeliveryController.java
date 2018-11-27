@@ -59,7 +59,7 @@ public class FcSaleDeliveryController implements IFxOrderDelivery {
 		BoolRespModel result = fcSaleDeliveryService.markDelivered(fcSaleDeliveryMarkDeliveredRequest);
 		return AmxApiResponse.build(result);
 	}
-	
+
 	@RequestMapping(value = Path.FX_DELIVERY_MARK_NOT_DELIVERED, method = RequestMethod.POST)
 	@Override
 	public AmxApiResponse<BoolRespModel, Object> markNotDelivered(
@@ -67,7 +67,7 @@ public class FcSaleDeliveryController implements IFxOrderDelivery {
 		BoolRespModel result = fcSaleDeliveryService.markNotDelivered(fcSaleDeliveryMarkNotDeliveredRequest);
 		return AmxApiResponse.build(result);
 	}
-	
+
 	@RequestMapping(value = Path.FX_DELIVERY_TRANSACTION_RECEIPT, method = RequestMethod.POST)
 	@Override
 	public AmxApiResponse<BoolRespModel, Object> updateTransactionReceipt(
@@ -75,5 +75,11 @@ public class FcSaleDeliveryController implements IFxOrderDelivery {
 		BoolRespModel result = fcSaleDeliveryService.updateTransactionReceipt(fcSaleDeliveryDetailUpdateReceiptRequest);
 		return AmxApiResponse.build(result);
 	}
-	
+
+	@RequestMapping(value = Path.FX_DELIVERY_SEND_OTP, method = RequestMethod.GET)
+	@Override
+	public AmxApiResponse<BoolRespModel, Object> sendOtp(@RequestParam BigDecimal deliveryDetailSeqId) {
+		BoolRespModel result = fcSaleDeliveryService.sendOtp(deliveryDetailSeqId);
+		return AmxApiResponse.build(result);
+	}
 }

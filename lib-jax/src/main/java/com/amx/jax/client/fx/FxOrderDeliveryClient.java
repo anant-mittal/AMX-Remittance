@@ -103,4 +103,19 @@ public class FxOrderDeliveryClient implements IFxOrderDelivery {
 		}
 	}
 
+	@Override
+	public AmxApiResponse<BoolRespModel, Object> sendOtp(BigDecimal deliveryDetailSeqId) {
+		try {
+			LOGGER.debug("in sendOtp");
+			String url = appConfig.getJaxURL() + Path.FX_DELIVERY_SEND_OTP;
+			return restService.ajax(url).queryParam(Params.DELIVERY_DETAIL_SEQID, deliveryDetailSeqId)
+					.meta(new JaxMetaInfo()).get()
+					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in sendOtp : ", e);
+			return JaxSystemError.evaluate(e);
+		}
+	}
+
 }

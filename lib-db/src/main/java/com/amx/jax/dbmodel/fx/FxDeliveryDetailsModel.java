@@ -77,6 +77,9 @@ public class FxDeliveryDetailsModel implements Serializable{
 	@Column(name = "TRANSACTION_RECEIPT_CLOB")
 	String transactionReceipt;
 	
+	@Column(name = "OTP_TOKEN")
+	String otpToken;
+	
 	public BigDecimal getDeleviryDelSeqId() {
 		return deleviryDelSeqId;
 	}
@@ -170,6 +173,12 @@ public class FxDeliveryDetailsModel implements Serializable{
 	}
 	public void setDeliveryStatus(String deliveryStatus) {
 		this.deliveryStatus = deliveryStatus;
+	}
+	public String getOtpToken() {
+		return otpToken;
+	}
+	public void setOtpToken(String otpToken) {
+		this.otpToken = otpToken;
 	}
 
 }
