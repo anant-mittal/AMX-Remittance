@@ -1,7 +1,5 @@
 package com.amx.jax.adapter;
 
-import java.io.IOException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
@@ -15,10 +13,6 @@ import com.amx.jax.device.CardReader;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
 import com.amx.utils.FileUtil;
-
-import net.east301.keyring.BackendNotSupportedException;
-import net.east301.keyring.PasswordSaveException;
-import net.east301.keyring.util.LockException;
 
 @Controller
 public class SWAdapterController {
@@ -65,7 +59,6 @@ public class SWAdapterController {
 		}
 		if (!ArgUtil.isEmpty(reset)) {
 			kwtCardReaderService.resetTerminalPairing();
-			adapterServiceClient.deActivateDevice(kwtCardReaderService.getDevicePairingCreds());
 		}
 
 		String body = "";

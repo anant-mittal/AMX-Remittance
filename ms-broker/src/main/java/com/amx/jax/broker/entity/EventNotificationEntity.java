@@ -1,4 +1,4 @@
-package com.amx.jax.mx.entity;
+package com.amx.jax.broker.entity;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -9,7 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import com.amx.jax.ProjectConfig;
+import com.amx.jax.broker.ProjectConfig;
 
 @Entity
 @Table(name = ProjectConfig.TABLE_EVENT_NOTIFICATION)

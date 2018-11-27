@@ -1,4 +1,4 @@
-package com.amx.jax.offsite.terminal;
+package com.amx.jax.offsite.device;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +14,8 @@ import com.amx.jax.client.IDeviceStateService;
 import com.amx.jax.device.CardData;
 import com.amx.jax.device.CardReader;
 import com.amx.jax.device.DeviceConstants;
+import com.amx.jax.device.DeviceData;
 import com.amx.jax.logger.LoggerService;
-import com.amx.jax.offsite.device.ApiDeviceHeaders;
-import com.amx.jax.offsite.device.DeviceConfigs.DeviceData;
-import com.amx.jax.offsite.device.DeviceRequest;
 import com.amx.jax.swagger.IStatusCodeListPlugin.ApiStatusService;
 import com.amx.utils.ArgUtil;
 

@@ -1,4 +1,4 @@
-package com.amx.jax.offsite.device;
+package com.amx.jax.device;
 
 import java.util.concurrent.TimeUnit;
 
@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 
 import com.amx.jax.adapter.ICardService;
 import com.amx.jax.device.CardData;
-import com.amx.jax.offsite.device.DeviceConfigs.CardBox;
 import com.amx.utils.ArgUtil;
 
 @Component

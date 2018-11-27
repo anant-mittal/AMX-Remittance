@@ -36,6 +36,8 @@ public class UserAuthInitReqDTO implements Serializable {
 	/** The device id. */
 	private String deviceId;
 
+	private String terminalId;
+
 	/** The device type. */
 	@NotNull(message = "Device Type Can not be Null or Empty")
 	private DeviceType deviceType;
@@ -52,8 +54,7 @@ public class UserAuthInitReqDTO implements Serializable {
 	/**
 	 * Sets the employee no.
 	 *
-	 * @param employeeNo
-	 *            the new employee no
+	 * @param employeeNo the new employee no
 	 */
 	public void setEmployeeNo(String employeeNo) {
 		this.employeeNo = employeeNo;
@@ -71,8 +72,7 @@ public class UserAuthInitReqDTO implements Serializable {
 	/**
 	 * Sets the identity.
 	 *
-	 * @param identity
-	 *            the new identity
+	 * @param identity the new identity
 	 */
 	public void setIdentity(String identity) {
 		this.identity = identity;
@@ -90,8 +90,7 @@ public class UserAuthInitReqDTO implements Serializable {
 	/**
 	 * Sets the ip address.
 	 *
-	 * @param ipAddress
-	 *            the new ip address
+	 * @param ipAddress the new ip address
 	 */
 	public void setIpAddress(String ipAddress) {
 		this.ipAddress = ipAddress;
@@ -109,8 +108,7 @@ public class UserAuthInitReqDTO implements Serializable {
 	/**
 	 * Sets the device id.
 	 *
-	 * @param deviceId
-	 *            the new device id
+	 * @param deviceId the new device id
 	 */
 	public void setDeviceId(String deviceId) {
 		this.deviceId = deviceId;
@@ -127,6 +125,24 @@ public class UserAuthInitReqDTO implements Serializable {
 
 	public void setDeviceType(DeviceType deviceType) {
 		this.deviceType = deviceType;
+	}
+
+	/**
+	 * Gets the Terminal Id.
+	 * 
+	 * @return
+	 */
+	public String getTerminalId() {
+		return terminalId;
+	}
+
+	/**
+	 * Sets the Terminal Id.
+	 * 
+	 * @param terminalId
+	 */
+	public void setTerminalId(String terminalId) {
+		this.terminalId = terminalId;
 	}
 
 }

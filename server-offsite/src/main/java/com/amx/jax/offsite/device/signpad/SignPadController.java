@@ -1,4 +1,4 @@
-package com.amx.jax.offsite.terminal;
+package com.amx.jax.offsite.device.signpad;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -19,17 +19,15 @@ import com.amx.jax.api.FileSubmitRequestModel;
 import com.amx.jax.client.DeviceStateClient;
 import com.amx.jax.client.IDeviceStateService;
 import com.amx.jax.constant.DeviceState;
+import com.amx.jax.device.DeviceData;
+import com.amx.jax.device.TerminalBox;
+import com.amx.jax.device.TerminalData;
 import com.amx.jax.http.ApiRequest;
 import com.amx.jax.http.RequestType;
 import com.amx.jax.model.response.DeviceStatusInfoDto;
 import com.amx.jax.offsite.device.ApiDeviceHeaders;
-import com.amx.jax.offsite.device.DeviceConfigs.DeviceData;
-import com.amx.jax.offsite.device.DeviceConfigs.SignPadBox;
-import com.amx.jax.offsite.device.DeviceConfigs.SignPadData;
-import com.amx.jax.offsite.device.DeviceConfigs.TerminalBox;
-import com.amx.jax.offsite.device.DeviceConfigs.TerminalData;
 import com.amx.jax.offsite.device.DeviceRequest;
-import com.amx.jax.offsite.terminal.TerminalConstants.Path;
+import com.amx.jax.offsite.device.TerminalConstants.Path;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.File.Type;
 import com.amx.jax.rbaac.RbaacServiceClient;

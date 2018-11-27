@@ -1,4 +1,4 @@
-package com.amx.jax.offsite.terminal;
+package com.amx.jax.offsite.device;
 
 public class TerminalConstants {
 	public static class Path {

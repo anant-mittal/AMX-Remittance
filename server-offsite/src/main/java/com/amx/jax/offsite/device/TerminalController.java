@@ -1,4 +1,4 @@
-package com.amx.jax.offsite.terminal;
+package com.amx.jax.offsite.device;
 
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
@@ -20,13 +20,13 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.DeviceStateClient;
 import com.amx.jax.client.IDeviceStateService;
+import com.amx.jax.device.TerminalBox;
+import com.amx.jax.device.TerminalData;
 import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.model.request.device.SignaturePadCustomerRegStateMetaInfo;
 import com.amx.jax.model.request.device.SignaturePadFCPurchaseSaleInfo;
 import com.amx.jax.model.request.device.SignaturePadRemittanceInfo;
-import com.amx.jax.offsite.device.DeviceConfigs.TerminalBox;
-import com.amx.jax.offsite.device.DeviceConfigs.TerminalData;
-import com.amx.jax.offsite.terminal.TerminalConstants.Path;
+import com.amx.jax.offsite.device.TerminalConstants.Path;
 import com.amx.jax.swagger.IStatusCodeListPlugin.ApiStatusService;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.HttpUtils;

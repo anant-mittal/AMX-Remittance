@@ -5,15 +5,16 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.AppConstants;
+import com.amx.jax.device.DeviceBox;
 import com.amx.jax.device.DeviceConstants;
+import com.amx.jax.device.DeviceData;
 import com.amx.jax.device.DeviceRestModels;
 import com.amx.jax.device.DeviceRestModels.DevicePairingCreds;
 import com.amx.jax.device.DeviceRestModels.SessionPairingCreds;
 import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.offsite.OffsiteStatus.OffsiteServerCodes;
 import com.amx.jax.offsite.OffsiteStatus.OffsiteServerError;
-import com.amx.jax.offsite.device.DeviceConfigs.DeviceBox;
-import com.amx.jax.offsite.device.DeviceConfigs.DeviceData;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Random;
 
@@ -97,7 +98,7 @@ public class DeviceRequest {
 		}
 		return deviceData;
 	}
-	
+
 	public void updateStamp(Object deviceRegId) {
 		deviceBox.updateStamp(deviceRegId);
 	}
@@ -115,6 +116,8 @@ public class DeviceRequest {
 		deviceData
 				.setSessionPairingTokenX(DeviceConstants.generateSessionPairingTokenX(deviceRegKey, sessionPairToken));
 		deviceData.setUpdatestamp(System.currentTimeMillis());
+		deviceData.setLocalIp(commonHttpRequest.get(AppConstants.DEVICE_IP_LOCAL_XKEY));
+		deviceData.setGlobalIp(commonHttpRequest.getIPAddress());
 		deviceBox.put(deviceRegKey, deviceData);
 		response.setHeader(DeviceConstants.Keys.DEVICE_REQ_KEY_XKEY, deviceData.getDeviceReqKey());
 

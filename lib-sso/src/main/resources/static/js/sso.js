@@ -7,13 +7,13 @@ var CHAR_LENGTH_MAP = {
 }
 var WITH_SMART_CARD = "withSmartCard";
 var WITHOUT_SMART_CARD = "withoutSmartCard";
-var WITHOUT_SMART_CARD_USER_VERIFIED = false;
 
 function sendData(step){
 	var selectedMode = $("input[name='cardtype']:checked").val();
 	if(selectedMode === WITH_SMART_CARD){
 		var errorFields = 0;
-		$(".withSmartCard input[type='text']:not([readonly])").each(function(){
+		$(".withSmartCard input[type='text']:not([readonly]), .withSmartCard input.scan-input").each(function(){
+			$(this).attr('')
 			if($(this).val() === ""){
 				errorFields = errorFields + 1;
 				$(this).next().children().text('This field can\'t be empty').show();
@@ -43,17 +43,17 @@ function sendData(step){
 			window.location.href = resp.redirectUrl;
 		}
 		if (resp.meta.mOtpPrefix) {
-			if(selectedMode == WITHOUT_SMART_CARD && WITHOUT_SMART_CARD_USER_VERIFIED){
+			if(selectedMode == WITHOUT_SMART_CARD){
 				$("input[name='partner-sec-code']").val(resp.meta.mOtpPrefix);
 			} else {
-				$(".prefix").text(resp.meta.mOtpPrefix);
 				$("[name=motp]").removeAttr("readonly")
-//				$("input[name='sec-code']").val(resp.meta.mOtpPrefix);
+//				$(".prefix").text(resp.meta.mOtpPrefix);
+				$("input[name='sec-code']").val(resp.meta.mOtpPrefix);
 			}
 		}
 	}).fail(function(jqXHR, y, z) {
 		console.log(jqXHR, y, z);
-		if(step === "CREDS") $(".prefix").text("---");
+		if(step === "CREDS") $("input[name='sec-code']").val(''); //$(".prefix").text("---");
 		$(".error-message[step='"+step+"']").text(jqXHR.responseJSON.message).show();
 		if (jqXHR.getResponseHeader('Location') != null) {
 			window.Location = jqXHR.getResponseHeader('Location');
@@ -65,7 +65,8 @@ function uiAction(step){
 	switch(step){
 		case "UI.CLEAR":
 			$(".form-wrapper input[type='text']").val('');
-			$(".prefix").text("---")
+			$("input[name='sec-code']").val(''); //$(".prefix").text("---");
+			$(".form-wrapper .error-message").text('').hide();
 			break;
 	}
 }
@@ -102,8 +103,10 @@ $("input[name='cardtype']").on('change', function(e) {
 	$(".form-wrapper input[type='text']").val('');
 	if(selectedMode === WITH_SMART_CARD){
 		$(".withoutSmartCard").addClass("dn");
+		$(".withSmartCard").removeClass("dn");
 	} else {
 		$(".withoutSmartCard").removeClass("dn");
+		$(".withSmartCard").addClass("dn");
 	}
 	console.log("mode: ", selectedMode);
 })

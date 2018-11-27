@@ -35,6 +35,7 @@ import com.amx.jax.rbaac.dto.request.UserAuthorisationReqDTO;
 import com.amx.jax.rbaac.dto.request.UserRoleMappingsRequestDTO;
 import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
 import com.amx.jax.rbaac.dto.response.PermissionResposeDTO;
+import com.amx.jax.rbaac.dto.response.RoleMappingForEmployee;
 import com.amx.jax.rbaac.dto.response.RoleResponseDTO;
 import com.amx.jax.rbaac.dto.response.UserAuthInitResponseDTO;
 import com.amx.jax.rbaac.dto.response.UserRoleMappingDTO;
@@ -352,6 +353,18 @@ public class RbaacServiceApiController implements IRbaacService {
 		BigDecimal response = deviceService.getDeviceRegIdByBranchInventoryId(deviceClientType,
 				countryBranchSystemInventoryId);
 		return AmxApiResponse.build(response);
+	}
+
+	@Override
+	@RequestMapping(value = ApiEndPoints.GET_ROLE_MAPPING_FOR_EMPLOYEE, method = RequestMethod.POST)
+	public AmxApiResponse<RoleMappingForEmployee, Object> getRoleMappingsForEmployee(
+			@RequestParam(required = true) BigDecimal employeeId, @RequestParam(required = true) String ipAddress, 
+			@RequestParam(required = false) String deviceId, @RequestParam(required = false, defaultValue="false") Boolean filterRole) {
+		LOGGER.info("In Get Role Mapping For Employee API...");
+		
+		RoleMappingForEmployee roleMappingForEmplyee = userRoleService.getRoleMappingsForEmployee(employeeId, ipAddress, deviceId, filterRole);
+		
+		return AmxApiResponse.build(roleMappingForEmplyee);
 	}
 
 }

@@ -33,6 +33,8 @@ public class AppConfig {
 	public static final String APP_DEBUG = "${app.debug}";
 	public static final String APP_CACHE = "${app.cache}";
 	public static final String APP_LOGGER = "${app.logger}";
+	
+	public static final String APP_CONTEXT_PREFIX = "${server.contextPath}";
 
 	@Deprecated
 	public static final String APP_CLASS = "${app.class}";
@@ -49,7 +51,7 @@ public class AppConfig {
 	public static final String JAX_LOGGER_URL = "${jax.logger.url}";
 	public static final String JAX_SSO_URL = "${jax.sso.url}";
 	public static final String JAX_AUTH_URL = "${jax.auth.url}";
-
+	
 	@Value(APP_ENV)
 	@AppParamKey(AppParam.APP_ENV)
 	private String appEnv;
@@ -128,6 +130,10 @@ public class AppConfig {
 	@Value(JAX_AUTH_URL)
 	@AppParamKey(AppParam.JAX_AUTH_URL)
 	private String authURL;
+	
+	@Value(APP_CONTEXT_PREFIX)
+	@AppParamKey(AppParam.APP_CONTEXT_PREFIX)
+	private String appPrefix;
 
 	@Value("${server.session.cookie.http-only}")
 	private boolean cookieHttpOnly;
@@ -290,6 +296,10 @@ public class AppConfig {
 
 	public boolean isLogger() {
 		return logger;
+	}
+
+	public String getAppPrefix() {
+		return appPrefix;
 	}
 
 }

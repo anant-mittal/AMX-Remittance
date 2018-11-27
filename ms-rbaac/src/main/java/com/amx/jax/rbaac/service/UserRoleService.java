@@ -24,6 +24,7 @@ import com.amx.jax.rbaac.dto.request.RoleRequestDTO;
 import com.amx.jax.rbaac.dto.request.UserRoleMappingsRequestDTO;
 import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
 import com.amx.jax.rbaac.dto.response.PermissionResposeDTO;
+import com.amx.jax.rbaac.dto.response.RoleMappingForEmployee;
 import com.amx.jax.rbaac.dto.response.RoleResponseDTO;
 import com.amx.jax.rbaac.dto.response.UserRoleMappingDTO;
 import com.amx.jax.rbaac.dto.response.UserRoleMappingsResponseDTO;
@@ -31,6 +32,7 @@ import com.amx.jax.rbaac.error.RbaacServiceError;
 import com.amx.jax.rbaac.exception.AuthServiceException;
 import com.amx.jax.util.ObjectConverter;
 import com.amx.utils.JsonUtil;
+
 
 /**
  * The Class UserRoleService.
@@ -442,6 +444,52 @@ public class UserRoleService {
 		}
 
 		return true;
+	}
+	
+	public RoleMappingForEmployee getRoleMappingsForEmployee(BigDecimal employeeId, String ipAddress,
+			String deviceId, Boolean filterRole) {
+		RoleMappingForEmployee rmForEmployee = new RoleMappingForEmployee();
+		
+		// put Employee Info by Employee Id 
+		Employee employee = rbaacDao.getEmployeeByEmployeeId(employeeId);
+		Map<BigDecimal, EmployeeDetailsDTO> employeeInfoMap = new HashMap<BigDecimal, EmployeeDetailsDTO>();
+		if(employee != null) {						
+			List<BigDecimal> empIdList = new ArrayList<BigDecimal>();
+			
+			empIdList.add(employee.getEmployeeId());
+
+			employeeInfoMap.put(employee.getEmployeeId(), ObjectConverter.convertEmployeeToEmpDetailsDTO(employee));
+			rmForEmployee.setEmployeeInfoMap(employeeInfoMap);
+		}else {
+			rmForEmployee.setEmployeeInfoMap(employeeInfoMap);
+		}
+		
+		// put role mapping list for that particular Employee Id
+		UserRoleMapping userRoleMappingList = rbaacDao.getUserRoleMappingsByEmployeeId(employeeId);
+		Map<BigDecimal, UserRoleMappingDTO> userRoleMappingInfoMap = new HashMap<BigDecimal, UserRoleMappingDTO>();
+		if(userRoleMappingList != null) {
+			userRoleMappingInfoMap.put(userRoleMappingList.getEmployeeId(),ObjectConverter.convertUrmToUrmDTO(userRoleMappingList));
+			rmForEmployee.setUserRoleMappingInfoMap(userRoleMappingInfoMap);
+		}else {
+			rmForEmployee.setUserRoleMappingInfoMap(userRoleMappingInfoMap);
+		}
+		
+		// put the role list
+		List<Role> roleListAll = rbaacDao.getAllRoles();
+		Map<BigDecimal, RoleResponseDTO> roleInfoMap = new HashMap<BigDecimal, RoleResponseDTO>();
+
+		for (Role role : roleListAll) {
+			if(userRoleMappingList != null && filterRole) {
+				if(role.getId().compareTo(userRoleMappingList.getRoleId())==0) {
+					roleInfoMap.put(role.getId(), ObjectConverter.convertRoleToRoleResponseDTO(role));
+				}
+			}else {
+				roleInfoMap.put(role.getId(), ObjectConverter.convertRoleToRoleResponseDTO(role));
+			}
+		}
+		rmForEmployee.setRoleInfoMap(roleInfoMap);
+		
+		return rmForEmployee;
 	}
 
 }

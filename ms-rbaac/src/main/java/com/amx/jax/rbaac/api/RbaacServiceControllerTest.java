@@ -22,6 +22,7 @@ import com.amx.jax.rbaac.dto.request.UserAuthorisationReqDTO;
 import com.amx.jax.rbaac.dto.request.UserRoleMappingsRequestDTO;
 import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
 import com.amx.jax.rbaac.dto.response.PermissionResposeDTO;
+import com.amx.jax.rbaac.dto.response.RoleMappingForEmployee;
 import com.amx.jax.rbaac.dto.response.RoleResponseDTO;
 import com.amx.jax.rbaac.dto.response.UserAuthInitResponseDTO;
 import com.amx.jax.rbaac.dto.response.UserRoleMappingDTO;
@@ -216,6 +217,13 @@ public class RbaacServiceControllerTest implements IRbaacService {
 	@Override
 	public AmxApiResponse<BigDecimal, Object> getDeviceRegIdByBranchInventoryId(ClientType deviceClientType,
 			BigDecimal countryBranchSystemInventoryId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public AmxApiResponse<RoleMappingForEmployee, Object> getRoleMappingsForEmployee(BigDecimal employeeId,
+			String ipAddr, String deviceId, Boolean filterRole) {
 		// TODO Auto-generated method stub
 		return null;
 	}

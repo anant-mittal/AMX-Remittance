@@ -6,6 +6,7 @@ import java.util.concurrent.ExecutionException;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -26,6 +27,7 @@ import com.amx.jax.task.events.PromoNotifyTask;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
 
+@PreAuthorize("hasPermission('MRKT_MGMT.PUSH_NOTIFICATION', 'SEND')")
 @RestController
 @Api(value = "Push Notifiation APIs")
 public class PushController {
@@ -39,12 +41,13 @@ public class PushController {
 	public List<Tenant> listOfTenants() throws PostManException, InterruptedException, ExecutionException {
 		return Arrays.asList(Tenant.values());
 	}
-
+	
+	
 	@RequestMapping(value = "/pub/list/nations", method = RequestMethod.POST)
 	public List<Nations> listOfNations() throws PostManException, InterruptedException, ExecutionException {
 		return Arrays.asList(Nations.values());
 	}
-
+	
 	@RequestMapping(value = "/pub/list/branches", method = RequestMethod.POST)
 	public List<?> listOfNations(
 			@ApiParam(required = true, allowableValues = "KWT,BHR",
@@ -57,7 +60,7 @@ public class PushController {
 		}
 
 	}
-
+	
 	@RequestMapping(value = "/api/notify/all", method = RequestMethod.POST)
 	public AmxApiResponse<PromoNotifyTask, Object> notifyAll(
 			@ApiParam(required = true, allowableValues = "KWT,BHR",
@@ -67,7 +70,7 @@ public class PushController {
 		PromoNotifyTask task = new PromoNotifyTask();
 		task.setNationality(Nations.ALL);
 		task.setTitle(title);
-		task.setMessage(message);
+		task.setMessage(message); 
 		onMessage(task);
 		return AmxApiResponse.build(task);
 	}

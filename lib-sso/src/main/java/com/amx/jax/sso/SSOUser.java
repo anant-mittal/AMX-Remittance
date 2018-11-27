@@ -37,8 +37,8 @@ public class SSOUser implements Serializable {
 	}
 
 	public String ssoTranxId() {
-		String tranxId;
-		if (!ArgUtil.isEmpty(this.getTranxId())) {
+		String tranxId = AppContextUtil.getTranxId();
+		if (ArgUtil.isEmpty(tranxId) && !ArgUtil.isEmpty(this.getTranxId())) {
 			tranxId = this.getTranxId();
 			AppContextUtil.setTranxId(tranxId);
 		} else {

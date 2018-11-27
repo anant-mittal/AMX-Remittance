@@ -54,6 +54,8 @@ public class ContactDetail implements java.io.Serializable {
 	//private BigDecimal customerId;
 	//private BigDecimal contactTypeId;
 	private String watsAppNo;
+	private String watsAppTelePrefix;
+	private String isWatsApp;
 
 	public ContactDetail() {
 	}
@@ -64,7 +66,7 @@ public class ContactDetail implements java.io.Serializable {
 
 
 	public ContactDetail(BigDecimal contactDetailId, Customer fsCustomer, LanguageType fsLanguageType, BizComponentData fsBizComponentDataByContactTypeId, CountryMaster fsCountryMaster, DistrictMaster fsDistrictMaster, StateMaster fsStateMaster, CityMaster fsCityMaster, String alterEmailId, String area, String block, String street, String flat, String telephone, String mobile, String approved, String createdBy, String updatedBy, Date creationDate, Date lastUpdated, String activeStatus,
-			String buildingNo,String telephoneCode,String watsAppNo) {
+			String buildingNo,String telephoneCode,String watsAppNo,String watsAppTelePrefix,String isWatsApp) {
 		this.contactDetailId = contactDetailId;
 		//this.fsCustomer = fsCustomer;
 		/*this.fsLanguageType = fsLanguageType;
@@ -89,8 +91,11 @@ public class ContactDetail implements java.io.Serializable {
 		this.buildingNo = buildingNo;
 		this.telephoneCode = telephoneCode;
 		this.watsAppNo = watsAppNo;
+		this.watsAppTelePrefix = watsAppTelePrefix;
+		this.isWatsApp = isWatsApp;
 	}
-
+	
+	
 	@Id
 	@GeneratedValue(generator="fs_contact_detail_seq",strategy=GenerationType.SEQUENCE)
 	@SequenceGenerator(name="fs_contact_detail_seq" ,sequenceName="FS_CONTACT_DETAIL_SEQ",allocationSize=1)
@@ -312,7 +317,7 @@ public class ContactDetail implements java.io.Serializable {
 		this.languageId = languageId;
 	}
 
-	@Column(name = "IS_WHATSAPP_NUMBER")
+	@Column(name = "WHATSAPP_NUMBER")
 	public String getWatsAppNo() {
 		return watsAppNo;
 	}
@@ -321,6 +326,25 @@ public class ContactDetail implements java.io.Serializable {
 		this.watsAppNo = watsAppNo;
 	}
 
+	@Column(name = "WHATSAPP_MOB_PREFIX")
+	public String getWatsAppTelePrefix() {
+		return watsAppTelePrefix;
+	}
+
+	public void setWatsAppTelePrefix(String watsAppTelePrefix) {
+		this.watsAppTelePrefix = watsAppTelePrefix;
+	}
+
+	@Column(name = "IS_WHATSAPP_NUMBER")
+	public String getIsWatsApp() {
+		return isWatsApp;
+	}
+
+	public void setIsWatsApp(String isWatsApp) {
+		this.isWatsApp = isWatsApp;
+	}
+
+	
 	/*@Column(name="CUSTOMER_ID")
 	public BigDecimal getCustomerId() {
 		return customerId;

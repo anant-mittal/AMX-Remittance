@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.amx.jax.AppConfig;
 import com.amx.jax.AppConstants;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.adapter.AdapterServiceClient;
@@ -64,6 +65,9 @@ public class SSOServerController {
 	private SSOUser ssoUser;
 
 	@Autowired
+	private AppConfig appConfig;
+
+	@Autowired
 	private CommonHttpRequest commonHttpRequest;
 
 	@Autowired
@@ -76,7 +80,8 @@ public class SSOServerController {
 		ssoUser.ssoTranxId();
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put(AppConstants.TRANX_ID_XKEY_CLEAN, AppContextUtil.getTranxId());
-		map.put(SSOConstants.PARAM_SSO_LOGIN_URL, SSOConstants.SSO_LOGIN_URL_DO);
+		map.put(SSOConstants.PARAM_SSO_LOGIN_URL, appConfig.getAppPrefix() + SSOConstants.SSO_LOGIN_URL_DO);
+		map.put(SSOConstants.PARAM_SSO_LOGIN_PREFIX, appConfig.getAppPrefix());
 		map.put(AppConstants.SECURITY_CODE_KEY, Random.randomAlpha(3));
 		map.put(AppConstants.PARTNER_SECURITY_CODE_KEY, Random.randomAlpha(3));
 		return map;
@@ -151,6 +156,7 @@ public class SSOServerController {
 				init.setIpAddress(userDevice.getIp());
 				init.setDeviceId(userDevice.getFingerprint());
 				init.setDeviceType(userDevice.getType());
+				init.setTerminalId(sSOTranx.get().getTerminalId());
 				UserAuthInitResponseDTO initResp = rbaacServiceClient.initAuthForUser(init).getResult();
 
 				model.put("mOtpPrefix", initResp.getmOtpPrefix());
@@ -174,6 +180,7 @@ public class SSOServerController {
 				auth.setmOtp(formdata.getMotp());
 				EmployeeDetailsDTO empDto = rbaacServiceClient.authoriseUser(auth).getResult();
 				sSOTranx.setUserDetails(empDto);
+
 				String redirectUrl = Urly.parse(sSOTranx.get().getAppUrl())
 						.addParameter(AppConstants.TRANX_ID_XKEY, AppContextUtil.getTranxId())
 						.addParameter(SSOConstants.PARAM_STEP, SSOAuthStep.DONE)

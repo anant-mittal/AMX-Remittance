@@ -115,7 +115,7 @@ public class AdapterServiceClient {
 					.meta(new DeviceMetaInfo())
 					.path(DeviceConstants.Path.DEVICE_DEACTIVATE)
 					.queryParam(DeviceConstants.Params.PARAM_DEVICE_REG_ID, req.getDeviceRegId())
-					.queryParam(DeviceConstants.Params.PARAM_CLIENT_TYPE, UserClient.ClientType.BRANCH_ADAPTER)
+					.queryParam(DeviceConstants.Params.PARAM_DEVICE_TYPE, UserClient.ClientType.BRANCH_ADAPTER).post()
 					.as(new ParameterizedTypeReference<AmxApiResponse<DevicePairingCreds, Object>>() {
 					});
 		} catch (Exception e) {

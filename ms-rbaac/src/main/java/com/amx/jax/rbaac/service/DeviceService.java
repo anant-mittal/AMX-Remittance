@@ -162,7 +162,10 @@ public class DeviceService extends AbstractService {
 
 	public BigDecimal getDeviceRegIdByBranchInventoryId(ClientType deviceClientType,
 			BigDecimal countryBranchSystemInventoryId) {
-		return deviceDao.findAllActiveDevices(countryBranchSystemInventoryId, deviceClientType).get(0)
-				.getRegistrationId();
+		List<Device> devices = deviceDao.findAllActiveDevices(countryBranchSystemInventoryId, deviceClientType);
+		if (CollectionUtils.isEmpty(devices)) {
+			throw new AuthServiceException("No device found", RbaacServiceError.CLIENT_NOT_FOUND);
+		}
+		return devices.get(0).getRegistrationId();
 	}
 }
