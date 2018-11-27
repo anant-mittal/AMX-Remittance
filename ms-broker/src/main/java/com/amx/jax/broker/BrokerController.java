@@ -50,7 +50,7 @@ public class BrokerController {
 	private BrokerService brokerService;
 
 	@ApiRequest(type = RequestType.POLL)
-	@RequestMapping(value = "/pub/task/{scheme}/{topic}", method = { RequestMethod.POST })
+	@RequestMapping(value = "/pub/events/pong", method = { RequestMethod.POST })
 	public AmxApiResponse<Object, Object> pollEvents(BigDecimal eventId) {
 		brokerService.pushNewEventNotifications();
 		return AmxApiResponse.build();
