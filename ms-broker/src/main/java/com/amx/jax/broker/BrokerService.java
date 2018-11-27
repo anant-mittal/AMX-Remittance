@@ -18,6 +18,7 @@ import com.amx.jax.broker.entity.EventNotificationEntity;
 import com.amx.jax.broker.entity.EventNotificationView;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.logger.LoggerService;
+import com.amx.jax.tunnel.DBEvents;
 import com.amx.jax.tunnel.TunnelService;
 import com.amx.utils.StringUtils;
 import com.amx.utils.TimeUtils;
