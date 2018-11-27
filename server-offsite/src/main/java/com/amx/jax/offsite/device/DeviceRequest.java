@@ -6,15 +6,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.AppConstants;
+import com.amx.jax.device.DeviceBox;
 import com.amx.jax.device.DeviceConstants;
+import com.amx.jax.device.DeviceData;
 import com.amx.jax.device.DeviceRestModels;
 import com.amx.jax.device.DeviceRestModels.DevicePairingCreds;
 import com.amx.jax.device.DeviceRestModels.SessionPairingCreds;
 import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.offsite.OffsiteStatus.OffsiteServerCodes;
 import com.amx.jax.offsite.OffsiteStatus.OffsiteServerError;
-import com.amx.jax.offsite.device.DeviceConfigs.DeviceBox;
-import com.amx.jax.offsite.device.DeviceConfigs.DeviceData;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Random;
 
