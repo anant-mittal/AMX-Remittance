@@ -642,6 +642,9 @@ public class UserService extends AbstractUserService {
 		onlineCustomer.setPassword(cryptoUtil.getHash(onlineCustomer.getUserName(), model.getPassword()));
 		custDao.saveOnlineCustomer(onlineCustomer);
 		BoolRespModel responseModel = new BoolRespModel(true);
+		if (model.getEmail() != null) {
+			jaxNotificationService.sendProfileChangeNotificationEmail(model, model.getPersoninfo());
+		}
 		auditService.log(createUserServiceEvent(model, JaxUserAuditEvent.Type.CUSTOMER_PASSWORD_UPDATE_SUCCESS));
 		return AmxApiResponse.build(responseModel);
 	}
