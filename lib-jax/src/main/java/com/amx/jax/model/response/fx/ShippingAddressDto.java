@@ -51,6 +51,7 @@ private String street;
 private String house;
 private String blockNo;
 private String adressType;
+private String areaDesc;
 public BigDecimal getCustomerId() {
 	return customerId;
 }
@@ -266,5 +267,11 @@ public BigDecimal getAddressId() {
 }
 public void setAddressId(BigDecimal addressId) {
 	this.addressId = addressId;
+}
+public String getAreaDesc() {
+	return areaDesc;
+}
+public void setAreaDesc(String areaDesc) {
+	this.areaDesc = areaDesc;
 }
 }

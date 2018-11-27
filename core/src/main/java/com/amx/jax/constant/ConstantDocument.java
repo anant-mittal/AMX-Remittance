@@ -76,6 +76,8 @@ public class ConstantDocument {
 	public static final String COLLECTION_RECEIPT_TYPE="70";
 	public static final String KNET_CODE="K";
 	public static final String T="T";
+	// ORD for --Ordered
+	public static final String ORD="ORD";
 	/** end Here **/
 
 }

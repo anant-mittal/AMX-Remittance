@@ -65,8 +65,8 @@ public class ApiEndpoint {
 		public static final String MULTI_COUNTRY = "/multicountry/";
 		public static final String EXCHANGE_RATE_CURRENCY_LIST = "/exchange-rate-currency/list/";
 		public static final String CURRENCY_ONLINE = "/currency/online/";
-
 		public static final String API_BANK_BRANCH_GET = "/bankbranch/get/";
+		public static final String API_AREA_LIST = "/arealist/";
 
 	}
 

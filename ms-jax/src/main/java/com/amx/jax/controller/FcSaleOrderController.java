@@ -25,6 +25,7 @@ import com.amx.jax.model.response.fx.FcSaleApplPaymentReponseModel;
 import com.amx.jax.model.response.fx.FcSaleOrderApplicationResponseModel;
 import com.amx.jax.model.response.fx.FcSaleOrderDefaultResponseModel;
 import com.amx.jax.model.response.fx.FxExchangeRateDto;
+import com.amx.jax.model.response.fx.FxOrderTransactionHistroyDto;
 import com.amx.jax.model.response.fx.PurposeOfTransactionDto;
 import com.amx.jax.model.response.fx.ShippingAddressDto;
 import com.amx.jax.model.response.fx.ShoppingCartDetailsDto;
@@ -164,6 +165,11 @@ public class FcSaleOrderController implements IFxOrderService {
 		logger.info("save-fcsale Controller :" + paymentResponse.getCustomerId() + "\t country ID :"+ paymentResponse.getApplicationCountryId() + "\t Compa Id:" + paymentResponse.getCompanyId());
 		return fcSaleService.savePaymentId(paymentResponse);
 		
+	}
+
+	@RequestMapping(value = Path.FC_SALE_ORDER_TRNX_HIST, method = RequestMethod.GET)
+	public AmxApiResponse<FxOrderTransactionHistroyDto, Object> getFxOrderTransactionHistroy()throws Exception {
+		return fcSaleService.getFxOrderTransactionHistroy();
 	}
 
 }

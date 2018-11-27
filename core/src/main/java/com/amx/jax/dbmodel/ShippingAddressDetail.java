@@ -37,7 +37,8 @@ public class ShippingAddressDetail implements java.io.Serializable {
 	private StateMaster fsStateMaster;
 	private CityMaster fsCityMaster;
 	private String alterEmailId;
-	private String area;
+	private String areaDesc;
+	private BigDecimal areaCode;
 	private String block;
 	private String street;
 	private String flat;
@@ -51,6 +52,7 @@ public class ShippingAddressDetail implements java.io.Serializable {
 	private String activeStatus;
 	private String buildingNo;
 	private String telephoneCode;
+	private String addressType;
 
 
 	public ShippingAddressDetail() {
@@ -65,7 +67,6 @@ public class ShippingAddressDetail implements java.io.Serializable {
 			String buildingNo,String telephoneCode,String watsAppNo) {
 		this.shippingAddressDetailId = shippingAddressDetailId;
 		this.alterEmailId = alterEmailId;
-		this.area = area;
 		this.block = block;
 		this.street = street;
 		this.flat = flat;
@@ -122,17 +123,6 @@ public class ShippingAddressDetail implements java.io.Serializable {
 		this.alterEmailId = alterEmailId;
 	}
 
-
-
-
-	@Column(name = "AREA", length = 100)
-	public String getArea() {
-		return this.area;
-	}
-
-	public void setArea(String area) {
-		this.area = area;
-	}
 
 	@Column(name = "BLOCK", length = 20)
 	public String getBlock() {
@@ -292,6 +282,33 @@ public class ShippingAddressDetail implements java.io.Serializable {
 
 	public void setShippingAddressDetailId(BigDecimal shippingAddressDetailId) {
 		this.shippingAddressDetailId = shippingAddressDetailId;
+	}
+
+	@Column(name="AREA_DESC")
+	public String getAreaDesc() {
+		return areaDesc;
+	}
+
+	public void setAreaDesc(String areaDesc) {
+		this.areaDesc = areaDesc;
+	}
+
+	@Column(name="AREA_CODE")
+	public BigDecimal getAreaCode() {
+		return areaCode;
+	}
+
+	public void setAreaCode(BigDecimal areaCode) {
+		this.areaCode = areaCode;
+	}
+
+	@Column(name="ADDRESS_TYPE")
+	public String getAddressType() {
+		return addressType;
+	}
+
+	public void setAddressType(String addressType) {
+		this.addressType = addressType;
 	}
 
 

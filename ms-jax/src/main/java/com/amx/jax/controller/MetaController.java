@@ -22,6 +22,7 @@ import com.amx.amxlib.meta.model.MultiCountryDTO;
 import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.meta.model.ServiceGroupMasterDescDto;
 import com.amx.amxlib.meta.model.TermsAndConditionDTO;
+import com.amx.amxlib.meta.model.ViewAreaDto;
 import com.amx.amxlib.meta.model.ViewCityDto;
 import com.amx.amxlib.meta.model.ViewCompanyDetailDTO;
 import com.amx.amxlib.meta.model.ViewDistrictDto;
@@ -365,6 +366,8 @@ public class MetaController {
 	public AmxApiResponse<ServiceGroupMasterDescDto, Object> getServiceGroup() {
 		return metaService.getServiceGroups();
 	}
+	
+	
 
 	/**
 	 * @param beneficiaryCountryId
@@ -414,9 +417,10 @@ public class MetaController {
 			return termsAndConditionService.getTermsAndConditionAsPerCountryForFxOrder(metaData.getLanguageId(),metaData.getCountryId());
 		}
 
-/*	@Deprecated
-	@RequestMapping(value = "/payg-error/", method = RequestMethod.GET)
-	public AmxApiResponse<PaygErrorMaster, Object> getPaygErrorList() {
-		return payGErrorService.getPaygErrorResponse();
-	}*/
+		
+		
+		@RequestMapping(value = MetaApi.API_AREA_LIST, method = RequestMethod.GET)
+		public AmxApiResponse<ViewAreaDto, Object> getAreaList() {
+			return metaService.getAreaList();
+		}
 }

@@ -29,6 +29,7 @@ import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.meta.model.ServiceGroupMasterDescDto;
 import com.amx.amxlib.meta.model.TermsAndConditionDTO;
 import com.amx.amxlib.meta.model.UserFinancialYearDTO;
+import com.amx.amxlib.meta.model.ViewAreaDto;
 import com.amx.amxlib.meta.model.ViewCityDto;
 import com.amx.amxlib.meta.model.ViewDistrictDto;
 import com.amx.amxlib.meta.model.ViewStateDto;
@@ -568,5 +569,20 @@ public class MetaClient extends AbstractJaxServiceClient {
 			return JaxSystemError.evaluate(ae);
 		}
 	}
+	
+	
+	public AmxApiResponse<ViewAreaDto, Object> getAreaList() {
+		try {
+			return restService.ajax(appConfig.getJaxURL())
+					.path(MetaApi.PREFIX + MetaApi.API_AREA_LIST).meta(new JaxMetaInfo()).get()
+					.as(new ParameterizedTypeReference<AmxApiResponse<ViewAreaDto, Object>>() {
+					});
+		} catch (Exception ae) {
+			LOGGER.error("exception in area list : ", ae);
+			return JaxSystemError.evaluate(ae);
+		}
+	}
+	
+	
 
 }

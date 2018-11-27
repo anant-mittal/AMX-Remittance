@@ -37,9 +37,9 @@ public class CustomerShippingAddressRequestModel {
 	String flatNo;
 	String buildingNo;
 	private BigDecimal cityId;
-	private String area;
 	private String modelType;
-	
+	private BigDecimal areaCode;
+	private String addressType;
 
 	public BigDecimal getCountryId() {
 		return countryId;
@@ -127,16 +127,25 @@ public class CustomerShippingAddressRequestModel {
 		this.cityId = cityId;
 	}
 
-	public String getArea() {
-		return area;
-	}
-
-	public void setArea(String area) {
-		this.area = area;
-	}
 
 	public String getModelType() {
 		return "fc-sale-shipping-address-save";
+	}
+
+	public BigDecimal getAreaCode() {
+		return areaCode;
+	}
+
+	public void setAreaCode(BigDecimal areaCode) {
+		this.areaCode = areaCode;
+	}
+
+	public String getAddressType() {
+		return addressType;
+	}
+
+	public void setAddressType(String addressType) {
+		this.addressType = addressType;
 	}
 
 	

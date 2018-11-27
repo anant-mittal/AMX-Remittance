@@ -25,6 +25,7 @@ import com.amx.jax.model.response.fx.FcSaleOrderApplicationResponseModel;
 import com.amx.jax.model.response.fx.FcSaleOrderDefaultResponseModel;
 import com.amx.jax.model.response.fx.FxDeliveryDetailDto;
 import com.amx.jax.model.response.fx.FxExchangeRateDto;
+import com.amx.jax.model.response.fx.FxOrderTransactionHistroyDto;
 import com.amx.jax.model.response.fx.PurposeOfTransactionDto;
 import com.amx.jax.model.response.fx.ShippingAddressDto;
 import com.amx.jax.model.response.fx.ShoppingCartDetailsDto;
@@ -261,6 +262,16 @@ public class FcSaleOrderClient implements IFxOrderService {
 			LOGGER.error("exception in getCurrencyByCountryId : ", e);
 			return JaxSystemError.evaluate(e);
 		} // end of try-catch
+
+	}
+
+	@Override
+	public AmxApiResponse<FxOrderTransactionHistroyDto, Object> getFxOrderTransactionHistroy()
+			throws Exception {
+		LOGGER.debug("in FxOrderTransactionHistroyDto  client :");
+		return restService.ajax(appConfig.getJaxURL() + Path.FC_SALE_ORDER_TRNX_HIST).meta(new JaxMetaInfo()).get()
+				.as(new ParameterizedTypeReference<AmxApiResponse<FxOrderTransactionHistroyDto, Object>>() {
+				});
 
 	}
 }

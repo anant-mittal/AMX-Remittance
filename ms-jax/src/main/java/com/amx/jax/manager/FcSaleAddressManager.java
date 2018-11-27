@@ -36,6 +36,7 @@ import com.amx.jax.repository.CountryRepository;
 import com.amx.jax.repository.IContactDetailDao;
 import com.amx.jax.repository.ICustomerRepository;
 import com.amx.jax.repository.IShippingAddressRepository;
+import com.amx.jax.repository.IViewArea;
 import com.amx.jax.repository.IViewCityDao;
 import com.amx.jax.repository.IViewDistrictDAO;
 import com.amx.jax.repository.IViewStateDao;
@@ -75,6 +76,9 @@ public class FcSaleAddressManager  extends AbstractModel{
 	
 	@Autowired
 	IViewDistrictDAO districtDao;
+	
+	@Autowired
+	IViewArea areaDao;
 
 	/** Fetching shipping address **/
 	
@@ -104,6 +108,7 @@ public class FcSaleAddressManager  extends AbstractModel{
 			shippingAddressDto.setStreet(contactList.get(0).getStreet());
 			shippingAddressDto.setBlockNo(contactList.get(0).getBlock());
 			shippingAddressDto.setHouse(contactList.get(0).getFlat());
+
 			List<CountryMasterView> countryMasterView = countryDao.findByLanguageIdAndCountryId(new BigDecimal(1),contactList.get(0).getFsCountryMaster().getCountryId());
 			if (!countryMasterView.isEmpty()) {
 				shippingAddressDto.setLocalContactCountry(countryMasterView.get(0).getCountryName());
@@ -152,6 +157,8 @@ public class FcSaleAddressManager  extends AbstractModel{
 			shippingAddressDto.setStreet(shippingAddressDetail.getStreet());
 			shippingAddressDto.setBlockNo(shippingAddressDetail.getBlock());
 			shippingAddressDto.setHouse(shippingAddressDetail.getFlat());
+			shippingAddressDto.setAdressType(shippingAddressDetail.getAddressType());
+			shippingAddressDto.setAreaDesc(areaDao.getAreaList(shippingAddressDetail.getAreaCode())==null?"":areaDao.getAreaList(shippingAddressDetail.getAreaCode()).getShortDesc());
 			List<CountryMasterView> countryMasterView = countryDao.findByLanguageIdAndCountryId(new BigDecimal(1),shippingAddressDetail.getFsCountryMaster().getCountryId());
 			if (!countryMasterView.isEmpty()) {
 				shippingAddressDto.setLocalContactCountry(countryMasterView.get(0).getCountryName());
@@ -174,7 +181,6 @@ public class FcSaleAddressManager  extends AbstractModel{
 				}
 
 			}
-			shippingAddressDto.setAdressType("shipping_address");
 			list.add(shippingAddressDto); // Local Address
 		} //end of for Loop
 	} //end 
@@ -190,7 +196,7 @@ public class FcSaleAddressManager  extends AbstractModel{
 		shipAdd.setFsCustomer(new Customer(meta.getCustomerId()));
 		shipAdd.setCreationDate(new Date());
 		shipAdd.setActiveStatus(ConstantDocument.Yes);
-		shipAdd.setArea(requestModel.getArea());
+		shipAdd.setAreaCode(requestModel.getAreaCode());
 		shipAdd.setBlock(requestModel.getBlock());
 		shipAdd.setBuildingNo(requestModel.getBuildingNo());
 		shipAdd.setFlat(requestModel.getFlatNo());
@@ -199,6 +205,7 @@ public class FcSaleAddressManager  extends AbstractModel{
 		shipAdd.setFsStateMaster(new StateMaster(requestModel.getStateId()));
 		shipAdd.setFsDistrictMaster(new DistrictMaster(requestModel.getDistrictId()));
 		shipAdd.setFsCityMaster(new CityMaster(requestModel.getCityId()));
+		shipAdd.setAddressType(requestModel.getAddressType());
 		if(!StringUtils.isBlank(meta.getReferrer())){
 			shipAdd.setCreatedBy(meta.getReferrer());
 		}else{

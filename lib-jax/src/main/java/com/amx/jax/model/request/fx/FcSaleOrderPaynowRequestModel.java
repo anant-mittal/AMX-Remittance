@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import com.amx.jax.model.AbstractModel;
+import com.amx.jax.model.response.fx.FxApplicationDto;
 import com.amx.jax.model.response.fx.ShoppingCartDetailsDto;
 
 public class FcSaleOrderPaynowRequestModel extends AbstractModel {
@@ -16,7 +17,9 @@ public class FcSaleOrderPaynowRequestModel extends AbstractModel {
 	 * 
 	 */
 	private static final long serialVersionUID = 4929104237573922383L;
-	private List<ShoppingCartDetailsDto> cartDetailList;
+	//private List<ShoppingCartDetailsDto> cartDetailList;
+	
+	private List<FxApplicationDto> cartDetailList;
 	private BigDecimal shippingAddressId;
 	private String  deliveryDate;
 	private String  timeSlot;
@@ -24,13 +27,13 @@ public class FcSaleOrderPaynowRequestModel extends AbstractModel {
 	
 
 	
-	public List<ShoppingCartDetailsDto> getCartDetailList() {
+	/*public List<ShoppingCartDetailsDto> getCartDetailList() {
 		return cartDetailList;
 	}
 	
 	public void setCartDetailList(List<ShoppingCartDetailsDto> cartDetailList) {
 		this.cartDetailList = cartDetailList;
-	}
+	}*/
 	public BigDecimal getShippingAddressId() {
 		return shippingAddressId;
 	}
@@ -54,6 +57,12 @@ public class FcSaleOrderPaynowRequestModel extends AbstractModel {
 	}
 	public void setTotalKnetAmount(BigDecimal totalKnetAmount) {
 		this.totalKnetAmount = totalKnetAmount;
+	}
+	public List<FxApplicationDto> getCartDetailList() {
+		return cartDetailList;
+	}
+	public void setCartDetailList(List<FxApplicationDto> cartDetailList) {
+		this.cartDetailList = cartDetailList;
 	}
 
 

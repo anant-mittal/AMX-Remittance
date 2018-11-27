@@ -14,6 +14,7 @@ import com.amx.jax.model.response.fx.FcSaleApplPaymentReponseModel;
 import com.amx.jax.model.response.fx.FcSaleOrderApplicationResponseModel;
 import com.amx.jax.model.response.fx.FcSaleOrderDefaultResponseModel;
 import com.amx.jax.model.response.fx.FxExchangeRateDto;
+import com.amx.jax.model.response.fx.FxOrderTransactionHistroyDto;
 import com.amx.jax.model.response.fx.PurposeOfTransactionDto;
 import com.amx.jax.model.response.fx.ShippingAddressDto;
 import com.amx.jax.model.response.fx.ShoppingCartDetailsDto;
@@ -36,6 +37,7 @@ public interface IFxOrderService extends IJaxService {
 		public static final String FC_SALE_XRATE = PREFIX + "/fc-sale-xrate/";
 		public static final String FC_CURRENCY_LIST = PREFIX + "/fc-currency-list/";
 		public static final String FC_SALE_SAVE_PAYMENT_ID = PREFIX + "/fc_sale_save-payment-id/";
+		public static final String FC_SALE_ORDER_TRNX_HIST = PREFIX + "/fc-sale-order-trnx-hist/";
 
 	}
 
@@ -115,5 +117,8 @@ public interface IFxOrderService extends IJaxService {
 	
 	@ApiJaxStatus({ JaxError.NULL_APPLICATION_ID })
 	AmxApiResponse<PaymentResponseDto, Object> savePaymentId(PaymentResponseDto paymentRequestDto)throws Exception;
+	
+	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND })
+	AmxApiResponse<FxOrderTransactionHistroyDto, Object> getFxOrderTransactionHistroy()throws Exception;
 
 }

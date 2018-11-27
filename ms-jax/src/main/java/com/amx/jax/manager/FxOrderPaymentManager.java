@@ -144,7 +144,10 @@ public class FxOrderPaymentManager {
 			 mapAllDetailApplSave.put("COLL_DETAILS", collectDetail);
 			 mapAllDetailApplSave.put("LIST_RCPT_APPL", listOfRecAppl);
 			 mapAllDetailApplSave.put("PG_RESP_DETAILS", paymentResponse);
+			 
 			 mapResopnseObject= rcptApplPaydao.finalSaveAll(mapAllDetailApplSave);
+			 
+			 
 			 logger.info("mapResopnseObject :"+mapResopnseObject.toString());
 			 if(mapResopnseObject != null && mapResopnseObject.get("P_ERROR_MESG")==null){
 				 paymentResponse.setCollectionDocumentNumber((BigDecimal)mapResopnseObject.get("P_COLLECTION_NO"));
@@ -253,6 +256,9 @@ public class FxOrderPaymentManager {
 				 receiptPayment.setTravelCountryId(applreceipt.getTravelCountryId());
 				 receiptPayment.setSourceofIncomeId(applreceipt.getSourceofIncomeId());
 				 receiptPayment.setDenominationType(applreceipt.getDenominationType());
+				 
+				 receiptPayment.setDeliveryDetSeqId(applreceipt.getDeliveryDetSeqId());
+				 receiptPayment.setPgPaymentSeqDtlId(applreceipt.getPgPaymentSeqDtlId());
 				 
 				 receiptPayment.setIsActive(ConstantDocument.Yes);
 				 if(!StringUtils.isBlank(metaData.getReferrer())){

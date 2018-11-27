@@ -21,6 +21,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.constants.FxDeliveryStatus;
 import com.amx.jax.dbmodel.CollectDetailModel;
 import com.amx.jax.dbmodel.CollectionModel;
 import com.amx.jax.dbmodel.fx.FxDeliveryDetailsModel;
@@ -32,6 +33,7 @@ import com.amx.jax.dbmodel.fx.FxDeliveryRemark;
 import com.amx.jax.dbmodel.fx.VwFxDeliveryDetailsModel;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.model.request.fx.FcSaleOrderPaynowRequestModel;
+import com.amx.jax.model.response.fx.FxApplicationDto;
 import com.amx.jax.model.response.fx.ShoppingCartDetailsDto;
 import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.repository.fx.FxDeliveryDetailsRepository;
@@ -104,7 +106,7 @@ public class FcSaleApplicationDao {
 		}
 		
 		if(paygDetailsModel !=null && fxDeliveryModel!= null && requestmodel!=null){
-			for(ShoppingCartDetailsDto dto :requestmodel.getCartDetailList()){
+			for(FxApplicationDto dto :requestmodel.getCartDetailList()){
 				ReceiptPaymentApp applDeac = receiptPaymentApplRespo.findOne(dto.getApplicationId());
 				if(applDeac!=null && applDeac.getIsActive().equalsIgnoreCase(ConstantDocument.Yes)){
 				applDeac.setApplicationStatus(ConstantDocument.S);
@@ -227,11 +229,13 @@ public class FcSaleApplicationDao {
 					 receiptPaymentRespository.save(rcpt);
 					 //Update the Application Receipt
 					 updateAppicationReceiptPayment(rcpt);
+					 updateDeliveryDetails(rcpt.getDeliveryDetSeqId());
 				 }//end of for loop.
 			 }else{
 				 output.put("P_ERROR_MESG", "ERROR_RCPT_APPLICATION_SAVE");
 			 }
 			 
+			
 			 
 		    BigDecimal collectionFinanceYear = collection.getDocumentFinanceYear();
 			BigDecimal collectionDocumentNumber = collection.getDocumentNo();
@@ -245,6 +249,8 @@ public class FcSaleApplicationDao {
 			 }else{
 				 output.put("P_ERROR_MESG", "RCPT_APPLICATION_NOT_FOUND");
 			 }
+			 
+			 
 			output.put("P_COLLECT_FINYR", collectionFinanceYear);
 			output.put("P_COLLECTION_NO", collectionDocumentNumber);
 			output.put("P_COLLECTION_DOCUMENT_CODE", collectionDocumentCode);
@@ -306,4 +312,12 @@ public class FcSaleApplicationDao {
 	public FxDeliveryDetailsModel getDeliveryDetailModel(BigDecimal deliveryDetailSeqId) {
 		return fxDeliveryDetailsRepository.findOne(deliveryDetailSeqId);
 	}
+	
+	public void updateDeliveryDetails(BigDecimal delDelSeqId){
+		FxDeliveryDetailsModel deliveryDetails = fxDeliveryDetailsRepository.findOne(delDelSeqId);
+		if(deliveryDetails!=null){
+			deliveryDetails.setDeliveryStatus(ConstantDocument.ORD);
+		}
+	}
+	
 }

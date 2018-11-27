@@ -87,21 +87,18 @@ public class FcSaleDeliveryService {
 	}
 
 	public BoolRespModel markDelivered(FcSaleDeliveryMarkDeliveredRequest fcSaleDeliveryMarkDeliveredRequest) {
-		FxDeliveryDetailsModel deliveryDetail = validateFxDeliveryModel(
-				fcSaleDeliveryMarkDeliveredRequest.getDeliveryDetailSeqId());
-		deliveryDetail.setDeliveryStatus(FxDeliveryStatus.DELIVERED);
+		FxDeliveryDetailsModel deliveryDetail = validateFxDeliveryModel(fcSaleDeliveryMarkDeliveredRequest.getDeliveryDetailSeqId());
+		//deliveryDetail.setDeliveryStatus(FxDeliveryStatus.DELIVERED);
 		fcSaleApplicationDao.saveDeliveryDetail(deliveryDetail);
 		// TODO: updated table ex_appl_receipt_payment and column ORDER_STATUS
 		return new BoolRespModel(true);
 	}
 
 	public BoolRespModel markNotDelivered(FcSaleDeliveryMarkNotDeliveredRequest fcSaleDeliveryMarkNotDeliveredRequest) {
-		FxDeliveryDetailsModel deliveryDetail = validateFxDeliveryModel(
-				fcSaleDeliveryMarkNotDeliveredRequest.getDeliveryDetailSeqId());
-		deliveryDetail.setDeliveryStatus(FxDeliveryStatus.NOT_DELIVERED);
+		FxDeliveryDetailsModel deliveryDetail = validateFxDeliveryModel(fcSaleDeliveryMarkNotDeliveredRequest.getDeliveryDetailSeqId());
+		//deliveryDetail.setDeliveryStatus(FxDeliveryStatus.NOT_DELIVERED);
 		deliveryDetail.setRemarksId(fcSaleDeliveryMarkNotDeliveredRequest.getDeleviryRemarkSeqId());
 		fcSaleApplicationDao.saveDeliveryDetail(deliveryDetail);
-		// TODO: updated table ex_appl_receipt_payment and column ORDER_STATUS
 		return new BoolRespModel(true);
 	}
 

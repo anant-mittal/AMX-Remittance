@@ -19,13 +19,10 @@ public class FcSaleOrderTransactionRequestModel extends AbstractModel {
 	private BigDecimal purposeOfTrnx;
 	private String currencyDenominationType;
 	private BigDecimal foreignCurrencyId;
-	private String remarks;
 	private BigDecimal travelCountryId;
 	private String startDate;
 	private String endDate;
 	
-
-	private BigDecimal domXRate;
 	public BigDecimal getSourceOfFundId() {
 		return sourceOfFundId;
 	}
@@ -52,24 +49,13 @@ public class FcSaleOrderTransactionRequestModel extends AbstractModel {
 		this.currencyDenominationType = currencyDenominationType;
 	}
 
-	public BigDecimal getDomXRate() {
-		return domXRate;
-	}
-	public void setDomXRate(BigDecimal domXRate) {
-		this.domXRate = domXRate;
-	}
 	public BigDecimal getForeignCurrencyId() {
 		return foreignCurrencyId;
 	}
 	public void setForeignCurrencyId(BigDecimal foreignCurrencyId) {
 		this.foreignCurrencyId = foreignCurrencyId;
 	}
-	public String getRemarks() {
-		return remarks;
-	}
-	public void setRemarks(String remarks) {
-		this.remarks = remarks;
-	}
+	
 	public BigDecimal getTravelCountryId() {
 		return travelCountryId;
 	}

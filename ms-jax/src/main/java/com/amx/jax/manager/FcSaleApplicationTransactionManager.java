@@ -22,7 +22,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
-
 import com.amx.jax.AbstractModel;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.ApplicationProcedureDao;
@@ -34,6 +33,7 @@ import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.fx.FxDeliveryDetailsModel;
 import com.amx.jax.dbmodel.fx.FxDeliveryTimeSlotMaster;
 import com.amx.jax.dbmodel.fx.FxExchangeRateView;
+import com.amx.jax.dbmodel.fx.FxOrderTransactionModel;
 import com.amx.jax.dbmodel.ParameterDetails;
 import com.amx.jax.dbmodel.PaygDetailsModel;
 import com.amx.jax.dbmodel.ReceiptPaymentApp;
@@ -45,10 +45,13 @@ import com.amx.jax.model.request.fx.FcSaleOrderPaynowRequestModel;
 import com.amx.jax.model.request.fx.FcSaleOrderTransactionRequestModel;
 import com.amx.jax.model.response.fx.FcSaleApplPaymentReponseModel;
 import com.amx.jax.model.response.fx.FcSaleOrderApplicationResponseModel;
+import com.amx.jax.model.response.fx.FxApplicationDto;
 import com.amx.jax.model.response.fx.FxExchangeRateBreakup;
+import com.amx.jax.model.response.fx.FxOrderTransactionHistroyDto;
 import com.amx.jax.model.response.fx.ShoppingCartDetailsDto;
 import com.amx.jax.repository.CountryBranchRepository;
 import com.amx.jax.repository.fx.FxOrderDeliveryTimeSlotRepository;
+import com.amx.jax.repository.fx.FxOrderTransactionRespository;
 import com.amx.jax.repository.IApplicationCountryRepository;
 import com.amx.jax.repository.ICompanyDAO;
 import com.amx.jax.repository.ICurrencyDao;
@@ -111,6 +114,9 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 	@Autowired
 	ReceiptPaymentAppRepository rcptPaymentAppl;
 	
+	@Autowired
+	FxOrderTransactionRespository fxTransactionHistroyDao;
+	
 	/**
 	 * 
 	 */
@@ -154,9 +160,9 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 		mapAllDetailApplSave.put("requestmodel", requestmodel);
 		fsSaleapplicationDao.saveAllAppDetails(mapAllDetailApplSave);
 		BigDecimal knetamount= BigDecimal.ZERO;
-		List<ShoppingCartDetailsDto> listShoppingCart = requestmodel.getCartDetailList();
+		List<FxApplicationDto> listShoppingCart = requestmodel.getCartDetailList();
 		if(!listShoppingCart.isEmpty()){
-		for(ShoppingCartDetailsDto shoppingCart:listShoppingCart){
+		for(FxApplicationDto shoppingCart:listShoppingCart){
 			ReceiptPaymentApp rcptAppl = rcptPaymentAppl.findOne(shoppingCart.getApplicationId());
 			if(rcptAppl!=null && rcptAppl.getIsActive().equalsIgnoreCase(ConstantDocument.Yes) 
 					&& rcptAppl.getApplicationStatus().equalsIgnoreCase(ConstantDocument.S)){
@@ -171,7 +177,7 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 			}
 		} //end of for Loop.
 		}else{
-			
+			throw new GlobalException("No record found for payment", JaxError.NO_RECORD_FOUND);
 		}
 		
 		logger.info("Total knet amount without delivery charges: "+knetamount);
@@ -247,7 +253,6 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 		receiptPaymentAppl.setLocalTrnxAmount(exchbreakUpRate.getConvertedLCAmount() ==null?BigDecimal.ZERO:exchbreakUpRate.getConvertedLCAmount());
 		receiptPaymentAppl.setLocalNetAmount(exchbreakUpRate.getNetAmount()==null?BigDecimal.ZERO:exchbreakUpRate.getNetAmount());
 		receiptPaymentAppl.setTransactionActualRate(exchbreakUpRate.getRate()==null?BigDecimal.ZERO:exchbreakUpRate.getRate());
-		//receiptPaymentAppl.setDeliveryCharges(exchbreakUpRate.getDeliveryCharges()==null?BigDecimal.ZERO:exchbreakUpRate.getDeliveryCharges());
 		receiptPaymentAppl.setBranchId(countryBranchId);
 		UserFinancialYear userFinancialYear = finanacialService.getUserFinancialYear();
 		if(userFinancialYear!=null){
@@ -291,7 +296,6 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 				receiptPaymentAppl.setCreatedBy("WEB");
 			 }
 		}
-		receiptPaymentAppl.setRemarks(fcSalerequestModel.getRemarks());
 		try {
 			receiptPaymentAppl.setAccountMMYYYY(new SimpleDateFormat("dd/MM/yyyy").parse(DateUtil.getCurrentAccMMYear()));
 		} catch (ParseException e) {
@@ -455,12 +459,9 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 
 	
 	public PaygDetailsModel createPgDetails(FcSaleOrderPaynowRequestModel requestmodel){
-		List<ShoppingCartDetailsDto> listShoppingCart = requestmodel.getCartDetailList();
+		List<FxApplicationDto> listShoppingCart = requestmodel.getCartDetailList();
 		PaygDetailsModel pgmodel = new PaygDetailsModel();
-		if(!listShoppingCart.isEmpty()){
-			listShoppingCart.sort(Comparator.comparing(ShoppingCartDetailsDto::getApplicationId));
-			pgmodel.setCollDocNumber(listShoppingCart.get(0).getDocumentNo());
-		}
+		
 		UserFinancialYear userFinancialYear = finanacialService.getUserFinancialYear();
 		if(userFinancialYear!=null){
 			pgmodel.setCollDocFYear(userFinancialYear.getFinancialYear());
@@ -477,7 +478,6 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 				pgmodel.setCreatedBy("WEB");
 			 }
 		}
-		// fsSaleapplicationDao.savePaygDetails(pgmodel);
 		return pgmodel;
 		
 	}
@@ -492,7 +492,7 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 		deliveryDetails.setDeliveryCharges(getDeliveryChargesFromParameter());
 		deliveryDetails.setShippingAddressId(requestmodel.getShippingAddressId());
 		if(!requestmodel.getCartDetailList().isEmpty()){
-			for(ShoppingCartDetailsDto dto :requestmodel.getCartDetailList()){
+			for(FxApplicationDto dto :requestmodel.getCartDetailList()){
 				appldocNo =appldocNo.append(dto.getApplicationId()).append(",");
 			}
 			deliveryDetails.setApplDocNo(appldocNo.toString());
@@ -521,4 +521,36 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 		return delicharges; 
 	}
 	
+	
+	public List<FxOrderTransactionHistroyDto> getFxOrderTransactionHistroy(){
+		 BigDecimal customerId = metaData.getCustomerId();
+		 List<FxOrderTransactionModel> trnxFxOrderList = new ArrayList<FxOrderTransactionModel>();
+		List<FxOrderTransactionHistroyDto>   trnxFxOrderListDto = new ArrayList<>();
+		trnxFxOrderList= fxTransactionHistroyDao.getFxOrderTrnxList(customerId);
+		if(trnxFxOrderList.isEmpty()){
+			throw new GlobalException("fx order list is empty", JaxError.NO_RECORD_FOUND);
+		}else{
+			trnxFxOrderListDto = convertFxHistDto(trnxFxOrderList);
+		}
+		
+		return trnxFxOrderListDto;
+	}
+	
+public List<FxOrderTransactionHistroyDto> convertFxHistDto(List<FxOrderTransactionModel> trnxFxOrderList){
+	List<FxOrderTransactionHistroyDto> dtoList = new ArrayList<>();
+	trnxFxOrderList.forEach(trnxDetails->dtoList.add(convertTrnxDto(trnxDetails)));
+	return dtoList;
+}
+	
+public FxOrderTransactionHistroyDto convertTrnxDto(FxOrderTransactionModel trnxDetails){
+	FxOrderTransactionHistroyDto  dto = new FxOrderTransactionHistroyDto();
+try {
+	BeanUtils.copyProperties(dto, trnxDetails);
+} catch (IllegalAccessException | InvocationTargetException e) {
+	logger.error("convertModel  to convert currency", e);
+}
+return dto;
+}
+
+ 	
 }

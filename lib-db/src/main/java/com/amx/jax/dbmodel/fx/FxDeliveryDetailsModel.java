@@ -43,9 +43,9 @@ public class FxDeliveryDetailsModel implements Serializable{
 	private Date deliveryDate; 
 	@Column(name="DELIVERY_TIME")
 	private String deliveryTimeSlot;
+
 	@Column(name="DELIVERY_STATUS")
-	@Enumerated(EnumType.STRING)
-	private FxDeliveryStatus deliveryStatus;
+	private String deliveryStatus;
 	
 	@Column(name="DRIVER_EMPLOYEE_ID")
 	private BigDecimal driverEmployeeId;
@@ -66,7 +66,7 @@ public class FxDeliveryDetailsModel implements Serializable{
 	@Column(name="EX_DELIVERY_REMARK_SEQ_ID")
 	private BigDecimal remarksId;
 	
-	
+	/** Status description will come  from master **/
 	@Column(name="DELIVERY_CHARGES")
     private BigDecimal deliveryCharges;
 	
@@ -165,10 +165,10 @@ public class FxDeliveryDetailsModel implements Serializable{
 	public void setTransactionReceipt(String transactionReceipt) {
 		this.transactionReceipt = transactionReceipt;
 	}
-	public FxDeliveryStatus getDeliveryStatus() {
+	public String getDeliveryStatus() {
 		return deliveryStatus;
 	}
-	public void setDeliveryStatus(FxDeliveryStatus deliveryStatus) {
+	public void setDeliveryStatus(String deliveryStatus) {
 		this.deliveryStatus = deliveryStatus;
 	}
 

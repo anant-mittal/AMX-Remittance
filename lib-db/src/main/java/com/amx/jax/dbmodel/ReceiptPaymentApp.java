@@ -67,7 +67,6 @@ public class ReceiptPaymentApp implements Serializable{
 	private BigDecimal sourceOfIncomeid;
 	private Clob signatureSpacimenClob;
 	private String transactionIPAddress;
-	//private BigDecimal deliveryCharges;
 	private String denominationType;
 	private BigDecimal pgPaymentSeqDtlId;
 	private BigDecimal deliveryDetSeqId;
