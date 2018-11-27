@@ -44,8 +44,8 @@ public class FxDeliveryDetailsModel implements Serializable{
 	@Column(name="DELIVERY_TIME")
 	private String deliveryTimeSlot;
 
-	@Column(name="DELIVERY_STATUS")
-	private String deliveryStatus;
+	@Column(name="ORDER_STATUS")
+	private String orderStatus;
 	
 	@Column(name="DRIVER_EMPLOYEE_ID")
 	private BigDecimal driverEmployeeId;
@@ -168,17 +168,18 @@ public class FxDeliveryDetailsModel implements Serializable{
 	public void setTransactionReceipt(String transactionReceipt) {
 		this.transactionReceipt = transactionReceipt;
 	}
-	public String getDeliveryStatus() {
-		return deliveryStatus;
-	}
-	public void setDeliveryStatus(String deliveryStatus) {
-		this.deliveryStatus = deliveryStatus;
-	}
+	
 	public String getOtpToken() {
 		return otpToken;
 	}
 	public void setOtpToken(String otpToken) {
 		this.otpToken = otpToken;
+	}
+	public String getOrderStatus() {
+		return orderStatus;
+	}
+	public void setOrderStatus(String orderStatus) {
+		this.orderStatus = orderStatus;
 	}
 
 }

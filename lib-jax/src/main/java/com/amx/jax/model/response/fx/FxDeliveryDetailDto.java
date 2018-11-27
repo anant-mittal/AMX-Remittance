@@ -8,7 +8,6 @@ public class FxDeliveryDetailDto {
 	ShippingAddressDto address;
 	String transactionRefId;
 	String inventoryId;//
-	String deliveryStatus;
 	String deliveryRemark;
 	String orderStatus;
 
@@ -58,14 +57,6 @@ public class FxDeliveryDetailDto {
 
 	public void setDeliveryTimeSlot(String deliveryTimeSlot) {
 		this.deliveryTimeSlot = deliveryTimeSlot;
-	}
-
-	public String getDeliveryStatus() {
-		return deliveryStatus;
-	}
-
-	public void setDeliveryStatus(String deliveryStatus) {
-		this.deliveryStatus = deliveryStatus;
 	}
 
 	public String getDeliveryRemark() {

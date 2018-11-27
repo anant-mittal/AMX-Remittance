@@ -316,7 +316,7 @@ public class FcSaleApplicationDao {
 	public void updateDeliveryDetails(BigDecimal delDelSeqId){
 		FxDeliveryDetailsModel deliveryDetails = fxDeliveryDetailsRepository.findOne(delDelSeqId);
 		if(deliveryDetails!=null){
-			deliveryDetails.setDeliveryStatus(ConstantDocument.ORD);
+			deliveryDetails.setOrderStatus(ConstantDocument.ORD);
 		}
 	}
 	
