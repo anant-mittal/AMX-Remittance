@@ -19,6 +19,8 @@ public class DeviceConfigs {
 	public static class DeviceData implements Serializable {
 		private static final long serialVersionUID = 2981932845270868040L;
 		private String terminalId;
+		private String globalIp;
+		private String localIp;
 		private long updatestamp;
 
 		public long getUpdatestamp() {
@@ -54,6 +56,22 @@ public class DeviceConfigs {
 
 		public void setDeviceReqKey(String deviceReqKey) {
 			this.deviceReqKey = deviceReqKey;
+		}
+
+		public String getGlobalIp() {
+			return globalIp;
+		}
+
+		public void setGlobalIp(String globalIp) {
+			this.globalIp = globalIp;
+		}
+
+		public String getLocalIp() {
+			return localIp;
+		}
+
+		public void setLocalIp(String localIp) {
+			this.localIp = localIp;
 		}
 	}
 
