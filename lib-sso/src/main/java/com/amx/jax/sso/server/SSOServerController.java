@@ -156,6 +156,7 @@ public class SSOServerController {
 				init.setIpAddress(userDevice.getIp());
 				init.setDeviceId(userDevice.getFingerprint());
 				init.setDeviceType(userDevice.getType());
+				init.setTerminalId(sSOTranx.get().getTerminalId());
 				UserAuthInitResponseDTO initResp = rbaacServiceClient.initAuthForUser(init).getResult();
 
 				model.put("mOtpPrefix", initResp.getmOtpPrefix());
