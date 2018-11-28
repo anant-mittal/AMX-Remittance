@@ -642,13 +642,12 @@ public class UserService extends AbstractUserService {
 		onlineCustomer.setPassword(cryptoUtil.getHash(onlineCustomer.getUserName(), model.getPassword()));
 		custDao.saveOnlineCustomer(onlineCustomer);
 		
-		CustomerOnlineRegistration onlineCust = custDao.getOnlineCustomerByCustomerId(custId);
-		CustomerModel outputModel = convert(onlineCust);
+		CustomerModel outputModel = convert(onlineCustomer);
 		if (outputModel.getEmail() != null) {
-			logger.info("The execute mail address is : " +model.getEmail());
 			jaxNotificationService.sendProfileChangeNotificationEmail(model, outputModel.getPersoninfo());
+			logger.info("The update password mail notification success");
 		}
-		logger.info("The execute mail address After " +outputModel.toString() );
+		logger.info("The update password mail notification model " +outputModel.toString());
 		
 		BoolRespModel responseModel = new BoolRespModel(true);
 		auditService.log(createUserServiceEvent(model, JaxUserAuditEvent.Type.CUSTOMER_PASSWORD_UPDATE_SUCCESS));
