@@ -1,6 +1,7 @@
 package com.amx.jax.payment.gateway;
 
 import com.amx.jax.dict.Channel;
+import com.amx.jax.dict.PayGServiceCode;
 import com.amx.jax.dict.Tenant;
 
 public class PayGParams {
@@ -9,9 +10,12 @@ public class PayGParams {
 	String docNo = null;
 	String name = null;
 	String redirectUrl = null;
-	Tenant tenant = null;
 	String payId = null;
+	Tenant tenant = null;
 	Channel channel = null;
+
+	PayGServiceCode serviceCode = null;
+
 	Object product = null;
 
 	public String getRedirectUrl() {
@@ -96,6 +100,14 @@ public class PayGParams {
 
 	public void setProduct(Object product) {
 		this.product = product;
+	}
+
+	public PayGServiceCode getServiceCode() {
+		return serviceCode;
+	}
+
+	public void setServiceCode(PayGServiceCode serviceCode) {
+		this.serviceCode = serviceCode;
 	}
 
 }

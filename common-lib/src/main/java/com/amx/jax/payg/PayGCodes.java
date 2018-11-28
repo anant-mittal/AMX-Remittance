@@ -22,13 +22,14 @@ public class PayGCodes {
 		TXN_SUCCESS(CodeTypes.VALIDATION, CodeStatus.APPROVED, "The transaction is successfully completed"),
 
 		UNKNOWN(CodeTypes.UNCERTAIN, CodeStatus.APPROVED, "Not able to determine"),
-		
-		TXN_DATA(CodeTypes.VALIDATION, CodeStatus.DECLINED, "The transaction could not be completed due to invalid/missing transaction data"),
 
-		TXN_AUTH(CodeTypes.VALIDATION, CodeStatus.DECLINED, "The transaction could not be completed due to authentication failure"),
-		
+		TXN_DATA(CodeTypes.VALIDATION, CodeStatus.DECLINED,
+				"The transaction could not be completed due to invalid/missing transaction data"),
+
+		TXN_AUTH(CodeTypes.VALIDATION, CodeStatus.DECLINED,
+				"The transaction could not be completed due to authentication failure"),
+
 		TXN_CANCEL_SUCC(CodeTypes.TECHNICAL, CodeStatus.DECLINED, "The transaction has been cancelled");
-		
 
 		CodeTypes type;
 		CodeStatus status;

@@ -25,6 +25,7 @@ import com.amx.jax.dict.Channel;
 import com.amx.jax.dict.PayGServiceCode;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.logger.AuditService;
+import com.amx.jax.payment.PaymentConstant;
 import com.amx.jax.payment.gateway.PayGClient;
 import com.amx.jax.payment.gateway.PayGClients;
 import com.amx.jax.payment.gateway.PayGConfig;
@@ -114,6 +115,7 @@ public class PayGController {
 			channel = Channel.ONLINE;
 		payGParams.setChannel(channel);
 		payGParams.setProduct(prod);
+		payGParams.setServiceCode(payGClient.getClientCode());
 
 		auditService.log(new PayGEvent(PayGEvent.Type.PAYMENT_INIT, payGParams));
 
@@ -138,21 +140,23 @@ public class PayGController {
 		return null;
 	}
 
-	// @RequestMapping(value = { "/capture/{paygCode}/{tenant}/*",
-	// "/capture/{paygCode}/{tenant}/" })
-	@RequestMapping(value = { "/capture/{paygCode}/{tenant}/{channel}/*", "/capture/{paygCode}/{tenant}/{channel}/",
-			"/v2/capture/{paygCode}/{tenant}/{channel}/{product}" })
+	@RequestMapping(value = { PaymentConstant.Path.PAYMENT_CAPTURE_CALLBACK_V1_WILDCARD,
+			PaymentConstant.Path.PAYMENT_CAPTURE_CALLBACK_V1,
+			PaymentConstant.Path.PAYMENT_CAPTURE_CALLBACK_V2,
+			PaymentConstant.Path.PAYMENT_CAPTURE_CALLBACK_V2_WILDCARD
+	})
 	public String paymentCapture(Model model, RedirectAttributes ra,
 			@PathVariable("tenant") Tenant tnt,
 			@PathVariable("paygCode") PayGServiceCode paygCode,
 			@PathVariable("channel") Channel channel,
-			@PathVariable(value = "prod", required = false) String product) {
+			@PathVariable(value = "product", required = false) String product) {
 
 		TenantContextHolder.setCurrent(tnt);
 		LOGGER.info("Inside capture method with parameters tenant : " + tnt + " paygCode : " + paygCode);
 		PayGClient payGClient = payGClients.getPayGClient(paygCode);
 
 		PayGResponse payGResponse = new PayGResponse();
+
 		try {
 			payGResponse = payGClient.capture(new PayGResponse(), channel, product);
 		} catch (Exception e) {
