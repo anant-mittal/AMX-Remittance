@@ -159,13 +159,13 @@ public class FxOrderPaymentManager {
 			 }
 			 
 			}else{
-					logger.info("Otehr than captured result  :paymentCapture else ***   : PaymentResponseDto "+paymentResponse.getPaymentId()+"\t Result :"+paymentResponse.getResultCode()+"\t Custoemr Id :"+paymentResponse.getCustomerId());
 					listOfRecAppl = receiptAppRepository.fetchreceiptPaymentAppl(paymentResponse.getCustomerId(), new BigDecimal(paymentResponse.getUdf3()));
 					if(!listOfRecAppl.isEmpty()) {
 						rcptApplPaydao.updatePaygDetails(listOfRecAppl, paymentResponse);
+						
 					}
 					
-					throw new GlobalException("else Payment capture failed", JaxError.PAYMENT_UPDATION_FAILED);
+					
 				}
 		}catch(Exception e){
 			logger.error("try--catch block paymentCapture :"+e.getMessage());

@@ -15,6 +15,8 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
+
+
 import com.amx.jax.constants.JaxTransactionStatus;
 import com.amx.jax.dbmodel.CountryMasterView;
 import com.amx.jax.dbmodel.Customer;
@@ -47,6 +49,8 @@ import com.amx.jax.repository.PaygDetailsRepository;
 import com.amx.jax.repository.ReceiptPaymentAppRepository;
 import com.amx.jax.repository.fx.FxDeliveryDetailsRepository;
 import com.amx.jax.repository.fx.FxOrderTransactionRespository;
+
+import org.apache.commons.lang.StringUtils;
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Component
@@ -98,6 +102,12 @@ public class FxOrderReportManager {
 	@Autowired
 	ReceiptPaymentAppRepository rcptPaymentAppl;
 	
+	/**
+	 * 
+	 * @param collNo
+	 * @param collFyr
+	 * @return
+	 */
 	public FxOrderReportResponseDto getReportDetails(BigDecimal collNo,BigDecimal collFyr){
 		FxOrderReportResponseDto reportModel = new FxOrderReportResponseDto();
 		BigDecimal custoemrId = metaData.getCustomerId();
@@ -127,15 +137,36 @@ public class FxOrderReportManager {
 		return reportModel; 
 	}
 	
+	/*
+	 * To get Transaction status: 
+	 */
 	
 	public FxOrderTransactionStatusResponseDto  getTransactionStatus(BigDecimal paymentSeqId){
-		FxOrderReportResponseDto reportModel = new FxOrderReportResponseDto();
+		FxOrderTransactionStatusResponseDto responseModel = new FxOrderTransactionStatusResponseDto();
+		FxOrderTransactionHistroyDto histroyDto = new FxOrderTransactionHistroyDto();
 		BigDecimal custoemrId = metaData.getCustomerId();
+		BigDecimal netAmount =BigDecimal.ZERO;
+		BigDecimal deliveryCharges =BigDecimal.ZERO;
 		ReceiptPaymentApp applReceipt = rcptPaymentAppl.getApplicationByPagdetailSeqIAndcustomerId(custoemrId, paymentSeqId);
 		PaygDetailsModel pgDetailsModel = payGDeatilsRepos.findOne(paymentSeqId);
+		FxDeliveryDetailsModel fxDelDetailModel = deliveryDetailsRepos.findOne(applReceipt.getDeliveryDetSeqId());
 		JaxTransactionStatus jaxTrnxStatus = getJaxTransactionStatus(pgDetailsModel,applReceipt);
-		
-		return null;
+		if(applReceipt!=null){
+		List<FxOrderTransactionModel> fxOrderTrnxList =  fxTransactionHistroyDao.getFxOrderTrnxListByCollectionDocNumber(custoemrId,applReceipt.getColDocNo(),applReceipt.getColDocFyr());
+			 if(!fxOrderTrnxList.isEmpty()){
+			    	List<FxOrderTransactionHistroyDto> fxOrderTrnxListDto = applTrnxManager.convertFxHistDto(fxOrderTrnxList);
+			    	responseModel.setFxOrderTrnxHistroyDTO(fxOrderTrnxListDto);
+			 }
+		}
+		if(applReceipt!=null){
+			netAmount = netAmount.add(applReceipt.getLocalTrnxAmount());
+		}
+		if(fxDelDetailModel !=null){
+			deliveryCharges = fxDelDetailModel.getDeliveryCharges();
+		}	
+		responseModel.setNetAmount(netAmount.add(deliveryCharges));
+		responseModel.setStatus(jaxTrnxStatus);
+		return responseModel;
 	}
 	
 	
