@@ -18,6 +18,7 @@ import com.amx.amxlib.meta.model.CountryMasterDTO;
 import com.amx.amxlib.meta.model.PrefixDTO;
 import com.amx.amxlib.meta.model.RoutingBankMasterDTO;
 import com.amx.amxlib.meta.model.ServiceGroupMasterDescDto;
+import com.amx.amxlib.meta.model.ViewCityDto;
 import com.amx.amxlib.meta.model.ViewDistrictDto;
 import com.amx.amxlib.meta.model.ViewStateDto;
 import com.amx.amxlib.model.BeneRelationsDescriptionDto;
@@ -87,8 +88,7 @@ public class MetaController {
 	/**
 	 * Ccy list.
 	 *
-	 * @param xrate
-	 *            the xrate
+	 * @param xrate the xrate
 	 * @return the response wrapper
 	 */
 	@RequestMapping(value = { "/api/meta/ccy/list" }, method = { RequestMethod.POST, RequestMethod.GET })
@@ -115,8 +115,7 @@ public class MetaController {
 	/**
 	 * Gets the list of countries.
 	 *
-	 * @param bene
-	 *            the bene
+	 * @param bene the bene
 	 * @return the list of countries
 	 */
 	@CacheForTenant
@@ -132,8 +131,7 @@ public class MetaController {
 	/**
 	 * Gets the list of countries pub.
 	 *
-	 * @param bene
-	 *            the bene
+	 * @param bene the bene
 	 * @return the list of countries pub
 	 */
 	@RequestMapping(value = { "/pub/meta/country/list" }, method = { RequestMethod.GET })
@@ -144,8 +142,7 @@ public class MetaController {
 	/**
 	 * Gets the list of countries pri.
 	 *
-	 * @param bene
-	 *            the bene
+	 * @param bene the bene
 	 * @return the list of countries pri
 	 */
 	@RequestMapping(value = { "/api/meta/country/list" }, method = { RequestMethod.GET })
@@ -156,8 +153,7 @@ public class MetaController {
 	/**
 	 * Gets the list of states for country.
 	 *
-	 * @param countryId
-	 *            the country id
+	 * @param countryId the country id
 	 * @return the list of states for country
 	 */
 	@CacheForTenant
@@ -170,8 +166,7 @@ public class MetaController {
 	/**
 	 * Gets the list of districts for state.
 	 *
-	 * @param stateId
-	 *            the state id
+	 * @param stateId the state id
 	 * @return the list of districts for state
 	 */
 	@RequestMapping(value = { "/api/meta/district/list", "/pub/meta/district/list" }, method = { RequestMethod.GET })
@@ -180,15 +175,18 @@ public class MetaController {
 				jaxService.setDefaults().getMetaClient().getDistrictList(stateId).getResults());
 	}
 
+	@RequestMapping(value = { "/api/meta/city/list", "/pub/meta/city/list" }, method = { RequestMethod.GET })
+	public ResponseWrapper<List<ViewCityDto>> getListOfCitiesForDistrict(@RequestParam BigDecimal districtId) {
+		return new ResponseWrapper<List<ViewCityDto>>(
+				jaxService.setDefaults().getMetaClient().getCitytList(districtId).getResults());
+	}
+
 	/**
 	 * Ccy bene list.
 	 *
-	 * @param countryId
-	 *            the country id
-	 * @param serviceGroupId
-	 *            the service group id
-	 * @param routingBankId
-	 *            the routing bank id
+	 * @param countryId      the country id
+	 * @param serviceGroupId the service group id
+	 * @param routingBankId  the routing bank id
 	 * @return the response wrapper
 	 */
 	@RequestMapping(value = "/api/meta/bnfcry/ccy", method = { RequestMethod.GET })
@@ -202,8 +200,7 @@ public class MetaController {
 	/**
 	 * Gets the list of account types.
 	 *
-	 * @param countryId
-	 *            the country id
+	 * @param countryId the country id
 	 * @return the list of account types
 	 */
 	@RequestMapping(value = "/api/meta/bnfcry/accounts", method = { RequestMethod.GET })
@@ -227,8 +224,7 @@ public class MetaController {
 	/**
 	 * Gets the list of banks.
 	 *
-	 * @param countryId
-	 *            the country id
+	 * @param countryId the country id
 	 * @return the list of banks
 	 */
 	@RequestMapping(value = "/api/meta/bank/list", method = { RequestMethod.GET })
@@ -240,8 +236,7 @@ public class MetaController {
 	/**
 	 * Gets the list of bank branches.
 	 *
-	 * @param param
-	 *            the param
+	 * @param param the param
 	 * @return the list of bank branches
 	 */
 	@RequestMapping(value = "/api/meta/bank_branch/list", method = { RequestMethod.POST })
@@ -253,8 +248,7 @@ public class MetaController {
 	/**
 	 * Gets the list of setvice providers.
 	 *
-	 * @param param
-	 *            the param
+	 * @param param the param
 	 * @return the list of setvice providers
 	 */
 	@RequestMapping(value = "/api/meta/service_provider/list", method = { RequestMethod.POST })
@@ -267,8 +261,7 @@ public class MetaController {
 	/**
 	 * Gets the list of agents.
 	 *
-	 * @param param
-	 *            the param
+	 * @param param the param
 	 * @return the list of agents
 	 */
 	@RequestMapping(value = "/api/meta/agent/list", method = { RequestMethod.POST })
@@ -280,8 +273,7 @@ public class MetaController {
 	/**
 	 * Gets the list of agent branches.
 	 *
-	 * @param param
-	 *            the param
+	 * @param param the param
 	 * @return the list of agent branches
 	 */
 	@RequestMapping(value = "/api/meta/agent_branch/list", method = { RequestMethod.POST })
@@ -296,7 +288,7 @@ public class MetaController {
 	 *
 	 * @return the exchange branches
 	 */
-	//@CacheForTenant
+	// @CacheForTenant
 	@RequestMapping(value = { "/pub/meta/branch/list" }, method = { RequestMethod.GET })
 	public ResponseWrapper<List<BranchDetailDTO>> getExchangeBranches() {
 		return new ResponseWrapper<List<BranchDetailDTO>>(
