@@ -146,7 +146,7 @@ public class BenefitClient extends TransactionModel<PaymentResponseDto> implemen
 	}
 
 	@Override
-	public PayGResponse capture(PayGResponse gatewayResponse, Channel channel) {
+	public PayGResponse capture(PayGResponse gatewayResponse, Channel channel, Object product) {
 
 		// Capturing GateWay Response
 		String resultResponse = request.getParameter("Error");

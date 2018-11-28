@@ -8,6 +8,9 @@ import com.amx.jax.payg.PayGCodes.CodeCategory;
 public class PaymentResponseDto extends ARespModel {
 
 	private static final long serialVersionUID = -7991187321598015743L;
+
+	public static final String PAYMENT_CAPTURE_URL = "/callback/payg/payment/capture";
+
 	String paymentId;
 	String errorText;
 	String udf1;
@@ -31,6 +34,8 @@ public class PaymentResponseDto extends ARespModel {
 	BigDecimal collectionDocumentCode;
 	String error = null;
 	CodeCategory errorCategory = null;
+
+	String product;
 
 	public String getPaymentId() {
 		return paymentId;
@@ -226,6 +231,14 @@ public class PaymentResponseDto extends ARespModel {
 				+ companyId + ", userName=" + userName + ", collectionFinanceYear=" + collectionFinanceYear
 				+ ", collectionDocumentNumber=" + collectionDocumentNumber + ", collectionDocumentCode="
 				+ collectionDocumentCode + ", error=" + error + ", errorCategory=" + errorCategory + "]";
+	}
+
+	public String getProduct() {
+		return product;
+	}
+
+	public void setProduct(String product) {
+		this.product = product;
 	}
 
 }

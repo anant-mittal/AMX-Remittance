@@ -75,20 +75,18 @@ public class PayGParams {
 		this.payId = payId;
 	}
 
-    /**
-     * @return the channel
-     */
-    public Channel getChannel() {
-        return channel;
-    }
+	/**
+	 * @return the channel
+	 */
+	public Channel getChannel() {
+		return channel;
+	}
 
-    /**
-     * @param channel the channel to set
-     */
-    public void setChannel(Channel channel) {
-        this.channel = channel;
-    }
-
-
+	/**
+	 * @param channel the channel to set
+	 */
+	public void setChannel(Channel channel) {
+		this.channel = channel;
+	}
 
 }

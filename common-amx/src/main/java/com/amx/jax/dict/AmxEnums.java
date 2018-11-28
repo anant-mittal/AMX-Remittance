@@ -17,6 +17,10 @@ public class AmxEnums {
 		public String note() {
 			return note;
 		}
-
 	}
+
+	public static enum Products implements EnumType {
+		REMIT, FXORDER;
+	}
+
 }

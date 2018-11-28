@@ -31,6 +31,7 @@ public class PayGService {
 				.addParameter("trckid", payment.getMerchantTrackId()).addParameter("pg", payment.getPgCode())
 				.addParameter("docFy", payment.getDocFinYear()).addParameter("docNo", payment.getDocNo())
 				.addParameter("tnt", context.getTenant()).addParameter("callbackd", callbackd)
+				.addParameter("prod", payment.getProduct())
 				.addParameter(AppConstants.TRACE_ID_XKEY, context.getTraceId());
 		return builder.getURL();
 	}

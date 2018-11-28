@@ -4,12 +4,13 @@ import com.amx.jax.logger.AuditEvent;
 
 public class PayGEvent extends AuditEvent {
 
+	private static final long serialVersionUID = 3439794415625434212L;
+
 	public enum Type implements EventType {
 		PAYMENT_INIT, PAYMENT_CAPTURED;
 
 		@Override
 		public EventMarker marker() {
-			// TODO Auto-generated method stub
 			return null;
 		}
 	}

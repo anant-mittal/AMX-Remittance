@@ -159,17 +159,17 @@ public class FcSaleOrderController implements IFxOrderService {
 	public AmxApiResponse<ShoppingCartDetailsDto, Object> fetchShoppingCartList() {
 		return fcSaleService.fetchShoppingCartList();
 	}
-	
-	
+
 	@RequestMapping(value = Path.FC_SALE_SAVE_PAYMENT_ID, method = RequestMethod.POST)
-	public AmxApiResponse<PaymentResponseDto,Object> savePaymentId(@RequestBody PaymentResponseDto paymentResponse) {
-		logger.info("save-fcsale Controller :" + paymentResponse.getCustomerId() + "\t country ID :"+ paymentResponse.getApplicationCountryId() + "\t Compa Id:" + paymentResponse.getCompanyId());
+	public AmxApiResponse<PaymentResponseDto, Object> savePaymentId(@RequestBody PaymentResponseDto paymentResponse) {
+		logger.info("save-fcsale Controller :" + paymentResponse.getCustomerId() + "\t country ID :"
+				+ paymentResponse.getApplicationCountryId() + "\t Compa Id:" + paymentResponse.getCompanyId());
 		return fcSaleService.savePaymentId(paymentResponse);
-		
+
 	}
 
 	@RequestMapping(value = Path.FC_SALE_ORDER_TRNX_HIST, method = RequestMethod.GET)
-	public AmxApiResponse<FxOrderTransactionHistroyDto, Object> getFxOrderTransactionHistroy()throws Exception {
+	public AmxApiResponse<FxOrderTransactionHistroyDto, Object> getFxOrderTransactionHistroy() throws Exception {
 		return fcSaleService.getFxOrderTransactionHistroy();
 	}
 

@@ -121,7 +121,7 @@ public class OmannetClient implements PayGClient {
 
 	@SuppressWarnings("finally")
 	@Override
-	public PayGResponse capture(PayGResponse gatewayResponse, Channel channel) {
+	public PayGResponse capture(PayGResponse gatewayResponse, Channel channel, Object product) {
 
 		// Capturing GateWay Response
 		gatewayResponse.setPaymentId(request.getParameter("paymentid"));
