@@ -48,6 +48,7 @@ public class UserAuthInitReqDTO implements Serializable {
 	private DeviceType deviceType;
 
 	/** The login type. */
+	@NotNull(message = "Login Type Can not be Null or Empty")
 	private LOGIN_TYPE loginType = LOGIN_TYPE.SELF;
 
 	/**

@@ -12,6 +12,7 @@ import java.io.Serializable;
  */
 public final class UserAuthInitResponseDTO implements Serializable {
 
+	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 3674143419419981482L;
 
 	/** The auth transaction id. */
@@ -22,6 +23,12 @@ public final class UserAuthInitResponseDTO implements Serializable {
 
 	/** The e otp prefix. */
 	private String eOtpPrefix;
+
+	/** The partner M otp prefix. */
+	private String partnerMOtpPrefix;
+
+	/** The partner E otp prefix. */
+	private String partnerEOtpPrefix;
 
 	/** The init otp time. */
 	private String initOtpTime;
@@ -84,6 +91,44 @@ public final class UserAuthInitResponseDTO implements Serializable {
 	 */
 	public void seteOtpPrefix(String eOtpPrefix) {
 		this.eOtpPrefix = eOtpPrefix;
+	}
+
+	/**
+	 * Gets the partner M otp prefix.
+	 *
+	 * @return the partner M otp prefix
+	 */
+	public String getPartnerMOtpPrefix() {
+		return partnerMOtpPrefix;
+	}
+
+	/**
+	 * Sets the partner M otp prefix.
+	 *
+	 * @param partnerMOtpPrefix
+	 *            the new partner M otp prefix
+	 */
+	public void setPartnerMOtpPrefix(String partnerMOtpPrefix) {
+		this.partnerMOtpPrefix = partnerMOtpPrefix;
+	}
+
+	/**
+	 * Gets the partner E otp prefix.
+	 *
+	 * @return the partner E otp prefix
+	 */
+	public String getPartnerEOtpPrefix() {
+		return partnerEOtpPrefix;
+	}
+
+	/**
+	 * Sets the partner E otp prefix.
+	 *
+	 * @param partnerEOtpPrefix
+	 *            the new partner E otp prefix
+	 */
+	public void setPartnerEOtpPrefix(String partnerEOtpPrefix) {
+		this.partnerEOtpPrefix = partnerEOtpPrefix;
 	}
 
 	/**
