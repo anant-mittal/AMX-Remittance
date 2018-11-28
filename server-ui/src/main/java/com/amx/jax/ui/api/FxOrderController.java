@@ -28,7 +28,10 @@ import com.amx.jax.model.response.fx.FcSaleApplPaymentReponseModel;
 import com.amx.jax.model.response.fx.FcSaleOrderApplicationResponseModel;
 import com.amx.jax.model.response.fx.FcSaleOrderDefaultResponseModel;
 import com.amx.jax.model.response.fx.FxExchangeRateDto;
+import com.amx.jax.model.response.fx.FxOrderReportResponseDto;
 import com.amx.jax.model.response.fx.FxOrderShoppingCartResponseModel;
+import com.amx.jax.model.response.fx.FxOrderTransactionHistroyDto;
+import com.amx.jax.model.response.fx.FxOrderTransactionStatusResponseDto;
 import com.amx.jax.model.response.fx.PurposeOfTransactionDto;
 import com.amx.jax.model.response.fx.ShippingAddressDto;
 import com.amx.jax.model.response.fx.TimeSlotDto;
@@ -81,7 +84,7 @@ public class FxOrderController {
 	}
 
 	@RequestMapping(value = "/api/fxo/application/add", method = { RequestMethod.POST })
-	public ResponseWrapper<FcSaleOrderApplicationResponseModel> saveOrder(
+	public ResponseWrapper<FcSaleOrderApplicationResponseModel> getSaveApplication(
 			@RequestBody FcSaleOrderTransactionRequestModel requestModel) {
 		return ResponseWrapper.build(fcSaleOrderClient.getSaveApplication(requestModel));
 	}
@@ -134,4 +137,24 @@ public class FxOrderController {
 								+ "/app/landing/fxorder"));
 	}
 
+	@RequestMapping(value = "/api/fxo/tranx/list", method = RequestMethod.GET)
+	public ResponseWrapper<List<FxOrderTransactionHistroyDto>> getFxOrderTransactionHistroy() {
+		return ResponseWrapper.buildList(fcSaleOrderClient.getFxOrderTransactionHistroy());
+	}
+
+	@RequestMapping(value = "/api/fxo/tranx/report", method = RequestMethod.GET)
+	public ResponseWrapper<FxOrderReportResponseDto> getFxOrderTransactionReport(
+			@RequestParam(required = false) BigDecimal collectionDocumentCode,
+			@RequestParam(required = false) BigDecimal collectionDocumentFinYear) {
+		return ResponseWrapper
+				.build(fcSaleOrderClient.getFxOrderTransactionReport(collectionDocumentCode,
+						collectionDocumentFinYear));
+	}
+
+	@RequestMapping(value = "/api/fxo/tranx/status", method = RequestMethod.GET)
+	public ResponseWrapper<FxOrderTransactionStatusResponseDto> getFxOrderTransactionStatus(
+			@RequestParam(required = false) BigDecimal documentIdForPayment) {
+		return ResponseWrapper
+				.build(fcSaleOrderClient.getFxOrderTransactionStatus(documentIdForPayment));
+	}
 }

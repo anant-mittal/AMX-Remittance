@@ -24,15 +24,16 @@ public class PayGService {
 
 		URLBuilder builder = new URLBuilder(appConfig.getPaygURL());
 
-		String callbackUrl = callback + "?docNo=" + payment.getDocNo() + "&docFy=" + payment.getDocFinYear();
+		String callbackUrl = callback + "?docNo=" + payment.getDocNo() + "&docFy=" + payment.getDocFinYear()
+				+ "&trckid=" + payment.getMerchantTrackId();
 		String callbackd = Base64.getEncoder().encodeToString(callbackUrl.getBytes());
 
-		builder.setPath("app/payment").addParameter("amount", payment.getNetPayableAmount())
-				.addParameter("trckid", payment.getMerchantTrackId()).addParameter("pg", payment.getPgCode())
-				.addParameter("docFy", payment.getDocFinYear()).addParameter("docNo", payment.getDocNo())
-				.addParameter("tnt", context.getTenant()).addParameter("callbackd", callbackd)
-				.addParameter("prod", payment.getProduct())
-				.addParameter(AppConstants.TRACE_ID_XKEY, context.getTraceId());
+		builder.path("app/payment").queryParam("amount", payment.getNetPayableAmount())
+				.queryParam("trckid", payment.getMerchantTrackId()).queryParam("pg", payment.getPgCode())
+				.queryParam("docFy", payment.getDocFinYear()).queryParam("docNo", payment.getDocNo())
+				.queryParam("tnt", context.getTenant()).queryParam("callbackd", callbackd)
+				.queryParam("prod", payment.getProduct())
+				.queryParam(AppConstants.TRACE_ID_XKEY, context.getTraceId());
 		return builder.getURL();
 	}
 

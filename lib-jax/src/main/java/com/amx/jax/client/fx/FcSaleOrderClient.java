@@ -256,12 +256,14 @@ public class FcSaleOrderClient implements IFxOrderService {
 
 	}
 
-	
 	@Override
 	public AmxApiResponse<PaymentResponseDto, Object> savePaymentId(PaymentResponseDto requestModel) {
 		try {
 			LOGGER.debug("client Save pg details  :" + requestModel.toString());
-			return restService.ajax(appConfig.getJaxURL() + Path.FC_SALE_SAVE_PAYMENT_ID).meta(new JaxMetaInfo()).post(requestModel).as(new ParameterizedTypeReference<AmxApiResponse<PaymentResponseDto, Object>>() {});
+			return restService.ajax(appConfig.getJaxURL() + Path.FC_SALE_SAVE_PAYMENT_ID).meta(new JaxMetaInfo())
+					.post(requestModel)
+					.as(new ParameterizedTypeReference<AmxApiResponse<PaymentResponseDto, Object>>() {
+					});
 		} catch (Exception e) {
 			LOGGER.error("exception in getCurrencyByCountryId : ", e);
 			return JaxSystemError.evaluate(e);
@@ -270,29 +272,28 @@ public class FcSaleOrderClient implements IFxOrderService {
 	}
 
 	@Override
-	public AmxApiResponse<FxOrderTransactionHistroyDto, Object> getFxOrderTransactionHistroy()
-			throws Exception {
+	public AmxApiResponse<FxOrderTransactionHistroyDto, Object> getFxOrderTransactionHistroy() {
 		LOGGER.debug("in FxOrderTransactionHistroyDto  client :");
 		return restService.ajax(appConfig.getJaxURL() + Path.FC_SALE_ORDER_TRNX_HIST).meta(new JaxMetaInfo()).get()
 				.as(new ParameterizedTypeReference<AmxApiResponse<FxOrderTransactionHistroyDto, Object>>() {
 				});
-
 	}
-	
 
 	@Override
-	public AmxApiResponse<FxOrderReportResponseDto, Object> getFxOrderTransactionReport(BigDecimal collectionDocNo,BigDecimal collectionFyear)throws Exception {
+	public AmxApiResponse<FxOrderReportResponseDto, Object> getFxOrderTransactionReport(BigDecimal collectionDocNo,
+			BigDecimal collectionFyear) {
 		LOGGER.debug("in FxOrderReportResponseDto  client :");
 		return restService.ajax(appConfig.getJaxURL() + Path.FC_SALE_ORDER_TRNX_REPORT).meta(new JaxMetaInfo())
 				.queryParam(Params.COLLECTION_DOC_NO, collectionDocNo)
 				.queryParam(Params.COLLECTION_FYEAR, collectionFyear)
 				.get().as(new ParameterizedTypeReference<AmxApiResponse<FxOrderReportResponseDto, Object>>() {
 				});
-		
+
 	}
 
 	@Override
-	public AmxApiResponse<FxOrderTransactionStatusResponseDto, Object> getFxOrderTransactionStatus(BigDecimal documentIdForPayment) {
+	public AmxApiResponse<FxOrderTransactionStatusResponseDto, Object> getFxOrderTransactionStatus(
+			BigDecimal documentIdForPayment) {
 		// TODO Auto-generated method stub
 		return null;
 	}

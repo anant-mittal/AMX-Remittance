@@ -170,19 +170,20 @@ public class FcSaleOrderController implements IFxOrderService {
 	}
 
 	@RequestMapping(value = Path.FC_SALE_ORDER_TRNX_HIST, method = RequestMethod.GET)
-	public AmxApiResponse<FxOrderTransactionHistroyDto, Object> getFxOrderTransactionHistroy() throws Exception {
+	public AmxApiResponse<FxOrderTransactionHistroyDto, Object> getFxOrderTransactionHistroy() {
 		return fcSaleService.getFxOrderTransactionHistroy();
 	}
 
 	@RequestMapping(value = Path.FC_SALE_ORDER_TRNX_REPORT, method = RequestMethod.POST)
-	public AmxApiResponse<FxOrderReportResponseDto, Object> getFxOrderTransactionReport(@RequestParam(value = Params.COLLECTION_DOC_NO, required = true) BigDecimal collectionDocNo,
-			@RequestParam(value = Params.COLLECTION_FYEAR, required = true) BigDecimal collectionFyear) 
-			throws Exception {
+	public AmxApiResponse<FxOrderReportResponseDto, Object> getFxOrderTransactionReport(
+			@RequestParam(value = Params.COLLECTION_DOC_NO, required = true) BigDecimal collectionDocNo,
+			@RequestParam(value = Params.COLLECTION_FYEAR, required = true) BigDecimal collectionFyear) {
 		return fcSaleService.getFxOrderTransactionReport(collectionDocNo, collectionFyear);
 	}
-	
+
 	@RequestMapping(value = Path.FC_SALE_ORDER_TRNX_STATUS, method = RequestMethod.POST)
-	public AmxApiResponse<FxOrderTransactionStatusResponseDto, Object> getFxOrderTransactionStatus(@RequestParam(value = Params.DOCUMENT_ID_FOR_PAYMENT, required = true) BigDecimal documentIdForPayment) {
+	public AmxApiResponse<FxOrderTransactionStatusResponseDto, Object> getFxOrderTransactionStatus(
+			@RequestParam(value = Params.DOCUMENT_ID_FOR_PAYMENT, required = true) BigDecimal documentIdForPayment) {
 		logger.info("In getFxOrderTransactionStatus with param, :  " + documentIdForPayment);
 		return fcSaleService.getFxOrderTransactionStatus(documentIdForPayment);
 	}
