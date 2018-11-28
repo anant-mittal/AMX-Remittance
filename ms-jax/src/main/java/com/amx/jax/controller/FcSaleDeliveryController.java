@@ -20,9 +20,7 @@ import com.amx.jax.model.request.fx.FcSaleDeliveryDetailUpdateReceiptRequest;
 import com.amx.jax.model.request.fx.FcSaleDeliveryMarkDeliveredRequest;
 import com.amx.jax.model.request.fx.FcSaleDeliveryMarkNotDeliveredRequest;
 import com.amx.jax.model.response.fx.FxDeliveryDetailDto;
-import com.amx.jax.model.response.fx.PurposeOfTransactionDto;
 import com.amx.jax.services.FcSaleDeliveryService;
-import com.amx.jax.services.FcSaleService;
 
 @RestController
 public class FcSaleDeliveryController implements IFxOrderDelivery {

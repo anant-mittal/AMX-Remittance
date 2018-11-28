@@ -47,8 +47,10 @@ import com.amx.jax.model.response.fx.FcSaleApplPaymentReponseModel;
 import com.amx.jax.model.response.fx.FcSaleOrderApplicationResponseModel;
 import com.amx.jax.model.response.fx.FxApplicationDto;
 import com.amx.jax.model.response.fx.FxExchangeRateBreakup;
+import com.amx.jax.model.response.fx.FxOrderShoppingCartResponseModel;
 import com.amx.jax.model.response.fx.FxOrderTransactionHistroyDto;
 import com.amx.jax.model.response.fx.ShoppingCartDetailsDto;
+import com.amx.jax.model.response.fx.TimeSlotDto;
 import com.amx.jax.repository.CountryBranchRepository;
 import com.amx.jax.repository.fx.FxOrderDeliveryTimeSlotRepository;
 import com.amx.jax.repository.fx.FxOrderTransactionRespository;
@@ -133,11 +135,11 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 		ReceiptPaymentApp receiptPayment =this. createFcSaleReceiptApplication(fcSalerequestModel);
 		mapAllDetailApplSave.put("EX_APPL_RECEIPT",receiptPayment);
 		fsSaleapplicationDao.saveAllApplicationData(mapAllDetailApplSave);
-		List<ShoppingCartDetailsDto> cartDetails= fetchApplicationDetails();
+		FxOrderShoppingCartResponseModel cartDetails= fetchApplicationDetails();
 		fetchCustomerAddressDetails();
-		List<String> fxOrderTimeSlot = fetchTimeSlot(null);
+		List<TimeSlotDto> fxOrderTimeSlot = fetchTimeSlot(null);
 		responeModel.setTimeSlot(fxOrderTimeSlot);
-		responeModel.setCartDetails(cartDetails);
+		responeModel.setCartDetails(cartDetails.getShoppingCartList());
 		responeModel.setDeliveryCharges(getDeliveryChargesFromParameter()); 
 		return responeModel; 
 		}catch(Exception e){
@@ -305,7 +307,7 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 		
 		}catch(Exception e){
 			logger.error("createFcSaleReceiptApplication", e.getMessage());
-			//throw new GlobalException("FC Sale application creation failed", JaxError.FS_APPLIATION_CREATION_FAILED);
+			
 		}
 		
 		return receiptPaymentAppl;	
@@ -349,7 +351,6 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 		breakup.setRate(maxExchangeRate);
 		if(JaxUtil.isNullZeroBigDecimalCheck(breakup.getConvertedLCAmount())){
 			breakup.setNetAmount(breakup.getConvertedLCAmount());
-			//breakup.setNetAmount(breakup.getConvertedLCAmount().add(breakup.getDeliveryCharges()));
 		}
 		
 		return breakup;
@@ -374,10 +375,17 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 	
 	public FcSaleOrderApplicationResponseModel removeitemFromCart(BigDecimal applId){
 		FcSaleOrderApplicationResponseModel responeModel = new FcSaleOrderApplicationResponseModel();
+		List<ShoppingCartDetailsDto> cartListDto = new ArrayList<>();
+		BigDecimal customerId = metaData.getCustomerId();
+		BigDecimal applciationCountryid = metaData.getCountryId();
+		BigDecimal companyId = metaData.getCompanyId();
 	try{
 		fsSaleapplicationDao.removeItemFromCart(applId);
-		List<ShoppingCartDetailsDto> cartDetails= fetchApplicationDetails();
-		responeModel.setCartDetails(cartDetails);
+		List<FxShoppingCartDetails>  shoppingCartList  = fcSaleExchangeRateDao.getFcSaleShoppingCartDetails(applciationCountryid, companyId, customerId);
+		if(!shoppingCartList.isEmpty()){
+			cartListDto = convertShopingCartDto(shoppingCartList);
+		}
+		responeModel.setCartDetails(cartListDto);
 	}catch(Exception e){
 		e.printStackTrace();
 		logger.error("removeitemFromCart ", e.getMessage()+"applId :"+applId);
@@ -386,17 +394,31 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 		
 	}
 	
-	public List<ShoppingCartDetailsDto> fetchApplicationDetails(){
+	//FxOrderShoppingCartResponseModel
+	public FxOrderShoppingCartResponseModel fetchApplicationDetails(){
+		FxOrderShoppingCartResponseModel shoppingCartResponseModel = new FxOrderShoppingCartResponseModel();
 		List<ShoppingCartDetailsDto> cartListDto = new ArrayList<>();
 		BigDecimal customerId = metaData.getCustomerId();
 		BigDecimal applciationCountryid = metaData.getCountryId();
 		BigDecimal companyId = metaData.getCompanyId();
+		BigDecimal deliveryCharges = BigDecimal.ZERO;
+		BigDecimal totalNetAmount  =BigDecimal.ZERO;
 		List<FxShoppingCartDetails>  shoppingCartList  = fcSaleExchangeRateDao.getFcSaleShoppingCartDetails(applciationCountryid, companyId, customerId);
+		List<ParameterDetails> parameterList 	= fcSaleExchangeRateDao.getParameterDetails(ConstantDocument.FX_DC, ConstantDocument.Yes);
+		if(parameterList != null && !parameterList.isEmpty()){
+			deliveryCharges = parameterList.get(0).getNumericField1()==null?BigDecimal.ZERO:parameterList.get(0).getNumericField1();
+		}	
 		if(!shoppingCartList.isEmpty()){
 			cartListDto = convertShopingCartDto(shoppingCartList);
+			for( ShoppingCartDetailsDto dto :cartListDto){
+				totalNetAmount =totalNetAmount.add(dto.getLocalTranxAmount());
+			}
 		}
+		shoppingCartResponseModel.setShoppingCartList(cartListDto);
+		shoppingCartResponseModel.setDeliveryCharges(deliveryCharges);
+		shoppingCartResponseModel.setTotalNetAmount(totalNetAmount.add(deliveryCharges));
 		
-		return cartListDto;
+		return shoppingCartResponseModel;
 	}
 	
 	
@@ -406,7 +428,7 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 		BigDecimal companyId = metaData.getCompanyId();
 		
 	}
-	
+
 	
 	
 	public BigDecimal generateDocumentNumber(CountryBranch countryBranch, String processInd,BigDecimal finYear) {
@@ -420,8 +442,8 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 
 	
 	
-	public List<String> fetchTimeSlot(String date){
-		List<String> timeSlotList = new ArrayList<>();
+	public List<TimeSlotDto> fetchTimeSlot(String date){
+		List<TimeSlotDto> timeSlotList = new ArrayList<>();
 		BigDecimal appCountryId = metaData.getCountryId()==null?BigDecimal.ZERO:metaData.getCountryId();
 		BigDecimal companyId = metaData.getCompanyId()==null?BigDecimal.ZERO:metaData.getCompanyId();
 		List<FxDeliveryTimeSlotMaster> list = fcSaleOrderTimeSlotDao.findByCountryIdAndCompanyIdAndIsActive(appCountryId, companyId, ConstantDocument.Yes);
@@ -430,7 +452,8 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 			BigDecimal  startTime = list.get(0).getStartTime()==null?BigDecimal.ZERO:list.get(0).getStartTime();
 			BigDecimal  endTime = list.get(0).getEndTime()==null?BigDecimal.ZERO:list.get(0).getEndTime();
 			BigDecimal  timeInterval = list.get(0).getTimeInterval()==null?BigDecimal.ZERO:list.get(0).getTimeInterval();
-			timeSlotList =DateUtil.getTimeSlotRange(date,startTime.intValue(),endTime.intValue(),timeInterval.intValue());
+			BigDecimal 	noOfDays	 = list.get(0).getNoOfDays()==null?BigDecimal.ZERO:list.get(0).getNoOfDays();
+			timeSlotList =DateUtil.getTimeSlotRange(date,startTime.intValue(),endTime.intValue(),timeInterval.intValue(),noOfDays.intValue());
 		}else{
 			throw new GlobalException("No data found in DB", JaxError.FC_SALE_TIME_SLOT_SETUP_MISSING);
 		}

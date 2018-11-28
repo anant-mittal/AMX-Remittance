@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.amxlib.model.request.RemittanceTransactionStatusRequestModel;
+import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.fx.IFxOrderService;
 import com.amx.jax.constant.JaxEvent;
@@ -26,10 +28,13 @@ import com.amx.jax.model.response.fx.FcSaleOrderApplicationResponseModel;
 import com.amx.jax.model.response.fx.FcSaleOrderDefaultResponseModel;
 import com.amx.jax.model.response.fx.FxExchangeRateDto;
 import com.amx.jax.model.response.fx.FxOrderReportResponseDto;
+import com.amx.jax.model.response.fx.FxOrderShoppingCartResponseModel;
 import com.amx.jax.model.response.fx.FxOrderTransactionHistroyDto;
+import com.amx.jax.model.response.fx.FxOrderTransactionStatusResponseDto;
 import com.amx.jax.model.response.fx.PurposeOfTransactionDto;
 import com.amx.jax.model.response.fx.ShippingAddressDto;
 import com.amx.jax.model.response.fx.ShoppingCartDetailsDto;
+import com.amx.jax.model.response.fx.TimeSlotDto;
 import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.service.TermsAndConditionService;
 import com.amx.jax.services.FcSaleService;
@@ -144,7 +149,7 @@ public class FcSaleOrderController implements IFxOrderService {
 	 * @ String date @ To fetch time slot for Fx order delviery
 	 */
 	@RequestMapping(value = Path.FC_SALE_TIME_SLOT, method = RequestMethod.GET)
-	public AmxApiResponse<String, Object> getTimeSlot(
+	public AmxApiResponse<TimeSlotDto, Object> getTimeSlot(
 			@RequestParam(value = Params.FXDATE2, required = true) String fxdate) {
 		return fcSaleService.fetchTimeSlot(fxdate);
 	}
@@ -156,7 +161,7 @@ public class FcSaleOrderController implements IFxOrderService {
 	}
 
 	@RequestMapping(value = Path.FC_SALE_SHOPPING_CART, method = RequestMethod.GET)
-	public AmxApiResponse<ShoppingCartDetailsDto, Object> fetchShoppingCartList() {
+	public AmxApiResponse<FxOrderShoppingCartResponseModel, Object> fetchShoppingCartList() {
 		return fcSaleService.fetchShoppingCartList();
 	}
 
@@ -179,4 +184,11 @@ public class FcSaleOrderController implements IFxOrderService {
 			throws Exception {
 		return fcSaleService.getFxOrderTransactionReport(collectionDocNo, collectionFyear);
 	}
+	
+	@RequestMapping(value = Path.FC_SALE_ORDER_TRNX_STATUS, method = RequestMethod.POST)
+	public AmxApiResponse<FxOrderTransactionStatusResponseDto, Object> getFxOrderTransactionStatus(@RequestParam(value = Params.DOCUMENT_ID_FOR_PAYMENT, required = true) BigDecimal documentIdForPayment) {
+		logger.info("In getFxOrderTransactionStatus with param, :  " + documentIdForPayment);
+		return fcSaleService.getFxOrderTransactionStatus(documentIdForPayment);
+	}
+
 }

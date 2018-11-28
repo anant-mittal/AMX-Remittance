@@ -16,6 +16,8 @@ import org.apache.commons.lang.time.DateUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.model.response.fx.TimeSlotDto;
+
 
 /*
  * Auth: Rabil
@@ -148,7 +150,7 @@ public class DateUtil {
 	 * @Date:  Time slot
 	 */
 	
-	public static List<String> getTimeSlotRange(String date,int startTime,int endTime,int timeIntVal){
+	/*public static List<String> getTimeSlotRange(String date,int startTime,int endTime,int timeIntVal,int noofDay){
 		logger.info("getTimeRange for Fx Order date :"+date+"\t startTime :"+startTime+"\t endTime:"+endTime+"\t timeIntVal :"+timeIntVal);
 		List<String> timeSlotList = new ArrayList<>();
 		Date d = new Date();
@@ -161,6 +163,10 @@ public class DateUtil {
 	    String meridienPm=" pm";
 	    String defaultZero =":00";
 	   
+	    
+	    
+	    
+	    
 	    
 	    if(date !=null && !date.equalsIgnoreCase(todayDate)){
 	    	todayDate = date;
@@ -183,7 +189,70 @@ public class DateUtil {
 	    }
 	    timeSlotList.add("delivery date :"+todayDate);
 		return timeSlotList;
-		}
+		}*/
 	
+	
+	public static List<TimeSlotDto> getTimeSlotRange(String date,int startTime,int endTime,int timeIntVal,int noofDay){
+	logger.info("getTimeRange for Fx Order date :"+date+"\t startTime :"+startTime+"\t endTime:"+endTime+"\t timeIntVal :"+timeIntVal+"\t noofDay :"+noofDay);
+	List<String> timeSlotList = new ArrayList<>();
+	List<TimeSlotDto> timeSlotDto = new ArrayList<>();
+	Date d = new Date();
+	
+	SimpleDateFormat dateStr = new SimpleDateFormat("dd/MM/yyyy");
+    SimpleDateFormat sdf = new SimpleDateFormat("H");
+    String todayDate = dateStr.format(d);
+    int hour = Integer.parseInt(sdf.format(d));
+    int j =0;
+    String meridienAm=" am";
+    String meridienPm=" pm";
+    String defaultZero =":00";
+    GregorianCalendar calendar = new GregorianCalendar();
+    Date now = calendar.getTime();
+   
+    
+    
+    /*if(noofDay==0){
+    	TimeSlotDto dto = new TimeSlotDto();
+    	if (hour>startTime){
+	    	startTime =hour+timeIntVal; 
+	    }
+	for (int i =startTime;i<endTime;  i = i+timeIntVal){
+		 j = i+timeIntVal;
+		 String str = "";
+		 str = String.valueOf(i)+defaultZero+(i<12?meridienAm:meridienPm)+ "-"+String.valueOf(j)+defaultZero+(j<12?meridienAm:meridienPm);
+		 timeSlotList.add(str);
+		 dto.setTimeSlot(timeSlotList);
+		}
+		 dto.setDate(sdf.format(now));
+		 timeSlotDto.add(dto);
+	
+    }else{*/
+    	for(int n=0;n<=noofDay;n++){
+    		if(n==0){
+    			if (hour>startTime){
+    		    	startTime =hour+timeIntVal; 
+    		    }
+    		}
+    		
+	    	TimeSlotDto dto = new TimeSlotDto();
+	    	for (int i =startTime;i<endTime;  i = i+timeIntVal){
+	   		 j = i+timeIntVal;
+	   		 String str = "";
+	   		 str = String.valueOf(i)+defaultZero+(i<12?meridienAm:meridienPm)+ "-"+String.valueOf(j)+defaultZero+(j<12?meridienAm:meridienPm);
+	   		 timeSlotList.add(str);
+	   		 dto.setTimeSlot(timeSlotList);
+	    	}
+	    	 calendar.add(calendar.DAY_OF_MONTH, n);
+	    	 Date dateD = calendar.getTime();
+	    	 dto.setDate(dateStr.format(dateD));
+	    	timeSlotDto.add(dto);
+    	//}
+    }
+    
+   
+    return timeSlotDto;
+}
+	
+
 	
 }
