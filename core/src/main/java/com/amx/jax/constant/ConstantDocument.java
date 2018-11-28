@@ -78,6 +78,10 @@ public class ConstantDocument {
 	public static final String T="T";
 	// ORD for --Ordered
 	public static final String ORD="ORD";
+	// DVD for --Delivered
+	public static final String DVD="DVD";
+	// RTD for --returned
+	public static final String RTD="RTD";
 	/** end Here **/
 
 }

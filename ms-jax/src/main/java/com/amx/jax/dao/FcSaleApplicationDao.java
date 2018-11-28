@@ -30,6 +30,7 @@ import com.amx.jax.dbmodel.ReceiptPayment;
 import com.amx.jax.dbmodel.ReceiptPaymentApp;
 import com.amx.jax.dbmodel.ShippingAddressDetail;
 import com.amx.jax.dbmodel.fx.FxDeliveryRemark;
+import com.amx.jax.dbmodel.fx.StatusMaster;
 import com.amx.jax.dbmodel.fx.VwFxDeliveryDetailsModel;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.model.request.fx.FcSaleOrderPaynowRequestModel;
@@ -38,6 +39,7 @@ import com.amx.jax.model.response.fx.ShoppingCartDetailsDto;
 import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.repository.fx.FxDeliveryDetailsRepository;
 import com.amx.jax.repository.fx.FxDeliveryRemarkRepository;
+import com.amx.jax.repository.fx.StatusMasterRepository;
 import com.amx.jax.repository.fx.VwFxDeliveryDetailsRepository;
 import com.amx.jax.repository.ICollectionDetailRepository;
 import com.amx.jax.repository.ICollectionRepository;
@@ -81,6 +83,9 @@ public class FcSaleApplicationDao {
 	
 	@Autowired
 	FxDeliveryRemarkRepository fxDeliveryRemarkRepository ;
+	
+	@Autowired
+	StatusMasterRepository statusMasterRepository;
 	
 	
 	@Transactional
@@ -290,11 +295,15 @@ public class FcSaleApplicationDao {
 	
 
 	public List<VwFxDeliveryDetailsModel> listOrders(BigDecimal driverEmployeeId) {
-		return vwFxDeliveryDetailsRepository.findByDriverEmployeeIdAndDeliveryDate(driverEmployeeId, new Date());
+		return vwFxDeliveryDetailsRepository.findDriverOrders(driverEmployeeId,  new Date());
 	}
 	
 	public FxDeliveryRemark getDeliveryRemarkById(BigDecimal deliveryRemarkId) {
-		return fxDeliveryRemarkRepository.findOne(deliveryRemarkId);
+		FxDeliveryRemark fxDeliveryRemark = null;
+		if (deliveryRemarkId != null) {
+			fxDeliveryRemark = fxDeliveryRemarkRepository.findOne(deliveryRemarkId);
+		}
+		return fxDeliveryRemark;
 	}
 	
 	public ShippingAddressDetail getShippingAddressById(BigDecimal shippingAddressId) {
@@ -320,4 +329,7 @@ public class FcSaleApplicationDao {
 		}
 	}
 	
+	public StatusMaster getStatusMaster(String statusCode) {
+		return statusMasterRepository.findByStatusCode(statusCode);
+	} 
 }

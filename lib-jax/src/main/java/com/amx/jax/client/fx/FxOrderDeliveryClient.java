@@ -118,4 +118,19 @@ public class FxOrderDeliveryClient implements IFxOrderDelivery {
 		}
 	}
 
+	@Override
+	public AmxApiResponse<BoolRespModel, Object> verifyOtp(BigDecimal deliveryDetailSeqId, BigDecimal mOtp) {
+		try {
+			LOGGER.debug("in verifyOtp");
+			String url = appConfig.getJaxURL() + Path.FX_DELIVERY_VERIFY_OTP;
+			return restService.ajax(url).field(Params.DELIVERY_DETAIL_SEQID, deliveryDetailSeqId)
+					.field(Params.DELIVERY_DETAIL_OTP, mOtp).meta(new JaxMetaInfo()).get()
+					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in verifyOtp : ", e);
+			return JaxSystemError.evaluate(e);
+		}
+	}
+
 }

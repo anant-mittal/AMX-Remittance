@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,7 @@ import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.PersonInfo;
 import com.amx.jax.api.BoolRespModel;
+import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constants.FxDeliveryStatus;
 import com.amx.jax.dao.FcSaleApplicationDao;
 import com.amx.jax.dbmodel.ShippingAddressDetail;
@@ -26,6 +29,7 @@ import com.amx.jax.dbmodel.fx.FxDeliveryRemark;
 import com.amx.jax.dbmodel.fx.VwFxDeliveryDetailsModel;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.ResourceDto;
 import com.amx.jax.model.request.fx.FcSaleDeliveryDetailUpdateReceiptRequest;
 import com.amx.jax.model.request.fx.FcSaleDeliveryMarkDeliveredRequest;
 import com.amx.jax.model.request.fx.FcSaleDeliveryMarkNotDeliveredRequest;
@@ -71,15 +75,20 @@ public class FcSaleDeliveryService {
 		FxDeliveryRemark delRemark = fcSaleApplicationDao.getDeliveryRemarkById(model.getDeliveryRemarkId());
 		ShippingAddressDetail shippingAddress = fcSaleApplicationDao
 				.getShippingAddressById(model.getShippingAddressId());
-		ShippingAddressDto shippingAddressDto = new ShippingAddressDto();
+		String statusDesc = fcSaleApplicationDao.getStatusMaster(model.getOrderStatus()).getStatusDescription();
+		ShippingAddressDto shippingAddressDto = createShippingAddressDto(shippingAddress);
 		try {
 			BeanUtils.copyProperties(dto, model);
-			BeanUtils.copyProperties(shippingAddressDto, shippingAddress);
 		} catch (Exception e) {
 		}
-		dto.setTransactionRefId(model.getCollectionDocFinYear() + "/" + model.getCollectionDocNo());
-		dto.setDeliveryRemark(delRemark.getDeliveryRemark());
+		if (model.getCollectionDocFinYear() != null) {
+			dto.setTransactionRefId(model.getCollectionDocFinYear() + "/" + model.getCollectionDocNo());
+		}
+		if (delRemark != null) {
+			dto.setDeliveryRemark(delRemark.getDeliveryRemark());
+		}
 		dto.setAddress(shippingAddressDto);
+		dto.setOrderStatus(statusDesc);
 		return dto;
 	}
 
@@ -95,16 +104,17 @@ public class FcSaleDeliveryService {
 	}
 
 	public BoolRespModel markDelivered(FcSaleDeliveryMarkDeliveredRequest fcSaleDeliveryMarkDeliveredRequest) {
-		FxDeliveryDetailsModel deliveryDetail = validateFxDeliveryModel(fcSaleDeliveryMarkDeliveredRequest.getDeliveryDetailSeqId());
-		//deliveryDetail.setDeliveryStatus(FxDeliveryStatus.DELIVERED);
+		FxDeliveryDetailsModel deliveryDetail = validateFxDeliveryModel(
+				fcSaleDeliveryMarkDeliveredRequest.getDeliveryDetailSeqId());
+		 deliveryDetail.setOrderStatus(ConstantDocument.DVD);
 		fcSaleApplicationDao.saveDeliveryDetail(deliveryDetail);
-		// TODO: updated table ex_appl_receipt_payment and column ORDER_STATUS
 		return new BoolRespModel(true);
 	}
 
 	public BoolRespModel markNotDelivered(FcSaleDeliveryMarkNotDeliveredRequest fcSaleDeliveryMarkNotDeliveredRequest) {
-		FxDeliveryDetailsModel deliveryDetail = validateFxDeliveryModel(fcSaleDeliveryMarkNotDeliveredRequest.getDeliveryDetailSeqId());
-		//deliveryDetail.setDeliveryStatus(FxDeliveryStatus.NOT_DELIVERED);
+		FxDeliveryDetailsModel deliveryDetail = validateFxDeliveryModel(
+				fcSaleDeliveryMarkNotDeliveredRequest.getDeliveryDetailSeqId());
+		deliveryDetail.setOrderStatus(ConstantDocument.RTD);
 		deliveryDetail.setRemarksId(fcSaleDeliveryMarkNotDeliveredRequest.getDeleviryRemarkSeqId());
 		fcSaleApplicationDao.saveDeliveryDetail(deliveryDetail);
 		return new BoolRespModel(true);
@@ -152,7 +162,7 @@ public class FcSaleDeliveryService {
 		CivilIdOtpModel model = new CivilIdOtpModel();
 		// generating otp
 		String mOtp = Random.randomNumeric(6);
-		String hashedmOtp = cryptoUtil.getHash(deliveryDetailSeqId.toString(), mOtp);
+		String hashedmOtp = cryptoUtil.generateHash(deliveryDetailSeqId.toString(), mOtp);
 		fxDeliveryDetailsMode.setOtpToken(hashedmOtp);
 		fcSaleApplicationDao.saveDeliveryDetail(fxDeliveryDetailsMode);
 		model.setmOtp(mOtp);
@@ -160,5 +170,52 @@ public class FcSaleDeliveryService {
 		logger.debug("sending otp for fcsale delivery");
 		jaxNotificationService.sendOtpSms(pinfo, model);
 		return new BoolRespModel(true);
+	}
+
+	public BoolRespModel verifyOtp(BigDecimal deliveryDetailSeqId, BigDecimal mOtp) {
+		FxDeliveryDetailsModel fxDeliveryDetailsMode = validateFxDeliveryModel(deliveryDetailSeqId);
+		if (mOtp == null) {
+			throw new GlobalException("mOtp can not be blank", JaxError.MISSING_OTP);
+		}
+		// validating otp
+		String hashedmOtp = cryptoUtil.generateHash(deliveryDetailSeqId.toString(), mOtp.toString());
+		String dbHashedmOtpToken = fxDeliveryDetailsMode.getOtpToken();
+		if (!hashedmOtp.equals(dbHashedmOtpToken)) {
+			throw new GlobalException("mOtp is not valid", JaxError.INVALID_OTP);
+		}
+		return new BoolRespModel(true);
+	}
+
+	private ShippingAddressDto createShippingAddressDto(ShippingAddressDetail shippingAddressDetail) {
+		ShippingAddressDto shippingAddressDto = new ShippingAddressDto();
+		if (CollectionUtils.isNotEmpty(shippingAddressDetail.getFsCityMaster().getFsCityMasterDescs())) {
+			ResourceDto cityDto = new ResourceDto(shippingAddressDetail.getFsCityMaster().getCityId(),
+					shippingAddressDetail.getFsCityMaster().getFsCityMasterDescs().get(0).getCityName());
+			shippingAddressDto.setCityDto(cityDto);
+		}
+		if (CollectionUtils.isNotEmpty(shippingAddressDetail.getFsStateMaster().getFsStateMasterDescs())) {
+			shippingAddressDto.setLocalContactState(
+					shippingAddressDetail.getFsStateMaster().getFsStateMasterDescs().get(0).getStateName());
+			ResourceDto stateDto = new ResourceDto(shippingAddressDetail.getFsStateMaster().getStateId(),
+					shippingAddressDetail.getFsStateMaster().getFsStateMasterDescs().get(0).getStateName());
+			shippingAddressDto.setStateDto(stateDto);
+
+		}
+		if (CollectionUtils.isNotEmpty(shippingAddressDetail.getFsDistrictMaster().getFsDistrictMasterDescs())) {
+			ResourceDto districtDto = new ResourceDto(shippingAddressDetail.getFsDistrictMaster().getDistrictId(),
+					shippingAddressDetail.getFsDistrictMaster().getFsDistrictMasterDescs().get(0).getDistrict());
+			shippingAddressDto.setDistrictDto(districtDto);
+
+		}
+		if (CollectionUtils.isNotEmpty(shippingAddressDetail.getFsCountryMaster().getFsCountryMasterDescs())) {
+			ResourceDto districtDto = new ResourceDto(shippingAddressDetail.getFsCountryMaster().getCountryId(),
+					shippingAddressDetail.getFsCountryMaster().getFsCountryMasterDescs().get(0).getCountryName());
+			shippingAddressDto.setCountryDto(districtDto);
+		}
+		try {
+			BeanUtils.copyProperties(shippingAddressDto, shippingAddressDetail);
+		} catch (Exception e) {
+		}
+		return shippingAddressDto;
 	}
 }

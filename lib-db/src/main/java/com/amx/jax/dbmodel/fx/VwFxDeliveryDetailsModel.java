@@ -43,9 +43,6 @@ public class VwFxDeliveryDetailsModel implements Serializable {
 	@Column(name = "EX_DELIVERY_REMARK_SEQ_ID")
 	BigDecimal deliveryRemarkId;
 
-	@Column(name = "DELIVERY_STATUS")
-	String deliveryStatus;
-
 	@Column(name = "DELIVERY_TIME")
 	String deliveryTimeSlot;
 
@@ -57,8 +54,8 @@ public class VwFxDeliveryDetailsModel implements Serializable {
 
 	@Column(name = "MOBILE")
 	String mobile;
-	
-	@Column(name="ORDER_STATUS")
+
+	@Column(name = "ORDER_STATUS")
 	String orderStatus;
 
 	public BigDecimal getDeleviryDelSeqId() {
@@ -99,14 +96,6 @@ public class VwFxDeliveryDetailsModel implements Serializable {
 
 	public void setDeliveryDate(Date deliveryDate) {
 		this.deliveryDate = deliveryDate;
-	}
-
-	public String getDeliveryStatus() {
-		return deliveryStatus;
-	}
-
-	public void setDeliveryStatus(String deliveryStatus) {
-		this.deliveryStatus = deliveryStatus;
 	}
 
 	public String getDeliveryTimeSlot() {
@@ -156,6 +145,5 @@ public class VwFxDeliveryDetailsModel implements Serializable {
 	public void setOrderStatus(String orderStatus) {
 		this.orderStatus = orderStatus;
 	}
-
 
 }

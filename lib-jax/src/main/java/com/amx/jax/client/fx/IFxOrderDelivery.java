@@ -27,6 +27,7 @@ public interface IFxOrderDelivery extends IJaxService {
 
 	public static class Params {
 		public static final String DELIVERY_DETAIL_SEQID = "deliveryDetailSeqId";
+		public static final String DELIVERY_DETAIL_OTP = "otp";
 	}
 
 	@ApiJaxStatus(JaxError.JAX_FIELD_VALIDATION_FAILURE)
@@ -47,6 +48,10 @@ public interface IFxOrderDelivery extends IJaxService {
 	AmxApiResponse<BoolRespModel, Object> updateTransactionReceipt(
 			FcSaleDeliveryDetailUpdateReceiptRequest fcSaleDeliveryDetailUpdateReceiptRequest);
 
+	@ApiJaxStatus(JaxError.FC_CURRENCY_DELIVERY_DETAIL_NOT_FOUND)
 	AmxApiResponse<BoolRespModel, Object> sendOtp(BigDecimal deliveryDetailSeqId);
+
+	@ApiJaxStatus({ JaxError.FC_CURRENCY_DELIVERY_DETAIL_NOT_FOUND, JaxError.MISSING_OTP, JaxError.INVALID_OTP })
+	AmxApiResponse<BoolRespModel, Object> verifyOtp(BigDecimal deliveryDetailSeqId, BigDecimal mOtp);
 
 }

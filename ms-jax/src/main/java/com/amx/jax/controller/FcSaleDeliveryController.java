@@ -82,4 +82,12 @@ public class FcSaleDeliveryController implements IFxOrderDelivery {
 		BoolRespModel result = fcSaleDeliveryService.sendOtp(deliveryDetailSeqId);
 		return AmxApiResponse.build(result);
 	}
+
+	@RequestMapping(value = Path.FX_DELIVERY_VERIFY_OTP, method = RequestMethod.POST)
+	@Override
+	public AmxApiResponse<BoolRespModel, Object> verifyOtp(@RequestParam BigDecimal deliveryDetailSeqId,
+			@RequestParam BigDecimal mOtp) {
+		BoolRespModel result = fcSaleDeliveryService.verifyOtp(deliveryDetailSeqId, mOtp);
+		return AmxApiResponse.build(result);
+	}
 }
