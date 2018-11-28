@@ -647,7 +647,6 @@ public class UserService extends AbstractUserService {
 			jaxNotificationService.sendProfileChangeNotificationEmail(model, outputModel.getPersoninfo());
 			logger.info("The update password mail notification success");
 		}
-		logger.info("The update password mail notification model " +outputModel.toString());
 		
 		BoolRespModel responseModel = new BoolRespModel(true);
 		auditService.log(createUserServiceEvent(model, JaxUserAuditEvent.Type.CUSTOMER_PASSWORD_UPDATE_SUCCESS));
