@@ -113,6 +113,7 @@ public class PayGController {
 		if (channel == null)
 			channel = Channel.ONLINE;
 		payGParams.setChannel(channel);
+		payGParams.setProduct(prod);
 
 		auditService.log(new PayGEvent(PayGEvent.Type.PAYMENT_INIT, payGParams));
 

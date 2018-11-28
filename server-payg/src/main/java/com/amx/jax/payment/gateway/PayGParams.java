@@ -12,6 +12,7 @@ public class PayGParams {
 	Tenant tenant = null;
 	String payId = null;
 	Channel channel = null;
+	Object product = null;
 
 	public String getRedirectUrl() {
 		return redirectUrl;
@@ -87,6 +88,14 @@ public class PayGParams {
 	 */
 	public void setChannel(Channel channel) {
 		this.channel = channel;
+	}
+
+	public Object getProduct() {
+		return product;
+	}
+
+	public void setProduct(Object product) {
+		this.product = product;
 	}
 
 }
