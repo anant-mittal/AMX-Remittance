@@ -14,9 +14,9 @@ public final class RbaacServiceConstants {
 		super();
 	}
 
-//	public static enum DEVICE_TYPE {
-//		MOBILE, PC;
-//	}
+	public static enum LOGIN_TYPE {
+		SELF, ASSISTED;
+	}
 
 	public static enum ACCESS_KEY {
 		YES, NO, VIEW, EDIT, CREATE, READ, UPDATE, DELETE, RESET, VERIFY, ADD, CANCEL, SEND;
