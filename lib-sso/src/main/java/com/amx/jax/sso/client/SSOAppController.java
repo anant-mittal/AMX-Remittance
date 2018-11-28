@@ -2,6 +2,9 @@ package com.amx.jax.sso.client;
 
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

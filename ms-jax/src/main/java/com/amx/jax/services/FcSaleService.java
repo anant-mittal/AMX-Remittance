@@ -29,7 +29,6 @@ import com.amx.jax.dbmodel.ParameterDetails;
 import com.amx.jax.dbmodel.PurposeOfTransaction;
 import com.amx.jax.dbmodel.SourceOfIncomeView;
 import com.amx.jax.dbmodel.fx.FxExchangeRateView;
-import com.amx.jax.dbmodel.fx.FxOrderTransactionModel;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.manager.FcSaleAddressManager;
 import com.amx.jax.manager.FcSaleApplicationTransactionManager;
@@ -52,15 +51,12 @@ import com.amx.jax.model.response.fx.FxOrderTransactionHistroyDto;
 import com.amx.jax.model.response.fx.FxOrderTransactionStatusResponseDto;
 import com.amx.jax.model.response.fx.PurposeOfTransactionDto;
 import com.amx.jax.model.response.fx.ShippingAddressDto;
-import com.amx.jax.model.response.fx.ShoppingCartDetailsDto;
 import com.amx.jax.model.response.fx.TimeSlotDto;
 import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.repository.ICurrencyDao;
 import com.amx.jax.repository.IPurposeOfTrnxDao;
 import com.amx.jax.repository.ISourceOfIncomeDao;
 import com.amx.jax.repository.ITermsAndConditionRepository;
-import com.amx.jax.repository.fx.FxOrderTransactionRespository;
-import com.amx.jax.util.JaxUtil;
 import com.amx.jax.validation.FxOrderValidation;
 
 @Component

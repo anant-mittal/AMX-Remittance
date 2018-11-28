@@ -1,6 +1,5 @@
 package com.amx.jax.services;
 
-import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +17,6 @@ import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.PersonInfo;
 import com.amx.jax.api.BoolRespModel;
-import com.amx.jax.constants.FxDeliveryStatus;
 import com.amx.jax.dao.FcSaleApplicationDao;
 import com.amx.jax.dbmodel.ShippingAddressDetail;
 import com.amx.jax.dbmodel.fx.FxDeliveryDetailsModel;
@@ -31,7 +29,6 @@ import com.amx.jax.model.request.fx.FcSaleDeliveryMarkDeliveredRequest;
 import com.amx.jax.model.request.fx.FcSaleDeliveryMarkNotDeliveredRequest;
 import com.amx.jax.model.response.fx.FxDeliveryDetailDto;
 import com.amx.jax.model.response.fx.ShippingAddressDto;
-import com.amx.jax.repository.fx.VwFxDeliveryDetailsRepository;
 import com.amx.jax.util.CryptoUtil;
 import com.amx.utils.Random;
 

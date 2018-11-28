@@ -28,9 +28,11 @@ import com.amx.jax.model.response.fx.FcSaleApplPaymentReponseModel;
 import com.amx.jax.model.response.fx.FcSaleOrderApplicationResponseModel;
 import com.amx.jax.model.response.fx.FcSaleOrderDefaultResponseModel;
 import com.amx.jax.model.response.fx.FxExchangeRateDto;
+import com.amx.jax.model.response.fx.FxOrderShoppingCartResponseModel;
 import com.amx.jax.model.response.fx.PurposeOfTransactionDto;
 import com.amx.jax.model.response.fx.ShippingAddressDto;
 import com.amx.jax.model.response.fx.ShoppingCartDetailsDto;
+import com.amx.jax.model.response.fx.TimeSlotDto;
 import com.amx.jax.payg.PayGService;
 import com.amx.jax.payg.Payment;
 import com.amx.jax.swagger.IStatusCodeListPlugin.ApiStatusService;
@@ -92,8 +94,8 @@ public class FxOrderController {
 	}
 
 	@RequestMapping(value = "/api/fxo/application/list", method = RequestMethod.GET)
-	public ResponseWrapper<List<ShoppingCartDetailsDto>> fetchShoppingCartList() {
-		return ResponseWrapper.buildList(fcSaleOrderClient.fetchShoppingCartList());
+	public ResponseWrapper<FxOrderShoppingCartResponseModel> fetchShoppingCartList() {
+		return ResponseWrapper.build(fcSaleOrderClient.fetchShoppingCartList());
 	}
 
 	@RequestMapping(value = "/api/fxo/address/list", method = { RequestMethod.GET })
@@ -108,7 +110,7 @@ public class FxOrderController {
 	}
 
 	@RequestMapping(value = "/api/fxo/slots/list", method = RequestMethod.GET)
-	public ResponseWrapper<List<String>> getTimeSlot(@RequestParam String date) {
+	public ResponseWrapper<List<TimeSlotDto>> getTimeSlot(@RequestParam String date) {
 		return ResponseWrapper.buildList(fcSaleOrderClient.getTimeSlot(date));
 	}
 
