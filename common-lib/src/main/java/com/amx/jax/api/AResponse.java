@@ -35,6 +35,11 @@ public abstract class AResponse<M> implements ApiMetaResponse<M> {
 		this.redirectUrl = redirectUrl;
 	}
 
+	@JsonIgnore
+	public void setOpenUrl(String redirectUrl) {
+		this.redirectUrl = "open:" + redirectUrl;
+	}
+
 	protected String messageKey;
 
 	/** The status key. */

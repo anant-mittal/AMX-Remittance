@@ -114,9 +114,9 @@ public class SSOServerController {
 		model.addAllAttributes(getModelMap());
 		if (sSOConfig.getAdminuser().equals(username) && sSOConfig.getAdminpass().equals(password)) {
 			return SSOConstants.REDIRECT + Urly.parse(sSOTranx.get().getAppUrl())
-					.addParameter(AppConstants.TRANX_ID_XKEY, AppContextUtil.getTranxId())
-					.addParameter(SSOConstants.PARAM_STEP, SSOAuthStep.DONE)
-					.addParameter(SSOConstants.PARAM_SOTP, sSOTranx.get().getAppToken()).getURL();
+					.queryParam(AppConstants.TRANX_ID_XKEY, AppContextUtil.getTranxId())
+					.queryParam(SSOConstants.PARAM_STEP, SSOAuthStep.DONE)
+					.queryParam(SSOConstants.PARAM_SOTP, sSOTranx.get().getAppToken()).getURL();
 		}
 		return SSOConstants.SSO_INDEX_PAGE;
 	}
@@ -195,9 +195,9 @@ public class SSOServerController {
 				sSOTranx.setUserDetails(empDto);
 
 				String redirectUrl = Urly.parse(sSOTranx.get().getAppUrl())
-						.addParameter(AppConstants.TRANX_ID_XKEY, AppContextUtil.getTranxId())
-						.addParameter(SSOConstants.PARAM_STEP, SSOAuthStep.DONE)
-						.addParameter(SSOConstants.PARAM_SOTP, sSOTranx.get().getAppToken()).getURL();
+						.queryParam(AppConstants.TRANX_ID_XKEY, AppContextUtil.getTranxId())
+						.queryParam(SSOConstants.PARAM_STEP, SSOAuthStep.DONE)
+						.queryParam(SSOConstants.PARAM_SOTP, sSOTranx.get().getAppToken()).getURL();
 				model.put(SSOConstants.PARAM_REDIRECT, redirectUrl);
 				result.setRedirectUrl(redirectUrl);
 				if (redirect) {
