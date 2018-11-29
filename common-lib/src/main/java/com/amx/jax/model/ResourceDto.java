@@ -14,23 +14,27 @@ public class ResourceDto {
 	 * db identifier of resource
 	 */
 	@JsonProperty("_id")
-	Number id;
+	BigDecimal id;
 
 	/**
 	 * name of resource
 	 */
 	Object name;
 
-	public ResourceDto(Number id, String name) {
+	public ResourceDto(){
+		
+	}
+	
+	public ResourceDto(BigDecimal id, String name) {
 		this.id = id;
 		this.name = name;
 	}
 
-	public Number getId() {
+	public BigDecimal getId() {
 		return id;
 	}
 
-	public void setId(Number id) {
+	public void setId(BigDecimal id) {
 		this.id = id;
 	}
 

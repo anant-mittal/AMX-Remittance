@@ -49,6 +49,11 @@ public class FxDeliveryTimeSlotMaster implements Serializable{
 	@Column(name="NO_Of_DAYS")
 	private BigDecimal noOfDays;
 	
+	@Column(name="OFFICE_END_TIME")
+	private BigDecimal officeEndTime;
+	
+	
+	
 	public BigDecimal getDeliveryTimeSlotId() {
 		return deliveryTimeSlotId;
 	}
@@ -102,6 +107,12 @@ public class FxDeliveryTimeSlotMaster implements Serializable{
 	}
 	public void setNoOfDays(BigDecimal noOfDays) {
 		this.noOfDays = noOfDays;
+	}
+	public BigDecimal getOfficeEndTime() {
+		return officeEndTime;
+	}
+	public void setOfficeEndTime(BigDecimal officeEndTime) {
+		this.officeEndTime = officeEndTime;
 	}
 	
 	

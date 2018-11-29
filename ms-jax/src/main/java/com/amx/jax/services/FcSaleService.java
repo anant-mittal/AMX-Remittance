@@ -233,9 +233,9 @@ public class FcSaleService extends AbstractService {
 	 * @param : to get the time slot for fx order
 	 * @return
 	 */
-	public AmxApiResponse<TimeSlotDto, Object> fetchTimeSlot(String date) {
+	public AmxApiResponse<TimeSlotDto, Object> fetchTimeSlot(BigDecimal shippingAddressId) {
 		validation.validateHeaderInfo();
-		List<TimeSlotDto> timeSlotList = applTrnxManager.fetchTimeSlot(date);
+		List<TimeSlotDto> timeSlotList = applTrnxManager.fetchTimeSlot(shippingAddressId);
 		if (timeSlotList.isEmpty()) {
 			throw new GlobalException("No data found", JaxError.NO_RECORD_FOUND);
 		}
@@ -304,13 +304,30 @@ public class FcSaleService extends AbstractService {
 	}
 	
 	
-	public AmxApiResponse<AddressTypeDto,Object>getAddressTypeList(){
+	public AmxApiResponse<AddressTypeDto,Object> getAddressTypeList(){
 		return AmxApiResponse.buildList(applTrnxManager.getAddressTypeList());
 	}
 	
 	
+	public AmxApiResponse<ShippingAddressDto, Object> deleteFcSaleAddress(BigDecimal addressId) {
+		validation.validateHeaderInfo();
+		ShippingAddressDto dto = new ShippingAddressDto();
+		List<ShippingAddressDto> shippingAddressList = fcSaleAddresManager.deleteShippingAddress(addressId);
+		if (shippingAddressList.isEmpty()) {
+			throw new GlobalException("No data found", JaxError.NO_RECORD_FOUND);
+		}
+		return AmxApiResponse.buildList(shippingAddressList);
+	}
 
 	
+	 public AmxApiResponse<ShippingAddressDto, Object> editShippingaddress(ShippingAddressDto dto){
+		 validation.validateHeaderInfo();
+		 List<ShippingAddressDto> shippingAddressList = fcSaleAddresManager.editShippingAddress(dto);
+		 if (shippingAddressList.isEmpty()) {
+				throw new GlobalException("No data found", JaxError.NO_RECORD_FOUND);
+			}
+			return AmxApiResponse.buildList(shippingAddressList);
+	 }
 	
 	
 	public List<PurposeOfTransactionDto> convertPurposeOfTrnxDto(List<PurposeOfTransaction> purposeofTrnxList) {

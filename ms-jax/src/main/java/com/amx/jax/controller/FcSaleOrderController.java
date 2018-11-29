@@ -146,9 +146,8 @@ public class FcSaleOrderController implements IFxOrderService {
 	 * @ String date @ To fetch time slot for Fx order delviery
 	 */
 	@RequestMapping(value = Path.FC_SALE_TIME_SLOT, method = RequestMethod.GET)
-	public AmxApiResponse<TimeSlotDto, Object> getTimeSlot(
-			@RequestParam(value = Params.FXDATE2, required = true) String fxdate) {
-		return fcSaleService.fetchTimeSlot(fxdate);
+	public AmxApiResponse<TimeSlotDto, Object> getTimeSlot(@RequestParam(value = Params.FX_SHIPPING_ADD_ID, required = true) BigDecimal addressId){
+		return fcSaleService.fetchTimeSlot(addressId);
 	}
 
 	@RequestMapping(value = Path.FC_SALE_REMOVE_ITEM, method = RequestMethod.POST)
@@ -189,9 +188,22 @@ public class FcSaleOrderController implements IFxOrderService {
 		return fcSaleService.getFxOrderTransactionStatus(documentIdForPayment);
 	}
 
+
 	@RequestMapping(value = Path.FC_SALE_ORDER_ADD_TYPE, method = RequestMethod.GET)
 	public AmxApiResponse<AddressTypeDto, Object> getAddressTypeList() {
 		return fcSaleService.getAddressTypeList();
 	}
-
+	
+	@RequestMapping(value = Path.FC_SALE_SHIPPING_ADDR_DELETE, method = RequestMethod.POST)
+	public  AmxApiResponse<ShippingAddressDto, Object> deleteFcSaleAddress(@RequestParam(value = Params.FX_SHIPPING_ADD_ID, required = true) BigDecimal addressId){
+		logger.info("In deleteFcSaleAddress with param, :  " + addressId);
+		return fcSaleService.deleteFcSaleAddress(addressId);
+	}
+	
+	@RequestMapping(value = Path.FC_SALE_SHIPPING_ADDR_EDIT, method = RequestMethod.POST)
+	public  AmxApiResponse<ShippingAddressDto, Object> editShippingAddress(@RequestBody ShippingAddressDto shippingAddressDto) {
+		logger.info("In deleteFcSaleAddress with param, :  " + shippingAddressDto);
+		return fcSaleService.editShippingaddress(shippingAddressDto);
+	}
 }
+

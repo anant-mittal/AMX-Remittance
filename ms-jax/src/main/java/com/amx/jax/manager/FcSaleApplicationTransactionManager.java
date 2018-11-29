@@ -33,6 +33,7 @@ import com.amx.jax.dbmodel.FxShoppingCartDetails;
 import com.amx.jax.dbmodel.ParameterDetails;
 import com.amx.jax.dbmodel.PaygDetailsModel;
 import com.amx.jax.dbmodel.ReceiptPaymentApp;
+import com.amx.jax.dbmodel.ShippingAddressDetail;
 import com.amx.jax.dbmodel.UserFinancialYear;
 import com.amx.jax.dbmodel.fx.FxDeliveryDetailsModel;
 import com.amx.jax.dbmodel.fx.FxDeliveryTimeSlotMaster;
@@ -56,6 +57,7 @@ import com.amx.jax.repository.IApplicationCountryRepository;
 import com.amx.jax.repository.ICompanyDAO;
 import com.amx.jax.repository.ICurrencyDao;
 import com.amx.jax.repository.ICustomerRepository;
+import com.amx.jax.repository.IShippingAddressRepository;
 import com.amx.jax.repository.ParameterDetailsRespository;
 import com.amx.jax.repository.ReceiptPaymentAppRepository;
 import com.amx.jax.repository.fx.FxOrderDeliveryTimeSlotRepository;
@@ -122,6 +124,9 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 	
 	@Autowired
 	ParameterDetailsRespository paramRepos;
+	
+	@Autowired
+	IShippingAddressRepository shippingAddressDao;
 	
 	
 	/**
@@ -437,8 +442,6 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 	public List<AddressTypeDto> getAddressTypeList(){
 		 List<AddressTypeDto> list = new ArrayList<>();  
 	List<ParameterDetails> parameterListAddType 	=fcSaleExchangeRateDao.getParameterDetails(ConstantDocument.FX_AD,ConstantDocument.Yes);
-	
-
 		if(!parameterListAddType.isEmpty()){
 			for(ParameterDetails addParam: parameterListAddType){
 				AddressTypeDto dto = new AddressTypeDto();
@@ -464,18 +467,25 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 
 	
 	
-	public List<TimeSlotDto> fetchTimeSlot(String date){
+	public List<TimeSlotDto> fetchTimeSlot(BigDecimal shippingAddressId){
 		List<TimeSlotDto> timeSlotList = new ArrayList<>();
 		BigDecimal appCountryId = metaData.getCountryId()==null?BigDecimal.ZERO:metaData.getCountryId();
 		BigDecimal companyId = metaData.getCompanyId()==null?BigDecimal.ZERO:metaData.getCompanyId();
 		List<FxDeliveryTimeSlotMaster> list = fcSaleOrderTimeSlotDao.findByCountryIdAndCompanyIdAndIsActive(appCountryId, companyId, ConstantDocument.Yes);
+		
 		
 		if(!list.isEmpty()){
 			BigDecimal  startTime = list.get(0).getStartTime()==null?BigDecimal.ZERO:list.get(0).getStartTime();
 			BigDecimal  endTime = list.get(0).getEndTime()==null?BigDecimal.ZERO:list.get(0).getEndTime();
 			BigDecimal  timeInterval = list.get(0).getTimeInterval()==null?BigDecimal.ZERO:list.get(0).getTimeInterval();
 			BigDecimal 	noOfDays	 = list.get(0).getNoOfDays()==null?BigDecimal.ZERO:list.get(0).getNoOfDays();
-			timeSlotList =DateUtil.getTimeSlotRange(date,startTime.intValue(),endTime.intValue(),timeInterval.intValue(),noOfDays.intValue());
+			BigDecimal officeendTime = list.get(0).getOfficeEndTime()==null?BigDecimal.ZERO:list.get(0).getOfficeEndTime();
+			ShippingAddressDetail shipp =shippingAddressDao.findOne(shippingAddressId);
+			if(shipp!=null &&  shipp.getAddressType()!=null && shipp.getAddressType().equalsIgnoreCase(ConstantDocument.FX_LHA)){
+				endTime =officeendTime; 
+			}
+			 
+			timeSlotList =DateUtil.getTimeSlotRange(startTime.intValue(),endTime.intValue(),timeInterval.intValue(),noOfDays.intValue());
 		}else{
 			throw new GlobalException("No data found in DB", JaxError.FC_SALE_TIME_SLOT_SETUP_MISSING);
 		}

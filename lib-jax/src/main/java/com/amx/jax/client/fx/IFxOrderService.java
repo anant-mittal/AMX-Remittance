@@ -2,6 +2,10 @@ package com.amx.jax.client.fx;
 
 import java.math.BigDecimal;
 
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+
 import com.amx.jax.IJaxService;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.error.ApiJaxStatusBuilder.ApiJaxStatus;
@@ -45,8 +49,12 @@ public interface IFxOrderService extends IJaxService {
 		public static final String FC_SALE_ORDER_TRNX_REPORT = PREFIX + "/fc-sale-order-trnx-report/";
 		public static final String FC_SALE_ORDER_TRNX_STATUS = PREFIX + "/fc-sale-order-trnx-status/";
 		public static final String FC_SALE_ORDER_ADD_TYPE = PREFIX + "/fc-sale-order-address-type/";
+		public static final String FC_SALE_SHIPPING_ADDR_DELETE = PREFIX + "/fc-sale-shipp-address-delete/";
+		public static final String FC_SALE_SHIPPING_ADDR_EDIT = PREFIX + "/fc-sale-shipp-address-edit/";
 	}
 
+
+	
 	public static class Params {
 
 		public static final String TERMINAL_ID = "countryBranchSystemInventoryId";
@@ -58,9 +66,13 @@ public interface IFxOrderService extends IJaxService {
 		public static final String COLLECTION_DOC_NO = "collectionDocNo";
 		public static final String COLLECTION_FYEAR = "collectionFyear";
 		public static final String DOCUMENT_ID_FOR_PAYMENT = "documentIdForPayment";
+		public static final String FX_SHIPPING_ADD_ID = "addressId";
 
 	}
 
+	
+	
+	
 	/**
 	 * @return
 	 */
@@ -112,7 +124,7 @@ public interface IFxOrderService extends IJaxService {
 
 	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND, JaxError.INVALID_APPLICATION_COUNTRY_ID, JaxError.INVALID_COMPANY_ID,
 			JaxError.FC_SALE_TIME_SLOT_SETUP_MISSING })
-	AmxApiResponse<TimeSlotDto, Object> getTimeSlot(String fxDate);
+	AmxApiResponse<TimeSlotDto, Object> getTimeSlot(BigDecimal addressId);
 
 	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND })
 	AmxApiResponse<FxOrderShoppingCartResponseModel, Object> fetchShoppingCartList();
@@ -135,9 +147,15 @@ public interface IFxOrderService extends IJaxService {
 			BigDecimal collectionFyear);
 
 	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND })
-	AmxApiResponse<FxOrderTransactionStatusResponseDto, Object> getFxOrderTransactionStatus(
-			BigDecimal documentIdForPayment);
+	AmxApiResponse<FxOrderTransactionStatusResponseDto,Object> getFxOrderTransactionStatus(BigDecimal documentIdForPayment);
+	
+	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND, JaxError.ADDRESS_TYPE_SETUP_IS_MISSING})
+    AmxApiResponse<AddressTypeDto, Object> getAddressTypeList() throws Exception;
+	
+	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND})
+    AmxApiResponse<ShippingAddressDto, Object> deleteFcSaleAddress(BigDecimal addressId);
+	
+	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND})
+    AmxApiResponse<ShippingAddressDto, Object> editShippingAddress(ShippingAddressDto shippingAddressDto);
 
-	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND, JaxError.ADDRESS_TYPE_SETUP_IS_MISSING })
-	public AmxApiResponse<AddressTypeDto, Object> getAddressTypeList();
 }

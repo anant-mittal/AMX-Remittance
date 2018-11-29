@@ -11,6 +11,9 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.amx.jax.AppConfig;
 import com.amx.jax.api.AmxApiResponse;
@@ -24,6 +27,7 @@ import com.amx.jax.model.response.fx.AddressTypeDto;
 import com.amx.jax.model.response.fx.FcSaleApplPaymentReponseModel;
 import com.amx.jax.model.response.fx.FcSaleOrderApplicationResponseModel;
 import com.amx.jax.model.response.fx.FcSaleOrderDefaultResponseModel;
+import com.amx.jax.model.response.fx.FxDeliveryDetailDto;
 import com.amx.jax.model.response.fx.FxExchangeRateDto;
 import com.amx.jax.model.response.fx.FxOrderReportResponseDto;
 import com.amx.jax.model.response.fx.FxOrderShoppingCartResponseModel;
@@ -31,9 +35,11 @@ import com.amx.jax.model.response.fx.FxOrderTransactionHistroyDto;
 import com.amx.jax.model.response.fx.FxOrderTransactionStatusResponseDto;
 import com.amx.jax.model.response.fx.PurposeOfTransactionDto;
 import com.amx.jax.model.response.fx.ShippingAddressDto;
+import com.amx.jax.model.response.fx.ShoppingCartDetailsDto;
 import com.amx.jax.model.response.fx.TimeSlotDto;
 import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.rest.RestService;
+import com.amx.jax.client.fx.IFxOrderService.Path;
 
 @Component
 public class FcSaleOrderClient implements IFxOrderService {
@@ -192,11 +198,11 @@ public class FcSaleOrderClient implements IFxOrderService {
 
 	/** @ To fetch the time slot **/
 	@Override
-	public AmxApiResponse<TimeSlotDto, Object> getTimeSlot(String fxDate) {
+	public AmxApiResponse<TimeSlotDto, Object> getTimeSlot(BigDecimal addressId) {
 		try {
-			LOGGER.debug("in getTime slot client :" + fxDate);
+			LOGGER.debug("in getTime slot client :" + addressId);
 			return restService.ajax(appConfig.getJaxURL() + Path.FC_SALE_TIME_SLOT)
-					.meta(new JaxMetaInfo()).queryParam(Params.FXDATE2, fxDate)
+					.meta(new JaxMetaInfo()).queryParam(Params.FX_SHIPPING_ADD_ID, addressId)
 					.get().as(new ParameterizedTypeReference<AmxApiResponse<TimeSlotDto, Object>>() {
 					});
 		} catch (Exception e) {
@@ -254,14 +260,12 @@ public class FcSaleOrderClient implements IFxOrderService {
 
 	}
 
+	
 	@Override
 	public AmxApiResponse<PaymentResponseDto, Object> savePaymentId(PaymentResponseDto requestModel) {
 		try {
 			LOGGER.debug("client Save pg details  :" + requestModel.toString());
-			return restService.ajax(appConfig.getJaxURL() + Path.FC_SALE_SAVE_PAYMENT_ID).meta(new JaxMetaInfo())
-					.post(requestModel)
-					.as(new ParameterizedTypeReference<AmxApiResponse<PaymentResponseDto, Object>>() {
-					});
+			return restService.ajax(appConfig.getJaxURL() + Path.FC_SALE_SAVE_PAYMENT_ID).meta(new JaxMetaInfo()).post(requestModel).as(new ParameterizedTypeReference<AmxApiResponse<PaymentResponseDto, Object>>() {});
 		} catch (Exception e) {
 			LOGGER.error("exception in getCurrencyByCountryId : ", e);
 			return JaxSystemError.evaluate(e);
@@ -277,45 +281,70 @@ public class FcSaleOrderClient implements IFxOrderService {
 				});
 
 	}
+	
 
 	@Override
-	public AmxApiResponse<FxOrderReportResponseDto, Object> getFxOrderTransactionReport(BigDecimal collectionDocNo,
-			BigDecimal collectionFyear) {
+	public AmxApiResponse<FxOrderReportResponseDto, Object> getFxOrderTransactionReport(BigDecimal collectionDocNo,BigDecimal collectionFyear) {
 		LOGGER.debug("in FxOrderReportResponseDto  client :");
 		return restService.ajax(appConfig.getJaxURL() + Path.FC_SALE_ORDER_TRNX_REPORT).meta(new JaxMetaInfo())
 				.queryParam(Params.COLLECTION_DOC_NO, collectionDocNo)
 				.queryParam(Params.COLLECTION_FYEAR, collectionFyear)
 				.post().as(new ParameterizedTypeReference<AmxApiResponse<FxOrderReportResponseDto, Object>>() {
 				});
-
+		
 	}
 
 	@Override
-	public AmxApiResponse<FxOrderTransactionStatusResponseDto, Object> getFxOrderTransactionStatus(
-			BigDecimal documentIdForPayment) {
+	public AmxApiResponse<FxOrderTransactionStatusResponseDto, Object> getFxOrderTransactionStatus(BigDecimal documentIdForPayment) {
 		try {
-			return restService.ajax(appConfig.getJaxURL() + Path.FC_SALE_ORDER_TRNX_STATUS).meta(new JaxMetaInfo())
-					.queryParam(Params.DOCUMENT_ID_FOR_PAYMENT, documentIdForPayment).post()
-					.as(new ParameterizedTypeReference<AmxApiResponse<FxOrderTransactionStatusResponseDto, Object>>() {
-					});
+		return restService.ajax(appConfig.getJaxURL() + Path.FC_SALE_ORDER_TRNX_STATUS).meta(new JaxMetaInfo())
+				.queryParam(Params.DOCUMENT_ID_FOR_PAYMENT, documentIdForPayment).post().as(new ParameterizedTypeReference<AmxApiResponse<FxOrderTransactionStatusResponseDto, Object>>() {
+				});
 		} catch (Exception e) {
 			LOGGER.error("exception in getFxOrderTransactionStatus : ", e);
 			return JaxSystemError.evaluate(e);
-		} //
-
+		} // 
+		
 	}
 
 	@Override
-	public AmxApiResponse<AddressTypeDto, Object> getAddressTypeList() {
+	public AmxApiResponse<AddressTypeDto, Object> getAddressTypeList()throws Exception {
 		try {
 			LOGGER.debug("in getAddressTypeList  client :");
-			return restService.ajax(appConfig.getJaxURL() + Path.FC_SALE_ORDER_ADD_TYPE).meta(new JaxMetaInfo()).get()
-					.as(new ParameterizedTypeReference<AmxApiResponse<AddressTypeDto, Object>>() {
-					});
+			return restService.ajax(appConfig.getJaxURL() + Path.FC_SALE_ORDER_ADD_TYPE).meta(new JaxMetaInfo()).get().as(new ParameterizedTypeReference<AmxApiResponse<AddressTypeDto, Object>>() {});
 		} catch (Exception e) {
 			LOGGER.error("exception in getAddressTypeList : ", e);
 			return JaxSystemError.evaluate(e);
 		} // end of try-catch
 
 	}
+
+	@Override
+	public AmxApiResponse<ShippingAddressDto, Object> deleteFcSaleAddress(BigDecimal addressId) {
+		try {
+			LOGGER.debug("in getAddressTypeList  client :");
+			return restService.ajax(appConfig.getJaxURL() + Path.FC_SALE_SHIPPING_ADDR_DELETE).meta(new JaxMetaInfo())
+					.queryParam(Params.FX_SHIPPING_ADD_ID, addressId)
+					.post().as(new ParameterizedTypeReference<AmxApiResponse<ShippingAddressDto, Object>>() {});
+		} catch (Exception e) {
+			LOGGER.error("exception in getAddressTypeList : ", e);
+			return JaxSystemError.evaluate(e);
+		} // end 
+	}
+	
+	
+	@Override
+	public AmxApiResponse<ShippingAddressDto, Object> editShippingAddress(ShippingAddressDto requestModel) {
+		try {
+			LOGGER.debug("in getAddressTypeList  client :");
+			return restService.ajax(appConfig.getJaxURL() + Path.FC_SALE_SHIPPING_ADDR_EDIT).meta(new JaxMetaInfo())
+					.post(requestModel).as(new ParameterizedTypeReference<AmxApiResponse<ShippingAddressDto, Object>>() {});
+		} catch (Exception e) {
+			LOGGER.error("exception in getAddressTypeList : ", e);
+			return JaxSystemError.evaluate(e);
+		} // end 
+	}
+
+
+
 }

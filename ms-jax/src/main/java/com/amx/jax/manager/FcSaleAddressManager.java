@@ -24,13 +24,16 @@ import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.DistrictMaster;
 import com.amx.jax.dbmodel.ShippingAddressDetail;
 import com.amx.jax.dbmodel.StateMaster;
+import com.amx.jax.dbmodel.ViewAreaModel;
 import com.amx.jax.dbmodel.ViewCity;
 import com.amx.jax.dbmodel.ViewDistrict;
 import com.amx.jax.dbmodel.ViewState;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.AbstractModel;
+import com.amx.jax.model.ResourceDto;
 import com.amx.jax.model.request.CustomerShippingAddressRequestModel;
+import com.amx.jax.model.response.fx.AddressTypeDto;
 import com.amx.jax.model.response.fx.ShippingAddressDto;
 import com.amx.jax.repository.CountryRepository;
 import com.amx.jax.repository.IContactDetailDao;
@@ -40,6 +43,7 @@ import com.amx.jax.repository.IViewArea;
 import com.amx.jax.repository.IViewCityDao;
 import com.amx.jax.repository.IViewDistrictDAO;
 import com.amx.jax.repository.IViewStateDao;
+import com.amx.jax.repository.ParameterDetailsRespository;
 import com.amx.jax.util.JaxUtil;
 
 
@@ -80,6 +84,13 @@ public class FcSaleAddressManager  extends AbstractModel{
 	
 	@Autowired
 	IViewArea areaDao;
+	
+	
+	@Autowired
+	ParameterDetailsRespository parameterDetailsRespository;
+	
+	@Autowired
+	FcSaleApplicationTransactionManager saleAppl;
 
 	/** Fetching shipping address **/
 	
@@ -94,53 +105,7 @@ public class FcSaleAddressManager  extends AbstractModel{
 		List<ContactDetail> contactList = contactDao.getContactDetailForLocal(new Customer(customerId));
 		List<ShippingAddressDetail> shippingAddressList = shippingAddressDao.findByFsCustomerAndActiveStatus(new Customer(customerId), ConstantDocument.Yes);
 		
-		if (!contactList.isEmpty()) {
-			ShippingAddressDto shippingAddressDto = new ShippingAddressDto();
-			shippingAddressDto.setAddressId(contactList.get(0).getContactDetailId());
-			if(!customerList.isEmpty()){
-				shippingAddressDto.setFirstName(customerList.get(0).getFirstName());
-				shippingAddressDto.setMiddleName(customerList.get(0).getMiddleName());
-				shippingAddressDto.setLastName(customerList.get(0).getLastName());
-			}
-			shippingAddressDto.setCustomerId(contactList.get(0).getFsCustomer().getCustomerId());
-			shippingAddressDto.setCompanyId(companyId);
-			shippingAddressDto.setMobile(contactList.get(0).getMobile());
-			shippingAddressDto.setLocalContactBuilding(contactList.get(0).getBuildingNo());
-			shippingAddressDto.setStreet(contactList.get(0).getStreet());
-			shippingAddressDto.setBlockNo(contactList.get(0).getBlock());
-			shippingAddressDto.setHouse(contactList.get(0).getFlat());
-
-			List<CountryMasterView> countryMasterView = countryDao.findByLanguageIdAndCountryId(new BigDecimal(1),contactList.get(0).getFsCountryMaster().getCountryId());
-			if (!countryMasterView.isEmpty()) {
-				shippingAddressDto.setLocalContactCountry(countryMasterView.get(0).getCountryName());
-				if (contactList.get(0).getFsStateMaster() != null) {
-					List<ViewState> stateMasterView = stateDao.getState(countryMasterView.get(0).getCountryId(),contactList.get(0).getFsStateMaster().getStateId(), new BigDecimal(1));
-					if (!stateMasterView.isEmpty()) {
-						shippingAddressDto.setLocalContactState(stateMasterView.get(0).getStateName());
-						DistrictMaster distictMaster = contactList.get(0).getFsDistrictMaster();
-						if (distictMaster != null) {
-							List<ViewDistrict> districtMas = districtDao.getDistrict(stateMasterView.get(0).getStateId(), distictMaster.getDistrictId(),new BigDecimal(1));
-							if (!districtMas.isEmpty()) {
-								shippingAddressDto.setLocalContactDistrict(districtMas.get(0).getDistrictDesc());
-								List<ViewCity> cityDetails = cityDao.getCityDescription(districtMas.get(0).getDistrictId(),contactList.get(0).getFsCityMaster().getCityId(), new BigDecimal(1));
-								if (!cityDetails.isEmpty()) {
-									shippingAddressDto.setLocalContactCity(cityDetails.get(0).getCityName());
-								}
-							}
-						}
-					}
-				}
-
-			}
-			shippingAddressDto.setAdressType("local_address");
-			list.add(shippingAddressDto); // Local Address
-		} //Local contact details
-		
-		
-		
 		/** Adding shipping Address **/
-		
-		
 		if (!shippingAddressList.isEmpty()) {
 			for (ShippingAddressDetail shippingAddressDetail : shippingAddressList) {
 				ShippingAddressDto shippingAddressDto = new ShippingAddressDto();
@@ -158,22 +123,30 @@ public class FcSaleAddressManager  extends AbstractModel{
 			shippingAddressDto.setStreet(shippingAddressDetail.getStreet());
 			shippingAddressDto.setBlockNo(shippingAddressDetail.getBlock());
 			shippingAddressDto.setHouse(shippingAddressDetail.getFlat());
-			shippingAddressDto.setAdressType(shippingAddressDetail.getAddressType());
+			shippingAddressDto.setAddressDto(getAddressType(shippingAddressDetail.getAddressType()));
 			shippingAddressDto.setAreaDesc(areaDao.getAreaList(shippingAddressDetail.getAreaCode())==null?"":areaDao.getAreaList(shippingAddressDetail.getAreaCode()).getShortDesc());
+			ViewAreaModel areaModel = areaDao.getAreaList(shippingAddressDetail.getAreaCode());
+			if(areaModel!=null){
+				shippingAddressDto.setAreaDto(getDbObject(areaModel.getAreaCode(),areaModel));
+			}
 			List<CountryMasterView> countryMasterView = countryDao.findByLanguageIdAndCountryId(new BigDecimal(1),shippingAddressDetail.getFsCountryMaster().getCountryId());
 			if (!countryMasterView.isEmpty()) {
 				shippingAddressDto.setLocalContactCountry(countryMasterView.get(0).getCountryName());
+				shippingAddressDto.setCountryDto(getDbObject(countryMasterView.get(0).getCountryId(),countryMasterView.get(0)));
 				if (contactList.get(0).getFsStateMaster() != null) {
 					List<ViewState> stateMasterView = stateDao.getState(countryMasterView.get(0).getCountryId(),shippingAddressDetail.getFsStateMaster().getStateId(), new BigDecimal(1));
 					if (!stateMasterView.isEmpty()) {
 						shippingAddressDto.setLocalContactState(stateMasterView.get(0).getStateName());
+						shippingAddressDto.setStateDto(getDbObject(stateMasterView.get(0).getStateId(),stateMasterView.get(0)));
 						DistrictMaster distictMaster = shippingAddressDetail.getFsDistrictMaster();
 						if (distictMaster != null) {
 							List<ViewDistrict> districtMas = districtDao.getDistrict(stateMasterView.get(0).getStateId(), distictMaster.getDistrictId(),new BigDecimal(1));
 							if (!districtMas.isEmpty()) {
 								shippingAddressDto.setLocalContactDistrict(districtMas.get(0).getDistrictDesc());
+								shippingAddressDto.setDistrictDto(getDbObject(districtMas.get(0).getDistrictId(),districtMas.get(0)));
 								List<ViewCity> cityDetails = cityDao.getCityDescription(districtMas.get(0).getDistrictId(),shippingAddressDetail.getFsCityMaster().getCityId(), new BigDecimal(1));
 								if (!cityDetails.isEmpty()) {
+									shippingAddressDto.setCityDto(getDbObject(cityDetails.get(0).getCityMasterId(), cityDetails.get(0)));
 									shippingAddressDto.setLocalContactCity(cityDetails.get(0).getCityName());
 								}
 							}
@@ -181,6 +154,8 @@ public class FcSaleAddressManager  extends AbstractModel{
 					}
 				}
 
+			}else{
+				throw new GlobalException("Failed" ,JaxError.COUNTRY_NOT_FOUND);
 			}
 			list.add(shippingAddressDto); // Local Address
 		} //end of for Loop
@@ -206,7 +181,7 @@ public class FcSaleAddressManager  extends AbstractModel{
 		shipAdd.setFsStateMaster(new StateMaster(requestModel.getStateId()));
 		shipAdd.setFsDistrictMaster(new DistrictMaster(requestModel.getDistrictId()));
 		shipAdd.setFsCityMaster(new CityMaster(requestModel.getCityId()));
-		shipAdd.setAddressType(requestModel.getAddressTypeDto().getAddressTypeDesc());
+		shipAdd.setAddressType(requestModel.getAddressTypeDto().getAddressTypeCode());
 		if(!StringUtils.isBlank(meta.getReferrer())){
 			shipAdd.setCreatedBy(meta.getReferrer());
 		}else{
@@ -219,7 +194,7 @@ public class FcSaleAddressManager  extends AbstractModel{
 		shipAdd.setMobile(requestModel.getMobile());
 		shipAdd.setTelephoneCode(requestModel.getTelPrefix());
 		shipAdd.setTelephone(requestModel.getMobile());
-		deactivateShippingAddress(new Customer(meta.getCustomerId()));
+		//deactivateShippingAddress(new Customer(meta.getCustomerId()));
 		shippingAddressDao.save(shipAdd);
 		}catch(Exception e){
 			logger.error("saveShippingAddress :", e.getMessage());
@@ -237,14 +212,127 @@ public class FcSaleAddressManager  extends AbstractModel{
     	 }
      }
 	}
-	
-	public void deleteShippingAddress(BigDecimal shippingAddressDetailId){
+	 public List<ShippingAddressDto> deleteShippingAddress(BigDecimal shippingAddressDetailId){
 	     if(JaxUtil.isNullZeroBigDecimalCheck(shippingAddressDetailId)){
 	    		 ShippingAddressDetail shippAdd = shippingAddressDao.findOne(shippingAddressDetailId);
+	    		 if(shippAdd!=null){
 	    		 shippAdd.setActiveStatus(ConstantDocument.Deleted);
+	    		 if(!StringUtils.isBlank(meta.getReferrer())){
+	    			 shippAdd.setUpdatedBy(meta.getReferrer());
+	    			}else{
+	    				if(!StringUtils.isBlank(meta.getAppType())){				
+	    					shippAdd.setUpdatedBy(meta.getAppType());
+	    				}else{
+	    					 shippAdd.setUpdatedBy("WEB");
+	    				 }
+	    			}
+	    		 shippAdd.setLastUpdated(new Date());
 	    		 shippingAddressDao.save(shippAdd);
+	    		 }else{
+	    			 throw new GlobalException("Invalid shipping address" ,JaxError.NO_RECORD_FOUND);
+	    		 }
 	     }
-		}
+	     List<ShippingAddressDto> list = fetchShippingAddress();
+	     return list;
+	}
 		
+	 
+	 public List<ShippingAddressDto> editShippingAddress(ShippingAddressDto adddto){
+		 	   if(adddto!=null){
+	    		 ShippingAddressDetail shippAdd = shippingAddressDao.findOne(adddto.getAddressId());
+	    		 if(shippAdd!=null){
+	    			 ShippingAddressDetail shipAdd = new ShippingAddressDetail();
+	    			   if(JaxUtil.isNullZeroBigDecimalCheck(meta.getCustomerId())){
+	    				shipAdd.setFsCustomer(new Customer(meta.getCustomerId()));
+	    			   }else{
+	    				   throw new GlobalException("custoemr Id " ,JaxError.INVALID_CUSTOMER);
+	    			   }
+	    				shipAdd.setLastUpdated(new Date());
+	    				shipAdd.setActiveStatus(ConstantDocument.Yes);
+	    				if(JaxUtil.isNullZeroBigDecimalCheck(adddto.getAreaDto().getId())){
+	    					shipAdd.setAreaCode(adddto.getAreaDto().getId());
+	    				}else{
+	    					 throw new GlobalException("custoemr Id " ,JaxError.NULL_AREA_CODE);
+	    				}
+	    				shipAdd.setBlock(adddto.getBlock());
+	    				shipAdd.setBuildingNo(adddto.getBuildingNo());
+	    				shipAdd.setFlat(adddto.getFlat());
+	    				shipAdd.setStreet(adddto.getStreet());
+	    				if(JaxUtil.isNullZeroBigDecimalCheck(meta.getCountryId())){
+	    				shipAdd.setFsCountryMaster(new CountryMaster(meta.getCountryId()));
+	    				}else{
+	    					 throw new GlobalException("Invalid country Id  " ,JaxError.INVALID_APPLICATION_COUNTRY_ID);
+	    				}
+	    				if(JaxUtil.isNullZeroBigDecimalCheck(adddto.getStateDto().getId())){
+	    				shipAdd.setFsStateMaster(new StateMaster(adddto.getStateDto().getId()));
+	    				}else{
+	    					throw new GlobalException("Invalid state  " ,JaxError.INVALID_STATE);
+	    				}
+	    				if(JaxUtil.isNullZeroBigDecimalCheck(adddto.getDistrictDto().getId())){
+	    				shipAdd.setFsDistrictMaster(new DistrictMaster(adddto.getDistrictDto().getId()));
+	    				}else{
+	    					throw new GlobalException("Invalid district  " ,JaxError.INVALID_DISTRICT);
+	    				}
+	    				if(JaxUtil.isNullZeroBigDecimalCheck(adddto.getCityDto().getId())){
+	    					shipAdd.setFsCityMaster(new CityMaster(adddto.getCityDto().getId()));
+	    				}else{
+	    					throw new GlobalException("Invalid city  " ,JaxError.INVALID_CITY);
+	    				}
+	    				if(!StringUtils.isBlank(adddto.getAddressDto().getAddressTypeCode())){
+	    					shipAdd.setAddressType(adddto.getAddressDto().getAddressTypeCode());
+	    				}else{
+	    					throw new GlobalException("Address type " ,JaxError.INVALID_ADDRESS_TYPE);
+	    				}
+	    				if(!StringUtils.isBlank(meta.getReferrer())){
+	    					shipAdd.setUpdatedBy(meta.getReferrer());
+	    				}else{
+	    					if(!StringUtils.isBlank(meta.getAppType())){				
+	    						shipAdd.setUpdatedBy(meta.getAppType());
+	    					}else{
+	    						shipAdd.setUpdatedBy("WEB");
+	    					 }
+	    				}
+	    				shipAdd.setMobile(adddto.getMobile());
+	    				shipAdd.setTelephoneCode(adddto.getTelephoneCode());
+	    				shipAdd.setTelephone(adddto.getMobile());
+	    				shippingAddressDao.save(shipAdd);
+	    			 
+	    		 }else{
+	    			 throw new GlobalException("Invalid shipping address" ,JaxError.NO_RECORD_FOUND);
+		 	   }
+		 	   
+	   }else{
+	 		  throw new GlobalException("Invalid shipping address" ,JaxError.NO_RECORD_FOUND);
+		 }
+	 
+	     List<ShippingAddressDto> list = fetchShippingAddress();
+	     return list;
+	 }
+	
+	public AddressTypeDto getAddressType(String addressTypecode){
+		List<AddressTypeDto> addtype = saleAppl.getAddressTypeList();
+		AddressTypeDto dto1 = null;
+		if(!addtype.isEmpty()){
+			for(AddressTypeDto dto: addtype){
+				if(dto.getAddressTypeCode()!= null && dto.getAddressTypeCode().equalsIgnoreCase(addressTypecode)){
+					dto1 = new AddressTypeDto();
+					dto1.setAddressTypeCode(dto.getAddressTypeCode());
+					dto1.setAddressTypeDesc(dto.getAddressTypeDesc());	
+					break;
+				}
+			}
+		}
+		return dto1;
+	}
+	
+	
+	
+	
+	public ResourceDto getDbObject(BigDecimal Id,Object Object){
+		ResourceDto dto  =new ResourceDto();
+		dto.setId(Id);
+		dto.setName(Object);
+		return dto;
+	}
 	
 }

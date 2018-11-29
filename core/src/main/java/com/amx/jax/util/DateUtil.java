@@ -192,8 +192,8 @@ public class DateUtil {
 		}*/
 	
 	
-	public static List<TimeSlotDto> getTimeSlotRange(String date,int startTime,int endTime,int timeIntVal,int noofDay){
-	logger.info("getTimeRange for Fx Order date :"+date+"\t startTime :"+startTime+"\t endTime:"+endTime+"\t timeIntVal :"+timeIntVal+"\t noofDay :"+noofDay);
+	public static List<TimeSlotDto> getTimeSlotRange(int startTime,int endTime,int timeIntVal,int noofDay){
+	logger.info("getTimeRange for Fx Order date :\t startTime :"+startTime+"\t endTime:"+endTime+"\t timeIntVal :"+timeIntVal+"\t noofDay :"+noofDay);
 	List<String> timeSlotList = new ArrayList<>();
 	List<TimeSlotDto> timeSlotDto = new ArrayList<>();
 	Date d = new Date();
