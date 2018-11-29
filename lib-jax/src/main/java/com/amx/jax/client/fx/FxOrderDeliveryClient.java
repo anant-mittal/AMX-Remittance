@@ -9,14 +9,11 @@ import org.springframework.stereotype.Component;
 import com.amx.jax.AppConfig;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
-import com.amx.jax.client.IDeviceStateService.Params;
-import com.amx.jax.client.IDeviceStateService.Path;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.exception.JaxSystemError;
 import com.amx.jax.model.request.fx.FcSaleDeliveryDetailUpdateReceiptRequest;
 import com.amx.jax.model.request.fx.FcSaleDeliveryMarkDeliveredRequest;
 import com.amx.jax.model.request.fx.FcSaleDeliveryMarkNotDeliveredRequest;
-import com.amx.jax.model.response.DeviceStatusInfoDto;
 import com.amx.jax.model.response.fx.FxDeliveryDetailDto;
 import com.amx.jax.rest.RestService;
 

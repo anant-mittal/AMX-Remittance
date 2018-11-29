@@ -24,7 +24,6 @@ import com.amx.jax.model.response.fx.AddressTypeDto;
 import com.amx.jax.model.response.fx.FcSaleApplPaymentReponseModel;
 import com.amx.jax.model.response.fx.FcSaleOrderApplicationResponseModel;
 import com.amx.jax.model.response.fx.FcSaleOrderDefaultResponseModel;
-import com.amx.jax.model.response.fx.FxDeliveryDetailDto;
 import com.amx.jax.model.response.fx.FxExchangeRateDto;
 import com.amx.jax.model.response.fx.FxOrderReportResponseDto;
 import com.amx.jax.model.response.fx.FxOrderShoppingCartResponseModel;
@@ -32,11 +31,9 @@ import com.amx.jax.model.response.fx.FxOrderTransactionHistroyDto;
 import com.amx.jax.model.response.fx.FxOrderTransactionStatusResponseDto;
 import com.amx.jax.model.response.fx.PurposeOfTransactionDto;
 import com.amx.jax.model.response.fx.ShippingAddressDto;
-import com.amx.jax.model.response.fx.ShoppingCartDetailsDto;
 import com.amx.jax.model.response.fx.TimeSlotDto;
 import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.rest.RestService;
-import com.amx.jax.client.fx.IFxOrderService.Path;
 
 @Component
 public class FcSaleOrderClient implements IFxOrderService {
