@@ -131,10 +131,11 @@ public class FxOrderController {
 		payment.setPgCode(x.getPgCode());
 		payment.setProduct(AmxEnums.Products.FXORDER);
 
-		return (ResponseWrapper<FcSaleApplPaymentReponseModel>) ResponseWrapper.build(wrapper)
-				.redirectUrl(payGService.getPaymentUrl(payment,
-						HttpUtils.getServerName(request)
-								+ "/app/landing/fxorder"));
+		ResponseWrapper<FcSaleApplPaymentReponseModel> newWrapper = ResponseWrapper.build(wrapper);
+		newWrapper.redirectUrl(payGService.getPaymentUrl(payment,
+				HttpUtils.getServerName(request)
+						+ "/app/landing/fxorder"));
+		return newWrapper;
 	}
 
 	@RequestMapping(value = "/api/fxo/tranx/list", method = RequestMethod.GET)
