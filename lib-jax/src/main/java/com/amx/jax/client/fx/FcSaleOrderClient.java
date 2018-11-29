@@ -284,7 +284,7 @@ public class FcSaleOrderClient implements IFxOrderService {
 	
 
 	@Override
-	public AmxApiResponse<FxOrderReportResponseDto, Object> getFxOrderTransactionReport(BigDecimal collectionDocNo,BigDecimal collectionFyear) {
+	public AmxApiResponse<FxOrderReportResponseDto, Object> getFxOrderTransactionReport(BigDecimal collectionDocNo,BigDecimal collectionFyear)throws Exception {
 		LOGGER.debug("in FxOrderReportResponseDto  client :");
 		return restService.ajax(appConfig.getJaxURL() + Path.FC_SALE_ORDER_TRNX_REPORT).meta(new JaxMetaInfo())
 				.queryParam(Params.COLLECTION_DOC_NO, collectionDocNo)

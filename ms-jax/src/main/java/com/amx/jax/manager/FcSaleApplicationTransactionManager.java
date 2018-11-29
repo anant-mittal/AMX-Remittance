@@ -442,6 +442,8 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 	public List<AddressTypeDto> getAddressTypeList(){
 		 List<AddressTypeDto> list = new ArrayList<>();  
 	List<ParameterDetails> parameterListAddType 	=fcSaleExchangeRateDao.getParameterDetails(ConstantDocument.FX_AD,ConstantDocument.Yes);
+	
+
 		if(!parameterListAddType.isEmpty()){
 			for(ParameterDetails addParam: parameterListAddType){
 				AddressTypeDto dto = new AddressTypeDto();

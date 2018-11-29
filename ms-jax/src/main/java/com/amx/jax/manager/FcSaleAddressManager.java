@@ -105,7 +105,11 @@ public class FcSaleAddressManager  extends AbstractModel{
 		List<ContactDetail> contactList = contactDao.getContactDetailForLocal(new Customer(customerId));
 		List<ShippingAddressDetail> shippingAddressList = shippingAddressDao.findByFsCustomerAndActiveStatus(new Customer(customerId), ConstantDocument.Yes);
 		
+		
+		
 		/** Adding shipping Address **/
+		
+		
 		if (!shippingAddressList.isEmpty()) {
 			for (ShippingAddressDetail shippingAddressDetail : shippingAddressList) {
 				ShippingAddressDto shippingAddressDto = new ShippingAddressDto();

@@ -62,7 +62,7 @@ public class ConstantDocument {
 	public static final String VOUCHER_ONLINE_PROMOTION_STR = "CHICKEN KING SAGAR VOUCHER";
 	public static final BigDecimal IDENTITY_FOR_ID_PROOF = new BigDecimal(48);
 	public static final BigDecimal BIZ_COMPONENT_ID_CIVIL_ID = new BigDecimal(198);
-	/** Added by Rabil on 06/11/2018  FX_CD-Currency Denomination and FX_DC Delivery Charges ,FX_AD -FX Address Type (LOA,LHA) **/ 
+	/** Added by Rabil on 06/11/2018  FX_CD-Currency Denomination and FX_DC Delivery Charges **/ 
 	public static final String FX_CD = "FXCD";
 	public static final String FX_DC = "FXDC";	
 	public static final String FX_AD = "FXAD";
