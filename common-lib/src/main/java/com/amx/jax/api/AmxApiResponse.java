@@ -161,6 +161,7 @@ public class AmxApiResponse<T, M> extends AResponse<M>
 		return resp;
 	}
 
+	@JsonIgnore
 	public AmxApiResponse<T, M> redirectUrl(String redirectUrl) {
 		this.redirectUrl = redirectUrl;
 		return this;
