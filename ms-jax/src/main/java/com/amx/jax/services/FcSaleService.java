@@ -40,6 +40,7 @@ import com.amx.jax.model.request.fx.FcSaleOrderPaynowRequestModel;
 import com.amx.jax.model.request.fx.FcSaleOrderTransactionRequestModel;
 import com.amx.jax.model.response.CurrencyMasterDTO;
 import com.amx.jax.model.response.SourceOfIncomeDto;
+import com.amx.jax.model.response.fx.AddressTypeDto;
 import com.amx.jax.model.response.fx.CurrencyDenominationTypeDto;
 import com.amx.jax.model.response.fx.FcSaleApplPaymentReponseModel;
 import com.amx.jax.model.response.fx.FcSaleOrderApplicationResponseModel;
@@ -301,6 +302,16 @@ public class FcSaleService extends AbstractService {
 		FxOrderTransactionStatusResponseDto statusdto = reportManager.getTransactionStatus(documentIdForPayment);
 		return AmxApiResponse.build(statusdto);
 	}
+	
+	
+	public AmxApiResponse<AddressTypeDto,Object>getAddressTypeList(){
+		return AmxApiResponse.buildList(applTrnxManager.getAddressTypeList());
+	}
+	
+	
+
+	
+	
 	
 	public List<PurposeOfTransactionDto> convertPurposeOfTrnxDto(List<PurposeOfTransaction> purposeofTrnxList) {
 		List<PurposeOfTransactionDto> dtoList = new ArrayList<>();

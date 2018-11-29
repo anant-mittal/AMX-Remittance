@@ -33,7 +33,8 @@ public class FcSaleExchangeRateDao {
 	
 	
 	public List<ParameterDetails> getParameterDetails(String recordId,String isactive){
-		return parameterDetailsRespository.findByRecordIdAndIsActive(recordId, isactive);
+		System.out.println("recordId :"+recordId+"\t isactive:"+isactive);
+		return parameterDetailsRespository.findByRecordIdAndIsActive(recordId.trim(), isactive.trim());
 	}
 	
 
@@ -44,4 +45,6 @@ public class FcSaleExchangeRateDao {
 	public List<FxShoppingCartDetails> getFcSaleShoppingCartDetails(BigDecimal applicationcountryId,BigDecimal companyId,BigDecimal customerId){
 		return shoppingCartRepository.fetchFcSaleApplicationDetails(applicationcountryId, companyId, customerId);
 	}
+	
+	
 }

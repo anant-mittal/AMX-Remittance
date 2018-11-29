@@ -20,6 +20,7 @@ import com.amx.jax.model.request.CustomerShippingAddressRequestModel;
 import com.amx.jax.model.request.fx.FcSaleOrderPaynowRequestModel;
 import com.amx.jax.model.request.fx.FcSaleOrderTransactionRequestModel;
 import com.amx.jax.model.response.CurrencyMasterDTO;
+import com.amx.jax.model.response.fx.AddressTypeDto;
 import com.amx.jax.model.response.fx.FcSaleApplPaymentReponseModel;
 import com.amx.jax.model.response.fx.FcSaleOrderApplicationResponseModel;
 import com.amx.jax.model.response.fx.FcSaleOrderDefaultResponseModel;
@@ -188,4 +189,11 @@ public class FcSaleOrderController implements IFxOrderService {
 		return fcSaleService.getFxOrderTransactionStatus(documentIdForPayment);
 	}
 
+	
+	
+	@RequestMapping(value = Path.FC_SALE_ORDER_ADD_TYPE, method = RequestMethod.GET)
+	public AmxApiResponse<AddressTypeDto, Object> getAddressTypeList() throws Exception {
+		return fcSaleService.getAddressTypeList();
+	}
+	
 }

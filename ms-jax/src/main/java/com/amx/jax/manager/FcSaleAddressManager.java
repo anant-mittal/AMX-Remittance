@@ -40,6 +40,7 @@ import com.amx.jax.repository.IViewArea;
 import com.amx.jax.repository.IViewCityDao;
 import com.amx.jax.repository.IViewDistrictDAO;
 import com.amx.jax.repository.IViewStateDao;
+import com.amx.jax.util.JaxUtil;
 
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -205,7 +206,7 @@ public class FcSaleAddressManager  extends AbstractModel{
 		shipAdd.setFsStateMaster(new StateMaster(requestModel.getStateId()));
 		shipAdd.setFsDistrictMaster(new DistrictMaster(requestModel.getDistrictId()));
 		shipAdd.setFsCityMaster(new CityMaster(requestModel.getCityId()));
-		shipAdd.setAddressType(requestModel.getAddressType());
+		shipAdd.setAddressType(requestModel.getAddressTypeDto().getAddressTypeDesc());
 		if(!StringUtils.isBlank(meta.getReferrer())){
 			shipAdd.setCreatedBy(meta.getReferrer());
 		}else{
@@ -236,5 +237,14 @@ public class FcSaleAddressManager  extends AbstractModel{
     	 }
      }
 	}
+	
+	public void deleteShippingAddress(BigDecimal shippingAddressDetailId){
+	     if(JaxUtil.isNullZeroBigDecimalCheck(shippingAddressDetailId)){
+	    		 ShippingAddressDetail shippAdd = shippingAddressDao.findOne(shippingAddressDetailId);
+	    		 shippAdd.setActiveStatus(ConstantDocument.Deleted);
+	    		 shippingAddressDao.save(shippAdd);
+	     }
+		}
+		
 	
 }

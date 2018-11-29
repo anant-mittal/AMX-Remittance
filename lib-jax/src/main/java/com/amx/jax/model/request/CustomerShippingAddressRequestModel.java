@@ -5,6 +5,8 @@ import java.math.BigDecimal;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+
+import com.amx.jax.model.response.fx.AddressTypeDto;
 /** this model represents customer shipping address **/
 public class CustomerShippingAddressRequestModel {
 
@@ -40,6 +42,7 @@ public class CustomerShippingAddressRequestModel {
 	private String modelType;
 	private BigDecimal areaCode;
 	private String addressType;
+	private AddressTypeDto addressTypeDto;
 
 	public BigDecimal getCountryId() {
 		return countryId;
@@ -146,6 +149,14 @@ public class CustomerShippingAddressRequestModel {
 
 	public void setAddressType(String addressType) {
 		this.addressType = addressType;
+	}
+
+	public AddressTypeDto getAddressTypeDto() {
+		return addressTypeDto;
+	}
+
+	public void setAddressTypeDto(AddressTypeDto addressTypeDto) {
+		this.addressTypeDto = addressTypeDto;
 	}
 
 	

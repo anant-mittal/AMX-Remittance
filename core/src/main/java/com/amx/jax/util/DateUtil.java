@@ -208,33 +208,20 @@ public class DateUtil {
     String defaultZero =":00";
     GregorianCalendar calendar = new GregorianCalendar();
     Date now = calendar.getTime();
+    int startTimeNToday = startTime;
    
     
-    
-    /*if(noofDay==0){
-    	TimeSlotDto dto = new TimeSlotDto();
-    	if (hour>startTime){
-	    	startTime =hour+timeIntVal; 
-	    }
-	for (int i =startTime;i<endTime;  i = i+timeIntVal){
-		 j = i+timeIntVal;
-		 String str = "";
-		 str = String.valueOf(i)+defaultZero+(i<12?meridienAm:meridienPm)+ "-"+String.valueOf(j)+defaultZero+(j<12?meridienAm:meridienPm);
-		 timeSlotList.add(str);
-		 dto.setTimeSlot(timeSlotList);
-		}
-		 dto.setDate(sdf.format(now));
-		 timeSlotDto.add(dto);
-	
-    }else{*/
     	for(int n=0;n<=noofDay;n++){
     		if(n==0){
     			if (hour>startTime){
     		    	startTime =hour+timeIntVal; 
     		    }
+    		}else{
+    			startTime=startTimeNToday;
     		}
     		
 	    	TimeSlotDto dto = new TimeSlotDto();
+	    	 timeSlotList = new ArrayList<>();
 	    	for (int i =startTime;i<endTime;  i = i+timeIntVal){
 	   		 j = i+timeIntVal;
 	   		 String str = "";
@@ -245,8 +232,8 @@ public class DateUtil {
 	    	 calendar.add(calendar.DAY_OF_MONTH, n);
 	    	 Date dateD = calendar.getTime();
 	    	 dto.setDate(dateStr.format(dateD));
-	    	timeSlotDto.add(dto);
-    	//}
+	    	 timeSlotDto.add(dto);
+
     }
     
    

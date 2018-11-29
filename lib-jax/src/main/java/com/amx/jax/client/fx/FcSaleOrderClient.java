@@ -20,6 +20,7 @@ import com.amx.jax.model.request.CustomerShippingAddressRequestModel;
 import com.amx.jax.model.request.fx.FcSaleOrderPaynowRequestModel;
 import com.amx.jax.model.request.fx.FcSaleOrderTransactionRequestModel;
 import com.amx.jax.model.response.CurrencyMasterDTO;
+import com.amx.jax.model.response.fx.AddressTypeDto;
 import com.amx.jax.model.response.fx.FcSaleApplPaymentReponseModel;
 import com.amx.jax.model.response.fx.FcSaleOrderApplicationResponseModel;
 import com.amx.jax.model.response.fx.FcSaleOrderDefaultResponseModel;
@@ -256,14 +257,12 @@ public class FcSaleOrderClient implements IFxOrderService {
 
 	}
 
+	
 	@Override
 	public AmxApiResponse<PaymentResponseDto, Object> savePaymentId(PaymentResponseDto requestModel) {
 		try {
 			LOGGER.debug("client Save pg details  :" + requestModel.toString());
-			return restService.ajax(appConfig.getJaxURL() + Path.FC_SALE_SAVE_PAYMENT_ID).meta(new JaxMetaInfo())
-					.post(requestModel)
-					.as(new ParameterizedTypeReference<AmxApiResponse<PaymentResponseDto, Object>>() {
-					});
+			return restService.ajax(appConfig.getJaxURL() + Path.FC_SALE_SAVE_PAYMENT_ID).meta(new JaxMetaInfo()).post(requestModel).as(new ParameterizedTypeReference<AmxApiResponse<PaymentResponseDto, Object>>() {});
 		} catch (Exception e) {
 			LOGGER.error("exception in getCurrencyByCountryId : ", e);
 			return JaxSystemError.evaluate(e);
@@ -272,29 +271,50 @@ public class FcSaleOrderClient implements IFxOrderService {
 	}
 
 	@Override
-	public AmxApiResponse<FxOrderTransactionHistroyDto, Object> getFxOrderTransactionHistroy() {
+	public AmxApiResponse<FxOrderTransactionHistroyDto, Object> getFxOrderTransactionHistroy()
+			throws Exception {
 		LOGGER.debug("in FxOrderTransactionHistroyDto  client :");
 		return restService.ajax(appConfig.getJaxURL() + Path.FC_SALE_ORDER_TRNX_HIST).meta(new JaxMetaInfo()).get()
 				.as(new ParameterizedTypeReference<AmxApiResponse<FxOrderTransactionHistroyDto, Object>>() {
 				});
+
 	}
+	
 
 	@Override
-	public AmxApiResponse<FxOrderReportResponseDto, Object> getFxOrderTransactionReport(BigDecimal collectionDocNo,
-			BigDecimal collectionFyear) {
+	public AmxApiResponse<FxOrderReportResponseDto, Object> getFxOrderTransactionReport(BigDecimal collectionDocNo,BigDecimal collectionFyear)throws Exception {
 		LOGGER.debug("in FxOrderReportResponseDto  client :");
 		return restService.ajax(appConfig.getJaxURL() + Path.FC_SALE_ORDER_TRNX_REPORT).meta(new JaxMetaInfo())
 				.queryParam(Params.COLLECTION_DOC_NO, collectionDocNo)
 				.queryParam(Params.COLLECTION_FYEAR, collectionFyear)
-				.get().as(new ParameterizedTypeReference<AmxApiResponse<FxOrderReportResponseDto, Object>>() {
+				.post().as(new ParameterizedTypeReference<AmxApiResponse<FxOrderReportResponseDto, Object>>() {
 				});
-
+		
 	}
 
 	@Override
-	public AmxApiResponse<FxOrderTransactionStatusResponseDto, Object> getFxOrderTransactionStatus(
-			BigDecimal documentIdForPayment) {
-		// TODO Auto-generated method stub
-		return null;
+	public AmxApiResponse<FxOrderTransactionStatusResponseDto, Object> getFxOrderTransactionStatus(BigDecimal documentIdForPayment) {
+		try {
+		return restService.ajax(appConfig.getJaxURL() + Path.FC_SALE_ORDER_TRNX_STATUS).meta(new JaxMetaInfo())
+				.queryParam(Params.DOCUMENT_ID_FOR_PAYMENT, documentIdForPayment).post().as(new ParameterizedTypeReference<AmxApiResponse<FxOrderTransactionStatusResponseDto, Object>>() {
+				});
+		} catch (Exception e) {
+			LOGGER.error("exception in getFxOrderTransactionStatus : ", e);
+			return JaxSystemError.evaluate(e);
+		} // 
+		
+	}
+
+	@Override
+	public AmxApiResponse<AddressTypeDto, Object> getAddressTypeList()
+			throws Exception {
+		try {
+			LOGGER.debug("in getAddressTypeList  client :");
+			return restService.ajax(appConfig.getJaxURL() + Path.FC_SALE_ORDER_ADD_TYPE).meta(new JaxMetaInfo()).get().as(new ParameterizedTypeReference<AmxApiResponse<AddressTypeDto, Object>>() {});
+		} catch (Exception e) {
+			LOGGER.error("exception in getAddressTypeList : ", e);
+			return JaxSystemError.evaluate(e);
+		} // end of try-catch
+
 	}
 }

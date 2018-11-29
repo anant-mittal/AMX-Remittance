@@ -65,6 +65,7 @@ public class ConstantDocument {
 	/** Added by Rabil on 06/11/2018  FX_CD-Currency Denomination and FX_DC Delivery Charges **/ 
 	public static final String FX_CD = "FXCD";
 	public static final String FX_DC = "FXDC";	
+	public static final String FX_AD = "FXAD";
 	public static final String S = "S";	
 	public static final BigDecimal DOCUMENT_CODE_FOR_FCSALE_APPLICATION =new BigDecimal(1);
 	public static final BigDecimal DOCUMENT_CODE_FOR_FCSALE = new BigDecimal(74);

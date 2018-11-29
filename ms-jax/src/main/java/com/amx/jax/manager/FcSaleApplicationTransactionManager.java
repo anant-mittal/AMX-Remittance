@@ -42,6 +42,7 @@ import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.fx.FcSaleOrderPaynowRequestModel;
 import com.amx.jax.model.request.fx.FcSaleOrderTransactionRequestModel;
+import com.amx.jax.model.response.fx.AddressTypeDto;
 import com.amx.jax.model.response.fx.FcSaleApplPaymentReponseModel;
 import com.amx.jax.model.response.fx.FcSaleOrderApplicationResponseModel;
 import com.amx.jax.model.response.fx.FxApplicationDto;
@@ -55,6 +56,7 @@ import com.amx.jax.repository.IApplicationCountryRepository;
 import com.amx.jax.repository.ICompanyDAO;
 import com.amx.jax.repository.ICurrencyDao;
 import com.amx.jax.repository.ICustomerRepository;
+import com.amx.jax.repository.ParameterDetailsRespository;
 import com.amx.jax.repository.ReceiptPaymentAppRepository;
 import com.amx.jax.repository.fx.FxOrderDeliveryTimeSlotRepository;
 import com.amx.jax.repository.fx.FxOrderTransactionRespository;
@@ -117,6 +119,10 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 	
 	@Autowired
 	FxOrderTransactionRespository fxTransactionHistroyDao;
+	
+	@Autowired
+	ParameterDetailsRespository paramRepos;
+	
 	
 	/**
 	 * 
@@ -428,6 +434,23 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 		
 	}
 
+	public List<AddressTypeDto> getAddressTypeList(){
+		 List<AddressTypeDto> list = new ArrayList<>();  
+	List<ParameterDetails> parameterListAddType 	=fcSaleExchangeRateDao.getParameterDetails(ConstantDocument.FX_AD,ConstantDocument.Yes);
+	
+
+		if(!parameterListAddType.isEmpty()){
+			for(ParameterDetails addParam: parameterListAddType){
+				AddressTypeDto dto = new AddressTypeDto();
+				dto.setAddressTypeCode(addParam.getCharField1());
+				dto.setAddressTypeDesc(addParam.getCharField2());
+				list.add(dto);
+			}
+		}else{
+			throw new GlobalException("address type setup is not avaliable", JaxError.ADDRESS_TYPE_SETUP_IS_MISSING);
+		}
+		return list;
+	}
 	
 	
 	public BigDecimal generateDocumentNumber(CountryBranch countryBranch, String processInd,BigDecimal finYear) {
