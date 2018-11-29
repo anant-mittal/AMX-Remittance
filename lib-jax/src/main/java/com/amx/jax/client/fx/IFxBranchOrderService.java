@@ -1,6 +1,14 @@
 package com.amx.jax.client.fx;
 
+import java.math.BigDecimal;
+
 import com.amx.jax.IJaxService;
+import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.error.JaxError;
+import com.amx.jax.error.ApiJaxStatusBuilder.ApiJaxStatus;
+import com.amx.jax.model.response.fx.FcEmployeeDetailsDto;
+import com.amx.jax.model.response.fx.FcSaleOrderManagementDTO;
+import com.amx.jax.model.response.fx.UserStockDto;
 
 public interface IFxBranchOrderService extends IJaxService {
 
@@ -12,5 +20,29 @@ public interface IFxBranchOrderService extends IJaxService {
 		public static final String FC_FETCH_STOCK = PREFIX + "/fetch-stock/";
 		public static final String FC_EMLOYEE_DRIVERS = PREFIX + "/employee-drivers/";
 		public static final String FC_ASSIGN_DRIVER = PREFIX + "/assign-driver/";
-	 }
+	}
+
+	public static class Params {
+		public static final String FX_ORDER_NUMBER = "orderNumber";
+		public static final String FX_CURRENCY_ID = "foreignCurrencyId";
+		public static final String FX_DRIVER_ID = "driverId";
+	}
+
+	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND,JaxError.NULL_APPLICATION_COUNTRY_ID,JaxError.NULL_EMPLOYEE_ID })
+	AmxApiResponse<FcSaleOrderManagementDTO,Object> fetchBranchOrderManagement();
+
+	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND,JaxError.NULL_APPLICATION_COUNTRY_ID,JaxError.NULL_ORDER_NUBMER })
+	AmxApiResponse<FcSaleOrderManagementDTO,Object> fetchBranchOrderDetails(BigDecimal orderNumber);
+
+	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND,JaxError.NULL_APPLICATION_COUNTRY_ID,JaxError.NULL_CURRENCY_ID,JaxError.NULL_EMPLOYEE_ID })
+	AmxApiResponse<UserStockDto,Object> fetchBranchStockDetailsByCurrency(BigDecimal foreignCurrencyId);
+
+	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND,JaxError.NULL_APPLICATION_COUNTRY_ID,JaxError.NULL_EMPLOYEE_ID })
+	AmxApiResponse<UserStockDto,Object> fetchBranchStockDetails();
+
+	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND })
+	AmxApiResponse<FcEmployeeDetailsDto, Object> fetchBranchEmployee();
+
+	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND,JaxError.NULL_APPLICATION_COUNTRY_ID,JaxError.NULL_DRIVER_ID,JaxError.NULL_ORDER_NUBMER,JaxError.SAVE_FAILED })
+	AmxApiResponse<Boolean,Object> assignDriver(BigDecimal orderNumber,BigDecimal driverId);
 }

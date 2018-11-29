@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import com.amx.jax.dbmodel.Employee;
 import org.apache.commons.beanutils.BeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,13 +15,14 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.meta.model.EmployeeDetailsDTO;
 import com.amx.jax.dao.FcSaleBranchDao;
+import com.amx.jax.dbmodel.Employee;
 import com.amx.jax.dbmodel.fx.EmployeeDetailsView;
 import com.amx.jax.dbmodel.fx.FxDeliveryDetailsModel;
 import com.amx.jax.dbmodel.fx.OrderManagementView;
 import com.amx.jax.dbmodel.fx.UserStockView;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.model.response.fx.FcEmployeeDetailsDto;
 import com.amx.jax.model.response.fx.FxEmployeeDetailsDto;
 import com.amx.jax.model.response.fx.UserStockDto;
 
@@ -163,13 +163,13 @@ public class FcSaleBranchOrderManager {
 		return userStock;
 	}
 	
-	public List<EmployeeDetailsDTO> fetchEmpDriverDetails(){
-		List<EmployeeDetailsDTO> empDrivers = new ArrayList<>();
+	public List<FcEmployeeDetailsDto> fetchEmpDriverDetails(){
+		List<FcEmployeeDetailsDto> empDrivers = new ArrayList<>();
 		try{
 			List<Employee> empDriverDt = fcSaleBranchDao.fetchEmpDriverDetails();
 			if(empDriverDt != null && empDriverDt.size() != 0) {
 				for (Employee employee : empDriverDt) {
-					EmployeeDetailsDTO empDet = new EmployeeDetailsDTO();
+					FcEmployeeDetailsDto empDet = new FcEmployeeDetailsDto();
 					empDet.setCivilId(employee.getCivilId());
 					empDet.setCountryBranchId(employee.getFsCountryBranch());
 					empDet.setCountryId(employee.getCountryId());

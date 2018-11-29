@@ -11,11 +11,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.amx.amxlib.meta.model.EmployeeDetailsDTO;
-import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.fx.IFxBranchOrderService;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.response.fx.FcEmployeeDetailsDto;
 import com.amx.jax.model.response.fx.FcSaleOrderManagementDTO;
 import com.amx.jax.model.response.fx.UserStockDto;
 import com.amx.jax.services.FcSaleBranchService;
@@ -86,7 +85,7 @@ public class FcSaleBranchOrderController implements IFxBranchOrderService {
 	 * 
 	 */
 	@RequestMapping(value = Path.FC_EMLOYEE_DRIVERS , method = RequestMethod.GET)
-	public AmxApiResponse<EmployeeDetailsDTO,Object> fetchBranchEmployee() {
+	public AmxApiResponse<FcEmployeeDetailsDto,Object> fetchBranchEmployee() {
 		return fcSaleBranch.fetchDriverDetails();
 	}
 	

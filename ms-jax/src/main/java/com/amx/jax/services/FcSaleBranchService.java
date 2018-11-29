@@ -22,6 +22,7 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.dbmodel.fx.OrderManagementView;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.manager.FcSaleBranchOrderManager;
+import com.amx.jax.model.response.fx.FcEmployeeDetailsDto;
 import com.amx.jax.model.response.fx.FcSaleOrderManagementDTO;
 import com.amx.jax.model.response.fx.UserStockDto;
 
@@ -54,9 +55,11 @@ public class FcSaleBranchService extends AbstractService{
 				// continue
 			}else {
 				// error
+				throw new GlobalException("Order Management records not found",JaxError.NO_RECORD_FOUND);
 			}
 		}else {
 			// error
+			throw new GlobalException("Order Management records not found",JaxError.NO_RECORD_FOUND);
 		}
 
 		return AmxApiResponse.buildList(saleOrderManage);
@@ -160,6 +163,9 @@ public class FcSaleBranchService extends AbstractService{
 		if(applicationCountryId == null || applicationCountryId.compareTo(BigDecimal.ZERO)==0){
 			throw new GlobalException("Application country id should not be blank",JaxError.NULL_APPLICATION_COUNTRY_ID);
 		}
+		if(orderNumber == null || orderNumber.compareTo(BigDecimal.ZERO)==0){
+			throw new GlobalException("Order Number should not be blank",JaxError.NULL_ORDER_NUBMER);
+		}
 		List<OrderManagementView> orderManagement =  branchOrderManager.fetchFcSaleOrderDetails(applicationCountryId,orderNumber);
 		if(orderManagement != null && orderManagement.size() != 0) {
 			saleOrderManage = convertFcSaleOrderDetails(orderManagement);
@@ -167,9 +173,11 @@ public class FcSaleBranchService extends AbstractService{
 				// continue
 			}else {
 				// error
+				throw new GlobalException("Order Management records not found",JaxError.NO_RECORD_FOUND);
 			}
 		}else {
 			// error
+			throw new GlobalException("Order Management records not found",JaxError.NO_RECORD_FOUND);
 		}
 
 		return AmxApiResponse.buildList(saleOrderManage);
@@ -220,25 +228,66 @@ public class FcSaleBranchService extends AbstractService{
 	 * @return UserStockView
 	 */
 	public AmxApiResponse<UserStockDto,Object> fetchFcSaleUserStockByCurrency(BigDecimal countryId,BigDecimal employeeId,BigDecimal foreignCurrencyId){
+		if(countryId == null || countryId.compareTo(BigDecimal.ZERO)==0){
+			throw new GlobalException("Application country id should not be blank",JaxError.NULL_APPLICATION_COUNTRY_ID);
+		}
+		if(employeeId == null || employeeId.compareTo(BigDecimal.ZERO) == 0){
+			throw new GlobalException("Employee Id should not be blank",JaxError.NULL_EMPLOYEE_ID);
+		}
 		if(foreignCurrencyId == null || foreignCurrencyId.compareTo(BigDecimal.ZERO)==0){
 			throw new GlobalException("foreign currency id should not be blank",JaxError.NULL_CURRENCY_ID);
 		}
-		List<UserStockDto> orderManagement =  branchOrderManager.fetchUserStockViewByCurrency(countryId,employeeId,foreignCurrencyId);
-		return AmxApiResponse.buildList(orderManagement);
+		List<UserStockDto> userStock =  branchOrderManager.fetchUserStockViewByCurrency(countryId,employeeId,foreignCurrencyId);
+		if(userStock != null && userStock.size() != 0) {
+			// continue
+		}else {
+			throw new GlobalException("User stock records not found",JaxError.NO_RECORD_FOUND);
+		}
+		return AmxApiResponse.buildList(userStock);
 	}
 	
 	public AmxApiResponse<UserStockDto,Object> fetchFcSaleUserStock(BigDecimal countryId,BigDecimal employeeId){
-		List<UserStockDto> orderManagement =  branchOrderManager.fetchUserStockView(countryId,employeeId);
-		return AmxApiResponse.buildList(orderManagement);
+		if(countryId == null || countryId.compareTo(BigDecimal.ZERO)==0){
+			throw new GlobalException("Application country id should not be blank",JaxError.NULL_APPLICATION_COUNTRY_ID);
+		}
+		if(employeeId == null || employeeId.compareTo(BigDecimal.ZERO) == 0){
+			throw new GlobalException("Employee Id should not be blank",JaxError.NULL_EMPLOYEE_ID);
+		}
+		List<UserStockDto> userStock =  branchOrderManager.fetchUserStockView(countryId,employeeId);
+		if(userStock != null && userStock.size() != 0) {
+			// continue
+		}else {
+			throw new GlobalException("User stock records not found",JaxError.NO_RECORD_FOUND);
+		}
+		return AmxApiResponse.buildList(userStock);
 	}
 
-	public AmxApiResponse<EmployeeDetailsDTO,Object> fetchDriverDetails(){
-		List<EmployeeDetailsDTO> driverEmp =  branchOrderManager.fetchEmpDriverDetails();
+	public AmxApiResponse<FcEmployeeDetailsDto,Object> fetchDriverDetails(){
+		List<FcEmployeeDetailsDto> driverEmp =  branchOrderManager.fetchEmpDriverDetails();
+		if(driverEmp != null && driverEmp.size() != 0) {
+			// continue
+		}else {
+			throw new GlobalException("driver records not found",JaxError.NO_RECORD_FOUND);
+		}
 		return AmxApiResponse.buildList(driverEmp);
 	}
 	
 	public AmxApiResponse<Boolean,Object> assignDriver(BigDecimal countryId,BigDecimal orderNumber,BigDecimal driverId) {
+		if(countryId == null || countryId.compareTo(BigDecimal.ZERO)==0){
+			throw new GlobalException("Application country id should not be blank",JaxError.NULL_APPLICATION_COUNTRY_ID);
+		}
+		if(orderNumber == null || orderNumber.compareTo(BigDecimal.ZERO)==0){
+			throw new GlobalException("Order Number should not be blank",JaxError.NULL_ORDER_NUBMER);
+		}
+		if(driverId == null || driverId.compareTo(BigDecimal.ZERO)==0){
+			throw new GlobalException("Driver id should not be blank",JaxError.NULL_DRIVER_ID);
+		}
 		Boolean status = branchOrderManager.saveAssignDriver(countryId,orderNumber,driverId);
+		if(status) {
+			// success
+		}else {
+			throw new GlobalException("Driver id didn't updated",JaxError.SAVE_FAILED);
+		}
 		return AmxApiResponse.build(status);
 	}
 
