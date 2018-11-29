@@ -15,10 +15,13 @@ import com.amx.jax.model.response.fx.FcSaleOrderApplicationResponseModel;
 import com.amx.jax.model.response.fx.FcSaleOrderDefaultResponseModel;
 import com.amx.jax.model.response.fx.FxExchangeRateDto;
 import com.amx.jax.model.response.fx.FxOrderReportResponseDto;
+import com.amx.jax.model.response.fx.FxOrderShoppingCartResponseModel;
 import com.amx.jax.model.response.fx.FxOrderTransactionHistroyDto;
+import com.amx.jax.model.response.fx.FxOrderTransactionStatusResponseDto;
 import com.amx.jax.model.response.fx.PurposeOfTransactionDto;
 import com.amx.jax.model.response.fx.ShippingAddressDto;
 import com.amx.jax.model.response.fx.ShoppingCartDetailsDto;
+import com.amx.jax.model.response.fx.TimeSlotDto;
 import com.amx.jax.payg.PaymentResponseDto;
 
 public interface IFxOrderService extends IJaxService {
@@ -40,6 +43,7 @@ public interface IFxOrderService extends IJaxService {
 		public static final String FC_SALE_SAVE_PAYMENT_ID = PREFIX + "/fc_sale_save-payment-id/";
 		public static final String FC_SALE_ORDER_TRNX_HIST = PREFIX + "/fc-sale-order-trnx-hist/";
 		public static final String FC_SALE_ORDER_TRNX_REPORT = PREFIX + "/fc-sale-order-trnx-report/";
+		public static final String FC_SALE_ORDER_TRNX_STATUS = PREFIX + "/fc-sale-order-trnx-status/";
 	}
 
 	public static class Params {
@@ -52,7 +56,7 @@ public interface IFxOrderService extends IJaxService {
 		public static final String RECEIPT_APPL_ID = "receiptApplId";
 		public static final String COLLECTION_DOC_NO = "collectionDocNo";
 		public static final String COLLECTION_FYEAR = "collectionFyear";
-		
+		public static final String DOCUMENT_ID_FOR_PAYMENT = "documentIdForPayment";
 
 	}
 
@@ -107,25 +111,29 @@ public interface IFxOrderService extends IJaxService {
 
 	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND, JaxError.INVALID_APPLICATION_COUNTRY_ID, JaxError.INVALID_COMPANY_ID,
 			JaxError.FC_SALE_TIME_SLOT_SETUP_MISSING })
-	AmxApiResponse<String, Object> getTimeSlot(String fxDate);
+	AmxApiResponse<TimeSlotDto, Object> getTimeSlot(String fxDate);
 
 	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND })
-	AmxApiResponse<ShoppingCartDetailsDto, Object> fetchShoppingCartList();
+	AmxApiResponse<FxOrderShoppingCartResponseModel, Object> fetchShoppingCartList();
 
 	@ApiJaxStatus({ JaxError.NULL_APPLICATION_ID })
 	AmxApiResponse<FcSaleApplPaymentReponseModel, Object> getSavePayNowApplication(
 			FcSaleOrderPaynowRequestModel requestModel);
 
 	@ApiJaxStatus({ JaxError.NULL_APPLICATION_ID })
-	AmxApiResponse<FcSaleOrderApplicationResponseModel, Object> removeItemFromCart(BigDecimal applicationId)throws Exception;
-	
-	@ApiJaxStatus({ JaxError.NULL_APPLICATION_ID })
-	AmxApiResponse<PaymentResponseDto, Object> savePaymentId(PaymentResponseDto paymentRequestDto)throws Exception;
-	
-	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND })
-	AmxApiResponse<FxOrderTransactionHistroyDto, Object> getFxOrderTransactionHistroy()throws Exception;
-	
-	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND })
-	AmxApiResponse<FxOrderReportResponseDto, Object> getFxOrderTransactionReport(BigDecimal collectionDocNo,BigDecimal collectionFyear)throws Exception;
+	AmxApiResponse<FcSaleOrderApplicationResponseModel, Object> removeItemFromCart(BigDecimal applicationId);
 
+	@ApiJaxStatus({ JaxError.NULL_APPLICATION_ID })
+	AmxApiResponse<PaymentResponseDto, Object> savePaymentId(PaymentResponseDto paymentRequestDto);
+
+	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND })
+	AmxApiResponse<FxOrderTransactionHistroyDto, Object> getFxOrderTransactionHistroy();
+
+	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND })
+	AmxApiResponse<FxOrderReportResponseDto, Object> getFxOrderTransactionReport(BigDecimal collectionDocNo,
+			BigDecimal collectionFyear);
+
+	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND })
+	AmxApiResponse<FxOrderTransactionStatusResponseDto, Object> getFxOrderTransactionStatus(
+			BigDecimal documentIdForPayment);
 }

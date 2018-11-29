@@ -79,6 +79,7 @@ public class FcSaleDeliveryService {
 		ShippingAddressDto shippingAddressDto = createShippingAddressDto(shippingAddress);
 		try {
 			BeanUtils.copyProperties(dto, model);
+			BeanUtils.copyProperties(shippingAddressDto, shippingAddress);
 		} catch (Exception e) {
 		}
 		if (model.getCollectionDocFinYear() != null) {
@@ -108,6 +109,7 @@ public class FcSaleDeliveryService {
 				fcSaleDeliveryMarkDeliveredRequest.getDeliveryDetailSeqId());
 		 deliveryDetail.setOrderStatus(ConstantDocument.DVD);
 		fcSaleApplicationDao.saveDeliveryDetail(deliveryDetail);
+		// TODO: updated table ex_appl_receipt_payment and column ORDER_STATUS
 		return new BoolRespModel(true);
 	}
 

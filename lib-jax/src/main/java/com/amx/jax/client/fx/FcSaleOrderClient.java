@@ -26,10 +26,13 @@ import com.amx.jax.model.response.fx.FcSaleOrderDefaultResponseModel;
 import com.amx.jax.model.response.fx.FxDeliveryDetailDto;
 import com.amx.jax.model.response.fx.FxExchangeRateDto;
 import com.amx.jax.model.response.fx.FxOrderReportResponseDto;
+import com.amx.jax.model.response.fx.FxOrderShoppingCartResponseModel;
 import com.amx.jax.model.response.fx.FxOrderTransactionHistroyDto;
+import com.amx.jax.model.response.fx.FxOrderTransactionStatusResponseDto;
 import com.amx.jax.model.response.fx.PurposeOfTransactionDto;
 import com.amx.jax.model.response.fx.ShippingAddressDto;
 import com.amx.jax.model.response.fx.ShoppingCartDetailsDto;
+import com.amx.jax.model.response.fx.TimeSlotDto;
 import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.rest.RestService;
 import com.amx.jax.client.fx.IFxOrderService.Path;
@@ -191,12 +194,12 @@ public class FcSaleOrderClient implements IFxOrderService {
 
 	/** @ To fetch the time slot **/
 	@Override
-	public AmxApiResponse<String, Object> getTimeSlot(String fxDate) {
+	public AmxApiResponse<TimeSlotDto, Object> getTimeSlot(String fxDate) {
 		try {
 			LOGGER.debug("in getTime slot client :" + fxDate);
 			return restService.ajax(appConfig.getJaxURL() + Path.FC_SALE_TIME_SLOT)
 					.meta(new JaxMetaInfo()).queryParam(Params.FXDATE2, fxDate)
-					.get().as(new ParameterizedTypeReference<AmxApiResponse<String, Object>>() {
+					.get().as(new ParameterizedTypeReference<AmxApiResponse<TimeSlotDto, Object>>() {
 					});
 		} catch (Exception e) {
 			LOGGER.error("exception in getCurrencyByCountryId : ", e);
@@ -224,11 +227,11 @@ public class FcSaleOrderClient implements IFxOrderService {
 
 	/** @ To fetch the time slot **/
 	@Override
-	public AmxApiResponse<ShoppingCartDetailsDto, Object> fetchShoppingCartList() {
+	public AmxApiResponse<FxOrderShoppingCartResponseModel, Object> fetchShoppingCartList() {
 		try {
 			LOGGER.debug("in fetchShoppingCartList  client :");
 			return restService.ajax(appConfig.getJaxURL() + Path.FC_SALE_SHOPPING_CART).meta(new JaxMetaInfo()).get()
-					.as(new ParameterizedTypeReference<AmxApiResponse<ShoppingCartDetailsDto, Object>>() {
+					.as(new ParameterizedTypeReference<AmxApiResponse<FxOrderShoppingCartResponseModel, Object>>() {
 					});
 		} catch (Exception e) {
 			LOGGER.error("exception in getCurrencyByCountryId : ", e);
@@ -253,12 +256,14 @@ public class FcSaleOrderClient implements IFxOrderService {
 
 	}
 
-	
 	@Override
 	public AmxApiResponse<PaymentResponseDto, Object> savePaymentId(PaymentResponseDto requestModel) {
 		try {
 			LOGGER.debug("client Save pg details  :" + requestModel.toString());
-			return restService.ajax(appConfig.getJaxURL() + Path.FC_SALE_SAVE_PAYMENT_ID).meta(new JaxMetaInfo()).post(requestModel).as(new ParameterizedTypeReference<AmxApiResponse<PaymentResponseDto, Object>>() {});
+			return restService.ajax(appConfig.getJaxURL() + Path.FC_SALE_SAVE_PAYMENT_ID).meta(new JaxMetaInfo())
+					.post(requestModel)
+					.as(new ParameterizedTypeReference<AmxApiResponse<PaymentResponseDto, Object>>() {
+					});
 		} catch (Exception e) {
 			LOGGER.error("exception in getCurrencyByCountryId : ", e);
 			return JaxSystemError.evaluate(e);
@@ -267,24 +272,29 @@ public class FcSaleOrderClient implements IFxOrderService {
 	}
 
 	@Override
-	public AmxApiResponse<FxOrderTransactionHistroyDto, Object> getFxOrderTransactionHistroy()
-			throws Exception {
+	public AmxApiResponse<FxOrderTransactionHistroyDto, Object> getFxOrderTransactionHistroy() {
 		LOGGER.debug("in FxOrderTransactionHistroyDto  client :");
 		return restService.ajax(appConfig.getJaxURL() + Path.FC_SALE_ORDER_TRNX_HIST).meta(new JaxMetaInfo()).get()
 				.as(new ParameterizedTypeReference<AmxApiResponse<FxOrderTransactionHistroyDto, Object>>() {
 				});
-
 	}
-	
 
 	@Override
-	public AmxApiResponse<FxOrderReportResponseDto, Object> getFxOrderTransactionReport(BigDecimal collectionDocNo,BigDecimal collectionFyear)throws Exception {
+	public AmxApiResponse<FxOrderReportResponseDto, Object> getFxOrderTransactionReport(BigDecimal collectionDocNo,
+			BigDecimal collectionFyear) {
 		LOGGER.debug("in FxOrderReportResponseDto  client :");
 		return restService.ajax(appConfig.getJaxURL() + Path.FC_SALE_ORDER_TRNX_REPORT).meta(new JaxMetaInfo())
 				.queryParam(Params.COLLECTION_DOC_NO, collectionDocNo)
 				.queryParam(Params.COLLECTION_FYEAR, collectionFyear)
 				.get().as(new ParameterizedTypeReference<AmxApiResponse<FxOrderReportResponseDto, Object>>() {
 				});
-		
+
+	}
+
+	@Override
+	public AmxApiResponse<FxOrderTransactionStatusResponseDto, Object> getFxOrderTransactionStatus(
+			BigDecimal documentIdForPayment) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

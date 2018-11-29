@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import com.amx.jax.AppConstants;
 import com.amx.jax.cache.TransactionModel;
@@ -22,6 +21,7 @@ import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.payg.codes.BenefitCodes;
 import com.amx.jax.payment.gateway.PayGClient;
 import com.amx.jax.payment.gateway.PayGConfig;
+import com.amx.jax.payment.gateway.PayGContext.PayGSpecific;
 import com.amx.jax.payment.gateway.PayGParams;
 import com.amx.jax.payment.gateway.PayGResponse;
 import com.amx.jax.payment.gateway.PayGResponse.PayGStatus;
@@ -36,7 +36,7 @@ import bhr.com.aciworldwide.commerce.gateway.plugins.e24PaymentPipe;
  * @param <T>
  *
  */
-@Component
+@PayGSpecific(PayGServiceCode.BENEFIT)
 public class BenefitClient extends TransactionModel<PaymentResponseDto> implements PayGClient {
 
 	private static final Logger LOGGER = Logger.getLogger(BenefitClient.class);
@@ -146,7 +146,7 @@ public class BenefitClient extends TransactionModel<PaymentResponseDto> implemen
 	}
 
 	@Override
-	public PayGResponse capture(PayGResponse gatewayResponse, Channel channel) {
+	public PayGResponse capture(PayGResponse gatewayResponse, Channel channel, Object product) {
 
 		// Capturing GateWay Response
 		String resultResponse = request.getParameter("Error");
@@ -201,7 +201,7 @@ public class BenefitClient extends TransactionModel<PaymentResponseDto> implemen
 
 		LOGGER.info("Params captured from BENEFIT : " + JsonUtil.toJson(gatewayResponse));
 
-		PaymentResponseDto resdto = paymentService.capturePayment(gatewayResponse);
+		PaymentResponseDto resdto = paymentService.capturePayment(gatewayResponse, channel, product);
 
 		if ("CAPTURED".equalsIgnoreCase(gatewayResponse.getResult())) {
 			gatewayResponse.setPayGStatus(PayGStatus.CAPTURED);

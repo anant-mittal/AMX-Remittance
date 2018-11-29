@@ -43,7 +43,7 @@ public class FxShoppingCartDetails implements Serializable {
 	@Column(name="LOCAL_TRNX_AMOUNT")
 	private BigDecimal localTranxAmount;
 	@Column(name="LOCAL_NET_AMOUNT")        
-	private BigDecimal localNextTranxAmount;
+	private BigDecimal localNetTranxAmount;
 	@Column(name="APPLICATION_TYPE")
 	private String applicationType; 
 	@Column(name="EXCHANGE_RATE_APPLIED")
@@ -157,11 +157,11 @@ public class FxShoppingCartDetails implements Serializable {
 	}
 
 	
-	public BigDecimal getLocalNextTranxAmount() {
-		return localNextTranxAmount;
+	public BigDecimal getLocalNetTranxAmount() {
+		return localNetTranxAmount;
 	}
-	public void setLocalNextTranxAmount(BigDecimal localNextTranxAmount) {
-		this.localNextTranxAmount = localNextTranxAmount;
+	public void setLocalNetTranxAmount(BigDecimal localNetTranxAmount) {
+		this.localNetTranxAmount = localNetTranxAmount;
 	}
 
 

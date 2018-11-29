@@ -18,5 +18,9 @@ public interface FxOrderTransactionRespository extends CrudRepository<FxOrderTra
 	@Query("select t from FxOrderTransactionModel t where t.customerId=:customerId and  t.collectionDocumentNo=:collectionDocumentNo and t.collectionDocumentCode=2 and t.collectionDocumentFinYear=:collectionDocumentFinYear")
 	public List<FxOrderTransactionModel> getFxOrderTrnxListByCollectionDocNumber(@Param("customerId") BigDecimal customerId,@Param("collectionDocumentNo") BigDecimal collectionDocumentNo,@Param("collectionDocumentFinYear") BigDecimal collectionDocumentFinYear);
 	
+	
+	@Query("select t from FxOrderTransactionModel t where t.customerId=:customerId and t.pagDetSeqId=:pagDetSeqId")
+	public List<FxOrderTransactionModel> getFxOrderTrnxDetailsByPagSeqId(@Param("customerId") BigDecimal customerId,@Param("pagDetSeqId") BigDecimal pagDetSeqId);
+	
 }
 

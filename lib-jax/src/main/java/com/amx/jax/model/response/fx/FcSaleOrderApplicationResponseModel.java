@@ -23,12 +23,8 @@ public class FcSaleOrderApplicationResponseModel extends AbstractModel {
 	private BigDecimal netPayableAmount;
 	private BigDecimal merchantTrackId;
 	private BigDecimal deliveryCharges;
-
-	private List<String> timeSlot;
-
+	private List<TimeSlotDto> timeSlot;
 	private List<ShoppingCartDetailsDto> cartDetails;
-
-	
 	@Override
 	public String getModelType() {
 		return "fcsale_application";
@@ -112,13 +108,13 @@ public class FcSaleOrderApplicationResponseModel extends AbstractModel {
 		this.cartDetails = cartDetails;
 	}
 
-	public List<String> getTimeSlot() {
+	/*public List<String> getTimeSlot() {
 		return timeSlot;
 	}
 
 	public void setTimeSlot(List<String> timeSlot) {
 		this.timeSlot = timeSlot;
-	}
+	}*/
 
 	public BigDecimal getDeliveryCharges() {
 		return deliveryCharges;
@@ -126,6 +122,14 @@ public class FcSaleOrderApplicationResponseModel extends AbstractModel {
 
 	public void setDeliveryCharges(BigDecimal deliveryCharges) {
 		this.deliveryCharges = deliveryCharges;
+	}
+
+	public List<TimeSlotDto> getTimeSlot() {
+		return timeSlot;
+	}
+
+	public void setTimeSlot(List<TimeSlotDto> timeSlot) {
+		this.timeSlot = timeSlot;
 	}
 	
 

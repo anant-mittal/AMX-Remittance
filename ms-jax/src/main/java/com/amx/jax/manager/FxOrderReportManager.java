@@ -8,16 +8,21 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
+
+
+import com.amx.jax.constants.JaxTransactionStatus;
 import com.amx.jax.dbmodel.CountryMasterView;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.DistrictMaster;
 import com.amx.jax.dbmodel.PaygDetailsModel;
+import com.amx.jax.dbmodel.ReceiptPaymentApp;
 import com.amx.jax.dbmodel.ShippingAddressDetail;
 import com.amx.jax.dbmodel.ViewCity;
 import com.amx.jax.dbmodel.ViewDistrict;
@@ -29,6 +34,7 @@ import com.amx.jax.model.response.fx.FxDeliveryDetailDto;
 import com.amx.jax.model.response.fx.FxDeliveryReportDetailDto;
 import com.amx.jax.model.response.fx.FxOrderReportResponseDto;
 import com.amx.jax.model.response.fx.FxOrderTransactionHistroyDto;
+import com.amx.jax.model.response.fx.FxOrderTransactionStatusResponseDto;
 import com.amx.jax.model.response.fx.PaygDetailsDto;
 import com.amx.jax.model.response.fx.ShippingAddressDto;
 import com.amx.jax.repository.CountryRepository;
@@ -40,8 +46,11 @@ import com.amx.jax.repository.IViewCityDao;
 import com.amx.jax.repository.IViewDistrictDAO;
 import com.amx.jax.repository.IViewStateDao;
 import com.amx.jax.repository.PaygDetailsRepository;
+import com.amx.jax.repository.ReceiptPaymentAppRepository;
 import com.amx.jax.repository.fx.FxDeliveryDetailsRepository;
 import com.amx.jax.repository.fx.FxOrderTransactionRespository;
+
+import org.apache.commons.lang.StringUtils;
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Component
@@ -90,7 +99,15 @@ public class FxOrderReportManager {
 	@Autowired
 	IViewArea areaDao;
 	
+	@Autowired
+	ReceiptPaymentAppRepository rcptPaymentAppl;
 	
+	/**
+	 * 
+	 * @param collNo
+	 * @param collFyr
+	 * @return
+	 */
 	public FxOrderReportResponseDto getReportDetails(BigDecimal collNo,BigDecimal collFyr){
 		FxOrderReportResponseDto reportModel = new FxOrderReportResponseDto();
 		BigDecimal custoemrId = metaData.getCustomerId();
@@ -120,6 +137,37 @@ public class FxOrderReportManager {
 		return reportModel; 
 	}
 	
+	/*
+	 * To get Transaction status: 
+	 */
+	
+	public FxOrderTransactionStatusResponseDto  getTransactionStatus(BigDecimal paymentSeqId){
+		FxOrderTransactionStatusResponseDto responseModel = new FxOrderTransactionStatusResponseDto();
+		FxOrderTransactionHistroyDto histroyDto = new FxOrderTransactionHistroyDto();
+		BigDecimal custoemrId = metaData.getCustomerId();
+		BigDecimal netAmount =BigDecimal.ZERO;
+		BigDecimal deliveryCharges =BigDecimal.ZERO;
+		ReceiptPaymentApp applReceipt = rcptPaymentAppl.getApplicationByPagdetailSeqIAndcustomerId(custoemrId, paymentSeqId);
+		PaygDetailsModel pgDetailsModel = payGDeatilsRepos.findOne(paymentSeqId);
+		FxDeliveryDetailsModel fxDelDetailModel = deliveryDetailsRepos.findOne(applReceipt.getDeliveryDetSeqId());
+		JaxTransactionStatus jaxTrnxStatus = getJaxTransactionStatus(pgDetailsModel,applReceipt);
+		if(applReceipt!=null){
+		List<FxOrderTransactionModel> fxOrderTrnxList =  fxTransactionHistroyDao.getFxOrderTrnxListByCollectionDocNumber(custoemrId,applReceipt.getColDocNo(),applReceipt.getColDocFyr());
+			 if(!fxOrderTrnxList.isEmpty()){
+			    	List<FxOrderTransactionHistroyDto> fxOrderTrnxListDto = applTrnxManager.convertFxHistDto(fxOrderTrnxList);
+			    	responseModel.setFxOrderTrnxHistroyDTO(fxOrderTrnxListDto);
+			 }
+		}
+		if(applReceipt!=null){
+			netAmount = netAmount.add(applReceipt.getLocalTrnxAmount());
+		}
+		if(fxDelDetailModel !=null){
+			deliveryCharges = fxDelDetailModel.getDeliveryCharges();
+		}	
+		responseModel.setNetAmount(netAmount.add(deliveryCharges));
+		responseModel.setStatus(jaxTrnxStatus);
+		return responseModel;
+	}
 	
 	
 	 FxDeliveryDetailDto  deliveryDetailList = new FxDeliveryDetailDto();
@@ -195,5 +243,31 @@ public class FxOrderReportManager {
 	} //end 
 		return shippingAddressDto;
 	}
+	
+	
+	private JaxTransactionStatus getJaxTransactionStatus(PaygDetailsModel pgDetailsModel,ReceiptPaymentApp applReceipt) {
+		JaxTransactionStatus status = JaxTransactionStatus.APPLICATION_CREATED;
+		String applicationStatus = applReceipt.getApplicationStatus();
+		if (StringUtils.isBlank(applicationStatus) && pgDetailsModel.getPgPaymentId() != null) {
+			status = JaxTransactionStatus.PAYMENT_IN_PROCESS;
+		}
+		String resultCode = pgDetailsModel.getResultCode();
+		if ("CAPTURED".equalsIgnoreCase(resultCode)) {
+			if ("S".equals(applicationStatus) || "T".equals(applicationStatus)) {
+				status = JaxTransactionStatus.PAYMENT_SUCCESS_APPLICATION_SUCCESS;
+			} else {
+				status = JaxTransactionStatus.PAYMENT_SUCCESS_APPLICATION_FAIL;
+			}
+		}
+		if ("NOT CAPTURED".equalsIgnoreCase(resultCode)) {
+			status = JaxTransactionStatus.PAYMENT_FAIL;
+		}
+		if ("CANCELED".equalsIgnoreCase(resultCode) || "CANCELLED".equalsIgnoreCase(resultCode)) {
+			status = JaxTransactionStatus.PAYMENT_CANCELED_BY_USER;
+		}
+
+		return status;
+	}
+
 	
 }

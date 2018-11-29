@@ -32,6 +32,7 @@ import com.amx.jax.http.CommonHttpRequest.CommonMediaType;
 import com.amx.jax.http.RequestType;
 import com.amx.jax.model.UserDevice;
 import com.amx.jax.rbaac.RbaacServiceClient;
+import com.amx.jax.rbaac.constants.RbaacServiceConstants.LOGIN_TYPE;
 import com.amx.jax.rbaac.dto.request.UserAuthInitReqDTO;
 import com.amx.jax.rbaac.dto.request.UserAuthorisationReqDTO;
 import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
@@ -127,7 +128,7 @@ public class SSOServerController {
 	public String loginJson(@RequestBody SSOLoginFormData formdata,
 			@PathVariable(required = false, value = "jsonstep") @ApiParam(defaultValue = "CREDS") SSOAuthStep json,
 			HttpServletResponse resp,
-
+			@RequestParam(required = false, defaultValue = "SELF") LOGIN_TYPE loginType,
 			@RequestParam(required = false) Boolean redirect) throws URISyntaxException, IOException {
 
 		redirect = ArgUtil.parseAsBoolean(redirect, true);
@@ -157,8 +158,17 @@ public class SSOServerController {
 				init.setDeviceId(userDevice.getFingerprint());
 				init.setDeviceType(userDevice.getType());
 				init.setTerminalId(sSOTranx.get().getTerminalId());
+				init.setLoginType(loginType);
+				
+				//for assisted
+				if(loginType == LOGIN_TYPE.ASSISTED) {
+					init.setPartnerIdentity(formdata.getPartnerIdentity());
+				}
 				UserAuthInitResponseDTO initResp = rbaacServiceClient.initAuthForUser(init).getResult();
-
+				
+				if(loginType == LOGIN_TYPE.ASSISTED) {
+					model.put("partnerMOtpPrefix", initResp.getPartnerMOtpPrefix());	
+				}
 				model.put("mOtpPrefix", initResp.getmOtpPrefix());
 
 				result.setStatusEnum(SSOServerCodes.OTP_REQUIRED);
@@ -178,6 +188,9 @@ public class SSOServerController {
 
 				auth.setDeviceId(userDevice.getFingerprint());
 				auth.setmOtp(formdata.getMotp());
+				if(loginType == LOGIN_TYPE.ASSISTED) {
+					auth.setPartnerMOtp(formdata.getPartnerMOtp());
+				}
 				EmployeeDetailsDTO empDto = rbaacServiceClient.authoriseUser(auth).getResult();
 				sSOTranx.setUserDetails(empDto);
 

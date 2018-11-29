@@ -25,7 +25,7 @@ public class PayGResponse {
 	String errorText = null;
 	String error = null;
 	CodeCategory errorCategory = null;
-	
+
 	String collectionFinYear;
 	String collectionDocNumber;
 	String collectionDocCode;
@@ -176,20 +176,19 @@ public class PayGResponse {
 		this.paymentId = paymentId;
 	}
 
-    /**
-     * @return the errorText
-     */
-    public String getErrorText() {
-        return errorText;
-    }
+	/**
+	 * @return the errorText
+	 */
+	public String getErrorText() {
+		return errorText;
+	}
 
-    /**
-	 * @param errorText
-	 *            the errorText to set
-     */
-    public void setErrorText(String errorText) {
-        this.errorText = errorText;
-    }
+	/**
+	 * @param errorText the errorText to set
+	 */
+	public void setErrorText(String errorText) {
+		this.errorText = errorText;
+	}
 
 	public String getError() {
 		return error;
@@ -212,14 +211,14 @@ public class PayGResponse {
 	 * 
 	 * @see java.lang.Object#toString()
 	 */
-    @Override
-    public String toString() {
-        return "PayGResponse [paymentId=" + paymentId + ", result=" + result + ", auth=" + auth + ", ref=" + ref
-                + ", postDate=" + postDate + ", trackId=" + trackId + ", tranxId=" + tranxId + ", responseCode="
-                + responseCode + ", udf1=" + udf1 + ", udf2=" + udf2 + ", udf3=" + udf3 + ", udf4=" + udf4 + ", udf5="
-                + udf5 + ", countryId=" + countryId + ", errorText=" + errorText + ", error=" + error
-                + ", collectionFinYear=" + collectionFinYear + ", collectionDocNumber=" + collectionDocNumber
-                + ", collectionDocCode=" + collectionDocCode + ", status=" + status + "]";
-    }
+	@Override
+	public String toString() {
+		return "PayGResponse [paymentId=" + paymentId + ", result=" + result + ", auth=" + auth + ", ref=" + ref
+				+ ", postDate=" + postDate + ", trackId=" + trackId + ", tranxId=" + tranxId + ", responseCode="
+				+ responseCode + ", udf1=" + udf1 + ", udf2=" + udf2 + ", udf3=" + udf3 + ", udf4=" + udf4 + ", udf5="
+				+ udf5 + ", countryId=" + countryId + ", errorText=" + errorText + ", error=" + error
+				+ ", collectionFinYear=" + collectionFinYear + ", collectionDocNumber=" + collectionDocNumber
+				+ ", collectionDocCode=" + collectionDocCode + ", status=" + status + "]";
+	}
 
 }

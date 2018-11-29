@@ -28,7 +28,7 @@ public class ShoppingCartDetailsDto extends AbstractModel {
 	private BigDecimal localCommisionAmount;
 	private BigDecimal localChargeAmount;
 	private BigDecimal localDeliveryAmount;
-	private BigDecimal localNextTranxAmount;
+	private BigDecimal localNetTranxAmount;
 	private String applicationType;
 	private BigDecimal customerId;
 	private BigDecimal exchangeRateApplied;
@@ -128,11 +128,11 @@ public class ShoppingCartDetailsDto extends AbstractModel {
 	public void setLocalDeliveryAmount(BigDecimal localDeliveryAmount) {
 		this.localDeliveryAmount = localDeliveryAmount;
 	}
-	public BigDecimal getLocalNextTranxAmount() {
-		return localNextTranxAmount;
+	public BigDecimal getLocalNetTranxAmount() {
+		return localNetTranxAmount;
 	}
-	public void setLocalNextTranxAmount(BigDecimal localNextTranxAmount) {
-		this.localNextTranxAmount = localNextTranxAmount;
+	public void setLocalNetTranxAmount(BigDecimal localNetTranxAmount) {
+		this.localNetTranxAmount = localNetTranxAmount;
 	}
 	public String getApplicationType() {
 		return applicationType;

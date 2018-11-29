@@ -46,6 +46,8 @@ public class FxDeliveryTimeSlotMaster implements Serializable{
 	private String isActive;
 	@Column(name="REMARKS")
 	private String remarks;
+	@Column(name="NO_Of_DAYS")
+	private BigDecimal noOfDays;
 	
 	public BigDecimal getDeliveryTimeSlotId() {
 		return deliveryTimeSlotId;
@@ -94,6 +96,12 @@ public class FxDeliveryTimeSlotMaster implements Serializable{
 	}
 	public void setRemarks(String remarks) {
 		this.remarks = remarks;
+	}
+	public BigDecimal getNoOfDays() {
+		return noOfDays;
+	}
+	public void setNoOfDays(BigDecimal noOfDays) {
+		this.noOfDays = noOfDays;
 	}
 	
 	

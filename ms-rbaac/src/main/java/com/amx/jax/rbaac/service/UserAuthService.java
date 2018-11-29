@@ -4,6 +4,7 @@
 package com.amx.jax.rbaac.service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -17,6 +18,7 @@ import com.amx.jax.dict.UserClient.DeviceType;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.model.OtpData;
 import com.amx.jax.rbaac.RbaacConstants;
+import com.amx.jax.rbaac.constants.RbaacServiceConstants.LOGIN_TYPE;
 import com.amx.jax.rbaac.dao.RbaacDao;
 import com.amx.jax.rbaac.dbmodel.Employee;
 import com.amx.jax.rbaac.dbmodel.Role;
@@ -81,6 +83,10 @@ public class UserAuthService {
 		String deviceId = userAuthInitReqDTO.getDeviceId();
 		DeviceType deviceType = userAuthInitReqDTO.getDeviceType();
 
+		String partnerIdentity = userAuthInitReqDTO.getPartnerIdentity();
+		boolean isAssisted = null == userAuthInitReqDTO.getLoginType() ? false
+				: (LOGIN_TYPE.ASSISTED.equals(userAuthInitReqDTO.getLoginType()) ? true : false);
+
 		/**
 		 * Input -> Invalid
 		 */
@@ -88,6 +94,16 @@ public class UserAuthService {
 				|| deviceType == null || StringUtils.isBlank(deviceType.toString())) {
 			throw new AuthServiceException("Employee Number, Civil Id, IP Address, & Device Type are Manadatory",
 					RbaacServiceError.INVALID_OR_MISSING_DATA);
+		}
+
+		/**
+		 * Check if login type is Assisted
+		 */
+		if (isAssisted) {
+			if (StringUtils.isBlank(partnerIdentity)) {
+				throw new AuthServiceException("Partner Identity is Manadatory for Assisted Login",
+						RbaacServiceError.INVALID_OR_MISSING_DATA);
+			}
 		}
 
 		if (DeviceType.MOBILE.isParentOf(deviceType) && StringUtils.isBlank(deviceId)) {
@@ -103,69 +119,61 @@ public class UserAuthService {
 			employees = rbaacDao.getEmployees(employeeNo, identity, ipAddress);
 		}
 
+		Employee selfEmployee = getValidEmployee(employees, "Self");
+
 		/**
-		 * Invalid Employee Details
+		 * For Assisted Login;
 		 */
-		if (null == employees || employees.isEmpty()) {
-			throw new AuthServiceException("Employee Details not available", RbaacServiceError.INVALID_USER_DETAILS);
+		Employee partnerEmployee = new Employee();
+
+		if (isAssisted) {
+			List<Employee> possiblePartners = rbaacDao.getEmployeesByCivilId(partnerIdentity);
+			partnerEmployee = getValidEmployee(possiblePartners, "Partner");
 		}
 
 		/**
-		 * Check for Multiple Employees
+		 * Begin Init Auth for User validation is Completed.
 		 */
-		if (employees.size() > 1) {
-			throw new AuthServiceException("Multiple Users Corresponding to the same Info: Pls contact Support",
-					RbaacServiceError.MULTIPLE_USERS);
-		}
+		OtpData selfOtpData = userOtpManager.generateOtpTokens();
 
-		Employee emp = employees.get(0);
-
-		/**
-		 * Check if User is Active
-		 */
-		if (StringUtils.isBlank(emp.getIsActive()) || !"Y".equalsIgnoreCase(emp.getIsActive())
-				|| "D".equalsIgnoreCase(emp.getDeletedUser()) || "Y".equalsIgnoreCase(emp.getDeletedUser())) {
-			throw new AuthServiceException("User Not Active Or Deleted: User Account is Suspended.",
-					RbaacServiceError.USER_NOT_ACTIVE_OR_DELETED);
-		}
-
-		/**
-		 * Check if user A/C is Locked. lockcnt >= 3
-		 */
-		if (null != emp.getLockCount() && emp.getLockCount().intValue() >= RbaacConstants.EMPLOYEE_MAX_LOCK_COUNT) {
-			throw new AuthServiceException(
-					"User Account Locked : User Account Login is Suspended, from: " + emp.getLockDate(),
-					RbaacServiceError.USER_ACCOUNT_LOCKED);
-		}
-
-		/**
-		 * Begin Init Auth for All User validation is Completed.
-		 */
-		OtpData otpData = userOtpManager.generateOtpTokens();
-
-		userOtpManager.sendOtpSms(emp, otpData);
+		userOtpManager.sendOtpSms(selfEmployee, selfOtpData, "Self OTP Details");
 
 		String transactionId = AppContextUtil.getTranxId();
 
 		UserOtpData userOtpData = new UserOtpData();
 
-		userOtpData.setEmployee(emp);
-		userOtpData.setOtpData(otpData);
+		userOtpData.setEmployee(selfEmployee);
+		userOtpData.setLoginType(userAuthInitReqDTO.getLoginType());
+		userOtpData.setOtpData(selfOtpData);
 		userOtpData.setAuthTransactionId(transactionId);
 
 		// Set OTP Attempt
 		userOtpData.setOtpAttemptCount(0);
 
-		userOtpCache.fastPut(emp.getEmployeeNumber(), userOtpData);
+		if (isAssisted) {
+			OtpData partnerOtpData = userOtpManager.generateOtpTokens();
+			userOtpManager.sendOtpSms(partnerEmployee, partnerOtpData, "Partner OTP Details");
+			userOtpData.setPartnerOtpData(partnerOtpData);
+		}
+
+		userOtpCache.cacheUserOtpData(selfEmployee.getEmployeeNumber(), userOtpData);
 
 		UserAuthInitResponseDTO dto = new UserAuthInitResponseDTO();
 
 		dto.setAuthTransactionId(transactionId);
-		dto.setmOtpPrefix(otpData.getmOtpPrefix());
-		dto.setInitOtpTime(String.valueOf(otpData.getInitTime()));
-		dto.setTtlOtp(String.valueOf(otpData.getTtl()));
 
-		LOGGER.info("OTP generated for Employee No: " + emp.getEmployeeNumber());
+		// Set Self Otp Prefix
+		dto.setmOtpPrefix(selfOtpData.getmOtpPrefix());
+
+		// partner Otp Prefix
+		if (isAssisted) {
+			dto.setPartnerMOtpPrefix(userOtpData.getPartnerOtpData().getmOtpPrefix());
+		}
+
+		dto.setInitOtpTime(String.valueOf(selfOtpData.getInitTime()));
+		dto.setTtlOtp(String.valueOf(selfOtpData.getTtl()));
+
+		LOGGER.info("OTP(s) generated for Employee No: " + selfEmployee.getEmployeeNumber());
 
 		return dto;
 
@@ -187,7 +195,6 @@ public class UserAuthService {
 
 		String employeeNo = reqDto.getEmployeeNo();
 		String mOtp = reqDto.getmOtp();
-		// String eOtpHash = reqDto.geteOtpHash();
 		String ipAddress = reqDto.getIpAddress();
 		// String transactionId = reqDto.getTransactionId();
 		String deviceId = reqDto.getDeviceId();
@@ -214,9 +221,28 @@ public class UserAuthService {
 		Employee employee = userOtpData.getEmployee();
 
 		String mOtpHash = UserOtpManager.getOtpHash(mOtp);
+		String partnerOtpHash = "";
+		boolean isAssisted = LOGIN_TYPE.ASSISTED.equals(userOtpData.getLoginType()) ? true : false;
+
+		if (isAssisted) {
+
+			if (StringUtils.isBlank(reqDto.getPartnerMOtp())) {
+				throw new AuthServiceException("Partner Otp is Manadatory for Assisted Login",
+						RbaacServiceError.INVALID_OR_MISSING_DATA);
+			}
+
+			partnerOtpHash = UserOtpManager.getOtpHash(reqDto.getPartnerMOtp());
+
+			if (StringUtils.isBlank(userOtpData.getPartnerOtpData().getHashedmOtp())) {
+				throw new AuthServiceException("Invalid OTP: OTP is not generated for the Partner user or timedOut",
+						RbaacServiceError.INVALID_OTP);
+			}
+
+		}
 
 		// Validate User OTP hash
-		if (!userOtpData.getOtpData().getHashedmOtp().equals(mOtpHash)) {
+		if (!userOtpData.getOtpData().getHashedmOtp().equals(mOtpHash)
+				|| (isAssisted && !userOtpData.getPartnerOtpData().getHashedmOtp().equals(partnerOtpHash))) {
 
 			/**
 			 * Crossed three Incorrect OTP counts --> Lock Accounnt. --> Clear Otp Cache
@@ -236,7 +262,7 @@ public class UserAuthService {
 			// Normal Incorrect Attempt: Increment Count
 			userOtpData.incrementOtpAttemptCount();
 
-			userOtpCache.fastPut(employeeNo, userOtpData);
+			userOtpCache.cacheUserOtpData(employeeNo, userOtpData);
 
 			throw new AuthServiceException("Invalid OTP: OTP entered is Incorrect", RbaacServiceError.INVALID_OTP);
 		}
@@ -257,6 +283,54 @@ public class UserAuthService {
 				+ " from Device id : " + deviceId);
 
 		return empDetail;
+	}
+
+	private Employee getValidEmployee(List<Employee> employees, String loginType) {
+		/**
+		 * Invalid Employee Details
+		 */
+		if (null == employees || employees.isEmpty()) {
+			throw new AuthServiceException("Employee Details not available : " + loginType,
+					RbaacServiceError.INVALID_USER_DETAILS);
+		}
+
+		List<Employee> activeEmployees = new ArrayList<Employee>();
+		/**
+		 * Filter Out InActive Employees
+		 */
+		employees.forEach(employee -> {
+			if (StringUtils.isNotBlank(employee.getIsActive()) && "Y".equalsIgnoreCase(employee.getIsActive())) {
+				activeEmployees.add(employee);
+			}
+		});
+
+		if (activeEmployees.isEmpty()) {
+			throw new AuthServiceException("User Not Active Or Deleted: User Account is Suspended : " + loginType,
+					RbaacServiceError.USER_NOT_ACTIVE_OR_DELETED);
+		}
+
+		/**
+		 * Check for Multiple Employees
+		 */
+		if (activeEmployees.size() > 1) {
+			throw new AuthServiceException(
+					"Multiple Users Corresponding to the same Info: Pls contact Support : " + loginType,
+					RbaacServiceError.MULTIPLE_USERS);
+		}
+
+		Employee validEmployee = activeEmployees.get(0);
+
+		/**
+		 * Check if user A/C is Locked. lockcnt >= 3
+		 */
+		if (null != validEmployee.getLockCount()
+				&& validEmployee.getLockCount().intValue() >= RbaacConstants.EMPLOYEE_MAX_LOCK_COUNT) {
+			throw new AuthServiceException("User Account Locked : User Account Login is Suspended, from: "
+					+ validEmployee.getLockDate() + " for Login Type : " + loginType,
+					RbaacServiceError.USER_ACCOUNT_LOCKED);
+		}
+
+		return validEmployee;
 	}
 
 	private RoleResponseDTO getRoleForUser(BigDecimal userId) {

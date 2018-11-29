@@ -108,7 +108,7 @@ public class UserOtpManager {
 	 *            the model
 	 */
 	// Employee otp to login: passing Employee for including any personal Msg
-	public void sendOtpSms(Employee einfo, OtpData model) {
+	public void sendOtpSms(Employee einfo, OtpData model, String slackMsg) {
 
 		LOGGER.info(String.format("Sending OTP SMS to customer :%s on mobile_no :%s  ", einfo.getEmployeeName(),
 				einfo.getTelephoneNumber()));
@@ -123,7 +123,7 @@ public class UserOtpManager {
 			postManService.sendSMSAsync(sms);
 
 			if (!appConfig.isProdMode()) {
-				sendToSlack("mobile", sms.getTo().get(0), model.getmOtpPrefix(), model.getmOtp());
+				sendToSlack(slackMsg + " : " + "mobile", sms.getTo().get(0), model.getmOtpPrefix(), model.getmOtp());
 				// sendToSlack("mobile", sms.getTo().get(0), "Otp-Hash", model.getHashedmOtp());
 			}
 

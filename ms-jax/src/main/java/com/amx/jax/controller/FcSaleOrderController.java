@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.fx.IFxOrderService;
-import com.amx.jax.constant.JaxEvent;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.CustomerShippingAddressRequestModel;
 import com.amx.jax.model.request.fx.FcSaleOrderPaynowRequestModel;
@@ -26,10 +25,12 @@ import com.amx.jax.model.response.fx.FcSaleOrderApplicationResponseModel;
 import com.amx.jax.model.response.fx.FcSaleOrderDefaultResponseModel;
 import com.amx.jax.model.response.fx.FxExchangeRateDto;
 import com.amx.jax.model.response.fx.FxOrderReportResponseDto;
+import com.amx.jax.model.response.fx.FxOrderShoppingCartResponseModel;
 import com.amx.jax.model.response.fx.FxOrderTransactionHistroyDto;
+import com.amx.jax.model.response.fx.FxOrderTransactionStatusResponseDto;
 import com.amx.jax.model.response.fx.PurposeOfTransactionDto;
 import com.amx.jax.model.response.fx.ShippingAddressDto;
-import com.amx.jax.model.response.fx.ShoppingCartDetailsDto;
+import com.amx.jax.model.response.fx.TimeSlotDto;
 import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.service.TermsAndConditionService;
 import com.amx.jax.services.FcSaleService;
@@ -144,7 +145,7 @@ public class FcSaleOrderController implements IFxOrderService {
 	 * @ String date @ To fetch time slot for Fx order delviery
 	 */
 	@RequestMapping(value = Path.FC_SALE_TIME_SLOT, method = RequestMethod.GET)
-	public AmxApiResponse<String, Object> getTimeSlot(
+	public AmxApiResponse<TimeSlotDto, Object> getTimeSlot(
 			@RequestParam(value = Params.FXDATE2, required = true) String fxdate) {
 		return fcSaleService.fetchTimeSlot(fxdate);
 	}
@@ -156,27 +157,35 @@ public class FcSaleOrderController implements IFxOrderService {
 	}
 
 	@RequestMapping(value = Path.FC_SALE_SHOPPING_CART, method = RequestMethod.GET)
-	public AmxApiResponse<ShoppingCartDetailsDto, Object> fetchShoppingCartList() {
+	public AmxApiResponse<FxOrderShoppingCartResponseModel, Object> fetchShoppingCartList() {
 		return fcSaleService.fetchShoppingCartList();
 	}
-	
-	
+
 	@RequestMapping(value = Path.FC_SALE_SAVE_PAYMENT_ID, method = RequestMethod.POST)
-	public AmxApiResponse<PaymentResponseDto,Object> savePaymentId(@RequestBody PaymentResponseDto paymentResponse) {
-		logger.info("save-fcsale Controller :" + paymentResponse.getCustomerId() + "\t country ID :"+ paymentResponse.getApplicationCountryId() + "\t Compa Id:" + paymentResponse.getCompanyId());
+	public AmxApiResponse<PaymentResponseDto, Object> savePaymentId(@RequestBody PaymentResponseDto paymentResponse) {
+		logger.info("save-fcsale Controller :" + paymentResponse.getCustomerId() + "\t country ID :"
+				+ paymentResponse.getApplicationCountryId() + "\t Compa Id:" + paymentResponse.getCompanyId());
 		return fcSaleService.savePaymentId(paymentResponse);
-		
+
 	}
 
 	@RequestMapping(value = Path.FC_SALE_ORDER_TRNX_HIST, method = RequestMethod.GET)
-	public AmxApiResponse<FxOrderTransactionHistroyDto, Object> getFxOrderTransactionHistroy()throws Exception {
+	public AmxApiResponse<FxOrderTransactionHistroyDto, Object> getFxOrderTransactionHistroy() {
 		return fcSaleService.getFxOrderTransactionHistroy();
 	}
 
 	@RequestMapping(value = Path.FC_SALE_ORDER_TRNX_REPORT, method = RequestMethod.POST)
-	public AmxApiResponse<FxOrderReportResponseDto, Object> getFxOrderTransactionReport(@RequestParam(value = Params.COLLECTION_DOC_NO, required = true) BigDecimal collectionDocNo,
-			@RequestParam(value = Params.COLLECTION_FYEAR, required = true) BigDecimal collectionFyear) 
-			throws Exception {
+	public AmxApiResponse<FxOrderReportResponseDto, Object> getFxOrderTransactionReport(
+			@RequestParam(value = Params.COLLECTION_DOC_NO, required = true) BigDecimal collectionDocNo,
+			@RequestParam(value = Params.COLLECTION_FYEAR, required = true) BigDecimal collectionFyear) {
 		return fcSaleService.getFxOrderTransactionReport(collectionDocNo, collectionFyear);
 	}
+
+	@RequestMapping(value = Path.FC_SALE_ORDER_TRNX_STATUS, method = RequestMethod.POST)
+	public AmxApiResponse<FxOrderTransactionStatusResponseDto, Object> getFxOrderTransactionStatus(
+			@RequestParam(value = Params.DOCUMENT_ID_FOR_PAYMENT, required = true) BigDecimal documentIdForPayment) {
+		logger.info("In getFxOrderTransactionStatus with param, :  " + documentIdForPayment);
+		return fcSaleService.getFxOrderTransactionStatus(documentIdForPayment);
+	}
+
 }

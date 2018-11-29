@@ -3,9 +3,12 @@
  */
 package com.amx.jax.util;
 
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Map;
+
+import org.apache.commons.beanutils.BeanUtils;
 
 import com.amx.jax.rbaac.RbaacConstants;
 import com.amx.jax.rbaac.dbmodel.Employee;
@@ -33,6 +36,13 @@ public final class ObjectConverter {
 	public static EmployeeDetailsDTO convertEmployeeToEmpDetailsDTO(Employee employee) {
 
 		EmployeeDetailsDTO empDetail = new EmployeeDetailsDTO();
+
+		/*try {
+			BeanUtils.copyProperties(empDetail, employee);
+		} catch (IllegalAccessException | InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
 
 		empDetail.setCivilId(employee.getCivilId());
 		empDetail.setCountryId(employee.getCountryId());

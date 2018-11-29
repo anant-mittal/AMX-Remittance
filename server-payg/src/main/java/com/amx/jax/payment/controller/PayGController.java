@@ -25,6 +25,7 @@ import com.amx.jax.dict.Channel;
 import com.amx.jax.dict.PayGServiceCode;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.logger.AuditService;
+import com.amx.jax.payment.PaymentConstant;
 import com.amx.jax.payment.gateway.PayGClient;
 import com.amx.jax.payment.gateway.PayGClients;
 import com.amx.jax.payment.gateway.PayGConfig;
@@ -58,16 +59,16 @@ public class PayGController {
 
 	@Value("${app.url.kwt}")
 	String kwtRedirectURL;
-	
+
 	@Value("${app.url.bhr}")
 	String bhrRedirectURL;
 
 	@Value("${app.url.omn}")
 	String omnRedirectURL;
-	
+
 	@Value("${app.url.omn.kiosk}")
 	String kioskOmnRedirectURL;
-	
+
 	@Autowired
 	PayGConfig payGConfig;
 
@@ -75,19 +76,21 @@ public class PayGController {
 
 	public String handleUrlPaymentRemit(@RequestParam Tenant tnt, @RequestParam String pg, @RequestParam String amount,
 			@RequestParam String trckid, @RequestParam String docNo, @RequestParam(required = false) String docFy,
-			@RequestParam(required = false) String callbackd, @RequestParam(required = false) Channel channel, Model model) {
+			@RequestParam(required = false) String callbackd, @RequestParam(required = false) Channel channel,
+			@RequestParam(required = false) String prod,
+			Model model) {
 
 		TenantContextHolder.setCurrent(tnt);
-        String appRedirectUrl=null;
-        
+		String appRedirectUrl = null;
+
 		if (tnt.equals(Tenant.BHR)) {
 			pg = "BENEFIT";
 			appRedirectUrl = bhrRedirectURL;
-		}else if (tnt.equals(Tenant.KWT)) {
+		} else if (tnt.equals(Tenant.KWT)) {
 			appRedirectUrl = kwtRedirectURL;
-		}else if(tnt.equals(Tenant.OMN)) {
-		    pg = "OMANNET";
-		    appRedirectUrl = omnRedirectURL;
+		} else if (tnt.equals(Tenant.OMN)) {
+			pg = "OMANNET";
+			appRedirectUrl = omnRedirectURL;
 		}
 
 		if (callbackd != null) {
@@ -96,7 +99,7 @@ public class PayGController {
 			payGSession.setCallback(callback);
 		}
 
-		LOGGER.info("call back ---->"+payGSession.getCallback());
+		LOGGER.info("call back ---->" + payGSession.getCallback());
 		LOGGER.info(String.format(
 				"Inside payment method with parameters --> TrackId: %s, amount: %s, docNo: %s, country: %s, pg: %s",
 				trckid, amount, docNo, tnt, pg));
@@ -108,20 +111,22 @@ public class PayGController {
 		payGParams.setTrackId(trckid);
 		payGParams.setDocNo(docNo);
 		payGParams.setTenant(tnt);
-        if (channel==null)
-		    channel = Channel.ONLINE;		
+		if (channel == null)
+			channel = Channel.ONLINE;
 		payGParams.setChannel(channel);
+		payGParams.setProduct(prod);
+		payGParams.setServiceCode(payGClient.getClientCode());
 
 		auditService.log(new PayGEvent(PayGEvent.Type.PAYMENT_INIT, payGParams));
 
 		try {
 			payGClient.initialize(payGParams);
 		} catch (RuntimeException e) {
-			 SimpleDateFormat df = new SimpleDateFormat("HH:mm");
-			 Calendar cal = Calendar.getInstance();
-			 cal.setTime(new Date());
-			 cal.add(Calendar.MINUTE, 15);
-			 String returnTime = df.format(cal.getTime());
+			SimpleDateFormat df = new SimpleDateFormat("HH:mm");
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(new Date());
+			cal.add(Calendar.MINUTE, 15);
+			String returnTime = df.format(cal.getTime());
 			model.addAttribute("REDIRECTURL", appRedirectUrl);
 			model.addAttribute("RETURN_TIME", returnTime);
 			return "thymeleaf/pg_error";
@@ -135,21 +140,25 @@ public class PayGController {
 		return null;
 	}
 
-	//@RequestMapping(value = { "/capture/{paygCode}/{tenant}/*", "/capture/{paygCode}/{tenant}/" })
-	@RequestMapping(value = { "/capture/{paygCode}/{tenant}/{channel}/*","/capture/{paygCode}/{tenant}/{channel}/" })
-	public String paymentCapture( Model model, 
-	                              @PathVariable("tenant") Tenant tnt,
-			                      @PathVariable("paygCode") PayGServiceCode paygCode,
-			                      @PathVariable("channel") Channel channel,
-			                      RedirectAttributes ra) {
-	    
+	@RequestMapping(value = { PaymentConstant.Path.PAYMENT_CAPTURE_CALLBACK_V1_WILDCARD,
+			PaymentConstant.Path.PAYMENT_CAPTURE_CALLBACK_V1,
+			PaymentConstant.Path.PAYMENT_CAPTURE_CALLBACK_V2,
+			PaymentConstant.Path.PAYMENT_CAPTURE_CALLBACK_V2_WILDCARD
+	})
+	public String paymentCapture(Model model, RedirectAttributes ra,
+			@PathVariable("tenant") Tenant tnt,
+			@PathVariable("paygCode") PayGServiceCode paygCode,
+			@PathVariable("channel") Channel channel,
+			@PathVariable(value = "product", required = false) String product) {
+
 		TenantContextHolder.setCurrent(tnt);
 		LOGGER.info("Inside capture method with parameters tenant : " + tnt + " paygCode : " + paygCode);
 		PayGClient payGClient = payGClients.getPayGClient(paygCode);
 
 		PayGResponse payGResponse = new PayGResponse();
+
 		try {
-			payGResponse = payGClient.capture(new PayGResponse(),channel);
+			payGResponse = payGClient.capture(new PayGResponse(), channel, product);
 		} catch (Exception e) {
 			LOGGER.error("payment service error in capturePayment method : ", e);
 			payGResponse.setPayGStatus(PayGStatus.ERROR);
@@ -158,39 +167,39 @@ public class PayGController {
 		auditService.log(new PayGEvent(PayGEvent.Type.PAYMENT_CAPTURED, payGResponse));
 
 		String redirectUrl;
-	
-	      if (payGResponse.getPayGStatus() == PayGStatus.CAPTURED) {
-	            redirectUrl = payGConfig.getServiceCallbackUrl() + "/callback/success" ;
-	        } else if (payGResponse.getPayGStatus() == PayGStatus.CANCELLED) {
-	            redirectUrl = payGConfig.getServiceCallbackUrl() + "/callback/cancelled";
-	        } else {
-	            redirectUrl = payGConfig.getServiceCallbackUrl() + "/callback/error";
-	        }
+
+		if (payGResponse.getPayGStatus() == PayGStatus.CAPTURED) {
+			redirectUrl = payGConfig.getServiceCallbackUrl() + "/callback/success";
+		} else if (payGResponse.getPayGStatus() == PayGStatus.CANCELLED) {
+			redirectUrl = payGConfig.getServiceCallbackUrl() + "/callback/cancelled";
+		} else {
+			redirectUrl = payGConfig.getServiceCallbackUrl() + "/callback/error";
+		}
 
 		model.addAttribute("REDIRECT", redirectUrl);
 
-		//return "thymeleaf/repback";
-		//if (paygCode.toString().equals("OMANNET")) {
-		if (paygCode.toString().equals("OMANNET") && channel.equals(Channel.ONLINE)) {    
+		// return "thymeleaf/repback";
+		// if (paygCode.toString().equals("OMANNET")) {
+		if (paygCode.toString().equals("OMANNET") && channel.equals(Channel.ONLINE)) {
 			return "redirect:" + redirectUrl;
-		//}else if (paygCode.toString().equals("KOMANNET")) {
-		}else if (paygCode.toString().equals("OMANNET") && channel.equals(Channel.KIOSK)) {    
-		    ra.addAttribute("paymentId",payGResponse.getPaymentId() );
-            ra.addAttribute("result", payGResponse.getResult());
-            ra.addAttribute("auth",payGResponse.getAuth() );
-            ra.addAttribute("referenceId",payGResponse.getRef() );
-            ra.addAttribute("postDate",payGResponse.getPostDate() );
-            ra.addAttribute("trackId", payGResponse.getTrackId());
-            ra.addAttribute("tranId", payGResponse.getTranxId());
-            ra.addAttribute("udf1", payGResponse.getUdf1());
-            ra.addAttribute("udf2", payGResponse.getUdf2());
-            ra.addAttribute("udf3", payGResponse.getUdf3());
-            ra.addAttribute("udf4", payGResponse.getUdf4());
-            ra.addAttribute("udf5", payGResponse.getUdf5());
-            LOGGER.info("PAYG Response is ----> "+payGResponse.toString());
-            return "redirect:" + kioskOmnRedirectURL;
-        }else {
-		    return "thymeleaf/repback";  
+			// }else if (paygCode.toString().equals("KOMANNET")) {
+		} else if (paygCode.toString().equals("OMANNET") && channel.equals(Channel.KIOSK)) {
+			ra.addAttribute("paymentId", payGResponse.getPaymentId());
+			ra.addAttribute("result", payGResponse.getResult());
+			ra.addAttribute("auth", payGResponse.getAuth());
+			ra.addAttribute("referenceId", payGResponse.getRef());
+			ra.addAttribute("postDate", payGResponse.getPostDate());
+			ra.addAttribute("trackId", payGResponse.getTrackId());
+			ra.addAttribute("tranId", payGResponse.getTranxId());
+			ra.addAttribute("udf1", payGResponse.getUdf1());
+			ra.addAttribute("udf2", payGResponse.getUdf2());
+			ra.addAttribute("udf3", payGResponse.getUdf3());
+			ra.addAttribute("udf4", payGResponse.getUdf4());
+			ra.addAttribute("udf5", payGResponse.getUdf5());
+			LOGGER.info("PAYG Response is ----> " + payGResponse.toString());
+			return "redirect:" + kioskOmnRedirectURL;
+		} else {
+			return "thymeleaf/repback";
 		}
 	}
 

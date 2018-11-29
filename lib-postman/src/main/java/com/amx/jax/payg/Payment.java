@@ -8,6 +8,7 @@ public class Payment {
 	String docFinYear;
 	String netPayableAmount;
 	String merchantTrackId;
+	Object product;
 	PayGServiceCode pgCode;
 
 	public String getDocNo() {
@@ -48,5 +49,13 @@ public class Payment {
 
 	public void setPgCode(PayGServiceCode payGServiceCode) {
 		this.pgCode = payGServiceCode;
+	}
+
+	public Object getProduct() {
+		return product;
+	}
+
+	public void setProduct(Object product) {
+		this.product = product;
 	}
 }

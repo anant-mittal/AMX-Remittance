@@ -29,7 +29,6 @@ import com.amx.jax.dbmodel.ParameterDetails;
 import com.amx.jax.dbmodel.PurposeOfTransaction;
 import com.amx.jax.dbmodel.SourceOfIncomeView;
 import com.amx.jax.dbmodel.fx.FxExchangeRateView;
-import com.amx.jax.dbmodel.fx.FxOrderTransactionModel;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.manager.FcSaleAddressManager;
 import com.amx.jax.manager.FcSaleApplicationTransactionManager;
@@ -47,17 +46,17 @@ import com.amx.jax.model.response.fx.FcSaleOrderApplicationResponseModel;
 import com.amx.jax.model.response.fx.FcSaleOrderDefaultResponseModel;
 import com.amx.jax.model.response.fx.FxExchangeRateDto;
 import com.amx.jax.model.response.fx.FxOrderReportResponseDto;
+import com.amx.jax.model.response.fx.FxOrderShoppingCartResponseModel;
 import com.amx.jax.model.response.fx.FxOrderTransactionHistroyDto;
+import com.amx.jax.model.response.fx.FxOrderTransactionStatusResponseDto;
 import com.amx.jax.model.response.fx.PurposeOfTransactionDto;
 import com.amx.jax.model.response.fx.ShippingAddressDto;
-import com.amx.jax.model.response.fx.ShoppingCartDetailsDto;
+import com.amx.jax.model.response.fx.TimeSlotDto;
 import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.repository.ICurrencyDao;
 import com.amx.jax.repository.IPurposeOfTrnxDao;
 import com.amx.jax.repository.ISourceOfIncomeDao;
 import com.amx.jax.repository.ITermsAndConditionRepository;
-import com.amx.jax.repository.fx.FxOrderTransactionRespository;
-import com.amx.jax.util.JaxUtil;
 import com.amx.jax.validation.FxOrderValidation;
 
 @Component
@@ -233,9 +232,9 @@ public class FcSaleService extends AbstractService {
 	 * @param : to get the time slot for fx order
 	 * @return
 	 */
-	public AmxApiResponse<String, Object> fetchTimeSlot(String date) {
+	public AmxApiResponse<TimeSlotDto, Object> fetchTimeSlot(String date) {
 		validation.validateHeaderInfo();
-		List<String> timeSlotList = applTrnxManager.fetchTimeSlot(date);
+		List<TimeSlotDto> timeSlotList = applTrnxManager.fetchTimeSlot(date);
 		if (timeSlotList.isEmpty()) {
 			throw new GlobalException("No data found", JaxError.NO_RECORD_FOUND);
 		}
@@ -255,13 +254,13 @@ public class FcSaleService extends AbstractService {
 
 	}
 
-	public AmxApiResponse<ShoppingCartDetailsDto, Object> fetchShoppingCartList() {
+	public AmxApiResponse<FxOrderShoppingCartResponseModel, Object> fetchShoppingCartList() {
 		validation.validateHeaderInfo();
-		List<ShoppingCartDetailsDto> shoppingCartDetails = applTrnxManager.fetchApplicationDetails();
-		if (shoppingCartDetails.isEmpty()) {
+		FxOrderShoppingCartResponseModel shoppingCartDetails = applTrnxManager.fetchApplicationDetails();
+		if (shoppingCartDetails==null) {
 			throw new GlobalException("No data found", JaxError.NO_RECORD_FOUND);
 		}
-		return AmxApiResponse.buildList(shoppingCartDetails);
+		return AmxApiResponse.build(shoppingCartDetails);
 	}
 
 	/** Pay now save **/
@@ -297,6 +296,12 @@ public class FcSaleService extends AbstractService {
 		return AmxApiResponse.build(reportResponseDto);
 	}
 
+	
+	public AmxApiResponse<FxOrderTransactionStatusResponseDto, Object> getFxOrderTransactionStatus(BigDecimal documentIdForPayment){
+		FxOrderTransactionStatusResponseDto statusdto = reportManager.getTransactionStatus(documentIdForPayment);
+		return AmxApiResponse.build(statusdto);
+	}
+	
 	public List<PurposeOfTransactionDto> convertPurposeOfTrnxDto(List<PurposeOfTransaction> purposeofTrnxList) {
 		List<PurposeOfTransactionDto> dtoList = new ArrayList<>();
 		for (PurposeOfTransaction purofTrnx : purposeofTrnxList) {

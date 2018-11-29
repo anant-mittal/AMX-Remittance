@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import com.amx.jax.dict.Channel;
 import com.amx.jax.dict.PayGServiceCode;
@@ -19,13 +18,14 @@ import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.payg.codes.OmanNetCodes;
 import com.amx.jax.payment.gateway.PayGClient;
 import com.amx.jax.payment.gateway.PayGConfig;
+import com.amx.jax.payment.gateway.PayGContext.PayGSpecific;
 import com.amx.jax.payment.gateway.PayGParams;
 import com.amx.jax.payment.gateway.PayGResponse;
 import com.amx.jax.payment.gateway.PayGResponse.PayGStatus;
 import com.amx.utils.JsonUtil;
 import com.fss.plugin.iPayPipe;
 
-@Component
+@PayGSpecific(PayGServiceCode.OMANNET)
 public class OmannetClient implements PayGClient {
 
 	private static final Logger LOGGER = Logger.getLogger(OmannetClient.class);
@@ -121,7 +121,7 @@ public class OmannetClient implements PayGClient {
 
 	@SuppressWarnings("finally")
 	@Override
-	public PayGResponse capture(PayGResponse gatewayResponse, Channel channel) {
+	public PayGResponse capture(PayGResponse gatewayResponse, Channel channel, Object product) {
 
 		// Capturing GateWay Response
 		gatewayResponse.setPaymentId(request.getParameter("paymentid"));
@@ -195,7 +195,7 @@ public class OmannetClient implements PayGClient {
 		LOGGER.info("Params captured from OMANNET : " + JsonUtil.toJson(gatewayResponse));
 
 		if (channel.equals(Channel.ONLINE)) {
-			PaymentResponseDto resdto = paymentService.capturePayment(gatewayResponse);
+			PaymentResponseDto resdto = paymentService.capturePayment(gatewayResponse, channel, product);
 			// Capturing JAX Response
 
 			if (resdto.getCollectionFinanceYear() != null) {

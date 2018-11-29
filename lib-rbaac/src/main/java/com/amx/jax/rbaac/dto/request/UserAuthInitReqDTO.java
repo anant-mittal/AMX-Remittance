@@ -10,6 +10,7 @@ import javax.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.amx.jax.dict.UserClient.DeviceType;
+import com.amx.jax.rbaac.constants.RbaacServiceConstants.LOGIN_TYPE;
 
 /**
  * The Class UserAuthInitReqDTO.
@@ -36,11 +37,19 @@ public class UserAuthInitReqDTO implements Serializable {
 	/** The device id. */
 	private String deviceId;
 
+	/** The terminal id. */
 	private String terminalId;
+
+	/** The partner identity. */
+	private String partnerIdentity;
 
 	/** The device type. */
 	@NotNull(message = "Device Type Can not be Null or Empty")
 	private DeviceType deviceType;
+
+	/** The login type. */
+	@NotNull(message = "Login Type Can not be Null or Empty")
+	private LOGIN_TYPE loginType = LOGIN_TYPE.SELF;
 
 	/**
 	 * Gets the employee no.
@@ -54,7 +63,8 @@ public class UserAuthInitReqDTO implements Serializable {
 	/**
 	 * Sets the employee no.
 	 *
-	 * @param employeeNo the new employee no
+	 * @param employeeNo
+	 *            the new employee no
 	 */
 	public void setEmployeeNo(String employeeNo) {
 		this.employeeNo = employeeNo;
@@ -72,7 +82,8 @@ public class UserAuthInitReqDTO implements Serializable {
 	/**
 	 * Sets the identity.
 	 *
-	 * @param identity the new identity
+	 * @param identity
+	 *            the new identity
 	 */
 	public void setIdentity(String identity) {
 		this.identity = identity;
@@ -90,7 +101,8 @@ public class UserAuthInitReqDTO implements Serializable {
 	/**
 	 * Sets the ip address.
 	 *
-	 * @param ipAddress the new ip address
+	 * @param ipAddress
+	 *            the new ip address
 	 */
 	public void setIpAddress(String ipAddress) {
 		this.ipAddress = ipAddress;
@@ -108,7 +120,8 @@ public class UserAuthInitReqDTO implements Serializable {
 	/**
 	 * Sets the device id.
 	 *
-	 * @param deviceId the new device id
+	 * @param deviceId
+	 *            the new device id
 	 */
 	public void setDeviceId(String deviceId) {
 		this.deviceId = deviceId;
@@ -123,14 +136,20 @@ public class UserAuthInitReqDTO implements Serializable {
 		return deviceType;
 	}
 
+	/**
+	 * Sets the device type.
+	 *
+	 * @param deviceType
+	 *            the new device type
+	 */
 	public void setDeviceType(DeviceType deviceType) {
 		this.deviceType = deviceType;
 	}
 
 	/**
 	 * Gets the Terminal Id.
-	 * 
-	 * @return
+	 *
+	 * @return the terminal id
 	 */
 	public String getTerminalId() {
 		return terminalId;
@@ -138,11 +157,50 @@ public class UserAuthInitReqDTO implements Serializable {
 
 	/**
 	 * Sets the Terminal Id.
-	 * 
+	 *
 	 * @param terminalId
+	 *            the new terminal id
 	 */
 	public void setTerminalId(String terminalId) {
 		this.terminalId = terminalId;
+	}
+
+	/**
+	 * Gets the login type.
+	 *
+	 * @return the login type
+	 */
+	public LOGIN_TYPE getLoginType() {
+		return loginType;
+	}
+
+	/**
+	 * Sets the login type.
+	 *
+	 * @param loginType
+	 *            the new login type
+	 */
+	public void setLoginType(LOGIN_TYPE loginType) {
+		this.loginType = loginType;
+	}
+
+	/**
+	 * Gets the partner identity.
+	 *
+	 * @return the partner identity
+	 */
+	public String getPartnerIdentity() {
+		return partnerIdentity;
+	}
+
+	/**
+	 * Sets the partner identity.
+	 *
+	 * @param partnerIdentity
+	 *            the new partner identity
+	 */
+	public void setPartnerIdentity(String partnerIdentity) {
+		this.partnerIdentity = partnerIdentity;
 	}
 
 }

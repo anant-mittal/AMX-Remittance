@@ -21,9 +21,9 @@ public interface PayGClient {
 	void initialize(PayGParams payGParams);
 
 	/**
-     * 
-     * @param payGResponse
-     */
-    PayGResponse capture(PayGResponse payGResponse,Channel channel);
+	 * 
+	 * @param payGResponse
+	 */
+	PayGResponse capture(PayGResponse payGResponse, Channel channel, Object product);
 
 }

@@ -29,6 +29,7 @@ import com.amx.jax.dbmodel.PaygDetailsModel;
 import com.amx.jax.dbmodel.ReceiptPayment;
 import com.amx.jax.dbmodel.ReceiptPaymentApp;
 import com.amx.jax.dbmodel.ShippingAddressDetail;
+import com.amx.jax.dbmodel.fx.FxDeliveryDetailsModel;
 import com.amx.jax.dbmodel.fx.FxDeliveryRemark;
 import com.amx.jax.dbmodel.fx.StatusMaster;
 import com.amx.jax.dbmodel.fx.VwFxDeliveryDetailsModel;
@@ -47,6 +48,9 @@ import com.amx.jax.repository.IShippingAddressRepository;
 import com.amx.jax.repository.PaygDetailsRepository;
 import com.amx.jax.repository.ReceiptPaymentAppRepository;
 import com.amx.jax.repository.ReceiptPaymentRespository;
+import com.amx.jax.repository.fx.FxDeliveryDetailsRepository;
+import com.amx.jax.repository.fx.FxDeliveryRemarkRepository;
+import com.amx.jax.repository.fx.VwFxDeliveryDetailsRepository;
 import com.amx.jax.util.JaxUtil;
 
 @Component
@@ -178,6 +182,16 @@ public class FcSaleApplicationDao {
 	
 	public void updatePaygDetails(List<ReceiptPaymentApp> listOfRecAppl,PaymentResponseDto paymentResponse){
 		try{
+			
+			if(!listOfRecAppl.isEmpty()){
+				for(ReceiptPaymentApp appl :listOfRecAppl){
+					appl.setIsActive(ConstantDocument.Deleted);
+					appl.setApplicationStatus(null);
+					appl.setModifiedDate(new Date());
+					updateCartDetails(appl);
+				}
+			}
+			
 			if(paymentResponse!= null && paymentResponse.getUdf3()!=null){
 				PaygDetailsModel pgModel =pgRepository.findOne(new BigDecimal(paymentResponse.getUdf3()));
 				pgModel.setResultCode(paymentResponse.getResultCode());

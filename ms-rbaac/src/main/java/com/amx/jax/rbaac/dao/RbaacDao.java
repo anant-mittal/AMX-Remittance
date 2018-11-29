@@ -169,7 +169,7 @@ public class RbaacDao {
 
 		return null;
 	}
-	
+
 	public Employee fetchEmpDetails(String identity) {
 		List<Employee> empList = employeeRepository.findByCivilId(identity);
 		if (null != empList && !empList.isEmpty()) {
@@ -185,6 +185,10 @@ public class RbaacDao {
 
 	public List<Employee> getEmployeesByDeviceId(String empcode, String identity, String deviceId) {
 		return employeeRepository.findByEmployeeNumberAndCivilIdAndDeviceId(empcode, identity, deviceId);
+	}
+
+	public List<Employee> getEmployeesByCivilId(String identity) {
+		return employeeRepository.findByCivilId(identity);
 	}
 
 	public List<Employee> getEmployeesByCountryBranchId(BigDecimal countryBranchId) {
