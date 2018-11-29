@@ -53,9 +53,9 @@ import com.amx.utils.ArgUtil;
 @RequestMapping(value = "/api/customer/reg", produces = { CommonMediaType.APPLICATION_JSON_VALUE,
 		CommonMediaType.APPLICATION_V0_JSON_VALUE })
 @ApiStatusService(ICustRegService.class)
-public class OffsiteController {
+public class OffsiteCustRegController {
 
-	private Logger logger = Logger.getLogger(OffsiteController.class);
+	private Logger logger = Logger.getLogger(OffsiteCustRegController.class);
 
 	@Autowired
 	private ICustRegService offsiteCustRegClient;
