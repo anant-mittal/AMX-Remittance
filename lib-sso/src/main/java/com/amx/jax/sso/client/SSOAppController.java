@@ -178,6 +178,7 @@ public class SSOAppController {
 			produces = { CommonMediaType.APPLICATION_JSON_VALUE, CommonMediaType.APPLICATION_V0_JSON_VALUE })
 	public String logout(
 			Model model,
+			HttpServletRequest request,
 			HttpServletResponse response,
 			@RequestParam(required = false) Boolean redirect) throws MalformedURLException, URISyntaxException {
 		redirect = ArgUtil.parseAsBoolean(redirect, true);
@@ -185,7 +186,10 @@ public class SSOAppController {
 		SecurityContextHolder.getContext().setAuthentication(null);
 		ssoUser.setAuthDone(false);
 		AmxApiResponse<Object, Model> result = AmxApiResponse.buildMeta(model);
-		String redirectUrl = appConfig.getAppPrefix();
+		
+//		URLBuilder builder = new URLBuilder(HttpUtils.getServerName(request));
+//		builder.path(appConfig.getAppPrefix() + '/');
+		String redirectUrl = HttpUtils.getServerName(request) + appConfig.getAppPrefix() + '/';
 		result.setRedirectUrl(redirectUrl);
 		if (redirect) {
 			response.setHeader("Location", redirectUrl);
