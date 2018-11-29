@@ -497,5 +497,27 @@ public class ExchangeRateApprovalDetModel implements Serializable{
 			return false;
 		return true;
 	}
+
+
+
+
+	@Override
+	public String toString() {
+		return "ExchangeRateApprovalDetModel [exchangeRateMasterAprDetId=" + exchangeRateMasterAprDetId
+				+ ", applicationCountryId=" + applicationCountryId + ", approvedBy=" + approvedBy + ", approvedDate="
+				+ approvedDate + ", authorisedBy=" + authorisedBy + ", authorisedDate=" + authorisedDate
+				+ ", bankMaster=" + bankMaster + ", buyRateMax=" + buyRateMax + ", buyRateMin=" + buyRateMin
+				+ ", corporateRate=" + corporateRate + ", countryBranchId=" + countryBranchId + ", countryId="
+				+ countryId + ", createdBy=" + createdBy + ", createdDate=" + createdDate + ", currencyId=" + currencyId
+				+ ", deliveryModeId=" + deliveryModeId + ", exchangeRateMasterId=" + exchangeRateMasterId
+				+ ", isActive=" + isActive + ", modifiedBy=" + modifiedBy + ", modifiedDate=" + modifiedDate
+				+ ", remarks=" + remarks + ", remitanceModeId=" + remitanceModeId + ", sellRateMin=" + sellRateMin
+				+ ", sellRateMax=" + sellRateMax + ", serviceId=" + serviceId + ", prvBuyRateMax=" + prvBuyRateMax
+				+ ", prvBuyRateMin=" + prvBuyRateMin + ", prvSellRateMin=" + prvSellRateMin + ", prvSellRateMax="
+				+ prvSellRateMax + "]";
+	}
+	
+	
+	
 	
 }

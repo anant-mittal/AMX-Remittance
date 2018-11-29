@@ -50,13 +50,13 @@ public class PipsMasterDao {
 	}
 
 	public List<PipsMaster> getPipsMasterForLcCur(BigDecimal toCurrency, BigDecimal lcAmount,
-			BigDecimal countryBranchId, List<BigDecimal> validBankIds) {
-		return repo.getPipsMasterForLcCurOnline(toCurrency, countryBranchId, lcAmount, validBankIds);
+			BigDecimal countryBranchId, BigDecimal countryId, List<BigDecimal> validBankIds) {
+		return repo.getPipsMasterForLcCurOnline(toCurrency, countryBranchId, lcAmount, countryId, validBankIds);
 	}
 
 	public List<PipsMaster> getPipsMasterForFcCur(BigDecimal toCurrency, BigDecimal fcAmount,
-			BigDecimal countryBranchId, List<BigDecimal> validBankIds) {
-		return repo.getPipsMasterForFcCurOnline(toCurrency, countryBranchId, fcAmount, validBankIds);
+			BigDecimal countryBranchId, BigDecimal countryId, List<BigDecimal> validBankIds) {
+		return repo.getPipsMasterForFcCurOnline(toCurrency, countryBranchId, fcAmount, countryId, validBankIds);
 	}
 
 	public List<PipsMaster> getPipsMasterForLocalAmount(BigDecimal toCurrency, BigDecimal lcAmount,

@@ -16,8 +16,8 @@ public class PricingReqDTO implements Serializable {
 
 	private BigDecimal customerId;
 	private BigDecimal beneId;
-	private BigDecimal lCountryId;
-	private BigDecimal fcCountryId;
+	private BigDecimal localCountryId;
+	private BigDecimal foreignCountryId;
 
 	private BigDecimal localAmount;
 	private BigDecimal foreignAmount;
@@ -50,12 +50,20 @@ public class PricingReqDTO implements Serializable {
 		this.beneId = beneId;
 	}
 
-	public BigDecimal getFcCountryId() {
-		return fcCountryId;
+	public BigDecimal getLocalCountryId() {
+		return localCountryId;
 	}
 
-	public void setFcCountryId(BigDecimal fcCountryId) {
-		this.fcCountryId = fcCountryId;
+	public void setLocalCountryId(BigDecimal localCountryId) {
+		this.localCountryId = localCountryId;
+	}
+
+	public BigDecimal getForeignCountryId() {
+		return foreignCountryId;
+	}
+
+	public void setForeignCountryId(BigDecimal foreignCountryId) {
+		this.foreignCountryId = foreignCountryId;
 	}
 
 	public BigDecimal getLocalAmount() {
@@ -120,14 +128,6 @@ public class PricingReqDTO implements Serializable {
 
 	public void setRoutingBankIds(List<BigDecimal> routingBankIds) {
 		this.routingBankIds = routingBankIds;
-	}
-
-	public BigDecimal getCountryId() {
-		return lCountryId;
-	}
-
-	public void setCountryId(BigDecimal countryId) {
-		this.lCountryId = countryId;
 	}
 
 	public PRICE_BY getPricingLevel() {

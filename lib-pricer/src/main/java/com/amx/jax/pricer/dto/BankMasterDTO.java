@@ -16,6 +16,8 @@ public class BankMasterDTO implements Comparable<BankMasterDTO>, Serializable {
 	private String bankFullName;
 	private String bankShortName;
 	private BigDecimal bankCountryId;
+	
+	private BigDecimal serviceIndicatorId;
 
 	private ExchangeRateBreakup exRateBreakup;
 
@@ -57,6 +59,14 @@ public class BankMasterDTO implements Comparable<BankMasterDTO>, Serializable {
 
 	public void setBankCountryId(BigDecimal bankCountryId) {
 		this.bankCountryId = bankCountryId;
+	}
+
+	public BigDecimal getServiceIndicatorId() {
+		return serviceIndicatorId;
+	}
+
+	public void setServiceIndicatorId(BigDecimal serviceIndicatorId) {
+		this.serviceIndicatorId = serviceIndicatorId;
 	}
 
 	@Override

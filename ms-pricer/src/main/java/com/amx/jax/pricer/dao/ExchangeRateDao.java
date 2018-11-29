@@ -38,10 +38,18 @@ public class ExchangeRateDao {
 	public void saveOrUpdate(ExchangeRateApprovalDetModel exchangeRateApprovalDetModel) {
 		repo.save(exchangeRateApprovalDetModel);
 	}
-	
+
 	public List<ExchangeRateApprovalDetModel> getExchangeRatesPlaceorder(BigDecimal currency, BigDecimal bankId) {
 		List<ExchangeRateApprovalDetModel> exchangeRates = repo.getExchangeRatesPlaceorder(currency, bankId);
-	    return exchangeRates;
+		return exchangeRates;
+	}
+
+	public List<ExchangeRateApprovalDetModel> getExchangeRatesForRoutingBanks(BigDecimal currencyId,
+			BigDecimal countryBranchId, BigDecimal countryId, BigDecimal applicationCountryId,
+			List<BigDecimal> routingBankIds) {
+
+		return repo.getExchangeRatesForRoutingBanks(currencyId, countryBranchId, countryId, applicationCountryId,
+				routingBankIds);
 	}
 
 }
