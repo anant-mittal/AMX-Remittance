@@ -11,6 +11,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -155,10 +157,11 @@ public class FxOrderController {
 		return ResponseWrapper.buildList(fcSaleOrderClient.getFxOrderTransactionHistroy());
 	}
 
-	@RequestMapping(value = "/api/fxo/tranx/report.{ext}", method = RequestMethod.GET, produces = {
-			CommonMediaType.APPLICATION_JSON_VALUE, CommonMediaType.APPLICATION_V0_JSON_VALUE,
-			CommonMediaType.APPLICATION_PDF_VALUE, CommonMediaType.TEXT_HTML_VALUE })
-	public String getFxOrderTransactionReport(
+	@RequestMapping(value = { "/api/fxo/tranx/report.{ext}", "/pub/fxo/tranx/report.{ext}" },
+			method = RequestMethod.GET, produces = {
+					CommonMediaType.APPLICATION_JSON_VALUE, CommonMediaType.APPLICATION_V0_JSON_VALUE,
+					CommonMediaType.APPLICATION_PDF_VALUE, CommonMediaType.TEXT_HTML_VALUE })
+	public ResponseEntity<byte[]> getFxOrderTransactionReport(
 			@RequestParam(required = false) BigDecimal collectionDocumentCode,
 			@RequestParam(required = false) BigDecimal collectionDocumentFinYear,
 			@PathVariable("ext") String ext,
@@ -167,24 +170,36 @@ public class FxOrderController {
 
 		duplicate = ArgUtil.parseAsBoolean(duplicate, false);
 
-		ResponseWrapper<FxOrderReportResponseDto> wrapper = ResponseWrapper
-				.build(fcSaleOrderClient.getFxOrderTransactionReport(collectionDocumentCode,
-						collectionDocumentFinYear));
+		ResponseWrapper<FxOrderReportResponseDto> wrapper = new ResponseWrapper<FxOrderReportResponseDto>(
+				new FxOrderReportResponseDto());
+
+//				ResponseWrapper
+//				.build(fcSaleOrderClient.getFxOrderTransactionReport(collectionDocumentCode,
+//						collectionDocumentFinYear));
+
 		if ("pdf".equals(ext)) {
 			File file = postManService.processTemplate(
 					new File(duplicate ? TemplatesMX.FXO_RECEIPT : TemplatesMX.FXO_RECEIPT,
 							wrapper, File.Type.PDF))
 					.getResult();
-			file.create(response, false);
-			return null;
+			// file.create(response, false);
+			// return null;
+			return ResponseEntity.ok().contentLength(file.getBody().length)
+					.contentType(MediaType.valueOf(file.getType().getContentType())).body(file.getBody());
+
 		} else if ("html".equals(ext)) {
 			File file = postManService.processTemplate(
 					new File(duplicate ? TemplatesMX.FXO_RECEIPT : TemplatesMX.FXO_RECEIPT,
-							wrapper, null))
+							wrapper, File.Type.HTML))
 					.getResult();
-			return file.getContent();
+			// return file.getContent();
+			return ResponseEntity.ok().contentLength(file.getBody().length)
+					.contentType(MediaType.valueOf(file.getType().getContentType())).body(file.getBody());
 		} else {
-			return JsonUtil.toJson(wrapper);
+			// return JsonUtil.toJson(wrapper);
+			String json = JsonUtil.toJson(wrapper);
+			return ResponseEntity.ok().contentLength(json.length())
+					.contentType(MediaType.valueOf(File.Type.JSON.getContentType())).body(json.getBytes());
 		}
 
 	}
