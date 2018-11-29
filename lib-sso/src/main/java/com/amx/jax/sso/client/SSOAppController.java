@@ -93,6 +93,7 @@ public class SSOAppController {
 		String tranxId = ssoUser.ssoTranxId();
 		URLBuilder builder = new URLBuilder(targetUrl).queryParam(AppConstants.TRANX_ID_XKEY, tranxId)
 				.queryParam(SSOConstants.PARAM_SOTP, sSOTranx.get().getAppToken())
+				.queryParam(SSOConstants.PARAM_STEP, SSOAuthStep.DONE)
 				.queryParam(SSOConstants.PARAM_SESSION_TOKEN, AppContextUtil.getTraceId());
 		result.setTargetUrl(builder.getURL(), Target._BLANK);
 		return JsonUtil.toJson(result);
@@ -184,7 +185,7 @@ public class SSOAppController {
 		SecurityContextHolder.getContext().setAuthentication(null);
 		ssoUser.setAuthDone(false);
 		AmxApiResponse<Object, Model> result = AmxApiResponse.buildMeta(model);
-		String redirectUrl = "/";
+		String redirectUrl = appConfig.getAppPrefix();
 		result.setRedirectUrl(redirectUrl);
 		if (redirect) {
 			response.setHeader("Location", redirectUrl);
