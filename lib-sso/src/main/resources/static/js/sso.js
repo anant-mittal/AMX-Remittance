@@ -22,7 +22,7 @@ function sendData(step){
 		if(errorFields !== 0) return;
 	} else if(selectedMode === WITHOUT_SMART_CARD){
 		var errorFields = 0;
-		$(".withoutSmartCard input[type='text']:not([readonly]), .withSmartCard input.scan-input").each(function(){
+		$(".withoutSmartCard input[type='text']:not([readonly]), .withoutSmartCard input.scan-input").each(function(){
 			$(this).attr('')
 			if($(this).val() === ""){
 				errorFields = errorFields + 1;
@@ -94,6 +94,7 @@ function uiAction(step){
 		case "UI.CLEAR":
 			$(".form-wrapper input[type='text']").val('');
 			//$(".prefix").text("---");
+			$('input[name="cardtype"][value="SELF"]').attr('checked', true);
 			$(".form-wrapper .error-message").text('').hide();
 			break;
 	}
