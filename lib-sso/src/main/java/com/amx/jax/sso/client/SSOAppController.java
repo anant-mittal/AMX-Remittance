@@ -62,7 +62,8 @@ public class SSOAppController {
 
 	@ApiSSOStatus({ SSOServerCodes.AUTH_REQUIRED, SSOServerCodes.AUTH_DONE })
 	@ResponseBody
-	@RequestMapping(value = SSOConstants.APP_LOGIN_URL_START, method = { RequestMethod.GET })
+	@RequestMapping(value = SSOConstants.APP_LOGIN_URL_START, method = { RequestMethod.GET }, produces = {
+			CommonMediaType.APPLICATION_JSON_VALUE, CommonMediaType.APPLICATION_V0_JSON_VALUE })
 	public String loginJSONStart(
 			@RequestParam String sotp, @RequestParam(required = false) String returnUrld, HttpServletRequest request,
 			HttpServletResponse response) throws MalformedURLException, URISyntaxException {
@@ -84,7 +85,8 @@ public class SSOAppController {
 
 	@ApiSSOStatus({ SSOServerCodes.AUTH_REQUIRED, SSOServerCodes.AUTH_DONE })
 	@ResponseBody
-	@RequestMapping(value = SSOConstants.APP_LOGIN_URL_SESSION, method = { RequestMethod.POST })
+	@RequestMapping(value = SSOConstants.APP_LOGIN_URL_SESSION, method = { RequestMethod.POST }, produces = {
+			CommonMediaType.APPLICATION_JSON_VALUE, CommonMediaType.APPLICATION_V0_JSON_VALUE })
 	public String loginJSONPreAuth(@RequestParam String targetUrl, HttpServletRequest request,
 			HttpServletResponse response) throws MalformedURLException, URISyntaxException {
 		AmxApiResponse<Object, Map<String, Object>> result = AmxApiResponse.buildMeta(new HashMap<String, Object>());
@@ -98,7 +100,8 @@ public class SSOAppController {
 
 	@ApiSSOStatus({ SSOServerCodes.AUTH_REQUIRED, SSOServerCodes.AUTH_DONE })
 	@ResponseBody
-	@RequestMapping(value = SSOConstants.APP_LOGIN_URL_VERYFY, method = { RequestMethod.GET })
+	@RequestMapping(value = SSOConstants.APP_LOGIN_URL_VERYFY, method = { RequestMethod.GET }, produces = {
+			CommonMediaType.APPLICATION_JSON_VALUE, CommonMediaType.APPLICATION_V0_JSON_VALUE })
 	public String loginJSONVerify(
 			@RequestParam String sotp, HttpServletRequest request,
 			HttpServletResponse response) throws MalformedURLException, URISyntaxException {
