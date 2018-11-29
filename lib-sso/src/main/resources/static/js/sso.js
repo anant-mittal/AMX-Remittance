@@ -167,7 +167,7 @@ function fetchCardDetails() {
 			}
 
 			if (resp.results && resp.results[0] && resp.results[0].identity) {
-				if(selectedMode == WITHOUT_SMART_CARD && WITHOUT_SMART_CARD_USER_VERIFIED){
+				if(selectedMode == WITHOUT_SMART_CARD){
 					$("[name=partner-identity]").val(resp.results[0].identity);
 				} else {
 					$("[name=identity]").val(resp.results[0].identity);
@@ -193,9 +193,8 @@ $(function(){
 })
 
 function dummyData(){
-	$(".SELF [name='identity']").val('282102202584')
-	$(".SELF [name='ecnumber']").val('235474')
-	$(".ASSISTED [name='identity']").val('282102202584')
-	$(".ASSISTED [name='ecnumber']").val('235474')
-	$(".ASSISTED [name='partner-identity']").val('287070110425')
+	var selectedMode = $("input[name='cardtype']:checked").val();
+	$("."+selectedMode+" [name='identity']").val('282102202584')
+	$("."+selectedMode+" [name='ecnumber']").val('235474')
+	$("."+selectedMode+" [name='partner-identity']").val('287070110425')
 }
