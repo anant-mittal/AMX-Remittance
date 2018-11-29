@@ -83,8 +83,8 @@ public class SSOServerController {
 		map.put(AppConstants.TRANX_ID_XKEY_CLEAN, AppContextUtil.getTranxId());
 		map.put(SSOConstants.PARAM_SSO_LOGIN_URL, appConfig.getAppPrefix() + SSOConstants.SSO_LOGIN_URL_DO);
 		map.put(SSOConstants.PARAM_SSO_LOGIN_PREFIX, appConfig.getAppPrefix());
-		map.put(AppConstants.SECURITY_CODE_KEY, Random.randomAlpha(3));
-		map.put(AppConstants.PARTNER_SECURITY_CODE_KEY, Random.randomAlpha(3));
+		map.put(SSOConstants.SECURITY_CODE_KEY, Random.randomAlpha(3));
+		map.put(SSOConstants.PARTNER_SECURITY_CODE_KEY, Random.randomAlpha(3));
 		return map;
 	}
 

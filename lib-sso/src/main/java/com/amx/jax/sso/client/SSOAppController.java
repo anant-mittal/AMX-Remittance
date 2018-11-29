@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.amx.jax.AppConfig;
 import com.amx.jax.AppConstants;
 import com.amx.jax.AppContextUtil;
+import com.amx.jax.api.AResponse.Target;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.http.CommonHttpRequest.CommonMediaType;
 import com.amx.jax.sso.SSOConstants;
@@ -91,7 +92,7 @@ public class SSOAppController {
 		URLBuilder builder = new URLBuilder(targetUrl).queryParam(AppConstants.TRANX_ID_XKEY, tranxId)
 				.queryParam(SSOConstants.PARAM_SOTP, sSOTranx.get().getAppToken())
 				.queryParam(SSOConstants.PARAM_SESSION_TOKEN, AppContextUtil.getTraceId());
-		result.setNewTabUrl(builder.getURL());
+		result.setTargetUrl(builder.getURL(), Target._BLANK);
 		return JsonUtil.toJson(result);
 	}
 

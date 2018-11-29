@@ -42,7 +42,5 @@ public class AppConstants extends Constants {
 	public static final String APP_DETAILS = "app";
 	public static final String BROWSER_ID_KEY = "bid";
 	public static final String SESSIONID = "JSESSIONID";
-	
-	public static final String SECURITY_CODE_KEY = "sec_code";
-	public static final String PARTNER_SECURITY_CODE_KEY = "partner_sec_code";
+
 }
