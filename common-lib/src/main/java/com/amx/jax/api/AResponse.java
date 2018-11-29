@@ -35,9 +35,18 @@ public abstract class AResponse<M> implements ApiMetaResponse<M> {
 		this.redirectUrl = redirectUrl;
 	}
 
+	public static enum Target {
+		_BLANK, _SELF, _PARENT, _TOP, _IFRAME
+	}
+
+	/**
+	 * target="_blank|_self|_parent|_top|framename"
+	 * 
+	 * @param redirectUrl
+	 */
 	@JsonIgnore
-	public void setOpenUrl(String redirectUrl) {
-		this.redirectUrl = "open:" + redirectUrl;
+	public void setTargetUrl(String redirectUrl, Target target) {
+		this.redirectUrl = target + ":" + redirectUrl;
 	}
 
 	protected String messageKey;

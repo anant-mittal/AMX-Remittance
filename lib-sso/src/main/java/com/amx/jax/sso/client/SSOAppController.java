@@ -91,7 +91,7 @@ public class SSOAppController {
 		URLBuilder builder = new URLBuilder(targetUrl).queryParam(AppConstants.TRANX_ID_XKEY, tranxId)
 				.queryParam(SSOConstants.PARAM_SOTP, sSOTranx.get().getAppToken())
 				.queryParam(SSOConstants.PARAM_SESSION_TOKEN, AppContextUtil.getTraceId());
-		result.setRedirectUrl(builder.getURL());
+		result.setNewTabUrl(builder.getURL());
 		return JsonUtil.toJson(result);
 	}
 
