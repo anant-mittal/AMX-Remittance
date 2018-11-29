@@ -31,9 +31,9 @@ public class PipsMasterDao {
 		onlineBranch.setCountryBranchId(countryBranchId);
 		return repo.getPipsMasterForBranch(onlineBranch, new CurrencyMasterModel(toCurrency));
 	}
-	
-	
-	public List<PipsMaster> getPipsMasterForBranch(ExchangeRateApprovalDetModel exchangeRate, BigDecimal fcAmount, BigDecimal countryBranchId) {
+
+	public List<PipsMaster> getPipsMasterForBranch(ExchangeRateApprovalDetModel exchangeRate, BigDecimal fcAmount,
+			BigDecimal countryBranchId) {
 		CountryBranch onlineBranch = new CountryBranch();
 		onlineBranch.setCountryBranchId(exchangeRate.getCountryBranchId());
 		CountryBranch countryBranch = new CountryBranch();
@@ -48,23 +48,25 @@ public class PipsMasterDao {
 				fcAmount);
 		return list;
 	}
-	
 
-	public List<PipsMaster> getPipsMaster(BigDecimal toCurrency, BigDecimal lcAmount, BigDecimal countryBranchId,
-			List<BigDecimal> validBankIds) {
-		return repo.getPipsMasterForOnline(toCurrency, countryBranchId, lcAmount, validBankIds);
+	public List<PipsMaster> getPipsMasterForLcCur(BigDecimal toCurrency, BigDecimal lcAmount,
+			BigDecimal countryBranchId, List<BigDecimal> validBankIds) {
+		return repo.getPipsMasterForLcCurOnline(toCurrency, countryBranchId, lcAmount, validBankIds);
 	}
-	
 
-	public List<PipsMaster> getPipsMasterForLocalAmount(BigDecimal toCurrency, BigDecimal lcAmount, BigDecimal countryBranchId, BigDecimal bankId) {
+	public List<PipsMaster> getPipsMasterForFcCur(BigDecimal toCurrency, BigDecimal fcAmount,
+			BigDecimal countryBranchId, List<BigDecimal> validBankIds) {
+		return repo.getPipsMasterForFcCurOnline(toCurrency, countryBranchId, fcAmount, validBankIds);
+	}
+
+	public List<PipsMaster> getPipsMasterForLocalAmount(BigDecimal toCurrency, BigDecimal lcAmount,
+			BigDecimal countryBranchId, BigDecimal bankId) {
 		return repo.getPipsMasterForLocalAmount(toCurrency, countryBranchId, lcAmount, bankId);
 	}
-	
+
 	public List<PipsMaster> getPipsMasterForForeignAmount(BigDecimal toCurrency, BigDecimal fcAmount,
 			BigDecimal countryBranchId, BigDecimal bankId) {
 		return repo.getPipsMasterForForeignAmount(toCurrency, countryBranchId, fcAmount, bankId);
 	}
-	
-	
 
 }
