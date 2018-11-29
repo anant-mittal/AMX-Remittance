@@ -189,11 +189,9 @@ public class FcSaleOrderController implements IFxOrderService {
 		return fcSaleService.getFxOrderTransactionStatus(documentIdForPayment);
 	}
 
-	
-	
 	@RequestMapping(value = Path.FC_SALE_ORDER_ADD_TYPE, method = RequestMethod.GET)
-	public AmxApiResponse<AddressTypeDto, Object> getAddressTypeList() throws Exception {
+	public AmxApiResponse<AddressTypeDto, Object> getAddressTypeList() {
 		return fcSaleService.getAddressTypeList();
 	}
-	
+
 }

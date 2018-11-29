@@ -166,7 +166,7 @@ public class FxOrderController {
 			@RequestParam(required = false) BigDecimal collectionDocumentFinYear,
 			@PathVariable("ext") File.Type ext,
 			@RequestParam(required = false) Boolean duplicate,
-			HttpServletResponse response) throws IOException {
+			HttpServletResponse response) {
 
 		duplicate = ArgUtil.parseAsBoolean(duplicate, false);
 

@@ -47,8 +47,6 @@ public interface IFxOrderService extends IJaxService {
 		public static final String FC_SALE_ORDER_ADD_TYPE = PREFIX + "/fc-sale-order-address-type/";
 	}
 
-
-	
 	public static class Params {
 
 		public static final String TERMINAL_ID = "countryBranchSystemInventoryId";
@@ -60,7 +58,6 @@ public interface IFxOrderService extends IJaxService {
 		public static final String COLLECTION_DOC_NO = "collectionDocNo";
 		public static final String COLLECTION_FYEAR = "collectionFyear";
 		public static final String DOCUMENT_ID_FOR_PAYMENT = "documentIdForPayment";
-		
 
 	}
 
@@ -121,23 +118,26 @@ public interface IFxOrderService extends IJaxService {
 	AmxApiResponse<FxOrderShoppingCartResponseModel, Object> fetchShoppingCartList();
 
 	@ApiJaxStatus({ JaxError.NULL_APPLICATION_ID })
-	AmxApiResponse<FcSaleApplPaymentReponseModel, Object> getSavePayNowApplication(FcSaleOrderPaynowRequestModel requestModel);
+	AmxApiResponse<FcSaleApplPaymentReponseModel, Object> getSavePayNowApplication(
+			FcSaleOrderPaynowRequestModel requestModel);
 
 	@ApiJaxStatus({ JaxError.NULL_APPLICATION_ID })
-	AmxApiResponse<FcSaleOrderApplicationResponseModel, Object> removeItemFromCart(BigDecimal applicationId)throws Exception;
-	
+	AmxApiResponse<FcSaleOrderApplicationResponseModel, Object> removeItemFromCart(BigDecimal applicationId);
+
 	@ApiJaxStatus({ JaxError.NULL_APPLICATION_ID })
-	AmxApiResponse<PaymentResponseDto, Object> savePaymentId(PaymentResponseDto paymentRequestDto)throws Exception;
-	
-	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND })
-	AmxApiResponse<FxOrderTransactionHistroyDto, Object> getFxOrderTransactionHistroy()throws Exception;
-	
-	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND })
-	AmxApiResponse<FxOrderReportResponseDto, Object> getFxOrderTransactionReport(BigDecimal collectionDocNo,BigDecimal collectionFyear)throws Exception;
+	AmxApiResponse<PaymentResponseDto, Object> savePaymentId(PaymentResponseDto paymentRequestDto);
 
 	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND })
-	AmxApiResponse<FxOrderTransactionStatusResponseDto,Object> getFxOrderTransactionStatus(BigDecimal documentIdForPayment);
-	
-	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND, JaxError.ADDRESS_TYPE_SETUP_IS_MISSING})
-	public AmxApiResponse<AddressTypeDto, Object> getAddressTypeList() throws Exception;
+	AmxApiResponse<FxOrderTransactionHistroyDto, Object> getFxOrderTransactionHistroy();
+
+	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND })
+	AmxApiResponse<FxOrderReportResponseDto, Object> getFxOrderTransactionReport(BigDecimal collectionDocNo,
+			BigDecimal collectionFyear);
+
+	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND })
+	AmxApiResponse<FxOrderTransactionStatusResponseDto, Object> getFxOrderTransactionStatus(
+			BigDecimal documentIdForPayment);
+
+	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND, JaxError.ADDRESS_TYPE_SETUP_IS_MISSING })
+	public AmxApiResponse<AddressTypeDto, Object> getAddressTypeList();
 }
