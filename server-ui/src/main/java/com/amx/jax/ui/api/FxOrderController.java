@@ -1,14 +1,17 @@
 
 package com.amx.jax.ui.api;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -20,6 +23,7 @@ import com.amx.jax.client.fx.FcSaleOrderClient;
 import com.amx.jax.client.fx.IFxOrderService;
 import com.amx.jax.client.fx.IFxOrderService.Params;
 import com.amx.jax.dict.AmxEnums;
+import com.amx.jax.http.CommonHttpRequest.CommonMediaType;
 import com.amx.jax.model.request.CustomerShippingAddressRequestModel;
 import com.amx.jax.model.request.fx.FcSaleOrderPaynowRequestModel;
 import com.amx.jax.model.request.fx.FcSaleOrderTransactionRequestModel;
@@ -37,9 +41,14 @@ import com.amx.jax.model.response.fx.ShippingAddressDto;
 import com.amx.jax.model.response.fx.TimeSlotDto;
 import com.amx.jax.payg.PayGService;
 import com.amx.jax.payg.Payment;
+import com.amx.jax.postman.PostManService;
+import com.amx.jax.postman.model.File;
+import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.swagger.IStatusCodeListPlugin.ApiStatusService;
 import com.amx.jax.ui.response.ResponseWrapper;
+import com.amx.utils.ArgUtil;
 import com.amx.utils.HttpUtils;
+import com.amx.utils.JsonUtil;
 
 import io.swagger.annotations.Api;
 
@@ -56,6 +65,9 @@ public class FxOrderController {
 
 	@Autowired
 	private PayGService payGService;
+
+	@Autowired
+	private PostManService postManService;
 
 	@RequestMapping(value = "/api/fxo/purpose/list", method = { RequestMethod.GET })
 	public ResponseWrapper<List<PurposeOfTransactionDto>> getFcPurposeofTrnx() {
@@ -120,22 +132,22 @@ public class FxOrderController {
 	public ResponseWrapper<FcSaleApplPaymentReponseModel> getSavePayNowApplication(
 			@RequestBody FcSaleOrderPaynowRequestModel requestModel,
 			HttpServletRequest request) throws MalformedURLException, URISyntaxException {
-		AmxApiResponse<FcSaleApplPaymentReponseModel, Object> wrapper = fcSaleOrderClient
-				.getSavePayNowApplication(requestModel);
-		FcSaleApplPaymentReponseModel x = fcSaleOrderClient.getSavePayNowApplication(requestModel).getResult();
+
+		ResponseWrapper<FcSaleApplPaymentReponseModel> wrapper = ResponseWrapper
+				.build(fcSaleOrderClient.getSavePayNowApplication(requestModel));
+
 		Payment payment = new Payment();
-		payment.setDocFinYear(x.getDocumentFinancialYear());
-		payment.setDocNo(x.getDocumentIdForPayment());
-		payment.setMerchantTrackId(x.getMerchantTrackId());
-		payment.setNetPayableAmount(x.getNetPayableAmount());
-		payment.setPgCode(x.getPgCode());
+		payment.setDocFinYear(wrapper.getData().getDocumentFinancialYear());
+		payment.setDocNo(wrapper.getData().getDocumentIdForPayment());
+		payment.setMerchantTrackId(wrapper.getData().getMerchantTrackId());
+		payment.setNetPayableAmount(wrapper.getData().getNetPayableAmount());
+		payment.setPgCode(wrapper.getData().getPgCode());
 		payment.setProduct(AmxEnums.Products.FXORDER);
 
-		ResponseWrapper<FcSaleApplPaymentReponseModel> newWrapper = ResponseWrapper.build(wrapper);
-		newWrapper.redirectUrl(payGService.getPaymentUrl(payment,
+		wrapper.redirectUrl(payGService.getPaymentUrl(payment,
 				HttpUtils.getServerName(request)
 						+ "/app/landing/fxorder"));
-		return newWrapper;
+		return wrapper;
 	}
 
 	@RequestMapping(value = "/api/fxo/tranx/list", method = RequestMethod.GET)
@@ -143,13 +155,38 @@ public class FxOrderController {
 		return ResponseWrapper.buildList(fcSaleOrderClient.getFxOrderTransactionHistroy());
 	}
 
-	@RequestMapping(value = "/api/fxo/tranx/report", method = RequestMethod.GET)
-	public ResponseWrapper<FxOrderReportResponseDto> getFxOrderTransactionReport(
+	@RequestMapping(value = "/api/fxo/tranx/report.{ext}", method = RequestMethod.GET, produces = {
+			CommonMediaType.APPLICATION_JSON_VALUE, CommonMediaType.APPLICATION_V0_JSON_VALUE,
+			CommonMediaType.APPLICATION_PDF_VALUE, CommonMediaType.TEXT_HTML_VALUE })
+	public String getFxOrderTransactionReport(
 			@RequestParam(required = false) BigDecimal collectionDocumentCode,
-			@RequestParam(required = false) BigDecimal collectionDocumentFinYear) {
-		return ResponseWrapper
+			@RequestParam(required = false) BigDecimal collectionDocumentFinYear,
+			@PathVariable("ext") String ext,
+			@RequestParam(required = false) Boolean duplicate,
+			HttpServletResponse response) throws IOException {
+
+		duplicate = ArgUtil.parseAsBoolean(duplicate, false);
+
+		ResponseWrapper<FxOrderReportResponseDto> wrapper = ResponseWrapper
 				.build(fcSaleOrderClient.getFxOrderTransactionReport(collectionDocumentCode,
 						collectionDocumentFinYear));
+		if ("pdf".equals(ext)) {
+			File file = postManService.processTemplate(
+					new File(duplicate ? TemplatesMX.FXO_RECEIPT : TemplatesMX.FXO_RECEIPT,
+							wrapper, File.Type.PDF))
+					.getResult();
+			file.create(response, false);
+			return null;
+		} else if ("html".equals(ext)) {
+			File file = postManService.processTemplate(
+					new File(duplicate ? TemplatesMX.FXO_RECEIPT : TemplatesMX.FXO_RECEIPT,
+							wrapper, null))
+					.getResult();
+			return file.getContent();
+		} else {
+			return JsonUtil.toJson(wrapper);
+		}
+
 	}
 
 	@RequestMapping(value = "/api/fxo/tranx/status", method = RequestMethod.GET)
