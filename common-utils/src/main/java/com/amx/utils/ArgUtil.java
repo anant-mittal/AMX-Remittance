@@ -7,7 +7,9 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -517,18 +519,18 @@ public final class ArgUtil {
 			return null;
 		}
 		String enumStringCaps = enumString.toUpperCase();
-		if (defaultValue instanceof EnumById) {
+		if (defaultValue instanceof EnumType) {
 			for (Object enumValue : defaultValue.getClass().getEnumConstants()) {
-				if (enumString.equals(((EnumById) enumValue).getId())
-						|| enumStringCaps.equals(((EnumById) enumValue).getId())) {
+				if (enumString.equals(((EnumType) enumValue).name())
+						|| enumStringCaps.equals(((EnumType) enumValue).name())) {
 					return (Enum) enumValue;
 				}
 			}
 			return defaultValue;
-		} else if (defaultValue instanceof EnumType) {
+		} else if (defaultValue instanceof EnumById) {
 			for (Object enumValue : defaultValue.getClass().getEnumConstants()) {
-				if (enumString.equals(((EnumType) enumValue).name())
-						|| enumStringCaps.equals(((EnumType) enumValue).name())) {
+				if (enumString.equals(((EnumById) enumValue).getId())
+						|| enumStringCaps.equals(((EnumById) enumValue).getId())) {
 					return (Enum) enumValue;
 				}
 			}
@@ -559,6 +561,33 @@ public final class ArgUtil {
 			LOGGER.error("Enum Cast Exception", e);
 		}
 		return null;
+	}
+
+	public static <T extends Enum> T parseAsEnumIgnoreCase(Object source, Class<T> enumType) {
+		String sourceStr = parseAsString(source);
+		if (sourceStr.isEmpty()) {
+			return null;
+		}
+		sourceStr = sourceStr.trim();
+		try {
+			return (T) Enum.valueOf(enumType, sourceStr);
+		} catch (Exception ex) {
+			String name = getLettersAndDigits(sourceStr);
+			for (T candidate : (Set<T>) EnumSet.allOf(enumType)) {
+				if (getLettersAndDigits(candidate.name()).equals(name)) {
+					return candidate;
+				}
+			}
+			throw new IllegalArgumentException("No enum constant "
+					+ enumType.getCanonicalName() + "." + source);
+		}
+	}
+
+	private static String getLettersAndDigits(String name) {
+		StringBuilder canonicalName = new StringBuilder(name.length());
+		name.chars().map((c) -> (char) c).filter(Character::isLetterOrDigit)
+				.map(Character::toLowerCase).forEach(canonicalName::append);
+		return canonicalName.toString();
 	}
 
 	public static <T extends Enum<T>> T[] parseAsEnumArray(Object value, Type componentType) {

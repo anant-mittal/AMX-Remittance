@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import com.amx.jax.dict.Language;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.postman.model.ITemplates.ITemplate;
+import com.amx.utils.EnumType;
 import com.amx.utils.JsonUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSetter;
@@ -21,7 +22,7 @@ public class File {
 
 	private static Logger LOGGER = LoggerService.getLogger(File.class);
 
-	public enum Type {
+	public enum Type implements EnumType {
 		PDF("application/pdf"), CSV("text/csv"),
 
 		PNG("image/png"), JPEG("image/jpeg"), JPG("image/jpg"),

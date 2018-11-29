@@ -164,20 +164,16 @@ public class FxOrderController {
 	public ResponseEntity<byte[]> getFxOrderTransactionReport(
 			@RequestParam(required = false) BigDecimal collectionDocumentCode,
 			@RequestParam(required = false) BigDecimal collectionDocumentFinYear,
-			@PathVariable("ext") String ext,
+			@PathVariable("ext") File.Type ext,
 			@RequestParam(required = false) Boolean duplicate,
 			HttpServletResponse response) throws IOException {
 
 		duplicate = ArgUtil.parseAsBoolean(duplicate, false);
 
-		ResponseWrapper<FxOrderReportResponseDto> wrapper = new ResponseWrapper<FxOrderReportResponseDto>(
-				new FxOrderReportResponseDto());
+		AmxApiResponse<FxOrderReportResponseDto, Object> wrapper = fcSaleOrderClient.getFxOrderTransactionReport(
+				collectionDocumentCode, collectionDocumentFinYear);
 
-//				ResponseWrapper
-//				.build(fcSaleOrderClient.getFxOrderTransactionReport(collectionDocumentCode,
-//						collectionDocumentFinYear));
-
-		if ("pdf".equals(ext)) {
+		if (File.Type.PDF.equals(ext)) {
 			File file = postManService.processTemplate(
 					new File(duplicate ? TemplatesMX.FXO_RECEIPT : TemplatesMX.FXO_RECEIPT,
 							wrapper, File.Type.PDF))
@@ -187,7 +183,7 @@ public class FxOrderController {
 			return ResponseEntity.ok().contentLength(file.getBody().length)
 					.contentType(MediaType.valueOf(file.getType().getContentType())).body(file.getBody());
 
-		} else if ("html".equals(ext)) {
+		} else if (File.Type.HTML.equals(ext)) {
 			File file = postManService.processTemplate(
 					new File(duplicate ? TemplatesMX.FXO_RECEIPT : TemplatesMX.FXO_RECEIPT,
 							wrapper, File.Type.HTML))
@@ -197,7 +193,7 @@ public class FxOrderController {
 					.contentType(MediaType.valueOf(file.getType().getContentType())).body(file.getBody());
 		} else {
 			// return JsonUtil.toJson(wrapper);
-			String json = JsonUtil.toJson(wrapper);
+			String json = JsonUtil.toJson(ResponseWrapper.build(wrapper));
 			return ResponseEntity.ok().contentLength(json.length())
 					.contentType(MediaType.valueOf(File.Type.JSON.getContentType())).body(json.getBytes());
 		}
