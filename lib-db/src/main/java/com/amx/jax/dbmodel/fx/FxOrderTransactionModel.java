@@ -102,6 +102,24 @@ public class FxOrderTransactionModel implements Serializable {
 	@Column(name="DELIVERY_CHARGES")
 	private BigDecimal deliveryCharges;
 	
+	@Column(name="SOURCE_OF_INCOME_DESC")
+	private String sourceOfIncomeDesc;
+	
+
+
+	@Column(name="TRAVEL_COUNTRY_NAME")
+	private String travelCountryName;
+	
+	@Column(name="TRAVEL_DATE_RANGE")
+	private String travelDateRange;
+	
+	@Column(name="LOCAL_CURRENCY_ID")
+	private BigDecimal localCurrencyId;
+	
+	@Column(name="LOCAL_CURR_QUOTE_NAME")
+	private String localCurrQuoteName;
+	
+	
 
 	public BigDecimal getIdno() {
 		return idno;
@@ -311,6 +329,46 @@ public class FxOrderTransactionModel implements Serializable {
 
 	public void setDeliveryCharges(BigDecimal deliveryCharges) {
 		this.deliveryCharges = deliveryCharges;
+	}
+
+	public String getSourceOfIncomeDesc() {
+		return sourceOfIncomeDesc;
+	}
+
+	public void setSourceOfIncomeDesc(String sourceOfIncomeDesc) {
+		this.sourceOfIncomeDesc = sourceOfIncomeDesc;
+	}
+
+	public String getTravelCountryName() {
+		return travelCountryName;
+	}
+
+	public void setTravelCountryName(String travelCountryName) {
+		this.travelCountryName = travelCountryName;
+	}
+
+	public String getTravelDateRange() {
+		return travelDateRange;
+	}
+
+	public void setTravelDateRange(String travelDateRange) {
+		this.travelDateRange = travelDateRange;
+	}
+
+	public BigDecimal getLocalCurrencyId() {
+		return localCurrencyId;
+	}
+
+	public void setLocalCurrencyId(BigDecimal localCurrencyId) {
+		this.localCurrencyId = localCurrencyId;
+	}
+
+	public String getLocalCurrQuoteName() {
+		return localCurrQuoteName;
+	}
+
+	public void setLocalCurrQuoteName(String localCurrQuoteName) {
+		this.localCurrQuoteName = localCurrQuoteName;
 	}
 
 }

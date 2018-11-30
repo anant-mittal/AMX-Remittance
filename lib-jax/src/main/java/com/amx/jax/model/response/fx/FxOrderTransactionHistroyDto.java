@@ -3,6 +3,8 @@ package com.amx.jax.model.response.fx;
 import java.math.BigDecimal;
 
 
+
+
 public class FxOrderTransactionHistroyDto {
 	private BigDecimal idno;
 	private BigDecimal customerReference;
@@ -72,6 +74,13 @@ public class FxOrderTransactionHistroyDto {
 	private BigDecimal deliveryCharges;
 	
 	private String createdDate;
+	private String sourceOfIncomeDesc;
+	
+	private String travelCountryName;
+
+	private String travelDateRange;
+	private String localCurrQuoteName;
+	
 
 	public BigDecimal getIdno() {
 		return idno;
@@ -287,5 +296,37 @@ public class FxOrderTransactionHistroyDto {
 
 	public void setCreatedDate(String createdDate) {
 		this.createdDate = createdDate;
+	}
+
+	public String getSourceOfIncomeDesc() {
+		return sourceOfIncomeDesc;
+	}
+
+	public void setSourceOfIncomeDesc(String sourceOfIncomeDesc) {
+		this.sourceOfIncomeDesc = sourceOfIncomeDesc;
+	}
+
+	public String getTravelCountryName() {
+		return travelCountryName;
+	}
+
+	public void setTravelCountryName(String travelCountryName) {
+		this.travelCountryName = travelCountryName;
+	}
+
+	public String getTravelDateRange() {
+		return travelDateRange;
+	}
+
+	public void setTravelDateRange(String travelDateRange) {
+		this.travelDateRange = travelDateRange;
+	}
+
+	public String getLocalCurrQuoteName() {
+		return localCurrQuoteName;
+	}
+
+	public void setLocalCurrQuoteName(String localCurrQuoteName) {
+		this.localCurrQuoteName = localCurrQuoteName;
 	}
 }

@@ -24,20 +24,26 @@ import org.springframework.web.context.WebApplicationContext;
 
 
 
-
+import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constants.JaxTransactionStatus;
 import com.amx.jax.dal.LoyaltyInsuranceProDao;
+import com.amx.jax.dbmodel.CollectionDetailViewModel;
+import com.amx.jax.dbmodel.CollectionPaymentDetailsViewModel;
 import com.amx.jax.dbmodel.CountryMasterView;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.DistrictMaster;
 import com.amx.jax.dbmodel.PaygDetailsModel;
+import com.amx.jax.dbmodel.PaymentModeModel;
 import com.amx.jax.dbmodel.ReceiptPaymentApp;
 import com.amx.jax.dbmodel.ShippingAddressDetail;
 import com.amx.jax.dbmodel.ViewCity;
+import com.amx.jax.dbmodel.ViewCompanyDetails;
 import com.amx.jax.dbmodel.ViewDistrict;
 import com.amx.jax.dbmodel.ViewState;
 import com.amx.jax.dbmodel.fx.FxDeliveryDetailsModel;
 import com.amx.jax.dbmodel.fx.FxOrderTransactionModel;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.response.fx.FxDeliveryDetailDto;
 import com.amx.jax.model.response.fx.FxDeliveryReportDetailDto;
@@ -47,7 +53,12 @@ import com.amx.jax.model.response.fx.FxOrderTransactionStatusResponseDto;
 import com.amx.jax.model.response.fx.PaygDetailsDto;
 import com.amx.jax.model.response.fx.ShippingAddressDto;
 import com.amx.jax.repository.CountryRepository;
+import com.amx.jax.repository.ICollectionDetailRepository;
+import com.amx.jax.repository.ICollectionDetailViewDao;
+import com.amx.jax.repository.ICollectionPaymentDetailsViewDao;
+import com.amx.jax.repository.ICompanyDAO;
 import com.amx.jax.repository.IContactDetailDao;
+import com.amx.jax.repository.ICurrencyDao;
 import com.amx.jax.repository.ICustomerRepository;
 import com.amx.jax.repository.IShippingAddressRepository;
 import com.amx.jax.repository.IViewArea;
@@ -55,10 +66,12 @@ import com.amx.jax.repository.IViewCityDao;
 import com.amx.jax.repository.IViewDistrictDAO;
 import com.amx.jax.repository.IViewStateDao;
 import com.amx.jax.repository.PaygDetailsRepository;
+import com.amx.jax.repository.PaymentModeRepository;
 import com.amx.jax.repository.ReceiptPaymentAppRepository;
 import com.amx.jax.repository.fx.FxDeliveryDetailsRepository;
 import com.amx.jax.repository.fx.FxOrderTransactionRespository;
 import com.amx.jax.util.DateUtil;
+import com.amx.jax.util.RoundUtil;
 
 
 
@@ -115,6 +128,26 @@ public class FxOrderReportManager {
 	@Autowired
 	LoyaltyInsuranceProDao loyaltyInsuranceProDao;
 	
+	@Autowired
+	PaymentModeRepository payModeRepositoy;
+	
+	@Autowired
+	ICollectionDetailRepository collDetailRepos;
+	
+	@Autowired
+	ICompanyDAO iCompanyDao;
+	
+	
+	@Autowired
+	ICollectionDetailViewDao collectionDetailViewDao;
+	
+	@Autowired
+	ICollectionPaymentDetailsViewDao collectionPaymentDetailsViewDao;
+	
+	@Autowired
+	ICurrencyDao currencyDao;
+
+	
 	/**
 	 * 
 	 * @param collNo
@@ -126,8 +159,14 @@ public class FxOrderReportManager {
 		BigDecimal custoemrId = metaData.getCustomerId();
 		BigDecimal companyId = metaData.getCompanyId();
 		BigDecimal countryId = metaData.getCountryId();
+		BigDecimal languageId = metaData.getLanguageId()==null?new BigDecimal(1):metaData.getLanguageId();
 		BigDecimal customerReferenceId = BigDecimal.ZERO;
 		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+		BigDecimal collectionDocNo =BigDecimal.ZERO;
+		BigDecimal collectionDocfyear =BigDecimal.ZERO;
+		BigDecimal collectionDocCode =BigDecimal.ZERO;
+		BigDecimal localCurrency =BigDecimal.ZERO;
+		String localCurrQuoteName ="";
 		String createdDate=""; 
 		String receiptNo = "";
 		String customerName="";
@@ -148,6 +187,11 @@ public class FxOrderReportManager {
 	    	BigDecimal deliveryDetSeqId =fxOrderTrnxList.get(0).getDeliveryDetSeqId() ;
 	    	BigDecimal paygSeqId        = fxOrderTrnxList.get(0).getPagDetSeqId();
 	    	if(fxOrderTrnxList.get(0).getCollectionDocumentNo()!=null && fxOrderTrnxList.get(0).getCollectionDocumentFinYear()!=null){
+	    		collectionDocfyear = fxOrderTrnxList.get(0).getCollectionDocumentFinYear();
+	    		collectionDocNo = fxOrderTrnxList.get(0).getCollectionDocumentNo();
+	    		collectionDocCode = fxOrderTrnxList.get(0).getCollectionDocumentCode();
+	    		localCurrency = fxOrderTrnxList.get(0).getLocalCurrencyId();
+	    		localCurrQuoteName = fxOrderTrnxList.get(0).getLocalCurrQuoteName(); 
 	    		receiptNo =  fxOrderTrnxList.get(0).getCollectionDocumentFinYear().toString()+"/"+fxOrderTrnxList.get(0).getCollectionDocumentNo().toString();
 	    	}
 	    	customerName=fxOrderTrnxList.get(0).getCustomerName(); 
@@ -162,15 +206,131 @@ public class FxOrderReportManager {
 	    		ShippingAddressDto shippingAddressDto = getShippingaddressDetails(shippAddDetails);
 	    		reportModel.setShippingAddressdto(shippingAddressDto);
 	    	}
-	    	if(pgDetailsModel!=null){
+	    	
+	    	
+	    
+			
+			List<ViewCompanyDetails> companyMaster = iCompanyDao.getCompanyDetailsByCompanyId(languageId, companyId);
+			
+			StringBuffer engCompanyInfo = null;
+			StringBuffer arabicCompanyInfo = null;
+			if (!companyMaster .isEmpty()) {
+				engCompanyInfo = new StringBuffer();
+				if (companyMaster.get(0).getEngAddress1()!= null && companyMaster.get(0).getEngAddress1().length() > 0) {
+					engCompanyInfo = engCompanyInfo.append(companyMaster.get(0).getEngAddress1() + ",");
+				}
+				if (companyMaster.get(0).getEngAddress2() != null && companyMaster.get(0).getEngAddress2().length() > 0) {
+					engCompanyInfo = engCompanyInfo.append(companyMaster.get(0).getEngAddress2() + ",");
+				}
+				if (companyMaster.get(0).getEngAddress3() != null && companyMaster.get(0).getEngAddress3().length() > 0) {
+					engCompanyInfo = engCompanyInfo.append(companyMaster.get(0).getEngAddress3() + ",");
+				}
+				if (companyMaster.get(0).getRegistrationNumber() != null && companyMaster.get(0).getRegistrationNumber().length() > 0) {
+					engCompanyInfo = engCompanyInfo.append("C.R. " + companyMaster.get(0).getRegistrationNumber() + ",");
+				}
+				if (companyMaster.get(0).getCapitalAmount() != null && companyMaster.get(0).getCapitalAmount().length() > 0) {
+					engCompanyInfo = engCompanyInfo.append("Share Capital-" + companyMaster.get(0).getCapitalAmount());
+				}
+				reportModel.setEngCompanyInfo(engCompanyInfo.toString());
+
+				arabicCompanyInfo = new StringBuffer();
+
+				if (companyMaster.get(0).getArabicAddress1() != null && companyMaster.get(0).getArabicAddress1().length() > 0) {
+					arabicCompanyInfo = arabicCompanyInfo.append(companyMaster.get(0).getArabicAddress1());
+				}
+				if (companyMaster.get(0).getArabicAddress2() != null && companyMaster.get(0).getArabicAddress2().length() > 0) {
+					arabicCompanyInfo = arabicCompanyInfo.append(companyMaster.get(0).getArabicAddress2() + ",");
+				}
+				if (companyMaster.get(0).getArabicAddress3() != null && companyMaster.get(0).getArabicAddress3().length() > 0) {
+					arabicCompanyInfo = arabicCompanyInfo.append(companyMaster.get(0).getArabicAddress3() + ",");
+				}
+				if (companyMaster.get(0).getRegistrationNumber() != null && companyMaster.get(0).getRegistrationNumber().length() > 0) {
+					arabicCompanyInfo = arabicCompanyInfo.append(ConstantDocument.CR + " " + companyMaster.get(0).getRegistrationNumber() + ",");
+				}
+				if (companyMaster.get(0).getCapitalAmount() != null && companyMaster.get(0).getCapitalAmount().length() > 0) {
+					arabicCompanyInfo = arabicCompanyInfo.append(ConstantDocument.Share_Capital + " " + companyMaster.get(0).getCapitalAmount());
+				}
+				reportModel.setArabicCompanyInfo(arabicCompanyInfo.toString());
+			}
+			
+			int decimalPerCurrency =0;
+			if(localCurrency!=null){
+			 decimalPerCurrency = currencyDao.getCurrencyList(localCurrency).get(0).getDecinalNumber().intValue();
+			}
+			
+			
+			List<CollectionDetailViewModel> collectionDetailList1= collectionDetailViewDao.getCollectionDetailView(companyId,collectionDocNo,collectionDocfyear,collectionDocCode);
+			
+			
+			CollectionDetailViewModel collectionDetailView = collectionDetailList1.get(0);
+
+			if(collectionDetailView.getNetAmount()!=null && localCurrency!=null){
+				BigDecimal collectNetAmount=RoundUtil.roundBigDecimal((collectionDetailView.getNetAmount()),decimalPerCurrency);
+				reportModel.setNetAmount(localCurrQuoteName+"     ******"+collectNetAmount);
+			}
+
+			if(collectionDetailView.getPaidAmount()!=null && localCurrency!=null){
+				BigDecimal collectPaidAmount=RoundUtil.roundBigDecimal((collectionDetailView.getPaidAmount()),decimalPerCurrency);
+				reportModel.setPaidAmount(localCurrQuoteName+"     ******"+collectPaidAmount);
+			}
+
+			if(collectionDetailView.getRefundedAmount()!=null && localCurrency!=null){
+				BigDecimal collectRefundAmount=RoundUtil.roundBigDecimal((collectionDetailView.getRefundedAmount()),decimalPerCurrency);
+				reportModel.setRefundedAmount(localCurrQuoteName+"     ******"+collectRefundAmount);
+			}
+
+			
+		
+			
+			//addedd new column
+			BigDecimal lessLoyaltyEncash = BigDecimal.ZERO;
+			BigDecimal amountPayable = BigDecimal.ZERO;
+			List<CollectionPaymentDetailsViewModel> collectionPmtDetailList= collectionPaymentDetailsViewDao.getCollectedPaymentDetails(companyId,collectionDocNo,collectionDocfyear,collectionDocCode);
+					
+				
+			for(CollectionPaymentDetailsViewModel collPaymentDetailsView: collectionPmtDetailList){
+				if(collPaymentDetailsView.getCollectionMode().equalsIgnoreCase(ConstantDocument.VOCHERCODE)){
+					lessLoyaltyEncash = collPaymentDetailsView.getCollectAmount();
+					amountPayable=amountPayable.add(collPaymentDetailsView.getCollectAmount());
+				}else{
+					amountPayable=amountPayable.add(collPaymentDetailsView.getCollectAmount());
+				}
+				reportModel.setPaymentMode(collPaymentDetailsView.getCollectionModeDesc());
+				reportModel.setKnetReceiptDateTime(collPaymentDetailsView.getKnetReceiptDatenTime());
+				
+			}
+			
+			
+			if(pgDetailsModel!=null){
 	    		PaygDetailsDto pgdto = convertFxPgDetailsDto(pgDetailsModel);
+	    		pgdto.setPaymentMode(reportModel.getPaymentMode());
+	    		pgdto.setKnetReceiptDateTime(reportModel.getKnetreceiptDateTime());
 	    		reportModel.setPayg(pgdto);
 	    	}
+			
+			
+			if(amountPayable!=null && localCurrQuoteName!=null && localCurrency!=null){
+				BigDecimal payable=RoundUtil.roundBigDecimal((amountPayable),currencyDao.getCurrencyList(localCurrency).get(0).getDecinalNumber().intValue());
+				reportModel.setAmountPayable(localCurrQuoteName+"     ******"+payable);
+			}
+
+			
+			
+			
+			
 	    	
+	    	if(fxOrderTrnxList.get(0)!=null){
+	    		reportModel.setDeliveryDate(fxOrderTrnxList.get(0).getDeliveryDate()==null?"":fxOrderTrnxList.get(0).getDeliveryDate());
+	    		reportModel.setDeliveryTime(fxOrderTrnxList.get(0).getDeliveryTime()==null?"":fxOrderTrnxList.get(0).getDeliveryTime());
+	    	}
+	    	
+	    
+	    	reportModel.setDeliveryCharges(RoundUtil.roundBigDecimal(fxOrderTrnxList.get(0).getDeliveryCharges(),decimalPerCurrency));
 	    	reportModel.setReceiptNo(receiptNo);
 	    	reportModel.setCustomerName(customerName);
 	    	reportModel.setPhoneNumber(phoneNo);
 	    	reportModel.setLocation(fxOrderTrnxList.get(0).getBranchDesc());
+	    	reportModel.setLocalCurrency(localCurrQuoteName);
 	    }
 	    
 	    
@@ -316,6 +476,8 @@ public class FxOrderReportManager {
 	} //end 
 		return shippingAddressDto;
 	}
+	
+	
 	
 	
 	private JaxTransactionStatus getJaxTransactionStatus(PaygDetailsModel pgDetailsModel,ReceiptPaymentApp applReceipt) {

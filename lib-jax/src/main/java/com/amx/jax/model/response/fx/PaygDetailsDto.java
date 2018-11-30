@@ -18,6 +18,8 @@ public class PaygDetailsDto {
 	private String pgReceiptDate;
 	private String errorMessage;
 	private String trnxType;
+	private String paymentMode;
+	private String KnetReceiptDateTime;
 	
 
 
@@ -131,6 +133,26 @@ public class PaygDetailsDto {
 
 	public void setResultCode(String resultCode) {
 		this.resultCode = resultCode;
+	}
+
+
+	public String getPaymentMode() {
+		return paymentMode;
+	}
+
+
+	public void setPaymentMode(String paymentMode) {
+		this.paymentMode = paymentMode;
+	}
+
+
+	public String getKnetReceiptDateTime() {
+		return KnetReceiptDateTime;
+	}
+
+
+	public void setKnetReceiptDateTime(String knetReceiptDateTime) {
+		KnetReceiptDateTime = knetReceiptDateTime;
 	}
 
 	
