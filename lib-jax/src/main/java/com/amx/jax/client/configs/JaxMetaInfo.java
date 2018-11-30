@@ -2,15 +2,28 @@ package com.amx.jax.client.configs;
 
 import java.math.BigDecimal;
 
+import com.amx.jax.AmxConfig;
 import com.amx.jax.constants.JaxChannel;
 import com.amx.jax.rest.RequestMetaInfo;
 
 public class JaxMetaInfo extends RequestMetaInfo {
 
+	/**
+	 * @deprecated use {@link AmxConfig#getDefaultCompanyId()}
+	 */
+	@Deprecated
 	public static final String DEFAULT_COMPANY_ID = "1";
 
+	/**
+	 * @deprecated use {@link AmxConfig#getDefaultCurrencyId()}
+	 */
+	@Deprecated
 	public static final String DEFAULT_CURRENCY_ID = "1";
 
+	/**
+	 * @deprecated use {@link AmxConfig#getDefaultBranchId()}
+	 */
+	@Deprecated
 	public static final String DEFAULT_COUNTRY_BRANCH_ID = "78"; // online
 
 	private BigDecimal countryBranchId;

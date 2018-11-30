@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.AmxConfig;
 import com.amx.jax.client.BeneClient;
 import com.amx.jax.client.CustomerRegistrationClient;
 import com.amx.jax.client.ExchangeRateClient;
@@ -19,7 +20,6 @@ import com.amx.jax.client.UserClient;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.rest.IMetaRequestOutFilter;
 import com.amx.jax.scope.TenantContextHolder;
-import com.amx.jax.ui.WebAppConfig;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.ContextUtil;
 
@@ -30,10 +30,6 @@ import com.amx.utils.ContextUtil;
 public class JaxService implements IMetaRequestOutFilter<JaxMetaInfo> {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
-
-	public static final String DEFAULT_COMPANY_ID = "1";
-
-	public static final String DEFAULT_COUNTRY_BRANCH_ID = "78"; // online
 
 	@Autowired
 	private SessionService sessionService;
@@ -151,15 +147,15 @@ public class JaxService implements IMetaRequestOutFilter<JaxMetaInfo> {
 	protected JaxMetaInfo jaxMetaInfo;
 
 	@Autowired
-	protected WebAppConfig webAppConfig;
+	protected AmxConfig amxConfig;
 
 	private void populateCommon(JaxMetaInfo jaxMetaInfo) {
 		jaxMetaInfo.setTenant(TenantContextHolder.currentSite());
 		jaxMetaInfo.setTraceId(ContextUtil.getTraceId());
-		jaxMetaInfo.setCountryId(webAppConfig.getCountryId());
-		jaxMetaInfo.setCompanyId(webAppConfig.getCompanyId());
-		jaxMetaInfo.setLanguageId(webAppConfig.getLanguageId());
-		jaxMetaInfo.setCountryBranchId(webAppConfig.getCountrybranchId());
+		jaxMetaInfo.setCountryId(amxConfig.getDefaultCountryId());
+		jaxMetaInfo.setCompanyId(amxConfig.getDefaultCompanyId());
+		jaxMetaInfo.setLanguageId(amxConfig.getDefaultLanguageId());
+		jaxMetaInfo.setCountryBranchId(amxConfig.getDefaultBranchId());
 	}
 
 	private void populateUser(JaxMetaInfo jaxMetaInfo, BigDecimal customerId) {

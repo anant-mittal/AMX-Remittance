@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.AmxConfig;
 import com.amx.jax.AppConstants;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.constants.JaxChannel;
@@ -36,6 +37,9 @@ public class JaxMetaServiceFilter implements IMetaRequestInFilter<JaxMetaInfo> {
 	private MetaData metaData;
 
 	@Autowired
+	private AmxConfig amxConfig;
+
+	@Autowired
 	CountryBranchService countryBranchService;
 
 	@Autowired
@@ -51,7 +55,7 @@ public class JaxMetaServiceFilter implements IMetaRequestInFilter<JaxMetaInfo> {
 			JaxMetaInfo metaInfoMap;
 			try {
 				metaInfoMap = new ObjectMapper().readValue(metaInfo, JaxMetaInfo.class);
-				metaData.setDefaultCurrencyId(new BigDecimal(1));// TODO: get currencyId from above countryId from db
+				metaData.setDefaultCurrencyId(amxConfig.getDefaultCurrencyId());
 				BeanUtils.copyProperties(metaData, metaInfoMap);
 				MDC.put("customer-id", metaData.getCustomerId());
 				logger.debug("Referrer = {}", metaData.getReferrer());
@@ -67,14 +71,13 @@ public class JaxMetaServiceFilter implements IMetaRequestInFilter<JaxMetaInfo> {
 	public void inFilter(JaxMetaInfo metaInfoMap) {
 		if (!ArgUtil.isEmpty(metaInfoMap)) {
 			try {
-				metaData.setDefaultCurrencyId(new BigDecimal(1));// TODO: get currencyId from above countryId from db
+				metaData.setDefaultCurrencyId(amxConfig.getDefaultCurrencyId());
 				BeanUtils.copyProperties(metaData, metaInfoMap);
 				MDC.put("customer-id", metaData.getCustomerId());
 				logger.debug("Referrer = {}", metaData.getReferrer());
 			} catch (IllegalAccessException | InvocationTargetException e) {
 				logger.error("Meta Exception", e);
 			}
-
 		}
 		resolveMetaDataFields();
 	}
@@ -86,12 +89,29 @@ public class JaxMetaServiceFilter implements IMetaRequestInFilter<JaxMetaInfo> {
 				metaData.setCountryBranchId(cb.getCountryBranchId());
 			}
 		}
+
 		if (metaData.getLanguageId() != null) {
 			ViewCompanyDetails company = companyService.getCompanyDetail(metaData.getLanguageId());
 			metaData.setCompanyId(company.getCompanyId());
 			BigDecimal defaultCurrencyId = currencyMasterService
 					.getCurrencyMasterByCountryId(company.getApplicationCountryId()).get(0).getCurrencyId();
 			metaData.setDefaultCurrencyId(defaultCurrencyId);
+		}
+
+		if (ArgUtil.isEmpty(metaData.getCountryId())) {
+			metaData.setCountryId(amxConfig.getDefaultCountryId());
+		}
+		if (ArgUtil.isEmpty(metaData.getLanguageId())) {
+			metaData.setLanguageId(amxConfig.getDefaultLanguageId());
+		}
+		if (ArgUtil.isEmpty(metaData.getCompanyId())) {
+			metaData.setCompanyId(amxConfig.getDefaultCompanyId());
+		}
+		if (ArgUtil.isEmpty(metaData.getDefaultCurrencyId())) {
+			metaData.setDefaultCurrencyId(amxConfig.getDefaultCurrencyId());
+		}
+		if (ArgUtil.isEmpty(metaData.getCountryBranchId())) {
+			metaData.setCountryBranchId(amxConfig.getDefaultBranchId());
 		}
 
 	}
