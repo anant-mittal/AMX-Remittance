@@ -280,7 +280,7 @@ public class FcSaleService extends AbstractService {
 	
 	/** To save Knet details **/
 	public AmxApiResponse<PaymentResponseDto,Object> savePaymentId(PaymentResponseDto paymentRequestDto){
-		validation.validateHeaderInfo();
+		//validation.validateHeaderInfo();
 		PaymentResponseDto paymentResponseDto =paymentManager.paymentCapture(paymentRequestDto); 
 		return AmxApiResponse.build(paymentResponseDto);
 	}
