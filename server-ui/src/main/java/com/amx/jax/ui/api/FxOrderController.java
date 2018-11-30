@@ -131,15 +131,15 @@ public class FxOrderController {
 	}
 
 	@RequestMapping(value = "/api/fxo/address/update", method = { RequestMethod.POST })
-	public ResponseWrapper<CustomerShippingAddressRequestModel> updateFcSaleShippingAddress(
-			@RequestBody CustomerShippingAddressRequestModel requestModel) {
-		return ResponseWrapper.build(fcSaleOrderClient.saveFcSaleShippingAddress(requestModel));
+	public ResponseWrapper<ShippingAddressDto> editShippingAddress(
+			@RequestBody ShippingAddressDto requestModel) {
+		return ResponseWrapper.build(fcSaleOrderClient.editShippingAddress(requestModel));
 	}
 
 	@RequestMapping(value = "/api/fxo/address/delete", method = { RequestMethod.POST })
-	public ResponseWrapper<CustomerShippingAddressRequestModel> deleteFcSaleShippingAddress(
-			@RequestBody CustomerShippingAddressRequestModel requestModel) {
-		return ResponseWrapper.build(fcSaleOrderClient.saveFcSaleShippingAddress(requestModel));
+	public ResponseWrapper<ShippingAddressDto> deleteFcSaleAddress(
+			@RequestParam BigDecimal addressId) {
+		return ResponseWrapper.build(fcSaleOrderClient.deleteFcSaleAddress(addressId));
 	}
 
 	@RequestMapping(value = "/api/fxo/slots/list", method = RequestMethod.GET)
