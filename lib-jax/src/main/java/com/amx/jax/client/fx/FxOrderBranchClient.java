@@ -35,7 +35,7 @@ public class FxOrderBranchClient implements IFxBranchOrderService {
 	public AmxApiResponse<FcSaleOrderManagementDTO,Object> fetchBranchOrderManagement() {
 		try {
 			LOGGER.debug("in fetchBranchOrderManagement :");
-			return restService.ajax(appConfig.getJaxURL() + Path.FC_PENDING_ORDER_MANAGEMENT).get()
+			return restService.ajax(appConfig.getJaxURL() + Path.FC_PENDING_ORDER_MANAGEMENT).meta(new JaxMetaInfo()).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<FcSaleOrderManagementDTO, Object>>() {
 					});
 		} catch (Exception e) {
@@ -90,7 +90,7 @@ public class FxOrderBranchClient implements IFxBranchOrderService {
 	public AmxApiResponse<UserStockDto,Object> fetchBranchStockDetails() {
 		try {
 			LOGGER.debug("in fetchBranchOrderManagement :");
-			return restService.ajax(appConfig.getJaxURL() + Path.FC_FETCH_STOCK).get()
+			return restService.ajax(appConfig.getJaxURL() + Path.FC_FETCH_STOCK).meta(new JaxMetaInfo()).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<UserStockDto,Object>>() {
 					});
 		} catch (Exception e) {
@@ -107,7 +107,7 @@ public class FxOrderBranchClient implements IFxBranchOrderService {
 	public AmxApiResponse<FcEmployeeDetailsDto,Object> fetchBranchEmployee() {
 		try {
 			LOGGER.debug("in fetchBranchEmployee :");
-			return restService.ajax(appConfig.getJaxURL() + Path.FC_EMLOYEE_DRIVERS).get()
+			return restService.ajax(appConfig.getJaxURL() + Path.FC_EMLOYEE_DRIVERS).meta(new JaxMetaInfo()).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<FcEmployeeDetailsDto,Object>>() {
 					});
 		} catch (Exception e) {
