@@ -31,7 +31,8 @@ import com.amx.jax.dbmodel.ViewState;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.AbstractModel;
-import com.amx.jax.model.ResourceDto;
+import com.amx.jax.model.ResourceDTO;
+
 import com.amx.jax.model.request.CustomerShippingAddressRequestModel;
 import com.amx.jax.model.response.fx.AddressTypeDto;
 import com.amx.jax.model.response.fx.ShippingAddressDto;
@@ -396,12 +397,12 @@ public class FcSaleAddressManager extends AbstractModel {
 	
 	
 	
-	
+/*	
 	public ResourceDto getDbObject(BigDecimal Id,Object Object){
 		ResourceDto dto  =new ResourceDto();
 		dto.setId(Id);
 		dto.setName(Object);
 		return dto;
-	}
+	}*/
 	
 }
