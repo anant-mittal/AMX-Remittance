@@ -33,7 +33,6 @@ public class FcSaleExchangeRateDao {
 	
 	
 	public List<ParameterDetails> getParameterDetails(String recordId,String isactive){
-		System.out.println("recordId :"+recordId+"\t isactive:"+isactive);
 		return parameterDetailsRespository.findByRecordIdAndIsActive(recordId.trim(), isactive.trim());
 	}
 	

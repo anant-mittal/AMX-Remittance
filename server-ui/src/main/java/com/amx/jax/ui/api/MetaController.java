@@ -18,6 +18,7 @@ import com.amx.amxlib.meta.model.CountryMasterDTO;
 import com.amx.amxlib.meta.model.PrefixDTO;
 import com.amx.amxlib.meta.model.RoutingBankMasterDTO;
 import com.amx.amxlib.meta.model.ServiceGroupMasterDescDto;
+import com.amx.amxlib.meta.model.ViewAreaDto;
 import com.amx.amxlib.meta.model.ViewCityDto;
 import com.amx.amxlib.meta.model.ViewDistrictDto;
 import com.amx.amxlib.meta.model.ViewStateDto;
@@ -179,6 +180,12 @@ public class MetaController {
 	public ResponseWrapper<List<ViewCityDto>> getListOfCitiesForDistrict(@RequestParam BigDecimal districtId) {
 		return new ResponseWrapper<List<ViewCityDto>>(
 				jaxService.setDefaults().getMetaClient().getCitytList(districtId).getResults());
+	}
+
+	@RequestMapping(value = { "/api/meta/area/list", "/pub/meta/area/list" }, method = { RequestMethod.GET })
+	public ResponseWrapper<List<ViewAreaDto>> getAreaList() {
+		return new ResponseWrapper<List<ViewAreaDto>>(
+				jaxService.setDefaults().getMetaClient().getAreaList().getResults());
 	}
 
 	/**

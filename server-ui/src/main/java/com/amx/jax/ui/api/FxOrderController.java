@@ -30,6 +30,7 @@ import com.amx.jax.model.request.CustomerShippingAddressRequestModel;
 import com.amx.jax.model.request.fx.FcSaleOrderPaynowRequestModel;
 import com.amx.jax.model.request.fx.FcSaleOrderTransactionRequestModel;
 import com.amx.jax.model.response.CurrencyMasterDTO;
+import com.amx.jax.model.response.fx.AddressTypeDto;
 import com.amx.jax.model.response.fx.FcSaleApplPaymentReponseModel;
 import com.amx.jax.model.response.fx.FcSaleOrderApplicationResponseModel;
 import com.amx.jax.model.response.fx.FcSaleOrderDefaultResponseModel;
@@ -119,8 +120,25 @@ public class FxOrderController {
 		return ResponseWrapper.buildList(fcSaleOrderClient.getFcSaleAddress());
 	}
 
+	@RequestMapping(value = "/api/fxo/address/type", method = { RequestMethod.GET })
+	public ResponseWrapper<AddressTypeDto> getAddressTypeList() {
+		return ResponseWrapper.build(fcSaleOrderClient.getAddressTypeList());
+	}
+
 	@RequestMapping(value = "/api/fxo/address/add", method = { RequestMethod.POST })
 	public ResponseWrapper<CustomerShippingAddressRequestModel> saveFcSaleShippingAddress(
+			@RequestBody CustomerShippingAddressRequestModel requestModel) {
+		return ResponseWrapper.build(fcSaleOrderClient.saveFcSaleShippingAddress(requestModel));
+	}
+
+	@RequestMapping(value = "/api/fxo/address/update", method = { RequestMethod.POST })
+	public ResponseWrapper<CustomerShippingAddressRequestModel> updateFcSaleShippingAddress(
+			@RequestBody CustomerShippingAddressRequestModel requestModel) {
+		return ResponseWrapper.build(fcSaleOrderClient.saveFcSaleShippingAddress(requestModel));
+	}
+
+	@RequestMapping(value = "/api/fxo/address/delete", method = { RequestMethod.POST })
+	public ResponseWrapper<CustomerShippingAddressRequestModel> deleteFcSaleShippingAddress(
 			@RequestBody CustomerShippingAddressRequestModel requestModel) {
 		return ResponseWrapper.build(fcSaleOrderClient.saveFcSaleShippingAddress(requestModel));
 	}
