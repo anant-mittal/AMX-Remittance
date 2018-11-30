@@ -175,6 +175,7 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 		List<FxApplicationDto> listShoppingCart = requestmodel.getCartDetailList();
 		if(!listShoppingCart.isEmpty()){
 		for(FxApplicationDto shoppingCart:listShoppingCart){
+			logger.info("FC Sale application Id : "+shoppingCart.getApplicationId());
 			ReceiptPaymentApp rcptAppl = rcptPaymentAppl.findOne(shoppingCart.getApplicationId());
 			if(rcptAppl!=null && rcptAppl.getIsActive().equalsIgnoreCase(ConstantDocument.Yes) 
 					&& rcptAppl.getApplicationStatus().equalsIgnoreCase(ConstantDocument.S)){
@@ -186,6 +187,8 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 				if(userFinancialYear!=null){
 					responeModel.setDocumentFinancialYear(userFinancialYear.getFinancialYear());
 				}
+			}else{
+				throw new GlobalException("No record found for payment", JaxError.FC_SALE_APPLIATION_NOT_FOUND);
 			}
 		} //end of for Loop.
 		}else{
@@ -200,7 +203,12 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 			logger.info("Delivery charges: "+parameterList.get(0).getNumericField1());
 			throw new GlobalException("Fc Delivery not defined", JaxError.FC_CURRENCY_DELIVERY_CHARGES_NOT_FOUND);
 		}
-		responeModel.setNetPayableAmount(knetamount);
+		if(JaxUtil.isNullZeroBigDecimalCheck(knetamount) && knetamount.compareTo(BigDecimal.ZERO) > 0){
+			responeModel.setNetPayableAmount(knetamount);
+		}else{
+			throw new GlobalException("Toal Knet Amount ", JaxError.INVALID_AMOUNT);
+		}
+		
 		logger.info("Total knet amount with delivery charges: "+knetamount);
 		return responeModel; 
 	}
