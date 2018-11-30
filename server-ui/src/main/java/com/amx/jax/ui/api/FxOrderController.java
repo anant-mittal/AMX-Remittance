@@ -158,6 +158,7 @@ public class FxOrderController {
 
 		PayGParams payment = new PayGParams();
 		payment.setDocFy(wrapper.getData().getDocumentFinancialYear());
+		payment.setDocNo(wrapper.getData().getDocumentIdForPayment());
 		payment.setDocId(wrapper.getData().getDocumentIdForPayment());
 		payment.setTrackId(wrapper.getData().getMerchantTrackId());
 		payment.setAmount(wrapper.getData().getNetPayableAmount());
