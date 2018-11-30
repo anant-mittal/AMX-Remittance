@@ -12,7 +12,7 @@ import com.amx.jax.dbmodel.fx.FxOrderTransactionModel;
 
 public interface FxOrderTransactionRespository extends CrudRepository<FxOrderTransactionModel, Serializable>{
 	
-	@Query("select t from FxOrderTransactionModel t where t.customerId=:customerId and  trunc(t.documentDate) between trunc(sysdate-6*30) and  trunc(sysdate)")
+	@Query("select t from FxOrderTransactionModel t where t.customerId=:customerId")
 	public List<FxOrderTransactionModel> getFxOrderTrnxList(@Param("customerId") BigDecimal customerId);
 	
 	@Query("select t from FxOrderTransactionModel t where t.customerId=:customerId and  t.collectionDocumentNo=:collectionDocumentNo and t.collectionDocumentCode=2 and t.collectionDocumentFinYear=:collectionDocumentFinYear")

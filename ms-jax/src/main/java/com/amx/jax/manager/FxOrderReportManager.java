@@ -5,7 +5,10 @@ package com.amx.jax.manager;
  */
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -17,7 +20,13 @@ import org.springframework.web.context.WebApplicationContext;
 
 
 
+
+
+
+
+
 import com.amx.jax.constants.JaxTransactionStatus;
+import com.amx.jax.dal.LoyaltyInsuranceProDao;
 import com.amx.jax.dbmodel.CountryMasterView;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.DistrictMaster;
@@ -49,8 +58,9 @@ import com.amx.jax.repository.PaygDetailsRepository;
 import com.amx.jax.repository.ReceiptPaymentAppRepository;
 import com.amx.jax.repository.fx.FxDeliveryDetailsRepository;
 import com.amx.jax.repository.fx.FxOrderTransactionRespository;
+import com.amx.jax.util.DateUtil;
 
-import org.apache.commons.lang.StringUtils;
+
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Component
@@ -102,6 +112,9 @@ public class FxOrderReportManager {
 	@Autowired
 	ReceiptPaymentAppRepository rcptPaymentAppl;
 	
+	@Autowired
+	LoyaltyInsuranceProDao loyaltyInsuranceProDao;
+	
 	/**
 	 * 
 	 * @param collNo
@@ -111,6 +124,22 @@ public class FxOrderReportManager {
 	public FxOrderReportResponseDto getReportDetails(BigDecimal collNo,BigDecimal collFyr){
 		FxOrderReportResponseDto reportModel = new FxOrderReportResponseDto();
 		BigDecimal custoemrId = metaData.getCustomerId();
+		BigDecimal companyId = metaData.getCompanyId();
+		BigDecimal countryId = metaData.getCountryId();
+		BigDecimal customerReferenceId = BigDecimal.ZERO;
+		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+		String createdDate=""; 
+		String receiptNo = "";
+		String customerName="";
+		String phoneNo ="";
+		
+		List<Customer> customerList = customerDao.getCustomerByCustomerId(countryId, companyId, custoemrId);
+		if(!customerList.isEmpty()){
+			reportModel.setIdExpiryDate(DateUtil.todaysDateWithDDMMYY(customerList.get(0).getIdentityExpiredDate(),"0"));
+			reportModel.setCivilId(customerList.get(0).getIdentityInt());
+			customerReferenceId = customerList.get(0).getCustomerReference();
+			phoneNo =  customerList.get(0).getMobile();
+		}
 		
 		List<FxOrderTransactionModel> fxOrderTrnxList =  fxTransactionHistroyDao.getFxOrderTrnxListByCollectionDocNumber(custoemrId,collNo,collFyr);
 	    if(!fxOrderTrnxList.isEmpty()){
@@ -118,8 +147,13 @@ public class FxOrderReportManager {
 	    	reportModel.setFxOrderTrnxList(fxOrderTrnxListDto);
 	    	BigDecimal deliveryDetSeqId =fxOrderTrnxList.get(0).getDeliveryDetSeqId() ;
 	    	BigDecimal paygSeqId        = fxOrderTrnxList.get(0).getPagDetSeqId();
+	    	if(fxOrderTrnxList.get(0).getCollectionDocumentNo()!=null && fxOrderTrnxList.get(0).getCollectionDocumentFinYear()!=null){
+	    		receiptNo =  fxOrderTrnxList.get(0).getCollectionDocumentFinYear().toString()+"/"+fxOrderTrnxList.get(0).getCollectionDocumentNo().toString();
+	    	}
+	    	customerName=fxOrderTrnxList.get(0).getCustomerName(); 
 	    	FxDeliveryDetailsModel fxDelDetailModel = deliveryDetailsRepos.findOne(deliveryDetSeqId);
 	    	PaygDetailsModel pgDetailsModel = payGDeatilsRepos.findOne(paygSeqId);
+	    	createdDate = fxOrderTrnxList.get(0).getCreatedDate();
 	    	
 	    	if(fxDelDetailModel!=null){
 	    		FxDeliveryReportDetailDto delDto = convertFxDeliveryDto(fxDelDetailModel);
@@ -132,7 +166,44 @@ public class FxOrderReportManager {
 	    		PaygDetailsDto pgdto = convertFxPgDetailsDto(pgDetailsModel);
 	    		reportModel.setPayg(pgdto);
 	    	}
+	    	
+	    	reportModel.setReceiptNo(receiptNo);
+	    	reportModel.setCustomerName(customerName);
+	    	reportModel.setPhoneNumber(phoneNo);
+	    	reportModel.setLocation(fxOrderTrnxList.get(0).getBranchDesc());
 	    }
+	    
+	    
+
+		Map<String, Object> loyaltiPoints = loyaltyInsuranceProDao.loyaltyInsuranceProcedure(customerReferenceId, createdDate);
+		
+		String prLtyStr1 =loyaltiPoints.get("P_LTY_STR1")==null?"":loyaltiPoints.get("P_LTY_STR1").toString();
+		String prLtyStr2 =loyaltiPoints.get("P_LTY_STR2")==null?"":loyaltiPoints.get("P_LTY_STR2").toString();
+		String prInsStr1 =loyaltiPoints.get("P_INS_STR1")==null?"":loyaltiPoints.get("P_INS_STR1").toString();
+		String prInsStr2 =loyaltiPoints.get("P_INS_STR2")==null?"":loyaltiPoints.get("P_INS_STR2").toString();
+		String prInsStrAr1 =loyaltiPoints.get("P_INS_STR_AR1")==null?"":loyaltiPoints.get("P_INS_STR_AR1").toString();
+		String prInsStrAr2 =loyaltiPoints.get("P_INS_STR_AR2")==null?"":loyaltiPoints.get("P_INS_STR_AR2").toString();
+
+		if(!prLtyStr1.trim().equals("") && !prLtyStr2.trim().equals("")){
+			reportModel.setLoyalityPointExpiring(prLtyStr1+"  \n"+prLtyStr2);
+		}else if(!prLtyStr1.trim().equals("")){
+			reportModel.setLoyalityPointExpiring(prLtyStr1);
+		}else if(!prLtyStr2.trim().equals("")){
+			reportModel.setLoyalityPointExpiring(prLtyStr2);
+		}
+
+		 if(!prInsStr1.trim().equals("")){
+			reportModel.setInsurence1(prInsStr1);
+		}else if(!prInsStrAr1.trim().equals("")){
+			reportModel.setInsurence1(prInsStrAr1);
+		}
+		if(!prInsStr2.trim().equals("") && !prInsStrAr2.trim().equals("")){
+			reportModel.setInsurence2(prInsStr2+"  \n"+prInsStrAr2);
+		}else if(!prInsStr2.trim().equals("")){
+			reportModel.setInsurence2(prInsStr2);
+		}else if(!prInsStrAr2.trim().equals("")){
+			reportModel.setInsurence2(prInsStrAr2);
+		}
 	    
 		return reportModel; 
 	}
@@ -164,6 +235,8 @@ public class FxOrderReportManager {
 		if(fxDelDetailModel !=null){
 			deliveryCharges = fxDelDetailModel.getDeliveryCharges();
 		}	
+		
+		
 		responseModel.setNetAmount(netAmount.add(deliveryCharges));
 		responseModel.setStatus(jaxTrnxStatus);
 		return responseModel;

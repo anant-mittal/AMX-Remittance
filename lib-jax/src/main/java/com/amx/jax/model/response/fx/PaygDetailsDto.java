@@ -9,32 +9,17 @@ public class PaygDetailsDto {
 
 	
 	private BigDecimal paygTrnxSeqId;
-	
 	private BigDecimal customerId;
-	
-	
 	private String pgPaymentId;
-	
-	
 	private String pgReferenceId;
-	
-	
 	private String pgTransactionId;
-	
-
 	private String pgAuthCode;
-	
-
 	private String pgErrorText;
-	
-
 	private String pgReceiptDate;
-	
-
 	private String errorMessage;
-
 	private String trnxType;
 	
+
 
 	private String resultCode;
 

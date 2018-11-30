@@ -31,7 +31,7 @@ import com.amx.jax.dbmodel.ViewState;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.AbstractModel;
-import com.amx.jax.model.ResourceDTO;
+import com.amx.jax.model.ResourceDto;
 import com.amx.jax.model.request.CustomerShippingAddressRequestModel;
 import com.amx.jax.model.response.fx.AddressTypeDto;
 import com.amx.jax.model.response.fx.ShippingAddressDto;
@@ -45,6 +45,7 @@ import com.amx.jax.repository.IViewDistrictDAO;
 import com.amx.jax.repository.IViewStateDao;
 import com.amx.jax.repository.ParameterDetailsRespository;
 import com.amx.jax.util.JaxUtil;
+
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Component
@@ -227,6 +228,7 @@ public class FcSaleAddressManager extends AbstractModel {
 			} // end of for Loop
 		} // end
 
+	
 		/** fetch End of shipping address **/
 		return list;
 	}
@@ -391,5 +393,15 @@ public class FcSaleAddressManager extends AbstractModel {
 		}
 		return dto1;
 	}
-
+	
+	
+	
+	
+	public ResourceDto getDbObject(BigDecimal Id,Object Object){
+		ResourceDto dto  =new ResourceDto();
+		dto.setId(Id);
+		dto.setName(Object);
+		return dto;
+	}
+	
 }

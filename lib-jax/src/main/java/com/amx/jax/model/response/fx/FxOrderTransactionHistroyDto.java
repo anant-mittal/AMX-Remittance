@@ -1,19 +1,15 @@
 package com.amx.jax.model.response.fx;
 
 import java.math.BigDecimal;
-import java.util.Date;
+
 
 public class FxOrderTransactionHistroyDto {
-
-
 	private BigDecimal idno;
-
 	private BigDecimal customerReference;
 	
-
 	private BigDecimal documentNumber;
 
-	private Date documentDate;
+	private String documentDate;
 	
 
 	private BigDecimal documentFinanceYear;
@@ -67,11 +63,15 @@ public class FxOrderTransactionHistroyDto {
 	private String orderStatus;
 	
 
-	private Date deliveryDate;
+	private String deliveryDate;
 
 	private String deliveryTime;
 	
 	private String customerName;
+	
+	private BigDecimal deliveryCharges;
+	
+	private String createdDate;
 
 	public BigDecimal getIdno() {
 		return idno;
@@ -97,11 +97,11 @@ public class FxOrderTransactionHistroyDto {
 		this.documentNumber = documentNumber;
 	}
 
-	public Date getDocumentDate() {
+	public String getDocumentDate() {
 		return documentDate;
 	}
 
-	public void setDocumentDate(Date documentDate) {
+	public void setDocumentDate(String documentDate) {
 		this.documentDate = documentDate;
 	}
 
@@ -249,11 +249,11 @@ public class FxOrderTransactionHistroyDto {
 		this.orderStatus = orderStatus;
 	}
 
-	public Date getDeliveryDate() {
+	public String getDeliveryDate() {
 		return deliveryDate;
 	}
 
-	public void setDeliveryDate(Date deliveryDate) {
+	public void setDeliveryDate(String deliveryDate) {
 		this.deliveryDate = deliveryDate;
 	}
 
@@ -271,5 +271,21 @@ public class FxOrderTransactionHistroyDto {
 
 	public void setCustomerName(String customerName) {
 		this.customerName = customerName;
+	}
+
+	public BigDecimal getDeliveryCharges() {
+		return deliveryCharges;
+	}
+
+	public void setDeliveryCharges(BigDecimal deliveryCharges) {
+		this.deliveryCharges = deliveryCharges;
+	}
+
+	public String getCreatedDate() {
+		return createdDate;
+	}
+
+	public void setCreatedDate(String createdDate) {
+		this.createdDate = createdDate;
 	}
 }

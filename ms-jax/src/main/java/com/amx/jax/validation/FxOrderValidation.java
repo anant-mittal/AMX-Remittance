@@ -57,10 +57,12 @@ public class FxOrderValidation {
 		BigDecimal countryBranchId = metaData.getCountryBranchId();
 		BigDecimal companyId = metaData.getCompanyId();
 		BigDecimal customerId = metaData.getCustomerId();
-		BigDecimal languageId = metaData.getLanguageId();
+		BigDecimal languageId =new BigDecimal(1);
 		BigDecimal applicationCountryDb = BigDecimal.ZERO;
 		BigDecimal companyIdDb =BigDecimal.ZERO;
 		BigDecimal localcurrencyDB = BigDecimal.ZERO;
+		
+		
 		if(appl!= null){
 			applicationCountryDb = appl.getApplicationCountryId();
 			companyIdDb =appl.getCompanyId();

@@ -3,7 +3,7 @@ package com.amx.jax.dbmodel.fx;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Date;
+
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -30,7 +30,7 @@ public class FxOrderTransactionModel implements Serializable {
 	
 
 	@Column(name = "DOCUMENT_DATE")
-	private Date documentDate;
+	private String documentDate;
 	
 	@Column(name = "DOCUMENT_FINANCE_YEAR")
 	private BigDecimal documentFinanceYear;
@@ -87,14 +87,20 @@ public class FxOrderTransactionModel implements Serializable {
 	private String orderStatus;
 	
 	@Column(name="DELIVERY_DATE")
-	private Date deliveryDate;
+	private String deliveryDate;
 	
 	@Column(name="DELIVERY_TIME")
 	private String deliveryTime;
 	
+	@Column(name="CREATED_DATE")
+	private String createdDate;
+	
 	
 	@Column(name="CUSTOMER_NAME")
 	private String customerName;
+	
+	@Column(name="DELIVERY_CHARGES")
+	private BigDecimal deliveryCharges;
 	
 
 	public BigDecimal getIdno() {
@@ -121,11 +127,11 @@ public class FxOrderTransactionModel implements Serializable {
 		this.documentNumber = documentNumber;
 	}
 
-	public Date getDocumentDate() {
+	public String getDocumentDate() {
 		return documentDate;
 	}
 
-	public void setDocumentDate(Date documentDate) {
+	public void setDocumentDate(String documentDate) {
 		this.documentDate = documentDate;
 	}
 
@@ -267,11 +273,11 @@ public class FxOrderTransactionModel implements Serializable {
 		this.orderStatus = orderStatus;
 	}
 
-	public Date getDeliveryDate() {
+	public String getDeliveryDate() {
 		return deliveryDate;
 	}
 
-	public void setDeliveryDate(Date deliveryDate) {
+	public void setDeliveryDate(String deliveryDate) {
 		this.deliveryDate = deliveryDate;
 	}
 
@@ -289,6 +295,22 @@ public class FxOrderTransactionModel implements Serializable {
 
 	public void setCustomerName(String customerName) {
 		this.customerName = customerName;
+	}
+
+	public String getCreatedDate() {
+		return createdDate;
+	}
+
+	public void setCreatedDate(String createdDate) {
+		this.createdDate = createdDate;
+	}
+
+	public BigDecimal getDeliveryCharges() {
+		return deliveryCharges;
+	}
+
+	public void setDeliveryCharges(BigDecimal deliveryCharges) {
+		this.deliveryCharges = deliveryCharges;
 	}
 
 }
