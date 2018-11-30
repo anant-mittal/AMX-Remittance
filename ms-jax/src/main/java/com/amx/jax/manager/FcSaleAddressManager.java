@@ -107,6 +107,56 @@ public class FcSaleAddressManager  extends AbstractModel{
 		
 		
 		
+		if (!contactList.isEmpty()) {
+			ShippingAddressDto shippingAddressDto = new ShippingAddressDto();
+			shippingAddressDto.setAddressId(contactList.get(0).getContactDetailId());
+			if(!customerList.isEmpty()){
+				shippingAddressDto.setFirstName(customerList.get(0).getFirstName());
+				shippingAddressDto.setMiddleName(customerList.get(0).getMiddleName());
+				shippingAddressDto.setLastName(customerList.get(0).getLastName());
+			}
+			shippingAddressDto.setCustomerId(contactList.get(0).getFsCustomer().getCustomerId());
+			shippingAddressDto.setCompanyId(companyId);
+			shippingAddressDto.setMobile(contactList.get(0).getMobile());
+			shippingAddressDto.setLocalContactBuilding(contactList.get(0).getBuildingNo());
+			shippingAddressDto.setStreet(contactList.get(0).getStreet());
+			shippingAddressDto.setBlockNo(contactList.get(0).getBlock());
+			shippingAddressDto.setHouse(contactList.get(0).getFlat());
+			shippingAddressDto.setAddressDto(getAddressType(contactList.get(0).getArea()==null?"":contactList.get(0).getArea()));
+			shippingAddressDto.setAreaDesc(contactList.get(0).getArea()==null?"":contactList.get(0).getArea());
+
+			List<CountryMasterView> countryMasterView = countryDao.findByLanguageIdAndCountryId(new BigDecimal(1),contactList.get(0).getFsCountryMaster().getCountryId());
+			if (!countryMasterView.isEmpty()) {
+				shippingAddressDto.setLocalContactCountry(countryMasterView.get(0).getCountryName());
+				if (contactList.get(0).getFsStateMaster() != null) {
+					List<ViewState> stateMasterView = stateDao.getState(countryMasterView.get(0).getCountryId(),contactList.get(0).getFsStateMaster().getStateId(), new BigDecimal(1));
+					if (!stateMasterView.isEmpty()) {
+						shippingAddressDto.setLocalContactState(stateMasterView.get(0).getStateName());
+						shippingAddressDto.setStateDto(getDbObject(stateMasterView.get(0).getStateId(),stateMasterView.get(0)));
+						DistrictMaster distictMaster = contactList.get(0).getFsDistrictMaster();
+						if (distictMaster != null) {
+							List<ViewDistrict> districtMas = districtDao.getDistrict(stateMasterView.get(0).getStateId(), distictMaster.getDistrictId(),new BigDecimal(1));
+							if (!districtMas.isEmpty()) {
+								shippingAddressDto.setLocalContactDistrict(districtMas.get(0).getDistrictDesc());
+								shippingAddressDto.setDistrictDto(getDbObject(districtMas.get(0).getDistrictId(),districtMas.get(0)));
+								List<ViewCity> cityDetails = cityDao.getCityDescription(districtMas.get(0).getDistrictId(),contactList.get(0).getFsCityMaster().getCityId(), new BigDecimal(1));
+								if (!cityDetails.isEmpty()) {
+									shippingAddressDto.setCityDto(getDbObject(cityDetails.get(0).getCityMasterId(), cityDetails.get(0)));
+									shippingAddressDto.setLocalContactCity(cityDetails.get(0).getCityName());
+									
+								}
+							}
+						}
+					}
+				}
+
+			}
+			shippingAddressDto.setAdressType("Local address");
+			list.add(shippingAddressDto); // Local Address
+		} //Local contact details
+		
+		
+		
 		/** Adding shipping Address **/
 		
 		
@@ -318,7 +368,7 @@ public class FcSaleAddressManager  extends AbstractModel{
 		AddressTypeDto dto1 = null;
 		if(!addtype.isEmpty()){
 			for(AddressTypeDto dto: addtype){
-				if(dto.getAddressTypeCode()!= null && dto.getAddressTypeCode().equalsIgnoreCase(addressTypecode)){
+				if(dto.getAddressTypeCode()!= null && addressTypecode !=null && dto.getAddressTypeCode().equalsIgnoreCase(addressTypecode)){
 					dto1 = new AddressTypeDto();
 					dto1.setAddressTypeCode(dto.getAddressTypeCode());
 					dto1.setAddressTypeDesc(dto.getAddressTypeDesc());	
