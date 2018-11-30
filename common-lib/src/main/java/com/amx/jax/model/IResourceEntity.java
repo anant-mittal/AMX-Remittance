@@ -4,9 +4,10 @@ import java.math.BigDecimal;
 
 public interface IResourceEntity {
 
-	public BigDecimal getResourceId();
+	public BigDecimal resourceId();
 
-	public String getResourceName();
+	public String resourceName();
 
-	public String getResourceCode();
+	public String resourceCode();
+
 }

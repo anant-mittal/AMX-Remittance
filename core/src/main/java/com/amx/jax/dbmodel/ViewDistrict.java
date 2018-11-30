@@ -66,20 +66,17 @@ public class ViewDistrict implements Serializable, IResourceEntity {
 	}
 
 	@Override
-	@Transient
-	public BigDecimal getResourceId() {
+	public BigDecimal resourceId() {
 		return this.districtId;
 	}
 
 	@Override
-	@Transient
-	public String getResourceName() {
+	public String resourceName() {
 		return this.districtDesc;
 	}
 
 	@Override
-	@Transient
-	public String getResourceCode() {
+	public String resourceCode() {
 		return null;
 	}
 

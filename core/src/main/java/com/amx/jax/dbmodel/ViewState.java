@@ -74,20 +74,17 @@ public class ViewState implements Serializable, IResourceEntity {
 	}
 
 	@Override
-	@Transient
-	public BigDecimal getResourceId() {
+	public BigDecimal resourceId() {
 		return this.stateId;
 	}
 
 	@Override
-	@Transient
-	public String getResourceName() {
+	public String resourceName() {
 		return this.stateName;
 	}
 
 	@Override
-	@Transient
-	public String getResourceCode() {
+	public String resourceCode() {
 		return this.stateCode;
 	}
 

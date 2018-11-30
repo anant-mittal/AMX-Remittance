@@ -41,7 +41,7 @@ public class ResourceDTO implements IResourceEntity {
 		this.resourceName = resourceName;
 	}
 
-	public BigDecimal getResourceId() {
+	public BigDecimal resourceId() {
 		return resourceId;
 	}
 
@@ -49,7 +49,7 @@ public class ResourceDTO implements IResourceEntity {
 		this.resourceId = resourceId;
 	}
 
-	public String getResourceName() {
+	public String resourceName() {
 		return resourceName;
 	}
 
@@ -61,7 +61,7 @@ public class ResourceDTO implements IResourceEntity {
 		this.resourceName = ArgUtil.parseAsString(resourceName);
 	}
 
-	public String getResourceCode() {
+	public String resourceCode() {
 		return resourceCode;
 	}
 
@@ -75,9 +75,21 @@ public class ResourceDTO implements IResourceEntity {
 
 	public static ResourceDTO create(IResourceEntity entity) {
 		ResourceDTO dto = new ResourceDTO();
-		dto.setResourceId(entity.getResourceId());
-		dto.setResourceName(entity.getResourceName());
-		dto.setResourceCode(entity.getResourceCode());
+		dto.setResourceId(entity.resourceId());
+		dto.setResourceName(entity.resourceName());
+		dto.setResourceCode(entity.resourceCode());
 		return dto;
+	}
+
+	public BigDecimal getResourceId() {
+		return resourceId;
+	}
+
+	public String getResourceName() {
+		return resourceName;
+	}
+
+	public String getResourceCode() {
+		return resourceCode;
 	}
 }

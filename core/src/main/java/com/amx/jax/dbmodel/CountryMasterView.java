@@ -253,20 +253,17 @@ public class CountryMasterView implements java.io.Serializable, IResourceEntity 
 	}
 
 	@Override
-	@Transient
-	public BigDecimal getResourceId() {
+	public BigDecimal resourceId() {
 		return this.countryId;
 	}
 
 	@Override
-	@Transient
-	public String getResourceName() {
+	public String resourceName() {
 		return this.countryName;
 	}
 
 	@Override
-	@Transient
-	public String getResourceCode() {
+	public String resourceCode() {
 		return this.countryISOCode;
 	}
 

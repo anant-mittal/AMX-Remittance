@@ -315,8 +315,8 @@ public class FcSaleAddressManager extends AbstractModel {
 				}
 				shipAdd.setLastUpdated(new Date());
 				shipAdd.setActiveStatus(ConstantDocument.Yes);
-				if (JaxUtil.isNullZeroBigDecimalCheck(adddto.getAreaDto().getResourceId())) {
-					shipAdd.setAreaCode(adddto.getAreaDto().getResourceId());
+				if (JaxUtil.isNullZeroBigDecimalCheck(adddto.getAreaDto().resourceId())) {
+					shipAdd.setAreaCode(adddto.getAreaDto().resourceId());
 				} else {
 					throw new GlobalException("custoemr Id ", JaxError.NULL_AREA_CODE);
 				}
@@ -329,18 +329,18 @@ public class FcSaleAddressManager extends AbstractModel {
 				} else {
 					throw new GlobalException("Invalid country Id  ", JaxError.INVALID_APPLICATION_COUNTRY_ID);
 				}
-				if (JaxUtil.isNullZeroBigDecimalCheck(adddto.getStateDto().getResourceId())) {
-					shipAdd.setFsStateMaster(new StateMaster(adddto.getStateDto().getResourceId()));
+				if (JaxUtil.isNullZeroBigDecimalCheck(adddto.getStateDto().resourceId())) {
+					shipAdd.setFsStateMaster(new StateMaster(adddto.getStateDto().resourceId()));
 				} else {
 					throw new GlobalException("Invalid state  ", JaxError.INVALID_STATE);
 				}
-				if (JaxUtil.isNullZeroBigDecimalCheck(adddto.getDistrictDto().getResourceId())) {
-					shipAdd.setFsDistrictMaster(new DistrictMaster(adddto.getDistrictDto().getResourceId()));
+				if (JaxUtil.isNullZeroBigDecimalCheck(adddto.getDistrictDto().resourceId())) {
+					shipAdd.setFsDistrictMaster(new DistrictMaster(adddto.getDistrictDto().resourceId()));
 				} else {
 					throw new GlobalException("Invalid district  ", JaxError.INVALID_DISTRICT);
 				}
-				if (JaxUtil.isNullZeroBigDecimalCheck(adddto.getCityDto().getResourceId())) {
-					shipAdd.setFsCityMaster(new CityMaster(adddto.getCityDto().getResourceId()));
+				if (JaxUtil.isNullZeroBigDecimalCheck(adddto.getCityDto().resourceId())) {
+					shipAdd.setFsCityMaster(new CityMaster(adddto.getCityDto().resourceId()));
 				} else {
 					throw new GlobalException("Invalid city  ", JaxError.INVALID_CITY);
 				}
