@@ -1,7 +1,6 @@
 
 package com.amx.jax.ui.api;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
@@ -144,8 +143,8 @@ public class FxOrderController {
 	}
 
 	@RequestMapping(value = "/api/fxo/slots/list", method = RequestMethod.GET)
-	public ResponseWrapper<List<TimeSlotDto>> getTimeSlot(@RequestParam String date) {
-		return ResponseWrapper.buildList(fcSaleOrderClient.getTimeSlot(date));
+	public ResponseWrapper<List<TimeSlotDto>> getTimeSlot(@RequestParam BigDecimal addressId) {
+		return ResponseWrapper.buildList(fcSaleOrderClient.getTimeSlot(addressId));
 	}
 
 	@RequestMapping(value = "/api/fxo/checkout", method = RequestMethod.POST)

@@ -312,7 +312,7 @@ public class FcSaleOrderClient implements IFxOrderService {
 	}
 
 	@Override
-	public AmxApiResponse<AddressTypeDto, Object> getAddressTypeList()throws Exception {
+	public AmxApiResponse<AddressTypeDto, Object> getAddressTypeList() {
 		try {
 			LOGGER.debug("in getAddressTypeList  client :");
 			return restService.ajax(appConfig.getJaxURL() + Path.FC_SALE_ORDER_ADD_TYPE).meta(new JaxMetaInfo()).get().as(new ParameterizedTypeReference<AmxApiResponse<AddressTypeDto, Object>>() {});

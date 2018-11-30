@@ -2,10 +2,6 @@ package com.amx.jax.client.fx;
 
 import java.math.BigDecimal;
 
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-
 import com.amx.jax.IJaxService;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.error.ApiJaxStatusBuilder.ApiJaxStatus;
@@ -25,7 +21,6 @@ import com.amx.jax.model.response.fx.FxOrderTransactionHistroyDto;
 import com.amx.jax.model.response.fx.FxOrderTransactionStatusResponseDto;
 import com.amx.jax.model.response.fx.PurposeOfTransactionDto;
 import com.amx.jax.model.response.fx.ShippingAddressDto;
-import com.amx.jax.model.response.fx.ShoppingCartDetailsDto;
 import com.amx.jax.model.response.fx.TimeSlotDto;
 import com.amx.jax.payg.PaymentResponseDto;
 
@@ -54,8 +49,6 @@ public interface IFxOrderService extends IJaxService {
 		public static final String FC_SALE_SHIPPING_ADDR_EDIT = PREFIX + "/fc-sale-shipp-address-edit/";
 	}
 
-
-	
 	public static class Params {
 
 		public static final String TERMINAL_ID = "countryBranchSystemInventoryId";
@@ -71,9 +64,6 @@ public interface IFxOrderService extends IJaxService {
 
 	}
 
-	
-	
-	
 	/**
 	 * @return
 	 */
@@ -148,15 +138,16 @@ public interface IFxOrderService extends IJaxService {
 			BigDecimal collectionFyear);
 
 	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND })
-	AmxApiResponse<FxOrderTransactionStatusResponseDto,Object> getFxOrderTransactionStatus(BigDecimal documentIdForPayment);
-	
-	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND, JaxError.ADDRESS_TYPE_SETUP_IS_MISSING})
-    AmxApiResponse<AddressTypeDto, Object> getAddressTypeList() throws Exception;
-	
-	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND})
-    AmxApiResponse<ShippingAddressDto, Object> deleteFcSaleAddress(BigDecimal addressId);
-	
-	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND})
-    AmxApiResponse<ShippingAddressDto, Object> editShippingAddress(ShippingAddressDto shippingAddressDto);
+	AmxApiResponse<FxOrderTransactionStatusResponseDto, Object> getFxOrderTransactionStatus(
+			BigDecimal documentIdForPayment);
+
+	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND, JaxError.ADDRESS_TYPE_SETUP_IS_MISSING })
+	AmxApiResponse<AddressTypeDto, Object> getAddressTypeList();
+
+	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND })
+	AmxApiResponse<ShippingAddressDto, Object> deleteFcSaleAddress(BigDecimal addressId);
+
+	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND })
+	AmxApiResponse<ShippingAddressDto, Object> editShippingAddress(ShippingAddressDto shippingAddressDto);
 
 }
