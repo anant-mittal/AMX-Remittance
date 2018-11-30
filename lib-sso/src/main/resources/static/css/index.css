@@ -9,7 +9,7 @@
 }
 
 .dn{
-	display: none;
+	display: none !important;
 }
 
 input[type="text"] {
