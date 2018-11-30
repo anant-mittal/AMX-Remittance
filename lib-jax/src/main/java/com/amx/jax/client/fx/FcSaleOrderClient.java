@@ -284,14 +284,18 @@ public class FcSaleOrderClient implements IFxOrderService {
 	
 
 	@Override
-	public AmxApiResponse<FxOrderReportResponseDto, Object> getFxOrderTransactionReport(BigDecimal collectionDocNo,BigDecimal collectionFyear)throws Exception {
-		LOGGER.debug("in FxOrderReportResponseDto  client :");
+	public AmxApiResponse<FxOrderReportResponseDto, Object> getFxOrderTransactionReport(BigDecimal collectionDocNo,BigDecimal collectionFyear) {
+		LOGGER.debug("in getFxOrderTransactionReport  client :");
+		try {
 		return restService.ajax(appConfig.getJaxURL() + Path.FC_SALE_ORDER_TRNX_REPORT).meta(new JaxMetaInfo())
 				.queryParam(Params.COLLECTION_DOC_NO, collectionDocNo)
 				.queryParam(Params.COLLECTION_FYEAR, collectionFyear)
 				.post().as(new ParameterizedTypeReference<AmxApiResponse<FxOrderReportResponseDto, Object>>() {
 				});
-		
+		} catch (Exception e) {
+			LOGGER.error("exception in getFxOrderTransactionReport : ", e);
+			return JaxSystemError.evaluate(e);
+		} //
 	}
 
 	@Override
