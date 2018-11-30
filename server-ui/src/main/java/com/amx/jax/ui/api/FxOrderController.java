@@ -120,8 +120,8 @@ public class FxOrderController {
 	}
 
 	@RequestMapping(value = "/api/fxo/address/types", method = { RequestMethod.GET })
-	public ResponseWrapper<AddressTypeDto> getAddressTypeList() {
-		return ResponseWrapper.build(fcSaleOrderClient.getAddressTypeList());
+	public ResponseWrapper<List<AddressTypeDto>> getAddressTypeList() {
+		return ResponseWrapper.buildList(fcSaleOrderClient.getAddressTypeList());
 	}
 
 	@RequestMapping(value = "/api/fxo/address/add", method = { RequestMethod.POST })
