@@ -41,6 +41,7 @@ import com.amx.jax.model.response.fx.FxOrderTransactionStatusResponseDto;
 import com.amx.jax.model.response.fx.PurposeOfTransactionDto;
 import com.amx.jax.model.response.fx.ShippingAddressDto;
 import com.amx.jax.model.response.fx.TimeSlotDto;
+import com.amx.jax.payg.PayGParams;
 import com.amx.jax.payg.PayGService;
 import com.amx.jax.payg.Payment;
 import com.amx.jax.postman.PostManService;
@@ -155,12 +156,12 @@ public class FxOrderController {
 		ResponseWrapper<FcSaleApplPaymentReponseModel> wrapper = ResponseWrapper
 				.build(fcSaleOrderClient.getSavePayNowApplication(requestModel));
 
-		Payment payment = new Payment();
-		payment.setDocFinYear(wrapper.getData().getDocumentFinancialYear());
-		payment.setDocNo(wrapper.getData().getDocumentIdForPayment());
-		payment.setMerchantTrackId(wrapper.getData().getMerchantTrackId());
-		payment.setNetPayableAmount(wrapper.getData().getNetPayableAmount());
-		payment.setPgCode(wrapper.getData().getPgCode());
+		PayGParams payment = new PayGParams();
+		payment.setDocFy(wrapper.getData().getDocumentFinancialYear());
+		payment.setDocId(wrapper.getData().getDocumentIdForPayment());
+		payment.setTrackId(wrapper.getData().getMerchantTrackId());
+		payment.setAmount(wrapper.getData().getNetPayableAmount());
+		payment.setServiceCode(wrapper.getData().getPgCode());
 		payment.setProduct(AmxEnums.Products.FXORDER);
 
 		wrapper.redirectUrl(payGService.getPaymentUrl(payment,
@@ -219,8 +220,8 @@ public class FxOrderController {
 
 	@RequestMapping(value = "/api/fxo/tranx/status", method = RequestMethod.GET)
 	public ResponseWrapper<FxOrderTransactionStatusResponseDto> getFxOrderTransactionStatus(
-			@RequestParam(required = false) BigDecimal documentIdForPayment) {
+			@RequestParam(required = false) BigDecimal docNo) {
 		return ResponseWrapper
-				.build(fcSaleOrderClient.getFxOrderTransactionStatus(documentIdForPayment));
+				.build(fcSaleOrderClient.getFxOrderTransactionStatus(docNo));
 	}
 }

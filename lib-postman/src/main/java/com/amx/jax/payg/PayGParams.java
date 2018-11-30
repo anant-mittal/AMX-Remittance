@@ -1,21 +1,22 @@
-package com.amx.jax.payment.gateway;
+package com.amx.jax.payg;
 
 import com.amx.jax.dict.Channel;
 import com.amx.jax.dict.PayGServiceCode;
 import com.amx.jax.dict.Tenant;
+import com.amx.utils.ArgUtil;
 
 public class PayGParams {
+	String docId = null;
+	String docNo = null;
+	String docFy = null;
+
 	String amount = null;
 	String trackId = null;
-	String docNo = null;
-	String name = null;
 	String redirectUrl = null;
 	String payId = null;
 	Tenant tenant = null;
 	Channel channel = null;
-
 	PayGServiceCode serviceCode = null;
-
 	Object product = null;
 
 	public String getRedirectUrl() {
@@ -26,28 +27,20 @@ public class PayGParams {
 		this.redirectUrl = redirectUrl;
 	}
 
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
 	public String getAmount() {
 		return amount;
 	}
 
-	public void setAmount(String amount) {
-		this.amount = amount;
+	public void setAmount(Object amount) {
+		this.amount = ArgUtil.parseAsString(amount);
 	}
 
 	public String getTrackId() {
 		return trackId;
 	}
 
-	public void setTrackId(String trackId) {
-		this.trackId = trackId;
+	public void setTrackId(Object trackId) {
+		this.trackId = ArgUtil.parseAsString(trackId);
 	}
 
 	public String getDocNo() {
@@ -55,7 +48,7 @@ public class PayGParams {
 	}
 
 	public void setDocNo(String docNo) {
-		this.docNo = docNo;
+		this.docNo = ArgUtil.parseAsString(docNo);
 	}
 
 	/**
@@ -108,6 +101,22 @@ public class PayGParams {
 
 	public void setServiceCode(PayGServiceCode serviceCode) {
 		this.serviceCode = serviceCode;
+	}
+
+	public String getDocId() {
+		return docId;
+	}
+
+	public void setDocId(String docId) {
+		this.docId = ArgUtil.parseAsString(docId);
+	}
+
+	public String getDocFy() {
+		return docFy;
+	}
+
+	public void setDocFy(Object docFy) {
+		this.docFy = ArgUtil.parseAsString(docFy);
 	}
 
 }

@@ -8,7 +8,7 @@ import java.net.URISyntaxException;
 
 import com.amx.jax.dict.PayGServiceCode;
 import com.amx.jax.dict.Tenant;
-import com.amx.jax.payment.gateway.PayGParams;
+import com.amx.jax.payg.PayGParams;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Urly;
 

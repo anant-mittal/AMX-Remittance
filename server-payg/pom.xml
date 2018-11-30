@@ -45,6 +45,11 @@
 
 		<dependency>
 			<groupId>com.amx.jax</groupId>
+			<artifactId>lib-postman</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.amx.jax</groupId>
 			<artifactId>lib-ext-jar</artifactId>
 			<type>pom</type>
 		</dependency>

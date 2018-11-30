@@ -25,12 +25,12 @@ import com.amx.jax.dict.Channel;
 import com.amx.jax.dict.PayGServiceCode;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.logger.AuditService;
+import com.amx.jax.payg.PayGParams;
 import com.amx.jax.payment.PaymentConstant;
 import com.amx.jax.payment.gateway.PayGClient;
 import com.amx.jax.payment.gateway.PayGClients;
 import com.amx.jax.payment.gateway.PayGConfig;
 import com.amx.jax.payment.gateway.PayGEvent;
-import com.amx.jax.payment.gateway.PayGParams;
 import com.amx.jax.payment.gateway.PayGResponse;
 import com.amx.jax.payment.gateway.PayGResponse.PayGStatus;
 import com.amx.jax.payment.gateway.PayGSession;
@@ -74,10 +74,16 @@ public class PayGController {
 
 	@RequestMapping(value = { "/payment/*", "/payment" }, method = RequestMethod.GET)
 
-	public String handleUrlPaymentRemit(@RequestParam Tenant tnt, @RequestParam String pg, @RequestParam String amount,
-			@RequestParam String trckid, @RequestParam String docNo, @RequestParam(required = false) String docFy,
-			@RequestParam(required = false) String callbackd, @RequestParam(required = false) Channel channel,
+	public String handleUrlPaymentRemit(
+			@RequestParam String trckid,
+			@RequestParam(required = false) String docId, @RequestParam(required = false) String docNo,
+			@RequestParam(required = false) String docFy,
+			@RequestParam String amount,
+
+			@RequestParam Tenant tnt, @RequestParam String pg, @RequestParam(required = false) Channel channel,
 			@RequestParam(required = false) String prod,
+
+			@RequestParam(required = false) String callbackd,
 			Model model) {
 
 		TenantContextHolder.setCurrent(tnt);
@@ -110,6 +116,8 @@ public class PayGController {
 		payGParams.setAmount(amount);
 		payGParams.setTrackId(trckid);
 		payGParams.setDocNo(docNo);
+		payGParams.setDocId(docId);
+		payGParams.setDocFy(docFy);
 		payGParams.setTenant(tnt);
 		if (channel == null)
 			channel = Channel.ONLINE;

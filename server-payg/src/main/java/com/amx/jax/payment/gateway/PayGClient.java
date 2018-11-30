@@ -2,6 +2,7 @@ package com.amx.jax.payment.gateway;
 
 import com.amx.jax.dict.Channel;
 import com.amx.jax.dict.PayGServiceCode;
+import com.amx.jax.payg.PayGParams;
 
 public interface PayGClient {
 
