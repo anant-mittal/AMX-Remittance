@@ -43,7 +43,6 @@ import com.amx.jax.model.response.fx.ShippingAddressDto;
 import com.amx.jax.model.response.fx.TimeSlotDto;
 import com.amx.jax.payg.PayGParams;
 import com.amx.jax.payg.PayGService;
-import com.amx.jax.payg.Payment;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.TemplatesMX;

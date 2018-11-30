@@ -1,19 +1,28 @@
 package com.amx.jax.model.response.fx;
 
-public class AddressTypeDto {
-	private String addressTypeCode;
-	private String addressTypeDesc;
+import com.amx.jax.model.ResourceDTO;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+public class AddressTypeDto extends ResourceDTO {
+
+	@JsonIgnore
 	public String getAddressTypeCode() {
-		return addressTypeCode;
+		return this.getResourceCode();
 	}
+
+	@JsonIgnore
 	public void setAddressTypeCode(String addressTypeCode) {
-		this.addressTypeCode = addressTypeCode;
+		this.setResourceCode(addressTypeCode);
 	}
+
+	@JsonIgnore
 	public String getAddressTypeDesc() {
-		return addressTypeDesc;
+		return this.getResourceName();
 	}
+
+	@JsonIgnore
 	public void setAddressTypeDesc(String addressTypeDesc) {
-		this.addressTypeDesc = addressTypeDesc;
+		this.setResourceName(addressTypeDesc);
 	}
 
 }
