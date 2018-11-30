@@ -1,5 +1,6 @@
 package com.amx.jax.dbmodel;
 
+import java.beans.Transient;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
@@ -73,16 +74,19 @@ public class ViewState implements Serializable, IResourceEntity {
 	}
 
 	@Override
+	@Transient
 	public BigDecimal getResourceId() {
 		return this.stateId;
 	}
 
 	@Override
+	@Transient
 	public String getResourceName() {
 		return this.stateName;
 	}
 
 	@Override
+	@Transient
 	public String getResourceCode() {
 		return this.stateCode;
 	}

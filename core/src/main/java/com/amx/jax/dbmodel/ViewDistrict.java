@@ -1,5 +1,6 @@
 package com.amx.jax.dbmodel;
 
+import java.beans.Transient;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
@@ -65,16 +66,19 @@ public class ViewDistrict implements Serializable, IResourceEntity {
 	}
 
 	@Override
+	@Transient
 	public BigDecimal getResourceId() {
 		return this.districtId;
 	}
 
 	@Override
+	@Transient
 	public String getResourceName() {
 		return this.districtDesc;
 	}
 
 	@Override
+	@Transient
 	public String getResourceCode() {
 		return null;
 	}

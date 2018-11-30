@@ -1,5 +1,6 @@
 package com.amx.jax.dbmodel;
 
+import java.beans.Transient;
 import java.math.BigDecimal;
 
 import javax.persistence.Column;
@@ -46,16 +47,19 @@ public class ViewAreaModel implements IResourceEntity {
 	}
 
 	@Override
+	@Transient
 	public BigDecimal getResourceId() {
 		return this.areaCode;
 	}
 
 	@Override
+	@Transient
 	public String getResourceName() {
 		return this.areaDesc;
 	}
 
 	@Override
+	@Transient
 	public String getResourceCode() {
 		return this.shortDesc;
 	}

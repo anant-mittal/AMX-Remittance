@@ -1,5 +1,6 @@
 package com.amx.jax.dbmodel;
 
+import java.beans.Transient;
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -252,16 +253,19 @@ public class CountryMasterView implements java.io.Serializable, IResourceEntity 
 	}
 
 	@Override
+	@Transient
 	public BigDecimal getResourceId() {
 		return this.countryId;
 	}
 
 	@Override
+	@Transient
 	public String getResourceName() {
 		return this.countryName;
 	}
 
 	@Override
+	@Transient
 	public String getResourceCode() {
 		return this.countryISOCode;
 	}
