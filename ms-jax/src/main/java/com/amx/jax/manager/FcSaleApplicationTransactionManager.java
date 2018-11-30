@@ -482,9 +482,11 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 			BigDecimal  timeInterval = list.get(0).getTimeInterval()==null?BigDecimal.ZERO:list.get(0).getTimeInterval();
 			BigDecimal 	noOfDays	 = list.get(0).getNoOfDays()==null?BigDecimal.ZERO:list.get(0).getNoOfDays();
 			BigDecimal officeendTime = list.get(0).getOfficeEndTime()==null?BigDecimal.ZERO:list.get(0).getOfficeEndTime();
+			if(JaxUtil.isNullZeroBigDecimalCheck(shippingAddressId)){
 			ShippingAddressDetail shipp =shippingAddressDao.findOne(shippingAddressId);
-			if(shipp!=null &&  shipp.getAddressType()!=null && shipp.getAddressType().equalsIgnoreCase(ConstantDocument.FX_LHA)){
+				if(shipp!=null &&  shipp.getAddressType()!=null && shipp.getAddressType().equalsIgnoreCase(ConstantDocument.FX_LHA)){
 				endTime =officeendTime; 
+				}
 			}
 			 
 			timeSlotList =DateUtil.getTimeSlotRange(startTime.intValue(),endTime.intValue(),timeInterval.intValue(),noOfDays.intValue());
