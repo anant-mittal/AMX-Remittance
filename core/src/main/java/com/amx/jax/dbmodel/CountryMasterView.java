@@ -1,232 +1,269 @@
 package com.amx.jax.dbmodel;
 
-	import java.math.BigDecimal;
+import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
-	
+
+import com.amx.jax.model.IResourceEntity;
+
+/**
+ * 
+ * @author Rabil
+ *
+ */
+
+@Entity
+@Table(name = "V_EX_COUNTRY_LANG")
+public class CountryMasterView implements java.io.Serializable, IResourceEntity {
+
 	/**
 	 * 
-	 * @author Rabil
-	 *
 	 */
+	private static final long serialVersionUID = 1L;
 
-	@Entity
-	@Table(name = "V_EX_COUNTRY_LANG")
-	public class CountryMasterView implements java.io.Serializable{
+	private BigDecimal idNo;
+	private String countryName;
+	private BigDecimal countryId;
+	private BigDecimal languageId;
+	private String nationality;
+	private String approvedBy;
+	private Date approvedDate;
+	private String businessCountry;
+	private String countryActive;
+	private String countryAlpha2Code;
+	private String countryAlpha3Code;
+	private String countryCode;
+	private String countryISOCode;
+	private String countryTelCode;
+	private String createdBy;
+	private Date createdDate;
+	private String isActive;
+	private BigDecimal splitIndicator;
+	private String direction;
+	private String languageCode;
+	private String languageName;
+	private String countryMobileLength;
 
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		
-		private BigDecimal idNo;
-		private String countryName;
-		private BigDecimal countryId;
-		private BigDecimal languageId;
-		private String nationality;
-		private String approvedBy;
-		private Date approvedDate;
-		private String businessCountry;
-		private String countryActive;
-		private String countryAlpha2Code;
-		private String countryAlpha3Code;
-		private String countryCode;
-		private String countryISOCode;
-		private String countryTelCode;
-		private String createdBy;
-		private Date createdDate;
-		private String isActive;
-		private BigDecimal splitIndicator;
-		private String direction;
-		private String languageCode;
-		private String languageName;
-		private String countryMobileLength;
-
-		public CountryMasterView() {
-			super();
-		}
-
-		@Id
-		@Column(name = "IDNO")
-		public BigDecimal getIdNo() {
-			return idNo;
-		}
-		public void setIdNo(BigDecimal idNo) {
-			this.idNo = idNo;
-		}
-
-		@Column(name = "COUNTRY_NAME")
-		public String getCountryName() {
-			return countryName;
-		}
-		public void setCountryName(String countryName) {
-			this.countryName = countryName;
-		}
-
-		@Column(name = "COUNTRY_ID")
-		public BigDecimal getCountryId() {
-			return countryId;
-		}
-		public void setCountryId(BigDecimal countryId) {
-			this.countryId = countryId;
-		}
-
-		@Column(name = "LANGUAGE_ID")
-		public BigDecimal getLanguageId() {
-			return languageId;
-		}
-		public void setLanguageId(BigDecimal languageId) {
-			this.languageId = languageId;
-		}
-
-		@Column(name = "NATIONALITY")
-		public String getNationality() {
-			return nationality;
-		}
-		public void setNationality(String nationality) {
-			this.nationality = nationality;
-		}
-
-		@Column(name = "APPROVED_BY")
-		public String getApprovedBy() {
-			return approvedBy;
-		}
-		public void setApprovedBy(String approvedBy) {
-			this.approvedBy = approvedBy;
-		}
-
-		@Column(name = "APPROVED_DATE")
-		public Date getApprovedDate() {
-			return approvedDate;
-		}
-		public void setApprovedDate(Date approvedDate) {
-			this.approvedDate = approvedDate;
-		}
-
-		@Column(name = "BUSINESS_COUNTRY")
-		public String getBusinessCountry() {
-			return businessCountry;
-		}
-		public void setBusinessCountry(String businessCountry) {
-			this.businessCountry = businessCountry;
-		}
-
-		@Column(name = "COUNTRY_ACTIVE")
-		public String getCountryActive() {
-			return countryActive;
-		}
-		public void setCountryActive(String countryActive) {
-			this.countryActive = countryActive;
-		}
-
-		@Column(name = "COUNTRY_ALPHA2_CODE")
-		public String getCountryAlpha2Code() {
-			return countryAlpha2Code;
-		}
-		public void setCountryAlpha2Code(String countryAlpha2Code) {
-			this.countryAlpha2Code = countryAlpha2Code;
-		}
-		
-		@Column(name = "COUNTRY_ALPHA3_CODE")
-		public String getCountryAlpha3Code() {
-			return countryAlpha3Code;
-		}
-		public void setCountryAlpha3Code(String countryAlpha3Code) {
-			this.countryAlpha3Code = countryAlpha3Code;
-		}
-
-		@Column(name = "COUNTRY_CODE")
-		public String getCountryCode() {
-			return countryCode;
-		}
-		public void setCountryCode(String countryCode) {
-			this.countryCode = countryCode;
-		}
-
-		@Column(name = "COUNTRY_ISO_CODE")
-		public String getCountryISOCode() {
-			return countryISOCode;
-		}
-		public void setCountryISOCode(String countryISOCode) {
-			this.countryISOCode = countryISOCode;
-		}	
-		
-		@Column(name = "COUNTRY_TEL_CODE")
-		public String getCountryTelCode() {
-			return countryTelCode;
-		}
-		public void setCountryTelCode(String countryTelCode) {
-			this.countryTelCode = countryTelCode;
-		}
-
-		@Column(name = "CREATED_BY")
-		public String getCreatedBy() {
-			return createdBy;
-		}
-		public void setCreatedBy(String createdBy) {
-			this.createdBy = createdBy;
-		}
-
-		@Column(name = "CREATED_DATE")
-		public Date getCreatedDate() {
-			return createdDate;
-		}
-		public void setCreatedDate(Date createdDate) {
-			this.createdDate = createdDate;
-		}
-
-		@Column(name = "ISACTIVE")
-		public String getIsActive() {
-			return isActive;
-		}
-		public void setIsActive(String isActive) {
-			this.isActive = isActive;
-		}
-
-		@Column(name = "SPLIT_INDICATOR")
-		public BigDecimal getSplitIndicator() {
-			return splitIndicator;
-		}
-		public void setSplitIndicator(BigDecimal splitIndicator) {
-			this.splitIndicator = splitIndicator;
-		}
-
-		@Column(name = "DIRECTION")
-		public String getDirection() {
-			return direction;
-		}
-		public void setDirection(String direction) {
-			this.direction = direction;
-		}
-
-		@Column(name = "LANGUAGE_CODE")
-		public String getLanguageCode() {
-			return languageCode;
-		}
-		public void setLanguageCode(String languageCode) {
-			this.languageCode = languageCode;
-		}
-
-		@Column(name = "LANGUAGE_NAME")
-		public String getLanguageName() {
-			return languageName;
-		}
-		public void setLanguageName(String languageName) {
-			this.languageName = languageName;
-		}
-		
-		@Column(name = "COUNTRY_MOB_LENGTH")
-		public String getCountryMobileLength() {
-			return countryMobileLength;
-		}
-
-		public void setCountryMobileLength(String countryMobileLength) {
-			this.countryMobileLength = countryMobileLength;
-		}
-
+	public CountryMasterView() {
+		super();
 	}
 
+	@Id
+	@Column(name = "IDNO")
+	public BigDecimal getIdNo() {
+		return idNo;
+	}
+
+	public void setIdNo(BigDecimal idNo) {
+		this.idNo = idNo;
+	}
+
+	@Column(name = "COUNTRY_NAME")
+	public String getCountryName() {
+		return countryName;
+	}
+
+	public void setCountryName(String countryName) {
+		this.countryName = countryName;
+	}
+
+	@Column(name = "COUNTRY_ID")
+	public BigDecimal getCountryId() {
+		return countryId;
+	}
+
+	public void setCountryId(BigDecimal countryId) {
+		this.countryId = countryId;
+	}
+
+	@Column(name = "LANGUAGE_ID")
+	public BigDecimal getLanguageId() {
+		return languageId;
+	}
+
+	public void setLanguageId(BigDecimal languageId) {
+		this.languageId = languageId;
+	}
+
+	@Column(name = "NATIONALITY")
+	public String getNationality() {
+		return nationality;
+	}
+
+	public void setNationality(String nationality) {
+		this.nationality = nationality;
+	}
+
+	@Column(name = "APPROVED_BY")
+	public String getApprovedBy() {
+		return approvedBy;
+	}
+
+	public void setApprovedBy(String approvedBy) {
+		this.approvedBy = approvedBy;
+	}
+
+	@Column(name = "APPROVED_DATE")
+	public Date getApprovedDate() {
+		return approvedDate;
+	}
+
+	public void setApprovedDate(Date approvedDate) {
+		this.approvedDate = approvedDate;
+	}
+
+	@Column(name = "BUSINESS_COUNTRY")
+	public String getBusinessCountry() {
+		return businessCountry;
+	}
+
+	public void setBusinessCountry(String businessCountry) {
+		this.businessCountry = businessCountry;
+	}
+
+	@Column(name = "COUNTRY_ACTIVE")
+	public String getCountryActive() {
+		return countryActive;
+	}
+
+	public void setCountryActive(String countryActive) {
+		this.countryActive = countryActive;
+	}
+
+	@Column(name = "COUNTRY_ALPHA2_CODE")
+	public String getCountryAlpha2Code() {
+		return countryAlpha2Code;
+	}
+
+	public void setCountryAlpha2Code(String countryAlpha2Code) {
+		this.countryAlpha2Code = countryAlpha2Code;
+	}
+
+	@Column(name = "COUNTRY_ALPHA3_CODE")
+	public String getCountryAlpha3Code() {
+		return countryAlpha3Code;
+	}
+
+	public void setCountryAlpha3Code(String countryAlpha3Code) {
+		this.countryAlpha3Code = countryAlpha3Code;
+	}
+
+	@Column(name = "COUNTRY_CODE")
+	public String getCountryCode() {
+		return countryCode;
+	}
+
+	public void setCountryCode(String countryCode) {
+		this.countryCode = countryCode;
+	}
+
+	@Column(name = "COUNTRY_ISO_CODE")
+	public String getCountryISOCode() {
+		return countryISOCode;
+	}
+
+	public void setCountryISOCode(String countryISOCode) {
+		this.countryISOCode = countryISOCode;
+	}
+
+	@Column(name = "COUNTRY_TEL_CODE")
+	public String getCountryTelCode() {
+		return countryTelCode;
+	}
+
+	public void setCountryTelCode(String countryTelCode) {
+		this.countryTelCode = countryTelCode;
+	}
+
+	@Column(name = "CREATED_BY")
+	public String getCreatedBy() {
+		return createdBy;
+	}
+
+	public void setCreatedBy(String createdBy) {
+		this.createdBy = createdBy;
+	}
+
+	@Column(name = "CREATED_DATE")
+	public Date getCreatedDate() {
+		return createdDate;
+	}
+
+	public void setCreatedDate(Date createdDate) {
+		this.createdDate = createdDate;
+	}
+
+	@Column(name = "ISACTIVE")
+	public String getIsActive() {
+		return isActive;
+	}
+
+	public void setIsActive(String isActive) {
+		this.isActive = isActive;
+	}
+
+	@Column(name = "SPLIT_INDICATOR")
+	public BigDecimal getSplitIndicator() {
+		return splitIndicator;
+	}
+
+	public void setSplitIndicator(BigDecimal splitIndicator) {
+		this.splitIndicator = splitIndicator;
+	}
+
+	@Column(name = "DIRECTION")
+	public String getDirection() {
+		return direction;
+	}
+
+	public void setDirection(String direction) {
+		this.direction = direction;
+	}
+
+	@Column(name = "LANGUAGE_CODE")
+	public String getLanguageCode() {
+		return languageCode;
+	}
+
+	public void setLanguageCode(String languageCode) {
+		this.languageCode = languageCode;
+	}
+
+	@Column(name = "LANGUAGE_NAME")
+	public String getLanguageName() {
+		return languageName;
+	}
+
+	public void setLanguageName(String languageName) {
+		this.languageName = languageName;
+	}
+
+	@Column(name = "COUNTRY_MOB_LENGTH")
+	public String getCountryMobileLength() {
+		return countryMobileLength;
+	}
+
+	public void setCountryMobileLength(String countryMobileLength) {
+		this.countryMobileLength = countryMobileLength;
+	}
+
+	@Override
+	public BigDecimal getResourceId() {
+		return this.countryId;
+	}
+
+	@Override
+	public String getResourceName() {
+		return this.countryName;
+	}
+
+	@Override
+	public String getResourceCode() {
+		return this.countryISOCode;
+	}
+
+}

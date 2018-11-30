@@ -29,7 +29,7 @@ import com.amx.jax.dbmodel.fx.FxDeliveryRemark;
 import com.amx.jax.dbmodel.fx.VwFxDeliveryDetailsModel;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
-import com.amx.jax.model.ResourceDto;
+import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.model.request.fx.FcSaleDeliveryDetailUpdateReceiptRequest;
 import com.amx.jax.model.request.fx.FcSaleDeliveryMarkDeliveredRequest;
 import com.amx.jax.model.request.fx.FcSaleDeliveryMarkNotDeliveredRequest;
@@ -191,26 +191,26 @@ public class FcSaleDeliveryService {
 	private ShippingAddressDto createShippingAddressDto(ShippingAddressDetail shippingAddressDetail) {
 		ShippingAddressDto shippingAddressDto = new ShippingAddressDto();
 		if (CollectionUtils.isNotEmpty(shippingAddressDetail.getFsCityMaster().getFsCityMasterDescs())) {
-			ResourceDto cityDto = new ResourceDto(shippingAddressDetail.getFsCityMaster().getCityId(),
+			ResourceDTO cityDto = new ResourceDTO(shippingAddressDetail.getFsCityMaster().getCityId(),
 					shippingAddressDetail.getFsCityMaster().getFsCityMasterDescs().get(0).getCityName());
 			shippingAddressDto.setCityDto(cityDto);
 		}
 		if (CollectionUtils.isNotEmpty(shippingAddressDetail.getFsStateMaster().getFsStateMasterDescs())) {
 			shippingAddressDto.setLocalContactState(
 					shippingAddressDetail.getFsStateMaster().getFsStateMasterDescs().get(0).getStateName());
-			ResourceDto stateDto = new ResourceDto(shippingAddressDetail.getFsStateMaster().getStateId(),
+			ResourceDTO stateDto = new ResourceDTO(shippingAddressDetail.getFsStateMaster().getStateId(),
 					shippingAddressDetail.getFsStateMaster().getFsStateMasterDescs().get(0).getStateName());
 			shippingAddressDto.setStateDto(stateDto);
 
 		}
 		if (CollectionUtils.isNotEmpty(shippingAddressDetail.getFsDistrictMaster().getFsDistrictMasterDescs())) {
-			ResourceDto districtDto = new ResourceDto(shippingAddressDetail.getFsDistrictMaster().getDistrictId(),
+			ResourceDTO districtDto = new ResourceDTO(shippingAddressDetail.getFsDistrictMaster().getDistrictId(),
 					shippingAddressDetail.getFsDistrictMaster().getFsDistrictMasterDescs().get(0).getDistrict());
 			shippingAddressDto.setDistrictDto(districtDto);
 
 		}
 		if (CollectionUtils.isNotEmpty(shippingAddressDetail.getFsCountryMaster().getFsCountryMasterDescs())) {
-			ResourceDto districtDto = new ResourceDto(shippingAddressDetail.getFsCountryMaster().getCountryId(),
+			ResourceDTO districtDto = new ResourceDTO(shippingAddressDetail.getFsCountryMaster().getCountryId(),
 					shippingAddressDetail.getFsCountryMaster().getFsCountryMasterDescs().get(0).getCountryName());
 			shippingAddressDto.setCountryDto(districtDto);
 		}

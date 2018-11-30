@@ -6,15 +6,13 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
-import com.amx.jax.model.ResourceDto;
-
+import com.amx.jax.model.ResourceDTO;
 
 public class ShippingAddressDto {
 
-
-	@NotNull(message="addressId may not be null")
+	@NotNull(message = "addressId may not be null")
 	private BigDecimal addressId;
-	@NotNull(message="customer may not be null")
+	@NotNull(message = "customer may not be null")
 	private BigDecimal customerId;
 	private BigDecimal companyId;
 	private BigDecimal countryId;
@@ -32,9 +30,9 @@ public class ShippingAddressDto {
 	private String middleNameLocal;
 	private String lastNameLocal;
 	private String alterEmailId;
-	@NotNull(message="Mobile may not be null")
-	@Pattern(regexp = "^[1-8]\\d*$",message="Invalid Mobile No")
-	@Size(min = 8)	
+	@NotNull(message = "Mobile may not be null")
+	@Pattern(regexp = "^[1-8]\\d*$", message = "Invalid Mobile No")
+	@Size(min = 8)
 	private String mobile;
 	private String companyName;
 	private String companyNameLocal;
@@ -54,7 +52,7 @@ public class ShippingAddressDto {
 	private String localContactCity;
 	private String localContactBuilding;
 	private String localContatFlat;
-	
+
 	private String street;
 	private String house;
 	private String block;
@@ -64,24 +62,22 @@ public class ShippingAddressDto {
 	private String telephone;
 	private String buildingNo;
 	/** country telephone prefix */
-	@NotNull(message="telPrefix may not be null")
-	@Pattern(regexp = "^[1-9]\\d*$",message="Invalid Tele Prefix")
+	@NotNull(message = "telPrefix may not be null")
+	@Pattern(regexp = "^[1-9]\\d*$", message = "Invalid Tele Prefix")
 	private String telephoneCode;
 
-	@NotNull(message="City Id may not be null")
-	private ResourceDto cityDto;
-	@NotNull(message="State Id may not be null")
-	private ResourceDto stateDto;
-	@NotNull(message="District Id may not be null")
-	private ResourceDto districtDto;
-	@NotNull(message="Country Id may not be null")
-	private ResourceDto countryDto;
-	@NotNull(message="Address type Id may not be null")
-	private AddressTypeDto  addressDto;
-	@NotNull(message="Area code may not be null")
-	private ResourceDto areaDto;
-	
-	
+	@NotNull(message = "City Id may not be null")
+	private ResourceDTO cityDto;
+	@NotNull(message = "State Id may not be null")
+	private ResourceDTO stateDto;
+	@NotNull(message = "District Id may not be null")
+	private ResourceDTO districtDto;
+	@NotNull(message = "Country Id may not be null")
+	private ResourceDTO countryDto;
+	@NotNull(message = "Address type Id may not be null")
+	private AddressTypeDto addressDto;
+	@NotNull(message = "Area code may not be null")
+	private ResourceDTO areaDto;
 
 	public BigDecimal getCustomerId() {
 		return customerId;
@@ -419,43 +415,42 @@ public class ShippingAddressDto {
 		this.telephoneCode = telephoneCode;
 	}
 
-	/*public String getAddressType() {
-		return addressType;
-	}
+	/*
+	 * public String getAddressType() { return addressType; }
+	 * 
+	 * public void setAddressType(String addressType) { this.addressType =
+	 * addressType; }
+	 */
 
-	public void setAddressType(String addressType) {
-		this.addressType = addressType;
-	}*/
-
-	public ResourceDto getCityDto() {
+	public ResourceDTO getCityDto() {
 		return cityDto;
 	}
 
-	public void setCityDto(ResourceDto cityDto) {
+	public void setCityDto(ResourceDTO cityDto) {
 		this.cityDto = cityDto;
 	}
 
-	public ResourceDto getStateDto() {
+	public ResourceDTO getStateDto() {
 		return stateDto;
 	}
 
-	public void setStateDto(ResourceDto stateDto) {
+	public void setStateDto(ResourceDTO stateDto) {
 		this.stateDto = stateDto;
 	}
 
-	public ResourceDto getDistrictDto() {
+	public ResourceDTO getDistrictDto() {
 		return districtDto;
 	}
 
-	public void setDistrictDto(ResourceDto districtDto) {
+	public void setDistrictDto(ResourceDTO districtDto) {
 		this.districtDto = districtDto;
 	}
 
-	public ResourceDto getCountryDto() {
+	public ResourceDTO getCountryDto() {
 		return countryDto;
 	}
 
-	public void setCountryDto(ResourceDto countryDto) {
+	public void setCountryDto(ResourceDTO countryDto) {
 		this.countryDto = countryDto;
 	}
 
@@ -467,11 +462,11 @@ public class ShippingAddressDto {
 		this.addressDto = addressDto;
 	}
 
-	public ResourceDto getAreaDto() {
+	public ResourceDTO getAreaDto() {
 		return areaDto;
 	}
 
-	public void setAreaDto(ResourceDto areaDto) {
+	public void setAreaDto(ResourceDTO areaDto) {
 		this.areaDto = areaDto;
 	}
 }
