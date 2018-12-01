@@ -9,7 +9,7 @@ public class FcSaleDeliveryMarkNotDeliveredRequest {
 	@NotNull
 	BigDecimal deliveryDetailSeqId;
 	@NotNull
-	BigDecimal deleviryRemarkSeqId;
+	BigDecimal deliveryRemarkSeqId;
 
 	public BigDecimal getDeliveryDetailSeqId() {
 		return deliveryDetailSeqId;
@@ -20,10 +20,10 @@ public class FcSaleDeliveryMarkNotDeliveredRequest {
 	}
 
 	public BigDecimal getDeleviryRemarkSeqId() {
-		return deleviryRemarkSeqId;
+		return deliveryRemarkSeqId;
 	}
 
 	public void setDeleviryRemarkSeqId(BigDecimal deleviryRemarkSeqId) {
-		this.deleviryRemarkSeqId = deleviryRemarkSeqId;
+		this.deliveryRemarkSeqId = deleviryRemarkSeqId;
 	}
 }
