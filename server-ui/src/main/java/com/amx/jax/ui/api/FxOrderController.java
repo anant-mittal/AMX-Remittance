@@ -48,6 +48,7 @@ import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.swagger.IStatusCodeListPlugin.ApiStatusService;
 import com.amx.jax.ui.response.ResponseWrapper;
+import com.amx.jax.utils.PostManUtil;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.HttpUtils;
 import com.amx.utils.JsonUtil;
@@ -198,9 +199,7 @@ public class FxOrderController {
 					.getResult();
 			// file.create(response, false);
 			// return null;
-			return ResponseEntity.ok().contentLength(file.getBody().length)
-					.header("Content-Disposition", "attachment; filename=" + file.getName())
-					.contentType(MediaType.valueOf(file.getType().getContentType())).body(file.getBody());
+			return PostManUtil.download(file);
 
 		} else if (File.Type.HTML.equals(ext)) {
 			File file = postManService.processTemplate(
@@ -208,8 +207,8 @@ public class FxOrderController {
 							wrapper, File.Type.HTML))
 					.getResult();
 			// return file.getContent();
-			return ResponseEntity.ok().contentLength(file.getBody().length)
-					.contentType(MediaType.valueOf(file.getType().getContentType())).body(file.getBody());
+			return PostManUtil.download(file);
+
 		} else {
 			// return JsonUtil.toJson(wrapper);
 			String json = JsonUtil.toJson(ResponseWrapper.build(wrapper));

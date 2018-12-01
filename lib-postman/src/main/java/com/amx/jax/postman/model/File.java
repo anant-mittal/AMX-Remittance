@@ -28,8 +28,7 @@ public class File {
 		PNG("image/png"), JPEG("image/jpeg"), JPG("image/jpg"),
 
 		JSON("application/json"), HTML("text/html"), TEXT(
-				"text/plain"
-		);
+				"text/plain");
 
 		String contentType;
 
@@ -79,6 +78,12 @@ public class File {
 	@SuppressWarnings("unchecked")
 	public File(ITemplate template, Object data, Type fileType) {
 		this.setITemplate(template);
+		this.setType(fileType);
+		this.setModel(JsonUtil.fromJson(JsonUtil.toJson(data), Map.class));
+	}
+
+	@SuppressWarnings("unchecked")
+	public File(Object data, Type fileType) {
 		this.setType(fileType);
 		this.setModel(JsonUtil.fromJson(JsonUtil.toJson(data), Map.class));
 	}
