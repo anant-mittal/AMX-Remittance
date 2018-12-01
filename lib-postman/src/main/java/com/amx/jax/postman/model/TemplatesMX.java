@@ -34,7 +34,9 @@ public enum TemplatesMX implements ITemplate {
 
 	PROMOTION_WINNER("PromotionWinner"), PROMOTION_COUPON("PromotionCoupon"),
 
-	SERVER_PING("server-ping");
+	SERVER_PING("server-ping"),
+	
+	FC_DELIVER_OTP("deliver-otp"),FC_ORDER_SUCCESS("order-success"),FC_KNET_SUCCESS("knet-success");
 
 	String fileName;
 	PDFConverter converter;
