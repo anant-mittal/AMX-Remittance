@@ -71,7 +71,8 @@
 					"sourceOfIncomeDesc": "SALARY",
 					"travelCountryName": "INDIA",
 					"travelDateRange": "11/04/2020 to 11/04/2020",
-					"localCurrQuoteName": "KWD"
+					"localCurrQuoteName": "KWD",
+					"exchangeRate":101.1
 				}
 			],
 			"deliveryDetailReport": {
@@ -123,16 +124,16 @@
 				"block": "10",
 				"adressType": "local address",
 				"areaDesc": "SALMIYA",
-				"flat": null,
-				"telephone": null,
-				"buildingNo": null,
-				"telephoneCode": null,
-				"cityDto": null,
-				"stateDto": null,
-				"districtDto": null,
-				"countryDto": null,
-				"addressDto": null,
-				"areaDto": null,
+				"flat": "101",
+				"telephone": "563",
+				"buildingNo": "101",
+				"telephoneCode": "344",
+				"cityDto": "kalyan",
+				"stateDto": "maha",
+				"districtDto": "thane",
+				"countryDto": "INDIA",
+				"addressDto": "west",
+				"areaDto": "bayer house",
 				"blockNo": "10"
 			},
 			"payg": {
