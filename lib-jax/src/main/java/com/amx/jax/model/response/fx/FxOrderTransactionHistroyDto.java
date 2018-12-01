@@ -10,23 +10,14 @@ public class FxOrderTransactionHistroyDto {
 	private BigDecimal customerReference;
 	
 	private BigDecimal documentNumber;
-
 	private String documentDate;
-	
-
 	private BigDecimal documentFinanceYear;
-	
-
+	private String transactionReferenceNo;
 	private String foreignCurrencyCode;
-	
-
+	private BigDecimal exchangeRate;
 	private BigDecimal foreignTransactionAmount;
-
 	private String currencyQuoteName;
-
 	private String transactionStatusDesc;
-	
-
 	private String transactionTypeDesc;
 	
 
@@ -75,11 +66,10 @@ public class FxOrderTransactionHistroyDto {
 	
 	private String createdDate;
 	private String sourceOfIncomeDesc;
-	
 	private String travelCountryName;
-
 	private String travelDateRange;
 	private String localCurrQuoteName;
+	
 	
 
 	public BigDecimal getIdno() {
@@ -328,5 +318,21 @@ public class FxOrderTransactionHistroyDto {
 
 	public void setLocalCurrQuoteName(String localCurrQuoteName) {
 		this.localCurrQuoteName = localCurrQuoteName;
+	}
+
+	public BigDecimal getExchangeRate() {
+		return exchangeRate;
+	}
+
+	public void setExchangeRate(BigDecimal exchangeRate) {
+		this.exchangeRate = exchangeRate;
+	}
+
+	public String getTransactionReferenceNo() {
+		return transactionReferenceNo;
+	}
+
+	public void setTransactionReferenceNo(String transactionReferenceNo) {
+		this.transactionReferenceNo = transactionReferenceNo;
 	}
 }

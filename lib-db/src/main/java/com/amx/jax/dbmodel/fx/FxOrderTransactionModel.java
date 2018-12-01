@@ -119,6 +119,12 @@ public class FxOrderTransactionModel implements Serializable {
 	@Column(name="LOCAL_CURR_QUOTE_NAME")
 	private String localCurrQuoteName;
 	
+	@Column(name="TRANSACTION_ACTUAL_RATE")
+	private BigDecimal exchangeRate;
+	
+	@Column(name="TRANSACTION_REF_NO")
+	private String  transactionReferenceNo;
+	
 	
 
 	public BigDecimal getIdno() {
@@ -369,6 +375,14 @@ public class FxOrderTransactionModel implements Serializable {
 
 	public void setLocalCurrQuoteName(String localCurrQuoteName) {
 		this.localCurrQuoteName = localCurrQuoteName;
+	}
+
+	public BigDecimal getExchangeRate() {
+		return exchangeRate;
+	}
+
+	public void setExchangeRate(BigDecimal exchangeRate) {
+		this.exchangeRate = exchangeRate;
 	}
 
 }

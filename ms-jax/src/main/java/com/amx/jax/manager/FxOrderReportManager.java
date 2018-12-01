@@ -375,23 +375,38 @@ public class FxOrderReportManager {
 	public FxOrderTransactionStatusResponseDto  getTransactionStatus(BigDecimal paymentSeqId){
 		FxOrderTransactionStatusResponseDto responseModel = new FxOrderTransactionStatusResponseDto();
 		FxOrderTransactionHistroyDto histroyDto = new FxOrderTransactionHistroyDto();
+		FxDeliveryDetailsModel fxDelDetailModel =null;
+		PaygDetailsModel pgDetailsModel =null;
 		BigDecimal custoemrId = metaData.getCustomerId();
 		BigDecimal netAmount =BigDecimal.ZERO;
 		BigDecimal deliveryCharges =BigDecimal.ZERO;
-		ReceiptPaymentApp applReceipt = rcptPaymentAppl.getApplicationByPagdetailSeqIAndcustomerId(custoemrId, paymentSeqId);
-		PaygDetailsModel pgDetailsModel = payGDeatilsRepos.findOne(paymentSeqId);
-		FxDeliveryDetailsModel fxDelDetailModel = deliveryDetailsRepos.findOne(applReceipt.getDeliveryDetSeqId());
+		List<ReceiptPaymentApp> applReceipt = rcptPaymentAppl.getApplicationByPagdetailSeqIAndcustomerId(custoemrId, paymentSeqId);
+		if(paymentSeqId!=null){
+		 pgDetailsModel = payGDeatilsRepos.findOne(paymentSeqId);
+		}
+		if(!applReceipt .isEmpty() && applReceipt.get(0).getDeliveryDetSeqId()!=null){
+		fxDelDetailModel = deliveryDetailsRepos.findOne(applReceipt.get(0).getDeliveryDetSeqId());
+		}
 		JaxTransactionStatus jaxTrnxStatus = getJaxTransactionStatus(pgDetailsModel,applReceipt);
-		if(applReceipt!=null){
-		List<FxOrderTransactionModel> fxOrderTrnxList =  fxTransactionHistroyDao.getFxOrderTrnxListByCollectionDocNumber(custoemrId,applReceipt.getColDocNo(),applReceipt.getColDocFyr());
+		String receiptNo="";
+		if(!applReceipt.isEmpty()){
+		List<FxOrderTransactionModel> fxOrderTrnxList =  fxTransactionHistroyDao.getFxOrderTrnxListByCollectionDocNumber(custoemrId,applReceipt.get(0).getColDocNo(),applReceipt.get(0).getColDocFyr());
 			 if(!fxOrderTrnxList.isEmpty()){
+				 if(fxOrderTrnxList.get(0).getCollectionDocumentNo()!=null && fxOrderTrnxList.get(0).getCollectionDocumentFinYear()!=null){
+			    		receiptNo =  fxOrderTrnxList.get(0).getCollectionDocumentFinYear().toString()+"/"+fxOrderTrnxList.get(0).getCollectionDocumentNo().toString();
+			    	}
 			    	List<FxOrderTransactionHistroyDto> fxOrderTrnxListDto = applTrnxManager.convertFxHistDto(fxOrderTrnxList);
 			    	responseModel.setFxOrderTrnxHistroyDTO(fxOrderTrnxListDto);
+			    	responseModel.setReceiptNo(receiptNo);
 			 }
+		
+			for(ReceiptPaymentApp appl : applReceipt){
+				netAmount = netAmount.add(appl.getLocalTrnxAmount());
+			}
 		}
-		if(applReceipt!=null){
+		/*if(applReceipt!=null){
 			netAmount = netAmount.add(applReceipt.getLocalTrnxAmount());
-		}
+		}*/
 		if(fxDelDetailModel !=null){
 			deliveryCharges = fxDelDetailModel.getDeliveryCharges();
 		}	
@@ -480,9 +495,13 @@ public class FxOrderReportManager {
 	
 	
 	
-	private JaxTransactionStatus getJaxTransactionStatus(PaygDetailsModel pgDetailsModel,ReceiptPaymentApp applReceipt) {
+	private JaxTransactionStatus getJaxTransactionStatus(PaygDetailsModel pgDetailsModel,List<ReceiptPaymentApp> applReceipt) {
 		JaxTransactionStatus status = JaxTransactionStatus.APPLICATION_CREATED;
-		String applicationStatus = applReceipt.getApplicationStatus();
+		String applicationStatus ="";
+		if(!applReceipt.isEmpty()){
+			applicationStatus = applReceipt.get(0).getApplicationStatus();
+		}
+		
 		if (StringUtils.isBlank(applicationStatus) && pgDetailsModel.getPgPaymentId() != null) {
 			status = JaxTransactionStatus.PAYMENT_IN_PROCESS;
 		}

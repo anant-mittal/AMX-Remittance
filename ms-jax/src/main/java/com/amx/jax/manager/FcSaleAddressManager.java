@@ -310,7 +310,9 @@ public class FcSaleAddressManager extends AbstractModel {
 		if (adddto != null) {
 			ShippingAddressDetail shippAdd = shippingAddressDao.findOne(adddto.getAddressId());
 			if (shippAdd != null) {
+				
 				ShippingAddressDetail shipAdd = new ShippingAddressDetail();
+				shipAdd.setShippingAddressDetailId(shippAdd.getShippingAddressDetailId());
 				if (JaxUtil.isNullZeroBigDecimalCheck(meta.getCustomerId())) {
 					shipAdd.setFsCustomer(new Customer(meta.getCustomerId()));
 				} else {

@@ -15,11 +15,11 @@ public class FxOrderTransactionStatusResponseDto extends AbstractModel{
 
 	JaxTransactionStatus status;
 	BigDecimal netAmount;
-	List<FxOrderTransactionHistroyDto>  fxOrderTrnxHistroyDTO;
-	
 	String transactionReference;
 	String errorMessage;
 	String errorCategory;
+	String receiptNo;
+	List<FxOrderTransactionHistroyDto>  fxOrderTrnxHistroyDTO;
 	public BigDecimal getNetAmount() {
 		return netAmount;
 	}
@@ -57,6 +57,12 @@ public class FxOrderTransactionStatusResponseDto extends AbstractModel{
 	public void setFxOrderTrnxHistroyDTO(
 			List<FxOrderTransactionHistroyDto> fxOrderTrnxHistroyDTO) {
 		this.fxOrderTrnxHistroyDTO = fxOrderTrnxHistroyDTO;
+	}
+	public String getReceiptNo() {
+		return receiptNo;
+	}
+	public void setReceiptNo(String receiptNo) {
+		this.receiptNo = receiptNo;
 	}
 	
 
