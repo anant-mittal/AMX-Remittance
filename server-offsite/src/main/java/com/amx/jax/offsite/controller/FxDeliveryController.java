@@ -15,6 +15,7 @@ import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.CustomerRegistrationClient;
 import com.amx.jax.client.fx.IFxOrderDelivery;
 import com.amx.jax.http.CommonHttpRequest.CommonMediaType;
+import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.model.request.fx.FcSaleDeliveryDetailUpdateReceiptRequest;
 import com.amx.jax.model.request.fx.FcSaleDeliveryMarkDeliveredRequest;
 import com.amx.jax.model.request.fx.FcSaleDeliveryMarkNotDeliveredRequest;
@@ -72,6 +73,11 @@ public class FxDeliveryController {
 	public AmxApiResponse<BoolRespModel, Object> markNotDelivered(
 			@RequestBody FcSaleDeliveryMarkNotDeliveredRequest fcSaleDeliveryMarkDeliveredRequest) {
 		return fxOrderDelivery.markNotDelivered(fcSaleDeliveryMarkDeliveredRequest);
+	}
+
+	@RequestMapping(value = "/order/reasons", method = { RequestMethod.GET })
+	public AmxApiResponse<ResourceDTO, Object> listDeliveryRemark() {
+		return fxOrderDelivery.listDeliveryRemark();
 	}
 
 	@RequestMapping(value = "/order/upload", method = { RequestMethod.POST })

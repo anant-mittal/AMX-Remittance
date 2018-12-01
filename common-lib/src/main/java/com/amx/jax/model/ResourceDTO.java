@@ -23,6 +23,9 @@ public class ResourceDTO implements IResourceEntity {
 	@JsonProperty("_name")
 	String resourceName;
 
+	/**
+	 * A short name for resource, eg:- ISO3 codes for Countries
+	 */
 	@JsonProperty("_code")
 	String resourceCode;
 
