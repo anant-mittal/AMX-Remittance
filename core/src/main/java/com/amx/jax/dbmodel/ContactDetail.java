@@ -53,7 +53,7 @@ public class ContactDetail implements java.io.Serializable {
 	private String telephoneCode;
 	//private BigDecimal customerId;
 	//private BigDecimal contactTypeId;
-	private String watsAppNo;
+	private BigDecimal watsAppNo;
 	private String watsAppTelePrefix;
 	private String isWatsApp;
 
@@ -66,7 +66,7 @@ public class ContactDetail implements java.io.Serializable {
 
 
 	public ContactDetail(BigDecimal contactDetailId, Customer fsCustomer, LanguageType fsLanguageType, BizComponentData fsBizComponentDataByContactTypeId, CountryMaster fsCountryMaster, DistrictMaster fsDistrictMaster, StateMaster fsStateMaster, CityMaster fsCityMaster, String alterEmailId, String area, String block, String street, String flat, String telephone, String mobile, String approved, String createdBy, String updatedBy, Date creationDate, Date lastUpdated, String activeStatus,
-			String buildingNo,String telephoneCode,String watsAppNo,String watsAppTelePrefix,String isWatsApp) {
+			String buildingNo,String telephoneCode,BigDecimal watsAppNo,String watsAppTelePrefix,String isWatsApp) {
 		this.contactDetailId = contactDetailId;
 		//this.fsCustomer = fsCustomer;
 		/*this.fsLanguageType = fsLanguageType;
@@ -318,11 +318,11 @@ public class ContactDetail implements java.io.Serializable {
 	}
 
 	@Column(name = "WHATSAPP_NUMBER")
-	public String getWatsAppNo() {
+	public BigDecimal getWatsAppNo() {
 		return watsAppNo;
 	}
 
-	public void setWatsAppNo(String watsAppNo) {
+	public void setWatsAppNo(BigDecimal watsAppNo) {
 		this.watsAppNo = watsAppNo;
 	}
 

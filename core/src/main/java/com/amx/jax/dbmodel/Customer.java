@@ -139,6 +139,13 @@ public class Customer implements java.io.Serializable {
 	private Date issueDate;
 	private Date expiryDate;
 	
+	//WhatsApp and Mobile Number related fields are add
+	private String prefixCodeMobile;
+	private BigDecimal mobileOther;
+	private String prefixCodeMobileOther;
+	private String isMobileWhatsApp;
+	private String isMobileOtherWhatsApp;
+	
 	private IncomeRangeMaster fsIncomeRangeMaster;
 	
 	/* Registration Type added */
@@ -918,5 +925,53 @@ public class Customer implements java.io.Serializable {
 	public void setCustomerRegistrationType(CustomerRegistrationType customerRegistrationType) {
 		this.customerRegistrationType = customerRegistrationType;
 	}
+
+	
+	@Column(name = "PREFIX_CODE_MOBILE")
+	public String getPrefixCodeMobile() {
+		return prefixCodeMobile;
+	}
+
+	public void setPrefixCodeMobile(String prefixCodeMobile) {
+		this.prefixCodeMobile = prefixCodeMobile;
+	}
+
+	@Column(name = "MOBILE_OTH")
+	public BigDecimal getMobileOther() {
+		return mobileOther;
+	}
+
+	public void setMobileOther(BigDecimal mobileOther) {
+		this.mobileOther = mobileOther;
+	}
+
+	@Column(name = "PREFIX_CODE_MOBILE_OTH")
+	public String getPrefixCodeMobileOther() {
+		return prefixCodeMobileOther;
+	}
+
+	public void setPrefixCodeMobileOther(String prefixCodeMobileOther) {
+		this.prefixCodeMobileOther = prefixCodeMobileOther;
+	}
+
+	@Column(name = "IS_MOBILE_WHATSAPP")
+	public String getIsMobileWhatsApp() {
+		return isMobileWhatsApp;
+	}
+
+	public void setIsMobileWhatsApp(String isMobileWhatsApp) {
+		this.isMobileWhatsApp = isMobileWhatsApp;
+	}
+
+	@Column(name = "IS_MOBILE_OTH_WHATSAPP")
+	public String getIsMobileOtherWhatsApp() {
+		return isMobileOtherWhatsApp;
+	}
+
+	public void setIsMobileOtherWhatsApp(String isMobileOtherWhatsApp) {
+		this.isMobileOtherWhatsApp = isMobileOtherWhatsApp;
+	}
+	
+	
 
 }
