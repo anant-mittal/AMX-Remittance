@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 import com.amx.jax.AppConfig;
 import com.amx.jax.AppConstants;
 import com.amx.jax.api.AmxApiResponse;
-import com.amx.jax.dict.Channel;
 import com.amx.jax.exception.AmxApiException;
 import com.amx.jax.payg.PayGParams;
 import com.amx.jax.payg.PaymentResponseDto;
@@ -47,15 +46,20 @@ public class PaymentService {
 	public PaymentResponseDto capturePayment(PayGParams params, PaymentGateWayResponse payGServiceResponse) {
 		PaymentResponseDto paymentResponseDto = null;
 		try {
-			paymentResponseDto = generatePaymentResponseDTO(payGServiceResponse);
+			paymentResponseDto = generatePaymentResponseDTO(params, payGServiceResponse);
 			LOGGER.info("Calling saveRemittanceTransaction with ...  " + paymentResponseDto.toString());
-			AmxApiResponse<PaymentResponseDto, Object> resp = savePayMentDetails(paymentResponseDto,
-					params.getChannel(), params.getProduct());
+			AmxApiResponse<PaymentResponseDto, Object> resp = savePayMentDetails(params, paymentResponseDto);
 			if (resp.getResult() != null) {
+				PaymentResponseDto capturedDto = resp.getResult();
 				LOGGER.info("PaymentResponseDto values -- CollectionDocumentCode : "
-						+ resp.getResult().getCollectionDocumentCode() + " CollectionDocumentNumber : "
-						+ resp.getResult().getCollectionDocumentNumber() + " CollectionFinanceYear : "
-						+ resp.getResult().getCollectionFinanceYear());
+						+ capturedDto.getCollectionDocumentCode() + " CollectionDocumentNumber : "
+						+ capturedDto.getCollectionDocumentNumber() + " CollectionFinanceYear : "
+						+ capturedDto.getCollectionFinanceYear());
+
+				payGServiceResponse.setCollectionDocumentCode(capturedDto.getCollectionDocumentCode());
+				payGServiceResponse.setCollectionDocumentNumber(capturedDto.getCollectionDocumentNumber());
+				payGServiceResponse.setCollectionFinanceYear(capturedDto.getCollectionFinanceYear());
+
 				return resp.getResult();
 			}
 		} catch (Exception e) {
@@ -66,11 +70,12 @@ public class PaymentService {
 
 	@Autowired
 	RestService restService;
+
 	@Autowired
 	AppConfig appConfig;
 
-	public AmxApiResponse<PaymentResponseDto, Object> savePayMentDetails(PaymentResponseDto paymentResponseDto,
-			Channel channel, Object product)
+	public AmxApiResponse<PaymentResponseDto, Object> savePayMentDetails(PayGParams params,
+			PaymentResponseDto paymentResponseDto)
 			throws Exception {
 		try {
 			RequestMetaInfo metaInfo = new RequestMetaInfo();
@@ -80,15 +85,15 @@ public class PaymentService {
 			metaInfo.setCustomerId(paymentResponseDto.getCustomerId());
 			headers.add(AppConstants.META_XKEY, new ObjectMapper().writeValueAsString(metaInfo));
 
-			if (ArgUtil.isEmpty(product)) {
+			if (ArgUtil.isEmpty(params.getProduct())) {
 				return restService.ajax(appConfig.getJaxURL() + "/remit/save-remittance/")
 						.post(new HttpEntity<PaymentResponseDto>(paymentResponseDto, headers))
 						.as(new ParameterizedTypeReference<AmxApiResponse<PaymentResponseDto, Object>>() {
 						});
 			} else {
 				return restService.ajax(appConfig.getJaxURL()).path(PaymentResponseDto.PAYMENT_CAPTURE_URL)
-						.queryParam(PaymentConstant.Params.PRODUCT, product)
-						.queryParam(PaymentConstant.Params.CHANNEL, channel)
+						.queryParam(PaymentConstant.Params.PRODUCT, params.getProduct())
+						.queryParam(PaymentConstant.Params.CHANNEL, params.getChannel())
 						.post(new HttpEntity<PaymentResponseDto>(paymentResponseDto, headers))
 						.as(new ParameterizedTypeReference<AmxApiResponse<PaymentResponseDto, Object>>() {
 						});
@@ -106,24 +111,20 @@ public class PaymentService {
 	 * @param payGServiceResponse
 	 * @return
 	 */
-	public PaymentResponseDto generatePaymentResponseDTO(PaymentGateWayResponse payGServiceResponse) {
+	public PaymentResponseDto generatePaymentResponseDTO(PayGParams params,
+			PaymentGateWayResponse payGServiceResponse) {
 		PaymentResponseDto paymentResponseDto = new PaymentResponseDto();
 
-		if (payGServiceResponse.getApplicationCountryId() != null) {
-			paymentResponseDto.setApplicationCountryId(payGServiceResponse.getApplicationCountryId());
-		}
+		paymentResponseDto.setApplicationCountryId(payGServiceResponse.getApplicationCountryId());
 
 		paymentResponseDto.setAuth_appNo(payGServiceResponse.getAuth());
 		paymentResponseDto.setTransactionId(payGServiceResponse.getTranxId());
 		paymentResponseDto.setResultCode(payGServiceResponse.getResult());
 		paymentResponseDto.setPostDate(payGServiceResponse.getPostDate());
 
-		paymentResponseDto
-				.setCollectionFinanceYear(payGServiceResponse.getCollectionFinanceYear());
-		paymentResponseDto
-				.setCollectionDocumentCode(payGServiceResponse.getCollectionDocumentCode());
-		paymentResponseDto
-				.setCollectionDocumentNumber(payGServiceResponse.getCollectionDocumentNumber());
+		paymentResponseDto.setCollectionFinanceYear(payGServiceResponse.getCollectionFinanceYear());
+		paymentResponseDto.setCollectionDocumentCode(payGServiceResponse.getCollectionDocumentCode());
+		paymentResponseDto.setCollectionDocumentNumber(payGServiceResponse.getCollectionDocumentNumber());
 
 		if (payGServiceResponse.getTrackId() != null) {
 			paymentResponseDto.setCustomerId(new BigDecimal(payGServiceResponse.getTrackId()));

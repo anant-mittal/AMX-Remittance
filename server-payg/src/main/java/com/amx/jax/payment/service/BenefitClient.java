@@ -14,7 +14,6 @@ import com.amx.jax.AppConstants;
 import com.amx.jax.dict.PayGServiceCode;
 import com.amx.jax.payg.PayGCodes;
 import com.amx.jax.payg.PayGParams;
-import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.payg.codes.BenefitCodes;
 import com.amx.jax.payment.gateway.PayGClient;
 import com.amx.jax.payment.gateway.PayGConfig;
@@ -200,24 +199,11 @@ public class BenefitClient implements PayGClient {
 
 		LOGGER.info("Params captured from BENEFIT : " + JsonUtil.toJson(gatewayResponse));
 
-		PaymentResponseDto resdto = paymentService.capturePayment(params, gatewayResponse);
+		paymentService.capturePayment(params, gatewayResponse);
 
 		if ("CAPTURED".equalsIgnoreCase(gatewayResponse.getResult())) {
 			gatewayResponse.setPayGStatus(PayGStatus.CAPTURED);
 			// Capturing JAX Response
-
-			if (resdto.getCollectionFinanceYear() != null) {
-				gatewayResponse.setCollectionFinanceYear(resdto.getCollectionFinanceYear());
-			}
-
-			if (resdto.getCollectionDocumentCode() != null) {
-				gatewayResponse.setCollectionDocumentCode(resdto.getCollectionDocumentCode());
-			}
-
-			if (resdto.getCollectionDocumentNumber() != null) {
-				gatewayResponse.setCollectionDocumentNumber(resdto.getCollectionDocumentNumber());
-			}
-
 		} else if ("CANCELED".equalsIgnoreCase(gatewayResponse.getResult())) {
 			gatewayResponse.setPayGStatus(PayGStatus.CANCELLED);
 		} else if ("NOT CAPTURED".equalsIgnoreCase(gatewayResponse.getResult())) {

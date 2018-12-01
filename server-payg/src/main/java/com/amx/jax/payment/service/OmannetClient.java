@@ -14,7 +14,6 @@ import com.amx.jax.dict.Channel;
 import com.amx.jax.dict.PayGServiceCode;
 import com.amx.jax.payg.PayGCodes;
 import com.amx.jax.payg.PayGParams;
-import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.payg.codes.OmanNetCodes;
 import com.amx.jax.payment.gateway.PayGClient;
 import com.amx.jax.payment.gateway.PayGConfig;
@@ -194,21 +193,7 @@ public class OmannetClient implements PayGClient {
 		LOGGER.info("Params captured from OMANNET : " + JsonUtil.toJson(gatewayResponse));
 
 		if (Channel.ONLINE.equals(params.getChannel())) {
-			PaymentResponseDto resdto = paymentService.capturePayment(params, gatewayResponse);
-			// Capturing JAX Response
-
-			if (resdto.getCollectionFinanceYear() != null) {
-				gatewayResponse.setCollectionFinanceYear(resdto.getCollectionFinanceYear());
-			}
-
-			if (resdto.getCollectionDocumentCode() != null) {
-				gatewayResponse.setCollectionDocumentCode(resdto.getCollectionDocumentCode());
-			}
-
-			if (resdto.getCollectionDocumentNumber() != null) {
-				gatewayResponse.setCollectionDocumentNumber(resdto.getCollectionDocumentNumber());
-			}
-
+			paymentService.capturePayment(params, gatewayResponse);
 		}
 
 		if ("CAPTURED".equalsIgnoreCase(gatewayResponse.getResult())) {

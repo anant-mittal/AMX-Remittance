@@ -13,18 +13,24 @@ public class PayGParams implements Serializable {
 
 	String uuid = null;
 
+	// Identifiers
 	String docId = null;
 	String docNo = null;
 	String docFy = null;
-
-	String amount = null;
 	String trackId = null;
-	String redirectUrl = null;
 	String payId = null;
+
+	// Money
+	String amount = null;
+
+	// Meta
 	Tenant tenant = null;
 	Channel channel = null;
 	PayGServiceCode serviceCode = null;
 	Object product = null;
+
+	// Processing
+	String redirectUrl = null;
 
 	public String getRedirectUrl() {
 		return redirectUrl;

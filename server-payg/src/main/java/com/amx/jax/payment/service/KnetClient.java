@@ -16,7 +16,6 @@ import com.aciworldwide.commerce.gateway.plugins.e24PaymentPipe;
 import com.amx.jax.dict.PayGServiceCode;
 import com.amx.jax.payg.PayGCodes;
 import com.amx.jax.payg.PayGParams;
-import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.payg.codes.KnetCodes;
 import com.amx.jax.payment.PaymentConstant;
 import com.amx.jax.payment.gateway.PayGClient;
@@ -184,21 +183,8 @@ public class KnetClient implements PayGClient {
 		LOGGER.info("Result from response Values ---> " + gatewayResponse.getErrorCategory());
 		/* gatewayResponse.setError(resultResponse); */
 
-		PaymentResponseDto resdto = paymentService.capturePayment(params, gatewayResponse);
+		paymentService.capturePayment(params, gatewayResponse);
 		// Capturing JAX Response
-
-		if (resdto.getCollectionFinanceYear() != null) {
-			gatewayResponse.setCollectionFinanceYear(resdto.getCollectionFinanceYear());
-		}
-
-		if (resdto.getCollectionDocumentCode() != null) {
-			gatewayResponse.setCollectionDocumentCode(resdto.getCollectionDocumentCode());
-		}
-
-		if (resdto.getCollectionDocumentNumber() != null) {
-			gatewayResponse.setCollectionDocumentNumber(resdto.getCollectionDocumentNumber());
-		}
-
 		if ("CAPTURED".equalsIgnoreCase(gatewayResponse.getResult())) {
 			gatewayResponse.setPayGStatus(PayGStatus.CAPTURED);
 		} else if ("CANCELED".equalsIgnoreCase(gatewayResponse.getResult())) {
