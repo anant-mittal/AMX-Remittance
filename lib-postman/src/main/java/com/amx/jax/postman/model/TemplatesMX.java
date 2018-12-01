@@ -20,7 +20,7 @@ public enum TemplatesMX implements ITemplate {
 			"TransactionCreationSuccess"),
 	PROFILE_CHANGE("AccoutDetailsUpdate"),
 
-	FXO_RECEIPT("FXO_RECIEPT", PDFConverter.JASPER),
+	FXO_RECEIPT("FXO_RECEIPT", PDFConverter.JASPER,"fxo-receipt.json"),
 
 	// Rate Alert, PlaceOrder
 	RATE_ALERT("place-order"), RATE_ALERT_COMPLETION("place-order-executed"),
