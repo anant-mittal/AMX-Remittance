@@ -16,11 +16,14 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.fx.IFxOrderDelivery;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.ResourceDto;
 import com.amx.jax.model.request.fx.FcSaleDeliveryDetailUpdateReceiptRequest;
 import com.amx.jax.model.request.fx.FcSaleDeliveryMarkDeliveredRequest;
 import com.amx.jax.model.request.fx.FcSaleDeliveryMarkNotDeliveredRequest;
 import com.amx.jax.model.response.fx.FxDeliveryDetailDto;
 import com.amx.jax.services.FcSaleDeliveryService;
+
+import io.swagger.annotations.ApiOperation;
 
 @RestController
 public class FcSaleDeliveryController implements IFxOrderDelivery {
@@ -38,6 +41,7 @@ public class FcSaleDeliveryController implements IFxOrderDelivery {
 	 */
 	@RequestMapping(value = Path.FX_DELIVERY_LIST_ORDER, method = RequestMethod.GET)
 	@Override
+	@ApiOperation("Lists order for driver employee present in metadata")
 	public AmxApiResponse<FxDeliveryDetailDto, Object> listOrders() {
 		List<FxDeliveryDetailDto> resultList = fcSaleDeliveryService.listOrders();
 		return AmxApiResponse.buildList(resultList);
@@ -45,6 +49,7 @@ public class FcSaleDeliveryController implements IFxOrderDelivery {
 
 	@RequestMapping(value = Path.FX_DELIVERY_GET_ORDER_DETAIL, method = RequestMethod.GET)
 	@Override
+	@ApiOperation("Fetch delivery detail of given delivery detail sequence id")
 	public AmxApiResponse<FxDeliveryDetailDto, Object> getDeliveryDetail(@RequestParam BigDecimal deliveryDetailSeqId) {
 		FxDeliveryDetailDto result = fcSaleDeliveryService.getDeliveryDetail(deliveryDetailSeqId);
 		return AmxApiResponse.build(result);
@@ -52,6 +57,7 @@ public class FcSaleDeliveryController implements IFxOrderDelivery {
 
 	@RequestMapping(value = Path.FX_DELIVERY_MARK_DELIVERED, method = RequestMethod.POST)
 	@Override
+	@ApiOperation("Marks the order status as delivered")
 	public AmxApiResponse<BoolRespModel, Object> markDelivered(
 			@RequestBody FcSaleDeliveryMarkDeliveredRequest fcSaleDeliveryMarkDeliveredRequest) {
 		BoolRespModel result = fcSaleDeliveryService.markDelivered(fcSaleDeliveryMarkDeliveredRequest);
@@ -60,6 +66,7 @@ public class FcSaleDeliveryController implements IFxOrderDelivery {
 
 	@RequestMapping(value = Path.FX_DELIVERY_MARK_NOT_DELIVERED, method = RequestMethod.POST)
 	@Override
+	@ApiOperation("Marks the order status as not delivered")
 	public AmxApiResponse<BoolRespModel, Object> markNotDelivered(
 			@RequestBody FcSaleDeliveryMarkNotDeliveredRequest fcSaleDeliveryMarkNotDeliveredRequest) {
 		BoolRespModel result = fcSaleDeliveryService.markNotDelivered(fcSaleDeliveryMarkNotDeliveredRequest);
@@ -68,6 +75,7 @@ public class FcSaleDeliveryController implements IFxOrderDelivery {
 
 	@RequestMapping(value = Path.FX_DELIVERY_TRANSACTION_RECEIPT, method = RequestMethod.POST)
 	@Override
+	@ApiOperation("Update receipt clob for given delivery details")
 	public AmxApiResponse<BoolRespModel, Object> updateTransactionReceipt(
 			@RequestBody FcSaleDeliveryDetailUpdateReceiptRequest fcSaleDeliveryDetailUpdateReceiptRequest) {
 		BoolRespModel result = fcSaleDeliveryService.updateTransactionReceipt(fcSaleDeliveryDetailUpdateReceiptRequest);
@@ -76,6 +84,7 @@ public class FcSaleDeliveryController implements IFxOrderDelivery {
 
 	@RequestMapping(value = Path.FX_DELIVERY_SEND_OTP, method = RequestMethod.GET)
 	@Override
+	@ApiOperation("Send otp to the customer")
 	public AmxApiResponse<BoolRespModel, Object> sendOtp(@RequestParam BigDecimal deliveryDetailSeqId) {
 		BoolRespModel result = fcSaleDeliveryService.sendOtp(deliveryDetailSeqId);
 		return AmxApiResponse.build(result);
@@ -83,9 +92,19 @@ public class FcSaleDeliveryController implements IFxOrderDelivery {
 
 	@RequestMapping(value = Path.FX_DELIVERY_VERIFY_OTP, method = RequestMethod.POST)
 	@Override
+	@ApiOperation("Verify otp sent to customer")
 	public AmxApiResponse<BoolRespModel, Object> verifyOtp(@RequestParam BigDecimal deliveryDetailSeqId,
 			@RequestParam BigDecimal mOtp) {
 		BoolRespModel result = fcSaleDeliveryService.verifyOtp(deliveryDetailSeqId, mOtp);
 		return AmxApiResponse.build(result);
 	}
+
+	@ApiOperation("Lists all active delivery remarks")
+	@RequestMapping(value = Path.FX_DELIVERY_LIST_DELIVERY_REMARK, method = RequestMethod.GET)
+	@Override
+	public AmxApiResponse<ResourceDto, Object> listDeliveryRemark() {
+		List<ResourceDto> resultList = fcSaleDeliveryService.listDeliveryRemark();
+		return AmxApiResponse.buildList(resultList);
+	}
+
 }

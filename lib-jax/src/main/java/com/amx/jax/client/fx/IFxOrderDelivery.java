@@ -7,6 +7,7 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.error.ApiJaxStatusBuilder.ApiJaxStatus;
+import com.amx.jax.model.ResourceDto;
 import com.amx.jax.model.request.fx.FcSaleDeliveryDetailUpdateReceiptRequest;
 import com.amx.jax.model.request.fx.FcSaleDeliveryMarkDeliveredRequest;
 import com.amx.jax.model.request.fx.FcSaleDeliveryMarkNotDeliveredRequest;
@@ -23,6 +24,7 @@ public interface IFxOrderDelivery extends IJaxService {
 		public static final String FX_DELIVERY_TRANSACTION_RECEIPT = PREFIX + "/update-trnx-receipt/";
 		public static final String FX_DELIVERY_SEND_OTP = PREFIX + "/send-otp/";
 		public static final String FX_DELIVERY_VERIFY_OTP = PREFIX + "/verify-otp/";
+		public static final String FX_DELIVERY_LIST_DELIVERY_REMARK = PREFIX + "/list-del-remark/";
 	}
 
 	public static class Params {
@@ -53,5 +55,7 @@ public interface IFxOrderDelivery extends IJaxService {
 
 	@ApiJaxStatus({ JaxError.FC_CURRENCY_DELIVERY_DETAIL_NOT_FOUND, JaxError.MISSING_OTP, JaxError.INVALID_OTP })
 	AmxApiResponse<BoolRespModel, Object> verifyOtp(BigDecimal deliveryDetailSeqId, BigDecimal mOtp);
+
+	AmxApiResponse<ResourceDto, Object> listDeliveryRemark();
 
 }

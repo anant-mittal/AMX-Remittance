@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
@@ -90,6 +91,7 @@ public class FcSaleDeliveryService {
 		}
 		dto.setAddress(shippingAddressDto);
 		dto.setOrderStatus(statusDesc);
+		dto.setDeliveryDetailSeqId(model.getDeleviryDelSeqId());
 		return dto;
 	}
 
@@ -107,7 +109,7 @@ public class FcSaleDeliveryService {
 	public BoolRespModel markDelivered(FcSaleDeliveryMarkDeliveredRequest fcSaleDeliveryMarkDeliveredRequest) {
 		FxDeliveryDetailsModel deliveryDetail = validateFxDeliveryModel(
 				fcSaleDeliveryMarkDeliveredRequest.getDeliveryDetailSeqId());
-		 deliveryDetail.setOrderStatus(ConstantDocument.DVD);
+		deliveryDetail.setOrderStatus(ConstantDocument.DVD);
 		fcSaleApplicationDao.saveDeliveryDetail(deliveryDetail);
 		// TODO: updated table ex_appl_receipt_payment and column ORDER_STATUS
 		return new BoolRespModel(true);
@@ -219,5 +221,12 @@ public class FcSaleDeliveryService {
 		} catch (Exception e) {
 		}
 		return shippingAddressDto;
+	}
+
+	public List<ResourceDto> listDeliveryRemark() {
+		List<FxDeliveryRemark> delRemarks = fcSaleApplicationDao.listDeliveryRemark();
+		return delRemarks.stream().map(remark -> {
+			return new ResourceDto(remark.getDeleviryRemarkSeqId(), remark.getDeliveryRemark());
+		}).collect(Collectors.toList());
 	}
 }

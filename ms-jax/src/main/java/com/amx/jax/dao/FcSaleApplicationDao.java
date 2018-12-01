@@ -345,5 +345,9 @@ public class FcSaleApplicationDao {
 	
 	public StatusMaster getStatusMaster(String statusCode) {
 		return statusMasterRepository.findByStatusCode(statusCode);
-	} 
+	}
+
+	public List<FxDeliveryRemark> listDeliveryRemark() {
+		return fxDeliveryRemarkRepository.findByIsActive(ConstantDocument.Yes);
+	}
 }

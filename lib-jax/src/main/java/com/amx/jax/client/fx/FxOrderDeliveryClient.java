@@ -11,6 +11,7 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.exception.JaxSystemError;
+import com.amx.jax.model.ResourceDto;
 import com.amx.jax.model.request.fx.FcSaleDeliveryDetailUpdateReceiptRequest;
 import com.amx.jax.model.request.fx.FcSaleDeliveryMarkDeliveredRequest;
 import com.amx.jax.model.request.fx.FcSaleDeliveryMarkNotDeliveredRequest;
@@ -126,6 +127,20 @@ public class FxOrderDeliveryClient implements IFxOrderDelivery {
 					});
 		} catch (Exception e) {
 			LOGGER.error("exception in verifyOtp : ", e);
+			return JaxSystemError.evaluate(e);
+		}
+	}
+
+	@Override
+	public AmxApiResponse<ResourceDto, Object> listDeliveryRemark() {
+		try {
+			LOGGER.debug("in listDeliveryRemark");
+			String url = appConfig.getJaxURL() + Path.FX_DELIVERY_LIST_DELIVERY_REMARK;
+			return restService.ajax(url).get()
+					.as(new ParameterizedTypeReference<AmxApiResponse<ResourceDto, Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in listDeliveryRemark : ", e);
 			return JaxSystemError.evaluate(e);
 		}
 	}

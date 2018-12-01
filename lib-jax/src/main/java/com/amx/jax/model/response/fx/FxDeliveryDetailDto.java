@@ -1,5 +1,7 @@
 package com.amx.jax.model.response.fx;
 
+import java.math.BigDecimal;
+
 public class FxDeliveryDetailDto {
 
 	String customerName;
@@ -10,7 +12,7 @@ public class FxDeliveryDetailDto {
 	String inventoryId;//
 	String deliveryRemark;
 	String orderStatus;
-	
+	BigDecimal deliveryDetailSeqId;
 
 	public String getMobile() {
 		return mobile;
@@ -76,6 +78,13 @@ public class FxDeliveryDetailDto {
 		this.orderStatus = orderStatus;
 	}
 
+	public BigDecimal getDeliveryDetailSeqId() {
+		return deliveryDetailSeqId;
+	}
+
+	public void setDeliveryDetailSeqId(BigDecimal deliveryDetailSeqId) {
+		this.deliveryDetailSeqId = deliveryDetailSeqId;
+	}
 
 
 }
