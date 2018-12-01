@@ -16,7 +16,7 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.fx.IFxOrderDelivery;
 import com.amx.jax.meta.MetaData;
-import com.amx.jax.model.ResourceDto;
+import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.model.request.fx.FcSaleDeliveryDetailUpdateReceiptRequest;
 import com.amx.jax.model.request.fx.FcSaleDeliveryMarkDeliveredRequest;
 import com.amx.jax.model.request.fx.FcSaleDeliveryMarkNotDeliveredRequest;
@@ -102,8 +102,8 @@ public class FcSaleDeliveryController implements IFxOrderDelivery {
 	@ApiOperation("Lists all active delivery remarks")
 	@RequestMapping(value = Path.FX_DELIVERY_LIST_DELIVERY_REMARK, method = RequestMethod.GET)
 	@Override
-	public AmxApiResponse<ResourceDto, Object> listDeliveryRemark() {
-		List<ResourceDto> resultList = fcSaleDeliveryService.listDeliveryRemark();
+	public AmxApiResponse<ResourceDTO, Object> listDeliveryRemark() {
+		List<ResourceDTO> resultList = fcSaleDeliveryService.listDeliveryRemark();
 		return AmxApiResponse.buildList(resultList);
 	}
 

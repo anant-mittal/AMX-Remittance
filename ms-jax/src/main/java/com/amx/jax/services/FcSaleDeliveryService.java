@@ -223,10 +223,10 @@ public class FcSaleDeliveryService {
 		return shippingAddressDto;
 	}
 
-	public List<ResourceDto> listDeliveryRemark() {
+	public List<ResourceDTO> listDeliveryRemark() {
 		List<FxDeliveryRemark> delRemarks = fcSaleApplicationDao.listDeliveryRemark();
 		return delRemarks.stream().map(remark -> {
-			return new ResourceDto(remark.getDeleviryRemarkSeqId(), remark.getDeliveryRemark());
+			return new ResourceDTO(remark.getDeleviryRemarkSeqId(), remark.getDeliveryRemark());
 		}).collect(Collectors.toList());
 	}
 }

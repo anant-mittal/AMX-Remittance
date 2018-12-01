@@ -7,7 +7,7 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.error.ApiJaxStatusBuilder.ApiJaxStatus;
-import com.amx.jax.model.ResourceDto;
+import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.model.request.fx.FcSaleDeliveryDetailUpdateReceiptRequest;
 import com.amx.jax.model.request.fx.FcSaleDeliveryMarkDeliveredRequest;
 import com.amx.jax.model.request.fx.FcSaleDeliveryMarkNotDeliveredRequest;
@@ -56,6 +56,6 @@ public interface IFxOrderDelivery extends IJaxService {
 	@ApiJaxStatus({ JaxError.FC_CURRENCY_DELIVERY_DETAIL_NOT_FOUND, JaxError.MISSING_OTP, JaxError.INVALID_OTP })
 	AmxApiResponse<BoolRespModel, Object> verifyOtp(BigDecimal deliveryDetailSeqId, BigDecimal mOtp);
 
-	AmxApiResponse<ResourceDto, Object> listDeliveryRemark();
+	AmxApiResponse<ResourceDTO, Object> listDeliveryRemark();
 
 }
