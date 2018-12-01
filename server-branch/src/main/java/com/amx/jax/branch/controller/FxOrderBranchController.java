@@ -29,8 +29,10 @@ public class FxOrderBranchController {
 	}
 	
 	@RequestMapping(value = "/api/fxo/order/details",  method = { RequestMethod.POST })
-	public AmxApiResponse<FcSaleOrderManagementDTO,Object> getOrderDetails(@RequestParam(value = "orderNumber", required = true) BigDecimal orderNumber){
-		return fxOrderBranchClient.fetchBranchOrderDetails(orderNumber);
+	public AmxApiResponse<FcSaleOrderManagementDTO,Object> getOrderDetails(
+			@RequestParam(value = "orderNumber", required = true) BigDecimal orderNumber,
+			@RequestParam(value = "orderYear", required = true) BigDecimal orderYear){
+		return fxOrderBranchClient.fetchBranchOrderDetails(orderNumber, orderYear);
 	}
 	
 	@RequestMapping(value = "/api/fxo/currency/stock",  method = { RequestMethod.POST })
