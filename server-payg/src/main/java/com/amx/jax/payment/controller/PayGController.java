@@ -31,10 +31,11 @@ import com.amx.jax.payment.gateway.PayGClient;
 import com.amx.jax.payment.gateway.PayGClients;
 import com.amx.jax.payment.gateway.PayGConfig;
 import com.amx.jax.payment.gateway.PayGEvent;
-import com.amx.jax.payment.gateway.PayGResponse;
-import com.amx.jax.payment.gateway.PayGResponse.PayGStatus;
 import com.amx.jax.payment.gateway.PayGSession;
+import com.amx.jax.payment.gateway.PaymentGateWayResponse;
+import com.amx.jax.payment.gateway.PaymentGateWayResponse.PayGStatus;
 import com.amx.jax.scope.TenantContextHolder;
+import com.amx.utils.ArgUtil;
 
 import io.swagger.annotations.Api;
 
@@ -87,6 +88,8 @@ public class PayGController {
 			Model model) {
 
 		TenantContextHolder.setCurrent(tnt);
+		String uuid = payGSession.uuid(true);
+
 		String appRedirectUrl = null;
 
 		if (tnt.equals(Tenant.BHR)) {
@@ -124,11 +127,18 @@ public class PayGController {
 		payGParams.setChannel(channel);
 		payGParams.setProduct(prod);
 		payGParams.setServiceCode(payGClient.getClientCode());
+		payGParams.setUuid(uuid);
 
 		auditService.log(new PayGEvent(PayGEvent.Type.PAYMENT_INIT, payGParams));
 
+		PaymentGateWayResponse respModel = new PaymentGateWayResponse();
+
+		payGSession.init();
+		payGSession.get().setParams(payGParams);
+		payGSession.get().setResponse(respModel);
+
 		try {
-			payGClient.initialize(payGParams);
+			payGClient.initialize(payGParams, respModel);
 		} catch (RuntimeException e) {
 			SimpleDateFormat df = new SimpleDateFormat("HH:mm");
 			Calendar cal = Calendar.getInstance();
@@ -140,11 +150,12 @@ public class PayGController {
 			return "thymeleaf/pg_error";
 		}
 
-		payGSession.setPayGParams(payGParams);
+		payGSession.save();
 
 		if (payGParams.getRedirectUrl() != null) {
 			return "redirect:" + payGParams.getRedirectUrl();
 		}
+
 		return null;
 	}
 
@@ -157,16 +168,23 @@ public class PayGController {
 			@PathVariable("tenant") Tenant tnt,
 			@PathVariable("paygCode") PayGServiceCode paygCode,
 			@PathVariable("channel") Channel channel,
-			@PathVariable(value = "product", required = false) String product) {
+			@PathVariable(value = "product", required = false) String product,
+			@PathVariable(value = "uuid", required = false) String uuid) {
 
 		TenantContextHolder.setCurrent(tnt);
+
+		if (!ArgUtil.isEmpty(uuid)) {
+			payGSession.uuid(uuid);
+		}
+
 		LOGGER.info("Inside capture method with parameters tenant : " + tnt + " paygCode : " + paygCode);
 		PayGClient payGClient = payGClients.getPayGClient(paygCode);
 
-		PayGResponse payGResponse = new PayGResponse();
+		PaymentGateWayResponse payGResponse = payGSession.get().getResponse();
+		payGResponse.setApplicationCountryId(tnt.getBDCode());
 
 		try {
-			payGResponse = payGClient.capture(new PayGResponse(), channel, product);
+			payGResponse = payGClient.capture(payGSession.get().getParams(), payGResponse);
 		} catch (Exception e) {
 			LOGGER.error("payment service error in capturePayment method : ", e);
 			payGResponse.setPayGStatus(PayGStatus.ERROR);

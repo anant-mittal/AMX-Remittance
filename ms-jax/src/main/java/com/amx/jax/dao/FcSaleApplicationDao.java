@@ -37,6 +37,7 @@ import com.amx.jax.error.JaxError;
 import com.amx.jax.model.request.fx.FcSaleOrderPaynowRequestModel;
 import com.amx.jax.model.response.fx.FxApplicationDto;
 import com.amx.jax.model.response.fx.ShoppingCartDetailsDto;
+import com.amx.jax.payg.PayGModel;
 import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.repository.fx.FxDeliveryDetailsRepository;
 import com.amx.jax.repository.fx.FxDeliveryRemarkRepository;
@@ -226,7 +227,7 @@ public class FcSaleApplicationDao {
 			 CollectionModel collection =(CollectionModel)hashMapToSaveAllInput.get("COLLECTION");
 			 CollectDetailModel collectDetail =(CollectDetailModel)hashMapToSaveAllInput.get("COLL_DETAILS");
 			 List<ReceiptPaymentApp> listOfRecAppl = (List<ReceiptPaymentApp>)hashMapToSaveAllInput.get("LIST_RCPT_APPL");
-			 PaymentResponseDto	pgResponse =(PaymentResponseDto)hashMapToSaveAllInput.get("PG_RESP_DETAILS");
+			 PayGModel	pgResponse =(PayGModel)hashMapToSaveAllInput.get("PG_RESP_DETAILS");
 			 
 			 if(collection!=null){
 				 collectionRepository.save(collection);

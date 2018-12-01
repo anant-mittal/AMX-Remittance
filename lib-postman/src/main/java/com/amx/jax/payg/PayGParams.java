@@ -1,11 +1,18 @@
 package com.amx.jax.payg;
 
+import java.io.Serializable;
+
 import com.amx.jax.dict.Channel;
 import com.amx.jax.dict.PayGServiceCode;
 import com.amx.jax.dict.Tenant;
 import com.amx.utils.ArgUtil;
 
-public class PayGParams {
+public class PayGParams implements Serializable {
+
+	private static final long serialVersionUID = 3434309644048921758L;
+
+	String uuid = null;
+
 	String docId = null;
 	String docNo = null;
 	String docFy = null;
@@ -117,6 +124,14 @@ public class PayGParams {
 
 	public void setDocFy(Object docFy) {
 		this.docFy = ArgUtil.parseAsString(docFy);
+	}
+
+	public String getUuid() {
+		return uuid;
+	}
+
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
 	}
 
 }

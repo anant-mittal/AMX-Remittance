@@ -45,6 +45,7 @@ import com.amx.jax.dbmodel.fx.FxDeliveryDetailsModel;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.response.fx.ShoppingCartDetailsDto;
+import com.amx.jax.payg.PayGModel;
 import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.repository.CountryBranchRepository;
 import com.amx.jax.repository.IDocumentDao;
@@ -176,7 +177,7 @@ public class FxOrderPaymentManager {
 	
 	/** Save ReceiptPayment 
 	 * @param localFsCountryMaster **/
-	 public List<ReceiptPayment> saveReceiptPayment(List<ReceiptPaymentApp> listOfRecAppl, PaymentResponseDto paymentResponse){
+	 public List<ReceiptPayment> saveReceiptPayment(List<ReceiptPaymentApp> listOfRecAppl, PayGModel paymentResponse){
 		 List<ReceiptPayment> receiptPaymentList =new ArrayList<>();
 		 if(!listOfRecAppl.isEmpty()){
 			 for(ReceiptPaymentApp applreceipt : listOfRecAppl){
@@ -279,7 +280,7 @@ public class FxOrderPaymentManager {
 	 }
 	
 	 /**  Save collection **/
-	 public CollectionModel saveCollection(List<ReceiptPaymentApp> listOfRecAppl, PaymentResponseDto paymentResponse){
+	 public CollectionModel saveCollection(List<ReceiptPaymentApp> listOfRecAppl, PayGModel paymentResponse){
 		 CollectionModel collection  =new CollectionModel();
 		 BigDecimal totalcollectiontAmount = BigDecimal.ZERO;
 		 BigDecimal deliveryCharges = BigDecimal.ZERO;

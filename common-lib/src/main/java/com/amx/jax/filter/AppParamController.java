@@ -18,9 +18,6 @@ import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.http.RequestType;
 import com.amx.jax.model.UserDevice;
 import com.amx.jax.scope.TenantContextHolder;
-import com.amx.jax.types.DigitsDnum;
-import com.amx.jax.types.Pnum;
-import com.amx.jax.types.WritersPnum;
 import com.amx.utils.CryptoUtil.HashBuilder;
 
 @RestController
@@ -30,11 +27,6 @@ public class AppParamController {
 	public static final String PUB_AMX_PREFIX = "/pub/amx";
 	public static final String PUBG_AMX_PREFIX = "/pubg/";
 	public static final String PARAM_URL = PUB_AMX_PREFIX + "/params";
-
-	static {
-		// Pnum.readEnums();
-		Pnum.init(WritersPnum.class);
-	}
 
 	@Autowired
 	CommonHttpRequest commonHttpRequest;
@@ -57,17 +49,6 @@ public class AppParamController {
 		resp.setMeta(map);
 		resp.setData(commonHttpRequest.getUserDevice());
 		return resp;
-	}
-
-	@RequestMapping(value = "/pub/amx/pnum", method = RequestMethod.GET)
-	public WritersPnum geoLocation(@RequestParam(required = false) WritersPnum id) {
-		return id;
-	}
-
-	@RequestMapping(value = "/pub/amx/dnum", method = RequestMethod.GET)
-	public DigitsDnum geoLocation(@RequestParam(required = false) DigitsDnum id) {
-		new DigitsDnum("FOUR", 3);
-		return id;
 	}
 
 	@RequestMapping(value = "/pub/amx/hmac", method = RequestMethod.GET)

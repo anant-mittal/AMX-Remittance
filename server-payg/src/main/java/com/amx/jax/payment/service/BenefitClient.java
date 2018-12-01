@@ -1,6 +1,5 @@
 package com.amx.jax.payment.service;
 
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,10 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import com.amx.jax.AppConstants;
-import com.amx.jax.cache.TransactionModel;
-import com.amx.jax.dict.Channel;
 import com.amx.jax.dict.PayGServiceCode;
-import com.amx.jax.dict.Tenant;
 import com.amx.jax.payg.PayGCodes;
 import com.amx.jax.payg.PayGParams;
 import com.amx.jax.payg.PaymentResponseDto;
@@ -23,8 +19,10 @@ import com.amx.jax.payg.codes.BenefitCodes;
 import com.amx.jax.payment.gateway.PayGClient;
 import com.amx.jax.payment.gateway.PayGConfig;
 import com.amx.jax.payment.gateway.PayGContext.PayGSpecific;
-import com.amx.jax.payment.gateway.PayGResponse;
-import com.amx.jax.payment.gateway.PayGResponse.PayGStatus;
+import com.amx.jax.payment.gateway.PayGSession;
+import com.amx.jax.payment.gateway.PaymentGateWayResponse;
+import com.amx.jax.payment.gateway.PaymentGateWayResponse.PayGStatus;
+import com.amx.jax.payment.gateway.PaymentService;
 import com.amx.utils.ContextUtil;
 import com.amx.utils.JsonUtil;
 
@@ -37,7 +35,7 @@ import bhr.com.aciworldwide.commerce.gateway.plugins.e24PaymentPipe;
  *
  */
 @PayGSpecific(PayGServiceCode.BENEFIT)
-public class BenefitClient extends TransactionModel<PaymentResponseDto> implements PayGClient {
+public class BenefitClient implements PayGClient {
 
 	private static final Logger LOGGER = Logger.getLogger(BenefitClient.class);
 
@@ -71,13 +69,16 @@ public class BenefitClient extends TransactionModel<PaymentResponseDto> implemen
 	@Autowired
 	private PaymentService paymentService;
 
+	@Autowired
+	PayGSession payGSession;
+
 	@Override
 	public PayGServiceCode getClientCode() {
 		return PayGServiceCode.BENEFIT;
 	}
 
 	@Override
-	public void initialize(PayGParams payGParams) {
+	public void initialize(PayGParams params, PaymentGateWayResponse gatewayResponse) {
 
 		Map<String, Object> configMap = new HashMap<String, Object>();
 
@@ -85,7 +86,7 @@ public class BenefitClient extends TransactionModel<PaymentResponseDto> implemen
 		configMap.put("currency", benefitCurrency);
 		configMap.put("languageCode", benefitLanguageCode);
 		configMap.put("responseUrl", payGConfig.getServiceCallbackUrl() + "/app/capture/BENEFIT/"
-				+ payGParams.getTenant() + "/" + payGParams.getChannel() + "/");
+				+ params.getTenant() + "/" + params.getChannel() + "/");
 		configMap.put("resourcePath", benefitCertpath);
 		configMap.put("aliasName", benefitAliasName);
 
@@ -103,10 +104,10 @@ public class BenefitClient extends TransactionModel<PaymentResponseDto> implemen
 			pipe.setErrorURL((String) configMap.get("responseUrl"));
 			pipe.setResourcePath((String) configMap.get("resourcePath"));
 			pipe.setAlias((String) configMap.get("aliasName"));
-			pipe.setAmt((String) payGParams.getAmount());
-			pipe.setTrackId((String) payGParams.getTrackId());
+			pipe.setAmt((String) params.getAmount());
+			pipe.setTrackId((String) params.getTrackId());
 
-			pipe.setUdf3(payGParams.getDocNo());
+			pipe.setUdf3(params.getDocNo());
 
 			Short pipeValue = pipe.performPaymentInitialization();
 			LOGGER.info("pipeValue : " + pipeValue);
@@ -126,18 +127,18 @@ public class BenefitClient extends TransactionModel<PaymentResponseDto> implemen
 			responseMap.put("payid", new String(payID));
 			responseMap.put("payurl", new String(payURL));
 
-			PaymentResponseDto paymentDto = new PaymentResponseDto();
+			PaymentGateWayResponse paymentDto = payGSession.get().getResponse();
 			paymentDto.setPaymentId(payID);
-			paymentDto.setCustomerId(new BigDecimal(payGParams.getTrackId()));
-			paymentDto.setUdf3(payGParams.getDocNo());
-			paymentDto.setTrackId(payGParams.getTrackId());
 
-			ContextUtil.map().put(AppConstants.TRANX_ID_XKEY, payID);
-			save(paymentDto);
+//			paymentDto.setCustomerId(new BigDecimal(payGParams.getTrackId()));
+//			paymentDto.setUdf3(payGParams.getDocNo());
+//			paymentDto.setTrackId(payGParams.getTrackId());
+//			ContextUtil.map().put(AppConstants.TRANX_ID_XKEY, payID);
+//			payGSession.save(paymentDto);
 
 			String url = payURL + "?PaymentID=" + payID;
 			LOGGER.info("Generated url is ---> " + url);
-			payGParams.setRedirectUrl(url);
+			params.setRedirectUrl(url);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -146,7 +147,7 @@ public class BenefitClient extends TransactionModel<PaymentResponseDto> implemen
 	}
 
 	@Override
-	public PayGResponse capture(PayGResponse gatewayResponse, Channel channel, Object product) {
+	public PaymentGateWayResponse capture(PayGParams params, PaymentGateWayResponse gatewayResponse) {
 
 		// Capturing GateWay Response
 		String resultResponse = request.getParameter("Error");
@@ -165,7 +166,6 @@ public class BenefitClient extends TransactionModel<PaymentResponseDto> implemen
 		gatewayResponse.setUdf3(request.getParameter("udf3"));
 		gatewayResponse.setUdf4(request.getParameter("udf4"));
 		gatewayResponse.setUdf5(request.getParameter("udf5"));
-		gatewayResponse.setCountryId(Tenant.BHR.getCode());
 		gatewayResponse.setErrorText(request.getParameter("ErrorText"));
 		gatewayResponse.setError(request.getParameter("Error"));
 
@@ -174,12 +174,11 @@ public class BenefitClient extends TransactionModel<PaymentResponseDto> implemen
 		// to handle error scenario
 		if (gatewayResponse.getUdf3() == null) {
 			ContextUtil.map().put(AppConstants.TRANX_ID_XKEY, request.getParameter("paymentid"));
-			PaymentResponseDto paymentCacheModel = get();
-			LOGGER.info("Values ---> " + paymentCacheModel.toString());
-			gatewayResponse.setUdf3(paymentCacheModel.getUdf3());
+			LOGGER.info("Values ---> " + JsonUtil.toJson(params));
+			gatewayResponse.setUdf3(params.getDocNo());
 			gatewayResponse.setResponseCode("NOT CAPTURED");
 			gatewayResponse.setResult("NOT CAPTURED");
-			gatewayResponse.setTrackId(paymentCacheModel.getTrackId());
+			gatewayResponse.setTrackId(params.getTrackId());
 		}
 
 		BenefitCodes statusCode;
@@ -201,22 +200,22 @@ public class BenefitClient extends TransactionModel<PaymentResponseDto> implemen
 
 		LOGGER.info("Params captured from BENEFIT : " + JsonUtil.toJson(gatewayResponse));
 
-		PaymentResponseDto resdto = paymentService.capturePayment(gatewayResponse, channel, product);
+		PaymentResponseDto resdto = paymentService.capturePayment(params, gatewayResponse);
 
 		if ("CAPTURED".equalsIgnoreCase(gatewayResponse.getResult())) {
 			gatewayResponse.setPayGStatus(PayGStatus.CAPTURED);
 			// Capturing JAX Response
 
 			if (resdto.getCollectionFinanceYear() != null) {
-				gatewayResponse.setCollectionFinYear(resdto.getCollectionFinanceYear().toString());
+				gatewayResponse.setCollectionFinanceYear(resdto.getCollectionFinanceYear());
 			}
 
 			if (resdto.getCollectionDocumentCode() != null) {
-				gatewayResponse.setCollectionDocCode(resdto.getCollectionDocumentCode().toString());
+				gatewayResponse.setCollectionDocumentCode(resdto.getCollectionDocumentCode());
 			}
 
 			if (resdto.getCollectionDocumentNumber() != null) {
-				gatewayResponse.setCollectionDocNumber(resdto.getCollectionDocumentNumber().toString());
+				gatewayResponse.setCollectionDocumentNumber(resdto.getCollectionDocumentNumber());
 			}
 
 		} else if ("CANCELED".equalsIgnoreCase(gatewayResponse.getResult())) {
@@ -228,17 +227,5 @@ public class BenefitClient extends TransactionModel<PaymentResponseDto> implemen
 		}
 		return gatewayResponse;
 	}// end of capture
-
-	@Override
-	public PaymentResponseDto init() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public PaymentResponseDto commit() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 }

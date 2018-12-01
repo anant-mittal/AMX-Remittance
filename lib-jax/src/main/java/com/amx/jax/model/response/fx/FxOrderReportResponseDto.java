@@ -23,7 +23,7 @@ public class FxOrderReportResponseDto {
  	 private String deliveryDate;
  	 private String deliveryTime;
  	 private BigDecimal deliveryCharges;
- 	
+     
 	 private String paymentMode;
 	 private String amountPayable;
 	 
@@ -49,8 +49,8 @@ public class FxOrderReportResponseDto {
 	 
 	 private String engCompanyInfo;
 	 private String arabicCompanyInfo;
-	 
-
+     
+     
 	
 	
 	public List<FxOrderTransactionHistroyDto> getFxOrderTrnxList() {
@@ -176,7 +176,7 @@ public class FxOrderReportResponseDto {
 	public void setArabicCompanyInfo(String arabicCompanyInfo) {
 		this.arabicCompanyInfo = arabicCompanyInfo;
 	}
-	
+	 
 	public String getPaymentMode() {
 		return paymentMode;
 	}

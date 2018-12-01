@@ -24,7 +24,7 @@ public abstract class TransactionModel<T> extends ATransactionModel<T> {
 
 	@Override
 	public T init() {
-		return null;
+		return save(getDefault());
 	};
 
 	@Override

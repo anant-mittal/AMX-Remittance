@@ -25,7 +25,7 @@ import com.amx.jax.dbmodel.SourceOfIncomeView;
 import com.amx.jax.exrateservice.service.NewExchangeRateService;
 import com.amx.jax.manager.RemittanceTransactionManager;
 import com.amx.jax.model.response.SourceOfIncomeDto;
-import com.amx.jax.payg.PaymentResponseDto;
+import com.amx.jax.payg.PayGModel;
 import com.amx.jax.repository.IRemittanceTransactionDao;
 import com.amx.jax.repository.ISourceOfIncomeDao;
 import com.amx.jax.service.CurrencyMasterService;
@@ -126,7 +126,7 @@ public class RemittanceTransactionService extends AbstractService {
 		return response;
 	}
 
-	public ApiResponse saveRemittance(PaymentResponseDto paymentResponseDto) {
+	public ApiResponse saveRemittance(PayGModel paymentResponseDto) {
 		ApiResponse response = getBlackApiResponse();
 		return response;
 

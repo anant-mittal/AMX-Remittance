@@ -1,4 +1,6 @@
-package com.amx.jax.types;
+package com.amx.jax.test;
+
+import com.amx.jax.types.Dnum;
 
 public class DigitsDnum extends Dnum<DigitsDnum> {
 	public final static DigitsDnum ZERO = new DigitsDnum("ZERO", 0);

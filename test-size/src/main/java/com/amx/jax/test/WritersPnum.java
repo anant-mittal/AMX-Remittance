@@ -1,4 +1,6 @@
-package com.amx.jax.types;
+package com.amx.jax.test;
+
+import com.amx.jax.types.Pnum;
 
 public class WritersPnum extends Pnum {
 
@@ -26,6 +28,10 @@ public class WritersPnum extends Pnum {
 
 	public static WritersPnum valueOf(String name) {
 		return fromString(WritersPnum.class, name);
+	}
+
+	static {
+		init(WritersPnum.class);
 	}
 
 }

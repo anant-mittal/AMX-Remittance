@@ -13,9 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import com.aciworldwide.commerce.gateway.plugins.e24PaymentPipe;
-import com.amx.jax.dict.Channel;
 import com.amx.jax.dict.PayGServiceCode;
-import com.amx.jax.dict.Tenant;
 import com.amx.jax.payg.PayGCodes;
 import com.amx.jax.payg.PayGParams;
 import com.amx.jax.payg.PaymentResponseDto;
@@ -24,8 +22,9 @@ import com.amx.jax.payment.PaymentConstant;
 import com.amx.jax.payment.gateway.PayGClient;
 import com.amx.jax.payment.gateway.PayGConfig;
 import com.amx.jax.payment.gateway.PayGContext.PayGSpecific;
-import com.amx.jax.payment.gateway.PayGResponse;
-import com.amx.jax.payment.gateway.PayGResponse.PayGStatus;
+import com.amx.jax.payment.gateway.PaymentGateWayResponse;
+import com.amx.jax.payment.gateway.PaymentGateWayResponse.PayGStatus;
+import com.amx.jax.payment.gateway.PaymentService;
 import com.amx.utils.JsonUtil;
 
 /**
@@ -71,7 +70,7 @@ public class KnetClient implements PayGClient {
 	}
 
 	@Override
-	public void initialize(PayGParams payGParams) {
+	public void initialize(PayGParams params, PaymentGateWayResponse gatewayResponse) {
 
 		/**
 		 * TODO :- TO be removed *********** DEBUG
@@ -81,7 +80,7 @@ public class KnetClient implements PayGClient {
 		configMap.put("currency", knetCurrency);
 		configMap.put("languageCode", knetLanguageCode);
 		configMap.put("responseUrl", payGConfig.getServiceCallbackUrl() +
-				PaymentConstant.getCalbackUrl(payGParams));
+				PaymentConstant.getCalbackUrl(params));
 		configMap.put("resourcePath", knetCertpath);
 		configMap.put("aliasName", knetAliasName);
 		LOGGER.info("KNET payment configuration : " + JsonUtil.toJson(configMap));
@@ -90,7 +89,7 @@ public class KnetClient implements PayGClient {
 		e24PaymentPipe pipe = new e24PaymentPipe();
 		HashMap<String, String> responseMap = new HashMap<String, String>();
 
-		String amount = (String) payGParams.getAmount();
+		String amount = (String) params.getAmount();
 
 		try {
 			BigDecimal bd = new BigDecimal(amount);
@@ -114,14 +113,14 @@ public class KnetClient implements PayGClient {
 			 * transaction identifier
 			 */
 			String responseUrl = payGConfig.getServiceCallbackUrl() +
-					PaymentConstant.getCalbackUrl(payGParams);
+					PaymentConstant.getCalbackUrl(params);
 			pipe.setResponseURL(responseUrl);
 			pipe.setErrorURL(responseUrl);
 			pipe.setResourcePath(knetCertpath);
 			pipe.setAlias(knetAliasName);
 			pipe.setAmt(amount);
-			pipe.setTrackId(payGParams.getTrackId());
-			pipe.setUdf3(payGParams.getDocNo());
+			pipe.setTrackId(params.getTrackId());
+			pipe.setUdf3(params.getDocNo());
 
 			Short pipeValue = pipe.performPaymentInitialization();
 
@@ -143,7 +142,7 @@ public class KnetClient implements PayGClient {
 			responseMap.put("payurl", new String(payURL));
 			String url = payURL + "?paymentId=" + payID;
 			LOGGER.debug("Generated url is ---> " + url);
-			payGParams.setRedirectUrl(url);
+			params.setRedirectUrl(url);
 
 		} catch (NumberFormatException e) {
 			LOGGER.error(String.format("Amount entered --> %s ,is not correct number.", amount), e);
@@ -157,7 +156,7 @@ public class KnetClient implements PayGClient {
 	}
 
 	@Override
-	public PayGResponse capture(PayGResponse gatewayResponse, Channel channel, Object product) {
+	public PaymentGateWayResponse capture(PayGParams params, PaymentGateWayResponse gatewayResponse) {
 
 		// Capturing GateWay Response
 		String resultResponse = request.getParameter("result");
@@ -174,7 +173,6 @@ public class KnetClient implements PayGClient {
 		gatewayResponse.setUdf3(request.getParameter("udf3"));
 		gatewayResponse.setUdf4(request.getParameter("udf4"));
 		gatewayResponse.setUdf5(request.getParameter("udf5"));
-		gatewayResponse.setCountryId(Tenant.KWT.getCode());
 
 		LOGGER.info("Params captured from KNET : " + JsonUtil.toJson(gatewayResponse));
 
@@ -186,19 +184,19 @@ public class KnetClient implements PayGClient {
 		LOGGER.info("Result from response Values ---> " + gatewayResponse.getErrorCategory());
 		/* gatewayResponse.setError(resultResponse); */
 
-		PaymentResponseDto resdto = paymentService.capturePayment(gatewayResponse, channel, product);
+		PaymentResponseDto resdto = paymentService.capturePayment(params, gatewayResponse);
 		// Capturing JAX Response
 
 		if (resdto.getCollectionFinanceYear() != null) {
-			gatewayResponse.setCollectionFinYear(resdto.getCollectionFinanceYear().toString());
+			gatewayResponse.setCollectionFinanceYear(resdto.getCollectionFinanceYear());
 		}
 
 		if (resdto.getCollectionDocumentCode() != null) {
-			gatewayResponse.setCollectionDocCode(resdto.getCollectionDocumentCode().toString());
+			gatewayResponse.setCollectionDocumentCode(resdto.getCollectionDocumentCode());
 		}
 
 		if (resdto.getCollectionDocumentNumber() != null) {
-			gatewayResponse.setCollectionDocNumber(resdto.getCollectionDocumentNumber().toString());
+			gatewayResponse.setCollectionDocumentNumber(resdto.getCollectionDocumentNumber());
 		}
 
 		if ("CAPTURED".equalsIgnoreCase(gatewayResponse.getResult())) {

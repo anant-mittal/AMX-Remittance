@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Value;
 
 import com.amx.jax.dict.Channel;
 import com.amx.jax.dict.PayGServiceCode;
-import com.amx.jax.dict.Tenant;
 import com.amx.jax.payg.PayGCodes;
 import com.amx.jax.payg.PayGParams;
 import com.amx.jax.payg.PaymentResponseDto;
@@ -20,8 +19,9 @@ import com.amx.jax.payg.codes.OmanNetCodes;
 import com.amx.jax.payment.gateway.PayGClient;
 import com.amx.jax.payment.gateway.PayGConfig;
 import com.amx.jax.payment.gateway.PayGContext.PayGSpecific;
-import com.amx.jax.payment.gateway.PayGResponse;
-import com.amx.jax.payment.gateway.PayGResponse.PayGStatus;
+import com.amx.jax.payment.gateway.PaymentGateWayResponse;
+import com.amx.jax.payment.gateway.PaymentGateWayResponse.PayGStatus;
+import com.amx.jax.payment.gateway.PaymentService;
 import com.amx.utils.JsonUtil;
 import com.fss.plugin.iPayPipe;
 
@@ -66,15 +66,15 @@ public class OmannetClient implements PayGClient {
 	}
 
 	@Override
-	public void initialize(PayGParams payGParams) {
+	public void initialize(PayGParams params, PaymentGateWayResponse gatewayResponse) {
 
 		Map<String, Object> configMap = new HashMap<String, Object>();
 
 		configMap.put("action", OmemnetAction);
 		configMap.put("currency", OmemnetCurrency);
 		configMap.put("languageCode", OmemnetLanguageCode);
-		configMap.put("responseUrl", OmemnetCallbackUrl + "/app/capture/OMANNET/" + payGParams.getTenant() + "/"
-				+ payGParams.getChannel() + "/");
+		configMap.put("responseUrl", OmemnetCallbackUrl + "/app/capture/OMANNET/" + params.getTenant() + "/"
+				+ params.getChannel() + "/");
 		// configMap.put("responseUrl",
 		// OmemnetCallbackUrl+"/app/capture/OMANNET/" + payGParams.getTenant() + "/");
 		configMap.put("resourcePath", OmemnetCertpath);
@@ -96,9 +96,9 @@ public class OmannetClient implements PayGClient {
 			pipe.setResourcePath((String) configMap.get("resourcePath"));
 			pipe.setKeystorePath((String) configMap.get("keystorePath"));
 			pipe.setAlias((String) configMap.get("aliasName"));
-			pipe.setAmt((String) payGParams.getAmount());
-			pipe.setTrackId((String) payGParams.getTrackId());
-			pipe.setUdf3(payGParams.getDocNo());
+			pipe.setAmt((String) params.getAmount());
+			pipe.setTrackId((String) params.getTrackId());
+			pipe.setUdf3(params.getDocNo());
 
 			int pipeValue = pipe.performPaymentInitializationHTTP();
 			LOGGER.info("pipeValue : " + pipeValue);
@@ -110,7 +110,7 @@ public class OmannetClient implements PayGClient {
 				throw new RuntimeException("Problem while sending transaction to Oman.");
 			}
 			LOGGER.info("Generated web address is ---> " + pipe.getWebAddress());
-			payGParams.setRedirectUrl(pipe.getWebAddress());
+			params.setRedirectUrl(pipe.getWebAddress());
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -121,7 +121,7 @@ public class OmannetClient implements PayGClient {
 
 	@SuppressWarnings("finally")
 	@Override
-	public PayGResponse capture(PayGResponse gatewayResponse, Channel channel, Object product) {
+	public PaymentGateWayResponse capture(PayGParams params, PaymentGateWayResponse gatewayResponse) {
 
 		// Capturing GateWay Response
 		gatewayResponse.setPaymentId(request.getParameter("paymentid"));
@@ -132,7 +132,6 @@ public class OmannetClient implements PayGClient {
 		gatewayResponse.setUdf3(request.getParameter("udf3"));
 		gatewayResponse.setUdf4(request.getParameter("udf4"));
 		gatewayResponse.setUdf5(request.getParameter("udf5"));
-		gatewayResponse.setCountryId(Tenant.OMN.getCode());
 
 		iPayPipe pipe = new iPayPipe();
 		// Initialization
@@ -194,20 +193,20 @@ public class OmannetClient implements PayGClient {
 
 		LOGGER.info("Params captured from OMANNET : " + JsonUtil.toJson(gatewayResponse));
 
-		if (channel.equals(Channel.ONLINE)) {
-			PaymentResponseDto resdto = paymentService.capturePayment(gatewayResponse, channel, product);
+		if (Channel.ONLINE.equals(params.getChannel())) {
+			PaymentResponseDto resdto = paymentService.capturePayment(params, gatewayResponse);
 			// Capturing JAX Response
 
 			if (resdto.getCollectionFinanceYear() != null) {
-				gatewayResponse.setCollectionFinYear(resdto.getCollectionFinanceYear().toString());
+				gatewayResponse.setCollectionFinanceYear(resdto.getCollectionFinanceYear());
 			}
 
 			if (resdto.getCollectionDocumentCode() != null) {
-				gatewayResponse.setCollectionDocCode(resdto.getCollectionDocumentCode().toString());
+				gatewayResponse.setCollectionDocumentCode(resdto.getCollectionDocumentCode());
 			}
 
 			if (resdto.getCollectionDocumentNumber() != null) {
-				gatewayResponse.setCollectionDocNumber(resdto.getCollectionDocumentNumber().toString());
+				gatewayResponse.setCollectionDocumentNumber(resdto.getCollectionDocumentNumber());
 			}
 
 		}
