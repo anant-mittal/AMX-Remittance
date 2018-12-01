@@ -36,6 +36,7 @@ public class FcSaleOrderManagementDTO extends AbstractModel {
 	BigDecimal localNetAmount;
 	BigDecimal transactionActualRate;
 	String customerName;
+	BigDecimal customerId;
 	
 	public BigDecimal getDocumentNo() {
 		return DocumentNo;
@@ -210,6 +211,13 @@ public class FcSaleOrderManagementDTO extends AbstractModel {
 	}
 	public void setCustomerName(String customerName) {
 		this.customerName = customerName;
+	}
+	
+	public BigDecimal getCustomerId() {
+		return customerId;
+	}
+	public void setCustomerId(BigDecimal customerId) {
+		this.customerId = customerId;
 	}
 	
 }

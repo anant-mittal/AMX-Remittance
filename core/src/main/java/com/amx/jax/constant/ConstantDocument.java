@@ -86,5 +86,7 @@ public class ConstantDocument {
 	// RTD for --returned
 	public static final String RTD="RTD";
 	/** end Here **/
+	public static final String P = "P";	
+	public static final String FC_SALE = "FC Sale";
 
 }

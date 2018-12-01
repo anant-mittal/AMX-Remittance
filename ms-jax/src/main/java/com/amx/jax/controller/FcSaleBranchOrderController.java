@@ -6,14 +6,17 @@ import java.math.BigDecimal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.fx.IFxBranchOrderService;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.request.fx.FcSaleBranchDispatchRequest;
 import com.amx.jax.model.response.fx.FcEmployeeDetailsDto;
 import com.amx.jax.model.response.fx.FcSaleOrderManagementDTO;
 import com.amx.jax.model.response.fx.UserStockDto;
@@ -41,6 +44,7 @@ public class FcSaleBranchOrderController implements IFxBranchOrderService {
 	 * 
 	 */
 	@RequestMapping(value = Path.FC_PENDING_ORDER_MANAGEMENT , method = RequestMethod.GET)
+	@Override
 	public AmxApiResponse<FcSaleOrderManagementDTO,Object> fetchBranchOrderManagement() {
 		BigDecimal countryId = metaData.getCountryId();
 		BigDecimal employeeId = metaData.getEmployeeId();
@@ -52,9 +56,10 @@ public class FcSaleBranchOrderController implements IFxBranchOrderService {
 	 * 
 	 */
 	@RequestMapping(value = Path.FC_FETCH_ORDER_MANAGEMENT , method = RequestMethod.GET)
-	public AmxApiResponse<FcSaleOrderManagementDTO,Object> fetchBranchOrderDetails(@RequestParam(value = "orderNumber", required = true) BigDecimal orderNumber) {
+	@Override
+	public AmxApiResponse<FcSaleOrderManagementDTO,Object> fetchBranchOrderDetails(@RequestParam(value = "orderNumber", required = true) BigDecimal orderNumber,@RequestParam(value = "orderYear", required = true) BigDecimal orderYear) {
 		BigDecimal countryId = metaData.getCountryId();
-		return fcSaleBranch.fetchFcSaleOrderDetails(countryId,orderNumber);
+		return fcSaleBranch.fetchFcSaleOrderDetails(countryId,orderNumber,orderYear);
 	}
 
 	/**
@@ -62,6 +67,7 @@ public class FcSaleBranchOrderController implements IFxBranchOrderService {
 	 * 
 	 */
 	@RequestMapping(value = Path.FC_FETCH_STOCK_CURRENCY , method = RequestMethod.GET)
+	@Override
 	public AmxApiResponse<UserStockDto,Object> fetchBranchStockDetailsByCurrency(@RequestParam(value = "foreignCurrencyId", required = true) BigDecimal foreignCurrencyId) {
 		BigDecimal countryId = metaData.getCountryId();
 		BigDecimal employeeId = metaData.getEmployeeId();
@@ -73,6 +79,7 @@ public class FcSaleBranchOrderController implements IFxBranchOrderService {
 	 * 
 	 */
 	@RequestMapping(value = Path.FC_FETCH_STOCK , method = RequestMethod.GET)
+	@Override
 	public AmxApiResponse<UserStockDto,Object> fetchBranchStockDetails() {
 		BigDecimal countryId = metaData.getCountryId();
 		BigDecimal employeeId = metaData.getEmployeeId();
@@ -85,6 +92,7 @@ public class FcSaleBranchOrderController implements IFxBranchOrderService {
 	 * 
 	 */
 	@RequestMapping(value = Path.FC_EMLOYEE_DRIVERS , method = RequestMethod.GET)
+	@Override
 	public AmxApiResponse<FcEmployeeDetailsDto,Object> fetchBranchEmployee() {
 		return fcSaleBranch.fetchDriverDetails();
 	}
@@ -94,9 +102,21 @@ public class FcSaleBranchOrderController implements IFxBranchOrderService {
 	 * 
 	 */
 	@RequestMapping(value = Path.FC_ASSIGN_DRIVER , method = RequestMethod.POST)
-	public AmxApiResponse<Boolean,Object> assignDriver(@RequestParam(value = "orderNumber", required = true) BigDecimal orderNumber,@RequestParam(value = "driverId", required = true) BigDecimal driverId) {
+	@Override
+	public AmxApiResponse<BoolRespModel,Object> assignDriver(@RequestParam(value = "orderNumber", required = true) BigDecimal orderNumber,@RequestParam(value = "orderYear", required = true) BigDecimal orderYear,@RequestParam(value = "driverId", required = true) BigDecimal driverId) {
 		BigDecimal countryId = metaData.getCountryId();
-		return fcSaleBranch.assignDriver(countryId,orderNumber,driverId);
+		BoolRespModel result = fcSaleBranch.assignDriver(countryId,orderNumber,orderYear,driverId);
+		return AmxApiResponse.build(result);
+	}
+	
+	@RequestMapping(value = Path.FC_DISPATCH_ORDER , method = RequestMethod.POST)
+	@Override
+	public AmxApiResponse<BoolRespModel,Object> dispatchOrder(@RequestBody FcSaleBranchDispatchRequest fcSaleBranchDispatchRequest){
+		BigDecimal employeeId = metaData.getEmployeeId();
+		BigDecimal countryId = metaData.getCountryId();
+		BigDecimal companyId = metaData.getCompanyId();
+		BoolRespModel result = fcSaleBranch.dispatchOrder(fcSaleBranchDispatchRequest,employeeId,countryId,companyId);
+		return AmxApiResponse.build(result);
 	}
 
 }

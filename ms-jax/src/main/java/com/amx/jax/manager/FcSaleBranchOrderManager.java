@@ -1,9 +1,13 @@
 package com.amx.jax.manager;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.slf4j.Logger;
@@ -15,16 +19,33 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.FcSaleBranchDao;
+import com.amx.jax.dbmodel.CollectionModel;
+import com.amx.jax.dbmodel.CompanyMaster;
+import com.amx.jax.dbmodel.CountryBranch;
+import com.amx.jax.dbmodel.CountryMaster;
+import com.amx.jax.dbmodel.CurrencyMasterModel;
+import com.amx.jax.dbmodel.CurrencyWiseDenomination;
+import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.Employee;
+import com.amx.jax.dbmodel.ForeignCurrencyAdjust;
+import com.amx.jax.dbmodel.ViewCompanyDetails;
 import com.amx.jax.dbmodel.fx.EmployeeDetailsView;
 import com.amx.jax.dbmodel.fx.FxDeliveryDetailsModel;
 import com.amx.jax.dbmodel.fx.OrderManagementView;
 import com.amx.jax.dbmodel.fx.UserStockView;
+import com.amx.jax.dbmodel.remittance.Document;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.model.request.fx.FcSaleBranchDispatchModel;
+import com.amx.jax.model.request.fx.FcSaleBranchDispatchRequest;
 import com.amx.jax.model.response.fx.FcEmployeeDetailsDto;
+import com.amx.jax.model.response.fx.FcSaleOrderManagementDTO;
 import com.amx.jax.model.response.fx.FxEmployeeDetailsDto;
 import com.amx.jax.model.response.fx.UserStockDto;
+import com.amx.jax.repository.IDocumentDao;
+import com.amx.jax.service.CompanyService;
+import com.amx.jax.util.DateUtil;
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Component
@@ -34,6 +55,12 @@ public class FcSaleBranchOrderManager {
 	
 	@Autowired
 	FcSaleBranchDao fcSaleBranchDao;
+	
+	@Autowired
+	CompanyService companyService;
+	
+	@Autowired
+	IDocumentDao documentDao;
 	
 	public List<OrderManagementView> fetchFcSaleOrderManagement(BigDecimal applicationCountryId,BigDecimal employeeId){
 		List<OrderManagementView> ordermanage = new ArrayList<>();
@@ -56,10 +83,10 @@ public class FcSaleBranchOrderManager {
 		return ordermanage;
 	}
 	
-	public List<OrderManagementView> fetchFcSaleOrderDetails(BigDecimal applicationCountryId,BigDecimal orderNumber){
+	public List<OrderManagementView> fetchFcSaleOrderDetails(BigDecimal applicationCountryId,BigDecimal orderNumber,BigDecimal orderYear){
 		List<OrderManagementView> ordermanage = new ArrayList<>();
 		try{
-			ordermanage = fcSaleBranchDao.checkPendingOrders(applicationCountryId,orderNumber);
+			ordermanage = fcSaleBranchDao.checkPendingOrders(applicationCountryId,orderNumber,orderYear);
 		}catch(Exception e){
 			e.printStackTrace();
 			logger.error("fetchFcSaleOrderDetails ", e.getMessage()+" applicationCountryId :"+applicationCountryId+" orderNumber :"+orderNumber);
@@ -190,10 +217,11 @@ public class FcSaleBranchOrderManager {
 		return empDrivers;
 	}
 	
-	public Boolean saveAssignDriver(BigDecimal countryId,BigDecimal orderNumber,BigDecimal driverId) {
+	// save assign driver details in multiple tables
+	public Boolean saveAssignDriver(BigDecimal countryId,BigDecimal orderNumber,BigDecimal orderYear,BigDecimal driverId) {
 		BigDecimal deliveryDetailsId = null;
 		Boolean status = Boolean.FALSE;
-		List<OrderManagementView> lstOrderManagement = fetchFcSaleOrderDetails(countryId, orderNumber);
+		List<OrderManagementView> lstOrderManagement = fetchFcSaleOrderDetails(countryId, orderNumber,orderYear);
 		if(lstOrderManagement != null && lstOrderManagement.size() != 0) {
 			for (OrderManagementView orderManagementView : lstOrderManagement) {
 				if(deliveryDetailsId == null) {
@@ -271,6 +299,158 @@ public class FcSaleBranchOrderManager {
 		}
 		
 		return employeeDto;
+	}
+	
+	// save the dispatch record 
+	public Boolean saveDispatchOrder(FcSaleBranchDispatchRequest fcSaleBranchDispatchRequest,BigDecimal employeeId,BigDecimal countryId,BigDecimal companyId) {
+		Boolean status = Boolean.FALSE;
+		String userName = null;
+		BigDecimal countryBranchId = null;
+		BigDecimal collectionDocYear = null;
+		BigDecimal collectionDocNumber = null;
+		BigDecimal companyCode = null;
+		BigDecimal documentId = null;
+		BigDecimal collectionId = null;
+		List<BigDecimal> duplicate = new ArrayList<>();
+		List<ForeignCurrencyAdjust> foreignCurrencyAdjusts = new ArrayList<>();
+		HashMap<BigDecimal, String> mapInventory = new HashMap<>();
+		HashMap<BigDecimal, String> mapInventoryReceiptPayment = new HashMap<>();
+
+		try {
+
+			if(fcSaleBranchDispatchRequest != null) {
+				List<FcSaleBranchDispatchModel> orderDetails =  fcSaleBranchDispatchRequest.getUserStockDocDetails();
+				collectionDocYear = fcSaleBranchDispatchRequest.getCollectionDocumentYear();
+				collectionDocNumber = fcSaleBranchDispatchRequest.getCollectionDocumentNo();
+
+				// employee details
+				FxEmployeeDetailsDto employeeDt = fetchEmployee(employeeId);
+				if(employeeDt != null && employeeDt.getEmployeeId() != null){
+					if(employeeDt.getUserName() != null) {
+						userName = employeeDt.getUserName();
+					}
+					if(employeeDt.getCountryBranchId() != null) {
+						countryBranchId = employeeDt.getCountryBranchId();
+					}
+				}else {
+					throw new GlobalException("Employee details is empty",JaxError.INVALID_EMPLOYEE);
+				}
+
+				// fetch collection details
+				List<CollectionModel> collection = fcSaleBranchDao.fetchCollectionData(collectionDocNumber, collectionDocYear);
+				if(collection != null && collection.size() != 0) {
+					CollectionModel collectionModel = collection.get(0);
+					collectionId = collectionModel.getCollectionId();
+					companyCode = collectionModel.getCompanyCode();
+				}
+
+				// fetch
+				List<Document> documentDt = documentDao.getDocumnetByCode(ConstantDocument.DOCUMENT_CODE_FOR_FCSALE);
+				if(documentDt != null && documentDt.size() != 0) {
+					Document document = documentDt.get(0);
+					documentId = document.getDocumentID();
+				}
+
+				// receipt payment Details
+				HashMap<BigDecimal, OrderManagementView> mapOrderManagement = new HashMap<>();
+				List<OrderManagementView> lstOrderManagement = fetchFcSaleOrderDetails(countryId, collectionDocNumber,collectionDocYear);
+				if(lstOrderManagement != null && lstOrderManagement.size() != 0) {
+					for (OrderManagementView orderManagementView : lstOrderManagement) {
+						mapOrderManagement.put(orderManagementView.getDocumentNo(), orderManagementView);
+					} 
+				}
+
+
+				if(orderDetails != null) {
+
+					for (FcSaleBranchDispatchModel fcSaleBranchDispatchModel : orderDetails) {
+						if(!duplicate.contains(fcSaleBranchDispatchModel.getDocumentNumber())) {
+							duplicate.add(fcSaleBranchDispatchModel.getDocumentNumber());
+							mapInventory.put(fcSaleBranchDispatchModel.getDocumentNumber(), fcSaleBranchDispatchModel.getInventoryId());
+							int i = 0;
+							for (FcSaleBranchDispatchModel fcSaleBranchDispatch : orderDetails) {
+								if(fcSaleBranchDispatchModel.getDocumentNumber().compareTo(fcSaleBranchDispatch.getDocumentNumber()) == 0) {
+									ForeignCurrencyAdjust foreignCurrencyAdj = new ForeignCurrencyAdjust();
+
+									foreignCurrencyAdj.setDocumentLineNumber(new BigDecimal(++i));
+
+									foreignCurrencyAdj.setAccountmmyyyy(new SimpleDateFormat("dd/MM/yyyy").parse(DateUtil.getCurrentAccMMYear()));
+
+									CollectionModel collectionModel = new CollectionModel();
+									collectionModel.setCollectionId(collectionId);
+									foreignCurrencyAdj.setCollect(collectionModel);
+
+									CountryMaster countryMaster = new CountryMaster();
+									countryMaster.setCountryId(countryId);
+									foreignCurrencyAdj.setFsCountryMaster(countryMaster);
+
+									CountryBranch countryBranch = new CountryBranch();
+									countryBranch.setCountryBranchId(countryBranchId);
+									foreignCurrencyAdj.setCountryBranch(countryBranch);
+
+									CompanyMaster companyMaster = new CompanyMaster();
+									companyMaster.setCompanyId(companyId);
+									foreignCurrencyAdj.setFsCompanyMaster(companyMaster);
+
+									foreignCurrencyAdj.setCompanyCode(companyCode);
+
+									CurrencyMasterModel currencyMasterModel = new CurrencyMasterModel();
+									currencyMasterModel.setCurrencyId(mapOrderManagement.get(fcSaleBranchDispatchModel.getDocumentNumber()).getForeignCurrencyId());
+									foreignCurrencyAdj.setFsCurrencyMaster(currencyMasterModel);
+
+									Customer customer = new Customer();
+									customer.setCustomerId(mapOrderManagement.get(fcSaleBranchDispatchModel.getDocumentNumber()).getCustomerId());
+									foreignCurrencyAdj.setFsCustomer(customer);
+
+									CurrencyWiseDenomination currencyWiseDenomination = new CurrencyWiseDenomination();
+									currencyWiseDenomination.setDenominationId(fcSaleBranchDispatchModel.getDenominationId());
+									foreignCurrencyAdj.setFsDenominationId(currencyWiseDenomination);
+
+									foreignCurrencyAdj.setAdjustmentAmount(fcSaleBranchDispatchModel.getDenominationPrice());
+									foreignCurrencyAdj.setDenaminationAmount(fcSaleBranchDispatchModel.getDenominationAmount());
+									foreignCurrencyAdj.setDocumentNo(fcSaleBranchDispatchModel.getDocumentNumber());
+									foreignCurrencyAdj.setNotesQuantity(fcSaleBranchDispatchModel.getDenominationQuatity());
+									foreignCurrencyAdj.setExchangeRate(mapOrderManagement.get(fcSaleBranchDispatchModel.getDocumentNumber()).getTransactionActualRate());
+
+									foreignCurrencyAdj.setDocumentFinanceYear(collectionDocYear);
+									foreignCurrencyAdj.setDocumentDate(new Date());
+
+									foreignCurrencyAdj.setOracleUser(userName);
+									foreignCurrencyAdj.setCreatedBy(userName);
+									foreignCurrencyAdj.setCreatedDate(new Date());
+
+									foreignCurrencyAdj.setTransactionType(ConstantDocument.S);
+									foreignCurrencyAdj.setDocumentStatus(ConstantDocument.P);
+									foreignCurrencyAdj.setProgNumber(ConstantDocument.FC_SALE);
+
+									foreignCurrencyAdj.setDocumentId(documentId);
+									foreignCurrencyAdj.setDocumentCode(ConstantDocument.DOCUMENT_CODE_FOR_FCSALE);
+
+									foreignCurrencyAdjusts.add(foreignCurrencyAdj);
+								}
+							}
+						}
+					}
+
+					for (Entry<BigDecimal, String> invertoryData : mapInventory.entrySet()) {
+						BigDecimal documentNo = invertoryData.getKey();
+						String inventoryId = invertoryData.getValue();
+						OrderManagementView orderManagementView = mapOrderManagement.get(documentNo);
+						mapInventoryReceiptPayment.put(orderManagementView.getReceiptPaymentId(), inventoryId);
+					}
+
+					fcSaleBranchDao.saveDispatchOrder(foreignCurrencyAdjusts, mapInventoryReceiptPayment);
+					status = Boolean.TRUE;
+				}
+			}
+
+		} catch (ParseException e) {
+			logger.error("Error in saving application", e);
+		}catch (Exception e) {
+			logger.error("Error in saving application", e);
+		}
+
+		return status;
 	}
 
 }

@@ -9,8 +9,10 @@ import org.springframework.stereotype.Component;
 
 import com.amx.jax.AppConfig;
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.exception.JaxSystemError;
+import com.amx.jax.model.request.fx.FcSaleBranchDispatchRequest;
 import com.amx.jax.model.response.fx.FcEmployeeDetailsDto;
 import com.amx.jax.model.response.fx.FcSaleOrderManagementDTO;
 import com.amx.jax.model.response.fx.UserStockDto;
@@ -49,11 +51,12 @@ public class FxOrderBranchClient implements IFxBranchOrderService {
 	 * @return : To get the fx pending order management list
 	 */
 	@Override
-	public AmxApiResponse<FcSaleOrderManagementDTO,Object> fetchBranchOrderDetails(BigDecimal orderNumber) {
+	public AmxApiResponse<FcSaleOrderManagementDTO,Object> fetchBranchOrderDetails(BigDecimal orderNumber,BigDecimal orderYear) {
 		try {
-			LOGGER.debug("in fetchBranchOrderDetails :"+orderNumber);
+			LOGGER.debug("in fetchBranchOrderDetails :"+orderNumber+ " "+orderYear);
 			return restService.ajax(appConfig.getJaxURL() + Path.FC_FETCH_ORDER_MANAGEMENT).meta(new JaxMetaInfo())
-					.queryParam(Params.FX_ORDER_NUMBER, orderNumber)
+					.queryParam(Params.FX_ORDER_NUMBER, orderNumber).meta(new JaxMetaInfo())
+					.queryParam(Params.FX_ORDER_YEAR, orderYear)
 					.get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<FcSaleOrderManagementDTO, Object>>() {
 					});
@@ -121,14 +124,33 @@ public class FxOrderBranchClient implements IFxBranchOrderService {
 	 * @return : To get the save assign driver
 	 */
 	@Override
-	public AmxApiResponse<Boolean,Object> assignDriver(BigDecimal orderNumber,BigDecimal driverId) {
+	public AmxApiResponse<BoolRespModel,Object> assignDriver(BigDecimal orderNumber,BigDecimal orderYear,BigDecimal driverId) {
 		try {
 			LOGGER.debug("in assignDriver :"+orderNumber +" "+driverId);
 			return restService.ajax(appConfig.getJaxURL() + Path.FC_ASSIGN_DRIVER).meta(new JaxMetaInfo())
 					.queryParam(Params.FX_ORDER_NUMBER, orderNumber).meta(new JaxMetaInfo())
+					.queryParam(Params.FX_ORDER_YEAR, orderYear).meta(new JaxMetaInfo())
 					.queryParam(Params.FX_DRIVER_ID, driverId)
 					.post()
-					.as(new ParameterizedTypeReference<AmxApiResponse<Boolean,Object>>() {
+					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel,Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in assignDriver : ", e);
+			return JaxSystemError.evaluate(e);
+		} // end of try-catch
+	}
+	
+	/**
+	 * 
+	 * @return : To get the save assign driver
+	 */
+	@Override
+	public AmxApiResponse<BoolRespModel,Object> dispatchOrder(FcSaleBranchDispatchRequest fcSaleBranchDispatchRequest) {
+		try {
+			LOGGER.debug("in assignDriver :"+fcSaleBranchDispatchRequest);
+			return restService.ajax(appConfig.getJaxURL() + Path.FC_DISPATCH_ORDER).meta(new JaxMetaInfo())
+					.post(fcSaleBranchDispatchRequest)
+					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel,Object>>() {
 					});
 		} catch (Exception e) {
 			LOGGER.error("exception in assignDriver : ", e);

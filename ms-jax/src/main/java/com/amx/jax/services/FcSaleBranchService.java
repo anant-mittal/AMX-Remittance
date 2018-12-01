@@ -15,13 +15,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.meta.model.EmployeeDetailsDTO;
-import com.amx.amxlib.model.response.ApiResponse;
-import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.dbmodel.fx.OrderManagementView;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.manager.FcSaleBranchOrderManager;
+import com.amx.jax.model.request.fx.FcSaleBranchDispatchRequest;
 import com.amx.jax.model.response.fx.FcEmployeeDetailsDto;
 import com.amx.jax.model.response.fx.FcSaleOrderManagementDTO;
 import com.amx.jax.model.response.fx.UserStockDto;
@@ -158,7 +157,7 @@ public class FcSaleBranchService extends AbstractService{
 	 * @param   :fetch Pending Orders by order number
 	 * @return FcSaleOrderManagementDTO
 	 */
-	public AmxApiResponse<FcSaleOrderManagementDTO,Object> fetchFcSaleOrderDetails(BigDecimal applicationCountryId,BigDecimal orderNumber){
+	public AmxApiResponse<FcSaleOrderManagementDTO,Object> fetchFcSaleOrderDetails(BigDecimal applicationCountryId,BigDecimal orderNumber,BigDecimal orderYear){
 		List<FcSaleOrderManagementDTO> saleOrderManage = new ArrayList<>();
 		if(applicationCountryId == null || applicationCountryId.compareTo(BigDecimal.ZERO)==0){
 			throw new GlobalException("Application country id should not be blank",JaxError.NULL_APPLICATION_COUNTRY_ID);
@@ -166,7 +165,7 @@ public class FcSaleBranchService extends AbstractService{
 		if(orderNumber == null || orderNumber.compareTo(BigDecimal.ZERO)==0){
 			throw new GlobalException("Order Number should not be blank",JaxError.NULL_ORDER_NUBMER);
 		}
-		List<OrderManagementView> orderManagement =  branchOrderManager.fetchFcSaleOrderDetails(applicationCountryId,orderNumber);
+		List<OrderManagementView> orderManagement =  branchOrderManager.fetchFcSaleOrderDetails(applicationCountryId,orderNumber,orderYear);
 		if(orderManagement != null && orderManagement.size() != 0) {
 			saleOrderManage = convertFcSaleOrderDetails(orderManagement);
 			if(saleOrderManage != null && saleOrderManage.size() != 0) {
@@ -272,7 +271,7 @@ public class FcSaleBranchService extends AbstractService{
 		return AmxApiResponse.buildList(driverEmp);
 	}
 	
-	public AmxApiResponse<Boolean,Object> assignDriver(BigDecimal countryId,BigDecimal orderNumber,BigDecimal driverId) {
+	public BoolRespModel assignDriver(BigDecimal countryId,BigDecimal orderNumber,BigDecimal orderYear,BigDecimal driverId) {
 		if(countryId == null || countryId.compareTo(BigDecimal.ZERO)==0){
 			throw new GlobalException("Application country id should not be blank",JaxError.NULL_APPLICATION_COUNTRY_ID);
 		}
@@ -282,13 +281,18 @@ public class FcSaleBranchService extends AbstractService{
 		if(driverId == null || driverId.compareTo(BigDecimal.ZERO)==0){
 			throw new GlobalException("Driver id should not be blank",JaxError.NULL_DRIVER_ID);
 		}
-		Boolean status = branchOrderManager.saveAssignDriver(countryId,orderNumber,driverId);
+		Boolean status = branchOrderManager.saveAssignDriver(countryId,orderNumber,orderYear,driverId);
 		if(status) {
 			// success
 		}else {
 			throw new GlobalException("Driver id didn't updated",JaxError.SAVE_FAILED);
 		}
-		return AmxApiResponse.build(status);
+		return new BoolRespModel(status);
+	}
+	
+	public BoolRespModel dispatchOrder(FcSaleBranchDispatchRequest fcSaleBranchDispatchRequest,BigDecimal employeeId,BigDecimal countryId,BigDecimal companyId) {
+		Boolean status = branchOrderManager.saveDispatchOrder(fcSaleBranchDispatchRequest,employeeId,countryId,companyId);
+		return new BoolRespModel(status);
 	}
 
 }

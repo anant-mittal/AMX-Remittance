@@ -1,19 +1,25 @@
 package com.amx.jax.dao;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.dbmodel.CollectionModel;
 import com.amx.jax.dbmodel.Employee;
+import com.amx.jax.dbmodel.ForeignCurrencyAdjust;
 import com.amx.jax.dbmodel.fx.EmployeeDetailsView;
 import com.amx.jax.dbmodel.fx.FxDeliveryDetailsModel;
 import com.amx.jax.dbmodel.fx.OrderManagementView;
 import com.amx.jax.dbmodel.fx.UserStockView;
 import com.amx.jax.repository.EmployeeRespository;
+import com.amx.jax.repository.ForeignCurrencyAdjustRepository;
+import com.amx.jax.repository.ICollectionRepository;
 import com.amx.jax.repository.ReceiptPaymentRespository;
 import com.amx.jax.repository.fx.EmployeeDetailsRepository;
 import com.amx.jax.repository.fx.FcSaleOrderManagementRepository;
@@ -41,12 +47,18 @@ public class FcSaleBranchDao {
 	@Autowired
 	EmployeeDetailsRepository employeeDetailsRepository;
 	
+	@Autowired
+	ICollectionRepository collectionRepository;
+	
+	@Autowired
+	ForeignCurrencyAdjustRepository foreignCurrencyAdjustRepository;
+	
 	public List<OrderManagementView> fetchFcSaleOrderManagement(BigDecimal applicationcountryId,BigDecimal areaCode){
 		return fcSaleOrderManagementRepository.findByApplicationCountryId(applicationcountryId);
 	}
 	
-	public List<OrderManagementView> checkPendingOrders(BigDecimal applicationcountryId,BigDecimal orderNumber){
-		return fcSaleOrderManagementRepository.checkPendingOrders(applicationcountryId,orderNumber);
+	public List<OrderManagementView> checkPendingOrders(BigDecimal applicationcountryId,BigDecimal orderNumber,BigDecimal orderYear){
+		return fcSaleOrderManagementRepository.checkPendingOrders(applicationcountryId,orderNumber,orderYear);
 	}
 	
 	public List<UserStockView> fetchUserStockCurrencyCurrentDate(BigDecimal countryId,String userName,BigDecimal countryBranchId,BigDecimal foreignCurrencyId){
@@ -94,5 +106,21 @@ public class FcSaleBranchDao {
 	public EmployeeDetailsView fetchEmployeeDetails(BigDecimal employeeId){
 		return employeeDetailsRepository.findByEmployeeId(employeeId);
 	}
-
+	
+	public List<CollectionModel> fetchCollectionData(BigDecimal collectDocNo,BigDecimal collectDocYear){
+		return collectionRepository.findByDocumentNoAndDocumentFinanceYear(collectDocNo, collectDocYear);
+	}
+	
+	@Transactional
+	public void saveDispatchOrder(List<ForeignCurrencyAdjust> foreignCurrencyAdjusts,HashMap<BigDecimal, String> mapInventoryReceiptPayment){
+		if(foreignCurrencyAdjusts != null && foreignCurrencyAdjusts.size() != 0) {
+			for (ForeignCurrencyAdjust foreignCurrencyAdjust : foreignCurrencyAdjusts) {
+				foreignCurrencyAdjustRepository.save(foreignCurrencyAdjust);
+			}
+			for (Entry<BigDecimal, String> receiptPayment : mapInventoryReceiptPayment.entrySet()) {
+				receiptPaymentRespository.updateInventoryId(receiptPayment.getKey(),receiptPayment.getValue());
+			}
+		}
+	}
+	
 }

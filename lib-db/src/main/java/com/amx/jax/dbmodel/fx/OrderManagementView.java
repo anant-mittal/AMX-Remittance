@@ -83,6 +83,9 @@ public class OrderManagementView {
 	@Column(name = "CUSTOMER_NAME")
 	String customerName;
 	
+	@Column(name = "CUSTOMER_ID")
+	BigDecimal customerId;
+	
 	public BigDecimal getCollectionDocFinanceYear() {
 		return collectionDocFinanceYear;
 	}
@@ -243,5 +246,12 @@ public class OrderManagementView {
 	public void setCustomerName(String customerName) {
 		this.customerName = customerName;
 	}
-							
+	
+	public BigDecimal getCustomerId() {
+		return customerId;
+	}
+	public void setCustomerId(BigDecimal customerId) {
+		this.customerId = customerId;
+	}
+								
 }
