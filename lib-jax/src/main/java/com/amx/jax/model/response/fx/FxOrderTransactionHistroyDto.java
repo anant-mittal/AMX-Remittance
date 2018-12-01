@@ -69,6 +69,8 @@ public class FxOrderTransactionHistroyDto {
 	private String travelCountryName;
 	private String travelDateRange;
 	private String localCurrQuoteName;
+	private String multiAmount;
+	private String multiExchangeRate;
 	
 	
 
@@ -334,5 +336,21 @@ public class FxOrderTransactionHistroyDto {
 
 	public void setTransactionReferenceNo(String transactionReferenceNo) {
 		this.transactionReferenceNo = transactionReferenceNo;
+	}
+
+	public String getMultiAmount() {
+		return multiAmount;
+	}
+
+	public void setMultiAmount(String multiAmount) {
+		this.multiAmount = multiAmount;
+	}
+
+	public String getMultiExchangeRate() {
+		return multiExchangeRate;
+	}
+
+	public void setMultiExchangeRate(String multiExchangeRate) {
+		this.multiExchangeRate = multiExchangeRate;
 	}
 }

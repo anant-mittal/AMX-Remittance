@@ -39,6 +39,7 @@ import com.amx.jax.dbmodel.fx.FxDeliveryDetailsModel;
 import com.amx.jax.dbmodel.fx.FxDeliveryTimeSlotMaster;
 import com.amx.jax.dbmodel.fx.FxExchangeRateView;
 import com.amx.jax.dbmodel.fx.FxOrderTransactionModel;
+import com.amx.jax.dbmodel.fx.OrderManagementView;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.fx.FcSaleOrderPaynowRequestModel;
@@ -591,16 +592,21 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 	
 	public List<FxOrderTransactionHistroyDto> getFxOrderTransactionHistroy(){
 		 BigDecimal customerId = metaData.getCustomerId();
+		 
 		 List<FxOrderTransactionModel> trnxFxOrderList = new ArrayList<FxOrderTransactionModel>();
 		List<FxOrderTransactionHistroyDto>   trnxFxOrderListDto = new ArrayList<>();
+		List<FxOrderTransactionHistroyDto>   finalFxOrderListDto = new ArrayList<>();
 		trnxFxOrderList= fxTransactionHistroyDao.getFxOrderTrnxList(customerId);
+		
+
 		if(trnxFxOrderList.isEmpty()){
 			throw new GlobalException("fx order list is empty", JaxError.NO_RECORD_FOUND);
 		}else{
 			trnxFxOrderListDto = convertFxHistDto(trnxFxOrderList);
+			finalFxOrderListDto =getMultipleTransactionHistroy(trnxFxOrderListDto);
 		}
 		
-		return trnxFxOrderListDto;
+		return finalFxOrderListDto;
 	}
 	
 public List<FxOrderTransactionHistroyDto> convertFxHistDto(List<FxOrderTransactionModel> trnxFxOrderList){
@@ -619,5 +625,117 @@ try {
 return dto;
 }
 
- 	
+public List<FxOrderTransactionHistroyDto> getMultipleTransactionHistroy(List<FxOrderTransactionHistroyDto>   trnxFxOrderListDto){
+	List<FxOrderTransactionHistroyDto> finalFxOrderListDto = new ArrayList<>();
+	List<BigDecimal> duplciate = new ArrayList<>();
+	for(FxOrderTransactionHistroyDto dto :trnxFxOrderListDto){
+	if(!duplciate.contains(dto.getCollectionDocumentNo())){
+		duplciate.add(dto.getCollectionDocumentNo());
+		FxOrderTransactionHistroyDto fianlDto = new FxOrderTransactionHistroyDto();
+		
+		HashMap<BigDecimal, BigDecimal> foreignCurrencyAmt = new HashMap<>();
+		String mutipleAmt = null;
+		String mutipleInventoryId = null;
+		String mutilSourceOfIncome = null;
+		String mutilPurposeOfTrnx = null;
+		String multiTravelCountryName = null;
+		String mulTravleDateRange = null;
+		String multiTransactionNo =null;
+		String multiReceiptPayId =null;
+		String multiExchangeRate =null;
+		int i =0;
+		for (FxOrderTransactionHistroyDto histDto : trnxFxOrderListDto) {
+			i++;
+			if(dto.getCollectionDocumentNo().compareTo(histDto.getCollectionDocumentNo()) == 0) {
+				if(mutipleAmt != null) {
+					mutipleAmt = mutipleAmt.concat(",").concat(histDto.getCurrencyQuoteName().concat(" ").concat(histDto.getForeignTransactionAmount().toString()));
+				}else {
+					mutipleAmt = histDto.getCurrencyQuoteName().concat(" ").concat(histDto.getForeignTransactionAmount().toString());
+				}
+				if(mutilSourceOfIncome!=null){
+					mutilSourceOfIncome = mutilSourceOfIncome.concat(",").concat(histDto.getSourceOfIncomeDesc());
+				}else{
+					mutilSourceOfIncome =histDto.getSourceOfIncomeDesc(); 
+				}
+				
+				if(mutilPurposeOfTrnx!=null){
+					mutilPurposeOfTrnx = mutilPurposeOfTrnx.concat(",").concat(histDto.getPurposeOfTrnx());
+				}else{
+					mutilPurposeOfTrnx =histDto.getPurposeOfTrnx(); 
+				}
+				
+				if(multiTravelCountryName!=null){
+					multiTravelCountryName = multiTravelCountryName.concat(",").concat(histDto.getTravelCountryName());
+				}else{
+					multiTravelCountryName =histDto.getTravelCountryName(); 
+				}
+				
+				if(mulTravleDateRange!=null){
+					mulTravleDateRange = mulTravleDateRange.concat(",").concat(histDto.getTravelDateRange());
+				}else{
+					mulTravleDateRange =histDto.getTravelDateRange(); 
+				}
+				
+				if(multiTransactionNo!=null){
+					multiTransactionNo = multiTransactionNo.concat(",").concat(histDto.getDocumentFinanceYear().toString().concat("/").concat(histDto.getDocumentNumber().toString()));
+				}else{
+					multiTransactionNo = histDto.getDocumentFinanceYear().toString().concat("/").concat(histDto.getDocumentNumber().toString());
+				}
+				
+				
+				if(multiReceiptPayId!=null){
+					multiReceiptPayId = mulTravleDateRange.concat(",").concat(histDto.getIdno().toString());
+				}else{
+					multiReceiptPayId =histDto.getIdno().toString(); 
+				}
+				
+				if(multiExchangeRate!=null){
+					multiExchangeRate =multiExchangeRate.concat(",").concat(histDto.getCurrencyQuoteName().concat(" ").concat(histDto.getExchangeRate().toString()));
+				}else{
+					multiExchangeRate =histDto.getCurrencyQuoteName().concat(" ").concat(histDto.getExchangeRate().toString()); 
+				}
+				
+				
+			}
+		}
+		
+		fianlDto.setIdno(dto.getIdno());
+		fianlDto.setMultiAmount(mutipleAmt);
+		fianlDto.setCollectionDocumentNo(dto.getCollectionDocumentNo());
+		fianlDto.setCollectionDocumentFinYear(dto.getCollectionDocumentFinYear());
+		fianlDto.setCollectionDocumentCode(dto.getCollectionDocumentCode());
+		fianlDto.setBranchDesc(dto.getBranchDesc());
+		fianlDto.setCreatedDate(dto.getCreatedDate());
+		fianlDto.setCustomerReference(dto.getCustomerReference());
+		fianlDto.setCustomerId(dto.getCustomerId());
+		fianlDto.setCustomerName(dto.getCustomerName());
+		fianlDto.setDeliveryCharges(dto.getDeliveryCharges());
+		fianlDto.setDeliveryDetSeqId(dto.getDeliveryDetSeqId());
+		fianlDto.setPagDetSeqId(dto.getPagDetSeqId());
+		fianlDto.setDeliveryDate(dto.getDeliveryDate());
+		fianlDto.setDeliveryTime(dto.getDeliveryTime());
+		fianlDto.setSourceOfIncomeDesc(mutilSourceOfIncome);
+		fianlDto.setPurposeOfTrnx(mutilPurposeOfTrnx);
+		fianlDto.setTravelCountryName(multiTravelCountryName==null?dto.getTravelCountryName():multiTravelCountryName);
+		fianlDto.setTravelDateRange(mulTravleDateRange==null?dto.getTravelDateRange():mulTravleDateRange);
+		fianlDto.setLocalCurrQuoteName(dto.getLocalCurrQuoteName());
+		fianlDto.setDocumentCode(dto.getDocumentCode());
+		fianlDto.setOrderStatus(dto.getOrderStatus());
+		fianlDto.setTransactionStatusDesc(dto.getTransactionStatusDesc());
+		fianlDto.setTransactionTypeDesc(dto.getTransactionTypeDesc());
+		fianlDto.setTransactionReferenceNo(multiTransactionNo);
+		fianlDto.setDocumentNumber(dto.getDocumentNumber());
+		fianlDto.setDocumentFinanceYear(dto.getDocumentFinanceYear());
+		fianlDto.setDocumentDate(dto.getDocumentDate());
+		fianlDto.setExchangeRate(dto.getExchangeRate());
+		fianlDto.setMultiExchangeRate(multiExchangeRate);
+		fianlDto.setLocalTrnxAmount(dto.getLocalTrnxAmount());
+		
+		finalFxOrderListDto.add(fianlDto);
+		}
+	
+	}
+	return finalFxOrderListDto;
+}
+
 }

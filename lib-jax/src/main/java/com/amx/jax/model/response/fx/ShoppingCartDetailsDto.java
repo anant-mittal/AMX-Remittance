@@ -39,9 +39,7 @@ public class ShoppingCartDetailsDto extends AbstractModel {
 	private String applicationTypeDesc;
 	private String customerSignature;
 	private String sourceofincome;
-	private String BeneCityName;
-	private String BeneStateName;
-	private String BeneDistrictName;
+
 	private String instruction;
 	private String sourceOfIncomeDesc;
 	private String remittanceDescription;
@@ -62,6 +60,7 @@ public class ShoppingCartDetailsDto extends AbstractModel {
 	private String purposeOftrnxDesc;
 	private String quoteName;
 	private BigDecimal forXRate;
+	private String amount;
 	public BigDecimal getApplicationId() {
 		return applicationId;
 	}
@@ -194,24 +193,7 @@ public class ShoppingCartDetailsDto extends AbstractModel {
 	public void setSourceofincome(String sourceofincome) {
 		this.sourceofincome = sourceofincome;
 	}
-	public String getBeneCityName() {
-		return BeneCityName;
-	}
-	public void setBeneCityName(String beneCityName) {
-		BeneCityName = beneCityName;
-	}
-	public String getBeneStateName() {
-		return BeneStateName;
-	}
-	public void setBeneStateName(String beneStateName) {
-		BeneStateName = beneStateName;
-	}
-	public String getBeneDistrictName() {
-		return BeneDistrictName;
-	}
-	public void setBeneDistrictName(String beneDistrictName) {
-		BeneDistrictName = beneDistrictName;
-	}
+	
 	public String getInstruction() {
 		return instruction;
 	}
@@ -331,6 +313,12 @@ public class ShoppingCartDetailsDto extends AbstractModel {
 	}
 	public void setForXRate(BigDecimal forXRate) {
 		this.forXRate = forXRate;
+	}
+	public String getAmount() {
+		return amount;
+	}
+	public void setAmount(String amount) {
+		this.amount = amount;
 	}
 
 	

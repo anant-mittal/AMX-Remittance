@@ -29,8 +29,7 @@ public class FxOrderReportResponseDto {
 	 
     private String collectionMode;
 	private String approvalNo;
-
-	private String knetreceiptDateTime;
+	private String KnetReceiptDateTime ="";
 	private Boolean knetBooleanCheck=false;
 	private Boolean drawLine=false;
 
@@ -39,7 +38,7 @@ public class FxOrderReportResponseDto {
 	private String refundedAmount;
 	private BigDecimal collectAmount;
 
-	private String KnetReceiptDateTime ="";
+	
 
  	 List<FxOrderTransactionHistroyDto> fxOrderTrnxList = new ArrayList<>();
 	 FxDeliveryReportDetailDto  deliveryDetailReport = new FxDeliveryReportDetailDto();
@@ -202,12 +201,13 @@ public class FxOrderReportResponseDto {
 		this.approvalNo = approvalNo;
 	}
 	
-	public String getKnetreceiptDateTime() {
-		return knetreceiptDateTime;
+	public String getKnetReceiptDateTime() {
+		return KnetReceiptDateTime;
 	}
-	public void setKnetreceiptDateTime(String knetreceiptDateTime) {
-		this.knetreceiptDateTime = knetreceiptDateTime;
+	public void setKnetReceiptDateTime(String knetReceiptDateTime) {
+		KnetReceiptDateTime = knetReceiptDateTime;
 	}
+	
 	public Boolean getKnetBooleanCheck() {
 		return knetBooleanCheck;
 	}
@@ -244,12 +244,7 @@ public class FxOrderReportResponseDto {
 	public void setCollectAmount(BigDecimal collectAmount) {
 		this.collectAmount = collectAmount;
 	}
-	public String getKnetReceiptDateTime() {
-		return KnetReceiptDateTime;
-	}
-	public void setKnetReceiptDateTime(String knetReceiptDateTime) {
-		KnetReceiptDateTime = knetReceiptDateTime;
-	}
+	
 	
 
 }

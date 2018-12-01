@@ -7,6 +7,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -17,6 +18,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
+
 
 
 
@@ -183,7 +185,14 @@ public class FxOrderReportManager {
 		List<FxOrderTransactionModel> fxOrderTrnxList =  fxTransactionHistroyDao.getFxOrderTrnxListByCollectionDocNumber(custoemrId,collNo,collFyr);
 	    if(!fxOrderTrnxList.isEmpty()){
 	    	List<FxOrderTransactionHistroyDto> fxOrderTrnxListDto = applTrnxManager.convertFxHistDto(fxOrderTrnxList);
-	    	reportModel.setFxOrderTrnxList(fxOrderTrnxListDto);
+	    	List<FxOrderTransactionHistroyDto> finalList = new ArrayList<>();
+	    	if(!fxOrderTrnxListDto.isEmpty()){
+	    		finalList = applTrnxManager.getMultipleTransactionHistroy(fxOrderTrnxListDto);
+	    		
+	    	}
+	    	
+	    	reportModel.setFxOrderTrnxList(finalList);
+	    	reportModel.setNoOfTransaction(new BigDecimal(fxOrderTrnxList.size()));
 	    	BigDecimal deliveryDetSeqId =fxOrderTrnxList.get(0).getDeliveryDetSeqId() ;
 	    	BigDecimal paygSeqId        = fxOrderTrnxList.get(0).getPagDetSeqId();
 	    	if(fxOrderTrnxList.get(0).getCollectionDocumentNo()!=null && fxOrderTrnxList.get(0).getCollectionDocumentFinYear()!=null){
@@ -297,6 +306,8 @@ public class FxOrderReportManager {
 				}
 				reportModel.setPaymentMode(collPaymentDetailsView.getCollectionModeDesc());
 				reportModel.setKnetReceiptDateTime(collPaymentDetailsView.getKnetReceiptDatenTime());
+				reportModel.setCollectionMode(collPaymentDetailsView.getCollectionModeDesc());
+				reportModel.setApprovalNo(collPaymentDetailsView.getApprovalNo());
 				
 			}
 			
@@ -304,7 +315,7 @@ public class FxOrderReportManager {
 			if(pgDetailsModel!=null){
 	    		PaygDetailsDto pgdto = convertFxPgDetailsDto(pgDetailsModel);
 	    		pgdto.setPaymentMode(reportModel.getPaymentMode());
-	    		pgdto.setKnetReceiptDateTime(reportModel.getKnetreceiptDateTime());
+	    		pgdto.setKnetReceiptDateTime(reportModel.getKnetReceiptDateTime());
 	    		reportModel.setPayg(pgdto);
 	    	}
 			
