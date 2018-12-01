@@ -108,7 +108,7 @@ public class CustomerPersonalDetail extends AbstractModel {
 	private String watsAppTelePrefix;
 
 	@ApiMockModelProperty(example = "9321484252")
-	private String watsAppMobileNo;
+	private BigDecimal watsAppMobileNo;
 	
 	@ApiMockModelProperty(example = "Y")
 	private String isWatsApp;
@@ -249,11 +249,11 @@ public class CustomerPersonalDetail extends AbstractModel {
 		this.watsAppTelePrefix = watsAppTelePrefix;
 	}
 
-	public String getWatsAppMobileNo() {
+	public BigDecimal getWatsAppMobileNo() {
 		return watsAppMobileNo;
 	}
 
-	public void setWatsAppMobileNo(String watsAppMobileNo) {
+	public void setWatsAppMobileNo(BigDecimal watsAppMobileNo) {
 		this.watsAppMobileNo = watsAppMobileNo;
 	}
 	

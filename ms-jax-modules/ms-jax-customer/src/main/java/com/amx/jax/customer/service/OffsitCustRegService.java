@@ -544,12 +544,10 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 			contactDetail.setLanguageId(customer.getLanguageId());
 			contactDetail.setCreatedBy(metaData.getEmployeeId().toString());
 			contactDetail.setCreationDate(customer.getCreationDate());
+			
 			contactDetail.setMobile(customerDetails.getMobile());
 			contactDetail.setTelephoneCode(customerDetails.getTelPrefix());
-			
 			contactDetail.setIsWatsApp(customerDetails.getIsWatsApp());
-			contactDetail.setWatsAppTelePrefix(customerDetails.getWatsAppTelePrefix());
-			contactDetail.setWatsAppNo(customerDetails.getWatsAppMobileNo());
 			
 			BizComponentData fsBizComponentDataByContactTypeId = new BizComponentData();
 			// home type contact
@@ -576,13 +574,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 			contactDetail.setLanguageId(customer.getLanguageId());
 			contactDetail.setCreatedBy(metaData.getEmployeeId().toString());
 			contactDetail.setCreationDate(customer.getCreationDate());
-			contactDetail.setMobile(customerDetails.getMobile());
-			contactDetail.setTelephoneCode(customerDetails.getTelPrefix());
-			
-			contactDetail.setIsWatsApp(customerDetails.getIsWatsApp());
-			contactDetail.setWatsAppTelePrefix(customerDetails.getWatsAppTelePrefix());
-			contactDetail.setWatsAppNo(customerDetails.getWatsAppMobileNo());
-			
+						
 			BizComponentData fsBizComponentDataByContactTypeId = new BizComponentData();
 			// home type contact
 			fsBizComponentDataByContactTypeId.setComponentDataId(new BigDecimal(50));
@@ -643,7 +635,13 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		customer.setLanguageId(metaData.getLanguageId());
 		customer.setBranchCode(metaData.getCountryBranchId());
 		customer.setNationalityId(customerDetails.getNationalityId());
+		
+		customer.setPrefixCodeMobile(customerDetails.getTelPrefix());
 		customer.setMobile(customerDetails.getMobile());
+		customer.setMobileOther(customerDetails.getWatsAppMobileNo());
+		customer.setPrefixCodeMobileOther(customerDetails.getWatsAppTelePrefix());
+		customer.setIsMobileWhatsApp(customerDetails.getIsWatsApp());
+		
 		customer.setIdentityFor(ConstantDocument.IDENTITY_FOR_ID_PROOF);
 		customer.setIdentityTypeId(customerDetails.getIdentityTypeId());
 		customer.setFirstNameLocal(customerDetails.getFirstNameLocal());
