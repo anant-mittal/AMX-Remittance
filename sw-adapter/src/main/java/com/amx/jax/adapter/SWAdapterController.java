@@ -62,10 +62,10 @@ public class SWAdapterController {
 		}
 
 		String body = "";
-		if (ArgUtil.isEmpty(kwtCardReaderService.getTerminalId())) {
-			body = FileUtil.read(applicationContext.getResource("classpath:templates/terminal.html").getURL());
-		} else if (!ArgUtil.isEmpty(kwtCardReaderService.getDevicePairingCreds())) {
+		if (!ArgUtil.isEmpty(kwtCardReaderService.getDevicePairingCreds())) {
 			body = FileUtil.read(applicationContext.getResource("classpath:templates/regid.html").getURL());
+		} else if (ArgUtil.isEmpty(kwtCardReaderService.getTerminalId())) {
+			body = FileUtil.read(applicationContext.getResource("classpath:templates/terminal.html").getURL());
 		} else {
 			body = FileUtil.read(applicationContext.getResource("classpath:templates/index.html").getURL());
 		}
