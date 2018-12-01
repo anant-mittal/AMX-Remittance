@@ -121,18 +121,12 @@ public class ReceiptPayment implements Serializable {
 	private Date travelEndDate;
 	private BigDecimal travelCountryId;
 	private String denominationType;
-
-
 	
-	
+	private String inventoryId;
+
 	private CurrencyWiseDenomination exCurrencyWiseDenomination;
 	private List<PurposeOfTransaction> exPurposeOfTransaction= new ArrayList<PurposeOfTransaction>();
 	private List<SourceOfIncome> exSourceOfIncome = new ArrayList<SourceOfIncome>();
-
-	
-	private BigDecimal shippingAddressId;
-	private Date deliveryDate;
-	private String deleveryTime;
 
 	@Id
 	@GeneratedValue(generator="ex_receipt_payment_seq",strategy=GenerationType.SEQUENCE)
@@ -831,6 +825,7 @@ public class ReceiptPayment implements Serializable {
 	public void setTravelCountryId(BigDecimal travelCountryId) {
 		this.travelCountryId = travelCountryId;
 	}
+	
 	@Column(name="DENOMINATION_TYPE")
 	public String getDenominationType() {
 		return denominationType;
@@ -838,4 +833,13 @@ public class ReceiptPayment implements Serializable {
 	public void setDenominationType(String denominationType) {
 		this.denominationType = denominationType;
 	}
+	
+	@Column(name="INVENTORY_ID")
+	public String getInventoryId() {
+		return inventoryId;
+	}
+	public void setInventoryId(String inventoryId) {
+		this.inventoryId = inventoryId;
+	}
+		
 }
