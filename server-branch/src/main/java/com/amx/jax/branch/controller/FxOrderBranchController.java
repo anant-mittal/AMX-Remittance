@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.fx.FxOrderBranchClient;
 import com.amx.jax.model.response.fx.FcEmployeeDetailsDto;
 import com.amx.jax.model.response.fx.FcSaleOrderManagementDTO;
@@ -51,10 +52,11 @@ public class FxOrderBranchController {
 	}
 	
 	@RequestMapping(value = "/api/fxo/driver/assign",  method = { RequestMethod.POST })
-	public AmxApiResponse<Boolean,Object> assignDriver(
+	public AmxApiResponse<BoolRespModel, Object> assignDriver(
 			@RequestParam(value = "orderNumber", required = true) BigDecimal orderNumber,
-			@RequestParam(value = "driverId", required = true) BigDecimal driverId){
-		return fxOrderBranchClient.assignDriver(orderNumber, driverId);
+			@RequestParam(value = "driverId", required = true) BigDecimal driverId,
+			@RequestParam(value = "orderYear", required = true) BigDecimal orderYear){
+		return fxOrderBranchClient.assignDriver(orderNumber, orderYear, driverId);
 	}
 	
 }
