@@ -199,6 +199,7 @@ public class FxOrderController {
 			// file.create(response, false);
 			// return null;
 			return ResponseEntity.ok().contentLength(file.getBody().length)
+					.header("Content-Disposition", "attachment; filename=" + file.getName())
 					.contentType(MediaType.valueOf(file.getType().getContentType())).body(file.getBody());
 
 		} else if (File.Type.HTML.equals(ext)) {
