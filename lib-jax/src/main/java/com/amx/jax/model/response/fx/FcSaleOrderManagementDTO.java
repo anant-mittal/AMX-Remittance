@@ -1,6 +1,7 @@
 package com.amx.jax.model.response.fx;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import com.amx.jax.model.AbstractModel;
 
@@ -27,7 +28,7 @@ public class FcSaleOrderManagementDTO extends AbstractModel {
 	String purposeDesc;
 	String denominationType;
 	BigDecimal applicationCountryId;
-	String mutipleFcAmount;
+	List<FcSaleCurrencyAmountModel> mutipleFcAmount;
 	String mutipleInventoryId;
 	String inventoryId;
 	BigDecimal areaCode;
@@ -37,6 +38,9 @@ public class FcSaleOrderManagementDTO extends AbstractModel {
 	BigDecimal transactionActualRate;
 	String customerName;
 	BigDecimal customerId;
+	String orderStatus;
+	String orderStatusDesc;
+	String driverEmployeName;
 	
 	public BigDecimal getDocumentNo() {
 		return DocumentNo;
@@ -150,10 +154,10 @@ public class FcSaleOrderManagementDTO extends AbstractModel {
 		this.applicationCountryId = applicationCountryId;
 	}
 	
-	public String getMutipleFcAmount() {
+	public List<FcSaleCurrencyAmountModel> getMutipleFcAmount() {
 		return mutipleFcAmount;
 	}
-	public void setMutipleFcAmount(String mutipleFcAmount) {
+	public void setMutipleFcAmount(List<FcSaleCurrencyAmountModel> mutipleFcAmount) {
 		this.mutipleFcAmount = mutipleFcAmount;
 	}
 	
@@ -220,4 +224,25 @@ public class FcSaleOrderManagementDTO extends AbstractModel {
 		this.customerId = customerId;
 	}
 	
+	public String getOrderStatus() {
+		return orderStatus;
+	}
+	public void setOrderStatus(String orderStatus) {
+		this.orderStatus = orderStatus;
+	}
+	
+	public String getOrderStatusDesc() {
+		return orderStatusDesc;
+	}
+	public void setOrderStatusDesc(String orderStatusDesc) {
+		this.orderStatusDesc = orderStatusDesc;
+	}
+	
+	public String getDriverEmployeName() {
+		return driverEmployeName;
+	}
+	public void setDriverEmployeName(String driverEmployeName) {
+		this.driverEmployeName = driverEmployeName;
+	}
+		
 }

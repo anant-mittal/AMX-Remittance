@@ -6,8 +6,6 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -15,8 +13,6 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-
-
 
 @Entity
 @Table(name="EX_DELIVERY_DETAILS")
@@ -34,13 +30,13 @@ public class FxDeliveryDetailsModel implements Serializable{
 	@Column(name = "DELIVERY_DET_SEQ_ID", unique = true, nullable = false, precision = 22, scale = 0)
 	private BigDecimal deleviryDelSeqId;
 	
-	
 	@Column(name="SHIPPING_ADDRESS_ID")
 	private BigDecimal shippingAddressId;
 	
 	@Column(name="DELIVERY_DATE")
 	@Temporal(TemporalType.DATE)
-	private Date deliveryDate; 
+	private Date deliveryDate;
+	
 	@Column(name="DELIVERY_TIME")
 	private String deliveryTimeSlot;
 
@@ -49,6 +45,7 @@ public class FxDeliveryDetailsModel implements Serializable{
 	
 	@Column(name="DRIVER_EMPLOYEE_ID")
 	private BigDecimal driverEmployeeId;
+	
 	@Column(name="APPL_DOCUMNET_NO")
 	private String applDocNo;
 	
@@ -60,6 +57,7 @@ public class FxDeliveryDetailsModel implements Serializable{
 	
 	@Column(name="UPDATED_BY")
 	private String updatedBy;
+	
 	@Column(name="UPDATED_DATE")
 	private Date uopdateDate;
 	
@@ -70,7 +68,6 @@ public class FxDeliveryDetailsModel implements Serializable{
 	@Column(name="DELIVERY_CHARGES")
     private BigDecimal deliveryCharges;
 	
-	
 	@Column(name="ISACTIVE")
 	private String isActive;
 	
@@ -80,18 +77,26 @@ public class FxDeliveryDetailsModel implements Serializable{
 	@Column(name = "OTP_TOKEN")
 	String otpToken;
 	
+	@Column(name = "ORDER_LOCK")
+	Date orderLock;
+	
+	@Column(name = "EMPLOYEE_ID")
+	BigDecimal employeeId;
+	
 	public BigDecimal getDeleviryDelSeqId() {
 		return deleviryDelSeqId;
 	}
 	public void setDeleviryDelSeqId(BigDecimal deleviryDelSeqId) {
 		this.deleviryDelSeqId = deleviryDelSeqId;
 	}
+	
 	public BigDecimal getShippingAddressId() {
 		return shippingAddressId;
 	}
 	public void setShippingAddressId(BigDecimal shippingAddressId) {
 		this.shippingAddressId = shippingAddressId;
 	}
+	
 	public Date getDeliveryDate() {
 		return deliveryDate;
 	}
@@ -111,57 +116,63 @@ public class FxDeliveryDetailsModel implements Serializable{
 	public void setDriverEmployeeId(BigDecimal driverEmployeeId) {
 		this.driverEmployeeId = driverEmployeeId;
 	}
+	
 	public String getApplDocNo() {
 		return applDocNo;
 	}
 	public void setApplDocNo(String applDocNo) {
 		this.applDocNo = applDocNo;
 	}
+	
 	public String getCreatedBy() {
 		return createdBy;
 	}
 	public void setCreatedBy(String createdBy) {
 		this.createdBy = createdBy;
 	}
+	
 	public Date getCreatedDate() {
 		return createdDate;
 	}
 	public void setCreatedDate(Date createdDate) {
 		this.createdDate = createdDate;
 	}
+	
 	public String getUpdatedBy() {
 		return updatedBy;
 	}
 	public void setUpdatedBy(String updatedBy) {
 		this.updatedBy = updatedBy;
 	}
+	
 	public Date getUopdateDate() {
 		return uopdateDate;
 	}
 	public void setUopdateDate(Date uopdateDate) {
 		this.uopdateDate = uopdateDate;
 	}
+	
 	public BigDecimal getRemarksId() {
 		return remarksId;
 	}
 	public void setRemarksId(BigDecimal remarksId) {
 		this.remarksId = remarksId;
 	}
+	
 	public String getIsActive() {
 		return isActive;
 	}
 	public void setIsActive(String isActive) {
 		this.isActive = isActive;
 	}
-	
-	
+		
 	public BigDecimal getDeliveryCharges() {
 		return deliveryCharges;
 	}
-
 	public void setDeliveryCharges(BigDecimal deliveryCharges) {
 		this.deliveryCharges = deliveryCharges;
 	}
+	
 	public String getTransactionReceipt() {
 		return transactionReceipt;
 	}
@@ -175,12 +186,27 @@ public class FxDeliveryDetailsModel implements Serializable{
 	public void setOtpToken(String otpToken) {
 		this.otpToken = otpToken;
 	}
+	
 	public String getOrderStatus() {
 		return orderStatus;
 	}
 	public void setOrderStatus(String orderStatus) {
 		this.orderStatus = orderStatus;
 	}
-
+	
+	public Date getOrderLock() {
+		return orderLock;
+	}
+	public void setOrderLock(Date orderLock) {
+		this.orderLock = orderLock;
+	}
+	
+	public BigDecimal getEmployeeId() {
+		return employeeId;
+	}
+	public void setEmployeeId(BigDecimal employeeId) {
+		this.employeeId = employeeId;
+	}
+	
 }
 

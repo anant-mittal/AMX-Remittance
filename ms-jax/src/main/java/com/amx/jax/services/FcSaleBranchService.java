@@ -22,6 +22,7 @@ import com.amx.jax.error.JaxError;
 import com.amx.jax.manager.FcSaleBranchOrderManager;
 import com.amx.jax.model.request.fx.FcSaleBranchDispatchRequest;
 import com.amx.jax.model.response.fx.FcEmployeeDetailsDto;
+import com.amx.jax.model.response.fx.FcSaleCurrencyAmountModel;
 import com.amx.jax.model.response.fx.FcSaleOrderManagementDTO;
 import com.amx.jax.model.response.fx.UserStockDto;
 
@@ -83,19 +84,23 @@ public class FcSaleBranchService extends AbstractService{
 						fcSaleOrder.setDenominationType(orderManagement.getDenominationType());
 						fcSaleOrder.setDocumentNo(orderManagement.getDocumentNo());
 						fcSaleOrder.setDriverEmployeId(orderManagement.getDriverEmployeId());
+						fcSaleOrder.setDriverEmployeName(orderManagement.getDriverEmployeeName());
+						fcSaleOrder.setOrderStatus(orderManagement.getOrderStatus());
+						fcSaleOrder.setOrderStatusDesc(orderManagement.getOrderStatusDesc());
 
 						HashMap<BigDecimal, BigDecimal> foreignCurrencyAmt = new HashMap<>();
-						String mutipleAmt = null;
+						List<FcSaleCurrencyAmountModel> lstCurrencyAmt = new ArrayList<>();
 						String mutipleInventoryId = null;
 						for (OrderManagementView fcSaleOrderManagement : orderManagementView) {
 							if(fcSaleOrderManagement.getCollectionDocumentNo().compareTo(orderManagement.getCollectionDocumentNo()) == 0) {
-								if(mutipleAmt != null) {
-									mutipleAmt = mutipleAmt.concat(",").concat(fcSaleOrderManagement.getForeignCurrencyQuote().concat(" ").concat(fcSaleOrderManagement.getForeignTrnxAmount().toString()));
-									foreignCurrencyAmt.put(fcSaleOrderManagement.getForeignCurrencyId(), fcSaleOrderManagement.getForeignTrnxAmount());
-								}else {
-									mutipleAmt = fcSaleOrderManagement.getForeignCurrencyQuote().concat(" ").concat(fcSaleOrderManagement.getForeignTrnxAmount().toString());
-									foreignCurrencyAmt.put(fcSaleOrderManagement.getForeignCurrencyId(), fcSaleOrderManagement.getForeignTrnxAmount());
-								}
+								
+								FcSaleCurrencyAmountModel fcSaleCurrencyAmountModel = new FcSaleCurrencyAmountModel();
+								fcSaleCurrencyAmountModel.setAmount(fcSaleOrderManagement.getForeignTrnxAmount());
+								fcSaleCurrencyAmountModel.setCurrencyQuote(fcSaleOrderManagement.getForeignCurrencyQuote());
+								lstCurrencyAmt.add(fcSaleCurrencyAmountModel);
+								
+								foreignCurrencyAmt.put(fcSaleOrderManagement.getForeignCurrencyId(), fcSaleOrderManagement.getForeignTrnxAmount());
+								
 								if(mutipleInventoryId != null) {
 									mutipleInventoryId = mutipleInventoryId.concat(",").concat(fcSaleOrderManagement.getInventoryId());
 								}else {
@@ -103,7 +108,8 @@ public class FcSaleBranchService extends AbstractService{
 								}
 							}
 						}
-						fcSaleOrder.setMutipleFcAmount(mutipleAmt);
+						
+						fcSaleOrder.setMutipleFcAmount(lstCurrencyAmt);
 						fcSaleOrder.setMutipleInventoryId(mutipleInventoryId);
 						
 						Boolean status = checkFcSaleStockAvailable(foreignCurrencyAmt,applicationCountryId,employeeId);
@@ -214,6 +220,10 @@ public class FcSaleBranchService extends AbstractService{
 				fcSaleOrder.setLocalNetAmount(orderManagement.getLocalNetAmount());
 				fcSaleOrder.setTransactionActualRate(orderManagement.getTransactionActualRate());
 				fcSaleOrder.setCustomerName(orderManagement.getCustomerName());
+				fcSaleOrder.setCustomerId(orderManagement.getCustomerId());
+				fcSaleOrder.setDriverEmployeName(orderManagement.getDriverEmployeeName());
+				fcSaleOrder.setOrderStatus(orderManagement.getOrderStatus());
+				fcSaleOrder.setOrderStatusDesc(orderManagement.getOrderStatusDesc());
 
 				lstDto.add(fcSaleOrder);
 			}

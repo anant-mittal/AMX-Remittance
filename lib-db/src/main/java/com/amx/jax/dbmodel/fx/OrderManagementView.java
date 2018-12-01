@@ -86,6 +86,15 @@ public class OrderManagementView {
 	@Column(name = "CUSTOMER_ID")
 	BigDecimal customerId;
 	
+	@Column(name = "ORDER_STATUS")
+	String orderStatus;
+	
+	@Column(name = "ORDER_STATUS_DESC")
+	String orderStatusDesc;
+	
+	@Column(name = "DRIVER_EMPLOYEE_NAME")
+	String driverEmployeeName;
+	
 	public BigDecimal getCollectionDocFinanceYear() {
 		return collectionDocFinanceYear;
 	}
@@ -252,6 +261,27 @@ public class OrderManagementView {
 	}
 	public void setCustomerId(BigDecimal customerId) {
 		this.customerId = customerId;
+	}
+	
+	public String getOrderStatus() {
+		return orderStatus;
+	}
+	public void setOrderStatus(String orderStatus) {
+		this.orderStatus = orderStatus;
+	}
+	
+	public String getOrderStatusDesc() {
+		return orderStatusDesc;
+	}
+	public void setOrderStatusDesc(String orderStatusDesc) {
+		this.orderStatusDesc = orderStatusDesc;
+	}
+	
+	public String getDriverEmployeeName() {
+		return driverEmployeeName;
+	}
+	public void setDriverEmployeeName(String driverEmployeeName) {
+		this.driverEmployeeName = driverEmployeeName;
 	}
 								
 }
