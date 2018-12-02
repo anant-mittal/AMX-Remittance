@@ -167,12 +167,12 @@ public class SSOServerController {
 				}
 				UserAuthInitResponseDTO initResp = rbaacServiceClient.initAuthForUser(init).getResult();
 
-				model.put("mOtpPrefix", initResp.getmOtpPrefix());
+				model.put("mOtpPrefix", ssoUser.getSelfSAC());
 				adapterServiceClient.sendSACtoEmployee(ArgUtil.parseAsString(initResp.getEmployeeId()),
 						ssoUser.getSelfSAC());
 
 				if (loginType == LOGIN_TYPE.ASSISTED) {
-					model.put("partnerMOtpPrefix", initResp.getPartnerMOtpPrefix());
+					model.put("partnerMOtpPrefix", ssoUser.getSelfSAC());
 					adapterServiceClient.sendSACtoEmployee(ArgUtil.parseAsString(initResp.getPartnerEmployeeId()),
 							ssoUser.getPartnerSAC());
 				}

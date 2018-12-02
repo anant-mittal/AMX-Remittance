@@ -44,7 +44,7 @@ public class DeviceConnecter implements IDeviceConnecter {
 
 	@Override
 	public void sendSACtoEmployee(String empId, String sac) {
-		NotipyData x = notipyBox.get(empId);
+		NotipyData x = notipyBox.getOrDefault(empId);
 		x.setSac(sac);
 		x.setUpdatestamp(System.currentTimeMillis());
 		notipyBox.put(empId, x);

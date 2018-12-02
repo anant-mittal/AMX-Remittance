@@ -93,12 +93,16 @@ table {
 						<td id="statusKey">--</td>
 					</tr>
 					<tr>
-						<td>deviceState</td>
-						<td id="deviceState">--</td>
+						<td>SAC</td>
+						<td><center>
+								<h4 id="SAC">--</h4>
+							</center></td>
 					</tr>
 					<tr>
-						<td>stateDataType</td>
-						<td id="stateDataType">--</td>
+						<td>Auth OTP</td>
+						<td><center>
+								<h2 id="AOTP">--</h2>
+							</center></td>
 					</tr>
 					<tr>
 						<td>data</td>
@@ -156,7 +160,7 @@ table {
 			},
 			data : JSON.stringify({
 				identity : identity,
-				deivceClientType : "SIGNATURE_PAD"
+				deivceClientType : "NOTP_APP"
 			})
 		}).then(function(resp) {
 			$(".device #statusKey").text(resp.statusKey);
@@ -258,35 +262,61 @@ table {
 	}
 
 	function poll() {
-		pairSession().then(
-				function(resp) {
-					return $.ajax({
-						url : '/offsite/pub/notipy/status',
-						headers : {
-							'x-device-reg-id' : deviceRegId,
-							'x-device-reg-token' : deviceRegToken,
-							'x-device-session-token' : deviceSessionToken,
-							'x-device-req-token' : requestToken
-						},
-						method : 'GET',
-						dataType : 'json'
-					}).then(
-							function(resp) {
-								$(".status #statusKey").text(resp.statusKey);
-								if (resp && resp.results && resp.results[0]) {
-									$(".status #deviceState").text(
-											resp.results[0].deviceState);
-									$(".status #stateDataType").text(
-											resp.results[0].stateDataType);
-									$(".status #data textarea").val(
-											JSON.stringify(resp.results[0],
-													null, 4));
-								}
-							}).always(
-							function() {
-								setTimeout(poll, 3000);
-							})
-				});
+		pairSession()
+				.then(
+						function(resp) {
+							return $
+									.ajax(
+											{
+												url : '/offsite/pub/notipy/status',
+												headers : {
+													'x-device-reg-id' : deviceRegId,
+													'x-device-reg-token' : deviceRegToken,
+													'x-device-session-token' : deviceSessionToken,
+													'x-device-req-token' : requestToken
+												},
+												method : 'GET',
+												dataType : 'json'
+											})
+									.then(
+											function(resp) {
+												$(".status #statusKey").text(
+														resp.statusKey);
+												if (resp && resp.results
+														&& resp.results[0]) {
+													$(".status #SAC")
+															.text(
+																	resp.results[0].sac);
+													$(".status #data textarea")
+															.val(
+																	JSON
+																			.stringify(
+																					resp.results[0],
+																					null,
+																					4));
+
+													$
+															.getJSON(
+																	"/offsite/pub/amx/hmac",
+																	{
+																		interval : 10 * 60 * 1000,
+																		secret : "DEVICEREGID",
+																		message : resp.results[0].sac,
+																		length : 6
+																	})
+															.done(
+																	function(
+																			resp) {
+																		$(
+																				".status #AOTP")
+																				.text(
+																						resp.numeric);
+																	})
+												}
+											}).always(function() {
+										setTimeout(poll, 3000);
+									})
+						});
 	}
 	hmac();
 	poll();

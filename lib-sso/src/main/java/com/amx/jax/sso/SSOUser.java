@@ -77,8 +77,8 @@ public class SSOUser implements Serializable {
 	}
 
 	public void generateSAC() {
-		this.selfSAC = Random.randomAlpha(3);
-		this.partnerSAC = Random.randomAlpha(3);
+		this.selfSAC = Random.randomAlphaNumeric(6);
+		this.partnerSAC = Random.randomAlphaNumeric(6);
 	}
 
 }

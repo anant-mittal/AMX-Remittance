@@ -42,7 +42,7 @@ public class NotipyController {
 		DeviceData deviceData = deviceRequestValidator.validateRequest();
 		NotipyData notipyData = notipyBox.getOrDefault(deviceData.getEmpId());
 
-		if (notipyData.getUpdatestamp() > notipyData.getCheckstamp()) {
+		if (notipyData.getUpdatestamp() > deviceData.getCheckstamp()) {
 			DevicePairOtpResponse devAuthResp = rbaacServiceClient.validateDeviceSessionToken(
 					ArgUtil.parseAsBigDecimal(deviceRequestValidator.getDeviceRegId()),
 					deviceRequestValidator.getDeviceSessionToken()).getResult();

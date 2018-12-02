@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.AppConfig;
+import com.amx.jax.dict.UserClient;
+import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.model.OtpData;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
@@ -21,6 +23,7 @@ import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.rbaac.dbmodel.Employee;
 import com.amx.jax.rbaac.exception.AuthServiceException;
 import com.amx.utils.CryptoUtil;
+import com.amx.utils.CryptoUtil.HashBuilder;
 import com.amx.utils.Random;
 
 /**
@@ -54,16 +57,23 @@ public class UserOtpManager {
 	}
 
 	/**
+	 * 
 	 * Generate otp tokens.
 	 *
 	 * @return the otp data
 	 */
-	public OtpData generateOtpTokens() {
+	public OtpData generateOtpTokens(String sac) {
 
 		OtpData otpData = new OtpData();
 
-		otpData.setmOtp(Random.randomNumeric(6));
-		otpData.setmOtpPrefix(Random.randomAlpha(3));
+		/**
+		 * TODO:- Get Device RegId for {@link ClientType#NOTP_APP}
+		 * 
+		 * @author lalittanwar
+		 */
+		HashBuilder builder = new HashBuilder().interval(otpTTL).secret("DEVICEREGID").message(sac);
+		otpData.setmOtpPrefix(sac);
+		otpData.setmOtp(builder.toNumeric(6).output());
 
 		otpData.setHashedmOtp(getOtpHash(otpData.getmOtp()));
 
@@ -78,14 +88,10 @@ public class UserOtpManager {
 	/**
 	 * Send to slack.
 	 *
-	 * @param channel
-	 *            the channel
-	 * @param to
-	 *            the to
-	 * @param prefix
-	 *            the prefix
-	 * @param otp
-	 *            the otp
+	 * @param channel the channel
+	 * @param to      the to
+	 * @param prefix  the prefix
+	 * @param otp     the otp
 	 */
 	public void sendToSlack(String channel, String to, String prefix, String otp) {
 		Notipy msg = new Notipy();
@@ -102,10 +108,8 @@ public class UserOtpManager {
 	/**
 	 * Send otp sms.
 	 *
-	 * @param einfo
-	 *            the einfo
-	 * @param model
-	 *            the model
+	 * @param einfo the einfo
+	 * @param model the model
 	 */
 	// Employee otp to login: passing Employee for including any personal Msg
 	public void sendOtpSms(Employee einfo, OtpData model, String slackMsg) {
