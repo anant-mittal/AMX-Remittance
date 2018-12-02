@@ -26,6 +26,7 @@ public class OffsiteMvcConfig extends WebMvcConfigurerAdapter {
 	public void addViewControllers(ViewControllerRegistry registry) {
 		registry.addViewController("/").setViewName("index");
 		registry.addViewController("/signpad.html").setViewName("signpad");
+		registry.addViewController("/notipy.html").setViewName("notipy");
 	}
 
 	@Bean

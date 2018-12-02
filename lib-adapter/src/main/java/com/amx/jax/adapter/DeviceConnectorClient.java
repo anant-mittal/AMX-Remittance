@@ -24,9 +24,9 @@ import com.amx.jax.rest.RestService;
 
 @Configuration
 @PropertySource("classpath:application-adapter.properties")
-public class AdapterServiceClient {
+public class DeviceConnectorClient {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(AdapterServiceClient.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(DeviceConnectorClient.class);
 
 	@Value("${jax.offsite.url}")
 	String offSiteUrl;
@@ -43,7 +43,7 @@ public class AdapterServiceClient {
 	RestService restService;
 
 	@Autowired(required = false)
-	ICardService iCardService;
+	IDeviceConnecter iCardService;
 
 	public AmxApiResponse<CardData, Object> getCardDetailsByTerminal(String terminalId) throws InterruptedException {
 		if (iCardService == null) {
@@ -166,4 +166,9 @@ public class AdapterServiceClient {
 		}
 	}
 
+	public void sendSACtoEmployee(String employeeId, String sac) {
+		if (iCardService != null) {
+			iCardService.sendSACtoEmployee(employeeId, sac);
+		}
+	}
 }

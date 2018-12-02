@@ -159,6 +159,7 @@ public class UserAuthService {
 		userOtpCache.cacheUserOtpData(selfEmployee.getEmployeeNumber(), userOtpData);
 
 		UserAuthInitResponseDTO dto = new UserAuthInitResponseDTO();
+		dto.setEmployeeId(selfEmployee.getEmployeeId());
 
 		dto.setAuthTransactionId(transactionId);
 
@@ -168,6 +169,7 @@ public class UserAuthService {
 		// partner Otp Prefix
 		if (isAssisted) {
 			dto.setPartnerMOtpPrefix(userOtpData.getPartnerOtpData().getmOtpPrefix());
+			dto.setPartnerEmployeeId(partnerEmployee.getEmployeeId());
 		}
 
 		dto.setInitOtpTime(String.valueOf(selfOtpData.getInitTime()));

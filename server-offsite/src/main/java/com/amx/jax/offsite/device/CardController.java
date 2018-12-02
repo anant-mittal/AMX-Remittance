@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.amx.jax.adapter.ICardService;
+import com.amx.jax.adapter.IDeviceConnecter;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.IDeviceStateService;
 import com.amx.jax.device.CardData;
@@ -32,7 +32,7 @@ public class CardController {
 	private DeviceRequest deviceRequestValidator;
 
 	@Autowired
-	private ICardService iCardService;
+	private IDeviceConnecter iCardService;
 
 	@ApiDeviceHeaders
 	@RequestMapping(value = { DeviceConstants.Path.DEVICE_STATUS_CARD }, method = { RequestMethod.POST })

@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.amx.jax.AppConfig;
 import com.amx.jax.AppConstants;
 import com.amx.jax.AppContextUtil;
-import com.amx.jax.adapter.AdapterServiceClient;
+import com.amx.jax.adapter.DeviceConnectorClient;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.device.CardData;
 import com.amx.jax.http.ApiRequest;
@@ -75,7 +75,7 @@ public class SSOServerController {
 	RbaacServiceClient rbaacServiceClient;
 
 	@Autowired
-	AdapterServiceClient adapterServiceClient;
+	DeviceConnectorClient adapterServiceClient;
 
 	private Map<String, Object> getModelMap() {
 		ssoUser.ssoTranxId();
@@ -83,8 +83,8 @@ public class SSOServerController {
 		map.put(AppConstants.TRANX_ID_XKEY_CLEAN, AppContextUtil.getTranxId());
 		map.put(SSOConstants.PARAM_SSO_LOGIN_URL, appConfig.getAppPrefix() + SSOConstants.SSO_LOGIN_URL_DO);
 		map.put(SSOConstants.PARAM_SSO_LOGIN_PREFIX, appConfig.getAppPrefix());
-		map.put(SSOConstants.SECURITY_CODE_KEY, Random.randomAlpha(3));
-		map.put(SSOConstants.PARTNER_SECURITY_CODE_KEY, Random.randomAlpha(3));
+		map.put(SSOConstants.SECURITY_CODE_KEY, ssoUser.getSelfSAC());
+		map.put(SSOConstants.PARTNER_SECURITY_CODE_KEY, ssoUser.getPartnerSAC());
 		return map;
 	}
 
@@ -92,6 +92,7 @@ public class SSOServerController {
 	@RequestMapping(value = SSOConstants.SSO_LOGIN_URL_HTML, method = RequestMethod.GET)
 	public String authLoginView(Model model,
 			@PathVariable(required = false, value = "htmlstep") @ApiParam(defaultValue = "REQUIRED") SSOAuthStep html) {
+		ssoUser.generateSAC();
 		model.addAllAttributes(getModelMap());
 		return SSOConstants.SSO_INDEX_PAGE;
 	}
@@ -159,17 +160,22 @@ public class SSOServerController {
 				init.setDeviceType(userDevice.getType());
 				init.setTerminalId(sSOTranx.get().getTerminalId());
 				init.setLoginType(loginType);
-				
-				//for assisted
-				if(loginType == LOGIN_TYPE.ASSISTED) {
+
+				// for assisted
+				if (loginType == LOGIN_TYPE.ASSISTED) {
 					init.setPartnerIdentity(formdata.getPartnerIdentity());
 				}
 				UserAuthInitResponseDTO initResp = rbaacServiceClient.initAuthForUser(init).getResult();
-				
-				if(loginType == LOGIN_TYPE.ASSISTED) {
-					model.put("partnerMOtpPrefix", initResp.getPartnerMOtpPrefix());	
-				}
+
 				model.put("mOtpPrefix", initResp.getmOtpPrefix());
+				adapterServiceClient.sendSACtoEmployee(ArgUtil.parseAsString(initResp.getEmployeeId()),
+						ssoUser.getSelfSAC());
+
+				if (loginType == LOGIN_TYPE.ASSISTED) {
+					model.put("partnerMOtpPrefix", initResp.getPartnerMOtpPrefix());
+					adapterServiceClient.sendSACtoEmployee(ArgUtil.parseAsString(initResp.getPartnerEmployeeId()),
+							ssoUser.getPartnerSAC());
+				}
 
 				result.setStatusEnum(SSOServerCodes.OTP_REQUIRED);
 
@@ -188,7 +194,7 @@ public class SSOServerController {
 
 				auth.setDeviceId(userDevice.getFingerprint());
 				auth.setmOtp(formdata.getMotp());
-				if(loginType == LOGIN_TYPE.ASSISTED) {
+				if (loginType == LOGIN_TYPE.ASSISTED) {
 					auth.setPartnerMOtp(formdata.getPartnerMOtp());
 				}
 				EmployeeDetailsDTO empDto = rbaacServiceClient.authoriseUser(auth).getResult();

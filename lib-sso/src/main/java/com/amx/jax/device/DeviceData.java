@@ -8,7 +8,10 @@ public class DeviceData implements Serializable {
 	private String empId;
 	private String globalIp;
 	private String localIp;
+
 	private long updatestamp;
+
+	private long checkstamp;
 
 	public long getUpdatestamp() {
 		return updatestamp;
@@ -67,5 +70,13 @@ public class DeviceData implements Serializable {
 
 	public void setEmpId(String empId) {
 		this.empId = empId;
+	}
+
+	public long getCheckstamp() {
+		return checkstamp;
+	}
+
+	public void setCheckstamp(long checkstamp) {
+		this.checkstamp = checkstamp;
 	}
 }
