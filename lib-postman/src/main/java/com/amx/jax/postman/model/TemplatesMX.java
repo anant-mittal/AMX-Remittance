@@ -36,7 +36,7 @@ public enum TemplatesMX implements ITemplate {
 
 	SERVER_PING("server-ping"),
 	
-	FC_DELIVER_OTP("deliver-otp"),FC_ORDER_SUCCESS("order-success"),FC_KNET_SUCCESS("knet-success");
+	FC_DELIVER_EMAIL_OTP("deliver-email-otp"),FC_DELIVER_SMS_OTP("deliver-sms-otp"),FC_ORDER_SUCCESS("order-success"),FC_KNET_SUCCESS("knet-success");
 
 	String fileName;
 	PDFConverter converter;
