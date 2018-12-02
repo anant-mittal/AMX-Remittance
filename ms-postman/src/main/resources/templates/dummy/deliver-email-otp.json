@@ -1,10 +1,14 @@
 {
-	"data": {
-		"eOtp": "7827",
-		"eOtpPrefix": "RXY",
-		"firstName": "Riddhi",
-		"lastName": "Madhu",
-		"middleName" : "Pata nhi",
-		"orderId":"123"
-	}
+  "mOtp":"123",
+  "mOtpPrefix":null,
+  "deliveryDetail":{
+     "customerName":"CHIRANJEEVI VEERAVALLI",
+     "mobile":"56432189",
+     "deliveryTimeSlot":"16:00 pm-17:00 pm",
+     "transactionRefId":null,
+     "inventoryId":null,
+     "deliveryRemark":null,
+     "orderStatus":"Returned",
+     "deliveryDetailSeqId":5
+  }
 }

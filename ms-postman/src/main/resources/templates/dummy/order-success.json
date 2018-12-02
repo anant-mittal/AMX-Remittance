@@ -1,7 +1,14 @@
 {
-	"data": {
-			"customerName": "CHIRANJEEVI VEERAVALLI",
-			 "deliveryTimeSlot": "16:00 pm-17:00 pm",
-			 "transactionRefId": "101"
-	}
+  "mOtp":null,
+  "mOtpPrefix":null,
+  "deliveryDetail":{
+     "customerName":"CHIRANJEEVI VEERAVALLI",
+     "mobile":"56432189",
+     "deliveryTimeSlot":"16:00 pm-17:00 pm",
+     "transactionRefId":null,
+     "inventoryId":null,
+     "deliveryRemark":null,
+     "orderStatus":"Returned",
+     "deliveryDetailSeqId":5
+  }
 }
