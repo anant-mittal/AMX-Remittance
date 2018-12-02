@@ -30,6 +30,7 @@ public class DeviceConstants {
 		public static final String SESSION_PAIR = "/pub/device/session/pair";
 		public static final String SESSION_TERMINAL = "/pub/device/session/terminal";
 		public static final String DEVICE_STATUS_CARD = "/pub/device/status/card";
+		public static final String DEVICE_STATUS_AUTHAPP = "/pub/device/mxauth/status";
 
 		@Deprecated
 		public static final String DEVICE_STATUS_ACTIVITY = "/pub/device/status/activity";

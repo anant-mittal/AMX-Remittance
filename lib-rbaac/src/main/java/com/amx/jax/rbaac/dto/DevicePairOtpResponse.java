@@ -9,10 +9,13 @@ public class DevicePairOtpResponse {
 	String otp;
 
 	String termialId;
+	String empId;
 
 	BigDecimal deviceRegId;
-	
+
 	DeviceState deviceState;
+
+	String sessionPairToken;
 
 	public BigDecimal getDeviceRegId() {
 		return deviceRegId;
@@ -29,8 +32,6 @@ public class DevicePairOtpResponse {
 	public void setTermialId(String termialId) {
 		this.termialId = termialId;
 	}
-
-	String sessionPairToken;
 
 	public String getOtp() {
 		return otp;
@@ -54,5 +55,13 @@ public class DevicePairOtpResponse {
 
 	public void setDeviceState(DeviceState deviceState) {
 		this.deviceState = deviceState;
+	}
+
+	public String getEmpId() {
+		return empId;
+	}
+
+	public void setEmpId(String empId) {
+		this.empId = empId;
 	}
 }
