@@ -63,7 +63,11 @@ public class FcSaleOrderTransactionManager extends AbstractModel{
 		
 		List<CurrencyMasterModel> curr =currencyDao.getCurrencyList(fcCurrencyId);
 		
-		if(curr.isEmpty()){
+		if(JaxUtil.isNullZeroBigDecimalCheck(fcAmount) && fcAmount.compareTo(BigDecimal.ZERO)<0){
+			throw new GlobalException("Negative not allowed", JaxError.INVALID_EXCHANGE_AMOUNT);
+		}
+		
+		if(curr !=null && curr.isEmpty()){
 			throw new GlobalException("Currency is not  available/invalid currency id", JaxError.INVALID_CURRENCY_ID);
 		}
 		FxExchangeRateBreakup breakup = new FxExchangeRateBreakup();

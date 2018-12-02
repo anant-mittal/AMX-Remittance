@@ -161,7 +161,7 @@ public class FxOrderPaymentManager {
 			 
 			}else{
 					listOfRecAppl = receiptAppRepository.fetchreceiptPaymentAppl(paymentResponse.getCustomerId(), new BigDecimal(paymentResponse.getUdf3()));
-					if(!listOfRecAppl.isEmpty()) {
+					if(listOfRecAppl!= null && !listOfRecAppl.isEmpty()) {
 						rcptApplPaydao.updatePaygDetails(listOfRecAppl, paymentResponse);
 						
 					}

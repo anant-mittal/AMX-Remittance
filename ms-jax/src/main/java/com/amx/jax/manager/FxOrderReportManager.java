@@ -13,22 +13,17 @@ import java.util.Map;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
-
-
-
-
-
-
-
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constants.JaxTransactionStatus;
+import com.amx.jax.controller.RemittanceController;
 import com.amx.jax.dal.LoyaltyInsuranceProDao;
 import com.amx.jax.dbmodel.CollectionDetailViewModel;
 import com.amx.jax.dbmodel.CollectionPaymentDetailsViewModel;
@@ -73,6 +68,7 @@ import com.amx.jax.repository.ReceiptPaymentAppRepository;
 import com.amx.jax.repository.fx.FxDeliveryDetailsRepository;
 import com.amx.jax.repository.fx.FxOrderTransactionRespository;
 import com.amx.jax.util.DateUtil;
+import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.RoundUtil;
 
 
@@ -80,6 +76,9 @@ import com.amx.jax.util.RoundUtil;
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Component
 public class FxOrderReportManager {
+	
+	private Logger logger = Logger.getLogger(FxOrderReportManager.class);
+	
 	@Autowired
 	MetaData metaData;
 	
@@ -175,20 +174,28 @@ public class FxOrderReportManager {
 		String phoneNo ="";
 		
 		List<Customer> customerList = customerDao.getCustomerByCustomerId(countryId, companyId, custoemrId);
-		if(!customerList.isEmpty()){
+		if(customerList != null && !customerList.isEmpty()){
 			reportModel.setIdExpiryDate(DateUtil.todaysDateWithDDMMYY(customerList.get(0).getIdentityExpiredDate(),"0"));
 			reportModel.setCivilId(customerList.get(0).getIdentityInt());
 			customerReferenceId = customerList.get(0).getCustomerReference();
 			phoneNo =  customerList.get(0).getMobile();
+		}else{
+			logger.error("custoemr not found :"+custoemrId);
+			throw new GlobalException("custoemr not found", JaxError.INVALID_CUSTOMER);
 		}
 		
+		
+		
 		List<FxOrderTransactionModel> fxOrderTrnxList =  fxTransactionHistroyDao.getFxOrderTrnxListByCollectionDocNumber(custoemrId,collNo,collFyr);
-	    if(!fxOrderTrnxList.isEmpty()){
+	    if(fxOrderTrnxList != null && !fxOrderTrnxList.isEmpty()){
 	    	List<FxOrderTransactionHistroyDto> fxOrderTrnxListDto = applTrnxManager.convertFxHistDto(fxOrderTrnxList);
 	    	List<FxOrderTransactionHistroyDto> finalList = new ArrayList<>();
-	    	if(!fxOrderTrnxListDto.isEmpty()){
+	    	if(fxOrderTrnxListDto !=null && !fxOrderTrnxListDto.isEmpty()){
 	    		finalList = applTrnxManager.getMultipleTransactionHistroy(fxOrderTrnxListDto);
 	    		
+	    	}else{
+	    		logger.error("fxOrderTrnxListDto trnx list not found :"+custoemrId+"\t Colle : "+collNo+"\t Coll fyr :"+collFyr);
+		    	throw new GlobalException("custoemr not found", JaxError.NO_RECORD_FOUND);
 	    	}
 	    	
 	    	reportModel.setFxOrderTrnxList(finalList);
@@ -202,7 +209,15 @@ public class FxOrderReportManager {
 	    		localCurrency = fxOrderTrnxList.get(0).getLocalCurrencyId();
 	    		localCurrQuoteName = fxOrderTrnxList.get(0).getLocalCurrQuoteName(); 
 	    		receiptNo =  fxOrderTrnxList.get(0).getCollectionDocumentFinYear().toString()+"/"+fxOrderTrnxList.get(0).getCollectionDocumentNo().toString();
+	    		reportModel.setDeliveryDate(fxOrderTrnxList.get(0).getDeliveryDate()==null?"":fxOrderTrnxList.get(0).getDeliveryDate());
+	    		reportModel.setDeliveryTime(fxOrderTrnxList.get(0).getDeliveryTime()==null?"":fxOrderTrnxList.get(0).getDeliveryTime());
 	    	}
+	    	
+	    	int decimalPerCurrency =0;
+			if(localCurrency!=null){
+			 decimalPerCurrency = currencyDao.getCurrencyList(localCurrency).get(0).getDecinalNumber().intValue();
+			}
+			reportModel.setDeliveryCharges(RoundUtil.roundBigDecimal(fxOrderTrnxList.get(0).getDeliveryCharges(),decimalPerCurrency));
 	    	customerName=fxOrderTrnxList.get(0).getCustomerName(); 
 	    	FxDeliveryDetailsModel fxDelDetailModel = deliveryDetailsRepos.findOne(deliveryDetSeqId);
 	    	PaygDetailsModel pgDetailsModel = payGDeatilsRepos.findOne(paygSeqId);
@@ -223,7 +238,7 @@ public class FxOrderReportManager {
 			
 			StringBuffer engCompanyInfo = null;
 			StringBuffer arabicCompanyInfo = null;
-			if (!companyMaster .isEmpty()) {
+			if (companyMaster !=null && !companyMaster .isEmpty()) {
 				engCompanyInfo = new StringBuffer();
 				if (companyMaster.get(0).getEngAddress1()!= null && companyMaster.get(0).getEngAddress1().length() > 0) {
 					engCompanyInfo = engCompanyInfo.append(companyMaster.get(0).getEngAddress1() + ",");
@@ -260,17 +275,17 @@ public class FxOrderReportManager {
 					arabicCompanyInfo = arabicCompanyInfo.append(ConstantDocument.Share_Capital + " " + companyMaster.get(0).getCapitalAmount());
 				}
 				reportModel.setArabicCompanyInfo(arabicCompanyInfo.toString());
+			}else{
+				logger.error("companyMaster not found :");
+				throw new GlobalException("custoemr not found", JaxError.INVALID_COMPANY_ID);
 			}
 			
-			int decimalPerCurrency =0;
-			if(localCurrency!=null){
-			 decimalPerCurrency = currencyDao.getCurrencyList(localCurrency).get(0).getDecinalNumber().intValue();
-			}
+		
 			
 			
 			List<CollectionDetailViewModel> collectionDetailList1= collectionDetailViewDao.getCollectionDetailView(companyId,collectionDocNo,collectionDocfyear,collectionDocCode);
 			
-			
+			if(collectionDetailList1!= null & !collectionDetailList1.isEmpty()){
 			CollectionDetailViewModel collectionDetailView = collectionDetailList1.get(0);
 
 			if(collectionDetailView.getNetAmount()!=null && localCurrency!=null){
@@ -286,6 +301,10 @@ public class FxOrderReportManager {
 			if(collectionDetailView.getRefundedAmount()!=null && localCurrency!=null){
 				BigDecimal collectRefundAmount=RoundUtil.roundBigDecimal((collectionDetailView.getRefundedAmount()),decimalPerCurrency);
 				reportModel.setRefundedAmount(localCurrQuoteName+"     ******"+collectRefundAmount);
+			}
+			}else{
+				logger.error("collectionDetailList1 not found :");
+				throw new GlobalException("Payment details not found", JaxError.PAYMENT_DETAILS_NOT_FOUND);
 			}
 
 			
@@ -327,21 +346,15 @@ public class FxOrderReportManager {
 
 			
 			
-			
-			
 	    	
-	    	if(fxOrderTrnxList.get(0)!=null){
-	    		reportModel.setDeliveryDate(fxOrderTrnxList.get(0).getDeliveryDate()==null?"":fxOrderTrnxList.get(0).getDeliveryDate());
-	    		reportModel.setDeliveryTime(fxOrderTrnxList.get(0).getDeliveryTime()==null?"":fxOrderTrnxList.get(0).getDeliveryTime());
-	    	}
-	    	
-	    
-	    	reportModel.setDeliveryCharges(RoundUtil.roundBigDecimal(fxOrderTrnxList.get(0).getDeliveryCharges(),decimalPerCurrency));
 	    	reportModel.setReceiptNo(receiptNo);
 	    	reportModel.setCustomerName(customerName);
 	    	reportModel.setPhoneNumber(phoneNo);
 	    	reportModel.setLocation(fxOrderTrnxList.get(0).getBranchDesc());
 	    	reportModel.setLocalCurrency(localCurrQuoteName);
+	    }else{
+	    	logger.error("trnx list not found :"+custoemrId+"\t Colle : "+collNo+"\t Coll fyr :"+collFyr);
+	    	throw new GlobalException("custoemr not found", JaxError.NO_RECORD_FOUND);
 	    }
 	    
 	    
@@ -392,15 +405,18 @@ public class FxOrderReportManager {
 		BigDecimal netAmount =BigDecimal.ZERO;
 		BigDecimal deliveryCharges =BigDecimal.ZERO;
 		List<ReceiptPaymentApp> applReceipt = rcptPaymentAppl.getApplicationByPagdetailSeqIAndcustomerId(custoemrId, paymentSeqId);
-		if(paymentSeqId!=null){
+		if(JaxUtil.isNullZeroBigDecimalCheck(paymentSeqId)){
 		 pgDetailsModel = payGDeatilsRepos.findOne(paymentSeqId);
 		}
-		if(!applReceipt .isEmpty() && applReceipt.get(0).getDeliveryDetSeqId()!=null){
+		if(applReceipt != null && !applReceipt .isEmpty() && applReceipt.get(0).getDeliveryDetSeqId()!=null){
 		fxDelDetailModel = deliveryDetailsRepos.findOne(applReceipt.get(0).getDeliveryDetSeqId());
+		}else{
+			logger.error(" getTransactionStatus custoemrId - paymentSeqId :"+custoemrId +"-"+paymentSeqId);
+			throw new GlobalException("No record found :",JaxError.NO_RECORD_FOUND);
 		}
 		JaxTransactionStatus jaxTrnxStatus = getJaxTransactionStatus(pgDetailsModel,applReceipt);
 		String receiptNo="";
-		if(!applReceipt.isEmpty()){
+		if(applReceipt != null && !applReceipt.isEmpty()){
 		List<FxOrderTransactionModel> fxOrderTrnxList =  fxTransactionHistroyDao.getFxOrderTrnxListByCollectionDocNumber(custoemrId,applReceipt.get(0).getColDocNo(),applReceipt.get(0).getColDocFyr());
 			 if(!fxOrderTrnxList.isEmpty()){
 				 if(fxOrderTrnxList.get(0).getCollectionDocumentNo()!=null && fxOrderTrnxList.get(0).getCollectionDocumentFinYear()!=null){
@@ -415,9 +431,7 @@ public class FxOrderReportManager {
 				netAmount = netAmount.add(appl.getLocalTrnxAmount());
 			}
 		}
-		/*if(applReceipt!=null){
-			netAmount = netAmount.add(applReceipt.getLocalTrnxAmount());
-		}*/
+		
 		if(fxDelDetailModel !=null){
 			deliveryCharges = fxDelDetailModel.getDeliveryCharges();
 		}	
@@ -513,7 +527,7 @@ public class FxOrderReportManager {
 			applicationStatus = applReceipt.get(0).getApplicationStatus();
 		}
 		
-		if (StringUtils.isBlank(applicationStatus) && pgDetailsModel.getPgPaymentId() != null) {
+		if (StringUtils.isBlank(applicationStatus) && pgDetailsModel != null && pgDetailsModel.getPgPaymentId() != null) {
 			status = JaxTransactionStatus.PAYMENT_IN_PROCESS;
 		}
 		String resultCode = pgDetailsModel.getResultCode();
