@@ -6,6 +6,11 @@
 		"lastName": "Madhu",
 		"middleName" : "Pata nhi",
 		"orderId":"123",
-		"deliverTime":"10am"
+		"deliverTime":"10am",
+		"transRefno":" 100/112",
+		"netAmt":" KD 3,000",
+		"loyalityPoints":"1000",
+		"transDate":"11/02/2018"
+		
 	}
 }

@@ -276,7 +276,7 @@ a {
 							<td class="content-wrap">
 								<table width="100%" cellpadding="0" cellspacing="0">
 									<tr>
-										<td class="content-block"><strong>Dear <span  th:text="${data.firstName}">User</span>  <span  th:text="${data.middleName}"></span>  <span  th:text="${data.lastName}"></span>,</strong>
+										<td class="content-block"><strong>Dear <span  th:text="${data.customerName}">User</span> </strong>
 										</td>
 									</tr>
 									<tr>
@@ -284,7 +284,7 @@ a {
 									</tr>
 									
 									<tr>
-										<td class="content-block">This is to inform you that your order is successfully delivered at <span  th:text="${data.deliverTime}"></span> .
+										<td class="content-block">This is to inform you that your order <span  th:text="${data.transactionRefId}">User</span> is successfully delivered at <span  th:text="${data.deliveryTimeSlot}"></span>.
 										</td>
 									</tr>
 									<tr>
