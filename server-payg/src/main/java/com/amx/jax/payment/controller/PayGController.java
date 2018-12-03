@@ -173,9 +173,7 @@ public class PayGController {
 
 		TenantContextHolder.setCurrent(tnt);
 
-		if (!ArgUtil.isEmpty(uuid)) {
-			payGSession.uuid(uuid);
-		}
+		payGSession.uuid(uuid);
 
 		LOGGER.info("Inside capture method with parameters tenant : " + tnt + " paygCode : " + paygCode);
 		PayGClient payGClient = payGClients.getPayGClient(paygCode);

@@ -36,8 +36,8 @@ public class PaymentConstant {
 	}
 
 	public static class Path {
-		public static final String PAYMENT_CAPTURE_CALLBACK_V1 = "/capture/{paygCode}/{tenant}/{channel}/";
-		public static final String PAYMENT_CAPTURE_CALLBACK_V1_WILDCARD = "/capture/{paygCode}/{tenant}/{channel}/*";
+		public static final String PAYMENT_CAPTURE_CALLBACK_V1 = "/capture/{paygCode}/{tenant}/{channel}/{uuid}";
+		public static final String PAYMENT_CAPTURE_CALLBACK_V1_WILDCARD = "/capture/{paygCode}/{tenant}/{channel}/{uuid}/*";
 		public static final String PAYMENT_CAPTURE_CALLBACK_V2 = "/v2/capture/{paygCode}/{tenant}/{channel}/{product}/{uuid}";
 		public static final String PAYMENT_CAPTURE_CALLBACK_V2_WILDCARD = "/v2/capture/{paygCode}/{tenant}/{channel}/{product}/{uuid}/*";
 	}
