@@ -160,10 +160,12 @@ public class SSOServerController {
 				init.setDeviceType(userDevice.getType());
 				init.setTerminalId(sSOTranx.get().getTerminalId());
 				init.setLoginType(loginType);
-
-				// for assisted
+				init.setSelfSAC(ssoUser.getSelfSAC());
+				
+				
 				if (loginType == LOGIN_TYPE.ASSISTED) {
 					init.setPartnerIdentity(formdata.getPartnerIdentity());
+					init.setPartnerSAC(ssoUser.getPartnerSAC());
 				}
 				UserAuthInitResponseDTO initResp = rbaacServiceClient.initAuthForUser(init).getResult();
 
