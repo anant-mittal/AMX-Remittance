@@ -198,3 +198,7 @@ function dummyData(){
 	$("."+selectedMode+" [name='ecnumber']").val('235474')
 	$("."+selectedMode+" [name='partner-identity']").val('287070110425')
 }
+
+$(document).ready(function(){
+	connect();
+})
