@@ -76,6 +76,8 @@ public class Constants {
 
 	public static final String NO = "N";
 	
+	public static final String YES = "Y";
+	
 	/** The Constant CUST_DB_SCAN. */
 	public static final String CUST_DB_SCAN = "D";
 

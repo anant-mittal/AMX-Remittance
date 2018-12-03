@@ -168,4 +168,13 @@ public class DeviceService extends AbstractService {
 		}
 		return devices.get(0).getRegistrationId();
 	}
+
+	/**
+	 * @param deviceClientType
+	 * @param employeeId
+	 * @return device object for given employee and device type
+	 */
+	public Device getDeviceByEmployeeAndDeviceType(ClientType deviceClientType, BigDecimal employeeId) {
+		return deviceDao.findDeviceByEmployee(employeeId, deviceClientType);
+	}
 }

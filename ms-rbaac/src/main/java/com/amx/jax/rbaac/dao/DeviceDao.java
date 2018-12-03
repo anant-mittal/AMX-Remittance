@@ -21,6 +21,7 @@ import com.amx.jax.rbaac.exception.AuthServiceException;
 import com.amx.jax.rbaac.repository.DeviceRepository;
 import com.amx.jax.rbaac.service.BranchSystemDetailService;
 import com.amx.jax.util.CryptoUtil;
+import com.amx.utils.Constants;
 
 @Component
 public class DeviceDao {
@@ -54,7 +55,7 @@ public class DeviceDao {
 		device.setStatus("N");
 		device.setState(DeviceState.REGISTERED_NOT_ACTIVE);
 		if (appConfig.isDebug()) {
-			device.setStatus("Y");
+			device.setStatus(Constants.YES);
 			device.setState(DeviceState.REGISTERED);
 		}
 		deviceRepository.save(device);
@@ -69,7 +70,20 @@ public class DeviceDao {
 	 */
 	public Device findDevice(BigDecimal branchSystemInvId, ClientType deviceType) {
 		List<Device> devices = deviceRepository.findByBranchSystemInventoryIdAndDeviceTypeAndStatus(branchSystemInvId,
-				deviceType, "Y");
+				deviceType, Constants.YES);
+		Device device = null;
+		if (devices != null && devices.size() > 1) {
+			throw new AuthServiceException("Too many devices activated", RbaacServiceError.CLIENT_TOO_MANY_ACTIVE);
+		}
+		if (devices != null && devices.size() == 1) {
+			device = devices.get(0);
+		}
+		return device;
+	}
+
+	public Device findDeviceByEmployee(BigDecimal employeeId, ClientType deviceType) {
+		List<Device> devices = deviceRepository.findByEmployeeIdAndDeviceTypeAndStatus(employeeId, deviceType,
+				Constants.YES);
 		Device device = null;
 		if (devices != null && devices.size() > 1) {
 			throw new AuthServiceException("Too many devices activated", RbaacServiceError.CLIENT_TOO_MANY_ACTIVE);
@@ -82,7 +96,7 @@ public class DeviceDao {
 
 	public List<Device> findAllActiveDevices(BigDecimal branchSystemInvId, ClientType deviceType) {
 		List<Device> devices = deviceRepository.findByBranchSystemInventoryIdAndDeviceTypeAndStatus(branchSystemInvId,
-				deviceType, "Y");
+				deviceType, Constants.YES);
 		return devices;
 	}
 
@@ -106,4 +120,5 @@ public class DeviceDao {
 	public DeviceStateInfo findBySessionToken(String sessionToken, Integer registrationId) {
 		return deviceRepository.findBySessionTokenAndRegistrationId(sessionToken, new BigDecimal(registrationId));
 	}
+
 }

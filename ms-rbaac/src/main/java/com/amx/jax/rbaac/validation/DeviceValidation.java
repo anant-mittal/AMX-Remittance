@@ -83,9 +83,10 @@ public class DeviceValidation {
 			existing = deviceDao.findDevice(branchSystem.getCountryBranchSystemInventoryId(), request.getDeviceType());
 		} else if (request.getIdentityInt() != null) {
 			Employee employee = rbaacDao.fetchEmpDetails(request.getIdentityInt());
-			if(employee == null) {
+			if (employee == null) {
 				throw new AuthServiceException("Employee not found");
 			}
+			existing = deviceDao.findDeviceByEmployee(employee.getEmployeeId(), request.getDeviceType());
 		} else {
 			throw new AuthServiceException("Either Ip address or identity must be present");
 		}

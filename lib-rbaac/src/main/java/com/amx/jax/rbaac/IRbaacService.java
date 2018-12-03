@@ -77,9 +77,9 @@ public interface IRbaacService {
 		public static final String DEVICE_DEACTIVATE = DEVICE_PREFIX + "/deactivate";
 		public static final String DEVICE_CREATE_SESSION = DEVICE_PREFIX + "/createsession";
 		public static final String DEVICE_PAIR_SESSION =  DEVICE_PREFIX + "/pairsession";
-		public static final String DEVICE_VALIDATE_SESSION_TOKEN =  DEVICE_PREFIX + "/validatesessiontoken";
+		public static final String DEVICE_VALIDATE_SESSION_TOKEN =  DEVICE_PREFIX + "/validate-sessiontoken";
 		public static final String DEVICE_REG = DEVICE_PREFIX + "/register";
-		public static final String DEVICE_GET_DEVICE_REG_ID =  DEVICE_PREFIX + "/getdeviceregid";
+		public static final String DEVICE_GET_DEVICE_REG_ID =  DEVICE_PREFIX + "/get-deviceregid";
 		
 		/** The Constant GET_ROLE_MAPPING_FOR_EMPLOYEE. */
 		public static final String GET_ROLE_MAPPING_FOR_EMPLOYEE = SERVICE_PREFIX + API_VERSION_V1 + "/roles/alloc/get-role-map-for-employee";
