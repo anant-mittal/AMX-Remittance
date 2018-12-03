@@ -435,19 +435,7 @@
                                 </textFieldExpression>
                             </textField>
 
-                            <textField isStretchWithOverflow="true">
-                                <reportElement x="485" y="4" width="100" height="15"
-                                               forecolor="#000000"
-                                               isPrintWhenDetailOverflows="true"/>
-                                <textElement textAlignment="Right">
-                                    <font fontName="Arial" size="8" isItalic="true"
-                                          pdfFontName="fonts/all/arialbd.ttf"/>
-                                </textElement>
-                                <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$R{label.locationphoneNumber}]]>
-                                </textFieldExpression>
-                            </textField>
-
+                           
                         </frame>
                         <!--#################Delivery Date and Time  END####################-->
                         
@@ -625,20 +613,7 @@
                                 </textFieldExpression>
                             </textField>
 
-                            <textField isStretchWithOverflow="true">
-                                <reportElement x="485" y="4" width="100" height="15"
-                                               forecolor="#000000"
-                                               isPrintWhenDetailOverflows="true"/>
-                                <textElement textAlignment="Right">
-                                    <font fontName="Arial" size="8" isItalic="true"
-                                          pdfFontName="fonts/all/arialbd.ttf"/>
-                                </textElement>
-                                <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$R{label.receiptNopin}]]>
-                                </textFieldExpression>
-                            </textField>
-
-                        </frame>
+                         </frame>
                         <!--##################Receipt No  END####################-->
                         
                           <!--##################Date START####################-->
@@ -754,19 +729,7 @@
                                 </textFieldExpression>
                             </textField>
 
-                            <textField isStretchWithOverflow="true">
-                                <reportElement x="485" y="4" width="100" height="15"
-                                               forecolor="#000000"
-                                               isPrintWhenDetailOverflows="true"/>
-                                <textElement textAlignment="Right">
-                                    <font fontName="Arial" size="8" isItalic="true"
-                                          pdfFontName="fonts/all/arialbd.ttf"/>
-                                </textElement>
-                                <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$R{label.exchangeRate}]]>
-                                </textFieldExpression>
-                            </textField>
-
+                           
                         </frame>
                         <!--##################Foreign Currency Exchange END####################-->
                         
@@ -1420,18 +1383,7 @@
                                 </textFieldExpression>
                             </textField>
 
-                            <textField isStretchWithOverflow="true">
-                                <reportElement x="485" y="4" width="100" height="45"
-                                               forecolor="#000000"
-                                               isPrintWhenDetailOverflows="true"/>
-                                <textElement textAlignment="Right">
-                                    <font fontName="Arial" size="8" isItalic="true"
-                                          pdfFontName="fonts/all/arialbd.ttf"/>
-                                </textElement>
-                                <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$R{label.netAmt}]]>
-                                </textFieldExpression>
-                            </textField>
+                           
                             
                         </frame>
                         <!--##################paymentMode Amount END####################-->
@@ -1468,18 +1420,7 @@
                                 </textFieldExpression>
                             </textField>
 
-                            <textField isStretchWithOverflow="true">
-                                <reportElement x="485" y="4" width="100" height="45"
-                                               forecolor="#000000"
-                                               isPrintWhenDetailOverflows="true"/>
-                                <textElement textAlignment="Right">
-                                    <font fontName="Arial" size="8" isItalic="true"
-                                          pdfFontName="fonts/all/arialbd.ttf"/>
-                                </textElement>
-                                <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$R{label.netAmt}]]>
-                                </textFieldExpression>
-                            </textField>
+                         
                             
                         </frame>
                         <!--################## Approved No  END####################-->
@@ -1516,18 +1457,7 @@
                                 </textFieldExpression>
                             </textField>
 
-                            <textField isStretchWithOverflow="true">
-                                <reportElement x="485" y="4" width="100" height="45"
-                                               forecolor="#000000"
-                                               isPrintWhenDetailOverflows="true"/>
-                                <textElement textAlignment="Right">
-                                    <font fontName="Arial" size="8" isItalic="true"
-                                          pdfFontName="fonts/all/arialbd.ttf"/>
-                                </textElement>
-                                <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$R{label.netAmount}]]>
-                                </textFieldExpression>
-                            </textField>
+                           
                             
                         </frame>
                         <!--##################Transaction Id END####################-->
@@ -1563,18 +1493,7 @@
                                 </textFieldExpression>
                             </textField>
 
-                            <textField isStretchWithOverflow="true">
-                                <reportElement x="485" y="4" width="100" height="45"
-                                               forecolor="#000000"
-                                               isPrintWhenDetailOverflows="true"/>
-                                <textElement textAlignment="Right">
-                                    <font fontName="Arial" size="8" isItalic="true"
-                                          pdfFontName="fonts/all/arialbd.ttf"/>
-                                </textElement>
-                                <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$R{label.netAmount}]]>
-                                </textFieldExpression>
-                            </textField>
+                           
                             
                         </frame>
                         <!--#################K-NET Receipt Date and Time  END####################-->
