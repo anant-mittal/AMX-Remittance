@@ -10,12 +10,6 @@ public class FcSaleCurrencyAmountModel {
 	public FcSaleCurrencyAmountModel() {
 		super();
 	}
-
-	public FcSaleCurrencyAmountModel(BigDecimal amount, String currencyQuote) {
-		super();
-		this.amount = amount;
-		this.currencyQuote = currencyQuote;
-	}
 	
 	public BigDecimal getAmount() {
 		return amount;

@@ -1,6 +1,7 @@
 package com.amx.jax.dao;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
@@ -11,12 +12,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.dbmodel.CollectionModel;
+import com.amx.jax.dbmodel.CurrencyWiseDenomination;
 import com.amx.jax.dbmodel.Employee;
 import com.amx.jax.dbmodel.ForeignCurrencyAdjust;
 import com.amx.jax.dbmodel.fx.EmployeeDetailsView;
 import com.amx.jax.dbmodel.fx.FxDeliveryDetailsModel;
 import com.amx.jax.dbmodel.fx.OrderManagementView;
 import com.amx.jax.dbmodel.fx.UserStockView;
+import com.amx.jax.repository.CurrencyWiseDenominationRepository;
 import com.amx.jax.repository.EmployeeRespository;
 import com.amx.jax.repository.ForeignCurrencyAdjustRepository;
 import com.amx.jax.repository.ICollectionRepository;
@@ -53,6 +56,9 @@ public class FcSaleBranchDao {
 	@Autowired
 	ForeignCurrencyAdjustRepository foreignCurrencyAdjustRepository;
 	
+	@Autowired
+	CurrencyWiseDenominationRepository currencyWiseDenominationRepository;
+	
 	public List<OrderManagementView> fetchFcSaleOrderManagement(BigDecimal applicationcountryId,BigDecimal areaCode){
 		return fcSaleOrderManagementRepository.findByApplicationCountryId(applicationcountryId);
 	}
@@ -77,7 +83,7 @@ public class FcSaleBranchDao {
 		return employeeRespository.fetchEmpDriverDetails();
 	}
 	
-	public List<FxDeliveryDetailsModel> fetchDeliveryDetails(BigDecimal deliveryDetailsId,String isActive){
+	public FxDeliveryDetailsModel fetchDeliveryDetails(BigDecimal deliveryDetailsId,String isActive){
 		return fxDeliveryDetailsRepository.findByDeleviryDelSeqIdAndIsActive(deliveryDetailsId, isActive);
 	}
 	
@@ -119,6 +125,28 @@ public class FcSaleBranchDao {
 			}
 			for (Entry<BigDecimal, String> receiptPayment : mapInventoryReceiptPayment.entrySet()) {
 				receiptPaymentRespository.updateInventoryId(receiptPayment.getKey(),receiptPayment.getValue());
+			}
+		}
+	}
+	
+	public List<CurrencyWiseDenomination> fetchCurrencyDenomination(BigDecimal currencyId,String isActive){
+		return currencyWiseDenominationRepository.fetchCurrencyDenomination(currencyId, isActive);
+	}
+	
+	@Transactional
+	public void saveOrderLockDetails(List<OrderManagementView> lstOrderManagement,BigDecimal employeeId,String userName){
+		if(lstOrderManagement != null){
+			for (OrderManagementView orderManagementView : lstOrderManagement) {
+				fxDeliveryDetailsRepository.updateOrderLockDetails(orderManagementView.getDeliveryDetailsId(),employeeId,userName,new Date());
+			}
+		}
+	}
+	
+	@Transactional
+	public void saveOrderReleaseDetails(List<OrderManagementView> lstOrderManagement,BigDecimal employeeId,String userName){
+		if(lstOrderManagement != null){
+			for (OrderManagementView orderManagementView : lstOrderManagement) {
+				fxDeliveryDetailsRepository.updateOrderReleaseDetails(orderManagementView.getDeliveryDetailsId(),null,userName,null);
 			}
 		}
 	}

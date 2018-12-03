@@ -171,6 +171,9 @@ public class FcSaleBranchService extends AbstractService{
 		if(orderNumber == null || orderNumber.compareTo(BigDecimal.ZERO)==0){
 			throw new GlobalException("Order Number should not be blank",JaxError.NULL_ORDER_NUBMER);
 		}
+		if(orderYear == null || orderYear.compareTo(BigDecimal.ZERO)==0){
+			throw new GlobalException("Order Year should not be blank",JaxError.NULL_ORDER_YEAR);
+		}
 		List<OrderManagementView> orderManagement =  branchOrderManager.fetchFcSaleOrderDetails(applicationCountryId,orderNumber,orderYear);
 		if(orderManagement != null && orderManagement.size() != 0) {
 			saleOrderManage = convertFcSaleOrderDetails(orderManagement);
@@ -288,6 +291,9 @@ public class FcSaleBranchService extends AbstractService{
 		if(orderNumber == null || orderNumber.compareTo(BigDecimal.ZERO)==0){
 			throw new GlobalException("Order Number should not be blank",JaxError.NULL_ORDER_NUBMER);
 		}
+		if(orderYear == null || orderYear.compareTo(BigDecimal.ZERO)==0){
+			throw new GlobalException("Order Year should not be blank",JaxError.NULL_ORDER_YEAR);
+		}
 		if(driverId == null || driverId.compareTo(BigDecimal.ZERO)==0){
 			throw new GlobalException("Driver id should not be blank",JaxError.NULL_DRIVER_ID);
 		}
@@ -301,7 +307,68 @@ public class FcSaleBranchService extends AbstractService{
 	}
 	
 	public BoolRespModel dispatchOrder(FcSaleBranchDispatchRequest fcSaleBranchDispatchRequest,BigDecimal employeeId,BigDecimal countryId,BigDecimal companyId) {
+		if(countryId == null || countryId.compareTo(BigDecimal.ZERO)==0){
+			throw new GlobalException("Application country id should not be blank",JaxError.NULL_APPLICATION_COUNTRY_ID);
+		}
+		if(employeeId == null || employeeId.compareTo(BigDecimal.ZERO) == 0){
+			throw new GlobalException("Employee Id should not be blank",JaxError.NULL_EMPLOYEE_ID);
+		}
+		if(companyId == null || companyId.compareTo(BigDecimal.ZERO)==0){
+			throw new GlobalException("Company Id should not be blank",JaxError.NULL_COMPANY_ID);
+		}
+		if(fcSaleBranchDispatchRequest == null){
+			throw new GlobalException("Currency Denomination should not be empty",JaxError.EMPTY_CURRENCY_DENOMINATION_DETAILS);
+		}
 		Boolean status = branchOrderManager.saveDispatchOrder(fcSaleBranchDispatchRequest,employeeId,countryId,companyId);
+		if(status) {
+			// success
+		}else {
+			throw new GlobalException("Order disptach didn't updated",JaxError.SAVE_FAILED);
+		}
+		return new BoolRespModel(status);
+	}
+	
+	public BoolRespModel acceptOrderLock(BigDecimal applicationCountryId,BigDecimal orderNumber,BigDecimal orderYear,BigDecimal employeeId){
+		if(applicationCountryId == null || applicationCountryId.compareTo(BigDecimal.ZERO)==0){
+			throw new GlobalException("Application country id should not be blank",JaxError.NULL_APPLICATION_COUNTRY_ID);
+		}
+		if(orderNumber == null || orderNumber.compareTo(BigDecimal.ZERO)==0){
+			throw new GlobalException("Order Number should not be blank",JaxError.NULL_ORDER_NUBMER);
+		}
+		if(orderYear == null || orderYear.compareTo(BigDecimal.ZERO)==0){
+			throw new GlobalException("Order Year should not be blank",JaxError.NULL_ORDER_YEAR);
+		}
+		if(employeeId == null || employeeId.compareTo(BigDecimal.ZERO) == 0){
+			throw new GlobalException("Employee Id should not be blank",JaxError.NULL_EMPLOYEE_ID);
+		}
+		Boolean status = branchOrderManager.acceptOrderLock(applicationCountryId, orderNumber, orderYear, employeeId);
+		if(status) {
+			// success
+		}else {
+			throw new GlobalException("accept Order lock didn't updated",JaxError.SAVE_FAILED);
+		}
+		return new BoolRespModel(status);
+	}
+	
+	public BoolRespModel releaseOrderLock(BigDecimal applicationCountryId,BigDecimal orderNumber,BigDecimal orderYear,BigDecimal employeeId){
+		if(applicationCountryId == null || applicationCountryId.compareTo(BigDecimal.ZERO)==0){
+			throw new GlobalException("Application country id should not be blank",JaxError.NULL_APPLICATION_COUNTRY_ID);
+		}
+		if(orderNumber == null || orderNumber.compareTo(BigDecimal.ZERO)==0){
+			throw new GlobalException("Order Number should not be blank",JaxError.NULL_ORDER_NUBMER);
+		}
+		if(orderYear == null || orderYear.compareTo(BigDecimal.ZERO)==0){
+			throw new GlobalException("Order Year should not be blank",JaxError.NULL_ORDER_YEAR);
+		}
+		if(employeeId == null || employeeId.compareTo(BigDecimal.ZERO) == 0){
+			throw new GlobalException("Employee Id should not be blank",JaxError.NULL_EMPLOYEE_ID);
+		}
+		Boolean status = branchOrderManager.releaseOrderLock(applicationCountryId, orderNumber, orderYear, employeeId);
+		if(status) {
+			// success
+		}else {
+			throw new GlobalException("Release Order lock didn't updated",JaxError.SAVE_FAILED);
+		}
 		return new BoolRespModel(status);
 	}
 

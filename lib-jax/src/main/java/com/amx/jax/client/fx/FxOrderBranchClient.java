@@ -92,12 +92,12 @@ public class FxOrderBranchClient implements IFxBranchOrderService {
 	@Override
 	public AmxApiResponse<UserStockDto,Object> fetchBranchStockDetails() {
 		try {
-			LOGGER.debug("in fetchBranchOrderManagement :");
+			LOGGER.debug("in fetchBranchStockDetails :");
 			return restService.ajax(appConfig.getJaxURL() + Path.FC_FETCH_STOCK).meta(new JaxMetaInfo()).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<UserStockDto,Object>>() {
 					});
 		} catch (Exception e) {
-			LOGGER.error("exception in fetchBranchOrderManagement : ", e);
+			LOGGER.error("exception in fetchBranchStockDetails : ", e);
 			return JaxSystemError.evaluate(e);
 		} // end of try-catch
 	}
@@ -142,18 +142,58 @@ public class FxOrderBranchClient implements IFxBranchOrderService {
 	
 	/**
 	 * 
-	 * @return : To get the save assign driver
+	 * @return : To get the save dispatch driver
 	 */
 	@Override
 	public AmxApiResponse<BoolRespModel,Object> dispatchOrder(FcSaleBranchDispatchRequest fcSaleBranchDispatchRequest) {
 		try {
-			LOGGER.debug("in assignDriver :"+fcSaleBranchDispatchRequest);
+			LOGGER.debug("in dispatchOrder :"+fcSaleBranchDispatchRequest);
 			return restService.ajax(appConfig.getJaxURL() + Path.FC_DISPATCH_ORDER).meta(new JaxMetaInfo())
 					.post(fcSaleBranchDispatchRequest)
 					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel,Object>>() {
 					});
 		} catch (Exception e) {
-			LOGGER.error("exception in assignDriver : ", e);
+			LOGGER.error("exception in dispatchOrder : ", e);
+			return JaxSystemError.evaluate(e);
+		} // end of try-catch
+	}
+	
+	/**
+	 * 
+	 * @return : To get the accept order lock
+	 */
+	@Override
+	public AmxApiResponse<BoolRespModel,Object> acceptOrderLock(BigDecimal orderNumber,BigDecimal orderYear) {
+		try {
+			LOGGER.debug("in acceptOrderLock :"+orderNumber +" "+orderYear);
+			return restService.ajax(appConfig.getJaxURL() + Path.FC_ACCEPT_ORDER_LOCK).meta(new JaxMetaInfo())
+					.queryParam(Params.FX_ORDER_NUMBER, orderNumber).meta(new JaxMetaInfo())
+					.queryParam(Params.FX_ORDER_YEAR, orderYear)
+					.post()
+					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel,Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in acceptOrderLock : ", e);
+			return JaxSystemError.evaluate(e);
+		} // end of try-catch
+	}
+	
+	/**
+	 * 
+	 * @return : To get the release order lock
+	 */
+	@Override
+	public AmxApiResponse<BoolRespModel,Object> releaseOrderLock(BigDecimal orderNumber,BigDecimal orderYear) {
+		try {
+			LOGGER.debug("in releaseOrderLock :"+orderNumber +" "+orderYear);
+			return restService.ajax(appConfig.getJaxURL() + Path.FC_RELEASE_ORDER_LOCK).meta(new JaxMetaInfo())
+					.queryParam(Params.FX_ORDER_NUMBER, orderNumber).meta(new JaxMetaInfo())
+					.queryParam(Params.FX_ORDER_YEAR, orderYear)
+					.post()
+					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel,Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in releaseOrderLock : ", e);
 			return JaxSystemError.evaluate(e);
 		} // end of try-catch
 	}

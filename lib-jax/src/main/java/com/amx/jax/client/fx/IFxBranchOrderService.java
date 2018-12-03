@@ -3,6 +3,7 @@ package com.amx.jax.client.fx;
 import java.math.BigDecimal;
 
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.amx.jax.IJaxService;
 import com.amx.jax.api.AmxApiResponse;
@@ -25,6 +26,9 @@ public interface IFxBranchOrderService extends IJaxService {
 		public static final String FC_EMLOYEE_DRIVERS = PREFIX + "/employee-drivers/";
 		public static final String FC_ASSIGN_DRIVER = PREFIX + "/assign-driver/";
 		public static final String FC_DISPATCH_ORDER = PREFIX + "/dispatch-order/";
+		public static final String FC_ACCEPT_ORDER_LOCK = PREFIX + "/accept-order-lock/";
+		public static final String FC_RELEASE_ORDER_LOCK = PREFIX + "/release-order-lock/";
+		public static final String FC_SAVE_ORDER = PREFIX + "/save-order/";
 	}
 
 	public static class Params {
@@ -49,8 +53,19 @@ public interface IFxBranchOrderService extends IJaxService {
 	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND })
 	AmxApiResponse<FcEmployeeDetailsDto, Object> fetchBranchEmployee();
 
-	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND,JaxError.NULL_APPLICATION_COUNTRY_ID,JaxError.NULL_DRIVER_ID,JaxError.NULL_ORDER_NUBMER,JaxError.SAVE_FAILED })
+	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND,JaxError.NULL_APPLICATION_COUNTRY_ID,JaxError.NULL_DRIVER_ID,JaxError.NULL_ORDER_NUBMER,JaxError.SAVE_FAILED,JaxError.NULL_ORDER_YEAR,
+		JaxError.DRIVER_ALREADY_ASSIGNED,JaxError.NO_DELIVERY_DETAILS})
 	AmxApiResponse<BoolRespModel,Object> assignDriver(BigDecimal orderNumber,BigDecimal orderYear,BigDecimal driverId);
-	
+
+	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND,JaxError.NULL_APPLICATION_COUNTRY_ID,JaxError.NULL_EMPLOYEE_ID,JaxError.NULL_COMPANY_ID,JaxError.SAVE_FAILED,JaxError.EMPTY_CURRENCY_DENOMINATION_DETAILS,
+		JaxError.INVALID_EMPLOYEE,JaxError.INVALID_COLLECTION_DOCUMENT_NO,JaxError.INCORRECT_CURRENCY_DENOMINATION,JaxError.BLANK_DOCUMENT_DETAILS,JaxError.MISMATCH_COLLECTION_AMOUNT,JaxError.INVALID_CURRENCY_DENOMINATION})
 	AmxApiResponse<BoolRespModel,Object> dispatchOrder(FcSaleBranchDispatchRequest fcSaleBranchDispatchRequest);
+
+	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND,JaxError.NULL_APPLICATION_COUNTRY_ID,JaxError.NULL_EMPLOYEE_ID,JaxError.NULL_ORDER_NUBMER,JaxError.SAVE_FAILED,JaxError.INVALID_COLLECTION_DOCUMENT_NO,JaxError.ORDER_LOCKED_OTHER_EMPLOYEE
+		,JaxError.NO_DELIVERY_DETAILS})
+	AmxApiResponse<BoolRespModel,Object> acceptOrderLock(BigDecimal orderNumber,BigDecimal orderYear);
+	
+	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND,JaxError.NULL_APPLICATION_COUNTRY_ID,JaxError.NULL_EMPLOYEE_ID,JaxError.NULL_ORDER_NUBMER,JaxError.SAVE_FAILED,JaxError.INVALID_COLLECTION_DOCUMENT_NO,JaxError.ORDER_LOCKED_OTHER_EMPLOYEE
+		,JaxError.NO_DELIVERY_DETAILS})
+	AmxApiResponse<BoolRespModel,Object> releaseOrderLock(BigDecimal orderNumber,BigDecimal orderYear);
 }

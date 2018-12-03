@@ -109,6 +109,10 @@ public class FcSaleBranchOrderController implements IFxBranchOrderService {
 		return AmxApiResponse.build(result);
 	}
 	
+	/**
+	 * To get the save dispatch order
+	 * 
+	 */
 	@RequestMapping(value = Path.FC_DISPATCH_ORDER , method = RequestMethod.POST)
 	@Override
 	public AmxApiResponse<BoolRespModel,Object> dispatchOrder(@RequestBody FcSaleBranchDispatchRequest fcSaleBranchDispatchRequest){
@@ -116,6 +120,32 @@ public class FcSaleBranchOrderController implements IFxBranchOrderService {
 		BigDecimal countryId = metaData.getCountryId();
 		BigDecimal companyId = metaData.getCompanyId();
 		BoolRespModel result = fcSaleBranch.dispatchOrder(fcSaleBranchDispatchRequest,employeeId,countryId,companyId);
+		return AmxApiResponse.build(result);
+	}
+	
+	/**
+	 * To get the accept the order lock
+	 * 
+	 */
+	@RequestMapping(value = Path.FC_ACCEPT_ORDER_LOCK , method = RequestMethod.POST)
+	@Override
+	public AmxApiResponse<BoolRespModel,Object> acceptOrderLock(@RequestParam(value = "orderNumber", required = true) BigDecimal orderNumber,@RequestParam(value = "orderYear", required = true) BigDecimal orderYear){
+		BigDecimal countryId = metaData.getCountryId();
+		BigDecimal employeeId = metaData.getEmployeeId();
+		BoolRespModel result = fcSaleBranch.acceptOrderLock(countryId, orderNumber, orderYear, employeeId);
+		return AmxApiResponse.build(result);
+	}
+	
+	/**
+	 * To get the release the order lock
+	 * 
+	 */
+	@RequestMapping(value = Path.FC_RELEASE_ORDER_LOCK , method = RequestMethod.POST)
+	@Override
+	public AmxApiResponse<BoolRespModel,Object> releaseOrderLock(@RequestParam(value = "orderNumber", required = true) BigDecimal orderNumber,@RequestParam(value = "orderYear", required = true) BigDecimal orderYear){
+		BigDecimal countryId = metaData.getCountryId();
+		BigDecimal employeeId = metaData.getEmployeeId();
+		BoolRespModel result = fcSaleBranch.releaseOrderLock(countryId, orderNumber, orderYear, employeeId);
 		return AmxApiResponse.build(result);
 	}
 
