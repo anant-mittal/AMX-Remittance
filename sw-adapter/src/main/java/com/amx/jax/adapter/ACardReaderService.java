@@ -1,6 +1,9 @@
 package com.amx.jax.adapter;
 
 import java.io.IOException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
@@ -149,6 +152,12 @@ public abstract class ACardReaderService {
 				SWAdapterGUI.CONTEXT.log(ex.getMessage());
 				LOGGER.error("pairing Exception:IOException", ex);
 				return null;
+			} catch (KeyStoreException e) {
+				e.printStackTrace();
+			} catch (CertificateException e) {
+				e.printStackTrace();
+			} catch (NoSuchAlgorithmException e) {
+				e.printStackTrace();
 			}
 
 			try {
