@@ -22,7 +22,7 @@ public class KeyUtil {
 		if (KEYRING == null) {
 			Keyring keyRing = Keyring.create();
 			if (keyRing.isKeyStorePathRequired()) {
-				File keyStoreFile = File.createTempFile("keystore", ".keystore");
+				File keyStoreFile = File.createTempFile("mxbranchadapter", ".keystore");
 				keyRing.setKeyStorePath(keyStoreFile.getPath());
 			}
 			KEYRING = keyRing;
