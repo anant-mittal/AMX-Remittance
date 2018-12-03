@@ -120,7 +120,7 @@
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$R{label.senderdetails}]]>
+                                    <![CDATA[$R{label.foreignCurOrder}]]>
                                 </textFieldExpression>
                             </textField>
                         </frame>
@@ -397,7 +397,7 @@
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                     <![CDATA[$R{label.insurence1}]]>
+                                     <![CDATA[$R{label.shippingAddress}]]>
                                 </textFieldExpression>
                             </textField>
 
@@ -540,7 +540,7 @@
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$R{label.locationphoneNumber}]]>
+                                    <![CDATA[$R{label.location}]]>
                                 </textFieldExpression>
                             </textField>
 
@@ -587,7 +587,7 @@
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$R{label.locationphoneNumber}]]>
+                                    <![CDATA[$R{label.phoneNo}]]>
                                 </textFieldExpression>
                             </textField>
 
@@ -681,7 +681,7 @@
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$R{label.receiptNopin}]]>
+                                    <![CDATA[$R{label.date}]]>
                                 </textFieldExpression>
                             </textField>
 
@@ -715,7 +715,7 @@
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$R{label.beneficiaryDetails}]]>
+                                    <![CDATA[$R{label.foreignCurDetails}]]>
                                 </textFieldExpression>
                             </textField>
 
@@ -811,7 +811,7 @@
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$R{label.beneficiaryName}]]>
+                                    <![CDATA[$R{label.saleAmount}]]>
                                 </textFieldExpression>
                             </textField>
 
@@ -906,7 +906,7 @@
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$R{label.benefeciaryBranchName}]]>
+                                    <![CDATA[$R{label.purchaseAmount}]]>
                                 </textFieldExpression>
                             </textField>
 
@@ -954,7 +954,7 @@
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$R{label.benefeciaryBranchName}]]>
+                                    <![CDATA[$R{label.deliveryCharges}]]>
                                 </textFieldExpression>
                             </textField>
 
@@ -1001,7 +1001,7 @@
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$R{label.benefeciaryBranchName}]]>
+                                    <![CDATA[$R{label.netAmt}]]>
                                 </textFieldExpression>
                             </textField>
 
@@ -1095,7 +1095,7 @@
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$R{label.benefeciaryBranchName}]]>
+                                    <![CDATA[$R{label.purposeOfTrans}]]>
                                 </textFieldExpression>
                             </textField>
 
@@ -1142,7 +1142,7 @@
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$R{label.benefeciaryBranchName}]]>
+                                    <![CDATA[$R{label.countryOfTravel}]]>
                                 </textFieldExpression>
                             </textField>
 
@@ -1189,7 +1189,7 @@
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$R{label.benefeciaryBranchName}]]>
+                                    <![CDATA[$R{label.travelDataRange}]]>
                                 </textFieldExpression>
                             </textField>
 
@@ -1389,15 +1389,13 @@
                         <!--##################Net Paid Amount END####################-->
                         
                         
-                        
-
- 				 <!--################## paymentMode START####################-->
+                <!--################## paymentMode START####################-->
                         <frame>
                             <reportElement x="5" y="515" width="585" height="45"/>
                             <staticText>
                                 <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "14" backcolor = "#FFFFFF" />
-                              
-                                <textElement />
+                                <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
+                         		<textElement />
                                 <text><![CDATA[]]></text>
                             </staticText>
                             <staticText>
@@ -1431,51 +1429,33 @@
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$R{label.netAmount}]]>
+                                    <![CDATA[$R{label.netAmt}]]>
                                 </textFieldExpression>
                             </textField>
                             
-                            <textField isStretchWithOverflow="true">
-                                <reportElement x="300" y="4" width="285" height="45"
-                                               forecolor="#000000"
-                                               isPrintWhenDetailOverflows="true"/>
-                                <textElement textAlignment="Left">
-                                    <font fontName="Arial" size="8" isItalic="true"
-                                          pdfFontName="fonts/all/arial.ttf"/>
-                                </textElement>
-                                <textFieldExpression class="java.lang.String">
-                                    <![CDATA[ "Approved No "+"                            "+":" + $F{tranx}.get("approvalNo") ]]>
-                                </textFieldExpression>
-                            </textField>
-                              <textField isStretchWithOverflow="true">
-                                <reportElement x="485" y="4" width="100" height="45"
-                                               forecolor="#000000"
-                                               isPrintWhenDetailOverflows="true"/>
-                                <textElement textAlignment="Right">
-                                    <font fontName="Arial" size="8" isItalic="true"
-                                          pdfFontName="fonts/all/arialbd.ttf"/>
-                                </textElement>
-                                <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$R{label.approvalNo}]]>
-                                </textFieldExpression>
-                            </textField>
-                            
-                            
-
                         </frame>
                         <!--##################paymentMode Amount END####################-->
                         
-                         <!--################## Transaction Id START####################-->
+                        
+ 				 <!--################## Approved No START####################-->
                         <frame>
                             <reportElement x="5" y="530" width="585" height="45"/>
                             <staticText>
                                 <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "14" backcolor = "#FFFFFF" />
-                                 <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
-                              <textElement />
+                                <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
+                         		<textElement />
                                 <text><![CDATA[]]></text>
                             </staticText>
-                           
-                           <textField isStretchWithOverflow="true">
+                            <staticText>
+                                <reportElement x="0" y="3" width="185" height="15" isPrintWhenDetailOverflows="true"/>
+                                <textElement>
+                                    <font fontName="Arial" size="8" isItalic="true"
+                                          pdfFontName="fonts/all/arialbd.ttf"/>
+                                </textElement>
+                                <text><![CDATA[Approved No ]]></text>
+                            </staticText>
+
+                            <textField isStretchWithOverflow="true">
                                 <reportElement x="100" y="4" width="485" height="45"
                                                forecolor="#000000"
                                                isPrintWhenDetailOverflows="true"/>
@@ -1484,7 +1464,55 @@
                                           pdfFontName="fonts/all/arial.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[ "Transaction Id :  "+  $F{tranx}.get("payg/pgTransactionId") ]]>
+                                <![CDATA[$F{tranx}.get("approvalNo")]]>
+                                </textFieldExpression>
+                            </textField>
+
+                            <textField isStretchWithOverflow="true">
+                                <reportElement x="485" y="4" width="100" height="45"
+                                               forecolor="#000000"
+                                               isPrintWhenDetailOverflows="true"/>
+                                <textElement textAlignment="Right">
+                                    <font fontName="Arial" size="8" isItalic="true"
+                                          pdfFontName="fonts/all/arialbd.ttf"/>
+                                </textElement>
+                                <textFieldExpression class="java.lang.String">
+                                    <![CDATA[$R{label.netAmt}]]>
+                                </textFieldExpression>
+                            </textField>
+                            
+                        </frame>
+                        <!--################## Approved No  END####################-->
+                        
+                        
+                         <!--##################Transaction Id START####################-->
+                        <frame>
+                            <reportElement x="5" y="545" width="585" height="45"/>
+                            <staticText>
+                                <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "14" backcolor = "#FFFFFF" />
+                                <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
+                         		<textElement />
+                                <text><![CDATA[]]></text>
+                            </staticText>
+                            <staticText>
+                                <reportElement x="0" y="3" width="185" height="15" isPrintWhenDetailOverflows="true"/>
+                                <textElement>
+                                    <font fontName="Arial" size="8" isItalic="true"
+                                          pdfFontName="fonts/all/arialbd.ttf"/>
+                                </textElement>
+                                <text><![CDATA[Transaction Id ]]></text>
+                            </staticText>
+
+                            <textField isStretchWithOverflow="true">
+                                <reportElement x="100" y="4" width="485" height="45"
+                                               forecolor="#000000"
+                                               isPrintWhenDetailOverflows="true"/>
+                                <textElement textAlignment="Left">
+                                    <font fontName="Arial" size="8" isItalic="true"
+                                          pdfFontName="fonts/all/arial.ttf"/>
+                                </textElement>
+                                <textFieldExpression class="java.lang.String">
+                                <![CDATA[$F{tranx}.get("payg/pgTransactionId")]]>
                                 </textFieldExpression>
                             </textField>
 
@@ -1501,8 +1529,29 @@
                                 </textFieldExpression>
                             </textField>
                             
+                        </frame>
+                        <!--##################Transaction Id END####################-->
+                        
+                         <!--##################K-NET Receipt Date Time START####################-->
+                        <frame>
+                            <reportElement x="5" y="560" width="585" height="45"/>
+                            <staticText>
+                                <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "14" backcolor = "#FFFFFF" />
+                                <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
+                         		<textElement />
+                                <text><![CDATA[]]></text>
+                            </staticText>
+                            <staticText>
+                                <reportElement x="0" y="3" width="185" height="15" isPrintWhenDetailOverflows="true"/>
+                                <textElement>
+                                    <font fontName="Arial" size="8" isItalic="true"
+                                          pdfFontName="fonts/all/arialbd.ttf"/>
+                                </textElement>
+                                <text><![CDATA[K-NET Receipt Date Time ]]></text>
+                            </staticText>
+
                             <textField isStretchWithOverflow="true">
-                                <reportElement x="300" y="4" width="285" height="45"
+                                <reportElement x="100" y="4" width="485" height="45"
                                                forecolor="#000000"
                                                isPrintWhenDetailOverflows="true"/>
                                 <textElement textAlignment="Left">
@@ -1510,10 +1559,11 @@
                                           pdfFontName="fonts/all/arial.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[ "K-NET Receipt Date and Time :  "+  $F{tranx}.get("payg/knetReceiptDateTime") ]]>
+                                <![CDATA[$F{tranx}.get("payg/knetReceiptDateTime")]]>
                                 </textFieldExpression>
                             </textField>
-                              <textField isStretchWithOverflow="true">
+
+                            <textField isStretchWithOverflow="true">
                                 <reportElement x="485" y="4" width="100" height="45"
                                                forecolor="#000000"
                                                isPrintWhenDetailOverflows="true"/>
@@ -1522,20 +1572,16 @@
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$R{label.approvalNo}]]>
+                                    <![CDATA[$R{label.netAmount}]]>
                                 </textFieldExpression>
                             </textField>
                             
-                            
-
                         </frame>
-                        <!--##################Transaction Id Amount END####################-->
+                        <!--#################K-NET Receipt Date and Time  END####################-->
                         
- 				
- 
-                     <!--##################Customer Name  START####################-->
+                            <!--##################Customer Name  START####################-->
                         <frame>
-                            <reportElement x="5" y="545" width="585" height="15"/>
+                            <reportElement x="5" y="575" width="585" height="15"/>
                             <staticText>
                                 <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "14" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
@@ -1575,7 +1621,7 @@
                                       pdfFontName="fonts/all/arialbd.ttf"/>
                             </textElement>
                             <textFieldExpression class="java.lang.String">
-                                <![CDATA[$R{label.userName}]]>
+                                <![CDATA[$R{label.customerName}]]>
                             </textFieldExpression>
                         </textField>
 
@@ -1585,7 +1631,7 @@
                     
                       <!--################Customer Signature START####################-->
                         <frame>
-                            <reportElement x="5" y="560" width="585" height="30"/>
+                            <reportElement x="5" y="590" width="585" height="30"/>
                             <staticText>
                                 <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "29" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
@@ -1619,12 +1665,19 @@
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                     <![CDATA[$R{label.insurence1}]]>
+                                     <![CDATA[$R{label.customerSignature}]]>
                                 </textFieldExpression>
                             </textField>
 
                         </frame>
                         <!--##################Customer Signature END####################-->
+                        
+                        
+                        
+                        
+                        
+                        
+                        
 
                    
                      
