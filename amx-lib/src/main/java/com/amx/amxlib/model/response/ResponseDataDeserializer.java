@@ -12,6 +12,7 @@ import com.amx.amxlib.meta.model.BankMasterDTO;
 import com.amx.amxlib.meta.model.BeneCountryDTO;
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.amxlib.meta.model.BranchDetailDTO;
+import com.amx.amxlib.meta.model.CountryMasterDTO;
 import com.amx.amxlib.meta.model.CustomerDto;
 import com.amx.amxlib.meta.model.EmployeeDetailsDTO;
 import com.amx.amxlib.meta.model.JaxMetaParameter;
@@ -101,9 +102,10 @@ public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {
 			});
 			break;
 		case "country":
-			models = new ObjectMapper().readValue(values, new TypeReference<List<CurrencyMasterDTO>>() {
+			models = new ObjectMapper().readValue(values, new TypeReference<List<CountryMasterDTO>>() {
 			});
 			break;	
+			
 			
 		case "quest":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<QuestModelDTO>>() {
