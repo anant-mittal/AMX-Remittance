@@ -439,8 +439,9 @@ public class FcSaleService extends AbstractService {
 				CollectionModel collModel =collRepos.getCollectionDetails(payDto.getCollectionDocumentNumber(),payDto.getCollectionFinanceYear(),ConstantDocument.DOCUMENT_CODE_FOR_COLLECT_TRANSACTION);
 				if(!StringUtils.isBlank(orderNotificationModel.getEmail()) && collModel!=null){
 				orderNotificationModel.setDate(DateUtil.todaysDateWithDDMMYY(collModel.getCreatedDate(),"0"));
-				orderNotificationModel.setLocalQurrencyQuote(collModel.getExCurrencyMaster().getQuoteName());
+				orderNotificationModel.setLocalQurrencyQuote(currencyDao.getCurrencyList(collModel.getExCurrencyMaster().getCurrencyId()).get(0).getQuoteName());
 				orderNotificationModel.setReceiptNo(collModel.getDocumentFinanceYear().toString()+"/"+collModel.getDocumentNo().toString());
+				orderNotificationModel.setNetAmount(collModel.getNetAmount());
 					Email email = new Email();
 					email.setSubject("FC Delivery - Payment Success");
 					email.addTo(orderNotificationModel.getEmail());
