@@ -1812,34 +1812,10 @@
 
                     </frame>
                     <!--##################Payment Mode END####################-->
- 					<!--##################Payment Mode START####################-->
+ 					
+					 <!--##################FOOTER START####################-->
                     <frame>
-                        <reportElement x="5" y="700" width="585" height="30"/>
-                        <staticText>
-                            <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "18" backcolor = "#FFFFFF" />
-                            <textElement />
-                            <text><![CDATA[]]></text>
-                        </staticText>
-
-                        <textField isStretchWithOverflow="true">
-                            <reportElement x="0" y="4" width="585" height="15"
-                                           forecolor="#3bb15d"
-                                           isPrintWhenDetailOverflows="true"/>
-                            <textElement textAlignment="Left">
-                                <font fontName="Arial" size="10" isItalic="true"
-                                      pdfFontName="fonts/all/arialbd.ttf"/>
-                            </textElement>
-                            <textFieldExpression class="java.lang.String">
-                                <![CDATA[$F{tranx}.get("/promotionDto/prizeMessage")]]>
-                            </textFieldExpression>
-                        </textField>
-
-                    </frame>
-                    <!--##################Payment Mode END####################-->
-
-                    <!--##################FOOTER START####################-->
-                    <frame>
-                        <reportElement x="0" y="730" width="595" height="70"
+                        <reportElement x="0" y="726" width="595" height="70"
                                        forecolor="blue"/>
 
                         <image evaluationTime="Now" hyperlinkType="None" hyperlinkTarget="Self">
