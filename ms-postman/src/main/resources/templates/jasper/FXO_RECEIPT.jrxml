@@ -1548,17 +1548,17 @@
                     <!--##################Customer Name  END####################-->
                     
                     
-                      <!--################Customer Signature START####################-->
+                     <!--##################Customer Signature START####################-->
                         <frame>
-                            <reportElement x="5" y="590" width="585" height="30"/>
+                            <reportElement x="5" y="590" width="585" height="45"/>
                             <staticText>
-                                <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "29" backcolor = "#FFFFFF" />
+                                <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "44" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
                                 <textElement />
                                 <text><![CDATA[]]></text>
                             </staticText>
                             <staticText>
-                                <reportElement x="0" y="3" width="185" height="15" isPrintWhenDetailOverflows="true"/>
+                                <reportElement x="0" y="3" width="185" height="45" isPrintWhenDetailOverflows="true"/>
                                 <textElement>
                                     <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arialbd.ttf"/>
@@ -1566,17 +1566,10 @@
                                 <text><![CDATA[Customer Signature]]></text>
                             </staticText>
 
-                           <staticText>
-                                <reportElement x="0" y="3" width="185" height="15" isPrintWhenDetailOverflows="true"/>
-                                <textElement>
-                                    <font fontName="Arial" size="8" isItalic="true"
-                                          pdfFontName="fonts/all/arialbd.ttf"/>
-                                </textElement>
-                                <text><![CDATA[ ]]></text>
-                            </staticText>
                             
+
                             <textField isStretchWithOverflow="true">
-                                <reportElement x="485" y="4" width="100" height="15"
+                                <reportElement x="485" y="4" width="100" height="45"
                                                forecolor="#000000"
                                                isPrintWhenDetailOverflows="true"/>
                                 <textElement textAlignment="Right">
@@ -1590,6 +1583,9 @@
 
                         </frame>
                         <!--##################Customer Signature END####################-->
+                    
+                    
+                      
                         
                         
                         
