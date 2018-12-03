@@ -582,7 +582,7 @@ public class FcSaleBranchOrderManager {
 			lstCurrencyDenomination = fcSaleBranchDao.fetchCurrencyDenomination(currencyId, ConstantDocument.Yes);
 		}catch (Exception e) {
 			e.printStackTrace();
-			logger.error("Error in checkingDenominationDetails", e.getMessage()+" currencyId :"+currencyId);
+			logger.error("Error in fetchCurrencyDenominationByCurrencyId", e.getMessage()+" currencyId :"+currencyId);
 		}
 		
 		return lstCurrencyDenomination;
@@ -613,6 +613,8 @@ public class FcSaleBranchOrderManager {
 									userName = employeeDt.getUserName();
 									fcSaleBranchDao.saveOrderLockDetails(lstOrderManagement,employeeId,userName);
 									status = Boolean.TRUE;
+								}else {
+									throw new GlobalException("Employee details is empty",JaxError.INVALID_EMPLOYEE);
 								}
 							}else {
 								// allow
@@ -623,6 +625,8 @@ public class FcSaleBranchOrderManager {
 										userName = employeeDt.getUserName();
 										fcSaleBranchDao.saveOrderLockDetails(lstOrderManagement,employeeId,userName);
 										status = Boolean.TRUE;
+									}else {
+										throw new GlobalException("Employee details is empty",JaxError.INVALID_EMPLOYEE);
 									}
 								}else {
 									throw new GlobalException("record is been locked by other employee",JaxError.ORDER_LOCKED_OTHER_EMPLOYEE);
@@ -636,6 +640,8 @@ public class FcSaleBranchOrderManager {
 									userName = employeeDt.getUserName();
 									fcSaleBranchDao.saveOrderLockDetails(lstOrderManagement,employeeId,userName);
 									status = Boolean.TRUE;
+								}else {
+									throw new GlobalException("Employee details is empty",JaxError.INVALID_EMPLOYEE);
 								}
 							}else {
 								// allow
@@ -646,6 +652,8 @@ public class FcSaleBranchOrderManager {
 										userName = employeeDt.getUserName();
 										fcSaleBranchDao.saveOrderLockDetails(lstOrderManagement,employeeId,userName);
 										status = Boolean.TRUE;
+									}else {
+										throw new GlobalException("Employee details is empty",JaxError.INVALID_EMPLOYEE);
 									}
 								}else {
 									throw new GlobalException("record is been locked by other employee",JaxError.ORDER_LOCKED_OTHER_EMPLOYEE);
@@ -658,6 +666,8 @@ public class FcSaleBranchOrderManager {
 							userName = employeeDt.getUserName();
 							fcSaleBranchDao.saveOrderLockDetails(lstOrderManagement,employeeId,userName);
 							status = Boolean.TRUE;
+						}else {
+							throw new GlobalException("Employee details is empty",JaxError.INVALID_EMPLOYEE);
 						}
 					}
 				}else {
@@ -692,13 +702,17 @@ public class FcSaleBranchOrderManager {
 							userName = employeeDt.getUserName();
 							fcSaleBranchDao.saveOrderReleaseDetails(lstOrderManagement,employeeId,userName);
 							status = Boolean.TRUE;
+						}else {
+							throw new GlobalException("Employee details is empty",JaxError.INVALID_EMPLOYEE);
 						}
+					}else {
+						throw new GlobalException("Already records are released",JaxError.ORDER_RELEASED_ALREADY);
 					}
 				}
 			}
 		}catch (Exception e) {
 			e.printStackTrace();
-			logger.error("Error in acceptOrderLock", e.getMessage()+" applicationCountryId :"+applicationCountryId+" orderNumber :"+orderNumber+" orderYear :"+orderYear+" employeeId :"+employeeId);
+			logger.error("Error in releaseOrderLock", e.getMessage()+" applicationCountryId :"+applicationCountryId+" orderNumber :"+orderNumber+" orderYear :"+orderYear+" employeeId :"+employeeId);
 		}
 		
 		return status;
