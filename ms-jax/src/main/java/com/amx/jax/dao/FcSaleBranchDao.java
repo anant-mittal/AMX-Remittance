@@ -104,7 +104,7 @@ public class FcSaleBranchDao {
 		}
 		if(lstOrderManagement != null){
 			for (OrderManagementView orderManagementView : lstOrderManagement) {
-				receiptPaymentRespository.updateDeliveryDetails(orderManagementView.getReceiptPaymentId(),deliveryDetailNew.getDeleviryDelSeqId());
+				receiptPaymentRespository.updateDeliveryDetails(orderManagementView.getReceiptPaymentId(),deliveryDetailNew.getDeleviryDelSeqId(),deliveryDetailNew.getCreatedBy(),deliveryDetailNew.getCreatedDate());
 			}
 		}
 	}
@@ -118,13 +118,13 @@ public class FcSaleBranchDao {
 	}
 	
 	@Transactional
-	public void saveDispatchOrder(List<ForeignCurrencyAdjust> foreignCurrencyAdjusts,HashMap<BigDecimal, String> mapInventoryReceiptPayment){
+	public void printOrderSave(List<ForeignCurrencyAdjust> foreignCurrencyAdjusts,HashMap<BigDecimal, String> mapInventoryReceiptPayment,String userName,Date currenctDate){
 		if(foreignCurrencyAdjusts != null && foreignCurrencyAdjusts.size() != 0) {
 			for (ForeignCurrencyAdjust foreignCurrencyAdjust : foreignCurrencyAdjusts) {
 				foreignCurrencyAdjustRepository.save(foreignCurrencyAdjust);
 			}
 			for (Entry<BigDecimal, String> receiptPayment : mapInventoryReceiptPayment.entrySet()) {
-				receiptPaymentRespository.updateInventoryId(receiptPayment.getKey(),receiptPayment.getValue());
+				receiptPaymentRespository.updateInventoryId(receiptPayment.getKey(),receiptPayment.getValue(),userName,currenctDate);
 			}
 		}
 	}
@@ -134,20 +134,20 @@ public class FcSaleBranchDao {
 	}
 	
 	@Transactional
-	public void saveOrderLockDetails(List<OrderManagementView> lstOrderManagement,BigDecimal employeeId,String userName){
-		if(lstOrderManagement != null){
-			for (OrderManagementView orderManagementView : lstOrderManagement) {
-				fxDeliveryDetailsRepository.updateOrderLockDetails(orderManagementView.getDeliveryDetailsId(),employeeId,userName,new Date());
-			}
+	public void saveOrderLockDetails(List<OrderManagementView> lstOrderManagement,BigDecimal employeeId,String userName,String orderStatus){
+		if(lstOrderManagement != null && lstOrderManagement.size() != 0){
+			OrderManagementView orderManagementView = lstOrderManagement.get(0);
+			BigDecimal deliveryDetailsId = orderManagementView.getDeliveryDetailsId();
+			fxDeliveryDetailsRepository.updateOrderLockDetails(deliveryDetailsId,employeeId,userName,new Date(),orderStatus);
 		}
 	}
 	
 	@Transactional
-	public void saveOrderReleaseDetails(List<OrderManagementView> lstOrderManagement,BigDecimal employeeId,String userName){
-		if(lstOrderManagement != null){
-			for (OrderManagementView orderManagementView : lstOrderManagement) {
-				fxDeliveryDetailsRepository.updateOrderReleaseDetails(orderManagementView.getDeliveryDetailsId(),null,userName,null);
-			}
+	public void saveOrderReleaseDetails(List<OrderManagementView> lstOrderManagement,BigDecimal employeeId,String userName,String orderStatus){
+		if(lstOrderManagement != null && lstOrderManagement.size() != 0){
+			OrderManagementView orderManagementView = lstOrderManagement.get(0);
+			BigDecimal deliveryDetailsId = orderManagementView.getDeliveryDetailsId();
+			fxDeliveryDetailsRepository.updateOrderReleaseDetails(deliveryDetailsId,null,userName,null,orderStatus);
 		}
 	}
 	

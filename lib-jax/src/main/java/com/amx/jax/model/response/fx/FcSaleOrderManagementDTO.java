@@ -41,6 +41,7 @@ public class FcSaleOrderManagementDTO extends AbstractModel {
 	String orderStatus;
 	String orderStatusDesc;
 	String driverEmployeName;
+	BigDecimal localActualRate;
 	
 	public BigDecimal getDocumentNo() {
 		return DocumentNo;
@@ -244,5 +245,12 @@ public class FcSaleOrderManagementDTO extends AbstractModel {
 	public void setDriverEmployeName(String driverEmployeName) {
 		this.driverEmployeName = driverEmployeName;
 	}
-		
+	
+	public BigDecimal getLocalActualRate() {
+		return localActualRate;
+	}
+	public void setLocalActualRate(BigDecimal localActualRate) {
+		this.localActualRate = localActualRate;
+	}
+
 }

@@ -85,8 +85,15 @@ public class ConstantDocument {
 	public static final String DVD="DVD";
 	// RTD for --returned
 	public static final String RTD="RTD";
+	// ACP for --Accepted
+	public static final String ACP="ACP";
+	// OFD_ACK for --Out for delivery pending acknowledgment
+	public static final String OFD_ACK="OFD_ACK";
+	// PCK for --PACKED
+	public static final String PCK="PCK";
 	/** end Here **/
 	public static final String P = "P";	
 	public static final String FC_SALE = "FC Sale";
+	
 
 }

@@ -105,7 +105,8 @@ public class FcSaleBranchOrderController implements IFxBranchOrderService {
 	@Override
 	public AmxApiResponse<BoolRespModel,Object> assignDriver(@RequestParam(value = "orderNumber", required = true) BigDecimal orderNumber,@RequestParam(value = "orderYear", required = true) BigDecimal orderYear,@RequestParam(value = "driverId", required = true) BigDecimal driverId) {
 		BigDecimal countryId = metaData.getCountryId();
-		BoolRespModel result = fcSaleBranch.assignDriver(countryId,orderNumber,orderYear,driverId);
+		BigDecimal employeeId = metaData.getEmployeeId();
+		BoolRespModel result = fcSaleBranch.assignDriver(countryId,orderNumber,orderYear,driverId,employeeId);
 		return AmxApiResponse.build(result);
 	}
 	
@@ -113,13 +114,13 @@ public class FcSaleBranchOrderController implements IFxBranchOrderService {
 	 * To get the save dispatch order
 	 * 
 	 */
-	@RequestMapping(value = Path.FC_DISPATCH_ORDER , method = RequestMethod.POST)
+	@RequestMapping(value = Path.FC_PRINT_ORDER_SAVE , method = RequestMethod.POST)
 	@Override
-	public AmxApiResponse<BoolRespModel,Object> dispatchOrder(@RequestBody FcSaleBranchDispatchRequest fcSaleBranchDispatchRequest){
+	public AmxApiResponse<BoolRespModel,Object> printOrderSave(@RequestBody FcSaleBranchDispatchRequest fcSaleBranchDispatchRequest){
 		BigDecimal employeeId = metaData.getEmployeeId();
 		BigDecimal countryId = metaData.getCountryId();
 		BigDecimal companyId = metaData.getCompanyId();
-		BoolRespModel result = fcSaleBranch.dispatchOrder(fcSaleBranchDispatchRequest,employeeId,countryId,companyId);
+		BoolRespModel result = fcSaleBranch.printOrderSave(fcSaleBranchDispatchRequest,employeeId,countryId,companyId);
 		return AmxApiResponse.build(result);
 	}
 	

@@ -145,15 +145,15 @@ public class FxOrderBranchClient implements IFxBranchOrderService {
 	 * @return : To get the save dispatch driver
 	 */
 	@Override
-	public AmxApiResponse<BoolRespModel,Object> dispatchOrder(FcSaleBranchDispatchRequest fcSaleBranchDispatchRequest) {
+	public AmxApiResponse<BoolRespModel,Object> printOrderSave(FcSaleBranchDispatchRequest fcSaleBranchDispatchRequest) {
 		try {
-			LOGGER.debug("in dispatchOrder :"+fcSaleBranchDispatchRequest);
-			return restService.ajax(appConfig.getJaxURL() + Path.FC_DISPATCH_ORDER).meta(new JaxMetaInfo())
+			LOGGER.debug("in printOrderSave :"+fcSaleBranchDispatchRequest);
+			return restService.ajax(appConfig.getJaxURL() + Path.FC_PRINT_ORDER_SAVE).meta(new JaxMetaInfo())
 					.post(fcSaleBranchDispatchRequest)
 					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel,Object>>() {
 					});
 		} catch (Exception e) {
-			LOGGER.error("exception in dispatchOrder : ", e);
+			LOGGER.error("exception in printOrderSave : ", e);
 			return JaxSystemError.evaluate(e);
 		} // end of try-catch
 	}

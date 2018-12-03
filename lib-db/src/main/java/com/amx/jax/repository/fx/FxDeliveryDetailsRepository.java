@@ -15,11 +15,11 @@ public interface FxDeliveryDetailsRepository extends CrudRepository<FxDeliveryDe
 	public FxDeliveryDetailsModel findByDeleviryDelSeqIdAndIsActive(BigDecimal deliveryDetailsId,String isActive);
 	
 	@Modifying
-	@Query("update FxDeliveryDetailsModel sd set sd.orderLock = ?4 , sd.employeeId = ?2 , sd.updatedBy = ?3 , sd.uopdateDate = ?4 where sd.deleviryDelSeqId = ?1 ")
-	public void updateOrderLockDetails(BigDecimal deleviryDelSeqId,BigDecimal employeeId,String userName,Date currenctDate);
+	@Query("update FxDeliveryDetailsModel sd set sd.orderLock = ?4 , sd.employeeId = ?2 , sd.updatedBy = ?3 , sd.uopdateDate = ?4 , sd.orderStatus = ?5 where sd.deleviryDelSeqId = ?1 ")
+	public void updateOrderLockDetails(BigDecimal deleviryDelSeqId,BigDecimal employeeId,String userName,Date currenctDate,String orderStatus);
 	
 	@Modifying
-	@Query("update FxDeliveryDetailsModel sd set sd.orderLock = ?4 , sd.employeeId = ?2 , sd.updatedBy = ?3 , sd.uopdateDate = ?4 where sd.deleviryDelSeqId = ?1 ")
-	public void updateOrderReleaseDetails(BigDecimal deleviryDelSeqId,BigDecimal employeeId,String userName,Date currenctDate);
+	@Query("update FxDeliveryDetailsModel sd set sd.orderLock = ?4 , sd.employeeId = ?2 , sd.updatedBy = ?3 , sd.uopdateDate = ?4 , sd.orderStatus = ?5 where sd.deleviryDelSeqId = ?1 ")
+	public void updateOrderReleaseDetails(BigDecimal deleviryDelSeqId,BigDecimal employeeId,String userName,Date currenctDate,String orderStatus);
 	
 }

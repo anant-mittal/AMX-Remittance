@@ -28,7 +28,7 @@ public interface IFxBranchOrderService extends IJaxService {
 		public static final String FC_DISPATCH_ORDER = PREFIX + "/dispatch-order/";
 		public static final String FC_ACCEPT_ORDER_LOCK = PREFIX + "/accept-order-lock/";
 		public static final String FC_RELEASE_ORDER_LOCK = PREFIX + "/release-order-lock/";
-		public static final String FC_SAVE_ORDER = PREFIX + "/save-order/";
+		public static final String FC_PRINT_ORDER_SAVE = PREFIX + "/print-order-save/";
 	}
 
 	public static class Params {
@@ -54,12 +54,12 @@ public interface IFxBranchOrderService extends IJaxService {
 	AmxApiResponse<FcEmployeeDetailsDto, Object> fetchBranchEmployee();
 
 	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND,JaxError.NULL_APPLICATION_COUNTRY_ID,JaxError.NULL_DRIVER_ID,JaxError.NULL_ORDER_NUBMER,JaxError.SAVE_FAILED,JaxError.NULL_ORDER_YEAR,
-		JaxError.DRIVER_ALREADY_ASSIGNED,JaxError.NO_DELIVERY_DETAILS})
+		JaxError.DRIVER_ALREADY_ASSIGNED,JaxError.NO_DELIVERY_DETAILS,JaxError.NULL_EMPLOYEE_ID,JaxError.INVALID_EMPLOYEE})
 	AmxApiResponse<BoolRespModel,Object> assignDriver(BigDecimal orderNumber,BigDecimal orderYear,BigDecimal driverId);
 
 	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND,JaxError.NULL_APPLICATION_COUNTRY_ID,JaxError.NULL_EMPLOYEE_ID,JaxError.NULL_COMPANY_ID,JaxError.SAVE_FAILED,JaxError.EMPTY_CURRENCY_DENOMINATION_DETAILS,
 		JaxError.INVALID_EMPLOYEE,JaxError.INVALID_COLLECTION_DOCUMENT_NO,JaxError.INCORRECT_CURRENCY_DENOMINATION,JaxError.BLANK_DOCUMENT_DETAILS,JaxError.MISMATCH_COLLECTION_AMOUNT,JaxError.INVALID_CURRENCY_DENOMINATION})
-	AmxApiResponse<BoolRespModel,Object> dispatchOrder(FcSaleBranchDispatchRequest fcSaleBranchDispatchRequest);
+	AmxApiResponse<BoolRespModel,Object> printOrderSave(FcSaleBranchDispatchRequest fcSaleBranchDispatchRequest);
 
 	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND,JaxError.NULL_APPLICATION_COUNTRY_ID,JaxError.NULL_EMPLOYEE_ID,JaxError.NULL_ORDER_NUBMER,JaxError.SAVE_FAILED,JaxError.INVALID_COLLECTION_DOCUMENT_NO,JaxError.ORDER_LOCKED_OTHER_EMPLOYEE
 		,JaxError.NO_DELIVERY_DETAILS})
