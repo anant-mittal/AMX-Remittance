@@ -35,7 +35,9 @@ public class KeyUtil {
 			Keyring keyRing = Keyring.create();
 			if (keyRing.isKeyStorePathRequired()) {
 				File keyStoreFile = new File(
-						System.getenv("APPDATA") + File.separator + "BranchAdapter" + File.separator + SUFFIX);
+						//System.getenv("APPDATA") 
+						System.getProperty("user.home") 
+						+ File.separator + "BranchAdapter" + File.separator + SUFFIX);
 				if (!keyStoreFile.exists()) {
 					keyStoreFile.getParentFile().mkdirs();
 				}
