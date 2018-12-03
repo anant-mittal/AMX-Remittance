@@ -433,6 +433,7 @@ public class FcSaleService extends AbstractService {
 				List<Customer> customerList = customerDao.getCustomerByCustomerId(countryId, companyId, custoemrId);
 				FxOrderDetailNotificationDto orderNotificationModel = new FxOrderDetailNotificationDto();
 				if(customerList!= null && !customerList.isEmpty()){
+					orderNotificationModel.setCustomerName(customerList.get(0).getFirstName()+" "+customerList.get(0).getMiddleName()==null?"":customerList.get(0).getMiddleName()+" "+customerList.get(0).getLastName()==null?"":customerList.get(0).getLastName());
 					orderNotificationModel.setEmail(customerList.get(0).getEmail());
 					orderNotificationModel.setMobileNo(customerList.get(0).getMobile()==null?"":customerList.get(0).getMobile());
 					orderNotificationModel.setLoyaltyPoints(customerList.get(0).getLoyaltyPoints()==null?BigDecimal.ZERO:customerList.get(0).getLoyaltyPoints());
