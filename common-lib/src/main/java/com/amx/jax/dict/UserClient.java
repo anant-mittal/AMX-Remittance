@@ -70,7 +70,7 @@ public class UserClient {
 
 	public enum ClientType {
 		// branch cleints
-		BRANCH_WEB, SIGNATURE_PAD, BRANCH_ADAPTER, OTP_APP,
+		BRANCH_WEB, SIGNATURE_PAD, BRANCH_ADAPTER, NOTP_APP,
 
 		// Other Channels
 		OFFSITE_PAD, KIOSK,

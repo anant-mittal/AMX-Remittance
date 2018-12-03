@@ -134,7 +134,7 @@ public class DeviceManager {
 			resp.setTermialId(ArgUtil.parseAsString(device.getBranchSystemInventoryId()));
 		}
 		if (device.getEmployeeId() != null) {
-			resp.setTermialId(device.getEmployeeId().toString());
+			resp.setEmpId(device.getEmployeeId().toString());
 		}
 		resp.setDeviceState(device.getState());
 		return resp;

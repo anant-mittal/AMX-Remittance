@@ -103,12 +103,18 @@ public class DeviceRequest {
 		deviceBox.updateStamp(deviceRegId);
 	}
 
-	public SessionPairingCreds createSession(String sessionPairToken, String sessionOtp, String terminalId) {
+	public void checkStamp(Object deviceRegId) {
+		deviceBox.checkStamp(deviceRegId);
+	}
+
+	public SessionPairingCreds createSession(String sessionPairToken, String sessionOtp, String terminalId,
+			String empId) {
 
 		String deviceRegKey = getDeviceRegId();
 		DeviceData deviceData = new DeviceData();
 
 		deviceData.setTerminalId(terminalId);
+		deviceData.setEmpId(empId);
 		// Session Request Key
 		deviceData.setDeviceReqKey(Random.randomAlphaNumeric(10));
 

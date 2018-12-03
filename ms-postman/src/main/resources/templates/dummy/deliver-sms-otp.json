@@ -1,6 +1,6 @@
 {
-  "mOtp":null,
-  "mOtpPrefix":null,
+  "mOtp":"123",
+  "mOtpPrefix":"AMX",
   "deliveryDetail":{
      "customerName":"CHIRANJEEVI VEERAVALLI",
      "mobile":"56432189",

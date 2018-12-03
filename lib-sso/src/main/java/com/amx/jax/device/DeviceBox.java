@@ -28,4 +28,13 @@ public class DeviceBox extends CacheBox<DeviceData> {
 			this.fastPut(deviceRegidStr, deviceData);
 		}
 	}
+
+	public void checkStamp(Object deviceRegid) {
+		if (!ArgUtil.isEmpty(deviceRegid)) {
+			String deviceRegidStr = ArgUtil.parseAsString(deviceRegid);
+			DeviceData deviceData = this.getOrDefault(deviceRegidStr);
+			deviceData.setCheckstamp(System.currentTimeMillis());
+			this.fastPut(deviceRegidStr, deviceData);
+		}
+	}
 }

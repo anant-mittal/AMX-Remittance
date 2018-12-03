@@ -74,7 +74,7 @@ public abstract class ACardReaderService {
 	private ConfigurableEnvironment environment;
 
 	@Autowired
-	private AdapterServiceClient adapterServiceClient;
+	private DeviceConnectorClient adapterServiceClient;
 
 	String serverUrl;
 

@@ -61,12 +61,9 @@ public class UserAuthService {
 	/**
 	 * Verify user details.
 	 * 
-	 * @param employeeNo
-	 *            the emp code
-	 * @param identity
-	 *            the identity
-	 * @param ipAddress
-	 *            the ip address
+	 * @param employeeNo the emp code
+	 * @param identity   the identity
+	 * @param ipAddress  the ip address
 	 * @return the user auth init response DTO
 	 * 
 	 * @flow: -> Get Employee ||->-> Multiple Employees -> Error ||->-> Employee Not
@@ -134,7 +131,7 @@ public class UserAuthService {
 		/**
 		 * Begin Init Auth for User validation is Completed.
 		 */
-		OtpData selfOtpData = userOtpManager.generateOtpTokens();
+		OtpData selfOtpData = userOtpManager.generateOtpTokens(userAuthInitReqDTO.getSelfSAC());
 
 		userOtpManager.sendOtpSms(selfEmployee, selfOtpData, "Self OTP Details");
 
@@ -151,7 +148,7 @@ public class UserAuthService {
 		userOtpData.setOtpAttemptCount(0);
 
 		if (isAssisted) {
-			OtpData partnerOtpData = userOtpManager.generateOtpTokens();
+			OtpData partnerOtpData = userOtpManager.generateOtpTokens(userAuthInitReqDTO.getPartnerSAC());
 			userOtpManager.sendOtpSms(partnerEmployee, partnerOtpData, "Partner OTP Details");
 			userOtpData.setPartnerOtpData(partnerOtpData);
 		}
@@ -159,6 +156,7 @@ public class UserAuthService {
 		userOtpCache.cacheUserOtpData(selfEmployee.getEmployeeNumber(), userOtpData);
 
 		UserAuthInitResponseDTO dto = new UserAuthInitResponseDTO();
+		dto.setEmployeeId(selfEmployee.getEmployeeId());
 
 		dto.setAuthTransactionId(transactionId);
 
@@ -168,6 +166,7 @@ public class UserAuthService {
 		// partner Otp Prefix
 		if (isAssisted) {
 			dto.setPartnerMOtpPrefix(userOtpData.getPartnerOtpData().getmOtpPrefix());
+			dto.setPartnerEmployeeId(partnerEmployee.getEmployeeId());
 		}
 
 		dto.setInitOtpTime(String.valueOf(selfOtpData.getInitTime()));

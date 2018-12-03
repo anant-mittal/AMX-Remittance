@@ -24,7 +24,7 @@ public class SWAdapterController {
 	ACardReaderService kwtCardReaderService;
 
 	@Autowired
-	AdapterServiceClient adapterServiceClient;
+	DeviceConnectorClient adapterServiceClient;
 
 	@Autowired
 	private ApplicationContext applicationContext;

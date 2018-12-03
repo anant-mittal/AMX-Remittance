@@ -5,12 +5,11 @@ import java.util.concurrent.TimeUnit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.amx.jax.adapter.ICardService;
-import com.amx.jax.device.CardData;
+import com.amx.jax.adapter.IDeviceConnecter;
 import com.amx.utils.ArgUtil;
 
 @Component
-public class CardService implements ICardService {
+public class DeviceConnecter implements IDeviceConnecter {
 
 	@Autowired
 	private CardBox cardBox;
@@ -38,6 +37,17 @@ public class CardService implements ICardService {
 			cardBox.fastRemove(terminalId);
 		}
 		return data;
+	}
+
+	@Autowired
+	private NotipyBox notipyBox;
+
+	@Override
+	public void sendSACtoEmployee(String empId, String sac) {
+		NotipyData x = notipyBox.getOrDefault(empId);
+		x.setSac(sac);
+		x.setUpdatestamp(System.currentTimeMillis());
+		notipyBox.put(empId, x);
 	}
 
 }
