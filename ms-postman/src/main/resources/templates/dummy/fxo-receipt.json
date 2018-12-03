@@ -30,12 +30,12 @@
 			"paymentMode": "K-NET",
 			"amountPayable": "KWD     ******60.000",
 			"collectionMode": "K-NET",
-			"approvalNo": "12345",
+			"approvalNo":null,
 			"knetBooleanCheck": false,
 			"drawLine": false,
 			"netAmount": "KWD     ******60.000",
 			"paidAmount": "KWD     ******60.000",
-			"refundedAmount": "KWD     ******60.000",
+			"refundedAmount":null,
 			"collectAmount": null,
 			"fxOrderTrnxList": [
 				{
@@ -45,7 +45,7 @@
 					"documentDate": "01/12/2018 12:12",
 					"documentFinanceYear": 2018,
 					"transactionReferenceNo": "2018/27000097,2018/27000098",
-					"foreignCurrencyCode": null,
+					"foreignCurrencyCode": "INR",
 					"exchangeRate": 0.00635,
 					"foreignTransactionAmount": "KWD     ******60.000",
 					"currencyQuoteName": null,

@@ -381,7 +381,7 @@
                                     + "," + $F{tranx}.get("/shippingAddressdto/telephone")+ "," + $F{tranx}.get("/shippingAddressdto/buildingNo")
                                     + "," + $F{tranx}.get("/shippingAddressdto/telephoneCode")+ "," + $F{tranx}.get("/shippingAddressdto/cityDto")
                                     + "," + $F{tranx}.get("/shippingAddressdto/stateDto")+ "," + $F{tranx}.get("/shippingAddressdto/districtDto")
-                                    + "," + $F{tranx}.get("/shippingAddressdto/countryDto")+ "," + $F{tranx}.get("/shippingAddressdto/addressDto")
+                                    + "," + $F{tranx}.get("/shippingAddressdto/countryDto")
                                  
                                     
                                 ]]>
@@ -478,7 +478,7 @@
                                           pdfFontName="fonts/all/arial.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$F{tranx}.get("/fxOrderTrnxList/[0]/documentFinanceYear")+" /"+$F{tranx}.get("/fxOrderTrnxList/[0]/documentNumber")]]>
+                                    <![CDATA[$F{tranx}.get("/fxOrderTrnxList/[0]/transactionReferenceNo")]]>
                                 </textFieldExpression>
                             </textField>
 
@@ -562,7 +562,7 @@
                                     <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
-                                <text><![CDATA[ Phone No]]></text>
+                                <text><![CDATA[Phone No]]></text>
                             </staticText>
 
                             <textField isStretchWithOverflow="true">
@@ -750,7 +750,7 @@
                                           pdfFontName="fonts/all/arial.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$F{tranx}.get("/fxOrderTrnxList/[0]/multiAmount")]]>
+                                    <![CDATA[$F{tranx}.get("/fxOrderTrnxList/[0]/foreignCurrencyCode")]]>
                                 </textFieldExpression>
                             </textField>
 
@@ -941,7 +941,7 @@
                                           pdfFontName="fonts/all/arial.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$F{tranx}.get("/fxOrderTrnxList/[0]/deliveryCharges")]]>
+                                    <![CDATA[$F{tranx}.get("localCurrency")+"    "+$F{tranx}.get("/fxOrderTrnxList/[0]/deliveryCharges")]]>
                                 </textFieldExpression>
                             </textField>
 
@@ -1320,7 +1320,7 @@
                                           pdfFontName="fonts/all/arial.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$F{tranx}.get("refundedAmount")]]>
+                                    <![CDATA[$F{tranx}.get("refundedAmount","-")]]>
                                 </textFieldExpression>
                             </textField>
 
@@ -1416,7 +1416,7 @@
                                           pdfFontName="fonts/all/arial.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$F{tranx}.get("payg/paymentMode")+ "            " + "  : " + $F{tranx}.get("netAmount")]]>
+                                    <![CDATA[$F{tranx}.get("payg/paymentMode")]]>
                                 </textFieldExpression>
                             </textField>
 
@@ -1464,7 +1464,7 @@
                                           pdfFontName="fonts/all/arial.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                <![CDATA[$F{tranx}.get("approvalNo")]]>
+                                <![CDATA[$F{tranx}.get("approvalNo","-")]]>
                                 </textFieldExpression>
                             </textField>
 
