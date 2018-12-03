@@ -264,11 +264,11 @@
                             <table width="100%" style="width: 100%">
                                 <tr>
                                     <td>
-                                        <h5>Dear <span  th:text="${data.firstName}"></span>   <span  th:text="${data.middleName}"></span>   <span  th:text="${data.lastName}"></span>,</h5><br/>
+                                        <h5>Dear <span  th:text="${customerName}"></span> ,</h5><br/>
 
                                         <p class="lead">Greetings from <span th:text="${_tu.prop('company.name')}" th:remove="tag"></span> !</p> <br/>
                                         <p class="lead">Thank you for using <a th:href="@{'https://' +${_tu.prop('company.website.url')}}"><span th:text="${_tu.prop('company.website.url')}"></span></a> for your payment of FC Purchase and hope you had a pleasant experience.</p>
-									    <p class="lead">Your transaction with us dated  <span  th:text="${data.transDate}"></span> having Trans Ref No: <span  th:text="${data.transRefno}"></span> for <span  th:text="${data.netAmt}"></span> is successful.Thank you for your continued patronage.</p>
+									    <p class="lead">Your transaction with us dated  <span  th:text="${date}"></span> having Trans Ref No: <span  th:text="${receiptNo}"></span> for <span  th:text="${localQurrencyQuote}"></span> <span  th:text="${netAmount}"></span> is successful.Thank you for your continued patronage.</p>
 										
                                       <!-- A Real Hero (and a real human being) -->
                                         <p style="padding:40px 0" align="center"><img src="cid:images/product-1.png"/></p><!-- /hero -->
@@ -371,7 +371,7 @@
 
                                         <!-- Callout Panel -->
                                         <p class="callout">Our online solution <a th:href="@{'https://' +${_tu.prop('company.website.url')}}"><span th:text="${_tu.prop('company.website.url')}"></span></a>
-                                            provides even finer rates and a bonus 150 loyalty points with each transaction.<br /><br />
+                                            provides even finer rates and a bonus 150 loyalty points with each transaction while doing remittance.<br /><br />
                                             Follow us on social media, facebook, twitter and instagram for our latest
                                             updates, product roll outs, special offers and events.<br /><br />
                                             We would love to hear your opinion and suggestions to make us better. You can write to
