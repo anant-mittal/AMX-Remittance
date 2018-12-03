@@ -504,18 +504,18 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 			employeeModel.setFsBizComponentDataByOccupationId(
 					bizcomponentDao.getBizComponentDataByComponmentDataId(customerEmploymentDetails.getProfessionId()));
 			employeeModel.setEmployerName(customerEmploymentDetails.getEmployer());
-			employeeModel.setBlock(localAddressDetails.getBlock());
-			employeeModel.setStreet(localAddressDetails.getStreet());
-			employeeModel.setArea(localAddressDetails.getStateId().toString());
+			employeeModel.setBlock(customerEmploymentDetails.getBlock());
+			employeeModel.setStreet(customerEmploymentDetails.getStreet());
+			employeeModel.setArea(customerEmploymentDetails.getStateId().toString());
 			employeeModel.setPostal(customerEmploymentDetails.getPostal());
 			employeeModel.setOfficeTelephone(customerEmploymentDetails.getOfficeTelephone());
 			/*employeeModel.setFsCountryMaster(
 					countryMasterRepository.getCountryMasterByCountryId(customerEmploymentDetails.getCountryId()));*/
 			employeeModel.setFsCountryMaster(
-					countryMasterRepository.getCountryMasterByCountryId(localAddressDetails.getCountryId()));
-			employeeModel.setFsStateMaster(localAddressDetails.getStateId());
-			employeeModel.setFsDistrictMaster(localAddressDetails.getDistrictId());
-			employeeModel.setFsCityMaster(localAddressDetails.getCityId());
+					countryMasterRepository.getCountryMasterByCountryId(customerEmploymentDetails.getCountryId()));
+			employeeModel.setFsStateMaster(customerEmploymentDetails.getStateId());
+			employeeModel.setFsDistrictMaster(customerEmploymentDetails.getDistrictId());
+			employeeModel.setFsCityMaster(customerEmploymentDetails.getCityId());
 			// employeeModel.setFsCompanyMaster(customerEmploymentDetails.getCompanyId());
 			employeeModel.setIsActive(ConstantDocument.Yes);
 			employeeModel.setCreatedBy(metaData.getEmployeeId().toString());
