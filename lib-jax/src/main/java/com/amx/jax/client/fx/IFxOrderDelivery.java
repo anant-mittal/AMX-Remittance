@@ -20,7 +20,7 @@ public interface IFxOrderDelivery extends IJaxService {
 		public static final String FX_DELIVERY_LIST_ORDER = PREFIX + "/list-orders/";
 		public static final String FX_DELIVERY_GET_ORDER_DETAIL = PREFIX + "/get-order/";
 		public static final String FX_DELIVERY_MARK_DELIVERED = PREFIX + "/mark-delivered/";
-		public static final String FX_DELIVERY_MARK_NOT_DELIVERED = PREFIX + "/mark-not-delivered/";
+		public static final String FX_DELIVERY_MARK_CANCELLED = PREFIX + "/mark-cancelled/";
 		public static final String FX_DELIVERY_TRANSACTION_RECEIPT = PREFIX + "/update-trnx-receipt/";
 		public static final String FX_DELIVERY_SEND_OTP = PREFIX + "/send-otp/";
 		public static final String FX_DELIVERY_VERIFY_OTP = PREFIX + "/verify-otp/";
@@ -43,7 +43,7 @@ public interface IFxOrderDelivery extends IJaxService {
 			FcSaleDeliveryMarkDeliveredRequest fcSaleDeliveryMarkDeliveredRequest);
 
 	@ApiJaxStatus(JaxError.FC_CURRENCY_DELIVERY_DETAIL_NOT_FOUND)
-	AmxApiResponse<BoolRespModel, Object> markNotDelivered(
+	AmxApiResponse<BoolRespModel, Object> markCancelled(
 			FcSaleDeliveryMarkNotDeliveredRequest fcSaleDeliveryMarkNotDeliveredRequest);
 
 	@ApiJaxStatus(JaxError.FC_CURRENCY_DELIVERY_DETAIL_NOT_FOUND)

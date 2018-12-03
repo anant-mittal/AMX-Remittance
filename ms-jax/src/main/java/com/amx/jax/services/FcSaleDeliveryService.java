@@ -17,6 +17,7 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.constant.NotificationConstants;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.PersonInfo;
@@ -35,9 +36,14 @@ import com.amx.jax.model.request.fx.FcSaleDeliveryDetailUpdateReceiptRequest;
 import com.amx.jax.model.request.fx.FcSaleDeliveryMarkDeliveredRequest;
 import com.amx.jax.model.request.fx.FcSaleDeliveryMarkNotDeliveredRequest;
 import com.amx.jax.model.response.fx.FxDeliveryDetailDto;
+import com.amx.jax.model.response.fx.FxDeliveryDetailNotificationDto;
 import com.amx.jax.model.response.fx.ShippingAddressDto;
+import com.amx.jax.postman.model.Email;
+import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.repository.fx.VwFxDeliveryDetailsRepository;
+import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.CryptoUtil;
+import com.amx.utils.JsonUtil;
 import com.amx.utils.Random;
 
 @Component
@@ -54,6 +60,8 @@ public class FcSaleDeliveryService {
 	JaxNotificationService jaxNotificationService;
 	@Autowired
 	CryptoUtil cryptoUtil;
+	@Autowired
+	UserService userService;
 
 	/**
 	 * @return today's order to be delivered for logged in driver
@@ -109,13 +117,23 @@ public class FcSaleDeliveryService {
 	public BoolRespModel markDelivered(FcSaleDeliveryMarkDeliveredRequest fcSaleDeliveryMarkDeliveredRequest) {
 		FxDeliveryDetailsModel deliveryDetail = validateFxDeliveryModel(
 				fcSaleDeliveryMarkDeliveredRequest.getDeliveryDetailSeqId());
+		VwFxDeliveryDetailsModel vwdeliveryDetail = validatetDeliveryDetailView(
+				fcSaleDeliveryMarkDeliveredRequest.getDeliveryDetailSeqId());
 		deliveryDetail.setOrderStatus(ConstantDocument.DVD);
 		fcSaleApplicationDao.saveDeliveryDetail(deliveryDetail);
-		// TODO: updated table ex_appl_receipt_payment and column ORDER_STATUS
+		PersonInfo pinfo = userService.getPersonInfo(vwdeliveryDetail.getCustomerId());
+		Email email = new Email();
+		email.setSubject("FC Order Successfully Delivered");
+		email.addTo(pinfo.getEmail());
+		email.setITemplate(TemplatesMX.FC_ORDER_SUCCESS);
+		email.setHtml(true);
+		FxDeliveryDetailDto ddDto = createFxDeliveryDetailDto(vwdeliveryDetail);
+		FxDeliveryDetailNotificationDto notificationModel = new FxDeliveryDetailNotificationDto(ddDto);
+		email.getModel().put(NotificationConstants.RESP_DATA_KEY, notificationModel);
 		return new BoolRespModel(true);
 	}
 
-	public BoolRespModel markNotDelivered(FcSaleDeliveryMarkNotDeliveredRequest fcSaleDeliveryMarkNotDeliveredRequest) {
+	public BoolRespModel markCancelled(FcSaleDeliveryMarkNotDeliveredRequest fcSaleDeliveryMarkNotDeliveredRequest) {
 		FxDeliveryDetailsModel deliveryDetail = validateFxDeliveryModel(
 				fcSaleDeliveryMarkNotDeliveredRequest.getDeliveryDetailSeqId());
 		deliveryDetail.setOrderStatus(ConstantDocument.RTD);
@@ -158,21 +176,30 @@ public class FcSaleDeliveryService {
 	 * 
 	 */
 	public BoolRespModel sendOtp(BigDecimal deliveryDetailSeqId) {
-		VwFxDeliveryDetailsModel vwFxDeliveryDetailsMode = validatetDeliveryDetailView(deliveryDetailSeqId);
-		FxDeliveryDetailsModel fxDeliveryDetailsMode = validateFxDeliveryModel(deliveryDetailSeqId);
-		PersonInfo pinfo = new PersonInfo();
-		pinfo.setFirstName(vwFxDeliveryDetailsMode.getCustomerName());
-		pinfo.setMobile(vwFxDeliveryDetailsMode.getMobile());
-		CivilIdOtpModel model = new CivilIdOtpModel();
+		VwFxDeliveryDetailsModel vwFxDeliveryDetailsModel = validatetDeliveryDetailView(deliveryDetailSeqId);
+		FxDeliveryDetailsModel fxDeliveryDetailsModel = validateFxDeliveryModel(deliveryDetailSeqId);
+		PersonInfo pinfo = userService.getPersonInfo(vwFxDeliveryDetailsModel.getCustomerId());
 		// generating otp
 		String mOtp = Random.randomNumeric(6);
+		String mOtpPrefix = Random.randomAlpha(3);
 		String hashedmOtp = cryptoUtil.generateHash(deliveryDetailSeqId.toString(), mOtp);
-		fxDeliveryDetailsMode.setOtpToken(hashedmOtp);
-		fcSaleApplicationDao.saveDeliveryDetail(fxDeliveryDetailsMode);
-		model.setmOtp(mOtp);
-		model.setmOtpPrefix(Random.randomAlpha(3));
+		fxDeliveryDetailsModel.setOtpToken(hashedmOtp);
+		fcSaleApplicationDao.saveDeliveryDetail(fxDeliveryDetailsModel);
+
+		FxDeliveryDetailDto ddDto = createFxDeliveryDetailDto(vwFxDeliveryDetailsModel);
+		FxDeliveryDetailNotificationDto notificationModel = new FxDeliveryDetailNotificationDto(mOtp, mOtpPrefix,
+				ddDto);
 		logger.debug("sending otp for fcsale delivery");
-		jaxNotificationService.sendOtpSms(pinfo, model);
+		jaxNotificationService.sendOtpSms(pinfo.getMobile(), notificationModel);
+		// send email otp
+		Email email = new Email();
+		email.setSubject("FC Order Successfully Delivered");
+		email.addTo(pinfo.getEmail());
+		email.setITemplate(TemplatesMX.FC_DELIVER_OTP);
+		email.setHtml(true);
+
+		email.getModel().put(NotificationConstants.RESP_DATA_KEY, notificationModel);
+		jaxNotificationService.sendEmail(email);
 		return new BoolRespModel(true);
 	}
 

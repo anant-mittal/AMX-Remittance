@@ -136,8 +136,6 @@ public class Customer implements java.io.Serializable {
 	private String identityInt;
 	private BigDecimal identityFor;
 	private BigDecimal identityTypeId;
-	private Date issueDate;
-	private Date expiryDate;
 	
 	//WhatsApp and Mobile Number related fields are add
 	private String prefixCodeMobile;

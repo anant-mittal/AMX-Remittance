@@ -72,7 +72,7 @@ public class FxDeliveryController {
 	@RequestMapping(value = "/order/notdelivered", method = { RequestMethod.POST })
 	public AmxApiResponse<BoolRespModel, Object> markNotDelivered(
 			@RequestBody FcSaleDeliveryMarkNotDeliveredRequest fcSaleDeliveryMarkDeliveredRequest) {
-		return fxOrderDelivery.markNotDelivered(fcSaleDeliveryMarkDeliveredRequest);
+		return fxOrderDelivery.markCancelled(fcSaleDeliveryMarkDeliveredRequest);
 	}
 
 	@RequestMapping(value = "/order/reasons", method = { RequestMethod.GET })

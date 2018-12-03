@@ -35,7 +35,10 @@ public class VwFxDeliveryDetailsModel implements Serializable {
 
 	@Column(name = "CUSTOMER_NAME")
 	String customerName;
-
+	
+	@Column(name= "CUSTOMER_ID")
+	BigDecimal customerId;
+	
 	@Column(name = "DELIVERY_DATE")
 	@Temporal(TemporalType.DATE)
 	Date deliveryDate;
@@ -144,6 +147,14 @@ public class VwFxDeliveryDetailsModel implements Serializable {
 
 	public void setOrderStatus(String orderStatus) {
 		this.orderStatus = orderStatus;
+	}
+
+	public BigDecimal getCustomerId() {
+		return customerId;
+	}
+
+	public void setCustomerId(BigDecimal customerId) {
+		this.customerId = customerId;
 	}
 
 }

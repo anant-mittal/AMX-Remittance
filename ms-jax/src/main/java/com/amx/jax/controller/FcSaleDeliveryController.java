@@ -64,12 +64,12 @@ public class FcSaleDeliveryController implements IFxOrderDelivery {
 		return AmxApiResponse.build(result);
 	}
 
-	@RequestMapping(value = Path.FX_DELIVERY_MARK_NOT_DELIVERED, method = RequestMethod.POST)
+	@RequestMapping(value = Path.FX_DELIVERY_MARK_CANCELLED, method = RequestMethod.POST)
 	@Override
 	@ApiOperation("Marks the order status as not delivered")
-	public AmxApiResponse<BoolRespModel, Object> markNotDelivered(
+	public AmxApiResponse<BoolRespModel, Object> markCancelled(
 			@RequestBody FcSaleDeliveryMarkNotDeliveredRequest fcSaleDeliveryMarkNotDeliveredRequest) {
-		BoolRespModel result = fcSaleDeliveryService.markNotDelivered(fcSaleDeliveryMarkNotDeliveredRequest);
+		BoolRespModel result = fcSaleDeliveryService.markCancelled(fcSaleDeliveryMarkNotDeliveredRequest);
 		return AmxApiResponse.build(result);
 	}
 

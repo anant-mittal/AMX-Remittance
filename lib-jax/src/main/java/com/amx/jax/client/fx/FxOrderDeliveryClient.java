@@ -72,16 +72,16 @@ public class FxOrderDeliveryClient implements IFxOrderDelivery {
 	}
 
 	@Override
-	public AmxApiResponse<BoolRespModel, Object> markNotDelivered(
-			FcSaleDeliveryMarkNotDeliveredRequest fcSaleDeliveryMarkNotDeliveredRequest) {
+	public AmxApiResponse<BoolRespModel, Object> markCancelled(
+			FcSaleDeliveryMarkNotDeliveredRequest fcSaleDeliveryMarkCancelledRequest) {
 		try {
-			LOGGER.debug("in markNotDelivered");
-			String url = appConfig.getJaxURL() + Path.FX_DELIVERY_MARK_NOT_DELIVERED;
-			return restService.ajax(url).meta(new JaxMetaInfo()).post(fcSaleDeliveryMarkNotDeliveredRequest)
+			LOGGER.debug("in markCancelled");
+			String url = appConfig.getJaxURL() + Path.FX_DELIVERY_MARK_CANCELLED;
+			return restService.ajax(url).meta(new JaxMetaInfo()).post(fcSaleDeliveryMarkCancelledRequest)
 					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
 					});
 		} catch (Exception e) {
-			LOGGER.error("exception in markNotDelivered : ", e);
+			LOGGER.error("exception in markCancelled : ", e);
 			return JaxSystemError.evaluate(e);
 		}
 	}

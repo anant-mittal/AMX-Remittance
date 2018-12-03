@@ -25,6 +25,7 @@ import com.amx.jax.AppConfig;
 import com.amx.jax.dbmodel.ApplicationSetup;
 import com.amx.jax.dbmodel.ExEmailNotification;
 import com.amx.jax.dict.Tenant;
+import com.amx.jax.model.response.fx.FxDeliveryDetailNotificationDto;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.client.PushNotifyClient;
@@ -139,7 +140,10 @@ public class JaxNotificationService {
 		sendEmail(email);
 	} // end of sendProfileChangeNotificationEmail
 
-	public void sendOtpSms(PersonInfo pinfo, CivilIdOtpModel model) {
+	public void sendOtpSms(PersonInfo pinfo, CivilIdOtpModel model ) {
+		sendOtpSms(pinfo, model, TemplatesMX.RESET_OTP_SMS);
+	}
+	public void sendOtpSms(PersonInfo pinfo, CivilIdOtpModel model, TemplatesMX templateMX) {
 
 		logger.info(String.format("Sending OTP SMS to customer :%s on mobile_no :%s  ", pinfo.getFirstName(),
 				pinfo.getMobile()));
@@ -147,7 +151,7 @@ public class JaxNotificationService {
 		SMS sms = new SMS();
 		sms.addTo(pinfo.getMobile());
 		sms.getModel().put(RESP_DATA_KEY, model);
-		sms.setITemplate(TemplatesMX.RESET_OTP_SMS);
+		sms.setITemplate(templateMX);
 
 		try {
 			postManService.sendSMSAsync(sms);
@@ -158,6 +162,22 @@ public class JaxNotificationService {
 			logger.error("error in sendOtpSms", e);
 		}
 	} // end of sendOtpSms
+	
+	public void sendOtpSms(String mobile, FxDeliveryDetailNotificationDto model) {
+		SMS sms = new SMS();
+		sms.addTo(mobile);
+		sms.getModel().put(RESP_DATA_KEY, model);
+		sms.setITemplate(TemplatesMX.FC_DELIVER_OTP);
+
+		try {
+			postManService.sendSMSAsync(sms);
+			if (!appConfig.isProdMode()) {
+				sendToSlack("mobile", sms.getTo().get(0), model.getmOtpPrefix(), model.getmOtp());
+			}
+		} catch (PostManException e) {
+			logger.error("error in sendOtpSms", e);
+		}
+	}
 
 	public void sendOtpEmail(PersonInfo pinfo, CivilIdOtpModel civilIdOtpModel) {
 
@@ -203,7 +223,7 @@ public class JaxNotificationService {
 		}
 	}
 
-	private void sendEmail(Email email) {
+	public void sendEmail(Email email) {
 		try {
 			postManService.sendEmailAsync(email);
 		} catch (PostManException e) {
