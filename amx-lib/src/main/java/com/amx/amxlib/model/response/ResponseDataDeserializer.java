@@ -105,8 +105,6 @@ public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {
 			models = new ObjectMapper().readValue(values, new TypeReference<List<CountryMasterDTO>>() {
 			});
 			break;	
-			
-			
 		case "quest":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<QuestModelDTO>>() {
 			});
