@@ -54,6 +54,7 @@ public class UserAuthInitReqDTO implements Serializable {
 	/**
 	 * Security Access Code for Self user
 	 */
+	@NotBlank(message = "Self SAC Can not be Null or Empty")
 	private String selfSAC;
 
 	/**

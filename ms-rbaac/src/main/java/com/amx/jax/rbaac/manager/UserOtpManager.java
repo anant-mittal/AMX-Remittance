@@ -73,7 +73,7 @@ public class UserOtpManager {
 		 */
 		HashBuilder builder = new HashBuilder().interval(otpTTL).secret("DEVICEREGID").message(sac);
 		otpData.setmOtpPrefix(sac);
-		otpData.setmOtp(builder.toNumeric(6).output());
+		otpData.setmOtp(builder.toHMAC().toNumeric(6).output());
 
 		otpData.setHashedmOtp(getOtpHash(otpData.getmOtp()));
 
