@@ -154,7 +154,7 @@ function repeaetCall(_gap) {
 
 function fetchCardDetails() {
 	var selectedMode = $("input[name='cardtype']:checked").val();
-	$.get("/branch/sso/card/details").done(function(resp) {
+	$.get(window.CONST.CONTEXT + "/sso/card/details").done(function(resp) {
 		console.log("resp==", resp);
 		if (resp) {
 			if (resp.statusKey == "NO_TERMINAL_SESSION") {

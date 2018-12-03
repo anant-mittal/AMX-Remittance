@@ -8,6 +8,14 @@
 
 <title>Admin Service</title>
 <link rel="stylesheet" th:href="${SSO_LOGIN_PREFIX} + '/css/index.css'">
+<script>
+	window.CONST = {
+			CONTEXT: '[[${SSO_LOGIN_PREFIX}]]',
+			SSO_LOGIN_URL: '[[${SSO_LOGIN_URL}]]',
+			SECURITY_CODE: '[[${sec_code}]]',
+			PARTNER_SECURITY_CODE: '[[${partner_sec_code}]]'
+	}
+</script>
 <script id="terminal_session" th:src="'https://localhost:8020/pub/script/validation.js?tranx=' + ${x_tranx_id}"></script>
 <script th:src="${SSO_LOGIN_PREFIX} + '/js/sockjs.min.js'"></script>
 <script th:src="${SSO_LOGIN_PREFIX} + '/js/stomp.min.js'"></script>
