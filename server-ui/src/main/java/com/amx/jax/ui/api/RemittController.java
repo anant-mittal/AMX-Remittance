@@ -39,8 +39,8 @@ import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
 import com.amx.jax.dict.Language;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.model.response.CurrencyMasterDTO;
+import com.amx.jax.payg.PayGParams;
 import com.amx.jax.payg.PayGService;
-import com.amx.jax.payg.Payment;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Email;
@@ -58,6 +58,7 @@ import com.amx.jax.ui.service.JaxService;
 import com.amx.jax.ui.service.SessionService;
 import com.amx.jax.ui.service.TenantService;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.HttpUtils;
 import com.amx.utils.JsonUtil;
 
 import io.swagger.annotations.Api;
@@ -115,17 +116,12 @@ public class RemittController {
 	/**
 	 * Send history.
 	 *
-	 * @param fromDate
-	 *            the from date
-	 * @param toDate
-	 *            the to date
-	 * @param docfyr
-	 *            the docfyr
+	 * @param fromDate the from date
+	 * @param toDate   the to date
+	 * @param docfyr   the docfyr
 	 * @return the response wrapper
-	 * @throws IOException
-	 *             Signals that an I/O exception has occurred.
-	 * @throws PostManException
-	 *             the post man exception
+	 * @throws IOException      Signals that an I/O exception has occurred.
+	 * @throws PostManException the post man exception
 	 */
 	@RequestMapping(value = "/api/user/tranx/print_history", method = { RequestMethod.GET })
 	public ResponseWrapper<List<TransactionHistroyDTO>> sendHistory(@RequestParam String fromDate,
@@ -155,13 +151,10 @@ public class RemittController {
 	/**
 	 * Prints the history.
 	 *
-	 * @param wrapper
-	 *            the wrapper
+	 * @param wrapper the wrapper
 	 * @return the response wrapper
-	 * @throws IOException
-	 *             Signals that an I/O exception has occurred.
-	 * @throws PostManException
-	 *             the post man exception
+	 * @throws IOException      Signals that an I/O exception has occurred.
+	 * @throws PostManException the post man exception
 	 */
 	@ApiOperation(value = "Returns transaction history")
 	@RequestMapping(value = "/api/user/tranx/print_history", method = { RequestMethod.POST })
@@ -176,17 +169,12 @@ public class RemittController {
 	/**
 	 * Tranxreport.
 	 *
-	 * @param tranxDTO
-	 *            the tranx DTO
-	 * @param duplicate
-	 *            the duplicate
-	 * @param skipd
-	 *            the skipd
+	 * @param tranxDTO  the tranx DTO
+	 * @param duplicate the duplicate
+	 * @param skipd     the skipd
 	 * @return the string
-	 * @throws IOException
-	 *             Signals that an I/O exception has occurred.
-	 * @throws PostManException
-	 *             the post man exception
+	 * @throws IOException      Signals that an I/O exception has occurred.
+	 * @throws PostManException the post man exception
 	 */
 	@ApiOperation(value = "Returns transaction reciept")
 	@RequestMapping(value = "/api/user/tranx/report", method = { RequestMethod.POST })
@@ -216,23 +204,15 @@ public class RemittController {
 	/**
 	 * Tranxreport ext.
 	 *
-	 * @param collectionDocumentNo
-	 *            the collection document no
-	 * @param collectionDocumentFinYear
-	 *            the collection document fin year
-	 * @param collectionDocumentCode
-	 *            the collection document code
-	 * @param customerReference
-	 *            the customer reference
-	 * @param ext
-	 *            the ext
-	 * @param duplicate
-	 *            the duplicate
+	 * @param collectionDocumentNo      the collection document no
+	 * @param collectionDocumentFinYear the collection document fin year
+	 * @param collectionDocumentCode    the collection document code
+	 * @param customerReference         the customer reference
+	 * @param ext                       the ext
+	 * @param duplicate                 the duplicate
 	 * @return the string
-	 * @throws PostManException
-	 *             the post man exception
-	 * @throws IOException
-	 *             Signals that an I/O exception has occurred.
+	 * @throws PostManException the post man exception
+	 * @throws IOException      Signals that an I/O exception has occurred.
 	 */
 	@ApiOperation(value = "Returns transaction reciept:")
 	@RequestMapping(value = "/api/user/tranx/report.{ext}", method = { RequestMethod.GET })
@@ -280,10 +260,8 @@ public class RemittController {
 	/**
 	 * Xrate.
 	 *
-	 * @param forCur
-	 *            the for cur
-	 * @param domAmount
-	 *            the dom amount
+	 * @param forCur    the for cur
+	 * @param domAmount the dom amount
 	 * @return the response wrapper
 	 */
 	@RequestMapping(value = "/api/remitt/xrate", method = { RequestMethod.POST })
@@ -316,10 +294,8 @@ public class RemittController {
 	/**
 	 * Bnfcry check.
 	 *
-	 * @param beneId
-	 *            the bene id
-	 * @param transactionId
-	 *            the transaction id
+	 * @param beneId        the bene id
+	 * @param transactionId the transaction id
 	 * @return the response wrapper
 	 */
 	@RequestMapping(value = "/api/remitt/default", method = { RequestMethod.POST })
@@ -354,8 +330,7 @@ public class RemittController {
 	/**
 	 * Bnfcry check.
 	 *
-	 * @param beneId
-	 *            the bene id
+	 * @param beneId the bene id
 	 * @return the response wrapper
 	 */
 	@RequestMapping(value = "/api/remitt/purpose/list", method = { RequestMethod.POST })
@@ -368,8 +343,7 @@ public class RemittController {
 	/**
 	 * Bnfcry check.
 	 *
-	 * @param request
-	 *            the request
+	 * @param request the request
 	 * @return the response wrapper
 	 */
 	@RequestMapping(value = "/api/remitt/tranxrate", method = { RequestMethod.POST })
@@ -390,10 +364,8 @@ public class RemittController {
 	/**
 	 * Creates the application.
 	 *
-	 * @param transactionRequestModel
-	 *            the transaction request model
-	 * @param request
-	 *            the request
+	 * @param transactionRequestModel the transaction request model
+	 * @param request                 the request
 	 * @return the response wrapper
 	 */
 	@RequestMapping(value = "/api/remitt/tranx/pay", method = { RequestMethod.POST })
@@ -416,15 +388,15 @@ public class RemittController {
 				wrapper.getMeta().setmOtpPrefix(respTxMdl.getCivilIdOtpModel().getmOtpPrefix());
 				wrapper.setStatus(WebResponseStatus.MOTP_REQUIRED);
 			} else {
-				Payment payment = new Payment();
-				payment.setDocFinYear(respTxMdl.getDocumentFinancialYear());
+				PayGParams payment = new PayGParams();
+				payment.setDocFy(respTxMdl.getDocumentFinancialYear());
 				payment.setDocNo(respTxMdl.getDocumentIdForPayment());
-				payment.setMerchantTrackId(respTxMdl.getMerchantTrackId());
-				payment.setNetPayableAmount(respTxMdl.getNetPayableAmount());
-				payment.setPgCode(respTxMdl.getPgCode());
+				payment.setTrackId(respTxMdl.getMerchantTrackId());
+				payment.setAmount(respTxMdl.getNetPayableAmount());
+				payment.setServiceCode(respTxMdl.getPgCode());
 
 				wrapper.setRedirectUrl(payGService.getPaymentUrl(payment,
-						"https://" + request.getServerName() + "/app/landing/remittance"));
+						HttpUtils.getServerName(request) + "/app/landing/remittance"));
 			}
 
 		} catch (RemittanceTransactionValidationException | LimitExeededException | MalformedURLException
@@ -437,8 +409,7 @@ public class RemittController {
 	/**
 	 * App status.
 	 *
-	 * @param request
-	 *            the request
+	 * @param request the request
 	 * @return the response wrapper
 	 */
 	@RequestMapping(value = "/api/remitt/tranx/status", method = { RequestMethod.POST })
