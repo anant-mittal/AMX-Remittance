@@ -15,6 +15,7 @@ import com.amx.jax.dict.PayGServiceCode;
 import com.amx.jax.payg.PayGCodes;
 import com.amx.jax.payg.PayGParams;
 import com.amx.jax.payg.codes.OmanNetCodes;
+import com.amx.jax.payment.PaymentConstant;
 import com.amx.jax.payment.gateway.PayGClient;
 import com.amx.jax.payment.gateway.PayGConfig;
 import com.amx.jax.payment.gateway.PayGContext.PayGSpecific;
@@ -67,34 +68,39 @@ public class OmannetClient implements PayGClient {
 	@Override
 	public void initialize(PayGParams params, PaymentGateWayResponse gatewayResponse) {
 
+		String responseUrl = payGConfig.getServiceCallbackUrl() +
+				PaymentConstant.getCalbackUrl(params);
+
+		/**
+		 * TODO :- TO be removed *********** DEBUG
+		 *****************/
 		Map<String, Object> configMap = new HashMap<String, Object>();
 
 		configMap.put("action", OmemnetAction);
 		configMap.put("currency", OmemnetCurrency);
 		configMap.put("languageCode", OmemnetLanguageCode);
-		configMap.put("responseUrl", OmemnetCallbackUrl + "/app/capture/OMANNET/" + params.getTenant() + "/"
-				+ params.getChannel() + "/");
+		configMap.put("responseUrl", responseUrl);
 		// configMap.put("responseUrl",
 		// OmemnetCallbackUrl+"/app/capture/OMANNET/" + payGParams.getTenant() + "/");
 		configMap.put("resourcePath", OmemnetCertpath);
 		configMap.put("keystorePath", OmemnetCertpath);
 		configMap.put("aliasName", OmemnetAliasName);
-
 		LOGGER.info("Oman omannet payment configuration : " + JsonUtil.toJson(configMap));
+		/************ DEBUG *****************/
 
 		iPayPipe pipe = new iPayPipe();
 		HashMap<String, String> responseMap = new HashMap<String, String>();
 
 		try {
 
-			pipe.setAction((String) configMap.get("action"));
-			pipe.setCurrency((String) configMap.get("currency"));
-			pipe.setLanguage((String) configMap.get("languageCode"));
-			pipe.setResponseURL((String) configMap.get("responseUrl"));
-			pipe.setErrorURL((String) configMap.get("responseUrl"));
-			pipe.setResourcePath((String) configMap.get("resourcePath"));
-			pipe.setKeystorePath((String) configMap.get("keystorePath"));
-			pipe.setAlias((String) configMap.get("aliasName"));
+			pipe.setAction(OmemnetAction);
+			pipe.setCurrency(OmemnetCurrency);
+			pipe.setLanguage(OmemnetLanguageCode);
+			pipe.setResponseURL(responseUrl);
+			pipe.setErrorURL(responseUrl);
+			pipe.setResourcePath(OmemnetCertpath);
+			pipe.setKeystorePath(OmemnetCertpath);
+			pipe.setAlias(OmemnetAliasName);
 			pipe.setAmt((String) params.getAmount());
 			pipe.setTrackId((String) params.getTrackId());
 			pipe.setUdf3(params.getDocNo());
@@ -118,7 +124,6 @@ public class OmannetClient implements PayGClient {
 
 	}
 
-	@SuppressWarnings("finally")
 	@Override
 	public PaymentGateWayResponse capture(PayGParams params, PaymentGateWayResponse gatewayResponse) {
 

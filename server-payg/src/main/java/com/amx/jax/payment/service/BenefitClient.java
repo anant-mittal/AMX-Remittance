@@ -10,11 +10,11 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
-import com.amx.jax.AppConstants;
 import com.amx.jax.dict.PayGServiceCode;
 import com.amx.jax.payg.PayGCodes;
 import com.amx.jax.payg.PayGParams;
 import com.amx.jax.payg.codes.BenefitCodes;
+import com.amx.jax.payment.PaymentConstant;
 import com.amx.jax.payment.gateway.PayGClient;
 import com.amx.jax.payment.gateway.PayGConfig;
 import com.amx.jax.payment.gateway.PayGContext.PayGSpecific;
@@ -22,7 +22,6 @@ import com.amx.jax.payment.gateway.PayGSession;
 import com.amx.jax.payment.gateway.PaymentGateWayResponse;
 import com.amx.jax.payment.gateway.PaymentGateWayResponse.PayGStatus;
 import com.amx.jax.payment.gateway.PaymentService;
-import com.amx.utils.ContextUtil;
 import com.amx.utils.JsonUtil;
 
 import bhr.com.aciworldwide.commerce.gateway.plugins.e24PaymentPipe;
@@ -79,30 +78,34 @@ public class BenefitClient implements PayGClient {
 	@Override
 	public void initialize(PayGParams params, PaymentGateWayResponse gatewayResponse) {
 
-		Map<String, Object> configMap = new HashMap<String, Object>();
+		String responseUrl = payGConfig.getServiceCallbackUrl() +
+				PaymentConstant.getCalbackUrl(params);
 
+		/**
+		 * TODO :- TO be removed *********** DEBUG
+		 *****************/
+		Map<String, Object> configMap = new HashMap<String, Object>();
 		configMap.put("action", benefitAction);
 		configMap.put("currency", benefitCurrency);
 		configMap.put("languageCode", benefitLanguageCode);
-		configMap.put("responseUrl", payGConfig.getServiceCallbackUrl() + "/app/capture/BENEFIT/"
-				+ params.getTenant() + "/" + params.getChannel() + "/");
+		configMap.put("responseUrl", responseUrl);
 		configMap.put("resourcePath", benefitCertpath);
 		configMap.put("aliasName", benefitAliasName);
-
 		LOGGER.info("Baharain BENEFIT payment configuration : " + JsonUtil.toJson(configMap));
+		/************ DEBUG *****************/
 
 		e24PaymentPipe pipe = new e24PaymentPipe();
 		HashMap<String, String> responseMap = new HashMap<String, String>();
 
 		try {
 
-			pipe.setAction((String) configMap.get("action"));
-			pipe.setCurrency((String) configMap.get("currency"));
-			pipe.setLanguage((String) configMap.get("languageCode"));
-			pipe.setResponseURL((String) configMap.get("responseUrl"));
-			pipe.setErrorURL((String) configMap.get("responseUrl"));
-			pipe.setResourcePath((String) configMap.get("resourcePath"));
-			pipe.setAlias((String) configMap.get("aliasName"));
+			pipe.setAction(benefitAction);
+			pipe.setCurrency(benefitCurrency);
+			pipe.setLanguage(benefitLanguageCode);
+			pipe.setResponseURL(responseUrl);
+			pipe.setErrorURL(responseUrl);
+			pipe.setResourcePath(benefitCertpath);
+			pipe.setAlias(benefitAliasName);
 			pipe.setAmt((String) params.getAmount());
 			pipe.setTrackId((String) params.getTrackId());
 
@@ -172,7 +175,7 @@ public class BenefitClient implements PayGClient {
 
 		// to handle error scenario
 		if (gatewayResponse.getUdf3() == null) {
-			ContextUtil.map().put(AppConstants.TRANX_ID_XKEY, request.getParameter("paymentid"));
+			//ContextUtil.map().put(AppConstants.TRANX_ID_XKEY, request.getParameter("paymentid"));
 			LOGGER.info("Values ---> " + JsonUtil.toJson(params));
 			gatewayResponse.setUdf3(params.getDocNo());
 			gatewayResponse.setResponseCode("NOT CAPTURED");
