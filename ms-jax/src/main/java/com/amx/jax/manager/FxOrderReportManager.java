@@ -172,6 +172,8 @@ public class FxOrderReportManager {
 		String receiptNo = "";
 		String customerName="";
 		String phoneNo ="";
+		BigDecimal loyaltyPoints = BigDecimal.ZERO;
+		String email = "";
 		
 		List<Customer> customerList = customerDao.getCustomerByCustomerId(countryId, companyId, custoemrId);
 		if(customerList != null && !customerList.isEmpty()){
@@ -179,6 +181,10 @@ public class FxOrderReportManager {
 			reportModel.setCivilId(customerList.get(0).getIdentityInt());
 			customerReferenceId = customerList.get(0).getCustomerReference();
 			phoneNo =  customerList.get(0).getMobile();
+			loyaltyPoints = customerList.get(0).getLoyaltyPoints()==null?BigDecimal.ZERO:customerList.get(0).getLoyaltyPoints();
+			email =customerList.get(0).getEmail();
+			reportModel.setLoyaltyPoints(loyaltyPoints);
+			reportModel.setEmail(email);
 		}else{
 			logger.error("custoemr not found :"+custoemrId);
 			throw new GlobalException("custoemr not found", JaxError.INVALID_CUSTOMER);

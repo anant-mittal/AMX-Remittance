@@ -5,8 +5,10 @@ package com.amx.jax.dao;
  */
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -16,15 +18,14 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.constant.ConstantDocument;
-import com.amx.jax.constants.FxDeliveryStatus;
 import com.amx.jax.dbmodel.CollectDetailModel;
 import com.amx.jax.dbmodel.CollectionModel;
-import com.amx.jax.dbmodel.fx.FxDeliveryDetailsModel;
 import com.amx.jax.dbmodel.PaygDetailsModel;
 import com.amx.jax.dbmodel.ReceiptPayment;
 import com.amx.jax.dbmodel.ReceiptPaymentApp;
@@ -36,13 +37,8 @@ import com.amx.jax.dbmodel.fx.VwFxDeliveryDetailsModel;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.model.request.fx.FcSaleOrderPaynowRequestModel;
 import com.amx.jax.model.response.fx.FxApplicationDto;
-import com.amx.jax.model.response.fx.ShoppingCartDetailsDto;
 import com.amx.jax.payg.PayGModel;
 import com.amx.jax.payg.PaymentResponseDto;
-import com.amx.jax.repository.fx.FxDeliveryDetailsRepository;
-import com.amx.jax.repository.fx.FxDeliveryRemarkRepository;
-import com.amx.jax.repository.fx.StatusMasterRepository;
-import com.amx.jax.repository.fx.VwFxDeliveryDetailsRepository;
 import com.amx.jax.repository.ICollectionDetailRepository;
 import com.amx.jax.repository.ICollectionRepository;
 import com.amx.jax.repository.IShippingAddressRepository;
@@ -51,6 +47,7 @@ import com.amx.jax.repository.ReceiptPaymentAppRepository;
 import com.amx.jax.repository.ReceiptPaymentRespository;
 import com.amx.jax.repository.fx.FxDeliveryDetailsRepository;
 import com.amx.jax.repository.fx.FxDeliveryRemarkRepository;
+import com.amx.jax.repository.fx.StatusMasterRepository;
 import com.amx.jax.repository.fx.VwFxDeliveryDetailsRepository;
 import com.amx.jax.util.JaxUtil;
 
@@ -61,6 +58,8 @@ public class FcSaleApplicationDao {
 	
 	private Logger logger = Logger.getLogger(FcSaleApplicationDao.class);
 	
+	@Autowired
+	JdbcTemplate jdbcTemplate;
 	
 	@Autowired
 	ReceiptPaymentAppRepository receiptPaymentApplRespo;
@@ -351,4 +350,32 @@ public class FcSaleApplicationDao {
 	public List<FxDeliveryRemark> listDeliveryRemark() {
 		return fxDeliveryRemarkRepository.findByIsActive(ConstantDocument.Yes);
 	}
+	
+	
+/*	public BigDecimal getFxTrnxLimit(Map<String, Object> inputValues) {
+		BigDecimal totalAmount = BigDecimal.ZERO;
+		BigDecimal fcAmount = (BigDecimal)inputValues.get("FC_AMOUNT");
+		BigDecimal customerId = (BigDecimal)inputValues.get("CUSTOMER_ID");
+		logger.info("inputValues :" +inputValues.toString());
+		String sql =" select sum(amt)  totalamount from ("
+					+" select sum(A.LOCAL_NET_AMOUNT) amt from EX_APPL_RECEIPT_PAYMENT A where  A.customer_id ="+customerId+" "
+					+" and   trunc(A.CREATED_DATE)=trunc(sysdate)  and a.isactive='Y' union all "
+					+" select sum(A.LOCAL_NET_AMOUNT) amt from EX_RECEIPT_PAYMENT A where  A.customer_id ="+customerId+" "
+					+ " and   trunc(A.CREATED_DATE)=trunc(sysdate)  and a.isactive='Y' ) t2 ";
+
+		List<Object> inputList = new ArrayList<>();
+		inputList.add(inputValues.get("CUSTOMER_ID"));
+		List<Map<String, Object>> outputList = jdbcTemplate.queryForList(sql, inputList.toArray());
+		logger.info("Output : "+outputList.toString());
+		Iterator<Map<String, Object>> itr = outputList.iterator();
+		while (itr.hasNext()) {
+			totalAmount = (BigDecimal) itr.next().get("totalamount");
+		}
+		
+		totalAmount = totalAmount.add(fcAmount);
+		return totalAmount;
+
+	}
+	*/
+	
 }

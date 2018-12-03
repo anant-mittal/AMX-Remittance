@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,11 +21,14 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.constant.NotificationConstants;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.FcSaleExchangeRateDao;
+import com.amx.jax.dbmodel.CollectionModel;
 import com.amx.jax.dbmodel.CurrencyMasterModel;
+import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.ParameterDetails;
 import com.amx.jax.dbmodel.PurposeOfTransaction;
 import com.amx.jax.dbmodel.SourceOfIncomeView;
@@ -35,6 +39,7 @@ import com.amx.jax.manager.FcSaleApplicationTransactionManager;
 import com.amx.jax.manager.FcSaleOrderTransactionManager;
 import com.amx.jax.manager.FxOrderPaymentManager;
 import com.amx.jax.manager.FxOrderReportManager;
+import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.CustomerShippingAddressRequestModel;
 import com.amx.jax.model.request.fx.FcSaleOrderPaynowRequestModel;
 import com.amx.jax.model.request.fx.FcSaleOrderTransactionRequestModel;
@@ -46,6 +51,7 @@ import com.amx.jax.model.response.fx.FcSaleApplPaymentReponseModel;
 import com.amx.jax.model.response.fx.FcSaleOrderApplicationResponseModel;
 import com.amx.jax.model.response.fx.FcSaleOrderDefaultResponseModel;
 import com.amx.jax.model.response.fx.FxExchangeRateDto;
+import com.amx.jax.model.response.fx.FxOrderDetailNotificationDto;
 import com.amx.jax.model.response.fx.FxOrderReportResponseDto;
 import com.amx.jax.model.response.fx.FxOrderShoppingCartResponseModel;
 import com.amx.jax.model.response.fx.FxOrderTransactionHistroyDto;
@@ -54,11 +60,17 @@ import com.amx.jax.model.response.fx.PurposeOfTransactionDto;
 import com.amx.jax.model.response.fx.ShippingAddressDto;
 import com.amx.jax.model.response.fx.TimeSlotDto;
 import com.amx.jax.payg.PaymentResponseDto;
+import com.amx.jax.postman.model.Email;
+import com.amx.jax.postman.model.TemplatesMX;
+import com.amx.jax.repository.ICollectionRepository;
 import com.amx.jax.repository.ICurrencyDao;
+import com.amx.jax.repository.ICustomerRepository;
 import com.amx.jax.repository.IPurposeOfTrnxDao;
 import com.amx.jax.repository.ISourceOfIncomeDao;
 import com.amx.jax.repository.ITermsAndConditionRepository;
+import com.amx.jax.util.DateUtil;
 import com.amx.jax.util.JaxUtil;
+import com.amx.jax.util.StringUtil;
 import com.amx.jax.validation.FxOrderValidation;
 
 @Component
@@ -101,6 +113,14 @@ public class FcSaleService extends AbstractService {
 	@Autowired
 	FxOrderReportManager reportManager;
 	
+	@Autowired
+	ICustomerRepository customerDao;
+	
+	@Autowired
+	MetaData metaData;
+	
+	@Autowired
+	ICollectionRepository collRepos;
 
 
 	/**
@@ -280,8 +300,8 @@ public class FcSaleService extends AbstractService {
 	
 	/** To save Knet details **/
 	public AmxApiResponse<PaymentResponseDto,Object> savePaymentId(PaymentResponseDto paymentRequestDto){
-		//validation.validateHeaderInfo();
-		PaymentResponseDto paymentResponseDto =paymentManager.paymentCapture(paymentRequestDto); 
+		PaymentResponseDto paymentResponseDto =paymentManager.paymentCapture(paymentRequestDto);
+		sendKnetSuccessEmail(paymentResponseDto);
 		return AmxApiResponse.build(paymentResponseDto);
 	}
 	
@@ -402,5 +422,38 @@ public class FcSaleService extends AbstractService {
 		return list;
 
 	}
+	
+	public void sendKnetSuccessEmail(PaymentResponseDto payDto){
+		if(payDto!=null && (payDto.getResultCode().equalsIgnoreCase(ConstantDocument.CAPTURED) || payDto.getResultCode().equalsIgnoreCase(ConstantDocument.APPROVED))){
+			
+			if(JaxUtil.isNullZeroBigDecimalCheck(payDto.getCollectionDocumentNumber()) && JaxUtil.isNullZeroBigDecimalCheck(payDto.getCollectionFinanceYear())){
+				BigDecimal countryId = metaData.getCountryId();
+				BigDecimal companyId = metaData.getCompanyId();
+				BigDecimal custoemrId = metaData.getCustomerId()==null?payDto.getCustomerId():metaData.getCustomerId();
+				List<Customer> customerList = customerDao.getCustomerByCustomerId(countryId, companyId, custoemrId);
+				FxOrderDetailNotificationDto orderNotificationModel = new FxOrderDetailNotificationDto();
+				if(customerList!= null && !customerList.isEmpty()){
+					orderNotificationModel.setEmail(customerList.get(0).getEmail());
+					orderNotificationModel.setMobileNo(customerList.get(0).getMobile()==null?"":customerList.get(0).getMobile());
+					orderNotificationModel.setLoyaltyPoints(customerList.get(0).getLoyaltyPoints()==null?BigDecimal.ZERO:customerList.get(0).getLoyaltyPoints());
+				CollectionModel collModel =collRepos.getCollectionDetails(payDto.getCollectionDocumentNumber(),payDto.getCollectionFinanceYear(),ConstantDocument.DOCUMENT_CODE_FOR_COLLECT_TRANSACTION);
+				if(!StringUtils.isBlank(orderNotificationModel.getEmail()) && collModel!=null){
+				orderNotificationModel.setDate(DateUtil.todaysDateWithDDMMYY(collModel.getCreatedDate(),"0"));
+				orderNotificationModel.setLocalQurrencyQuote(collModel.getExCurrencyMaster().getQuoteName());
+				orderNotificationModel.setReceiptNo(collModel.getDocumentFinanceYear().toString()+"/"+collModel.getDocumentNo().toString());
+					Email email = new Email();
+					email.setSubject("FC Delivery - Payment Success");
+					email.addTo(orderNotificationModel.getEmail());
+					email.setITemplate(TemplatesMX.FC_KNET_SUCCESS);
+					email.setHtml(true);
+					email.getModel().put(NotificationConstants.RESP_DATA_KEY, orderNotificationModel);
+					}
+				}
+			}
+			
+		}
+		
+	}
+	
 
 }

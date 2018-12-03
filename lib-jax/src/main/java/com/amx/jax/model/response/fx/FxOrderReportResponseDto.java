@@ -37,6 +37,8 @@ public class FxOrderReportResponseDto {
 	private String paidAmount;
 	private String refundedAmount;
 	private BigDecimal collectAmount;
+	private BigDecimal loyaltyPoints;
+	private String email;
 
 	
 
@@ -243,6 +245,18 @@ public class FxOrderReportResponseDto {
 	}
 	public void setCollectAmount(BigDecimal collectAmount) {
 		this.collectAmount = collectAmount;
+	}
+	public BigDecimal getLoyaltyPoints() {
+		return loyaltyPoints;
+	}
+	public void setLoyaltyPoints(BigDecimal loyaltyPoints) {
+		this.loyaltyPoints = loyaltyPoints;
+	}
+	public String getEmail() {
+		return email;
+	}
+	public void setEmail(String email) {
+		this.email = email;
 	}
 	
 	

@@ -102,14 +102,15 @@ public interface IFxOrderService extends IJaxService {
 	AmxApiResponse<FcSaleOrderDefaultResponseModel, Object> getFcSaleDefaultApi();
 
 	@ApiJaxStatus({ JaxError.FS_APPLIATION_CREATION_FAILED, JaxError.INVALID_APPLICATION_COUNTRY_ID,
-			JaxError.INVALID_COMPANY_ID, JaxError.INVALID_COUNTRY_BRANCH })
+			JaxError.INVALID_COMPANY_ID, JaxError.INVALID_COUNTRY_BRANCH,JaxError.FC_SALE_DAY_LIMIT_SETUP_NOT_DIFINED,
+			JaxError.FC_SALE_TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED,JaxError.CUSTOMER_NOT_REGISTERED_ONLINE})
 	AmxApiResponse<FcSaleOrderApplicationResponseModel, Object> getSaveApplication(
 			FcSaleOrderTransactionRequestModel requestModel);
 
 	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND })
 	AmxApiResponse<ShippingAddressDto, Object> getFcSaleAddress();
 
-	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND, JaxError.INVALID_APPLICATION_COUNTRY_ID, JaxError.INVALID_COMPANY_ID })
+	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND, JaxError.INVALID_APPLICATION_COUNTRY_ID, JaxError.INVALID_COMPANY_ID,JaxError.INVALID_STATE,JaxError.INVALID_DISTRICT,JaxError.CITY_NOT_AVAILABLE,JaxError.INVALID_ADDRESS_TYPE})
 	AmxApiResponse<CustomerShippingAddressRequestModel, Object> saveFcSaleShippingAddress(
 			CustomerShippingAddressRequestModel requestModel);
 

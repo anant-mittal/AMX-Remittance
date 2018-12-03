@@ -27,6 +27,7 @@ import com.amx.jax.dao.ApplicationProcedureDao;
 import com.amx.jax.dao.FcSaleApplicationDao;
 import com.amx.jax.dao.FcSaleExchangeRateDao;
 import com.amx.jax.dbmodel.ApplicationSetup;
+import com.amx.jax.dbmodel.AuthenticationLimitCheckView;
 import com.amx.jax.dbmodel.CountryBranch;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.FxShoppingCartDetails;
@@ -39,6 +40,7 @@ import com.amx.jax.dbmodel.fx.FxDeliveryDetailsModel;
 import com.amx.jax.dbmodel.fx.FxDeliveryTimeSlotMaster;
 import com.amx.jax.dbmodel.fx.FxExchangeRateView;
 import com.amx.jax.dbmodel.fx.FxOrderTransactionModel;
+import com.amx.jax.dbmodel.fx.FxOrderTranxLimitView;
 import com.amx.jax.dbmodel.fx.OrderManagementView;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
@@ -53,6 +55,7 @@ import com.amx.jax.model.response.fx.FxOrderShoppingCartResponseModel;
 import com.amx.jax.model.response.fx.FxOrderTransactionHistroyDto;
 import com.amx.jax.model.response.fx.ShoppingCartDetailsDto;
 import com.amx.jax.model.response.fx.TimeSlotDto;
+import com.amx.jax.repository.AuthenticationLimitCheckDAO;
 import com.amx.jax.repository.CountryBranchRepository;
 import com.amx.jax.repository.IApplicationCountryRepository;
 import com.amx.jax.repository.ICompanyDAO;
@@ -63,9 +66,11 @@ import com.amx.jax.repository.ParameterDetailsRespository;
 import com.amx.jax.repository.ReceiptPaymentAppRepository;
 import com.amx.jax.repository.fx.FxOrderDeliveryTimeSlotRepository;
 import com.amx.jax.repository.fx.FxOrderTransactionRespository;
+import com.amx.jax.repository.fx.FxOrderTranxLimitRespository;
 import com.amx.jax.service.BankMetaService;
 import com.amx.jax.service.CurrencyMasterService;
 import com.amx.jax.service.FinancialService;
+import com.amx.jax.service.ParameterService;
 import com.amx.jax.util.DateUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.RoundUtil;
@@ -128,6 +133,14 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 	
 	@Autowired
 	IShippingAddressRepository shippingAddressDao;
+	
+	
+	@Autowired
+	AuthenticationLimitCheckDAO authentication;
+	
+	@Autowired
+	FxOrderTranxLimitRespository trnxLimitRepos;
+
 	
 	
 	/**
@@ -226,6 +239,8 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 		BigDecimal companyId = metaData.getCompanyId();
 		BigDecimal countryBranchId = metaData.getCountryBranchId();
 		ApplicationSetup appl = applCountryRepos.getApplicationSetupDetails();
+		BigDecimal fcTrnxLimitPerDay =BigDecimal.ZERO;
+		BigDecimal fxTrnxHistAmount =BigDecimal.ZERO; 
 		if(appl!= null){
 			applciationCountryid = appl.getApplicationCountryId();
 			companyId =appl.getCompanyId();
@@ -280,6 +295,20 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 		receiptPaymentAppl.setDocumentFinanceYear(userFinancialYear.getFinancialYear());
 		}
 		
+		
+		AuthenticationLimitCheckView authLimit = authentication.getFxOrderTxnLimit();
+		if(authLimit!=null){
+		 fcTrnxLimitPerDay = authLimit.getAuthLimit();
+		 FxOrderTranxLimitView trnxViewModel = trnxLimitRepos.getFxTransactionLimit(customerId);
+		 if(trnxViewModel!=null){
+			 fxTrnxHistAmount  = trnxViewModel.getTotalAmount()==null?BigDecimal.ZERO:trnxViewModel.getTotalAmount().add(receiptPaymentAppl.getLocalTrnxAmount());
+		 }
+		 if(JaxUtil.isNullZeroBigDecimalCheck(fxTrnxHistAmount) && JaxUtil.isNullZeroBigDecimalCheck(fcTrnxLimitPerDay) && fxTrnxHistAmount.compareTo(fcTrnxLimitPerDay)>=0){
+			 throw new GlobalException("Fx Trasaction limit exceeds ",JaxError.FC_SALE_TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED);
+		 }
+		}else{
+			throw new GlobalException("FX Order limit setup is not defined",JaxError.FC_SALE_DAY_LIMIT_SETUP_NOT_DIFINED);
+		}
 		receiptPaymentAppl.setDenominationType(fcSalerequestModel.getCurrencyDenominationType());
 		receiptPaymentAppl.setTransactionType(ConstantDocument.S);
 		receiptPaymentAppl.setIsActive(ConstantDocument.Yes);
@@ -643,6 +672,7 @@ public List<FxOrderTransactionHistroyDto> getMultipleTransactionHistroy(List<FxO
 		String multiTransactionNo =null;
 		String multiReceiptPayId =null;
 		String multiExchangeRate =null;
+		String multiForeignQuotoName= null;
 		int i =0;
 		for (FxOrderTransactionHistroyDto histDto : trnxFxOrderListDto) {
 			i++;
@@ -695,6 +725,13 @@ public List<FxOrderTransactionHistroyDto> getMultipleTransactionHistroy(List<FxO
 					multiExchangeRate =histDto.getCurrencyQuoteName().concat(" ").concat(histDto.getExchangeRate().toString()); 
 				}
 				
+				if(multiForeignQuotoName!=null){
+					multiForeignQuotoName = multiForeignQuotoName.concat(",").concat(histDto.getCurrencyQuoteName());
+				}else{
+					multiForeignQuotoName = histDto.getCurrencyQuoteName();
+				}
+				
+				
 				
 			}
 		}
@@ -730,6 +767,7 @@ public List<FxOrderTransactionHistroyDto> getMultipleTransactionHistroy(List<FxO
 		fianlDto.setExchangeRate(dto.getExchangeRate());
 		fianlDto.setMultiExchangeRate(multiExchangeRate);
 		fianlDto.setLocalTrnxAmount(dto.getLocalTrnxAmount());
+		fianlDto.setForeignCurrencyCode(multiForeignQuotoName);
 		
 		finalFxOrderListDto.add(fianlDto);
 		}
