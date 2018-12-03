@@ -167,7 +167,7 @@ public class JaxNotificationService {
 		SMS sms = new SMS();
 		sms.addTo(mobile);
 		sms.getModel().put(RESP_DATA_KEY, model);
-		sms.setITemplate(TemplatesMX.FC_DELIVER_OTP);
+		sms.setITemplate(TemplatesMX.FC_DELIVER_SMS_OTP);
 
 		try {
 			postManService.sendSMSAsync(sms);
