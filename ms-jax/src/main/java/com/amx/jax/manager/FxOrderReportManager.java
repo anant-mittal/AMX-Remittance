@@ -23,7 +23,6 @@ import org.springframework.web.context.WebApplicationContext;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constants.JaxTransactionStatus;
-import com.amx.jax.controller.RemittanceController;
 import com.amx.jax.dal.LoyaltyInsuranceProDao;
 import com.amx.jax.dbmodel.CollectionDetailViewModel;
 import com.amx.jax.dbmodel.CollectionPaymentDetailsViewModel;
@@ -31,7 +30,6 @@ import com.amx.jax.dbmodel.CountryMasterView;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.DistrictMaster;
 import com.amx.jax.dbmodel.PaygDetailsModel;
-import com.amx.jax.dbmodel.PaymentModeModel;
 import com.amx.jax.dbmodel.ReceiptPaymentApp;
 import com.amx.jax.dbmodel.ShippingAddressDetail;
 import com.amx.jax.dbmodel.ViewCity;
@@ -487,6 +485,9 @@ public class FxOrderReportManager {
 					shippingAddressDto.setFirstName(customerList.get(0).getFirstName());
 					shippingAddressDto.setMiddleName(customerList.get(0).getMiddleName());
 					shippingAddressDto.setLastName(customerList.get(0).getLastName());
+					shippingAddressDto.setMobile(customerList.get(0).getMobile());
+					shippingAddressDto.setEmail(customerList.get(0).getEmail());
+					
 				}
 			shippingAddressDto.setCustomerId(shippingAddressDetail.getFsCustomer().getCustomerId());
 			shippingAddressDto.setCompanyId(companyId);
@@ -495,8 +496,10 @@ public class FxOrderReportManager {
 			shippingAddressDto.setStreet(shippingAddressDetail.getStreet());
 			shippingAddressDto.setBlockNo(shippingAddressDetail.getBlock());
 			shippingAddressDto.setHouse(shippingAddressDetail.getFlat());
+			shippingAddressDto.setBuildingNo(shippingAddressDetail.getBuildingNo());
 			shippingAddressDto.setAdressType(shippingAddressDetail.getAddressType());
 			shippingAddressDto.setAreaDesc(areaDao.getAreaList(shippingAddressDetail.getAreaCode())==null?"":areaDao.getAreaList(shippingAddressDetail.getAreaCode()).getShortDesc());
+			shippingAddressDto.setFlat(shippingAddressDetail.getFlat());
 			List<CountryMasterView> countryMasterView = countryDao.findByLanguageIdAndCountryId(new BigDecimal(1),shippingAddressDetail.getFsCountryMaster().getCountryId());
 			if (!countryMasterView.isEmpty()) {
 				shippingAddressDto.setLocalContactCountry(countryMasterView.get(0).getCountryName());

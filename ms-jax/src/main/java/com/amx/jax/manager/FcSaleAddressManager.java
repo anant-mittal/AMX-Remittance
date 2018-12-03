@@ -262,7 +262,6 @@ public class FcSaleAddressManager extends AbstractModel {
 			shipAdd.setMobile(requestModel.getMobile());
 			shipAdd.setTelephoneCode(requestModel.getTelPrefix());
 			shipAdd.setTelephone(requestModel.getMobile());
-			// deactivateShippingAddress(new Customer(meta.getCustomerId()));
 			shippingAddressDao.save(shipAdd);
 		} catch (Exception e) {
 			logger.error("saveShippingAddress :", e.getMessage());
@@ -397,14 +396,6 @@ public class FcSaleAddressManager extends AbstractModel {
 		return dto1;
 	}
 	
-	
-	
-/*	
-	public ResourceDto getDbObject(BigDecimal Id,Object Object){
-		ResourceDto dto  =new ResourceDto();
-		dto.setId(Id);
-		dto.setName(Object);
-		return dto;
-	}*/
+
 	
 }

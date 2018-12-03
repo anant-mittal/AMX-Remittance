@@ -53,6 +53,7 @@ import com.amx.jax.model.response.fx.FxApplicationDto;
 import com.amx.jax.model.response.fx.FxExchangeRateBreakup;
 import com.amx.jax.model.response.fx.FxOrderShoppingCartResponseModel;
 import com.amx.jax.model.response.fx.FxOrderTransactionHistroyDto;
+import com.amx.jax.model.response.fx.ShippingAddressDto;
 import com.amx.jax.model.response.fx.ShoppingCartDetailsDto;
 import com.amx.jax.model.response.fx.TimeSlotDto;
 import com.amx.jax.repository.AuthenticationLimitCheckDAO;
@@ -64,6 +65,7 @@ import com.amx.jax.repository.ICustomerRepository;
 import com.amx.jax.repository.IShippingAddressRepository;
 import com.amx.jax.repository.ParameterDetailsRespository;
 import com.amx.jax.repository.ReceiptPaymentAppRepository;
+import com.amx.jax.repository.fx.FxDeliveryDetailsRepository;
 import com.amx.jax.repository.fx.FxOrderDeliveryTimeSlotRepository;
 import com.amx.jax.repository.fx.FxOrderTransactionRespository;
 import com.amx.jax.repository.fx.FxOrderTranxLimitRespository;
@@ -141,6 +143,17 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 	@Autowired
 	FxOrderTranxLimitRespository trnxLimitRepos;
 
+	
+	@Autowired
+	FcSaleAddressManager addressManager;
+	
+	@Autowired
+	FxDeliveryDetailsRepository deliveryDetailsRepos;
+
+	@Autowired
+	FxOrderReportManager reportManager;
+	
+	
 	
 	
 	/**
@@ -678,12 +691,12 @@ public List<FxOrderTransactionHistroyDto> getMultipleTransactionHistroy(List<FxO
 			i++;
 			if(dto.getCollectionDocumentNo().compareTo(histDto.getCollectionDocumentNo()) == 0) {
 				if(mutipleAmt != null) {
-					mutipleAmt = mutipleAmt.concat(",").concat(histDto.getCurrencyQuoteName().concat(" ").concat(histDto.getForeignTransactionAmount().toString()));
+					mutipleAmt = mutipleAmt.concat(" ,").concat(histDto.getCurrencyQuoteName().concat(" ").concat(histDto.getForeignTransactionAmount().toString()));
 				}else {
 					mutipleAmt = histDto.getCurrencyQuoteName().concat(" ").concat(histDto.getForeignTransactionAmount().toString());
 				}
 				if(mutilSourceOfIncome!=null){
-					mutilSourceOfIncome = mutilSourceOfIncome.concat(",").concat(histDto.getSourceOfIncomeDesc());
+					mutilSourceOfIncome = mutilSourceOfIncome.concat(" ,").concat(histDto.getSourceOfIncomeDesc());
 				}else{
 					mutilSourceOfIncome =histDto.getSourceOfIncomeDesc(); 
 				}
@@ -695,46 +708,48 @@ public List<FxOrderTransactionHistroyDto> getMultipleTransactionHistroy(List<FxO
 				}
 				
 				if(multiTravelCountryName!=null){
-					multiTravelCountryName = multiTravelCountryName.concat(",").concat(histDto.getTravelCountryName());
+					multiTravelCountryName = multiTravelCountryName.concat(" ,").concat(histDto.getTravelCountryName());
 				}else{
 					multiTravelCountryName =histDto.getTravelCountryName(); 
 				}
 				
 				if(mulTravleDateRange!=null){
-					mulTravleDateRange = mulTravleDateRange.concat(",").concat(histDto.getTravelDateRange());
+					mulTravleDateRange = mulTravleDateRange.concat(" ,").concat(histDto.getTravelDateRange());
 				}else{
 					mulTravleDateRange =histDto.getTravelDateRange(); 
 				}
 				
 				if(multiTransactionNo!=null){
-					multiTransactionNo = multiTransactionNo.concat(",").concat(histDto.getDocumentFinanceYear().toString().concat("/").concat(histDto.getDocumentNumber().toString()));
+					multiTransactionNo = multiTransactionNo.concat(" ,").concat(histDto.getDocumentFinanceYear().toString().concat("/").concat(histDto.getDocumentNumber().toString()));
 				}else{
 					multiTransactionNo = histDto.getDocumentFinanceYear().toString().concat("/").concat(histDto.getDocumentNumber().toString());
 				}
 				
 				
 				if(multiReceiptPayId!=null){
-					multiReceiptPayId = mulTravleDateRange.concat(",").concat(histDto.getIdno().toString());
+					multiReceiptPayId = mulTravleDateRange.concat(" ,").concat(histDto.getIdno().toString());
 				}else{
 					multiReceiptPayId =histDto.getIdno().toString(); 
 				}
 				
 				if(multiExchangeRate!=null){
-					multiExchangeRate =multiExchangeRate.concat(",").concat(histDto.getCurrencyQuoteName().concat(" ").concat(histDto.getExchangeRate().toString()));
+					multiExchangeRate =multiExchangeRate.concat(" ,").concat(histDto.getCurrencyQuoteName().concat(" ").concat(histDto.getExchangeRate().toString()));
 				}else{
 					multiExchangeRate =histDto.getCurrencyQuoteName().concat(" ").concat(histDto.getExchangeRate().toString()); 
 				}
 				
 				if(multiForeignQuotoName!=null){
-					multiForeignQuotoName = multiForeignQuotoName.concat(",").concat(histDto.getCurrencyQuoteName());
+					multiForeignQuotoName = multiForeignQuotoName.concat(" ,").concat(histDto.getCurrencyQuoteName());
 				}else{
 					multiForeignQuotoName = histDto.getCurrencyQuoteName();
 				}
-				
-				
-				
 			}
 		}
+		
+		if(dto.getDeliveryDetSeqId()!=null){
+			fianlDto.setDeliveryAddress(getDeliveryAddress(dto.getDeliveryDetSeqId()));
+		}
+	
 		
 		fianlDto.setIdno(dto.getIdno());
 		fianlDto.setMultiAmount(mutipleAmt);
@@ -769,6 +784,7 @@ public List<FxOrderTransactionHistroyDto> getMultipleTransactionHistroy(List<FxO
 		fianlDto.setLocalTrnxAmount(dto.getLocalTrnxAmount());
 		fianlDto.setForeignCurrencyCode(multiForeignQuotoName);
 		
+		
 		finalFxOrderListDto.add(fianlDto);
 		}
 	
@@ -776,4 +792,29 @@ public List<FxOrderTransactionHistroyDto> getMultipleTransactionHistroy(List<FxO
 	return finalFxOrderListDto;
 }
 
+	public String getDeliveryAddress(BigDecimal deliveryDetSeqId){
+		ShippingAddressDto shippingAddressDto = new ShippingAddressDto();
+		String address ="";
+		StringBuffer sb = new StringBuffer();
+		String concat =",";
+		FxDeliveryDetailsModel fxDelDetailModel = deliveryDetailsRepos.findOne(deliveryDetSeqId);
+		if(fxDelDetailModel != null){
+			ShippingAddressDetail shippAddDetails = shippingAddressDao.findOne(fxDelDetailModel.getShippingAddressId());
+    		 shippingAddressDto =reportManager.getShippingaddressDetails(shippAddDetails);
+    		 sb = sb.append("Area ").append(shippingAddressDto.getAreaDesc()).append(concat)
+    			  .append("Block ").append(shippingAddressDto.getBlock()==null?"":shippingAddressDto.getBlock()).append(concat)
+    			  .append("Street ").append(shippingAddressDto.getStreet()==null?"":shippingAddressDto.getStreet()).append(concat)
+    			  .append("Build ").append(shippingAddressDto.getBuildingNo()==null?"":shippingAddressDto.getBuildingNo()).append(concat)
+    			  .append("Fla ").append(shippingAddressDto.getFlat()==null?"":shippingAddressDto.getFlat()).append(concat)
+    			  .append("City ").append(shippingAddressDto.getLocalContactCity()==null?"":shippingAddressDto.getLocalContactCity()).append(concat)
+    			  .append(shippingAddressDto.getLocalContactDistrict()==null?"":shippingAddressDto.getLocalContactDistrict()).append(concat)
+    			  .append(shippingAddressDto.getLocalContactState()==null?"":shippingAddressDto.getLocalContactState()).append(concat)
+    			  .append("Mobile ").append(shippingAddressDto.getMobile()==null?"":shippingAddressDto.getMobile());
+    		 
+		}
+		if(sb!=null){
+			address = sb.toString();
+		}
+		return address;
+	}
 }

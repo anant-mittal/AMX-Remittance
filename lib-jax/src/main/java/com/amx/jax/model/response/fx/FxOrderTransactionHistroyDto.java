@@ -2,13 +2,10 @@ package com.amx.jax.model.response.fx;
 
 import java.math.BigDecimal;
 
-
-
-
 public class FxOrderTransactionHistroyDto {
 	private BigDecimal idno;
 	private BigDecimal customerReference;
-	
+
 	private BigDecimal documentNumber;
 	private String documentDate;
 	private BigDecimal documentFinanceYear;
@@ -19,51 +16,38 @@ public class FxOrderTransactionHistroyDto {
 	private String currencyQuoteName;
 	private String transactionStatusDesc;
 	private String transactionTypeDesc;
-	
-
 	private BigDecimal collectionDocumentNo;
-		
 
 	private BigDecimal collectionDocumentCode;
-	
 
-	private BigDecimal  collectionDocumentFinYear;
-	
+	private BigDecimal collectionDocumentFinYear;
 
 	private String branchDesc;
-	
 
 	private BigDecimal customerId;
-	
 
 	private BigDecimal localTrnxAmount;
-	
 
 	private BigDecimal sourceOfIncomeId;
-	
 
 	private String purposeOfTrnx;
-	
 
 	private BigDecimal documentCode;
-	
 
 	private BigDecimal deliveryDetSeqId;
-	
 
 	private BigDecimal pagDetSeqId;
 
 	private String orderStatus;
-	
 
 	private String deliveryDate;
 
 	private String deliveryTime;
-	
+
 	private String customerName;
-	
+
 	private BigDecimal deliveryCharges;
-	
+
 	private String createdDate;
 	private String sourceOfIncomeDesc;
 	private String travelCountryName;
@@ -71,6 +55,7 @@ public class FxOrderTransactionHistroyDto {
 	private String localCurrQuoteName;
 	private String multiAmount;
 	private String multiExchangeRate;
+	private String deliveryAddress;
 	
 	
 
@@ -174,7 +159,8 @@ public class FxOrderTransactionHistroyDto {
 		return collectionDocumentFinYear;
 	}
 
-	public void setCollectionDocumentFinYear(BigDecimal collectionDocumentFinYear) {
+	public void setCollectionDocumentFinYear(
+			BigDecimal collectionDocumentFinYear) {
 		this.collectionDocumentFinYear = collectionDocumentFinYear;
 	}
 
@@ -353,4 +339,14 @@ public class FxOrderTransactionHistroyDto {
 	public void setMultiExchangeRate(String multiExchangeRate) {
 		this.multiExchangeRate = multiExchangeRate;
 	}
+
+	public String getDeliveryAddress() {
+		return deliveryAddress;
+	}
+
+	public void setDeliveryAddress(String deliveryAddress) {
+		this.deliveryAddress = deliveryAddress;
+	}
+
+	
 }
