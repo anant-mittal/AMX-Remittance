@@ -62,5 +62,7 @@ public class ConstantDocument {
 	public static final String VOUCHER_ONLINE_PROMOTION_STR = "CHICKEN KING SAGAR VOUCHER";
 	public static final BigDecimal IDENTITY_FOR_ID_PROOF = new BigDecimal(48);
 	public static final BigDecimal BIZ_COMPONENT_ID_CIVIL_ID = new BigDecimal(198);
+	public static final BigDecimal BIZ_COMPONENT_ID_GCC_ID = new BigDecimal(201);
+	public static final BigDecimal BIZ_COMPONENT_ID_BEDOUIN_ID = new BigDecimal(197);
 
 }

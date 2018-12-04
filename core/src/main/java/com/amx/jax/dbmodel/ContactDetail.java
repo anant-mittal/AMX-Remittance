@@ -317,7 +317,7 @@ public class ContactDetail implements java.io.Serializable {
 		this.languageId = languageId;
 	}
 
-	@Column(name = "WHATSAPP_NUMBER")
+	//@Column(name = "WHATSAPP_NUMBER")
 	public BigDecimal getWatsAppNo() {
 		return watsAppNo;
 	}
@@ -326,7 +326,7 @@ public class ContactDetail implements java.io.Serializable {
 		this.watsAppNo = watsAppNo;
 	}
 
-	@Column(name = "WHATSAPP_MOB_PREFIX")
+	//@Column(name = "WHATSAPP_MOB_PREFIX")
 	public String getWatsAppTelePrefix() {
 		return watsAppTelePrefix;
 	}
