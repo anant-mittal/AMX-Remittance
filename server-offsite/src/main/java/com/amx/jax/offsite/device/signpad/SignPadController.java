@@ -25,7 +25,8 @@ import com.amx.jax.device.TerminalData;
 import com.amx.jax.http.ApiRequest;
 import com.amx.jax.http.RequestType;
 import com.amx.jax.model.response.DeviceStatusInfoDto;
-import com.amx.jax.offsite.device.ApiDeviceHeaders;
+import com.amx.jax.offsite.device.ApiHeaderAnnotations.ApiDeviceHeaders;
+import com.amx.jax.offsite.device.ApiHeaderAnnotations.ApiDeviceSessionHeaders;
 import com.amx.jax.offsite.device.DeviceRequest;
 import com.amx.jax.offsite.device.TerminalConstants.Path;
 import com.amx.jax.postman.model.File;
@@ -60,7 +61,7 @@ public class SignPadController {
 	private TerminalBox terminalBox;
 
 	@ApiRequest(type = RequestType.POLL)
-	@ApiDeviceHeaders
+	@ApiDeviceSessionHeaders
 	@RequestMapping(value = { Path.SIGNPAD_STATUS_ACTIVITY }, method = { RequestMethod.GET })
 	public AmxApiResponse<DeviceStatusInfoDto, Object> getStatus() {
 		DeviceData deviceData = deviceRequestValidator.validateRequest();
