@@ -184,6 +184,7 @@ public class SSOServerController {
 					// Terminal Login
 					DeviceData branchDeviceData = deviceBox.get(sSOTranx.get().getBranchAdapterId());
 					ssomodel.getUserClient().setLocalIpAddress(branchDeviceData.getLocalIp());
+					ssomodel.getUserClient().setLocalIpAddress(branchDeviceData.getTerminalId());
 					LOGGER.info("Gloabal IPs THIS: {} ADAPTER: {}", userDevice.getIp(), branchDeviceData.getGlobalIp());
 				} else {
 					// Device LOGIN

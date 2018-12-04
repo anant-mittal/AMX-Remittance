@@ -144,9 +144,9 @@ public class DeviceController {
 		String terminalId = deviceData.getTerminalId();
 
 		sSOTranx.get().setBranchAdapterId(deviceRequestValidator.getDeviceRegId());
+		sSOTranx.get().getUserClient().setTerminalId(terminalId);
 
 		// sSOTranx.get().getUserClient().setDeviceRegId(deviceRequestValidator.getDeviceRegId());
-		// sSOTranx.get().getUserClient().setTerminalId(terminalId);
 		// sSOTranx.get().getUserClient().setGlobalIpAddress(deviceData.getGlobalIp());
 		// sSOTranx.get().getUserClient().setLocalIpAddress(deviceData.getLocalIp());
 
