@@ -211,6 +211,7 @@ public final class CryptoUtil {
 		private String message;
 		private long currentTime;
 		private String output;
+		private String hash;
 
 		public HashBuilder() {
 			this.currentTime = System.currentTimeMillis();
@@ -246,7 +247,7 @@ public final class CryptoUtil {
 		}
 
 		public HashBuilder hash(String hash) {
-			this.output = hash;
+			this.hash = hash;
 			return this;
 		}
 
@@ -262,7 +263,7 @@ public final class CryptoUtil {
 		 */
 		public HashBuilder toSHA2() {
 			try {
-				this.output = CryptoUtil.getSHA2Hash(this.message);
+				this.hash = CryptoUtil.getSHA2Hash(this.message);
 			} catch (NoSuchAlgorithmException e) {
 				e.printStackTrace();
 			}
@@ -275,7 +276,7 @@ public final class CryptoUtil {
 		 * @return
 		 */
 		public HashBuilder toHMAC() {
-			this.output = CryptoUtil.generateHMAC(this.interval, this.secret, this.message, this.currentTime);
+			this.hash = CryptoUtil.generateHMAC(this.interval, this.secret, this.message, this.currentTime);
 			return this;
 		}
 
@@ -287,12 +288,16 @@ public final class CryptoUtil {
 		 * @return
 		 */
 		public HashBuilder toNumeric(int length) {
-			this.output = CryptoUtil.toNumeric(length, this.output);
+			this.output = CryptoUtil.toNumeric(length, this.hash);
 			return this;
 		}
 
+		public String hash() {
+			return hash;
+		}
+
 		public String output() {
-			return output;
+			return ArgUtil.isEmpty(this.output) ? this.hash : this.output;
 		}
 
 		public boolean validate(String hash) {
