@@ -91,7 +91,7 @@ public abstract class ACardReaderService {
 			if (ArgUtil.isEmpty(serverDB)) {
 				serverDB = environment.getProperty("adapter.local.db");
 			}
-			KeyUtil.SERVICE_NAME = serverDB;
+			KeyUtil.setServiceName(serverDB);
 			adapterServiceClient.setOffSiteUrl(serverUrl);
 		}
 		return serverUrl;
@@ -162,7 +162,7 @@ public abstract class ACardReaderService {
 
 			try {
 				if (devicePairingCredsValid) {
-					DevicePairingCreds dpr = KeyUtil.getDevicePairingCreds();
+					DevicePairingCreds dpr = KeyUtil.getDevicePairingCreds(address);
 					if (!ArgUtil.isEmpty(dpr) && !ArgUtil.isEmpty(dpr.getDeviceRegId())) {
 						devicePairingCreds = dpr;
 						terminalId = devicePairingCreds.getDeivceTerminalId();
@@ -202,7 +202,7 @@ public abstract class ACardReaderService {
 							devicePairingCredsValid = true;
 
 							try {
-								KeyUtil.setDevicePairingCreds(dpr);
+								KeyUtil.setDevicePairingCreds(dpr, address);
 								status(DeviceStatus.PAIRED);
 							} catch (LockException ex) {
 								status(DeviceStatus.PAIRING_KEY_SAVE_ERROR);
@@ -279,7 +279,7 @@ public abstract class ACardReaderService {
 			adapterServiceClient.deActivateDevice(this.getDevicePairingCreds());
 		}
 		KeyUtil.getKeyRing();
-		KeyUtil.setDevicePairingCreds(new DeviceRestModel());
+		KeyUtil.setDevicePairingCreds(new DeviceRestModel(), getAddress());
 		devicePairingCreds = null;
 		sessionPairingCreds = null;
 		terminalId = null;
