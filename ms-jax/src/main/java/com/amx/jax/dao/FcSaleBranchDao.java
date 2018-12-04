@@ -147,8 +147,16 @@ public class FcSaleBranchDao {
 		if(lstOrderManagement != null && lstOrderManagement.size() != 0){
 			OrderManagementView orderManagementView = lstOrderManagement.get(0);
 			BigDecimal deliveryDetailsId = orderManagementView.getDeliveryDetailsId();
-			fxDeliveryDetailsRepository.updateOrderReleaseDetails(deliveryDetailsId,null,userName,null,orderStatus);
+			fxDeliveryDetailsRepository.updateOrderReleaseDetails(deliveryDetailsId,null,userName,new Date(),orderStatus,null);
 		}
 	}
 	
+	@Transactional
+	public void saveDispatchOrder(List<OrderManagementView> lstOrderManagement,BigDecimal employeeId,String userName,String orderStatus){
+		if(lstOrderManagement != null && lstOrderManagement.size() != 0){
+			OrderManagementView orderManagementView = lstOrderManagement.get(0);
+			BigDecimal deliveryDetailsId = orderManagementView.getDeliveryDetailsId();
+			fxDeliveryDetailsRepository.updateDispatchStatusDetails(deliveryDetailsId,userName,new Date(),orderStatus);
+		}
+	}
 }

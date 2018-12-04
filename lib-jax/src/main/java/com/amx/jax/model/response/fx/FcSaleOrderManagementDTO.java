@@ -1,6 +1,7 @@
 package com.amx.jax.model.response.fx;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 import com.amx.jax.model.AbstractModel;
@@ -42,6 +43,9 @@ public class FcSaleOrderManagementDTO extends AbstractModel {
 	String orderStatusDesc;
 	String driverEmployeName;
 	BigDecimal localActualRate;
+	String orderLock;
+	BigDecimal employeeId;
+	Boolean orderEmployee;
 	
 	public BigDecimal getDocumentNo() {
 		return DocumentNo;
@@ -251,6 +255,27 @@ public class FcSaleOrderManagementDTO extends AbstractModel {
 	}
 	public void setLocalActualRate(BigDecimal localActualRate) {
 		this.localActualRate = localActualRate;
+	}
+	
+	public String getOrderLock() {
+		return orderLock;
+	}
+	public void setOrderLock(String orderLock) {
+		this.orderLock = orderLock;
+	}
+	
+	public BigDecimal getEmployeeId() {
+		return employeeId;
+	}
+	public void setEmployeeId(BigDecimal employeeId) {
+		this.employeeId = employeeId;
+	}
+	
+	public Boolean getOrderEmployee() {
+		return orderEmployee;
+	}
+	public void setOrderEmployee(Boolean orderEmployee) {
+		this.orderEmployee = orderEmployee;
 	}
 
 }

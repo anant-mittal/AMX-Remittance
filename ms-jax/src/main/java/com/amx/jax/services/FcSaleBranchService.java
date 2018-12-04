@@ -171,7 +171,7 @@ public class FcSaleBranchService extends AbstractService{
 	 * @param   :fetch Pending Orders by order number
 	 * @return FcSaleOrderManagementDTO
 	 */
-	public AmxApiResponse<FcSaleOrderManagementDTO,Object> fetchFcSaleOrderDetails(BigDecimal applicationCountryId,BigDecimal orderNumber,BigDecimal orderYear){
+	public AmxApiResponse<FcSaleOrderManagementDTO,Object> fetchFcSaleOrderDetails(BigDecimal applicationCountryId,BigDecimal orderNumber,BigDecimal orderYear,BigDecimal employeeId){
 		List<FcSaleOrderManagementDTO> saleOrderManage = new ArrayList<>();
 
 		if(applicationCountryId == null || applicationCountryId.compareTo(BigDecimal.ZERO)==0){
@@ -183,11 +183,14 @@ public class FcSaleBranchService extends AbstractService{
 		if(orderYear == null || orderYear.compareTo(BigDecimal.ZERO)==0){
 			throw new GlobalException("Order Year should not be blank",JaxError.NULL_ORDER_YEAR);
 		}
+		if(employeeId == null || employeeId.compareTo(BigDecimal.ZERO) == 0){
+			throw new GlobalException("Employee Id should not be blank",JaxError.NULL_EMPLOYEE_ID);
+		}
 
 		try {
 			List<OrderManagementView> orderManagement =  branchOrderManager.fetchFcSaleOrderDetails(applicationCountryId,orderNumber,orderYear);
 			if(orderManagement != null && orderManagement.size() != 0) {
-				saleOrderManage = convertFcSaleOrderDetails(orderManagement);
+				saleOrderManage = convertFcSaleOrderDetails(orderManagement,employeeId);
 				if(saleOrderManage != null && saleOrderManage.size() != 0) {
 					// continue
 				}else {
@@ -207,9 +210,10 @@ public class FcSaleBranchService extends AbstractService{
 		return AmxApiResponse.buildList(saleOrderManage);
 	}
 
-	public List<FcSaleOrderManagementDTO> convertFcSaleOrderDetails(List<OrderManagementView> orderManagementView){
+	public List<FcSaleOrderManagementDTO> convertFcSaleOrderDetails(List<OrderManagementView> orderManagementView,BigDecimal employeeId){
 		List<FcSaleOrderManagementDTO> lstDto = new ArrayList<>();
 		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+		SimpleDateFormat dateTimeFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 		if(orderManagementView != null && orderManagementView.size() != 0) {
 
 			for (OrderManagementView orderManagement : orderManagementView) {
@@ -246,6 +250,18 @@ public class FcSaleBranchService extends AbstractService{
 				BigDecimal localRate = new BigDecimal((BigDecimal.ONE).doubleValue()/orderManagement.getTransactionActualRate().doubleValue());
 				BigDecimal currencyDecimal = branchOrderManager.fetchCurrencyMasterDetails(orderManagement.getForeignCurrencyId());
 				fcSaleOrder.setLocalActualRate(RoundUtil.roundBigDecimal(localRate, currencyDecimal.intValue()));
+				fcSaleOrder.setOrderLock(dateTimeFormat.format(orderManagement.getOrderLock()));
+				fcSaleOrder.setEmployeeId(orderManagement.getEmployeeId());
+				if(orderManagement.getEmployeeId() != null){
+					if(orderManagement.getEmployeeId().compareTo(employeeId) == 0){
+						fcSaleOrder.setOrderEmployee(Boolean.TRUE);
+					}else {
+						fcSaleOrder.setOrderEmployee(Boolean.FALSE);
+					}
+				}else {
+					fcSaleOrder.setOrderEmployee(Boolean.TRUE);
+				}
+				
 				lstDto.add(fcSaleOrder);
 			}
 		}
@@ -452,6 +468,38 @@ public class FcSaleBranchService extends AbstractService{
 				// success
 			}else {
 				throw new GlobalException("Release Order lock didn't updated",JaxError.SAVE_FAILED);
+			}
+		}catch (GlobalException e) {
+			throw new GlobalException(e.getErrorMessage(),e.getErrorKey());
+		}catch (Exception e) {
+			throw new GlobalException(e.getMessage());
+		}
+		
+		return new BoolRespModel(status);
+	}
+	
+	public BoolRespModel dispatchOrder(BigDecimal applicationCountryId,BigDecimal orderNumber,BigDecimal orderYear,BigDecimal employeeId) {
+		Boolean status = Boolean.FALSE;
+		
+		if(applicationCountryId == null || applicationCountryId.compareTo(BigDecimal.ZERO)==0){
+			throw new GlobalException("Application country id should not be blank",JaxError.NULL_APPLICATION_COUNTRY_ID);
+		}
+		if(orderNumber == null || orderNumber.compareTo(BigDecimal.ZERO)==0){
+			throw new GlobalException("Order Number should not be blank",JaxError.NULL_ORDER_NUBMER);
+		}
+		if(orderYear == null || orderYear.compareTo(BigDecimal.ZERO)==0){
+			throw new GlobalException("Order Year should not be blank",JaxError.NULL_ORDER_YEAR);
+		}
+		if(employeeId == null || employeeId.compareTo(BigDecimal.ZERO) == 0){
+			throw new GlobalException("Employee Id should not be blank",JaxError.NULL_EMPLOYEE_ID);
+		}
+		
+		try {
+			status = branchOrderManager.dispatchOrder(applicationCountryId, orderNumber, orderYear, employeeId);
+			if(status) {
+				// success
+			}else {
+				throw new GlobalException("dispatch order status didn't updated",JaxError.SAVE_FAILED);
 			}
 		}catch (GlobalException e) {
 			throw new GlobalException(e.getErrorMessage(),e.getErrorKey());

@@ -255,11 +255,37 @@ public final class CryptoUtil {
 			return this;
 		}
 
+		/**
+		 * Generates SHA2 based HASH from params
+		 * 
+		 * @return
+		 */
+		public HashBuilder toSHA2() {
+			try {
+				this.output = CryptoUtil.getSHA2Hash(this.message);
+			} catch (NoSuchAlgorithmException e) {
+				e.printStackTrace();
+			}
+			return this;
+		}
+
+		/**
+		 * Generates time based HASH from params
+		 * 
+		 * @return
+		 */
 		public HashBuilder toHMAC() {
 			this.output = CryptoUtil.generateHMAC(this.interval, this.secret, this.message, this.currentTime);
 			return this;
 		}
 
+		/**
+		 * Converts generated has to Numeric Representation. Should be called post Any
+		 * Hash Function only.
+		 * 
+		 * @param length
+		 * @return
+		 */
 		public HashBuilder toNumeric(int length) {
 			this.output = CryptoUtil.toNumeric(length, this.output);
 			return this;

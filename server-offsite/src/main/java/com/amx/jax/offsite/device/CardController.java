@@ -16,6 +16,7 @@ import com.amx.jax.device.CardReader;
 import com.amx.jax.device.DeviceConstants;
 import com.amx.jax.device.DeviceData;
 import com.amx.jax.logger.LoggerService;
+import com.amx.jax.offsite.device.ApiHeaderAnnotations.ApiDeviceSessionHeaders;
 import com.amx.jax.swagger.IStatusCodeListPlugin.ApiStatusService;
 import com.amx.utils.ArgUtil;
 
@@ -34,7 +35,7 @@ public class CardController {
 	@Autowired
 	private IDeviceConnecter iCardService;
 
-	@ApiDeviceHeaders
+	@ApiDeviceSessionHeaders
 	@RequestMapping(value = { DeviceConstants.Path.DEVICE_STATUS_CARD }, method = { RequestMethod.POST })
 	public AmxApiResponse<CardData, Object> saveCardDetails(@RequestBody CardReader reader) {
 		DeviceData deviceData = deviceRequestValidator.validateRequest();

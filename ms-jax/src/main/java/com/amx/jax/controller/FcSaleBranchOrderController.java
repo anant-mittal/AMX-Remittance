@@ -59,7 +59,8 @@ public class FcSaleBranchOrderController implements IFxBranchOrderService {
 	@Override
 	public AmxApiResponse<FcSaleOrderManagementDTO,Object> fetchBranchOrderDetails(@RequestParam(value = "orderNumber", required = true) BigDecimal orderNumber,@RequestParam(value = "orderYear", required = true) BigDecimal orderYear) {
 		BigDecimal countryId = metaData.getCountryId();
-		return fcSaleBranch.fetchFcSaleOrderDetails(countryId,orderNumber,orderYear);
+		BigDecimal employeeId = metaData.getEmployeeId();
+		return fcSaleBranch.fetchFcSaleOrderDetails(countryId,orderNumber,orderYear,employeeId);
 	}
 
 	/**
@@ -111,7 +112,7 @@ public class FcSaleBranchOrderController implements IFxBranchOrderService {
 	}
 	
 	/**
-	 * To get the save dispatch order
+	 * To get the save print order
 	 * 
 	 */
 	@RequestMapping(value = Path.FC_PRINT_ORDER_SAVE , method = RequestMethod.POST)
@@ -147,6 +148,19 @@ public class FcSaleBranchOrderController implements IFxBranchOrderService {
 		BigDecimal countryId = metaData.getCountryId();
 		BigDecimal employeeId = metaData.getEmployeeId();
 		BoolRespModel result = fcSaleBranch.releaseOrderLock(countryId, orderNumber, orderYear, employeeId);
+		return AmxApiResponse.build(result);
+	}
+	
+	/**
+	 * To get the order to dispatch
+	 * 
+	 */
+	@RequestMapping(value = Path.FC_DISPATCH_ORDER , method = RequestMethod.POST)
+	@Override
+	public AmxApiResponse<BoolRespModel,Object> dispatchOrder(@RequestParam(value = "orderNumber", required = true) BigDecimal orderNumber,@RequestParam(value = "orderYear", required = true) BigDecimal orderYear){
+		BigDecimal countryId = metaData.getCountryId();
+		BigDecimal employeeId = metaData.getEmployeeId();
+		BoolRespModel result = fcSaleBranch.dispatchOrder(countryId, orderNumber, orderYear, employeeId);
 		return AmxApiResponse.build(result);
 	}
 

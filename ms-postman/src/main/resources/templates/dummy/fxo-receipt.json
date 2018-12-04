@@ -73,7 +73,8 @@
 					"travelDateRange": "12/01/2018 to 12/01/2018,12/10/2018 to 12/10/2018",
 					"localCurrQuoteName": "KWD",
 					"multiAmount": "PHP 6000,INR 4000",
-					"multiExchangeRate": "PHP 0.00635,INR 0.004975"
+					"multiExchangeRate": "PHP 0.00635,INR 0.004975",
+					"deliveryAddress":"Area city"
 				}
 			],
 			"deliveryDetailReport": {

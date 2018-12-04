@@ -26,6 +26,7 @@ import com.amx.jax.model.response.BranchSystemDetailDto;
 import com.amx.jax.offsite.OffsiteStatus.ApiOffisteStatus;
 import com.amx.jax.offsite.OffsiteStatus.OffsiteServerCodes;
 import com.amx.jax.offsite.OffsiteStatus.OffsiteServerError;
+import com.amx.jax.offsite.device.ApiHeaderAnnotations.ApiDeviceHeaders;
 import com.amx.jax.rbaac.IRbaacService;
 import com.amx.jax.rbaac.RbaacServiceClient;
 import com.amx.jax.rbaac.dto.DeviceDto;

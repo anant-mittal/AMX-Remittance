@@ -92,8 +92,12 @@ public class DeviceService extends AbstractService {
 	@Transactional
 	public DeviceDto registerNewDevice(DeviceRegistrationRequest request) {
 		logger.info("In register device with request: {}", request);
-		deviceValidation.validateDeviceRegRequest(request);
-		Device newDevice = deviceDao.saveDevice(request);
+		boolean deviceRegisteredAndActivated = deviceValidation.validateDeviceRegRequest(request, true);
+
+		boolean registerDeviceByDefault = ClientType.BRANCH_ADAPTER.equals(request.getDeviceType())
+				&& !deviceRegisteredAndActivated;
+
+		Device newDevice = deviceDao.saveDevice(request, registerDeviceByDefault);
 		DeviceState deviceState;
 		if (RbaacConstants.YES.equals(newDevice.getStatus())) {
 			deviceState = DeviceState.REGISTERED;

@@ -95,6 +95,12 @@ public class OrderManagementView {
 	@Column(name = "DRIVER_EMPLOYEE_NAME")
 	String driverEmployeeName;
 	
+	@Column(name = "ORDER_LOCK")
+	Date orderLock;
+	
+	@Column(name = "EMPLOYEE_ID")
+	BigDecimal employeeId;
+	
 	public BigDecimal getCollectionDocFinanceYear() {
 		return collectionDocFinanceYear;
 	}
@@ -283,5 +289,19 @@ public class OrderManagementView {
 	public void setDriverEmployeeName(String driverEmployeeName) {
 		this.driverEmployeeName = driverEmployeeName;
 	}
-								
+	
+	public Date getOrderLock() {
+		return orderLock;
+	}
+	public void setOrderLock(Date orderLock) {
+		this.orderLock = orderLock;
+	}
+	
+	public BigDecimal getEmployeeId() {
+		return employeeId;
+	}
+	public void setEmployeeId(BigDecimal employeeId) {
+		this.employeeId = employeeId;
+	}
+									
 }

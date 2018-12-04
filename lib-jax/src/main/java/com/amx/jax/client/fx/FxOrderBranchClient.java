@@ -197,5 +197,25 @@ public class FxOrderBranchClient implements IFxBranchOrderService {
 			return JaxSystemError.evaluate(e);
 		} // end of try-catch
 	}
+	
+	/**
+	 * 
+	 * @return : To get the dispatch order
+	 */
+	@Override
+	public AmxApiResponse<BoolRespModel,Object> dispatchOrder(BigDecimal orderNumber,BigDecimal orderYear) {
+		try {
+			LOGGER.debug("in dispatchOrder :"+orderNumber +" "+orderYear);
+			return restService.ajax(appConfig.getJaxURL() + Path.FC_DISPATCH_ORDER).meta(new JaxMetaInfo())
+					.queryParam(Params.FX_ORDER_NUMBER, orderNumber).meta(new JaxMetaInfo())
+					.queryParam(Params.FX_ORDER_YEAR, orderYear)
+					.post()
+					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel,Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in dispatchOrder : ", e);
+			return JaxSystemError.evaluate(e);
+		} // end of try-catch
+	}
 
 }

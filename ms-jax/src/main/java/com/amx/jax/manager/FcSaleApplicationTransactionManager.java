@@ -801,15 +801,15 @@ public List<FxOrderTransactionHistroyDto> getMultipleTransactionHistroy(List<FxO
 		if(fxDelDetailModel != null){
 			ShippingAddressDetail shippAddDetails = shippingAddressDao.findOne(fxDelDetailModel.getShippingAddressId());
     		 shippingAddressDto =reportManager.getShippingaddressDetails(shippAddDetails);
-    		 sb = sb.append("Area ").append(shippingAddressDto.getAreaDesc()).append(concat)
+    		 sb = sb.append("Street ").append(shippingAddressDto.getStreet()==null?"":shippingAddressDto.getStreet()).append(concat)
     			  .append("Block ").append(shippingAddressDto.getBlock()==null?"":shippingAddressDto.getBlock()).append(concat)
-    			  .append("Street ").append(shippingAddressDto.getStreet()==null?"":shippingAddressDto.getStreet()).append(concat)
     			  .append("Build ").append(shippingAddressDto.getBuildingNo()==null?"":shippingAddressDto.getBuildingNo()).append(concat)
-    			  .append("Fla ").append(shippingAddressDto.getFlat()==null?"":shippingAddressDto.getFlat()).append(concat)
-    			  .append("City ").append(shippingAddressDto.getLocalContactCity()==null?"":shippingAddressDto.getLocalContactCity()).append(concat)
+    			  .append("Flat ").append(shippingAddressDto.getFlat()==null?"":shippingAddressDto.getFlat()).append(concat)
+    			  .append("City ").append(shippingAddressDto.getLocalContactCity()==null?"":shippingAddressDto.getLocalContactCity()).append(concat) 
+    			  .append("Area ").append(shippingAddressDto.getAreaDesc()).append(concat)
     			  .append(shippingAddressDto.getLocalContactDistrict()==null?"":shippingAddressDto.getLocalContactDistrict()).append(concat)
     			  .append(shippingAddressDto.getLocalContactState()==null?"":shippingAddressDto.getLocalContactState()).append(concat)
-    			  .append("Mobile ").append(shippingAddressDto.getMobile()==null?"":shippingAddressDto.getMobile());
+    			  .append("Contact ").append(shippingAddressDto.getMobile()==null?"":shippingAddressDto.getMobile());
     		 
 		}
 		if(sb!=null){

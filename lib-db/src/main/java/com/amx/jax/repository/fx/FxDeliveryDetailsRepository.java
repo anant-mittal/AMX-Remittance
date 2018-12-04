@@ -19,7 +19,11 @@ public interface FxDeliveryDetailsRepository extends CrudRepository<FxDeliveryDe
 	public void updateOrderLockDetails(BigDecimal deleviryDelSeqId,BigDecimal employeeId,String userName,Date currenctDate,String orderStatus);
 	
 	@Modifying
-	@Query("update FxDeliveryDetailsModel sd set sd.orderLock = ?4 , sd.employeeId = ?2 , sd.updatedBy = ?3 , sd.uopdateDate = ?4 , sd.orderStatus = ?5 where sd.deleviryDelSeqId = ?1 ")
-	public void updateOrderReleaseDetails(BigDecimal deleviryDelSeqId,BigDecimal employeeId,String userName,Date currenctDate,String orderStatus);
+	@Query("update FxDeliveryDetailsModel sd set sd.orderLock = ?6 , sd.employeeId = ?2 , sd.updatedBy = ?3 , sd.uopdateDate = ?4 , sd.orderStatus = ?5 where sd.deleviryDelSeqId = ?1 ")
+	public void updateOrderReleaseDetails(BigDecimal deleviryDelSeqId,BigDecimal employeeId,String userName,Date currenctDate,String orderStatus,Date orderLock);
+	
+	@Modifying
+	@Query("update FxDeliveryDetailsModel sd set sd.updatedBy = ?2 , sd.uopdateDate = ?3 , sd.orderStatus = ?4 where sd.deleviryDelSeqId = ?1 ")
+	public void updateDispatchStatusDetails(BigDecimal deleviryDelSeqId,String userName,Date currenctDate,String orderStatus);
 	
 }
