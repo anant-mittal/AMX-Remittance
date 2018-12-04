@@ -133,6 +133,7 @@ public class FcSaleDeliveryService {
 		FxDeliveryDetailDto ddDto = createFxDeliveryDetailDto(vwdeliveryDetail);
 		FxDeliveryDetailNotificationDto notificationModel = new FxDeliveryDetailNotificationDto(ddDto);
 		email.getModel().put(NotificationConstants.RESP_DATA_KEY, notificationModel);
+		jaxNotificationService.sendEmail(email);
 		return new BoolRespModel(true);
 	}
 
