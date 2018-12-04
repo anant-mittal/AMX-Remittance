@@ -1,6 +1,7 @@
 package com.amx.jax.rbaac.service;
 
 import java.math.BigDecimal;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -28,7 +29,8 @@ import com.amx.jax.rbaac.error.RbaacServiceError;
 import com.amx.jax.rbaac.exception.AuthServiceException;
 import com.amx.jax.rbaac.manager.DeviceManager;
 import com.amx.jax.rbaac.validation.DeviceValidation;
-import com.amx.jax.util.CryptoUtil;
+import com.amx.utils.CryptoUtil;
+import com.amx.utils.Random;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -42,8 +44,6 @@ public class DeviceService extends AbstractService {
 	DeviceValidation deviceValidation;
 	@Autowired
 	DeviceManager deviceManager;
-	@Autowired
-	CryptoUtil cryptoUtil;
 
 	public static final long DEVICE_SESSION_TIMEOUT = 8 * 60 * 60; // in seconds
 
@@ -101,7 +101,12 @@ public class DeviceService extends AbstractService {
 			deviceState = DeviceState.REGISTERED_NOT_ACTIVE;
 		}
 		newDevice.setState(deviceState);
-		newDevice.setPairToken(cryptoUtil.generateHash("DEVICE_PAIR", newDevice.getRegistrationId().toString()));
+		String devicePairToken = Random.randomAlpha(13);
+		String devicePairTokenStr = devicePairToken + newDevice.getRegistrationId().toString();
+		try {
+			newDevice.setPairToken(CryptoUtil.getSHA2Hash(devicePairTokenStr));
+		} catch (Exception e) {
+		}
 		deviceDao.saveDevice(newDevice);
 		logger.info("device registered with id: {}", newDevice.getRegistrationId());
 		DeviceDto dto = new DeviceDto();
@@ -109,6 +114,7 @@ public class DeviceService extends AbstractService {
 			BeanUtils.copyProperties(dto, newDevice);
 		} catch (Exception e) {
 		}
+		dto.setPairToken(devicePairToken);
 		return dto;
 	}
 
@@ -143,7 +149,12 @@ public class DeviceService extends AbstractService {
 	public DevicePairOtpResponse validateDevicePairToken(BigDecimal deviceRegId, String devicePairToken) {
 		Device device = deviceDao.findDevice(deviceRegId);
 		deviceValidation.validateDevice(device);
-		if (!device.getPairToken().equals(devicePairToken)) {
+		String derivedPairToken = null;
+		try {
+			derivedPairToken = CryptoUtil.getSHA2Hash(devicePairToken + deviceRegId.toString());
+		} catch (NoSuchAlgorithmException e) {
+		}
+		if (!device.getPairToken().equals(derivedPairToken)) {
 			throw new AuthServiceException("Invalid paire token", RbaacServiceError.CLIENT_INVALID_PAIR_TOKEN);
 		}
 		return deviceManager.generateDevicePaireOtpResponse(device);

@@ -165,7 +165,7 @@ public final class CryptoUtil {
 	 * @throws NoSuchAlgorithmException the no such algorithm exception
 	 */
 	public static String getSHA2Hash(String str) throws NoSuchAlgorithmException {
-		return getSHA1Hash(str.getBytes());
+		return getSHA2Hash(str.getBytes());
 	}
 
 	/**
