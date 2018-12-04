@@ -18,7 +18,7 @@ import com.amx.jax.constant.DeviceState;
 import com.amx.jax.dict.UserClient.ClientType;
 
 @Entity
-@Table(name = "JAX_DEVICE_CLIENT")
+@Table(name = "JAX_RB_DEVICE_CLIENT")
 public class Device {
 
 	@Id

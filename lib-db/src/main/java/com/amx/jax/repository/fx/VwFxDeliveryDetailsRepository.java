@@ -15,7 +15,9 @@ import com.amx.jax.model.response.fx.FxDeliveryDetailDto;
 public interface VwFxDeliveryDetailsRepository extends CrudRepository<VwFxDeliveryDetailsModel, Serializable> {
 
 	@Query(value = "select * from JAX_VW_FX_DELIVERY_DETAIL where DRIVER_EMPLOYEE_ID=?1 and TRUNC(DELIVERY_DATE) = TRUNC(?2)", nativeQuery = true)
-	List<VwFxDeliveryDetailsModel> findDriverOrders(BigDecimal driverEmployeeId,
-			Date deliveryDate);
+	List<VwFxDeliveryDetailsModel> findDriverOrders(BigDecimal driverEmployeeId, Date deliveryDate);
+
+	VwFxDeliveryDetailsModel findByDeleviryDelSeqIdAndDriverEmployeeId(BigDecimal deliveryDetailSeqId,
+			BigDecimal driverEmployeeId);
 
 }

@@ -107,4 +107,19 @@ public class FcSaleDeliveryController implements IFxOrderDelivery {
 		return AmxApiResponse.buildList(resultList);
 	}
 
+	@RequestMapping(value = Path.FX_DELIVERY_MARK_RETURNED, method = RequestMethod.POST)
+	@Override
+	@ApiOperation("Return the envolope")
+	public AmxApiResponse<BoolRespModel, Object> markReturn(@RequestParam BigDecimal deliveryDetailSeqId) {
+		BoolRespModel result = fcSaleDeliveryService.markReturn(deliveryDetailSeqId);
+		return AmxApiResponse.build(result);
+	}
+
+	@RequestMapping(value = Path.FX_DELIVERY_MARK_ACKNOWLEDGE, method = RequestMethod.POST)
+	@Override
+	@ApiOperation("Acknowledge the fx order")
+	public AmxApiResponse<BoolRespModel, Object> markAcknowledged(@RequestParam BigDecimal deliveryDetailSeqId) {
+		BoolRespModel result = fcSaleDeliveryService.markAcknowledged(deliveryDetailSeqId);
+		return AmxApiResponse.build(result);
+	}
 }

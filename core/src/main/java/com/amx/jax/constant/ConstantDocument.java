@@ -87,6 +87,12 @@ public class ConstantDocument {
 	public static final String RTD="RTD";
 	// ACP for --Accepted
 	public static final String ACP="ACP";
+	public static final String RTD_ACK="RTD_ACK";
+	// CND for --cancelled
+	public static final String CND="CND";
+	// OFD for --out for delivery
+	public static final String OFD="OFD";
+	
 	// OFD_ACK for --Out for delivery pending acknowledgment
 	public static final String OFD_ACK="OFD_ACK";
 	// PCK for --PACKED
@@ -94,6 +100,5 @@ public class ConstantDocument {
 	/** end Here **/
 	public static final String P = "P";	
 	public static final String FC_SALE = "FC Sale";
-	
 
 }

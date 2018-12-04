@@ -119,6 +119,9 @@ public class FcSaleDeliveryService {
 				fcSaleDeliveryMarkDeliveredRequest.getDeliveryDetailSeqId());
 		VwFxDeliveryDetailsModel vwdeliveryDetail = validatetDeliveryDetailView(
 				fcSaleDeliveryMarkDeliveredRequest.getDeliveryDetailSeqId());
+		if (!deliveryDetail.getOrderStatus().equals(ConstantDocument.OFD)) {
+			throw new GlobalException("Order status should be OFD", JaxError.FC_CURRENCY_DELIVERY_INVALID_STATUS);
+		}
 		deliveryDetail.setOrderStatus(ConstantDocument.DVD);
 		fcSaleApplicationDao.saveDeliveryDetail(deliveryDetail);
 		PersonInfo pinfo = userService.getPersonInfo(vwdeliveryDetail.getCustomerId());
@@ -136,7 +139,10 @@ public class FcSaleDeliveryService {
 	public BoolRespModel markCancelled(FcSaleDeliveryMarkNotDeliveredRequest fcSaleDeliveryMarkNotDeliveredRequest) {
 		FxDeliveryDetailsModel deliveryDetail = validateFxDeliveryModel(
 				fcSaleDeliveryMarkNotDeliveredRequest.getDeliveryDetailSeqId());
-		deliveryDetail.setOrderStatus(ConstantDocument.RTD);
+		if (!deliveryDetail.getOrderStatus().equals(ConstantDocument.OFD)) {
+			throw new GlobalException("Order status should be OFD", JaxError.FC_CURRENCY_DELIVERY_INVALID_STATUS);
+		}
+		deliveryDetail.setOrderStatus(ConstantDocument.CND);
 		deliveryDetail.setRemarksId(fcSaleDeliveryMarkNotDeliveredRequest.getDeleviryRemarkSeqId());
 		fcSaleApplicationDao.saveDeliveryDetail(deliveryDetail);
 		return new BoolRespModel(true);
@@ -146,6 +152,9 @@ public class FcSaleDeliveryService {
 		FxDeliveryDetailsModel deliveryDetail = fcSaleApplicationDao.getDeliveryDetailModel(deliveryDetailSeqId);
 		if (deliveryDetail == null) {
 			throw new GlobalException("Delivery detail not found", JaxError.FC_CURRENCY_DELIVERY_DETAIL_NOT_FOUND);
+		}
+		if (!deliveryDetail.getDriverEmployeeId().equals(metaData.getEmployeeId())) {
+			throw new GlobalException("Invalid driver employee for this order", JaxError.INVALID_EMPLOYEE);
 		}
 		return deliveryDetail;
 	}
@@ -255,5 +264,33 @@ public class FcSaleDeliveryService {
 		return delRemarks.stream().map(remark -> {
 			return new ResourceDTO(remark.getDeleviryRemarkSeqId(), remark.getDeliveryRemark());
 		}).collect(Collectors.toList());
+	}
+
+	/**
+	 * @param deliveryDetailSeqId
+	 * @return
+	 */
+	public BoolRespModel markReturn(BigDecimal deliveryDetailSeqId) {
+		FxDeliveryDetailsModel deliveryDetail = validateFxDeliveryModel(deliveryDetailSeqId);
+		if (!deliveryDetail.getOrderStatus().equals(ConstantDocument.OFD)) {
+			throw new GlobalException("Order status should be OFD", JaxError.FC_CURRENCY_DELIVERY_INVALID_STATUS);
+		}
+		deliveryDetail.setOrderStatus(ConstantDocument.RTD_ACK);
+		fcSaleApplicationDao.saveDeliveryDetail(deliveryDetail);
+		return new BoolRespModel(true);
+	}
+
+	/**
+	 * @param deliveryDetailSeqId
+	 * @return
+	 */
+	public BoolRespModel markAcknowledged(BigDecimal deliveryDetailSeqId) {
+		FxDeliveryDetailsModel deliveryDetail = validateFxDeliveryModel(deliveryDetailSeqId);
+		if (!deliveryDetail.getOrderStatus().equals(ConstantDocument.OFD_ACK)) {
+			throw new GlobalException("Order status should be OFD_ACK", JaxError.FC_CURRENCY_DELIVERY_INVALID_STATUS);
+		}
+		deliveryDetail.setOrderStatus(ConstantDocument.OFD);
+		fcSaleApplicationDao.saveDeliveryDetail(deliveryDetail);
+		return new BoolRespModel(true);
 	}
 }

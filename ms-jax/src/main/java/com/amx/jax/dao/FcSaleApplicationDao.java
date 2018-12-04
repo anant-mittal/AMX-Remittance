@@ -328,6 +328,11 @@ public class FcSaleApplicationDao {
 		return vwFxDeliveryDetailsRepository.findOne(deliveryDetailSeqId);
 	}
 	
+	public VwFxDeliveryDetailsModel getDeliveryDetail(BigDecimal deliveryDetailSeqId, BigDecimal driverEmployeeId) {
+		return vwFxDeliveryDetailsRepository.findByDeleviryDelSeqIdAndDriverEmployeeId(deliveryDetailSeqId,
+				driverEmployeeId);
+	}
+	
 	public void saveDeliveryDetail(FxDeliveryDetailsModel model) {
 		fxDeliveryDetailsRepository.save(model);
 	}

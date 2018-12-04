@@ -145,4 +145,32 @@ public class FxOrderDeliveryClient implements IFxOrderDelivery {
 		}
 	}
 
+	@Override
+	public AmxApiResponse<BoolRespModel, Object> markReturn(BigDecimal deliveryDetailSeqId) {
+		try {
+			LOGGER.debug("in markReturn");
+			String url = appConfig.getJaxURL() + Path.FX_DELIVERY_LIST_DELIVERY_REMARK;
+			return restService.ajax(url).post().field(Params.DELIVERY_DETAIL_SEQID, deliveryDetailSeqId)
+					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in markReturn : ", e);
+			return JaxSystemError.evaluate(e);
+		}
+	}
+
+	@Override
+	public AmxApiResponse<BoolRespModel, Object> markAcknowledged(BigDecimal deliveryDetailSeqId) {
+		try {
+			LOGGER.debug("in markAcknowledged");
+			String url = appConfig.getJaxURL() + Path.FX_DELIVERY_MARK_ACKNOWLEDGE;
+			return restService.ajax(url).post().field(Params.DELIVERY_DETAIL_SEQID, deliveryDetailSeqId)
+					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in markAcknowledged : ", e);
+			return JaxSystemError.evaluate(e);
+		}
+	}
+
 }
