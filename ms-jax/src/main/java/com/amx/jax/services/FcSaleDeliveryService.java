@@ -204,7 +204,7 @@ public class FcSaleDeliveryService {
 		Email email = new Email();
 		email.setSubject("FC Order Successfully Delivered");
 		email.addTo(pinfo.getEmail());
-		email.setITemplate(TemplatesMX.FC_DELIVER_SMS_OTP);
+		email.setITemplate(TemplatesMX.FC_DELIVER_EMAIL_OTP);
 		email.setHtml(true);
 
 		email.getModel().put(NotificationConstants.RESP_DATA_KEY, notificationModel);
