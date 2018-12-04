@@ -9,7 +9,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -26,11 +26,14 @@ import com.amx.jax.AppContextUtil;
 import com.amx.jax.adapter.DeviceConnectorClient;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.device.CardData;
+import com.amx.jax.device.DeviceBox;
+import com.amx.jax.device.DeviceData;
 import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.http.ApiRequest;
 import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.http.CommonHttpRequest.CommonMediaType;
 import com.amx.jax.http.RequestType;
+import com.amx.jax.logger.LoggerService;
 import com.amx.jax.model.UserDevice;
 import com.amx.jax.rbaac.RbaacServiceClient;
 import com.amx.jax.rbaac.constants.RbaacServiceConstants.LOGIN_TYPE;
@@ -44,10 +47,10 @@ import com.amx.jax.sso.SSOConstants.SSOAuthStep;
 import com.amx.jax.sso.SSOStatus.ApiSSOStatus;
 import com.amx.jax.sso.SSOStatus.SSOServerCodes;
 import com.amx.jax.sso.SSOTranx;
+import com.amx.jax.sso.SSOTranx.SSOModel;
 import com.amx.jax.sso.SSOUser;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;
-import com.amx.utils.Random;
 import com.amx.utils.Urly;
 
 import io.swagger.annotations.ApiParam;
@@ -55,7 +58,7 @@ import io.swagger.annotations.ApiParam;
 @Controller
 public class SSOServerController {
 
-	private Logger LOGGER = Logger.getLogger(SSOServerController.class);
+	private Logger LOGGER = LoggerService.getLogger(SSOServerController.class);
 
 	@Autowired
 	private SSOTranx sSOTranx;
@@ -68,6 +71,9 @@ public class SSOServerController {
 
 	@Autowired
 	private AppConfig appConfig;
+
+	@Autowired
+	private DeviceBox deviceBox;
 
 	@Autowired
 	private CommonHttpRequest commonHttpRequest;
@@ -143,7 +149,7 @@ public class SSOServerController {
 	public String loginJson(@RequestBody SSOLoginFormData formdata,
 			@PathVariable(required = false, value = "jsonstep") @ApiParam(defaultValue = "CREDS") SSOAuthStep json,
 			HttpServletResponse resp,
-			@RequestParam(required = false) ClientType deviceType,
+			@RequestParam(required = false) ClientType clientType,
 			@RequestParam(required = false, defaultValue = "SELF") LOGIN_TYPE loginType,
 			@RequestParam(required = false) Boolean redirect) throws URISyntaxException, IOException {
 
@@ -167,13 +173,35 @@ public class SSOServerController {
 
 			if (SSOAuthStep.CREDS == json) {
 
+				ssoUser.generateSAC();
+
+				SSOModel ssomodel = sSOTranx.get();
+				ssomodel.getUserClient().setDeviceType(userDevice.getType());
+				ssomodel.getUserClient().setClientType(clientType);
+				ssomodel.getUserClient().setGlobalIpAddress(userDevice.getIp());
+
+				if (!ArgUtil.isEmpty(sSOTranx.get().getBranchAdapterId())) {
+					// Terminal Login
+					DeviceData branchDeviceData = deviceBox.get(sSOTranx.get().getBranchAdapterId());
+					ssomodel.getUserClient().setLocalIpAddress(branchDeviceData.getLocalIp());
+					LOGGER.info("Gloabal IPs THIS: {} ADAPTER: {}", userDevice.getIp(), branchDeviceData.getGlobalIp());
+				} else {
+					// Device LOGIN
+					ssomodel.getUserClient().setLocalIpAddress(userDevice.getIp());
+					ssomodel.getUserClient().setDeviceId(userDevice.getFingerprint());
+				}
+
 				UserAuthInitReqDTO init = new UserAuthInitReqDTO();
 				init.setEmployeeNo(formdata.getEcnumber());
 				init.setIdentity(formdata.getIdentity());
+
+				/** TO be Removed **/
 				init.setIpAddress(userDevice.getIp());
 				init.setDeviceId(userDevice.getFingerprint());
+				init.setTerminalId(sSOTranx.get().getUserClient().getTerminalId());
 				init.setDeviceType(userDevice.getType());
-				init.setTerminalId(sSOTranx.get().getTerminalId());
+				/*** TO BE REMOVED */
+
 				init.setLoginType(loginType);
 				init.setSelfSAC(ssoUser.getSelfSAC());
 
@@ -181,6 +209,7 @@ public class SSOServerController {
 					init.setPartnerIdentity(formdata.getPartnerIdentity());
 					init.setPartnerSAC(ssoUser.getPartnerSAC());
 				}
+
 				UserAuthInitResponseDTO initResp = rbaacServiceClient.initAuthForUser(init).getResult();
 
 				model.put("mOtpPrefix", ssoUser.getSelfSAC());
@@ -197,7 +226,7 @@ public class SSOServerController {
 
 			} else if ((SSOAuthStep.OTP == json) && formdata.getMotp() != null) {
 
-				String terminalId = sSOTranx.get().getTerminalId();
+				String terminalId = sSOTranx.get().getUserClient().getTerminalId();
 
 				UserAuthorisationReqDTO auth = new UserAuthorisationReqDTO();
 				auth.setEmployeeNo(formdata.getEcnumber());
@@ -240,7 +269,7 @@ public class SSOServerController {
 	public String getCardDetails() throws InterruptedException {
 		AmxApiResponse<CardData, Object> resp = AmxApiResponse.build(new CardData());
 		ssoUser.ssoTranxId();
-		String terminlId = sSOTranx.get().getTerminalId();
+		String terminlId = sSOTranx.get().getUserClient().getTerminalId();
 		if (terminlId != null) {
 			CardData card = adapterServiceClient.pollCardDetailsByTerminal(terminlId).getResult();
 			if (card != null) {

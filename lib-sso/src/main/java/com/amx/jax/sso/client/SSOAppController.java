@@ -28,12 +28,14 @@ import com.amx.jax.AppConstants;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AResponse.Target;
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.http.CommonHttpRequest.CommonMediaType;
 import com.amx.jax.sso.SSOConstants;
 import com.amx.jax.sso.SSOConstants.SSOAuthStep;
 import com.amx.jax.sso.SSOStatus.ApiSSOStatus;
 import com.amx.jax.sso.SSOStatus.SSOServerCodes;
 import com.amx.jax.sso.SSOTranx;
+import com.amx.jax.sso.SSOTranx.SSOModel;
 import com.amx.jax.sso.SSOUser;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.HttpUtils;
@@ -74,7 +76,12 @@ public class SSOAppController {
 			byte[] decodedBytes = Base64.getDecoder().decode(returnUrld);
 			returnUrl = new String(decodedBytes);
 		}
-		sSOTranx.setAppReturnDetails(returnUrl, sotp);
+		SSOModel sSOModel = sSOTranx.get();
+		sSOModel.setAppUrl(returnUrl);
+		sSOModel.setAppToken(sotp);
+		sSOModel.getUserClient().setClientType(ClientType.BRANCH_WEB_OLD);
+		sSOTranx.save(sSOModel);
+
 		URLBuilder builder = new URLBuilder(HttpUtils.getServerName(request));
 		builder.path(appConfig.getAppPrefix() + SSOConstants.SSO_LOGIN_URL_REQUIRED)
 				.queryParam(AppConstants.TRANX_ID_XKEY, tranxId);
@@ -135,7 +142,13 @@ public class SSOAppController {
 
 		if (!ssoUser.isAuthDone()) {
 			LOGGER.debug("ssoUser.isAuthDone() is false");
-			sSOTranx.setAppReturnDetails(request.getRequestURL().toString(), Random.randomAlphaNumeric(6));
+
+			SSOModel sSOModel = sSOTranx.get();
+			sSOModel.setAppUrl(request.getRequestURL().toString());
+			sSOModel.setAppToken(Random.randomAlphaNumeric(6));
+			sSOModel.getUserClient().setClientType(ClientType.BRANCH_WEB);
+			sSOTranx.save(sSOModel);
+
 			URLBuilder builder = new URLBuilder(appConfig.getSsoURL());
 			builder.path(SSOConstants.SSO_LOGIN_URL_REQUIRED)
 					.queryParam(AppConstants.TRANX_ID_XKEY, tranxId);
@@ -186,7 +199,7 @@ public class SSOAppController {
 		SecurityContextHolder.getContext().setAuthentication(null);
 		ssoUser.setAuthDone(false);
 		AmxApiResponse<Object, Model> result = AmxApiResponse.buildMeta(model);
-		
+
 //		URLBuilder builder = new URLBuilder(HttpUtils.getServerName(request));
 //		builder.path(appConfig.getAppPrefix() + '/');
 		String redirectUrl = HttpUtils.getServerName(request) + appConfig.getAppPrefix() + '/';

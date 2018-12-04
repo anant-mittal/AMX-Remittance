@@ -247,10 +247,17 @@ public class FcSaleBranchService extends AbstractService{
 				fcSaleOrder.setDriverEmployeName(orderManagement.getDriverEmployeeName());
 				fcSaleOrder.setOrderStatus(orderManagement.getOrderStatus());
 				fcSaleOrder.setOrderStatusDesc(orderManagement.getOrderStatusDesc());
-				BigDecimal localRate = new BigDecimal((BigDecimal.ONE).doubleValue()/orderManagement.getTransactionActualRate().doubleValue());
-				BigDecimal currencyDecimal = branchOrderManager.fetchCurrencyMasterDetails(orderManagement.getForeignCurrencyId());
-				fcSaleOrder.setLocalActualRate(RoundUtil.roundBigDecimal(localRate, currencyDecimal.intValue()));
-				fcSaleOrder.setOrderLock(dateTimeFormat.format(orderManagement.getOrderLock()));
+				if(orderManagement.getTransactionActualRate() != null && orderManagement.getForeignCurrencyId() != null) {
+					BigDecimal localRate = new BigDecimal((BigDecimal.ONE).doubleValue()/orderManagement.getTransactionActualRate().doubleValue());
+					BigDecimal currencyDecimal = branchOrderManager.fetchCurrencyMasterDetails(orderManagement.getForeignCurrencyId());
+					if(currencyDecimal != null && currencyDecimal.compareTo(BigDecimal.ZERO) != 0) {
+						fcSaleOrder.setLocalActualRate(RoundUtil.roundBigDecimal(localRate, currencyDecimal.intValue()));
+					}
+				}
+				
+				if(orderManagement.getOrderLock() != null) {
+					fcSaleOrder.setOrderLock(dateTimeFormat.format(orderManagement.getOrderLock()));
+				}
 				fcSaleOrder.setEmployeeId(orderManagement.getEmployeeId());
 				if(orderManagement.getEmployeeId() != null){
 					if(orderManagement.getEmployeeId().compareTo(employeeId) == 0){
