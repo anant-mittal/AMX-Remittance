@@ -31,6 +31,20 @@ public class FxOrderBranchController {
 		return fxOrderBranchClient.fetchBranchOrderManagement();
 	}
 	
+	@RequestMapping(value = "/api/fxo/order/lock", method = { RequestMethod.POST })
+	public AmxApiResponse<BoolRespModel,Object> acceptOrderLock(
+			@RequestParam(value = "orderNumber", required = true) BigDecimal orderNumber,
+			@RequestParam(value = "orderYear", required = true) BigDecimal orderYear){
+		return fxOrderBranchClient.acceptOrderLock(orderNumber, orderYear);
+	}
+	
+	@RequestMapping(value = "/api/fxo/order/release", method = { RequestMethod.POST })
+	public AmxApiResponse<BoolRespModel,Object> releaseOrderLock(
+			@RequestParam(value = "orderNumber", required = true) BigDecimal orderNumber,
+			@RequestParam(value = "orderYear", required = true) BigDecimal orderYear){
+		return fxOrderBranchClient.releaseOrderLock(orderNumber, orderYear);
+	}
+	
 	@RequestMapping(value = "/api/fxo/order/details",  method = { RequestMethod.POST })
 	public AmxApiResponse<FcSaleOrderManagementDTO,Object> getOrderDetails(
 			@RequestParam(value = "orderNumber", required = true) BigDecimal orderNumber,
@@ -48,6 +62,11 @@ public class FxOrderBranchController {
 		return fxOrderBranchClient.fetchBranchStockDetails();
 	}
 	
+	@RequestMapping(value = "/api/fxo/order/pack",  method = { RequestMethod.POST })
+	public AmxApiResponse<BoolRespModel,Object> saveAndPrintReceipt(FcSaleBranchDispatchRequest fcSaleBranchDispatchRequest){
+		return fxOrderBranchClient.printOrderSave(fcSaleBranchDispatchRequest);
+	}
+	
 	@RequestMapping(value = "/api/fxo/drivers",  method = { RequestMethod.GET })
 	public AmxApiResponse<FcEmployeeDetailsDto,Object> fetchDriverList(){
 		return fxOrderBranchClient.fetchBranchEmployee();
@@ -61,9 +80,12 @@ public class FxOrderBranchController {
 		return fxOrderBranchClient.assignDriver(orderNumber, orderYear, driverId);
 	}
 	
-	@RequestMapping(value = "/api/fxo/order/dispatch",  method = { RequestMethod.POST })
-	public AmxApiResponse<BoolRespModel,Object> dispatchOrder(FcSaleBranchDispatchRequest fcSaleBranchDispatchRequest){
-		return fxOrderBranchClient.dispatchOrder(fcSaleBranchDispatchRequest);
-	}
+//	@RequestMapping(value = "/api/fxo/order/dispatch",  method = { RequestMethod.POST })
+//	public AmxApiResponse<BoolRespModel,Object> dispatchOrder(FcSaleBranchDispatchRequest fcSaleBranchDispatchRequest){
+//		return fxOrderBranchClient.dispatchOrder(fcSaleBranchDispatchRequest);
+//	}
+	
+	
+	
 	
 }

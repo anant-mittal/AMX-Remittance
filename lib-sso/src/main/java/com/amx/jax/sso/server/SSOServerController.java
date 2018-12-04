@@ -103,6 +103,7 @@ public class SSOServerController {
 	@ResponseBody
 	public String authLoginJson(Model model,
 			@PathVariable(required = false, value = "jsonstep") @ApiParam(defaultValue = "REQUIRED") SSOAuthStep json) {
+		ssoUser.generateSAC();
 		AmxApiResponse<Object, Map<String, Object>> result = AmxApiResponse.buildMeta(getModelMap());
 		result.setStatusEnum(SSOServerCodes.AUTH_REQUIRED);
 		return JsonUtil.toJson(result);
