@@ -37,7 +37,7 @@ public class ViewExEmpBranchSysDetails implements Serializable {
 	private BigDecimal branchId;
 
 	@Column(name = "IP_ADDRESS")
-	private BigDecimal ipAddress;
+	private String ipAddress;
 
 	public BigDecimal getSeqId() {
 		return seqId;
@@ -87,11 +87,11 @@ public class ViewExEmpBranchSysDetails implements Serializable {
 		this.branchId = branchId;
 	}
 
-	public BigDecimal getIpAddress() {
+	public String getIpAddress() {
 		return ipAddress;
 	}
 
-	public void setIpAddress(BigDecimal ipAddress) {
+	public void setIpAddress(String ipAddress) {
 		this.ipAddress = ipAddress;
 	}
 
