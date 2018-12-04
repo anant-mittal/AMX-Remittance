@@ -41,7 +41,6 @@ import com.amx.jax.dbmodel.fx.FxDeliveryTimeSlotMaster;
 import com.amx.jax.dbmodel.fx.FxExchangeRateView;
 import com.amx.jax.dbmodel.fx.FxOrderTransactionModel;
 import com.amx.jax.dbmodel.fx.FxOrderTranxLimitView;
-import com.amx.jax.dbmodel.fx.OrderManagementView;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.fx.FcSaleOrderPaynowRequestModel;
@@ -72,7 +71,6 @@ import com.amx.jax.repository.fx.FxOrderTranxLimitRespository;
 import com.amx.jax.service.BankMetaService;
 import com.amx.jax.service.CurrencyMasterService;
 import com.amx.jax.service.FinancialService;
-import com.amx.jax.service.ParameterService;
 import com.amx.jax.util.DateUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.RoundUtil;
@@ -178,7 +176,10 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 		responeModel.setTimeSlot(fxOrderTimeSlot);
 		responeModel.setCartDetails(cartDetails.getShoppingCartList());
 		responeModel.setDeliveryCharges(getDeliveryChargesFromParameter()); 
-		return responeModel; 
+		return responeModel;
+		}catch(GlobalException e){
+			logger.error("createFcSaleReceiptApplication", e.getErrorMessage() + "" +e.getErrorKey());
+			 throw new GlobalException(e.getErrorMessage(),e.getErrorKey());
 		}catch(Exception e){
 			e.printStackTrace();
 			logger.error("saveApplication", e.getMessage());
@@ -315,6 +316,8 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 		 FxOrderTranxLimitView trnxViewModel = trnxLimitRepos.getFxTransactionLimit(customerId);
 		 if(trnxViewModel!=null){
 			 fxTrnxHistAmount  = trnxViewModel.getTotalAmount()==null?BigDecimal.ZERO:trnxViewModel.getTotalAmount().add(receiptPaymentAppl.getLocalTrnxAmount());
+		 }else{
+			 fxTrnxHistAmount = receiptPaymentAppl.getLocalTrnxAmount();
 		 }
 		 if(JaxUtil.isNullZeroBigDecimalCheck(fxTrnxHistAmount) && JaxUtil.isNullZeroBigDecimalCheck(fcTrnxLimitPerDay) && fxTrnxHistAmount.compareTo(fcTrnxLimitPerDay)>=0){
 			 throw new GlobalException("Fx Trasaction limit exceeds ",JaxError.FC_SALE_TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED);
@@ -366,9 +369,11 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 		}
 		
 		
+		}catch(GlobalException e){
+			logger.error("createFcSaleReceiptApplication", e.getErrorMessage() + "" +e.getErrorKey());
+			 throw new GlobalException(e.getErrorMessage(),e.getErrorKey());
 		}catch(Exception e){
 			logger.error("createFcSaleReceiptApplication", e.getMessage());
-			
 		}
 		
 		return receiptPaymentAppl;	
@@ -415,6 +420,9 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 		}
 		
 		return breakup;
+		}catch(GlobalException e){
+			logger.error("createFcSaleReceiptApplication", e.getErrorMessage() + "" +e.getErrorKey());
+			 throw new GlobalException(e.getErrorMessage(),e.getErrorKey());
 		}catch(Exception e){
 			e.printStackTrace();
 			logger.error("getExchangeRateFcSaleOrder", e.getMessage());
