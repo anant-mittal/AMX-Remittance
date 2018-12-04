@@ -1,4 +1,4 @@
-package com.amx.jax.offsite.device;
+package com.amx.jax.sso.server;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

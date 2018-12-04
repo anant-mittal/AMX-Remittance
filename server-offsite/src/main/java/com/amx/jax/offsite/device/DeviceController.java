@@ -26,13 +26,13 @@ import com.amx.jax.model.response.BranchSystemDetailDto;
 import com.amx.jax.offsite.OffsiteStatus.ApiOffisteStatus;
 import com.amx.jax.offsite.OffsiteStatus.OffsiteServerCodes;
 import com.amx.jax.offsite.OffsiteStatus.OffsiteServerError;
-import com.amx.jax.offsite.device.ApiHeaderAnnotations.ApiDeviceHeaders;
 import com.amx.jax.rbaac.IRbaacService;
 import com.amx.jax.rbaac.RbaacServiceClient;
 import com.amx.jax.rbaac.dto.DeviceDto;
 import com.amx.jax.rbaac.dto.DevicePairOtpResponse;
 import com.amx.jax.rbaac.dto.request.DeviceRegistrationRequest;
 import com.amx.jax.sso.SSOTranx;
+import com.amx.jax.sso.server.ApiHeaderAnnotations.ApiDeviceHeaders;
 import com.amx.jax.swagger.IStatusCodeListPlugin.ApiStatusService;
 import com.amx.utils.ArgUtil;
 

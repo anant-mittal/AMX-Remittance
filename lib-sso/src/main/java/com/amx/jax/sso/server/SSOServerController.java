@@ -27,6 +27,7 @@ import com.amx.jax.adapter.DeviceConnectorClient;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.device.CardData;
 import com.amx.jax.device.DeviceBox;
+import com.amx.jax.device.DeviceConstants;
 import com.amx.jax.device.DeviceData;
 import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.http.ApiRequest;
@@ -49,6 +50,7 @@ import com.amx.jax.sso.SSOStatus.SSOServerCodes;
 import com.amx.jax.sso.SSOTranx;
 import com.amx.jax.sso.SSOTranx.SSOModel;
 import com.amx.jax.sso.SSOUser;
+import com.amx.jax.sso.server.ApiHeaderAnnotations.ApiDeviceHeaders;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;
 import com.amx.utils.Urly;
@@ -142,6 +144,7 @@ public class SSOServerController {
 		return SSOConstants.SSO_INDEX_PAGE;
 	}
 
+	@ApiDeviceHeaders
 	@ApiSSOStatus({ SSOServerCodes.AUTH_REQUIRED, SSOServerCodes.AUTH_DONE, SSOServerCodes.OTP_REQUIRED })
 	@RequestMapping(value = SSOConstants.SSO_LOGIN_URL_JSON, method = { RequestMethod.POST }, produces = {
 			CommonMediaType.APPLICATION_JSON_VALUE, CommonMediaType.APPLICATION_V0_JSON_VALUE })
@@ -190,6 +193,15 @@ public class SSOServerController {
 					// Device LOGIN
 					ssomodel.getUserClient().setLocalIpAddress(userDevice.getIp());
 					ssomodel.getUserClient().setDeviceId(userDevice.getFingerprint());
+					ssomodel.getUserClient()
+							.setDeviceRegId(ArgUtil.parseAsBigDecimal(
+									commonHttpRequest.get(DeviceConstants.Keys.CLIENT_REG_KEY_XKEY)));
+					ssomodel.getUserClient()
+							.setDeviceRegToken(
+									commonHttpRequest.get(DeviceConstants.Keys.CLIENT_REG_TOKEN_XKEY));
+					ssomodel.getUserClient()
+							.setDeviceSessionToken(
+									commonHttpRequest.get(DeviceConstants.Keys.CLIENT_SESSION_TOKEN_XKEY));
 				}
 
 				UserAuthInitReqDTO init = new UserAuthInitReqDTO();
