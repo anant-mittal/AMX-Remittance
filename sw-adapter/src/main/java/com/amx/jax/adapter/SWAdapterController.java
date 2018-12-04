@@ -76,7 +76,7 @@ public class SWAdapterController {
 				.replace("${HOST_NAME}", kwtCardReaderService.getAddress().getHostName())
 				.replace("${USER_NAME}", kwtCardReaderService.getAddress().getUserName())
 				.replace("${LOCAL_IP}", kwtCardReaderService.getAddress().getLocalIp())
-				.replace("${TERMINAL_IP}", kwtCardReaderService.getTerminalId())
+				.replace("${TERMINAL_IP}", ArgUtil.parseAsString(kwtCardReaderService.getTerminalId(), Constants.BLANK))
 				.replace("${DEVICE_STATUS}", String.format("%s", kwtCardReaderService.getDeviceStatus()))
 				.replace("${CARD_STATUS}", String.format("%s", kwtCardReaderService.getCardStatusValue()))
 				.replace("${DATA_STATUS}", String.format("%s", kwtCardReaderService.getDataStatusValue()))
