@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.amx.jax.rbaac.dbmodel.Role;
 
-public interface IRoleRepository extends JpaRepository<Role, Serializable> {
+public interface RoleRepository extends JpaRepository<Role, Serializable> {
 	
 	
 	public Role findById(BigDecimal id);

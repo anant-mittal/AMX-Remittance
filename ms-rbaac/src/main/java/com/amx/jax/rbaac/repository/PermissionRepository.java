@@ -8,9 +8,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.amx.jax.rbaac.dbmodel.Permission;
 
 /**
- * The Interface IPermissionRepository.
+ * The Interface PermissionRepository.
  */
-public interface IPermissionRepository extends JpaRepository<Permission, Serializable> {
+public interface PermissionRepository extends JpaRepository<Permission, Serializable> {
 
 	/**
 	 * Find by context.

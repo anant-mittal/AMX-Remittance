@@ -8,13 +8,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.amx.jax.rbaac.dbmodel.Employee;
 
-public interface IEmployeeRepository extends JpaRepository<Employee, Serializable> {
+public interface EmployeeRepository extends JpaRepository<Employee, Serializable> {
 
-	public Employee findByEmployeeNumberAndCivilId(String empcode, String identity);
+	public List<Employee> findByEmployeeNumberAndCivilId(String empcode, String identity);
 
-	public List<Employee> findByEmployeeNumberAndCivilIdAndIpAddress(String empcode, String identity, String ipAddress);
-
-	public List<Employee> findByEmployeeNumberAndCivilIdAndDeviceId(String empcode, String identity, String deviceId);
+	//public List<Employee> findByEmployeeNumberAndCivilIdAndDeviceId(String empcode, String identity, String deviceId);
 	
 	public List<Employee> findByFsCountryBranch(BigDecimal countryBranchId);
 	

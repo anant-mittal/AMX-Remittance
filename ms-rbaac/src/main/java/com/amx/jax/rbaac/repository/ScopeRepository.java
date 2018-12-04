@@ -9,9 +9,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.amx.jax.rbaac.dbmodel.PermScope;
 
 /**
- * The Interface IScopeRepository.
+ * The Interface ScopeRepository.
  */
-public interface IScopeRepository extends JpaRepository<PermScope, Serializable> {
+public interface ScopeRepository extends JpaRepository<PermScope, Serializable> {
 
 	/**
 	 * Find by flags.

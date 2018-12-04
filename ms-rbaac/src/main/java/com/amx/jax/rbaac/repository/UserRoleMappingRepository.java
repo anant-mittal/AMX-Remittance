@@ -9,9 +9,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.amx.jax.rbaac.dbmodel.UserRoleMapping;
 
 /**
- * The Interface IUserRoleMappingRepository.
+ * The Interface UserRoleMappingRepository.
  */
-public interface IUserRoleMappingRepository extends JpaRepository<UserRoleMapping, Serializable> {
+public interface UserRoleMappingRepository extends JpaRepository<UserRoleMapping, Serializable> {
 
 	/**
 	 * Gives User Role Mappings for the EmployeeIds.

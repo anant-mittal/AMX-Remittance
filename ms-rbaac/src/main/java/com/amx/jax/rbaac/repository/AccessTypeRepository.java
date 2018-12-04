@@ -9,9 +9,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.amx.jax.rbaac.dbmodel.AccessType;
 
 /**
- * The Interface IAccessTypeRepository.
+ * The Interface AccessTypeRepository.
  */
-public interface IAccessTypeRepository extends JpaRepository<AccessType, Serializable> {
+public interface AccessTypeRepository extends JpaRepository<AccessType, Serializable> {
 
 	/**
 	 * Find by flags.

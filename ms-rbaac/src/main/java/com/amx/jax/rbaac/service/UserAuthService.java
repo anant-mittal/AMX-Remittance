@@ -23,6 +23,7 @@ import com.amx.jax.rbaac.dao.RbaacDao;
 import com.amx.jax.rbaac.dbmodel.Employee;
 import com.amx.jax.rbaac.dbmodel.Role;
 import com.amx.jax.rbaac.dbmodel.UserRoleMapping;
+import com.amx.jax.rbaac.dbmodel.ViewExEmpBranchSysDetails;
 import com.amx.jax.rbaac.dto.request.UserAuthInitReqDTO;
 import com.amx.jax.rbaac.dto.request.UserAuthorisationReqDTO;
 import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
@@ -58,12 +59,18 @@ public class UserAuthService {
 	@Autowired
 	UserOtpManager userOtpManager;
 
+	@Autowired
+	DeviceService deviceService;
+
 	/**
 	 * Verify user details.
 	 * 
-	 * @param employeeNo the emp code
-	 * @param identity   the identity
-	 * @param ipAddress  the ip address
+	 * @param employeeNo
+	 *            the emp code
+	 * @param identity
+	 *            the identity
+	 * @param ipAddress
+	 *            the ip address
 	 * @return the user auth init response DTO
 	 * 
 	 * @flow: -> Get Employee ||->-> Multiple Employees -> Error ||->-> Employee Not
@@ -108,15 +115,15 @@ public class UserAuthService {
 					RbaacServiceError.INVALID_OR_MISSING_DATA);
 		}
 
-		List<Employee> employees;
+		List<Employee> employees = rbaacDao.getEmployees(employeeNo, identity);
 
-		if (DeviceType.MOBILE.isParentOf(deviceType.getParent())) {
-			employees = rbaacDao.getEmployeesByDeviceId(employeeNo, identity, deviceId);
-		} else {
-			employees = rbaacDao.getEmployees(employeeNo, identity, ipAddress);
-		}
+		/*
+		 * if (DeviceType.MOBILE.isParentOf(deviceType.getParent())) { employees =
+		 * rbaacDao.getEmployeesByDeviceId(employeeNo, identity, deviceId); } else {
+		 * employees = rbaacDao.getEmployees(employeeNo, identity, ipAddress); }
+		 */
 
-		Employee selfEmployee = getValidEmployee(employees, "Self");
+		Employee selfEmployee = getValidEmployee(employees, userAuthInitReqDTO); // here
 
 		/**
 		 * For Assisted Login;
@@ -125,7 +132,9 @@ public class UserAuthService {
 
 		if (isAssisted) {
 			List<Employee> possiblePartners = rbaacDao.getEmployeesByCivilId(partnerIdentity);
-			partnerEmployee = getValidEmployee(possiblePartners, "Partner");
+			// partnerEmployee = getValidEmployee(possiblePartners, "Partner"); //here
+
+			partnerEmployee = getValidEmployee(possiblePartners, userAuthInitReqDTO);
 		}
 
 		/**
@@ -284,7 +293,11 @@ public class UserAuthService {
 		return empDetail;
 	}
 
-	private Employee getValidEmployee(List<Employee> employees, String loginType) {
+	private Employee getValidEmployee(List<Employee> employees, UserAuthInitReqDTO userAuthInitReqDTO) {
+
+		LOGIN_TYPE loginType = userAuthInitReqDTO.getLoginType();
+		DeviceType deviceType = userAuthInitReqDTO.getDeviceType();
+
 		/**
 		 * Invalid Employee Details
 		 */
@@ -327,6 +340,22 @@ public class UserAuthService {
 			throw new AuthServiceException("User Account Locked : User Account Login is Suspended, from: "
 					+ validEmployee.getLockDate() + " for Login Type : " + loginType,
 					RbaacServiceError.USER_ACCOUNT_LOCKED);
+		}
+
+		// Check for Employee System Assignment
+		if (DeviceType.COMPUTER.isParentOf(deviceType)) {
+
+			List<ViewExEmpBranchSysDetails> empBranchSysDetails = rbaacDao.getEmpBranchSysDetailsByEmpIdAndIpAddr(
+					validEmployee.getEmployeeId(), userAuthInitReqDTO.getIpAddress());
+
+			if (null == empBranchSysDetails || empBranchSysDetails.isEmpty()) {
+				throw new AuthServiceException(
+						"Branch System is Invalid, NONE Found to be assigned :: Pls contact Support : " + loginType,
+						RbaacServiceError.BRANCH_SYSTEM_NOT_FOUND);
+			}
+
+		} else if (DeviceType.MOBILE.isParentOf(deviceType)) {
+
 		}
 
 		return validEmployee;

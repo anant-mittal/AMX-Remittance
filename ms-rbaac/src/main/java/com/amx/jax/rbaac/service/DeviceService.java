@@ -192,4 +192,14 @@ public class DeviceService extends AbstractService {
 	public Device getDeviceByEmployeeAndDeviceType(ClientType deviceClientType, BigDecimal employeeId) {
 		return deviceDao.findDeviceByEmployee(employeeId, deviceClientType);
 	}
+
+	/**
+	 * 
+	 * @param registrationId
+	 * @return
+	 */
+	public Device getDeviceByRegistrationId(BigDecimal registrationId) {
+		return deviceDao.findDevice(registrationId);
+	}
+
 }
