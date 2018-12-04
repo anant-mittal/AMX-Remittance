@@ -17,6 +17,7 @@ import org.springframework.web.context.WebApplicationContext;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
+import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.fx.OrderManagementView;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.manager.FcSaleBranchOrderManager;
@@ -24,6 +25,7 @@ import com.amx.jax.model.request.fx.FcSaleBranchDispatchRequest;
 import com.amx.jax.model.response.fx.FcEmployeeDetailsDto;
 import com.amx.jax.model.response.fx.FcSaleCurrencyAmountModel;
 import com.amx.jax.model.response.fx.FcSaleOrderManagementDTO;
+import com.amx.jax.model.response.fx.FxOrderReportResponseDto;
 import com.amx.jax.model.response.fx.UserStockDto;
 import com.amx.jax.util.RoundUtil;
 
@@ -171,7 +173,7 @@ public class FcSaleBranchService extends AbstractService{
 	 * @param   :fetch Pending Orders by order number
 	 * @return FcSaleOrderManagementDTO
 	 */
-	public AmxApiResponse<FcSaleOrderManagementDTO,Object> fetchFcSaleOrderDetails(BigDecimal applicationCountryId,BigDecimal orderNumber,BigDecimal orderYear,BigDecimal employeeId){
+	public AmxApiResponse<FcSaleOrderManagementDTO,Object> fetchFcSaleOrderDetails(BigDecimal applicationCountryId,BigDecimal orderNumber,BigDecimal orderYear,BigDecimal employeeId,BigDecimal companyId){
 		List<FcSaleOrderManagementDTO> saleOrderManage = new ArrayList<>();
 
 		if(applicationCountryId == null || applicationCountryId.compareTo(BigDecimal.ZERO)==0){
@@ -190,7 +192,7 @@ public class FcSaleBranchService extends AbstractService{
 		try {
 			List<OrderManagementView> orderManagement =  branchOrderManager.fetchFcSaleOrderDetails(applicationCountryId,orderNumber,orderYear);
 			if(orderManagement != null && orderManagement.size() != 0) {
-				saleOrderManage = convertFcSaleOrderDetails(orderManagement,employeeId);
+				saleOrderManage = convertFcSaleOrderDetails(orderManagement,employeeId,companyId);
 				if(saleOrderManage != null && saleOrderManage.size() != 0) {
 					// continue
 				}else {
@@ -210,7 +212,7 @@ public class FcSaleBranchService extends AbstractService{
 		return AmxApiResponse.buildList(saleOrderManage);
 	}
 
-	public List<FcSaleOrderManagementDTO> convertFcSaleOrderDetails(List<OrderManagementView> orderManagementView,BigDecimal employeeId){
+	public List<FcSaleOrderManagementDTO> convertFcSaleOrderDetails(List<OrderManagementView> orderManagementView,BigDecimal employeeId,BigDecimal companyId){
 		List<FcSaleOrderManagementDTO> lstDto = new ArrayList<>();
 		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 		SimpleDateFormat dateTimeFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
@@ -267,6 +269,11 @@ public class FcSaleBranchService extends AbstractService{
 					}
 				}else {
 					fcSaleOrder.setOrderEmployee(Boolean.TRUE);
+				}
+				
+				List<UserStockDto> userStockDto = branchOrderManager.fetchCurrencyAdjustDetails(orderManagement.getDocumentNo(), orderManagement.getCollectionDocFinanceYear(), companyId, ConstantDocument.DOCUMENT_CODE_FOR_FCSALE);
+				if(userStockDto != null) {
+					fcSaleOrder.setFcDenomination(userStockDto);
 				}
 				
 				lstDto.add(fcSaleOrder);
@@ -389,8 +396,8 @@ public class FcSaleBranchService extends AbstractService{
 		return new BoolRespModel(status);
 	}
 	
-	public BoolRespModel printOrderSave(FcSaleBranchDispatchRequest fcSaleBranchDispatchRequest,BigDecimal employeeId,BigDecimal countryId,BigDecimal companyId) {
-		Boolean status = Boolean.FALSE;
+	public AmxApiResponse<FxOrderReportResponseDto,Object> printOrderSave(FcSaleBranchDispatchRequest fcSaleBranchDispatchRequest,BigDecimal employeeId,BigDecimal countryId,BigDecimal companyId) {
+		FxOrderReportResponseDto fxOrderReportResponseDto = null;
 		
 		if(countryId == null || countryId.compareTo(BigDecimal.ZERO)==0){
 			throw new GlobalException("Application country id should not be blank",JaxError.NULL_APPLICATION_COUNTRY_ID);
@@ -406,8 +413,8 @@ public class FcSaleBranchService extends AbstractService{
 		}
 
 		try {
-			status = branchOrderManager.printOrderSave(fcSaleBranchDispatchRequest,employeeId,countryId,companyId);
-			if(status) {
+			fxOrderReportResponseDto = branchOrderManager.printOrderSave(fcSaleBranchDispatchRequest,employeeId,countryId,companyId);
+			if(fxOrderReportResponseDto != null) {
 				// success
 			}else {
 				throw new GlobalException("Print order save didn't updated",JaxError.SAVE_FAILED);
@@ -418,7 +425,7 @@ public class FcSaleBranchService extends AbstractService{
 			throw new GlobalException(e.getMessage());
 		}
 
-		return new BoolRespModel(status);
+		return AmxApiResponse.build(fxOrderReportResponseDto);
 	}
 	
 	public BoolRespModel acceptOrderLock(BigDecimal applicationCountryId,BigDecimal orderNumber,BigDecimal orderYear,BigDecimal employeeId){

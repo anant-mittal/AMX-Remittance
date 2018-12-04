@@ -1,7 +1,6 @@
 package com.amx.jax.model.response.fx;
 
 import java.math.BigDecimal;
-import java.util.Date;
 import java.util.List;
 
 import com.amx.jax.model.AbstractModel;
@@ -29,7 +28,6 @@ public class FcSaleOrderManagementDTO extends AbstractModel {
 	String purposeDesc;
 	String denominationType;
 	BigDecimal applicationCountryId;
-	List<FcSaleCurrencyAmountModel> mutipleFcAmount;
 	String mutipleInventoryId;
 	String inventoryId;
 	BigDecimal areaCode;
@@ -46,6 +44,8 @@ public class FcSaleOrderManagementDTO extends AbstractModel {
 	String orderLock;
 	BigDecimal employeeId;
 	Boolean orderEmployee;
+	List<FcSaleCurrencyAmountModel> mutipleFcAmount;
+	List<UserStockDto> fcDenomination;
 	
 	public BigDecimal getDocumentNo() {
 		return DocumentNo;
@@ -277,5 +277,12 @@ public class FcSaleOrderManagementDTO extends AbstractModel {
 	public void setOrderEmployee(Boolean orderEmployee) {
 		this.orderEmployee = orderEmployee;
 	}
-
+	
+	public List<UserStockDto> getFcDenomination() {
+		return fcDenomination;
+	}
+	public void setFcDenomination(List<UserStockDto> fcDenomination) {
+		this.fcDenomination = fcDenomination;
+	}
+	
 }

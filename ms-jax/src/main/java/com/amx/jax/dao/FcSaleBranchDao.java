@@ -159,4 +159,8 @@ public class FcSaleBranchDao {
 			fxDeliveryDetailsRepository.updateDispatchStatusDetails(deliveryDetailsId,userName,new Date(),orderStatus);
 		}
 	}
+	
+	public List<ForeignCurrencyAdjust> fetchByCollectionDetails(BigDecimal documentNo,BigDecimal documentYear,BigDecimal companyId,BigDecimal documentCode){
+		return foreignCurrencyAdjustRepository.fetchByCollectionDetails(documentNo,documentYear,companyId,documentCode);
+	}
 }

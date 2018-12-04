@@ -19,6 +19,7 @@ import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.fx.FcSaleBranchDispatchRequest;
 import com.amx.jax.model.response.fx.FcEmployeeDetailsDto;
 import com.amx.jax.model.response.fx.FcSaleOrderManagementDTO;
+import com.amx.jax.model.response.fx.FxOrderReportResponseDto;
 import com.amx.jax.model.response.fx.UserStockDto;
 import com.amx.jax.services.FcSaleBranchService;
 
@@ -60,7 +61,8 @@ public class FcSaleBranchOrderController implements IFxBranchOrderService {
 	public AmxApiResponse<FcSaleOrderManagementDTO,Object> fetchBranchOrderDetails(@RequestParam(value = "orderNumber", required = true) BigDecimal orderNumber,@RequestParam(value = "orderYear", required = true) BigDecimal orderYear) {
 		BigDecimal countryId = metaData.getCountryId();
 		BigDecimal employeeId = metaData.getEmployeeId();
-		return fcSaleBranch.fetchFcSaleOrderDetails(countryId,orderNumber,orderYear,employeeId);
+		BigDecimal companyId = metaData.getCompanyId();
+		return fcSaleBranch.fetchFcSaleOrderDetails(countryId,orderNumber,orderYear,employeeId,companyId);
 	}
 
 	/**
@@ -117,12 +119,11 @@ public class FcSaleBranchOrderController implements IFxBranchOrderService {
 	 */
 	@RequestMapping(value = Path.FC_PRINT_ORDER_SAVE , method = RequestMethod.POST)
 	@Override
-	public AmxApiResponse<BoolRespModel,Object> printOrderSave(@RequestBody FcSaleBranchDispatchRequest fcSaleBranchDispatchRequest){
+	public AmxApiResponse<FxOrderReportResponseDto,Object> printOrderSave(@RequestBody FcSaleBranchDispatchRequest fcSaleBranchDispatchRequest){
 		BigDecimal employeeId = metaData.getEmployeeId();
 		BigDecimal countryId = metaData.getCountryId();
 		BigDecimal companyId = metaData.getCompanyId();
-		BoolRespModel result = fcSaleBranch.printOrderSave(fcSaleBranchDispatchRequest,employeeId,countryId,companyId);
-		return AmxApiResponse.build(result);
+		return fcSaleBranch.printOrderSave(fcSaleBranchDispatchRequest,employeeId,countryId,companyId);
 	}
 	
 	/**

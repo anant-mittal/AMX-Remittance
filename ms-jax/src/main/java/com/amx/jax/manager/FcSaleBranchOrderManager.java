@@ -45,6 +45,7 @@ import com.amx.jax.model.request.fx.FcSaleBranchDispatchModel;
 import com.amx.jax.model.request.fx.FcSaleBranchDispatchRequest;
 import com.amx.jax.model.response.fx.FcEmployeeDetailsDto;
 import com.amx.jax.model.response.fx.FxEmployeeDetailsDto;
+import com.amx.jax.model.response.fx.FxOrderReportResponseDto;
 import com.amx.jax.model.response.fx.UserStockDto;
 import com.amx.jax.repository.IDocumentDao;
 import com.amx.jax.repository.JaxConfigRepository;
@@ -55,30 +56,33 @@ import com.amx.jax.util.DateUtil;
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Component
 public class FcSaleBranchOrderManager {
-	
+
 	private Logger logger = LoggerFactory.getLogger(getClass());
-	
+
 	@Autowired
 	FcSaleBranchDao fcSaleBranchDao;
-	
+
 	@Autowired
 	CompanyService companyService;
-	
+
 	@Autowired
 	IDocumentDao documentDao;
-	
+
 	@Autowired
 	ApplicationProcedureDao applicationProcedureDao;
-	
+
 	@Autowired
 	JaxConfigRepository jaxConfigRepository;
-	
+
 	@Autowired
 	ConverterUtil converterutil;
-	
+
 	@Autowired
 	CurrencyMasterDao currencyMasterDao;
-	
+
+	@Autowired
+	FxOrderReportManager fxOrderReportManager;
+
 	public List<OrderManagementView> fetchFcSaleOrderManagement(BigDecimal applicationCountryId,BigDecimal employeeId){
 		List<OrderManagementView> ordermanage = new ArrayList<>();
 		try{
@@ -102,10 +106,10 @@ public class FcSaleBranchOrderManager {
 			logger.error("fetchFcSaleOrderManagement ", e.getMessage()+"applId :"+applicationCountryId+" employeeId :"+employeeId);
 			throw new GlobalException(e.getMessage());
 		}
-		
+
 		return ordermanage;
 	}
-	
+
 	public List<OrderManagementView> fetchFcSaleOrderDetails(BigDecimal applicationCountryId,BigDecimal orderNumber,BigDecimal orderYear){
 		List<OrderManagementView> ordermanage = new ArrayList<>();
 		try{
@@ -121,7 +125,7 @@ public class FcSaleBranchOrderManager {
 		}
 		return ordermanage;
 	}
-	
+
 	public List<UserStockDto> fetchUserStockViewByCurrency(BigDecimal countryId,BigDecimal employeeId,BigDecimal foreignCurrencyId){
 		List<UserStockDto> userStock = new ArrayList<>();
 		String userName = null;
@@ -160,15 +164,15 @@ public class FcSaleBranchOrderManager {
 			logger.error("fetchUserStockViewByCurrency ", e.getMessage()+" countryId :"+countryId+" userName :"+userName+" countryBranchId :"+countryBranchId+" foreignCurrencyId :"+foreignCurrencyId);
 			throw new GlobalException(e.getMessage());
 		}
-		
+
 		return userStock;
 	}
-	
+
 	public List<Object[]> fetchUserStockViewSum(BigDecimal countryId,BigDecimal employeeId){
 		List<Object[]> userStock = new ArrayList<>();
 		String userName = null;
 		BigDecimal countryBranchId = null;
-		
+
 		try{
 			FxEmployeeDetailsDto employeeDt = fetchEmployee(employeeId);
 			if(employeeDt != null && employeeDt.getEmployeeId() != null){
@@ -191,15 +195,15 @@ public class FcSaleBranchOrderManager {
 			logger.error("fetchUserStockView ", e.getMessage()+" countryId :"+countryId+" userName :"+userName+" countryBranchId :"+countryBranchId);
 			throw new GlobalException(e.getMessage());
 		}
-		
+
 		return userStock;
 	}
-	
+
 	public List<UserStockDto> fetchUserStockView(BigDecimal countryId,BigDecimal employeeId){
 		List<UserStockDto> userStock = new ArrayList<>();
 		String userName = null;
 		BigDecimal countryBranchId = null;
-		
+
 		try{
 			FxEmployeeDetailsDto employeeDt = fetchEmployee(employeeId);
 			if(employeeDt != null && employeeDt.getEmployeeId() != null){
@@ -234,10 +238,10 @@ public class FcSaleBranchOrderManager {
 			logger.error("fetchUserStockView ", e.getMessage()+" countryId :"+countryId+" userName :"+userName+" countryBranchId :"+countryBranchId);
 			throw new GlobalException(e.getMessage());
 		}
-		
+
 		return userStock;
 	}
-	
+
 	public List<FcEmployeeDetailsDto> fetchEmpDriverDetails(){
 		List<FcEmployeeDetailsDto> empDrivers = new ArrayList<>();
 		try{
@@ -254,7 +258,7 @@ public class FcSaleBranchOrderManager {
 					empDet.setRoleId(employee.getFsRoleMaster());
 					empDet.setTelephoneNumber(employee.getTelephoneNumber());
 					empDet.setEmployeeName(employee.getEmployeeName());
-					
+
 					empDrivers.add(empDet);
 				}
 			}
@@ -267,17 +271,17 @@ public class FcSaleBranchOrderManager {
 			logger.error("fetchEmpDriverDetails ", e.getMessage());
 			throw new GlobalException(e.getMessage());
 		}
-		
+
 		return empDrivers;
 	}
-	
+
 	// save assign driver details in multiple tables
 	public Boolean saveAssignDriver(BigDecimal countryId,BigDecimal orderNumber,BigDecimal orderYear,BigDecimal driverId,BigDecimal employeeId) {
 		BigDecimal deliveryDetailsId = null;
 		Boolean status = Boolean.FALSE;
 		String isActive = ConstantDocument.Yes;
 		String userName = null;
-		
+
 		try{
 			List<OrderManagementView> lstOrderManagement = fetchFcSaleOrderDetails(countryId, orderNumber,orderYear);
 			if(lstOrderManagement != null && lstOrderManagement.size() != 0) {
@@ -363,13 +367,13 @@ public class FcSaleBranchOrderManager {
 
 		return status;
 	}
-	
+
 	// fetch the user details based on employee id 
 	public FxEmployeeDetailsDto fetchEmployee(BigDecimal employeeId) {
 		FxEmployeeDetailsDto employeeDto = new FxEmployeeDetailsDto();
 		try{
 			EmployeeDetailsView employee = fcSaleBranchDao.fetchEmployeeDetails(employeeId);
-			
+
 			if(employee != null && employee.getEmployeeId() != null) {
 				BeanUtils.copyProperties(employeeDto, employee);
 			}else {
@@ -385,13 +389,12 @@ public class FcSaleBranchOrderManager {
 			logger.error("fetchEmployee ", e.getMessage()+" employeeId :"+employeeId);
 			throw new GlobalException(e.getMessage());
 		}
-		
+
 		return employeeDto;
 	}
-	
+
 	// save the dispatch record 
-	public Boolean printOrderSave(FcSaleBranchDispatchRequest fcSaleBranchDispatchRequest,BigDecimal employeeId,BigDecimal countryId,BigDecimal companyId) {
-		Boolean status = Boolean.FALSE;
+	public FxOrderReportResponseDto printOrderSave(FcSaleBranchDispatchRequest fcSaleBranchDispatchRequest,BigDecimal employeeId,BigDecimal countryId,BigDecimal companyId) {
 		String userName = null;
 		BigDecimal countryBranchId = null;
 		BigDecimal collectionDocYear = null;
@@ -405,6 +408,7 @@ public class FcSaleBranchOrderManager {
 		HashMap<BigDecimal, String> mapInventoryReceiptPayment = new HashMap<>();
 		HashMap<BigDecimal, BigDecimal> mapDocAmount = new HashMap<>();
 		HashMap<BigDecimal, List<CurrencyWiseDenomination>> mapCurrencyDenom = new HashMap<>();
+		FxOrderReportResponseDto fxOrderReportResponseDto = null;
 
 		try {
 
@@ -465,19 +469,19 @@ public class FcSaleBranchOrderManager {
 						if(fcSaleBranchDispatchModel.getDocumentNumber() != null && !duplicate.contains(fcSaleBranchDispatchModel.getDocumentNumber())) {
 							duplicate.add(fcSaleBranchDispatchModel.getDocumentNumber());
 							mapInventory.put(fcSaleBranchDispatchModel.getDocumentNumber(), fcSaleBranchDispatchModel.getInventoryId());
-							
+
 							List<UserStockDto> userCurrenctStock = fetchUserStockViewByCurrency(countryId, employeeId, fcSaleBranchDispatchModel.getCurrencyId());
 							if(userCurrenctStock != null && userCurrenctStock.size() != 0) {
 								// continue
 							}else {
 								throw new GlobalException("Currenct stock for employee not available",JaxError.CURRENCY_STOCK_NOT_AVAILABLE);
 							}
-							
+
 							int i = 0;
 							BigDecimal fcAmount = BigDecimal.ZERO;
 							for (FcSaleBranchDispatchModel fcSaleBranchDispatch : orderDetails) {
 								if(fcSaleBranchDispatch.getDocumentNumber() != null && fcSaleBranchDispatchModel.getDocumentNumber().compareTo(fcSaleBranchDispatch.getDocumentNumber()) == 0) {
-									
+
 									if(mapOrderManagement.get(fcSaleBranchDispatch.getDocumentNumber()) != null && mapCurrencyDenom.get(mapOrderManagement.get(fcSaleBranchDispatch.getDocumentNumber()).getForeignCurrencyId()) != null) {
 										// checking denomination details passing correctly
 										Boolean denominationStatus = checkingDenominationDetails(fcSaleBranchDispatch, mapCurrencyDenom.get(mapOrderManagement.get(fcSaleBranchDispatch.getDocumentNumber()).getForeignCurrencyId()),userCurrenctStock);
@@ -540,7 +544,7 @@ public class FcSaleBranchOrderManager {
 											foreignCurrencyAdj.setDocumentCode(ConstantDocument.DOCUMENT_CODE_FOR_FCSALE);
 
 											foreignCurrencyAdjusts.add(foreignCurrencyAdj);
-											
+
 											// mapping document number with amount
 											mapDocAmount.put(fcSaleBranchDispatch.getDocumentNumber(), fcAmount);
 										}else {
@@ -553,7 +557,7 @@ public class FcSaleBranchOrderManager {
 							}
 						}
 					}
-					
+
 					Boolean amtStatus = Boolean.FALSE;
 					for (Entry<BigDecimal, BigDecimal> docAmountComp : mapDocAmount.entrySet()) {
 						BigDecimal documentNo = docAmountComp.getKey();
@@ -580,18 +584,12 @@ public class FcSaleBranchOrderManager {
 
 					// saving in currency Adjustment and receipt payment
 					fcSaleBranchDao.printOrderSave(foreignCurrencyAdjusts, mapInventoryReceiptPayment,userName,new Date());
-					
-					// moving to old emos
-					Map<String, Object> insertEmos = new HashMap<>();
-					insertEmos.put("P_APPL_CNTY_ID", countryId);
-					insertEmos.put("P_COMPANY_ID", companyId);
-					insertEmos.put("P_DOCUMENT_ID", ConstantDocument.DOCUMENT_CODE_FOR_COLLECT_TRANSACTION);
-					insertEmos.put("P_DOC_FINYR", collectionDocYear);
-					insertEmos.put("P_DOCUMENT_NO", collectionDocNumber);
-					
-					Map<String, Object> errorStatus = applicationProcedureDao.insertEMOSLIVETransfer(insertEmos);
-					logger.error("Error in insertEMOSLIVETransfer : " + errorStatus.get("P_ERROR_MESSAGE"));
-					status = Boolean.TRUE;
+
+					// calling report
+					fxOrderReportResponseDto = fetchTransactionReport(collectionDocYear, collectionDocNumber);
+
+					// transfer to emos 
+					transferReceiptPaymentEMOS(countryId, collectionDocYear, collectionDocNumber, companyId);
 				}
 			}
 		}catch (GlobalException e) {
@@ -608,9 +606,28 @@ public class FcSaleBranchOrderManager {
 			throw new GlobalException(e.getMessage());
 		}
 
-		return status;
+		return fxOrderReportResponseDto;
 	}
-	
+
+	// fetch the reprint full data
+	public FxOrderReportResponseDto fetchTransactionReport(BigDecimal collectionDocYear,BigDecimal collectionDocNumber) {
+		return fxOrderReportManager.getReportDetails(collectionDocNumber, collectionDocYear);
+	}
+
+	// moving record to old emos
+	public void transferReceiptPaymentEMOS(BigDecimal countryId,BigDecimal collectionDocYear,BigDecimal collectionDocNumber,BigDecimal companyId) {
+		// moving to old emos
+		Map<String, Object> insertEmos = new HashMap<>();
+		insertEmos.put("P_APPL_CNTY_ID", countryId);
+		insertEmos.put("P_COMPANY_ID", companyId);
+		insertEmos.put("P_DOCUMENT_ID", ConstantDocument.DOCUMENT_CODE_FOR_COLLECT_TRANSACTION);
+		insertEmos.put("P_DOC_FINYR", collectionDocYear);
+		insertEmos.put("P_DOCUMENT_NO", collectionDocNumber);
+
+		Map<String, Object> errorStatus = applicationProcedureDao.insertEMOSLIVETransfer(insertEmos);
+		logger.error("Error in insertEMOSLIVETransfer : " + errorStatus.get("P_ERROR_MESSAGE"));
+	}
+
 	// check the denomination details send correctly
 	public Boolean checkingDenominationDetails(FcSaleBranchDispatchModel currencyAdj,List<CurrencyWiseDenomination> currencyDenomination,List<UserStockDto> currentStock) {
 		Boolean currencyStatus = Boolean.FALSE;
@@ -670,10 +687,10 @@ public class FcSaleBranchOrderManager {
 
 		return currencyStatus;
 	}
-	
+
 	public List<CurrencyWiseDenomination> fetchCurrencyDenominationByCurrencyId(BigDecimal currencyId) {
 		List<CurrencyWiseDenomination> lstCurrencyDenomination = new ArrayList<>();
-		
+
 		try {
 			lstCurrencyDenomination = fcSaleBranchDao.fetchCurrencyDenomination(currencyId, ConstantDocument.Yes);
 		}catch (GlobalException e) {
@@ -685,14 +702,14 @@ public class FcSaleBranchOrderManager {
 			logger.error("Error in fetchCurrencyDenominationByCurrencyId", e.getMessage()+" currencyId :"+currencyId);
 			throw new GlobalException(e.getMessage());
 		}
-		
+
 		return lstCurrencyDenomination;
 	}
-	
+
 	public Boolean acceptOrderLock(BigDecimal applicationCountryId,BigDecimal orderNumber,BigDecimal orderYear,BigDecimal employeeId) {
 		Boolean status = Boolean.FALSE;
 		String userName = null;
-		
+
 		try {
 			// receipt payment Details
 			List<OrderManagementView> lstOrderManagement = fetchFcSaleOrderDetails(applicationCountryId, orderNumber, orderYear);
@@ -787,14 +804,14 @@ public class FcSaleBranchOrderManager {
 			logger.error("Error in acceptOrderLock", e.getMessage()+" applicationCountryId :"+applicationCountryId+" orderNumber :"+orderNumber+" orderYear :"+orderYear+" employeeId :"+employeeId);
 			throw new GlobalException(e.getMessage());
 		}
-		
+
 		return status;
 	}
-	
+
 	public Boolean releaseOrderLock(BigDecimal applicationCountryId,BigDecimal orderNumber,BigDecimal orderYear,BigDecimal employeeId) {
 		Boolean status = Boolean.FALSE;
 		String userName = null;
-		
+
 		try {
 			// receipt payment Details
 			List<OrderManagementView> lstOrderManagement = fetchFcSaleOrderDetails(applicationCountryId, orderNumber, orderYear);
@@ -826,24 +843,24 @@ public class FcSaleBranchOrderManager {
 			logger.error("Error in releaseOrderLock", e.getMessage()+" applicationCountryId :"+applicationCountryId+" orderNumber :"+orderNumber+" orderYear :"+orderYear+" employeeId :"+employeeId);
 			throw new GlobalException(e.getMessage());
 		}
-		
+
 		return status;
 	}
-	
+
 	public BigDecimal fetchCurrencyMasterDetails(BigDecimal currencyId) {
 		CurrencyMasterModel currencyMasterModel = currencyMasterDao.getCurrencyMasterById(currencyId);
 		BigDecimal decimalValue = new BigDecimal(3);
 		if(currencyMasterModel != null) {
 			decimalValue = currencyMasterModel.getDecinalNumber();
 		}
-		
+
 		return decimalValue;
 	}
-	
+
 	public Boolean dispatchOrder(BigDecimal applicationCountryId,BigDecimal orderNumber,BigDecimal orderYear,BigDecimal employeeId) {
 		Boolean status = Boolean.FALSE;
 		String userName = null;
-		
+
 		try {
 			// receipt payment Details
 			List<OrderManagementView> lstOrderManagement = fetchFcSaleOrderDetails(applicationCountryId, orderNumber, orderYear);
@@ -875,8 +892,39 @@ public class FcSaleBranchOrderManager {
 			logger.error("Error in dispatchOrder", e.getMessage()+" applicationCountryId :"+applicationCountryId+" orderNumber :"+orderNumber+" orderYear :"+orderYear+" employeeId :"+employeeId);
 			throw new GlobalException(e.getMessage());
 		}
-		
+
 		return status;
 	}
 	
+	// fetch the currency Denomination from currency adjust
+	public List<UserStockDto> fetchCurrencyAdjustDetails(BigDecimal documentNo,BigDecimal documentYear,BigDecimal companyId,BigDecimal documentCode){
+		List<UserStockDto> currencyAdjust = new ArrayList<>();
+
+		List<ForeignCurrencyAdjust> foreignCurrencyAdjust = fcSaleBranchDao.fetchByCollectionDetails(documentNo, documentYear, companyId, documentCode);
+		if(foreignCurrencyAdjust != null && foreignCurrencyAdjust.size() != 0) {
+
+			for (ForeignCurrencyAdjust foreignCurrencyAdj : foreignCurrencyAdjust) {
+				
+				UserStockDto userStockDto = new UserStockDto();
+
+				userStockDto.setCurrencyId(foreignCurrencyAdj.getFsCurrencyMaster().getCurrencyId());
+				userStockDto.setDenominationAmount(foreignCurrencyAdj.getDenaminationAmount());
+				userStockDto.setDenominationId(foreignCurrencyAdj.getFsDenominationId().getDenominationId());
+				userStockDto.setDenominationPrice(foreignCurrencyAdj.getAdjustmentAmount());
+				userStockDto.setDenominationQuatity(foreignCurrencyAdj.getNotesQuantity());
+				
+				currencyAdjust.add(userStockDto);
+			}
+		}
+
+		return currencyAdjust;
+	}
+
+	// stock move from branch staff to driver and vice versa
+	public Boolean currentStockMigration() {
+		Boolean status = Boolean.FALSE;
+
+		return status;
+	}
+
 }

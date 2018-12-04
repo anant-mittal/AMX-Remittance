@@ -13,6 +13,7 @@ import com.amx.jax.error.ApiJaxStatusBuilder.ApiJaxStatus;
 import com.amx.jax.model.request.fx.FcSaleBranchDispatchRequest;
 import com.amx.jax.model.response.fx.FcEmployeeDetailsDto;
 import com.amx.jax.model.response.fx.FcSaleOrderManagementDTO;
+import com.amx.jax.model.response.fx.FxOrderReportResponseDto;
 import com.amx.jax.model.response.fx.UserStockDto;
 
 public interface IFxBranchOrderService extends IJaxService {
@@ -60,7 +61,7 @@ public interface IFxBranchOrderService extends IJaxService {
 	@ApiJaxStatus({ JaxError.NULL_APPLICATION_COUNTRY_ID,JaxError.NULL_EMPLOYEE_ID,JaxError.NULL_COMPANY_ID,JaxError.SAVE_FAILED,JaxError.EMPTY_CURRENCY_DENOMINATION_DETAILS,
 		JaxError.INVALID_EMPLOYEE,JaxError.INVALID_COLLECTION_DOCUMENT_NO,JaxError.INCORRECT_CURRENCY_DENOMINATION,JaxError.BLANK_DOCUMENT_DETAILS,JaxError.MISMATCH_COLLECTION_AMOUNT,
 		JaxError.INVALID_CURRENCY_DENOMINATION,JaxError.CURRENCY_STOCK_NOT_AVAILABLE,JaxError.MISMATCH_CURRENT_STOCK,JaxError.MISMATCH_ADJ_AMT_AND_DENOMINATION_AMT_QUANTITY})
-	AmxApiResponse<BoolRespModel,Object> printOrderSave(FcSaleBranchDispatchRequest fcSaleBranchDispatchRequest);
+	AmxApiResponse<FxOrderReportResponseDto,Object> printOrderSave(FcSaleBranchDispatchRequest fcSaleBranchDispatchRequest);
 
 	@ApiJaxStatus({ JaxError.NULL_APPLICATION_COUNTRY_ID,JaxError.NULL_EMPLOYEE_ID,JaxError.NULL_ORDER_NUBMER,JaxError.SAVE_FAILED,JaxError.INVALID_COLLECTION_DOCUMENT_NO,JaxError.ORDER_LOCKED_OTHER_EMPLOYEE
 		,JaxError.NO_DELIVERY_DETAILS,JaxError.NULL_ORDER_YEAR,JaxError.INVALID_EMPLOYEE})

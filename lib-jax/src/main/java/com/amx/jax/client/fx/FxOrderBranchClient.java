@@ -15,6 +15,7 @@ import com.amx.jax.exception.JaxSystemError;
 import com.amx.jax.model.request.fx.FcSaleBranchDispatchRequest;
 import com.amx.jax.model.response.fx.FcEmployeeDetailsDto;
 import com.amx.jax.model.response.fx.FcSaleOrderManagementDTO;
+import com.amx.jax.model.response.fx.FxOrderReportResponseDto;
 import com.amx.jax.model.response.fx.UserStockDto;
 import com.amx.jax.rest.RestService;
 
@@ -145,12 +146,12 @@ public class FxOrderBranchClient implements IFxBranchOrderService {
 	 * @return : To get the save print order save
 	 */
 	@Override
-	public AmxApiResponse<BoolRespModel,Object> printOrderSave(FcSaleBranchDispatchRequest fcSaleBranchDispatchRequest) {
+	public AmxApiResponse<FxOrderReportResponseDto,Object> printOrderSave(FcSaleBranchDispatchRequest fcSaleBranchDispatchRequest) {
 		try {
 			LOGGER.debug("in printOrderSave :"+fcSaleBranchDispatchRequest);
 			return restService.ajax(appConfig.getJaxURL() + Path.FC_PRINT_ORDER_SAVE).meta(new JaxMetaInfo())
 					.post(fcSaleBranchDispatchRequest)
-					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel,Object>>() {
+					.as(new ParameterizedTypeReference<AmxApiResponse<FxOrderReportResponseDto,Object>>() {
 					});
 		} catch (Exception e) {
 			LOGGER.error("exception in printOrderSave : ", e);
