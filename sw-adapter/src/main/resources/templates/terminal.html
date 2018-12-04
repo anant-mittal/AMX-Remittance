@@ -10,6 +10,10 @@
 			<td>${REG_ID}</td>
 		</tr>
 		<tr>
+			<td>TERMINAL</td>
+			<td>${TERMINAL_IP}</td>
+		</tr>
+		<tr>
 			<td>USER_NAME</td>
 			<td>${USER_NAME}</td>
 		</tr>
@@ -49,7 +53,7 @@
 				<div>&nbsp;</div>
 				<div>
 					<form method="post">
-						<input name="terminalId" type="hidden" />
+						<input name="terminalId" type="hidden" value="${LOCAL_IP}" />
 						<button type="submit">Pair with Local IP</button>
 					</form>
 				</div>
