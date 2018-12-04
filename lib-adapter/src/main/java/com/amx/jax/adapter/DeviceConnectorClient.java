@@ -143,7 +143,7 @@ public class DeviceConnectorClient {
 		}
 	}
 
-	public AmxApiResponse<CardData, Object> pairTerminal(NetAddress address, DevicePairingCreds devicePairingCreds,
+	public AmxApiResponse<Object, Object> pairTerminal(NetAddress address, DevicePairingCreds devicePairingCreds,
 			SessionPairingCreds sessionPairingCreds, String tranxId) throws Exception {
 		try {
 			return restService.ajax(offSiteUrl).path(DeviceConstants.Path.SESSION_TERMINAL)
@@ -158,7 +158,7 @@ public class DeviceConnectorClient {
 					.header(DeviceConstants.Keys.CLIENT_SESSION_TOKEN_XKEY, sessionPairingCreds.getDeviceSessionToken())
 					.header(DeviceConstants.Keys.CLIENT_REQ_TOKEN_XKEY,
 							DeviceConstants.generateDeviceReqToken(sessionPairingCreds, devicePairingCreds))
-					.get().as(new ParameterizedTypeReference<AmxApiResponse<CardData, Object>>() {
+					.get().as(new ParameterizedTypeReference<AmxApiResponse<Object, Object>>() {
 					});
 		} catch (Exception e) {
 			LOGGER.error(DeviceConstants.Path.SESSION_TERMINAL, e);

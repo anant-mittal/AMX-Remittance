@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.device.CardReader;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
@@ -38,9 +39,9 @@ public class SWAdapterController {
 	@ResponseBody
 	@RequestMapping(value = "/pub/script/validation.js", method = RequestMethod.GET)
 	public String makesession(@RequestParam String tranx) throws Exception {
-		adapterServiceClient.pairTerminal(kwtCardReaderService.getAddress(),
+		AmxApiResponse<Object, Object> x = adapterServiceClient.pairTerminal(kwtCardReaderService.getAddress(),
 				kwtCardReaderService.getDevicePairingCreds(), kwtCardReaderService.getSessionPairingCreds(), tranx);
-		return "var _ba_ = true";
+		return "var _tid_ = '" + x.getResult() + "', _rid_ = '" + x.getMeta() + "' ";
 	}
 
 	@ResponseBody

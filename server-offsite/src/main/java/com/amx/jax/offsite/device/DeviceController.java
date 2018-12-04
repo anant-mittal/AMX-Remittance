@@ -139,20 +139,16 @@ public class DeviceController {
 	}
 
 	@RequestMapping(value = { DeviceConstants.Path.SESSION_TERMINAL }, method = { RequestMethod.GET })
-	public AmxApiResponse<SessionPairingCreds, Object> webAppLogin() {
+	public AmxApiResponse<Object, Object> webAppLogin() {
 		DeviceData deviceData = deviceRequestValidator.validateRequest();
 		String terminalId = deviceData.getTerminalId();
-
 		sSOTranx.get().setBranchAdapterId(deviceRequestValidator.getDeviceRegId());
 		sSOTranx.get().getUserClient().setTerminalId(terminalId);
-
 		// sSOTranx.get().getUserClient().setDeviceRegId(deviceRequestValidator.getDeviceRegId());
 		// sSOTranx.get().getUserClient().setGlobalIpAddress(deviceData.getGlobalIp());
 		// sSOTranx.get().getUserClient().setLocalIpAddress(deviceData.getLocalIp());
-
 		sSOTranx.save();
-
-		return AmxApiResponse.build();
+		return AmxApiResponse.build(terminalId, deviceRequestValidator.getDeviceRegId());
 	}
 
 }
