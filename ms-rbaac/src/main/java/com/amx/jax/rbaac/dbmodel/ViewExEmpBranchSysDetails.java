@@ -21,6 +21,9 @@ public class ViewExEmpBranchSysDetails implements Serializable {
 	@Column(name = "SEQ_ID")
 	private BigDecimal seqId;
 
+	@Column(name = "BRANCH_SYS_INVENTORY_ID")
+	private BigDecimal branchSysInventoryId;
+
 	@Column(name = "EMPLOYEE_ID")
 	private BigDecimal employeeId;
 
@@ -36,14 +39,20 @@ public class ViewExEmpBranchSysDetails implements Serializable {
 	@Column(name = "IP_ADDRESS")
 	private BigDecimal ipAddress;
 
-	
-	
 	public BigDecimal getSeqId() {
 		return seqId;
 	}
 
 	public void setSeqId(BigDecimal seqId) {
 		this.seqId = seqId;
+	}
+
+	public BigDecimal getBranchSysInventoryId() {
+		return branchSysInventoryId;
+	}
+
+	public void setBranchSysInventoryId(BigDecimal branchSysInventoryId) {
+		this.branchSysInventoryId = branchSysInventoryId;
 	}
 
 	public BigDecimal getEmployeeId() {
@@ -85,6 +94,5 @@ public class ViewExEmpBranchSysDetails implements Serializable {
 	public void setIpAddress(BigDecimal ipAddress) {
 		this.ipAddress = ipAddress;
 	}
-	
 
 }

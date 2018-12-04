@@ -1,6 +1,11 @@
 package com.amx.jax.rbaac.dto;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
+
+import javax.validation.constraints.NotNull;
+
+import org.hibernate.validator.constraints.NotBlank;
 
 import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.dict.UserClient.DeviceType;
@@ -11,17 +16,23 @@ public class UserClientDto implements Serializable {
 
 	// Category Informations
 	ClientType clientType;
+
+	@NotNull(message = "Device Type Can not be Null or Empty")
 	DeviceType deviceType;
 
 	// Terminal Identifications
-	String terminalId;
+	BigDecimal terminalId;
+
+	@NotBlank(message = "Local Ip Address Can not be Null or Empty")
 	String localIpAddress;
+
+	@NotBlank(message = "Global Ip Address Can not be Null or Empty")
 	String globalIpAddress;
 
 	// Device Identifications
-	String deviceId;
-	String deviceRegId;
-	String deviceRegToken;
+	String deviceId; // req
+	BigDecimal deviceRegId; // req
+	String deviceRegToken; // req
 
 	// Session/Request Identifications
 	String deviceSessionToken;
@@ -43,11 +54,11 @@ public class UserClientDto implements Serializable {
 		this.deviceType = deviceType;
 	}
 
-	public String getTerminalId() {
+	public BigDecimal getTerminalId() {
 		return terminalId;
 	}
 
-	public void setTerminalId(String terminalId) {
+	public void setTerminalId(BigDecimal terminalId) {
 		this.terminalId = terminalId;
 	}
 
@@ -75,11 +86,11 @@ public class UserClientDto implements Serializable {
 		this.deviceId = deviceId;
 	}
 
-	public String getDeviceRegId() {
+	public BigDecimal getDeviceRegId() {
 		return deviceRegId;
 	}
 
-	public void setDeviceRegId(String deviceRegId) {
+	public void setDeviceRegId(BigDecimal deviceRegId) {
 		this.deviceRegId = deviceRegId;
 	}
 

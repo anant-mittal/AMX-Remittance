@@ -24,6 +24,7 @@ import com.amx.jax.rbaac.dbmodel.Employee;
 import com.amx.jax.rbaac.dbmodel.Role;
 import com.amx.jax.rbaac.dbmodel.UserRoleMapping;
 import com.amx.jax.rbaac.dbmodel.ViewExEmpBranchSysDetails;
+import com.amx.jax.rbaac.dto.UserClientDto;
 import com.amx.jax.rbaac.dto.request.UserAuthInitReqDTO;
 import com.amx.jax.rbaac.dto.request.UserAuthorisationReqDTO;
 import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
@@ -83,13 +84,18 @@ public class UserAuthService {
 
 		String employeeNo = userAuthInitReqDTO.getEmployeeNo();
 		String identity = userAuthInitReqDTO.getIdentity();
-		String ipAddress = userAuthInitReqDTO.getIpAddress();
-		String deviceId = userAuthInitReqDTO.getDeviceId();
-		DeviceType deviceType = userAuthInitReqDTO.getDeviceType();
+
+		UserClientDto userClientDto = userAuthInitReqDTO.getUserClientDto();
+
+		String ipAddress = userClientDto.getGlobalIpAddress();
+		// String deviceId = userClientDto.getDeviceId();
+		DeviceType deviceType = userClientDto.getDeviceType();
 
 		String partnerIdentity = userAuthInitReqDTO.getPartnerIdentity();
-		boolean isAssisted = null == userAuthInitReqDTO.getLoginType() ? false
-				: (LOGIN_TYPE.ASSISTED.equals(userAuthInitReqDTO.getLoginType()) ? true : false);
+		LOGIN_TYPE loginType = userAuthInitReqDTO.getLoginType();
+
+		// Login Type Assisted Check
+		boolean isAssisted = null == loginType ? false : (LOGIN_TYPE.ASSISTED.equals(loginType) ? true : false);
 
 		/**
 		 * Input -> Invalid
@@ -110,20 +116,13 @@ public class UserAuthService {
 			}
 		}
 
-		if (DeviceType.MOBILE.isParentOf(deviceType) && StringUtils.isBlank(deviceId)) {
-			throw new AuthServiceException("Device Id is Mandatory for Mobile Devices",
-					RbaacServiceError.INVALID_OR_MISSING_DATA);
-		}
-
 		List<Employee> employees = rbaacDao.getEmployees(employeeNo, identity);
 
-		/*
-		 * if (DeviceType.MOBILE.isParentOf(deviceType.getParent())) { employees =
-		 * rbaacDao.getEmployeesByDeviceId(employeeNo, identity, deviceId); } else {
-		 * employees = rbaacDao.getEmployees(employeeNo, identity, ipAddress); }
-		 */
+		Employee selfEmployee = getValidEmployee(employees, userAuthInitReqDTO);
 
-		Employee selfEmployee = getValidEmployee(employees, userAuthInitReqDTO); // here
+		// Validate Employee Device/Terminal Assignment
+
+		validateLoginClient(selfEmployee, userAuthInitReqDTO);
 
 		/**
 		 * For Assisted Login;
@@ -132,7 +131,6 @@ public class UserAuthService {
 
 		if (isAssisted) {
 			List<Employee> possiblePartners = rbaacDao.getEmployeesByCivilId(partnerIdentity);
-			// partnerEmployee = getValidEmployee(possiblePartners, "Partner"); //here
 
 			partnerEmployee = getValidEmployee(possiblePartners, userAuthInitReqDTO);
 		}
@@ -296,7 +294,6 @@ public class UserAuthService {
 	private Employee getValidEmployee(List<Employee> employees, UserAuthInitReqDTO userAuthInitReqDTO) {
 
 		LOGIN_TYPE loginType = userAuthInitReqDTO.getLoginType();
-		DeviceType deviceType = userAuthInitReqDTO.getDeviceType();
 
 		/**
 		 * Invalid Employee Details
@@ -342,23 +339,68 @@ public class UserAuthService {
 					RbaacServiceError.USER_ACCOUNT_LOCKED);
 		}
 
+		return validEmployee;
+	}
+
+	private boolean validateLoginClient(Employee employee, UserAuthInitReqDTO userAuthInitReqDTO) {
+
+		UserClientDto userClientDto = userAuthInitReqDTO.getUserClientDto();
+
+		if (null == userClientDto) {
+			throw new AuthServiceException("User Client Info Is Null", RbaacServiceError.CLIENT_NOT_FOUND);
+		}
+
+		DeviceType deviceType = userClientDto.getDeviceType();
+
 		// Check for Employee System Assignment
 		if (DeviceType.COMPUTER.isParentOf(deviceType)) {
 
-			List<ViewExEmpBranchSysDetails> empBranchSysDetails = rbaacDao.getEmpBranchSysDetailsByEmpIdAndIpAddr(
-					validEmployee.getEmployeeId(), userAuthInitReqDTO.getIpAddress());
+			if (null == userClientDto.getTerminalId()) {
+
+				throw new AuthServiceException("Terminal Id is Mandatory for Computer Terminals",
+						RbaacServiceError.INVALID_OR_MISSING_TERMINAL_ID);
+			}
+
+			List<ViewExEmpBranchSysDetails> empBranchSysDetails = rbaacDao
+					.getEmpBranchSysDetailsByEmpIdAndBranchSysInventoryId(employee.getEmployeeId(),
+							userAuthInitReqDTO.getUserClientDto().getTerminalId());
 
 			if (null == empBranchSysDetails || empBranchSysDetails.isEmpty()) {
-				throw new AuthServiceException(
-						"Branch System is Invalid, NONE Found to be assigned :: Pls contact Support : " + loginType,
+
+				throw new AuthServiceException("Branch System/Terminal is Invalid, NONE found to be assigned.",
 						RbaacServiceError.BRANCH_SYSTEM_NOT_FOUND);
+
 			}
+			if (empBranchSysDetails.size() > 1) {
+
+				LOGGER.warn("Multiple Active Terminals with Same Terminal Id: "
+						+ userAuthInitReqDTO.getUserClientDto().getTerminalId() + " exist for Employee Id : "
+						+ employee.getEmployeeId());
+
+			}
+
+			return Boolean.TRUE;
 
 		} else if (DeviceType.MOBILE.isParentOf(deviceType)) {
 
+			// Device and terminal Validations
+			if (StringUtils.isBlank(userClientDto.getDeviceId()) || null == userClientDto.getDeviceRegId()
+					|| StringUtils.isBlank(userClientDto.getDeviceRegToken())) {
+
+				throw new AuthServiceException(
+						"Valid Device Info is Mandatory for Mobile/Tablet Devices, DeviceId: "
+								+ userClientDto.getDeviceId() + ", Device Reg Id: " + userClientDto.getDeviceRegId()
+								+ " Device Reg Token: " + userClientDto.getDeviceRegToken(),
+						RbaacServiceError.INVALID_OR_MISSING_DEVICE_ID);
+
+			}
+
+			return deviceService.validateEmployeeDeviceMapping(employee.getEmployeeId(), userClientDto.getDeviceId(),
+					userClientDto.getDeviceRegId(), userClientDto.getDeviceRegToken());
+
 		}
 
-		return validEmployee;
+		return Boolean.FALSE;
 	}
 
 	private RoleResponseDTO getRoleForUser(BigDecimal userId) {

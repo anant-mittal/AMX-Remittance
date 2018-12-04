@@ -169,6 +169,11 @@ public class RbaacDao {
 		return vwEmpBranchSysDetailsRepository.findByEmployeeIdAndIpAddress(empId, ipAddress);
 	}
 
+	public List<ViewExEmpBranchSysDetails> getEmpBranchSysDetailsByEmpIdAndBranchSysInventoryId(BigDecimal empId,
+			BigDecimal sysInventoryId) {
+		return vwEmpBranchSysDetailsRepository.findByEmployeeIdAndBranchSysInventoryId(empId, sysInventoryId);
+	}
+
 	public Employee fetchEmpDetails(String empcode, String identity, String ipAddress) {
 		List<Employee> empList = employeeRepository.findByEmployeeNumberAndCivilId(empcode, identity);
 		if (null != empList && !empList.isEmpty()) {

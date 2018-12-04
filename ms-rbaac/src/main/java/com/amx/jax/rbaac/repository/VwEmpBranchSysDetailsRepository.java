@@ -12,4 +12,7 @@ public interface VwEmpBranchSysDetailsRepository extends CrudRepository<ViewExEm
 
 	public List<ViewExEmpBranchSysDetails> findByEmployeeIdAndIpAddress(BigDecimal employeeId, String ipAddress);
 
+	public List<ViewExEmpBranchSysDetails> findByEmployeeIdAndBranchSysInventoryId(BigDecimal employeeId,
+			BigDecimal branchSysInvId);
+
 }

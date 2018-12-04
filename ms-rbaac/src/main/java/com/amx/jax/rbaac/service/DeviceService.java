@@ -21,6 +21,7 @@ import com.amx.jax.constant.DeviceState;
 import com.amx.jax.dbmodel.Device;
 import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.rbaac.RbaacConstants;
+import com.amx.jax.rbaac.constants.RbaacServiceConstants;
 import com.amx.jax.rbaac.dao.DeviceDao;
 import com.amx.jax.rbaac.dto.DeviceDto;
 import com.amx.jax.rbaac.dto.DevicePairOtpResponse;
@@ -193,13 +194,37 @@ public class DeviceService extends AbstractService {
 		return deviceDao.findDeviceByEmployee(employeeId, deviceClientType);
 	}
 
-	/**
-	 * 
-	 * @param registrationId
-	 * @return
-	 */
-	public Device getDeviceByRegistrationId(BigDecimal registrationId) {
-		return deviceDao.findDevice(registrationId);
+	public boolean validateEmployeeDeviceMapping(BigDecimal employeeId, String deviceId, BigDecimal deviceRegId,
+			String deviceRegToken) {
+
+		if (RbaacServiceConstants.OFFSITE_DEVICE_REG_ID.equals(deviceRegId)) {
+
+			Device device = deviceDao.findDeviceByEmployee(employeeId, ClientType.OFFSITE_PAD);
+
+			if (device == null || employeeId != device.getEmployeeId()
+					|| !deviceId.equalsIgnoreCase(device.getDeviceId())) {
+
+				throw new AuthServiceException("Invalid Device Client : Not Paired or Not Mapped",
+						RbaacServiceError.DEVICE_CLIENT_INVALID);
+
+			}
+
+		} else {
+
+			Device device = deviceDao.findDevice(deviceRegId);
+
+			if (device == null || employeeId != device.getEmployeeId()
+					|| !deviceId.equalsIgnoreCase(device.getDeviceId())
+					|| !deviceRegToken.equalsIgnoreCase(deviceRegToken)) {
+
+				throw new AuthServiceException("Invalid Device Client : Not Paired or Not Mapped",
+						RbaacServiceError.DEVICE_CLIENT_INVALID);
+
+			}
+
+		}
+
+		return Boolean.TRUE;
 	}
 
 }

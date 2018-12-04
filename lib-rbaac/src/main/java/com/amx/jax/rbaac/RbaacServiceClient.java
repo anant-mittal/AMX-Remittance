@@ -55,15 +55,20 @@ public class RbaacServiceClient implements IRbaacService {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.amx.jax.rbaac.IRbaacService#initAuthForUser(com.amx.jax.rbaac.dto.request.
-	 * UserAuthInitReqDTO)
+	 * @see com.amx.jax.rbaac.IRbaacService#initAuthForUser(com.amx.jax.rbaac.dto.
+	 * request. UserAuthInitReqDTO)
 	 */
 	@Override
 	public AmxApiResponse<UserAuthInitResponseDTO, Object> initAuthForUser(UserAuthInitReqDTO userAuthInitReqDTO) {
 
+		String ipAddr = "";
+
+		if (null != userAuthInitReqDTO.getUserClientDto()) {
+			ipAddr = userAuthInitReqDTO.getUserClientDto().getGlobalIpAddress();
+		}
+
 		LOGGER.info("Init Auth Request called for Employee No: {}, Identity: {}, from IP address: {}, with TraceId: {}",
-				userAuthInitReqDTO.getEmployeeNo(), userAuthInitReqDTO.getIdentity(), userAuthInitReqDTO.getIpAddress(),
+				userAuthInitReqDTO.getEmployeeNo(), userAuthInitReqDTO.getIdentity(), ipAddr,
 				AppContextUtil.getTraceId());
 
 		return restService.ajax(appConfig.getAuthURL()).path(ApiEndPoints.INIT_AUTH).post(userAuthInitReqDTO)
@@ -191,8 +196,8 @@ public class RbaacServiceClient implements IRbaacService {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.amx.jax.rbaac.IRbaacService#updateEmployeeAccountDetails(com.amx.jax.rbaac
-	 * .dto.request.EmployeeDetailsRequestDTO)
+	 * com.amx.jax.rbaac.IRbaacService#updateEmployeeAccountDetails(com.amx.jax.
+	 * rbaac .dto.request.EmployeeDetailsRequestDTO)
 	 */
 	@Override
 	public AmxApiResponse<EmployeeDetailsDTO, Object> updateEmployeeAccountDetails(
@@ -229,7 +234,7 @@ public class RbaacServiceClient implements IRbaacService {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 	@Override
 	public AmxApiResponse<DeviceDto, Object> registerNewDevice(DeviceRegistrationRequest request) {
 		LOGGER.debug("in registerNewDevice");
@@ -304,15 +309,14 @@ public class RbaacServiceClient implements IRbaacService {
 	@Override
 	public AmxApiResponse<RoleMappingForEmployee, Object> getRoleMappingsForEmployee(BigDecimal employeeId,
 			String ipAddress, String deviceId, Boolean filterRole) {
-		
+
 		LOGGER.debug("in getRoleMappingsForEmployee");
-		
+
 		return restService.ajax(appConfig.getAuthURL()).path(ApiEndPoints.GET_ROLE_MAPPING_FOR_EMPLOYEE)
 				.queryParam("employeeId", employeeId).queryParam("ipAddress", ipAddress)
 				.queryParam("deviceId", deviceId).queryParam("filterRole", filterRole).post()
 				.as(new ParameterizedTypeReference<AmxApiResponse<RoleMappingForEmployee, Object>>() {
 				});
 	}
-
 
 }

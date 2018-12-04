@@ -9,8 +9,8 @@ import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotBlank;
 
-import com.amx.jax.dict.UserClient.DeviceType;
 import com.amx.jax.rbaac.constants.RbaacServiceConstants.LOGIN_TYPE;
+import com.amx.jax.rbaac.dto.UserClientDto;
 
 /**
  * The Class UserAuthInitReqDTO.
@@ -30,38 +30,26 @@ public class UserAuthInitReqDTO implements Serializable {
 	@NotBlank(message = "Employee Identity Can not be Null or Empty")
 	private String identity;
 
-	/** The ip address. */
-	@NotBlank(message = "Ip Address Can not be Null or Empty")
-	private String ipAddress;
-
-	/** The device id. */
-	private String deviceId;
-
-	/** The terminal id. */
-	private String terminalId;
-
 	/** The partner identity. */
 	private String partnerIdentity;
-
-	/** The device type. */
-	@NotNull(message = "Device Type Can not be Null or Empty")
-	private DeviceType deviceType;
 
 	/** The login type. */
 	@NotNull(message = "Login Type Can not be Null or Empty")
 	private LOGIN_TYPE loginType = LOGIN_TYPE.SELF;
 
-	/**
-	 * Security Access Code for Self user
-	 */
+	/** Security Access Code for Self user. */
 	@NotBlank(message = "Self SAC Can not be Null or Empty")
 	private String selfSAC;
 
-	/**
-	 * Security Access Code for partner
-	 */
+	/** Security Access Code for partner. */
 	private String partnerSAC;
 
+	
+	/** The user client dto. */
+	@NotNull(message = "User Client Info Can not be Null or Empty")
+	private UserClientDto userClientDto;
+	
+	
 	/**
 	 * Gets the employee no.
 	 *
@@ -74,7 +62,8 @@ public class UserAuthInitReqDTO implements Serializable {
 	/**
 	 * Sets the employee no.
 	 *
-	 * @param employeeNo the new employee no
+	 * @param employeeNo
+	 *            the new employee no
 	 */
 	public void setEmployeeNo(String employeeNo) {
 		this.employeeNo = employeeNo;
@@ -92,82 +81,11 @@ public class UserAuthInitReqDTO implements Serializable {
 	/**
 	 * Sets the identity.
 	 *
-	 * @param identity the new identity
+	 * @param identity
+	 *            the new identity
 	 */
 	public void setIdentity(String identity) {
 		this.identity = identity;
-	}
-
-	/**
-	 * Gets the ip address.
-	 *
-	 * @return the ip address
-	 */
-	public String getIpAddress() {
-		return ipAddress;
-	}
-
-	/**
-	 * Sets the ip address.
-	 *
-	 * @param ipAddress the new ip address
-	 */
-	public void setIpAddress(String ipAddress) {
-		this.ipAddress = ipAddress;
-	}
-
-	/**
-	 * Gets the device id.
-	 *
-	 * @return the device id
-	 */
-	public String getDeviceId() {
-		return deviceId;
-	}
-
-	/**
-	 * Sets the device id.
-	 *
-	 * @param deviceId the new device id
-	 */
-	public void setDeviceId(String deviceId) {
-		this.deviceId = deviceId;
-	}
-
-	/**
-	 * Gets the device type.
-	 *
-	 * @return the device type
-	 */
-	public DeviceType getDeviceType() {
-		return deviceType;
-	}
-
-	/**
-	 * Sets the device type.
-	 *
-	 * @param deviceType the new device type
-	 */
-	public void setDeviceType(DeviceType deviceType) {
-		this.deviceType = deviceType;
-	}
-
-	/**
-	 * Gets the Terminal Id.
-	 *
-	 * @return the terminal id
-	 */
-	public String getTerminalId() {
-		return terminalId;
-	}
-
-	/**
-	 * Sets the Terminal Id.
-	 *
-	 * @param terminalId the new terminal id
-	 */
-	public void setTerminalId(String terminalId) {
-		this.terminalId = terminalId;
 	}
 
 	/**
@@ -182,7 +100,8 @@ public class UserAuthInitReqDTO implements Serializable {
 	/**
 	 * Sets the login type.
 	 *
-	 * @param loginType the new login type
+	 * @param loginType
+	 *            the new login type
 	 */
 	public void setLoginType(LOGIN_TYPE loginType) {
 		this.loginType = loginType;
@@ -200,26 +119,65 @@ public class UserAuthInitReqDTO implements Serializable {
 	/**
 	 * Sets the partner identity.
 	 *
-	 * @param partnerIdentity the new partner identity
+	 * @param partnerIdentity
+	 *            the new partner identity
 	 */
 	public void setPartnerIdentity(String partnerIdentity) {
 		this.partnerIdentity = partnerIdentity;
 	}
 
+	/**
+	 * Gets the self SAC.
+	 *
+	 * @return the self SAC
+	 */
 	public String getSelfSAC() {
 		return selfSAC;
 	}
 
+	/**
+	 * Sets the self SAC.
+	 *
+	 * @param selfSAC the new self SAC
+	 */
 	public void setSelfSAC(String selfSAC) {
 		this.selfSAC = selfSAC;
 	}
 
+	/**
+	 * Gets the partner SAC.
+	 *
+	 * @return the partner SAC
+	 */
 	public String getPartnerSAC() {
 		return partnerSAC;
 	}
 
+	/**
+	 * Sets the partner SAC.
+	 *
+	 * @param partnerSAC the new partner SAC
+	 */
 	public void setPartnerSAC(String partnerSAC) {
 		this.partnerSAC = partnerSAC;
+	}
+
+	/**
+	 * Gets the user client dto.
+	 *
+	 * @return the user client dto
+	 */
+	public UserClientDto getUserClientDto() {
+		return userClientDto;
+	}
+
+	/**
+	 * Sets the user client dto.
+	 *
+	 * @param userClientDto the new user client dto
+	 */
+	public void setUserClientDto(UserClientDto userClientDto) {
+		this.userClientDto = userClientDto;
 	}
 
 }
