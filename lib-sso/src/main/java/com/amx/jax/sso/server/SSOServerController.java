@@ -26,6 +26,7 @@ import com.amx.jax.AppContextUtil;
 import com.amx.jax.adapter.DeviceConnectorClient;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.device.CardData;
+import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.http.ApiRequest;
 import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.http.CommonHttpRequest.CommonMediaType;
@@ -109,6 +110,18 @@ public class SSOServerController {
 		return JsonUtil.toJson(result);
 	}
 
+	/**
+	 * @deprecated do not use this
+	 * 
+	 * @param username
+	 * @param password
+	 * @param model
+	 * @param html
+	 * @return
+	 * @throws MalformedURLException
+	 * @throws URISyntaxException
+	 */
+	@Deprecated
 	@RequestMapping(value = SSOConstants.SSO_LOGIN_URL_HTML, method = RequestMethod.POST)
 	public String sendOTP(@RequestParam String username, @RequestParam String password, Model model,
 			@PathVariable(required = false, value = "htmlstep") @ApiParam(defaultValue = "DO") SSOAuthStep html)
@@ -130,6 +143,7 @@ public class SSOServerController {
 	public String loginJson(@RequestBody SSOLoginFormData formdata,
 			@PathVariable(required = false, value = "jsonstep") @ApiParam(defaultValue = "CREDS") SSOAuthStep json,
 			HttpServletResponse resp,
+			@RequestParam(required = false) ClientType deviceType,
 			@RequestParam(required = false, defaultValue = "SELF") LOGIN_TYPE loginType,
 			@RequestParam(required = false) Boolean redirect) throws URISyntaxException, IOException {
 
@@ -162,8 +176,7 @@ public class SSOServerController {
 				init.setTerminalId(sSOTranx.get().getTerminalId());
 				init.setLoginType(loginType);
 				init.setSelfSAC(ssoUser.getSelfSAC());
-				
-				
+
 				if (loginType == LOGIN_TYPE.ASSISTED) {
 					init.setPartnerIdentity(formdata.getPartnerIdentity());
 					init.setPartnerSAC(ssoUser.getPartnerSAC());
