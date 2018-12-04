@@ -425,6 +425,20 @@
                                     <![CDATA[$F{tranx}.get("deliveryDate")+" / "+ $F{tranx}.get("deliveryTime") ]]>
                                 </textFieldExpression>
                             </textField>
+                            
+                            <textField isStretchWithOverflow="true">
+                                <reportElement x="485" y="4" width="100" height="15"
+                                               forecolor="#000000"
+                                               isPrintWhenDetailOverflows="true"/>
+                                <textElement textAlignment="Right">
+                                    <font fontName="Arial" size="8" isItalic="true"
+                                          pdfFontName="fonts/all/arialbd.ttf"/>
+                                </textElement>
+                                <textFieldExpression class="java.lang.String">
+                                    <![CDATA[$R{label.deliveryDateTime}]]>
+                                </textFieldExpression>
+                            </textField>
+                            
 
                            
                         </frame>
@@ -603,6 +617,20 @@
                                     <![CDATA[$F{tranx}.get("receiptNo")]]>
                                 </textFieldExpression>
                             </textField>
+                            
+                            <textField isStretchWithOverflow="true">
+                                <reportElement x="485" y="4" width="100" height="15"
+                                               forecolor="#000000"
+                                               isPrintWhenDetailOverflows="true"/>
+                                <textElement textAlignment="Right">
+                                    <font fontName="Arial" size="8" isItalic="true"
+                                          pdfFontName="fonts/all/arialbd.ttf"/>
+                                </textElement>
+                                <textFieldExpression class="java.lang.String">
+                                    <![CDATA[$R{label.receiptNo}]]>
+                                </textFieldExpression>
+                            </textField>
+                            
 
                          </frame>
                         <!--##################Receipt No  END####################-->
@@ -684,6 +712,19 @@
                                     <![CDATA[$R{label.foreignCurDetails}]]>
                                 </textFieldExpression>
                             </textField>
+                            
+                             <textField isStretchWithOverflow="true">
+                                <reportElement x="485" y="4" width="100" height="15"
+                                               forecolor="#000000"
+                                               isPrintWhenDetailOverflows="true"/>
+                                <textElement textAlignment="Right">
+                                    <font fontName="Arial" size="8" isItalic="true"
+                                          pdfFontName="fonts/all/arialbd.ttf"/>
+                                </textElement>
+                                <textFieldExpression class="java.lang.String">
+                                    <![CDATA[$R{label.foreignCurDetails}]]>
+                                </textFieldExpression>
+                            </textField>
 
                         </frame>
                         <!--##################Foreign Currency Details END####################-->
@@ -717,6 +758,19 @@
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
                                     <![CDATA[$F{tranx}.get("/fxOrderTrnxList/[0]/foreignCurrencyCode")]]>
+                                </textFieldExpression>
+                            </textField>
+                            
+                               <textField isStretchWithOverflow="true">
+                                <reportElement x="485" y="4" width="100" height="15"
+                                               forecolor="#000000"
+                                               isPrintWhenDetailOverflows="true"/>
+                                <textElement textAlignment="Right">
+                                    <font fontName="Arial" size="8" isItalic="true"
+                                          pdfFontName="fonts/all/arialbd.ttf"/>
+                                </textElement>
+                                <textFieldExpression class="java.lang.String">
+                                    <![CDATA[$R{label.foreignCur}]]>
                                 </textFieldExpression>
                             </textField>
 
@@ -1373,6 +1427,20 @@
                                     <![CDATA[$F{tranx}.get("payg/paymentMode")]]>
                                 </textFieldExpression>
                             </textField>
+                            
+                             <textField isStretchWithOverflow="true">
+                                <reportElement x="485" y="4" width="100" height="45"
+                                               forecolor="#000000"
+                                               isPrintWhenDetailOverflows="true"/>
+                                <textElement textAlignment="Right">
+                                    <font fontName="Arial" size="8" isItalic="true"
+                                          pdfFontName="fonts/all/arialbd.ttf"/>
+                                </textElement>
+                                <textFieldExpression class="java.lang.String">
+                                    <![CDATA[$R{label.paymentMode}]]>
+                                </textFieldExpression>
+                            </textField>
+                            
 
                            
                             
@@ -1408,6 +1476,19 @@
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
                                 <![CDATA[$F{tranx}.get("approvalNo","-")]]>
+                                </textFieldExpression>
+                            </textField>
+                            
+                               <textField isStretchWithOverflow="true">
+                                <reportElement x="485" y="4" width="100" height="45"
+                                               forecolor="#000000"
+                                               isPrintWhenDetailOverflows="true"/>
+                                <textElement textAlignment="Right">
+                                    <font fontName="Arial" size="8" isItalic="true"
+                                          pdfFontName="fonts/all/arialbd.ttf"/>
+                                </textElement>
+                                <textFieldExpression class="java.lang.String">
+                                    <![CDATA[$R{label.approvedNo}]]>
                                 </textFieldExpression>
                             </textField>
 
@@ -1447,6 +1528,19 @@
                                 <![CDATA[$F{tranx}.get("payg/pgTransactionId")]]>
                                 </textFieldExpression>
                             </textField>
+                            
+                             <textField isStretchWithOverflow="true">
+                                <reportElement x="485" y="4" width="100" height="45"
+                                               forecolor="#000000"
+                                               isPrintWhenDetailOverflows="true"/>
+                                <textElement textAlignment="Right">
+                                    <font fontName="Arial" size="8" isItalic="true"
+                                          pdfFontName="fonts/all/arialbd.ttf"/>
+                                </textElement>
+                                <textFieldExpression class="java.lang.String">
+                                    <![CDATA[$R{label.transactionId}]]>
+                                </textFieldExpression>
+                            </textField>
 
                            
                             
@@ -1483,6 +1577,20 @@
                                 <![CDATA[$F{tranx}.get("payg/knetReceiptDateTime")]]>
                                 </textFieldExpression>
                             </textField>
+                            
+                             <textField isStretchWithOverflow="true">
+                                <reportElement x="485" y="4" width="100" height="45"
+                                               forecolor="#000000"
+                                               isPrintWhenDetailOverflows="true"/>
+                                <textElement textAlignment="Right">
+                                    <font fontName="Arial" size="8" isItalic="true"
+                                          pdfFontName="fonts/all/arialbd.ttf"/>
+                                </textElement>
+                                <textFieldExpression class="java.lang.String">
+                                    <![CDATA[$R{label.knetReceiptDateTime}]]>
+                                </textFieldExpression>
+                            </textField>
+                            
 
                            
                             
