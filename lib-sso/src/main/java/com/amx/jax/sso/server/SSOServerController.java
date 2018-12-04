@@ -196,12 +196,7 @@ public class SSOServerController {
 				init.setEmployeeNo(formdata.getEcnumber());
 				init.setIdentity(formdata.getIdentity());
 
-				/** TO be Removed **/
-				init.setIpAddress(userDevice.getIp());
-				init.setDeviceId(userDevice.getFingerprint());
-				init.setTerminalId(sSOTranx.get().getUserClient().getTerminalId());
-				init.setDeviceType(userDevice.getType());
-				/*** TO BE REMOVED */
+				init.setUserClientDto(ssomodel.getUserClient());
 
 				init.setLoginType(loginType);
 				init.setSelfSAC(ssoUser.getSelfSAC());
