@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -31,8 +32,8 @@ public class FxOrderBranchController {
 		return fxOrderBranchClient.fetchBranchOrderManagement();
 	}
 	
-	@RequestMapping(value = "/api/fxo/order/lock", method = { RequestMethod.POST })
-	public AmxApiResponse<BoolRespModel,Object> acceptOrderLock(
+	@RequestMapping(value = "/api/fxo/order/accept", method = { RequestMethod.POST })
+	public AmxApiResponse<BoolRespModel,Object> acceptOrder(
 			@RequestParam(value = "orderNumber", required = true) BigDecimal orderNumber,
 			@RequestParam(value = "orderYear", required = true) BigDecimal orderYear){
 		return fxOrderBranchClient.acceptOrderLock(orderNumber, orderYear);
@@ -63,7 +64,7 @@ public class FxOrderBranchController {
 	}
 	
 	@RequestMapping(value = "/api/fxo/order/pack",  method = { RequestMethod.POST })
-	public AmxApiResponse<BoolRespModel,Object> saveAndPrintReceipt(FcSaleBranchDispatchRequest fcSaleBranchDispatchRequest){
+	public AmxApiResponse<BoolRespModel,Object> saveAndPrintReceipt(@RequestBody FcSaleBranchDispatchRequest fcSaleBranchDispatchRequest){
 		return fxOrderBranchClient.printOrderSave(fcSaleBranchDispatchRequest);
 	}
 	
@@ -81,7 +82,7 @@ public class FxOrderBranchController {
 	}
 	
 //	@RequestMapping(value = "/api/fxo/order/dispatch",  method = { RequestMethod.POST })
-//	public AmxApiResponse<BoolRespModel,Object> dispatchOrder(FcSaleBranchDispatchRequest fcSaleBranchDispatchRequest){
+//	public AmxApiResponse<BoolRespModel,Object> dispatchOrder(@RequestBody FcSaleBranchDispatchRequest fcSaleBranchDispatchRequest){
 //		return fxOrderBranchClient.dispatchOrder(fcSaleBranchDispatchRequest);
 //	}
 	

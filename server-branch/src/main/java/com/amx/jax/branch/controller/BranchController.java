@@ -40,6 +40,7 @@ public class BranchController {
 	@RequestMapping(value = { "/register/**", "/app/**", "/login/**", "/push/**"}, method = { RequestMethod.GET })
 	public String defaultPage(Model model) {
 		model.addAttribute("cdnUrl", webAppConfig.getCleanCDNUrl());
+		model.addAttribute("oldBranchUrl", webAppConfig.getOldBranchUrl());
 		model.addAttribute("cdnVersion", getVersion());
 		model.addAttribute("applicationTitle", webAppConfig.getAppTitle());
 		return "index";
