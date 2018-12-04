@@ -37,7 +37,14 @@ public class DeviceDao {
 	@Autowired
 	RbaacDao rbaacDao;
 
-	public Device saveDevice(DeviceRegistrationRequest request) {
+	/**
+	 * 
+	 * 
+	 * @param request
+	 * @param registerDefault - Register device by default
+	 * @return
+	 */
+	public Device saveDevice(DeviceRegistrationRequest request, boolean registerDefault) {
 
 		Device device = new Device();
 		if (request.getBranchSystemIp() != null) {
@@ -54,7 +61,7 @@ public class DeviceDao {
 		device.setDeviceType(request.getDeviceType());
 		device.setStatus("N");
 		device.setState(DeviceState.REGISTERED_NOT_ACTIVE);
-		if (appConfig.isDebug()) {
+		if (registerDefault) {
 			device.setStatus(Constants.YES);
 			device.setState(DeviceState.REGISTERED);
 		}

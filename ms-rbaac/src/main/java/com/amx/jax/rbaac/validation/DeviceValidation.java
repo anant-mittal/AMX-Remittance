@@ -74,9 +74,10 @@ public class DeviceValidation {
 	 * validates device reg request
 	 * 
 	 * @param request
-	 * 
+	 * @param duplicateAllowed
+	 * @return TRUE if Activated Device with same identity already exists
 	 */
-	public void validateDeviceRegRequest(DeviceRegistrationRequest request) {
+	public boolean validateDeviceRegRequest(DeviceRegistrationRequest request, boolean duplicateAllowed) {
 		Device existing = null;
 		if (request.getBranchSystemIp() != null) {
 			BranchSystemDetail branchSystem = branchDetailService.findBranchSystemByIp(request.getBranchSystemIp());
@@ -90,9 +91,10 @@ public class DeviceValidation {
 		} else {
 			throw new AuthServiceException("Either Ip address or identity must be present");
 		}
-		if (existing != null) {
+		if (!duplicateAllowed && existing != null) {
 			throw new AuthServiceException("Device already registered", RbaacServiceError.CLIENT_ALREADY_REGISTERED);
 		}
+		return (existing != null);
 	}
 
 	public void validateSessionToken(String sessionToken, Integer registrationId) {
