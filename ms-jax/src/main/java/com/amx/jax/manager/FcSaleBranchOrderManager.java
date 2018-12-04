@@ -316,7 +316,7 @@ public class FcSaleBranchOrderManager {
 									deliveryDetailNew.setDeliveryTimeSlot(deliveryDetail.getDeliveryTimeSlot());
 									deliveryDetailNew.setDriverEmployeeId(driverId);
 									deliveryDetailNew.setIsActive(deliveryDetail.getIsActive());
-									deliveryDetailNew.setOrderStatus(deliveryDetail.getOrderStatus());
+									deliveryDetailNew.setOrderStatus(ConstantDocument.PCK);
 									deliveryDetailNew.setOtpToken(deliveryDetail.getOtpToken());
 									deliveryDetailNew.setRemarksId(deliveryDetail.getRemarksId());
 									deliveryDetailNew.setShippingAddressId(deliveryDetail.getShippingAddressId());
@@ -334,6 +334,7 @@ public class FcSaleBranchOrderManager {
 									deliveryDetail.setDriverEmployeeId(driverId);
 									deliveryDetail.setUpdatedBy(userName);
 									deliveryDetail.setUopdateDate(new Date());
+									deliveryDetail.setOrderStatus(ConstantDocument.PCK);
 									fcSaleBranchDao.saveDeliveryDetailsDriverId(deliveryDetail);
 									status = Boolean.TRUE;
 								}
@@ -837,6 +838,45 @@ public class FcSaleBranchOrderManager {
 		}
 		
 		return decimalValue;
+	}
+	
+	public Boolean dispatchOrder(BigDecimal applicationCountryId,BigDecimal orderNumber,BigDecimal orderYear,BigDecimal employeeId) {
+		Boolean status = Boolean.FALSE;
+		String userName = null;
+		
+		try {
+			// receipt payment Details
+			List<OrderManagementView> lstOrderManagement = fetchFcSaleOrderDetails(applicationCountryId, orderNumber, orderYear);
+			if(lstOrderManagement != null && lstOrderManagement.size() != 0) {
+				// checking delivery details order lock and employee id assign
+				OrderManagementView orderManagementView = lstOrderManagement.get(0);
+				FxDeliveryDetailsModel deliveryDetails = fcSaleBranchDao.fetchDeliveryDetails(orderManagementView.getDeliveryDetailsId(),ConstantDocument.Yes);
+				if(deliveryDetails != null) {
+					if(deliveryDetails.getOrderLock() != null && deliveryDetails.getEmployeeId() != null) {
+						FxEmployeeDetailsDto employeeDt = fetchEmployee(employeeId);
+						if(employeeDt != null && employeeDt.getEmployeeId() != null){
+							userName = employeeDt.getUserName();
+							fcSaleBranchDao.saveDispatchOrder(lstOrderManagement,employeeId,userName,ConstantDocument.OFD_ACK);
+							status = Boolean.TRUE;
+						}else {
+							throw new GlobalException("Employee details is empty",JaxError.INVALID_EMPLOYEE);
+						}
+					}else {
+						throw new GlobalException("Dispatch order is not locked",JaxError.ORDER_IS_NOT_LOCK);
+					}
+				}
+			}
+		}catch (GlobalException e) {
+			e.printStackTrace();
+			logger.error("Error in dispatchOrder", e.getMessage()+" applicationCountryId :"+applicationCountryId+" orderNumber :"+orderNumber+" orderYear :"+orderYear+" employeeId :"+employeeId);
+			throw new GlobalException(e.getErrorMessage(),e.getErrorKey());
+		}catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error in dispatchOrder", e.getMessage()+" applicationCountryId :"+applicationCountryId+" orderNumber :"+orderNumber+" orderYear :"+orderYear+" employeeId :"+employeeId);
+			throw new GlobalException(e.getMessage());
+		}
+		
+		return status;
 	}
 	
 }

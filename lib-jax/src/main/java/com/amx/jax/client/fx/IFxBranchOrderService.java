@@ -41,7 +41,7 @@ public interface IFxBranchOrderService extends IJaxService {
 	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND,JaxError.NULL_APPLICATION_COUNTRY_ID,JaxError.NULL_EMPLOYEE_ID,JaxError.NULL_AREA_CODE,JaxError.INVALID_EMPLOYEE,JaxError.UNABLE_CONVERT_PENDING_RECORDS })
 	AmxApiResponse<FcSaleOrderManagementDTO,Object> fetchBranchOrderManagement();
 
-	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND,JaxError.NULL_APPLICATION_COUNTRY_ID,JaxError.NULL_ORDER_NUBMER,JaxError.NULL_ORDER_YEAR })
+	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND,JaxError.NULL_APPLICATION_COUNTRY_ID,JaxError.NULL_ORDER_NUBMER,JaxError.NULL_ORDER_YEAR,JaxError.NULL_EMPLOYEE_ID })
 	AmxApiResponse<FcSaleOrderManagementDTO,Object> fetchBranchOrderDetails(BigDecimal orderNumber,BigDecimal orderYear);
 
 	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND,JaxError.NULL_APPLICATION_COUNTRY_ID,JaxError.NULL_CURRENCY_ID,JaxError.NULL_EMPLOYEE_ID,JaxError.INVALID_EMPLOYEE })
@@ -69,4 +69,8 @@ public interface IFxBranchOrderService extends IJaxService {
 	@ApiJaxStatus({ JaxError.NULL_APPLICATION_COUNTRY_ID,JaxError.NULL_EMPLOYEE_ID,JaxError.NULL_ORDER_NUBMER,JaxError.SAVE_FAILED,JaxError.INVALID_COLLECTION_DOCUMENT_NO,JaxError.ORDER_RELEASED_ALREADY
 		,JaxError.NO_DELIVERY_DETAILS,JaxError.NULL_ORDER_YEAR,JaxError.INVALID_EMPLOYEE})
 	AmxApiResponse<BoolRespModel,Object> releaseOrderLock(BigDecimal orderNumber,BigDecimal orderYear);
+	
+	@ApiJaxStatus({ JaxError.NULL_APPLICATION_COUNTRY_ID,JaxError.NULL_ORDER_NUBMER,JaxError.NULL_ORDER_YEAR,JaxError.NULL_EMPLOYEE_ID,JaxError.SAVE_FAILED,JaxError.INVALID_EMPLOYEE
+		,JaxError.ORDER_IS_NOT_LOCK})
+	AmxApiResponse<BoolRespModel,Object> dispatchOrder(BigDecimal orderNumber,BigDecimal orderYear);
 }
