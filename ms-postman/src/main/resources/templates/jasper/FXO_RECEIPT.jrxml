@@ -375,11 +375,7 @@
                                           pdfFontName="fonts/all/arial.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$F{tranx}.get("/shippingAddressdto/localContatFlat") + "," + $F{tranx}.get("/shippingAddressdto/localContactBuilding")
-                                    + "," + $F{tranx}.get("/shippingAddressdto/localContactCity")+ "," + $F{tranx}.get("/shippingAddressdto/localContactDistrict")
-                                    + "," + $F{tranx}.get("/shippingAddressdto/localContactState")+ "," + $F{tranx}.get("/shippingAddressdto/localContactCountry")
-                                   
-                                   ]]>
+                                    <![CDATA[$F{tranx}.get("/fxOrderTrnxList/[0]/deliveryAddress")]]>
                                 </textFieldExpression>
                             </textField>
 
