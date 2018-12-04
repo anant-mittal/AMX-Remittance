@@ -16,12 +16,12 @@ public class FxExchangeRateBreakup {
 	BigDecimal inverseRate;
 
 	@JsonProperty("forAmount")
-	BigDecimal convertedFCAmount;
+	BigDecimal convertedFCAmount=BigDecimal.ZERO;
 
 	@JsonProperty("domAmount")
-	BigDecimal convertedLCAmount;
+	BigDecimal convertedLCAmount=BigDecimal.ZERO;
 
-	BigDecimal netAmount;
+	BigDecimal netAmount=BigDecimal.ZERO;
 
 	BigDecimal netAmountWithoutLoyality;
 
@@ -29,7 +29,7 @@ public class FxExchangeRateBreakup {
 
 	BigDecimal fcDecimalNumber;
 	
-	BigDecimal deliveryCharges;
+	BigDecimal deliveryCharges=BigDecimal.ZERO;
 
 	public BigDecimal getRate() {
 		return rate;

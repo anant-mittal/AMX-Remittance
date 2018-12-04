@@ -20,7 +20,7 @@ public class FcSaleOrderApplicationResponseModel extends AbstractModel {
 	private BigDecimal remittanceAppId;
 	private String documentIdForPayment;
 	private BigDecimal documentFinancialYear;
-	private BigDecimal netPayableAmount;
+	private BigDecimal netPayableAmount=BigDecimal.ZERO;
 	private BigDecimal merchantTrackId;
 	private BigDecimal deliveryCharges;
 	private List<TimeSlotDto> timeSlot;
