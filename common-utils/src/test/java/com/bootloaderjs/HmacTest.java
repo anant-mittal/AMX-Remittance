@@ -1,8 +1,12 @@
 package com.bootloaderjs;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.regex.Pattern;
 
-import com.amx.utils.CryptoUtil;
+import com.amx.utils.CryptoUtil.HashBuilder;
+import com.amx.utils.Random;
 
 public class HmacTest { // Noncompliant
 
@@ -14,23 +18,30 @@ public class HmacTest { // Noncompliant
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		int passLen = 6;
 
-		String hash = CryptoUtil.generateHMAC(1, "secret", "message");
-		System.out.println(hash);
+		Map<String, Integer> map = new HashMap<String, Integer>();
+		for (int i = 0; i < 999999; i++) {
+			String otp = new HashBuilder().secret("secret").message(Random.randomAlphaNumeric(6)).interval(1).toHMAC()
+					.toNumeric(6)
+					.output();
 
-		char[] hashChars = hash.toCharArray();
-		int totalInt = 0;
-		for (int i = 0; i < hashChars.length; i++) {
-			int cint = hashChars[i];
-			totalInt = (cint * cint * i) + totalInt;
+			// String otp = Random.randomAlphaNumeric(6);
+			Integer count = map.getOrDefault(otp, 0);
+			count++;
+			map.put(otp, count);
 		}
-		long hashCode = Math.max(totalInt % Math.round(Math.pow(10, passLen)), 2);
-		int passLenDiff = (passLen - String.valueOf(hashCode).length());
-		long passLenFill = Math.max(Math.round(Math.pow(10, passLenDiff)) - 1, 1);
+		Map<Integer, Integer> counter = new HashMap<Integer, Integer>();
+		for (Entry<String, Integer> entry : map.entrySet()) {
+			// System.out.println(String.format("%s x%s", entry.getKey(),
+			// entry.getValue()));
+			Integer count = counter.getOrDefault(entry.getValue(), 0);
+			counter.put(entry.getValue(), ++count);
+			// System.out.println(String.format("%s > %s", entry.getValue(), count));
+		}
 
-		System.out.println(String.format("%s %s %s %s", passLenDiff, hashCode, passLenFill, (hashCode * passLenFill)));
-
+		for (Entry<Integer, Integer> entry : counter.entrySet()) {
+			System.out.println(String.format("x%s v%s", entry.getKey(), entry.getValue()));
+		}
 	}
 
 }
