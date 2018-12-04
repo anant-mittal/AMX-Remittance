@@ -73,7 +73,7 @@ public class UserClient {
 		NOTP_APP,
 
 		// branch cleints
-		BRANCH_WEB, SIGNATURE_PAD, BRANCH_ADAPTER,
+		BRANCH_WEB_OLD, BRANCH_WEB, SIGNATURE_PAD, BRANCH_ADAPTER,
 
 		// Other Channels
 		OFFSITE_PAD, KIOSK, DELIVERY_APP,

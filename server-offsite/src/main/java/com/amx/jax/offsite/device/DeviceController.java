@@ -142,8 +142,16 @@ public class DeviceController {
 	public AmxApiResponse<SessionPairingCreds, Object> webAppLogin() {
 		DeviceData deviceData = deviceRequestValidator.validateRequest();
 		String terminalId = deviceData.getTerminalId();
-		sSOTranx.get().setTerminalId(terminalId);
+
+		sSOTranx.get().setBranchAdapterId(deviceRequestValidator.getDeviceRegId());
+
+		// sSOTranx.get().getUserClient().setDeviceRegId(deviceRequestValidator.getDeviceRegId());
+		// sSOTranx.get().getUserClient().setTerminalId(terminalId);
+		// sSOTranx.get().getUserClient().setGlobalIpAddress(deviceData.getGlobalIp());
+		// sSOTranx.get().getUserClient().setLocalIpAddress(deviceData.getLocalIp());
+
 		sSOTranx.save();
+
 		return AmxApiResponse.build();
 	}
 
