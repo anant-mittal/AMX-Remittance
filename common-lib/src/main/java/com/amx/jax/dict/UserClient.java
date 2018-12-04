@@ -69,11 +69,14 @@ public class UserClient {
 	}
 
 	public enum ClientType {
+		// Auth Apps
+		NOTP_APP,
+
 		// branch cleints
-		BRANCH_WEB, SIGNATURE_PAD, BRANCH_ADAPTER, NOTP_APP,
+		BRANCH_WEB, SIGNATURE_PAD, BRANCH_ADAPTER,
 
 		// Other Channels
-		OFFSITE_PAD, KIOSK,
+		OFFSITE_PAD, KIOSK, DELIVERY_APP,
 
 		// Customer Facing interfaces
 		ONLINE_WEB, ONLINE_ANDROID, ONLINE_IOS;
