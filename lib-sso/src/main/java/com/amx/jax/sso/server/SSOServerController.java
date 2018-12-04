@@ -222,7 +222,7 @@ public class SSOServerController {
 
 			} else if ((SSOAuthStep.OTP == json) && formdata.getMotp() != null) {
 
-				String terminalId = sSOTranx.get().getUserClient().getTerminalId();
+				String terminalId = ArgUtil.parseAsString(sSOTranx.get().getUserClient().getTerminalId());
 
 				UserAuthorisationReqDTO auth = new UserAuthorisationReqDTO();
 				auth.setEmployeeNo(formdata.getEcnumber());
@@ -265,7 +265,7 @@ public class SSOServerController {
 	public String getCardDetails() throws InterruptedException {
 		AmxApiResponse<CardData, Object> resp = AmxApiResponse.build(new CardData());
 		ssoUser.ssoTranxId();
-		String terminlId = sSOTranx.get().getUserClient().getTerminalId();
+		String terminlId = ArgUtil.parseAsString(sSOTranx.get().getUserClient().getTerminalId());
 		if (terminlId != null) {
 			CardData card = adapterServiceClient.pollCardDetailsByTerminal(terminlId).getResult();
 			if (card != null) {
