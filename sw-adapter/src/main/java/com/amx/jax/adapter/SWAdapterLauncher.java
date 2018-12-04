@@ -63,7 +63,7 @@ public class SWAdapterLauncher {
 
 	public static void opnePage() {
 		try {
-			URI homepage = new URI("https://localhost:" + PORT + "/");
+			URI homepage = new URI("http://127.0.0.1:" + PORT + "/");
 			Desktop.getDesktop().browse(homepage);
 		} catch (URISyntaxException | IOException e) {
 			e.printStackTrace();

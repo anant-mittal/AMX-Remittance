@@ -16,7 +16,7 @@
 			PARTNER_SECURITY_CODE: '[[${partner_sec_code}]]'
 	}
 </script>
-<script id="terminal_session" th:src="'https://localhost:8020/pub/script/validation.js?tranx=' + ${x_tranx_id}"></script>
+<script id="terminal_session" th:src="'http://127.0.0.1:8020/pub/script/validation.js?tranx=' + ${x_tranx_id}"></script>
 <script th:src="${SSO_LOGIN_PREFIX} + '/js/sockjs.min.js'"></script>
 <script th:src="${SSO_LOGIN_PREFIX} + '/js/stomp.min.js'"></script>
 <script th:src="${SSO_LOGIN_PREFIX} + '/js/app.js'"></script>
