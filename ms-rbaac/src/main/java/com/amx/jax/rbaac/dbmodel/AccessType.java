@@ -20,7 +20,7 @@ import javax.persistence.Table;
  * @author abhijeet
  */
 @Entity
-@Table(name = "JX_RB_ACCESS_TYPE" )
+@Table(name = "JAX_RB_ACCESS_TYPE" )
 public class AccessType  implements java.io.Serializable {
 
 	
