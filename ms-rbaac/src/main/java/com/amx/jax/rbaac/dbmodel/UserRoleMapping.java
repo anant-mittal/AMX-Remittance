@@ -16,7 +16,7 @@ import javax.persistence.Table;
  * The Class UserRoleMapping.
  */
 @Entity
-@Table(name = "JX_RB_USER_ROLE_MAPPING")
+@Table(name = "JAX_RB_USER_ROLE_MAPPING")
 public class UserRoleMapping implements Serializable {
 
 	/** The Constant serialVersionUID. */

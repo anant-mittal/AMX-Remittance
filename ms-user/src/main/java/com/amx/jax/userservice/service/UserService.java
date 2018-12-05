@@ -356,7 +356,12 @@ public class UserService extends AbstractUserService {
 		}
 		logger.info("customerId is --> " + customerId);
 		userValidationService.validateCustomerVerification(customerId);
-		userValidationService.validateCivilId(civilId);
+		//userValidationService.validateCivilId(civilId);
+		
+		// --- Validate IdentityInt 
+		Customer customerType = custDao.getCustomerByCivilId(civilId);
+		BigDecimal indentityType = customerType.getIdentityTypeId();
+		userValidationService.validateIdentityInt(civilId, indentityType);
 
 		CivilIdOtpModel model = new CivilIdOtpModel();
 
@@ -641,6 +646,13 @@ public class UserService extends AbstractUserService {
 		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(custId);
 		onlineCustomer.setPassword(cryptoUtil.getHash(onlineCustomer.getUserName(), model.getPassword()));
 		custDao.saveOnlineCustomer(onlineCustomer);
+		
+		CustomerModel outputModel = convert(onlineCustomer);
+		if (outputModel.getEmail() != null) {
+			jaxNotificationService.sendProfileChangeNotificationEmail(model, outputModel.getPersoninfo());
+			logger.info("The update password mail notification success");
+		}
+		
 		BoolRespModel responseModel = new BoolRespModel(true);
 		auditService.log(createUserServiceEvent(model, JaxUserAuditEvent.Type.CUSTOMER_PASSWORD_UPDATE_SUCCESS));
 		return AmxApiResponse.build(responseModel);

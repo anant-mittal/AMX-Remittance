@@ -87,6 +87,12 @@ public class AmxApiResponse<T, M> extends AResponse<M>
 		return null;
 	}
 
+	@JsonIgnore
+	public void setResult(T result) {
+		this.results = new ArrayList<T>();
+		this.results.add(result);
+	}
+
 	public void addResult(T result) {
 		this.results.add(result);
 	}
@@ -153,6 +159,12 @@ public class AmxApiResponse<T, M> extends AResponse<M>
 		// listOfStrings.addAll(resultList);
 		resp.setResults(resultList);
 		return resp;
+	}
+
+	@JsonIgnore
+	public AmxApiResponse<T, M> redirectUrl(String redirectUrl) {
+		this.redirectUrl = redirectUrl;
+		return this;
 	}
 
 }

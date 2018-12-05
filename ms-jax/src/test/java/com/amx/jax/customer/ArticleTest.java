@@ -14,7 +14,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import com.amx.jax.dal.ArticleDao;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.meta.MetaData;
-import com.amx.jax.multitenant.TenantContext;
+import com.amx.jax.scope.TenantContextHolder;
 import com.amx.jax.userservice.dao.CustomerDao;
 
 @RunWith(SpringRunner.class)
@@ -22,21 +22,22 @@ import com.amx.jax.userservice.dao.CustomerDao;
 public class ArticleTest {
 
 	@Autowired
-	ArticleDao articleDao ;
+	ArticleDao articleDao;
 	@Autowired
 	CustomerDao custDao;
 	@Autowired
 	MetaData metaData;
-	
+
 	@Before
 	public void contextLoads() {
-		TenantContext.setCurrentTenant(Tenant.KWT.toString());
+		TenantContextHolder.setCurrent(Tenant.KWT);
+		// TenantContext.setCurrentTenant(Tenant.KWT.toString());
 		metaData.setLanguageId(new BigDecimal(1));
 	}
-	
+
 	@Test
 	public void testArticle() {
-		
+
 		List<Map<String, Object>> map = articleDao.getIncomeRangeForCustomer(custDao.getCustById(new BigDecimal(5218)));
 		map.get(0);
 	}

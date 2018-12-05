@@ -1,35 +1,34 @@
 package com.amx.jax.dbmodel;
 
 import java.math.BigDecimal;
+import java.sql.Blob;
 import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "DMS_DOC_BLOB_TEMP_JAVA")
+@Table(name = "DMS_DOC_BLOB_UPLOAD_JAVA")
 public class DocBlobUpload implements java.io.Serializable {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -838181138590494662L;
-	private BigDecimal temSeqNo;
+	//private BigDecimal temSeqNo;
 	private BigDecimal docBlobID;
 	private BigDecimal cntryCd;
 	private BigDecimal seqNo;
 	private BigDecimal docFinYear;
-	private byte[] docContent;
+	//private byte[] docContent;
+	private Blob docContent;
 	private String createdBy;
 	private Date createdOn;
 	private Date updatedDate;
 	private String updateBy;
 
-	@Id
+	/*@Id
 	@GeneratedValue(generator = "ex_dms_doc_blob_temp_seq", strategy = GenerationType.SEQUENCE)
 	@SequenceGenerator(name = "ex_dms_doc_blob_temp_seq", sequenceName = "EX_DMS_DOC_BLOB_TEMP_SEQ", allocationSize = 1)
 	@Column(name = "TEMP_SEQNO", unique = true, nullable = false, precision = 22, scale = 0)
@@ -39,8 +38,9 @@ public class DocBlobUpload implements java.io.Serializable {
 
 	public void setTemSeqNo(BigDecimal temSeqNo) {
 		this.temSeqNo = temSeqNo;
-	}
+	}*/
 
+	@Id
 	@Column(name = "DOC_BLOB_ID")
 	public BigDecimal getDocBlobID() {
 		return docBlobID;
@@ -77,14 +77,14 @@ public class DocBlobUpload implements java.io.Serializable {
 		this.docFinYear = docFinYear;
 	}
 
-	@Column(name = "DOC_CONTENT")
+	/*@Column(name = "DOC_CONTENT")
 	public byte[] getDocContent() {
 		return docContent;
 	}
 
 	public void setDocContent(byte[] fileContent) {
 		this.docContent = fileContent;
-	}
+	}*/
 
 	@Column(name = "CRE_BY")
 	public String getCreatedBy() {
@@ -121,5 +121,15 @@ public class DocBlobUpload implements java.io.Serializable {
 	public void setUpdateBy(String updateBy) {
 		this.updateBy = updateBy;
 	}
+
+	@Column(name = "DOC_CONTENT")
+	public Blob getDocContent() {
+		return docContent;
+	}
+
+	public void setDocContent(Blob docContent) {
+		this.docContent = docContent;
+	}
+	
 
 }

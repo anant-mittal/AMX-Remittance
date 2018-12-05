@@ -28,6 +28,8 @@ public class ExchangeRateBreakup implements Comparable<ExchangeRateBreakup> {
 	BigDecimal lcDecimalNumber;
 
 	BigDecimal fcDecimalNumber;
+	
+	BigDecimal deliveryCharges;
 
 	public BigDecimal getRate() {
 		return rate;
@@ -96,6 +98,14 @@ public class ExchangeRateBreakup implements Comparable<ExchangeRateBreakup> {
 	@Override
 	public int compareTo(ExchangeRateBreakup o) {
 		return this.rate.compareTo(o.rate);
+	}
+
+	public BigDecimal getDeliveryCharges() {
+		return deliveryCharges;
+	}
+
+	public void setDeliveryCharges(BigDecimal deliveryCharges) {
+		this.deliveryCharges = deliveryCharges;
 	}
 
 }

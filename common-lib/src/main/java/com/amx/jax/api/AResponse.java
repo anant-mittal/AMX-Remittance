@@ -5,11 +5,11 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 
 import com.amx.jax.api.AmxResponseSchemes.ApiMetaResponse;
+import com.amx.jax.exception.ApiHttpExceptions.ApiStatusCodes;
 import com.amx.jax.exception.IExceptionEnum;
+import com.amx.jax.swagger.ApiMockModelProperty;
 import com.amx.utils.ArgUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import io.swagger.annotations.ApiModelProperty;
 
 public abstract class AResponse<M> implements ApiMetaResponse<M> {
 
@@ -21,10 +21,10 @@ public abstract class AResponse<M> implements ApiMetaResponse<M> {
 	protected String exception; // org.springframework.http.converter.HttpMessageNotReadableException
 	protected String message;// JSON parse error
 
-	@ApiModelProperty(example = "/postman/email/send")
+	@ApiMockModelProperty(example = "/postman/email/send")
 	protected String path;
 
-	@ApiModelProperty(example = "/go/to/some/other/url.html")
+	@ApiMockModelProperty(example = "/go/to/some/other/url.html")
 	protected String redirectUrl;
 
 	public String getRedirectUrl() {
@@ -35,10 +35,24 @@ public abstract class AResponse<M> implements ApiMetaResponse<M> {
 		this.redirectUrl = redirectUrl;
 	}
 
+	public static enum Target {
+		_BLANK, _SELF, _PARENT, _TOP, _IFRAME
+	}
+
+	/**
+	 * target="_blank|_self|_parent|_top|framename"
+	 * 
+	 * @param redirectUrl
+	 */
+	@JsonIgnore
+	public void setTargetUrl(String redirectUrl, Target target) {
+		this.redirectUrl = target + ":" + redirectUrl;
+	}
+
 	protected String messageKey;
 
 	/** The status key. */
-	protected String statusKey = "SUCCESS";
+	protected String statusKey = ApiStatusCodes.SUCCESS.toString();
 
 	// Amx Specs
 	protected M meta;
@@ -114,6 +128,7 @@ public abstract class AResponse<M> implements ApiMetaResponse<M> {
 	 */
 	@Override
 	public void setStatusKey(String statusKey) {
+		// this.setStatusEnum(ApiStatusCodes.NO_STATUS);
 		this.statusKey = statusKey;
 	}
 

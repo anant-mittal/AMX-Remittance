@@ -118,7 +118,9 @@ public class ParameterService extends AbstractService {
 		List<AuthenticationLimitCheckView> allAuthLimits = authentication.findAll();
 		Map<String, BigDecimal> authMap = allAuthLimits.stream()
 				.filter(x -> (x.getAuthorizationType() != null && x.getAuthLimit() != null))
-				.collect(Collectors.toMap(x -> x.getAuthorizationType(), x -> x.getAuthLimit()));
+				.collect(Collectors.toMap(x -> x.getAuthorizationType(), x -> x.getAuthLimit(), (v1, v2) -> {
+					return v1;
+				}));
 		JaxMetaParameter metaParams = new JaxMetaParameter();
 		metaParams.setNewBeneTransactionTimeLimit(authMap.get(NEW_BENE_TRANSACT_TIME_LIMIT.getAuthType()));
 		metaParams.setMaxDomAmountLimit((authMap.get(MAX_DOM_AMOUNT_LIMIT.getAuthType())));

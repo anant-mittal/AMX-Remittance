@@ -49,7 +49,7 @@ public abstract class AmxApiException extends AmxException {
 	}
 
 	public AmxApiException(IExceptionEnum error, String message) {
-		super(message);
+		super(message, null, true, false);
 		this.error = error;
 	}
 

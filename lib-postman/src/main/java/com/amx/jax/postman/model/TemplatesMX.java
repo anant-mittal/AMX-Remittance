@@ -8,13 +8,20 @@ public enum TemplatesMX implements ITemplate {
 	CONTACT_US("ContactForm"), RESET_OTP("reset-otp"), RESET_OTP_SMS("reset-otp-sms"), SERVER_UP("health-server-up"),
 
 	REMIT_RECEIPT("TransactionReceipt"), REMIT_RECEIPT2("TransactionReceipt2"), REMIT_RECEIPT_JASPER(
-			"TransactionReceipt_jasper", PDFConverter.JASPER, "TransactionReceipt.json"), REMIT_RECEIPT_COPY_JASPER(
-					"TransactionReceiptCopy_jasper", PDFConverter.JASPER, "TransactionReceipt.json"),
+			"TransactionReceipt_jasper", PDFConverter.JASPER, "TransactionReceipt.json"),
+	REMIT_RECEIPT_COPY_JASPER(
+			"TransactionReceiptCopy_jasper", PDFConverter.JASPER, "TransactionReceipt.json"),
 
 	REMIT_RECEIPT_COPY("TransactionReceiptCopy"), REMIT_STATMENT("TransactionList"), REMIT_STATMENT_EMAIL(
-			"RemittanceStatmentEmail"), REMIT_STATMENT_EMAIL_FILE("TransactionStatementHistory"), REG_SUC(
-					"RegistrationSuccessEmail"), TXN_CRT_SUCC(
-							"TransactionCreationSuccess"), PROFILE_CHANGE("AccoutDetailsUpdate"),
+			"RemittanceStatmentEmail"),
+	REMIT_STATMENT_EMAIL_FILE("TransactionStatementHistory"), REG_SUC(
+			"RegistrationSuccessEmail"),
+	TXN_CRT_SUCC(
+			"TransactionCreationSuccess"),
+	PROFILE_CHANGE("AccoutDetailsUpdate"),
+
+	FXO_RECEIPT("FXO_RECEIPT", PDFConverter.JASPER,"fxo-receipt.json"),
+
 	// Rate Alert, PlaceOrder
 	RATE_ALERT("place-order"), RATE_ALERT_COMPLETION("place-order-executed"),
 
@@ -27,7 +34,9 @@ public enum TemplatesMX implements ITemplate {
 
 	PROMOTION_WINNER("PromotionWinner"), PROMOTION_COUPON("PromotionCoupon"),
 
-	SERVER_PING("server-ping");
+	SERVER_PING("server-ping"),
+	
+	FC_DELIVER_EMAIL_OTP("deliver-email-otp"),FC_DELIVER_SMS_OTP("deliver-sms-otp"),FC_ORDER_SUCCESS("order-success"),FC_KNET_SUCCESS("knet-success");
 
 	String fileName;
 	PDFConverter converter;

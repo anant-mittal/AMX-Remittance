@@ -1,8 +1,10 @@
 package com.amx.jax.model.response.customer;
 
+import java.io.Serializable;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class CustomerIncomeRangeDto {
+public class CustomerIncomeRangeDto  implements Serializable {
 
 	@JsonProperty("article")
 	String articleeDescription;

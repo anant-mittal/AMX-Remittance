@@ -6,8 +6,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import com.amx.jax.model.AbstractModel;
-
-import io.swagger.annotations.ApiModelProperty;
+import com.amx.jax.swagger.ApiMockModelProperty;
 
 public class SecurityQuestionModel extends AbstractModel {
 
@@ -33,7 +32,7 @@ public class SecurityQuestionModel extends AbstractModel {
 	@Size(min=1)
 	private String answer;
 
-	@ApiModelProperty(example = "6")
+	@ApiMockModelProperty(example = "6")
 	public BigDecimal getQuestionSrNo() {
 		return questionSrNo;
 	}
@@ -42,7 +41,7 @@ public class SecurityQuestionModel extends AbstractModel {
 		this.questionSrNo = questionSrNo;
 	}
 
-	@ApiModelProperty(example = "test")
+	@ApiMockModelProperty(example = "test")
 	public String getAnswer() {
 		return answer;
 	}
@@ -51,7 +50,7 @@ public class SecurityQuestionModel extends AbstractModel {
 		this.answer = answer;
 	}
 
-	@ApiModelProperty(example = "null")
+	@ApiMockModelProperty(example = "null")
 	public String getAnswerKey() {
 		return answerKey;
 	}

@@ -2,44 +2,35 @@ package com.amx.jax.model.request;
 
 import java.math.BigDecimal;
 
-import javax.validation.constraints.NotNull;
-
-import io.swagger.annotations.ApiModelProperty;
+import com.amx.jax.swagger.ApiMockModelProperty;
 
 public class LocalAddressDetails {
 
-	@ApiModelProperty(example="49")
+	@ApiMockModelProperty(example="49")
 	private BigDecimal contactTypeId;
 	
-	@NotNull(message="In local Address block may not be null")
-	@ApiModelProperty(example="1011")
+	@ApiMockModelProperty(example="1011")
 	private String block;
 	
-	@NotNull(message="In local Address street may not be null")
-	@ApiModelProperty(example="Gandhi Road")
+	@ApiMockModelProperty(example="Gandhi Road")
 	private String street;
 	
-	@NotNull(message="In local Address house may not be null")
-	@ApiModelProperty(example="Runwall")
+	@ApiMockModelProperty(example="Runwall")
 	private String house;
 	
-	@NotNull(message="In local Address flat may not be null")
-	@ApiModelProperty(example="5")
+	@ApiMockModelProperty(example="5")
 	private String flat;
 	
-	@NotNull(message="In local Address countryId may not be null")
-	@ApiModelProperty(example="91")
+	@ApiMockModelProperty(example="91")
 	private BigDecimal countryId;
 	
-	@NotNull(message="In local Address stateId may not be null")
-	@ApiModelProperty(example="584")
+	@ApiMockModelProperty(example="584")
 	private BigDecimal stateId;
 	
-	@NotNull(message="In local Address districtId may not be null")
-	@ApiModelProperty(example="4165")
+	@ApiMockModelProperty(example="4165")
 	private BigDecimal districtId;
 	
-	@ApiModelProperty(example="12760")
+	@ApiMockModelProperty(example="12760")
 	private BigDecimal cityId;
 
 	public String getBlock() {

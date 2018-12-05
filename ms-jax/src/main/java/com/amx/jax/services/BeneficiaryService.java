@@ -32,7 +32,6 @@ import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.BeneCountryDTO;
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.amxlib.meta.model.CountryMasterDTO;
-import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.meta.model.RemittancePageDto;
 import com.amx.amxlib.meta.model.RoutingBankMasterDTO;
@@ -71,6 +70,7 @@ import com.amx.jax.error.JaxError;
 import com.amx.jax.logger.AuditEvent;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.response.CurrencyMasterDTO;
 import com.amx.jax.repository.BeneficaryAccountRepository;
 import com.amx.jax.repository.CountryRepository;
 import com.amx.jax.repository.IBeneficaryContactDao;
@@ -275,8 +275,7 @@ public class BeneficiaryService extends AbstractService {
 					beneDetails.getBeneficaryMasterSeqId(), beneDetails.getCustomerId());
 
 			if (!beneRelationList.isEmpty()) {
-				BeneficaryRelationship beneRelationModel = beneRelationShipDao
-						.findOne((beneRelationList.get(0).getBeneficaryRelationshipId()));
+				BeneficaryRelationship beneRelationModel = beneRelationShipDao.findOne((beneRelationList.get(0).getBeneficaryRelationshipId()));
 				beneRelationModel.setIsActive("D");
 				beneRelationModel.setModifiedBy(beneDetails.getCustomerId().toString());
 				beneRelationModel.setModifiedDate(new Date());

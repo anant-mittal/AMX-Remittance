@@ -1,6 +1,8 @@
 package com.amx.jax.customer.service;
 
 import java.math.BigDecimal;
+import java.sql.Blob;
+import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -13,7 +15,10 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import javax.sql.rowset.serial.SerialException;
+
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,13 +33,13 @@ import com.amx.amxlib.constant.PrefixEnum;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.PersonInfo;
 import com.amx.amxlib.model.SecurityQuestionModel;
-import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.CustomerCredential;
 import com.amx.jax.ICustRegService;
 import com.amx.jax.amxlib.config.OtpSettings;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxApiFlow;
+import com.amx.jax.constants.CustomerRegistrationType;
 import com.amx.jax.customer.CustomerAuditEvent;
 import com.amx.jax.customer.CustomerAuditEvent.Type;
 import com.amx.jax.dal.ArticleDao;
@@ -481,8 +486,8 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		CustomerPersonalDetail customerDetails = new CustomerPersonalDetail();
 		jaxUtil.convert(model.getCustomerPersonalDetail(), customerDetails);
 		Customer customer = commitCustomer(customerDetails, model.getCustomerEmploymentDetails());
-		commitCustomerLocalContact(model.getLocalAddressDetails(), customer, customerDetails.getWatsAppMobileNo());
-		commitCustomerHomeContact(model.getHomeAddressDestails(), customer, customerDetails.getWatsAppMobileNo());
+		commitCustomerLocalContact(model.getLocalAddressDetails(), customer, customerDetails);
+		commitCustomerHomeContact(model.getHomeAddressDestails(), customer, customerDetails);
 		commitOnlineCustomerIdProof(model, customer);
 		commitEmploymentDetails(model.getCustomerEmploymentDetails(), customer, model.getLocalAddressDetails());
 		auditService.log(new CustomerAuditEvent(Type.CUST_INFO, model));
@@ -499,18 +504,18 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 			employeeModel.setFsBizComponentDataByOccupationId(
 					bizcomponentDao.getBizComponentDataByComponmentDataId(customerEmploymentDetails.getProfessionId()));
 			employeeModel.setEmployerName(customerEmploymentDetails.getEmployer());
-			employeeModel.setBlock(localAddressDetails.getBlock());
-			employeeModel.setStreet(localAddressDetails.getStreet());
-			employeeModel.setArea(localAddressDetails.getStateId().toString());
+			employeeModel.setBlock(customerEmploymentDetails.getBlock());
+			employeeModel.setStreet(customerEmploymentDetails.getStreet());
+			employeeModel.setArea(customerEmploymentDetails.getStateId().toString());
 			employeeModel.setPostal(customerEmploymentDetails.getPostal());
 			employeeModel.setOfficeTelephone(customerEmploymentDetails.getOfficeTelephone());
 			/*employeeModel.setFsCountryMaster(
 					countryMasterRepository.getCountryMasterByCountryId(customerEmploymentDetails.getCountryId()));*/
 			employeeModel.setFsCountryMaster(
-					countryMasterRepository.getCountryMasterByCountryId(localAddressDetails.getCountryId()));
-			employeeModel.setFsStateMaster(localAddressDetails.getStateId());
-			employeeModel.setFsDistrictMaster(localAddressDetails.getDistrictId());
-			employeeModel.setFsCityMaster(localAddressDetails.getCityId());
+					countryMasterRepository.getCountryMasterByCountryId(customerEmploymentDetails.getCountryId()));
+			employeeModel.setFsStateMaster(customerEmploymentDetails.getStateId());
+			employeeModel.setFsDistrictMaster(customerEmploymentDetails.getDistrictId());
+			employeeModel.setFsCityMaster(customerEmploymentDetails.getCityId());
 			// employeeModel.setFsCompanyMaster(customerEmploymentDetails.getCompanyId());
 			employeeModel.setIsActive(ConstantDocument.Yes);
 			employeeModel.setCreatedBy(metaData.getEmployeeId().toString());
@@ -522,7 +527,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 	}
 
 	private void commitCustomerLocalContact(LocalAddressDetails localAddressDetails, Customer customer,
-			String watsAppMobileNo) {
+			com.amx.jax.model.request.CustomerPersonalDetail customerDetails) {
 		if (localAddressDetails != null) {
 			ContactDetail contactDetail = new ContactDetail();
 			contactDetail.setFsCountryMaster(new CountryMaster(localAddressDetails.getCountryId()));
@@ -538,7 +543,11 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 			contactDetail.setLanguageId(customer.getLanguageId());
 			contactDetail.setCreatedBy(metaData.getEmployeeId().toString());
 			contactDetail.setCreationDate(customer.getCreationDate());
-			contactDetail.setWatsAppNo(watsAppMobileNo);
+			
+			contactDetail.setMobile(customerDetails.getMobile());
+			contactDetail.setTelephoneCode(customerDetails.getTelPrefix());
+			contactDetail.setIsWatsApp(customerDetails.getIsWatsApp());
+			
 			BizComponentData fsBizComponentDataByContactTypeId = new BizComponentData();
 			// home type contact
 			fsBizComponentDataByContactTypeId.setComponentDataId(new BigDecimal(49));
@@ -548,7 +557,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 	}
 
 	private void commitCustomerHomeContact(HomeAddressDetails homeAddressDestails, Customer customer,
-			String watsAppMobileNo) {
+			com.amx.jax.model.request.CustomerPersonalDetail customerDetails) {
 		if (homeAddressDestails != null) {
 			ContactDetail contactDetail = new ContactDetail();
 			contactDetail.setFsCountryMaster(new CountryMaster(homeAddressDestails.getCountryId()));
@@ -564,7 +573,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 			contactDetail.setLanguageId(customer.getLanguageId());
 			contactDetail.setCreatedBy(metaData.getEmployeeId().toString());
 			contactDetail.setCreationDate(customer.getCreationDate());
-			contactDetail.setWatsAppNo(watsAppMobileNo);
+						
 			BizComponentData fsBizComponentDataByContactTypeId = new BizComponentData();
 			// home type contact
 			fsBizComponentDataByContactTypeId.setComponentDataId(new BigDecimal(50));
@@ -620,12 +629,17 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		customer.setTitleLocal(getTitleLocal(prefixEnum.getTitleLocal()));
 		customer.setLoyaltyPoints(BigDecimal.ZERO);
 		customer.setCompanyId(metaData.getCompanyId());
-		customer.setCustomerTypeId(
-				bizcomponentDao.getBizComponentDataByComponmentCode(ConstantDocument.Individual).getComponentDataId());
+		customer.setCustomerTypeId(bizcomponentDao.getBizComponentDataByComponmentCode(ConstantDocument.Individual).getComponentDataId());
 		customer.setLanguageId(metaData.getLanguageId());
 		customer.setBranchCode(metaData.getCountryBranchId());
 		customer.setNationalityId(customerDetails.getNationalityId());
+		
+		customer.setPrefixCodeMobile(customerDetails.getTelPrefix());
 		customer.setMobile(customerDetails.getMobile());
+		customer.setMobileOther(customerDetails.getWatsAppMobileNo());
+		customer.setPrefixCodeMobileOther(customerDetails.getWatsAppTelePrefix());
+		customer.setIsMobileWhatsApp(customerDetails.getIsWatsApp());
+		
 		customer.setIdentityFor(ConstantDocument.IDENTITY_FOR_ID_PROOF);
 		customer.setIdentityTypeId(customerDetails.getIdentityTypeId());
 		customer.setFirstNameLocal(customerDetails.getFirstNameLocal());
@@ -643,6 +657,8 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 			//customer.setIssueDate(null);
 		}
 		customer.setIdentityInt(customerDetails.getIdentityInt());
+		
+		customer.setCustomerRegistrationType(CustomerRegistrationType.OFF_CUSTOMER);
 		if (customerEmploymentDetails != null) {
 			customer.setFsArticleDetails(
 					articleDao.getArticleDetailsByArticleDetailId(customerEmploymentDetails.getArticleDetailsId()));
@@ -668,15 +684,19 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		custProof.setFsCustomer(customerData);
 		custProof.setLanguageId(metaData.getLanguageId());
 		BizComponentData customerType = new BizComponentData();
-		customerType.setComponentDataId(
-				bizcomponentDao.getComponentId(Constants.CUSTOMERTYPE_INDU, metaData.getLanguageId())
-						.getFsBizComponentData().getComponentDataId());
+		customerType.setComponentDataId(bizcomponentDao.getComponentId(Constants.CUSTOMERTYPE_INDU, metaData.getLanguageId()).getFsBizComponentData().getComponentDataId());
 		custProof.setFsBizComponentDataByCustomerTypeId(customerType);
 		custProof.setIdentityInt(customer.getIdentityInt());
 		custProof.setIdentityStatus(Constants.CUST_ACTIVE_INDICATOR);
 		custProof.setCreatedBy(customer.getIdentityInt());
 		custProof.setCreationDate(new Date());
 		custProof.setIdentityTypeId(customer.getIdentityTypeId());
+		
+		if(customer.getIdentityExpiredDate() != null) {
+			custProof.setIdentityExpiryDate(customer.getIdentityExpiredDate());
+		}
+		custProof.setIdentityFor(ConstantDocument.IDENTITY_FOR_ID_PROOF);
+		custProof.setScanSystem(Constants.CUST_DB_SCAN);
 		customerIdProofRepository.save(custProof);
 	}
 
@@ -721,10 +741,25 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		documentDetails.setDocBlobID(mappingData.getDocBlobId());
 		documentDetails.setDocFinYear(mappingData.getFinancialYear());
 		documentDetails.setSeqNo(new BigDecimal(1));
-		documentDetails.setDocContent(image.getBytes());
+		//documentDetails.setDocContent(image.getBytes());
+		
+		try {
+			Blob documentContent = new javax.sql.rowset.serial.SerialBlob(decodeImage(image));
+			documentDetails.setDocContent(documentContent);
+		} catch (SerialException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}	
+		
 		documentDetails.setCreatedOn(new Date());
 		documentDetails.setCreatedBy(metaData.getCustomerId().toString());
 		return documentDetails;
+	}
+	
+	public static byte[] decodeImage(String imageDataString) {
+        return Base64.decodeBase64(imageDataString);
+        //return null;
 	}
 
 	private DmsApplMapping getDmsApplMappingData(Customer model) throws ParseException {

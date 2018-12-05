@@ -2,23 +2,23 @@ package com.amx.jax.model.request;
 
 import java.math.BigDecimal;
 
-import io.swagger.annotations.ApiModelProperty;
+import com.amx.jax.swagger.ApiMockModelProperty;
 
 public class DynamicFieldRequest {
 	
-	@ApiModelProperty(example="KWT")
+	@ApiMockModelProperty(example="KWT")
 	private String tenant;
 	
-	@ApiModelProperty(example="EGYPT")
+	@ApiMockModelProperty(example="EGYPT")
 	private String nationality;
 	
-	@ApiModelProperty(example="REGISTRATION")
+	@ApiMockModelProperty(example="REGISTRATION")
 	private String component;
 	
-	@ApiModelProperty(example="198")
+	@ApiMockModelProperty(example="198")
 	private BigDecimal componentDataId;
 	
-	@ApiModelProperty(example="CIVIL ID")
+	@ApiMockModelProperty(example="CIVIL ID")
 	private String componentDataDesc;
 
 	public String getTenant() {

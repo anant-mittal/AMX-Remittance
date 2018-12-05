@@ -58,7 +58,7 @@ public class TenantProperties {
 			}
 
 		} catch (IllegalArgumentException | IOException e) {
-			LOGGER.error("readPropertyException", e);
+			LOGGER.error("readPropertyFileException", e);
 		} finally {
 			try {
 				if (outSideInputStream != null) {

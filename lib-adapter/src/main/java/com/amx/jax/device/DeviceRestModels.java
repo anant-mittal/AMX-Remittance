@@ -1,17 +1,32 @@
 package com.amx.jax.device;
 
-import javax.validation.constraints.NotNull;
-
 import com.amx.jax.dict.UserClient.ClientType;
+import com.amx.jax.swagger.ApiMockModelProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-
-import io.swagger.annotations.ApiModelProperty;
 
 public class DeviceRestModels {
 
 	public static class NetAddress {
 		String mac;
 		String localIp;
+		String hostName;
+		String userName;
+
+		public String getHostName() {
+			return hostName;
+		}
+
+		public void setHostName(String hostName) {
+			this.hostName = hostName;
+		}
+
+		public String getUserName() {
+			return userName;
+		}
+
+		public void setUserName(String userName) {
+			this.userName = userName;
+		}
 
 		public String getMac() {
 			return mac;
@@ -32,12 +47,18 @@ public class DeviceRestModels {
 
 	@JsonDeserialize(as = DeviceRestModel.class)
 	public interface DevicePairingRequest {
-		@ApiModelProperty(example = "192.168.14.162")
+
+		@ApiMockModelProperty(example = "284052306594", required = false)
+		String getIdentity();
+
+		void setIdentity(String identity);
+
+		@ApiMockModelProperty(example = "192.168.14.162", required = false)
 		String getDeivceTerminalId();
 
 		void setDeivceTerminalId(String deivceTerminalId);
 
-		@ApiModelProperty(example = "SIGNATURE_PAD")
+		@ApiMockModelProperty(example = "SIGNATURE_PAD")
 		ClientType getDeivceClientType();
 
 		void setDeivceClientType(ClientType deivceClientType);
@@ -69,7 +90,7 @@ public class DeviceRestModels {
 
 		String getDeviceSessionToken();
 
-		@ApiModelProperty(example = "654321")
+		@ApiMockModelProperty(example = "654321")
 		String getSessionOTP();
 
 		void setSessionOTP(String sessionOTP);
@@ -83,7 +104,8 @@ public class DeviceRestModels {
 	public static class DeviceRestModel
 			implements DevicePairingRequest, DevicePairingCreds, SessionPairingRequest, SessionPairingCreds {
 
-		@NotNull
+		String identity;
+
 		String deivceTerminalId;
 		ClientType deivceClientType;
 
@@ -164,6 +186,16 @@ public class DeviceRestModels {
 		@Override
 		public String getDeviceRequestKey() {
 			return this.deviceRequestKey;
+		}
+
+		@Override
+		public String getIdentity() {
+			return this.identity;
+		}
+
+		@Override
+		public void setIdentity(String identity) {
+			this.identity = identity;
 		}
 
 	}

@@ -107,7 +107,6 @@
 
 		<module>ms-jax</module>
 		<module>ms-rbaac</module>
-		<module>ms-broker</module>
 		<module>ms-worker</module>
 		<module>ms-radar</module>
 
@@ -116,7 +115,6 @@
 		<!-- <module>server-stomp</module> -->
 
 		<module>sw-adapter</module>
-		<module>server-admin</module>
 		<module>server-branch</module>
 		<module>test-size</module>
 		<!-- <module>server-kiosk</module> -->

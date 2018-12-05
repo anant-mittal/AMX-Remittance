@@ -21,12 +21,14 @@ import org.springframework.stereotype.Service;
 
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.ServiceGroupMasterDescDto;
+import com.amx.amxlib.meta.model.ViewAreaDto;
 import com.amx.amxlib.meta.model.ViewCityDto;
 import com.amx.amxlib.model.OnlineConfigurationDto;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.config.JaxProperties;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.OnlineConfiguration;
+import com.amx.jax.dbmodel.ViewAreaModel;
 import com.amx.jax.dbmodel.ViewCity;
 import com.amx.jax.dbmodel.ViewDistrict;
 import com.amx.jax.dbmodel.ViewState;
@@ -38,6 +40,7 @@ import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.CountryRepository;
 import com.amx.jax.repository.IContactDetailDao;
 import com.amx.jax.repository.ICustomerRepository;
+import com.amx.jax.repository.IViewArea;
 import com.amx.jax.repository.IViewCityDao;
 import com.amx.jax.repository.IViewDistrictDAO;
 import com.amx.jax.repository.IViewStateDao;
@@ -71,6 +74,8 @@ public class MetaService extends AbstractService {
 
 	@Autowired
 	IViewDistrictDAO districtDao;
+	@Autowired
+	IViewArea areaDao;
 
 	@Autowired
 	OnlineConfigurationRepository onlineConfigurationRepository;
@@ -110,6 +115,27 @@ public class MetaService extends AbstractService {
 		cityList.forEach(cityModel -> output.add(convertCityModelToDto(cityModel)));
 		return output;
 	}
+	
+	
+	public AmxApiResponse<ViewAreaDto,Object> getAreaList(){
+		List<ViewAreaModel> viewAreaList = areaDao.getAreaList();
+		if(viewAreaList.isEmpty()){
+			throw new GlobalException("area not avaliable");
+		}
+		return AmxApiResponse.buildList(convertAreaDto(viewAreaList));
+	}
+	
+	private List<ViewAreaDto> convertAreaDto(List<ViewAreaModel> viewAreaList){
+		 List<ViewAreaDto> output= new ArrayList<>();
+		 for (ViewAreaModel viewAreaModel : viewAreaList) {
+			 ViewAreaDto dto = new ViewAreaDto();
+			 dto.setAreaCode(viewAreaModel.getAreaCode());
+			 dto.setAreaDesc(viewAreaModel.getAreaDesc());
+			 dto.setShortDesc(viewAreaModel.getShortDesc());
+			 output.add(dto);
+		}
+		 return output;
+	}
 
 	private ViewCityDto convertCityModelToDto(ViewCity cityModel) {
 		ViewCityDto dto = new ViewCityDto();
@@ -133,12 +159,11 @@ public class MetaService extends AbstractService {
 	}
 	
 	public AmxApiResponse<ServiceGroupMasterDescDto, Object> getServiceGroups() {
-		/*ApiResponse response = getBlackApiResponse();
-		response.getData().setType("service-group-model");*/
 		List<ServiceGroupMasterDescDto> outputDto = getServiceGroupDto();
-		/*response.getData().getValues().addAll(outputDto);*/
 		return AmxApiResponse.buildList(outputDto);
 	}
+	
+	
 
 	private List<ServiceGroupMasterDescDto> getServiceGroupDto() {
 		List<ServiceGroupMasterDesc> output = serviceGroupMasterDescRepository

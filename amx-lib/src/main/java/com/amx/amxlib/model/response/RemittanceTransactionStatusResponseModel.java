@@ -2,9 +2,9 @@ package com.amx.amxlib.model.response;
 
 import java.math.BigDecimal;
 
-import com.amx.amxlib.constant.JaxTransactionStatus;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.PromotionDto;
+import com.amx.jax.constants.JaxTransactionStatus;
 import com.amx.jax.model.AbstractModel;
 
 public class RemittanceTransactionStatusResponseModel extends AbstractModel {

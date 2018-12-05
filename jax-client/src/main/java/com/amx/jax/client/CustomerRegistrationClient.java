@@ -18,6 +18,7 @@ import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.jax.CustomerCredential;
+import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.model.dto.SendOtpModel;
 import com.amx.jax.model.request.CustomerPersonalDetail;
 import com.amx.jax.rest.RestService;
@@ -35,8 +36,7 @@ public class CustomerRegistrationClient extends AbstractJaxServiceClient {
 	private RestService restService;
 
 	/**
-	 * @param personalDetail
-	 *            - Person detail object
+	 * @param personalDetail - Person detail object
 	 * @return SendOtpModel - contains otp prefix for both e & m otp
 	 */
 	public ApiResponse<SendOtpModel> sendOtp(CustomerPersonalDetail personalDetail) {
@@ -57,10 +57,8 @@ public class CustomerRegistrationClient extends AbstractJaxServiceClient {
 	}
 
 	/**
-	 * @param mOtp
-	 *            mobile otp
-	 * @param eOtp
-	 *            email otp
+	 * @param mOtp mobile otp
+	 * @param eOtp email otp
 	 * @return BooleanResponse - return success or failure
 	 */
 	public ApiResponse<BooleanResponse> validateOtp(String mOtp, String eOtp) {
@@ -82,8 +80,7 @@ public class CustomerRegistrationClient extends AbstractJaxServiceClient {
 	}
 
 	/**
-	 * @param customerHomeAddress
-	 *            customer home address model
+	 * @param customerHomeAddress customer home address model
 	 * @return BooleanResponse - return success or failure
 	 */
 	public ApiResponse<BooleanResponse> saveHomeAddress(CustomerHomeAddress customerHomeAddress) {
@@ -104,13 +101,12 @@ public class CustomerRegistrationClient extends AbstractJaxServiceClient {
 	}
 
 	/**
-	 * @param securityquestions
-	 *            - list of security question and answers
+	 * @param securityquestions - list of security question and answers
 	 * @return BooleanResponse - return success or failure
 	 */
 	public ApiResponse<BooleanResponse> saveSecurityQuestions(List<SecurityQuestionModel> securityquestions) {
 		try {
-			return restService.ajax(appConfig.getJaxURL()).filter(metaFilter)
+			return restService.ajax(appConfig.getJaxURL()).meta(new JaxMetaInfo())
 					.path(CUSTOMER_REG_ENDPOINT + "/save-security-questions/").post(securityquestions)
 					.as(new ParameterizedTypeReference<ApiResponse<BooleanResponse>>() {
 					});
@@ -121,16 +117,14 @@ public class CustomerRegistrationClient extends AbstractJaxServiceClient {
 	}
 
 	/**
-	 * @param caption
-	 *            - Caption as string
-	 * @param imageUrl
-	 *            - url of image as string
+	 * @param caption  - Caption as string
+	 * @param imageUrl - url of image as string
 	 * @return BooleanResponse - return success or failure
 	 */
 	public ApiResponse<BooleanResponse> savePhishiingImage(String caption, String imageUrl) {
 		try {
 			return restService.ajax(appConfig.getJaxURL()).path(CUSTOMER_REG_ENDPOINT + "/save-phishing-image/")
-					.queryParam("caption", caption).queryParam("imageUrl", imageUrl).filter(metaFilter).post()
+					.queryParam("caption", caption).queryParam("imageUrl", imageUrl).meta(new JaxMetaInfo()).post()
 					.as(new ParameterizedTypeReference<ApiResponse<BooleanResponse>>() {
 					});
 		} catch (Exception e) {
@@ -140,10 +134,8 @@ public class CustomerRegistrationClient extends AbstractJaxServiceClient {
 	}
 
 	/**
-	 * @param loginId
-	 *            - login id
-	 * @param password
-	 *            - password
+	 * @param loginId  - login id
+	 * @param password - password
 	 * @return BooleanResponse - return success or failure
 	 */
 	public ApiResponse<BooleanResponse> saveLoginDetail(CustomerCredential customerCredential) {
@@ -151,15 +143,13 @@ public class CustomerRegistrationClient extends AbstractJaxServiceClient {
 	}
 
 	/**
-	 * @param loginId
-	 *            - login id
-	 * @param password
-	 *            - password
+	 * @param loginId  - login id
+	 * @param password - password
 	 * @return BooleanResponse - return success or failure
 	 */
 	public ApiResponse<BooleanResponse> saveLoginDetail(CustomerCredential customerCredential, Boolean isPartialReg) {
 		try {
-			return restService.ajax(appConfig.getJaxURL()).filter(metaFilter)
+			return restService.ajax(appConfig.getJaxURL()).meta(new JaxMetaInfo())
 					.path(CUSTOMER_REG_ENDPOINT + "/save-login-detail/").queryParam("isPartialReg", isPartialReg)
 					.post(customerCredential).as(new ParameterizedTypeReference<ApiResponse<BooleanResponse>>() {
 					});

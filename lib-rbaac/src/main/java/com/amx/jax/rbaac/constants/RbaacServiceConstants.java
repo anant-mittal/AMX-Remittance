@@ -3,6 +3,8 @@
  */
 package com.amx.jax.rbaac.constants;
 
+import java.math.BigDecimal;
+
 /**
  * @author abhijeet
  *
@@ -14,12 +16,14 @@ public final class RbaacServiceConstants {
 		super();
 	}
 
-//	public static enum DEVICE_TYPE {
-//		MOBILE, PC;
-//	}
+	public static BigDecimal OFFSITE_DEVICE_REG_ID = new BigDecimal(99999999);
+
+	public static enum LOGIN_TYPE {
+		SELF, ASSISTED;
+	}
 
 	public static enum ACCESS_KEY {
-		YES, NO, VIEW, EDIT, CREATE, READ, UPDATE, DELETE, RESET, VERIFY, ADD, CANCEL;
+		YES, NO, VIEW, EDIT, CREATE, READ, UPDATE, DELETE, RESET, VERIFY, ADD, CANCEL, SEND;
 	}
 
 	public static enum SCOPE {
@@ -55,7 +59,9 @@ public final class RbaacServiceConstants {
 		CUSTOMER_STATUS("CUSTOMER.STATUS"),
 		CUSTOMER_BENEFICIARY("CUSTOMER.BENEFICIARY"),
 		CUSTOMER_BENEFICIARY_PAYMENT("CUSTOMER.BENEFICIARY.PAYMENT"),
-		CUSTOMER_LOYALTY_POINTS_BALANCE("CUSTOMER.LOYALTY_POINTS.BALANCE");
+		CUSTOMER_LOYALTY_POINTS_BALANCE("CUSTOMER.LOYALTY_POINTS.BALANCE"),
+		MRKT_MGMT_PUSH_NOTIFICATION("MRKT_MGMT.PUSH_NOTIFICATION"),
+		CUSTOMER_MGMT_REMITTANCE("CUSTOMER_MGMT.REMITTANCE");
 
 		// @formatter:on
 

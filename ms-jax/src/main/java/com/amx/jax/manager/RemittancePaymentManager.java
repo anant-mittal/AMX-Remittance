@@ -94,7 +94,7 @@ public class RemittancePaymentManager extends AbstractService{
 	@Autowired
 	RemittanceManager remittanceManager;
 	
-	public ApiResponse paymentCapture(PaymentResponseDto paymentResponse) {
+	public ApiResponse<PaymentResponseDto> paymentCapture(PaymentResponseDto paymentResponse) {
 		ApiResponse response = null;
 		logger.info("paymment capture :"+paymentResponse.toString());
 		List<ShoppingCartDetails>  shoppingCartList = new ArrayList<>();

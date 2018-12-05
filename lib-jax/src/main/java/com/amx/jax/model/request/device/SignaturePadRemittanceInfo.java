@@ -1,6 +1,7 @@
 package com.amx.jax.model.request.device;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 import com.amx.jax.model.response.IDeviceStateData;
 
@@ -14,6 +15,7 @@ public class SignaturePadRemittanceInfo implements IDeviceStateData {
 	@NotNull
 	String branchName;
 	@NotNull
+	@Pattern(regexp = "^[A-Za-z0-9]+$", message = "Invalid account Number, only alphanumeric allowed")
 	String accountNo;
 	@NotNull
 	String currencyAndAmount;
