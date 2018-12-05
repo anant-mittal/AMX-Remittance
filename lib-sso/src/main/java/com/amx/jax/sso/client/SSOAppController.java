@@ -44,6 +44,7 @@ import com.amx.utils.Random;
 import com.amx.utils.URLBuilder;
 
 import io.swagger.annotations.ApiParam;
+import springfox.documentation.annotations.ApiIgnore;
 
 @Controller
 public class SSOAppController {
@@ -141,8 +142,8 @@ public class SSOAppController {
 		}
 
 		if (!ssoUser.isAuthDone()) {
-			LOGGER.debug("ssoUser.isAuthDone() is false");
 
+			LOGGER.debug("ssoUser.isAuthDone() is false");
 			SSOModel sSOModel = sSOTranx.get();
 			sSOModel.setAppUrl(request.getRequestURL().toString());
 			sSOModel.setAppToken(Random.randomAlphaNumeric(6));
@@ -171,11 +172,13 @@ public class SSOAppController {
 		return JsonUtil.toJson(AmxApiResponse.build());
 	}
 
+	@ApiIgnore
 	@RequestMapping(value = SSOConstants.APP_LOGGEDIN_URL_HTML, method = { RequestMethod.GET, RequestMethod.POST })
 	public String loggedinJPage() throws MalformedURLException, URISyntaxException {
 		return "sso_home";
 	}
 
+	@ApiIgnore
 	@ApiSSOStatus({ SSOServerCodes.AUTH_REQUIRED, SSOServerCodes.AUTH_DONE })
 	@ResponseBody
 	@RequestMapping(value = SSOConstants.APP_LOGGEDIN_URL_JSON, method = { RequestMethod.GET,

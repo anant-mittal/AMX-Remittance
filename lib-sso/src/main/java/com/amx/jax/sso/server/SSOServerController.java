@@ -1,7 +1,6 @@
 package com.amx.jax.sso.server;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -233,7 +232,9 @@ public class SSOServerController {
 				EmployeeDetailsDTO empDto = rbaacServiceClient.authoriseUser(auth).getResult();
 				sSOTranx.setUserDetails(empDto);
 
-				String redirectUrl = Urly.parse(sSOTranx.get().getAppUrl())
+				String redirectUrl = Urly.parse(
+						ArgUtil.ifNotEmpty(sSOTranx.get().getAppUrl(),
+								appConfig.getAppPrefix() + SSOConstants.APP_LOGIN_URL_DONE))
 						.queryParam(AppConstants.TRANX_ID_XKEY, AppContextUtil.getTranxId())
 						.queryParam(SSOConstants.PARAM_STEP, SSOAuthStep.DONE)
 						.queryParam(SSOConstants.PARAM_SOTP, sSOTranx.get().getAppToken()).getURL();
