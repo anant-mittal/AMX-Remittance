@@ -250,7 +250,7 @@ public class FcSaleBranchOrderManager {
 	public List<FcEmployeeDetailsDto> fetchEmpDriverDetails(){
 		List<FcEmployeeDetailsDto> empDrivers = new ArrayList<>();
 		try{
-			List<Employee> empDriverDt = fcSaleBranchDao.fetchEmpDriverDetails();
+			List<Employee> empDriverDt = fcSaleBranchDao.fetchEmpDriverDetails(ConstantDocument.USER_TYPE_DRIVER,ConstantDocument.Yes);
 			if(empDriverDt != null && empDriverDt.size() != 0) {
 				for (Employee employee : empDriverDt) {
 					FcEmployeeDetailsDto empDet = new FcEmployeeDetailsDto();
@@ -283,6 +283,7 @@ public class FcSaleBranchOrderManager {
 	// save assign driver details in multiple tables
 	public Boolean saveAssignDriver(BigDecimal countryId,BigDecimal orderNumber,BigDecimal orderYear,BigDecimal driverId,BigDecimal employeeId) {
 		BigDecimal deliveryDetailsId = null;
+		BigDecimal assignDriverId = null;
 		Boolean status = Boolean.FALSE;
 		String isActive = ConstantDocument.Yes;
 		String userName = null;
@@ -293,9 +294,15 @@ public class FcSaleBranchOrderManager {
 				for (OrderManagementView orderManagementView : lstOrderManagement) {
 					if(deliveryDetailsId == null) {
 						deliveryDetailsId = orderManagementView.getDeliveryDetailsId();
+						assignDriverId = orderManagementView.getDriverEmployeId();
 					}else {
-						if(deliveryDetailsId.compareTo(orderManagementView.getDeliveryDetailsId()) != 0) {
+						if(orderManagementView.getDeliveryDetailsId() != null && deliveryDetailsId != null && deliveryDetailsId.compareTo(orderManagementView.getDeliveryDetailsId()) != 0) {
 							deliveryDetailsId = null; // fail
+							break;
+						}
+						
+						if(orderManagementView.getDriverEmployeId() != null && assignDriverId != null && assignDriverId != null && deliveryDetailsId.compareTo(orderManagementView.getDriverEmployeId()) != 0) {
+							assignDriverId = null;
 							break;
 						}
 					}
@@ -304,7 +311,7 @@ public class FcSaleBranchOrderManager {
 
 			if(deliveryDetailsId != null) {
 				// fetch delivery details by id
-				if(deliveryDetailsId.compareTo(driverId) == 0) {
+				if(assignDriverId != null && driverId != null && assignDriverId.compareTo(driverId) == 0) {
 					throw new GlobalException("Driver is already assign for order",JaxError.DRIVER_ALREADY_ASSIGNED);
 				}else {
 					FxDeliveryDetailsModel deliveryDetail = fcSaleBranchDao.fetchDeliveryDetails(deliveryDetailsId,isActive);
@@ -407,6 +414,8 @@ public class FcSaleBranchOrderManager {
 		BigDecimal companyCode = null;
 		BigDecimal documentId = null;
 		BigDecimal collectionId = null;
+		BigDecimal customerId = null;
+		BigDecimal deliveryDetailsId = null;
 		List<BigDecimal> duplicate = new ArrayList<>();
 		List<ForeignCurrencyAdjust> foreignCurrencyAdjusts = new ArrayList<>();
 		HashMap<BigDecimal, String> mapInventory = new HashMap<>();
@@ -441,6 +450,7 @@ public class FcSaleBranchOrderManager {
 					CollectionModel collectionModel = collection.get(0);
 					collectionId = collectionModel.getCollectionId();
 					companyCode = collectionModel.getCompanyCode();
+					customerId = collectionModel.getFsCustomer().getCustomerId();
 				}else {
 					throw new GlobalException("Collection details is empty",JaxError.INVALID_COLLECTION_DOCUMENT_NO);
 				}
@@ -462,6 +472,18 @@ public class FcSaleBranchOrderManager {
 						mapOrderManagement.put(orderManagementView.getDocumentNo(), orderManagementView);
 						List<CurrencyWiseDenomination> lstCurrencyDenomination = fetchCurrencyDenominationByCurrencyId(orderManagementView.getForeignCurrencyId());
 						mapCurrencyDenom.put(orderManagementView.getForeignCurrencyId(), lstCurrencyDenomination);
+						if(deliveryDetailsId == null) {
+							deliveryDetailsId = orderManagementView.getDeliveryDetailsId();
+						}else {
+							if(orderManagementView.getDeliveryDetailsId() != null && deliveryDetailsId != null && deliveryDetailsId.compareTo(orderManagementView.getDeliveryDetailsId()) != 0) {
+								deliveryDetailsId = null; // fail
+								break;
+							}
+						}
+					}
+					
+					if(deliveryDetailsId == null) {
+						throw new GlobalException("No records or mismatch of delivery details",JaxError.NO_DELIVERY_DETAILS);
 					}
 				}else {
 					throw new GlobalException("Collection details is empty",JaxError.INVALID_COLLECTION_DOCUMENT_NO);
@@ -520,7 +542,7 @@ public class FcSaleBranchOrderManager {
 											foreignCurrencyAdj.setFsCurrencyMaster(currencyMasterModel);
 
 											Customer customer = new Customer();
-											customer.setCustomerId(mapOrderManagement.get(fcSaleBranchDispatch.getDocumentNumber()).getCustomerId());
+											customer.setCustomerId(customerId);
 											foreignCurrencyAdj.setFsCustomer(customer);
 
 											CurrencyWiseDenomination currencyWiseDenomination = new CurrencyWiseDenomination();
@@ -588,10 +610,10 @@ public class FcSaleBranchOrderManager {
 					}
 
 					// saving in currency Adjustment and receipt payment
-					fcSaleBranchDao.printOrderSave(foreignCurrencyAdjusts, mapInventoryReceiptPayment,userName,new Date());
+					fcSaleBranchDao.printOrderSave(foreignCurrencyAdjusts, mapInventoryReceiptPayment,userName,new Date(),deliveryDetailsId);
 
 					// calling report
-					fxOrderReportResponseDto = fetchTransactionReport(collectionDocYear, collectionDocNumber);
+					fxOrderReportResponseDto = fetchTransactionReport(customerId,collectionDocYear, collectionDocNumber);
 
 					// transfer to emos 
 					transferReceiptPaymentEMOS(countryId, collectionDocYear, collectionDocNumber, companyId);
@@ -615,8 +637,8 @@ public class FcSaleBranchOrderManager {
 	}
 
 	// fetch the reprint full data
-	public FxOrderReportResponseDto fetchTransactionReport(BigDecimal collectionDocYear,BigDecimal collectionDocNumber) {
-		return fxOrderReportManager.getReportDetails(metaData.getCustomerId(),collectionDocNumber, collectionDocYear);
+	public FxOrderReportResponseDto fetchTransactionReport(BigDecimal customerId,BigDecimal collectionDocYear,BigDecimal collectionDocNumber) {
+		return fxOrderReportManager.getReportDetails(customerId,collectionDocNumber, collectionDocYear);
 	}
 
 	// moving record to old emos
@@ -732,26 +754,12 @@ public class FcSaleBranchOrderManager {
 						JaxConfig jaxConfig = jaxConfigRepository.findByType("FC_SALE_ONLINE");
 						if (jaxConfig != null) {
 							if(jaxConfig.getValue() != null && diffMinutes >= Long.parseLong(jaxConfig.getValue())) {
-								FxEmployeeDetailsDto employeeDt = fetchEmployee(employeeId);
-								if(employeeDt != null && employeeDt.getEmployeeId() != null){
-									userName = employeeDt.getUserName();
-									fcSaleBranchDao.saveOrderLockDetails(lstOrderManagement,employeeId,userName,ConstantDocument.ACP);
-									status = Boolean.TRUE;
-								}else {
-									throw new GlobalException("Employee details is empty",JaxError.INVALID_EMPLOYEE);
-								}
+								saveAndUpdateOrderLock(employeeId, lstOrderManagement);
 							}else {
 								// allow
 								if(employeeDBId.compareTo(employeeId) == 0) {
 									// already
-									FxEmployeeDetailsDto employeeDt = fetchEmployee(employeeId);
-									if(employeeDt != null && employeeDt.getEmployeeId() != null){
-										userName = employeeDt.getUserName();
-										fcSaleBranchDao.saveOrderLockDetails(lstOrderManagement,employeeId,userName,ConstantDocument.ACP);
-										status = Boolean.TRUE;
-									}else {
-										throw new GlobalException("Employee details is empty",JaxError.INVALID_EMPLOYEE);
-									}
+									saveAndUpdateOrderLock(employeeId, lstOrderManagement);
 								}else {
 									throw new GlobalException("record is been locked by other employee",JaxError.ORDER_LOCKED_OTHER_EMPLOYEE);
 								}
@@ -771,28 +779,14 @@ public class FcSaleBranchOrderManager {
 								// allow
 								if(employeeDBId.compareTo(employeeId) == 0) {
 									// already
-									FxEmployeeDetailsDto employeeDt = fetchEmployee(employeeId);
-									if(employeeDt != null && employeeDt.getEmployeeId() != null){
-										userName = employeeDt.getUserName();
-										fcSaleBranchDao.saveOrderLockDetails(lstOrderManagement,employeeId,userName,ConstantDocument.ACP);
-										status = Boolean.TRUE;
-									}else {
-										throw new GlobalException("Employee details is empty",JaxError.INVALID_EMPLOYEE);
-									}
+									saveAndUpdateOrderLock(employeeId, lstOrderManagement);
 								}else {
 									throw new GlobalException("record is been locked by other employee",JaxError.ORDER_LOCKED_OTHER_EMPLOYEE);
 								}
 							}
 						}
 					}else {
-						FxEmployeeDetailsDto employeeDt = fetchEmployee(employeeId);
-						if(employeeDt != null && employeeDt.getEmployeeId() != null){
-							userName = employeeDt.getUserName();
-							fcSaleBranchDao.saveOrderLockDetails(lstOrderManagement,employeeId,userName,ConstantDocument.ACP);
-							status = Boolean.TRUE;
-						}else {
-							throw new GlobalException("Employee details is empty",JaxError.INVALID_EMPLOYEE);
-						}
+						saveAndUpdateOrderLock(employeeId, lstOrderManagement);
 					}
 				}else {
 					throw new GlobalException("No records available for Delivery details",JaxError.NO_DELIVERY_DETAILS);
@@ -812,6 +806,20 @@ public class FcSaleBranchOrderManager {
 
 		return status;
 	}
+	
+	// update the status
+	public void saveAndUpdateOrderLock(BigDecimal employeeId,List<OrderManagementView> lstOrderManagement) {
+		Boolean status = Boolean.FALSE;
+		String userName = null;
+		FxEmployeeDetailsDto employeeDt = fetchEmployee(employeeId);
+		if(employeeDt != null && employeeDt.getEmployeeId() != null){
+			userName = employeeDt.getUserName();
+			fcSaleBranchDao.saveOrderLockDetails(lstOrderManagement,employeeId,userName,ConstantDocument.ACP);
+			status = Boolean.TRUE;
+		}else {
+			throw new GlobalException("Employee details is empty",JaxError.INVALID_EMPLOYEE);
+		}
+	}
 
 	public Boolean releaseOrderLock(BigDecimal applicationCountryId,BigDecimal orderNumber,BigDecimal orderYear,BigDecimal employeeId) {
 		Boolean status = Boolean.FALSE;
@@ -829,7 +837,7 @@ public class FcSaleBranchOrderManager {
 						FxEmployeeDetailsDto employeeDt = fetchEmployee(employeeId);
 						if(employeeDt != null && employeeDt.getEmployeeId() != null){
 							userName = employeeDt.getUserName();
-							fcSaleBranchDao.saveOrderReleaseDetails(lstOrderManagement,employeeId,userName,null);
+							fcSaleBranchDao.saveOrderReleaseDetails(lstOrderManagement,employeeId,userName,ConstantDocument.ORD);
 							status = Boolean.TRUE;
 						}else {
 							throw new GlobalException("Employee details is empty",JaxError.INVALID_EMPLOYEE);

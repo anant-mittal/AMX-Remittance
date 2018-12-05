@@ -16,8 +16,8 @@ public interface EmployeeRespository extends CrudRepository<Employee, String>{
 	@Query("select em from Employee em where em.countryId =:applicationCountryId and em.userName =:userName and em.password =:password and em.isActive=:isActive")
 	public List<Employee> checkEmployeeLogin(BigDecimal applicationCountryId,String userName,String password,String isActive);
 	
-	@Query(value = "SELECT * FROM FS_EMPLOYEE WHERE ROLE_ID = (Select ROLE_ID from EX_ROLE_MASTER where ROLE_CODE = '2') AND ISACTIVE = 'Y'", nativeQuery = true)
-	public List<Employee> fetchEmpDriverDetails();
+	@Query(value = "SELECT * FROM FS_EMPLOYEE WHERE USER_TYPE = ?1 AND ISACTIVE = ?2 ", nativeQuery = true)
+	public List<Employee> fetchEmpDriverDetails(String userType,String isActive);
 	
 	public List<Employee> findByEmployeeId(BigDecimal employeeId);
 
