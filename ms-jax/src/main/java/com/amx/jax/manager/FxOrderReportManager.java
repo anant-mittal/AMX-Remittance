@@ -153,9 +153,8 @@ public class FxOrderReportManager {
 	 * @param collFyr
 	 * @return
 	 */
-	public FxOrderReportResponseDto getReportDetails(BigDecimal collNo,BigDecimal collFyr){
+	public FxOrderReportResponseDto getReportDetails(BigDecimal customerId ,BigDecimal collNo,BigDecimal collFyr){
 		FxOrderReportResponseDto reportModel = new FxOrderReportResponseDto();
-		BigDecimal custoemrId = metaData.getCustomerId();
 		BigDecimal companyId = metaData.getCompanyId();
 		BigDecimal countryId = metaData.getCountryId();
 		BigDecimal languageId = metaData.getLanguageId()==null?new BigDecimal(1):metaData.getLanguageId();
@@ -173,33 +172,41 @@ public class FxOrderReportManager {
 		BigDecimal loyaltyPoints = BigDecimal.ZERO;
 		String email = "";
 		
-		List<Customer> customerList = customerDao.getCustomerByCustomerId(countryId, companyId, custoemrId);
-		if(customerList != null && !customerList.isEmpty()){
-			reportModel.setIdExpiryDate(DateUtil.todaysDateWithDDMMYY(customerList.get(0).getIdentityExpiredDate(),"0"));
-			reportModel.setCivilId(customerList.get(0).getIdentityInt());
-			customerReferenceId = customerList.get(0).getCustomerReference();
-			phoneNo =  customerList.get(0).getMobile();
-			loyaltyPoints = customerList.get(0).getLoyaltyPoints()==null?BigDecimal.ZERO:customerList.get(0).getLoyaltyPoints();
-			email =customerList.get(0).getEmail();
-			reportModel.setLoyaltyPoints(loyaltyPoints);
-			reportModel.setEmail(email);
-		}else{
-			logger.error("custoemr not found :"+custoemrId);
-			throw new GlobalException("custoemr not found", JaxError.INVALID_CUSTOMER);
-		}
 		
 		
 		
-		List<FxOrderTransactionModel> fxOrderTrnxList =  fxTransactionHistroyDao.getFxOrderTrnxListByCollectionDocNumber(custoemrId,collNo,collFyr);
+		List<FxOrderTransactionModel> fxOrderTrnxList =  fxTransactionHistroyDao.getFxOrderTrnxListByCollectionDocNumber(customerId,collNo,collFyr);
+		
 	    if(fxOrderTrnxList != null && !fxOrderTrnxList.isEmpty()){
+	    	
+	    	if(JaxUtil.isNullZeroBigDecimalCheck(customerId) && customerId.compareTo(fxOrderTrnxList.get(0).getCustomerId())!=0){
+	    		logger.error("custoemr not found meta data:"+customerId+"\t details :"+fxOrderTrnxList.get(0).getCustomerId());
+	    		throw new GlobalException("customer not found", JaxError.INVALID_CUSTOMER);
+	    	 }
+	    	
+	    	List<Customer> customerList = customerDao.getCustomerByCustomerId(countryId, companyId, customerId);
+			if(customerList != null && !customerList.isEmpty()){
+				reportModel.setIdExpiryDate(DateUtil.todaysDateWithDDMMYY(customerList.get(0).getIdentityExpiredDate(),"0"));
+				reportModel.setCivilId(customerList.get(0).getIdentityInt());
+				customerReferenceId = customerList.get(0).getCustomerReference();
+				phoneNo =  customerList.get(0).getMobile();
+				loyaltyPoints = customerList.get(0).getLoyaltyPoints()==null?BigDecimal.ZERO:customerList.get(0).getLoyaltyPoints();
+				email =customerList.get(0).getEmail();
+				reportModel.setLoyaltyPoints(loyaltyPoints);
+				reportModel.setEmail(email);
+			}else{
+				logger.error("customer not found :"+customerId);
+				throw new GlobalException("customer not found", JaxError.INVALID_CUSTOMER);
+			}
+	    	
 	    	List<FxOrderTransactionHistroyDto> fxOrderTrnxListDto = applTrnxManager.convertFxHistDto(fxOrderTrnxList);
 	    	List<FxOrderTransactionHistroyDto> finalList = new ArrayList<>();
 	    	if(fxOrderTrnxListDto !=null && !fxOrderTrnxListDto.isEmpty()){
 	    		finalList = applTrnxManager.getMultipleTransactionHistroy(fxOrderTrnxListDto);
 	    		
 	    	}else{
-	    		logger.error("fxOrderTrnxListDto trnx list not found :"+custoemrId+"\t Colle : "+collNo+"\t Coll fyr :"+collFyr);
-		    	throw new GlobalException("custoemr not found", JaxError.NO_RECORD_FOUND);
+	    		logger.error("fxOrderTrnxListDto trnx list not found :"+customerId+"\t Colle : "+collNo+"\t Coll fyr :"+collFyr);
+		    	throw new GlobalException("customer not found", JaxError.NO_RECORD_FOUND);
 	    	}
 	    	
 	    	reportModel.setFxOrderTrnxList(finalList);
@@ -281,7 +288,7 @@ public class FxOrderReportManager {
 				reportModel.setArabicCompanyInfo(arabicCompanyInfo.toString());
 			}else{
 				logger.error("companyMaster not found :");
-				throw new GlobalException("custoemr not found", JaxError.INVALID_COMPANY_ID);
+				throw new GlobalException("customer not found", JaxError.INVALID_COMPANY_ID);
 			}
 			
 		
@@ -357,8 +364,8 @@ public class FxOrderReportManager {
 	    	reportModel.setLocation(fxOrderTrnxList.get(0).getBranchDesc());
 	    	reportModel.setLocalCurrency(localCurrQuoteName);
 	    }else{
-	    	logger.error("trnx list not found :"+custoemrId+"\t Colle : "+collNo+"\t Coll fyr :"+collFyr);
-	    	throw new GlobalException("custoemr not found", JaxError.NO_RECORD_FOUND);
+	    	logger.error("trnx list not found :"+customerId+"\t Colle : "+collNo+"\t Coll fyr :"+collFyr);
+	    	throw new GlobalException("customer not found", JaxError.NO_RECORD_FOUND);
 	    }
 	    
 	    
@@ -474,11 +481,10 @@ public class FxOrderReportManager {
 	public ShippingAddressDto getShippingaddressDetails(ShippingAddressDetail shippingAddressDetail){
 		ShippingAddressDto shippingAddressDto = new ShippingAddressDto();
 		BigDecimal countryId = meta.getCountryId();
-		BigDecimal customerId = meta.getCustomerId();
+		BigDecimal customerId = shippingAddressDetail.getFsCustomer().getCustomerId()==null?meta.getCustomerId():shippingAddressDetail.getFsCustomer().getCustomerId();
 		BigDecimal companyId = meta.getCompanyId();
 		List<Customer> customerList = customerDao.getCustomerByCustomerId(countryId, companyId, customerId);
 		if (shippingAddressDetail!=null) {
-				
 				shippingAddressDto.setAddressId(shippingAddressDetail.getShippingAddressDetailId());
 				
 				if(!customerList.isEmpty()){
