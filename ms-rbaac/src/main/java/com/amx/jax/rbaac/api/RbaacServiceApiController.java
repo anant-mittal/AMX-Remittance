@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
+import com.amx.jax.auth.App;
 import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.rbaac.IRbaacService;
 import com.amx.jax.rbaac.dto.DeviceDto;
@@ -95,6 +96,8 @@ public class RbaacServiceApiController implements IRbaacService {
 				+ userAuthInitReqDTO.getUserClientDto().getGlobalIpAddress() + " from device Id: "
 				+ userAuthInitReqDTO.getUserClientDto().getDeviceId() + " with TraceId: "
 				+ AppContextUtil.getTraceId());
+		
+		LOGGER.debug("User Auth Init Request Dto : " + userAuthInitReqDTO.toString());
 		
 		UserAuthInitResponseDTO userAuthInitResponseDTO = userAuthService.verifyUserDetails(userAuthInitReqDTO);
 

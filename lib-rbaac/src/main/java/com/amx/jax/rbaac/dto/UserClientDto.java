@@ -118,4 +118,15 @@ public class UserClientDto implements Serializable {
 		this.deviceRequestToken = deviceRequestToken;
 	}
 
+	@Override
+	public String toString() {
+		return "UserClientDto [clientType=" + clientType + ", deviceType=" + deviceType + ", terminalId=" + terminalId
+				+ ", localIpAddress=" + localIpAddress + ", globalIpAddress=" + globalIpAddress + ", deviceId="
+				+ deviceId + ", deviceRegId=" + deviceRegId + ", deviceRegToken=" + deviceRegToken
+				+ ", deviceSessionToken=" + deviceSessionToken + ", deviceRequestToken=" + deviceRequestToken + "]";
+	}
+	
+	
+	
+
 }
