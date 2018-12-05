@@ -111,7 +111,10 @@ public class FcSaleDeliveryService {
 		if (deliveryDetailModel == null) {
 			throw new GlobalException("Delivery detail not found", JaxError.FC_CURRENCY_DELIVERY_DETAIL_NOT_FOUND);
 		}
-		return createFxDeliveryDetailDto(deliveryDetailModel);
+		String otpTokenPrefix = fcSaleApplicationDao.getDeliveryDetailModel(deliveryDetailSeqId).getOtpTokenPrefix();
+		FxDeliveryDetailDto dto = createFxDeliveryDetailDto(deliveryDetailModel);
+		dto.setOtpTokenPrefix(otpTokenPrefix);
+		return dto;
 	}
 
 	public BoolRespModel markDelivered(FcSaleDeliveryMarkDeliveredRequest fcSaleDeliveryMarkDeliveredRequest) {
@@ -194,6 +197,7 @@ public class FcSaleDeliveryService {
 		String mOtpPrefix = Random.randomAlpha(3);
 		String hashedmOtp = cryptoUtil.generateHash(deliveryDetailSeqId.toString(), mOtp);
 		fxDeliveryDetailsModel.setOtpToken(hashedmOtp);
+		fxDeliveryDetailsModel.setOtpTokenPrefix(mOtpPrefix);
 		fcSaleApplicationDao.saveDeliveryDetail(fxDeliveryDetailsModel);
 
 		FxDeliveryDetailDto ddDto = createFxDeliveryDetailDto(vwFxDeliveryDetailsModel);

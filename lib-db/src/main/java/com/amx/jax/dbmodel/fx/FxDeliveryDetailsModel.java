@@ -77,6 +77,9 @@ public class FxDeliveryDetailsModel implements Serializable{
 	@Column(name = "OTP_TOKEN")
 	String otpToken;
 	
+	@Column(name = "OTP_TOKEN_PREFIX")
+	String otpTokenPrefix;
+
 	@Column(name = "ORDER_LOCK")
 	Date orderLock;
 	
@@ -208,5 +211,12 @@ public class FxDeliveryDetailsModel implements Serializable{
 		this.employeeId = employeeId;
 	}
 	
+	public String getOtpTokenPrefix() {
+		return otpTokenPrefix;
+	}
+	
+	public void setOtpTokenPrefix(String otpTokenPrefix) {
+		this.otpTokenPrefix = otpTokenPrefix;
+	}
 }
 
