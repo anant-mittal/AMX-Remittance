@@ -185,7 +185,7 @@ public class SSOServerController {
 				ssomodel.getUserClient().setClientType(clientType);
 				ssomodel.getUserClient().setGlobalIpAddress(userDevice.getIp());
 
-				if (appConfig.isSwaggerEnabled() && ArgUtil.isEmpty(deviceType)) {
+				if (appConfig.isSwaggerEnabled() && !ArgUtil.isEmpty(deviceType)) {
 					ssomodel.getUserClient().setDeviceType(deviceType);
 				}
 

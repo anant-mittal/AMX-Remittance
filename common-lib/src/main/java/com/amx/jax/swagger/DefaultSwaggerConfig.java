@@ -13,6 +13,7 @@ import com.amx.jax.AppConstants;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.jax.swagger.MockParamBuilder.MockParam;
+import com.amx.utils.UniqueID;
 
 import springfox.documentation.builders.ParameterBuilder;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -33,6 +34,8 @@ public class DefaultSwaggerConfig {
 
 	public static final String PARAM_STRING = "string";
 	public static final String PARAM_HEADER = "header";
+	public static final String SWGGER_SECRET_PARAM = "x-swagger-key";
+	public static final String SWGGER_SECRET_VALUE = UniqueID.generateString();
 
 	@Bean
 	public Docket productApi(List<MockParam> mockParams) {
@@ -61,6 +64,10 @@ public class DefaultSwaggerConfig {
 		operationParameters.add(new ParameterBuilder().name(AppConstants.TRACE_ID_XKEY).description("Trace Id")
 				.defaultValue("TST-1d59nub55kbgg-1d59nub5827sx")
 				.modelRef(new ModelRef(PARAM_STRING)).parameterType(PARAM_HEADER).required(false).build());
+		operationParameters.add(new ParameterBuilder().name(AppConstants.TRACE_ID_XKEY).description("Trace Id")
+				.defaultValue(SWGGER_SECRET_VALUE)
+				.modelRef(new ModelRef(SWGGER_SECRET_PARAM)).parameterType(PARAM_HEADER).required(false).hidden(true)
+				.build());
 		docket.globalOperationParameters(operationParameters);
 		docket.apiInfo(metaData());
 		return docket;
