@@ -1,35 +1,44 @@
 var stompClient = null;
 
-function setConnected(connected) {
+var tunnelClient = (function(win) {
 	
-}
-
-function connect() {
-	var socket = new SockJS('/offsite/gs-guide-websocket');
-	stompClient = Stomp.over(socket);
-	stompClient.connect({}, function(frame) {
-		setConnected(true);
-		console.log('Connected: ' + frame);
-		stompClient.subscribe('/topic/greetings', function(greeting) {
-			showGreeting(JSON.parse(greeting.body));
+	function connect() {
+		var dfd = jQuery.Deferred();
+		var socket = new SockJS('/offsite/gs-guide-websocket');
+		stompClient = Stomp.over(socket);
+		stompClient.connect({}, function(frame) {
+			console.log('Connected: ' + frame);
+			dfd.resolve(frame);
 		});
-	});
-}
-
-function disconnect() {
-	if (stompClient !== null) {
-		stompClient.disconnect();
+		return dfd.promise();
 	}
-	setConnected(false);
-	console.log("Disconnected");
-}
-
-function sendName() {
-	stompClient.send("/app/hello", {}, JSON.stringify({
-		'name' : "LT"
-	}));
-}
-
-function showGreeting(reply) {
-	console.log("Reply===", reply);
-}
+	
+	return {
+		$connectd : null,
+		onConnect :  function(){
+			if(!this.$connectd){
+				this.$connectd = connect();
+			}
+			return this.$connectd;
+		}
+		on : function subscribe(topic, fun) {
+			this.onConnect().then(function(){
+				stompClient.subscribe(topic, function(greeting) {
+					fun(JSON.parse(greeting.body), topic,greeting);
+				});
+			});
+		},
+		disconnect : function disconnect() {
+			if (stompClient !== null) {
+				stompClient.disconnect();
+			}
+			setConnected(false);
+			console.log("Disconnected");
+		},
+		send : function send(topic, msg) {
+			this.onConnect().then(function(){
+				stompClient.send(topic, {}, JSON.stringify(msg));
+			});
+		}
+	};
+})(this);

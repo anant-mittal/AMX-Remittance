@@ -188,6 +188,9 @@ function fetchCardDetails() {
 			repeaetCall();
 		});
 	}
+	tunnelClient.on("/topic/card/"+window._tid_+"/" + window._rid_, function(cardDetails){
+		console.log("cardDetails===", cardDetails)
+	});
 	$.get(window.CONST.CONTEXT + "/sso/card/details").done(function(resp) {
 		console.log("resp==", resp);
 		if (resp) {
@@ -229,7 +232,3 @@ function dummyData() {
 	$("." + selectedMode + " [name='ecnumber']").val('235474')
 	$("." + selectedMode + " [name='partner-identity']").val('287070110425')
 }
-
-$(document).ready(function() {
-	connect();
-})

@@ -101,14 +101,6 @@ public class SSOTranx extends TransactionModel<SSOModel> {
 		return msg;
 	}
 
-	public SSOModel setAppReturnDetails(String landingUrl, String appToken) {
-		SSOModel msg = this.get();
-		msg.setAppUrl(landingUrl);
-		msg.setAppToken(appToken);
-		this.save(msg);
-		return msg;
-	}
-
 	public SSOModel setUserDetails(EmployeeDetailsDTO userDetail) {
 		SSOModel msg = this.get();
 		msg.setUserDetails(userDetail);

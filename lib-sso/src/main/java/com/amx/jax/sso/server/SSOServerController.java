@@ -119,32 +119,6 @@ public class SSOServerController {
 		return JsonUtil.toJson(result);
 	}
 
-	/**
-	 * @deprecated do not use this
-	 * 
-	 * @param username
-	 * @param password
-	 * @param model
-	 * @param html
-	 * @return
-	 * @throws MalformedURLException
-	 * @throws URISyntaxException
-	 */
-	@Deprecated
-	@RequestMapping(value = SSOConstants.SSO_LOGIN_URL_HTML, method = RequestMethod.POST)
-	public String sendOTP(@RequestParam String username, @RequestParam String password, Model model,
-			@PathVariable(required = false, value = "htmlstep") @ApiParam(defaultValue = "DO") SSOAuthStep html)
-			throws MalformedURLException, URISyntaxException {
-		model.addAllAttributes(getModelMap());
-		if (sSOConfig.getAdminuser().equals(username) && sSOConfig.getAdminpass().equals(password)) {
-			return SSOConstants.REDIRECT + Urly.parse(sSOTranx.get().getAppUrl())
-					.queryParam(AppConstants.TRANX_ID_XKEY, AppContextUtil.getTranxId())
-					.queryParam(SSOConstants.PARAM_STEP, SSOAuthStep.DONE)
-					.queryParam(SSOConstants.PARAM_SOTP, sSOTranx.get().getAppToken()).getURL();
-		}
-		return SSOConstants.SSO_INDEX_PAGE;
-	}
-
 	@ApiDeviceHeaders
 	@ApiSSOStatus({ SSOServerCodes.AUTH_REQUIRED, SSOServerCodes.AUTH_DONE, SSOServerCodes.OTP_REQUIRED })
 	@RequestMapping(value = SSOConstants.SSO_LOGIN_URL_JSON, method = { RequestMethod.POST }, produces = {
@@ -265,8 +239,8 @@ public class SSOServerController {
 						.queryParam(SSOConstants.PARAM_SOTP, sSOTranx.get().getAppToken()).getURL();
 				model.put(SSOConstants.PARAM_REDIRECT, redirectUrl);
 				result.setRedirectUrl(redirectUrl);
+				result.setStatusEnum(SSOServerCodes.AUTH_DONE);
 				if (redirect) {
-					result.setStatusEnum(SSOServerCodes.AUTH_DONE);
 					resp.setHeader("Location", redirectUrl);
 					resp.setStatus(302);
 				}
