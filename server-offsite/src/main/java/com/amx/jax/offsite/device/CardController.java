@@ -43,14 +43,14 @@ public class CardController {
 	@RequestMapping(value = { DeviceConstants.Path.DEVICE_STATUS_CARD }, method = { RequestMethod.POST })
 	public AmxApiResponse<CardData, Object> saveCardDetails(@RequestBody CardReader reader) {
 		DeviceData deviceData = deviceRequestValidator.validateRequest();
-		
+
 		iCardService.saveCardDetailsByTerminal(deviceData.getTerminalId(), reader.getData());
-		
-		CardData cardData = ArgUtil.ifNotEmpty(reader.getData(),new CardData());
+
+		CardData cardData = ArgUtil.ifNotEmpty(reader.getData(), new CardData());
 		messagingTemplate.convertAndSend(
 				"/topic/card/details/" + deviceData.getTerminalId() + "/" + deviceRequestValidator.getDeviceRegId(),
 				cardData);
-		
+
 		return AmxApiResponse.build(reader.getData());
 	}
 
