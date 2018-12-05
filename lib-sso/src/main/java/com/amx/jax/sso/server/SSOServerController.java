@@ -30,6 +30,7 @@ import com.amx.jax.device.DeviceBox;
 import com.amx.jax.device.DeviceConstants;
 import com.amx.jax.device.DeviceData;
 import com.amx.jax.dict.UserClient.ClientType;
+import com.amx.jax.dict.UserClient.DeviceType;
 import com.amx.jax.http.ApiRequest;
 import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.http.CommonHttpRequest.CommonMediaType;
@@ -152,6 +153,7 @@ public class SSOServerController {
 	public String loginJson(@RequestBody SSOLoginFormData formdata,
 			@PathVariable(required = false, value = "jsonstep") @ApiParam(defaultValue = "CREDS") SSOAuthStep json,
 			HttpServletResponse resp,
+			@RequestParam(required = false) DeviceType deviceType,
 			@RequestParam(required = false) ClientType clientType,
 			@RequestParam(required = false, defaultValue = "SELF") LOGIN_TYPE loginType,
 			@RequestParam(required = false) Boolean redirect) throws URISyntaxException, IOException {
@@ -182,6 +184,10 @@ public class SSOServerController {
 				ssomodel.getUserClient().setDeviceType(userDevice.getType());
 				ssomodel.getUserClient().setClientType(clientType);
 				ssomodel.getUserClient().setGlobalIpAddress(userDevice.getIp());
+
+				if (appConfig.isSwaggerEnabled() && ArgUtil.isEmpty(deviceType)) {
+					ssomodel.getUserClient().setDeviceType(deviceType);
+				}
 
 				if (!ArgUtil.isEmpty(sSOTranx.get().getBranchAdapterId())) {
 					// Terminal Login

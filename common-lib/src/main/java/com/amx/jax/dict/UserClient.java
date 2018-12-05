@@ -70,16 +70,40 @@ public class UserClient {
 
 	public enum ClientType {
 		// Auth Apps
-		NOTP_APP,
+		NOTP_APP(DeviceType.MOBILE),
 
 		// branch cleints
-		BRANCH_WEB_OLD, BRANCH_WEB, SIGNATURE_PAD, BRANCH_ADAPTER,
+		BRANCH_WEB_OLD(DeviceType.COMPUTER), BRANCH_WEB(DeviceType.COMPUTER), SIGNATURE_PAD(DeviceType.TABLET),
+		BRANCH_ADAPTER(DeviceType.COMPUTER),
 
 		// Other Channels
-		OFFSITE_PAD, KIOSK, DELIVERY_APP,
+		OFFSITE_PAD(DeviceType.TABLET), KIOSK(DeviceType.COMPUTER), DELIVERY_APP(DeviceType.MOBILE),
 
 		// Customer Facing interfaces
-		ONLINE_WEB, ONLINE_ANDROID, ONLINE_IOS;
+		ONLINE_WEB(DeviceType.COMPUTER), ONLINE_ANDROID(DeviceType.MOBILE), ONLINE_IOS(DeviceType.MOBILE);
+
+		DeviceType deviceType;
+
+		ClientType(DeviceType deviceType) {
+			this.deviceType = deviceType;
+		}
+
+		ClientType() {
+			this.deviceType = DeviceType.COMPUTER;
+		}
+
+		/**
+		 * Allowed Device for This client
+		 * 
+		 * @return
+		 */
+		public DeviceType getDeviceType() {
+			return deviceType;
+		}
+
+		public void setDeviceType(DeviceType deviceType) {
+			this.deviceType = deviceType;
+		}
 	}
 
 }
