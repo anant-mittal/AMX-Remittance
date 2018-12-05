@@ -713,19 +713,7 @@
                                 </textFieldExpression>
                             </textField>
                             
-                             <textField isStretchWithOverflow="true">
-                                <reportElement x="485" y="4" width="100" height="15"
-                                               forecolor="#000000"
-                                               isPrintWhenDetailOverflows="true"/>
-                                <textElement textAlignment="Right">
-                                    <font fontName="Arial" size="8" isItalic="true"
-                                          pdfFontName="fonts/all/arialbd.ttf"/>
-                                </textElement>
-                                <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$R{label.foreignCurDetails}]]>
-                                </textFieldExpression>
-                            </textField>
-
+                            
                         </frame>
                         <!--##################Foreign Currency Details END####################-->
                         
