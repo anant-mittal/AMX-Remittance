@@ -16,7 +16,7 @@ public final class RbaacServiceConstants {
 		super();
 	}
 
-	public static BigDecimal OFFSITE_DEVICE_REG_ID = new BigDecimal(-1);
+	public static BigDecimal OFFSITE_DEVICE_REG_ID = new BigDecimal(99999999);
 
 	public static enum LOGIN_TYPE {
 		SELF, ASSISTED;
