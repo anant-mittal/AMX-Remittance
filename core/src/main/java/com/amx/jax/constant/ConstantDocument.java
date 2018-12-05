@@ -100,5 +100,6 @@ public class ConstantDocument {
 	/** end Here **/
 	public static final String P = "P";	
 	public static final String FC_SALE = "FC Sale";
+	public static final String USER_TYPE_DRIVER = "D";
 
 }
