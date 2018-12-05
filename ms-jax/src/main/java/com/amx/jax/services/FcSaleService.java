@@ -314,7 +314,7 @@ public class FcSaleService extends AbstractService {
 	
 	
 	public AmxApiResponse<FxOrderReportResponseDto, Object> getFxOrderTransactionReport(BigDecimal collNo,BigDecimal collFyr){
-		FxOrderReportResponseDto reportResponseDto = reportManager.getReportDetails(collNo, collFyr);
+		FxOrderReportResponseDto reportResponseDto = reportManager.getReportDetails(metaData.getCustomerId(),collNo, collFyr);
 		return AmxApiResponse.build(reportResponseDto);
 	}
 

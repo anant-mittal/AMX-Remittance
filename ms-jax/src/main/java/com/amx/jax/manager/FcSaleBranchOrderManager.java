@@ -20,6 +20,7 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.constant.ApiEndpoint.MetaApi;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.ApplicationProcedureDao;
@@ -41,6 +42,7 @@ import com.amx.jax.dbmodel.fx.OrderManagementView;
 import com.amx.jax.dbmodel.fx.UserStockView;
 import com.amx.jax.dbmodel.remittance.Document;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.fx.FcSaleBranchDispatchModel;
 import com.amx.jax.model.request.fx.FcSaleBranchDispatchRequest;
 import com.amx.jax.model.response.fx.FcEmployeeDetailsDto;
@@ -82,6 +84,9 @@ public class FcSaleBranchOrderManager {
 
 	@Autowired
 	FxOrderReportManager fxOrderReportManager;
+	
+	@Autowired
+	MetaData metaData;
 
 	public List<OrderManagementView> fetchFcSaleOrderManagement(BigDecimal applicationCountryId,BigDecimal employeeId){
 		List<OrderManagementView> ordermanage = new ArrayList<>();
@@ -611,7 +616,7 @@ public class FcSaleBranchOrderManager {
 
 	// fetch the reprint full data
 	public FxOrderReportResponseDto fetchTransactionReport(BigDecimal collectionDocYear,BigDecimal collectionDocNumber) {
-		return fxOrderReportManager.getReportDetails(collectionDocNumber, collectionDocYear);
+		return fxOrderReportManager.getReportDetails(metaData.getCustomerId(),collectionDocNumber, collectionDocYear);
 	}
 
 	// moving record to old emos
