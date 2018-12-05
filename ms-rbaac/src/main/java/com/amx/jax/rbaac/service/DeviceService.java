@@ -201,7 +201,7 @@ public class DeviceService extends AbstractService {
 
 			Device device = deviceDao.findDeviceByEmployee(employeeId, ClientType.OFFSITE_PAD);
 
-			if (device == null || employeeId != device.getEmployeeId()
+			if (device == null || employeeId.longValue() != device.getEmployeeId().longValue()
 					|| !deviceId.equalsIgnoreCase(device.getDeviceId())) {
 
 				throw new AuthServiceException("Invalid Device Client : Not Paired or Not Mapped",
@@ -213,7 +213,7 @@ public class DeviceService extends AbstractService {
 
 			Device device = deviceDao.findDevice(deviceRegId);
 
-			if (device == null || employeeId != device.getEmployeeId()
+			if (device == null || employeeId.longValue() != device.getEmployeeId().longValue()
 					|| !deviceId.equalsIgnoreCase(device.getDeviceId())
 					|| !deviceRegToken.equalsIgnoreCase(deviceRegToken)) {
 
