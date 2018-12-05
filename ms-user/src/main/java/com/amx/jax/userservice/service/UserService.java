@@ -356,7 +356,12 @@ public class UserService extends AbstractUserService {
 		}
 		logger.info("customerId is --> " + customerId);
 		userValidationService.validateCustomerVerification(customerId);
-		userValidationService.validateCivilId(civilId);
+		//userValidationService.validateCivilId(civilId);
+		
+		// --- Validate IdentityInt 
+		Customer customerType = custDao.getCustomerByCivilId(civilId);
+		BigDecimal indentityType = customerType.getIdentityTypeId();
+		userValidationService.validateIdentityInt(civilId, indentityType);
 
 		CivilIdOtpModel model = new CivilIdOtpModel();
 

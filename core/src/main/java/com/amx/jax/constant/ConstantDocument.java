@@ -101,4 +101,7 @@ public class ConstantDocument {
 	public static final String P = "P";	
 	public static final String FC_SALE = "FC Sale";
 
+	public static final BigDecimal BIZ_COMPONENT_ID_GCC_ID = new BigDecimal(201);
+	public static final BigDecimal BIZ_COMPONENT_ID_BEDOUIN_ID = new BigDecimal(197);
+
 }

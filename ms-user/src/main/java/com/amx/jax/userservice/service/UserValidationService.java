@@ -157,7 +157,15 @@ public class UserValidationService {
 	protected void validateCivilId(String civilId) {
 		boolean isValid = custValidation.validateCivilId(civilId, meta.getCountry().getCountryCode());
 		if (!isValid) {
-			throw new InvalidCivilIdException("Civil Id " + civilId + " is not valid.");
+			throw new InvalidCivilIdException("Civil Id " + civilId + " is not valid!");
+		}
+	}
+	
+	//Validate IdentityInt
+	protected void validateIdentityInt(String civilId, BigDecimal identityType) {
+		boolean isValid = custValidation.validateIdentityInt(civilId, meta.getCountry().getCountryCode(), identityType);
+		if (!isValid) {
+			throw new InvalidCivilIdException("Id " + civilId + " is not valid!");
 		}
 	}
 
