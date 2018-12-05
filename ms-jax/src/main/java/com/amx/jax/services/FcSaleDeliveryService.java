@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.transaction.Transactional;
+
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -111,7 +113,10 @@ public class FcSaleDeliveryService {
 		if (deliveryDetailModel == null) {
 			throw new GlobalException("Delivery detail not found", JaxError.FC_CURRENCY_DELIVERY_DETAIL_NOT_FOUND);
 		}
-		return createFxDeliveryDetailDto(deliveryDetailModel);
+		String otpTokenPrefix = fcSaleApplicationDao.getDeliveryDetailModel(deliveryDetailSeqId).getOtpTokenPrefix();
+		FxDeliveryDetailDto dto = createFxDeliveryDetailDto(deliveryDetailModel);
+		dto.setOtpTokenPrefix(otpTokenPrefix);
+		return dto;
 	}
 
 	public BoolRespModel markDelivered(FcSaleDeliveryMarkDeliveredRequest fcSaleDeliveryMarkDeliveredRequest) {
@@ -194,6 +199,7 @@ public class FcSaleDeliveryService {
 		String mOtpPrefix = Random.randomAlpha(3);
 		String hashedmOtp = cryptoUtil.generateHash(deliveryDetailSeqId.toString(), mOtp);
 		fxDeliveryDetailsModel.setOtpToken(hashedmOtp);
+		fxDeliveryDetailsModel.setOtpTokenPrefix(mOtpPrefix);
 		fcSaleApplicationDao.saveDeliveryDetail(fxDeliveryDetailsModel);
 
 		FxDeliveryDetailDto ddDto = createFxDeliveryDetailDto(vwFxDeliveryDetailsModel);
@@ -292,6 +298,7 @@ public class FcSaleDeliveryService {
 		}
 		deliveryDetail.setOrderStatus(ConstantDocument.OFD);
 		fcSaleApplicationDao.saveDeliveryDetail(deliveryDetail);
+		sendOtp(deliveryDetailSeqId);
 		return new BoolRespModel(true);
 	}
 }

@@ -16,7 +16,7 @@ import javax.persistence.Table;
  * The Class Role.
  */
 @Entity
-@Table(name = "JX_RB_ROLE")
+@Table(name = "JAX_RB_ROLE")
 public class Role implements Serializable {
 
 	

@@ -13,6 +13,15 @@ public class FxDeliveryDetailDto {
 	String deliveryRemark;
 	String orderStatus;
 	BigDecimal deliveryDetailSeqId;
+	String otpTokenPrefix;
+
+	public String getOtpTokenPrefix() {
+		return otpTokenPrefix;
+	}
+
+	public void setOtpTokenPrefix(String otpTokenPrefix) {
+		this.otpTokenPrefix = otpTokenPrefix;
+	}
 
 	public String getMobile() {
 		return mobile;
