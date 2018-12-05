@@ -97,7 +97,7 @@ public class RbaacServiceApiController implements IRbaacService {
 				+ userAuthInitReqDTO.getUserClientDto().getDeviceId() + " with TraceId: "
 				+ AppContextUtil.getTraceId());
 		
-		LOGGER.debug("User Auth Init Request Dto : " + userAuthInitReqDTO.toString());
+		LOGGER.info("User Auth Init Request Dto : " + userAuthInitReqDTO.toString());
 		
 		UserAuthInitResponseDTO userAuthInitResponseDTO = userAuthService.verifyUserDetails(userAuthInitReqDTO);
 
