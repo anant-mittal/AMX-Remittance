@@ -23,7 +23,7 @@ var tunnelClient = (function(win) {
 		},
 		on : function subscribe(topic, fun) {
 			return this.onConnect().then(function() {
-				return stompClient.subscribe(topic, function(greeting) {
+				return stompClient.subscribe("/topic" + topic, function(greeting) {
 					fun(JSON.parse(greeting.body), topic, greeting);
 				});
 			});
@@ -37,7 +37,7 @@ var tunnelClient = (function(win) {
 		},
 		send : function send(topic, msg) {
 			this.onConnect().then(function() {
-				stompClient.send("topic/" + topic, {}, JSON.stringify(msg));
+				stompClient.send(topic, {}, JSON.stringify(msg));
 			});
 		}
 	};

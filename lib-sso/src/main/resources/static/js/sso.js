@@ -170,18 +170,25 @@ $('.message a').click(function() {
 	}, "slow");
 });
 
+function populateCardDetails(cardDetails){
+	var selectedMode = $("input[name='cardtype']:checked").val();
+	if (selectedMode == WITHOUT_SMART_CARD) {
+		$("[name=partner-identity]").val(cardDetails.identity);
+	} else {
+		$("[name=identity]").val(cardDetails.identity);
+	}
+}
+
 var fetchTimer = null;
 var gap = 1000;
 function repeaetCall(_gap) {
 	gap = (_gap === undefined) ? gap : _gap;
 	clearTimeout(fetchTimer);
-	fetchTimer = setTimeout(fetchCardDetails, gap);
+	fetchTimer = setTimeout(fetchCardDetails, gap*2);
 }
 
 function fetchCardDetails() {
-	var selectedMode = $("input[name='cardtype']:checked").val();
 	var localScriptSrc = $("#terminal_session").attr("src");
-
 	if (!window._tid_ && !window._rid_) {
 		return $.getScript(localScriptSrc, function(data, textStatus, jqxhr) {
 		}).always(function() {
@@ -189,10 +196,9 @@ function fetchCardDetails() {
 		});
 	} else if(!window._card_sub_){
 		window._card_sub_ = tunnelClient.on("/card/details/"+window._tid_+"/" + window._rid_, function(cardDetails){
-			console.log("cardDetails===", cardDetails)
+			populateCardDetails(cardDetails);
 		});
 	}
-
 	$.get(window.CONST.CONTEXT + "/sso/card/details").done(function(resp) {
 		console.log("resp==", resp);
 		if (resp) {
@@ -203,11 +209,7 @@ function fetchCardDetails() {
 				return repeaetCall(2000);
 			}
 			if (resp.results && resp.results[0] && resp.results[0].identity) {
-				if (selectedMode == WITHOUT_SMART_CARD) {
-					$("[name=partner-identity]").val(resp.results[0].identity);
-				} else {
-					$("[name=identity]").val(resp.results[0].identity);
-				}
+				populateCardDetails(resp.results[0]);
 				return repeaetCall(2000);
 			} else {
 				return repeaetCall(1000);
