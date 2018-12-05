@@ -2,6 +2,7 @@ package com.amx.jax.offsite.device;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.core.MessageSendingOperations;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -35,11 +36,17 @@ public class CardController {
 	@Autowired
 	private IDeviceConnecter iCardService;
 
+	@Autowired
+	private MessageSendingOperations<String> messagingTemplate;
+
 	@ApiDeviceSessionHeaders
 	@RequestMapping(value = { DeviceConstants.Path.DEVICE_STATUS_CARD }, method = { RequestMethod.POST })
 	public AmxApiResponse<CardData, Object> saveCardDetails(@RequestBody CardReader reader) {
 		DeviceData deviceData = deviceRequestValidator.validateRequest();
 		iCardService.saveCardDetailsByTerminal(deviceData.getTerminalId(), reader.getData());
+		messagingTemplate.convertAndSend(
+				"/topic/card/details/" + deviceData.getTerminalId() + "/" + deviceRequestValidator.getDeviceRegId(),
+				reader.getData());
 		return AmxApiResponse.build(reader.getData());
 	}
 

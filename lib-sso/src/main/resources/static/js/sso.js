@@ -187,10 +187,12 @@ function fetchCardDetails() {
 		}).always(function() {
 			repeaetCall();
 		});
+	} else if(!window._card_sub_){
+		window._card_sub_ = tunnelClient.on("/card/details/"+window._tid_+"/" + window._rid_, function(cardDetails){
+			console.log("cardDetails===", cardDetails)
+		});
 	}
-	tunnelClient.on("/topic/card/"+window._tid_+"/" + window._rid_, function(cardDetails){
-		console.log("cardDetails===", cardDetails)
-	});
+
 	$.get(window.CONST.CONTEXT + "/sso/card/details").done(function(resp) {
 		console.log("resp==", resp);
 		if (resp) {

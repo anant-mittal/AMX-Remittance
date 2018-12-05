@@ -39,9 +39,16 @@ public class SWAdapterController {
 	@ResponseBody
 	@RequestMapping(value = "/pub/script/validation.js", method = RequestMethod.GET)
 	public String makesession(@RequestParam String tranx) throws Exception {
-		AmxApiResponse<Object, Object> x = adapterServiceClient.pairTerminal(kwtCardReaderService.getAddress(),
-				kwtCardReaderService.getDevicePairingCreds(), kwtCardReaderService.getSessionPairingCreds(), tranx);
-		return "var _tid_ = '" + x.getResult() + "', _rid_ = '" + x.getMeta() + "' ";
+		String tid = "";
+		String rid = "";
+		if (!ArgUtil.isEmpty(kwtCardReaderService.getDevicePairingCreds())
+				&& !ArgUtil.isEmpty(kwtCardReaderService.getSessionPairingCreds())) {
+			AmxApiResponse<Object, Object> x = adapterServiceClient.pairTerminal(kwtCardReaderService.getAddress(),
+					kwtCardReaderService.getDevicePairingCreds(), kwtCardReaderService.getSessionPairingCreds(), tranx);
+			tid = ArgUtil.parseAsString(x.getResult());
+			rid = ArgUtil.parseAsString(x.getMeta());
+		}
+		return "var _tid_ = '" + tid + "', _rid_ = '" + rid + "' ";
 	}
 
 	@ResponseBody

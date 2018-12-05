@@ -1,7 +1,7 @@
 var stompClient = null;
 
 var tunnelClient = (function(win) {
-	
+
 	function connect() {
 		var dfd = jQuery.Deferred();
 		var socket = new SockJS('/offsite/gs-guide-websocket');
@@ -12,19 +12,19 @@ var tunnelClient = (function(win) {
 		});
 		return dfd.promise();
 	}
-	
+
 	return {
 		$connectd : null,
-		onConnect :  function(){
-			if(!this.$connectd){
+		onConnect : function() {
+			if (!this.$connectd) {
 				this.$connectd = connect();
 			}
 			return this.$connectd;
-		}
+		},
 		on : function subscribe(topic, fun) {
-			this.onConnect().then(function(){
-				stompClient.subscribe(topic, function(greeting) {
-					fun(JSON.parse(greeting.body), topic,greeting);
+			return this.onConnect().then(function() {
+				return stompClient.subscribe(topic, function(greeting) {
+					fun(JSON.parse(greeting.body), topic, greeting);
 				});
 			});
 		},
@@ -36,8 +36,8 @@ var tunnelClient = (function(win) {
 			console.log("Disconnected");
 		},
 		send : function send(topic, msg) {
-			this.onConnect().then(function(){
-				stompClient.send(topic, {}, JSON.stringify(msg));
+			this.onConnect().then(function() {
+				stompClient.send("topic/" + topic, {}, JSON.stringify(msg));
 			});
 		}
 	};
