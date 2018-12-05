@@ -103,7 +103,7 @@ public class UserAuthService {
 		if (StringUtils.isBlank(employeeNo) || StringUtils.isBlank(identity) || StringUtils.isBlank(ipAddress)
 				|| deviceType == null || StringUtils.isBlank(deviceType.toString())) {
 			throw new AuthServiceException("Employee Number, Civil Id, IP Address, & Device Type are Manadatory",
-					RbaacServiceError.INVALID_OR_MISSING_DATA);
+					RbaacServiceError.INVALID_OR_MISSING_CREDENTIALS);
 		}
 
 		/**
@@ -112,13 +112,13 @@ public class UserAuthService {
 		if (isAssisted) {
 			if (StringUtils.isBlank(partnerIdentity)) {
 				throw new AuthServiceException("Partner Identity is Manadatory for Assisted Login",
-						RbaacServiceError.INVALID_OR_MISSING_DATA);
+						RbaacServiceError.INVALID_OR_MISSING_PARTNER_IDENTITY);
 			}
 		}
 
 		List<Employee> employees = rbaacDao.getEmployees(employeeNo, identity);
 
-		Employee selfEmployee = getValidEmployee(employees, userAuthInitReqDTO);
+		Employee selfEmployee = getValidEmployee(employees, "Self");
 
 		// Validate Employee Device/Terminal Assignment
 
@@ -132,7 +132,7 @@ public class UserAuthService {
 		if (isAssisted) {
 			List<Employee> possiblePartners = rbaacDao.getEmployeesByCivilId(partnerIdentity);
 
-			partnerEmployee = getValidEmployee(possiblePartners, userAuthInitReqDTO);
+			partnerEmployee = getValidEmployee(possiblePartners, "Partner");
 		}
 
 		/**
@@ -241,7 +241,7 @@ public class UserAuthService {
 
 			if (StringUtils.isBlank(userOtpData.getPartnerOtpData().getHashedmOtp())) {
 				throw new AuthServiceException("Invalid OTP: OTP is not generated for the Partner user or timedOut",
-						RbaacServiceError.INVALID_OTP);
+						RbaacServiceError.INVALID_PARTNER_OTP);
 			}
 
 		}
@@ -291,15 +291,15 @@ public class UserAuthService {
 		return empDetail;
 	}
 
-	private Employee getValidEmployee(List<Employee> employees, UserAuthInitReqDTO userAuthInitReqDTO) {
+	private Employee getValidEmployee(List<Employee> employees, String userType) {
 
-		LOGIN_TYPE loginType = userAuthInitReqDTO.getLoginType();
+		// LOGIN_TYPE userType = userAuthInitReqDTO.getLoginType();
 
 		/**
 		 * Invalid Employee Details
 		 */
 		if (null == employees || employees.isEmpty()) {
-			throw new AuthServiceException("Employee Details not available : " + loginType,
+			throw new AuthServiceException("Employee Details not available : " + userType,
 					RbaacServiceError.INVALID_USER_DETAILS);
 		}
 
@@ -314,7 +314,7 @@ public class UserAuthService {
 		});
 
 		if (activeEmployees.isEmpty()) {
-			throw new AuthServiceException("User Not Active Or Deleted: User Account is Suspended : " + loginType,
+			throw new AuthServiceException("User Not Active Or Deleted: User Account is Suspended : " + userType,
 					RbaacServiceError.USER_NOT_ACTIVE_OR_DELETED);
 		}
 
@@ -323,7 +323,7 @@ public class UserAuthService {
 		 */
 		if (activeEmployees.size() > 1) {
 			throw new AuthServiceException(
-					"Multiple Users Corresponding to the same Info: Pls contact Support : " + loginType,
+					"Multiple Users Corresponding to the same Info: Pls contact Support : " + userType,
 					RbaacServiceError.MULTIPLE_USERS);
 		}
 
@@ -335,7 +335,7 @@ public class UserAuthService {
 		if (null != validEmployee.getLockCount()
 				&& validEmployee.getLockCount().intValue() >= RbaacConstants.EMPLOYEE_MAX_LOCK_COUNT) {
 			throw new AuthServiceException("User Account Locked : User Account Login is Suspended, from: "
-					+ validEmployee.getLockDate() + " for Login Type : " + loginType,
+					+ validEmployee.getLockDate() + " for Login Type : " + userType,
 					RbaacServiceError.USER_ACCOUNT_LOCKED);
 		}
 
