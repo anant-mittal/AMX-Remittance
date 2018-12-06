@@ -216,16 +216,17 @@ public class DeviceService extends AbstractService {
 			if (device == null || employeeId.longValue() != device.getEmployeeId().longValue()
 					|| !deviceId.equalsIgnoreCase(device.getDeviceId())
 					|| !deviceRegToken.equalsIgnoreCase(pairTokenHash)) {
-				
+
 				throw new AuthServiceException("Invalid Device Client : Not Paired or Not Mapped",
 						RbaacServiceError.DEVICE_CLIENT_INVALID);
 
-			}else if(RbaacServiceConstants.YES.equalsIgnoreCase(device.getStatus())) {
-				throw new AuthServiceException("Inactive Device Client : Contact Support",
-						RbaacServiceError.CLIENT_NOT_ACTIVE);
+			} else if (!RbaacServiceConstants.YES.equalsIgnoreCase(device.getStatus())) {
+
+				logger.info("====== WARNING : Inactive Device Client : Contact Support ======");
+
+				// throw new AuthServiceException("Inactive Device Client : Contact Support",
+				// RbaacServiceError.CLIENT_NOT_ACTIVE);
 			}
-			
-			
 
 		}
 
