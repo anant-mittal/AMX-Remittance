@@ -208,8 +208,8 @@ public enum JaxError implements IExceptionEnum {
 	MISMATCH_CURRENT_STOCK,
 	UNABLE_CONVERT_PENDING_RECORDS,
 	ORDER_IS_NOT_LOCK,
-	ORDER_STATUS_MISMATCH;
-
+	ORDER_STATUS_MISMATCH,
+	NULL_ORDER_STATUS;
 
 	@Deprecated
 	public String getCode() {

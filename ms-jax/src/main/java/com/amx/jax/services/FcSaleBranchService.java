@@ -20,6 +20,7 @@ import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.fx.OrderManagementView;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.manager.FcSaleApplicationTransactionManager;
 import com.amx.jax.manager.FcSaleBranchOrderManager;
 import com.amx.jax.model.request.fx.FcSaleBranchDispatchRequest;
 import com.amx.jax.model.response.fx.FcEmployeeDetailsDto;
@@ -38,6 +39,9 @@ public class FcSaleBranchService extends AbstractService{
 
 	@Autowired
 	FcSaleBranchOrderManager branchOrderManager;
+	
+	@Autowired
+	FcSaleApplicationTransactionManager fcSaleApplicationTransactionManager;
 
 	/* 
 	 * @param   :fetch List of Pending Orders
@@ -216,7 +220,14 @@ public class FcSaleBranchService extends AbstractService{
 		List<FcSaleOrderManagementDTO> lstDto = new ArrayList<>();
 		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 		SimpleDateFormat dateTimeFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+		String deliveryAddress = null;
 		if(orderManagementView != null && orderManagementView.size() != 0) {
+			
+			OrderManagementView ordDelieryAddress = orderManagementView.get(0);
+			if(ordDelieryAddress.getDeliveryDetailsId() != null) {
+				String address = fcSaleApplicationTransactionManager.getDeliveryAddress(ordDelieryAddress.getDeliveryDetailsId());
+				deliveryAddress = address;
+			}
 
 			for (OrderManagementView orderManagement : orderManagementView) {
 
@@ -274,6 +285,10 @@ public class FcSaleBranchService extends AbstractService{
 				List<UserStockDto> userStockDto = branchOrderManager.fetchCurrencyAdjustDetails(orderManagement.getDocumentNo(), orderManagement.getCollectionDocFinanceYear(), companyId, ConstantDocument.DOCUMENT_CODE_FOR_FCSALE);
 				if(userStockDto != null) {
 					fcSaleOrder.setFcDenomination(userStockDto);
+				}
+				
+				if(deliveryAddress != null) {
+					fcSaleOrder.setDeliveryAddress(deliveryAddress);
 				}
 				
 				lstDto.add(fcSaleOrder);

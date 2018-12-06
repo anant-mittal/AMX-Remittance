@@ -4,12 +4,15 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import javax.transaction.Transactional;
+
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
 import com.amx.jax.dbmodel.fx.FxDeliveryDetailsModel;
 
+@Transactional
 public interface FxDeliveryDetailsRepository extends CrudRepository<FxDeliveryDetailsModel, Serializable>{
 	
 	public FxDeliveryDetailsModel findByDeleviryDelSeqIdAndIsActive(BigDecimal deliveryDetailsId,String isActive);
@@ -24,6 +27,7 @@ public interface FxDeliveryDetailsRepository extends CrudRepository<FxDeliveryDe
 	
 	@Modifying
 	@Query("update FxDeliveryDetailsModel sd set sd.updatedBy = ?2 , sd.uopdateDate = ?3 , sd.orderStatus = ?4 where sd.deleviryDelSeqId = ?1 ")
-	public void updateDispatchStatusDetails(BigDecimal deleviryDelSeqId,String userName,Date currenctDate,String orderStatus);
+	public void updateStatusDeliveryDetails(BigDecimal deleviryDelSeqId,String userName,Date currenctDate,String orderStatus);
+	
 	
 }
