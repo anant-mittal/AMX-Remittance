@@ -52,7 +52,7 @@ public class VwFxDeliveryDetailsModel implements Serializable {
 	@Column(name = "DRIVER_EMPLOYEE_ID")
 	BigDecimal driverEmployeeId;
 
-	@Column(name = "EX_SHIPPING_ADDR_ID")
+	@Column(name = "SHIPPING_ADDRESS_ID")
 	BigDecimal shippingAddressId;
 
 	@Column(name = "ORDER_STATUS")
