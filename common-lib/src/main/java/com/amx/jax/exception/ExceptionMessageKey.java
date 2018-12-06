@@ -19,13 +19,13 @@ public class ExceptionMessageKey extends Dnum<ExceptionMessageKey> implements IM
 	int argCount = 0;
 	String messageKeyFormat;
 
-	public ExceptionMessageKey(String messageKey, int argCount, String... matchings) {
-		super(messageKey, ordinalCounter++);
+	public ExceptionMessageKey(String messageKeyName, int argCount, String... matchings) {
+		super(messageKeyName, ordinalCounter++);
 		this.argCount = argCount;
 		for (String matching : matchings) {
-			MAP.put(matching.toLowerCase(), messageKey);
+			MAP.put(matching.toLowerCase(), messageKeyName);
 		}
-		StringBuilder builder = new StringBuilder(messageKey);
+		StringBuilder builder = new StringBuilder(messageKeyName);
 		for (int i = 0; i < argCount; i++) {
 			builder.append(":%s");
 		}
@@ -39,7 +39,12 @@ public class ExceptionMessageKey extends Dnum<ExceptionMessageKey> implements IM
 
 	@Override
 	public String getMessageKey(Object... args) {
-		return String.format(messageKeyFormat, args);
+		return String.format(this.messageKeyFormat, args);
+	}
+
+	@Override
+	public String toString() {
+		return this.messageKeyFormat;
 	}
 
 	public static <E> Dnum<? extends Dnum<?>>[] values() {
@@ -65,16 +70,17 @@ public class ExceptionMessageKey extends Dnum<ExceptionMessageKey> implements IM
 					ExceptionMessageKey exceptionMessageKey = ExceptionMessageKey.valueOf(fieldError.getDescription());
 					if (exceptionMessageKey != null) {
 						apiError.setMessageKey(exceptionMessageKey
-								.getMessageKey(ArgUtil.ifNotEmpty(fieldError.getField(), fieldError.getObzect())));
+								.getMessageKey(ArgUtil.ifNotEmpty(fieldError.getField(), fieldError.getObzect()))
+								.toString());
 					} else {
 						exceptionMessageKey = ExceptionMessageKey.valueOf(fieldError.getCode());
 						if (exceptionMessageKey != null) {
 							apiError.setMessageKey(exceptionMessageKey
-									.getMessageKey(ArgUtil.ifNotEmpty(fieldError.getField(), fieldError.getObzect())));
+									.getMessageKey(ArgUtil.ifNotEmpty(fieldError.getField(), fieldError.getObzect()))
+									.toString());
 						}
 					}
 				}
-
 				if (ArgUtil.isEmpty(apiError.getMessage())) {
 					apiError.setMessage(fieldError.getDescription());
 				}
