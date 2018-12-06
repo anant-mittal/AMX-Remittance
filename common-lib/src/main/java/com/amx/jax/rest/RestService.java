@@ -96,13 +96,14 @@ public class RestService {
 	public Map<String, IMetaRequestInFilter<RequestMetaInfo>> getInFilters() {
 		if (!IN_FILTER_MAP_DONE) {
 			if (inFilters == null) {
-				LOGGER.warn("NO IMetaRequestInFilter Filters FOUND and SCANNED");
+				LOGGER.debug("NO IMetaRequestInFilter Filters FOUND and SCANNED");
 				return IN_FILTERS_MAP;
-			}
-			for (IMetaRequestInFilter filter : inFilters) {
-				Matcher matcher = PATTERN_IN.matcher(filter.getClass().getGenericInterfaces()[0].getTypeName());
-				if (matcher.find()) {
-					IN_FILTERS_MAP.put(matcher.group(1), filter);
+			} else {
+				for (IMetaRequestInFilter filter : inFilters) {
+					Matcher matcher = PATTERN_IN.matcher(filter.getClass().getGenericInterfaces()[0].getTypeName());
+					if (matcher.find()) {
+						IN_FILTERS_MAP.put(matcher.group(1), filter);
+					}
 				}
 			}
 			IN_FILTER_MAP_DONE = true;
