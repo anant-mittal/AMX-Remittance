@@ -2,7 +2,6 @@ package com.amx.jax.offsite.device;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.core.MessageSendingOperations;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -18,6 +17,7 @@ import com.amx.jax.device.DeviceConstants;
 import com.amx.jax.device.DeviceData;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.sso.server.ApiHeaderAnnotations.ApiDeviceSessionHeaders;
+import com.amx.jax.stomp.StompTunnel;
 import com.amx.jax.swagger.IStatusCodeListPlugin.ApiStatusService;
 import com.amx.utils.ArgUtil;
 
@@ -37,7 +37,7 @@ public class CardController {
 	private IDeviceConnecter iCardService;
 
 	@Autowired
-	private MessageSendingOperations<String> messagingTemplate;
+	private StompTunnel stompTunnel;
 
 	@ApiDeviceSessionHeaders
 	@RequestMapping(value = { DeviceConstants.Path.DEVICE_STATUS_CARD }, method = { RequestMethod.POST })
@@ -47,8 +47,8 @@ public class CardController {
 		iCardService.saveCardDetailsByTerminal(deviceData.getTerminalId(), reader.getData());
 
 		CardData cardData = ArgUtil.ifNotEmpty(reader.getData(), new CardData());
-		messagingTemplate.convertAndSend(
-				"/topic/card/details/" + deviceData.getTerminalId() + "/" + deviceRequestValidator.getDeviceRegId(),
+		stompTunnel.send(
+				"/card/details/" + deviceData.getTerminalId() + "/" + deviceRequestValidator.getDeviceRegId(),
 				cardData);
 
 		return AmxApiResponse.build(reader.getData());
