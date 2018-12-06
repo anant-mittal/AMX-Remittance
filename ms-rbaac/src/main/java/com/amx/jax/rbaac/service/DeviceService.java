@@ -215,11 +215,14 @@ public class DeviceService extends AbstractService {
 
 			String pairTokenHash = this.getDevicePairTokenHash(deviceRegToken, deviceRegId);
 
-			if (device == null || employeeId.longValue() != device.getEmployeeId().longValue()
-					|| !deviceId.equalsIgnoreCase(device.getDeviceId())
-					|| !deviceRegToken.equalsIgnoreCase(pairTokenHash)) {
-
-				throw new AuthServiceException("Invalid Device Client : Not Paired or Not Mapped",
+			if (device == null) {
+				throw new AuthServiceException("No valid device is found", RbaacServiceError.DEVICE_CLIENT_INVALID);
+			} else if (employeeId.longValue() != device.getEmployeeId().longValue()
+					|| !deviceId.equalsIgnoreCase(device.getDeviceId())) {
+				throw new AuthServiceException("Incorrect Employee or Device Mapping : Contact Support",
+						RbaacServiceError.DEVICE_CLIENT_INVALID);
+			} else if (null == device.getPairToken() || !device.getPairToken().equalsIgnoreCase(pairTokenHash)) {
+				throw new AuthServiceException("Invalid Device Pairing : Pair Device Again",
 						RbaacServiceError.DEVICE_CLIENT_INVALID);
 
 			} else if (!RbaacServiceConstants.YES.equalsIgnoreCase(device.getStatus())) {
