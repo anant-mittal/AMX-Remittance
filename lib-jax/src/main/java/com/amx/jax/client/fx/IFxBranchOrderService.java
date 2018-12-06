@@ -76,5 +76,7 @@ public interface IFxBranchOrderService extends IJaxService {
 		,JaxError.ORDER_IS_NOT_LOCK})
 	AmxApiResponse<BoolRespModel,Object> dispatchOrder(BigDecimal orderNumber,BigDecimal orderYear);
 	
+	@ApiJaxStatus({ JaxError.NULL_APPLICATION_COUNTRY_ID,JaxError.NULL_ORDER_NUBMER,JaxError.NULL_ORDER_YEAR,JaxError.NULL_EMPLOYEE_ID,JaxError.SAVE_FAILED,JaxError.INVALID_EMPLOYEE
+		,JaxError.ORDER_IS_NOT_LOCK})
 	AmxApiResponse<BoolRespModel,Object> acknowledgeDrive(BigDecimal orderNumber,BigDecimal orderYear);
 }

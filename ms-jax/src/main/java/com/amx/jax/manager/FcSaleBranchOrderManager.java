@@ -22,7 +22,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.constant.ConstantDocument;
-import com.amx.jax.dao.ApplicationProcedureDao;
 import com.amx.jax.dao.CurrencyMasterDao;
 import com.amx.jax.dao.FcSaleBranchDao;
 import com.amx.jax.dao.RemittanceProcedureDao;
@@ -52,6 +51,7 @@ import com.amx.jax.model.response.fx.UserStockDto;
 import com.amx.jax.repository.IDocumentDao;
 import com.amx.jax.repository.JaxConfigRepository;
 import com.amx.jax.service.CompanyService;
+import com.amx.jax.services.FcSaleDeliveryService;
 import com.amx.jax.util.ConverterUtil;
 import com.amx.jax.util.DateUtil;
 
@@ -84,6 +84,9 @@ public class FcSaleBranchOrderManager {
 
 	@Autowired
 	FxOrderReportManager fxOrderReportManager;
+	
+	@Autowired
+	FcSaleDeliveryService fcSaleDeliveryService;
 	
 	@Autowired
 	MetaData metaData;
@@ -364,7 +367,7 @@ public class FcSaleBranchOrderManager {
 										deliveryDetail.setDriverEmployeeId(driverId);
 										deliveryDetail.setUpdatedBy(userName);
 										deliveryDetail.setUopdateDate(new Date());
-										deliveryDetail.setOrderStatus(ConstantDocument.PCK);
+										deliveryDetail.setOrderStatus(ConstantDocument.OFD_ACK);
 										fcSaleBranchDao.saveDeliveryDetailsDriverId(deliveryDetail);
 										status = Boolean.TRUE;
 									}else {
@@ -899,6 +902,7 @@ public class FcSaleBranchOrderManager {
 						if(employeeDt != null && employeeDt.getEmployeeId() != null){
 							userName = employeeDt.getUserName();
 							fcSaleBranchDao.saveDispatchOrder(lstOrderManagement,employeeId,userName,ConstantDocument.OFD);
+							fcSaleDeliveryService.sendOtp(deliveryDetails.getDeleviryDelSeqId());
 							status = Boolean.TRUE;
 						}else {
 							throw new GlobalException("Employee details is empty",JaxError.INVALID_EMPLOYEE);
