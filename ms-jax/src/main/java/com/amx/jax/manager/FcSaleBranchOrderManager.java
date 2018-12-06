@@ -990,6 +990,84 @@ public class FcSaleBranchOrderManager {
 
 		return status;
 	}
+	
+	public Boolean returnAcknowledge(BigDecimal applicationCountryId,BigDecimal orderNumber,BigDecimal orderYear,BigDecimal employeeId) {
+		Boolean status = Boolean.FALSE;
+		String userName = null;
+
+		try {
+			// receipt payment Details
+			List<OrderManagementView> lstOrderManagement = fetchFcSaleOrderDetails(applicationCountryId, orderNumber, orderYear);
+			if(lstOrderManagement != null && lstOrderManagement.size() != 0) {
+				// checking delivery details order lock and employee id assign
+				OrderManagementView orderManagementView = lstOrderManagement.get(0);
+				FxDeliveryDetailsModel deliveryDetails = fcSaleBranchDao.fetchDeliveryDetails(orderManagementView.getDeliveryDetailsId(),ConstantDocument.Yes);
+				if(deliveryDetails != null) {
+					if(deliveryDetails.getOrderLock() != null && deliveryDetails.getEmployeeId() != null) {
+						FxEmployeeDetailsDto employeeDt = fetchEmployee(employeeId);
+						if(employeeDt != null && employeeDt.getEmployeeId() != null){
+							userName = employeeDt.getUserName();
+							fcSaleBranchDao.saveReturnAcknowledge(lstOrderManagement,employeeId,userName,ConstantDocument.RTN);
+							status = Boolean.TRUE;
+						}else {
+							throw new GlobalException("Employee details is empty",JaxError.INVALID_EMPLOYEE);
+						}
+					}else {
+						throw new GlobalException("Dispatch order is not locked",JaxError.ORDER_IS_NOT_LOCK);
+					}
+				}
+			}
+		}catch (GlobalException e) {
+			e.printStackTrace();
+			logger.error("Error in returnAcknowledge", e.getMessage()+" applicationCountryId :"+applicationCountryId+" orderNumber :"+orderNumber+" orderYear :"+orderYear+" employeeId :"+employeeId);
+			throw new GlobalException(e.getErrorMessage(),e.getErrorKey());
+		}catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error in returnAcknowledge", e.getMessage()+" applicationCountryId :"+applicationCountryId+" orderNumber :"+orderNumber+" orderYear :"+orderYear+" employeeId :"+employeeId);
+			throw new GlobalException(e.getMessage());
+		}
+
+		return status;
+	}
+	
+	public Boolean acceptCancellation(BigDecimal applicationCountryId,BigDecimal orderNumber,BigDecimal orderYear,BigDecimal employeeId) {
+		Boolean status = Boolean.FALSE;
+		String userName = null;
+
+		try {
+			// receipt payment Details
+			List<OrderManagementView> lstOrderManagement = fetchFcSaleOrderDetails(applicationCountryId, orderNumber, orderYear);
+			if(lstOrderManagement != null && lstOrderManagement.size() != 0) {
+				// checking delivery details order lock and employee id assign
+				OrderManagementView orderManagementView = lstOrderManagement.get(0);
+				FxDeliveryDetailsModel deliveryDetails = fcSaleBranchDao.fetchDeliveryDetails(orderManagementView.getDeliveryDetailsId(),ConstantDocument.Yes);
+				if(deliveryDetails != null) {
+					if(deliveryDetails.getOrderLock() != null && deliveryDetails.getEmployeeId() != null) {
+						FxEmployeeDetailsDto employeeDt = fetchEmployee(employeeId);
+						if(employeeDt != null && employeeDt.getEmployeeId() != null){
+							userName = employeeDt.getUserName();
+							fcSaleBranchDao.saveAcceptCancellation(lstOrderManagement,employeeId,userName,ConstantDocument.CND);
+							status = Boolean.TRUE;
+						}else {
+							throw new GlobalException("Employee details is empty",JaxError.INVALID_EMPLOYEE);
+						}
+					}else {
+						throw new GlobalException("Dispatch order is not locked",JaxError.ORDER_IS_NOT_LOCK);
+					}
+				}
+			}
+		}catch (GlobalException e) {
+			e.printStackTrace();
+			logger.error("Error in acceptCancellation", e.getMessage()+" applicationCountryId :"+applicationCountryId+" orderNumber :"+orderNumber+" orderYear :"+orderYear+" employeeId :"+employeeId);
+			throw new GlobalException(e.getErrorMessage(),e.getErrorKey());
+		}catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error in acceptCancellation", e.getMessage()+" applicationCountryId :"+applicationCountryId+" orderNumber :"+orderNumber+" orderYear :"+orderYear+" employeeId :"+employeeId);
+			throw new GlobalException(e.getMessage());
+		}
+
+		return status;
+	}
 
 	// stock move from branch staff to driver and vice versa
 	public Boolean currentStockMigration() {

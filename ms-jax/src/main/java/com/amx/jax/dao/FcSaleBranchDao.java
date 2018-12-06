@@ -141,7 +141,10 @@ public class FcSaleBranchDao {
 					}
 					
 					// update status
-					fxDeliveryDetailsRepository.updateStatusDeliveryDetails(deliveryDetailsId,userName,new Date(),orderStatus);
+					fxDeliveryDetailsModel.setUopdateDate(new Date());
+					fxDeliveryDetailsModel.setUpdatedBy(userName);
+					fxDeliveryDetailsModel.setOrderStatus(orderStatus);
+					fxDeliveryDetailsRepository.save(fxDeliveryDetailsModel);
 				}else {
 					throw new GlobalException("Order status is not acepoted to print",JaxError.ORDER_STATUS_MISMATCH);
 				}
@@ -157,7 +160,6 @@ public class FcSaleBranchDao {
 		return currencyWiseDenominationRepository.fetchCurrencyDenomination(currencyId, isActive);
 	}
 	
-	@Transactional
 	public void saveOrderLockDetails(List<OrderManagementView> lstOrderManagement,BigDecimal employeeId,String userName,String orderStatus){
 		if(lstOrderManagement != null && lstOrderManagement.size() != 0){
 			OrderManagementView orderManagementView = lstOrderManagement.get(0);
@@ -167,7 +169,12 @@ public class FcSaleBranchDao {
 			FxDeliveryDetailsModel fxDeliveryDetailsModel = fetchDeliveryDetails(deliveryDetailsId, ConstantDocument.Yes);
 			if(fxDeliveryDetailsModel != null && fxDeliveryDetailsModel.getOrderStatus() != null) {
 				if(fxDeliveryDetailsModel.getOrderStatus().equalsIgnoreCase(ConstantDocument.ORD)) {
-					fxDeliveryDetailsRepository.updateOrderLockDetails(deliveryDetailsId,employeeId,userName,new Date(),orderStatus);
+					fxDeliveryDetailsModel.setOrderLock(new Date());
+					fxDeliveryDetailsModel.setEmployeeId(employeeId);
+					fxDeliveryDetailsModel.setUopdateDate(new Date());
+					fxDeliveryDetailsModel.setUpdatedBy(userName);
+					fxDeliveryDetailsModel.setOrderStatus(orderStatus);
+					fxDeliveryDetailsRepository.save(fxDeliveryDetailsModel);
 				}else {
 					throw new GlobalException("Order status is not Ordered to lock",JaxError.ORDER_STATUS_MISMATCH);
 				}
@@ -179,7 +186,6 @@ public class FcSaleBranchDao {
 		}
 	}
 	
-	@Transactional
 	public void saveOrderReleaseDetails(List<OrderManagementView> lstOrderManagement,BigDecimal employeeId,String userName,String orderStatus){
 		if(lstOrderManagement != null && lstOrderManagement.size() != 0){
 			OrderManagementView orderManagementView = lstOrderManagement.get(0);
@@ -188,7 +194,12 @@ public class FcSaleBranchDao {
 			FxDeliveryDetailsModel fxDeliveryDetailsModel = fetchDeliveryDetails(deliveryDetailsId, ConstantDocument.Yes);
 			if(fxDeliveryDetailsModel != null && fxDeliveryDetailsModel.getOrderStatus() != null) {
 				if(fxDeliveryDetailsModel.getOrderStatus().equalsIgnoreCase(ConstantDocument.ACP)) {
-					fxDeliveryDetailsRepository.updateOrderReleaseDetails(deliveryDetailsId,null,userName,new Date(),orderStatus,null);
+					fxDeliveryDetailsModel.setOrderLock(null);
+					fxDeliveryDetailsModel.setEmployeeId(null);
+					fxDeliveryDetailsModel.setUopdateDate(new Date());
+					fxDeliveryDetailsModel.setUpdatedBy(userName);
+					fxDeliveryDetailsModel.setOrderStatus(orderStatus);
+					fxDeliveryDetailsRepository.save(fxDeliveryDetailsModel);
 				}else {
 					throw new GlobalException("Order status is not Accepted to release",JaxError.ORDER_STATUS_MISMATCH);
 				}
@@ -226,7 +237,6 @@ public class FcSaleBranchDao {
 		return foreignCurrencyAdjustRepository.fetchByCollectionDetails(documentNo,documentYear,companyId,documentCode);
 	}
 	
-	@Transactional
 	public void saveAcknowledgeDriver(List<OrderManagementView> lstOrderManagement,BigDecimal employeeId,String userName,String orderStatus){
 		if(lstOrderManagement != null && lstOrderManagement.size() != 0){
 			OrderManagementView orderManagementView = lstOrderManagement.get(0);
@@ -234,9 +244,56 @@ public class FcSaleBranchDao {
 			FxDeliveryDetailsModel fxDeliveryDetailsModel = fetchDeliveryDetails(deliveryDetailsId, ConstantDocument.Yes);
 			if(fxDeliveryDetailsModel != null && fxDeliveryDetailsModel.getOrderStatus() != null) {
 				if(fxDeliveryDetailsModel.getOrderStatus().equalsIgnoreCase(ConstantDocument.OFD_ACK)) {
-					fxDeliveryDetailsRepository.updateStatusDeliveryDetails(deliveryDetailsId,userName,new Date(),orderStatus);
+					fxDeliveryDetailsModel.setUopdateDate(new Date());
+					fxDeliveryDetailsModel.setUpdatedBy(userName);
+					fxDeliveryDetailsModel.setOrderStatus(orderStatus);
+					fxDeliveryDetailsRepository.save(fxDeliveryDetailsModel);
 				}else {
-					throw new GlobalException("Order status is not out for delivery pending acknowledgment to dispatch",JaxError.ORDER_STATUS_MISMATCH);
+					throw new GlobalException("Order status is not out for delivery acknowledge ",JaxError.ORDER_STATUS_MISMATCH);
+				}
+			}else {
+				throw new GlobalException("No records or order status is empty for delivery details",JaxError.NO_DELIVERY_DETAILS);
+			}
+		}else {
+			throw new GlobalException("No records found for order management",JaxError.SAVE_FAILED);
+		}
+	}
+	
+	public void saveReturnAcknowledge(List<OrderManagementView> lstOrderManagement,BigDecimal employeeId,String userName,String orderStatus){
+		if(lstOrderManagement != null && lstOrderManagement.size() != 0){
+			OrderManagementView orderManagementView = lstOrderManagement.get(0);
+			BigDecimal deliveryDetailsId = orderManagementView.getDeliveryDetailsId();
+			FxDeliveryDetailsModel fxDeliveryDetailsModel = fetchDeliveryDetails(deliveryDetailsId, ConstantDocument.Yes);
+			if(fxDeliveryDetailsModel != null && fxDeliveryDetailsModel.getOrderStatus() != null) {
+				if(fxDeliveryDetailsModel.getOrderStatus().equalsIgnoreCase(ConstantDocument.RTN_ACK)) {
+					fxDeliveryDetailsModel.setUopdateDate(new Date());
+					fxDeliveryDetailsModel.setUpdatedBy(userName);
+					fxDeliveryDetailsModel.setOrderStatus(orderStatus);
+					fxDeliveryDetailsRepository.save(fxDeliveryDetailsModel);
+				}else {
+					throw new GlobalException("Order status is not return acknowledge",JaxError.ORDER_STATUS_MISMATCH);
+				}
+			}else {
+				throw new GlobalException("No records or order status is empty for delivery details",JaxError.NO_DELIVERY_DETAILS);
+			}
+		}else {
+			throw new GlobalException("No records found for order management",JaxError.SAVE_FAILED);
+		}
+	}
+	
+	public void saveAcceptCancellation(List<OrderManagementView> lstOrderManagement,BigDecimal employeeId,String userName,String orderStatus){
+		if(lstOrderManagement != null && lstOrderManagement.size() != 0){
+			OrderManagementView orderManagementView = lstOrderManagement.get(0);
+			BigDecimal deliveryDetailsId = orderManagementView.getDeliveryDetailsId();
+			FxDeliveryDetailsModel fxDeliveryDetailsModel = fetchDeliveryDetails(deliveryDetailsId, ConstantDocument.Yes);
+			if(fxDeliveryDetailsModel != null && fxDeliveryDetailsModel.getOrderStatus() != null) {
+				if(fxDeliveryDetailsModel.getOrderStatus().equalsIgnoreCase(ConstantDocument.CND_ACK)) {
+					fxDeliveryDetailsModel.setUopdateDate(new Date());
+					fxDeliveryDetailsModel.setUpdatedBy(userName);
+					fxDeliveryDetailsModel.setOrderStatus(orderStatus);
+					fxDeliveryDetailsRepository.save(fxDeliveryDetailsModel);
+				}else {
+					throw new GlobalException("Order status is not cancelled ",JaxError.ORDER_STATUS_MISMATCH);
 				}
 			}else {
 				throw new GlobalException("No records or order status is empty for delivery details",JaxError.NO_DELIVERY_DETAILS);

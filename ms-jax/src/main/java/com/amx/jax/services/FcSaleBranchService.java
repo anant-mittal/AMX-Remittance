@@ -560,7 +560,71 @@ public class FcSaleBranchService extends AbstractService{
 			if(status) {
 				// success
 			}else {
-				throw new GlobalException("acknowledge Driver status didn't updated",JaxError.SAVE_FAILED);
+				throw new GlobalException("acknowledge driver status didn't updated",JaxError.SAVE_FAILED);
+			}
+		}catch (GlobalException e) {
+			throw new GlobalException(e.getErrorMessage(),e.getErrorKey());
+		}catch (Exception e) {
+			throw new GlobalException(e.getMessage());
+		}
+		
+		return new BoolRespModel(status);
+	}
+	
+	public BoolRespModel returnAcknowledge(BigDecimal applicationCountryId,BigDecimal orderNumber,BigDecimal orderYear,BigDecimal employeeId) {
+		Boolean status = Boolean.FALSE;
+		
+		if(applicationCountryId == null || applicationCountryId.compareTo(BigDecimal.ZERO)==0){
+			throw new GlobalException("Application country id should not be blank",JaxError.NULL_APPLICATION_COUNTRY_ID);
+		}
+		if(orderNumber == null || orderNumber.compareTo(BigDecimal.ZERO)==0){
+			throw new GlobalException("Order Number should not be blank",JaxError.NULL_ORDER_NUBMER);
+		}
+		if(orderYear == null || orderYear.compareTo(BigDecimal.ZERO)==0){
+			throw new GlobalException("Order Year should not be blank",JaxError.NULL_ORDER_YEAR);
+		}
+		if(employeeId == null || employeeId.compareTo(BigDecimal.ZERO) == 0){
+			throw new GlobalException("Employee Id should not be blank",JaxError.NULL_EMPLOYEE_ID);
+		}
+		
+		try {
+			status = branchOrderManager.returnAcknowledge(applicationCountryId, orderNumber, orderYear, employeeId);
+			if(status) {
+				// success
+			}else {
+				throw new GlobalException("return acknowledge status didn't updated",JaxError.SAVE_FAILED);
+			}
+		}catch (GlobalException e) {
+			throw new GlobalException(e.getErrorMessage(),e.getErrorKey());
+		}catch (Exception e) {
+			throw new GlobalException(e.getMessage());
+		}
+		
+		return new BoolRespModel(status);
+	}
+	
+	public BoolRespModel acceptCancellation(BigDecimal applicationCountryId,BigDecimal orderNumber,BigDecimal orderYear,BigDecimal employeeId) {
+		Boolean status = Boolean.FALSE;
+		
+		if(applicationCountryId == null || applicationCountryId.compareTo(BigDecimal.ZERO)==0){
+			throw new GlobalException("Application country id should not be blank",JaxError.NULL_APPLICATION_COUNTRY_ID);
+		}
+		if(orderNumber == null || orderNumber.compareTo(BigDecimal.ZERO)==0){
+			throw new GlobalException("Order Number should not be blank",JaxError.NULL_ORDER_NUBMER);
+		}
+		if(orderYear == null || orderYear.compareTo(BigDecimal.ZERO)==0){
+			throw new GlobalException("Order Year should not be blank",JaxError.NULL_ORDER_YEAR);
+		}
+		if(employeeId == null || employeeId.compareTo(BigDecimal.ZERO) == 0){
+			throw new GlobalException("Employee Id should not be blank",JaxError.NULL_EMPLOYEE_ID);
+		}
+		
+		try {
+			status = branchOrderManager.acceptCancellation(applicationCountryId, orderNumber, orderYear, employeeId);
+			if(status) {
+				// success
+			}else {
+				throw new GlobalException("accept cancellation status didn't updated",JaxError.SAVE_FAILED);
 			}
 		}catch (GlobalException e) {
 			throw new GlobalException(e.getErrorMessage(),e.getErrorKey());
