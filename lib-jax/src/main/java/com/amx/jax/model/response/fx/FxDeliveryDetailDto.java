@@ -5,7 +5,6 @@ import java.math.BigDecimal;
 public class FxDeliveryDetailDto {
 
 	String customerName;
-	String mobile;
 	String deliveryTimeSlot;
 	ShippingAddressDto address;
 	String transactionRefId;
@@ -22,14 +21,6 @@ public class FxDeliveryDetailDto {
 
 	public void setOtpTokenPrefix(String otpTokenPrefix) {
 		this.otpTokenPrefix = otpTokenPrefix;
-	}
-
-	public String getMobile() {
-		return mobile;
-	}
-
-	public void setMobile(String mobile) {
-		this.mobile = mobile;
 	}
 
 	public ShippingAddressDto getAddress() {

@@ -27,6 +27,7 @@ import com.amx.jax.dbmodel.fx.FxDeliveryRemark;
 import com.amx.jax.dbmodel.fx.StatusMaster;
 import com.amx.jax.dbmodel.fx.VwFxDeliveryDetailsModel;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.manager.FcSaleAddressManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.model.request.fx.FcSaleDeliveryDetailUpdateReceiptRequest;
@@ -57,6 +58,8 @@ public class FcSaleDeliveryService {
 	CryptoUtil cryptoUtil;
 	@Autowired
 	UserService userService;
+	@Autowired
+	FcSaleAddressManager fcSaleAddressManager;
 
 	/**
 	 * @return today's order to be delivered for logged in driver
@@ -80,7 +83,9 @@ public class FcSaleDeliveryService {
 		ShippingAddressDetail shippingAddress = fcSaleApplicationDao
 				.getShippingAddressById(model.getShippingAddressId());
 		StatusMaster statusMaster = fcSaleApplicationDao.getStatusMaster(model.getOrderStatus());
-		ShippingAddressDto shippingAddressDto = createShippingAddressDto(shippingAddress);
+		//ShippingAddressDto shippingAddressDto = createShippingAddressDto(shippingAddress);
+		ShippingAddressDto shippingAddressDto = fcSaleAddressManager.fetchShippingAddress(model.getCustomerId(),
+				model.getShippingAddressId());
 		try {
 			BeanUtils.copyProperties(dto, model);
 			BeanUtils.copyProperties(shippingAddressDto, shippingAddress);
