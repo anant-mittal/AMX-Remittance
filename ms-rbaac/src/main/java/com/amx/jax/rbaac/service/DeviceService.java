@@ -20,7 +20,6 @@ import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.constant.DeviceState;
 import com.amx.jax.dbmodel.Device;
 import com.amx.jax.dict.UserClient.ClientType;
-import com.amx.jax.rbaac.RbaacConstants;
 import com.amx.jax.rbaac.constants.RbaacServiceConstants;
 import com.amx.jax.rbaac.dao.DeviceDao;
 import com.amx.jax.rbaac.dto.DeviceDto;
@@ -100,20 +99,19 @@ public class DeviceService extends AbstractService {
 
 		Device newDevice = deviceDao.saveDevice(request, registerDeviceByDefault);
 		DeviceState deviceState;
-		if (RbaacConstants.YES.equals(newDevice.getStatus())) {
+		if (RbaacServiceConstants.YES.equals(newDevice.getStatus())) {
 			deviceState = DeviceState.REGISTERED;
 		} else {
 			deviceState = DeviceState.REGISTERED_NOT_ACTIVE;
 		}
 		newDevice.setState(deviceState);
 		String devicePairToken = Random.randomAlpha(13);
-		String devicePairTokenStr = devicePairToken + newDevice.getRegistrationId().toString();
-		try {
-			newDevice.setPairToken(CryptoUtil.getSHA2Hash(devicePairTokenStr));
-		} catch (Exception e) {
-		}
+
+		newDevice.setPairToken(this.getDevicePairTokenHash(devicePairToken, newDevice.getRegistrationId()));
 		deviceDao.saveDevice(newDevice);
+
 		logger.info("device registered with id: {}", newDevice.getRegistrationId());
+
 		DeviceDto dto = new DeviceDto();
 		try {
 			BeanUtils.copyProperties(dto, newDevice);
@@ -213,18 +211,37 @@ public class DeviceService extends AbstractService {
 
 			Device device = deviceDao.findDevice(deviceRegId);
 
+			String pairTokenHash = this.getDevicePairTokenHash(deviceRegToken, deviceRegId);
+
 			if (device == null || employeeId.longValue() != device.getEmployeeId().longValue()
 					|| !deviceId.equalsIgnoreCase(device.getDeviceId())
-					|| !deviceRegToken.equalsIgnoreCase(deviceRegToken)) {
-
+					|| !deviceRegToken.equalsIgnoreCase(pairTokenHash)) {
+				
 				throw new AuthServiceException("Invalid Device Client : Not Paired or Not Mapped",
 						RbaacServiceError.DEVICE_CLIENT_INVALID);
 
+			}else if(RbaacServiceConstants.YES.equalsIgnoreCase(device.getStatus())) {
+				throw new AuthServiceException("Inactive Device Client : Contact Support",
+						RbaacServiceError.CLIENT_NOT_ACTIVE);
 			}
+			
+			
 
 		}
 
 		return Boolean.TRUE;
+	}
+
+	private String getDevicePairTokenHash(String pairToken, BigDecimal deviceRegId) {
+
+		try {
+			String devicePairTokenStr = pairToken + Long.toString(deviceRegId.longValue());
+			return CryptoUtil.getSHA2Hash(devicePairTokenStr);
+
+		} catch (Exception e) {
+		}
+
+		return null;
 	}
 
 }

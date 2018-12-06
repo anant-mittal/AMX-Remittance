@@ -17,7 +17,7 @@ import com.amx.jax.AppContextUtil;
 import com.amx.jax.dict.UserClient.DeviceType;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.model.OtpData;
-import com.amx.jax.rbaac.RbaacConstants;
+import com.amx.jax.rbaac.constants.RbaacServiceConstants;
 import com.amx.jax.rbaac.constants.RbaacServiceConstants.LOGIN_TYPE;
 import com.amx.jax.rbaac.dao.RbaacDao;
 import com.amx.jax.rbaac.dbmodel.Employee;
@@ -333,7 +333,7 @@ public class UserAuthService {
 		 * Check if user A/C is Locked. lockcnt >= 3
 		 */
 		if (null != validEmployee.getLockCount()
-				&& validEmployee.getLockCount().intValue() >= RbaacConstants.EMPLOYEE_MAX_LOCK_COUNT) {
+				&& validEmployee.getLockCount().intValue() >= RbaacServiceConstants.EMPLOYEE_MAX_LOCK_COUNT) {
 			throw new AuthServiceException("User Account Locked : User Account Login is Suspended, from: "
 					+ validEmployee.getLockDate() + " for Login Type : " + userType,
 					RbaacServiceError.USER_ACCOUNT_LOCKED);

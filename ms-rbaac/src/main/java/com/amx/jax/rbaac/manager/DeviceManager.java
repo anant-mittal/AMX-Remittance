@@ -16,7 +16,7 @@ import com.amx.jax.constant.DeviceState;
 import com.amx.jax.dbmodel.Device;
 import com.amx.jax.dbmodel.DeviceStateInfo;
 import com.amx.jax.dict.UserClient.ClientType;
-import com.amx.jax.rbaac.RbaacConstants;
+import com.amx.jax.rbaac.constants.RbaacServiceConstants;
 import com.amx.jax.rbaac.dao.DeviceDao;
 import com.amx.jax.rbaac.dto.DevicePairOtpResponse;
 import com.amx.jax.rbaac.error.RbaacServiceError;
@@ -123,7 +123,7 @@ public class DeviceManager {
 	}
 
 	public void deactivateDevice(Device device) {
-		device.setStatus(RbaacConstants.NO);
+		device.setStatus(RbaacServiceConstants.NO);
 		deviceDao.saveDevice(device);
 	}
 

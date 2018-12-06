@@ -15,7 +15,7 @@ import com.amx.jax.constant.DeviceState;
 import com.amx.jax.dbmodel.BranchSystemDetail;
 import com.amx.jax.dbmodel.Device;
 import com.amx.jax.dbmodel.DeviceStateInfo;
-import com.amx.jax.rbaac.RbaacConstants;
+import com.amx.jax.rbaac.constants.RbaacServiceConstants;
 import com.amx.jax.rbaac.dao.DeviceDao;
 import com.amx.jax.rbaac.dao.RbaacDao;
 import com.amx.jax.rbaac.dbmodel.Employee;
@@ -44,7 +44,7 @@ public class DeviceValidation {
 		if (device == null) {
 			throw new AuthServiceException("No device found", RbaacServiceError.CLIENT_NOT_FOUND);
 		}
-		if (!device.getStatus().equals(RbaacConstants.YES)) {
+		if (!device.getStatus().equals(RbaacServiceConstants.YES)) {
 			throw new AuthServiceException("Device is not active", RbaacServiceError.CLIENT_NOT_ACTIVE);
 		}
 	}
@@ -111,7 +111,7 @@ public class DeviceValidation {
 		if (device == null) {
 			throw new AuthServiceException("device not found with given reg id", RbaacServiceError.CLIENT_NOT_FOUND);
 		}
-		if (!RbaacConstants.YES.equals(device.getStatus())) {
+		if (!RbaacServiceConstants.YES.equals(device.getStatus())) {
 			throw new AuthServiceException("device not active", RbaacServiceError.CLIENT_NOT_ACTIVE);
 		}
 	}

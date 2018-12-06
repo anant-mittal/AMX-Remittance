@@ -11,6 +11,11 @@ import java.math.BigDecimal;
  */
 public final class RbaacServiceConstants {
 
+	/** The Constant EMPLOYEE_MAX_LOCK_COUNT. */
+	public static final int EMPLOYEE_MAX_LOCK_COUNT = 3;
+	public static final String YES = "Y";
+	public static final String NO = "N";
+
 	private RbaacServiceConstants() {
 		// Not Allowed
 		super();
