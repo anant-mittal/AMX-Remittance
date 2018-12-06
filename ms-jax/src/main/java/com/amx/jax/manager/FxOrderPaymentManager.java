@@ -163,9 +163,7 @@ public class FxOrderPaymentManager {
 					listOfRecAppl = receiptAppRepository.fetchreceiptPaymentAppl(paymentResponse.getCustomerId(), new BigDecimal(paymentResponse.getUdf3()));
 					if(listOfRecAppl!= null && !listOfRecAppl.isEmpty()) {
 						rcptApplPaydao.updatePaygDetails(listOfRecAppl, paymentResponse);
-						
 					}
-					
 					
 				}
 		}catch(GlobalException e){
@@ -235,7 +233,15 @@ public class FxOrderPaymentManager {
 				}
 			 
 				 receiptPayment.setDocumentCode(ConstantDocument.DOCUMENT_CODE_FOR_FCSALE);
-				 receiptPayment.setDocumentNo(applTrnxManager.generateDocumentNumber(countryBranch, ConstantDocument.Update, userFinancialYear.getFinancialYear()));
+				 
+					 
+				 BigDecimal documentNo =generateDocumentNumber(countryBranch,countryMas.getCountryId(), companyDetails.getCompanyId(), ConstantDocument.Update,receiptPayment.getDocumentFinanceYear(), ConstantDocument.DOCUMENT_CODE_FOR_FCSALE);
+				    if(documentNo!=null && documentNo.compareTo(BigDecimal.ZERO)!=0){
+				    	receiptPayment.setDocumentNo(documentNo);
+				    }else{
+				    	throw new GlobalException("Receipt  document should not be blank.", JaxError.INVALID_RECEIPT_PAYMNET_DOCUMENT_NO);
+				    }
+		
 				 receiptPayment.setReceiptType(ConstantDocument.FC_SALE_RECEIPT_TYPE);
 				 receiptPayment.setDocumentId(documentDao.getDocumnetByCode(ConstantDocument.DOCUMENT_CODE_FOR_FCSALE).get(0).getDocumentID());
 				 
@@ -288,7 +294,7 @@ public class FxOrderPaymentManager {
 		 BigDecimal totalcollectiontAmount = BigDecimal.ZERO;
 		 BigDecimal deliveryCharges = BigDecimal.ZERO;
 		 try{
-			 if(!listOfRecAppl.isEmpty()){
+			 if(listOfRecAppl != null && !listOfRecAppl.isEmpty()){
 				 ReceiptPaymentApp appl  = listOfRecAppl.get(0);
 				 FxDeliveryDetailsModel delDetail = deliveryDetailRepos.findOne(appl.getDeliveryDetSeqId());
 				 if(delDetail!=null){

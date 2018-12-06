@@ -487,13 +487,15 @@ public class FxOrderReportManager {
 		if (shippingAddressDetail!=null) {
 				shippingAddressDto.setAddressId(shippingAddressDetail.getShippingAddressDetailId());
 				
-				if(!customerList.isEmpty()){
+				if(customerList !=null && !customerList.isEmpty()){
 					shippingAddressDto.setFirstName(customerList.get(0).getFirstName());
 					shippingAddressDto.setMiddleName(customerList.get(0).getMiddleName());
 					shippingAddressDto.setLastName(customerList.get(0).getLastName());
 					shippingAddressDto.setMobile(customerList.get(0).getMobile());
 					shippingAddressDto.setEmail(customerList.get(0).getEmail());
 					
+				}else{
+					throw new GlobalException("customer not found :"+customerId ,JaxError.CUSTOMER_NOT_FOUND);
 				}
 			shippingAddressDto.setCustomerId(shippingAddressDetail.getFsCustomer().getCustomerId());
 			shippingAddressDto.setCompanyId(companyId);
@@ -507,26 +509,34 @@ public class FxOrderReportManager {
 			shippingAddressDto.setAreaDesc(areaDao.getAreaList(shippingAddressDetail.getAreaCode())==null?"":areaDao.getAreaList(shippingAddressDetail.getAreaCode()).getShortDesc());
 			shippingAddressDto.setFlat(shippingAddressDetail.getFlat());
 			List<CountryMasterView> countryMasterView = countryDao.findByLanguageIdAndCountryId(new BigDecimal(1),shippingAddressDetail.getFsCountryMaster().getCountryId());
-			if (!countryMasterView.isEmpty()) {
+			if (countryMasterView !=null && !countryMasterView.isEmpty()) {
 				shippingAddressDto.setLocalContactCountry(countryMasterView.get(0).getCountryName());
 				if (shippingAddressDetail.getFsStateMaster() != null) {
 					List<ViewState> stateMasterView = stateDao.getState(countryMasterView.get(0).getCountryId(),shippingAddressDetail.getFsStateMaster().getStateId(), new BigDecimal(1));
-					if (!stateMasterView.isEmpty()) {
+					if (stateMasterView !=null && !stateMasterView.isEmpty()) {
 						shippingAddressDto.setLocalContactState(stateMasterView.get(0).getStateName());
 						DistrictMaster distictMaster = shippingAddressDetail.getFsDistrictMaster();
 						if (distictMaster != null) {
 							List<ViewDistrict> districtMas = districtDao.getDistrict(stateMasterView.get(0).getStateId(), distictMaster.getDistrictId(),new BigDecimal(1));
-							if (!districtMas.isEmpty()) {
+							if (districtMas !=null && !districtMas.isEmpty()) {
 								shippingAddressDto.setLocalContactDistrict(districtMas.get(0).getDistrictDesc());
 								List<ViewCity> cityDetails = cityDao.getCityDescription(districtMas.get(0).getDistrictId(),shippingAddressDetail.getFsCityMaster().getCityId(), new BigDecimal(1));
 								if (!cityDetails.isEmpty()) {
 									shippingAddressDto.setLocalContactCity(cityDetails.get(0).getCityName());
 								}
+							}else{
+								//throw new GlobalException("City not found  :" ,JaxError.INVALID_CITY);
 							}
 						}
+					}else{
+						//throw new GlobalException("District not found  :" ,JaxError.INVALID_DISTRICT);
 					}
+				}else{
+					//throw new GlobalException("State not found  :" ,JaxError.INVALID_STATE);
 				}
 
+			}else{
+				//throw new GlobalException("Country not found  :" ,JaxError.COUNTRY_NOT_FOUND);
 			}
 	} //end 
 		return shippingAddressDto;
