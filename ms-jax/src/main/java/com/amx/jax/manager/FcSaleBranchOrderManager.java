@@ -902,7 +902,7 @@ public class FcSaleBranchOrderManager {
 						if(employeeDt != null && employeeDt.getEmployeeId() != null){
 							userName = employeeDt.getUserName();
 							fcSaleBranchDao.saveDispatchOrder(lstOrderManagement,employeeId,userName,ConstantDocument.OFD);
-							fcSaleDeliveryService.sendOtp(deliveryDetails.getDeleviryDelSeqId());
+							fcSaleDeliveryService.sendOtp(deliveryDetails.getDeleviryDelSeqId(), false);
 							status = Boolean.TRUE;
 						}else {
 							throw new GlobalException("Employee details is empty",JaxError.INVALID_EMPLOYEE);

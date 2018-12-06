@@ -83,7 +83,8 @@ public class FcSaleDeliveryService {
 		ShippingAddressDetail shippingAddress = fcSaleApplicationDao
 				.getShippingAddressById(model.getShippingAddressId());
 		StatusMaster statusMaster = fcSaleApplicationDao.getStatusMaster(model.getOrderStatus());
-		//ShippingAddressDto shippingAddressDto = createShippingAddressDto(shippingAddress);
+		// ShippingAddressDto shippingAddressDto =
+		// createShippingAddressDto(shippingAddress);
 		ShippingAddressDto shippingAddressDto = fcSaleAddressManager.fetchShippingAddress(model.getCustomerId(),
 				model.getShippingAddressId());
 		try {
@@ -156,12 +157,18 @@ public class FcSaleDeliveryService {
 	}
 
 	private FxDeliveryDetailsModel validateFxDeliveryModel(BigDecimal deliveryDetailSeqId) {
+		return validateFxDeliveryModel(deliveryDetailSeqId, true);
+	}
+
+	private FxDeliveryDetailsModel validateFxDeliveryModel(BigDecimal deliveryDetailSeqId, boolean validateEmployee) {
 		FxDeliveryDetailsModel deliveryDetail = fcSaleApplicationDao.getDeliveryDetailModel(deliveryDetailSeqId);
 		if (deliveryDetail == null) {
 			throw new GlobalException("Delivery detail not found", JaxError.FC_CURRENCY_DELIVERY_DETAIL_NOT_FOUND);
 		}
-		if (!deliveryDetail.getDriverEmployeeId().equals(metaData.getEmployeeId())) {
-			throw new GlobalException("Invalid driver employee for this order", JaxError.INVALID_EMPLOYEE);
+		if (validateEmployee) {
+			if (!deliveryDetail.getDriverEmployeeId().equals(metaData.getEmployeeId())) {
+				throw new GlobalException("Invalid driver employee for this order", JaxError.INVALID_EMPLOYEE);
+			}
 		}
 		return deliveryDetail;
 	}
@@ -191,9 +198,9 @@ public class FcSaleDeliveryService {
 	 * @return
 	 * 
 	 */
-	public BoolRespModel sendOtp(BigDecimal deliveryDetailSeqId) {
+	public BoolRespModel sendOtp(BigDecimal deliveryDetailSeqId, boolean validateDriverEmployee) {
 		VwFxDeliveryDetailsModel vwFxDeliveryDetailsModel = validatetDeliveryDetailView(deliveryDetailSeqId);
-		FxDeliveryDetailsModel fxDeliveryDetailsModel = validateFxDeliveryModel(deliveryDetailSeqId);
+		FxDeliveryDetailsModel fxDeliveryDetailsModel = validateFxDeliveryModel(deliveryDetailSeqId, validateDriverEmployee);
 		PersonInfo pinfo = userService.getPersonInfo(vwFxDeliveryDetailsModel.getCustomerId());
 		// generating otp
 		String mOtp = Random.randomNumeric(6);
