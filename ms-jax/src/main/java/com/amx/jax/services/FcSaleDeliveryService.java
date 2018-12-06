@@ -30,6 +30,7 @@ import com.amx.jax.dao.FcSaleApplicationDao;
 import com.amx.jax.dbmodel.ShippingAddressDetail;
 import com.amx.jax.dbmodel.fx.FxDeliveryDetailsModel;
 import com.amx.jax.dbmodel.fx.FxDeliveryRemark;
+import com.amx.jax.dbmodel.fx.StatusMaster;
 import com.amx.jax.dbmodel.fx.VwFxDeliveryDetailsModel;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
@@ -86,7 +87,7 @@ public class FcSaleDeliveryService {
 		FxDeliveryRemark delRemark = fcSaleApplicationDao.getDeliveryRemarkById(model.getDeliveryRemarkId());
 		ShippingAddressDetail shippingAddress = fcSaleApplicationDao
 				.getShippingAddressById(model.getShippingAddressId());
-		String statusDesc = fcSaleApplicationDao.getStatusMaster(model.getOrderStatus()).getStatusDescription();
+		StatusMaster statusMaster = fcSaleApplicationDao.getStatusMaster(model.getOrderStatus());
 		ShippingAddressDto shippingAddressDto = createShippingAddressDto(shippingAddress);
 		try {
 			BeanUtils.copyProperties(dto, model);
@@ -100,7 +101,8 @@ public class FcSaleDeliveryService {
 			dto.setDeliveryRemark(delRemark.getDeliveryRemark());
 		}
 		dto.setAddress(shippingAddressDto);
-		dto.setOrderStatus(statusDesc);
+		dto.setOrderStatus(statusMaster.getStatusDescription());
+		dto.setOrderStatusCode(statusMaster.getStatusCode());
 		dto.setDeliveryDetailSeqId(model.getDeleviryDelSeqId());
 		return dto;
 	}
@@ -296,9 +298,8 @@ public class FcSaleDeliveryService {
 		if (!deliveryDetail.getOrderStatus().equals(ConstantDocument.OFD_ACK)) {
 			throw new GlobalException("Order status should be OFD_ACK", JaxError.FC_CURRENCY_DELIVERY_INVALID_STATUS);
 		}
-		deliveryDetail.setOrderStatus(ConstantDocument.OFD);
+		deliveryDetail.setOrderStatus(ConstantDocument.OFD_CNF);
 		fcSaleApplicationDao.saveDeliveryDetail(deliveryDetail);
-		sendOtp(deliveryDetailSeqId);
 		return new BoolRespModel(true);
 	}
 }

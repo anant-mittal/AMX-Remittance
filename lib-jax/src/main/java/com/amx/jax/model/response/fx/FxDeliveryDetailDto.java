@@ -12,6 +12,7 @@ public class FxDeliveryDetailDto {
 	String inventoryId;//
 	String deliveryRemark;
 	String orderStatus;
+	String orderStatusCode;
 	BigDecimal deliveryDetailSeqId;
 	String otpTokenPrefix;
 
@@ -93,6 +94,14 @@ public class FxDeliveryDetailDto {
 
 	public void setDeliveryDetailSeqId(BigDecimal deliveryDetailSeqId) {
 		this.deliveryDetailSeqId = deliveryDetailSeqId;
+	}
+
+	public String getOrderStatusCode() {
+		return orderStatusCode;
+	}
+
+	public void setOrderStatusCode(String orderStatusCode) {
+		this.orderStatusCode = orderStatusCode;
 	}
 
 
