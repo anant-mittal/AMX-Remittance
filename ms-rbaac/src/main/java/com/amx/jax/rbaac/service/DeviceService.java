@@ -57,6 +57,7 @@ public class DeviceService extends AbstractService {
 	@Transactional
 	public void activateDevice(Device device) {
 		device.setStatus("Y");
+		device.setState(DeviceState.REGISTERED);
 		List<Device> devices = deviceDao.findAllActiveDevices(device.getBranchSystemInventoryId(),
 				device.getDeviceType());
 		if (!CollectionUtils.isEmpty(devices)) {
@@ -86,6 +87,7 @@ public class DeviceService extends AbstractService {
 
 	public void deactivateDevice(Device device) {
 		device.setStatus("N");
+		device.setState(DeviceState.REGISTERED_NOT_ACTIVE);
 		deviceDao.saveDevice(device);
 	}
 
