@@ -218,5 +218,25 @@ public class FxOrderBranchClient implements IFxBranchOrderService {
 			return JaxSystemError.evaluate(e);
 		} // end of try-catch
 	}
+	
+	/**
+	 * 
+	 * @return : To get the acknowledgement Driver
+	 */
+	@Override
+	public AmxApiResponse<BoolRespModel,Object> acknowledgeDrive(BigDecimal orderNumber,BigDecimal orderYear) {
+		try {
+			LOGGER.debug("in acknowledgeDrive :"+orderNumber +" "+orderYear);
+			return restService.ajax(appConfig.getJaxURL() + Path.FC_ACKNOWLEDGE_DRIVE).meta(new JaxMetaInfo())
+					.queryParam(Params.FX_ORDER_NUMBER, orderNumber).meta(new JaxMetaInfo())
+					.queryParam(Params.FX_ORDER_YEAR, orderYear)
+					.post()
+					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel,Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in acknowledgeDrive : ", e);
+			return JaxSystemError.evaluate(e);
+		} // end of try-catch
+	}
 
 }

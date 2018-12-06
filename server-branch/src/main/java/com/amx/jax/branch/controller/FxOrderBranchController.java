@@ -99,6 +99,9 @@ public class FxOrderBranchController {
 					.getResult();
 			// file.create(response, false);
 			// return null;
+			file.setName(file.getITemplate().getFileName() + '_' + 
+					fcSaleBranchDispatchRequest.getCollectionDocumentNo().toString() + '_' + 
+					fcSaleBranchDispatchRequest.getCollectionDocumentYear().toString() + ".pdf");
 			return PostManUtil.download(file);
 
 		} else if (File.Type.HTML.equals(ext)) {
@@ -106,6 +109,10 @@ public class FxOrderBranchController {
 					new File(duplicate ? TemplatesMX.FXO_RECEIPT : TemplatesMX.FXO_RECEIPT,
 							wrapper, File.Type.HTML))
 					.getResult();
+			
+			file.setName(file.getITemplate().getFileName() + '_' +
+					fcSaleBranchDispatchRequest.getCollectionDocumentNo().toString() + '_' + 
+					fcSaleBranchDispatchRequest.getCollectionDocumentYear().toString() + ".html");
 			// return file.getContent();
 			return PostManUtil.download(file);
 

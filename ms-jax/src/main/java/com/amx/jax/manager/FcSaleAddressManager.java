@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -92,13 +93,20 @@ public class FcSaleAddressManager extends AbstractModel {
 	@Autowired
 	FcSaleApplicationTransactionManager saleAppl;
 
+	public List<ShippingAddressDto> fetchShippingAddress(){
+		return fetchShippingAddress(meta.getCustomerId());
+	}
+	
+	public ShippingAddressDto fetchShippingAddress(BigDecimal customerId, BigDecimal shippingAddressId) {
+		List<ShippingAddressDto> shippingAddresses = fetchShippingAddress(customerId);
+		return shippingAddresses.stream().filter(i -> i.getAddressId().equals(shippingAddressId)).findFirst().get();
+	}
 	/** Fetching shipping address **/
 
-	public List<ShippingAddressDto> fetchShippingAddress() {
+	public List<ShippingAddressDto> fetchShippingAddress(BigDecimal customerId) {
 		List<ShippingAddressDto> list = new ArrayList<>();
 
 		BigDecimal countryId = meta.getCountryId();
-		BigDecimal customerId = meta.getCustomerId();
 		BigDecimal companyId = meta.getCompanyId();
 
 		List<Customer> customerList = customerDao.getCustomerByCustomerId(countryId, companyId, customerId);

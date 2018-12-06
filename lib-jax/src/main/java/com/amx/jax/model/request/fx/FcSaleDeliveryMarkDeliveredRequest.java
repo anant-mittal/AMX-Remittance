@@ -16,6 +16,10 @@ public class FcSaleDeliveryMarkDeliveredRequest {
 	public void setDeliveryDetailSeqId(BigDecimal deliveryDetailSeqId) {
 		this.deliveryDetailSeqId = deliveryDetailSeqId;
 	}
+	@Override
+	public String toString() {
+		return "FcSaleDeliveryMarkDeliveredRequest [deliveryDetailSeqId=" + deliveryDetailSeqId + "]";
+	}
 	
 	
 }

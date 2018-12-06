@@ -1,16 +1,12 @@
 package com.amx.jax.services;
 
-import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.transaction.Transactional;
-
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,17 +17,17 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.constant.NotificationConstants;
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.PersonInfo;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.constant.ConstantDocument;
-import com.amx.jax.constants.FxDeliveryStatus;
 import com.amx.jax.dao.FcSaleApplicationDao;
 import com.amx.jax.dbmodel.ShippingAddressDetail;
 import com.amx.jax.dbmodel.fx.FxDeliveryDetailsModel;
 import com.amx.jax.dbmodel.fx.FxDeliveryRemark;
+import com.amx.jax.dbmodel.fx.StatusMaster;
 import com.amx.jax.dbmodel.fx.VwFxDeliveryDetailsModel;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.manager.FcSaleAddressManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.model.request.fx.FcSaleDeliveryDetailUpdateReceiptRequest;
@@ -42,10 +38,8 @@ import com.amx.jax.model.response.fx.FxDeliveryDetailNotificationDto;
 import com.amx.jax.model.response.fx.ShippingAddressDto;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.TemplatesMX;
-import com.amx.jax.repository.fx.VwFxDeliveryDetailsRepository;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.CryptoUtil;
-import com.amx.utils.JsonUtil;
 import com.amx.utils.Random;
 
 @Component
@@ -64,6 +58,8 @@ public class FcSaleDeliveryService {
 	CryptoUtil cryptoUtil;
 	@Autowired
 	UserService userService;
+	@Autowired
+	FcSaleAddressManager fcSaleAddressManager;
 
 	/**
 	 * @return today's order to be delivered for logged in driver
@@ -86,8 +82,10 @@ public class FcSaleDeliveryService {
 		FxDeliveryRemark delRemark = fcSaleApplicationDao.getDeliveryRemarkById(model.getDeliveryRemarkId());
 		ShippingAddressDetail shippingAddress = fcSaleApplicationDao
 				.getShippingAddressById(model.getShippingAddressId());
-		String statusDesc = fcSaleApplicationDao.getStatusMaster(model.getOrderStatus()).getStatusDescription();
-		ShippingAddressDto shippingAddressDto = createShippingAddressDto(shippingAddress);
+		StatusMaster statusMaster = fcSaleApplicationDao.getStatusMaster(model.getOrderStatus());
+		//ShippingAddressDto shippingAddressDto = createShippingAddressDto(shippingAddress);
+		ShippingAddressDto shippingAddressDto = fcSaleAddressManager.fetchShippingAddress(model.getCustomerId(),
+				model.getShippingAddressId());
 		try {
 			BeanUtils.copyProperties(dto, model);
 			BeanUtils.copyProperties(shippingAddressDto, shippingAddress);
@@ -100,7 +98,8 @@ public class FcSaleDeliveryService {
 			dto.setDeliveryRemark(delRemark.getDeliveryRemark());
 		}
 		dto.setAddress(shippingAddressDto);
-		dto.setOrderStatus(statusDesc);
+		dto.setOrderStatus(statusMaster.getStatusDescription());
+		dto.setOrderStatusCode(statusMaster.getStatusCode());
 		dto.setDeliveryDetailSeqId(model.getDeleviryDelSeqId());
 		return dto;
 	}
@@ -120,6 +119,7 @@ public class FcSaleDeliveryService {
 	}
 
 	public BoolRespModel markDelivered(FcSaleDeliveryMarkDeliveredRequest fcSaleDeliveryMarkDeliveredRequest) {
+		logger.debug("markDelivered request: {}", fcSaleDeliveryMarkDeliveredRequest);
 		FxDeliveryDetailsModel deliveryDetail = validateFxDeliveryModel(
 				fcSaleDeliveryMarkDeliveredRequest.getDeliveryDetailSeqId());
 		VwFxDeliveryDetailsModel vwdeliveryDetail = validatetDeliveryDetailView(
@@ -143,6 +143,7 @@ public class FcSaleDeliveryService {
 	}
 
 	public BoolRespModel markCancelled(FcSaleDeliveryMarkNotDeliveredRequest fcSaleDeliveryMarkNotDeliveredRequest) {
+		logger.info("Cancel request received: {}", fcSaleDeliveryMarkNotDeliveredRequest);
 		FxDeliveryDetailsModel deliveryDetail = validateFxDeliveryModel(
 				fcSaleDeliveryMarkNotDeliveredRequest.getDeliveryDetailSeqId());
 		if (!deliveryDetail.getOrderStatus().equals(ConstantDocument.OFD)) {
@@ -175,7 +176,7 @@ public class FcSaleDeliveryService {
 
 	public BoolRespModel updateTransactionReceipt(
 			FcSaleDeliveryDetailUpdateReceiptRequest fcSaleDeliveryDetailUpdateReceiptRequest) {
-
+		logger.debug("updateTransactionReceipt request: {}", fcSaleDeliveryDetailUpdateReceiptRequest);
 		FxDeliveryDetailsModel deliveryDetail = validateFxDeliveryModel(
 				fcSaleDeliveryDetailUpdateReceiptRequest.getDeliveryDetailSeqId());
 		deliveryDetail.setTransactionReceipt(fcSaleDeliveryDetailUpdateReceiptRequest.getTransactionRecieptImageClob());
@@ -220,6 +221,7 @@ public class FcSaleDeliveryService {
 	}
 
 	public BoolRespModel verifyOtp(BigDecimal deliveryDetailSeqId, BigDecimal mOtp) {
+		logger.debug("verifyOtp request: deliveryDetailSeqId {} mOtp {}", deliveryDetailSeqId, mOtp);
 		FxDeliveryDetailsModel fxDeliveryDetailsMode = validateFxDeliveryModel(deliveryDetailSeqId);
 		if (mOtp == null) {
 			throw new GlobalException("mOtp can not be blank", JaxError.MISSING_OTP);
@@ -278,6 +280,7 @@ public class FcSaleDeliveryService {
 	 * @return
 	 */
 	public BoolRespModel markReturn(BigDecimal deliveryDetailSeqId) {
+		logger.debug("markReturn request: deldetailid {}", deliveryDetailSeqId);
 		FxDeliveryDetailsModel deliveryDetail = validateFxDeliveryModel(deliveryDetailSeqId);
 		if (!deliveryDetail.getOrderStatus().equals(ConstantDocument.OFD)) {
 			throw new GlobalException("Order status should be OFD", JaxError.FC_CURRENCY_DELIVERY_INVALID_STATUS);
@@ -292,13 +295,13 @@ public class FcSaleDeliveryService {
 	 * @return
 	 */
 	public BoolRespModel markAcknowledged(BigDecimal deliveryDetailSeqId) {
+		logger.debug("markAcknowledged request: deldetailid {}", deliveryDetailSeqId);
 		FxDeliveryDetailsModel deliveryDetail = validateFxDeliveryModel(deliveryDetailSeqId);
 		if (!deliveryDetail.getOrderStatus().equals(ConstantDocument.OFD_ACK)) {
 			throw new GlobalException("Order status should be OFD_ACK", JaxError.FC_CURRENCY_DELIVERY_INVALID_STATUS);
 		}
-		deliveryDetail.setOrderStatus(ConstantDocument.OFD);
+		deliveryDetail.setOrderStatus(ConstantDocument.OFD_CNF);
 		fcSaleApplicationDao.saveDeliveryDetail(deliveryDetail);
-		sendOtp(deliveryDetailSeqId);
 		return new BoolRespModel(true);
 	}
 }

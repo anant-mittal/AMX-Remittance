@@ -20,6 +20,7 @@ import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.fx.OrderManagementView;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.manager.FcSaleApplicationTransactionManager;
 import com.amx.jax.manager.FcSaleBranchOrderManager;
 import com.amx.jax.model.request.fx.FcSaleBranchDispatchRequest;
 import com.amx.jax.model.response.fx.FcEmployeeDetailsDto;
@@ -38,6 +39,9 @@ public class FcSaleBranchService extends AbstractService{
 
 	@Autowired
 	FcSaleBranchOrderManager branchOrderManager;
+	
+	@Autowired
+	FcSaleApplicationTransactionManager fcSaleApplicationTransactionManager;
 
 	/* 
 	 * @param   :fetch List of Pending Orders
@@ -216,7 +220,14 @@ public class FcSaleBranchService extends AbstractService{
 		List<FcSaleOrderManagementDTO> lstDto = new ArrayList<>();
 		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 		SimpleDateFormat dateTimeFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+		String deliveryAddress = null;
 		if(orderManagementView != null && orderManagementView.size() != 0) {
+			
+			OrderManagementView ordDelieryAddress = orderManagementView.get(0);
+			if(ordDelieryAddress.getDeliveryDetailsId() != null) {
+				String address = fcSaleApplicationTransactionManager.getDeliveryAddress(ordDelieryAddress.getDeliveryDetailsId());
+				deliveryAddress = address;
+			}
 
 			for (OrderManagementView orderManagement : orderManagementView) {
 
@@ -274,6 +285,10 @@ public class FcSaleBranchService extends AbstractService{
 				List<UserStockDto> userStockDto = branchOrderManager.fetchCurrencyAdjustDetails(orderManagement.getDocumentNo(), orderManagement.getCollectionDocFinanceYear(), companyId, ConstantDocument.DOCUMENT_CODE_FOR_FCSALE);
 				if(userStockDto != null) {
 					fcSaleOrder.setFcDenomination(userStockDto);
+				}
+				
+				if(deliveryAddress != null) {
+					fcSaleOrder.setDeliveryAddress(deliveryAddress);
 				}
 				
 				lstDto.add(fcSaleOrder);
@@ -514,6 +529,38 @@ public class FcSaleBranchService extends AbstractService{
 				// success
 			}else {
 				throw new GlobalException("dispatch order status didn't updated",JaxError.SAVE_FAILED);
+			}
+		}catch (GlobalException e) {
+			throw new GlobalException(e.getErrorMessage(),e.getErrorKey());
+		}catch (Exception e) {
+			throw new GlobalException(e.getMessage());
+		}
+		
+		return new BoolRespModel(status);
+	}
+	
+	public BoolRespModel acknowledgeDriver(BigDecimal applicationCountryId,BigDecimal orderNumber,BigDecimal orderYear,BigDecimal employeeId) {
+		Boolean status = Boolean.FALSE;
+		
+		if(applicationCountryId == null || applicationCountryId.compareTo(BigDecimal.ZERO)==0){
+			throw new GlobalException("Application country id should not be blank",JaxError.NULL_APPLICATION_COUNTRY_ID);
+		}
+		if(orderNumber == null || orderNumber.compareTo(BigDecimal.ZERO)==0){
+			throw new GlobalException("Order Number should not be blank",JaxError.NULL_ORDER_NUBMER);
+		}
+		if(orderYear == null || orderYear.compareTo(BigDecimal.ZERO)==0){
+			throw new GlobalException("Order Year should not be blank",JaxError.NULL_ORDER_YEAR);
+		}
+		if(employeeId == null || employeeId.compareTo(BigDecimal.ZERO) == 0){
+			throw new GlobalException("Employee Id should not be blank",JaxError.NULL_EMPLOYEE_ID);
+		}
+		
+		try {
+			status = branchOrderManager.acknowledgeDriver(applicationCountryId, orderNumber, orderYear, employeeId);
+			if(status) {
+				// success
+			}else {
+				throw new GlobalException("acknowledge Driver status didn't updated",JaxError.SAVE_FAILED);
 			}
 		}catch (GlobalException e) {
 			throw new GlobalException(e.getErrorMessage(),e.getErrorKey());

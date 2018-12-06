@@ -30,6 +30,7 @@ public interface IFxBranchOrderService extends IJaxService {
 		public static final String FC_ACCEPT_ORDER_LOCK = PREFIX + "/accept-order-lock/";
 		public static final String FC_RELEASE_ORDER_LOCK = PREFIX + "/release-order-lock/";
 		public static final String FC_PRINT_ORDER_SAVE = PREFIX + "/print-order-save/";
+		public static final String FC_ACKNOWLEDGE_DRIVE = PREFIX + "/acknowledge-drive/";
 	}
 
 	public static class Params {
@@ -74,4 +75,8 @@ public interface IFxBranchOrderService extends IJaxService {
 	@ApiJaxStatus({ JaxError.NULL_APPLICATION_COUNTRY_ID,JaxError.NULL_ORDER_NUBMER,JaxError.NULL_ORDER_YEAR,JaxError.NULL_EMPLOYEE_ID,JaxError.SAVE_FAILED,JaxError.INVALID_EMPLOYEE
 		,JaxError.ORDER_IS_NOT_LOCK})
 	AmxApiResponse<BoolRespModel,Object> dispatchOrder(BigDecimal orderNumber,BigDecimal orderYear);
+	
+	@ApiJaxStatus({ JaxError.NULL_APPLICATION_COUNTRY_ID,JaxError.NULL_ORDER_NUBMER,JaxError.NULL_ORDER_YEAR,JaxError.NULL_EMPLOYEE_ID,JaxError.SAVE_FAILED,JaxError.INVALID_EMPLOYEE
+		,JaxError.ORDER_IS_NOT_LOCK})
+	AmxApiResponse<BoolRespModel,Object> acknowledgeDrive(BigDecimal orderNumber,BigDecimal orderYear);
 }

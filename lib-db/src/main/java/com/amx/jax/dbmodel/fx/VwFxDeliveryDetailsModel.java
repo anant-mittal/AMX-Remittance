@@ -52,11 +52,8 @@ public class VwFxDeliveryDetailsModel implements Serializable {
 	@Column(name = "DRIVER_EMPLOYEE_ID")
 	BigDecimal driverEmployeeId;
 
-	@Column(name = "EX_SHIPPING_ADDR_ID")
+	@Column(name = "SHIPPING_ADDRESS_ID")
 	BigDecimal shippingAddressId;
-
-	@Column(name = "MOBILE")
-	String mobile;
 
 	@Column(name = "ORDER_STATUS")
 	String orderStatus;
@@ -123,14 +120,6 @@ public class VwFxDeliveryDetailsModel implements Serializable {
 
 	public void setShippingAddressId(BigDecimal shippingAddressId) {
 		this.shippingAddressId = shippingAddressId;
-	}
-
-	public String getMobile() {
-		return mobile;
-	}
-
-	public void setMobile(String mobile) {
-		this.mobile = mobile;
 	}
 
 	public BigDecimal getDeliveryRemarkId() {

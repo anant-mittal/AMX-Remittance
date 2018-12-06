@@ -44,6 +44,7 @@ public class FcSaleOrderManagementDTO extends AbstractModel {
 	String orderLock;
 	BigDecimal employeeId;
 	Boolean orderEmployee;
+	String deliveryAddress;
 	List<FcSaleCurrencyAmountModel> mutipleFcAmount;
 	List<UserStockDto> fcDenomination;
 	
@@ -285,4 +286,11 @@ public class FcSaleOrderManagementDTO extends AbstractModel {
 		this.fcDenomination = fcDenomination;
 	}
 	
+	public String getDeliveryAddress() {
+		return deliveryAddress;
+	}
+	public void setDeliveryAddress(String deliveryAddress) {
+		this.deliveryAddress = deliveryAddress;
+	}
+
 }

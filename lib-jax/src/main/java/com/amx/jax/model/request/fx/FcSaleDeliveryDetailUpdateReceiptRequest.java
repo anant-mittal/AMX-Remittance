@@ -23,4 +23,9 @@ public class FcSaleDeliveryDetailUpdateReceiptRequest {
 	public void setTransactionRecieptImageClob(String transactionRecieptImageClob) {
 		this.transactionRecieptImageClob = transactionRecieptImageClob;
 	}
+	@Override
+	public String toString() {
+		return "FcSaleDeliveryDetailUpdateReceiptRequest [deliveryDetailSeqId=" + deliveryDetailSeqId
+				+ ", transactionRecieptImageClob=" + transactionRecieptImageClob + "]";
+	}
 }
