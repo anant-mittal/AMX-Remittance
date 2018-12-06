@@ -506,9 +506,13 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 				employeeModel.setFsBizComponentDataByOccupationId(
 						bizcomponentDao.getBizComponentDataByComponmentDataId(customerEmploymentDetails.getProfessionId()));
 				employeeModel.setEmployerName(customerEmploymentDetails.getEmployer());
-				employeeModel.setFsCountryMaster(
-					countryMasterRepository.getCountryMasterByCountryId(customerEmploymentDetails.getCountryId()));
+				
 			}
+			
+			employeeModel.setFsCountryMaster(
+					countryMasterRepository.getCountryMasterByCountryId(customerEmploymentDetails.getCountryId()));
+			employeeModel.setFsStateMaster(localAddressDetails.getStateId());
+			employeeModel.setFsDistrictMaster(localAddressDetails.getDistrictId());
 			
 			employeeModel.setIsActive(ConstantDocument.Yes);
 			employeeModel.setCreatedBy(metaData.getEmployeeId().toString());
