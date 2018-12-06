@@ -164,5 +164,18 @@ public class FcSaleBranchOrderController implements IFxBranchOrderService {
 		BoolRespModel result = fcSaleBranch.dispatchOrder(countryId, orderNumber, orderYear, employeeId);
 		return AmxApiResponse.build(result);
 	}
+	
+	/**
+	 * To get the order to Acknowledge driver
+	 * 
+	 */
+	@RequestMapping(value = Path.FC_ACKNOWLEDGE_DRIVE , method = RequestMethod.POST)
+	@Override
+	public AmxApiResponse<BoolRespModel,Object> acknowledgeDrive(@RequestParam(value = "orderNumber", required = true) BigDecimal orderNumber,@RequestParam(value = "orderYear", required = true) BigDecimal orderYear){
+		BigDecimal countryId = metaData.getCountryId();
+		BigDecimal employeeId = metaData.getEmployeeId();
+		BoolRespModel result = fcSaleBranch.acknowledgeDriver(countryId, orderNumber, orderYear, employeeId);
+		return AmxApiResponse.build(result);
+	}
 
 }

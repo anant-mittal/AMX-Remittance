@@ -207,7 +207,7 @@ public class FcSaleBranchDao {
 			BigDecimal deliveryDetailsId = orderManagementView.getDeliveryDetailsId();
 			FxDeliveryDetailsModel fxDeliveryDetailsModel = fetchDeliveryDetails(deliveryDetailsId, ConstantDocument.Yes);
 			if(fxDeliveryDetailsModel != null && fxDeliveryDetailsModel.getOrderStatus() != null) {
-				if(fxDeliveryDetailsModel.getOrderStatus().equalsIgnoreCase(ConstantDocument.PCK)) {
+				if(fxDeliveryDetailsModel.getOrderStatus().equalsIgnoreCase(ConstantDocument.OFD_CNF)) {
 					fxDeliveryDetailsRepository.updateStatusDeliveryDetails(deliveryDetailsId,userName,new Date(),orderStatus);
 				}else {
 					throw new GlobalException("Order status is not out for delivery pending acknowledgment to dispatch",JaxError.ORDER_STATUS_MISMATCH);
@@ -222,5 +222,25 @@ public class FcSaleBranchDao {
 	
 	public List<ForeignCurrencyAdjust> fetchByCollectionDetails(BigDecimal documentNo,BigDecimal documentYear,BigDecimal companyId,BigDecimal documentCode){
 		return foreignCurrencyAdjustRepository.fetchByCollectionDetails(documentNo,documentYear,companyId,documentCode);
+	}
+	
+	@Transactional
+	public void saveAcknowledgeDriver(List<OrderManagementView> lstOrderManagement,BigDecimal employeeId,String userName,String orderStatus){
+		if(lstOrderManagement != null && lstOrderManagement.size() != 0){
+			OrderManagementView orderManagementView = lstOrderManagement.get(0);
+			BigDecimal deliveryDetailsId = orderManagementView.getDeliveryDetailsId();
+			FxDeliveryDetailsModel fxDeliveryDetailsModel = fetchDeliveryDetails(deliveryDetailsId, ConstantDocument.Yes);
+			if(fxDeliveryDetailsModel != null && fxDeliveryDetailsModel.getOrderStatus() != null) {
+				if(fxDeliveryDetailsModel.getOrderStatus().equalsIgnoreCase(ConstantDocument.OFD_ACK)) {
+					fxDeliveryDetailsRepository.updateStatusDeliveryDetails(deliveryDetailsId,userName,new Date(),orderStatus);
+				}else {
+					throw new GlobalException("Order status is not out for delivery pending acknowledgment to dispatch",JaxError.ORDER_STATUS_MISMATCH);
+				}
+			}else {
+				throw new GlobalException("No records or order status is empty for delivery details",JaxError.NO_DELIVERY_DETAILS);
+			}
+		}else {
+			throw new GlobalException("No records found for order management",JaxError.SAVE_FAILED);
+		}
 	}
 }

@@ -25,6 +25,7 @@ import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.ApplicationProcedureDao;
 import com.amx.jax.dao.CurrencyMasterDao;
 import com.amx.jax.dao.FcSaleBranchDao;
+import com.amx.jax.dao.RemittanceProcedureDao;
 import com.amx.jax.dbmodel.CollectionModel;
 import com.amx.jax.dbmodel.CompanyMaster;
 import com.amx.jax.dbmodel.CountryBranch;
@@ -70,7 +71,7 @@ public class FcSaleBranchOrderManager {
 	IDocumentDao documentDao;
 
 	@Autowired
-	ApplicationProcedureDao applicationProcedureDao;
+	RemittanceProcedureDao remittanceProcedureDao;
 
 	@Autowired
 	JaxConfigRepository jaxConfigRepository;
@@ -341,7 +342,7 @@ public class FcSaleBranchOrderManager {
 										deliveryDetailNew.setDeliveryTimeSlot(deliveryDetail.getDeliveryTimeSlot());
 										deliveryDetailNew.setDriverEmployeeId(driverId);
 										deliveryDetailNew.setIsActive(deliveryDetail.getIsActive());
-										deliveryDetailNew.setOrderStatus(ConstantDocument.PCK);
+										deliveryDetailNew.setOrderStatus(ConstantDocument.OFD_ACK);
 										deliveryDetailNew.setOtpToken(deliveryDetail.getOtpToken());
 										deliveryDetailNew.setRemarksId(deliveryDetail.getRemarksId());
 										deliveryDetailNew.setShippingAddressId(deliveryDetail.getShippingAddressId());
@@ -582,6 +583,7 @@ public class FcSaleBranchOrderManager {
 											foreignCurrencyAdj.setTransactionType(ConstantDocument.S);
 											foreignCurrencyAdj.setDocumentStatus(ConstantDocument.P);
 											foreignCurrencyAdj.setProgNumber(ConstantDocument.FC_SALE);
+											foreignCurrencyAdj.setStockUpdated(" ");
 
 											foreignCurrencyAdj.setDocumentId(documentId);
 											foreignCurrencyAdj.setDocumentCode(ConstantDocument.DOCUMENT_CODE_FOR_FCSALE);
@@ -667,7 +669,7 @@ public class FcSaleBranchOrderManager {
 		insertEmos.put("P_DOC_FINYR", collectionDocYear);
 		insertEmos.put("P_DOCUMENT_NO", collectionDocNumber);
 
-		Map<String, Object> errorStatus = applicationProcedureDao.insertEMOSLIVETransfer(insertEmos);
+		Map<String, Object> errorStatus = remittanceProcedureDao.insertEMOSLIVETransfer(insertEmos);
 		logger.error("Error in insertEMOSLIVETransfer : " + errorStatus.get("P_ERROR_MESSAGE"));
 	}
 
@@ -896,7 +898,7 @@ public class FcSaleBranchOrderManager {
 						FxEmployeeDetailsDto employeeDt = fetchEmployee(employeeId);
 						if(employeeDt != null && employeeDt.getEmployeeId() != null){
 							userName = employeeDt.getUserName();
-							fcSaleBranchDao.saveDispatchOrder(lstOrderManagement,employeeId,userName,ConstantDocument.OFD_ACK);
+							fcSaleBranchDao.saveDispatchOrder(lstOrderManagement,employeeId,userName,ConstantDocument.OFD);
 							status = Boolean.TRUE;
 						}else {
 							throw new GlobalException("Employee details is empty",JaxError.INVALID_EMPLOYEE);
@@ -941,6 +943,45 @@ public class FcSaleBranchOrderManager {
 		}
 
 		return currencyAdjust;
+	}
+	
+	public Boolean acknowledgeDriver(BigDecimal applicationCountryId,BigDecimal orderNumber,BigDecimal orderYear,BigDecimal employeeId) {
+		Boolean status = Boolean.FALSE;
+		String userName = null;
+
+		try {
+			// receipt payment Details
+			List<OrderManagementView> lstOrderManagement = fetchFcSaleOrderDetails(applicationCountryId, orderNumber, orderYear);
+			if(lstOrderManagement != null && lstOrderManagement.size() != 0) {
+				// checking delivery details order lock and employee id assign
+				OrderManagementView orderManagementView = lstOrderManagement.get(0);
+				FxDeliveryDetailsModel deliveryDetails = fcSaleBranchDao.fetchDeliveryDetails(orderManagementView.getDeliveryDetailsId(),ConstantDocument.Yes);
+				if(deliveryDetails != null) {
+					if(deliveryDetails.getOrderLock() != null && deliveryDetails.getEmployeeId() != null) {
+						FxEmployeeDetailsDto employeeDt = fetchEmployee(employeeId);
+						if(employeeDt != null && employeeDt.getEmployeeId() != null){
+							userName = employeeDt.getUserName();
+							fcSaleBranchDao.saveAcknowledgeDriver(lstOrderManagement,employeeId,userName,ConstantDocument.OFD_CNF);
+							status = Boolean.TRUE;
+						}else {
+							throw new GlobalException("Employee details is empty",JaxError.INVALID_EMPLOYEE);
+						}
+					}else {
+						throw new GlobalException("Dispatch order is not locked",JaxError.ORDER_IS_NOT_LOCK);
+					}
+				}
+			}
+		}catch (GlobalException e) {
+			e.printStackTrace();
+			logger.error("Error in acknowledgeDriver", e.getMessage()+" applicationCountryId :"+applicationCountryId+" orderNumber :"+orderNumber+" orderYear :"+orderYear+" employeeId :"+employeeId);
+			throw new GlobalException(e.getErrorMessage(),e.getErrorKey());
+		}catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error in acknowledgeDriver", e.getMessage()+" applicationCountryId :"+applicationCountryId+" orderNumber :"+orderNumber+" orderYear :"+orderYear+" employeeId :"+employeeId);
+			throw new GlobalException(e.getMessage());
+		}
+
+		return status;
 	}
 
 	// stock move from branch staff to driver and vice versa
