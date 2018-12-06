@@ -200,7 +200,6 @@ public class FcSaleBranchDao {
 		}
 	}
 	
-	@Transactional
 	public void saveDispatchOrder(List<OrderManagementView> lstOrderManagement,BigDecimal employeeId,String userName,String orderStatus){
 		if(lstOrderManagement != null && lstOrderManagement.size() != 0){
 			OrderManagementView orderManagementView = lstOrderManagement.get(0);
@@ -208,7 +207,10 @@ public class FcSaleBranchDao {
 			FxDeliveryDetailsModel fxDeliveryDetailsModel = fetchDeliveryDetails(deliveryDetailsId, ConstantDocument.Yes);
 			if(fxDeliveryDetailsModel != null && fxDeliveryDetailsModel.getOrderStatus() != null) {
 				if(fxDeliveryDetailsModel.getOrderStatus().equalsIgnoreCase(ConstantDocument.OFD_CNF)) {
-					fxDeliveryDetailsRepository.updateStatusDeliveryDetails(deliveryDetailsId,userName,new Date(),orderStatus);
+					fxDeliveryDetailsModel.setUopdateDate(new Date());
+					fxDeliveryDetailsModel.setUpdatedBy(userName);
+					fxDeliveryDetailsModel.setOrderStatus(orderStatus);
+					fxDeliveryDetailsRepository.save(fxDeliveryDetailsModel);
 				}else {
 					throw new GlobalException("Order status is not out for delivery pending acknowledgment to dispatch",JaxError.ORDER_STATUS_MISMATCH);
 				}
