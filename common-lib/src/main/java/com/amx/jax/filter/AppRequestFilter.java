@@ -90,7 +90,7 @@ public class AppRequestFilter implements Filter {
 			}
 			if (!StringUtils.isEmpty(siteId)) {
 				TenantContextHolder.setCurrent(siteId, null);
-			}
+			} 
 			Tenant tnt = TenantContextHolder.currentSite();
 
 			// Tranx Id Tracking

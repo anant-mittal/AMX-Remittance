@@ -97,7 +97,6 @@ public class RestService {
 		if (!IN_FILTER_MAP_DONE) {
 			if (inFilters == null) {
 				LOGGER.debug("NO IMetaRequestInFilter Filters FOUND and SCANNED");
-				return IN_FILTERS_MAP;
 			} else {
 				for (IMetaRequestInFilter filter : inFilters) {
 					Matcher matcher = PATTERN_IN.matcher(filter.getClass().getGenericInterfaces()[0].getTypeName());

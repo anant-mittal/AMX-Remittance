@@ -75,6 +75,16 @@ public class FxDeliveryController {
 		return fxOrderDelivery.markCancelled(fcSaleDeliveryMarkDeliveredRequest);
 	}
 
+	@RequestMapping(value = "/order/return", method = { RequestMethod.POST })
+	public AmxApiResponse<BoolRespModel, Object> markReturn(@RequestParam BigDecimal deliveryDetailSeqId) {
+		return fxOrderDelivery.markReturn(deliveryDetailSeqId);
+	}
+
+	@RequestMapping(value = "/order/acknowledge", method = { RequestMethod.POST })
+	public AmxApiResponse<BoolRespModel, Object> markAcknowledged(@RequestParam BigDecimal deliveryDetailSeqId) {
+		return fxOrderDelivery.markAcknowledged(deliveryDetailSeqId);
+	}
+
 	@RequestMapping(value = "/order/reasons", method = { RequestMethod.GET })
 	public AmxApiResponse<ResourceDTO, Object> listDeliveryRemark() {
 		return fxOrderDelivery.listDeliveryRemark();
