@@ -329,7 +329,7 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 			 fxTrnxHistAmount = receiptPaymentAppl.getLocalTrnxAmount();
 		 }
 		 if(JaxUtil.isNullZeroBigDecimalCheck(fxTrnxHistAmount) && JaxUtil.isNullZeroBigDecimalCheck(fcTrnxLimitPerDay) && fxTrnxHistAmount.compareTo(fcTrnxLimitPerDay)>=0){
-			 throw new GlobalException("Fx Trasaction limit exceeds ",JaxError.FC_SALE_TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED);
+			 throw new GlobalException("You have reached daily limit of FC Sale  "+fcTrnxLimitPerDay,JaxError.FC_SALE_TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED);
 		 }
 		}else{
 			throw new GlobalException("FX Order limit setup is not defined",JaxError.FC_SALE_DAY_LIMIT_SETUP_NOT_DIFINED);
