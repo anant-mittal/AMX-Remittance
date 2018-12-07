@@ -113,6 +113,9 @@ public class UserAuthService {
 			if (StringUtils.isBlank(partnerIdentity)) {
 				throw new AuthServiceException("Partner Identity is Manadatory for Assisted Login",
 						RbaacServiceError.INVALID_OR_MISSING_PARTNER_IDENTITY);
+			} else if (partnerIdentity.equalsIgnoreCase(identity)) {
+				throw new AuthServiceException("Partner Identity can not be same as Primary User Identity",
+						RbaacServiceError.INVALID_OR_MISSING_PARTNER_IDENTITY);
 			}
 		}
 
