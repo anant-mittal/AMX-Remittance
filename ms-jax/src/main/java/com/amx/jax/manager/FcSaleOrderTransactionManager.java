@@ -58,7 +58,7 @@ public class FcSaleOrderTransactionManager extends AbstractModel{
 
 	public FcSaleOrderApplicationResponseModel calculateTrnxRate(BigDecimal countryId,BigDecimal countryBracnhId ,BigDecimal fcCurrencyId,BigDecimal fcAmount){
 		BigDecimal maxExchangeRate = BigDecimal.ZERO;
-		logger.info("calculateTrnxRate fc currencyId :"+fcCurrencyId+"\t fcAmount :"+fcAmount+"\t countryId :"+countryId+"\t countryBracnhId :"+countryBracnhId);
+		logger.debug("calculateTrnxRate fc currencyId :"+fcCurrencyId+"\t fcAmount :"+fcAmount+"\t countryId :"+countryId+"\t countryBracnhId :"+countryBracnhId);
 		FcSaleOrderApplicationResponseModel responseModel = new FcSaleOrderApplicationResponseModel();
 		
 		List<CurrencyMasterModel> curr =currencyDao.getCurrencyList(fcCurrencyId);
@@ -89,7 +89,7 @@ public class FcSaleOrderTransactionManager extends AbstractModel{
 		}else{
 			throw new GlobalException("Fc currency rate is not defiend", JaxError.FC_CURRENCY_RATE_IS_NOT_AVAILABLE);
 		}
-		logger.info(" maxExchangeRate  :"+maxExchangeRate +"\t : for Currency  :"+fcCurrencyId+"\t Fc amount :"+fcAmount);
+		logger.debug(" maxExchangeRate  :"+maxExchangeRate +"\t : for Currency  :"+fcCurrencyId+"\t Fc amount :"+fcAmount);
 		
 		if(parameterList != null && !parameterList.isEmpty()){
 			responseModel.setTxnFee(RoundUtil.roundBigDecimal(parameterList.get(0).getNumericField1()==null?BigDecimal.ZERO:parameterList.get(0).getNumericField1(),breakup.getLcDecimalNumber().intValue()));
@@ -116,7 +116,7 @@ public class FcSaleOrderTransactionManager extends AbstractModel{
 		}
 		responseModel.setExRateBreakup(breakup);
 		
-		logger.info("breakup rate maxExchangeRate  :"+breakup.getRate() +"\t : for Currency  :"+fcCurrencyId+"\t Fc amount :"+breakup.getConvertedFCAmount()+"\t LC amount :"+breakup.getConvertedLCAmount());
+		logger.debug("breakup rate maxExchangeRate  :"+breakup.getRate() +"\t : for Currency  :"+fcCurrencyId+"\t Fc amount :"+breakup.getConvertedFCAmount()+"\t LC amount :"+breakup.getConvertedLCAmount());
 	
 		return responseModel; 
 	}
