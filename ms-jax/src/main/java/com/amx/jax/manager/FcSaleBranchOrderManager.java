@@ -1007,7 +1007,7 @@ public class FcSaleBranchOrderManager {
 						FxEmployeeDetailsDto employeeDt = fetchEmployee(employeeId);
 						if(employeeDt != null && employeeDt.getEmployeeId() != null){
 							userName = employeeDt.getUserName();
-							fcSaleBranchDao.saveReturnAcknowledge(lstOrderManagement,employeeId,userName,ConstantDocument.RTN);
+							fcSaleBranchDao.saveReturnAcknowledge(lstOrderManagement,employeeId,userName,ConstantDocument.RTD);
 							status = Boolean.TRUE;
 						}else {
 							throw new GlobalException("Employee details is empty",JaxError.INVALID_EMPLOYEE);

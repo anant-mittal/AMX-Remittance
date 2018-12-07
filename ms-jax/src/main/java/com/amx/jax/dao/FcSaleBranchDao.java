@@ -265,7 +265,7 @@ public class FcSaleBranchDao {
 			BigDecimal deliveryDetailsId = orderManagementView.getDeliveryDetailsId();
 			FxDeliveryDetailsModel fxDeliveryDetailsModel = fetchDeliveryDetails(deliveryDetailsId, ConstantDocument.Yes);
 			if(fxDeliveryDetailsModel != null && fxDeliveryDetailsModel.getOrderStatus() != null) {
-				if(fxDeliveryDetailsModel.getOrderStatus().equalsIgnoreCase(ConstantDocument.RTN_ACK)) {
+				if(fxDeliveryDetailsModel.getOrderStatus().equalsIgnoreCase(ConstantDocument.RTD_ACK)) {
 					fxDeliveryDetailsModel.setUopdateDate(new Date());
 					fxDeliveryDetailsModel.setUpdatedBy(userName);
 					fxDeliveryDetailsModel.setOrderStatus(orderStatus);

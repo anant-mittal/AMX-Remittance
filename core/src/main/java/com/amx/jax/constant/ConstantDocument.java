@@ -98,8 +98,6 @@ public class ConstantDocument {
 	// PCK for --PACKED
 	public static final String PCK="PCK";
 	public static final String OFD_CNF="OFD_CNF";
-	public static final String RTN="RTN";
-	public static final String RTN_ACK="RTN_ACK";
 	public static final String CND_ACK="CND_ACK";
 	
 	/** end Here **/
