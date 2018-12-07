@@ -12,8 +12,9 @@ import org.springframework.web.socket.server.HandshakeInterceptor;
 
 import com.amx.jax.AppConstants;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.Constants;
 
-public class HttpHandshakeInterceptor implements HandshakeInterceptor {
+public class StompHttpHandshakeInterceptor implements HandshakeInterceptor {
 
 	@Override
 	public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler,
@@ -23,8 +24,11 @@ public class HttpHandshakeInterceptor implements HandshakeInterceptor {
 			HttpSession session = servletRequest.getServletRequest().getSession(false);
 			if (!ArgUtil.isEmpty(session)) {
 				String sessionString = ArgUtil.parseAsString(
-						session.getAttribute(AppConstants.SESSION_ID_XKEY));
-				attributes.put(AppConstants.SESSION_ID_XKEY,sessionString);
+						session.getAttribute(AppConstants.SESSION_ID_XKEY), Constants.BLANK);
+				String uSessionId = ArgUtil.parseAsString(
+						session.getAttribute(AppConstants.SESSION_UID_XKEY), Constants.BLANK);
+				attributes.put(AppConstants.SESSION_ID_XKEY, sessionString);
+				attributes.put(AppConstants.SESSION_UID_XKEY, uSessionId);
 			}
 		}
 		return true;

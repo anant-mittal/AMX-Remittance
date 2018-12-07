@@ -5,7 +5,7 @@ import org.springframework.messaging.core.MessageSendingOperations;
 import org.springframework.stereotype.Component;
 
 @Component
-public class StompTunnel {
+public class StompTunnelService {
 
 	@Autowired
 	private MessageSendingOperations<String> messagingTemplate;

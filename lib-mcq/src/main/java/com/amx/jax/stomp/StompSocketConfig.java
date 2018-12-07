@@ -9,7 +9,7 @@ import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 
 @Configuration
 @EnableWebSocketMessageBroker
-public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
+public class StompSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
 
 	@Override
 	public void configureMessageBroker(MessageBrokerRegistry config) {
@@ -23,8 +23,8 @@ public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
 	}
 
 	@Bean
-	public HttpHandshakeInterceptor httpSessionIdHandshakeInterceptor() {
-		return new HttpHandshakeInterceptor();
+	public StompHttpHandshakeInterceptor httpSessionIdHandshakeInterceptor() {
+		return new StompHttpHandshakeInterceptor();
 	}
 
 }
