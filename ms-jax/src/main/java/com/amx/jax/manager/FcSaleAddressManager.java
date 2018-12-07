@@ -29,11 +29,11 @@ import com.amx.jax.dbmodel.ViewAreaModel;
 import com.amx.jax.dbmodel.ViewCity;
 import com.amx.jax.dbmodel.ViewDistrict;
 import com.amx.jax.dbmodel.ViewState;
+import com.amx.jax.dbmodel.fx.FxDeliveryDetailsModel;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.AbstractModel;
 import com.amx.jax.model.ResourceDTO;
-
 import com.amx.jax.model.request.CustomerShippingAddressRequestModel;
 import com.amx.jax.model.response.fx.AddressTypeDto;
 import com.amx.jax.model.response.fx.ShippingAddressDto;
@@ -166,6 +166,7 @@ public class FcSaleAddressManager extends AbstractModel {
 
 			}
 			shippingAddressDto.setAdressType("Local address");
+			shippingAddressDto.setDeliveryAddress(getLocalDeliveryAddress(shippingAddressDto));
 			list.add(shippingAddressDto); // Local Address
 		} // Local contact details
 
@@ -229,7 +230,7 @@ public class FcSaleAddressManager extends AbstractModel {
 							}
 						}
 					}
-
+					shippingAddressDto.setDeliveryAddress(getLocalDeliveryAddress(shippingAddressDto));
 				} else {
 					throw new GlobalException("Failed", JaxError.COUNTRY_NOT_FOUND);
 				}
@@ -405,5 +406,29 @@ public class FcSaleAddressManager extends AbstractModel {
 	}
 	
 
+	public String getLocalDeliveryAddress(ShippingAddressDto shippingAddressDto){
+		logger.info("getDeliveryAddress  in FC Sale Address Manager :"+shippingAddressDto.getAddressId());
+		String address ="";
+		StringBuffer sb = new StringBuffer();
+		String concat =",";
+			 if(shippingAddressDto!=null){
+    		 sb = sb.append("Street ").append(shippingAddressDto.getStreet()==null?"":shippingAddressDto.getStreet()).append(concat)
+    			  .append("Block ").append(shippingAddressDto.getBlock()==null?"":shippingAddressDto.getBlock()).append(concat)
+    			  .append("Build ").append(shippingAddressDto.getBuildingNo()==null?"":shippingAddressDto.getBuildingNo()).append(concat)
+    			  .append("Flat ").append(shippingAddressDto.getFlat()==null?"":shippingAddressDto.getFlat()).append(concat)
+    			  .append("City ").append(shippingAddressDto.getLocalContactCity()==null?"":shippingAddressDto.getLocalContactCity()).append(concat) 
+    			  .append("Area ").append(shippingAddressDto.getAreaDesc()).append(concat)
+    			  .append(shippingAddressDto.getLocalContactDistrict()==null?"":shippingAddressDto.getLocalContactDistrict()).append(concat)
+    			  .append(shippingAddressDto.getLocalContactState()==null?"":shippingAddressDto.getLocalContactState()).append(concat)
+    			  .append("Contact ").append(shippingAddressDto.getMobile()==null?"":shippingAddressDto.getMobile());
+    	
+    		 }
+		if(sb!=null){
+			address = sb.toString();
+		}
+		return address;
+	}
+	
+	
 	
 }

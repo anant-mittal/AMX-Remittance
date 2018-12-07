@@ -240,7 +240,7 @@ public class FcSaleApplicationDao {
 				 output.put("P_ERROR_MESG", "ERROR_WHILE_SAVING_COLLECTION_DETAILS");
 			 }
 			 
-			 if(!receiptPaymentList.isEmpty()){
+			 if(receiptPaymentList !=null && !receiptPaymentList.isEmpty()){
 				 for(ReceiptPayment rcpt : receiptPaymentList){
 					 rcpt.setColDocNo(collection.getDocumentNo());
 					 rcpt.setColDocFyr(collection.getDocumentFinanceYear());
