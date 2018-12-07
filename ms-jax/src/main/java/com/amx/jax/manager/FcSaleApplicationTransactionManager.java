@@ -154,6 +154,10 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 	@Autowired
 	FxOrderPaymentManager  orderPayMang;
 	
+	@Autowired
+	FcSaleOrderTransactionManager trnxManager;
+	
+	
 	/**
 	 * 
 	 */
@@ -318,8 +322,11 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 			throw new GlobalException("Enter valid amount ",JaxError.ZERO_NOT_ALLOWED);
 		}
 		
+
 		
-		AuthenticationLimitCheckView authLimit = authentication.getFxOrderTxnLimit();
+		trnxManager.checkFCSaleTrnxLimit(exchbreakUpRate,fcSalerequestModel.getForeignCurrencyId(),fcSalerequestModel.getForeignAmount(),localCurrencyId,customerId);
+		
+		/*AuthenticationLimitCheckView authLimit = authentication.getFxOrderTxnLimit();
 		if(authLimit!=null){
 		 fcTrnxLimitPerDay = authLimit.getAuthLimit();
 		 FxOrderTranxLimitView trnxViewModel = trnxLimitRepos.getFxTransactionLimit(customerId);
@@ -333,7 +340,7 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 		 }
 		}else{
 			throw new GlobalException("FX Order limit setup is not defined",JaxError.FC_SALE_DAY_LIMIT_SETUP_NOT_DIFINED);
-		}
+		}*/
 		receiptPaymentAppl.setDenominationType(fcSalerequestModel.getCurrencyDenominationType());
 		receiptPaymentAppl.setTransactionType(ConstantDocument.S);
 		receiptPaymentAppl.setIsActive(ConstantDocument.Yes);
@@ -847,11 +854,12 @@ public List<FxOrderTransactionHistroyDto> getMultipleTransactionHistroy(List<FxO
     			  .append("Contact ").append(shippingAddressDto.getMobile()==null?"":shippingAddressDto.getMobile());
     		 
     		 }
-		 //}
 		}
 		if(sb!=null){
 			address = sb.toString();
 		}
 		return address;
 	}
+	
+	
 }

@@ -183,7 +183,7 @@ public class FcSaleApplicationDao {
 	public void updatePaygDetails(List<ReceiptPaymentApp> listOfRecAppl,PaymentResponseDto paymentResponse){
 		try{
 			
-			if(!listOfRecAppl.isEmpty()){
+			if(listOfRecAppl !=null && !listOfRecAppl.isEmpty()){
 				for(ReceiptPaymentApp appl :listOfRecAppl){
 					appl.setIsActive(ConstantDocument.Deleted);
 					appl.setApplicationStatus(null);
