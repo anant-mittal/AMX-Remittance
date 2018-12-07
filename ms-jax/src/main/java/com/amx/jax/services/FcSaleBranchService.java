@@ -225,7 +225,7 @@ public class FcSaleBranchService extends AbstractService{
 			
 			OrderManagementView ordDelieryAddress = orderManagementView.get(0);
 			if(ordDelieryAddress.getDeliveryDetailsId() != null) {
-				String address = fcSaleApplicationTransactionManager.getDeliveryAddress(ordDelieryAddress.getDeliveryDetailsId());
+				String address = fcSaleApplicationTransactionManager.getDeliveryAddress(ordDelieryAddress.getCustomerId(),ordDelieryAddress.getDeliveryDetailsId());
 				deliveryAddress = address;
 			}
 

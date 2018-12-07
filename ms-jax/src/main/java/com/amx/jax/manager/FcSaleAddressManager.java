@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -29,7 +29,6 @@ import com.amx.jax.dbmodel.ViewAreaModel;
 import com.amx.jax.dbmodel.ViewCity;
 import com.amx.jax.dbmodel.ViewDistrict;
 import com.amx.jax.dbmodel.ViewState;
-import com.amx.jax.dbmodel.fx.FxDeliveryDetailsModel;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.AbstractModel;
@@ -98,8 +97,15 @@ public class FcSaleAddressManager extends AbstractModel {
 	}
 	
 	public ShippingAddressDto fetchShippingAddress(BigDecimal customerId, BigDecimal shippingAddressId) {
+		logger.debug("customerId :"+customerId+"\t shippingAddressId :"+shippingAddressId);
 		List<ShippingAddressDto> shippingAddresses = fetchShippingAddress(customerId);
-		return shippingAddresses.stream().filter(i -> i.getAddressId().equals(shippingAddressId)).findFirst().get();
+		ShippingAddressDto shippingAddressDto = null;
+		
+		 Optional<ShippingAddressDto> shippingAddressDtoOptional = shippingAddresses.stream().filter(i -> i.getAddressId().equals(shippingAddressId)).findFirst();
+		 if(shippingAddressDtoOptional.isPresent()){
+			 shippingAddressDto =  shippingAddressDtoOptional.get();
+		 }
+		 return shippingAddressDto;
 	}
 	/** Fetching shipping address **/
 
@@ -114,7 +120,7 @@ public class FcSaleAddressManager extends AbstractModel {
 		List<ShippingAddressDetail> shippingAddressList = shippingAddressDao
 				.findByFsCustomerAndActiveStatus(new Customer(customerId), ConstantDocument.Yes);
 
-		if (!contactList.isEmpty()) {
+		if (contactList!=null && !contactList.isEmpty()) {
 			ShippingAddressDto shippingAddressDto = new ShippingAddressDto();
 			shippingAddressDto.setAddressId(contactList.get(0).getContactDetailId());
 			if (!customerList.isEmpty()) {
@@ -172,12 +178,12 @@ public class FcSaleAddressManager extends AbstractModel {
 
 		/** Adding shipping Address **/
 
-		if (!shippingAddressList.isEmpty()) {
+		if (shippingAddressList !=null && !shippingAddressList.isEmpty()) {
 			for (ShippingAddressDetail shippingAddressDetail : shippingAddressList) {
 				ShippingAddressDto shippingAddressDto = new ShippingAddressDto();
 				shippingAddressDto.setAddressId(shippingAddressDetail.getShippingAddressDetailId());
 
-				if (!customerList.isEmpty()) {
+				if (customerList!=null && !customerList.isEmpty()) {
 					shippingAddressDto.setFirstName(customerList.get(0).getFirstName());
 					shippingAddressDto.setMiddleName(customerList.get(0).getMiddleName());
 					shippingAddressDto.setLastName(customerList.get(0).getLastName());
@@ -407,7 +413,7 @@ public class FcSaleAddressManager extends AbstractModel {
 	
 
 	public String getLocalDeliveryAddress(ShippingAddressDto shippingAddressDto){
-		logger.info("getDeliveryAddress  in FC Sale Address Manager :"+shippingAddressDto.getAddressId());
+		logger.debug("getDeliveryAddress  in FC Sale Address Manager :"+shippingAddressDto.getAddressId());
 		String address ="";
 		StringBuffer sb = new StringBuffer();
 		String concat =",";

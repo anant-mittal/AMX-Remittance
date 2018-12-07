@@ -145,6 +145,9 @@ public class FxOrderReportManager {
 
 	@Autowired
 	ICurrencyDao currencyDao;
+	
+	@Autowired
+	FcSaleAddressManager addressManager;
 
 
 	/**
@@ -236,13 +239,14 @@ public class FxOrderReportManager {
 			}
 			createdDate = fxOrderTrnxList.get(0).getCreatedDate();
 
-			if(fxDelDetailModel!=null){
-				FxDeliveryReportDetailDto delDto = convertFxDeliveryDto(fxDelDetailModel);
-				reportModel.setDeliveryDetailReport(delDto);
-				ShippingAddressDetail shippAddDetails = shippingAddressDao.findOne(fxDelDetailModel.getShippingAddressId());
-				ShippingAddressDto shippingAddressDto = getShippingaddressDetails(shippAddDetails);
-				reportModel.setShippingAddressdto(shippingAddressDto);
-			}
+
+	    	if(fxDelDetailModel!=null){
+	    		FxDeliveryReportDetailDto delDto = convertFxDeliveryDto(fxDelDetailModel);
+	    		reportModel.setDeliveryDetailReport(delDto);
+	    		ShippingAddressDto shippingAddressDto = addressManager.fetchShippingAddress(customerId, fxDelDetailModel.getShippingAddressId());
+	    		reportModel.setShippingAddressdto(shippingAddressDto);
+	    	}
+	    	
 
 			List<ViewCompanyDetails> companyMaster = iCompanyDao.getCompanyDetailsByCompanyId(languageId, companyId);
 
@@ -321,7 +325,7 @@ public class FxOrderReportManager {
 
 
 			for(CollectionPaymentDetailsViewModel collPaymentDetailsView: collectionPmtDetailList){
-				if(collPaymentDetailsView.getCollectionMode().equalsIgnoreCase(ConstantDocument.VOCHERCODE)){
+				if(collPaymentDetailsView.getCollectionMode() !=null && collPaymentDetailsView.getCollectionMode().equalsIgnoreCase(ConstantDocument.VOCHERCODE)){
 					lessLoyaltyEncash = collPaymentDetailsView.getCollectAmount();
 					amountPayable=amountPayable.add(collPaymentDetailsView.getCollectAmount());
 				}else{
@@ -468,7 +472,10 @@ public class FxOrderReportManager {
 	public ShippingAddressDto getShippingaddressDetails(ShippingAddressDetail shippingAddressDetail){
 		ShippingAddressDto shippingAddressDto = new ShippingAddressDto();
 		BigDecimal countryId = meta.getCountryId();
-		BigDecimal customerId = shippingAddressDetail.getFsCustomer().getCustomerId()==null?meta.getCustomerId():shippingAddressDetail.getFsCustomer().getCustomerId();
+		BigDecimal customerId  = meta.getCustomerId();
+		if(shippingAddressDetail!=null){
+		 customerId = shippingAddressDetail.getFsCustomer().getCustomerId();
+		}
 		BigDecimal companyId = meta.getCompanyId();
 		List<Customer> customerList = customerDao.getCustomerByCustomerId(countryId, companyId, customerId);
 		if (shippingAddressDetail!=null) {
@@ -526,8 +533,9 @@ public class FxOrderReportManager {
 				//throw new GlobalException("Country not found  :" ,JaxError.COUNTRY_NOT_FOUND);
 			}
 		} //end 
+
 		return shippingAddressDto;
-	}
+}
 
 
 
