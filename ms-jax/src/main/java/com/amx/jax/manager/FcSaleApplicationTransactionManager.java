@@ -600,7 +600,8 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 		 FxDeliveryDetailsModel deliveryDetails = new FxDeliveryDetailsModel();
 		 StringBuffer appldocNo=new StringBuffer();
 		 deliveryDetails.setCreatedDate(new Date());
-		 deliveryDetails.setDeliveryDate(requestmodel.getDeliveryDate()==null?new Date():new Date(requestmodel.getDeliveryDate()));
+		deliveryDetails.setDeliveryDate(requestmodel.getDeliveryDate() == null ? new Date()
+				: DateUtil.convertStringToDate(requestmodel.getDeliveryDate()));
 		 deliveryDetails.setDeliveryTimeSlot(requestmodel.getTimeSlot());
 		 deliveryDetails.setDeliveryCharges(getDeliveryChargesFromParameter());
 		 deliveryDetails.setShippingAddressId(requestmodel.getShippingAddressId());
