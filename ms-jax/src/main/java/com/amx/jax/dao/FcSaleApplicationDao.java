@@ -185,7 +185,7 @@ public class FcSaleApplicationDao {
 			
 			if(listOfRecAppl !=null && !listOfRecAppl.isEmpty()){
 				for(ReceiptPaymentApp appl :listOfRecAppl){
-					appl.setIsActive(ConstantDocument.Deleted);
+					//appl.setIsActive(ConstantDocument.Deleted);
 					appl.setApplicationStatus(null);
 					appl.setModifiedDate(new Date());
 					updateCartDetails(appl);
