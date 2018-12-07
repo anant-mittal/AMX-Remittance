@@ -86,7 +86,7 @@ public class FcSaleDeliveryController implements IFxOrderDelivery {
 	@Override
 	@ApiOperation("Send otp to the customer")
 	public AmxApiResponse<BoolRespModel, Object> sendOtp(@RequestParam BigDecimal deliveryDetailSeqId) {
-		BoolRespModel result = fcSaleDeliveryService.sendOtp(deliveryDetailSeqId);
+		BoolRespModel result = fcSaleDeliveryService.sendOtp(deliveryDetailSeqId, true);
 		return AmxApiResponse.build(result);
 	}
 

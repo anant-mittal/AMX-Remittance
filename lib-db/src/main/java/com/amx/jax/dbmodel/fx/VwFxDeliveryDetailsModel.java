@@ -57,6 +57,17 @@ public class VwFxDeliveryDetailsModel implements Serializable {
 
 	@Column(name = "ORDER_STATUS")
 	String orderStatus;
+	
+	@Column(name = "INVENTORY_ID")
+	String inventoryId;
+
+	public String getInventoryId() {
+		return inventoryId;
+	}
+
+	public void setInventoryId(String inventoryId) {
+		this.inventoryId = inventoryId;
+	}
 
 	public BigDecimal getDeleviryDelSeqId() {
 		return deleviryDelSeqId;

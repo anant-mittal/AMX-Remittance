@@ -78,6 +78,7 @@ public class ShippingAddressDto {
 	private AddressTypeDto addressDto;
 	@NotNull(message = "Area code may not be null")
 	private ResourceDTO areaDto;
+	private String deliveryAddress;
 
 	public BigDecimal getCustomerId() {
 		return customerId;
@@ -468,5 +469,13 @@ public class ShippingAddressDto {
 
 	public void setAreaDto(ResourceDTO areaDto) {
 		this.areaDto = areaDto;
+	}
+
+	public String getDeliveryAddress() {
+		return deliveryAddress;
+	}
+
+	public void setDeliveryAddress(String deliveryAddress) {
+		this.deliveryAddress = deliveryAddress;
 	}
 }

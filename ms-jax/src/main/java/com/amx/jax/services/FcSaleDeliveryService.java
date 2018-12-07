@@ -83,7 +83,8 @@ public class FcSaleDeliveryService {
 		ShippingAddressDetail shippingAddress = fcSaleApplicationDao
 				.getShippingAddressById(model.getShippingAddressId());
 		StatusMaster statusMaster = fcSaleApplicationDao.getStatusMaster(model.getOrderStatus());
-		//ShippingAddressDto shippingAddressDto = createShippingAddressDto(shippingAddress);
+		// ShippingAddressDto shippingAddressDto =
+		// createShippingAddressDto(shippingAddress);
 		ShippingAddressDto shippingAddressDto = fcSaleAddressManager.fetchShippingAddress(model.getCustomerId(),
 				model.getShippingAddressId());
 		try {
@@ -156,12 +157,18 @@ public class FcSaleDeliveryService {
 	}
 
 	private FxDeliveryDetailsModel validateFxDeliveryModel(BigDecimal deliveryDetailSeqId) {
+		return validateFxDeliveryModel(deliveryDetailSeqId, true);
+	}
+
+	private FxDeliveryDetailsModel validateFxDeliveryModel(BigDecimal deliveryDetailSeqId, boolean validateEmployee) {
 		FxDeliveryDetailsModel deliveryDetail = fcSaleApplicationDao.getDeliveryDetailModel(deliveryDetailSeqId);
 		if (deliveryDetail == null) {
 			throw new GlobalException("Delivery detail not found", JaxError.FC_CURRENCY_DELIVERY_DETAIL_NOT_FOUND);
 		}
-		if (!deliveryDetail.getDriverEmployeeId().equals(metaData.getEmployeeId())) {
-			throw new GlobalException("Invalid driver employee for this order", JaxError.INVALID_EMPLOYEE);
+		if (validateEmployee) {
+			if (!deliveryDetail.getDriverEmployeeId().equals(metaData.getEmployeeId())) {
+				throw new GlobalException("Invalid driver employee for this order", JaxError.INVALID_EMPLOYEE);
+			}
 		}
 		return deliveryDetail;
 	}
@@ -191,9 +198,9 @@ public class FcSaleDeliveryService {
 	 * @return
 	 * 
 	 */
-	public BoolRespModel sendOtp(BigDecimal deliveryDetailSeqId) {
+	public BoolRespModel sendOtp(BigDecimal deliveryDetailSeqId, boolean validateDriverEmployee) {
 		VwFxDeliveryDetailsModel vwFxDeliveryDetailsModel = validatetDeliveryDetailView(deliveryDetailSeqId);
-		FxDeliveryDetailsModel fxDeliveryDetailsModel = validateFxDeliveryModel(deliveryDetailSeqId);
+		FxDeliveryDetailsModel fxDeliveryDetailsModel = validateFxDeliveryModel(deliveryDetailSeqId, validateDriverEmployee);
 		PersonInfo pinfo = userService.getPersonInfo(vwFxDeliveryDetailsModel.getCustomerId());
 		// generating otp
 		String mOtp = Random.randomNumeric(6);
@@ -235,39 +242,7 @@ public class FcSaleDeliveryService {
 		return new BoolRespModel(true);
 	}
 
-	private ShippingAddressDto createShippingAddressDto(ShippingAddressDetail shippingAddressDetail) {
-		ShippingAddressDto shippingAddressDto = new ShippingAddressDto();
-		if (CollectionUtils.isNotEmpty(shippingAddressDetail.getFsCityMaster().getFsCityMasterDescs())) {
-			ResourceDTO cityDto = new ResourceDTO(shippingAddressDetail.getFsCityMaster().getCityId(),
-					shippingAddressDetail.getFsCityMaster().getFsCityMasterDescs().get(0).getCityName());
-			shippingAddressDto.setCityDto(cityDto);
-		}
-		if (CollectionUtils.isNotEmpty(shippingAddressDetail.getFsStateMaster().getFsStateMasterDescs())) {
-			shippingAddressDto.setLocalContactState(
-					shippingAddressDetail.getFsStateMaster().getFsStateMasterDescs().get(0).getStateName());
-			ResourceDTO stateDto = new ResourceDTO(shippingAddressDetail.getFsStateMaster().getStateId(),
-					shippingAddressDetail.getFsStateMaster().getFsStateMasterDescs().get(0).getStateName());
-			shippingAddressDto.setStateDto(stateDto);
-
-		}
-		if (CollectionUtils.isNotEmpty(shippingAddressDetail.getFsDistrictMaster().getFsDistrictMasterDescs())) {
-			ResourceDTO districtDto = new ResourceDTO(shippingAddressDetail.getFsDistrictMaster().getDistrictId(),
-					shippingAddressDetail.getFsDistrictMaster().getFsDistrictMasterDescs().get(0).getDistrict());
-			shippingAddressDto.setDistrictDto(districtDto);
-
-		}
-		if (CollectionUtils.isNotEmpty(shippingAddressDetail.getFsCountryMaster().getFsCountryMasterDescs())) {
-			ResourceDTO districtDto = new ResourceDTO(shippingAddressDetail.getFsCountryMaster().getCountryId(),
-					shippingAddressDetail.getFsCountryMaster().getFsCountryMasterDescs().get(0).getCountryName());
-			shippingAddressDto.setCountryDto(districtDto);
-		}
-		try {
-			BeanUtils.copyProperties(shippingAddressDto, shippingAddressDetail);
-		} catch (Exception e) {
-		}
-		return shippingAddressDto;
-	}
-
+	
 	public List<ResourceDTO> listDeliveryRemark() {
 		List<FxDeliveryRemark> delRemarks = fcSaleApplicationDao.listDeliveryRemark();
 		return delRemarks.stream().map(remark -> {

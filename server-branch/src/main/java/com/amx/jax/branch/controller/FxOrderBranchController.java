@@ -89,7 +89,7 @@ public class FxOrderBranchController {
 			HttpServletResponse response) {
 
 		duplicate = ArgUtil.parseAsBoolean(duplicate, false);
-
+		
 		AmxApiResponse<FxOrderReportResponseDto, Object> wrapper = fxOrderBranchClient.printOrderSave(fcSaleBranchDispatchRequest);
 
 		if (File.Type.PDF.equals(ext)) {
@@ -143,11 +143,26 @@ public class FxOrderBranchController {
 		return fxOrderBranchClient.assignDriver(orderNumber, orderYear, driverId);
 	}
 	
-//	@RequestMapping(value = "/api/fxo/order/dispatch",  method = { RequestMethod.POST })
-//	public AmxApiResponse<BoolRespModel,Object> dispatchOrder(@RequestBody FcSaleBranchDispatchRequest fcSaleBranchDispatchRequest){
-//		return fxOrderBranchClient.dispatchOrder(fcSaleBranchDispatchRequest);
-//	}
+	@RequestMapping(value = "/api/fxo/order/dispatch",  method = { RequestMethod.POST })
+	public AmxApiResponse<BoolRespModel,Object> dispatchOrder(
+			@RequestParam(value = "orderNumber", required = true) BigDecimal orderNumber,
+			@RequestParam(value = "orderYear", required = true) BigDecimal orderYear){
+		return fxOrderBranchClient.dispatchOrder(orderNumber, orderYear);
+	}
 	
+	@RequestMapping(value = "/api/fxo/order/acknowledge/return",  method = { RequestMethod.POST })
+	public AmxApiResponse<BoolRespModel,Object> acknowledgeReturn(
+			@RequestParam(value = "orderNumber", required = true) BigDecimal orderNumber,
+			@RequestParam(value = "orderYear", required = true) BigDecimal orderYear) {
+		return fxOrderBranchClient.returnAcknowledge(orderNumber, orderYear);
+	}
+	
+	@RequestMapping(value = "/api/fxo/order/acknowledge/cancel",  method = { RequestMethod.POST })
+	public AmxApiResponse<BoolRespModel,Object> acknowledgeCancel(
+			@RequestParam(value = "orderNumber", required = true) BigDecimal orderNumber,
+			@RequestParam(value = "orderYear", required = true) BigDecimal orderYear) {
+		return fxOrderBranchClient.acceptCancellation(orderNumber, orderYear);
+	}
 	
 	
 	
