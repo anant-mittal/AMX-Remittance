@@ -33,6 +33,7 @@ public interface IFxBranchOrderService extends IJaxService {
 		public static final String FC_ACKNOWLEDGE_DRIVE = PREFIX + "/acknowledge-drive/";
 		public static final String FC_RETURN_ACKNOWLEDGE = PREFIX + "/return-acknowledge/";
 		public static final String FC_ACCEPT_CANCELLATION = PREFIX + "/accept-cancellation/";
+		public static final String FC_REPRINT_ORDER = PREFIX + "/reprint-order/";
 	}
 
 	public static class Params {
@@ -89,4 +90,8 @@ public interface IFxBranchOrderService extends IJaxService {
 	@ApiJaxStatus({ JaxError.NULL_APPLICATION_COUNTRY_ID,JaxError.NULL_ORDER_NUBMER,JaxError.NULL_ORDER_YEAR,JaxError.NULL_EMPLOYEE_ID,JaxError.SAVE_FAILED,JaxError.INVALID_EMPLOYEE
 		,JaxError.ORDER_IS_NOT_LOCK})
 	AmxApiResponse<BoolRespModel,Object> acceptCancellation(BigDecimal orderNumber,BigDecimal orderYear);
+	
+	@ApiJaxStatus({ JaxError.NULL_APPLICATION_COUNTRY_ID,JaxError.NULL_ORDER_NUBMER,JaxError.NULL_ORDER_YEAR,JaxError.NULL_EMPLOYEE_ID,JaxError.UNABLE_TO_PRINT_ORDER,JaxError.INVALID_CUSTOMER
+		,JaxError.INVALID_COLLECTION_DOCUMENT_NO,JaxError.NO_RECORD_FOUND,JaxError.INVALID_COMPANY_ID,JaxError.PAYMENT_DETAILS_NOT_FOUND,JaxError.NO_RECORD_FOUND})
+	AmxApiResponse<FxOrderReportResponseDto,Object> reprintOrder(BigDecimal orderNumber,BigDecimal orderYear);
 }

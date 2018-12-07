@@ -203,5 +203,17 @@ public class FcSaleBranchOrderController implements IFxBranchOrderService {
 		BoolRespModel result = fcSaleBranch.acceptCancellation(countryId, orderNumber, orderYear, employeeId);
 		return AmxApiResponse.build(result);
 	}
+	
+	/**
+	 * To get the re-print document order 
+	 * 
+	 */
+	@RequestMapping(value = Path.FC_REPRINT_ORDER , method = RequestMethod.GET)
+	@Override
+	public AmxApiResponse<FxOrderReportResponseDto,Object> reprintOrder(@RequestParam(value = "orderNumber", required = true) BigDecimal orderNumber,@RequestParam(value = "orderYear", required = true) BigDecimal orderYear){
+		BigDecimal countryId = metaData.getCountryId();
+		BigDecimal employeeId = metaData.getEmployeeId();
+		return fcSaleBranch.reprintOrder(countryId, orderNumber, orderYear, employeeId);
+	}
 
 }

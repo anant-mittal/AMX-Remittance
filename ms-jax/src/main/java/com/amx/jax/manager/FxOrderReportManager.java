@@ -74,32 +74,32 @@ import com.amx.jax.util.RoundUtil;
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Component
 public class FxOrderReportManager {
-	
+
 	private Logger logger = Logger.getLogger(FxOrderReportManager.class);
-	
+
 	@Autowired
 	MetaData metaData;
-	
+
 	@Autowired
 	FxOrderTransactionRespository fxTransactionHistroyDao;
-	
+
 	@Autowired
 	FcSaleApplicationTransactionManager applTrnxManager;
-	
+
 	@Autowired
 	FxDeliveryDetailsRepository deliveryDetailsRepos;
-	
+
 	@Autowired
 	PaygDetailsRepository payGDeatilsRepos;
-	
+
 	@Autowired
 	IShippingAddressRepository shippingAddressDao;
-	
-	
+
+
 	@Autowired
 	ICustomerRepository customerDao;
-	
-	
+
+
 	@Autowired
 	IContactDetailDao contactDao;
 
@@ -108,45 +108,45 @@ public class FxOrderReportManager {
 
 	@Autowired
 	private MetaData meta;
-	
+
 	@Autowired
 	IViewCityDao cityDao;
 
 	@Autowired
 	IViewStateDao stateDao;
-	
+
 	@Autowired
 	IViewDistrictDAO districtDao;
-	
+
 	@Autowired
 	IViewArea areaDao;
-	
+
 	@Autowired
 	ReceiptPaymentAppRepository rcptPaymentAppl;
-	
+
 	@Autowired
 	LoyaltyInsuranceProDao loyaltyInsuranceProDao;
-	
+
 	@Autowired
 	PaymentModeRepository payModeRepositoy;
-	
+
 	@Autowired
 	ICollectionDetailRepository collDetailRepos;
-	
+
 	@Autowired
 	ICompanyDAO iCompanyDao;
-	
-	
+
+
 	@Autowired
 	ICollectionDetailViewDao collectionDetailViewDao;
-	
+
 	@Autowired
 	ICollectionPaymentDetailsViewDao collectionPaymentDetailsViewDao;
-	
+
 	@Autowired
 	ICurrencyDao currencyDao;
 
-	
+
 	/**
 	 * 
 	 * @param collNo
@@ -171,82 +171,81 @@ public class FxOrderReportManager {
 		String phoneNo ="";
 		BigDecimal loyaltyPoints = BigDecimal.ZERO;
 		String email = "";
-		
-		
-		
-		
+		FxDeliveryDetailsModel fxDelDetailModel = null;
+		PaygDetailsModel pgDetailsModel = null;
+
 		List<FxOrderTransactionModel> fxOrderTrnxList =  fxTransactionHistroyDao.getFxOrderTrnxListByCollectionDocNumber(customerId,collNo,collFyr);
-		
-	    if(fxOrderTrnxList != null && !fxOrderTrnxList.isEmpty()){
-	    	
-	    	if(JaxUtil.isNullZeroBigDecimalCheck(customerId) && customerId.compareTo(fxOrderTrnxList.get(0).getCustomerId())!=0){
-	    		logger.error("custoemr not found meta data:"+customerId+"\t details :"+fxOrderTrnxList.get(0).getCustomerId());
-	    		throw new GlobalException("customer not found", JaxError.INVALID_CUSTOMER);
-	    	 }
-	    	
-	    	List<Customer> customerList = customerDao.getCustomerByCustomerId(countryId, companyId, customerId);
+
+		if(fxOrderTrnxList != null && !fxOrderTrnxList.isEmpty()){
+
+			if(JaxUtil.isNullZeroBigDecimalCheck(customerId) && customerId.compareTo(fxOrderTrnxList.get(0).getCustomerId())!=0){
+				logger.error("custoemr not found meta data:"+customerId+"\t details :"+fxOrderTrnxList.get(0).getCustomerId());
+				throw new GlobalException("customer not found", JaxError.INVALID_CUSTOMER);
+			}
+
+			List<Customer> customerList = customerDao.getCustomerByCustomerId(countryId, companyId, customerId);
 			if(customerList != null && !customerList.isEmpty()){
 				reportModel.setIdExpiryDate(DateUtil.todaysDateWithDDMMYY(customerList.get(0).getIdentityExpiredDate(),"0"));
 				reportModel.setCivilId(customerList.get(0).getIdentityInt());
 				customerReferenceId = customerList.get(0).getCustomerReference();
 				phoneNo =  customerList.get(0).getMobile();
 				loyaltyPoints = customerList.get(0).getLoyaltyPoints()==null?BigDecimal.ZERO:customerList.get(0).getLoyaltyPoints();
-				email =customerList.get(0).getEmail();
+				email = customerList.get(0).getEmail();
 				reportModel.setLoyaltyPoints(loyaltyPoints);
 				reportModel.setEmail(email);
 			}else{
 				logger.error("customer not found :"+customerId);
 				throw new GlobalException("customer not found", JaxError.INVALID_CUSTOMER);
 			}
-	    	
-	    	List<FxOrderTransactionHistroyDto> fxOrderTrnxListDto = applTrnxManager.convertFxHistDto(fxOrderTrnxList);
-	    	List<FxOrderTransactionHistroyDto> finalList = new ArrayList<>();
-	    	if(fxOrderTrnxListDto !=null && !fxOrderTrnxListDto.isEmpty()){
-	    		finalList = applTrnxManager.getMultipleTransactionHistroy(fxOrderTrnxListDto);
-	    		
-	    	}else{
-	    		logger.error("fxOrderTrnxListDto trnx list not found :"+customerId+"\t Colle : "+collNo+"\t Coll fyr :"+collFyr);
-		    	throw new GlobalException("customer not found", JaxError.NO_RECORD_FOUND);
-	    	}
-	    	
-	    	reportModel.setFxOrderTrnxList(finalList);
-	    	reportModel.setNoOfTransaction(new BigDecimal(fxOrderTrnxList.size()));
-	    	BigDecimal deliveryDetSeqId =fxOrderTrnxList.get(0).getDeliveryDetSeqId() ;
-	    	BigDecimal paygSeqId        = fxOrderTrnxList.get(0).getPagDetSeqId();
-	    	if(fxOrderTrnxList.get(0).getCollectionDocumentNo()!=null && fxOrderTrnxList.get(0).getCollectionDocumentFinYear()!=null){
-	    		collectionDocfyear = fxOrderTrnxList.get(0).getCollectionDocumentFinYear();
-	    		collectionDocNo = fxOrderTrnxList.get(0).getCollectionDocumentNo();
-	    		collectionDocCode = fxOrderTrnxList.get(0).getCollectionDocumentCode();
-	    		localCurrency = fxOrderTrnxList.get(0).getLocalCurrencyId();
-	    		localCurrQuoteName = fxOrderTrnxList.get(0).getLocalCurrQuoteName(); 
-	    		receiptNo =  fxOrderTrnxList.get(0).getCollectionDocumentFinYear().toString()+"/"+fxOrderTrnxList.get(0).getCollectionDocumentNo().toString();
-	    		reportModel.setDeliveryDate(fxOrderTrnxList.get(0).getDeliveryDate()==null?"":fxOrderTrnxList.get(0).getDeliveryDate());
-	    		reportModel.setDeliveryTime(fxOrderTrnxList.get(0).getDeliveryTime()==null?"":fxOrderTrnxList.get(0).getDeliveryTime());
-	    	}
-	    	
-	    	int decimalPerCurrency =0;
+
+			List<FxOrderTransactionHistroyDto> fxOrderTrnxListDto = applTrnxManager.convertFxHistDto(fxOrderTrnxList);
+			List<FxOrderTransactionHistroyDto> finalList = new ArrayList<>();
+			if(fxOrderTrnxListDto !=null && !fxOrderTrnxListDto.isEmpty()){
+				finalList = applTrnxManager.getMultipleTransactionHistroy(fxOrderTrnxListDto);
+			}else{
+				logger.error("fxOrderTrnxListDto trnx list not found :"+customerId+"\t Colle : "+collNo+"\t Coll fyr :"+collFyr);
+				throw new GlobalException("customer not found", JaxError.NO_RECORD_FOUND);
+			}
+
+			reportModel.setFxOrderTrnxList(finalList);
+			reportModel.setNoOfTransaction(new BigDecimal(fxOrderTrnxList.size()));
+			BigDecimal deliveryDetSeqId =fxOrderTrnxList.get(0).getDeliveryDetSeqId() ;
+			BigDecimal paygSeqId        = fxOrderTrnxList.get(0).getPagDetSeqId();
+			if(fxOrderTrnxList.get(0).getCollectionDocumentNo()!=null && fxOrderTrnxList.get(0).getCollectionDocumentFinYear()!=null){
+				collectionDocfyear = fxOrderTrnxList.get(0).getCollectionDocumentFinYear();
+				collectionDocNo = fxOrderTrnxList.get(0).getCollectionDocumentNo();
+				collectionDocCode = fxOrderTrnxList.get(0).getCollectionDocumentCode();
+				localCurrency = fxOrderTrnxList.get(0).getLocalCurrencyId();
+				localCurrQuoteName = fxOrderTrnxList.get(0).getLocalCurrQuoteName(); 
+				receiptNo =  fxOrderTrnxList.get(0).getCollectionDocumentFinYear().toString()+"/"+fxOrderTrnxList.get(0).getCollectionDocumentNo().toString();
+				reportModel.setDeliveryDate(fxOrderTrnxList.get(0).getDeliveryDate()==null?"":fxOrderTrnxList.get(0).getDeliveryDate());
+				reportModel.setDeliveryTime(fxOrderTrnxList.get(0).getDeliveryTime()==null?"":fxOrderTrnxList.get(0).getDeliveryTime());
+			}
+
+			int decimalPerCurrency =0;
 			if(localCurrency!=null){
-			 decimalPerCurrency = currencyDao.getCurrencyList(localCurrency).get(0).getDecinalNumber().intValue();
+				decimalPerCurrency = currencyDao.getCurrencyList(localCurrency).get(0).getDecinalNumber().intValue();
 			}
 			reportModel.setDeliveryCharges(RoundUtil.roundBigDecimal(fxOrderTrnxList.get(0).getDeliveryCharges(),decimalPerCurrency));
-	    	customerName=fxOrderTrnxList.get(0).getCustomerName(); 
-	    	FxDeliveryDetailsModel fxDelDetailModel = deliveryDetailsRepos.findOne(deliveryDetSeqId);
-	    	PaygDetailsModel pgDetailsModel = payGDeatilsRepos.findOne(paygSeqId);
-	    	createdDate = fxOrderTrnxList.get(0).getCreatedDate();
-	    	
-	    	if(fxDelDetailModel!=null){
-	    		FxDeliveryReportDetailDto delDto = convertFxDeliveryDto(fxDelDetailModel);
-	    		reportModel.setDeliveryDetailReport(delDto);
-	    		ShippingAddressDetail shippAddDetails = shippingAddressDao.findOne(fxDelDetailModel.getShippingAddressId());
-	    		ShippingAddressDto shippingAddressDto = getShippingaddressDetails(shippAddDetails);
-	    		reportModel.setShippingAddressdto(shippingAddressDto);
-	    	}
-	    	
-	    	
-	    
-			
+			customerName=fxOrderTrnxList.get(0).getCustomerName();
+			if(deliveryDetSeqId != null) {
+				fxDelDetailModel = deliveryDetailsRepos.findOne(deliveryDetSeqId);
+			}
+			if(paygSeqId != null) {
+				pgDetailsModel = payGDeatilsRepos.findOne(paygSeqId);
+			}
+			createdDate = fxOrderTrnxList.get(0).getCreatedDate();
+
+			if(fxDelDetailModel!=null){
+				FxDeliveryReportDetailDto delDto = convertFxDeliveryDto(fxDelDetailModel);
+				reportModel.setDeliveryDetailReport(delDto);
+				ShippingAddressDetail shippAddDetails = shippingAddressDao.findOne(fxDelDetailModel.getShippingAddressId());
+				ShippingAddressDto shippingAddressDto = getShippingaddressDetails(shippAddDetails);
+				reportModel.setShippingAddressdto(shippingAddressDto);
+			}
+
 			List<ViewCompanyDetails> companyMaster = iCompanyDao.getCompanyDetailsByCompanyId(languageId, companyId);
-			
+
 			StringBuffer engCompanyInfo = null;
 			StringBuffer arabicCompanyInfo = null;
 			if (companyMaster !=null && !companyMaster .isEmpty()) {
@@ -290,43 +289,37 @@ public class FxOrderReportManager {
 				logger.error("companyMaster not found :");
 				throw new GlobalException("customer not found", JaxError.INVALID_COMPANY_ID);
 			}
-			
-		
-			
-			
+
 			List<CollectionDetailViewModel> collectionDetailList1= collectionDetailViewDao.getCollectionDetailView(companyId,collectionDocNo,collectionDocfyear,collectionDocCode);
-			
+
 			if(collectionDetailList1!= null & !collectionDetailList1.isEmpty()){
-			CollectionDetailViewModel collectionDetailView = collectionDetailList1.get(0);
+				CollectionDetailViewModel collectionDetailView = collectionDetailList1.get(0);
 
-			if(collectionDetailView.getNetAmount()!=null && localCurrency!=null){
-				BigDecimal collectNetAmount=RoundUtil.roundBigDecimal((collectionDetailView.getNetAmount()),decimalPerCurrency);
-				reportModel.setNetAmount(localCurrQuoteName+"     ******"+collectNetAmount);
-			}
+				if(collectionDetailView.getNetAmount()!=null && localCurrency!=null){
+					BigDecimal collectNetAmount=RoundUtil.roundBigDecimal((collectionDetailView.getNetAmount()),decimalPerCurrency);
+					reportModel.setNetAmount(localCurrQuoteName+"     ******"+collectNetAmount);
+				}
 
-			if(collectionDetailView.getPaidAmount()!=null && localCurrency!=null){
-				BigDecimal collectPaidAmount=RoundUtil.roundBigDecimal((collectionDetailView.getPaidAmount()),decimalPerCurrency);
-				reportModel.setPaidAmount(localCurrQuoteName+"     ******"+collectPaidAmount);
-			}
+				if(collectionDetailView.getPaidAmount()!=null && localCurrency!=null){
+					BigDecimal collectPaidAmount=RoundUtil.roundBigDecimal((collectionDetailView.getPaidAmount()),decimalPerCurrency);
+					reportModel.setPaidAmount(localCurrQuoteName+"     ******"+collectPaidAmount);
+				}
 
-			if(collectionDetailView.getRefundedAmount()!=null && localCurrency!=null){
-				BigDecimal collectRefundAmount=RoundUtil.roundBigDecimal((collectionDetailView.getRefundedAmount()),decimalPerCurrency);
-				reportModel.setRefundedAmount(localCurrQuoteName+"     ******"+collectRefundAmount);
-			}
+				if(collectionDetailView.getRefundedAmount()!=null && localCurrency!=null){
+					BigDecimal collectRefundAmount=RoundUtil.roundBigDecimal((collectionDetailView.getRefundedAmount()),decimalPerCurrency);
+					reportModel.setRefundedAmount(localCurrQuoteName+"     ******"+collectRefundAmount);
+				}
 			}else{
 				logger.error("collectionDetailList1 not found :");
 				throw new GlobalException("Payment details not found", JaxError.PAYMENT_DETAILS_NOT_FOUND);
 			}
 
-			
-		
-			
 			//addedd new column
 			BigDecimal lessLoyaltyEncash = BigDecimal.ZERO;
 			BigDecimal amountPayable = BigDecimal.ZERO;
 			List<CollectionPaymentDetailsViewModel> collectionPmtDetailList= collectionPaymentDetailsViewDao.getCollectedPaymentDetails(companyId,collectionDocNo,collectionDocfyear,collectionDocCode);
-					
-				
+
+
 			for(CollectionPaymentDetailsViewModel collPaymentDetailsView: collectionPmtDetailList){
 				if(collPaymentDetailsView.getCollectionMode().equalsIgnoreCase(ConstantDocument.VOCHERCODE)){
 					lessLoyaltyEncash = collPaymentDetailsView.getCollectAmount();
@@ -338,40 +331,34 @@ public class FxOrderReportManager {
 				reportModel.setKnetReceiptDateTime(collPaymentDetailsView.getKnetReceiptDatenTime());
 				reportModel.setCollectionMode(collPaymentDetailsView.getCollectionModeDesc());
 				reportModel.setApprovalNo(collPaymentDetailsView.getApprovalNo());
-				
 			}
-			
-			
+
+
 			if(pgDetailsModel!=null){
-	    		PaygDetailsDto pgdto = convertFxPgDetailsDto(pgDetailsModel);
-	    		pgdto.setPaymentMode(reportModel.getPaymentMode());
-	    		pgdto.setKnetReceiptDateTime(reportModel.getKnetReceiptDateTime());
-	    		reportModel.setPayg(pgdto);
-	    	}
-			
-			
+				PaygDetailsDto pgdto = convertFxPgDetailsDto(pgDetailsModel);
+				pgdto.setPaymentMode(reportModel.getPaymentMode());
+				pgdto.setKnetReceiptDateTime(reportModel.getKnetReceiptDateTime());
+				reportModel.setPayg(pgdto);
+			}
+
 			if(amountPayable!=null && localCurrQuoteName!=null && localCurrency!=null){
 				BigDecimal payable=RoundUtil.roundBigDecimal((amountPayable),currencyDao.getCurrencyList(localCurrency).get(0).getDecinalNumber().intValue());
 				reportModel.setAmountPayable(localCurrQuoteName+"     ******"+payable);
 			}
 
+			reportModel.setReceiptNo(receiptNo);
+			reportModel.setCustomerName(customerName);
+			reportModel.setPhoneNumber(phoneNo);
+			reportModel.setLocation(fxOrderTrnxList.get(0).getBranchDesc());
+			reportModel.setLocalCurrency(localCurrQuoteName);
 			
-			
-	    	
-	    	reportModel.setReceiptNo(receiptNo);
-	    	reportModel.setCustomerName(customerName);
-	    	reportModel.setPhoneNumber(phoneNo);
-	    	reportModel.setLocation(fxOrderTrnxList.get(0).getBranchDesc());
-	    	reportModel.setLocalCurrency(localCurrQuoteName);
-	    }else{
-	    	logger.error("trnx list not found :"+customerId+"\t Colle : "+collNo+"\t Coll fyr :"+collFyr);
-	    	throw new GlobalException("customer not found", JaxError.NO_RECORD_FOUND);
-	    }
-	    
-	    
+		}else{
+			logger.error("trnx list not found :"+customerId+"\t Colle : "+collNo+"\t Coll fyr :"+collFyr);
+			throw new GlobalException("customer not found", JaxError.NO_RECORD_FOUND);
+		}
 
 		Map<String, Object> loyaltiPoints = loyaltyInsuranceProDao.loyaltyInsuranceProcedure(customerReferenceId, createdDate);
-		
+
 		String prLtyStr1 =loyaltiPoints.get("P_LTY_STR1")==null?"":loyaltiPoints.get("P_LTY_STR1").toString();
 		String prLtyStr2 =loyaltiPoints.get("P_LTY_STR2")==null?"":loyaltiPoints.get("P_LTY_STR2").toString();
 		String prInsStr1 =loyaltiPoints.get("P_INS_STR1")==null?"":loyaltiPoints.get("P_INS_STR1").toString();
@@ -387,7 +374,7 @@ public class FxOrderReportManager {
 			reportModel.setLoyalityPointExpiring(prLtyStr2);
 		}
 
-		 if(!prInsStr1.trim().equals("")){
+		if(!prInsStr1.trim().equals("")){
 			reportModel.setInsurence1(prInsStr1);
 		}else if(!prInsStrAr1.trim().equals("")){
 			reportModel.setInsurence1(prInsStrAr1);
@@ -399,14 +386,14 @@ public class FxOrderReportManager {
 		}else if(!prInsStrAr2.trim().equals("")){
 			reportModel.setInsurence2(prInsStrAr2);
 		}
-	    
+
 		return reportModel; 
 	}
-	
+
 	/*
 	 * To get Transaction status: 
 	 */
-	
+
 	public FxOrderTransactionStatusResponseDto  getTransactionStatus(BigDecimal paymentSeqId){
 		FxOrderTransactionStatusResponseDto responseModel = new FxOrderTransactionStatusResponseDto();
 		FxOrderTransactionHistroyDto histroyDto = new FxOrderTransactionHistroyDto();
@@ -417,10 +404,10 @@ public class FxOrderReportManager {
 		BigDecimal deliveryCharges =BigDecimal.ZERO;
 		List<ReceiptPaymentApp> applReceipt = rcptPaymentAppl.getApplicationByPagdetailSeqIAndcustomerId(custoemrId, paymentSeqId);
 		if(JaxUtil.isNullZeroBigDecimalCheck(paymentSeqId)){
-		 pgDetailsModel = payGDeatilsRepos.findOne(paymentSeqId);
+			pgDetailsModel = payGDeatilsRepos.findOne(paymentSeqId);
 		}
 		if(applReceipt != null && !applReceipt .isEmpty() && applReceipt.get(0).getDeliveryDetSeqId()!=null){
-		fxDelDetailModel = deliveryDetailsRepos.findOne(applReceipt.get(0).getDeliveryDetSeqId());
+			fxDelDetailModel = deliveryDetailsRepos.findOne(applReceipt.get(0).getDeliveryDetSeqId());
 		}else{
 			logger.error(" getTransactionStatus custoemrId - paymentSeqId :"+custoemrId +"-"+paymentSeqId);
 			throw new GlobalException("No record found :",JaxError.NO_RECORD_FOUND);
@@ -428,56 +415,56 @@ public class FxOrderReportManager {
 		JaxTransactionStatus jaxTrnxStatus = getJaxTransactionStatus(pgDetailsModel,applReceipt);
 		String receiptNo="";
 		if(applReceipt != null && !applReceipt.isEmpty()){
-		List<FxOrderTransactionModel> fxOrderTrnxList =  fxTransactionHistroyDao.getFxOrderTrnxListByCollectionDocNumber(custoemrId,applReceipt.get(0).getColDocNo(),applReceipt.get(0).getColDocFyr());
-			 if(!fxOrderTrnxList.isEmpty()){
-				 if(fxOrderTrnxList.get(0).getCollectionDocumentNo()!=null && fxOrderTrnxList.get(0).getCollectionDocumentFinYear()!=null){
-			    		receiptNo =  fxOrderTrnxList.get(0).getCollectionDocumentFinYear().toString()+"/"+fxOrderTrnxList.get(0).getCollectionDocumentNo().toString();
-			    	}
-			    	List<FxOrderTransactionHistroyDto> fxOrderTrnxListDto = applTrnxManager.convertFxHistDto(fxOrderTrnxList);
-			    	responseModel.setFxOrderTrnxHistroyDTO(fxOrderTrnxListDto);
-			    	responseModel.setReceiptNo(receiptNo);
-			 }
-		
+			List<FxOrderTransactionModel> fxOrderTrnxList =  fxTransactionHistroyDao.getFxOrderTrnxListByCollectionDocNumber(custoemrId,applReceipt.get(0).getColDocNo(),applReceipt.get(0).getColDocFyr());
+			if(!fxOrderTrnxList.isEmpty()){
+				if(fxOrderTrnxList.get(0).getCollectionDocumentNo()!=null && fxOrderTrnxList.get(0).getCollectionDocumentFinYear()!=null){
+					receiptNo =  fxOrderTrnxList.get(0).getCollectionDocumentFinYear().toString()+"/"+fxOrderTrnxList.get(0).getCollectionDocumentNo().toString();
+				}
+				List<FxOrderTransactionHistroyDto> fxOrderTrnxListDto = applTrnxManager.convertFxHistDto(fxOrderTrnxList);
+				responseModel.setFxOrderTrnxHistroyDTO(fxOrderTrnxListDto);
+				responseModel.setReceiptNo(receiptNo);
+			}
+
 			for(ReceiptPaymentApp appl : applReceipt){
 				netAmount = netAmount.add(appl.getLocalTrnxAmount());
 			}
 		}
-		
+
 		if(fxDelDetailModel !=null){
 			deliveryCharges = fxDelDetailModel.getDeliveryCharges();
 		}	
-		
-		
+
+
 		responseModel.setNetAmount(netAmount.add(deliveryCharges));
 		responseModel.setStatus(jaxTrnxStatus);
 		return responseModel;
 	}
-	
-	
-	 FxDeliveryDetailDto  deliveryDetailList = new FxDeliveryDetailDto();
-	 ShippingAddressDto shippingAddressdto =new ShippingAddressDto();
-	 PaygDetailsDto payg = new PaygDetailsDto();
-	
+
+
+	FxDeliveryDetailDto  deliveryDetailList = new FxDeliveryDetailDto();
+	ShippingAddressDto shippingAddressdto =new ShippingAddressDto();
+	PaygDetailsDto payg = new PaygDetailsDto();
+
 	public FxDeliveryReportDetailDto convertFxDeliveryDto(FxDeliveryDetailsModel delDetails){
 		FxDeliveryReportDetailDto  dto = new FxDeliveryReportDetailDto();
 		try {
 			BeanUtils.copyProperties(dto, delDetails);
 		} catch (IllegalAccessException | InvocationTargetException e) {
-			
+
 		}
 		return dto;
-		}
-	
+	}
+
 	public PaygDetailsDto convertFxPgDetailsDto(PaygDetailsModel pgdelDetails){
 		PaygDetailsDto  dto = new PaygDetailsDto();
 		try {
 			BeanUtils.copyProperties(dto, pgdelDetails);
 		} catch (IllegalAccessException | InvocationTargetException e) {
-			
+
 		}
 		return dto;
-		}
-	
+	}
+
 	public ShippingAddressDto getShippingaddressDetails(ShippingAddressDetail shippingAddressDetail){
 		ShippingAddressDto shippingAddressDto = new ShippingAddressDto();
 		BigDecimal countryId = meta.getCountryId();
@@ -485,18 +472,18 @@ public class FxOrderReportManager {
 		BigDecimal companyId = meta.getCompanyId();
 		List<Customer> customerList = customerDao.getCustomerByCustomerId(countryId, companyId, customerId);
 		if (shippingAddressDetail!=null) {
-				shippingAddressDto.setAddressId(shippingAddressDetail.getShippingAddressDetailId());
-				
-				if(customerList !=null && !customerList.isEmpty()){
-					shippingAddressDto.setFirstName(customerList.get(0).getFirstName());
-					shippingAddressDto.setMiddleName(customerList.get(0).getMiddleName());
-					shippingAddressDto.setLastName(customerList.get(0).getLastName());
-					shippingAddressDto.setMobile(customerList.get(0).getMobile());
-					shippingAddressDto.setEmail(customerList.get(0).getEmail());
-					
-				}else{
-					throw new GlobalException("customer not found :"+customerId ,JaxError.CUSTOMER_NOT_FOUND);
-				}
+			shippingAddressDto.setAddressId(shippingAddressDetail.getShippingAddressDetailId());
+
+			if(customerList !=null && !customerList.isEmpty()){
+				shippingAddressDto.setFirstName(customerList.get(0).getFirstName());
+				shippingAddressDto.setMiddleName(customerList.get(0).getMiddleName());
+				shippingAddressDto.setLastName(customerList.get(0).getLastName());
+				shippingAddressDto.setMobile(customerList.get(0).getMobile());
+				shippingAddressDto.setEmail(customerList.get(0).getEmail());
+
+			}else{
+				throw new GlobalException("customer not found :"+customerId ,JaxError.CUSTOMER_NOT_FOUND);
+			}
 			shippingAddressDto.setCustomerId(shippingAddressDetail.getFsCustomer().getCustomerId());
 			shippingAddressDto.setCompanyId(companyId);
 			shippingAddressDto.setMobile(shippingAddressDetail.getMobile());
@@ -538,20 +525,20 @@ public class FxOrderReportManager {
 			}else{
 				//throw new GlobalException("Country not found  :" ,JaxError.COUNTRY_NOT_FOUND);
 			}
-	} //end 
+		} //end 
 		return shippingAddressDto;
 	}
-	
-	
-	
-	
+
+
+
+
 	private JaxTransactionStatus getJaxTransactionStatus(PaygDetailsModel pgDetailsModel,List<ReceiptPaymentApp> applReceipt) {
 		JaxTransactionStatus status = JaxTransactionStatus.APPLICATION_CREATED;
 		String applicationStatus ="";
 		if(!applReceipt.isEmpty()){
 			applicationStatus = applReceipt.get(0).getApplicationStatus();
 		}
-		
+
 		if (StringUtils.isBlank(applicationStatus) && pgDetailsModel != null && pgDetailsModel.getPgPaymentId() != null) {
 			status = JaxTransactionStatus.PAYMENT_IN_PROCESS;
 		}
@@ -573,5 +560,5 @@ public class FxOrderReportManager {
 		return status;
 	}
 
-	
+
 }
