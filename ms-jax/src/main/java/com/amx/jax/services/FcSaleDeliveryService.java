@@ -138,8 +138,10 @@ public class FcSaleDeliveryService {
 			throw new GlobalException("Order status should be OFD", JaxError.FC_CURRENCY_DELIVERY_INVALID_STATUS);
 		}
 		if (StringUtils.isBlank(deliveryDetail.getTransactionReceipt())) {
-			throw new GlobalException("Order receipt not uploaded ", JaxError.FC_CURRENCY_DELIVERY_ORDER_RECIEPT_NOT_FOUND);
+			throw new GlobalException("Order receipt not uploaded ",
+					JaxError.FC_CURRENCY_DELIVERY_ORDER_RECIEPT_NOT_FOUND);
 		}
+		validateOtpStatus(deliveryDetail);
 		deliveryDetail.setOrderStatus(ConstantDocument.DVD);
 		fcSaleApplicationDao.saveDeliveryDetail(deliveryDetail);
 		PersonInfo pinfo = userService.getPersonInfo(vwdeliveryDetail.getCustomerId());
@@ -156,6 +158,12 @@ public class FcSaleDeliveryService {
 		return new BoolRespModel(true);
 	}
 
+	private void validateOtpStatus(FxDeliveryDetailsModel deliveryDetail) {
+		if (!ConstantDocument.Yes.equalsIgnoreCase(deliveryDetail.getOtpValidated())) {
+			throw new GlobalException("Order otp not validated", JaxError.OTP_NOT_VALIDATED);
+		}
+	}
+
 	public BoolRespModel markCancelled(FcSaleDeliveryMarkNotDeliveredRequest fcSaleDeliveryMarkNotDeliveredRequest) {
 		logger.info("Cancel request received: {}", fcSaleDeliveryMarkNotDeliveredRequest);
 		FxDeliveryDetailsModel deliveryDetail = validateFxDeliveryModel(
@@ -164,6 +172,7 @@ public class FcSaleDeliveryService {
 		if (!deliveryDetail.getOrderStatus().equals(ConstantDocument.OFD)) {
 			throw new GlobalException("Order status should be OFD", JaxError.FC_CURRENCY_DELIVERY_INVALID_STATUS);
 		}
+		validateOtpStatus(deliveryDetail);
 		deliveryDetail.setOrderStatus(ConstantDocument.CND);
 		deliveryDetail.setRemarksId(fcSaleDeliveryMarkNotDeliveredRequest.getDeleviryRemarkSeqId());
 		fcSaleApplicationDao.saveDeliveryDetail(deliveryDetail);
