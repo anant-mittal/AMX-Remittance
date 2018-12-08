@@ -102,10 +102,10 @@ public class FcSaleBranchOrderManager {
 				if(areaCode != null) {
 					ordermanage = fcSaleBranchDao.fetchFcSaleOrderManagement(applicationCountryId,areaCode);
 				}else {
-					throw new GlobalException("Area Code should not be blank",JaxError.NULL_AREA_CODE);
+					throw new GlobalException(JaxError.NULL_AREA_CODE,"Area Code should not be blank");
 				}
 			}else {
-				throw new GlobalException("Employee details is empty",JaxError.INVALID_EMPLOYEE);
+				throw new GlobalException(JaxError.INVALID_EMPLOYEE,"Employee details is empty");
 			}
 		}catch (GlobalException e) {
 			e.printStackTrace();
@@ -160,10 +160,10 @@ public class FcSaleBranchOrderManager {
 						}
 					}
 				}else {
-					throw new GlobalException("Employee details userName,countryBranchId is empty",JaxError.INVALID_EMPLOYEE);
+					throw new GlobalException(JaxError.INVALID_EMPLOYEE,"Employee details userName,countryBranchId is empty");
 				}
 			}else {
-				throw new GlobalException("Employee details is empty",JaxError.INVALID_EMPLOYEE);
+				throw new GlobalException(JaxError.INVALID_EMPLOYEE,"Employee details is empty");
 			}
 		}catch (GlobalException e) {
 			e.printStackTrace();
@@ -191,10 +191,10 @@ public class FcSaleBranchOrderManager {
 				if(userName != null && countryBranchId != null) {
 					userStock = fcSaleBranchDao.fetchUserStockCurrentDateSum(countryId,userName,countryBranchId);
 				}else {
-					throw new GlobalException("Employee details userName,countryBranchId is empty",JaxError.INVALID_EMPLOYEE);
+					throw new GlobalException(JaxError.INVALID_EMPLOYEE,"Employee details userName,countryBranchId is empty");
 				}
 			}else {
-				throw new GlobalException("Employee details is empty",JaxError.INVALID_EMPLOYEE);
+				throw new GlobalException(JaxError.INVALID_EMPLOYEE,"Employee details is empty");
 			}
 		}catch (GlobalException e) {
 			e.printStackTrace();
@@ -234,10 +234,10 @@ public class FcSaleBranchOrderManager {
 						}
 					}
 				}else {
-					throw new GlobalException("Employee details userName,countryBranchId is empty",JaxError.INVALID_EMPLOYEE);
+					throw new GlobalException(JaxError.INVALID_EMPLOYEE,"Employee details userName,countryBranchId is empty");
 				}
 			}else {
-				throw new GlobalException("Employee details is empty",JaxError.INVALID_EMPLOYEE);
+				throw new GlobalException(JaxError.INVALID_EMPLOYEE,"Employee details is empty");
 			}
 		}catch (GlobalException e) {
 			e.printStackTrace();
@@ -324,9 +324,9 @@ public class FcSaleBranchOrderManager {
 			if(deliveryDetailsId != null) {
 				// fetch delivery details by id
 				if(orderStatus == null) {
-					throw new GlobalException("Order Status should be empty",JaxError.NULL_ORDER_STATUS);
+					throw new GlobalException(JaxError.NULL_ORDER_STATUS,"Order Status should be empty");
 				}else if(assignDriverId != null && driverId != null && assignDriverId.compareTo(driverId) == 0 && orderStatus.equalsIgnoreCase(ConstantDocument.PCK)) {
-					throw new GlobalException("Driver is already assign for order",JaxError.DRIVER_ALREADY_ASSIGNED);
+					throw new GlobalException(JaxError.DRIVER_ALREADY_ASSIGNED,"Driver is already assign for order");
 				}else {
 					FxDeliveryDetailsModel deliveryDetail = fcSaleBranchDao.fetchDeliveryDetails(deliveryDetailsId,isActive);
 					if(deliveryDetail != null) {
@@ -363,7 +363,7 @@ public class FcSaleBranchOrderManager {
 										fcSaleBranchDao.saveDeliveryDetails(deliveryDetailNew,deliveryDetail,lstOrderManagement);
 										status = Boolean.TRUE;
 									}else {
-										throw new GlobalException("Order status is not packed to assign driver",JaxError.ORDER_STATUS_MISMATCH);
+										throw new GlobalException(JaxError.ORDER_STATUS_MISMATCH,"Order status is not packed to assign driver");
 									}
 								}else {
 									// update the current record by driver id
@@ -375,21 +375,21 @@ public class FcSaleBranchOrderManager {
 										fcSaleBranchDao.saveDeliveryDetailsDriverId(deliveryDetail);
 										status = Boolean.TRUE;
 									}else {
-										throw new GlobalException("Order status is not packed to assign driver",JaxError.ORDER_STATUS_MISMATCH);
+										throw new GlobalException(JaxError.ORDER_STATUS_MISMATCH,"Order status is not packed to assign driver");
 									}
 								}
 							}
 						}else {
-							throw new GlobalException("Employee details is empty",JaxError.INVALID_EMPLOYEE);
+							throw new GlobalException(JaxError.INVALID_EMPLOYEE,"Employee details is empty");
 						}
 					}else {
 						//multiple active records
-						throw new GlobalException("No records available for Delivery details",JaxError.NO_DELIVERY_DETAILS);
+						throw new GlobalException(JaxError.NO_DELIVERY_DETAILS,"No records available for Delivery details");
 					}
 				}
 			}else {
 				// error 
-				throw new GlobalException("No records available for Delivery details",JaxError.NO_DELIVERY_DETAILS);
+				throw new GlobalException(JaxError.NO_DELIVERY_DETAILS,"No records available for Delivery details");
 			}
 		}catch (GlobalException e) {
 			e.printStackTrace();
@@ -414,7 +414,7 @@ public class FcSaleBranchOrderManager {
 				BeanUtils.copyProperties(employeeDto, employee);
 			}else {
 				// fail
-				throw new GlobalException("Employee details is empty",JaxError.INVALID_EMPLOYEE);
+				throw new GlobalException(JaxError.INVALID_EMPLOYEE,"Employee details is empty");
 			}
 		}catch (GlobalException e) {
 			e.printStackTrace();
@@ -465,7 +465,7 @@ public class FcSaleBranchOrderManager {
 						countryBranchId = employeeDt.getCountryBranchId();
 					}
 				}else {
-					throw new GlobalException("Employee details is empty",JaxError.INVALID_EMPLOYEE);
+					throw new GlobalException(JaxError.INVALID_EMPLOYEE,"Employee details is empty");
 				}
 
 				// fetch collection details
@@ -476,7 +476,7 @@ public class FcSaleBranchOrderManager {
 					companyCode = collectionModel.getCompanyCode();
 					customerId = collectionModel.getFsCustomer().getCustomerId();
 				}else {
-					throw new GlobalException("Collection details is empty",JaxError.INVALID_COLLECTION_DOCUMENT_NO);
+					throw new GlobalException(JaxError.INVALID_COLLECTION_DOCUMENT_NO,"Collection details is empty");
 				}
 
 				// fetch
@@ -485,7 +485,7 @@ public class FcSaleBranchOrderManager {
 					Document document = documentDt.get(0);
 					documentId = document.getDocumentID();
 				}else {
-					throw new GlobalException("Document details is empty",JaxError.BLANK_DOCUMENT_DETAILS);
+					throw new GlobalException(JaxError.BLANK_DOCUMENT_DETAILS,"Document details is empty");
 				}
 
 				// receipt payment Details
@@ -507,10 +507,10 @@ public class FcSaleBranchOrderManager {
 					}
 					
 					if(deliveryDetailsId == null) {
-						throw new GlobalException("No records or mismatch of delivery details",JaxError.NO_DELIVERY_DETAILS);
+						throw new GlobalException(JaxError.NO_DELIVERY_DETAILS,"No records or mismatch of delivery details");
 					}
 				}else {
-					throw new GlobalException("Collection details is empty",JaxError.INVALID_COLLECTION_DOCUMENT_NO);
+					throw new GlobalException(JaxError.INVALID_COLLECTION_DOCUMENT_NO,"Collection details is empty");
 				}
 
 
@@ -525,7 +525,7 @@ public class FcSaleBranchOrderManager {
 							if(userCurrenctStock != null && userCurrenctStock.size() != 0) {
 								// continue
 							}else {
-								throw new GlobalException("Currenct stock for employee not available",JaxError.CURRENCY_STOCK_NOT_AVAILABLE);
+								throw new GlobalException(JaxError.CURRENCY_STOCK_NOT_AVAILABLE,"Currenct stock for employee not available");
 							}
 
 							int i = 0;
@@ -600,10 +600,10 @@ public class FcSaleBranchOrderManager {
 											// mapping document number with amount
 											mapDocAmount.put(fcSaleBranchDispatch.getDocumentNumber(), fcAmount);
 										}else {
-											throw new GlobalException("Currency Denomination Details is in correct",JaxError.INCORRECT_CURRENCY_DENOMINATION);
+											throw new GlobalException(JaxError.INCORRECT_CURRENCY_DENOMINATION,"Currency Denomination Details is in correct");
 										}
 									}else {
-										throw new GlobalException("Receipt Document Details is in correct",JaxError.BLANK_DOCUMENT_DETAILS);
+										throw new GlobalException(JaxError.BLANK_DOCUMENT_DETAILS,"Receipt Document Details is in correct");
 									}
 								}
 							}
@@ -623,7 +623,7 @@ public class FcSaleBranchOrderManager {
 							}
 						}
 						if(!amtStatus) {
-							throw new GlobalException("Amount mismatch with document details",JaxError.MISMATCH_COLLECTION_AMOUNT);
+							throw new GlobalException(JaxError.MISMATCH_COLLECTION_AMOUNT,"Amount mismatch with document details");
 						}
 					}
 
@@ -716,14 +716,14 @@ public class FcSaleBranchOrderManager {
 							}
 							if(!currentStockStatus) {
 								currencyStatus = Boolean.FALSE;
-								throw new GlobalException("Employee current stock not matcing",JaxError.MISMATCH_CURRENT_STOCK);
+								throw new GlobalException(JaxError.MISMATCH_CURRENT_STOCK,"Employee current stock not matcing");
 							}
 						}else {
 							currencyStatus = Boolean.FALSE;
-							throw new GlobalException("Currency Adj Amount not matching Denomination Amount and Quantity",JaxError.MISMATCH_ADJ_AMT_AND_DENOMINATION_AMT_QUANTITY);
+							throw new GlobalException(JaxError.MISMATCH_ADJ_AMT_AND_DENOMINATION_AMT_QUANTITY,"Currency Adj Amount not matching Denomination Amount and Quantity");
 						}
 					}else {
-						throw new GlobalException("Currency Denomination Details is not vaild",JaxError.INVALID_CURRENCY_DENOMINATION);
+						throw new GlobalException(JaxError.INVALID_CURRENCY_DENOMINATION,"Currency Denomination Details is not vaild");
 					}
 				}
 			}
@@ -785,7 +785,7 @@ public class FcSaleBranchOrderManager {
 									// already
 									status = saveAndUpdateOrderLock(employeeId, lstOrderManagement);
 								}else {
-									throw new GlobalException("record is been locked by other employee",JaxError.ORDER_LOCKED_OTHER_EMPLOYEE);
+									throw new GlobalException(JaxError.ORDER_LOCKED_OTHER_EMPLOYEE,"record is been locked by other employee");
 								}
 							}
 						}else {
@@ -798,7 +798,7 @@ public class FcSaleBranchOrderManager {
 									// already
 									status = saveAndUpdateOrderLock(employeeId, lstOrderManagement);
 								}else {
-									throw new GlobalException("record is been locked by other employee",JaxError.ORDER_LOCKED_OTHER_EMPLOYEE);
+									throw new GlobalException(JaxError.ORDER_LOCKED_OTHER_EMPLOYEE,"record is been locked by other employee");
 								}
 							}
 						}
@@ -806,10 +806,10 @@ public class FcSaleBranchOrderManager {
 						status = saveAndUpdateOrderLock(employeeId, lstOrderManagement);
 					}
 				}else {
-					throw new GlobalException("No records available for Delivery details",JaxError.NO_DELIVERY_DETAILS);
+					throw new GlobalException(JaxError.NO_DELIVERY_DETAILS,"No records available for Delivery details");
 				}
 			}else {
-				throw new GlobalException("Collection details is empty",JaxError.INVALID_COLLECTION_DOCUMENT_NO);
+				throw new GlobalException(JaxError.INVALID_COLLECTION_DOCUMENT_NO,"Collection details is empty");
 			}
 		}catch (GlobalException e) {
 			e.printStackTrace();
@@ -834,7 +834,7 @@ public class FcSaleBranchOrderManager {
 			fcSaleBranchDao.saveOrderLockDetails(lstOrderManagement,employeeId,userName,ConstantDocument.ACP);
 			status = Boolean.TRUE;
 		}else {
-			throw new GlobalException("Employee details is empty",JaxError.INVALID_EMPLOYEE);
+			throw new GlobalException(JaxError.INVALID_EMPLOYEE,"Employee details is empty");
 		}
 		
 		return status;
@@ -859,10 +859,10 @@ public class FcSaleBranchOrderManager {
 							fcSaleBranchDao.saveOrderReleaseDetails(lstOrderManagement,employeeId,userName,ConstantDocument.ORD);
 							status = Boolean.TRUE;
 						}else {
-							throw new GlobalException("Employee details is empty",JaxError.INVALID_EMPLOYEE);
+							throw new GlobalException(JaxError.INVALID_EMPLOYEE,"Employee details is empty");
 						}
 					}else {
-						throw new GlobalException("Already records are released",JaxError.ORDER_RELEASED_ALREADY);
+						throw new GlobalException(JaxError.ORDER_RELEASED_ALREADY,"Already records are released");
 					}
 				}
 			}
@@ -910,10 +910,10 @@ public class FcSaleBranchOrderManager {
 							fcSaleDeliveryService.sendOtp(deliveryDetails.getDeleviryDelSeqId(), false);
 							status = Boolean.TRUE;
 						}else {
-							throw new GlobalException("Employee details is empty",JaxError.INVALID_EMPLOYEE);
+							throw new GlobalException(JaxError.INVALID_EMPLOYEE,"Employee details is empty");
 						}
 					}else {
-						throw new GlobalException("Dispatch order is not locked",JaxError.ORDER_IS_NOT_LOCK);
+						throw new GlobalException(JaxError.ORDER_IS_NOT_LOCK,"Dispatch order is not locked");
 					}
 				}
 			}
@@ -973,10 +973,10 @@ public class FcSaleBranchOrderManager {
 							fcSaleBranchDao.saveAcknowledgeDriver(lstOrderManagement,employeeId,userName,ConstantDocument.OFD_CNF);
 							status = Boolean.TRUE;
 						}else {
-							throw new GlobalException("Employee details is empty",JaxError.INVALID_EMPLOYEE);
+							throw new GlobalException(JaxError.INVALID_EMPLOYEE,"Employee details is empty");
 						}
 					}else {
-						throw new GlobalException("Dispatch order is not locked",JaxError.ORDER_IS_NOT_LOCK);
+						throw new GlobalException(JaxError.ORDER_IS_NOT_LOCK,"Dispatch order is not locked");
 					}
 				}
 			}
@@ -1012,10 +1012,10 @@ public class FcSaleBranchOrderManager {
 							fcSaleBranchDao.saveReturnAcknowledge(lstOrderManagement,employeeId,userName,ConstantDocument.RTD);
 							status = Boolean.TRUE;
 						}else {
-							throw new GlobalException("Employee details is empty",JaxError.INVALID_EMPLOYEE);
+							throw new GlobalException(JaxError.INVALID_EMPLOYEE,"Employee details is empty");
 						}
 					}else {
-						throw new GlobalException("Dispatch order is not locked",JaxError.ORDER_IS_NOT_LOCK);
+						throw new GlobalException(JaxError.ORDER_IS_NOT_LOCK,"Dispatch order is not locked");
 					}
 				}
 			}
@@ -1051,10 +1051,10 @@ public class FcSaleBranchOrderManager {
 							fcSaleBranchDao.saveAcceptCancellation(lstOrderManagement,employeeId,userName,ConstantDocument.CND);
 							status = Boolean.TRUE;
 						}else {
-							throw new GlobalException("Employee details is empty",JaxError.INVALID_EMPLOYEE);
+							throw new GlobalException(JaxError.INVALID_EMPLOYEE,"Employee details is empty");
 						}
 					}else {
-						throw new GlobalException("Dispatch order is not locked",JaxError.ORDER_IS_NOT_LOCK);
+						throw new GlobalException(JaxError.ORDER_IS_NOT_LOCK,"Dispatch order is not locked");
 					}
 				}
 			}
@@ -1082,7 +1082,7 @@ public class FcSaleBranchOrderManager {
 			
 			fxOrderReportResponseDto = fetchTransactionReport(customerId,orderYear, orderNumber);
 		}else {
-			throw new GlobalException("Collection details is empty",JaxError.INVALID_COLLECTION_DOCUMENT_NO);
+			throw new GlobalException(JaxError.INVALID_COLLECTION_DOCUMENT_NO,"Collection details is empty");
 		}
 		
 		return fxOrderReportResponseDto; 

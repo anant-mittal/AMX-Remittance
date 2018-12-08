@@ -113,14 +113,14 @@ public class UserValidationService {
 	protected void validateLoginId(String loginId) {
 		CustomerOnlineRegistration existingCust = custDao.getOnlineCustomerByLoginIdOrUserName(loginId);
 		if (existingCust != null) {
-			throw new GlobalException("Username already taken", JaxError.USERNAME_ALREADY_EXISTS);
+			throw new GlobalException(JaxError.USERNAME_ALREADY_EXISTS, "Username already taken");
 		}
 	}
 
 	public void validateAllLoginId(String loginId) {
 		List<CustomerOnlineRegistration> existingCust = custDao.getOnlineCustomerWithStatusByLoginIdOrUserName(loginId);
 		if (existingCust != null && !existingCust.isEmpty()) {
-			throw new GlobalException("Username already taken", JaxError.USERNAME_ALREADY_EXISTS);
+			throw new GlobalException(JaxError.USERNAME_ALREADY_EXISTS, "Username already taken");
 		}
 	}
 
@@ -193,7 +193,7 @@ public class UserValidationService {
 			validateIdProof(idProof);
 		}
 		if (idProofs.isEmpty()) {
-			throw new GlobalException("ID proofs not available, contact branch", JaxError.NO_ID_PROOFS_AVAILABLE);
+			throw new GlobalException(JaxError.NO_ID_PROOFS_AVAILABLE, "ID proofs not available, contact branch");
 		}
 	}
 
@@ -201,17 +201,17 @@ public class UserValidationService {
 
 		String scanSystem = idProof.getScanSystem();
 		if (idProof.getIdentityExpiryDate() != null && idProof.getIdentityExpiryDate().compareTo(new Date()) < 0) {
-			throw new GlobalException("Identity proof are expired", JaxError.ID_PROOF_EXPIRED);
+			throw new GlobalException(JaxError.ID_PROOF_EXPIRED, "Identity proof are expired");
 		}
 		if ("A".equals(scanSystem)) {
 			List<CustomerIdProof> validIds = idproofDao
 					.getCustomerImageValidation(idProof.getFsCustomer().getCustomerId(), idProof.getIdentityTypeId());
 			if (validIds == null || validIds.isEmpty()) {
-				throw new GlobalException("Identity proof are expired or invalid", JaxError.ID_PROOFS_NOT_VALID);
+				throw new GlobalException(JaxError.ID_PROOFS_NOT_VALID, "Identity proof are expired or invalid");
 			}
 			for (CustomerIdProof id : validIds) {
 				if (id.getIdentityExpiryDate() != null && id.getIdentityExpiryDate().compareTo(new Date()) < 0) {
-					throw new GlobalException("Identity proof are expired", JaxError.ID_PROOF_EXPIRED);
+					throw new GlobalException(JaxError.ID_PROOF_EXPIRED, "Identity proof are expired");
 				}
 			}
 
@@ -224,35 +224,35 @@ public class UserValidationService {
 				List<DmsDocumentModel> dmsDocs = dmsDocDao.getDmsDocument(new BigDecimal(docBlobIdInt),
 						new BigDecimal(docFinYrInt));
 				if (dmsDocs == null || dmsDocs.isEmpty()) {
-					throw new GlobalException("Identity proof images not found", JaxError.ID_PROOFS_IMAGES_NOT_FOUND);
+					throw new GlobalException(JaxError.ID_PROOFS_IMAGES_NOT_FOUND, "Identity proof images not found");
 				}
 			}
 		} else {
-			throw new GlobalException("Identity proof scans not found", JaxError.ID_PROOFS_SCAN_NOT_FOUND);
+			throw new GlobalException(JaxError.ID_PROOFS_SCAN_NOT_FOUND, "Identity proof scans not found");
 		}
 	}
 
 	protected void validateCustomerData(CustomerOnlineRegistration onlineCust, Customer customer) {
 
 		if (customer.getCustomerReference() == null) {
-			throw new GlobalException("Invalid Customer Reference", JaxError.INVALID_CUSTOMER_REFERENCE);
+			throw new GlobalException(JaxError.INVALID_CUSTOMER_REFERENCE, "Invalid Customer Reference");
 		}
 		// validate contact details
 		validateCustContact(customer);
 		if (!"Y".equals(customer.getIsActive())) {
-			throw new GlobalException("Customer is not active", JaxError.CUSTOMER_INACTIVE);
+			throw new GlobalException(JaxError.CUSTOMER_INACTIVE, "Customer is not active");
 		}
 		if (customer.getSignatureSpecimenClob() == null) {
-			throw new GlobalException("CUSTOMER SIGNATURE NOT AVAILABLE", JaxError.CUSTOMER__SIGNATURE_UNAVAILABLE);
+			throw new GlobalException(JaxError.CUSTOMER__SIGNATURE_UNAVAILABLE, "CUSTOMER SIGNATURE NOT AVAILABLE");
 		}
 		boolean insuranceCheck = ("Y".equals(customer.getMedicalInsuranceInd())
 				|| "N".equals(customer.getMedicalInsuranceInd()));
 		if (!insuranceCheck) {
-			throw new GlobalException("INVALID MEDICAL INSURANCE INDICATOR", JaxError.INVALID_INSURANCE_INDICATOR);
+			throw new GlobalException(JaxError.INVALID_INSURANCE_INDICATOR, "INVALID MEDICAL INSURANCE INDICATOR");
 		}
 		ViewOnlineCustomerCheck onlineCustView = custDao.getOnlineCustomerview(customer.getCustomerId());
 		if (onlineCustView != null && onlineCustView.getIdExpirtyDate() == null) {
-			throw new GlobalException("ID is expired", JaxError.ID_PROOF_EXPIRED);
+			throw new GlobalException(JaxError.ID_PROOF_EXPIRED, "ID is expired");
 		}		
 		validateOldEmosData(customer);
 
@@ -260,15 +260,15 @@ public class UserValidationService {
 
 	private void validateOldEmosData(Customer customer) {
 		if (customer.getCustomerReference() == null) {
-			throw new GlobalException("Old customer records not found in EMOS", JaxError.OLD_EMOS_USER_NOT_FOUND);
+			throw new GlobalException(JaxError.OLD_EMOS_USER_NOT_FOUND, "Old customer records not found in EMOS");
 		}
 		CusmasModel emosCustomer = cusmosDao.getOldCusMasDetails(customer.getCustomerReference());
 		if (emosCustomer.getStatus() != null) {
-			throw new GlobalException("RECORD IS DELETED IN OLD EMOS", JaxError.OLD_EMOS_USER_DELETED);
+			throw new GlobalException(JaxError.OLD_EMOS_USER_DELETED, "RECORD IS DELETED IN OLD EMOS");
 		}
 		if (emosCustomer.getIdExpireDate() == null || emosCustomer.getIdExpireDate().compareTo(new Date()) < 0) {
-			throw new GlobalException("ID EXPIRY IS NOT UPDATED OR HAS BEEN EXPIRED IN OLD EMOS",
-					JaxError.OLD_EMOS_USER_DATA_EXPIRED);
+			throw new GlobalException(JaxError.OLD_EMOS_USER_DATA_EXPIRED,
+					"ID EXPIRY IS NOT UPDATED OR HAS BEEN EXPIRED IN OLD EMOS");
 		}
 	}
 
@@ -276,7 +276,7 @@ public class UserValidationService {
 
 		List<ContactDetail> contactDetails = contactDetailService.getContactDetail(customer.getCustomerId());
 		if (CollectionUtils.isEmpty(contactDetails)) {
-			throw new GlobalException("No contact details found", JaxError.MISSING_CONTACT_DETAILS);
+			throw new GlobalException(JaxError.MISSING_CONTACT_DETAILS, "No contact details found");
 		}
 		boolean ishome = false, islocal = false;
 		for (ContactDetail contact : contactDetails) {
@@ -293,10 +293,10 @@ public class UserValidationService {
 			}
 		}
 		if (!ishome) {
-			throw new GlobalException("No home contact details found", JaxError.MISSING_HOME_CONTACT_DETAILS);
+			throw new GlobalException(JaxError.MISSING_HOME_CONTACT_DETAILS, "No home contact details found");
 		}
 		if (!islocal) {
-			throw new GlobalException("No local details found", JaxError.MISSING_LOCAL_CONTACT_DETAILS);
+			throw new GlobalException(JaxError.MISSING_LOCAL_CONTACT_DETAILS, "No local details found");
 		}
 	}
 	
@@ -343,8 +343,8 @@ public class UserValidationService {
 			String actualAnswer = getActualAnswer(answer.getQuestionSrNo(), customer);
 			if (!actualAnswer.equals(cryptoUtil.getHash(customer.getUserName(), answer.getAnswer()))) {
 				incrementLockCount(customer);
-				throw new GlobalException("Incorrect answer for question no. : " + answer.getQuestionSrNo(),
-						JaxError.INCORRECT_SECURITY_QUESTION_ANSWER);
+				throw new GlobalException(JaxError.INCORRECT_SECURITY_QUESTION_ANSWER,
+						"Incorrect answer for question no. : " + answer.getQuestionSrNo());
 			}
 		}
 
@@ -385,8 +385,8 @@ public class UserValidationService {
 					lockCnt = 0;
 				}
 				if (lockCnt >= MAX_OTP_ATTEMPTS) {
-					throw new GlobalException("Customer is locked. No of attempts:- " + lockCnt,
-							JaxError.USER_LOGIN_ATTEMPT_EXCEEDED);
+					throw new GlobalException(JaxError.USER_LOGIN_ATTEMPT_EXCEEDED,
+							"Customer is locked. No of attempts:- " + lockCnt);
 				}
 			}
 		}
@@ -534,7 +534,7 @@ public class UserValidationService {
 
 		ValidationClient validationClient = validationClients.getValidationClient(customer.getCountryId().toString());
 		if (!validationClient.isValidMobileNumber(mobile)) {
-			throw new GlobalException("Mobile Number length is not correct.", JaxError.INCORRECT_LENGTH);
+			throw new GlobalException(JaxError.INCORRECT_LENGTH, "Mobile Number length is not correct.");
 		}
 	}
 
@@ -542,7 +542,7 @@ public class UserValidationService {
 
 		ValidationClient validationClient = validationClients.getValidationClient(customer.getCountryId().toString());
 		if (validationClient.isMobileExist(mobile)) {
-			throw new GlobalException("Mobile Number already exist.", JaxError.ALREADY_EXIST);
+			throw new GlobalException(JaxError.ALREADY_EXIST, "Mobile Number already exist.");
 		}
 	}
 
@@ -552,8 +552,8 @@ public class UserValidationService {
 			CustomerVerification cv = customerVerificationService.getVerification(customerId,
 					CustomerVerificationType.EMAIL);
 			if (cv != null && ConstantDocument.No.equals(cv.getVerificationStatus()) && cv.getFieldValue() != null) {
-				throw new GlobalException("Your email verificaiton is pending",
-						JaxError.USER_DATA_VERIFICATION_PENDING_REG);
+				throw new GlobalException(JaxError.USER_DATA_VERIFICATION_PENDING_REG,
+						"Your email verificaiton is pending");
 			}
 		}
 	}
@@ -563,10 +563,10 @@ public class UserValidationService {
 			return;
 		}
 		if (onlineCustReg == null) {
-			throw new GlobalException("User is not registered", JaxError.USER_NOT_REGISTERED);
+			throw new GlobalException(JaxError.USER_NOT_REGISTERED, "User is not registered");
 		}
 		if (initRegistration == null && !"Y".equals(onlineCustReg.getStatus())) {
-			throw new GlobalException("Customer is not active", JaxError.CUSTOMER_INACTIVE);
+			throw new GlobalException(JaxError.CUSTOMER_INACTIVE, "Customer is not active");
 		}
 	}
 	
@@ -591,15 +591,15 @@ public class UserValidationService {
 			return;
 		}
 		if (CollectionUtils.isEmpty(customers) && apiFlow != JaxApiFlow.SIGNUP_DEFAULT) {
-			throw new GlobalException("Customer not registered in branch ", JaxError.CUSTOMER_NOT_REGISTERED_BRANCH);
+			throw new GlobalException(JaxError.CUSTOMER_NOT_REGISTERED_BRANCH, "Customer not registered in branch ");
 		}
 		// duplicate records check
 		if (customers != null && customers.size() > 1) {
 			customers = custDao.findActiveCustomers(identityInt);
 			boolean isSingleRecord = (customers != null && customers.size() == 1);
 			if (!isSingleRecord) {
-				throw new GlobalException("Customer not active in branch, please visit branch",
-						JaxError.DUPLICATE_CUSTOMER_NOT_ACTIVE_BRANCH);
+				throw new GlobalException(JaxError.DUPLICATE_CUSTOMER_NOT_ACTIVE_BRANCH,
+						"Customer not active in branch, please visit branch");
 			}
 		}
 		switch (apiFlow) {
@@ -618,22 +618,22 @@ public class UserValidationService {
 	private void validateCustomerDefault(Customer customer) {
 
 		if (customer == null) {
-			throw new GlobalException("Customer not registered in branch ", JaxError.CUSTOMER_NOT_REGISTERED_BRANCH);
+			throw new GlobalException(JaxError.CUSTOMER_NOT_REGISTERED_BRANCH, "Customer not registered in branch ");
 		}
 		if (!ConstantDocument.Yes.equals(customer.getIsActive())) {
-			throw new GlobalException("Customer not active in branch, go to branch ",
-					JaxError.CUSTOMER_NOT_ACTIVE_BRANCH);
+			throw new GlobalException(JaxError.CUSTOMER_NOT_ACTIVE_BRANCH,
+					"Customer not active in branch, go to branch ");
 		}
 
 		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(customer.getCustomerId());
 		if (onlineCustomer == null) {
-			throw new GlobalException("Customer not registered in online", JaxError.CUSTOMER_NOT_REGISTERED_ONLINE);
+			throw new GlobalException(JaxError.CUSTOMER_NOT_REGISTERED_ONLINE, "Customer not registered in online");
 		}
 
 		userValidationService.validateCustomerVerification(onlineCustomer.getCustomerId());
 
 		if (!ConstantDocument.Yes.equals(onlineCustomer.getStatus())) {
-			throw new GlobalException("Customer not active in online", JaxError.CUSTOMER_NOT_ACTIVE_ONLINE);
+			throw new GlobalException(JaxError.CUSTOMER_NOT_ACTIVE_ONLINE, "Customer not active in online");
 		}
 	}
 
@@ -644,32 +644,32 @@ public class UserValidationService {
 		}
 
 		if (!ConstantDocument.Yes.equals(customer.getIsActive())) {
-			throw new GlobalException("Customer not active in branch, go to branch ",
-					JaxError.CUSTOMER_NOT_ACTIVE_BRANCH);
+			throw new GlobalException(JaxError.CUSTOMER_NOT_ACTIVE_BRANCH,
+					"Customer not active in branch, go to branch ");
 		}
 
 		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(customer.getCustomerId());
 		if (onlineCustomer == null) {
-			throw new GlobalException("Customer not registered in online", JaxError.CUSTOMER_NOT_REGISTERED_ONLINE);
+			throw new GlobalException(JaxError.CUSTOMER_NOT_REGISTERED_ONLINE, "Customer not registered in online");
 		}
 		
 		userValidationService.validateCustomerVerification(onlineCustomer.getCustomerId());
 		
 		if (!ConstantDocument.Yes.equals(onlineCustomer.getStatus())) {
-			throw new GlobalException("Customer not active in online", JaxError.CUSTOMER_NOT_ACTIVE_ONLINE);
+			throw new GlobalException(JaxError.CUSTOMER_NOT_ACTIVE_ONLINE, "Customer not active in online");
 		}
 		if (ConstantDocument.Yes.equals(customer.getIsActive())) {
-			throw new GlobalException("Customer active in branch", JaxError.CUSTOMER_ACTIVE_BRANCH);
+			throw new GlobalException(JaxError.CUSTOMER_ACTIVE_BRANCH, "Customer active in branch");
 		}
 	}
 
 	private void validateCustomerForSignUpOnline(Customer customer) {
 		if (customer == null) {
-			throw new GlobalException("Customer not registered in branch ", JaxError.CUSTOMER_NOT_REGISTERED_BRANCH);
+			throw new GlobalException(JaxError.CUSTOMER_NOT_REGISTERED_BRANCH, "Customer not registered in branch ");
 		}
 		if (!ConstantDocument.Yes.equals(customer.getIsActive())) {
-			throw new GlobalException("Customer not active in branch, go to branch ",
-					JaxError.CUSTOMER_NOT_ACTIVE_BRANCH);
+			throw new GlobalException(JaxError.CUSTOMER_NOT_ACTIVE_BRANCH,
+					"Customer not active in branch, go to branch ");
 		}
 	}
 

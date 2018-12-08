@@ -6,12 +6,12 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AmxApiError extends AResponse<Object> {
 
-	private String errorId;
+	private String errorKey;
 
-	public AmxApiError(String errorId, String errorMessage) {
+	public AmxApiError(String statusKey, String errorMessage) {
 		super();
-		this.errorId = errorId;
-		this.statusKey = errorId;
+		this.errorKey = statusKey;
+		this.statusKey = statusKey;
 		this.message = errorMessage;
 	}
 
@@ -19,12 +19,12 @@ public class AmxApiError extends AResponse<Object> {
 		super();
 	}
 
-	public String getErrorId() {
-		return errorId;
+	public String getErrorKey() {
+		return errorKey;
 	}
 
-	public void setErrorId(String errorId) {
-		this.errorId = errorId;
+	public void setErrorKey(String errorKey) {
+		this.errorKey = errorKey;
 	}
 
 }

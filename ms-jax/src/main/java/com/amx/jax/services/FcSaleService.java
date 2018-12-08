@@ -129,7 +129,7 @@ public class FcSaleService extends AbstractService {
 	public AmxApiResponse<PurposeOfTransactionDto, Object> getPurposeofTrnxList() {
 		List<PurposeOfTransaction> purposeofTrnxList = purposetrnxDao.getPurposeOfTrnx();
 		if (purposeofTrnxList.isEmpty()) {
-			throw new GlobalException("No data found", JaxError.NO_RECORD_FOUND);
+			throw new GlobalException(JaxError.NO_RECORD_FOUND, "No data found");
 		}
 		return AmxApiResponse.buildList(convertPurposeOfTrnxDto(purposeofTrnxList));
 	}
@@ -143,7 +143,7 @@ public class FcSaleService extends AbstractService {
 		validation.validateHeaderInfo();
 		List<CurrencyMasterModel> currencyList = currencyDao.getfcCurrencyList(countryId);
 		if (currencyList.isEmpty()) {
-			throw new GlobalException("No data found", JaxError.NO_RECORD_FOUND);
+			throw new GlobalException(JaxError.NO_RECORD_FOUND, "No data found");
 		}
 		return AmxApiResponse.buildList(convertToModelDto(currencyList));
 	}
@@ -163,7 +163,7 @@ public class FcSaleService extends AbstractService {
 		List<FxExchangeRateView> fxSaleRateList = fcSaleExchangeRateDao.getFcSaleExchangeRate(applicationCountryId,
 				countryBranchId, fxCurrencyId);
 		if (fxSaleRateList.isEmpty()) {
-			throw new GlobalException("No data found", JaxError.NO_RECORD_FOUND);
+			throw new GlobalException(JaxError.NO_RECORD_FOUND, "No data found");
 		}
 		return AmxApiResponse.buildList(convertExchangeRateModelToDto(fxSaleRateList));
 	}
@@ -232,7 +232,7 @@ public class FcSaleService extends AbstractService {
 		ShippingAddressDto dto = new ShippingAddressDto();
 		List<ShippingAddressDto> shippingAddressList = fcSaleAddresManager.fetchShippingAddress();
 		if (shippingAddressList.isEmpty()) {
-			throw new GlobalException("No data found", JaxError.NO_RECORD_FOUND);
+			throw new GlobalException(JaxError.NO_RECORD_FOUND, "No data found");
 		}
 		return AmxApiResponse.buildList(shippingAddressList);
 	}
@@ -257,7 +257,7 @@ public class FcSaleService extends AbstractService {
 		validation.validateHeaderInfo();
 		List<TimeSlotDto> timeSlotList = applTrnxManager.fetchTimeSlot(shippingAddressId);
 		if (timeSlotList.isEmpty()) {
-			throw new GlobalException("No data found", JaxError.NO_RECORD_FOUND);
+			throw new GlobalException(JaxError.NO_RECORD_FOUND, "No data found");
 		}
 		return AmxApiResponse.buildList(timeSlotList);
 	}
@@ -279,7 +279,7 @@ public class FcSaleService extends AbstractService {
 		validation.validateHeaderInfo();
 		FxOrderShoppingCartResponseModel shoppingCartDetails = applTrnxManager.fetchApplicationDetails();
 		if (shoppingCartDetails==null) {
-			throw new GlobalException("No data found", JaxError.NO_RECORD_FOUND);
+			throw new GlobalException(JaxError.NO_RECORD_FOUND, "No data found");
 		}
 		return AmxApiResponse.build(shoppingCartDetails);
 	}
@@ -289,7 +289,7 @@ public class FcSaleService extends AbstractService {
 	public AmxApiResponse<FcSaleApplPaymentReponseModel, Object> saveApplicationPayment(FcSaleOrderPaynowRequestModel requestmodel) {
 		validation.validateHeaderInfo();
 		if (requestmodel !=null && requestmodel.getCartDetailList().isEmpty()) {
-			throw new GlobalException("Mandatory field is missing", JaxError.NULL_APPLICATION_ID);
+			throw new GlobalException(JaxError.NULL_APPLICATION_ID, "Mandatory field is missing");
 		}
 		FcSaleApplPaymentReponseModel responseModel = applTrnxManager.saveApplicationPayment(requestmodel);
 		return AmxApiResponse.build(responseModel);
@@ -333,7 +333,7 @@ public class FcSaleService extends AbstractService {
 		ShippingAddressDto dto = new ShippingAddressDto();
 		List<ShippingAddressDto> shippingAddressList = fcSaleAddresManager.deleteShippingAddress(addressId);
 		if (shippingAddressList.isEmpty()) {
-			throw new GlobalException("No data found", JaxError.NO_RECORD_FOUND);
+			throw new GlobalException(JaxError.NO_RECORD_FOUND, "No data found");
 		}
 		return AmxApiResponse.buildList(shippingAddressList);
 	}
@@ -343,7 +343,7 @@ public class FcSaleService extends AbstractService {
 		 validation.validateHeaderInfo();
 		 List<ShippingAddressDto> shippingAddressList = fcSaleAddresManager.editShippingAddress(dto);
 		 if (shippingAddressList.isEmpty()) {
-				throw new GlobalException("No data found", JaxError.NO_RECORD_FOUND);
+				throw new GlobalException(JaxError.NO_RECORD_FOUND, "No data found");
 			}
 			return AmxApiResponse.buildList(shippingAddressList);
 	 }

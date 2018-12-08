@@ -102,14 +102,14 @@ public class ExchangeRateService extends AbstractService {
 		if (fromCurrency.equals(meta.getDefaultCurrencyId())) {
 			List<PipsMaster> pips = pipsDao.getPipsForOnline(toCurrency);
 			if (pips == null || pips.isEmpty()) {
-				throw new GlobalException("No exchange data found", JaxError.EXCHANGE_RATE_NOT_FOUND);
+				throw new GlobalException(JaxError.EXCHANGE_RATE_NOT_FOUND, "No exchange data found");
 			}
 			validateExchangeRateInputdata(lcAmount);
 			BigDecimal countryBranchId = meta.getCountryBranchId();
 			List<BigDecimal> validBankIds = exchangeRateProcedureDao.getBankIdsForExchangeRates(toCurrency);
 			
 			if (validBankIds.isEmpty()) {
-				throw new GlobalException("No exchange data found", JaxError.EXCHANGE_RATE_NOT_FOUND);
+				throw new GlobalException(JaxError.EXCHANGE_RATE_NOT_FOUND, "No exchange data found");
 			}
 			
 			CurrencyMasterModel toCurrencyMaster = currencyMasterDao.getCurrencyMasterById(toCurrency);
@@ -123,7 +123,7 @@ public class ExchangeRateService extends AbstractService {
 			}
 			List<BankMasterDTO> bankWiseRates = chooseBankWiseRates(toCurrency, applicableRatesWithDiscount, lcAmount);
 			if (equivalentAmount == null && (bankWiseRates == null || bankWiseRates.isEmpty())) {
-				throw new GlobalException("No exchange data found", JaxError.EXCHANGE_RATE_NOT_FOUND);
+				throw new GlobalException(JaxError.EXCHANGE_RATE_NOT_FOUND, "No exchange data found");
 			}
 			ExchangeRateResponseModel outputModel = new ExchangeRateResponseModel();
 			outputModel.setExRateBreakup(equivalentAmount);
@@ -302,7 +302,7 @@ public class ExchangeRateService extends AbstractService {
 
 	protected void validateExchangeRateInputdata(BigDecimal amount) {
 		if (amount.compareTo(new BigDecimal(0)) < 0) {
-			throw new GlobalException("No exchange data found", JaxError.INVALID_EXCHANGE_AMOUNT);
+			throw new GlobalException(JaxError.INVALID_EXCHANGE_AMOUNT, "No exchange data found");
 		}
 	}
 

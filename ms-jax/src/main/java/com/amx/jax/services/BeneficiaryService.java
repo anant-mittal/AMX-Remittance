@@ -177,7 +177,7 @@ public class BeneficiaryService extends AbstractService {
 		Collections.sort(beneList, comparator);
 		ApiResponse response = getBlackApiResponse();
 		if (beneList.isEmpty()) {
-			throw new GlobalException("Beneficiary list is not found",JaxError.BENEFICIARY_LIST_NOT_FOUND);
+			throw new GlobalException(JaxError.BENEFICIARY_LIST_NOT_FOUND,"Beneficiary list is not found");
 		} else {
 			response.getData().getValues().addAll(convertBeneList(beneList));
 			response.setResponseStatus(ResponseStatus.OK);
@@ -227,7 +227,7 @@ public class BeneficiaryService extends AbstractService {
 
 		ApiResponse response = getBlackApiResponse();
 		if (beneList.isEmpty()) {
-			throw new GlobalException("Beneficiary list is not found",JaxError.BENEFICIARY_LIST_NOT_FOUND);
+			throw new GlobalException(JaxError.BENEFICIARY_LIST_NOT_FOUND,"Beneficiary list is not found");
 		} else {
 			response.getData().getValues().addAll(convertBeneList(beneList));
 			response.setResponseStatus(ResponseStatus.OK);
@@ -242,8 +242,8 @@ public class BeneficiaryService extends AbstractService {
 																							// 04-05-2018
 		ApiResponse response = getBlackApiResponse();
 		if (beneocountryList.isEmpty()) {
-			throw new GlobalException("Beneficiary country list is not found",
-					JaxError.BENEFICIARY_COUNTRY_LIST_NOT_FOUND);
+			throw new GlobalException(JaxError.BENEFICIARY_COUNTRY_LIST_NOT_FOUND,
+					"Beneficiary country list is not found");
 		} else {
 			response.getData().getValues().addAll(convert(beneocountryList, supportedServiceGroupList));
 			response.setResponseStatus(ResponseStatus.OK);
@@ -257,7 +257,7 @@ public class BeneficiaryService extends AbstractService {
 		List<BigDecimal> supportedServiceGroupList = beneDao.getRoutingBankMasterList(); //add for channeling 04-05-2018
 		ApiResponse response = getBlackApiResponse();
 		if (beneocountryList.isEmpty()) {
-			throw new GlobalException("Beneficiary country list is not found",JaxError.BENEFICIARY_COUNTRY_LIST_NOT_FOUND);
+			throw new GlobalException(JaxError.BENEFICIARY_COUNTRY_LIST_NOT_FOUND,"Beneficiary country list is not found");
 		} else {
 			response.getData().getValues().addAll(convert(beneocountryList,supportedServiceGroupList));
 			response.setResponseStatus(ResponseStatus.OK);
@@ -285,7 +285,7 @@ public class BeneficiaryService extends AbstractService {
 				auditService.log (createBeneficiaryEvent(beneRelationModel,Type.BENE_STATUS_UPDATE_SUCCESS));
 			} else {
 				auditService.log (createBeneficiaryEvent(beneDetails,Type.BENE_STATUS_UPDATE_NO_BENE_RECORD));
-				throw new GlobalException("No record found",JaxError.NO_RECORD_FOUND);
+				throw new GlobalException(JaxError.NO_RECORD_FOUND,"No record found");
 			}
 			return response;
 		} catch (Exception e) {
@@ -316,7 +316,7 @@ public class BeneficiaryService extends AbstractService {
 				auditService.log (createBeneficiaryEvent(beneRelationModel,Type.BENE_FAV_UPDATE_SUCCESS));
 			} else {
 				auditService.log (createBeneficiaryEvent(beneDetails,Type.BENE_FAV_UPDATE_NO_BENE_RECORD));
-				throw new GlobalException("No record found",JaxError.NO_RECORD_FOUND);
+				throw new GlobalException(JaxError.NO_RECORD_FOUND,"No record found");
 			}
 
 			return response;
@@ -407,7 +407,7 @@ public class BeneficiaryService extends AbstractService {
 		}
 		if (beneList.isEmpty()) {
 			auditService.log (createBeneficiaryEvent(customerId,Type.BENE_FAV_LIST_NOT_EXIST));
-			throw new GlobalException("My favourite eneficiary list is not found",JaxError.BENEFICIARY_LIST_NOT_FOUND);
+			throw new GlobalException(JaxError.BENEFICIARY_LIST_NOT_FOUND,"My favourite eneficiary list is not found");
 		} else {
 			response.getData().getValues().addAll(convertBeneList(beneList));
 			response.setResponseStatus(ResponseStatus.OK);
@@ -585,7 +585,7 @@ public class BeneficiaryService extends AbstractService {
 			customerId = customer.getCustomerId();
 		}else {
 			//customer is not logged-in
-			throw new GlobalException("Customer not logged-in", JaxError.CUSTOMER_NOT_FOUND);
+			throw new GlobalException(JaxError.CUSTOMER_NOT_FOUND, "Customer not logged-in");
 		}
 		
 		logger.info("customerId for sending OTPs is --> " + customerId);
@@ -682,7 +682,7 @@ public class BeneficiaryService extends AbstractService {
 				response.getData().setType("boolean_response");
 			} else {
 				auditService.log (createBeneficiaryEvent(beneDetails,Type.BENE_STATUS_UPDATE_NO_BENE_RECORD));
-				throw new GlobalException("No record found",JaxError.NO_RECORD_FOUND);
+				throw new GlobalException(JaxError.NO_RECORD_FOUND,"No record found");
 			}
 			return response;
 		} catch (GlobalException ge) {
@@ -702,7 +702,7 @@ public class BeneficiaryService extends AbstractService {
 		
 		ApiResponse response = getBlackApiResponse();
 		if (serviceProviderList.isEmpty()) {
-			throw new GlobalException("Service provider list is not found.",JaxError.SERVICE_PROVIDER_LIST_NOT_FOUND);
+			throw new GlobalException(JaxError.SERVICE_PROVIDER_LIST_NOT_FOUND,"Service provider list is not found.");
 		} else {
 			response.getData().getValues().addAll(convertSeriviceList(serviceProviderList));
 			response.setResponseStatus(ResponseStatus.OK);
@@ -737,7 +737,7 @@ public class BeneficiaryService extends AbstractService {
 																							param.getCurrencyId());
 		ApiResponse response = getBlackApiResponse();
 		if (agentMasterList.isEmpty()) {
-			throw new GlobalException("Agent Master List is not found.",JaxError.AGENT_BANK_LIST_NOT_FOUND);
+			throw new GlobalException(JaxError.AGENT_BANK_LIST_NOT_FOUND,"Agent Master List is not found.");
 		} else {
 			response.getData().getValues().addAll(convertAgentList(agentMasterList));
 			response.setResponseStatus(ResponseStatus.OK);
@@ -774,7 +774,7 @@ public class BeneficiaryService extends AbstractService {
 																							   param.getAgentBankId());
 		ApiResponse response = getBlackApiResponse();
 		if (agentBranchList.isEmpty()) {
-			throw new GlobalException("Agent Branch List is not found.",JaxError.AGENT_BRANCH_LIST_NOT_FOUND);
+			throw new GlobalException(JaxError.AGENT_BRANCH_LIST_NOT_FOUND,"Agent Branch List is not found.");
 		} else {
 			response.getData().getValues().addAll(convertBranchList(agentBranchList));
 			response.setResponseStatus(ResponseStatus.OK);
@@ -900,7 +900,7 @@ public class BeneficiaryService extends AbstractService {
                 }
                 
                 if (isExpired) {
-            		throw new GlobalException("PO got expired for id : "+placeOrderId,JaxError.PLACE_ORDER_EXPIRED);
+            		throw new GlobalException(JaxError.PLACE_ORDER_EXPIRED,"PO got expired for id : "+placeOrderId);
             	}
                 
                 logger.info("PlaceOrderDTO --> "+poDto.toString());
@@ -910,8 +910,8 @@ public class BeneficiaryService extends AbstractService {
                 
             }else {
 		auditService.log (createBeneficiaryEvent(customerId,placeOrderId,Type.BENE_PO_NO_BENE_RECORD));
-				throw new GlobalException("Place Order not found for place_order_id:",
-						JaxError.PLACE_ORDER_NOT_ACTIVE_OR_EXPIRED);
+				throw new GlobalException(JaxError.PLACE_ORDER_NOT_ACTIVE_OR_EXPIRED,
+						"Place Order not found for place_order_id:");
             }
             
             BigDecimal beneRealtionId = poDto.getBeneficiaryRelationshipSeqId();
@@ -922,7 +922,7 @@ public class BeneficiaryService extends AbstractService {
 
             if (poBene == null) {
                 auditService.log (createBeneficiaryEvent(customerId,placeOrderId,Type.BENE_PO_NO_PO_ID));
-                throw new GlobalException("PO bene not found : ",JaxError.BENEFICIARY_LIST_NOT_FOUND);
+                throw new GlobalException(JaxError.BENEFICIARY_LIST_NOT_FOUND,"PO bene not found : ");
             } else {
                 beneDto = beneCheck.beneCheck(convertBeneModelToDto((poBene)));
                 

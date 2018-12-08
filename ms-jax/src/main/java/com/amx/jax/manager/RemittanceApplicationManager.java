@@ -235,11 +235,11 @@ public class RemittanceApplicationManager {
 		Integer todaysTxns = beneficiaryService.getTodaysTransactionForBene(metaData.getCustomerId(),beneDetails.getBeneficaryMasterSeqId());
 		if (todaysTxns > 0) {
 			throw new GlobalException(
+					JaxError.NO_OF_TRANSACTION_LIMIT_EXCEEDED,
 					"Dear Customer, you have already done 1 application to this beneficiary within the last 24"
 							+ " hours. In the interest of safety, we do not allow a customer to repeat the same"
 							+ " transaction to the same beneficiary more than once in 24 hours."
-							+ " Kindly logout and login to make a new application for the same details",
-					JaxError.NO_OF_TRANSACTION_LIMIT_EXCEEDED);
+							+ " Kindly logout and login to make a new application for the same details");
 		}
 	}
 
@@ -247,7 +247,7 @@ public class RemittanceApplicationManager {
 		Map<String, Object> output = applicationProcedureDao.getBannedBankCheckProcedure(remitApplParametersMap);
 		String errorMessage = (String) output.get("P_ERROR_MESSAGE");
 		if (errorMessage != null) {
-			throw new GlobalException(errorMessage, JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL);
+			throw new GlobalException(JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL, errorMessage);
 		}
 	}
 
@@ -285,7 +285,7 @@ public class RemittanceApplicationManager {
 			errorMessage = "Additional Field required by bank not set";
 		}
 		if (StringUtils.isNotBlank(errorMessage)) {
-			throw new GlobalException(errorMessage, JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL);
+			throw new GlobalException(JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL, errorMessage);
 		}
 	}
 
