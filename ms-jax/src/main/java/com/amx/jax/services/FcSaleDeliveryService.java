@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -135,6 +136,9 @@ public class FcSaleDeliveryService {
 		String oldStatus = deliveryDetail.getOrderStatus();
 		if (!deliveryDetail.getOrderStatus().equals(ConstantDocument.OFD)) {
 			throw new GlobalException("Order status should be OFD", JaxError.FC_CURRENCY_DELIVERY_INVALID_STATUS);
+		}
+		if (StringUtils.isBlank(deliveryDetail.getTransactionReceipt())) {
+			throw new GlobalException("Order receipt not uploaded ", JaxError.FC_CURRENCY_DELIVERY_ORDER_RECIEPT_NOT_FOUND);
 		}
 		deliveryDetail.setOrderStatus(ConstantDocument.DVD);
 		fcSaleApplicationDao.saveDeliveryDetail(deliveryDetail);
