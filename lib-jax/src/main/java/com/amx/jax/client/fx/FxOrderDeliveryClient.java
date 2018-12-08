@@ -150,7 +150,7 @@ public class FxOrderDeliveryClient implements IFxOrderDelivery {
 		try {
 			LOGGER.debug("in markReturn");
 			String url = appConfig.getJaxURL() + Path.FX_DELIVERY_LIST_DELIVERY_REMARK;
-			return restService.ajax(url).post().field(Params.DELIVERY_DETAIL_SEQID, deliveryDetailSeqId)
+			return restService.ajax(url).field(Params.DELIVERY_DETAIL_SEQID, deliveryDetailSeqId).postForm()
 					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
 					});
 		} catch (Exception e) {
@@ -164,7 +164,7 @@ public class FxOrderDeliveryClient implements IFxOrderDelivery {
 		try {
 			LOGGER.debug("in markAcknowledged");
 			String url = appConfig.getJaxURL() + Path.FX_DELIVERY_MARK_ACKNOWLEDGE;
-			return restService.ajax(url).post().field(Params.DELIVERY_DETAIL_SEQID, deliveryDetailSeqId)
+			return restService.ajax(url).field(Params.DELIVERY_DETAIL_SEQID, deliveryDetailSeqId).postForm()
 					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
 					});
 		} catch (Exception e) {
