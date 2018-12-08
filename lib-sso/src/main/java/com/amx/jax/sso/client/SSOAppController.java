@@ -125,8 +125,11 @@ public class SSOAppController {
 	@RequestMapping(value = SSOConstants.APP_LOGIN_URL_HTML, method = { RequestMethod.GET })
 	public String loginJPage(
 			@PathVariable(required = false, value = "htmlstep") @ApiParam(defaultValue = "CHECK") SSOAuthStep step,
-			@RequestParam(required = false) String sotp, Model model, HttpServletRequest request,
+			@RequestParam(required = false) String sotp,
+			@RequestParam(required = false, value = SSOConstants.IS_RETURN) Boolean isReturn,
+			Model model, HttpServletRequest request,
 			HttpServletResponse response) throws MalformedURLException, URISyntaxException {
+		isReturn = ArgUtil.parseAsBoolean(isReturn, true);
 
 		String tranxId = ssoUser.ssoTranxId();
 		step = (SSOAuthStep) ArgUtil.parseAsEnum(step, SSOAuthStep.CHECK);
@@ -142,7 +145,6 @@ public class SSOAppController {
 		}
 
 		if (!ssoUser.isAuthDone()) {
-
 			LOGGER.debug("ssoUser.isAuthDone() is false");
 			SSOModel sSOModel = sSOTranx.get();
 			sSOModel.setAppUrl(request.getRequestURL().toString());
@@ -164,12 +166,22 @@ public class SSOAppController {
 			CommonMediaType.APPLICATION_JSON_VALUE, CommonMediaType.APPLICATION_V0_JSON_VALUE })
 	public String loginJSON(
 			@PathVariable(required = false, value = "jsonstep") @ApiParam(defaultValue = "CHECK") SSOAuthStep step,
-			@RequestParam(required = false) String sotp, Model model, HttpServletRequest request,
+			@RequestParam(required = false) String sotp,
+			@RequestParam(required = false, value = SSOConstants.IS_RETURN) Boolean isReturn,
+			Model model, HttpServletRequest request,
 			HttpServletResponse response) throws MalformedURLException, URISyntaxException {
-		String redirectUrl = this.loginJPage(step, sotp, model, request, response);
-		response.setHeader("Location", (appConfig.getAppPrefix() + redirectUrl.replace(SSOConstants.REDIRECT, "")));
-		response.setStatus(302);
-		return JsonUtil.toJson(AmxApiResponse.build());
+		isReturn = ArgUtil.parseAsBoolean(isReturn, false);
+
+		String redirectUrl = this.loginJPage(step, sotp, isReturn, model, request, response);
+
+		AmxApiResponse<Object, Object> resp = AmxApiResponse.build(new Object());
+		resp.setRedirectUrl((appConfig.getAppPrefix() + redirectUrl.replace(SSOConstants.REDIRECT, "")));
+		if (isReturn) {
+			response.setHeader("Location", resp.getRedirectUrl());
+			response.setStatus(302);
+		}
+
+		return JsonUtil.toJson(resp);
 	}
 
 	@ApiIgnore
