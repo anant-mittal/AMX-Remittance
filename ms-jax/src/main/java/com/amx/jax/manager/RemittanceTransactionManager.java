@@ -523,7 +523,7 @@ public class RemittanceTransactionManager {
 		if (isNewBene && authLimit != null && netAmount.doubleValue() > authLimit.getAuthLimit().doubleValue()) {
 			String errorExpr = jaxUtil.buildErrorExpression(TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED_NEW_BENE.toString(),
 					authLimit.getAuthLimit());
-			throw new GlobalException("New beneficiary max allowed limit exceeds", errorExpr);
+			throw new GlobalException(errorExpr, "New beneficiary max allowed limit exceeds");
 		}
 	}
 
@@ -659,14 +659,14 @@ public class RemittanceTransactionManager {
 	private void validateBlackListedBene(BenificiaryListView beneficiary) {
 		List<BlackListModel> blist = blistDao.getBlackByName(beneficiary.getBenificaryName());
 		if (blist != null && !blist.isEmpty()) {
-			throw new GlobalException("The beneficiary you have selected has been black-listed by CBK ",
-					BLACK_LISTED_CUSTOMER.getStatusKey());
+			throw new GlobalException(BLACK_LISTED_CUSTOMER.getStatusKey(),
+					"The beneficiary you have selected has been black-listed by CBK ");
 		}
 		if (beneficiary.getArbenificaryName() != null) {
 			blist = blistDao.getBlackByName(beneficiary.getArbenificaryName());
 			if (blist != null && !blist.isEmpty()) {
-				throw new GlobalException("Beneficiary local name found matching with black list ",
-						BLACK_LISTED_CUSTOMER.getStatusKey());
+				throw new GlobalException(BLACK_LISTED_CUSTOMER.getStatusKey(),
+						"Beneficiary local name found matching with black list ");
 			}
 		}
 	}

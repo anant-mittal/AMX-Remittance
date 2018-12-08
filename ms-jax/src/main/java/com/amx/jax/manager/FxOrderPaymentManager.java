@@ -168,7 +168,7 @@ public class FxOrderPaymentManager {
 				}
 		}catch(GlobalException e){
 			logger.error("createFcSaleReceiptApplication", e.getErrorMessage() + "" +e.getErrorKey());
-			 throw new GlobalException(e.getErrorMessage(),e.getErrorKey());
+			 throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}catch(Exception e){
 			logger.error("try--catch block paymentCapture :"+e.getMessage());
 			throw new GlobalException(JaxError.PAYMENT_UPDATION_FAILED, "catch Payment capture failed");
@@ -367,7 +367,7 @@ public class FxOrderPaymentManager {
 			 }
 		 }catch(GlobalException e){
 				logger.error("createFcSaleReceiptApplication", e.getErrorMessage() + "" +e.getErrorKey());
-				 throw new GlobalException(e.getErrorMessage(),e.getErrorKey());
+				 throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		 }catch(Exception e){
 			 e.printStackTrace();
 			 logger.error("save collection :"+e.getMessage());
@@ -433,7 +433,7 @@ public class FxOrderPaymentManager {
 			collectDetail.setKnetReceiptDateTime(new SimpleDateFormat("dd/MM/YYYY hh:mm").format(new Date()));
 		}catch(GlobalException e){
 			logger.error("createFcSaleReceiptApplication", e.getErrorMessage() + "" +e.getErrorKey());
-			 throw new GlobalException(e.getErrorMessage(),e.getErrorKey());
+			 throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		 }catch(Exception e){
 			 e.printStackTrace();
 			 logger.error("save collection details :"+e.getMessage());

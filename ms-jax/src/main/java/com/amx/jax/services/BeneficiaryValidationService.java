@@ -169,7 +169,7 @@ public class BeneficiaryValidationService {
 				String validLengths = accNumLength.stream().map(i -> i.toString()).collect(Collectors.joining(":"));
 				String errorExpression = jaxUtil
 						.buildErrorExpression(JaxError.INVALID_BANK_ACCOUNT_NUM_LENGTH.toString(), validLengths);
-				throw new GlobalException("Invalid Bank Account number length", errorExpression);
+				throw new GlobalException(errorExpression, "Invalid Bank Account number length");
 			}
 		}
 	}
@@ -268,16 +268,16 @@ public class BeneficiaryValidationService {
 		if (!StringUtils.isBlank(beneInfo.getBenificaryName())) {
 			List<BlackListModel> blist = blackListDao.getBlackByName(beneInfo.getBenificaryName());
 			if (blist != null && !blist.isEmpty()) {
-				throw new GlobalException("The beneficiary you have selected has been black-listed by CBK ",
-						JaxError.BLACK_LISTED_BENEFICIARY.getCode());
+				throw new GlobalException(JaxError.BLACK_LISTED_BENEFICIARY.getCode(),
+						"The beneficiary you have selected has been black-listed by CBK ");
 			}
 		}
 		
 		if (!StringUtils.isBlank(beneInfo.getArbenificaryName())) {
 			List<BlackListModel> blist = blackListDao.getBlackByLocalName(beneInfo.getArbenificaryName());
 			if (blist != null && !blist.isEmpty()) {
-				throw new GlobalException("Beneficiary Arabic name found matching with black list ",
-						JaxError.BLACK_LISTED_ARABIC_BENEFICIARY.getCode());
+				throw new GlobalException(JaxError.BLACK_LISTED_ARABIC_BENEFICIARY.getCode(),
+						"Beneficiary Arabic name found matching with black list ");
 			}
 		}
 	}

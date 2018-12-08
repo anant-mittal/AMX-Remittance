@@ -92,7 +92,7 @@ public class CustomerPersonalDetailValidator implements Validator {
 		}
 		List<BlackListModel> blist = blackListDao.getBlackByName(customerName.toString());
 		if (blist != null && !blist.isEmpty()) {
-			throw new GlobalException("Customer is black listed", JaxError.BLACK_LISTED_CUSTOMER.getStatusKey());
+			throw new GlobalException(JaxError.BLACK_LISTED_CUSTOMER.getStatusKey(), "Customer is black listed");
 		}
 	}
 	

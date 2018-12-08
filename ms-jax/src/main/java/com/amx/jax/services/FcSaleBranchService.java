@@ -71,7 +71,7 @@ public class FcSaleBranchService extends AbstractService{
 				throw new GlobalException(JaxError.NO_RECORD_FOUND,"Order Management records not found");
 			}
 		}catch (GlobalException e) {
-			throw new GlobalException(e.getErrorMessage(),e.getErrorKey());
+			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}catch (Exception e) {
 			throw new GlobalException(e.getMessage());
 		}
@@ -208,7 +208,7 @@ public class FcSaleBranchService extends AbstractService{
 				throw new GlobalException(JaxError.NO_RECORD_FOUND,"Order Management records not found");
 			}
 		}catch (GlobalException e) {
-			throw new GlobalException(e.getErrorMessage(),e.getErrorKey());
+			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}catch (Exception e) {
 			throw new GlobalException(e.getMessage());
 		}
@@ -323,7 +323,7 @@ public class FcSaleBranchService extends AbstractService{
 				throw new GlobalException(JaxError.NO_RECORD_FOUND,"User stock records not found");
 			}
 		}catch (GlobalException e) {
-			throw new GlobalException(e.getErrorMessage(),e.getErrorKey());
+			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}catch (Exception e) {
 			throw new GlobalException(e.getMessage());
 		}
@@ -349,7 +349,7 @@ public class FcSaleBranchService extends AbstractService{
 				throw new GlobalException(JaxError.NO_RECORD_FOUND,"User stock records not found");
 			}
 		}catch (GlobalException e) {
-			throw new GlobalException(e.getErrorMessage(),e.getErrorKey());
+			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}catch (Exception e) {
 			throw new GlobalException(e.getMessage());
 		}
@@ -368,7 +368,7 @@ public class FcSaleBranchService extends AbstractService{
 				throw new GlobalException(JaxError.NO_RECORD_FOUND,"driver records not found");
 			}
 		}catch (GlobalException e) {
-			throw new GlobalException(e.getErrorMessage(),e.getErrorKey());
+			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}catch (Exception e) {
 			throw new GlobalException(e.getMessage());
 		}
@@ -403,7 +403,7 @@ public class FcSaleBranchService extends AbstractService{
 				throw new GlobalException(JaxError.SAVE_FAILED,"Driver id didn't updated");
 			}
 		}catch (GlobalException e) {
-			throw new GlobalException(e.getErrorMessage(),e.getErrorKey());
+			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}catch (Exception e) {
 			throw new GlobalException(e.getMessage());
 		}
@@ -435,7 +435,7 @@ public class FcSaleBranchService extends AbstractService{
 				throw new GlobalException(JaxError.SAVE_FAILED,"Print order save didn't updated");
 			}
 		}catch (GlobalException e) {
-			throw new GlobalException(e.getErrorMessage(),e.getErrorKey());
+			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}catch (Exception e) {
 			throw new GlobalException(e.getMessage());
 		}
@@ -467,7 +467,7 @@ public class FcSaleBranchService extends AbstractService{
 				throw new GlobalException(JaxError.SAVE_FAILED,"accept Order lock didn't updated");
 			}
 		}catch (GlobalException e) {
-			throw new GlobalException(e.getErrorMessage(),e.getErrorKey());
+			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}catch (Exception e) {
 			throw new GlobalException(e.getMessage());
 		}
@@ -499,7 +499,7 @@ public class FcSaleBranchService extends AbstractService{
 				throw new GlobalException(JaxError.SAVE_FAILED,"Release Order lock didn't updated");
 			}
 		}catch (GlobalException e) {
-			throw new GlobalException(e.getErrorMessage(),e.getErrorKey());
+			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}catch (Exception e) {
 			throw new GlobalException(e.getMessage());
 		}
@@ -531,7 +531,7 @@ public class FcSaleBranchService extends AbstractService{
 				throw new GlobalException(JaxError.SAVE_FAILED,"dispatch order status didn't updated");
 			}
 		}catch (GlobalException e) {
-			throw new GlobalException(e.getErrorMessage(),e.getErrorKey());
+			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}catch (Exception e) {
 			throw new GlobalException(e.getMessage());
 		}
@@ -563,7 +563,7 @@ public class FcSaleBranchService extends AbstractService{
 				throw new GlobalException(JaxError.SAVE_FAILED,"acknowledge driver status didn't updated");
 			}
 		}catch (GlobalException e) {
-			throw new GlobalException(e.getErrorMessage(),e.getErrorKey());
+			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}catch (Exception e) {
 			throw new GlobalException(e.getMessage());
 		}
@@ -595,7 +595,7 @@ public class FcSaleBranchService extends AbstractService{
 				throw new GlobalException(JaxError.SAVE_FAILED,"return acknowledge status didn't updated");
 			}
 		}catch (GlobalException e) {
-			throw new GlobalException(e.getErrorMessage(),e.getErrorKey());
+			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}catch (Exception e) {
 			throw new GlobalException(e.getMessage());
 		}
@@ -627,7 +627,7 @@ public class FcSaleBranchService extends AbstractService{
 				throw new GlobalException(JaxError.SAVE_FAILED,"accept cancellation status didn't updated");
 			}
 		}catch (GlobalException e) {
-			throw new GlobalException(e.getErrorMessage(),e.getErrorKey());
+			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}catch (Exception e) {
 			throw new GlobalException(e.getMessage());
 		}
@@ -659,7 +659,7 @@ public class FcSaleBranchService extends AbstractService{
 				throw new GlobalException(JaxError.UNABLE_TO_PRINT_ORDER,"Re-print order unable to print");
 			}
 		}catch (GlobalException e) {
-			throw new GlobalException(e.getErrorMessage(),e.getErrorKey());
+			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}catch (Exception e) {
 			throw new GlobalException(e.getMessage());
 		}

@@ -9,8 +9,8 @@ public class CustomerValidationException extends AbstractJaxException {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public CustomerValidationException(String errorMessage, String errorCode) {
-		super(errorMessage, errorCode);
+	public CustomerValidationException(String errorCode, String errorMessage) {
+		super(errorCode, errorMessage);
 	}
 
 	public CustomerValidationException(AmxApiError error) {
