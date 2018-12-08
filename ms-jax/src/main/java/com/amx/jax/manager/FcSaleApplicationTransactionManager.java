@@ -154,6 +154,10 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 	@Autowired
 	FxOrderPaymentManager  orderPayMang;
 	
+	@Autowired
+	FcSaleOrderTransactionManager trnxManager;
+	
+	
 	/**
 	 * 
 	 */
@@ -201,9 +205,9 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 		fsSaleapplicationDao.saveAllAppDetails(mapAllDetailApplSave);
 		BigDecimal knetamount= BigDecimal.ZERO;
 		List<FxApplicationDto> listShoppingCart = requestmodel.getCartDetailList();
-		if(!listShoppingCart.isEmpty()){
+		if(listShoppingCart!=null && !listShoppingCart.isEmpty()){
 		for(FxApplicationDto shoppingCart:listShoppingCart){
-			logger.info("FC Sale application Id : "+shoppingCart.getApplicationId());
+			logger.debug("FC Sale application Id : "+shoppingCart.getApplicationId());
 			ReceiptPaymentApp rcptAppl = rcptPaymentAppl.findOne(shoppingCart.getApplicationId());
 			if(rcptAppl!=null && rcptAppl.getIsActive().equalsIgnoreCase(ConstantDocument.Yes) 
 					&& rcptAppl.getApplicationStatus().equalsIgnoreCase(ConstantDocument.S)){
@@ -223,12 +227,12 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 			throw new GlobalException("No record found for payment", JaxError.NO_RECORD_FOUND);
 		}
 		
-		logger.info("Total knet amount without delivery charges: "+knetamount);
-		if(!parameterList.isEmpty()){
-			logger.info("Delivery charges: "+parameterList.get(0).getNumericField1());
+		logger.debug("Total knet amount without delivery charges: "+knetamount);
+		if(parameterList!=null && !parameterList.isEmpty()){
+			logger.debug("Delivery charges: "+parameterList.get(0).getNumericField1());
 			knetamount = knetamount.add(parameterList.get(0).getNumericField1());
 		}else{
-			logger.info("Delivery charges: "+parameterList.get(0).getNumericField1());
+			logger.debug("Delivery charges: "+parameterList.get(0).getNumericField1());
 			throw new GlobalException("Fc Delivery not defined", JaxError.FC_CURRENCY_DELIVERY_CHARGES_NOT_FOUND);
 		}
 		if(JaxUtil.isNullZeroBigDecimalCheck(knetamount) && knetamount.compareTo(BigDecimal.ZERO) > 0){
@@ -237,7 +241,7 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 			throw new GlobalException("Toal Knet Amount ", JaxError.INVALID_AMOUNT);
 		}
 		
-		logger.info("Total knet amount with delivery charges: "+knetamount);
+		logger.debug("Total knet amount with delivery charges: "+knetamount);
 		return responeModel; 
 	}
 	
@@ -295,11 +299,16 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 		}
 		validation.validateHeaderInfo();
 		
+		if(!JaxUtil.isNullZeroBigDecimalCheck(fcSalerequestModel.getForeignAmount()) && fcSalerequestModel.getForeignAmount().compareTo(BigDecimal.ZERO)<0){
+			throw new GlobalException("Negative not allowed", JaxError.INVALID_EXCHANGE_AMOUNT);
+		}
+		
 		FxExchangeRateBreakup exchbreakUpRate = getExchangeRateFcSaleOrder(applciationCountryid, countryBranchId, fcSalerequestModel.getForeignCurrencyId(), fcSalerequestModel.getForeignAmount());
 		
 		receiptPaymentAppl.setLocalCurrencyId(localCurrencyId);
 		receiptPaymentAppl.setForeignCurrencyId(fcSalerequestModel.getForeignCurrencyId());
 		receiptPaymentAppl.setForignTrnxAmount(fcSalerequestModel.getForeignAmount());
+		
 		receiptPaymentAppl.setLocalTrnxAmount(exchbreakUpRate.getConvertedLCAmount() ==null?BigDecimal.ZERO:exchbreakUpRate.getConvertedLCAmount());
 		receiptPaymentAppl.setLocalNetAmount(exchbreakUpRate.getNetAmount()==null?BigDecimal.ZERO:exchbreakUpRate.getNetAmount());
 		receiptPaymentAppl.setTransactionActualRate(exchbreakUpRate.getRate()==null?BigDecimal.ZERO:exchbreakUpRate.getRate());
@@ -309,8 +318,15 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 		receiptPaymentAppl.setDocumentFinanceYear(userFinancialYear.getFinancialYear());
 		}
 		
+		if(receiptPaymentAppl.getLocalTrnxAmount().compareTo(BigDecimal.ZERO)<=0){
+			throw new GlobalException("Enter valid amount ",JaxError.ZERO_NOT_ALLOWED);
+		}
 		
-		AuthenticationLimitCheckView authLimit = authentication.getFxOrderTxnLimit();
+
+		
+		trnxManager.checkFCSaleTrnxLimit(exchbreakUpRate,fcSalerequestModel.getForeignCurrencyId(),fcSalerequestModel.getForeignAmount(),localCurrencyId,customerId);
+		
+		/*AuthenticationLimitCheckView authLimit = authentication.getFxOrderTxnLimit();
 		if(authLimit!=null){
 		 fcTrnxLimitPerDay = authLimit.getAuthLimit();
 		 FxOrderTranxLimitView trnxViewModel = trnxLimitRepos.getFxTransactionLimit(customerId);
@@ -320,11 +336,11 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 			 fxTrnxHistAmount = receiptPaymentAppl.getLocalTrnxAmount();
 		 }
 		 if(JaxUtil.isNullZeroBigDecimalCheck(fxTrnxHistAmount) && JaxUtil.isNullZeroBigDecimalCheck(fcTrnxLimitPerDay) && fxTrnxHistAmount.compareTo(fcTrnxLimitPerDay)>=0){
-			 throw new GlobalException("Fx Trasaction limit exceeds ",JaxError.FC_SALE_TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED);
+			 throw new GlobalException("You have reached daily limit of FC Sale  "+fcTrnxLimitPerDay,JaxError.FC_SALE_TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED);
 		 }
 		}else{
 			throw new GlobalException("FX Order limit setup is not defined",JaxError.FC_SALE_DAY_LIMIT_SETUP_NOT_DIFINED);
-		}
+		}*/
 		receiptPaymentAppl.setDenominationType(fcSalerequestModel.getCurrencyDenominationType());
 		receiptPaymentAppl.setTransactionType(ConstantDocument.S);
 		receiptPaymentAppl.setIsActive(ConstantDocument.Yes);
@@ -395,7 +411,7 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 		try{
 		
 		BigDecimal maxExchangeRate = BigDecimal.ZERO;
-		logger.info("calculateTrnxRate fc currencyId :"+fcCurrencyId+"\t fcAmount :"+fcAmount+"\t countryId :"+countryId+"\t countryBracnhId :"+countryBracnhId);
+		logger.debug("calculateTrnxRate fc currencyId :"+fcCurrencyId+"\t fcAmount :"+fcAmount+"\t countryId :"+countryId+"\t countryBracnhId :"+countryBracnhId);
 		FcSaleOrderApplicationResponseModel responseModel = new FcSaleOrderApplicationResponseModel();
 		
 		List<FxExchangeRateView> fxSaleRateList = fcSaleExchangeRateDao.getFcSaleExchangeRate(countryId, countryBracnhId, fcCurrencyId);
@@ -407,7 +423,14 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 		if(fxSaleRateList!= null && !fxSaleRateList .isEmpty()){
 			maxExchangeRate = fxSaleRateList.get(0).getSalMaxRate();
 		}
-		logger.info(" maxExchangeRate  :"+maxExchangeRate +"\t : for Currency  :"+fcCurrencyId+"\t Fc amount :"+fcAmount);
+		logger.debug(" maxExchangeRate  :"+maxExchangeRate +"\t : for Currency  :"+fcCurrencyId+"\t Fc amount :"+fcAmount);
+		
+		
+		
+		if(JaxUtil.isNullZeroBigDecimalCheck(fcAmount) && fcAmount.compareTo(BigDecimal.ZERO)<0){
+			throw new GlobalException("Negative not allowed", JaxError.INVALID_EXCHANGE_AMOUNT);
+		}
+		
 		
 		if(parameterList != null && !parameterList.isEmpty()){
 			breakup.setDeliveryCharges(RoundUtil.roundBigDecimal(parameterList.get(0).getNumericField1()==null?BigDecimal.ZERO:parameterList.get(0).getNumericField1(),breakup.getLcDecimalNumber().intValue()));
@@ -458,7 +481,7 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 	try{
 		fsSaleapplicationDao.removeItemFromCart(applId);
 		List<FxShoppingCartDetails>  shoppingCartList  = fcSaleExchangeRateDao.getFcSaleShoppingCartDetails(applciationCountryid, companyId, customerId);
-		if(!shoppingCartList.isEmpty()){
+		if(shoppingCartList !=null && !shoppingCartList.isEmpty()){
 			cartListDto = convertShopingCartDto(shoppingCartList);
 		}
 		responeModel.setCartDetails(cartListDto);
@@ -484,7 +507,7 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 		if(parameterList != null && !parameterList.isEmpty()){
 			deliveryCharges = parameterList.get(0).getNumericField1()==null?BigDecimal.ZERO:parameterList.get(0).getNumericField1();
 		}	
-		if(!shoppingCartList.isEmpty()){
+		if(shoppingCartList!=null && !shoppingCartList.isEmpty()){
 			cartListDto = convertShopingCartDto(shoppingCartList);
 			for( ShoppingCartDetailsDto dto :cartListDto){
 				totalNetAmount =totalNetAmount.add(dto.getLocalTranxAmount());
@@ -542,7 +565,7 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 		List<FxDeliveryTimeSlotMaster> list = fcSaleOrderTimeSlotDao.findByCountryIdAndCompanyIdAndIsActive(appCountryId, companyId, ConstantDocument.Yes);
 		
 		
-		if(!list.isEmpty()){
+		if(list!=null && !list.isEmpty()){
 			BigDecimal  startTime = list.get(0).getStartTime()==null?BigDecimal.ZERO:list.get(0).getStartTime();
 			BigDecimal  endTime = list.get(0).getEndTime()==null?BigDecimal.ZERO:list.get(0).getEndTime();
 			BigDecimal  timeInterval = list.get(0).getTimeInterval()==null?BigDecimal.ZERO:list.get(0).getTimeInterval();
@@ -617,7 +640,7 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 		deliveryDetails.setDeliveryTimeSlot(requestmodel.getTimeSlot());
 		deliveryDetails.setDeliveryCharges(getDeliveryChargesFromParameter());
 		deliveryDetails.setShippingAddressId(requestmodel.getShippingAddressId());
-		if(!requestmodel.getCartDetailList().isEmpty()){
+		if(requestmodel !=null && !requestmodel.getCartDetailList().isEmpty()){
 			for(FxApplicationDto dto :requestmodel.getCartDetailList()){
 				appldocNo =appldocNo.append(dto.getApplicationId()).append(",");
 			}
@@ -657,7 +680,7 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 		trnxFxOrderList= fxTransactionHistroyDao.getFxOrderTrnxList(customerId);
 		
 
-		if(trnxFxOrderList.isEmpty()){
+		if(trnxFxOrderList==null || trnxFxOrderList.isEmpty()){
 			throw new GlobalException("fx order list is empty", JaxError.NO_RECORD_FOUND);
 		}else{
 			trnxFxOrderListDto = convertFxHistDto(trnxFxOrderList);
@@ -763,7 +786,9 @@ public List<FxOrderTransactionHistroyDto> getMultipleTransactionHistroy(List<FxO
 		}
 		
 		if(dto.getDeliveryDetSeqId()!=null){
-			fianlDto.setDeliveryAddress(getDeliveryAddress(dto.getDeliveryDetSeqId()));
+			fianlDto.setDeliveryAddress(getDeliveryAddress(dto.getCustomerId(),dto.getDeliveryDetSeqId()));
+			
+			
 		}
 	
 		
@@ -808,17 +833,15 @@ public List<FxOrderTransactionHistroyDto> getMultipleTransactionHistroy(List<FxO
 	return finalFxOrderListDto;
 }
 
-	public String getDeliveryAddress(BigDecimal deliveryDetSeqId){
-		logger.info("getDeliveryAddress  :"+deliveryDetSeqId);
+	public String getDeliveryAddress(BigDecimal customerId,BigDecimal deliveryDetSeqId){
+		logger.debug("getDeliveryAddress  :"+deliveryDetSeqId);
 		ShippingAddressDto shippingAddressDto = new ShippingAddressDto();
 		String address ="";
 		StringBuffer sb = new StringBuffer();
 		String concat =",";
 		FxDeliveryDetailsModel fxDelDetailModel = deliveryDetailsRepos.findOne(deliveryDetSeqId);
 		if(fxDelDetailModel != null){
-			ShippingAddressDetail shippAddDetails = shippingAddressDao.findOne(fxDelDetailModel.getShippingAddressId());
-			if(shippAddDetails!=null){
-    		 shippingAddressDto =reportManager.getShippingaddressDetails(shippAddDetails);
+			 shippingAddressDto =addressManager.fetchShippingAddress(customerId ,fxDelDetailModel.getShippingAddressId());
     		 if(shippingAddressDto!=null){
     		 sb = sb.append("Street ").append(shippingAddressDto.getStreet()==null?"":shippingAddressDto.getStreet()).append(concat)
     			  .append("Block ").append(shippingAddressDto.getBlock()==null?"":shippingAddressDto.getBlockNo()).append(concat)
@@ -831,11 +854,12 @@ public List<FxOrderTransactionHistroyDto> getMultipleTransactionHistroy(List<FxO
     			  .append("Contact ").append(shippingAddressDto.getMobile()==null?"":shippingAddressDto.getMobile());
     		 
     		 }
-		 }
 		}
 		if(sb!=null){
 			address = sb.toString();
 		}
 		return address;
 	}
+	
+	
 }

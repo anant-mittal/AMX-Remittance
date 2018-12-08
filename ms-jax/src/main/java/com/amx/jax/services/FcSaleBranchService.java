@@ -225,7 +225,7 @@ public class FcSaleBranchService extends AbstractService{
 			
 			OrderManagementView ordDelieryAddress = orderManagementView.get(0);
 			if(ordDelieryAddress.getDeliveryDetailsId() != null) {
-				String address = fcSaleApplicationTransactionManager.getDeliveryAddress(ordDelieryAddress.getDeliveryDetailsId());
+				String address = fcSaleApplicationTransactionManager.getDeliveryAddress(ordDelieryAddress.getCustomerId(),ordDelieryAddress.getDeliveryDetailsId());
 				deliveryAddress = address;
 			}
 
@@ -635,4 +635,35 @@ public class FcSaleBranchService extends AbstractService{
 		return new BoolRespModel(status);
 	}
 
+	public AmxApiResponse<FxOrderReportResponseDto,Object> reprintOrder(BigDecimal applicationCountryId,BigDecimal orderNumber,BigDecimal orderYear,BigDecimal employeeId) {
+		FxOrderReportResponseDto fxOrderReportResponseDto = null;
+		
+		if(applicationCountryId == null || applicationCountryId.compareTo(BigDecimal.ZERO)==0){
+			throw new GlobalException("Application country id should not be blank",JaxError.NULL_APPLICATION_COUNTRY_ID);
+		}
+		if(orderNumber == null || orderNumber.compareTo(BigDecimal.ZERO)==0){
+			throw new GlobalException("Order Number should not be blank",JaxError.NULL_ORDER_NUBMER);
+		}
+		if(orderYear == null || orderYear.compareTo(BigDecimal.ZERO)==0){
+			throw new GlobalException("Order Year should not be blank",JaxError.NULL_ORDER_YEAR);
+		}
+		if(employeeId == null || employeeId.compareTo(BigDecimal.ZERO) == 0){
+			throw new GlobalException("Employee Id should not be blank",JaxError.NULL_EMPLOYEE_ID);
+		}
+		
+		try {
+			fxOrderReportResponseDto = branchOrderManager.reprintOrder(applicationCountryId, orderNumber, orderYear, employeeId);
+			if(fxOrderReportResponseDto != null) {
+				// success
+			}else {
+				throw new GlobalException("Re-print order unable to print",JaxError.UNABLE_TO_PRINT_ORDER);
+			}
+		}catch (GlobalException e) {
+			throw new GlobalException(e.getErrorMessage(),e.getErrorKey());
+		}catch (Exception e) {
+			throw new GlobalException(e.getMessage());
+		}
+		
+		return AmxApiResponse.build(fxOrderReportResponseDto);
+	}
 }

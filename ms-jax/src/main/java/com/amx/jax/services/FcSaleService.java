@@ -172,8 +172,7 @@ public class FcSaleService extends AbstractService {
 	public AmxApiResponse<FcSaleOrderApplicationResponseModel, Object> getFCSaleLcAndFcAmount(
 			BigDecimal applicationCountryId, BigDecimal countryBranchId, BigDecimal fxCurrencyId, BigDecimal fcAmount) {
 		validation.validateHeaderInfo();
-		FcSaleOrderApplicationResponseModel responseModel = trnxManager.calculateTrnxRate(applicationCountryId,
-				countryBranchId, fxCurrencyId, fcAmount);
+		FcSaleOrderApplicationResponseModel responseModel = trnxManager.calculateTrnxRate(applicationCountryId,countryBranchId, fxCurrencyId, fcAmount);
 		return AmxApiResponse.build(responseModel);
 	}
 
@@ -287,10 +286,9 @@ public class FcSaleService extends AbstractService {
 
 	/** Pay now save **/
 
-	public AmxApiResponse<FcSaleApplPaymentReponseModel, Object> saveApplicationPayment(
-			FcSaleOrderPaynowRequestModel requestmodel) {
+	public AmxApiResponse<FcSaleApplPaymentReponseModel, Object> saveApplicationPayment(FcSaleOrderPaynowRequestModel requestmodel) {
 		validation.validateHeaderInfo();
-		if (requestmodel.getCartDetailList().isEmpty()) {
+		if (requestmodel !=null && requestmodel.getCartDetailList().isEmpty()) {
 			throw new GlobalException("Mandatory field is missing", JaxError.NULL_APPLICATION_ID);
 		}
 		FcSaleApplPaymentReponseModel responseModel = applTrnxManager.saveApplicationPayment(requestmodel);

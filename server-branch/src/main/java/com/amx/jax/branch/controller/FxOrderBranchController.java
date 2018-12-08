@@ -90,7 +90,11 @@ public class FxOrderBranchController {
 
 		duplicate = ArgUtil.parseAsBoolean(duplicate, false);
 		
-		AmxApiResponse<FxOrderReportResponseDto, Object> wrapper = fxOrderBranchClient.printOrderSave(fcSaleBranchDispatchRequest);
+		AmxApiResponse<FxOrderReportResponseDto, Object> wrapper = duplicate ? 
+				fxOrderBranchClient.reprintOrder(
+						fcSaleBranchDispatchRequest.getCollectionDocumentNo(), 
+						fcSaleBranchDispatchRequest.getCollectionDocumentYear()) : 
+				fxOrderBranchClient.printOrderSave(fcSaleBranchDispatchRequest);
 
 		if (File.Type.PDF.equals(ext)) {
 			File file = postManService.processTemplate(

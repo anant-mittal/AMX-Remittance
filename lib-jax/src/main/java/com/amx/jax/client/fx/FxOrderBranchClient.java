@@ -278,5 +278,25 @@ public class FxOrderBranchClient implements IFxBranchOrderService {
 			return JaxSystemError.evaluate(e);
 		} // end of try-catch
 	}
+	
+	/**
+	 * 
+	 * @return : To get the re-print order
+	 */
+	@Override
+	public AmxApiResponse<FxOrderReportResponseDto,Object> reprintOrder(BigDecimal orderNumber,BigDecimal orderYear) {
+		try {
+			LOGGER.debug("in reprintOrder :"+orderNumber +" "+orderYear);
+			return restService.ajax(appConfig.getJaxURL() + Path.FC_REPRINT_ORDER).meta(new JaxMetaInfo())
+					.queryParam(Params.FX_ORDER_NUMBER, orderNumber).meta(new JaxMetaInfo())
+					.queryParam(Params.FX_ORDER_YEAR, orderYear)
+					.get()
+					.as(new ParameterizedTypeReference<AmxApiResponse<FxOrderReportResponseDto,Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in reprintOrder : ", e);
+			return JaxSystemError.evaluate(e);
+		} // end of try-catch
+	}
 
 }

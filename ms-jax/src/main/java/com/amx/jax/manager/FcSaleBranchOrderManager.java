@@ -352,6 +352,8 @@ public class FcSaleBranchOrderManager {
 										deliveryDetailNew.setRemarksId(deliveryDetail.getRemarksId());
 										deliveryDetailNew.setShippingAddressId(deliveryDetail.getShippingAddressId());
 										deliveryDetailNew.setTransactionReceipt(deliveryDetail.getTransactionReceipt());
+										deliveryDetailNew.setOrderLock(new Date());
+										deliveryDetailNew.setEmployeeId(employeeId);
 
 										// deactivate current record
 										deliveryDetail.setIsActive("D");
@@ -1067,6 +1069,23 @@ public class FcSaleBranchOrderManager {
 		}
 
 		return status;
+	}
+	
+	public FxOrderReportResponseDto reprintOrder(BigDecimal applicationCountryId,BigDecimal orderNumber,BigDecimal orderYear,BigDecimal employeeId){
+		FxOrderReportResponseDto fxOrderReportResponseDto = null;
+		BigDecimal customerId = null;
+		// fetch collection details
+		List<CollectionModel> collection = fcSaleBranchDao.fetchCollectionData(orderNumber, orderYear);
+		if(collection != null && collection.size() != 0) {
+			CollectionModel collectionModel = collection.get(0);
+			customerId = collectionModel.getFsCustomer().getCustomerId();
+			
+			fxOrderReportResponseDto = fetchTransactionReport(customerId,orderYear, orderNumber);
+		}else {
+			throw new GlobalException("Collection details is empty",JaxError.INVALID_COLLECTION_DOCUMENT_NO);
+		}
+		
+		return fxOrderReportResponseDto; 
 	}
 
 	// stock move from branch staff to driver and vice versa

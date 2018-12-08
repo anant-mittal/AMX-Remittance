@@ -109,10 +109,10 @@ public class FxOrderPaymentManager {
 
 	
 	public PaymentResponseDto paymentCapture(PaymentResponseDto paymentResponse) {
-		logger.info("paymment capture :"+paymentResponse.toString());
-		logger.info("Customer Id :"+paymentResponse.getCustomerId());
-		logger.info("Result code :"+paymentResponse.getResultCode()+"\t Auth Code :"+paymentResponse.getAuth_appNo());		
-		logger.info("paymment capture Payment ID :"+paymentResponse.getPaymentId()+"\t Merchant Track Id :"+paymentResponse.getTrackId()+"\t UDF 3 :"+paymentResponse.getUdf3()+"\t Udf 2 :"+paymentResponse.getUdf2());
+		logger.debug("paymment capture :"+paymentResponse.toString());
+		logger.debug("Customer Id :"+paymentResponse.getCustomerId());
+		logger.debug("Result code :"+paymentResponse.getResultCode()+"\t Auth Code :"+paymentResponse.getAuth_appNo());		
+		logger.debug("paymment capture Payment ID :"+paymentResponse.getPaymentId()+"\t Merchant Track Id :"+paymentResponse.getTrackId()+"\t UDF 3 :"+paymentResponse.getUdf3()+"\t Udf 2 :"+paymentResponse.getUdf2());
 		
 	
 		HashMap<String, Object> mapAllDetailApplSave = new HashMap<String, Object>();
@@ -149,7 +149,7 @@ public class FxOrderPaymentManager {
 			 mapResopnseObject= rcptApplPaydao.finalSaveAll(mapAllDetailApplSave);
 			 
 			 
-			 logger.info("mapResopnseObject :"+mapResopnseObject.toString());
+			 logger.debug("mapResopnseObject :"+mapResopnseObject.toString());
 			 if(mapResopnseObject != null && mapResopnseObject.get("P_ERROR_MESG")==null){
 				 paymentResponse.setCollectionDocumentNumber((BigDecimal)mapResopnseObject.get("P_COLLECTION_NO"));
 				 paymentResponse.setCollectionFinanceYear((BigDecimal)mapResopnseObject.get("P_COLLECT_FINYR"));
