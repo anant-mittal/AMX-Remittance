@@ -32,7 +32,7 @@ public interface IFxOrderDelivery extends IJaxService {
 
 	public static class Params {
 		public static final String DELIVERY_DETAIL_SEQID = "deliveryDetailSeqId";
-		public static final String DELIVERY_DETAIL_OTP = "otp";
+		public static final String DELIVERY_DETAIL_OTP = "mOtp";
 	}
 
 	@ApiJaxStatus(JaxError.JAX_FIELD_VALIDATION_FAILURE)
