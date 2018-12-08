@@ -124,7 +124,7 @@ public class FxOrderDeliveryClient implements IFxOrderDelivery {
 			String url = appConfig.getJaxURL() + Path.FX_DELIVERY_VERIFY_OTP;
 			return restService.ajax(url).meta(new JaxMetaInfo())
 					.field(Params.DELIVERY_DETAIL_SEQID, deliveryDetailSeqId).field(Params.DELIVERY_DETAIL_OTP, mOtp)
-					.get().as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
+					.postForm().as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
 					});
 		} catch (Exception e) {
 			LOGGER.error("exception in verifyOtp : ", e);
