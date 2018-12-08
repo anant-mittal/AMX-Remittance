@@ -234,6 +234,7 @@ public class FcSaleDeliveryService {
 		String hashedmOtp = cryptoUtil.generateHash(deliveryDetailSeqId.toString(), mOtp);
 		fxDeliveryDetailsModel.setOtpToken(hashedmOtp);
 		fxDeliveryDetailsModel.setOtpTokenPrefix(mOtpPrefix);
+		fxDeliveryDetailsModel.setOtpValidated(ConstantDocument.No);
 		fcSaleApplicationDao.saveDeliveryDetail(fxDeliveryDetailsModel);
 
 		FxDeliveryDetailDto ddDto = createFxDeliveryDetailDto(vwFxDeliveryDetailsModel);
@@ -255,16 +256,18 @@ public class FcSaleDeliveryService {
 
 	public BoolRespModel verifyOtp(BigDecimal deliveryDetailSeqId, BigDecimal mOtp) {
 		logger.debug("verifyOtp request: deliveryDetailSeqId {} mOtp {}", deliveryDetailSeqId, mOtp);
-		FxDeliveryDetailsModel fxDeliveryDetailsMode = validateFxDeliveryModel(deliveryDetailSeqId);
+		FxDeliveryDetailsModel fxDeliveryDetailsModel = validateFxDeliveryModel(deliveryDetailSeqId);
 		if (mOtp == null) {
 			throw new GlobalException("mOtp can not be blank", JaxError.MISSING_OTP);
 		}
 		// validating otp
 		String hashedmOtp = cryptoUtil.generateHash(deliveryDetailSeqId.toString(), mOtp.toString());
-		String dbHashedmOtpToken = fxDeliveryDetailsMode.getOtpToken();
+		String dbHashedmOtpToken = fxDeliveryDetailsModel.getOtpToken();
 		if (!hashedmOtp.equals(dbHashedmOtpToken)) {
 			throw new GlobalException("mOtp is not valid", JaxError.INVALID_OTP);
 		}
+		fxDeliveryDetailsModel.setOtpValidated(ConstantDocument.Yes);
+		fcSaleApplicationDao.saveDeliveryDetail(fxDeliveryDetailsModel);
 		return new BoolRespModel(true);
 	}
 
