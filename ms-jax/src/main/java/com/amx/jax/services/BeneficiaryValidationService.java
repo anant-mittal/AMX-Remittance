@@ -113,7 +113,7 @@ public class BeneficiaryValidationService {
 		swiftRules.forEach(i -> {
 			if (ConstantDocument.Yes.equals(i.getMandatory())) {
 				if (StringUtils.isEmpty(beneAccountModel.getSwiftCode())) {
-					throw new GlobalException("Swift code is required", JaxError.BANK_SWIFT_EMPTY);
+					throw new GlobalException(JaxError.BANK_SWIFT_EMPTY, "Swift code is required");
 				}
 				validateSwiftCode(beneAccountModel.getSwiftCode());
 			}
@@ -137,7 +137,7 @@ public class BeneficiaryValidationService {
 				List<BeneficaryRelationship> beneRelationShip = beneficiaryService
 						.getBeneRelationShip(itr.getBeneficaryMasterId(), itr.getBeneficaryAccountSeqId());
 				if (beneRelationShip != null && !beneRelationShip.isEmpty()) {
-					throw new GlobalException("Duplicate Beneficiary Account", JaxError.DUPLICATE_BENE_BANK_ACCOUNT);
+					throw new GlobalException(JaxError.DUPLICATE_BENE_BANK_ACCOUNT, "Duplicate Beneficiary Account");
 				}
 			});
 		}
@@ -247,7 +247,7 @@ public class BeneficiaryValidationService {
 			List<BeneficaryRelationship> beneRelationShip = beneficiaryService.getBeneRelationShip(
 					beneMaster.getBeneficaryMasterSeqId(), beneAccountMaster.getBeneficaryAccountSeqId());
 			if (beneRelationShip != null && !beneRelationShip.isEmpty()) {
-				throw new GlobalException("Duplicate Beneficiary  Cash Account", JaxError.DUPLICATE_BENE_CASH_ACCOUNT);
+				throw new GlobalException(JaxError.DUPLICATE_BENE_CASH_ACCOUNT, "Duplicate Beneficiary  Cash Account");
 			}
 		}
 	}
@@ -255,7 +255,7 @@ public class BeneficiaryValidationService {
 	private void validateSwiftCode(String swift) {
 		final Pattern pattern = Pattern.compile("^[A-Z]{6}[A-Z0-9]{2}([A-Z0-9]{3})?$");
 		if (!pattern.matcher(swift).matches()) {
-			throw new GlobalException("Invalid swift", JaxError.INVALID_BANK_SWIFT);
+			throw new GlobalException(JaxError.INVALID_BANK_SWIFT, "Invalid swift");
 		}
 
 	}

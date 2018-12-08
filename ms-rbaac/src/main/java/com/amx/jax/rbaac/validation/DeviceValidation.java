@@ -42,10 +42,10 @@ public class DeviceValidation {
 	public void validateDevice(Device device) {
 
 		if (device == null) {
-			throw new AuthServiceException("No device found", RbaacServiceError.CLIENT_NOT_FOUND);
+			throw new AuthServiceException(RbaacServiceError.CLIENT_NOT_FOUND, "No device found");
 		}
 		if (!device.getStatus().equals(RbaacServiceConstants.YES)) {
-			throw new AuthServiceException("Device is not active", RbaacServiceError.CLIENT_NOT_ACTIVE);
+			throw new AuthServiceException(RbaacServiceError.CLIENT_NOT_ACTIVE, "Device is not active");
 		}
 	}
 
@@ -92,7 +92,7 @@ public class DeviceValidation {
 			throw new AuthServiceException("Either Ip address or identity must be present");
 		}
 		if (!duplicateAllowed && existing != null) {
-			throw new AuthServiceException("Device already registered", RbaacServiceError.CLIENT_ALREADY_REGISTERED);
+			throw new AuthServiceException(RbaacServiceError.CLIENT_ALREADY_REGISTERED, "Device already registered");
 		}
 		return (existing != null);
 	}
@@ -100,7 +100,7 @@ public class DeviceValidation {
 	public void validateSessionToken(String sessionToken, Integer registrationId) {
 		DeviceStateInfo deviceStateInfo = deviceDao.findBySessionToken(sessionToken, registrationId);
 		if (deviceStateInfo == null) {
-			throw new AuthServiceException("Invalid session token", RbaacServiceError.CLIENT_INVALID_SESSION_TOKEN);
+			throw new AuthServiceException(RbaacServiceError.CLIENT_INVALID_SESSION_TOKEN, "Invalid session token");
 		}
 
 	}
@@ -109,10 +109,10 @@ public class DeviceValidation {
 
 		Device device = deviceDao.findDevice(new BigDecimal(deviceRegId));
 		if (device == null) {
-			throw new AuthServiceException("device not found with given reg id", RbaacServiceError.CLIENT_NOT_FOUND);
+			throw new AuthServiceException(RbaacServiceError.CLIENT_NOT_FOUND, "device not found with given reg id");
 		}
 		if (!RbaacServiceConstants.YES.equals(device.getStatus())) {
-			throw new AuthServiceException("device not active", RbaacServiceError.CLIENT_NOT_ACTIVE);
+			throw new AuthServiceException(RbaacServiceError.CLIENT_NOT_ACTIVE, "device not active");
 		}
 	}
 
@@ -128,15 +128,15 @@ public class DeviceValidation {
 
 	public void validateDeviceForActivation(Device device) {
 		if (device == null) {
-			throw new AuthServiceException("No device found", RbaacServiceError.CLIENT_NOT_FOUND);
+			throw new AuthServiceException(RbaacServiceError.CLIENT_NOT_FOUND, "No device found");
 		}
 	}
 
 	public void validateSystemInventoryForDuplicateDevice(Device device) {
 		Device activeDevice = deviceDao.findDevice(device.getBranchSystemInventoryId(), device.getDeviceType());
 		if (activeDevice != null) {
-			throw new AuthServiceException("Another device client already active",
-					RbaacServiceError.CLIENT_ANOTHER_ALREADY_ACTIVE);
+			throw new AuthServiceException(RbaacServiceError.CLIENT_ANOTHER_ALREADY_ACTIVE,
+					"Another device client already active");
 		}
 	}
 
@@ -156,8 +156,8 @@ public class DeviceValidation {
 			Date now = Calendar.getInstance().getTime();
 			long timeDiff = (now.getTime() - otpTokenCreationDate.getTime());
 			if ((timeDiff / 60000) > configValue) {
-				throw new AuthServiceException("Session token otp is not yet validated for " + configValue + " min",
-						RbaacServiceError.CLIENT_EXPIRED_VALIDATE_OTP_TIME);
+				throw new AuthServiceException(RbaacServiceError.CLIENT_EXPIRED_VALIDATE_OTP_TIME,
+						"Session token otp is not yet validated for " + configValue + " min");
 			}
 		}
 	}

@@ -241,8 +241,8 @@ public class RemittanceTransactionManager {
 		List<ExchangeRateApprovalDetModel> exchangeRates = exchangeRateDao.getExchangeRatesForRoutingBank(currencyId,
 				meta.getCountryBranchId(), rountingCountryId, applicationCountryId, routingBankId, serviceMasterId);
 		if (!jaxProperties.getExrateBestRateLogicEnable() && (exchangeRates == null || exchangeRates.isEmpty())) {
-			throw new GlobalException("No exchange rate found for bank- " + routingBankId,
-					REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL);
+			throw new GlobalException(REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL,
+					"No exchange rate found for bank- " + routingBankId);
 		}
 		validateNumberOfTransactionLimits();
 		validateBeneficiaryTransactionLimit(beneficiary);
@@ -362,14 +362,14 @@ public class RemittanceTransactionManager {
 			}
 			if (outputMap.size() > 2) {
 				throw new GlobalException(
+						TOO_MANY_COMISSION_NOT_DEFINED_FOR_ROUTING_BANK,
 						"TOO MANY COMMISSION DEFINED for rounting bankid: "
-								+ remitApplParametersMap.get("P_ROUTING_BANK_ID"),
-						TOO_MANY_COMISSION_NOT_DEFINED_FOR_ROUTING_BANK);
+								+ remitApplParametersMap.get("P_ROUTING_BANK_ID"));
 			}
 
 			if (outputMap.get("P_DELIVERY_MODE_ID") == null) {
-				throw new GlobalException("COMMISSION NOT DEFINED BankId: " + remitApplParametersMap.get("P_ROUTING_BANK_ID"),
-						COMISSION_NOT_DEFINED_FOR_ROUTING_BANK);
+				throw new GlobalException(COMISSION_NOT_DEFINED_FOR_ROUTING_BANK,
+						"COMMISSION NOT DEFINED BankId: " + remitApplParametersMap.get("P_ROUTING_BANK_ID"));
 			}
 			remitApplParametersMap.putAll(outputMap);
 		}
@@ -405,8 +405,8 @@ public class RemittanceTransactionManager {
 				+ beneficiary.getBeneficiaryRelationShipSeqId() + " and todays tnx are: " + transfers.size());
 		if (beneficiaryPerDayLimit != null && transfers != null
 				&& transfers.size() >= beneficiaryPerDayLimit.getAuthLimit().intValue()) {
-			throw new GlobalException(beneficiaryPerDayLimit.getAuthMessage(),
-					TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED_PER_BENE);
+			throw new GlobalException(TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED_PER_BENE,
+					beneficiaryPerDayLimit.getAuthMessage());
 		}
 		validateNewBeneficiaryTransactionLimit(beneficiary);
 	}
@@ -415,8 +415,8 @@ public class RemittanceTransactionManager {
 
 		Boolean canTransact = beneCheckService.canTransact(beneficiary.getCreatedDate());
 		if (!canTransact) {
-			throw new GlobalException("Newly added beneficiary cannot transact until certain time",
-					JaxError.NEW_BENEFICIARY_TRANSACTION_TIME_LIMIT);
+			throw new GlobalException(JaxError.NEW_BENEFICIARY_TRANSACTION_TIME_LIMIT,
+					"Newly added beneficiary cannot transact until certain time");
 		}
 	}
 
@@ -429,12 +429,12 @@ public class RemittanceTransactionManager {
 		logger.debug("Available loyalitypoint= " + availableLoyaltyPoints + " maxLoyalityPoints=" + maxLoyalityPoints
 				+ " todaysLoyalityPointsEncashed=" + todaysLoyalityPointsEncashed);
 		if (availableLoyaltyPoints.intValue() < maxLoyalityPoints.intValue()) {
-			throw new GlobalException("Insufficient loyality points. Available points- : " + availableLoyaltyPoints,
-					REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL);
+			throw new GlobalException(REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL,
+					"Insufficient loyality points. Available points- : " + availableLoyaltyPoints);
 		}
 		if (availableLoyaltyPoints.intValue() - todaysLoyalityPointsEncashedInt < 0) {
-			throw new GlobalException("Insufficient loyality points. Available points- : " + availableLoyaltyPoints,
-					REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL);
+			throw new GlobalException(REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL,
+					"Insufficient loyality points. Available points- : " + availableLoyaltyPoints);
 		}
 	}
 
@@ -482,7 +482,7 @@ public class RemittanceTransactionManager {
 			StringBuilder errorMessage = new StringBuilder();
 			errorMessage.append("Online Transaction Amount should not exceed - ").append(appCurrencyQuote);
 			errorMessage.append(" ").append(onlineTxnLimit.getAuthLimit());
-			throw new GlobalException(errorMessage.toString(), TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED);
+			throw new GlobalException(TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED, errorMessage.toString());
 		}
 		CurrencyMasterModel beneCurrencyMaster = currencyMasterService.getCurrencyMasterById(currencyId);
 		BigDecimal decimalCurrencyValue = beneCurrencyMaster.getDecinalNumber();
@@ -507,7 +507,7 @@ public class RemittanceTransactionManager {
 			}
 
 			if (!StringUtils.isBlank(msg)) {
-				throw new GlobalException(msg, REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL);
+				throw new GlobalException(REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL, msg);
 			}
 
 		}
@@ -538,7 +538,7 @@ public class RemittanceTransactionManager {
 			Integer txnCount = customerTxnAmounts.get(limitView.getAuthorizationType());
 			logger.debug("Trnx Count for Limit Check :" + txnCount);
 			if (txnCount >= limitView.getAuthLimit().intValue()) {
-				throw new GlobalException(limitView.getAuthMessage(), NO_OF_TRANSACTION_LIMIT_EXCEEDED);
+				throw new GlobalException(NO_OF_TRANSACTION_LIMIT_EXCEEDED, limitView.getAuthMessage());
 			}
 		}
 

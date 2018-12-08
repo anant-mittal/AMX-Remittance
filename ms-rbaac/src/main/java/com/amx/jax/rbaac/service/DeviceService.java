@@ -160,7 +160,7 @@ public class DeviceService extends AbstractService {
 		} catch (NoSuchAlgorithmException e) {
 		}
 		if (!device.getPairToken().equals(derivedPairToken)) {
-			throw new AuthServiceException("Invalid paire token", RbaacServiceError.CLIENT_INVALID_PAIR_TOKEN);
+			throw new AuthServiceException(RbaacServiceError.CLIENT_INVALID_PAIR_TOKEN, "Invalid paire token");
 		}
 		return deviceManager.generateDevicePaireOtpResponse(device);
 	}
@@ -170,7 +170,7 @@ public class DeviceService extends AbstractService {
 		deviceValidation.validateDevice(device);
 		String sessionTokenGen = deviceManager.generateSessionPairToken(device);
 		if (!deviceSessionToken.equals(sessionTokenGen)) {
-			throw new AuthServiceException("Session token is expired", RbaacServiceError.CLIENT_EXPIRED_SESSION_TOKEN);
+			throw new AuthServiceException(RbaacServiceError.CLIENT_EXPIRED_SESSION_TOKEN, "Session token is expired");
 		}
 		deviceValidation.validateOtpValidationTimeLimit(deviceRegId);
 		return deviceManager.generateDevicePaireOtpResponse(device);
@@ -180,7 +180,7 @@ public class DeviceService extends AbstractService {
 			BigDecimal countryBranchSystemInventoryId) {
 		List<Device> devices = deviceDao.findAllActiveDevices(countryBranchSystemInventoryId, deviceClientType);
 		if (CollectionUtils.isEmpty(devices)) {
-			throw new AuthServiceException("No device found", RbaacServiceError.CLIENT_NOT_FOUND);
+			throw new AuthServiceException(RbaacServiceError.CLIENT_NOT_FOUND, "No device found");
 		}
 		return devices.get(0).getRegistrationId();
 	}
@@ -204,8 +204,8 @@ public class DeviceService extends AbstractService {
 			if (device == null || employeeId.longValue() != device.getEmployeeId().longValue()
 					|| !deviceId.equalsIgnoreCase(device.getDeviceId())) {
 
-				throw new AuthServiceException("Invalid Device Client : Not Paired or Not Mapped",
-						RbaacServiceError.DEVICE_CLIENT_INVALID);
+				throw new AuthServiceException(RbaacServiceError.DEVICE_CLIENT_INVALID,
+						"Invalid Device Client : Not Paired or Not Mapped");
 
 			}
 
@@ -216,14 +216,14 @@ public class DeviceService extends AbstractService {
 			String pairTokenHash = this.getDevicePairTokenHash(deviceRegToken, deviceRegId);
 
 			if (device == null) {
-				throw new AuthServiceException("No valid device is found", RbaacServiceError.DEVICE_CLIENT_INVALID);
+				throw new AuthServiceException(RbaacServiceError.DEVICE_CLIENT_INVALID, "No valid device is found");
 			} else if (employeeId.longValue() != device.getEmployeeId().longValue()
 					|| !deviceId.equalsIgnoreCase(device.getDeviceId())) {
-				throw new AuthServiceException("Incorrect Employee or Device Mapping : Contact Support",
-						RbaacServiceError.DEVICE_CLIENT_INVALID);
+				throw new AuthServiceException(RbaacServiceError.DEVICE_CLIENT_INVALID,
+						"Incorrect Employee or Device Mapping : Contact Support");
 			} else if (null == device.getPairToken() || !device.getPairToken().equalsIgnoreCase(pairTokenHash)) {
-				throw new AuthServiceException("Invalid Device Pairing : Pair Device Again",
-						RbaacServiceError.DEVICE_CLIENT_INVALID);
+				throw new AuthServiceException(RbaacServiceError.DEVICE_CLIENT_INVALID,
+						"Invalid Device Pairing : Pair Device Again");
 
 			} else if (!RbaacServiceConstants.YES.equalsIgnoreCase(device.getStatus())) {
 

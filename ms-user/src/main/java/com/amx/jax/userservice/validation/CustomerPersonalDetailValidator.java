@@ -77,8 +77,8 @@ public class CustomerPersonalDetailValidator implements Validator {
 
 	private void validateOtpSendCount(OtpData otpData) {
 		if (otpData.getSendOtpAttempts() >= otpSettings.getMaxSendOtpAttempts()) {
-			throw new GlobalException("Sorry, you cannot proceed to register. Please try to register after 12 midnight",
-					JaxError.VALIDATE_OTP_LIMIT_EXCEEDED);
+			throw new GlobalException(JaxError.VALIDATE_OTP_LIMIT_EXCEEDED,
+					"Sorry, you cannot proceed to register. Please try to register after 12 midnight");
 		}
 	}
 

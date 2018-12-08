@@ -30,6 +30,10 @@ public abstract class AbstractJaxException extends com.amx.jax.exception.Abstrac
 		super(errorMessage, errorKey);
 	}
 
+	public AbstractJaxException(JaxError error, String errorMessage) {
+		super(error, errorMessage);
+	}
+
 	@Override
 	public AmxApiException getInstance(AmxApiError apiError) {
 		try {

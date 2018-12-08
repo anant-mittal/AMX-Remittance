@@ -205,12 +205,12 @@ public class FcSaleApplicationDao {
 				pgRepository.save(pgModel);
 			}else{
 				logger.error("Update after PG details Payment Id :"+paymentResponse.getPaymentId()+"\t Udf 3--Pg trnx seq Id :"+paymentResponse.getUdf3()+"Result code :"+paymentResponse.getResultCode());
-				throw new GlobalException("PG updatio failed",JaxError.PAYMENT_UPDATION_FAILED);
+				throw new GlobalException(JaxError.PAYMENT_UPDATION_FAILED,"PG updatio failed");
 			}
 		}catch (Exception e) {
 			e.printStackTrace();
 			logger.error("catch Update after PG details Payment Id :"+paymentResponse.getPaymentId()+"\t Udf 3--Pg trnx seq Id :"+paymentResponse.getUdf3()+"Result code :"+paymentResponse.getResultCode());
-			throw new GlobalException("PG updatio failed",JaxError.PAYMENT_UPDATION_FAILED);
+			throw new GlobalException(JaxError.PAYMENT_UPDATION_FAILED,"PG updatio failed");
 		}
 		
 	}

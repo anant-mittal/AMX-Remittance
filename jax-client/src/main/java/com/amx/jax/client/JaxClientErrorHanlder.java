@@ -52,29 +52,29 @@ public class JaxClientErrorHanlder implements ResponseErrorHandler {
 	}
 
 	private void validateLimitExeededException(AmxApiError error) {
-		if (JaxError.SEND_OTP_LIMIT_EXCEEDED.getStatusKey().equals(error.getErrorId())) {
+		if (JaxError.SEND_OTP_LIMIT_EXCEEDED.getStatusKey().equals(error.getErrorKey())) {
 			throw new LimitExeededException(error);
 		}
 	}
 
 	private void checkUnknownJaxError(AmxApiError apiError) {
-		if (JaxError.UNKNOWN_JAX_ERROR.getStatusKey().equals(apiError.getErrorId())) {
+		if (JaxError.UNKNOWN_JAX_ERROR.getStatusKey().equals(apiError.getErrorKey())) {
 			throw new UnknownJaxError(apiError);
 		}
 	}
 
 	protected void checkInvalidInputErrors(AmxApiError error) throws InvalidInputException {
 		if (error != null) {
-			if (JaxError.INVALID_CIVIL_ID.getStatusKey().equals(error.getErrorId())) {
+			if (JaxError.INVALID_CIVIL_ID.getStatusKey().equals(error.getErrorKey())) {
 				throw new InvalidInputException(error);
 			}
-			if (JaxError.CUSTOMER_NOT_FOUND.getStatusKey().equals(error.getErrorId())) {
+			if (JaxError.CUSTOMER_NOT_FOUND.getStatusKey().equals(error.getErrorKey())) {
 				throw new InvalidInputException(error);
 			}
-			if (JaxError.NULL_CUSTOMER_ID.getStatusKey().equals(error.getErrorId())) {
+			if (JaxError.NULL_CUSTOMER_ID.getStatusKey().equals(error.getErrorKey())) {
 				throw new InvalidInputException(error);
 			}
-			if (JaxError.INVALID_EXCHANGE_AMOUNT.getStatusKey().equals(error.getErrorId())) {
+			if (JaxError.INVALID_EXCHANGE_AMOUNT.getStatusKey().equals(error.getErrorKey())) {
 				throw new InvalidInputException(error);
 			}
 		}
@@ -84,59 +84,59 @@ public class JaxClientErrorHanlder implements ResponseErrorHandler {
 			throws CustomerValidationException, LimitExeededException {
 		if (error != null) {
 
-			if (JaxError.BLACK_LISTED_CUSTOMER.getStatusKey().equals(error.getErrorId())) {
+			if (JaxError.BLACK_LISTED_CUSTOMER.getStatusKey().equals(error.getErrorKey())) {
 				throw new CustomerValidationException(error);
 			}
-			if (JaxError.USER_LOGIN_ATTEMPT_EXCEEDED.getStatusKey().equals(error.getErrorId())) {
+			if (JaxError.USER_LOGIN_ATTEMPT_EXCEEDED.getStatusKey().equals(error.getErrorKey())) {
 				throw new LimitExeededException(error);
 			}
 			boolean iscustValidationError = false;
-			if (JaxError.USER_NOT_FOUND.getStatusKey().equals(error.getErrorId())) {
+			if (JaxError.USER_NOT_FOUND.getStatusKey().equals(error.getErrorKey())) {
 				iscustValidationError = true;
 			}
-			if (JaxError.USER_NOT_REGISTERED.getStatusKey().equals(error.getErrorId())) {
+			if (JaxError.USER_NOT_REGISTERED.getStatusKey().equals(error.getErrorKey())) {
 				iscustValidationError = true;
 			}
-			if (JaxError.ID_PROOF_EXPIRED.getStatusKey().equals(error.getErrorId())) {
+			if (JaxError.ID_PROOF_EXPIRED.getStatusKey().equals(error.getErrorKey())) {
 				iscustValidationError = true;
 			}
-			if (JaxError.ID_PROOFS_NOT_VALID.getStatusKey().equals(error.getErrorId())) {
+			if (JaxError.ID_PROOFS_NOT_VALID.getStatusKey().equals(error.getErrorKey())) {
 				iscustValidationError = true;
 			}
-			if (JaxError.ID_PROOFS_SCAN_NOT_FOUND.getStatusKey().equals(error.getErrorId())) {
+			if (JaxError.ID_PROOFS_SCAN_NOT_FOUND.getStatusKey().equals(error.getErrorKey())) {
 				iscustValidationError = true;
 			}
-			if (JaxError.CUSTOMER__SIGNATURE_UNAVAILABLE.getStatusKey().equals(error.getErrorId())) {
+			if (JaxError.CUSTOMER__SIGNATURE_UNAVAILABLE.getStatusKey().equals(error.getErrorKey())) {
 				iscustValidationError = true;
 			}
-			if (JaxError.INVALID_INSURANCE_INDICATOR.getStatusKey().equals(error.getErrorId())) {
+			if (JaxError.INVALID_INSURANCE_INDICATOR.getStatusKey().equals(error.getErrorKey())) {
 				iscustValidationError = true;
 			}
-			if (JaxError.OLD_EMOS_USER_NOT_FOUND.getStatusKey().equals(error.getErrorId())) {
+			if (JaxError.OLD_EMOS_USER_NOT_FOUND.getStatusKey().equals(error.getErrorKey())) {
 				iscustValidationError = true;
 			}
-			if (JaxError.MISSING_CONTACT_DETAILS.getStatusKey().equals(error.getErrorId())) {
+			if (JaxError.MISSING_CONTACT_DETAILS.getStatusKey().equals(error.getErrorKey())) {
 				iscustValidationError = true;
 			}
-			if (JaxError.MISSING_HOME_CONTACT_DETAILS.getStatusKey().equals(error.getErrorId())) {
+			if (JaxError.MISSING_HOME_CONTACT_DETAILS.getStatusKey().equals(error.getErrorKey())) {
 				iscustValidationError = true;
 			}
-			if (JaxError.INVALID_CUSTOMER_REFERENCE.getStatusKey().equals(error.getErrorId())) {
+			if (JaxError.INVALID_CUSTOMER_REFERENCE.getStatusKey().equals(error.getErrorKey())) {
 				iscustValidationError = true;
 			}
-			if (JaxError.OLD_EMOS_USER_DELETED.getStatusKey().equals(error.getErrorId())) {
+			if (JaxError.OLD_EMOS_USER_DELETED.getStatusKey().equals(error.getErrorKey())) {
 				iscustValidationError = true;
 			}
-			if (JaxError.OLD_EMOS_USER_DATA_EXPIRED.getStatusKey().equals(error.getErrorId())) {
+			if (JaxError.OLD_EMOS_USER_DATA_EXPIRED.getStatusKey().equals(error.getErrorKey())) {
 				iscustValidationError = true;
 			}
-			if (JaxError.ID_PROOFS_IMAGES_NOT_FOUND.getStatusKey().equals(error.getErrorId())) {
+			if (JaxError.ID_PROOFS_IMAGES_NOT_FOUND.getStatusKey().equals(error.getErrorKey())) {
 				iscustValidationError = true;
 			}
-			if (JaxError.OTP_EXPIRED.getStatusKey().equals(error.getErrorId())) {
+			if (JaxError.OTP_EXPIRED.getStatusKey().equals(error.getErrorKey())) {
 				iscustValidationError = true;
 			}
-			if (JaxError.INCORRECT_LENGTH.getStatusKey().equals(error.getErrorId())) {
+			if (JaxError.INCORRECT_LENGTH.getStatusKey().equals(error.getErrorKey())) {
 				iscustValidationError = true;
 			}
 			if (iscustValidationError) {
@@ -149,11 +149,11 @@ public class JaxClientErrorHanlder implements ResponseErrorHandler {
 
 		if (error != null) {
 
-			if (JaxError.USERNAME_ALREADY_EXISTS.getStatusKey().equals(error.getErrorId())) {
+			if (JaxError.USERNAME_ALREADY_EXISTS.getStatusKey().equals(error.getErrorKey())) {
 				throw new AlreadyExistsException(error);
 			}
 
-			if (JaxError.ALREADY_EXIST.getStatusKey().equals(error.getErrorId())) {
+			if (JaxError.ALREADY_EXIST.getStatusKey().equals(error.getErrorKey())) {
 				throw new AlreadyExistsException(error);
 			}
 		}
@@ -163,16 +163,16 @@ public class JaxClientErrorHanlder implements ResponseErrorHandler {
 
 		if (error != null) {
 
-			if (JaxError.WRONG_PASSWORD.getStatusKey().equals(error.getErrorId())) {
+			if (JaxError.WRONG_PASSWORD.getStatusKey().equals(error.getErrorKey())) {
 				throw new IncorrectInputException(error);
 			}
-			if (JaxError.INVALID_OTP.getStatusKey().equals(error.getErrorId())) {
+			if (JaxError.INVALID_OTP.getStatusKey().equals(error.getErrorKey())) {
 				throw new IncorrectInputException(error);
 			}
-			if (JaxError.INCORRECT_SECURITY_QUESTION_ANSWER.getStatusKey().equals(error.getErrorId())) {
+			if (JaxError.INCORRECT_SECURITY_QUESTION_ANSWER.getStatusKey().equals(error.getErrorKey())) {
 				throw new IncorrectInputException(error);
 			}
-			if (JaxError.MISSING_OTP.getStatusKey().equals(error.getErrorId())) {
+			if (JaxError.MISSING_OTP.getStatusKey().equals(error.getErrorKey())) {
 				throw new IncorrectInputException(error);
 			}
 		}
@@ -181,7 +181,7 @@ public class JaxClientErrorHanlder implements ResponseErrorHandler {
 	protected void checkResourceNotFoundException(AmxApiError error) throws ResourceNotFoundException {
 		if (error != null) {
 
-			if (JaxError.EXCHANGE_RATE_NOT_FOUND.getStatusKey().equals(error.getErrorId())) {
+			if (JaxError.EXCHANGE_RATE_NOT_FOUND.getStatusKey().equals(error.getErrorKey())) {
 				throw new ResourceNotFoundException(error);
 			}
 		}
@@ -192,20 +192,20 @@ public class JaxClientErrorHanlder implements ResponseErrorHandler {
 
 		if (error != null) {
 
-			if (JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL.getStatusKey().equals(error.getErrorId())) {
+			if (JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL.getStatusKey().equals(error.getErrorKey())) {
 				throw new RemittanceTransactionValidationException(error);
 			}
-			if (JaxError.NO_OF_TRANSACTION_LIMIT_EXCEEDED.getStatusKey().equals(error.getErrorId())) {
+			if (JaxError.NO_OF_TRANSACTION_LIMIT_EXCEEDED.getStatusKey().equals(error.getErrorKey())) {
 				throw new LimitExeededException(error);
 			}
-			if (JaxError.TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED.getStatusKey().equals(error.getErrorId())) {
+			if (JaxError.TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED.getStatusKey().equals(error.getErrorKey())) {
 				throw new LimitExeededException(error);
 			}
-			if (JaxError.TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED_PER_BENE.getStatusKey().equals(error.getErrorId())) {
+			if (JaxError.TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED_PER_BENE.getStatusKey().equals(error.getErrorKey())) {
 				throw new LimitExeededException(error);
 			}
 
-			if (JaxError.TRANSACTION_HISTORY_NOT_FOUND.getStatusKey().equals(error.getErrorId())) {
+			if (JaxError.TRANSACTION_HISTORY_NOT_FOUND.getStatusKey().equals(error.getErrorKey())) {
 				throw new RemittanceTransactionValidationException(error);
 			}
 

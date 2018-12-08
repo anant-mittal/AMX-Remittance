@@ -151,7 +151,7 @@ public class ApplicationProcedureDao {
 			e.printStackTrace();
 		}
 		if (output.get("P_ERROR_MESSAGE") != null) {
-			throw new GlobalException(output.get("P_ERROR_MESSAGE").toString(), JaxError.TRANSACTION_VALIDATION_FAIL);
+			throw new GlobalException(JaxError.TRANSACTION_VALIDATION_FAIL, output.get("P_ERROR_MESSAGE").toString());
 		}
 		return output;
 	}

@@ -50,7 +50,7 @@ public class UserValidationKwt implements CustomerValidation {
 			validateIdProof(idProof);
 		}
 		if (idProofs.isEmpty()) {
-			throw new GlobalException("ID proofs not available, contact branch", JaxError.NO_ID_PROOFS_AVAILABLE);
+			throw new GlobalException(JaxError.NO_ID_PROOFS_AVAILABLE, "ID proofs not available, contact branch");
 		}
 	}
 
@@ -58,17 +58,17 @@ public class UserValidationKwt implements CustomerValidation {
 
 		String scanSystem = idProof.getScanSystem();
 		if (idProof.getIdentityExpiryDate() != null && idProof.getIdentityExpiryDate().compareTo(new Date()) < 0) {
-			throw new GlobalException("Identity proof are expired", JaxError.ID_PROOF_EXPIRED);
+			throw new GlobalException(JaxError.ID_PROOF_EXPIRED, "Identity proof are expired");
 		}
 		if ("A".equals(scanSystem)) {
 			List<CustomerIdProof> validIds = idproofDao
 					.getCustomerImageValidation(idProof.getFsCustomer().getCustomerId(), idProof.getIdentityTypeId());
 			if (validIds == null || validIds.isEmpty()) {
-				throw new GlobalException("Identity proof are expired or invalid", JaxError.ID_PROOFS_NOT_VALID);
+				throw new GlobalException(JaxError.ID_PROOFS_NOT_VALID, "Identity proof are expired or invalid");
 			}
 			for (CustomerIdProof id : validIds) {
 				if (id.getIdentityExpiryDate() != null && id.getIdentityExpiryDate().compareTo(new Date()) < 0) {
-					throw new GlobalException("Identity proof are expired", JaxError.ID_PROOF_EXPIRED);
+					throw new GlobalException(JaxError.ID_PROOF_EXPIRED, "Identity proof are expired");
 				}
 			}
 
@@ -81,11 +81,11 @@ public class UserValidationKwt implements CustomerValidation {
 				List<DmsDocumentModel> dmsDocs = dmsDocDao.getDmsDocument(new BigDecimal(docBlobIdInt),
 						new BigDecimal(docFinYrInt));
 				if (dmsDocs == null || dmsDocs.isEmpty()) {
-					throw new GlobalException("Identity proof images not found", JaxError.ID_PROOFS_IMAGES_NOT_FOUND);
+					throw new GlobalException(JaxError.ID_PROOFS_IMAGES_NOT_FOUND, "Identity proof images not found");
 				}
 			}
 		} else {
-			throw new GlobalException("Identity proof scans not found", JaxError.ID_PROOFS_SCAN_NOT_FOUND);
+			throw new GlobalException(JaxError.ID_PROOFS_SCAN_NOT_FOUND, "Identity proof scans not found");
 		}
 	}
 
@@ -128,7 +128,7 @@ public class UserValidationKwt implements CustomerValidation {
 	public void validateEmailId(String emailId) {
 		List<Customer> list = customerRepo.getCustomerByEmailId(emailId);	
 		if (list != null && list.size()!=0) {
-			throw new GlobalException("Email Id already exist", JaxError.ALREADY_EXIST_EMAIL);
+			throw new GlobalException(JaxError.ALREADY_EXIST_EMAIL, "Email Id already exist");
 		}
 		
 	}
@@ -137,7 +137,7 @@ public class UserValidationKwt implements CustomerValidation {
 	public void validateDuplicateMobile(String mobileNo) {
 		List<Customer> list = customerRepo.getCustomerByMobileCheck(mobileNo);
 		if (list != null && list.size()!=0) {
-			throw new GlobalException("Mobile Number already exist", JaxError.ALREADY_EXIST_MOBILE);
+			throw new GlobalException(JaxError.ALREADY_EXIST_MOBILE, "Mobile Number already exist");
 		}
 		
 	}

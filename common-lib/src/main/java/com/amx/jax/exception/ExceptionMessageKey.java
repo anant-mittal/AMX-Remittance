@@ -32,6 +32,10 @@ public class ExceptionMessageKey extends Dnum<ExceptionMessageKey> implements IM
 		messageKeyFormat = builder.toString();
 	}
 
+	public ExceptionMessageKey(IExceptionEnum exceptionEnum, int argCount, String... matchings) {
+		super(exceptionEnum.getStatusKey(), ordinalCounter++);
+	}
+
 	@Override
 	public int getArgCount() {
 		return argCount;
@@ -40,6 +44,20 @@ public class ExceptionMessageKey extends Dnum<ExceptionMessageKey> implements IM
 	@Override
 	public String getMessageKey(Object... args) {
 		return String.format(this.messageKeyFormat, args);
+	}
+
+	public static String build(IExceptionEnum exceptionEnum, Object... values) {
+		final String DELIM = ":";
+		StringBuffer sbuf = new StringBuffer();
+		sbuf.append(exceptionEnum.getStatusKey()).append(DELIM);
+		for (int i = 0; i < values.length; i++) {
+			if (i == (values.length - 1)) {
+				sbuf.append(values[i]);
+			} else {
+				sbuf.append(values[i]).append(DELIM);
+			}
+		}
+		return sbuf.toString();
 	}
 
 	@Override
