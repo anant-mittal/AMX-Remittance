@@ -110,7 +110,7 @@ public class FcSaleBranchOrderManager {
 		}catch (GlobalException e) {
 			e.printStackTrace();
 			logger.error("fetchFcSaleOrderManagement ", e.getMessage()+"applId :"+applicationCountryId+" employeeId :"+employeeId);
-			throw new GlobalException(e.getErrorMessage(),e.getErrorKey());
+			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}catch (Exception e) {
 			e.printStackTrace();
 			logger.error("fetchFcSaleOrderManagement ", e.getMessage()+"applId :"+applicationCountryId+" employeeId :"+employeeId);
@@ -127,7 +127,7 @@ public class FcSaleBranchOrderManager {
 		}catch (GlobalException e) {
 			e.printStackTrace();
 			logger.error("fetchFcSaleOrderDetails ", e.getMessage()+" applicationCountryId :"+applicationCountryId+" orderNumber :"+orderNumber+" orderYear :"+orderYear);
-			throw new GlobalException(e.getErrorMessage(),e.getErrorKey());
+			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}catch (Exception e) {
 			e.printStackTrace();
 			logger.error("fetchFcSaleOrderDetails ", e.getMessage()+" applicationCountryId :"+applicationCountryId+" orderNumber :"+orderNumber+" orderYear :"+orderYear);
@@ -168,7 +168,7 @@ public class FcSaleBranchOrderManager {
 		}catch (GlobalException e) {
 			e.printStackTrace();
 			logger.error("fetchUserStockViewByCurrency ", e.getMessage()+" countryId :"+countryId+" userName :"+userName+" countryBranchId :"+countryBranchId+" foreignCurrencyId :"+foreignCurrencyId);
-			throw new GlobalException(e.getErrorMessage(),e.getErrorKey());
+			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}catch (Exception e) {
 			e.printStackTrace();
 			logger.error("fetchUserStockViewByCurrency ", e.getMessage()+" countryId :"+countryId+" userName :"+userName+" countryBranchId :"+countryBranchId+" foreignCurrencyId :"+foreignCurrencyId);
@@ -199,7 +199,7 @@ public class FcSaleBranchOrderManager {
 		}catch (GlobalException e) {
 			e.printStackTrace();
 			logger.error("fetchUserStockView ", e.getMessage()+" countryId :"+countryId+" userName :"+userName+" countryBranchId :"+countryBranchId);
-			throw new GlobalException(e.getErrorMessage(),e.getErrorKey());
+			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}catch (Exception e) {
 			e.printStackTrace();
 			logger.error("fetchUserStockView ", e.getMessage()+" countryId :"+countryId+" userName :"+userName+" countryBranchId :"+countryBranchId);
@@ -242,7 +242,7 @@ public class FcSaleBranchOrderManager {
 		}catch (GlobalException e) {
 			e.printStackTrace();
 			logger.error("fetchUserStockView ", e.getMessage()+" countryId :"+countryId+" userName :"+userName+" countryBranchId :"+countryBranchId);
-			throw new GlobalException(e.getErrorMessage(),e.getErrorKey());
+			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}catch (Exception e) {
 			e.printStackTrace();
 			logger.error("fetchUserStockView ", e.getMessage()+" countryId :"+countryId+" userName :"+userName+" countryBranchId :"+countryBranchId);
@@ -275,7 +275,7 @@ public class FcSaleBranchOrderManager {
 		}catch (GlobalException e) {
 			e.printStackTrace();
 			logger.error("fetchEmpDriverDetails ", e.getMessage());
-			throw new GlobalException(e.getErrorMessage(),e.getErrorKey());
+			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}catch (Exception e) {
 			e.printStackTrace();
 			logger.error("fetchEmpDriverDetails ", e.getMessage());
@@ -394,7 +394,7 @@ public class FcSaleBranchOrderManager {
 		}catch (GlobalException e) {
 			e.printStackTrace();
 			logger.error("Error in Exception saving Assign Driver", e.getMessage()+" countryId :"+countryId+" orderNumber :"+orderNumber+" orderYear :"+orderYear+" driverId :"+driverId);
-			throw new GlobalException(e.getErrorMessage(),e.getErrorKey());
+			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}catch (Exception e) {
 			e.printStackTrace();
 			logger.error("Error in Exception saving Assign Driver", e.getMessage()+" countryId :"+countryId+" orderNumber :"+orderNumber+" orderYear :"+orderYear+" driverId :"+driverId);
@@ -419,7 +419,7 @@ public class FcSaleBranchOrderManager {
 		}catch (GlobalException e) {
 			e.printStackTrace();
 			logger.error("fetchEmployee ", e.getMessage()+" employeeId :"+employeeId);
-			throw new GlobalException(e.getErrorMessage(),e.getErrorKey());
+			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}catch (Exception e) {
 			e.printStackTrace();
 			logger.error("fetchEmployee ", e.getMessage()+" employeeId :"+employeeId);
@@ -647,7 +647,7 @@ public class FcSaleBranchOrderManager {
 		}catch (GlobalException e) {
 			e.printStackTrace();
 			logger.error("Error in Exception saving print receipt denomination", e.getMessage()+" employeeId :"+employeeId+" countryId :"+countryId+" companyId :"+companyId+" fcSaleBranchDispatchRequest :"+fcSaleBranchDispatchRequest);
-			throw new GlobalException(e.getErrorMessage(),e.getErrorKey());
+			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}catch (ParseException e) {
 			e.printStackTrace();
 			logger.error("Error in ParseException saving print receipt denomination", e.getMessage()+" employeeId :"+employeeId+" countryId :"+countryId+" companyId :"+companyId+" fcSaleBranchDispatchRequest :"+fcSaleBranchDispatchRequest);
@@ -730,7 +730,7 @@ public class FcSaleBranchOrderManager {
 		}catch (GlobalException e) {
 			e.printStackTrace();
 			logger.error("Error in checkingDenominationDetails", e.getMessage()+" FcSaleBranchDispatchModel :"+currencyAdj+" List<CurrencyWiseDenomination> :"+currencyDenomination.toString());
-			throw new GlobalException(e.getErrorMessage(),e.getErrorKey());
+			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}catch (Exception e) {
 			e.printStackTrace();
 			logger.error("Error in checkingDenominationDetails", e.getMessage()+" FcSaleBranchDispatchModel :"+currencyAdj+" List<CurrencyWiseDenomination> :"+currencyDenomination.toString());
@@ -748,7 +748,7 @@ public class FcSaleBranchOrderManager {
 		}catch (GlobalException e) {
 			e.printStackTrace();
 			logger.error("Error in fetchCurrencyDenominationByCurrencyId", e.getMessage()+" currencyId :"+currencyId);
-			throw new GlobalException(e.getErrorMessage(),e.getErrorKey());
+			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}catch (Exception e) {
 			e.printStackTrace();
 			logger.error("Error in fetchCurrencyDenominationByCurrencyId", e.getMessage()+" currencyId :"+currencyId);
@@ -814,7 +814,7 @@ public class FcSaleBranchOrderManager {
 		}catch (GlobalException e) {
 			e.printStackTrace();
 			logger.error("Error in acceptOrderLock", e.getMessage()+" applicationCountryId :"+applicationCountryId+" orderNumber :"+orderNumber+" orderYear :"+orderYear+" employeeId :"+employeeId);
-			throw new GlobalException(e.getErrorMessage(),e.getErrorKey());
+			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}catch (Exception e) {
 			e.printStackTrace();
 			logger.error("Error in acceptOrderLock", e.getMessage()+" applicationCountryId :"+applicationCountryId+" orderNumber :"+orderNumber+" orderYear :"+orderYear+" employeeId :"+employeeId);
@@ -869,7 +869,7 @@ public class FcSaleBranchOrderManager {
 		}catch (GlobalException e) {
 			e.printStackTrace();
 			logger.error("Error in releaseOrderLock", e.getMessage()+" applicationCountryId :"+applicationCountryId+" orderNumber :"+orderNumber+" orderYear :"+orderYear+" employeeId :"+employeeId);
-			throw new GlobalException(e.getErrorMessage(),e.getErrorKey());
+			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}catch (Exception e) {
 			e.printStackTrace();
 			logger.error("Error in releaseOrderLock", e.getMessage()+" applicationCountryId :"+applicationCountryId+" orderNumber :"+orderNumber+" orderYear :"+orderYear+" employeeId :"+employeeId);
@@ -920,7 +920,7 @@ public class FcSaleBranchOrderManager {
 		}catch (GlobalException e) {
 			e.printStackTrace();
 			logger.error("Error in dispatchOrder", e.getMessage()+" applicationCountryId :"+applicationCountryId+" orderNumber :"+orderNumber+" orderYear :"+orderYear+" employeeId :"+employeeId);
-			throw new GlobalException(e.getErrorMessage(),e.getErrorKey());
+			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}catch (Exception e) {
 			e.printStackTrace();
 			logger.error("Error in dispatchOrder", e.getMessage()+" applicationCountryId :"+applicationCountryId+" orderNumber :"+orderNumber+" orderYear :"+orderYear+" employeeId :"+employeeId);
@@ -983,7 +983,7 @@ public class FcSaleBranchOrderManager {
 		}catch (GlobalException e) {
 			e.printStackTrace();
 			logger.error("Error in acknowledgeDriver", e.getMessage()+" applicationCountryId :"+applicationCountryId+" orderNumber :"+orderNumber+" orderYear :"+orderYear+" employeeId :"+employeeId);
-			throw new GlobalException(e.getErrorMessage(),e.getErrorKey());
+			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}catch (Exception e) {
 			e.printStackTrace();
 			logger.error("Error in acknowledgeDriver", e.getMessage()+" applicationCountryId :"+applicationCountryId+" orderNumber :"+orderNumber+" orderYear :"+orderYear+" employeeId :"+employeeId);
@@ -1022,7 +1022,7 @@ public class FcSaleBranchOrderManager {
 		}catch (GlobalException e) {
 			e.printStackTrace();
 			logger.error("Error in returnAcknowledge", e.getMessage()+" applicationCountryId :"+applicationCountryId+" orderNumber :"+orderNumber+" orderYear :"+orderYear+" employeeId :"+employeeId);
-			throw new GlobalException(e.getErrorMessage(),e.getErrorKey());
+			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}catch (Exception e) {
 			e.printStackTrace();
 			logger.error("Error in returnAcknowledge", e.getMessage()+" applicationCountryId :"+applicationCountryId+" orderNumber :"+orderNumber+" orderYear :"+orderYear+" employeeId :"+employeeId);
@@ -1061,7 +1061,7 @@ public class FcSaleBranchOrderManager {
 		}catch (GlobalException e) {
 			e.printStackTrace();
 			logger.error("Error in acceptCancellation", e.getMessage()+" applicationCountryId :"+applicationCountryId+" orderNumber :"+orderNumber+" orderYear :"+orderYear+" employeeId :"+employeeId);
-			throw new GlobalException(e.getErrorMessage(),e.getErrorKey());
+			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}catch (Exception e) {
 			e.printStackTrace();
 			logger.error("Error in acceptCancellation", e.getMessage()+" applicationCountryId :"+applicationCountryId+" orderNumber :"+orderNumber+" orderYear :"+orderYear+" employeeId :"+employeeId);

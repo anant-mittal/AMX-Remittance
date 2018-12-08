@@ -6,7 +6,6 @@ import org.slf4j.Logger;
 
 import com.amx.jax.exception.AmxApiError;
 import com.amx.jax.exception.AmxApiException;
-import com.amx.jax.exception.ExceptionMessageKey;
 import com.amx.jax.exception.IExceptionEnum;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.rbaac.error.RbaacServiceError;
@@ -58,30 +57,6 @@ public class AuthServiceException extends AmxApiException {
 	 */
 	public AuthServiceException(AmxApiError error) {
 		super(error);
-	}
-
-	/**
-	 * Instantiates a new auth service exception.
-	 *
-	 * @param error       the error
-	 * @param expressions the expressions
-	 */
-	public AuthServiceException(RbaacServiceError error, Object... expressions) {
-		this.errorKey = ExceptionMessageKey.build(error, expressions);
-
-	}
-
-	/**
-	 * Instantiates a new auth service exception.
-	 *
-	 * @param errorMessage the error message
-	 * @param error        the error
-	 * @param expressions  the expressions
-	 */
-	public AuthServiceException(String errorMessage, RbaacServiceError error, Object... expressions) {
-		this.errorKey = ExceptionMessageKey.build(error, expressions);
-		this.errorMessage = errorMessage;
-
 	}
 
 	/**

@@ -40,7 +40,7 @@ public abstract class AmxApiException extends AmxException {
 		super(amxApiError.getMessage(), null, true, false);
 		this.apiError = amxApiError;
 		try {
-			this.error = getErrorIdEnum(amxApiError.getErrorKey());
+			this.error = getErrorIdEnum(amxApiError.getStatusKey());
 		} catch (Exception e) {
 		}
 		this.errorKey = amxApiError.getErrorKey();
@@ -102,7 +102,7 @@ public abstract class AmxApiException extends AmxException {
 
 	public AmxApiError createAmxApiError() {
 		if (this.apiError == null) {
-			this.apiError = new AmxApiError(this.getErrorKey(), this.getErrorMessage());
+			this.apiError = new AmxApiError(this.error, this.getErrorKey(), this.getErrorMessage());
 			this.apiError.setException(this.getClass().getName());
 		}
 		return this.apiError;

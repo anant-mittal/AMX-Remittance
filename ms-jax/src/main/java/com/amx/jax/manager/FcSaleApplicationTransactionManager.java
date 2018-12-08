@@ -183,7 +183,7 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 		return responeModel;
 		}catch(GlobalException e){
 			logger.error("createFcSaleReceiptApplication", e.getErrorMessage() + "" +e.getErrorKey());
-			 throw new GlobalException(e.getErrorMessage(),e.getErrorKey());
+			 throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}catch(Exception e){
 			e.printStackTrace();
 			logger.error("saveApplication", e.getMessage());
@@ -287,7 +287,7 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 			receiptPaymentAppl.setCustomerName(customerName);
 		}else{
 				logger.error("Customer is not registered"+customerId);
-				throw new GlobalException("Customer is not registered", JaxError.CUSTOMER_NOT_REGISTERED_ONLINE.getStatusKey());
+				throw new GlobalException(JaxError.CUSTOMER_NOT_REGISTERED_ONLINE, "Customer is not registered");
 			}
 		
 		CountryBranch countryBranch = countryBranchRepository.findByBranchId(ConstantDocument.ONLINE_BRANCH_LOC_CODE);
@@ -394,7 +394,7 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 		
 		}catch(GlobalException e){
 			logger.error("createFcSaleReceiptApplication", e.getErrorMessage() + "" +e.getErrorKey());
-			 throw new GlobalException(e.getErrorMessage(),e.getErrorKey());
+			 throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}catch(Exception e){
 			logger.error("createFcSaleReceiptApplication", e.getMessage());
 		}
@@ -452,7 +452,7 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 		return breakup;
 		}catch(GlobalException e){
 			logger.error("createFcSaleReceiptApplication", e.getErrorMessage() + "" +e.getErrorKey());
-			 throw new GlobalException(e.getErrorMessage(),e.getErrorKey());
+			 throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}catch(Exception e){
 			e.printStackTrace();
 			logger.error("getExchangeRateFcSaleOrder", e.getMessage());

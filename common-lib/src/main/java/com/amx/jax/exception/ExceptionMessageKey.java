@@ -9,6 +9,20 @@ import com.amx.utils.ArgUtil;
 
 public class ExceptionMessageKey extends Dnum<ExceptionMessageKey> implements IMessageKey {
 
+	public static class MessageKey implements IMessageKey {
+
+		String output;
+
+		public MessageKey(String output) {
+			this.output = output;
+		}
+
+		@Override
+		public String toString() {
+			return this.output;
+		}
+	}
+
 	public static final Map<String, String> MAP = new HashMap<String, String>();
 
 	public static final ExceptionMessageKey NULL_NOT_ALLOWED = new ExceptionMessageKey("NULL_NOT_ALLOWED", 1,
@@ -36,17 +50,15 @@ public class ExceptionMessageKey extends Dnum<ExceptionMessageKey> implements IM
 		super(exceptionEnum.getStatusKey(), ordinalCounter++);
 	}
 
-	@Override
 	public int getArgCount() {
 		return argCount;
 	}
 
-	@Override
-	public String getMessageKey(Object... args) {
+	public String get(Object... args) {
 		return String.format(this.messageKeyFormat, args);
 	}
 
-	public static String build(IExceptionEnum exceptionEnum, Object... values) {
+	public static IMessageKey build(IExceptionEnum exceptionEnum, Object... values) {
 		final String DELIM = ":";
 		StringBuffer sbuf = new StringBuffer();
 		sbuf.append(exceptionEnum.getStatusKey()).append(DELIM);
@@ -57,7 +69,7 @@ public class ExceptionMessageKey extends Dnum<ExceptionMessageKey> implements IM
 				sbuf.append(values[i]).append(DELIM);
 			}
 		}
-		return sbuf.toString();
+		return new MessageKey(sbuf.toString());
 	}
 
 	@Override
@@ -88,13 +100,13 @@ public class ExceptionMessageKey extends Dnum<ExceptionMessageKey> implements IM
 					ExceptionMessageKey exceptionMessageKey = ExceptionMessageKey.valueOf(fieldError.getDescription());
 					if (exceptionMessageKey != null) {
 						apiError.setMessageKey(exceptionMessageKey
-								.getMessageKey(ArgUtil.ifNotEmpty(fieldError.getField(), fieldError.getObzect()))
+								.get(ArgUtil.ifNotEmpty(fieldError.getField(), fieldError.getObzect()))
 								.toString());
 					} else {
 						exceptionMessageKey = ExceptionMessageKey.valueOf(fieldError.getCode());
 						if (exceptionMessageKey != null) {
 							apiError.setMessageKey(exceptionMessageKey
-									.getMessageKey(ArgUtil.ifNotEmpty(fieldError.getField(), fieldError.getObzect()))
+									.get(ArgUtil.ifNotEmpty(fieldError.getField(), fieldError.getObzect()))
 									.toString());
 						}
 					}

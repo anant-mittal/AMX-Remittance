@@ -217,7 +217,7 @@ public class UserService extends AbstractUserService {
 	public ApiResponse saveCustomer(CustomerModel model) {
 		BigDecimal customerId = (model.getCustomerId() == null) ? metaData.getCustomerId() : model.getCustomerId();
 		if (customerId == null) {
-			throw new GlobalException("Null customer id passed ", JaxError.NULL_CUSTOMER_ID.getCode());
+			throw new GlobalException(JaxError.NULL_CUSTOMER_ID.getCode(), "Null customer id passed ");
 		}
 		Customer cust = custDao.getCustById(customerId);
 		String oldEmail = cust.getEmail();
@@ -600,7 +600,7 @@ public class UserService extends AbstractUserService {
 
 	public ApiResponse validateCustomerData(CustomerModel model) {
 		if (model.getCustomerId() == null) {
-			throw new GlobalException("Null customer id passed ", JaxError.NULL_CUSTOMER_ID.getCode());
+			throw new GlobalException(JaxError.NULL_CUSTOMER_ID.getCode(), "Null customer id passed ");
 		}
 		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(model.getCustomerId());
 		ApiResponse response = getBlackApiResponse();
@@ -634,7 +634,7 @@ public class UserService extends AbstractUserService {
 		if (custId == null) {
 			auditService.log(
 					createUserServiceEvent(model, JaxUserAuditEvent.Type.CUSTOMER_PASSWORD_UPDATE_CUSTOMER_ID_NULL));
-			throw new GlobalException("Null customer id passed ", JaxError.NULL_CUSTOMER_ID.getCode());
+			throw new GlobalException(JaxError.NULL_CUSTOMER_ID.getCode(), "Null customer id passed ");
 		}
 		try {
 			userValidationService.validateOtpFlow(model);
