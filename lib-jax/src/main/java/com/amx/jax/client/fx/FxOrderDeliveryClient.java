@@ -15,6 +15,7 @@ import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.model.request.fx.FcSaleDeliveryDetailUpdateReceiptRequest;
 import com.amx.jax.model.request.fx.FcSaleDeliveryMarkDeliveredRequest;
 import com.amx.jax.model.request.fx.FcSaleDeliveryMarkNotDeliveredRequest;
+import com.amx.jax.model.response.OtpPrefixDto;
 import com.amx.jax.model.response.fx.FxDeliveryDetailDto;
 import com.amx.jax.rest.RestService;
 
@@ -102,13 +103,13 @@ public class FxOrderDeliveryClient implements IFxOrderDelivery {
 	}
 
 	@Override
-	public AmxApiResponse<BoolRespModel, Object> sendOtp(BigDecimal deliveryDetailSeqId) {
+	public AmxApiResponse<OtpPrefixDto, Object> sendOtp(BigDecimal deliveryDetailSeqId) {
 		try {
 			LOGGER.debug("in sendOtp");
 			String url = appConfig.getJaxURL() + Path.FX_DELIVERY_SEND_OTP;
 			return restService.ajax(url).meta(new JaxMetaInfo())
 					.queryParam(Params.DELIVERY_DETAIL_SEQID, deliveryDetailSeqId).get()
-					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
+					.as(new ParameterizedTypeReference<AmxApiResponse<OtpPrefixDto, Object>>() {
 					});
 		} catch (Exception e) {
 			LOGGER.error("exception in sendOtp : ", e);

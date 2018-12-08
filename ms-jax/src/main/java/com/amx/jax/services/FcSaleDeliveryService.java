@@ -39,6 +39,7 @@ import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.model.request.fx.FcSaleDeliveryDetailUpdateReceiptRequest;
 import com.amx.jax.model.request.fx.FcSaleDeliveryMarkDeliveredRequest;
 import com.amx.jax.model.request.fx.FcSaleDeliveryMarkNotDeliveredRequest;
+import com.amx.jax.model.response.OtpPrefixDto;
 import com.amx.jax.model.response.fx.FxDeliveryDetailDto;
 import com.amx.jax.model.response.fx.FxDeliveryDetailNotificationDto;
 import com.amx.jax.model.response.fx.ShippingAddressDto;
@@ -223,7 +224,7 @@ public class FcSaleDeliveryService {
 	 * @return
 	 * 
 	 */
-	public BoolRespModel sendOtp(BigDecimal deliveryDetailSeqId, boolean validateDriverEmployee) {
+	public OtpPrefixDto sendOtp(BigDecimal deliveryDetailSeqId, boolean validateDriverEmployee) {
 		VwFxDeliveryDetailsModel vwFxDeliveryDetailsModel = validatetDeliveryDetailView(deliveryDetailSeqId);
 		FxDeliveryDetailsModel fxDeliveryDetailsModel = validateFxDeliveryModel(deliveryDetailSeqId,
 				validateDriverEmployee);
@@ -251,7 +252,7 @@ public class FcSaleDeliveryService {
 
 		email.getModel().put(NotificationConstants.RESP_DATA_KEY, notificationModel);
 		jaxNotificationService.sendEmail(email);
-		return new BoolRespModel(true);
+		return new OtpPrefixDto(mOtpPrefix);
 	}
 
 	public BoolRespModel verifyOtp(BigDecimal deliveryDetailSeqId, BigDecimal mOtp) {
