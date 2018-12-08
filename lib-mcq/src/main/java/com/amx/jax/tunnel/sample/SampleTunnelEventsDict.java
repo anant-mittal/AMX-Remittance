@@ -1,6 +1,8 @@
-package com.amx.jax.tunnel;
+package com.amx.jax.tunnel.sample;
 
-public enum SampleTunnelEvents implements ITunnelEventsDict {
+import com.amx.jax.tunnel.ITunnelEventsDict;
+
+public enum SampleTunnelEventsDict implements ITunnelEventsDict {
 
 	TEST_TOPIC(Names.TEST_TOPIC);
 
@@ -10,7 +12,7 @@ public enum SampleTunnelEvents implements ITunnelEventsDict {
 
 	String eventName;
 
-	SampleTunnelEvents(String eventName) {
+	SampleTunnelEventsDict(String eventName) {
 		this.eventName = eventName;
 	}
 

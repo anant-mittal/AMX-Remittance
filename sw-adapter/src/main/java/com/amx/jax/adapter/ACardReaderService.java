@@ -83,16 +83,18 @@ public abstract class ACardReaderService {
 
 	public String getServerUrl() {
 		if (ArgUtil.isEmpty(serverUrl)) {
-			serverUrl = environment.getProperty("adapter." + tnt + "." + env + ".url");
-			String serverDB = environment.getProperty("adapter." + tnt + "." + env + ".db");
-			if (ArgUtil.isEmpty(serverUrl)) {
-				serverUrl = environment.getProperty("adapter.local.url");
+			synchronized (lock) {
+				serverUrl = environment.getProperty("adapter." + tnt + "." + env + ".url");
+				String serverDB = environment.getProperty("adapter." + tnt + "." + env + ".db");
+				if (ArgUtil.isEmpty(serverUrl)) {
+					serverUrl = environment.getProperty("adapter.local.url");
+				}
+				if (ArgUtil.isEmpty(serverDB)) {
+					serverDB = environment.getProperty("adapter.local.db");
+				}
+				KeyUtil.setServiceName(serverDB);
+				adapterServiceClient.setOffSiteUrl(serverUrl);
 			}
-			if (ArgUtil.isEmpty(serverDB)) {
-				serverDB = environment.getProperty("adapter.local.db");
-			}
-			KeyUtil.setServiceName(serverDB);
-			adapterServiceClient.setOffSiteUrl(serverUrl);
 		}
 		return serverUrl;
 	}
@@ -131,11 +133,15 @@ public abstract class ACardReaderService {
 
 	public DevicePairingCreds getDevicePairingCreds() {
 
-		if (getAddress() == null) {
+		if (ArgUtil.isEmpty(getServerUrl())) {
 			return null;
 		}
 
-		if (devicePairingCreds != null) {
+		if (ArgUtil.isEmpty(getAddress() == null)) {
+			return null;
+		}
+
+		if (!ArgUtil.isEmpty(devicePairingCreds)) {
 			return devicePairingCreds;
 		}
 

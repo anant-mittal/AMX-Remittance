@@ -47,7 +47,7 @@ public class CardController {
 		iCardService.saveCardDetailsByTerminal(deviceData.getTerminalId(), reader.getData());
 
 		CardData cardData = ArgUtil.ifNotEmpty(reader.getData(), new CardData());
-		stompTunnel.send(
+		stompTunnel.sendToAll(
 				"/card/details/" + deviceData.getTerminalId() + "/" + deviceRequestValidator.getDeviceRegId(),
 				cardData);
 

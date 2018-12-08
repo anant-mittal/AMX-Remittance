@@ -1,9 +1,12 @@
-package com.amx.jax.tunnel;
+package com.amx.jax.tunnel.sample;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@TunnelEventMapping(topic = SampleTunnelEvents.Names.TEST_TOPIC, queued = true)
+import com.amx.jax.tunnel.ITunnelSubscriber;
+import com.amx.jax.tunnel.TunnelEventMapping;
+
+@TunnelEventMapping(topic = SampleTunnelEventsDict.Names.TEST_TOPIC)
 public class SampleTunnelSubscriber implements ITunnelSubscriber<Object> {
 
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());

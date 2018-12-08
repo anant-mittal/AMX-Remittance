@@ -15,7 +15,7 @@ public class StompTunnelSessionManager {
 	public Map<String, String> sessionMap = new HashMap<String, String>();
 	public Map<String, String> wsessionMap = new HashMap<String, String>();
 
-	public String getSystemPrefix() {
+	public static String getSystemPrefix() {
 		return UniqueID.PREF;
 	}
 
