@@ -149,7 +149,7 @@ public class FxOrderDeliveryClient implements IFxOrderDelivery {
 	public AmxApiResponse<BoolRespModel, Object> markReturn(BigDecimal deliveryDetailSeqId) {
 		try {
 			LOGGER.debug("in markReturn");
-			String url = appConfig.getJaxURL() + Path.FX_DELIVERY_LIST_DELIVERY_REMARK;
+			String url = appConfig.getJaxURL() + Path.FX_DELIVERY_MARK_RETURNED;
 			return restService.ajax(url).meta(new JaxMetaInfo())
 					.field(Params.DELIVERY_DETAIL_SEQID, deliveryDetailSeqId).postForm()
 					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
