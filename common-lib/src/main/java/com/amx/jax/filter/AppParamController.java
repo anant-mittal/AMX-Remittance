@@ -18,6 +18,7 @@ import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.http.RequestType;
 import com.amx.jax.model.UserDevice;
 import com.amx.jax.scope.TenantContextHolder;
+import com.amx.utils.ArgUtil;
 import com.amx.utils.CryptoUtil.HashBuilder;
 
 @RestController
@@ -53,9 +54,13 @@ public class AppParamController {
 
 	@RequestMapping(value = "/pub/amx/hmac", method = RequestMethod.GET)
 	public Map<String, String> hmac(@RequestParam Long interval, @RequestParam String secret,
-			@RequestParam String message, @RequestParam Integer length) {
+			@RequestParam String message, @RequestParam Integer length,
+			@RequestParam(required = false) Long currentTime) {
 		Map<String, String> map = new HashMap<String, String>();
 		HashBuilder builder = new HashBuilder().interval(interval).secret(secret).message(message);
+		if (!ArgUtil.isEmpty(currentTime)) {
+			builder.currentTime(currentTime);
+		}
 		map.put("hmac", builder.toHMAC().output());
 		map.put("numeric", builder.toNumeric(length).output());
 		return map;
