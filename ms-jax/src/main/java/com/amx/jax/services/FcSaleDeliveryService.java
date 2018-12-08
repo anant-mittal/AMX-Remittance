@@ -106,6 +106,7 @@ public class FcSaleDeliveryService {
 		if (delRemark != null) {
 			dto.setDeliveryRemark(delRemark.getDeliveryRemark());
 		}
+		dto.setOtpTokenPrefix(model.getOtpTokenPrefix());
 		dto.setAddress(shippingAddressDto);
 		dto.setOrderStatus(statusMaster.getStatusDescription());
 		dto.setOrderStatusCode(statusMaster.getStatusCode());
@@ -121,9 +122,8 @@ public class FcSaleDeliveryService {
 		if (deliveryDetailModel == null) {
 			throw new GlobalException("Delivery detail not found", JaxError.FC_CURRENCY_DELIVERY_DETAIL_NOT_FOUND);
 		}
-		String otpTokenPrefix = fcSaleApplicationDao.getDeliveryDetailModel(deliveryDetailSeqId).getOtpTokenPrefix();
 		FxDeliveryDetailDto dto = createFxDeliveryDetailDto(deliveryDetailModel);
-		dto.setOtpTokenPrefix(otpTokenPrefix);
+		dto.setOtpTokenPrefix(deliveryDetailModel.getOtpTokenPrefix());
 		return dto;
 	}
 
