@@ -135,6 +135,7 @@ public class FcSaleAddressManager extends AbstractModel {
 			shippingAddressDto.setStreet(contactList.get(0).getStreet());
 			shippingAddressDto.setBlockNo(contactList.get(0).getBlock());
 			shippingAddressDto.setHouse(contactList.get(0).getFlat());
+			shippingAddressDto.setFlat(contactList.get(0).getFlat());
 			shippingAddressDto.setAddressDto(
 					getAddressType(contactList.get(0).getArea() == null ? "" : contactList.get(0).getArea()));
 			shippingAddressDto.setAreaDesc(contactList.get(0).getArea() == null ? "" : contactList.get(0).getArea());
@@ -195,6 +196,8 @@ public class FcSaleAddressManager extends AbstractModel {
 				shippingAddressDto.setStreet(shippingAddressDetail.getStreet());
 				shippingAddressDto.setBlockNo(shippingAddressDetail.getBlock());
 				shippingAddressDto.setHouse(shippingAddressDetail.getFlat());
+				shippingAddressDto.setFlat(shippingAddressDetail.getFlat());
+				shippingAddressDto.setBuildingNo(shippingAddressDetail.getBuildingNo());
 				shippingAddressDto.setAddressDto(getAddressType(shippingAddressDetail.getAddressType()));
 				shippingAddressDto.setAreaDesc(areaDao.getAreaList(shippingAddressDetail.getAreaCode()) == null ? ""
 						: areaDao.getAreaList(shippingAddressDetail.getAreaCode()).getShortDesc());
@@ -252,7 +255,11 @@ public class FcSaleAddressManager extends AbstractModel {
 	public void saveShippingAddress(CustomerShippingAddressRequestModel requestModel) {
 		try {
 			ShippingAddressDetail shipAdd = new ShippingAddressDetail();
-			shipAdd.setFsCustomer(new Customer(meta.getCustomerId()));
+			if(JaxUtil.isNullZeroBigDecimalCheck(meta.getCustomerId())){
+			 shipAdd.setFsCustomer(new Customer(meta.getCustomerId()));
+			}else{
+				throw new GlobalException("Customer  id not found ", JaxError.CUSTOMER_NOT_FOUND);
+			}
 			shipAdd.setCreationDate(new Date());
 			shipAdd.setActiveStatus(ConstantDocument.Yes);
 			shipAdd.setAreaCode(requestModel.getAreaCode());
@@ -278,6 +285,9 @@ public class FcSaleAddressManager extends AbstractModel {
 			shipAdd.setTelephoneCode(requestModel.getTelPrefix());
 			shipAdd.setTelephone(requestModel.getMobile());
 			shippingAddressDao.save(shipAdd);
+		}catch(GlobalException e){
+			logger.error("saveShippingAddress", e.getErrorMessage() + "" +e.getErrorKey());
+			 throw new GlobalException(e.getErrorMessage(),e.getErrorKey());
 		} catch (Exception e) {
 			logger.error("saveShippingAddress :", e.getMessage());
 			throw new GlobalException("Failed", JaxError.FS_SHIPPING_ADDRESS_CREATION_FAILED);
@@ -287,7 +297,7 @@ public class FcSaleAddressManager extends AbstractModel {
 	public void deactivateShippingAddress(Customer customer) {
 		List<ShippingAddressDetail> shippingAddressList = shippingAddressDao.findByFsCustomerAndActiveStatus(customer,
 				ConstantDocument.Yes);
-		if (!shippingAddressList.isEmpty()) {
+		if (shippingAddressList !=null && !shippingAddressList.isEmpty()) {
 			for (ShippingAddressDetail add : shippingAddressList) {
 				ShippingAddressDetail shippAdd = shippingAddressDao.findOne(add.getShippingAddressDetailId());
 				shippAdd.setActiveStatus(ConstantDocument.Deleted);
@@ -299,7 +309,8 @@ public class FcSaleAddressManager extends AbstractModel {
 	public List<ShippingAddressDto> deleteShippingAddress(BigDecimal shippingAddressDetailId) {
 		if (JaxUtil.isNullZeroBigDecimalCheck(shippingAddressDetailId)) {
 			ShippingAddressDetail shippAdd = shippingAddressDao.findOne(shippingAddressDetailId);
-			if (shippAdd != null) {
+			if ( shippAdd !=null) {
+				shippAdd.setShippingAddressDetailId(shippingAddressDetailId);
 				shippAdd.setActiveStatus(ConstantDocument.Deleted);
 				if (!StringUtils.isBlank(meta.getReferrer())) {
 					shippAdd.setUpdatedBy(meta.getReferrer());
@@ -421,7 +432,7 @@ public class FcSaleAddressManager extends AbstractModel {
     		 sb = sb.append("Street ").append(shippingAddressDto.getStreet()==null?"":shippingAddressDto.getStreet()).append(concat)
     			  .append("Block ").append(shippingAddressDto.getBlock()==null?"":shippingAddressDto.getBlock()).append(concat)
     			  .append("Build ").append(shippingAddressDto.getBuildingNo()==null?"":shippingAddressDto.getBuildingNo()).append(concat)
-    			  .append("Flat ").append(shippingAddressDto.getFlat()==null?"":shippingAddressDto.getFlat()).append(concat)
+    			  .append("Flat ").append(shippingAddressDto.getFlat()==null?"":shippingAddressDto.getHouse()).append(concat)
     			  .append("City ").append(shippingAddressDto.getLocalContactCity()==null?"":shippingAddressDto.getLocalContactCity()).append(concat) 
     			  .append("Area ").append(shippingAddressDto.getAreaDesc()).append(concat)
     			  .append(shippingAddressDto.getLocalContactDistrict()==null?"":shippingAddressDto.getLocalContactDistrict()).append(concat)
