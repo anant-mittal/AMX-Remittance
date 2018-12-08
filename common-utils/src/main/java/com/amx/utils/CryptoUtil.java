@@ -72,6 +72,7 @@ public final class CryptoUtil {
 	}
 
 	public static boolean validateHMAC(long interval, String secretKey, String message, long currentTime, String hash) {
+		LOGGER.debug("validateHMAC I:{} S:{} M:{} C:{} H:{}", interval, secretKey, message, currentTime, hash);
 		if (generateHMAC(interval, secretKey, message).equals(hash)) {
 			return true;
 		} else if (generateHMAC(interval, secretKey, message, currentTime - interval * 1000).equals(hash)) {
