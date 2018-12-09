@@ -140,6 +140,9 @@ public class AppConfig {
 
 	@Value("${server.session.cookie.secure}")
 	private boolean cookieSecure;
+	
+	@Value("${spring.profiles.active}")
+	private String[] springProfile;
 
 	@Value("${app.audit.file.print}")
 	String[] printableAuditMarkers;

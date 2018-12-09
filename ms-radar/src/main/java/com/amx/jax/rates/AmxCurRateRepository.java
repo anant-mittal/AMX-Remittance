@@ -23,9 +23,9 @@ import com.amx.utils.JsonUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 @Repository
-public class CurRateRepository {
+public class AmxCurRateRepository {
 
-	Logger LOGGER = LoggerService.getLogger(CurRateRepository.class);
+	Logger LOGGER = LoggerService.getLogger(AmxCurRateRepository.class);
 
 	private final String INDEX = "marketrate";
 	private final String TYPE = "currate";
@@ -33,11 +33,11 @@ public class CurRateRepository {
 	@Autowired
 	private RestHighLevelClient restHighLevelClient;
 
-	public CurRate insertRate(CurRate rate) {
+	public AmxCurRate insertRate(AmxCurRate rate) {
 
 		// vote.setId(UUID.randomUUID().toString());
 
-		Map<String, Object> dataMap = JsonUtil.toMap(rate);
+		Map<String, String> dataMap = JsonUtil.toStringMap(rate);
 		IndexRequest indexRequest = new IndexRequest(INDEX, TYPE, rate.getId())
 				.source(dataMap);
 		try {
@@ -62,7 +62,7 @@ public class CurRateRepository {
 		return sourceAsMap;
 	}
 
-	public Map<String, Object> updateRateById(String id, CurRate vote) {
+	public Map<String, Object> updateRateById(String id, AmxCurRate vote) {
 		UpdateRequest updateRequest = new UpdateRequest(INDEX, TYPE, id)
 				.fetchSource(true); // Fetch Object after its update
 		Map<String, Object> error = new HashMap<>();

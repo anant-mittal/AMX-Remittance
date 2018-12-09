@@ -10,20 +10,20 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
-public class CurRateController {
+public class AmxCurRateController {
 
 	@Autowired
-	private CurRateRepository curRateRepository;
+	private AmxCurRateRepository curRateRepository;
 
 	@ResponseBody
 	@RequestMapping(value = "/pub/currate", method = RequestMethod.POST)
-	public Map<String, Object> postVote(@RequestBody CurRate vote) {
+	public Map<String, Object> postVote(@RequestBody AmxCurRate vote) {
 		return curRateRepository.updateRateById(vote.getId(), vote);
 	}
 
 	@ResponseBody
 	@RequestMapping(value = "/pub/currate", method = RequestMethod.PUT)
-	public CurRate putVote(@RequestBody CurRate vote) {
+	public AmxCurRate putVote(@RequestBody AmxCurRate vote) {
 		return curRateRepository.insertRate(vote);
 	}
 

@@ -1,9 +1,12 @@
 package com.amx.jax.rates.models;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 
+import com.amx.jax.rates.AmxConstants.RCur;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 
@@ -16,6 +19,7 @@ public class AmanKuwaitModels {
 		private static final long serialVersionUID = 3954809608842883968L;
 
 		@JacksonXmlProperty(localName = "CurRates")
+		@JacksonXmlElementWrapper(useWrapping = false)
 		private List<CurRates> curRates;
 
 		@JacksonXmlProperty(localName = "UpdtDate")
@@ -49,13 +53,22 @@ public class AmanKuwaitModels {
 		@JacksonXmlProperty(localName = "Name")
 		private String name;
 		@JacksonXmlProperty(localName = "Code")
-		private String code;
+		private RCur code;
 		@JacksonXmlProperty(localName = "BRate")
 		private String buyrate;
 		@JacksonXmlProperty(localName = "SRate")
 		private String sellrate;
 		@JacksonXmlProperty(localName = "KDRate")
-		private String kdrate;
+		private BigDecimal kdrate;
+
+		public CurRates() {
+//			this.sortOrder = "1";
+//			this.name = "NAME";
+//			this.code = "CODE";
+//			this.buyrate = "BUYRATE";
+//			this.sellrate = "SELLRATE";
+//			this.kdrate = "KDRATE";
+		}
 
 		public String getSortOrder() {
 			return sortOrder;
@@ -73,11 +86,11 @@ public class AmanKuwaitModels {
 			this.name = name;
 		}
 
-		public String getCode() {
+		public RCur getCode() {
 			return code;
 		}
 
-		public void setCode(String code) {
+		public void setCode(RCur code) {
 			this.code = code;
 		}
 
@@ -97,11 +110,11 @@ public class AmanKuwaitModels {
 			this.sellrate = sellrate;
 		}
 
-		public String getKdrate() {
+		public BigDecimal getKdrate() {
 			return kdrate;
 		}
 
-		public void setKdrate(String kdrate) {
+		public void setKdrate(BigDecimal kdrate) {
 			this.kdrate = kdrate;
 		}
 
