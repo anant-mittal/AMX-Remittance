@@ -322,25 +322,7 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 			throw new GlobalException(JaxError.ZERO_NOT_ALLOWED,"Enter valid amount ");
 		}
 		
-
-		
 		trnxManager.checkFCSaleTrnxLimit(exchbreakUpRate,fcSalerequestModel.getForeignCurrencyId(),fcSalerequestModel.getForeignAmount(),localCurrencyId,customerId);
-		
-		/*AuthenticationLimitCheckView authLimit = authentication.getFxOrderTxnLimit();
-		if(authLimit!=null){
-		 fcTrnxLimitPerDay = authLimit.getAuthLimit();
-		 FxOrderTranxLimitView trnxViewModel = trnxLimitRepos.getFxTransactionLimit(customerId);
-		 if(trnxViewModel!=null){
-			 fxTrnxHistAmount  = trnxViewModel.getTotalAmount()==null?BigDecimal.ZERO:trnxViewModel.getTotalAmount().add(receiptPaymentAppl.getLocalTrnxAmount());
-		 }else{
-			 fxTrnxHistAmount = receiptPaymentAppl.getLocalTrnxAmount();
-		 }
-		 if(JaxUtil.isNullZeroBigDecimalCheck(fxTrnxHistAmount) && JaxUtil.isNullZeroBigDecimalCheck(fcTrnxLimitPerDay) && fxTrnxHistAmount.compareTo(fcTrnxLimitPerDay)>=0){
-			 throw new GlobalException("You have reached daily limit of FC Sale  "+fcTrnxLimitPerDay,JaxError.FC_SALE_TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED);
-		 }
-		}else{
-			throw new GlobalException("FX Order limit setup is not defined",JaxError.FC_SALE_DAY_LIMIT_SETUP_NOT_DIFINED);
-		}*/
 		receiptPaymentAppl.setDenominationType(fcSalerequestModel.getCurrencyDenominationType());
 		receiptPaymentAppl.setTransactionType(ConstantDocument.S);
 		receiptPaymentAppl.setIsActive(ConstantDocument.Yes);
