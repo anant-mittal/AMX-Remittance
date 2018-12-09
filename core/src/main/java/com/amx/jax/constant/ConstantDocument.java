@@ -97,6 +97,9 @@ public class ConstantDocument {
 	public static final String OFD_ACK="OFD_ACK";
 	// PCK for --PACKED
 	public static final String PCK="PCK";
+	public static final String OFD_CNF="OFD_CNF";
+	public static final String CND_ACK="CND_ACK";
+	
 	/** end Here **/
 	public static final String P = "P";	
 	public static final String FC_SALE = "FC Sale";

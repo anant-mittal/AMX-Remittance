@@ -156,6 +156,7 @@ public class DeviceConnectorClient {
 					.header(DeviceConstants.Keys.CLIENT_REG_TOKEN_XKEY, devicePairingCreds.getDeviceRegToken())
 
 					.header(DeviceConstants.Keys.CLIENT_SESSION_TOKEN_XKEY, sessionPairingCreds.getDeviceSessionToken())
+					.header(DeviceConstants.Keys.DEVICE_REQ_TIME_XKEY, System.currentTimeMillis())
 					.header(DeviceConstants.Keys.CLIENT_REQ_TOKEN_XKEY,
 							DeviceConstants.generateDeviceReqToken(sessionPairingCreds, devicePairingCreds))
 					.get().as(new ParameterizedTypeReference<AmxApiResponse<Object, Object>>() {

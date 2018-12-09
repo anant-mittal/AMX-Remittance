@@ -17,6 +17,7 @@ public class DeviceConstants {
 
 		public static final String CLIENT_SESSION_TOKEN_XKEY = "x-device-session-token";
 
+		public static final String DEVICE_REQ_TIME_XKEY = "x-device-req-time";
 		public static final String DEVICE_REQ_KEY_XKEY = "x-device-req-key";
 		public static final String CLIENT_REQ_TOKEN_XKEY = "x-device-req-token";
 	}
@@ -45,8 +46,8 @@ public class DeviceConstants {
 		public static final String PARAM_DEVICE_REG_ID = "deviceRegId";
 	}
 
-	public static String generateDeviceReqToken(String deviceReqKey, String deviceRegToken) {
-		return CryptoUtil.generateHMAC(DeviceConstants.Config.REQUEST_TOKEN_VALIDITY, deviceReqKey, deviceRegToken);
+	public static String generateDeviceReqToken(String deviceReqKey, String deviceRegId) {
+		return CryptoUtil.generateHMAC(DeviceConstants.Config.REQUEST_TOKEN_VALIDITY, deviceReqKey, deviceRegId);
 	}
 
 	public static String generateDeviceReqToken(
@@ -55,9 +56,9 @@ public class DeviceConstants {
 		return generateDeviceReqToken(sessionPairingCreds.getDeviceRequestKey(), devicePairingCreds.getDeviceRegId());
 	}
 
-	public static boolean validateDeviceReqToken(String deviceReqKey, String deviceRegKey, String deviceReqToken) {
+	public static boolean validateDeviceReqToken(String deviceReqKey, String deviceRegId, String deviceReqToken) {
 		return CryptoUtil.validateHMAC(
-				DeviceConstants.Config.REQUEST_TOKEN_VALIDITY, deviceReqKey, deviceRegKey,
+				DeviceConstants.Config.REQUEST_TOKEN_VALIDITY, deviceReqKey, deviceRegId,
 				deviceReqToken);
 	}
 

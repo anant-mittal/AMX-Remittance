@@ -128,7 +128,7 @@ public class CustomerRegistrationManager extends CustomerTransactionModel<Custom
 	 */
 	private void revalidateOtp(OtpData otpData) {
 		if (!otpData.isOtpValidated()) {
-			throw new GlobalException("otp is not validated", JaxError.OTP_NOT_VALIDATED);
+			throw new GlobalException(JaxError.OTP_NOT_VALIDATED, "otp is not validated");
 		}
 	}
 

@@ -39,14 +39,14 @@ public class BankBranchSearchRequestlValidator implements Validator {
 
 	private void validateIfscCode(String ifscCode) {
 		if (StringUtils.isNotBlank(ifscCode) && ifscCode.length() < 3) {
-			throw new GlobalException("Invalid ifsc", JaxError.INVALID_BANK_IFSC);
+			throw new GlobalException(JaxError.INVALID_BANK_IFSC, "Invalid ifsc");
 		}
 
 	}
 
 	private void validateSwiftCode(String swift) {
 		if (StringUtils.isNotBlank(swift) && swift.length() < 3) {
-			throw new GlobalException("Invalid swift", JaxError.INVALID_BANK_SWIFT);
+			throw new GlobalException(JaxError.INVALID_BANK_SWIFT, "Invalid swift");
 		}
 
 	}

@@ -183,9 +183,9 @@ public class FcSaleApplicationDao {
 	public void updatePaygDetails(List<ReceiptPaymentApp> listOfRecAppl,PaymentResponseDto paymentResponse){
 		try{
 			
-			if(!listOfRecAppl.isEmpty()){
+			if(listOfRecAppl !=null && !listOfRecAppl.isEmpty()){
 				for(ReceiptPaymentApp appl :listOfRecAppl){
-					appl.setIsActive(ConstantDocument.Deleted);
+					//appl.setIsActive(ConstantDocument.Deleted);
 					appl.setApplicationStatus(null);
 					appl.setModifiedDate(new Date());
 					updateCartDetails(appl);
@@ -205,12 +205,12 @@ public class FcSaleApplicationDao {
 				pgRepository.save(pgModel);
 			}else{
 				logger.error("Update after PG details Payment Id :"+paymentResponse.getPaymentId()+"\t Udf 3--Pg trnx seq Id :"+paymentResponse.getUdf3()+"Result code :"+paymentResponse.getResultCode());
-				throw new GlobalException("PG updatio failed",JaxError.PAYMENT_UPDATION_FAILED);
+				throw new GlobalException(JaxError.PAYMENT_UPDATION_FAILED,"PG updatio failed");
 			}
 		}catch (Exception e) {
 			e.printStackTrace();
 			logger.error("catch Update after PG details Payment Id :"+paymentResponse.getPaymentId()+"\t Udf 3--Pg trnx seq Id :"+paymentResponse.getUdf3()+"Result code :"+paymentResponse.getResultCode());
-			throw new GlobalException("PG updatio failed",JaxError.PAYMENT_UPDATION_FAILED);
+			throw new GlobalException(JaxError.PAYMENT_UPDATION_FAILED,"PG updatio failed");
 		}
 		
 	}
@@ -240,7 +240,7 @@ public class FcSaleApplicationDao {
 				 output.put("P_ERROR_MESG", "ERROR_WHILE_SAVING_COLLECTION_DETAILS");
 			 }
 			 
-			 if(!receiptPaymentList.isEmpty()){
+			 if(receiptPaymentList !=null && !receiptPaymentList.isEmpty()){
 				 for(ReceiptPayment rcpt : receiptPaymentList){
 					 rcpt.setColDocNo(collection.getDocumentNo());
 					 rcpt.setColDocFyr(collection.getDocumentFinanceYear());

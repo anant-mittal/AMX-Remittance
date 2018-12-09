@@ -41,7 +41,8 @@ public class JaxAuditEvent extends AuditEvent {
 	    FC_SALE_PUR_TRNX,
 	    FC_SALE_PUR_TRNX_NOT_EXIST,
 		FC_SALE_CURR_LIST_SUCESS,
-		FC_SALE_CURR_LIST_NOT_SET;
+		FC_SALE_CURR_LIST_NOT_SET,
+		FC_SALE_UPDATE_ORDER_STATUS;
 		/** End Here**/
 
 		@Override

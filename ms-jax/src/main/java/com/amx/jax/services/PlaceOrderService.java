@@ -467,8 +467,8 @@ public class PlaceOrderService extends AbstractService {
 	public void validatePlaceOrderDto(PlaceOrderDTO dto) {
 		// both foreign and domestic amounts should not be null
 		if(dto.getPayAmount() == null && dto.getReceiveAmount() == null) {
-			throw new GlobalException("Both PayAmount and ReceivedAmount should not be null ",
-					JaxError.PO_BOTH_PAY_RECEIVED_AMT_NULL);
+			throw new GlobalException(JaxError.PO_BOTH_PAY_RECEIVED_AMT_NULL,
+					"Both PayAmount and ReceivedAmount should not be null ");
 		}
 		
 		/*if(dto.getPayAmount() != null && dto.getReceiveAmount() != null) {

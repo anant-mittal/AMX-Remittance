@@ -100,18 +100,18 @@ public class AuthLoginOTPManager {
 		OtpData otpData = authLoginManager.get().getOtpData();
 		try {
 			if (StringUtils.isBlank(mOtp)) {
-				throw new AuthServiceException("Otp field is required", RbaacServiceError.MISSING_OTP);
+				throw new AuthServiceException(RbaacServiceError.MISSING_OTP, "Otp field is required");
 			}
 			// call from parameter master
 			if (otpData.getValidateOtpAttempts() >= 3) {
 				throw new AuthServiceException(
-						"Sorry, you cannot proceed to login. Please contact head office to unlock account",
-						RbaacServiceError.OTP_LIMIT_EXCEEDED);
+						RbaacServiceError.OTP_LIMIT_EXCEEDED,
+						"Sorry, you cannot proceed to login. Please contact head office to unlock account");
 			}
 			// actual validation logic
 			if (!otpData.getmOtp().equals(mOtp)) {
 				otpData.setValidateOtpAttempts(otpData.getValidateOtpAttempts() + 1);
-				throw new AuthServiceException("Invalid otp", RbaacServiceError.INVALID_OTP);
+				throw new AuthServiceException(RbaacServiceError.INVALID_OTP, "Invalid otp");
 			}
 			otpData.setOtpValidated(true);
 			UserRoleMaster usermaster = rbaacDao.fetchUserMasterDetails(empDetails.getEmployeeId());
@@ -120,12 +120,12 @@ public class AuthLoginOTPManager {
 				if (roleDef != null && roleDef.size() != 0) {
 					authLoginTrnxModel = authLoginManager.fetchEmployeeDetails(empDetails, usermaster, roleDef);
 				} else {
-					throw new AuthServiceException("Sorry, you cannot proceed to login. Please contact head office",
-							RbaacServiceError.INVALID_ROLE_DEFINITION);
+					throw new AuthServiceException(RbaacServiceError.INVALID_ROLE_DEFINITION,
+							"Sorry, you cannot proceed to login. Please contact head office");
 				}
 			} else {
-				throw new AuthServiceException("Sorry, you cannot proceed to login. Please contact head office",
-						RbaacServiceError.INVALID_USER_DETAILS);
+				throw new AuthServiceException(RbaacServiceError.INVALID_USER_DETAILS,
+						"Sorry, you cannot proceed to login. Please contact head office");
 			}
 		} finally {
 			authLoginManager.saveOtpData(otpData);

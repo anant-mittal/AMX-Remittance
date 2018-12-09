@@ -89,8 +89,12 @@ public class FxOrderBranchController {
 			HttpServletResponse response) {
 
 		duplicate = ArgUtil.parseAsBoolean(duplicate, false);
-
-		AmxApiResponse<FxOrderReportResponseDto, Object> wrapper = fxOrderBranchClient.printOrderSave(fcSaleBranchDispatchRequest);
+		
+		AmxApiResponse<FxOrderReportResponseDto, Object> wrapper = duplicate ? 
+				fxOrderBranchClient.reprintOrder(
+						fcSaleBranchDispatchRequest.getCollectionDocumentNo(), 
+						fcSaleBranchDispatchRequest.getCollectionDocumentYear()) : 
+				fxOrderBranchClient.printOrderSave(fcSaleBranchDispatchRequest);
 
 		if (File.Type.PDF.equals(ext)) {
 			File file = postManService.processTemplate(
@@ -99,6 +103,9 @@ public class FxOrderBranchController {
 					.getResult();
 			// file.create(response, false);
 			// return null;
+			file.setName(file.getITemplate().getFileName() + '_' + 
+					fcSaleBranchDispatchRequest.getCollectionDocumentNo().toString() + '_' + 
+					fcSaleBranchDispatchRequest.getCollectionDocumentYear().toString() + ".pdf");
 			return PostManUtil.download(file);
 
 		} else if (File.Type.HTML.equals(ext)) {
@@ -106,6 +113,10 @@ public class FxOrderBranchController {
 					new File(duplicate ? TemplatesMX.FXO_RECEIPT : TemplatesMX.FXO_RECEIPT,
 							wrapper, File.Type.HTML))
 					.getResult();
+			
+			file.setName(file.getITemplate().getFileName() + '_' +
+					fcSaleBranchDispatchRequest.getCollectionDocumentNo().toString() + '_' + 
+					fcSaleBranchDispatchRequest.getCollectionDocumentYear().toString() + ".html");
 			// return file.getContent();
 			return PostManUtil.download(file);
 
@@ -136,11 +147,26 @@ public class FxOrderBranchController {
 		return fxOrderBranchClient.assignDriver(orderNumber, orderYear, driverId);
 	}
 	
-//	@RequestMapping(value = "/api/fxo/order/dispatch",  method = { RequestMethod.POST })
-//	public AmxApiResponse<BoolRespModel,Object> dispatchOrder(@RequestBody FcSaleBranchDispatchRequest fcSaleBranchDispatchRequest){
-//		return fxOrderBranchClient.dispatchOrder(fcSaleBranchDispatchRequest);
-//	}
+	@RequestMapping(value = "/api/fxo/order/dispatch",  method = { RequestMethod.POST })
+	public AmxApiResponse<BoolRespModel,Object> dispatchOrder(
+			@RequestParam(value = "orderNumber", required = true) BigDecimal orderNumber,
+			@RequestParam(value = "orderYear", required = true) BigDecimal orderYear){
+		return fxOrderBranchClient.dispatchOrder(orderNumber, orderYear);
+	}
 	
+	@RequestMapping(value = "/api/fxo/order/acknowledge/return",  method = { RequestMethod.POST })
+	public AmxApiResponse<BoolRespModel,Object> acknowledgeReturn(
+			@RequestParam(value = "orderNumber", required = true) BigDecimal orderNumber,
+			@RequestParam(value = "orderYear", required = true) BigDecimal orderYear) {
+		return fxOrderBranchClient.returnAcknowledge(orderNumber, orderYear);
+	}
+	
+	@RequestMapping(value = "/api/fxo/order/acknowledge/cancel",  method = { RequestMethod.POST })
+	public AmxApiResponse<BoolRespModel,Object> acknowledgeCancel(
+			@RequestParam(value = "orderNumber", required = true) BigDecimal orderNumber,
+			@RequestParam(value = "orderYear", required = true) BigDecimal orderYear) {
+		return fxOrderBranchClient.acceptCancellation(orderNumber, orderYear);
+	}
 	
 	
 	

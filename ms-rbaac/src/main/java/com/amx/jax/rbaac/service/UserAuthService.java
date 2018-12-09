@@ -17,7 +17,7 @@ import com.amx.jax.AppContextUtil;
 import com.amx.jax.dict.UserClient.DeviceType;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.model.OtpData;
-import com.amx.jax.rbaac.RbaacConstants;
+import com.amx.jax.rbaac.constants.RbaacServiceConstants;
 import com.amx.jax.rbaac.constants.RbaacServiceConstants.LOGIN_TYPE;
 import com.amx.jax.rbaac.dao.RbaacDao;
 import com.amx.jax.rbaac.dbmodel.Employee;
@@ -102,8 +102,8 @@ public class UserAuthService {
 		 */
 		if (StringUtils.isBlank(employeeNo) || StringUtils.isBlank(identity) || StringUtils.isBlank(ipAddress)
 				|| deviceType == null || StringUtils.isBlank(deviceType.toString())) {
-			throw new AuthServiceException("Employee Number, Civil Id, IP Address, & Device Type are Manadatory",
-					RbaacServiceError.INVALID_OR_MISSING_CREDENTIALS);
+			throw new AuthServiceException(RbaacServiceError.INVALID_OR_MISSING_CREDENTIALS,
+					"Employee Number, Civil Id, IP Address, & Device Type are Manadatory");
 		}
 
 		/**
@@ -111,8 +111,11 @@ public class UserAuthService {
 		 */
 		if (isAssisted) {
 			if (StringUtils.isBlank(partnerIdentity)) {
-				throw new AuthServiceException("Partner Identity is Manadatory for Assisted Login",
-						RbaacServiceError.INVALID_OR_MISSING_PARTNER_IDENTITY);
+				throw new AuthServiceException(RbaacServiceError.INVALID_OR_MISSING_PARTNER_IDENTITY,
+						"Partner Identity is Manadatory for Assisted Login");
+			} else if (partnerIdentity.equalsIgnoreCase(identity)) {
+				throw new AuthServiceException(RbaacServiceError.INVALID_OR_MISSING_PARTNER_IDENTITY,
+						"Partner Identity can not be same as Primary User Identity");
 			}
 		}
 
@@ -209,8 +212,8 @@ public class UserAuthService {
 		 * Input -> Invalid
 		 */
 		if (StringUtils.isBlank(employeeNo) || StringUtils.isBlank(mOtp) || StringUtils.isBlank(ipAddress)) {
-			throw new AuthServiceException("Employee Number, Otp & IP Address are Manadatory",
-					RbaacServiceError.INVALID_OR_MISSING_DATA);
+			throw new AuthServiceException(RbaacServiceError.INVALID_OR_MISSING_DATA,
+					"Employee Number, Otp & IP Address are Manadatory");
 		}
 
 		// Get Cached OTP data for the user.
@@ -220,8 +223,8 @@ public class UserAuthService {
 		// handle Time out Here.
 		// eOtp is not checked
 		if (userOtpData == null || StringUtils.isBlank(userOtpData.getOtpData().getHashedmOtp())) {
-			throw new AuthServiceException("Invalid OTP: OTP is not generated for the user or timedOut",
-					RbaacServiceError.INVALID_OTP);
+			throw new AuthServiceException(RbaacServiceError.INVALID_OTP,
+					"Invalid OTP: OTP is not generated for the user or timedOut");
 		}
 
 		Employee employee = userOtpData.getEmployee();
@@ -233,15 +236,15 @@ public class UserAuthService {
 		if (isAssisted) {
 
 			if (StringUtils.isBlank(reqDto.getPartnerMOtp())) {
-				throw new AuthServiceException("Partner Otp is Manadatory for Assisted Login",
-						RbaacServiceError.INVALID_OR_MISSING_DATA);
+				throw new AuthServiceException(RbaacServiceError.INVALID_OR_MISSING_DATA,
+						"Partner Otp is Manadatory for Assisted Login");
 			}
 
 			partnerOtpHash = UserOtpManager.getOtpHash(reqDto.getPartnerMOtp());
 
 			if (StringUtils.isBlank(userOtpData.getPartnerOtpData().getHashedmOtp())) {
-				throw new AuthServiceException("Invalid OTP: OTP is not generated for the Partner user or timedOut",
-						RbaacServiceError.INVALID_PARTNER_OTP);
+				throw new AuthServiceException(RbaacServiceError.INVALID_PARTNER_OTP,
+						"Invalid OTP: OTP is not generated for the Partner user or timedOut");
 			}
 
 		}
@@ -261,8 +264,8 @@ public class UserAuthService {
 				// Clear OTP Cache
 				userOtpCache.remove(employeeNo);
 
-				throw new AuthServiceException("Invalid OTP : Max OTP Attempts are Exeeded : User Account is LOCKED ",
-						RbaacServiceError.USER_ACCOUNT_LOCKED);
+				throw new AuthServiceException(RbaacServiceError.USER_ACCOUNT_LOCKED,
+						"Invalid OTP : Max OTP Attempts are Exeeded : User Account is LOCKED ");
 			}
 
 			// Normal Incorrect Attempt: Increment Count
@@ -270,7 +273,7 @@ public class UserAuthService {
 
 			userOtpCache.cacheUserOtpData(employeeNo, userOtpData);
 
-			throw new AuthServiceException("Invalid OTP: OTP entered is Incorrect", RbaacServiceError.INVALID_OTP);
+			throw new AuthServiceException(RbaacServiceError.INVALID_OTP, "Invalid OTP: OTP entered is Incorrect");
 		}
 
 		// OTP is validated
@@ -299,8 +302,8 @@ public class UserAuthService {
 		 * Invalid Employee Details
 		 */
 		if (null == employees || employees.isEmpty()) {
-			throw new AuthServiceException("Employee Details not available : " + userType,
-					RbaacServiceError.INVALID_USER_DETAILS);
+			throw new AuthServiceException(RbaacServiceError.INVALID_USER_DETAILS,
+					"Employee Details not available : " + userType);
 		}
 
 		List<Employee> activeEmployees = new ArrayList<Employee>();
@@ -314,8 +317,8 @@ public class UserAuthService {
 		});
 
 		if (activeEmployees.isEmpty()) {
-			throw new AuthServiceException("User Not Active Or Deleted: User Account is Suspended : " + userType,
-					RbaacServiceError.USER_NOT_ACTIVE_OR_DELETED);
+			throw new AuthServiceException(RbaacServiceError.USER_NOT_ACTIVE_OR_DELETED,
+					"User Not Active Or Deleted: User Account is Suspended : " + userType);
 		}
 
 		/**
@@ -323,8 +326,8 @@ public class UserAuthService {
 		 */
 		if (activeEmployees.size() > 1) {
 			throw new AuthServiceException(
-					"Multiple Users Corresponding to the same Info: Pls contact Support : " + userType,
-					RbaacServiceError.MULTIPLE_USERS);
+					RbaacServiceError.MULTIPLE_USERS,
+					"Multiple Users Corresponding to the same Info: Pls contact Support : " + userType);
 		}
 
 		Employee validEmployee = activeEmployees.get(0);
@@ -333,10 +336,10 @@ public class UserAuthService {
 		 * Check if user A/C is Locked. lockcnt >= 3
 		 */
 		if (null != validEmployee.getLockCount()
-				&& validEmployee.getLockCount().intValue() >= RbaacConstants.EMPLOYEE_MAX_LOCK_COUNT) {
-			throw new AuthServiceException("User Account Locked : User Account Login is Suspended, from: "
-					+ validEmployee.getLockDate() + " for Login Type : " + userType,
-					RbaacServiceError.USER_ACCOUNT_LOCKED);
+				&& validEmployee.getLockCount().intValue() >= RbaacServiceConstants.EMPLOYEE_MAX_LOCK_COUNT) {
+			throw new AuthServiceException(RbaacServiceError.USER_ACCOUNT_LOCKED,
+					"User Account Locked : User Account Login is Suspended, from: "
+							+ validEmployee.getLockDate() + " for Login Type : " + userType);
 		}
 
 		return validEmployee;
@@ -347,7 +350,7 @@ public class UserAuthService {
 		UserClientDto userClientDto = userAuthInitReqDTO.getUserClientDto();
 
 		if (null == userClientDto) {
-			throw new AuthServiceException("User Client Info Is Null", RbaacServiceError.CLIENT_NOT_FOUND);
+			throw new AuthServiceException(RbaacServiceError.CLIENT_NOT_FOUND, "User Client Info Is Null");
 		}
 
 		DeviceType deviceType = userClientDto.getDeviceType();
@@ -357,8 +360,8 @@ public class UserAuthService {
 
 			if (null == userClientDto.getTerminalId()) {
 
-				throw new AuthServiceException("Terminal Id is Mandatory for Computer Terminals",
-						RbaacServiceError.INVALID_OR_MISSING_TERMINAL_ID);
+				throw new AuthServiceException(RbaacServiceError.INVALID_OR_MISSING_TERMINAL_ID,
+						"Terminal Id is Mandatory for Computer Terminals");
 			}
 
 			List<ViewExEmpBranchSysDetails> empBranchSysDetails = rbaacDao
@@ -367,8 +370,8 @@ public class UserAuthService {
 
 			if (null == empBranchSysDetails || empBranchSysDetails.isEmpty()) {
 
-				throw new AuthServiceException("Branch System/Terminal is Invalid, NONE found to be assigned.",
-						RbaacServiceError.BRANCH_SYSTEM_NOT_FOUND);
+				throw new AuthServiceException(RbaacServiceError.BRANCH_SYSTEM_NOT_FOUND,
+						"Branch System/Terminal is Invalid, NONE found to be assigned.");
 
 			}
 			if (empBranchSysDetails.size() > 1) {
@@ -388,10 +391,10 @@ public class UserAuthService {
 					|| StringUtils.isBlank(userClientDto.getDeviceRegToken())) {
 
 				throw new AuthServiceException(
+						RbaacServiceError.INVALID_OR_MISSING_DEVICE_ID,
 						"Valid Device Info is Mandatory for Mobile/Tablet Devices, DeviceId: "
 								+ userClientDto.getDeviceId() + ", Device Reg Id: " + userClientDto.getDeviceRegId()
-								+ " Device Reg Token: " + userClientDto.getDeviceRegToken(),
-						RbaacServiceError.INVALID_OR_MISSING_DEVICE_ID);
+								+ " Device Reg Token: " + userClientDto.getDeviceRegToken());
 
 			}
 

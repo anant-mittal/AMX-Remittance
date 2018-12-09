@@ -86,6 +86,16 @@ public class FxDeliveryDetailsModel implements Serializable{
 	@Column(name = "EMPLOYEE_ID")
 	BigDecimal employeeId;
 	
+	@Column(name = "OTP_VALIDATED")
+	String otpValidated;
+	
+	
+	public String getOtpValidated() {
+		return otpValidated;
+	}
+	public void setOtpValidated(String otpValidated) {
+		this.otpValidated = otpValidated;
+	}
 	public BigDecimal getDeleviryDelSeqId() {
 		return deleviryDelSeqId;
 	}

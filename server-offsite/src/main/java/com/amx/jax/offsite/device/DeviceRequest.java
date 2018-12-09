@@ -10,7 +10,6 @@ import com.amx.jax.device.DeviceBox;
 import com.amx.jax.device.DeviceConstants;
 import com.amx.jax.device.DeviceData;
 import com.amx.jax.device.DeviceRestModels;
-import com.amx.jax.device.DeviceConstants.Keys;
 import com.amx.jax.device.DeviceRestModels.DevicePairingCreds;
 import com.amx.jax.device.DeviceRestModels.SessionPairingCreds;
 import com.amx.jax.http.CommonHttpRequest;

@@ -41,14 +41,20 @@ public class SWAdapterController {
 	public String makesession(@RequestParam String tranx) throws Exception {
 		String tid = "";
 		String rid = "";
+		String excep = "";
 		if (!ArgUtil.isEmpty(kwtCardReaderService.getDevicePairingCreds())
 				&& !ArgUtil.isEmpty(kwtCardReaderService.getSessionPairingCreds())) {
-			AmxApiResponse<Object, Object> x = adapterServiceClient.pairTerminal(kwtCardReaderService.getAddress(),
-					kwtCardReaderService.getDevicePairingCreds(), kwtCardReaderService.getSessionPairingCreds(), tranx);
-			tid = ArgUtil.parseAsString(x.getResult());
-			rid = ArgUtil.parseAsString(x.getMeta());
+			try {
+				AmxApiResponse<Object, Object> x = adapterServiceClient.pairTerminal(kwtCardReaderService.getAddress(),
+						kwtCardReaderService.getDevicePairingCreds(), kwtCardReaderService.getSessionPairingCreds(),
+						tranx);
+				tid = ArgUtil.parseAsString(x.getResult());
+				rid = ArgUtil.parseAsString(x.getMeta());
+			} catch (Exception e) {
+
+			}
 		}
-		return "var _tid_ = '" + tid + "', _rid_ = '" + rid + "' ";
+		return "var _tid_ = '" + tid + "', _rid_ = '" + rid + "', _excep_='" + excep + "';";
 	}
 
 	@ResponseBody

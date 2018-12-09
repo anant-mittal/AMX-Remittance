@@ -77,8 +77,8 @@ public class CustomerPersonalDetailValidator implements Validator {
 
 	private void validateOtpSendCount(OtpData otpData) {
 		if (otpData.getSendOtpAttempts() >= otpSettings.getMaxSendOtpAttempts()) {
-			throw new GlobalException("Sorry, you cannot proceed to register. Please try to register after 12 midnight",
-					JaxError.VALIDATE_OTP_LIMIT_EXCEEDED);
+			throw new GlobalException(JaxError.VALIDATE_OTP_LIMIT_EXCEEDED,
+					"Sorry, you cannot proceed to register. Please try to register after 12 midnight");
 		}
 	}
 
@@ -92,7 +92,7 @@ public class CustomerPersonalDetailValidator implements Validator {
 		}
 		List<BlackListModel> blist = blackListDao.getBlackByName(customerName.toString());
 		if (blist != null && !blist.isEmpty()) {
-			throw new GlobalException("Customer is black listed", JaxError.BLACK_LISTED_CUSTOMER.getStatusKey());
+			throw new GlobalException(JaxError.BLACK_LISTED_CUSTOMER.getStatusKey(), "Customer is black listed");
 		}
 	}
 	

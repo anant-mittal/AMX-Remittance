@@ -80,7 +80,7 @@ public class DeviceDao {
 				deviceType, Constants.YES);
 		Device device = null;
 		if (devices != null && devices.size() > 1) {
-			throw new AuthServiceException("Too many devices activated", RbaacServiceError.CLIENT_TOO_MANY_ACTIVE);
+			throw new AuthServiceException(RbaacServiceError.CLIENT_TOO_MANY_ACTIVE, "Too many devices activated");
 		}
 		if (devices != null && devices.size() == 1) {
 			device = devices.get(0);
@@ -93,7 +93,7 @@ public class DeviceDao {
 				Constants.YES);
 		Device device = null;
 		if (devices != null && devices.size() > 1) {
-			throw new AuthServiceException("Too many devices activated", RbaacServiceError.CLIENT_TOO_MANY_ACTIVE);
+			throw new AuthServiceException(RbaacServiceError.CLIENT_TOO_MANY_ACTIVE, "Too many devices activated");
 		}
 		if (devices != null && devices.size() == 1) {
 			device = devices.get(0);

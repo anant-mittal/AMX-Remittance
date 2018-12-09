@@ -109,10 +109,10 @@ public class FxOrderPaymentManager {
 
 	
 	public PaymentResponseDto paymentCapture(PaymentResponseDto paymentResponse) {
-		logger.info("paymment capture :"+paymentResponse.toString());
-		logger.info("Customer Id :"+paymentResponse.getCustomerId());
-		logger.info("Result code :"+paymentResponse.getResultCode()+"\t Auth Code :"+paymentResponse.getAuth_appNo());		
-		logger.info("paymment capture Payment ID :"+paymentResponse.getPaymentId()+"\t Merchant Track Id :"+paymentResponse.getTrackId()+"\t UDF 3 :"+paymentResponse.getUdf3()+"\t Udf 2 :"+paymentResponse.getUdf2());
+		logger.debug("paymment capture :"+paymentResponse.toString());
+		logger.debug("Customer Id :"+paymentResponse.getCustomerId());
+		logger.debug("Result code :"+paymentResponse.getResultCode()+"\t Auth Code :"+paymentResponse.getAuth_appNo());		
+		logger.debug("paymment capture Payment ID :"+paymentResponse.getPaymentId()+"\t Merchant Track Id :"+paymentResponse.getTrackId()+"\t UDF 3 :"+paymentResponse.getUdf3()+"\t Udf 2 :"+paymentResponse.getUdf2());
 		
 	
 		HashMap<String, Object> mapAllDetailApplSave = new HashMap<String, Object>();
@@ -149,31 +149,29 @@ public class FxOrderPaymentManager {
 			 mapResopnseObject= rcptApplPaydao.finalSaveAll(mapAllDetailApplSave);
 			 
 			 
-			 logger.info("mapResopnseObject :"+mapResopnseObject.toString());
+			 logger.debug("mapResopnseObject :"+mapResopnseObject.toString());
 			 if(mapResopnseObject != null && mapResopnseObject.get("P_ERROR_MESG")==null){
 				 paymentResponse.setCollectionDocumentNumber((BigDecimal)mapResopnseObject.get("P_COLLECTION_NO"));
 				 paymentResponse.setCollectionFinanceYear((BigDecimal)mapResopnseObject.get("P_COLLECT_FINYR"));
 				 paymentResponse.setCollectionDocumentCode((BigDecimal)mapResopnseObject.get("P_COLLECTION_DOCUMENT_CODE"));
 			 }else{
 				 logger.error("paymentCapture final save  finalSaveAll method :"+mapResopnseObject.toString());
-				 throw new GlobalException("Invalid collection document number /year", JaxError.PAYMENT_UPDATION_FAILED);
+				 throw new GlobalException(JaxError.PAYMENT_UPDATION_FAILED, "Invalid collection document number /year");
 			 }
 			 
 			}else{
 					listOfRecAppl = receiptAppRepository.fetchreceiptPaymentAppl(paymentResponse.getCustomerId(), new BigDecimal(paymentResponse.getUdf3()));
 					if(listOfRecAppl!= null && !listOfRecAppl.isEmpty()) {
 						rcptApplPaydao.updatePaygDetails(listOfRecAppl, paymentResponse);
-						
 					}
-					
 					
 				}
 		}catch(GlobalException e){
 			logger.error("createFcSaleReceiptApplication", e.getErrorMessage() + "" +e.getErrorKey());
-			 throw new GlobalException(e.getErrorMessage(),e.getErrorKey());
+			 throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}catch(Exception e){
 			logger.error("try--catch block paymentCapture :"+e.getMessage());
-			throw new GlobalException("catch Payment capture failed", JaxError.PAYMENT_UPDATION_FAILED);
+			throw new GlobalException(JaxError.PAYMENT_UPDATION_FAILED, "catch Payment capture failed");
 		}
 		return paymentResponse;
 	}
@@ -235,7 +233,15 @@ public class FxOrderPaymentManager {
 				}
 			 
 				 receiptPayment.setDocumentCode(ConstantDocument.DOCUMENT_CODE_FOR_FCSALE);
-				 receiptPayment.setDocumentNo(applTrnxManager.generateDocumentNumber(countryBranch, ConstantDocument.Update, userFinancialYear.getFinancialYear()));
+				 
+					 
+				 BigDecimal documentNo =generateDocumentNumber(countryBranch,countryMas.getCountryId(), companyDetails.getCompanyId(), ConstantDocument.Update,receiptPayment.getDocumentFinanceYear(), ConstantDocument.DOCUMENT_CODE_FOR_FCSALE);
+				    if(documentNo!=null && documentNo.compareTo(BigDecimal.ZERO)!=0){
+				    	receiptPayment.setDocumentNo(documentNo);
+				    }else{
+				    	throw new GlobalException(JaxError.INVALID_RECEIPT_PAYMNET_DOCUMENT_NO, "Receipt  document should not be blank.");
+				    }
+		
 				 receiptPayment.setReceiptType(ConstantDocument.FC_SALE_RECEIPT_TYPE);
 				 receiptPayment.setDocumentId(documentDao.getDocumnetByCode(ConstantDocument.DOCUMENT_CODE_FOR_FCSALE).get(0).getDocumentID());
 				 
@@ -288,7 +294,7 @@ public class FxOrderPaymentManager {
 		 BigDecimal totalcollectiontAmount = BigDecimal.ZERO;
 		 BigDecimal deliveryCharges = BigDecimal.ZERO;
 		 try{
-			 if(!listOfRecAppl.isEmpty()){
+			 if(listOfRecAppl != null && !listOfRecAppl.isEmpty()){
 				 ReceiptPaymentApp appl  = listOfRecAppl.get(0);
 				 FxDeliveryDetailsModel delDetail = deliveryDetailRepos.findOne(appl.getDeliveryDetSeqId());
 				 if(delDetail!=null){
@@ -312,7 +318,7 @@ public class FxOrderPaymentManager {
 			 	  collection.setCompanyCode(companyDetails.getCompanyCode());
 			 	  
 			 	 }else{
-			 		throw new GlobalException("Invalid company code.", JaxError.INVALID_COMPANY_ID);
+			 		throw new GlobalException(JaxError.INVALID_COMPANY_ID, "Invalid company code.");
 			 	 }
 			 	collection.setFsCompanyMaster(new CompanyMaster(appl.getCompanyId()));
 			 	 CountryBranch countryBranch = countryBranchRepository.findByCountryBranchId(appl.getBranchId());
@@ -333,7 +339,7 @@ public class FxOrderPaymentManager {
 			    if(documentNo!=null && documentNo.compareTo(BigDecimal.ZERO)!=0){
 			    	collection.setDocumentNo(documentNo);
 			    }else{
-			    	throw new GlobalException("Collection document should not be blank.", JaxError.INVALID_COLLECTION_DOCUMENT_NO);
+			    	throw new GlobalException(JaxError.INVALID_COLLECTION_DOCUMENT_NO, "Collection document should not be blank.");
 			    }
 			 	 
 				Customer customer = new Customer();
@@ -357,11 +363,11 @@ public class FxOrderPaymentManager {
 				 
 			 }else{
 				 logger.error("save saveCollection listOfRecAppl is empty :");
-				 throw new GlobalException("NO record found", JaxError.NO_RECORD_FOUND);
+				 throw new GlobalException(JaxError.NO_RECORD_FOUND, "NO record found");
 			 }
 		 }catch(GlobalException e){
 				logger.error("createFcSaleReceiptApplication", e.getErrorMessage() + "" +e.getErrorKey());
-				 throw new GlobalException(e.getErrorMessage(),e.getErrorKey());
+				 throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		 }catch(Exception e){
 			 e.printStackTrace();
 			 logger.error("save collection :"+e.getMessage());
@@ -414,7 +420,7 @@ public class FxOrderPaymentManager {
 			if(payModeModel!=null){
 				collectDetail.setPaymentModeId(payModeModel.getPaymentModeId());
 			}else{
-			    	throw new GlobalException("Paymnet mode is not found.", JaxError.INVALID_PAYMENT_MODE);
+			    	throw new GlobalException(JaxError.INVALID_PAYMENT_MODE, "Paymnet mode is not found.");
 			    }
 		
 			collectDetail.setApprovalNo(paymentResponse.getAuth_appNo());
@@ -427,7 +433,7 @@ public class FxOrderPaymentManager {
 			collectDetail.setKnetReceiptDateTime(new SimpleDateFormat("dd/MM/YYYY hh:mm").format(new Date()));
 		}catch(GlobalException e){
 			logger.error("createFcSaleReceiptApplication", e.getErrorMessage() + "" +e.getErrorKey());
-			 throw new GlobalException(e.getErrorMessage(),e.getErrorKey());
+			 throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		 }catch(Exception e){
 			 e.printStackTrace();
 			 logger.error("save collection details :"+e.getMessage());

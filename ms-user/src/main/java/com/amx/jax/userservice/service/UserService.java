@@ -217,7 +217,7 @@ public class UserService extends AbstractUserService {
 	public ApiResponse saveCustomer(CustomerModel model) {
 		BigDecimal customerId = (model.getCustomerId() == null) ? metaData.getCustomerId() : model.getCustomerId();
 		if (customerId == null) {
-			throw new GlobalException("Null customer id passed ", JaxError.NULL_CUSTOMER_ID.getCode());
+			throw new GlobalException(JaxError.NULL_CUSTOMER_ID.getCode(), "Null customer id passed ");
 		}
 		Customer cust = custDao.getCustById(customerId);
 		String oldEmail = cust.getEmail();
@@ -282,8 +282,8 @@ public class UserService extends AbstractUserService {
 
 			if (cv != null && cv.getFieldValue() != null && !ConstantDocument.Yes.equals(cv.getVerificationStatus())) {
 				throw new GlobalException(
-						"Thank you for registration, Our helpdesk will get in touch with you in 48 hours",
-						JaxError.USER_DATA_VERIFICATION_PENDING);
+						JaxError.USER_DATA_VERIFICATION_PENDING,
+						"Thank you for registration, Our helpdesk will get in touch with you in 48 hours");
 			}
 
 			onlineCust.setStatus(ConstantDocument.Yes);
@@ -345,7 +345,7 @@ public class UserService extends AbstractUserService {
 			userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(civilId, JaxApiFlow.SIGNUP_ONLINE);
 			Customer customer = custDao.getCustomerByCivilId(civilId);
 			if (customer == null && !Boolean.TRUE.equals(initRegistration)) {
-				throw new GlobalException("Invalid civil Id passed", JaxError.INVALID_CIVIL_ID);
+				throw new GlobalException(JaxError.INVALID_CIVIL_ID, "Invalid civil Id passed");
 			}
 			if (customer != null) {
 				customerId = customer.getCustomerId();
@@ -524,14 +524,14 @@ public class UserService extends AbstractUserService {
 		userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(userId, JaxApiFlow.LOGIN);
 		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustomerByLoginIdOrUserName(userId);
 		if (onlineCustomer == null) {
-			throw new GlobalException("User with userId: " + userId + " is not registered",
-					JaxError.USER_NOT_REGISTERED);
+			throw new GlobalException(JaxError.USER_NOT_REGISTERED,
+					"User with userId: " + userId + " is not registered");
 		}
 		Customer customer = custDao.getCustById(onlineCustomer.getCustomerId());
 		// userValidationService.validateCustomerVerification(onlineCustomer.getCustomerId());
 		if (!ConstantDocument.Yes.equals(onlineCustomer.getStatus())) {
-			throw new GlobalException("User with userId: " + userId + " is not registered or not active",
-					JaxError.USER_NOT_REGISTERED);
+			throw new GlobalException(JaxError.USER_NOT_REGISTERED,
+					"User with userId: " + userId + " is not registered or not active");
 		}
 
 		userValidationService.validateCustomerLockCount(onlineCustomer);
@@ -600,7 +600,7 @@ public class UserService extends AbstractUserService {
 
 	public ApiResponse validateCustomerData(CustomerModel model) {
 		if (model.getCustomerId() == null) {
-			throw new GlobalException("Null customer id passed ", JaxError.NULL_CUSTOMER_ID.getCode());
+			throw new GlobalException(JaxError.NULL_CUSTOMER_ID.getCode(), "Null customer id passed ");
 		}
 		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(model.getCustomerId());
 		ApiResponse response = getBlackApiResponse();
@@ -634,7 +634,7 @@ public class UserService extends AbstractUserService {
 		if (custId == null) {
 			auditService.log(
 					createUserServiceEvent(model, JaxUserAuditEvent.Type.CUSTOMER_PASSWORD_UPDATE_CUSTOMER_ID_NULL));
-			throw new GlobalException("Null customer id passed ", JaxError.NULL_CUSTOMER_ID.getCode());
+			throw new GlobalException(JaxError.NULL_CUSTOMER_ID.getCode(), "Null customer id passed ");
 		}
 		try {
 			userValidationService.validateOtpFlow(model);
@@ -830,8 +830,8 @@ public class UserService extends AbstractUserService {
 		if (onlineCustomer == null) {
 			auditService.log(
 					createUserServiceEvent(customerId, JaxUserAuditEvent.Type.CUSTOMER_UNLOCK_USER_NOT_REGISTERED));
-			throw new GlobalException("User with userId: " + customerId + " is not registered or not active",
-					JaxError.USER_NOT_REGISTERED);
+			throw new GlobalException(JaxError.USER_NOT_REGISTERED,
+					"User with userId: " + customerId + " is not registered or not active");
 		}
 		this.unlockCustomer(onlineCustomer);
 		responseModel.setSuccess(true);
@@ -881,8 +881,8 @@ public class UserService extends AbstractUserService {
 		if (onlineCustomer == null) {
 			auditService.log(
 					createUserServiceEvent(customerId, JaxUserAuditEvent.Type.CUSTOMER_UNLOCK_USER_NOT_REGISTERED));
-			throw new GlobalException("User with userId: " + customerId + " is not registered or not active",
-					JaxError.USER_NOT_REGISTERED);
+			throw new GlobalException(JaxError.USER_NOT_REGISTERED,
+					"User with userId: " + customerId + " is not registered or not active");
 		}
 		this.unlockCustomer(onlineCustomer);
 		responseModel.setSuccess(true);

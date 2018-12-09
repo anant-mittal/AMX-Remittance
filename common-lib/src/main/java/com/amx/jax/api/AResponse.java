@@ -27,26 +27,8 @@ public abstract class AResponse<M> implements ApiMetaResponse<M> {
 	@ApiMockModelProperty(example = "/go/to/some/other/url.html")
 	protected String redirectUrl;
 
-	public String getRedirectUrl() {
-		return redirectUrl;
-	}
-
-	public void setRedirectUrl(String redirectUrl) {
-		this.redirectUrl = redirectUrl;
-	}
-
 	public static enum Target {
 		_BLANK, _SELF, _PARENT, _TOP, _IFRAME
-	}
-
-	/**
-	 * target="_blank|_self|_parent|_top|framename"
-	 * 
-	 * @param redirectUrl
-	 */
-	@JsonIgnore
-	public void setTargetUrl(String redirectUrl, Target target) {
-		this.redirectUrl = target + ":" + redirectUrl;
 	}
 
 	protected String messageKey;
@@ -61,6 +43,24 @@ public abstract class AResponse<M> implements ApiMetaResponse<M> {
 	public AResponse() {
 		this.timestamp = System.currentTimeMillis();
 		this.meta = null;
+	}
+
+	/**
+	 * target="_blank|_self|_parent|_top|framename"
+	 * 
+	 * @param redirectUrl
+	 */
+	@JsonIgnore
+	public void setTargetUrl(String redirectUrl, Target target) {
+		this.redirectUrl = target + ":" + redirectUrl;
+	}
+
+	public String getRedirectUrl() {
+		return redirectUrl;
+	}
+
+	public void setRedirectUrl(String redirectUrl) {
+		this.redirectUrl = redirectUrl;
 	}
 
 	/**

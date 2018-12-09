@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -32,7 +33,6 @@ import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.AbstractModel;
 import com.amx.jax.model.ResourceDTO;
-
 import com.amx.jax.model.request.CustomerShippingAddressRequestModel;
 import com.amx.jax.model.response.fx.AddressTypeDto;
 import com.amx.jax.model.response.fx.ShippingAddressDto;
@@ -92,13 +92,27 @@ public class FcSaleAddressManager extends AbstractModel {
 	@Autowired
 	FcSaleApplicationTransactionManager saleAppl;
 
+	public List<ShippingAddressDto> fetchShippingAddress(){
+		return fetchShippingAddress(meta.getCustomerId());
+	}
+	
+	public ShippingAddressDto fetchShippingAddress(BigDecimal customerId, BigDecimal shippingAddressId) {
+		logger.debug("customerId :"+customerId+"\t shippingAddressId :"+shippingAddressId);
+		List<ShippingAddressDto> shippingAddresses = fetchShippingAddress(customerId);
+		ShippingAddressDto shippingAddressDto = null;
+		
+		 Optional<ShippingAddressDto> shippingAddressDtoOptional = shippingAddresses.stream().filter(i -> i.getAddressId().equals(shippingAddressId)).findFirst();
+		 if(shippingAddressDtoOptional.isPresent()){
+			 shippingAddressDto =  shippingAddressDtoOptional.get();
+		 }
+		 return shippingAddressDto;
+	}
 	/** Fetching shipping address **/
 
-	public List<ShippingAddressDto> fetchShippingAddress() {
+	public List<ShippingAddressDto> fetchShippingAddress(BigDecimal customerId) {
 		List<ShippingAddressDto> list = new ArrayList<>();
 
 		BigDecimal countryId = meta.getCountryId();
-		BigDecimal customerId = meta.getCustomerId();
 		BigDecimal companyId = meta.getCompanyId();
 
 		List<Customer> customerList = customerDao.getCustomerByCustomerId(countryId, companyId, customerId);
@@ -106,7 +120,7 @@ public class FcSaleAddressManager extends AbstractModel {
 		List<ShippingAddressDetail> shippingAddressList = shippingAddressDao
 				.findByFsCustomerAndActiveStatus(new Customer(customerId), ConstantDocument.Yes);
 
-		if (!contactList.isEmpty()) {
+		if (contactList!=null && !contactList.isEmpty()) {
 			ShippingAddressDto shippingAddressDto = new ShippingAddressDto();
 			shippingAddressDto.setAddressId(contactList.get(0).getContactDetailId());
 			if (!customerList.isEmpty()) {
@@ -158,17 +172,18 @@ public class FcSaleAddressManager extends AbstractModel {
 
 			}
 			shippingAddressDto.setAdressType("Local address");
+			shippingAddressDto.setDeliveryAddress(getLocalDeliveryAddress(shippingAddressDto));
 			list.add(shippingAddressDto); // Local Address
 		} // Local contact details
 
 		/** Adding shipping Address **/
 
-		if (!shippingAddressList.isEmpty()) {
+		if (shippingAddressList !=null && !shippingAddressList.isEmpty()) {
 			for (ShippingAddressDetail shippingAddressDetail : shippingAddressList) {
 				ShippingAddressDto shippingAddressDto = new ShippingAddressDto();
 				shippingAddressDto.setAddressId(shippingAddressDetail.getShippingAddressDetailId());
 
-				if (!customerList.isEmpty()) {
+				if (customerList!=null && !customerList.isEmpty()) {
 					shippingAddressDto.setFirstName(customerList.get(0).getFirstName());
 					shippingAddressDto.setMiddleName(customerList.get(0).getMiddleName());
 					shippingAddressDto.setLastName(customerList.get(0).getLastName());
@@ -221,9 +236,9 @@ public class FcSaleAddressManager extends AbstractModel {
 							}
 						}
 					}
-
+					shippingAddressDto.setDeliveryAddress(getLocalDeliveryAddress(shippingAddressDto));
 				} else {
-					throw new GlobalException("Failed", JaxError.COUNTRY_NOT_FOUND);
+					throw new GlobalException(JaxError.COUNTRY_NOT_FOUND, "Failed");
 				}
 				list.add(shippingAddressDto); // Local Address
 			} // end of for Loop
@@ -265,7 +280,7 @@ public class FcSaleAddressManager extends AbstractModel {
 			shippingAddressDao.save(shipAdd);
 		} catch (Exception e) {
 			logger.error("saveShippingAddress :", e.getMessage());
-			throw new GlobalException("Failed", JaxError.FS_SHIPPING_ADDRESS_CREATION_FAILED);
+			throw new GlobalException(JaxError.FS_SHIPPING_ADDRESS_CREATION_FAILED, "Failed");
 		}
 	}
 
@@ -298,7 +313,7 @@ public class FcSaleAddressManager extends AbstractModel {
 				shippAdd.setLastUpdated(new Date());
 				shippingAddressDao.save(shippAdd);
 			} else {
-				throw new GlobalException("Invalid shipping address", JaxError.NO_RECORD_FOUND);
+				throw new GlobalException(JaxError.NO_RECORD_FOUND, "Invalid shipping address");
 			}
 		}
 		List<ShippingAddressDto> list = fetchShippingAddress();
@@ -315,14 +330,14 @@ public class FcSaleAddressManager extends AbstractModel {
 				if (JaxUtil.isNullZeroBigDecimalCheck(meta.getCustomerId())) {
 					shipAdd.setFsCustomer(new Customer(meta.getCustomerId()));
 				} else {
-					throw new GlobalException("custoemr Id ", JaxError.INVALID_CUSTOMER);
+					throw new GlobalException(JaxError.INVALID_CUSTOMER, "custoemr Id ");
 				}
 				shipAdd.setLastUpdated(new Date());
 				shipAdd.setActiveStatus(ConstantDocument.Yes);
 				if (JaxUtil.isNullZeroBigDecimalCheck(adddto.getAreaDto().resourceId())) {
 					shipAdd.setAreaCode(adddto.getAreaDto().resourceId());
 				} else {
-					throw new GlobalException("custoemr Id ", JaxError.NULL_AREA_CODE);
+					throw new GlobalException(JaxError.NULL_AREA_CODE, "custoemr Id ");
 				}
 				shipAdd.setBlock(adddto.getBlock());
 				shipAdd.setBuildingNo(adddto.getBuildingNo());
@@ -331,27 +346,27 @@ public class FcSaleAddressManager extends AbstractModel {
 				if (JaxUtil.isNullZeroBigDecimalCheck(meta.getCountryId())) {
 					shipAdd.setFsCountryMaster(new CountryMaster(meta.getCountryId()));
 				} else {
-					throw new GlobalException("Invalid country Id  ", JaxError.INVALID_APPLICATION_COUNTRY_ID);
+					throw new GlobalException(JaxError.INVALID_APPLICATION_COUNTRY_ID, "Invalid country Id  ");
 				}
 				if (JaxUtil.isNullZeroBigDecimalCheck(adddto.getStateDto().resourceId())) {
 					shipAdd.setFsStateMaster(new StateMaster(adddto.getStateDto().resourceId()));
 				} else {
-					throw new GlobalException("Invalid state  ", JaxError.INVALID_STATE);
+					throw new GlobalException(JaxError.INVALID_STATE, "Invalid state  ");
 				}
 				if (JaxUtil.isNullZeroBigDecimalCheck(adddto.getDistrictDto().resourceId())) {
 					shipAdd.setFsDistrictMaster(new DistrictMaster(adddto.getDistrictDto().resourceId()));
 				} else {
-					throw new GlobalException("Invalid district  ", JaxError.INVALID_DISTRICT);
+					throw new GlobalException(JaxError.INVALID_DISTRICT, "Invalid district  ");
 				}
 				if (JaxUtil.isNullZeroBigDecimalCheck(adddto.getCityDto().resourceId())) {
 					shipAdd.setFsCityMaster(new CityMaster(adddto.getCityDto().resourceId()));
 				} else {
-					throw new GlobalException("Invalid city  ", JaxError.INVALID_CITY);
+					throw new GlobalException(JaxError.INVALID_CITY, "Invalid city  ");
 				}
 				if (!StringUtils.isBlank(adddto.getAddressDto().getAddressTypeCode())) {
 					shipAdd.setAddressType(adddto.getAddressDto().getAddressTypeCode());
 				} else {
-					throw new GlobalException("Address type ", JaxError.INVALID_ADDRESS_TYPE);
+					throw new GlobalException(JaxError.INVALID_ADDRESS_TYPE, "Address type ");
 				}
 				if (!StringUtils.isBlank(meta.getReferrer())) {
 					shipAdd.setUpdatedBy(meta.getReferrer());
@@ -368,11 +383,11 @@ public class FcSaleAddressManager extends AbstractModel {
 				shippingAddressDao.save(shipAdd);
 
 			} else {
-				throw new GlobalException("Invalid shipping address", JaxError.NO_RECORD_FOUND);
+				throw new GlobalException(JaxError.NO_RECORD_FOUND, "Invalid shipping address");
 			}
 
 		} else {
-			throw new GlobalException("Invalid shipping address", JaxError.NO_RECORD_FOUND);
+			throw new GlobalException(JaxError.NO_RECORD_FOUND, "Invalid shipping address");
 		}
 
 		List<ShippingAddressDto> list = fetchShippingAddress();
@@ -397,5 +412,29 @@ public class FcSaleAddressManager extends AbstractModel {
 	}
 	
 
+	public String getLocalDeliveryAddress(ShippingAddressDto shippingAddressDto){
+		logger.debug("getDeliveryAddress  in FC Sale Address Manager :"+shippingAddressDto.getAddressId());
+		String address ="";
+		StringBuffer sb = new StringBuffer();
+		String concat =",";
+			 if(shippingAddressDto!=null){
+    		 sb = sb.append("Street ").append(shippingAddressDto.getStreet()==null?"":shippingAddressDto.getStreet()).append(concat)
+    			  .append("Block ").append(shippingAddressDto.getBlock()==null?"":shippingAddressDto.getBlock()).append(concat)
+    			  .append("Build ").append(shippingAddressDto.getBuildingNo()==null?"":shippingAddressDto.getBuildingNo()).append(concat)
+    			  .append("Flat ").append(shippingAddressDto.getFlat()==null?"":shippingAddressDto.getFlat()).append(concat)
+    			  .append("City ").append(shippingAddressDto.getLocalContactCity()==null?"":shippingAddressDto.getLocalContactCity()).append(concat) 
+    			  .append("Area ").append(shippingAddressDto.getAreaDesc()).append(concat)
+    			  .append(shippingAddressDto.getLocalContactDistrict()==null?"":shippingAddressDto.getLocalContactDistrict()).append(concat)
+    			  .append(shippingAddressDto.getLocalContactState()==null?"":shippingAddressDto.getLocalContactState()).append(concat)
+    			  .append("Contact ").append(shippingAddressDto.getMobile()==null?"":shippingAddressDto.getMobile());
+    	
+    		 }
+		if(sb!=null){
+			address = sb.toString();
+		}
+		return address;
+	}
+	
+	
 	
 }

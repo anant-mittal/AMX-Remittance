@@ -20,7 +20,19 @@ public @interface TunnelEventMapping {
 
 	Class<?> byEvent() default TunnelEvent.class;
 
+	/**
+	 * If set to true, only one instance of same microservices (behind LB) will be
+	 * able to process the message
+	 * 
+	 * @return
+	 */
 	boolean integrity() default true;
 
+	/**
+	 * @deprecated
+	 * 
+	 * @return
+	 */
+	@Deprecated
 	boolean queued() default false;
 }
