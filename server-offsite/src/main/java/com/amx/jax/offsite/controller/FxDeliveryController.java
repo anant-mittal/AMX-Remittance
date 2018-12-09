@@ -19,6 +19,7 @@ import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.model.request.fx.FcSaleDeliveryDetailUpdateReceiptRequest;
 import com.amx.jax.model.request.fx.FcSaleDeliveryMarkDeliveredRequest;
 import com.amx.jax.model.request.fx.FcSaleDeliveryMarkNotDeliveredRequest;
+import com.amx.jax.model.response.OtpPrefixDto;
 import com.amx.jax.model.response.fx.FxDeliveryDetailDto;
 import com.amx.jax.swagger.IStatusCodeListPlugin.ApiStatusService;
 
@@ -58,7 +59,7 @@ public class FxDeliveryController {
 	}
 
 	@RequestMapping(value = "/customer/resend", method = { RequestMethod.POST })
-	public AmxApiResponse<BoolRespModel, Object> sendOtp(
+	public AmxApiResponse<OtpPrefixDto, Object> sendOtp(
 			@RequestParam BigDecimal deliveryDetailSeqId) {
 		return fxOrderDelivery.sendOtp(deliveryDetailSeqId);
 	}

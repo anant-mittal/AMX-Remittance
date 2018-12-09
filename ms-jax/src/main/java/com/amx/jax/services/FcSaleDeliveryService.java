@@ -39,6 +39,7 @@ import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.model.request.fx.FcSaleDeliveryDetailUpdateReceiptRequest;
 import com.amx.jax.model.request.fx.FcSaleDeliveryMarkDeliveredRequest;
 import com.amx.jax.model.request.fx.FcSaleDeliveryMarkNotDeliveredRequest;
+import com.amx.jax.model.response.OtpPrefixDto;
 import com.amx.jax.model.response.fx.FxDeliveryDetailDto;
 import com.amx.jax.model.response.fx.FxDeliveryDetailNotificationDto;
 import com.amx.jax.model.response.fx.ShippingAddressDto;
@@ -106,6 +107,7 @@ public class FcSaleDeliveryService {
 		if (delRemark != null) {
 			dto.setDeliveryRemark(delRemark.getDeliveryRemark());
 		}
+		dto.setOtpTokenPrefix(model.getOtpTokenPrefix());
 		dto.setAddress(shippingAddressDto);
 		dto.setOrderStatus(statusMaster.getStatusDescription());
 		dto.setOrderStatusCode(statusMaster.getStatusCode());
@@ -121,9 +123,8 @@ public class FcSaleDeliveryService {
 		if (deliveryDetailModel == null) {
 			throw new GlobalException(JaxError.FC_CURRENCY_DELIVERY_DETAIL_NOT_FOUND, "Delivery detail not found");
 		}
-		String otpTokenPrefix = fcSaleApplicationDao.getDeliveryDetailModel(deliveryDetailSeqId).getOtpTokenPrefix();
 		FxDeliveryDetailDto dto = createFxDeliveryDetailDto(deliveryDetailModel);
-		dto.setOtpTokenPrefix(otpTokenPrefix);
+		dto.setOtpTokenPrefix(deliveryDetailModel.getOtpTokenPrefix());
 		return dto;
 	}
 
@@ -172,7 +173,6 @@ public class FcSaleDeliveryService {
 		if (!deliveryDetail.getOrderStatus().equals(ConstantDocument.OFD)) {
 			throw new GlobalException(JaxError.FC_CURRENCY_DELIVERY_INVALID_STATUS, "Order status should be OFD");
 		}
-		validateOtpStatus(deliveryDetail);
 		deliveryDetail.setOrderStatus(ConstantDocument.CND);
 		deliveryDetail.setRemarksId(fcSaleDeliveryMarkNotDeliveredRequest.getDeleviryRemarkSeqId());
 		fcSaleApplicationDao.saveDeliveryDetail(deliveryDetail);
@@ -223,7 +223,7 @@ public class FcSaleDeliveryService {
 	 * @return
 	 * 
 	 */
-	public BoolRespModel sendOtp(BigDecimal deliveryDetailSeqId, boolean validateDriverEmployee) {
+	public OtpPrefixDto sendOtp(BigDecimal deliveryDetailSeqId, boolean validateDriverEmployee) {
 		VwFxDeliveryDetailsModel vwFxDeliveryDetailsModel = validatetDeliveryDetailView(deliveryDetailSeqId);
 		FxDeliveryDetailsModel fxDeliveryDetailsModel = validateFxDeliveryModel(deliveryDetailSeqId,
 				validateDriverEmployee);
@@ -251,7 +251,7 @@ public class FcSaleDeliveryService {
 
 		email.getModel().put(NotificationConstants.RESP_DATA_KEY, notificationModel);
 		jaxNotificationService.sendEmail(email);
-		return new BoolRespModel(true);
+		return new OtpPrefixDto(mOtpPrefix);
 	}
 
 	public BoolRespModel verifyOtp(BigDecimal deliveryDetailSeqId, BigDecimal mOtp) {
