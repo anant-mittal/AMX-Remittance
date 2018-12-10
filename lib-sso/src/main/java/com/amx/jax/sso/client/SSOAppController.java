@@ -194,7 +194,7 @@ public class SSOAppController {
 	@ApiIgnore
 	@RequestMapping(value = SSOConstants.APP_LOGGEDIN_URL_HTML, method = { RequestMethod.GET, RequestMethod.POST })
 	public String loggedinJPage() throws MalformedURLException, URISyntaxException {
-		return "sso_home";
+		return SSOConstants.REDIRECT + "/";
 	}
 
 	@ApiIgnore

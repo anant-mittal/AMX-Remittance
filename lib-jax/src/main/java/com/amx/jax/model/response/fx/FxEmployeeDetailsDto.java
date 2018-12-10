@@ -43,6 +43,7 @@ public class FxEmployeeDetailsDto extends AbstractModel {
 	String scanId;
 	String digitalSignatureInd;
 	String wuAccountCode;
+	BigDecimal branchId;
 
 	public BigDecimal getEmployeeId() {
 		return employeeId;
@@ -282,6 +283,14 @@ public class FxEmployeeDetailsDto extends AbstractModel {
 
 	public void setWuAccountCode(String wuAccountCode) {
 		this.wuAccountCode = wuAccountCode;
+	}
+	
+	public BigDecimal getBranchId() {
+		return branchId;
+	}
+
+	public void setBranchId(BigDecimal branchId) {
+		this.branchId = branchId;
 	}
 	
 }

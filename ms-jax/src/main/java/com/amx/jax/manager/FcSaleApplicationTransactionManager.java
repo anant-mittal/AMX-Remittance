@@ -555,7 +555,7 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 			BigDecimal officeendTime = list.get(0).getOfficeEndTime()==null?BigDecimal.ZERO:list.get(0).getOfficeEndTime();
 			if(JaxUtil.isNullZeroBigDecimalCheck(shippingAddressId)){
 			ShippingAddressDetail shipp =shippingAddressDao.findOne(shippingAddressId);
-				if(shipp!=null &&  shipp.getAddressType()!=null && shipp.getAddressType().equalsIgnoreCase(ConstantDocument.FX_LHA)){
+				if(shipp!=null &&  shipp.getAddressType()!=null && shipp.getAddressType().equalsIgnoreCase(ConstantDocument.FX_LOA)){
 				endTime =officeendTime; 
 				}
 			}
@@ -806,8 +806,8 @@ public List<FxOrderTransactionHistroyDto> getMultipleTransactionHistroy(List<FxO
 		fianlDto.setMultiExchangeRate(multiExchangeRate);
 		fianlDto.setLocalTrnxAmount(dto.getLocalTrnxAmount());
 		fianlDto.setForeignCurrencyCode(multiForeignQuotoName);
-		
-		
+		fianlDto.setOrderStatusCode(dto.getOrderStatusCode());
+		fianlDto.setInventoryId(dto.getInventoryId());
 		finalFxOrderListDto.add(fianlDto);
 		}
 	
