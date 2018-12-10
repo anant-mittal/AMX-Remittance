@@ -57,9 +57,14 @@ public class FcSaleBranchService extends AbstractService{
 			throw new GlobalException(JaxError.NULL_EMPLOYEE_ID,"Employee Id should not be blank");
 		}
 		try {
-			List<OrderManagementView> orderManagement = branchOrderManager.fetchFcSaleOrderManagement(applicationCountryId,employeeId);
+			HashMap<String, Object> orderDetails = branchOrderManager.fetchFcSaleOrderManagement(applicationCountryId,employeeId);
+			if(orderDetails != null) {
+				if(orderDetails.get("ORDERS") != null && orderDetails.get("AREA") != null) {
+					List<OrderManagementView> orderManagement = (List<OrderManagementView>) orderDetails.get("ORDERS");
+					Boolean areaCodeCheck = (Boolean) orderDetails.get("AREA");
+
 			if(orderManagement != null && orderManagement.size() != 0) {
-				saleOrderManage  = convertFcSaleOrderManagementDTO(orderManagement,applicationCountryId,employeeId);
+						saleOrderManage  = convertFcSaleOrderManagementDTO(orderManagement,applicationCountryId,employeeId,areaCodeCheck);
 				if(saleOrderManage != null && saleOrderManage.size() != 0) {
 					// continue
 				}else {
@@ -68,7 +73,9 @@ public class FcSaleBranchService extends AbstractService{
 				}
 			}else {
 				// error
-				throw new GlobalException(JaxError.NO_RECORD_FOUND,"Order Management records not found");
+						throw new GlobalException("Order Management records not found",JaxError.NO_RECORD_FOUND);
+					}
+				}
 			}
 		}catch (GlobalException e) {
 			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
@@ -79,7 +86,7 @@ public class FcSaleBranchService extends AbstractService{
 		return AmxApiResponse.buildList(saleOrderManage);
 	}
 
-	public List<FcSaleOrderManagementDTO> convertFcSaleOrderManagementDTO(List<OrderManagementView> orderManagementView,BigDecimal applicationCountryId,BigDecimal employeeId){
+	public List<FcSaleOrderManagementDTO> convertFcSaleOrderManagementDTO(List<OrderManagementView> orderManagementView,BigDecimal applicationCountryId,BigDecimal employeeId,Boolean areaCodeCheck){
 		List<FcSaleOrderManagementDTO> lstFcSaleOrder = new ArrayList<>();
 		List<BigDecimal> duplicate = new ArrayList<>();
 		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -126,6 +133,9 @@ public class FcSaleBranchService extends AbstractService{
 						fcSaleOrder.setMutipleFcAmount(lstCurrencyAmt);
 						fcSaleOrder.setMutipleInventoryId(mutipleInventoryId);
 						
+						if(areaCodeCheck) {
+							lstFcSaleOrder.add(fcSaleOrder);
+						}else {
 						Boolean status = checkFcSaleStockAvailable(foreignCurrencyAmt,applicationCountryId,employeeId);
 						if(status) {
 							lstFcSaleOrder.add(fcSaleOrder);
@@ -133,6 +143,9 @@ public class FcSaleBranchService extends AbstractService{
 					}
 				}
 			}
+			}
+		}catch (GlobalException e) {
+			throw new GlobalException(e.getErrorMessage(),e.getErrorKey());
 		}catch (Exception e) {
 			throw new GlobalException(JaxError.UNABLE_CONVERT_PENDING_RECORDS,"Converting multiple records to single by collection document failed");
 		}
@@ -143,14 +156,16 @@ public class FcSaleBranchService extends AbstractService{
 	// checking stock available for fc sale
 	public Boolean checkFcSaleStockAvailable(HashMap<BigDecimal, BigDecimal> foreignCurrencyAmt,BigDecimal applicationCountryId,BigDecimal employeeId) {
 		HashMap<BigDecimal, BigDecimal> foreignCurrencySumAmt = new HashMap<>();
+		Boolean status = Boolean.TRUE;
 		List<Object[]> orderManagement = fetchFcSaleUserStockSum(applicationCountryId,employeeId);
+		if(orderManagement != null && orderManagement.size() != 0) {
 		for (Object object : orderManagement) {
 			Object[] currencyAmt = (Object[]) object;
 			if (currencyAmt.length >= 2) {
 				foreignCurrencySumAmt.put(new BigDecimal(currencyAmt[0].toString()),new BigDecimal(currencyAmt[1].toString()));
 			}
 		}
-		Boolean status = Boolean.TRUE;
+			
 		for (HashMap.Entry<BigDecimal, BigDecimal> currencyAmt : foreignCurrencyAmt.entrySet()) {
 			BigDecimal currency = currencyAmt.getKey();
 			BigDecimal amount = currencyAmt.getValue();
@@ -163,6 +178,9 @@ public class FcSaleBranchService extends AbstractService{
 				status = Boolean.FALSE;
 				break;
 			}
+			}
+		}else {
+			throw new GlobalException("Employee stock not available",JaxError.EMPTY_STOCK_EMPLOYEE);
 		}
 		
 		return status;

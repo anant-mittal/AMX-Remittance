@@ -93,14 +93,26 @@ public class FcSaleBranchOrderManager {
 	@Autowired
 	MetaData metaData;
 
-	public List<OrderManagementView> fetchFcSaleOrderManagement(BigDecimal applicationCountryId,BigDecimal employeeId){
+	public HashMap<String, Object> fetchFcSaleOrderManagement(BigDecimal applicationCountryId,BigDecimal employeeId){
+		HashMap<String, Object> fetchOrder = new HashMap<>();
 		List<OrderManagementView> ordermanage = new ArrayList<>();
 		try{
 			FxEmployeeDetailsDto employeeDt = fetchEmployee(employeeId);
 			if(employeeDt != null && employeeDt.getEmployeeId() != null){
 				BigDecimal areaCode = employeeDt.getAreaCode();
-				if(areaCode != null) {
+				BigDecimal branchId = employeeDt.getBranchId();
+				if(areaCode != null && branchId != null) {
+					if(branchId.compareTo(ConstantDocument.MURQAB_FOREIGNCURRENCY) == 0) {
+						ordermanage = fcSaleBranchDao.fetchFcSaleOrderManagementForHeadOffice(applicationCountryId);
+						
+						fetchOrder.put("ORDERS", ordermanage);
+						fetchOrder.put("AREA", Boolean.TRUE);
+					}else {
 					ordermanage = fcSaleBranchDao.fetchFcSaleOrderManagement(applicationCountryId,areaCode);
+						
+						fetchOrder.put("ORDERS", ordermanage);
+						fetchOrder.put("AREA", Boolean.FALSE);
+					}
 				}else {
 					throw new GlobalException(JaxError.NULL_AREA_CODE,"Area Code should not be blank");
 				}
@@ -117,7 +129,7 @@ public class FcSaleBranchOrderManager {
 			throw new GlobalException(e.getMessage());
 		}
 
-		return ordermanage;
+		return fetchOrder;
 	}
 
 	public List<OrderManagementView> fetchFcSaleOrderDetails(BigDecimal applicationCountryId,BigDecimal orderNumber,BigDecimal orderYear){
@@ -185,7 +197,8 @@ public class FcSaleBranchOrderManager {
 
 		try{
 			FxEmployeeDetailsDto employeeDt = fetchEmployee(employeeId);
-			if(employeeDt != null && employeeDt.getEmployeeId() != null){
+			if(employeeDt != null){
+				if(employeeDt.getEmployeeId() != null && employeeDt.getIsActive().equalsIgnoreCase(ConstantDocument.Yes)) {
 				userName = employeeDt.getUserName();
 				countryBranchId = employeeDt.getCountryBranchId();
 				if(userName != null && countryBranchId != null) {
@@ -194,7 +207,10 @@ public class FcSaleBranchOrderManager {
 					throw new GlobalException(JaxError.INVALID_EMPLOYEE,"Employee details userName,countryBranchId is empty");
 				}
 			}else {
-				throw new GlobalException(JaxError.INVALID_EMPLOYEE,"Employee details is empty");
+					throw new GlobalException("Employee details is not active",JaxError.INACTIVE_EMPLOYEE);
+				}
+			}else {
+				throw new GlobalException("Employee details is empty",JaxError.INVALID_EMPLOYEE);
 			}
 		}catch (GlobalException e) {
 			e.printStackTrace();
