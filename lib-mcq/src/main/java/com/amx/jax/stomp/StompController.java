@@ -37,7 +37,7 @@ public class StompController {
 		Thread.sleep(1000); // simulated delay
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("message", "Hey baby ping pong!");
-		stompTunnelService.sendToAll("pong", map);
+		stompTunnelService.sendToAll("/pong", map);
 		return map;
 	}
 }

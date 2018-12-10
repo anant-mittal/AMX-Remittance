@@ -18,7 +18,7 @@ public class StompTunnelService {
 
 	public void sendToAll(String topic, Object message) {
 		StompTunnelEvent event = new StompTunnelEvent();
-		event.setTopic(topic);
+		event.setTopic("/topic" + topic);
 		event.setData(JsonUtil.toMap(message));
 		tunnelService.shout(StompTunnelToAllSender.STOMP_TO_ALL, event);
 	}

@@ -64,7 +64,7 @@ var tunnelClient = (function(win) {
 			return this;
 		},
 		send : function send(topic, msg) {
-			this.onConnect().then(function() {
+			onConnect().then(function() {
 				stompClient.send("/app" + topic, {}, JSON.stringify(msg));
 			});
 			return this;
@@ -72,7 +72,7 @@ var tunnelClient = (function(win) {
 		ping : function send(topic, msg) {
 			if(!pong){
 				this.on("/pong", function(pong,pong1,pong2,pong3){
-					console.log(pong,pong1,pong2,pong3)
+					console.log("PONG : ",pong,pong1,pong2,pong3)
 				});
 				pong = true;
 			}
