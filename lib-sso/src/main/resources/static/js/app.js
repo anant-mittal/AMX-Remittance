@@ -1,17 +1,20 @@
-var stompClient = null;
-
 var tunnelClient = (function(win) {
-	var $connectd = null;
-	var $dfd = null;
+	var config = {
+		context : "/offsite",
+		user : "guest",
+		token : guid()
+	};
+	var $connectd = null, $dfd = null;
 	var sessionToken = null;
+	var stompClient = null;
 	var pong = false;
 	function connect() {
 		$dfd = $dfd || jQuery.Deferred();
-		var socket = new SockJS('/offsite/stomp-tunnel');
+		var socket = new SockJS(config.context + '/stomp-tunnel');
 		stompClient = Stomp.over(socket);
 		stompClient.connect({
-			user : "guest",
-			token : guid()
+			user : config.user,
+			token : config.token
 		}, function(frame) {
 			console.log('Connected: ', frame);
 			stompClient.subscribe("/app/stomp/tunnel/meta" , function(greeting) {
@@ -38,6 +41,11 @@ var tunnelClient = (function(win) {
 		return this.$connectd;
 	}
 	return {
+		config : function (_config){
+			for(var key in _config){
+				config[key] = _config[key]
+			}
+		},
 		connect : function() {
 			onConnect();
 			return this;

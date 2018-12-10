@@ -1,5 +1,6 @@
 package com.amx.jax.stomp;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -12,8 +13,8 @@ import com.amx.utils.UniqueID;
 @Component
 public class StompTunnelSessionManager {
 
-	public Map<String, String> sessionMap = new HashMap<String, String>();
-	public Map<String, String> wsessionMap = new HashMap<String, String>();
+	public Map<String, String> sessionMap = Collections.synchronizedMap(new HashMap<String, String>());
+	public Map<String, String> wsessionMap = Collections.synchronizedMap(new HashMap<String, String>());
 
 	public static String getSystemPrefix() {
 		return UniqueID.PREF;
