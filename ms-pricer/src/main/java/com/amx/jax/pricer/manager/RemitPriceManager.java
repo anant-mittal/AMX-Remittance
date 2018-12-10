@@ -17,11 +17,13 @@ import org.springframework.util.StopWatch;
 
 import com.amx.jax.pricer.dao.ExchangeRateDao;
 import com.amx.jax.pricer.dao.ExchangeRateProcedureDao;
+import com.amx.jax.pricer.dao.MarginMarkupDao;
 import com.amx.jax.pricer.dao.PipsMasterDao;
 import com.amx.jax.pricer.dao.ViewExGLCBALDao;
 import com.amx.jax.pricer.dbmodel.BankMasterModel;
 import com.amx.jax.pricer.dbmodel.ExchangeRateAPRDET;
 import com.amx.jax.pricer.dbmodel.ExchangeRateApprovalDetModel;
+import com.amx.jax.pricer.dbmodel.OnlineMarginMarkup;
 import com.amx.jax.pricer.dbmodel.PipsMaster;
 import com.amx.jax.pricer.dbmodel.ViewExGLCBAL;
 import com.amx.jax.pricer.dto.BankMasterDTO;
@@ -45,6 +47,9 @@ public class RemitPriceManager {
 	@Autowired
 	ViewExGLCBALDao viewExGLCBALDao;
 
+	@Autowired
+	MarginMarkupDao marginMarkupDao;
+
 	private static List<BigDecimal> ValidServiceIndicatorIds = new ArrayList<BigDecimal>();
 
 	static {
@@ -59,36 +64,54 @@ public class RemitPriceManager {
 		reqDto.setLocalCountryId(new BigDecimal(91));
 
 		if (reqDto.getCountryBranchId().intValue() == 78) {
+
 			// This is code for fetching prices for online Channel
-
-			/*
-			 * List<PipsMaster> pips =
-			 * pipsMasterDao.getPipsForOnline(reqDto.getForeignCurrencyId(),
-			 * reqDto.getCountryBranchId()); if (pips == null || pips.isEmpty()) { throw new
-			 * PricerServiceException("============ No exchange data found ==========="); }
-			 */
-
 			List<BigDecimal> validBankIds = getValidBankIds(reqDto);
 
-			List<ExchangeRateApprovalDetModel> exchangeRates = computeBestRateForOnline(reqDto.getForeignCurrencyId(),
-					reqDto.getForeignCountryId(), reqDto.getLocalCountryId(), validBankIds);
+			Map<BigDecimal, ExchangeRateAPRDET> exchangeRateMap = computeBestRateForOnline(
+					reqDto.getForeignCurrencyId(), reqDto.getForeignCountryId(), reqDto.getLocalCountryId(),
+					validBankIds);
 
 			if (validBankIds.isEmpty()) {
 				throw new PricerServiceException("============ No Routing Bank Data Found ===========");
 			}
 
-			if (reqDto.getLocalAmount() != null) {
-				// Get Bank Wise Rates for Local Currency
-				bankWiseRates = computeBankPricesForLcCurOnline(reqDto.getForeignCurrencyId(), reqDto.getLocalAmount(),
-						reqDto.getCountryBranchId(), reqDto.getForeignCountryId(), validBankIds);
+			if (exchangeRateMap != null && !exchangeRateMap.isEmpty()) {
 
-			} else {
+				for (ExchangeRateAPRDET exchangeRate : exchangeRateMap.values()) {
+					BankMasterDTO dto = this.convertBankMasterData(exchangeRate.getBankMaster());
 
-				// Get Bank wise Rates for Foreign Currency
-				bankWiseRates = computeBankPricesForFcCurOnline(reqDto.getForeignCurrencyId(),
-						reqDto.getForeignAmount(), reqDto.getCountryBranchId(), reqDto.getForeignCountryId(),
-						validBankIds);
+					if (reqDto.getLocalAmount() != null) {
 
+						// Get Bank Wise Rates for Local Currency
+
+						dto.setExRateBreakup(
+								createBreakUpForLcCur(exchangeRate.getSellRateMin(), reqDto.getLocalAmount()));
+
+						// Earlier Pips based Rate Computation
+						// bankWiseRates =
+						// computeBankPricesForLcCurOnline(reqDto.getForeignCurrencyId(),
+						// reqDto.getLocalAmount(),
+						// reqDto.getCountryBranchId(), reqDto.getForeignCountryId(), validBankIds);
+
+					} else {
+
+						// Get Bank wise Rates for Foreign Currency
+						dto.setExRateBreakup(
+								createBreakUpForFcCur(exchangeRate.getSellRateMin(), reqDto.getForeignAmount()));
+
+						// Earlier Pips based Rate Computation
+						// bankWiseRates =
+						// computeBankPricesForFcCurOnline(reqDto.getForeignCurrencyId(),
+						// reqDto.getForeignAmount(), reqDto.getCountryBranchId(),
+						// reqDto.getForeignCountryId(),
+						// validBankIds);
+
+					}
+
+					bankWiseRates.add(dto);
+
+				}
 			}
 
 			if (bankWiseRates == null || bankWiseRates.isEmpty()) {
@@ -105,31 +128,35 @@ public class RemitPriceManager {
 					.getBranchExchangeRatesForRoutingBanks(reqDto.getForeignCurrencyId(), reqDto.getCountryBranchId(),
 							reqDto.getForeignCountryId(), reqDto.getLocalCountryId(), validBankIds);
 
-			for (ExchangeRateApprovalDetModel exchangeRate : bankExchangeRates) {
-				BankMasterDTO bankMasterDTO = convertBankMasterData(exchangeRate.getBankMaster());
+			if (bankExchangeRates != null && !bankExchangeRates.isEmpty()) {
 
-				if (reqDto.getLocalAmount() != null) {
+				for (ExchangeRateApprovalDetModel exchangeRate : bankExchangeRates) {
+					BankMasterDTO bankMasterDTO = convertBankMasterData(exchangeRate.getBankMaster());
 
-					bankMasterDTO.setExRateBreakup(
-							createBreakUpForLcCur(exchangeRate.getSellRateMin(), reqDto.getLocalAmount()));
+					if (reqDto.getLocalAmount() != null) {
 
-				} else {
-					bankMasterDTO.setExRateBreakup(
-							createBreakUpForFcCur(exchangeRate.getSellRateMin(), reqDto.getForeignAmount()));
-				}
+						bankMasterDTO.setExRateBreakup(
+								createBreakUpForLcCur(exchangeRate.getSellRateMin(), reqDto.getLocalAmount()));
 
-				bankMasterDTO.setServiceIndicatorId(exchangeRate.getServiceId());
+					} else {
+						bankMasterDTO.setExRateBreakup(
+								createBreakUpForFcCur(exchangeRate.getSellRateMin(), reqDto.getForeignAmount()));
+					}
 
-				bankWiseRates.add(bankMasterDTO);
+					bankMasterDTO.setServiceIndicatorId(exchangeRate.getServiceId());
 
-			} // for
+					bankWiseRates.add(bankMasterDTO);
+
+				} // for
+
+			} // if (bankExchang......
 
 		} // else
 
 		return bankWiseRates;
 	}
 
-	private List<ExchangeRateApprovalDetModel> computeBestRateForOnline(BigDecimal currencyId,
+	private Map<BigDecimal, ExchangeRateAPRDET> computeBestRateForOnline(BigDecimal currencyId,
 			BigDecimal foreignCountryId, BigDecimal applicationCountryId, List<BigDecimal> routingBankIds) {
 
 		StopWatch watch = new StopWatch();
@@ -138,6 +165,14 @@ public class RemitPriceManager {
 		String curCode = StringUtils.leftPad(String.valueOf(currencyId.intValue()), 3, "0");
 
 		List<ViewExGLCBAL> glcbalRatesForBanks = viewExGLCBALDao.getGLCBALforCurrencyAndBank(curCode, routingBankIds);
+
+		OnlineMarginMarkup margin = marginMarkupDao.getMarkupForCountryAndCurrency(applicationCountryId,
+				foreignCountryId, currencyId);
+
+		if (null == margin) {
+			margin = new OnlineMarginMarkup();
+			margin.setMarginMarkup(new BigDecimal(0));
+		}
 
 		Map<BigDecimal, ViewExGLCBAL> bankGlcBalMap = new HashMap<BigDecimal, ViewExGLCBAL>();
 
@@ -170,6 +205,16 @@ public class RemitPriceManager {
 
 			if (null != viewExGLCBAL) {
 
+				// Update GLCBAL Rate to Markup Adjusted Rates
+
+				System.out.println(" Original GLCBAL Rate ==> " + viewExGLCBAL.getBankCode() + " Rate ==> "
+						+ viewExGLCBAL.getRateAvgRate());
+
+				BigDecimal adjustedSellRate = viewExGLCBAL.getRateAvgRate().add(margin.getMarginMarkup());
+
+				System.out.println(
+						" Modified GLCBAL Rate ==> " + viewExGLCBAL.getBankCode() + " Rate ==> " + adjustedSellRate);
+
 				if (bankExchangeRateMap.containsKey(bankId)) {
 
 					ExchangeRateAPRDET ratePrev = bankExchangeRateMap.get(bankId);
@@ -178,16 +223,16 @@ public class RemitPriceManager {
 					// Lower than Previous Exchange Bank Rate
 					// Higher than GLCBAL Rate
 					if (ratePrev.getSellRateMin().compareTo(rate.getSellRateMin()) > 0
-							&& rate.getSellRateMin().compareTo(viewExGLCBAL.getRateAvgRate()) > 0) {
+							&& rate.getSellRateMin().compareTo(adjustedSellRate) > 0) {
 						bankExchangeRateMap.put(rate.getBankMaster().getBankId(), rate);
 					}
 
 				} else {
 
-					if (rate.getSellRateMin().compareTo(viewExGLCBAL.getRateAvgRate()) < 0) {
+					if (rate.getSellRateMin().compareTo(adjustedSellRate) < 0) {
 
-						rate.setSellRateMin(viewExGLCBAL.getRateAvgRate());
-						rate.setSellRateMax(viewExGLCBAL.getRateAvgRate());
+						rate.setSellRateMin(adjustedSellRate);
+						rate.setSellRateMax(adjustedSellRate);
 					}
 
 					bankExchangeRateMap.put(rate.getBankMaster().getBankId(), rate);
@@ -215,7 +260,7 @@ public class RemitPriceManager {
 
 		System.out.println(" List Size ===> " + exchangeRates.size());
 
-		return null;
+		return bankExchangeRateMap;
 	}
 
 	private List<BigDecimal> getValidBankIds(PricingReqDTO reqDto) {
@@ -243,6 +288,7 @@ public class RemitPriceManager {
 		return validBankIds;
 	}
 
+	@SuppressWarnings("unused")
 	private List<BankMasterDTO> computeBankPricesForLcCurOnline(BigDecimal toCurrency, BigDecimal lcAmount,
 			BigDecimal countryBranchId, BigDecimal foreignCountryId, List<BigDecimal> validBankIds) {
 		List<BankMasterDTO> bankMasterDtoList = new ArrayList<BankMasterDTO>();
@@ -261,6 +307,7 @@ public class RemitPriceManager {
 		return bankMasterDtoList;
 	}
 
+	@SuppressWarnings("unused")
 	private List<BankMasterDTO> computeBankPricesForFcCurOnline(BigDecimal toCurrency, BigDecimal fcAmount,
 			BigDecimal countryBranchId, BigDecimal foreignCountryId, List<BigDecimal> validBankIds) {
 		List<BankMasterDTO> bankMasterDtoList = new ArrayList<BankMasterDTO>();
