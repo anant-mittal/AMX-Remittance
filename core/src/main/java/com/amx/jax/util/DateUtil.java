@@ -225,8 +225,11 @@ public class DateUtil {
 	    	for (int i =startTime;i<endTime;  i = i+timeIntVal){
 	   		 j = i+timeIntVal;
 	   		 String str = "";
-	   		 str = String.valueOf(i)+defaultZero+(i<12?meridienAm:meridienPm)+ "-"+String.valueOf(j)+defaultZero+(j<12?meridienAm:meridienPm);
-	   		 timeSlotList.add(str);
+	   		 if(j<=endTime){
+	   		  str = String.valueOf(i)+defaultZero+(i<12?meridienAm:meridienPm)+ "-"+String.valueOf(j)+defaultZero+(j<12?meridienAm:meridienPm);
+	   		  timeSlotList.add(str);
+	   		 }
+	   		
 	   		 dto.setTimeSlot(timeSlotList);
 	    	}
 	    	 calendar.add(calendar.DAY_OF_MONTH, n);
