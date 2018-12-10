@@ -111,7 +111,10 @@ public interface IRbaacService {
 	 */
 	@RbaacApiStatus({ RbaacServiceError.INVALID_OR_MISSING_DATA, RbaacServiceError.INVALID_USER_DETAILS,
 			RbaacServiceError.MULTIPLE_USERS, RbaacServiceError.USER_NOT_ACTIVE_OR_DELETED,
-			RbaacServiceError.USER_ACCOUNT_LOCKED })
+			RbaacServiceError.USER_ACCOUNT_LOCKED, RbaacServiceError.INVALID_OR_MISSING_CREDENTIALS,
+			RbaacServiceError.INVALID_OR_MISSING_PARTNER_IDENTITY, RbaacServiceError.CLIENT_NOT_FOUND,
+			RbaacServiceError.INVALID_OR_MISSING_TERMINAL_ID, RbaacServiceError.BRANCH_SYSTEM_NOT_FOUND,
+			RbaacServiceError.INVALID_OR_MISSING_DEVICE_ID, RbaacServiceError.DEVICE_CLIENT_INVALID })
 	public AmxApiResponse<UserAuthInitResponseDTO, Object> initAuthForUser(UserAuthInitReqDTO userAuthInitReqDTO);
 
 	/**
@@ -122,7 +125,7 @@ public interface IRbaacService {
 	 * @return the amx api response
 	 */
 	@RbaacApiStatus({ RbaacServiceError.INVALID_OR_MISSING_DATA, RbaacServiceError.INVALID_OTP,
-			RbaacServiceError.USER_ACCOUNT_LOCKED })
+			RbaacServiceError.USER_ACCOUNT_LOCKED, RbaacServiceError.INVALID_PARTNER_OTP })
 	public AmxApiResponse<EmployeeDetailsDTO, Object> authoriseUser(UserAuthorisationReqDTO reqDto);
 
 	/**
