@@ -57,6 +57,7 @@ public class FxOrderTransactionHistroyDto {
 	private String multiAmount;
 	private String multiExchangeRate;
 	private String deliveryAddress;
+	private String inventoryId;
 	
 	
 	
@@ -356,6 +357,14 @@ public class FxOrderTransactionHistroyDto {
 
 	public void setOrderStatusCode(String orderStatusCode) {
 		this.orderStatusCode = orderStatusCode;
+	}
+
+	public String getInventoryId() {
+		return inventoryId;
+	}
+
+	public void setInventoryId(String inventoryId) {
+		this.inventoryId = inventoryId;
 	}
 
 	
