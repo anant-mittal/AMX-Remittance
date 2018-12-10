@@ -3,6 +3,8 @@ var stompClient = null;
 var tunnelClient = (function(win) {
 	var $connectd = null;
 	var $dfd = null;
+	var sessionToken = null;
+	var pong = false;
 	function connect() {
 		$dfd = $dfd || jQuery.Deferred();
 		var socket = new SockJS('/offsite/stomp-tunnel');
@@ -13,7 +15,9 @@ var tunnelClient = (function(win) {
 		}, function(frame) {
 			console.log('Connected: ', frame);
 			stompClient.subscribe("/app/stomp/tunnel/meta" , function(greeting) {
-				console.log("@SubscribeMapping",JSON.parse(greeting.body));
+				var resp = JSON.parse(greeting.body);
+				console.log("@SubscribeMapping",resp);
+				sessionToken = resp["x-session-uid"];
 				$dfd.resolve(frame);
 			});
 		});
@@ -44,6 +48,11 @@ var tunnelClient = (function(win) {
 						fun(JSON.parse(greeting.body), topic, greeting);
 				});
 			});
+			onConnect().then(function() {
+				return stompClient.subscribe("/queue/" + sessionToken + topic, function(greeting) {
+						fun(JSON.parse(greeting.body), topic, greeting);
+				});
+			});
 			return this;
 		},
 		disconnect : function disconnect() {
@@ -56,8 +65,18 @@ var tunnelClient = (function(win) {
 		},
 		send : function send(topic, msg) {
 			this.onConnect().then(function() {
-				stompClient.send(topic, {}, JSON.stringify(msg));
+				stompClient.send("/app" + topic, {}, JSON.stringify(msg));
 			});
+			return this;
+		},
+		ping : function send(topic, msg) {
+			if(!pong){
+				this.on("/pong", function(pong,pong1,pong2,pong3){
+					console.log(pong,pong1,pong2,pong3)
+				});
+				pong = true;
+			}
+			this.send("/ping",{ ping : "Hello"});
 			return this;
 		}
 	};
