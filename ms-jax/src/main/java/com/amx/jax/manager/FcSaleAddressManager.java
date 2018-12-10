@@ -241,7 +241,7 @@ public class FcSaleAddressManager extends AbstractModel {
 					}
 					shippingAddressDto.setDeliveryAddress(getLocalDeliveryAddress(shippingAddressDto));
 				} else {
-					throw new GlobalException("Failed", JaxError.COUNTRY_NOT_FOUND);
+					throw new GlobalException(JaxError.COUNTRY_NOT_FOUND, "Failed");
 				}
 				list.add(shippingAddressDto); // Local Address
 			} // end of for Loop
@@ -290,7 +290,7 @@ public class FcSaleAddressManager extends AbstractModel {
 			 throw new GlobalException(e.getErrorMessage(),e.getErrorKey());
 		} catch (Exception e) {
 			logger.error("saveShippingAddress :", e.getMessage());
-			throw new GlobalException("Failed", JaxError.FS_SHIPPING_ADDRESS_CREATION_FAILED);
+			throw new GlobalException(JaxError.FS_SHIPPING_ADDRESS_CREATION_FAILED, "Failed");
 		}
 	}
 
@@ -324,7 +324,7 @@ public class FcSaleAddressManager extends AbstractModel {
 				shippAdd.setLastUpdated(new Date());
 				shippingAddressDao.save(shippAdd);
 			} else {
-				throw new GlobalException("Invalid shipping address", JaxError.NO_RECORD_FOUND);
+				throw new GlobalException(JaxError.NO_RECORD_FOUND, "Invalid shipping address");
 			}
 		}
 		List<ShippingAddressDto> list = fetchShippingAddress();
@@ -341,14 +341,14 @@ public class FcSaleAddressManager extends AbstractModel {
 				if (JaxUtil.isNullZeroBigDecimalCheck(meta.getCustomerId())) {
 					shipAdd.setFsCustomer(new Customer(meta.getCustomerId()));
 				} else {
-					throw new GlobalException("custoemr Id ", JaxError.INVALID_CUSTOMER);
+					throw new GlobalException(JaxError.INVALID_CUSTOMER, "custoemr Id ");
 				}
 				shipAdd.setLastUpdated(new Date());
 				shipAdd.setActiveStatus(ConstantDocument.Yes);
 				if (JaxUtil.isNullZeroBigDecimalCheck(adddto.getAreaDto().resourceId())) {
 					shipAdd.setAreaCode(adddto.getAreaDto().resourceId());
 				} else {
-					throw new GlobalException("custoemr Id ", JaxError.NULL_AREA_CODE);
+					throw new GlobalException(JaxError.NULL_AREA_CODE, "custoemr Id ");
 				}
 				shipAdd.setBlock(adddto.getBlock());
 				shipAdd.setBuildingNo(adddto.getBuildingNo());
@@ -357,27 +357,27 @@ public class FcSaleAddressManager extends AbstractModel {
 				if (JaxUtil.isNullZeroBigDecimalCheck(meta.getCountryId())) {
 					shipAdd.setFsCountryMaster(new CountryMaster(meta.getCountryId()));
 				} else {
-					throw new GlobalException("Invalid country Id  ", JaxError.INVALID_APPLICATION_COUNTRY_ID);
+					throw new GlobalException(JaxError.INVALID_APPLICATION_COUNTRY_ID, "Invalid country Id  ");
 				}
 				if (JaxUtil.isNullZeroBigDecimalCheck(adddto.getStateDto().resourceId())) {
 					shipAdd.setFsStateMaster(new StateMaster(adddto.getStateDto().resourceId()));
 				} else {
-					throw new GlobalException("Invalid state  ", JaxError.INVALID_STATE);
+					throw new GlobalException(JaxError.INVALID_STATE, "Invalid state  ");
 				}
 				if (JaxUtil.isNullZeroBigDecimalCheck(adddto.getDistrictDto().resourceId())) {
 					shipAdd.setFsDistrictMaster(new DistrictMaster(adddto.getDistrictDto().resourceId()));
 				} else {
-					throw new GlobalException("Invalid district  ", JaxError.INVALID_DISTRICT);
+					throw new GlobalException(JaxError.INVALID_DISTRICT, "Invalid district  ");
 				}
 				if (JaxUtil.isNullZeroBigDecimalCheck(adddto.getCityDto().resourceId())) {
 					shipAdd.setFsCityMaster(new CityMaster(adddto.getCityDto().resourceId()));
 				} else {
-					throw new GlobalException("Invalid city  ", JaxError.INVALID_CITY);
+					throw new GlobalException(JaxError.INVALID_CITY, "Invalid city  ");
 				}
 				if (!StringUtils.isBlank(adddto.getAddressDto().getAddressTypeCode())) {
 					shipAdd.setAddressType(adddto.getAddressDto().getAddressTypeCode());
 				} else {
-					throw new GlobalException("Address type ", JaxError.INVALID_ADDRESS_TYPE);
+					throw new GlobalException(JaxError.INVALID_ADDRESS_TYPE, "Address type ");
 				}
 				if (!StringUtils.isBlank(meta.getReferrer())) {
 					shipAdd.setUpdatedBy(meta.getReferrer());
@@ -394,11 +394,11 @@ public class FcSaleAddressManager extends AbstractModel {
 				shippingAddressDao.save(shipAdd);
 
 			} else {
-				throw new GlobalException("Invalid shipping address", JaxError.NO_RECORD_FOUND);
+				throw new GlobalException(JaxError.NO_RECORD_FOUND, "Invalid shipping address");
 			}
 
 		} else {
-			throw new GlobalException("Invalid shipping address", JaxError.NO_RECORD_FOUND);
+			throw new GlobalException(JaxError.NO_RECORD_FOUND, "Invalid shipping address");
 		}
 
 		List<ShippingAddressDto> list = fetchShippingAddress();

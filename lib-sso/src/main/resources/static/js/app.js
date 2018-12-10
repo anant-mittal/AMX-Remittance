@@ -1,19 +1,26 @@
-var stompClient = null;
-
 var tunnelClient = (function(win) {
-	var $connectd = null;
-	var $dfd = null;
+	var config = {
+		context : "/offsite",
+		user : "guest",
+		token : guid()
+	};
+	var $connectd = null, $dfd = null;
+	var sessionToken = null;
+	var stompClient = null;
+	var pong = false;
 	function connect() {
 		$dfd = $dfd || jQuery.Deferred();
-		var socket = new SockJS('/offsite/stomp-tunnel');
+		var socket = new SockJS(config.context + '/stomp-tunnel');
 		stompClient = Stomp.over(socket);
 		stompClient.connect({
-			user : "guest",
-			token : guid()
+			user : config.user,
+			token : config.token
 		}, function(frame) {
 			console.log('Connected: ', frame);
 			stompClient.subscribe("/app/stomp/tunnel/meta" , function(greeting) {
-				console.log("@SubscribeMapping",JSON.parse(greeting.body));
+				var resp = JSON.parse(greeting.body);
+				console.log("@SubscribeMapping",resp);
+				sessionToken = resp["x-session-uid"];
 				$dfd.resolve(frame);
 			});
 		});
@@ -34,6 +41,11 @@ var tunnelClient = (function(win) {
 		return this.$connectd;
 	}
 	return {
+		config : function (_config){
+			for(var key in _config){
+				config[key] = _config[key]
+			}
+		},
 		connect : function() {
 			onConnect();
 			return this;
@@ -41,6 +53,11 @@ var tunnelClient = (function(win) {
 		on : function subscribe(topic, fun) {
 			onConnect().then(function() {
 				return stompClient.subscribe("/topic" + topic, function(greeting) {
+						fun(JSON.parse(greeting.body), topic, greeting);
+				});
+			});
+			onConnect().then(function() {
+				return stompClient.subscribe("/queue/" + sessionToken + topic, function(greeting) {
 						fun(JSON.parse(greeting.body), topic, greeting);
 				});
 			});
@@ -55,9 +72,19 @@ var tunnelClient = (function(win) {
 			return this;
 		},
 		send : function send(topic, msg) {
-			this.onConnect().then(function() {
-				stompClient.send(topic, {}, JSON.stringify(msg));
+			onConnect().then(function() {
+				stompClient.send("/app" + topic, {}, JSON.stringify(msg));
 			});
+			return this;
+		},
+		ping : function send(topic, msg) {
+			if(!pong){
+				this.on("/pong", function(pong,pong1,pong2,pong3){
+					console.log("PONG : ",pong,pong1,pong2,pong3)
+				});
+				pong = true;
+			}
+			this.send("/ping",{ ping : "Hello"});
 			return this;
 		}
 	};

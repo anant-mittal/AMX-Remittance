@@ -15,6 +15,7 @@ import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.model.request.fx.FcSaleDeliveryDetailUpdateReceiptRequest;
 import com.amx.jax.model.request.fx.FcSaleDeliveryMarkDeliveredRequest;
 import com.amx.jax.model.request.fx.FcSaleDeliveryMarkNotDeliveredRequest;
+import com.amx.jax.model.response.OtpPrefixDto;
 import com.amx.jax.model.response.fx.FxDeliveryDetailDto;
 import com.amx.jax.rest.RestService;
 
@@ -46,8 +47,8 @@ public class FxOrderDeliveryClient implements IFxOrderDelivery {
 		try {
 			LOGGER.debug("in getDeliveryDetail");
 			String url = appConfig.getJaxURL() + Path.FX_DELIVERY_GET_ORDER_DETAIL;
-			return restService.ajax(url).queryParam(Params.DELIVERY_DETAIL_SEQID, deliveryDetailSeqId)
-					.meta(new JaxMetaInfo()).get()
+			return restService.ajax(url).meta(new JaxMetaInfo())
+					.queryParam(Params.DELIVERY_DETAIL_SEQID, deliveryDetailSeqId).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<FxDeliveryDetailDto, Object>>() {
 					});
 		} catch (Exception e) {
@@ -102,13 +103,13 @@ public class FxOrderDeliveryClient implements IFxOrderDelivery {
 	}
 
 	@Override
-	public AmxApiResponse<BoolRespModel, Object> sendOtp(BigDecimal deliveryDetailSeqId) {
+	public AmxApiResponse<OtpPrefixDto, Object> sendOtp(BigDecimal deliveryDetailSeqId) {
 		try {
 			LOGGER.debug("in sendOtp");
 			String url = appConfig.getJaxURL() + Path.FX_DELIVERY_SEND_OTP;
-			return restService.ajax(url).queryParam(Params.DELIVERY_DETAIL_SEQID, deliveryDetailSeqId)
-					.meta(new JaxMetaInfo()).get()
-					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
+			return restService.ajax(url).meta(new JaxMetaInfo())
+					.queryParam(Params.DELIVERY_DETAIL_SEQID, deliveryDetailSeqId).get()
+					.as(new ParameterizedTypeReference<AmxApiResponse<OtpPrefixDto, Object>>() {
 					});
 		} catch (Exception e) {
 			LOGGER.error("exception in sendOtp : ", e);
@@ -117,13 +118,13 @@ public class FxOrderDeliveryClient implements IFxOrderDelivery {
 	}
 
 	@Override
-	public AmxApiResponse<BoolRespModel, Object> verifyOtp(BigDecimal deliveryDetailSeqId, BigDecimal mOtp) {
+	public AmxApiResponse<BoolRespModel, Object> verifyOtp(BigDecimal deliveryDetailSeqId, String mOtp) {
 		try {
 			LOGGER.debug("in verifyOtp");
 			String url = appConfig.getJaxURL() + Path.FX_DELIVERY_VERIFY_OTP;
-			return restService.ajax(url).field(Params.DELIVERY_DETAIL_SEQID, deliveryDetailSeqId)
-					.field(Params.DELIVERY_DETAIL_OTP, mOtp).meta(new JaxMetaInfo()).get()
-					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
+			return restService.ajax(url).meta(new JaxMetaInfo())
+					.field(Params.DELIVERY_DETAIL_SEQID, deliveryDetailSeqId).field(Params.DELIVERY_DETAIL_OTP, mOtp)
+					.postForm().as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
 					});
 		} catch (Exception e) {
 			LOGGER.error("exception in verifyOtp : ", e);
@@ -136,7 +137,7 @@ public class FxOrderDeliveryClient implements IFxOrderDelivery {
 		try {
 			LOGGER.debug("in listDeliveryRemark");
 			String url = appConfig.getJaxURL() + Path.FX_DELIVERY_LIST_DELIVERY_REMARK;
-			return restService.ajax(url).get()
+			return restService.ajax(url).meta(new JaxMetaInfo()).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<ResourceDTO, Object>>() {
 					});
 		} catch (Exception e) {
@@ -149,8 +150,9 @@ public class FxOrderDeliveryClient implements IFxOrderDelivery {
 	public AmxApiResponse<BoolRespModel, Object> markReturn(BigDecimal deliveryDetailSeqId) {
 		try {
 			LOGGER.debug("in markReturn");
-			String url = appConfig.getJaxURL() + Path.FX_DELIVERY_LIST_DELIVERY_REMARK;
-			return restService.ajax(url).post().field(Params.DELIVERY_DETAIL_SEQID, deliveryDetailSeqId)
+			String url = appConfig.getJaxURL() + Path.FX_DELIVERY_MARK_RETURNED;
+			return restService.ajax(url).meta(new JaxMetaInfo())
+					.field(Params.DELIVERY_DETAIL_SEQID, deliveryDetailSeqId).postForm()
 					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
 					});
 		} catch (Exception e) {
@@ -164,7 +166,8 @@ public class FxOrderDeliveryClient implements IFxOrderDelivery {
 		try {
 			LOGGER.debug("in markAcknowledged");
 			String url = appConfig.getJaxURL() + Path.FX_DELIVERY_MARK_ACKNOWLEDGE;
-			return restService.ajax(url).post().field(Params.DELIVERY_DETAIL_SEQID, deliveryDetailSeqId)
+			return restService.ajax(url).meta(new JaxMetaInfo())
+					.field(Params.DELIVERY_DETAIL_SEQID, deliveryDetailSeqId).postForm()
 					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
 					});
 		} catch (Exception e) {

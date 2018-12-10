@@ -1501,7 +1501,7 @@
                                     <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
-                                <text><![CDATA[Transaction Id ]]></text>
+                                <text><![CDATA[K-Net Transaction ID ]]></text>
                             </staticText>
 
                             <textField isStretchWithOverflow="true">

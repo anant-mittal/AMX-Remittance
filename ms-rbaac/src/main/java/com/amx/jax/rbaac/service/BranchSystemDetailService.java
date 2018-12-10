@@ -17,12 +17,12 @@ public class BranchSystemDetailService {
 	public BranchSystemDetail findBranchSystemByIp(String branchSystemIp) {
 		BranchSystemDetail branchSystemDetail = branchDetailDao.getBranchSystemDetail(branchSystemIp);
 		if (branchSystemDetail == null) {
-			throw new AuthServiceException("No  branch system found for given IP ",
-					RbaacServiceError.BRANCH_SYSTEM_NOT_FOUND);
+			throw new AuthServiceException(RbaacServiceError.BRANCH_SYSTEM_NOT_FOUND,
+					"No  branch system found for given IP ");
 		}
 		if (!"Y".equals(branchSystemDetail.getIsActive())) {
-			throw new AuthServiceException("Given branch system is inactive ",
-					RbaacServiceError.BRANCH_SYSTEM_NOT_ACTIVE);
+			throw new AuthServiceException(RbaacServiceError.BRANCH_SYSTEM_NOT_ACTIVE,
+					"Given branch system is inactive ");
 		}
 		return branchSystemDetail;
 	}

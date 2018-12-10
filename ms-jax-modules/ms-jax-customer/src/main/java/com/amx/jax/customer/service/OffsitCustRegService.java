@@ -241,7 +241,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 			}
 		}
 		if (tempList.isEmpty()) {
-			throw new GlobalException("Id Type List Is Not available ", JaxError.EMPTY_ID_TYPE_LIST);
+			throw new GlobalException(JaxError.EMPTY_ID_TYPE_LIST, "Id Type List Is Not available ");
 		}
 		return AmxApiResponse.buildList(list);
 	}
@@ -253,18 +253,18 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		try {
 			if (StringUtils.isBlank(offsiteCustRegModel.getmOtp())) {
 				auditService.excep(new CustomerAuditEvent(Type.VALIDATE_OTP, offsiteCustRegModel),
-						new GlobalException("Otp field is required", JaxError.MISSING_OTP));
-				throw new GlobalException("Otp field is required", JaxError.MISSING_OTP);
+						new GlobalException(JaxError.MISSING_OTP, "Otp field is required"));
+				throw new GlobalException(JaxError.MISSING_OTP, "Otp field is required");
 			}
 			resetAttempts(otpData);
 			if (otpData.getValidateOtpAttempts() >= otpSettings.getMaxValidateOtpAttempts()) {
 				auditService.excep(new CustomerAuditEvent(Type.VALIDATE_OTP, offsiteCustRegModel),
 						new GlobalException(
-								"Sorry, you cannot proceed to register. Please try to register after 12 midnight",
-								JaxError.VALIDATE_OTP_LIMIT_EXCEEDED));
+								JaxError.VALIDATE_OTP_LIMIT_EXCEEDED,
+								"Sorry, you cannot proceed to register. Please try to register after 12 midnight"));
 				throw new GlobalException(
-						"Sorry, you cannot proceed to register. Please try to register after 12 midnight",
-						JaxError.VALIDATE_OTP_LIMIT_EXCEEDED);
+						JaxError.VALIDATE_OTP_LIMIT_EXCEEDED,
+						"Sorry, you cannot proceed to register. Please try to register after 12 midnight");
 			}
 			
 			// actual validation logic
@@ -303,14 +303,14 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		if (otpData.getValidateOtpAttempts() >= otpSettings.getMaxValidateOtpAttempts()) {
 			otpData.setLockDate(new Date());
 		}
-		throw new GlobalException("Invalid otp", JaxError.INVALID_OTP);
+		throw new GlobalException(JaxError.INVALID_OTP, "Invalid otp");
 
 	}
 
 	public AmxApiResponse<ArticleMasterDescDto, Object> getArticleListResponse() {
 		List<Map<String, Object>> articleList = articleDao.getArticles(metaData.getLanguageId());
 		if (articleList == null || articleList.isEmpty()) {
-			throw new GlobalException("Article List Is Empty ", JaxError.EMPTY_ARTICLE_LIST);
+			throw new GlobalException(JaxError.EMPTY_ARTICLE_LIST, "Article List Is Empty ");
 		}
 		List<ArticleMasterDescDto> articleDtoList = convertArticle(articleList);
 		return AmxApiResponse.buildList(articleDtoList);
@@ -340,8 +340,8 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		EmploymentDetailsRequest details = new EmploymentDetailsRequest(articleId, null, null);
 		if (designationList == null || designationList.isEmpty()) {
 			auditService.excep(new CustomerAuditEvent(Type.DESIGNATION_LIST, details),
-					new GlobalException("Designation List Is Empty ", JaxError.EMPTY_DESIGNATION_LIST));
-			throw new GlobalException("Designation List Is Empty ", JaxError.EMPTY_DESIGNATION_LIST);
+					new GlobalException(JaxError.EMPTY_DESIGNATION_LIST, "Designation List Is Empty "));
+			throw new GlobalException(JaxError.EMPTY_DESIGNATION_LIST, "Designation List Is Empty ");
 		}
 		List<ArticleDetailsDescDto> designationDataList = convertDesignation(designationList);
 		auditService.log(new CustomerAuditEvent(Type.DESIGNATION_LIST, details));
@@ -375,8 +375,8 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		EmploymentDetailsRequest details = new EmploymentDetailsRequest(null, articleDetailsId, countryId);
 		if (incomeRangeList == null || incomeRangeList.isEmpty()) {
 			auditService.excep(new CustomerAuditEvent(Type.INCOME_RANGE, details),
-					new GlobalException("Income Range List Is Empty ", JaxError.EMPTY_INCOME_RANGE));
-			throw new GlobalException("Income Range List Is Empty ", JaxError.EMPTY_INCOME_RANGE);
+					new GlobalException(JaxError.EMPTY_INCOME_RANGE, "Income Range List Is Empty "));
+			throw new GlobalException(JaxError.EMPTY_INCOME_RANGE, "Income Range List Is Empty ");
 		}
 		List<IncomeRangeDto> incomeRangeDataList = convertIncomeRange(incomeRangeList);
 		auditService.log(new CustomerAuditEvent(Type.INCOME_RANGE, details));
@@ -406,7 +406,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		List<FieldList> fieldList = null;
 		fieldList = fieldListDao.getFieldList(model.getTenant(), Constants.COMMON_NATIONALITY, model.getComponent());
 		if (fieldList == null) {
-			throw new GlobalException("Field Condition is Empty ", JaxError.EMPTY_FIELD_CONDITION);
+			throw new GlobalException(JaxError.EMPTY_FIELD_CONDITION, "Field Condition is Empty ");
 		}
 		List<FieldListDto> listDto = convertFieldList(fieldList);
 		Map<String, FieldListDto> map = new HashMap<>();
@@ -426,8 +426,8 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		}
 		if (map == null || map.isEmpty()) {
 			auditService.excep(new CustomerAuditEvent(Type.FIELD_LIST, model),
-					new GlobalException("Field Condition is Empty ", JaxError.EMPTY_FIELD_CONDITION));
-			throw new GlobalException("Field Condition is Empty ", JaxError.EMPTY_FIELD_CONDITION);
+					new GlobalException(JaxError.EMPTY_FIELD_CONDITION, "Field Condition is Empty "));
+			throw new GlobalException(JaxError.EMPTY_FIELD_CONDITION, "Field Condition is Empty ");
 		}
 		auditService.log(new CustomerAuditEvent(Type.FIELD_LIST, model));
 		return AmxApiResponse.build(map);
@@ -458,7 +458,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 	public AmxApiResponse<ComponentDataDto, Object> sendEmploymentTypeList() {
 		List<EmploymentTypeMasterView> view = employmentTypeRepo.findAll();
 		if (view.isEmpty()) {
-			throw new GlobalException("Employment Type List Not Available", JaxError.EMPTY_EMPLOYMENT_TYPE);
+			throw new GlobalException(JaxError.EMPTY_EMPLOYMENT_TYPE, "Employment Type List Not Available");
 		}
 		List<ComponentDataDto> list = new ArrayList<>();
 		for (EmploymentTypeMasterView map : view) {
@@ -471,7 +471,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 	public AmxApiResponse<ComponentDataDto, Object> sendProfessionList() {
 		List<ProfessionMasterView> view = professionRepository.findAll();
 		if (view.isEmpty()) {
-			throw new GlobalException("Profession List Not Available", JaxError.EMPTY_PROFESSION_LIST);
+			throw new GlobalException(JaxError.EMPTY_PROFESSION_LIST, "Profession List Not Available");
 		}
 		List<ComponentDataDto> list = new ArrayList<>();
 		for (ProfessionMasterView map : view) {
@@ -592,16 +592,16 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 				customerDetails.getCountryId(), customerDetails.getIdentityTypeId());
 		if (customer != null) {
 			if (customer.getIdentityTypeId().equals(new BigDecimal(198))) {
-				throw new GlobalException("Customer Civil Id Already Exist", JaxError.EXISTING_CIVIL_ID);
+				throw new GlobalException(JaxError.EXISTING_CIVIL_ID, "Customer Civil Id Already Exist");
 			}
 			if (customer.getIdentityTypeId().equals(new BigDecimal(204))) {
-				throw new GlobalException("Passport Number Already Exist", JaxError.EXISTING_PASSPORT);
+				throw new GlobalException(JaxError.EXISTING_PASSPORT, "Passport Number Already Exist");
 			}
 			if (customer.getIdentityTypeId().equals(new BigDecimal(201))) {
-				throw new GlobalException("GCC ID Already Exist", JaxError.EXISTING_GCC_ID);
+				throw new GlobalException(JaxError.EXISTING_GCC_ID, "GCC ID Already Exist");
 			}
 			if (customer.getIdentityTypeId().equals(new BigDecimal(197))) {
-				throw new GlobalException("BEDOUIN ID Already Exist", JaxError.EXISTING_BEDOUIN_ID);
+				throw new GlobalException(JaxError.EXISTING_BEDOUIN_ID, "BEDOUIN ID Already Exist");
 			}
 
 		}
@@ -702,20 +702,20 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		if (model != null) {
 			if (metaData.getCustomerId() == null) {
 				auditService.excep(new CustomerAuditEvent(Type.KYC_DOC, metaData.getCustomerId()),
-						new GlobalException("Customer Id is not available", JaxError.NULL_CUSTOMER_ID));
-				throw new GlobalException("Customer Id is not available", JaxError.NULL_CUSTOMER_ID);
+						new GlobalException(JaxError.NULL_CUSTOMER_ID, "Customer Id is not available"));
+				throw new GlobalException(JaxError.NULL_CUSTOMER_ID, "Customer Id is not available");
 			}
 			Customer customer = customerRepository.getCustomerByCustomerIdAndIsActive(metaData.getCustomerId(),
 					Constants.NO);
 			if (customer == null) {
 				auditService.excep(new CustomerAuditEvent(Type.KYC_DOC, metaData.getCustomerId()),
-						new GlobalException("Customer is Invalid", JaxError.INVALID_CUSTOMER));
-				throw new GlobalException("Customer is Invalid", JaxError.INVALID_CUSTOMER);
+						new GlobalException(JaxError.INVALID_CUSTOMER, "Customer is Invalid"));
+				throw new GlobalException(JaxError.INVALID_CUSTOMER, "Customer is Invalid");
 			}
 			if (model.getImage() == null) {
 				auditService.excep(new CustomerAuditEvent(Type.KYC_DOC, metaData.getCustomerId()),
-						new GlobalException("Image is not available", JaxError.IMAGE_NOT_AVAILABLE));
-				throw new GlobalException("Image is not available", JaxError.IMAGE_NOT_AVAILABLE);
+						new GlobalException(JaxError.IMAGE_NOT_AVAILABLE, "Image is not available"));
+				throw new GlobalException(JaxError.IMAGE_NOT_AVAILABLE, "Image is not available");
 			}
 
 			for (String image : model.getImage()) {
@@ -727,7 +727,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 				docblobRepository.save(documentDetails);
 			}
 		} else {
-			throw new GlobalException("Image data is not available", JaxError.IMAGE_NOT_AVAILABLE);
+			throw new GlobalException(JaxError.IMAGE_NOT_AVAILABLE, "Image data is not available");
 		}
 		return AmxApiResponse.build("Document Uploaded Successfully");
 	}
@@ -788,24 +788,24 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 
 	public AmxApiResponse<String, Object> saveCustomerSignature(ImageSubmissionRequest model) {
 		if (model == null) {
-			throw new GlobalException("Image data is not available", JaxError.SIGNATURE_NOT_AVAILABLE);
+			throw new GlobalException(JaxError.SIGNATURE_NOT_AVAILABLE, "Image data is not available");
 		}
 		if (metaData.getCustomerId() == null) {
 			auditService.excep(new CustomerAuditEvent(Type.SIGNATURE, metaData.getCustomerId()),
-					new GlobalException("Customer Id is not available", JaxError.NULL_CUSTOMER_ID));
-			throw new GlobalException("Customer Id is not available", JaxError.NULL_CUSTOMER_ID);
+					new GlobalException(JaxError.NULL_CUSTOMER_ID, "Customer Id is not available"));
+			throw new GlobalException(JaxError.NULL_CUSTOMER_ID, "Customer Id is not available");
 		}
 		if (model.getImage() == null) {
 			auditService.excep(new CustomerAuditEvent(Type.SIGNATURE, metaData.getCustomerId()),
-					new GlobalException("Signature not available for this customer", JaxError.NULL_CUSTOMER_ID));
-			throw new GlobalException("Signature not available", JaxError.SIGNATURE_NOT_AVAILABLE);
+					new GlobalException(JaxError.NULL_CUSTOMER_ID, "Signature not available for this customer"));
+			throw new GlobalException(JaxError.SIGNATURE_NOT_AVAILABLE, "Signature not available");
 		}
 		Customer customer = customerRepository.getCustomerByCustomerIdAndIsActive(metaData.getCustomerId(),
 				Constants.NO);
 		if (customer == null) {
 			auditService.excep(new CustomerAuditEvent(Type.SIGNATURE, metaData.getCustomerId()),
-					new GlobalException("Customer is Invalid", JaxError.INVALID_CUSTOMER));
-			throw new GlobalException("Customer is Invalid", JaxError.INVALID_CUSTOMER);
+					new GlobalException(JaxError.INVALID_CUSTOMER, "Customer is Invalid"));
+			throw new GlobalException(JaxError.INVALID_CUSTOMER, "Customer is Invalid");
 		}
 		customer.setSignatureSpecimenClob(model.getImage().get(0));
 		customer.setPepsIndicator(model.getPoliticallyExposed());
@@ -857,14 +857,14 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		}
 		List<BlackListModel> blist = blackListDao.getBlackByName(customerName.toString());
 		if (blist != null && !blist.isEmpty()) {
-			throw new GlobalException("Customer is black listed", JaxError.BLACK_LISTED_CUSTOMER.getStatusKey());
+			throw new GlobalException(JaxError.BLACK_LISTED_CUSTOMER.getStatusKey(), "Customer is black listed");
 		}
 	}
 
 	private void validateOtpSendCount(OtpData otpData) {
 		if (otpData.getSendOtpAttempts() >= otpSettings.getMaxSendOtpAttempts()) {
-			throw new GlobalException("Sorry, you cannot proceed to register. Please try to register after 12 midnight",
-					JaxError.VALIDATE_OTP_LIMIT_EXCEEDED);
+			throw new GlobalException(JaxError.VALIDATE_OTP_LIMIT_EXCEEDED,
+					"Sorry, you cannot proceed to register. Please try to register after 12 midnight");
 		}
 	}
 

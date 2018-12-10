@@ -29,22 +29,22 @@ public class FxOrderValidation {
 	
 	public void fcsalecurrencyList(BigDecimal countryId){
 		if (!JaxUtil.isNullZeroBigDecimalCheck(countryId)) {
-			throw new GlobalException("Country Id not found", JaxError. NULL_APPLICATION_COUNTRY_ID);
+			throw new GlobalException(JaxError. NULL_APPLICATION_COUNTRY_ID, "Country Id not found");
 		}
 	}
 	
 	
 	public void fcSaleExchangeRate(BigDecimal countryId,BigDecimal countryBranchId,BigDecimal currencyId){
 		if (!JaxUtil.isNullZeroBigDecimalCheck(countryId)) {
-			throw new GlobalException("Country Id not found", JaxError. NULL_APPLICATION_COUNTRY_ID);
+			throw new GlobalException(JaxError. NULL_APPLICATION_COUNTRY_ID, "Country Id not found");
 		}
 		
 		if (!JaxUtil.isNullZeroBigDecimalCheck(countryBranchId)) {
-			throw new GlobalException("Country branch Id not found", JaxError.BLANK_COUNTRY_BRANCH);
+			throw new GlobalException(JaxError.BLANK_COUNTRY_BRANCH, "Country branch Id not found");
 		}
 		
 		if (!JaxUtil.isNullZeroBigDecimalCheck(currencyId)) {
-			throw new GlobalException("currency not found", JaxError. NULL_CURRENCY_ID);
+			throw new GlobalException(JaxError. NULL_CURRENCY_ID, "currency not found");
 		}
 	}
 	
@@ -72,41 +72,41 @@ public class FxOrderValidation {
 		}
 		
 		if (!JaxUtil.isNullZeroBigDecimalCheck(countryId)) {
-			throw new GlobalException("Null applicationCountryId  passed", JaxError.NULL_APPLICATION_COUNTRY_ID);
+			throw new GlobalException(JaxError.NULL_APPLICATION_COUNTRY_ID, "Null applicationCountryId  passed");
 		}else{
 			if(!JaxUtil.isNullZeroBigDecimalCheck(applicationCountryDb) && applicationCountryDb.compareTo(countryId)!=0){
-				throw new GlobalException("invalid applciation country Id", JaxError.INVALID_APPLICATION_COUNTRY_ID);
+				throw new GlobalException(JaxError.INVALID_APPLICATION_COUNTRY_ID, "invalid applciation country Id");
 			}
 		}
 		
 		if (!JaxUtil.isNullZeroBigDecimalCheck(countryBranchId)) {
-			throw new GlobalException("Invalid Country branch Id", JaxError.BLANK_COUNTRY_BRANCH);
+			throw new GlobalException(JaxError.BLANK_COUNTRY_BRANCH, "Invalid Country branch Id");
 		}else{
 			
 		}
 		
 		if (!JaxUtil.isNullZeroBigDecimalCheck(currencyId)) {
-			throw new GlobalException("Null local currency id passed ", JaxError.NULL_CURRENCY_ID);
+			throw new GlobalException(JaxError.NULL_CURRENCY_ID, "Null local currency id passed ");
 		}else{
 			if(!JaxUtil.isNullZeroBigDecimalCheck(localcurrencyDB) && localcurrencyDB.compareTo(currencyId)!=0){
-				throw new GlobalException("Invalid local currency Id", JaxError.INVALID_CURRENCY_ID);
+				throw new GlobalException(JaxError.INVALID_CURRENCY_ID, "Invalid local currency Id");
 			}
 		}
 		
 		 if (customerId == null) {
-				throw new GlobalException("Null customer id passed ", JaxError.NULL_CUSTOMER_ID);
+				throw new GlobalException(JaxError.NULL_CUSTOMER_ID, "Null customer id passed ");
 			}
 		if (!JaxUtil.isNullZeroBigDecimalCheck(languageId)) {
-			throw new GlobalException("Invalid language id", JaxError. BLANK_LANGUAGE_ID);
+			throw new GlobalException(JaxError. BLANK_LANGUAGE_ID, "Invalid language id");
 		}else{
 			
 			}
 		
 		if (!JaxUtil.isNullZeroBigDecimalCheck(companyId)) {
-			throw new GlobalException("Invalid company id", JaxError. BLANK_COMPANY_ID);
+			throw new GlobalException(JaxError. BLANK_COMPANY_ID, "Invalid company id");
 		}else{
 			if(!JaxUtil.isNullZeroBigDecimalCheck(companyIdDb) && companyIdDb.compareTo(companyId)!=0){
-				throw new GlobalException("invalid comapany", JaxError.INVALID_COMPANY_ID);
+				throw new GlobalException(JaxError.INVALID_COMPANY_ID, "invalid comapany");
 			}
 		}
 	}

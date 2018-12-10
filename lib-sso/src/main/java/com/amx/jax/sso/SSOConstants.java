@@ -2,6 +2,8 @@ package com.amx.jax.sso;
 
 public class SSOConstants {
 
+	public static final String IS_RETURN = "return";
+
 	private SSOConstants() {
 		// Not allowed
 	}

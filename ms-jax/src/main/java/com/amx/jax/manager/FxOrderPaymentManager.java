@@ -156,7 +156,7 @@ public class FxOrderPaymentManager {
 				 paymentResponse.setCollectionDocumentCode((BigDecimal)mapResopnseObject.get("P_COLLECTION_DOCUMENT_CODE"));
 			 }else{
 				 logger.error("paymentCapture final save  finalSaveAll method :"+mapResopnseObject.toString());
-				 throw new GlobalException("Invalid collection document number /year", JaxError.PAYMENT_UPDATION_FAILED);
+				 throw new GlobalException(JaxError.PAYMENT_UPDATION_FAILED, "Invalid collection document number /year");
 			 }
 			 
 			}else{
@@ -168,10 +168,10 @@ public class FxOrderPaymentManager {
 				}
 		}catch(GlobalException e){
 			logger.error("createFcSaleReceiptApplication", e.getErrorMessage() + "" +e.getErrorKey());
-			 throw new GlobalException(e.getErrorMessage(),e.getErrorKey());
+			 throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}catch(Exception e){
 			logger.error("try--catch block paymentCapture :"+e.getMessage());
-			throw new GlobalException("catch Payment capture failed", JaxError.PAYMENT_UPDATION_FAILED);
+			throw new GlobalException(JaxError.PAYMENT_UPDATION_FAILED, "catch Payment capture failed");
 		}
 		return paymentResponse;
 	}
@@ -239,7 +239,7 @@ public class FxOrderPaymentManager {
 				    if(documentNo!=null && documentNo.compareTo(BigDecimal.ZERO)!=0){
 				    	receiptPayment.setDocumentNo(documentNo);
 				    }else{
-				    	throw new GlobalException("Receipt  document should not be blank.", JaxError.INVALID_RECEIPT_PAYMNET_DOCUMENT_NO);
+				    	throw new GlobalException(JaxError.INVALID_RECEIPT_PAYMNET_DOCUMENT_NO, "Receipt  document should not be blank.");
 				    }
 		
 				 receiptPayment.setReceiptType(ConstantDocument.FC_SALE_RECEIPT_TYPE);
@@ -318,7 +318,7 @@ public class FxOrderPaymentManager {
 			 	  collection.setCompanyCode(companyDetails.getCompanyCode());
 			 	  
 			 	 }else{
-			 		throw new GlobalException("Invalid company code.", JaxError.INVALID_COMPANY_ID);
+			 		throw new GlobalException(JaxError.INVALID_COMPANY_ID, "Invalid company code.");
 			 	 }
 			 	collection.setFsCompanyMaster(new CompanyMaster(appl.getCompanyId()));
 			 	 CountryBranch countryBranch = countryBranchRepository.findByCountryBranchId(appl.getBranchId());
@@ -339,7 +339,7 @@ public class FxOrderPaymentManager {
 			    if(documentNo!=null && documentNo.compareTo(BigDecimal.ZERO)!=0){
 			    	collection.setDocumentNo(documentNo);
 			    }else{
-			    	throw new GlobalException("Collection document should not be blank.", JaxError.INVALID_COLLECTION_DOCUMENT_NO);
+			    	throw new GlobalException(JaxError.INVALID_COLLECTION_DOCUMENT_NO, "Collection document should not be blank.");
 			    }
 			 	 
 				Customer customer = new Customer();
@@ -363,11 +363,11 @@ public class FxOrderPaymentManager {
 				 
 			 }else{
 				 logger.error("save saveCollection listOfRecAppl is empty :");
-				 throw new GlobalException("NO record found", JaxError.NO_RECORD_FOUND);
+				 throw new GlobalException(JaxError.NO_RECORD_FOUND, "NO record found");
 			 }
 		 }catch(GlobalException e){
 				logger.error("createFcSaleReceiptApplication", e.getErrorMessage() + "" +e.getErrorKey());
-				 throw new GlobalException(e.getErrorMessage(),e.getErrorKey());
+				 throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		 }catch(Exception e){
 			 e.printStackTrace();
 			 logger.error("save collection :"+e.getMessage());
@@ -420,7 +420,7 @@ public class FxOrderPaymentManager {
 			if(payModeModel!=null){
 				collectDetail.setPaymentModeId(payModeModel.getPaymentModeId());
 			}else{
-			    	throw new GlobalException("Paymnet mode is not found.", JaxError.INVALID_PAYMENT_MODE);
+			    	throw new GlobalException(JaxError.INVALID_PAYMENT_MODE, "Paymnet mode is not found.");
 			    }
 		
 			collectDetail.setApprovalNo(paymentResponse.getAuth_appNo());
@@ -433,7 +433,7 @@ public class FxOrderPaymentManager {
 			collectDetail.setKnetReceiptDateTime(new SimpleDateFormat("dd/MM/YYYY hh:mm").format(new Date()));
 		}catch(GlobalException e){
 			logger.error("createFcSaleReceiptApplication", e.getErrorMessage() + "" +e.getErrorKey());
-			 throw new GlobalException(e.getErrorMessage(),e.getErrorKey());
+			 throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		 }catch(Exception e){
 			 e.printStackTrace();
 			 logger.error("save collection details :"+e.getMessage());

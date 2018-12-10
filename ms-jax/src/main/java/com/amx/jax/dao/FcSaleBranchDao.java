@@ -99,7 +99,7 @@ public class FcSaleBranchDao {
 		if(deliveryDetail != null) {
 			fxDeliveryDetailsRepository.save(deliveryDetail);
 		}else {
-			throw new GlobalException("No records found for delivery detail",JaxError.SAVE_FAILED);
+			throw new GlobalException(JaxError.SAVE_FAILED,"No records found for delivery detail");
 		}
 	}
 	
@@ -118,7 +118,7 @@ public class FcSaleBranchDao {
 				receiptPaymentRespository.updateDeliveryDetails(orderManagementView.getReceiptPaymentId(),deliveryDetailNew.getDeleviryDelSeqId(),deliveryDetailNew.getCreatedBy(),deliveryDetailNew.getCreatedDate());
 			}
 		}else {
-			throw new GlobalException("No records found for order management",JaxError.SAVE_FAILED);
+			throw new GlobalException(JaxError.SAVE_FAILED,"No records found for order management");
 		}
 	}
 	
@@ -150,13 +150,13 @@ public class FcSaleBranchDao {
 					fxDeliveryDetailsModel.setOrderStatus(orderStatus);
 					fxDeliveryDetailsRepository.save(fxDeliveryDetailsModel);
 				}else {
-					throw new GlobalException("Order status is not acepoted to print",JaxError.ORDER_STATUS_MISMATCH);
+					throw new GlobalException(JaxError.ORDER_STATUS_MISMATCH,"Order status is not acepoted to print");
 				}
 			}else {
-				throw new GlobalException("No records or order status is empty for delivery details",JaxError.NO_DELIVERY_DETAILS);
+				throw new GlobalException(JaxError.NO_DELIVERY_DETAILS,"No records or order status is empty for delivery details");
 			}
 		}else {
-			throw new GlobalException("No records or delivery details id is empty",JaxError.SAVE_FAILED);
+			throw new GlobalException(JaxError.SAVE_FAILED,"No records or delivery details id is empty");
 		}
 	}
 	
@@ -180,13 +180,13 @@ public class FcSaleBranchDao {
 					fxDeliveryDetailsModel.setOrderStatus(orderStatus);
 					fxDeliveryDetailsRepository.save(fxDeliveryDetailsModel);
 				}else {
-					throw new GlobalException("Order status is not Ordered to lock",JaxError.ORDER_STATUS_MISMATCH);
+					throw new GlobalException(JaxError.ORDER_STATUS_MISMATCH,"Order status is not Ordered to lock");
 				}
 			}else {
-				throw new GlobalException("No records or order status is empty for delivery details",JaxError.NO_DELIVERY_DETAILS);
+				throw new GlobalException(JaxError.NO_DELIVERY_DETAILS,"No records or order status is empty for delivery details");
 			}
 		}else {
-			throw new GlobalException("No records found for order management",JaxError.SAVE_FAILED);
+			throw new GlobalException(JaxError.SAVE_FAILED,"No records found for order management");
 		}
 	}
 	
@@ -205,13 +205,13 @@ public class FcSaleBranchDao {
 					fxDeliveryDetailsModel.setOrderStatus(orderStatus);
 					fxDeliveryDetailsRepository.save(fxDeliveryDetailsModel);
 				}else {
-					throw new GlobalException("Order status is not Accepted to release",JaxError.ORDER_STATUS_MISMATCH);
+					throw new GlobalException(JaxError.ORDER_STATUS_MISMATCH,"Order status is not Accepted to release");
 				}
 			}else {
-				throw new GlobalException("No records or order status is empty for delivery details",JaxError.NO_DELIVERY_DETAILS);
+				throw new GlobalException(JaxError.NO_DELIVERY_DETAILS,"No records or order status is empty for delivery details");
 			}
 		}else {
-			throw new GlobalException("No records found for order management",JaxError.SAVE_FAILED);
+			throw new GlobalException(JaxError.SAVE_FAILED,"No records found for order management");
 		}
 	}
 	
@@ -227,13 +227,13 @@ public class FcSaleBranchDao {
 					fxDeliveryDetailsModel.setOrderStatus(orderStatus);
 					fxDeliveryDetailsRepository.save(fxDeliveryDetailsModel);
 				}else {
-					throw new GlobalException("Order status is not out for delivery pending acknowledgment to dispatch",JaxError.ORDER_STATUS_MISMATCH);
+					throw new GlobalException(JaxError.ORDER_STATUS_MISMATCH,"Order status is not out for delivery pending acknowledgment to dispatch");
 				}
 			}else {
-				throw new GlobalException("No records or order status is empty for delivery details",JaxError.NO_DELIVERY_DETAILS);
+				throw new GlobalException(JaxError.NO_DELIVERY_DETAILS,"No records or order status is empty for delivery details");
 			}
 		}else {
-			throw new GlobalException("No records found for order management",JaxError.SAVE_FAILED);
+			throw new GlobalException(JaxError.SAVE_FAILED,"No records found for order management");
 		}
 	}
 	
@@ -253,13 +253,13 @@ public class FcSaleBranchDao {
 					fxDeliveryDetailsModel.setOrderStatus(orderStatus);
 					fxDeliveryDetailsRepository.save(fxDeliveryDetailsModel);
 				}else {
-					throw new GlobalException("Order status is not out for delivery acknowledge ",JaxError.ORDER_STATUS_MISMATCH);
+					throw new GlobalException(JaxError.ORDER_STATUS_MISMATCH,"Order status is not out for delivery acknowledge ");
 				}
 			}else {
-				throw new GlobalException("No records or order status is empty for delivery details",JaxError.NO_DELIVERY_DETAILS);
+				throw new GlobalException(JaxError.NO_DELIVERY_DETAILS,"No records or order status is empty for delivery details");
 			}
 		}else {
-			throw new GlobalException("No records found for order management",JaxError.SAVE_FAILED);
+			throw new GlobalException(JaxError.SAVE_FAILED,"No records found for order management");
 		}
 	}
 	
@@ -275,13 +275,13 @@ public class FcSaleBranchDao {
 					fxDeliveryDetailsModel.setOrderStatus(orderStatus);
 					fxDeliveryDetailsRepository.save(fxDeliveryDetailsModel);
 				}else {
-					throw new GlobalException("Order status is not return acknowledge",JaxError.ORDER_STATUS_MISMATCH);
+					throw new GlobalException(JaxError.ORDER_STATUS_MISMATCH,"Order status is not return acknowledge");
 				}
 			}else {
-				throw new GlobalException("No records or order status is empty for delivery details",JaxError.NO_DELIVERY_DETAILS);
+				throw new GlobalException(JaxError.NO_DELIVERY_DETAILS,"No records or order status is empty for delivery details");
 			}
 		}else {
-			throw new GlobalException("No records found for order management",JaxError.SAVE_FAILED);
+			throw new GlobalException(JaxError.SAVE_FAILED,"No records found for order management");
 		}
 	}
 	
@@ -297,13 +297,13 @@ public class FcSaleBranchDao {
 					fxDeliveryDetailsModel.setOrderStatus(orderStatus);
 					fxDeliveryDetailsRepository.save(fxDeliveryDetailsModel);
 				}else {
-					throw new GlobalException("Order status is not cancelled ",JaxError.ORDER_STATUS_MISMATCH);
+					throw new GlobalException(JaxError.ORDER_STATUS_MISMATCH,"Order status is not cancelled ");
 				}
 			}else {
-				throw new GlobalException("No records or order status is empty for delivery details",JaxError.NO_DELIVERY_DETAILS);
+				throw new GlobalException(JaxError.NO_DELIVERY_DETAILS,"No records or order status is empty for delivery details");
 			}
 		}else {
-			throw new GlobalException("No records found for order management",JaxError.SAVE_FAILED);
+			throw new GlobalException(JaxError.SAVE_FAILED,"No records found for order management");
 		}
 	}
 }

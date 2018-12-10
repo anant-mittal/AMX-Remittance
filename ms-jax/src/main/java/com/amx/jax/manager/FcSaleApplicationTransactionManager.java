@@ -183,7 +183,7 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 		return responeModel;
 		}catch(GlobalException e){
 			logger.error("createFcSaleReceiptApplication", e.getErrorMessage() + "" +e.getErrorKey());
-			 throw new GlobalException(e.getErrorMessage(),e.getErrorKey());
+			 throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}catch(Exception e){
 			e.printStackTrace();
 			logger.error("saveApplication", e.getMessage());
@@ -220,11 +220,11 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 					responeModel.setDocumentFinancialYear(userFinancialYear.getFinancialYear());
 				}
 			}else{
-				throw new GlobalException("No record found for payment", JaxError.FC_SALE_APPLIATION_NOT_FOUND);
+				throw new GlobalException(JaxError.FC_SALE_APPLIATION_NOT_FOUND, "No record found for payment");
 			}
 		} //end of for Loop.
 		}else{
-			throw new GlobalException("No record found for payment", JaxError.NO_RECORD_FOUND);
+			throw new GlobalException(JaxError.NO_RECORD_FOUND, "No record found for payment");
 		}
 		
 		logger.debug("Total knet amount without delivery charges: "+knetamount);
@@ -233,12 +233,12 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 			knetamount = knetamount.add(parameterList.get(0).getNumericField1());
 		}else{
 			logger.debug("Delivery charges: "+parameterList.get(0).getNumericField1());
-			throw new GlobalException("Fc Delivery not defined", JaxError.FC_CURRENCY_DELIVERY_CHARGES_NOT_FOUND);
+			throw new GlobalException(JaxError.FC_CURRENCY_DELIVERY_CHARGES_NOT_FOUND, "Fc Delivery not defined");
 		}
 		if(JaxUtil.isNullZeroBigDecimalCheck(knetamount) && knetamount.compareTo(BigDecimal.ZERO) > 0){
 			responeModel.setNetPayableAmount(knetamount);
 		}else{
-			throw new GlobalException("Toal Knet Amount ", JaxError.INVALID_AMOUNT);
+			throw new GlobalException(JaxError.INVALID_AMOUNT, "Toal Knet Amount ");
 		}
 		
 		logger.debug("Total knet amount with delivery charges: "+knetamount);
@@ -287,7 +287,7 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 			receiptPaymentAppl.setCustomerName(customerName);
 		}else{
 				logger.error("Customer is not registered"+customerId);
-				throw new GlobalException("Customer is not registered", JaxError.CUSTOMER_NOT_REGISTERED_ONLINE.getStatusKey());
+				throw new GlobalException(JaxError.CUSTOMER_NOT_REGISTERED_ONLINE, "Customer is not registered");
 			}
 		
 		CountryBranch countryBranch = countryBranchRepository.findByBranchId(ConstantDocument.ONLINE_BRANCH_LOC_CODE);
@@ -295,12 +295,12 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 			locCode = countryBranch.getBranchId();
 			countryBranchId =countryBranch.getCountryBranchId(); 
 		}else{
-			throw new GlobalException("Country branch is not found", JaxError.INVALID_COUNTRY_BRANCH);
+			throw new GlobalException(JaxError.INVALID_COUNTRY_BRANCH, "Country branch is not found");
 		}
 		validation.validateHeaderInfo();
 		
 		if(!JaxUtil.isNullZeroBigDecimalCheck(fcSalerequestModel.getForeignAmount()) && fcSalerequestModel.getForeignAmount().compareTo(BigDecimal.ZERO)<0){
-			throw new GlobalException("Negative not allowed", JaxError.INVALID_EXCHANGE_AMOUNT);
+			throw new GlobalException(JaxError.INVALID_EXCHANGE_AMOUNT, "Negative not allowed");
 		}
 		
 		FxExchangeRateBreakup exchbreakUpRate = getExchangeRateFcSaleOrder(applciationCountryid, countryBranchId, fcSalerequestModel.getForeignCurrencyId(), fcSalerequestModel.getForeignAmount());
@@ -319,7 +319,7 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 		}
 		
 		if(receiptPaymentAppl.getLocalTrnxAmount().compareTo(BigDecimal.ZERO)<=0){
-			throw new GlobalException("Enter valid amount ",JaxError.ZERO_NOT_ALLOWED);
+			throw new GlobalException(JaxError.ZERO_NOT_ALLOWED,"Enter valid amount ");
 		}
 		
 		trnxManager.checkFCSaleTrnxLimit(exchbreakUpRate,fcSalerequestModel.getForeignCurrencyId(),fcSalerequestModel.getForeignAmount(),localCurrencyId,customerId);
@@ -333,7 +333,7 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 	    if(documentNo!=null && documentNo.compareTo(BigDecimal.ZERO)!=0){
 	    	receiptPaymentAppl.setDocumentNo(documentNo);
 	    }else{
-	    	throw new GlobalException("Receipt  document should not be blank.", JaxError.INVALID_APPL_RECEIPT_PAYMNET_DOCUMENT_NO);
+	    	throw new GlobalException(JaxError.INVALID_APPL_RECEIPT_PAYMNET_DOCUMENT_NO, "Receipt  document should not be blank.");
 	    }
 		
 		
@@ -376,7 +376,7 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 		
 		}catch(GlobalException e){
 			logger.error("createFcSaleReceiptApplication", e.getErrorMessage() + "" +e.getErrorKey());
-			 throw new GlobalException(e.getErrorMessage(),e.getErrorKey());
+			 throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}catch(Exception e){
 			logger.error("createFcSaleReceiptApplication", e.getMessage());
 		}
@@ -410,7 +410,7 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 		
 		
 		if(JaxUtil.isNullZeroBigDecimalCheck(fcAmount) && fcAmount.compareTo(BigDecimal.ZERO)<0){
-			throw new GlobalException("Negative not allowed", JaxError.INVALID_EXCHANGE_AMOUNT);
+			throw new GlobalException(JaxError.INVALID_EXCHANGE_AMOUNT, "Negative not allowed");
 		}
 		
 		
@@ -434,11 +434,11 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 		return breakup;
 		}catch(GlobalException e){
 			logger.error("createFcSaleReceiptApplication", e.getErrorMessage() + "" +e.getErrorKey());
-			 throw new GlobalException(e.getErrorMessage(),e.getErrorKey());
+			 throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}catch(Exception e){
 			e.printStackTrace();
 			logger.error("getExchangeRateFcSaleOrder", e.getMessage());
-			throw new GlobalException("FC Sale application exchange", JaxError.FS_APPLIATION_CREATION_FAILED);
+			throw new GlobalException(JaxError.FS_APPLIATION_CREATION_FAILED, "FC Sale application exchange");
 		}
 	}
 	
@@ -523,7 +523,7 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 				list.add(dto);
 			}
 		}else{
-			throw new GlobalException("address type setup is not avaliable", JaxError.ADDRESS_TYPE_SETUP_IS_MISSING);
+			throw new GlobalException(JaxError.ADDRESS_TYPE_SETUP_IS_MISSING, "address type setup is not avaliable");
 		}
 		return list;
 	}
@@ -562,7 +562,7 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 			 
 			timeSlotList =DateUtil.getTimeSlotRange(startTime.intValue(),endTime.intValue(),timeInterval.intValue(),noOfDays.intValue());
 		}else{
-			throw new GlobalException("No data found in DB", JaxError.FC_SALE_TIME_SLOT_SETUP_MISSING);
+			throw new GlobalException(JaxError.FC_SALE_TIME_SLOT_SETUP_MISSING, "No data found in DB");
 		}
 		return timeSlotList;
 	}
@@ -663,7 +663,7 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 		
 
 		if(trnxFxOrderList==null || trnxFxOrderList.isEmpty()){
-			throw new GlobalException("fx order list is empty", JaxError.NO_RECORD_FOUND);
+			throw new GlobalException(JaxError.NO_RECORD_FOUND, "fx order list is empty");
 		}else{
 			trnxFxOrderListDto = convertFxHistDto(trnxFxOrderList);
 			finalFxOrderListDto =getMultipleTransactionHistroy(trnxFxOrderListDto);

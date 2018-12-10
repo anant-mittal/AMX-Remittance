@@ -142,7 +142,7 @@ public class UserRoleService {
 			Date today = new Date();
 
 			if (StringUtils.isEmpty(roleRequestDTO.getRole())) {
-				throw new AuthServiceException("Role Can Not be null or Empty", RbaacServiceError.INVALID_ROLE);
+				throw new AuthServiceException(RbaacServiceError.INVALID_ROLE, "Role Can Not be null or Empty");
 			}
 
 			/**
@@ -156,7 +156,7 @@ public class UserRoleService {
 				List<Role> roleList = rbaacDao.getAllRoles();
 				for (Role existingRole : roleList) {
 					if (existingRole.getRole().trim().equalsIgnoreCase(roleRequestDTO.getRole().trim())) {
-						throw new AuthServiceException("Duplicate Role", RbaacServiceError.DUPLICATE_ROLE);
+						throw new AuthServiceException(RbaacServiceError.DUPLICATE_ROLE, "Duplicate Role");
 					}
 				}
 
@@ -169,8 +169,8 @@ public class UserRoleService {
 				role = rbaacDao.getRoleById(roleRequestDTO.getId());
 
 				if (role == null) {
-					throw new AuthServiceException("Invalid Role: No Role Exists with Given Id",
-							RbaacServiceError.INVALID_ROLE_DEFINITION);
+					throw new AuthServiceException(RbaacServiceError.INVALID_ROLE_DEFINITION,
+							"Invalid Role: No Role Exists with Given Id");
 				}
 			}
 
@@ -286,10 +286,10 @@ public class UserRoleService {
 				if (!validateUserRoleMapping(userRoleMappingDTO)) {
 
 					throw new AuthServiceException(
+							RbaacServiceError.INVALID_USER_ROLE_MAPPINGS,
 							"Invalid User Role Mappings: One or more role mappings are Invalid for User Role Mapping Id: "
 									+ userRoleMappingDTO.getId() + ", EmployeeId: " + userRoleMappingDTO.getEmployeeId()
-									+ ", RoleId: " + userRoleMappingDTO.getRoleId(),
-							RbaacServiceError.INVALID_USER_ROLE_MAPPINGS);
+									+ ", RoleId: " + userRoleMappingDTO.getRoleId());
 				}
 
 				persistURMappings.add(urm);
@@ -310,10 +310,10 @@ public class UserRoleService {
 				} else if (!validateUserRoleMapping(userRoleMappingDTO)) {
 
 					throw new AuthServiceException(
+							RbaacServiceError.INVALID_USER_ROLE_MAPPINGS,
 							"Invalid User Role Mappings: One or more role mappings are Invalid for User Role Mapping Id: "
 									+ userRoleMappingDTO.getId() + ", EmployeeId: " + userRoleMappingDTO.getEmployeeId()
-									+ ", RoleId: " + userRoleMappingDTO.getRoleId(),
-							RbaacServiceError.INVALID_USER_ROLE_MAPPINGS);
+									+ ", RoleId: " + userRoleMappingDTO.getRoleId());
 				}
 
 				deleteURMappings.add(existingMapping);
@@ -334,18 +334,18 @@ public class UserRoleService {
 				} else if (!validateUserRoleMapping(userRoleMappingDTO)) {
 
 					throw new AuthServiceException(
+							RbaacServiceError.INVALID_USER_ROLE_MAPPINGS,
 							"Invalid User Role Mappings: One or more role mappings are Invalid for User Role Mapping Id: "
 									+ userRoleMappingDTO.getId() + ", EmployeeId: " + userRoleMappingDTO.getEmployeeId()
-									+ ", RoleId: " + userRoleMappingDTO.getRoleId(),
-							RbaacServiceError.INVALID_USER_ROLE_MAPPINGS);
+									+ ", RoleId: " + userRoleMappingDTO.getRoleId());
 
 				} else if (userRoleMappingDTO.getEmployeeId() != existingMapping.getEmployeeId()) {
 
 					throw new AuthServiceException(
+							RbaacServiceError.ILLEGAL_USER_ROLE_MAPPING_MODIFICATION,
 							"Illegal User Role Mappings Modification: One or more role mapping modifications are Invalid for User Role Mapping Id: "
 									+ userRoleMappingDTO.getId() + ", EmployeeId: " + userRoleMappingDTO.getEmployeeId()
-									+ ", RoleId: " + userRoleMappingDTO.getRoleId(),
-							RbaacServiceError.ILLEGAL_USER_ROLE_MAPPING_MODIFICATION);
+									+ ", RoleId: " + userRoleMappingDTO.getRoleId());
 				}
 
 				existingMapping.setRoleId(userRoleMappingDTO.getRoleId());
@@ -409,16 +409,16 @@ public class UserRoleService {
 				for (Entry<String, String> innerEntry : entry.getValue().entrySet()) {
 					if (!accessTypeJson.contains(innerEntry.getKey()) || !scopeJson.contains(innerEntry.getValue())) {
 						throw new AuthServiceException(
+								RbaacServiceError.INVALID_ACCESS_TYPE_SCOPE,
 								"Invalid Permission: One or more permissions are Invalid: " + entry.getKey() + " : "
-										+ innerEntry.getKey() + " : " + innerEntry.getValue(),
-								RbaacServiceError.INVALID_ACCESS_TYPE_SCOPE);
+										+ innerEntry.getKey() + " : " + innerEntry.getValue());
 					}
 				}
 
 			} else {
 				throw new AuthServiceException(
-						"Invalid Permission: One or more permissions are Invalid: " + entry.getKey(),
-						RbaacServiceError.INVALID_PERMISSION);
+						RbaacServiceError.INVALID_PERMISSION,
+						"Invalid Permission: One or more permissions are Invalid: " + entry.getKey());
 			}
 
 		} // for

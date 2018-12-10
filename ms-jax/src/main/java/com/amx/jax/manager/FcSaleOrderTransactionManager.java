@@ -76,11 +76,11 @@ public class FcSaleOrderTransactionManager extends AbstractModel{
 		List<CurrencyMasterModel> curr =currencyDao.getCurrencyList(fcCurrencyId);
 		
 		if(JaxUtil.isNullZeroBigDecimalCheck(fcAmount) && fcAmount.compareTo(BigDecimal.ZERO)<0){
-			throw new GlobalException("Negative not allowed", JaxError.INVALID_EXCHANGE_AMOUNT);
+			throw new GlobalException(JaxError.INVALID_EXCHANGE_AMOUNT, "Negative not allowed");
 		}
 		
 		if(curr !=null && curr.isEmpty()){
-			throw new GlobalException("Currency is not  available/invalid currency id", JaxError.INVALID_CURRENCY_ID);
+			throw new GlobalException(JaxError.INVALID_CURRENCY_ID, "Currency is not  available/invalid currency id");
 		}
 		FxExchangeRateBreakup breakup = new FxExchangeRateBreakup();
 		List<FxExchangeRateView> fxSaleRateList = fcSaleExchangeRateDao.getFcSaleExchangeRate(countryId, countryBracnhId, fcCurrencyId);
@@ -88,7 +88,7 @@ public class FcSaleOrderTransactionManager extends AbstractModel{
 		if(fxSaleRateList!= null && !fxSaleRateList .isEmpty()){
 			maxExchangeRate = fxSaleRateList.get(0).getSalMaxRate();
 		}else{
-			throw new GlobalException("No record found", JaxError.NO_RECORD_FOUND);
+			throw new GlobalException(JaxError.NO_RECORD_FOUND, "No record found");
 		}
 		
 		List<ParameterDetails> parameterList 	= fcSaleExchangeRateDao.getParameterDetails(ConstantDocument.FX_DC, ConstantDocument.Yes);
@@ -99,14 +99,14 @@ public class FcSaleOrderTransactionManager extends AbstractModel{
 		if(fxSaleRateList!= null && !fxSaleRateList .isEmpty()){
 			maxExchangeRate = fxSaleRateList.get(0).getSalMaxRate();
 		}else{
-			throw new GlobalException("Fc currency rate is not defiend", JaxError.FC_CURRENCY_RATE_IS_NOT_AVAILABLE);
+			throw new GlobalException(JaxError.FC_CURRENCY_RATE_IS_NOT_AVAILABLE, "Fc currency rate is not defiend");
 		}
 		logger.debug(" maxExchangeRate  :"+maxExchangeRate +"\t : for Currency  :"+fcCurrencyId+"\t Fc amount :"+fcAmount);
 		
 		if(parameterList != null && !parameterList.isEmpty()){
 			responseModel.setTxnFee(RoundUtil.roundBigDecimal(parameterList.get(0).getNumericField1()==null?BigDecimal.ZERO:parameterList.get(0).getNumericField1(),breakup.getLcDecimalNumber().intValue()));
 		}else{
-			throw new GlobalException("Fc delivery charge is not defined", JaxError.FC_CURRENCY_DELIVERY_CHARGES_NOT_FOUND);
+			throw new GlobalException(JaxError.FC_CURRENCY_DELIVERY_CHARGES_NOT_FOUND, "Fc delivery charge is not defined");
 		}
 		
 		if(JaxUtil.isNullZeroBigDecimalCheck(maxExchangeRate) && JaxUtil.isNullZeroBigDecimalCheck(fcAmount)){
@@ -147,15 +147,15 @@ public class FcSaleOrderTransactionManager extends AbstractModel{
 		BigDecimal fcTrnxLimitPerDay = BigDecimal.ZERO;
 		BigDecimal fxTrnxHistAmount = BigDecimal.ZERO;
 		if(!JaxUtil.isNullZeroBigDecimalCheck(customerId)){
-			throw new GlobalException("Customer not found ",JaxError.CUSTOMER_NOT_FOUND);
+			throw new GlobalException(JaxError.CUSTOMER_NOT_FOUND,"Customer not found ");
 		}
 		String quoteName ="";
 		int localDecimal =0;
 		if(JaxUtil.isNullZeroBigDecimalCheck(fcAmount) && fcAmount.compareTo(BigDecimal.ZERO)<0){
-			throw new GlobalException("Negative or zeror not allowed", JaxError.INVALID_EXCHANGE_AMOUNT);
+			throw new GlobalException(JaxError.INVALID_EXCHANGE_AMOUNT, "Negative or zeror not allowed");
 		}
 		if(fcAmount.compareTo(BigDecimal.ZERO)<=0){
-			throw new GlobalException("Enter valid amount ",JaxError.ZERO_NOT_ALLOWED);
+			throw new GlobalException(JaxError.ZERO_NOT_ALLOWED,"Enter valid amount ");
 		}
 		CurrencyMasterModel curr = currencyMasterService.getCurrencyMasterById(localCurrencyId);
 		if(curr!=null){
@@ -173,10 +173,10 @@ public class FcSaleOrderTransactionManager extends AbstractModel{
 			 fxTrnxHistAmount = exchbreakUpRate.getConvertedLCAmount();
 		 }
 		 if(JaxUtil.isNullZeroBigDecimalCheck(fxTrnxHistAmount) && JaxUtil.isNullZeroBigDecimalCheck(fcTrnxLimitPerDay) && fxTrnxHistAmount.compareTo(fcTrnxLimitPerDay)>=0){
-			 throw new GlobalException("You have reached daily limit of FC Sale  "+quoteName +" "+RoundUtil.roundBigDecimal(fcTrnxLimitPerDay,localDecimal),JaxError.FC_SALE_TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED);
+			 throw new GlobalException(JaxError.FC_SALE_TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED,"You have reached daily limit of FC Sale  "+quoteName +" "+RoundUtil.roundBigDecimal(fcTrnxLimitPerDay,localDecimal));
 		 }
 		}else{
-			throw new GlobalException("FX Order limit setup is not defined",JaxError.FC_SALE_DAY_LIMIT_SETUP_NOT_DIFINED);
+			throw new GlobalException(JaxError.FC_SALE_DAY_LIMIT_SETUP_NOT_DIFINED,"FX Order limit setup is not defined");
 		}
 		
 	}

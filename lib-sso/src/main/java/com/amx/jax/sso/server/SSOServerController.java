@@ -129,9 +129,11 @@ public class SSOServerController {
 			@RequestParam(required = false) DeviceType deviceType,
 			@RequestParam(required = false) ClientType clientType,
 			@RequestParam(required = false, defaultValue = "SELF") LOGIN_TYPE loginType,
+			@RequestParam(required = false, value = SSOConstants.IS_RETURN) Boolean isReturn,
 			@RequestParam(required = false) Boolean redirect) throws URISyntaxException, IOException {
 
 		redirect = ArgUtil.parseAsBoolean(redirect, true);
+		isReturn = ArgUtil.parseAsBoolean(isReturn, false);
 
 		if (json == SSOAuthStep.DO) {
 			json = formdata.getStep();
@@ -237,7 +239,9 @@ public class SSOServerController {
 								appConfig.getAppPrefix() + SSOConstants.APP_LOGIN_URL_DONE))
 						.queryParam(AppConstants.TRANX_ID_XKEY, AppContextUtil.getTranxId())
 						.queryParam(SSOConstants.PARAM_STEP, SSOAuthStep.DONE)
-						.queryParam(SSOConstants.PARAM_SOTP, sSOTranx.get().getAppToken()).getURL();
+						.queryParam(SSOConstants.PARAM_SOTP, sSOTranx.get().getAppToken())
+						.queryParam(SSOConstants.IS_RETURN, isReturn)
+						.getURL();
 				model.put(SSOConstants.PARAM_REDIRECT, redirectUrl);
 				result.setRedirectUrl(redirectUrl);
 				result.setStatusEnum(SSOServerCodes.AUTH_DONE);

@@ -21,7 +21,6 @@ public class StompTunnelToAllSender implements ITunnelSubscriber<StompTunnelEven
 
 	@Override
 	public void onMessage(String channel, StompTunnelEvent msg) {
-		LOGGER.info("======onMessage1==={} ====  {}", channel, msg);
 		messagingTemplate.convertAndSend(msg.getTopic(), msg.getData());
 	}
 
