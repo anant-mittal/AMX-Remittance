@@ -4,8 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.stomp.StompSessionCache.StompSession;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.UniqueID;
 
@@ -14,6 +16,9 @@ public class StompTunnelSessionManager {
 
 	public Map<String, String> sessionMap = new HashMap<String, String>();
 	public Map<String, String> wsessionMap = new HashMap<String, String>();
+
+	@Autowired
+	StompSessionCache stompSessionCache;
 
 	public static String getSystemPrefix() {
 		return UniqueID.PREF;
@@ -46,5 +51,22 @@ public class StompTunnelSessionManager {
 		if (!isExists) {
 			sessionMap.remove(sessionId);
 		}
+	}
+
+	/**
+	 * 
+	 * @param stompSessionId - only one session with one stompSessionId can exists,
+	 *                       if you want to support multiple, change accordingly
+	 * @param sessionId
+	 */
+	public void mapHTTPSession(String stompSessionId, String httpSessionId) {
+		StompSession stompSession = new StompSession();
+		stompSession.setPrefix(getSystemPrefix());
+		stompSession.setHttpSessionId(httpSessionId);
+		stompSessionCache.put(stompSessionId, stompSession);
+	}
+
+	public StompSession getStompSession(String stompSessionId) {
+		return stompSessionCache.get(stompSessionId);
 	}
 }

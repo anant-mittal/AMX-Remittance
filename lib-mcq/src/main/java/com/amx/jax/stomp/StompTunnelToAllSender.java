@@ -13,7 +13,6 @@ import com.amx.jax.tunnel.TunnelEventXchange;
 		integrity = false)
 public class StompTunnelToAllSender implements ITunnelSubscriber<StompTunnelEvent> {
 
-	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 	public static final String STOMP_TO_ALL = "STOMP_TO_ALL";
 
 	@Autowired
@@ -21,7 +20,7 @@ public class StompTunnelToAllSender implements ITunnelSubscriber<StompTunnelEven
 
 	@Override
 	public void onMessage(String channel, StompTunnelEvent msg) {
-		messagingTemplate.convertAndSend(msg.getTopic(), msg.getData());
+		messagingTemplate.convertAndSend("/topic" + msg.getTopic(), msg.getData());
 	}
 
 }
