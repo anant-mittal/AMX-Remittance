@@ -1,7 +1,7 @@
 package com.amx.jax.stomp;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.core.MessageSendingOperations;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.stomp.StompSessionCache.StompSession;
@@ -18,6 +18,7 @@ public class StompTunnelService {
 	@Autowired
 	StompTunnelSessionManager stompTunnelSessionManager;
 
+	@Async
 	public void sendToAll(String topic, Object message) {
 		StompTunnelEvent event = new StompTunnelEvent();
 		event.setTopic(topic);
@@ -25,6 +26,7 @@ public class StompTunnelService {
 		tunnelService.shout(StompTunnelToAllSender.STOMP_TO_ALL, event);
 	}
 
+	@Async
 	public void sendTo(String stompSessionId, String topic, Object message) {
 		StompTunnelEvent event = new StompTunnelEvent();
 		event.setTopic(topic);
