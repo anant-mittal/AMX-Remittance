@@ -224,6 +224,8 @@ public class FcSaleDeliveryService {
 	 * 
 	 */
 	public OtpPrefixDto sendOtp(BigDecimal deliveryDetailSeqId, boolean validateDriverEmployee) {
+		logger.debug("sendOtp request: deliveryDetailSeqId {} validateDriverEmployee {}", deliveryDetailSeqId,
+				validateDriverEmployee);
 		VwFxDeliveryDetailsModel vwFxDeliveryDetailsModel = validatetDeliveryDetailView(deliveryDetailSeqId);
 		FxDeliveryDetailsModel fxDeliveryDetailsModel = validateFxDeliveryModel(deliveryDetailSeqId,
 				validateDriverEmployee);
@@ -254,7 +256,7 @@ public class FcSaleDeliveryService {
 		return new OtpPrefixDto(mOtpPrefix);
 	}
 
-	public BoolRespModel verifyOtp(BigDecimal deliveryDetailSeqId, BigDecimal mOtp) {
+	public BoolRespModel verifyOtp(BigDecimal deliveryDetailSeqId, String mOtp) {
 		logger.debug("verifyOtp request: deliveryDetailSeqId {} mOtp {}", deliveryDetailSeqId, mOtp);
 		FxDeliveryDetailsModel fxDeliveryDetailsModel = validateFxDeliveryModel(deliveryDetailSeqId);
 		if (mOtp == null) {

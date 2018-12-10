@@ -54,7 +54,7 @@ public class FxDeliveryController {
 
 	@RequestMapping(value = "/customer/verify", method = { RequestMethod.POST })
 	public AmxApiResponse<BoolRespModel, Object> verifyOtp(
-			@RequestParam BigDecimal deliveryDetailSeqId, @RequestParam BigDecimal mOtp) {
+			@RequestParam BigDecimal deliveryDetailSeqId, @RequestParam String mOtp) {
 		return fxOrderDelivery.verifyOtp(deliveryDetailSeqId, mOtp);
 	}
 

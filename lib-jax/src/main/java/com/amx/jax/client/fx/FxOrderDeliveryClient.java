@@ -118,7 +118,7 @@ public class FxOrderDeliveryClient implements IFxOrderDelivery {
 	}
 
 	@Override
-	public AmxApiResponse<BoolRespModel, Object> verifyOtp(BigDecimal deliveryDetailSeqId, BigDecimal mOtp) {
+	public AmxApiResponse<BoolRespModel, Object> verifyOtp(BigDecimal deliveryDetailSeqId, String mOtp) {
 		try {
 			LOGGER.debug("in verifyOtp");
 			String url = appConfig.getJaxURL() + Path.FX_DELIVERY_VERIFY_OTP;

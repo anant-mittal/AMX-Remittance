@@ -60,7 +60,7 @@ public interface IFxOrderDelivery extends IJaxService {
 
 	@ApiJaxStatus({ JaxError.FC_CURRENCY_DELIVERY_DETAIL_NOT_FOUND, JaxError.MISSING_OTP, JaxError.INVALID_OTP,
 			JaxError.INVALID_EMPLOYEE })
-	AmxApiResponse<BoolRespModel, Object> verifyOtp(BigDecimal deliveryDetailSeqId, BigDecimal mOtp);
+	AmxApiResponse<BoolRespModel, Object> verifyOtp(BigDecimal deliveryDetailSeqId, String mOtp);
 
 	AmxApiResponse<ResourceDTO, Object> listDeliveryRemark();
 
