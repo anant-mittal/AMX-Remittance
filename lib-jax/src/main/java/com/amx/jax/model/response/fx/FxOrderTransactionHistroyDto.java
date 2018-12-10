@@ -39,6 +39,7 @@ public class FxOrderTransactionHistroyDto {
 	private BigDecimal pagDetSeqId;
 
 	private String orderStatus;
+	private String orderStatusCode;
 
 	private String deliveryDate;
 
@@ -56,6 +57,7 @@ public class FxOrderTransactionHistroyDto {
 	private String multiAmount;
 	private String multiExchangeRate;
 	private String deliveryAddress;
+	
 	
 	
 
@@ -346,6 +348,14 @@ public class FxOrderTransactionHistroyDto {
 
 	public void setDeliveryAddress(String deliveryAddress) {
 		this.deliveryAddress = deliveryAddress;
+	}
+
+	public String getOrderStatusCode() {
+		return orderStatusCode;
+	}
+
+	public void setOrderStatusCode(String orderStatusCode) {
+		this.orderStatusCode = orderStatusCode;
 	}
 
 	
