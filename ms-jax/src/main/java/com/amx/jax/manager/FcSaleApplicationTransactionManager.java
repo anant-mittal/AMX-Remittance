@@ -555,7 +555,7 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 			BigDecimal officeendTime = list.get(0).getOfficeEndTime()==null?BigDecimal.ZERO:list.get(0).getOfficeEndTime();
 			if(JaxUtil.isNullZeroBigDecimalCheck(shippingAddressId)){
 			ShippingAddressDetail shipp =shippingAddressDao.findOne(shippingAddressId);
-				if(shipp!=null &&  shipp.getAddressType()!=null && shipp.getAddressType().equalsIgnoreCase(ConstantDocument.FX_LHA)){
+				if(shipp!=null &&  shipp.getAddressType()!=null && shipp.getAddressType().equalsIgnoreCase(ConstantDocument.FX_LOA)){
 				endTime =officeendTime; 
 				}
 			}
