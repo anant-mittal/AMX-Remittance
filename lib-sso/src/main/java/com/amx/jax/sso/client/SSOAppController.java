@@ -129,6 +129,9 @@ public class SSOAppController {
 			@RequestParam(required = false, value = SSOConstants.IS_RETURN) Boolean isReturn,
 			Model model, HttpServletRequest request,
 			HttpServletResponse response) throws MalformedURLException, URISyntaxException {
+		/**
+		 * By default for JSON apis, redirections should be true
+		 */
 		isReturn = ArgUtil.parseAsBoolean(isReturn, true);
 
 		String tranxId = ssoUser.ssoTranxId();
@@ -157,7 +160,7 @@ public class SSOAppController {
 					.queryParam(AppConstants.TRANX_ID_XKEY, tranxId);
 			return SSOConstants.REDIRECT + builder.getURL();
 		}
-		return SSOConstants.REDIRECT + sSOTranx.get().getReturnUrl();
+		return SSOConstants.REDIRECT + (isReturn ? sSOTranx.get().getReturnUrl() : SSOConstants.APP_LOGGEDIN_URL);
 	}
 
 	@ApiSSOStatus({ SSOServerCodes.AUTH_REQUIRED, SSOServerCodes.AUTH_DONE })
@@ -170,13 +173,18 @@ public class SSOAppController {
 			@RequestParam(required = false, value = SSOConstants.IS_RETURN) Boolean isReturn,
 			Model model, HttpServletRequest request,
 			HttpServletResponse response) throws MalformedURLException, URISyntaxException {
+		/**
+		 * By default for JSON apis, redirections should be false
+		 */
 		isReturn = ArgUtil.parseAsBoolean(isReturn, false);
 
 		String redirectUrl = this.loginJPage(step, sotp, isReturn, model, request, response);
 
 		AmxApiResponse<Object, Object> resp = AmxApiResponse.build();
 		resp.setRedirectUrl((appConfig.getAppPrefix() + redirectUrl.replace(SSOConstants.REDIRECT, "")));
-		//if (isReturn) {
+		//if (isReturn || !ssoUser.isAuthDone()) {
+			// Redirect only if user is not logged, otherwise redirection should be based on
+			// argument passed by user
 			response.setHeader("Location", resp.getRedirectUrl());
 			response.setStatus(302);
 		//}
