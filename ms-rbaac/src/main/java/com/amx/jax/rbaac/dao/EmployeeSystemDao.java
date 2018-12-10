@@ -14,8 +14,8 @@ import com.amx.jax.repository.EmployeeSystemsAssignedRepository;
 @Component
 public class EmployeeSystemDao {
 
-	@Autowired
-	EmployeeSystemsAssignedRepository employeeSystemsAssignedRepository;
+	//@Autowired
+	//EmployeeSystemsAssignedRepository employeeSystemsAssignedRepository;
 
 	
 }
