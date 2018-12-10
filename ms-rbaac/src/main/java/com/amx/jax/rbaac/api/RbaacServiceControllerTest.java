@@ -228,4 +228,11 @@ public class RbaacServiceControllerTest implements IRbaacService {
 		return null;
 	}
 
+	@Override
+	public AmxApiResponse<BoolRespModel, Object> createEmployeeSystemMapping(BigDecimal employeeId,
+			Integer countryBranchSystemInventoryId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

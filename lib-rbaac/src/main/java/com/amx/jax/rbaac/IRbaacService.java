@@ -83,6 +83,8 @@ public interface IRbaacService {
 		
 		/** The Constant GET_ROLE_MAPPING_FOR_EMPLOYEE. */
 		public static final String GET_ROLE_MAPPING_FOR_EMPLOYEE = SERVICE_PREFIX + API_VERSION_V1 + "/roles/alloc/get-role-map-for-employee";
+		
+		public static final String EMPLOYEE_SYSTEM_MAPPING_CREATE =  SERVICE_PREFIX + API_VERSION_V1 + "/employee-system/create";
 
 	}
 	
@@ -287,5 +289,8 @@ public interface IRbaacService {
 	@RbaacApiStatus({})
 	public AmxApiResponse<RoleMappingForEmployee, Object> getRoleMappingsForEmployee(BigDecimal employeeId,
 			String ipAddr, String deviceId, Boolean filterRole);
+
+	AmxApiResponse<BoolRespModel, Object> createEmployeeSystemMapping(BigDecimal employeeId,
+			Integer countryBranchSystemInventoryId);
 
 }
