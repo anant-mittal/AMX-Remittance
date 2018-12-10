@@ -176,10 +176,10 @@ public class SSOAppController {
 
 		AmxApiResponse<Object, Object> resp = AmxApiResponse.build();
 		resp.setRedirectUrl((appConfig.getAppPrefix() + redirectUrl.replace(SSOConstants.REDIRECT, "")));
-		if (isReturn) {
+		//if (isReturn) {
 			response.setHeader("Location", resp.getRedirectUrl());
 			response.setStatus(302);
-		}
+		//}
 		return JsonUtil.toJson(resp);
 	}
 
