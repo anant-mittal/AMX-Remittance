@@ -168,9 +168,9 @@ public class FcSaleOrderTransactionManager extends AbstractModel{
 		 fcTrnxLimitPerDay = authLimit.getAuthLimit();
 		 FxOrderTranxLimitView trnxViewModel = trnxLimitRepos.getFxTransactionLimit(customerId);
 		 if(trnxViewModel!=null){
-			 fxTrnxHistAmount  = trnxViewModel.getTotalAmount()==null?BigDecimal.ZERO:trnxViewModel.getTotalAmount().add(exchbreakUpRate.getConvertedFCAmount());
+			 fxTrnxHistAmount  = trnxViewModel.getTotalAmount()==null?BigDecimal.ZERO:trnxViewModel.getTotalAmount().add(exchbreakUpRate.getConvertedLCAmount());
 		 }else{
-			 fxTrnxHistAmount = exchbreakUpRate.getConvertedFCAmount();
+			 fxTrnxHistAmount = exchbreakUpRate.getConvertedLCAmount();
 		 }
 		 if(JaxUtil.isNullZeroBigDecimalCheck(fxTrnxHistAmount) && JaxUtil.isNullZeroBigDecimalCheck(fcTrnxLimitPerDay) && fxTrnxHistAmount.compareTo(fcTrnxLimitPerDay)>=0){
 			 throw new GlobalException(JaxError.FC_SALE_TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED,"You have reached daily limit of FC Sale  "+quoteName +" "+RoundUtil.roundBigDecimal(fcTrnxLimitPerDay,localDecimal));

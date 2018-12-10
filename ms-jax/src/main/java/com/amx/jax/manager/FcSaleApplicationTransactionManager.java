@@ -806,7 +806,7 @@ public List<FxOrderTransactionHistroyDto> getMultipleTransactionHistroy(List<FxO
 		fianlDto.setMultiExchangeRate(multiExchangeRate);
 		fianlDto.setLocalTrnxAmount(dto.getLocalTrnxAmount());
 		fianlDto.setForeignCurrencyCode(multiForeignQuotoName);
-		
+		fianlDto.setOrderStatusCode(dto.getOrderStatusCode());
 		
 		finalFxOrderListDto.add(fianlDto);
 		}

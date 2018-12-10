@@ -125,6 +125,8 @@ public class FxOrderTransactionModel implements Serializable {
 	@Column(name="TRANSACTION_REF_NO")
 	private String  transactionReferenceNo;
 	
+	@Column(name="ORDER_STATUS_CODE")
+	private String orderStatusCode;
 	
 
 	public BigDecimal getIdno() {
@@ -383,6 +385,14 @@ public class FxOrderTransactionModel implements Serializable {
 
 	public void setExchangeRate(BigDecimal exchangeRate) {
 		this.exchangeRate = exchangeRate;
+	}
+
+	public String getOrderStatusCode() {
+		return orderStatusCode;
+	}
+
+	public void setOrderStatusCode(String orderStatusCode) {
+		this.orderStatusCode = orderStatusCode;
 	}
 
 }
