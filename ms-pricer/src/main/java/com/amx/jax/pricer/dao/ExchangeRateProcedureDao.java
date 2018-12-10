@@ -66,7 +66,7 @@ public class ExchangeRateProcedureDao {
 	@Transactional
 	public List<BigDecimal> getBankIdsForExchangeRates(BigDecimal currencyid) {
 
-		String sql = "select distinct(BANK_ID)  from VW_EX_TRATE where CURRENCY_ID=? ";
+		String sql = "select distinct(BANK_ID) from VW_EX_TRATE where CURRENCY_ID=? ";
 		List<BigDecimal> list = new ArrayList<>();
 		try {
 			list = jdbcTemplate.queryForList(sql, BigDecimal.class, currencyid);

@@ -71,7 +71,8 @@ public class ViewExGLCBAL implements Serializable {
 	/**
 	 * Sets the row id.
 	 *
-	 * @param rowId the new row id
+	 * @param rowId
+	 *            the new row id
 	 */
 	public void setRowId(BigDecimal rowId) {
 		this.rowId = rowId;
@@ -89,7 +90,8 @@ public class ViewExGLCBAL implements Serializable {
 	/**
 	 * Sets the bank id.
 	 *
-	 * @param bankId the new bank id
+	 * @param bankId
+	 *            the new bank id
 	 */
 	public void setBankId(BigDecimal bankId) {
 		this.bankId = bankId;
@@ -107,7 +109,8 @@ public class ViewExGLCBAL implements Serializable {
 	/**
 	 * Sets the bank code.
 	 *
-	 * @param bankCode the new bank code
+	 * @param bankCode
+	 *            the new bank code
 	 */
 	public void setBankCode(String bankCode) {
 		this.bankCode = bankCode;
@@ -125,7 +128,8 @@ public class ViewExGLCBAL implements Serializable {
 	/**
 	 * Sets the bank full name.
 	 *
-	 * @param bankFullName the new bank full name
+	 * @param bankFullName
+	 *            the new bank full name
 	 */
 	public void setBankFullName(String bankFullName) {
 		this.bankFullName = bankFullName;
@@ -143,7 +147,8 @@ public class ViewExGLCBAL implements Serializable {
 	/**
 	 * Sets the currency code.
 	 *
-	 * @param currencyCode the new currency code
+	 * @param currencyCode
+	 *            the new currency code
 	 */
 	public void setCurrencyCode(String currencyCode) {
 		this.currencyCode = currencyCode;
@@ -161,7 +166,8 @@ public class ViewExGLCBAL implements Serializable {
 	/**
 	 * Sets the currency name.
 	 *
-	 * @param currencyName the new currency name
+	 * @param currencyName
+	 *            the new currency name
 	 */
 	public void setCurrencyName(String currencyName) {
 		this.currencyName = currencyName;
@@ -179,7 +185,8 @@ public class ViewExGLCBAL implements Serializable {
 	/**
 	 * Sets the slno.
 	 *
-	 * @param sLNO the new slno
+	 * @param sLNO
+	 *            the new slno
 	 */
 	public void setSLNO(String sLNO) {
 		SLNO = sLNO;
@@ -197,7 +204,8 @@ public class ViewExGLCBAL implements Serializable {
 	/**
 	 * Sets the rate fc cur bal.
 	 *
-	 * @param rateFcCurBal the new rate fc cur bal
+	 * @param rateFcCurBal
+	 *            the new rate fc cur bal
 	 */
 	public void setRateFcCurBal(BigDecimal rateFcCurBal) {
 		this.rateFcCurBal = rateFcCurBal;
@@ -215,7 +223,8 @@ public class ViewExGLCBAL implements Serializable {
 	/**
 	 * Sets the rate cur bal.
 	 *
-	 * @param rateCurBal the new rate cur bal
+	 * @param rateCurBal
+	 *            the new rate cur bal
 	 */
 	public void setRateCurBal(BigDecimal rateCurBal) {
 		this.rateCurBal = rateCurBal;
@@ -233,10 +242,19 @@ public class ViewExGLCBAL implements Serializable {
 	/**
 	 * Sets the rate avg rate.
 	 *
-	 * @param rateAvgRate the new rate avg rate
+	 * @param rateAvgRate
+	 *            the new rate avg rate
 	 */
 	public void setRateAvgRate(BigDecimal rateAvgRate) {
 		this.rateAvgRate = rateAvgRate;
+	}
+
+	@Override
+	public String toString() {
+		return "ViewExGLCBAL [rowId=" + rowId + ", bankId=" + bankId + ", bankCode=" + bankCode + ", bankFullName="
+				+ bankFullName + ", currencyCode=" + currencyCode + ", currencyName=" + currencyName + ", SLNO=" + SLNO
+				+ ", rateFcCurBal=" + rateFcCurBal + ", rateCurBal=" + rateCurBal + ", rateAvgRate=" + rateAvgRate
+				+ "]";
 	}
 
 }

@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.pricer.dbmodel.ExchangeRateAPRDET;
 import com.amx.jax.pricer.dbmodel.ExchangeRateApprovalDetModel;
 import com.amx.jax.pricer.repository.ExchangeRateApprovalDetRepository;
 
@@ -15,14 +16,14 @@ public class ExchangeRateDao {
 	@Autowired
 	private ExchangeRateApprovalDetRepository repo;
 
-	public List<ExchangeRateApprovalDetModel> getExchangeRates(BigDecimal currencyId, BigDecimal countryBranchId,
+	public List<ExchangeRateApprovalDetModel> getBranchExchangeRates(BigDecimal currencyId, BigDecimal countryBranchId,
 			BigDecimal countryId, List<BigDecimal> bankIds) {
 
 		List<ExchangeRateApprovalDetModel> exchangeRates = repo.getExchangeRates(currencyId, countryBranchId, bankIds);
 		return exchangeRates;
 	}
 
-	public List<ExchangeRateApprovalDetModel> getExchangeRatesForRoutingBank(BigDecimal currencyId,
+	public List<ExchangeRateApprovalDetModel> getBranchExchangeRatesForRoutingBank(BigDecimal currencyId,
 			BigDecimal countryBranchId, BigDecimal countryId, BigDecimal applicationCountryId, BigDecimal routingBankId,
 			BigDecimal serviceIndicatorId) {
 
@@ -44,12 +45,31 @@ public class ExchangeRateDao {
 		return exchangeRates;
 	}
 
-	public List<ExchangeRateApprovalDetModel> getExchangeRatesForRoutingBanks(BigDecimal currencyId,
+	public List<ExchangeRateApprovalDetModel> getBranchExchangeRatesForRoutingBanks(BigDecimal currencyId,
 			BigDecimal countryBranchId, BigDecimal countryId, BigDecimal applicationCountryId,
 			List<BigDecimal> routingBankIds) {
 
-		return repo.getExchangeRatesForRoutingBanks(currencyId, countryBranchId, countryId, applicationCountryId,
+		return repo.getBranchExchangeRatesForRoutingBanks(currencyId, countryBranchId, countryId, applicationCountryId,
 				routingBankIds);
 	}
+
+	public List<ExchangeRateApprovalDetModel> getExchangeRatesForRoutingBanks(BigDecimal currencyId,
+			BigDecimal countryId, BigDecimal applicationCountryId, List<BigDecimal> routingBankIds) {
+
+		return repo.getExchangeRatesForRoutingBanks(currencyId, countryId, applicationCountryId, routingBankIds);
+	}
+
+	public List<BigDecimal> getSellRateMinForRoutingBanks(BigDecimal currencyId, BigDecimal countryId,
+			BigDecimal applicationCountryId, BigDecimal routingBankId) {
+
+		return repo.getUniqueSellRatesMinForRoutingBank(currencyId, countryId, applicationCountryId, routingBankId);
+	}
+
+	public List<ExchangeRateAPRDET> getUniqueSellRatesForRoutingBanks(BigDecimal currencyId, BigDecimal countryId,
+			BigDecimal applicationCountryId, List<BigDecimal> routingBankIds, List<BigDecimal> serviceIds) {
+
+		return repo.getSellRatesForRoutingBanks(currencyId, countryId, applicationCountryId, routingBankIds, serviceIds);
+	}
+	
 
 }

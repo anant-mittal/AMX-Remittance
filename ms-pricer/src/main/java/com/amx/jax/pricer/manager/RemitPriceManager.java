@@ -4,18 +4,26 @@ import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StopWatch;
 
 import com.amx.jax.pricer.dao.ExchangeRateDao;
 import com.amx.jax.pricer.dao.ExchangeRateProcedureDao;
 import com.amx.jax.pricer.dao.PipsMasterDao;
+import com.amx.jax.pricer.dao.ViewExGLCBALDao;
 import com.amx.jax.pricer.dbmodel.BankMasterModel;
+import com.amx.jax.pricer.dbmodel.ExchangeRateAPRDET;
 import com.amx.jax.pricer.dbmodel.ExchangeRateApprovalDetModel;
 import com.amx.jax.pricer.dbmodel.PipsMaster;
+import com.amx.jax.pricer.dbmodel.ViewExGLCBAL;
 import com.amx.jax.pricer.dto.BankMasterDTO;
 import com.amx.jax.pricer.dto.ExchangeRateBreakup;
 import com.amx.jax.pricer.dto.PricingReqDTO;
@@ -34,6 +42,16 @@ public class RemitPriceManager {
 	@Autowired
 	ExchangeRateProcedureDao exchangeRateProcedureDao;
 
+	@Autowired
+	ViewExGLCBALDao viewExGLCBALDao;
+
+	private static List<BigDecimal> ValidServiceIndicatorIds = new ArrayList<BigDecimal>();
+
+	static {
+		ValidServiceIndicatorIds.add(new BigDecimal(101));
+		ValidServiceIndicatorIds.add(new BigDecimal(102));
+	}
+
 	public List<BankMasterDTO> fetchPricesForRoutingBanks(PricingReqDTO reqDto) {
 
 		List<BankMasterDTO> bankWiseRates = new ArrayList<BankMasterDTO>();
@@ -51,6 +69,9 @@ public class RemitPriceManager {
 			 */
 
 			List<BigDecimal> validBankIds = getValidBankIds(reqDto);
+
+			List<ExchangeRateApprovalDetModel> exchangeRates = computeBestRateForOnline(reqDto.getForeignCurrencyId(),
+					reqDto.getForeignCountryId(), reqDto.getLocalCountryId(), validBankIds);
 
 			if (validBankIds.isEmpty()) {
 				throw new PricerServiceException("============ No Routing Bank Data Found ===========");
@@ -80,9 +101,9 @@ public class RemitPriceManager {
 
 			List<BigDecimal> validBankIds = getValidBankIds(reqDto);
 
-			List<ExchangeRateApprovalDetModel> bankExchangeRates = exchangeRateDao.getExchangeRatesForRoutingBanks(
-					reqDto.getForeignCurrencyId(), reqDto.getCountryBranchId(), reqDto.getForeignCountryId(),
-					reqDto.getLocalCountryId(), validBankIds);
+			List<ExchangeRateApprovalDetModel> bankExchangeRates = exchangeRateDao
+					.getBranchExchangeRatesForRoutingBanks(reqDto.getForeignCurrencyId(), reqDto.getCountryBranchId(),
+							reqDto.getForeignCountryId(), reqDto.getLocalCountryId(), validBankIds);
 
 			for (ExchangeRateApprovalDetModel exchangeRate : bankExchangeRates) {
 				BankMasterDTO bankMasterDTO = convertBankMasterData(exchangeRate.getBankMaster());
@@ -106,6 +127,95 @@ public class RemitPriceManager {
 		} // else
 
 		return bankWiseRates;
+	}
+
+	private List<ExchangeRateApprovalDetModel> computeBestRateForOnline(BigDecimal currencyId,
+			BigDecimal foreignCountryId, BigDecimal applicationCountryId, List<BigDecimal> routingBankIds) {
+
+		StopWatch watch = new StopWatch();
+		watch.start();
+
+		String curCode = StringUtils.leftPad(String.valueOf(currencyId.intValue()), 3, "0");
+
+		List<ViewExGLCBAL> glcbalRatesForBanks = viewExGLCBALDao.getGLCBALforCurrencyAndBank(curCode, routingBankIds);
+
+		Map<BigDecimal, ViewExGLCBAL> bankGlcBalMap = new HashMap<BigDecimal, ViewExGLCBAL>();
+
+		for (ViewExGLCBAL viewExGLCBAL : glcbalRatesForBanks) {
+
+			if (bankGlcBalMap.containsKey(viewExGLCBAL.getBankId())) {
+
+				ViewExGLCBAL viewExGLCBALPrev = bankGlcBalMap.get(viewExGLCBAL.getBankId());
+
+				// Considering only the rates with Max GLCBAL
+				if (viewExGLCBALPrev.getRateFcCurBal().compareTo(viewExGLCBAL.getRateCurBal()) < 0) {
+					bankGlcBalMap.put(viewExGLCBAL.getBankId(), viewExGLCBAL);
+				}
+			} else {
+				bankGlcBalMap.put(viewExGLCBAL.getBankId(), viewExGLCBAL);
+			}
+
+		}
+
+		List<ExchangeRateAPRDET> exchangeRates = exchangeRateDao.getUniqueSellRatesForRoutingBanks(currencyId,
+				foreignCountryId, applicationCountryId, routingBankIds, ValidServiceIndicatorIds);
+
+		Map<BigDecimal, ExchangeRateAPRDET> bankExchangeRateMap = new HashMap<BigDecimal, ExchangeRateAPRDET>();
+
+		for (ExchangeRateAPRDET rate : exchangeRates) {
+
+			BigDecimal bankId = rate.getBankMaster().getBankId();
+
+			ViewExGLCBAL viewExGLCBAL = bankGlcBalMap.get(bankId);
+
+			if (null != viewExGLCBAL) {
+
+				if (bankExchangeRateMap.containsKey(bankId)) {
+
+					ExchangeRateAPRDET ratePrev = bankExchangeRateMap.get(bankId);
+
+					// New Better Rate Found
+					// Lower than Previous Exchange Bank Rate
+					// Higher than GLCBAL Rate
+					if (ratePrev.getSellRateMin().compareTo(rate.getSellRateMin()) > 0
+							&& rate.getSellRateMin().compareTo(viewExGLCBAL.getRateAvgRate()) > 0) {
+						bankExchangeRateMap.put(rate.getBankMaster().getBankId(), rate);
+					}
+
+				} else {
+
+					if (rate.getSellRateMin().compareTo(viewExGLCBAL.getRateAvgRate()) < 0) {
+
+						rate.setSellRateMin(viewExGLCBAL.getRateAvgRate());
+						rate.setSellRateMax(viewExGLCBAL.getRateAvgRate());
+					}
+
+					bankExchangeRateMap.put(rate.getBankMaster().getBankId(), rate);
+
+				}
+
+			}
+		}
+
+		System.out.println(" ===================== ALL GLC BAL Rates ===================== ");
+
+		for (Entry<BigDecimal, ViewExGLCBAL> entry : bankGlcBalMap.entrySet()) {
+			System.out.println(" GLCBAL Rate ==> " + entry.getValue().toString());
+		}
+
+		System.out.println(" ===================== ALL Exchange Rate  Master Rates ===================== ");
+
+		for (Entry<BigDecimal, ExchangeRateAPRDET> exchangeRate : bankExchangeRateMap.entrySet()) {
+			System.out.println(" Exchange Rate ==> " + exchangeRate.toString());
+		}
+
+		watch.stop();
+		long timetaken = watch.getLastTaskTimeMillis();
+		System.out.println("Total time taken to fetch prices from db: " + timetaken + " milli-seconds");
+
+		System.out.println(" List Size ===> " + exchangeRates.size());
+
+		return null;
 	}
 
 	private List<BigDecimal> getValidBankIds(PricingReqDTO reqDto) {

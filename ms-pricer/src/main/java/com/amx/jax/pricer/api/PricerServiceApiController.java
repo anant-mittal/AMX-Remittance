@@ -8,13 +8,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.api.AmxApiResponse;
-import com.amx.jax.pricer.IPricerService;
+import com.amx.jax.pricer.PricerService;
 import com.amx.jax.pricer.dto.PricingReqDTO;
 import com.amx.jax.pricer.dto.PricingRespDTO;
 import com.amx.jax.pricer.service.PricingService;
 
 @RestController
-public class PricerServiceApiController implements IPricerService {
+public class PricerServiceApiController implements PricerService {
 
 	/** The Constant LOGGER. */
 	private static final Logger LOGGER = LoggerFactory.getLogger(PricerServiceApiController.class);

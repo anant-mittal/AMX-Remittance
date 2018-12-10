@@ -8,6 +8,7 @@ import javax.transaction.Transactional;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
+import com.amx.jax.pricer.dbmodel.ExchangeRateAPRDET;
 import com.amx.jax.pricer.dbmodel.ExchangeRateApprovalDetModel;
 
 @Transactional
@@ -29,8 +30,29 @@ public interface ExchangeRateApprovalDetRepository extends CrudRepository<Exchan
 
 	@Query("select rate from ExchangeRateApprovalDetModel rate where rate.currencyId=?1 and rate.countryBranchId=?2 "
 			+ "and rate.countryId=?3 and rate.applicationCountryId=?4 and rate.bankMaster.bankId in (?5)")
-	List<ExchangeRateApprovalDetModel> getExchangeRatesForRoutingBanks(BigDecimal currencyId,
+	List<ExchangeRateApprovalDetModel> getBranchExchangeRatesForRoutingBanks(BigDecimal currencyId,
 			BigDecimal countryBranchId, BigDecimal countryId, BigDecimal applicationCountryId,
 			List<BigDecimal> routingBankIds);
 
+	@Query("select rate from ExchangeRateApprovalDetModel rate where rate.currencyId=?1 "
+			+ "and rate.countryId=?2 and rate.applicationCountryId=?3 and rate.bankMaster.bankId in (?4)")
+	List<ExchangeRateApprovalDetModel> getExchangeRatesForRoutingBanks(BigDecimal currencyId, BigDecimal countryId,
+			BigDecimal applicationCountryId, List<BigDecimal> routingBankIds);
+
+	@Query("select distinct rate.sellRateMin from ExchangeRateApprovalDetModel rate where rate.currencyId=?1 "
+			+ "and rate.countryId=?2 and rate.applicationCountryId=?3 and rate.bankMaster.bankId=?4")
+	List<BigDecimal> getUniqueSellRatesMinForRoutingBank(BigDecimal currencyId, BigDecimal countryId,
+			BigDecimal applicationCountryId, BigDecimal routingBankId);
+
+	
+	@Query("select new com.amx.jax.pricer.dbmodel.ExchangeRateAPRDET(isActive, sellRateMin, sellRateMax, serviceId, " 
+			+ "	bankMaster) from ExchangeRateApprovalDetModel rate where rate.currencyId=?1 "
+			+ " and rate.countryId=?2 and rate.applicationCountryId=?3 and rate.bankMaster.bankId in (?4) "
+			+ " and rate.serviceId in (?5) "
+			+ " group by rate.isActive, rate.sellRateMin, rate.sellRateMax, rate.serviceId, rate.bankMaster"
+			+ " order by rate.bankMaster, rate.serviceId")
+	List<ExchangeRateAPRDET> getSellRatesForRoutingBanks(BigDecimal currencyId, BigDecimal countryId,
+			BigDecimal applicationCountryId, List<BigDecimal> routingBankIds, List<BigDecimal> serviceIds);
+	
+	
 }

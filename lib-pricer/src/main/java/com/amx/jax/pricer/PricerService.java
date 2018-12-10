@@ -6,7 +6,7 @@ import com.amx.jax.pricer.dto.PricingRespDTO;
 import com.amx.jax.pricer.exception.PricerApiStatusBuilder.PricerApiStatus;
 import com.amx.jax.pricer.exception.PricerServiceError;
 
-public interface IPricerService {
+public interface PricerService {
 
 	public static class ApiEndPoints {
 
