@@ -1,5 +1,6 @@
 package com.amx.jax.rates;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.amx.jax.logger.LoggerService;
+import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -35,18 +37,20 @@ public class AmxCurRateRepository {
 
 	public AmxCurRate insertRate(AmxCurRate rate) {
 
-		// vote.setId(UUID.randomUUID().toString());
-
-		Map<String, Object> dataMap = JsonUtil.toMap(rate);
-		IndexRequest indexRequest = new IndexRequest(INDEX, TYPE, rate.getId())
-				.source(dataMap);
-		try {
-			IndexResponse response = restHighLevelClient.index(indexRequest);
-		} catch (ElasticsearchException e) {
-			LOGGER.error("ElasticsearchException", e);
-		} catch (java.io.IOException ex) {
-			LOGGER.error("java.io.IOException", ex);
+		if (!ArgUtil.isEmpty(rate) && rate.getrRate().compareTo(BigDecimal.ZERO) > 0) {
+			// vote.setId(UUID.randomUUID().toString());
+			Map<String, Object> dataMap = JsonUtil.toMap(rate);
+			IndexRequest indexRequest = new IndexRequest(INDEX, TYPE, rate.getId())
+					.source(dataMap);
+			try {
+				IndexResponse response = restHighLevelClient.index(indexRequest);
+			} catch (ElasticsearchException e) {
+				LOGGER.error("ElasticsearchException", e);
+			} catch (java.io.IOException ex) {
+				LOGGER.error("java.io.IOException", ex);
+			}
 		}
+
 		return rate;
 	}
 
