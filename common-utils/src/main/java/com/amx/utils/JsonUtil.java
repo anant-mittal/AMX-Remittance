@@ -203,6 +203,18 @@ public final class JsonUtil {
 	}
 
 	/**
+	 * This will remove any Object binding, final map will contain only primitive
+	 * types at leaf node level
+	 * 
+	 * @param object
+	 * @return
+	 */
+	public static Map<String, Object> toJsonMap(Object object) {
+		return JsonUtil.fromJson(JsonUtil.toJson(object), new TypeReference<Map<String, Object>>() {
+		});
+	}
+
+	/**
 	 * To json.
 	 *
 	 * @param outputStream the output stream
@@ -309,9 +321,9 @@ class BigDecimalSerializer extends JsonSerializer<BigDecimal> {
 	public void serialize(BigDecimal value, JsonGenerator gen, SerializerProvider serializers)
 			throws IOException, JsonProcessingException {
 		if (!ArgUtil.isEmpty(value)) {
-			//gen.writeString(value.toPlainString());
-			//gen.writeNumber(value);
-			//gen.writeNumber(value.doubleValue());
+			// gen.writeString(value.toPlainString());
+			// gen.writeNumber(value);
+			// gen.writeNumber(value.doubleValue());
 			gen.writeNumber(value.toPlainString());
 		}
 	}

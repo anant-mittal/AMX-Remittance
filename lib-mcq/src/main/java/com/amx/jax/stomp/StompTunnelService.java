@@ -27,7 +27,7 @@ public class StompTunnelService {
 		event.setTopic(topic);
 		Map<String, Object> messageData = new HashMap<String, Object>();
 		messageData.put("data", message);
-		event.setData(JsonUtil.toMap(messageData));
+		event.setData(JsonUtil.toJsonMap(messageData));
 		tunnelService.shout(StompTunnelToAllSender.STOMP_TO_ALL, event);
 	}
 
@@ -40,7 +40,7 @@ public class StompTunnelService {
 			event.setHttpSessionId(stompSession.getHttpSessionId());
 			Map<String, Object> messageData = new HashMap<String, Object>();
 			messageData.put("data", message);
-			event.setData(JsonUtil.toMap(messageData));
+			event.setData(JsonUtil.toJsonMap(messageData));
 			tunnelService.shout(StompTunnelToXSender.getSendTopic(stompSession.getPrefix()), event);
 		}
 
