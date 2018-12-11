@@ -35,30 +35,28 @@ public class App { // Noncompliant
 	 * @throws IOException
 	 */
 	public static void main(String[] args) throws URISyntaxException, IOException {
-		Matcher match = pattern.matcher("${app.prod}");
+		Document doc = Jsoup.connect("http://www.muzaini.com/ExchangeRates.aspx")
+				.data("ddlCurrency", "KWD")
+				.data("ScriptManager1", "ScriptManager1|ddlCurrency")
+				.referrer("http://www.muzaini.com")
+				.post();
 
-		Document doc = Jsoup.connect("https://www.bec.com.kw/currency-exchange-rates?atype=money&continent=popular")
-				.get();
-
-		Elements tabs = doc.select(".currency-nav-tab-holder.transfer");
-		if (tabs.size() > 0) {
-			Elements trs = tabs.get(0).select("tr");
-			for (Element tr : trs) {
-				AmxCurConstants.RCur cur = (RCur) ArgUtil.parseAsEnum(tr.select(".bfc-country-code").text(),
-						AmxCurConstants.RCur.UNKNOWN);
-				if (!AmxCurConstants.RCur.UNKNOWN.equals(cur)) {
-					BigDecimal rate = ArgUtil.parseAsBigDecimal(tr.select(".tg-buy .bfc-currency-rates").text());
-					if (!ArgUtil.isEmpty(rate)) {
-						AmxCurRate trnsfrRate = new AmxCurRate();
-						trnsfrRate.setrSrc(RSource.BECKWT);
-						trnsfrRate.setrDomCur(RCur.KWD);
-						trnsfrRate.setrForCur(cur);
-						trnsfrRate.setrType(RType.SELL_TRNSFR);
-						trnsfrRate.setrRate(BigDecimal.ONE.divide(rate, 12, RoundingMode.CEILING));
-						System.out.println(JsonUtil.toJson(trnsfrRate));
-					}
+		Elements trs = doc.select("#UpdatePanel1 table.ex-table tbody tr");
+		for (Element tr : trs) {
+			Elements tds = tr.select("td");
+			AmxCurConstants.RCur cur = (RCur) ArgUtil.parseAsEnum(tds.get(0).text(),
+					AmxCurConstants.RCur.UNKNOWN);
+			if (!AmxCurConstants.RCur.UNKNOWN.equals(cur) && tds.size() >= 4) {
+				BigDecimal rate = ArgUtil.parseAsBigDecimal(tds.get(4).text());
+				if (!ArgUtil.isEmpty(rate)) {
+					AmxCurRate trnsfrRate = new AmxCurRate();
+					trnsfrRate.setrSrc(RSource.MUZAINI);
+					trnsfrRate.setrDomCur(RCur.KWD);
+					trnsfrRate.setrForCur(cur);
+					trnsfrRate.setrType(RType.SELL_TRNSFR);
+					trnsfrRate.setrRate(rate);
+					System.out.println(JsonUtil.toJson(trnsfrRate));
 				}
-
 			}
 		}
 	}
