@@ -33,6 +33,25 @@ public class EmployeeSystemsAssigned implements Serializable {
 	private Date updatedDate;
 	private String isActive;
 	private String remarks;
+	
+	
+
+	public EmployeeSystemsAssigned() {
+		super();
+	}
+
+	public EmployeeSystemsAssigned(BigDecimal employeeId, String employeeName,
+			BigDecimal countryBranchId, String branchName, String systemName, String createdBy, String isActive) {
+		super();
+		this.employeeId = employeeId;
+		this.employeeName = employeeName;
+		this.countryBranchId = countryBranchId;
+		this.branchName = branchName;
+		this.systemName = systemName;
+		this.createdBy = createdBy;
+		this.createdDate = new Date();
+		this.isActive = isActive;
+	}
 
 	@Id
 	@GeneratedValue(generator = "fs_employee_system_assign_seq", strategy = GenerationType.SEQUENCE)

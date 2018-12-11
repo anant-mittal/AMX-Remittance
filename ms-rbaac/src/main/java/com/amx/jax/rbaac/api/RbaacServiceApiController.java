@@ -394,13 +394,14 @@ public class RbaacServiceApiController implements IRbaacService {
 
 		return AmxApiResponse.build(roleMappingForEmplyee);
 	}
-	
+
 	@Override
 	@RequestMapping(value = ApiEndPoints.EMPLOYEE_SYSTEM_MAPPING_CREATE, method = RequestMethod.POST)
 	public AmxApiResponse<BoolRespModel, Object> createEmployeeSystemMapping(
 			@RequestParam(name = Params.EMPLOYEE_ID) BigDecimal employeeId,
-			@RequestParam(name = Params.TERMINAL_ID) Integer countryBranchSystemInventoryId) {
-		BoolRespModel response = userAccountService.createEmployeeSystemMapping(employeeId, countryBranchSystemInventoryId);
+			@RequestParam(name = Params.TERMINAL_ID) BigDecimal countryBranchSystemInventoryId) {
+		BoolRespModel response = userAccountService.createEmployeeSystemMapping(employeeId,
+				countryBranchSystemInventoryId);
 		return AmxApiResponse.build(response);
 	}
 
