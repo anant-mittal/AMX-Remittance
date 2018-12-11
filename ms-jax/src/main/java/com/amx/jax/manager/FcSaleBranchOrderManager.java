@@ -17,12 +17,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.jax.auditlog.FcSaleOrderStatusChangeAuditEvent;
+import com.amx.jax.auditlog.JaxAuditEvent;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.CurrencyMasterDao;
+import com.amx.jax.dao.FcSaleApplicationDao;
 import com.amx.jax.dao.FcSaleBranchDao;
 import com.amx.jax.dao.RemittanceProcedureDao;
 import com.amx.jax.dbmodel.CollectionModel;
@@ -41,6 +45,7 @@ import com.amx.jax.dbmodel.fx.OrderManagementView;
 import com.amx.jax.dbmodel.fx.UserStockView;
 import com.amx.jax.dbmodel.remittance.Document;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.logger.AuditService;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.fx.FcSaleBranchDispatchModel;
 import com.amx.jax.model.request.fx.FcSaleBranchDispatchRequest;
@@ -84,9 +89,15 @@ public class FcSaleBranchOrderManager {
 
 	@Autowired
 	FxOrderReportManager fxOrderReportManager;
-
+	
 	@Autowired
 	FcSaleDeliveryService fcSaleDeliveryService;
+
+	@Autowired
+	AuditService auditService;
+	
+	@Autowired
+	FcSaleApplicationDao fcSaleApplicationDao;
 
 	@Autowired
 	MetaData metaData;
@@ -307,6 +318,8 @@ public class FcSaleBranchOrderManager {
 		String isActive = ConstantDocument.Yes;
 		String userName = null;
 		String orderStatus = null;
+		BigDecimal fromBranchId = null;
+		BigDecimal toBranchId = null;
 
 		try{
 			List<OrderManagementView> lstOrderManagement = fetchFcSaleOrderDetails(countryId, orderNumber,orderYear);
@@ -348,56 +361,68 @@ public class FcSaleBranchOrderManager {
 						FxEmployeeDetailsDto employeeDt = fetchEmployee(employeeId);
 						if(employeeDt != null && employeeDt.getEmployeeId() != null){
 							userName = employeeDt.getUserName();
-							if(userName != null) {
-								if(deliveryDetail.getDriverEmployeeId() != null) {
-									if(deliveryDetail.getOrderStatus().equalsIgnoreCase(ConstantDocument.PCK) || deliveryDetail.getOrderStatus().equalsIgnoreCase(ConstantDocument.RTD)) {
-										String oldOrderStatus = deliveryDetail.getOrderStatus();
-										// create new record 
-										FxDeliveryDetailsModel deliveryDetailNew = new FxDeliveryDetailsModel();
-										deliveryDetailNew.setApplDocNo(deliveryDetail.getApplDocNo());
-										deliveryDetailNew.setCreatedBy(userName);
-										deliveryDetailNew.setCreatedDate(new Date());
-										deliveryDetailNew.setDeliveryCharges(deliveryDetail.getDeliveryCharges());
-										deliveryDetailNew.setDeliveryDate(deliveryDetail.getDeliveryDate());
-										deliveryDetailNew.setDeliveryTimeSlot(deliveryDetail.getDeliveryTimeSlot());
-										deliveryDetailNew.setDriverEmployeeId(driverId);
-										deliveryDetailNew.setIsActive(deliveryDetail.getIsActive());
-										deliveryDetailNew.setOrderStatus(ConstantDocument.OFD_ACK);
-										deliveryDetailNew.setOtpToken(deliveryDetail.getOtpToken());
-										deliveryDetailNew.setRemarksId(deliveryDetail.getRemarksId());
-										deliveryDetailNew.setShippingAddressId(deliveryDetail.getShippingAddressId());
-										deliveryDetailNew.setTransactionReceipt(deliveryDetail.getTransactionReceipt());
-										deliveryDetailNew.setOrderLock(new Date());
-										deliveryDetailNew.setEmployeeId(employeeId);
+							fromBranchId = employeeDt.getBranchId();
+							// driver details
+							FxEmployeeDetailsDto driverEmpDt = fetchEmployee(driverId);
+							if(driverEmpDt != null && driverEmpDt.getEmployeeId() != null){
+								toBranchId = driverEmpDt.getBranchId();
+								
+								if(userName != null) {
+									if(deliveryDetail.getDriverEmployeeId() != null) {
+										if(deliveryDetail.getOrderStatus().equalsIgnoreCase(ConstantDocument.PCK) || deliveryDetail.getOrderStatus().equalsIgnoreCase(ConstantDocument.RTD)) {
+											String oldOrderStatus = deliveryDetail.getOrderStatus();
+											// create new record 
+											FxDeliveryDetailsModel deliveryDetailNew = new FxDeliveryDetailsModel();
+											deliveryDetailNew.setApplDocNo(deliveryDetail.getApplDocNo());
+											deliveryDetailNew.setCreatedBy(userName);
+											deliveryDetailNew.setCreatedDate(new Date());
+											deliveryDetailNew.setDeliveryCharges(deliveryDetail.getDeliveryCharges());
+											deliveryDetailNew.setDeliveryDate(deliveryDetail.getDeliveryDate());
+											deliveryDetailNew.setDeliveryTimeSlot(deliveryDetail.getDeliveryTimeSlot());
+											deliveryDetailNew.setDriverEmployeeId(driverId);
+											deliveryDetailNew.setIsActive(ConstantDocument.Yes);
+											deliveryDetailNew.setOrderStatus(ConstantDocument.OFD_ACK);
+											deliveryDetailNew.setOtpToken(deliveryDetail.getOtpToken());
+											deliveryDetailNew.setRemarksId(deliveryDetail.getRemarksId());
+											deliveryDetailNew.setShippingAddressId(deliveryDetail.getShippingAddressId());
+											deliveryDetailNew.setTransactionReceipt(deliveryDetail.getTransactionReceipt());
+											deliveryDetailNew.setOrderLock(new Date());
+											deliveryDetailNew.setEmployeeId(employeeId);
+											deliveryDetailNew.setFromBranchId(fromBranchId);
+											deliveryDetailNew.setToBranchId(toBranchId);
 
-										// deactivate current record
-										deliveryDetail.setIsActive("D");
-										deliveryDetail.setUpdatedBy(userName);
-										deliveryDetail.setUopdateDate(new Date());
+											// deactivate current record
+											deliveryDetail.setIsActive("D");
+											deliveryDetail.setUpdatedBy(userName);
+											deliveryDetail.setUopdateDate(new Date());
 
-										fcSaleBranchDao.saveDeliveryDetails(deliveryDetailNew,deliveryDetail,lstOrderManagement);
+											fcSaleBranchDao.saveDeliveryDetails(deliveryDetailNew,deliveryDetail,lstOrderManagement);
 
-										// old status
-										fcSaleDeliveryService.logStatusChangeAuditEvent(deliveryDetail.getDeleviryDelSeqId(), oldOrderStatus);
-										fcSaleDeliveryService.logStatusChangeAuditEvent(deliveryDetailNew.getDeleviryDelSeqId(), oldOrderStatus);
-										status = Boolean.TRUE;
+											// old status
+											logStatusChangeAuditEvent(deliveryDetail.getDeleviryDelSeqId(), oldOrderStatus);
+											logStatusChangeAuditEvent(deliveryDetailNew.getDeleviryDelSeqId(), oldOrderStatus);
+											status = Boolean.TRUE;
+										}else {
+											throw new GlobalException(JaxError.ORDER_STATUS_MISMATCH,"Order status is not packed to assign driver");
+										}
 									}else {
-										throw new GlobalException(JaxError.ORDER_STATUS_MISMATCH,"Order status is not packed to assign driver");
-									}
-								}else {
-									// update the current record by driver id
-									if(deliveryDetail.getOrderStatus().equalsIgnoreCase(ConstantDocument.PCK) || deliveryDetail.getOrderStatus().equalsIgnoreCase(ConstantDocument.RTD)) {
-										String oldOrderStatus = deliveryDetail.getOrderStatus();
-										deliveryDetail.setDriverEmployeeId(driverId);
-										deliveryDetail.setUpdatedBy(userName);
-										deliveryDetail.setUopdateDate(new Date());
-										deliveryDetail.setOrderStatus(ConstantDocument.OFD_ACK);
-										fcSaleBranchDao.saveDeliveryDetailsDriverId(deliveryDetail);
-										// old status
-										fcSaleDeliveryService.logStatusChangeAuditEvent(deliveryDetail.getDeleviryDelSeqId(), oldOrderStatus);
-										status = Boolean.TRUE;
-									}else {
-										throw new GlobalException(JaxError.ORDER_STATUS_MISMATCH,"Order status is not packed to assign driver");
+										// update the current record by driver id
+										if(deliveryDetail.getOrderStatus().equalsIgnoreCase(ConstantDocument.PCK) || deliveryDetail.getOrderStatus().equalsIgnoreCase(ConstantDocument.RTD)) {
+											String oldOrderStatus = deliveryDetail.getOrderStatus();
+											deliveryDetail.setDriverEmployeeId(driverId);
+											deliveryDetail.setUpdatedBy(userName);
+											deliveryDetail.setUopdateDate(new Date());
+											deliveryDetail.setOrderStatus(ConstantDocument.OFD_ACK);
+											deliveryDetail.setFromBranchId(fromBranchId);
+											deliveryDetail.setToBranchId(toBranchId);
+
+											fcSaleBranchDao.saveDeliveryDetailsDriverId(deliveryDetail);
+											// old status
+											logStatusChangeAuditEvent(deliveryDetail.getDeleviryDelSeqId(), oldOrderStatus);
+											status = Boolean.TRUE;
+										}else {
+											throw new GlobalException(JaxError.ORDER_STATUS_MISMATCH,"Order status is not packed to assign driver");
+										}
 									}
 								}
 							}
@@ -662,7 +687,7 @@ public class FcSaleBranchOrderManager {
 					fcSaleBranchDao.printOrderSave(foreignCurrencyAdjusts, mapInventoryReceiptPayment,userName,new Date(),deliveryDetailsId,ConstantDocument.PCK);
 
 					// old status
-					fcSaleDeliveryService.logStatusChangeAuditEvent(deliveryDetailsId, oldOrderStatus);
+					logStatusChangeAuditEvent(deliveryDetailsId, oldOrderStatus);
 
 					// calling report
 					fxOrderReportResponseDto = fetchTransactionReport(customerId,collectionDocYear, collectionDocNumber);
@@ -864,7 +889,7 @@ public class FcSaleBranchOrderManager {
 			userName = employeeDt.getUserName();
 			fcSaleBranchDao.saveOrderLockDetails(lstOrderManagement,employeeId,userName,ConstantDocument.ACP);
 			// old status
-			fcSaleDeliveryService.logStatusChangeAuditEvent(deliveryDetailsId, oldOrderStatus);
+			logStatusChangeAuditEvent(deliveryDetailsId, oldOrderStatus);
 			status = Boolean.TRUE;
 		}else {
 			throw new GlobalException(JaxError.INVALID_EMPLOYEE,"Employee details is empty");
@@ -895,7 +920,7 @@ public class FcSaleBranchOrderManager {
 							userName = employeeDt.getUserName();
 							fcSaleBranchDao.saveOrderReleaseDetails(lstOrderManagement,employeeId,userName,ConstantDocument.ORD);
 							// old status
-							fcSaleDeliveryService.logStatusChangeAuditEvent(deliveryDetailsId, oldOrderStatus);
+							logStatusChangeAuditEvent(deliveryDetailsId, oldOrderStatus);
 							status = Boolean.TRUE;
 						}else {
 							throw new GlobalException(JaxError.INVALID_EMPLOYEE,"Employee details is empty");
@@ -952,7 +977,7 @@ public class FcSaleBranchOrderManager {
 							fcSaleBranchDao.saveDispatchOrder(lstOrderManagement,employeeId,userName,ConstantDocument.OFD);
 
 							// old status
-							fcSaleDeliveryService.logStatusChangeAuditEvent(deliveryDetailsId, oldOrderStatus);
+							logStatusChangeAuditEvent(deliveryDetailsId, oldOrderStatus);
 
 							fcSaleDeliveryService.sendOtp(deliveryDetails.getDeleviryDelSeqId(), false);
 							status = Boolean.TRUE;
@@ -1024,7 +1049,7 @@ public class FcSaleBranchOrderManager {
 							fcSaleBranchDao.saveAcknowledgeDriver(lstOrderManagement,employeeId,userName,ConstantDocument.OFD_CNF);
 
 							// old status
-							fcSaleDeliveryService.logStatusChangeAuditEvent(deliveryDetailsId, oldOrderStatus);
+							logStatusChangeAuditEvent(deliveryDetailsId, oldOrderStatus);
 
 							status = Boolean.TRUE;
 						}else {
@@ -1071,7 +1096,7 @@ public class FcSaleBranchOrderManager {
 							fcSaleBranchDao.saveReturnAcknowledge(lstOrderManagement,employeeId,userName,ConstantDocument.RTD);
 
 							// old status
-							fcSaleDeliveryService.logStatusChangeAuditEvent(deliveryDetailsId, oldOrderStatus);
+							logStatusChangeAuditEvent(deliveryDetailsId, oldOrderStatus);
 
 							status = Boolean.TRUE;
 						}else {
@@ -1118,7 +1143,7 @@ public class FcSaleBranchOrderManager {
 							fcSaleBranchDao.saveAcceptCancellation(lstOrderManagement,employeeId,userName,ConstantDocument.CND);
 
 							// old status
-							fcSaleDeliveryService.logStatusChangeAuditEvent(deliveryDetailsId, oldOrderStatus);
+							logStatusChangeAuditEvent(deliveryDetailsId, oldOrderStatus);
 
 							status = Boolean.TRUE;
 						}else {
@@ -1158,12 +1183,18 @@ public class FcSaleBranchOrderManager {
 
 		return fxOrderReportResponseDto; 
 	}
+	
+	@Async
+	private void logStatusChangeAuditEvent(BigDecimal deliveryDetailSeqId, String oldOrderStatus) {
+		FxDeliveryDetailsModel deliveryDetailModel = fcSaleApplicationDao.getDeliveryDetailModel(deliveryDetailSeqId);
+		FcSaleOrderStatusChangeAuditEvent event = new FcSaleOrderStatusChangeAuditEvent(deliveryDetailModel,
+				oldOrderStatus, JaxAuditEvent.Type.FC_SALE_UPDATE_ORDER_STATUS);
+		auditService.log(event);
+	}
 
 	// stock move from branch staff to driver and vice versa
 	public Boolean currentStockMigration() {
 		Boolean status = Boolean.FALSE;
-
-
 
 		return status;
 	}

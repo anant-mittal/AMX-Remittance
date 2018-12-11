@@ -89,6 +89,11 @@ public class FxDeliveryDetailsModel implements Serializable{
 	@Column(name = "OTP_VALIDATED")
 	String otpValidated;
 	
+	@Column(name = "FROM_BRANCH_ID")
+	BigDecimal fromBranchId;
+	
+	@Column(name = "TO_BRANCH_ID")
+	BigDecimal toBranchId;
 	
 	public String getOtpValidated() {
 		return otpValidated;
@@ -228,5 +233,22 @@ public class FxDeliveryDetailsModel implements Serializable{
 	public void setOtpTokenPrefix(String otpTokenPrefix) {
 		this.otpTokenPrefix = otpTokenPrefix;
 	}
+	
+	public BigDecimal getFromBranchId() {
+		return fromBranchId;
+	}
+	
+	public void setFromBranchId(BigDecimal fromBranchId) {
+		this.fromBranchId = fromBranchId;
+	}
+	
+	public BigDecimal getToBranchId() {
+		return toBranchId;
+	}
+	
+	public void setToBranchId(BigDecimal toBranchId) {
+		this.toBranchId = toBranchId;
+	}
+	
 }
 
