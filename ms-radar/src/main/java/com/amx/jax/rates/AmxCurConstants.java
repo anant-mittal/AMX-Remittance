@@ -1,6 +1,6 @@
 package com.amx.jax.rates;
 
-public class AmxConstants {
+public class AmxCurConstants {
 
 	public static enum RCur {
 		AFA, ALL, AZN, DZD, USD, ESP, FRF, ADP, AOA, XCD, ARS, AMD, AWG, AUD, ATS, AZM, BSD, BHD, BDT, BBD, BYB, RYR,
@@ -15,7 +15,7 @@ public class AmxConstants {
 		STD,
 		SAR, SCR, SLL, SGD, SKK, SIT, SBD, SOS, LKR, SDP, SRG, SZL, SEK, SYP, TWD, TJR, TZS, THB, TOP, TTD, TRY,
 		TND, TRL, TMM, UGX, UAH, AED, GBP, USS, USN, UYU, UZS, VUV, VEB, VND, YER,
-		YUN, ZRN, ZMK, ZWD;
+		YUN, ZRN, ZMK, ZWD, UNKNOWN;
 	}
 
 	public static enum RType {
@@ -23,6 +23,9 @@ public class AmxConstants {
 	}
 
 	public static enum RSource {
-		AMANKUWAIT, SELL_CASH, SELL_TRNSFR,
+		AMANKUWAIT, BECKWT, SELL_TRNSFR,
 	}
+
+	public static final int INTERVAL_MIN_5 = 5 * 60 * 1000;
+	public static final int INTERVAL_TEST = 2 * 1000;
 }

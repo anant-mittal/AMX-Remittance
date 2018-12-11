@@ -1,4 +1,4 @@
-package com.amx.jax.rates;
+package com.amx.jax.jobs.scrapper;
 
 import java.io.IOException;
 import java.util.List;
@@ -12,10 +12,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import com.amx.jax.logger.LoggerService;
-import com.amx.jax.rates.AmxConstants.RCur;
-import com.amx.jax.rates.AmxConstants.RSource;
-import com.amx.jax.rates.AmxConstants.RType;
-import com.amx.jax.rates.models.AmanKuwaitModels;
+import com.amx.jax.rates.AmxCurRate;
+import com.amx.jax.rates.AmxCurRateRepository;
+import com.amx.jax.rates.AmxCurConstants;
+import com.amx.jax.rates.AmxCurConstants.RCur;
+import com.amx.jax.rates.AmxCurConstants.RSource;
+import com.amx.jax.rates.AmxCurConstants.RType;
 import com.amx.jax.rest.RestService;
 import com.amx.utils.CollectionUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -25,7 +27,7 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 @EnableScheduling
 @Component
 @Service
-public class AmxCurScheduler {
+public class AmanKuwaitJob {
 
 	@Autowired
 	RestService restService;
@@ -35,18 +37,17 @@ public class AmxCurScheduler {
 
 	XmlMapper xmlMapper = new XmlMapper();
 
-	Logger logger = LoggerService.getLogger(AmxCurScheduler.class);
-	public static final int DELETE_NOTIFICATION_FREQUENCY = 2 * 1000;
+	Logger logger = LoggerService.getLogger(AmanKuwaitJob.class);
 
-	@Scheduled(fixedDelay = DELETE_NOTIFICATION_FREQUENCY)
-	public void pushNewEventNotifications() {
+	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_MIN_5)
+	public void fetchAmanKuwaitModels() {
 		try {
 			AmanKuwaitModels.Rates rates = new AmanKuwaitModels.Rates();
 			List<AmanKuwaitModels.CurRates> curRates = CollectionUtil.getList(new AmanKuwaitModels.CurRates(),
 					new AmanKuwaitModels.CurRates());
 			rates.setCurRates(curRates);
 			String xml = xmlMapper.writeValueAsString(rates);
-			System.out.println(xml);
+			// System.out.println(xml);
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
 		}
@@ -56,7 +57,6 @@ public class AmxCurScheduler {
 		// xmlMapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
 		try {
 			AmanKuwaitModels.Rates rates2 = xmlMapper.readValue(response, AmanKuwaitModels.Rates.class);
-
 			for (AmanKuwaitModels.CurRates rates : rates2.getCurRates()) {
 				AmxCurRate trnsfrRate = new AmxCurRate();
 				trnsfrRate.setrSrc(RSource.AMANKUWAIT);

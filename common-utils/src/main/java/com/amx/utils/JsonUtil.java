@@ -2,6 +2,7 @@ package com.amx.utils;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.math.BigDecimal;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -144,6 +145,7 @@ public final class JsonUtil {
 		SimpleModule module = new SimpleModule("MyModule", new Version(1, 0, 0, null, null, null));
 		module.addSerializer(EnumById.class, new EnumByIdSerializer());
 		module.addSerializer(EnumType.class, new EnumTypeSerializer());
+		module.addSerializer(BigDecimal.class, new BigDecimalSerializer());
 		module.addSerializer(JsonSerializerType.class, new JsonSerializerTypeSerializer());
 		mapper.registerModule(module);
 		instance = new JsonUtil.JsonUtilConfigurable(mapper);
@@ -298,5 +300,19 @@ class EnumTypeSerializer extends JsonSerializer<EnumType> {
 	public void serialize(EnumType value, JsonGenerator gen, SerializerProvider serializers)
 			throws IOException, JsonProcessingException {
 		gen.writeString(value.name());
+	}
+}
+
+class BigDecimalSerializer extends JsonSerializer<BigDecimal> {
+
+	@Override
+	public void serialize(BigDecimal value, JsonGenerator gen, SerializerProvider serializers)
+			throws IOException, JsonProcessingException {
+		if (!ArgUtil.isEmpty(value)) {
+			//gen.writeString(value.toPlainString());
+			//gen.writeNumber(value);
+			//gen.writeNumber(value.doubleValue());
+			gen.writeNumber(value.toPlainString());
+		}
 	}
 }

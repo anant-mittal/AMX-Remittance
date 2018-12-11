@@ -37,7 +37,7 @@ public class AmxCurRateRepository {
 
 		// vote.setId(UUID.randomUUID().toString());
 
-		Map<String, String> dataMap = JsonUtil.toStringMap(rate);
+		Map<String, Object> dataMap = JsonUtil.toMap(rate);
 		IndexRequest indexRequest = new IndexRequest(INDEX, TYPE, rate.getId())
 				.source(dataMap);
 		try {

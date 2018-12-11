@@ -1,10 +1,10 @@
-package com.amx.jax.rates.models;
+package com.amx.jax.jobs.scrapper;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
 
-import com.amx.jax.rates.AmxConstants.RCur;
+import com.amx.jax.rates.AmxCurConstants.RCur;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
