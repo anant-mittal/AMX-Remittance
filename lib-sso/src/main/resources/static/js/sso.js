@@ -195,7 +195,7 @@ function fetchCardDetails() {
 			repeaetCall();
 		});
 	} else if(!window._card_sub_){
-		window._card_sub_ = tunnelClient.on("/card/details/"+window._tid_+"/" + window._rid_, function(cardDetails){
+		window._card_sub_ = tunnelClient.instance().on("/card/details/"+window._tid_+"/" + window._rid_, function(cardDetails){
 			populateCardDetails(cardDetails);
 		});
 	}
