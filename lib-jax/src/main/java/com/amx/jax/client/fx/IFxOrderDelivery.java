@@ -5,12 +5,13 @@ import java.math.BigDecimal;
 import com.amx.jax.IJaxService;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
-import com.amx.jax.error.JaxError;
 import com.amx.jax.error.ApiJaxStatusBuilder.ApiJaxStatus;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.model.request.fx.FcSaleDeliveryDetailUpdateReceiptRequest;
 import com.amx.jax.model.request.fx.FcSaleDeliveryMarkDeliveredRequest;
 import com.amx.jax.model.request.fx.FcSaleDeliveryMarkNotDeliveredRequest;
+import com.amx.jax.model.response.OtpPrefixDto;
 import com.amx.jax.model.response.fx.FxDeliveryDetailDto;
 
 public interface IFxOrderDelivery extends IJaxService {
@@ -31,7 +32,7 @@ public interface IFxOrderDelivery extends IJaxService {
 
 	public static class Params {
 		public static final String DELIVERY_DETAIL_SEQID = "deliveryDetailSeqId";
-		public static final String DELIVERY_DETAIL_OTP = "otp";
+		public static final String DELIVERY_DETAIL_OTP = "mOtp";
 	}
 
 	@ApiJaxStatus(JaxError.JAX_FIELD_VALIDATION_FAILURE)
@@ -55,11 +56,11 @@ public interface IFxOrderDelivery extends IJaxService {
 			FcSaleDeliveryDetailUpdateReceiptRequest fcSaleDeliveryDetailUpdateReceiptRequest);
 
 	@ApiJaxStatus({ JaxError.FC_CURRENCY_DELIVERY_DETAIL_NOT_FOUND, JaxError.INVALID_EMPLOYEE })
-	AmxApiResponse<BoolRespModel, Object> sendOtp(BigDecimal deliveryDetailSeqId);
+	AmxApiResponse<OtpPrefixDto, Object> sendOtp(BigDecimal deliveryDetailSeqId);
 
 	@ApiJaxStatus({ JaxError.FC_CURRENCY_DELIVERY_DETAIL_NOT_FOUND, JaxError.MISSING_OTP, JaxError.INVALID_OTP,
 			JaxError.INVALID_EMPLOYEE })
-	AmxApiResponse<BoolRespModel, Object> verifyOtp(BigDecimal deliveryDetailSeqId, BigDecimal mOtp);
+	AmxApiResponse<BoolRespModel, Object> verifyOtp(BigDecimal deliveryDetailSeqId, String mOtp);
 
 	AmxApiResponse<ResourceDTO, Object> listDeliveryRemark();
 

@@ -322,25 +322,7 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 			throw new GlobalException(JaxError.ZERO_NOT_ALLOWED,"Enter valid amount ");
 		}
 		
-
-		
 		trnxManager.checkFCSaleTrnxLimit(exchbreakUpRate,fcSalerequestModel.getForeignCurrencyId(),fcSalerequestModel.getForeignAmount(),localCurrencyId,customerId);
-		
-		/*AuthenticationLimitCheckView authLimit = authentication.getFxOrderTxnLimit();
-		if(authLimit!=null){
-		 fcTrnxLimitPerDay = authLimit.getAuthLimit();
-		 FxOrderTranxLimitView trnxViewModel = trnxLimitRepos.getFxTransactionLimit(customerId);
-		 if(trnxViewModel!=null){
-			 fxTrnxHistAmount  = trnxViewModel.getTotalAmount()==null?BigDecimal.ZERO:trnxViewModel.getTotalAmount().add(receiptPaymentAppl.getLocalTrnxAmount());
-		 }else{
-			 fxTrnxHistAmount = receiptPaymentAppl.getLocalTrnxAmount();
-		 }
-		 if(JaxUtil.isNullZeroBigDecimalCheck(fxTrnxHistAmount) && JaxUtil.isNullZeroBigDecimalCheck(fcTrnxLimitPerDay) && fxTrnxHistAmount.compareTo(fcTrnxLimitPerDay)>=0){
-			 throw new GlobalException("You have reached daily limit of FC Sale  "+fcTrnxLimitPerDay,JaxError.FC_SALE_TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED);
-		 }
-		}else{
-			throw new GlobalException("FX Order limit setup is not defined",JaxError.FC_SALE_DAY_LIMIT_SETUP_NOT_DIFINED);
-		}*/
 		receiptPaymentAppl.setDenominationType(fcSalerequestModel.getCurrencyDenominationType());
 		receiptPaymentAppl.setTransactionType(ConstantDocument.S);
 		receiptPaymentAppl.setIsActive(ConstantDocument.Yes);
@@ -573,7 +555,7 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 			BigDecimal officeendTime = list.get(0).getOfficeEndTime()==null?BigDecimal.ZERO:list.get(0).getOfficeEndTime();
 			if(JaxUtil.isNullZeroBigDecimalCheck(shippingAddressId)){
 			ShippingAddressDetail shipp =shippingAddressDao.findOne(shippingAddressId);
-				if(shipp!=null &&  shipp.getAddressType()!=null && shipp.getAddressType().equalsIgnoreCase(ConstantDocument.FX_LHA)){
+				if(shipp!=null &&  shipp.getAddressType()!=null && shipp.getAddressType().equalsIgnoreCase(ConstantDocument.FX_LOA)){
 				endTime =officeendTime; 
 				}
 			}
@@ -824,8 +806,8 @@ public List<FxOrderTransactionHistroyDto> getMultipleTransactionHistroy(List<FxO
 		fianlDto.setMultiExchangeRate(multiExchangeRate);
 		fianlDto.setLocalTrnxAmount(dto.getLocalTrnxAmount());
 		fianlDto.setForeignCurrencyCode(multiForeignQuotoName);
-		
-		
+		fianlDto.setOrderStatusCode(dto.getOrderStatusCode());
+		fianlDto.setInventoryId(dto.getInventoryId());
 		finalFxOrderListDto.add(fianlDto);
 		}
 	

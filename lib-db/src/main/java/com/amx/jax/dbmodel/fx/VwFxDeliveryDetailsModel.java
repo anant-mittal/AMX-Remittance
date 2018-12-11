@@ -35,10 +35,10 @@ public class VwFxDeliveryDetailsModel implements Serializable {
 
 	@Column(name = "CUSTOMER_NAME")
 	String customerName;
-	
-	@Column(name= "CUSTOMER_ID")
+
+	@Column(name = "CUSTOMER_ID")
 	BigDecimal customerId;
-	
+
 	@Column(name = "DELIVERY_DATE")
 	@Temporal(TemporalType.DATE)
 	Date deliveryDate;
@@ -57,9 +57,20 @@ public class VwFxDeliveryDetailsModel implements Serializable {
 
 	@Column(name = "ORDER_STATUS")
 	String orderStatus;
-	
+
 	@Column(name = "INVENTORY_ID")
 	String inventoryId;
+
+	@Column(name = "OTP_TOKEN_PREFIX")
+	String otpTokenPrefix;
+
+	public String getOtpTokenPrefix() {
+		return otpTokenPrefix;
+	}
+
+	public void setOtpTokenPrefix(String otpTokenPrefix) {
+		this.otpTokenPrefix = otpTokenPrefix;
+	}
 
 	public String getInventoryId() {
 		return inventoryId;

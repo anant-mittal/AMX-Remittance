@@ -68,6 +68,7 @@ public class ConstantDocument {
 	public static final String FX_AD = "FXAD";
 	/** LOA -Local Office Address ,LHA -Local home Address **/
 	public static final String FX_LHA = "LHA";
+	public static final String FX_LOA = "LOA";
 	public static final String S = "S";	
 	public static final BigDecimal DOCUMENT_CODE_FOR_FCSALE_APPLICATION =new BigDecimal(1);
 	public static final BigDecimal DOCUMENT_CODE_FOR_FCSALE = new BigDecimal(74);
@@ -107,5 +108,6 @@ public class ConstantDocument {
 
 	public static final BigDecimal BIZ_COMPONENT_ID_GCC_ID = new BigDecimal(201);
 	public static final BigDecimal BIZ_COMPONENT_ID_BEDOUIN_ID = new BigDecimal(197);
+	public static final BigDecimal MURQAB_FOREIGNCURRENCY = new BigDecimal(89);
 
 }

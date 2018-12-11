@@ -63,6 +63,10 @@ public class FcSaleBranchDao {
 	CurrencyWiseDenominationRepository currencyWiseDenominationRepository;
 	
 	public List<OrderManagementView> fetchFcSaleOrderManagement(BigDecimal applicationcountryId,BigDecimal areaCode){
+		return fcSaleOrderManagementRepository.findByApplicationCountryIdAndAreaCode(applicationcountryId,areaCode);
+	}
+	
+	public List<OrderManagementView> fetchFcSaleOrderManagementForHeadOffice(BigDecimal applicationcountryId){
 		return fcSaleOrderManagementRepository.findByApplicationCountryId(applicationcountryId);
 	}
 	

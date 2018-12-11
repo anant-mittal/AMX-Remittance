@@ -45,7 +45,7 @@ public class FxOrderDeliveryClientTest  {
 	@Test
 	public void testMarkAck() {
 		setDefaults();
-		AmxApiResponse<BoolRespModel, Object> result = fxOrderDeliveryClient.markAcknowledged(new BigDecimal(5));
+		AmxApiResponse<BoolRespModel, Object> result = fxOrderDeliveryClient.verifyOtp(new BigDecimal(5) , "1234");
 		assertTrue(result.getResult().isSuccess());
 	}
 }

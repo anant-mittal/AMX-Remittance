@@ -83,6 +83,8 @@ public interface IRbaacService {
 		
 		/** The Constant GET_ROLE_MAPPING_FOR_EMPLOYEE. */
 		public static final String GET_ROLE_MAPPING_FOR_EMPLOYEE = SERVICE_PREFIX + API_VERSION_V1 + "/roles/alloc/get-role-map-for-employee";
+		
+		public static final String EMPLOYEE_SYSTEM_MAPPING_CREATE =  SERVICE_PREFIX + API_VERSION_V1 + "/employee-system/create";
 
 	}
 	
@@ -111,7 +113,10 @@ public interface IRbaacService {
 	 */
 	@RbaacApiStatus({ RbaacServiceError.INVALID_OR_MISSING_DATA, RbaacServiceError.INVALID_USER_DETAILS,
 			RbaacServiceError.MULTIPLE_USERS, RbaacServiceError.USER_NOT_ACTIVE_OR_DELETED,
-			RbaacServiceError.USER_ACCOUNT_LOCKED })
+			RbaacServiceError.USER_ACCOUNT_LOCKED, RbaacServiceError.INVALID_OR_MISSING_CREDENTIALS,
+			RbaacServiceError.INVALID_OR_MISSING_PARTNER_IDENTITY, RbaacServiceError.CLIENT_NOT_FOUND,
+			RbaacServiceError.INVALID_OR_MISSING_TERMINAL_ID, RbaacServiceError.BRANCH_SYSTEM_NOT_FOUND,
+			RbaacServiceError.INVALID_OR_MISSING_DEVICE_ID, RbaacServiceError.DEVICE_CLIENT_INVALID })
 	public AmxApiResponse<UserAuthInitResponseDTO, Object> initAuthForUser(UserAuthInitReqDTO userAuthInitReqDTO);
 
 	/**
@@ -122,7 +127,7 @@ public interface IRbaacService {
 	 * @return the amx api response
 	 */
 	@RbaacApiStatus({ RbaacServiceError.INVALID_OR_MISSING_DATA, RbaacServiceError.INVALID_OTP,
-			RbaacServiceError.USER_ACCOUNT_LOCKED })
+			RbaacServiceError.USER_ACCOUNT_LOCKED, RbaacServiceError.INVALID_PARTNER_OTP })
 	public AmxApiResponse<EmployeeDetailsDTO, Object> authoriseUser(UserAuthorisationReqDTO reqDto);
 
 	/**
@@ -284,5 +289,8 @@ public interface IRbaacService {
 	@RbaacApiStatus({})
 	public AmxApiResponse<RoleMappingForEmployee, Object> getRoleMappingsForEmployee(BigDecimal employeeId,
 			String ipAddr, String deviceId, Boolean filterRole);
+
+	AmxApiResponse<BoolRespModel, Object> createEmployeeSystemMapping(BigDecimal employeeId,
+			Integer countryBranchSystemInventoryId);
 
 }
