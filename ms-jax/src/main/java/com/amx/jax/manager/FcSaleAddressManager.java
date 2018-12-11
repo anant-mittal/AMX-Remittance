@@ -258,7 +258,7 @@ public class FcSaleAddressManager extends AbstractModel {
 			if(JaxUtil.isNullZeroBigDecimalCheck(meta.getCustomerId())){
 			 shipAdd.setFsCustomer(new Customer(meta.getCustomerId()));
 			}else{
-				throw new GlobalException("Customer  id not found ", JaxError.CUSTOMER_NOT_FOUND);
+				throw new GlobalException(JaxError.CUSTOMER_NOT_FOUND,"Customer  id not found ");
 			}
 			shipAdd.setCreationDate(new Date());
 			shipAdd.setActiveStatus(ConstantDocument.Yes);

@@ -11,8 +11,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 
-import javax.transaction.Transactional;
-
 import org.apache.commons.beanutils.BeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,10 +84,10 @@ public class FcSaleBranchOrderManager {
 
 	@Autowired
 	FxOrderReportManager fxOrderReportManager;
-	
+
 	@Autowired
 	FcSaleDeliveryService fcSaleDeliveryService;
-	
+
 	@Autowired
 	MetaData metaData;
 
@@ -104,12 +102,12 @@ public class FcSaleBranchOrderManager {
 				if(areaCode != null && branchId != null) {
 					if(branchId.compareTo(ConstantDocument.MURQAB_FOREIGNCURRENCY) == 0) {
 						ordermanage = fcSaleBranchDao.fetchFcSaleOrderManagementForHeadOffice(applicationCountryId);
-						
+
 						fetchOrder.put("ORDERS", ordermanage);
 						fetchOrder.put("AREA", Boolean.TRUE);
 					}else {
-					ordermanage = fcSaleBranchDao.fetchFcSaleOrderManagement(applicationCountryId,areaCode);
-						
+						ordermanage = fcSaleBranchDao.fetchFcSaleOrderManagement(applicationCountryId,areaCode);
+
 						fetchOrder.put("ORDERS", ordermanage);
 						fetchOrder.put("AREA", Boolean.FALSE);
 					}
@@ -199,18 +197,18 @@ public class FcSaleBranchOrderManager {
 			FxEmployeeDetailsDto employeeDt = fetchEmployee(employeeId);
 			if(employeeDt != null){
 				if(employeeDt.getEmployeeId() != null && employeeDt.getIsActive().equalsIgnoreCase(ConstantDocument.Yes)) {
-				userName = employeeDt.getUserName();
-				countryBranchId = employeeDt.getCountryBranchId();
-				if(userName != null && countryBranchId != null) {
-					userStock = fcSaleBranchDao.fetchUserStockCurrentDateSum(countryId,userName,countryBranchId);
-				}else {
-					throw new GlobalException(JaxError.INVALID_EMPLOYEE,"Employee details userName,countryBranchId is empty");
+					userName = employeeDt.getUserName();
+					countryBranchId = employeeDt.getCountryBranchId();
+					if(userName != null && countryBranchId != null) {
+						userStock = fcSaleBranchDao.fetchUserStockCurrentDateSum(countryId,userName,countryBranchId);
+					}else {
+						throw new GlobalException(JaxError.INVALID_EMPLOYEE,"Employee details userName,countryBranchId is empty");
 					}
 				}else {
-					throw new GlobalException("Employee details is not active",JaxError.INACTIVE_EMPLOYEE);
+					throw new GlobalException(JaxError.INACTIVE_EMPLOYEE,"Employee details is not active");
 				}
 			}else {
-				throw new GlobalException("Employee details is empty",JaxError.INVALID_EMPLOYEE);
+				throw new GlobalException(JaxError.INVALID_EMPLOYEE,"Employee details is empty");
 			}
 		}catch (GlobalException e) {
 			e.printStackTrace();
@@ -323,12 +321,12 @@ public class FcSaleBranchOrderManager {
 							deliveryDetailsId = null;
 							break;
 						}
-						
+
 						if(orderManagementView.getDriverEmployeId() != null && assignDriverId != null && assignDriverId.compareTo(orderManagementView.getDriverEmployeId()) != 0) {
 							assignDriverId = null;
 							break;
 						}
-						
+
 						if(orderManagementView.getOrderStatus() != null && orderStatus != null && orderStatus.compareTo(orderManagementView.getOrderStatus()) != 0) {
 							orderStatus = null;
 							break;
@@ -353,6 +351,7 @@ public class FcSaleBranchOrderManager {
 							if(userName != null) {
 								if(deliveryDetail.getDriverEmployeeId() != null) {
 									if(deliveryDetail.getOrderStatus().equalsIgnoreCase(ConstantDocument.PCK) || deliveryDetail.getOrderStatus().equalsIgnoreCase(ConstantDocument.RTD)) {
+										String oldOrderStatus = deliveryDetail.getOrderStatus();
 										// create new record 
 										FxDeliveryDetailsModel deliveryDetailNew = new FxDeliveryDetailsModel();
 										deliveryDetailNew.setApplDocNo(deliveryDetail.getApplDocNo());
@@ -377,6 +376,10 @@ public class FcSaleBranchOrderManager {
 										deliveryDetail.setUopdateDate(new Date());
 
 										fcSaleBranchDao.saveDeliveryDetails(deliveryDetailNew,deliveryDetail,lstOrderManagement);
+
+										// old status
+										fcSaleDeliveryService.logStatusChangeAuditEvent(deliveryDetail.getDeleviryDelSeqId(), oldOrderStatus);
+										fcSaleDeliveryService.logStatusChangeAuditEvent(deliveryDetailNew.getDeleviryDelSeqId(), oldOrderStatus);
 										status = Boolean.TRUE;
 									}else {
 										throw new GlobalException(JaxError.ORDER_STATUS_MISMATCH,"Order status is not packed to assign driver");
@@ -384,11 +387,14 @@ public class FcSaleBranchOrderManager {
 								}else {
 									// update the current record by driver id
 									if(deliveryDetail.getOrderStatus().equalsIgnoreCase(ConstantDocument.PCK) || deliveryDetail.getOrderStatus().equalsIgnoreCase(ConstantDocument.RTD)) {
+										String oldOrderStatus = deliveryDetail.getOrderStatus();
 										deliveryDetail.setDriverEmployeeId(driverId);
 										deliveryDetail.setUpdatedBy(userName);
 										deliveryDetail.setUopdateDate(new Date());
 										deliveryDetail.setOrderStatus(ConstantDocument.OFD_ACK);
 										fcSaleBranchDao.saveDeliveryDetailsDriverId(deliveryDetail);
+										// old status
+										fcSaleDeliveryService.logStatusChangeAuditEvent(deliveryDetail.getDeleviryDelSeqId(), oldOrderStatus);
 										status = Boolean.TRUE;
 									}else {
 										throw new GlobalException(JaxError.ORDER_STATUS_MISMATCH,"Order status is not packed to assign driver");
@@ -456,6 +462,7 @@ public class FcSaleBranchOrderManager {
 		BigDecimal collectionId = null;
 		BigDecimal customerId = null;
 		BigDecimal deliveryDetailsId = null;
+		String oldOrderStatus = null;
 		List<BigDecimal> duplicate = new ArrayList<>();
 		List<ForeignCurrencyAdjust> foreignCurrencyAdjusts = new ArrayList<>();
 		HashMap<BigDecimal, String> mapInventory = new HashMap<>();
@@ -514,6 +521,7 @@ public class FcSaleBranchOrderManager {
 						mapCurrencyDenom.put(orderManagementView.getForeignCurrencyId(), lstCurrencyDenomination);
 						if(deliveryDetailsId == null) {
 							deliveryDetailsId = orderManagementView.getDeliveryDetailsId();
+							oldOrderStatus = orderManagementView.getOrderStatus();
 						}else {
 							if(orderManagementView.getDeliveryDetailsId() != null && deliveryDetailsId != null && deliveryDetailsId.compareTo(orderManagementView.getDeliveryDetailsId()) != 0) {
 								deliveryDetailsId = null; // fail
@@ -521,7 +529,7 @@ public class FcSaleBranchOrderManager {
 							}
 						}
 					}
-					
+
 					if(deliveryDetailsId == null) {
 						throw new GlobalException(JaxError.NO_DELIVERY_DETAILS,"No records or mismatch of delivery details");
 					}
@@ -653,6 +661,9 @@ public class FcSaleBranchOrderManager {
 					// saving in currency Adjustment and receipt payment
 					fcSaleBranchDao.printOrderSave(foreignCurrencyAdjusts, mapInventoryReceiptPayment,userName,new Date(),deliveryDetailsId,ConstantDocument.PCK);
 
+					// old status
+					fcSaleDeliveryService.logStatusChangeAuditEvent(deliveryDetailsId, oldOrderStatus);
+
 					// calling report
 					fxOrderReportResponseDto = fetchTransactionReport(customerId,collectionDocYear, collectionDocNumber);
 
@@ -776,6 +787,8 @@ public class FcSaleBranchOrderManager {
 
 	public Boolean acceptOrderLock(BigDecimal applicationCountryId,BigDecimal orderNumber,BigDecimal orderYear,BigDecimal employeeId) {
 		Boolean status = Boolean.FALSE;
+		BigDecimal deliveryDetailsId = null;
+		String oldOrderStatus = null;
 
 		try {
 			// receipt payment Details
@@ -785,6 +798,8 @@ public class FcSaleBranchOrderManager {
 				OrderManagementView orderManagementView = lstOrderManagement.get(0);
 				FxDeliveryDetailsModel deliveryDetails = fcSaleBranchDao.fetchDeliveryDetails(orderManagementView.getDeliveryDetailsId(),ConstantDocument.Yes);
 				if(deliveryDetails != null) {
+					deliveryDetailsId = deliveryDetails.getDeleviryDelSeqId();
+					oldOrderStatus = deliveryDetails.getOrderStatus();
 					if(deliveryDetails.getOrderLock() != null && deliveryDetails.getEmployeeId() != null) {
 						Date orderLock = deliveryDetails.getOrderLock();
 						BigDecimal employeeDBId = deliveryDetails.getEmployeeId();
@@ -794,12 +809,12 @@ public class FcSaleBranchOrderManager {
 						JaxConfig jaxConfig = jaxConfigRepository.findByType("FC_SALE_ONLINE");
 						if (jaxConfig != null) {
 							if(jaxConfig.getValue() != null && diffMinutes >= Long.parseLong(jaxConfig.getValue())) {
-								status = saveAndUpdateOrderLock(employeeId, lstOrderManagement);
+								status = saveAndUpdateOrderLock(employeeId, lstOrderManagement,deliveryDetailsId,oldOrderStatus);
 							}else {
 								// allow
 								if(employeeDBId.compareTo(employeeId) == 0) {
 									// already
-									status = saveAndUpdateOrderLock(employeeId, lstOrderManagement);
+									status = saveAndUpdateOrderLock(employeeId, lstOrderManagement,deliveryDetailsId,oldOrderStatus);
 								}else {
 									throw new GlobalException(JaxError.ORDER_LOCKED_OTHER_EMPLOYEE,"record is been locked by other employee");
 								}
@@ -807,19 +822,19 @@ public class FcSaleBranchOrderManager {
 						}else {
 							// default 10 minutes
 							if(diffMinutes >= new Long(10)) {
-								status = saveAndUpdateOrderLock(employeeId, lstOrderManagement);
+								status = saveAndUpdateOrderLock(employeeId, lstOrderManagement,deliveryDetailsId,oldOrderStatus);
 							}else {
 								// allow
 								if(employeeDBId.compareTo(employeeId) == 0) {
 									// already
-									status = saveAndUpdateOrderLock(employeeId, lstOrderManagement);
+									status = saveAndUpdateOrderLock(employeeId, lstOrderManagement,deliveryDetailsId,oldOrderStatus);
 								}else {
 									throw new GlobalException(JaxError.ORDER_LOCKED_OTHER_EMPLOYEE,"record is been locked by other employee");
 								}
 							}
 						}
 					}else {
-						status = saveAndUpdateOrderLock(employeeId, lstOrderManagement);
+						status = saveAndUpdateOrderLock(employeeId, lstOrderManagement,deliveryDetailsId,oldOrderStatus);
 					}
 				}else {
 					throw new GlobalException(JaxError.NO_DELIVERY_DETAILS,"No records available for Delivery details");
@@ -839,26 +854,30 @@ public class FcSaleBranchOrderManager {
 
 		return status;
 	}
-	
+
 	// update the status
-	public Boolean saveAndUpdateOrderLock(BigDecimal employeeId,List<OrderManagementView> lstOrderManagement) {
+	public Boolean saveAndUpdateOrderLock(BigDecimal employeeId,List<OrderManagementView> lstOrderManagement,BigDecimal deliveryDetailsId,String oldOrderStatus) {
 		Boolean status = Boolean.FALSE;
 		String userName = null;
 		FxEmployeeDetailsDto employeeDt = fetchEmployee(employeeId);
 		if(employeeDt != null && employeeDt.getEmployeeId() != null){
 			userName = employeeDt.getUserName();
 			fcSaleBranchDao.saveOrderLockDetails(lstOrderManagement,employeeId,userName,ConstantDocument.ACP);
+			// old status
+			fcSaleDeliveryService.logStatusChangeAuditEvent(deliveryDetailsId, oldOrderStatus);
 			status = Boolean.TRUE;
 		}else {
 			throw new GlobalException(JaxError.INVALID_EMPLOYEE,"Employee details is empty");
 		}
-		
+
 		return status;
 	}
 
 	public Boolean releaseOrderLock(BigDecimal applicationCountryId,BigDecimal orderNumber,BigDecimal orderYear,BigDecimal employeeId) {
 		Boolean status = Boolean.FALSE;
 		String userName = null;
+		BigDecimal deliveryDetailsId = null;
+		String oldOrderStatus = null;
 
 		try {
 			// receipt payment Details
@@ -868,11 +887,15 @@ public class FcSaleBranchOrderManager {
 				OrderManagementView orderManagementView = lstOrderManagement.get(0);
 				FxDeliveryDetailsModel deliveryDetails = fcSaleBranchDao.fetchDeliveryDetails(orderManagementView.getDeliveryDetailsId(),ConstantDocument.Yes);
 				if(deliveryDetails != null) {
+					deliveryDetailsId = deliveryDetails.getDeleviryDelSeqId();
+					oldOrderStatus = deliveryDetails.getOrderStatus();
 					if(deliveryDetails.getOrderLock() != null && deliveryDetails.getEmployeeId() != null) {
 						FxEmployeeDetailsDto employeeDt = fetchEmployee(employeeId);
 						if(employeeDt != null && employeeDt.getEmployeeId() != null){
 							userName = employeeDt.getUserName();
 							fcSaleBranchDao.saveOrderReleaseDetails(lstOrderManagement,employeeId,userName,ConstantDocument.ORD);
+							// old status
+							fcSaleDeliveryService.logStatusChangeAuditEvent(deliveryDetailsId, oldOrderStatus);
 							status = Boolean.TRUE;
 						}else {
 							throw new GlobalException(JaxError.INVALID_EMPLOYEE,"Employee details is empty");
@@ -905,10 +928,12 @@ public class FcSaleBranchOrderManager {
 		return decimalValue;
 	}
 
-	
+
 	public Boolean dispatchOrder(BigDecimal applicationCountryId,BigDecimal orderNumber,BigDecimal orderYear,BigDecimal employeeId) {
 		Boolean status = Boolean.FALSE;
 		String userName = null;
+		BigDecimal deliveryDetailsId = null;
+		String oldOrderStatus = null;
 
 		try {
 			// receipt payment Details
@@ -918,11 +943,17 @@ public class FcSaleBranchOrderManager {
 				OrderManagementView orderManagementView = lstOrderManagement.get(0);
 				FxDeliveryDetailsModel deliveryDetails = fcSaleBranchDao.fetchDeliveryDetails(orderManagementView.getDeliveryDetailsId(),ConstantDocument.Yes);
 				if(deliveryDetails != null) {
+					deliveryDetailsId = deliveryDetails.getDeleviryDelSeqId();
+					oldOrderStatus = deliveryDetails.getOrderStatus();
 					if(deliveryDetails.getOrderLock() != null && deliveryDetails.getEmployeeId() != null) {
 						FxEmployeeDetailsDto employeeDt = fetchEmployee(employeeId);
 						if(employeeDt != null && employeeDt.getEmployeeId() != null){
 							userName = employeeDt.getUserName();
 							fcSaleBranchDao.saveDispatchOrder(lstOrderManagement,employeeId,userName,ConstantDocument.OFD);
+
+							// old status
+							fcSaleDeliveryService.logStatusChangeAuditEvent(deliveryDetailsId, oldOrderStatus);
+
 							fcSaleDeliveryService.sendOtp(deliveryDetails.getDeleviryDelSeqId(), false);
 							status = Boolean.TRUE;
 						}else {
@@ -945,7 +976,7 @@ public class FcSaleBranchOrderManager {
 
 		return status;
 	}
-	
+
 	// fetch the currency Denomination from currency adjust
 	public List<UserStockDto> fetchCurrencyAdjustDetails(BigDecimal documentNo,BigDecimal documentYear,BigDecimal companyId,BigDecimal documentCode){
 		List<UserStockDto> currencyAdjust = new ArrayList<>();
@@ -954,7 +985,7 @@ public class FcSaleBranchOrderManager {
 		if(foreignCurrencyAdjust != null && foreignCurrencyAdjust.size() != 0) {
 
 			for (ForeignCurrencyAdjust foreignCurrencyAdj : foreignCurrencyAdjust) {
-				
+
 				UserStockDto userStockDto = new UserStockDto();
 
 				userStockDto.setCurrencyId(foreignCurrencyAdj.getFsCurrencyMaster().getCurrencyId());
@@ -962,17 +993,19 @@ public class FcSaleBranchOrderManager {
 				userStockDto.setDenominationId(foreignCurrencyAdj.getFsDenominationId().getDenominationId());
 				userStockDto.setDenominationPrice(foreignCurrencyAdj.getAdjustmentAmount());
 				userStockDto.setDenominationQuatity(foreignCurrencyAdj.getNotesQuantity());
-				
+
 				currencyAdjust.add(userStockDto);
 			}
 		}
 
 		return currencyAdjust;
 	}
-	
+
 	public Boolean acknowledgeDriver(BigDecimal applicationCountryId,BigDecimal orderNumber,BigDecimal orderYear,BigDecimal employeeId) {
 		Boolean status = Boolean.FALSE;
 		String userName = null;
+		BigDecimal deliveryDetailsId = null;
+		String oldOrderStatus = null;
 
 		try {
 			// receipt payment Details
@@ -982,11 +1015,17 @@ public class FcSaleBranchOrderManager {
 				OrderManagementView orderManagementView = lstOrderManagement.get(0);
 				FxDeliveryDetailsModel deliveryDetails = fcSaleBranchDao.fetchDeliveryDetails(orderManagementView.getDeliveryDetailsId(),ConstantDocument.Yes);
 				if(deliveryDetails != null) {
+					deliveryDetailsId = deliveryDetails.getDeleviryDelSeqId();
+					oldOrderStatus = deliveryDetails.getOrderStatus();
 					if(deliveryDetails.getOrderLock() != null && deliveryDetails.getEmployeeId() != null) {
 						FxEmployeeDetailsDto employeeDt = fetchEmployee(employeeId);
 						if(employeeDt != null && employeeDt.getEmployeeId() != null){
 							userName = employeeDt.getUserName();
 							fcSaleBranchDao.saveAcknowledgeDriver(lstOrderManagement,employeeId,userName,ConstantDocument.OFD_CNF);
+
+							// old status
+							fcSaleDeliveryService.logStatusChangeAuditEvent(deliveryDetailsId, oldOrderStatus);
+
 							status = Boolean.TRUE;
 						}else {
 							throw new GlobalException(JaxError.INVALID_EMPLOYEE,"Employee details is empty");
@@ -1008,10 +1047,12 @@ public class FcSaleBranchOrderManager {
 
 		return status;
 	}
-	
+
 	public Boolean returnAcknowledge(BigDecimal applicationCountryId,BigDecimal orderNumber,BigDecimal orderYear,BigDecimal employeeId) {
 		Boolean status = Boolean.FALSE;
 		String userName = null;
+		BigDecimal deliveryDetailsId = null;
+		String oldOrderStatus = null;
 
 		try {
 			// receipt payment Details
@@ -1021,11 +1062,17 @@ public class FcSaleBranchOrderManager {
 				OrderManagementView orderManagementView = lstOrderManagement.get(0);
 				FxDeliveryDetailsModel deliveryDetails = fcSaleBranchDao.fetchDeliveryDetails(orderManagementView.getDeliveryDetailsId(),ConstantDocument.Yes);
 				if(deliveryDetails != null) {
+					deliveryDetailsId = deliveryDetails.getDeleviryDelSeqId();
+					oldOrderStatus = deliveryDetails.getOrderStatus();
 					if(deliveryDetails.getOrderLock() != null && deliveryDetails.getEmployeeId() != null) {
 						FxEmployeeDetailsDto employeeDt = fetchEmployee(employeeId);
 						if(employeeDt != null && employeeDt.getEmployeeId() != null){
 							userName = employeeDt.getUserName();
 							fcSaleBranchDao.saveReturnAcknowledge(lstOrderManagement,employeeId,userName,ConstantDocument.RTD);
+
+							// old status
+							fcSaleDeliveryService.logStatusChangeAuditEvent(deliveryDetailsId, oldOrderStatus);
+
 							status = Boolean.TRUE;
 						}else {
 							throw new GlobalException(JaxError.INVALID_EMPLOYEE,"Employee details is empty");
@@ -1047,10 +1094,12 @@ public class FcSaleBranchOrderManager {
 
 		return status;
 	}
-	
+
 	public Boolean acceptCancellation(BigDecimal applicationCountryId,BigDecimal orderNumber,BigDecimal orderYear,BigDecimal employeeId) {
 		Boolean status = Boolean.FALSE;
 		String userName = null;
+		BigDecimal deliveryDetailsId = null;
+		String oldOrderStatus = null;
 
 		try {
 			// receipt payment Details
@@ -1060,11 +1109,17 @@ public class FcSaleBranchOrderManager {
 				OrderManagementView orderManagementView = lstOrderManagement.get(0);
 				FxDeliveryDetailsModel deliveryDetails = fcSaleBranchDao.fetchDeliveryDetails(orderManagementView.getDeliveryDetailsId(),ConstantDocument.Yes);
 				if(deliveryDetails != null) {
+					deliveryDetailsId = deliveryDetails.getDeleviryDelSeqId();
+					oldOrderStatus = deliveryDetails.getOrderStatus();
 					if(deliveryDetails.getOrderLock() != null && deliveryDetails.getEmployeeId() != null) {
 						FxEmployeeDetailsDto employeeDt = fetchEmployee(employeeId);
 						if(employeeDt != null && employeeDt.getEmployeeId() != null){
 							userName = employeeDt.getUserName();
 							fcSaleBranchDao.saveAcceptCancellation(lstOrderManagement,employeeId,userName,ConstantDocument.CND);
+
+							// old status
+							fcSaleDeliveryService.logStatusChangeAuditEvent(deliveryDetailsId, oldOrderStatus);
+
 							status = Boolean.TRUE;
 						}else {
 							throw new GlobalException(JaxError.INVALID_EMPLOYEE,"Employee details is empty");
@@ -1086,7 +1141,7 @@ public class FcSaleBranchOrderManager {
 
 		return status;
 	}
-	
+
 	public FxOrderReportResponseDto reprintOrder(BigDecimal applicationCountryId,BigDecimal orderNumber,BigDecimal orderYear,BigDecimal employeeId){
 		FxOrderReportResponseDto fxOrderReportResponseDto = null;
 		BigDecimal customerId = null;
@@ -1095,18 +1150,20 @@ public class FcSaleBranchOrderManager {
 		if(collection != null && collection.size() != 0) {
 			CollectionModel collectionModel = collection.get(0);
 			customerId = collectionModel.getFsCustomer().getCustomerId();
-			
+
 			fxOrderReportResponseDto = fetchTransactionReport(customerId,orderYear, orderNumber);
 		}else {
 			throw new GlobalException(JaxError.INVALID_COLLECTION_DOCUMENT_NO,"Collection details is empty");
 		}
-		
+
 		return fxOrderReportResponseDto; 
 	}
 
 	// stock move from branch staff to driver and vice versa
 	public Boolean currentStockMigration() {
 		Boolean status = Boolean.FALSE;
+
+
 
 		return status;
 	}
