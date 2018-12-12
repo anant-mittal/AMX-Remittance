@@ -284,13 +284,11 @@ a {
 									</tr>
 									
 									<tr>
-										<td class="content-block">This is to inform you that your order <strong  th:text="${data.deliveryDetail.transactionRefId}"></strong> is dispatched. To acknowledge and take the
-										delivery, please share the OTP to the delivery person.
+										<td class="content-block">This is to inform you that your order <span  th:text="${data.deliveryDetail.transactionRefId}"></span>  
+										This OTP <span  th:text="${data.mOtpPrefix}"></span> - <span  th:text="${data.mOtp}"></span>, is to be shared with the delivery agent, to confirm your identity, as the originator of the Foreign Exchange Order.
 										</td>
 									</tr>
-									<tr>
-										<td class="content-block">Your one time password (OTP) is - <strong  th:text="${data.mOtp}"></strong></td>
-									</tr>
+									
 									<tr>
 										<td class="content-block">Thanks and Regards,<br/>
 											<strong><span th:text="${_tu.prop('company.fullname')}" th:remove="tag"></span>,</strong><br/>
