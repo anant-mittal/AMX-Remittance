@@ -45,6 +45,15 @@ public class JaxConfigService extends AbstractService {
 		JaxConfig jaxConfig = repo.findByType(type);
 		return jaxConfig;
 	}
+	
+	public String getConfigValue(String key, String defaultValue) {
+		JaxConfig jaxConfig = repo.findByType(key);
+		if (jaxConfig != null && jaxConfig.getValue() != null) {
+			return jaxConfig.getValue();
+		} else {
+			return defaultValue;
+		}
+	}
 
 	@SuppressWarnings({ "rawtypes" })
 	public ApiResponse saveOtpSettings(OtpSettings settings) {

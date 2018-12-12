@@ -8,7 +8,9 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.logger.LoggerService;
+import com.amx.jax.rbaac.dao.EmployeeSystemDao;
 import com.amx.jax.rbaac.dao.RbaacDao;
 import com.amx.jax.rbaac.dbmodel.Employee;
 import com.amx.jax.rbaac.dto.request.EmployeeDetailsRequestDTO;
@@ -25,6 +27,8 @@ public class UserAccountService {
 	/** The login dao. */
 	@Autowired
 	RbaacDao rbaacDao;
+	@Autowired
+	EmployeeSystemDao employeeSystemDao ; 
 
 	/**
 	 * Update employee.
@@ -100,4 +104,11 @@ public class UserAccountService {
 
 	}
 
+	public BoolRespModel createEmployeeSystemMapping(BigDecimal employeeId, Integer countryBranchSystemInventoryId) {
+		return null;
+		// TODO Auto-generated method stub
+		
+	}
+
+	
 }

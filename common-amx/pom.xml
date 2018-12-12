@@ -13,7 +13,6 @@
 		<groupId>com.amx.jax</groupId>
 		<artifactId>amxeco</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
-		<relativePath>../pom.xml</relativePath> <!-- lookup parent from repository -->
 	</parent>
 
 	<properties>
@@ -21,12 +20,6 @@
 	</properties>
 
 	<dependencies>
-
-		<dependency>
-			<groupId>com.amx.jax</groupId>
-			<artifactId>lib-ext-jar</artifactId>
-			<type>pom</type>
-		</dependency>
 
 		<dependency>
 			<groupId>com.amx.jax</groupId>
@@ -39,20 +32,9 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.springframework.mobile</groupId>
-			<artifactId>spring-mobile-device</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>eu.bitwalker</groupId>
-			<artifactId>UserAgentUtils</artifactId>
-			<version>1.21</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.googlecode.owasp-java-html-sanitizer</groupId>
-			<artifactId>owasp-java-html-sanitizer</artifactId>
-			<version>20180219.1</version>
+			<groupId>com.amx.jax</groupId>
+			<artifactId>lib-ext-jar</artifactId>
+			<type>pom</type>
 		</dependency>
 
 		<dependency>
@@ -65,7 +47,6 @@
 			<groupId>commons-beanutils</groupId>
 			<artifactId>commons-beanutils</artifactId>
 		</dependency>
-
 
 		<dependency>
 			<groupId>org.springframework</groupId>

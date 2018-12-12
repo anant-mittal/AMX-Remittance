@@ -1,0 +1,66 @@
+<meta http-equiv="refresh" content="5;url=http://127.0.0.1:8020" />
+
+<center>
+	<table align="center" border=1 cols=2>
+		<tr>
+			<th colspan="2">Al Mulla Exchange : BranchAdapter</th>
+		</tr>
+		<tr>
+			<td>REG ID</td>
+			<td>${REG_ID}</td>
+		</tr>
+		<tr>
+			<td>TERMINAL</td>
+			<td>${TERMINAL_IP}</td>
+		</tr>
+		<tr>
+			<td>USER_NAME</td>
+			<td>${USER_NAME}</td>
+		</tr>
+		<tr>
+			<td>HOST_NAME</td>
+			<td>${HOST_NAME}</td>
+		</tr>
+		<tr>
+			<td>LOCAL_IP</td>
+			<td>${LOCAL_IP}</td>
+		</tr>
+		<tr>
+			<td>DEVICE_STATUS</td>
+			<td>${DEVICE_STATUS}</td>
+		</tr>
+		<tr>
+			<td>CARD_STATUS</td>
+			<td>${CARD_STATUS}</td>
+		</tr>
+		<tr>
+			<td>DATA_STATUS</td>
+			<td>${DATA_STATUS}</td>
+		</tr>
+		<tr hidden="hidden" style="dispaly:none">
+			<td align="center" colspan="2">
+				<div>&nbsp;</div>
+				<div>
+					<form method="post">
+						<input name="terminalId" placeholder="Terminal IP" />
+						<button type="submit">Pair</button>
+					</form>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td align="center" colspan="2">
+				<div>&nbsp;</div>
+				<div>
+					<form method="post">
+						<input name="terminalId" type="hidden" value="${LOCAL_IP}" />
+						<button type="submit">Pair with Local IP</button>
+					</form>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2">${LOG}</td>
+		</tr>
+	</table>
+</center>

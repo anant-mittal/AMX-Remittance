@@ -6,7 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.amx.amxlib.meta.model.CurrencyMasterDTO;
+import com.amx.jax.model.response.CurrencyMasterDTO;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.jax.scope.TenantScoped;
 

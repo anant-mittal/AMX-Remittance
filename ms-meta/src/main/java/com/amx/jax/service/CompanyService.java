@@ -26,7 +26,7 @@ public class CompanyService extends AbstractService {
 
 	@Autowired
 	ICompanyDAO companyDao;
-	
+
 	@Autowired
 	MetaData metaData;
 
@@ -39,16 +39,15 @@ public class CompanyService extends AbstractService {
 		}
 		return AmxApiResponse.buildList(convert(companyDetails));
 	}
-	
+
 	public ViewCompanyDetails getCompanyDetail(BigDecimal languageId) {
 		List<ViewCompanyDetails> companyDetails = companyDao.getCompanyDetails(languageId);
-		if(companyDetails.isEmpty())
-		{
-			throw new GlobalException("Language Id is invalid",JaxError.INVALID_LANGUAGE_ID);
+		if (companyDetails.isEmpty()) {
+			throw new GlobalException(JaxError.INVALID_LANGUAGE_ID, "Language Id is invalid");
 		}
 		return companyDetails.get(0);
 	}
-	
+
 	/**
 	 * returns the company details based on meta info
 	 */
@@ -88,10 +87,10 @@ public class CompanyService extends AbstractService {
 		return list;
 
 	}
-	
+
 	public ViewCompanyDetails getCompanyDetailsById(BigDecimal companyId) {
 		List<ViewCompanyDetails> companyDetails = companyDao.getCompanyDetailsByCompanyId(companyId);
-		return companyDetails.get(0); 
+		return companyDetails.get(0);
 	}
 
 	@Override

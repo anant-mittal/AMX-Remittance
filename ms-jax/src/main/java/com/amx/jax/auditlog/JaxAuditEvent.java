@@ -35,7 +35,15 @@ public class JaxAuditEvent extends AuditEvent {
 	    BENE_FAV_LIST_NOT_EXIST,
 	    BENE_PO_SUCCESS,
 	    BENE_PO_NO_PO_ID,
-	    BENE_PO_NO_BENE_RECORD;
+	    BENE_PO_NO_BENE_RECORD,
+
+		/** FOR FC Sale Order in Online added by Rabil **/
+	    FC_SALE_PUR_TRNX,
+	    FC_SALE_PUR_TRNX_NOT_EXIST,
+		FC_SALE_CURR_LIST_SUCESS,
+		FC_SALE_CURR_LIST_NOT_SET,
+		FC_SALE_UPDATE_ORDER_STATUS;
+		/** End Here**/
 
 		@Override
 		public EventMarker marker() {

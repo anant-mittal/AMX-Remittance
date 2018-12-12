@@ -1,10 +1,12 @@
 package com.amx.amxlib.meta.model;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
-public class CustomerDto {
+public class CustomerDto implements Serializable {
 	
+	private static final long serialVersionUID = 6882188565866584762L;
 	private BigDecimal customerId;
 	private BigDecimal companyId;
 	private BigDecimal countryId;

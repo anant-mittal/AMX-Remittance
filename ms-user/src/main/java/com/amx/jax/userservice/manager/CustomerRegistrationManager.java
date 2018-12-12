@@ -16,13 +16,14 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.constant.PrefixEnum;
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.model.CustomerCredential;
 import com.amx.amxlib.model.CustomerHomeAddress;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.jax.AppConstants;
+import com.amx.jax.CustomerCredential;
 import com.amx.jax.cache.CustomerTransactionModel;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxTransactionModel;
+import com.amx.jax.constants.CustomerRegistrationType;
 import com.amx.jax.dal.BizcomponentDao;
 import com.amx.jax.dbmodel.BizComponentData;
 import com.amx.jax.dbmodel.ContactDetail;
@@ -127,7 +128,7 @@ public class CustomerRegistrationManager extends CustomerTransactionModel<Custom
 	 */
 	private void revalidateOtp(OtpData otpData) {
 		if (!otpData.isOtpValidated()) {
-			throw new GlobalException("otp is not validated", JaxError.OTP_NOT_VALIDATED);
+			throw new GlobalException(JaxError.OTP_NOT_VALIDATED, "otp is not validated");
 		}
 	}
 
@@ -197,6 +198,7 @@ public class CustomerRegistrationManager extends CustomerTransactionModel<Custom
 		customer.setMobile(customerPersonalDetail.getMobile());
 		customer.setIdentityFor(ConstantDocument.IDENTITY_FOR_ID_PROOF);
 		customer.setIdentityTypeId(ConstantDocument.BIZ_COMPONENT_ID_CIVIL_ID);
+		customer.setCustomerRegistrationType(CustomerRegistrationType.PARTIAL_REG);
 
 		LOGGER.info("generated customer ref: {}", customerReference);
 		LOGGER.info("Createing new customer record, civil id- {}", customerPersonalDetail.getIdentityInt());

@@ -21,12 +21,14 @@ import org.springframework.stereotype.Service;
 
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.ServiceGroupMasterDescDto;
+import com.amx.amxlib.meta.model.ViewAreaDto;
 import com.amx.amxlib.meta.model.ViewCityDto;
 import com.amx.amxlib.model.OnlineConfigurationDto;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.config.JaxProperties;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.OnlineConfiguration;
+import com.amx.jax.dbmodel.ViewAreaModel;
 import com.amx.jax.dbmodel.ViewCity;
 import com.amx.jax.dbmodel.ViewDistrict;
 import com.amx.jax.dbmodel.ViewState;
@@ -38,6 +40,7 @@ import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.CountryRepository;
 import com.amx.jax.repository.IContactDetailDao;
 import com.amx.jax.repository.ICustomerRepository;
+import com.amx.jax.repository.IViewArea;
 import com.amx.jax.repository.IViewCityDao;
 import com.amx.jax.repository.IViewDistrictDAO;
 import com.amx.jax.repository.IViewStateDao;
@@ -71,13 +74,15 @@ public class MetaService extends AbstractService {
 
 	@Autowired
 	IViewDistrictDAO districtDao;
+	@Autowired
+	IViewArea areaDao;
 
 	@Autowired
 	OnlineConfigurationRepository onlineConfigurationRepository;
-	
+
 	@Autowired
 	ServiceGroupMasterDescRepository serviceGroupMasterDescRepository;
-	
+
 	@Autowired
 	ServiceGroupMasterRepository serviceGroupMasterRepository;
 	@Autowired
@@ -92,22 +97,43 @@ public class MetaService extends AbstractService {
 	public AmxApiResponse<ViewCityDto, Object> getDistrictCity(BigDecimal districtId, BigDecimal languageId) {
 		List<ViewCity> cityList = cityDao.getCityByDistrictId(districtId, languageId);
 		if (cityList.isEmpty()) {
-			throw new GlobalException("city not avaliable", JaxError.CITY_NOT_AVAILABLE);
-		} 
+			throw new GlobalException(JaxError.CITY_NOT_AVAILABLE, "city not avaliable");
+		}
 		return AmxApiResponse.buildList(convertCityDto(cityList));
 	}
 
-	public AmxApiResponse<ViewCityDto, Object> getCityDescription(BigDecimal districtId, BigDecimal languageId, BigDecimal cityId) {
+	public AmxApiResponse<ViewCityDto, Object> getCityDescription(BigDecimal districtId, BigDecimal languageId,
+			BigDecimal cityId) {
 		List<ViewCity> cityList = cityDao.getCityDescription(districtId, cityId, languageId);
 		if (cityList.isEmpty()) {
 			throw new GlobalException("city not avaliable");
-		} 
+		}
 		return AmxApiResponse.buildList(convertCityDto(cityList));
 	}
 
 	private List<ViewCityDto> convertCityDto(List<ViewCity> cityList) {
 		List<ViewCityDto> output = new ArrayList<>();
 		cityList.forEach(cityModel -> output.add(convertCityModelToDto(cityModel)));
+		return output;
+	}
+
+	public AmxApiResponse<ViewAreaDto, Object> getAreaList() {
+		List<ViewAreaModel> viewAreaList = areaDao.getAreaList();
+		if (viewAreaList.isEmpty()) {
+			throw new GlobalException("area not avaliable");
+		}
+		return AmxApiResponse.buildList(convertAreaDto(viewAreaList));
+	}
+
+	private List<ViewAreaDto> convertAreaDto(List<ViewAreaModel> viewAreaList) {
+		List<ViewAreaDto> output = new ArrayList<>();
+		for (ViewAreaModel viewAreaModel : viewAreaList) {
+			ViewAreaDto dto = new ViewAreaDto();
+			dto.setAreaCode(viewAreaModel.getAreaCode());
+			dto.setAreaDesc(viewAreaModel.getAreaDesc());
+			dto.setShortDesc(viewAreaModel.getShortDesc());
+			output.add(dto);
+		}
 		return output;
 	}
 
@@ -121,22 +147,19 @@ public class MetaService extends AbstractService {
 		return dto;
 	}
 
-	public AmxApiResponse<OnlineConfigurationDto, Object> getOnlineConfig(String applInd) {		
+	public AmxApiResponse<OnlineConfigurationDto, Object> getOnlineConfig(String applInd) {
 		List<OnlineConfiguration> output = onlineConfigurationRepository.findByappInd(applInd);
 		OnlineConfigurationDto dto = new OnlineConfigurationDto();
 		try {
 			BeanUtils.copyProperties(dto, output.get(0));
 		} catch (IllegalAccessException | InvocationTargetException e) {
 			logger.error("unable to convert OnlineConfigurationDto", e);
-		}		
+		}
 		return AmxApiResponse.build(dto);
 	}
-	
+
 	public AmxApiResponse<ServiceGroupMasterDescDto, Object> getServiceGroups() {
-		/*ApiResponse response = getBlackApiResponse();
-		response.getData().setType("service-group-model");*/
 		List<ServiceGroupMasterDescDto> outputDto = getServiceGroupDto();
-		/*response.getData().getValues().addAll(outputDto);*/
 		return AmxApiResponse.buildList(outputDto);
 	}
 
@@ -174,7 +197,7 @@ public class MetaService extends AbstractService {
 		return serviceGroupMasterRepository.findByServiceGroupCodeAndIsActive(serviceGroupCode, ConstantDocument.Yes)
 				.get(0);
 	}
-	
+
 	public List<ServiceMaster> getServiceMaster(String serviceGroupCode) {
 		ServiceGroupMaster serviceGroupMaster = getServiceGroupMasterByCode(serviceGroupCode);
 		return serviceMasterRepository.findByServiceGroupIdAndIsActive(serviceGroupMaster, ConstantDocument.Yes);
@@ -200,7 +223,7 @@ public class MetaService extends AbstractService {
 	public ViewDistrict getDistrictMasterById(BigDecimal id) {
 		return districtDao.findOne(id);
 	}
-	
+
 	public ViewState getStateMasterById(BigDecimal id) {
 		return stateDao.findOne(id);
 	}

@@ -19,4 +19,6 @@ public interface CustomerIdProofRepository extends JpaRepository<CustomerIdProof
 			+ " ORDER BY NVL(LAST_UPDATED_DATE,CREATION_DATE) DESC", nativeQuery = true)
 	public List<CustomerIdProof> getCustomerImageValidation(BigDecimal customerId, BigDecimal identityTypeId);
 
+	@Query(value = "select * from FS_CUSTOMER_ID_PROOF where CUSTOMER_ID=?1 and IDENTITY_TYPE_ID =?2", nativeQuery = true)
+	public List<CustomerIdProof> getCustomeridProofForIdType(BigDecimal customerId, BigDecimal identityTypeId);
 }

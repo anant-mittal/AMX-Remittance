@@ -17,6 +17,9 @@ public class TermsAndCondition {
 	private BigDecimal countryId;
 	private String status;
 	private String description;
+	private String moduleType;
+	private String moduleDescription;
+	private String channel;
 	
 	@Id
 	@Column(name="TERMS_CONDITION_ID")
@@ -60,6 +63,27 @@ public class TermsAndCondition {
 	}
 	public void setDescription(String description) {
 		this.description = description;
+	}
+	@Column(name="MODULE_TYPE")
+	public String getModuleType() {
+		return moduleType;
+	}
+	public void setModuleType(String moduleType) {
+		this.moduleType = moduleType;
+	}
+	@Column(name="MODULE_DESC")
+	public String getModuleDescription() {
+		return moduleDescription;
+	}
+	public void setModuleDescription(String moduleDescription) {
+		this.moduleDescription = moduleDescription;
+	}
+	@Column(name="CHANNEL")
+	public String getChannel() {
+		return channel;
+	}
+	public void setChannel(String channel) {
+		this.channel = channel;
 	}
 	
 	

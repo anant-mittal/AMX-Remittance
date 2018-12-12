@@ -25,4 +25,10 @@ public class CustomerIdProofDao {
 				identityTypeId);
 		return idProofList;
 	}
+	
+	public List<CustomerIdProof> getCustomeridProofForIdType(BigDecimal customerId, BigDecimal identityTypeId) {
+		List<CustomerIdProof> idProofList = customerIdProofRepository.getCustomeridProofForIdType(customerId,
+				identityTypeId);
+		return idProofList;
+	}
 }

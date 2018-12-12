@@ -96,15 +96,15 @@ public class Pnum extends Dnum<Pnum> {
 				} else {
 					String[] args = parts[1].split("\\s*,\\s*");
 					if (args.length == 1) {
-						additionalConstructor1.newInstance(parts[0], ordinal, args[0]);
+						additionalConstructor1.newInstance(parts[0], ordinal++, args[0]);
 					} else if (args.length == 2 && additionalConstructor2 != null) {
-						additionalConstructor2.newInstance(parts[0], ordinal, args[0], args[1]);
+						additionalConstructor2.newInstance(parts[0], ordinal++, args[0], args[1]);
 					} else if (args.length == 3 && additionalConstructor3 != null) {
-						additionalConstructor3.newInstance(parts[0], ordinal, args[0], args[1], args[2]);
+						additionalConstructor3.newInstance(parts[0], ordinal++, args[0], args[1], args[2]);
 					} else if (args.length == 4 && additionalConstructor4 != null) {
-						additionalConstructor4.newInstance(parts[0], ordinal, args[0], args[1], args[2], args[3]);
+						additionalConstructor4.newInstance(parts[0], ordinal++, args[0], args[1], args[2], args[3]);
 					} else if (args.length == 5 && additionalConstructor5 != null) {
-						additionalConstructor5.newInstance(parts[0], ordinal, args[0], args[1], args[2], args[3],
+						additionalConstructor5.newInstance(parts[0], ordinal++, args[0], args[1], args[2], args[3],
 								args[4]);
 					}
 

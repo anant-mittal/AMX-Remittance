@@ -11,25 +11,16 @@ public enum TemplatesIB implements ITemplate {
 	PDFConverter converter;
 	String sampleJSON;
 	boolean thymleaf = true;
-	boolean thymleafJson = false;
 
 	@Override
 	public String getFileName() {
 		return fileName;
 	}
 
-	@Override
-	public String getJsonFileName() {
-		return "json/" + fileName;
-	}
-
 	TemplatesIB(String fileName, PDFConverter converter, String sampleJSON) {
 		this.fileName = fileName;
 		this.converter = converter;
 		this.sampleJSON = sampleJSON;
-		if (this.fileName.startsWith("json/")) {
-			this.thymleafJson = true;
-		}
 		if (this.converter == PDFConverter.JASPER) {
 			this.thymleaf = false;
 		}
@@ -65,13 +56,18 @@ public enum TemplatesIB implements ITemplate {
 		return thymleaf;
 	}
 
-	@Override
-	public boolean isThymleafJson() {
-		return thymleafJson;
-	}
-
 	public String toString() {
 		return this.name();
+	}
+
+	@Override
+	public String getJsonFile() {
+		return "json/" + fileName;
+	}
+
+	@Override
+	public String getHtmlFile() {
+		return "html/" + fileName;
 	}
 
 }

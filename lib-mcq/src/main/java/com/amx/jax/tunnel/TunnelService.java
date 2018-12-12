@@ -12,6 +12,7 @@ import com.amx.jax.AppContext;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.logger.client.AuditServiceClient;
 import com.amx.jax.logger.events.RequestTrackEvent;
+import com.amx.jax.tunnel.sample.SampleTunnelEventsDict;
 
 @Service
 public class TunnelService implements ITunnelService {
@@ -130,7 +131,7 @@ public class TunnelService implements ITunnelService {
 	}
 
 	public void sayHello() {
-		this.shout(SampleTunnelEvents.Names.TEST_TOPIC, "Hey There");
+		this.shout(SampleTunnelEventsDict.Names.TEST_TOPIC, "Hey There");
 	}
 
 }

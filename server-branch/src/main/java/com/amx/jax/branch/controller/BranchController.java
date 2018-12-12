@@ -37,12 +37,19 @@ public class BranchController {
 	private Logger logger = Logger.getLogger(BranchController.class);
 	
 	@ApiOperation(value = "Branch Pages")
-	@RequestMapping(value = { "/register/**", "/app/**", "/login/**", "/push/**", "/" }, method = { RequestMethod.GET })
+	@RequestMapping(value = { "/register/**", "/app/**", "/login/**", "/push/**"}, method = { RequestMethod.GET })
 	public String defaultPage(Model model) {
 		model.addAttribute("cdnUrl", webAppConfig.getCleanCDNUrl());
+		model.addAttribute("oldBranchUrl", webAppConfig.getOldBranchUrl());
 		model.addAttribute("cdnVersion", getVersion());
 		model.addAttribute("applicationTitle", webAppConfig.getAppTitle());
 		return "index";
+	}
+	
+	@ApiOperation(value = "Base URL")
+	@RequestMapping(value = { "/" }, method = { RequestMethod.GET })
+	public String baseUrl(Model model) {
+		return "redirect:/app";
 	}
 	
 	public String getVersion() {

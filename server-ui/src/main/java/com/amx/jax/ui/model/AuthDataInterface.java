@@ -5,9 +5,8 @@ import java.util.List;
 import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.jax.model.AuthState;
+import com.amx.jax.swagger.ApiMockModelProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-
-import io.swagger.annotations.ApiModelProperty;
 
 /**
  * The Class AuthDataInterface.
@@ -24,7 +23,7 @@ public final class AuthDataInterface {
 		 *
 		 * @return the identity
 		 */
-		@ApiModelProperty(example = "289053104436")
+		@ApiMockModelProperty(example = "289053104436")
 		public String getIdentity();
 
 		/**
@@ -46,7 +45,7 @@ public final class AuthDataInterface {
 		 *
 		 * @return the password
 		 */
-		@ApiModelProperty(example = "Amx@1234")
+		@ApiMockModelProperty(example = "Amx@1234")
 		public String getPassword();
 
 		/**
@@ -90,7 +89,7 @@ public final class AuthDataInterface {
 		 *
 		 * @return the m otp
 		 */
-		@ApiModelProperty(example = "345678")
+		@ApiMockModelProperty(example = "345678")
 		String getmOtp();
 
 		/**
@@ -106,7 +105,7 @@ public final class AuthDataInterface {
 		 *
 		 * @return the e otp
 		 */
-		@ApiModelProperty(example = "654321")
+		@ApiMockModelProperty(example = "654321")
 		String geteOtp();
 
 		/**
@@ -244,7 +243,7 @@ public final class AuthDataInterface {
 		 *
 		 * @return the email
 		 */
-		@ApiModelProperty(example = "user@amx.com")
+		@ApiMockModelProperty(example = "user@amx.com")
 		public String getEmail();
 
 		/**
@@ -260,7 +259,7 @@ public final class AuthDataInterface {
 		 *
 		 * @return the phone
 		 */
-		@ApiModelProperty(example = "9876543210")
+		@ApiMockModelProperty(example = "9876543210")
 		public String getPhone();
 
 		/**

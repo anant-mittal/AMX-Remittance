@@ -102,7 +102,7 @@ public class BeneficiaryDao {
 
 			}, declareInAndOutputParameters);
 			if (output.get("P_ERROR_MESSAGE") != null) {
-				throw new GlobalException("Failed to populate EMOS data, {}", output.toString());
+				throw new GlobalException(output.toString(), "Failed to populate EMOS data, {}");
 			}
 			LOGGER.info("EX_POPULATE_BENE_DT Out put Parameters :" + output.toString());
 		} catch (DataAccessException e) {

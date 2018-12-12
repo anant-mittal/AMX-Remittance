@@ -21,7 +21,7 @@ import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.rbaac.dbmodel.Employee;
 import com.amx.jax.rbaac.exception.AuthServiceException;
 import com.amx.utils.CryptoUtil;
-import com.amx.utils.Random;
+import com.amx.utils.CryptoUtil.HashBuilder;
 
 /**
  * The Class UserOtpManager.
@@ -54,16 +54,23 @@ public class UserOtpManager {
 	}
 
 	/**
+	 * 
 	 * Generate otp tokens.
 	 *
 	 * @return the otp data
 	 */
-	public OtpData generateOtpTokens() {
+	public OtpData generateOtpTokens(String sac) {
 
 		OtpData otpData = new OtpData();
 
-		otpData.setmOtp(Random.randomNumeric(6));
-		otpData.setmOtpPrefix(Random.randomAlpha(3));
+		/**
+		 * TODO:- Get Device RegId for {@link ClientType#NOTP_APP}
+		 * 
+		 * @author lalittanwar
+		 */
+		HashBuilder builder = new HashBuilder().interval(otpTTL).secret("SHH..DONT.TELL.ANYONE").message(sac);
+		otpData.setmOtpPrefix(sac);
+		otpData.setmOtp(builder.toHMAC().toNumeric(6).output());
 
 		otpData.setHashedmOtp(getOtpHash(otpData.getmOtp()));
 
@@ -108,7 +115,7 @@ public class UserOtpManager {
 	 *            the model
 	 */
 	// Employee otp to login: passing Employee for including any personal Msg
-	public void sendOtpSms(Employee einfo, OtpData model) {
+	public void sendOtpSms(Employee einfo, OtpData model, String slackMsg) {
 
 		LOGGER.info(String.format("Sending OTP SMS to customer :%s on mobile_no :%s  ", einfo.getEmployeeName(),
 				einfo.getTelephoneNumber()));
@@ -123,7 +130,7 @@ public class UserOtpManager {
 			postManService.sendSMSAsync(sms);
 
 			if (!appConfig.isProdMode()) {
-				sendToSlack("mobile", sms.getTo().get(0), model.getmOtpPrefix(), model.getmOtp());
+				sendToSlack(slackMsg + " : " + "mobile", sms.getTo().get(0), model.getmOtpPrefix(), model.getmOtp());
 				// sendToSlack("mobile", sms.getTo().get(0), "Otp-Hash", model.getHashedmOtp());
 			}
 

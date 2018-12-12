@@ -7,11 +7,13 @@ import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.ResponseErrorHandler;
 
+import com.amx.jax.AppConstants;
 import com.amx.jax.exception.AmxApiError;
 import com.amx.jax.exception.AmxApiException;
-import com.amx.jax.exception.AmxHttpExceptions.AmxHttpClientException;
-import com.amx.jax.exception.AmxHttpExceptions.AmxHttpNotFoundException;
-import com.amx.jax.exception.AmxHttpExceptions.AmxHttpServerException;
+import com.amx.jax.exception.ApiHttpExceptions.ApiErrorException;
+import com.amx.jax.exception.ApiHttpExceptions.ApiHttpClientException;
+import com.amx.jax.exception.ApiHttpExceptions.ApiHttpNotFoundException;
+import com.amx.jax.exception.ApiHttpExceptions.ApiHttpServerException;
 import com.amx.jax.exception.ExceptionFactory;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.IoUtils;
@@ -25,8 +27,12 @@ public class AppClientErrorHanlder implements ResponseErrorHandler {
 		if (response.getStatusCode() != HttpStatus.OK) {
 			return true;
 		}
-		String apiErrorJson = (String) response.getHeaders().getFirst("apiErrorJson");
+		String apiErrorJson = (String) response.getHeaders().getFirst(AppConstants.ERROR_HEADER_KEY);
 		if (!ArgUtil.isEmpty(apiErrorJson)) {
+			return true;
+		}
+		Object hasExceptionHeader = response.getHeaders().getFirst(AppConstants.EXCEPTION_HEADER_KEY);
+		if (!ArgUtil.isEmpty(hasExceptionHeader)) {
 			return true;
 		}
 		return false;
@@ -37,21 +43,28 @@ public class AppClientErrorHanlder implements ResponseErrorHandler {
 
 		HttpStatus statusCode = response.getStatusCode();
 		String statusText = response.getStatusText();
-		String apiErrorJson = ArgUtil.parseAsString(response.getHeaders().getFirst("apiErrorJson"));
+		String apiErrorJson = ArgUtil.parseAsString(response.getHeaders().getFirst(AppConstants.ERROR_HEADER_KEY));
 		AmxApiError apiError = throwError(apiErrorJson);
 
 		if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
-			throw new AmxHttpNotFoundException(statusCode);
+			throw new ApiHttpNotFoundException(statusCode);
 		}
+
+		boolean hasExceptionHeader = !ArgUtil
+				.isEmpty(response.getHeaders().getFirst(AppConstants.EXCEPTION_HEADER_KEY));
 
 		if (response.getStatusCode().series() == HttpStatus.Series.SERVER_ERROR) {
 			String body = IoUtils.inputstream_to_string(response.getBody());
 			apiError = throwError(body);
-			throw new AmxHttpServerException(statusCode, apiError);
+			throw new ApiHttpServerException(statusCode, apiError);
 		} else if (response.getStatusCode().series() == HttpStatus.Series.CLIENT_ERROR) {
 			String body2 = IoUtils.inputstream_to_string(response.getBody());
 			apiError = throwError(body2);
-			throw new AmxHttpClientException(statusCode, apiError);
+			throw new ApiHttpClientException(statusCode, apiError);
+		} else if (hasExceptionHeader) {
+			String body = IoUtils.inputstream_to_string(response.getBody());
+			apiError = throwError(body);
+			throw new ApiErrorException(apiError);
 		}
 
 	}
@@ -61,7 +74,7 @@ public class AppClientErrorHanlder implements ResponseErrorHandler {
 		if (!ArgUtil.isEmpty(apiError)) {
 			AmxApiException defExcp = ExceptionFactory.get(apiError.getException());
 			if (defExcp == null) {
-				defExcp = ExceptionFactory.get(apiError.getErrorId());
+				defExcp = ExceptionFactory.get(apiError.getErrorKey());
 			}
 			if (defExcp != null) {
 				throw defExcp.getInstance(apiError);

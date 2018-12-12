@@ -4,11 +4,14 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.amx.jax.api.AmxResponseSchemes.ApiDataMetaResponse;
+import com.amx.jax.api.AmxResponseSchemes.ApiResultsMetaResponse;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class AmxApiResponse<T, M> extends AResponse<M> implements Serializable {
+public class AmxApiResponse<T, M> extends AResponse<M>
+		implements ApiDataMetaResponse<T, M>, ApiResultsMetaResponse<T, M>, Serializable {
 
 	private static final long serialVersionUID = 2026047322050489651L;
 
@@ -27,8 +30,7 @@ public class AmxApiResponse<T, M> extends AResponse<M> implements Serializable {
 	/**
 	 * Instantiates a new amx api response.
 	 *
-	 * @param resultList
-	 *            the result list
+	 * @param resultList the result list
 	 */
 	public AmxApiResponse(List<T> resultList) {
 		super();
@@ -39,10 +41,8 @@ public class AmxApiResponse<T, M> extends AResponse<M> implements Serializable {
 	/**
 	 * Instantiates a new amx api response.
 	 *
-	 * @param resultList
-	 *            the result list
-	 * @param meta
-	 *            the meta
+	 * @param resultList the result list
+	 * @param meta       the meta
 	 */
 	public AmxApiResponse(List<T> resultList, M meta) {
 		super();
@@ -56,6 +56,7 @@ public class AmxApiResponse<T, M> extends AResponse<M> implements Serializable {
 	 *
 	 * @return the data
 	 */
+	@Override
 	public T getData() {
 		return data;
 	}
@@ -63,9 +64,9 @@ public class AmxApiResponse<T, M> extends AResponse<M> implements Serializable {
 	/**
 	 * Sets the data.
 	 *
-	 * @param data
-	 *            the new data
+	 * @param data the new data
 	 */
+	@Override
 	public void setData(T data) {
 		this.data = data;
 	}
@@ -84,6 +85,12 @@ public class AmxApiResponse<T, M> extends AResponse<M> implements Serializable {
 			return results.get(0);
 		}
 		return null;
+	}
+
+	@JsonIgnore
+	public void setResult(T result) {
+		this.results = new ArrayList<T>();
+		this.results.add(result);
 	}
 
 	public void addResult(T result) {
@@ -113,13 +120,24 @@ public class AmxApiResponse<T, M> extends AResponse<M> implements Serializable {
 		return resp;
 	}
 
+	public static <TS> AmxApiResponse<TS, Object> buildData(TS data) {
+		AmxApiResponse<TS, Object> resp = new AmxApiResponse<TS, Object>();
+		resp.setData(data);
+		return resp;
+	}
+
+	public static <TS, MS> AmxApiResponse<TS, MS> buildData(TS data, MS meta) {
+		AmxApiResponse<TS, MS> resp = new AmxApiResponse<TS, MS>();
+		resp.setData(data);
+		resp.setMeta(meta);
+		return resp;
+	}
+
 	/**
 	 * Builds the list.
 	 *
-	 * @param <TS>
-	 *            the generic type
-	 * @param resultList
-	 *            the result list
+	 * @param            <TS> the generic type
+	 * @param resultList the result list
 	 * @return the amx api response
 	 */
 	public static <TS> AmxApiResponse<TS, Object> buildList(List<TS> resultList) {
@@ -129,14 +147,10 @@ public class AmxApiResponse<T, M> extends AResponse<M> implements Serializable {
 	/**
 	 * Builds the list.
 	 *
-	 * @param <TS>
-	 *            the generic type
-	 * @param <MS>
-	 *            the generic type
-	 * @param resultList
-	 *            the result list
-	 * @param meta
-	 *            the meta
+	 * @param            <TS> the generic type
+	 * @param            <MS> the generic type
+	 * @param resultList the result list
+	 * @param meta       the meta
 	 * @return the amx api response
 	 */
 	public static <TS, MS> AmxApiResponse<TS, MS> buildList(List<TS> resultList, MS meta) {
@@ -145,6 +159,12 @@ public class AmxApiResponse<T, M> extends AResponse<M> implements Serializable {
 		// listOfStrings.addAll(resultList);
 		resp.setResults(resultList);
 		return resp;
+	}
+
+	@JsonIgnore
+	public AmxApiResponse<T, M> redirectUrl(String redirectUrl) {
+		this.redirectUrl = redirectUrl;
+		return this;
 	}
 
 }

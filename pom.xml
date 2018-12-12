@@ -1,51 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<name>amxeco</name>
-	<url>http://maven.apache.org</url>
-	<groupId>com.amx.jax</groupId>
 	<artifactId>amxeco</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<name>amxeco</name>
 	<packaging>pom</packaging>
+	<url>http://maven.apache.org</url>
 
 	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>1.5.8.RELEASE</version>
+		<groupId>com.amx.jax</groupId>
+		<artifactId>amxeco-parent</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+		<relativePath>amxeco-parent/pom.xml</relativePath>
 	</parent>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<jax.version>0.0.1-SNAPSHOT</jax.version>
 		<amx.version>0.0.1-SNAPSHOT</amx.version>
+		<java.version>1.8</java.version>
 	</properties>
 
 	<dependencyManagement>
 		<dependencies>
-			<dependency>
-				<groupId>com.amx.jax</groupId>
-				<artifactId>common-utils</artifactId>
-				<version>${amx.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.amx.jax</groupId>
-				<artifactId>common-lib</artifactId>
-				<version>${amx.version}</version>
-			</dependency>
 
 			<dependency>
 				<groupId>com.amx.jax</groupId>
-				<artifactId>lib-ext-jar</artifactId>
+				<artifactId>amxeco-parent</artifactId>
 				<version>${amx.version}</version>
-				<type>pom</type>
 			</dependency>
-			<dependency>
-              		<groupId>com.amx.jax</groupId>
-                     <artifactId>lib-ext-jar</artifactId>
-                     <version>${amx.version}</version>
-             </dependency>
 
 			<dependency>
 				<groupId>com.amx.jax</groupId>
@@ -55,64 +40,34 @@
 
 			<dependency>
 				<groupId>com.amx.jax</groupId>
-				<artifactId>lib-mcq</artifactId>
-				<version>${amx.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.amx.jax</groupId>
 				<artifactId>lib-rbaac</artifactId>
 				<version>${amx.version}</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>com.amx.jax</groupId>
 				<artifactId>lib-jax</artifactId>
 				<version>${amx.version}</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>com.amx.jax</groupId>
 				<artifactId>jax-client</artifactId>
 				<version>${amx.version}</version>
 			</dependency>
-			
-			<dependency>
-				<groupId>com.amx.jax</groupId>
-				<artifactId>lib-postman</artifactId>
-				<version>${amx.version}</version>
-			</dependency>	
-			
-			<dependency>
-				<groupId>com.amx.jax</groupId>
-				<artifactId>lib-monitor</artifactId>
-				<version>${amx.version}</version>
-			</dependency>
-			
+
 			<dependency>
 				<groupId>com.amx.jax</groupId>
 				<artifactId>lib-pricer</artifactId>
 				<version>${amx.version}</version>
 			</dependency>
-					
+
 		</dependencies>
 
-	 </dependencyManagement>
+	</dependencyManagement>
 
 	<dependencies>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-		</dependency>		
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
+
 	</dependencies>
 
 
@@ -127,93 +82,52 @@
 				</configuration>
 			</plugin>
 
-
-			<plugin>
-				<artifactId>maven-source-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>attach-sources</id>
-						<phase>deploy</phase>
-						<goals>
-							<goal>jar-no-fork</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<!-- Don't deploy all artifacts. Overridden in submodules. -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-deploy-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>default-deploy</id>
-						<phase>none</phase>
-					</execution>
-				</executions>
-				<configuration>
-					<altDeploymentRepository>internal.repo::default::file://${project.basedir}/../../amx-maven</altDeploymentRepository>
-				</configuration>
-			</plugin>
-
 			<!-- <plugin> <groupId>org.sonarsource.scanner.maven</groupId> <artifactId>sonar-maven-plugin</artifactId> 
 				<version>3.3.0.603</version> </plugin> -->
 		</plugins>
 	</build>
 
-	<!-- <repositories> <repository> <id>gitlab.com.almullagroup.maven.mvn-amx</id> 
-		<url>https://gitlab.com/almullagroup/maven/mvn-amx/raw/master/</url> </repository> 
-		</repositories> -->
-
-	<!--
-	<pluginRepositories>
-		<pluginRepository>
-			<id>sonatype-snapshots</id>
-			<name>Sonatype Snapshots</name>
-			<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-		</pluginRepository>
-	</pluginRepositories>
-
-	-->
+	<!-- <pluginRepositories> <pluginRepository> <id>sonatype-snapshots</id> 
+		<name>Sonatype Snapshots</name> <url>https://oss.sonatype.org/content/repositories/snapshots/</url> 
+		</pluginRepository> </pluginRepositories> -->
 
 	<modules>
-		<module>common-utils</module>
-		<module>common-lib</module>
+		<module>amxeco-parent</module>
+
+		<!-- Exchange Libs -->
 		<module>common-amx</module>
-		<module>lib-ext-jar</module>
 		<module>lib-db</module>
-		<module>lib-mcq</module>
-		<module>lib-monitor</module>
 		<module>lib-rbaac</module>
 		<module>lib-sso</module>
 		<module>lib-jax</module>
-		<module>lib-pricer</module>
-
-		<module>lib-postman</module>
-		<module>ms-postman</module>
-
 		<module>amx-lib</module>
 		<module>core</module>
+		<module>jax-client</module>
+		<module>lib-adapter</module>
+		<module>lib-pricer</module>
+
+		<!-- Exchange Services -->
 		<module>ms-meta</module>
 		<module>ms-user</module>
 		<module>ms-exchangerate</module>
-		<module>ms-branch</module>
-		<module>ms-jax</module>
-		<module>jax-client</module>
-		<module>ms-rbaac</module>
-		<module>ms-broker</module>
-		<module>ms-worker</module>
-		<module>ms-pricer</module>
+		<module>ms-jax-modules/ms-jax-customer</module>
 
-		<module>server-payg</module>
+		<module>ms-jax</module>
+		<module>ms-rbaac</module>
+		<module>ms-worker</module>
+		<module>ms-radar</module>
+		<module>ms-pricer</module>
+		
+
 		<module>server-ui</module>
 		<module>server-offsite</module>
-		<module>server-staff</module>
 		<!-- <module>server-stomp</module> -->
-		
-		<module>server-monitor</module>
-		<module>server-admin</module>
+
+		<module>sw-adapter</module>
 		<module>server-branch</module>
+		<module>test-size</module>
 		<!-- <module>server-kiosk</module> -->
 		<!-- <module>server-sample</module> -->
 	</modules>
 </project>
+

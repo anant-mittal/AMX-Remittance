@@ -1,0 +1,102 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.amx.jax</groupId>
+	<artifactId>amxeco-parent</artifactId>
+	<name>amxeco-parent</name>
+	<packaging>pom</packaging>
+	<description>Parent pom providing dependency and plugin management for applications built with Maven </description>
+	<url>http://maven.apache.org</url>
+	<version>0.0.1-SNAPSHOT</version>
+
+	<organization>
+		<name>Al Mulla International Exchange</name>
+		<url>https://www.almullaexchange.com</url>
+	</organization>
+
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>1.5.9.RELEASE</version>
+		<relativePath />
+	</parent>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<jax.version>0.0.1-SNAPSHOT</jax.version>
+		<amx.version>0.0.1-SNAPSHOT</amx.version>
+		<java.version>1.8</java.version>
+	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>com.amx.jax</groupId>
+				<artifactId>common-utils</artifactId>
+				<version>${amx.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.amx.jax</groupId>
+				<artifactId>common-lib</artifactId>
+				<version>${amx.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.amx.jax</groupId>
+				<artifactId>lib-ext-jar</artifactId>
+				<version>${amx.version}</version>
+				<type>pom</type>
+			</dependency>
+			<dependency>
+				<groupId>com.amx.jax</groupId>
+				<artifactId>lib-mcq</artifactId>
+				<version>${amx.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.amx.jax</groupId>
+				<artifactId>lib-postman</artifactId>
+				<version>${amx.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.amx.jax</groupId>
+				<artifactId>lib-monitor</artifactId>
+				<version>${amx.version}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<dependencies>
+
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<modules>
+		<!-- Common Libs -->
+		<module>../common-utils</module>
+		<module>../common-lib</module>
+		<module>../lib-ext-jar</module>
+		<module>../lib-mcq</module>
+		<module>../lib-monitor</module>
+		<module>../lib-postman</module>
+
+		<!-- Common Servers -->
+		<module>../ms-postman</module>
+		<module>../ms-broker</module>
+		<module>../server-payg</module>
+		<module>../server-monitor</module>
+		
+	</modules>
+</project>

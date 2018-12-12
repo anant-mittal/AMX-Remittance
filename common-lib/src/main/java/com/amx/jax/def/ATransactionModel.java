@@ -37,7 +37,7 @@ public abstract class ATransactionModel<T> {
 			AppContextUtil.setTranxId(key);
 			LOGGER.info("************ Creating New Tranx Id {} *******************", key);
 		} else {
-			LOGGER.info("************ Exisitng Tranx Id {} *******************", key);
+			LOGGER.debug("************ Exisitng Tranx Id {} *******************", key);
 		}
 		return key;
 	}
@@ -45,6 +45,19 @@ public abstract class ATransactionModel<T> {
 	public T save(T model) {
 		getCacheBox().put(getTranxId(), model);
 		return model;
+	}
+
+	public T save() {
+		T model = this.get(null);
+		if (model == null) {
+			return null;
+		}
+		this.save(model);
+		return model;
+	}
+
+	public void clear(String tranxId) {
+		getCacheBox().remove(tranxId);
 	}
 
 	public T get() {

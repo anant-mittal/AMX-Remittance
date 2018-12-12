@@ -2,6 +2,7 @@ package com.amx.jax.cache;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import org.redisson.api.LocalCachedMapOptions;
 import org.redisson.api.LocalCachedMapOptions.EvictionPolicy;
@@ -10,9 +11,9 @@ import org.redisson.api.LocalCachedMapOptions.SyncStrategy;
 import org.redisson.api.RLocalCachedMap;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.thavam.util.concurrent.blockingMap.BlockingHashMap;
 
 import com.amx.jax.def.ICacheBox;
-
 
 public class CacheBox<T> implements ICacheBox<T> {
 
@@ -26,14 +27,18 @@ public class CacheBox<T> implements ICacheBox<T> {
 	String cahceName = getClass().getName();
 
 	private RLocalCachedMap<String, T> cache = null;
+	private BlockingHashMap<String, T> locker = null;
 
 	public RLocalCachedMap<String, T> map() {
 		if (redisson != null) {
 
-		if (cache == null) {
-			cache = redisson.getLocalCachedMap(getCahceName(), localCacheOptions);
-		}
-		return cache;
+			if (locker == null) {
+				locker = new BlockingHashMap<String, T>();
+			}
+			if (cache == null) {
+				cache = redisson.getLocalCachedMap(getCahceName(), localCacheOptions);
+			}
+			return cache;
 		}
 		return null;
 	}
@@ -116,7 +121,32 @@ public class CacheBox<T> implements ICacheBox<T> {
 
 	@Override
 	public T getOrDefault(String key, T defaultValue) {
-		return this.map().getOrDefault(key, defaultValue);
+		try {
+			return this.map().getOrDefault(key, defaultValue);
+		} catch (Exception e) {
+			return defaultValue;
+		}
+	}
+
+	public T take(String key, long timeout, TimeUnit unit) throws InterruptedException {
+		T item = this.map().get(key);
+		long waiting = unit.toSeconds(timeout);
+		while (item == null && waiting > 0) {
+			item = locker.take(key, 1, unit);
+			item = this.map().get(key);
+			waiting--;
+		}
+		return item;
+	}
+
+	@Override
+	public T getOrDefault(String key) {
+		return getOrDefault(key, getDefault());
+	}
+
+	@Override
+	public T getDefault() {
+		return null;
 	}
 
 }

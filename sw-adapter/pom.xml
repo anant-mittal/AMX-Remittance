@@ -1,0 +1,125 @@
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+  http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<name>sw-adapter</name>
+	<artifactId>sw-adapter</artifactId>
+	<packaging>jar</packaging>
+
+
+	<parent>
+		<groupId>com.amx.jax</groupId>
+		<artifactId>amxeco</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath> <!-- lookup parent from repository -->
+	</parent>
+
+	<properties>
+		<java.version>1.8</java.version>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+	</properties>
+
+	<dependencies>
+
+		<dependency>
+			<groupId>com.amx.jax</groupId>
+			<artifactId>lib-adapter</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<exclusions>
+				<exclusion>
+					<groupId>io.springfox</groupId>
+					<artifactId>springfox-swagger-ui</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.apache.tomcat.embed</groupId>
+					<artifactId>tomcat-embed-websocket</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>junit</groupId>
+					<artifactId>junit</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-test</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>com.github.sarveswaran-m</groupId>
+			<artifactId>util.concurrent.blockingMap</artifactId>
+			<version>0.91</version>
+		</dependency>
+
+		<dependency>
+			<groupId>net.east301</groupId>
+			<artifactId>java-keyring</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.amx.jax</groupId>
+			<artifactId>lib-ext-jar</artifactId>
+			<type>pom</type>
+		</dependency>
+
+		<dependency>
+			<groupId>kw-card</groupId>
+			<artifactId>paci-card-library</artifactId>
+			<version>1.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>kw-card</groupId>
+			<artifactId>jna</artifactId>
+			<version>1.0</version>
+		</dependency>
+
+	</dependencies>
+
+	<profiles>
+		<profile>
+			<id>java8</id>
+			<properties>
+				<lane>java8</lane>
+			</properties>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<dependencies>
+			</dependencies>
+		</profile>
+		<profile>
+			<id>java7</id>
+			<properties>
+				<lane>java7</lane>
+			</properties>
+			<dependencies>
+				<dependency>                                 <!-- juli fot tomcat 7 -->
+					<groupId>org.apache.tomcat</groupId>
+					<artifactId>tomcat-juli</artifactId>
+					<version>7.0.59</version>
+				</dependency>
+			</dependencies>
+		</profile>
+	</profiles>
+
+	<build>
+		<plugins>
+			<!-- Package as an executable jar/war -->
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<outputDirectory>${basedir}/dist-sw-adapter/</outputDirectory>
+					<finalName>${project.name}-${env}-${tnt}-${lane}</finalName>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>

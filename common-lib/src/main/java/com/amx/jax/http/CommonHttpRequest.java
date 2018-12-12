@@ -1,21 +1,30 @@
 package com.amx.jax.http;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.owasp.html.HtmlPolicyBuilder;
-import org.owasp.html.PolicyFactory;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.mobile.device.Device;
 import org.springframework.mobile.device.DeviceUtils;
 import org.springframework.stereotype.Component;
+import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.servlet.HandlerExecutionChain;
+import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 import org.springframework.web.util.WebUtils;
 
 import com.amx.jax.AppConfig;
 import com.amx.jax.AppConstants;
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.dict.Language;
 import com.amx.jax.dict.UserClient;
 import com.amx.jax.dict.UserClient.AppType;
@@ -67,8 +76,6 @@ public class CommonHttpRequest {
 
 	private static Logger LOGGER = LoggerService.getLogger(CommonHttpRequest.class);
 
-	private static final PolicyFactory policy = new HtmlPolicyBuilder().allowStandardUrlProtocols().toFactory();
-
 	@Autowired(required = false)
 	private HttpServletRequest request;
 
@@ -79,6 +86,13 @@ public class CommonHttpRequest {
 	private AppConfig appConfig;
 
 	public String getIPAddress() {
+		String deviceIp = null;
+		if (appConfig.isSwaggerEnabled()) {
+			deviceIp = request.getHeader(AppConstants.DEVICE_IP_XKEY);
+			if (!ArgUtil.isEmpty(deviceIp)) {
+				return deviceIp;
+			}
+		}
 		return HttpUtils.getIPAddress(request);
 	}
 
@@ -93,14 +107,33 @@ public class CommonHttpRequest {
 	public String getDeviceId() {
 		String deviceId = null;
 		if (request != null) {
-			Cookie cookie = WebUtils.getCookie(request, AppConstants.DEVICE_ID_KEY);
-			if (cookie != null) {
-				deviceId = cookie.getValue();
-			} else {
-				deviceId = request.getHeader(AppConstants.DEVICE_ID_XKEY);
+			deviceId = request.getHeader(AppConstants.DEVICE_ID_XKEY);
+			if (ArgUtil.isEmpty(deviceId)) {
+				Cookie cookie = WebUtils.getCookie(request, AppConstants.DEVICE_ID_KEY);
+				if (cookie != null) {
+					deviceId = cookie.getValue();
+				}
 			}
 		}
 		return deviceId;
+	}
+
+	public String get(String contextKey) {
+		String value = AppContextUtil.get(contextKey);
+		if (request != null) {
+			value = request.getParameter(contextKey);
+			if (ArgUtil.isEmpty(value)) {
+				value = request.getHeader(contextKey);
+				if (ArgUtil.isEmpty(value)) {
+					Cookie cookie = WebUtils.getCookie(request, contextKey);
+					if (cookie != null) {
+						value = cookie.getValue();
+					}
+				}
+			}
+			AppContextUtil.set(contextKey, value);
+		}
+		return value;
 	}
 
 	public void clearSessionCookie() {
@@ -148,8 +181,10 @@ public class CommonHttpRequest {
 		UserAgent userAgent = this.getUserAgent();
 
 		if (currentDevice != null) {
-			userDevice.setType((currentDevice.isMobile() ? UserClient.DeviceType.MOBILE
-					: (currentDevice.isTablet() ? UserClient.DeviceType.TABLET : UserClient.DeviceType.COMPUTER)));
+			userDevice.setType(
+					(currentDevice.isMobile() ? UserClient.DeviceType.MOBILE
+							: (currentDevice.isTablet() ? UserClient.DeviceType.TABLET
+									: UserClient.DeviceType.COMPUTER)));
 
 			DevicePlatform devicePlatform = DevicePlatform.UNKNOWN;
 			if (currentDevice.getDevicePlatform() == org.springframework.mobile.device.DevicePlatform.ANDROID
@@ -222,8 +257,74 @@ public class CommonHttpRequest {
 		return userDevice;
 	}
 
-	public static String sanitze(String str) {
-		return policy.sanitize(str);
+	private static Map<String, ApiRequest> apiRequestMap = Collections
+			.synchronizedMap(new HashMap<String, ApiRequest>());
+	private boolean apiRequestMapped = false;
+
+	@Autowired
+	private RequestMappingHandlerMapping requestMappingHandlerMapping;
+
+	public ApiRequest getApiRequestModel(HttpServletRequest req) {
+		createApiRequestModels();
+		HandlerExecutionChain handlerExeChain;
+		try {
+			handlerExeChain = requestMappingHandlerMapping.getHandler(req);
+			HandlerMethod handlerMethod = null;
+
+			if (!ArgUtil.isEmpty(handlerExeChain)) {
+				handlerMethod = (HandlerMethod) handlerExeChain.getHandler();
+				if (!ArgUtil.isEmpty(handlerMethod)) {
+					String handlerKey = handlerMethod.getShortLogMessage() + "#" +
+							ArgUtil.parseAsString(handlerMethod.hashCode());
+					handlerKey = handlerMethod.getMethod().toGenericString();
+					return apiRequestMap.get(handlerKey);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return null;
 	}
 
+	public boolean createApiRequestModels() {
+		if (apiRequestMapped) {
+			return true;
+		}
+		try {
+			Set<Entry<RequestMappingInfo, HandlerMethod>> x = requestMappingHandlerMapping.getHandlerMethods()
+					.entrySet();
+			for (Entry<RequestMappingInfo, HandlerMethod> requestMappingInfo : x) {
+				HandlerMethod handlerMethod = requestMappingInfo.getValue();
+				ApiRequest apiRequest = handlerMethod.getMethodAnnotation(ApiRequest.class);
+				if (apiRequest == null) {
+					apiRequest = handlerMethod.getBeanType().getAnnotation(ApiRequest.class);
+				}
+				if (apiRequest != null) {
+					String handlerKey = handlerMethod.getShortLogMessage() + "#" +
+							ArgUtil.parseAsString(handlerMethod.hashCode());
+					handlerKey = handlerMethod.getMethod().toGenericString();
+					apiRequestMap.put(
+							handlerKey,
+							apiRequest);
+				}
+
+			}
+			apiRequestMapped = true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	public RequestType getApiRequestType(HttpServletRequest req) {
+		RequestType reqType = RequestType.from(req);
+		if (reqType == RequestType.DEFAULT) {
+			ApiRequest x = getApiRequestModel(req);
+			if (x != null) {
+				return x.type();
+			}
+		}
+		return reqType;
+	}
 }

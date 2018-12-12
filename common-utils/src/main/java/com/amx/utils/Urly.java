@@ -3,7 +3,6 @@ package com.amx.utils;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-
 /**
  * The Class Urly.
  */
@@ -12,9 +11,11 @@ public class Urly {
 	/**
 	 * Gets the domain name.
 	 *
-	 * @param url the url
+	 * @param url
+	 *            the url
 	 * @return the domain name
-	 * @throws MalformedURLException the malformed URL exception
+	 * @throws MalformedURLException
+	 *             the malformed URL exception
 	 */
 	public static String getDomainName(String url) throws MalformedURLException {
 		if (!url.startsWith("http") && !url.startsWith("https")) {
@@ -31,9 +32,11 @@ public class Urly {
 	/**
 	 * Gets the sub domain name.
 	 *
-	 * @param url the url
+	 * @param url
+	 *            the url
 	 * @return the sub domain name
-	 * @throws MalformedURLException the malformed URL exception
+	 * @throws MalformedURLException
+	 *             the malformed URL exception
 	 */
 	public static String getSubDomainName(String url) throws MalformedURLException {
 		String[] names = url.split("\\.");
@@ -56,15 +59,24 @@ public class Urly {
 	/**
 	 * Parses the.
 	 *
-	 * @param urlString the url string
+	 * @param urlString
+	 *            the url string
 	 * @return the URL builder
-	 * @throws MalformedURLException the malformed URL exception
+	 * @throws MalformedURLException
+	 *             the malformed URL exception
 	 */
 	public static URLBuilder parse(String urlString) throws MalformedURLException {
-		URL url = new URL(urlString);
-		URLBuilder builder = new URLBuilder(url.getAuthority());
+		URL url;
+		URLBuilder builder;
+		if (urlString.startsWith("/")) {
+			url = new URL("https://localhost/" + urlString);
+			builder = new URLBuilder();
+		} else {
+			url = new URL(urlString);
+			builder = new URLBuilder(url.getAuthority());
+			builder.setConnectionType(url.getProtocol());
+		}
 		builder.setPath(url.getPath());
-		builder.setConnectionType(url.getProtocol());
 		builder.addParameter(url.getQuery());
 		return builder;
 	}

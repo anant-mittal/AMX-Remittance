@@ -15,27 +15,36 @@ public abstract class AmxApiException extends AmxException {
 
 	private static final long serialVersionUID = 1L;
 
-	protected String errorMessage;
-
-	protected String errorKey;
-
+	/**
+	 * Finally resolves to statusKey
+	 */
 	protected IExceptionEnum error;
 
-	private Object meta;
+	/**
+	 * Finally resolves to messageKey
+	 */
+	protected String errorKey;
+
+	/**
+	 * Finally resolves to message
+	 */
+	protected String errorMessage;
+
+	AmxApiError apiError;
 
 	public AmxApiException() {
 		super(null, null, true, false);
 	}
 
 	public AmxApiException(AmxApiError amxApiError) {
-		this();
-		this.meta = amxApiError.getMeta();
+		super(amxApiError.getMessage(), null, true, false);
+		this.apiError = amxApiError;
 		try {
-			this.error = getErrorIdEnum(amxApiError.getErrorId());
+			this.error = getErrorIdEnum(amxApiError.getStatusKey());
 		} catch (Exception e) {
 		}
-		this.errorKey = amxApiError.getErrorId();
-		this.errorMessage = amxApiError.getErrorMessage();
+		this.errorKey = amxApiError.getErrorKey();
+		this.errorMessage = amxApiError.getMessage();
 	}
 
 	public AmxApiException(String errorMessage) {
@@ -45,6 +54,11 @@ public abstract class AmxApiException extends AmxException {
 
 	public AmxApiException(IExceptionEnum error) {
 		this();
+		this.error = error;
+	}
+
+	public AmxApiException(IExceptionEnum error, String message) {
+		super(message, null, true, false);
 		this.error = error;
 	}
 
@@ -87,9 +101,11 @@ public abstract class AmxApiException extends AmxException {
 	}
 
 	public AmxApiError createAmxApiError() {
-		AmxApiError error = new AmxApiError(this.getErrorKey(), this.getErrorMessage());
-		error.setException(this.getClass().getName());
-		return error;
+		if (this.apiError == null) {
+			this.apiError = new AmxApiError(this.error, this.getErrorKey(), this.getErrorMessage());
+			this.apiError.setException(this.getClass().getName());
+		}
+		return this.apiError;
 	}
 
 	/**
@@ -113,11 +129,17 @@ public abstract class AmxApiException extends AmxException {
 	public abstract IExceptionEnum getErrorIdEnum(String errorId);
 
 	public Object getMeta() {
-		return meta;
+		if (this.apiError == null) {
+			return null;
+		}
+		return this.apiError.getMeta();
 	}
 
 	public void setMeta(Object meta) {
-		this.meta = meta;
+		if (this.apiError == null) {
+			this.apiError = createAmxApiError();
+		}
+		this.apiError.setMeta(meta);
 	}
 
 	public abstract boolean isReportable();
@@ -133,6 +155,8 @@ public abstract class AmxApiException extends AmxException {
 	public static <T> T evaluate(Exception e) throws Exception {
 		if (e instanceof AmxApiException) {
 			throw (AmxApiException) e;
+		} else if (e instanceof AmxException) {
+			throw e;
 		} else {
 			throw e;
 		}

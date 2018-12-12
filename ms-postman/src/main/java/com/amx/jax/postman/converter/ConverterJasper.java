@@ -73,7 +73,7 @@ public class ConverterJasper implements FileConverter {
 	@Timed(name = "PDF_CREATION_JASPER", absolute = true)
 	public File toPDF(File file) throws JRException {
 
-		simpleReportFiller.setReportFileName("jasper/" + file.getITemplate().getFileName() + ".jrxml");
+		simpleReportFiller.setReportFileName("templates/jasper/" + file.getITemplate().getFileName() + ".jrxml");
 		simpleReportFiller.compileReport();
 
 		// ResourceBundle rb = ResourceBundle.getBundle("messages",

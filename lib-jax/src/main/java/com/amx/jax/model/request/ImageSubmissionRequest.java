@@ -3,7 +3,7 @@ package com.amx.jax.model.request;
 import java.io.Serializable;
 import java.util.List;
 
-import io.swagger.annotations.ApiModelProperty;
+import com.amx.jax.swagger.ApiMockModelProperty;
 
 public class ImageSubmissionRequest implements Serializable {
 
@@ -15,7 +15,7 @@ public class ImageSubmissionRequest implements Serializable {
 	
 	private List<String> image;
 	
-	@ApiModelProperty(example="Y")
+	@ApiMockModelProperty(example="Y")
 	private String politicallyExposed;	
 
 	public List<String> getImage() {

@@ -10,7 +10,7 @@ import org.apache.log4j.MDC;
 import org.springframework.http.HttpHeaders;
 
 import com.amx.jax.dict.Tenant;
-import com.amx.jax.filter.RequestType;
+import com.amx.jax.http.RequestType;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.ContextUtil;
@@ -20,13 +20,11 @@ public class AppContextUtil {
 
 	/**
 	 * 
-	 * @param generate
-	 *            - create new token if not present
-	 * @param override
-	 *            - create new token anyway
+	 * @param generate - create new token if not present
+	 * @param override - create new token anyway
 	 * @return -returns current token
 	 */
-	public static String generateTraceId(boolean generate, boolean override) {
+	public static String getTraceId(boolean generate, boolean override) {
 		String sessionId = getSessionId();
 		if (override) {
 			if (ArgUtil.isEmpty(sessionId)) {
@@ -41,8 +39,12 @@ public class AppContextUtil {
 		return traceId;
 	}
 
+	public static String getTraceId(boolean generate) {
+		return getTraceId(generate, false);
+	}
+
 	public static String getTraceId() {
-		return generateTraceId(true, false);
+		return getTraceId(true, false);
 	}
 
 	public static String getTranxId() {
@@ -118,6 +120,15 @@ public class AppContextUtil {
 
 	public static void setRequestType(RequestType reqType) {
 		ContextUtil.map().put(AppConstants.REQUEST_TYPE_XKEY, reqType);
+	}
+
+	public static <T> void set(String contextKey, T value) {
+		ContextUtil.map().put(contextKey, value);
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T> T get(String contextKey) {
+		return (T) ContextUtil.map().get(contextKey);
 	}
 
 	public static void init() {
@@ -200,6 +211,16 @@ public class AppContextUtil {
 				setTranxId(tranxids.get(0));
 			}
 		}
+		String traceId = getTraceId(false);
+		if (ArgUtil.isEmpty(traceId)) {
+			if (httpHeaders.containsKey(AppConstants.TRACE_ID_XKEY)) {
+				List<String> traceIds = httpHeaders.get(AppConstants.TRACE_ID_XKEY);
+				if (traceIds.size() >= 0) {
+					setTranceId(traceIds.get(0));
+				}
+			}
+		}
+
 	}
 
 }

@@ -4,14 +4,20 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.time.DateUtils;
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
+
+import com.amx.jax.model.response.fx.TimeSlotDto;
+
 
 /*
  * Auth: Rabil
@@ -19,6 +25,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class DateUtil {
+	private static Logger logger = Logger.getLogger(DateUtil.class);
 
 	public static String todaysDateWithDDMMYY(Date date, String action) {
 		// action ->1 today Date else user defind date
@@ -138,5 +145,104 @@ public class DateUtil {
 		}
 	}
 	
+	/**
+	 * @Auth :Rabil
+	 * @Date:  Time slot
+	 */
+	
+	/*public static List<String> getTimeSlotRange(String date,int startTime,int endTime,int timeIntVal,int noofDay){
+		logger.info("getTimeRange for Fx Order date :"+date+"\t startTime :"+startTime+"\t endTime:"+endTime+"\t timeIntVal :"+timeIntVal);
+		List<String> timeSlotList = new ArrayList<>();
+		Date d = new Date();
+		SimpleDateFormat dateStr = new SimpleDateFormat("dd/MM/yyyy");
+	    SimpleDateFormat sdf = new SimpleDateFormat("H");
+	    String todayDate = dateStr.format(d);
+	    int hour = Integer.parseInt(sdf.format(d));
+	    int j =0;
+	    String meridienAm=" am";
+	    String meridienPm=" pm";
+	    String defaultZero =":00";
+	   
+	    
+	    
+	    
+	    
+	    
+	    if(date !=null && !date.equalsIgnoreCase(todayDate)){
+	    	todayDate = date;
+	    	for (int i =startTime;i<endTime;  i = i+timeIntVal){
+				 j = i+timeIntVal;
+				 String str = "";
+				 str = String.valueOf(i)+defaultZero+(i<12?meridienAm:meridienPm)+ "-"+String.valueOf(j)+defaultZero+(j<12?meridienAm:meridienPm);
+				 timeSlotList.add(str);
+	    	}
+	    }else{
+	    	 if (hour>startTime){
+	    	    	startTime =hour; 
+	    	    }
+	    	for (int i =startTime;i<endTime;  i = i+timeIntVal){
+				 j = i+timeIntVal;
+				 String str = "";
+				 str = String.valueOf(i)+defaultZero+(i<12?meridienAm:meridienPm)+ "-"+String.valueOf(j)+defaultZero+(j<12?meridienAm:meridienPm);
+				 timeSlotList.add(str);
+			}
+	    }
+	    timeSlotList.add("delivery date :"+todayDate);
+		return timeSlotList;
+		}*/
+	
+	
+	public static List<TimeSlotDto> getTimeSlotRange(int startTime,int endTime,int timeIntVal,int noofDay){
+	logger.info("getTimeRange for Fx Order date :\t startTime :"+startTime+"\t endTime:"+endTime+"\t timeIntVal :"+timeIntVal+"\t noofDay :"+noofDay);
+	List<String> timeSlotList = new ArrayList<>();
+	List<TimeSlotDto> timeSlotDto = new ArrayList<>();
+	Date d = new Date();
+	
+	SimpleDateFormat dateStr = new SimpleDateFormat("dd/MM/yyyy");
+    SimpleDateFormat sdf = new SimpleDateFormat("H");
+    String todayDate = dateStr.format(d);
+    int hour = Integer.parseInt(sdf.format(d));
+    int j =0;
+    String meridienAm=" am";
+    String meridienPm=" pm";
+    String defaultZero =":00";
+    GregorianCalendar calendar = new GregorianCalendar();
+    Date now = calendar.getTime();
+    int startTimeNToday = startTime;
+   
+    
+    	for(int n=0;n<=noofDay;n++){
+    		if(n==0){
+    			if (hour>startTime){
+    		    	startTime =hour+timeIntVal; 
+    		    }
+    		}else{
+    			startTime=startTimeNToday;
+    		}
+    		
+	    	TimeSlotDto dto = new TimeSlotDto();
+	    	 timeSlotList = new ArrayList<>();
+	    	for (int i =startTime;i<endTime;  i = i+timeIntVal){
+	   		 j = i+timeIntVal;
+	   		 String str = "";
+	   		 if(j<=endTime){
+	   		  str = String.valueOf(i)+defaultZero+(i<12?meridienAm:meridienPm)+ "-"+String.valueOf(j)+defaultZero+(j<12?meridienAm:meridienPm);
+	   		  timeSlotList.add(str);
+	   		 }
+	   		
+	   		 dto.setTimeSlot(timeSlotList);
+	    	}
+	    	 calendar.add(calendar.DAY_OF_MONTH, n);
+	    	 Date dateD = calendar.getTime();
+	    	 dto.setDate(dateStr.format(dateD));
+	    	 timeSlotDto.add(dto);
+
+    }
+    
+   
+    return timeSlotDto;
+}
+	
+
 	
 }

@@ -8,13 +8,14 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.amx.utils.ContextUtil;
 
 /**
  * A factory for creating ScopedBean objects.
  *
  * @author lalittanwar
- * @param <E>            Must have toString() function which returns unique id for each
- *            member;
+ * @param <E> Must have toString() function which returns unique id for each
+ *        member;
  * @param <T> the generic type
  */
 public abstract class ScopedBeanFactory<E, T> implements Serializable {
@@ -53,16 +54,27 @@ public abstract class ScopedBeanFactory<E, T> implements Serializable {
 	abstract public E[] getKeys(T bean);
 
 	/**
-	 * Returns key against bean which is either default or current;.
+	 * Returns key against bean which is either default or current, set by setKey.
 	 *
 	 * @return the key
 	 */
-	abstract public E getKey();
+	@SuppressWarnings("unchecked")
+	public E getKey() {
+		return (E) ContextUtil.map().get(this.getClass().getName());
+	};
+
+	/**
+	 * 
+	 * @param serviceCode
+	 */
+	public void setKey(E key) {
+		ContextUtil.map().put(this.getClass().getName(), key);
+	}
 
 	/**
 	 * Register key and bean.
 	 *
-	 * @param key the key
+	 * @param key  the key
 	 * @param bean the bean
 	 */
 	public void register(E key, T bean) {

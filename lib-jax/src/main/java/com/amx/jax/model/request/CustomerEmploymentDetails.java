@@ -2,56 +2,56 @@ package com.amx.jax.model.request;
 
 import java.math.BigDecimal;
 
-import io.swagger.annotations.ApiModelProperty;
+import com.amx.jax.swagger.ApiMockModelProperty;
 
 public class CustomerEmploymentDetails {
 	
-	@ApiModelProperty(example="188")
+	@ApiMockModelProperty(example="188")
 	private BigDecimal employmentTypeId;
 	
-	@ApiModelProperty(example="262")
+	@ApiMockModelProperty(example="262")
 	private BigDecimal professionId;
 	
-	@ApiModelProperty(example="MUSSA  SALEH")
+	@ApiMockModelProperty(example="MUSSA  SALEH")
 	private String employer;
 	
-	@ApiModelProperty(example="2")
+	@ApiMockModelProperty(example="2")
 	private BigDecimal articleId;
 	
-	@ApiModelProperty(example="27")
+	@ApiMockModelProperty(example="27")
 	private BigDecimal articleDetailsId;
 	
-	@ApiModelProperty(example="128")
+	@ApiMockModelProperty(example="128")
 	private BigDecimal incomeRangeId;
 	
-	@ApiModelProperty(example="Powai")
+	@ApiMockModelProperty(example="Powai")
 	private String area;
 	
-	@ApiModelProperty(example="1011")
+	@ApiMockModelProperty(example="1011")
 	private String block;
 	
-	@ApiModelProperty(example="Gandhi Road")
+	@ApiMockModelProperty(example="Gandhi Road")
 	private String street;
 	
-	@ApiModelProperty(example="421 004")
+	@ApiMockModelProperty(example="421 004")
 	private String postal;
 	
-	@ApiModelProperty(example="22694512")
+	@ApiMockModelProperty(example="22694512")
 	private String officeTelephone;
 	
-	@ApiModelProperty(example="12760")
+	@ApiMockModelProperty(example="12760")
 	private BigDecimal cityId;
 	
-	@ApiModelProperty(example="4165")
+	@ApiMockModelProperty(example="4165")
 	private BigDecimal districtId;
 	
-	@ApiModelProperty(example="584")
+	@ApiMockModelProperty(example="584")
 	private BigDecimal stateId;
 	
-	@ApiModelProperty(example="91")
+	@ApiMockModelProperty(example="91")
 	private BigDecimal countryId;
 	
-	@ApiModelProperty(example="1")
+	@ApiMockModelProperty(example="1")
 	private BigDecimal companyId;
 	
 	public BigDecimal getEmploymentTypeId() {

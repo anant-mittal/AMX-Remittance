@@ -22,10 +22,12 @@ public abstract class TransactionModel<T> extends ATransactionModel<T> {
 		return this.cache;
 	}
 
+	@Override
 	public T init() {
-		return null;
+		return save(getDefault());
 	};
 
+	@Override
 	public T commit() {
 		return null;
 	};

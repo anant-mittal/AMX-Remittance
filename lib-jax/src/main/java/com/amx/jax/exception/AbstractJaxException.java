@@ -27,6 +27,10 @@ public abstract class AbstractJaxException extends AmxApiException {
 		super(errorMessage, errorKey);
 	}
 
+	public AbstractJaxException(JaxError errorKey, String errorMessage) {
+		super(errorKey, errorMessage);
+	}
+
 	@Override
 	public AmxApiException getInstance(AmxApiError apiError) {
 		try {

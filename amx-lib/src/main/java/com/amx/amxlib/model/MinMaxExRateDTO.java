@@ -3,8 +3,8 @@ package com.amx.amxlib.model;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
-import com.amx.amxlib.meta.model.CurrencyMasterDTO;
-import com.amx.jax.model.AbstractModel;
+import com.amx.jax.AbstractModel;
+import com.amx.jax.model.response.CurrencyMasterDTO;
 
 /**
  * @author Subodh Bhoir

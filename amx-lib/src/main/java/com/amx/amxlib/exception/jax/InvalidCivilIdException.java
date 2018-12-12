@@ -12,7 +12,7 @@ public class InvalidCivilIdException extends AbstractJaxException {
 	private static final long serialVersionUID = 1L;
 
 	public InvalidCivilIdException(String errorMessage) {
-		super(errorMessage, JaxError.JAX_FIELD_VALIDATION_FAILURE.getStatusKey());
+		super(JaxError.JAX_FIELD_VALIDATION_FAILURE.getStatusKey(), errorMessage);
 	}
 	
 	public InvalidCivilIdException(AmxApiError error) {

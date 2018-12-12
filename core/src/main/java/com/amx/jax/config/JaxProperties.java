@@ -16,7 +16,6 @@ public class JaxProperties {
 
 	@Value("${jax.properties.cash.disable}")
 	Boolean cashDisable;
-	
 
 	@Value("${jax.properties.bene.threecountrycheck.enable}")
 	Boolean beneThreeCountryCheck;
@@ -26,6 +25,10 @@ public class JaxProperties {
 	
 	@Value("${jax.properties.remittance.flexfield.enable}")
 	Boolean flexFieldEnabled;
+
+	@Value("${jax.properties.device.autoactivate}")
+	Boolean deviceAutoActivate;
+	
 
 	public List<String> getSupportSoaEmail() {
 		return supportSoaEmail;
@@ -73,6 +76,14 @@ public class JaxProperties {
 
 	public void setFlexFieldEnabled(Boolean flexFieldEnabled) {
 		this.flexFieldEnabled = flexFieldEnabled;
+	}
+
+	public Boolean getDeviceAutoActivate() {
+		return deviceAutoActivate;
+	}
+
+	public void setDeviceAutoActivate(Boolean deviceAutoActivate) {
+		this.deviceAutoActivate = deviceAutoActivate;
 	}
 
 }

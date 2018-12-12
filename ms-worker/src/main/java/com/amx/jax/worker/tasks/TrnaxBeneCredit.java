@@ -16,7 +16,7 @@ import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.postman.model.TemplatesMX;
-import com.amx.jax.tunnel.TunnelEvent;
+import com.amx.jax.tunnel.DBEvent;
 import com.amx.jax.tunnel.ITunnelSubscriber;
 import com.amx.jax.tunnel.TunnelEventMapping;
 import com.amx.jax.tunnel.TunnelEventXchange;
@@ -24,7 +24,7 @@ import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;
 
 @TunnelEventMapping(topic = AmxTunnelEvents.Names.TRNX_BENE_CREDIT, scheme = TunnelEventXchange.TASK_WORKER)
-public class TrnaxBeneCredit implements ITunnelSubscriber<TunnelEvent> {
+public class TrnaxBeneCredit implements ITunnelSubscriber<DBEvent> {
 
 	@Autowired
 	PostManClient postManClient;
@@ -48,7 +48,7 @@ public class TrnaxBeneCredit implements ITunnelSubscriber<TunnelEvent> {
 	private static final String CURNAME = "CURNAME";
 
 	@Override
-	public void onMessage(String channel, TunnelEvent event) {
+	public void onMessage(String channel, DBEvent event) {
 		LOGGER.info("======onMessage1==={} ====  {}", channel, JsonUtil.toJson(event));
 		String emailId = ArgUtil.parseAsString(event.getData().get(EMAIL));
 		String smsNo = ArgUtil.parseAsString(event.getData().get(MOBILE));
@@ -64,7 +64,7 @@ public class TrnaxBeneCredit implements ITunnelSubscriber<TunnelEvent> {
 		NumberFormat myFormat = NumberFormat.getInstance();
 		myFormat.setGroupingUsed(true);
 		String trnxAmountval = myFormat.format(trnxAmount);
-				
+
 		Map<String, Object> wrapper = new HashMap<String, Object>();
 		Map<String, Object> modeldata = new HashMap<String, Object>();
 		modeldata.put("to", emailId);

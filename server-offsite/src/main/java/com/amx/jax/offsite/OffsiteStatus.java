@@ -30,6 +30,10 @@ public class OffsiteStatus extends IStatusCodeListPlugin<OffsiteServerCodes, Api
 	 *
 	 */
 	public static enum OffsiteServerCodes implements IExceptionEnum {
+		CLIENT_UNKNOWN,
+
+		CLIENT_CREDS_MISSING, INVALID_CLIENT_SESSION, INVALID_CLIENT_REQUEST,
+
 		OFFSITE_SERVER_ERROR, DOTP_REQUIRED, MOTP_REQUIRED, EOTP_REQUIRED;
 
 		@Override
@@ -75,6 +79,14 @@ public class OffsiteStatus extends IStatusCodeListPlugin<OffsiteServerCodes, Api
 			this.setError(OffsiteServerCodes.OFFSITE_SERVER_ERROR);
 		}
 
+		public OffsiteServerError(OffsiteServerCodes statusCode) {
+			super(statusCode);
+		}
+
+		public OffsiteServerError(OffsiteServerCodes statusCode, String message) {
+			super(statusCode, message);
+		}
+
 		public OffsiteServerError(Exception e) {
 			super(e);
 			this.setError(OffsiteServerCodes.OFFSITE_SERVER_ERROR);
@@ -102,7 +114,7 @@ public class OffsiteStatus extends IStatusCodeListPlugin<OffsiteServerCodes, Api
 
 		@Override
 		public boolean isReportable() {
-			return true;
+			return false;
 		}
 
 	}

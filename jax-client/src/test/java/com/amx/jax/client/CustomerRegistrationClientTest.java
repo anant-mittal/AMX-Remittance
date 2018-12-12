@@ -15,14 +15,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.amx.amxlib.model.CustomerCredential;
 import com.amx.amxlib.model.CustomerHomeAddress;
-import com.amx.amxlib.model.CustomerPersonalDetail;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.jax.AppConstants;
+import com.amx.jax.CustomerCredential;
 import com.amx.jax.model.dto.SendOtpModel;
+import com.amx.jax.model.request.CustomerPersonalDetail;
 import com.amx.utils.ContextUtil;
 import com.amx.utils.JsonUtil;
 
@@ -54,7 +54,7 @@ public class CustomerRegistrationClientTest extends AbstractTestClient {
 		client.savePhishiingImage("test", "5");
 		
 		CustomerCredential customerCredential = new CustomerCredential(personalDetail.getIdentityInt(), "Amx@1234");
-		response = client.saveLoginDetail(customerCredential);
+		response = client.saveLoginDetail(customerCredential, Boolean.TRUE);
 
 		trnxId = (String) ContextUtil.map().get(AppConstants.TRANX_ID_XKEY);
 		assertNotNull("Response is null", response);

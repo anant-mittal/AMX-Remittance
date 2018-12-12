@@ -63,8 +63,7 @@ public class BeneController {
 	/**
 	 * Bene details.
 	 *
-	 * @param beneficiaryId
-	 *            the beneficiary id
+	 * @param beneficiaryId the beneficiary id
 	 * @return the response wrapper
 	 */
 	@ApiOperation(value = "Get Beneficiary Details")
@@ -76,8 +75,7 @@ public class BeneController {
 	/**
 	 * Bene details.
 	 *
-	 * @param beneficiary
-	 *            the beneficiary
+	 * @param beneficiary the beneficiary
 	 * @return the response wrapper
 	 * @deprecated - not used any more
 	 */
@@ -91,20 +89,13 @@ public class BeneController {
 	/**
 	 * Bene disable.
 	 *
-	 * @param mOtpHeader
-	 *            the m otp header
-	 * @param eOtpHeader
-	 *            the e otp header
-	 * @param mOtp
-	 *            the m otp
-	 * @param eOtp
-	 *            the e otp
-	 * @param beneficaryMasterSeqId
-	 *            the beneficary master seq id
-	 * @param remarks
-	 *            the remarks
-	 * @param status
-	 *            the status
+	 * @param mOtpHeader            the m otp header
+	 * @param eOtpHeader            the e otp header
+	 * @param mOtp                  the m otp
+	 * @param eOtp                  the e otp
+	 * @param beneficaryMasterSeqId the beneficary master seq id
+	 * @param remarks               the remarks
+	 * @param status                the status
 	 * @return the response wrapper M
 	 */
 	@ApiOperation(value = "Disable Beneficiary")
@@ -138,8 +129,7 @@ public class BeneController {
 	/**
 	 * Bene fav.
 	 *
-	 * @param beneficaryMasterSeqId
-	 *            the beneficary master seq id
+	 * @param beneficaryMasterSeqId the beneficary master seq id
 	 * @return the response wrapper
 	 */
 	@ApiOperation(value = "Set Beneficiary As Favorite")
@@ -164,8 +154,7 @@ public class BeneController {
 	/**
 	 * Save bene account in trnx.
 	 *
-	 * @param beneAccountModel
-	 *            the bene account model
+	 * @param beneAccountModel the bene account model
 	 * @return the response wrapper
 	 */
 	@ApiOperation(value = "Save Bene Account Info")
@@ -179,8 +168,7 @@ public class BeneController {
 	/**
 	 * Save bene personal detail in trnx.
 	 *
-	 * @param benePersonalDetailModel
-	 *            the bene personal detail model
+	 * @param benePersonalDetailModel the bene personal detail model
 	 * @return the response wrapper
 	 */
 	@ApiOperation(value = "Save Bene Personal Detail")
@@ -211,8 +199,7 @@ public class BeneController {
 	/**
 	 * Commit add bene trnx.
 	 *
-	 * @param req
-	 *            the req
+	 * @param req the req
 	 * @return the response wrapper
 	 */
 	@ApiOperation(value = "Save the current beneficary in progress")

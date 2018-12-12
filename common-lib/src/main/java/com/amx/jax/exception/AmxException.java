@@ -16,6 +16,11 @@ public class AmxException extends RuntimeException {
 		super(msg);
 	}
 
+	public AmxException(HttpStatus httpStatus, String msg) {
+		this(msg);
+		this.httpStatus = httpStatus;
+	}
+
 	public AmxException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
 		super(message, cause, enableSuppression, writableStackTrace);
 	}
@@ -27,4 +32,9 @@ public class AmxException extends RuntimeException {
 	public void setHttpStatus(HttpStatus httpStatus) {
 		this.httpStatus = httpStatus;
 	}
+
+	public String getStatusKey() {
+		return getHttpStatus().series().toString();
+	}
+
 }

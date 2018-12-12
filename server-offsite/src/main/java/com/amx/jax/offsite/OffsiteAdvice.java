@@ -1,14 +1,17 @@
 package com.amx.jax.offsite;
 
-import org.apache.log4j.Logger;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 
 import com.amx.jax.exception.AmxAdvice;
+import com.amx.jax.exception.AmxApiException;
 
 @ControllerAdvice
-@SuppressWarnings(value = { "unchecked", "rawtypes" })
 public class OffsiteAdvice extends AmxAdvice {
 
-	private Logger logger = Logger.getLogger(OffsiteAdvice.class);
+	@Override
+	public HttpStatus getHttpStatus(AmxApiException exp) {
+		return HttpStatus.OK;
+	}
 
 }

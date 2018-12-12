@@ -24,6 +24,8 @@ import com.amx.jax.AppConfig;
 import com.amx.jax.AppConstants;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.dict.Tenant;
+import com.amx.jax.http.CommonHttpRequest;
+import com.amx.jax.http.RequestType;
 import com.amx.jax.logger.client.AuditServiceClient;
 import com.amx.jax.logger.events.RequestTrackEvent;
 import com.amx.jax.scope.TenantContextHolder;
@@ -33,7 +35,6 @@ import com.amx.utils.UniqueID;
 import com.amx.utils.Urly;
 
 @Component
-// @PropertySource("classpath:application-logger.properties")
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class AppRequestFilter implements Filter {
 
@@ -41,19 +42,32 @@ public class AppRequestFilter implements Filter {
 
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
-		// TODO Auto-generated method stub
+		LOGGER.info("Filter Intialzed");
 	}
 
 	@Autowired
 	AppConfig appConfig;
 
+	@Autowired
+	CommonHttpRequest commonHttpRequest;
+
 	private boolean doesTokenMatch(HttpServletRequest req, HttpServletResponse resp, String traceId) {
 		String authToken = req.getHeader(AppConstants.AUTH_KEY_XKEY);
 		if (StringUtils.isEmpty(authToken)
-				|| (CryptoUtil.validateHMAC(appConfig.getAppAuthKey(), authToken, traceId) == false)) {
+				|| (CryptoUtil.validateHMAC(appConfig.getAppAuthKey(), traceId, authToken) == false)) {
 			return false;
 		}
 		return true;
+	}
+
+	private boolean isRequestValid(
+			RequestType reqType, HttpServletRequest req, HttpServletResponse resp,
+			String traceId) {
+		if (reqType.isAuth() && appConfig.isAppAuthEnabled() && !doesTokenMatch(req, resp, traceId)) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 
 	@Override
@@ -63,7 +77,7 @@ public class AppRequestFilter implements Filter {
 		HttpServletRequest req = ((HttpServletRequest) request);
 		HttpServletResponse resp = ((HttpServletResponse) response);
 		try {
-			RequestType reqType = RequestType.from(req);
+			RequestType reqType = commonHttpRequest.getApiRequestType(req);
 			AppContextUtil.setRequestType(reqType);
 
 			// Tenant Tracking
@@ -76,7 +90,7 @@ public class AppRequestFilter implements Filter {
 			}
 			if (!StringUtils.isEmpty(siteId)) {
 				TenantContextHolder.setCurrent(siteId, null);
-			}
+			} 
 			Tenant tnt = TenantContextHolder.currentSite();
 
 			// Tranx Id Tracking
@@ -110,7 +124,8 @@ public class AppRequestFilter implements Filter {
 				if (session == null) {
 					sessionID = UniqueID.generateString();
 				} else {
-					sessionID = ArgUtil.parseAsString(session.getAttribute(AppConstants.SESSION_ID_XKEY),
+					sessionID = ArgUtil.parseAsString(
+							session.getAttribute(AppConstants.SESSION_ID_XKEY),
 							UniqueID.generateString());
 				}
 
@@ -133,10 +148,10 @@ public class AppRequestFilter implements Filter {
 				AuditServiceClient.trackStatic(new RequestTrackEvent(req));
 			}
 			try {
-				if (reqType.isAuth() && appConfig.isAppAuthEnabled() && !doesTokenMatch(req, resp, traceId)) {
-					resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
-				} else {
+				if (isRequestValid(reqType, req, resp, traceId)) {
 					chain.doFilter(request, new AppResponseWrapper(resp));
+				} else {
+					resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
 				}
 			} finally {
 				if (reqType.isTrack()) {
@@ -154,7 +169,7 @@ public class AppRequestFilter implements Filter {
 
 	@Override
 	public void destroy() {
-		// TODO Auto-generated method stub
+		LOGGER.info("Filter Destroyed");
 	}
 
 }

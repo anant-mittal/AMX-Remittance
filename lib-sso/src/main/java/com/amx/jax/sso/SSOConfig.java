@@ -23,4 +23,5 @@ public class SSOConfig {
 	public String getAdminpass() {
 		return adminpass;
 	}
+
 }
