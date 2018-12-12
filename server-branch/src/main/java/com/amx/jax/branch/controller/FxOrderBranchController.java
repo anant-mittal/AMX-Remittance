@@ -58,7 +58,7 @@ public class FxOrderBranchController {
 			@RequestParam(value = "orderNumber", required = true) BigDecimal orderNumber,
 			@RequestParam(value = "orderYear", required = true) BigDecimal orderYear){
 		AmxApiResponse<BoolRespModel, Object> response = fxOrderBranchClient.acceptOrderLock(orderNumber, orderYear);
-		jaxStompClient.publishFxOrderStatusChange(orderNumber, orderYear, FxOrderStatus.ACP.toString());
+		jaxStompClient.publishFxOrderStatusChange(orderNumber, orderYear, FxOrderStatus.ACP);
 		return response;
 	}
 	
@@ -67,7 +67,7 @@ public class FxOrderBranchController {
 			@RequestParam(value = "orderNumber", required = true) BigDecimal orderNumber,
 			@RequestParam(value = "orderYear", required = true) BigDecimal orderYear){
 		AmxApiResponse<BoolRespModel, Object> response =  fxOrderBranchClient.releaseOrderLock(orderNumber, orderYear);
-		jaxStompClient.publishFxOrderStatusChange(orderNumber, orderYear, FxOrderStatus.ORD.toString());
+		jaxStompClient.publishFxOrderStatusChange(orderNumber, orderYear, FxOrderStatus.ORD);
 		return response;
 	}
 	
@@ -107,7 +107,7 @@ public class FxOrderBranchController {
 				fxOrderBranchClient.reprintOrder(documentNo, documentYear) : 
 				fxOrderBranchClient.printOrderSave(fcSaleBranchDispatchRequest);
 				
-		jaxStompClient.publishFxOrderStatusChange(documentNo, documentYear, FxOrderStatus.PCK.toString());
+		jaxStompClient.publishFxOrderStatusChange(documentNo, documentYear, FxOrderStatus.PCK);
 
 		if (File.Type.PDF.equals(ext)) {
 			File file = postManService.processTemplate(
@@ -147,7 +147,7 @@ public class FxOrderBranchController {
 		BigDecimal documentNo = fcSaleBranchDispatchRequest.getCollectionDocumentNo();
 		BigDecimal documentYear = fcSaleBranchDispatchRequest.getCollectionDocumentYear();
 		AmxApiResponse<FxOrderReportResponseDto, Object> response = fxOrderBranchClient.printOrderSave(fcSaleBranchDispatchRequest);
-		jaxStompClient.publishFxOrderStatusChange(documentNo, documentYear, FxOrderStatus.PCK.toString());
+		jaxStompClient.publishFxOrderStatusChange(documentNo, documentYear, FxOrderStatus.PCK);
 		return response;
 	}
 	
@@ -163,7 +163,7 @@ public class FxOrderBranchController {
 			@RequestParam(value = "orderYear", required = true) BigDecimal orderYear){
 
 		AmxApiResponse<BoolRespModel, Object> response = fxOrderBranchClient.assignDriver(orderNumber, orderYear,driverId);
-		jaxStompClient.publishFxOrderStatusChange(orderNumber, orderYear, FxOrderStatus.OFD_ACK.toString());
+		jaxStompClient.publishFxOrderStatusChange(orderNumber, orderYear, FxOrderStatus.OFD_ACK);
 		return response;
 	}
 	
@@ -172,7 +172,7 @@ public class FxOrderBranchController {
 			@RequestParam(value = "orderNumber", required = true) BigDecimal orderNumber,
 			@RequestParam(value = "orderYear", required = true) BigDecimal orderYear){
 		AmxApiResponse<BoolRespModel, Object> response = fxOrderBranchClient.dispatchOrder(orderNumber, orderYear);
-		jaxStompClient.publishFxOrderStatusChange(orderNumber, orderYear, FxOrderStatus.OFD.toString());
+		jaxStompClient.publishFxOrderStatusChange(orderNumber, orderYear, FxOrderStatus.OFD);
 		return response;
 	}
 	
@@ -181,7 +181,7 @@ public class FxOrderBranchController {
 			@RequestParam(value = "orderNumber", required = true) BigDecimal orderNumber,
 			@RequestParam(value = "orderYear", required = true) BigDecimal orderYear) {
 		AmxApiResponse<BoolRespModel, Object> response = fxOrderBranchClient.returnAcknowledge(orderNumber, orderYear);
-		jaxStompClient.publishFxOrderStatusChange(orderNumber, orderYear, FxOrderStatus.RTD.toString());
+		jaxStompClient.publishFxOrderStatusChange(orderNumber, orderYear, FxOrderStatus.RTD);
 		return response;
 	}
 	
@@ -190,7 +190,7 @@ public class FxOrderBranchController {
 			@RequestParam(value = "orderNumber", required = true) BigDecimal orderNumber,
 			@RequestParam(value = "orderYear", required = true) BigDecimal orderYear) {
 		AmxApiResponse<BoolRespModel, Object> response = fxOrderBranchClient.acceptCancellation(orderNumber, orderYear);
-		jaxStompClient.publishFxOrderStatusChange(orderNumber, orderYear, FxOrderStatus.CND.toString());
+		jaxStompClient.publishFxOrderStatusChange(orderNumber, orderYear, FxOrderStatus.CND);
 		return response;
 	}
 	
