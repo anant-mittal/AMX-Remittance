@@ -161,7 +161,7 @@ public class FxOrderPaymentManager {
 				 paymentResponse.setCollectionDocumentCode((BigDecimal)mapResopnseObject.get("P_COLLECTION_DOCUMENT_CODE"));
 				 
 				 if(listOfRecAppl!=null && !listOfRecAppl.isEmpty()){
-					 
+					 logStatusChangeAuditEvent(listOfRecAppl.get(0).getDeliveryDetSeqId(),ConstantDocument.ORD);
 				 }
 				 
 			 }else{

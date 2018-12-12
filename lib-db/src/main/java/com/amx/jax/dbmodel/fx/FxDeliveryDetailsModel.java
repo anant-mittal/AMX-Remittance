@@ -95,6 +95,12 @@ public class FxDeliveryDetailsModel implements Serializable{
 	@Column(name = "TO_BRANCH_ID")
 	BigDecimal toBranchId;
 	
+	@Column(name = "COLLECTION_DOC_FINANCE_YEAR")
+	private BigDecimal colDocFyr;
+	
+	@Column(name = "COLLECTION_DOCUMENT_NO")
+	private BigDecimal colDocNo;
+	
 	public String getOtpValidated() {
 		return otpValidated;
 	}
@@ -248,6 +254,18 @@ public class FxDeliveryDetailsModel implements Serializable{
 	
 	public void setToBranchId(BigDecimal toBranchId) {
 		this.toBranchId = toBranchId;
+	}
+	public BigDecimal getColDocFyr() {
+		return colDocFyr;
+	}
+	public void setColDocFyr(BigDecimal colDocFyr) {
+		this.colDocFyr = colDocFyr;
+	}
+	public BigDecimal getColDocNo() {
+		return colDocNo;
+	}
+	public void setColDocNo(BigDecimal colDocNo) {
+		this.colDocNo = colDocNo;
 	}
 	
 }
