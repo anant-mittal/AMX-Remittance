@@ -12,34 +12,26 @@ function sendData(step) {
 	var selectedMode = $("input[name='cardtype']:checked").val();
 	if (selectedMode === WITH_SMART_CARD) {
 		var errorFields = 0;
-		$(
-				".withSmartCard input[type='text']:not([readonly]), .withSmartCard input.scan-input")
-				.each(
-						function() {
-							$(this).attr('')
-							if ($(this).val() === "") {
-								errorFields = errorFields + 1;
-								$(this).next().children().text(
-										'This field can\'t be empty').show();
-							}
-						})
-		if (errorFields !== 0)
-			return;
+		$(".withSmartCard input[type='text']:not([readonly]), .withSmartCard input.scan-input").each(function() {
+			$(this).attr('')
+			if ($(this).val() === "") {
+				errorFields = errorFields + 1;
+				$(this).next().children().text(
+						'This field can\'t be empty').show();
+			}
+		})
+		if (errorFields !== 0) return;
 	} else if (selectedMode === WITHOUT_SMART_CARD) {
 		var errorFields = 0;
-		$(
-				".withoutSmartCard input[type='text']:not([readonly]), .withoutSmartCard input.scan-input")
-				.each(
-						function() {
-							$(this).attr('')
-							if ($(this).val() === "") {
-								errorFields = errorFields + 1;
-								$(this).next().children().text(
-										'This field can\'t be empty').show();
-							}
-						})
-		if (errorFields !== 0)
-			return;
+		$(".withoutSmartCard input[type='text']:not([readonly]), .withoutSmartCard input.scan-input").each(function() {
+			$(this).attr('')
+			if ($(this).val() === "") {
+				errorFields = errorFields + 1;
+				$(this).next().children().text(
+						'This field can\'t be empty').show();
+			}
+		})
+		if (errorFields !== 0) return;
 	}
 
 	var reqObj;
