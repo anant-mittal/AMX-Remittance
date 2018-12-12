@@ -203,8 +203,6 @@ public class DateUtil {
     String todayDate = dateStr.format(d);
     int hour = Integer.parseInt(sdf.format(d));
     int j =0;
-    String meridienAm=" am";
-    String meridienPm=" pm";
     String defaultZero =":00";
     GregorianCalendar calendar = new GregorianCalendar();
     Date now = calendar.getTime();
@@ -226,7 +224,7 @@ public class DateUtil {
 	   		 j = i+timeIntVal;
 	   		 String str = "";
 	   		 if(j<=endTime){
-	   		  str = String.valueOf(i)+defaultZero+(i<12?meridienAm:meridienPm)+ "-"+String.valueOf(j)+defaultZero+(j<12?meridienAm:meridienPm);
+	   		 	str = String.valueOf(i)+defaultZero+ "-"+String.valueOf(j)+defaultZero;
 	   		  timeSlotList.add(str);
 	   		 }
 	   		
