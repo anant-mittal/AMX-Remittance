@@ -7,11 +7,17 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.net.URL;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Properties;
 
+import org.apache.commons.lang.text.StrLookup;
+import org.apache.commons.lang.text.StrSubstitutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.framework.AopProxyUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.dict.Language;
@@ -26,8 +32,20 @@ public class TenantProperties {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(TenantProperties.class);
 	private static TenantProperties obj = new TenantProperties();
+	private static Environment ENV;
 
 	private Properties properties = null;
+
+	TenantProperties() {
+
+	}
+
+	@Autowired
+	public TenantProperties(Environment env) {
+		if (ENV == null) {
+			ENV = env;
+		}
+	}
 
 	public Properties getProperties() {
 		if (properties == null) {
@@ -47,13 +65,15 @@ public class TenantProperties {
 			URL ufile = FileUtil.getResource(propertyFile, object.getClass());
 			if (ufile != null) {
 				inSideInputStream = ufile.openStream();
-				tenantProperties.load(inSideInputStream);
+				// tenantProperties.load(inSideInputStream);
+				tenantProperties.putAll(loadPropertiesMap(inSideInputStream));
 				LOGGER.info("Loaded Properties from classpath: {}", ufile.getPath());
 			}
 
 			outSideInputStream = FileUtil.getExternalResourceAsStream(propertyFile, object.getClass());
 			if (outSideInputStream != null) {
-				tenantProperties.load(outSideInputStream);
+				// tenantProperties.load(outSideInputStream);
+				tenantProperties.putAll(loadPropertiesMap(outSideInputStream));
 				LOGGER.info("Loaded Properties from jarpath: {}", propertyFile);
 			}
 
@@ -72,6 +92,42 @@ public class TenantProperties {
 			}
 		}
 		return tenantProperties;
+	}
+
+	@SuppressWarnings("serial")
+	public static Map<String, String> loadPropertiesMap(InputStream s) throws IOException {
+		final Map<String, String> ordered = new LinkedHashMap<String, String>();
+		// Hack to use properties class to parse but our map for preserved order
+		Properties bp = new Properties() {
+			@Override
+			public synchronized Object put(Object key, Object value) {
+				ordered.put((String) key, (String) value);
+				return super.put(key, value);
+			}
+		};
+		bp.load(s);
+		final Map<String, String> resolved = new LinkedHashMap<String, String>(ordered.size());
+		StrSubstitutor sub = new StrSubstitutor(new StrLookup() {
+			@Override
+			public String lookup(String key) {
+				String value = resolved.get(key);
+
+				if (ArgUtil.isEmpty(value)) {
+					if (ENV != null) {
+						value = ENV.getProperty(key);
+					}
+					if (ArgUtil.isEmpty(value)) {
+						value = System.getProperty(key);
+					}
+				}
+				return value;
+			}
+		});
+		for (String k : ordered.keySet()) {
+			String value = sub.replace(ordered.get(k));
+			resolved.put(k, value);
+		}
+		return resolved;
 	}
 
 	public static Object assignValues(String tenant, Object object) {
