@@ -1074,15 +1074,14 @@ public class FcSaleBranchOrderManager {
 						if(employeeDt != null && employeeDt.getEmployeeId() != null && employeeDt.getUserName() != null){
 							userName = employeeDt.getUserName();
 							if(deliveryDetails.getOrderStatus() != null && deliveryDetails.getOrderStatus().equalsIgnoreCase(ConstantDocument.OFD_ACK)) {
-								fcSaleBranchDao.saveAcknowledgeDriver(lstOrderManagement,employeeId,userName,ConstantDocument.OFD_CNF);
-
 								// migrate stock from cashier to driver
-								currentStockMigration(deliveryDetailsId, orderManagementView.getDriverEmployeId(),employeeId);
-
-								// old status
-								logStatusChangeAuditEvent(deliveryDetailsId, oldOrderStatus);
-
-								status = Boolean.TRUE;
+								Boolean stockStatus = currentStockMigration(deliveryDetailsId, orderManagementView.getDriverEmployeId(),employeeId);
+								if(stockStatus) {
+									fcSaleBranchDao.saveAcknowledgeDriver(lstOrderManagement,employeeId,userName,ConstantDocument.OFD_CNF);
+									// old status
+									logStatusChangeAuditEvent(deliveryDetailsId, oldOrderStatus);
+									status = Boolean.TRUE;
+								}
 							}else {
 								throw new GlobalException(JaxError.ORDER_STATUS_MISMATCH,"Order status is not out for delivery acknowledge ");
 							}
@@ -1128,15 +1127,14 @@ public class FcSaleBranchOrderManager {
 						if(employeeDt != null && employeeDt.getEmployeeId() != null && employeeDt.getUserName() != null){
 							userName = employeeDt.getUserName();
 							if(deliveryDetails.getOrderStatus() != null && deliveryDetails.getOrderStatus().equalsIgnoreCase(ConstantDocument.RTD_ACK)) {
-								fcSaleBranchDao.saveReturnAcknowledge(lstOrderManagement,employeeId,userName,ConstantDocument.RTD);
-
 								// migrate stock from driver to cashier
-								migrateStock(lstOrderManagement,employeeId,userName,ConstantDocument.RTD);
-
-								// old status
-								logStatusChangeAuditEvent(deliveryDetailsId, oldOrderStatus);
-
-								status = Boolean.TRUE;
+								Boolean stockStatus = migrateStock(lstOrderManagement,employeeId,userName,ConstantDocument.RTD);
+								if(stockStatus) {
+									fcSaleBranchDao.saveReturnAcknowledge(lstOrderManagement,employeeId,userName,ConstantDocument.RTD);
+									// old status
+									logStatusChangeAuditEvent(deliveryDetailsId, oldOrderStatus);
+									status = Boolean.TRUE;
+								}
 							}
 						}else {
 							throw new GlobalException(JaxError.INVALID_EMPLOYEE,"Employee details is empty");
@@ -1180,15 +1178,14 @@ public class FcSaleBranchOrderManager {
 						if(employeeDt != null && employeeDt.getEmployeeId() != null && employeeDt.getUserName() != null){
 							userName = employeeDt.getUserName();
 							if(deliveryDetails.getOrderStatus() != null && deliveryDetails.getOrderStatus().equalsIgnoreCase(ConstantDocument.CND_ACK)) {
-								fcSaleBranchDao.saveAcceptCancellation(lstOrderManagement,employeeId,userName,ConstantDocument.CND);
-
 								// migrate stock from driver to cashier
-								migrateStock(lstOrderManagement,employeeId,userName,ConstantDocument.CND);
-
-								// old status
-								logStatusChangeAuditEvent(deliveryDetailsId, oldOrderStatus);
-
-								status = Boolean.TRUE;
+								Boolean stockStatus = migrateStock(lstOrderManagement,employeeId,userName,ConstantDocument.CND);
+								if(stockStatus) {
+									fcSaleBranchDao.saveAcceptCancellation(lstOrderManagement,employeeId,userName,ConstantDocument.CND);
+									// old status
+									logStatusChangeAuditEvent(deliveryDetailsId, oldOrderStatus);
+									status = Boolean.TRUE;
+								}
 							}
 						}else {
 							throw new GlobalException(JaxError.INVALID_EMPLOYEE,"Employee details is empty");
