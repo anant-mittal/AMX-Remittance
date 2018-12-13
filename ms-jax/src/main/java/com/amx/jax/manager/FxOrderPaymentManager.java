@@ -19,10 +19,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.jax.auditlog.FcSaleOrderStatusChangeAuditEvent;
+import com.amx.jax.auditlog.JaxAuditEvent;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.ApplicationProcedureDao;
 import com.amx.jax.dao.FcSaleApplicationDao;
@@ -43,6 +46,7 @@ import com.amx.jax.dbmodel.UserFinancialYear;
 import com.amx.jax.dbmodel.ViewCompanyDetails;
 import com.amx.jax.dbmodel.fx.FxDeliveryDetailsModel;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.logger.AuditService;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.response.fx.ShoppingCartDetailsDto;
 import com.amx.jax.payg.PayGModel;
@@ -106,7 +110,8 @@ public class FxOrderPaymentManager {
 	PaymentModeRepository payModeRepositoy;
 	
 
-
+	@Autowired
+	AuditService auditService;
 	
 	public PaymentResponseDto paymentCapture(PaymentResponseDto paymentResponse) {
 		logger.debug("paymment capture :"+paymentResponse.toString());
@@ -154,6 +159,11 @@ public class FxOrderPaymentManager {
 				 paymentResponse.setCollectionDocumentNumber((BigDecimal)mapResopnseObject.get("P_COLLECTION_NO"));
 				 paymentResponse.setCollectionFinanceYear((BigDecimal)mapResopnseObject.get("P_COLLECT_FINYR"));
 				 paymentResponse.setCollectionDocumentCode((BigDecimal)mapResopnseObject.get("P_COLLECTION_DOCUMENT_CODE"));
+				 
+				 if(listOfRecAppl!=null && !listOfRecAppl.isEmpty()){
+					 logStatusChangeAuditEvent(listOfRecAppl.get(0).getDeliveryDetSeqId(),ConstantDocument.ORD);
+				 }
+				 
 			 }else{
 				 logger.error("paymentCapture final save  finalSaveAll method :"+mapResopnseObject.toString());
 				 throw new GlobalException(JaxError.PAYMENT_UPDATION_FAILED, "Invalid collection document number /year");
@@ -308,7 +318,7 @@ public class FxOrderPaymentManager {
 				 if(deliveryCharges!=null && totalcollectiontAmount !=null){
 					 totalcollectiontAmount = totalcollectiontAmount.add(deliveryCharges);
 				 }
-				 
+				 collection.setDeliveryCharges(deliveryCharges);
 				 collection.setReceiptType(ConstantDocument.COLLECTION_RECEIPT_TYPE);
 			 	 collection.setApplicationCountryId(appl.getCountryId());
 			 	 collection.setAccountMMYYYY(appl.getAccountMMYYYY());
@@ -448,4 +458,12 @@ public class FxOrderPaymentManager {
 		return (BigDecimal) output.get("P_DOC_NO");
 	}
 
+	
+	@Async
+	private  void logStatusChangeAuditEvent(BigDecimal deliveryDetailSeqId, String oldOrderStatus) {
+		FxDeliveryDetailsModel deliveryDetailModel = rcptApplPaydao.getDeliveryDetailModel(deliveryDetailSeqId);
+		FcSaleOrderStatusChangeAuditEvent event = new FcSaleOrderStatusChangeAuditEvent(deliveryDetailModel,oldOrderStatus, JaxAuditEvent.Type.FC_SALE_UPDATE_ORDER_STATUS);
+		auditService.log(event);
+	}
+	
 }
