@@ -84,15 +84,12 @@ public class SecurityQuestionsManager {
 
 		QuestModelDTO q1 = CustomerDataVerificationQuestion.Q1.getQuestModelDTO();
 		QuestModelDTO q2 = CustomerDataVerificationQuestion.Q2.getQuestModelDTO();
-		QuestModelDTO q3 = CustomerDataVerificationQuestion.Q3.getQuestModelDTO();
 		q1.setQuestAnswerModelDTO(getAnswerModelForQ1());
-		q2.setQuestAnswerModelDTO(getRelationShips());
-		q3.setQuestAnswerModelDTO(getListOfMonths());
+		q2.setQuestAnswerModelDTO(getExpiryDateForQ2());
 		List<QuestModelDTO> result = new ArrayList<>();
 		Map<Integer, QuestModelDTO> maps = new HashMap<>();
 		maps.put(1, q1);
 		maps.put(2, q2);
-		maps.put(3, q3);
 		int randQKey = ThreadLocalRandom.current().nextInt(1, 4);
 		result.add(maps.get(randQKey));
 		return result;
@@ -105,33 +102,10 @@ public class SecurityQuestionsManager {
 		return dto;
 	}
 
-	private QuestAnswerModelDTO getListOfMonths() {
+	private QuestAnswerModelDTO getExpiryDateForQ2() {
 		QuestAnswerModelDTO dto = new QuestAnswerModelDTO();
-		dto.setAnswerKey("select");
-		List<AbstractAnswer> possibleAnswers = new ArrayList<>();
-		dto.setPossibleAnswers(possibleAnswers);
-		util.getMonthsList().forEach((k, v) -> {
-			OptionAnswer answer = new OptionAnswer();
-			answer.setOptionKey(k);
-			answer.setOptionValue(v);
-			possibleAnswers.add(answer);
-		});
+		dto.setAnswerType("date");
 		return dto;
 	}
 
-	private QuestAnswerModelDTO getRelationShips() {
-		QuestAnswerModelDTO dto = new QuestAnswerModelDTO();
-		dto.setAnswerType("select");
-		List<AbstractAnswer> possibleAnswers = new ArrayList<>();
-
-		dto.setPossibleAnswers(possibleAnswers);
-		List<RelationsDescription> allRelationsDesc = relationsRepository.findBylangId(metaData.getLanguageId());
-		allRelationsDesc.forEach(i -> {
-			OptionAnswer answer = new OptionAnswer();
-			answer.setOptionKey(i.getRelationsId().toString());
-			answer.setOptionValue(i.getLocalRelationsDesc());
-			possibleAnswers.add(answer);
-		});
-		return dto;
-	}
 }

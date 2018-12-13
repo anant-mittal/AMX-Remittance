@@ -186,7 +186,7 @@ public class CustomerController {
 	public ApiResponse getCustomerDataValidationQeustions(@RequestParam Integer size) {
 		logger.info("getCustomerDataValidationQeustions Request:");
 		ApiResponse<QuestModelDTO> response = userService.getDataVerificationRandomQuestions(size);
-		customerDataVerificationService.setAdditionalData(response.getResults());
+		response.getResult();
 		return response;
 	}
 

@@ -6,7 +6,7 @@ import com.amx.amxlib.meta.model.QuestModelDTO;
 
 public enum CustomerDataVerificationQuestion {
 
-	Q1(1, "The first name of your beneficiary to whom you did the last transaction") {
+	Q1(1, "The last 4 digits of your primary mobile number") {
 		@Override
 		public QuestModelDTO getQuestModelDTO() {
 			QuestModelDTO dto = new QuestModelDTO(Q1.getId(), Q1.getId(), Q1.getQuestion());
@@ -14,21 +14,14 @@ public enum CustomerDataVerificationQuestion {
 
 		}
 	},
-	Q2(2, "Relationship with beneficiary:  ${name}") {
+	Q2(2, "Identity Id Expiry Date") {
 		@Override
 		public QuestModelDTO getQuestModelDTO() {
 			QuestModelDTO dto = new QuestModelDTO(Q2.getId(), Q2.getId(), Q2.getQuestion());
 			return dto;
 		}
-	},
-	Q3(3, "Month of last transaction") {
-		@Override
-		public QuestModelDTO getQuestModelDTO() {
-			QuestModelDTO dto = new QuestModelDTO(Q3.getId(), Q3.getId(), Q3.getQuestion());
-			return dto;
-		}
 	};
-
+	
 	BigDecimal id;
 	String question;
 
