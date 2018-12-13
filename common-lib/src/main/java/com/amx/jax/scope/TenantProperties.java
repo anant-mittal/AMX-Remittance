@@ -37,7 +37,6 @@ public class TenantProperties {
 	private Properties properties = null;
 
 	TenantProperties() {
-
 	}
 
 	@Autowired
@@ -45,6 +44,14 @@ public class TenantProperties {
 		if (ENV == null) {
 			ENV = env;
 		}
+	}
+
+	public static void setEnviroment(Environment env) {
+		ENV = env;
+	}
+
+	public static Environment getEnviroment() {
+		return ENV;
 	}
 
 	public Properties getProperties() {
@@ -113,8 +120,8 @@ public class TenantProperties {
 				String value = resolved.get(key);
 
 				if (ArgUtil.isEmpty(value)) {
-					if (ENV != null) {
-						value = ENV.getProperty(key);
+					if (getEnviroment() != null) {
+						value = getEnviroment().getProperty(key);
 					}
 					if (ArgUtil.isEmpty(value)) {
 						value = System.getProperty(key);

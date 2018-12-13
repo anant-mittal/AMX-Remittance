@@ -3,6 +3,7 @@ package com.amx.jax.postman.model;
 import com.amx.jax.ProjectConfig;
 import com.amx.jax.dict.Project;
 import com.amx.jax.postman.model.File.PDFConverter;
+import com.amx.jax.postman.model.Notipy.Channel;
 
 public class ITemplates {
 
@@ -19,6 +20,10 @@ public class ITemplates {
 		String getHtmlFile();
 
 		String getFileName();
+
+		public default Channel getChannel() {
+			return null;
+		}
 
 	}
 

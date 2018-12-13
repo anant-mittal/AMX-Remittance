@@ -1,5 +1,7 @@
 package com.amx.jax.postman.client;
 
+import java.awt.Color;
+
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
@@ -11,7 +13,6 @@ import com.amx.jax.AppConfig;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Notipy;
 import com.amx.jax.postman.model.Notipy.Channel;
-import com.amx.jax.postman.model.Notipy.Color;
 
 public class PostManContextListener implements ServletContextListener {
 
@@ -32,7 +33,7 @@ public class PostManContextListener implements ServletContextListener {
 				PostManService postManService = getService(sce);
 				Notipy msg = new Notipy();
 				msg.setChannel(Channel.DEPLOYER);
-				msg.setColor(Color.SUCCESS);
+				msg.setColor("#36a64f");
 				msg.setMessage("App : " + appConfig.getAppName());
 				msg.addLine("Status : server is started...");
 				LOGGER.info("{} : Status : server is started...", appConfig.getAppName());
@@ -54,7 +55,7 @@ public class PostManContextListener implements ServletContextListener {
 				PostManService postManService = getService(sce);
 				Notipy msg = new Notipy();
 				msg.setChannel(Channel.DEPLOYER);
-				msg.setColor(Color.DANGER);
+				msg.setColor("danger");
 				msg.setMessage("App : " + appConfig.getAppName());
 				msg.addLine("Status : server is shutdown...");
 				LOGGER.info("{} : Status : server is shutdown...", appConfig.getAppName());

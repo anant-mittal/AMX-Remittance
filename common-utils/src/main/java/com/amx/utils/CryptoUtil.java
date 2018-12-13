@@ -103,6 +103,21 @@ public final class CryptoUtil {
 		long passLenFill = Math.max(Math.round(Math.pow(10, passLenDiff)) - 1, 1);
 		return ArgUtil.parseAsString(hashCode * passLenFill);
 	}
+	
+	public static String toHex(int length, String hash) {
+		//length = length*2;
+		char[] hashChars = hash.toCharArray();
+		int totalInt = 0;
+		for (int i = 0; i < hashChars.length; i++) {
+			int cint = hashChars[i];
+			totalInt = (cint * cint * i) + totalInt;
+		}
+		long hashCode = Math.max(totalInt % Math.round(Math.pow(16, length)), 2);
+		int passLenDiff = (length - String.valueOf(Long.toHexString(hashCode)).length());
+		long passLenFill = Math.max(Math.round(Math.pow(16, passLenDiff)) - 1, 1);
+		//return (Long.toHexString(hashCode * passLenFill));
+		return (Long.toHexString(hashCode * passLenFill) + "FFFFFF").substring(0, length);
+	}
 
 	private static String bytesToHex(byte[] bytes) {
 		char[] hexChars = new char[bytes.length * 2];
@@ -290,6 +305,11 @@ public final class CryptoUtil {
 		 */
 		public HashBuilder toNumeric(int length) {
 			this.output = CryptoUtil.toNumeric(length, this.hash);
+			return this;
+		}
+		
+		public HashBuilder toHex(int length) {
+			this.output = CryptoUtil.toHex(length, this.hash);
 			return this;
 		}
 

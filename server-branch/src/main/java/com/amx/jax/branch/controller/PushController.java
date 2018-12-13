@@ -6,6 +6,7 @@ import java.util.concurrent.ExecutionException;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.amqp.RabbitProperties.Template;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +22,7 @@ import com.amx.jax.dict.Tenant;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.postman.model.PushMessage;
+import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.jax.task.events.PromoNotifyTask;
 
@@ -41,13 +43,12 @@ public class PushController {
 	public List<Tenant> listOfTenants() throws PostManException, InterruptedException, ExecutionException {
 		return Arrays.asList(Tenant.values());
 	}
-	
-	
+
 	@RequestMapping(value = "/pub/list/nations", method = RequestMethod.POST)
 	public List<Nations> listOfNations() throws PostManException, InterruptedException, ExecutionException {
 		return Arrays.asList(Nations.values());
 	}
-	
+
 	@RequestMapping(value = "/pub/list/branches", method = RequestMethod.POST)
 	public List<?> listOfNations(
 			@ApiParam(required = true, allowableValues = "KWT,BHR",
@@ -60,7 +61,7 @@ public class PushController {
 		}
 
 	}
-	
+
 	@RequestMapping(value = "/api/notify/all", method = RequestMethod.POST)
 	public AmxApiResponse<PromoNotifyTask, Object> notifyAll(
 			@ApiParam(required = true, allowableValues = "KWT,BHR",
@@ -70,7 +71,7 @@ public class PushController {
 		PromoNotifyTask task = new PromoNotifyTask();
 		task.setNationality(Nations.ALL);
 		task.setTitle(title);
-		task.setMessage(message); 
+		task.setMessage(message);
 		onMessage(task);
 		return AmxApiResponse.build(task);
 	}
@@ -101,6 +102,8 @@ public class PushController {
 		PushMessage msg = new PushMessage();
 		msg.setMessage(task.getMessage());
 		msg.setSubject(task.getTitle());
+
+		msg.setITemplate(TemplatesMX.MARKETING_PUSH);
 
 		if (task.getNationality() == Nations.ALL) {
 			msg.addTopic(String.format(PushMessage.FORMAT_TO_ALL, tnt.toString().toLowerCase()));
