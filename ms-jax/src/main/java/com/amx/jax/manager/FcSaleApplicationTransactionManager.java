@@ -171,7 +171,7 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 		FcSaleOrderApplicationResponseModel responeModel = new FcSaleOrderApplicationResponseModel();
 		HashMap<String, Object> mapAllDetailApplSave = new HashMap<String, Object>();
 		deactivateApplications(fcSalerequestModel);
-		ReceiptPaymentApp receiptPayment =this. createFcSaleReceiptApplication(fcSalerequestModel);
+		ReceiptPaymentApp receiptPayment =this.createFcSaleReceiptApplication(fcSalerequestModel);
 		mapAllDetailApplSave.put("EX_APPL_RECEIPT",receiptPayment);
 		fsSaleapplicationDao.saveAllApplicationData(mapAllDetailApplSave);
 		FxOrderShoppingCartResponseModel cartDetails= fetchApplicationDetails();
@@ -354,8 +354,8 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 		receiptPaymentAppl.setCreatedDate(new Date());
 		
 		receiptPaymentAppl.setTravelCountryId(fcSalerequestModel.getTravelCountryId());
-		receiptPaymentAppl.setTravelStartDate(fcSalerequestModel.getStartDate()==null?new Date():new Date(fcSalerequestModel.getStartDate()));
-		receiptPaymentAppl.setTravelEndDate(fcSalerequestModel.getEndDate()==null?new Date():new Date(fcSalerequestModel.getEndDate()));
+		receiptPaymentAppl.setTravelStartDate(fcSalerequestModel.getStartDate()==null?new Date():new SimpleDateFormat("dd/MM/yyyy").parse(fcSalerequestModel.getStartDate()));
+		receiptPaymentAppl.setTravelEndDate(fcSalerequestModel.getEndDate()==null?new Date():new SimpleDateFormat("dd/MM/yyyy").parse(fcSalerequestModel.getEndDate()));
 		
 		
 		if(!StringUtils.isBlank(metaData.getReferrer())){
