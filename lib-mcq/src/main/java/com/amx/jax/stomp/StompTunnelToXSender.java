@@ -22,7 +22,7 @@ public class StompTunnelToXSender implements ITunnelSubscriber<StompTunnelEvent>
 	@Autowired
 	StompTunnelSessionManager stompTunnelSessionManager;
 
-	@Autowired
+	@Autowired(required = false)
 	private MessageSendingOperations<String> messagingTemplate;
 
 	@Override
