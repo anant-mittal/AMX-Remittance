@@ -18,12 +18,14 @@ import com.amx.jax.dbmodel.CurrencyWiseDenomination;
 import com.amx.jax.dbmodel.Employee;
 import com.amx.jax.dbmodel.ForeignCurrencyAdjust;
 import com.amx.jax.dbmodel.fx.EmployeeDetailsView;
+import com.amx.jax.dbmodel.fx.ForeignCurrencyOldModel;
 import com.amx.jax.dbmodel.fx.FxDeliveryDetailsModel;
 import com.amx.jax.dbmodel.fx.OrderManagementView;
 import com.amx.jax.dbmodel.fx.UserStockView;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.repository.CurrencyWiseDenominationRepository;
 import com.amx.jax.repository.EmployeeRespository;
+import com.amx.jax.repository.ForeignCurrencyAdjustOldRepository;
 import com.amx.jax.repository.ForeignCurrencyAdjustRepository;
 import com.amx.jax.repository.ICollectionRepository;
 import com.amx.jax.repository.ReceiptPaymentRespository;
@@ -58,6 +60,9 @@ public class FcSaleBranchDao {
 	
 	@Autowired
 	ForeignCurrencyAdjustRepository foreignCurrencyAdjustRepository;
+	
+	@Autowired
+	ForeignCurrencyAdjustOldRepository foreignCurrencyAdjustOldRepository;
 	
 	@Autowired
 	CurrencyWiseDenominationRepository currencyWiseDenominationRepository;
@@ -95,16 +100,35 @@ public class FcSaleBranchDao {
 	}
 	
 	@Transactional
-	public void saveDeliveryDetailsDriverId(FxDeliveryDetailsModel deliveryDetail){
+	public void saveDeliveryDetailsDriverId(FxDeliveryDetailsModel deliveryDetail,String docNoBulk,BigDecimal companyId,BigDecimal documentCode,BigDecimal documentYear){
+		BigDecimal documentNo = null;
 		if(deliveryDetail != null) {
 			fxDeliveryDetailsRepository.save(deliveryDetail);
+			if(docNoBulk != null) {
+				String[] docNum = docNoBulk.split(",");
+				for (int i=0; i < docNum.length; i++){
+					documentNo = new BigDecimal(docNum[i]);
+					if(documentNo != null) {
+						List<ForeignCurrencyAdjust> lstForeignCurrencyAdj = foreignCurrencyAdjustRepository.fetchByDocumentDetails(documentNo, documentYear, companyId, documentCode, ConstantDocument.P);
+						if(lstForeignCurrencyAdj != null) {
+							for (ForeignCurrencyAdjust foreignCurrencyAdjust : lstForeignCurrencyAdj) {
+								foreignCurrencyAdjust.setDocumentStatus(null);
+								foreignCurrencyAdjust.setModifiedBy(deliveryDetail.getUpdatedBy());
+								foreignCurrencyAdjust.setModifiedDate(new Date());
+								foreignCurrencyAdjustRepository.save(foreignCurrencyAdjust);
+							}
+						}
+					}
+				}
+			}
 		}else {
 			throw new GlobalException(JaxError.SAVE_FAILED,"No records found for delivery detail");
 		}
 	}
 	
 	@Transactional
-	public void saveDeliveryDetails(FxDeliveryDetailsModel deliveryDetailNew,FxDeliveryDetailsModel deliveryDetail,List<OrderManagementView> lstOrderManagement){
+	public void saveDeliveryDetails(FxDeliveryDetailsModel deliveryDetailNew,FxDeliveryDetailsModel deliveryDetail,List<OrderManagementView> lstOrderManagement,String docNoBulk,BigDecimal companyId,BigDecimal documentCode,BigDecimal documentYear){
+		BigDecimal documentNo = null;
 		if(lstOrderManagement != null){
 			if(deliveryDetailNew != null) {
 				fxDeliveryDetailsRepository.save(deliveryDetailNew);
@@ -117,6 +141,25 @@ public class FcSaleBranchDao {
 			for (OrderManagementView orderManagementView : lstOrderManagement) {
 				receiptPaymentRespository.updateDeliveryDetails(orderManagementView.getReceiptPaymentId(),deliveryDetailNew.getDeleviryDelSeqId(),deliveryDetailNew.getCreatedBy(),deliveryDetailNew.getCreatedDate());
 			}
+			
+			if(docNoBulk != null) {
+				String[] docNum = docNoBulk.split(",");
+				for (int i=0; i < docNum.length; i++){
+					documentNo = new BigDecimal(docNum[i]);
+					if(documentNo != null) {
+						List<ForeignCurrencyAdjust> lstForeignCurrencyAdj = foreignCurrencyAdjustRepository.fetchByDocumentDetails(documentNo, documentYear, companyId, documentCode, ConstantDocument.P);
+						if(lstForeignCurrencyAdj != null) {
+							for (ForeignCurrencyAdjust foreignCurrencyAdjust : lstForeignCurrencyAdj) {
+								foreignCurrencyAdjust.setDocumentStatus(null);
+								foreignCurrencyAdjust.setModifiedBy(deliveryDetail.getUpdatedBy());
+								foreignCurrencyAdjust.setModifiedDate(new Date());
+								foreignCurrencyAdjustRepository.save(foreignCurrencyAdjust);
+							}
+						}
+					}
+				}
+			}
+			
 		}else {
 			throw new GlobalException(JaxError.SAVE_FAILED,"No records found for order management");
 		}
@@ -237,8 +280,8 @@ public class FcSaleBranchDao {
 		}
 	}
 	
-	public List<ForeignCurrencyAdjust> fetchByCollectionDetails(BigDecimal documentNo,BigDecimal documentYear,BigDecimal companyId,BigDecimal documentCode){
-		return foreignCurrencyAdjustRepository.fetchByCollectionDetails(documentNo,documentYear,companyId,documentCode);
+	public List<ForeignCurrencyAdjust> fetchByCollectionDetails(BigDecimal documentNo,BigDecimal documentYear,BigDecimal companyId,BigDecimal documentCode,String status){
+		return foreignCurrencyAdjustRepository.fetchByCollectionDetails(documentNo,documentYear,companyId,documentCode,status);
 	}
 	
 	public void saveAcknowledgeDriver(List<OrderManagementView> lstOrderManagement,BigDecimal employeeId,String userName,String orderStatus){
@@ -246,7 +289,7 @@ public class FcSaleBranchDao {
 			OrderManagementView orderManagementView = lstOrderManagement.get(0);
 			BigDecimal deliveryDetailsId = orderManagementView.getDeliveryDetailsId();
 			FxDeliveryDetailsModel fxDeliveryDetailsModel = fetchDeliveryDetails(deliveryDetailsId, ConstantDocument.Yes);
-			if(fxDeliveryDetailsModel != null && fxDeliveryDetailsModel.getOrderStatus() != null) {
+			if(fxDeliveryDetailsModel.getOrderStatus() != null && fxDeliveryDetailsModel != null && fxDeliveryDetailsModel.getOrderStatus() != null) {
 				if(fxDeliveryDetailsModel.getOrderStatus().equalsIgnoreCase(ConstantDocument.OFD_ACK)) {
 					fxDeliveryDetailsModel.setUopdateDate(new Date());
 					fxDeliveryDetailsModel.setUpdatedBy(userName);
@@ -269,7 +312,7 @@ public class FcSaleBranchDao {
 			BigDecimal deliveryDetailsId = orderManagementView.getDeliveryDetailsId();
 			FxDeliveryDetailsModel fxDeliveryDetailsModel = fetchDeliveryDetails(deliveryDetailsId, ConstantDocument.Yes);
 			if(fxDeliveryDetailsModel != null && fxDeliveryDetailsModel.getOrderStatus() != null) {
-				if(fxDeliveryDetailsModel.getOrderStatus().equalsIgnoreCase(ConstantDocument.RTD_ACK)) {
+				if(fxDeliveryDetailsModel.getOrderStatus() != null && fxDeliveryDetailsModel.getOrderStatus().equalsIgnoreCase(ConstantDocument.RTD_ACK)) {
 					fxDeliveryDetailsModel.setUopdateDate(new Date());
 					fxDeliveryDetailsModel.setUpdatedBy(userName);
 					fxDeliveryDetailsModel.setOrderStatus(orderStatus);
@@ -291,7 +334,7 @@ public class FcSaleBranchDao {
 			BigDecimal deliveryDetailsId = orderManagementView.getDeliveryDetailsId();
 			FxDeliveryDetailsModel fxDeliveryDetailsModel = fetchDeliveryDetails(deliveryDetailsId, ConstantDocument.Yes);
 			if(fxDeliveryDetailsModel != null && fxDeliveryDetailsModel.getOrderStatus() != null) {
-				if(fxDeliveryDetailsModel.getOrderStatus().equalsIgnoreCase(ConstantDocument.CND_ACK)) {
+				if(fxDeliveryDetailsModel.getOrderStatus() != null && fxDeliveryDetailsModel.getOrderStatus().equalsIgnoreCase(ConstantDocument.CND_ACK)) {
 					fxDeliveryDetailsModel.setUopdateDate(new Date());
 					fxDeliveryDetailsModel.setUpdatedBy(userName);
 					fxDeliveryDetailsModel.setOrderStatus(orderStatus);
@@ -305,5 +348,33 @@ public class FcSaleBranchDao {
 		}else {
 			throw new GlobalException(JaxError.SAVE_FAILED,"No records found for order management");
 		}
+	}
+	
+	public List<OrderManagementView> fetchOrdersByDeliveryDetailId(BigDecimal deliveryDetailSeqId){
+		return fcSaleOrderManagementRepository.findByDeliveryDetailsId(deliveryDetailSeqId);
+	}
+	
+	@Transactional
+	public void stockUpdate(List<ForeignCurrencyAdjust> fromFCAdj,List<ForeignCurrencyAdjust> toFCAdj,List<ForeignCurrencyOldModel> oldToFCAdj){
+		if(fromFCAdj != null) {
+			for (ForeignCurrencyAdjust fromCurrencyAdj : fromFCAdj) {
+				foreignCurrencyAdjustRepository.save(fromCurrencyAdj);
+			}
+		}
+		if(toFCAdj != null) {
+			for (ForeignCurrencyAdjust toCurrencyAdj : toFCAdj) {
+				foreignCurrencyAdjustRepository.save(toCurrencyAdj);
+			}
+		}
+		if(oldToFCAdj != null) {
+			for (ForeignCurrencyOldModel oldToCurrencyAdj : oldToFCAdj) {
+				foreignCurrencyAdjustOldRepository.save(oldToCurrencyAdj);
+			}
+		}
+	}
+	
+	
+	public List<ForeignCurrencyAdjust> fetchByCollectionDetailsByTrnxType(BigDecimal documentNo,BigDecimal documentYear,BigDecimal companyId,BigDecimal documentCode,String tranctionType,String stockUpdate,String documentStatus){
+		return foreignCurrencyAdjustRepository.fetchByCollectionDetailsByTrnxType(documentNo,documentYear,companyId,documentCode,tranctionType,stockUpdate,documentStatus);
 	}
 }

@@ -20,5 +20,7 @@ public interface FcSaleOrderManagementRepository extends CrudRepository<OrderMan
 	
 	@Query(value = "SELECT * FROM JAX_VW_ORDER_MANAGEMENT WHERE APPLICATION_COUNTRY_ID=?1 AND COLLECTION_DOCUMENT_NO=?2 AND COLLECTION_DOC_FINANCE_YEAR=?3", nativeQuery = true)
 	public List<OrderManagementView> checkPendingOrders(BigDecimal applicationCountryId,BigDecimal orderNumber,BigDecimal orderYear);
+	
+	public List<OrderManagementView> findByDeliveryDetailsId(BigDecimal deliveryDetailSeqId);
 
 }
