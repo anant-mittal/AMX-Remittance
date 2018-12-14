@@ -55,9 +55,9 @@ public class AmanKuwaitModels {
 		@JacksonXmlProperty(localName = "Code")
 		private RCur code;
 		@JacksonXmlProperty(localName = "BRate")
-		private String buyrate;
+		private BigDecimal buyrate;
 		@JacksonXmlProperty(localName = "SRate")
-		private String sellrate;
+		private BigDecimal sellrate;
 		@JacksonXmlProperty(localName = "KDRate")
 		private BigDecimal kdrate;
 
@@ -94,19 +94,19 @@ public class AmanKuwaitModels {
 			this.code = code;
 		}
 
-		public String getBuyrate() {
+		public BigDecimal getBuyrate() {
 			return buyrate;
 		}
 
-		public void setBuyrate(String buyrate) {
+		public void setBuyrate(BigDecimal buyrate) {
 			this.buyrate = buyrate;
 		}
 
-		public String getSellrate() {
+		public BigDecimal getSellrate() {
 			return sellrate;
 		}
 
-		public void setSellrate(String sellrate) {
+		public void setSellrate(BigDecimal sellrate) {
 			this.sellrate = sellrate;
 		}
 

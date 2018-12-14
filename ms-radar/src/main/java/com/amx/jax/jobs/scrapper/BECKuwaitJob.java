@@ -17,22 +17,21 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import com.amx.jax.logger.LoggerService;
-import com.amx.jax.rates.AmxCurRate;
-import com.amx.jax.rates.AmxCurRateRepository;
 import com.amx.jax.rates.AmxCurConstants;
 import com.amx.jax.rates.AmxCurConstants.RCur;
 import com.amx.jax.rates.AmxCurConstants.RSource;
 import com.amx.jax.rates.AmxCurConstants.RType;
+import com.amx.jax.rates.AmxCurRate;
+import com.amx.jax.rates.AmxCurRateRepository;
 import com.amx.jax.rest.RestService;
 import com.amx.utils.ArgUtil;
-import com.amx.utils.JsonUtil;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
 @Configuration
 @EnableScheduling
 @Component
 @Service
-public class BECKuwaitJob {
+public class BECKuwaitJob extends AScrapperTasks {
 
 	@Autowired
 	RestService restService;
@@ -44,14 +43,14 @@ public class BECKuwaitJob {
 
 	Logger logger = LoggerService.getLogger(BECKuwaitJob.class);
 
-	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_MIN_5)
-	public void fetchAmanKuwaitModels() {
+	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_MIN_30)
+	public void doTask() {
 		try {
 			Document doc = Jsoup.connect("https://www.bec.com.kw/currency-exchange-rates?atype=money&continent=popular")
 					.get();
-			Elements tabs = doc.select(".currency-nav-tab-holder.transfer");
-			if (tabs.size() > 0) {
-				Elements trs = tabs.get(0).select("tr");
+			Elements transferTabs = doc.select(".currency-nav-tab-holder.transfer");
+			if (transferTabs.size() > 0) {
+				Elements trs = transferTabs.get(0).select("tr");
 				for (Element tr : trs) {
 					AmxCurConstants.RCur cur = (RCur) ArgUtil.parseAsEnum(tr.select(".bfc-country-code").text(),
 							AmxCurConstants.RCur.UNKNOWN);
@@ -69,6 +68,38 @@ public class BECKuwaitJob {
 					}
 				}
 			}
+
+			Elements xTabs = doc.select(".currency-nav-tab-holder.exchange");
+			if (xTabs.size() > 0) {
+				Elements trs = xTabs.get(0).select("tr");
+				for (Element tr : trs) {
+					AmxCurConstants.RCur cur = (RCur) ArgUtil.parseAsEnum(tr.select(".bfc-country-code").text(),
+							AmxCurConstants.RCur.UNKNOWN);
+					if (!AmxCurConstants.RCur.UNKNOWN.equals(cur)) {
+
+						AmxCurRate buyCash = new AmxCurRate(RSource.BECKWT, RCur.KWD, cur);
+
+						BigDecimal buyCashRate = ArgUtil
+								.parseAsBigDecimal(tr.select(".tg-buy .bfc-currency-rates").text());
+						if (!ArgUtil.isEmpty(buyCashRate)) {
+							buyCash.setrType(RType.BUY_CASH);
+							buyCash.setrRate(BigDecimal.ONE.divide(buyCashRate, 12, RoundingMode.CEILING));
+							curRateRepository.insertRate(buyCash);
+						}
+
+						AmxCurRate sellCash = buyCash.clone();
+						BigDecimal sellCashRate = ArgUtil
+								.parseAsBigDecimal(tr.select(".tg-buy .bfc-currency-rates").text());
+						if (!ArgUtil.isEmpty(sellCashRate)) {
+							sellCash.setrType(RType.SELL_CASH);
+							sellCash.setrRate(BigDecimal.ONE.divide(sellCashRate, 12, RoundingMode.CEILING));
+							curRateRepository.insertRate(sellCash);
+						}
+
+					}
+				}
+			}
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

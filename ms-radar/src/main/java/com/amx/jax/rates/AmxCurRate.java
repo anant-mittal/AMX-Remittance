@@ -27,6 +27,24 @@ public class AmxCurRate {
 		this.timestamp = new Date(System.currentTimeMillis());
 	}
 
+	public AmxCurRate(RType rType) {
+		this();
+		this.rType = rType;
+	}
+
+	public AmxCurRate(RType rType, BigDecimal rRate) {
+		this();
+		this.rType = rType;
+		this.rRate = rRate;
+	}
+
+	public AmxCurRate(RSource rSrc, RCur rDomCur, RCur rForCur) {
+		this();
+		this.rSrc = rSrc;
+		this.rDomCur = rDomCur;
+		this.rForCur = rForCur;
+	}
+
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZZ")
 	@JsonProperty(value = "@timestamp")
 	private Date timestamp;
@@ -85,6 +103,28 @@ public class AmxCurRate {
 
 	public void setTimestamp(Date timestamp) {
 		this.timestamp = timestamp;
+	}
+
+	public AmxCurRate clone() {
+		AmxCurRate rate = new AmxCurRate();
+		rate.setrSrc(rSrc);
+		rate.setrDomCur(rDomCur);
+		rate.setrForCur(rForCur);
+		rate.setTimestamp(timestamp);
+		return rate;
+	}
+
+	public AmxCurRate clone(RType rType) {
+		AmxCurRate rate = this.clone();
+		rate.setrType(rType);
+		return rate;
+	}
+
+	public AmxCurRate clone(RType rType, BigDecimal rRate) {
+		AmxCurRate rate = this.clone();
+		rate.setrType(rType);
+		rate.setrRate(rRate);
+		return rate;
 	}
 
 }

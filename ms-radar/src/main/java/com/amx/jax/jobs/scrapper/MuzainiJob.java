@@ -2,7 +2,6 @@ package com.amx.jax.jobs.scrapper;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -17,15 +16,14 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import com.amx.jax.logger.LoggerService;
-import com.amx.jax.rates.AmxCurRate;
-import com.amx.jax.rates.AmxCurRateRepository;
 import com.amx.jax.rates.AmxCurConstants;
 import com.amx.jax.rates.AmxCurConstants.RCur;
 import com.amx.jax.rates.AmxCurConstants.RSource;
 import com.amx.jax.rates.AmxCurConstants.RType;
+import com.amx.jax.rates.AmxCurRate;
+import com.amx.jax.rates.AmxCurRateRepository;
 import com.amx.jax.rest.RestService;
 import com.amx.utils.ArgUtil;
-import com.amx.utils.JsonUtil;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
 @Configuration
@@ -44,7 +42,7 @@ public class MuzainiJob {
 
 	Logger logger = LoggerService.getLogger(MuzainiJob.class);
 
-	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_MIN_5)
+	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_MIN_30)
 	public void fetchAmanKuwaitModels() {
 		try {
 			Document doc = Jsoup.connect("http://www.muzaini.com/ExchangeRates.aspx")
@@ -59,15 +57,31 @@ public class MuzainiJob {
 				AmxCurConstants.RCur cur = (RCur) ArgUtil.parseAsEnum(tds.get(0).text(),
 						AmxCurConstants.RCur.UNKNOWN);
 				if (!AmxCurConstants.RCur.UNKNOWN.equals(cur) && tds.size() >= 4) {
+
 					BigDecimal rate = ArgUtil.parseAsBigDecimal(tds.get(4).text());
+					AmxCurRate sellTrnsfrRate = new AmxCurRate();
+					sellTrnsfrRate.setrSrc(RSource.MUZAINI);
+					sellTrnsfrRate.setrDomCur(RCur.KWD);
+					sellTrnsfrRate.setrForCur(cur);
 					if (!ArgUtil.isEmpty(rate)) {
-						AmxCurRate trnsfrRate = new AmxCurRate();
-						trnsfrRate.setrSrc(RSource.MUZAINI);
-						trnsfrRate.setrDomCur(RCur.KWD);
-						trnsfrRate.setrForCur(cur);
-						trnsfrRate.setrType(RType.SELL_TRNSFR);
-						trnsfrRate.setrRate(rate);
-						curRateRepository.insertRate(trnsfrRate);
+						sellTrnsfrRate.setrType(RType.SELL_TRNSFR);
+						sellTrnsfrRate.setrRate(rate);
+						curRateRepository.insertRate(sellTrnsfrRate);
+					}
+					AmxCurRate sellCash = sellTrnsfrRate.clone();
+					BigDecimal sellCashRate = ArgUtil.parseAsBigDecimal(tds.get(3).text());
+					if (!ArgUtil.isEmpty(sellCashRate)) {
+						sellCash.setrType(RType.SELL_CASH);
+						sellTrnsfrRate.setrRate(sellCashRate);
+						curRateRepository.insertRate(sellCash);
+					}
+
+					AmxCurRate buyCash = sellTrnsfrRate.clone();
+					BigDecimal buyCashRate = ArgUtil.parseAsBigDecimal(tds.get(2).text());
+					if (!ArgUtil.isEmpty(buyCashRate)) {
+						buyCash.setrType(RType.BUY_CASH);
+						sellTrnsfrRate.setrRate(buyCashRate);
+						curRateRepository.insertRate(buyCash);
 					}
 				}
 			}

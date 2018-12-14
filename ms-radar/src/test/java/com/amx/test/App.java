@@ -7,6 +7,7 @@ import java.net.URISyntaxException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -35,29 +36,62 @@ public class App { // Noncompliant
 	 * @throws IOException
 	 */
 	public static void main(String[] args) throws URISyntaxException, IOException {
-		Document doc = Jsoup.connect("http://www.muzaini.com/ExchangeRates.aspx")
-				.data("ddlCurrency", "KWD")
-				.data("ScriptManager1", "ScriptManager1|ddlCurrency")
-				.referrer("http://www.muzaini.com")
-				.post();
+		System.out.println("Strat ============");
+		Document doc0 = Jsoup.connect("https://www.uaeexchange.com.kw/Rates.aspx").get();
 
-		Elements trs = doc.select("#UpdatePanel1 table.ex-table tbody tr");
+		Connection con1 = Jsoup.connect("https://www.uaeexchange.com.kw/Rates.aspx")
+				.referrer("https://www.uaeexchange.com.kw/Rates.aspx");
+		Elements inputs1 = doc0.select("input");
+		for (Element input : inputs1) {
+			String key = input.attr("name");
+			if (!"ctl00$ctl10$anchorForex".equalsIgnoreCase(key)) {
+				con1 = con1.data(key, input.val());
+			}
+		}
+		con1 = con1.data("ctl00$ScriptManager1", "ctl00$ctl10$updatepnl|ctl00$ctl10$ahrefExchange")
+				.data("ctl00$ctl10$ahrefExchange", "Exchange Rates");
+
+		Document doc1 = con1.post();
+		printUAERates(doc1, RType.SELL_TRNSFR);
+
+		Connection con2 = Jsoup.connect("https://www.uaeexchange.com.kw/Rates.aspx")
+				.referrer("https://www.uaeexchange.com.kw/Rates.aspx");
+
+		Elements inputs2 = doc0.select("input");
+		for (Element input : inputs2) {
+			String key = input.attr("name");
+			if (!"ctl00$ctl10$ahrefExchange".equalsIgnoreCase(key)) {
+				con2 = con2.data(key, input.val());
+			}
+		}
+		con2 = con2.data("ctl00$ScriptManager1", "ctl00$ctl10$updatepnl|ctl00$ctl10$anchorForex")
+				.data("ctl00$ctl10$anchorForex", "Forex Rates");
+
+		System.out.println("RAte ============");
+		Document doc2 = con2.post();
+		printUAERates(doc2, RType.SELL_CASH);
+		System.out.println("Ends ============");
+	}
+
+	public static void printUAERates(Document doc, RType type) {
+		Elements trs = doc.select("#ctl10_updatepnl table.table tbody tr");
 		for (Element tr : trs) {
 			Elements tds = tr.select("td");
-			AmxCurConstants.RCur cur = (RCur) ArgUtil.parseAsEnum(tds.get(0).text(),
+			AmxCurConstants.RCur cur = (RCur) ArgUtil.parseAsEnum(tds.get(2).text(),
 					AmxCurConstants.RCur.UNKNOWN);
-			if (!AmxCurConstants.RCur.UNKNOWN.equals(cur) && tds.size() >= 4) {
-				BigDecimal rate = ArgUtil.parseAsBigDecimal(tds.get(4).text());
+			if (!AmxCurConstants.RCur.UNKNOWN.equals(cur) && tds.size() >= 3) {
+				BigDecimal rate = ArgUtil.parseAsBigDecimal(tds.get(3).text());
 				if (!ArgUtil.isEmpty(rate)) {
 					AmxCurRate trnsfrRate = new AmxCurRate();
 					trnsfrRate.setrSrc(RSource.MUZAINI);
 					trnsfrRate.setrDomCur(RCur.KWD);
 					trnsfrRate.setrForCur(cur);
-					trnsfrRate.setrType(RType.SELL_TRNSFR);
+					trnsfrRate.setrType(type);
 					trnsfrRate.setrRate(rate);
 					System.out.println(JsonUtil.toJson(trnsfrRate));
 				}
 			}
 		}
 	}
+
 }
