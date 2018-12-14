@@ -17,8 +17,10 @@ import com.amx.jax.dbmodel.CollectionModel;
 import com.amx.jax.dbmodel.CurrencyWiseDenomination;
 import com.amx.jax.dbmodel.Employee;
 import com.amx.jax.dbmodel.ForeignCurrencyAdjust;
+import com.amx.jax.dbmodel.ReceiptPayment;
 import com.amx.jax.dbmodel.fx.EmployeeDetailsView;
 import com.amx.jax.dbmodel.fx.ForeignCurrencyOldModel;
+import com.amx.jax.dbmodel.fx.ForeignCurrencyStockTransfer;
 import com.amx.jax.dbmodel.fx.FxDeliveryDetailsModel;
 import com.amx.jax.dbmodel.fx.OrderManagementView;
 import com.amx.jax.dbmodel.fx.UserStockView;
@@ -27,6 +29,7 @@ import com.amx.jax.repository.CurrencyWiseDenominationRepository;
 import com.amx.jax.repository.EmployeeRespository;
 import com.amx.jax.repository.ForeignCurrencyAdjustOldRepository;
 import com.amx.jax.repository.ForeignCurrencyAdjustRepository;
+import com.amx.jax.repository.ForeignCurrencyStockRepository;
 import com.amx.jax.repository.ICollectionRepository;
 import com.amx.jax.repository.ReceiptPaymentRespository;
 import com.amx.jax.repository.fx.EmployeeDetailsRepository;
@@ -66,6 +69,9 @@ public class FcSaleBranchDao {
 	
 	@Autowired
 	CurrencyWiseDenominationRepository currencyWiseDenominationRepository;
+	
+	@Autowired
+	ForeignCurrencyStockRepository foreignCurrencyStockRepository;
 	
 	public List<OrderManagementView> fetchFcSaleOrderManagement(BigDecimal applicationcountryId,BigDecimal areaCode){
 		return fcSaleOrderManagementRepository.findByApplicationCountryIdAndAreaCode(applicationcountryId,areaCode);
@@ -376,5 +382,14 @@ public class FcSaleBranchDao {
 	
 	public List<ForeignCurrencyAdjust> fetchByCollectionDetailsByTrnxType(BigDecimal documentNo,BigDecimal documentYear,BigDecimal companyId,BigDecimal documentCode,String tranctionType,String stockUpdate,String documentStatus){
 		return foreignCurrencyAdjustRepository.fetchByCollectionDetailsByTrnxType(documentNo,documentYear,companyId,documentCode,tranctionType,stockUpdate,documentStatus);
+	}
+	
+	// save stock details
+	public void saveFcCurrencyStock(List<ForeignCurrencyStockTransfer> lstFCStkTrnf) {
+		foreignCurrencyStockRepository.save(lstFCStkTrnf);
+	}
+	
+	public List<ReceiptPayment> fetchReceiptPaymentByInventory(String inventoryId){
+		return receiptPaymentRespository.findByInventoryId(inventoryId);
 	}
 }

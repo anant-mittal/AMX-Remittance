@@ -2,6 +2,7 @@ package com.amx.jax.repository;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -18,5 +19,8 @@ public interface ReceiptPaymentRespository extends CrudRepository<ReceiptPayment
 	@Modifying
 	@Query("update ReceiptPayment rp set rp.inventoryId = ?2 , rp.modifiedBy = ?3 , rp.modifiedDate = ?4 where rp.receiptId = ?1 ")
 	public void updateInventoryId(BigDecimal receiptPaymentId,String inventoryId,String userName,Date currenctDate);
+	
+	@Query(value = "SELECT * FROM EX_RECEIPT_PAYMENT WHERE INVENTORY_ID=?1", nativeQuery = true)
+	public List<ReceiptPayment> findByInventoryId(String inventoryId);
 
 }
