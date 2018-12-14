@@ -262,9 +262,11 @@ public abstract class ACardReaderService {
 					devicePairingCredsValid = false;
 					terminalId = null;
 				}
+				LOGGER.error("getSessionPairingCreds" + e);
 			} catch (AmxException e) {
 				status(DeviceStatus.SESSION_ERROR);
 				SWAdapterGUI.CONTEXT.log("SERVICE ERROR : " + e.getMessage());
+				LOGGER.error("getSessionPairingCreds" + e);
 			} catch (Exception e) {
 				status(DeviceStatus.SESSION_ERROR);
 				SWAdapterGUI.CONTEXT.log("CLIENT ERROR : " + e.getMessage());
@@ -321,9 +323,11 @@ public abstract class ACardReaderService {
 		} catch (AmxApiException e) {
 			status(DataStatus.SYNC_ERROR);
 			SWAdapterGUI.CONTEXT.log("SERVICE ERROR : " + e.getErrorKey());
+			LOGGER.error(getServerUrl(), e);
 		} catch (AmxException e) {
 			status(DataStatus.SYNC_ERROR);
 			SWAdapterGUI.CONTEXT.log("SERVICE ERROR : " + e.getMessage());
+			LOGGER.error(getServerUrl(), e);
 		} catch (InterruptedException e) {
 			status(DataStatus.SYNC_ERROR);
 			LOGGER.error(getServerUrl(), e);
