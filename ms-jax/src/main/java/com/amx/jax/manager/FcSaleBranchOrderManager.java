@@ -53,6 +53,7 @@ import com.amx.jax.model.response.fx.FcEmployeeDetailsDto;
 import com.amx.jax.model.response.fx.FxEmployeeDetailsDto;
 import com.amx.jax.model.response.fx.FxOrderReportResponseDto;
 import com.amx.jax.model.response.fx.UserStockDto;
+import com.amx.jax.notification.fx.FcSaleEventManager;
 import com.amx.jax.repository.IDocumentDao;
 import com.amx.jax.repository.JaxConfigRepository;
 import com.amx.jax.service.CompanyService;
@@ -94,7 +95,7 @@ public class FcSaleBranchOrderManager {
 	FcSaleDeliveryService fcSaleDeliveryService;
 
 	@Autowired
-	AuditService auditService;
+	FcSaleEventManager fcSaleEventManager;
 	
 	@Autowired
 	FcSaleApplicationDao fcSaleApplicationDao;
@@ -1184,12 +1185,8 @@ public class FcSaleBranchOrderManager {
 		return fxOrderReportResponseDto; 
 	}
 	
-	@Async
 	private void logStatusChangeAuditEvent(BigDecimal deliveryDetailSeqId, String oldOrderStatus) {
-		FxDeliveryDetailsModel deliveryDetailModel = fcSaleApplicationDao.getDeliveryDetailModel(deliveryDetailSeqId);
-		FcSaleOrderStatusChangeAuditEvent event = new FcSaleOrderStatusChangeAuditEvent(deliveryDetailModel,
-				oldOrderStatus, JaxAuditEvent.Type.FC_SALE_UPDATE_ORDER_STATUS);
-		auditService.log(event);
+		fcSaleEventManager.logStatusChangeAuditEvent(deliveryDetailSeqId, oldOrderStatus);
 	}
 
 	// stock move from branch staff to driver and vice versa
