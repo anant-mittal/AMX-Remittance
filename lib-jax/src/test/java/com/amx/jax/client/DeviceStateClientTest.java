@@ -21,7 +21,7 @@ public class DeviceStateClientTest extends AbstractClientTest {
 		request.setBranchSystemIp("192.178.0.1");
 		request.setDeviceId("did");
 		request.setDeviceType(ClientType.SIGNATURE_PAD);
-		response = client.registerNewDevice(request);
+		//response = client.registerNewDevice(request);
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());*/
 	}

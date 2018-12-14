@@ -18,12 +18,12 @@ import com.amx.jax.constant.DeviceState;
 import com.amx.jax.dict.UserClient.ClientType;
 
 @Entity
-@Table(name = "JAX_DEVICE_CLIENT")
+@Table(name = "JAX_RB_DEVICE_CLIENT")
 public class Device {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "JAX_DEVICE_SEQ")
-	@SequenceGenerator(name = "JAX_DEVICE_SEQ", sequenceName = "JAX_DEVICE_SEQ", allocationSize = 1)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "JAX_RB_DEVICE_SEQ")
+	@SequenceGenerator(name = "JAX_RB_DEVICE_SEQ", sequenceName = "JAX_RB_DEVICE_SEQ", allocationSize = 1)
 	@Column(name = "REGISTRATION_ID")
 	BigDecimal registrationId;
 

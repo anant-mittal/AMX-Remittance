@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html>
+<head>
+<!-- Static content -->
+
+<title>SIGNPAD</title>
+
+<style type="text/css">
+table, th, td {
+	border: 1px solid black;
+	font-size: 14px;
+}
+
+table {
+	margin-left: auto;
+	margin-right: auto;
+	border-spacing: 2px;
+}
+</style>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"
+	integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+	crossorigin="anonymous"></script>
+</head>
+<body>
+	<h1 align="center">Welcome to Al Mulla Admin Panel !!!</h1>
+	<hr />
+	<br />
+	<br />
+	<table>
+		<tr>
+			<td>
+				<table class="device" width="100%">
+					<tr>
+						<th>Device</th>
+						<th id="otp">--</th>
+					</tr>
+					<tr>
+						<td>statusKey
+						</th>
+						<td id="statusKey">--</td>
+					</tr>
+					<tr>
+						<td>deviceRegId</td>
+						<td id="deviceRegId">--</td>
+					</tr>
+					<tr>
+						<td>deviceRegToken
+						</th>
+						<td id="deviceRegToken">--</td>
+					</tr>
+					<tr>
+						<td>deviceActivationStatus</td>
+						<td id="deviceActivationStatus">--</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<table class="session" width="100%">
+					<tr>
+						<th>Session</th>
+						<th id="otp">--</th>
+					</tr>
+					<tr>
+						<td>statusKey</td>
+						<td id="statusKey">--</td>
+					</tr>
+					<tr>
+						<td>deviceSessionToken</td>
+						<td id="deviceSessionToken">--</td>
+					</tr>
+					<tr>
+						<td>deviceRequestKey</td>
+						<td id="deviceRequestKey">--</td>
+					</tr>
+					<tr>
+						<td>sessionOTP</td>
+						<td id="sessionOTP">--</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<table class="status" width="100%">
+					<tr>
+						<th>Polling</th>
+						<th id="hmac">--</th>
+					</tr>
+					<tr>
+						<td>statusKey</td>
+						<td id="statusKey">--</td>
+					</tr>
+					<tr>
+						<td>SAC</td>
+						<td><center>
+								<h4 id="SAC">--</h4>
+							</center></td>
+					</tr>
+					<tr>
+						<td>Auth OTP</td>
+						<td><center>
+								<h2 id="AOTP">--</h2>
+							</center></td>
+					</tr>
+					<tr>
+						<td>data</td>
+						<td id="data"><textarea rows="12" cols="100"
+								readonly=readonly></textarea></td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+	</table>
+
+</body>
+<script>
+	function getItem(key) {
+		return localStorage.getItem("notipy" + key);
+	}
+	function setItem(key, value) {
+		return localStorage.setItem("notipy" + key, value);
+	}
+	var identity = getItem("identity") || window.prompt("Enter CiviliId");
+	setItem("identity", identity);
+	var deviceRegId = getItem("deviceRegId");
+	var deviceRegToken = getItem("deviceRegToken");
+	var did = getItem("did") || guid();
+	setItem("did", did);
+
+	function guid() {
+		function s4() {
+			return Math.floor((1 + Math.random()) * 0x10000).toString(16)
+					.substring(1);
+		}
+		return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4()
+				+ s4() + s4();
+	}
+
+	function pairDevice() {
+		var dfd = jQuery.Deferred();
+		if (deviceRegToken && deviceRegId) {
+			setTimeout(function() {
+				dfd.resolve({
+					deviceRegId : deviceRegId,
+					deviceRegToken : deviceRegToken
+				});
+			}, 0);
+			activateDevice();
+			return dfd.promise();
+		}
+		return $.ajax({
+			url : "/offsite/pub/device/pair",
+			method : 'POST',
+			dataType : 'json',
+			contentType : "application/json",
+			headers : {
+				'x-did' : did
+			},
+			data : JSON.stringify({
+				identity : identity,
+				deivceClientType : "NOTP_APP"
+			})
+		}).then(function(resp) {
+			$(".device #statusKey").text(resp.statusKey);
+			if (resp && resp.results && resp.results[0]) {
+				deviceRegId = resp.results[0].deviceRegId;
+				deviceRegToken = resp.results[0].deviceRegToken;
+				setItem("deviceRegId", deviceRegId);
+				setItem("deviceRegToken", deviceRegToken);
+				return resp.results[0];
+			}
+		});
+	}
+
+	var deviceActivationStatus, $activateDevice;
+
+	function activateDevice() {
+		if (!$activateDevice) {
+			$activateDevice = $.ajax({
+				url : "/offsite/pub/device/activate",
+				method : 'POST',
+				dataType : 'json',
+				//contentType : "application/json",
+				data : {
+					deviceRegId : deviceRegId,
+					deviceType : "SIGNATURE_PAD"
+				}
+			}).done(
+					function(resp) {
+						deviceActivationStatus = resp.statusKey;
+						$(".device #deviceActivationStatus").text(
+								deviceActivationStatus);
+					});
+		}
+		return $activateDevice;
+	}
+
+	var empId, deviceSessionToken, deviceRequestKey, deviceRequestToken, sessionOTP;
+
+	function pairSession() {
+		return pairDevice().then(function() {
+			if (deviceSessionToken && deviceRequestKey) {
+
+				$(".device #deviceRegId").text(deviceRegId);
+				$(".device #deviceRegToken").text(deviceRegToken);
+
+				var dfd = jQuery.Deferred();
+				setTimeout(function() {
+					dfd.resolve({
+						deviceSessionToken : deviceSessionToken,
+						deviceRequestKey : deviceRequestKey
+					});
+				}, 0);
+
+				return dfd.promise();
+			}
+			return $.ajax({
+				url : '/offsite/pub/device/session',
+				headers : {
+					'x-device-reg-id' : deviceRegId,
+					'x-device-reg-token' : deviceRegToken
+				},
+				method : 'GET',
+				dataType : 'json'
+			}).then(function(resp) {
+				$(".session #statusKey").text(resp.statusKey);
+				if (resp && resp.results && resp.results[0]) {
+					deviceSessionToken = resp.results[0].deviceSessionToken;
+					deviceRequestKey = resp.results[0].deviceRequestKey;
+					sessionOTP = resp.results[0].sessionOTP;
+					$(".session #deviceSessionToken").text(deviceSessionToken);
+					$(".session #deviceRequestKey").text(deviceRequestKey);
+					$(".session #sessionOTP").text(sessionOTP);
+				}
+				empId = resp.meta;
+			});
+
+		})
+	}
+	var requestToken, hmacTimer;
+
+	function hmac() {
+		if (deviceRegId && deviceRequestKey) {
+			return $.getJSON("/offsite/pub/amx/hmac", {
+				interval : 30,
+				secret : deviceRequestKey,
+				message : deviceRegId,
+				length : 6
+			}).done(function(resp) {
+				$(".status #hmac").text(resp.hmac);
+				requestToken = resp.hmac;
+			}).always(function() {
+				clearTimeout(hmacTimer);
+				hmacTimer = setTimeout(hmac, 10000);
+			});
+		} else {
+			clearTimeout(hmacTimer);
+			hmacTimer = setTimeout(hmac, 10000);
+		}
+	}
+
+	function poll() {
+		pairSession()
+				.then(
+						function(resp) {
+							return $
+									.ajax(
+											{
+												url : '/offsite/pub/notipy/status',
+												headers : {
+													'x-device-reg-id' : deviceRegId,
+													'x-device-reg-token' : deviceRegToken,
+													'x-device-session-token' : deviceSessionToken,
+													'x-device-req-token' : requestToken
+												},
+												method : 'GET',
+												dataType : 'json'
+											})
+									.then(
+											function(resp) {
+												$(".status #statusKey").text(
+														resp.statusKey);
+												if (resp && resp.results
+														&& resp.results[0]) {
+													$(".status #SAC")
+															.text(
+																	resp.results[0].sac);
+													$(".status #data textarea")
+															.val(
+																	JSON
+																			.stringify(
+																					resp.results[0],
+																					null,
+																					4));
+
+													$
+															.getJSON(
+																	"/offsite/pub/amx/hmac",
+																	{
+																		interval : 10 * 60 * 1000,
+																		secret : "DEVICEREGID",
+																		message : resp.results[0].sac,
+																		length : 6
+																	})
+															.done(
+																	function(
+																			resp) {
+																		$(
+																				".status #AOTP")
+																				.text(
+																						resp.numeric);
+																	})
+												}
+											}).always(function() {
+										setTimeout(poll, 3000);
+									})
+						});
+	}
+	hmac();
+	poll();
+</script>
+</html>

@@ -8,6 +8,10 @@
 	font-family: 'Open Sans', sans-serif;
 }
 
+.dn{
+	display: none !important;
+}
+
 input[type="text"] {
 	/* Rectangle 6: */
 	background: #FFFFFF;
@@ -29,6 +33,10 @@ input[readonly] {
 	position: relative;
 	width: 20px;
 	height: 20px;
+}
+
+.radio-container {
+	cursor: pointer;
 }
 
 input.invalid {
@@ -145,6 +153,14 @@ header {
 	flex-basis: 100%;
 }
 
+input.sec-code-input {
+	text-align: center;
+    font-size: 18px;
+    color: #4cb83f;
+    background: #f0f0f0;
+    font-weight: bold;
+}
+
 @media screen and (min-width:600px) {
 	.login-form {
 		flex-wrap: nowrap;
@@ -242,29 +258,30 @@ h4 {
 
 .error-message {
 	position: absolute;
-	padding: 15px;
-	margin: 1em 0 3em;
-	color: #000;
-	top: 0px;
-	background: #ffe7e7;
-	-webkit-border-radius: 10px;
-	-moz-border-radius: 10px;
-	border-radius: 10px;
-	min-width: 100px;
-	z-index: 10;
-	display: none;
+    padding: 4px 7px;
+    margin: 1em 0 3em;
+    color: #fff;
+    top: 0px;
+    background: #a93434;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 4px;
+    min-width: 100px;
+    z-index: 10;
+    display: none;
+    font-size: 12px;
 }
 
 .error-message:after {
 	content: "";
-	position: absolute;
-	border-style: solid;
-	display: block;
-	width: 0;
-	top: -10px;
-	left: 50px;
-	bottom: auto;
-	left: auto;
-	border-width: 0 15px 15px;
-	border-color: #ffe7e7 transparent;
+    position: absolute;
+    border-style: solid;
+    display: block;
+    width: 0;
+    top: -6px;
+    left: 50px;
+    bottom: auto;
+    left: auto;
+    border-width: 0 9px 9px;
+    border-color: #a93434 transparent;
 }

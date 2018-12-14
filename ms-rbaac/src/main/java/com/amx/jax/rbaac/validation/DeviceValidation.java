@@ -15,7 +15,7 @@ import com.amx.jax.constant.DeviceState;
 import com.amx.jax.dbmodel.BranchSystemDetail;
 import com.amx.jax.dbmodel.Device;
 import com.amx.jax.dbmodel.DeviceStateInfo;
-import com.amx.jax.rbaac.RbaacConstants;
+import com.amx.jax.rbaac.constants.RbaacServiceConstants;
 import com.amx.jax.rbaac.dao.DeviceDao;
 import com.amx.jax.rbaac.dao.RbaacDao;
 import com.amx.jax.rbaac.dbmodel.Employee;
@@ -42,10 +42,10 @@ public class DeviceValidation {
 	public void validateDevice(Device device) {
 
 		if (device == null) {
-			throw new AuthServiceException("No device found", RbaacServiceError.CLIENT_NOT_FOUND);
+			throw new AuthServiceException(RbaacServiceError.CLIENT_NOT_FOUND, "No device found");
 		}
-		if (!device.getStatus().equals(RbaacConstants.YES)) {
-			throw new AuthServiceException("Device is not active", RbaacServiceError.CLIENT_NOT_ACTIVE);
+		if (!device.getStatus().equals(RbaacServiceConstants.YES)) {
+			throw new AuthServiceException(RbaacServiceError.CLIENT_NOT_ACTIVE, "Device is not active");
 		}
 	}
 
@@ -74,30 +74,33 @@ public class DeviceValidation {
 	 * validates device reg request
 	 * 
 	 * @param request
-	 * 
+	 * @param duplicateAllowed
+	 * @return TRUE if Activated Device with same identity already exists
 	 */
-	public void validateDeviceRegRequest(DeviceRegistrationRequest request) {
+	public boolean validateDeviceRegRequest(DeviceRegistrationRequest request, boolean duplicateAllowed) {
 		Device existing = null;
 		if (request.getBranchSystemIp() != null) {
 			BranchSystemDetail branchSystem = branchDetailService.findBranchSystemByIp(request.getBranchSystemIp());
 			existing = deviceDao.findDevice(branchSystem.getCountryBranchSystemInventoryId(), request.getDeviceType());
 		} else if (request.getIdentityInt() != null) {
 			Employee employee = rbaacDao.fetchEmpDetails(request.getIdentityInt());
-			if(employee == null) {
+			if (employee == null) {
 				throw new AuthServiceException("Employee not found");
 			}
+			existing = deviceDao.findDeviceByEmployee(employee.getEmployeeId(), request.getDeviceType());
 		} else {
 			throw new AuthServiceException("Either Ip address or identity must be present");
 		}
-		if (existing != null) {
-			throw new AuthServiceException("Device already registered", RbaacServiceError.CLIENT_ALREADY_REGISTERED);
+		if (!duplicateAllowed && existing != null) {
+			throw new AuthServiceException(RbaacServiceError.CLIENT_ALREADY_REGISTERED, "Device already registered");
 		}
+		return (existing != null);
 	}
 
 	public void validateSessionToken(String sessionToken, Integer registrationId) {
 		DeviceStateInfo deviceStateInfo = deviceDao.findBySessionToken(sessionToken, registrationId);
 		if (deviceStateInfo == null) {
-			throw new AuthServiceException("Invalid session token", RbaacServiceError.CLIENT_INVALID_SESSION_TOKEN);
+			throw new AuthServiceException(RbaacServiceError.CLIENT_INVALID_SESSION_TOKEN, "Invalid session token");
 		}
 
 	}
@@ -106,10 +109,10 @@ public class DeviceValidation {
 
 		Device device = deviceDao.findDevice(new BigDecimal(deviceRegId));
 		if (device == null) {
-			throw new AuthServiceException("device not found with given reg id", RbaacServiceError.CLIENT_NOT_FOUND);
+			throw new AuthServiceException(RbaacServiceError.CLIENT_NOT_FOUND, "device not found with given reg id");
 		}
-		if (!RbaacConstants.YES.equals(device.getStatus())) {
-			throw new AuthServiceException("device not active", RbaacServiceError.CLIENT_NOT_ACTIVE);
+		if (!RbaacServiceConstants.YES.equals(device.getStatus())) {
+			throw new AuthServiceException(RbaacServiceError.CLIENT_NOT_ACTIVE, "device not active");
 		}
 	}
 
@@ -125,15 +128,15 @@ public class DeviceValidation {
 
 	public void validateDeviceForActivation(Device device) {
 		if (device == null) {
-			throw new AuthServiceException("No device found", RbaacServiceError.CLIENT_NOT_FOUND);
+			throw new AuthServiceException(RbaacServiceError.CLIENT_NOT_FOUND, "No device found");
 		}
 	}
 
 	public void validateSystemInventoryForDuplicateDevice(Device device) {
 		Device activeDevice = deviceDao.findDevice(device.getBranchSystemInventoryId(), device.getDeviceType());
 		if (activeDevice != null) {
-			throw new AuthServiceException("Another device client already active",
-					RbaacServiceError.CLIENT_ANOTHER_ALREADY_ACTIVE);
+			throw new AuthServiceException(RbaacServiceError.CLIENT_ANOTHER_ALREADY_ACTIVE,
+					"Another device client already active");
 		}
 	}
 
@@ -153,8 +156,8 @@ public class DeviceValidation {
 			Date now = Calendar.getInstance().getTime();
 			long timeDiff = (now.getTime() - otpTokenCreationDate.getTime());
 			if ((timeDiff / 60000) > configValue) {
-				throw new AuthServiceException("Session token otp is not yet validated for " + configValue + " min",
-						RbaacServiceError.CLIENT_EXPIRED_VALIDATE_OTP_TIME);
+				throw new AuthServiceException(RbaacServiceError.CLIENT_EXPIRED_VALIDATE_OTP_TIME,
+						"Session token otp is not yet validated for " + configValue + " min");
 			}
 		}
 	}

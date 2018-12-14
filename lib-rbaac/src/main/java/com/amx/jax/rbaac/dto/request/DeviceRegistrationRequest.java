@@ -52,4 +52,10 @@ public class DeviceRegistrationRequest {
 		this.identityInt = identityInt;
 	}
 
+	@Override
+	public String toString() {
+		return "DeviceRegistrationRequest [deviceId=" + deviceId + ", deviceType=" + deviceType + ", branchSystemIp="
+				+ branchSystemIp + ", identityInt=" + identityInt + "]";
+	}
+
 }

@@ -1,15 +1,18 @@
 package com.amx.jax.payment.gateway;
 
 import com.amx.jax.logger.AuditEvent;
+import com.amx.jax.payg.PayGModel;
+import com.amx.jax.payg.PayGParams;
 
 public class PayGEvent extends AuditEvent {
+
+	private static final long serialVersionUID = 3439794415625434212L;
 
 	public enum Type implements EventType {
 		PAYMENT_INIT, PAYMENT_CAPTURED;
 
 		@Override
 		public EventMarker marker() {
-			// TODO Auto-generated method stub
 			return null;
 		}
 	}
@@ -19,19 +22,19 @@ public class PayGEvent extends AuditEvent {
 		this.params = params;
 	}
 
-	public PayGEvent(Type type, PayGResponse response) {
+	public PayGEvent(Type type, PayGModel response) {
 		super(type);
 		this.response = response;
 	}
 
 	PayGParams params = null;
-	PayGResponse response = null;
+	PayGModel response = null;
 
-	public PayGResponse getResponse() {
+	public PayGModel getResponse() {
 		return response;
 	}
 
-	public void setResponse(PayGResponse response) {
+	public void setResponse(PayGModel response) {
 		this.response = response;
 	}
 

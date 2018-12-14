@@ -1,0 +1,16 @@
+{
+  "data":{
+  "mOtp":"123465",
+  "mOtpPrefix":"AMX",
+  "deliveryDetail":{
+     "customerName":"CHIRANJEEVI VEERAVALLI",
+     "mobile":"56432189",
+     "deliveryTimeSlot":"16:00 pm-17:00 pm",
+     "transactionRefId":123,
+     "inventoryId":null,
+     "deliveryRemark":null,
+     "orderStatus":"Returned",
+     "deliveryDetailSeqId":5
+  }
+  }
+}

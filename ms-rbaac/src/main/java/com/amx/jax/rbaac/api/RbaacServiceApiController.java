@@ -35,6 +35,7 @@ import com.amx.jax.rbaac.dto.request.UserAuthorisationReqDTO;
 import com.amx.jax.rbaac.dto.request.UserRoleMappingsRequestDTO;
 import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
 import com.amx.jax.rbaac.dto.response.PermissionResposeDTO;
+import com.amx.jax.rbaac.dto.response.RoleMappingForEmployee;
 import com.amx.jax.rbaac.dto.response.RoleResponseDTO;
 import com.amx.jax.rbaac.dto.response.UserAuthInitResponseDTO;
 import com.amx.jax.rbaac.dto.response.UserRoleMappingDTO;
@@ -74,7 +75,7 @@ public class RbaacServiceApiController implements IRbaacService {
 
 	@Autowired
 	HttpServletRequest request;
-	
+
 	@Autowired
 	DeviceService deviceService;
 
@@ -91,8 +92,12 @@ public class RbaacServiceApiController implements IRbaacService {
 			@RequestBody @Valid UserAuthInitReqDTO userAuthInitReqDTO) {
 
 		LOGGER.info("Begin Init Auth for User: " + userAuthInitReqDTO.getEmployeeNo() + " from Ip Address: "
-				+ userAuthInitReqDTO.getIpAddress() + " from device Id: " + userAuthInitReqDTO.getDeviceId()
-				+ " with TraceId: " + AppContextUtil.getTraceId());
+				+ userAuthInitReqDTO.getUserClientDto().getGlobalIpAddress() + " from device Id: "
+				+ userAuthInitReqDTO.getUserClientDto().getDeviceId() + " with TraceId: "
+				+ AppContextUtil.getTraceId());
+		
+		LOGGER.info("User Auth Init Request Dto : " + userAuthInitReqDTO.toString());
+		
 		UserAuthInitResponseDTO userAuthInitResponseDTO = userAuthService.verifyUserDetails(userAuthInitReqDTO);
 
 		return AmxApiResponse.build(userAuthInitResponseDTO);
@@ -225,8 +230,8 @@ public class RbaacServiceApiController implements IRbaacService {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.amx.jax.rbaac.IRbaacService#updateEmployeeAccountDetails(com.amx.jax.rbaac
-	 * .dto.request.EmployeeDetailsRequestDTO)
+	 * com.amx.jax.rbaac.IRbaacService#updateEmployeeAccountDetails(com.amx.jax.
+	 * rbaac .dto.request.EmployeeDetailsRequestDTO)
 	 */
 	@Override
 	@RequestMapping(value = ApiEndPoints.UAC_UPDATE, method = RequestMethod.POST)
@@ -268,9 +273,12 @@ public class RbaacServiceApiController implements IRbaacService {
 
 		return AmxApiResponse.build("Success");
 	}
-	
-	/* (non-Javadoc)
-	 * @see com.amx.jax.rbaac.IRbaacService#registerNewDevice(com.amx.jax.rbaac.dto.request.DeviceRegistrationRequest)
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.amx.jax.rbaac.IRbaacService#registerNewDevice(com.amx.jax.rbaac.dto.
+	 * request.DeviceRegistrationRequest)
 	 */
 	@RequestMapping(value = ApiEndPoints.DEVICE_REG, method = RequestMethod.POST)
 	@Override
@@ -280,8 +288,11 @@ public class RbaacServiceApiController implements IRbaacService {
 		return AmxApiResponse.build(newDevice);
 	}
 
-	/* (non-Javadoc)
-	 * @see com.amx.jax.rbaac.IRbaacService#activateDevice(java.lang.Integer, java.lang.String)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.amx.jax.rbaac.IRbaacService#activateDevice(java.lang.Integer,
+	 * java.lang.String)
 	 */
 	@RequestMapping(value = ApiEndPoints.DEVICE_ACTIVATE, method = RequestMethod.POST)
 	@Override
@@ -292,7 +303,9 @@ public class RbaacServiceApiController implements IRbaacService {
 		return AmxApiResponse.build(response);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.amx.jax.rbaac.IRbaacService#deactivateDevice(java.lang.Integer)
 	 */
 	@RequestMapping(value = ApiEndPoints.DEVICE_DEACTIVATE, method = RequestMethod.POST)
@@ -303,8 +316,11 @@ public class RbaacServiceApiController implements IRbaacService {
 		return AmxApiResponse.build(response);
 	}
 
-	/* (non-Javadoc)
-	 * @see com.amx.jax.rbaac.IRbaacService#createDeviceSession(java.lang.Integer, java.lang.String)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.amx.jax.rbaac.IRbaacService#createDeviceSession(java.lang.Integer,
+	 * java.lang.String)
 	 */
 	@RequestMapping(value = ApiEndPoints.DEVICE_CREATE_SESSION, method = RequestMethod.POST)
 	@Override
@@ -315,8 +331,12 @@ public class RbaacServiceApiController implements IRbaacService {
 		return AmxApiResponse.build(otpResponse);
 	}
 
-	/* (non-Javadoc)
-	 * @see com.amx.jax.rbaac.IRbaacService#pairDeviceSession(com.amx.jax.dict.UserClient.ClientType, java.lang.Integer, java.lang.String)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.amx.jax.rbaac.IRbaacService#pairDeviceSession(com.amx.jax.dict.UserClient
+	 * .ClientType, java.lang.Integer, java.lang.String)
 	 */
 	@Override
 	@RequestMapping(value = ApiEndPoints.DEVICE_PAIR_SESSION, method = RequestMethod.POST)
@@ -329,8 +349,11 @@ public class RbaacServiceApiController implements IRbaacService {
 		return AmxApiResponse.build(otpResponse, new BoolRespModel(Boolean.TRUE));
 	}
 
-	/* (non-Javadoc)
-	 * @see com.amx.jax.rbaac.IRbaacService#validateDeviceSessionToken(java.math.BigDecimal, java.lang.String)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.amx.jax.rbaac.IRbaacService#validateDeviceSessionToken(java.math.
+	 * BigDecimal, java.lang.String)
 	 */
 	@Override
 	@RequestMapping(value = ApiEndPoints.DEVICE_VALIDATE_SESSION_TOKEN, method = RequestMethod.POST)
@@ -341,8 +364,12 @@ public class RbaacServiceApiController implements IRbaacService {
 		return AmxApiResponse.build(repsonse);
 	}
 
-	/* (non-Javadoc)
-	 * @see com.amx.jax.rbaac.IRbaacService#getDeviceRegIdByBranchInventoryId(com.amx.jax.dict.UserClient.ClientType, java.math.BigDecimal)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.amx.jax.rbaac.IRbaacService#getDeviceRegIdByBranchInventoryId(com.amx.jax
+	 * .dict.UserClient.ClientType, java.math.BigDecimal)
 	 */
 	@Override
 	@RequestMapping(value = ApiEndPoints.DEVICE_GET_DEVICE_REG_ID, method = RequestMethod.POST)
@@ -350,6 +377,30 @@ public class RbaacServiceApiController implements IRbaacService {
 			@RequestParam(name = Params.DEVICE_CLIENT_TYPE) ClientType deviceClientType,
 			@RequestParam(name = Params.DEVICE_SYS_INV_ID) BigDecimal countryBranchSystemInventoryId) {
 		BigDecimal response = deviceService.getDeviceRegIdByBranchInventoryId(deviceClientType,
+				countryBranchSystemInventoryId);
+		return AmxApiResponse.build(response);
+	}
+
+	@Override
+	@RequestMapping(value = ApiEndPoints.GET_ROLE_MAPPING_FOR_EMPLOYEE, method = RequestMethod.POST)
+	public AmxApiResponse<RoleMappingForEmployee, Object> getRoleMappingsForEmployee(
+			@RequestParam(required = true) BigDecimal employeeId, @RequestParam(required = true) String ipAddress,
+			@RequestParam(required = false) String deviceId,
+			@RequestParam(required = false, defaultValue = "false") Boolean filterRole) {
+		LOGGER.info("In Get Role Mapping For Employee API...");
+
+		RoleMappingForEmployee roleMappingForEmplyee = userRoleService.getRoleMappingsForEmployee(employeeId, ipAddress,
+				deviceId, filterRole);
+
+		return AmxApiResponse.build(roleMappingForEmplyee);
+	}
+
+	@Override
+	@RequestMapping(value = ApiEndPoints.EMPLOYEE_SYSTEM_MAPPING_CREATE, method = RequestMethod.POST)
+	public AmxApiResponse<BoolRespModel, Object> createEmployeeSystemMapping(
+			@RequestParam(name = Params.EMPLOYEE_ID) BigDecimal employeeId,
+			@RequestParam(name = Params.TERMINAL_ID) BigDecimal countryBranchSystemInventoryId) {
+		BoolRespModel response = userAccountService.createEmployeeSystemMapping(employeeId,
 				countryBranchSystemInventoryId);
 		return AmxApiResponse.build(response);
 	}

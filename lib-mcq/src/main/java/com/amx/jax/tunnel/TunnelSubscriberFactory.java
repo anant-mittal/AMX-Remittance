@@ -57,9 +57,15 @@ public class TunnelSubscriberFactory {
 				Class<?> c = AopProxyUtils.ultimateTargetClass(listener);
 				TunnelEventMapping tunnelEvent = getAnnotationProxyReady(c, TunnelEventMapping.class);
 				String eventTopic = tunnelEvent.topic();
+
 				if (ArgUtil.isEmpty(eventTopic)) {
 					eventTopic = tunnelEvent.byEvent().getName();
 				}
+
+				if (!ArgUtil.isEmpty(listener.getTopic())) {
+					eventTopic = listener.getTopic();
+				}
+
 				boolean integrity = tunnelEvent.integrity();
 				TunnelEventXchange scheme = tunnelEvent.scheme();
 				if (scheme == TunnelEventXchange.TASK_WORKER) {

@@ -51,6 +51,7 @@ public class ParameterNotNullAnnotationPlugin implements ModelPropertyBuilderPlu
 			context.getBuilder()
 					//.allowableValues(annotation.transform(toAllowableValues()).orNull())
 					.required(annotation.transform(toIsRequired()).or(true))
+					.isHidden(annotation.transform(toHidden()).or(false))
 					// .required(true)
 					//.readOnly(annotation.transform(toIsReadOnly()).or(false))
 					//.description(annotation.transform(toDescription()).orNull())

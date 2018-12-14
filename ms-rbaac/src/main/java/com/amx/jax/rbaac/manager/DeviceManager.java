@@ -16,7 +16,7 @@ import com.amx.jax.constant.DeviceState;
 import com.amx.jax.dbmodel.Device;
 import com.amx.jax.dbmodel.DeviceStateInfo;
 import com.amx.jax.dict.UserClient.ClientType;
-import com.amx.jax.rbaac.RbaacConstants;
+import com.amx.jax.rbaac.constants.RbaacServiceConstants;
 import com.amx.jax.rbaac.dao.DeviceDao;
 import com.amx.jax.rbaac.dto.DevicePairOtpResponse;
 import com.amx.jax.rbaac.error.RbaacServiceError;
@@ -99,31 +99,31 @@ public class DeviceManager {
 
 	public void validateLogIn(Device device) {
 		if (!isLoggedIn(device)) {
-			throw new AuthServiceException("Device not logged in", RbaacServiceError.CLIENT_NOT_LOGGGED_IN);
+			throw new AuthServiceException(RbaacServiceError.CLIENT_NOT_LOGGGED_IN, "Device not logged in");
 		}
 	}
 
 	public void validateDeviceActivationRequest(Integer countryBranchSystemInventoryId, ClientType deviceType) {
 		Device device = deviceDao.findDevice(new BigDecimal(countryBranchSystemInventoryId), deviceType);
 		if (device != null) {
-			throw new AuthServiceException("Device already active", RbaacServiceError.CLIENT_ALREADY_ACTIVE);
+			throw new AuthServiceException(RbaacServiceError.CLIENT_ALREADY_ACTIVE, "Device already active");
 		}
 	}
 
 	public void validateSessionToken(String sessionToken, Integer registrationId) {
 		DeviceStateInfo deviceStateInfo = deviceDao.findBySessionToken(sessionToken, registrationId);
 		if (deviceStateInfo == null) {
-			throw new AuthServiceException("Invalid session token", RbaacServiceError.CLIENT_INVALID_SESSION_TOKEN);
+			throw new AuthServiceException(RbaacServiceError.CLIENT_INVALID_SESSION_TOKEN, "Invalid session token");
 		}
 		Device device = deviceDao.findDevice(new BigDecimal(registrationId));
 		String sessionTokenGen = generateSessionPairToken(device);
 		if (!sessionToken.equals(sessionTokenGen)) {
-			throw new AuthServiceException("Session token is expired", RbaacServiceError.CLIENT_EXPIRED_SESSION_TOKEN);
+			throw new AuthServiceException(RbaacServiceError.CLIENT_EXPIRED_SESSION_TOKEN, "Session token is expired");
 		}
 	}
 
 	public void deactivateDevice(Device device) {
-		device.setStatus(RbaacConstants.NO);
+		device.setStatus(RbaacServiceConstants.NO);
 		deviceDao.saveDevice(device);
 	}
 
@@ -134,7 +134,7 @@ public class DeviceManager {
 			resp.setTermialId(ArgUtil.parseAsString(device.getBranchSystemInventoryId()));
 		}
 		if (device.getEmployeeId() != null) {
-			resp.setTermialId(device.getEmployeeId().toString());
+			resp.setEmpId(device.getEmployeeId().toString());
 		}
 		resp.setDeviceState(device.getState());
 		return resp;

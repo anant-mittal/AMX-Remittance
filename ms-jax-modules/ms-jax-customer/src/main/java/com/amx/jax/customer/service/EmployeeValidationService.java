@@ -41,8 +41,8 @@ public class EmployeeValidationService
 				lockCnt = 0;
 			}
 			if (lockCnt >= MAX_OTP_ATTEMPTS) {
-				throw new GlobalException("Employee is locked. No of attempts:- " + lockCnt,
-						JaxError.EMPLOYEE_OTP_ATTEMPT_EXCEEDED);
+				throw new GlobalException(JaxError.EMPLOYEE_OTP_ATTEMPT_EXCEEDED,
+						"Employee is locked. No of attempts:- " + lockCnt);
 			}
 		}
 	}

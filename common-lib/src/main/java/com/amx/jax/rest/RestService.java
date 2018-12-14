@@ -78,16 +78,16 @@ public class RestService {
 		if (!OUT_FILTER_MAP_DONE) {
 			if (outFilters == null) {
 				LOGGER.warn("NO IMetaRequestOutFilter Filters FOUND and SCANNED");
-				return OUT_FILTERS_MAP;
-			}
-			for (IMetaRequestOutFilter filter : outFilters) {
-				Matcher matcher = PATTERN_OUT.matcher(filter.getClass().getGenericInterfaces()[0].getTypeName());
-				if (matcher.find()) {
-					OUT_FILTERS_MAP.put(matcher.group(1), filter);
+			} else {
+				for (IMetaRequestOutFilter filter : outFilters) {
+					Matcher matcher = PATTERN_OUT.matcher(filter.getClass().getGenericInterfaces()[0].getTypeName());
+					if (matcher.find()) {
+						OUT_FILTERS_MAP.put(matcher.group(1), filter);
+					}
 				}
 			}
 			OUT_FILTER_MAP_DONE = true;
-			LOGGER.warn("RestMataFilters Filters scanned");
+			LOGGER.info("RestMataFilters Filters scanned");
 		}
 		return OUT_FILTERS_MAP;
 	}
@@ -97,16 +97,16 @@ public class RestService {
 		if (!IN_FILTER_MAP_DONE) {
 			if (inFilters == null) {
 				LOGGER.warn("NO IMetaRequestInFilter Filters FOUND and SCANNED");
-				return IN_FILTERS_MAP;
-			}
-			for (IMetaRequestInFilter filter : inFilters) {
-				Matcher matcher = PATTERN_IN.matcher(filter.getClass().getGenericInterfaces()[0].getTypeName());
-				if (matcher.find()) {
-					IN_FILTERS_MAP.put(matcher.group(1), filter);
+			} else {
+				for (IMetaRequestInFilter filter : inFilters) {
+					Matcher matcher = PATTERN_IN.matcher(filter.getClass().getGenericInterfaces()[0].getTypeName());
+					if (matcher.find()) {
+						IN_FILTERS_MAP.put(matcher.group(1), filter);
+					}
 				}
 			}
 			IN_FILTER_MAP_DONE = true;
-			LOGGER.warn("RestMataFilters Filters scanned");
+			LOGGER.info("RestMataFilters Filters scanned");
 		}
 		return IN_FILTERS_MAP;
 	}
@@ -160,6 +160,7 @@ public class RestService {
 			builder = UriComponentsBuilder.fromUriString(uri.toString());
 		}
 
+		@Deprecated
 		public <T extends RequestMetaInfo> Ajax filter(IMetaRequestOutFilter<T> restMetaServiceFilter) {
 			RestService.exportMetaToStatic(restMetaServiceFilter, this.header());
 			return this;

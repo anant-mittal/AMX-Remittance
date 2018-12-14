@@ -17,12 +17,12 @@ import com.amx.amxlib.meta.model.ApplicationSetupDTO;
 import com.amx.amxlib.meta.model.AuthenticationLimitCheckDTO;
 import com.amx.amxlib.meta.model.BankBranchDto;
 import com.amx.amxlib.meta.model.BankMasterDTO;
-import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.meta.model.JaxMetaParameter;
 import com.amx.amxlib.meta.model.MultiCountryDTO;
 import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.meta.model.ServiceGroupMasterDescDto;
 import com.amx.amxlib.meta.model.TermsAndConditionDTO;
+import com.amx.amxlib.meta.model.ViewAreaDto;
 import com.amx.amxlib.meta.model.ViewCityDto;
 import com.amx.amxlib.meta.model.ViewCompanyDetailDTO;
 import com.amx.amxlib.meta.model.ViewDistrictDto;
@@ -46,6 +46,7 @@ import com.amx.jax.dbmodel.ViewOnlineEmailMobileCheck;
 import com.amx.jax.manager.JaxNotificationManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.response.BranchSystemDetailDto;
+import com.amx.jax.model.response.CurrencyMasterDTO;
 import com.amx.jax.service.ApplicationCountryService;
 import com.amx.jax.service.BankMetaService;
 import com.amx.jax.service.BranchDetailService;
@@ -365,6 +366,8 @@ public class MetaController {
 	public AmxApiResponse<ServiceGroupMasterDescDto, Object> getServiceGroup() {
 		return metaService.getServiceGroups();
 	}
+	
+	
 
 	/**
 	 * @param beneficiaryCountryId
@@ -404,10 +407,20 @@ public class MetaController {
 	public AmxApiResponse<BranchSystemDetailDto, Object> listBranchSystemInventory() {
 		return branchDetailService.listBranchSystemInventory();
 	}
+
 	
-/*	@Deprecated
-	@RequestMapping(value = "/payg-error/", method = RequestMethod.GET)
-	public AmxApiResponse<PaygErrorMaster, Object> getPaygErrorList() {
-		return payGErrorService.getPaygErrorResponse();
-	}*/
+	/** 
+	  @Paurpose : Terms and condtion for FX Order
+	 **/
+		@RequestMapping(value = MetaApi.API_TERMS_BY_lANG_COUNTRY_ID_FOR_FX, method = RequestMethod.GET)
+		public AmxApiResponse<TermsAndConditionDTO, Object> getTermsAndConditionAsPerCountryResponseforFxOrder() {
+			return termsAndConditionService.getTermsAndConditionAsPerCountryForFxOrder(metaData.getLanguageId(),metaData.getCountryId());
+		}
+
+		
+		
+		@RequestMapping(value = MetaApi.API_AREA_LIST, method = RequestMethod.GET)
+		public AmxApiResponse<ViewAreaDto, Object> getAreaList() {
+			return metaService.getAreaList();
+		}
 }

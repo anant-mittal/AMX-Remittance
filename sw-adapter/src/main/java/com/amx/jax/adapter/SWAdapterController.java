@@ -1,7 +1,5 @@
 package com.amx.jax.adapter;
 
-import java.io.IOException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
@@ -11,13 +9,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.device.CardReader;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.Constants;
 import com.amx.utils.FileUtil;
-
-import net.east301.keyring.BackendNotSupportedException;
-import net.east301.keyring.PasswordSaveException;
-import net.east301.keyring.util.LockException;
 
 @Controller
 public class SWAdapterController {
@@ -29,7 +25,7 @@ public class SWAdapterController {
 	ACardReaderService kwtCardReaderService;
 
 	@Autowired
-	AdapterServiceClient adapterServiceClient;
+	DeviceConnectorClient adapterServiceClient;
 
 	@Autowired
 	private ApplicationContext applicationContext;
@@ -43,15 +39,27 @@ public class SWAdapterController {
 	@ResponseBody
 	@RequestMapping(value = "/pub/script/validation.js", method = RequestMethod.GET)
 	public String makesession(@RequestParam String tranx) throws Exception {
-		adapterServiceClient.pairTerminal(kwtCardReaderService.getAddress(),
-				kwtCardReaderService.getDevicePairingCreds(), kwtCardReaderService.getSessionPairingCreds(), tranx);
-		return "var _ba_ = true";
+		String tid = "";
+		String rid = "";
+		String excep = "";
+		if (!ArgUtil.isEmpty(kwtCardReaderService.getDevicePairingCreds())
+				&& !ArgUtil.isEmpty(kwtCardReaderService.getSessionPairingCreds())) {
+			try {
+				AmxApiResponse<Object, Object> x = adapterServiceClient.pairTerminal(kwtCardReaderService.getAddress(),
+						kwtCardReaderService.getDevicePairingCreds(), kwtCardReaderService.getSessionPairingCreds(),
+						tranx);
+				tid = ArgUtil.parseAsString(x.getResult());
+				rid = ArgUtil.parseAsString(x.getMeta());
+			} catch (Exception e) {
+
+			}
+		}
+		return "var _tid_ = '" + tid + "', _rid_ = '" + rid + "', _excep_='" + excep + "';";
 	}
 
 	@ResponseBody
 	@RequestMapping(value = "/pub/script/index.js", method = RequestMethod.GET)
 	public String indexJs() throws Exception {
-
 		return FileUtil.read(applicationContext.getResource("classpath:templates/index.js").getURL());
 	}
 
@@ -59,8 +67,7 @@ public class SWAdapterController {
 	@RequestMapping(value = { "/**", "/*", "/" }, method = { RequestMethod.GET, RequestMethod.POST })
 	public String home(@RequestParam(required = false) String terminalId, Model model,
 			@RequestParam(required = false) String reset)
-			throws InterruptedException, IOException, BackendNotSupportedException, LockException,
-			PasswordSaveException {
+			throws Exception {
 		if (!ArgUtil.isEmpty(terminalId)) {
 			kwtCardReaderService.setTerminalId(terminalId);
 		}
@@ -68,20 +75,25 @@ public class SWAdapterController {
 			kwtCardReaderService.resetTerminalPairing();
 		}
 
-		if (ArgUtil.isEmpty(kwtCardReaderService.getTerminalId())) {
-			return FileUtil.read(applicationContext.getResource("classpath:templates/terminal.html").getURL());
-		} else if (!ArgUtil.isEmpty(kwtCardReaderService.getDevicePairingCreds())) {
-			return FileUtil.read(applicationContext.getResource("classpath:templates/regid.html").getURL()).replace(
-					"${REG_ID}",
-					kwtCardReaderService.getDevicePairingCreds().getDeviceRegId())
-
-					.replace("${HOST_NAME}", kwtCardReaderService.getAddress().getHostName())
-					.replace("${USER_NAME}", kwtCardReaderService.getAddress().getUserName())
-					.replace("${LOCAL_IP}", kwtCardReaderService.getAddress().getLocalIp());
+		String body = "";
+		if (!ArgUtil.isEmpty(kwtCardReaderService.getDevicePairingCreds())) {
+			body = FileUtil.read(applicationContext.getResource("classpath:templates/regid.html").getURL());
+		} else if (ArgUtil.isEmpty(kwtCardReaderService.getTerminalId())) {
+			body = FileUtil.read(applicationContext.getResource("classpath:templates/terminal.html").getURL());
 		} else {
-			return FileUtil.read(applicationContext.getResource("classpath:templates/index.html").getURL());
+			body = FileUtil.read(applicationContext.getResource("classpath:templates/index.html").getURL());
 		}
-
+		return body.replace("${REG_ID}", ArgUtil.isEmpty(kwtCardReaderService.getDevicePairingCreds())
+				? Constants.BLANK
+				: kwtCardReaderService.getDevicePairingCreds().getDeviceRegId())
+				.replace("${HOST_NAME}", kwtCardReaderService.getAddress().getHostName())
+				.replace("${USER_NAME}", kwtCardReaderService.getAddress().getUserName())
+				.replace("${LOCAL_IP}", kwtCardReaderService.getAddress().getLocalIp())
+				.replace("${TERMINAL_IP}", ArgUtil.parseAsString(kwtCardReaderService.getTerminalId(), Constants.BLANK))
+				.replace("${DEVICE_STATUS}", String.format("%s", kwtCardReaderService.getDeviceStatus()))
+				.replace("${CARD_STATUS}", String.format("%s", kwtCardReaderService.getCardStatusValue()))
+				.replace("${DATA_STATUS}", String.format("%s", kwtCardReaderService.getDataStatusValue()))
+				.replace("${LOG}", String.format("%s", SWAdapterGUI.CONTEXT.LOG));
 	}
 
 }

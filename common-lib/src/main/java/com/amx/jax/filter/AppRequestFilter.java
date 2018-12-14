@@ -45,6 +45,9 @@ public class AppRequestFilter implements Filter {
 		LOGGER.info("Filter Intialzed");
 	}
 
+	/**
+	 * DO NOT REMOVE THIS ONE AS IT WILL DO VERY IMPORTANT STUFF LIKE TENANT BEAN INIT
+	 */
 	@Autowired
 	AppConfig appConfig;
 
@@ -90,7 +93,7 @@ public class AppRequestFilter implements Filter {
 			}
 			if (!StringUtils.isEmpty(siteId)) {
 				TenantContextHolder.setCurrent(siteId, null);
-			}
+			} 
 			Tenant tnt = TenantContextHolder.currentSite();
 
 			// Tranx Id Tracking

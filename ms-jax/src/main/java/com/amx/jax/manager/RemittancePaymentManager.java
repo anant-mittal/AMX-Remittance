@@ -94,7 +94,7 @@ public class RemittancePaymentManager extends AbstractService{
 	@Autowired
 	RemittanceManager remittanceManager;
 	
-	public ApiResponse paymentCapture(PaymentResponseDto paymentResponse) {
+	public ApiResponse<PaymentResponseDto> paymentCapture(PaymentResponseDto paymentResponse) {
 		ApiResponse response = null;
 		logger.info("paymment capture :"+paymentResponse.toString());
 		List<ShoppingCartDetails>  shoppingCartList = new ArrayList<>();
@@ -225,7 +225,7 @@ public class RemittancePaymentManager extends AbstractService{
 				remittanceApplicationService.updatePayTokenNull(lstPayIdDetails, paymentResponse);
 			}
 			
-			throw new GlobalException("Remittance error :"+errorMsg,JaxError.PG_ERROR);
+			throw new GlobalException(JaxError.PG_ERROR,"Remittance error :"+errorMsg);
 		}
 		
 		response.getData().getValues().add(paymentResponse);

@@ -3,11 +3,22 @@ package com.amx.jax.payg;
 import com.amx.jax.dict.PayGServiceCode;
 import com.amx.utils.ArgUtil;
 
+/**
+ * 
+ * @deprecated use {@link PayGParams}
+ * 
+ * @author lalittanwar
+ *
+ */
+@Deprecated
 public class Payment {
+	String docId;
 	String docNo;
 	String docFinYear;
+
 	String netPayableAmount;
 	String merchantTrackId;
+	Object product;
 	PayGServiceCode pgCode;
 
 	public String getDocNo() {
@@ -48,5 +59,33 @@ public class Payment {
 
 	public void setPgCode(PayGServiceCode payGServiceCode) {
 		this.pgCode = payGServiceCode;
+	}
+
+	public Object getProduct() {
+		return product;
+	}
+
+	public void setProduct(Object product) {
+		this.product = product;
+	}
+
+	public String getDocId() {
+		return docId;
+	}
+
+	public void setDocId(String docId) {
+		this.docId = docId;
+	}
+
+	public void setDocFinYear(String docFinYear) {
+		this.docFinYear = docFinYear;
+	}
+
+	public void setNetPayableAmount(String netPayableAmount) {
+		this.netPayableAmount = netPayableAmount;
+	}
+
+	public void setMerchantTrackId(String merchantTrackId) {
+		this.merchantTrackId = merchantTrackId;
 	}
 }

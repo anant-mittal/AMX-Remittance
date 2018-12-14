@@ -25,14 +25,17 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.amx.jax.AppConfig;
 import com.amx.jax.AppConstants;
+import com.amx.jax.AppContextUtil;
+import com.amx.jax.api.AResponse.Target;
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.http.CommonHttpRequest.CommonMediaType;
-import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
 import com.amx.jax.sso.SSOConstants;
 import com.amx.jax.sso.SSOConstants.SSOAuthStep;
 import com.amx.jax.sso.SSOStatus.ApiSSOStatus;
 import com.amx.jax.sso.SSOStatus.SSOServerCodes;
 import com.amx.jax.sso.SSOTranx;
+import com.amx.jax.sso.SSOTranx.SSOModel;
 import com.amx.jax.sso.SSOUser;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.HttpUtils;
@@ -41,6 +44,7 @@ import com.amx.utils.Random;
 import com.amx.utils.URLBuilder;
 
 import io.swagger.annotations.ApiParam;
+import springfox.documentation.annotations.ApiIgnore;
 
 @Controller
 public class SSOAppController {
@@ -61,21 +65,27 @@ public class SSOAppController {
 
 	@ApiSSOStatus({ SSOServerCodes.AUTH_REQUIRED, SSOServerCodes.AUTH_DONE })
 	@ResponseBody
-	@RequestMapping(value = SSOConstants.APP_LOGIN_URL_START, method = { RequestMethod.GET })
+	@RequestMapping(value = SSOConstants.APP_LOGIN_URL_START, method = { RequestMethod.GET }, produces = {
+			CommonMediaType.APPLICATION_JSON_VALUE, CommonMediaType.APPLICATION_V0_JSON_VALUE })
 	public String loginJSONStart(
 			@RequestParam String sotp, @RequestParam(required = false) String returnUrld, HttpServletRequest request,
 			HttpServletResponse response) throws MalformedURLException, URISyntaxException {
 		AmxApiResponse<Object, Map<String, Object>> result = AmxApiResponse.buildMeta(new HashMap<String, Object>());
 		String tranxId = ssoUser.ssoTranxId();
-
 		String returnUrl = null;
 		if (returnUrld != null) {
 			byte[] decodedBytes = Base64.getDecoder().decode(returnUrld);
 			returnUrl = new String(decodedBytes);
 		}
-		sSOTranx.setAppReturnDetails(returnUrl, sotp);
+		SSOModel sSOModel = sSOTranx.get();
+		sSOModel.setAppUrl(returnUrl);
+		sSOModel.setAppToken(sotp);
+		sSOModel.getUserClient().setClientType(ClientType.BRANCH_WEB_OLD);
+		sSOTranx.save(sSOModel);
+
 		URLBuilder builder = new URLBuilder(HttpUtils.getServerName(request));
-		builder.setPath(SSOConstants.SSO_LOGIN_URL_REQUIRED).addParameter(AppConstants.TRANX_ID_XKEY, tranxId);
+		builder.path(appConfig.getAppPrefix() + SSOConstants.SSO_LOGIN_URL_REQUIRED)
+				.queryParam(AppConstants.TRANX_ID_XKEY, tranxId);
 		result.setRedirectUrl(builder.getURL());
 		result.getMeta().put(AppConstants.TRANX_ID_XKEY, tranxId);
 		return JsonUtil.toJson(result);
@@ -83,12 +93,29 @@ public class SSOAppController {
 
 	@ApiSSOStatus({ SSOServerCodes.AUTH_REQUIRED, SSOServerCodes.AUTH_DONE })
 	@ResponseBody
-	@RequestMapping(value = SSOConstants.APP_LOGIN_URL_VERYFY, method = { RequestMethod.GET })
+	@RequestMapping(value = SSOConstants.APP_LOGIN_URL_SESSION, method = { RequestMethod.POST }, produces = {
+			CommonMediaType.APPLICATION_JSON_VALUE, CommonMediaType.APPLICATION_V0_JSON_VALUE })
+	public String loginJSONPreAuth(@RequestParam String targetUrl, HttpServletRequest request,
+			HttpServletResponse response) throws MalformedURLException, URISyntaxException {
+		AmxApiResponse<Object, Map<String, Object>> result = AmxApiResponse.buildMeta(new HashMap<String, Object>());
+		String tranxId = ssoUser.ssoTranxId();
+		URLBuilder builder = new URLBuilder(targetUrl).queryParam(AppConstants.TRANX_ID_XKEY, tranxId)
+				.queryParam(SSOConstants.PARAM_SOTP, sSOTranx.get().getAppToken())
+				.queryParam(SSOConstants.PARAM_STEP, SSOAuthStep.DONE)
+				.queryParam(SSOConstants.PARAM_SESSION_TOKEN, AppContextUtil.getTraceId());
+		result.setTargetUrl(builder.getURL(), Target._BLANK);
+		return JsonUtil.toJson(result);
+	}
+
+	@ApiSSOStatus({ SSOServerCodes.AUTH_REQUIRED, SSOServerCodes.AUTH_DONE })
+	@ResponseBody
+	@RequestMapping(value = SSOConstants.APP_LOGIN_URL_VERYFY, method = { RequestMethod.GET }, produces = {
+			CommonMediaType.APPLICATION_JSON_VALUE, CommonMediaType.APPLICATION_V0_JSON_VALUE })
 	public String loginJSONVerify(
 			@RequestParam String sotp, HttpServletRequest request,
 			HttpServletResponse response) throws MalformedURLException, URISyntaxException {
 		String tranxId = ssoUser.ssoTranxId();
-		if (ssoUser.isAuthDone() && sotp.equalsIgnoreCase(sSOTranx.get().getAppToken())) {
+		if (!ArgUtil.isEmpty(sSOTranx.get().getUserDetails()) && sotp.equalsIgnoreCase(sSOTranx.get().getAppToken())) {
 			return JsonUtil.toJson(AmxApiResponse.buildData(sSOTranx.get().getUserDetails()));
 		}
 		return JsonUtil.toJson(AmxApiResponse.build());
@@ -98,8 +125,14 @@ public class SSOAppController {
 	@RequestMapping(value = SSOConstants.APP_LOGIN_URL_HTML, method = { RequestMethod.GET })
 	public String loginJPage(
 			@PathVariable(required = false, value = "htmlstep") @ApiParam(defaultValue = "CHECK") SSOAuthStep step,
-			@RequestParam(required = false) String sotp, Model model, HttpServletRequest request,
+			@RequestParam(required = false) String sotp,
+			@RequestParam(required = false, value = SSOConstants.IS_RETURN) Boolean isReturn,
+			Model model, HttpServletRequest request,
 			HttpServletResponse response) throws MalformedURLException, URISyntaxException {
+		/**
+		 * By default for JSON apis, redirections should be true
+		 */
+		isReturn = ArgUtil.parseAsBoolean(isReturn, true);
 
 		String tranxId = ssoUser.ssoTranxId();
 		step = (SSOAuthStep) ArgUtil.parseAsEnum(step, SSOAuthStep.CHECK);
@@ -116,12 +149,18 @@ public class SSOAppController {
 
 		if (!ssoUser.isAuthDone()) {
 			LOGGER.debug("ssoUser.isAuthDone() is false");
-			sSOTranx.setAppReturnDetails(request.getRequestURL().toString(), Random.randomAlphaNumeric(6));
+			SSOModel sSOModel = sSOTranx.get();
+			sSOModel.setAppUrl(request.getRequestURL().toString());
+			sSOModel.setAppToken(Random.randomAlphaNumeric(6));
+			sSOModel.getUserClient().setClientType(ClientType.BRANCH_WEB);
+			sSOTranx.save(sSOModel);
+
 			URLBuilder builder = new URLBuilder(appConfig.getSsoURL());
-			builder.setPath(SSOConstants.SSO_LOGIN_URL_REQUIRED).addParameter(AppConstants.TRANX_ID_XKEY, tranxId);
+			builder.path(SSOConstants.SSO_LOGIN_URL_REQUIRED)
+					.queryParam(AppConstants.TRANX_ID_XKEY, tranxId);
 			return SSOConstants.REDIRECT + builder.getURL();
 		}
-		return SSOConstants.REDIRECT + sSOTranx.get().getReturnUrl();
+		return SSOConstants.REDIRECT + (isReturn ? sSOTranx.get().getReturnUrl() : SSOConstants.APP_LOGGEDIN_URL);
 	}
 
 	@ApiSSOStatus({ SSOServerCodes.AUTH_REQUIRED, SSOServerCodes.AUTH_DONE })
@@ -130,19 +169,35 @@ public class SSOAppController {
 			CommonMediaType.APPLICATION_JSON_VALUE, CommonMediaType.APPLICATION_V0_JSON_VALUE })
 	public String loginJSON(
 			@PathVariable(required = false, value = "jsonstep") @ApiParam(defaultValue = "CHECK") SSOAuthStep step,
-			@RequestParam(required = false) String sotp, Model model, HttpServletRequest request,
+			@RequestParam(required = false) String sotp,
+			@RequestParam(required = false, value = SSOConstants.IS_RETURN) Boolean isReturn,
+			Model model, HttpServletRequest request,
 			HttpServletResponse response) throws MalformedURLException, URISyntaxException {
-		String redirectUrl = this.loginJPage(step, sotp, model, request, response);
-		response.setHeader("Location", redirectUrl.replace(SSOConstants.REDIRECT, ""));
-		response.setStatus(302);
-		return JsonUtil.toJson(AmxApiResponse.build());
+		/**
+		 * By default for JSON apis, redirections should be false
+		 */
+		isReturn = ArgUtil.parseAsBoolean(isReturn, false);
+
+		String redirectUrl = this.loginJPage(step, sotp, isReturn, model, request, response);
+
+		AmxApiResponse<Object, Object> resp = AmxApiResponse.build();
+		resp.setRedirectUrl((appConfig.getAppPrefix() + redirectUrl.replace(SSOConstants.REDIRECT, "")));
+		//if (isReturn || !ssoUser.isAuthDone()) {
+			// Redirect only if user is not logged, otherwise redirection should be based on
+			// argument passed by user
+			response.setHeader("Location", resp.getRedirectUrl());
+			response.setStatus(302);
+		//}
+		return JsonUtil.toJson(resp);
 	}
 
+	@ApiIgnore
 	@RequestMapping(value = SSOConstants.APP_LOGGEDIN_URL_HTML, method = { RequestMethod.GET, RequestMethod.POST })
 	public String loggedinJPage() throws MalformedURLException, URISyntaxException {
-		return "sso_home";
+		return SSOConstants.REDIRECT + "/";
 	}
 
+	@ApiIgnore
 	@ApiSSOStatus({ SSOServerCodes.AUTH_REQUIRED, SSOServerCodes.AUTH_DONE })
 	@ResponseBody
 	@RequestMapping(value = SSOConstants.APP_LOGGEDIN_URL_JSON, method = { RequestMethod.GET,
@@ -158,6 +213,7 @@ public class SSOAppController {
 			produces = { CommonMediaType.APPLICATION_JSON_VALUE, CommonMediaType.APPLICATION_V0_JSON_VALUE })
 	public String logout(
 			Model model,
+			HttpServletRequest request,
 			HttpServletResponse response,
 			@RequestParam(required = false) Boolean redirect) throws MalformedURLException, URISyntaxException {
 		redirect = ArgUtil.parseAsBoolean(redirect, true);
@@ -165,7 +221,10 @@ public class SSOAppController {
 		SecurityContextHolder.getContext().setAuthentication(null);
 		ssoUser.setAuthDone(false);
 		AmxApiResponse<Object, Model> result = AmxApiResponse.buildMeta(model);
-		String redirectUrl = "/";
+
+//		URLBuilder builder = new URLBuilder(HttpUtils.getServerName(request));
+//		builder.path(appConfig.getAppPrefix() + '/');
+		String redirectUrl = HttpUtils.getServerName(request) + appConfig.getAppPrefix() + '/';
 		result.setRedirectUrl(redirectUrl);
 		if (redirect) {
 			response.setHeader("Location", redirectUrl);

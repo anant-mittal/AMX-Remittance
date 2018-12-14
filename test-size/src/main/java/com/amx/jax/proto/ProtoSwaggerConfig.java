@@ -36,8 +36,7 @@ public class ProtoSwaggerConfig {
 
 		operationParameters.add(
 				new ParameterBuilder().name(AppConstants.TRACE_ID_XKEY).description("Trace Id")
-						.modelRef(new ModelRef(PARAM_STRING)).parameterType(PARAM_HEADER).required(false).build()
-		);
+						.modelRef(new ModelRef(PARAM_STRING)).parameterType(PARAM_HEADER).required(false).build());
 
 		docket.globalOperationParameters(operationParameters);
 		docket.apiInfo(metaData());
@@ -50,7 +49,6 @@ public class ProtoSwaggerConfig {
 				"Third Party Client Server", "1.0",
 				"Terms of service",
 				new Contact("", "https://modernexchange.com/", "tech@almullaexchange.com"),
-				"Apache License Version 2.0", "https://www.apache.org/licenses/LICENSE-2.0"
-		);
+				"Apache License Version 2.0", "https://www.apache.org/licenses/LICENSE-2.0");
 	}
 }

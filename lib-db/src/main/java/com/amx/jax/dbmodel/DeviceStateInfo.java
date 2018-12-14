@@ -1,7 +1,6 @@
 package com.amx.jax.dbmodel;
 
 import java.math.BigDecimal;
-import java.sql.Clob;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -9,7 +8,6 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Id;
-import javax.persistence.Lob;
 import javax.persistence.PrePersist;
 import javax.persistence.Table;
 
@@ -41,15 +39,21 @@ public class DeviceStateInfo {
 
 	@Column(name = "SIGNATURE_CLOB")
 	String signature;
-	
+
 	@Column(name = "EMPLOYEE_ID")
 	BigDecimal employeeId;
-	
+
 	@Column(name = "STATE_DATA_MODIFIED_DATE")
 	Date stateDataModifiedDate;
 
-	public DeviceStateInfo(Integer registrationId) {
-		this.deviceRegId = new BigDecimal(registrationId);
+	public DeviceStateInfo(BigDecimal registrationId) {
+		this.deviceRegId = registrationId;
+		this.createdDate = new Date();
+		this.createdBy = "JOMAX_ONLINE";
+	}
+
+	public DeviceStateInfo() {
+		super();
 	}
 
 	public BigDecimal getDeviceRegId() {
@@ -59,7 +63,6 @@ public class DeviceStateInfo {
 	public void setDeviceRegId(BigDecimal deviceRegId) {
 		this.deviceRegId = deviceRegId;
 	}
-
 
 	public Date getCreatedDate() {
 		return createdDate;

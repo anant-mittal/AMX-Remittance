@@ -1,7 +1,7 @@
 package com.amx.jax.payment.gateway;
 
-import com.amx.jax.dict.Channel;
 import com.amx.jax.dict.PayGServiceCode;
+import com.amx.jax.payg.PayGParams;
 
 public interface PayGClient {
 
@@ -17,13 +17,14 @@ public interface PayGClient {
 	 * payment actually starts
 	 * 
 	 * @param payGParams
+	 * @param respModel
 	 */
-	void initialize(PayGParams payGParams);
+	void initialize(PayGParams params, PaymentGateWayResponse gatewayResponse);
 
 	/**
-     * 
-     * @param payGResponse
-     */
-    PayGResponse capture(PayGResponse payGResponse,Channel channel);
+	 * 
+	 * @param payGResponse
+	 */
+	public PaymentGateWayResponse capture(PayGParams params, PaymentGateWayResponse gatewayResponse);
 
 }

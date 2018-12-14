@@ -2,6 +2,8 @@ package com.amx.jax.sso;
 
 public class SSOConstants {
 
+	public static final String IS_RETURN = "return";
+
 	private SSOConstants() {
 		// Not allowed
 	}
@@ -17,6 +19,7 @@ public class SSOConstants {
 	public static final String APP_LOGIN_URL_DONE = APP_LOGIN_URL + "/DONE";
 	public static final String APP_LOGIN_URL_CHECK = APP_LOGIN_URL + "/CHECK";
 	public static final String APP_LOGIN_URL_START = APP_LOGIN_URL + "/START";
+	public static final String APP_LOGIN_URL_SESSION = APP_LOGIN_URL + "/SESSION";
 	public static final String APP_LOGIN_URL_VERYFY = APP_LOGIN_URL + "/VERIFY";
 
 	public static final String SSO_LOGIN_URL = "/sso/auth/login";
@@ -33,11 +36,17 @@ public class SSOConstants {
 
 	public static final String PARAM_REDIRECT = "redirect";
 	public static final String PARAM_SOTP = "sotp";
+	public static final String PARAM_SESSION_TOKEN = "x-session-token";
 	public static final String PARAM_STEP = "step";
+
+	public static final String SECURITY_CODE_KEY = "sec_code";
+	public static final String PARTNER_SECURITY_CODE_KEY = "partner_sec_code";
+
 	public static final String PARAM_SSO_LOGIN_URL = "SSO_LOGIN_URL";
+	public static final String PARAM_SSO_LOGIN_PREFIX = "SSO_LOGIN_PREFIX";
 
 	public enum SSOAuthStep {
-		START, DO, DONE, REQUIRED, CHECK, CREDS, OTP, VERIFY
+		START, SESSION, DO, DONE, REQUIRED, CHECK, CREDS, OTP, VERIFY
 	}
 
 }

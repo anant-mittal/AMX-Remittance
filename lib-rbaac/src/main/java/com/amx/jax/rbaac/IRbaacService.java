@@ -15,6 +15,7 @@ import com.amx.jax.rbaac.dto.request.UserAuthorisationReqDTO;
 import com.amx.jax.rbaac.dto.request.UserRoleMappingsRequestDTO;
 import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
 import com.amx.jax.rbaac.dto.response.PermissionResposeDTO;
+import com.amx.jax.rbaac.dto.response.RoleMappingForEmployee;
 import com.amx.jax.rbaac.dto.response.RoleResponseDTO;
 import com.amx.jax.rbaac.dto.response.UserAuthInitResponseDTO;
 import com.amx.jax.rbaac.dto.response.UserRoleMappingDTO;
@@ -56,7 +57,7 @@ public interface IRbaacService {
 		public static final String ROLES_SAVE = SERVICE_PREFIX + API_VERSION_V1 + "/roles/save";
 
 		/** The Constant RA_GET_FOR_BRANCH. */
-		public static final String RA_GET_FOR_BRANCH = SERVICE_PREFIX + API_VERSION_V1 + "/roles/alloc/get_for_branch";
+		public static final String RA_GET_FOR_BRANCH = SERVICE_PREFIX + API_VERSION_V1 + "/roles/alloc/get-for-branch";
 
 		/** The Constant RA_UPDATE. */
 		public static final String RA_UPDATE = SERVICE_PREFIX + API_VERSION_V1 + "/roles/alloc/update";
@@ -76,9 +77,14 @@ public interface IRbaacService {
 		public static final String DEVICE_DEACTIVATE = DEVICE_PREFIX + "/deactivate";
 		public static final String DEVICE_CREATE_SESSION = DEVICE_PREFIX + "/createsession";
 		public static final String DEVICE_PAIR_SESSION =  DEVICE_PREFIX + "/pairsession";
-		public static final String DEVICE_VALIDATE_SESSION_TOKEN =  DEVICE_PREFIX + "/validatesessiontoken";
+		public static final String DEVICE_VALIDATE_SESSION_TOKEN =  DEVICE_PREFIX + "/validate-sessiontoken";
 		public static final String DEVICE_REG = DEVICE_PREFIX + "/register";
-		public static final String DEVICE_GET_DEVICE_REG_ID =  DEVICE_PREFIX + "/getdeviceregid";
+		public static final String DEVICE_GET_DEVICE_REG_ID =  DEVICE_PREFIX + "/get-deviceregid";
+		
+		/** The Constant GET_ROLE_MAPPING_FOR_EMPLOYEE. */
+		public static final String GET_ROLE_MAPPING_FOR_EMPLOYEE = SERVICE_PREFIX + API_VERSION_V1 + "/roles/alloc/get-role-map-for-employee";
+		
+		public static final String EMPLOYEE_SYSTEM_MAPPING_CREATE =  SERVICE_PREFIX + API_VERSION_V1 + "/employee-system/create";
 
 	}
 	
@@ -107,7 +113,10 @@ public interface IRbaacService {
 	 */
 	@RbaacApiStatus({ RbaacServiceError.INVALID_OR_MISSING_DATA, RbaacServiceError.INVALID_USER_DETAILS,
 			RbaacServiceError.MULTIPLE_USERS, RbaacServiceError.USER_NOT_ACTIVE_OR_DELETED,
-			RbaacServiceError.USER_ACCOUNT_LOCKED })
+			RbaacServiceError.USER_ACCOUNT_LOCKED, RbaacServiceError.INVALID_OR_MISSING_CREDENTIALS,
+			RbaacServiceError.INVALID_OR_MISSING_PARTNER_IDENTITY, RbaacServiceError.CLIENT_NOT_FOUND,
+			RbaacServiceError.INVALID_OR_MISSING_TERMINAL_ID, RbaacServiceError.BRANCH_SYSTEM_NOT_FOUND,
+			RbaacServiceError.INVALID_OR_MISSING_DEVICE_ID, RbaacServiceError.DEVICE_CLIENT_INVALID })
 	public AmxApiResponse<UserAuthInitResponseDTO, Object> initAuthForUser(UserAuthInitReqDTO userAuthInitReqDTO);
 
 	/**
@@ -118,7 +127,7 @@ public interface IRbaacService {
 	 * @return the amx api response
 	 */
 	@RbaacApiStatus({ RbaacServiceError.INVALID_OR_MISSING_DATA, RbaacServiceError.INVALID_OTP,
-			RbaacServiceError.USER_ACCOUNT_LOCKED })
+			RbaacServiceError.USER_ACCOUNT_LOCKED, RbaacServiceError.INVALID_PARTNER_OTP })
 	public AmxApiResponse<EmployeeDetailsDTO, Object> authoriseUser(UserAuthorisationReqDTO reqDto);
 
 	/**
@@ -274,6 +283,14 @@ public interface IRbaacService {
 	 * 
 	 */
 	public  AmxApiResponse<BigDecimal, Object> getDeviceRegIdByBranchInventoryId(ClientType deviceClientType,
+			BigDecimal countryBranchSystemInventoryId);
+	
+	
+	@RbaacApiStatus({})
+	public AmxApiResponse<RoleMappingForEmployee, Object> getRoleMappingsForEmployee(BigDecimal employeeId,
+			String ipAddr, String deviceId, Boolean filterRole);
+
+	AmxApiResponse<BoolRespModel, Object> createEmployeeSystemMapping(BigDecimal employeeId,
 			BigDecimal countryBranchSystemInventoryId);
 
 }

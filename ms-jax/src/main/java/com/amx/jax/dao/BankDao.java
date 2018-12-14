@@ -26,7 +26,6 @@ public class BankDao {
 
 	public List<BankServiceRule> getBankServiceRule(BigDecimal routingBankId, BigDecimal countryId,
 			BigDecimal currencyId, BigDecimal remittanceMode, BigDecimal deliveryMode) {
-
 		return bankServiceRuleRepo.getServiceRules(routingBankId, countryId, currencyId, remittanceMode, deliveryMode);
 
 	}

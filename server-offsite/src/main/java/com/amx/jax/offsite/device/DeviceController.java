@@ -14,6 +14,7 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.MetaClient;
 import com.amx.jax.device.DeviceConstants;
+import com.amx.jax.device.DeviceData;
 import com.amx.jax.device.DeviceRestModels;
 import com.amx.jax.device.DeviceRestModels.DevicePairingCreds;
 import com.amx.jax.device.DeviceRestModels.DevicePairingRequest;
@@ -25,13 +26,13 @@ import com.amx.jax.model.response.BranchSystemDetailDto;
 import com.amx.jax.offsite.OffsiteStatus.ApiOffisteStatus;
 import com.amx.jax.offsite.OffsiteStatus.OffsiteServerCodes;
 import com.amx.jax.offsite.OffsiteStatus.OffsiteServerError;
-import com.amx.jax.offsite.device.DeviceConfigs.DeviceData;
 import com.amx.jax.rbaac.IRbaacService;
 import com.amx.jax.rbaac.RbaacServiceClient;
 import com.amx.jax.rbaac.dto.DeviceDto;
 import com.amx.jax.rbaac.dto.DevicePairOtpResponse;
 import com.amx.jax.rbaac.dto.request.DeviceRegistrationRequest;
 import com.amx.jax.sso.SSOTranx;
+import com.amx.jax.sso.server.ApiHeaderAnnotations.ApiDeviceHeaders;
 import com.amx.jax.swagger.IStatusCodeListPlugin.ApiStatusService;
 import com.amx.utils.ArgUtil;
 
@@ -99,6 +100,14 @@ public class DeviceController {
 		return rbaacServiceClient.activateDevice(deviceRegId, mOtp);
 	}
 
+	@ApiOffisteStatus({ OffsiteServerCodes.CLIENT_UNKNOWN })
+	@RequestMapping(value = { DeviceConstants.Path.DEVICE_DEACTIVATE }, method = { RequestMethod.POST })
+	public AmxApiResponse<BoolRespModel, Object> deActivateDevice(
+			@RequestParam Integer deviceRegId, @RequestParam ClientType deviceType) {
+		deviceRequestValidator.updateStamp(deviceRegId);
+		return rbaacServiceClient.deactivateDevice(deviceRegId);
+	}
+
 	@ApiDeviceHeaders
 	@ApiOffisteStatus({ OffsiteServerCodes.CLIENT_UNKNOWN })
 	@RequestMapping(value = { DeviceConstants.Path.SESSION_CREATE }, method = { RequestMethod.GET })
@@ -113,8 +122,9 @@ public class DeviceController {
 				.createDeviceSession(ArgUtil.parseAsInteger(deviceRegId), deviceRegToken)
 				.getResult();
 		SessionPairingCreds creds = deviceRequestValidator.createSession(resp.getSessionPairToken(), resp.getOtp(),
-				resp.getTermialId());
-		return AmxApiResponse.build(creds, resp.getTermialId());
+				resp.getTermialId(), resp.getEmpId());
+		String meta = ArgUtil.isEmpty(resp.getEmpId()) ? resp.getTermialId() : resp.getEmpId();
+		return AmxApiResponse.build(creds, meta);
 	}
 
 	@RequestMapping(value = DeviceConstants.Path.SESSION_PAIR, method = RequestMethod.POST)
@@ -129,12 +139,16 @@ public class DeviceController {
 	}
 
 	@RequestMapping(value = { DeviceConstants.Path.SESSION_TERMINAL }, method = { RequestMethod.GET })
-	public AmxApiResponse<SessionPairingCreds, Object> webAppLogin() {
+	public AmxApiResponse<Object, Object> webAppLogin() {
 		DeviceData deviceData = deviceRequestValidator.validateRequest();
 		String terminalId = deviceData.getTerminalId();
-		sSOTranx.get().setTerminalId(terminalId);
+		sSOTranx.get().setBranchAdapterId(deviceRequestValidator.getDeviceRegId());
+		sSOTranx.get().getUserClient().setTerminalId(ArgUtil.parseAsBigDecimal(terminalId));
+		// sSOTranx.get().getUserClient().setDeviceRegId(deviceRequestValidator.getDeviceRegId());
+		// sSOTranx.get().getUserClient().setGlobalIpAddress(deviceData.getGlobalIp());
+		// sSOTranx.get().getUserClient().setLocalIpAddress(deviceData.getLocalIp());
 		sSOTranx.save();
-		return AmxApiResponse.build();
+		return AmxApiResponse.build(terminalId, deviceRequestValidator.getDeviceRegId());
 	}
 
 }

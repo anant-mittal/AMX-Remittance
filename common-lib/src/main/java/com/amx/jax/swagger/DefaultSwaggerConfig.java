@@ -13,6 +13,8 @@ import com.amx.jax.AppConstants;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.jax.swagger.MockParamBuilder.MockParam;
+import com.amx.utils.CollectionUtil;
+import com.amx.utils.UniqueID;
 
 import springfox.documentation.builders.ParameterBuilder;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -33,10 +35,13 @@ public class DefaultSwaggerConfig {
 
 	public static final String PARAM_STRING = "string";
 	public static final String PARAM_HEADER = "header";
+	public static final String SWGGER_SECRET_PARAM = "x-swagger-key";
+	public static final String SWGGER_SECRET_VALUE = UniqueID.generateString();
 
 	@Bean
 	public Docket productApi(List<MockParam> mockParams) {
-		Docket docket = new Docket(DocumentationType.SWAGGER_2).select()
+		Docket docket = new Docket(DocumentationType.SWAGGER_2)
+				.select()
 				.apis(RequestHandlerSelectors.basePackage("com.amx.jax"))
 				// .paths(regex("/product.*"))
 				.build();
@@ -51,7 +56,8 @@ public class DefaultSwaggerConfig {
 			Parameter parameter = new ParameterBuilder().name(mockParam.getName())
 					.description(mockParam.getDescription()).defaultValue(mockParam.getDefaultValue())
 					.modelRef(new ModelRef(PARAM_STRING)).parameterType(mockParam.getType().toString().toLowerCase())
-					.allowableValues(allowableValues).required(mockParam.isRequired()).build();
+					.allowableValues(allowableValues).required(mockParam.isRequired()).hidden(mockParam.isHidden())
+					.build();
 			operationParameters.add(parameter);
 		}
 
@@ -71,6 +77,17 @@ public class DefaultSwaggerConfig {
 		return new MockParamBuilder().name(TenantContextHolder.TENANT).description("Tenant Country").defaultValue("KWT")
 				.parameterType(MockParamBuilder.MockParamType.HEADER)
 				.allowableValues(Tenant.tenantStrings(), TenantContextHolder.TENANT).required(true).build();
+
+	}
+
+	@Bean
+	public MockParam swaggerParam() {
+		return new MockParamBuilder().name(SWGGER_SECRET_PARAM).description(SWGGER_SECRET_PARAM)
+				.defaultValue(SWGGER_SECRET_VALUE)
+				.parameterType(MockParamBuilder.MockParamType.HEADER)
+				.allowableValues(CollectionUtil.getList(SWGGER_SECRET_VALUE), PARAM_STRING).required(true)
+				.hidden(true)
+				.build();
 
 	}
 

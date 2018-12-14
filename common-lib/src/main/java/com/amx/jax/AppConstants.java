@@ -24,6 +24,7 @@ public class AppConstants extends Constants {
 	public static final String AUTH_KEY_XKEY = "x-app-auth-key";
 	public static final String AUTH_CLIENT_KEY_XKEY = "x-client-auth-key";
 	public static final String SESSION_ID_XKEY = "x-session-id";
+	public static final String SESSION_UID_XKEY = "x-session-uid";
 	public static final String TRACE_ID_XKEY = "x-trace-id";
 	public static final String TRACE_TIME_XKEY = "x-time-id";
 	public static final String REQUEST_TYPE_XKEY = "x-request-type";
@@ -42,4 +43,5 @@ public class AppConstants extends Constants {
 	public static final String APP_DETAILS = "app";
 	public static final String BROWSER_ID_KEY = "bid";
 	public static final String SESSIONID = "JSESSIONID";
+
 }

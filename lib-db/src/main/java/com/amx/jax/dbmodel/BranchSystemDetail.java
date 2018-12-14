@@ -27,6 +27,9 @@ public class BranchSystemDetail {
 
 	@Column(name = "IS_ACTIVE")
 	String isActive;
+	
+	@Column(name = "BRANCH_NAME")
+	String branchName;
 
 	@Column(name = "CREATION_DATE")
 	Date createdDate;
@@ -77,5 +80,13 @@ public class BranchSystemDetail {
 
 	public void setCreatedDate(Date createdDate) {
 		this.createdDate = createdDate;
+	}
+
+	public String getBranchName() {
+		return branchName;
+	}
+
+	public void setBranchName(String branchName) {
+		this.branchName = branchName;
 	}
 }

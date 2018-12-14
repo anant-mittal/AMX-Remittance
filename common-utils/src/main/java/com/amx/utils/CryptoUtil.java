@@ -72,6 +72,7 @@ public final class CryptoUtil {
 	}
 
 	public static boolean validateHMAC(long interval, String secretKey, String message, long currentTime, String hash) {
+		LOGGER.debug("validateHMAC I:{} S:{} M:{} C:{} H:{}", interval, secretKey, message, currentTime, hash);
 		if (generateHMAC(interval, secretKey, message).equals(hash)) {
 			return true;
 		} else if (generateHMAC(interval, secretKey, message, currentTime - interval * 1000).equals(hash)) {
@@ -101,6 +102,21 @@ public final class CryptoUtil {
 		int passLenDiff = (length - String.valueOf(hashCode).length());
 		long passLenFill = Math.max(Math.round(Math.pow(10, passLenDiff)) - 1, 1);
 		return ArgUtil.parseAsString(hashCode * passLenFill);
+	}
+	
+	public static String toHex(int length, String hash) {
+		//length = length*2;
+		char[] hashChars = hash.toCharArray();
+		int totalInt = 0;
+		for (int i = 0; i < hashChars.length; i++) {
+			int cint = hashChars[i];
+			totalInt = (cint * cint * i) + totalInt;
+		}
+		long hashCode = Math.max(totalInt % Math.round(Math.pow(16, length)), 2);
+		int passLenDiff = (length - String.valueOf(Long.toHexString(hashCode)).length());
+		long passLenFill = Math.max(Math.round(Math.pow(16, passLenDiff)) - 1, 1);
+		//return (Long.toHexString(hashCode * passLenFill));
+		return (Long.toHexString(hashCode * passLenFill) + "FFFFFF").substring(0, length);
 	}
 
 	private static String bytesToHex(byte[] bytes) {
@@ -165,7 +181,7 @@ public final class CryptoUtil {
 	 * @throws NoSuchAlgorithmException the no such algorithm exception
 	 */
 	public static String getSHA2Hash(String str) throws NoSuchAlgorithmException {
-		return getSHA1Hash(str.getBytes());
+		return getSHA2Hash(str.getBytes());
 	}
 
 	/**
@@ -211,6 +227,7 @@ public final class CryptoUtil {
 		private String message;
 		private long currentTime;
 		private String output;
+		private String hash;
 
 		public HashBuilder() {
 			this.currentTime = System.currentTimeMillis();
@@ -246,7 +263,7 @@ public final class CryptoUtil {
 		}
 
 		public HashBuilder hash(String hash) {
-			this.output = hash;
+			this.hash = hash;
 			return this;
 		}
 
@@ -255,18 +272,53 @@ public final class CryptoUtil {
 			return this;
 		}
 
-		public HashBuilder toHMAC() {
-			this.output = CryptoUtil.generateHMAC(this.interval, this.secret, this.message, this.currentTime);
+		/**
+		 * Generates SHA2 based HASH from params
+		 * 
+		 * @return
+		 */
+		public HashBuilder toSHA2() {
+			try {
+				this.hash = CryptoUtil.getSHA2Hash(this.message);
+			} catch (NoSuchAlgorithmException e) {
+				e.printStackTrace();
+			}
 			return this;
 		}
 
-		public HashBuilder toNumeric(int length) {
-			this.output = CryptoUtil.toNumeric(length, this.output);
+		/**
+		 * Generates time based HASH from params
+		 * 
+		 * @return
+		 */
+		public HashBuilder toHMAC() {
+			this.hash = CryptoUtil.generateHMAC(this.interval, this.secret, this.message, this.currentTime);
 			return this;
+		}
+
+		/**
+		 * Converts generated has to Numeric Representation. Should be called post Any
+		 * Hash Function only.
+		 * 
+		 * @param length
+		 * @return
+		 */
+		public HashBuilder toNumeric(int length) {
+			this.output = CryptoUtil.toNumeric(length, this.hash);
+			return this;
+		}
+		
+		public HashBuilder toHex(int length) {
+			this.output = CryptoUtil.toHex(length, this.hash);
+			return this;
+		}
+
+		public String hash() {
+			return hash;
 		}
 
 		public String output() {
-			return output;
+			return ArgUtil.isEmpty(this.output) ? this.hash : this.output;
 		}
 
 		public boolean validate(String hash) {

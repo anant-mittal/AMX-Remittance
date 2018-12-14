@@ -108,6 +108,7 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 		BeneficaryRelationship beneRelationship = commitBeneRelationship(beneficiaryTrnxModel,
 				beneMaster.getBeneficaryMasterSeqId(), beneAccount.getBeneficaryAccountSeqId());
 		logger.info("commit done");
+		logger.info("Beneficiary Relationship Sequence Id : " +beneRelationship.getBeneficaryRelationshipId());
 		populateOldEmosData(beneficiaryTrnxModel, beneMaster.getBeneficaryMasterSeqId(),
 				beneAccount.getBeneficaryAccountSeqId());
 		beneRelationship = beneficiaryRelationshipDao.findOne(beneRelationship.getBeneficaryRelationshipId());
@@ -115,6 +116,8 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 			logger.info("Map sequence is null for bene rel seq id: {}", beneRelationship.getBeneficaryRelationshipId());
 			populateOldEmosData(beneficiaryTrnxModel, beneMaster.getBeneficaryMasterSeqId(),
 					beneAccount.getBeneficaryAccountSeqId());
+		}else {
+			logger.info("Map Sequence Id generated: {}", beneRelationship.getMapSequenceId());
 		}
 		return beneficiaryTrnxModel;
 	}

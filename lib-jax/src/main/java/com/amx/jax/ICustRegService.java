@@ -76,8 +76,7 @@ public interface ICustRegService extends IJaxService {
 
 	AmxApiResponse<CardDetail, Object> cardScan(CardDetail cardDetail);
 
-	@ApiJaxStatus({ JaxError.EXISTING_CIVIL_ID, JaxError.EXISTING_BEDOUIN_ID, JaxError.EXISTING_GCC_ID,
-			JaxError.EXISTING_PASSPORT, JaxError.INVALID_CIVIL_ID })
+	@ApiJaxStatus({ JaxError.EXISTING_CIVIL_ID, JaxError.EXISTING_BEDOUIN_ID, JaxError.EXISTING_GCC_ID,JaxError.EXISTING_PASSPORT, JaxError.INVALID_CIVIL_ID })
 	AmxApiResponse<CustomerInfo, Object> saveCustomerInfo(CustomerInfoRequest model);
 
 	@ApiJaxStatus({ JaxError.IMAGE_NOT_AVAILABLE, JaxError.NULL_CUSTOMER_ID, JaxError.INVALID_CUSTOMER })

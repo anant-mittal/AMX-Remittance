@@ -20,8 +20,13 @@ import com.amx.jax.dict.UserClient.ClientType;
  */
 public interface DeviceRepository extends CrudRepository<Device, Serializable> {
 
+	public Device findByRegistrationId(BigDecimal registrationId);
+
 	public List<Device> findByBranchSystemInventoryIdAndDeviceTypeAndStatus(BigDecimal brachSystemInvId,
 			ClientType deviceType, String status);
+
+	public List<Device> findByEmployeeIdAndDeviceTypeAndStatus(BigDecimal employeeId, ClientType deviceType,
+			String status);
 
 	public Device findFirst1ByBranchSystemInventoryIdAndDeviceType(BigDecimal brachSystemInvId, ClientType deviceType,
 			Sort sort);

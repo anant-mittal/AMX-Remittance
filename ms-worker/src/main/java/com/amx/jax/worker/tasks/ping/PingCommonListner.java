@@ -18,12 +18,12 @@ import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.postman.model.WAMessage;
+import com.amx.jax.tunnel.DBEvent;
 import com.amx.jax.tunnel.ITunnelSubscriber;
-import com.amx.jax.tunnel.TunnelEvent;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;
 
-public class PingCommonListner implements ITunnelSubscriber<TunnelEvent> {
+public class PingCommonListner implements ITunnelSubscriber<DBEvent> {
 
 	@Autowired
 	PostManClient postManClient;
@@ -37,7 +37,7 @@ public class PingCommonListner implements ITunnelSubscriber<TunnelEvent> {
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
 	@Override
-	public void onMessage(String channel, TunnelEvent event) {
+	public void onMessage(String channel, DBEvent event) {
 		LOGGER.info("======onMessage1==={} ====  {}", channel, JsonUtil.toJson(event));
 		String message = ArgUtil.parseAsString(event.getData().get("message"));
 		String smsNo = ArgUtil.parseAsString(event.getData().get("sms"));

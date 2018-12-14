@@ -24,12 +24,9 @@ import com.amx.jax.rbaac.dbmodel.RoleDefinition;
 import com.amx.jax.rbaac.dbmodel.RoleMaster;
 import com.amx.jax.rbaac.dbmodel.UserRoleMapping;
 import com.amx.jax.rbaac.dbmodel.UserRoleMaster;
-import com.amx.jax.rbaac.repository.IAccessTypeRepository;
-import com.amx.jax.rbaac.repository.IEmployeeRepository;
-import com.amx.jax.rbaac.repository.IPermissionRepository;
-import com.amx.jax.rbaac.repository.IRoleRepository;
-import com.amx.jax.rbaac.repository.IScopeRepository;
-import com.amx.jax.rbaac.repository.IUserRoleMappingRepository;
+import com.amx.jax.rbaac.dbmodel.ViewExEmpBranchSysDetails;
+import com.amx.jax.rbaac.repository.AccessTypeRepository;
+import com.amx.jax.rbaac.repository.EmployeeRepository;
 import com.amx.jax.rbaac.repository.OldIFunctionalityTypeRepository;
 import com.amx.jax.rbaac.repository.OldIModuleRepository;
 import com.amx.jax.rbaac.repository.OldIPermissionRepository;
@@ -37,13 +34,18 @@ import com.amx.jax.rbaac.repository.OldIPermissionScopeRepository;
 import com.amx.jax.rbaac.repository.OldIRoleDefinitionRepository;
 import com.amx.jax.rbaac.repository.OldIRoleMasterRepository;
 import com.amx.jax.rbaac.repository.OldIUserMasterRepository;
+import com.amx.jax.rbaac.repository.PermissionRepository;
+import com.amx.jax.rbaac.repository.RoleRepository;
+import com.amx.jax.rbaac.repository.ScopeRepository;
+import com.amx.jax.rbaac.repository.UserRoleMappingRepository;
+import com.amx.jax.rbaac.repository.VwEmpBranchSysDetailsRepository;
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Component
 public class RbaacDao {
 
 	@Autowired
-	IEmployeeRepository employeeRepository;
+	EmployeeRepository employeeRepository;
 
 	@Autowired
 	OldIRoleDefinitionRepository roleDefinitionRepositoryOld;
@@ -67,19 +69,22 @@ public class RbaacDao {
 	OldIPermissionRepository permissionRepositoryOld;
 
 	@Autowired
-	IAccessTypeRepository accessTypeRepository;
+	AccessTypeRepository accessTypeRepository;
 
 	@Autowired
-	IScopeRepository scopeRepository;
+	ScopeRepository scopeRepository;
 
 	@Autowired
-	IPermissionRepository permissionRepository;
+	PermissionRepository permissionRepository;
 
 	@Autowired
-	IRoleRepository roleRepository;
+	RoleRepository roleRepository;
 
 	@Autowired
-	IUserRoleMappingRepository userRoleMappingRepository;
+	UserRoleMappingRepository userRoleMappingRepository;
+
+	@Autowired
+	VwEmpBranchSysDetailsRepository vwEmpBranchSysDetailsRepository;
 
 	public List<AccessType> getAllAccessTypes() {
 		return accessTypeRepository.findAll();
@@ -160,16 +165,24 @@ public class RbaacDao {
 		userRoleMappingRepository.deleteInBatch(urMappings);
 	}
 
+	public List<ViewExEmpBranchSysDetails> getEmpBranchSysDetailsByEmpIdAndIpAddr(BigDecimal empId, String ipAddress) {
+		return vwEmpBranchSysDetailsRepository.findByEmployeeIdAndIpAddress(empId, ipAddress);
+	}
+
+	public List<ViewExEmpBranchSysDetails> getEmpBranchSysDetailsByEmpIdAndBranchSysInventoryId(BigDecimal empId,
+			BigDecimal sysInventoryId) {
+		return vwEmpBranchSysDetailsRepository.findByEmployeeIdAndBranchSysInventoryId(empId, sysInventoryId);
+	}
+
 	public Employee fetchEmpDetails(String empcode, String identity, String ipAddress) {
-		List<Employee> empList = employeeRepository.findByEmployeeNumberAndCivilIdAndIpAddress(empcode, identity,
-				ipAddress);
+		List<Employee> empList = employeeRepository.findByEmployeeNumberAndCivilId(empcode, identity);
 		if (null != empList && !empList.isEmpty()) {
 			return empList.get(0);
 		}
 
 		return null;
 	}
-	
+
 	public Employee fetchEmpDetails(String identity) {
 		List<Employee> empList = employeeRepository.findByCivilId(identity);
 		if (null != empList && !empList.isEmpty()) {
@@ -179,12 +192,12 @@ public class RbaacDao {
 		return null;
 	}
 
-	public List<Employee> getEmployees(String empcode, String identity, String ipAddress) {
-		return employeeRepository.findByEmployeeNumberAndCivilIdAndIpAddress(empcode, identity, ipAddress);
+	public List<Employee> getEmployees(String empcode, String identity) {
+		return employeeRepository.findByEmployeeNumberAndCivilId(empcode, identity);
 	}
 
-	public List<Employee> getEmployeesByDeviceId(String empcode, String identity, String deviceId) {
-		return employeeRepository.findByEmployeeNumberAndCivilIdAndDeviceId(empcode, identity, deviceId);
+	public List<Employee> getEmployeesByCivilId(String identity) {
+		return employeeRepository.findByCivilId(identity);
 	}
 
 	public List<Employee> getEmployeesByCountryBranchId(BigDecimal countryBranchId) {
@@ -303,5 +316,9 @@ public class RbaacDao {
 
 	public void saveRoleDefintionDetails(RoleDefinition roleDefinition) {
 		roleDefinitionRepositoryOld.save(roleDefinition);
+	}
+
+	public UserRoleMapping getUserRoleMappingsByEmployeeId(BigDecimal employeeId) {
+		return userRoleMappingRepository.findByEmployeeId(employeeId);
 	}
 }

@@ -20,6 +20,7 @@ import org.thymeleaf.context.Context;
 import org.thymeleaf.spring4.SpringTemplateEngine;
 
 import com.amx.jax.AppConstants;
+import com.amx.jax.dict.AmxEnums.Products;
 import com.amx.jax.dict.Language;
 import com.amx.jax.error.ApiJaxStatusBuilder.ApiJaxStatus;
 import com.amx.jax.error.JaxError;
@@ -105,8 +106,7 @@ public class HomeController {
 	/**
 	 * Login ping.
 	 *
-	 * @param request
-	 *            the request
+	 * @param request the request
 	 * @return the string
 	 */
 	@ApiJaxStatus({ JaxError.ACCOUNT_LENGTH, JaxError.ACCOUNT_TYPE_UPDATE })
@@ -127,8 +127,7 @@ public class HomeController {
 	/**
 	 * Login J page.
 	 *
-	 * @param model
-	 *            the model
+	 * @param model the model
 	 * @return the string
 	 */
 	@RequestMapping(value = "/login/**", method = { RequestMethod.GET })
@@ -163,8 +162,7 @@ public class HomeController {
 	/**
 	 * Default page.
 	 *
-	 * @param model
-	 *            the model
+	 * @param model the model
 	 * @return the string
 	 */
 	@RequestMapping(value = { "/register/**", "/app/**", "/home/**", "/" }, method = { RequestMethod.GET })
@@ -181,17 +179,21 @@ public class HomeController {
 	/**
 	 * Terms page.
 	 *
-	 * @param model
-	 *            the model
-	 * @param lang
-	 *            the lang
+	 * @param model the model
+	 * @param lang  the lang
 	 * @return the string
 	 */
 	@RequestMapping(value = { "/app/terms", "/pub/terms" }, method = { RequestMethod.GET })
-	public String termsPage(Model model, @RequestParam Language lang) {
+	public String termsPage(Model model, @RequestParam Language lang,
+			@RequestParam(required = false) Products product) {
 		model.addAttribute("lang", httpService.getLanguage());
 		sessionService.getGuestSession().setLanguage(lang);
-		model.addAttribute("terms", jaxService.setDefaults().getMetaClient().getTermsAndCondition().getResults());
+		if (ArgUtil.isEmpty(product) || Products.REMIT.equals(product)) {
+			model.addAttribute("terms", jaxService.setDefaults().getMetaClient().getTermsAndCondition().getResults());
+		} else if (Products.FXORDER.equals(product)) {
+			model.addAttribute("terms",
+					jaxService.setDefaults().getMetaClient().getTermsAndConditionAsPerCountryForFxOrder().getResults());
+		}
 		return "terms";
 	}
 

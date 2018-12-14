@@ -114,7 +114,7 @@ public class RemittanceProcedureDao {
 			cs.registerOutParameter(6, java.sql.Types.VARCHAR);
 			cs.execute();
 			output.put("P_ERROR_MESSAGE", cs.getString(6));
-			LOGGER.info("EX_INSERT_EMOS_TRANSFER_LIVE INPUT :" + output.toString());
+			LOGGER.info("EX_INSERT_EMOS_TRANSFER_LIVE OUTPUT :" + output.toString());
 			cs.close();
 
 		} catch (Exception e) {
