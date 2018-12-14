@@ -70,7 +70,7 @@ public class BrokerService {
 				);
 
 				// Push to Message Queue
-				DBEvents event = new DBEvents();
+				DBEvent event = new DBEvent();
 				event.setEventCode(current_event_record.getEvent_code());
 				event.setPriority(current_event_record.getEvent_priority());
 				event.setData(event_data_map);
