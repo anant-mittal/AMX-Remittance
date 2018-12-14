@@ -25,7 +25,7 @@ public class CustomerShippingAddressRequestModel {
 	private BigDecimal districtId;
 
 	@NotNull(message="Mobile may not be null")
-	@Pattern(regexp = "^[1-8]\\d*$",message="Invalid Mobile No")
+	@Pattern(regexp = "^[1-9]\\d*$",message="Invalid Mobile No")
 	@Size(min = 8)	
 	private String mobile;
 
