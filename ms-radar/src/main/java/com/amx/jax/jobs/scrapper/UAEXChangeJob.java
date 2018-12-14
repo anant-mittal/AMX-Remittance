@@ -105,7 +105,7 @@ public class UAEXChangeJob extends AScrapperTasks {
 				BigDecimal rate = ArgUtil.parseAsBigDecimal(tds.get(3).text());
 				if (!ArgUtil.isEmpty(rate)) {
 					AmxCurRate trnsfrRate = new AmxCurRate();
-					trnsfrRate.setrSrc(RSource.MUZAINI);
+					trnsfrRate.setrSrc(RSource.UAEXCHANGE);
 					trnsfrRate.setrDomCur(RCur.KWD);
 					trnsfrRate.setrForCur(cur);
 					trnsfrRate.setrType(type);
