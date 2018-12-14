@@ -21,12 +21,12 @@ public class JaxStompClient implements IJaxStompService {
 	StompTunnelService stompTunnelService;
     
     @Override
-    public void publishFxOrderStatusChange(BigDecimal orderNumber, BigDecimal orderYear, FxOrderStatus status) {
+    public void publishFxOrderStatusChange(BigDecimal collectionDocumentNo, BigDecimal collectionDocumentYear, FxOrderStatus status) {
         try {
             LOGGER.debug("in publishFxOrderStatusChange");
             Map<String, Object> data = new HashMap<String, Object>();
             data.put("status", status.toString());
-            stompTunnelService.sendToAll("/fx/order/"+orderNumber+"/"+orderYear +"/onupdate", data);
+            stompTunnelService.sendToAll("/fx/order/"+collectionDocumentNo+"/"+collectionDocumentYear+"/onupdate", data);
             stompTunnelService.sendToAll("/fx/order/list/onupdate", data);
         } catch (Exception e) {
             LOGGER.error("exception in publishFxOrderStatusChange : ", e);
