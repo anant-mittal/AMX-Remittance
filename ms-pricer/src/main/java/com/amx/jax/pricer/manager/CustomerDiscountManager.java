@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,22 +64,50 @@ public class CustomerDiscountManager {
 		List<PipsMaster> pipsList = pipsMasterDao.getPipsForFcCurAndBank(pricingReqDTO.getForeignCurrencyId(),
 				PIPS_BANK_ID, pricingReqDTO.getForeignCountryId(), validBankIds);
 
-		Map<Long, Map<BigDecimal, PipsMaster>> bankAmountSlabDiscounts = new HashMap<Long, Map<BigDecimal, PipsMaster>>();
+		Map<Long, TreeMap<BigDecimal, PipsMaster>> bankAmountSlabDiscounts = new HashMap<Long, TreeMap<BigDecimal, PipsMaster>>();
 
 		if (null != pipsList) {
 			for (PipsMaster pipsMaster : pipsList) {
-				if(bankAmountSlabDiscounts.containsKey(pipsMaster.getBankMaster().getBankId())) {
-					
-				}else {
-					
-					
-					Map<BigDecimal, PipsMaster> slabPipsMap = new TreeMap<BigDecimal, PipsMaster>();
-					
+				if (bankAmountSlabDiscounts.containsKey(pipsMaster.getBankMaster().getBankId().longValue())) {
+
+					bankAmountSlabDiscounts.get(pipsMaster.getBankMaster().getBankId().longValue())
+							.put(pipsMaster.getToAmount(), pipsMaster);
+
+				} else {
+
+					TreeMap<BigDecimal, PipsMaster> slabPipsMap = new TreeMap<BigDecimal, PipsMaster>();
+					slabPipsMap.put(pipsMaster.getToAmount(), pipsMaster);
+					bankAmountSlabDiscounts.put(pipsMaster.getBankMaster().getBankId().longValue(), slabPipsMap);
 				}
-				
-				
+
 			}
 		}
+
+		for (BankRateDetailsDTO bankRate : bankRates) {
+
+			BigDecimal amountSlabPips = new BigDecimal(0);
+
+			if (bankAmountSlabDiscounts.containsKey(bankRate.getBankId().longValue())) {
+				TreeMap<BigDecimal, PipsMaster> pipsMap = bankAmountSlabDiscounts.get(bankRate.getBankId().longValue());
+				for (Entry<BigDecimal, PipsMaster> entry : pipsMap.entrySet()) {
+					if (bankRate.getExRateBreakup().getConvertedFCAmount().compareTo(entry.getKey()) <= 0) {
+						amountSlabPips = entry.getValue().getPipsNo();
+						break;
+					} // if
+
+				} // for
+			}
+
+			BigDecimal totalDiscountPips = amountSlabPips;
+
+			totalDiscountPips
+					.add(null != channelDiscountPips ? channelDiscountPips.getDiscountPips() : new BigDecimal(0));
+
+			totalDiscountPips.add(null != ccDiscount ? ccDiscount.getDiscountPips() : new BigDecimal(0));
+
+			System.out.println(" Total Discount Pips ==> " + totalDiscountPips.doubleValue());
+
+		} // for (Bank...
 
 		return null;
 	}
