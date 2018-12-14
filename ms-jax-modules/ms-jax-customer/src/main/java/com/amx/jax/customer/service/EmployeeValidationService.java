@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -42,8 +41,8 @@ public class EmployeeValidationService
 				lockCnt = 0;
 			}
 			if (lockCnt >= MAX_OTP_ATTEMPTS) {
-				throw new GlobalException("Employee is locked. No of attempts:- " + lockCnt,
-						JaxError.EMPLOYEE_OTP_ATTEMPT_EXCEEDED);
+				throw new GlobalException(JaxError.EMPLOYEE_OTP_ATTEMPT_EXCEEDED,
+						"Employee is locked. No of attempts:- " + lockCnt);
 			}
 		}
 	}

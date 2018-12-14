@@ -10,14 +10,18 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>test-size</artifactId>
 	<name>test-size</name>
-	<version>0.0.1-SNAPSHOT</version>
-
-	<properties>
-		<java.version>1.8</java.version>
-		<es.version>6.3.0</es.version>
-	</properties>
-
-
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<excludes>
+					</excludes>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 	<dependencies>
 
 		<dependency>
@@ -35,56 +39,9 @@
 			</exclusions>
 		</dependency>
 
-		<dependency>
-			<groupId>org.elasticsearch</groupId>
-			<artifactId>elasticsearch</artifactId>
-			<version>${es.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.elasticsearch.client</groupId>
-			<artifactId>elasticsearch-rest-high-level-client</artifactId>
-			<version>${es.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-api</artifactId>
-			<version>2.8.2</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-core</artifactId>
-			<version>2.8.2</version>
-		</dependency>
-
-
-		<dependency>
-			<groupId>org.elasticsearch.client</groupId>
-			<artifactId>elasticsearch-rest-client</artifactId>
-			<version>${es.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.elasticsearch.client</groupId>
-			<artifactId>elasticsearch-rest-client-sniffer</artifactId>
-			<version>${es.version}</version>
-		</dependency>
-
-
 	</dependencies>
-
-
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-				<configuration>
-					<excludes>
-					</excludes>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
-
+	<properties>
+		<java.version>1.8</java.version>
+	</properties>
 </project>
 

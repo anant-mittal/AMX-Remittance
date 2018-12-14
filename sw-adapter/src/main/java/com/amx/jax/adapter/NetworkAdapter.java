@@ -14,8 +14,14 @@ public class NetworkAdapter {
 	public static NetAddress getAddress() {
 
 		NetAddress netAddress = new NetAddress();
+
+		netAddress.setUserName(System.getProperty("user.name"));
 		InetAddress lanIp = null;
 		try {
+
+			InetAddress localMachine = InetAddress.getLocalHost();
+
+			netAddress.setHostName(localMachine.getHostName());
 
 			String ipAddress = null;
 			Enumeration<NetworkInterface> net = null;

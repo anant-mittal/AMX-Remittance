@@ -2,7 +2,6 @@ package com.amx.jax.postman.service;
 
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -19,6 +18,7 @@ import com.amx.jax.logger.LoggerService;
 import com.amx.jax.postman.PostManConfig;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.audit.PMGaugeEvent;
+import com.amx.jax.postman.model.Notipy;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.rest.RestQuery;
 import com.amx.jax.rest.RestService;
@@ -26,6 +26,7 @@ import com.amx.jax.rest.RestService.Ajax.RestMethod;
 import com.amx.jax.scope.TenantScoped;
 import com.amx.jax.scope.TenantValue;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.CryptoUtil;
 import com.amx.utils.JsonPath;
 import com.amx.utils.JsonUtil;
 import com.amx.utils.MapBuilder;
@@ -83,24 +84,24 @@ public class SMService {
 
 	/** The rest service. */
 	@Autowired
-	RestService restService;
+	private RestService restService;
 
 	/** The audit service. */
 	@Autowired
-	AuditService auditService;
+	private AuditService auditService;
 
 	/** The slack service. */
 	@Autowired
-	SlackService slackService;
+	private SlackService slackService;
 
 	@Autowired
-	AppConfig appConfig;
+	private AppConfig appConfig;
 
 	@Autowired
-	PostManConfig postManConfig;
+	private PostManConfig postManConfig;
 
 	@Autowired
-	ContactCleanerService contactService;
+	private ContactCleanerService contactService;
 
 	/** The template service. */
 	@Autowired
@@ -121,8 +122,7 @@ public class SMService {
 	/**
 	 * Send SMS.
 	 *
-	 * @param sms
-	 *            the sms
+	 * @param sms the sms
 	 * @return the sms
 	 */
 	public SMS sendSMS(SMS sms) {
@@ -161,8 +161,7 @@ public class SMService {
 	/**
 	 * Do send SMS.
 	 *
-	 * @param sms
-	 *            the sms
+	 * @param sms the sms
 	 * @return the sms
 	 * @throws UnsupportedEncodingException
 	 */
@@ -170,12 +169,24 @@ public class SMService {
 
 		String phone = contactService.getMobile(sms.getTo().get(0));
 
+		if (!appConfig.isProdMode() && !ArgUtil.isEmpty(sms.getITemplate())
+				&& !ArgUtil.isEmpty(sms.getITemplate().getChannel())) {
+			Notipy msg = new Notipy();
+			msg.setAuthor(String.format("%s = %s", sms.getTo().get(0), phone));
+			msg.setMessage(sms.toText());
+			msg.setChannel(sms.getITemplate().getChannel());
+			msg.addField("TEMPLATE", sms.getITemplate().toString());
+			msg.setColor("#" + CryptoUtil.toHex(6, sms.getITemplate().toString()));
+			slackService.sendNotification(msg);
+		}
+
 		if (!appConfig.isProdMode() && (phone != null && phone.length() == 10)) {
 
 			Map<String, Object> map = MapBuilder.map().put("sender", senderId).put("route", route).put("country", "91")
 					.put(messagePath, sms.toText()).put(toPath, phone).toMap();
 			return restService.ajax(remoteUrl).header("authkey", authKey).header("content-type", "application/json")
 					.post(JsonUtil.toJson(map)).asString();
+
 		} else if (phone != null) {
 
 			Map<String, String> params = new HashMap<String, String>();

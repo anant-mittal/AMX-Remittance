@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.model.MinMaxExRateDTO;
+import com.amx.jax.AmxConfig;
 import com.amx.jax.AppConfig;
 import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.postman.GeoLocationService;
@@ -86,6 +87,9 @@ public class PubController {
 	@Autowired
 	private AppConfig appConfig;
 
+	@Autowired
+	private AmxConfig amxConfig;
+
 	/** The session service. */
 	@Autowired
 	private SessionService sessionService;
@@ -105,8 +109,7 @@ public class PubController {
 	 * Gets the location.
 	 *
 	 * @return the location
-	 * @throws PostManException
-	 *             the post man exception
+	 * @throws PostManException the post man exception
 	 */
 	@ApiOperation(value = "Current Location ofr client")
 	@RequestMapping(value = "/pub/location", method = { RequestMethod.GET })
@@ -120,17 +123,12 @@ public class PubController {
 	/**
 	 * Status.
 	 *
-	 * @param tnt
-	 *            the tnt
-	 * @param httpSession
-	 *            the http session
-	 * @param request
-	 *            the request
-	 * @param device
-	 *            the device
+	 * @param tnt         the tnt
+	 * @param httpSession the http session
+	 * @param request     the request
+	 * @param device      the device
 	 * @return the response wrapper
-	 * @throws Exception
-	 *             the exception
+	 * @throws Exception the exception
 	 */
 	@ApiOperation(value = "Ping")
 	@RequestMapping(value = "/pub/ping", method = { RequestMethod.POST, RequestMethod.GET })
@@ -154,7 +152,8 @@ public class PubController {
 		wrapper.getData().setDevice(userDevice.toUserDevice());
 		wrapper.getData().message = calcLibs.get().getRSName();
 
-		log.info("==========appConfig======== {} == {} = {} {}", appConfig.isSwaggerEnabled(), appConfig.getAppName());
+		log.info("==========appConfig======== {} == {}", amxConfig.getDefaultCompanyId(),
+				amxConfig.getDefaultCountryId());
 
 		return wrapper;
 	}
@@ -171,8 +170,7 @@ public class PubController {
 	/**
 	 * Report us.
 	 *
-	 * @param email
-	 *            the email
+	 * @param email the email
 	 * @return the response wrapper
 	 */
 	@RequestMapping(value = "/pub/report", method = { RequestMethod.POST })
@@ -199,16 +197,11 @@ public class PubController {
 	/**
 	 * Contact us.
 	 *
-	 * @param name
-	 *            the name
-	 * @param cemail
-	 *            the cemail
-	 * @param cphone
-	 *            the cphone
-	 * @param message
-	 *            the message
-	 * @param verify
-	 *            the verify
+	 * @param name    the name
+	 * @param cemail  the cemail
+	 * @param cphone  the cphone
+	 * @param message the message
+	 * @param verify  the verify
 	 * @return the response wrapper
 	 */
 	@RequestMapping(value = "/pub/contact", method = { RequestMethod.POST })

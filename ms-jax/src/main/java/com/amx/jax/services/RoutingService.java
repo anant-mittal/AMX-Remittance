@@ -82,10 +82,10 @@ public class RoutingService {
 
 	private void checkRemittanceAndDeliveryMode(Map<String, Object> inputValue) {
 		if (inputValue.get("P_REMITTANCE_MODE_ID") == null) {
-			throw new GlobalException("Service not available", JaxError.REMITTANCE_SERVICE_NOT_AVAILABLE);
+			throw new GlobalException(JaxError.REMITTANCE_SERVICE_NOT_AVAILABLE, "Service not available");
 		}
 		if (inputValue.get("P_DELIVERY_MODE_ID") == null) {
-			throw new GlobalException("Service not available", JaxError.REMITTANCE_SERVICE_NOT_AVAILABLE);
+			throw new GlobalException(JaxError.REMITTANCE_SERVICE_NOT_AVAILABLE, "Service not available");
 		}
 	}
 

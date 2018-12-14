@@ -1,33 +1,21 @@
 package com.amx.jax.postman.model;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class Notipy extends Message {
 
-	public static enum Color {
-		DANGER("danger"), WARNING("warning"), SUCCESS("#36a64f"), INFO("info");
-
-		public static final Color DEFAULT = INFO;
-
-		String code;
-
-		public String getCode() {
-			return code;
-		}
-
-		public void setCode(String code) {
-			this.code = code;
-		}
-
-		Color(String code) {
-			this.code = code;
-		}
-	}
+	private static final long serialVersionUID = -8315838727087594607L;
 
 	public static enum Workspace {
 		ALMEX, MODEX
 	}
 
 	public static enum Channel {
-		NOTIPY("C9AK11W2K"), DEPLOYER("C8L3GL92A"), GENERAL("C7F823MLJ"), INQUIRY("CAQ4WUNAZ", Workspace.MODEX);
+		NOTIPY("C9AK11W2K"), ALERTY("CET4055AB"), FEED("CET8JSKFZ"), DEPLOYER("C8L3GL92A"),
+		GENERAL("C7F823MLJ"), INQUIRY("CAQ4WUNAZ", Workspace.MODEX);
 
 		String code;
 		Workspace workspace;
@@ -48,28 +36,20 @@ public class Notipy extends Message {
 			return code;
 		}
 
-		public void setCode(String code) {
-			this.code = code;
-		}
-
 		public Workspace getWorkspace() {
 			return workspace;
 		}
 
-		public void setWorkspace(Workspace workspace) {
-			this.workspace = workspace;
-		}
 	}
 
 	protected Channel channel = Channel.DEFAULT;
-	protected Color color = Color.DEFAULT;
+	protected Object author;
+	protected List<Map<String, Object>> fields;
+	protected String color;
 
-	public Color getColor() {
-		return color;
-	}
-
-	public void setColor(Color color) {
-		this.color = color;
+	public Notipy() {
+		super();
+		this.fields = new ArrayList<Map<String, Object>>();
 	}
 
 	public Channel getChannel() {
@@ -78,6 +58,38 @@ public class Notipy extends Message {
 
 	public void setChannel(Channel channel) {
 		this.channel = channel;
+	}
+
+	public Object getAuthor() {
+		return author;
+	}
+
+	public void setAuthor(Object author) {
+		this.author = author;
+	}
+
+	public List<Map<String, Object>> getFields() {
+		return fields;
+	}
+
+	public void setFields(List<Map<String, Object>> fields) {
+		this.fields = fields;
+	}
+
+	public void addField(String title, String value) {
+		Map<String, Object> field = new HashMap<String, Object>();
+		field.put("title", title);
+		field.put("value", value);
+		field.put("short", false);
+		this.fields.add(field);
+	}
+
+	public String getColor() {
+		return this.color;
+	}
+
+	public void setColor(String color) {
+		this.color = color;
 	}
 
 }

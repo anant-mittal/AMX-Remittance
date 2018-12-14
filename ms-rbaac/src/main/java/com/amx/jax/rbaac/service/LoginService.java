@@ -88,7 +88,7 @@ public class LoginService extends AbstractService {
 	 * @return the employee
 	 */
 	public Employee validateEmployeeData(String empcode, String identity, String ipAddress) {
-		Employee emp = rbaacDao.validateEmpDetails(empcode, identity, ipAddress);
+		Employee emp = rbaacDao.fetchEmpDetails(empcode, identity, ipAddress);
 		return emp;
 	}
 
@@ -592,7 +592,7 @@ public class LoginService extends AbstractService {
 					userM.setEmployeeId(user.getEmployeeId());
 					if (user.getRoleId() != null && user.getRoleId().compareTo(roleId) == 0) {
 						// error already exist
-						throw new AuthServiceException("saveAssignRoleToUser fail ", RbaacServiceError.ALREADY_EXIST);
+						throw new AuthServiceException(RbaacServiceError.ALREADY_EXIST, "saveAssignRoleToUser fail ");
 					} else {
 						userM.setRoleId(roleId);
 					}
@@ -604,7 +604,7 @@ public class LoginService extends AbstractService {
 				rbaacDao.saveRoleToUser(userM);
 				savesStatus = Boolean.TRUE;
 			} else {
-				throw new AuthServiceException("saveAssignRoleToUser fail ", RbaacServiceError.INVALID_USER_DETAILS);
+				throw new AuthServiceException(RbaacServiceError.INVALID_USER_DETAILS, "saveAssignRoleToUser fail ");
 			}
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
@@ -779,12 +779,12 @@ public class LoginService extends AbstractService {
 				if (emp != null) {
 					apiResponse = sendOtp(emp);
 				} else {
-					throw new AuthServiceException("Employee Details not available",
-							RbaacServiceError.INVALID_USER_DETAILS);
+					throw new AuthServiceException(RbaacServiceError.INVALID_USER_DETAILS,
+							"Employee Details not available");
 				}
 			} else {
-				throw new AuthServiceException("Employee Number and Civil Id Manadatory",
-						RbaacServiceError.INVALID_OR_MISSING_DATA);
+				throw new AuthServiceException(RbaacServiceError.INVALID_OR_MISSING_DATA,
+						"Employee Number and Civil Id Manadatory");
 			}
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
@@ -816,12 +816,12 @@ public class LoginService extends AbstractService {
 				if (emp != null) {
 					apiResponse = validateOtp(emp, mOtp);
 				} else {
-					throw new AuthServiceException("Employee Details not available",
-							RbaacServiceError.INVALID_USER_DETAILS);
+					throw new AuthServiceException(RbaacServiceError.INVALID_USER_DETAILS,
+							"Employee Details not available");
 				}
 			} else {
-				throw new AuthServiceException("Employee Number and Civil Id Manadatory",
-						RbaacServiceError.INVALID_OR_MISSING_DATA);
+				throw new AuthServiceException(RbaacServiceError.INVALID_OR_MISSING_DATA,
+						"Employee Number and Civil Id Manadatory");
 			}
 		} catch (Exception e) {
 			System.out.println(e.getMessage());

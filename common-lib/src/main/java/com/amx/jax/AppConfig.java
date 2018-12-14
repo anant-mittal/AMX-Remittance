@@ -5,24 +5,27 @@ import java.util.Collections;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.PostConstruct;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
 import com.amx.jax.dict.Project;
 import com.amx.jax.filter.AppClientErrorHanlder;
 import com.amx.jax.filter.AppClientInterceptor;
+import com.amx.jax.scope.TenantProperties;
 import com.amx.utils.ArgUtil;
 
 @Configuration
 @PropertySource("classpath:application-lib.properties")
 public class AppConfig {
-
-	public static Project PROJECT = null;
 
 	public static final Pattern pattern = Pattern.compile("^\\$\\{(.*)\\}$");
 	public static final String APP_ENV = "${app.env}";
@@ -35,6 +38,8 @@ public class AppConfig {
 	public static final String APP_DEBUG = "${app.debug}";
 	public static final String APP_CACHE = "${app.cache}";
 	public static final String APP_LOGGER = "${app.logger}";
+
+	public static final String APP_CONTEXT_PREFIX = "${server.contextPath}";
 
 	@Deprecated
 	public static final String APP_CLASS = "${app.class}";
@@ -131,11 +136,18 @@ public class AppConfig {
 	@AppParamKey(AppParam.JAX_AUTH_URL)
 	private String authURL;
 
+	@Value(APP_CONTEXT_PREFIX)
+	@AppParamKey(AppParam.APP_CONTEXT_PREFIX)
+	private String appPrefix;
+
 	@Value("${server.session.cookie.http-only}")
 	private boolean cookieHttpOnly;
 
 	@Value("${server.session.cookie.secure}")
 	private boolean cookieSecure;
+
+	@Value("${spring.profiles.active}")
+	private String[] springProfile;
 
 	@Value("${app.audit.file.print}")
 	String[] printableAuditMarkers;
@@ -241,7 +253,7 @@ public class AppConfig {
 
 	@Bean
 	public Project project(@Value("${app.project}") Project project) {
-		PROJECT = project;
+		ProjectConfig.PROJECT = project;
 		return project;
 	}
 
@@ -292,6 +304,18 @@ public class AppConfig {
 
 	public boolean isLogger() {
 		return logger;
+	}
+
+	public String getAppPrefix() {
+		return appPrefix;
+	}
+
+	@Autowired
+	private Environment environment;
+	
+	@PostConstruct
+	public void init() {
+		TenantProperties.setEnviroment(environment);
 	}
 
 }

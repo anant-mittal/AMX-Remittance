@@ -1,6 +1,5 @@
 package com.amx.jax.customer.service;
 
-import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +23,6 @@ import com.amx.jax.model.response.customer.CustomerIncomeRangeDto;
 import com.amx.jax.repository.IContactDetailDao;
 import com.amx.jax.repository.ICustomerRepository;
 import com.amx.jax.services.AbstractService;
-import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.dao.CustomerIdProofDao;
 import com.amx.jax.userservice.service.UserService;
 

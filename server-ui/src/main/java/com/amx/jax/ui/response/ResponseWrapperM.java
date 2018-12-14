@@ -22,9 +22,6 @@ public class ResponseWrapperM<T, M> extends AmxApiResponse<T, M> {
 	/** The message key. */
 	private String messageKey = UIConstants.EMPTY;
 
-	/** The redirect url. */
-	private String redirectUrl = null;
-
 	/**
 	 * Instantiates a new response wrapper M.
 	 */
@@ -77,25 +74,6 @@ public class ResponseWrapperM<T, M> extends AmxApiResponse<T, M> {
 	 */
 	public void setTraceId(String traceId) {
 		this.traceId = traceId;
-	}
-
-	/**
-	 * Gets the redirect url.
-	 *
-	 * @return the redirect url
-	 */
-	public String getRedirectUrl() {
-		return redirectUrl;
-	}
-
-	/**
-	 * Sets the redirect url.
-	 *
-	 * @param redirectUrl
-	 *            the new redirect url
-	 */
-	public void setRedirectUrl(String redirectUrl) {
-		this.redirectUrl = redirectUrl;
 	}
 
 	/**

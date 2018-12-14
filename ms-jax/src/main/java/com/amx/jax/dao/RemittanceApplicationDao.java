@@ -58,6 +58,7 @@ public class RemittanceApplicationDao {
 	IFlexFiledView IFlexFiledView;
     @Autowired
     IPlaceOrderDao placeOrderdao;
+    
 	@Transactional
 	public void saveAllApplicationData(RemittanceApplication app, RemittanceAppBenificiary appBene,
 			List<AdditionalInstructionData> additionalInstrumentData) {
@@ -117,7 +118,7 @@ public class RemittanceApplicationDao {
 				placeOrderdao.save(po);
 			} else {
 				logger.info("Place Order not found for place_order_id: " + model.getPlaceOrderId());
-				throw new GlobalException("The order is not available", JaxError.PLACE_ORDER_NOT_ACTIVE_OR_EXPIRED);
+				throw new GlobalException(JaxError.PLACE_ORDER_NOT_ACTIVE_OR_EXPIRED, "The order is not available");
 			}
 			logger.info("Place Order updated for place_order_id: " + model.getPlaceOrderId());
 		}

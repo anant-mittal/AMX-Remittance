@@ -2,7 +2,7 @@ package com.amx.jax.auditlog;
 
 import java.math.BigDecimal;
 
-import com.amx.amxlib.constant.JaxTransactionStatus;
+import com.amx.jax.constants.JaxTransactionStatus;
 
 public class JaxTransactionEvent extends JaxAuditEvent {
 

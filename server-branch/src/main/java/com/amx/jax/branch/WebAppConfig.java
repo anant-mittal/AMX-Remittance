@@ -13,9 +13,16 @@ public class WebAppConfig {
 	@Value("${jax.cdn.url}")
 	private String cleanCDNUrl;
 	
+	@Value("${oldbranch.url}")
+	private String oldBranchUrl;
+	
 	/** The app title. */
 	@TenantValue("${application.title}")
 	private String appTitle;
+	
+	public String getOldBranchUrl() {
+		return oldBranchUrl;
+	}
 	
 	public String getCleanCDNUrl() {
 		return cleanCDNUrl;

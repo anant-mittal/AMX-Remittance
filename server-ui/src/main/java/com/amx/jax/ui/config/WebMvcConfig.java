@@ -12,19 +12,13 @@ import org.thymeleaf.spring4.SpringTemplateEngine;
 import org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.templatemode.TemplateMode;
 
+import com.amx.jax.AppMVConfig;
+
 /**
  * The Class WebMvcConfig.
  */
 @Configuration
 public class WebMvcConfig extends WebMvcConfigurerAdapter {
-
-	public static final String TEMPLATES_BASE = "classpath:/templates/";
-	/** Pattern relative to templates base used to match XML templates. */
-	public static final String XML_TEMPLATES_RESOLVE_PATTERN = "xml/*";
-	/** Pattern relative to templates base used to match JSON templates. */
-	public static final String JSON_TEMPLATES_RESOLVE_PATTERN = "json/*";
-	/** Pattern relative to templates base used to match text templates. */
-	public static final String TEXT_TEMPLATES_RESOLVE_PATTERN = "text/*";
 
 	/*
 	 * (non-Javadoc)
@@ -60,8 +54,9 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 	@Bean
 	public SpringResourceTemplateResolver jsonMessageTemplateResolver() {
 		SpringResourceTemplateResolver theResourceTemplateResolver = new SpringResourceTemplateResolver();
-		theResourceTemplateResolver.setPrefix(TEMPLATES_BASE);
-		theResourceTemplateResolver.setResolvablePatterns(Collections.singleton(JSON_TEMPLATES_RESOLVE_PATTERN));
+		theResourceTemplateResolver.setPrefix(AppMVConfig.TEMPLATES_BASE);
+		theResourceTemplateResolver
+				.setResolvablePatterns(Collections.singleton(AppMVConfig.JSON_TEMPLATES_RESOLVE_PATTERN));
 		theResourceTemplateResolver.setSuffix(".json");
 		theResourceTemplateResolver.setTemplateMode(TemplateMode.TEXT);
 		theResourceTemplateResolver.setCharacterEncoding("UTF-8");
@@ -82,7 +77,7 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 	@Bean
 	public SpringTemplateEngine messageTemplateEngine(
 			final Collection<SpringResourceTemplateResolver> inTemplateResolvers) {
-		final SpringTemplateEngine theTemplateEngine = new SpringTemplateEngine();
+			final SpringTemplateEngine theTemplateEngine = new SpringTemplateEngine();
 		for (SpringResourceTemplateResolver theTemplateResolver : inTemplateResolvers) {
 			theTemplateEngine.addTemplateResolver(theTemplateResolver);
 		}

@@ -13,7 +13,6 @@ import com.amx.amxlib.meta.model.BeneCountryDTO;
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.amxlib.meta.model.BranchDetailDTO;
 import com.amx.amxlib.meta.model.CountryMasterDTO;
-import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.meta.model.CustomerDto;
 import com.amx.amxlib.meta.model.EmployeeDetailsDTO;
 import com.amx.amxlib.meta.model.JaxMetaParameter;
@@ -23,7 +22,6 @@ import com.amx.amxlib.meta.model.RemittancePageDto;
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
 import com.amx.amxlib.meta.model.RoutingBankMasterDTO;
 import com.amx.amxlib.meta.model.ServiceGroupMasterDescDto;
-import com.amx.amxlib.meta.model.SourceOfIncomeDto;
 import com.amx.amxlib.meta.model.TermsAndConditionDTO;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.meta.model.UserDetailsDTO;
@@ -47,6 +45,10 @@ import com.amx.amxlib.model.UserModel;
 import com.amx.amxlib.model.UserVerificationCheckListDTO;
 import com.amx.amxlib.model.trnx.BeneficiaryTrnxModel;
 import com.amx.jax.model.dto.SendOtpModel;
+import com.amx.jax.model.response.CurrencyMasterDTO;
+import com.amx.jax.model.response.SourceOfIncomeDto;
+import com.amx.jax.model.response.fx.FxExchangeRateDto;
+import com.amx.jax.model.response.fx.PurposeOfTransactionDto;
 import com.amx.jax.payg.PaymentResponseDto;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -103,7 +105,6 @@ public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {
 			models = new ObjectMapper().readValue(values, new TypeReference<List<CountryMasterDTO>>() {
 			});
 			break;	
-			
 		case "quest":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<QuestModelDTO>>() {
 			});
@@ -310,6 +311,18 @@ public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {
 			models = new ObjectMapper().readValue(values, new TypeReference<List<UserDetailsDTO>>() {
 			});
 			break;
+		case "fx-purpose-of-trnx":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<PurposeOfTransactionDto>>() {
+			});
+			break;
+		case "fc_sale_xrate":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<FxExchangeRateDto>>() {
+			});
+			break;
+			
+			
+			
+			
 	}
 		responseData.setValues(models);
 		return responseData;

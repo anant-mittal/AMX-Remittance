@@ -1,9 +1,17 @@
 package com.amx.jax.model.request;
 
+import javax.validation.Valid;
+
 public class CustomerInfoRequest {
+	@Valid
 	CustomerPersonalDetail customerPersonalDetail;
+	
+	@Valid
 	LocalAddressDetails localAddressDetails;
+	
 	HomeAddressDetails homeAddressDestails;
+	
+	@Valid
 	CustomerEmploymentDetails customerEmploymentDetails;
 
 	/* OtpData otpData; */

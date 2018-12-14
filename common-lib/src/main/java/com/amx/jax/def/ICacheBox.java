@@ -3,7 +3,6 @@ package com.amx.jax.def;
 import java.util.Map;
 import java.util.Set;
 
-
 /**
  * TO start with we are using RCache from Redisson, so following all conventions
  * from there
@@ -215,4 +214,8 @@ public interface ICacheBox<T> {
 	 * @since 1.8
 	 */
 	T getOrDefault(String key, T defaultValue);
+
+	T getOrDefault(String key);
+
+	T getDefault();
 }

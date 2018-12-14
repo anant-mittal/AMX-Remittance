@@ -14,7 +14,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.api.AmxApiResponse;
@@ -25,6 +24,7 @@ import com.amx.jax.dbmodel.CurrencyMasterModel;
 import com.amx.jax.dbmodel.ViewOnlineCurrency;
 import com.amx.jax.dbmodel.bene.ViewBeneServiceCurrency;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.response.CurrencyMasterDTO;
 import com.amx.jax.repository.ICurrencyDao;
 import com.amx.jax.repository.ViewBeneficiaryCurrencyRepository;
 import com.amx.jax.repository.ViewOnlineCurrencyRepository;
@@ -103,8 +103,7 @@ public class CurrencyMasterService extends AbstractService {
 	}
 
 	public AmxApiResponse<CurrencyMasterDTO, Object> getAllOnlineCurrencyDetails() {
-		List<ViewOnlineCurrency> currencyList = (List<ViewOnlineCurrency>) viewOnlineCurrencyRepo
-				.findAll(new Sort("quoteName"));
+		List<ViewOnlineCurrency> currencyList = (List<ViewOnlineCurrency>) viewOnlineCurrencyRepo.findAll(new Sort("quoteName"));
 		if (currencyList.isEmpty()) {
 			throw new GlobalException("Currency details not avaliable");
 		}
@@ -113,8 +112,7 @@ public class CurrencyMasterService extends AbstractService {
 	
 	// added by chetan 30/04/2018 list the country for currency.
 	public AmxApiResponse<CurrencyMasterDTO, Object> getAllExchangeRateCurrencyList() {
-		List<ViewOnlineCurrency> currencyList = (List<ViewOnlineCurrency>) viewOnlineCurrencyRepo
-				.findAll(new Sort("quoteName"));
+		List<ViewOnlineCurrency> currencyList = (List<ViewOnlineCurrency>) viewOnlineCurrencyRepo.findAll(new Sort("quoteName"));
 		List<BigDecimal> uniqueCurrency = (List<BigDecimal>) exchangeRateProcedureDao.getDistinctCurrencyList();
 		Iterator<ViewOnlineCurrency> itr = currencyList.iterator();
 		if (!currencyList.isEmpty() && !uniqueCurrency.isEmpty()) {
@@ -206,12 +204,10 @@ public class CurrencyMasterService extends AbstractService {
 	 */
 	public AmxApiResponse<CurrencyMasterDTO, Object> getBeneficiaryCurrencyList(BigDecimal beneCountryId, BigDecimal serviceGroupId,
 			BigDecimal routingBankId) {
-		List<ViewBeneServiceCurrency> currencyList = viewBeneficiaryCurrencyRepository
-				.findByBeneCountryId(beneCountryId, new Sort("currencyName"));
+		List<ViewBeneServiceCurrency> currencyList = viewBeneficiaryCurrencyRepository.findByBeneCountryId(beneCountryId, new Sort("currencyName"));
 		List<BigDecimal> currencyIdList = new ArrayList<BigDecimal>();
 		if (serviceGroupId != null && routingBankId != null && metaSerivce.isCashSeriveGroup(serviceGroupId)) {
-			currencyIdList = currencyMasterDao.getCashCurrencyList(metaData.getCountryId(), beneCountryId,
-					serviceGroupId, routingBankId);
+			currencyIdList = currencyMasterDao.getCashCurrencyList(metaData.getCountryId(), beneCountryId,serviceGroupId, routingBankId);
 		}
 		if (currencyIdList != null && !currencyIdList.isEmpty()) {
 			Iterator itr = currencyList.iterator();

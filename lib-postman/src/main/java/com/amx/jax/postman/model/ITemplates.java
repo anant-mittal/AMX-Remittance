@@ -1,8 +1,9 @@
 package com.amx.jax.postman.model;
 
-import com.amx.jax.AppConfig;
+import com.amx.jax.ProjectConfig;
 import com.amx.jax.dict.Project;
 import com.amx.jax.postman.model.File.PDFConverter;
+import com.amx.jax.postman.model.Notipy.Channel;
 
 public class ITemplates {
 
@@ -20,10 +21,14 @@ public class ITemplates {
 
 		String getFileName();
 
+		public default Channel getChannel() {
+			return null;
+		}
+
 	}
 
 	public static ITemplate getTemplate(String templateStr) {
-		if (AppConfig.PROJECT == Project.IB) {
+		if (ProjectConfig.PROJECT == Project.IB) {
 			return TemplatesIB.valueOf(templateStr);
 		}
 		return TemplatesMX.valueOf(templateStr);

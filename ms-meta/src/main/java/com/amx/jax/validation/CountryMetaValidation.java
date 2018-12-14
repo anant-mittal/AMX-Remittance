@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.exception.ExceptionMessageKey;
 import com.amx.jax.service.CountryService;
 
 /**
@@ -27,8 +28,7 @@ public class CountryMetaValidation {
 
 	/**
 	 * @param countryId
-	 * @param mobile
-	 *            - mobile number to validate
+	 * @param mobile    - mobile number to validate
 	 * 
 	 */
 	public void validateMobileNumberLength(BigDecimal countryId, String mobile) {
@@ -39,32 +39,34 @@ public class CountryMetaValidation {
 			isValid = Stream.of(StringUtils.split(mobileLength, ",")).mapToInt(Integer::parseInt).anyMatch(predicate);
 		}
 		if (!isValid) {
-			throw new GlobalException("Mobile Number length is not correct.", JaxError.INCORRECT_LENGTH,
-					mobileLength.replaceAll(",", ":"));
+			throw new GlobalException(JaxError.INCORRECT_LENGTH,
+					ExceptionMessageKey.build(JaxError.INCORRECT_LENGTH, mobileLength.replaceAll(",", ":")),
+					"Mobile Number length is not correct.");
 		}
 	}
 
 	public void validateMobileNumber(BigDecimal countryId, String mobile) {
-		//String CountryCode = countryService.getCountryMaster(countryId).getCountryCode();
+		// String CountryCode =
+		// countryService.getCountryMaster(countryId).getCountryCode();
 		String countryAlpha2Code = countryService.getCountryMaster(countryId).getCountryAlpha2Code();
-		if(countryAlpha2Code.toString().equals("KW")) {
+		if (countryAlpha2Code.toString().equals("KW")) {
 			final Pattern pattern = Pattern.compile("^[5679]\\d+$");
 			if (!pattern.matcher(mobile).matches()) {
-				throw new GlobalException("Invalid Mobile Number", JaxError.INVALID_MOBILE_NUMBER);
+				throw new GlobalException(JaxError.INVALID_MOBILE_NUMBER, "Invalid Mobile Number");
 			}
 		}
-		
-		if(countryAlpha2Code.toString().equals("BH")) {
+
+		if (countryAlpha2Code.toString().equals("BH")) {
 			final Pattern pattern = Pattern.compile("^[367]\\d+$");
 			if (!pattern.matcher(mobile).matches()) {
-				throw new GlobalException("Invalid Mobile Number", JaxError.INVALID_MOBILE_NUMBER);
+				throw new GlobalException(JaxError.INVALID_MOBILE_NUMBER, "Invalid Mobile Number");
 			}
 		}
-		
-		if(countryAlpha2Code.toString().equals("OM")) {
+
+		if (countryAlpha2Code.toString().equals("OM")) {
 			final Pattern pattern = Pattern.compile("^[79]\\d+$");
 			if (!pattern.matcher(mobile).matches()) {
-				throw new GlobalException("Invalid Mobile Number", JaxError.INVALID_MOBILE_NUMBER);
+				throw new GlobalException(JaxError.INVALID_MOBILE_NUMBER, "Invalid Mobile Number");
 			}
 		}
 	}

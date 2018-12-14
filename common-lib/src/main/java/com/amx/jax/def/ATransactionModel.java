@@ -37,7 +37,7 @@ public abstract class ATransactionModel<T> {
 			AppContextUtil.setTranxId(key);
 			LOGGER.info("************ Creating New Tranx Id {} *******************", key);
 		} else {
-			LOGGER.info("************ Exisitng Tranx Id {} *******************", key);
+			LOGGER.debug("************ Exisitng Tranx Id {} *******************", key);
 		}
 		return key;
 	}

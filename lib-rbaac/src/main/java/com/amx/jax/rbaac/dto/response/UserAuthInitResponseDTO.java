@@ -4,6 +4,7 @@
 package com.amx.jax.rbaac.dto.response;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  * The Class UserAuthInitResponseDTO.
@@ -12,6 +13,7 @@ import java.io.Serializable;
  */
 public final class UserAuthInitResponseDTO implements Serializable {
 
+	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 3674143419419981482L;
 
 	/** The auth transaction id. */
@@ -23,11 +25,20 @@ public final class UserAuthInitResponseDTO implements Serializable {
 	/** The e otp prefix. */
 	private String eOtpPrefix;
 
+	/** The partner M otp prefix. */
+	private String partnerMOtpPrefix;
+
+	/** The partner E otp prefix. */
+	private String partnerEOtpPrefix;
+
 	/** The init otp time. */
 	private String initOtpTime;
 
 	/** The ttl otp. */
 	private String ttlOtp;
+
+	private BigDecimal employeeId;
+	private BigDecimal partnerEmployeeId;
 
 	/**
 	 * Gets the auth transaction id.
@@ -41,8 +52,7 @@ public final class UserAuthInitResponseDTO implements Serializable {
 	/**
 	 * Sets the auth transaction id.
 	 *
-	 * @param authTransactionId
-	 *            the new auth transaction id
+	 * @param authTransactionId the new auth transaction id
 	 */
 	public void setAuthTransactionId(String authTransactionId) {
 		this.authTransactionId = authTransactionId;
@@ -60,8 +70,7 @@ public final class UserAuthInitResponseDTO implements Serializable {
 	/**
 	 * Sets the m otp prefix.
 	 *
-	 * @param mOtpPrefix
-	 *            the new m otp prefix
+	 * @param mOtpPrefix the new m otp prefix
 	 */
 	public void setmOtpPrefix(String mOtpPrefix) {
 		this.mOtpPrefix = mOtpPrefix;
@@ -79,11 +88,46 @@ public final class UserAuthInitResponseDTO implements Serializable {
 	/**
 	 * Sets the e otp prefix.
 	 *
-	 * @param eOtpPrefix
-	 *            the new e otp prefix
+	 * @param eOtpPrefix the new e otp prefix
 	 */
 	public void seteOtpPrefix(String eOtpPrefix) {
 		this.eOtpPrefix = eOtpPrefix;
+	}
+
+	/**
+	 * Gets the partner M otp prefix.
+	 *
+	 * @return the partner M otp prefix
+	 */
+	public String getPartnerMOtpPrefix() {
+		return partnerMOtpPrefix;
+	}
+
+	/**
+	 * Sets the partner M otp prefix.
+	 *
+	 * @param partnerMOtpPrefix the new partner M otp prefix
+	 */
+	public void setPartnerMOtpPrefix(String partnerMOtpPrefix) {
+		this.partnerMOtpPrefix = partnerMOtpPrefix;
+	}
+
+	/**
+	 * Gets the partner E otp prefix.
+	 *
+	 * @return the partner E otp prefix
+	 */
+	public String getPartnerEOtpPrefix() {
+		return partnerEOtpPrefix;
+	}
+
+	/**
+	 * Sets the partner E otp prefix.
+	 *
+	 * @param partnerEOtpPrefix the new partner E otp prefix
+	 */
+	public void setPartnerEOtpPrefix(String partnerEOtpPrefix) {
+		this.partnerEOtpPrefix = partnerEOtpPrefix;
 	}
 
 	/**
@@ -98,8 +142,7 @@ public final class UserAuthInitResponseDTO implements Serializable {
 	/**
 	 * Sets the inits the otp time.
 	 *
-	 * @param initOtpTime
-	 *            the new inits the otp time
+	 * @param initOtpTime the new inits the otp time
 	 */
 	public void setInitOtpTime(String initOtpTime) {
 		this.initOtpTime = initOtpTime;
@@ -117,11 +160,26 @@ public final class UserAuthInitResponseDTO implements Serializable {
 	/**
 	 * Sets the ttl otp.
 	 *
-	 * @param ttlOtp
-	 *            the new ttl otp
+	 * @param ttlOtp the new ttl otp
 	 */
 	public void setTtlOtp(String ttlOtp) {
 		this.ttlOtp = ttlOtp;
+	}
+
+	public BigDecimal getEmployeeId() {
+		return employeeId;
+	}
+
+	public void setEmployeeId(BigDecimal employeeId) {
+		this.employeeId = employeeId;
+	}
+
+	public BigDecimal getPartnerEmployeeId() {
+		return partnerEmployeeId;
+	}
+
+	public void setPartnerEmployeeId(BigDecimal partnerEmployeeId) {
+		this.partnerEmployeeId = partnerEmployeeId;
 	}
 
 }

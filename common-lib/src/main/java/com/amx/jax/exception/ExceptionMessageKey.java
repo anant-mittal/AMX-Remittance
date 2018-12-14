@@ -9,6 +9,20 @@ import com.amx.utils.ArgUtil;
 
 public class ExceptionMessageKey extends Dnum<ExceptionMessageKey> implements IMessageKey {
 
+	public static class MessageKey implements IMessageKey {
+
+		String output;
+
+		public MessageKey(String output) {
+			this.output = output;
+		}
+
+		@Override
+		public String toString() {
+			return this.output;
+		}
+	}
+
 	public static final Map<String, String> MAP = new HashMap<String, String>();
 
 	public static final ExceptionMessageKey NULL_NOT_ALLOWED = new ExceptionMessageKey("NULL_NOT_ALLOWED", 1,
@@ -19,27 +33,48 @@ public class ExceptionMessageKey extends Dnum<ExceptionMessageKey> implements IM
 	int argCount = 0;
 	String messageKeyFormat;
 
-	public ExceptionMessageKey(String messageKey, int argCount, String... matchings) {
-		super(messageKey, ordinalCounter++);
+	public ExceptionMessageKey(String messageKeyName, int argCount, String... matchings) {
+		super(messageKeyName, ordinalCounter++);
 		this.argCount = argCount;
 		for (String matching : matchings) {
-			MAP.put(matching.toLowerCase(), messageKey);
+			MAP.put(matching.toLowerCase(), messageKeyName);
 		}
-		StringBuilder builder = new StringBuilder(messageKey);
+		StringBuilder builder = new StringBuilder(messageKeyName);
 		for (int i = 0; i < argCount; i++) {
 			builder.append(":%s");
 		}
 		messageKeyFormat = builder.toString();
 	}
 
-	@Override
+	public ExceptionMessageKey(IExceptionEnum exceptionEnum, int argCount, String... matchings) {
+		super(exceptionEnum.getStatusKey(), ordinalCounter++);
+	}
+
 	public int getArgCount() {
 		return argCount;
 	}
 
+	public String get(Object... args) {
+		return String.format(this.messageKeyFormat, args);
+	}
+
+	public static IMessageKey build(IExceptionEnum exceptionEnum, Object... values) {
+		final String DELIM = ":";
+		StringBuffer sbuf = new StringBuffer();
+		sbuf.append(exceptionEnum.getStatusKey()).append(DELIM);
+		for (int i = 0; i < values.length; i++) {
+			if (i == (values.length - 1)) {
+				sbuf.append(values[i]);
+			} else {
+				sbuf.append(values[i]).append(DELIM);
+			}
+		}
+		return new MessageKey(sbuf.toString());
+	}
+
 	@Override
-	public String getMessageKey(Object... args) {
-		return String.format(messageKeyFormat, args);
+	public String toString() {
+		return this.messageKeyFormat;
 	}
 
 	public static <E> Dnum<? extends Dnum<?>>[] values() {
@@ -65,16 +100,17 @@ public class ExceptionMessageKey extends Dnum<ExceptionMessageKey> implements IM
 					ExceptionMessageKey exceptionMessageKey = ExceptionMessageKey.valueOf(fieldError.getDescription());
 					if (exceptionMessageKey != null) {
 						apiError.setMessageKey(exceptionMessageKey
-								.getMessageKey(ArgUtil.ifNotEmpty(fieldError.getField(), fieldError.getObzect())));
+								.get(ArgUtil.ifNotEmpty(fieldError.getField(), fieldError.getObzect()))
+								.toString());
 					} else {
 						exceptionMessageKey = ExceptionMessageKey.valueOf(fieldError.getCode());
 						if (exceptionMessageKey != null) {
 							apiError.setMessageKey(exceptionMessageKey
-									.getMessageKey(ArgUtil.ifNotEmpty(fieldError.getField(), fieldError.getObzect())));
+									.get(ArgUtil.ifNotEmpty(fieldError.getField(), fieldError.getObzect()))
+									.toString());
 						}
 					}
 				}
-
 				if (ArgUtil.isEmpty(apiError.getMessage())) {
 					apiError.setMessage(fieldError.getDescription());
 				}

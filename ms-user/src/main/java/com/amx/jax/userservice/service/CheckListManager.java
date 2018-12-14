@@ -90,8 +90,8 @@ public class CheckListManager {
 		CustomerOnlineRegistration customer = custRepo.getOnlineCustomerByLoginIdOrUserName(userId);
 		UserVerificationCheckListModel checkList = checkListrepo.findOne(customer.getUserName());
 		if (checkList == null) {
-			throw new GlobalException("No User verfification record found",
-					JaxError.USER_VERFICATION_RECORD_NOT_FOUND);
+			throw new GlobalException(JaxError.USER_VERFICATION_RECORD_NOT_FOUND,
+					"No User verfification record found");
 		}
 		return convert(checkList);
 	}

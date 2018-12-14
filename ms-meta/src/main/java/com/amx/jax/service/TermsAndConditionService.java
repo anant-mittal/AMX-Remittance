@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.TermsAndConditionDTO;
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.TermsAndCondition;
 import com.amx.jax.repository.ITermsAndConditionRepository;
 import com.amx.jax.services.AbstractService;
@@ -27,7 +28,7 @@ public class TermsAndConditionService extends AbstractService{
 	ITermsAndConditionRepository termsAndCondition;
 	
 	public AmxApiResponse<TermsAndConditionDTO, Object> getTermsAndCondition(BigDecimal languageId) {
-		List<TermsAndCondition> termsConditionList = termsAndCondition.getTermsAndCondition(languageId);
+		List<TermsAndCondition> termsConditionList = termsAndCondition.getTermsAndCondition(languageId,ConstantDocument.PR);
 		if(termsConditionList.isEmpty()) {
 			throw new GlobalException("Terms and Condition is not abaliable");
 		}
@@ -36,7 +37,7 @@ public class TermsAndConditionService extends AbstractService{
 	
 	
 	public AmxApiResponse<TermsAndConditionDTO, Object> getTermsAndConditionAsPerCountry(BigDecimal languageId,BigDecimal countryId) {
-		List<TermsAndCondition> termsConditionList = termsAndCondition.getTermsAndConditionBasedOnCountry(languageId, countryId);
+		List<TermsAndCondition> termsConditionList = termsAndCondition.getTermsAndConditionBasedOnCountry(languageId, countryId,ConstantDocument.PR);
 		if(termsConditionList.isEmpty()) {
 			throw new GlobalException("Terms and Condition is not abaliable");
 		}
@@ -44,6 +45,14 @@ public class TermsAndConditionService extends AbstractService{
 	}
 	
 	
+	
+	public AmxApiResponse<TermsAndConditionDTO, Object> getTermsAndConditionAsPerCountryForFxOrder(BigDecimal languageId,BigDecimal countryId) {
+		List<TermsAndCondition> termsConditionList = termsAndCondition.getTermsAndConditionBasedOnCountry(languageId, countryId,ConstantDocument.FS);
+		if(termsConditionList.isEmpty()) {
+			throw new GlobalException("Terms and Condition is not abaliable");
+		}
+		return AmxApiResponse.buildList(convert(termsConditionList));
+	}
 	
 	
 	private List<TermsAndConditionDTO> convert(List<TermsAndCondition> termsConditionList) {

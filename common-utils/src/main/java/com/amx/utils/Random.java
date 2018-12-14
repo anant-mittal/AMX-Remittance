@@ -1,6 +1,5 @@
 package com.amx.utils;
 
-
 /**
  * The Class Random.
  */
@@ -15,10 +14,13 @@ public class Random {
 
 	/** The Constant ALPHA_NUMERIC_STRING. */
 	private static final String ALPHA_NUMERIC_STRING = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-	
+
+	/** The Constant HEXA_STRING. */
+	private static final String HEXA_STRING = "ABCDEF0123456789";
+
 	/** The Constant ALPHA_STRING. */
 	private static final String ALPHA_STRING = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-	
+
 	/** The Constant NUMERIC_STRING. */
 	private static final String NUMERIC_STRING = "0123456789";
 
@@ -36,7 +38,7 @@ public class Random {
 	/**
 	 * Random alpha.
 	 *
-	 * @param count the count
+	 * @param count       the count
 	 * @param alphaString the alpha string
 	 * @return the string
 	 */
@@ -77,5 +79,9 @@ public class Random {
 	 */
 	public static String randomAlphaNumeric(int count) {
 		return randomAlpha(count, ALPHA_NUMERIC_STRING);
+	}
+
+	public static String randomHexa(int count) {
+		return randomAlpha(count, HEXA_STRING);
 	}
 }

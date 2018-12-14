@@ -16,6 +16,7 @@ public class MockParamBuilder {
 		String description;
 		String defaultValue;
 		boolean required = false;
+		boolean hidden = false;
 		List<String> values = null;
 		public String valueType;
 
@@ -47,6 +48,14 @@ public class MockParamBuilder {
 			return valueType;
 		}
 
+		public boolean isHidden() {
+			return hidden;
+		}
+
+		public void setHidden(boolean hidden) {
+			this.hidden = hidden;
+		}
+
 	}
 
 	MockParam mockParam;
@@ -72,6 +81,11 @@ public class MockParamBuilder {
 
 	public MockParamBuilder required(boolean required) {
 		this.mockParam.required = required;
+		return this;
+	}
+
+	public MockParamBuilder hidden(boolean hidden) {
+		this.mockParam.hidden = hidden;
 		return this;
 	}
 

@@ -1,8 +1,4 @@
-/**  AlMulla Exchange
-  *  
-  */
 package com.amx.jax.payment.controller;
-
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +17,7 @@ import com.amx.jax.payment.gateway.PayGSession;
 public class AppController {
 
 	private static final Logger LOGGER = Logger.getLogger(AppController.class);
-	
+
 	@Autowired
 	private PayGSession payGSession;
 
@@ -35,10 +31,12 @@ public class AppController {
 
 		model.addAttribute("page", page);
 		model.addAttribute("callback", payGSession.getCallback());
-	/*	if (payGSession.getCallback() != null && !Constants.defaultString.equals(payGSession.getCallback())) {
-			return "redirect:" + payGSession.getCallback();
-		}*/
-		LOGGER.info("payGSession getCallback ------->"+payGSession.getCallback());
+		/*
+		 * if (payGSession.getCallback() != null &&
+		 * !Constants.defaultString.equals(payGSession.getCallback())) { return
+		 * "redirect:" + payGSession.getCallback(); }
+		 */
+		LOGGER.info("payGSession getCallback ------->" + payGSession.getCallback());
 		if (payGSession.getCallback() != null) {
 			return "redirect:" + payGSession.getCallback();
 		}

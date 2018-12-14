@@ -36,9 +36,7 @@ public class BranchDetailDao {
 	 */
 	public List<BranchDetailModel> getBranchDetailList(BigDecimal countryId) {
 
-		List<BranchDetailModel> branchDetail = jdbcTemplate.query(QUERY_BRANCH_LIST, new BranchDetailRowMapper(),
-				countryId);
-
+		List<BranchDetailModel> branchDetail = jdbcTemplate.query(QUERY_BRANCH_LIST, new BranchDetailRowMapper(),countryId);
 		return branchDetail;
 	}
 

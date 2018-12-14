@@ -13,8 +13,6 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 
 import com.amx.jax.AppConstants;
-import com.amx.jax.dict.Tenant;
-import com.amx.jax.scope.TenantContextHolder;
 import com.amx.jax.sso.client.SSOAuthProvider;
 import com.amx.jax.sso.client.SSOLoginUrlEntry;
 import com.amx.jax.swagger.MockParamBuilder;

@@ -1,8 +1,6 @@
 package com.amx.jax.service;
 
-import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,7 +24,6 @@ import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.response.BranchSystemDetailDto;
 import com.amx.jax.services.AbstractService;
 import com.amx.jax.validation.BranchDetailValidation;
-import com.amx.utils.NumberUtil;
 
 /**
  * @author Subodh Bhoir
@@ -76,10 +73,10 @@ public class BranchDetailService extends AbstractService {
 	public BranchSystemDetail findBranchSystemByIp(String branchSystemIp) {
 		BranchSystemDetail branchSystemDetail = branchDetailDao.getBranchSystemDetail(branchSystemIp);
 		if (branchSystemDetail == null) {
-			throw new GlobalException("No  branch system found for given IP ", JaxError.BRANCH_SYSTEM_NOT_FOUND);
+			throw new GlobalException(JaxError.BRANCH_SYSTEM_NOT_FOUND, "No  branch system found for given IP ");
 		}
 		if (!ConstantDocument.Yes.equals(branchSystemDetail.getIsActive())) {
-			throw new GlobalException("Given branch system is inactive ", JaxError.BRANCH_SYSTEM_NOT_ACTIVE);
+			throw new GlobalException(JaxError.BRANCH_SYSTEM_NOT_ACTIVE, "Given branch system is inactive ");
 		}
 		return branchSystemDetail;
 	}
@@ -88,7 +85,7 @@ public class BranchDetailService extends AbstractService {
 		BranchSystemDetail branchSystemDetail = branchDetailDao
 				.getBranchSystemDetailByInventoryId(countryBranchSystemInventoryId);
 		if (branchSystemDetail == null) {
-			throw new GlobalException("No  branch system found for given inv id ", JaxError.BRANCH_SYSTEM_NOT_FOUND);
+			throw new GlobalException(JaxError.BRANCH_SYSTEM_NOT_FOUND, "No  branch system found for given inv id ");
 		}
 
 		return branchSystemDetail;

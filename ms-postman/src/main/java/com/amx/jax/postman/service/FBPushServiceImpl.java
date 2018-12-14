@@ -17,12 +17,14 @@ import com.amx.jax.postman.IPushNotifyService;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.audit.PMGaugeEvent;
 import com.amx.jax.postman.model.File;
+import com.amx.jax.postman.model.Notipy;
 import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.postman.model.UserMessageEvent;
 import com.amx.jax.rest.RestService;
 import com.amx.jax.tunnel.TunnelService;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
+import com.amx.utils.CryptoUtil;
 import com.amx.utils.JsonPath;
 import com.amx.utils.JsonUtil;
 import com.amx.utils.MapBuilder;
@@ -136,7 +138,7 @@ public class FBPushServiceImpl implements IPushNotifyService {
 				String link = ArgUtil.parseAsString(map.get("url"));
 				if (!ArgUtil.isEmptyString(link)) {
 					msg.setLink(link);
-					//map.remove("url");
+					// map.remove("url");
 				}
 
 			}
@@ -187,6 +189,18 @@ public class FBPushServiceImpl implements IPushNotifyService {
 				}
 			}
 			tunnelService.task(userMessageEvent);
+			if (!ArgUtil.isEmpty(msg.getITemplate())
+					&& !ArgUtil.isEmpty(msg.getITemplate().getChannel())) {
+				Notipy noti = new Notipy();
+				noti.setSubject(msg.getSubject());
+				noti.setAuthor(String.format("Topic = %s", msg.getTo().get(0)));
+				noti.setMessage(msg.getMessage());
+				noti.setChannel(msg.getITemplate().getChannel());
+				noti.addField("TEMPLATE", msg.getITemplate().toString());
+				noti.setColor("#" + CryptoUtil.toHex(6, msg.getITemplate().toString()));
+				slackService.sendNotification(noti);
+			}
+
 		} catch (PostManException e) {
 			auditServiceClient.log(
 					new PMGaugeEvent(PMGaugeEvent.Type.NOTIFCATION).set(Result.FAIL).set(msg, msg.getMessage(), null));

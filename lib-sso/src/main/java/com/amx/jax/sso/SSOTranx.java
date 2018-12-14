@@ -5,6 +5,7 @@ import java.io.Serializable;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.cache.TransactionModel;
+import com.amx.jax.rbaac.dto.UserClientDto;
 import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
 import com.amx.jax.sso.SSOTranx.SSOModel;
 
@@ -14,19 +15,13 @@ public class SSOTranx extends TransactionModel<SSOModel> {
 	public static class SSOModel implements Serializable {
 		private static final long serialVersionUID = -2178734153442648084L;
 
-		private String appUrl = SSOConstants.APP_LOGIN_URL_DONE;
+		private String appUrl = null;
 		private String returnUrl = SSOConstants.APP_LOGGEDIN_URL;
+
 		private String appToken = null;
 		private String motp = null;
-		private String terminalId = null;
-
-		public String getTerminalId() {
-			return terminalId;
-		}
-
-		public void setTerminalId(String terminalId) {
-			this.terminalId = terminalId;
-		}
+		private UserClientDto userClient;
+		private String branchAdapterId = null;
 
 		private EmployeeDetailsDTO userDetails = null;
 
@@ -70,29 +65,39 @@ public class SSOTranx extends TransactionModel<SSOModel> {
 			this.userDetails = userDetails;
 		}
 
+		public UserClientDto getUserClient() {
+			return userClient;
+		}
+
+		public void setUserClient(UserClientDto userClient) {
+			this.userClient = userClient;
+		}
+
+		public String getBranchAdapterId() {
+			return branchAdapterId;
+		}
+
+		public void setBranchAdapterId(String branchAdapterId) {
+			this.branchAdapterId = branchAdapterId;
+		}
+
 	}
 
 	@Override
 	public SSOModel init() {
-		return this.save(new SSOModel());
+		return this.save(getDefault());
 	}
 
 	@Override
 	public SSOModel getDefault() {
-		return new SSOModel();
+		SSOModel sSOModel = new SSOModel();
+		sSOModel.setUserClient(new UserClientDto());
+		return sSOModel;
 	}
 
 	public SSOModel setReturnUrl(String returnUrl) {
 		SSOModel msg = this.get();
 		msg.setReturnUrl(returnUrl);
-		this.save(msg);
-		return msg;
-	}
-
-	public SSOModel setAppReturnDetails(String landingUrl, String appToken) {
-		SSOModel msg = this.get();
-		msg.setAppUrl(landingUrl);
-		msg.setAppToken(appToken);
 		this.save(msg);
 		return msg;
 	}

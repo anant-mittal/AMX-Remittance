@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import com.amx.jax.dict.Language;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.postman.model.ITemplates.ITemplate;
+import com.amx.utils.EnumType;
 import com.amx.utils.JsonUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSetter;
@@ -21,14 +22,13 @@ public class File {
 
 	private static Logger LOGGER = LoggerService.getLogger(File.class);
 
-	public enum Type {
+	public enum Type implements EnumType {
 		PDF("application/pdf"), CSV("text/csv"),
 
 		PNG("image/png"), JPEG("image/jpeg"), JPG("image/jpg"),
 
 		JSON("application/json"), HTML("text/html"), TEXT(
-				"text/plain"
-		);
+				"text/plain");
 
 		String contentType;
 
@@ -78,6 +78,12 @@ public class File {
 	@SuppressWarnings("unchecked")
 	public File(ITemplate template, Object data, Type fileType) {
 		this.setITemplate(template);
+		this.setType(fileType);
+		this.setModel(JsonUtil.fromJson(JsonUtil.toJson(data), Map.class));
+	}
+
+	@SuppressWarnings("unchecked")
+	public File(Object data, Type fileType) {
 		this.setType(fileType);
 		this.setModel(JsonUtil.fromJson(JsonUtil.toJson(data), Map.class));
 	}
@@ -198,10 +204,14 @@ public class File {
 	}
 
 	public static File fromBase64(String base64String) {
+		return fromBase64(base64String, Type.TEXT);
+	}
+
+	public static File fromBase64(String base64String, Type defaultType) {
 		String[] strings = base64String.split(",");
 		Type extension;
 		String dataPart;
-		if (strings.length > 0) {
+		if (strings.length > 1) {
 			dataPart = strings[1];
 			switch (strings[0]) {// check image's extension
 			case "data:image/jpeg;base64":
@@ -215,7 +225,7 @@ public class File {
 				break;
 			}
 		} else {
-			extension = Type.TEXT;
+			extension = defaultType;
 			dataPart = strings[0];
 		}
 		File file = new File();

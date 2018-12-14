@@ -15,11 +15,20 @@ public abstract class AmxApiException extends AmxException {
 
 	private static final long serialVersionUID = 1L;
 
-	protected String errorMessage;
+	/**
+	 * Finally resolves to statusKey
+	 */
+	protected IExceptionEnum error;
 
+	/**
+	 * Finally resolves to messageKey
+	 */
 	protected String errorKey;
 
-	protected IExceptionEnum error;
+	/**
+	 * Finally resolves to message
+	 */
+	protected String errorMessage;
 
 	AmxApiError apiError;
 
@@ -31,10 +40,10 @@ public abstract class AmxApiException extends AmxException {
 		super(amxApiError.getMessage(), null, true, false);
 		this.apiError = amxApiError;
 		try {
-			this.error = getErrorIdEnum(amxApiError.getErrorId());
+			this.error = getErrorIdEnum(amxApiError.getStatusKey());
 		} catch (Exception e) {
 		}
-		this.errorKey = amxApiError.getErrorId();
+		this.errorKey = amxApiError.getErrorKey();
 		this.errorMessage = amxApiError.getMessage();
 	}
 
@@ -49,7 +58,7 @@ public abstract class AmxApiException extends AmxException {
 	}
 
 	public AmxApiException(IExceptionEnum error, String message) {
-		super(message);
+		super(message, null, true, false);
 		this.error = error;
 	}
 
@@ -93,7 +102,7 @@ public abstract class AmxApiException extends AmxException {
 
 	public AmxApiError createAmxApiError() {
 		if (this.apiError == null) {
-			this.apiError = new AmxApiError(this.getErrorKey(), this.getErrorMessage());
+			this.apiError = new AmxApiError(this.error, this.getErrorKey(), this.getErrorMessage());
 			this.apiError.setException(this.getClass().getName());
 		}
 		return this.apiError;

@@ -1,15 +1,17 @@
 package com.amx.jax.auth;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.amx.utils.CryptoUtil;
 import com.amx.utils.JsonUtil;
 
 public final class RuntimeTest {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws NoSuchAlgorithmException {
 
 		System.out.println(" ======== String Test ======= " + "Y".equalsIgnoreCase(null));
 
@@ -33,7 +35,8 @@ public final class RuntimeTest {
 
 		System.out.println(" JSON ==> " + JsonUtil.toJson(outMap));
 
-		Map<String, Map<String, Object>> revJsonMap =  (Map<String, Map<String, Object>>)JsonUtil.fromJson(JsonUtil.toJson(outMap), Map.class);
+		Map<String, Map<String, Object>> revJsonMap = (Map<String, Map<String, Object>>) JsonUtil
+				.fromJson(JsonUtil.toJson(outMap), Map.class);
 
 		System.out.println(" Rev MAP ==> " + JsonUtil.toJson(revJsonMap));
 
@@ -53,6 +56,10 @@ public final class RuntimeTest {
 		System.out.println(" List Json ==> " + jsonL);
 
 		System.out.println(" From Json ==>" + JsonUtil.fromJson(jsonL, List.class));
+
+		String devicePairTokenStr = CryptoUtil.getSHA2Hash( "HFOSQUZNXGGNF" + Long.toString(10l));
+
+		System.out.println(" Device Pair Token ==> " + devicePairTokenStr);
 
 	}
 

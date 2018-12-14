@@ -46,8 +46,8 @@ public class SSOLoginUrlEntry extends LoginUrlAuthenticationEntryPoint {
 		RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 		sSOTranx.setReturnUrl(request.getServletPath());
 		URLBuilder builder = new URLBuilder();
-		builder.setPath(SSOConstants.APP_LOGIN_URL_CHECK).addPathVariable(SSOConstants.PARAM_STEP, SSOAuthStep.CHECK)
-				.addParameter(AppConstants.TRANX_ID_XKEY, tranxId);
+		builder.path(SSOConstants.APP_LOGIN_URL_CHECK).pathParam(SSOConstants.PARAM_STEP, SSOAuthStep.CHECK)
+				.queryParam(AppConstants.TRANX_ID_XKEY, tranxId);
 		try {
 			redirectStrategy.sendRedirect(request, response, builder.getRelativeURL());
 		} catch (URISyntaxException e) {

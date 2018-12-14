@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import com.amx.amxlib.meta.model.BankMasterDTO;
-import com.amx.amxlib.meta.model.CurrencyMasterDTO;
+import com.amx.jax.model.response.CurrencyMasterDTO;
 
 /**
  * The Class XRateData.

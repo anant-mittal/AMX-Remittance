@@ -89,16 +89,20 @@ public class CustomerRegistrationOtpManager {
 			logger.info("otp data not found in trnx, creating new one");
 			otpData = new OtpData();
 		}
-		String eOtp = Random.randomNumeric(6);
-		String hashedeOtp = cryptoUtil.getHash(userId, eOtp);
-		sendOtpModel.seteOtpPrefix(Random.randomAlpha(3));
-		sendOtpModel.seteOtp(eOtp);
-		otpData.seteOtp(eOtp);
-		otpData.setHashedeOtp(hashedeOtp);
-		otpData.seteOtpPrefix(sendOtpModel.geteOtpPrefix());
-
+		
+		String emailId = customerRegistrationManager.get().getCustomerPersonalDetail().getEmail();
+		if(!StringUtils.isBlank(emailId)) {
+			String eOtp = Random.randomNumeric(6);
+			String hashedeOtp = cryptoUtil.getHash(userId, eOtp);
+			sendOtpModel.seteOtpPrefix(Random.randomAlpha(3));
+			sendOtpModel.seteOtp(eOtp);
+			otpData.seteOtp(eOtp);
+			otpData.setHashedeOtp(hashedeOtp);
+			otpData.seteOtpPrefix(sendOtpModel.geteOtpPrefix());
+		}
+		
 		String mOtp = Random.randomNumeric(6);
-		String hashedmOtp = cryptoUtil.getHash(userId, eOtp);
+		String hashedmOtp = cryptoUtil.getHash(userId, mOtp);
 		sendOtpModel.setmOtp(mOtp);
 		sendOtpModel.setmOtpPrefix(Random.randomAlpha(3));
 		otpData.setmOtp(mOtp);
@@ -117,13 +121,13 @@ public class CustomerRegistrationOtpManager {
 		OtpData otpData = customerRegistrationManager.get().getOtpData();
 		try {
 			if (StringUtils.isBlank(eOtp) || StringUtils.isBlank(mOtp)) {
-				throw new GlobalException("Otp field is required", JaxError.MISSING_OTP);
+				throw new GlobalException(JaxError.MISSING_OTP, "Otp field is required");
 			}
 			resetAttempts(otpData);
 			if (otpData.getValidateOtpAttempts() >= otpSettings.getMaxValidateOtpAttempts()) {
 				throw new GlobalException(
-						"Sorry, you cannot proceed to register. Please try to register after 12 midnight",
-						JaxError.VALIDATE_OTP_LIMIT_EXCEEDED);
+						JaxError.VALIDATE_OTP_LIMIT_EXCEEDED,
+						"Sorry, you cannot proceed to register. Please try to register after 12 midnight");
 			}
 			// actual validation logic
 			if (!otpData.geteOtp().equals(eOtp) || !otpData.getmOtp().equals(mOtp)) {
@@ -147,7 +151,7 @@ public class CustomerRegistrationOtpManager {
 		if (otpData.getValidateOtpAttempts() >= otpSettings.getMaxValidateOtpAttempts()) {
 			otpData.setLockDate(new Date());
 		}
-		throw new GlobalException("Invalid otp", JaxError.INVALID_OTP);
+		throw new GlobalException(JaxError.INVALID_OTP, "Invalid otp");
 
 	}
 
