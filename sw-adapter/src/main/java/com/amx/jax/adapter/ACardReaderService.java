@@ -37,7 +37,7 @@ import net.east301.keyring.util.LockException;
 
 public abstract class ACardReaderService {
 
-	public static String CARD_READER_KEY = CardData.class.getName();
+	public static final String CARD_READER_KEY = CardData.class.getName();
 	private static final Logger LOGGER = LoggerService.getLogger(ACardReaderService.class);
 	public static ACardReaderService CONTEXT = null;
 	protected static CardReader READER = new CardReader();
@@ -159,11 +159,11 @@ public abstract class ACardReaderService {
 				LOGGER.error("pairing Exception:IOException", ex);
 				return null;
 			} catch (KeyStoreException e) {
-				e.printStackTrace();
+				LOGGER.error("KeyStoreException", e);
 			} catch (CertificateException e) {
-				e.printStackTrace();
+				LOGGER.error("CertificateException", e);
 			} catch (NoSuchAlgorithmException e) {
-				e.printStackTrace();
+				LOGGER.error("NoSuchAlgorithmException", e);
 			}
 
 			try {
