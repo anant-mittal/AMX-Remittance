@@ -253,7 +253,7 @@ public class FcSaleDeliveryService {
 		jaxNotificationService.sendOtpSms(pinfo.getMobile(), notificationModel);
 		// send email otp
 		Email email = new Email();
-		email.setSubject("FC Order Successfully Delivered");
+		email.setSubject("FC Delivery OTP");
 		email.addTo(pinfo.getEmail());
 		email.setITemplate(TemplatesMX.FC_DELIVER_EMAIL_OTP);
 		email.setHtml(true);
