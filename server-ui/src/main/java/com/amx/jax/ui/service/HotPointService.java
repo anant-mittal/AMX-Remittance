@@ -40,7 +40,7 @@ public class HotPointService {
 		task.setCustomerId(customerId);
 		task.setGeoPoint(hotpoint.toString());
 		task.setAppTitle(webAppConfig.getAppTitle());
-		if (webAppConfig.isNotifyGeoEnabled() || true) {
+		if (webAppConfig.isNotifyGeoEnabled()) {
 			tunnelService.task(task);
 				}
 		return task;

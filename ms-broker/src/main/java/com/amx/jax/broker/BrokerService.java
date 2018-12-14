@@ -46,7 +46,7 @@ public class BrokerService {
 
 		// Increase Print Delay if its been long waiting for events
 		if (totalEvents > 0 || TimeUtils.isDead(printStamp, printDelay)) {
-			logger.info("Total {} Events fetched from DB, after waiting {} secs", totalEvents, printDelay);
+			logger.info("Total {} Events fetched from DB, after waiting {} secs", totalEvents,printDelay);
 			printStamp = System.currentTimeMillis();
 			if (totalEvents == 0) {
 				printDelay = 2 * printDelay;
@@ -66,7 +66,8 @@ public class BrokerService {
 
 				Map<String, String> event_data_map = StringUtils.getMapFromString(
 						BrokerConstants.SPLITTER_CHAR,
-						BrokerConstants.KEY_VALUE_SEPARATOR_CHAR, current_event_record.getEvent_data());
+						BrokerConstants.KEY_VALUE_SEPARATOR_CHAR, current_event_record.getEvent_data()
+				);
 
 				// Push to Message Queue
 				DBEvent event = new DBEvent();
