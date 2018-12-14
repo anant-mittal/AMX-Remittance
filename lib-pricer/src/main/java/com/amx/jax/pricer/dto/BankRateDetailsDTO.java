@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Comparator;
 
-public class BankMasterDTO implements Comparable<BankMasterDTO>, Serializable {
+public class BankRateDetailsDTO implements Comparable<BankRateDetailsDTO>, Serializable {
 
 	/**
 	 * 
@@ -89,7 +89,7 @@ public class BankMasterDTO implements Comparable<BankMasterDTO>, Serializable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		BankMasterDTO other = (BankMasterDTO) obj;
+		BankRateDetailsDTO other = (BankRateDetailsDTO) obj;
 		if (bankCode == null) {
 			if (other.bankCode != null)
 				return false;
@@ -127,9 +127,9 @@ public class BankMasterDTO implements Comparable<BankMasterDTO>, Serializable {
 	}
 
 	@Override
-	public int compareTo(BankMasterDTO arg0) {
-		BankMasterDTO o1 = this;
-		BankMasterDTO o2 = arg0;
+	public int compareTo(BankRateDetailsDTO arg0) {
+		BankRateDetailsDTO o1 = this;
+		BankRateDetailsDTO o2 = arg0;
 		BigDecimal o1Rate = (o1.getExRateBreakup() != null) ? o1.getExRateBreakup().getRate() : null;
 		BigDecimal o2Rate = (o2.getExRateBreakup() != null) ? o2.getExRateBreakup().getRate() : null;
 		if (o2Rate != null && o1Rate != null) {
@@ -138,10 +138,10 @@ public class BankMasterDTO implements Comparable<BankMasterDTO>, Serializable {
 		return 0;
 	}
 	
-	public static class BankMasterDTOComparator implements Comparator<BankMasterDTO> {
+	public static class BankMasterDTOComparator implements Comparator<BankRateDetailsDTO> {
 
 		@Override
-		public int compare(BankMasterDTO o1, BankMasterDTO o2) {
+		public int compare(BankRateDetailsDTO o1, BankRateDetailsDTO o2) {
 
 			BigDecimal o1Rate = (o1.getExRateBreakup() != null) ? o1.getExRateBreakup().getRate() : null;
 			BigDecimal o2Rate = (o2.getExRateBreakup() != null) ? o2.getExRateBreakup().getRate() : null;

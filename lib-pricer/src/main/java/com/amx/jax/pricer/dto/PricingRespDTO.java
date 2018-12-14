@@ -10,13 +10,13 @@ public class PricingRespDTO implements Serializable {
 	 */
 	private static final long serialVersionUID = 3237498833216893709L;
 	
-	private List<BankMasterDTO> bankMasterDTOList;
+	private List<BankRateDetailsDTO> bankMasterDTOList;
 
-	public List<BankMasterDTO> getBankMasterDTOList() {
+	public List<BankRateDetailsDTO> getBankMasterDTOList() {
 		return bankMasterDTOList;
 	}
 
-	public void setBankMasterDTOList(List<BankMasterDTO> bankMasterDTOList) {
+	public void setBankMasterDTOList(List<BankRateDetailsDTO> bankMasterDTOList) {
 		this.bankMasterDTOList = bankMasterDTOList;
 	}
 

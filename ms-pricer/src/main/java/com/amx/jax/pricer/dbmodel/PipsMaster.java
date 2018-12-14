@@ -19,10 +19,10 @@ import javax.persistence.Table;
 @Table(name = "EX_PIPS_MASTER")
 public class PipsMaster implements Serializable {
 	/**
-     * 
-     */
-    private static final long serialVersionUID = 1L;
-    private BigDecimal pipsMasterId;
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private BigDecimal pipsMasterId;
 	private CountryBranch countryBranch;
 	private CountryMaster countryMaster;
 	private BankMasterModel bankMaster;
@@ -40,7 +40,7 @@ public class PipsMaster implements Serializable {
 	private Date approvedDate;
 	private BigDecimal derivedSellRate;
 
-	//private String pipsTypeCode;
+	// private String pipsTypeCode;
 
 	public PipsMaster() {
 	}
@@ -206,6 +206,17 @@ public class PipsMaster implements Serializable {
 
 	public void setDerivedSellRate(BigDecimal derivedSellRate) {
 		this.derivedSellRate = derivedSellRate;
+	}
+
+	@Override
+	public String toString() {
+		return "PipsMaster [pipsMasterId=" + pipsMasterId + ", countryBranch=" + countryBranch.getCountryBranchId()
+				+ ", countryMaster=" + countryMaster.getCountryId() + ", bankMaster=" + bankMaster.getBankId()
+				+ ", currencyMaster=" + currencyMaster.getCurrencyId() + ", pipsNo=" + pipsNo + ", isActive=" + isActive
+				+ ", createdBy=" + createdBy + ", createdDate=" + createdDate + ", modifiedBy=" + modifiedBy
+				+ ", modifiedDate=" + modifiedDate + ", fromAmount=" + fromAmount + ", toAmount=" + toAmount
+				+ ", approvedBy=" + approvedBy + ", approvedDate=" + approvedDate + ", derivedSellRate="
+				+ derivedSellRate + "]";
 	}
 
 }
