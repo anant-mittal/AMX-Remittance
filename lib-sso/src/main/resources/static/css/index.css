@@ -109,6 +109,12 @@ input.invalid {
 	color: #000;
 }
 
+.button[disabled], .button[disabled]:hover{
+	color: #fff;
+	border: 1px solid #666666;
+	background: #666666;
+}
+
 .button.small {
 	height: 24px;
 	line-height: 24px;

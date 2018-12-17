@@ -60,6 +60,7 @@ import com.amx.jax.model.response.fx.FxEmployeeDetailsDto;
 import com.amx.jax.model.response.fx.FxOrderReportResponseDto;
 import com.amx.jax.model.response.fx.UserStockDto;
 import com.amx.jax.repository.ICompanyDAO;
+import com.amx.jax.notification.fx.FcSaleEventManager;
 import com.amx.jax.repository.IDocumentDao;
 import com.amx.jax.repository.JaxConfigRepository;
 import com.amx.jax.service.CompanyService;
@@ -96,21 +97,18 @@ public class FcSaleBranchOrderManager {
 
 	@Autowired
 	FxOrderReportManager fxOrderReportManager;
-
+	
 	@Autowired
 	FcSaleDeliveryService fcSaleDeliveryService;
 
 	@Autowired
 	AuditService auditService;
-
+	
 	@Autowired
 	FcSaleApplicationDao fcSaleApplicationDao;
 
 	@Autowired
 	MetaData metaData;
-
-	@Autowired
-	ICompanyDAO companyDAO;
 
 	public HashMap<String, Object> fetchFcSaleOrderManagement(BigDecimal applicationCountryId,BigDecimal employeeId){
 		HashMap<String, Object> fetchOrder = new HashMap<>();
@@ -393,7 +391,7 @@ public class FcSaleBranchOrderManager {
 							FxEmployeeDetailsDto driverEmpDt = fetchEmployee(driverId);
 							if(driverEmpDt != null && driverEmpDt.getEmployeeId() != null){
 								toBranchId = driverEmpDt.getBranchId();
-
+								
 								if(userName != null) {
 									if(deliveryDetail.getDriverEmployeeId() != null) {
 										if(deliveryDetail.getOrderStatus().equalsIgnoreCase(ConstantDocument.PCK) || deliveryDetail.getOrderStatus().equalsIgnoreCase(ConstantDocument.RTD)) {
@@ -1248,13 +1246,9 @@ public class FcSaleBranchOrderManager {
 
 		return fxOrderReportResponseDto; 
 	}
-
-	@Async
+	
 	private void logStatusChangeAuditEvent(BigDecimal deliveryDetailSeqId, String oldOrderStatus) {
-		FxDeliveryDetailsModel deliveryDetailModel = fcSaleApplicationDao.getDeliveryDetailModel(deliveryDetailSeqId);
-		FcSaleOrderStatusChangeAuditEvent event = new FcSaleOrderStatusChangeAuditEvent(deliveryDetailModel,
-				oldOrderStatus, JaxAuditEvent.Type.FC_SALE_UPDATE_ORDER_STATUS);
-		auditService.log(event);
+		fcSaleEventManager.logStatusChangeAuditEvent(deliveryDetailSeqId, oldOrderStatus);
 	}
 
 	// stock move from branch staff to driver and vice versa

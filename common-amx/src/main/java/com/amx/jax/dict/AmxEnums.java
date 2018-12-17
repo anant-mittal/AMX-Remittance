@@ -23,4 +23,8 @@ public class AmxEnums {
 		REMIT, FXORDER;
 	}
 
+	public static enum FxOrderStatus implements EnumType{
+		ORD, ACP, PCK, DVD, OFD_ACK, OFD_CNF, OFD, CND_ACK, CND, RTD_ACK, RTD
+	}
+
 }

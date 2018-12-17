@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import com.amx.jax.dict.Language;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.Message;
+import com.amx.jax.postman.model.Notipy.Channel;
 import com.amx.jax.scope.TenantScoped;
 import com.amx.jax.scope.TenantValue;
 
@@ -30,6 +31,33 @@ public class PostManConfig {
 	@TenantValue("${slack.exception.channel}")
 	private String exceptionChannelCode;
 
+	@TenantValue("${slack.channel.notipy.tnt}")
+	private String channelNotipy;
+	@TenantValue("${slack.channel.deployer.tnt}")
+	private String channelDeployer;
+	@TenantValue("${slack.channel.genral.tnt}")
+	private String channelGenral;
+	@TenantValue("${slack.channel.inquiry.tnt}")
+	private String channelInquiry;
+
+	public String getChannelCode(Channel channel) {
+		if (channel == null) {
+			return channelGenral;
+		}
+		switch (channel) {
+		case NOTIPY:
+			return channelNotipy;
+		case DEPLOYER:
+			return channelDeployer;
+		case INQUIRY:
+			return channelInquiry;
+		case GENERAL:
+			return channelGenral;
+		default:
+			return channelGenral;
+		}
+	}
+
 	/**
 	 * Gets the tenant.
 	 *
@@ -51,8 +79,7 @@ public class PostManConfig {
 	/**
 	 * Gets the local.
 	 *
-	 * @param file
-	 *            the file
+	 * @param file the file
 	 * @return the local
 	 */
 	public Locale getLocal(File file) {

@@ -83,18 +83,18 @@
 					<div class="form-col">
 						<label>EC Number</label>
 						<div class="input-wrapper">
-							<input type="text" name="ecnumber" value="" on-keyup="UI.ECNO"/>
+							<input type="text" name="ecnumber" value="" on-keyup="UI.ECNO" clear-error/>
 							<div class="error-wrapper"><div class="error-message" step="ECNO">asdsad</div></div>
 						</div>
 					</div>
 					<div class="form-col">
 						<label>Scan Smart Card</label>
 						<div class="input-wrapper">
-							<input type="text" class="scan-input" name="identity" value="" on-keyup="UI.CREDS"/>
+							<input type="text" class="scan-input" name="identity" value="" on-keyup="UI.CREDS" clear-error/>
 							<div class="error-wrapper"><div class="error-message" step="CREDS">asdsad</div></div>
 						</div>
 						<div class="send-otp">
-							<div class="button small right" on-click="CREDS" >Send OTP</div>
+							<div class="button small right" on-click="CREDS" disabled>Send OTP</div>
 						</div> 
 					</div>
 				</div>
@@ -102,15 +102,15 @@
 					<div class="form-col">
 						<label>Security Code</label>
 						<div class="input-wrapper">
-							<input type="text" name="sec-code" value="" class="sec-code-input" readonly/>
+							<input type="text" name="sec-code" value="" class="sec-code-input" readonly clear-error/>
 							<div class="error-wrapper"><div class="error-message">asdsad</div></div>
 						</div>
 					</div>
 					<div class="form-col">
 						<label>OTP</label>
 						<div class="input-wrapper">
-							<input type="text" name="motp" on-keyup="UI.OTP" readonly/>
-							<div class="error-wrapper"><div class="error-message" step="OTP">asdsad</div></div>
+							<input type="text" name="motp" on-keyup="UI.OTP" readonly clear-error/>
+							<div class="error-wrapper"><div class="error-message">asdsad</div></div>
 						</div>
 					</div>
 				</div>
@@ -126,15 +126,15 @@
 					<div class="form-col">
 						<label>EC Number</label>
 						<div class="input-wrapper">
-							<input type="text" name="ecnumber" value="" on-keyup="UI.ECNO"/>
-							<div class="error-wrapper"><div class="error-message" step="ECNO">asdsad</div></div>
+							<input type="text" name="ecnumber" value="" on-keyup="UI.ECNO" clear-error/>
+							<div class="error-wrapper"><div class="error-message">asdsad</div></div>
 						</div>
 					</div>
 					<div class="form-col">
 						<label>Enter Civil ID</label>
 						<div class="input-wrapper">
-							<input type="text" name="identity" value="" on-keyup="UI.CREDS" />
-							<div class="error-wrapper"><div class="error-message" step="CREDS">asdsad</div></div>
+							<input type="text" name="identity" value="" on-keyup="UI.CREDS" clear-error/>
+							<div class="error-wrapper"><div class="error-message">asdsad</div></div>
 						</div>
 					</div>
 				</div>
@@ -143,11 +143,11 @@
 					<div class="form-col">
 						<label>Civil ID (Partner’s Civil ID)</label>
 						<div class="input-wrapper">
-							<input type="text" class="scan-input" name="partner-identity" on-keyup="UI.CREDS"/>
+							<input type="text" class="scan-input" name="partner-identity" on-keyup="UI.PARTNERCREDS" clear-error/>
 							<div class="error-wrapper"><div class="error-message">asdsad</div></div>
 						</div>
 						<div class="send-otp">
-							<div class="button small right" on-click="CREDS" >Send OTP</div>
+							<div class="button small right" on-click="CREDS" disabled>Send OTP</div>
 						</div> 
 					</div>
 				</div>
@@ -156,14 +156,14 @@
 					<div class="form-col">
 						<label>Security Code</label>
 						<div class="input-wrapper">
-							<input type="text" name="sec-code" value="" class="sec-code-input" readonly/>
+							<input type="text" name="sec-code" value="" class="sec-code-input" readonly clear-error/>
 							<div class="error-wrapper"><div class="error-message">asdsad</div></div>
 						</div>
 					</div>
 					<div class="form-col">
 						<label>OTP</label>
 						<div class="input-wrapper">
-							<input type="text" name="motp" on-keyup="UI.OTP" readonly/>
+							<input type="text" name="motp" on-keyup="UI.OTP" readonly clear-error/>
 							<div class="error-wrapper"><div class="error-message" step="OTP">asdsad</div></div>
 						</div>
 					</div>
@@ -173,14 +173,14 @@
 					<div class="form-col">
 						<label>Partner Security Code</label>
 						<div class="input-wrapper">
-							<input type="text" name="partner-sec-code" value="" class="sec-code-input" readonly/>
+							<input type="text" name="partner-sec-code" value="" class="sec-code-input" readonly clear-error/>
 							<div class="error-wrapper"><div class="error-message">asdsad</div></div>
 						</div>
 					</div>
 					<div class="form-col">
 						<label>OTP</label>
 						<div class="input-wrapper">
-							<input type="text" name="partner-otp" value="" readonly/>
+							<input type="text" name="partner-otp" value="" readonly clear-error/>
 							<div class="error-wrapper"><div class="error-message">asdsad</div></div>
 						</div>
 					</div>
@@ -192,7 +192,7 @@
 					<div class="button inline" on-click="UI.CLEAR">Cancel</div>
 				</div>
 				<div class="form-col ">
-					<div class="button" on-click="OTP" >Submit</div>
+					<div class="button" on-click="OTP" disabled>Submit</div>
 				</div>
 			</div>
 		</div>

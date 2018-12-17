@@ -8,38 +8,32 @@ var CHAR_LENGTH_MAP = {
 var WITH_SMART_CARD = "SELF";
 var WITHOUT_SMART_CARD = "ASSISTED";
 
+var $selfContainer, $assistedContainer;
+
 function sendData(step) {
 	var selectedMode = $("input[name='cardtype']:checked").val();
 	if (selectedMode === WITH_SMART_CARD) {
 		var errorFields = 0;
-		$(
-				".withSmartCard input[type='text']:not([readonly]), .withSmartCard input.scan-input")
-				.each(
-						function() {
-							$(this).attr('')
-							if ($(this).val() === "") {
-								errorFields = errorFields + 1;
-								$(this).next().children().text(
-										'This field can\'t be empty').show();
-							}
-						})
-		if (errorFields !== 0)
-			return;
+		$(".withSmartCard input[type='text']:not([readonly]), .withSmartCard input.scan-input").each(function() {
+			$(this).attr('')
+			if ($(this).val() === "") {
+				errorFields = errorFields + 1;
+				$(this).next().children().text(
+						'This field can\'t be empty').show();
+			}
+		})
+		if (errorFields !== 0) return;
 	} else if (selectedMode === WITHOUT_SMART_CARD) {
 		var errorFields = 0;
-		$(
-				".withoutSmartCard input[type='text']:not([readonly]), .withoutSmartCard input.scan-input")
-				.each(
-						function() {
-							$(this).attr('')
-							if ($(this).val() === "") {
-								errorFields = errorFields + 1;
-								$(this).next().children().text(
-										'This field can\'t be empty').show();
-							}
-						})
-		if (errorFields !== 0)
-			return;
+		$(".withoutSmartCard input[type='text']:not([readonly]), .withoutSmartCard input.scan-input").each(function() {
+			$(this).attr('')
+			if ($(this).val() === "") {
+				errorFields = errorFields + 1;
+				$(this).next().children().text(
+						'This field can\'t be empty').show();
+			}
+		})
+		if (errorFields !== 0) return;
 	}
 
 	var reqObj;
@@ -58,12 +52,9 @@ function sendData(step) {
 			cardata : {},
 			ecnumber : $("." + selectedMode + " [name=ecnumber]").val(),
 			identity : $("." + selectedMode + " [name=identity]").val(),
-			partnerIdentity : selectedMode === WITHOUT_SMART_CARD ? $(
-					"." + selectedMode + " [name='partner-identity']").val()
-					: '',
+			partnerIdentity : selectedMode === WITHOUT_SMART_CARD ? $("." + selectedMode + " [name='partner-identity']").val() : '',
 			motp : $("." + selectedMode + " [name=motp]").val(),
-			partnerMOtp : selectedMode === WITHOUT_SMART_CARD ? $(
-					"." + selectedMode + " [name='partner-otp']").val() : '',
+			partnerMOtp : selectedMode === WITHOUT_SMART_CARD ? $("." + selectedMode + " [name='partner-otp']").val() : '',
 			step : step,
 			loginType : selectedMode
 		}
@@ -86,17 +77,11 @@ function sendData(step) {
 					window.location.href = resp.redirectUrl;
 				}
 				if (resp.meta.mOtpPrefix) {
-					$("." + selectedMode + " [name=motp]").removeAttr(
-							"readonly")
-					$("." + selectedMode + " input[name='sec-code']").val(
-							resp.meta.mOtpPrefix);
+					$("." + selectedMode + " [name=motp]").removeAttr("readonly")
+					$("." + selectedMode + " input[name='sec-code']").val(resp.meta.mOtpPrefix);
 					if (selectedMode == WITHOUT_SMART_CARD) {
-						$("." + selectedMode + " [name='partner-otp']")
-								.removeAttr("readonly");
-						$(
-								"." + selectedMode
-										+ " input[name='partner-sec-code']")
-								.val(resp.meta.partnerMOtpPrefix);
+						$("." + selectedMode + " [name='partner-otp']").removeAttr("readonly");
+						$("." + selectedMode + " input[name='partner-sec-code']").val(resp.meta.partnerMOtpPrefix);
 					}
 				}
 			}).fail(
@@ -123,7 +108,7 @@ function uiAction(step) {
 	}
 }
 
-$("body").on("click", "[on-click]", function(e, b, c) {
+$("body").on("click", "[on-click]:not([disabled])", function(e, b, c) {
 	var step = $(e.target).attr("on-click");
 	if (step.indexOf("UI.") === 0) {
 		uiAction(step);
@@ -137,11 +122,48 @@ $("body").on(
 		"input",
 		"[on-keyup]",
 		function(e, b, c) {
+			console.log("hi")
 			var step = $(e.target).attr("on-keyup");
+			var selectedMode = $("input[name='cardtype']:checked").val();
 			if (step.indexOf("UI.") === 0) {
 				// potential UI methods
-				$("[step='" + step.replace('UI.', '') + "'].error-message")
-						.text("").hide();
+				if(selectedMode == WITH_SMART_CARD){
+					if(
+						$(".SELF input[name='ecnumber']").val().length > 0 &&
+						$(".SELF input[name='identity']").val().length > 0
+					) {
+
+						$(".SELF [on-click='CREDS']").removeAttr('disabled');
+					} else {
+						$(".SELF [on-click='CREDS']").attr('disabled', 'diabled');
+					}
+
+					if($(".SELF input[name='motp']").val().length > 0){
+						$(".button[on-click='OTP']").removeAttr('disabled');
+					} else {
+						$(".button[on-click='OTP']").attr('disabled', 'disabled');
+					}
+						
+				} else {
+					if(
+						$(".ASSISTED input[name='ecnumber']").val().length > 0 &&
+						$(".ASSISTED input[name='identity']").val().length > 0 &&
+						$(".ASSISTED input[name='partner-identity']").val().length > 0
+					) {
+						$(".ASSISTED [on-click='CREDS']").removeAttr('disabled');
+					} else {
+						$(".ASSISTED [on-click='CREDS']").attr('disabled', 'diabled');
+					}
+
+					if($(".ASSISTED input[name='motp']").val().length > 0 && $(".ASSISTED input[name='partner-otp']").val().length > 0){
+						$(".button[on-click='OTP']").removeAttr('disabled');
+					} else {
+						$(".button[on-click='OTP']").attr('disabled', 'disabled');
+					}
+						
+				}
+				console.log(this);
+				uiAction(step);
 				return;
 			}
 			$("[step='" + step + "'].error-message").text("").hide();
@@ -149,6 +171,10 @@ $("body").on(
 				sendData(step);
 			}
 		})
+
+$("body").on("input", "[clear-error]", function(e,b,c){
+	$(this).next().find('.error-message').text("").hide();
+})
 
 $("input[name='cardtype']").on('change', function(e) {
 	var selectedMode = $("input[name='cardtype']:checked").val();
@@ -195,7 +221,7 @@ function fetchCardDetails() {
 			repeaetCall();
 		});
 	} else if(!window._card_sub_){
-		window._card_sub_ = tunnelClient.on("/card/details/"+window._tid_+"/" + window._rid_, function(cardDetails){
+		window._card_sub_ = tunnelClient.instance().on("/card/details/"+window._tid_+"/" + window._rid_, function(cardDetails){
 			populateCardDetails(cardDetails);
 		});
 	}
@@ -222,6 +248,8 @@ function fetchCardDetails() {
 fetchCardDetails();
 
 $(function() {
+	$selfContainer = $('.withSmartCard');
+	$assistedContainer = $('.withoutSmartCard');
 	$(".form-wrapper input[type='text']").val('');
 	if (window.localStorage.getItem('test') !== null) {
 		var dummyBtn = $('<input type="button" value="D"/>').on('click',
@@ -232,7 +260,7 @@ $(function() {
 
 function dummyData() {
 	var selectedMode = $("input[name='cardtype']:checked").val();
-	$("." + selectedMode + " [name='identity']").val('282102202584')
-	$("." + selectedMode + " [name='ecnumber']").val('235474')
-	$("." + selectedMode + " [name='partner-identity']").val('287070110425')
+	$("." + selectedMode + " [name='identity']").val('282102202584');
+	$("." + selectedMode + " [name='ecnumber']").val('235474');
+	$("." + selectedMode + " [name='partner-identity']").val('287070110425');
 }

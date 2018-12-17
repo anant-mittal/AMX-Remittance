@@ -354,8 +354,13 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 		receiptPaymentAppl.setCreatedDate(new Date());
 		
 		receiptPaymentAppl.setTravelCountryId(fcSalerequestModel.getTravelCountryId());
+<<<<<<< HEAD
 		receiptPaymentAppl.setTravelStartDate(fcSalerequestModel.getStartDate()==null?new Date():new SimpleDateFormat("dd/MM/yyyy").parse(fcSalerequestModel.getStartDate()));
 		receiptPaymentAppl.setTravelEndDate(fcSalerequestModel.getEndDate()==null?new Date():new SimpleDateFormat("dd/MM/yyyy").parse(fcSalerequestModel.getEndDate()));
+=======
+		receiptPaymentAppl.setTravelStartDate(fcSalerequestModel.getStartDate()==null?new Date():DateUtil.convertStringToDate(fcSalerequestModel.getStartDate()));
+		receiptPaymentAppl.setTravelEndDate(fcSalerequestModel.getEndDate()==null?new Date():DateUtil.convertStringToDate(fcSalerequestModel.getEndDate()));
+>>>>>>> milestone_fcpurchase
 		
 		
 		if(!StringUtils.isBlank(metaData.getReferrer())){

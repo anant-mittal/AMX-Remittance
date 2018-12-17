@@ -264,11 +264,11 @@
                             <table width="100%" style="width: 100%">
                                 <tr>
                                     <td>
-                                        <h5>Dear <span  th:text="${customerName}"></span> ,</h5><br/>
+                                        <h5>Dear <span  th:text="${data.customerName}"></span> ,</h5><br/>
 
                                         <p class="lead">Greetings from <span th:text="${_tu.prop('company.name')}" th:remove="tag"></span> !</p> <br/>
                                         <p class="lead">Thank you for using <a th:href="@{'https://' +${_tu.prop('company.website.url')}}"><span th:text="${_tu.prop('company.website.url')}"></span></a> for your payment of FC Purchase and hope you had a pleasant experience.</p>
-									    <p class="lead">Your transaction with us dated  <span  th:text="${date}"></span> having Trans Ref No: <span  th:text="${receiptNo}"></span> for <span  th:text="${localQurrencyQuote}"></span> <span  th:text="${netAmount}"></span> is successful.Thank you for your continued patronage.</p>
+									    <p class="lead">Your transaction with us dated  <span  th:text="${data.date}"></span> having Trans Ref No: <span  th:text="${data.receiptNo}"></span> for <span  th:text="${data.localQurrencyQuote}"></span> <span  th:text="${data.netAmount}"></span> is successful.Thank you for your continued patronage.</p>
 										
                                       <!-- A Real Hero (and a real human being) -->
                                         <p style="padding:40px 0" align="center"><img src="cid:images/product-1.png"/></p><!-- /hero -->

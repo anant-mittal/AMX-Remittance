@@ -1818,14 +1818,14 @@
                         <reportElement x="0" y="726" width="595" height="70"
                                        forecolor="blue"/>
 
-                        <image evaluationTime="Now" hyperlinkType="None" hyperlinkTarget="Self">
+                        <image evaluationTime="Now" hyperlinkType="None" hyperlinkTarget="Self" isLazy="true" onErrorType="Blank">
                             <reportElement
                                     x="0"
                                     y="0"
                                     width="595"
                                     height="90"
                                     key="image-1"
-                                    stretchType="NoStretch"/>
+                                    stretchType="NoStretch" />
                             <graphicElement/>
                             <imageExpression class="java.lang.String">
                                 <![CDATA[$P{TU}.prop("company.promotion.img")]]>

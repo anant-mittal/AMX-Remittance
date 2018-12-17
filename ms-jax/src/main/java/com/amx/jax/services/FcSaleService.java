@@ -121,6 +121,9 @@ public class FcSaleService extends AbstractService {
 	
 	@Autowired
 	ICollectionRepository collRepos;
+	
+	@Autowired
+	JaxNotificationService jaxNotificationService;
 
 
 	/**
@@ -447,6 +450,7 @@ public class FcSaleService extends AbstractService {
 					email.setITemplate(TemplatesMX.FC_KNET_SUCCESS);
 					email.setHtml(true);
 					email.getModel().put(NotificationConstants.RESP_DATA_KEY, orderNotificationModel);
+					jaxNotificationService.sendEmail(email);
 					}
 				}
 			}

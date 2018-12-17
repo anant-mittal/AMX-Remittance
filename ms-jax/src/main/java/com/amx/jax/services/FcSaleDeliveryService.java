@@ -25,6 +25,7 @@ import com.amx.amxlib.model.PersonInfo;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.auditlog.FcSaleOrderStatusChangeAuditEvent;
 import com.amx.jax.auditlog.JaxAuditEvent;
+import com.amx.jax.client.JaxStompClient;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.FcSaleApplicationDao;
 import com.amx.jax.dbmodel.ShippingAddressDetail;
@@ -32,6 +33,7 @@ import com.amx.jax.dbmodel.fx.FxDeliveryDetailsModel;
 import com.amx.jax.dbmodel.fx.FxDeliveryRemark;
 import com.amx.jax.dbmodel.fx.StatusMaster;
 import com.amx.jax.dbmodel.fx.VwFxDeliveryDetailsModel;
+import com.amx.jax.dict.AmxEnums.FxOrderStatus;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.logger.AuditEvent;
 import com.amx.jax.logger.AuditService;
@@ -46,6 +48,7 @@ import com.amx.jax.model.response.OtpPrefixDto;
 import com.amx.jax.model.response.fx.FxDeliveryDetailDto;
 import com.amx.jax.model.response.fx.FxDeliveryDetailNotificationDto;
 import com.amx.jax.model.response.fx.ShippingAddressDto;
+import com.amx.jax.notification.fx.FcSaleEventManager;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.userservice.service.UserService;
@@ -73,7 +76,12 @@ public class FcSaleDeliveryService {
 	@Autowired
 	AuditService auditService;
 	@Autowired
+	JaxStompClient jaxStompClient ; 
+	@Autowired
+	FcSaleEventManager fcSaleEventManager;
+	@Autowired
 	FcSaleBranchOrderManager fcSaleBranchOrderManager;
+
 
 	/**
 	 * @return today's order to be delivered for logged in driver
@@ -260,7 +268,7 @@ public class FcSaleDeliveryService {
 		jaxNotificationService.sendOtpSms(pinfo.getMobile(), notificationModel);
 		// send email otp
 		Email email = new Email();
-		email.setSubject("FC Order Successfully Delivered");
+		email.setSubject("FC Delivery OTP");
 		email.addTo(pinfo.getEmail());
 		email.setITemplate(TemplatesMX.FC_DELIVER_EMAIL_OTP);
 		email.setHtml(true);
@@ -331,11 +339,7 @@ public class FcSaleDeliveryService {
 		return new BoolRespModel(true);
 	}
 
-	@Async
 	private void logStatusChangeAuditEvent(BigDecimal deliveryDetailSeqId, String oldOrderStatus) {
-		FxDeliveryDetailsModel deliveryDetailModel = fcSaleApplicationDao.getDeliveryDetailModel(deliveryDetailSeqId);
-		FcSaleOrderStatusChangeAuditEvent event = new FcSaleOrderStatusChangeAuditEvent(deliveryDetailModel,
-				oldOrderStatus, JaxAuditEvent.Type.FC_SALE_UPDATE_ORDER_STATUS);
-		auditService.log(event);
+		fcSaleEventManager.logStatusChangeAuditEvent(deliveryDetailSeqId, oldOrderStatus);
 	}
 }

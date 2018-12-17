@@ -1,9 +1,16 @@
 package com.amx.jax.rbaac.dao;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import java.math.BigDecimal;
+import java.util.List;
 
-import com.amx.jax.repository.EmployeeSystemsAssignedRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.stereotype.Component;
+import org.springframework.web.context.WebApplicationContext;
+
+import com.amx.jax.dbmodel.EmployeeSystemsAssigned;
+import com.amx.jax.rbaac.repository.EmployeeSystemAssignedRepository;
 
 /**
  * Dao responsible for employee and system mapping
@@ -15,7 +22,16 @@ import com.amx.jax.repository.EmployeeSystemsAssignedRepository;
 public class EmployeeSystemDao {
 
 	@Autowired
-	EmployeeSystemsAssignedRepository employeeSystemsAssignedRepository;
+	EmployeeSystemAssignedRepository employeeSystemsAssignedRepository;
 
-	
+	public void saveEmployeeSystemsAssigned(EmployeeSystemsAssigned employeeSystemsAssigned) {
+		employeeSystemsAssignedRepository.save(employeeSystemsAssigned);
+	}
+
+	public List<EmployeeSystemsAssigned> findByEmployeeIdAndCountryBranchId(BigDecimal employeeId,
+			BigDecimal countryBranchId, String systemName) {
+		return employeeSystemsAssignedRepository.findByEmployeeIdAndCountryBranchIdAndSystemName(employeeId,
+				countryBranchId, systemName);
+	}
+
 }
