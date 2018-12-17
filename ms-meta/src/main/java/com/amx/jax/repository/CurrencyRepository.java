@@ -17,7 +17,7 @@ public interface CurrencyRepository extends CrudRepository<CurrencyMasterModel, 
 
 	List<CurrencyMasterModel> findAll();
 	
-	@Query(value = "SELECT * FROM EX_CURRENCY_MASTER WHERE CURRENCY_ID in (?1) ", nativeQuery = true)
-	List<CurrencyMasterModel> fetchCurrencyMaster(String currencyId);
+	@Query(value = "SELECT * FROM EX_CURRENCY_MASTER WHERE CURRENCY_ID in ?1 ", nativeQuery = true)
+	List<CurrencyMasterModel> fetchCurrencyMaster(List<String>  currencyId);
 
 }

@@ -167,7 +167,7 @@ public class FcSaleDeliveryService {
 		fcSaleApplicationDao.saveDeliveryDetail(deliveryDetail);
 		fcSaleBranchOrderManager.currentStockNullify(deliveryDetail.getDeleviryDelSeqId(),
 				deliveryDetail.getDriverEmployeeId());
-		fcSaleBranchOrderManager.saveFCStockTransferDetails(deliveryDetail.getDeleviryDelSeqId(), deliveryDetail.getDriverEmployeeId(), null, ConstantDocument.DVD);
+		fcSaleBranchOrderManager.saveFCStockTransferDetails(deliveryDetail.getDeleviryDelSeqId(),null,deliveryDetail.getDriverEmployeeId(), ConstantDocument.DVD);
 		PersonInfo pinfo = userService.getPersonInfo(vwdeliveryDetail.getCustomerId());
 		Email email = new Email();
 		email.setSubject("FC Order Successfully Delivered");

@@ -1618,9 +1618,11 @@ public class FcSaleBranchOrderManager {
 		String fromUserName = null;
 		BigDecimal toBranchId = null;
 		BigDecimal fromBranchId = null;
+		BigDecimal toCountryBranchId = null;
+		BigDecimal fromCountryBranchId = null;
 		BigDecimal companyId = null;
 		BigDecimal companyCode = null;
-		String currencyId = null;
+		List<String> currencyId = new ArrayList<>();
 		List<ForeignCurrencyStockTransfer> lstFCStkTrnf = new ArrayList<>();
 		List<BigDecimal> duplicate = new ArrayList<>();
 
@@ -1631,16 +1633,22 @@ public class FcSaleBranchOrderManager {
 				companyId = metaData.getCompanyId();
 			}
 
-			FxEmployeeDetailsDto employeeDt = fetchEmployee(toEmployeeId);
-			if(employeeDt != null && employeeDt.getEmployeeId() != null){
-				toUserName = employeeDt.getUserName();
-				toBranchId = employeeDt.getBranchId();
+			if(toEmployeeId != null) {
+				FxEmployeeDetailsDto employeeDt = fetchEmployee(toEmployeeId);
+				if(employeeDt != null && employeeDt.getEmployeeId() != null){
+					toUserName = employeeDt.getUserName();
+					toCountryBranchId = employeeDt.getCountryBranchId();
+					toBranchId = employeeDt.getBranchId();
+				}
 			}
 
-			FxEmployeeDetailsDto reqEmployeeDt = fetchEmployee(fromEmployeeId);
-			if(reqEmployeeDt != null && reqEmployeeDt.getEmployeeId() != null){
-				fromUserName = reqEmployeeDt.getUserName();
-				fromBranchId = reqEmployeeDt.getBranchId();
+			if(fromEmployeeId != null) {
+				FxEmployeeDetailsDto reqEmployeeDt = fetchEmployee(fromEmployeeId);
+				if(reqEmployeeDt != null && reqEmployeeDt.getEmployeeId() != null){
+					fromUserName = reqEmployeeDt.getUserName();
+					fromCountryBranchId = reqEmployeeDt.getCountryBranchId();
+					fromBranchId = reqEmployeeDt.getBranchId();
+				}
 			}
 
 			// fetch company code
@@ -1653,21 +1661,17 @@ public class FcSaleBranchOrderManager {
 			// fetch records 
 			List<OrderManagementView> lstOrderManager = fcSaleBranchDao.fetchOrdersByDeliveryDetailId(deliveryDetailSeqId);
 			if(lstOrderManager != null && lstOrderManager.size() != 0){
-				
+
 				for (OrderManagementView orderManagementView : lstOrderManager) {
 					if(orderManagementView.getForeignCurrencyId() != null && !duplicate.contains(orderManagementView.getForeignCurrencyId())) {
 						duplicate.add(orderManagementView.getForeignCurrencyId());
-						if(currencyId != null) {
-							currencyId = currencyId.concat(",").concat(orderManagementView.getForeignCurrencyId().toString());
-						}else {
-							currencyId = orderManagementView.getForeignCurrencyId().toString();
-						}
+						currencyId.add(orderManagementView.getForeignCurrencyId().toString());
 					}
 				}
-				
+
 				// fetch currency code
 				Map<BigDecimal, CurrencyMasterModel> currencyMasterModel = currencyMasterDao.getSelectedCurrencyMap(currencyId);
-				
+
 				for (OrderManagementView orderManagementView : lstOrderManager) {
 					if(orderManagementView.getDocumentNo() != null && orderManagementView.getCollectionDocFinanceYear() != null) {
 						ForeignCurrencyStockTransfer foreignCurrencyStockTransfer = new ForeignCurrencyStockTransfer();
@@ -1686,13 +1690,13 @@ public class FcSaleBranchOrderManager {
 						foreignCurrencyStockTransfer.setDocumentFinanceYear(orderManagementView.getCollectionDocFinanceYear());
 						foreignCurrencyStockTransfer.setDocumentNo(orderManagementView.getDocumentNo());
 						foreignCurrencyStockTransfer.setFcValue(orderManagementView.getForeignTrnxAmount());
-						foreignCurrencyStockTransfer.setFromBranchId(fromBranchId);
+						foreignCurrencyStockTransfer.setFromCountryBranchId(fromCountryBranchId);
 						foreignCurrencyStockTransfer.setFromEmployeeId(fromEmployeeId);
 						foreignCurrencyStockTransfer.setFromLocationCode(fromBranchId);
 						foreignCurrencyStockTransfer.setFromUser(fromUserName);
 						foreignCurrencyStockTransfer.setIsActive(ConstantDocument.Yes);
 						foreignCurrencyStockTransfer.setOrderStatus(orderStatus);
-						foreignCurrencyStockTransfer.setToBranchId(toBranchId);
+						foreignCurrencyStockTransfer.setToCountryBranchId(toCountryBranchId);
 						foreignCurrencyStockTransfer.setToEmployeeId(toEmployeeId);
 						foreignCurrencyStockTransfer.setToLocationCode(toBranchId);
 						foreignCurrencyStockTransfer.setToUser(toUserName);

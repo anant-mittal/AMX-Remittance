@@ -51,11 +51,11 @@ public class ForeignCurrencyStockTransfer implements Serializable{
 	@Column(name="CURRENCY_ID")
 	private BigDecimal currencyId;
 	
-	@Column(name="FROM_BRANCH_ID")
-	private BigDecimal fromBranchId;
+	@Column(name="FROM_COUNTRY_BRANCH_ID")
+	private BigDecimal fromCountryBranchId;
 	
-	@Column(name="TO_BRANCH_ID")
-	private BigDecimal toBranchId;
+	@Column(name="TO_COUNTRY_BRANCH_ID")
+	private BigDecimal toCountryBranchId;
 	
 	@Column(name="FROM_EMPLOYEE_ID")
 	private BigDecimal fromEmployeeId;
@@ -105,7 +105,7 @@ public class ForeignCurrencyStockTransfer implements Serializable{
 	@Column(name="GLDATE")
 	private Date glDate;
 	
-	@Column(name="ELERR")
+	@Column(name="GLERR")
 	private String elerr;
 	
 	@Column(name="ACCOUNT_MMYYYY")
@@ -175,20 +175,20 @@ public class ForeignCurrencyStockTransfer implements Serializable{
 		this.currencyId = currencyId;
 	}
 
-	public BigDecimal getFromBranchId() {
-		return fromBranchId;
+	public BigDecimal getFromCountryBranchId() {
+		return fromCountryBranchId;
 	}
 
-	public void setFromBranchId(BigDecimal fromBranchId) {
-		this.fromBranchId = fromBranchId;
+	public void setFromCountryBranchId(BigDecimal fromCountryBranchId) {
+		this.fromCountryBranchId = fromCountryBranchId;
 	}
 
-	public BigDecimal getToBranchId() {
-		return toBranchId;
+	public BigDecimal getToCountryBranchId() {
+		return toCountryBranchId;
 	}
 
-	public void setToBranchId(BigDecimal toBranchId) {
-		this.toBranchId = toBranchId;
+	public void setToCountryBranchId(BigDecimal toCountryBranchId) {
+		this.toCountryBranchId = toCountryBranchId;
 	}
 
 	public BigDecimal getFromEmployeeId() {
