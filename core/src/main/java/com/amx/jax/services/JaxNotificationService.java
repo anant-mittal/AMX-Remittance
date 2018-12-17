@@ -21,19 +21,15 @@ import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.EmployeeInfo;
 import com.amx.amxlib.model.PersonInfo;
 import com.amx.amxlib.model.notification.RemittanceTransactionFailureAlertModel;
-import com.amx.jax.AppConfig;
 import com.amx.jax.dbmodel.ApplicationSetup;
 import com.amx.jax.dbmodel.ExEmailNotification;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.model.response.fx.FxDeliveryDetailNotificationDto;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
-import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.postman.model.ChangeType;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
-import com.amx.jax.postman.model.Notipy;
-import com.amx.jax.postman.model.Notipy.Channel;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.scope.TenantContextHolder;
@@ -44,12 +40,6 @@ public class JaxNotificationService {
 
 	@Autowired
 	private PostManService postManService;
-
-	@Autowired
-	private PushNotifyClient pushNotifyClient;
-
-	@Autowired
-	private AppConfig appConfig;
 
 	Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -155,9 +145,6 @@ public class JaxNotificationService {
 
 		try {
 			postManService.sendSMSAsync(sms);
-			if (!appConfig.isProdMode()) {
-				sendToSlack("mobile", sms.getTo().get(0), model.getmOtpPrefix(), model.getmOtp());
-			}
 		} catch (PostManException e) {
 			logger.error("error in sendOtpSms", e);
 		}
@@ -171,9 +158,6 @@ public class JaxNotificationService {
 
 		try {
 			postManService.sendSMSAsync(sms);
-			if (!appConfig.isProdMode()) {
-				sendToSlack("mobile", sms.getTo().get(0), model.getmOtpPrefix(), model.getmOtp());
-			}
 		} catch (PostManException e) {
 			logger.error("error in sendOtpSms", e);
 		}
@@ -193,10 +177,6 @@ public class JaxNotificationService {
 		logger.info("Email to - " + pinfo.getEmail() + " first name : " + civilIdOtpModel.getFirstName());
 		sendEmail(email);
 
-		if (!appConfig.isProdMode()) {
-			sendToSlack("email", email.getTo().get(0), civilIdOtpModel.geteOtpPrefix(), civilIdOtpModel.geteOtp());
-		}
-
 	}// end of sendOtpEmail
 
 	public void sendNewRegistrationSuccessEmailNotification(PersonInfo pinfo, String emailid) {
@@ -209,18 +189,6 @@ public class JaxNotificationService {
 
 		logger.info("Email to - " + pinfo.getEmail() + " first name : " + pinfo.getFirstName());
 		sendEmail(email);
-	}
-
-	public void sendToSlack(String channel, String to, String prefix, String otp) {
-		Notipy msg = new Notipy();
-		msg.setMessage(String.format("%s = %s", channel, to));
-		msg.addLine(String.format("OTP = %s-%s", prefix, otp));
-		msg.setChannel(Channel.NOTIPY);
-		try {
-			postManService.notifySlack(msg);
-		} catch (PostManException e) {
-			logger.error("error in SlackNotify", e);
-		}
 	}
 
 	public void sendEmail(Email email) {
@@ -291,9 +259,6 @@ public class JaxNotificationService {
 
 		try {
 			postManService.sendSMSAsync(sms);
-			if (!appConfig.isProdMode()) {
-				sendToSlack("mobile", sms.getTo().get(0), model.getmOtpPrefix(), model.getmOtp());
-			}
 		} catch (PostManException e) {
 			logger.error("error in sendOtpSms", e);
 		}
