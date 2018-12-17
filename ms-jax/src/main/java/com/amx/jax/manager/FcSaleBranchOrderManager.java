@@ -109,6 +109,12 @@ public class FcSaleBranchOrderManager {
 
 	@Autowired
 	MetaData metaData;
+	
+	@Autowired
+	ICompanyDAO companyDAO;
+	
+	@Autowired
+	FcSaleEventManager fcSaleEventManager;
 
 	public HashMap<String, Object> fetchFcSaleOrderManagement(BigDecimal applicationCountryId,BigDecimal employeeId){
 		HashMap<String, Object> fetchOrder = new HashMap<>();
@@ -1690,6 +1696,7 @@ public class FcSaleBranchOrderManager {
 						foreignCurrencyStockTransfer.setToEmployeeId(toEmployeeId);
 						foreignCurrencyStockTransfer.setToLocationCode(toBranchId);
 						foreignCurrencyStockTransfer.setToUser(toUserName);
+						foreignCurrencyStockTransfer.setDocumentCode(ConstantDocument.DOCUMENT_CODE_FOR_FCSALE);
 						//foreignCurrencyStockTransfer.setGlDate(glDate);
 						//foreignCurrencyStockTransfer.setGlent(glent);
 						//foreignCurrencyStockTransfer.setElerr(elerr);

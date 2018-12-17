@@ -42,6 +42,9 @@ public class ForeignCurrencyStockTransfer implements Serializable{
 	@Column(name="DOCUMENT_FINANCE_YEAR")
 	private BigDecimal documentFinanceYear;
 	
+	@Column(name="DOCUMENT_CODE")
+	private BigDecimal documentCode;
+	
 	@Column(name="DOCUMENT_DATE")
 	private Date documentDate;
 	
@@ -330,6 +333,14 @@ public class ForeignCurrencyStockTransfer implements Serializable{
 
 	public void setAccountMMYYYY(Date accountMMYYYY) {
 		this.accountMMYYYY = accountMMYYYY;
+	}
+
+	public BigDecimal getDocumentCode() {
+		return documentCode;
+	}
+
+	public void setDocumentCode(BigDecimal documentCode) {
+		this.documentCode = documentCode;
 	}
 	
 }

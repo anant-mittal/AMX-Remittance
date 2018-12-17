@@ -167,6 +167,7 @@ public class FcSaleDeliveryService {
 		fcSaleApplicationDao.saveDeliveryDetail(deliveryDetail);
 		fcSaleBranchOrderManager.currentStockNullify(deliveryDetail.getDeleviryDelSeqId(),
 				deliveryDetail.getDriverEmployeeId());
+		fcSaleBranchOrderManager.saveFCStockTransferDetails(deliveryDetail.getDeleviryDelSeqId(), deliveryDetail.getDriverEmployeeId(), null, ConstantDocument.DVD);
 		PersonInfo pinfo = userService.getPersonInfo(vwdeliveryDetail.getCustomerId());
 		Email email = new Email();
 		email.setSubject("FC Order Successfully Delivered");
@@ -335,6 +336,7 @@ public class FcSaleDeliveryService {
 		fcSaleApplicationDao.saveDeliveryDetail(deliveryDetail);
 		fcSaleBranchOrderManager.currentStockMigration(deliveryDetailSeqId, deliveryDetail.getDriverEmployeeId(),
 				deliveryDetail.getEmployeeId());
+		fcSaleBranchOrderManager.saveFCStockTransferDetails(deliveryDetailSeqId, deliveryDetail.getDriverEmployeeId(), deliveryDetail.getEmployeeId(), ConstantDocument.OFD_CNF);
 		logStatusChangeAuditEvent(deliveryDetailSeqId, oldOrderStatus);
 		return new BoolRespModel(true);
 	}
