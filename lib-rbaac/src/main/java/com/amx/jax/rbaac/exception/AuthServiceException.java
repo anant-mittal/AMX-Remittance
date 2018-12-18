@@ -32,12 +32,12 @@ public class AuthServiceException extends AmxApiException {
 
 	/**
 	 * Instantiates a new auth service exception.
-	 *
-	 * @param errorMessage the error message
+	 * 
 	 * @param errorCode    the error code
+	 * @param errorMessage the error message
 	 */
-	public AuthServiceException(String errorMessage, String errorCode) {
-		super(errorMessage, errorCode);
+	public AuthServiceException(String errorCode, String errorMessage) {
+		super(errorCode, errorMessage);
 	}
 
 	/**
@@ -47,7 +47,7 @@ public class AuthServiceException extends AmxApiException {
 	 * @param errorMessage the error message
 	 */
 	public AuthServiceException(RbaacServiceError error, String errorMessage) {
-		super(errorMessage, error.getStatusKey());
+		super(error, errorMessage);
 	}
 
 	/**
