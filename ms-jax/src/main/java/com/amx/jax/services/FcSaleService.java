@@ -451,7 +451,6 @@ public class FcSaleService extends AbstractService {
 					email.addTo(orderNotificationModel.getEmail());
 					email.setITemplate(TemplatesMX.FC_KNET_SUCCESS);
 					email.setHtml(true);
-					email.getModel().put(NotificationConstants.RESP_DATA_KEY, orderNotificationModel);
 					jaxNotificationService.sendTransactionNotification(reportResponseDto,orderNotificationModel);
 					}
 				}
