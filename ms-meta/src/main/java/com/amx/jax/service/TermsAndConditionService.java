@@ -28,7 +28,7 @@ public class TermsAndConditionService extends AbstractService{
 	ITermsAndConditionRepository termsAndCondition;
 	
 	public AmxApiResponse<TermsAndConditionDTO, Object> getTermsAndCondition(BigDecimal languageId) {
-		List<TermsAndCondition> termsConditionList = termsAndCondition.getTermsAndCondition(languageId,ConstantDocument.PR);
+		List<TermsAndCondition> termsConditionList = termsAndCondition.getTermsAndCondition(languageId,ConstantDocument.PR,ConstantDocument.Yes);
 		if(termsConditionList.isEmpty()) {
 			throw new GlobalException("Terms and Condition is not abaliable");
 		}
@@ -37,7 +37,7 @@ public class TermsAndConditionService extends AbstractService{
 	
 	
 	public AmxApiResponse<TermsAndConditionDTO, Object> getTermsAndConditionAsPerCountry(BigDecimal languageId,BigDecimal countryId) {
-		List<TermsAndCondition> termsConditionList = termsAndCondition.getTermsAndConditionBasedOnCountry(languageId, countryId,ConstantDocument.PR);
+		List<TermsAndCondition> termsConditionList = termsAndCondition.getTermsAndConditionBasedOnCountry(languageId, countryId,ConstantDocument.PR,ConstantDocument.Yes);
 		if(termsConditionList.isEmpty()) {
 			throw new GlobalException("Terms and Condition is not abaliable");
 		}
@@ -47,7 +47,7 @@ public class TermsAndConditionService extends AbstractService{
 	
 	
 	public AmxApiResponse<TermsAndConditionDTO, Object> getTermsAndConditionAsPerCountryForFxOrder(BigDecimal languageId,BigDecimal countryId) {
-		List<TermsAndCondition> termsConditionList = termsAndCondition.getTermsAndConditionBasedOnCountry(languageId, countryId,ConstantDocument.FS);
+		List<TermsAndCondition> termsConditionList = termsAndCondition.getTermsAndConditionBasedOnCountry(languageId, countryId,ConstantDocument.FS,ConstantDocument.Yes);
 		if(termsConditionList.isEmpty()) {
 			throw new GlobalException("Terms and Condition is not abaliable");
 		}

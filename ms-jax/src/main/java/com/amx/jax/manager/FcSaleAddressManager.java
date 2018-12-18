@@ -408,7 +408,7 @@ public class FcSaleAddressManager extends AbstractModel {
 	public AddressTypeDto getAddressType(String addressTypecode) {
 		List<AddressTypeDto> addtype = saleAppl.getAddressTypeList();
 		AddressTypeDto dto1 = null;
-		if (!addtype.isEmpty()) {
+		if (addtype !=null &&  !addtype.isEmpty()) {
 			for (AddressTypeDto dto : addtype) {
 				if (dto.getAddressTypeCode() != null && addressTypecode != null
 						&& dto.getAddressTypeCode().equalsIgnoreCase(addressTypecode)) {
@@ -431,7 +431,7 @@ public class FcSaleAddressManager extends AbstractModel {
 			 if(shippingAddressDto!=null){
     		 sb = sb.append("Street ").append(shippingAddressDto.getStreet()==null?"":shippingAddressDto.getStreet()).append(concat)
     			  .append("Block ").append(shippingAddressDto.getBlock()==null?"":shippingAddressDto.getBlock()).append(concat)
-    			  .append("Build ").append(shippingAddressDto.getBuildingNo()==null?"":shippingAddressDto.getBuildingNo()).append(concat)
+    			  .append("House no. ").append(shippingAddressDto.getBuildingNo()==null?"":shippingAddressDto.getBuildingNo()).append(concat)
     			  .append("Flat ").append(shippingAddressDto.getFlat()==null?"":shippingAddressDto.getHouse()).append(concat)
     			  .append("City ").append(shippingAddressDto.getLocalContactCity()==null?"":shippingAddressDto.getLocalContactCity()).append(concat) 
     			  .append("Area ").append(shippingAddressDto.getAreaDesc()).append(concat)
