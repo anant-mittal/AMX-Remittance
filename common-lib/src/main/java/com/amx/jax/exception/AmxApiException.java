@@ -64,6 +64,11 @@ public abstract class AmxApiException extends AmxException {
 		this.errorMessage = errorMessage;
 	}
 
+	/**
+	 * @deprecated Declare IExceptionEnum for String errorCode, and pass the message
+	 * @param errorCode
+	 * @param errorMessage
+	 */
 	@Deprecated
 	public AmxApiException(String errorCode, String errorMessage) {
 		this();

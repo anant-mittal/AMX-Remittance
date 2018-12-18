@@ -33,6 +33,8 @@ public class AuthServiceException extends AmxApiException {
 	/**
 	 * Instantiates a new auth service exception.
 	 * 
+	 * @deprecated Declare IExceptionEnum for String errorCode, and pass the message
+	 * 
 	 * @param errorCode    the error code
 	 * @param errorMessage the error message
 	 */
