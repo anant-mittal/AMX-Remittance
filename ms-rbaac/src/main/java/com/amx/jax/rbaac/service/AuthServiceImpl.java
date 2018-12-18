@@ -103,7 +103,7 @@ public class AuthServiceImpl implements AuthService {
 
 		} catch (Exception e) {
 			LOGGER.info(e.getMessage());
-			throw new AuthServiceException("saveEnums fail ", e.getMessage());
+			throw new AuthServiceException(e.getMessage(), "saveEnums fail ");
 		}
 		return AmxApiResponse.build(new BoolRespModel(savesStatus));
 	}
@@ -155,7 +155,7 @@ public class AuthServiceImpl implements AuthService {
 
 		} catch (Exception e) {
 			LOGGER.info(e.getMessage());
-			throw new AuthServiceException("saveModule fail ", e.getMessage());
+			throw new AuthServiceException(e.getMessage(), "saveModule fail ");
 		}
 
 		return savesStatus;
@@ -206,7 +206,7 @@ public class AuthServiceImpl implements AuthService {
 
 		} catch (Exception e) {
 			LOGGER.info(e.getMessage());
-			throw new AuthServiceException("saveFunctionalityTypeMaster fail ", e.getMessage());
+			throw new AuthServiceException(e.getMessage(), "saveFunctionalityTypeMaster fail ");
 		}
 
 		return savesStatus;
@@ -257,7 +257,7 @@ public class AuthServiceImpl implements AuthService {
 			}
 		} catch (Exception e) {
 			LOGGER.info(e.getMessage());
-			throw new AuthServiceException("savePermissionScopeMaster fail ", e.getMessage());
+			throw new AuthServiceException(e.getMessage(), "savePermissionScopeMaster fail ");
 		}
 
 		return savesStatus;
@@ -337,7 +337,7 @@ public class AuthServiceImpl implements AuthService {
 
 		} catch (Exception e) {
 			LOGGER.info(e.getMessage());
-			throw new AuthServiceException("savePermission fail ", e.getMessage());
+			throw new AuthServiceException(e.getMessage(), "savePermission fail ");
 		}
 
 		return savesStatus;
@@ -417,7 +417,7 @@ public class AuthServiceImpl implements AuthService {
 
 		} catch (Exception e) {
 			LOGGER.info(e.getMessage());
-			throw new AuthServiceException("saveRoleMaster fail ", e.getMessage());
+			throw new AuthServiceException(e.getMessage(), "saveRoleMaster fail ");
 		}
 		AmxApiResponse<BoolRespModel, Object> response = new AmxApiResponse<BoolRespModel, Object>();
 		response.addResult(new BoolRespModel(savesStatus));
@@ -463,7 +463,7 @@ public class AuthServiceImpl implements AuthService {
 			savesStatus = Boolean.TRUE;
 		} catch (Exception e) {
 			LOGGER.info(e.getMessage());
-			throw new AuthServiceException("saveAssignRoleToUser fail ", e.getMessage());
+			throw new AuthServiceException(e.getMessage(), "saveAssignRoleToUser fail ");
 		}
 
 		return AmxApiResponse.build(new BoolRespModel(savesStatus));
@@ -517,7 +517,7 @@ public class AuthServiceImpl implements AuthService {
 			savesStatus = Boolean.TRUE;
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
-			throw new AuthServiceException("saveAssignPermToRole fail ", e.getMessage());
+			throw new AuthServiceException(e.getMessage(), "saveAssignPermToRole fail ");
 		}
 
 		return AmxApiResponse.build(new BoolRespModel(savesStatus));
@@ -552,7 +552,7 @@ public class AuthServiceImpl implements AuthService {
 			return amxResp;
 		} catch (Exception e) {
 			LOGGER.info(e.getMessage());
-			throw new AuthServiceException("sendOtp fail ", e.getMessage());
+			throw new AuthServiceException(e.getMessage(), "sendOtp fail ");
 		}
 	}
 
@@ -628,7 +628,7 @@ public class AuthServiceImpl implements AuthService {
 			}
 		} catch (Exception e) {
 			LOGGER.info(e.getMessage());
-			throw new AuthServiceException("verifyUserDetails fail ", e.getMessage());
+			throw new AuthServiceException(e.getMessage(), "verifyUserDetails fail ");
 		}
 	}
 
