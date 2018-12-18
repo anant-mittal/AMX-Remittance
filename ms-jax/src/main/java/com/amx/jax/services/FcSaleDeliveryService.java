@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.transaction.Transactional;
+
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -36,6 +38,7 @@ import com.amx.jax.error.JaxError;
 import com.amx.jax.logger.AuditEvent;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.manager.FcSaleAddressManager;
+import com.amx.jax.manager.FcSaleBranchOrderManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.model.request.fx.FcSaleDeliveryDetailUpdateReceiptRequest;
@@ -76,6 +79,9 @@ public class FcSaleDeliveryService {
 	JaxStompClient jaxStompClient ; 
 	@Autowired
 	FcSaleEventManager fcSaleEventManager;
+	@Autowired
+	FcSaleBranchOrderManager fcSaleBranchOrderManager;
+
 
 	/**
 	 * @return today's order to be delivered for logged in driver
@@ -135,6 +141,13 @@ public class FcSaleDeliveryService {
 		return dto;
 	}
 
+	/**
+	 * Marks fc sale order's status as delivered
+	 * 
+	 * @param fcSaleDeliveryMarkDeliveredRequest
+	 * @return
+	 */
+	@Transactional
 	public BoolRespModel markDelivered(FcSaleDeliveryMarkDeliveredRequest fcSaleDeliveryMarkDeliveredRequest) {
 		logger.debug("markDelivered request: {}", fcSaleDeliveryMarkDeliveredRequest);
 		FxDeliveryDetailsModel deliveryDetail = validateFxDeliveryModel(
@@ -152,6 +165,9 @@ public class FcSaleDeliveryService {
 		validateOtpStatus(deliveryDetail);
 		deliveryDetail.setOrderStatus(ConstantDocument.DVD);
 		fcSaleApplicationDao.saveDeliveryDetail(deliveryDetail);
+		fcSaleBranchOrderManager.currentStockNullify(deliveryDetail.getDeleviryDelSeqId(),
+				deliveryDetail.getDriverEmployeeId());
+		fcSaleBranchOrderManager.saveFCStockTransferDetails(deliveryDetail.getDeleviryDelSeqId(),null,deliveryDetail.getDriverEmployeeId(), ConstantDocument.DVD);
 		PersonInfo pinfo = userService.getPersonInfo(vwdeliveryDetail.getCustomerId());
 		Email email = new Email();
 		email.setSubject("FC Order Successfully Delivered");
@@ -308,6 +324,7 @@ public class FcSaleDeliveryService {
 	 * @param deliveryDetailSeqId
 	 * @return
 	 */
+	@Transactional
 	public BoolRespModel markAcknowledged(BigDecimal deliveryDetailSeqId) {
 		logger.debug("markAcknowledged request: deldetailid {}", deliveryDetailSeqId);
 		FxDeliveryDetailsModel deliveryDetail = validateFxDeliveryModel(deliveryDetailSeqId);
@@ -317,6 +334,9 @@ public class FcSaleDeliveryService {
 		}
 		deliveryDetail.setOrderStatus(ConstantDocument.OFD_CNF);
 		fcSaleApplicationDao.saveDeliveryDetail(deliveryDetail);
+		fcSaleBranchOrderManager.currentStockMigration(deliveryDetailSeqId, deliveryDetail.getDriverEmployeeId(),
+				deliveryDetail.getEmployeeId());
+		fcSaleBranchOrderManager.saveFCStockTransferDetails(deliveryDetailSeqId, deliveryDetail.getDriverEmployeeId(), deliveryDetail.getEmployeeId(), ConstantDocument.OFD_CNF);
 		logStatusChangeAuditEvent(deliveryDetailSeqId, oldOrderStatus);
 		return new BoolRespModel(true);
 	}

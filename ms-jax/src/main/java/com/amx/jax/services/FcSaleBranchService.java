@@ -394,7 +394,7 @@ public class FcSaleBranchService extends AbstractService{
 		return AmxApiResponse.buildList(driverEmp);
 	}
 
-	public BoolRespModel assignDriver(BigDecimal countryId,BigDecimal orderNumber,BigDecimal orderYear,BigDecimal driverId,BigDecimal employeeId) {
+	public BoolRespModel assignDriver(BigDecimal countryId,BigDecimal orderNumber,BigDecimal orderYear,BigDecimal driverId,BigDecimal employeeId,BigDecimal companyId) {
 		Boolean status = Boolean.FALSE;
 
 		if(countryId == null || countryId.compareTo(BigDecimal.ZERO)==0){
@@ -412,9 +412,12 @@ public class FcSaleBranchService extends AbstractService{
 		if(employeeId == null || employeeId.compareTo(BigDecimal.ZERO) == 0){
 			throw new GlobalException(JaxError.NULL_EMPLOYEE_ID,"Employee Id should not be blank");
 		}
+		if(companyId == null || companyId.compareTo(BigDecimal.ZERO)==0){
+			throw new GlobalException(JaxError.NULL_COMPANY_ID,"Company Id should not be blank");
+		}
 
 		try {
-			status = branchOrderManager.saveAssignDriver(countryId,orderNumber,orderYear,driverId,employeeId);
+			status = branchOrderManager.saveAssignDriver(countryId,orderNumber,orderYear,driverId,employeeId,companyId);
 			if(status) {
 				// success
 			}else {

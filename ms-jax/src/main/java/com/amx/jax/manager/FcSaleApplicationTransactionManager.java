@@ -171,7 +171,7 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 		FcSaleOrderApplicationResponseModel responeModel = new FcSaleOrderApplicationResponseModel();
 		HashMap<String, Object> mapAllDetailApplSave = new HashMap<String, Object>();
 		deactivateApplications(fcSalerequestModel);
-		ReceiptPaymentApp receiptPayment =this. createFcSaleReceiptApplication(fcSalerequestModel);
+		ReceiptPaymentApp receiptPayment =this.createFcSaleReceiptApplication(fcSalerequestModel);
 		mapAllDetailApplSave.put("EX_APPL_RECEIPT",receiptPayment);
 		fsSaleapplicationDao.saveAllApplicationData(mapAllDetailApplSave);
 		FxOrderShoppingCartResponseModel cartDetails= fetchApplicationDetails();

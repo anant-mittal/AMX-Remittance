@@ -581,14 +581,15 @@ public class UserValidationService {
 
 	/**
 	 * validates inactive or not registered customers status
+	 * @return 
 	 */
 	@SuppressWarnings("unused")
-	public void validateNonActiveOrNonRegisteredCustomerStatus(String identityInt, JaxApiFlow apiFlow) {
+	public List<Customer> validateNonActiveOrNonRegisteredCustomerStatus(String identityInt, JaxApiFlow apiFlow) {
 		List<Customer> customers = null;
 
 		customers = custDao.getCustomerByIdentityInt(identityInt);
 		if (CollectionUtils.isEmpty(customers) && apiFlow == JaxApiFlow.SIGNUP_DEFAULT) {
-			return;
+			return customers;
 		}
 		if (CollectionUtils.isEmpty(customers) && apiFlow != JaxApiFlow.SIGNUP_DEFAULT) {
 			throw new GlobalException(JaxError.CUSTOMER_NOT_REGISTERED_BRANCH, "Customer not registered in branch ");
@@ -613,6 +614,7 @@ public class UserValidationService {
 		default:
 			validateCustomerDefault(customers.get(0));
 		}
+		return customers;
 	}
 
 	private void validateCustomerDefault(Customer customer) {

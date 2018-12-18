@@ -521,8 +521,9 @@ public class UserService extends AbstractUserService {
 	}
 
 	public ApiResponse loginUser(String userId, String password) {
-		userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(userId, JaxApiFlow.LOGIN);
-		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustomerByLoginIdOrUserName(userId);
+		List<Customer> validCustomer = userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(userId, JaxApiFlow.LOGIN);
+		CustomerOnlineRegistration onlineCustomer = custDao
+				.getOnlineCustByCustomerId(validCustomer.get(0).getCustomerId());
 		if (onlineCustomer == null) {
 			throw new GlobalException(JaxError.USER_NOT_REGISTERED,
 					"User with userId: " + userId + " is not registered");

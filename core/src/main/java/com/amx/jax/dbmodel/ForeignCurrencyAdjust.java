@@ -53,6 +53,7 @@ public class ForeignCurrencyAdjust implements Serializable {
 	private CollectionModel collect;
 	private BigDecimal documentId;
 	private BigDecimal companyCode;
+	private String status;
 
 
 	/**
@@ -406,4 +407,12 @@ public class ForeignCurrencyAdjust implements Serializable {
 		this.companyCode = companyCode;
 	}
 
+	@Column(name="STATUS")
+	public String getStatus() {
+		return status;
+	}
+	public void setStatus(String status) {
+		this.status = status;
+	}
+	
 }
