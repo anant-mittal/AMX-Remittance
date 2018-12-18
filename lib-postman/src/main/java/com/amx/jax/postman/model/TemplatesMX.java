@@ -42,6 +42,7 @@ public enum TemplatesMX implements ITemplate {
 
 	MARKETING_PUSH("mrkt-push", Channel.FEED),
 
+	/// FC Templates
 	FC_DELIVER_EMAIL_OTP("deliver-email-otp", Channel.NOTIPY), FC_DELIVER_SMS_OTP("deliver-sms-otp", Channel.NOTIPY),
 	FC_ORDER_SUCCESS("order-success"),
 	FC_KNET_SUCCESS("knet-success");

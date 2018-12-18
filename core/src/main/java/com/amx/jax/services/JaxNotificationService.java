@@ -25,6 +25,8 @@ import com.amx.jax.dbmodel.ApplicationSetup;
 import com.amx.jax.dbmodel.ExEmailNotification;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.model.response.fx.FxDeliveryDetailNotificationDto;
+import com.amx.jax.model.response.fx.FxOrderDetailNotificationDto;
+import com.amx.jax.model.response.fx.FxOrderReportResponseDto;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.ChangeType;
@@ -47,10 +49,8 @@ public class JaxNotificationService {
 
 	public void sendTransactionNotification(RemittanceReceiptSubreport remittanceReceiptSubreport, PersonInfo pinfo) {
 
-		logger.info("Sending txn notification to customer");
+		logger.debug("Sending txn notification to customer");
 		Email email = new Email();
-
-		logger.info("Tenant is ----> " + TenantContextHolder.currentSite());
 
 		if (TenantContextHolder.currentSite().equals(Tenant.KWT)) {
 			email.setSubject("Your transaction on AMX is successful");
@@ -69,7 +69,34 @@ public class JaxNotificationService {
 		file.getModel().put(RESP_DATA_KEY, remittanceReceiptSubreport);
 
 		email.addFile(file);
-		logger.info("Email to - " + pinfo.getEmail() + " first name : " + pinfo.getFirstName());
+		logger.debug("Email to - " + pinfo.getEmail() + " first name : " + pinfo.getFirstName());
+		sendEmail(email);
+	}
+
+	public void sendTransactionNotification(FxOrderReportResponseDto remittanceReceiptSubreport,
+			FxOrderDetailNotificationDto pinfo) {
+
+		logger.debug("Sending txn notification to customer");
+		Email email = new Email();
+
+		if (TenantContextHolder.currentSite().equals(Tenant.KWT)) {
+			email.setSubject("Your transaction on AMX is successful");
+		} else if (TenantContextHolder.currentSite().equals(Tenant.BHR)) {
+			email.setSubject("Your transaction on MEC is successful");
+		}
+
+		email.addTo(pinfo.getEmail());
+		email.setITemplate(TemplatesMX.FC_KNET_SUCCESS);
+		email.setHtml(true);
+		email.getModel().put(RESP_DATA_KEY, pinfo);
+
+		File file = new File();
+		file.setITemplate(TemplatesMX.FXO_RECEIPT);
+		file.setType(File.Type.PDF);
+		file.getModel().put(RESP_DATA_KEY, remittanceReceiptSubreport);
+
+		email.addFile(file);
+		logger.debug("Email to - " + pinfo.getEmail() + " first name : " + pinfo.getCustomerName());
 		sendEmail(email);
 	}
 
@@ -130,9 +157,10 @@ public class JaxNotificationService {
 		sendEmail(email);
 	} // end of sendProfileChangeNotificationEmail
 
-	public void sendOtpSms(PersonInfo pinfo, CivilIdOtpModel model ) {
+	public void sendOtpSms(PersonInfo pinfo, CivilIdOtpModel model) {
 		sendOtpSms(pinfo, model, TemplatesMX.RESET_OTP_SMS);
 	}
+
 	public void sendOtpSms(PersonInfo pinfo, CivilIdOtpModel model, TemplatesMX templateMX) {
 
 		logger.info(String.format("Sending OTP SMS to customer :%s on mobile_no :%s  ", pinfo.getFirstName(),
@@ -149,7 +177,7 @@ public class JaxNotificationService {
 			logger.error("error in sendOtpSms", e);
 		}
 	} // end of sendOtpSms
-	
+
 	public void sendOtpSms(String mobile, FxDeliveryDetailNotificationDto model) {
 		SMS sms = new SMS();
 		sms.addTo(mobile);
