@@ -24,7 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -79,11 +78,11 @@ public class FxOrderBranchController {
 		return fxOrderBranchClient.fetchBranchStockDetails();
 	}
 	
-	@RequestMapping(value = "/api/fxo/order/print.{ext}",  method = { RequestMethod.POST }, produces = {
+	@RequestMapping(value = "/api/fxo/order/print",  method = { RequestMethod.POST }, produces = {
 			CommonMediaType.APPLICATION_JSON_VALUE, CommonMediaType.APPLICATION_V0_JSON_VALUE,
 			CommonMediaType.APPLICATION_PDF_VALUE, CommonMediaType.TEXT_HTML_VALUE })
 	public ResponseEntity<byte[]> getFxOrderTransactionReport(
-			@PathVariable("ext") File.Type ext,
+			@RequestParam("ext") File.Type ext,
 			@RequestParam(required = false) Boolean duplicate,
 			@RequestBody FcSaleBranchDispatchRequest fcSaleBranchDispatchRequest,
 			HttpServletResponse response) {
