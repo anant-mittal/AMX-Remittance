@@ -1,5 +1,6 @@
 package com.amx.jax.pricer.manager;
 
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -10,6 +11,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
+import javax.annotation.Resource;
+
+import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -21,8 +25,10 @@ import com.amx.jax.pricer.dbmodel.ChannelDiscount;
 import com.amx.jax.pricer.dbmodel.Customer;
 import com.amx.jax.pricer.dbmodel.CustomerCategoryDiscount;
 import com.amx.jax.pricer.dbmodel.PipsMaster;
+import com.amx.jax.pricer.dbmodel.ViewExGLCBAL;
 import com.amx.jax.pricer.dto.BankRateDetailsDTO;
 import com.amx.jax.pricer.dto.PricingReqDTO;
+import com.amx.jax.pricer.util.PricingRateDetailsDTO;
 import com.amx.utils.JsonUtil;
 
 @Component
@@ -36,6 +42,9 @@ public class CustomerDiscountManager {
 
 	@Autowired
 	ChannelDiscountDao channelDiscountDao;
+
+	@Resource
+	PricingRateDetailsDTO pricingRateDetailsDTO;
 
 	private static BigDecimal PIPS_BANK_ID = new BigDecimal(78);
 
@@ -80,8 +89,17 @@ public class CustomerDiscountManager {
 					bankAmountSlabDiscounts.put(pipsMaster.getBankMaster().getBankId().longValue(), slabPipsMap);
 				}
 
+				System.out.println(" Pips Master Discount ==> "
+						+ bankAmountSlabDiscounts.get(pipsMaster.getBankMaster().getBankId().longValue()));
+
 			}
 		}
+
+		List<BankRateDetailsDTO> discountedRatesNPrices = new ArrayList<BankRateDetailsDTO>();
+
+		BigDecimal margin = pricingRateDetailsDTO.getMargin() != null
+				? pricingRateDetailsDTO.getMargin().getMarginMarkup()
+				: new BigDecimal(0);
 
 		for (BankRateDetailsDTO bankRate : bankRates) {
 
@@ -90,6 +108,10 @@ public class CustomerDiscountManager {
 			if (bankAmountSlabDiscounts.containsKey(bankRate.getBankId().longValue())) {
 				TreeMap<BigDecimal, PipsMaster> pipsMap = bankAmountSlabDiscounts.get(bankRate.getBankId().longValue());
 				for (Entry<BigDecimal, PipsMaster> entry : pipsMap.entrySet()) {
+
+					System.out.println("For PIPS Iterations Bank ==> " + entry.getValue().getBankMaster().getBankCode()
+							+ " pips No ==> " + entry.getKey());
+
 					if (bankRate.getExRateBreakup().getConvertedFCAmount().compareTo(entry.getKey()) <= 0) {
 						amountSlabPips = entry.getValue().getPipsNo();
 						break;
@@ -105,13 +127,59 @@ public class CustomerDiscountManager {
 
 			totalDiscountPips.add(null != ccDiscount ? ccDiscount.getDiscountPips() : new BigDecimal(0));
 
-			System.out.println(" Total Discount Pips ==> " + totalDiscountPips.doubleValue());
+			BigDecimal discountedSellRate = bankRate.getExRateBreakup().getInverseRate().subtract(totalDiscountPips);
+
+			/**
+			 * Compute Base Sell rate : Cost + Margin
+			 */
+			BigDecimal adjustedBaseSellRate = new BigDecimal(0);
+
+			if (pricingRateDetailsDTO.getBankGlcBalMap() != null) {
+
+				ViewExGLCBAL viewExGLCBAL = pricingRateDetailsDTO.getBankGlcBalMap().get(bankRate.getBankId());
+
+				adjustedBaseSellRate = viewExGLCBAL.getRateAvgRate().add(margin);
+
+			}
+
+			if (discountedSellRate.compareTo(adjustedBaseSellRate) < 0) {
+				discountedSellRate = adjustedBaseSellRate;
+			}
+
+			BankRateDetailsDTO discountedRateDetail = new BankRateDetailsDTO();
+
+			try {
+				BeanUtils.copyProperties(discountedRateDetail, bankRate);
+			} catch (IllegalAccessException | InvocationTargetException e) {
+				System.out.println("error in convert of bankmaster");
+			}
+
+			discountedRateDetail.setBankCode(" Discounted : " + discountedRateDetail.getBankCode());
+
+			if (pricingReqDTO.getLocalAmount() != null) {
+
+				// Get Bank Wise Rates for Local Currency
+				discountedRateDetail.setExRateBreakup(
+						RemitPriceManager.createBreakUpForLcCur(discountedSellRate, pricingReqDTO.getLocalAmount()));
+
+			} else {
+
+				// Get Bank wise Rates for Foreign Currency
+				discountedRateDetail.setExRateBreakup(
+						RemitPriceManager.createBreakUpForFcCur(discountedSellRate, pricingReqDTO.getLocalAmount()));
+
+			}
+
+			discountedRatesNPrices.add(discountedRateDetail);
+
+			System.out.println(" Discounted Rates ==> " + discountedRateDetail);
 
 		} // for (Bank...
 
-		return null;
+		return discountedRatesNPrices;
 	}
 
+	@SuppressWarnings("unused")
 	private void saveNewDiscountType() {
 
 		ChannelDiscount channelDiscountPipsNew = new ChannelDiscount();

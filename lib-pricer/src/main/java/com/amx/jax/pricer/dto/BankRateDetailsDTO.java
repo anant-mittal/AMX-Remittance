@@ -152,4 +152,13 @@ public class BankRateDetailsDTO implements Comparable<BankRateDetailsDTO>, Seria
 		}
 
 	}
+
+	@Override
+	public String toString() {
+		return "BankRateDetailsDTO [bankId=" + bankId + ", bankCode=" + bankCode + ", bankFullName=" + bankFullName
+				+ ", bankShortName=" + bankShortName + ", bankCountryId=" + bankCountryId + ", serviceIndicatorId="
+				+ serviceIndicatorId + ", exRateBreakup=" + exRateBreakup + "]";
+	}
+	
+	
 }
