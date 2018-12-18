@@ -428,10 +428,12 @@ public class FcSaleService extends AbstractService {
 		if(payDto!=null && (payDto.getResultCode().equalsIgnoreCase(ConstantDocument.CAPTURED) || payDto.getResultCode().equalsIgnoreCase(ConstantDocument.APPROVED))){
 			
 			if(JaxUtil.isNullZeroBigDecimalCheck(payDto.getCollectionDocumentNumber()) && JaxUtil.isNullZeroBigDecimalCheck(payDto.getCollectionFinanceYear())){
+				
 				BigDecimal countryId = metaData.getCountryId();
 				BigDecimal companyId = metaData.getCompanyId();
 				BigDecimal custoemrId = metaData.getCustomerId()==null?payDto.getCustomerId():metaData.getCustomerId();
 				List<Customer> customerList = customerDao.getCustomerByCustomerId(countryId, companyId, custoemrId);
+				FxOrderReportResponseDto reportResponseDto = reportManager.getReportDetails(custoemrId,payDto.getCollectionDocumentNumber(), payDto.getCollectionFinanceYear());
 				FxOrderDetailNotificationDto orderNotificationModel = new FxOrderDetailNotificationDto();
 				if(customerList!= null && !customerList.isEmpty()){
 					orderNotificationModel.setCustomerName(customerList.get(0).getFirstName()+" "+customerList.get(0).getMiddleName()==null?"":customerList.get(0).getMiddleName()+" "+customerList.get(0).getLastName()==null?"":customerList.get(0).getLastName());
@@ -450,7 +452,7 @@ public class FcSaleService extends AbstractService {
 					email.setITemplate(TemplatesMX.FC_KNET_SUCCESS);
 					email.setHtml(true);
 					email.getModel().put(NotificationConstants.RESP_DATA_KEY, orderNotificationModel);
-					jaxNotificationService.sendEmail(email);
+					jaxNotificationService.sendTransactionNotification(reportResponseDto,orderNotificationModel);
 					}
 				}
 			}
