@@ -1,6 +1,5 @@
 package com.amx.jax.grid;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.amx.utils.ArgUtil;
@@ -222,8 +221,6 @@ public class DataTableRequest {
 
 		int sortableCol = gridQuery.getSortBy();
 
-		List<DataTableColumnSpecs> columns = new ArrayList<DataTableColumnSpecs>();
-
 		if (!GridUtil.isObjectEmpty(this.getSearch())) {
 			this.setGlobalSearch(true);
 		}
@@ -266,15 +263,16 @@ public class DataTableRequest {
 
 		FilterBy filterBy = new FilterBy();
 		filterBy.setGlobalSearch(this.isGlobalSearch());
-		for (DataTableColumnSpecs colSpec : this.getColumns()) {
-			if (colSpec.isSearchable()) {
-				if (!GridUtil.isObjectEmpty(this.getSearch()) || !GridUtil.isObjectEmpty(colSpec.getSearch())) {
-					filterBy.addFilter(colSpec.getData(),
-							(this.isGlobalSearch()) ? this.getSearch() : colSpec.getSearch());
+		if (!ArgUtil.isEmpty(this.getColumns())) {
+			for (DataTableColumnSpecs colSpec : this.getColumns()) {
+				if (colSpec.isSearchable()) {
+					if (!GridUtil.isObjectEmpty(this.getSearch()) || !GridUtil.isObjectEmpty(colSpec.getSearch())) {
+						filterBy.addFilter(colSpec.getData(),
+								(this.isGlobalSearch()) ? this.getSearch() : colSpec.getSearch());
+					}
 				}
 			}
 		}
-
 		pagination.setSortBy(sortBy);
 		pagination.setFilterBy(filterBy);
 

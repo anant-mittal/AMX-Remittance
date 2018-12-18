@@ -38,6 +38,7 @@ import com.amx.jax.postman.model.Message;
 import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.postman.service.PostManServiceImpl;
+import com.amx.utils.ArgUtil;
 import com.amx.utils.IoUtils;
 import com.amx.utils.JsonUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -195,7 +196,8 @@ public class PostManControllerTest {
 	public String processTemplate(@PathVariable("template") TemplatesMX template, @PathVariable("ext") String ext,
 			@RequestParam(name = "email", required = false) String email,
 			@RequestBody(required = false) Map<String, Object> data, @RequestParam(required = false) Tenant tnt,
-			@RequestParam(required = false) File.PDFConverter lib)
+			@RequestParam(required = false) File.PDFConverter lib,
+			@RequestParam(required = false) TemplatesMX attachment)
 			throws IOException, /* DocumentException, */ PostManException {
 
 		Map<String, Object> map = readJsonWithObjectMapper("templates/dummy/" + template.getSampleJSON());
@@ -234,9 +236,18 @@ public class PostManControllerTest {
 				// this.readImageWithObjectMapper(null);
 
 				File file2 = new File();
-				file2.setITemplate(template);
+
+				if (ArgUtil.isEmpty(attachment)) {
+					file2.setITemplate(template);
+					file2.setModel(map);
+				} else {
+					file2.setITemplate(attachment);
+					Map<String, Object> map2 = readJsonWithObjectMapper(
+							"templates/dummy/" + attachment.getSampleJSON());
+					file2.setModel(map2);
+				}
+
 				file2.setType(File.Type.PDF);
-				file2.setModel(map);
 				file2.setConverter(lib);
 
 				eml.addFile(file2);

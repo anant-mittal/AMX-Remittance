@@ -1,13 +1,12 @@
 {
-	"data":{
-		"customerName":"Animesh Kumar",
-		"email":"animesh@gamil.com",
-		"mobileNo":"4545555",
-		"loyaltyPoints":100.0,
-		"receiptNo":33412,
-		"date":"11/02/2018",
-		"netAmount":" 3,000",
-		"localQurrencyQuote":"KWD"
-		}
-		
+	"data": {
+		"customerName": "MIR MIR RAJAK",
+		"email": "rabiluddin@gmail.com",
+		"mobileNo": "51780401",
+		"loyaltyPoints": 56002,
+		"receiptNo": "2018/27000057",
+		"date": "18/12/2018",
+		"netAmount": 31.85,
+		"localQurrencyQuote": "KWD"
+	}
 }

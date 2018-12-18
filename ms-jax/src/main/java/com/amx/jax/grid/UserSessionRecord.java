@@ -6,7 +6,7 @@ import javax.persistence.Transient;
 import com.amx.jax.dbmodel.employee.UserSession;
 
 @Entity
-public class UserSessionRecord extends UserSession {
+public class UserSessionRecord extends UserSession implements GridViewRecord {
 
 	private static final long serialVersionUID = 412176528892609487L;
 

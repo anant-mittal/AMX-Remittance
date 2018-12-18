@@ -158,6 +158,7 @@ public class AmxApiResponse<T, M> extends AResponse<M>
 		// ArrayList<TS> listOfStrings = new ArrayList<TS>(resultList.size());
 		// listOfStrings.addAll(resultList);
 		resp.setResults(resultList);
+		resp.setMeta(meta);
 		return resp;
 	}
 

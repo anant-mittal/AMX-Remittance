@@ -82,10 +82,9 @@ public class File {
 		this.setModel(JsonUtil.fromJson(JsonUtil.toJson(data), Map.class));
 	}
 
-	@SuppressWarnings("unchecked")
 	public File(Object data, Type fileType) {
 		this.setType(fileType);
-		this.setModel(JsonUtil.fromJson(JsonUtil.toJson(data), Map.class));
+		this.setModel(JsonUtil.toJsonMap(data));
 	}
 
 	public Map<String, Object> getModel() {
