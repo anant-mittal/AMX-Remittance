@@ -65,6 +65,7 @@ public class JaxNotificationService {
 
 		File file = new File();
 		file.setITemplate(TemplatesMX.REMIT_RECEIPT_JASPER);
+		file.setName("TransactionReceipt");
 		file.setType(File.Type.PDF);
 		file.getModel().put(RESP_DATA_KEY, remittanceReceiptSubreport);
 

@@ -74,7 +74,7 @@ public class PlaceOrderListner implements ITunnelSubscriber<DBEvent> {
 			LOGGER.info("Sending rate alert to " + placeorderNot.getEmail());
 
 			Email email = new Email();
-			email.setSubject("AMX Rate Alert");
+			email.setSubject("Rate Alert");
 			email.addTo(placeorderNot.getEmail());
 			email.setITemplate(TemplatesMX.RATE_ALERT);
 			email.setHtml(true);
