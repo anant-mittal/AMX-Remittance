@@ -32,9 +32,11 @@ import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.ChangeType;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
+import com.amx.jax.postman.model.Message;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.scope.TenantContextHolder;
+import com.amx.utils.CollectionUtil;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -94,7 +96,7 @@ public class JaxNotificationService {
 		File file = new File();
 		file.setITemplate(TemplatesMX.FXO_RECEIPT);
 		file.setType(File.Type.PDF);
-		file.getModel().put(RESP_DATA_KEY, remittanceReceiptSubreport);
+		email.getModel().put(Message.RESULTS_KEY, CollectionUtil.getList(remittanceReceiptSubreport));
 
 		email.addFile(file);
 		logger.debug("Email to - " + pinfo.getEmail() + " first name : " + pinfo.getCustomerName());

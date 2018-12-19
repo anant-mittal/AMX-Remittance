@@ -14,7 +14,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class Message implements Serializable {
 
 	private static final long serialVersionUID = 1363933600245334964L;
-	private static final String DATA_KEY = "data";
+	public static final String DATA_KEY = "data";
+	public static final String RESULTS_KEY = "results";
 
 	public static enum Status {
 		INIT, SENT, DELIVERED, READ, FAILED
