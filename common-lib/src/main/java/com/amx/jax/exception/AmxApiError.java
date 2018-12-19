@@ -10,6 +10,7 @@ public class AmxApiError extends AResponse<Object> {
 	/**
 	 * errorKey is messageKey
 	 */
+	@Deprecated
 	private String errorKey;
 
 	public AmxApiError(String errorKey, String errorMessage) {
