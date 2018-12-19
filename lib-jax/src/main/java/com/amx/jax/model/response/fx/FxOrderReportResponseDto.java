@@ -17,6 +17,7 @@ public class FxOrderReportResponseDto extends AbstractModel {
 	private String civilId;
 	private String idExpiryDate;
 	private String customerName;
+	private BigDecimal customerReferenceId;
 	private String localCurrency;
 	private String insurence1;
 	private String insurence2;
@@ -43,6 +44,7 @@ public class FxOrderReportResponseDto extends AbstractModel {
 	private String email;
 	private String engCompanyInfo;
 	private String arabicCompanyInfo;
+	
 
 	List<FxOrderTransactionHistroyDto> fxOrderTrnxList = new ArrayList<>();
 	FxDeliveryReportDetailDto  deliveryDetailReport = new FxDeliveryReportDetailDto();
@@ -279,6 +281,12 @@ public class FxOrderReportResponseDto extends AbstractModel {
 	}
 	public void setEmail(String email) {
 		this.email = email;
+	}
+	public BigDecimal getCustomerReferenceId() {
+		return customerReferenceId;
+	}
+	public void setCustomerReferenceId(BigDecimal customerReferenceId) {
+		this.customerReferenceId = customerReferenceId;
 	}
 
 }
