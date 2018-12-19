@@ -38,11 +38,11 @@
 			<td>${DATA_STATUS}</td>
 		</tr>
 		<tr hidden="hidden" style="dispaly:none">
-			<td align="center" colspan="2">
-				<div>&nbsp;</div>
-				<div>
-					<form method="post">
-						<input name="terminalId" placeholder="Terminal IP" />
+			<td align="center" colspan="2" hidden="hidden" style="dispaly:none" >
+				<div hidden="hidden" style="dispaly:none" >&nbsp;</div>
+				<div hidden="hidden" style="dispaly:none" >
+					<form method="post" hidden="hidden" style="dispaly:none">
+						<input name="terminalId" placeholder="Terminal IP" value="${LOCAL_IP}" type="hidden" />
 						<button type="submit">Pair</button>
 					</form>
 				</div>
