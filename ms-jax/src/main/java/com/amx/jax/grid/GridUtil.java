@@ -118,10 +118,11 @@ public class GridUtil {
 		paginationCriteria.setPageNumber(pageNo);
 
 		if (!GridUtil.isObjectEmpty(paginationCriteria)) {
+			String whereClaus = paginationCriteria.getFilterByClause();
 			finalQuery = sb.toString().replaceAll("#BASE_QUERY#", baseQuery)
 					.replaceAll("#WHERE_CLAUSE#",
-							((GridUtil.isObjectEmpty(paginationCriteria.getFilterByClause())) ? "" : " WHERE ")
-									+ paginationCriteria.getFilterByClause())
+							((GridUtil.isObjectEmpty(whereClaus)) ? "" : " WHERE ")
+									+ whereClaus)
 					.replaceAll("#ORDER_CLASUE#", paginationCriteria.getOrderByClause())
 					.replaceAll("#PAGE_NUMBER#", paginationCriteria.getPageNumber().toString())
 					.replaceAll("#PAGE_SIZE#", paginationCriteria.getPageSize().toString());
