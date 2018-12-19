@@ -53,6 +53,13 @@ public class JaxNotificationService {
 
 		logger.debug("Sending txn notification to customer");
 		Email email = new Email();
+
+		if (TenantContextHolder.currentSite().equals(Tenant.KWT)) {
+			email.setSubject("Your transaction on AMX is successful");
+		} else if (TenantContextHolder.currentSite().equals(Tenant.BHR)) {
+			email.setSubject("Your transaction on MEC is successful");
+		}
+
 		email.addTo(pinfo.getEmail());
 		email.setITemplate(TemplatesMX.TXN_CRT_SUCC);
 		email.setHtml(true);
@@ -74,12 +81,6 @@ public class JaxNotificationService {
 
 		logger.debug("Sending txn notification to customer");
 		Email email = new Email();
-
-		if (TenantContextHolder.currentSite().equals(Tenant.KWT)) {
-			email.setSubject("Your transaction on AMX is successful");
-		} else if (TenantContextHolder.currentSite().equals(Tenant.BHR)) {
-			email.setSubject("Your transaction on MEC is successful");
-		}
 
 		email.addTo(pinfo.getEmail());
 		email.setITemplate(TemplatesMX.FC_KNET_SUCCESS);
