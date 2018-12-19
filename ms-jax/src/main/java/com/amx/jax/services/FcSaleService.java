@@ -452,16 +452,6 @@ public class FcSaleService extends AbstractService {
 				orderNotificationModel.setReceiptNo(collModel.getDocumentFinanceYear().toString()+"/"+collModel.getDocumentNo().toString());
 				orderNotificationModel.setNetAmount(collModel.getNetAmount());
 				
-				try{
-				ObjectMapper mapper = new ObjectMapper();
-				String reportResponseDtoJson = mapper.writeValueAsString(reportResponseDto);
-				String orderNotificationModelJson = mapper.writeValueAsString(orderNotificationModel);
-				System.out.println("reportResponseDtoJson :"+reportResponseDtoJson);
-				System.out.println("orderNotificationModelJson :"+orderNotificationModelJson);
-				}catch(Exception e){
-					e.printStackTrace();
-				}
-				
 					Email email = new Email();
 					email.setSubject("FC Delivery - Payment Success");
 					email.addTo(orderNotificationModel.getEmail());
