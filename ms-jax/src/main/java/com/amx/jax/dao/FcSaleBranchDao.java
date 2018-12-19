@@ -361,7 +361,7 @@ public class FcSaleBranchDao {
 	}
 	
 	@Transactional
-	public void stockUpdate(List<ForeignCurrencyAdjust> fromFCAdj,List<ForeignCurrencyAdjust> toFCAdj,List<ForeignCurrencyOldModel> oldToFCAdj){
+	public void stockUpdate(List<ForeignCurrencyAdjust> fromFCAdj,List<ForeignCurrencyAdjust> toFCAdj,List<ForeignCurrencyOldModel> oldToFCAdj,List<ForeignCurrencyOldModel> oldFromFCAdj){
 		if(fromFCAdj != null) {
 			for (ForeignCurrencyAdjust fromCurrencyAdj : fromFCAdj) {
 				foreignCurrencyAdjustRepository.save(fromCurrencyAdj);
@@ -375,6 +375,11 @@ public class FcSaleBranchDao {
 		if(oldToFCAdj != null) {
 			for (ForeignCurrencyOldModel oldToCurrencyAdj : oldToFCAdj) {
 				foreignCurrencyAdjustOldRepository.save(oldToCurrencyAdj);
+			}
+		}
+		if(oldFromFCAdj != null) {
+			for (ForeignCurrencyOldModel oldFromCurrencyAdj : oldFromFCAdj) {
+				foreignCurrencyAdjustOldRepository.save(oldFromCurrencyAdj);
 			}
 		}
 	}
