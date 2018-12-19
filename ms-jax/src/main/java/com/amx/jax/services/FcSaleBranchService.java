@@ -145,7 +145,7 @@ public class FcSaleBranchService extends AbstractService{
 				}
 			}
 		}catch (GlobalException e) {
-			throw new GlobalException(e.getErrorMessage(),e.getErrorKey());
+			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}catch (Exception e) {
 			throw new GlobalException(JaxError.UNABLE_CONVERT_PENDING_RECORDS,"Converting multiple records to single by collection document failed");
 		}
