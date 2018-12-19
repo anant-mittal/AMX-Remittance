@@ -3,7 +3,7 @@ package com.amx.jax.pricer.dto;
 import java.io.Serializable;
 import java.util.List;
 
-public class PricingRespDTO implements Serializable {
+public class PricingResponseDTO implements Serializable {
 
 	/**
 	 * 

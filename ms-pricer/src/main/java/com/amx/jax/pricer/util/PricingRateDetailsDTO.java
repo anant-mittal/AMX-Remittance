@@ -1,6 +1,5 @@
 package com.amx.jax.pricer.util;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
@@ -9,12 +8,7 @@ import com.amx.jax.pricer.dbmodel.OnlineMarginMarkup;
 import com.amx.jax.pricer.dbmodel.ViewExGLCBAL;
 import com.amx.jax.pricer.dto.BankRateDetailsDTO;
 
-public class PricingRateDetailsDTO implements Serializable {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+public class PricingRateDetailsDTO  {
 
 	private List<BankRateDetailsDTO> baseBankRatesNPrices;
 
@@ -22,7 +16,7 @@ public class PricingRateDetailsDTO implements Serializable {
 
 	private OnlineMarginMarkup margin;
 
-	private List<BankRateDetailsDTO> finalBanksRatesNPrices;
+	private List<BankRateDetailsDTO> discountedBanksRatesNPrices;
 
 	public List<BankRateDetailsDTO> getBaseBankRatesNPrices() {
 		return baseBankRatesNPrices;
@@ -48,12 +42,12 @@ public class PricingRateDetailsDTO implements Serializable {
 		this.margin = margin;
 	}
 
-	public List<BankRateDetailsDTO> getFinalBanksRatesNPrices() {
-		return finalBanksRatesNPrices;
+	public List<BankRateDetailsDTO> getDiscountedBanksRatesNPrices() {
+		return discountedBanksRatesNPrices;
 	}
 
-	public void setFinalBanksRatesNPrices(List<BankRateDetailsDTO> finalBanksRatesNPrices) {
-		this.finalBanksRatesNPrices = finalBanksRatesNPrices;
+	public void setDiscountedBanksRatesNPrices(List<BankRateDetailsDTO> finalBanksRatesNPrices) {
+		this.discountedBanksRatesNPrices = finalBanksRatesNPrices;
 	}
 	
 	

@@ -7,58 +7,28 @@ import com.amx.jax.exception.IExceptionEnum;
  */
 public enum PricerServiceError implements IExceptionEnum {
 
-	/** The already exist. */
-	// RBAC error
-	ALREADY_EXIST,
+	INVALID_CUSTOMER,
 
-	/** The missing otp. */
-	MISSING_OTP,
-
-	/** The invalid otp. */
-	INVALID_OTP,
-
-	/** The otp limit exceeded. */
-	OTP_LIMIT_EXCEEDED,
-
-	/** The invalid or missing data. */
-	INVALID_OR_MISSING_DATA,
-
-	/** The invalid role definition. */
-	INVALID_ROLE_DEFINITION,
-
-	/** The invalid permission. */
-	INVALID_PERMISSION,
-
-	/** The invalid access type scope. */
-	INVALID_ACCESS_TYPE_SCOPE,
-
-	/** The invalid user role mappings. */
-	INVALID_USER_ROLE_MAPPINGS,
-
-	/** The illegal user role mapping modification. */
-	ILLEGAL_USER_ROLE_MAPPING_MODIFICATION,
-
-	/** The invalid user details. */
-	INVALID_USER_DETAILS,
-
-	/** The Multiple users. */
-	MULTIPLE_USERS,
-
-	/** The User Not Active. */
-	USER_NOT_ACTIVE_OR_DELETED,
-
-	/** The user account locked. */
-	USER_ACCOUNT_LOCKED,
-
-	/** The duplicate role. */
-	DUPLICATE_ROLE,
-
-	/** The invalid role. */
-	INVALID_ROLE,
-
-	/** The incompatible data type. */
-	INCOMPATIBLE_DATA_TYPE,
-
+	INVALID_COUNTRY,
+	
+	INVALID_CURRENCY,
+	
+	MISSING_AMOUNT,
+	
+	INVALID_BRANCH_ID,
+	
+	INVALID_CHANNEL,
+	
+	INVALID_PRICING_LEVEL,
+	
+	MISSING_ROUTING_BANK_IDS,
+	
+	INVALID_ROUTING_BANK_IDS,
+	
+	MISSING_GLCBAL_ENTRIES,
+	
+	MISSING_VALID_EXCHANGE_RATES,
+	
 	/** The unknown exception. */
 	// MISC
 	UNKNOWN_EXCEPTION;

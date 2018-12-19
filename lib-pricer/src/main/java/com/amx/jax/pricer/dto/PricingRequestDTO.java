@@ -7,7 +7,7 @@ import java.util.List;
 import com.amx.jax.dict.UserClient.Channel;
 import com.amx.jax.pricer.var.PricerServiceConstants.PRICE_BY;
 
-public class PricingReqDTO implements Serializable {
+public class PricingRequestDTO implements Serializable {
 
 	/**
 	 * 

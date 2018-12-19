@@ -27,9 +27,8 @@ import com.amx.jax.pricer.dbmodel.CustomerCategoryDiscount;
 import com.amx.jax.pricer.dbmodel.PipsMaster;
 import com.amx.jax.pricer.dbmodel.ViewExGLCBAL;
 import com.amx.jax.pricer.dto.BankRateDetailsDTO;
-import com.amx.jax.pricer.dto.PricingReqDTO;
+import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.util.PricingRateDetailsDTO;
-import com.amx.utils.JsonUtil;
 
 @Component
 public class CustomerDiscountManager {
@@ -48,16 +47,15 @@ public class CustomerDiscountManager {
 
 	private static BigDecimal PIPS_BANK_ID = new BigDecimal(78);
 
-	public List<BankRateDetailsDTO> getDiscountedRates(PricingReqDTO pricingReqDTO, List<BankRateDetailsDTO> bankRates,
-			Channel channel, Customer customer) {
+	public List<BankRateDetailsDTO> getDiscountedRates(PricingRequestDTO pricingRequestDTO,
+			List<BankRateDetailsDTO> bankRates, Channel channel, Customer customer) {
 
-		ChannelDiscount channelDiscountPips = channelDiscountDao.getDiscountByChannel(channel);
+		ChannelDiscount channelDiscount = channelDiscountDao.getDiscountByChannel(channel);
+		BigDecimal channelDiscountPips = (null != channelDiscount ? channelDiscount.getDiscountPips()
+				: new BigDecimal(0));
 
 		CustomerCategoryDiscount ccDiscount = custCatDiscountDao.getDiscountByCustomerCategory("PLATINUM");
-
-		System.out.println(" Channel Discount ==>  " + JsonUtil.toJson(channelDiscountPips));
-
-		System.out.println(" Customer cat Discount ==>  " + JsonUtil.toJson(ccDiscount));
+		BigDecimal ccDiscountPips = (null != ccDiscount ? ccDiscount.getDiscountPips() : new BigDecimal(0));
 
 		List<BigDecimal> validBankIds = new ArrayList<BigDecimal>();
 
@@ -70,8 +68,8 @@ public class CustomerDiscountManager {
 			}
 		}
 
-		List<PipsMaster> pipsList = pipsMasterDao.getPipsForFcCurAndBank(pricingReqDTO.getForeignCurrencyId(),
-				PIPS_BANK_ID, pricingReqDTO.getForeignCountryId(), validBankIds);
+		List<PipsMaster> pipsList = pipsMasterDao.getPipsForFcCurAndBank(pricingRequestDTO.getForeignCurrencyId(),
+				PIPS_BANK_ID, pricingRequestDTO.getForeignCountryId(), validBankIds);
 
 		Map<Long, TreeMap<BigDecimal, PipsMaster>> bankAmountSlabDiscounts = new HashMap<Long, TreeMap<BigDecimal, PipsMaster>>();
 
@@ -109,9 +107,6 @@ public class CustomerDiscountManager {
 				TreeMap<BigDecimal, PipsMaster> pipsMap = bankAmountSlabDiscounts.get(bankRate.getBankId().longValue());
 				for (Entry<BigDecimal, PipsMaster> entry : pipsMap.entrySet()) {
 
-					System.out.println("For PIPS Iterations Bank ==> " + entry.getValue().getBankMaster().getBankCode()
-							+ " pips No ==> " + entry.getKey());
-
 					if (bankRate.getExRateBreakup().getConvertedFCAmount().compareTo(entry.getKey()) <= 0) {
 						amountSlabPips = entry.getValue().getPipsNo();
 						break;
@@ -122,10 +117,9 @@ public class CustomerDiscountManager {
 
 			BigDecimal totalDiscountPips = amountSlabPips;
 
-			totalDiscountPips
-					.add(null != channelDiscountPips ? channelDiscountPips.getDiscountPips() : new BigDecimal(0));
+			totalDiscountPips.add(channelDiscountPips);
 
-			totalDiscountPips.add(null != ccDiscount ? ccDiscount.getDiscountPips() : new BigDecimal(0));
+			totalDiscountPips.add(ccDiscountPips);
 
 			BigDecimal discountedSellRate = bankRate.getExRateBreakup().getInverseRate().subtract(totalDiscountPips);
 
@@ -151,22 +145,22 @@ public class CustomerDiscountManager {
 			try {
 				BeanUtils.copyProperties(discountedRateDetail, bankRate);
 			} catch (IllegalAccessException | InvocationTargetException e) {
-				System.out.println("error in convert of bankmaster");
+				// pass
 			}
 
 			discountedRateDetail.setBankCode(" Discounted : " + discountedRateDetail.getBankCode());
 
-			if (pricingReqDTO.getLocalAmount() != null) {
+			if (pricingRequestDTO.getLocalAmount() != null) {
 
 				// Get Bank Wise Rates for Local Currency
-				discountedRateDetail.setExRateBreakup(
-						RemitPriceManager.createBreakUpForLcCur(discountedSellRate, pricingReqDTO.getLocalAmount()));
+				discountedRateDetail.setExRateBreakup(RemitPriceManager.createBreakUpForLcCur(discountedSellRate,
+						pricingRequestDTO.getLocalAmount()));
 
 			} else {
 
 				// Get Bank wise Rates for Foreign Currency
-				discountedRateDetail.setExRateBreakup(
-						RemitPriceManager.createBreakUpForFcCur(discountedSellRate, pricingReqDTO.getLocalAmount()));
+				discountedRateDetail.setExRateBreakup(RemitPriceManager.createBreakUpForFcCur(discountedSellRate,
+						pricingRequestDTO.getLocalAmount()));
 
 			}
 

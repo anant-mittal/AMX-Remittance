@@ -12,10 +12,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.pricer.PricerService;
-import com.amx.jax.pricer.dto.PricingReqDTO;
-import com.amx.jax.pricer.dto.PricingRespDTO;
+import com.amx.jax.pricer.dto.PricingRequestDTO;
+import com.amx.jax.pricer.dto.PricingResponseDTO;
 import com.amx.jax.pricer.service.PricingService;
 import com.amx.jax.pricer.util.PricingRateDetailsDTO;
 
@@ -34,15 +35,29 @@ public class PricerServiceApiController implements PricerService {
 		PricingRateDetailsDTO pricingRateDetailsDTO = new PricingRateDetailsDTO();
 		return pricingRateDetailsDTO;
 	}
-	
-	
+
 	@Override
 	@RequestMapping(value = ApiEndPoints.FETCH_PRICE_CUSTOMER, method = RequestMethod.POST)
-	public AmxApiResponse<PricingRespDTO, Object> fetchPriceForCustomer(PricingReqDTO pricingReqDTO) {
+	public AmxApiResponse<PricingResponseDTO, Object> fetchPriceForCustomer(PricingRequestDTO pricingRequestDTO) {
 
-		PricingRespDTO pricingRespDTO = pricingService.fetchRemitPricesForCustomer(pricingReqDTO);
+		LOGGER.info("Received Pricing Request from customer Id : " + pricingRequestDTO.getCustomerId() + " with TraceId: "
+				+ AppContextUtil.getTraceId());
 
-		return AmxApiResponse.build(pricingRespDTO);
+		PricingResponseDTO pricingResponseDTO = pricingService.fetchRemitPricesForCustomer(pricingRequestDTO);
+
+		return AmxApiResponse.build(pricingResponseDTO);
+
+	}
+
+	@Override
+	@RequestMapping(value = ApiEndPoints.FETCH_BASE_PRICE, method = RequestMethod.POST)
+	public AmxApiResponse<PricingResponseDTO, Object> fetchBasePrice(PricingRequestDTO pricingRequestDTO) {
+
+		LOGGER.info("Received Base Rate Request " + " with TraceId: " + AppContextUtil.getTraceId());
+
+		PricingResponseDTO pricingResponseDTO = pricingService.fetchBaseRemitPrices(pricingRequestDTO);
+
+		return AmxApiResponse.build(pricingResponseDTO);
 
 	}
 
