@@ -196,6 +196,7 @@ public class FxOrderReportManager {
 				email = customerList.get(0).getEmail();
 				reportModel.setLoyaltyPoints(loyaltyPoints);
 				reportModel.setEmail(email);
+				reportModel.setCustomerReferenceId(customerReferenceId);
 			}else{
 				logger.error("customer not found :"+customerId);
 				throw new GlobalException(JaxError.INVALID_CUSTOMER, "customer not found");

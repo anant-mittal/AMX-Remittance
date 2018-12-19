@@ -72,6 +72,7 @@ import com.amx.jax.util.DateUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.StringUtil;
 import com.amx.jax.validation.FxOrderValidation;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -421,7 +422,6 @@ public class FcSaleService extends AbstractService {
 			list.add(dto);
 		}
 		return list;
-
 	}
 	
 	public void sendKnetSuccessEmail(PaymentResponseDto payDto){
@@ -436,7 +436,12 @@ public class FcSaleService extends AbstractService {
 				FxOrderReportResponseDto reportResponseDto = reportManager.getReportDetails(custoemrId,payDto.getCollectionDocumentNumber(), payDto.getCollectionFinanceYear());
 				FxOrderDetailNotificationDto orderNotificationModel = new FxOrderDetailNotificationDto();
 				if(customerList!= null && !customerList.isEmpty()){
-					orderNotificationModel.setCustomerName(customerList.get(0).getFirstName()+" "+customerList.get(0).getMiddleName()==null?"":customerList.get(0).getMiddleName()+" "+customerList.get(0).getLastName()==null?"":customerList.get(0).getLastName());
+					String customerName = getCustomerFullName(customerList);
+					if(!StringUtils.isBlank(customerName)){
+						orderNotificationModel.setCustomerName(customerName);
+					}else{
+					 orderNotificationModel.setCustomerName(reportResponseDto.getCustomerName());
+					}
 					orderNotificationModel.setEmail(customerList.get(0).getEmail());
 					orderNotificationModel.setMobileNo(customerList.get(0).getMobile()==null?"":customerList.get(0).getMobile());
 					orderNotificationModel.setLoyaltyPoints(customerList.get(0).getLoyaltyPoints()==null?BigDecimal.ZERO:customerList.get(0).getLoyaltyPoints());
@@ -446,6 +451,7 @@ public class FcSaleService extends AbstractService {
 				orderNotificationModel.setLocalQurrencyQuote(currencyDao.getCurrencyList(collModel.getExCurrencyMaster().getCurrencyId()).get(0).getQuoteName());
 				orderNotificationModel.setReceiptNo(collModel.getDocumentFinanceYear().toString()+"/"+collModel.getDocumentNo().toString());
 				orderNotificationModel.setNetAmount(collModel.getNetAmount());
+				
 					Email email = new Email();
 					email.setSubject("FC Delivery - Payment Success");
 					email.addTo(orderNotificationModel.getEmail());
@@ -460,5 +466,20 @@ public class FcSaleService extends AbstractService {
 		
 	}
 	
+public String getCustomerFullName(List<Customer> customerList){
+	String customerName =null;
 
+	if(customerList !=null && !customerList.isEmpty()){
+		if(customerList.get(0).getFirstName() !=null){
+			customerName = customerList.get(0).getFirstName(); 
+		}
+		if(!StringUtils.isEmpty(customerList.get(0).getMiddleName())){
+			customerName = customerName +" "+customerList.get(0).getMiddleName();
+		}
+		if(!StringUtils.isEmpty(customerList.get(0).getLastName())){
+			customerName = customerName+ " "+ customerList.get(0).getLastName();
+		}
+	}
+	return customerName;
+	}
 }

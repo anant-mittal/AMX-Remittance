@@ -187,7 +187,7 @@
                                           pdfFontName="fonts/all/arial.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$F{tranx}.get("/fxOrderTrnxList/[0]/customerId") + " / " + $F{tranx}.get("/fxOrderTrnxList/[0]/customerName")]]>
+                                    <![CDATA[$F{tranx}.get("/fxOrderTrnxList/[0]/customerReference") + " / " + $F{tranx}.get("/fxOrderTrnxList/[0]/customerName")]]>
                                     </textFieldExpression>
                             </textField>
  

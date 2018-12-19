@@ -45,6 +45,7 @@ public class SWAdapterGUI extends JFrame {
 	Font font = new Font("monospaced", Font.PLAIN, 12);
 
 	JLabel labelDescription = new JLabel("....");
+	JLabel labelDescriptionDetail = new JLabel("....");
 	public static SWAdapterGUI CONTEXT = null;
 	public static String LOG = "";
 
@@ -92,13 +93,20 @@ public class SWAdapterGUI extends JFrame {
 		labelDescription.setFont(font);
 		newPanel.add(labelDescription, constraints);
 
+		constraints.gridx = 0;
+		constraints.gridy = 6;
+		constraints.anchor = GridBagConstraints.CENTER;
+		constraints.gridwidth = 4;
+		labelDescriptionDetail.setFont(font);
+		newPanel.add(labelDescriptionDetail, constraints);
+
 		// Button
 		JButton quitButton = new JButton("Quit");
 		quitButton.addActionListener((ActionEvent event) -> {
 			System.exit(0);
 		});
 		constraints.gridx = 2;
-		constraints.gridy = 6;
+		constraints.gridy = 7;
 		constraints.gridwidth = 2;
 		constraints.anchor = GridBagConstraints.CENTER;
 		newPanel.add(quitButton, constraints);
@@ -109,7 +117,7 @@ public class SWAdapterGUI extends JFrame {
 		});
 
 		constraints.gridx = 0;
-		constraints.gridy = 6;
+		constraints.gridy = 7;
 		constraints.gridwidth = 2;
 		constraints.anchor = GridBagConstraints.CENTER;
 		newPanel.add(refreshButton, constraints);
@@ -194,10 +202,17 @@ public class SWAdapterGUI extends JFrame {
 	public void readerName(String name) {
 		statusReader.setText(String.format(STAT_FORMAT_READER, name));
 	}
-	
+
 	public void log(String message) {
 		LOG = message;
 		labelDescription.setText(message);
+		labelDescriptionDetail.setText("");
+	}
+
+	public void log(String message, String detail) {
+		LOG = message;
+		labelDescription.setText(message);
+		labelDescriptionDetail.setText(detail);
 	}
 
 }

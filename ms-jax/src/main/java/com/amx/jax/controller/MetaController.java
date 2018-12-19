@@ -2,7 +2,7 @@ package com.amx.jax.controller;
 
 import java.math.BigDecimal;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -43,6 +43,7 @@ import com.amx.jax.dbmodel.PrefixModel;
 import com.amx.jax.dbmodel.PurposeOfRemittanceViewModel;
 import com.amx.jax.dbmodel.UserFinancialYear;
 import com.amx.jax.dbmodel.ViewOnlineEmailMobileCheck;
+import com.amx.jax.logger.LoggerService;
 import com.amx.jax.manager.JaxNotificationManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.response.BranchSystemDetailDto;
@@ -84,7 +85,7 @@ import com.amx.jax.validation.BankBranchSearchRequestlValidator;
 @RequestMapping(MetaApi.PREFIX)
 public class MetaController {
 
-	private static final Logger LOGGER = Logger.getLogger(MetaController.class);
+	private static final Logger LOGGER = LoggerService.getLogger(MetaController.class);
 
 	@Autowired
 	CountryService countryService;
@@ -188,6 +189,9 @@ public class MetaController {
 
 	@RequestMapping(value = MetaApi.SEQ_QUEST_LIST, method = RequestMethod.GET)
 	public AmxApiResponse<QuestModelDTO, Object> getAllQuestionListResponse() {
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("{} {} {}", MetaApi.SEQ_QUEST_LIST, metaData.getLanguageId(), metaData.getCountryId());
+		}
 		return questionAnswerService.findAllQuestion(metaData.getLanguageId(), metaData.getCountryId());
 	}
 
@@ -197,7 +201,7 @@ public class MetaController {
 		return questionAnswerService.getQuestionDescription(metaData.getLanguageId(), metaData.getCountryId(), questId);
 	}
 
-	@RequestMapping(value =MetaApi.API_TERMS_BY_lANG_ID, method = RequestMethod.GET)
+	@RequestMapping(value = MetaApi.API_TERMS_BY_lANG_ID, method = RequestMethod.GET)
 	public AmxApiResponse<TermsAndConditionDTO, Object> getTermsAndConditionResponse() {
 		return termsAndConditionService.getTermsAndCondition(metaData.getLanguageId());
 	}
@@ -208,7 +212,7 @@ public class MetaController {
 				metaData.getCountryId());
 	}
 
-	@RequestMapping(value =  MetaApi.API_WHY, method = RequestMethod.GET)
+	@RequestMapping(value = MetaApi.API_WHY, method = RequestMethod.GET)
 	public AmxApiResponse<WhyDoAskInformationDTO, Object> getWhyAskInformationResponse() {
 		return whyDoAskService.getWhyDoAskInformation(metaData.getLanguageId(), metaData.getCountryId());
 	}
@@ -227,7 +231,7 @@ public class MetaController {
 		return emailMobileCheckService.checkMobile(languageId, countryId, mobile);
 	}
 
-	@RequestMapping(value = MetaApi.API_FYEAR , method = RequestMethod.GET)
+	@RequestMapping(value = MetaApi.API_FYEAR, method = RequestMethod.GET)
 	public AmxApiResponse<UserFinancialYear, Object> getFinancialYearResponse() {
 		return financialService.getFinancialYear();
 	}
@@ -237,7 +241,7 @@ public class MetaController {
 		return parameterService.getContactUsTime();
 	}
 
-	@RequestMapping(value =  MetaApi.API_HELP_NO, method = RequestMethod.GET)
+	@RequestMapping(value = MetaApi.API_HELP_NO, method = RequestMethod.GET)
 	public AmxApiResponse<AuthenticationLimitCheckDTO, Object> getContactNumberResponse() {
 		return parameterService.getContactPhoneNo();
 	}
@@ -278,7 +282,8 @@ public class MetaController {
 		return purposeOfRemittanceService.getPurposeOfRemittance(documentNumber, documentFinancialYear);
 	}
 
-	@RequestMapping(value = "/colldetview/{companyId}/{documentNo}/{documentFinancialYear}/{documentCode}", method = RequestMethod.GET)
+	@RequestMapping(value = "/colldetview/{companyId}/{documentNo}/{documentFinancialYear}/{documentCode}",
+			method = RequestMethod.GET)
 	public AmxApiResponse<CollectionDetailViewModel, Object> getCollectionDetailFromView(
 			@PathVariable("companyId") BigDecimal companyId, @PathVariable("documentNo") BigDecimal documentNo,
 			@PathVariable("documentFinancialYear") BigDecimal documentFinancialYear) {
@@ -286,7 +291,8 @@ public class MetaController {
 				ConstantDocument.DOCUMENT_CODE_FOR_COLLECT_TRANSACTION);
 	}
 
-	@RequestMapping(value = "/collpaydetview/{companyId}/{documentNo}/{documentFinancialYear}/{documentCode}", method = RequestMethod.GET)
+	@RequestMapping(value = "/collpaydetview/{companyId}/{documentNo}/{documentFinancialYear}/{documentCode}",
+			method = RequestMethod.GET)
 	public AmxApiResponse<CollectionPaymentDetailsViewModel, Object> getCollectPaymentDetailsFromView(
 			@PathVariable("companyId") BigDecimal companyId, @PathVariable("documentNo") BigDecimal documentNo,
 			@PathVariable("documentFinancialYear") BigDecimal documentFinancialYear) {
@@ -295,7 +301,7 @@ public class MetaController {
 				documentFinancialYear, ConstantDocument.DOCUMENT_CODE_FOR_COLLECT_TRANSACTION);
 	}
 
-	@RequestMapping(value =  MetaApi.MULTI_COUNTRY, method = RequestMethod.GET)
+	@RequestMapping(value = MetaApi.MULTI_COUNTRY, method = RequestMethod.GET)
 	public AmxApiResponse<MultiCountryDTO, Object> getMultiCountry() {
 		return multiCountryService.getMultiCountryList();
 	}
@@ -366,8 +372,6 @@ public class MetaController {
 	public AmxApiResponse<ServiceGroupMasterDescDto, Object> getServiceGroup() {
 		return metaService.getServiceGroups();
 	}
-	
-	
 
 	/**
 	 * @param beneficiaryCountryId
@@ -397,30 +401,29 @@ public class MetaController {
 	public AmxApiResponse<BranchDetailModel, Object> getBranchDetail() {
 		return branchDetailService.getBracnchDetailResponse();
 	}
+
 	@RequestMapping(value = "/branch/{countryBranchId}/systeminfo", method = RequestMethod.GET)
 	public AmxApiResponse<BranchSystemDetail, Object> getBranchSystemList(
 			@PathVariable("countryBranchId") BigDecimal countryBranchId) {
 		return branchDetailService.getBranchSystemDetailResponse(countryBranchId);
 	}
-	
+
 	@RequestMapping(value = MetaApi.API_BRANCH_SYSTEM_INV_LIST, method = RequestMethod.GET)
 	public AmxApiResponse<BranchSystemDetailDto, Object> listBranchSystemInventory() {
 		return branchDetailService.listBranchSystemInventory();
 	}
 
-	
-	/** 
-	  @Paurpose : Terms and condtion for FX Order
+	/**
+	 * @Paurpose : Terms and condtion for FX Order
 	 **/
-		@RequestMapping(value = MetaApi.API_TERMS_BY_lANG_COUNTRY_ID_FOR_FX, method = RequestMethod.GET)
-		public AmxApiResponse<TermsAndConditionDTO, Object> getTermsAndConditionAsPerCountryResponseforFxOrder() {
-			return termsAndConditionService.getTermsAndConditionAsPerCountryForFxOrder(metaData.getLanguageId(),metaData.getCountryId());
-		}
+	@RequestMapping(value = MetaApi.API_TERMS_BY_lANG_COUNTRY_ID_FOR_FX, method = RequestMethod.GET)
+	public AmxApiResponse<TermsAndConditionDTO, Object> getTermsAndConditionAsPerCountryResponseforFxOrder() {
+		return termsAndConditionService.getTermsAndConditionAsPerCountryForFxOrder(metaData.getLanguageId(),
+				metaData.getCountryId());
+	}
 
-		
-		
-		@RequestMapping(value = MetaApi.API_AREA_LIST, method = RequestMethod.GET)
-		public AmxApiResponse<ViewAreaDto, Object> getAreaList() {
-			return metaService.getAreaList();
-		}
+	@RequestMapping(value = MetaApi.API_AREA_LIST, method = RequestMethod.GET)
+	public AmxApiResponse<ViewAreaDto, Object> getAreaList() {
+		return metaService.getAreaList();
+	}
 }

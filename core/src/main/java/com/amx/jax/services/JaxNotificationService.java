@@ -32,9 +32,11 @@ import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.ChangeType;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
+import com.amx.jax.postman.model.Message;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.scope.TenantContextHolder;
+import com.amx.utils.CollectionUtil;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -80,12 +82,6 @@ public class JaxNotificationService {
 		logger.debug("Sending txn notification to customer");
 		Email email = new Email();
 
-		if (TenantContextHolder.currentSite().equals(Tenant.KWT)) {
-			email.setSubject("Your transaction on AMX is successful");
-		} else if (TenantContextHolder.currentSite().equals(Tenant.BHR)) {
-			email.setSubject("Your transaction on MEC is successful");
-		}
-
 		email.addTo(pinfo.getEmail());
 		email.setITemplate(TemplatesMX.FC_KNET_SUCCESS);
 		email.setHtml(true);
@@ -94,7 +90,7 @@ public class JaxNotificationService {
 		File file = new File();
 		file.setITemplate(TemplatesMX.FXO_RECEIPT);
 		file.setType(File.Type.PDF);
-		file.getModel().put(RESP_DATA_KEY, remittanceReceiptSubreport);
+		file.getModel().put(Message.RESULTS_KEY, CollectionUtil.getList(remittanceReceiptSubreport));
 
 		email.addFile(file);
 		logger.debug("Email to - " + pinfo.getEmail() + " first name : " + pinfo.getCustomerName());

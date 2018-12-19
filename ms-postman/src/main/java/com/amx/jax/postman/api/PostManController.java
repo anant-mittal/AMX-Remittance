@@ -66,14 +66,10 @@ public class PostManController {
 	/**
 	 * Process template.
 	 *
-	 * @param template
-	 *            the template
-	 * @param data
-	 *            the data
-	 * @param fileName
-	 *            the file name
-	 * @param fileType
-	 *            the file type
+	 * @param template the template
+	 * @param data     the data
+	 * @param fileName the file name
+	 * @param fileType the file type
 	 * @return the file
 	 */
 	@SuppressWarnings("unchecked")
@@ -96,8 +92,7 @@ public class PostManController {
 	/**
 	 * Process template file.
 	 *
-	 * @param file
-	 *            the file
+	 * @param file the file
 	 * @return the file
 	 */
 	@RequestMapping(value = PostManUrls.PROCESS_TEMPLATE_FILE, method = RequestMethod.POST)
@@ -110,13 +105,10 @@ public class PostManController {
 	/**
 	 * Send SMS.
 	 *
-	 * @param sms
-	 *            the sms
-	 * @param async
-	 *            the async
+	 * @param sms   the sms
+	 * @param async the async
 	 * @return the sms
-	 * @throws PostManException
-	 *             the post man exception
+	 * @throws PostManException the post man exception
 	 */
 	@RequestMapping(value = PostManUrls.SEND_SMS, method = RequestMethod.POST)
 	public AmxApiResponse<SMS, Object> sendSMS(@RequestBody SMS sms,
@@ -158,6 +150,10 @@ public class PostManController {
 			email.setLang(lang);
 		}
 
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("SEND_EMAIL   {} ", JsonUtil.toJson(email));
+		}
+
 		if (async == true) {
 			return postManService.sendEmailAsync(email);
 		} else {
@@ -173,11 +169,9 @@ public class PostManController {
 	/**
 	 * Send email.
 	 *
-	 * @param email
-	 *            the email
+	 * @param email the email
 	 * @return the email
-	 * @throws PostManException
-	 *             the post man exception
+	 * @throws PostManException the post man exception
 	 */
 	@RequestMapping(value = PostManUrls.SEND_EMAIL_SUPPORT, method = RequestMethod.POST)
 	public AmxApiResponse<Email, Object> sendEmail(@RequestBody SupportEmail email) throws PostManException {
@@ -191,11 +185,9 @@ public class PostManController {
 	/**
 	 * Notify slack.
 	 *
-	 * @param msg
-	 *            the msg
+	 * @param msg the msg
 	 * @return the message
-	 * @throws PostManException
-	 *             the post man exception
+	 * @throws PostManException the post man exception
 	 */
 	@RequestMapping(value = PostManUrls.NOTIFY_SLACK, method = RequestMethod.POST)
 	public AmxApiResponse<Notipy, Object> notifySlack(@RequestBody Notipy msg) throws PostManException {
@@ -205,17 +197,12 @@ public class PostManController {
 	/**
 	 * Notify slack.
 	 *
-	 * @param eMsg
-	 *            the e msg
-	 * @param title
-	 *            the title
-	 * @param appname
-	 *            the appname
-	 * @param exception
-	 *            the exception
+	 * @param eMsg      the e msg
+	 * @param title     the title
+	 * @param appname   the appname
+	 * @param exception the exception
 	 * @return the exception
-	 * @throws PostManException
-	 *             the post man exception
+	 * @throws PostManException the post man exception
 	 */
 	@RequestMapping(value = PostManUrls.NOTIFY_SLACK_EXCEP, method = RequestMethod.POST)
 	public AmxApiResponse<ExceptionReport, Object> notifySlack(@RequestBody Exception eMsg,

@@ -2,6 +2,7 @@ package com.amx.jax.device;
 
 import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.swagger.ApiMockModelProperty;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 public class DeviceRestModels {
@@ -46,6 +47,7 @@ public class DeviceRestModels {
 	}
 
 	@JsonDeserialize(as = DeviceRestModel.class)
+	@JsonIgnoreProperties(ignoreUnknown = true)
 	public interface DevicePairingRequest {
 
 		@ApiMockModelProperty(example = "284052306594", required = false)
@@ -66,6 +68,7 @@ public class DeviceRestModels {
 	}
 
 	@JsonDeserialize(as = DeviceRestModel.class)
+	@JsonIgnoreProperties(ignoreUnknown = true)
 	public interface DevicePairingCreds extends DevicePairingRequest {
 
 		void setDeviceRegToken(String deviceRegToken);
@@ -76,14 +79,20 @@ public class DeviceRestModels {
 
 		void setDeviceRegId(String deviceRegId);
 
+		String getDeviceSecret();
+
+		void setDeviceSecret(String deviceSecret);
+
 	}
 
 	@JsonDeserialize(as = DeviceRestModel.class)
+	@JsonIgnoreProperties(ignoreUnknown = true)
 	public interface SessionPairingRequest extends DevicePairingCreds {
 
 	}
 
 	@JsonDeserialize(as = DeviceRestModel.class)
+	@JsonIgnoreProperties(ignoreUnknown = true)
 	public interface SessionPairingCreds {
 
 		void setDeviceSessionToken(String sessionPairingToken);
@@ -101,6 +110,7 @@ public class DeviceRestModels {
 
 	}
 
+	@JsonIgnoreProperties(ignoreUnknown = true)
 	public static class DeviceRestModel
 			implements DevicePairingRequest, DevicePairingCreds, SessionPairingRequest, SessionPairingCreds {
 
@@ -117,6 +127,8 @@ public class DeviceRestModels {
 		String sessionOTP;
 
 		String deviceRequestKey;
+
+		String deviceSecret;
 
 		@Override
 		public String getDeivceTerminalId() {
@@ -196,6 +208,16 @@ public class DeviceRestModels {
 		@Override
 		public void setIdentity(String identity) {
 			this.identity = identity;
+		}
+
+		@Override
+		public String getDeviceSecret() {
+			return this.deviceSecret;
+		}
+
+		@Override
+		public void setDeviceSecret(String deviceSecret) {
+			this.deviceSecret = deviceSecret;
 		}
 
 	}

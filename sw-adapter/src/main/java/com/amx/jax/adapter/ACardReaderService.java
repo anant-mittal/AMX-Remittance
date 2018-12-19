@@ -228,7 +228,7 @@ public abstract class ACardReaderService {
 					}
 				} catch (AmxApiException e) {
 					status(DeviceStatus.PAIRING_ERROR);
-					SWAdapterGUI.CONTEXT.log("SERVICE ERROR : " + e.getErrorKey());
+					SWAdapterGUI.CONTEXT.log("SERVICE ERROR : " + e.getErrorKey(), e.getErrorMessage());
 				} catch (AmxException e) {
 					status(DeviceStatus.PAIRING_ERROR);
 					SWAdapterGUI.CONTEXT.log("SERVICE ERROR : " + e.getMessage());
@@ -255,7 +255,8 @@ public abstract class ACardReaderService {
 				status(DeviceStatus.SESSION_CREATED);
 			} catch (AmxApiException e) {
 				status(DeviceStatus.SESSION_ERROR);
-				SWAdapterGUI.CONTEXT.log(e.getErrorKey() + " - REGID : " + devicePairingCreds.getDeviceRegId());
+				SWAdapterGUI.CONTEXT.log(e.getErrorKey() + " - REGID : " + devicePairingCreds.getDeviceRegId(),
+						e.getErrorMessage());
 				if ("CLIENT_INVALID_PAIR_TOKEN".equals(e.getErrorKey())) {
 					devicePairingCredsValid = false;
 				} else if ("CLIENT_NOT_FOUND".equals(e.getErrorKey())) {
