@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.AmxConstants;
 import com.amx.jax.AppConfig;
 import com.amx.jax.model.OtpData;
 import com.amx.jax.postman.PostManException;
@@ -68,7 +69,7 @@ public class UserOtpManager {
 		 * 
 		 * @author lalittanwar
 		 */
-		HashBuilder builder = new HashBuilder().interval(otpTTL).secret("SHH..DONT.TELL.ANYONE").message(sac);
+		HashBuilder builder = new HashBuilder().interval(otpTTL).secret(AmxConstants.SHH_DONT_TELL_ANYONE).message(sac);
 		otpData.setmOtpPrefix(sac);
 		otpData.setmOtp(builder.toHMAC().toNumeric(6).output());
 

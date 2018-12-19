@@ -88,6 +88,7 @@ public class DeviceController {
 		DevicePairingCreds creds = DeviceRestModels.get();
 		creds.setDeviceRegToken(deviceDto.getPairToken());
 		creds.setDeviceRegId(ArgUtil.parseAsString(deviceDto.getRegistrationId()));
+		creds.setDeviceSecret(deviceDto.getDeviceSecret());
 		return AmxApiResponse.build(creds);
 	}
 

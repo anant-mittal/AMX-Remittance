@@ -2,6 +2,7 @@ package com.amx.jax.rbaac.dto;
 
 import java.math.BigDecimal;
 
+import com.amx.jax.AmxConstants;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -14,7 +15,7 @@ public class DeviceDto {
 
 	String deviceType;
 
-	String deviceSecret;
+	String deviceSecret = AmxConstants.SHH_DONT_TELL_ANYONE;
 
 	String pairToken;
 
