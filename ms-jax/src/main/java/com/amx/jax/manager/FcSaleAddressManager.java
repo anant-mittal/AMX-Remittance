@@ -287,7 +287,7 @@ public class FcSaleAddressManager extends AbstractModel {
 			shippingAddressDao.save(shipAdd);
 		}catch(GlobalException e){
 			logger.error("saveShippingAddress", e.getErrorMessage() + "" +e.getErrorKey());
-			 throw new GlobalException(e.getErrorMessage(),e.getErrorKey());
+			 throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		} catch (Exception e) {
 			logger.error("saveShippingAddress :", e.getMessage());
 			throw new GlobalException(JaxError.FS_SHIPPING_ADDRESS_CREATION_FAILED, "Failed");
