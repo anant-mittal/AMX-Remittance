@@ -122,24 +122,10 @@ public class DeviceService extends AbstractService {
 		} catch (Exception e) {
 		}
 		dto.setPairToken(devicePairToken);
-		dto.setDeviceSecret(getClientSecreteKey(newDevice));
+		dto.setDeviceSecret(newDevice.getClientSecreteKey());
 		return dto;
 	}
 
-	/**
-	 * Create client secret key used to generate otp. Will be sent for first time
-	 * 
-	 * @param newDevice
-	 * @return
-	 */
-	public String getClientSecreteKey(Device newDevice) {
-		String clientSecretKey = null;
-		try {
-			clientSecretKey = CryptoUtil.getSHA2Hash(newDevice.getClientSecret() + newDevice.getPairToken());
-		} catch (NoSuchAlgorithmException e) {
-		}
-		return clientSecretKey;
-	}
 
 	public BoolRespModel activateDevice(Integer deviceRegId) {
 		logger.info("In activateDevice with deviceRegId: {}", deviceRegId);
