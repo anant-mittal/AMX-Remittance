@@ -11,7 +11,8 @@ import java.util.Map;
 public class FilterBy {
 
 	/** The map of sorts. */
-	private Map<String, String> mapOfFilters;
+	private Map<String, String> mapOfLikeFilters;
+	private Map<String, String> mapOfWhereFilters;
 
 	/** The global search. */
 	private boolean globalSearch;
@@ -20,8 +21,11 @@ public class FilterBy {
 	 * Instantiates a new sort by.
 	 */
 	public FilterBy() {
-		if (null == mapOfFilters) {
-			mapOfFilters = new HashMap<String, String>();
+		if (null == mapOfLikeFilters) {
+			mapOfLikeFilters = new HashMap<String, String>();
+		}
+		if (null == mapOfWhereFilters) {
+			mapOfWhereFilters = new HashMap<String, String>();
 		}
 	}
 
@@ -30,8 +34,8 @@ public class FilterBy {
 	 *
 	 * @return the mapOfFilters
 	 */
-	public Map<String, String> getMapOfFilters() {
-		return mapOfFilters;
+	public Map<String, String> getMapOfLikeFilters() {
+		return mapOfLikeFilters;
 	}
 
 	/**
@@ -40,7 +44,7 @@ public class FilterBy {
 	 * @param mapOfFilters the mapOfFilters to set
 	 */
 	public void setMapOfFilters(Map<String, String> mapOfFilters) {
-		this.mapOfFilters = mapOfFilters;
+		this.mapOfLikeFilters = mapOfFilters;
 	}
 
 	/**
@@ -49,8 +53,12 @@ public class FilterBy {
 	 * @param filterColumn the filter column
 	 * @param filterValue  the filter value
 	 */
-	public void addFilter(String filterColumn, String filterValue) {
-		mapOfFilters.put(filterColumn, filterValue);
+	public void addSearchFilter(String filterColumn, String filterValue) {
+		mapOfLikeFilters.put(filterColumn, filterValue);
+	}
+
+	public void addWhereFilter(String filterColumn, String filterValue) {
+		mapOfWhereFilters.put(filterColumn, filterValue);
 	}
 
 	/**
@@ -69,6 +77,14 @@ public class FilterBy {
 	 */
 	public void setGlobalSearch(boolean globalSearch) {
 		this.globalSearch = globalSearch;
+	}
+
+	public Map<String, String> getMapOfWhereFilters() {
+		return mapOfWhereFilters;
+	}
+
+	public void setMapOfWhereFilters(Map<String, String> mapOfWhereFilters) {
+		this.mapOfWhereFilters = mapOfWhereFilters;
 	}
 
 }

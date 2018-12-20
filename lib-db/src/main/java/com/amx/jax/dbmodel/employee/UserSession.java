@@ -11,12 +11,9 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "USER_SESSION")
-public class UserSession implements Serializable{
+public class UserSession implements Serializable {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -4842537006134875403L;
 
 	@Id
 	@Column(name = "USER_NAME")

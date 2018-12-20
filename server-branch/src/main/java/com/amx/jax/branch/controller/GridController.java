@@ -1,6 +1,5 @@
-package com.amx.jax.grid;
+package com.amx.jax.branch.controller;
 
-import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -9,20 +8,20 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.api.AmxApiResponse;
-import com.amx.jax.logger.LoggerService;
+import com.amx.jax.client.GridServiceClient;
+import com.amx.jax.grid.GridMeta;
+import com.amx.jax.grid.GridQuery;
+import com.amx.jax.grid.GridView;
 
 @RestController
-public class GridViewController {
-
-	Logger LOGGER = LoggerService.getLogger(getClass());
+public class GridController {
 
 	@Autowired
-	GridService gridService;
+	GridServiceClient gridService;
 
-	@RequestMapping(value = "/grid/view/{gridView}", method = { RequestMethod.POST })
+	@RequestMapping(value = "/pub/grid/view/{gridView}", method = { RequestMethod.POST })
 	public AmxApiResponse<?, GridMeta> gridView(@PathVariable(value = "gridView") GridView gridView,
 			@RequestBody GridQuery gridQuery) {
-		return gridService.view(gridView, gridQuery).get();
+		return gridService.gridView(gridView, gridQuery);
 	}
-
 }

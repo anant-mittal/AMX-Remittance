@@ -3,14 +3,9 @@ package com.amx.jax.grid;
 import java.util.List;
 
 import com.amx.utils.ArgUtil;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class DataTableRequest {
-
-	/** The unique id. */
-	private String uniqueId;
-
-	/** The draw. */
-	private String draw;
 
 	/** The start. */
 	private Integer start;
@@ -21,14 +16,11 @@ public class DataTableRequest {
 	/** The search. */
 	private String search;
 
-	/** The regex. */
-	private boolean regex;
-
 	/** The columns. */
-	private List<DataTableColumnSpecs> columns;
+	private List<GridColumn> columns;
 
 	/** The order. */
-	private DataTableColumnSpecs order;
+	private GridColumn order;
 
 	/** The is global search. */
 	private boolean isGlobalSearch;
@@ -40,24 +32,6 @@ public class DataTableRequest {
 	 */
 	public DataTableRequest(GridQuery gridQuery) {
 		prepareDataTableRequest(gridQuery);
-	}
-
-	/**
-	 * Gets the unique id.
-	 *
-	 * @return the uniqueId
-	 */
-	public String getUniqueId() {
-		return uniqueId;
-	}
-
-	/**
-	 * Sets the unique id.
-	 *
-	 * @param uniqueId the uniqueId to set
-	 */
-	public void setUniqueId(String uniqueId) {
-		this.uniqueId = uniqueId;
 	}
 
 	/**
@@ -115,29 +89,11 @@ public class DataTableRequest {
 	}
 
 	/**
-	 * Checks if is regex.
-	 *
-	 * @return the regex
-	 */
-	public boolean isRegex() {
-		return regex;
-	}
-
-	/**
-	 * Sets the regex.
-	 *
-	 * @param regex the regex to set
-	 */
-	public void setRegex(boolean regex) {
-		this.regex = regex;
-	}
-
-	/**
 	 * Gets the columns.
 	 *
 	 * @return the columns
 	 */
-	public List<DataTableColumnSpecs> getColumns() {
+	public List<GridColumn> getColumns() {
 		return columns;
 	}
 
@@ -146,7 +102,7 @@ public class DataTableRequest {
 	 *
 	 * @param columns the columns to set
 	 */
-	public void setColumns(List<DataTableColumnSpecs> columns) {
+	public void setColumns(List<GridColumn> columns) {
 		this.columns = columns;
 	}
 
@@ -155,7 +111,7 @@ public class DataTableRequest {
 	 *
 	 * @return the order
 	 */
-	public DataTableColumnSpecs getOrder() {
+	public GridColumn getOrder() {
 		return order;
 	}
 
@@ -164,26 +120,8 @@ public class DataTableRequest {
 	 *
 	 * @param order the order to set
 	 */
-	public void setOrder(DataTableColumnSpecs order) {
+	public void setOrder(GridColumn order) {
 		this.order = order;
-	}
-
-	/**
-	 * Gets the draw.
-	 *
-	 * @return the draw
-	 */
-	public String getDraw() {
-		return draw;
-	}
-
-	/**
-	 * Sets the draw.
-	 *
-	 * @param draw the draw to set
-	 */
-	public void setDraw(String draw) {
-		this.draw = draw;
 	}
 
 	/**
@@ -191,6 +129,7 @@ public class DataTableRequest {
 	 *
 	 * @return the isGlobalSearch
 	 */
+	@JsonIgnore
 	public boolean isGlobalSearch() {
 		return isGlobalSearch;
 	}
@@ -213,11 +152,8 @@ public class DataTableRequest {
 
 		this.setStart(gridQuery.getStart());
 		this.setLength(gridQuery.getLength());
-		this.setUniqueId(gridQuery.getUniqueId());
-		this.setDraw(gridQuery.getDraw());
 
 		this.setSearch(gridQuery.getSearch());
-		this.setRegex(gridQuery.isRegex());
 
 		int sortableCol = gridQuery.getSortBy();
 
@@ -228,7 +164,7 @@ public class DataTableRequest {
 		int maxParamsToCheck = gridQuery.getColumns().size();
 
 		for (int i = 0; i < maxParamsToCheck; i++) {
-			DataTableColumnSpecs colSpec = gridQuery.getColumns().get(i);
+			GridColumn colSpec = gridQuery.getColumns().get(i);
 			colSpec.setIndex(i);
 			if (i == sortableCol) {
 				colSpec.setSortDir(gridQuery.getSortOrder());
@@ -264,12 +200,16 @@ public class DataTableRequest {
 		FilterBy filterBy = new FilterBy();
 		filterBy.setGlobalSearch(this.isGlobalSearch());
 		if (!ArgUtil.isEmpty(this.getColumns())) {
-			for (DataTableColumnSpecs colSpec : this.getColumns()) {
-				if (colSpec.isSearchable()) {
+			for (GridColumn colSpec : this.getColumns()) {
+				if (colSpec.isSearchable() || !ArgUtil.isEmpty(colSpec.getSearch())) {
 					if (!GridUtil.isObjectEmpty(this.getSearch()) || !GridUtil.isObjectEmpty(colSpec.getSearch())) {
-						filterBy.addFilter(colSpec.getData(),
+						filterBy.addSearchFilter(colSpec.getData(),
 								(this.isGlobalSearch()) ? this.getSearch() : colSpec.getSearch());
 					}
+				}
+
+				if (!ArgUtil.isEmpty(colSpec.getValue())) {
+					filterBy.addWhereFilter(colSpec.getData(), colSpec.getValue());
 				}
 			}
 		}

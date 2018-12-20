@@ -1,6 +1,6 @@
 package com.amx.jax.grid;
 
-public class DataTableMeta {
+public class GridMeta {
 	private String recordsFiltered;
 
 	/** The records total. */

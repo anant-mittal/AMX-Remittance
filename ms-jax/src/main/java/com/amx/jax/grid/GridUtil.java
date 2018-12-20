@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import com.amx.utils.ArgUtil;
+
 /**
  * The Class AppUtil.
  *
@@ -111,6 +113,10 @@ public class GridUtil {
 				"SELECT * FROM (SELECT FILTERED_ORDERED_RESULTS.*, COUNT(1) OVER() total_records, ROWNUM AS RN FROM (SELECT BASEINFO.* FROM ( #BASE_QUERY# ) BASEINFO ) FILTERED_ORDERED_RESULTS #WHERE_CLAUSE# #ORDER_CLASUE# ) WHERE RN > (#PAGE_NUMBER# * #PAGE_SIZE#) AND RN <= (#PAGE_NUMBER# + 1) * #PAGE_SIZE# ");
 		String finalQuery = null;
 
+		String baseQueryFilter = paginationCriteria.getWhereFilterByClause();
+		String finalBaseQuery = baseQuery + ((ArgUtil.isEmpty(baseQueryFilter)) ? " " : " WHERE ")
+				+ baseQueryFilter;
+
 		// Datatable start is set to 0, 5, 10 ..etc (5 is page size)
 		// For oracle paginated query we need page start from 1,2,3
 
@@ -119,7 +125,7 @@ public class GridUtil {
 
 		if (!GridUtil.isObjectEmpty(paginationCriteria)) {
 			String whereClaus = paginationCriteria.getFilterByClause();
-			finalQuery = sb.toString().replaceAll("#BASE_QUERY#", baseQuery)
+			finalQuery = sb.toString().replaceAll("#BASE_QUERY#", finalBaseQuery)
 					.replaceAll("#WHERE_CLAUSE#",
 							((GridUtil.isObjectEmpty(whereClaus)) ? "" : " WHERE ")
 									+ whereClaus)
@@ -127,6 +133,6 @@ public class GridUtil {
 					.replaceAll("#PAGE_NUMBER#", paginationCriteria.getPageNumber().toString())
 					.replaceAll("#PAGE_SIZE#", paginationCriteria.getPageSize().toString());
 		}
-		return (null == finalQuery) ? baseQuery : finalQuery;
+		return (null == finalQuery) ? finalBaseQuery : finalQuery;
 	}
 }

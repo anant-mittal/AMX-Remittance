@@ -1,6 +1,7 @@
 package com.amx.jax.grid;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -11,39 +12,73 @@ import org.springframework.stereotype.Component;
 
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.logger.LoggerService;
-
+import com.amx.utils.ArgUtil;
 
 @Component
 public class GridService {
 
-	Logger LOGGER = LoggerService.getLogger(getClass());
+	public static Logger LOGGER = LoggerService.getLogger(GridService.class);
 
 	@PersistenceContext
 	private EntityManager entityManager;
 
-	public <T extends GridViewRecord> AmxApiResponse<T, DataTableMeta> getView(String baseQuery, GridQuery gridQuery,
-			Class<T> GridViewRecordClass) {
+	public <T> GridViewBuilder<T> view(GridView gridView,
+			GridQuery gridQuery) {
+
+		@SuppressWarnings("unchecked")
+		GridInfo<T> gridInfo = (GridInfo<T>) GridViewFactory.get(gridView);
+
+		String baseQuery = gridInfo.getQuery();
+		Class<T> gridViewRecordClass = gridInfo.getResultClass();
+		Map<String, String> map = gridInfo.getMap();
+
+		for (GridColumn column : gridQuery.getColumns()) {
+			String data = column.getData();
+			if (map.containsKey(data)) {
+				column.setData(map.get(data));
+			}
+		}
+
 		DataTableRequest dataTableInRQ = new DataTableRequest(gridQuery);
 		PaginationCriteria pagination = dataTableInRQ.getPaginationRequest();
 		String paginatedQuery = GridUtil.buildPaginatedQueryForOracle(baseQuery, pagination);
-		LOGGER.debug(paginatedQuery);
-		Query query = entityManager.createNativeQuery(paginatedQuery, GridViewRecordClass);
-		@SuppressWarnings("unchecked")
-		List<T> userList = query.getResultList();
-		query.getHints();
+		LOGGER.info(paginatedQuery);
+		Query query = entityManager.createNativeQuery(paginatedQuery, gridViewRecordClass);
 
-		DataTableMeta meta = new DataTableMeta();
-		if (!GridUtil.isObjectEmpty(userList)) {
-			meta.setRecordsTotal(userList.get(0).getTotalRecords()
-					.toString());
-			if (dataTableInRQ.getPaginationRequest().isFilterByEmpty()) {
-				meta.setRecordsFiltered(userList.get(0).getTotalRecords()
-						.toString());
-			} else {
-				meta.setRecordsFiltered(Integer.toString(userList.size()));
-			}
+		return new GridViewBuilder<T>(query, dataTableInRQ);
+
+	}
+
+	public static class GridViewBuilder<T> {
+		Query query;
+		DataTableRequest dataTableRequest;
+
+		GridViewBuilder(Query query, DataTableRequest dataTableRequest) {
+			this.query = query;
+			this.dataTableRequest = dataTableRequest;
 		}
-		return AmxApiResponse.buildList(userList, meta);
+
+		public AmxApiResponse<T, GridMeta> get() {
+
+			@SuppressWarnings("unchecked")
+			List<T> userList = query.getResultList();
+			GridMeta meta = new GridMeta();
+			if (!GridUtil.isObjectEmpty(userList)) {
+				T firstElement = userList.get(0);
+				int totalRecords = 0;
+				if (firstElement instanceof GridViewRecord) {
+					totalRecords = ((GridViewRecord) firstElement).getTotalRecords();
+				}
+				meta.setRecordsTotal(ArgUtil.parseAsString(totalRecords));
+				if (dataTableRequest.getPaginationRequest().isFilterByEmpty()) {
+					meta.setRecordsFiltered(ArgUtil.parseAsString(totalRecords));
+				} else {
+					meta.setRecordsFiltered(ArgUtil.parseAsString(userList.size()));
+				}
+			}
+			return AmxApiResponse.buildList(userList, meta);
+		}
+
 	}
 
 }

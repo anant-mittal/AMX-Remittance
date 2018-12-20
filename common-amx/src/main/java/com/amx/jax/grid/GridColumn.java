@@ -1,10 +1,9 @@
 package com.amx.jax.grid;
 
-import javax.servlet.http.HttpServletRequest;
+import com.amx.jax.grid.SortOrder;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import com.amx.utils.ArgUtil;
-
-public class DataTableColumnSpecs {
+public class GridColumn {
 
 	/** The index. */
 	private int index;
@@ -18,14 +17,10 @@ public class DataTableColumnSpecs {
 	/** The searchable. */
 	private boolean searchable;
 
-	/** The orderable. */
-	private boolean orderable;
-
 	/** The search. */
 	private String search;
 
-	/** The regex. */
-	private boolean regex;
+	private String value;
 
 	/** The sort dir. */
 	private SortOrder sortDir;
@@ -71,6 +66,7 @@ public class DataTableColumnSpecs {
 	 *
 	 * @return the searchable
 	 */
+	@JsonIgnore
 	public boolean isSearchable() {
 		return searchable;
 	}
@@ -82,24 +78,6 @@ public class DataTableColumnSpecs {
 	 */
 	public void setSearchable(boolean searchable) {
 		this.searchable = searchable;
-	}
-
-	/**
-	 * Checks if is orderable.
-	 *
-	 * @return the orderable
-	 */
-	public boolean isOrderable() {
-		return orderable;
-	}
-
-	/**
-	 * Sets the orderable.
-	 *
-	 * @param orderable the orderable to set
-	 */
-	public void setOrderable(boolean orderable) {
-		this.orderable = orderable;
 	}
 
 	/**
@@ -118,24 +96,6 @@ public class DataTableColumnSpecs {
 	 */
 	public void setSearch(String search) {
 		this.search = search;
-	}
-
-	/**
-	 * Checks if is regex.
-	 *
-	 * @return the regex
-	 */
-	public boolean isRegex() {
-		return regex;
-	}
-
-	/**
-	 * Sets the regex.
-	 *
-	 * @param regex the regex to set
-	 */
-	public void setRegex(boolean regex) {
-		this.regex = regex;
 	}
 
 	/**
@@ -161,6 +121,7 @@ public class DataTableColumnSpecs {
 	 *
 	 * @return the index
 	 */
+	@JsonIgnore
 	public int getIndex() {
 		return index;
 	}
@@ -174,28 +135,12 @@ public class DataTableColumnSpecs {
 		this.index = index;
 	}
 
-	/**
-	 * Prepare column specs.
-	 *
-	 * @param request the request
-	 * @param i       the i
-	 */
-	@Deprecated
-	private void prepareColumnSpecs(HttpServletRequest request, int i) {
+	public String getValue() {
+		return value;
+	}
 
-		this.setData(request.getParameter("columns[" + i + "][data]"));
-		this.setName(request.getParameter("columns[" + i + "][name]"));
-		this.setOrderable(Boolean.valueOf(request.getParameter("columns[" + i + "][orderable]")));
-		this.setRegex(Boolean.valueOf(request.getParameter("columns[" + i + "][search][regex]")));
-		this.setSearch(request.getParameter("columns[" + i + "][search][value]"));
-		this.setSearchable(Boolean.valueOf(request.getParameter("columns[" + i + "][searchable]")));
-
-		int sortableCol = Integer.parseInt(request.getParameter("order[0][column]"));
-		SortOrder sortDir = (SortOrder) ArgUtil.parseAsEnum(request.getParameter("order[0][dir]"), SortOrder.ASC);
-
-		if (i == sortableCol) {
-			this.setSortDir(sortDir);
-		}
+	public void setValue(String value) {
+		this.value = value;
 	}
 
 }

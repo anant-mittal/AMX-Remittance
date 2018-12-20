@@ -3,23 +3,20 @@ package com.amx.jax.grid;
 import java.util.List;
 
 public class GridQuery {
-	private String uniqueId;
-	private String draw;
 	private Integer start;
 	private Integer length;
 
 	private String search;
-	private boolean regex;
 
-	List<DataTableColumnSpecs> columns;
+	List<GridColumn> columns;
 	int sortBy;
 	SortOrder sortOrder;
 
-	public List<DataTableColumnSpecs> getColumns() {
+	public List<GridColumn> getColumns() {
 		return columns;
 	}
 
-	public void setColumns(List<DataTableColumnSpecs> columns) {
+	public void setColumns(List<GridColumn> columns) {
 		this.columns = columns;
 	}
 
@@ -37,22 +34,6 @@ public class GridQuery {
 
 	public void setSortOrder(SortOrder sortOrder) {
 		this.sortOrder = sortOrder;
-	}
-
-	public String getUniqueId() {
-		return uniqueId;
-	}
-
-	public void setUniqueId(String uniqueId) {
-		this.uniqueId = uniqueId;
-	}
-
-	public String getDraw() {
-		return draw;
-	}
-
-	public void setDraw(String draw) {
-		this.draw = draw;
 	}
 
 	public Integer getStart() {
@@ -79,11 +60,4 @@ public class GridQuery {
 		this.search = search;
 	}
 
-	public boolean isRegex() {
-		return regex;
-	}
-
-	public void setRegex(boolean regex) {
-		this.regex = regex;
-	}
 }
