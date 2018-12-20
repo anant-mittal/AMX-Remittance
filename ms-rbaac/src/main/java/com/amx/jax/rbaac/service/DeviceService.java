@@ -108,8 +108,10 @@ public class DeviceService extends AbstractService {
 		}
 		newDevice.setState(deviceState);
 		String devicePairToken = Random.randomAlpha(13);
+		String clientSecret = Random.randomAlpha(13);
 
 		newDevice.setPairToken(this.getDevicePairTokenHash(devicePairToken, newDevice.getRegistrationId()));
+		newDevice.setClientSecret(clientSecret);
 		deviceDao.saveDevice(newDevice);
 
 		logger.info("device registered with id: {}", newDevice.getRegistrationId());
@@ -120,7 +122,23 @@ public class DeviceService extends AbstractService {
 		} catch (Exception e) {
 		}
 		dto.setPairToken(devicePairToken);
+		dto.setDeviceSecret(getClientSecreteKey(newDevice));
 		return dto;
+	}
+
+	/**
+	 * Create client secret key used to generate otp. Will be sent for first time
+	 * 
+	 * @param newDevice
+	 * @return
+	 */
+	public String getClientSecreteKey(Device newDevice) {
+		String clientSecretKey = null;
+		try {
+			clientSecretKey = CryptoUtil.getSHA2Hash(newDevice.getClientSecret() + newDevice.getPairToken());
+		} catch (NoSuchAlgorithmException e) {
+		}
+		return clientSecretKey;
 	}
 
 	public BoolRespModel activateDevice(Integer deviceRegId) {

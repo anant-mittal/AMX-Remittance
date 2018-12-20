@@ -62,6 +62,9 @@ public class Device {
 	@Column(name = "OTP_TOKEN")
 	String otpToken;
 	
+	@Column(name = "CLIENT_SECRET")
+	String clientSecret;
+	
 	@Column(name = "OTP_TOKEN_CREATED_DATE")
 	Date otpTokenCreatedDate;
 	
@@ -176,6 +179,14 @@ public class Device {
 
 	public void setPairToken(String pairToken) {
 		this.pairToken = pairToken;
+	}
+
+	public String getClientSecret() {
+		return clientSecret;
+	}
+
+	public void setClientSecret(String clientSecret) {
+		this.clientSecret = clientSecret;
 	}
 
 	public String getSessionToken() {
