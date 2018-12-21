@@ -165,6 +165,24 @@ public class RemittController {
 		file.create(response, true);
 		return wrapper;
 	}
+	
+	/**
+	 * Prints the fx order history.
+	 *
+	 * @param wrapper the wrapper
+	 * @return the response wrapper
+	 * @throws IOException      Signals that an I/O exception has occurred.
+	 * @throws PostManException the post man exception
+	 */
+	@ApiOperation(value = "Returns tx order transaction history")
+	@RequestMapping(value = "/api/user/tranx/fx-order/print_history", method = { RequestMethod.POST })
+	public ResponseWrapper<List<Map<String, Object>>> printFxOrderHistory(
+			@RequestBody ResponseWrapper<List<Map<String, Object>>> wrapper) throws IOException, PostManException {
+		File file = postManService.processTemplate(new File(TemplatesMX.FXO_STATMENT, wrapper, File.Type.PDF))
+				.getResult();
+		file.create(response, true);
+		return wrapper;
+	}
 
 	/**
 	 * Tranxreport.
