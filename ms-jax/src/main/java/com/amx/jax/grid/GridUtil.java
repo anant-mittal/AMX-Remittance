@@ -1,9 +1,5 @@
 package com.amx.jax.grid;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-
 import com.amx.utils.ArgUtil;
 
 /**
@@ -12,74 +8,6 @@ import com.amx.utils.ArgUtil;
  * @author pavan.solapure
  */
 public class GridUtil {
-
-	/**
-	 * Checks if is collection empty.
-	 *
-	 * @param collection the collection
-	 * @return true, if is collection empty
-	 */
-	private static boolean isCollectionEmpty(Collection<?> collection) {
-		if (collection == null || collection.isEmpty()) {
-			return true;
-		}
-		return false;
-	}
-
-	/**
-	 * Checks if is object empty.
-	 *
-	 * @param object the object
-	 * @return true, if is object empty
-	 */
-	public static boolean isObjectEmpty(Object object) {
-		if (object == null)
-			return true;
-		else if (object instanceof String) {
-			if (((String) object).trim().length() == 0) {
-				return true;
-			}
-		} else if (object instanceof Collection) {
-			return isCollectionEmpty((Collection<?>) object);
-		}
-		return false;
-	}
-
-	/**
-	 * Gets the bean to json string.
-	 *
-	 * @param beanClasses the bean classes
-	 * @return the bean to json string
-	 */
-	public static String getBeanToJsonString(Object... beanClasses) {
-		StringBuilder stringBuilder = new StringBuilder();
-		for (Object beanClass : beanClasses) {
-			stringBuilder.append(getBeanToJsonString(beanClass));
-			stringBuilder.append(", ");
-		}
-		return stringBuilder.toString();
-	}
-
-	/**
-	 * Concatenate.
-	 *
-	 * @param listOfItems the list of items
-	 * @param separator   the separator
-	 * @return the string
-	 */
-	public String concatenate(List<String> listOfItems, String separator) {
-		StringBuilder sb = new StringBuilder();
-		Iterator<String> stit = listOfItems.iterator();
-
-		while (stit.hasNext()) {
-			sb.append(stit.next());
-			if (stit.hasNext()) {
-				sb.append(separator);
-			}
-		}
-
-		return sb.toString();
-	}
 
 	/**
 	 * Builds the paginated query.
@@ -95,12 +23,12 @@ public class GridUtil {
 		StringBuilder sb = new StringBuilder(
 				"SELECT FILTERED_ORDERD_RESULTS.* FROM (SELECT BASEINFO.* FROM ( #BASE_QUERY# ) BASEINFO #WHERE_CLAUSE#  #ORDER_CLASUE# ) FILTERED_ORDERD_RESULTS LIMIT #PAGE_START#, #PAGE_SIZE#");
 		String finalQuery = null;
-		if (!GridUtil.isObjectEmpty(paginationCriteria)) {
+		if (!ArgUtil.isEmpty(paginationCriteria)) {
 			int pageStart = paginationCriteria.getPageNumber() * paginationCriteria.getPageSize();
 			String whereClaus = paginationCriteria.getFilterByClause();
 			finalQuery = sb.toString().replaceAll("#BASE_QUERY#", baseQuery)
 					.replaceAll("#WHERE_CLAUSE#",
-							((GridUtil.isObjectEmpty(whereClaus)) ? "" : " WHERE ")
+							((ArgUtil.isEmpty(whereClaus)) ? "" : " WHERE ")
 									+ whereClaus)
 					.replaceAll("#ORDER_CLASUE#", paginationCriteria.getOrderByClause())
 					.replaceAll("#PAGE_START#", ArgUtil.parseAsString(pageStart))
@@ -125,11 +53,11 @@ public class GridUtil {
 //		int pageNo = paginationCriteria.getPageNumber() / Math.max(paginationCriteria.getPageSize(), 1);
 //		paginationCriteria.setPageNumber(pageNo);
 
-		if (!GridUtil.isObjectEmpty(paginationCriteria)) {
+		if (!ArgUtil.isEmpty(paginationCriteria)) {
 			String whereClaus = paginationCriteria.getFilterByClause();
 			finalQuery = sb.toString().replaceAll("#BASE_QUERY#", finalBaseQuery)
 					.replaceAll("#WHERE_CLAUSE#",
-							((GridUtil.isObjectEmpty(whereClaus)) ? "" : " WHERE ")
+							((ArgUtil.isEmpty(whereClaus)) ? "" : " WHERE ")
 									+ whereClaus)
 					.replaceAll("#ORDER_CLASUE#", paginationCriteria.getOrderByClause())
 					.replaceAll("#PAGE_NUMBER#", paginationCriteria.getPageNumber().toString())

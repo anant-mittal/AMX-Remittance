@@ -5,8 +5,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.persistence.Column;
+import javax.persistence.Table;
 
 import org.slf4j.Logger;
+import org.springframework.core.annotation.AnnotationUtils;
 
 import com.amx.jax.logger.LoggerService;
 import com.amx.utils.ArgUtil;
@@ -31,18 +33,33 @@ public class GridInfo<T> {
 		return fieldMap;
 	}
 
+	public static <T> String query(Class<?> clazz, String query) {
+		if (ArgUtil.isEmpty(query)) {
+			Class<?> tmpClass = clazz;
+			Table tableAnnot = tmpClass.getAnnotation(Table.class);
+			if (!ArgUtil.isEmpty(tableAnnot) && !ArgUtil.isEmpty(tableAnnot.name())) {
+				return String.format("SELECT *  FROM %s", tableAnnot.name());
+			}
+		}
+		return query;
+	}
+
 	Map<String, String> map;
 	String query;
 	Class<T> resultClass;
 
 	GridInfo(String query, Class<T> resultClass) {
-		this.query = query;
+		this.query = query(resultClass, query);
 		this.resultClass = resultClass;
 		this.map = map(resultClass, new HashMap<String, String>());
 	}
 
 	GridInfo(Class<T> resultClass, String query) {
 		this(query, resultClass);
+	}
+
+	GridInfo(Class<T> resultClass) {
+		this(null, resultClass);
 	}
 
 	public String getQuery() {

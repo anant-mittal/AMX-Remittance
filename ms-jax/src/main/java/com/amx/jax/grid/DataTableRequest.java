@@ -157,7 +157,7 @@ public class DataTableRequest {
 
 		int sortableCol = gridQuery.getSortBy();
 
-		if (!GridUtil.isObjectEmpty(this.getSearch())) {
+		if (!ArgUtil.isEmpty(this.getSearch())) {
 			this.setGlobalSearch(true);
 		}
 
@@ -192,7 +192,7 @@ public class DataTableRequest {
 		pagination.setPageSize(this.getLength());
 
 		SortBy sortBy = null;
-		if (!GridUtil.isObjectEmpty(this.getOrder())) {
+		if (!ArgUtil.isEmpty(this.getOrder())) {
 			sortBy = new SortBy();
 			sortBy.addSort(this.getOrder().getKey(), this.getOrder().getSortDir());
 		}
@@ -202,7 +202,7 @@ public class DataTableRequest {
 		if (!ArgUtil.isEmpty(this.getColumns())) {
 			for (GridColumn colSpec : this.getColumns()) {
 				if (colSpec.isSearchable() || !ArgUtil.isEmpty(colSpec.getSearch())) {
-					if (!GridUtil.isObjectEmpty(this.getSearch()) || !GridUtil.isObjectEmpty(colSpec.getSearch())) {
+					if (!ArgUtil.isEmpty(this.getSearch()) || !ArgUtil.isEmpty(colSpec.getSearch())) {
 						filterBy.addSearchFilter(colSpec.getKey(),
 								(this.isGlobalSearch()) ? this.getSearch() : colSpec.getSearch());
 					}

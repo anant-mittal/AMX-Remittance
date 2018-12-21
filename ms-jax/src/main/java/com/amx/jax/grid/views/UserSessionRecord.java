@@ -1,4 +1,4 @@
-package com.amx.jax.grid;
+package com.amx.jax.grid.views;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -7,6 +7,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Transient;
+
+import com.amx.jax.grid.GridViewRecord;
 
 @Entity
 public class UserSessionRecord implements GridViewRecord {

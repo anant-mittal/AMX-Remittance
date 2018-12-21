@@ -4,6 +4,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.amx.utils.ArgUtil;
+
 /**
  * The Class PaginationCriteria.
  */
@@ -247,11 +249,13 @@ public class PaginationCriteria {
 
 			while (sbit.hasNext()) {
 				Map.Entry<String, SortOrder> pair = sbit.next();
-				if (null == sbsb) {
-					sbsb = new StringBuilder();
-					sbsb.append(ORDER_BY).append(pair.getKey()).append(SPACE).append(pair.getValue());
-				} else {
-					sbsb.append(COMMA).append(pair.getKey()).append(SPACE).append(pair.getValue());
+				if(!ArgUtil.isEmpty(pair.getKey())) {
+					if (null == sbsb) {
+						sbsb = new StringBuilder();
+						sbsb.append(ORDER_BY).append(pair.getKey()).append(SPACE).append(pair.getValue());
+					} else {
+						sbsb.append(COMMA).append(pair.getKey()).append(SPACE).append(pair.getValue());
+					}
 				}
 			}
 		}

@@ -63,7 +63,7 @@ public class GridService {
 			@SuppressWarnings("unchecked")
 			List<T> userList = query.getResultList();
 			GridMeta meta = new GridMeta();
-			if (!GridUtil.isObjectEmpty(userList)) {
+			if (!ArgUtil.isEmpty(userList)) {
 				T firstElement = userList.get(0);
 				int totalRecords = 0;
 				if (firstElement instanceof GridViewRecord) {
