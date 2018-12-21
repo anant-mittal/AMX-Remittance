@@ -61,6 +61,9 @@ public class UserOtpManager {
 		 * 
 		 * @author lalittanwar
 		 */
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("OTP TOKEN {} {} {}", otpTTL, secret, sac);
+		}
 		HashBuilder builder = new HashBuilder().interval(otpTTL).secret(secret).message(sac);
 		otpData.setmOtpPrefix(sac);
 		otpData.setmOtp(builder.toHMAC().toNumeric(6).output());
