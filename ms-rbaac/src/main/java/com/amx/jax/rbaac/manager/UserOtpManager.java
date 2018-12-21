@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.AmxConstants;
 import com.amx.jax.model.OtpData;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
@@ -35,9 +36,6 @@ public class UserOtpManager {
 	/** The logger. */
 	Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
-	/** The otp TTL. */
-	private long otpTTL = 10 * 60 * 1000;
-
 	public static String getOtpHash(String otp) {
 		try {
 			return CryptoUtil.getSHA1Hash(otp);
@@ -62,9 +60,9 @@ public class UserOtpManager {
 		 * @author lalittanwar
 		 */
 		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug("OTP TOKEN {} {} {}", otpTTL, secret, sac);
+			LOGGER.debug("OTP TOKEN {} {} {}", AmxConstants.OTP_TTL, secret, sac);
 		}
-		HashBuilder builder = new HashBuilder().interval(otpTTL).secret(secret).message(sac);
+		HashBuilder builder = new HashBuilder().interval(AmxConstants.OTP_TTL).secret(secret).message(sac);
 		otpData.setmOtpPrefix(sac);
 		otpData.setmOtp(builder.toHMAC().toNumeric(6).output());
 
@@ -73,7 +71,7 @@ public class UserOtpManager {
 		long initTime = System.currentTimeMillis();
 
 		otpData.setInitTime(initTime);
-		otpData.setTtl(initTime + otpTTL);
+		otpData.setTtl(initTime + AmxConstants.OTP_TTL);
 
 		return otpData;
 	}
