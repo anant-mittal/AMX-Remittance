@@ -3,7 +3,6 @@
  */
 package com.amx.jax.pricer.service;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -103,33 +102,14 @@ public class PricingService {
 
 	private boolean validatePricingRequest(PricingRequestDTO pricingRequestDTO, boolean isCustomer) {
 
-		if (null == pricingRequestDTO.getLocalCountryId() || null == pricingRequestDTO.getForeignCountryId()) {
-			throw new PricerServiceException(PricerServiceError.INVALID_COUNTRY,
-					"Missing Local or Foreign Country Id; Both Required");
-		}
-
-		if (null == pricingRequestDTO.getLocalCurrencyId() || null == pricingRequestDTO.getForeignCurrencyId()) {
-			throw new PricerServiceException(PricerServiceError.INVALID_CURRENCY,
-					"Missing Local or Foreign Currency Id; Both Required");
-		}
-
+		/**
+		 * All Conditional Validations
+		 */
 		if (null == pricingRequestDTO.getLocalAmount() && null == pricingRequestDTO.getForeignAmount()) {
 			throw new PricerServiceException(PricerServiceError.MISSING_AMOUNT,
 					"Missing Local and Foreign Amount; Either is Required");
 		}
-
-		if (null == pricingRequestDTO.getCountryBranchId()) {
-			throw new PricerServiceException(PricerServiceError.INVALID_BRANCH_ID, "Branch Id is  Missing");
-		}
-
-		if (null == pricingRequestDTO.getChannel()) {
-			throw new PricerServiceException(PricerServiceError.INVALID_CHANNEL, "Channel is Missing");
-		}
-
-		if (null == pricingRequestDTO.getPricingLevel()) {
-			throw new PricerServiceException(PricerServiceError.INVALID_PRICING_LEVEL, "Invalid Pricing Level");
-		}
-
+		
 		if (PRICE_BY.ROUTING_BANK.equals(pricingRequestDTO.getPricingLevel())
 				&& null == pricingRequestDTO.getRoutingBankIds()) {
 			throw new PricerServiceException(PricerServiceError.MISSING_ROUTING_BANK_IDS, "Invalid Pricing Level");
@@ -139,6 +119,33 @@ public class PricingService {
 			throw new PricerServiceException(PricerServiceError.INVALID_CUSTOMER,
 					"Customer Id Can not be blank or empty");
 		}
+		
+		
+		/*if (null == pricingRequestDTO.getLocalCountryId() || null == pricingRequestDTO.getForeignCountryId()) {
+			throw new PricerServiceException(PricerServiceError.INVALID_COUNTRY,
+					"Missing Local or Foreign Country Id; Both Required");
+		}
+
+		if (null == pricingRequestDTO.getLocalCurrencyId() || null == pricingRequestDTO.getForeignCurrencyId()) {
+			throw new PricerServiceException(PricerServiceError.INVALID_CURRENCY,
+					"Missing Local or Foreign Currency Id; Both Required");
+		}*/
+
+		
+
+		/*if (null == pricingRequestDTO.getCountryBranchId()) {
+			throw new PricerServiceException(PricerServiceError.INVALID_BRANCH_ID, "Branch Id is  Missing");
+		}
+
+		if (null == pricingRequestDTO.getChannel()) {
+			throw new PricerServiceException(PricerServiceError.INVALID_CHANNEL, "Channel is Missing");
+		}
+
+		if (null == pricingRequestDTO.getPricingLevel()) {
+			throw new PricerServiceException(PricerServiceError.INVALID_PRICING_LEVEL, "Invalid Pricing Level");
+		}*/
+
+		
 
 		return Boolean.TRUE;
 	}

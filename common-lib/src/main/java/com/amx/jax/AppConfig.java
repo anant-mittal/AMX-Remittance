@@ -51,6 +51,8 @@ public class AppConfig {
 	public static final String JAX_LOGGER_URL = "${jax.logger.url}";
 	public static final String JAX_SSO_URL = "${jax.sso.url}";
 	public static final String JAX_AUTH_URL = "${jax.auth.url}";
+	
+	public static final String JAX_PRICER_URL = "${jax.pricer.url}";
 
 	@Value(APP_ENV)
 	@AppParamKey(AppParam.APP_ENV)
@@ -130,6 +132,10 @@ public class AppConfig {
 	@Value(JAX_AUTH_URL)
 	@AppParamKey(AppParam.JAX_AUTH_URL)
 	private String authURL;
+	
+	@Value(JAX_PRICER_URL)
+	@AppParamKey(AppParam.JAX_PRICER_URL)
+	private String pricerURL;
 
 	@Value(APP_CONTEXT_PREFIX)
 	@AppParamKey(AppParam.APP_CONTEXT_PREFIX)
@@ -259,6 +265,14 @@ public class AppConfig {
 
 	public void setAuthURL(String authURL) {
 		this.authURL = authURL;
+	}
+
+	public final String getPricerURL() {
+		return pricerURL;
+	}
+
+	public final void setPricerURL(String pricerURL) {
+		this.pricerURL = pricerURL;
 	}
 
 	public String getAppAuthKey() {

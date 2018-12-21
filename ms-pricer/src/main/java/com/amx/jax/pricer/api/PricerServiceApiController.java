@@ -1,12 +1,14 @@
 package com.amx.jax.pricer.api;
 
 import javax.annotation.Resource;
+import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -38,10 +40,11 @@ public class PricerServiceApiController implements PricerService {
 
 	@Override
 	@RequestMapping(value = ApiEndPoints.FETCH_PRICE_CUSTOMER, method = RequestMethod.POST)
-	public AmxApiResponse<PricingResponseDTO, Object> fetchPriceForCustomer(PricingRequestDTO pricingRequestDTO) {
+	public AmxApiResponse<PricingResponseDTO, Object> fetchPriceForCustomer(
+			@RequestBody @Valid PricingRequestDTO pricingRequestDTO) {
 
-		LOGGER.info("Received Pricing Request from customer Id : " + pricingRequestDTO.getCustomerId() + " with TraceId: "
-				+ AppContextUtil.getTraceId());
+		LOGGER.info("Received Pricing Request from customer Id : " + pricingRequestDTO.getCustomerId()
+				+ " with TraceId: " + AppContextUtil.getTraceId());
 
 		PricingResponseDTO pricingResponseDTO = pricingService.fetchRemitPricesForCustomer(pricingRequestDTO);
 
@@ -51,7 +54,8 @@ public class PricerServiceApiController implements PricerService {
 
 	@Override
 	@RequestMapping(value = ApiEndPoints.FETCH_BASE_PRICE, method = RequestMethod.POST)
-	public AmxApiResponse<PricingResponseDTO, Object> fetchBasePrice(PricingRequestDTO pricingRequestDTO) {
+	public AmxApiResponse<PricingResponseDTO, Object> fetchBasePrice(
+			@RequestBody @Valid PricingRequestDTO pricingRequestDTO) {
 
 		LOGGER.info("Received Base Rate Request " + " with TraceId: " + AppContextUtil.getTraceId());
 

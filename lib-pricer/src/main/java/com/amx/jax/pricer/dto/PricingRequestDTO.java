@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
 
+import javax.validation.constraints.NotNull;
+
 import com.amx.jax.dict.UserClient.Channel;
 import com.amx.jax.pricer.var.PricerServiceConstants.PRICE_BY;
 
@@ -16,22 +18,31 @@ public class PricingRequestDTO implements Serializable {
 
 	private BigDecimal customerId;
 	private BigDecimal beneId;
+
+	@NotNull(message = "Local Country Id Can not be Null or Empty")
 	private BigDecimal localCountryId;
+
+	@NotNull(message = "Foreign Country Id Can not be Null or Empty")
 	private BigDecimal foreignCountryId;
 
 	private BigDecimal localAmount;
 	private BigDecimal foreignAmount;
 
+	@NotNull(message = "Local Currency Id Can not be Null or Empty")
 	private BigDecimal localCurrencyId;
+
+	@NotNull(message = "Foreign Currency Id Can not be Null or Empty")
 	private BigDecimal foreignCurrencyId;
 
+	@NotNull(message = "Country Branch Id Can not be Null or Empty")
 	private BigDecimal countryBranchId;
 
 	private List<BigDecimal> routingBankIds;
 
-
+	@NotNull(message = "Pricing Level Can not be Null or Empty")
 	private PRICE_BY pricingLevel;
 
+	@NotNull(message = "Channel Can not be Null or Empty")
 	private Channel channel;
 
 	public BigDecimal getCustomerId() {

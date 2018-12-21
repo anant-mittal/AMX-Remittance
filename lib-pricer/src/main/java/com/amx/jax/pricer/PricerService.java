@@ -22,10 +22,12 @@ public interface PricerService {
 
 	}
 
-	@PricerApiStatus({ PricerServiceError.INVALID_USER_DETAILS, PricerServiceError.INCOMPATIBLE_DATA_TYPE })
+	@PricerApiStatus({ PricerServiceError.MISSING_AMOUNT, PricerServiceError.MISSING_ROUTING_BANK_IDS,
+			PricerServiceError.INVALID_CUSTOMER })
 	public AmxApiResponse<PricingResponseDTO, Object> fetchPriceForCustomer(PricingRequestDTO pricingRequestDTO);
 
-	@PricerApiStatus({ PricerServiceError.INCOMPATIBLE_DATA_TYPE })
+	@PricerApiStatus({ PricerServiceError.MISSING_AMOUNT, PricerServiceError.MISSING_ROUTING_BANK_IDS,
+			PricerServiceError.INVALID_CUSTOMER })
 	public AmxApiResponse<PricingResponseDTO, Object> fetchBasePrice(PricingRequestDTO pricingRequestDTO);
 
 }
