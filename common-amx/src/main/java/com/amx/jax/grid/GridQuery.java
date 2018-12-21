@@ -2,10 +2,17 @@ package com.amx.jax.grid;
 
 import java.util.List;
 
-public class GridQuery {
-	private Integer start;
-	private Integer length;
+import com.amx.jax.swagger.ApiMockModelProperty;
 
+public class GridQuery {
+
+	@ApiMockModelProperty(example = "0", value = "page")
+	private Integer pageNo;
+
+	@ApiMockModelProperty(example = "5", value = "Length of page")
+	private Integer pageSize;
+
+	@ApiMockModelProperty(example = "", value = "Global Search String")
 	private String search;
 
 	List<GridColumn> columns;
@@ -36,20 +43,20 @@ public class GridQuery {
 		this.sortOrder = sortOrder;
 	}
 
-	public Integer getStart() {
-		return start;
+	public Integer getPageNo() {
+		return pageNo;
 	}
 
-	public void setStart(Integer start) {
-		this.start = start;
+	public void setPageNo(Integer start) {
+		this.pageNo = start;
 	}
 
-	public Integer getLength() {
-		return length;
+	public Integer getPageSize() {
+		return pageSize;
 	}
 
-	public void setLength(Integer length) {
-		this.length = length;
+	public void setPageSize(Integer length) {
+		this.pageSize = length;
 	}
 
 	public String getSearch() {

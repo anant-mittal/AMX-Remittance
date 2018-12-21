@@ -33,9 +33,9 @@ public class GridService {
 		Map<String, String> map = gridInfo.getMap();
 
 		for (GridColumn column : gridQuery.getColumns()) {
-			String data = column.getData();
+			String data = column.getKey();
 			if (map.containsKey(data)) {
-				column.setData(map.get(data));
+				column.setKey(map.get(data));
 			}
 		}
 

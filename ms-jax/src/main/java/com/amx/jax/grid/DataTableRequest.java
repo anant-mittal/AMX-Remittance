@@ -150,8 +150,8 @@ public class DataTableRequest {
 	 */
 	private void prepareDataTableRequest(GridQuery gridQuery) {
 
-		this.setStart(gridQuery.getStart());
-		this.setLength(gridQuery.getLength());
+		this.setStart(gridQuery.getPageNo());
+		this.setLength(gridQuery.getPageSize());
 
 		this.setSearch(gridQuery.getSearch());
 
@@ -194,7 +194,7 @@ public class DataTableRequest {
 		SortBy sortBy = null;
 		if (!GridUtil.isObjectEmpty(this.getOrder())) {
 			sortBy = new SortBy();
-			sortBy.addSort(this.getOrder().getData(), this.getOrder().getSortDir());
+			sortBy.addSort(this.getOrder().getKey(), this.getOrder().getSortDir());
 		}
 
 		FilterBy filterBy = new FilterBy();
@@ -203,13 +203,13 @@ public class DataTableRequest {
 			for (GridColumn colSpec : this.getColumns()) {
 				if (colSpec.isSearchable() || !ArgUtil.isEmpty(colSpec.getSearch())) {
 					if (!GridUtil.isObjectEmpty(this.getSearch()) || !GridUtil.isObjectEmpty(colSpec.getSearch())) {
-						filterBy.addSearchFilter(colSpec.getData(),
+						filterBy.addSearchFilter(colSpec.getKey(),
 								(this.isGlobalSearch()) ? this.getSearch() : colSpec.getSearch());
 					}
 				}
 
 				if (!ArgUtil.isEmpty(colSpec.getValue())) {
-					filterBy.addWhereFilter(colSpec.getData(), colSpec.getValue());
+					filterBy.addWhereFilter(colSpec.getKey(), colSpec.getValue());
 				}
 			}
 		}

@@ -93,15 +93,17 @@ public class GridUtil {
 		// BASEINFO.* FROM ( %s ) BASEINFO %s %s ) FILTERED_ORDERD_RESULTS LIMIT %d,
 		// %d";
 		StringBuilder sb = new StringBuilder(
-				"SELECT FILTERED_ORDERD_RESULTS.* FROM (SELECT BASEINFO.* FROM ( #BASE_QUERY# ) BASEINFO #WHERE_CLAUSE#  #ORDER_CLASUE# ) FILTERED_ORDERD_RESULTS LIMIT #PAGE_NUMBER#, #PAGE_SIZE#");
+				"SELECT FILTERED_ORDERD_RESULTS.* FROM (SELECT BASEINFO.* FROM ( #BASE_QUERY# ) BASEINFO #WHERE_CLAUSE#  #ORDER_CLASUE# ) FILTERED_ORDERD_RESULTS LIMIT #PAGE_START#, #PAGE_SIZE#");
 		String finalQuery = null;
 		if (!GridUtil.isObjectEmpty(paginationCriteria)) {
+			int pageStart = paginationCriteria.getPageNumber() * paginationCriteria.getPageSize();
+			String whereClaus = paginationCriteria.getFilterByClause();
 			finalQuery = sb.toString().replaceAll("#BASE_QUERY#", baseQuery)
 					.replaceAll("#WHERE_CLAUSE#",
-							((GridUtil.isObjectEmpty(paginationCriteria.getFilterByClause())) ? "" : " WHERE ")
-									+ paginationCriteria.getFilterByClause())
+							((GridUtil.isObjectEmpty(whereClaus)) ? "" : " WHERE ")
+									+ whereClaus)
 					.replaceAll("#ORDER_CLASUE#", paginationCriteria.getOrderByClause())
-					.replaceAll("#PAGE_NUMBER#", paginationCriteria.getPageNumber().toString())
+					.replaceAll("#PAGE_START#", ArgUtil.parseAsString(pageStart))
 					.replaceAll("#PAGE_SIZE#", paginationCriteria.getPageSize().toString());
 		}
 		return (null == finalQuery) ? baseQuery : finalQuery;
@@ -120,8 +122,8 @@ public class GridUtil {
 		// Datatable start is set to 0, 5, 10 ..etc (5 is page size)
 		// For oracle paginated query we need page start from 1,2,3
 
-		int pageNo = paginationCriteria.getPageNumber() / paginationCriteria.getPageSize();
-		paginationCriteria.setPageNumber(pageNo);
+//		int pageNo = paginationCriteria.getPageNumber() / Math.max(paginationCriteria.getPageSize(), 1);
+//		paginationCriteria.setPageNumber(pageNo);
 
 		if (!GridUtil.isObjectEmpty(paginationCriteria)) {
 			String whereClaus = paginationCriteria.getFilterByClause();

@@ -1,15 +1,15 @@
 package com.amx.jax.grid;
 
 import com.amx.jax.grid.SortOrder;
+import com.amx.jax.swagger.ApiMockModelProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class GridColumn {
 
-	/** The index. */
 	private int index;
 
-	/** The data. */
-	private String data;
+	@ApiMockModelProperty(example = "", value = "nameKey for column")
+	private String key;
 
 	/** The name. */
 	private String name;
@@ -17,9 +17,10 @@ public class GridColumn {
 	/** The searchable. */
 	private boolean searchable;
 
-	/** The search. */
+	@ApiMockModelProperty(example = "", value = "Search String")
 	private String search;
 
+	@ApiMockModelProperty(example = "", value = "Exact Value to Filter")
 	private String value;
 
 	/** The sort dir. */
@@ -30,8 +31,8 @@ public class GridColumn {
 	 *
 	 * @return the data
 	 */
-	public String getData() {
-		return data;
+	public String getKey() {
+		return key;
 	}
 
 	/**
@@ -39,8 +40,8 @@ public class GridColumn {
 	 *
 	 * @param data the data to set
 	 */
-	public void setData(String data) {
-		this.data = data;
+	public void setKey(String data) {
+		this.key = data;
 	}
 
 	/**
