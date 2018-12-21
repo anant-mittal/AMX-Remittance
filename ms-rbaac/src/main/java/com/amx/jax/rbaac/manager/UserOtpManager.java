@@ -11,12 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.AmxConstants;
-import com.amx.jax.AppConfig;
 import com.amx.jax.model.OtpData;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
-import com.amx.jax.postman.model.Notipy;
-import com.amx.jax.postman.model.Notipy.Channel;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.rbaac.dbmodel.Employee;
@@ -35,10 +32,6 @@ public class UserOtpManager {
 	/** The post man service. */
 	@Autowired
 	private PostManService postManService;
-
-	/** The app config. */
-	@Autowired
-	private AppConfig appConfig;
 
 	/** The logger. */
 	Logger LOGGER = LoggerFactory.getLogger(this.getClass());
@@ -84,36 +77,10 @@ public class UserOtpManager {
 	}
 
 	/**
-	 * Send to slack.
-	 *
-	 * @param channel
-	 *            the channel
-	 * @param to
-	 *            the to
-	 * @param prefix
-	 *            the prefix
-	 * @param otp
-	 *            the otp
-	 */
-	public void sendToSlack(String channel, String to, String prefix, String otp) {
-		Notipy msg = new Notipy();
-		msg.setMessage(String.format("%s = %s", channel, to));
-		msg.addLine(String.format("OTP = %s-%s", prefix, otp));
-		msg.setChannel(Channel.NOTIPY);
-		try {
-			postManService.notifySlack(msg);
-		} catch (PostManException e) {
-			LOGGER.error("Error in SlackNotify", e);
-		}
-	}
-
-	/**
 	 * Send otp sms.
 	 *
-	 * @param einfo
-	 *            the einfo
-	 * @param model
-	 *            the model
+	 * @param einfo the einfo
+	 * @param model the model
 	 */
 	// Employee otp to login: passing Employee for including any personal Msg
 	public void sendOtpSms(Employee einfo, OtpData model, String slackMsg) {
@@ -127,14 +94,7 @@ public class UserOtpManager {
 		sms.setITemplate(TemplatesMX.RESET_OTP_SMS);
 
 		try {
-
 			postManService.sendSMSAsync(sms);
-
-			if (!appConfig.isProdMode()) {
-				sendToSlack(slackMsg + " : " + "mobile", sms.getTo().get(0), model.getmOtpPrefix(), model.getmOtp());
-				// sendToSlack("mobile", sms.getTo().get(0), "Otp-Hash", model.getHashedmOtp());
-			}
-
 		} catch (PostManException e) {
 			LOGGER.error("error in sendOtpSms", e);
 			throw new AuthServiceException(e);
