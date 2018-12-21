@@ -33,7 +33,7 @@ public class GridServiceClient implements IGridService {
 			String url = appConfig.getJaxURL() + Path.GRID_VIEW;
 			return restService.ajax(url).meta(new JaxMetaInfo())
 					.pathParam(Params.GRID_VIEW, gridView)
-					.post().as(new ParameterizedTypeReference<AmxApiResponse<?, GridMeta>>() {
+					.post(gridQuery).as(new ParameterizedTypeReference<AmxApiResponse<?, GridMeta>>() {
 					});
 		} catch (Exception e) {
 			LOGGER.error("exception in getStatus : ", e);

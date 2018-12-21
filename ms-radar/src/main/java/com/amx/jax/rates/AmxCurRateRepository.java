@@ -37,7 +37,8 @@ public class AmxCurRateRepository {
 
 	public AmxCurRate insertRate(AmxCurRate rate) {
 
-		if (!ArgUtil.isEmpty(rate) && rate.getrRate().compareTo(BigDecimal.ZERO) > 0) {
+		if (!ArgUtil.isEmpty(rate) && ArgUtil.isEmpty(rate.getrRate())
+				&& rate.getrRate().compareTo(BigDecimal.ZERO) > 0) {
 			// vote.setId(UUID.randomUUID().toString());
 			Map<String, Object> dataMap = JsonUtil.toMap(rate);
 			IndexRequest indexRequest = new IndexRequest(INDEX, TYPE, rate.getId())
