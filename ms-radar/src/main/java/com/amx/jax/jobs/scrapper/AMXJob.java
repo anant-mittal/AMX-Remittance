@@ -14,11 +14,14 @@ import org.springframework.stereotype.Service;
 
 import com.amx.amxlib.model.MinMaxExRateDTO;
 import com.amx.jax.client.ExchangeRateClient;
+import com.amx.jax.client.configs.JaxMetaInfo;
+import com.amx.jax.dict.Language;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.rates.AmxCurConstants;
 import com.amx.jax.rates.AmxCurConstants.RCur;
 import com.amx.jax.rates.AmxCurConstants.RSource;
 import com.amx.jax.rates.AmxCurConstants.RType;
+import com.amx.jax.scope.TenantContextHolder;
 import com.amx.jax.rates.AmxCurRate;
 import com.amx.jax.rates.AmxCurRateRepository;
 import com.amx.utils.ArgUtil;
@@ -35,10 +38,20 @@ public class AMXJob extends AScrapperTasks {
 	@Autowired
 	private ExchangeRateClient xRateClient;
 
+	@Autowired
+	private JaxMetaInfo jaxMetaInfo;
+
 	Logger logger = LoggerService.getLogger(AMXJob.class);
 
 	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_MIN_30)
 	public void doTask() {
+
+		jaxMetaInfo.setCountryId(TenantContextHolder.currentSite().getBDCode());
+		jaxMetaInfo.setTenant(TenantContextHolder.currentSite());
+		jaxMetaInfo.setLanguageId(Language.DEFAULT.getBDCode());
+		jaxMetaInfo.setCompanyId(new BigDecimal(JaxMetaInfo.DEFAULT_COMPANY_ID));
+		jaxMetaInfo.setCountryBranchId(new BigDecimal(JaxMetaInfo.DEFAULT_COUNTRY_BRANCH_ID));
+
 		List<MinMaxExRateDTO> rates = xRateClient.getMinMaxExchangeRate().getResults();
 
 		RType type = RType.SELL_TRNSFR;

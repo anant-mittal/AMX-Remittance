@@ -10,7 +10,12 @@ import org.springframework.boot.autoconfigure.validation.ValidationAutoConfigura
 import org.springframework.boot.autoconfigure.websocket.WebSocketAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
+
+import com.amx.jax.client.configs.JaxMetaInfo;
 
 @SpringBootApplication
 @ComponentScan(value = "com.amx.jax")
@@ -33,6 +38,12 @@ public class TestSizeApp {
 		ConfigurableApplicationContext ctx = new SpringApplicationBuilder(TestSizeApp.class)
 				.run(args);
 
+	}
+	
+	@Bean
+	@Scope(value = "threaded", proxyMode = ScopedProxyMode.TARGET_CLASS)
+	public JaxMetaInfo jaxMetaInfo() {
+		return new JaxMetaInfo();
 	}
 
 }
