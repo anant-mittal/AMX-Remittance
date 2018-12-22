@@ -6,6 +6,8 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -27,7 +29,8 @@ public class ChannelDiscount implements Serializable {
 	private BigDecimal id;
 
 	@Column(name = "CHANNEL")
-	private String channel;
+	@Enumerated(value = EnumType.STRING)
+	private Channel channel;
 
 	@Column(name = "DISCOUNT_PIPS")
 	private BigDecimal discountPips;
@@ -68,11 +71,11 @@ public class ChannelDiscount implements Serializable {
 	}
 
 	public Channel getChannel() {
-		return Channel.valueOf(channel);
+		return channel;
 	}
 
 	public void setChannel(Channel channel) {
-		this.channel = channel.toString();
+		this.channel = channel;
 	}
 
 	public BigDecimal getDiscountPips() {
@@ -154,9 +157,5 @@ public class ChannelDiscount implements Serializable {
 	public void setApprovedDate(Date approvedDate) {
 		this.approvedDate = approvedDate;
 	}
-	
-	
-	
-	
 
 }
