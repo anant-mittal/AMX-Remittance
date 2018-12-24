@@ -683,7 +683,7 @@ public class UserValidationService {
 			String articleCode = customer.getFsArticleDetails().getFsArticleMaster().getArticleCode();
 			if (ConstantDocument.ARTICLE_20_CODE.equals(articleCode)) {
 				throw new GlobalException(JaxError.ONLINE_REG_NOT_ALLOWED_ARTICLE_20,
-						"Customer not registered in online");
+						"Your online account is not activated. Please visit the branch for assistance.");
 			}
 		}
 	}
