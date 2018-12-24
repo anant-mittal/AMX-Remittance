@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
@@ -672,6 +673,18 @@ public class UserValidationService {
 		if (!ConstantDocument.Yes.equals(customer.getIsActive())) {
 			throw new GlobalException(JaxError.CUSTOMER_NOT_ACTIVE_BRANCH,
 					"Customer not active in branch, go to branch ");
+		}
+		validateBlockedCustomerForOnlineReg(customer);
+	}
+	
+	private void validateBlockedCustomerForOnlineReg(Customer customer) {
+		// article 20
+		if (customer.getFsArticleDetails() != null) {
+			String articleCode = customer.getFsArticleDetails().getFsArticleMaster().getArticleCode();
+			if (ConstantDocument.ARTICLE_20_CODE.equals(articleCode)) {
+				throw new GlobalException(JaxError.ONLINE_REG_NOT_ALLOWED_ARTICLE_20,
+						"Customer not registered in online");
+			}
 		}
 	}
 
