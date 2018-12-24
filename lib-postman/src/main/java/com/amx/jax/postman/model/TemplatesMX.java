@@ -44,7 +44,8 @@ public enum TemplatesMX implements ITemplate {
 	FC_DELIVER_EMAIL_OTP("deliver-email-otp", Channel.NOTIPY), FC_DELIVER_SMS_OTP("deliver-sms-otp", Channel.NOTIPY),
 	FC_ORDER_SUCCESS("order-success"),
 	FC_KNET_SUCCESS("knet-success"),
-	FXO_RECEIPT("FXO_RECEIPT", PDFConverter.JASPER, "fxo-receipt.json");
+	FXO_RECEIPT("FXO_RECEIPT", PDFConverter.JASPER, "fxo-receipt.json"),
+	FXO_STATMENT("FXOTransactionList");
 
 	String fileName;
 	PDFConverter converter;

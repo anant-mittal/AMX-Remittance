@@ -1,6 +1,8 @@
 package com.amx.jax.grid;
 
-public interface GridViewRecord {
+import java.io.Serializable;
+
+public interface GridViewRecord extends Serializable {
 	public Integer getTotalRecords();
 
 	public void setTotalRecords(Integer totalRecords);

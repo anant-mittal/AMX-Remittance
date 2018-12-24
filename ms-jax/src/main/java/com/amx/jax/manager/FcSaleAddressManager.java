@@ -134,7 +134,7 @@ public class FcSaleAddressManager extends AbstractModel {
 			shippingAddressDto.setLocalContactBuilding(contactList.get(0).getBuildingNo());
 			shippingAddressDto.setStreet(contactList.get(0).getStreet());
 			shippingAddressDto.setBlockNo(contactList.get(0).getBlock());
-			shippingAddressDto.setHouse(contactList.get(0).getFlat());
+			shippingAddressDto.setHouse(contactList.get(0).getBuildingNo());
 			shippingAddressDto.setFlat(contactList.get(0).getFlat());
 			shippingAddressDto.setAddressDto(
 					getAddressType(contactList.get(0).getArea() == null ? "" : contactList.get(0).getArea()));
