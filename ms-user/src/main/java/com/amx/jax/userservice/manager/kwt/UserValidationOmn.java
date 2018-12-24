@@ -50,6 +50,9 @@ public class UserValidationOmn implements CustomerValidation {
 	}
 
 	public boolean isValid(String civilId) {
+		if (civilId.startsWith("0")) {
+			return false;
+		}
 		if (civilId.length() >= 4 && civilId.length() <= 12) {
 			return true;
 		}
