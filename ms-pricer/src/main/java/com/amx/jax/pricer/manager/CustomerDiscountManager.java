@@ -47,15 +47,20 @@ public class CustomerDiscountManager {
 
 	private static BigDecimal PIPS_BANK_ID = new BigDecimal(78);
 
+	private static BigDecimal BIGD_ZERO = new BigDecimal(0);
+
 	public List<BankRateDetailsDTO> getDiscountedRates(PricingRequestDTO pricingRequestDTO,
 			List<BankRateDetailsDTO> bankRates, Channel channel, Customer customer) {
 
 		ChannelDiscount channelDiscount = channelDiscountDao.getDiscountByChannel(channel);
-		BigDecimal channelDiscountPips = (null != channelDiscount ? channelDiscount.getDiscountPips()
-				: new BigDecimal(0));
+		BigDecimal channelDiscountPips = (null != channelDiscount ? channelDiscount.getDiscountPips() : BIGD_ZERO);
 
-		CustomerCategoryDiscount ccDiscount = custCatDiscountDao.getDiscountByCustomerCategory("PLATINUM");
-		BigDecimal ccDiscountPips = (null != ccDiscount ? ccDiscount.getDiscountPips() : new BigDecimal(0));
+		// CustomerCategoryDiscount ccDiscount =
+		// custCatDiscountDao.getDiscountByCustomerCategory("PLATINUM");
+
+		CustomerCategoryDiscount ccDiscount = customer.getCustomerCategoryDiscount();
+
+		BigDecimal ccDiscountPips = (null != ccDiscount ? ccDiscount.getDiscountPips() : BIGD_ZERO);
 
 		List<BigDecimal> validBankIds = new ArrayList<BigDecimal>();
 
@@ -97,11 +102,11 @@ public class CustomerDiscountManager {
 
 		BigDecimal margin = pricingRateDetailsDTO.getMargin() != null
 				? pricingRateDetailsDTO.getMargin().getMarginMarkup()
-				: new BigDecimal(0);
+				: BIGD_ZERO;
 
 		for (BankRateDetailsDTO bankRate : bankRates) {
 
-			BigDecimal amountSlabPips = new BigDecimal(0);
+			BigDecimal amountSlabPips = BIGD_ZERO;
 
 			if (bankAmountSlabDiscounts.containsKey(bankRate.getBankId().longValue())) {
 				TreeMap<BigDecimal, PipsMaster> pipsMap = bankAmountSlabDiscounts.get(bankRate.getBankId().longValue());
@@ -126,7 +131,7 @@ public class CustomerDiscountManager {
 			/**
 			 * Compute Base Sell rate : Cost + Margin
 			 */
-			BigDecimal adjustedBaseSellRate = new BigDecimal(0);
+			BigDecimal adjustedBaseSellRate = BIGD_ZERO;
 
 			if (pricingRateDetailsDTO.getBankGlcBalMap() != null) {
 
