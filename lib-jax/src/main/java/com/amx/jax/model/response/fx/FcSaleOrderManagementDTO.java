@@ -49,6 +49,7 @@ public class FcSaleOrderManagementDTO extends AbstractModel {
 	BigDecimal toBranchId;
 	BigDecimal recPayCountryBranchId;
 	BigDecimal recPayBranchId;
+	BigDecimal governateId;
 	List<FcSaleCurrencyAmountModel> mutipleFcAmount;
 	List<UserStockDto> fcDenomination;
 	
@@ -323,6 +324,13 @@ public class FcSaleOrderManagementDTO extends AbstractModel {
 	}
 	public void setRecPayBranchId(BigDecimal recPayBranchId) {
 		this.recPayBranchId = recPayBranchId;
+	}
+	
+	public BigDecimal getGovernateId() {
+		return governateId;
+	}
+	public void setGovernateId(BigDecimal governateId) {
+		this.governateId = governateId;
 	}
 
 }

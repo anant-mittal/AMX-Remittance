@@ -84,6 +84,10 @@ public class FcSaleBranchDao {
 		return fcSaleOrderManagementRepository.findByApplicationCountryIdAndAreaCode(applicationcountryId,areaCode);
 	}
 	
+	public List<OrderManagementView> fetchFcSaleOrderManagementByGovernate(BigDecimal applicationcountryId,BigDecimal governate){
+		return fcSaleOrderManagementRepository.findByApplicationCountryIdAndGovernateId(applicationcountryId,governate);
+	}
+	
 	public List<OrderManagementView> fetchFcSaleOrderManagementForHeadOffice(BigDecimal applicationcountryId){
 		return fcSaleOrderManagementRepository.findByApplicationCountryId(applicationcountryId);
 	}

@@ -16,6 +16,8 @@ public interface FcSaleOrderManagementRepository extends CrudRepository<OrderMan
 	
 	public List<OrderManagementView> findByApplicationCountryIdAndAreaCode(BigDecimal applicationCountryId,BigDecimal areaCode);
 	
+	public List<OrderManagementView> findByApplicationCountryIdAndGovernateId(BigDecimal applicationCountryId,BigDecimal governateId);
+	
 	public List<OrderManagementView> findByApplicationCountryId(BigDecimal applicationCountryId);
 	
 	@Query(value = "SELECT * FROM JAX_VW_ORDER_MANAGEMENT WHERE APPLICATION_COUNTRY_ID=?1 AND COLLECTION_DOCUMENT_NO=?2 AND COLLECTION_DOC_FINANCE_YEAR=?3", nativeQuery = true)

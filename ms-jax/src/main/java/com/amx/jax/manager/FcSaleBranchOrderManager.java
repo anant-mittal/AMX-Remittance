@@ -129,6 +129,7 @@ public class FcSaleBranchOrderManager {
 			if(employeeDt != null && employeeDt.getEmployeeId() != null){
 				BigDecimal areaCode = employeeDt.getAreaCode();
 				BigDecimal branchId = employeeDt.getBranchId();
+				BigDecimal governorate = employeeDt.getGovernorates();
 				if(areaCode != null && branchId != null) {
 					if(branchId.compareTo(ConstantDocument.MURQAB_FOREIGNCURRENCY) == 0) {
 						ordermanage = fcSaleBranchDao.fetchFcSaleOrderManagementForHeadOffice(applicationCountryId);
@@ -137,7 +138,8 @@ public class FcSaleBranchOrderManager {
 						fetchOrder.put("AREA", Boolean.TRUE);
 						fetchOrder.put("BranchId", branchId);
 					}else {
-						ordermanage = fcSaleBranchDao.fetchFcSaleOrderManagement(applicationCountryId,areaCode);
+						//ordermanage = fcSaleBranchDao.fetchFcSaleOrderManagement(applicationCountryId,areaCode);
+						ordermanage = fcSaleBranchDao.fetchFcSaleOrderManagementByGovernate(applicationCountryId,governorate);
 
 						fetchOrder.put("ORDERS", ordermanage);
 						fetchOrder.put("AREA", Boolean.FALSE);

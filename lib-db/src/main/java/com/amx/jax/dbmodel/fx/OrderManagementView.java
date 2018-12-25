@@ -113,6 +113,9 @@ public class OrderManagementView {
 	@Column(name = "RECPAY_BRANCH_ID")
 	BigDecimal recPayBranchId;
 	
+	@Column(name="GOVERNORATES_ID")
+	BigDecimal governateId; 
+	
 	public BigDecimal getCollectionDocFinanceYear() {
 		return collectionDocFinanceYear;
 	}
@@ -343,5 +346,12 @@ public class OrderManagementView {
 	public void setRecPayBranchId(BigDecimal recPayBranchId) {
 		this.recPayBranchId = recPayBranchId;
 	}
-									
+	
+	public BigDecimal getGovernateId() {
+		return governateId;
+	}
+	public void setGovernateId(BigDecimal governateId) {
+		this.governateId = governateId;
+	}
+										
 }

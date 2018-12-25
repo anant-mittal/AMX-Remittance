@@ -112,6 +112,9 @@ public class FcSaleBranchService extends AbstractService{
 						fcSaleOrder.setOrderStatusDesc(orderManagement.getOrderStatusDesc());
 						fcSaleOrder.setFromBranchId(orderManagement.getFromBranchId());
 						fcSaleOrder.setToBranchId(orderManagement.getToBranchId());
+						fcSaleOrder.setRecPayBranchId(orderManagement.getRecPayBranchId());
+						fcSaleOrder.setRecPayCountryBranchId(orderManagement.getRecPayCountryBranchId());
+						fcSaleOrder.setGovernateId(orderManagement.getGovernateId());
 
 						HashMap<BigDecimal, BigDecimal> foreignCurrencyAmt = new HashMap<>();
 						List<FcSaleCurrencyAmountModel> lstCurrencyAmt = new ArrayList<>();
@@ -288,6 +291,12 @@ public class FcSaleBranchService extends AbstractService{
 				fcSaleOrder.setDriverEmployeName(orderManagement.getDriverEmployeeName());
 				fcSaleOrder.setOrderStatus(orderManagement.getOrderStatus());
 				fcSaleOrder.setOrderStatusDesc(orderManagement.getOrderStatusDesc());
+				fcSaleOrder.setFromBranchId(orderManagement.getFromBranchId());
+				fcSaleOrder.setToBranchId(orderManagement.getToBranchId());
+				fcSaleOrder.setRecPayBranchId(orderManagement.getRecPayBranchId());
+				fcSaleOrder.setRecPayCountryBranchId(orderManagement.getRecPayCountryBranchId());
+				fcSaleOrder.setGovernateId(orderManagement.getGovernateId());
+				
 				if(orderManagement.getTransactionActualRate() != null && orderManagement.getForeignCurrencyId() != null) {
 					BigDecimal localRate = new BigDecimal((BigDecimal.ONE).doubleValue()/orderManagement.getTransactionActualRate().doubleValue());
 					BigDecimal currencyDecimal = branchOrderManager.fetchCurrencyMasterDetails(orderManagement.getForeignCurrencyId());
