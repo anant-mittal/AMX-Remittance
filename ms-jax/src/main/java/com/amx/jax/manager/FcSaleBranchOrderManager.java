@@ -27,6 +27,7 @@ import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.auditlog.FcSaleOrderStatusChangeAuditEvent;
 import com.amx.jax.auditlog.JaxAuditEvent;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.dao.ApplicationProcedureDao;
 import com.amx.jax.dao.CurrencyMasterDao;
 import com.amx.jax.dao.FcSaleApplicationDao;
 import com.amx.jax.dao.FcSaleBranchDao;
@@ -63,6 +64,7 @@ import com.amx.jax.repository.ICompanyDAO;
 import com.amx.jax.notification.fx.FcSaleEventManager;
 import com.amx.jax.repository.IDocumentDao;
 import com.amx.jax.repository.JaxConfigRepository;
+import com.amx.jax.repository.ReceiptPaymentRespository;
 import com.amx.jax.service.CompanyService;
 import com.amx.jax.services.FcSaleDeliveryService;
 import com.amx.jax.util.ConverterUtil;
@@ -115,6 +117,9 @@ public class FcSaleBranchOrderManager {
 	
 	@Autowired
 	FcSaleEventManager fcSaleEventManager;
+	
+	@Autowired
+	ApplicationProcedureDao applicationProcedureDao;
 
 	public HashMap<String, Object> fetchFcSaleOrderManagement(BigDecimal applicationCountryId,BigDecimal employeeId){
 		HashMap<String, Object> fetchOrder = new HashMap<>();
@@ -130,11 +135,13 @@ public class FcSaleBranchOrderManager {
 
 						fetchOrder.put("ORDERS", ordermanage);
 						fetchOrder.put("AREA", Boolean.TRUE);
+						fetchOrder.put("BranchId", branchId);
 					}else {
 						ordermanage = fcSaleBranchDao.fetchFcSaleOrderManagement(applicationCountryId,areaCode);
 
 						fetchOrder.put("ORDERS", ordermanage);
 						fetchOrder.put("AREA", Boolean.FALSE);
+						fetchOrder.put("BRANCH", branchId);
 					}
 				}else {
 					throw new GlobalException(JaxError.NULL_AREA_CODE,"Area Code should not be blank");
@@ -522,6 +529,7 @@ public class FcSaleBranchOrderManager {
 	public FxOrderReportResponseDto printOrderSave(FcSaleBranchDispatchRequest fcSaleBranchDispatchRequest,BigDecimal employeeId,BigDecimal countryId,BigDecimal companyId) {
 		String userName = null;
 		BigDecimal countryBranchId = null;
+		BigDecimal branchId = null;
 		BigDecimal collectionDocYear = null;
 		BigDecimal collectionDocNumber = null;
 		BigDecimal companyCode = null;
@@ -530,12 +538,16 @@ public class FcSaleBranchOrderManager {
 		BigDecimal customerId = null;
 		BigDecimal deliveryDetailsId = null;
 		String oldOrderStatus = null;
-		List<BigDecimal> duplicate = new ArrayList<>();
+		List<BigDecimal> dupdocumentNumbers = new ArrayList<>();
+		List<String> dupInventory = new ArrayList<>();
 		List<ForeignCurrencyAdjust> foreignCurrencyAdjusts = new ArrayList<>();
+		List<ReceiptPayment> updateRecPay = new ArrayList<>();
 		HashMap<BigDecimal, String> mapInventory = new HashMap<>();
 		HashMap<BigDecimal, String> mapInventoryReceiptPayment = new HashMap<>();
 		HashMap<BigDecimal, BigDecimal> mapDocAmount = new HashMap<>();
 		HashMap<BigDecimal, List<CurrencyWiseDenomination>> mapCurrencyDenom = new HashMap<>();
+		//HashMap<BigDecimal, FSaleRecPayDocDetails> mapBranchDocumentNo = new HashMap<>();
+		HashMap<BigDecimal, BigDecimal> mapBranchDocumentNo = new HashMap<>();
 		FxOrderReportResponseDto fxOrderReportResponseDto = null;
 
 		try {
@@ -553,6 +565,9 @@ public class FcSaleBranchOrderManager {
 					}
 					if(employeeDt.getCountryBranchId() != null) {
 						countryBranchId = employeeDt.getCountryBranchId();
+					}
+					if(employeeDt.getBranchId() != null) {
+						branchId = employeeDt.getBranchId();
 					}
 				}else {
 					throw new GlobalException(JaxError.INVALID_EMPLOYEE,"Employee details is empty");
@@ -608,8 +623,8 @@ public class FcSaleBranchOrderManager {
 				if(orderDetails != null) {
 
 					for (FcSaleBranchDispatchModel fcSaleBranchDispatchModel : orderDetails) {
-						if(fcSaleBranchDispatchModel.getDocumentNumber() != null && !duplicate.contains(fcSaleBranchDispatchModel.getDocumentNumber())) {
-							duplicate.add(fcSaleBranchDispatchModel.getDocumentNumber());
+						if(fcSaleBranchDispatchModel.getDocumentNumber() != null && !dupdocumentNumbers.contains(fcSaleBranchDispatchModel.getDocumentNumber())) {
+							dupdocumentNumbers.add(fcSaleBranchDispatchModel.getDocumentNumber());
 							mapInventory.put(fcSaleBranchDispatchModel.getDocumentNumber(), fcSaleBranchDispatchModel.getInventoryId());
 
 							List<UserStockDto> userCurrenctStock = fetchUserStockViewByCurrency(countryId, employeeId, fcSaleBranchDispatchModel.getCurrencyId());
@@ -618,6 +633,13 @@ public class FcSaleBranchOrderManager {
 							}else {
 								throw new GlobalException(JaxError.CURRENCY_STOCK_NOT_AVAILABLE,"Currenct stock for employee not available");
 							}
+							
+							BigDecimal documentNo = generateDocumentNumber(branchId,countryId,companyId,ConstantDocument.Yes,collectionDocYear,ConstantDocument.DOCUMENT_CODE_FOR_FCSALE);
+						    if(documentNo!=null && documentNo.compareTo(BigDecimal.ZERO)!=0){
+						    	mapBranchDocumentNo.put(fcSaleBranchDispatchModel.getDocumentNumber(), documentNo);
+						    }else{
+						    	throw new GlobalException(JaxError.INVALID_APPL_RECEIPT_PAYMNET_DOCUMENT_NO, "Receipt document should not be blank.");
+						    }
 
 							int i = 0;
 							BigDecimal fcAmount = BigDecimal.ZERO;
@@ -667,7 +689,8 @@ public class FcSaleBranchOrderManager {
 											foreignCurrencyAdj.setAdjustmentAmount(fcSaleBranchDispatch.getDenominationPrice());
 											fcAmount = fcAmount.add(fcSaleBranchDispatch.getDenominationPrice());
 											foreignCurrencyAdj.setDenaminationAmount(fcSaleBranchDispatch.getDenominationAmount());
-											foreignCurrencyAdj.setDocumentNo(fcSaleBranchDispatch.getDocumentNumber());
+											//foreignCurrencyAdj.setDocumentNo(fcSaleBranchDispatch.getDocumentNumber());
+											foreignCurrencyAdj.setDocumentNo(documentNo);
 											foreignCurrencyAdj.setNotesQuantity(fcSaleBranchDispatch.getDenominationQuatity());
 											foreignCurrencyAdj.setExchangeRate(mapOrderManagement.get(fcSaleBranchDispatch.getDocumentNumber()).getTransactionActualRate());
 
@@ -723,18 +746,46 @@ public class FcSaleBranchOrderManager {
 						BigDecimal documentNo = invertoryData.getKey();
 						String inventoryId = invertoryData.getValue();
 						OrderManagementView orderManagementView = mapOrderManagement.get(documentNo);
-						
-						// check inventory Id before save
-						List<ReceiptPayment> lstReciptPayment = fcSaleBranchDao.fetchReceiptPaymentByInventory(inventoryId);
-						if(lstReciptPayment != null && lstReciptPayment.size() != 0) {
-							throw new GlobalException(JaxError.INVENTORY_ID_EXISTS,"Inventory Id already exists");
+						if(!dupInventory.contains(inventoryId)) {
+							dupInventory.add(inventoryId);
+							// check inventory Id before save
+							List<ReceiptPayment> lstReciptPayment = fcSaleBranchDao.fetchReceiptPaymentByInventory(inventoryId);
+							if(lstReciptPayment != null && lstReciptPayment.size() != 0) {
+								throw new GlobalException(JaxError.INVENTORY_ID_EXISTS,"Inventory Id already exists");
+							}else {
+								mapInventoryReceiptPayment.put(orderManagementView.getReceiptPaymentId(), inventoryId);
+							}
 						}else {
-							mapInventoryReceiptPayment.put(orderManagementView.getReceiptPaymentId(), inventoryId);
+							throw new GlobalException(JaxError.INVENTORY_ID_EXISTS,"Inventory Id passing duplicates");
+						}
+					}
+					
+					if(mapBranchDocumentNo != null && !mapBranchDocumentNo.isEmpty()) {
+						List<ReceiptPayment> lstReceiptPayment = fcSaleBranchDao.fetchReceiptPayment(collectionDocYear, collectionDocNumber);
+						for (ReceiptPayment receiptPayment : lstReceiptPayment) {
+							receiptPayment.setOnlineCountryBranchId(receiptPayment.getCountryBranch().getCountryBranchId());
+							receiptPayment.setOnlineDocumentNumber(receiptPayment.getDocumentNo());
+							receiptPayment.setOnlineLocationCode(receiptPayment.getLocCode());
+							
+							receiptPayment.setDocumentNo(mapBranchDocumentNo.get(receiptPayment.getDocumentNo()));
+
+							CountryBranch countryBranch = new CountryBranch();
+							countryBranch.setCountryBranchId(countryBranchId);
+							receiptPayment.setCountryBranch(countryBranch);
+
+							receiptPayment.setLocCode(branchId);
+							
+							receiptPayment.setInventoryId(mapInventoryReceiptPayment.get(receiptPayment.getReceiptId()));
+							receiptPayment.setModifiedBy(userName);
+							receiptPayment.setModifiedDate(new Date());
+
+							updateRecPay.add(receiptPayment);
+
 						}
 					}
 
 					// saving in currency Adjustment and receipt payment
-					fcSaleBranchDao.printOrderSave(foreignCurrencyAdjusts, mapInventoryReceiptPayment,userName,new Date(),deliveryDetailsId,ConstantDocument.PCK);
+					fcSaleBranchDao.printOrderSave(foreignCurrencyAdjusts,updateRecPay,userName,new Date(),deliveryDetailsId,ConstantDocument.PCK);
 
 					// old status
 					logStatusChangeAuditEvent(deliveryDetailsId, oldOrderStatus);
@@ -1694,7 +1745,11 @@ public class FcSaleBranchOrderManager {
 						foreignCurrencyStockTransfer.setAccountMMYYYY(new SimpleDateFormat("dd/MM/yyyy").parse(DateUtil.getCurrentAccMMYear()));
 						foreignCurrencyStockTransfer.setCompanyCode(companyCode);
 						foreignCurrencyStockTransfer.setCompanyId(companyId);
-						foreignCurrencyStockTransfer.setCreatedBy(toUserName);
+						if(toUserName != null) {
+							foreignCurrencyStockTransfer.setCreatedBy(toUserName);
+						}else {
+							foreignCurrencyStockTransfer.setCreatedBy(fromUserName);
+						}
 						foreignCurrencyStockTransfer.setCreationDate(new Date());
 						if(currencyMasterModel != null && !currencyMasterModel.isEmpty() && currencyMasterModel.get(orderManagementView.getForeignCurrencyId()) != null) {
 							foreignCurrencyStockTransfer.setCurrencyCode(currencyMasterModel.get(orderManagementView.getForeignCurrencyId()).getCurrencyCode());
@@ -1740,6 +1795,11 @@ public class FcSaleBranchOrderManager {
 		}
 
 		return status;
+	}
+	
+	public BigDecimal generateDocumentNumber(BigDecimal branchId, BigDecimal appCountryId,BigDecimal companyId,String processInd,BigDecimal finYear,BigDecimal documentId) {
+		Map<String, Object> output = applicationProcedureDao.getDocumentSeriality(appCountryId, companyId, documentId,finYear, processInd, branchId);
+		return (BigDecimal) output.get("P_DOC_NO");
 	}
 
 }

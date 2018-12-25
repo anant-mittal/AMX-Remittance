@@ -2,9 +2,8 @@ package com.amx.jax.dao;
 
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map.Entry;
+import java.util.Map;
 
 import javax.transaction.Transactional;
 
@@ -18,6 +17,7 @@ import com.amx.jax.dbmodel.CurrencyWiseDenomination;
 import com.amx.jax.dbmodel.Employee;
 import com.amx.jax.dbmodel.ForeignCurrencyAdjust;
 import com.amx.jax.dbmodel.ReceiptPayment;
+import com.amx.jax.dbmodel.ReceiptPaymentApp;
 import com.amx.jax.dbmodel.fx.EmployeeDetailsView;
 import com.amx.jax.dbmodel.fx.ForeignCurrencyOldModel;
 import com.amx.jax.dbmodel.fx.ForeignCurrencyStockTransfer;
@@ -31,6 +31,7 @@ import com.amx.jax.repository.ForeignCurrencyAdjustOldRepository;
 import com.amx.jax.repository.ForeignCurrencyAdjustRepository;
 import com.amx.jax.repository.ForeignCurrencyStockRepository;
 import com.amx.jax.repository.ICollectionRepository;
+import com.amx.jax.repository.ReceiptPaymentAppRepository;
 import com.amx.jax.repository.ReceiptPaymentRespository;
 import com.amx.jax.repository.fx.EmployeeDetailsRepository;
 import com.amx.jax.repository.fx.FcSaleOrderManagementRepository;
@@ -72,6 +73,12 @@ public class FcSaleBranchDao {
 	
 	@Autowired
 	ForeignCurrencyStockRepository foreignCurrencyStockRepository;
+	
+	@Autowired
+	ApplicationProcedureDao applicationProcedureDao;
+	
+	@Autowired
+	ReceiptPaymentAppRepository receiptPaymentAppRepository;
 	
 	public List<OrderManagementView> fetchFcSaleOrderManagement(BigDecimal applicationcountryId,BigDecimal areaCode){
 		return fcSaleOrderManagementRepository.findByApplicationCountryIdAndAreaCode(applicationcountryId,areaCode);
@@ -180,21 +187,45 @@ public class FcSaleBranchDao {
 	}
 	
 	@Transactional
-	public void printOrderSave(List<ForeignCurrencyAdjust> foreignCurrencyAdjusts,HashMap<BigDecimal, String> mapInventoryReceiptPayment,String userName,Date currenctDate,BigDecimal deliveryDetailsId,String orderStatus){
+	public void printOrderSave(List<ForeignCurrencyAdjust> foreignCurrencyAdjusts,List<ReceiptPayment> updateRecPay,String userName,Date currenctDate,BigDecimal deliveryDetailsId,String orderStatus){
 		if(foreignCurrencyAdjusts != null && foreignCurrencyAdjusts.size() != 0 && deliveryDetailsId != null) {
 			// before updating need to check the status is ordered
 			FxDeliveryDetailsModel fxDeliveryDetailsModel = fetchDeliveryDetails(deliveryDetailsId, ConstantDocument.Yes);
 			if(fxDeliveryDetailsModel != null && fxDeliveryDetailsModel.getOrderStatus() != null) {
 				if(fxDeliveryDetailsModel.getOrderStatus().equalsIgnoreCase(ConstantDocument.ACP)) {
+					// receipt payment update
+					if(updateRecPay != null && !updateRecPay.isEmpty()) {
+						for (ReceiptPayment receiptPayment : updateRecPay) {
+							BigDecimal branchId = receiptPayment.getLocCode();
+							BigDecimal countryId = receiptPayment.getFsCountryMaster().getCountryId();
+							BigDecimal companyId = receiptPayment.getFsCompanyMaster().getCompanyId();
+							BigDecimal docYear = receiptPayment.getDocumentFinanceYear();
+							BigDecimal documentNo = null;
+							Map<String, Object> output = applicationProcedureDao.getDocumentSeriality(countryId, companyId,ConstantDocument.DOCUMENT_CODE_FOR_FCSALE,docYear,ConstantDocument.Update,branchId);
+							if(output != null && !output.isEmpty()) {
+								documentNo = (BigDecimal) output.get("P_DOC_NO");
+							}
+							receiptPayment.setDocumentNo(documentNo);
+							receiptPaymentRespository.save(receiptPayment);
+							
+							// application receipt payment Update
+							ReceiptPaymentApp appRecPay = receiptPaymentAppRepository.findByCustomerIdAndTransactionFinanceYearAndTransactionRefNo(receiptPayment.getFsCustomer().getCustomerId(), receiptPayment.getDocumentFinanceYear(), receiptPayment.getOnlineDocumentNumber());
+							if(appRecPay != null) {
+								appRecPay.setTransactionFinanceYear(docYear);
+								appRecPay.setTransactionRefNo(documentNo);
+								appRecPay.setModifiedBy(userName);
+								appRecPay.setModifiedDate(currenctDate);
+								receiptPaymentAppRepository.save(appRecPay);
+							}
+						}
+					}
+					
 					for (ForeignCurrencyAdjust foreignCurrencyAdjust : foreignCurrencyAdjusts) {
 						foreignCurrencyAdjustRepository.save(foreignCurrencyAdjust);
 					}
-					for (Entry<BigDecimal, String> receiptPayment : mapInventoryReceiptPayment.entrySet()) {
-						receiptPaymentRespository.updateInventoryId(receiptPayment.getKey(),receiptPayment.getValue(),userName,currenctDate);
-					}
 					
 					// update status
-					fxDeliveryDetailsModel.setUopdateDate(new Date());
+					fxDeliveryDetailsModel.setUopdateDate(currenctDate);
 					fxDeliveryDetailsModel.setUpdatedBy(userName);
 					fxDeliveryDetailsModel.setOrderStatus(orderStatus);
 					fxDeliveryDetailsRepository.save(fxDeliveryDetailsModel);
@@ -397,4 +428,9 @@ public class FcSaleBranchDao {
 	public List<ReceiptPayment> fetchReceiptPaymentByInventory(String inventoryId){
 		return receiptPaymentRespository.findByInventoryId(inventoryId);
 	}
+	
+	public List<ReceiptPayment> fetchReceiptPayment(BigDecimal collDocFyr,BigDecimal collDocNo){
+		return receiptPaymentRespository.findByColDocFyrAndColDocNo(collDocFyr, collDocNo);
+	}
+	
 }

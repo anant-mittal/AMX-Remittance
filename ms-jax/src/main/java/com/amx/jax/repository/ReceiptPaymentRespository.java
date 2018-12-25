@@ -22,5 +22,7 @@ public interface ReceiptPaymentRespository extends CrudRepository<ReceiptPayment
 	
 	@Query(value = "SELECT * FROM EX_RECEIPT_PAYMENT WHERE INVENTORY_ID=?1", nativeQuery = true)
 	public List<ReceiptPayment> findByInventoryId(String inventoryId);
+	
+	public List<ReceiptPayment> findByColDocFyrAndColDocNo(BigDecimal collDocFyr,BigDecimal collDocNo);
 
 }

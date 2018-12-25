@@ -101,6 +101,18 @@ public class OrderManagementView {
 	@Column(name = "EMPLOYEE_ID")
 	BigDecimal employeeId;
 	
+	@Column(name = "FROM_BRANCH_ID")
+	BigDecimal fromBranchId;
+	
+	@Column(name = "TO_BRANCH_ID")
+	BigDecimal toBranchId;
+	
+	@Column(name = "RECPAY_COUNTRY_BRANCH_ID")
+	BigDecimal recPayCountryBranchId;
+	
+	@Column(name = "RECPAY_BRANCH_ID")
+	BigDecimal recPayBranchId;
+	
 	public BigDecimal getCollectionDocFinanceYear() {
 		return collectionDocFinanceYear;
 	}
@@ -302,6 +314,34 @@ public class OrderManagementView {
 	}
 	public void setEmployeeId(BigDecimal employeeId) {
 		this.employeeId = employeeId;
+	}
+	
+	public BigDecimal getFromBranchId() {
+		return fromBranchId;
+	}
+	public void setFromBranchId(BigDecimal fromBranchId) {
+		this.fromBranchId = fromBranchId;
+	}
+	
+	public BigDecimal getToBranchId() {
+		return toBranchId;
+	}
+	public void setToBranchId(BigDecimal toBranchId) {
+		this.toBranchId = toBranchId;
+	}
+	
+	public BigDecimal getRecPayCountryBranchId() {
+		return recPayCountryBranchId;
+	}
+	public void setRecPayCountryBranchId(BigDecimal recPayCountryBranchId) {
+		this.recPayCountryBranchId = recPayCountryBranchId;
+	}
+	
+	public BigDecimal getRecPayBranchId() {
+		return recPayBranchId;
+	}
+	public void setRecPayBranchId(BigDecimal recPayBranchId) {
+		this.recPayBranchId = recPayBranchId;
 	}
 									
 }
