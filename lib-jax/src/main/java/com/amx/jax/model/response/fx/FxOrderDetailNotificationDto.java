@@ -11,6 +11,8 @@ public class FxOrderDetailNotificationDto {
 	private String date;
 	private BigDecimal netAmount;
 	private String localQurrencyQuote;
+	
+	
 	public String getCustomerName() {
 		return customerName;
 	}

@@ -76,9 +76,16 @@ public class ShippingAddressDto {
 	private ResourceDTO countryDto;
 	@NotNull(message = "Address type Id may not be null")
 	private AddressTypeDto addressDto;
-	@NotNull(message = "Area code may not be null")
+	
+	//@NotNull(message = "Area code may not be null")
 	private ResourceDTO areaDto;
 	private String deliveryAddress;
+	private ResourceDTO governoatesDto;
+	@NotNull(message = "Goveronate area code may not be null")
+	private ResourceDTO governoateAreaDto;
+	private String govtAreaDesc;
+	private String govtDesc;
+	
 
 	public BigDecimal getCustomerId() {
 		return customerId;
@@ -477,5 +484,37 @@ public class ShippingAddressDto {
 
 	public void setDeliveryAddress(String deliveryAddress) {
 		this.deliveryAddress = deliveryAddress;
+	}
+
+	public ResourceDTO getGovernoatesDto() {
+		return governoatesDto;
+	}
+
+	public void setGovernoatesDto(ResourceDTO governoatesDto) {
+		this.governoatesDto = governoatesDto;
+	}
+
+	public ResourceDTO getGovernoateAreaDto() {
+		return governoateAreaDto;
+	}
+
+	public void setGovernoateAreaDto(ResourceDTO governoateAreaDto) {
+		this.governoateAreaDto = governoateAreaDto;
+	}
+
+	public String getGovtAreaDesc() {
+		return govtAreaDesc;
+	}
+
+	public void setGovtAreaDesc(String govtAreaDesc) {
+		this.govtAreaDesc = govtAreaDesc;
+	}
+
+	public String getGovtDesc() {
+		return govtDesc;
+	}
+
+	public void setGovtDesc(String govtDesc) {
+		this.govtDesc = govtDesc;
 	}
 }

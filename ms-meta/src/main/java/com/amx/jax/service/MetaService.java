@@ -23,6 +23,8 @@ import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.ServiceGroupMasterDescDto;
 import com.amx.amxlib.meta.model.ViewAreaDto;
 import com.amx.amxlib.meta.model.ViewCityDto;
+import com.amx.amxlib.meta.model.ViewGovernateAreaDto;
+import com.amx.amxlib.meta.model.ViewGovernateDto;
 import com.amx.amxlib.model.OnlineConfigurationDto;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.config.JaxProperties;
@@ -32,6 +34,8 @@ import com.amx.jax.dbmodel.ViewAreaModel;
 import com.amx.jax.dbmodel.ViewCity;
 import com.amx.jax.dbmodel.ViewDistrict;
 import com.amx.jax.dbmodel.ViewState;
+import com.amx.jax.dbmodel.VwGovernateAreaModel;
+import com.amx.jax.dbmodel.VwGovernateModel;
 import com.amx.jax.dbmodel.meta.ServiceGroupMaster;
 import com.amx.jax.dbmodel.meta.ServiceGroupMasterDesc;
 import com.amx.jax.dbmodel.meta.ServiceMaster;
@@ -40,9 +44,11 @@ import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.CountryRepository;
 import com.amx.jax.repository.IContactDetailDao;
 import com.amx.jax.repository.ICustomerRepository;
+import com.amx.jax.repository.IGovernateAreaDao;
 import com.amx.jax.repository.IViewArea;
 import com.amx.jax.repository.IViewCityDao;
 import com.amx.jax.repository.IViewDistrictDAO;
+import com.amx.jax.repository.IViewGovernateDao;
 import com.amx.jax.repository.IViewStateDao;
 import com.amx.jax.repository.OnlineConfigurationRepository;
 import com.amx.jax.repository.ServiceGroupMasterDescRepository;
@@ -76,7 +82,14 @@ public class MetaService extends AbstractService {
 	IViewDistrictDAO districtDao;
 	@Autowired
 	IViewArea areaDao;
-
+	
+	@Autowired
+	IViewGovernateDao govermentDao;
+	
+	@Autowired
+	IGovernateAreaDao govermentAreaDao;
+	
+	
 	@Autowired
 	OnlineConfigurationRepository onlineConfigurationRepository;
 
@@ -125,6 +138,60 @@ public class MetaService extends AbstractService {
 		return AmxApiResponse.buildList(convertAreaDto(viewAreaList));
 	}
 
+	/** For Governate list**/
+	public AmxApiResponse<ViewGovernateDto, Object> getGovernateList(BigDecimal applicationCountryId){
+		List<VwGovernateModel> goveList = govermentDao.getGovermentList(applicationCountryId);
+		if (goveList.isEmpty()) {
+			throw new GlobalException("governate are not avaliable");
+		}
+		return AmxApiResponse.buildList(convertGovtDto(goveList));
+		
+	}
+	
+	/** For Governate area list **/
+	public AmxApiResponse<ViewGovernateAreaDto, Object> getGovernateAreaList(BigDecimal governateId){
+		List<VwGovernateAreaModel> goveAreaList = govermentAreaDao.getGovermenAreaList(governateId);
+		if (goveAreaList.isEmpty()) {
+			throw new GlobalException("governate area are not avaliable");
+		}
+		return AmxApiResponse.buildList(convertGovtAreaDto(goveAreaList));
+		
+	}
+	
+	
+	
+	
+	public List<ViewGovernateAreaDto> convertGovtAreaDto(List<VwGovernateAreaModel> goveAreaList){
+		List<ViewGovernateAreaDto> output = new ArrayList<>();
+		for(VwGovernateAreaModel model :goveAreaList){
+			ViewGovernateAreaDto dto = new ViewGovernateAreaDto();
+			dto.setAreaId(model.getGoverAreaId());
+			dto.setArFullName(model.getArFullName());
+			dto.setFullName(model.getFullName());
+			dto.setGovendateId(model.getGovernateId());
+			output.add(dto);
+		}
+		return output;
+	}
+	
+	
+	
+	
+	public List<ViewGovernateDto> convertGovtDto(List<VwGovernateModel> goveList){
+		List<ViewGovernateDto> output = new ArrayList<>();
+		for(VwGovernateModel model :goveList){
+			ViewGovernateDto dto = new ViewGovernateDto();
+			dto.setApplicationCountryId(model.getApplicationCountryId());
+			dto.setArFullName(model.getArFullName());
+			dto.setFullName(model.getFullName());
+			dto.setGovernateId(model.getGovernateId());
+			output.add(dto);
+		}
+		return output;
+	}
+	
+	
+	
 	private List<ViewAreaDto> convertAreaDto(List<ViewAreaModel> viewAreaList) {
 		List<ViewAreaDto> output = new ArrayList<>();
 		for (ViewAreaModel viewAreaModel : viewAreaList) {
