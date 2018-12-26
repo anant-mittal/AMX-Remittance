@@ -24,5 +24,8 @@ public interface ReceiptPaymentRespository extends CrudRepository<ReceiptPayment
 	public List<ReceiptPayment> findByInventoryId(String inventoryId);
 	
 	public List<ReceiptPayment> findByColDocFyrAndColDocNo(BigDecimal collDocFyr,BigDecimal collDocNo);
+	
+	@Query(value = "SELECT COUNT(*) FROM V_RECPAY WHERE COMCOD=?1 AND COL_DOCCOD=?2 AND COL_DOCFYR=?3 AND COL_DOCNO=?4", nativeQuery = true)
+	public int fetchRecPayTrnxDetails(BigDecimal companyCode,BigDecimal collDocCode,BigDecimal collDocFyr,BigDecimal collDocNo);
 
 }

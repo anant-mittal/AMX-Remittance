@@ -437,4 +437,15 @@ public class FcSaleBranchDao {
 		return receiptPaymentRespository.findByColDocFyrAndColDocNo(collDocFyr, collDocNo);
 	}
 	
+	public Boolean fetchRecPayTrnxDetails(BigDecimal companyCode,BigDecimal collDocCode,BigDecimal collDocFyr,BigDecimal collDocNo,int count){
+		Boolean status = Boolean.TRUE;
+		int recordCount = receiptPaymentRespository.fetchRecPayTrnxDetails(companyCode, collDocCode, collDocFyr, collDocNo);
+		if(recordCount != 0 && recordCount == count) {
+			status = Boolean.FALSE;
+		}
+		
+		return status;
+	}
+	
+	
 }

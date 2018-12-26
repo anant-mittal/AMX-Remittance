@@ -1328,6 +1328,7 @@ public class FcSaleBranchOrderManager {
 		BigDecimal collectionDocumentNo = null;
 		BigDecimal collectionDocumentYear = null;
 		Boolean oldEmosProdStatus = Boolean.FALSE;
+		int count = 0;
 		List<ForeignCurrencyAdjust> lstTotalStock = new ArrayList<>();
 		List<ForeignCurrencyAdjust> lstToStock = new ArrayList<>();
 		List<ForeignCurrencyAdjust> lstFromStock = new ArrayList<>();
@@ -1356,6 +1357,7 @@ public class FcSaleBranchOrderManager {
 			// fetch records 
 			List<OrderManagementView> lstOrderManager = fcSaleBranchDao.fetchOrdersByDeliveryDetailId(deliveryDetailSeqId);
 			if(lstOrderManager != null && lstOrderManager.size() != 0){
+				count = lstOrderManager.size();
 				OrderManagementView ordManager = lstOrderManager.get(0);
 				collectionDocumentYear = ordManager.getCollectionDocFinanceYear();
 				collectionDocumentNo = ordManager.getCollectionDocumentNo();
@@ -1419,7 +1421,15 @@ public class FcSaleBranchOrderManager {
 				if(countryId != null && collectionDocumentYear != null && collectionDocumentNo != null && companyId != null) {
 					// transfer to emos
 					if(oldEmosProdStatus) {
-						transferReceiptPaymentEMOS(countryId, collectionDocumentYear, collectionDocumentNo, companyId);
+						// check whether procedure moved or not
+						ForeignCurrencyAdjust fcCurrencyAdjust = lstFromStock.get(0);
+						BigDecimal companyCode = fcCurrencyAdjust.getCompanyCode();
+						Boolean recPayStatus = fcSaleBranchDao.fetchRecPayTrnxDetails(companyCode, ConstantDocument.DOCUMENT_CODE_FOR_COLLECT_TRANSACTION, collectionDocumentYear, collectionDocumentNo,count);
+						
+						// move java to old emos
+						if(recPayStatus) {
+							transferReceiptPaymentEMOS(countryId, collectionDocumentYear, collectionDocumentNo, companyId);
+						}
 					}
 
 					if(lstToStock != null && lstToStock.size() != 0 && lstOldToStock != null && lstOldToStock.size() != 0) {
