@@ -1,4 +1,4 @@
-package com.amx.jax.jobs.scrapper;
+package com.amx.jax.radar.jobs.scrapper;
 
 import java.io.Serializable;
 import java.math.BigDecimal;

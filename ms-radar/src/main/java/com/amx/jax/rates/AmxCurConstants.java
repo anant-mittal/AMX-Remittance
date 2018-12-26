@@ -23,7 +23,7 @@ public class AmxCurConstants {
 	}
 
 	public static enum RSource {
-		AMANKUWAIT, BECKWT, MUZAINI, UAEXCHANGE
+		AMANKUWAIT, BECKWT, MUZAINI, UAEXCHANGE, AMX
 	}
 
 	public static final int INTERVAL_MIN_30 = 30 * 60 * 1000;

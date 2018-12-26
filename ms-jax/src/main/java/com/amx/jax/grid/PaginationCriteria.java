@@ -4,6 +4,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.amx.utils.ArgUtil;
+
 /**
  * The Class PaginationCriteria.
  */
@@ -120,7 +122,15 @@ public class PaginationCriteria {
 	 * @return true, if is filter by empty
 	 */
 	public boolean isFilterByEmpty() {
-		if (null == filterBy || null == filterBy.getMapOfFilters() || filterBy.getMapOfFilters().size() == 0) {
+		if (null == filterBy || null == filterBy.getMapOfLikeFilters() || filterBy.getMapOfLikeFilters().size() == 0) {
+			return true;
+		}
+		return false;
+	}
+
+	public boolean isWhereFilterByEmpty() {
+		if (null == filterBy || null == filterBy.getMapOfWhereFilters()
+				|| filterBy.getMapOfWhereFilters().size() == 0) {
 			return true;
 		}
 		return false;
@@ -148,7 +158,7 @@ public class PaginationCriteria {
 		StringBuilder fbsb = null;
 
 		if (!isFilterByEmpty()) {
-			Iterator<Entry<String, String>> fbit = filterBy.getMapOfFilters().entrySet().iterator();
+			Iterator<Entry<String, String>> fbit = filterBy.getMapOfLikeFilters().entrySet().iterator();
 
 			while (fbit.hasNext()) {
 
@@ -184,6 +194,47 @@ public class PaginationCriteria {
 		return (null == fbsb) ? BLANK : fbsb.toString();
 	}
 
+	public String getWhereFilterByClause() {
+
+		StringBuilder fbsb = null;
+
+		if (!isWhereFilterByEmpty()) {
+			Iterator<Entry<String, String>> fbit = filterBy.getMapOfWhereFilters().entrySet().iterator();
+
+			while (fbit.hasNext()) {
+
+				Map.Entry<String, String> pair = fbit.next();
+
+				if (null == fbsb) {
+					fbsb = new StringBuilder();
+					fbsb.append(BRKT_OPN);
+
+					fbsb.append(SPACE)
+							.append(BRKT_OPN)
+							.append(pair.getKey())
+							.append(WHERE_PREFIX)
+							.append(pair.getValue())
+							.append(WHERE_SUFFIX)
+							.append(BRKT_CLS);
+
+				} else {
+
+					fbsb.append(AND)
+							.append(BRKT_OPN)
+							.append(pair.getKey())
+							.append(WHERE_PREFIX)
+							.append(pair.getValue())
+							.append(WHERE_SUFFIX)
+							.append(BRKT_CLS);
+
+				}
+			}
+			fbsb.append(BRKT_CLS);
+		}
+
+		return (null == fbsb) ? BLANK : fbsb.toString();
+	}
+
 	/**
 	 * Gets the order by clause.
 	 *
@@ -198,11 +249,13 @@ public class PaginationCriteria {
 
 			while (sbit.hasNext()) {
 				Map.Entry<String, SortOrder> pair = sbit.next();
-				if (null == sbsb) {
-					sbsb = new StringBuilder();
-					sbsb.append(ORDER_BY).append(pair.getKey()).append(SPACE).append(pair.getValue());
-				} else {
-					sbsb.append(COMMA).append(pair.getKey()).append(SPACE).append(pair.getValue());
+				if(!ArgUtil.isEmpty(pair.getKey())) {
+					if (null == sbsb) {
+						sbsb = new StringBuilder();
+						sbsb.append(ORDER_BY).append(pair.getKey()).append(SPACE).append(pair.getValue());
+					} else {
+						sbsb.append(COMMA).append(pair.getKey()).append(SPACE).append(pair.getValue());
+					}
 				}
 			}
 		}
@@ -221,6 +274,10 @@ public class PaginationCriteria {
 
 	/** The Constant LIKE_SUFFIX. */
 	private static final String LIKE_SUFFIX = "%' ";
+
+	private static final String WHERE_PREFIX = " = '";
+
+	private static final String WHERE_SUFFIX = "' ";
 
 	/** The Constant AND. */
 	private static final String AND = " AND ";

@@ -83,6 +83,10 @@ public class DeviceRestModels {
 
 		void setDeviceSecret(String deviceSecret);
 
+		long getOtpTtl();
+
+		void setOtpTtl(long otpValidity);
+
 	}
 
 	@JsonDeserialize(as = DeviceRestModel.class)
@@ -129,6 +133,8 @@ public class DeviceRestModels {
 		String deviceRequestKey;
 
 		String deviceSecret;
+
+		private long otpTtl;
 
 		@Override
 		public String getDeivceTerminalId() {
@@ -218,6 +224,16 @@ public class DeviceRestModels {
 		@Override
 		public void setDeviceSecret(String deviceSecret) {
 			this.deviceSecret = deviceSecret;
+		}
+
+		@Override
+		public long getOtpTtl() {
+			return this.otpTtl;
+		}
+
+		@Override
+		public void setOtpTtl(long otpTtl) {
+			this.otpTtl = otpTtl;
 		}
 
 	}

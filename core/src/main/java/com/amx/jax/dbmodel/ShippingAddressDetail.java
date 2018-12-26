@@ -53,8 +53,10 @@ public class ShippingAddressDetail implements java.io.Serializable {
 	private String buildingNo;
 	private String telephoneCode;
 	private String addressType;
-    private BigDecimal goverAreaId;
-    private BigDecimal governateId;
+	private BigDecimal goverAreaId;
+	private BigDecimal governateId;
+
+
 
 	public ShippingAddressDetail() {
 	}
@@ -329,5 +331,7 @@ public class ShippingAddressDetail implements java.io.Serializable {
 	public void setGovernateId(BigDecimal governateId) {
 		this.governateId = governateId;
 	}
+
+
 	
 }

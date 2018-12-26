@@ -830,7 +830,7 @@ public List<FxOrderTransactionHistroyDto> getMultipleTransactionHistroy(List<FxO
     			  .append("House no. ").append(shippingAddressDto.getBuildingNo()==null?"":shippingAddressDto.getBuildingNo()).append(concat)
     			  .append("Flat ").append(shippingAddressDto.getFlat()==null?"":shippingAddressDto.getHouse()).append(concat)
     			  .append("City ").append(shippingAddressDto.getLocalContactCity()==null?"":shippingAddressDto.getLocalContactCity()).append(concat) 
-    			  .append("Area ").append(shippingAddressDto.getAreaDesc()).append(concat)
+    			  .append("Area ").append(shippingAddressDto.getGovtAreaDesc()==null?"":shippingAddressDto.getGovtAreaDesc()).append(concat)
     			  .append(shippingAddressDto.getLocalContactDistrict()==null?"":shippingAddressDto.getLocalContactDistrict()).append(concat)
     			  .append(shippingAddressDto.getLocalContactState()==null?"":shippingAddressDto.getLocalContactState()).append(concat)
     			  .append("Contact ").append(shippingAddressDto.getMobile()==null?"":shippingAddressDto.getMobile());

@@ -1298,7 +1298,7 @@ public class FcSaleBranchOrderManager {
 		BigDecimal customerId = null;
 		// fetch collection details
 		List<CollectionModel> collection = fcSaleBranchDao.fetchCollectionData(orderNumber, orderYear);
-		if(collection != null && collection.size() != 0) {
+		if(collection != null && !collection.isEmpty()) {
 			CollectionModel collectionModel = collection.get(0);
 			customerId = collectionModel.getFsCustomer().getCustomerId();
 

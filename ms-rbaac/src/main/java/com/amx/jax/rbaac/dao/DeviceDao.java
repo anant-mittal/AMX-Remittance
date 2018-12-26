@@ -21,6 +21,7 @@ import com.amx.jax.rbaac.exception.AuthServiceException;
 import com.amx.jax.rbaac.repository.DeviceRepository;
 import com.amx.jax.rbaac.service.BranchSystemDetailService;
 import com.amx.jax.util.CryptoUtil;
+import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
 
 @Component
@@ -53,6 +54,12 @@ public class DeviceDao {
 		}
 		if (request.getIdentityInt() != null) {
 			Employee employee = rbaacDao.fetchEmpDetails(request.getIdentityInt());
+
+			if (ArgUtil.isEmpty(employee)) {
+				throw new AuthServiceException(RbaacServiceError.INVALID_USER_DETAILS,
+						"Cannot find user with provided details");
+			}
+
 			device.setEmployeeId(employee.getEmployeeId());
 		}
 		device.setCreatedBy("JOMAX_ONLINE");

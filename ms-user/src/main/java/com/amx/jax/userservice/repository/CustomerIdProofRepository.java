@@ -11,7 +11,7 @@ import com.amx.jax.dbmodel.CustomerIdProof;
 
 public interface CustomerIdProofRepository extends JpaRepository<CustomerIdProof, Serializable> {
 
-	@Query(value = "select * from FS_CUSTOMER_ID_PROOF where CUSTOMER_ID=?1 and NVL(ISACTIVE,'') ='Y' and TRUNC(IDENTITY_EXPIRY_DATE) >= TRUNC(SYSDATE)"
+	@Query(value = "select * from FS_CUSTOMER_ID_PROOF where CUSTOMER_ID=?1 and NVL(ISACTIVE,'') ='Y' "
 			+ " ORDER BY NVL(LAST_UPDATED_DATE,CREATION_DATE) DESC", nativeQuery = true)
 	public List<CustomerIdProof> getCustomerIdProofByCustomerId(BigDecimal customerId);
 
