@@ -58,6 +58,8 @@ public class JaxNotificationService {
 			email.setSubject("Your transaction on AMX is successful");
 		} else if (TenantContextHolder.currentSite().equals(Tenant.BHR)) {
 			email.setSubject("Your transaction on MEC is successful");
+		}else if (TenantContextHolder.currentSite().equals(Tenant.OMN)) {
+		    email.setSubject("Your transaction on Modern Exchange - Oman is successful");
 		}
 
 		email.addTo(pinfo.getEmail());
