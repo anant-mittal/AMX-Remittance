@@ -40,11 +40,8 @@ import com.amx.amxlib.model.OnlineConfigurationDto;
 import com.amx.amxlib.model.request.GetBankBranchRequest;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.configs.JaxMetaInfo;
-import com.amx.jax.client.fx.IFxOrderDelivery.Params;
-import com.amx.jax.client.fx.IFxOrderDelivery.Path;
 import com.amx.jax.model.response.BranchSystemDetailDto;
 import com.amx.jax.model.response.CurrencyMasterDTO;
-import com.amx.jax.model.response.fx.FxDeliveryDetailDto;
 import com.amx.jax.rest.RestService;
 
 /**
@@ -576,6 +573,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 	}
 	
 	
+	@Deprecated
 	public AmxApiResponse<ViewAreaDto, Object> getAreaList() {
 		try {
 			return restService.ajax(appConfig.getJaxURL())
