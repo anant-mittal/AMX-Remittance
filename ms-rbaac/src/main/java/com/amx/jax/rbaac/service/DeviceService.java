@@ -126,7 +126,6 @@ public class DeviceService extends AbstractService {
 		return dto;
 	}
 
-
 	public BoolRespModel activateDevice(Integer deviceRegId) {
 		logger.info("In activateDevice with deviceRegId: {}", deviceRegId);
 		Device device = deviceDao.findDevice(new BigDecimal(deviceRegId));
@@ -233,8 +232,8 @@ public class DeviceService extends AbstractService {
 
 				logger.info("====== WARNING : Inactive Device Client : Contact Support ======");
 
-				// throw new AuthServiceException("Inactive Device Client : Contact Support",
-				// RbaacServiceError.CLIENT_NOT_ACTIVE);
+				throw new AuthServiceException(RbaacServiceError.CLIENT_NOT_ACTIVE,
+						"Inactive Device Client : Contact Support");
 			}
 
 		}
