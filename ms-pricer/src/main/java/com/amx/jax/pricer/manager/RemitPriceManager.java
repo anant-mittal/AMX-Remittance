@@ -130,6 +130,14 @@ public class RemitPriceManager {
 
 			List<BigDecimal> validBankIds = getValidBankIds(requestDto.getForeignCurrencyId(),
 					requestDto.getPricingLevel(), requestDto.getRoutingBankIds());
+			
+			if (validBankIds.isEmpty()) {
+
+				LOGGER.info("No Valid bank Ids found for Pricing Request");
+
+				throw new PricerServiceException(PricerServiceError.INVALID_ROUTING_BANK_IDS,
+						"Invalid Routing Bank Ids : None Found : " + requestDto.getRoutingBankIds());
+			}
 
 			List<ExchangeRateApprovalDetModel> bankExchangeRates = exchangeRateDao
 					.getBranchExchangeRatesForRoutingBanks(requestDto.getForeignCurrencyId(),
@@ -353,7 +361,7 @@ public class RemitPriceManager {
 		try {
 			BeanUtils.copyProperties(dto, dbmodel);
 		} catch (IllegalAccessException | InvocationTargetException e) {
-			System.out.println("error in convert of bankmaster");
+			LOGGER.warn("error in convert of bankmaster");
 		}
 		return dto;
 	}

@@ -19,6 +19,8 @@ public interface PricerService {
 		public static final String FETCH_PRICE_CUSTOMER = SERVICE_PREFIX + API_VERSION_V1 + "/fetch-price-customer";
 
 		public static final String FETCH_BASE_PRICE = SERVICE_PREFIX + API_VERSION_V1 + "/fetch-base-price";
+		
+		public static final String PRICE_TEST = SERVICE_PREFIX + API_VERSION_V1 + "/price-test";
 
 	}
 

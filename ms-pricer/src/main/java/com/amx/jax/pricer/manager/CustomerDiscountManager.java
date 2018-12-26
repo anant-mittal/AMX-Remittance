@@ -92,8 +92,8 @@ public class CustomerDiscountManager {
 					bankAmountSlabDiscounts.put(pipsMaster.getBankMaster().getBankId().longValue(), slabPipsMap);
 				}
 
-				System.out.println(" Pips Master Discount ==> "
-						+ bankAmountSlabDiscounts.get(pipsMaster.getBankMaster().getBankId().longValue()));
+			//	System.out.println(" Pips Master Discount ==> "
+			//			+ bankAmountSlabDiscounts.get(pipsMaster.getBankMaster().getBankId().longValue()));
 
 			}
 		}
@@ -171,7 +171,7 @@ public class CustomerDiscountManager {
 
 			discountedRatesNPrices.add(discountedRateDetail);
 
-			System.out.println(" Discounted Rates ==> " + discountedRateDetail);
+			//System.out.println(" Discounted Rates ==> " + discountedRateDetail);
 
 		} // for (Bank...
 

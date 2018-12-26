@@ -14,7 +14,7 @@ public class ChannelDiscountDao {
 	ChannelDiscountRepository channelDiscountRepository;
 
 	public ChannelDiscount getDiscountByChannel(Channel channel) {
-		return channelDiscountRepository.findByChannel(channel.toString());
+		return channelDiscountRepository.findByChannel(channel);
 	}
 
 	public ChannelDiscount saveDiscountForChannel(ChannelDiscount channelDiscount) {

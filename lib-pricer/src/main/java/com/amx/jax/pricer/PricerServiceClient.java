@@ -27,6 +27,7 @@ public class PricerServiceClient implements PricerService {
 	@Autowired
 	AppConfig appConfig;
 
+	
 	@Override
 	public AmxApiResponse<PricingResponseDTO, Object> fetchPriceForCustomer(PricingRequestDTO pricingRequestDTO) {
 
@@ -50,5 +51,7 @@ public class PricerServiceClient implements PricerService {
 				.as(new ParameterizedTypeReference<AmxApiResponse<PricingResponseDTO, Object>>() {
 				});
 	}
+
+	
 
 }
