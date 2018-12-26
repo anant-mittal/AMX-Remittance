@@ -1,4 +1,4 @@
-package com.amx.jax.adapter;
+package com.amx.jax.radar;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

@@ -1,4 +1,4 @@
-package com.amx.jax.polls;
+package com.amx.jax.radar.polls;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 

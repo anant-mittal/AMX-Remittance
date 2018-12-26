@@ -1,8 +1,7 @@
-package com.amx.jax.polls;
+package com.amx.jax.radar;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.action.delete.DeleteRequest;
@@ -17,29 +16,23 @@ import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
 
 import com.amx.jax.logger.LoggerService;
 import com.amx.utils.JsonUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-@Repository
-public class VoteRepository {
+public class AESRepository {
 
-	Logger LOGGER = LoggerService.getLogger(VoteRepository.class);
-
-	private final String INDEX = "polls";
-	private final String TYPE = "vote";
+	Logger LOGGER = LoggerService.getLogger(AESRepository.class);
 
 	@Autowired
 	private RestHighLevelClient restHighLevelClient;
 
-	public Vote insertVote(Vote vote) {
+	public Map<String, Object> insert(String index, String type, AESDocument rate) {
 
 		// vote.setId(UUID.randomUUID().toString());
-
-		Map<String, Object> dataMap = JsonUtil.toMap(vote);
-		IndexRequest indexRequest = new IndexRequest(INDEX, TYPE, vote.getId())
+		Map<String, Object> dataMap = JsonUtil.toMap(rate);
+		IndexRequest indexRequest = new IndexRequest(index, type, rate.getId())
 				.source(dataMap);
 		try {
 			IndexResponse response = restHighLevelClient.index(indexRequest);
@@ -48,11 +41,12 @@ public class VoteRepository {
 		} catch (java.io.IOException ex) {
 			LOGGER.error("java.io.IOException", ex);
 		}
-		return vote;
+
+		return dataMap;
 	}
 
-	public Map<String, Object> getVoteById(String id) {
-		GetRequest getRequest = new GetRequest(INDEX, TYPE, id);
+	public Map<String, Object> getById(String index, String type, String id) {
+		GetRequest getRequest = new GetRequest(index, type, id);
 		GetResponse getResponse = null;
 		try {
 			getResponse = restHighLevelClient.get(getRequest);
@@ -63,8 +57,8 @@ public class VoteRepository {
 		return sourceAsMap;
 	}
 
-	public Map<String, Object> updateVoteById(String id, Vote vote) {
-		UpdateRequest updateRequest = new UpdateRequest(INDEX, TYPE, id)
+	public Map<String, Object> updateById(String index, String type, String id, AESDocument vote) {
+		UpdateRequest updateRequest = new UpdateRequest(index, type, id)
 				.fetchSource(true); // Fetch Object after its update
 		Map<String, Object> error = new HashMap<>();
 		error.put("Error", "Unable to update vote");
@@ -83,8 +77,8 @@ public class VoteRepository {
 		return error;
 	}
 
-	public void deleteVoteById(String id) {
-		DeleteRequest deleteRequest = new DeleteRequest(INDEX, TYPE, id);
+	public void deleteById(String index, String type, String id) {
+		DeleteRequest deleteRequest = new DeleteRequest(index, type, id);
 		try {
 			DeleteResponse deleteResponse = restHighLevelClient.delete(deleteRequest);
 		} catch (java.io.IOException e) {

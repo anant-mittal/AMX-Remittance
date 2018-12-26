@@ -1,4 +1,4 @@
-package com.amx.jax.jobs.scrapper;
+package com.amx.jax.radar.jobs.scrapper;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -17,6 +17,7 @@ import com.amx.jax.client.ExchangeRateClient;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.dict.Language;
 import com.amx.jax.logger.LoggerService;
+import com.amx.jax.radar.ARadarTask;
 import com.amx.jax.rates.AmxCurConstants;
 import com.amx.jax.rates.AmxCurConstants.RCur;
 import com.amx.jax.rates.AmxCurConstants.RSource;
@@ -30,7 +31,7 @@ import com.amx.utils.ArgUtil;
 @EnableScheduling
 @Component
 @Service
-public class AMXJob extends AScrapperTasks {
+public class AMXJob extends ARadarTask {
 
 	@Autowired
 	private AmxCurRateRepository curRateRepository;
