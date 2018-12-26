@@ -58,7 +58,6 @@ import com.amx.jax.services.AbstractService;
 import com.amx.jax.util.JaxUtil;
 
 @Service
-@SuppressWarnings("rawtypes")
 public class MetaService extends AbstractService {
 
 	private Logger logger = Logger.getLogger(MetaService.class);
@@ -82,14 +81,13 @@ public class MetaService extends AbstractService {
 	IViewDistrictDAO districtDao;
 	@Autowired
 	IViewArea areaDao;
-	
+
 	@Autowired
 	IViewGovernateDao govermentDao;
-	
+
 	@Autowired
 	IGovernateAreaDao govermentAreaDao;
-	
-	
+
 	@Autowired
 	OnlineConfigurationRepository onlineConfigurationRepository;
 
@@ -138,32 +136,29 @@ public class MetaService extends AbstractService {
 		return AmxApiResponse.buildList(convertAreaDto(viewAreaList));
 	}
 
-	/** For Governate list**/
-	public AmxApiResponse<ViewGovernateDto, Object> getGovernateList(BigDecimal applicationCountryId){
+	/** For Governate list **/
+	public AmxApiResponse<ViewGovernateDto, Object> getGovernateList(BigDecimal applicationCountryId) {
 		List<VwGovernateModel> goveList = govermentDao.getGovermentList(applicationCountryId);
 		if (goveList.isEmpty()) {
 			throw new GlobalException("governate are not avaliable");
 		}
 		return AmxApiResponse.buildList(convertGovtDto(goveList));
-		
+
 	}
-	
+
 	/** For Governate area list **/
-	public AmxApiResponse<ViewGovernateAreaDto, Object> getGovernateAreaList(BigDecimal governateId){
+	public AmxApiResponse<ViewGovernateAreaDto, Object> getGovernateAreaList(BigDecimal governateId) {
 		List<VwGovernateAreaModel> goveAreaList = govermentAreaDao.getGovermenAreaList(governateId);
 		if (goveAreaList.isEmpty()) {
 			throw new GlobalException("governate area are not avaliable");
 		}
 		return AmxApiResponse.buildList(convertGovtAreaDto(goveAreaList));
-		
+
 	}
-	
-	
-	
-	
-	public List<ViewGovernateAreaDto> convertGovtAreaDto(List<VwGovernateAreaModel> goveAreaList){
+
+	public List<ViewGovernateAreaDto> convertGovtAreaDto(List<VwGovernateAreaModel> goveAreaList) {
 		List<ViewGovernateAreaDto> output = new ArrayList<>();
-		for(VwGovernateAreaModel model :goveAreaList){
+		for (VwGovernateAreaModel model : goveAreaList) {
 			ViewGovernateAreaDto dto = new ViewGovernateAreaDto();
 			dto.setAreaId(model.getGoverAreaId());
 			dto.setArFullName(model.getArFullName());
@@ -173,13 +168,10 @@ public class MetaService extends AbstractService {
 		}
 		return output;
 	}
-	
-	
-	
-	
-	public List<ViewGovernateDto> convertGovtDto(List<VwGovernateModel> goveList){
+
+	public List<ViewGovernateDto> convertGovtDto(List<VwGovernateModel> goveList) {
 		List<ViewGovernateDto> output = new ArrayList<>();
-		for(VwGovernateModel model :goveList){
+		for (VwGovernateModel model : goveList) {
 			ViewGovernateDto dto = new ViewGovernateDto();
 			dto.setApplicationCountryId(model.getApplicationCountryId());
 			dto.setArFullName(model.getArFullName());
@@ -189,9 +181,7 @@ public class MetaService extends AbstractService {
 		}
 		return output;
 	}
-	
-	
-	
+
 	private List<ViewAreaDto> convertAreaDto(List<ViewAreaModel> viewAreaList) {
 		List<ViewAreaDto> output = new ArrayList<>();
 		for (ViewAreaModel viewAreaModel : viewAreaList) {

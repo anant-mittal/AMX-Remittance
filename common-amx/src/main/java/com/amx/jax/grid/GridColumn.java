@@ -3,7 +3,9 @@ package com.amx.jax.grid;
 import com.amx.jax.grid.SortOrder;
 import com.amx.jax.swagger.ApiMockModelProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class GridColumn {
 
 	private int index;
