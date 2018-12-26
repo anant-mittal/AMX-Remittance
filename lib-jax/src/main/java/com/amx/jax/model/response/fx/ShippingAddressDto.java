@@ -85,7 +85,16 @@ public class ShippingAddressDto {
 	private ResourceDTO governoateAreaDto;
 	private String govtAreaDesc;
 	private String govtDesc;
+	private Boolean isDefault = Boolean.FALSE;
 	
+
+	public Boolean getIsDefault() {
+		return isDefault;
+	}
+
+	public void setIsDefault(Boolean isDefault) {
+		this.isDefault = isDefault;
+	}
 
 	public BigDecimal getCustomerId() {
 		return customerId;
