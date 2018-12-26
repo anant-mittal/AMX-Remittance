@@ -45,7 +45,7 @@ public class GridUtil {
 		StringBuilder sb = null;
 
 		if (isCustomeQuery) {
-			//Record Query with Custom
+			//Record Query with Custom // SLOWEST
 			sb = new StringBuilder(
 					"SELECT * FROM (SELECT FILTERED_ORDERED_RESULTS.*, COUNT(1) OVER() total_records, ROWNUM AS RN FROM (SELECT BASEINFO.* FROM ( #BASE_QUERY# ) BASEINFO ) FILTERED_ORDERED_RESULTS #WHERE_CLAUSE# #ORDER_CLASUE# ) WHERE RN > (#PAGE_NUMBER# * #PAGE_SIZE#) AND RN <= (#PAGE_NUMBER# + 1) * #PAGE_SIZE# ");
 		} else if (!isCustomeQuery && !isGridViewRecord) {
@@ -53,9 +53,9 @@ public class GridUtil {
 			sb = new StringBuilder(
 					"SELECT * FROM (SELECT FILTERED_ORDERED_RESULTS.* , 0 total_records, ROWNUM as RN FROM (#BASE_QUERY# #WHERE_CLAUSE# #NOWHERE# ROWNUM <= (#PAGE_NUMBER# + 1) * #PAGE_SIZE# #ORDER_CLASUE# ) FILTERED_ORDERED_RESULTS ) WHERE RN > (#PAGE_NUMBER# * #PAGE_SIZE#)");
 		} else if (!isCustomeQuery && isGridViewRecord) {
-			//Record Query
+			//Record Query : MEDIUM
 			sb = new StringBuilder(
-					"SELECT * FROM (SELECT FILTERED_ORDERED_RESULTS.*, COUNT(1) OVER() total_records, ROWNUM as RN FROM (#BASE_QUERY# #WHERE_CLAUSE# #ORDER_CLASUE# ) FILTERED_ORDERED_RESULTS) WHERE RN > (#PAGE_NUMBER# * #PAGE_SIZE#) AND ROWNUM <= (#PAGE_NUMBER# + 1) * #PAGE_SIZE# ");
+					"SELECT * FROM (SELECT FILTERED_ORDERED_RESULTS.*, COUNT(1) OVER() total_records, ROWNUM as RN FROM (#BASE_QUERY# #WHERE_CLAUSE# #ORDER_CLASUE# ) FILTERED_ORDERED_RESULTS) WHERE RN > (#PAGE_NUMBER# * #PAGE_SIZE#) AND RN <= (#PAGE_NUMBER# + 1) * #PAGE_SIZE# ");
 		}
 
 		if (!ArgUtil.isEmpty(paginationCriteria)) {
