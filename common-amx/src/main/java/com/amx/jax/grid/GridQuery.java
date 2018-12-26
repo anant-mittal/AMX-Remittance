@@ -3,7 +3,9 @@ package com.amx.jax.grid;
 import java.util.List;
 
 import com.amx.jax.swagger.ApiMockModelProperty;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class GridQuery {
 
 	@ApiMockModelProperty(example = "0", value = "page")
@@ -14,6 +16,9 @@ public class GridQuery {
 
 	@ApiMockModelProperty(example = "", value = "Global Search String")
 	private String search;
+
+	@ApiMockModelProperty(example = "false", value = "false,if pagination is not required, faster")
+	private boolean paginated;
 
 	List<GridColumn> columns;
 	int sortBy;
@@ -65,6 +70,14 @@ public class GridQuery {
 
 	public void setSearch(String search) {
 		this.search = search;
+	}
+
+	public boolean isPaginated() {
+		return paginated;
+	}
+
+	public void setPaginated(boolean paginated) {
+		this.paginated = paginated;
 	}
 
 }
