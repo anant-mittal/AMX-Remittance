@@ -494,16 +494,14 @@ public class FcSaleAddressManager extends AbstractModel {
 				sb.append("City ").append(shippingAddressDto.getLocalContactCity() == null ? ""
 						: shippingAddressDto.getLocalContactCity()).append(concat);
 			}
-			if (shippingAddressDto.getGovtAreaDesc() != null) {
-				sb.append("Area ")
-						.append(shippingAddressDto.getGovtAreaDesc() == null ? ""
-								: shippingAddressDto.getGovtAreaDesc())
-						.append(concat)
-						.append(shippingAddressDto.getLocalContactDistrict() == null ? ""
-								: shippingAddressDto.getLocalContactDistrict() + concat)
-						.append(shippingAddressDto.getLocalContactState() == null ? ""
-								: shippingAddressDto.getLocalContactState() + concat);
-			}
+			sb.append(
+					shippingAddressDto.getGovtDesc() == null ? "" : shippingAddressDto.getGovtDesc() + concat);
+			sb.append(
+					shippingAddressDto.getGovtAreaDesc() == null ? "" : shippingAddressDto.getGovtAreaDesc() + concat);
+			sb.append(shippingAddressDto.getLocalContactDistrict() == null ? ""
+					: shippingAddressDto.getLocalContactDistrict() + concat);
+			sb.append(shippingAddressDto.getLocalContactState() == null ? ""
+					: shippingAddressDto.getLocalContactState() + concat);
 			sb.append("Contact ").append(shippingAddressDto.getMobile() == null ? "" : shippingAddressDto.getMobile());
 
 		}
