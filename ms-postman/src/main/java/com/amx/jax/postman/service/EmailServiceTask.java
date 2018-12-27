@@ -2,8 +2,6 @@ package com.amx.jax.postman.service;
 
 import java.io.IOException;
 
-import javax.mail.MessagingException;
-
 import org.redisson.api.RQueue;
 import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
@@ -14,10 +12,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-import com.amx.jax.AppConfig;
-import com.amx.jax.AppContext;
 import com.amx.jax.AppContextUtil;
-import com.amx.jax.dict.Tenant;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.postman.PostManConfig;
 import com.amx.jax.postman.model.Email;
