@@ -208,10 +208,6 @@ public class EmailService {
 	private Email send(Email email) throws MessagingException, IOException {
 		String tos = null;
 
-		if (email != null) {
-			throw new MessagingException();
-		}
-
 		if (email.isHtml()) {
 			tos = String.join(",", sendHtmlMail(email));
 		} else {
