@@ -10,6 +10,8 @@ import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+import org.redisson.api.RQueue;
+import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,8 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.AppConfig;
+import com.amx.jax.AppContext;
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.async.ExecutorConfig;
 import com.amx.jax.logger.AuditEvent;
 import com.amx.jax.logger.AuditService;
@@ -29,8 +33,10 @@ import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.audit.PMGaugeEvent;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
+import com.amx.jax.postman.model.Message.Status;
 import com.amx.jax.postman.model.Notipy;
 import com.amx.jax.scope.TenantScoped;
+import com.amx.jax.tunnel.TunnelMessage;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
 import com.amx.utils.CryptoUtil;
@@ -42,6 +48,8 @@ import com.amx.utils.Utils;
 @TenantScoped
 @Component
 public class EmailService {
+
+	static final String FAILED_EMAIL_QUEUE = "FAILED_EMAIL_QUEUE";
 
 	/** The Constant LOGGER. */
 	private static final Logger LOGGER = LoggerFactory.getLogger(EmailService.class);
@@ -82,6 +90,11 @@ public class EmailService {
 
 	@Autowired
 	private AppConfig appConfig;
+
+	@Autowired
+	RedissonClient redisson;
+
+	public static final int RESEND_INTERVAL = 1 * 60 * 1000;
 
 	/**
 	 * Gets the mail sender.
@@ -125,6 +138,12 @@ public class EmailService {
 
 		PMGaugeEvent pMGaugeEvent = new PMGaugeEvent(PMGaugeEvent.Type.SEND_EMAIL);
 		String to = null;
+		Email emailClone = null;
+		try {
+			emailClone = email.clone();
+		} catch (CloneNotSupportedException e1) {
+			LOGGER.error("Clonning exception {} Email to {}", email.getTemplate(), Utils.commaConcat(email.getTo()));
+		}
 		try {
 			if (LOGGER.isDebugEnabled()) {
 				LOGGER.debug("Sending {} Email to {}", email.getTemplate(), Utils.commaConcat(email.getTo()));
@@ -155,14 +174,26 @@ public class EmailService {
 			}
 			if (!ArgUtil.isEmpty(to)) {
 				this.send(email);
+				email.setStatus(Status.SENT);
 				auditService.log(pMGaugeEvent.set(AuditEvent.Result.DONE).set(email));
 			} else {
-				auditService.log(pMGaugeEvent.set(AuditEvent.Result.FAIL).set(email));
+				email.setStatus(Status.NOT_SENT);
+				auditService.log(pMGaugeEvent.set(AuditEvent.Result.REJECTED).set(email));
 			}
+
 		} catch (Exception e) {
-			auditService.excep(pMGaugeEvent.set(email), LOGGER, e);
+			auditService.excep(pMGaugeEvent.set(AuditEvent.Result.ERROR).set(email), LOGGER, e);
 			slackService.sendException(to, e);
 		}
+
+		if (!ArgUtil.isEmpty(emailClone) && !Status.SENT.equals(email.getStatus())
+				&& !Status.NOT_SENT.equals(email.getStatus())) {
+			AppContext context = AppContextUtil.getContext();
+			TunnelMessage<Email> tunnelMessage = new TunnelMessage<Email>(emailClone, context);
+			RQueue<TunnelMessage<Email>> emailQueue = redisson.getQueue(FAILED_EMAIL_QUEUE);
+			emailQueue.add(tunnelMessage);
+		}
+
 		return email;
 	}
 
@@ -176,6 +207,11 @@ public class EmailService {
 	 */
 	private Email send(Email email) throws MessagingException, IOException {
 		String tos = null;
+
+		if (email != null) {
+			throw new MessagingException();
+		}
+
 		if (email.isHtml()) {
 			tos = String.join(",", sendHtmlMail(email));
 		} else {
