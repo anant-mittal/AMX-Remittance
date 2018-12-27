@@ -66,26 +66,30 @@ public class ShippingAddressDto {
 	@Pattern(regexp = "^[1-9]\\d*$", message = "Invalid Tele Prefix")
 	private String telephoneCode;
 
-	@NotNull(message = "City Id may not be null")
 	private ResourceDTO cityDto;
-	@NotNull(message = "State Id may not be null")
 	private ResourceDTO stateDto;
-	@NotNull(message = "District Id may not be null")
 	private ResourceDTO districtDto;
 	@NotNull(message = "Country Id may not be null")
 	private ResourceDTO countryDto;
 	@NotNull(message = "Address type Id may not be null")
 	private AddressTypeDto addressDto;
 	
-	//@NotNull(message = "Area code may not be null")
 	private ResourceDTO areaDto;
 	private String deliveryAddress;
 	private ResourceDTO governoatesDto;
-	@NotNull(message = "Goveronate area code may not be null")
 	private ResourceDTO governoateAreaDto;
 	private String govtAreaDesc;
 	private String govtDesc;
+	private Boolean isDefault = Boolean.FALSE;
 	
+
+	public Boolean getIsDefault() {
+		return isDefault;
+	}
+
+	public void setIsDefault(Boolean isDefault) {
+		this.isDefault = isDefault;
+	}
 
 	public BigDecimal getCustomerId() {
 		return customerId;

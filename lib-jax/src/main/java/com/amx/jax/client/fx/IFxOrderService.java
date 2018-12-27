@@ -35,6 +35,7 @@ public interface IFxOrderService extends IJaxService {
 		public static final String FC_SALE_TIME_SLOT = PREFIX + "/fc-sale-time-slot/";
 		public static final String FC_SAVE_SHIPPING_ADDR = "/fc-save-shipping-addr/";
 		public static final String FC_SALE_ADDRESS = PREFIX + "/fc-sale-address/";
+		public static final String FC_SALE_ADDRESS_NEW = PREFIX + "/fc-sale-address-new/";
 		public static final String FCSALE_SAVE_APPLICATION = PREFIX + "/fcsale-save-application/";
 		public static final String FC_SALE_DEFAULT = PREFIX + "/fc-sale-default/";
 		public static final String FC_SALE_CAL_XRATE = PREFIX + "/fc-sale-cal-xrate/";
@@ -109,6 +110,9 @@ public interface IFxOrderService extends IJaxService {
 
 	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND })
 	AmxApiResponse<ShippingAddressDto, Object> getFcSaleAddress();
+	
+	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND })
+	AmxApiResponse<ShippingAddressDto, Object> getFcSaleAddressNew();
 
 	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND, JaxError.INVALID_APPLICATION_COUNTRY_ID, JaxError.INVALID_COMPANY_ID,JaxError.INVALID_STATE,JaxError.INVALID_DISTRICT,JaxError.CITY_NOT_AVAILABLE,JaxError.INVALID_ADDRESS_TYPE})
 	AmxApiResponse<CustomerShippingAddressRequestModel, Object> saveFcSaleShippingAddress(
@@ -150,5 +154,6 @@ public interface IFxOrderService extends IJaxService {
 
 	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND })
 	AmxApiResponse<ShippingAddressDto, Object> editShippingAddress(ShippingAddressDto shippingAddressDto);
+
 
 }

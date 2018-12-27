@@ -240,6 +240,13 @@ public class FcSaleService extends AbstractService {
 		}
 		return AmxApiResponse.buildList(shippingAddressList);
 	}
+	
+	public AmxApiResponse<ShippingAddressDto, Object> fetchFcSaleAddressNew() {
+		validation.validateHeaderInfo();
+		List<ShippingAddressDto> shippingAddressList = fcSaleAddresManager
+				.getShippingAddressDto(metaData.getCustomerId());
+		return AmxApiResponse.buildList(shippingAddressList);
+	}
 
 	/**
 	 * Save shipping address
@@ -485,4 +492,6 @@ public String getCustomerFullName(List<Customer> customerList){
 	}
 	return customerName;
 	}
+
+
 }
