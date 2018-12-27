@@ -88,7 +88,6 @@ public class CustomerDetailViewRecord implements GridViewRecord {
 	private BigDecimal auditGrossIncome;
 	private Date auditStatementDate;
 	private String objectiveDesc;
-	private Clob signatureSpecimenClob;
 
 	/*
 	 * @Column(name = "HY_TXN_LIMIT") public BigDecimal

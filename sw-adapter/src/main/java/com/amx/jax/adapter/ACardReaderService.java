@@ -57,11 +57,11 @@ public abstract class ACardReaderService {
 	}
 
 	public static enum CardStatus {
-		ERROR, NOCARD, REMOVED, FOUND, READING, SCANNED;
+		ERROR, NOCARD, REMOVED, FOUND, READING, CARD_NOT_GENUINE, CARD_EXPIRED, SCANNED;
 	}
 
 	public static enum DataStatus {
-		READ_ERROR, SYNC_ERROR, EMPTY, VALID_DATA, SYNCING, SYNCED;
+		READ_ERROR, SYNC_ERROR, EMPTY, INVALID, VALID_DATA, SYNCING, SYNCED;
 	}
 
 	// @Value("${device.terminal.id}")
@@ -401,7 +401,7 @@ public abstract class ACardReaderService {
 			READER.setData(cardData.isValid() ? cardData : null);
 			READER.setCardActiveTime(cardData.getTimestamp());
 			READER.setDeviceActiveTime(Math.max(READER.getDeviceActiveTime(), cardData.getTimestamp()));
-			status(DataStatus.VALID_DATA);
+			status(getDataStatus(cardData));
 			MAP.put(CARD_READER_KEY, cardData);
 		}
 	}
@@ -413,11 +413,13 @@ public abstract class ACardReaderService {
 			readerStarted = start();
 		}
 		CardData data = poll();
-		if (data != null && data.isValid()) {
+		DataStatus dataStatus = getDataStatus(data);
+		status(dataStatus);
+		if (DataStatus.VALID_DATA.equals(dataStatus)) {
 			SWAdapterGUI.CONTEXT.log("ID : " + data.getIdentity());
+		}
+		if (!DataStatus.EMPTY.equals(dataStatus)) {
 			push(data);
-		} else {
-			status(DataStatus.EMPTY);
 		}
 		return READER;
 	}
@@ -483,6 +485,16 @@ public abstract class ACardReaderService {
 
 	public DataStatus getDataStatusValue() {
 		return dataStatusValue;
+	}
+
+	// UTILS FUNXIONS
+	private static DataStatus getDataStatus(CardData cardData) {
+		if (ArgUtil.isEmpty(cardData)) {
+			return DataStatus.EMPTY;
+		} else if (!cardData.isValid()) {
+			return DataStatus.INVALID;
+		}
+		return DataStatus.VALID_DATA;
 	}
 
 }

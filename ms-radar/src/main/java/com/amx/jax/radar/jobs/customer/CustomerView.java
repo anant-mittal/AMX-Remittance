@@ -1,26 +1,25 @@
 package com.amx.jax.radar.jobs.customer;
 
-import java.io.IOException;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.client.GridServiceClient;
+import com.amx.jax.grid.GridMeta;
+import com.amx.jax.grid.GridQuery;
+import com.amx.jax.grid.GridView;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.radar.ARadarTask;
-import com.amx.jax.radar.jobs.scrapper.AmanKuwaitModels;
+import com.amx.jax.radar.ESRepository;
 import com.amx.jax.rates.AmxCurConstants;
-import com.amx.jax.rates.AmxCurConstants.RCur;
-import com.amx.jax.rates.AmxCurConstants.RSource;
-import com.amx.jax.rates.AmxCurConstants.RType;
-import com.amx.jax.rates.AmxCurRate;
-import com.amx.jax.rates.AmxCurRateRepository;
-import com.amx.jax.rest.RestService;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
 @Configuration
 @EnableScheduling
@@ -31,40 +30,26 @@ public class CustomerView extends ARadarTask {
 	private static final Logger LOGGER = LoggerService.getLogger(CustomerView.class);
 
 	@Autowired
-	private RestService restService;
+	private ESRepository esRepository;
 
 	@Autowired
-	private AmxCurRateRepository curRateRepository;
-
-	XmlMapper xmlMapper = new XmlMapper();
+	GridServiceClient gridService;
 
 	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_MIN_30)
 	public void doTask() {
 
-		String response = restService.ajax("http://www.amankuwait.com/AmanWebsite/RateSheet/RateSheet.aspx")
-				.get().asString();
-		// xmlMapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
-		try {
-			AmanKuwaitModels.Rates rates2 = xmlMapper.readValue(response, AmanKuwaitModels.Rates.class);
-			for (AmanKuwaitModels.CurRates rates : rates2.getCurRates()) {
-				AmxCurRate trnsfrRate = new AmxCurRate();
-				trnsfrRate.setrSrc(RSource.AMANKUWAIT);
-				trnsfrRate.setrDomCur(RCur.KWD);
-				trnsfrRate.setrForCur(rates.getCode());
-				
-				trnsfrRate.setrType(RType.SELL_TRNSFR);
-				trnsfrRate.setrRate(rates.getKdrate());
-				curRateRepository.insertRate(trnsfrRate);
+		GridQuery gridQuery = new GridQuery();
+		gridQuery.setPageNo(0);
+		gridQuery.setPageSize(100);
+		gridQuery.setPaginated(false);
 
-				AmxCurRate buyCash = trnsfrRate.clone(RType.BUY_CASH, rates.getBuyrate());
-				curRateRepository.insertRate(buyCash);
+		AmxApiResponse<Map<String, Object>, GridMeta> x = gridService.gridView(GridView.VW_EX_CUSTOMER_INFO, gridQuery,
+				new ParameterizedTypeReference<AmxApiResponse<Map<String, Object>, GridMeta>>() {
 
-				AmxCurRate sellCash = trnsfrRate.clone(RType.SELL_CASH, rates.getSellrate());
-				curRateRepository.insertRate(sellCash);
-			}
+				});
 
-		} catch (IOException e) {
-			e.printStackTrace();
+		for (Map<String, Object> record : x.getResults()) {
+
 		}
 
 	}
