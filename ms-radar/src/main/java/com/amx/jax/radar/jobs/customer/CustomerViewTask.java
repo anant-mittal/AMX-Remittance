@@ -1,9 +1,9 @@
 package com.amx.jax.radar.jobs.customer;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Map;
-import java.util.ArrayList;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,7 +65,6 @@ public class CustomerViewTask extends ARadarTask {
 
 		AmxApiResponse<Map<String, Object>, GridMeta> x = gridService.gridView(GridView.VW_EX_CUSTOMER_INFO, gridQuery,
 				new ParameterizedTypeReference<AmxApiResponse<Map<String, Object>, GridMeta>>() {
-
 				});
 		for (Map<String, Object> record : x.getResults()) {
 			BigDecimal customerId = ArgUtil.parseAsBigDecimal(record.get("customerId"));
