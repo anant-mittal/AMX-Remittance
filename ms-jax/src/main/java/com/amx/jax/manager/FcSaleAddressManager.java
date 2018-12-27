@@ -495,7 +495,7 @@ public class FcSaleAddressManager extends AbstractModel {
 						: shippingAddressDto.getLocalContactCity()).append(concat);
 			}
 			sb.append(
-					shippingAddressDto.getGovtDesc() == null ? "" : shippingAddressDto.getGovtDesc() + concat);
+					shippingAddressDto.getGovernoatesDto() == null ? "" : shippingAddressDto.getGovernoatesDto().getResourceName() + concat);
 			sb.append(
 					shippingAddressDto.getGovtAreaDesc() == null ? "" : shippingAddressDto.getGovtAreaDesc() + concat);
 			sb.append(shippingAddressDto.getLocalContactDistrict() == null ? ""
