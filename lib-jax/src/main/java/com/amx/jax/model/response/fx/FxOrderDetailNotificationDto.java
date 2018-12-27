@@ -11,6 +11,8 @@ public class FxOrderDetailNotificationDto {
 	private String date;
 	private BigDecimal netAmount;
 	private String localQurrencyQuote;
+	private String deliveryDate;
+	private String deliveryTime;
 	
 	
 	public String getCustomerName() {
@@ -60,6 +62,18 @@ public class FxOrderDetailNotificationDto {
 	}
 	public void setLocalQurrencyQuote(String localQurrencyQuote) {
 		this.localQurrencyQuote = localQurrencyQuote;
+	}
+	public String getDeliveryDate() {
+		return deliveryDate;
+	}
+	public void setDeliveryDate(String deliveryDate) {
+		this.deliveryDate = deliveryDate;
+	}
+	public String getDeliveryTime() {
+		return deliveryTime;
+	}
+	public void setDeliveryTime(String deliveryTime) {
+		this.deliveryTime = deliveryTime;
 	}
 	
 
