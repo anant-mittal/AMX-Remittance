@@ -3,6 +3,7 @@ package com.amx.jax.pricer.dto;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 import javax.validation.constraints.NotNull;
 
@@ -44,6 +45,8 @@ public class PricingRequestDTO implements Serializable {
 
 	@NotNull(message = "Channel Can not be Null or Empty")
 	private Channel channel;
+	
+	private Map<String, Object> info;
 
 	public BigDecimal getCustomerId() {
 		return customerId;
@@ -147,6 +150,14 @@ public class PricingRequestDTO implements Serializable {
 
 	public void setPricingLevel(PRICE_BY pricingLevel) {
 		this.pricingLevel = pricingLevel;
+	}
+
+	public Map<String, Object> getInfo() {
+		return info;
+	}
+
+	public void setInfo(Map<String, Object> info) {
+		this.info = info;
 	}
 
 }

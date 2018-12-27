@@ -45,6 +45,8 @@ public class PricerServiceApiController implements PricerService {
 
 		LOGGER.info("Received Pricing Request from customer Id : " + pricingRequestDTO.getCustomerId()
 				+ " with TraceId: " + AppContextUtil.getTraceId());
+		
+		LOGGER.info(" @##$## API THREAD ===> " + pricingRequestDTO.getInfo().get("thread"));
 
 		PricingResponseDTO pricingResponseDTO = pricingService.fetchRemitPricesForCustomer(pricingRequestDTO);
 

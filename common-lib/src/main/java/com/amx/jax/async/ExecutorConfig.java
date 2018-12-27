@@ -22,7 +22,7 @@ public class ExecutorConfig extends AsyncConfigurerSupport {
 	@Bean
 	public Executor getAsyncExecutor() {
 		ContextAwarePoolExecutor executor = new ContextAwarePoolExecutor();
-		executor.setCorePoolSize(20);
+		executor.setCorePoolSize(5);
 		executor.setThreadNamePrefix(DEFAULT + "-");
 		executor.initialize();
 		return executor;
