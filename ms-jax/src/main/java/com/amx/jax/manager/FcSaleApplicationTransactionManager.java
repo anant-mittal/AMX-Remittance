@@ -824,18 +824,32 @@ public List<FxOrderTransactionHistroyDto> getMultipleTransactionHistroy(List<FxO
 		FxDeliveryDetailsModel fxDelDetailModel = deliveryDetailsRepos.findOne(deliveryDetSeqId);
 		if(fxDelDetailModel != null){
 			 shippingAddressDto =addressManager.fetchShippingAddress(customerId ,fxDelDetailModel.getShippingAddressId());
-    		 if(shippingAddressDto!=null){
-    		 sb = sb.append("Street ").append(shippingAddressDto.getStreet()==null?"":shippingAddressDto.getStreet()).append(concat)
-    			  .append("Block ").append(shippingAddressDto.getBlock()==null?"":shippingAddressDto.getBlockNo()).append(concat)
-    			  .append("House no. ").append(shippingAddressDto.getBuildingNo()==null?"":shippingAddressDto.getBuildingNo()).append(concat)
-    			  .append("Flat ").append(shippingAddressDto.getFlat()==null?"":shippingAddressDto.getHouse()).append(concat)
-    			  .append("City ").append(shippingAddressDto.getLocalContactCity()==null?"":shippingAddressDto.getLocalContactCity()).append(concat) 
-    			  .append("Area ").append(shippingAddressDto.getAreaDesc()).append(concat)
-    			  .append(shippingAddressDto.getLocalContactDistrict()==null?"":shippingAddressDto.getLocalContactDistrict()).append(concat)
-    			  .append(shippingAddressDto.getLocalContactState()==null?"":shippingAddressDto.getLocalContactState()).append(concat)
-    			  .append("Contact ").append(shippingAddressDto.getMobile()==null?"":shippingAddressDto.getMobile());
-    		 
-    		 }
+			if (shippingAddressDto != null) {
+				sb = sb.append("Street ")
+						.append(shippingAddressDto.getStreet() == null ? "" : shippingAddressDto.getStreet())
+						.append(concat).append("Block ")
+						.append(shippingAddressDto.getBlock() == null ? "" : shippingAddressDto.getBlockNo())
+						.append(concat).append("House no. ")
+						.append(shippingAddressDto.getBuildingNo() == null ? "" : shippingAddressDto.getBuildingNo())
+						.append(concat).append("Flat ")
+						.append(shippingAddressDto.getFlat() == null ? "" : shippingAddressDto.getHouse())
+						.append(concat);
+				if(shippingAddressDto.getLocalContactCity() != null) {
+					sb.append("City ").append(shippingAddressDto.getLocalContactCity() == null ? ""
+							: shippingAddressDto.getLocalContactCity()).append(concat);
+				}
+				sb.append(
+						shippingAddressDto.getGovernoatesDto() == null ? "" : shippingAddressDto.getGovernoatesDto().getResourceName() + concat);
+				sb.append(
+						shippingAddressDto.getGovtAreaDesc() == null ? "" : shippingAddressDto.getGovtAreaDesc() + concat);
+				sb.append(shippingAddressDto.getLocalContactDistrict() == null ? ""
+						: shippingAddressDto.getLocalContactDistrict() + concat);
+				sb.append(shippingAddressDto.getLocalContactState() == null ? ""
+						: shippingAddressDto.getLocalContactState() + concat);
+				sb.append("Contact ")
+						.append(shippingAddressDto.getMobile() == null ? "" : shippingAddressDto.getMobile());
+
+			}
 		}
 		if(sb!=null){
 			address = sb.toString();

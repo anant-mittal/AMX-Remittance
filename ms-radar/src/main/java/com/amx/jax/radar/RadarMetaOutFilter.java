@@ -1,4 +1,4 @@
-package com.amx.jax.adapter;
+package com.amx.jax.radar;
 
 import java.math.BigDecimal;
 

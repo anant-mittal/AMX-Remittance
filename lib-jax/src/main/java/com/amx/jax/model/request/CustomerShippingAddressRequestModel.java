@@ -15,13 +15,10 @@ public class CustomerShippingAddressRequestModel {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	@NotNull(message="Country Id may not be null")
 	private BigDecimal countryId;
 
-	@NotNull(message="State Id may not be null")
 	private BigDecimal stateId;
 
-	@NotNull(message="District Id may not be null")
 	private BigDecimal districtId;
 
 	@NotNull(message="Mobile may not be null")
@@ -39,11 +36,13 @@ public class CustomerShippingAddressRequestModel {
 	String flatNo;
 	String buildingNo;
 	private BigDecimal cityId;
-	private String modelType;
 	private BigDecimal areaCode;
 	private String addressType;
 	private AddressTypeDto addressTypeDto;
-
+	private BigDecimal govermentId;
+	private BigDecimal govermentAreaId;
+	
+	
 	public BigDecimal getCountryId() {
 		return countryId;
 	}
@@ -157,6 +156,22 @@ public class CustomerShippingAddressRequestModel {
 
 	public void setAddressTypeDto(AddressTypeDto addressTypeDto) {
 		this.addressTypeDto = addressTypeDto;
+	}
+
+	public BigDecimal getGovermentId() {
+		return govermentId;
+	}
+
+	public void setGovermentId(BigDecimal govermentId) {
+		this.govermentId = govermentId;
+	}
+
+	public BigDecimal getGovermentAreaId() {
+		return govermentAreaId;
+	}
+
+	public void setGovermentAreaId(BigDecimal govermentAreaId) {
+		this.govermentAreaId = govermentAreaId;
 	}
 
 	

@@ -18,6 +18,10 @@ public interface CustomerIdProofRepository extends JpaRepository<CustomerIdProof
 	@Query(value = "select * from FS_CUSTOMER_ID_PROOF where CUSTOMER_ID=?1 and IDENTITY_TYPE_ID =?2 and NVL(ISACTIVE,'') ='Y' and  TRUNC(IDENTITY_EXPIRY_DATE) >=TRUNC(SYSDATE)"
 			+ " ORDER BY NVL(LAST_UPDATED_DATE,CREATION_DATE) DESC", nativeQuery = true)
 	public List<CustomerIdProof> getCustomerImageValidation(BigDecimal customerId, BigDecimal identityTypeId);
+	
+	@Query(value = "select * from FS_CUSTOMER_ID_PROOF where CUSTOMER_ID=?1 and NVL(ISACTIVE,'') ='Y' "
+			+ " ORDER BY NVL(LAST_UPDATED_DATE,CREATION_DATE) DESC", nativeQuery = true)
+	public List<CustomerIdProof> getCustomerIdProofExpiryByCustomerId(BigDecimal customerId);
 
 	@Query(value = "select * from FS_CUSTOMER_ID_PROOF where CUSTOMER_ID=?1 and IDENTITY_TYPE_ID =?2", nativeQuery = true)
 	public List<CustomerIdProof> getCustomeridProofForIdType(BigDecimal customerId, BigDecimal identityTypeId);

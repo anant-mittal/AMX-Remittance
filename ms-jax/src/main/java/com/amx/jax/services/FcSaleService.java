@@ -240,6 +240,13 @@ public class FcSaleService extends AbstractService {
 		}
 		return AmxApiResponse.buildList(shippingAddressList);
 	}
+	
+	public AmxApiResponse<ShippingAddressDto, Object> fetchFcSaleAddressNew() {
+		validation.validateHeaderInfo();
+		List<ShippingAddressDto> shippingAddressList = fcSaleAddresManager
+				.getShippingAddressDto(metaData.getCustomerId());
+		return AmxApiResponse.buildList(shippingAddressList);
+	}
 
 	/**
 	 * Save shipping address
@@ -451,6 +458,9 @@ public class FcSaleService extends AbstractService {
 				orderNotificationModel.setLocalQurrencyQuote(currencyDao.getCurrencyList(collModel.getExCurrencyMaster().getCurrencyId()).get(0).getQuoteName());
 				orderNotificationModel.setReceiptNo(collModel.getDocumentFinanceYear().toString()+"/"+collModel.getDocumentNo().toString());
 				orderNotificationModel.setNetAmount(collModel.getNetAmount());
+				orderNotificationModel.setDeliveryDate(reportResponseDto.getDeliveryDate()==null?"":reportResponseDto.getDeliveryDate());
+				orderNotificationModel.setDeliveryTime(reportResponseDto.getDeliveryTime()==null?"":reportResponseDto.getDeliveryTime());
+				
 				
 					Email email = new Email();
 					email.setSubject("FC Delivery - Payment Success");
@@ -482,4 +492,6 @@ public String getCustomerFullName(List<Customer> customerList){
 	}
 	return customerName;
 	}
+
+
 }

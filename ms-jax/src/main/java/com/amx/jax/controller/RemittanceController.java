@@ -114,6 +114,7 @@ public class RemittanceController {
 		logger.info("Country Id :" + transactionHistroyDTO.getApplicationCountryId() + "\t Currency Id :"
 				+ transactionHistroyDTO.getCurrencyId());
 
+		transactionHistroyDTO.setCompanyId(metaData.getCompanyId());
 		ApiResponse response = reportManagerService
 				.generatePersonalRemittanceReceiptReportDetails(transactionHistroyDTO, Boolean.TRUE);
 		return response;

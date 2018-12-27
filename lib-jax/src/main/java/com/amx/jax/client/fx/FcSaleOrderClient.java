@@ -172,6 +172,21 @@ public class FcSaleOrderClient implements IFxOrderService {
 
 	}
 
+	@Override
+	public AmxApiResponse<ShippingAddressDto, Object> getFcSaleAddressNew() {
+		try {
+			LOGGER.debug("getFcSale address new shipping Address client :");
+			return restService.ajax(appConfig.getJaxURL() + Path.FC_SALE_ADDRESS_NEW).meta(new JaxMetaInfo())
+					.get()
+					.as(new ParameterizedTypeReference<AmxApiResponse<ShippingAddressDto, Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in getFcSaleAddressNew : ", e);
+			return JaxSystemError.evaluate(e);
+		} // end of try-catch
+
+	}
+	
 	/**
 	 * @purpose : Save FC Sale shipping address CustomerShippingAddressRequestModel
 	 **/

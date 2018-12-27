@@ -1,4 +1,4 @@
-package com.amx.jax.jobs.scrapper;
+package com.amx.jax.radar.jobs.scrapper;
 
 import java.io.IOException;
 
@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import com.amx.jax.logger.LoggerService;
+import com.amx.jax.radar.ARadarTask;
 import com.amx.jax.rates.AmxCurConstants;
 import com.amx.jax.rates.AmxCurConstants.RCur;
 import com.amx.jax.rates.AmxCurConstants.RSource;
@@ -24,7 +25,7 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 @EnableScheduling
 @Component
 @Service
-public class AmanKuwaitJob extends AScrapperTasks {
+public class AmanKuwaitJob extends ARadarTask {
 
 	private static final Logger LOGGER = LoggerService.getLogger(AmanKuwaitJob.class);
 

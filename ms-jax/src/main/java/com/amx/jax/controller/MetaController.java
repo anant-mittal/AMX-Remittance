@@ -26,6 +26,8 @@ import com.amx.amxlib.meta.model.ViewAreaDto;
 import com.amx.amxlib.meta.model.ViewCityDto;
 import com.amx.amxlib.meta.model.ViewCompanyDetailDTO;
 import com.amx.amxlib.meta.model.ViewDistrictDto;
+import com.amx.amxlib.meta.model.ViewGovernateAreaDto;
+import com.amx.amxlib.meta.model.ViewGovernateDto;
 import com.amx.amxlib.meta.model.ViewStateDto;
 import com.amx.amxlib.meta.model.WhyDoAskInformationDTO;
 import com.amx.amxlib.model.OnlineConfigurationDto;
@@ -426,4 +428,16 @@ public class MetaController {
 	public AmxApiResponse<ViewAreaDto, Object> getAreaList() {
 		return metaService.getAreaList();
 	}
+	
+	@RequestMapping(value = MetaApi.API_GOVERNATE_LIST, method = RequestMethod.GET)
+	public AmxApiResponse<ViewGovernateDto, Object> getGovernateList() {
+		return metaService.getGovernateList(metaData.getCountryId());
+	}
+	
+	@RequestMapping(value = MetaApi.API_GOVERNATE_AREA_LIST, method = RequestMethod.GET)
+	public AmxApiResponse<ViewGovernateAreaDto, Object> getGovernateAreaList(@RequestParam(value = "governateId", required = true) BigDecimal governateId) {
+		return metaService.getGovernateAreaList(governateId);
+	}
+	
+	
 }

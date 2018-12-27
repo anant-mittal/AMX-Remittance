@@ -6,11 +6,12 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.Transient;
+import javax.persistence.Table;
 
 import com.amx.jax.grid.GridViewRecord;
 
 @Entity
+@Table(name = "USER_SESSION")
 public class UserSessionRecord implements GridViewRecord {
 
 	private static final long serialVersionUID = 412176528892609487L;
@@ -62,7 +63,6 @@ public class UserSessionRecord implements GridViewRecord {
 
 	private Integer totalRecords;
 
-	@Transient
 	private Integer rn;
 
 	public Integer getTotalRecords() {

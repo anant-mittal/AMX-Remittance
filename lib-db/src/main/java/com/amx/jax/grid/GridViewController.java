@@ -15,7 +15,7 @@ import com.amx.jax.logger.LoggerService;
 public class GridViewController {
 
 	Logger LOGGER = LoggerService.getLogger(getClass());
-
+	
 	@Autowired
 	GridService gridService;
 

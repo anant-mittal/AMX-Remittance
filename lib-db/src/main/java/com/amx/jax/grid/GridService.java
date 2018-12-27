@@ -32,16 +32,20 @@ public class GridService {
 		Class<T> gridViewRecordClass = gridInfo.getResultClass();
 		Map<String, String> map = gridInfo.getMap();
 
-		for (GridColumn column : gridQuery.getColumns()) {
-			String data = column.getKey();
-			if (map.containsKey(data)) { 
-				column.setKey(map.get(data));
+		if(!ArgUtil.isEmpty(gridQuery.getColumns())) {
+			for (GridColumn column : gridQuery.getColumns()) {
+				String data = column.getKey();
+				if (map.containsKey(data)) {
+					column.setKey(map.get(data));
+				}
 			}
 		}
 
 		DataTableRequest dataTableInRQ = new DataTableRequest(gridQuery);
 		PaginationCriteria pagination = dataTableInRQ.getPaginationRequest();
-		String paginatedQuery = GridUtil.buildPaginatedQueryForOracle(baseQuery, pagination);
+		String paginatedQuery = GridUtil.buildPaginatedQueryForOracle(baseQuery, pagination,
+				gridQuery.isPaginated() && GridViewRecord.class.isAssignableFrom(gridViewRecordClass),
+				gridInfo.isCustomeQuery());
 		LOGGER.info(paginatedQuery);
 		Query query = entityManager.createNativeQuery(paginatedQuery, gridViewRecordClass);
 

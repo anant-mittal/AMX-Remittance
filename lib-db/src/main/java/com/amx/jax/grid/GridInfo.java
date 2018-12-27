@@ -8,7 +8,6 @@ import javax.persistence.Column;
 import javax.persistence.Table;
 
 import org.slf4j.Logger;
-import org.springframework.core.annotation.AnnotationUtils;
 
 import com.amx.jax.logger.LoggerService;
 import com.amx.utils.ArgUtil;
@@ -47,8 +46,12 @@ public class GridInfo<T> {
 	Map<String, String> map;
 	String query;
 	Class<T> resultClass;
+	boolean customeQuery;
 
 	GridInfo(String query, Class<T> resultClass) {
+		if (!ArgUtil.isEmpty(query)) {
+			this.customeQuery = true;
+		}
 		this.query = query(resultClass, query);
 		this.resultClass = resultClass;
 		this.map = map(resultClass, new HashMap<String, String>());
@@ -80,6 +83,14 @@ public class GridInfo<T> {
 
 	public Map<String, String> getMap() {
 		return map;
+	}
+
+	public boolean isCustomeQuery() {
+		return customeQuery;
+	}
+
+	public void setCustomeQuery(boolean customeQuery) {
+		this.customeQuery = customeQuery;
 	}
 
 }
