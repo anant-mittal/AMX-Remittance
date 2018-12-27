@@ -395,10 +395,8 @@ public class FcSaleAddressManager extends AbstractModel {
 				}
 				shipAdd.setLastUpdated(new Date());
 				shipAdd.setActiveStatus(ConstantDocument.Yes);
-				if (JaxUtil.isNullZeroBigDecimalCheck(adddto.getAreaDto().resourceId())) {
+				if (adddto.getAreaDto() != null) {
 					shipAdd.setAreaCode(adddto.getAreaDto().resourceId());
-				} else {
-					throw new GlobalException(JaxError.NULL_AREA_CODE, "custoemr Id ");
 				}
 				shipAdd.setBlock(adddto.getBlock());
 				shipAdd.setBuildingNo(adddto.getBuildingNo());
@@ -409,15 +407,13 @@ public class FcSaleAddressManager extends AbstractModel {
 				} else {
 					throw new GlobalException(JaxError.INVALID_APPLICATION_COUNTRY_ID, "Invalid country Id  ");
 				}
-				if (JaxUtil.isNullZeroBigDecimalCheck(adddto.getStateDto().resourceId())) {
+				if (adddto.getStateDto() != null) {
 					shipAdd.setFsStateMaster(new StateMaster(adddto.getStateDto().resourceId()));
-				} else {
-					throw new GlobalException(JaxError.INVALID_STATE, "Invalid state  ");
-				}
-				if (JaxUtil.isNullZeroBigDecimalCheck(adddto.getDistrictDto().resourceId())) {
+				} 
+				if (adddto.getDistrictDto() !=  null) {
 					shipAdd.setFsDistrictMaster(new DistrictMaster(adddto.getDistrictDto().resourceId()));
 				} 
-				if (JaxUtil.isNullZeroBigDecimalCheck(adddto.getCityDto().resourceId())) {
+				if (adddto.getCityDto() != null) {
 					shipAdd.setFsCityMaster(new CityMaster(adddto.getCityDto().resourceId()));
 				}
 				if (!StringUtils.isBlank(adddto.getAddressDto().getAddressTypeCode())) {
@@ -438,11 +434,11 @@ public class FcSaleAddressManager extends AbstractModel {
 				shipAdd.setTelephoneCode(adddto.getTelephoneCode());
 				shipAdd.setTelephone(adddto.getMobile());
 				
-				if (JaxUtil.isNullZeroBigDecimalCheck(adddto.getGovernoatesDto().resourceId())) {
+				if (adddto.getGovernoatesDto() != null) {
 					shipAdd.setGovernateId(adddto.getGovernoatesDto().resourceId());
 				}
 				
-				if (JaxUtil.isNullZeroBigDecimalCheck(adddto.getGovernoateAreaDto().resourceId())) {
+				if (adddto.getGovernoateAreaDto() != null) {
 					shipAdd.setGoverAreaId(adddto.getGovernoateAreaDto().resourceId());
 				}else {
 					throw new GlobalException(JaxError.NULL_AREA_CODE, "Invalid governate area");
