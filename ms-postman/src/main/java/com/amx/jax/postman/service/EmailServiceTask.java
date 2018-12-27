@@ -37,7 +37,8 @@ public class EmailServiceTask {
 
 	@Scheduled(fixedDelay = EmailService.RESEND_INTERVAL)
 	public void doTask() throws IOException {
-		RQueue<TunnelMessage<Email>> emailQueue = redisson.getQueue(EmailService.FAILED_EMAIL_QUEUE);
+		RQueue<TunnelMessage<Email>> emailQueue = redisson
+				.getQueue(EmailService.FAILED_EMAIL_QUEUE + "_" + postManConfig.getEmailRetryPoll());
 
 		for (int i = 0; i < postManConfig.getEmailRetryBatch(); i++) {
 			TunnelMessage<Email> emailtask = emailQueue.poll();
@@ -51,6 +52,7 @@ public class EmailServiceTask {
 				if (email.getAttempt() < postManConfig.getEmailRetryCount()) {
 					emailService.sendEmail(email);
 				}
+
 			}
 		}
 

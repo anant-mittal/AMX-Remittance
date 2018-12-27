@@ -190,7 +190,8 @@ public class EmailService {
 				&& !Status.NOT_SENT.equals(email.getStatus())) {
 			AppContext context = AppContextUtil.getContext();
 			TunnelMessage<Email> tunnelMessage = new TunnelMessage<Email>(emailClone, context);
-			RQueue<TunnelMessage<Email>> emailQueue = redisson.getQueue(FAILED_EMAIL_QUEUE);
+			RQueue<TunnelMessage<Email>> emailQueue = redisson
+					.getQueue(FAILED_EMAIL_QUEUE + "_" + postManConfig.getEmailRetryPush());
 			emailQueue.add(tunnelMessage);
 		}
 
