@@ -18,6 +18,7 @@ import com.amx.jax.postman.PostManConfig;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.tunnel.TunnelMessage;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.TimeUtils;
 
 @Configuration
 @EnableScheduling
@@ -38,7 +39,9 @@ public class EmailServiceTask {
 	@Scheduled(fixedDelay = EmailService.RESEND_INTERVAL)
 	public void doTask() throws IOException {
 		RQueue<TunnelMessage<Email>> emailQueue = redisson
-				.getQueue(EmailService.FAILED_EMAIL_QUEUE + "_" + postManConfig.getEmailRetryPoll());
+				.getQueue(EmailService.FAILED_EMAIL_QUEUE + "_" +
+						TimeUtils.getReverseRotationNumber(EmailService.RESEND_INTERVAL, 0x1)
+						+ "_" + postManConfig.getEmailRetryPoll());
 
 		for (int i = 0; i < postManConfig.getEmailRetryBatch(); i++) {
 			TunnelMessage<Email> emailtask = emailQueue.poll();

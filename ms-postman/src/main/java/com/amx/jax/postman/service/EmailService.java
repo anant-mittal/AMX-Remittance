@@ -40,6 +40,7 @@ import com.amx.jax.tunnel.TunnelMessage;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
 import com.amx.utils.CryptoUtil;
+import com.amx.utils.TimeUtils;
 import com.amx.utils.Utils;
 
 /**
@@ -191,7 +192,9 @@ public class EmailService {
 			AppContext context = AppContextUtil.getContext();
 			TunnelMessage<Email> tunnelMessage = new TunnelMessage<Email>(emailClone, context);
 			RQueue<TunnelMessage<Email>> emailQueue = redisson
-					.getQueue(FAILED_EMAIL_QUEUE + "_" + postManConfig.getEmailRetryPush());
+					.getQueue(FAILED_EMAIL_QUEUE + "_" +
+							TimeUtils.getRotationNumber(RESEND_INTERVAL, 0x1)
+							+ "_" + postManConfig.getEmailRetryPush());
 			emailQueue.add(tunnelMessage);
 		}
 
