@@ -19,8 +19,11 @@ import com.amx.jax.dao.ApplicationProcedureDao;
 import com.amx.jax.dao.RemittanceProcedureDao;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
+import com.amx.jax.error.JaxError;
+import com.amx.jax.meta.MetaData;
 import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.repository.RemittanceApplicationRepository;
+import com.amx.jax.userservice.service.UserService;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -30,12 +33,14 @@ public class RemittanceApplicationService {
 	
 	@Autowired
 	RemittanceApplicationRepository remittanceApplicationRepository;
-	
 	@Autowired
 	ApplicationProcedureDao applRemitDao;
-	
 	@Autowired
 	RemittanceProcedureDao remitDao;
+	@Autowired
+	MetaData metaData;
+	@Autowired
+	UserService userService;
 	
 	Logger logger = LoggerFactory.getLogger(RemittanceApplicationService.class);
 	
@@ -198,4 +203,14 @@ public void updatePayTokenNull(List<RemittanceApplication> lstPayIdDetails,Payme
 		return resultMap;
 	}
 
+	public void checkForSuspiciousPaymentAttempts(BigDecimal remittanceTransactionId) {
+		Long count = remittanceApplicationRepository.getFailedTransactionAttemptCount(metaData.getCustomerId());
+		if (count > 2) {
+			// deactivate user and send mail to compliance
+			logger.info("suspicious failed payment attempt found, remittance transaction id: {}", remittanceTransactionId);
+			userService.deActivateFsCustomer(metaData.getCustomerId());
+			throw new GlobalException(JaxError.UNAUTHORIZED,
+					"Please visit branch/compliance team to activate the account");
+		}
+	}
 }

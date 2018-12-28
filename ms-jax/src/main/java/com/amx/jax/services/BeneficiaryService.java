@@ -999,4 +999,22 @@ public class BeneficiaryService extends AbstractService {
         AuditEvent beneAuditEvent = new BeneficiaryAuditEvent(type,customerId);
         return beneAuditEvent;
     }
+
+    /**
+     * return list of bene based on bene country id and customer in meta
+     * @param beneCountryId
+     * @return 
+     */
+    public List<BeneficiaryCountryView> getBeneficiaryByCountry(BigDecimal beneCountryId) {
+    	return beneficiaryCountryDao.findByCustomerIdAndBeneCountry(metaData.getCustomerId(), beneCountryId);
+    }
+    
+    /**
+     * whether bene is suspicous based on past transactions
+     * @param beneRelationshipId
+     */
+    public void isSuspiciousBeneficiary(BigDecimal beneRelationshipId) {
+    	
+    	
+    }
 }

@@ -1001,4 +1001,10 @@ public class UserService extends AbstractUserService {
 	public Customer getCustomerDetails(String loginId) {
 		return repo.getCustomerDetails(loginId);
 	}
+	
+	public void deActivateFsCustomer(BigDecimal customerId) {
+		Customer customer = repo.findOne(customerId);
+		customer.setIsActive(ConstantDocument.Deleted);
+		repo.save(customer);
+	}
 }
