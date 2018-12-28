@@ -15,7 +15,7 @@
 			PARTNER_SECURITY_CODE: '[[${partner_sec_code}]]'
 		}
 	</script>
-	<script id="terminal_session" th:src="'http://127.0.0.1:8020/pub/script/validation.js?tranx=' + ${x_tranx_id}"></script>
+	<script id="terminal_session" th:src="${ADAPTER_URL} + '/pub/script/validation.js?tranx=' + ${x_tranx_id}"></script>
 </head>
 
 <body>
