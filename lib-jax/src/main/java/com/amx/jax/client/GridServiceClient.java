@@ -40,4 +40,20 @@ public class GridServiceClient implements IGridService {
 			return JaxSystemError.evaluate(e);
 		}
 	}
+
+	
+	@Override
+	public <T> AmxApiResponse<T, GridMeta> gridView(
+			GridView gridView, GridQuery gridQuery,
+			ParameterizedTypeReference<AmxApiResponse<T, GridMeta>> parameterizedTypeReference) {
+		try {
+			String url = appConfig.getJaxURL() + Path.GRID_VIEW;
+			return restService.ajax(url).meta(new JaxMetaInfo())
+					.pathParam(Params.GRID_VIEW, gridView)
+					.post(gridQuery).as(parameterizedTypeReference);
+		} catch (Exception e) {
+			LOGGER.error("exception in getStatus : ", e);
+			return JaxSystemError.evaluate(e);
+		}
+	}
 }

@@ -15,13 +15,10 @@ public class CustomerShippingAddressRequestModel {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	@NotNull(message="Country Id may not be null")
 	private BigDecimal countryId;
 
-	@NotNull(message="State Id may not be null")
 	private BigDecimal stateId;
 
-	@NotNull(message="District Id may not be null")
 	private BigDecimal districtId;
 
 	@NotNull(message="Mobile may not be null")

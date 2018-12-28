@@ -131,6 +131,12 @@ public class FcSaleOrderController implements IFxOrderService {
 	public AmxApiResponse<ShippingAddressDto, Object> getFcSaleAddress() {
 		return fcSaleService.fetchFcSaleAddress();
 	}
+	
+	@RequestMapping(value = Path.FC_SALE_ADDRESS_NEW, method = RequestMethod.GET)
+	@Override
+	public AmxApiResponse<ShippingAddressDto, Object> getFcSaleAddressNew() {
+		return fcSaleService.fetchFcSaleAddressNew();
+	}
 
 	/**
 	 * Save shipping address

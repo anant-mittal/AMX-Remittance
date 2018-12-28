@@ -56,15 +56,17 @@ public class FcSaleBranchService extends AbstractService{
 		if(employeeId == null || employeeId.compareTo(BigDecimal.ZERO) == 0){
 			throw new GlobalException(JaxError.NULL_EMPLOYEE_ID,"Employee Id should not be blank");
 		}
+		
 		try {
 			HashMap<String, Object> orderDetails = branchOrderManager.fetchFcSaleOrderManagement(applicationCountryId,employeeId);
 			if(orderDetails != null) {
 				if(orderDetails.get("ORDERS") != null && orderDetails.get("AREA") != null) {
 					List<OrderManagementView> orderManagement = (List<OrderManagementView>) orderDetails.get("ORDERS");
 					Boolean areaCodeCheck = (Boolean) orderDetails.get("AREA");
+					BigDecimal branchId = (BigDecimal) orderDetails.get("BRANCH");
 
 					if(orderManagement != null && orderManagement.size() != 0) {
-						saleOrderManage  = convertFcSaleOrderManagementDTO(orderManagement,applicationCountryId,employeeId,areaCodeCheck);
+						saleOrderManage  = convertFcSaleOrderManagementDTO(orderManagement,applicationCountryId,employeeId,areaCodeCheck,branchId);
 						if(saleOrderManage != null && saleOrderManage.size() != 0) {
 							// continue
 						}else {
@@ -86,7 +88,7 @@ public class FcSaleBranchService extends AbstractService{
 		return AmxApiResponse.buildList(saleOrderManage);
 	}
 
-	public List<FcSaleOrderManagementDTO> convertFcSaleOrderManagementDTO(List<OrderManagementView> orderManagementView,BigDecimal applicationCountryId,BigDecimal employeeId,Boolean areaCodeCheck){
+	public List<FcSaleOrderManagementDTO> convertFcSaleOrderManagementDTO(List<OrderManagementView> orderManagementView,BigDecimal applicationCountryId,BigDecimal employeeId,Boolean areaCodeCheck,BigDecimal branchId){
 		List<FcSaleOrderManagementDTO> lstFcSaleOrder = new ArrayList<>();
 		List<BigDecimal> duplicate = new ArrayList<>();
 		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -108,6 +110,11 @@ public class FcSaleBranchService extends AbstractService{
 						fcSaleOrder.setDriverEmployeName(orderManagement.getDriverEmployeeName());
 						fcSaleOrder.setOrderStatus(orderManagement.getOrderStatus());
 						fcSaleOrder.setOrderStatusDesc(orderManagement.getOrderStatusDesc());
+						fcSaleOrder.setFromBranchId(orderManagement.getFromBranchId());
+						fcSaleOrder.setToBranchId(orderManagement.getToBranchId());
+						fcSaleOrder.setRecPayBranchId(orderManagement.getRecPayBranchId());
+						fcSaleOrder.setRecPayCountryBranchId(orderManagement.getRecPayCountryBranchId());
+						fcSaleOrder.setGovernateId(orderManagement.getGovernateId());
 
 						HashMap<BigDecimal, BigDecimal> foreignCurrencyAmt = new HashMap<>();
 						List<FcSaleCurrencyAmountModel> lstCurrencyAmt = new ArrayList<>();
@@ -136,7 +143,13 @@ public class FcSaleBranchService extends AbstractService{
 						if(areaCodeCheck) {
 							lstFcSaleOrder.add(fcSaleOrder);
 						}else {
-							Boolean status = checkFcSaleStockAvailable(foreignCurrencyAmt,applicationCountryId,employeeId);
+							Boolean status = Boolean.FALSE;
+							if(orderManagement.getRecPayBranchId() != null && branchId != null && branchId.compareTo(orderManagement.getRecPayBranchId()) == 0) {
+								status = Boolean.TRUE;
+							}else {
+								status = checkFcSaleStockAvailable(foreignCurrencyAmt,applicationCountryId,employeeId);
+							}
+							
 							if(status) {
 								lstFcSaleOrder.add(fcSaleOrder);
 							}
@@ -278,6 +291,12 @@ public class FcSaleBranchService extends AbstractService{
 				fcSaleOrder.setDriverEmployeName(orderManagement.getDriverEmployeeName());
 				fcSaleOrder.setOrderStatus(orderManagement.getOrderStatus());
 				fcSaleOrder.setOrderStatusDesc(orderManagement.getOrderStatusDesc());
+				fcSaleOrder.setFromBranchId(orderManagement.getFromBranchId());
+				fcSaleOrder.setToBranchId(orderManagement.getToBranchId());
+				fcSaleOrder.setRecPayBranchId(orderManagement.getRecPayBranchId());
+				fcSaleOrder.setRecPayCountryBranchId(orderManagement.getRecPayCountryBranchId());
+				fcSaleOrder.setGovernateId(orderManagement.getGovernateId());
+				
 				if(orderManagement.getTransactionActualRate() != null && orderManagement.getForeignCurrencyId() != null) {
 					BigDecimal localRate = new BigDecimal((BigDecimal.ONE).doubleValue()/orderManagement.getTransactionActualRate().doubleValue());
 					BigDecimal currencyDecimal = branchOrderManager.fetchCurrencyMasterDetails(orderManagement.getForeignCurrencyId());

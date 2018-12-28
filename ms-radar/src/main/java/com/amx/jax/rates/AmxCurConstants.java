@@ -27,5 +27,6 @@ public class AmxCurConstants {
 	}
 
 	public static final int INTERVAL_MIN_30 = 30 * 60 * 1000;
+	public static final int INTERVAL_MIN_10 = 10 * 60 * 1000;
 	public static final int INTERVAL_TEST = 2 * 1000;
 }

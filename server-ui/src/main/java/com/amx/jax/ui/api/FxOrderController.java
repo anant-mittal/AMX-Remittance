@@ -127,6 +127,11 @@ public class FxOrderController {
 	public ResponseWrapper<List<ShippingAddressDto>> getFcSaleAddress() {
 		return ResponseWrapper.buildList(fcSaleOrderClient.getFcSaleAddress());
 	}
+	
+	@RequestMapping(value = "/api/fxo/address-new/list", method = { RequestMethod.GET })
+	public ResponseWrapper<List<ShippingAddressDto>> getFcSaleAddressNew() {
+		return ResponseWrapper.buildList(fcSaleOrderClient.getFcSaleAddressNew());
+	}
 
 	@RequestMapping(value = "/api/fxo/address/types", method = { RequestMethod.GET })
 	public ResponseWrapper<List<AddressTypeDto>> getAddressTypeList() {

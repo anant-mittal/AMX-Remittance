@@ -45,7 +45,7 @@ public enum TemplatesMX implements ITemplate {
 	FC_ORDER_SUCCESS("order-success"),
 	FC_KNET_SUCCESS("knet-success"),
 	FXO_RECEIPT("FXO_RECEIPT", PDFConverter.JASPER, "fxo-receipt.json"),
-	FXO_STATMENT("FXOTransactionList");
+	FXO_STATMENT("FxoTransactionList");
 
 	String fileName;
 	PDFConverter converter;
