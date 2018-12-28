@@ -68,10 +68,10 @@ public class CustomerViewTask extends ARadarTask {
 				});
 		for (Map<String, Object> record : x.getResults()) {
 			BigDecimal customerId = ArgUtil.parseAsBigDecimal(record.get("customerId"));
-			Date creationDate = ArgUtil.parseAsSimpleDate(record.get("creationDate"));
+			Date creationDate = ArgUtil.parseAsSimpleDate(record.get("lastUpdateDate"));
 			CustomerViewDocument document = new CustomerViewDocument();
 			document.setId("customer-" + customerId);
-			// document.setTimestamp(creationDate);
+			document.setTimestamp(creationDate);
 			document.setCustomer(record);
 			esRepository.insert("oracle-customer", "oracle", document);
 		}
