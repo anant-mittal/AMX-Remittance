@@ -16,14 +16,10 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-import javax.validation.constraints.NotNull;
-
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StopWatch;
@@ -38,14 +34,11 @@ import com.amx.jax.dict.UserClient.Channel;
 import com.amx.jax.pricer.PricerService;
 import com.amx.jax.pricer.PricerServiceClient;
 import com.amx.jax.pricer.dto.BankRateDetailsDTO;
-import com.amx.jax.pricer.dto.ExchangeRateBreakup;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.dto.PricingResponseDTO;
 import com.amx.jax.pricer.exception.PricerServiceException;
 import com.amx.jax.pricer.service.PricerTestService;
 import com.amx.jax.pricer.var.PricerServiceConstants.PRICE_BY;
-import com.amx.utils.JsonUtil;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * The Class PricerServiceApiTest.
@@ -78,15 +71,17 @@ public class PricerServiceApiTest implements PricerService {
 			throws IOException, InterruptedException, ExecutionException {
 
 		List<BigDecimal> customerList = new ArrayList<BigDecimal>();
-		customerList.add(new BigDecimal(21));
+
 		customerList.add(new BigDecimal(54));
 		customerList.add(new BigDecimal(74));
 		customerList.add(new BigDecimal(96));
+		customerList.add(new BigDecimal(21));
 
 		List<Channel> channelList = new ArrayList<>();
-		channelList.add(Channel.BRANCH);
+
 		channelList.add(Channel.KIOSK);
 		channelList.add(Channel.ONLINE);
+		channelList.add(Channel.BRANCH);
 
 		List<BigDecimal> localAmtList = new ArrayList<>();
 		localAmtList.add(new BigDecimal(1000));
@@ -179,7 +174,7 @@ public class PricerServiceApiTest implements PricerService {
 						try {
 
 							pricingRequestDTO.setInfo(new HashMap<String, Object>());
-							pricingRequestDTO.getInfo().put("thread", i++);
+							// pricingRequestDTO.getInfo().put("thread", i++);
 
 							Future<AmxApiResponse<PricingResponseDTO, Object>> amxFutureResp = pricerTestService
 									.fetchPriceForCustomerAsynch(pricingRequestDTO);
@@ -246,10 +241,10 @@ public class PricerServiceApiTest implements PricerService {
 
 				if (future.isDone()) {
 
+					PricingRequestDTO requestParam = requestMap.get(future.hashCode());
+
 					try {
 						AmxApiResponse<PricingResponseDTO, Object> amxResp = future.get();
-
-						PricingRequestDTO requestParam = requestMap.get(future.hashCode());
 
 						PricingResponseDTO response = amxResp.getResult();
 
@@ -281,7 +276,7 @@ public class PricerServiceApiTest implements PricerService {
 
 						}
 
-						//strBuilder.append("\n" + JsonUtil.toJson(amxResp.getResult()));
+						// strBuilder.append("\n" + JsonUtil.toJson(amxResp.getResult()));
 
 						errorPrintWriter.println(" Response Future Hash ==>  " + future.hashCode());
 
@@ -292,10 +287,40 @@ public class PricerServiceApiTest implements PricerService {
 
 						errorPrintWriter.println(" Error Future Hash ==>  " + future.hashCode());
 
-						if (!(cause instanceof PricerServiceException)) {
+						if ((cause instanceof PricerServiceException)) {
 
-							errorPrintWriter.println("\n\n === ErrorType2 === ");
-							e.printStackTrace(errorPrintWriter);
+							PricerServiceException prCause = (PricerServiceException) cause;
+
+							/**
+							 * Query Params
+							 */
+							strBuilder.append("\n" + future.hashCode());
+							strBuilder.append(", " + requestParam.getCustomerId());
+							strBuilder.append(", " + requestParam.getForeignCountryId());
+							strBuilder.append(", " + requestParam.getForeignCurrencyId());
+							strBuilder.append(", " + requestParam.getLocalAmount());
+							strBuilder.append(", " + requestParam.getCountryBranchId());
+							strBuilder.append(", " + requestParam.getPricingLevel());
+							strBuilder.append(", " + requestParam.getChannel());
+
+							strBuilder.append(", Pricing Error: ");
+							strBuilder.append(", " + prCause.getErrorKey());
+							strBuilder.append(", " + prCause.getErrorMessage());
+
+							// e.printStackTrace(errorPrintWriter);
+						} else {
+
+							strBuilder.append("\n" + future.hashCode());
+							strBuilder.append(", " + requestParam.getCustomerId());
+							strBuilder.append(", " + requestParam.getForeignCountryId());
+							strBuilder.append(", " + requestParam.getForeignCurrencyId());
+							strBuilder.append(", " + requestParam.getLocalAmount());
+							strBuilder.append(", " + requestParam.getCountryBranchId());
+							strBuilder.append(", " + requestParam.getPricingLevel());
+							strBuilder.append(", " + requestParam.getChannel());
+
+							strBuilder.append(", UnKnown Error: ");
+
 						}
 					}
 
