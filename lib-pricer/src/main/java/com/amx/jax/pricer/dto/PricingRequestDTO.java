@@ -45,7 +45,7 @@ public class PricingRequestDTO implements Serializable {
 
 	@NotNull(message = "Channel Can not be Null or Empty")
 	private Channel channel;
-	
+
 	private Map<String, Object> info;
 
 	public BigDecimal getCustomerId() {
@@ -159,5 +159,6 @@ public class PricingRequestDTO implements Serializable {
 	public void setInfo(Map<String, Object> info) {
 		this.info = info;
 	}
+
 
 }

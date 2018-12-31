@@ -20,62 +20,27 @@ public class PricerServiceException extends AmxApiException {
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 1L;
 
-	/**
-	 * Instantiates a new auth service exception.
-	 *
-	 * @param errorMessage the error message
-	 */
 	public PricerServiceException(String errorMessage) {
 		super(errorMessage);
 	}
 
-	/**
-	 * Instantiates a new auth service exception.
-	 *
-	 * @param errorMessage the error message
-	 * @param errorCode    the error code
-	 */
 	public PricerServiceException(String errorMessage, String errorCode) {
 		super(errorMessage, errorCode);
 	}
 
-	/**
-	 * Instantiates a new auth service exception.
-	 *
-	 * @param error        the error
-	 * @param errorMessage the error message
-	 */
 	public PricerServiceException(PricerServiceError error, String errorMessage) {
 		super(errorMessage, error.getStatusKey());
 	}
 
-	/**
-	 * Instantiates a new auth service exception.
-	 *
-	 * @param error the error
-	 */
+	
 	public PricerServiceException(AmxApiError error) {
 		super(error);
 	}
 
-	/**
-	 * Instantiates a new auth service exception.
-	 *
-	 * @param e the e
-	 */
 	public PricerServiceException(Exception e) {
 		super(e);
 	}
 
-	/*
-	 * Instantiates a new auth service exception.
-	 *
-	 * @param errorMessage the error message
-	 * 
-	 * @param error the error
-	 * 
-	 * @param e the e
-	 */
 	public PricerServiceException(String errorMessage, PricerServiceError error, Exception e) {
 		super(e);
 		this.errorMessage = errorMessage;

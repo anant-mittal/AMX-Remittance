@@ -10,12 +10,23 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.TreeMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
+import javax.validation.constraints.NotNull;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.http.CacheControl;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.StopWatch;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -24,15 +35,17 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.dict.UserClient.Channel;
-import com.amx.jax.exception.AmxApiException;
 import com.amx.jax.pricer.PricerService;
 import com.amx.jax.pricer.PricerServiceClient;
+import com.amx.jax.pricer.dto.BankRateDetailsDTO;
+import com.amx.jax.pricer.dto.ExchangeRateBreakup;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.dto.PricingResponseDTO;
 import com.amx.jax.pricer.exception.PricerServiceException;
 import com.amx.jax.pricer.service.PricerTestService;
 import com.amx.jax.pricer.var.PricerServiceConstants.PRICE_BY;
 import com.amx.utils.JsonUtil;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * The Class PricerServiceApiTest.
@@ -61,10 +74,8 @@ public class PricerServiceApiTest implements PricerService {
 	}
 
 	@RequestMapping(value = ApiEndPoints.PRICE_TEST, method = RequestMethod.POST)
-	public AmxApiResponse<String, Object> pricingLoadTest(@RequestParam("file") MultipartFile uploadfile)
+	public ResponseEntity<byte[]> pricingLoadTest(@RequestParam("file") MultipartFile uploadfile)
 			throws IOException, InterruptedException, ExecutionException {
-
-		System.out.println(" File Name ==> " + uploadfile.getName());
 
 		List<BigDecimal> customerList = new ArrayList<BigDecimal>();
 		customerList.add(new BigDecimal(21));
@@ -85,7 +96,10 @@ public class PricerServiceApiTest implements PricerService {
 		Map<String, PricingRequestDTO> pricingReqMap = new TreeMap<>();
 		BufferedReader countryCurrencyReader = new BufferedReader(new InputStreamReader(uploadfile.getInputStream()));
 
-		FileWriter fileWriter = new FileWriter("/home/abhijeet/Desktop/results.json");
+		// FileWriter outFileWriter = new
+		// FileWriter("/home/abhijeet/Desktop/results.json");
+
+		FileWriter errorFileWriter = new FileWriter("/home/abhijeet/Desktop/error.txt");
 
 		String line;
 		while ((line = countryCurrencyReader.readLine()) != null) {
@@ -103,7 +117,7 @@ public class PricerServiceApiTest implements PricerService {
 			pricingRequestDTO.setForeignCountryId(new BigDecimal(tokens[1]));
 
 			// Multiple
-			pricingRequestDTO.setLocalAmount(new BigDecimal(1000));
+			// pricingRequestDTO.setLocalAmount(new BigDecimal(1000));
 
 			pricingRequestDTO.setLocalCurrencyId(new BigDecimal(1));
 			pricingRequestDTO.setForeignCurrencyId(new BigDecimal(tokens[3]));
@@ -126,11 +140,20 @@ public class PricerServiceApiTest implements PricerService {
 		branchIdList.add(new BigDecimal(84));
 		branchIdList.add(new BigDecimal(85));
 
-		PrintWriter printWriter = new PrintWriter(fileWriter);
+		// PrintWriter outPrintWriter = new PrintWriter(outFileWriter);
+
+		PrintWriter errorPrintWriter = new PrintWriter(errorFileWriter);
+
+		StringBuilder strBuilder = new StringBuilder();
+
+		Map<Integer, PricingRequestDTO> requestMap = new HashMap<Integer, PricingRequestDTO>();
 
 		long i = 1;
 
-		List<Future<AmxApiResponse<PricingResponseDTO, Object>>> allFutureList = new ArrayList<>();
+		Queue<Future<AmxApiResponse<PricingResponseDTO, Object>>> allFutureQueue = new ConcurrentLinkedQueue<>();
+
+		StopWatch watch = new StopWatch();
+		watch.start();
 
 		for (BigDecimal customerId : customerList) {
 
@@ -153,24 +176,26 @@ public class PricerServiceApiTest implements PricerService {
 
 						pricingRequestDTO.setChannel(channel);
 
-						System.out.println(" Pricing Request Dto ==> " + JsonUtil.toJson(pricingRequestDTO));
-
 						try {
 
-							System.out.println(" @#@#$@#$#%#% PRE THREAD ==> " + i + "\n\n");
-
 							pricingRequestDTO.setInfo(new HashMap<String, Object>());
-							pricingRequestDTO.getInfo().put("thread", i);
+							pricingRequestDTO.getInfo().put("thread", i++);
 
 							Future<AmxApiResponse<PricingResponseDTO, Object>> amxFutureResp = pricerTestService
 									.fetchPriceForCustomerAsynch(pricingRequestDTO);
 
-							allFutureList.add(amxFutureResp);
+							// errorPrintWriter.println(" Future Hash ==> " + amxFutureResp.hashCode());
 
-							System.out.println(" @#@#$@#$#%#%POST THREAD ==> " + i++ + "\n\n");
+							requestMap.put(amxFutureResp.hashCode(), pricingRequestDTO);
+
+							allFutureQueue.add(amxFutureResp);
 
 						} catch (Exception e) {
 							// TODO: handle exception
+
+							errorPrintWriter.println("\n\n === ErrorType1 === ");
+							e.printStackTrace(errorPrintWriter);
+
 						}
 
 					} // for
@@ -185,19 +210,97 @@ public class PricerServiceApiTest implements PricerService {
 
 		boolean allDone = false;
 
+		strBuilder.append("\n Result Size ==>  " + allFutureQueue.size() + " Count Size ==> " + i + " Hash Size ==>"
+				+ requestMap.size());
+
+		/**
+		 * Query Params
+		 */
+		strBuilder.append("\nID");
+		strBuilder.append(", CustomerId");
+		strBuilder.append(", ForeignCountryId");
+		strBuilder.append(", ForeignCurrencyId");
+		strBuilder.append(", LocalAmount");
+
+		strBuilder.append(", CountryBranchId");
+		strBuilder.append(", PricingLevel");
+		strBuilder.append(", Channel");
+
+		/**
+		 * Result Params
+		 */
+		strBuilder.append(", BankId");
+		strBuilder.append(", BankCode");
+		strBuilder.append(", BankCountryId");
+		strBuilder.append(", ServiceIndicatorId");
+		strBuilder.append(", Rate");
+		strBuilder.append(", InverseRate");
+		strBuilder.append(", ConvertedFCAmount");
+		strBuilder.append(", ConvertedLCAmount");
+
 		while (!allDone) {
 
-			for (Future<AmxApiResponse<PricingResponseDTO, Object>> future : allFutureList) {
-				allDone = Boolean.TRUE;
+			allDone = Boolean.TRUE;
+
+			for (Future<AmxApiResponse<PricingResponseDTO, Object>> future : allFutureQueue) {
 
 				if (future.isDone()) {
 
 					try {
 						AmxApiResponse<PricingResponseDTO, Object> amxResp = future.get();
-						printWriter.println(JsonUtil.toJson(amxResp.getResult()));
+
+						PricingRequestDTO requestParam = requestMap.get(future.hashCode());
+
+						PricingResponseDTO response = amxResp.getResult();
+
+						for (BankRateDetailsDTO bankRate : response.getBankMasterDTOList()) {
+
+							/**
+							 * Query Params
+							 */
+							strBuilder.append("\n" + future.hashCode());
+							strBuilder.append(", " + requestParam.getCustomerId());
+							strBuilder.append(", " + requestParam.getForeignCountryId());
+							strBuilder.append(", " + requestParam.getForeignCurrencyId());
+							strBuilder.append(", " + requestParam.getLocalAmount());
+							strBuilder.append(", " + requestParam.getCountryBranchId());
+							strBuilder.append(", " + requestParam.getPricingLevel());
+							strBuilder.append(", " + requestParam.getChannel());
+
+							/**
+							 * Result Params
+							 */
+							strBuilder.append(", " + bankRate.getBankId());
+							strBuilder.append(", " + bankRate.getBankCode());
+							strBuilder.append(", " + bankRate.getBankCountryId());
+							strBuilder.append(", " + bankRate.getServiceIndicatorId());
+							strBuilder.append(", " + bankRate.getExRateBreakup().getRate());
+							strBuilder.append(", " + bankRate.getExRateBreakup().getInverseRate());
+							strBuilder.append(", " + bankRate.getExRateBreakup().getConvertedFCAmount());
+							strBuilder.append(", " + bankRate.getExRateBreakup().getConvertedLCAmount());
+
+						}
+
+						//strBuilder.append("\n" + JsonUtil.toJson(amxResp.getResult()));
+
+						errorPrintWriter.println(" Response Future Hash ==>  " + future.hashCode());
+
 					} catch (Exception e) {
 						// TODO: handle exception
+
+						Throwable cause = e.getCause().getCause();
+
+						errorPrintWriter.println(" Error Future Hash ==>  " + future.hashCode());
+
+						if (!(cause instanceof PricerServiceException)) {
+
+							errorPrintWriter.println("\n\n === ErrorType2 === ");
+							e.printStackTrace(errorPrintWriter);
+						}
 					}
+
+					allFutureQueue.remove(future);
+
 				} else {
 					allDone = Boolean.FALSE;
 				}
@@ -216,9 +319,23 @@ public class PricerServiceApiTest implements PricerService {
 
 		// System.out.println("File 2 ==> " + countryCurrencyFile.getFilename());
 
-		printWriter.close();
+		// outPrintWriter.close();
+		// outFileWriter.close();
 
-		return AmxApiResponse.build("Success");
+		errorPrintWriter.close();
+		errorFileWriter.close();
+
+		watch.stop();
+		long timetaken = watch.getLastTaskTimeMillis();
+		System.out.println("Total time taken to Complete the Process with size: " + allFutureQueue.size() + " : "
+				+ timetaken / 1000 + " seconds OR : " + timetaken / (1000 * 60) + " Mins");
+
+		HttpHeaders headers = new HttpHeaders();
+		byte[] media = strBuilder.toString().getBytes();
+		headers.setCacheControl(CacheControl.noCache().getHeaderValue());
+
+		return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/octet-stream"))
+				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + "Results.csv" + "\"").body(media);
 
 	}
 

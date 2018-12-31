@@ -19,9 +19,10 @@ public class PricerTestService {
 	@Autowired
 	PricerServiceClient pricerServiceClient;
 
-	@Async(ExecutorConfig.EXECUTER_BRONZE)
+	@Async(ExecutorConfig.EXECUTER_GOLD)
 	public Future<AmxApiResponse<PricingResponseDTO, Object>> fetchPriceForCustomerAsynch(
 			PricingRequestDTO pricingRequestDTO) {
+
 		AmxApiResponse<PricingResponseDTO, Object> resp = pricerServiceClient.fetchPriceForCustomer(pricingRequestDTO);
 
 		return new AsyncResult<AmxApiResponse<PricingResponseDTO, Object>>(resp);
