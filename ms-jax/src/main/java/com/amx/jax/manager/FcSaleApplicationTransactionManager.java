@@ -819,6 +819,10 @@ public List<FxOrderTransactionHistroyDto> getMultipleTransactionHistroy(List<FxO
 	return finalFxOrderListDto;
 }
 
+	/**
+	 * @param trnxFxOrderListDto
+	 * @return map of collection doc no vs inventory ids separated by comma
+	 */
 	private Map<BigDecimal, String> getCollectionInventoryIdMap(List<FxOrderTransactionHistroyDto> trnxFxOrderListDto) {
 		BinaryOperator<String> mergeFunction = (oldVal, newVal) -> {
 			if (StringUtils.isNotBlank(newVal)) {
