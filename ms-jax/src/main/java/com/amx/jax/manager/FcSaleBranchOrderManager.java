@@ -548,8 +548,6 @@ public class FcSaleBranchOrderManager {
 		HashMap<BigDecimal, String> mapInventoryReceiptPayment = new HashMap<>();
 		HashMap<BigDecimal, BigDecimal> mapDocAmount = new HashMap<>();
 		HashMap<BigDecimal, List<CurrencyWiseDenomination>> mapCurrencyDenom = new HashMap<>();
-		//HashMap<BigDecimal, FSaleRecPayDocDetails> mapBranchDocumentNo = new HashMap<>();
-		HashMap<BigDecimal, BigDecimal> mapBranchDocumentNo = new HashMap<>();
 		FxOrderReportResponseDto fxOrderReportResponseDto = null;
 
 		try {
@@ -594,6 +592,21 @@ public class FcSaleBranchOrderManager {
 				}else {
 					throw new GlobalException(JaxError.BLANK_DOCUMENT_DETAILS,"Document details is empty");
 				}
+				
+				Map<String, Object> documentSeriality = generateDocumentNumber(branchId,countryId,companyId,ConstantDocument.Yes,collectionDocYear,ConstantDocument.DOCUMENT_CODE_FOR_FCSALE);
+				if(documentSeriality != null && !documentSeriality.isEmpty()) {
+					BigDecimal docNo = (BigDecimal) documentSeriality.get("P_DOC_NO");
+					String errMsg = (String) documentSeriality.get("P_ERROR_MESG");
+					if(errMsg != null) {
+						throw new GlobalException(JaxError.INVALID_APPL_RECEIPT_PAYMNET_DOCUMENT_NO, errMsg);
+					}else {
+						if(docNo!=null && docNo.compareTo(BigDecimal.ZERO)!=0){
+							// document number allocation done
+						}else{
+							throw new GlobalException(JaxError.INVALID_APPL_RECEIPT_PAYMNET_DOCUMENT_NO, "Receipt document should not be blank.");
+						}
+					}
+				}
 
 				// receipt payment Details
 				HashMap<BigDecimal, OrderManagementView> mapOrderManagement = new HashMap<>();
@@ -636,13 +649,6 @@ public class FcSaleBranchOrderManager {
 								throw new GlobalException(JaxError.CURRENCY_STOCK_NOT_AVAILABLE,"Currenct stock for employee not available");
 							}
 							
-							BigDecimal documentNo = generateDocumentNumber(branchId,countryId,companyId,ConstantDocument.Yes,collectionDocYear,ConstantDocument.DOCUMENT_CODE_FOR_FCSALE);
-						    if(documentNo!=null && documentNo.compareTo(BigDecimal.ZERO)!=0){
-						    	mapBranchDocumentNo.put(fcSaleBranchDispatchModel.getDocumentNumber(), documentNo);
-						    }else{
-						    	throw new GlobalException(JaxError.INVALID_APPL_RECEIPT_PAYMNET_DOCUMENT_NO, "Receipt document should not be blank.");
-						    }
-
 							int i = 0;
 							BigDecimal fcAmount = BigDecimal.ZERO;
 							for (FcSaleBranchDispatchModel fcSaleBranchDispatch : orderDetails) {
@@ -691,8 +697,7 @@ public class FcSaleBranchOrderManager {
 											foreignCurrencyAdj.setAdjustmentAmount(fcSaleBranchDispatch.getDenominationPrice());
 											fcAmount = fcAmount.add(fcSaleBranchDispatch.getDenominationPrice());
 											foreignCurrencyAdj.setDenaminationAmount(fcSaleBranchDispatch.getDenominationAmount());
-											//foreignCurrencyAdj.setDocumentNo(fcSaleBranchDispatch.getDocumentNumber());
-											foreignCurrencyAdj.setDocumentNo(documentNo);
+											foreignCurrencyAdj.setDocumentNo(fcSaleBranchDispatch.getDocumentNumber());
 											foreignCurrencyAdj.setNotesQuantity(fcSaleBranchDispatch.getDenominationQuatity());
 											foreignCurrencyAdj.setExchangeRate(mapOrderManagement.get(fcSaleBranchDispatch.getDocumentNumber()).getTransactionActualRate());
 
@@ -762,14 +767,14 @@ public class FcSaleBranchOrderManager {
 						}
 					}
 					
-					if(mapBranchDocumentNo != null && !mapBranchDocumentNo.isEmpty()) {
+					if(collectionDocYear != null && collectionDocNumber != null) {
 						List<ReceiptPayment> lstReceiptPayment = fcSaleBranchDao.fetchReceiptPayment(collectionDocYear, collectionDocNumber);
 						for (ReceiptPayment receiptPayment : lstReceiptPayment) {
 							receiptPayment.setOnlineCountryBranchId(receiptPayment.getCountryBranch().getCountryBranchId());
 							receiptPayment.setOnlineDocumentNumber(receiptPayment.getDocumentNo());
 							receiptPayment.setOnlineLocationCode(receiptPayment.getLocCode());
 							
-							receiptPayment.setDocumentNo(mapBranchDocumentNo.get(receiptPayment.getDocumentNo()));
+							receiptPayment.setDocumentNo(receiptPayment.getDocumentNo());
 
 							CountryBranch countryBranch = new CountryBranch();
 							countryBranch.setCountryBranchId(countryBranchId);
@@ -782,7 +787,6 @@ public class FcSaleBranchOrderManager {
 							receiptPayment.setModifiedDate(new Date());
 
 							updateRecPay.add(receiptPayment);
-
 						}
 					}
 
@@ -1809,9 +1813,9 @@ public class FcSaleBranchOrderManager {
 		return status;
 	}
 	
-	public BigDecimal generateDocumentNumber(BigDecimal branchId, BigDecimal appCountryId,BigDecimal companyId,String processInd,BigDecimal finYear,BigDecimal documentId) {
+	public Map<String, Object> generateDocumentNumber(BigDecimal branchId, BigDecimal appCountryId,BigDecimal companyId,String processInd,BigDecimal finYear,BigDecimal documentId) {
 		Map<String, Object> output = applicationProcedureDao.getDocumentSeriality(appCountryId, companyId, documentId,finYear, processInd, branchId);
-		return (BigDecimal) output.get("P_DOC_NO");
+		return output;
 	}
 
 }
