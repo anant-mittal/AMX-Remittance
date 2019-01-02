@@ -39,8 +39,8 @@ public class AppConfig {
 	public static final String APP_CACHE = "${app.cache}";
 	public static final String APP_LOGGER = "${app.logger}";
 
-	public static final String APP_CONTEXT_PREFIX = "${server.contextPath}";
-
+    public static final String APP_CONTEXT_PREFIX = "${server.contextPath}";
+    
 	@Deprecated
 	public static final String APP_CLASS = "${app.class}";
 
@@ -138,8 +138,8 @@ public class AppConfig {
 
 	@Value(APP_CONTEXT_PREFIX)
 	@AppParamKey(AppParam.APP_CONTEXT_PREFIX)
-	private String appPrefix;
-
+    private String appPrefix;
+    
 	@Value("${server.session.cookie.http-only}")
 	private boolean cookieHttpOnly;
 
@@ -153,7 +153,7 @@ public class AppConfig {
 	String[] printableAuditMarkers;
 
 	@Value("${app.audit.file.skip}")
-	String[] skipAuditMarkers;
+    String[] skipAuditMarkers;
 
 	public boolean isCookieHttpOnly() {
 		return cookieHttpOnly;
@@ -205,8 +205,8 @@ public class AppConfig {
 
 	public String getLoggerURL() {
 		return loggerURL;
-	}
-
+    }
+    
 	@Bean
 	public AppParam loadAppParams() {
 
