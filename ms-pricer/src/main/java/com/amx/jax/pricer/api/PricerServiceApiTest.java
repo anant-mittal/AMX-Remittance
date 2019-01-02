@@ -156,13 +156,27 @@ public class PricerServiceApiTest implements PricerService {
 
 				for (Channel channel : channelList) {
 
-					for (PricingRequestDTO pricingRequestDTO : pricingReqMap.values()) {
+					for (PricingRequestDTO request : pricingReqMap.values()) {
+
+						PricingRequestDTO pricingRequestDTO = new PricingRequestDTO();
+
+						pricingRequestDTO.setLocalCountryId(request.getLocalCountryId());
+						pricingRequestDTO.setForeignCountryId(request.getForeignCountryId());
+
+						// Multiple
+						// pricingRequestDTO.setLocalAmount(new BigDecimal(1000));
+
+						pricingRequestDTO.setLocalCurrencyId(request.getLocalCurrencyId());
+						pricingRequestDTO.setForeignCurrencyId(request.getForeignCurrencyId());
+
+						pricingRequestDTO.setPricingLevel(PRICE_BY.COUNTRY);
+
 						if (channel.equals(Channel.ONLINE)) {
 							pricingRequestDTO.setCountryBranchId(new BigDecimal(78));
 						} else if (channel.equals(Channel.KIOSK)) {
 							pricingRequestDTO.setCountryBranchId(new BigDecimal(54));
 						} else if (channel.equals(Channel.BRANCH)) {
-							pricingRequestDTO.setCountryBranchId(new BigDecimal(72));
+							pricingRequestDTO.setCountryBranchId(new BigDecimal(64));
 						}
 
 						pricingRequestDTO.setCustomerId(customerId);
@@ -248,6 +262,8 @@ public class PricerServiceApiTest implements PricerService {
 
 						PricingResponseDTO response = amxResp.getResult();
 
+						//PricingRequestDTO requestParam = response.getRequest();
+
 						for (BankRateDetailsDTO bankRate : response.getBankMasterDTOList()) {
 
 							/**
@@ -291,6 +307,8 @@ public class PricerServiceApiTest implements PricerService {
 
 							PricerServiceException prCause = (PricerServiceException) cause;
 
+							//PricingRequestDTO requestParam = prCause.getRequest();
+
 							/**
 							 * Query Params
 							 */
@@ -309,6 +327,8 @@ public class PricerServiceApiTest implements PricerService {
 
 							// e.printStackTrace(errorPrintWriter);
 						} else {
+
+							errorPrintWriter.println(" UNKNOWN : Error Future Hash ==>  " + future.hashCode());
 
 							strBuilder.append("\n" + future.hashCode());
 							strBuilder.append(", " + requestParam.getCustomerId());
