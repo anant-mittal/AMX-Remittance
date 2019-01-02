@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -691,6 +692,8 @@ return dto;
 public List<FxOrderTransactionHistroyDto> getMultipleTransactionHistroy(List<FxOrderTransactionHistroyDto>   trnxFxOrderListDto){
 	List<FxOrderTransactionHistroyDto> finalFxOrderListDto = new ArrayList<>();
 	List<BigDecimal> duplciate = new ArrayList<>();
+	Map<BigDecimal, String> collectionInventoryIdMap = trnxFxOrderListDto.stream().collect(Collectors.toMap(
+				i -> i.getCollectionDocumentNo(), i -> i.getInventoryId(), (oldVal, newVal) -> oldVal + "," + newVal));
 	for(FxOrderTransactionHistroyDto dto :trnxFxOrderListDto){
 	if(!duplciate.contains(dto.getCollectionDocumentNo())){
 		duplciate.add(dto.getCollectionDocumentNo());
@@ -807,7 +810,7 @@ public List<FxOrderTransactionHistroyDto> getMultipleTransactionHistroy(List<FxO
 		fianlDto.setLocalTrnxAmount(dto.getLocalTrnxAmount());
 		fianlDto.setForeignCurrencyCode(multiForeignQuotoName);
 		fianlDto.setOrderStatusCode(dto.getOrderStatusCode());
-		fianlDto.setInventoryId(dto.getInventoryId());
+		fianlDto.setInventoryId(collectionInventoryIdMap.get(dto.getCollectionDocumentNo()));
 		finalFxOrderListDto.add(fianlDto);
 		}
 	
@@ -825,15 +828,10 @@ public List<FxOrderTransactionHistroyDto> getMultipleTransactionHistroy(List<FxO
 		if(fxDelDetailModel != null){
 			 shippingAddressDto =addressManager.fetchShippingAddress(customerId ,fxDelDetailModel.getShippingAddressId());
 			if (shippingAddressDto != null) {
-				sb = sb.append("Street ")
-						.append(shippingAddressDto.getStreet() == null ? "" : shippingAddressDto.getStreet())
-						.append(concat).append("Block ")
-						.append(shippingAddressDto.getBlock() == null ? "" : shippingAddressDto.getBlockNo())
-						.append(concat).append("House no. ")
-						.append(shippingAddressDto.getBuildingNo() == null ? "" : shippingAddressDto.getBuildingNo())
-						.append(concat).append("Flat ")
-						.append(shippingAddressDto.getFlat() == null ? "" : shippingAddressDto.getHouse())
-						.append(concat);
+				sb = sb.append(shippingAddressDto.getStreet() == null ? "" : "Street "+  shippingAddressDto.getStreet() +concat)
+						.append(shippingAddressDto.getBlock() == null ? "" : "Block " + shippingAddressDto.getBlockNo() + concat)
+						.append(shippingAddressDto.getBuildingNo() == null ? "" : "House no. " + shippingAddressDto.getBuildingNo() + concat)
+						.append(shippingAddressDto.getFlat() == null ? "" : "Flat "+  shippingAddressDto.getHouse() +concat);
 				if(shippingAddressDto.getLocalContactCity() != null) {
 					sb.append("City ").append(shippingAddressDto.getLocalContactCity() == null ? ""
 							: shippingAddressDto.getLocalContactCity()).append(concat);
