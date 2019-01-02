@@ -9,6 +9,7 @@ import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 
 import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -23,13 +24,18 @@ import com.amx.jax.AppConstants;
 import com.amx.jax.api.AmxFieldError;
 import com.amx.jax.exception.ApiHttpExceptions.ApiHttpArgException;
 import com.amx.jax.exception.ApiHttpExceptions.ApiStatusCodes;
+import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.LoggerService;
+import com.amx.jax.logger.events.ApiAuditEvent;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.HttpUtils;
 
 public abstract class AmxAdvice {
 
 	private Logger logger = LoggerService.getLogger(AmxAdvice.class);
+
+	@Autowired
+	private AuditService auditService;
 
 	@ExceptionHandler(AmxApiException.class)
 	@ResponseBody
@@ -52,8 +58,7 @@ public abstract class AmxAdvice {
 	}
 
 	private void alert(AmxApiException ex) {
-		logger.error("Exception occured in controller " + ex.getClass().getName() + " error message: "
-				+ ex.getErrorMessage() + " error code: " + ex.getErrorKey(), ex);
+		auditService.excep(new ApiAuditEvent(ex), ex);
 	}
 
 	public void alert(Exception ex) {
@@ -118,8 +123,7 @@ public abstract class AmxAdvice {
 		errors.add(newError);
 		return badRequest(ex, errors, request, response, ApiStatusCodes.PARAM_TYPE_MISMATCH);
 	}
-	
-	
+
 	/**
 	 * Handle.
 	 *

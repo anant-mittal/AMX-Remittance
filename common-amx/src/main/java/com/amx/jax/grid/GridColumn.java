@@ -1,6 +1,7 @@
 package com.amx.jax.grid;
 
-import com.amx.jax.grid.SortOrder;
+import com.amx.jax.grid.GridEnums.FilterDataType;
+import com.amx.jax.grid.GridEnums.FilterOperater;
 import com.amx.jax.swagger.ApiMockModelProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -21,6 +22,12 @@ public class GridColumn {
 
 	@ApiMockModelProperty(example = "", value = "Search String")
 	private String search;
+
+	@ApiMockModelProperty(example = "EQ", value = "GT, GTE, EQ, STE, ST")
+	private FilterOperater operator;
+
+	@ApiMockModelProperty(example = "STRING", value = "STRING, NUMBER, DATE, TIME, TIMESTAMP")
+	private FilterDataType dataType;
 
 	@ApiMockModelProperty(example = "", value = "Exact Value to Filter")
 	private String value;
@@ -144,6 +151,22 @@ public class GridColumn {
 
 	public void setValue(String value) {
 		this.value = value;
+	}
+
+	public FilterOperater getOperator() {
+		return operator;
+	}
+
+	public void setOperator(FilterOperater operator) {
+		this.operator = operator;
+	}
+
+	public FilterDataType getDataType() {
+		return dataType;
+	}
+
+	public void setDataType(FilterDataType dataType) {
+		this.dataType = dataType;
 	}
 
 }

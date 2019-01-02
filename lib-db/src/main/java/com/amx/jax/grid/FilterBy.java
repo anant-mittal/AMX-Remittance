@@ -3,6 +3,9 @@ package com.amx.jax.grid;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.amx.jax.grid.GridEnums.FilterDataType;
+import com.amx.jax.grid.GridEnums.FilterOperater;
+
 /**
  * The Class SortBy.
  * 
@@ -10,9 +13,46 @@ import java.util.Map;
  */
 public class FilterBy {
 
+	public static class Condition {
+		private String value;
+		private FilterOperater opertor;
+		private FilterDataType type;
+
+		public Condition(FilterOperater opertor, String value, FilterDataType type) {
+			super();
+			this.opertor = opertor;
+			this.value = value;
+			this.type = type;
+		}
+
+		public String getValue() {
+			return value;
+		}
+
+		public void setValue(String value) {
+			this.value = value;
+		}
+
+		public FilterOperater getOpertor() {
+			return opertor;
+		}
+
+		public void setOpertor(FilterOperater opertor) {
+			this.opertor = opertor;
+		}
+
+		public FilterDataType getType() {
+			return type;
+		}
+
+		public void setType(FilterDataType type) {
+			this.type = type;
+		}
+	}
+
 	/** The map of sorts. */
 	private Map<String, String> mapOfLikeFilters;
-	private Map<String, String> mapOfWhereFilters;
+	private Map<String, Condition> mapOfWhereFilters;
 
 	/** The global search. */
 	private boolean globalSearch;
@@ -25,7 +65,7 @@ public class FilterBy {
 			mapOfLikeFilters = new HashMap<String, String>();
 		}
 		if (null == mapOfWhereFilters) {
-			mapOfWhereFilters = new HashMap<String, String>();
+			mapOfWhereFilters = new HashMap<String, Condition>();
 		}
 	}
 
@@ -57,8 +97,8 @@ public class FilterBy {
 		mapOfLikeFilters.put(filterColumn, filterValue);
 	}
 
-	public void addWhereFilter(String filterColumn, String filterValue) {
-		mapOfWhereFilters.put(filterColumn, filterValue);
+	public void addWhereFilter(String filterColumn, Condition filterCondition) {
+		mapOfWhereFilters.put(filterColumn, filterCondition);
 	}
 
 	/**
@@ -79,11 +119,11 @@ public class FilterBy {
 		this.globalSearch = globalSearch;
 	}
 
-	public Map<String, String> getMapOfWhereFilters() {
+	public Map<String, Condition> getMapOfWhereFilters() {
 		return mapOfWhereFilters;
 	}
 
-	public void setMapOfWhereFilters(Map<String, String> mapOfWhereFilters) {
+	public void setMapOfWhereFilters(Map<String, Condition> mapOfWhereFilters) {
 		this.mapOfWhereFilters = mapOfWhereFilters;
 	}
 

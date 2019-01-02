@@ -230,7 +230,7 @@ public class PMGaugeEvent extends AuditEvent {
 	@Override
 	public String getDescription() {
 		if (this.description == null) {
-			return String.format("%s_%s_%d", this.type, this.result, this.attmept);
+			return String.format("%s_%s:%d", this.type, this.result, this.attmept);
 		}
 		return this.description;
 	}

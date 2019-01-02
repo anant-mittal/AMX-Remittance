@@ -19,25 +19,55 @@ public class CustomerDetailViewRecord implements GridViewRecord {
 
 	private static final long serialVersionUID = 1L;
 
-	private Date lastTransactionDate;
-	private String nationalityCode;
-	private BigDecimal customerId;
-	private BigDecimal customerTypeId;
-	private String name;
-	private String gender;
-	private Date dateOfBirth;
-	private BigDecimal nationality;
-	private String mobile;
-	private String email;
-	private Date creationDate;
-	private Date updateDate;
-	private Date lastUpdateDate;
-	private String isActive;
-	private String isMobileWhatsApp;
-	private String isOnlineUser;
-
 	@Id
 	@Column(name = "CUSTOMER_ID")
+	private BigDecimal customerId;
+
+	@Column(name = "CUSTOMER_TYPE_ID")
+	private BigDecimal customerTypeId;
+
+	@Column(name = "CUSTOMER_EN_NAME")
+	private String name;
+
+	@Column(name = "GENDER")
+	private String gender;
+
+	@Column(name = "DATE_OF_BIRTH")
+	private Date dateOfBirth;
+
+	@Column(name = "NATIONALITY")
+	private BigDecimal nationality;
+
+	@Column(name = "NATIONALITY_CODE")
+	private String nationalityCode;
+
+	@Column(name = "MOBILE")
+	private String mobile;
+
+	@Column(name = "EMAIL")
+	private String email;
+
+	@Column(name = "CREATION_DATE")
+	private Date creationDate;
+
+	@Column(name = "LAST_UPDATED")
+	private Date updateDate;
+
+	@Column(name = "LATEST_UPDATE_DATE")
+	private Date lastUpdateDate;
+
+	@Column(name = "ISACTIVE")
+	private String isActive;
+
+	@Column(name = "IS_MOBILE_WHATSAPP")
+	private String isMobileWhatsApp;
+
+	@Column(name = "IS_ONLINE_USER")
+	private String isOnlineUser;
+
+	@Column(name = "LAST_TRANSACTION_DATE")
+	private Date lastTransactionDate;
+
 	public BigDecimal getCustomerId() {
 		return customerId;
 	}
@@ -46,7 +76,6 @@ public class CustomerDetailViewRecord implements GridViewRecord {
 		this.customerId = customerId;
 	}
 
-	@Column(name = "CUSTOMER_TYPE_ID")
 	public BigDecimal getCustomerTypeId() {
 		return customerTypeId;
 	}
@@ -55,7 +84,6 @@ public class CustomerDetailViewRecord implements GridViewRecord {
 		this.customerTypeId = customerTypeId;
 	}
 
-	@Column(name = "CUSTOMER_EN_NAME")
 	public String getName() {
 		return name;
 	}
@@ -64,7 +92,6 @@ public class CustomerDetailViewRecord implements GridViewRecord {
 		this.name = name;
 	}
 
-	@Column(name = "GENDER")
 	public String getGender() {
 		return gender;
 	}
@@ -73,7 +100,6 @@ public class CustomerDetailViewRecord implements GridViewRecord {
 		this.gender = gender;
 	}
 
-	@Column(name = "DATE_OF_BIRTH")
 	public Date getDateOfBirth() {
 		return dateOfBirth;
 	}
@@ -82,7 +108,6 @@ public class CustomerDetailViewRecord implements GridViewRecord {
 		this.dateOfBirth = dateOfBirth;
 	}
 
-	@Column(name = "NATIONALITY")
 	public BigDecimal getNationality() {
 		return nationality;
 	}
@@ -91,7 +116,6 @@ public class CustomerDetailViewRecord implements GridViewRecord {
 		this.nationality = nationality;
 	}
 
-	@Column(name = "NATIONALITY_CODE")
 	public String getNationalityCode() {
 		return nationalityCode;
 	}
@@ -101,7 +125,6 @@ public class CustomerDetailViewRecord implements GridViewRecord {
 	}
 
 	// Contact
-	@Column(name = "MOBILE")
 	public String getMobile() {
 		return mobile;
 	}
@@ -110,7 +133,6 @@ public class CustomerDetailViewRecord implements GridViewRecord {
 		this.mobile = mobile;
 	}
 
-	@Column(name = "EMAIL")
 	public String getEmail() {
 		return email;
 	}
@@ -120,7 +142,6 @@ public class CustomerDetailViewRecord implements GridViewRecord {
 	}
 
 	// Account Info
-	@Column(name = "CREATION_DATE")
 	public Date getCreationDate() {
 		return creationDate;
 	}
@@ -129,7 +150,6 @@ public class CustomerDetailViewRecord implements GridViewRecord {
 		this.creationDate = creationDate;
 	}
 
-	@Column(name = "LAST_UPDATED")
 	public Date getUpdateDate() {
 		return updateDate;
 	}
@@ -138,7 +158,6 @@ public class CustomerDetailViewRecord implements GridViewRecord {
 		this.updateDate = updateDate;
 	}
 
-	@Column(name = "LATEST_UPDATE_DATE")
 	public Date getLastUpdateDate() {
 		return lastUpdateDate;
 	}
@@ -147,7 +166,6 @@ public class CustomerDetailViewRecord implements GridViewRecord {
 		this.lastUpdateDate = lastUpdateDate;
 	}
 
-	@Column(name = "ISACTIVE")
 	public String getIsActive() {
 		return isActive;
 	}
@@ -156,7 +174,6 @@ public class CustomerDetailViewRecord implements GridViewRecord {
 		this.isActive = isActive;
 	}
 
-	@Column(name = "IS_MOBILE_WHATSAPP")
 	public String getIsMobileWhatsApp() {
 		return isMobileWhatsApp;
 	}
@@ -165,7 +182,6 @@ public class CustomerDetailViewRecord implements GridViewRecord {
 		this.isMobileWhatsApp = isMobileWhatsApp;
 	}
 
-	@Column(name = "IS_ONLINE_USER")
 	public String getIsOnlineUser() {
 		return isOnlineUser;
 	}
@@ -175,7 +191,6 @@ public class CustomerDetailViewRecord implements GridViewRecord {
 	}
 
 	// Transaction
-	@Column(name = "LAST_TRANSACTION_DATE")
 	public Date getLastTransactionDate() {
 		return lastTransactionDate;
 	}
