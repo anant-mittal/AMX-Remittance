@@ -155,10 +155,6 @@ public class AppConfig {
 	@Value("${app.audit.file.skip}")
     String[] skipAuditMarkers;
 
-    @Value("${adapter.url}")
-    private String adapterUrl;
-    
-
 	public boolean isCookieHttpOnly() {
 		return cookieHttpOnly;
 	}
@@ -211,10 +207,6 @@ public class AppConfig {
 		return loggerURL;
     }
     
-    public String getAdapterUrl() {
-        return adapterUrl;
-    }
-
 	@Bean
 	public AppParam loadAppParams() {
 
