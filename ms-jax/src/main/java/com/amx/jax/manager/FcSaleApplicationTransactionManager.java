@@ -692,8 +692,10 @@ return dto;
 public List<FxOrderTransactionHistroyDto> getMultipleTransactionHistroy(List<FxOrderTransactionHistroyDto>   trnxFxOrderListDto){
 	List<FxOrderTransactionHistroyDto> finalFxOrderListDto = new ArrayList<>();
 	List<BigDecimal> duplciate = new ArrayList<>();
-	Map<BigDecimal, String> collectionInventoryIdMap = trnxFxOrderListDto.stream().collect(Collectors.toMap(
-				i -> i.getCollectionDocumentNo(), i -> i.getInventoryId(), (oldVal, newVal) -> oldVal + "," + newVal));
+		Map<BigDecimal, String> collectionInventoryIdMap = trnxFxOrderListDto.stream()
+				.collect(Collectors.toMap(i -> i.getCollectionDocumentNo(),
+						(i -> i.getInventoryId() == null ? "" : i.getInventoryId()),
+						(oldVal, newVal) -> oldVal + "," + newVal));
 	for(FxOrderTransactionHistroyDto dto :trnxFxOrderListDto){
 	if(!duplciate.contains(dto.getCollectionDocumentNo())){
 		duplciate.add(dto.getCollectionDocumentNo());
