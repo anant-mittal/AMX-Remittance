@@ -9,6 +9,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BinaryOperator;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.beanutils.BeanUtils;
@@ -692,10 +694,7 @@ return dto;
 public List<FxOrderTransactionHistroyDto> getMultipleTransactionHistroy(List<FxOrderTransactionHistroyDto>   trnxFxOrderListDto){
 	List<FxOrderTransactionHistroyDto> finalFxOrderListDto = new ArrayList<>();
 	List<BigDecimal> duplciate = new ArrayList<>();
-		Map<BigDecimal, String> collectionInventoryIdMap = trnxFxOrderListDto.stream()
-				.collect(Collectors.toMap(i -> i.getCollectionDocumentNo(),
-						(i -> i.getInventoryId() == null ? "" : i.getInventoryId()),
-						(oldVal, newVal) -> oldVal + "," + newVal));
+	Map<BigDecimal, String> collectionInventoryIdMap = getCollectionInventoryIdMap(trnxFxOrderListDto);
 	for(FxOrderTransactionHistroyDto dto :trnxFxOrderListDto){
 	if(!duplciate.contains(dto.getCollectionDocumentNo())){
 		duplciate.add(dto.getCollectionDocumentNo());
@@ -819,6 +818,19 @@ public List<FxOrderTransactionHistroyDto> getMultipleTransactionHistroy(List<FxO
 	}
 	return finalFxOrderListDto;
 }
+
+	private Map<BigDecimal, String> getCollectionInventoryIdMap(List<FxOrderTransactionHistroyDto> trnxFxOrderListDto) {
+		BinaryOperator<String> mergeFunction = (oldVal, newVal) -> {
+			if (StringUtils.isNotBlank(newVal)) {
+				return oldVal + "," + newVal;
+			} else {
+				return oldVal;
+			}
+		};
+		return trnxFxOrderListDto.stream().collect(Collectors.toMap(i -> i.getCollectionDocumentNo(),
+				(i -> i.getInventoryId() == null ? "" : i.getInventoryId()), mergeFunction));
+	}
+
 
 	public String getDeliveryAddress(BigDecimal customerId,BigDecimal deliveryDetSeqId){
 		logger.debug("getDeliveryAddress  :"+deliveryDetSeqId);
