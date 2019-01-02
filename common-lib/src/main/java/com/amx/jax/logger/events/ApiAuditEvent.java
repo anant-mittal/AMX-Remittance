@@ -16,33 +16,17 @@ public class ApiAuditEvent extends AuditEvent {
 		}
 	}
 
-	String statusKey;
-
-	public String getStatusKey() {
-		return statusKey;
-	}
-
-	public void setStatusKey(String statusKey) {
-		this.statusKey = statusKey;
-	}
-
 	public ApiAuditEvent(Type type, AmxApiException excep) {
 		this.type = type;
-		this.statusKey = ArgUtil.isEmpty(excep.getErrorKey()) ? ArgUtil.parseAsString(excep.getError())
-				: excep.getErrorKey();
 		this.message = excep.getErrorMessage();
+		this.description = String.format("%s_%s:%s", this.type, this.result,
+				ArgUtil.isEmpty(excep.getErrorKey()) ? ArgUtil.parseAsString(excep.getError())
+						: excep.getErrorKey());
 		this.result = Result.ERROR;
 	}
 
 	public ApiAuditEvent(AmxApiException excep) {
 		this(Type.API, excep);
-	}
-
-	public String getDescription() {
-		if (this.description == null) {
-			return String.format("%s_%s:%s", this.type, this.result, this.statusKey);
-		}
-		return this.description;
 	}
 
 }

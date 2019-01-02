@@ -261,6 +261,12 @@ public class AuditServiceClient implements AuditService {
 	}
 
 	@Override
+	public AuditLoggerResponse log(AuditEvent event, Exception e) {
+		AuditServiceClient.captureException(event, e);
+		return this.log(event);
+	}
+
+	@Override
 	public AuditLoggerResponse excep(AuditEvent event, Logger logger, Exception e) {
 		logger.error(event.getType().toString(), e);
 		return this.excep(event, e);
