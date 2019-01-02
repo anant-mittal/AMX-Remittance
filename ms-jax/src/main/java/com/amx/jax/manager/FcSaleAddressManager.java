@@ -483,13 +483,11 @@ public class FcSaleAddressManager extends AbstractModel {
 		StringBuffer sb = new StringBuffer();
 		String concat =",";
 		if (shippingAddressDto != null) {
-			sb = sb.append("Street ")
-					.append(shippingAddressDto.getStreet() == null ? "" : shippingAddressDto.getStreet()).append(concat)
-					.append("Block ").append(shippingAddressDto.getBlock() == null ? "" : shippingAddressDto.getBlock())
-					.append(concat).append("House no. ")
-					.append(shippingAddressDto.getBuildingNo() == null ? "" : shippingAddressDto.getBuildingNo())
-					.append(concat).append("Flat ")
-					.append(shippingAddressDto.getFlat() == null ? "" : shippingAddressDto.getHouse()).append(concat);
+			sb = sb.append(shippingAddressDto.getStreet() == null ? "" : "Street "+  shippingAddressDto.getStreet() +concat)
+					.append(shippingAddressDto.getBlock() == null ? "" : "Block " + shippingAddressDto.getBlockNo() + concat)
+					.append(shippingAddressDto.getBuildingNo() == null ? "" : "House no. " + shippingAddressDto.getBuildingNo() + concat)
+					.append(shippingAddressDto.getFlat() == null ? "" : "Flat "+  shippingAddressDto.getHouse() +concat);
+					
 			if (shippingAddressDto.getLocalContactCity() != null) {
 				sb.append("City ").append(shippingAddressDto.getLocalContactCity() == null ? ""
 						: shippingAddressDto.getLocalContactCity()).append(concat);

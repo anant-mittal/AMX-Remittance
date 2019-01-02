@@ -56,6 +56,7 @@ public class PMGaugeEvent extends AuditEvent {
 
 	/** The template. */
 	String template = null;
+	int attmept;
 
 	/** The to. */
 	private List<String> to = null;
@@ -73,8 +74,7 @@ public class PMGaugeEvent extends AuditEvent {
 	/**
 	 * Instantiates a new PM gauge event.
 	 *
-	 * @param type
-	 *            the type
+	 * @param type the type
 	 */
 	public PMGaugeEvent(EventType type) {
 		super(type);
@@ -83,10 +83,8 @@ public class PMGaugeEvent extends AuditEvent {
 	/**
 	 * Instantiates a new PM gauge event.
 	 *
-	 * @param type
-	 *            the type
-	 * @param sms
-	 *            the sms
+	 * @param type the type
+	 * @param sms  the sms
 	 */
 	public PMGaugeEvent(Type type, SMS sms) {
 		super(type);
@@ -96,10 +94,8 @@ public class PMGaugeEvent extends AuditEvent {
 	/**
 	 * Instantiates a new PM gauge event.
 	 *
-	 * @param type
-	 *            the type
-	 * @param email
-	 *            the email
+	 * @param type  the type
+	 * @param email the email
 	 */
 	public PMGaugeEvent(Type type, Email email) {
 		super(type);
@@ -109,10 +105,8 @@ public class PMGaugeEvent extends AuditEvent {
 	/**
 	 * Instantiates a new PM gauge event.
 	 *
-	 * @param type
-	 *            the type
-	 * @param file
-	 *            the file
+	 * @param type the type
+	 * @param file the file
 	 */
 	public PMGaugeEvent(Type type, File file) {
 		super(type);
@@ -131,8 +125,7 @@ public class PMGaugeEvent extends AuditEvent {
 	/**
 	 * Sets the template.
 	 *
-	 * @param template
-	 *            the new template
+	 * @param template the new template
 	 */
 	public void setTemplate(String template) {
 		this.template = template;
@@ -150,8 +143,7 @@ public class PMGaugeEvent extends AuditEvent {
 	/**
 	 * Sets the to.
 	 *
-	 * @param to
-	 *            the new to
+	 * @param to the new to
 	 */
 	public void setTo(List<String> to) {
 		this.to = to;
@@ -165,10 +157,8 @@ public class PMGaugeEvent extends AuditEvent {
 	/**
 	 * Fill detail.
 	 *
-	 * @param type
-	 *            the type
-	 * @param file
-	 *            the file
+	 * @param type the type
+	 * @param file the file
 	 * @return the PM gauge event
 	 */
 	public PMGaugeEvent set(File file) {
@@ -179,15 +169,14 @@ public class PMGaugeEvent extends AuditEvent {
 	/**
 	 * Fill detail.
 	 *
-	 * @param type
-	 *            the type
-	 * @param sms
-	 *            the sms
+	 * @param type the type
+	 * @param sms  the sms
 	 * @return the PM gauge event
 	 */
 	public PMGaugeEvent set(SMS sms) {
 		this.template = sms.getTemplate();
 		this.to = sms.getTo();
+		this.attmept = sms.getAttempt();
 		return this;
 	}
 
@@ -195,41 +184,38 @@ public class PMGaugeEvent extends AuditEvent {
 		this.template = sms.getTemplate();
 		this.to = sms.getTo();
 		this.responseText = responseText;
+		this.attmept = sms.getAttempt();
 		return this;
 	}
 
 	/**
 	 * Fill detail.
 	 *
-	 * @param type
-	 *            the type
-	 * @param email
-	 *            the email
+	 * @param type  the type
+	 * @param email the email
 	 * @return the PM gauge event
 	 */
 	public PMGaugeEvent set(Email email) {
 		this.template = email.getTemplate();
 		this.to = email.getTo();
+		this.attmept = email.getAttempt();
 		return this;
 	}
 
 	/**
 	 * Fill detail.
 	 *
-	 * @param type
-	 *            the type
-	 * @param msg
-	 *            the msg
-	 * @param message
-	 *            the message
-	 * @param response
-	 *            the response
+	 * @param type     the type
+	 * @param msg      the msg
+	 * @param message  the message
+	 * @param response the response
 	 * @return the audit event
 	 */
 	public AuditEvent set(PushMessage msg, String message, String responseText) {
 		this.to = msg.getTo();
 		this.message = message;
 		this.responseText = responseText;
+		this.attmept = msg.getAttempt();
 		return this;
 	}
 
@@ -241,4 +227,19 @@ public class PMGaugeEvent extends AuditEvent {
 		this.responseText = responseText;
 	}
 
+	@Override
+	public String getDescription() {
+		if (this.description == null) {
+			return String.format("%s_%s_%d", this.type, this.result, this.attmept);
+		}
+		return this.description;
+	}
+
+	public int getAttmept() {
+		return attmept;
+	}
+
+	public void setAttmept(int attmept) {
+		this.attmept = attmept;
+	}
 }

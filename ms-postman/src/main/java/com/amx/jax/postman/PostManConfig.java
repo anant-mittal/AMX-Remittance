@@ -148,6 +148,12 @@ public class PostManConfig {
 	@Value("${spring.mail.from}")
 	private String mailDefaultSender;
 
+	@Value("${spring.mail.retry.count}")
+	private Integer emailRetryCount;
+
+	@Value("${spring.mail.retry.batch}")
+	private Integer emailRetryBatch;
+
 	public String getMailFrom() {
 		return mailFrom;
 	}
@@ -190,6 +196,22 @@ public class PostManConfig {
 
 	public String getMailDefaultSender() {
 		return mailDefaultSender;
+	}
+
+	public Integer getEmailRetryCount() {
+		return emailRetryCount;
+	}
+
+	public void setEmailRetryCount(Integer emailRetryCount) {
+		this.emailRetryCount = emailRetryCount;
+	}
+
+	public Integer getEmailRetryBatch() {
+		return emailRetryBatch;
+	}
+
+	public void setEmailRetryBatch(Integer emailRetryBatch) {
+		this.emailRetryBatch = emailRetryBatch;
 	}
 
 }

@@ -23,7 +23,7 @@ public abstract class AuditEvent extends AbstractEvent {
 	protected Object data;
 
 	public static enum Result {
-		DONE, FAIL, ERROR, PASS;
+		DONE, REJECTED, FAIL, ERROR, PASS;
 	}
 
 	public AuditEvent() {
