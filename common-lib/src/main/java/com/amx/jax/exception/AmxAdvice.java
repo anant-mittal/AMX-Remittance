@@ -58,7 +58,7 @@ public abstract class AmxAdvice {
 	}
 
 	private void alert(AmxApiException ex) {
-		auditService.excep(new ApiAuditEvent(ex), ex);
+		auditService.log(new ApiAuditEvent(ex), ex);
 	}
 
 	public void alert(Exception ex) {
