@@ -1,7 +1,5 @@
 package com.amx.jax.postman.client;
 
-import java.awt.Color;
-
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 

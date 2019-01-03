@@ -21,13 +21,14 @@ import com.amx.jax.device.DeviceRestModels;
 import com.amx.jax.device.DeviceRestModels.DevicePairingCreds;
 import com.amx.jax.device.DeviceRestModels.DevicePairingRequest;
 import com.amx.jax.device.DeviceRestModels.DeviceRestModel;
-import com.amx.jax.device.DeviceRestModels.NetAddress;
 import com.amx.jax.device.DeviceRestModels.SessionPairingCreds;
 import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.exception.AmxApiException;
 import com.amx.jax.exception.AmxException;
 import com.amx.jax.logger.LoggerService;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.NetworkAdapter;
+import com.amx.utils.NetworkAdapter.NetAddress;
 import com.amx.utils.TimeUtils;
 
 import net.east301.keyring.BackendNotSupportedException;
