@@ -24,6 +24,7 @@ import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.dto.PricingResponseDTO;
 import com.amx.jax.pricer.service.PricingService;
 import com.amx.jax.pricer.util.PricingRateDetailsDTO;
+import com.amx.jax.pricer.var.PricerServiceConstants;
 
 @RestController
 public class PricerServiceApiController implements PricerService {
@@ -57,7 +58,7 @@ public class PricerServiceApiController implements PricerService {
 		watch.stop();
 
 		pricingResponseDTO.setInfo(new HashMap<>());
-		pricingResponseDTO.getInfo().put("TTE", watch.getLastTaskTimeMillis());
+		pricingResponseDTO.getInfo().put(PricerServiceConstants.TTE, watch.getLastTaskTimeMillis());
 
 		return AmxApiResponse.build(pricingResponseDTO);
 

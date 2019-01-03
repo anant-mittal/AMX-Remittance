@@ -9,19 +9,19 @@ package com.amx.jax.pricer.var;
  */
 public final class PricerServiceConstants {
 
+	public static String TTE = "TTE";
+
 	private PricerServiceConstants() {
 		// Not Allowed
 		super();
 	}
 
-//	public static enum DEVICE_TYPE {
-//		MOBILE, PC;
-//	}
+	// public static enum DEVICE_TYPE {
+	// MOBILE, PC;
+	// }
 
 	public static enum PRICE_BY {
 		ROUTING_BANK, COUNTRY;
 	}
-
-	
 
 }

@@ -1,7 +1,6 @@
 package com.amx.jax.pricer.api;
 
 import java.io.BufferedReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
@@ -37,6 +36,7 @@ import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.dto.PricingResponseDTO;
 import com.amx.jax.pricer.exception.PricerServiceException;
 import com.amx.jax.pricer.service.PricerTestService;
+import com.amx.jax.pricer.var.PricerServiceConstants;
 import com.amx.jax.pricer.var.PricerServiceConstants.PRICE_BY;
 import com.amx.utils.ArgUtil;
 
@@ -94,7 +94,7 @@ public class PricerServiceApiTest implements PricerService {
 		// FileWriter outFileWriter = new
 		// FileWriter("/home/abhijeet/Desktop/results.json");
 
-		FileWriter errorFileWriter = new FileWriter("/home/abhijeet/Desktop/error.txt");
+		//FileWriter errorFileWriter = new FileWriter("/home/abhijeet/Desktop/error.txt");
 
 		String line;
 		while ((line = countryCurrencyReader.readLine()) != null) {
@@ -267,7 +267,7 @@ public class PricerServiceApiTest implements PricerService {
 
 						// PricingRequestDTO requestParam = response.getRequest();
 
-						long tte = ArgUtil.parseAsLong(response.getInfo().get("TTE"));
+						long tte = ArgUtil.parseAsLong(response.getInfo().get(PricerServiceConstants.TTE));
 
 						for (BankRateDetailsDTO bankRate : response.getBankMasterDTOList()) {
 
@@ -377,7 +377,7 @@ public class PricerServiceApiTest implements PricerService {
 		// outFileWriter.close();
 
 		// errorPrintWriter.close();
-		errorFileWriter.close();
+		//errorFileWriter.close();
 
 		watch.stop();
 		long timetaken = watch.getLastTaskTimeMillis();
