@@ -19,6 +19,7 @@ import org.springframework.util.MultiValueMap;
 
 import com.amx.jax.AppContext;
 import com.amx.jax.logger.AuditEvent;
+import com.amx.jax.tunnel.TunnelEventXchange;
 import com.amx.jax.tunnel.TunnelMessage;
 import com.amx.utils.HttpUtils;
 
@@ -53,9 +54,9 @@ public class RequestTrackEvent extends AuditEvent {
 		super(type);
 	}
 
-	public <T> RequestTrackEvent(Type type, TunnelMessage<T> message) {
+	public <T> RequestTrackEvent(Type type, TunnelEventXchange xchange, TunnelMessage<T> message) {
 		super(type);
-		this.description = String.format("%s %s", this.type, message.getTopic());
+		this.description = String.format("%s %s=%s", this.type, xchange, message.getTopic());
 		this.context = message.getContext();
 	}
 

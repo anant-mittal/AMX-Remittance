@@ -54,7 +54,7 @@ public class CustomerViewTask extends ARadarTask {
 
 	private Long lastUpdateDateNow = 0L;
 
-	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_TEST)
+	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_TASK)
 	public void doTask() {
 
 		jaxMetaInfo.setCountryId(TenantContextHolder.currentSite().getBDCode());
