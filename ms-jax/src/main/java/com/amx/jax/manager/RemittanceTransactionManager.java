@@ -78,6 +78,7 @@ import com.amx.jax.logger.AuditService;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.VTransferRepository;
+import com.amx.jax.service.CountryService;
 import com.amx.jax.service.CurrencyMasterService;
 import com.amx.jax.service.LoyalityPointService;
 import com.amx.jax.service.ParameterService;
@@ -185,6 +186,8 @@ public class RemittanceTransactionManager {
 	NewExchangeRateService newExchangeRateService;
 	@Autowired
 	PromotionManager promotionManager;
+	@Autowired
+	CountryService countryService;
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -203,6 +206,7 @@ public class RemittanceTransactionManager {
 		remitApplParametersMap.put("P_BENEFICIARY_MASTER_ID", beneficiary.getBeneficaryMasterSeqId());
 		addBeneficiaryParameters(beneficiary);
 		validateBlackListedBene(beneficiary);
+		validateRiskyBene(beneficiary, customer);
 		validatedObjects.put("BENEFICIARY", beneficiary);
 		HashMap<String, Object> beneBankDetails = getBeneBankDetails(beneficiary);
 		remitApplParametersMap.putAll(beneBankDetails);
@@ -279,6 +283,15 @@ public class RemittanceTransactionManager {
 		applyRoudingLogic(responseModel.getExRateBreakup());
 		return responseModel;
 
+	}
+
+	private void validateRiskyBene(BenificiaryListView beneficiary, Customer customer) {
+		if (beneficiary.getCountryId() != customer.getNationalityId()) {
+			int beneCountryRisk = countryService.getCountryMaster(beneficiary.getCountryId()).getBeneCountryRisk();
+			if (beneCountryRisk == 1) {
+				throw new GlobalException(JaxError.BENE_COUNTRY_RISK, "Bene country risk");
+			}
+		}
 	}
 
 	private void setLoyalityPointFlags(Customer customer, RemittanceTransactionResponsetModel responseModel) {

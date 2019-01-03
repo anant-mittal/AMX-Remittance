@@ -826,7 +826,9 @@ public class BeneficiaryService extends AbstractService {
 		if (jaxProperties.getBeneThreeCountryCheck()) {
 			countryList = countryRepository.getBeneCountryList(metaData.getLanguageId());
 		} else {
-			countryList = countryRepository.findByLanguageId(metaData.getLanguageId());
+			Customer customer = userService.getCustById(customerId);
+			countryList = countryRepository.findByLanguageIdAndNonBeneRisk(metaData.getLanguageId(),
+					customer.getNationalityId());
 		}
 		List<BigDecimal> supportedServiceGroupList = beneDao.getRoutingBankMasterList(); // add for channeling
 																							// 03-05-2018

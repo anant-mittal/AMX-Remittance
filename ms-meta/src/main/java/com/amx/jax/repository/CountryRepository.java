@@ -28,6 +28,7 @@ public interface CountryRepository extends JpaRepository<CountryMasterView, BigD
 	@Query("Select c from CountryMasterView c where  languageId=?1 and countryAlpha2Code  in ('IN', 'PH', 'EG') ORDER BY countryName asc")
 	List<CountryMasterView> getBeneCountryList(BigDecimal languageId);
 	
-	
+	@Query("Select c from CountryMasterView c where  languageId=?1 and (beneCountryRisk != 1 or countryId = ?2 ) ORDER BY countryName asc")
+	List<CountryMasterView> findByLanguageIdAndNonBeneRisk(BigDecimal languageId, BigDecimal homeCountryId);
 
 }
