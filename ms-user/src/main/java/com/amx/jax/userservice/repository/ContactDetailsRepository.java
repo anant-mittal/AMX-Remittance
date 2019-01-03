@@ -17,5 +17,5 @@ public interface ContactDetailsRepository extends JpaRepository<ContactDetail, S
 
 	@Query("select cd from ContactDetail cd where cd.fsCustomer =?1 and cd.fsBizComponentDataByContactTypeId=?2 and activeStatus='Y'")
 	public List<ContactDetail> getContactDetailByCotactId(Customer customerId, BizComponentData bizComponentData);
-
+	
 }

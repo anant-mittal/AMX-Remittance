@@ -24,7 +24,7 @@ import com.amx.jax.model.response.customer.OffsiteCustomerDataDTO;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class OffsiteCustRegClientTest extends AbstractClientTest {
+public class OffsiteCustomerClientTest extends AbstractTestClient {
 
 	@Autowired
 	OffsiteCustRegClient offsiteClient;
@@ -76,7 +76,7 @@ public class OffsiteCustRegClientTest extends AbstractClientTest {
 		assertNotNull(response.getResult());
 	}
 
-	@Test
+	//@Test
 	public void testIncomeRangeList() {
 		setDefaults();
 		EmploymentDetailsRequest model = new EmploymentDetailsRequest();
@@ -112,7 +112,7 @@ public class OffsiteCustRegClientTest extends AbstractClientTest {
 		assertNotNull(response.getResult());
 	}
 
-	//@Test
+	@Test
 	public void testForCustomerData() {
 		setDefaults();
 		AmxApiResponse<OffsiteCustomerDataDTO, Object> response = null;
@@ -123,3 +123,10 @@ public class OffsiteCustRegClientTest extends AbstractClientTest {
 		assertNotNull(response.getResult());
 	}
 }
+
+
+/*package com.amx.jax.client;
+
+public class OffsiteCustomerClientTest {
+
+}*/
