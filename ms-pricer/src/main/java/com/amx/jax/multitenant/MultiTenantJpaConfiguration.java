@@ -29,12 +29,19 @@ public class MultiTenantJpaConfiguration {
 			DataSourceBuilder factory = DataSourceBuilder.create().url(dsProperties.getUrl())
 					.username(dsProperties.getUsername()).password(dsProperties.getPassword())
 					.driverClassName(dsProperties.getDriverClassName());
+
 			org.apache.tomcat.jdbc.pool.DataSource tomcatDataSource = (org.apache.tomcat.jdbc.pool.DataSource) factory
 					.build();
-			tomcatDataSource.setTestOnBorrow(true);
-			tomcatDataSource.setValidationQuery("select 1 from dual");
-			tomcatDataSource.setTestWhileIdle(true);
-			result.put(dsProperties.getTenantId(), tomcatDataSource);
+
+			 tomcatDataSource.setTestOnBorrow(true);
+			 tomcatDataSource.setValidationQuery("select 1 from dual");
+			 tomcatDataSource.setTestWhileIdle(true);
+			 result.put(dsProperties.getTenantId(), tomcatDataSource);
+
+//			com.zaxxer.hikari.HikariDataSource hikariDataSource = (com.zaxxer.hikari.HikariDataSource) factory.build();
+//			hikariDataSource.setConnectionTestQuery("select 1 from dual");
+//			result.put(dsProperties.getTenantId(), hikariDataSource);
+
 		}
 		return result;
 	}
