@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.amx.jax.dict.UserClient.Channel;
 import com.amx.jax.pricer.dao.CustomerDao;
 import com.amx.jax.pricer.dbmodel.Customer;
 import com.amx.jax.pricer.dto.BankRateDetailsDTO;
@@ -64,21 +63,21 @@ public class PricingService {
 
 		List<BankRateDetailsDTO> bankRateDetailsDTOs = remitPriceManager.computeBaseSellRatesPrices(pricingRequestDTO);
 
-		if (pricingRateDetailsDTO.getBaseBankRatesNPrices() != null) {
-			System.out.println(" Banks Rates ===> " + pricingRateDetailsDTO.getBaseBankRatesNPrices());
-		}
-
-		for (BankRateDetailsDTO b : pricingRateDetailsDTO.getBaseBankRatesNPrices()) {
-			System.out.println(" Pricing Service Bank Rates ==> " + b);
-		}
+		/*
+		 * if (pricingRateDetailsDTO.getBaseBankRatesNPrices() != null) { for
+		 * (BankRateDetailsDTO b : pricingRateDetailsDTO.getBaseBankRatesNPrices()) {
+		 * System.out.println(" Pricing Service Bank Rates ==> " + b); }
+		 * 
+		 * }
+		 */
 
 		List<BankRateDetailsDTO> discountedPrices = customerDiscountManager.getDiscountedRates(pricingRequestDTO,
-				bankRateDetailsDTOs, Channel.ONLINE, customer);
+				bankRateDetailsDTOs, customer);
 
-		bankRateDetailsDTOs.addAll(discountedPrices);
+		// bankRateDetailsDTOs.addAll(discountedPrices);
 
 		PricingResponseDTO pricingResponseDTO = new PricingResponseDTO();
-		pricingResponseDTO.setBankMasterDTOList(bankRateDetailsDTOs);
+		pricingResponseDTO.setBankMasterDTOList(discountedPrices);
 
 		return pricingResponseDTO;
 	}
@@ -90,9 +89,9 @@ public class PricingService {
 		List<BankRateDetailsDTO> bankRateDetailsDtoList = remitPriceManager
 				.computeBaseSellRatesPrices(pricingRequestDTO);
 
-		for (BankRateDetailsDTO b : pricingRateDetailsDTO.getBaseBankRatesNPrices()) {
+		/*for (BankRateDetailsDTO b : pricingRateDetailsDTO.getBaseBankRatesNPrices()) {
 			System.out.println(" Pricing Service Bank Rates ==> " + b);
-		}
+		}*/
 
 		PricingResponseDTO pricingResponseDTO = new PricingResponseDTO();
 		pricingResponseDTO.setBankMasterDTOList(bankRateDetailsDtoList);
@@ -109,7 +108,7 @@ public class PricingService {
 			throw new PricerServiceException(PricerServiceError.MISSING_AMOUNT,
 					"Missing Local and Foreign Amount; Either is Required");
 		}
-		
+
 		if (PRICE_BY.ROUTING_BANK.equals(pricingRequestDTO.getPricingLevel())
 				&& null == pricingRequestDTO.getRoutingBankIds()) {
 			throw new PricerServiceException(PricerServiceError.MISSING_ROUTING_BANK_IDS, "Invalid Pricing Level");
@@ -119,33 +118,32 @@ public class PricingService {
 			throw new PricerServiceException(PricerServiceError.INVALID_CUSTOMER,
 					"Customer Id Can not be blank or empty");
 		}
-		
-		
-		/*if (null == pricingRequestDTO.getLocalCountryId() || null == pricingRequestDTO.getForeignCountryId()) {
-			throw new PricerServiceException(PricerServiceError.INVALID_COUNTRY,
-					"Missing Local or Foreign Country Id; Both Required");
-		}
 
-		if (null == pricingRequestDTO.getLocalCurrencyId() || null == pricingRequestDTO.getForeignCurrencyId()) {
-			throw new PricerServiceException(PricerServiceError.INVALID_CURRENCY,
-					"Missing Local or Foreign Currency Id; Both Required");
-		}*/
+		/*
+		 * if (null == pricingRequestDTO.getLocalCountryId() || null ==
+		 * pricingRequestDTO.getForeignCountryId()) { throw new
+		 * PricerServiceException(PricerServiceError.INVALID_COUNTRY,
+		 * "Missing Local or Foreign Country Id; Both Required"); }
+		 * 
+		 * if (null == pricingRequestDTO.getLocalCurrencyId() || null ==
+		 * pricingRequestDTO.getForeignCurrencyId()) { throw new
+		 * PricerServiceException(PricerServiceError.INVALID_CURRENCY,
+		 * "Missing Local or Foreign Currency Id; Both Required"); }
+		 */
 
-		
-
-		/*if (null == pricingRequestDTO.getCountryBranchId()) {
-			throw new PricerServiceException(PricerServiceError.INVALID_BRANCH_ID, "Branch Id is  Missing");
-		}
-
-		if (null == pricingRequestDTO.getChannel()) {
-			throw new PricerServiceException(PricerServiceError.INVALID_CHANNEL, "Channel is Missing");
-		}
-
-		if (null == pricingRequestDTO.getPricingLevel()) {
-			throw new PricerServiceException(PricerServiceError.INVALID_PRICING_LEVEL, "Invalid Pricing Level");
-		}*/
-
-		
+		/*
+		 * if (null == pricingRequestDTO.getCountryBranchId()) { throw new
+		 * PricerServiceException(PricerServiceError.INVALID_BRANCH_ID,
+		 * "Branch Id is  Missing"); }
+		 * 
+		 * if (null == pricingRequestDTO.getChannel()) { throw new
+		 * PricerServiceException(PricerServiceError.INVALID_CHANNEL,
+		 * "Channel is Missing"); }
+		 * 
+		 * if (null == pricingRequestDTO.getPricingLevel()) { throw new
+		 * PricerServiceException(PricerServiceError.INVALID_PRICING_LEVEL,
+		 * "Invalid Pricing Level"); }
+		 */
 
 		return Boolean.TRUE;
 	}

@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,6 +38,7 @@ import com.amx.jax.pricer.dto.PricingResponseDTO;
 import com.amx.jax.pricer.exception.PricerServiceException;
 import com.amx.jax.pricer.service.PricerTestService;
 import com.amx.jax.pricer.var.PricerServiceConstants.PRICE_BY;
+import com.amx.utils.ArgUtil;
 
 /**
  * The Class PricerServiceApiTest.
@@ -137,7 +137,7 @@ public class PricerServiceApiTest implements PricerService {
 
 		// PrintWriter outPrintWriter = new PrintWriter(outFileWriter);
 
-		PrintWriter errorPrintWriter = new PrintWriter(errorFileWriter);
+		// PrintWriter errorPrintWriter = new PrintWriter(errorFileWriter);
 
 		StringBuilder strBuilder = new StringBuilder();
 
@@ -201,10 +201,7 @@ public class PricerServiceApiTest implements PricerService {
 
 						} catch (Exception e) {
 							// TODO: handle exception
-
-							errorPrintWriter.println("\n\n === ErrorType1 === ");
-							e.printStackTrace(errorPrintWriter);
-
+							// Ignore
 						}
 
 					} // for
@@ -225,7 +222,8 @@ public class PricerServiceApiTest implements PricerService {
 		/**
 		 * Query Params
 		 */
-		strBuilder.append("\nID");
+		strBuilder.append("\nSr. No.");
+		strBuilder.append(", ID");
 		strBuilder.append(", CustomerId");
 		strBuilder.append(", ForeignCountryId");
 		strBuilder.append(", ForeignCurrencyId");
@@ -246,6 +244,9 @@ public class PricerServiceApiTest implements PricerService {
 		strBuilder.append(", InverseRate");
 		strBuilder.append(", ConvertedFCAmount");
 		strBuilder.append(", ConvertedLCAmount");
+		strBuilder.append(", TimeToExec");
+
+		long srNo = 0;
 
 		while (!allDone) {
 
@@ -255,6 +256,8 @@ public class PricerServiceApiTest implements PricerService {
 
 				if (future.isDone()) {
 
+					srNo++;
+
 					PricingRequestDTO requestParam = requestMap.get(future.hashCode());
 
 					try {
@@ -262,14 +265,17 @@ public class PricerServiceApiTest implements PricerService {
 
 						PricingResponseDTO response = amxResp.getResult();
 
-						//PricingRequestDTO requestParam = response.getRequest();
+						// PricingRequestDTO requestParam = response.getRequest();
+
+						long tte = ArgUtil.parseAsLong(response.getInfo().get("TTE"));
 
 						for (BankRateDetailsDTO bankRate : response.getBankMasterDTOList()) {
 
 							/**
 							 * Query Params
 							 */
-							strBuilder.append("\n" + future.hashCode());
+							strBuilder.append("\n" + srNo);
+							strBuilder.append(", " + future.hashCode());
 							strBuilder.append(", " + requestParam.getCustomerId());
 							strBuilder.append(", " + requestParam.getForeignCountryId());
 							strBuilder.append(", " + requestParam.getForeignCurrencyId());
@@ -289,30 +295,31 @@ public class PricerServiceApiTest implements PricerService {
 							strBuilder.append(", " + bankRate.getExRateBreakup().getInverseRate());
 							strBuilder.append(", " + bankRate.getExRateBreakup().getConvertedFCAmount());
 							strBuilder.append(", " + bankRate.getExRateBreakup().getConvertedLCAmount());
+							strBuilder.append(", " + tte);
 
 						}
 
 						// strBuilder.append("\n" + JsonUtil.toJson(amxResp.getResult()));
 
-						errorPrintWriter.println(" Response Future Hash ==>  " + future.hashCode());
+						// errorPrintWriter.println(" Response Future Hash ==> " + future.hashCode());
 
 					} catch (Exception e) {
-						// TODO: handle exception
 
 						Throwable cause = e.getCause().getCause();
 
-						errorPrintWriter.println(" Error Future Hash ==>  " + future.hashCode());
+						// errorPrintWriter.println(" Error Future Hash ==> " + future.hashCode());
 
 						if ((cause instanceof PricerServiceException)) {
 
 							PricerServiceException prCause = (PricerServiceException) cause;
 
-							//PricingRequestDTO requestParam = prCause.getRequest();
+							// PricingRequestDTO requestParam = prCause.getRequest();
 
 							/**
 							 * Query Params
 							 */
-							strBuilder.append("\n" + future.hashCode());
+							strBuilder.append("\n" + srNo);
+							strBuilder.append(", " + future.hashCode());
 							strBuilder.append(", " + requestParam.getCustomerId());
 							strBuilder.append(", " + requestParam.getForeignCountryId());
 							strBuilder.append(", " + requestParam.getForeignCurrencyId());
@@ -321,16 +328,18 @@ public class PricerServiceApiTest implements PricerService {
 							strBuilder.append(", " + requestParam.getPricingLevel());
 							strBuilder.append(", " + requestParam.getChannel());
 
-							strBuilder.append(", Pricing Error: ");
+							strBuilder.append(", Pricing Error ");
 							strBuilder.append(", " + prCause.getErrorKey());
 							strBuilder.append(", " + prCause.getErrorMessage());
 
 							// e.printStackTrace(errorPrintWriter);
 						} else {
 
-							errorPrintWriter.println(" UNKNOWN : Error Future Hash ==>  " + future.hashCode());
+							// errorPrintWriter.println(" UNKNOWN_Error Future Hash ==> " +
+							// future.hashCode());
 
-							strBuilder.append("\n" + future.hashCode());
+							strBuilder.append("\n" + srNo);
+							strBuilder.append(", " + future.hashCode());
 							strBuilder.append(", " + requestParam.getCustomerId());
 							strBuilder.append(", " + requestParam.getForeignCountryId());
 							strBuilder.append(", " + requestParam.getForeignCurrencyId());
@@ -339,7 +348,7 @@ public class PricerServiceApiTest implements PricerService {
 							strBuilder.append(", " + requestParam.getPricingLevel());
 							strBuilder.append(", " + requestParam.getChannel());
 
-							strBuilder.append(", UnKnown Error: ");
+							strBuilder.append(", UnKnown Error: " + e.getMessage());
 
 						}
 					}
@@ -367,7 +376,7 @@ public class PricerServiceApiTest implements PricerService {
 		// outPrintWriter.close();
 		// outFileWriter.close();
 
-		errorPrintWriter.close();
+		// errorPrintWriter.close();
 		errorFileWriter.close();
 
 		watch.stop();

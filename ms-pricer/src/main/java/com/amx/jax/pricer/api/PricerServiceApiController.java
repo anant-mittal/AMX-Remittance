@@ -1,5 +1,7 @@
 package com.amx.jax.pricer.api;
 
+import java.util.HashMap;
+
 import javax.annotation.Resource;
 import javax.validation.Valid;
 
@@ -8,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.util.StopWatch;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -45,8 +48,16 @@ public class PricerServiceApiController implements PricerService {
 
 		LOGGER.info("Received Pricing Request from customer Id : " + pricingRequestDTO.getCustomerId()
 				+ " with TraceId: " + AppContextUtil.getTraceId());
-		
+
+		StopWatch watch = new StopWatch();
+		watch.start();
+
 		PricingResponseDTO pricingResponseDTO = pricingService.fetchRemitPricesForCustomer(pricingRequestDTO);
+
+		watch.stop();
+
+		pricingResponseDTO.setInfo(new HashMap<>());
+		pricingResponseDTO.getInfo().put("TTE", watch.getLastTaskTimeMillis());
 
 		return AmxApiResponse.build(pricingResponseDTO);
 

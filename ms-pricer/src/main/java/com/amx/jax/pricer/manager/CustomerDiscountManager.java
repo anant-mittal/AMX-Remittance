@@ -50,9 +50,9 @@ public class CustomerDiscountManager {
 	private static BigDecimal BIGD_ZERO = new BigDecimal(0);
 
 	public List<BankRateDetailsDTO> getDiscountedRates(PricingRequestDTO pricingRequestDTO,
-			List<BankRateDetailsDTO> bankRates, Channel channel, Customer customer) {
+			List<BankRateDetailsDTO> bankRates, Customer customer) {
 
-		ChannelDiscount channelDiscount = channelDiscountDao.getDiscountByChannel(channel);
+		ChannelDiscount channelDiscount = channelDiscountDao.getDiscountByChannel(pricingRequestDTO.getChannel());
 		BigDecimal channelDiscountPips = (null != channelDiscount ? channelDiscount.getDiscountPips() : BIGD_ZERO);
 
 		// CustomerCategoryDiscount ccDiscount =
@@ -92,8 +92,9 @@ public class CustomerDiscountManager {
 					bankAmountSlabDiscounts.put(pipsMaster.getBankMaster().getBankId().longValue(), slabPipsMap);
 				}
 
-			//	System.out.println(" Pips Master Discount ==> "
-			//			+ bankAmountSlabDiscounts.get(pipsMaster.getBankMaster().getBankId().longValue()));
+				// System.out.println(" Pips Master Discount ==> "
+				// +
+				// bankAmountSlabDiscounts.get(pipsMaster.getBankMaster().getBankId().longValue()));
 
 			}
 		}
@@ -153,7 +154,7 @@ public class CustomerDiscountManager {
 				// pass
 			}
 
-			discountedRateDetail.setBankCode(" Discounted : " + discountedRateDetail.getBankCode());
+			discountedRateDetail.setBankCode(discountedRateDetail.getBankCode());
 
 			if (pricingRequestDTO.getLocalAmount() != null) {
 
@@ -171,7 +172,7 @@ public class CustomerDiscountManager {
 
 			discountedRatesNPrices.add(discountedRateDetail);
 
-			//System.out.println(" Discounted Rates ==> " + discountedRateDetail);
+			// System.out.println(" Discounted Rates ==> " + discountedRateDetail);
 
 		} // for (Bank...
 
