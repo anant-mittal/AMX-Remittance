@@ -144,8 +144,11 @@ public final class ArgUtil {
 		return (T) ret;
 	}
 
-	public static Object parseAsObject(Class clazz, Object objectvalue) {
+	public static Object parseAsObject(Class clazz, Object objectvalue, boolean required) {
 		String value = ArgUtil.parseAsString(objectvalue);
+		String typeName = clazz.getTypeName();
+		if (String.class == clazz)
+			return value;
 		if (Boolean.class == clazz)
 			return Boolean.parseBoolean(value);
 		if (Byte.class == clazz)
@@ -162,6 +165,13 @@ public final class ArgUtil {
 			return Double.parseDouble(value);
 		if (BigDecimal.class == clazz)
 			return parseAsBigDecimal(value);
+		if (clazz.isEnum())
+			return ArgUtil.parseAsEnumIgnoreCase(value, clazz);
+
+		if (required) {
+			throw new IllegalArgumentException("Cannot parse Object : " + objectvalue
+					+ " as " + typeName);
+		}
 		return value;
 	}
 

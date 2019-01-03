@@ -84,4 +84,5 @@ public class Random {
 	public static String randomHexa(int count) {
 		return randomAlpha(count, HEXA_STRING);
 	}
+
 }

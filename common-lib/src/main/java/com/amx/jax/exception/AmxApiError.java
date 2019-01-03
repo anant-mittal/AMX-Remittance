@@ -7,6 +7,10 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AmxApiError extends AResponse<Object> {
 
+	/**
+	 * errorKey is messageKey
+	 */
+	@Deprecated
 	private String errorKey;
 
 	public AmxApiError(String errorKey, String errorMessage) {
@@ -19,6 +23,7 @@ public class AmxApiError extends AResponse<Object> {
 		super();
 		this.statusKey = ArgUtil.isEmpty(error) ? null : error.getStatusKey();
 		this.errorKey = errorKey;
+		this.messageKey = errorKey;
 		this.message = errorMessage;
 	}
 

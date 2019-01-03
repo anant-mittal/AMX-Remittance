@@ -1,13 +1,14 @@
 {
-	"data":{
-		"customerName":"Animesh Kumar",
-		"email":"animesh@gamil.com",
-		"mobileNo":"4545555",
-		"loyaltyPoints":100.0,
-		"receiptNo":33412,
-		"date":"11/02/2018",
-		"netAmount":" 3,000",
-		"localQurrencyQuote":"KWD"
-		}
-		
+	"data": {
+		"customerName": "MUHAMMAD ANWAR",
+		"email": "preeti.pawar@mobicule.com",
+		"mobileNo": "51789090",
+		"loyaltyPoints": 3711,
+		"receiptNo": "2018/37001794",
+		"date": "19/12/2018",
+		"netAmount": 2.592,
+		"localQurrencyQuote": "KWD",
+		"deliveryDate": "18/12/2018",
+		"deliveryTime": "13:00 - 15:00"
+	}
 }

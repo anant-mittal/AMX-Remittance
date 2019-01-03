@@ -113,6 +113,8 @@ public class FxOrderPaymentManager {
 	@Autowired
 	AuditService auditService;
 	
+
+	
 	public PaymentResponseDto paymentCapture(PaymentResponseDto paymentResponse) {
 		logger.debug("paymment capture :"+paymentResponse.toString());
 		logger.debug("Customer Id :"+paymentResponse.getCustomerId());
@@ -459,7 +461,6 @@ public class FxOrderPaymentManager {
 	}
 
 	
-	@Async
 	private  void logStatusChangeAuditEvent(BigDecimal deliveryDetailSeqId, String oldOrderStatus) {
 		FxDeliveryDetailsModel deliveryDetailModel = rcptApplPaydao.getDeliveryDetailModel(deliveryDetailSeqId);
 		FcSaleOrderStatusChangeAuditEvent event = new FcSaleOrderStatusChangeAuditEvent(deliveryDetailModel,oldOrderStatus, JaxAuditEvent.Type.FC_SALE_UPDATE_ORDER_STATUS);

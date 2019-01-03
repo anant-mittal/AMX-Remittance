@@ -18,7 +18,6 @@ public class StompTunnelService {
 	@Autowired
 	TunnelService tunnelService;
 
-	@Autowired
 	StompTunnelSessionManager stompTunnelSessionManager;
 
 	@Async

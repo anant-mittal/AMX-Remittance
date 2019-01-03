@@ -27,7 +27,7 @@ public abstract class AbstractJaxException extends com.amx.jax.exception.Abstrac
 	}
 
 	public AbstractJaxException(String errorKey, String errorMessage) {
-		super(errorMessage, errorKey);
+		super(errorKey, errorMessage);
 	}
 
 	public AbstractJaxException(JaxError error, String errorMessage) {

@@ -337,6 +337,9 @@ public class UserService extends AbstractUserService {
 
 	public ApiResponse sendOtpForCivilId(String civilId, List<CommunicationChannel> channels,
 			CustomerModel customerModel, Boolean initRegistration) {
+		if (StringUtils.isNotBlank(civilId)) {
+			tenantContext.get().validateCivilId(civilId);
+		}
 		BigDecimal customerId = metaData.getCustomerId();
 		if (customerId != null) {
 			civilId = custDao.getCustById(customerId).getIdentityInt();
@@ -521,8 +524,10 @@ public class UserService extends AbstractUserService {
 	}
 
 	public ApiResponse loginUser(String userId, String password) {
-		userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(userId, JaxApiFlow.LOGIN);
-		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustomerByLoginIdOrUserName(userId);
+		tenantContext.get().validateCivilId(userId);
+		List<Customer> validCustomer = userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(userId, JaxApiFlow.LOGIN);
+		CustomerOnlineRegistration onlineCustomer = custDao
+				.getOnlineCustByCustomerId(validCustomer.get(0).getCustomerId());
 		if (onlineCustomer == null) {
 			throw new GlobalException(JaxError.USER_NOT_REGISTERED,
 					"User with userId: " + userId + " is not registered");

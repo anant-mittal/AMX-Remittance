@@ -58,12 +58,22 @@ public class AppClientInterceptor implements ClientHttpRequestInterceptor {
 	private ClientHttpResponse traceResponse(ClientHttpResponse response) throws IOException {
 		final ClientHttpResponse responseWrapper = new BufferingClientHttpResponseWrapper(response);
 		StringBuilder inputStringBuilder = new StringBuilder();
-		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(responseWrapper.getBody(), "UTF-8"));
-		String line = bufferedReader.readLine();
-		while (line != null) {
-			inputStringBuilder.append(line);
-			inputStringBuilder.append('\n');
-			line = bufferedReader.readLine();
+		BufferedReader bufferedReader = null;
+		try {
+			bufferedReader = new BufferedReader(
+					new InputStreamReader(responseWrapper.getBody(), "UTF-8"));
+			String line = bufferedReader.readLine();
+			while (line != null) {
+				inputStringBuilder.append(line);
+				inputStringBuilder.append('\n');
+				line = bufferedReader.readLine();
+			}
+		} catch (Exception e) {
+			LOGGER.error("traceResponse", e);
+		} finally {
+			if (bufferedReader != null) {
+				bufferedReader.close();
+			}
 		}
 		LOGGER.debug("*** RESP_IN_BODY ****: {}", inputStringBuilder.toString());
 		return responseWrapper;

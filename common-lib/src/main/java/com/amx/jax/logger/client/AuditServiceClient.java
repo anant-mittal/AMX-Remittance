@@ -50,8 +50,7 @@ public class AuditServiceClient implements AuditService {
 	@Autowired
 	public AuditServiceClient(
 			AppConfig appConfig, List<AuditFilter> filters,
-			@Autowired(required = false) ITunnelService iTunnelService
-	) {
+			@Autowired(required = false) ITunnelService iTunnelService) {
 
 		String[] allowedMarkersList = appConfig.getPrintableAuditMarkers();
 		String[] skippedMarkersList = appConfig.getSkipAuditMarkers();
@@ -142,8 +141,7 @@ public class AuditServiceClient implements AuditService {
 	 * 
 	 * @param marker
 	 * @param event
-	 * @param capture
-	 *            - true to capture value in logger service, default is false
+	 * @param capture - true to capture value in logger service, default is false
 	 * @return
 	 */
 	public static AuditLoggerResponse logAuditEvent(Marker marker, AuditEvent event, boolean capture) {
@@ -260,6 +258,12 @@ public class AuditServiceClient implements AuditService {
 	public AuditLoggerResponse excep(AuditEvent event, Exception e) {
 		AuditServiceClient.captureException(event, e);
 		return this.excep(event);
+	}
+
+	@Override
+	public AuditLoggerResponse log(AuditEvent event, Exception e) {
+		AuditServiceClient.captureException(event, e);
+		return this.log(event);
 	}
 
 	@Override

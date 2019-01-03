@@ -109,7 +109,8 @@ public class FcSaleBranchOrderController implements IFxBranchOrderService {
 	public AmxApiResponse<BoolRespModel,Object> assignDriver(@RequestParam(value = "orderNumber", required = true) BigDecimal orderNumber,@RequestParam(value = "orderYear", required = true) BigDecimal orderYear,@RequestParam(value = "driverId", required = true) BigDecimal driverId) {
 		BigDecimal countryId = metaData.getCountryId();
 		BigDecimal employeeId = metaData.getEmployeeId();
-		BoolRespModel result = fcSaleBranch.assignDriver(countryId,orderNumber,orderYear,driverId,employeeId);
+		BigDecimal companyId = metaData.getCompanyId();
+		BoolRespModel result = fcSaleBranch.assignDriver(countryId,orderNumber,orderYear,driverId,employeeId,companyId);
 		return AmxApiResponse.build(result);
 	}
 	

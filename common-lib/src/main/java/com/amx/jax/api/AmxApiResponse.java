@@ -2,6 +2,7 @@ package com.amx.jax.api;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import com.amx.jax.api.AmxResponseSchemes.ApiDataMetaResponse;
@@ -141,7 +142,7 @@ public class AmxApiResponse<T, M> extends AResponse<M>
 	 * @return the amx api response
 	 */
 	public static <TS> AmxApiResponse<TS, Object> buildList(List<TS> resultList) {
-		return buildList(resultList, new Object());
+		return buildList(resultList, new HashMap<String, Object>());
 	}
 
 	/**
@@ -158,6 +159,7 @@ public class AmxApiResponse<T, M> extends AResponse<M>
 		// ArrayList<TS> listOfStrings = new ArrayList<TS>(resultList.size());
 		// listOfStrings.addAll(resultList);
 		resp.setResults(resultList);
+		resp.setMeta(meta);
 		return resp;
 	}
 

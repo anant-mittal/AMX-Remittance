@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.jax.AmxConstants;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.MetaClient;
@@ -88,6 +89,8 @@ public class DeviceController {
 		DevicePairingCreds creds = DeviceRestModels.get();
 		creds.setDeviceRegToken(deviceDto.getPairToken());
 		creds.setDeviceRegId(ArgUtil.parseAsString(deviceDto.getRegistrationId()));
+		creds.setOtpTtl(AmxConstants.OTP_TTL);
+		creds.setDeviceSecret(deviceDto.getDeviceSecret());
 		return AmxApiResponse.build(creds);
 	}
 

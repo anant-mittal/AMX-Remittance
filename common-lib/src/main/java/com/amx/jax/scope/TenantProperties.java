@@ -152,6 +152,7 @@ public class TenantProperties {
 						Type type = field.getGenericType();
 						String typeName = type.getTypeName();
 						field.setAccessible(true);
+
 						if ("java.lang.String".equals(typeName)) {
 							field.set(object, propertyValue);
 						} else if ("int".equals(typeName) || "java.lang.Integer".equals(typeName)) {
@@ -178,8 +179,11 @@ public class TenantProperties {
 							o.fromString(ArgUtil.parseAsString(propertyValue));
 							field.set(object, o);
 						} else {
-							LOGGER.warn("********** Property Type Undefined *****  " + typeName);
-							field.set(object, ArgUtil.parseAsObject((Class<?>) type, propertyValue));
+							try {
+								field.set(object, ArgUtil.parseAsObject((Class<?>) type, propertyValue, true));
+							} catch (IllegalArgumentException e) {
+								LOGGER.warn("********** Property Type Undefined *****  {} {}", typeName, propertyValue);
+							}
 						}
 					}
 				}

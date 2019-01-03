@@ -25,12 +25,10 @@ public enum TemplatesMX implements ITemplate {
 	TXN_CRT_SUCC("TransactionCreationSuccess"),
 	PROFILE_CHANGE("AccoutDetailsUpdate"),
 
-	FXO_RECEIPT("FXO_RECEIPT", PDFConverter.JASPER, "fxo-receipt.json"),
-
 	// Rate Alert, PlaceOrder
 	RATE_ALERT("place-order"), RATE_ALERT_COMPLETION("place-order-executed"),
 
-	BRANCH_SEARCH_EMPTY("BranchSearchEmpty"), TEST("test"), BRANCH_FEEDBACK("trnx-feedback"),
+	BRANCH_SEARCH_EMPTY("BranchSearchEmpty"), TEST("test"), TT("tt"),EFT("eft"),CASH("cash"),
 
 	CIVILID_EXPIRY("civilexpiry"), CIVILID_EXPIRED("civilexpired"),
 
@@ -42,9 +40,12 @@ public enum TemplatesMX implements ITemplate {
 
 	MARKETING_PUSH("mrkt-push", Channel.FEED),
 
+	/// FC Templates
 	FC_DELIVER_EMAIL_OTP("deliver-email-otp", Channel.NOTIPY), FC_DELIVER_SMS_OTP("deliver-sms-otp", Channel.NOTIPY),
 	FC_ORDER_SUCCESS("order-success"),
-	FC_KNET_SUCCESS("knet-success");
+	FC_KNET_SUCCESS("knet-success"),
+	FXO_RECEIPT("FXO_RECEIPT", PDFConverter.JASPER, "fxo-receipt.json"),
+	FXO_STATMENT("FxoTransactionList");
 
 	String fileName;
 	PDFConverter converter;

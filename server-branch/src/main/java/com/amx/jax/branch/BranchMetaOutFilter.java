@@ -27,12 +27,12 @@ public class BranchMetaOutFilter implements IMetaRequestOutFilter<JaxMetaInfo> {
 	public void outFilter(JaxMetaInfo requestMeta) {
 		requestMeta.setTenant(TenantContextHolder.currentSite());
 		requestMeta.setTraceId(ContextUtil.getTraceId());
-		requestMeta.setCountryId(ssoUser.getUserDetails().getCountryId());
-		requestMeta.setCountryBranchId(ssoUser.getUserDetails().getCountryBranchId());
 
 		// HardCoded
 		if (!ArgUtil.isEmpty(ssoUser.getUserDetails())) {
 			requestMeta.setEmployeeId(ssoUser.getUserDetails().getEmployeeId());
+			requestMeta.setCountryBranchId(ssoUser.getUserDetails().getCountryBranchId());
+			requestMeta.setCountryId(ssoUser.getUserDetails().getCountryId());
 		}
 	}
 

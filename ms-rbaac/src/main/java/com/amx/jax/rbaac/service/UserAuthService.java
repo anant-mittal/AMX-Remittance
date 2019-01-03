@@ -13,7 +13,10 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.amx.jax.AmxConstants;
 import com.amx.jax.AppContextUtil;
+import com.amx.jax.dbmodel.Device;
+import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.dict.UserClient.DeviceType;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.model.OtpData;
@@ -36,6 +39,7 @@ import com.amx.jax.rbaac.manager.UserOtpManager;
 import com.amx.jax.rbaac.trnx.UserOtpCache;
 import com.amx.jax.rbaac.trnx.UserOtpData;
 import com.amx.jax.util.ObjectConverter;
+import com.amx.utils.ArgUtil;
 
 /**
  * The Class UserAuthService.
@@ -66,12 +70,9 @@ public class UserAuthService {
 	/**
 	 * Verify user details.
 	 * 
-	 * @param employeeNo
-	 *            the emp code
-	 * @param identity
-	 *            the identity
-	 * @param ipAddress
-	 *            the ip address
+	 * @param employeeNo the emp code
+	 * @param identity   the identity
+	 * @param ipAddress  the ip address
 	 * @return the user auth init response DTO
 	 * 
 	 * @flow: -> Get Employee ||->-> Multiple Employees -> Error ||->-> Employee Not
@@ -141,7 +142,13 @@ public class UserAuthService {
 		/**
 		 * Begin Init Auth for User validation is Completed.
 		 */
-		OtpData selfOtpData = userOtpManager.generateOtpTokens(userAuthInitReqDTO.getSelfSAC());
+		Device selfOtpDevice = deviceService.getDeviceByEmployeeAndDeviceType(ClientType.NOTP_APP,
+				selfEmployee.getEmployeeId());
+		String selfOtpDeviceSecret = AmxConstants.SHH_DONT_TELL_ANYONE;
+		if (!ArgUtil.isEmpty(selfOtpDevice)) {
+			selfOtpDeviceSecret = selfOtpDevice.getClientSecreteKey();
+		}
+		OtpData selfOtpData = userOtpManager.generateOtpTokens(selfOtpDeviceSecret, userAuthInitReqDTO.getSelfSAC());
 
 		userOtpManager.sendOtpSms(selfEmployee, selfOtpData, "Self OTP Details");
 
@@ -158,7 +165,14 @@ public class UserAuthService {
 		userOtpData.setOtpAttemptCount(0);
 
 		if (isAssisted) {
-			OtpData partnerOtpData = userOtpManager.generateOtpTokens(userAuthInitReqDTO.getPartnerSAC());
+			Device partnerOTPDevice = deviceService.getDeviceByEmployeeAndDeviceType(ClientType.NOTP_APP,
+					selfEmployee.getEmployeeId());
+			String partnerOTPDeviceSecret = AmxConstants.SHH_DONT_TELL_ANYONE;
+			if (!ArgUtil.isEmpty(partnerOTPDevice)) {
+				partnerOTPDeviceSecret = partnerOTPDevice.getClientSecreteKey();
+			}
+			OtpData partnerOtpData = userOtpManager.generateOtpTokens(partnerOTPDeviceSecret,
+					userAuthInitReqDTO.getPartnerSAC());
 			userOtpManager.sendOtpSms(partnerEmployee, partnerOtpData, "Partner OTP Details");
 			userOtpData.setPartnerOtpData(partnerOtpData);
 		}

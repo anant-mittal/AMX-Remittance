@@ -108,8 +108,10 @@ public class DeviceService extends AbstractService {
 		}
 		newDevice.setState(deviceState);
 		String devicePairToken = Random.randomAlpha(13);
+		String clientSecret = Random.randomAlpha(13);
 
 		newDevice.setPairToken(this.getDevicePairTokenHash(devicePairToken, newDevice.getRegistrationId()));
+		newDevice.setClientSecret(clientSecret);
 		deviceDao.saveDevice(newDevice);
 
 		logger.info("device registered with id: {}", newDevice.getRegistrationId());
@@ -120,6 +122,7 @@ public class DeviceService extends AbstractService {
 		} catch (Exception e) {
 		}
 		dto.setPairToken(devicePairToken);
+		dto.setDeviceSecret(newDevice.getClientSecreteKey());
 		return dto;
 	}
 
@@ -229,8 +232,8 @@ public class DeviceService extends AbstractService {
 
 				logger.info("====== WARNING : Inactive Device Client : Contact Support ======");
 
-				// throw new AuthServiceException("Inactive Device Client : Contact Support",
-				// RbaacServiceError.CLIENT_NOT_ACTIVE);
+				throw new AuthServiceException(RbaacServiceError.CLIENT_NOT_ACTIVE,
+						"Inactive Device Client : Contact Support");
 			}
 
 		}

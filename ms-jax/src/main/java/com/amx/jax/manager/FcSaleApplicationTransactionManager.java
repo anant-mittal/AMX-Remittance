@@ -9,6 +9,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BinaryOperator;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -171,7 +174,7 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 		FcSaleOrderApplicationResponseModel responeModel = new FcSaleOrderApplicationResponseModel();
 		HashMap<String, Object> mapAllDetailApplSave = new HashMap<String, Object>();
 		deactivateApplications(fcSalerequestModel);
-		ReceiptPaymentApp receiptPayment =this. createFcSaleReceiptApplication(fcSalerequestModel);
+		ReceiptPaymentApp receiptPayment =this.createFcSaleReceiptApplication(fcSalerequestModel);
 		mapAllDetailApplSave.put("EX_APPL_RECEIPT",receiptPayment);
 		fsSaleapplicationDao.saveAllApplicationData(mapAllDetailApplSave);
 		FxOrderShoppingCartResponseModel cartDetails= fetchApplicationDetails();
@@ -354,8 +357,8 @@ public class FcSaleApplicationTransactionManager extends AbstractModel{
 		receiptPaymentAppl.setCreatedDate(new Date());
 		
 		receiptPaymentAppl.setTravelCountryId(fcSalerequestModel.getTravelCountryId());
-		receiptPaymentAppl.setTravelStartDate(fcSalerequestModel.getStartDate()==null?new Date():new Date(fcSalerequestModel.getStartDate()));
-		receiptPaymentAppl.setTravelEndDate(fcSalerequestModel.getEndDate()==null?new Date():new Date(fcSalerequestModel.getEndDate()));
+		receiptPaymentAppl.setTravelStartDate(fcSalerequestModel.getStartDate()==null?new Date():DateUtil.convertStringToDate(fcSalerequestModel.getStartDate()));
+		receiptPaymentAppl.setTravelEndDate(fcSalerequestModel.getEndDate()==null?new Date():DateUtil.convertStringToDate(fcSalerequestModel.getEndDate()));
 		
 		
 		if(!StringUtils.isBlank(metaData.getReferrer())){
@@ -691,6 +694,7 @@ return dto;
 public List<FxOrderTransactionHistroyDto> getMultipleTransactionHistroy(List<FxOrderTransactionHistroyDto>   trnxFxOrderListDto){
 	List<FxOrderTransactionHistroyDto> finalFxOrderListDto = new ArrayList<>();
 	List<BigDecimal> duplciate = new ArrayList<>();
+	Map<BigDecimal, String> collectionInventoryIdMap = getCollectionInventoryIdMap(trnxFxOrderListDto);
 	for(FxOrderTransactionHistroyDto dto :trnxFxOrderListDto){
 	if(!duplciate.contains(dto.getCollectionDocumentNo())){
 		duplciate.add(dto.getCollectionDocumentNo());
@@ -807,13 +811,30 @@ public List<FxOrderTransactionHistroyDto> getMultipleTransactionHistroy(List<FxO
 		fianlDto.setLocalTrnxAmount(dto.getLocalTrnxAmount());
 		fianlDto.setForeignCurrencyCode(multiForeignQuotoName);
 		fianlDto.setOrderStatusCode(dto.getOrderStatusCode());
-		fianlDto.setInventoryId(dto.getInventoryId());
+		fianlDto.setInventoryId(collectionInventoryIdMap.get(dto.getCollectionDocumentNo()));
 		finalFxOrderListDto.add(fianlDto);
 		}
 	
 	}
 	return finalFxOrderListDto;
 }
+
+	/**
+	 * @param trnxFxOrderListDto
+	 * @return map of collection doc no vs inventory ids separated by comma
+	 */
+	private Map<BigDecimal, String> getCollectionInventoryIdMap(List<FxOrderTransactionHistroyDto> trnxFxOrderListDto) {
+		BinaryOperator<String> mergeFunction = (oldVal, newVal) -> {
+			if (StringUtils.isNotBlank(newVal)) {
+				return oldVal + "," + newVal;
+			} else {
+				return oldVal;
+			}
+		};
+		return trnxFxOrderListDto.stream().collect(Collectors.toMap(i -> i.getCollectionDocumentNo(),
+				(i -> i.getInventoryId() == null ? "" : i.getInventoryId()), mergeFunction));
+	}
+
 
 	public String getDeliveryAddress(BigDecimal customerId,BigDecimal deliveryDetSeqId){
 		logger.debug("getDeliveryAddress  :"+deliveryDetSeqId);
@@ -824,18 +845,27 @@ public List<FxOrderTransactionHistroyDto> getMultipleTransactionHistroy(List<FxO
 		FxDeliveryDetailsModel fxDelDetailModel = deliveryDetailsRepos.findOne(deliveryDetSeqId);
 		if(fxDelDetailModel != null){
 			 shippingAddressDto =addressManager.fetchShippingAddress(customerId ,fxDelDetailModel.getShippingAddressId());
-    		 if(shippingAddressDto!=null){
-    		 sb = sb.append("Street ").append(shippingAddressDto.getStreet()==null?"":shippingAddressDto.getStreet()).append(concat)
-    			  .append("Block ").append(shippingAddressDto.getBlock()==null?"":shippingAddressDto.getBlockNo()).append(concat)
-    			  .append("Build ").append(shippingAddressDto.getBuildingNo()==null?"":shippingAddressDto.getBuildingNo()).append(concat)
-    			  .append("Flat ").append(shippingAddressDto.getFlat()==null?"":shippingAddressDto.getHouse()).append(concat)
-    			  .append("City ").append(shippingAddressDto.getLocalContactCity()==null?"":shippingAddressDto.getLocalContactCity()).append(concat) 
-    			  .append("Area ").append(shippingAddressDto.getAreaDesc()).append(concat)
-    			  .append(shippingAddressDto.getLocalContactDistrict()==null?"":shippingAddressDto.getLocalContactDistrict()).append(concat)
-    			  .append(shippingAddressDto.getLocalContactState()==null?"":shippingAddressDto.getLocalContactState()).append(concat)
-    			  .append("Contact ").append(shippingAddressDto.getMobile()==null?"":shippingAddressDto.getMobile());
-    		 
-    		 }
+			if (shippingAddressDto != null) {
+				sb = sb.append(shippingAddressDto.getStreet() == null ? "" : "Street "+  shippingAddressDto.getStreet() +concat)
+						.append(shippingAddressDto.getBlock() == null ? "" : "Block " + shippingAddressDto.getBlockNo() + concat)
+						.append(shippingAddressDto.getBuildingNo() == null ? "" : "House no. " + shippingAddressDto.getBuildingNo() + concat)
+						.append(shippingAddressDto.getFlat() == null ? "" : "Flat "+  shippingAddressDto.getHouse() +concat);
+				if(shippingAddressDto.getLocalContactCity() != null) {
+					sb.append("City ").append(shippingAddressDto.getLocalContactCity() == null ? ""
+							: shippingAddressDto.getLocalContactCity()).append(concat);
+				}
+				sb.append(
+						shippingAddressDto.getGovernoatesDto() == null ? "" : shippingAddressDto.getGovernoatesDto().getResourceName() + concat);
+				sb.append(
+						shippingAddressDto.getGovtAreaDesc() == null ? "" : shippingAddressDto.getGovtAreaDesc() + concat);
+				sb.append(shippingAddressDto.getLocalContactDistrict() == null ? ""
+						: shippingAddressDto.getLocalContactDistrict() + concat);
+				sb.append(shippingAddressDto.getLocalContactState() == null ? ""
+						: shippingAddressDto.getLocalContactState() + concat);
+				sb.append("Contact ")
+						.append(shippingAddressDto.getMobile() == null ? "" : shippingAddressDto.getMobile());
+
+			}
 		}
 		if(sb!=null){
 			address = sb.toString();
