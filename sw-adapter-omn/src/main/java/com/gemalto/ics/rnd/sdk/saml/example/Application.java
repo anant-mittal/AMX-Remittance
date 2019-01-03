@@ -28,7 +28,6 @@ import java.security.Provider;
 import java.security.Security;
 import java.security.cert.X509Certificate;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
@@ -45,6 +44,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
 
+import com.amx.utils.ArgUtil;
 import com.gemalto.ics.dc.oids.sdk.saml.OmanSingleSignOnClient;
 import com.gemalto.ics.rnd.sdk.saml.SAMLInitializer;
 import com.gemalto.ics.rnd.sdk.saml.configuration.BasicConfigurationProvider;
@@ -85,7 +85,7 @@ public class Application extends SpringBootServletInitializer {
 	}
 
 	@Bean
-	protected VelocityEngine getVelocityEngine() {
+	protected VelocityEngine getVelocityEngine() throws Exception {
 		VelocityEngine engine = new VelocityEngine();
 		engine.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
 		engine.setProperty("classpath.resource.loader.class", ClasspathResourceLoader.class.getName());
@@ -95,16 +95,19 @@ public class Application extends SpringBootServletInitializer {
 	}
 
 	@Bean
-	public OmanSingleSignOnClient getSingleSignOnClient(ConfigurationProvider configurationProvider, VelocityEngine velocityEngine) {
+	public OmanSingleSignOnClient getSingleSignOnClient(ConfigurationProvider configurationProvider,
+			VelocityEngine velocityEngine) {
 		OmanSingleSignOnClient client = new OmanSingleSignOnClient(configurationProvider, velocityEngine);
 		return client;
 	}
 
 	@Bean
 	public ConfigurationProvider getConfigurationProvider(
-			@Value("${idpMetadata}") String idpMetadataName, @Value("${spMetadata}") String spMetadataName, 
-			@Value("${spSigningCredential}") String spSigningCredential, @Value("${spSigningCredential.password}") String spSigningCredentialPassword,
-			@Value("${spEncryptingCredential}") String spEncryptingCredential, @Value("${spEncryptingCredential.password}") String spEncryptingCredentialPassword) {
+			@Value("${idpMetadata}") String idpMetadataName, @Value("${spMetadata}") String spMetadataName,
+			@Value("${spSigningCredential}") String spSigningCredential,
+			@Value("${spSigningCredential.password}") String spSigningCredentialPassword,
+			@Value("${spEncryptingCredential}") String spEncryptingCredential,
+			@Value("${spEncryptingCredential.password}") String spEncryptingCredentialPassword) {
 		final ClientConfiguration configuration = new ClientConfiguration();
 		IdpMetadata idpMetadata = new IdpMetadata();
 		try (InputStream idpStream = getResourceInputStream(idpMetadataName)) {
@@ -132,14 +135,17 @@ public class Application extends SpringBootServletInitializer {
 
 		configuration.setIdpMetadata(idpMetadata);
 		configuration.setSpMetadata(spMetadata);
-		configuration.setSpSigningCredential(createSpSigningCredential(spSigningCredential, spSigningCredentialPassword));
-		configuration.setSpEncryptingCredential(createSpEncryptingCredential(spEncryptingCredential, spEncryptingCredentialPassword));
+		configuration
+				.setSpSigningCredential(createSpSigningCredential(spSigningCredential, spSigningCredentialPassword));
+		configuration.setSpEncryptingCredential(
+				createSpEncryptingCredential(spEncryptingCredential, spEncryptingCredentialPassword));
 		return new BasicConfigurationProvider(configuration);
 	}
 
 	protected InputStream getResourceInputStream(String name) {
-		if (!StringUtils.isEmpty(name)) {
-			ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(this.getClass().getClassLoader());
+		if (!ArgUtil.isEmpty(name)) {
+			ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(
+					this.getClass().getClassLoader());
 			Resource resource = resolver.getResource(name);
 			if (resource != null) {
 				try {
@@ -152,39 +158,45 @@ public class Application extends SpringBootServletInitializer {
 		return null;
 	}
 
-	protected SpSigningCredential createSpSigningCredential(String signingCredentialName, String signingCredentialPassword) {
+	protected SpSigningCredential createSpSigningCredential(String signingCredentialName,
+			String signingCredentialPassword) {
 		final SpSigningCredential credential = new SpSigningCredential();
 		credential.setDigestMethod(DigestMethod.SHA256);
 		credential.setSignatureAlgorithm(SignatureAlgorithm.SHA256_WITH_RSA);
 
 		try (InputStream is = getResourceInputStream(signingCredentialName)) {
 			if (is != null) {
-				KeyStore.PrivateKeyEntry ksPrivateKeyEntry = KeyStoreUtils.loadKeyFromKeyStore(is, signingCredentialPassword, KeyStoreUtils.PKCS12);
+				KeyStore.PrivateKeyEntry ksPrivateKeyEntry = KeyStoreUtils.loadKeyFromKeyStore(is,
+						signingCredentialPassword, KeyStoreUtils.PKCS12);
 
 				credential.setPrivateKey(ksPrivateKeyEntry.getPrivateKey());
 				credential.setCertificate((X509Certificate) ksPrivateKeyEntry.getCertificate());
 				LOGGER.info("SP signing credential [{}] loaded", signingCredentialName);
 			}
 		} catch (GeneralSecurityException | IOException e) {
-			LOGGER.warn("Error to load SP signing credential [{}], error message: {}", signingCredentialName, e.getMessage());
+			LOGGER.warn("Error to load SP signing credential [{}], error message: {}", signingCredentialName,
+					e.getMessage());
 		}
 
 		return credential;
 	}
-	
-	protected SpCredential createSpEncryptingCredential(String encryptingCredentialName, String encryptingCredentialPassword) {
+
+	protected SpCredential createSpEncryptingCredential(String encryptingCredentialName,
+			String encryptingCredentialPassword) {
 		final SpCredential credential = new SpCredential();
 
 		try (InputStream is = getResourceInputStream(encryptingCredentialName)) {
 			if (is != null) {
-				KeyStore.PrivateKeyEntry ksPrivateKeyEntry = KeyStoreUtils.loadKeyFromKeyStore(is, encryptingCredentialPassword, KeyStoreUtils.PKCS12);
+				KeyStore.PrivateKeyEntry ksPrivateKeyEntry = KeyStoreUtils.loadKeyFromKeyStore(is,
+						encryptingCredentialPassword, KeyStoreUtils.PKCS12);
 
 				credential.setPrivateKey(ksPrivateKeyEntry.getPrivateKey());
 				credential.setCertificate((X509Certificate) ksPrivateKeyEntry.getCertificate());
 				LOGGER.info("SP encrypting credential [{}] loaded", encryptingCredentialName);
 			}
 		} catch (GeneralSecurityException | IOException e) {
-			LOGGER.warn("Error to load SP encrypting credential [{}], error message: {}", encryptingCredentialName, e.getMessage());
+			LOGGER.warn("Error to load SP encrypting credential [{}], error message: {}", encryptingCredentialName,
+					e.getMessage());
 		}
 
 		return credential;

@@ -122,6 +122,7 @@
 		<!-- <module>server-stomp</module> -->
 
 		<module>sw-adapter</module>
+		<module>sw-adapter-omn</module>
 		<module>server-branch</module>
 		<module>test-size</module>
 		<!-- <module>server-kiosk</module> -->
