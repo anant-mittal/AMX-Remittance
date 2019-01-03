@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<taglib xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd"
+    version="2.0">
+
+    <description>X.509 JSP Form Tag Library</description>
+    <tlib-version>1.0</tlib-version>
+    <short-name>x509</short-name>
+    <uri>http://gemalto.com/ics/rnd/sdk/saml/example/x509</uri>
+
+    <function>
+        <name>certificate</name>
+        <function-class>com.gemalto.ics.rnd.sdk.saml.example.tags.X509Function</function-class>
+        <function-signature>com.gemalto.ics.rnd.sdk.saml.example.tags.CertificateBean certificate(java.lang.Object)</function-signature>
+    </function>
+
+</taglib>

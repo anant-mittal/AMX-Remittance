@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<jboss-deployment-structure xmlns="urn:jboss:deployment-structure:1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<deployment>
+	<exclusions>
+        <module name="com.fasterxml.jackson.core.jackson-core" />
+        <module name="com.fasterxml.jackson.core.jackson-databind" />
+        <module name="com.fasterxml.jackson.jaxrs.jackson-jaxrs-json-provider" />
+        <module name="org.jboss.resteasy.resteasy-jackson2-provider" />
+        <module name="org.apache.log4j"/>
+	    <module name="org.apache.commons.logging"/>
+	    <module name="org.slf4j" />
+	    <module name="org.slf4j.impl" />
+    </exclusions>
+    <dependencies>
+        <module name="oids.config" >
+            <imports>
+                <include path="META-INF**"/>
+                <include path="**"/>
+            </imports>
+        </module>
+    </dependencies>
+</deployment>
+</jboss-deployment-structure>
