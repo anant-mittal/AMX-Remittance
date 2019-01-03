@@ -57,6 +57,10 @@ public class AESRepository {
 		return sourceAsMap;
 	}
 
+	public Map<String, Object> update(String index, String type, AESDocument vote) {
+		return this.updateById(index, type, vote.getId(), vote);
+	}
+
 	public Map<String, Object> updateById(String index, String type, String id, AESDocument vote) {
 		UpdateRequest updateRequest = new UpdateRequest(index, type, id)
 				.fetchSource(true); // Fetch Object after its update

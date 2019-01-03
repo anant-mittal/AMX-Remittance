@@ -2,6 +2,8 @@ package com.amx.jax.grid;
 
 import java.util.List;
 
+import com.amx.jax.grid.FilterBy.Condition;
+import com.amx.jax.grid.GridEnums.FilterOperater;
 import com.amx.utils.ArgUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -207,9 +209,11 @@ public class DataTableRequest {
 								(this.isGlobalSearch()) ? this.getSearch() : colSpec.getSearch());
 					}
 				}
-
 				if (!ArgUtil.isEmpty(colSpec.getValue())) {
-					filterBy.addWhereFilter(colSpec.getKey(), colSpec.getValue());
+					FilterOperater filterOperater = (FilterOperater) ArgUtil.parseAsEnum(colSpec.getOperator(),
+							FilterOperater.EQ);
+					filterBy.addWhereFilter(colSpec.getKey(),
+							new Condition(filterOperater, colSpec.getValue(), colSpec.getDataType()));
 				}
 			}
 		}
