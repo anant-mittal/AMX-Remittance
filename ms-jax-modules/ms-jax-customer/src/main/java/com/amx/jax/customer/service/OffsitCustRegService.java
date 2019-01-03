@@ -892,24 +892,30 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 			customer = customerList.get(0);
 		}
 		
-		if (ConstantDocument.Yes.equals(customer.getIsActive())) {
-			throw new GlobalException(JaxError.CUSTOMER_ACTIVE_BRANCH, "Customer active in branch");
-		}
-		
-		if(customer.getEmail() != null) {
-			if(!customer.getEmail().equals(customerPersonalDetail.getEmail())) {
-				tenantContext.get().validateEmailId(customerPersonalDetail.getEmail());
+		if(null != customer) {
+			if (ConstantDocument.Yes.equals(customer.getIsActive())) {
+				throw new GlobalException(JaxError.CUSTOMER_ACTIVE_BRANCH, "Customer active in branch");
 			}
 		}
+		
+		if(null != customer) {
+			if(customer.getEmail() != null) {
+				if(!customer.getEmail().equals(customerPersonalDetail.getEmail())) {
+					tenantContext.get().validateEmailId(customerPersonalDetail.getEmail());
+				}
+			}
+		}	
 		else {
 			tenantContext.get().validateEmailId(customerPersonalDetail.getEmail());
 		}
 		
-		if(customer.getMobile() != null) {
-			if(!customer.getMobile().equals(customerPersonalDetail.getMobile())) {
-				tenantContext.get().validateDuplicateMobile(customerPersonalDetail.getMobile());
+		if(null != customer) {
+			if(customer.getMobile() != null) {
+				if(!customer.getMobile().equals(customerPersonalDetail.getMobile())) {
+					tenantContext.get().validateDuplicateMobile(customerPersonalDetail.getMobile());
+				}
 			}
-		}
+		}	
 		else {
 			tenantContext.get().validateDuplicateMobile(customerPersonalDetail.getMobile());
 		}
