@@ -115,12 +115,12 @@ public class HomeController {
 	public String loginPing(HttpServletRequest request) {
 		ResponseWrapper<ServerStatus> wrapper = new ResponseWrapper<ServerStatus>(new ServerStatus());
 		Integer hits = sessionService.getGuestSession().hitCounter();
-		userDevice.getType();
+		userDevice.resolve();
 		wrapper.getData().setHits(hits);
 		wrapper.getData().setDomain(request.getRequestURL().toString());
 		wrapper.getData().setRequestUri(request.getRequestURI());
 		wrapper.getData().setRemoteAddr(httpService.getIPAddress());
-		wrapper.getData().setDevice(userDevice.toUserDevice());
+		wrapper.getData().setDevice(userDevice.getUserDevice());
 		return JsonUtil.toJson(wrapper);
 	}
 
@@ -132,13 +132,11 @@ public class HomeController {
 	 */
 	@RequestMapping(value = "/login/**", method = { RequestMethod.GET })
 	public String loginJPage(Model model) {
-		LOGGER.debug("This is debug Statment");
-		LOGGER.info("This is info Statment");
 		model.addAttribute("lang", httpService.getLanguage());
 		model.addAttribute("applicationTitle", webAppConfig.getAppTitle());
 		model.addAttribute("cdnUrl", webAppConfig.getCleanCDNUrl());
 		model.addAttribute(UIConstants.CDN_VERSION, getVersion());
-		model.addAttribute(AppConstants.DEVICE_ID_KEY, userDevice.getFingerprint());
+		model.addAttribute(AppConstants.DEVICE_ID_KEY, userDevice.getUserDevice().getFingerprint());
 		model.addAttribute("fcmSenderId", webAppConfig.getFcmSenderId());
 		return "app";
 	}
@@ -171,7 +169,7 @@ public class HomeController {
 		model.addAttribute("applicationTitle", webAppConfig.getAppTitle());
 		model.addAttribute("cdnUrl", webAppConfig.getCleanCDNUrl());
 		model.addAttribute(UIConstants.CDN_VERSION, getVersion());
-		model.addAttribute(AppConstants.DEVICE_ID_KEY, userDevice.getFingerprint());
+		model.addAttribute(AppConstants.DEVICE_ID_KEY, userDevice.getUserDevice().getFingerprint());
 		model.addAttribute("fcmSenderId", webAppConfig.getFcmSenderId());
 		return "app";
 	}

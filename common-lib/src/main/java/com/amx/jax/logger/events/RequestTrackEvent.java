@@ -87,28 +87,11 @@ public class RequestTrackEvent extends AuditEvent {
 
 	public RequestTrackEvent track(HttpServletResponse response, HttpServletRequest request) {
 		this.description = String.format("%s %s=%s", this.type, response.getStatus(), request.getRequestURI());
-		this.header = new LinkedMultiValueMap<String, String>();
-
-		Collection<String> headerNames = response.getHeaderNames();
-		for (String headerName : headerNames) {
-			List<String> values = (List<String>) response.getHeaders(headerName);
-			header.put(headerName, values);
-		}
 		return this;
 	}
 
 	public RequestTrackEvent track(HttpServletRequest request) {
 		this.description = String.format("%s %s=%s", this.type, request.getMethod(), request.getRequestURI());
-		this.header = new LinkedMultiValueMap<String, String>();
-		Enumeration<String> headerNames = request.getHeaderNames();
-		while (headerNames.hasMoreElements()) {
-			String headerName = headerNames.nextElement();
-			Enumeration<String> headerValues = request.getHeaders(headerName);
-			while (headerValues.hasMoreElements()) {
-				String headerValue = headerValues.nextElement();
-				header.add(headerName, headerValue);
-			}
-		}
 		this.ip = HttpUtils.getIPAddress(request);
 		return this;
 	}
@@ -116,12 +99,6 @@ public class RequestTrackEvent extends AuditEvent {
 	public RequestTrackEvent track(HttpRequest request) {
 		this.description = String.format("%s %s=%s", this.type, request.getMethod(), request.getURI());
 		// this.header = request.getHeaders();
-
-		this.header = new LinkedMultiValueMap<String, String>();
-		Collection<Entry<String, List<String>>> headers = request.getHeaders().entrySet();
-		for (Entry<String, List<String>> header : headers) {
-			this.header.put(header.getKey(), header.getValue());
-		}
 		return this;
 	}
 
@@ -131,12 +108,6 @@ public class RequestTrackEvent extends AuditEvent {
 		} catch (IOException e) {
 			LOGGER.error("RequestTrackEvent.track while logging response in", e);
 			this.description = String.format("%s %s=%s", this.type, "EXCEPTION", uri);
-		}
-		// this.header = response.getHeaders();
-		this.header = new LinkedMultiValueMap<String, String>();
-		Collection<Entry<String, List<String>>> headers = response.getHeaders().entrySet();
-		for (Entry<String, List<String>> header : headers) {
-			this.header.put(header.getKey(), header.getValue());
 		}
 		return this;
 	}

@@ -278,7 +278,7 @@ public class RegistrationService {
 
 		if (doLogin) {
 			sessionService.authorize(sessionService.getGuestSession().getCustomerModel(), true);
-			jaxClient.getUserclient().customerLoggedIn(sessionService.getAppDevice().toUserDevice());
+			jaxClient.getUserclient().customerLoggedIn(sessionService.getAppDevice().getUserDevice());
 		}
 
 		wrapper.setMessage(WebResponseStatus.USER_UPDATE_SUCCESS, "LoginId and Password updated");
