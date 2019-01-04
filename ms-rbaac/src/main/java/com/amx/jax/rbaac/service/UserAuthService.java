@@ -40,6 +40,9 @@ import com.amx.jax.rbaac.trnx.UserOtpCache;
 import com.amx.jax.rbaac.trnx.UserOtpData;
 import com.amx.jax.util.ObjectConverter;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.CryptoUtil;
+import com.amx.utils.Random;
+import com.amx.utils.CryptoUtil.HashBuilder;
 
 /**
  * The Class UserAuthService.
@@ -70,9 +73,12 @@ public class UserAuthService {
 	/**
 	 * Verify user details.
 	 * 
-	 * @param employeeNo the emp code
-	 * @param identity   the identity
-	 * @param ipAddress  the ip address
+	 * @param employeeNo
+	 *            the emp code
+	 * @param identity
+	 *            the identity
+	 * @param ipAddress
+	 *            the ip address
 	 * @return the user auth init response DTO
 	 * 
 	 * @flow: -> Get Employee ||->-> Multiple Employees -> Error ||->-> Employee Not
@@ -142,13 +148,17 @@ public class UserAuthService {
 		/**
 		 * Begin Init Auth for User validation is Completed.
 		 */
-		Device selfOtpDevice = deviceService.getDeviceByEmployeeAndDeviceType(ClientType.NOTP_APP,
-				selfEmployee.getEmployeeId());
-		String selfOtpDeviceSecret = AmxConstants.SHH_DONT_TELL_ANYONE;
-		if (!ArgUtil.isEmpty(selfOtpDevice)) {
-			selfOtpDeviceSecret = selfOtpDevice.getClientSecreteKey();
-		}
-		OtpData selfOtpData = userOtpManager.generateOtpTokens(selfOtpDeviceSecret, userAuthInitReqDTO.getSelfSAC());
+		// Device selfOtpDevice =
+		// deviceService.getDeviceByEmployeeAndDeviceType(ClientType.NOTP_APP,
+		// selfEmployee.getEmployeeId());
+
+		String selfOtpSecret = AmxConstants.SHH_DONT_TELL_ANYONE + Random.randomAlphaNumeric(AmxConstants.OTP_LENGTH);
+
+		/*
+		 * if (!ArgUtil.isEmpty(selfOtpDevice)) { selfOtpDeviceSecret +=
+		 * selfOtpDevice.getClientSecreteKey(); }
+		 */
+		OtpData selfOtpData = userOtpManager.generateOtpTokens(selfOtpSecret, userAuthInitReqDTO.getSelfSAC());
 
 		userOtpManager.sendOtpSms(selfEmployee, selfOtpData, "Self OTP Details");
 
@@ -157,6 +167,10 @@ public class UserAuthService {
 		UserOtpData userOtpData = new UserOtpData();
 
 		userOtpData.setEmployee(selfEmployee);
+
+		if (isAssisted) {
+			userOtpData.setPartnerEmployeeId(partnerEmployee.getEmployeeId());
+		}
 		userOtpData.setLoginType(userAuthInitReqDTO.getLoginType());
 		userOtpData.setOtpData(selfOtpData);
 		userOtpData.setAuthTransactionId(transactionId);
@@ -165,12 +179,17 @@ public class UserAuthService {
 		userOtpData.setOtpAttemptCount(0);
 
 		if (isAssisted) {
-			Device partnerOTPDevice = deviceService.getDeviceByEmployeeAndDeviceType(ClientType.NOTP_APP,
-					selfEmployee.getEmployeeId());
-			String partnerOTPDeviceSecret = AmxConstants.SHH_DONT_TELL_ANYONE;
-			if (!ArgUtil.isEmpty(partnerOTPDevice)) {
-				partnerOTPDeviceSecret = partnerOTPDevice.getClientSecreteKey();
-			}
+			// Device partnerOTPDevice =
+			// deviceService.getDeviceByEmployeeAndDeviceType(ClientType.NOTP_APP,
+			// selfEmployee.getEmployeeId());
+
+			String partnerOTPDeviceSecret = AmxConstants.SHH_DONT_TELL_ANYONE
+					+ Random.randomAlphaNumeric(AmxConstants.OTP_LENGTH);
+
+			/*
+			 * if (!ArgUtil.isEmpty(partnerOTPDevice)) { partnerOTPDeviceSecret =
+			 * partnerOTPDevice.getClientSecreteKey(); }
+			 */
 			OtpData partnerOtpData = userOtpManager.generateOtpTokens(partnerOTPDeviceSecret,
 					userAuthInitReqDTO.getPartnerSAC());
 			userOtpManager.sendOtpSms(partnerEmployee, partnerOtpData, "Partner OTP Details");
@@ -263,9 +282,19 @@ public class UserAuthService {
 
 		}
 
-		// Validate User OTP hash
+		boolean isAuthorized = Boolean.FALSE;
+
 		if (!userOtpData.getOtpData().getHashedmOtp().equals(mOtpHash)
 				|| (isAssisted && !userOtpData.getPartnerOtpData().getHashedmOtp().equals(partnerOtpHash))) {
+
+			isAuthorized = validateOfflineOtp(mOtp, reqDto.getPartnerMOtp(), isAssisted, userOtpData);
+
+		} else {
+			isAuthorized = Boolean.TRUE;
+		}
+
+		// Validate User OTP hash
+		if (!isAuthorized) {
 
 			/**
 			 * Crossed three Incorrect OTP counts --> Lock Accounnt. --> Clear Otp Cache
@@ -308,6 +337,59 @@ public class UserAuthService {
 		return empDetail;
 	}
 
+	/**
+	 * Method to validate offline OTP
+	 * 
+	 * @param selfOtp
+	 * @param partnerOtp
+	 * @param isAssisted
+	 * @param userOtpData
+	 * @return
+	 */
+	private boolean validateOfflineOtp(String selfOtp, String partnerOtp, boolean isAssisted, UserOtpData userOtpData) {
+
+		Employee self = userOtpData.getEmployee();
+		OtpData selfOtpData = userOtpData.getOtpData();
+
+		Device selfOtpDevice = deviceService.getDeviceByEmployeeAndDeviceType(ClientType.NOTP_APP,
+				self.getEmployeeId());
+
+		if (ArgUtil.isEmpty(selfOtpDevice) || !RbaacServiceConstants.YES.equalsIgnoreCase(selfOtpDevice.getStatus())) {
+			return Boolean.FALSE;
+		}
+
+		HashBuilder builder = new HashBuilder().interval(AmxConstants.OFFLINE_OTP_TTL)
+				.tolerance(AmxConstants.OFFLINE_OTP_TOLERANCE).secret(selfOtpDevice.getClientSecreteKey())
+				.message(selfOtpData.getmOtpPrefix());
+
+		if (!builder.validateNumHMAC(selfOtp)) {
+			return Boolean.FALSE;
+		}
+
+		if (isAssisted) {
+			BigDecimal partnerId = userOtpData.getPartnerEmployeeId();
+			OtpData partnerOtpData = userOtpData.getPartnerOtpData();
+
+			Device partnerOtpDevice = deviceService.getDeviceByEmployeeAndDeviceType(ClientType.NOTP_APP, partnerId);
+
+			if (ArgUtil.isEmpty(partnerOtpDevice)
+					|| !RbaacServiceConstants.YES.equalsIgnoreCase(partnerOtpDevice.getStatus())) {
+				return Boolean.FALSE;
+			}
+
+			HashBuilder secondBuilder = new HashBuilder().interval(AmxConstants.OFFLINE_OTP_TTL)
+					.tolerance(AmxConstants.OFFLINE_OTP_TOLERANCE).secret(partnerOtpDevice.getClientSecreteKey())
+					.message(partnerOtpData.getmOtpPrefix());
+
+			if (!builder.validateNumHMAC(partnerOtp)) {
+				return Boolean.FALSE;
+			}
+		}
+
+		return Boolean.TRUE;
+
+	}
+
 	private Employee getValidEmployee(List<Employee> employees, String userType) {
 
 		// LOGIN_TYPE userType = userAuthInitReqDTO.getLoginType();
@@ -339,8 +421,7 @@ public class UserAuthService {
 		 * Check for Multiple Employees
 		 */
 		if (activeEmployees.size() > 1) {
-			throw new AuthServiceException(
-					RbaacServiceError.MULTIPLE_USERS,
+			throw new AuthServiceException(RbaacServiceError.MULTIPLE_USERS,
 					"Multiple Users Corresponding to the same Info: Pls contact Support : " + userType);
 		}
 
@@ -352,8 +433,8 @@ public class UserAuthService {
 		if (null != validEmployee.getLockCount()
 				&& validEmployee.getLockCount().intValue() >= RbaacServiceConstants.EMPLOYEE_MAX_LOCK_COUNT) {
 			throw new AuthServiceException(RbaacServiceError.USER_ACCOUNT_LOCKED,
-					"User Account Locked : User Account Login is Suspended, from: "
-							+ validEmployee.getLockDate() + " for Login Type : " + userType);
+					"User Account Locked : User Account Login is Suspended, from: " + validEmployee.getLockDate()
+							+ " for Login Type : " + userType);
 		}
 
 		return validEmployee;
@@ -404,8 +485,7 @@ public class UserAuthService {
 			if (StringUtils.isBlank(userClientDto.getDeviceId()) || null == userClientDto.getDeviceRegId()
 					|| StringUtils.isBlank(userClientDto.getDeviceRegToken())) {
 
-				throw new AuthServiceException(
-						RbaacServiceError.INVALID_OR_MISSING_DEVICE_ID,
+				throw new AuthServiceException(RbaacServiceError.INVALID_OR_MISSING_DEVICE_ID,
 						"Valid Device Info is Mandatory for Mobile/Tablet Devices, DeviceId: "
 								+ userClientDto.getDeviceId() + ", Device Reg Id: " + userClientDto.getDeviceRegId()
 								+ " Device Reg Token: " + userClientDto.getDeviceRegToken());

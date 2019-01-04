@@ -11,7 +11,7 @@ import com.amx.utils.JsonUtil;
 
 public final class RuntimeTest {
 
-	public static void main(String[] args) throws NoSuchAlgorithmException {
+	public static void main(String[] args) throws NoSuchAlgorithmException, InterruptedException {
 
 		System.out.println(" ======== String Test ======= " + "Y".equalsIgnoreCase(null));
 
@@ -57,9 +57,26 @@ public final class RuntimeTest {
 
 		System.out.println(" From Json ==>" + JsonUtil.fromJson(jsonL, List.class));
 
-		String devicePairTokenStr = CryptoUtil.getSHA2Hash( "HFOSQUZNXGGNF" + Long.toString(10l));
+		String devicePairTokenStr = CryptoUtil.getSHA2Hash("HFOSQUZNXGGNF" + Long.toString(10l));
 
 		System.out.println(" Device Pair Token ==> " + devicePairTokenStr);
+
+		for (int i = 0; i < 50; i++) {
+			
+			long timeNow = System.currentTimeMillis();
+
+			System.out.println(
+					"\n HMAC Current " + i + " ==> " + CryptoUtil.generateHMAC(10, "abc", "message", timeNow));
+			
+			System.out.println(
+					" HMAC Before " + i + " ==> " + CryptoUtil.generateHMAC(10, "abc", "message", timeNow - 5000));
+			
+			System.out.println(
+					" HMAC After " + i + " ==> " + CryptoUtil.generateHMAC(10, "abc", "message", timeNow + 5000));
+
+			Thread.sleep(1 * 1000);
+
+		}
 
 	}
 
