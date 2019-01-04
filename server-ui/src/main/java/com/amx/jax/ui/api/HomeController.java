@@ -198,7 +198,7 @@ public class HomeController {
 	@Autowired
 	private SpringTemplateEngine templateEngine;
 
-	@RequestMapping(value = { "/apple-app-site-association" }, method = {
+	@RequestMapping(value = { "/apple-app-site-association", "/.well-known/apple-app-site-association" }, method = {
 			RequestMethod.GET }, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public String applejson(Model model, HttpServletResponse response, Locale locale) {
