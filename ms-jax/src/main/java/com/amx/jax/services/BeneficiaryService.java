@@ -49,6 +49,7 @@ import com.amx.jax.auditlog.BeneficiaryAuditEvent;
 import com.amx.jax.auditlog.JaxAuditEvent.Type;
 import com.amx.jax.config.JaxProperties;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.constant.JaxDbConfig;
 import com.amx.jax.dal.RoutingDao;
 import com.amx.jax.dao.BeneficiaryDao;
 import com.amx.jax.dbmodel.AgentBranchModel;
@@ -162,6 +163,8 @@ public class BeneficiaryService extends AbstractService {
 	ICurrencyDao currencyDao;
 	@Autowired
 	RoutingDao routingDao;
+	@Autowired
+	JaxConfigService jaxConfigService;
 
 	public ApiResponse getBeneficiaryListForOnline(BigDecimal customerId, BigDecimal applicationCountryId,
 			BigDecimal beneCountryId) {
@@ -826,9 +829,13 @@ public class BeneficiaryService extends AbstractService {
 		if (jaxProperties.getBeneThreeCountryCheck()) {
 			countryList = countryRepository.getBeneCountryList(metaData.getLanguageId());
 		} else {
-			Customer customer = userService.getCustById(customerId);
-			countryList = countryRepository.findByLanguageIdAndNonBeneRisk(metaData.getLanguageId(),
-					customer.getNationalityId());
+			if (jaxConfigService.getBooleanConfigValue(JaxDbConfig.BLOCK_BENE_RISK_TRANSACTION, true)) {
+				Customer customer = userService.getCustById(customerId);
+				countryList = countryRepository.findByLanguageIdAndNonBeneRisk(metaData.getLanguageId(),
+						customer.getNationalityId());
+			}else {
+				countryList = countryRepository.findByLanguageId(metaData.getLanguageId());
+			}
 		}
 		List<BigDecimal> supportedServiceGroupList = beneDao.getRoutingBankMasterList(); // add for channeling
 																							// 03-05-2018
