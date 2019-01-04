@@ -524,7 +524,9 @@ public class UserService extends AbstractUserService {
 	}
 
 	public ApiResponse loginUser(String userId, String password) {
-		tenantContext.get().validateCivilId(userId);
+		if(tenantContext.getKey().equals("OMN")) {
+			tenantContext.get().validateCivilId(userId);
+		}	
 		List<Customer> validCustomer = userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(userId, JaxApiFlow.LOGIN);
 		CustomerOnlineRegistration onlineCustomer = custDao
 				.getOnlineCustByCustomerId(validCustomer.get(0).getCustomerId());
