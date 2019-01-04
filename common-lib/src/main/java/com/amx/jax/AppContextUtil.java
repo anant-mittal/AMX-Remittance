@@ -10,10 +10,12 @@ import org.apache.log4j.MDC;
 import org.springframework.http.HttpHeaders;
 
 import com.amx.jax.dict.Tenant;
+import com.amx.jax.dict.UserClient.UserDeviceClient;
 import com.amx.jax.http.RequestType;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.ContextUtil;
+import com.amx.utils.JsonUtil;
 import com.amx.utils.UniqueID;
 
 public class AppContextUtil {
@@ -72,6 +74,18 @@ public class AppContextUtil {
 		return ArgUtil.parseAsString(ContextUtil.map().get(AppConstants.SESSION_ID_XKEY));
 	}
 
+	public static UserDeviceClient getUserClient() {
+		Object userDeviceClientObject = ContextUtil.map().get(AppConstants.USER_CLIENT_XKEY);
+		UserDeviceClient userDeviceClient = null;
+		if (userDeviceClientObject == null) {
+			userDeviceClient = new UserDeviceClient();
+			ContextUtil.map().put(AppConstants.USER_CLIENT_XKEY, userDeviceClient);
+		} else {
+			userDeviceClient = (UserDeviceClient) userDeviceClientObject;
+		}
+		return userDeviceClient;
+	}
+
 	public static RequestType getRequestType() {
 		return (RequestType) ArgUtil.parseAsEnum(ContextUtil.map().get(AppConstants.REQUEST_TYPE_XKEY),
 				RequestType.DEFAULT);
@@ -122,6 +136,10 @@ public class AppContextUtil {
 		ContextUtil.map().put(AppConstants.REQUEST_TYPE_XKEY, reqType);
 	}
 
+	public static void setUserClient(UserDeviceClient userClient) {
+		ContextUtil.map().put(AppConstants.USER_CLIENT_XKEY, userClient);
+	}
+
 	public static <T> void set(String contextKey, T value) {
 		ContextUtil.map().put(contextKey, value);
 	}
@@ -164,6 +182,11 @@ public class AppContextUtil {
 		if (context.getActorId() != null) {
 			setActorId(context.getActorId());
 		}
+
+		if (context.getClient() != null) {
+			setUserClient(context.getClient());
+		}
+
 		setTraceTime(context.getTraceTime());
 
 		return context;
@@ -179,6 +202,7 @@ public class AppContextUtil {
 		map.put(AppConstants.TRACE_ID_XKEY, context.getTraceId());
 		map.put(AppConstants.TRANX_ID_XKEY, context.getTranxId());
 		map.put(AppConstants.ACTOR_ID_XKEY, context.getActorId());
+		map.put(AppConstants.USER_CLIENT_XKEY, JsonUtil.toJson(context.getClient()));
 		return map;
 	}
 
@@ -192,6 +216,7 @@ public class AppContextUtil {
 		String traceId = getTraceId();
 		String tranxId = getTranxId();
 		String userId = getActorId();
+		UserDeviceClient userClient = getUserClient();
 		httpHeaders.add(TenantContextHolder.TENANT, getTenant().toString());
 		if (!ArgUtil.isEmpty(traceId)) {
 			httpHeaders.add(AppConstants.TRACE_ID_XKEY, traceId);
@@ -202,8 +227,16 @@ public class AppContextUtil {
 		if (!ArgUtil.isEmpty(userId)) {
 			httpHeaders.add(AppConstants.ACTOR_ID_XKEY, userId);
 		}
+		if (!ArgUtil.isEmpty(userClient)) {
+			httpHeaders.add(AppConstants.USER_CLIENT_XKEY, JsonUtil.toJson(userClient));
+		}
 	}
 
+	/**
+	 * This method is called when we receive response from other service
+	 * 
+	 * @param httpHeaders
+	 */
 	public static void importAppContextFrom(HttpHeaders httpHeaders) {
 		if (httpHeaders.containsKey(AppConstants.TRANX_ID_XKEY)) {
 			List<String> tranxids = httpHeaders.get(AppConstants.TRANX_ID_XKEY);

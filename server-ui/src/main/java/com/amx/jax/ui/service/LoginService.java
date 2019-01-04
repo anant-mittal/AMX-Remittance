@@ -143,7 +143,7 @@ public class LoginService {
 					sessionService.getGuestSession().getState().isFlow(AuthState.AuthFlow.LOGIN));
 
 			if (sessionService.getGuestSession().getState().isFlow(AuthState.AuthFlow.LOGIN)) {
-				jaxService.getUserclient().customerLoggedIn(sessionService.getAppDevice().toUserDevice());
+				jaxService.getUserclient().customerLoggedIn(sessionService.getAppDevice().getUserDevice());
 
 				wrapper.setRedirectUrl(sessionService.getGuestSession().getReturnUrl());
 				sessionService.getGuestSession().setReturnUrl(null);
