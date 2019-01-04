@@ -264,7 +264,7 @@
                             <table width="100%" style="width: 100%">
                                 <tr>
                                     <td>
-                                        <h5>Dear <span  th:text="${data.firstName}"></span>   <span  th:text="${data.middleName}"></span>   <span  th:text="${data.lastName}"></span>,</h5><br/>
+                                        <h5>Dear <span  th:text="${data.firstName}"></span> <span  th:text="${data.lastName}"></span>,</h5><br/>
 
                                         <p class="lead">Greetings from <span th:text="${_tu.prop('company.name')}" th:remove="tag"></span> !</p> <br/>
                                         <p class="lead">Thank you for using <a th:href="@{'https://' +${_tu.prop('company.website.url')}}"><span th:text="${_tu.prop('company.website.url')}"></span></a> for your remittance and hope you had a pleasant experience. Please find attached the remittance receipt.</p>
