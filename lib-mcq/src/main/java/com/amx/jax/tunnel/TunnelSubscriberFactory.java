@@ -134,7 +134,8 @@ public class TunnelSubscriberFactory {
 			}
 
 			public void doMessage(String channel, TunnelMessage<M> msg) {
-				AuditServiceClient.trackStatic(new RequestTrackEvent(RequestTrackEvent.Type.SUB_IN, msg));
+				AuditServiceClient.trackStatic(
+						new RequestTrackEvent(RequestTrackEvent.Type.SUB_IN, TunnelEventXchange.SHOUT_LISTNER, msg));
 				try {
 					this.subscriber.onMessage(channel, msg.getData());
 				} catch (Exception e) {
@@ -178,7 +179,8 @@ public class TunnelSubscriberFactory {
 			public void doMessage(String channel, TunnelMessage<M> msg) {
 				AppContextUtil.setContext(msg.getContext());
 				AppContextUtil.init();
-				AuditServiceClient.trackStatic(new RequestTrackEvent(RequestTrackEvent.Type.SUB_IN, msg));
+				AuditServiceClient.trackStatic(
+						new RequestTrackEvent(RequestTrackEvent.Type.SUB_IN, TunnelEventXchange.SEND_LISTNER, msg));
 				try {
 					this.subscriber.onMessage(channel, msg.getData());
 				} catch (Exception e) {
@@ -208,7 +210,8 @@ public class TunnelSubscriberFactory {
 					AppContext context = msg.getContext();
 					AppContextUtil.setContext(context);
 					AppContextUtil.init();
-					AuditServiceClient.trackStatic(new RequestTrackEvent(RequestTrackEvent.Type.SUB_IN, msg));
+					AuditServiceClient.trackStatic(
+							new RequestTrackEvent(RequestTrackEvent.Type.SUB_IN, TunnelEventXchange.TASK_WORKER, msg));
 					try {
 						listener.onMessage(channel, msg.getData());
 					} catch (Exception e) {

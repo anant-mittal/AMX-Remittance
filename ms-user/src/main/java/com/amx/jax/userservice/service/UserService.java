@@ -338,7 +338,9 @@ public class UserService extends AbstractUserService {
 	public ApiResponse sendOtpForCivilId(String civilId, List<CommunicationChannel> channels,
 			CustomerModel customerModel, Boolean initRegistration) {
 		if (StringUtils.isNotBlank(civilId)) {
-			tenantContext.get().validateCivilId(civilId);
+			if(tenantContext.getKey().equals("OMN")) {
+				tenantContext.get().validateCivilId(civilId);
+			}
 		}
 		BigDecimal customerId = metaData.getCustomerId();
 		if (customerId != null) {
@@ -524,7 +526,9 @@ public class UserService extends AbstractUserService {
 	}
 
 	public ApiResponse loginUser(String userId, String password) {
-		tenantContext.get().validateCivilId(userId);
+		if(tenantContext.getKey().equals("OMN")) {
+			tenantContext.get().validateCivilId(userId);
+		}	
 		List<Customer> validCustomer = userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(userId, JaxApiFlow.LOGIN);
 		CustomerOnlineRegistration onlineCustomer = custDao
 				.getOnlineCustByCustomerId(validCustomer.get(0).getCustomerId());

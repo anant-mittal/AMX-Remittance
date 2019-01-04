@@ -46,7 +46,8 @@ public class TunnelService implements ITunnelService {
 		TunnelMessage<T> message = new TunnelMessage<T>(messagePayload, context);
 		message.setTopic(topic);
 
-		AuditServiceClient.trackStatic(new RequestTrackEvent(RequestTrackEvent.Type.PUB_OUT, message));
+		AuditServiceClient.trackStatic(
+				new RequestTrackEvent(RequestTrackEvent.Type.PUB_OUT, TunnelEventXchange.SHOUT_LISTNER, message));
 		return topicQueue.publish(message);
 	}
 
@@ -71,7 +72,8 @@ public class TunnelService implements ITunnelService {
 		RQueue<TunnelMessage<T>> queue = redisson.getQueue(TunnelEventXchange.SEND_LISTNER.getQueue(topic));
 		RTopic<TunnelMessage<T>> topicQueue = redisson.getTopic(TunnelEventXchange.SEND_LISTNER.getTopic(topic));
 
-		AuditServiceClient.trackStatic(new RequestTrackEvent(RequestTrackEvent.Type.PUB_OUT, message));
+		AuditServiceClient.trackStatic(
+				new RequestTrackEvent(RequestTrackEvent.Type.PUB_OUT, TunnelEventXchange.SEND_LISTNER, message));
 		queue.add(message);
 		return topicQueue.publish(message);
 	}
@@ -94,7 +96,8 @@ public class TunnelService implements ITunnelService {
 		RQueue<TunnelMessage<T>> queue = redisson.getQueue(TunnelEventXchange.TASK_WORKER.getQueue(topic));
 		RTopic<String> topicQueue = redisson.getTopic(TunnelEventXchange.TASK_WORKER.getTopic(topic));
 
-		AuditServiceClient.trackStatic(new RequestTrackEvent(RequestTrackEvent.Type.PUB_OUT, message));
+		AuditServiceClient.trackStatic(
+				new RequestTrackEvent(RequestTrackEvent.Type.PUB_OUT, TunnelEventXchange.TASK_WORKER, message));
 		queue.add(message);
 		return topicQueue.publish(message.getId());
 	}
