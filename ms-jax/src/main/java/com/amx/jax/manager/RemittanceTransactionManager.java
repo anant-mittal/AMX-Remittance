@@ -291,7 +291,7 @@ public class RemittanceTransactionManager {
 
 	private void validateRiskyBene(BenificiaryListView beneficiary, Customer customer) {
 		if (jaxConfigService.getBooleanConfigValue(JaxDbConfig.BLOCK_BENE_RISK_TRANSACTION, true)) {
-			if (beneficiary.getCountryId() != customer.getNationalityId()) {
+			if (beneficiary.getCountryId().intValue() != customer.getNationalityId().intValue()) {
 				int beneCountryRisk = countryService.getCountryMaster(beneficiary.getCountryId()).getBeneCountryRisk();
 				if (beneCountryRisk == 1) {
 					throw new GlobalException(JaxError.BENE_COUNTRY_RISK, "Bene country risk");
