@@ -11,11 +11,11 @@ public final class AmxConstants {
 	@Deprecated
 	public static final long OTP_TTL = AmxConstants.OFFLINE_OTP_TTL;
 
-	public static final long OFFLINE_OTP_TTL = 60 * 1000;
+	public static final long OFFLINE_OTP_TTL = 60;
 
-	public static final long OFFLINE_OTP_TOLERANCE = 30 * 1000;
+	public static final long OFFLINE_OTP_TOLERANCE = 30;
 
-	public static final long SMS_OTP_TTL = 15 * 60 * 1000;
+	public static final long SMS_OTP_TTL = 15 * 60;
 
 	public static final int OTP_LENGTH = 6;
 
