@@ -60,18 +60,19 @@ public class UserOtpManager {
 		 * @author lalittanwar
 		 */
 		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug("OTP TOKEN {} {} {}", AmxConstants.OTP_TTL, secret, sac);
+			LOGGER.debug("SMS OTP TOKEN {} {} {}", AmxConstants.SMS_OTP_TTL, secret, sac);
 		}
-		HashBuilder builder = new HashBuilder().interval(AmxConstants.OTP_TTL).secret(secret).message(sac);
+
+		HashBuilder builder = new HashBuilder().interval(AmxConstants.SMS_OTP_TTL).secret(secret).message(sac);
 		otpData.setmOtpPrefix(sac);
-		otpData.setmOtp(builder.toHMAC().toNumeric(6).output());
+		otpData.setmOtp(builder.toHMAC().toNumeric(AmxConstants.OTP_LENGTH).output());
 
 		otpData.setHashedmOtp(getOtpHash(otpData.getmOtp()));
 
 		long initTime = System.currentTimeMillis();
 
 		otpData.setInitTime(initTime);
-		otpData.setTtl(initTime + AmxConstants.OTP_TTL);
+		otpData.setTtl(initTime + AmxConstants.SMS_OTP_TTL);
 
 		return otpData;
 	}
@@ -79,8 +80,10 @@ public class UserOtpManager {
 	/**
 	 * Send otp sms.
 	 *
-	 * @param einfo the einfo
-	 * @param model the model
+	 * @param einfo
+	 *            the einfo
+	 * @param model
+	 *            the model
 	 */
 	// Employee otp to login: passing Employee for including any personal Msg
 	public void sendOtpSms(Employee einfo, OtpData model, String slackMsg) {

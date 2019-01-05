@@ -1,5 +1,6 @@
 package com.amx.jax.logger;
 
+import com.amx.jax.dict.UserClient.UserDeviceClient;
 import com.amx.jax.exception.IExceptionEnum;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -23,6 +24,7 @@ public abstract class AuditEvent extends AbstractEvent {
 	protected String exceptionType;
 	protected String actorId;
 	protected Object data;
+	protected UserDeviceClient client;
 
 	public static enum Result {
 		DONE, REJECTED, FAIL, ERROR, PASS;
@@ -136,6 +138,14 @@ public abstract class AuditEvent extends AbstractEvent {
 	@Override
 	public void clean() {
 
+	}
+
+	public UserDeviceClient getClient() {
+		return client;
+	}
+
+	public void setClient(UserDeviceClient client) {
+		this.client = client;
 	}
 
 }

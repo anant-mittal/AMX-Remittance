@@ -1,13 +1,12 @@
 package com.amx.jax.ui.audit;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.amx.jax.logger.AuditEvent;
 import com.amx.jax.model.AuthState;
 import com.amx.jax.model.AuthState.AuthFlow;
 import com.amx.jax.model.AuthState.AuthStep;
 import com.amx.utils.ArgUtil;
+
+import eu.bitwalker.useragentutils.UserAgent;
 
 /**
  * The Class CAuthEvent.
@@ -23,10 +22,8 @@ public class CAuthEvent extends AuditEvent {
 	/**
 	 * Instantiates a new c auth event.
 	 *
-	 * @param flow
-	 *            the flow
-	 * @param step
-	 *            the step
+	 * @param flow the flow
+	 * @param step the step
 	 */
 	public CAuthEvent(AuthFlow flow, AuthStep step) {
 		super(flow);
@@ -36,12 +33,9 @@ public class CAuthEvent extends AuditEvent {
 	/**
 	 * Instantiates a new c auth event.
 	 *
-	 * @param state
-	 *            the state
-	 * @param result
-	 *            the result
-	 * @param tranxTime
-	 *            the tranx time
+	 * @param state     the state
+	 * @param result    the result
+	 * @param tranxTime the tranx time
 	 */
 	public CAuthEvent(AuthState state, Result result, long tranxTime) {
 		this(state.flow, state.getnStep());
@@ -54,14 +48,10 @@ public class CAuthEvent extends AuditEvent {
 	/**
 	 * Instantiates a new c auth event.
 	 *
-	 * @param state
-	 *            the state
-	 * @param result
-	 *            the result
-	 * @param message
-	 *            the message
-	 * @param tranxTime
-	 *            the tranx time
+	 * @param state     the state
+	 * @param result    the result
+	 * @param message   the message
+	 * @param tranxTime the tranx time
 	 */
 	public CAuthEvent(AuthState state, Result result, Object message, long tranxTime) {
 		this(state, result, tranxTime);
@@ -71,12 +61,9 @@ public class CAuthEvent extends AuditEvent {
 	/**
 	 * Instantiates a new c auth event.
 	 *
-	 * @param state
-	 *            the state
-	 * @param result
-	 *            the result
-	 * @param message
-	 *            the message
+	 * @param state   the state
+	 * @param result  the result
+	 * @param message the message
 	 */
 	public CAuthEvent(AuthState state, Result result, Object message) {
 		this(state, result, message, 0L);
@@ -85,8 +72,7 @@ public class CAuthEvent extends AuditEvent {
 	/**
 	 * Instantiates a new c auth event.
 	 *
-	 * @param state
-	 *            the state
+	 * @param state the state
 	 */
 	public CAuthEvent(AuthState state) {
 		this(state, Result.DONE, 0L);
@@ -98,25 +84,24 @@ public class CAuthEvent extends AuditEvent {
 
 	String userId = null;
 
-	Map<String, Object> device = new HashMap<String, Object>(); // Noncompliant; Address isn't serializable
+	UserAgent agent = null; // Noncompliant; Address isn't serializable
 
 	/**
 	 * Gets the device.
 	 *
 	 * @return the device
 	 */
-	public Map<String, Object> getDevice() {
-		return device;
+	public UserAgent getAgent() {
+		return agent;
 	}
 
 	/**
 	 * Sets the device.
 	 *
-	 * @param device
-	 *            the device
+	 * @param device the device
 	 */
-	public void setDevice(Map<String, Object> device) {
-		this.device = device;
+	public void setAgent(UserAgent agent) {
+		this.agent = agent;
 	}
 
 	/*
@@ -141,8 +126,7 @@ public class CAuthEvent extends AuditEvent {
 	/**
 	 * Sets the user id.
 	 *
-	 * @param userId
-	 *            the new user id
+	 * @param userId the new user id
 	 */
 	public void setUserId(String userId) {
 		this.userId = userId;
@@ -160,8 +144,7 @@ public class CAuthEvent extends AuditEvent {
 	/**
 	 * Sets the identiy.
 	 *
-	 * @param identiy
-	 *            the new identiy
+	 * @param identiy the new identiy
 	 */
 	public void setIdentiy(String identiy) {
 		this.identiy = identiy;
@@ -179,8 +162,7 @@ public class CAuthEvent extends AuditEvent {
 	/**
 	 * Sets the step.
 	 *
-	 * @param step
-	 *            the new step
+	 * @param step the new step
 	 */
 	public void setStep(AuthStep step) {
 		this.step = step;

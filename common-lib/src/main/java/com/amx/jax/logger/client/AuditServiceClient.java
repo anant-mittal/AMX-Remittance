@@ -147,6 +147,7 @@ public class AuditServiceClient implements AuditService {
 	public static AuditLoggerResponse logAuditEvent(Marker marker, AuditEvent event, boolean capture) {
 		try {
 			captureDetails(event);
+			event.setClient(AppContextUtil.getUserClient());
 			return logAbstractEvent(marker, event, capture);
 		} catch (Exception e) {
 			LOGGER2.error("Exception while logAuditEvent {}", JsonUtil.toJson(event), e);
