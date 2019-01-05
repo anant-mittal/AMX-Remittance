@@ -2,10 +2,6 @@ package com.amx.jax.logger.events;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -14,8 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 
 import com.amx.jax.AppContext;
 import com.amx.jax.logger.AuditEvent;
@@ -37,18 +31,9 @@ public class RequestTrackEvent extends AuditEvent {
 		}
 	}
 
-	private MultiValueMap<String, String> header;
 	private AppContext context;
 	private long responseTime;
 	private String ip;
-
-	public MultiValueMap<String, String> getHeader() {
-		return header;
-	}
-
-	public void setHeader(MultiValueMap<String, String> header) {
-		this.header = header;
-	}
 
 	public RequestTrackEvent(Type type) {
 		super(type);
@@ -98,7 +83,6 @@ public class RequestTrackEvent extends AuditEvent {
 
 	public RequestTrackEvent track(HttpRequest request) {
 		this.description = String.format("%s %s=%s", this.type, request.getMethod(), request.getURI());
-		// this.header = request.getHeaders();
 		return this;
 	}
 
@@ -137,19 +121,6 @@ public class RequestTrackEvent extends AuditEvent {
 	}
 
 	public void clean() {
-		if (this.header != null) {
-			this.header.remove("connection");
-			this.header.remove("accept");
-			this.header.remove("Accept");
-			this.header.remove("accept-encoding");
-			this.header.remove("accept-language");
-			this.header.remove("Content-Length");
-			this.header.remove("X-Application-Context");
-			this.header.remove("Content-Type");
-			this.header.remove("Transfer-Encoding");
-			this.header.remove("Date");
-			this.header.remove("Connection");
-		}
 	}
 
 }
