@@ -96,10 +96,8 @@ public class UserController {
 	/**
 	 * Gets the meta.
 	 *
-	 * @param appType
-	 *            the app type
-	 * @param appVersion
-	 *            the app version
+	 * @param appType    the app type
+	 * @param appVersion the app version
 	 * @return the meta
 	 */
 	@RequestMapping(value = "/pub/user/meta", method = { RequestMethod.POST, RequestMethod.GET })
@@ -107,12 +105,13 @@ public class UserController {
 			@RequestParam(required = false) String appVersion) {
 		ResponseWrapper<UserMetaData> wrapper = new ResponseWrapper<UserMetaData>(new UserMetaData());
 
+		sessionService.getAppDevice().resolve();
 		if (appType != null) {
-			sessionService.getAppDevice().setAppType(appType);
+			sessionService.getAppDevice().getUserDevice().setAppType(appType);
 		}
 
 		if (appVersion != null) {
-			sessionService.getAppDevice().setAppVersion(appVersion);
+			sessionService.getAppDevice().getUserDevice().setAppVersion(appVersion);
 		}
 
 		wrapper.getData().setTenant(AppContextUtil.getTenant());
@@ -121,7 +120,7 @@ public class UserController {
 		wrapper.getData().setCdnUrl(appConfig.getCdnURL());
 		wrapper.getData().setFeatures(webAppConfig.getFeatures());
 
-		wrapper.getData().setDevice(sessionService.getAppDevice().toUserDevice());
+		wrapper.getData().setDevice(sessionService.getAppDevice().getUserDevice());
 		wrapper.getData().setState(sessionService.getGuestSession().getState());
 		wrapper.getData().setValidSession(sessionService.getUserSession().isValid());
 
@@ -145,15 +144,11 @@ public class UserController {
 	/**
 	 * Me notify.
 	 *
-	 * @param token
-	 *            the token
-	 * @param hotpoint
-	 *            the hotpoint
-	 * @param customerId
-	 *            the customer id
+	 * @param token      the token
+	 * @param hotpoint   the hotpoint
+	 * @param customerId the customer id
 	 * @return the response wrapper
-	 * @throws PostManException
-	 *             the post man exception
+	 * @throws PostManException the post man exception
 	 */
 	@RequestMapping(value = "/pub/user/notify/hotpoint", method = { RequestMethod.POST })
 	public ResponseWrapper<Object> meNotify(@RequestParam(required = false) String token,
@@ -175,11 +170,9 @@ public class UserController {
 	/**
 	 * Register notify.
 	 *
-	 * @param token
-	 *            the token
+	 * @param token the token
 	 * @return the response wrapper
-	 * @throws PostManException
-	 *             the post man exception
+	 * @throws PostManException the post man exception
 	 */
 	@RequestMapping(value = "/api/user/notify/register", method = { RequestMethod.POST })
 	public ResponseWrapper<Object> registerNotify(@RequestParam String token) throws PostManException {
@@ -192,8 +185,7 @@ public class UserController {
 	/**
 	 * Unregister notify.
 	 *
-	 * @param token
-	 *            the token
+	 * @param token the token
 	 * @return the response wrapper
 	 */
 	@RequestMapping(value = "/api/user/notify/unregister", method = { RequestMethod.POST })
@@ -214,14 +206,10 @@ public class UserController {
 	/**
 	 * Change password.
 	 *
-	 * @param oldPassword
-	 *            the old password
-	 * @param password
-	 *            the password
-	 * @param mOtp
-	 *            the m otp
-	 * @param eOtp
-	 *            the e otp
+	 * @param oldPassword the old password
+	 * @param password    the password
+	 * @param mOtp        the m otp
+	 * @param eOtp        the e otp
 	 * @return the response wrapper
 	 */
 	@Deprecated
@@ -236,8 +224,7 @@ public class UserController {
 	/**
 	 * Change password JSON.
 	 *
-	 * @param userUpdateRequest
-	 *            the user update request
+	 * @param userUpdateRequest the user update request
 	 * @return the response wrapper
 	 */
 	@ApiOperation(value = "new API to update password with Object")
@@ -245,8 +232,7 @@ public class UserController {
 	public ResponseWrapperM<Object, AuthResponseOTPprefix> changePasswordJSON(
 			@RequestHeader(value = "mOtp", required = false) String mOtpHeader,
 			@RequestParam(required = false) String mOtp,
-			@RequestBody UserUpdateRequest userUpdateRequest
-			) {
+			@RequestBody UserUpdateRequest userUpdateRequest) {
 		ResponseWrapperM<Object, AuthResponseOTPprefix> wrapper = new ResponseWrapperM<>();
 		mOtp = (mOtp == null) ? (mOtpHeader == null ? userUpdateRequest.getmOtp() : mOtpHeader) : mOtp;
 		if (mOtp == null) {
@@ -265,12 +251,9 @@ public class UserController {
 	/**
 	 * Update email.
 	 *
-	 * @param email
-	 *            the email
-	 * @param mOtp
-	 *            the m otp
-	 * @param eOtp
-	 *            the e otp
+	 * @param email the email
+	 * @param mOtp  the m otp
+	 * @param eOtp  the e otp
 	 * @return the response wrapper
 	 */
 	@Deprecated
@@ -284,8 +267,7 @@ public class UserController {
 	/**
 	 * Update email JSON.
 	 *
-	 * @param userUpdateRequest
-	 *            the user update request
+	 * @param userUpdateRequest the user update request
 	 * @return the response wrapper
 	 */
 	@RequestMapping(value = "/api/user/email/**", method = { RequestMethod.POST })
@@ -293,19 +275,20 @@ public class UserController {
 			@RequestHeader(value = "mOtp", required = false) String mOtpHeader,
 			@RequestHeader(value = "eOtp", required = false) String eOtpHeader,
 			@RequestParam(required = false) String mOtp, @RequestParam(required = false) String eOtp,
-			@RequestBody UserUpdateRequest userUpdateRequest
-			) {
+			@RequestBody UserUpdateRequest userUpdateRequest) {
 		mOtp = (mOtp == null) ? (mOtpHeader == null ? userUpdateRequest.getmOtp() : mOtpHeader) : mOtp;
 		eOtp = (eOtp == null) ? (eOtpHeader == null ? userUpdateRequest.geteOtp() : eOtpHeader) : eOtp;
 		ResponseWrapperM<Object, AuthResponseOTPprefix> wrapper = new ResponseWrapperM<>();
 		if (mOtp == null && eOtp == null) {
-			CivilIdOtpModel model = jaxService.setDefaults().getUserclient().sendOtpForEmailUpdate(userUpdateRequest.getEmail()).getResult();
+			CivilIdOtpModel model = jaxService.setDefaults().getUserclient()
+					.sendOtpForEmailUpdate(userUpdateRequest.getEmail()).getResult();
 			wrapper.setMeta(new AuthData());
 			wrapper.getMeta().setmOtpPrefix(model.getmOtpPrefix());
 			wrapper.getMeta().seteOtpPrefix(model.geteOtpPrefix());
 			wrapper.setStatus(WebResponseStatus.DOTP_REQUIRED);
 		} else {
-			CustomerModel model = jaxService.setDefaults().getUserclient().saveEmail(userUpdateRequest.getEmail(), mOtp, eOtp).getResult();
+			CustomerModel model = jaxService.setDefaults().getUserclient()
+					.saveEmail(userUpdateRequest.getEmail(), mOtp, eOtp).getResult();
 			sessionService.getUserSession().getCustomerModel().setEmail(model.getEmail());
 			sessionService.getUserSession().getCustomerModel().getPersoninfo().setEmail(model.getEmail());
 			wrapper.setStatus(WebResponseStatus.USER_UPDATE_SUCCESS);
@@ -316,12 +299,9 @@ public class UserController {
 	/**
 	 * Update phone.
 	 *
-	 * @param phone
-	 *            the phone
-	 * @param mOtp
-	 *            the m otp
-	 * @param eOtp
-	 *            the e otp
+	 * @param phone the phone
+	 * @param mOtp  the m otp
+	 * @param eOtp  the e otp
 	 * @return the response wrapper
 	 */
 	@Deprecated
@@ -335,8 +315,7 @@ public class UserController {
 	/**
 	 * Update phone JSON.
 	 *
-	 * @param userUpdateRequest
-	 *            the user update request
+	 * @param userUpdateRequest the user update request
 	 * @return the response wrapper
 	 */
 	@RequestMapping(value = "/api/user/phone/**", method = { RequestMethod.POST })
@@ -344,19 +323,20 @@ public class UserController {
 			@RequestHeader(value = "mOtp", required = false) String mOtpHeader,
 			@RequestHeader(value = "eOtp", required = false) String eOtpHeader,
 			@RequestParam(required = false) String mOtp, @RequestParam(required = false) String eOtp,
-			@RequestBody UserUpdateRequest userUpdateRequest
-			) {
+			@RequestBody UserUpdateRequest userUpdateRequest) {
 		mOtp = (mOtp == null) ? (mOtpHeader == null ? userUpdateRequest.getmOtp() : mOtpHeader) : mOtp;
 		eOtp = (eOtp == null) ? (eOtpHeader == null ? userUpdateRequest.geteOtp() : eOtpHeader) : eOtp;
 		ResponseWrapperM<Object, AuthResponseOTPprefix> wrapper = new ResponseWrapperM<>();
 		if (mOtp == null && eOtp == null) {
-			CivilIdOtpModel model = jaxService.setDefaults().getUserclient().sendOtpForMobileUpdate(userUpdateRequest.getPhone()).getResult();
+			CivilIdOtpModel model = jaxService.setDefaults().getUserclient()
+					.sendOtpForMobileUpdate(userUpdateRequest.getPhone()).getResult();
 			wrapper.setMeta(new AuthData());
 			wrapper.getMeta().setmOtpPrefix(model.getmOtpPrefix());
 			wrapper.getMeta().seteOtpPrefix(model.geteOtpPrefix());
 			wrapper.setStatus(WebResponseStatus.DOTP_REQUIRED);
 		} else {
-			CustomerModel model = jaxService.setDefaults().getUserclient().saveMobile(userUpdateRequest.getPhone(), mOtp, eOtp).getResult();
+			CustomerModel model = jaxService.setDefaults().getUserclient()
+					.saveMobile(userUpdateRequest.getPhone(), mOtp, eOtp).getResult();
 			sessionService.getUserSession().getCustomerModel().setMobile(model.getMobile());
 			sessionService.getUserSession().getCustomerModel().getPersoninfo().setMobile(model.getMobile());
 			wrapper.setStatus(WebResponseStatus.USER_UPDATE_SUCCESS);
@@ -367,16 +347,14 @@ public class UserController {
 	/**
 	 * Reg sec ques.
 	 *
-	 * @param userUpdateData
-	 *            the user update data
+	 * @param userUpdateData the user update data
 	 * @return the response wrapper
 	 */
 	@RequestMapping(value = "/api/user/secques", method = { RequestMethod.POST })
 	public ResponseWrapperM<Object, AuthResponseOTPprefix> regSecQues(
 			@RequestHeader(value = "mOtp", required = false) String mOtpHeader,
 			@RequestParam(required = false) String mOtp,
-			@RequestBody UserUpdateRequest userUpdateData
-			) {
+			@RequestBody UserUpdateRequest userUpdateData) {
 		ResponseWrapperM<Object, AuthResponseOTPprefix> wrapper = new ResponseWrapperM<>();
 		mOtp = (mOtp == null) ? (mOtpHeader == null ? userUpdateData.getmOtp() : mOtpHeader) : mOtp;
 		if (mOtp == null) {
@@ -393,16 +371,14 @@ public class UserController {
 	/**
 	 * Update phising.
 	 *
-	 * @param userUpdateData
-	 *            the user update data
+	 * @param userUpdateData the user update data
 	 * @return the response wrapper
 	 */
 	@RequestMapping(value = "/api/user/phising", method = { RequestMethod.POST })
 	public ResponseWrapperM<Object, AuthResponseOTPprefix> updatePhising(
 			@RequestHeader(value = "mOtp", required = false) String mOtpHeader,
 			@RequestParam(required = false) String mOtp,
-			@RequestBody UserUpdateRequest userUpdateData
-			) {
+			@RequestBody UserUpdateRequest userUpdateData) {
 		ResponseWrapperM<Object, AuthResponseOTPprefix> wrapper = new ResponseWrapperM<>();
 		mOtp = (mOtp == null) ? (mOtpHeader == null ? userUpdateData.getmOtp() : mOtpHeader) : mOtp;
 		if (mOtp == null) {
@@ -411,7 +387,7 @@ public class UserController {
 			wrapper.setStatus(WebResponseStatus.MOTP_REQUIRED);
 		} else {
 			wrapper.setData(userService.updatePhising(userUpdateData.getImageUrl(), userUpdateData.getCaption(),
-				mOtp, null));
+					mOtp, null));
 			wrapper.setStatus(WebResponseStatus.USER_UPDATE_SUCCESS);
 		}
 		return wrapper;
@@ -420,10 +396,8 @@ public class UserController {
 	/**
 	 * Send OTP.
 	 *
-	 * @param mOtp
-	 *            the m otp
-	 * @param eOtp
-	 *            the e otp
+	 * @param mOtp the m otp
+	 * @param eOtp the e otp
 	 * @return the response wrapper
 	 */
 	@Deprecated
