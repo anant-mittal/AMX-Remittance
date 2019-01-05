@@ -1,5 +1,6 @@
 package com.amx.jax.ui.session;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,7 +11,6 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.amx.jax.dict.UserClient.DeviceType;
 import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.model.UserDevice;
@@ -24,7 +24,7 @@ import eu.bitwalker.useragentutils.UserAgent;
  */
 @Component
 @Scope(value = WebApplicationContext.SCOPE_SESSION, proxyMode = ScopedProxyMode.TARGET_CLASS)
-public class UserDeviceBean extends UserDevice {
+public class UserDeviceBean implements Serializable {
 
 	private static final long serialVersionUID = -6869375666742059912L;
 
@@ -33,6 +33,8 @@ public class UserDeviceBean extends UserDevice {
 	@Autowired
 	private transient CommonHttpRequest httpService;
 
+	private UserDevice userDevice;
+
 	/**
 	 * Resolve.
 	 *
@@ -40,100 +42,33 @@ public class UserDeviceBean extends UserDevice {
 	 */
 	public UserDevice resolve() {
 
-		UserDevice userDevice = httpService.getUserDevice();
-
-		this.setAppType(userDevice.getAppType());
-		this.setType(userDevice.getType());
-		this.setPlatform(userDevice.getPlatform());
-		this.setUserAgent(userDevice.getUserAgent());
-
-		if (this.id == null) {
+		if (userDevice == null) {
+			userDevice = httpService.getUserDevice();
+		}
+		if (this.userDevice.getId() == null) {
 			String idn = ArgUtil.parseAsString(userDevice.getUserAgent().getId());
-			this.id = httpService.setBrowserId(ArgUtil.parseAsString(idn));
+			this.userDevice.setId(httpService.setBrowserId(ArgUtil.parseAsString(idn)));
 		}
 
-		return this;
+		return userDevice;
 	}
 
 	public boolean isAuthorized() {
-		if (this.id == null || this.fingerprint == null || httpService == null) {
+		if (this.userDevice == null || this.userDevice.getId() == null || this.userDevice.getFingerprint() == null
+				|| httpService == null) {
 			return true;
 		}
 		String ip = ArgUtil.parseAsString(httpService.getIPAddress(), Constants.BLANK);
 		String fingerprint = ArgUtil.parseAsString(httpService.getDeviceId(), Constants.BLANK);
 		UserAgent userAgent = httpService.getUserAgent();
 		String id = ArgUtil.parseAsString(userAgent.getId(), Constants.BLANK);
-		if (!id.equals(this.id)
+		if (!id.equals(userDevice.getId())
 				// || !fingerprint.equals(this.fingerprint)
-				|| !ip.equals(this.ip) || !(this.getUserAgent() == null || this.getUserAgent().equals(userAgent))) {
+				|| !ip.equals(userDevice.getIp())
+				|| !(userDevice.getUserAgent() == null || userDevice.getUserAgent().equals(userAgent))) {
 			return false;
 		}
 		return true;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.amx.jax.user.UserDevice#getFingerprint()
-	 */
-	@Override
-	public String getFingerprint() {
-		if (type == null) {
-			this.resolve();
-		}
-		return fingerprint;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.amx.jax.user.UserDevice#getId()
-	 */
-	@Override
-	public String getId() {
-		if (type == null) {
-			this.resolve();
-		}
-		return id;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.amx.jax.user.UserDevice#getAppVersion()
-	 */
-	@Override
-	public String getAppVersion() {
-		if (type == null) {
-			this.resolve();
-		}
-		return appVersion;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.amx.jax.user.UserDevice#getIp()
-	 */
-	@Override
-	public String getIp() {
-		if (type == null) {
-			this.resolve();
-		}
-		return ip;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.amx.jax.user.UserDevice#getType()
-	 */
-	@Override
-	public DeviceType getType() {
-		if (type == null) {
-			this.resolve();
-		}
-		return type;
 	}
 
 	/**
@@ -143,14 +78,14 @@ public class UserDeviceBean extends UserDevice {
 	 */
 	public Map<String, Object> toMap() {
 		Map<String, Object> map = new HashMap<>();
-		map.put("id", getId());
-		map.put("fingerprint", fingerprint);
-		map.put("platform", platform);
-		map.put("type", type);
-		map.put("agent", this.getUserAgent());
-		map.put("ip", ip);
-		map.put("appVersion", appVersion);
-		map.put("appType", appType);
+		map.put("id", userDevice.getId());
+		map.put("fingerprint", userDevice.getFingerprint());
+		map.put("platform", userDevice.getPlatform());
+		map.put("type", userDevice.getType());
+		map.put("agent", userDevice.getUserAgent());
+		map.put("ip", userDevice.getIp());
+		map.put("appVersion", userDevice.getAppVersion());
+		map.put("appType", userDevice.getAppType());
 		return map;
 	}
 
@@ -159,17 +94,20 @@ public class UserDeviceBean extends UserDevice {
 	 *
 	 * @return the user device
 	 */
-	public UserDevice toUserDevice() {
-		UserDeviceBean device = new UserDeviceBean();
-		device.setId(getId());
-		device.setFingerprint(getFingerprint());
-		device.setPlatform(getPlatform());
-		device.setType(getType());
-		device.setIp(getIp());
-		device.setAppVersion(getAppVersion());
-		device.setAppType(getAppType());
-		device.setUserAgent(getUserAgent());
-		return device;
+	public UserDevice getUserDevice() {
+		if (userDevice == null) {
+			this.resolve();
+		}
+		return userDevice;
 	}
 
+	public UserAgent getUserAgent() {
+		if (userDevice == null) {
+			this.resolve();
+		}
+		if (userDevice == null) {
+			return null;
+		}
+		return userDevice.getUserAgent();
+	}
 }
