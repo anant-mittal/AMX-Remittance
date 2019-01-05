@@ -126,6 +126,7 @@ public class DeviceController {
 				.getResult();
 		SessionPairingCreds creds = deviceRequestValidator.createSession(resp.getSessionPairToken(), resp.getOtp(),
 				resp.getTermialId(), resp.getEmpId());
+		creds.setOtpTtl(AmxConstants.OTP_TTL);
 		String meta = ArgUtil.isEmpty(resp.getEmpId()) ? resp.getTermialId() : resp.getEmpId();
 		return AmxApiResponse.build(creds, meta);
 	}

@@ -30,7 +30,15 @@ public class DeviceRestModels {
 
 	@JsonDeserialize(as = DeviceRestModel.class)
 	@JsonIgnoreProperties(ignoreUnknown = true)
-	public interface DevicePairingCreds extends DevicePairingRequest {
+	public interface DeviceModelConfig {
+		long getOtpTtl();
+
+		void setOtpTtl(long otpValidity);
+	}
+
+	@JsonDeserialize(as = DeviceRestModel.class)
+	@JsonIgnoreProperties(ignoreUnknown = true)
+	public interface DevicePairingCreds extends DevicePairingRequest, DeviceModelConfig {
 
 		void setDeviceRegToken(String deviceRegToken);
 
@@ -44,10 +52,6 @@ public class DeviceRestModels {
 
 		void setDeviceSecret(String deviceSecret);
 
-		long getOtpTtl();
-
-		void setOtpTtl(long otpValidity);
-
 	}
 
 	@JsonDeserialize(as = DeviceRestModel.class)
@@ -58,7 +62,7 @@ public class DeviceRestModels {
 
 	@JsonDeserialize(as = DeviceRestModel.class)
 	@JsonIgnoreProperties(ignoreUnknown = true)
-	public interface SessionPairingCreds {
+	public interface SessionPairingCreds extends DeviceModelConfig {
 
 		void setDeviceSessionToken(String sessionPairingToken);
 
