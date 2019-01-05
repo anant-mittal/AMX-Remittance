@@ -189,7 +189,6 @@ public class RemittancePaymentManager extends AbstractService{
 						} catch (Exception e) {
 						}
 						notificationService.sendTransactionNotification(rrsrl.get(0), personinfo);
-						/*remittanceManager.afterRemittanceSteps(remittanceTransaction);*/
 					} catch (Exception e) {
 						logger.error("error while sending transaction notification", e);
 					}
@@ -224,7 +223,7 @@ public class RemittancePaymentManager extends AbstractService{
 			
 			throw new GlobalException(JaxError.PG_ERROR,"Remittance error :"+errorMsg);
 		}
-		remittanceManager.checkAndBlockSuspiciousTransaction(lstPayIdDetails);
+		//remittanceManager.checkAndBlockSuspiciousTransaction(lstPayIdDetails);
 		response.getData().getValues().add(paymentResponse);
 	    response.getData().setType("pg_remit_response");
 		

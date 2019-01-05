@@ -29,6 +29,7 @@ import com.amx.jax.payg.PayGModel;
 import com.amx.jax.repository.IRemittanceTransactionDao;
 import com.amx.jax.repository.ISourceOfIncomeDao;
 import com.amx.jax.service.CurrencyMasterService;
+import com.amx.libjax.model.postman.SuspiciousTransactionPaymentDto;
 
 @Service
 @SuppressWarnings("rawtypes")
@@ -162,4 +163,9 @@ public class RemittanceTransactionService extends AbstractService {
 		return response;
 	}
 
+	public SuspiciousTransactionPaymentDto getSuspiciousTransactionPaymentDto(BigDecimal remittanceTransactionId) {
+		SuspiciousTransactionPaymentDto dto = new SuspiciousTransactionPaymentDto();
+		RemittanceTransactionView remittanceTransation = remittanceTransactionDao.findByRemittanceTransactionId(remittanceTransactionId);
+		return dto;
+	}
 }
