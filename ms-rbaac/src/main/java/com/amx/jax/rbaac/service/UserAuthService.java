@@ -381,7 +381,7 @@ public class UserAuthService {
 					.tolerance(AmxConstants.OFFLINE_OTP_TOLERANCE).secret(partnerOtpDevice.getClientSecreteKey())
 					.message(partnerOtpData.getmOtpPrefix());
 
-			if (!builder.validateNumHMAC(partnerOtp)) {
+			if (!secondBuilder.validateNumHMAC(partnerOtp)) {
 				return Boolean.FALSE;
 			}
 		}
