@@ -55,10 +55,8 @@ public class SlackService {
 	/**
 	 * Send.
 	 *
-	 * @param message
-	 *            the message
-	 * @param channel
-	 *            the channel
+	 * @param message the message
+	 * @param channel the channel
 	 * @return the string
 	 */
 	private String send(Map<String, Object> message, Channel channel) {
@@ -73,42 +71,43 @@ public class SlackService {
 	/**
 	 * Send notification.
 	 *
-	 * @param msg
-	 *            the msg
+	 * @param msg the msg
 	 * @return the notipy
 	 */
 	public Notipy sendNotification(Notipy msg) {
 
-		Map<String, Object> message = new HashMap<>();
-		message.put("text", msg.getMessage());
-		message.put("channel", msg.getChannel().getCode());
+		Map<String, Object> message = new HashMap<String, Object>();
+		// message.put("text", msg.getSubject());
+		message.put("channel", postManConfig.getChannelCode(msg.getChannel()));
+		// message.put("text", msg.getSubject());
 
+		Map<String, Object> attachment = new HashMap<String, Object>();
+		attachment.put("title", msg.getSubject());
+		StringBuilder tracetext = new StringBuilder();
+		tracetext.append(msg.getMessage());
 		if (msg.getLines().size() > 0 && msg.getLines().get(0).toString().length() > 0) {
-			Map<String, String> attachment = new HashMap<>();
-
-			StringBuilder tracetext = new StringBuilder();
-
 			for (String line : msg.getLines()) {
 				tracetext.append("\n" + line);
 			}
-
-			attachment.put("text", tracetext.toString());
-			attachment.put("color", msg.getColor().getCode());
-			message.put("attachments", Collections.singletonList(attachment));
 		}
+		attachment.put("text", tracetext.toString());
+		attachment.put("author_name", ArgUtil.parseAsString(msg.getAuthor()));
+		attachment.put("color", msg.getColor());
+		attachment.put("fields", msg.getFields());
+		message.put("attachments", Collections.singletonList(attachment));
 
 		String response = send(message, msg.getChannel());
-		LOGGER.info("Slack Sent", response);
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.info("Slack Sent", response);
+		}
 		return msg;
 	}
 
 	/**
 	 * Send exception.
 	 *
-	 * @param title
-	 *            the title
-	 * @param e
-	 *            the e
+	 * @param title the title
+	 * @param e     the e
 	 * @return the exception report
 	 */
 	@Async(ExecutorConfig.EXECUTER_BRONZE)
@@ -119,10 +118,8 @@ public class SlackService {
 	/**
 	 * Send exception.
 	 *
-	 * @param title
-	 *            the title
-	 * @param e
-	 *            the e
+	 * @param title the title
+	 * @param e     the e
 	 * @return the exception report
 	 */
 	@Async(ExecutorConfig.EXECUTER_BRONZE)
@@ -133,14 +130,10 @@ public class SlackService {
 	/**
 	 * Send exception.
 	 *
-	 * @param appname
-	 *            the appname
-	 * @param title
-	 *            the title
-	 * @param exception
-	 *            the exception
-	 * @param e
-	 *            the e
+	 * @param appname   the appname
+	 * @param title     the title
+	 * @param exception the exception
+	 * @param e         the e
 	 * @return the exception report
 	 */
 	@Async(ExecutorConfig.EXECUTER_BRONZE)

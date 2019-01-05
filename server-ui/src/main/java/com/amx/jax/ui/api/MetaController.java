@@ -21,6 +21,8 @@ import com.amx.amxlib.meta.model.ServiceGroupMasterDescDto;
 import com.amx.amxlib.meta.model.ViewAreaDto;
 import com.amx.amxlib.meta.model.ViewCityDto;
 import com.amx.amxlib.meta.model.ViewDistrictDto;
+import com.amx.amxlib.meta.model.ViewGovernateAreaDto;
+import com.amx.amxlib.meta.model.ViewGovernateDto;
 import com.amx.amxlib.meta.model.ViewStateDto;
 import com.amx.amxlib.model.BeneRelationsDescriptionDto;
 import com.amx.amxlib.model.request.GetBankBranchRequest;
@@ -182,6 +184,23 @@ public class MetaController {
 				jaxService.setDefaults().getMetaClient().getCitytList(districtId).getResults());
 	}
 
+	@RequestMapping(value = { "/pub/meta/v2/governate/list" }, method = { RequestMethod.GET })
+	public ResponseWrapper<List<ViewGovernateDto>> getGovernateList() {
+		return new ResponseWrapper<List<ViewGovernateDto>>(
+				jaxService.setDefaults().getMetaClient().getGovernateList().getResults());
+	}
+
+	@RequestMapping(value = { "/pub/meta/v2/area/list" }, method = { RequestMethod.GET })
+	public ResponseWrapper<List<ViewGovernateAreaDto>> getGovernateAreaList(@RequestParam BigDecimal governateId) {
+		return new ResponseWrapper<List<ViewGovernateAreaDto>>(
+				jaxService.setDefaults().getMetaClient().getGovernateAreaList(governateId).getResults());
+	}
+
+	/**
+	 * @deprecated
+	 * @return
+	 */
+	@Deprecated
 	@RequestMapping(value = { "/api/meta/area/list", "/pub/meta/area/list" }, method = { RequestMethod.GET })
 	public ResponseWrapper<List<ViewAreaDto>> getAreaList() {
 		return new ResponseWrapper<List<ViewAreaDto>>(

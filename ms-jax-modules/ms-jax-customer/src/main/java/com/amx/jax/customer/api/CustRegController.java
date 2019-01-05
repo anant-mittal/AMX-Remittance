@@ -1,5 +1,6 @@
 package com.amx.jax.customer.api;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Map;
 
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.CustomerCredential;
@@ -32,6 +34,7 @@ import com.amx.jax.model.response.ComponentDataDto;
 import com.amx.jax.model.response.CustomerInfo;
 import com.amx.jax.model.response.FieldListDto;
 import com.amx.jax.model.response.IncomeRangeDto;
+import com.amx.jax.model.response.customer.OffsiteCustomerDataDTO;
 import com.amx.jax.service.CountryService;
 import com.amx.jax.service.MetaService;
 import com.amx.jax.service.ViewDistrictService;
@@ -139,4 +142,9 @@ public class CustRegController implements ICustRegService {
 		return offsiteCustRegService.saveLoginDetailOffsite(customerCredential);
 	}
 	
+	@RequestMapping(value = CustRegApiEndPoints.GET_OFFSITE_CUSTOMER_DATA, method = RequestMethod.GET)
+	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerData(@RequestParam(value = "identityInt", required = true) String identityInt,
+			@RequestParam(value = "identityType", required = true) BigDecimal identityType) {
+		return offsiteCustRegService.getOffsiteCustomerData(identityInt, identityType);
+	}
 }

@@ -25,11 +25,11 @@ import javax.crypto.spec.PBEParameterSpec;
 import org.slf4j.Logger;
 
 import com.amx.jax.device.DeviceRestModels.DevicePairingCreds;
-import com.amx.jax.device.DeviceRestModels.NetAddress;
 import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.logger.LoggerService;
 import com.amx.utils.CryptoUtil.HashBuilder;
 import com.amx.utils.JsonUtil;
+import com.amx.utils.NetworkAdapter.NetAddress;
 
 import net.east301.keyring.BackendNotSupportedException;
 import net.east301.keyring.Keyring;

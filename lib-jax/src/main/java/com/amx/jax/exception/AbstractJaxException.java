@@ -23,8 +23,8 @@ public abstract class AbstractJaxException extends AmxApiException {
 		super(errorMessage);
 	}
 
-	public AbstractJaxException(String errorMessage, String errorKey) {
-		super(errorMessage, errorKey);
+	public AbstractJaxException(String errorKey, String errorMessage) {
+		super(errorKey, errorMessage);
 	}
 
 	public AbstractJaxException(JaxError errorKey, String errorMessage) {

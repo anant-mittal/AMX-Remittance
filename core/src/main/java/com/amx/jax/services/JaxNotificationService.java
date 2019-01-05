@@ -21,22 +21,22 @@ import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.EmployeeInfo;
 import com.amx.amxlib.model.PersonInfo;
 import com.amx.amxlib.model.notification.RemittanceTransactionFailureAlertModel;
-import com.amx.jax.AppConfig;
 import com.amx.jax.dbmodel.ApplicationSetup;
 import com.amx.jax.dbmodel.ExEmailNotification;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.model.response.fx.FxDeliveryDetailNotificationDto;
+import com.amx.jax.model.response.fx.FxOrderDetailNotificationDto;
+import com.amx.jax.model.response.fx.FxOrderReportResponseDto;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
-import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.postman.model.ChangeType;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
-import com.amx.jax.postman.model.Notipy;
-import com.amx.jax.postman.model.Notipy.Channel;
+import com.amx.jax.postman.model.Message;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.scope.TenantContextHolder;
+import com.amx.utils.CollectionUtil;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -45,27 +45,21 @@ public class JaxNotificationService {
 	@Autowired
 	private PostManService postManService;
 
-	@Autowired
-	private PushNotifyClient pushNotifyClient;
-
-	@Autowired
-	private AppConfig appConfig;
-
 	Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	private final String SUBJECT_ACCOUNT_UPDATE = "Account Update";
 
 	public void sendTransactionNotification(RemittanceReceiptSubreport remittanceReceiptSubreport, PersonInfo pinfo) {
 
-		logger.info("Sending txn notification to customer");
+		logger.debug("Sending txn notification to customer");
 		Email email = new Email();
-
-		logger.info("Tenant is ----> " + TenantContextHolder.currentSite());
 
 		if (TenantContextHolder.currentSite().equals(Tenant.KWT)) {
 			email.setSubject("Your transaction on AMX is successful");
 		} else if (TenantContextHolder.currentSite().equals(Tenant.BHR)) {
 			email.setSubject("Your transaction on MEC is successful");
+		}else if (TenantContextHolder.currentSite().equals(Tenant.OMN)) {
+		    email.setSubject("Your transaction on Modern Exchange - Oman is successful");
 		}
 
 		email.addTo(pinfo.getEmail());
@@ -75,11 +69,33 @@ public class JaxNotificationService {
 
 		File file = new File();
 		file.setITemplate(TemplatesMX.REMIT_RECEIPT_JASPER);
+		file.setName("TransactionReceipt");
 		file.setType(File.Type.PDF);
 		file.getModel().put(RESP_DATA_KEY, remittanceReceiptSubreport);
 
 		email.addFile(file);
-		logger.info("Email to - " + pinfo.getEmail() + " first name : " + pinfo.getFirstName());
+		logger.debug("Email to - " + pinfo.getEmail() + " first name : " + pinfo.getFirstName());
+		sendEmail(email);
+	}
+
+	public void sendTransactionNotification(FxOrderReportResponseDto remittanceReceiptSubreport,
+			FxOrderDetailNotificationDto pinfo) {
+
+		logger.debug("Sending txn notification to customer");
+		Email email = new Email();
+
+		email.addTo(pinfo.getEmail());
+		email.setITemplate(TemplatesMX.FC_KNET_SUCCESS);
+		email.setHtml(true);
+		email.getModel().put(RESP_DATA_KEY, pinfo);
+
+		File file = new File();
+		file.setITemplate(TemplatesMX.FXO_RECEIPT);
+		file.setType(File.Type.PDF);
+		file.getModel().put(Message.RESULTS_KEY, CollectionUtil.getList(remittanceReceiptSubreport));
+
+		email.addFile(file);
+		logger.debug("Email to - " + pinfo.getEmail() + " first name : " + pinfo.getCustomerName());
 		sendEmail(email);
 	}
 
@@ -140,9 +156,10 @@ public class JaxNotificationService {
 		sendEmail(email);
 	} // end of sendProfileChangeNotificationEmail
 
-	public void sendOtpSms(PersonInfo pinfo, CivilIdOtpModel model ) {
+	public void sendOtpSms(PersonInfo pinfo, CivilIdOtpModel model) {
 		sendOtpSms(pinfo, model, TemplatesMX.RESET_OTP_SMS);
 	}
+
 	public void sendOtpSms(PersonInfo pinfo, CivilIdOtpModel model, TemplatesMX templateMX) {
 
 		logger.info(String.format("Sending OTP SMS to customer :%s on mobile_no :%s  ", pinfo.getFirstName(),
@@ -155,14 +172,11 @@ public class JaxNotificationService {
 
 		try {
 			postManService.sendSMSAsync(sms);
-			if (!appConfig.isProdMode()) {
-				sendToSlack("mobile", sms.getTo().get(0), model.getmOtpPrefix(), model.getmOtp());
-			}
 		} catch (PostManException e) {
 			logger.error("error in sendOtpSms", e);
 		}
 	} // end of sendOtpSms
-	
+
 	public void sendOtpSms(String mobile, FxDeliveryDetailNotificationDto model) {
 		SMS sms = new SMS();
 		sms.addTo(mobile);
@@ -171,9 +185,6 @@ public class JaxNotificationService {
 
 		try {
 			postManService.sendSMSAsync(sms);
-			if (!appConfig.isProdMode()) {
-				sendToSlack("mobile", sms.getTo().get(0), model.getmOtpPrefix(), model.getmOtp());
-			}
 		} catch (PostManException e) {
 			logger.error("error in sendOtpSms", e);
 		}
@@ -193,10 +204,6 @@ public class JaxNotificationService {
 		logger.info("Email to - " + pinfo.getEmail() + " first name : " + civilIdOtpModel.getFirstName());
 		sendEmail(email);
 
-		if (!appConfig.isProdMode()) {
-			sendToSlack("email", email.getTo().get(0), civilIdOtpModel.geteOtpPrefix(), civilIdOtpModel.geteOtp());
-		}
-
 	}// end of sendOtpEmail
 
 	public void sendNewRegistrationSuccessEmailNotification(PersonInfo pinfo, String emailid) {
@@ -209,18 +216,6 @@ public class JaxNotificationService {
 
 		logger.info("Email to - " + pinfo.getEmail() + " first name : " + pinfo.getFirstName());
 		sendEmail(email);
-	}
-
-	public void sendToSlack(String channel, String to, String prefix, String otp) {
-		Notipy msg = new Notipy();
-		msg.setMessage(String.format("%s = %s", channel, to));
-		msg.addLine(String.format("OTP = %s-%s", prefix, otp));
-		msg.setChannel(Channel.NOTIPY);
-		try {
-			postManService.notifySlack(msg);
-		} catch (PostManException e) {
-			logger.error("error in SlackNotify", e);
-		}
 	}
 
 	public void sendEmail(Email email) {
@@ -291,9 +286,6 @@ public class JaxNotificationService {
 
 		try {
 			postManService.sendSMSAsync(sms);
-			if (!appConfig.isProdMode()) {
-				sendToSlack("mobile", sms.getTo().get(0), model.getmOtpPrefix(), model.getmOtp());
-			}
 		} catch (PostManException e) {
 			logger.error("error in sendOtpSms", e);
 		}

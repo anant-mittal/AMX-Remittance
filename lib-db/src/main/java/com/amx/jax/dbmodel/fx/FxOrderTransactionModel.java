@@ -5,6 +5,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 
 
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -125,6 +126,11 @@ public class FxOrderTransactionModel implements Serializable {
 	@Column(name="TRANSACTION_REF_NO")
 	private String  transactionReferenceNo;
 	
+	@Column(name="ORDER_STATUS_CODE")
+	private String orderStatusCode;
+	
+	@Column(name="INVENTORY_ID")
+	private String inventoryId;
 	
 
 	public BigDecimal getIdno() {
@@ -383,6 +389,30 @@ public class FxOrderTransactionModel implements Serializable {
 
 	public void setExchangeRate(BigDecimal exchangeRate) {
 		this.exchangeRate = exchangeRate;
+	}
+
+	public String getOrderStatusCode() {
+		return orderStatusCode;
+	}
+
+	public void setOrderStatusCode(String orderStatusCode) {
+		this.orderStatusCode = orderStatusCode;
+	}
+
+	public String getInventoryId() {
+		return inventoryId;
+	}
+
+	public void setInventoryId(String inventoryId) {
+		this.inventoryId = inventoryId;
+	}
+
+	public String getTransactionReferenceNo() {
+		return transactionReferenceNo;
+	}
+
+	public void setTransactionReferenceNo(String transactionReferenceNo) {
+		this.transactionReferenceNo = transactionReferenceNo;
 	}
 
 }

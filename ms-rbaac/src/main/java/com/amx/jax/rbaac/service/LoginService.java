@@ -155,7 +155,7 @@ public class LoginService extends AbstractService {
 
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
-			throw new AuthServiceException("saveEnums fail ", e.getMessage());
+			throw new AuthServiceException(e.getMessage(), "saveEnums fail ");
 		}
 
 		return getBooleanResponse(savesStatus);
@@ -213,7 +213,7 @@ public class LoginService extends AbstractService {
 
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
-			throw new AuthServiceException("saveModule fail ", e.getMessage());
+			throw new AuthServiceException(e.getMessage(), "saveModule fail ");
 		}
 
 		return savesStatus;
@@ -269,7 +269,7 @@ public class LoginService extends AbstractService {
 
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
-			throw new AuthServiceException("saveFunctionalityTypeMaster fail ", e.getMessage());
+			throw new AuthServiceException(e.getMessage(), "saveFunctionalityTypeMaster fail ");
 		}
 
 		return savesStatus;
@@ -325,7 +325,7 @@ public class LoginService extends AbstractService {
 			}
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
-			throw new AuthServiceException("savePermissionScopeMaster fail ", e.getMessage());
+			throw new AuthServiceException(e.getMessage(), "savePermissionScopeMaster fail ");
 		}
 
 		return savesStatus;
@@ -424,7 +424,7 @@ public class LoginService extends AbstractService {
 
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
-			throw new AuthServiceException("savePermission fail ", e.getMessage());
+			throw new AuthServiceException(e.getMessage(), "savePermission fail ");
 		}
 
 		return savesStatus;
@@ -536,7 +536,7 @@ public class LoginService extends AbstractService {
 
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
-			throw new AuthServiceException("saveRoleMaster fail ", e.getMessage());
+			throw new AuthServiceException(e.getMessage(), "saveRoleMaster fail ");
 		}
 
 		return getBooleanResponse(savesStatus);
@@ -608,7 +608,7 @@ public class LoginService extends AbstractService {
 			}
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
-			throw new AuthServiceException("saveAssignRoleToUser fail ", e.getMessage());
+			throw new AuthServiceException(e.getMessage(), "saveAssignRoleToUser fail ");
 		}
 
 		return getBooleanResponse(savesStatus);
@@ -682,7 +682,7 @@ public class LoginService extends AbstractService {
 			savesStatus = Boolean.TRUE;
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
-			throw new AuthServiceException("saveAssignPermToRole fail ", e.getMessage());
+			throw new AuthServiceException(e.getMessage(), "saveAssignPermToRole fail ");
 		}
 
 		return getBooleanResponse(savesStatus);
@@ -709,7 +709,7 @@ public class LoginService extends AbstractService {
 			apiResponse.getData().setType("send-otp-model");
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
-			throw new AuthServiceException("sendOtp fail ", e.getMessage());
+			throw new AuthServiceException(e.getMessage(), "sendOtp fail ");
 		}
 
 		return apiResponse;
@@ -788,7 +788,7 @@ public class LoginService extends AbstractService {
 			}
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
-			throw new AuthServiceException("verifyUserDetails fail ", e.getMessage());
+			throw new AuthServiceException(e.getMessage(), "verifyUserDetails fail ");
 		}
 
 		return apiResponse;
@@ -825,7 +825,7 @@ public class LoginService extends AbstractService {
 			}
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
-			throw new AuthServiceException("verifyUserOTPDetails fail ", e.getMessage());
+			throw new AuthServiceException(e.getMessage(), "verifyUserOTPDetails fail ");
 		}
 
 		return apiResponse;

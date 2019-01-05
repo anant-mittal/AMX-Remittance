@@ -5,8 +5,8 @@ import java.math.BigDecimal;
 import com.amx.jax.IJaxService;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
-import com.amx.jax.error.JaxError;
 import com.amx.jax.error.ApiJaxStatusBuilder.ApiJaxStatus;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.model.request.fx.FcSaleDeliveryDetailUpdateReceiptRequest;
 import com.amx.jax.model.request.fx.FcSaleDeliveryMarkDeliveredRequest;
@@ -60,7 +60,7 @@ public interface IFxOrderDelivery extends IJaxService {
 
 	@ApiJaxStatus({ JaxError.FC_CURRENCY_DELIVERY_DETAIL_NOT_FOUND, JaxError.MISSING_OTP, JaxError.INVALID_OTP,
 			JaxError.INVALID_EMPLOYEE })
-	AmxApiResponse<BoolRespModel, Object> verifyOtp(BigDecimal deliveryDetailSeqId, BigDecimal mOtp);
+	AmxApiResponse<BoolRespModel, Object> verifyOtp(BigDecimal deliveryDetailSeqId, String mOtp);
 
 	AmxApiResponse<ResourceDTO, Object> listDeliveryRemark();
 

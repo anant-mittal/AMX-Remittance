@@ -5,17 +5,22 @@ import java.util.Collections;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.PostConstruct;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
 import com.amx.jax.dict.Project;
 import com.amx.jax.filter.AppClientErrorHanlder;
 import com.amx.jax.filter.AppClientInterceptor;
+import com.amx.jax.scope.TenantProperties;
 import com.amx.utils.ArgUtil;
 
 @Configuration
@@ -34,8 +39,8 @@ public class AppConfig {
 	public static final String APP_CACHE = "${app.cache}";
 	public static final String APP_LOGGER = "${app.logger}";
 
-	public static final String APP_CONTEXT_PREFIX = "${server.contextPath}";
-
+    public static final String APP_CONTEXT_PREFIX = "${server.contextPath}";
+    
 	@Deprecated
 	public static final String APP_CLASS = "${app.class}";
 
@@ -133,19 +138,22 @@ public class AppConfig {
 
 	@Value(APP_CONTEXT_PREFIX)
 	@AppParamKey(AppParam.APP_CONTEXT_PREFIX)
-	private String appPrefix;
-
+    private String appPrefix;
+    
 	@Value("${server.session.cookie.http-only}")
 	private boolean cookieHttpOnly;
 
 	@Value("${server.session.cookie.secure}")
 	private boolean cookieSecure;
 
+	@Value("${spring.profiles.active}")
+	private String[] springProfile;
+
 	@Value("${app.audit.file.print}")
 	String[] printableAuditMarkers;
 
 	@Value("${app.audit.file.skip}")
-	String[] skipAuditMarkers;
+    String[] skipAuditMarkers;
 
 	public boolean isCookieHttpOnly() {
 		return cookieHttpOnly;
@@ -197,8 +205,8 @@ public class AppConfig {
 
 	public String getLoggerURL() {
 		return loggerURL;
-	}
-
+    }
+    
 	@Bean
 	public AppParam loadAppParams() {
 
@@ -300,6 +308,14 @@ public class AppConfig {
 
 	public String getAppPrefix() {
 		return appPrefix;
+	}
+
+	@Autowired
+	private Environment environment;
+	
+	@PostConstruct
+	public void init() {
+		TenantProperties.setEnviroment(environment);
 	}
 
 }

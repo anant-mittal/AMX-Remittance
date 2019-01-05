@@ -4,17 +4,6 @@ import java.math.BigDecimal;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.fx.FxOrderBranchClient;
@@ -31,6 +20,16 @@ import com.amx.jax.utils.PostManUtil;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import io.swagger.annotations.Api;
 
 @PreAuthorize("hasPermission('CUSTOMER_MGMT.FXORDER', 'VIEW')")
@@ -39,10 +38,10 @@ import io.swagger.annotations.Api;
 public class FxOrderBranchController {
 	@Autowired
 	private FxOrderBranchClient fxOrderBranchClient;
-	
+
 	@Autowired
 	private PostManService postManService;
-	
+
 	@RequestMapping(value = "/api/fxo/order/list", method = { RequestMethod.GET })
 	public AmxApiResponse<FcSaleOrderManagementDTO,Object> getOrderList(){
 		return fxOrderBranchClient.fetchBranchOrderManagement();
@@ -66,7 +65,7 @@ public class FxOrderBranchController {
 	public AmxApiResponse<FcSaleOrderManagementDTO,Object> getOrderDetails(
 			@RequestParam(value = "orderNumber", required = true) BigDecimal orderNumber,
 			@RequestParam(value = "orderYear", required = true) BigDecimal orderYear){
-		return fxOrderBranchClient.fetchBranchOrderDetails(orderNumber, orderYear);
+		return fxOrderBranchClient.fetchBranchOrderDetails(orderNumber,orderYear);
 	}
 	
 	@RequestMapping(value = "/api/fxo/currency/stock",  method = { RequestMethod.POST })
@@ -79,23 +78,23 @@ public class FxOrderBranchController {
 		return fxOrderBranchClient.fetchBranchStockDetails();
 	}
 	
-	@RequestMapping(value = "/api/fxo/order/print.{ext}",  method = { RequestMethod.POST }, produces = {
+	@RequestMapping(value = "/api/fxo/order/print",  method = { RequestMethod.POST }, produces = {
 			CommonMediaType.APPLICATION_JSON_VALUE, CommonMediaType.APPLICATION_V0_JSON_VALUE,
 			CommonMediaType.APPLICATION_PDF_VALUE, CommonMediaType.TEXT_HTML_VALUE })
 	public ResponseEntity<byte[]> getFxOrderTransactionReport(
-			@PathVariable("ext") File.Type ext,
+			@RequestParam("ext") File.Type ext,
 			@RequestParam(required = false) Boolean duplicate,
 			@RequestBody FcSaleBranchDispatchRequest fcSaleBranchDispatchRequest,
 			HttpServletResponse response) {
 
 		duplicate = ArgUtil.parseAsBoolean(duplicate, false);
+		BigDecimal documentNo = fcSaleBranchDispatchRequest.getCollectionDocumentNo();
+		BigDecimal documentYear = fcSaleBranchDispatchRequest.getCollectionDocumentYear();
 		
 		AmxApiResponse<FxOrderReportResponseDto, Object> wrapper = duplicate ? 
-				fxOrderBranchClient.reprintOrder(
-						fcSaleBranchDispatchRequest.getCollectionDocumentNo(), 
-						fcSaleBranchDispatchRequest.getCollectionDocumentYear()) : 
+				fxOrderBranchClient.reprintOrder(documentNo, documentYear) : 
 				fxOrderBranchClient.printOrderSave(fcSaleBranchDispatchRequest);
-
+				
 		if (File.Type.PDF.equals(ext)) {
 			File file = postManService.processTemplate(
 					new File(duplicate ? TemplatesMX.FXO_RECEIPT : TemplatesMX.FXO_RECEIPT,
@@ -104,8 +103,8 @@ public class FxOrderBranchController {
 			// file.create(response, false);
 			// return null;
 			file.setName(file.getITemplate().getFileName() + '_' + 
-					fcSaleBranchDispatchRequest.getCollectionDocumentNo().toString() + '_' + 
-					fcSaleBranchDispatchRequest.getCollectionDocumentYear().toString() + ".pdf");
+					documentNo.toString() + '_' + 
+					documentYear.toString() + ".pdf");
 			return PostManUtil.download(file);
 
 		} else if (File.Type.HTML.equals(ext)) {
@@ -115,8 +114,8 @@ public class FxOrderBranchController {
 					.getResult();
 			
 			file.setName(file.getITemplate().getFileName() + '_' +
-					fcSaleBranchDispatchRequest.getCollectionDocumentNo().toString() + '_' + 
-					fcSaleBranchDispatchRequest.getCollectionDocumentYear().toString() + ".html");
+					documentNo.toString() + '_' + 
+					documentYear.toString() + ".html");
 			// return file.getContent();
 			return PostManUtil.download(file);
 
@@ -144,7 +143,8 @@ public class FxOrderBranchController {
 			@RequestParam(value = "orderNumber", required = true) BigDecimal orderNumber,
 			@RequestParam(value = "driverId", required = true) BigDecimal driverId,
 			@RequestParam(value = "orderYear", required = true) BigDecimal orderYear){
-		return fxOrderBranchClient.assignDriver(orderNumber, orderYear, driverId);
+
+		return fxOrderBranchClient.assignDriver(orderNumber, orderYear,driverId);
 	}
 	
 	@RequestMapping(value = "/api/fxo/order/dispatch",  method = { RequestMethod.POST })
@@ -167,7 +167,5 @@ public class FxOrderBranchController {
 			@RequestParam(value = "orderYear", required = true) BigDecimal orderYear) {
 		return fxOrderBranchClient.acceptCancellation(orderNumber, orderYear);
 	}
-	
-	
 	
 }

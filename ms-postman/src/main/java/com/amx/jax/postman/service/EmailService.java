@@ -1,6 +1,7 @@
 package com.amx.jax.postman.service;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -9,6 +10,8 @@ import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+import org.redisson.api.RQueue;
+import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +22,9 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.AppConfig;
+import com.amx.jax.AppContext;
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.async.ExecutorConfig;
 import com.amx.jax.logger.AuditEvent;
 import com.amx.jax.logger.AuditService;
@@ -27,9 +33,14 @@ import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.audit.PMGaugeEvent;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
+import com.amx.jax.postman.model.Message.Status;
+import com.amx.jax.postman.model.Notipy;
 import com.amx.jax.scope.TenantScoped;
+import com.amx.jax.tunnel.TunnelMessage;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
+import com.amx.utils.CryptoUtil;
+import com.amx.utils.TimeUtils;
 import com.amx.utils.Utils;
 
 /**
@@ -38,6 +49,8 @@ import com.amx.utils.Utils;
 @TenantScoped
 @Component
 public class EmailService {
+
+	static final String FAILED_EMAIL_QUEUE = "FAILED_EMAIL_QUEUE";
 
 	/** The Constant LOGGER. */
 	private static final Logger LOGGER = LoggerFactory.getLogger(EmailService.class);
@@ -66,15 +79,23 @@ public class EmailService {
 	private PostManConfig postManConfig;
 
 	@Autowired
-	ContactCleanerService contactService;
+	private ContactCleanerService contactService;
 
 	/** The slack service. */
 	@Autowired
-	SlackService slackService;
+	private SlackService slackService;
 
 	/** The audit service. */
 	@Autowired
-	AuditService auditService;
+	private AuditService auditService;
+
+	@Autowired
+	private AppConfig appConfig;
+
+	@Autowired
+	RedissonClient redisson;
+
+	public static final int RESEND_INTERVAL = 1 * 60 * 1000;
 
 	/**
 	 * Gets the mail sender.
@@ -109,17 +130,21 @@ public class EmailService {
 	/**
 	 * Send email.
 	 *
-	 * @param email
-	 *            the email
+	 * @param email the email
 	 * @return the email
-	 * @throws PostManException
-	 *             the post man exception
+	 * @throws PostManException the post man exception
 	 */
 	@Async(ExecutorConfig.EXECUTER_GOLD)
 	public Email sendEmail(Email email) throws PostManException {
 
 		PMGaugeEvent pMGaugeEvent = new PMGaugeEvent(PMGaugeEvent.Type.SEND_EMAIL);
 		String to = null;
+		Email emailClone = null;
+		try {
+			emailClone = email.clone();
+		} catch (CloneNotSupportedException e1) {
+			LOGGER.error("Clonning exception {} Email to {}", email.getTemplate(), Utils.commaConcat(email.getTo()));
+		}
 		try {
 			if (LOGGER.isDebugEnabled()) {
 				LOGGER.debug("Sending {} Email to {}", email.getTemplate(), Utils.commaConcat(email.getTo()));
@@ -150,55 +175,97 @@ public class EmailService {
 			}
 			if (!ArgUtil.isEmpty(to)) {
 				this.send(email);
+				email.setStatus(Status.SENT);
 				auditService.log(pMGaugeEvent.set(AuditEvent.Result.DONE).set(email));
 			} else {
-				auditService.log(pMGaugeEvent.set(AuditEvent.Result.FAIL).set(email));
+				email.setStatus(Status.NOT_SENT);
+				auditService.log(pMGaugeEvent.set(AuditEvent.Result.REJECTED).set(email));
 			}
+
 		} catch (Exception e) {
-			auditService.excep(pMGaugeEvent.set(email), LOGGER, e);
+			auditService.excep(pMGaugeEvent.set(AuditEvent.Result.ERROR).set(email), LOGGER, e);
 			slackService.sendException(to, e);
 		}
+
+		if (!ArgUtil.isEmpty(emailClone) && !Status.SENT.equals(email.getStatus())
+				&& !Status.NOT_SENT.equals(email.getStatus())) {
+			AppContext context = AppContextUtil.getContext();
+			TunnelMessage<Email> tunnelMessage = new TunnelMessage<Email>(emailClone, context);
+			RQueue<TunnelMessage<Email>> emailQueue = redisson
+					.getQueue(FAILED_EMAIL_QUEUE + "_" +
+							TimeUtils.getRotationNumber(RESEND_INTERVAL, 0x1)
+							+ "_" + postManConfig.getEmailRetryPush());
+			emailQueue.add(tunnelMessage);
+		}
+
 		return email;
 	}
 
 	/**
 	 * Send.
 	 *
-	 * @param eParams
-	 *            the e params
+	 * @param eParams the e params
 	 * @return the email
-	 * @throws MessagingException
-	 *             the messaging exception
-	 * @throws IOException
-	 *             Signals that an I/O exception has occurred.
+	 * @throws MessagingException the messaging exception
+	 * @throws IOException        Signals that an I/O exception has occurred.
 	 */
-	private Email send(Email eParams) throws MessagingException, IOException {
-		if (eParams.isHtml()) {
-			sendHtmlMail(eParams);
+	private Email send(Email email) throws MessagingException, IOException {
+		String tos = null;
+
+		if (email.isHtml()) {
+			tos = String.join(",", sendHtmlMail(email));
 		} else {
-			sendPlainTextMail(eParams);
+			tos = String.join(",", sendPlainTextMail(email));
 		}
-		return eParams;
+
+		if (!appConfig.isProdMode() && !ArgUtil.isEmpty(email.getITemplate())
+				&& !ArgUtil.isEmpty(email.getITemplate().getChannel())) {
+			Notipy msg = new Notipy();
+			msg.setSubject(email.getSubject());
+			msg.setAuthor(String.format("%s = %s", email.getTo().get(0), tos));
+			msg.setMessage(String.format("%s", email.getModel().toString()));
+			msg.setChannel(email.getITemplate().getChannel());
+			msg.addField("TEMPLATE", email.getITemplate().toString());
+			msg.setColor("#" + CryptoUtil.toHex(6, email.getITemplate().toString()));
+			slackService.sendNotification(msg);
+		}
+
+		return email;
+	}
+
+	private InternetAddress getInternetAddress(String email) throws UnsupportedEncodingException {
+		String fromEmail = null;
+		String fromTitle = null;
+
+		Matcher matcher = pattern.matcher(email);
+		if (matcher.find()) {
+			fromEmail = matcher.group(2);
+			fromTitle = matcher.group(1);
+		} else {
+			fromEmail = email;
+			fromTitle = email;
+		}
+		return new InternetAddress(fromEmail, fromTitle);
 	}
 
 	/**
 	 * Send html mail.
 	 *
-	 * @param eParams
-	 *            the e params
-	 * @throws MessagingException
-	 *             the messaging exception
-	 * @throws IOException
-	 *             Signals that an I/O exception has occurred.
+	 * @param eParams the e params
+	 * @return
+	 * @throws MessagingException the messaging exception
+	 * @throws IOException        Signals that an I/O exception has occurred.
 	 */
-	private void sendHtmlMail(Email eParams) throws MessagingException, IOException {
+	private String[] sendHtmlMail(Email eParams) throws MessagingException, IOException {
 
 		boolean isHtml = true;
 
 		MimeMessage message = getMailSender().createMimeMessage();
 		MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
-		helper.setTo(contactService.getEmail(eParams.getTo()));
+		String[] tos = contactService.getEmail(eParams.getTo());
+
+		helper.setTo(tos);
 		// helper.setTo(emailsTo.toArray(new String[emailsTo.size()]));
 		// helper.setReplyTo(eParams.getFrom());
 
@@ -206,23 +273,13 @@ public class EmailService {
 			eParams.setFrom(postManConfig.getMailFrom());
 		}
 
-		String fromEmail = null;
-		String fromTitle = null;
-
-		Matcher matcher = pattern.matcher(eParams.getFrom());
-		if (matcher.find()) {
-			fromEmail = matcher.group(2);
-			fromTitle = matcher.group(1);
-		} else {
-			fromEmail = eParams.getFrom();
-			fromTitle = eParams.getFrom();
-		}
+		InternetAddress fromInternetAddress = getInternetAddress(eParams.getFrom());
 
 		if (eParams.getReplyTo() == null || Constants.DEFAULT_STRING.equals(eParams.getReplyTo())) {
 			eParams.setReplyTo(eParams.getFrom());
 		}
 
-		helper.setFrom(new InternetAddress(fromEmail, fromTitle));
+		helper.setFrom(fromInternetAddress);
 		helper.setReplyTo(eParams.getReplyTo());
 
 		String messageStr = eParams.getMessage();
@@ -256,19 +313,25 @@ public class EmailService {
 		}
 
 		getMailSender().send(message);
+
+		return tos;
 	}
 
 	/**
 	 * Send plain text mail.
 	 *
-	 * @param eParams
-	 *            the e params
+	 * @param eParams the e params
+	 * @return
+	 * @throws UnsupportedEncodingException
 	 */
-	private void sendPlainTextMail(Email eParams) {
+	private String[] sendPlainTextMail(Email eParams) throws UnsupportedEncodingException {
 		SimpleMailMessage mailMessage = new SimpleMailMessage();
 
-		eParams.getTo().toArray(new String[eParams.getTo().size()]);
-		mailMessage.setTo(eParams.getTo().toArray(new String[eParams.getTo().size()]));
+		String[] tos = contactService.getEmail(eParams.getTo());
+		// InternetAddress fromInternetAddress = getInternetAddress(eParams.getFrom());
+
+		// eParams.getTo().toArray(new String[eParams.getTo().size()]);
+		mailMessage.setTo(tos);
 		mailMessage.setReplyTo(eParams.getFrom());
 		mailMessage.setFrom(eParams.getFrom());
 		mailMessage.setSubject(eParams.getSubject());
@@ -279,7 +342,7 @@ public class EmailService {
 		}
 
 		getMailSender().send(mailMessage);
-
+		return tos;
 	}
 
 }

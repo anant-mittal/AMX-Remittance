@@ -319,4 +319,16 @@ public class RbaacServiceClient implements IRbaacService {
 				});
 	}
 
+	@Override
+	public AmxApiResponse<BoolRespModel, Object> createEmployeeSystemMapping(BigDecimal employeeId,
+			BigDecimal countryBranchSystemInventoryId) {
+
+		LOGGER.debug("in createEmployeeSystemMapping");
+
+		return restService.ajax(appConfig.getAuthURL()).path(ApiEndPoints.EMPLOYEE_SYSTEM_MAPPING_CREATE)
+				.field(Params.EMPLOYEE_ID, employeeId).field(Params.TERMINAL_ID, countryBranchSystemInventoryId)
+				.postForm().as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
+				});
+	}
+
 }

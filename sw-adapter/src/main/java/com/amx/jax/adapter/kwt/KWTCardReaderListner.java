@@ -128,10 +128,24 @@ public class KWTCardReaderListner implements PaciEventHandler {
 				}
 
 				data.setExpiryDate(expiryDate);
-				data.setGenuine(KWTCardReaderService.API.ValidateCardIsGenuine(readerIndex));
-				data.setValid(KWTCardReaderService.API.ValidateCardCertificate(readerIndex, false, true, true));
-				KWTCardReaderService.CONTEXT.push(data);
+
 				KWTCardReaderService.CONTEXT.status(CardStatus.SCANNED);
+
+				try {
+					data.setGenuine(KWTCardReaderService.API.ValidateCardIsGenuine(readerIndex));
+				} catch (Exception exp) {
+					data.setGenuine(false);
+					KWTCardReaderService.CONTEXT.status(CardStatus.CARD_NOT_GENUINE);
+				}
+
+				try {
+					data.setValid(KWTCardReaderService.API.ValidateCardCertificate(readerIndex, false, true, true));
+				} catch (Exception exp) {
+					data.setValid(false);
+					KWTCardReaderService.CONTEXT.status(CardStatus.CARD_EXPIRED);
+				}
+				KWTCardReaderService.CONTEXT.push(data);
+
 			} catch (PaciException e) {
 				LOGGER.error("KwCardReaderListner:CardConnectionEvent:PaciException {}", e);
 				KWTCardReaderService.CONTEXT.status(DataStatus.READ_ERROR);

@@ -2,15 +2,20 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<parent>
-		<artifactId>amxeco</artifactId>
-		<groupId>com.amx.jax</groupId>
-		<version>0.0.1-SNAPSHOT</version>
-	</parent>
 	<modelVersion>4.0.0</modelVersion>
+
 	<artifactId>ms-radar</artifactId>
+	<packaging>jar</packaging>
 	<name>ms-radar</name>
-	<version>0.0.1-SNAPSHOT</version>
+	<url>http://maven.apache.org</url>
+	<description>Radar System</description>
+
+	<parent>
+		<groupId>com.amx.jax</groupId>
+		<artifactId>amxeco</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath> <!-- lookup parent from repository -->
+	</parent>
 
 	<properties>
 		<java.version>1.8</java.version>
@@ -19,6 +24,12 @@
 
 
 	<dependencies>
+
+		<dependency>
+			<groupId>com.fasterxml.jackson.dataformat</groupId>
+			<artifactId>jackson-dataformat-xml</artifactId>
+			<version>2.9.6</version>
+		</dependency>
 
 		<dependency>
 			<groupId>com.amx.jax</groupId>
@@ -70,6 +81,18 @@
 		</dependency>
 
 
+
+		<dependency>
+			<groupId>org.jsoup</groupId>
+			<artifactId>jsoup</artifactId>
+			<version>1.11.3</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.amx.jax</groupId>
+			<artifactId>jax-client</artifactId>
+		</dependency>
+
 	</dependencies>
 
 
@@ -79,8 +102,7 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
-					<excludes>
-					</excludes>
+					<executable>true</executable>
 				</configuration>
 			</plugin>
 		</plugins>

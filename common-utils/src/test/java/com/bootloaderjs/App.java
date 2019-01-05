@@ -1,10 +1,6 @@
 package com.bootloaderjs;
 
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
-
-import com.amx.utils.CryptoUtil;
-import com.amx.utils.StringUtils;
 
 public class App { // Noncompliant
 
@@ -17,16 +13,17 @@ public class App { // Noncompliant
 	 */
 	public static void main(String[] args) {
 		long timeout = 100L;
-		System.out.println("DIV=" + (TimeUnit.NANOSECONDS.toSeconds(timeout) - 1));
-		// String lalit = "lalit.tanwar07@gmail.com";
-		// String amit = "amitt.n.tanwar07@gmail.com";
-		// System.out.println("HASH=" + StringUtils.hash(lalit, 99));
-		// System.out.println("HASH=" + StringUtils.hash(amit, 99));
-
+		long minute = System.currentTimeMillis() / (1000 * 60);
+		System.out.println(
+				"==" + minute + "===" + rotateTime(1000 * 1, 0x3));
 	}
 
-	public static void generate() {
-		System.out.println(CryptoUtil.generateHMAC("appd-kwt.amxremit.com", "traceId"));
+	private static long rotateTime(long millis, int i) {
+		return (System.currentTimeMillis() / (millis)) & i;
+	}
+
+	private static long rotateTimeReverse(long millis, int i) {
+		return i - (System.currentTimeMillis() / (millis)) & i;
 	}
 
 }

@@ -123,6 +123,9 @@ public class ReceiptPayment implements Serializable {
 	private String denominationType;
 	
 	private String inventoryId;
+	private BigDecimal onlineCountryBranchId;
+	private BigDecimal onlineLocationCode;
+	private BigDecimal onlineDocumentNumber;
 
 	private CurrencyWiseDenomination exCurrencyWiseDenomination;
 	private List<PurposeOfTransaction> exPurposeOfTransaction= new ArrayList<PurposeOfTransaction>();
@@ -841,5 +844,28 @@ public class ReceiptPayment implements Serializable {
 	public void setInventoryId(String inventoryId) {
 		this.inventoryId = inventoryId;
 	}
-		
+	
+	@Column(name="ONLINE_COUNTRY_BRANCH_ID")
+	public BigDecimal getOnlineCountryBranchId() {
+		return onlineCountryBranchId;
+	}
+	public void setOnlineCountryBranchId(BigDecimal onlineCountryBranchId) {
+		this.onlineCountryBranchId = onlineCountryBranchId;
+	}
+	
+	@Column(name="ONLINE_LOCCOD")
+	public BigDecimal getOnlineLocationCode() {
+		return onlineLocationCode;
+	}
+	public void setOnlineLocationCode(BigDecimal onlineLocationCode) {
+		this.onlineLocationCode = onlineLocationCode;
+	}
+	
+	@Column(name="ONLINE_DOCUMENT_NO")
+	public BigDecimal getOnlineDocumentNumber() {
+		return onlineDocumentNumber;
+	}
+	public void setOnlineDocumentNumber(BigDecimal onlineDocumentNumber) {
+		this.onlineDocumentNumber = onlineDocumentNumber;
+	}
 }

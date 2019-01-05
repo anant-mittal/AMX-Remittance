@@ -2,8 +2,11 @@ package com.amx.jax.rbaac.dto;
 
 import java.math.BigDecimal;
 
+import com.amx.jax.AmxConstants;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class DeviceDto {
 
 	BigDecimal registrationId;
@@ -11,9 +14,11 @@ public class DeviceDto {
 	String deviceId;
 
 	String deviceType;
-	
+
+	String deviceSecret = AmxConstants.SHH_DONT_TELL_ANYONE;
+
 	String pairToken;
-	
+
 	@JsonIgnore
 	String status;
 
@@ -56,6 +61,14 @@ public class DeviceDto {
 	@JsonIgnore
 	public void setStatus(String status) {
 		this.status = status;
+	}
+
+	public String getDeviceSecret() {
+		return deviceSecret;
+	}
+
+	public void setDeviceSecret(String deviceSecret) {
+		this.deviceSecret = deviceSecret;
 	}
 
 }

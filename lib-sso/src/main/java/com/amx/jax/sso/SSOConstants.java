@@ -2,6 +2,8 @@ package com.amx.jax.sso;
 
 public class SSOConstants {
 
+	public static final String IS_RETURN = "return";
+
 	private SSOConstants() {
 		// Not allowed
 	}
@@ -40,8 +42,10 @@ public class SSOConstants {
 	public static final String SECURITY_CODE_KEY = "sec_code";
 	public static final String PARTNER_SECURITY_CODE_KEY = "partner_sec_code";
 
-	public static final String PARAM_SSO_LOGIN_URL = "SSO_LOGIN_URL";
-	public static final String PARAM_SSO_LOGIN_PREFIX = "SSO_LOGIN_PREFIX";
+    public static final String PARAM_SSO_LOGIN_URL = "SSO_LOGIN_URL";
+    public static final String PARAM_SSO_LOGIN_PREFIX = "SSO_LOGIN_PREFIX";
+    
+    public static final String ADAPTER_URL = "ADAPTER_URL";
 
 	public enum SSOAuthStep {
 		START, SESSION, DO, DONE, REQUIRED, CHECK, CREDS, OTP, VERIFY

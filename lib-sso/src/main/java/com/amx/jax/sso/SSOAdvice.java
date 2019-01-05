@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import com.amx.jax.AppConstants;
 import com.amx.jax.api.AmxFieldError;
@@ -26,7 +25,7 @@ import com.amx.utils.HttpUtils;
 
 @ControllerAdvice
 public class SSOAdvice extends AmxAdvice {
-	
+
 	@ExceptionHandler(AccessDeniedException.class)
 	@ResponseBody
 	@ResponseStatus(HttpStatus.FORBIDDEN)
@@ -39,8 +38,7 @@ public class SSOAdvice extends AmxAdvice {
 		errors.add(newError);
 		return accessDenied(ex, errors, request, response, ApiStatusCodes.ACCESS_DENIED);
 	}
-	
-	
+
 	protected ResponseEntity<AmxApiError> accessDenied(Exception ex, List<AmxFieldError> errors,
 			HttpServletRequest request, HttpServletResponse response, ApiStatusCodes statusKey) {
 		AmxApiError apiError = new AmxApiError();

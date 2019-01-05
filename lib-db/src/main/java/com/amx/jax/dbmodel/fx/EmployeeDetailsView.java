@@ -108,6 +108,12 @@ public class EmployeeDetailsView implements Serializable {
 	
 	@Column(name = "WU_ACCOUNT_CODE")
 	String wuAccountCode;
+	
+	@Column(name = "BRANCH_ID")
+	BigDecimal branchId;
+	
+	@Column(name = "GOVERNORATES")
+	BigDecimal governorates;
 
 	public BigDecimal getEmployeeId() {
 		return employeeId;
@@ -347,6 +353,22 @@ public class EmployeeDetailsView implements Serializable {
 
 	public void setWuAccountCode(String wuAccountCode) {
 		this.wuAccountCode = wuAccountCode;
+	}
+
+	public BigDecimal getBranchId() {
+		return branchId;
+	}
+
+	public void setBranchId(BigDecimal branchId) {
+		this.branchId = branchId;
+	}
+
+	public BigDecimal getGovernorates() {
+		return governorates;
+	}
+
+	public void setGovernorates(BigDecimal governorates) {
+		this.governorates = governorates;
 	}
 
 }

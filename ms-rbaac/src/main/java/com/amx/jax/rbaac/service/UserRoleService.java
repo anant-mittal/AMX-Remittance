@@ -33,7 +33,6 @@ import com.amx.jax.rbaac.exception.AuthServiceException;
 import com.amx.jax.util.ObjectConverter;
 import com.amx.utils.JsonUtil;
 
-
 /**
  * The Class UserRoleService.
  */
@@ -285,16 +284,15 @@ public class UserRoleService {
 
 				if (!validateUserRoleMapping(userRoleMappingDTO)) {
 
-					throw new AuthServiceException(
-							RbaacServiceError.INVALID_USER_ROLE_MAPPINGS,
-							"Invalid User Role Mappings: One or more role mappings are Invalid for User Role Mapping Id: "
+					throw new AuthServiceException(RbaacServiceError.INVALID_USER_ROLE_MAPPINGS,
+							"Invalid User Role Mappings: One or more role mappings are Present for User Role Mapping Id: "
 									+ userRoleMappingDTO.getId() + ", EmployeeId: " + userRoleMappingDTO.getEmployeeId()
 									+ ", RoleId: " + userRoleMappingDTO.getRoleId());
 				}
 
 				persistURMappings.add(urm);
 
-			} else if (userRoleMappingDTO.getIsDeleted()) {
+			} else if (null != userRoleMappingDTO.getIsDeleted() && userRoleMappingDTO.getIsDeleted()) {
 
 				// case 2: Mapping is to be deleted.
 
@@ -309,8 +307,7 @@ public class UserRoleService {
 
 				} else if (!validateUserRoleMapping(userRoleMappingDTO)) {
 
-					throw new AuthServiceException(
-							RbaacServiceError.INVALID_USER_ROLE_MAPPINGS,
+					throw new AuthServiceException(RbaacServiceError.INVALID_USER_ROLE_MAPPINGS,
 							"Invalid User Role Mappings: One or more role mappings are Invalid for User Role Mapping Id: "
 									+ userRoleMappingDTO.getId() + ", EmployeeId: " + userRoleMappingDTO.getEmployeeId()
 									+ ", RoleId: " + userRoleMappingDTO.getRoleId());
@@ -333,16 +330,14 @@ public class UserRoleService {
 
 				} else if (!validateUserRoleMapping(userRoleMappingDTO)) {
 
-					throw new AuthServiceException(
-							RbaacServiceError.INVALID_USER_ROLE_MAPPINGS,
+					throw new AuthServiceException(RbaacServiceError.INVALID_USER_ROLE_MAPPINGS,
 							"Invalid User Role Mappings: One or more role mappings are Invalid for User Role Mapping Id: "
 									+ userRoleMappingDTO.getId() + ", EmployeeId: " + userRoleMappingDTO.getEmployeeId()
 									+ ", RoleId: " + userRoleMappingDTO.getRoleId());
 
-				} else if (userRoleMappingDTO.getEmployeeId() != existingMapping.getEmployeeId()) {
+				} else if (userRoleMappingDTO.getEmployeeId().longValue() != existingMapping.getEmployeeId().longValue()) {
 
-					throw new AuthServiceException(
-							RbaacServiceError.ILLEGAL_USER_ROLE_MAPPING_MODIFICATION,
+					throw new AuthServiceException(RbaacServiceError.ILLEGAL_USER_ROLE_MAPPING_MODIFICATION,
 							"Illegal User Role Mappings Modification: One or more role mapping modifications are Invalid for User Role Mapping Id: "
 									+ userRoleMappingDTO.getId() + ", EmployeeId: " + userRoleMappingDTO.getEmployeeId()
 									+ ", RoleId: " + userRoleMappingDTO.getRoleId());
@@ -408,16 +403,14 @@ public class UserRoleService {
 
 				for (Entry<String, String> innerEntry : entry.getValue().entrySet()) {
 					if (!accessTypeJson.contains(innerEntry.getKey()) || !scopeJson.contains(innerEntry.getValue())) {
-						throw new AuthServiceException(
-								RbaacServiceError.INVALID_ACCESS_TYPE_SCOPE,
+						throw new AuthServiceException(RbaacServiceError.INVALID_ACCESS_TYPE_SCOPE,
 								"Invalid Permission: One or more permissions are Invalid: " + entry.getKey() + " : "
 										+ innerEntry.getKey() + " : " + innerEntry.getValue());
 					}
 				}
 
 			} else {
-				throw new AuthServiceException(
-						RbaacServiceError.INVALID_PERMISSION,
+				throw new AuthServiceException(RbaacServiceError.INVALID_PERMISSION,
 						"Invalid Permission: One or more permissions are Invalid: " + entry.getKey());
 			}
 
@@ -443,52 +436,60 @@ public class UserRoleService {
 			return false;
 		}
 
+		if (null != urm.getId() && urm.getId().longValue() == 0l) {
+			// In Case Requested for New user Role Mapping and Mapping already exists
+			if (null != rbaacDao.getUserRoleMappingByEmployeeId(urm.getEmployeeId())) {
+				return false;
+			}
+		}
+
 		return true;
 	}
-	
-	public RoleMappingForEmployee getRoleMappingsForEmployee(BigDecimal employeeId, String ipAddress,
-			String deviceId, Boolean filterRole) {
+
+	public RoleMappingForEmployee getRoleMappingsForEmployee(BigDecimal employeeId, String ipAddress, String deviceId,
+			Boolean filterRole) {
 		RoleMappingForEmployee rmForEmployee = new RoleMappingForEmployee();
-		
-		// put Employee Info by Employee Id 
+
+		// put Employee Info by Employee Id
 		Employee employee = rbaacDao.getEmployeeByEmployeeId(employeeId);
 		Map<BigDecimal, EmployeeDetailsDTO> employeeInfoMap = new HashMap<BigDecimal, EmployeeDetailsDTO>();
-		if(employee != null) {						
+		if (employee != null) {
 			List<BigDecimal> empIdList = new ArrayList<BigDecimal>();
-			
+
 			empIdList.add(employee.getEmployeeId());
 
 			employeeInfoMap.put(employee.getEmployeeId(), ObjectConverter.convertEmployeeToEmpDetailsDTO(employee));
 			rmForEmployee.setEmployeeInfoMap(employeeInfoMap);
-		}else {
+		} else {
 			rmForEmployee.setEmployeeInfoMap(employeeInfoMap);
 		}
-		
+
 		// put role mapping list for that particular Employee Id
 		UserRoleMapping userRoleMappingList = rbaacDao.getUserRoleMappingsByEmployeeId(employeeId);
 		Map<BigDecimal, UserRoleMappingDTO> userRoleMappingInfoMap = new HashMap<BigDecimal, UserRoleMappingDTO>();
-		if(userRoleMappingList != null) {
-			userRoleMappingInfoMap.put(userRoleMappingList.getEmployeeId(),ObjectConverter.convertUrmToUrmDTO(userRoleMappingList));
+		if (userRoleMappingList != null) {
+			userRoleMappingInfoMap.put(userRoleMappingList.getEmployeeId(),
+					ObjectConverter.convertUrmToUrmDTO(userRoleMappingList));
 			rmForEmployee.setUserRoleMappingInfoMap(userRoleMappingInfoMap);
-		}else {
+		} else {
 			rmForEmployee.setUserRoleMappingInfoMap(userRoleMappingInfoMap);
 		}
-		
+
 		// put the role list
 		List<Role> roleListAll = rbaacDao.getAllRoles();
 		Map<BigDecimal, RoleResponseDTO> roleInfoMap = new HashMap<BigDecimal, RoleResponseDTO>();
 
 		for (Role role : roleListAll) {
-			if(userRoleMappingList != null && filterRole) {
-				if(role.getId().compareTo(userRoleMappingList.getRoleId())==0) {
+			if (userRoleMappingList != null && filterRole) {
+				if (role.getId().compareTo(userRoleMappingList.getRoleId()) == 0) {
 					roleInfoMap.put(role.getId(), ObjectConverter.convertRoleToRoleResponseDTO(role));
 				}
-			}else {
+			} else {
 				roleInfoMap.put(role.getId(), ObjectConverter.convertRoleToRoleResponseDTO(role));
 			}
 		}
 		rmForEmployee.setRoleInfoMap(roleInfoMap);
-		
+
 		return rmForEmployee;
 	}
 

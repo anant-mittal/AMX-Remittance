@@ -33,10 +33,10 @@ public class SessionAuditFilter implements AuditFilter<SessionEvent> {
 		RequestAttributes attribs = RequestContextHolder.getRequestAttributes();
 		if (attribs instanceof NativeWebRequest) {
 			if (userDevice != null) {
-				if (userDevice.getFingerprint() == null) {
+				if (userDevice.getUserDevice().getFingerprint() == null) {
 					userDevice.resolve();
 				}
-				event.setDevice(userDevice.toUserDevice());
+				event.setDevice(userDevice.getUserDevice().getUserAgent());
 			}
 		}
 	}

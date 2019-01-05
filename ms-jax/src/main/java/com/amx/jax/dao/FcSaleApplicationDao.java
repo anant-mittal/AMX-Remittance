@@ -248,7 +248,7 @@ public class FcSaleApplicationDao {
 					 receiptPaymentRespository.save(rcpt);
 					 //Update the Application Receipt
 					 updateAppicationReceiptPayment(rcpt);
-					 updateDeliveryDetails(rcpt.getDeliveryDetSeqId());
+					 updateDeliveryDetails(rcpt.getDeliveryDetSeqId(),collection.getDocumentNo(),collection.getDocumentFinanceYear());
 				 }//end of for loop.
 			 }else{
 				 output.put("P_ERROR_MESG", "ERROR_RCPT_APPLICATION_SAVE");
@@ -341,9 +341,12 @@ public class FcSaleApplicationDao {
 		return fxDeliveryDetailsRepository.findOne(deliveryDetailSeqId);
 	}
 	
-	public void updateDeliveryDetails(BigDecimal delDelSeqId){
+	public void updateDeliveryDetails(BigDecimal delDelSeqId,BigDecimal colldocNo,BigDecimal collDocfyr){
 		FxDeliveryDetailsModel deliveryDetails = fxDeliveryDetailsRepository.findOne(delDelSeqId);
 		if(deliveryDetails!=null){
+			deliveryDetails.setDeleviryDelSeqId(deliveryDetails.getDeleviryDelSeqId());
+			deliveryDetails.setColDocFyr(collDocfyr);
+			deliveryDetails.setColDocNo(colldocNo);
 			deliveryDetails.setOrderStatus(ConstantDocument.ORD);
 		}
 	}
@@ -357,30 +360,6 @@ public class FcSaleApplicationDao {
 	}
 	
 	
-/*	public BigDecimal getFxTrnxLimit(Map<String, Object> inputValues) {
-		BigDecimal totalAmount = BigDecimal.ZERO;
-		BigDecimal fcAmount = (BigDecimal)inputValues.get("FC_AMOUNT");
-		BigDecimal customerId = (BigDecimal)inputValues.get("CUSTOMER_ID");
-		logger.info("inputValues :" +inputValues.toString());
-		String sql =" select sum(amt)  totalamount from ("
-					+" select sum(A.LOCAL_NET_AMOUNT) amt from EX_APPL_RECEIPT_PAYMENT A where  A.customer_id ="+customerId+" "
-					+" and   trunc(A.CREATED_DATE)=trunc(sysdate)  and a.isactive='Y' union all "
-					+" select sum(A.LOCAL_NET_AMOUNT) amt from EX_RECEIPT_PAYMENT A where  A.customer_id ="+customerId+" "
-					+ " and   trunc(A.CREATED_DATE)=trunc(sysdate)  and a.isactive='Y' ) t2 ";
 
-		List<Object> inputList = new ArrayList<>();
-		inputList.add(inputValues.get("CUSTOMER_ID"));
-		List<Map<String, Object>> outputList = jdbcTemplate.queryForList(sql, inputList.toArray());
-		logger.info("Output : "+outputList.toString());
-		Iterator<Map<String, Object>> itr = outputList.iterator();
-		while (itr.hasNext()) {
-			totalAmount = (BigDecimal) itr.next().get("totalamount");
-		}
-		
-		totalAmount = totalAmount.add(fcAmount);
-		return totalAmount;
-
-	}
-	*/
 	
 }
