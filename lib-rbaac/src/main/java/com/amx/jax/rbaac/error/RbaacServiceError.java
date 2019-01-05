@@ -19,6 +19,9 @@ public enum RbaacServiceError implements IExceptionEnum {
 	/** The invalid otp. */
 	INVALID_OTP,
 	
+	/** The invalid otp. */
+	OTP_TIMED_OUT,
+	
 	INVALID_PARTNER_OTP,
 
 	/** The otp limit exceeded. */

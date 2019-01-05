@@ -33,6 +33,16 @@ public final class CryptoUtil {
 	/** The Constant SHA2. */
 	private static final String SHA2 = "SHA-256";
 
+	/**
+	 * 
+	 * @param interval
+	 *            : In Seconds
+	 * @param secretKey
+	 * @param message
+	 * @param currentTime
+	 *            : In MilliSeconds
+	 * @return
+	 */
 	public static String generateHMAC(long interval, String secretKey, String message, long currentTime) {
 		try {
 

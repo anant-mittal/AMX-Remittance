@@ -14,6 +14,8 @@ import com.amx.jax.AmxConstants;
 import com.amx.jax.model.OtpData;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
+import com.amx.jax.postman.model.Notipy;
+import com.amx.jax.postman.model.Notipy.Channel;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.rbaac.dbmodel.Employee;
@@ -54,11 +56,6 @@ public class UserOtpManager {
 
 		OtpData otpData = new OtpData();
 
-		/**
-		 * TODO:- Get Device RegId for {@link ClientType#NOTP_APP}
-		 * 
-		 * @author lalittanwar
-		 */
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("SMS OTP TOKEN {} {} {}", AmxConstants.SMS_OTP_TTL, secret, sac);
 		}
@@ -72,9 +69,21 @@ public class UserOtpManager {
 		long initTime = System.currentTimeMillis();
 
 		otpData.setInitTime(initTime);
-		otpData.setTtl(initTime + AmxConstants.SMS_OTP_TTL);
+		otpData.setTtl(AmxConstants.SMS_OTP_TTL * 1000);
 
 		return otpData;
+	}
+
+	public void sendToSlack(String channel, String to, String prefix, String otp) {
+		Notipy msg = new Notipy();
+		msg.setMessage(String.format("%s = %s", channel, to));
+		msg.addLine(String.format("OTP = %s-%s", prefix, otp));
+		msg.setChannel(Channel.NOTIPY);
+		try {
+			postManService.notifySlack(msg);
+		} catch (PostManException e) {
+			LOGGER.error("Error in SlackNotify", e);
+		}
 	}
 
 	/**
