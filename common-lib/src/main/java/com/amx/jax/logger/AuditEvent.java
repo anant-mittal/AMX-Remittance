@@ -1,6 +1,5 @@
 package com.amx.jax.logger;
 
-import com.amx.jax.dict.UserClient;
 import com.amx.jax.dict.UserClient.UserDeviceClient;
 import com.amx.jax.exception.IExceptionEnum;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
