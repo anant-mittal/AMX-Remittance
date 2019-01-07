@@ -299,12 +299,12 @@ public class UserAuthService {
 		/**
 		 * Check for Timed Out OTP
 		 */
-		if (userOtpData.getOtpData().getInitTime() + AmxConstants.SMS_OTP_TTL < System.currentTimeMillis()) {
+		if (userOtpData.getOtpData().getInitTime() + AmxConstants.SMS_OTP_TTL * 1000 < System.currentTimeMillis()) {
 
 			userOtpCache.remove(employeeNo);
 
 			throw new AuthServiceException(RbaacServiceError.OTP_TIMED_OUT,
-					"Invalid OTP: OTP is not generated for the user or timedOut");
+					"Invalid OTP: OTP is timedOut");
 		}
 
 		Employee employee = userOtpData.getEmployee();
