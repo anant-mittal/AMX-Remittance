@@ -16,9 +16,11 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.dao.ApplicationProcedureDao;
+import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dao.RemittanceProcedureDao;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
+import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.payg.PaymentResponseDto;
@@ -41,6 +43,10 @@ public class RemittanceApplicationService {
 	MetaData metaData;
 	@Autowired
 	UserService userService;
+	@Autowired
+	RemittanceTransactionService remittanceTransactionService ; 
+	@Autowired
+	RemittanceApplicationDao remittanceApplicationDao; 
 	
 	Logger logger = LoggerFactory.getLogger(RemittanceApplicationService.class);
 	
@@ -212,5 +218,10 @@ public void updatePayTokenNull(List<RemittanceApplication> lstPayIdDetails,Payme
 			throw new GlobalException(JaxError.UNAUTHORIZED,
 					"Please visit branch/compliance team to activate the account");
 		}
+	}
+	
+	public RemittanceApplication getRemittanceApplicationByTransactionId(BigDecimal remittanceTransactionId) {
+		RemittanceTransaction remitTrxn = remittanceTransactionService.getRemittanceTransactionById(remittanceTransactionId);
+		return remittanceApplicationDao.getApplication(remitTrxn.getApplicationDocumentNo(), remitTrxn.getApplicationdocumentFinancialyear());
 	}
 }
