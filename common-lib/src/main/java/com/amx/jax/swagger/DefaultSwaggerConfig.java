@@ -58,6 +58,7 @@ public class DefaultSwaggerConfig {
 					.modelRef(new ModelRef(PARAM_STRING)).parameterType(mockParam.getType().toString().toLowerCase())
 					.allowableValues(allowableValues).required(mockParam.isRequired()).hidden(mockParam.isHidden())
 					.build();
+			
 			operationParameters.add(parameter);
 		}
 

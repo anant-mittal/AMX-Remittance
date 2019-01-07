@@ -3,10 +3,12 @@ package com.amx.jax;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.JaxAuthCache.JaxAuthMeta;
 import com.amx.jax.scope.TenantScoped;
 import com.amx.jax.scope.TenantValue;
 import com.amx.jax.swagger.MockParamBuilder;
 import com.amx.jax.swagger.MockParamBuilder.MockParam;
+import com.amx.utils.JsonUtil;
 
 @TenantScoped
 @Component
@@ -19,7 +21,7 @@ public class JaxClientConfig {
 	public MockParam basicParam() {
 		return new MockParamBuilder().name(AppConstants.REQUEST_PARAMS_XKEY)
 				.description(AppConstants.REQUEST_PARAMS_XKEY)
-				.defaultValue("{\"mOtp\":123456,\"eOtp\":234567,\"secAns\":\"black\"}")
+				.defaultValue(JsonUtil.toJson(new JaxAuthMeta("123456", "234567", "black")))
 				.parameterType(MockParamBuilder.MockParamType.HEADER).required(true).build();
 	}
 }
