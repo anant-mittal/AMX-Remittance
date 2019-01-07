@@ -220,7 +220,7 @@ public enum JaxError implements IExceptionEnum {
 	INVENTORY_ID_EXISTS,
 	ONLINE_REG_NOT_ALLOWED_ARTICLE_20, CIVIL_ID_EXPIRED,
 	// to log out customer
-	UNAUTHORIZED;
+	UNAUTHORIZED, BENE_COUNTRY_RISK;
 
 	
 
