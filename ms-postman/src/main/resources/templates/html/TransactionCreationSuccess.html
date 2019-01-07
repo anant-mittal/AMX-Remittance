@@ -267,7 +267,8 @@
                                         <h5>Dear <span  th:text="${data.firstName}"></span> <span  th:text="${data.lastName}"></span>,</h5><br/>
 
                                         <p class="lead">Greetings from <span th:text="${_tu.prop('company.name')}" th:remove="tag"></span> !</p> <br/>
-                                        <p class="lead">Thank you for using <a th:href="@{'https://' +${_tu.prop('company.website.url')}}"><span th:text="${_tu.prop('company.website.url')}"></span></a> for your remittance and hope you had a pleasant experience. Please find attached the remittance receipt.</p>
+                                        <p class="lead">Thank you for using <a th:href="@{'https://' +${_tu.prop('company.website.url')}}"><span th:text="${_tu.prop('company.website.url')}"></span></a> for your remittance and hope you had a pleasant experience. </p>
+                                        <p class="lead">Please find attached your the remittance receipt.</p> 
 
                                       <!-- A Real Hero (and a real human being) -->
                                         <p style="padding:40px 0" align="center"><img src="cid:images/product-1.png"/></p><!-- /hero -->
