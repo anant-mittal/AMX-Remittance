@@ -11,7 +11,7 @@ public class SuspiciousTransactionPaymentDto {
 	String bankName;
 	String product;
 	String beneBankName;
-	BigDecimal noOfAttempts;
+	Long noOfAttempts;
 	String customerEmailId;
 	String countryName;
 	String customerMobile;
@@ -57,10 +57,12 @@ public class SuspiciousTransactionPaymentDto {
 	public void setBeneBankName(String beneBankName) {
 		this.beneBankName = beneBankName;
 	}
-	public BigDecimal getNoOfAttempts() {
+	
+	
+	public Long getNoOfAttempts() {
 		return noOfAttempts;
 	}
-	public void setNoOfAttempts(BigDecimal noOfAttempts) {
+	public void setNoOfAttempts(Long noOfAttempts) {
 		this.noOfAttempts = noOfAttempts;
 	}
 	public String getCustomerEmailId() {

@@ -14,7 +14,9 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.constant.NotificationConstants;
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.jax.config.JaxTenantProperties;
 import com.amx.jax.dao.ApplicationProcedureDao;
 import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dao.RemittanceProcedureDao;
@@ -24,8 +26,11 @@ import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.payg.PaymentResponseDto;
+import com.amx.jax.postman.model.Email;
+import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.repository.RemittanceApplicationRepository;
 import com.amx.jax.userservice.service.UserService;
+import com.amx.libjax.model.postman.SuspiciousTransactionPaymentDto;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -47,6 +52,10 @@ public class RemittanceApplicationService {
 	RemittanceTransactionService remittanceTransactionService ; 
 	@Autowired
 	RemittanceApplicationDao remittanceApplicationDao; 
+	@Autowired
+	JaxTenantProperties jaxTenantProperties;
+	@Autowired
+	JaxNotificationService jaxNotificationService;
 	
 	Logger logger = LoggerFactory.getLogger(RemittanceApplicationService.class);
 	
@@ -213,8 +222,18 @@ public void updatePayTokenNull(List<RemittanceApplication> lstPayIdDetails,Payme
 		Long count = remittanceApplicationRepository.getFailedTransactionAttemptCount(metaData.getCustomerId());
 		if (count > 2) {
 			// deactivate user and send mail to compliance
-			logger.info("suspicious failed payment attempt found, remittance transaction id: {}", remittanceTransactionId);
+			logger.info("suspicious failed payment attempt found, remittance transaction id: {}, customer id {}",
+					remittanceTransactionId, metaData.getCustomerId());
 			userService.deActivateFsCustomer(metaData.getCustomerId());
+			SuspiciousTransactionPaymentDto notificationModel = remittanceTransactionService
+					.getSuspiciousTransactionPaymentDto(remittanceTransactionId, count + 1);
+			Email email = new Email();
+			email.setSubject("User ID Block");
+			email.addTo(jaxTenantProperties.getComplianceEmail());
+			email.setITemplate(TemplatesMX.FC_ORDER_SUCCESS);
+			email.setHtml(true);
+			email.getModel().put(NotificationConstants.RESP_DATA_KEY, notificationModel);
+			jaxNotificationService.sendEmail(email);
 			throw new GlobalException(JaxError.UNAUTHORIZED,
 					"Please visit branch/compliance team to activate the account");
 		}

@@ -179,7 +179,7 @@ public class RemittanceTransactionService extends AbstractService {
 	}
 
 	public SuspiciousTransactionPaymentDto getSuspiciousTransactionPaymentDto(BigDecimal remittanceTransactionId,
-			BigDecimal noOfAttempts) {
+			Long noOfAttempts) {
 		SuspiciousTransactionPaymentDto dto = new SuspiciousTransactionPaymentDto();
 		BenificiaryListView beneView = getBeneBybeneficiaryView(remittanceTransactionId);
 		dto.setBankName(beneView.getBankName());
