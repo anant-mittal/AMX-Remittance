@@ -22,6 +22,7 @@ public class JaxServiceApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(JaxServiceApplication.class, args);
+		//SysUtils.disableSysOut();
 	}
 
 	@Bean

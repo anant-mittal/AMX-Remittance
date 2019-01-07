@@ -39,6 +39,7 @@ public final class UserOtpData implements Serializable {
 
 	/** The otp attempt count. */
 	private int otpAttemptCount;
+	
 
 	/**
 	 * Gets the auth transaction id.
