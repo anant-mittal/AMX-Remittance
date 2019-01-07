@@ -90,7 +90,8 @@ public class WebJaxAdvice {
 		if (state.getFlow() != null) {
 			auditService.log(new CAuthEvent(state, CAuthEvent.Result.FAIL, exc.getError()));
 		}
-		if (exc.getError() == JaxError.USER_LOGIN_ATTEMPT_EXCEEDED) {
+		if (exc.getError() == JaxError.USER_LOGIN_ATTEMPT_EXCEEDED
+				|| JaxError.UNAUTHORIZED.equals(exc.getError())) {
 			sessionService.unIndexUser();
 		}
 
