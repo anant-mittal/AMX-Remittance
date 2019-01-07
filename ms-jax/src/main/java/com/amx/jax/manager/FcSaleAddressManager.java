@@ -2,10 +2,10 @@ package com.amx.jax.manager;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -51,6 +51,7 @@ import com.amx.jax.repository.IViewGovernateDao;
 import com.amx.jax.repository.IViewStateDao;
 import com.amx.jax.repository.ParameterDetailsRespository;
 import com.amx.jax.util.JaxUtil;
+import com.amx.jax.validation.CountryMetaValidation;
 
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -103,6 +104,8 @@ public class FcSaleAddressManager extends AbstractModel {
 	@Autowired
 	IGovernateAreaDao govtAreaDao;
 	
+	@Autowired
+	CountryMetaValidation countryMetaValidation;
 	
 
 	public List<ShippingAddressDto> fetchShippingAddress(){
@@ -296,12 +299,34 @@ public class FcSaleAddressManager extends AbstractModel {
 
 	public void saveShippingAddress(CustomerShippingAddressRequestModel requestModel) {
 		try {
+			final Pattern pattern = Pattern.compile("^[0-9]*$");
+
 			ShippingAddressDetail shipAdd = new ShippingAddressDetail();
+
 			if(JaxUtil.isNullZeroBigDecimalCheck(meta.getCustomerId())){
-			 shipAdd.setFsCustomer(new Customer(meta.getCustomerId()));
+				shipAdd.setFsCustomer(new Customer(meta.getCustomerId()));
 			}else{
 				throw new GlobalException(JaxError.CUSTOMER_NOT_FOUND,"Customer  id not found ");
 			}
+
+			if (StringUtils.isBlank(requestModel.getMobile())) {
+				throw new GlobalException(JaxError.INVALID_MOBILE_NUMBER, "Invalid Mobile Number");
+			}else {
+				if (!pattern.matcher(requestModel.getMobile()).matches()) {
+					throw new GlobalException(JaxError.INVALID_MOBILE_NUMBER, "Invalid Mobile Number");
+				}
+				countryMetaValidation.validateMobileNumber(meta.getCountryId(), requestModel.getMobile());
+				countryMetaValidation.validateMobileNumberLength(meta.getCountryId(), requestModel.getMobile());
+			}
+
+			if (StringUtils.isBlank(requestModel.getTelPrefix())) {
+				throw new GlobalException(JaxError.INVALID_MOBILE_PREFIX, "Invalid Tele Prefix");
+			}else {
+				if (!pattern.matcher(requestModel.getTelPrefix()).matches()) {
+					throw new GlobalException(JaxError.INVALID_MOBILE_PREFIX, "Invalid Tele Prefix");
+				}
+			}
+
 			shipAdd.setCreationDate(new Date());
 			shipAdd.setActiveStatus(ConstantDocument.Yes);
 			shipAdd.setAreaCode(requestModel.getAreaCode());
@@ -309,17 +334,23 @@ public class FcSaleAddressManager extends AbstractModel {
 			shipAdd.setBuildingNo(requestModel.getBuildingNo());
 			shipAdd.setFlat(requestModel.getFlatNo());
 			shipAdd.setStreet(requestModel.getStreet());
+
 			shipAdd.setFsCountryMaster(new CountryMaster(meta.getCountryId()));
+			
 			if (JaxUtil.isNullZeroBigDecimalCheck(requestModel.getStateId())) {
 				shipAdd.setFsStateMaster(new StateMaster(requestModel.getStateId()));
 			}
+			
 			if (JaxUtil.isNullZeroBigDecimalCheck(requestModel.getDistrictId())) {
 				shipAdd.setFsDistrictMaster(new DistrictMaster(requestModel.getDistrictId()));
 			}
+			
 			if (JaxUtil.isNullZeroBigDecimalCheck(requestModel.getCityId())) {
 				shipAdd.setFsCityMaster(new CityMaster(requestModel.getCityId()));
 			}
+			
 			shipAdd.setAddressType(requestModel.getAddressTypeDto().getAddressTypeCode());
+
 			if (!StringUtils.isBlank(meta.getReferrer())) {
 				shipAdd.setCreatedBy(meta.getReferrer());
 			} else {
@@ -329,6 +360,7 @@ public class FcSaleAddressManager extends AbstractModel {
 					shipAdd.setCreatedBy("WEB");
 				}
 			}
+
 			shipAdd.setMobile(requestModel.getMobile());
 			shipAdd.setTelephoneCode(requestModel.getTelPrefix());
 			shipAdd.setTelephone(requestModel.getMobile());
@@ -337,7 +369,7 @@ public class FcSaleAddressManager extends AbstractModel {
 			shippingAddressDao.save(shipAdd);
 		}catch(GlobalException e){
 			logger.error("saveShippingAddress", e.getErrorMessage() + "" +e.getErrorKey());
-			 throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
+			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		} catch (Exception e) {
 			logger.error("saveShippingAddress :", e.getMessage());
 			throw new GlobalException(JaxError.FS_SHIPPING_ADDRESS_CREATION_FAILED, "Failed");
