@@ -2,11 +2,11 @@ package com.amx.jax.ui.model;
 
 import javax.validation.constraints.Pattern;
 
-import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.jax.AppConstants;
 import com.amx.jax.model.AbstractModel;
 import com.amx.jax.model.AuthState;
+import com.amx.jax.model.auth.QuestModelDTO;
 import com.amx.jax.ui.model.AuthDataInterface.AuthRequest;
 import com.amx.jax.ui.model.AuthDataInterface.AuthResponse;
 

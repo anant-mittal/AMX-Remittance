@@ -3,7 +3,6 @@ package com.amx.jax.notification.fx;
 import java.math.BigDecimal;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.auditlog.FcSaleOrderStatusChangeAuditEvent;

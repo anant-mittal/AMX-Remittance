@@ -1,7 +1,5 @@
 package com.amx.libjax.model.postman;
 
-import java.math.BigDecimal;
-
 public class SuspiciousTransactionPaymentDto {
 
 	String remitterReferenceNo;

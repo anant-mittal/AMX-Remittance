@@ -21,7 +21,6 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.amx.amxlib.constant.NotificationConstants;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.constant.ConstantDocument;
@@ -70,9 +69,7 @@ import com.amx.jax.repository.ISourceOfIncomeDao;
 import com.amx.jax.repository.ITermsAndConditionRepository;
 import com.amx.jax.util.DateUtil;
 import com.amx.jax.util.JaxUtil;
-import com.amx.jax.util.StringUtil;
 import com.amx.jax.validation.FxOrderValidation;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)

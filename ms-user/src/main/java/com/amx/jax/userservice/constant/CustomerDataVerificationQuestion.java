@@ -2,7 +2,7 @@ package com.amx.jax.userservice.constant;
 
 import java.math.BigDecimal;
 
-import com.amx.amxlib.meta.model.QuestModelDTO;
+import com.amx.jax.model.auth.QuestModelDTO;
 
 public enum CustomerDataVerificationQuestion {
 

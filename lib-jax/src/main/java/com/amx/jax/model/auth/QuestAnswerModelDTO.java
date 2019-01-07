@@ -1,15 +1,13 @@
-package com.amx.amxlib.meta.model;
+package com.amx.jax.model.auth;
 
 import java.util.List;
-
-import com.amx.amxlib.model.AbstractAnswer;
 
 public class QuestAnswerModelDTO {
 
 	List<AbstractAnswer> possibleAnswers;
-	
+
 	private String answerKey;
-	
+
 	private String answerType;
 
 	public List<AbstractAnswer> getPossibleAnswers() {
