@@ -218,15 +218,15 @@ public void updatePayTokenNull(List<RemittanceApplication> lstPayIdDetails,Payme
 		return resultMap;
 	}
 
-	public void checkForSuspiciousPaymentAttempts(BigDecimal remittanceTransactionId) {
+	public void checkForSuspiciousPaymentAttempts(BigDecimal remittanceApplicationId) {
 		Long count = remittanceApplicationRepository.getFailedTransactionAttemptCount(metaData.getCustomerId());
 		if (count > 2) {
 			// deactivate user and send mail to compliance
-			logger.info("suspicious failed payment attempt found, remittance transaction id: {}, customer id {}",
-					remittanceTransactionId, metaData.getCustomerId());
+			logger.info("suspicious failed payment attempt found,  remittanceApplicationId id: {}, customer id {}",
+					remittanceApplicationId, metaData.getCustomerId());
 			userService.deActivateFsCustomer(metaData.getCustomerId());
 			SuspiciousTransactionPaymentDto notificationModel = remittanceTransactionService
-					.getSuspiciousTransactionPaymentDto(remittanceTransactionId, count + 1);
+					.getSuspiciousTransactionPaymentDto(remittanceApplicationId, count + 1);
 			Email email = new Email();
 			email.setSubject("User ID Block");
 			email.addTo(jaxTenantProperties.getComplianceEmail());
@@ -242,5 +242,9 @@ public void updatePayTokenNull(List<RemittanceApplication> lstPayIdDetails,Payme
 	public RemittanceApplication getRemittanceApplicationByTransactionId(BigDecimal remittanceTransactionId) {
 		RemittanceTransaction remitTrxn = remittanceTransactionService.getRemittanceTransactionById(remittanceTransactionId);
 		return remittanceApplicationDao.getApplication(remitTrxn.getApplicationDocumentNo(), remitTrxn.getApplicationdocumentFinancialyear());
+	}
+	
+	public RemittanceApplication getRemittanceApplicationById(BigDecimal remittanceApplicationId) {
+		return remittanceApplicationDao.getApplication(remittanceApplicationId);
 	}
 }

@@ -178,10 +178,10 @@ public class RemittanceTransactionService extends AbstractService {
 		return response;
 	}
 
-	public SuspiciousTransactionPaymentDto getSuspiciousTransactionPaymentDto(BigDecimal remittanceTransactionId,
+	public SuspiciousTransactionPaymentDto getSuspiciousTransactionPaymentDto(BigDecimal remittanceApplicationId,
 			Long noOfAttempts) {
 		SuspiciousTransactionPaymentDto dto = new SuspiciousTransactionPaymentDto();
-		BenificiaryListView beneView = getBeneBybeneficiaryView(remittanceTransactionId);
+		BenificiaryListView beneView = getBeneBybeneficiaryView(remittanceApplicationId);
 		dto.setBankName(beneView.getBankName());
 		dto.setBeneBankName(beneView.getBankName());
 		dto.setBeneName(beneView.getBenificaryName());
@@ -202,10 +202,12 @@ public class RemittanceTransactionService extends AbstractService {
 		return remittanceApplicationDao.getRemittanceTransactionById(remittanceTransactionId);
 	}
 	
-	public BenificiaryListView getBeneBybeneficiaryView(BigDecimal remittanceTransactionId) {
-		
-		RemittanceApplication remittanceApplication = remittanceApplicationService.getRemittanceApplicationByTransactionId(remittanceTransactionId);
-		BigDecimal beneficiaryRelationShipSeqId = remittanceApplication.getExRemittanceAppBenificiary().get(0).getBeneficiaryRelationShipSeqId();
+	public BenificiaryListView getBeneBybeneficiaryView(BigDecimal remittanceApplicationId) {
+
+		RemittanceApplication remittanceApplication = remittanceApplicationService
+				.getRemittanceApplicationById(remittanceApplicationId);
+		BigDecimal beneficiaryRelationShipSeqId = remittanceApplication.getExRemittanceAppBenificiary().get(0)
+				.getBeneficiaryRelationShipSeqId();
 		return beneficiaryService.getBeneBybeneficiaryRelationShipSeqId(beneficiaryRelationShipSeqId);
 	}
 }

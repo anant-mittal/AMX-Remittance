@@ -815,8 +815,8 @@ public class RemittanceTransactionManager {
 				.getRemittanceTransaction(request.getApplicationDocumentNumber(), request.getDocumentFinancialYear());
 		RemittanceApplication application = remitAppDao.getApplication(request.getApplicationDocumentNumber(),
 				request.getDocumentFinancialYear());
+		remittanceApplicationService.checkForSuspiciousPaymentAttempts(application.getRemittanceApplicationId());
 		if (remittanceTransaction != null) {
-			remittanceApplicationService.checkForSuspiciousPaymentAttempts(remittanceTransaction.getRemittanceTransactionId());
 			BigDecimal cutomerReference = remittanceTransaction.getCustomerId();
 			BigDecimal remittancedocfyr = remittanceTransaction.getDocumentFinancialyear();
 			BigDecimal remittancedocNumber = remittanceTransaction.getDocumentNo();
