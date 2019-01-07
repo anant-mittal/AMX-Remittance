@@ -1,5 +1,6 @@
 package com.amx.jax;
 
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -7,6 +8,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.MDC;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 
 import com.amx.jax.dict.Tenant;
@@ -17,8 +20,11 @@ import com.amx.utils.ArgUtil;
 import com.amx.utils.ContextUtil;
 import com.amx.utils.JsonUtil;
 import com.amx.utils.UniqueID;
+import com.fasterxml.jackson.core.type.TypeReference;
 
 public class AppContextUtil {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(AppContextUtil.class);
 
 	/**
 	 * 
@@ -86,6 +92,19 @@ public class AppContextUtil {
 		return userDeviceClient;
 	}
 
+	@SuppressWarnings("unchecked")
+	public static Map<String, Object> getParams() {
+		Object userDeviceClientObject = ContextUtil.map().get(AppConstants.REQUEST_PARAMS_XKEY);
+		Map<String, Object> userDeviceClient = null;
+		if (userDeviceClientObject == null) {
+			userDeviceClient = new HashMap<String, Object>();
+			ContextUtil.map().put(AppConstants.REQUEST_PARAMS_XKEY, userDeviceClient);
+		} else {
+			userDeviceClient = (Map<String, Object>) userDeviceClientObject;
+		}
+		return userDeviceClient;
+	}
+
 	public static RequestType getRequestType() {
 		return (RequestType) ArgUtil.parseAsEnum(ContextUtil.map().get(AppConstants.REQUEST_TYPE_XKEY),
 				RequestType.DEFAULT);
@@ -140,6 +159,23 @@ public class AppContextUtil {
 		ContextUtil.map().put(AppConstants.USER_CLIENT_XKEY, userClient);
 	}
 
+	public static void setParams(String requestParamsJson, String requestdParamsJson) {
+		try {
+			if (!ArgUtil.isEmpty(requestdParamsJson)) {
+				byte[] decodedBytes = Base64.getDecoder().decode(requestdParamsJson);
+				requestParamsJson = new String(decodedBytes);
+			}
+			if (!ArgUtil.isEmpty(requestParamsJson)) {
+				ContextUtil.map().put(AppConstants.REQUEST_PARAMS_XKEY,
+						JsonUtil.fromJson(requestParamsJson, new TypeReference<Map<String, Object>>() {
+						}));
+			}
+		} catch (Exception e) {
+			// Fail Silenty
+			LOGGER.error("***xxxxx***** NOT ABLE TO UNDERSTAND REQUEST PARAMS  ***xxxxx***** ");
+		}
+	}
+
 	public static <T> void set(String contextKey, T value) {
 		ContextUtil.map().put(contextKey, value);
 	}
@@ -166,6 +202,8 @@ public class AppContextUtil {
 		appContext.setTranxId(getTranxId());
 		appContext.setActorId(getActorId());
 		appContext.setTraceTime(getTraceTime());
+		appContext.setClient(getUserClient());
+		appContext.setParams(getParams());
 		return appContext;
 	}
 
@@ -203,6 +241,7 @@ public class AppContextUtil {
 		map.put(AppConstants.TRANX_ID_XKEY, context.getTranxId());
 		map.put(AppConstants.ACTOR_ID_XKEY, context.getActorId());
 		map.put(AppConstants.USER_CLIENT_XKEY, JsonUtil.toJson(context.getClient()));
+		map.put(AppConstants.REQUEST_PARAMS_XKEY, JsonUtil.toJson(context.getParams()));
 		return map;
 	}
 
@@ -217,6 +256,7 @@ public class AppContextUtil {
 		String tranxId = getTranxId();
 		String userId = getActorId();
 		UserDeviceClient userClient = getUserClient();
+		Map<String, Object> params = getParams();
 		httpHeaders.add(TenantContextHolder.TENANT, getTenant().toString());
 		if (!ArgUtil.isEmpty(traceId)) {
 			httpHeaders.add(AppConstants.TRACE_ID_XKEY, traceId);
@@ -229,6 +269,9 @@ public class AppContextUtil {
 		}
 		if (!ArgUtil.isEmpty(userClient)) {
 			httpHeaders.add(AppConstants.USER_CLIENT_XKEY, JsonUtil.toJson(userClient));
+		}
+		if (!ArgUtil.isEmpty(params)) {
+			httpHeaders.add(AppConstants.REQUEST_PARAMS_XKEY, JsonUtil.toJson(params));
 		}
 	}
 

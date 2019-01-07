@@ -1,6 +1,8 @@
 package com.amx.jax;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.dict.UserClient.UserDeviceClient;
@@ -14,6 +16,7 @@ public class AppContext implements Serializable {
 	String tranxId = null;
 	String actorId = null;
 	UserDeviceClient client;
+	Map<String, Object> params = new HashMap<String, Object>();
 
 	long traceTime = 0L;
 	long tranxTime = 0L;
@@ -72,6 +75,14 @@ public class AppContext implements Serializable {
 
 	public void setClient(UserDeviceClient client) {
 		this.client = client;
+	}
+
+	public Map<String, Object> getParams() {
+		return params;
+	}
+
+	public void setParams(Map<String, Object> params) {
+		this.params = params;
 	}
 
 }
