@@ -66,12 +66,9 @@ public class WebJaxAdvice {
 	/**
 	 * Handle.
 	 *
-	 * @param exc
-	 *            the exc
-	 * @param request
-	 *            the request
-	 * @param response
-	 *            the response
+	 * @param exc      the exc
+	 * @param request  the request
+	 * @param response the response
 	 * @return the response entity
 	 */
 	@ExceptionHandler(AmxApiException.class)
@@ -105,8 +102,7 @@ public class WebJaxAdvice {
 	/**
 	 * Handle.
 	 *
-	 * @param exception
-	 *            the exception
+	 * @param exception the exception
 	 * @return the response entity
 	 */
 	@ExceptionHandler(ConstraintViolationException.class)
@@ -130,8 +126,7 @@ public class WebJaxAdvice {
 	/**
 	 * Handle.
 	 *
-	 * @param exception
-	 *            the exception
+	 * @param exception the exception
 	 * @return the response entity
 	 */
 	@ExceptionHandler(HttpMessageNotReadableException.class)
@@ -152,12 +147,9 @@ public class WebJaxAdvice {
 	/**
 	 * Handle.
 	 *
-	 * @param ex
-	 *            the ex
-	 * @param request
-	 *            the request
-	 * @param response
-	 *            the response
+	 * @param ex       the ex
+	 * @param request  the request
+	 * @param response the response
 	 * @return the response entity
 	 */
 	@ExceptionHandler(MethodArgumentNotValidException.class)
@@ -184,12 +176,9 @@ public class WebJaxAdvice {
 	/**
 	 * Handle.
 	 *
-	 * @param ex
-	 *            the ex
-	 * @param request
-	 *            the request
-	 * @param response
-	 *            the response
+	 * @param ex       the ex
+	 * @param request  the request
+	 * @param response the response
 	 * @return the response entity
 	 */
 	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
@@ -208,14 +197,10 @@ public class WebJaxAdvice {
 	/**
 	 * Not valid argument.
 	 *
-	 * @param ex
-	 *            the ex
-	 * @param errors
-	 *            the errors
-	 * @param request
-	 *            the request
-	 * @param response
-	 *            the response
+	 * @param ex       the ex
+	 * @param errors   the errors
+	 * @param request  the request
+	 * @param response the response
 	 * @return the response entity
 	 */
 	protected ResponseEntity<ResponseWrapper<Object>> notValidArgument(Exception ex, List<AmxFieldError> errors,
@@ -230,10 +215,8 @@ public class WebJaxAdvice {
 	/**
 	 * Handle all.
 	 *
-	 * @param ex
-	 *            the ex
-	 * @param request
-	 *            the request
+	 * @param ex      the ex
+	 * @param request the request
 	 * @return the response entity
 	 */
 	@ExceptionHandler({ Exception.class })
@@ -241,7 +224,7 @@ public class WebJaxAdvice {
 		ResponseWrapper<Object> wrapper = new ResponseWrapper<Object>();
 		wrapper.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
 		wrapper.setException(ex.getClass().getName());
-		LOG.error("In Advice Exception Captured",ex);
+		LOG.error("In Advice Exception Captured", ex);
 		postManService.notifyException(wrapper.getStatus(), ex);
 		return new ResponseEntity<ResponseWrapper<Object>>(wrapper, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
