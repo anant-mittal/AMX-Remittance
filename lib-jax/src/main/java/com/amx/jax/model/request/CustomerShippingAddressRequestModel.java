@@ -2,10 +2,6 @@ package com.amx.jax.model.request;
 
 import java.math.BigDecimal;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
-
 import com.amx.jax.model.response.fx.AddressTypeDto;
 /** this model represents customer shipping address **/
 public class CustomerShippingAddressRequestModel {
@@ -21,14 +17,14 @@ public class CustomerShippingAddressRequestModel {
 
 	private BigDecimal districtId;
 
-	@NotNull(message="Mobile may not be null")
-	@Pattern(regexp = "^[1-9]\\d*$",message="Invalid Mobile No")
-	@Size(min = 8)	
+	//@NotNull(message="Mobile may not be null")
+	//@Pattern(regexp = "^[1-9]\\d*$",message="Invalid Mobile No")
+	//@Size(min = 8)	
 	private String mobile;
 
 	/** country telephone prefix */
-	@NotNull(message="telPrefix may not be null")
-	@Pattern(regexp = "^[1-9]\\d*$",message="Invalid Tele Prefix")
+	//@NotNull(message="telPrefix may not be null")
+	//@Pattern(regexp = "^[1-9]\\d*$",message="Invalid Tele Prefix")
 	private String telPrefix;
 	
 	String block;
