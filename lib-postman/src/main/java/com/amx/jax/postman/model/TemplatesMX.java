@@ -28,7 +28,7 @@ public enum TemplatesMX implements ITemplate {
 	// Rate Alert, PlaceOrder
 	RATE_ALERT("place-order"), RATE_ALERT_COMPLETION("place-order-executed"),
 
-	BRANCH_SEARCH_EMPTY("BranchSearchEmpty"), TEST("test"), BRANCH_FEEDBACK("trnx-feedback"),
+	BRANCH_SEARCH_EMPTY("BranchSearchEmpty"), TEST("test"), TT("tt"),EFT("eft"),CASH("cash"),
 
 	CIVILID_EXPIRY("civilexpiry"), CIVILID_EXPIRED("civilexpired"),
 
@@ -45,7 +45,7 @@ public enum TemplatesMX implements ITemplate {
 	FC_ORDER_SUCCESS("order-success"),
 	FC_KNET_SUCCESS("knet-success"),
 	FXO_RECEIPT("FXO_RECEIPT", PDFConverter.JASPER, "fxo-receipt.json"),
-	FXO_STATMENT("FXOTransactionList");
+	FXO_STATMENT("FxoTransactionList");
 
 	String fileName;
 	PDFConverter converter;

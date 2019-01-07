@@ -3,6 +3,7 @@ package com.amx.jax;
 import java.io.Serializable;
 
 import com.amx.jax.dict.Tenant;
+import com.amx.jax.dict.UserClient.UserDeviceClient;
 
 public class AppContext implements Serializable {
 
@@ -12,6 +13,7 @@ public class AppContext implements Serializable {
 	String traceId = null;
 	String tranxId = null;
 	String actorId = null;
+	UserDeviceClient client;
 
 	long traceTime = 0L;
 	long tranxTime = 0L;
@@ -62,6 +64,14 @@ public class AppContext implements Serializable {
 
 	public void setTranxTime(long tranxTime) {
 		this.tranxTime = tranxTime;
+	}
+
+	public UserDeviceClient getClient() {
+		return client;
+	}
+
+	public void setClient(UserDeviceClient client) {
+		this.client = client;
 	}
 
 }

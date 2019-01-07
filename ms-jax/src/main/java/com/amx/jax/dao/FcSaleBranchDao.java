@@ -2,6 +2,7 @@ package com.amx.jax.dao;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -192,6 +193,7 @@ public class FcSaleBranchDao {
 	
 	@Transactional
 	public void printOrderSave(List<ForeignCurrencyAdjust> foreignCurrencyAdjusts,List<ReceiptPayment> updateRecPay,String userName,Date currenctDate,BigDecimal deliveryDetailsId,String orderStatus){
+		HashMap<BigDecimal, BigDecimal> mapBranchDocumentNo = new HashMap<>();
 		if(foreignCurrencyAdjusts != null && foreignCurrencyAdjusts.size() != 0 && deliveryDetailsId != null) {
 			// before updating need to check the status is ordered
 			FxDeliveryDetailsModel fxDeliveryDetailsModel = fetchDeliveryDetails(deliveryDetailsId, ConstantDocument.Yes);
@@ -208,6 +210,7 @@ public class FcSaleBranchDao {
 							Map<String, Object> output = applicationProcedureDao.getDocumentSeriality(countryId, companyId,ConstantDocument.DOCUMENT_CODE_FOR_FCSALE,docYear,ConstantDocument.Update,branchId);
 							if(output != null && !output.isEmpty()) {
 								documentNo = (BigDecimal) output.get("P_DOC_NO");
+								mapBranchDocumentNo.put(receiptPayment.getDocumentNo(), documentNo);
 							}
 							receiptPayment.setDocumentNo(documentNo);
 							receiptPaymentRespository.save(receiptPayment);
@@ -225,6 +228,7 @@ public class FcSaleBranchDao {
 					}
 					
 					for (ForeignCurrencyAdjust foreignCurrencyAdjust : foreignCurrencyAdjusts) {
+						foreignCurrencyAdjust.setDocumentNo(mapBranchDocumentNo.get(foreignCurrencyAdjust.getDocumentNo()));
 						foreignCurrencyAdjustRepository.save(foreignCurrencyAdjust);
 					}
 					

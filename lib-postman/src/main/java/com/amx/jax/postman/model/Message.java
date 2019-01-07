@@ -18,10 +18,11 @@ public class Message implements Serializable {
 	public static final String RESULTS_KEY = "results";
 
 	public static enum Status {
-		INIT, SENT, DELIVERED, READ, FAILED
+		INIT, SENT, DELIVERED, READ, NOT_SENT, FAILED
 	}
 
 	protected long timestamp;
+	protected int attempt;
 	protected Language lang = null;
 	protected String subject;
 	protected String message = null;
@@ -60,8 +61,7 @@ public class Message implements Serializable {
 	}
 
 	/**
-	 * @param subject
-	 *            the subject to set
+	 * @param subject the subject to set
 	 */
 	public void setSubject(String subject) {
 		this.subject = subject;
@@ -102,6 +102,7 @@ public class Message implements Serializable {
 	}
 
 	public Message() {
+		this.attempt = 0;
 		this.timestamp = System.currentTimeMillis();
 		this.status = Status.INIT;
 		this.to = new ArrayList<String>();
@@ -115,16 +116,14 @@ public class Message implements Serializable {
 	}
 
 	/**
-	 * @param to
-	 *            the to to set
+	 * @param to the to to set
 	 */
 	public void setTo(List<String> to) {
 		this.to = to;
 	}
 
 	/**
-	 * @param to
-	 *            the to to set
+	 * @param to the to to set
 	 */
 	public void addTo(String... recieverIds) {
 		for (String recieverId : recieverIds) {
@@ -168,6 +167,14 @@ public class Message implements Serializable {
 
 	public void setTimestamp(long timestamp) {
 		this.timestamp = timestamp;
+	}
+
+	public int getAttempt() {
+		return attempt;
+	}
+
+	public void setAttempt(int attempt) {
+		this.attempt = attempt;
 	}
 
 }

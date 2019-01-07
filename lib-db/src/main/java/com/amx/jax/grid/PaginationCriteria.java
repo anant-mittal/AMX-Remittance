@@ -4,6 +4,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.amx.jax.grid.FilterBy.Condition;
+import com.amx.jax.grid.GridEnums.FilterDataType;
 import com.amx.utils.ArgUtil;
 
 /**
@@ -199,35 +201,36 @@ public class PaginationCriteria {
 		StringBuilder fbsb = null;
 
 		if (!isWhereFilterByEmpty()) {
-			Iterator<Entry<String, String>> fbit = filterBy.getMapOfWhereFilters().entrySet().iterator();
+			Iterator<Entry<String, Condition>> fbit = filterBy.getMapOfWhereFilters().entrySet().iterator();
 
 			while (fbit.hasNext()) {
-
-				Map.Entry<String, String> pair = fbit.next();
-
+				Map.Entry<String, Condition> pair = fbit.next();
 				if (null == fbsb) {
 					fbsb = new StringBuilder();
 					fbsb.append(BRKT_OPN);
-
-					fbsb.append(SPACE)
-							.append(BRKT_OPN)
-							.append(pair.getKey())
-							.append(WHERE_PREFIX)
-							.append(pair.getValue())
-							.append(WHERE_SUFFIX)
-							.append(BRKT_CLS);
-
+					fbsb.append(SPACE);
 				} else {
-
-					fbsb.append(AND)
-							.append(BRKT_OPN)
-							.append(pair.getKey())
-							.append(WHERE_PREFIX)
-							.append(pair.getValue())
-							.append(WHERE_SUFFIX)
-							.append(BRKT_CLS);
-
+					fbsb.append(AND);
 				}
+				fbsb.append(BRKT_OPN)
+						.append(pair.getKey());
+				fbsb.append(SPACE + pair.getValue().getOpertor().getSign());
+
+				if (FilterDataType.DATE.equals(pair.getValue().getType())) {
+					fbsb.append(" TO_DATE( '" + pair.getValue().getValue() + "', 'DD-MM-YYYY' )");
+				} else if (FilterDataType.TIME.equals(pair.getValue().getType())) {
+					fbsb.append(" TO_DATE( '" + pair.getValue().getValue() + "', 'DD-MM-YYYY HH24:MI:SS' )");
+				} else if (FilterDataType.TIMESTAMP.equals(pair.getValue().getType())) {
+					fbsb.append(
+							" TO_TIMESTAMP( '1970-01-01 00:00:00.0', 'YYYY-MM-DD HH24:MI:SS.FF' ) + NUMTODSINTERVAL("
+									+ pair.getValue().getValue() + "/1000, 'SECOND')");
+				} else if (FilterDataType.NUMBER.equals(pair.getValue().getType())) {
+					fbsb.append(pair.getValue().getValue());
+				} else {
+					fbsb.append(WHERE_PREFIX + pair.getValue().getValue() + WHERE_SUFFIX);
+				}
+
+				fbsb.append(BRKT_CLS);
 			}
 			fbsb.append(BRKT_CLS);
 		}
@@ -249,7 +252,7 @@ public class PaginationCriteria {
 
 			while (sbit.hasNext()) {
 				Map.Entry<String, SortOrder> pair = sbit.next();
-				if(!ArgUtil.isEmpty(pair.getKey())) {
+				if (!ArgUtil.isEmpty(pair.getKey())) {
 					if (null == sbsb) {
 						sbsb = new StringBuilder();
 						sbsb.append(ORDER_BY).append(pair.getKey()).append(SPACE).append(pair.getValue());
@@ -275,7 +278,7 @@ public class PaginationCriteria {
 	/** The Constant LIKE_SUFFIX. */
 	private static final String LIKE_SUFFIX = "%' ";
 
-	private static final String WHERE_PREFIX = " = '";
+	private static final String WHERE_PREFIX = " '";
 
 	private static final String WHERE_SUFFIX = "' ";
 

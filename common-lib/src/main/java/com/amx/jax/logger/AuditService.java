@@ -50,4 +50,12 @@ public interface AuditService {
 	 */
 	public AuditLoggerResponse excep(AuditEvent event, Logger logger, Exception e);
 
+	/**
+	 * 
+	 * @param event
+	 * @param e
+	 * @return
+	 */
+	public AuditLoggerResponse log(AuditEvent event, Exception e);
+
 }

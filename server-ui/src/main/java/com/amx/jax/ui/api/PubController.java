@@ -137,7 +137,8 @@ public class PubController {
 		ResponseWrapper<ServerStatus> wrapper = new ResponseWrapper<>(new ServerStatus());
 		Integer hits = guestSession.hitCounter();
 
-		userDevice.getType();
+		userDevice.resolve();
+
 		wrapper.getData().setDebug(env.isDebug());
 		wrapper.getData().setId(httpSession.getId());
 		wrapper.getData().setHits(hits);
@@ -149,7 +150,7 @@ public class PubController {
 		wrapper.getData().setRemoteAddr(request.getRemoteAddr());
 		wrapper.getData().setLocalAddress(request.getLocalAddr());
 		wrapper.getData().setScheme(request.getScheme());
-		wrapper.getData().setDevice(userDevice.toUserDevice());
+		wrapper.getData().setDevice(userDevice.getUserDevice());
 		wrapper.getData().message = calcLibs.get().getRSName();
 
 		log.info("==========appConfig======== {} == {}", amxConfig.getDefaultCompanyId(),

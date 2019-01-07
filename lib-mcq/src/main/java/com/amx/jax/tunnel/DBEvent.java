@@ -2,8 +2,6 @@ package com.amx.jax.tunnel;
 
 import java.util.Map;
 
-import com.amx.jax.tunnel.TunnelEvent;
-
 public class DBEvent extends TunnelEvent {
 	private static final long serialVersionUID = 1426912782817649062L;
 

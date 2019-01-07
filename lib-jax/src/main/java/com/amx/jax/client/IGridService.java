@@ -1,5 +1,7 @@
 package com.amx.jax.client;
 
+import org.springframework.core.ParameterizedTypeReference;
+
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.grid.GridMeta;
 import com.amx.jax.grid.GridQuery;
@@ -16,4 +18,7 @@ public interface IGridService {
 	}
 
 	AmxApiResponse<?, GridMeta> gridView(GridView gridView, GridQuery gridQuery);
+
+	<T> AmxApiResponse<T, GridMeta> gridView(GridView gridView, GridQuery gridQuery,
+			ParameterizedTypeReference<AmxApiResponse<T, GridMeta>> parameterizedTypeReference);
 }

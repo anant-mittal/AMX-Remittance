@@ -14,7 +14,14 @@ public class SSOConfig {
 	String adminuser;
 
 	@Value("${amx.server.password}")
-	String adminpass;
+    String adminpass;
+    
+    @Value("${adapter.url}")
+    String adapterUrl;
+
+    public String getAdapterUrl() {
+        return adapterUrl;
+    }
 
 	public String getAdminuser() {
 		return adminuser;

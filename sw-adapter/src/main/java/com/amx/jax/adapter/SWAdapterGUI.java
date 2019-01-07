@@ -101,26 +101,35 @@ public class SWAdapterGUI extends JFrame {
 		newPanel.add(labelDescriptionDetail, constraints);
 
 		// Button
-		JButton quitButton = new JButton("Quit");
-		quitButton.addActionListener((ActionEvent event) -> {
-			System.exit(0);
-		});
-		constraints.gridx = 2;
+		constraints.gridx = 0;
 		constraints.gridy = 7;
-		constraints.gridwidth = 2;
+		constraints.gridwidth = 1;
 		constraints.anchor = GridBagConstraints.CENTER;
-		newPanel.add(quitButton, constraints);
+		JButton openButton = new JButton("Open");
+		openButton.addActionListener((ActionEvent event) -> {
+			SWAdapterLauncher.opnePage();
+		});
+		newPanel.add(openButton, constraints);
 
+		constraints.gridx = 1;
+		constraints.gridy = 7;
+		constraints.gridwidth = 1;
+		constraints.anchor = GridBagConstraints.CENTER;
 		JButton refreshButton = new JButton("Refresh");
 		refreshButton.addActionListener((ActionEvent event) -> {
 			ACardReaderService.CONTEXT.reset();
 		});
-
-		constraints.gridx = 0;
-		constraints.gridy = 7;
-		constraints.gridwidth = 2;
-		constraints.anchor = GridBagConstraints.CENTER;
 		newPanel.add(refreshButton, constraints);
+
+		constraints.gridx = 2;
+		constraints.gridy = 7;
+		constraints.gridwidth = 1;
+		constraints.anchor = GridBagConstraints.CENTER;
+		JButton quitButton = new JButton("Quit");
+		quitButton.addActionListener((ActionEvent event) -> {
+			System.exit(0);
+		});
+		newPanel.add(quitButton, constraints);
 
 		statusReader.setEnabled(false);
 		statusReader.setBackground(Color.LIGHT_GRAY);

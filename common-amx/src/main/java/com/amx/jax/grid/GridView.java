@@ -2,6 +2,7 @@ package com.amx.jax.grid;
 
 public enum GridView {
 	USER_SESSION_RECORD, USER_SESSION_RECORD_CUSTOM, USER_SESSION,
+	VW_FS_EMPLOYEE,
 
 	DEVICE_CLIENT,
 

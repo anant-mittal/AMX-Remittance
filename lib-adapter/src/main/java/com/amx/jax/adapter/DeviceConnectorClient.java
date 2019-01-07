@@ -16,11 +16,11 @@ import com.amx.jax.device.DeviceConstants;
 import com.amx.jax.device.DeviceMetaInfo;
 import com.amx.jax.device.DeviceRestModels.DevicePairingCreds;
 import com.amx.jax.device.DeviceRestModels.DevicePairingRequest;
-import com.amx.jax.device.DeviceRestModels.NetAddress;
 import com.amx.jax.device.DeviceRestModels.SessionPairingCreds;
 import com.amx.jax.dict.UserClient;
 import com.amx.jax.exception.AmxApiException;
 import com.amx.jax.rest.RestService;
+import com.amx.utils.NetworkAdapter.NetAddress;
 
 @Configuration
 @PropertySource("classpath:application-adapter.properties")

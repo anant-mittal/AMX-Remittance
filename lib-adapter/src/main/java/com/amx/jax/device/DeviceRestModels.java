@@ -7,45 +7,6 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 public class DeviceRestModels {
 
-	public static class NetAddress {
-		String mac;
-		String localIp;
-		String hostName;
-		String userName;
-
-		public String getHostName() {
-			return hostName;
-		}
-
-		public void setHostName(String hostName) {
-			this.hostName = hostName;
-		}
-
-		public String getUserName() {
-			return userName;
-		}
-
-		public void setUserName(String userName) {
-			this.userName = userName;
-		}
-
-		public String getMac() {
-			return mac;
-		}
-
-		public void setMac(String mac) {
-			this.mac = mac;
-		}
-
-		public String getLocalIp() {
-			return localIp;
-		}
-
-		public void setLocalIp(String localIp) {
-			this.localIp = localIp;
-		}
-	}
-
 	@JsonDeserialize(as = DeviceRestModel.class)
 	@JsonIgnoreProperties(ignoreUnknown = true)
 	public interface DevicePairingRequest {
@@ -69,7 +30,15 @@ public class DeviceRestModels {
 
 	@JsonDeserialize(as = DeviceRestModel.class)
 	@JsonIgnoreProperties(ignoreUnknown = true)
-	public interface DevicePairingCreds extends DevicePairingRequest {
+	public interface DeviceModelConfig {
+		long getOtpTtl();
+
+		void setOtpTtl(long otpValidity);
+	}
+
+	@JsonDeserialize(as = DeviceRestModel.class)
+	@JsonIgnoreProperties(ignoreUnknown = true)
+	public interface DevicePairingCreds extends DevicePairingRequest, DeviceModelConfig {
 
 		void setDeviceRegToken(String deviceRegToken);
 
@@ -83,10 +52,6 @@ public class DeviceRestModels {
 
 		void setDeviceSecret(String deviceSecret);
 
-		long getOtpTtl();
-
-		void setOtpTtl(long otpValidity);
-
 	}
 
 	@JsonDeserialize(as = DeviceRestModel.class)
@@ -97,7 +62,7 @@ public class DeviceRestModels {
 
 	@JsonDeserialize(as = DeviceRestModel.class)
 	@JsonIgnoreProperties(ignoreUnknown = true)
-	public interface SessionPairingCreds {
+	public interface SessionPairingCreds extends DeviceModelConfig {
 
 		void setDeviceSessionToken(String sessionPairingToken);
 

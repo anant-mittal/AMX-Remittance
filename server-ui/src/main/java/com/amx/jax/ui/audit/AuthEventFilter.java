@@ -39,10 +39,10 @@ public class AuthEventFilter implements AuditFilter<CAuthEvent> {
 		if (guestSession.getCustomerModel() != null) {
 			event.setUserId(ArgUtil.parseAsString(guestSession.getCustomerModel().getCustomerId()));
 		}
-		if (userDevice.getFingerprint() == null) {
+		if (userDevice.getUserDevice().getFingerprint() == null) {
 			userDevice.resolve();
 		}
-		event.setDevice(userDevice.toMap());
+		event.setAgent(userDevice.getUserAgent());
 	}
 
 }

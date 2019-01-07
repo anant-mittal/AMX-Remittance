@@ -21,6 +21,7 @@ import com.amx.jax.model.response.ComponentDataDto;
 import com.amx.jax.model.response.CustomerInfo;
 import com.amx.jax.model.response.FieldListDto;
 import com.amx.jax.model.response.IncomeRangeDto;
+import com.amx.jax.model.response.customer.OffsiteCustomerDataDTO;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 public interface ICustRegService extends IJaxService {
@@ -41,6 +42,12 @@ public interface ICustRegService extends IJaxService {
 		public static final String SAVE_SIGNATURE = PREFIX + "/saveCustomerSignature";
 		public static final String SCAN_CARD = PREFIX + "/scan_card";
 		public static final String SAVE_OFFSITE_LOGIN = PREFIX + "/offsite-save-login-detail";
+		public static final String GET_OFFSITE_CUSTOMER_DATA = PREFIX + "/getOffsiteCustomerData";
+	}
+	
+	public static class Params {
+		public static final String IDENTITY_INT = "identityInt";
+		public static final String IDENTITY_TYPE = "identityType";
 	}
 
 	@JsonDeserialize(as = CustRegRequestModel.class)
@@ -89,5 +96,7 @@ public interface ICustRegService extends IJaxService {
 	AmxApiResponse<SendOtpModel, Object> sendOtp(CustomerPersonalDetail customerPersonalDetail);
 	
 	AmxApiResponse<CustomerCredential, Object> saveLoginDetailOffsite(CustomerCredential customerCredential);
+	
+	AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerData(String identityInt, BigDecimal identityType);
 
 }

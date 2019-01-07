@@ -28,7 +28,9 @@ public class GridInfo<T> {
 				}
 			}
 			tmpClass = tmpClass.getSuperclass();
+			
 		} while (tmpClass != null);
+		
 		return fieldMap;
 	}
 

@@ -1,4 +1,4 @@
-package com.amx.jax.adapter;
+package com.amx.utils;
 
 import java.net.Inet4Address;
 import java.net.InetAddress;
@@ -7,9 +7,46 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Enumeration;
 
-import com.amx.jax.device.DeviceRestModels.NetAddress;
-
 public class NetworkAdapter {
+	
+	public static class NetAddress {
+		String mac;
+		String localIp;
+		String hostName;
+		String userName;
+
+		public String getHostName() {
+			return hostName;
+		}
+
+		public void setHostName(String hostName) {
+			this.hostName = hostName;
+		}
+
+		public String getUserName() {
+			return userName;
+		}
+
+		public void setUserName(String userName) {
+			this.userName = userName;
+		}
+
+		public String getMac() {
+			return mac;
+		}
+
+		public void setMac(String mac) {
+			this.mac = mac;
+		}
+
+		public String getLocalIp() {
+			return localIp;
+		}
+
+		public void setLocalIp(String localIp) {
+			this.localIp = localIp;
+		}
+	}
 
 	public static NetAddress getAddress() {
 
