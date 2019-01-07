@@ -207,7 +207,7 @@ public class SSOServerController {
 						ssoUser.getSelfSAC());
 
 				if (loginType == LOGIN_TYPE.ASSISTED) {
-					model.put("partnerMOtpPrefix", ssoUser.getSelfSAC());
+					model.put("partnerMOtpPrefix", ssoUser.getPartnerSAC());
 					adapterServiceClient.sendSACtoEmployee(ArgUtil.parseAsString(initResp.getPartnerEmployeeId()),
 							ssoUser.getPartnerSAC());
 				}
