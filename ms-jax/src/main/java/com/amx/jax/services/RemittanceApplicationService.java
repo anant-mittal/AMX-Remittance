@@ -230,7 +230,7 @@ public void updatePayTokenNull(List<RemittanceApplication> lstPayIdDetails,Payme
 			Email email = new Email();
 			email.setSubject("User ID Block");
 			email.addTo(jaxTenantProperties.getComplianceEmail());
-			email.setITemplate(TemplatesMX.FC_ORDER_SUCCESS);
+			email.setITemplate(TemplatesMX.SUSPICIOUS_USER);
 			email.setHtml(true);
 			email.getModel().put(NotificationConstants.RESP_DATA_KEY, notificationModel);
 			jaxNotificationService.sendEmail(email);
