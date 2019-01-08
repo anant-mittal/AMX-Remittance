@@ -10,7 +10,6 @@ import java.util.List;
 
 import com.amx.jax.model.AbstractModel;
 import com.amx.jax.model.response.fx.FxApplicationDto;
-import com.amx.jax.model.response.fx.ShoppingCartDetailsDto;
 
 public class FcSaleOrderPaynowRequestModel extends AbstractModel {
 	/**

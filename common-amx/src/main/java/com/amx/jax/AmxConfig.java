@@ -45,4 +45,5 @@ public class AmxConfig {
 	public BigDecimal getDefaultBranchId() {
 		return defaultBranchId;
 	}
+
 }

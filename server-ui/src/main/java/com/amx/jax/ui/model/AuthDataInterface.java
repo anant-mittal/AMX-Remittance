@@ -2,9 +2,9 @@ package com.amx.jax.ui.model;
 
 import java.util.List;
 
-import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.jax.model.AuthState;
+import com.amx.jax.model.auth.QuestModelDTO;
 import com.amx.jax.swagger.ApiMockModelProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 

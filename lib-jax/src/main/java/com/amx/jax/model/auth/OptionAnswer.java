@@ -1,4 +1,4 @@
-package com.amx.amxlib.model;
+package com.amx.jax.model.auth;
 
 public class OptionAnswer extends AbstractAnswer {
 

@@ -8,9 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.dbmodel.OnlineQuestModel;
+import com.amx.jax.model.auth.QuestModelDTO;
 import com.amx.jax.repository.IQuestionAnswerRepository;
 import com.amx.jax.services.AbstractService;
 

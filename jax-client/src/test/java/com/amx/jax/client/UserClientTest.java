@@ -21,7 +21,6 @@ import com.amx.amxlib.exception.LimitExeededException;
 import com.amx.amxlib.exception.RemittanceTransactionValidationException;
 import com.amx.amxlib.exception.ResourceNotFoundException;
 import com.amx.amxlib.meta.model.CustomerDto;
-import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
@@ -30,6 +29,7 @@ import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.model.UserDevice;
+import com.amx.jax.model.auth.QuestModelDTO;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest

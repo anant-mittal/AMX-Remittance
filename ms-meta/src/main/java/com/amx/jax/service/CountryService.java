@@ -14,6 +14,7 @@ import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.CountryMaster;
+import com.amx.jax.dbmodel.CountryMasterDesc;
 import com.amx.jax.dbmodel.CountryMasterView;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.CountryMasterRepository;
@@ -142,4 +143,16 @@ public class CountryService extends AbstractService {
 		return AmxApiResponse.buildList(countryList);	
 	}
 	
+	public CountryMasterDesc getCountryMasterDesc(BigDecimal countryId, BigDecimal languageId) {
+		List<CountryMasterDesc> countryMasterDescs = countryMasterRepository.findOne(countryId)
+				.getFsCountryMasterDescs();
+		CountryMasterDesc countryMasterDesc = null;
+		for (CountryMasterDesc desc : countryMasterDescs) {
+			if (desc.getFsLanguageType().getLanguageId().equals(languageId)) {
+				countryMasterDesc = desc;
+				break;
+			}
+		}
+		return countryMasterDesc;
+	}
 }

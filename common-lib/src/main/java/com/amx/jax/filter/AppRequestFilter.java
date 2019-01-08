@@ -135,10 +135,23 @@ public class AppRequestFilter implements Filter {
 				userClient.setAppType(userDevice.getAppType());
 				userClient.setIp(userDevice.getIp());
 				userClient.setFingerprint(userDevice.getFingerprint());
-				if (appContextInFilter != null) {
-					appContextInFilter.appRequestContextInFilter();
-				}
 				AppContextUtil.setUserClient(userClient);
+			}
+
+			String requestParamsJson = req.getHeader(AppConstants.REQUEST_PARAMS_XKEY);
+			if (!ArgUtil.isEmpty(requestParamsJson)) {
+				AppContextUtil.setParams(requestParamsJson, null);
+			} else {
+				requestParamsJson = req.getParameter(AppConstants.REQUEST_PARAMS_XKEY);
+				if (!ArgUtil.isEmpty(requestParamsJson)) {
+					AppContextUtil.setParams(requestParamsJson, null);
+				} else {
+					AppContextUtil.setParams(requestParamsJson, req.getParameter(AppConstants.REQUESTD_PARAMS_XKEY));
+				}
+			}
+
+			if (appContextInFilter != null) {
+				appContextInFilter.appRequestContextInFilter();
 			}
 
 			// Trace Id Tracking

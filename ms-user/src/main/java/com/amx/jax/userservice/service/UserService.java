@@ -27,7 +27,6 @@ import com.amx.amxlib.exception.jax.InvalidOtpException;
 import com.amx.amxlib.exception.jax.UserNotFoundException;
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.amxlib.meta.model.CustomerDto;
-import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.model.AbstractUserModel;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
@@ -62,6 +61,7 @@ import com.amx.jax.logger.AuditEvent;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.AbstractModel;
+import com.amx.jax.model.auth.QuestModelDTO;
 import com.amx.jax.repository.CountryRepository;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.IContactDetailDao;
@@ -1004,5 +1004,11 @@ public class UserService extends AbstractUserService {
 	
 	public Customer getCustomerDetails(String loginId) {
 		return repo.getCustomerDetails(loginId);
+	}
+	
+	public void deActivateFsCustomer(BigDecimal customerId) {
+		Customer customer = repo.findOne(customerId);
+		customer.setIsActive(ConstantDocument.Deleted);
+		repo.save(customer);
 	}
 }

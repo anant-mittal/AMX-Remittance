@@ -14,7 +14,7 @@ public interface IBeneficiaryRelationshipDao extends JpaRepository<BeneficaryRel
 	
 	@Query("select br from BeneficaryRelationship br where br.beneficaryRelationshipId=:beneRelationshipId "
 			+ "and br.customerId = :customerId and br.isActive='Y'")
-	public List<BeneficaryRelationship> getBeneRelationshipById(
+	public BeneficaryRelationship getBeneRelationshipById(
 			@Param("beneRelationshipId") BigDecimal beneRelationshipId,
 			@Param("customerId") BigDecimal customerId);
 	

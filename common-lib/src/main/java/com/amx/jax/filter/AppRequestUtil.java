@@ -34,6 +34,7 @@ public class AppRequestUtil {
 	public static void printIfDebug(HttpServletRequest req) {
 		if (LOGGER.isDebugEnabled()) {
 			LinkedMultiValueMap<String, String> headerMap = getHeader(req);
+			LOGGER.debug("*** REQT_OUT_HEADER *****: {}", headerMap.toString());
 		}
 	}
 
@@ -50,6 +51,7 @@ public class AppRequestUtil {
 	public static void printIfDebug(HttpServletResponse resp) {
 		if (LOGGER.isDebugEnabled()) {
 			LinkedMultiValueMap<String, String> headerMap = getHeader(resp);
+			LOGGER.debug("*** REQT_OUT_HEADER *****: {}", headerMap.toString());
 		}
 	}
 

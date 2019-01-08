@@ -1,5 +1,6 @@
 package com.amx.jax.offsite.controller;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Map;
 
@@ -12,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.jax.CustomerCredential;
 import com.amx.jax.ICustRegService;
@@ -25,6 +25,7 @@ import com.amx.jax.error.ApiJaxStatusBuilder.ApiJaxStatus;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.http.CommonHttpRequest.CommonMediaType;
 import com.amx.jax.model.CardDetail;
+import com.amx.jax.model.auth.QuestModelDTO;
 import com.amx.jax.model.dto.SendOtpModel;
 import com.amx.jax.model.request.CustomerInfoRequest;
 import com.amx.jax.model.request.CustomerPersonalDetail;
@@ -38,6 +39,7 @@ import com.amx.jax.model.response.ComponentDataDto;
 import com.amx.jax.model.response.CustomerInfo;
 import com.amx.jax.model.response.FieldListDto;
 import com.amx.jax.model.response.IncomeRangeDto;
+import com.amx.jax.model.response.customer.OffsiteCustomerDataDTO;
 import com.amx.jax.offsite.OffsiteStatus.ApiOffisteStatus;
 import com.amx.jax.offsite.OffsiteStatus.OffsiteServerCodes;
 import com.amx.jax.offsite.service.CustomerSession;
@@ -109,6 +111,12 @@ public class OffsiteCustRegController {
 	@RequestMapping(value = "/card/read", method = { RequestMethod.POST })
 	public AmxApiResponse<CardDetail, Object> cardScan(@RequestBody CardDetail cardDetail) {
 		return offsiteCustRegClient.cardScan(cardDetail);
+	}
+
+	@RequestMapping(value = "/customer_info/get", method = { RequestMethod.GET })
+	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerData(String identity,
+			BigDecimal identityType) {
+		return offsiteCustRegClient.getOffsiteCustomerData(identity, identityType);
 	}
 
 	@RequestMapping(value = "/customer_info/save", method = { RequestMethod.POST })
