@@ -116,6 +116,7 @@ public class TrnaxBeneCredit implements ITunnelSubscriber<DBEvent> {
 
 		if (!ArgUtil.isEmpty(custId)) {
 			PushMessage pushMessage = new PushMessage();
+			
 			switch (type) {
 			case "CASH":
 				pushMessage.setITemplate(TemplatesMX.CASH);
@@ -129,6 +130,7 @@ public class TrnaxBeneCredit implements ITunnelSubscriber<DBEvent> {
 			default:
 				break;
 			}
+		
 			pushMessage.addToUser(custId);
 			pushMessage.setModel(wrapper);
 			pushNotifyClient.send(pushMessage);
