@@ -110,12 +110,12 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 		logger.info("commit done");
 		logger.info("Beneficiary Relationship Sequence Id : " +beneRelationship.getBeneficaryRelationshipId());
 		populateOldEmosData(beneficiaryTrnxModel, beneMaster.getBeneficaryMasterSeqId(),
-				beneAccount.getBeneficaryAccountSeqId());
+				beneAccount);
 		beneRelationship = beneficiaryRelationshipDao.findOne(beneRelationship.getBeneficaryRelationshipId());
 		if (beneRelationship.getMapSequenceId() == null) {
 			logger.info("Map sequence is null for bene rel seq id: {}", beneRelationship.getBeneficaryRelationshipId());
 			populateOldEmosData(beneficiaryTrnxModel, beneMaster.getBeneficaryMasterSeqId(),
-					beneAccount.getBeneficaryAccountSeqId());
+					beneAccount);
 		}else {
 			logger.info("Map Sequence Id generated: {}", beneRelationship.getMapSequenceId());
 		}
@@ -129,13 +129,13 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 	 * 
 	 */
 	private void populateOldEmosData(BeneficiaryTrnxModel beneficiaryTrnxModel, BigDecimal beneMasterSeqId,
-			BigDecimal beneAccountSeqId) {
+			BeneficaryAccount beneAccount) {
 		BeneAccountModel accModel = beneficiaryTrnxModel.getBeneAccountModel();
 		Map<String, Object> inputValues = new HashMap<>();
 		inputValues.put("P_BENE_MASTER_ID", beneMasterSeqId);
 		inputValues.put("P_BANK_ID", accModel.getBankId());
-		inputValues.put("P_BANK_BRANCH_ID", accModel.fetchBankBranchId());
-		inputValues.put("P_BENEFICARY_ACCOUNT_SEQ_ID", beneAccountSeqId);
+		inputValues.put("P_BANK_BRANCH_ID", beneAccount.getBankBranchId());
+		inputValues.put("P_BENEFICARY_ACCOUNT_SEQ_ID", beneAccount.getBeneficaryAccountSeqId());
 		inputValues.put("P_CURRENCY_ID", accModel.getCurrencyId());
 		inputValues.put("P_CUSTOMER_ID", metaData.getCustomerId());
 		beneficiaryDao.populateBeneDt(inputValues);
