@@ -19,7 +19,7 @@ public class OracleVarsCache extends CacheBox<String> {
 	}
 
 	public Long getCustomerScannedStamp() {
-		return ArgUtil.parseAsLong(this.get("getCustomerScannedStamp"));
+		return ArgUtil.parseAsLong(this.get("getCustomerScannedStamp"),0L);
 	}
 
 	public void setCustomerScannedStamp(Long customerScannedStamp) {
