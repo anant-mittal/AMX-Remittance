@@ -146,7 +146,7 @@
 		</dependency>
 
 		<dependency>
-			<groupId>omn-card</groupId>
+			<groupId>com.gemalto.ics.rnd.sdk.saml</groupId>
 			<artifactId>saml-sdk</artifactId>
 			<version>3.2.0.4584</version>
 		</dependency>
