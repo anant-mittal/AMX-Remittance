@@ -56,6 +56,9 @@ public class AppConfig {
 	public static final String JAX_LOGGER_URL = "${jax.logger.url}";
 	public static final String JAX_SSO_URL = "${jax.sso.url}";
 	public static final String JAX_AUTH_URL = "${jax.auth.url}";
+	
+	public static final String SPRING_REDIS_HOST = "${spring.redis.host}";
+	public static final String SPRING_REDIS_PORT = "${spring.redis.port}";
 
 	@Value(APP_ENV)
 	@AppParamKey(AppParam.APP_ENV)
@@ -135,6 +138,14 @@ public class AppConfig {
 	@Value(JAX_AUTH_URL)
 	@AppParamKey(AppParam.JAX_AUTH_URL)
 	private String authURL;
+	
+	@Value(SPRING_REDIS_HOST)
+	@AppParamKey(AppParam.SPRING_REDIS_HOST)
+	private String redisSpringHost;
+	
+	@Value(SPRING_REDIS_PORT)
+	@AppParamKey(AppParam.SPRING_REDIS_PORT)
+	private String redisSpringPort;
 
 	@Value(APP_CONTEXT_PREFIX)
 	@AppParamKey(AppParam.APP_CONTEXT_PREFIX)
