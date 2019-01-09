@@ -51,7 +51,7 @@
 
 		<dependency>
 			<groupId>com.amx.jax</groupId>
-			<artifactId>lib-sso</artifactId>
+			<artifactId>server-offsite</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 
