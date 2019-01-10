@@ -15,7 +15,6 @@
 		<groupId>com.amx.jax</groupId>
 		<artifactId>amxeco</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
-		<relativePath>../pom.xml</relativePath> <!-- lookup parent from repository -->
 	</parent>
 
 	<properties>
