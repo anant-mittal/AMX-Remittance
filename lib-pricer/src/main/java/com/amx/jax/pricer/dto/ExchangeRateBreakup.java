@@ -4,30 +4,19 @@ import java.math.BigDecimal;
 
 import javax.validation.constraints.NotNull;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 public class ExchangeRateBreakup implements Comparable<ExchangeRateBreakup> {
 
-	@JsonProperty("domXRate")
 	@NotNull
 	BigDecimal rate;
 
-	@JsonProperty("forXRate")
+	@NotNull
 	BigDecimal inverseRate;
 
-	@JsonProperty("forAmount")
+	@NotNull
 	BigDecimal convertedFCAmount;
 
-	@JsonProperty("domAmount")
+	@NotNull
 	BigDecimal convertedLCAmount;
-
-	BigDecimal netAmount;
-
-	BigDecimal netAmountWithoutLoyality;
-
-	BigDecimal lcDecimalNumber;
-
-	BigDecimal fcDecimalNumber;
 
 	public BigDecimal getRate() {
 		return rate;
@@ -59,38 +48,6 @@ public class ExchangeRateBreakup implements Comparable<ExchangeRateBreakup> {
 
 	public BigDecimal getConvertedFCAmount() {
 		return convertedFCAmount;
-	}
-
-	public BigDecimal getNetAmount() {
-		return netAmount;
-	}
-
-	public void setNetAmount(BigDecimal netAmount) {
-		this.netAmount = netAmount;
-	}
-
-	public BigDecimal getNetAmountWithoutLoyality() {
-		return netAmountWithoutLoyality;
-	}
-
-	public void setNetAmountWithoutLoyality(BigDecimal netAmountWithoutLoyality) {
-		this.netAmountWithoutLoyality = netAmountWithoutLoyality;
-	}
-
-	public BigDecimal getFcDecimalNumber() {
-		return fcDecimalNumber;
-	}
-
-	public void setFcDecimalNumber(BigDecimal fcDecimalNumber) {
-		this.fcDecimalNumber = fcDecimalNumber;
-	}
-
-	public BigDecimal getLcDecimalNumber() {
-		return lcDecimalNumber;
-	}
-
-	public void setLcDecimalNumber(BigDecimal lcDecimalNumber) {
-		this.lcDecimalNumber = lcDecimalNumber;
 	}
 
 	@Override

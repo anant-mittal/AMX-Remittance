@@ -3,7 +3,7 @@
  */
 package com.amx.jax.pricer.service;
 
-import java.util.List;
+import java.util.Collections;
 
 import javax.annotation.Resource;
 
@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 
 import com.amx.jax.pricer.dao.CustomerDao;
 import com.amx.jax.pricer.dbmodel.Customer;
-import com.amx.jax.pricer.dto.BankRateDetailsDTO;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.dto.PricingResponseDTO;
 import com.amx.jax.pricer.exception.PricerServiceError;
@@ -61,23 +60,34 @@ public class PricingService {
 
 		}
 
-		List<BankRateDetailsDTO> bankRateDetailsDTOs = remitPriceManager.computeBaseSellRatesPrices(pricingRequestDTO);
+		remitPriceManager.computeBaseSellRatesPrices(pricingRequestDTO);
 
-		/*
-		 * if (pricingRateDetailsDTO.getBaseBankRatesNPrices() != null) { for
-		 * (BankRateDetailsDTO b : pricingRateDetailsDTO.getBaseBankRatesNPrices()) {
-		 * System.out.println(" Pricing Service Bank Rates ==> " + b); }
-		 * 
-		 * }
-		 */
-
-		List<BankRateDetailsDTO> discountedPrices = customerDiscountManager.getDiscountedRates(pricingRequestDTO,
-				bankRateDetailsDTOs, customer);
-
-		// bankRateDetailsDTOs.addAll(discountedPrices);
+		customerDiscountManager.getDiscountedRates(pricingRequestDTO, customer);
 
 		PricingResponseDTO pricingResponseDTO = new PricingResponseDTO();
-		pricingResponseDTO.setBankMasterDTOList(discountedPrices);
+
+		pricingResponseDTO.setBankDetails(pricingRateDetailsDTO.getBankDetails());
+
+		pricingResponseDTO.setSellRateDetails(pricingRateDetailsDTO.getSellRateDetails());
+
+		Collections.sort(pricingResponseDTO.getSellRateDetails());
+
+		/*
+		 * Map<String, BankRateDetailsDTO> baseRateBankDetails = new HashMap<String,
+		 * BankRateDetailsDTO>();
+		 * 
+		 * pricingResponseDTO.setBankDetails(new HashMap<BigDecimal, BankDetailsDTO>());
+		 * 
+		 * for (BankRateDetailsDTO baseBankRate : bankRateDetailsDTOs) {
+		 * 
+		 * String key = baseBankRate.getBankId().longValue() + "" +
+		 * baseBankRate.getServiceIndicatorId() == null ? "" :
+		 * baseBankRate.getServiceIndicatorId().longValue() + "";
+		 * 
+		 * baseRateBankDetails.put(key, baseBankRate); }
+		 */
+
+		// pricingResponseDTO.set
 
 		return pricingResponseDTO;
 	}
@@ -86,15 +96,15 @@ public class PricingService {
 
 		validatePricingRequest(pricingRequestDTO, Boolean.FALSE);
 
-		List<BankRateDetailsDTO> bankRateDetailsDtoList = remitPriceManager
-				.computeBaseSellRatesPrices(pricingRequestDTO);
-
-		/*for (BankRateDetailsDTO b : pricingRateDetailsDTO.getBaseBankRatesNPrices()) {
-			System.out.println(" Pricing Service Bank Rates ==> " + b);
-		}*/
+		remitPriceManager.computeBaseSellRatesPrices(pricingRequestDTO);
 
 		PricingResponseDTO pricingResponseDTO = new PricingResponseDTO();
-		pricingResponseDTO.setBankMasterDTOList(bankRateDetailsDtoList);
+
+		pricingResponseDTO.setBankDetails(pricingRateDetailsDTO.getBankDetails());
+
+		pricingResponseDTO.setSellRateDetails(pricingRateDetailsDTO.getSellRateDetails());
+
+		Collections.sort(pricingResponseDTO.getSellRateDetails());
 
 		return pricingResponseDTO;
 	}

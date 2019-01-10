@@ -18,7 +18,6 @@ public class PricingRequestDTO implements Serializable {
 	private static final long serialVersionUID = 7408571124880744930L;
 
 	private BigDecimal customerId;
-	private BigDecimal beneId;
 
 	@NotNull(message = "Local Country Id Can not be Null or Empty")
 	private BigDecimal localCountryId;
@@ -54,14 +53,6 @@ public class PricingRequestDTO implements Serializable {
 
 	public void setCustomerId(BigDecimal customerId) {
 		this.customerId = customerId;
-	}
-
-	public BigDecimal getBeneId() {
-		return beneId;
-	}
-
-	public void setBeneId(BigDecimal beneId) {
-		this.beneId = beneId;
 	}
 
 	public BigDecimal getLocalCountryId() {
@@ -159,6 +150,5 @@ public class PricingRequestDTO implements Serializable {
 	public void setInfo(Map<String, Object> info) {
 		this.info = info;
 	}
-
 
 }

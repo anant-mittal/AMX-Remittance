@@ -31,7 +31,8 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.dict.UserClient.Channel;
 import com.amx.jax.pricer.PricerService;
 import com.amx.jax.pricer.PricerServiceClient;
-import com.amx.jax.pricer.dto.BankRateDetailsDTO;
+import com.amx.jax.pricer.dto.BankDetailsDTO;
+import com.amx.jax.pricer.dto.ExchangeRateDetails;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.dto.PricingResponseDTO;
 import com.amx.jax.pricer.exception.PricerServiceException;
@@ -94,7 +95,8 @@ public class PricerServiceApiTest implements PricerService {
 		// FileWriter outFileWriter = new
 		// FileWriter("/home/abhijeet/Desktop/results.json");
 
-		//FileWriter errorFileWriter = new FileWriter("/home/abhijeet/Desktop/error.txt");
+		// FileWriter errorFileWriter = new
+		// FileWriter("/home/abhijeet/Desktop/error.txt");
 
 		String line;
 		while ((line = countryCurrencyReader.readLine()) != null) {
@@ -269,7 +271,9 @@ public class PricerServiceApiTest implements PricerService {
 
 						long tte = ArgUtil.parseAsLong(response.getInfo().get(PricerServiceConstants.TTE));
 
-						for (BankRateDetailsDTO bankRate : response.getBankMasterDTOList()) {
+						for (ExchangeRateDetails bankRate : response.getSellRateDetails()) {
+
+							BankDetailsDTO bankDetails = response.getBankDetails().get(bankRate.getBankId());
 
 							/**
 							 * Query Params
@@ -288,13 +292,13 @@ public class PricerServiceApiTest implements PricerService {
 							 * Result Params
 							 */
 							strBuilder.append(", " + bankRate.getBankId());
-							strBuilder.append(", " + bankRate.getBankCode());
-							strBuilder.append(", " + bankRate.getBankCountryId());
+							strBuilder.append(", " + bankDetails.getBankCode());
+							strBuilder.append(", " + bankDetails.getBankCountryId());
 							strBuilder.append(", " + bankRate.getServiceIndicatorId());
-							strBuilder.append(", " + bankRate.getExRateBreakup().getRate());
-							strBuilder.append(", " + bankRate.getExRateBreakup().getInverseRate());
-							strBuilder.append(", " + bankRate.getExRateBreakup().getConvertedFCAmount());
-							strBuilder.append(", " + bankRate.getExRateBreakup().getConvertedLCAmount());
+							strBuilder.append(", " + bankRate.getSellRateNet().getRate());
+							strBuilder.append(", " + bankRate.getSellRateNet().getInverseRate());
+							strBuilder.append(", " + bankRate.getSellRateNet().getConvertedFCAmount());
+							strBuilder.append(", " + bankRate.getSellRateNet().getConvertedLCAmount());
 							strBuilder.append(", " + tte);
 
 						}
@@ -377,7 +381,7 @@ public class PricerServiceApiTest implements PricerService {
 		// outFileWriter.close();
 
 		// errorPrintWriter.close();
-		//errorFileWriter.close();
+		// errorFileWriter.close();
 
 		watch.stop();
 		long timetaken = watch.getLastTaskTimeMillis();

@@ -29,8 +29,9 @@ import com.amx.jax.pricer.dbmodel.ExchangeRateApprovalDetModel;
 import com.amx.jax.pricer.dbmodel.OnlineMarginMarkup;
 import com.amx.jax.pricer.dbmodel.PipsMaster;
 import com.amx.jax.pricer.dbmodel.ViewExGLCBAL;
-import com.amx.jax.pricer.dto.BankRateDetailsDTO;
+import com.amx.jax.pricer.dto.BankDetailsDTO;
 import com.amx.jax.pricer.dto.ExchangeRateBreakup;
+import com.amx.jax.pricer.dto.ExchangeRateDetails;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.exception.PricerServiceError;
 import com.amx.jax.pricer.exception.PricerServiceException;
@@ -70,9 +71,20 @@ public class RemitPriceManager {
 		ValidServiceIndicatorIds.add(new BigDecimal(102));
 	}
 
-	public List<BankRateDetailsDTO> computeBaseSellRatesPrices(PricingRequestDTO requestDto) {
+	/**
+	 * Function to compute Base Sell Rates, Cost Rate, Banks Details and other
+	 * related data Result Data is computed and saved into <b>@Resource
+	 * PricingRateDetailsDTO </b>
+	 * 
+	 * @param requestDto
+	 */
+	public void computeBaseSellRatesPrices(PricingRequestDTO requestDto) {
 
-		List<BankRateDetailsDTO> bankWiseRates = new ArrayList<BankRateDetailsDTO>();
+		List<ExchangeRateDetails> bankWiseRates = new ArrayList<ExchangeRateDetails>();
+		pricingRateDetailsDTO.setSellRateDetails(bankWiseRates);
+
+		Map<BigDecimal, BankDetailsDTO> bankIdDetailsMap = new HashMap<BigDecimal, BankDetailsDTO>();
+		pricingRateDetailsDTO.setBankDetails(bankIdDetailsMap);
 
 		if ((Channel.ONLINE.equals(requestDto.getChannel()) || Channel.MOBILE.equals(requestDto.getChannel()))
 				&& requestDto.getCountryBranchId().intValue() == OnlineCountryBranchId) {
@@ -99,23 +111,35 @@ public class RemitPriceManager {
 			}
 
 			for (ExchangeRateAPRDET exchangeRate : exchangeRateMap.values()) {
-				BankRateDetailsDTO bankRateDto = this.convertBankMasterData(exchangeRate.getBankMaster());
+
+				BankDetailsDTO bankDetailsDto;
+
+				if (bankIdDetailsMap.containsKey(exchangeRate.getBankMaster().getBankId())) {
+					bankDetailsDto = bankIdDetailsMap.get(exchangeRate.getBankMaster().getBankId());
+				} else {
+					bankDetailsDto = this.convertBankMasterData(exchangeRate.getBankMaster());
+					bankIdDetailsMap.put(bankDetailsDto.getBankId(), bankDetailsDto);
+				}
+
+				ExchangeRateDetails exRateDetails = new ExchangeRateDetails();
+				exRateDetails.setBankId(bankDetailsDto.getBankId());
+				exRateDetails.setServiceIndicatorId(exchangeRate.getServiceId());
 
 				if (requestDto.getLocalAmount() != null) {
 
 					// Get Bank Wise Rates for Local Currency
-					bankRateDto.setExRateBreakup(
-							createBreakUpForLcCur(exchangeRate.getSellRateMin(), requestDto.getLocalAmount()));
+					exRateDetails.setSellRateBase(
+							createBreakUpForLcCur(exchangeRate.getSellRateMax(), requestDto.getLocalAmount()));
 
 				} else {
 
 					// Get Bank wise Rates for Foreign Currency
-					bankRateDto.setExRateBreakup(
-							createBreakUpForFcCur(exchangeRate.getSellRateMin(), requestDto.getForeignAmount()));
+					exRateDetails.setSellRateBase(
+							createBreakUpForFcCur(exchangeRate.getSellRateMax(), requestDto.getForeignAmount()));
 
 				}
 
-				bankWiseRates.add(bankRateDto);
+				bankWiseRates.add(exRateDetails);
 
 			}
 
@@ -130,7 +154,7 @@ public class RemitPriceManager {
 
 			List<BigDecimal> validBankIds = getValidBankIds(requestDto.getForeignCurrencyId(),
 					requestDto.getPricingLevel(), requestDto.getRoutingBankIds());
-			
+
 			if (validBankIds.isEmpty()) {
 
 				LOGGER.info("No Valid bank Ids found for Pricing Request");
@@ -151,21 +175,30 @@ public class RemitPriceManager {
 
 			for (ExchangeRateApprovalDetModel exchangeRate : bankExchangeRates) {
 
-				BankRateDetailsDTO bankRateDetailsDTO = convertBankMasterData(exchangeRate.getBankMaster());
+				BankDetailsDTO bankDetailsDTO;
+
+				if (bankIdDetailsMap.containsKey(exchangeRate.getBankMaster().getBankId())) {
+					bankDetailsDTO = bankIdDetailsMap.get(exchangeRate.getBankMaster().getBankId());
+				} else {
+					bankDetailsDTO = this.convertBankMasterData(exchangeRate.getBankMaster());
+					bankIdDetailsMap.put(bankDetailsDTO.getBankId(), bankDetailsDTO);
+				}
+
+				ExchangeRateDetails exRateDetails = new ExchangeRateDetails();
+				exRateDetails.setBankId(bankDetailsDTO.getBankId());
+				exRateDetails.setServiceIndicatorId(exchangeRate.getServiceId());
 
 				if (requestDto.getLocalAmount() != null) {
 
-					bankRateDetailsDTO.setExRateBreakup(
+					exRateDetails.setSellRateBase(
 							createBreakUpForLcCur(exchangeRate.getSellRateMin(), requestDto.getLocalAmount()));
 
 				} else {
-					bankRateDetailsDTO.setExRateBreakup(
+					exRateDetails.setSellRateBase(
 							createBreakUpForFcCur(exchangeRate.getSellRateMin(), requestDto.getForeignAmount()));
 				}
 
-				bankRateDetailsDTO.setServiceIndicatorId(exchangeRate.getServiceId());
-
-				bankWiseRates.add(bankRateDetailsDTO);
+				bankWiseRates.add(exRateDetails);
 
 			} // for
 
@@ -182,16 +215,10 @@ public class RemitPriceManager {
 
 		} // else
 
-		pricingRateDetailsDTO.setBaseBankRatesNPrices(bankWiseRates);
-
-		return bankWiseRates;
 	}
 
 	private Map<BigDecimal, ExchangeRateAPRDET> computeBestRateForOnline(BigDecimal currencyId,
 			BigDecimal foreignCountryId, BigDecimal applicationCountryId, List<BigDecimal> routingBankIds) {
-
-		// StopWatch watch = new StopWatch();
-		// watch.start();
 
 		/**
 		 * Get All Cost rates from GLCBAL
@@ -242,14 +269,14 @@ public class RemitPriceManager {
 					// New Better Rate Found
 					// Lower than Previous Exchange Bank Rate
 					// Higher than GLCBAL Rate
-					if (ratePrev.getSellRateMin().compareTo(rate.getSellRateMin()) > 0
-							&& rate.getSellRateMin().compareTo(adjustedSellRate) > 0) {
+					if (ratePrev.getSellRateMax().compareTo(rate.getSellRateMax()) > 0
+							&& rate.getSellRateMax().compareTo(adjustedSellRate) > 0) {
 						bankExchangeRateMap.put(rate.getBankMaster().getBankId(), rate);
 					}
 
 				} else {
 
-					if (rate.getSellRateMin().compareTo(adjustedSellRate) < 0) {
+					if (rate.getSellRateMax().compareTo(adjustedSellRate) < 0) {
 
 						rate.setSellRateMin(adjustedSellRate);
 						rate.setSellRateMax(adjustedSellRate);
@@ -279,11 +306,6 @@ public class RemitPriceManager {
 		 * bankExchangeRateMap.entrySet()) { System.out.println(" Exchange Rate ==> " +
 		 * exchangeRate.toString()); }
 		 */
-
-		// watch.stop();
-		// long timetaken = watch.getLastTaskTimeMillis();
-		// System.out.println("Total time taken to fetch prices from db: " + timetaken +
-		// " milli-seconds");
 
 		return bankExchangeRateMap;
 	}
@@ -343,7 +365,8 @@ public class RemitPriceManager {
 
 			routingBnaks.forEach(bId -> {
 				if (!availableBankIds.contains(bId)) {
-					throw new PricerServiceException("============ Routing Bank Id Invalid ==>" + bId.toString());
+					throw new PricerServiceException(PricerServiceError.INVALID_ROUTING_BANK_IDS,
+							" Routing Bank Id is Invalid: " + bId.toString());
 				}
 			});
 
@@ -356,8 +379,8 @@ public class RemitPriceManager {
 		return validBankIds;
 	}
 
-	private BankRateDetailsDTO convertBankMasterData(BankMasterModel dbmodel) {
-		BankRateDetailsDTO dto = new BankRateDetailsDTO();
+	private BankDetailsDTO convertBankMasterData(BankMasterModel dbmodel) {
+		BankDetailsDTO dto = new BankDetailsDTO();
 		try {
 			BeanUtils.copyProperties(dto, dbmodel);
 		} catch (IllegalAccessException | InvocationTargetException e) {
@@ -391,67 +414,85 @@ public class RemitPriceManager {
 	}
 
 	@SuppressWarnings("unused")
-	private List<BankRateDetailsDTO> computePipsRateForOnline(PricingRequestDTO reqDto, List<BigDecimal> validBankIds) {
+	private List<ExchangeRateDetails> computePipsRateForOnline(PricingRequestDTO reqDto,
+			List<BigDecimal> validBankIds) {
 
-		List<BankRateDetailsDTO> pipsBankWiseRates;
+		List<ExchangeRateDetails> exchangeRateDetailList;
+
 		if (reqDto.getLocalAmount() != null) {
 
 			// Get Bank Wise Rates for Local Currency
 			// Earlier Pips based Rate Computation
-			pipsBankWiseRates = computeBankPricesForLcCurOnline(reqDto.getForeignCurrencyId(), reqDto.getLocalAmount(),
-					reqDto.getCountryBranchId(), reqDto.getForeignCountryId(), validBankIds);
+			exchangeRateDetailList = computeBankPricesForLcCurOnline(reqDto.getForeignCurrencyId(),
+					reqDto.getLocalAmount(), reqDto.getCountryBranchId(), reqDto.getForeignCountryId(), validBankIds);
 
 		} else {
 
 			// Get Bank wise Rates for Foreign Currency
 			// Earlier Pips based Rate Computation
-			pipsBankWiseRates = computeBankPricesForFcCurOnline(reqDto.getForeignCurrencyId(),
+			exchangeRateDetailList = computeBankPricesForFcCurOnline(reqDto.getForeignCurrencyId(),
 					reqDto.getForeignAmount(), reqDto.getCountryBranchId(), reqDto.getForeignCountryId(), validBankIds);
 
 		}
 
-		return pipsBankWiseRates;
+		return exchangeRateDetailList;
 
 	}
 
 	@SuppressWarnings("unused")
-	private List<BankRateDetailsDTO> computeBankPricesForLcCurOnline(BigDecimal toCurrency, BigDecimal lcAmount,
+	private List<ExchangeRateDetails> computeBankPricesForLcCurOnline(BigDecimal toCurrency, BigDecimal lcAmount,
 			BigDecimal countryBranchId, BigDecimal foreignCountryId, List<BigDecimal> validBankIds) {
-		List<BankRateDetailsDTO> bankMasterDtoList = new ArrayList<BankRateDetailsDTO>();
+		List<ExchangeRateDetails> exchangeRateDetailList = new ArrayList<ExchangeRateDetails>();
 
 		List<PipsMaster> pips = pipsMasterDao.getPipsMasterForLcCur(toCurrency, lcAmount, countryBranchId,
 				foreignCountryId, validBankIds);
 
+		if (this.pricingRateDetailsDTO.getBankDetails() == null) {
+			this.pricingRateDetailsDTO.setBankDetails(new HashMap<BigDecimal, BankDetailsDTO>());
+		}
+
 		if (pips != null && !pips.isEmpty()) {
 			pips.forEach(i -> {
-				BankRateDetailsDTO dto = this.convertBankMasterData(i.getBankMaster());
-				dto.setBankCode("PIPS : " + dto.getBankCode());
-				dto.setExRateBreakup(createBreakUpForLcCur(i.getDerivedSellRate().add(i.getPipsNo()), lcAmount));
-				bankMasterDtoList.add(dto);
+				ExchangeRateDetails exRateDetails = new ExchangeRateDetails();
+				BankDetailsDTO dto = this.convertBankMasterData(i.getBankMaster());
+				exRateDetails.setBankId(dto.getBankId());
+				exRateDetails
+						.setSellRateBase(createBreakUpForLcCur(i.getDerivedSellRate().add(i.getPipsNo()), lcAmount));
+
+				exchangeRateDetailList.add(exRateDetails);
+				this.pricingRateDetailsDTO.getBankDetails().put(dto.getBankId(), dto);
 			});
 		}
 
-		return bankMasterDtoList;
+		return exchangeRateDetailList;
 	}
 
 	@SuppressWarnings("unused")
-	private List<BankRateDetailsDTO> computeBankPricesForFcCurOnline(BigDecimal toCurrency, BigDecimal fcAmount,
+	private List<ExchangeRateDetails> computeBankPricesForFcCurOnline(BigDecimal toCurrency, BigDecimal fcAmount,
 			BigDecimal countryBranchId, BigDecimal foreignCountryId, List<BigDecimal> validBankIds) {
-		List<BankRateDetailsDTO> bankMasterDtoList = new ArrayList<BankRateDetailsDTO>();
+		List<ExchangeRateDetails> exchangeRateDetailList = new ArrayList<ExchangeRateDetails>();
 
 		List<PipsMaster> pips = pipsMasterDao.getPipsMasterForFcCur(toCurrency, fcAmount, countryBranchId,
 				foreignCountryId, validBankIds);
 
+		if (this.pricingRateDetailsDTO.getBankDetails() == null) {
+			this.pricingRateDetailsDTO.setBankDetails(new HashMap<BigDecimal, BankDetailsDTO>());
+		}
+
 		if (pips != null && !pips.isEmpty()) {
 			pips.forEach(i -> {
-				BankRateDetailsDTO dto = this.convertBankMasterData(i.getBankMaster());
-				dto.setBankCode("PIPS : " + dto.getBankCode());
-				dto.setExRateBreakup(createBreakUpForFcCur(i.getDerivedSellRate().add(i.getPipsNo()), fcAmount));
-				bankMasterDtoList.add(dto);
+				ExchangeRateDetails exRateDetails = new ExchangeRateDetails();
+				BankDetailsDTO dto = this.convertBankMasterData(i.getBankMaster());
+				exRateDetails.setBankId(dto.getBankId());
+				exRateDetails
+						.setSellRateBase(createBreakUpForFcCur(i.getDerivedSellRate().add(i.getPipsNo()), fcAmount));
+
+				exchangeRateDetailList.add(exRateDetails);
+				this.pricingRateDetailsDTO.getBankDetails().put(dto.getBankId(), dto);
 
 			});
 		}
-		return bankMasterDtoList;
+		return exchangeRateDetailList;
 	}
 
 	@SuppressWarnings("unused")

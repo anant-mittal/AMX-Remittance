@@ -6,25 +6,18 @@ import java.util.Map;
 
 import com.amx.jax.pricer.dbmodel.OnlineMarginMarkup;
 import com.amx.jax.pricer.dbmodel.ViewExGLCBAL;
-import com.amx.jax.pricer.dto.BankRateDetailsDTO;
+import com.amx.jax.pricer.dto.BankDetailsDTO;
+import com.amx.jax.pricer.dto.ExchangeRateDetails;
 
-public class PricingRateDetailsDTO  {
+public class PricingRateDetailsDTO {
 
-	private List<BankRateDetailsDTO> baseBankRatesNPrices;
+	private List<ExchangeRateDetails> sellRateDetails;
+
+	private Map<BigDecimal, BankDetailsDTO> bankDetails;
 
 	private Map<BigDecimal, ViewExGLCBAL> bankGlcBalMap;
 
 	private OnlineMarginMarkup margin;
-
-	private List<BankRateDetailsDTO> discountedBanksRatesNPrices;
-
-	public List<BankRateDetailsDTO> getBaseBankRatesNPrices() {
-		return baseBankRatesNPrices;
-	}
-
-	public void setBaseBankRatesNPrices(List<BankRateDetailsDTO> baseBankRatesNPrices) {
-		this.baseBankRatesNPrices = baseBankRatesNPrices;
-	}
 
 	public Map<BigDecimal, ViewExGLCBAL> getBankGlcBalMap() {
 		return bankGlcBalMap;
@@ -42,14 +35,20 @@ public class PricingRateDetailsDTO  {
 		this.margin = margin;
 	}
 
-	public List<BankRateDetailsDTO> getDiscountedBanksRatesNPrices() {
-		return discountedBanksRatesNPrices;
+	public List<ExchangeRateDetails> getSellRateDetails() {
+		return sellRateDetails;
 	}
 
-	public void setDiscountedBanksRatesNPrices(List<BankRateDetailsDTO> finalBanksRatesNPrices) {
-		this.discountedBanksRatesNPrices = finalBanksRatesNPrices;
+	public void setSellRateDetails(List<ExchangeRateDetails> sellRateDetails) {
+		this.sellRateDetails = sellRateDetails;
 	}
-	
-	
+
+	public Map<BigDecimal, BankDetailsDTO> getBankDetails() {
+		return bankDetails;
+	}
+
+	public void setBankDetails(Map<BigDecimal, BankDetailsDTO> bankDetails) {
+		this.bankDetails = bankDetails;
+	}
 
 }

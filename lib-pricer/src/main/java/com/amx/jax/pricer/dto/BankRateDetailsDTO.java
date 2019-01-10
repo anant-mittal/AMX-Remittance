@@ -3,6 +3,9 @@ package com.amx.jax.pricer.dto;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Comparator;
+import java.util.Map;
+
+import com.amx.jax.pricer.var.PricerServiceConstants.DISCOUNT_TYPE;
 
 public class BankRateDetailsDTO implements Comparable<BankRateDetailsDTO>, Serializable {
 
@@ -10,16 +13,18 @@ public class BankRateDetailsDTO implements Comparable<BankRateDetailsDTO>, Seria
 	 * 
 	 */
 	private static final long serialVersionUID = -5376785365468336325L;
-	
+
 	private BigDecimal bankId;
 	private String bankCode;
 	private String bankFullName;
 	private String bankShortName;
 	private BigDecimal bankCountryId;
-	
+
 	private BigDecimal serviceIndicatorId;
 
 	private ExchangeRateBreakup exRateBreakup;
+
+	private Map<DISCOUNT_TYPE, String> discountPipsDetails;
 
 	public BigDecimal getBankId() {
 		return bankId;
@@ -126,6 +131,14 @@ public class BankRateDetailsDTO implements Comparable<BankRateDetailsDTO>, Seria
 		this.exRateBreakup = exRateBreakup;
 	}
 
+	public Map<DISCOUNT_TYPE, String> getDiscountPipsDetails() {
+		return discountPipsDetails;
+	}
+
+	public void setDiscountPipsDetails(Map<DISCOUNT_TYPE, String> discountPipsDetails) {
+		this.discountPipsDetails = discountPipsDetails;
+	}
+
 	@Override
 	public int compareTo(BankRateDetailsDTO arg0) {
 		BankRateDetailsDTO o1 = this;
@@ -137,7 +150,7 @@ public class BankRateDetailsDTO implements Comparable<BankRateDetailsDTO>, Seria
 		}
 		return 0;
 	}
-	
+
 	public static class BankMasterDTOComparator implements Comparator<BankRateDetailsDTO> {
 
 		@Override
@@ -159,6 +172,5 @@ public class BankRateDetailsDTO implements Comparable<BankRateDetailsDTO>, Seria
 				+ ", bankShortName=" + bankShortName + ", bankCountryId=" + bankCountryId + ", serviceIndicatorId="
 				+ serviceIndicatorId + ", exRateBreakup=" + exRateBreakup + "]";
 	}
-	
-	
+
 }
