@@ -128,4 +128,8 @@ public class RemittanceApplicationDao {
 	public RemittanceTransaction getRemittanceTransactionById(BigDecimal remittanceTransactionId) {
 		return remittanceTransactionRepository.findOne(remittanceTransactionId);
 	}
+
+	public RemittanceApplication getApplication(BigDecimal remittanceApplicationId) {
+		return appRepo.findOne(remittanceApplicationId);
+	}
 }

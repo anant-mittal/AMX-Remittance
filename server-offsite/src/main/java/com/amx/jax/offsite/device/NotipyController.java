@@ -10,6 +10,7 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.IDeviceStateService;
 import com.amx.jax.device.DeviceConstants;
 import com.amx.jax.device.DeviceData;
+import com.amx.jax.device.DeviceRequest;
 import com.amx.jax.device.NotipyBox;
 import com.amx.jax.device.NotipyData;
 import com.amx.jax.logger.LoggerService;

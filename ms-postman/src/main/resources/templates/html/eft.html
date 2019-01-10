@@ -266,9 +266,8 @@
                                     <td>
                                   		<h5>Dear <span th:text="${data.customer}" th:remove="tag"></span>,</h5><br/>
                                   		<p class="lead">Greetings from <span th:text="${_tu.prop('company.name')}" th:remove="tag"></span> !</p> <br/>
-                                  		<p class="lead">Thank you for using <a th:href="@{'https://' +${_tu.prop('company.website.url')}}"><span th:text="${_tu.prop('company.website.url')}"></span></a> for your remittance and hope you had a pleasant experience.</p>
-                                  		
-                                      	<p class="lead">Your transaction with us dated <strong th:text="${data.date}"></strong> having Trans Ref No: <strong th:text="${data.refno}"></strong> for <strong th:text="${data.currency}"></strong> <strong th:text="${data.amount}"></strong>   has been successfully transferred to the beneficiary account. You now have <strong th:text="${data.loyaltypoints}"></strong> loyalty points. Thank you for your continued patronage.</p>
+                                  		<p class="lead">Your transaction with us dated <strong th:text="${data.date}"></strong> having Trans Ref No: <strong th:text="${data.refno}"></strong> for <strong th:text="${data.currency}"></strong> <strong th:text="${data.amount}"></strong>   has been successfully transferred to the beneficiary account. You now have <strong th:text="${data.loyaltypoints}"></strong> loyalty points. Thank you for your continued patronage.</p>
+                                        <p class="lead">We are now available <a th:href="${_tu.prop('company.app.url')}"><span >online</span></a> and on App's for <a th:href="${_tu.prop('company.ios.url')}"><span>IOS</span></a> and <a th:href="${_tu.prop('company.android.url')}"><span>Android</span>.</a></p>
                                     
                                    		<!-- A Real Hero (and a real human being) -->
                                         <p style="padding:40px 0" align="center"><img src="cid:images/product-1.png"/></p><!-- /hero -->

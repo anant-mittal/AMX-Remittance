@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.event.AmxTunnelEvents;
 import com.amx.jax.tunnel.DBEvent;
-import com.amx.jax.tunnel.TunnelEvent;
 import com.amx.jax.tunnel.TunnelEventXchange;
 import com.amx.jax.tunnel.TunnelService;
 import com.amx.jax.ui.response.ResponseWrapper;

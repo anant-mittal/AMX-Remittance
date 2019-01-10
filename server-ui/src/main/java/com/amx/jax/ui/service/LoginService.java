@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import com.amx.amxlib.exception.JaxSystemError;
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
@@ -19,6 +18,7 @@ import com.amx.jax.error.JaxError;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.model.AuthState;
 import com.amx.jax.model.AuthState.AuthStep;
+import com.amx.jax.model.auth.QuestModelDTO;
 import com.amx.jax.ui.audit.CAuthEvent;
 import com.amx.jax.ui.config.HttpUnauthorizedException;
 import com.amx.jax.ui.config.UIServerError;

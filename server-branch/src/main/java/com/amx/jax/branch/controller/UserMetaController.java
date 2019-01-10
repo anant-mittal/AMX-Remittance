@@ -16,10 +16,10 @@ import com.amx.jax.sso.SSOUser;
 import io.swagger.annotations.Api;
 
 @RestController
-@Api(value = "Meta APIs")
-public class MetaController {
+@Api(value = "User Meta APIs")
+public class UserMetaController {
 
-	private Logger logger = Logger.getLogger(MetaController.class);
+	private Logger logger = Logger.getLogger(UserMetaController.class);
 
 	@Autowired
 	private SSOUser ssoUser;
