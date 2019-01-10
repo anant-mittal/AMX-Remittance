@@ -119,11 +119,11 @@ public class RemittancePaymentManager extends AbstractService{
 			{
 				
 				lstPayIdDetails = applicationDao.fetchRemitApplTrnxRecordsByCustomerPayId(paymentResponse.getUdf3(),new Customer(paymentResponse.getCustomerId()));
-				
-			//	logger.info("Appl :"+lstPayIdDetails.get(0).getRemittanceApplicationId()+"\n Company Id :"+lstPayIdDetails.get(0).getFsCompanyMaster().getCompanyId());
-				
 				paymentResponse.setCompanyId(lstPayIdDetails.get(0).getFsCompanyMaster().getCompanyId());
-				
+				if (lstPayIdDetails.get(0).getResultCode() != null) {
+					logger.info("Existing payment id found: {}", lstPayIdDetails.get(0).getPaymentId());
+					return response;
+				}
 				remittanceApplicationService.updatePaymentDetails(lstPayIdDetails, paymentResponse);
 				/** Calling stored procedure  insertRemittanceOnline **/
 				remitanceMap = remittanceApplicationService.saveRemittance(paymentResponse);
@@ -221,6 +221,10 @@ public class RemittancePaymentManager extends AbstractService{
 			e.printStackTrace();
 			
 			lstPayIdDetails =applicationDao.fetchRemitApplTrnxRecordsByCustomerPayId(paymentResponse.getUdf3(),new Customer(paymentResponse.getCustomerId()));
+			if (lstPayIdDetails.get(0).getResultCode() != null) {
+				logger.info("Existing payment id found: {}", lstPayIdDetails.get(0).getPaymentId());
+				return response;
+			}
 			if(!lstPayIdDetails.isEmpty()) {
 				remittanceApplicationService.updatePayTokenNull(lstPayIdDetails, paymentResponse);
 			}
