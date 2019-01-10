@@ -738,7 +738,6 @@ public class UserValidationService {
 		
 		if(null == JaxAuthContext.getMotp() && null == JaxAuthContext.getEotp() && null == JaxAuthContext.getSecAns()) {
 			ex=  new GlobalException(JaxError.OTP_AND_SEC_ANSWER_REQUIRED.getStatusKey(), "motp, eOtp and Security Answer required");
-			//CivilIdOtpModel civilIdOtpModel = (CivilIdOtpModel) userService.sendOtpForCivilId(customerModel.getIdentityId()).getResult();
 			CivilIdOtpModel civilIdOtpModel = (CivilIdOtpModel) userService.sendOtpForCivilId(customerModel.getIdentityId(),channels,null,null).getResult();
 			QuestModelDTO secQuestion = securityQuestionsManager.getDataVerificationRandomQuestions(1).get(0);
 			ex.setMeta(new CustomerRequestAuthMeta(civilIdOtpModel.getmOtpPrefix(), civilIdOtpModel.geteOtpPrefix(),secQuestion));
@@ -748,7 +747,6 @@ public class UserValidationService {
 		
 		if(null == JaxAuthContext.getMotp() && null == JaxAuthContext.getEotp() && JaxAuthContext.getSecAns() != null) {
 			ex =  new GlobalException(JaxError.BOTH_OTP_REQUIRED.getStatusKey(), "motp and eOtp required");
-			//CivilIdOtpModel civilIdOtpModel = (CivilIdOtpModel) userService.sendOtpForCivilId(customerModel.getIdentityId()).getResult();
 			CivilIdOtpModel civilIdOtpModel = (CivilIdOtpModel) userService.sendOtpForCivilId(customerModel.getIdentityId(),channels,null,null).getResult();
 			ex.setMeta(new CustomerRequestAuthMeta(civilIdOtpModel.getmOtpPrefix(), civilIdOtpModel.geteOtpPrefix()));
 			
@@ -784,10 +782,9 @@ public class UserValidationService {
 	}
 
 	private void validateSecurityAnswer() {
-		// get question from cache
-		// CustomerDataVerificationQuestion.valueOf(jaxAuthMeta.getSecQ())
-		//JaxAuthMeta jaxAuthMeta = jaxAuthCache.get(metaData.getCustomerId().toString());
 		JaxAuthMeta jaxAuthMeta = jaxAuthCache.getOrDefault(metaData.getCustomerId().toString(), new JaxAuthMeta());
+		
+		// get question from cache
 		CustomerDataVerificationQuestion question = CustomerDataVerificationQuestion
 				.getCustomerDataVerificationQuestionById(jaxAuthMeta.getQuestId());
 
