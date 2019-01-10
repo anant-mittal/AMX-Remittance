@@ -85,15 +85,38 @@ public class SecurityQuestionsManager {
 		QuestModelDTO q1 = CustomerDataVerificationQuestion.Q1.getQuestModelDTO();
 		QuestModelDTO q2 = CustomerDataVerificationQuestion.Q2.getQuestModelDTO();
 		QuestModelDTO q3 = CustomerDataVerificationQuestion.Q3.getQuestModelDTO();
+		QuestModelDTO q4 = CustomerDataVerificationQuestion.Q4.getQuestModelDTO();
+		QuestModelDTO q5 = CustomerDataVerificationQuestion.Q5.getQuestModelDTO();
 		q1.setQuestAnswerModelDTO(getAnswerModelForQ1());
 		q2.setQuestAnswerModelDTO(getRelationShips());
 		q3.setQuestAnswerModelDTO(getListOfMonths());
+		q4.setQuestAnswerModelDTO(getAnswerModelForQ4());
+		q5.setQuestAnswerModelDTO(getExpiryDateForQ5());
 		List<QuestModelDTO> result = new ArrayList<>();
 		Map<Integer, QuestModelDTO> maps = new HashMap<>();
 		maps.put(1, q1);
 		maps.put(2, q2);
 		maps.put(3, q3);
+		maps.put(4, q4);
+		maps.put(5, q5);
 		int randQKey = ThreadLocalRandom.current().nextInt(1, 4);
+		result.add(maps.get(randQKey));
+		return result;
+
+	}
+	
+	public List<QuestModelDTO> getDataVerificationRandomQuestions(Integer size) {
+
+		QuestModelDTO q4 = CustomerDataVerificationQuestion.Q4.getQuestModelDTO();
+		QuestModelDTO q5 = CustomerDataVerificationQuestion.Q5.getQuestModelDTO();
+		
+		q4.setQuestAnswerModelDTO(getAnswerModelForQ4());
+		q5.setQuestAnswerModelDTO(getExpiryDateForQ5());
+		List<QuestModelDTO> result = new ArrayList<>();
+		Map<Integer, QuestModelDTO> maps = new HashMap<>();
+		maps.put(1, q4);
+		maps.put(2, q5);
+		int randQKey = ThreadLocalRandom.current().nextInt(1, 3);
 		result.add(maps.get(randQKey));
 		return result;
 
@@ -132,6 +155,18 @@ public class SecurityQuestionsManager {
 			answer.setOptionValue(i.getLocalRelationsDesc());
 			possibleAnswers.add(answer);
 		});
+		return dto;
+	}
+	
+	private QuestAnswerModelDTO getAnswerModelForQ4() {
+		QuestAnswerModelDTO dto = new QuestAnswerModelDTO();
+		dto.setAnswerType("text");
+		return dto;
+	}
+
+	private QuestAnswerModelDTO getExpiryDateForQ5() {
+		QuestAnswerModelDTO dto = new QuestAnswerModelDTO();
+		dto.setAnswerType("date");
 		return dto;
 	}
 }

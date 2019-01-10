@@ -37,6 +37,8 @@ import com.amx.amxlib.model.UserVerificationCheckListDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.JaxAuthCache;
+import com.amx.jax.JaxAuthCache.JaxAuthMeta;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.auditlog.CustomerAuditEvent;
@@ -72,6 +74,7 @@ import com.amx.jax.repository.IViewDistrictDAO;
 import com.amx.jax.repository.IViewStateDao;
 import com.amx.jax.scope.TenantContext;
 import com.amx.jax.services.JaxNotificationService;
+import com.amx.jax.userservice.constant.CustomerDataVerificationQuestion;
 import com.amx.jax.userservice.dao.AbstractUserDao;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.manager.SecurityQuestionsManager;
@@ -155,6 +158,9 @@ public class UserService extends AbstractUserService {
 
 	@Autowired
 	AuditService auditService;
+	
+	@Autowired
+	JaxAuthCache jaxAuthCache;
 
 	@Override
 	public ApiResponse registerUser(AbstractUserModel userModel) {
@@ -262,7 +268,7 @@ public class UserService extends AbstractUserService {
 
 		return response;
 	}
-
+	
 	private void updateCustomerVerification(CustomerOnlineRegistration onlineCust, CustomerModel model, Customer cust) {
 		CustomerVerification cv = customerVerificationService.getVerification(cust, CustomerVerificationType.EMAIL);
 		if (cv != null) {
@@ -365,8 +371,10 @@ public class UserService extends AbstractUserService {
 		
 		// --- Validate IdentityInt 
 		Customer customerType = custDao.getCustomerByCivilId(civilId);
-		BigDecimal indentityType = customerType.getIdentityTypeId();
-		userValidationService.validateIdentityInt(civilId, indentityType);
+		if(null != customerType) {
+			BigDecimal indentityType = customerType.getIdentityTypeId();
+			userValidationService.validateIdentityInt(civilId, indentityType);
+		}
 
 		CivilIdOtpModel model = new CivilIdOtpModel();
 
@@ -460,6 +468,11 @@ public class UserService extends AbstractUserService {
 			model.seteOtpPrefix(model.getmOtpPrefix());
 			logger.info("Generated otp for civilid email- " + userId + " is " + randmOtp);
 		}
+		
+		JaxAuthMeta jaxAuthMeta = jaxAuthCache.getOrDefault(metaData.getCustomerId().toString(), new JaxAuthMeta());
+		jaxAuthMeta.seteOtp(randeOtp);
+		jaxAuthMeta.setmOtp(randmOtp);
+		jaxAuthCache.fastPut(metaData.getCustomerId().toString(), jaxAuthMeta);
 
 		logger.info("Generated otp for civilid mobile- " + userId + " is " + randmOtp);
 	}
