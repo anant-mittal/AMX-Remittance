@@ -90,7 +90,7 @@ public class TrnxViewTask extends ARadarTask {
 		gridQuery.setSortOrder(SortOrder.ASC);
 
 		GridViewBuilder<TranxViewRecord> y = gridService
-				.view(GridView.VW_CUSTOMER_RATING, gridQuery);
+				.view(GridView.VW_KIBANA_TRNX, gridQuery);
 
 		AmxApiResponse<TranxViewRecord, GridMeta> x = y.get();
 

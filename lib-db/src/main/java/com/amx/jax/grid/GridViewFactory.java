@@ -25,7 +25,7 @@ public class GridViewFactory {
 
 		map.put(GridView.DEVICE_CLIENT, new GridInfo<Device>(Device.class));
 		map.put(GridView.VW_EX_CUSTOMER_INFO, new GridInfo<CustomerDetailViewRecord>(CustomerDetailViewRecord.class));
-		map.put(GridView.VW_CUSTOMER_RATING, new GridInfo<TranxViewRecord>(TranxViewRecord.class));
+		map.put(GridView.VW_KIBANA_TRNX, new GridInfo<TranxViewRecord>(TranxViewRecord.class));
 	}
 
 	public static GridInfo<?> get(GridView gridView) {

@@ -13,7 +13,7 @@ import javax.persistence.Table;
  * Author Rahamathali Shaik
 */
 @Entity
-@Table(name = "VW_CUSTOMER_RATING")
+@Table(name = "VW_KIBANA_TRNX")
 public class TranxViewRecord implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -31,15 +31,15 @@ public class TranxViewRecord implements Serializable {
 	@Column(name = "APPL_DOCNO")
 	private BigDecimal docNo;
 
-	@Column(name = "appl_date")
+	@Column(name = "APPL_DATE")
 	private Date creationDate;
 
 	// Bene
 	@Column(name = "BENE_COUNTRY_ID")
 	private BigDecimal beneCountryId;
 
-	@Column(name = "BENE_COUNTRY_NAME")
-	private String beneCountryName;
+	@Column(name = "BENE_COUNTRY_CODE")
+	private String beneCountryCode;
 
 	@Column(name = "BENE_BANK_ID")
 	private BigDecimal beneBankId;
@@ -60,8 +60,8 @@ public class TranxViewRecord implements Serializable {
 	@Column(name = "COUNTRY_BRANCH_ID")
 	private BigDecimal countryBranchId;
 
-	@Column(name = "COUNTRY_BRANCH_NAME")
-	private String countryBranchName;
+	@Column(name = "COUNTRY_BRANCH_CODE")
+	private String countryBranchCode;
 
 	@Column(name = "DELIVERY_MODE_ID")
 	private BigDecimal deliveryModeId;
@@ -72,13 +72,13 @@ public class TranxViewRecord implements Serializable {
 	@Column(name = "FOREIGN_CURRENCY_ID")
 	private BigDecimal forCurId;
 
-	@Column(name = "FOREIGN_CURRENCY_NAME")
+	@Column(name = "FOREIGN_CURRENCY_CODE")
 	private String forCurName;
 
-	@Column(name = "foreign_trnx_amount")
+	@Column(name = "FOREIGN_TRNX_AMOUNT")
 	private BigDecimal forTrnxAmount;
 
-	@Column(name = "local_tranx_amount")
+	@Column(name = "LOCAL_TRANX_AMOUNT")
 	private BigDecimal domTrnxAmount;
 
 	@Column(name = "REMITTANCE_MODE_ID")
@@ -96,8 +96,8 @@ public class TranxViewRecord implements Serializable {
 	@Column(name = "ROUTING_COUNTRY_ID")
 	private BigDecimal routingCountryid;
 
-	@Column(name = "ROUTING_COUNTRY_NAME")
-	private String routingCountryName;
+	@Column(name = "ROUTING_COUNTRY_CODE")
+	private String routingCountryCode;
 
 	// Tranx
 	@Column(name = "TRNX_ID")
@@ -121,6 +121,16 @@ public class TranxViewRecord implements Serializable {
 	@Column(name = "TRNX_STATUS")
 	private String trnxStatus;
 
+	// Revenue
+	@Column(name = "EXCHANGE_GAIN")
+	private BigDecimal exchangeGain;
+
+	@Column(name = "CO_BANK_CHARGES")
+	private BigDecimal coBankCharges;
+
+	@Column(name = "COMM_RECV")
+	private BigDecimal commRecv;
+
 	// Customer
 	@Column(name = "IDENTITY_INT")
 	private String identity;
@@ -134,8 +144,8 @@ public class TranxViewRecord implements Serializable {
 	@Column(name = "NATIONALITY")
 	private BigDecimal custmerNation;
 
-	@Column(name = "NATIONALITY_NAME")
-	private String custmerNationName;
+	@Column(name = "NATIONALITY_CODE")
+	private String custmerNationCode;
 
 	public BigDecimal getId() {
 		return id;
@@ -185,14 +195,6 @@ public class TranxViewRecord implements Serializable {
 		this.beneCountryId = beneCountryId;
 	}
 
-	public String getBeneCountryName() {
-		return beneCountryName;
-	}
-
-	public void setBeneCountryName(String beneCountryName) {
-		this.beneCountryName = beneCountryName;
-	}
-
 	public BigDecimal getBeneBankId() {
 		return beneBankId;
 	}
@@ -239,14 +241,6 @@ public class TranxViewRecord implements Serializable {
 
 	public void setCountryBranchId(BigDecimal countryBranchId) {
 		this.countryBranchId = countryBranchId;
-	}
-
-	public String getCountryBranchName() {
-		return countryBranchName;
-	}
-
-	public void setCountryBranchName(String countryBranchName) {
-		this.countryBranchName = countryBranchName;
 	}
 
 	public BigDecimal getDeliveryModeId() {
@@ -337,14 +331,6 @@ public class TranxViewRecord implements Serializable {
 		this.routingCountryid = routingCountryid;
 	}
 
-	public String getRoutingCountryName() {
-		return routingCountryName;
-	}
-
-	public void setRoutingCountryName(String routingCountryName) {
-		this.routingCountryName = routingCountryName;
-	}
-
 	public BigDecimal getTrnaxId() {
 		return trnaxId;
 	}
@@ -433,12 +419,60 @@ public class TranxViewRecord implements Serializable {
 		this.custmerNation = custmerNation;
 	}
 
-	public String getCustmerNationName() {
-		return custmerNationName;
+	public String getBeneCountryCode() {
+		return beneCountryCode;
 	}
 
-	public void setCustmerNationName(String custmerNationName) {
-		this.custmerNationName = custmerNationName;
+	public void setBeneCountryCode(String beneCountryCode) {
+		this.beneCountryCode = beneCountryCode;
+	}
+
+	public String getCountryBranchCode() {
+		return countryBranchCode;
+	}
+
+	public void setCountryBranchCode(String countryBranchCode) {
+		this.countryBranchCode = countryBranchCode;
+	}
+
+	public String getRoutingCountryCode() {
+		return routingCountryCode;
+	}
+
+	public void setRoutingCountryCode(String routingCountryCode) {
+		this.routingCountryCode = routingCountryCode;
+	}
+
+	public String getCustmerNationCode() {
+		return custmerNationCode;
+	}
+
+	public void setCustmerNationCode(String custmerNationCode) {
+		this.custmerNationCode = custmerNationCode;
+	}
+
+	public BigDecimal getExchangeGain() {
+		return exchangeGain;
+	}
+
+	public void setExchangeGain(BigDecimal exchangeGain) {
+		this.exchangeGain = exchangeGain;
+	}
+
+	public BigDecimal getCoBankCharges() {
+		return coBankCharges;
+	}
+
+	public void setCoBankCharges(BigDecimal coBankCharges) {
+		this.coBankCharges = coBankCharges;
+	}
+
+	public BigDecimal getCommRecv() {
+		return commRecv;
+	}
+
+	public void setCommRecv(BigDecimal commRecv) {
+		this.commRecv = commRecv;
 	}
 
 }
