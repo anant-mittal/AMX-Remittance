@@ -65,8 +65,9 @@ public class TrnxViewTask extends ARadarTask {
 
 	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_TASK)
 	public void doTask() {
-
 		AppContextUtil.setTenant(TenantContextHolder.currentSite(appConfig.getDefaultTenant()));
+		AppContextUtil.init();
+		LOGGER.info("Running Task lastUpdateDateNow:{}", lastUpdateDateNow);
 
 		jaxMetaInfo.setCountryId(TenantContextHolder.currentSite().getBDCode());
 		jaxMetaInfo.setTenant(TenantContextHolder.currentSite());

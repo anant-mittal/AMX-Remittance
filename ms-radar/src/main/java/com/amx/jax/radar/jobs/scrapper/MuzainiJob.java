@@ -43,10 +43,13 @@ public class MuzainiJob {
 
 	XmlMapper xmlMapper = new XmlMapper();
 
-	Logger logger = LoggerService.getLogger(MuzainiJob.class);
+	public static final Logger LOGGER = LoggerService.getLogger(MuzainiJob.class);
 
 	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_MIN_30)
 	public void fetchAmanKuwaitModels() {
+
+		LOGGER.info("Scrapper Task");
+
 		try {
 			Document doc = Jsoup.connect("http://www.muzaini.com/ExchangeRates.aspx")
 					.data("ddlCurrency", "KWD")

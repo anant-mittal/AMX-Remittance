@@ -43,6 +43,8 @@ public class AmanKuwaitJob extends ARadarTask {
 	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_MIN_30)
 	public void doTask() {
 
+		LOGGER.info("Scrapper Task");
+
 		String response = restService.ajax("http://www.amankuwait.com/AmanWebsite/RateSheet/RateSheet.aspx")
 				.get().asString();
 		// xmlMapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);

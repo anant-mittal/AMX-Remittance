@@ -54,10 +54,13 @@ public class UAEXChangeJob extends ARadarTask {
 
 	XmlMapper xmlMapper = new XmlMapper();
 
-	Logger logger = LoggerService.getLogger(UAEXChangeJob.class);
+	public static final Logger LOGGER = LoggerService.getLogger(UAEXChangeJob.class);
 
 	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_MIN_30)
 	public void doTask() {
+
+		LOGGER.info("Scrapper Task");
+
 		try {
 			Document doc0 = Jsoup.connect(UAE_XCHANGE_URL).get();
 

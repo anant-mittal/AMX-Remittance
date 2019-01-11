@@ -15,6 +15,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import com.amx.jax.AppConfig;
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.dict.Language;
@@ -54,6 +56,9 @@ public class CustomerViewTask extends ARadarTask {
 	GridService gridService;
 
 	@Autowired
+	private AppConfig appConfig;
+
+	@Autowired
 	private JaxMetaInfo jaxMetaInfo;
 
 	@Autowired
@@ -63,6 +68,10 @@ public class CustomerViewTask extends ARadarTask {
 
 	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_TASK)
 	public void doTask() {
+
+		AppContextUtil.setTenant(TenantContextHolder.currentSite(appConfig.getDefaultTenant()));
+		AppContextUtil.init();
+		LOGGER.info("Running Task lastUpdateDateNow:{}", lastUpdateDateNow);
 
 		jaxMetaInfo.setCountryId(TenantContextHolder.currentSite().getBDCode());
 		jaxMetaInfo.setTenant(TenantContextHolder.currentSite());

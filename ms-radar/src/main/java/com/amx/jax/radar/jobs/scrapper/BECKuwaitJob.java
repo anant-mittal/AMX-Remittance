@@ -45,10 +45,13 @@ public class BECKuwaitJob extends ARadarTask {
 
 	XmlMapper xmlMapper = new XmlMapper();
 
-	Logger logger = LoggerService.getLogger(BECKuwaitJob.class);
+	public static final Logger LOGGER = LoggerService.getLogger(BECKuwaitJob.class);
 
 	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_MIN_30)
 	public void doTask() {
+
+		LOGGER.info("Scrapper Task");
+
 		try {
 			Document doc = Jsoup.connect("https://www.bec.com.kw/currency-exchange-rates?atype=money&continent=popular")
 					.get();

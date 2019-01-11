@@ -45,10 +45,12 @@ public class AMXJob extends ARadarTask {
 	@Autowired
 	private JaxMetaInfo jaxMetaInfo;
 
-	Logger logger = LoggerService.getLogger(AMXJob.class);
+	public static final Logger LOGGER = LoggerService.getLogger(AMXJob.class);
 
 	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_MIN_30)
 	public void doTask() {
+
+		LOGGER.info("Scrapper Task");
 
 		jaxMetaInfo.setCountryId(TenantContextHolder.currentSite().getBDCode());
 		jaxMetaInfo.setTenant(TenantContextHolder.currentSite());
