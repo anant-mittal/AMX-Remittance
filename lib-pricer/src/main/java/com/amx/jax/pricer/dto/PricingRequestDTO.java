@@ -95,14 +95,6 @@ public class PricingRequestDTO implements Serializable {
 		this.channel = channel;
 	}
 
-	public BigDecimal getDefaultCurrencyId() {
-		return localCurrencyId;
-	}
-
-	public void setDefaultCurrencyId(BigDecimal defaultCurrencyId) {
-		this.localCurrencyId = defaultCurrencyId;
-	}
-
 	public BigDecimal getCountryBranchId() {
 		return countryBranchId;
 	}
