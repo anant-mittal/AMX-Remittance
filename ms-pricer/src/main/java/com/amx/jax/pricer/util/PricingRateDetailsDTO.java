@@ -1,6 +1,7 @@
 package com.amx.jax.pricer.util;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -18,6 +19,8 @@ public class PricingRateDetailsDTO {
 	private Map<BigDecimal, ViewExGLCBAL> bankGlcBalMap;
 
 	private OnlineMarginMarkup margin;
+
+	private Map<String, Object> info = new HashMap<String, Object>();
 
 	public Map<BigDecimal, ViewExGLCBAL> getBankGlcBalMap() {
 		return bankGlcBalMap;
@@ -49,6 +52,14 @@ public class PricingRateDetailsDTO {
 
 	public void setBankDetails(Map<BigDecimal, BankDetailsDTO> bankDetails) {
 		this.bankDetails = bankDetails;
+	}
+
+	public Map<String, Object> getInfo() {
+		return info;
+	}
+
+	public void setInfo(Map<String, Object> info) {
+		this.info = info;
 	}
 
 }

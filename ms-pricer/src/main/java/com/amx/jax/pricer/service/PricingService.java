@@ -71,6 +71,8 @@ public class PricingService {
 		pricingResponseDTO.setSellRateDetails(pricingRateDetailsDTO.getSellRateDetails());
 
 		Collections.sort(pricingResponseDTO.getSellRateDetails());
+		
+		pricingResponseDTO.setInfo(pricingRateDetailsDTO.getInfo());
 
 		/*
 		 * Map<String, BankRateDetailsDTO> baseRateBankDetails = new HashMap<String,
