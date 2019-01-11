@@ -46,7 +46,7 @@ public class GridService {
 		String paginatedQuery = GridUtil.buildPaginatedQueryForOracle(baseQuery, pagination,
 				gridQuery.isPaginated() && GridViewRecord.class.isAssignableFrom(gridViewRecordClass),
 				gridInfo.isCustomeQuery());
-		LOGGER.info(paginatedQuery);
+		LOGGER.debug(paginatedQuery);
 		Query query = entityManager.createNativeQuery(paginatedQuery, gridViewRecordClass);
 
 		return new GridViewBuilder<T>(query, dataTableInRQ);

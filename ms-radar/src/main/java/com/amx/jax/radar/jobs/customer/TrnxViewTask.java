@@ -7,7 +7,6 @@ import java.util.Date;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -33,7 +32,6 @@ import com.amx.jax.logger.LoggerService;
 import com.amx.jax.radar.AESRepository.BulkRequestBuilder;
 import com.amx.jax.radar.ARadarTask;
 import com.amx.jax.radar.ESRepository;
-import com.amx.jax.radar.TestSizeApp;
 import com.amx.jax.rates.AmxCurConstants;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.utils.ArgUtil;
@@ -69,7 +67,8 @@ public class TrnxViewTask extends ARadarTask {
 	public void doTask() {
 		AppContextUtil.setTenant(TenantContextHolder.currentSite(appConfig.getDefaultTenant()));
 		AppContextUtil.init();
-		LOGGER.info("Running Task lastUpdateDateNow:{}", lastUpdateDateNow);
+		LOGGER.info("Running Task lastUpdateDateNow:{} {}", lastUpdateDateNow,
+				new Date(lastUpdateDateNow).toGMTString());
 
 		jaxMetaInfo.setCountryId(TenantContextHolder.currentSite().getBDCode());
 		jaxMetaInfo.setTenant(TenantContextHolder.currentSite());
@@ -102,7 +101,7 @@ public class TrnxViewTask extends ARadarTask {
 		for (TranxViewRecord record : x.getResults()) {
 			try {
 				Long lastUpdateDate = DateUtil.toUTC(record.getLastUpdateDate());
-				LOGGER.info("DIFF {}", lastUpdateDateNow - lastUpdateDate);
+				LOGGER.debug("DIFF {}", lastUpdateDateNow - lastUpdateDate);
 				if (lastUpdateDate > lastUpdateDateNow) {
 					lastUpdateDateNow = lastUpdateDate;
 				}
