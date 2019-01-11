@@ -97,6 +97,10 @@
 			<groupId>com.amx.jax</groupId>
 			<artifactId>lib-rbaac</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.amx.jax</groupId>
+			<artifactId>lib-pricer</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>
