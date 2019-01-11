@@ -7,6 +7,7 @@ import com.amx.jax.dbmodel.Device;
 import com.amx.jax.dbmodel.employee.UserSession;
 import com.amx.jax.grid.views.CustomerDetailViewRecord;
 import com.amx.jax.grid.views.EmployeeDetailViewRecord;
+import com.amx.jax.grid.views.TranxViewRecord;
 import com.amx.jax.grid.views.UserSessionRecord;
 
 public class GridViewFactory {
@@ -24,6 +25,7 @@ public class GridViewFactory {
 
 		map.put(GridView.DEVICE_CLIENT, new GridInfo<Device>(Device.class));
 		map.put(GridView.VW_EX_CUSTOMER_INFO, new GridInfo<CustomerDetailViewRecord>(CustomerDetailViewRecord.class));
+		map.put(GridView.VW_CUSTOMER_RATING, new GridInfo<TranxViewRecord>(TranxViewRecord.class));
 	}
 
 	public static GridInfo<?> get(GridView gridView) {

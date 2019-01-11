@@ -108,11 +108,11 @@ public class AESRepository {
 
 		BulkRequest request;
 
-		BulkRequestBuilder() {
+		public BulkRequestBuilder() {
 			this.request = new BulkRequest();
 		}
 
-		BulkRequest build() {
+		public BulkRequest build() {
 			return this.request;
 		}
 
