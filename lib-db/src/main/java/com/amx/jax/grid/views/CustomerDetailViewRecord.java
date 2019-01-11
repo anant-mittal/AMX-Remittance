@@ -27,7 +27,7 @@ public class CustomerDetailViewRecord implements GridViewRecord {
 	private BigDecimal customerTypeId;
 
 	@Column(name = "IDENTITY_INT")
-	private BigDecimal identity;
+	private String identity;
 
 	@Column(name = "CUSTOMER_EN_NAME")
 	private String name;
@@ -220,6 +220,14 @@ public class CustomerDetailViewRecord implements GridViewRecord {
 
 	public void setRn(Integer rn) {
 		this.rn = rn;
+	}
+
+	public String getIdentity() {
+		return identity;
+	}
+
+	public void setIdentity(String identity) {
+		this.identity = identity;
 	}
 
 }
