@@ -21,11 +21,11 @@ public class OracleVarsCache extends CacheBox<String> {
 	}
 
 	public String getTranxIndex() {
-		return "oracle-" + DOC_VERSION + "-tranx-v2";
+		return "oracle-" + DOC_VERSION + "-tranx-v3";
 	}
 
 	public String getCustomerIndex() {
-		return "oracle-" + DOC_VERSION + "-customer-v2";
+		return "oracle-" + DOC_VERSION + "-customer-v3";
 	}
 
 	public Long getCustomerScannedStamp() {

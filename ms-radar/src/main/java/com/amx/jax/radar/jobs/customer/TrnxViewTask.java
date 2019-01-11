@@ -116,7 +116,7 @@ public class TrnxViewTask extends ARadarTask {
 			esRepository.bulk(builder.build());
 		}
 
-		oracleVarsCache.setCustomerScannedStamp(lastUpdateDateNow);
+		oracleVarsCache.setTranxScannedStamp(lastUpdateDateNow);
 
 	}
 

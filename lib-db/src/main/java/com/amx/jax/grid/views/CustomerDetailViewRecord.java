@@ -26,6 +26,9 @@ public class CustomerDetailViewRecord implements GridViewRecord {
 	@Column(name = "CUSTOMER_TYPE_ID")
 	private BigDecimal customerTypeId;
 
+	@Column(name = "IDENTITY_INT")
+	private BigDecimal identity;
+
 	@Column(name = "CUSTOMER_EN_NAME")
 	private String name;
 
