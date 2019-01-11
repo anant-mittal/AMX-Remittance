@@ -23,7 +23,7 @@ import com.amx.jax.scope.ThreadScoped;
 })
 public class TestSizeApp {
 
-	public static final String ENABLE_JOBS = "true";
+	public static final String ENABLE_JOBS = "false";
 
 	public static void main(String[] args) throws Exception {
 		ConfigurableApplicationContext ctx = new SpringApplicationBuilder(TestSizeApp.class)

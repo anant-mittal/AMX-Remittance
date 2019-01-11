@@ -87,7 +87,7 @@ public class CustomerViewTask extends ARadarTask {
 		gridQuery.setSortOrder(SortOrder.ASC);
 
 		GridViewBuilder<CustomerDetailViewRecord> y = gridService
-				.view(GridView.VW_EX_CUSTOMER_INFO, gridQuery);
+				.view(GridView.VW_CUSTOMER_KIBANA, gridQuery);
 
 		AmxApiResponse<CustomerDetailViewRecord, GridMeta> x = y.get();
 

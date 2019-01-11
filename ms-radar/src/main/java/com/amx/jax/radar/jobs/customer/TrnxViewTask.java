@@ -41,7 +41,7 @@ import com.amx.utils.ArgUtil;
 @EnableScheduling
 @Component
 @Service
-@ConditionalOnExpression(TestSizeApp.ENABLE_JOBS)
+//@ConditionalOnExpression(TestSizeApp.ENABLE_JOBS)
 public class TrnxViewTask extends ARadarTask {
 
 	private static final Logger LOGGER = LoggerService.getLogger(TrnxViewTask.class);

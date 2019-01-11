@@ -60,8 +60,8 @@ public class TranxViewRecord implements Serializable {
 	@Column(name = "COUNTRY_BRANCH_ID")
 	private BigDecimal countryBranchId;
 
-	@Column(name = "COUNTRY_BRANCH_CODE")
-	private String countryBranchCode;
+	@Column(name = "COUNTRY_BRANCH_NAME")
+	private String countryBranchName;
 
 	@Column(name = "DELIVERY_MODE_ID")
 	private BigDecimal deliveryModeId;
@@ -425,14 +425,6 @@ public class TranxViewRecord implements Serializable {
 
 	public void setBeneCountryCode(String beneCountryCode) {
 		this.beneCountryCode = beneCountryCode;
-	}
-
-	public String getCountryBranchCode() {
-		return countryBranchCode;
-	}
-
-	public void setCountryBranchCode(String countryBranchCode) {
-		this.countryBranchCode = countryBranchCode;
 	}
 
 	public String getRoutingCountryCode() {
