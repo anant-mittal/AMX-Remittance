@@ -1,20 +1,19 @@
 package com.amx.jax.radar.jobs.customer;
 
-import java.util.Map;
-
+import com.amx.jax.grid.views.CustomerDetailViewRecord;
 import com.amx.jax.grid.views.TranxViewRecord;
 import com.amx.jax.radar.AESDocument;
 
 public class OracleViewDocument extends AESDocument {
 
-	Map<String, Object> customer;
+	CustomerDetailViewRecord customer;
 	TranxViewRecord trnx;
 
-	public Map<String, Object> getCustomer() {
+	public CustomerDetailViewRecord getCustomer() {
 		return customer;
 	}
 
-	public void setCustomer(Map<String, Object> customer) {
+	public void setCustomer(CustomerDetailViewRecord customer) {
 		this.customer = customer;
 	}
 

@@ -8,7 +8,6 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -17,7 +16,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import com.amx.jax.api.AmxApiResponse;
-import com.amx.jax.client.GridServiceClient;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.dict.Language;
 import com.amx.jax.grid.GridColumn;
@@ -25,13 +23,17 @@ import com.amx.jax.grid.GridEnums.FilterDataType;
 import com.amx.jax.grid.GridEnums.FilterOperater;
 import com.amx.jax.grid.GridMeta;
 import com.amx.jax.grid.GridQuery;
+import com.amx.jax.grid.GridService;
+import com.amx.jax.grid.GridService.GridViewBuilder;
 import com.amx.jax.grid.GridView;
 import com.amx.jax.grid.SortOrder;
+import com.amx.jax.grid.views.CustomerDetailViewRecord;
+import com.amx.jax.grid.views.TranxViewRecord;
 import com.amx.jax.logger.LoggerService;
+import com.amx.jax.radar.AESRepository.BulkRequestBuilder;
 import com.amx.jax.radar.ARadarTask;
 import com.amx.jax.radar.ESRepository;
 import com.amx.jax.radar.TestSizeApp;
-import com.amx.jax.radar.AESRepository.BulkRequestBuilder;
 import com.amx.jax.rates.AmxCurConstants;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.utils.ArgUtil;
@@ -49,7 +51,7 @@ public class CustomerViewTask extends ARadarTask {
 	private ESRepository esRepository;
 
 	@Autowired
-	GridServiceClient gridService;
+	GridService gridService;
 
 	@Autowired
 	private JaxMetaInfo jaxMetaInfo;
@@ -84,22 +86,22 @@ public class CustomerViewTask extends ARadarTask {
 		gridQuery.setSortBy(0);
 		gridQuery.setSortOrder(SortOrder.ASC);
 
-		AmxApiResponse<Map<String, Object>, GridMeta> x = gridService.gridView(GridView.VW_EX_CUSTOMER_INFO, gridQuery,
-				new ParameterizedTypeReference<AmxApiResponse<Map<String, Object>, GridMeta>>() {
-				});
+		GridViewBuilder<CustomerDetailViewRecord> y = gridService
+				.view(GridView.VW_EX_CUSTOMER_INFO, gridQuery);
+
+		AmxApiResponse<CustomerDetailViewRecord, GridMeta> x = y.get();
 
 		BulkRequestBuilder builder = new BulkRequestBuilder();
 
-		for (Map<String, Object> record : x.getResults()) {
-			Object lastUpdateDateObj = record.get("lastUpdateDate");
+		for (CustomerDetailViewRecord record : x.getResults()) {
 
-			Long lastUpdateDate = ArgUtil.parseAsLong(lastUpdateDateObj, 0L);
+			Long lastUpdateDate = ArgUtil.parseAsLong(record.getLastUpdateDate().getTime(), 0L);
 			if (lastUpdateDate > lastUpdateDateNow) {
 				lastUpdateDateNow = lastUpdateDate;
 			}
 
-			BigDecimal customerId = ArgUtil.parseAsBigDecimal(record.get("customerId"));
-			Date creationDate = ArgUtil.parseAsSimpleDate(lastUpdateDateObj);
+			BigDecimal customerId = ArgUtil.parseAsBigDecimal(record.getCustomerId());
+			Date creationDate = ArgUtil.parseAsSimpleDate(record.getLastUpdateDate());
 			OracleViewDocument document = new OracleViewDocument();
 			document.setId("customer-" + customerId);
 			document.setTimestamp(creationDate);
