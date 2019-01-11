@@ -34,6 +34,7 @@ import com.amx.amxlib.constant.PrefixEnum;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.PersonInfo;
 import com.amx.amxlib.model.SecurityQuestionModel;
+import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.CustomerCredential;
 import com.amx.jax.ICustRegService;
 import com.amx.jax.amxlib.config.OtpSettings;
@@ -690,7 +691,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		customer.setDateOfBirth(customerDetails.getDateOfBirth());
 		customer.setMedicalInsuranceInd(customerDetails.getInsurance());
 		if (customerDetails.getIdentityTypeId().toString().equals("204")) {
-			customer.setIdentityExpiredDate(null);
+			customer.setIdentityExpiredDate(customerDetails.getExpiryDate());
 			// commented by Prashant
 			//customer.setExpiryDate(customerDetails.getExpiryDate());
 			//customer.setIssueDate(customerDetails.getIssueDate());
@@ -1068,10 +1069,14 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 				employmentDetails.setDistrictId(employmentData.getFsDistrictMaster());
 				employmentDetails.setCountryId(employmentData.getFsCountryMaster().getCountryId());
 				employmentDetails.setArticleDetailsId(customer.getFsArticleDetails().getArticleDetailId());
+				employmentDetails.setArticleId(customer.getFsArticleDetails().getFsArticleMaster().getArticleId());
 				employmentDetails.setIncomeRangeId(customer.getFsIncomeRangeMaster().getIncomeRangeId());
 				
 				offsiteCustomer.setCustomerEmploymentDetails(employmentDetails);
 			}	
+		}
+		else {
+			throw new GlobalException(ResponseStatus.NOT_FOUND.toString());
 		}
 		return AmxApiResponse.build(offsiteCustomer); 
 	}
