@@ -18,12 +18,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.dict.UserClient.Channel;
+import com.amx.jax.pricer.dao.CountryBranchDao;
 import com.amx.jax.pricer.dao.ExchangeRateDao;
 import com.amx.jax.pricer.dao.ExchangeRateProcedureDao;
 import com.amx.jax.pricer.dao.MarginMarkupDao;
 import com.amx.jax.pricer.dao.PipsMasterDao;
 import com.amx.jax.pricer.dao.ViewExGLCBALDao;
 import com.amx.jax.pricer.dbmodel.BankMasterModel;
+import com.amx.jax.pricer.dbmodel.CountryBranch;
 import com.amx.jax.pricer.dbmodel.ExchangeRateAPRDET;
 import com.amx.jax.pricer.dbmodel.ExchangeRateApprovalDetModel;
 import com.amx.jax.pricer.dbmodel.OnlineMarginMarkup;
@@ -59,12 +61,15 @@ public class RemitPriceManager {
 	@Autowired
 	MarginMarkupDao marginMarkupDao;
 
+	@Autowired
+	CountryBranchDao countryBranchDao;
+
 	@Resource
 	PricingRateDetailsDTO pricingRateDetailsDTO;
 
 	private static List<BigDecimal> ValidServiceIndicatorIds = new ArrayList<BigDecimal>();
 
-	private static int OnlineCountryBranchId = 78;
+	private static BigDecimal OnlineCountryBranchId;
 
 	static {
 		ValidServiceIndicatorIds.add(new BigDecimal(101));
@@ -86,8 +91,17 @@ public class RemitPriceManager {
 		Map<BigDecimal, BankDetailsDTO> bankIdDetailsMap = new HashMap<BigDecimal, BankDetailsDTO>();
 		pricingRateDetailsDTO.setBankDetails(bankIdDetailsMap);
 
-		if ((Channel.ONLINE.equals(requestDto.getChannel()) || Channel.MOBILE.equals(requestDto.getChannel()))
-				&& requestDto.getCountryBranchId().intValue() == OnlineCountryBranchId) {
+		if ((Channel.ONLINE.equals(requestDto.getChannel()) || Channel.MOBILE.equals(requestDto.getChannel()))) {
+
+			if (OnlineCountryBranchId == null) {
+				CountryBranch cb = countryBranchDao.getOnlineCountryBranch();
+				OnlineCountryBranchId = cb.getCountryBranchId();
+			}
+
+			if (OnlineCountryBranchId.longValue() != requestDto.getCountryBranchId().longValue()) {
+				throw new PricerServiceException(PricerServiceError.INVALID_BRANCH_ID,
+						"Invalid CountryBranchId, for Channel ONLINE, Id : " + requestDto.getCountryBranchId());
+			}
 
 			// This is code for fetching prices for online Channel
 			List<BigDecimal> validBankIds = getValidBankIds(requestDto.getForeignCurrencyId(),
