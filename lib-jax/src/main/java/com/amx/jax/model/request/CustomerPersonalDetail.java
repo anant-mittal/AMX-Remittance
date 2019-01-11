@@ -10,6 +10,7 @@ import org.hibernate.validator.constraints.Email;
 import org.springframework.format.annotation.NumberFormat;
 
 import com.amx.jax.AbstractModel;
+import com.amx.jax.constants.CustomerRegistrationType;
 import com.amx.jax.swagger.ApiMockModelProperty;
 
 /**
@@ -112,6 +113,17 @@ public class CustomerPersonalDetail extends AbstractModel {
 	
 	@ApiMockModelProperty(example = "Y")
 	private String isWatsApp;
+	
+	@ApiMockModelProperty(example = "OFF_CUSTOMER")
+	private CustomerRegistrationType registrationType;
+
+	public CustomerRegistrationType getRegistrationType() {
+		return registrationType;
+	}
+
+	public void setRegistrationType(CustomerRegistrationType registrationType) {
+		this.registrationType = registrationType;
+	}
 
 	public BigDecimal getCountryId() {
 		return countryId;

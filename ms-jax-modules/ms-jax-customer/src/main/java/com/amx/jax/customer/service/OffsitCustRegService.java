@@ -1021,6 +1021,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 			customerDetails.setWatsAppMobileNo(customer.getMobileOther());
 			customerDetails.setWatsAppTelePrefix(customer.getPrefixCodeMobileOther());
 			customerDetails.setIsWatsApp(customer.getIsMobileWhatsApp());
+			customerDetails.setRegistrationType(customer.getCustomerRegistrationType());
 			
 			offsiteCustomer.setCustomerPersonalDetail(customerDetails);
 			
@@ -1033,9 +1034,15 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 				localAddress.setStreet(localData.getStreet());
 				localAddress.setHouse(localData.getBuildingNo());
 				localAddress.setFlat(localData.getFlat());
-				localAddress.setCountryId(localData.getFsCountryMaster().getCountryId());
-				localAddress.setStateId(localData.getFsStateMaster().getStateId());
-				localAddress.setDistrictId(localData.getFsDistrictMaster().getDistrictId());
+				if(null != localData.getFsCountryMaster()) {
+					localAddress.setCountryId(localData.getFsCountryMaster().getCountryId());
+				}
+				if(null != localData.getFsStateMaster()) {
+					localAddress.setStateId(localData.getFsStateMaster().getStateId());
+				}
+				if(null != localData.getFsDistrictMaster()) {
+					localAddress.setDistrictId(localData.getFsDistrictMaster().getDistrictId());
+				}
 				if(null != localData.getFsCityMaster()) {
 					localAddress.setCityId(localData.getFsCityMaster().getCityId());
 				}
@@ -1050,9 +1057,15 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 				homeAddress.setStreet(homeData.getStreet());
 				homeAddress.setHouse(homeData.getBuildingNo());
 				homeAddress.setFlat(homeData.getFlat());
-				homeAddress.setCountryId(homeData.getFsCountryMaster().getCountryId());
-				homeAddress.setStateId(homeData.getFsStateMaster().getStateId());
-				homeAddress.setDistrictId(homeData.getFsDistrictMaster().getDistrictId());
+				if(null != homeData.getFsCountryMaster()) {
+					homeAddress.setCountryId(homeData.getFsCountryMaster().getCountryId());
+				}
+				if(null != homeData.getFsStateMaster()) {
+					homeAddress.setStateId(homeData.getFsStateMaster().getStateId());
+				}	
+				if(null != homeData.getFsDistrictMaster()) {
+					homeAddress.setDistrictId(homeData.getFsDistrictMaster().getDistrictId());
+				}	
 				if(null != homeData.getFsCityMaster()) {
 					homeAddress.setCityId(homeData.getFsCityMaster().getCityId());		
 				}
