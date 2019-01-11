@@ -1,6 +1,7 @@
 package com.amx.jax.radar.jobs.customer;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -36,12 +37,13 @@ import com.amx.jax.radar.TestSizeApp;
 import com.amx.jax.rates.AmxCurConstants;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.DateUtil;
 
 @Configuration
 @EnableScheduling
 @Component
 @Service
-@ConditionalOnExpression(TestSizeApp.ENABLE_JOBS)
+//@ConditionalOnExpression(TestSizeApp.ENABLE_JOBS)
 public class TrnxViewTask extends ARadarTask {
 
 	private static final Logger LOGGER = LoggerService.getLogger(TrnxViewTask.class);
@@ -98,25 +100,29 @@ public class TrnxViewTask extends ARadarTask {
 		BulkRequestBuilder builder = new BulkRequestBuilder();
 
 		for (TranxViewRecord record : x.getResults()) {
-			Long lastUpdateDate = ArgUtil.parseAsLong(record.getLastUpdateDate().getTime(), 0L);
-			if (lastUpdateDate > lastUpdateDateNow) {
-				lastUpdateDateNow = lastUpdateDate;
-			}
+			try {
+				Long lastUpdateDate = DateUtil.toUTC(record.getLastUpdateDate());
+				LOGGER.info("DIFF {}", lastUpdateDateNow - lastUpdateDate);
+				if (lastUpdateDate > lastUpdateDateNow) {
+					lastUpdateDateNow = lastUpdateDate;
+				}
 
-			BigDecimal appId = ArgUtil.parseAsBigDecimal(record.getId());
-			Date creationDate = ArgUtil.parseAsSimpleDate(record.getLastUpdateDate());
-			OracleViewDocument document = new OracleViewDocument();
-			document.setId("appxn-" + appId);
-			document.setTimestamp(creationDate);
-			document.setTrnx(record);
-			builder.update(oracleVarsCache.getTranxIndex(), "appxn", document);
+				BigDecimal appId = ArgUtil.parseAsBigDecimal(record.getId());
+				Date creationDate = ArgUtil.parseAsSimpleDate(record.getLastUpdateDate());
+				OracleViewDocument document = new OracleViewDocument();
+				document.setId("appxn-" + appId);
+				document.setTimestamp(creationDate);
+				document.setTrnx(record);
+				builder.update(oracleVarsCache.getTranxIndex(), "appxn", document);
+			} catch (ParseException e) {
+				LOGGER.error("TranxViewRecord Excep", e);
+			}
 		}
 
 		if (x.getResults().size() > 0) {
 			esRepository.bulk(builder.build());
+			oracleVarsCache.setTranxScannedStamp(lastUpdateDateNow);
 		}
-
-		oracleVarsCache.setTranxScannedStamp(lastUpdateDateNow);
 
 	}
 
