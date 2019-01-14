@@ -1,6 +1,7 @@
 package com.amx.jax.radar.jobs.customer;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -36,6 +37,7 @@ import com.amx.jax.radar.TestSizeApp;
 import com.amx.jax.rates.AmxCurConstants;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.DateUtil;
 
 @Configuration
 @EnableScheduling
@@ -68,7 +70,8 @@ public class CustomerViewTask extends ARadarTask {
 
 		AppContextUtil.setTenant(TenantContextHolder.currentSite(appConfig.getDefaultTenant()));
 		AppContextUtil.init();
-		LOGGER.info("Running Task lastUpdateDateNow:{}", lastUpdateDateNow);
+		LOGGER.info("Running Task lastUpdateDateNow:{} {}", lastUpdateDateNow,
+				new Date(lastUpdateDateNow).toGMTString());
 
 		jaxMetaInfo.setCountryId(TenantContextHolder.currentSite().getBDCode());
 		jaxMetaInfo.setTenant(TenantContextHolder.currentSite());
@@ -101,18 +104,24 @@ public class CustomerViewTask extends ARadarTask {
 
 		for (CustomerDetailViewRecord record : x.getResults()) {
 
-			Long lastUpdateDate = ArgUtil.parseAsLong(record.getLastUpdateDate().getTime(), 0L);
-			if (lastUpdateDate > lastUpdateDateNow) {
-				lastUpdateDateNow = lastUpdateDate;
+			try {
+				Long lastUpdateDate = DateUtil.toUTC(record.getLastUpdateDate());
+				LOGGER.debug("DIFF {}", lastUpdateDateNow - lastUpdateDate);
+				if (lastUpdateDate > lastUpdateDateNow) {
+					lastUpdateDateNow = lastUpdateDate;
+				}
+
+				BigDecimal customerId = ArgUtil.parseAsBigDecimal(record.getId());
+				Date creationDate = ArgUtil.parseAsSimpleDate(record.getLastUpdateDate());
+				OracleViewDocument document = new OracleViewDocument();
+				document.setId("customer-" + customerId);
+				document.setTimestamp(creationDate);
+				document.setCustomer(record);
+				builder.update(oracleVarsCache.getCustomerIndex(), "customer", document);
+			} catch (ParseException e) {
+				LOGGER.error("CustomerViewTask Excep", e);
 			}
 
-			BigDecimal customerId = ArgUtil.parseAsBigDecimal(record.getId());
-			Date creationDate = ArgUtil.parseAsSimpleDate(record.getLastUpdateDate());
-			OracleViewDocument document = new OracleViewDocument();
-			document.setId("customer-" + customerId);
-			document.setTimestamp(creationDate);
-			document.setCustomer(record);
-			builder.update(oracleVarsCache.getCustomerIndex(), "customer", document);
 		}
 
 		if (x.getResults().size() > 0) {
