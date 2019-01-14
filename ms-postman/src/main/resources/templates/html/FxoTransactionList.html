@@ -168,8 +168,8 @@ bottom-center {
 			<th>Delivery Time</th>
 			<th>Transaction ID</th>
 			<th>Type</th>
-<!-- 			<th>Channel</th>
- -->			<th>Amount</th>
+			<th>Channel</th>
+			<th>Amount</th>
 			<th>Status</th>
 		</tr>
 		<tr th:each="transaction : ${data}">
@@ -178,8 +178,8 @@ bottom-center {
 			<td th:text="${transaction.deliveryTime}"></td>
 			<td th:text="${transaction.transactionReferenceNo}"></td>
 			<td th:text="${transaction.transactionTypeDesc}"></td>
-<!-- 			<td th:text="${transaction.branchDesc}"></td>
- -->			<td th:text="${transaction.multiAmount}"></td>
+			<td th:text="${transaction.branchDesc}"></td>
+			<td th:text="${transaction.multiAmount}"></td>
 			<td th:text="${transaction.orderStatus}"></td>
 
 		</tr>
