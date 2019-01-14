@@ -9,22 +9,26 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import com.amx.jax.grid.GridViewRecord;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 /*
  * Author Rahamathali Shaik
 */
 @Entity
 @Table(name = "VW_CUSTOMER_KIBANA")
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CustomerDetailViewRecord implements GridViewRecord {
 
 	private static final long serialVersionUID = 1L;
 
 	@Id
 	@Column(name = "CUSTOMER_ID")
-	private BigDecimal customerId;
+	private BigDecimal id;
 
 	@Column(name = "CUSTOMER_TYPE_ID")
-	private BigDecimal customerTypeId;
+	private BigDecimal typeId;
 
 	@Column(name = "IDENTITY_INT")
 	private String identity;
@@ -70,22 +74,6 @@ public class CustomerDetailViewRecord implements GridViewRecord {
 
 	@Column(name = "LAST_TRANSACTION_DATE")
 	private Date lastTransactionDate;
-
-	public BigDecimal getCustomerId() {
-		return customerId;
-	}
-
-	public void setCustomerId(BigDecimal customerId) {
-		this.customerId = customerId;
-	}
-
-	public BigDecimal getCustomerTypeId() {
-		return customerTypeId;
-	}
-
-	public void setCustomerTypeId(BigDecimal customerTypeId) {
-		this.customerTypeId = customerTypeId;
-	}
 
 	public String getName() {
 		return name;
@@ -228,6 +216,22 @@ public class CustomerDetailViewRecord implements GridViewRecord {
 
 	public void setIdentity(String identity) {
 		this.identity = identity;
+	}
+
+	public BigDecimal getId() {
+		return id;
+	}
+
+	public void setId(BigDecimal id) {
+		this.id = id;
+	}
+
+	public BigDecimal getTypeId() {
+		return typeId;
+	}
+
+	public void setTypeId(BigDecimal typeId) {
+		this.typeId = typeId;
 	}
 
 }

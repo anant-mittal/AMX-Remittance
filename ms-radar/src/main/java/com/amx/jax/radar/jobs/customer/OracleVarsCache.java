@@ -11,7 +11,7 @@ import com.amx.utils.ArgUtil;
 @Component
 public class OracleVarsCache extends CacheBox<String> {
 
-	public static final String DOC_VERSION = "v2";
+	public static final String DOC_VERSION = "v3";
 
 	/**
 	 * Instantiates a new logged in users.

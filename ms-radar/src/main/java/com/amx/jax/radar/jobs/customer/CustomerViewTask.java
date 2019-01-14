@@ -106,7 +106,7 @@ public class CustomerViewTask extends ARadarTask {
 				lastUpdateDateNow = lastUpdateDate;
 			}
 
-			BigDecimal customerId = ArgUtil.parseAsBigDecimal(record.getCustomerId());
+			BigDecimal customerId = ArgUtil.parseAsBigDecimal(record.getId());
 			Date creationDate = ArgUtil.parseAsSimpleDate(record.getLastUpdateDate());
 			OracleViewDocument document = new OracleViewDocument();
 			document.setId("customer-" + customerId);

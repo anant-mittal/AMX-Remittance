@@ -24,4 +24,24 @@ public class OracleViewDocument extends AESDocument {
 	public void setTrnx(TranxViewRecord trnx) {
 		this.trnx = trnx;
 	}
+
+	public void normalizeTrnx() {
+		this.customer = new CustomerDetailViewRecord();
+
+		this.customer.setId(this.trnx.getCustmerId());
+		this.trnx.setCustmerId(null);
+
+		this.customer.setIdentity(this.trnx.getIdentity());
+		this.trnx.setIdentity(null);
+
+		this.customer.setName(this.trnx.getCustmerName());
+		this.trnx.setCustmerName(null);
+
+		this.customer.setNationalityCode(this.trnx.getCustmerNationCode());
+		this.trnx.setCustmerNationCode(null);
+
+		this.customer.setNationality(this.trnx.getCustmerNation());
+		this.trnx.setCustmerNation(null);
+
+	}
 }
