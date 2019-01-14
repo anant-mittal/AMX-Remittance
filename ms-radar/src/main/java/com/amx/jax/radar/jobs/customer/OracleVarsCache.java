@@ -29,19 +29,19 @@ public class OracleVarsCache extends CacheBox<String> {
 	}
 
 	public Long getCustomerScannedStamp() {
-		return ArgUtil.parseAsLong(this.get(getCustomerIndex()), 0L);
+		return ArgUtil.parseAsLong(this.get(getCustomerIndex() + "-ts"), 0L);
 	}
 
 	public void setCustomerScannedStamp(Long customerScannedStamp) {
-		this.put(getCustomerIndex(), ArgUtil.parseAsString(customerScannedStamp));
+		this.put(getCustomerIndex() + "-ts", ArgUtil.parseAsString(customerScannedStamp));
 	}
 
 	public Long getTranxScannedStamp() {
-		return ArgUtil.parseAsLong(this.get(getTranxIndex()), 0L);
+		return ArgUtil.parseAsLong(this.get(getTranxIndex() + "-ts"), 0L);
 	}
 
 	public void setTranxScannedStamp(Long tranxScannedStamp) {
-		this.put(getTranxIndex(), ArgUtil.parseAsString(tranxScannedStamp));
+		this.put(getTranxIndex() + "-ts", ArgUtil.parseAsString(tranxScannedStamp));
 	}
 
 }
