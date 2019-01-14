@@ -30,14 +30,14 @@ html, body {
 	text-align: center;
 }
 
-.table td{
+.table td {
 	border-width: 0 0 0 0;
 	font-size: inherit;
 	margin: 0;
 	overflow: visible;
 	padding: 0.5em 1em;
 	background-color: transparent;
-} 
+}
 
 .table td:first-child {
 	border-left-width: 0;
@@ -100,13 +100,17 @@ html, body {
 }
 
 @page {
-  	size: A4 landscape;
+	size: A4 landscape;
 	margin: 0;
-	margin:10px 10px 30px;
-	@top-center {content: element(header);}
-	@bottom-center {
-    	content: "Page " counter(page) " of " counter(pages)"&nbsp;&nbsp;";
-  }
+	margin: 10px 10px 30px; @
+	top-center {content: element(header);
+}
+
+@
+bottom-center {
+	content: "Page " counter(page) " of " counter(pages) "&nbsp;&nbsp;";
+}
+
 }
 #header {
 	position: running(header);
@@ -134,21 +138,25 @@ html, body {
 .height100 {
 	height: 80px;
 }
-.mainTable{
-	margin:5px;	
-	border:0;
+
+.mainTable {
+	margin: 5px;
+	border: 0;
 	border-collapse: collapse;
 	border-spacing: 0;
 	empty-cells: show;
 }
+
 .mainTable-border {
 	border-bottom: 1px dashed #000000;
 }
-.mode + .mode td:nth-child(1){
-	color:#fff;
+
+.mode+.mode td:nth-child(1) {
+	color: #fff;
 }
-.mode + .mode td:nth-child(3){
-	color:#fff;
+
+.mode+.mode td:nth-child(3) {
+	color: #fff;
 }
 </style>
 </head>
@@ -160,19 +168,22 @@ html, body {
 			<th>Delivery Time</th>
 			<th>Transaction ID</th>
 			<th>Type</th>
+			<th>Channel</th>
 			<th>Amount</th>
 			<th>Status</th>
-		</tr>			
+		</tr>
 		<tr th:each="transaction : ${data}">
 			<td th:text="${transaction.inventoryId}"></td>
 			<td th:text="${transaction.createdDate}"></td>
 			<td th:text="${transaction.deliveryTime}"></td>
 			<td th:text="${transaction.transactionReferenceNo}"></td>
 			<td th:text="${transaction.transactionTypeDesc}"></td>
+			<td th:text="${transaction.branchDesc}"></td>
 			<td th:text="${transaction.multiAmount}"></td>
 			<td th:text="${transaction.orderStatus}"></td>
-			
+
 		</tr>
-	</table> <!--customer table end-->
+	</table>
+	<!--customer table end-->
 </body>
 </html>

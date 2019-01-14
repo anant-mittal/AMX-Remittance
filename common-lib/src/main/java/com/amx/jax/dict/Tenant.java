@@ -133,7 +133,8 @@ public enum Tenant {
 	POL("PL", 91, "Poland"), SPM("PM", 91, "Saint Pierre And Miquelon"), PCN("PN", 91, "Pitcairn"),
 
 	PRI("PR", 91, "Puerto Rico"), PSE("PS", 91, "Palestine"), PRT("PT", 91, "Portugal"), PLW("PW", 91,
-			"Palau"), PRY("PY", 91, "Paraguay"),
+			"Palau"),
+	PRY("PY", 91, "Paraguay"),
 
 	QAT("QA", 91, "Qatar"),
 
@@ -271,7 +272,6 @@ public enum Tenant {
 			}
 		}
 		return values;
-
 	}
 
 }

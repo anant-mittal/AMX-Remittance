@@ -1,6 +1,7 @@
 package com.amx.jax.radar.jobs.customer;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -27,7 +28,7 @@ import com.amx.jax.grid.GridService;
 import com.amx.jax.grid.GridService.GridViewBuilder;
 import com.amx.jax.grid.GridView;
 import com.amx.jax.grid.SortOrder;
-import com.amx.jax.grid.views.CustomerDetailViewRecord;
+import com.amx.jax.grid.views.TranxViewRecord;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.radar.AESRepository.BulkRequestBuilder;
 import com.amx.jax.radar.ARadarTask;
@@ -36,15 +37,16 @@ import com.amx.jax.radar.TestSizeApp;
 import com.amx.jax.rates.AmxCurConstants;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.DateUtil;
 
 @Configuration
 @EnableScheduling
 @Component
 @Service
 @ConditionalOnExpression(TestSizeApp.ENABLE_JOBS)
-public class CustomerViewTask extends ARadarTask {
+public class TrnxViewTask extends ARadarTask {
 
-	private static final Logger LOGGER = LoggerService.getLogger(CustomerViewTask.class);
+	private static final Logger LOGGER = LoggerService.getLogger(TrnxViewTask.class);
 
 	@Autowired
 	private ESRepository esRepository;
@@ -53,10 +55,10 @@ public class CustomerViewTask extends ARadarTask {
 	GridService gridService;
 
 	@Autowired
-	private AppConfig appConfig;
+	private JaxMetaInfo jaxMetaInfo;
 
 	@Autowired
-	private JaxMetaInfo jaxMetaInfo;
+	private AppConfig appConfig;
 
 	@Autowired
 	OracleVarsCache oracleVarsCache;
@@ -65,21 +67,20 @@ public class CustomerViewTask extends ARadarTask {
 
 	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_TASK)
 	public void doTask() {
-
 		AppContextUtil.setTenant(TenantContextHolder.currentSite(appConfig.getDefaultTenant()));
 		AppContextUtil.init();
-		LOGGER.info("Running Task lastUpdateDateNow:{}", lastUpdateDateNow);
+		LOGGER.info("Running Task lastUpdateDateNow:{} {}", lastUpdateDateNow,
+				new Date(lastUpdateDateNow).toGMTString());
 
 		jaxMetaInfo.setCountryId(TenantContextHolder.currentSite().getBDCode());
 		jaxMetaInfo.setTenant(TenantContextHolder.currentSite());
 		jaxMetaInfo.setLanguageId(Language.DEFAULT.getBDCode());
 		jaxMetaInfo.setCompanyId(new BigDecimal(JaxMetaInfo.DEFAULT_COMPANY_ID));
 		jaxMetaInfo.setCountryBranchId(new BigDecimal(JaxMetaInfo.DEFAULT_COUNTRY_BRANCH_ID));
-
-		lastUpdateDateNow = oracleVarsCache.getCustomerScannedStamp();
+		lastUpdateDateNow = oracleVarsCache.getTranxScannedStamp();
 		GridQuery gridQuery = new GridQuery();
 		// gridQuery.setPageNo(lastPage++);
-		gridQuery.setPageSize(100);
+		gridQuery.setPageSize(1000);
 		gridQuery.setPaginated(false);
 		gridQuery.setColumns(new ArrayList<GridColumn>());
 		GridColumn column = new GridColumn();
@@ -92,34 +93,38 @@ public class CustomerViewTask extends ARadarTask {
 		gridQuery.setSortBy(0);
 		gridQuery.setSortOrder(SortOrder.ASC);
 
-		GridViewBuilder<CustomerDetailViewRecord> y = gridService
-				.view(GridView.VW_CUSTOMER_KIBANA, gridQuery);
+		GridViewBuilder<TranxViewRecord> y = gridService
+				.view(GridView.VW_KIBANA_TRNX, gridQuery);
 
-		AmxApiResponse<CustomerDetailViewRecord, GridMeta> x = y.get();
+		AmxApiResponse<TranxViewRecord, GridMeta> x = y.get();
 
 		BulkRequestBuilder builder = new BulkRequestBuilder();
 
-		for (CustomerDetailViewRecord record : x.getResults()) {
+		for (TranxViewRecord record : x.getResults()) {
+			try {
+				Long lastUpdateDate = DateUtil.toUTC(record.getLastUpdateDate());
+				LOGGER.debug("DIFF {}", lastUpdateDateNow - lastUpdateDate);
+				if (lastUpdateDate > lastUpdateDateNow) {
+					lastUpdateDateNow = lastUpdateDate;
+				}
 
-			Long lastUpdateDate = ArgUtil.parseAsLong(record.getLastUpdateDate().getTime(), 0L);
-			if (lastUpdateDate > lastUpdateDateNow) {
-				lastUpdateDateNow = lastUpdateDate;
+				BigDecimal appId = ArgUtil.parseAsBigDecimal(record.getId());
+				Date creationDate = ArgUtil.parseAsSimpleDate(record.getLastUpdateDate());
+				OracleViewDocument document = new OracleViewDocument();
+				document.setId("appxn-" + appId);
+				document.setTimestamp(creationDate);
+				document.setTrnx(record);
+				document.normalizeTrnx();
+				builder.update(oracleVarsCache.getTranxIndex(), "appxn", document);
+			} catch (ParseException e) {
+				LOGGER.error("TranxViewRecord Excep", e);
 			}
-
-			BigDecimal customerId = ArgUtil.parseAsBigDecimal(record.getId());
-			Date creationDate = ArgUtil.parseAsSimpleDate(record.getLastUpdateDate());
-			OracleViewDocument document = new OracleViewDocument();
-			document.setId("customer-" + customerId);
-			document.setTimestamp(creationDate);
-			document.setCustomer(record);
-			builder.update(oracleVarsCache.getCustomerIndex(), "customer", document);
 		}
 
 		if (x.getResults().size() > 0) {
 			esRepository.bulk(builder.build());
+			oracleVarsCache.setTranxScannedStamp(lastUpdateDateNow);
 		}
-
-		oracleVarsCache.setCustomerScannedStamp(lastUpdateDateNow);
 
 	}
 
