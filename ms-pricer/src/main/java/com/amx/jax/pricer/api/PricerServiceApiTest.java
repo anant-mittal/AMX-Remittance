@@ -247,6 +247,8 @@ public class PricerServiceApiTest implements PricerService {
 		strBuilder.append(", ConvertedFCAmount");
 		strBuilder.append(", ConvertedLCAmount");
 		strBuilder.append(", TimeToExec");
+		//strBuilder.append(", TRATE_IDS");
+		//strBuilder.append(", RoutingHeaderIds");
 
 		long srNo = 0;
 
@@ -300,6 +302,8 @@ public class PricerServiceApiTest implements PricerService {
 							strBuilder.append(", " + bankRate.getSellRateNet().getConvertedFCAmount());
 							strBuilder.append(", " + bankRate.getSellRateNet().getConvertedLCAmount());
 							strBuilder.append(", " + tte);
+							//strBuilder.append(", " + response.getInfo().get("TRATE_IDS"));
+							//strBuilder.append(", " + response.getInfo().get("RH_IDS"));
 
 						}
 

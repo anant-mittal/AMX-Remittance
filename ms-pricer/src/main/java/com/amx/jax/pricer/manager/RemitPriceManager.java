@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
@@ -23,6 +24,7 @@ import com.amx.jax.pricer.dao.ExchangeRateDao;
 import com.amx.jax.pricer.dao.ExchangeRateProcedureDao;
 import com.amx.jax.pricer.dao.MarginMarkupDao;
 import com.amx.jax.pricer.dao.PipsMasterDao;
+import com.amx.jax.pricer.dao.RoutingDao;
 import com.amx.jax.pricer.dao.ViewExGLCBALDao;
 import com.amx.jax.pricer.dbmodel.BankMasterModel;
 import com.amx.jax.pricer.dbmodel.CountryBranch;
@@ -30,6 +32,7 @@ import com.amx.jax.pricer.dbmodel.ExchangeRateAPRDET;
 import com.amx.jax.pricer.dbmodel.ExchangeRateApprovalDetModel;
 import com.amx.jax.pricer.dbmodel.OnlineMarginMarkup;
 import com.amx.jax.pricer.dbmodel.PipsMaster;
+import com.amx.jax.pricer.dbmodel.RoutingHeader;
 import com.amx.jax.pricer.dbmodel.ViewExGLCBAL;
 import com.amx.jax.pricer.dto.BankDetailsDTO;
 import com.amx.jax.pricer.dto.ExchangeRateBreakup;
@@ -63,6 +66,9 @@ public class RemitPriceManager {
 
 	@Autowired
 	CountryBranchDao countryBranchDao;
+
+	@Autowired
+	RoutingDao routingDao;
 
 	@Resource
 	PricingRateDetailsDTO pricingRateDetailsDTO;
@@ -104,12 +110,12 @@ public class RemitPriceManager {
 			}
 
 			// This is code for fetching prices for online Channel
-			List<BigDecimal> validBankIds = getValidBankIds(requestDto.getForeignCurrencyId(),
-					requestDto.getPricingLevel(), requestDto.getRoutingBankIds());
+			List<BigDecimal> validBankIds = getValidBankIds(requestDto.getForeignCountryId(),
+					requestDto.getForeignCurrencyId(), requestDto.getPricingLevel(), requestDto.getRoutingBankIds());
 
 			if (validBankIds.isEmpty()) {
 
-				LOGGER.info("No Valid bank Ids found for Pricing Request");
+				LOGGER.warn("No Valid bank Ids found for Pricing Request");
 
 				throw new PricerServiceException(PricerServiceError.INVALID_ROUTING_BANK_IDS,
 						"Invalid Routing Bank Ids : None Found : " + requestDto.getRoutingBankIds());
@@ -166,8 +172,8 @@ public class RemitPriceManager {
 
 			// This is code for fetching prices for Other Channel
 
-			List<BigDecimal> validBankIds = getValidBankIds(requestDto.getForeignCurrencyId(),
-					requestDto.getPricingLevel(), requestDto.getRoutingBankIds());
+			List<BigDecimal> validBankIds = getValidBankIds(requestDto.getForeignCountryId(),
+					requestDto.getForeignCurrencyId(), requestDto.getPricingLevel(), requestDto.getRoutingBankIds());
 
 			if (validBankIds.isEmpty()) {
 
@@ -368,10 +374,33 @@ public class RemitPriceManager {
 
 	}
 
-	private List<BigDecimal> getValidBankIds(BigDecimal fCurrencyId, PRICE_BY pricingLevel,
+	private List<BigDecimal> getValidBankIds(BigDecimal fCountryId, BigDecimal fCurrencyId, PRICE_BY pricingLevel,
 			List<BigDecimal> routingBnaks) {
 
-		List<BigDecimal> availableBankIds = exchangeRateProcedureDao.getBankIdsForExchangeRates(fCurrencyId);
+		/**
+		 * Old Code for fetching the Routing Bank Ids from VW_EX_TRATE
+		 * 
+		 * List<BigDecimal> availableBankIds =
+		 * exchangeRateProcedureDao.getBankIdsForExchangeRates(fCurrencyId);
+		 **/
+
+		/** Start: Routing Bank Find **/
+		List<RoutingHeader> routingHeaders = routingDao.getRoutHeadersByCountryIdAndCurrenyId(fCountryId, fCurrencyId);
+
+		List<BigDecimal> availableBankIds = routingHeaders.stream().map(rh -> rh.getRoutingBankId()).distinct().sorted()
+				.collect(Collectors.toList());
+
+		// String routingHeaderIds =
+		// rhList.stream().map(Object::toString).collect(Collectors.joining("# "));
+
+		// String trateIds =
+		// validBankIds.stream().distinct().sorted().map(Object::toString)
+		// .collect(Collectors.joining("# "));
+
+		// pricingRateDetailsDTO.getInfo().put("TRATE_IDS", trateIds);
+		// pricingRateDetailsDTO.getInfo().put("RH_IDS", routingHeaderIds);
+
+		/** End: Routing Bank Find **/
 
 		List<BigDecimal> validBankIds;
 

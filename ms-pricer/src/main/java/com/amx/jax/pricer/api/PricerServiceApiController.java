@@ -57,7 +57,9 @@ public class PricerServiceApiController implements PricerService {
 
 		watch.stop();
 
-		pricingResponseDTO.setInfo(new HashMap<>());
+		if (null == pricingResponseDTO.getInfo()) {
+			pricingResponseDTO.setInfo(new HashMap<>());
+		}
 		pricingResponseDTO.getInfo().put(PricerServiceConstants.TTE, watch.getLastTaskTimeMillis());
 
 		return AmxApiResponse.build(pricingResponseDTO);
