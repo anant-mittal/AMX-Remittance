@@ -22,6 +22,7 @@ import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.config.JaxProperties;
 import com.amx.jax.dbmodel.PipsMaster;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.pricer.PricerServiceClient;
 import com.amx.jax.util.RoundUtil;
 
 /**
@@ -34,6 +35,8 @@ public class NewExchangeRateService extends ExchangeRateService {
 
 	@Autowired
 	JaxProperties jaxProperties;
+	@Autowired
+	JaxDynamicPriceService jaxDynamicPriceService;
 
 	/*
 	 * (non-Javadoc)
@@ -44,12 +47,20 @@ public class NewExchangeRateService extends ExchangeRateService {
 	 */
 	public ApiResponse<ExchangeRateResponseModel> getExchangeRatesForOnline(BigDecimal fromCurrency, BigDecimal toCurrency, BigDecimal lcAmount,
 			BigDecimal bankId) {
+		ExchangeRateResponseModel outputModel = null;
+		ApiResponse<ExchangeRateResponseModel> response = getBlackApiResponse();
+		if (true) {
+			outputModel = jaxDynamicPriceService.getExchangeRatese(fromCurrency, toCurrency,
+					lcAmount);
+			response.getData().getValues().add(outputModel);
+			response.getData().setType(outputModel.getModelType());
+			return response;
+		}
 		if (!jaxProperties.getExrateBestRateLogicEnable()) {
 			return super.getExchangeRatesForOnline(fromCurrency, toCurrency, lcAmount, bankId);
 		}
 		logger.info("In getExchangeRatesForOnline, parames- " + fromCurrency + " toCurrency " + toCurrency + " amount "
 				+ lcAmount + " bankId: " + bankId);
-		ApiResponse<ExchangeRateResponseModel> response = getBlackApiResponse();
 		if (fromCurrency.equals(meta.getDefaultCurrencyId())) {
 			List<PipsMaster> pips = pipsDao.getPipsForOnline(toCurrency);
 			if (pips == null || pips.isEmpty()) {
@@ -66,7 +77,7 @@ public class NewExchangeRateService extends ExchangeRateService {
 			if (bankWiseRates == null || bankWiseRates.isEmpty()) {
 				throw new GlobalException(JaxError.EXCHANGE_RATE_NOT_FOUND, "No exchange data found");
 			}
-			ExchangeRateResponseModel outputModel = new ExchangeRateResponseModel();
+			outputModel = new ExchangeRateResponseModel();
 			outputModel.setBankWiseRates(bankWiseRates);
 			if (bankId != null) {
 				outputModel.setExRateBreakup(getExchangeRateBreakUp(toCurrency, lcAmount, null, bankId));

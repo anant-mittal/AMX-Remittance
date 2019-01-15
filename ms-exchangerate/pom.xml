@@ -33,6 +33,10 @@
 			<artifactId>ms-meta</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+			<groupId>com.amx.jax</groupId>
+			<artifactId>lib-pricer</artifactId>
+		</dependency>
 	</dependencies>
 	<parent>
 		<groupId>com.amx.jax</groupId>

@@ -12,6 +12,7 @@ import com.amx.jax.logger.LoggerService;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.dto.PricingResponseDTO;
 import com.amx.jax.rest.RestService;
+import com.amx.utils.JsonUtil;
 
 @Component
 public class PricerServiceClient implements PricerService {
@@ -33,7 +34,7 @@ public class PricerServiceClient implements PricerService {
 
 		LOGGER.info("Pricing Request Called for : Customer Id: {}, transaction Id: {}, with TraceId: {}",
 				pricingRequestDTO.getCustomerId(), AppContextUtil.getTranxId(), AppContextUtil.getTraceId());
-
+		LOGGER.debug("Pricing request json : {}", JsonUtil.toJson(pricingRequestDTO));
 		return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.FETCH_PRICE_CUSTOMER)
 				.post(pricingRequestDTO)
 				.as(new ParameterizedTypeReference<AmxApiResponse<PricingResponseDTO, Object>>() {
