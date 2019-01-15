@@ -1,10 +1,4 @@
 {
-	"data": {
-		"customer": "Riddhi",
-		"amount": "KD100",
-		"loyaltypoints" : "1000",
-		"refno" : "100/112",
-		"date" : "11/02/2018",
-		"currency" : "INR"
-	}
+	"_subject": "Transaction Credit Notification",
+	"_message": "Your transaction with us dated [[${data.date}]] having Trans Ref No: [[${data.refno}]] for [[${data.currency}]] [[${data.amount}]] has been successfully transferred and is now available for pickup by the beneficiary. You now have [[${data.loyaltypoints}]] loyalty points."
 }
