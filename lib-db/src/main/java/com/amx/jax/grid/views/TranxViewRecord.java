@@ -62,6 +62,9 @@ public class TranxViewRecord implements Serializable {
 	@Column(name = "CHANNEL")
 	private String channel;
 
+	@Column(name = "USER_NAME")
+	private String branchUser;
+
 	@Column(name = "COUNTRY_BRANCH_ID")
 	private BigDecimal countryBranchId;
 
@@ -151,6 +154,14 @@ public class TranxViewRecord implements Serializable {
 
 	@Column(name = "NATIONALITY_CODE")
 	private String custmerNationCode;
+
+	// DeviceClient Info
+	@Column(name = "CLIENT_TYPE")
+	private String clientType;;
+	@Column(name = "CLIENT_ID")
+	private String clientId;
+	@Column(name = "CLIENT_IP")
+	private String clientIp;
 
 	public BigDecimal getId() {
 		return id;
@@ -470,6 +481,46 @@ public class TranxViewRecord implements Serializable {
 
 	public void setCommRecv(BigDecimal commRecv) {
 		this.commRecv = commRecv;
+	}
+
+	public String getBranchUser() {
+		return branchUser;
+	}
+
+	public void setBranchUser(String branchUser) {
+		this.branchUser = branchUser;
+	}
+
+	public String getCountryBranchName() {
+		return countryBranchName;
+	}
+
+	public void setCountryBranchName(String countryBranchName) {
+		this.countryBranchName = countryBranchName;
+	}
+
+	public String getClientType() {
+		return clientType;
+	}
+
+	public void setClientType(String clientType) {
+		this.clientType = clientType;
+	}
+
+	public String getClientId() {
+		return clientId;
+	}
+
+	public void setClientId(String clientId) {
+		this.clientId = clientId;
+	}
+
+	public String getClientIp() {
+		return clientIp;
+	}
+
+	public void setClientIp(String clientIp) {
+		this.clientIp = clientIp;
 	}
 
 }
