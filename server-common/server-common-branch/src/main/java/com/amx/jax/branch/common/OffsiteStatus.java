@@ -1,4 +1,4 @@
-package com.amx.jax.offsite;
+package com.amx.jax.branch.common;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -10,11 +10,11 @@ import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.exception.AbstractJaxException;
 import com.amx.amxlib.exception.JaxSystemError;
+import com.amx.jax.branch.common.OffsiteStatus.ApiOffisteStatus;
+import com.amx.jax.branch.common.OffsiteStatus.OffsiteServerCodes;
 import com.amx.jax.exception.AmxApiError;
 import com.amx.jax.exception.AmxApiException;
 import com.amx.jax.exception.IExceptionEnum;
-import com.amx.jax.offsite.OffsiteStatus.ApiOffisteStatus;
-import com.amx.jax.offsite.OffsiteStatus.OffsiteServerCodes;
 import com.amx.jax.swagger.IStatusCodeListPlugin;
 
 import springfox.documentation.swagger.common.SwaggerPluginSupport;

@@ -7,20 +7,21 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
+import com.amx.jax.logger.LoggerService;
 import com.amx.jax.multitenant.TenantContext;
 import com.amx.jax.scope.TenantContextHolder;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
+@Deprecated
 public class TenantInterceptor extends HandlerInterceptorAdapter {
 
-	private Logger logger = LoggerFactory.getLogger(getClass());
+	private Logger logger = LoggerService.getLogger(TenantInterceptor.class);
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
@@ -28,7 +29,7 @@ public class TenantInterceptor extends HandlerInterceptorAdapter {
 
 		String tnt = TenantContextHolder.currentSite().toString();
 		if (StringUtils.isNotBlank(tnt)) {
-			logger.info("current tenant: " + tnt);
+			logger.debug("current tenant: " + tnt);
 			TenantContext.setCurrentTenant(tnt);
 		}
 		String metaInfo = request.getHeader("meta-info");

@@ -7,13 +7,13 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.model.AuthState;
 import com.amx.jax.model.AuthState.AuthStep;
+import com.amx.jax.model.auth.QuestModelDTO;
 import com.amx.jax.ui.model.AuthData;
 import com.amx.jax.ui.model.UserUpdateData;
 import com.amx.jax.ui.response.ResponseMessage;
@@ -278,7 +278,7 @@ public class RegistrationService {
 
 		if (doLogin) {
 			sessionService.authorize(sessionService.getGuestSession().getCustomerModel(), true);
-			jaxClient.getUserclient().customerLoggedIn(sessionService.getAppDevice().toUserDevice());
+			jaxClient.getUserclient().customerLoggedIn(sessionService.getAppDevice().getUserDevice());
 		}
 
 		wrapper.setMessage(WebResponseStatus.USER_UPDATE_SUCCESS, "LoginId and Password updated");

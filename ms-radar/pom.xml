@@ -88,9 +88,37 @@
 			<version>1.11.3</version>
 		</dependency>
 
+
+		<dependency>
+			<groupId>com.amx.jax</groupId>
+			<artifactId>common-amx</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.amx.jax</groupId>
+			<artifactId>lib-mcq</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.amx.jax</groupId>
+			<artifactId>lib-postman</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.amx.jax</groupId>
+			<artifactId>lib-db</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+
 		<dependency>
 			<groupId>com.amx.jax</groupId>
 			<artifactId>jax-client</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
 		</dependency>
 
 	</dependencies>
@@ -107,6 +135,13 @@
 			</plugin>
 		</plugins>
 	</build>
+
+	<repositories>
+		<repository>
+			<id>jcenter</id>
+			<url>https://jcenter.bintray.com/</url>
+		</repository>
+	</repositories>
 
 </project>
 

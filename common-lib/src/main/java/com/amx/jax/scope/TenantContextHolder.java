@@ -23,11 +23,11 @@ public class TenantContextHolder {
 		ContextUtil.map().put(TENANT, Tenant.KWT);
 	}
 
-	public static Tenant currentSite(boolean returnDefault) {
+	private static Tenant currentSite(boolean returnDefault, Tenant defaultTnt) {
 		Object site = ContextUtil.map().get(TENANT);
 		if (site == null) {
 			if (returnDefault) {
-				return Tenant.KWT;
+				return defaultTnt;
 			} else {
 				return null;
 			}
@@ -35,6 +35,44 @@ public class TenantContextHolder {
 		return (Tenant) site;
 	}
 
+	/**
+	 * Returns Current Tenant/Site OR {@link Tenant#DEFAULT} if no mathicng found in
+	 * case returnDefault is TRUE
+	 * 
+	 * @param returnDefault - to return Tenant#DEFAULT in case no current is set
+	 * @return
+	 */
+	public static Tenant currentSite(boolean returnDefault) {
+		return currentSite(returnDefault, Tenant.KWT);
+	}
+
+	/**
+	 * Returns Current Tenant/Site OR defaultTnt if null OR {@link Tenant#DEFAULT}
+	 * if no mathicng found
+	 * 
+	 * @param defaultTnt
+	 * @return
+	 */
+	public static Tenant currentSite(Tenant defaultTnt) {
+		return currentSite(true, Tenant.DEFAULT);
+	}
+
+	/**
+	 * Returns Current Tenant/Site OR defaultTnt if null OR {@link Tenant#DEFAULT}
+	 * if no mathicng found
+	 * 
+	 * @param defaultTnt
+	 * @return
+	 */
+	public static Tenant currentSite(String defaultTnt) {
+		return currentSite(fromString(defaultTnt, Tenant.DEFAULT));
+	}
+
+	/**
+	 * Returns Current Tenant/Site OR {@link Tenant#DEFAULT} if no mathicng found
+	 * 
+	 * @return
+	 */
 	public static Tenant currentSite() {
 		return currentSite(true);
 	}

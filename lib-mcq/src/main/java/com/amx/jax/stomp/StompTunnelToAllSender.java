@@ -7,6 +7,7 @@ import org.springframework.messaging.core.MessageSendingOperations;
 import com.amx.jax.tunnel.ITunnelSubscriber;
 import com.amx.jax.tunnel.TunnelEventMapping;
 import com.amx.jax.tunnel.TunnelEventXchange;
+import com.amx.utils.ArgUtil;
 
 @TunnelEventMapping(topic = StompTunnelToAllSender.STOMP_TO_ALL, scheme = TunnelEventXchange.SHOUT_LISTNER,
 		integrity = false)
@@ -20,7 +21,9 @@ public class StompTunnelToAllSender implements ITunnelSubscriber<StompTunnelEven
 
 	@Override
 	public void onMessage(String channel, StompTunnelEvent msg) {
-		messagingTemplate.convertAndSend("/topic" + msg.getTopic(), msg.getData());
+		if (!ArgUtil.isEmpty(messagingTemplate)) {
+			messagingTemplate.convertAndSend("/topic" + msg.getTopic(), msg.getData());
+		}
 	}
 
 }

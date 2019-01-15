@@ -3,8 +3,9 @@ package com.amx.jax.multitenant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Deprecated
 public class TenantContext {
-	
+
 	private static Logger logger = LoggerFactory.getLogger(TenantContext.class.getName());
 
 	private static ThreadLocal<String> currentTenant = new ThreadLocal<>();

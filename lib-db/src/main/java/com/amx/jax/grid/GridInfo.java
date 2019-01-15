@@ -23,7 +23,7 @@ public class GridInfo<T> {
 			for (Field field : f) {
 				Column y = field.getAnnotation(Column.class);
 				if (!ArgUtil.isEmpty(y) && !ArgUtil.isEmpty(y.name()) && !ArgUtil.isEmpty(field.getName())) {
-					LOGGER.info("UserSessionRecord : {} {}", field.getName(), y.name());
+					LOGGER.info("{} : {} {}", clazz.getName(), field.getName(), y.name());
 					fieldMap.put(field.getName(), y.name());
 				}
 			}

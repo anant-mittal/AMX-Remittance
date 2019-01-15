@@ -119,11 +119,11 @@ public class RemittancePaymentManager extends AbstractService{
 			{
 				
 				lstPayIdDetails = applicationDao.fetchRemitApplTrnxRecordsByCustomerPayId(paymentResponse.getUdf3(),new Customer(paymentResponse.getCustomerId()));
-				
-			//	logger.info("Appl :"+lstPayIdDetails.get(0).getRemittanceApplicationId()+"\n Company Id :"+lstPayIdDetails.get(0).getFsCompanyMaster().getCompanyId());
-				
 				paymentResponse.setCompanyId(lstPayIdDetails.get(0).getFsCompanyMaster().getCompanyId());
-				
+				if (lstPayIdDetails.get(0).getResultCode() != null) {
+					logger.info("Existing payment id found: {}", lstPayIdDetails.get(0).getPaymentId());
+					return response;
+				}
 				remittanceApplicationService.updatePaymentDetails(lstPayIdDetails, paymentResponse);
 				/** Calling stored procedure  insertRemittanceOnline **/
 				remitanceMap = remittanceApplicationService.saveRemittance(paymentResponse);
@@ -189,7 +189,6 @@ public class RemittancePaymentManager extends AbstractService{
 						} catch (Exception e) {
 						}
 						notificationService.sendTransactionNotification(rrsrl.get(0), personinfo);
-						/*remittanceManager.afterRemittanceSteps(remittanceTransaction);*/
 					} catch (Exception e) {
 						logger.error("error while sending transaction notification", e);
 					}
@@ -207,27 +206,28 @@ public class RemittancePaymentManager extends AbstractService{
 				
 			}else{
 				logger.info("PaymentResponseDto "+paymentResponse.getPaymentId()+"\t Result :"+paymentResponse.getResultCode()+"\t Custoemr Id :"+paymentResponse.getCustomerId());
-				
-				
 				lstPayIdDetails =applicationDao.fetchRemitApplTrnxRecordsByCustomerPayId(paymentResponse.getUdf3(),new Customer(paymentResponse.getCustomerId()));
 				if(!lstPayIdDetails.isEmpty()) {
 					remittanceApplicationService.updatePayTokenNull(lstPayIdDetails, paymentResponse);
 				}
 				response.setResponseStatus(ResponseStatus.INTERNAL_ERROR);
-				//throw new GlobalException("Remittance error :"+errorMsg,JaxError.PG_ERROR);
 			}
 			
 		}catch(Exception e) {
 			e.printStackTrace();
 			
 			lstPayIdDetails =applicationDao.fetchRemitApplTrnxRecordsByCustomerPayId(paymentResponse.getUdf3(),new Customer(paymentResponse.getCustomerId()));
+			if (lstPayIdDetails.get(0).getResultCode() != null) {
+				logger.info("Existing payment id found: {}", lstPayIdDetails.get(0).getPaymentId());
+				return response;
+			}
 			if(!lstPayIdDetails.isEmpty()) {
 				remittanceApplicationService.updatePayTokenNull(lstPayIdDetails, paymentResponse);
 			}
 			
 			throw new GlobalException(JaxError.PG_ERROR,"Remittance error :"+errorMsg);
 		}
-		
+		//remittanceManager.checkAndBlockSuspiciousTransaction(lstPayIdDetails);
 		response.getData().getValues().add(paymentResponse);
 	    response.getData().setType("pg_remit_response");
 		

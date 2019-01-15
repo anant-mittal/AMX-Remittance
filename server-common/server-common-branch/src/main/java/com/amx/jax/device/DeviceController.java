@@ -1,4 +1,4 @@
-package com.amx.jax.offsite.device;
+package com.amx.jax.device;
 
 import javax.validation.Valid;
 
@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.jax.AmxConstants;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
+import com.amx.jax.branch.common.OffsiteStatus.ApiOffisteStatus;
+import com.amx.jax.branch.common.OffsiteStatus.OffsiteServerCodes;
+import com.amx.jax.branch.common.OffsiteStatus.OffsiteServerError;
 import com.amx.jax.client.MetaClient;
-import com.amx.jax.device.DeviceConstants;
-import com.amx.jax.device.DeviceData;
-import com.amx.jax.device.DeviceRestModels;
 import com.amx.jax.device.DeviceRestModels.DevicePairingCreds;
 import com.amx.jax.device.DeviceRestModels.DevicePairingRequest;
 import com.amx.jax.device.DeviceRestModels.SessionPairingCreds;
@@ -24,9 +24,6 @@ import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.model.response.BranchSystemDetailDto;
-import com.amx.jax.offsite.OffsiteStatus.ApiOffisteStatus;
-import com.amx.jax.offsite.OffsiteStatus.OffsiteServerCodes;
-import com.amx.jax.offsite.OffsiteStatus.OffsiteServerError;
 import com.amx.jax.rbaac.IRbaacService;
 import com.amx.jax.rbaac.RbaacServiceClient;
 import com.amx.jax.rbaac.dto.DeviceDto;
@@ -126,6 +123,7 @@ public class DeviceController {
 				.getResult();
 		SessionPairingCreds creds = deviceRequestValidator.createSession(resp.getSessionPairToken(), resp.getOtp(),
 				resp.getTermialId(), resp.getEmpId());
+		creds.setOtpTtl(AmxConstants.OTP_TTL);
 		String meta = ArgUtil.isEmpty(resp.getEmpId()) ? resp.getTermialId() : resp.getEmpId();
 		return AmxApiResponse.build(creds, meta);
 	}

@@ -10,8 +10,7 @@ var WITHOUT_SMART_CARD = "ASSISTED";
 
 var $selfContainer, $assistedContainer;
 
-function sendData(step) {
-	var selectedMode = $("input[name='cardtype']:checked").val();
+function explicitFieldErrors(step) {
 	if (selectedMode === WITH_SMART_CARD) {
 		var errorFields = 0;
 		$(".withSmartCard input[type='text']:not([readonly]), .withSmartCard input.scan-input").each(function() {
@@ -22,7 +21,7 @@ function sendData(step) {
 						'This field can\'t be empty').show();
 			}
 		})
-		if (errorFields !== 0) return;
+		if (errorFields !== 0) return false;
 	} else if (selectedMode === WITHOUT_SMART_CARD) {
 		var errorFields = 0;
 		$(".withoutSmartCard input[type='text']:not([readonly]), .withoutSmartCard input.scan-input").each(function() {
@@ -33,9 +32,15 @@ function sendData(step) {
 						'This field can\'t be empty').show();
 			}
 		})
-		if (errorFields !== 0) return;
+		if (errorFields !== 0) return false;
 	}
+	return true;
+}
 
+function sendData(step) {
+	var selectedMode = $("input[name='cardtype']:checked").val();
+	// let noErrors = explicitFieldErrors(step);
+	// if(!noErrors) return;
 	var reqObj;
 
 	if (selectedMode === WITH_SMART_CARD) {

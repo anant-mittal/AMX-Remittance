@@ -24,13 +24,17 @@ import com.amx.jax.AppConfig;
 import com.amx.jax.AppConstants;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.dict.Tenant;
+import com.amx.jax.dict.UserClient.UserDeviceClient;
 import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.http.RequestType;
 import com.amx.jax.logger.client.AuditServiceClient;
 import com.amx.jax.logger.events.RequestTrackEvent;
+import com.amx.jax.model.UserDevice;
+import com.amx.jax.rest.AppRequestContextInFilter;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.CryptoUtil;
+import com.amx.utils.JsonUtil;
 import com.amx.utils.UniqueID;
 import com.amx.utils.Urly;
 
@@ -46,13 +50,17 @@ public class AppRequestFilter implements Filter {
 	}
 
 	/**
-	 * DO NOT REMOVE THIS ONE AS IT WILL DO VERY IMPORTANT STUFF LIKE TENANT BEAN INIT
+	 * DO NOT REMOVE THIS ONE AS IT WILL DO VERY IMPORTANT STUFF LIKE TENANT BEAN
+	 * INIT
 	 */
 	@Autowired
 	AppConfig appConfig;
 
 	@Autowired
 	CommonHttpRequest commonHttpRequest;
+
+	@Autowired(required = false)
+	AppRequestContextInFilter appContextInFilter;
 
 	private boolean doesTokenMatch(HttpServletRequest req, HttpServletResponse resp, String traceId) {
 		String authToken = req.getHeader(AppConstants.AUTH_KEY_XKEY);
@@ -93,7 +101,7 @@ public class AppRequestFilter implements Filter {
 			}
 			if (!StringUtils.isEmpty(siteId)) {
 				TenantContextHolder.setCurrent(siteId, null);
-			} 
+			}
 			Tenant tnt = TenantContextHolder.currentSite();
 
 			// Tranx Id Tracking
@@ -114,6 +122,36 @@ public class AppRequestFilter implements Filter {
 
 			if (!StringUtils.isEmpty(actorId)) {
 				AppContextUtil.setActorId(actorId);
+			}
+
+			// UserClient Tracking
+			String userClientJson = req.getHeader(AppConstants.USER_CLIENT_XKEY);
+			if (!StringUtils.isEmpty(userClientJson)) {
+				AppContextUtil.setUserClient(JsonUtil.fromJson(userClientJson, UserDeviceClient.class));
+			} else {
+				UserDevice userDevice = commonHttpRequest.instance(req, resp, appConfig).getUserDevice();
+				UserDeviceClient userClient = AppContextUtil.getUserClient();
+				userClient.setDeviceType(userDevice.getType());
+				userClient.setAppType(userDevice.getAppType());
+				userClient.setIp(userDevice.getIp());
+				userClient.setFingerprint(userDevice.getFingerprint());
+				AppContextUtil.setUserClient(userClient);
+			}
+
+			String requestParamsJson = req.getHeader(AppConstants.REQUEST_PARAMS_XKEY);
+			if (!ArgUtil.isEmpty(requestParamsJson)) {
+				AppContextUtil.setParams(requestParamsJson, null);
+			} else {
+				requestParamsJson = req.getParameter(AppConstants.REQUEST_PARAMS_XKEY);
+				if (!ArgUtil.isEmpty(requestParamsJson)) {
+					AppContextUtil.setParams(requestParamsJson, null);
+				} else {
+					AppContextUtil.setParams(requestParamsJson, req.getParameter(AppConstants.REQUESTD_PARAMS_XKEY));
+				}
+			}
+
+			if (appContextInFilter != null) {
+				appContextInFilter.appRequestContextInFilter();
 			}
 
 			// Trace Id Tracking
@@ -149,6 +187,7 @@ public class AppRequestFilter implements Filter {
 			AppContextUtil.setTraceTime(startTime);
 			if (reqType.isTrack()) {
 				AuditServiceClient.trackStatic(new RequestTrackEvent(req));
+				AppRequestUtil.printIfDebug(req);
 			}
 			try {
 				if (isRequestValid(reqType, req, resp, traceId)) {
@@ -160,6 +199,7 @@ public class AppRequestFilter implements Filter {
 				if (reqType.isTrack()) {
 					AuditServiceClient
 							.trackStatic(new RequestTrackEvent(resp, req, System.currentTimeMillis() - startTime));
+					AppRequestUtil.printIfDebug(resp);
 				}
 			}
 

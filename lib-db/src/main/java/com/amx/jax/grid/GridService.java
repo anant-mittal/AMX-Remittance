@@ -32,7 +32,7 @@ public class GridService {
 		Class<T> gridViewRecordClass = gridInfo.getResultClass();
 		Map<String, String> map = gridInfo.getMap();
 
-		if(!ArgUtil.isEmpty(gridQuery.getColumns())) {
+		if (!ArgUtil.isEmpty(gridQuery.getColumns())) {
 			for (GridColumn column : gridQuery.getColumns()) {
 				String data = column.getKey();
 				if (map.containsKey(data)) {

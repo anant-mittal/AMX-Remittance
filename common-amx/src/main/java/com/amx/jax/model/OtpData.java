@@ -35,10 +35,7 @@ public class OtpData implements Serializable {
 	/** The ttl. */
 	private long ttl;
 
-	/** The sent date. */
-	// when otp was sent
-	private Date sentDate;
-
+	
 	/** The send otp attempts. */
 	// no of send otp attempts
 	private int sendOtpAttempts;
@@ -205,26 +202,9 @@ public class OtpData implements Serializable {
 	public void setTtl(long ttl) {
 		this.ttl = ttl;
 	}
+	
 
-	/**
-	 * Gets the sent date.
-	 *
-	 * @return the sent date
-	 */
-	public Date getSentDate() {
-		return sentDate;
-	}
-
-	/**
-	 * Sets the sent date.
-	 *
-	 * @param sentDate
-	 *            the new sent date
-	 */
-	public void setSentDate(Date sentDate) {
-		this.sentDate = sentDate;
-	}
-
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -234,7 +214,7 @@ public class OtpData implements Serializable {
 	public String toString() {
 		return "OtpData [mOtpPrefix=" + mOtpPrefix + ", eOtpPrefix=" + eOtpPrefix + ", mOtp=" + mOtp + ", eOtp=" + eOtp
 				+ ", hashedmOtp=" + hashedmOtp + ", hashedeOtp=" + hashedeOtp + ", initTime=" + initTime + ", ttl="
-				+ ttl + ", sentDate=" + sentDate + ", sendOtpAttempts=" + sendOtpAttempts + ", validateOtpAttempts="
+				+ ttl + ", sendOtpAttempts=" + sendOtpAttempts + ", validateOtpAttempts="
 				+ validateOtpAttempts + ", lockDate=" + lockDate + ", otpValidated=" + otpValidated + "]";
 	}
 

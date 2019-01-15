@@ -3,8 +3,8 @@ package com.amx.jax.grid;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.amx.jax.grid.GridEnums.FilterDataType;
-import com.amx.jax.grid.GridEnums.FilterOperater;
+import com.amx.jax.grid.GridConstants.FilterDataType;
+import com.amx.jax.grid.GridConstants.FilterOperater;
 
 /**
  * The Class SortBy.

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.jax.amxlib.config.OtpSettings;
+import com.amx.jax.constant.JaxDbConfig;
 import com.amx.jax.dbmodel.JaxConfig;
 import com.amx.jax.repository.JaxConfigRepository;
 import com.amx.jax.util.ConverterUtil;
@@ -50,6 +51,15 @@ public class JaxConfigService extends AbstractService {
 		JaxConfig jaxConfig = repo.findByType(key);
 		if (jaxConfig != null && jaxConfig.getValue() != null) {
 			return jaxConfig.getValue();
+		} else {
+			return defaultValue;
+		}
+	}
+	
+	public Boolean getBooleanConfigValue(JaxDbConfig key, Boolean defaultValue) {
+		JaxConfig jaxConfig = repo.findByType(key.toString());
+		if (jaxConfig != null && jaxConfig.getValue() != null) {
+			return Boolean.parseBoolean(jaxConfig.getValue());
 		} else {
 			return defaultValue;
 		}

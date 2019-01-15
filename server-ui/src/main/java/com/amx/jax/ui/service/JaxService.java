@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.AmxConfig;
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.client.BeneClient;
 import com.amx.jax.client.CustomerRegistrationClient;
 import com.amx.jax.client.ExchangeRateClient;
@@ -18,6 +19,13 @@ import com.amx.jax.client.RateAlertClient;
 import com.amx.jax.client.RemitClient;
 import com.amx.jax.client.UserClient;
 import com.amx.jax.client.configs.JaxMetaInfo;
+import com.amx.jax.dict.UserClient.AppType;
+import com.amx.jax.dict.UserClient.Channel;
+import com.amx.jax.dict.UserClient.ClientType;
+import com.amx.jax.dict.UserClient.UserDeviceClient;
+import com.amx.jax.http.CommonHttpRequest;
+import com.amx.jax.model.UserDevice;
+import com.amx.jax.rest.AppRequestContextInFilter;
 import com.amx.jax.rest.IMetaRequestOutFilter;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.utils.ArgUtil;
@@ -27,9 +35,12 @@ import com.amx.utils.ContextUtil;
  * The Class JaxService.
  */
 @Component
-public class JaxService implements IMetaRequestOutFilter<JaxMetaInfo> {
+public class JaxService implements IMetaRequestOutFilter<JaxMetaInfo>, AppRequestContextInFilter {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
+
+	@Autowired
+	CommonHttpRequest commonHttpRequest;
 
 	@Autowired
 	private SessionService sessionService;
@@ -160,10 +171,10 @@ public class JaxService implements IMetaRequestOutFilter<JaxMetaInfo> {
 
 	private void populateUser(JaxMetaInfo jaxMetaInfo, BigDecimal customerId) {
 		jaxMetaInfo.setReferrer(sessionService.getUserSession().getReferrer());
-		jaxMetaInfo.setDeviceId(sessionService.getAppDevice().getFingerprint());
-		jaxMetaInfo.setDeviceIp(sessionService.getAppDevice().getIp());
-		jaxMetaInfo.setDeviceType(ArgUtil.parseAsString(sessionService.getAppDevice().getType()));
-		jaxMetaInfo.setAppType(ArgUtil.parseAsString(sessionService.getAppDevice().getAppType()));
+		jaxMetaInfo.setDeviceId(sessionService.getAppDevice().getUserDevice().getFingerprint());
+		jaxMetaInfo.setDeviceIp(sessionService.getAppDevice().getUserDevice().getIp());
+		jaxMetaInfo.setDeviceType(ArgUtil.parseAsString(sessionService.getAppDevice().getUserDevice().getType()));
+		jaxMetaInfo.setAppType(ArgUtil.parseAsString(sessionService.getAppDevice().getUserDevice().getAppType()));
 
 		jaxMetaInfo.setCustomerId(customerId);
 	}
@@ -209,6 +220,22 @@ public class JaxService implements IMetaRequestOutFilter<JaxMetaInfo> {
 		JaxMetaInfo jaxMetaInfo = new JaxMetaInfo();
 		outFilter(jaxMetaInfo);
 		return jaxMetaInfo;
+	}
+
+	@Override
+	public void appRequestContextInFilter() {
+		UserDevice userDevice = commonHttpRequest.getUserDevice();
+		UserDeviceClient userClient = AppContextUtil.getUserClient();
+		userClient.setChannel(Channel.ONLINE);
+		if (AppType.ANDROID.equals(userClient.getAppType())) {
+			userClient.setClientType(ClientType.ONLINE_AND);
+		} else if (AppType.IOS.equals(userClient.getAppType())) {
+			userClient.setClientType(ClientType.ONLINE_IOS);
+		} else if (AppType.WEB.equals(userClient.getAppType())) {
+			userClient.setClientType(ClientType.ONLINE_WEB);
+		} else {
+			userClient.setClientType(ClientType.UNKNOWN);
+		}
 	}
 
 }

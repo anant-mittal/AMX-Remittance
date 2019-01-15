@@ -1,4 +1,4 @@
-package com.amx.amxlib.model;
+package com.amx.jax.model.auth;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
