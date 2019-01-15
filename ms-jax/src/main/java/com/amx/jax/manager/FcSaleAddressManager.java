@@ -518,10 +518,10 @@ public class FcSaleAddressManager extends AbstractModel {
 		StringBuffer sb = new StringBuffer();
 		String concat =",";
 		if (shippingAddressDto != null) {
-			sb = sb.append(shippingAddressDto.getStreet() == null ? "" : "Street "+  shippingAddressDto.getStreet() +concat)
-					.append(shippingAddressDto.getBlock() == null ? "" : "Block " + shippingAddressDto.getBlockNo() + concat)
-					.append(shippingAddressDto.getBuildingNo() == null ? "" : "House no. " + shippingAddressDto.getBuildingNo() + concat)
-					.append(shippingAddressDto.getFlat() == null ? "" : "Flat "+  shippingAddressDto.getHouse() +concat);
+			sb = sb.append(shippingAddressDto.getStreet() == null ? "" : "Street "+  shippingAddressDto.getStreet())
+					.append(shippingAddressDto.getBlock() == null ? "" : concat + "Block " + shippingAddressDto.getBlockNo())
+					.append(shippingAddressDto.getBuildingNo() == null ? "" : concat + "House no. " + shippingAddressDto.getBuildingNo())
+					.append(shippingAddressDto.getFlat() == null ? "" : concat + "Flat "+  shippingAddressDto.getHouse());
 					
 			if (shippingAddressDto.getLocalContactCity() != null) {
 				sb.append("City ").append(shippingAddressDto.getLocalContactCity() == null ? ""
