@@ -67,20 +67,17 @@ public class TrnxViewTask extends ARadarTask {
 	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_SEC * 10)
 	public void doTask() {
 		AppContextUtil.setTenant(TenantContextHolder.currentSite(appConfig.getDefaultTenant()));
+		AppContextUtil.getTraceId(true, true);
 		AppContextUtil.init();
 
 		String dateString = GridConstants.GRID_TIME_FORMATTER_JAVA.format(new Date(lastUpdateDateNow));
 		String dateStringLimit = GridConstants.GRID_TIME_FORMATTER_JAVA
 				.format(new Date(lastUpdateDateNow + (10 * 24 * 3600 * 1000)));
 
-		LOGGER.info("Running Task lastUpdateDateNow:{} {} to {}", lastUpdateDateNow, dateString, dateStringLimit);
+		LOGGER.info("Range:{} {} - {}", lastUpdateDateNow, dateString, dateStringLimit);
 
-		jaxMetaInfo.setCountryId(TenantContextHolder.currentSite().getBDCode());
-		jaxMetaInfo.setTenant(TenantContextHolder.currentSite());
-		jaxMetaInfo.setLanguageId(Language.DEFAULT.getBDCode());
-		jaxMetaInfo.setCompanyId(new BigDecimal(JaxMetaInfo.DEFAULT_COMPANY_ID));
-		jaxMetaInfo.setCountryBranchId(new BigDecimal(JaxMetaInfo.DEFAULT_COUNTRY_BRANCH_ID));
 		lastUpdateDateNow = oracleVarsCache.getTranxScannedStamp();
+
 		GridQuery gridQuery = new GridQuery();
 		// gridQuery.setPageNo(lastPage++);
 		gridQuery.setPageSize(1000);
@@ -136,8 +133,11 @@ public class TrnxViewTask extends ARadarTask {
 
 		if (x.getResults().size() > 0) {
 			esRepository.bulk(builder.build());
-			oracleVarsCache.setTranxScannedStamp(lastUpdateDateNow);
 		}
+
+		LOGGER.info("Records:{}", x.getResults().size());
+
+		oracleVarsCache.setTranxScannedStamp(lastUpdateDateNow);
 
 	}
 
