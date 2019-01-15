@@ -19,8 +19,9 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.dict.Language;
 import com.amx.jax.grid.GridColumn;
-import com.amx.jax.grid.GridEnums.FilterDataType;
-import com.amx.jax.grid.GridEnums.FilterOperater;
+import com.amx.jax.grid.GridConstants;
+import com.amx.jax.grid.GridConstants.FilterDataType;
+import com.amx.jax.grid.GridConstants.FilterOperater;
 import com.amx.jax.grid.GridMeta;
 import com.amx.jax.grid.GridQuery;
 import com.amx.jax.grid.GridService;
@@ -68,7 +69,9 @@ public class CustomerViewTask extends ARadarTask {
 
 		AppContextUtil.setTenant(TenantContextHolder.currentSite(appConfig.getDefaultTenant()));
 		AppContextUtil.init();
-		LOGGER.info("Running Task lastUpdateDateNow:{}", lastUpdateDateNow);
+
+		String dateString = GridConstants.GRID_TIME_FORMATTER_JAVA.format(new Date(lastUpdateDateNow));
+		LOGGER.info("Running Task lastUpdateDateNow:{} {}", lastUpdateDateNow, dateString);
 
 		jaxMetaInfo.setCountryId(TenantContextHolder.currentSite().getBDCode());
 		jaxMetaInfo.setTenant(TenantContextHolder.currentSite());
@@ -85,8 +88,8 @@ public class CustomerViewTask extends ARadarTask {
 		GridColumn column = new GridColumn();
 		column.setKey("lastUpdateDate");
 		column.setOperator(FilterOperater.GTE);
-		column.setDataType(FilterDataType.TIMESTAMP);
-		column.setValue(ArgUtil.parseAsString(lastUpdateDateNow, "0"));
+		column.setDataType(FilterDataType.TIME);
+		column.setValue(dateString);
 		column.setSortDir(SortOrder.ASC);
 		gridQuery.getColumns().add(column);
 		gridQuery.setSortBy(0);
@@ -101,18 +104,25 @@ public class CustomerViewTask extends ARadarTask {
 
 		for (CustomerDetailViewRecord record : x.getResults()) {
 
-			Long lastUpdateDate = ArgUtil.parseAsLong(record.getLastUpdateDate().getTime(), 0L);
-			if (lastUpdateDate > lastUpdateDateNow) {
-				lastUpdateDateNow = lastUpdateDate;
+			try {
+				// Long lastUpdateDate = DateUtil.toUTC(record.getLastUpdateDate());
+				Long lastUpdateDate = record.getLastUpdateDate().getTime();
+				LOGGER.debug("DIFF {}", lastUpdateDateNow - lastUpdateDate);
+				if (lastUpdateDate > lastUpdateDateNow) {
+					lastUpdateDateNow = lastUpdateDate;
+				}
+
+				BigDecimal customerId = ArgUtil.parseAsBigDecimal(record.getId());
+				Date creationDate = ArgUtil.parseAsSimpleDate(record.getLastUpdateDate());
+				OracleViewDocument document = new OracleViewDocument();
+				document.setId("customer-" + customerId);
+				document.setTimestamp(creationDate);
+				document.setCustomer(record);
+				builder.update(oracleVarsCache.getCustomerIndex(), "customer", document);
+			} catch (Exception e) {
+				LOGGER.error("CustomerViewTask Excep", e);
 			}
 
-			BigDecimal customerId = ArgUtil.parseAsBigDecimal(record.getId());
-			Date creationDate = ArgUtil.parseAsSimpleDate(record.getLastUpdateDate());
-			OracleViewDocument document = new OracleViewDocument();
-			document.setId("customer-" + customerId);
-			document.setTimestamp(creationDate);
-			document.setCustomer(record);
-			builder.update(oracleVarsCache.getCustomerIndex(), "customer", document);
 		}
 
 		if (x.getResults().size() > 0) {

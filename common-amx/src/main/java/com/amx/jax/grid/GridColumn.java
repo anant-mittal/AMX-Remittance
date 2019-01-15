@@ -1,7 +1,7 @@
 package com.amx.jax.grid;
 
-import com.amx.jax.grid.GridEnums.FilterDataType;
-import com.amx.jax.grid.GridEnums.FilterOperater;
+import com.amx.jax.grid.GridConstants.FilterDataType;
+import com.amx.jax.grid.GridConstants.FilterOperater;
 import com.amx.jax.swagger.ApiMockModelProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;

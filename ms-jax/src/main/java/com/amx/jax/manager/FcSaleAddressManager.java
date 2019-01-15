@@ -309,7 +309,9 @@ public class FcSaleAddressManager extends AbstractModel {
 				throw new GlobalException(JaxError.CUSTOMER_NOT_FOUND,"Customer  id not found ");
 			}
 
-			if (StringUtils.isBlank(requestModel.getMobile())) {
+			/*
+			  4703  FC Order Enhancement - Customer App 
+			  if (StringUtils.isBlank(requestModel.getMobile())) {
 				throw new GlobalException(JaxError.INVALID_MOBILE_NUMBER, "Invalid Mobile Number");
 			}else {
 				if (!pattern.matcher(requestModel.getMobile()).matches()) {
@@ -325,7 +327,7 @@ public class FcSaleAddressManager extends AbstractModel {
 				if (!pattern.matcher(requestModel.getTelPrefix()).matches()) {
 					throw new GlobalException(JaxError.INVALID_MOBILE_PREFIX, "Invalid Tele Prefix");
 				}
-			}
+			}*/
 
 			shipAdd.setCreationDate(new Date());
 			shipAdd.setActiveStatus(ConstantDocument.Yes);
@@ -531,8 +533,8 @@ public class FcSaleAddressManager extends AbstractModel {
 			sb.append(shippingAddressDto.getLocalContactDistrict() == null ? ""
 					: shippingAddressDto.getLocalContactDistrict() + concat);
 			sb.append(shippingAddressDto.getLocalContactState() == null ? ""
-					: shippingAddressDto.getLocalContactState() + concat);
-			sb.append("Contact ").append(shippingAddressDto.getMobile() == null ? "" : shippingAddressDto.getMobile());
+					: shippingAddressDto.getLocalContactState());
+			
 
 		}
 		if(sb!=null){

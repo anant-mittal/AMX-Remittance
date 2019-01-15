@@ -228,7 +228,7 @@ public class JaxService implements IMetaRequestOutFilter<JaxMetaInfo>, AppReques
 		UserDeviceClient userClient = AppContextUtil.getUserClient();
 		userClient.setChannel(Channel.ONLINE);
 		if (AppType.ANDROID.equals(userClient.getAppType())) {
-			userClient.setClientType(ClientType.ONLINE_ANDROID);
+			userClient.setClientType(ClientType.ONLINE_AND);
 		} else if (AppType.IOS.equals(userClient.getAppType())) {
 			userClient.setClientType(ClientType.ONLINE_IOS);
 		} else if (AppType.WEB.equals(userClient.getAppType())) {

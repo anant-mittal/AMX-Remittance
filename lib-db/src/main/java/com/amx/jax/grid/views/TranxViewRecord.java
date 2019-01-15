@@ -106,7 +106,7 @@ public class TranxViewRecord implements Serializable {
 
 	// Tranx
 	@Column(name = "TRNX_ID")
-	private BigDecimal trnaxId;
+	private BigDecimal trnxId;
 
 	@Column(name = "TRNX_DATETIME")
 	private Date trnxDate;
@@ -336,12 +336,12 @@ public class TranxViewRecord implements Serializable {
 		this.routingCountryid = routingCountryid;
 	}
 
-	public BigDecimal getTrnaxId() {
-		return trnaxId;
+	public BigDecimal getTrnxId() {
+		return trnxId;
 	}
 
-	public void setTrnaxId(BigDecimal trnaxId) {
-		this.trnaxId = trnaxId;
+	public void setTrnxId(BigDecimal trnaxId) {
+		this.trnxId = trnaxId;
 	}
 
 	public Date getTrnxDate() {
