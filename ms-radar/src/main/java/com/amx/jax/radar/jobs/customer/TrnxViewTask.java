@@ -16,8 +16,6 @@ import org.springframework.stereotype.Service;
 import com.amx.jax.AppConfig;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
-import com.amx.jax.client.configs.JaxMetaInfo;
-import com.amx.jax.dict.Language;
 import com.amx.jax.grid.GridColumn;
 import com.amx.jax.grid.GridConstants;
 import com.amx.jax.grid.GridConstants.FilterDataType;
@@ -54,9 +52,6 @@ public class TrnxViewTask extends ARadarTask {
 	GridService gridService;
 
 	@Autowired
-	private JaxMetaInfo jaxMetaInfo;
-
-	@Autowired
 	private AppConfig appConfig;
 
 	@Autowired
@@ -70,13 +65,14 @@ public class TrnxViewTask extends ARadarTask {
 		AppContextUtil.getTraceId(true, true);
 		AppContextUtil.init();
 
+		lastUpdateDateNow = oracleVarsCache.getTranxScannedStamp();
+		Long lastUpdateDateNowLimit = lastUpdateDateNow + (10 * AmxCurConstants.INTERVAL_DAYS);
+
 		String dateString = GridConstants.GRID_TIME_FORMATTER_JAVA.format(new Date(lastUpdateDateNow));
 		String dateStringLimit = GridConstants.GRID_TIME_FORMATTER_JAVA
-				.format(new Date(lastUpdateDateNow + (10 * 24 * 3600 * 1000)));
+				.format(new Date(lastUpdateDateNowLimit));
 
 		LOGGER.info("Range:{} {} - {}", lastUpdateDateNow, dateString, dateStringLimit);
-
-		lastUpdateDateNow = oracleVarsCache.getTranxScannedStamp();
 
 		GridQuery gridQuery = new GridQuery();
 		// gridQuery.setPageNo(lastPage++);
@@ -131,13 +127,13 @@ public class TrnxViewTask extends ARadarTask {
 			}
 		}
 
+		LOGGER.info("Records:{}", x.getResults().size());
 		if (x.getResults().size() > 0) {
 			esRepository.bulk(builder.build());
+			oracleVarsCache.setTranxScannedStamp(lastUpdateDateNow);
+		} else if (lastUpdateDateNowLimit < (System.currentTimeMillis() - AmxCurConstants.INTERVAL_DAYS)) {
+			oracleVarsCache.setTranxScannedStamp(lastUpdateDateNowLimit);
 		}
-
-		LOGGER.info("Records:{}", x.getResults().size());
-
-		oracleVarsCache.setTranxScannedStamp(lastUpdateDateNow);
 
 	}
 

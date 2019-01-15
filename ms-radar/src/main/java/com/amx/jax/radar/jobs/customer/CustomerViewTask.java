@@ -16,8 +16,6 @@ import org.springframework.stereotype.Service;
 import com.amx.jax.AppConfig;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
-import com.amx.jax.client.configs.JaxMetaInfo;
-import com.amx.jax.dict.Language;
 import com.amx.jax.grid.GridColumn;
 import com.amx.jax.grid.GridConstants;
 import com.amx.jax.grid.GridConstants.FilterDataType;
@@ -68,13 +66,15 @@ public class CustomerViewTask extends ARadarTask {
 		AppContextUtil.getTraceId(true, true);
 		AppContextUtil.init();
 
+		lastUpdateDateNow = oracleVarsCache.getCustomerScannedStamp();
+		Long lastUpdateDateNowLimit = lastUpdateDateNow + (30 * AmxCurConstants.INTERVAL_DAYS);
+
 		String dateString = GridConstants.GRID_TIME_FORMATTER_JAVA.format(new Date(lastUpdateDateNow));
 		String dateStringLimit = GridConstants.GRID_TIME_FORMATTER_JAVA
-				.format(new Date(lastUpdateDateNow + (30 * 24 * 3600 * 1000)));
+				.format(new Date(lastUpdateDateNowLimit));
 
 		LOGGER.info("Range:{} {} - {}", lastUpdateDateNow, dateString, dateStringLimit);
 
-		lastUpdateDateNow = oracleVarsCache.getCustomerScannedStamp();
 		GridQuery gridQuery = new GridQuery();
 		// gridQuery.setPageNo(lastPage++);
 		gridQuery.setPageSize(1000);
@@ -130,13 +130,13 @@ public class CustomerViewTask extends ARadarTask {
 
 		}
 
+		LOGGER.info("Records:{}", x.getResults().size());
 		if (x.getResults().size() > 0) {
 			esRepository.bulk(builder.build());
+			oracleVarsCache.setCustomerScannedStamp(lastUpdateDateNow);
+		} else if (lastUpdateDateNowLimit < (System.currentTimeMillis() - AmxCurConstants.INTERVAL_DAYS)) {
+			oracleVarsCache.setCustomerScannedStamp(lastUpdateDateNowLimit);
 		}
-
-		LOGGER.info("Records:{}", x.getResults().size());
-
-		oracleVarsCache.setCustomerScannedStamp(lastUpdateDateNow);
 
 	}
 

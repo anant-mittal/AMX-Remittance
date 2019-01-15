@@ -11,6 +11,7 @@ import com.amx.utils.ArgUtil;
 @Component
 public class OracleVarsCache extends CacheBox<String> {
 
+	public static final Long START_TIME = 978287400000L;
 	private static final String STRING_DASH = "-";
 	private static final String CUSTOMER_RESET_COUNTER = "7";
 	private static final String TRANSACTION_RESET_COUNTER = "7";
@@ -32,7 +33,7 @@ public class OracleVarsCache extends CacheBox<String> {
 	}
 
 	public Long getCustomerScannedStamp() {
-		return ArgUtil.parseAsLong(this.get(getCustomerIndex() + STRING_DASH + CUSTOMER_RESET_COUNTER), 978287400000L);
+		return ArgUtil.parseAsLong(this.get(getCustomerIndex() + STRING_DASH + CUSTOMER_RESET_COUNTER), START_TIME);
 	}
 
 	public void setCustomerScannedStamp(Long customerScannedStamp) {
@@ -41,7 +42,7 @@ public class OracleVarsCache extends CacheBox<String> {
 	}
 
 	public Long getTranxScannedStamp() {
-		return ArgUtil.parseAsLong(this.get(getTranxIndex() + STRING_DASH + TRANSACTION_RESET_COUNTER), 978287400000L);
+		return ArgUtil.parseAsLong(this.get(getTranxIndex() + STRING_DASH + TRANSACTION_RESET_COUNTER), START_TIME);
 	}
 
 	public void setTranxScannedStamp(Long tranxScannedStamp) {
