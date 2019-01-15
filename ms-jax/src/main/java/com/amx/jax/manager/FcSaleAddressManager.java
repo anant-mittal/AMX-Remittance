@@ -523,7 +523,10 @@ public class FcSaleAddressManager extends AbstractModel {
 					.append(shippingAddressDto.getBuildingNo() == null ? "" : concat + "House no. " + shippingAddressDto.getBuildingNo())
 					.append(shippingAddressDto.getFlat() == null ? "" : concat + "Flat "+  shippingAddressDto.getHouse());
 					
+			
+			
 			if (shippingAddressDto.getLocalContactCity() != null) {
+<<<<<<< Updated upstream
 				sb.append("City ").append(shippingAddressDto.getLocalContactCity() == null ? ""
 						: concat + shippingAddressDto.getLocalContactCity());
 			}
@@ -535,8 +538,24 @@ public class FcSaleAddressManager extends AbstractModel {
 					: concat + shippingAddressDto.getLocalContactDistrict());
 			sb.append(shippingAddressDto.getLocalContactState() == null ? ""
 					: concat + shippingAddressDto.getLocalContactState());
+=======
+				sb.append(concat).append("City ").append(shippingAddressDto.getLocalContactCity() == null ? "": shippingAddressDto.getLocalContactCity());
+			}
+			if(shippingAddressDto.getGovernoatesDto()!=null && !shippingAddressDto.getGovernoatesDto().equals("")) {
+				sb.append(concat).append(shippingAddressDto.getGovernoatesDto().getResourceName());
+			}
+			if(shippingAddressDto.getGovtAreaDesc()!=null && !shippingAddressDto.getGovtAreaDesc().equals("")) {
+				sb.append(concat).append(shippingAddressDto.getGovtAreaDesc());
+			}
+			if(shippingAddressDto.getLocalContactDistrict()!=null && !shippingAddressDto.getLocalContactDistrict().equals("")) {
+				sb.append(concat).append(shippingAddressDto.getLocalContactDistrict());
+			}
 			
-
+			if(shippingAddressDto.getLocalContactState()!=null && !shippingAddressDto.getLocalContactState().equals("")) {
+				sb.append(concat).append(shippingAddressDto.getLocalContactState());
+			}
+>>>>>>> Stashed changes
+			
 		}
 		if(sb!=null){
 			address = sb.toString();
