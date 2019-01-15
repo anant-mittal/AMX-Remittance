@@ -525,16 +525,16 @@ public class FcSaleAddressManager extends AbstractModel {
 					
 			if (shippingAddressDto.getLocalContactCity() != null) {
 				sb.append("City ").append(shippingAddressDto.getLocalContactCity() == null ? ""
-						: shippingAddressDto.getLocalContactCity()).append(concat);
+						: concat + shippingAddressDto.getLocalContactCity());
 			}
 			sb.append(
-					shippingAddressDto.getGovernoatesDto() == null ? "" : shippingAddressDto.getGovernoatesDto().getResourceName() + concat);
+					shippingAddressDto.getGovernoatesDto() == null ? "" : concat + shippingAddressDto.getGovernoatesDto().getResourceName());
 			sb.append(
-					shippingAddressDto.getGovtAreaDesc() == null ? "" : shippingAddressDto.getGovtAreaDesc() + concat);
+					shippingAddressDto.getGovtAreaDesc() == null ? "" : concat + shippingAddressDto.getGovtAreaDesc());
 			sb.append(shippingAddressDto.getLocalContactDistrict() == null ? ""
-					: shippingAddressDto.getLocalContactDistrict() + concat);
+					: concat + shippingAddressDto.getLocalContactDistrict());
 			sb.append(shippingAddressDto.getLocalContactState() == null ? ""
-					: shippingAddressDto.getLocalContactState());
+					: concat + shippingAddressDto.getLocalContactState());
 			
 
 		}
