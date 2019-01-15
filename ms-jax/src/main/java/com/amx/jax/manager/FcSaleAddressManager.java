@@ -223,7 +223,8 @@ public class FcSaleAddressManager extends AbstractModel {
 				}
 				shippingAddressDto.setCustomerId(shippingAddressDetail.getFsCustomer().getCustomerId());
 				shippingAddressDto.setCompanyId(companyId);
-				shippingAddressDto.setMobile(shippingAddressDetail.getMobile());
+				//shippingAddressDto.setMobile(shippingAddressDetail.getMobile());
+				shippingAddressDto.setMobile(shippingAddressDetail.getFsCustomer().getMobile());
 				shippingAddressDto.setLocalContactBuilding(shippingAddressDetail.getBuildingNo());
 				shippingAddressDto.setStreet(shippingAddressDetail.getStreet());
 				shippingAddressDto.setBlockNo(shippingAddressDetail.getBlock());
