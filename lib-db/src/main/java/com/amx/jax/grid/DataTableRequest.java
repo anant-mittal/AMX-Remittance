@@ -210,10 +210,7 @@ public class DataTableRequest {
 					}
 				}
 				if (!ArgUtil.isEmpty(colSpec.getValue())) {
-					FilterOperater filterOperater = (FilterOperater) ArgUtil.parseAsEnum(colSpec.getOperator(),
-							FilterOperater.EQ);
-					filterBy.addWhereFilter(colSpec.getKey(),
-							new Condition(filterOperater, colSpec.getValue(), colSpec.getDataType()));
+					filterBy.addWhereFilter(colSpec);
 				}
 			}
 		}

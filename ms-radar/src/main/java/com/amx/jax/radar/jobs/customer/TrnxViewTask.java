@@ -64,14 +64,16 @@ public class TrnxViewTask extends ARadarTask {
 
 	private Long lastUpdateDateNow = 0L;
 
-	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_TASK)
+	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_SEC * 10)
 	public void doTask() {
 		AppContextUtil.setTenant(TenantContextHolder.currentSite(appConfig.getDefaultTenant()));
 		AppContextUtil.init();
 
 		String dateString = GridConstants.GRID_TIME_FORMATTER_JAVA.format(new Date(lastUpdateDateNow));
+		String dateStringLimit = GridConstants.GRID_TIME_FORMATTER_JAVA
+				.format(new Date(lastUpdateDateNow + (10 * 24 * 3600 * 1000)));
 
-		LOGGER.info("Running Task lastUpdateDateNow:{} {}", lastUpdateDateNow, dateString);
+		LOGGER.info("Running Task lastUpdateDateNow:{} {} to {}", lastUpdateDateNow, dateString, dateStringLimit);
 
 		jaxMetaInfo.setCountryId(TenantContextHolder.currentSite().getBDCode());
 		jaxMetaInfo.setTenant(TenantContextHolder.currentSite());
@@ -91,6 +93,15 @@ public class TrnxViewTask extends ARadarTask {
 		column.setValue(dateString);
 		column.setSortDir(SortOrder.ASC);
 		gridQuery.getColumns().add(column);
+
+		GridColumn column2 = new GridColumn();
+		column2.setKey("lastUpdateDate");
+		column2.setOperator(FilterOperater.ST);
+		column2.setDataType(FilterDataType.TIME);
+		column2.setValue(dateStringLimit);
+		column2.setSortDir(SortOrder.ASC);
+		gridQuery.getColumns().add(column2);
+
 		gridQuery.setSortBy(0);
 		gridQuery.setSortOrder(SortOrder.ASC);
 
