@@ -11,6 +11,8 @@ import com.amx.utils.ArgUtil;
 @Component
 public class OracleVarsCache extends CacheBox<String> {
 
+	private static final String CUSTOMER_RESET_COUNTER = "1";
+	private static final String TRANSACTION_RESET_COUNTER = "2";
 	public static final String DOC_VERSION = "v3";
 
 	/**
@@ -29,19 +31,19 @@ public class OracleVarsCache extends CacheBox<String> {
 	}
 
 	public Long getCustomerScannedStamp() {
-		return ArgUtil.parseAsLong(this.get(getCustomerIndex() + "-ts"), 0L);
+		return ArgUtil.parseAsLong(this.get(getCustomerIndex() + "-" + CUSTOMER_RESET_COUNTER), 0L);
 	}
 
 	public void setCustomerScannedStamp(Long customerScannedStamp) {
-		this.put(getCustomerIndex() + "-ts", ArgUtil.parseAsString(customerScannedStamp));
+		this.put(getCustomerIndex() + "-" + CUSTOMER_RESET_COUNTER, ArgUtil.parseAsString(customerScannedStamp));
 	}
 
 	public Long getTranxScannedStamp() {
-		return ArgUtil.parseAsLong(this.get(getTranxIndex() + "-ts"), 0L);
+		return ArgUtil.parseAsLong(this.get(getTranxIndex() + "-" + TRANSACTION_RESET_COUNTER), 0L);
 	}
 
 	public void setTranxScannedStamp(Long tranxScannedStamp) {
-		this.put(getTranxIndex() + "-ts", ArgUtil.parseAsString(tranxScannedStamp));
+		this.put(getTranxIndex() + "-" + TRANSACTION_RESET_COUNTER, ArgUtil.parseAsString(tranxScannedStamp));
 	}
 
 }

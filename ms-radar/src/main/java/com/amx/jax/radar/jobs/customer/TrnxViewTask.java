@@ -1,7 +1,6 @@
 package com.amx.jax.radar.jobs.customer;
 
 import java.math.BigDecimal;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -20,8 +19,9 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.dict.Language;
 import com.amx.jax.grid.GridColumn;
-import com.amx.jax.grid.GridEnums.FilterDataType;
-import com.amx.jax.grid.GridEnums.FilterOperater;
+import com.amx.jax.grid.GridConstants;
+import com.amx.jax.grid.GridConstants.FilterDataType;
+import com.amx.jax.grid.GridConstants.FilterOperater;
 import com.amx.jax.grid.GridMeta;
 import com.amx.jax.grid.GridQuery;
 import com.amx.jax.grid.GridService;
@@ -37,7 +37,6 @@ import com.amx.jax.radar.TestSizeApp;
 import com.amx.jax.rates.AmxCurConstants;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.utils.ArgUtil;
-import com.amx.utils.DateUtil;
 
 @Configuration
 @EnableScheduling
@@ -69,8 +68,10 @@ public class TrnxViewTask extends ARadarTask {
 	public void doTask() {
 		AppContextUtil.setTenant(TenantContextHolder.currentSite(appConfig.getDefaultTenant()));
 		AppContextUtil.init();
-		LOGGER.info("Running Task lastUpdateDateNow:{} {}", lastUpdateDateNow,
-				new Date(lastUpdateDateNow).toGMTString());
+
+		String dateString = GridConstants.GRID_TIME_FORMATTER_JAVA.format(new Date(lastUpdateDateNow));
+
+		LOGGER.info("Running Task lastUpdateDateNow:{} {}", lastUpdateDateNow, dateString);
 
 		jaxMetaInfo.setCountryId(TenantContextHolder.currentSite().getBDCode());
 		jaxMetaInfo.setTenant(TenantContextHolder.currentSite());
@@ -86,8 +87,8 @@ public class TrnxViewTask extends ARadarTask {
 		GridColumn column = new GridColumn();
 		column.setKey("lastUpdateDate");
 		column.setOperator(FilterOperater.GTE);
-		column.setDataType(FilterDataType.TIMESTAMP);
-		column.setValue(ArgUtil.parseAsString(lastUpdateDateNow, "0"));
+		column.setDataType(FilterDataType.TIME);
+		column.setValue(dateString);
 		column.setSortDir(SortOrder.ASC);
 		gridQuery.getColumns().add(column);
 		gridQuery.setSortBy(0);
@@ -102,7 +103,8 @@ public class TrnxViewTask extends ARadarTask {
 
 		for (TranxViewRecord record : x.getResults()) {
 			try {
-				Long lastUpdateDate = DateUtil.toUTC(record.getLastUpdateDate());
+				// Long lastUpdateDate = DateUtil.toUTC(record.getLastUpdateDate());
+				Long lastUpdateDate = record.getLastUpdateDate().getTime();
 				LOGGER.debug("DIFF {}", lastUpdateDateNow - lastUpdateDate);
 				if (lastUpdateDate > lastUpdateDateNow) {
 					lastUpdateDateNow = lastUpdateDate;
@@ -116,7 +118,7 @@ public class TrnxViewTask extends ARadarTask {
 				document.setTrnx(record);
 				document.normalizeTrnx();
 				builder.update(oracleVarsCache.getTranxIndex(), "appxn", document);
-			} catch (ParseException e) {
+			} catch (Exception e) {
 				LOGGER.error("TranxViewRecord Excep", e);
 			}
 		}
