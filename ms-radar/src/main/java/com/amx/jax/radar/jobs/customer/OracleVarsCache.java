@@ -12,8 +12,8 @@ import com.amx.utils.ArgUtil;
 public class OracleVarsCache extends CacheBox<String> {
 
 	private static final String STRING_DASH = "-";
-	private static final String CUSTOMER_RESET_COUNTER = "6";
-	private static final String TRANSACTION_RESET_COUNTER = "6";
+	private static final String CUSTOMER_RESET_COUNTER = "7";
+	private static final String TRANSACTION_RESET_COUNTER = "7";
 	public static final String DOC_VERSION = "v3";
 
 	/**
