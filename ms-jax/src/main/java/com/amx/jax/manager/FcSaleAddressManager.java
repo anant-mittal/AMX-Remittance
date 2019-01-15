@@ -533,8 +533,8 @@ public class FcSaleAddressManager extends AbstractModel {
 			sb.append(shippingAddressDto.getLocalContactDistrict() == null ? ""
 					: shippingAddressDto.getLocalContactDistrict() + concat);
 			sb.append(shippingAddressDto.getLocalContactState() == null ? ""
-					: shippingAddressDto.getLocalContactState() + concat);
-			sb.append("Contact ").append(shippingAddressDto.getMobile() == null ? "" : shippingAddressDto.getMobile());
+					: shippingAddressDto.getLocalContactState());
+			
 
 		}
 		if(sb!=null){
