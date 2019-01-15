@@ -105,6 +105,7 @@ public class FcSaleDeliveryService {
 				model.getShippingAddressId());
 		try {
 			BeanUtils.copyProperties(dto, model);
+			shippingAddress.setMobile(shippingAddressDto.getMobile());
 			BeanUtils.copyProperties(shippingAddressDto, shippingAddress);
 		} catch (Exception e) {
 		}

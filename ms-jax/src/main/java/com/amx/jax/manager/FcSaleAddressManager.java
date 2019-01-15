@@ -223,7 +223,8 @@ public class FcSaleAddressManager extends AbstractModel {
 				}
 				shippingAddressDto.setCustomerId(shippingAddressDetail.getFsCustomer().getCustomerId());
 				shippingAddressDto.setCompanyId(companyId);
-				shippingAddressDto.setMobile(shippingAddressDetail.getMobile());
+				//shippingAddressDto.setMobile(shippingAddressDetail.getMobile());
+				shippingAddressDto.setMobile(shippingAddressDetail.getFsCustomer().getMobile());
 				shippingAddressDto.setLocalContactBuilding(shippingAddressDetail.getBuildingNo());
 				shippingAddressDto.setStreet(shippingAddressDetail.getStreet());
 				shippingAddressDto.setBlockNo(shippingAddressDetail.getBlock());
@@ -517,23 +518,23 @@ public class FcSaleAddressManager extends AbstractModel {
 		StringBuffer sb = new StringBuffer();
 		String concat =",";
 		if (shippingAddressDto != null) {
-			sb = sb.append(shippingAddressDto.getStreet() == null ? "" : "Street "+  shippingAddressDto.getStreet() +concat)
-					.append(shippingAddressDto.getBlock() == null ? "" : "Block " + shippingAddressDto.getBlockNo() + concat)
-					.append(shippingAddressDto.getBuildingNo() == null ? "" : "House no. " + shippingAddressDto.getBuildingNo() + concat)
-					.append(shippingAddressDto.getFlat() == null ? "" : "Flat "+  shippingAddressDto.getHouse() +concat);
+			sb = sb.append(shippingAddressDto.getStreet() == null ? "" : "Street "+  shippingAddressDto.getStreet())
+					.append(shippingAddressDto.getBlock() == null ? "" : concat + "Block " + shippingAddressDto.getBlockNo())
+					.append(shippingAddressDto.getBuildingNo() == null ? "" : concat + "House no. " + shippingAddressDto.getBuildingNo())
+					.append(shippingAddressDto.getFlat() == null ? "" : concat + "Flat "+  shippingAddressDto.getHouse());
 					
 			if (shippingAddressDto.getLocalContactCity() != null) {
 				sb.append("City ").append(shippingAddressDto.getLocalContactCity() == null ? ""
-						: shippingAddressDto.getLocalContactCity()).append(concat);
+						: concat + shippingAddressDto.getLocalContactCity());
 			}
 			sb.append(
-					shippingAddressDto.getGovernoatesDto() == null ? "" : shippingAddressDto.getGovernoatesDto().getResourceName() + concat);
+					shippingAddressDto.getGovernoatesDto() == null ? "" : concat + shippingAddressDto.getGovernoatesDto().getResourceName());
 			sb.append(
-					shippingAddressDto.getGovtAreaDesc() == null ? "" : shippingAddressDto.getGovtAreaDesc() + concat);
+					shippingAddressDto.getGovtAreaDesc() == null ? "" : concat + shippingAddressDto.getGovtAreaDesc());
 			sb.append(shippingAddressDto.getLocalContactDistrict() == null ? ""
-					: shippingAddressDto.getLocalContactDistrict() + concat);
+					: concat + shippingAddressDto.getLocalContactDistrict());
 			sb.append(shippingAddressDto.getLocalContactState() == null ? ""
-					: shippingAddressDto.getLocalContactState());
+					: concat + shippingAddressDto.getLocalContactState());
 			
 
 		}
