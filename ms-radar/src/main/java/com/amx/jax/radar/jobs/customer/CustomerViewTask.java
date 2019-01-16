@@ -16,8 +16,6 @@ import org.springframework.stereotype.Service;
 import com.amx.jax.AppConfig;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
-import com.amx.jax.client.configs.JaxMetaInfo;
-import com.amx.jax.dict.Language;
 import com.amx.jax.grid.GridColumn;
 import com.amx.jax.grid.GridConstants;
 import com.amx.jax.grid.GridConstants.FilterDataType;
@@ -57,34 +55,36 @@ public class CustomerViewTask extends ARadarTask {
 	private AppConfig appConfig;
 
 	@Autowired
-	private JaxMetaInfo jaxMetaInfo;
-
-	@Autowired
-	OracleVarsCache oracleVarsCache;
+	private OracleVarsCache oracleVarsCache;
 
 	private Long lastUpdateDateNow = 0L;
 
-	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_TASK)
+	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_SEC * 30)
 	public void doTask() {
+		doTask(0);
+	}
+
+	public void doTask(int lastPage) {
 
 		AppContextUtil.setTenant(TenantContextHolder.currentSite(appConfig.getDefaultTenant()));
+		AppContextUtil.getTraceId(true, true);
 		AppContextUtil.init();
 
-		String dateString = GridConstants.GRID_TIME_FORMATTER_JAVA.format(new Date(lastUpdateDateNow));
-		LOGGER.info("Running Task lastUpdateDateNow:{} {}", lastUpdateDateNow, dateString);
-
-		jaxMetaInfo.setCountryId(TenantContextHolder.currentSite().getBDCode());
-		jaxMetaInfo.setTenant(TenantContextHolder.currentSite());
-		jaxMetaInfo.setLanguageId(Language.DEFAULT.getBDCode());
-		jaxMetaInfo.setCompanyId(new BigDecimal(JaxMetaInfo.DEFAULT_COMPANY_ID));
-		jaxMetaInfo.setCountryBranchId(new BigDecimal(JaxMetaInfo.DEFAULT_COUNTRY_BRANCH_ID));
-
 		lastUpdateDateNow = oracleVarsCache.getCustomerScannedStamp();
+		Long lastUpdateDateNowLimit = lastUpdateDateNow + (30 * AmxCurConstants.INTERVAL_DAYS);
+
+		String dateString = GridConstants.GRID_TIME_FORMATTER_JAVA.format(new Date(lastUpdateDateNow));
+		String dateStringLimit = GridConstants.GRID_TIME_FORMATTER_JAVA
+				.format(new Date(lastUpdateDateNowLimit));
+
+		LOGGER.info("Pg:{},Time:{} {} - {}", lastPage, lastUpdateDateNow, dateString, dateStringLimit);
+
 		GridQuery gridQuery = new GridQuery();
-		// gridQuery.setPageNo(lastPage++);
-		gridQuery.setPageSize(100);
+		gridQuery.setPageNo(lastPage);
+		gridQuery.setPageSize(1000);
 		gridQuery.setPaginated(false);
 		gridQuery.setColumns(new ArrayList<GridColumn>());
+
 		GridColumn column = new GridColumn();
 		column.setKey("lastUpdateDate");
 		column.setOperator(FilterOperater.GTE);
@@ -92,6 +92,15 @@ public class CustomerViewTask extends ARadarTask {
 		column.setValue(dateString);
 		column.setSortDir(SortOrder.ASC);
 		gridQuery.getColumns().add(column);
+
+		GridColumn column2 = new GridColumn();
+		column2.setKey("lastUpdateDate");
+		column2.setOperator(FilterOperater.ST);
+		column2.setDataType(FilterDataType.TIME);
+		column2.setValue(dateStringLimit);
+		column2.setSortDir(SortOrder.ASC);
+		gridQuery.getColumns().add(column2);
+
 		gridQuery.setSortBy(0);
 		gridQuery.setSortOrder(SortOrder.ASC);
 
@@ -102,6 +111,7 @@ public class CustomerViewTask extends ARadarTask {
 
 		BulkRequestBuilder builder = new BulkRequestBuilder();
 
+		Long lastUpdateDateNowStart = lastUpdateDateNow;
 		for (CustomerDetailViewRecord record : x.getResults()) {
 
 			try {
@@ -122,15 +132,18 @@ public class CustomerViewTask extends ARadarTask {
 			} catch (Exception e) {
 				LOGGER.error("CustomerViewTask Excep", e);
 			}
-
 		}
 
+		LOGGER.info("Pg:{}, Rcds:{}, Nxt:{}", lastPage, x.getResults().size(), lastUpdateDateNow);
 		if (x.getResults().size() > 0) {
 			esRepository.bulk(builder.build());
+			oracleVarsCache.setCustomerScannedStamp(lastUpdateDateNow);
+			if (lastUpdateDateNowStart == lastUpdateDateNow) {
+				doTask(lastPage + 1);
+			}
+		} else if (lastUpdateDateNowLimit < (System.currentTimeMillis() - AmxCurConstants.INTERVAL_DAYS)) {
+			oracleVarsCache.setCustomerScannedStamp(lastUpdateDateNowLimit);
 		}
-
-		oracleVarsCache.setCustomerScannedStamp(lastUpdateDateNow);
-
 	}
 
 }

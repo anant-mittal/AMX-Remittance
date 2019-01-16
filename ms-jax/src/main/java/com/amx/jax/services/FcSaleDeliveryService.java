@@ -2,6 +2,7 @@ package com.amx.jax.services;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -47,6 +48,7 @@ import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.CryptoUtil;
+import com.amx.utils.DateUtil;
 import com.amx.utils.Random;
 
 @Component
@@ -120,6 +122,7 @@ public class FcSaleDeliveryService {
 		dto.setOrderStatus(statusMaster.getStatusDescription());
 		dto.setOrderStatusCode(statusMaster.getStatusCode());
 		dto.setDeliveryDetailSeqId(model.getDeleviryDelSeqId());
+		dto.setDeliveryTimeSlot(DateUtil.formatDateTime(new Date()));
 		return dto;
 	}
 
