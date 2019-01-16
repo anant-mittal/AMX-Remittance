@@ -14,8 +14,8 @@ public class OracleVarsCache extends CacheBox<String> {
 	public static final Long START_TIME = 978287400000L;
 	private static final String ASC_SEPERATOR = "-";
 	private static final String DESC_SEPERATOR = "-desc-";
-	private static final String CUSTOMER_RESET_COUNTER = "10";
-	private static final String TRANSACTION_RESET_COUNTER = "10";
+	private static final String CUSTOMER_RESET_COUNTER = "11";
+	private static final String TRANSACTION_RESET_COUNTER = "11";
 	public static final String DOC_VERSION = "v3";
 
 	/**
@@ -58,8 +58,10 @@ public class OracleVarsCache extends CacheBox<String> {
 		if (reverse) {
 			this.put(getTranxIndex() + DESC_SEPERATOR + TRANSACTION_RESET_COUNTER,
 					ArgUtil.parseAsString(tranxScannedStamp));
+		} else {
+			this.put(getTranxIndex() + ASC_SEPERATOR + TRANSACTION_RESET_COUNTER,
+					ArgUtil.parseAsString(tranxScannedStamp));
 		}
-		this.put(getTranxIndex() + ASC_SEPERATOR + TRANSACTION_RESET_COUNTER, ArgUtil.parseAsString(tranxScannedStamp));
 	}
 
 	public void setTranxScannedStamp(Long tranxScannedStamp) {
