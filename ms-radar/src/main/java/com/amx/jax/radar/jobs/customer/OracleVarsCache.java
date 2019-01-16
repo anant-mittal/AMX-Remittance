@@ -13,8 +13,8 @@ public class OracleVarsCache extends CacheBox<String> {
 
 	public static final Long START_TIME = 978287400000L;
 	private static final String STRING_DASH = "-";
-	private static final String CUSTOMER_RESET_COUNTER = "8";
-	private static final String TRANSACTION_RESET_COUNTER = "8";
+	private static final String CUSTOMER_RESET_COUNTER = "9";
+	private static final String TRANSACTION_RESET_COUNTER = "9";
 	public static final String DOC_VERSION = "v3";
 
 	/**
