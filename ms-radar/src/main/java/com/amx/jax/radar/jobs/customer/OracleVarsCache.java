@@ -13,8 +13,8 @@ public class OracleVarsCache extends CacheBox<String> {
 
 	public static final Long START_TIME = 978287400000L;
 	private static final String STRING_DASH = "-";
-	private static final String CUSTOMER_RESET_COUNTER = "7";
-	private static final String TRANSACTION_RESET_COUNTER = "7";
+	private static final String CUSTOMER_RESET_COUNTER = "8";
+	private static final String TRANSACTION_RESET_COUNTER = "8";
 	public static final String DOC_VERSION = "v3";
 
 	/**
@@ -25,11 +25,11 @@ public class OracleVarsCache extends CacheBox<String> {
 	}
 
 	public String getTranxIndex() {
-		return "oracle-" + DOC_VERSION + "-tranx-v3";
+		return "oracle-" + DOC_VERSION + "-tranx-v4";
 	}
 
 	public String getCustomerIndex() {
-		return "oracle-" + DOC_VERSION + "-customer-v3";
+		return "oracle-" + DOC_VERSION + "-customer-v4";
 	}
 
 	public Long getCustomerScannedStamp() {
