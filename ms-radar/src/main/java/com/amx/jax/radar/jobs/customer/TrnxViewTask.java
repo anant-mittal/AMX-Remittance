@@ -133,14 +133,18 @@ public class TrnxViewTask extends ARadarTask {
 		}
 
 		LOGGER.info("Pg:{}, Rcds:{}, Nxt:{}", lastPage, x.getResults().size(), lastUpdateDateNow);
+		long todayOffset = System.currentTimeMillis() - AmxCurConstants.INTERVAL_DAYS;
 		if (x.getResults().size() > 0) {
 			esRepository.bulk(builder.build());
 			oracleVarsCache.setTranxScannedStamp(lastUpdateDateNow);
 			if (lastUpdateDateNowStart == lastUpdateDateNow) {
 				doTask(lastPage + 1);
 			}
-		} else if (lastUpdateDateNowLimit < (System.currentTimeMillis() - AmxCurConstants.INTERVAL_DAYS)) {
+		} else if (lastUpdateDateNowLimit < todayOffset) {
 			oracleVarsCache.setTranxScannedStamp(lastUpdateDateNowLimit);
+		} else {
+			oracleVarsCache
+					.setTranxScannedStamp(Math.min(todayOffset, lastUpdateDateNow + AmxCurConstants.INTERVAL_DAYS));
 		}
 
 	}
