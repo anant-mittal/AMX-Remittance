@@ -130,7 +130,7 @@ public class CustomerViewTask extends ARadarTask {
 
 		}
 
-		LOGGER.info("Records:{}", x.getResults().size());
+		LOGGER.info("Records:{} , next : {}", x.getResults().size(), lastUpdateDateNow);
 		if (x.getResults().size() > 0) {
 			esRepository.bulk(builder.build());
 			oracleVarsCache.setCustomerScannedStamp(lastUpdateDateNow);
