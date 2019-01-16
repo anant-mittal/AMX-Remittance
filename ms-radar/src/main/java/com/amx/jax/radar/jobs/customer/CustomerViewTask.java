@@ -77,7 +77,7 @@ public class CustomerViewTask extends ARadarTask {
 		String dateStringLimit = GridConstants.GRID_TIME_FORMATTER_JAVA
 				.format(new Date(lastUpdateDateNowLimit));
 
-		LOGGER.info("Range:{} {} - {}", lastUpdateDateNow, dateString, dateStringLimit);
+		LOGGER.info("Pg:{},Time:{} {} - {}", lastPage, lastUpdateDateNow, dateString, dateStringLimit);
 
 		GridQuery gridQuery = new GridQuery();
 		gridQuery.setPageNo(lastPage);
@@ -134,7 +134,7 @@ public class CustomerViewTask extends ARadarTask {
 			}
 		}
 
-		LOGGER.info("Records:{} , next : {}", x.getResults().size(), lastUpdateDateNow);
+		LOGGER.info("Pg:{}, Rcds:{}, Nxt:{}", lastPage, x.getResults().size(), lastUpdateDateNow);
 		if (x.getResults().size() > 0) {
 			esRepository.bulk(builder.build());
 			oracleVarsCache.setCustomerScannedStamp(lastUpdateDateNow);
