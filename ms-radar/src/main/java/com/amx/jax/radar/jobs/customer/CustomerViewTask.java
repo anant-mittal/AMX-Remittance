@@ -59,7 +59,7 @@ public class CustomerViewTask extends ARadarTask {
 
 	private Long lastUpdateDateNow = 0L;
 
-	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_SEC * 10)
+	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_SEC * 30)
 	public void doTask() {
 		doTask(0);
 	}
