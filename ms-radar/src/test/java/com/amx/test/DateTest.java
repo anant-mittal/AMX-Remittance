@@ -32,8 +32,8 @@ public class DateTest { // Noncompliant
 	 */
 	public static void main(String[] args) throws URISyntaxException, IOException {
 
-		Long lastUpdateDateNow = 978287400000L;
-		Long lastUpdateDateNowLimit = lastUpdateDateNow + (30 * AmxCurConstants.INTERVAL_DAYS);
+		Long lastUpdateDateNow = 1537312560000L;
+		Long lastUpdateDateNowLimit = lastUpdateDateNow - (10 * AmxCurConstants.INTERVAL_DAYS);
 
 		String dateString = GridConstants.GRID_TIME_FORMATTER_JAVA.format(new Date(lastUpdateDateNow));
 		String dateStringLimit = GridConstants.GRID_TIME_FORMATTER_JAVA

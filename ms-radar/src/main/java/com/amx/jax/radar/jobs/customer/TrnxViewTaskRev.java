@@ -86,7 +86,7 @@ public class TrnxViewTaskRev extends ARadarTask {
 		LOGGER.info("Pg:{},Time:{} {} - {}", lastPage, lastUpdateDateNow, dateString, dateStringLimit);
 
 		GridQuery gridQuery = new GridQuery();
-		// gridQuery.setPageNo(lastPage++);
+		gridQuery.setPageNo(lastPage);
 		gridQuery.setPageSize(1000);
 		gridQuery.setPaginated(false);
 		gridQuery.setColumns(new ArrayList<GridColumn>());
