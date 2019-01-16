@@ -59,6 +59,8 @@ public class TrnxViewTask extends ARadarTask {
 
 	private Long lastUpdateDateNow = 0L;
 
+	long intervalDays = 10;
+
 	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_SEC * 10)
 	public void doTask() {
 		doTask(0);
@@ -70,7 +72,7 @@ public class TrnxViewTask extends ARadarTask {
 		AppContextUtil.init();
 
 		lastUpdateDateNow = oracleVarsCache.getTranxScannedStamp();
-		Long lastUpdateDateNowLimit = lastUpdateDateNow + (10 * AmxCurConstants.INTERVAL_DAYS);
+		Long lastUpdateDateNowLimit = lastUpdateDateNow + (intervalDays * AmxCurConstants.INTERVAL_DAYS);
 
 		String dateString = GridConstants.GRID_TIME_FORMATTER_JAVA.format(new Date(lastUpdateDateNow));
 		String dateStringLimit = GridConstants.GRID_TIME_FORMATTER_JAVA
@@ -135,12 +137,14 @@ public class TrnxViewTask extends ARadarTask {
 		LOGGER.info("Pg:{}, Rcds:{}, Nxt:{}", lastPage, x.getResults().size(), lastUpdateDateNow);
 		long todayOffset = System.currentTimeMillis() - AmxCurConstants.INTERVAL_DAYS;
 		if (x.getResults().size() > 0) {
+			intervalDays = 10;
 			esRepository.bulk(builder.build());
 			oracleVarsCache.setTranxScannedStamp(lastUpdateDateNow);
 			if (lastUpdateDateNowStart == lastUpdateDateNow) {
 				doTask(lastPage + 1);
 			}
 		} else if (lastUpdateDateNowLimit < todayOffset) {
+			intervalDays++;
 			oracleVarsCache.setTranxScannedStamp(lastUpdateDateNowLimit);
 		} else {
 			oracleVarsCache
