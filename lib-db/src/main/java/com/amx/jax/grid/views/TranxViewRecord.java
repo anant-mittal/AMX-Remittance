@@ -9,6 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.amx.jax.es.ESDocFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -27,6 +28,7 @@ public class TranxViewRecord implements Serializable {
 	@Column(name = "APPL_ID")
 	private BigDecimal id;
 
+	@ESDocFormat(ESDocFormat.Type.DATE)
 	@Column(name = "LATEST_TIMESTAMP")
 	private Date lastUpdateDate;
 
@@ -36,6 +38,7 @@ public class TranxViewRecord implements Serializable {
 	@Column(name = "APPL_DOCNO")
 	private BigDecimal docNo;
 
+	@ESDocFormat(ESDocFormat.Type.DATE)
 	@Column(name = "APPL_DATE")
 	private Date creationDate;
 
@@ -111,9 +114,11 @@ public class TranxViewRecord implements Serializable {
 	@Column(name = "TRNX_ID")
 	private BigDecimal trnxId;
 
+	@ESDocFormat(ESDocFormat.Type.DATE)
 	@Column(name = "TRNX_DATETIME")
 	private Date trnxDate;
 
+	@ESDocFormat(ESDocFormat.Type.DATE)
 	@Column(name = "TRNX_PAID_DATETIME")
 	private Date trnxPaidDate;
 
@@ -157,9 +162,11 @@ public class TranxViewRecord implements Serializable {
 
 	// DeviceClient Info
 	@Column(name = "CLIENT_TYPE")
-	private String clientType;;
+	private String clientType;
+
 	@Column(name = "CLIENT_ID")
 	private String clientId;
+
 	@Column(name = "CLIENT_IP")
 	private String clientIp;
 

@@ -12,9 +12,10 @@ import com.amx.utils.ArgUtil;
 public class OracleVarsCache extends CacheBox<String> {
 
 	public static final Long START_TIME = 978287400000L;
-	private static final String STRING_DASH = "-";
-	private static final String CUSTOMER_RESET_COUNTER = "7";
-	private static final String TRANSACTION_RESET_COUNTER = "7";
+	private static final String ASC_SEPERATOR = "-";
+	private static final String DESC_SEPERATOR = "-desc-";
+	private static final String CUSTOMER_RESET_COUNTER = "11";
+	private static final String TRANSACTION_RESET_COUNTER = "11";
 	public static final String DOC_VERSION = "v3";
 
 	/**
@@ -25,28 +26,57 @@ public class OracleVarsCache extends CacheBox<String> {
 	}
 
 	public String getTranxIndex() {
-		return "oracle-" + DOC_VERSION + "-tranx-v3";
+		return "oracle-" + DOC_VERSION + "-tranx-v4";
 	}
 
 	public String getCustomerIndex() {
-		return "oracle-" + DOC_VERSION + "-customer-v3";
+		return "oracle-" + DOC_VERSION + "-customer-v4";
 	}
 
-	public Long getCustomerScannedStamp() {
-		return ArgUtil.parseAsLong(this.get(getCustomerIndex() + STRING_DASH + CUSTOMER_RESET_COUNTER), START_TIME);
+	public Long getCustomerScannedStamp(boolean reverse) {
+		if (reverse) {
+			return ArgUtil.parseAsLong(this.get(getCustomerIndex() + DESC_SEPERATOR + CUSTOMER_RESET_COUNTER),
+					START_TIME);
+		}
+		return ArgUtil.parseAsLong(this.get(getCustomerIndex() + ASC_SEPERATOR + CUSTOMER_RESET_COUNTER), START_TIME);
 	}
 
-	public void setCustomerScannedStamp(Long customerScannedStamp) {
-		this.put(getCustomerIndex() + STRING_DASH + CUSTOMER_RESET_COUNTER,
-				ArgUtil.parseAsString(customerScannedStamp));
+	public void setCustomerScannedStamp(Long customerScannedStamp, boolean reverse) {
+		if (reverse) {
+			this.put(getCustomerIndex() + DESC_SEPERATOR + CUSTOMER_RESET_COUNTER,
+					ArgUtil.parseAsString(customerScannedStamp));
+		} else {
+			this.put(getCustomerIndex() + ASC_SEPERATOR + CUSTOMER_RESET_COUNTER,
+					ArgUtil.parseAsString(customerScannedStamp));
+		}
 	}
 
+	public Long getTranxScannedStamp(boolean reverse) {
+		if (reverse) {
+			return ArgUtil.parseAsLong(this.get(getTranxIndex() + DESC_SEPERATOR + TRANSACTION_RESET_COUNTER),
+					System.currentTimeMillis());
+		}
+		return ArgUtil.parseAsLong(this.get(getTranxIndex() + ASC_SEPERATOR + TRANSACTION_RESET_COUNTER), START_TIME);
+	}
+
+	@Deprecated
 	public Long getTranxScannedStamp() {
-		return ArgUtil.parseAsLong(this.get(getTranxIndex() + STRING_DASH + TRANSACTION_RESET_COUNTER), START_TIME);
+		return this.getTranxScannedStamp(false);
 	}
 
+	public void setTranxScannedStamp(Long tranxScannedStamp, boolean reverse) {
+		if (reverse) {
+			this.put(getTranxIndex() + DESC_SEPERATOR + TRANSACTION_RESET_COUNTER,
+					ArgUtil.parseAsString(tranxScannedStamp));
+		} else {
+			this.put(getTranxIndex() + ASC_SEPERATOR + TRANSACTION_RESET_COUNTER,
+					ArgUtil.parseAsString(tranxScannedStamp));
+		}
+	}
+
+	@Deprecated
 	public void setTranxScannedStamp(Long tranxScannedStamp) {
-		this.put(getTranxIndex() + STRING_DASH + TRANSACTION_RESET_COUNTER, ArgUtil.parseAsString(tranxScannedStamp));
+		this.setTranxScannedStamp(tranxScannedStamp, false);
 	}
 
 }

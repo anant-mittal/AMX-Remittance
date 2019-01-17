@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.amx.jax.es.ESDocFormat;
 import com.amx.jax.grid.GridViewRecord;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -39,6 +40,7 @@ public class CustomerDetailViewRecord implements GridViewRecord {
 	@Column(name = "GENDER")
 	private String gender;
 
+	@ESDocFormat(ESDocFormat.Type.DATE)
 	@Column(name = "DATE_OF_BIRTH")
 	private Date dateOfBirth;
 
@@ -54,12 +56,15 @@ public class CustomerDetailViewRecord implements GridViewRecord {
 	@Column(name = "EMAIL")
 	private String email;
 
+	@ESDocFormat(ESDocFormat.Type.DATE)
 	@Column(name = "CREATION_DATE")
 	private Date creationDate;
 
+	@ESDocFormat(ESDocFormat.Type.DATE)
 	@Column(name = "LAST_UPDATED")
 	private Date updateDate;
 
+	@ESDocFormat(ESDocFormat.Type.DATE)
 	@Column(name = "LATEST_UPDATE_DATE")
 	private Date lastUpdateDate;
 
@@ -72,6 +77,7 @@ public class CustomerDetailViewRecord implements GridViewRecord {
 	@Column(name = "IS_ONLINE_USER")
 	private String isOnlineUser;
 
+	@ESDocFormat(ESDocFormat.Type.DATE)
 	@Column(name = "LAST_TRANSACTION_DATE")
 	private Date lastTransactionDate;
 

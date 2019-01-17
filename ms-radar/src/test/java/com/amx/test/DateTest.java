@@ -8,8 +8,11 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 
 import com.amx.jax.grid.GridConstants;
+import com.amx.jax.grid.views.CustomerDetailViewRecord;
 import com.amx.jax.logger.LoggerService;
+import com.amx.jax.radar.ESDocumentParser;
 import com.amx.jax.rates.AmxCurConstants;
+import com.amx.utils.JsonUtil;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
 public class DateTest { // Noncompliant
@@ -29,8 +32,8 @@ public class DateTest { // Noncompliant
 	 */
 	public static void main(String[] args) throws URISyntaxException, IOException {
 
-		Long lastUpdateDateNow = 978287400000L;
-		Long lastUpdateDateNowLimit = lastUpdateDateNow + (30 * AmxCurConstants.INTERVAL_DAYS);
+		Long lastUpdateDateNow = 1537312560000L;
+		Long lastUpdateDateNowLimit = lastUpdateDateNow - (10 * AmxCurConstants.INTERVAL_DAYS);
 
 		String dateString = GridConstants.GRID_TIME_FORMATTER_JAVA.format(new Date(lastUpdateDateNow));
 		String dateStringLimit = GridConstants.GRID_TIME_FORMATTER_JAVA
@@ -38,6 +41,14 @@ public class DateTest { // Noncompliant
 
 		LOGGER.info("Range:{} - {}", lastUpdateDateNow, lastUpdateDateNowLimit);
 		LOGGER.info("Range:{} - {}", dateString, dateStringLimit);
+
+		CustomerDetailViewRecord doc = new CustomerDetailViewRecord();
+		doc.setCreationDate(new Date());
+
+		System.out.println(JsonUtil.getMapper().writeValueAsString(doc));
+
+		System.out.println(ESDocumentParser.toJson(doc));
+
 	}
 
 }
