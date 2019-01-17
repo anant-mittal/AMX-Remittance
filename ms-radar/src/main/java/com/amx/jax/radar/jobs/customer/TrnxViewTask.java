@@ -169,7 +169,7 @@ public class TrnxViewTask extends ARadarTask {
 		String dateStringLimit = GridConstants.GRID_TIME_FORMATTER_JAVA
 				.format(new Date(lastUpdateDateNowLimit));
 
-		LOGGER.info("Pg:{},Time:{} {} - {}", lastPage, lastUpdateDateNow, dateString, dateStringLimit);
+		LOGGER.info("Pg:-{},Time:{} {} - {}", lastPage, lastUpdateDateNow, dateString, dateStringLimit);
 
 		GridQuery gridQuery = new GridQuery();
 		gridQuery.setPageNo(lastPage);

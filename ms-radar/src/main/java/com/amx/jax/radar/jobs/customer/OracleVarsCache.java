@@ -36,7 +36,7 @@ public class OracleVarsCache extends CacheBox<String> {
 	public Long getCustomerScannedStamp(boolean reverse) {
 		if (reverse) {
 			return ArgUtil.parseAsLong(this.get(getCustomerIndex() + DESC_SEPERATOR + CUSTOMER_RESET_COUNTER),
-					START_TIME);
+					System.currentTimeMillis());
 		}
 		return ArgUtil.parseAsLong(this.get(getCustomerIndex() + ASC_SEPERATOR + CUSTOMER_RESET_COUNTER), START_TIME);
 	}
@@ -59,11 +59,6 @@ public class OracleVarsCache extends CacheBox<String> {
 		return ArgUtil.parseAsLong(this.get(getTranxIndex() + ASC_SEPERATOR + TRANSACTION_RESET_COUNTER), START_TIME);
 	}
 
-	@Deprecated
-	public Long getTranxScannedStamp() {
-		return this.getTranxScannedStamp(false);
-	}
-
 	public void setTranxScannedStamp(Long tranxScannedStamp, boolean reverse) {
 		if (reverse) {
 			this.put(getTranxIndex() + DESC_SEPERATOR + TRANSACTION_RESET_COUNTER,
@@ -72,11 +67,6 @@ public class OracleVarsCache extends CacheBox<String> {
 			this.put(getTranxIndex() + ASC_SEPERATOR + TRANSACTION_RESET_COUNTER,
 					ArgUtil.parseAsString(tranxScannedStamp));
 		}
-	}
-
-	@Deprecated
-	public void setTranxScannedStamp(Long tranxScannedStamp) {
-		this.setTranxScannedStamp(tranxScannedStamp, false);
 	}
 
 }
