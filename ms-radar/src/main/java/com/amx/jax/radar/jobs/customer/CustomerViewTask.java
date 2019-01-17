@@ -136,7 +136,7 @@ public class CustomerViewTask extends ARadarTask {
 		if (x.getResults().size() > 0) {
 			esRepository.bulk(builder.build());
 			oracleVarsCache.setCustomerScannedStamp(lastUpdateDateNow, false);
-			if (lastUpdateDateNowStart == lastUpdateDateNow) {
+			if ((lastUpdateDateNowStart == lastUpdateDateNow) || (x.getResults().size() == 1000 && lastPage < 10)) {
 				doTask(lastPage + 1);
 			}
 		} else if (lastUpdateDateNowLimit < (System.currentTimeMillis() - AmxCurConstants.INTERVAL_DAYS)) {
@@ -221,7 +221,7 @@ public class CustomerViewTask extends ARadarTask {
 		if (x.getResults().size() > 0) {
 			esRepository.bulk(builder.build());
 			oracleVarsCache.setCustomerScannedStamp(lastUpdateDateNow, true);
-			if (lastUpdateDateNowStart == lastUpdateDateNow) {
+			if ((lastUpdateDateNowStart == lastUpdateDateNow) || (x.getResults().size() == 1000 && lastPage < 2)) {
 				doTaskRev(lastPage + 1);
 			}
 		} else {
