@@ -523,6 +523,8 @@ public class FcSaleAddressManager extends AbstractModel {
 					.append(shippingAddressDto.getBuildingNo() == null ? "" : concat + "House no. " + shippingAddressDto.getBuildingNo())
 					.append(shippingAddressDto.getFlat() == null ? "" : concat + "Flat "+  shippingAddressDto.getHouse());
 					
+			
+			
 			if (shippingAddressDto.getLocalContactCity() != null) {
 				sb.append(concat).append("City ").append(shippingAddressDto.getLocalContactCity() == null ? "": shippingAddressDto.getLocalContactCity());
 			}
@@ -538,7 +540,7 @@ public class FcSaleAddressManager extends AbstractModel {
 			
 			if(shippingAddressDto.getLocalContactState()!=null && !shippingAddressDto.getLocalContactState().equals("")) {
 				sb.append(concat).append(shippingAddressDto.getLocalContactState());
-
+			}
 		}
 		if(sb!=null){
 			address = sb.toString();
@@ -546,6 +548,8 @@ public class FcSaleAddressManager extends AbstractModel {
 		
 	}
 		return address;
-}
+	}
+	
+	
 	
 }
