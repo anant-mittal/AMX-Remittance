@@ -33,13 +33,22 @@ public class OracleVarsCache extends CacheBox<String> {
 		return "oracle-" + DOC_VERSION + "-customer-v4";
 	}
 
-	public Long getCustomerScannedStamp() {
+	public Long getCustomerScannedStamp(boolean reverse) {
+		if (reverse) {
+			return ArgUtil.parseAsLong(this.get(getCustomerIndex() + DESC_SEPERATOR + CUSTOMER_RESET_COUNTER),
+					START_TIME);
+		}
 		return ArgUtil.parseAsLong(this.get(getCustomerIndex() + ASC_SEPERATOR + CUSTOMER_RESET_COUNTER), START_TIME);
 	}
 
-	public void setCustomerScannedStamp(Long customerScannedStamp) {
-		this.put(getCustomerIndex() + ASC_SEPERATOR + CUSTOMER_RESET_COUNTER,
-				ArgUtil.parseAsString(customerScannedStamp));
+	public void setCustomerScannedStamp(Long customerScannedStamp, boolean reverse) {
+		if (reverse) {
+			this.put(getCustomerIndex() + DESC_SEPERATOR + CUSTOMER_RESET_COUNTER,
+					ArgUtil.parseAsString(customerScannedStamp));
+		} else {
+			this.put(getCustomerIndex() + ASC_SEPERATOR + CUSTOMER_RESET_COUNTER,
+					ArgUtil.parseAsString(customerScannedStamp));
+		}
 	}
 
 	public Long getTranxScannedStamp(boolean reverse) {
@@ -50,6 +59,7 @@ public class OracleVarsCache extends CacheBox<String> {
 		return ArgUtil.parseAsLong(this.get(getTranxIndex() + ASC_SEPERATOR + TRANSACTION_RESET_COUNTER), START_TIME);
 	}
 
+	@Deprecated
 	public Long getTranxScannedStamp() {
 		return this.getTranxScannedStamp(false);
 	}
@@ -64,6 +74,7 @@ public class OracleVarsCache extends CacheBox<String> {
 		}
 	}
 
+	@Deprecated
 	public void setTranxScannedStamp(Long tranxScannedStamp) {
 		this.setTranxScannedStamp(tranxScannedStamp, false);
 	}
