@@ -158,10 +158,11 @@ public class JaxNotificationService {
 		sendEmail(email);
 	} // end of sendProfileChangeNotificationEmail
 	
-	public void sendProfileChangeNotificationMobile(CustomerModel customerModel, PersonInfo personinfo, String mobile) {
-		if (customerModel.getMobile() != null && mobile != null) {
+	public void sendProfileChangeNotificationMobile(CustomerModel customerModel, PersonInfo personinfo, String oldMobile) {
+		if (customerModel.getMobile() != null) {
 			SMS sms = new SMS();
-			sms.addTo(mobile);
+			// to new and old
+			sms.addTo(oldMobile, customerModel.getMobile());
 			sms.getModel().put(RESP_DATA_KEY, personinfo);
 			sms.setITemplate(TemplatesMX.PROFILE_CHANGE_SMS);
 
