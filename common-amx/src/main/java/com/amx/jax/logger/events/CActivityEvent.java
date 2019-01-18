@@ -1,37 +1,52 @@
 package com.amx.jax.logger.events;
 
+import java.math.BigDecimal;
+
 import com.amx.jax.logger.AuditEvent;
+import com.amx.utils.ArgUtil;
+import com.amx.utils.Constants;
 
 public class CActivityEvent extends AuditEvent {
 
 	private static final long serialVersionUID = -3189696554945071766L;
 
 	public static enum Type implements EventType {
-		PASSOWRD_UPDATE, EMAIL_UPDATE, PHONE_UPDATE, SECQUES_UPDATE, PHISHIN_UPDATE,
 
+		BENE_ADD, BENE_UPDATE, FC_UPDATE,
+
+		APPLICATION_CREATED,
+
+		DELETE, ENABLED, DISABLED,
 		GEO_LOCATION;
-
 		@Override
 		public EventMarker marker() {
-			return null;
+			return EventMarker.AUDIT;
 		}
 	}
 
-	CActivityEvent(Type type, String fromValue, String toValue) {
+	public CActivityEvent(Type type, Object target) {
 		super(type);
-		this.fromValue = fromValue;
-		this.toValue = toValue;
+		this.target = ArgUtil.parseAsString(target);
 	}
 
-	CActivityEvent(Type type, String fromValue, String toValue, Result result) {
-		this(type, fromValue, toValue);
-		this.result = result;
+	public CActivityEvent(Type type, BigDecimal targetId, Object target) {
+		super(type);
+		this.targetId = targetId;
+		this.target = ArgUtil.parseAsString(target);
+	}
+
+	public CActivityEvent(Type type, BigDecimal targetId) {
+		super(type);
+		this.targetId = targetId;
 	}
 
 	public CActivityEvent(Type type) {
 		super(type);
 	}
 
+	private String target = null;
+	private BigDecimal targetId = null;
+	private String field = null;
 	private String fromValue = null;
 	private String toValue = null;
 	private String actor = null;
@@ -72,6 +87,50 @@ public class CActivityEvent extends AuditEvent {
 
 	public void setCustomer(String customer) {
 		this.customer = customer;
+	}
+
+	public String getField() {
+		return field;
+	}
+
+	public void setField(String field) {
+		this.field = field;
+	}
+
+	public CActivityEvent field(Object field) {
+		this.setField(ArgUtil.parseAsString(field, Constants.BLANK).toUpperCase());
+		return this;
+	}
+
+	public CActivityEvent toggle(Object field) {
+		this.setField(ArgUtil.parseAsString(field, Constants.BLANK).toUpperCase());
+		return this;
+	}
+
+	public CActivityEvent from(Object fromValue) {
+		this.setFromValue(ArgUtil.parseAsString(fromValue));
+		return this;
+	}
+
+	public CActivityEvent to(Object toValue) {
+		this.setFromValue(ArgUtil.parseAsString(toValue));
+		return this;
+	}
+
+	public String getTarget() {
+		return target;
+	}
+
+	public void setTarget(String target) {
+		this.target = target;
+	}
+
+	public BigDecimal getTargetId() {
+		return targetId;
+	}
+
+	public void setTargetId(BigDecimal targetId) {
+		this.targetId = targetId;
 	}
 
 }

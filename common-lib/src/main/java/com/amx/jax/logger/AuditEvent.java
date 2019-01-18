@@ -2,6 +2,7 @@ package com.amx.jax.logger;
 
 import com.amx.jax.dict.UserClient.UserDeviceClient;
 import com.amx.jax.exception.IExceptionEnum;
+import com.amx.utils.ArgUtil;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -146,6 +147,16 @@ public abstract class AuditEvent extends AbstractEvent {
 
 	public void setClient(UserDeviceClient client) {
 		this.client = client;
+	}
+
+	public AuditEvent result(Result result) {
+		this.setResult(result);
+		return this;
+	}
+
+	public AuditEvent message(Object message) {
+		this.setMessage(ArgUtil.parseAsString(message));
+		return this;
 	}
 
 }

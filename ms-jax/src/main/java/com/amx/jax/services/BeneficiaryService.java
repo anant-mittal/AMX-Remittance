@@ -44,8 +44,6 @@ import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.amxlib.model.RoutingBankMasterParam;
-import com.amx.jax.auditlog.BeneficiaryAuditEvent;
-import com.amx.jax.auditlog.JaxAuditEvent.Type;
 import com.amx.jax.config.JaxProperties;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxDbConfig;
@@ -67,8 +65,9 @@ import com.amx.jax.dbmodel.bene.BeneficaryContact;
 import com.amx.jax.dbmodel.bene.BeneficaryRelationship;
 import com.amx.jax.dbmodel.bene.RelationsDescription;
 import com.amx.jax.error.JaxError;
-import com.amx.jax.logger.AuditEvent;
+import com.amx.jax.logger.AuditEvent.Result;
 import com.amx.jax.logger.AuditService;
+import com.amx.jax.logger.events.CActivityEvent;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.auth.QuestModelDTO;
 import com.amx.jax.model.response.CurrencyMasterDTO;
@@ -273,6 +272,12 @@ public class BeneficiaryService extends AbstractService {
 
 	public ApiResponse disableBeneficiary(BeneficiaryListDTO beneDetails) {
 		ApiResponse response = getBlackApiResponse();
+
+		// Audit
+		CActivityEvent auditEvent = new CActivityEvent(CActivityEvent.Type.BENE_UPDATE,
+				beneDetails.getBeneficiaryRelationShipSeqId(),
+				beneDetails.getFirstName()).field("ACTIVE");
+
 		try {
 			List<BeneficaryRelationship> beneRelationList = null;
 
@@ -282,26 +287,40 @@ public class BeneficiaryService extends AbstractService {
 			if (!beneRelationList.isEmpty()) {
 				BeneficaryRelationship beneRelationModel = beneRelationShipDao
 						.findOne((beneRelationList.get(0).getBeneficaryRelationshipId()));
+
+				auditEvent.from(beneRelationModel.getIsActive()); // Audit
+
 				beneRelationModel.setIsActive("D");
+
+				auditEvent.to(beneRelationModel.getIsActive()); // Audit
+
 				beneRelationModel.setModifiedBy(beneDetails.getCustomerId().toString());
 				beneRelationModel.setModifiedDate(new Date());
 				beneRelationModel.setRemarks(beneDetails.getRemarks());
 				beneRelationShipDao.save(beneRelationModel);
 				response.setResponseStatus(ResponseStatus.OK);
-				auditService.log(createBeneficiaryEvent(beneRelationModel, Type.BENE_STATUS_UPDATE_SUCCESS));
+
+				auditService.log(auditEvent.result(Result.DONE)); // Audit
 			} else {
-				auditService.log(createBeneficiaryEvent(beneDetails, Type.BENE_STATUS_UPDATE_NO_BENE_RECORD));
+				auditService.log(auditEvent.result(Result.REJECTED).message(JaxError.NO_RECORD_FOUND)); // Audit
+
 				throw new GlobalException(JaxError.NO_RECORD_FOUND, "No record found");
 			}
 			return response;
 		} catch (Exception e) {
-			auditService.log(createBeneficiaryEvent(beneDetails, Type.BENE_STATUS_UPDATE_EXEC));
+			auditService.log(auditEvent.result(Result.ERROR).message(e.getMessage())); // Audit
+
 			throw new GlobalException("Error while update");
 		}
 	}
 
 	public ApiResponse updateFavoriteBeneficiary(BeneficiaryListDTO beneDetails) {
 		ApiResponse response = getBlackApiResponse();
+
+		CActivityEvent auditEvent = new CActivityEvent(CActivityEvent.Type.BENE_UPDATE,
+				beneDetails.getBeneficiaryRelationShipSeqId(),
+				beneDetails.getFirstName()).field("FAV");
+
 		try {
 			List<BeneficaryRelationship> beneRelationList = null;
 
@@ -313,23 +332,33 @@ public class BeneficiaryService extends AbstractService {
 						.findOne((beneRelationList.get(0).getBeneficaryRelationshipId()));
 				beneRelationModel.setModifiedBy(beneDetails.getCustomerId().toString());
 				beneRelationModel.setModifiedDate(new Date());
+
+				auditEvent.from(beneRelationModel.getMyFavouriteBene()); // Audit
+
 				if (StringUtils.isBlank(beneRelationModel.getMyFavouriteBene())
 						|| beneRelationModel.getMyFavouriteBene().equalsIgnoreCase("N")) {
 					beneRelationModel.setMyFavouriteBene("Y");
 				} else {
 					beneRelationModel.setMyFavouriteBene("N");
 				}
+
+				auditEvent.to(beneRelationModel.getMyFavouriteBene()); // Audit
+
 				beneRelationShipDao.save(beneRelationModel);
 				response.setResponseStatus(ResponseStatus.OK);
-				auditService.log(createBeneficiaryEvent(beneRelationModel, Type.BENE_FAV_UPDATE_SUCCESS));
+
+				auditService.log(auditEvent.result(Result.DONE));// Audit
 			} else {
-				auditService.log(createBeneficiaryEvent(beneDetails, Type.BENE_FAV_UPDATE_NO_BENE_RECORD));
+				auditService.log(auditEvent.result(Result.REJECTED).message(JaxError.NO_RECORD_FOUND));// Audit
+
 				throw new GlobalException(JaxError.NO_RECORD_FOUND, "No record found");
 			}
 
 			return response;
 		} catch (Exception e) {
-			auditService.log(createBeneficiaryEvent(beneDetails, Type.BENE_FAV_UPDATE_EXEC));
+
+			auditService.log(auditEvent.result(Result.ERROR).message(e.getMessage()));// Audit
+
 			throw new GlobalException("Error while update");
 		}
 
@@ -655,6 +684,11 @@ public class BeneficiaryService extends AbstractService {
 			userService.validateOtp(null, mOtp, eOtp);
 		}
 
+		// Audit
+		CActivityEvent auditEvent = new CActivityEvent(CActivityEvent.Type.BENE_UPDATE,
+				beneDetails.getBeneficiaryRelationShipSeqId(),
+				beneDetails.getFirstName()).field("ACTIVE");
+
 		ApiResponse response = getBlackApiResponse();
 		try {
 			List<BeneficaryRelationship> beneRelationList = null;
@@ -671,28 +705,41 @@ public class BeneficiaryService extends AbstractService {
 				BeneficaryRelationship beneRelationModel = beneRelationShipDao
 						.findOne((beneRelationList.get(0).getBeneficaryRelationshipId()));
 
+				// Audit
+				auditEvent.from(beneRelationModel.getIsActive());
+
 				if (status != null && status.equals(BeneStatus.DISABLE)) {
 					beneRelationModel.setIsActive("D");
 				} else {
 					beneRelationModel.setIsActive("Y");
 				}
+				// Audit
+				auditEvent.to(beneRelationModel.getIsActive());
 
 				beneRelationModel.setModifiedBy(beneDetails.getCustomerId().toString());
 				beneRelationModel.setModifiedDate(new Date());
 				beneRelationModel.setRemarks(beneDetails.getRemarks());
 				beneRelationShipDao.save(beneRelationModel);
 				response.setResponseStatus(ResponseStatus.OK);
-				auditService.log(createBeneficiaryEvent(beneRelationModel, Type.BENE_STATUS_UPDATE_SUCCESS));
+
 				response.getData().getValues().add(new BooleanResponse(Boolean.TRUE));
 				response.getData().setType("boolean_response");
+
+				// Audit
+				auditService.log(auditEvent.result(Result.DONE));
 			} else {
-				auditService.log(createBeneficiaryEvent(beneDetails, Type.BENE_STATUS_UPDATE_NO_BENE_RECORD));
+				// Audit
+				auditService.log(auditEvent.result(Result.REJECTED));
+
 				throw new GlobalException(JaxError.NO_RECORD_FOUND, "No record found");
 			}
 			return response;
 		} catch (GlobalException ge) {
+			auditService.log(auditEvent.result(Result.ERROR)); // Audit
+
 			throw ge;
 		} catch (Exception e) {
+			auditService.log(auditEvent.result(Result.ERROR)); // Audit
 			throw new GlobalException("Error while update");
 		}
 	}
@@ -986,21 +1033,6 @@ public class BeneficiaryService extends AbstractService {
 	public List<BenificiaryListView> listBeneficiaryForPOloadTest(int num, BigDecimal currencyId) {
 		return beneficiaryOnlineDao.findByIsActiveAndCurrencyIdAndBankIdNotIn("Y", currencyId,
 				routingDao.listAllRoutingBankIds(), new PageRequest(0, num));
-	}
-
-	private AuditEvent createBeneficiaryEvent(BeneficaryRelationship beneficaryRelationship, Type type) {
-		AuditEvent beneAuditEvent = new BeneficiaryAuditEvent(type, beneficaryRelationship);
-		return beneAuditEvent;
-	}
-
-	private AuditEvent createBeneficiaryEvent(BeneficiaryListDTO beneficiaryListDTO, Type type) {
-		AuditEvent beneAuditEvent = new BeneficiaryAuditEvent(type, beneficiaryListDTO);
-		return beneAuditEvent;
-	}
-
-	private AuditEvent createBeneficiaryEvent(BigDecimal customerId, Type type) {
-		AuditEvent beneAuditEvent = new BeneficiaryAuditEvent(type, customerId);
-		return beneAuditEvent;
 	}
 
 	/**
