@@ -134,7 +134,7 @@ public class JaxNotificationService {
 			emailToOld.setSubject(SUBJECT_EMAIL_CHANGE);
 			emailToOld.getModel().put("change_type", ChangeType.EMAIL_CHANGE);
 			emailToOld.addTo(customerModel.getEmail());
-			emailToOld.setITemplate(TemplatesMX.PROFILE_CHANGE);
+			emailToOld.setITemplate(TemplatesMX.EMAIL_CHANGE_OLD_EMAIL);
 			emailToOld.setHtml(true);
 
 			PersonInfo oldPinfo = null;
