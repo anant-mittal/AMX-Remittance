@@ -48,6 +48,8 @@ public class JaxNotificationService {
 	Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	private final String SUBJECT_ACCOUNT_UPDATE = "Account Update";
+	private final String SUBJECT_EMAIL_CHANGE = "Al Mulla Exchange Account - Email ID Change";
+	private final String SUBJECT_PHONE_CHANGE = "Al Mulla Exchange Account - Phone Number Change";
 
 	public void sendTransactionNotification(RemittanceReceiptSubreport remittanceReceiptSubreport, PersonInfo pinfo) {
 
@@ -121,15 +123,15 @@ public class JaxNotificationService {
 			email.getModel().put("change_type", ChangeType.IMAGE_CHANGE);
 
 		} else if (customerModel.getMobile() != null) {
-			email.setSubject(SUBJECT_ACCOUNT_UPDATE);
+			email.setSubject(SUBJECT_PHONE_CHANGE);
 			email.getModel().put("change_type", ChangeType.MOBILE_CHANGE);
 
 		} else if (customerModel.getEmail() != null) {
-			email.setSubject(SUBJECT_ACCOUNT_UPDATE);
+			email.setSubject(SUBJECT_EMAIL_CHANGE);
 			email.getModel().put("change_type", ChangeType.EMAIL_CHANGE);
 
 			emailToOld = new Email();
-			emailToOld.setSubject(SUBJECT_ACCOUNT_UPDATE);
+			emailToOld.setSubject(SUBJECT_EMAIL_CHANGE);
 			emailToOld.getModel().put("change_type", ChangeType.EMAIL_CHANGE);
 			emailToOld.addTo(customerModel.getEmail());
 			emailToOld.setITemplate(TemplatesMX.PROFILE_CHANGE);
@@ -156,10 +158,10 @@ public class JaxNotificationService {
 		sendEmail(email);
 	} // end of sendProfileChangeNotificationEmail
 	
-	public void sendProfileChangeNotificationMobile(CustomerModel model, PersonInfo personinfo, String oldMobile) {
-		if (model.getMobile() != null && oldMobile != null) {
+	public void sendProfileChangeNotificationMobile(CustomerModel customerModel, PersonInfo personinfo, String mobile) {
+		if (customerModel.getMobile() != null && mobile != null) {
 			SMS sms = new SMS();
-			sms.addTo(oldMobile);
+			sms.addTo(mobile);
 			sms.getModel().put(RESP_DATA_KEY, personinfo);
 			sms.setITemplate(TemplatesMX.PROFILE_CHANGE_SMS);
 
