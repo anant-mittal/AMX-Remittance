@@ -4,17 +4,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.logger.client.AuditFilter;
+import com.amx.jax.logger.events.CActivityEvent;
 import com.amx.jax.meta.MetaData;
+import com.amx.utils.ArgUtil;
 
 @Component
-public class JaxAuditFilter implements AuditFilter<JaxTransactionEvent> {
+public class JaxAuditFilter implements AuditFilter<CActivityEvent> {
 
 	@Autowired
 	MetaData metaData;
 
 	@Override
-	public void doFilter(JaxTransactionEvent event) {
-		event.setCustomerId(metaData.getCustomerId());
+	public void doFilter(CActivityEvent event) {
+		if (!ArgUtil.isEmpty(metaData.getCustomerId())) {
+			event.setCustomer(metaData.getCustomerId());
+		}
 	}
-	
+
 }

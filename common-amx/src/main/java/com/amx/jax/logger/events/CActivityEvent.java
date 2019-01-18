@@ -50,7 +50,7 @@ public class CActivityEvent extends AuditEvent {
 	private String fromValue = null;
 	private String toValue = null;
 	private String actor = null;
-	private String customer = null;
+	private BigDecimal customer = null;
 
 	@Override
 	public String getDescription() {
@@ -81,11 +81,11 @@ public class CActivityEvent extends AuditEvent {
 		this.actor = actor;
 	}
 
-	public String getCustomer() {
+	public BigDecimal getCustomer() {
 		return customer;
 	}
 
-	public void setCustomer(String customer) {
+	public void setCustomer(BigDecimal customer) {
 		this.customer = customer;
 	}
 
@@ -114,6 +114,11 @@ public class CActivityEvent extends AuditEvent {
 
 	public CActivityEvent to(Object toValue) {
 		this.setFromValue(ArgUtil.parseAsString(toValue));
+		return this;
+	}
+
+	public CActivityEvent customer(BigDecimal customer) {
+		this.setCustomer(customer);
 		return this;
 	}
 
