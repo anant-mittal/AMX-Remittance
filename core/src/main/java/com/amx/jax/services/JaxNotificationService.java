@@ -155,6 +155,21 @@ public class JaxNotificationService {
 		logger.info("Email to - " + pinfo.getEmail() + " first name : " + pinfo.getFirstName());
 		sendEmail(email);
 	} // end of sendProfileChangeNotificationEmail
+	
+	public void sendProfileChangeNotificationMobile(CustomerModel model, PersonInfo personinfo, String oldMobile) {
+		if (model.getMobile() != null && oldMobile != null) {
+			SMS sms = new SMS();
+			sms.addTo(oldMobile);
+			sms.getModel().put(RESP_DATA_KEY, personinfo);
+			sms.setITemplate(TemplatesMX.PROFILE_CHANGE_SMS);
+
+			try {
+				postManService.sendSMSAsync(sms);
+			} catch (PostManException e) {
+				logger.error("error in sendProfileChangeNotificationMobile", e);
+			}
+		}
+	}
 
 	public void sendOtpSms(PersonInfo pinfo, CivilIdOtpModel model) {
 		sendOtpSms(pinfo, model, TemplatesMX.RESET_OTP_SMS);
@@ -290,4 +305,5 @@ public class JaxNotificationService {
 			logger.error("error in sendOtpSms", e);
 		}
 	} // end of sendOtpSms
+
 }

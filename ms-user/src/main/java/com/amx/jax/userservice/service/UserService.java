@@ -221,6 +221,7 @@ public class UserService extends AbstractUserService {
 		}
 		Customer cust = custDao.getCustById(customerId);
 		String oldEmail = cust.getEmail();
+		String oldMobile = cust.getMobile();
 
 		CustomerOnlineRegistration onlineCust = custDao.getOnlineCustomerByCustomerId(customerId);
 		if (onlineCust == null) {
@@ -258,6 +259,7 @@ public class UserService extends AbstractUserService {
 					onlineCust.getEmail());
 		} else {
 			jaxNotificationService.sendProfileChangeNotificationEmail(model, outputModel.getPersoninfo());
+			jaxNotificationService.sendProfileChangeNotificationMobile(model, outputModel.getPersoninfo(), oldMobile);
 		}
 
 		return response;
