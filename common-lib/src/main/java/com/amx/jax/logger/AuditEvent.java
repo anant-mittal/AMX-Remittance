@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonPropertyOrder({ "description", "component", "category", "type", "timestamp", "message" })
+@JsonPropertyOrder({ "description", "message", "component", "category", "type", "result", "timestamp" })
 public abstract class AuditEvent extends AbstractEvent {
 
 	private static final long serialVersionUID = -1539116953165424464L;
