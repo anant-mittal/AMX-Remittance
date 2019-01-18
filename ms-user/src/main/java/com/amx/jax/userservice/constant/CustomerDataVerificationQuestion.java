@@ -27,6 +27,21 @@ public enum CustomerDataVerificationQuestion {
 			QuestModelDTO dto = new QuestModelDTO(Q3.getId(), Q3.getId(), Q3.getQuestion());
 			return dto;
 		}
+	},
+	Q4(4, "The last 4 digits of your primary mobile number") {
+		@Override
+		public QuestModelDTO getQuestModelDTO() {
+			QuestModelDTO dto = new QuestModelDTO(Q4.getId(), Q4.getId(), Q4.getQuestion());
+			return dto;
+
+		}
+	},
+	Q5(5, "Identity Id Expiry Date") {
+		@Override
+		public QuestModelDTO getQuestModelDTO() {
+			QuestModelDTO dto = new QuestModelDTO(Q5.getId(), Q5.getId(), Q5.getQuestion());
+			return dto;
+		}
 	};
 
 	BigDecimal id;
@@ -53,5 +68,16 @@ public enum CustomerDataVerificationQuestion {
 
 	public void setQuestion(String question) {
 		this.question = question;
+	}
+	
+	public static CustomerDataVerificationQuestion getCustomerDataVerificationQuestionById(BigDecimal questId) {
+		CustomerDataVerificationQuestion[] allValues = CustomerDataVerificationQuestion.values();
+		CustomerDataVerificationQuestion question = null;
+		for (CustomerDataVerificationQuestion q : allValues) {
+			if (q.getId().equals(questId)) {
+				question = q;
+			}
+		}
+		return question;
 	}
 }

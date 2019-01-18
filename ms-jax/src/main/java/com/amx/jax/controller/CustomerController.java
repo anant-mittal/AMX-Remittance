@@ -24,6 +24,7 @@ import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.model.auth.QuestModelDTO;
 import com.amx.jax.services.CustomerDataVerificationService;
 import com.amx.jax.userservice.service.UserService;
+import com.amx.jax.userservice.service.UserValidationService;
 import com.amx.jax.util.ConverterUtil;
 
 @RestController
@@ -39,6 +40,9 @@ public class CustomerController {
 
 	@Autowired
 	private CustomerDataVerificationService customerDataVerificationService;
+	
+	@Autowired
+	private UserValidationService userValidationService;
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -194,6 +198,18 @@ public class CustomerController {
 	public ApiResponse saveDataVerificationQuestions(@RequestBody CustomerModel model) {
 		logger.info("in saveDataVerificationQuestions ");
 		ApiResponse response = customerDataVerificationService.saveVerificationData(model);
+		return response;
+	}
+	
+	//-- Email and Mobile update New API 
+	@RequestMapping(value = "/saveEmailOrMobile", method = RequestMethod.POST)
+	public ApiResponse saveMobile(@RequestBody CustomerModel customerModel) {
+		logger.info("New API for Save updated Email or Mobile Request : " + customerModel.toString());
+		List<CommunicationChannel> channel = new ArrayList<>();
+		channel.add(CommunicationChannel.MOBILE);
+		channel.add(CommunicationChannel.EMAIL);
+		userValidationService.validateEmailMobileUpdateFlow(customerModel, channel);
+		ApiResponse response = userService.saveCustomer(customerModel);
 		return response;
 	}
 }

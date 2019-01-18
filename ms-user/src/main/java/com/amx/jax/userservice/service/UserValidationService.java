@@ -3,6 +3,7 @@ package com.amx.jax.userservice.service;
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -11,6 +12,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.time.DateUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -19,12 +21,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.constant.CommunicationChannel;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.exception.jax.InvalidCivilIdException;
 import com.amx.amxlib.exception.jax.InvalidOtpException;
 import com.amx.amxlib.exception.jax.UserNotFoundException;
+import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
+import com.amx.amxlib.model.JaxConditionalFieldDto;
 import com.amx.amxlib.model.SecurityQuestionModel;
+import com.amx.jax.JaxAuthCache;
+import com.amx.jax.JaxAuthContext;
+import com.amx.jax.JaxAuthCache.JaxAuthMeta;
 import com.amx.jax.amxlib.config.OtpSettings;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.CustomerVerificationType;
@@ -42,11 +50,15 @@ import com.amx.jax.dbmodel.DmsDocumentModel;
 import com.amx.jax.dbmodel.ViewOnlineCustomerCheck;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.auth.CustomerRequestAuthMeta;
+import com.amx.jax.model.auth.QuestModelDTO;
 import com.amx.jax.scope.TenantContext;
+import com.amx.jax.userservice.constant.CustomerDataVerificationQuestion;
 import com.amx.jax.userservice.dao.CusmosDao;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.dao.CustomerIdProofDao;
 import com.amx.jax.userservice.dao.DmsDocumentDao;
+import com.amx.jax.userservice.manager.SecurityQuestionsManager;
 import com.amx.jax.userservice.service.CustomerValidationContext.CustomerValidation;
 import com.amx.jax.userservice.validation.ValidationClient;
 import com.amx.jax.userservice.validation.ValidationClients;
@@ -107,6 +119,19 @@ public class UserValidationService {
 	
 	@Autowired
 	private UserValidationService userValidationService;
+	
+	@Autowired
+	UserService userService;
+	
+	@Autowired 
+	SecurityQuestionsManager securityQuestionsManager;
+	
+	@Autowired
+	JaxAuthCache jaxAuthCache;
+	
+	@Autowired
+	MetaData metaData;
+	
 
 	private DateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
@@ -472,7 +497,7 @@ public class UserValidationService {
 		}
 		this.unlockCustomer(onlineCustomer);
 	}
-
+	
 	private boolean isMOtpFlowRequired(CustomerModel model) {
 
 		boolean required = false;
@@ -506,6 +531,26 @@ public class UserValidationService {
 		if (cv != null && ConstantDocument.No.equals(cv.getVerificationStatus())) {
 			required = false;
 		}
+		return required;
+	}
+	
+	private boolean isSecurityQuestionRequired(CustomerModel model) {
+
+		boolean required = false;
+		if (model.getSecurityquestions() != null) {
+			required = true;
+		}
+				
+		return required;
+	}
+	
+	private boolean isVerificationAnswerRequired(CustomerModel model) {
+
+		boolean required = false;
+		if (model.getVerificationAnswers() != null) {
+			required = true;
+		}
+				
 		return required;
 	}
 
@@ -684,6 +729,92 @@ public class UserValidationService {
 				throw new GlobalException(JaxError.ONLINE_REG_NOT_ALLOWED_ARTICLE_20,
 						"Your online account is not activated. Please visit the branch for assistance.");
 			}
+		}
+	}
+	
+	public void validateEmailMobileUpdateFlow(CustomerModel customerModel, List<CommunicationChannel> channels) {
+		GlobalException ex =  null;
+		JaxAuthMeta jaxAuthMeta = jaxAuthCache.getOrDefault(metaData.getCustomerId().toString(), new JaxAuthMeta());
+		
+		if(null == JaxAuthContext.getMotp() && null == JaxAuthContext.getEotp() && null == JaxAuthContext.getSecAns()) {
+			ex=  new GlobalException(JaxError.OTP_AND_SEC_ANSWER_REQUIRED.getStatusKey(), "motp, eOtp and Security Answer required");
+			CivilIdOtpModel civilIdOtpModel = (CivilIdOtpModel) userService.sendOtpForCivilId(customerModel.getIdentityId(),channels,null,null).getResult();
+			QuestModelDTO secQuestion = securityQuestionsManager.getDataVerificationRandomQuestions(1).get(0);
+			ex.setMeta(new CustomerRequestAuthMeta(civilIdOtpModel.getmOtpPrefix(), civilIdOtpModel.geteOtpPrefix(),secQuestion));
+			jaxAuthMeta.setQuestId(secQuestion.getQuestId());
+			jaxAuthCache.fastPut(metaData.getCustomerId().toString(), jaxAuthMeta);
+		}
+		
+		if(null == JaxAuthContext.getMotp() && null == JaxAuthContext.getEotp() && JaxAuthContext.getSecAns() != null) {
+			ex =  new GlobalException(JaxError.BOTH_OTP_REQUIRED.getStatusKey(), "motp and eOtp required");
+			CivilIdOtpModel civilIdOtpModel = (CivilIdOtpModel) userService.sendOtpForCivilId(customerModel.getIdentityId(),channels,null,null).getResult();
+			ex.setMeta(new CustomerRequestAuthMeta(civilIdOtpModel.getmOtpPrefix(), civilIdOtpModel.geteOtpPrefix()));
+			
+			jaxAuthCache.fastPut(metaData.getCustomerId().toString(), jaxAuthMeta);
+		}
+		
+		if(isSecurityAnsRequired(jaxAuthMeta)) {
+			ex = new GlobalException(JaxError.SEC_ANS_REQUIRED.getStatusKey(), "Security Answer required");
+			QuestModelDTO secQuestion = securityQuestionsManager.getDataVerificationRandomQuestions(1).get(0);
+			ex.setMeta(new CustomerRequestAuthMeta(secQuestion));
+			jaxAuthMeta.setQuestId(secQuestion.getQuestId());
+			jaxAuthCache.fastPut(metaData.getCustomerId().toString(), jaxAuthMeta);
+		}
+		
+		if(ex != null) {
+			throw ex;
+		}
+		customerModel.setMotp(JaxAuthContext.getMotp());
+		customerModel.setEotp(JaxAuthContext.getEotp());
+		validateSecurityAnswer();
+		
+	}
+	
+	private boolean isSecurityAnsRequired(JaxAuthMeta jaxAuthMeta) {
+		if (JaxAuthContext.getMotp() != null && JaxAuthContext.getEotp() != null
+				&& null == JaxAuthContext.getSecAns()) {
+			return true;
+		}
+		if (jaxAuthMeta != null && jaxAuthMeta.getQuestId() == null) {
+			return true;
+		}
+		return false;
+	}
+
+	private void validateSecurityAnswer() {
+		JaxAuthMeta jaxAuthMeta = jaxAuthCache.getOrDefault(metaData.getCustomerId().toString(), new JaxAuthMeta());
+		
+		// get question from cache
+		CustomerDataVerificationQuestion question = CustomerDataVerificationQuestion
+				.getCustomerDataVerificationQuestionById(jaxAuthMeta.getQuestId());
+
+		// get answer from JaxAuthContext.getSecAns()
+		String answer = JaxAuthContext.getSecAns();
+
+		Customer customerInfo = custDao.getCustById(metaData.getCustomerId());
+
+		switch (question) {
+		case Q4: {
+			String mobileNumber = customerInfo.getMobile();
+			String correctAnswer = mobileNumber.substring(mobileNumber.length() - 4);
+			if (!correctAnswer.equalsIgnoreCase(answer)) {
+				throw new GlobalException(JaxError.INVALIDATE_ANSWER, "Given Answer is Invalid");
+			}
+			break;
+		}
+		
+		case Q5: {
+			Date identityExpiry = customerInfo.getIdentityExpiredDate();
+			Date givenDate = com.amx.jax.util.DateUtil.convertStringToDate(answer);
+			if (!DateUtils.isSameDay(identityExpiry, givenDate)) {
+				throw new GlobalException(JaxError.INVALIDATE_ANSWER, "Given Answer is Invalid");
+			}
+			break;
+		}
+		
+		default:
+			break;
+
 		}
 	}
 
