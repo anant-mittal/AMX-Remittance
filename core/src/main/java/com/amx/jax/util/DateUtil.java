@@ -211,7 +211,7 @@ public class DateUtil {
     
     	for(int n=0;n<=noofDay;n++){
     		if(n==0){
-    			if (hour>startTime){
+    			if (hour>=startTime){
     		    	startTime =hour+timeIntVal; 
     		    }
     		}else{

@@ -58,15 +58,17 @@ public class DeviceService extends AbstractService {
 	public void activateDevice(Device device) {
 		device.setStatus("Y");
 		device.setState(DeviceState.REGISTERED);
-		List<Device> devices = deviceDao.findAllActiveDevices(device.getBranchSystemInventoryId(),
-				device.getDeviceType());
-		if (!CollectionUtils.isEmpty(devices)) {
-			for (Device d : devices) {
-				if (!d.equals(device)) {
-					d.setStatus("N");
+		if (device.getBranchSystemInventoryId() != null) {
+			List<Device> devices = deviceDao.findAllActiveDevices(device.getBranchSystemInventoryId(),
+					device.getDeviceType());
+			if (!CollectionUtils.isEmpty(devices)) {
+				for (Device d : devices) {
+					if (!d.equals(device)) {
+						d.setStatus("N");
+					}
 				}
+				deviceDao.saveDevices(devices);
 			}
-			deviceDao.saveDevices(devices);
 		}
 		deviceDao.saveDevice(device);
 	}

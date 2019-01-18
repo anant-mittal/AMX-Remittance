@@ -1,6 +1,7 @@
 package com.amx.jax.branch;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.client.configs.JaxMetaInfo;
@@ -10,6 +11,7 @@ import com.amx.jax.sso.SSOUser;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.ContextUtil;
 
+@Primary
 @Component
 public class BranchMetaOutFilter implements IMetaRequestOutFilter<JaxMetaInfo> {
 

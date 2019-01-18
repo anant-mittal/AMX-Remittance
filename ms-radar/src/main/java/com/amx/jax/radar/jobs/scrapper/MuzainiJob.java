@@ -9,6 +9,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import com.amx.jax.logger.LoggerService;
+import com.amx.jax.radar.TestSizeApp;
 import com.amx.jax.rates.AmxCurConstants;
 import com.amx.jax.rates.AmxCurConstants.RCur;
 import com.amx.jax.rates.AmxCurConstants.RSource;
@@ -30,6 +32,7 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 @EnableScheduling
 @Component
 @Service
+@ConditionalOnExpression(TestSizeApp.ENABLE_JOBS)
 public class MuzainiJob {
 
 	@Autowired
@@ -40,10 +43,13 @@ public class MuzainiJob {
 
 	XmlMapper xmlMapper = new XmlMapper();
 
-	Logger logger = LoggerService.getLogger(MuzainiJob.class);
+	public static final Logger LOGGER = LoggerService.getLogger(MuzainiJob.class);
 
 	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_MIN_30)
 	public void fetchAmanKuwaitModels() {
+
+		LOGGER.info("Scrapper Task");
+
 		try {
 			Document doc = Jsoup.connect("http://www.muzaini.com/ExchangeRates.aspx")
 					.data("ddlCurrency", "KWD")

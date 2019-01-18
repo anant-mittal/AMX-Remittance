@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import com.amx.jax.grid.FilterBy.Condition;
-import com.amx.jax.grid.GridEnums.FilterDataType;
+import com.amx.jax.grid.GridConstants.FilterDataType;
 import com.amx.utils.ArgUtil;
 
 /**
@@ -213,13 +213,15 @@ public class PaginationCriteria {
 					fbsb.append(AND);
 				}
 				fbsb.append(BRKT_OPN)
-						.append(pair.getKey());
+						.append(pair.getValue().getColumn());
 				fbsb.append(SPACE + pair.getValue().getOpertor().getSign());
 
 				if (FilterDataType.DATE.equals(pair.getValue().getType())) {
-					fbsb.append(" TO_DATE( '" + pair.getValue().getValue() + "', 'DD-MM-YYYY' )");
+					fbsb.append(" TO_DATE( '" + pair.getValue().getValue() + "', '" + GridConstants.GRID_DATE_FORMAT_SQL
+							+ "' )");
 				} else if (FilterDataType.TIME.equals(pair.getValue().getType())) {
-					fbsb.append(" TO_DATE( '" + pair.getValue().getValue() + "', 'DD-MM-YYYY HH24:MI:SS' )");
+					fbsb.append(" TO_DATE( '" + pair.getValue().getValue() + "', '" + GridConstants.GRID_TIME_FORMAT_SQL
+							+ "' )");
 				} else if (FilterDataType.TIMESTAMP.equals(pair.getValue().getType())) {
 					fbsb.append(
 							" TO_TIMESTAMP( '1970-01-01 00:00:00.0', 'YYYY-MM-DD HH24:MI:SS.FF' ) + NUMTODSINTERVAL("
