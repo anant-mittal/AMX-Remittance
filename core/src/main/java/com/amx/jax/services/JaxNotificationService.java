@@ -162,7 +162,7 @@ public class JaxNotificationService {
 		if (customerModel.getMobile() != null) {
 			SMS smsOld = new SMS();
 			// to new and old
-			smsOld.addTo(oldMobile, customerModel.getMobile());
+			smsOld.addTo(oldMobile);
 			smsOld.getModel().put(RESP_DATA_KEY, personinfo);
 			smsOld.setITemplate(TemplatesMX.PROFILE_CHANGE_SMS);
 
@@ -174,7 +174,7 @@ public class JaxNotificationService {
 
 			SMS smsNew = new SMS();
 			// to new and old
-			smsNew.addTo(oldMobile, customerModel.getMobile());
+			smsNew.addTo(customerModel.getMobile());
 			smsNew.getModel().put(RESP_DATA_KEY, personinfo);
 			smsNew.setITemplate(TemplatesMX.PROFILE_CHANGE_SMS);
 
