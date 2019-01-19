@@ -44,10 +44,10 @@ public class JaxFieldService extends AbstractService {
 		return "jax-field";
 	}
 
-	public ApiResponse getJaxFieldsForEntity(GetJaxFieldRequest request) {
-		ApiResponse apiResponse = getBlackApiResponse();
+	public ApiResponse<JaxConditionalFieldDto> getJaxFieldsForEntity(GetJaxFieldRequest request) {
+		ApiResponse<JaxConditionalFieldDto> apiResponse = getBlackApiResponse();
 		List<JaxConditionalFieldRule> fieldList = null;
-		if (request.getCondition().getConditionKey() != null && request.getCondition().getConditionValue() != null) {
+		if (request.getCondition() != null && request.getCondition().getConditionKey() != null && request.getCondition().getConditionValue() != null) {
 			fieldList = jaxConditionalFieldRuleRepository.findByEntityNameAndConditionKeyAndConditionValue(
 					request.getEntity(), request.getCondition().getConditionKey(),
 					request.getCondition().getConditionValue());

@@ -222,7 +222,8 @@ public enum JaxError implements IExceptionEnum {
 	BENE_COUNTRY_RISK,
 	INVALID_MOBILE_PREFIX,
 	// to log out customer
-	UNAUTHORIZED;
+	UNAUTHORIZED, 
+	REMITTANCE_ADDITIONAL_FIELD_REQUIRED;
 
 	
 

@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +19,12 @@ import com.amx.amxlib.constant.JaxFieldEntity;
 import com.amx.amxlib.exception.AdditionalFlexRequiredException;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.FlexFieldDto;
+import com.amx.amxlib.model.GetJaxFieldRequest;
 import com.amx.amxlib.model.JaxConditionalFieldDto;
 import com.amx.amxlib.model.JaxFieldDto;
 import com.amx.amxlib.model.JaxFieldValueDto;
 import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
+import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ExchangeRateBreakup;
 import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.jax.constant.ConstantDocument;
@@ -237,5 +240,17 @@ public class RemittanceTransactionRequestValidator {
 			dto.setValue(ffDto);
 			return dto;
 		}).collect(Collectors.toList());
+	}
+
+	public void validateAdditionalFields(RemittanceTransactionRequestModel model) {
+		ApiResponse<JaxConditionalFieldDto> apiResponse = jaxFieldService.getJaxFieldsForEntity(new GetJaxFieldRequest(JaxFieldEntity.REMITTANCE_ONLINE));
+		List<JaxConditionalFieldDto> jaxConditionalFieldDto = apiResponse.getResults();
+		if(CollectionUtils.isNotEmpty(jaxConditionalFieldDto)) {
+			Map<String, Object> additionalFields = model.getAdditionalFields();
+			GlobalException ex = new GlobalException(JaxError.ADDTIONAL_FLEX_FIELD_REQUIRED, "additional fields required");
+			jaxConditionalFieldDto.get(0).getField().setDtoPath("additionalFields.beneIBAN");
+			ex.setMeta(jaxConditionalFieldDto);
+			throw ex;
+		}
 	}
 }
