@@ -291,6 +291,6 @@ public interface IRbaacService {
 			String ipAddr, String deviceId, Boolean filterRole);
 
 	AmxApiResponse<BoolRespModel, Object> createEmployeeSystemMapping(BigDecimal employeeId,
-			Integer countryBranchSystemInventoryId);
+			BigDecimal countryBranchSystemInventoryId);
 
 }

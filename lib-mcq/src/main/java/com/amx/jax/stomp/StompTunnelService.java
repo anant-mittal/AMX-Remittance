@@ -1,5 +1,8 @@
 package com.amx.jax.stomp;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -15,14 +18,15 @@ public class StompTunnelService {
 	@Autowired
 	TunnelService tunnelService;
 
-	@Autowired
 	StompTunnelSessionManager stompTunnelSessionManager;
 
 	@Async
 	public void sendToAll(String topic, Object message) {
 		StompTunnelEvent event = new StompTunnelEvent();
 		event.setTopic(topic);
-		event.setData(JsonUtil.toMap(message));
+		Map<String, Object> messageData = new HashMap<String, Object>();
+		messageData.put("data", message);
+		event.setData(JsonUtil.toJsonMap(messageData));
 		tunnelService.shout(StompTunnelToAllSender.STOMP_TO_ALL, event);
 	}
 
@@ -33,7 +37,9 @@ public class StompTunnelService {
 		StompSession stompSession = stompTunnelSessionManager.getStompSession(stompSessionId);
 		if (!ArgUtil.isEmpty(stompSession)) {
 			event.setHttpSessionId(stompSession.getHttpSessionId());
-			event.setData(JsonUtil.toMap(message));
+			Map<String, Object> messageData = new HashMap<String, Object>();
+			messageData.put("data", message);
+			event.setData(JsonUtil.toJsonMap(messageData));
 			tunnelService.shout(StompTunnelToXSender.getSendTopic(stompSession.getPrefix()), event);
 		}
 

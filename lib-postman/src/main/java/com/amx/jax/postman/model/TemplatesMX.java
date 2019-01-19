@@ -2,31 +2,33 @@ package com.amx.jax.postman.model;
 
 import com.amx.jax.postman.model.File.PDFConverter;
 import com.amx.jax.postman.model.ITemplates.ITemplate;
+import com.amx.jax.postman.model.Notipy.Channel;
 
 public enum TemplatesMX implements ITemplate {
 
-	CONTACT_US("ContactForm"), RESET_OTP("reset-otp"), RESET_OTP_SMS("reset-otp-sms"), SERVER_UP("health-server-up"),
+	CONTACT_US("ContactForm"),
+	RESET_OTP("reset-otp", Channel.NOTIPY),
+	RESET_OTP_SMS("reset-otp-sms", Channel.NOTIPY),
 
-	REMIT_RECEIPT("TransactionReceipt"), REMIT_RECEIPT2("TransactionReceipt2"), REMIT_RECEIPT_JASPER(
-			"TransactionReceipt_jasper", PDFConverter.JASPER, "TransactionReceipt.json"),
-	REMIT_RECEIPT_COPY_JASPER(
-			"TransactionReceiptCopy_jasper", PDFConverter.JASPER, "TransactionReceipt.json"),
+	SERVER_UP("health-server-up"),
 
-	REMIT_RECEIPT_COPY("TransactionReceiptCopy"), REMIT_STATMENT("TransactionList"), REMIT_STATMENT_EMAIL(
-			"RemittanceStatmentEmail"),
-	REMIT_STATMENT_EMAIL_FILE("TransactionStatementHistory"), REG_SUC(
-			"RegistrationSuccessEmail"),
-	TXN_CRT_SUCC(
-			"TransactionCreationSuccess"),
+	REMIT_RECEIPT("TransactionReceipt"), REMIT_RECEIPT2("TransactionReceipt2"),
+	REMIT_RECEIPT_JASPER("TransactionReceipt_jasper", PDFConverter.JASPER, "TransactionReceipt.json"),
+	REMIT_RECEIPT_COPY_JASPER("TransactionReceiptCopy_jasper", PDFConverter.JASPER, "TransactionReceipt.json"),
+
+	REMIT_RECEIPT_COPY("TransactionReceiptCopy"), REMIT_STATMENT("TransactionList"),
+	REMIT_STATMENT_EMAIL("RemittanceStatmentEmail"),
+	REMIT_STATMENT_EMAIL_FILE("TransactionStatementHistory"),
+
+	REG_SUC("RegistrationSuccessEmail"),
+
+	TXN_CRT_SUCC("TransactionCreationSuccess"),
 	PROFILE_CHANGE("AccoutDetailsUpdate"),
-
-	FXO_RECEIPT("FXO_RECEIPT", PDFConverter.JASPER,"fxo-receipt.json"),
 
 	// Rate Alert, PlaceOrder
 	RATE_ALERT("place-order"), RATE_ALERT_COMPLETION("place-order-executed"),
 
-	BRANCH_SEARCH_EMPTY("BranchSearchEmpty"), TEST("test"), BRANCH_FEEDBACK("trnx-feedback"), BRANCH_FEEDBACK_JSON(
-			"json/trnx-feedback"),
+	BRANCH_SEARCH_EMPTY("BranchSearchEmpty"), TEST("test"),BRANCH_FEEDBACK("trnx-feedback"), TT("tt"),EFT("eft"),CASH("cash"),
 
 	CIVILID_EXPIRY("civilexpiry"), CIVILID_EXPIRED("civilexpired"),
 
@@ -35,13 +37,22 @@ public enum TemplatesMX implements ITemplate {
 	PROMOTION_WINNER("PromotionWinner"), PROMOTION_COUPON("PromotionCoupon"),
 
 	SERVER_PING("server-ping"),
-	
-	FC_DELIVER_EMAIL_OTP("deliver-email-otp"),FC_DELIVER_SMS_OTP("deliver-sms-otp"),FC_ORDER_SUCCESS("order-success"),FC_KNET_SUCCESS("knet-success");
+
+	MARKETING_PUSH("mrkt-push", Channel.FEED),
+
+	/// FC Templates
+	FC_DELIVER_EMAIL_OTP("deliver-email-otp", Channel.NOTIPY), FC_DELIVER_SMS_OTP("deliver-sms-otp", Channel.NOTIPY),
+	FC_ORDER_SUCCESS("order-success"),
+	FC_KNET_SUCCESS("knet-success"),
+	FXO_RECEIPT("FXO_RECEIPT", PDFConverter.JASPER, "fxo-receipt.json"),
+	FXO_STATMENT("FxoTransactionList"),
+	SUSPICIOUS_USER("suspicious-user"), PROFILE_CHANGE_SMS("profile-change-sms", Channel.ALERTY),EMAIL_CHANGE_OLD_EMAIL("EmailChangeOldEmail");
 
 	String fileName;
 	PDFConverter converter;
 	String sampleJSON;
 	boolean thymleaf = true;
+	Channel channel = null;
 
 	@Override
 	public String getFileName() {
@@ -50,33 +61,38 @@ public enum TemplatesMX implements ITemplate {
 
 	@Override
 	public String getHtmlFile() {
-		return "html/" + fileName;
+		return "html/" + getFileName();
 	}
 
 	@Override
 	public String getJsonFile() {
-		return "json/" + fileName;
+		return "json/" + getFileName();
 	}
 
-	TemplatesMX(String fileName, PDFConverter converter, String sampleJSON) {
+	TemplatesMX(String fileName, PDFConverter converter, String sampleJSON, Channel channel) {
 		this.fileName = fileName;
 		this.converter = converter;
 		this.sampleJSON = sampleJSON;
 		if (this.converter == PDFConverter.JASPER) {
 			this.thymleaf = false;
 		}
+		this.channel = channel;
+	}
+
+	TemplatesMX(String fileName, PDFConverter converter, String sampleJSON) {
+		this(fileName, converter, sampleJSON, null);
 	}
 
 	TemplatesMX(String fileName, PDFConverter converter) {
-		this(fileName, converter, null);
+		this(fileName, converter, null, null);
 	}
 
-	TemplatesMX(String fileName, String sampleJSON) {
-		this(fileName, null, sampleJSON);
+	TemplatesMX(String fileName, Channel channel) {
+		this(fileName, null, null, channel);
 	}
 
 	TemplatesMX(String fileName) {
-		this(fileName, null, null);
+		this(fileName, null, null, null);
 	}
 
 	@Override
@@ -95,6 +111,11 @@ public enum TemplatesMX implements ITemplate {
 	@Override
 	public boolean isThymleaf() {
 		return thymleaf;
+	}
+
+	@Override
+	public Channel getChannel() {
+		return channel;
 	}
 
 	public String toString() {

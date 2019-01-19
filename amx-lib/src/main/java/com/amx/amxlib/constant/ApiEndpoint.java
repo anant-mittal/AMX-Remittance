@@ -31,6 +31,7 @@ public class ApiEndpoint {
 		public static final String PARAM_CITY_ID = "cityId";
 		public static final String PARAM_COUNTRY_ID = "countryId";
 		public static final String PARAM_STATE_ID = "stateId";
+		public static final String PARAM_GOVERONATE_ID = "governateId";
 
 		// Paths
 		public static final String SEQ_QUEST_LIST = "/quest/list";
@@ -67,6 +68,8 @@ public class ApiEndpoint {
 		public static final String CURRENCY_ONLINE = "/currency/online/";
 		public static final String API_BANK_BRANCH_GET = "/bankbranch/get/";
 		public static final String API_AREA_LIST = "/arealist/";
+		public static final String API_GOVERNATE_LIST = "/governatelist/";
+		public static final String API_GOVERNATE_AREA_LIST = "/governatearealist/";
 
 	}
 

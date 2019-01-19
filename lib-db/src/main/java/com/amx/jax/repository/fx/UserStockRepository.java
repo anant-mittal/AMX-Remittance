@@ -20,7 +20,8 @@ public interface UserStockRepository extends CrudRepository<UserStockView, Seria
 	@Query(value = "SELECT * FROM V_EX_STOCK WHERE COUNTRY_ID=?1 AND ORACLE_USER=?2 AND COUNTRY_BRANCH_ID=?3 AND TRUNC(LOG_DATE)=TRUNC(SYSDATE)", nativeQuery = true)
 	public List<UserStockView> fetchUserStockByDate(BigDecimal countryId,String userName,BigDecimal countryBranchId);
 	
-	@Query(value = "SELECT CURRENCY_ID,SUM(CURRENT_STOCK) FROM V_EX_STOCK WHERE COUNTRY_ID=?1 AND ORACLE_USER=?2 AND COUNTRY_BRANCH_ID=?3 AND TRUNC(LOG_DATE)=TRUNC(SYSDATE) Group By CURRENCY_ID", nativeQuery = true)
+	//@Query(value = "SELECT CURRENCY_ID,SUM(CURRENT_STOCK) FROM V_EX_STOCK WHERE COUNTRY_ID=?1 AND ORACLE_USER=?2 AND COUNTRY_BRANCH_ID=?3 AND TRUNC(LOG_DATE)=TRUNC(SYSDATE) Group By CURRENCY_ID", nativeQuery = true)
+	@Query(value = "SELECT CURRENCY_ID,SUM(T_VALUE) FROM (SELECT CURRENCY_ID, CURRENT_STOCK * DENOMINATION_AMOUNT T_VALUE FROM V_EX_STOCK WHERE COUNTRY_ID=?1 AND ORACLE_USER=?2 AND COUNTRY_BRANCH_ID=?3 AND TRUNC(LOG_DATE)=TRUNC(SYSDATE)) Group By CURRENCY_ID", nativeQuery = true)
 	public List<Object[]> fetchUserStockByDateSum(BigDecimal countryId,String userName,BigDecimal countryBranchId);
 
 }

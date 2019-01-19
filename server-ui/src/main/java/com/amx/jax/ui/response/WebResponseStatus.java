@@ -1,9 +1,11 @@
 package com.amx.jax.ui.response;
 
+import com.amx.jax.exception.IExceptionEnum;
+
 /**
  * The Enum WebResponseStatus.
  */
-public enum WebResponseStatus {
+public enum WebResponseStatus implements IExceptionEnum {
 
 	/** The already active. */
 	// Registration - CIVIL ID validation
@@ -83,11 +85,20 @@ public enum WebResponseStatus {
 	/**
 	 * Instantiates a new web response status.
 	 *
-	 * @param code
-	 *            the code
+	 * @param code the code
 	 */
 	WebResponseStatus(String code) {
 		this.code = code;
+	}
+
+	@Override
+	public String getStatusKey() {
+		return this.toString();
+	}
+
+	@Override
+	public int getStatusCode() {
+		return this.ordinal();
 	}
 
 }

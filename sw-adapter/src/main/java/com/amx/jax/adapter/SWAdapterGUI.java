@@ -45,6 +45,7 @@ public class SWAdapterGUI extends JFrame {
 	Font font = new Font("monospaced", Font.PLAIN, 12);
 
 	JLabel labelDescription = new JLabel("....");
+	JLabel labelDescriptionDetail = new JLabel("....");
 	public static SWAdapterGUI CONTEXT = null;
 	public static String LOG = "";
 
@@ -92,27 +93,43 @@ public class SWAdapterGUI extends JFrame {
 		labelDescription.setFont(font);
 		newPanel.add(labelDescription, constraints);
 
-		// Button
-		JButton quitButton = new JButton("Quit");
-		quitButton.addActionListener((ActionEvent event) -> {
-			System.exit(0);
-		});
-		constraints.gridx = 2;
+		constraints.gridx = 0;
 		constraints.gridy = 6;
-		constraints.gridwidth = 2;
 		constraints.anchor = GridBagConstraints.CENTER;
-		newPanel.add(quitButton, constraints);
+		constraints.gridwidth = 4;
+		labelDescriptionDetail.setFont(font);
+		newPanel.add(labelDescriptionDetail, constraints);
 
+		// Button
+		constraints.gridx = 0;
+		constraints.gridy = 7;
+		constraints.gridwidth = 1;
+		constraints.anchor = GridBagConstraints.CENTER;
+		JButton openButton = new JButton("Open");
+		openButton.addActionListener((ActionEvent event) -> {
+			SWAdapterLauncher.opnePage();
+		});
+		newPanel.add(openButton, constraints);
+
+		constraints.gridx = 1;
+		constraints.gridy = 7;
+		constraints.gridwidth = 1;
+		constraints.anchor = GridBagConstraints.CENTER;
 		JButton refreshButton = new JButton("Refresh");
 		refreshButton.addActionListener((ActionEvent event) -> {
 			ACardReaderService.CONTEXT.reset();
 		});
-
-		constraints.gridx = 0;
-		constraints.gridy = 6;
-		constraints.gridwidth = 2;
-		constraints.anchor = GridBagConstraints.CENTER;
 		newPanel.add(refreshButton, constraints);
+
+		constraints.gridx = 2;
+		constraints.gridy = 7;
+		constraints.gridwidth = 1;
+		constraints.anchor = GridBagConstraints.CENTER;
+		JButton quitButton = new JButton("Quit");
+		quitButton.addActionListener((ActionEvent event) -> {
+			System.exit(0);
+		});
+		newPanel.add(quitButton, constraints);
 
 		statusReader.setEnabled(false);
 		statusReader.setBackground(Color.LIGHT_GRAY);
@@ -194,10 +211,17 @@ public class SWAdapterGUI extends JFrame {
 	public void readerName(String name) {
 		statusReader.setText(String.format(STAT_FORMAT_READER, name));
 	}
-	
+
 	public void log(String message) {
 		LOG = message;
 		labelDescription.setText(message);
+		labelDescriptionDetail.setText("");
+	}
+
+	public void log(String message, String detail) {
+		LOG = message;
+		labelDescription.setText(message);
+		labelDescriptionDetail.setText(detail);
 	}
 
 }

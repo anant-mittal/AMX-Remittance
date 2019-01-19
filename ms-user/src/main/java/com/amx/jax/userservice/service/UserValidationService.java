@@ -581,14 +581,15 @@ public class UserValidationService {
 
 	/**
 	 * validates inactive or not registered customers status
+	 * @return 
 	 */
 	@SuppressWarnings("unused")
-	public void validateNonActiveOrNonRegisteredCustomerStatus(String identityInt, JaxApiFlow apiFlow) {
+	public List<Customer> validateNonActiveOrNonRegisteredCustomerStatus(String identityInt, JaxApiFlow apiFlow) {
 		List<Customer> customers = null;
 
 		customers = custDao.getCustomerByIdentityInt(identityInt);
 		if (CollectionUtils.isEmpty(customers) && apiFlow == JaxApiFlow.SIGNUP_DEFAULT) {
-			return;
+			return customers;
 		}
 		if (CollectionUtils.isEmpty(customers) && apiFlow != JaxApiFlow.SIGNUP_DEFAULT) {
 			throw new GlobalException(JaxError.CUSTOMER_NOT_REGISTERED_BRANCH, "Customer not registered in branch ");
@@ -613,6 +614,7 @@ public class UserValidationService {
 		default:
 			validateCustomerDefault(customers.get(0));
 		}
+		return customers;
 	}
 
 	private void validateCustomerDefault(Customer customer) {
@@ -670,6 +672,18 @@ public class UserValidationService {
 		if (!ConstantDocument.Yes.equals(customer.getIsActive())) {
 			throw new GlobalException(JaxError.CUSTOMER_NOT_ACTIVE_BRANCH,
 					"Customer not active in branch, go to branch ");
+		}
+		validateBlockedCustomerForOnlineReg(customer);
+	}
+	
+	private void validateBlockedCustomerForOnlineReg(Customer customer) {
+		// article 20
+		if (customer.getFsArticleDetails() != null) {
+			String articleCode = customer.getFsArticleDetails().getFsArticleMaster().getArticleCode();
+			if (ConstantDocument.ARTICLE_20_CODE.equals(articleCode)) {
+				throw new GlobalException(JaxError.ONLINE_REG_NOT_ALLOWED_ARTICLE_20,
+						"Your online account is not activated. Please visit the branch for assistance.");
+			}
 		}
 	}
 

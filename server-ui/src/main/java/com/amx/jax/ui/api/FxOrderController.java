@@ -1,10 +1,12 @@
 
 package com.amx.jax.ui.api;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -43,6 +45,7 @@ import com.amx.jax.model.response.fx.ShippingAddressDto;
 import com.amx.jax.model.response.fx.TimeSlotDto;
 import com.amx.jax.payg.PayGParams;
 import com.amx.jax.payg.PayGService;
+import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.TemplatesMX;
@@ -54,6 +57,7 @@ import com.amx.utils.HttpUtils;
 import com.amx.utils.JsonUtil;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 /**
  * The Class PlaceOrderController.
@@ -71,6 +75,10 @@ public class FxOrderController {
 
 	@Autowired
 	private PostManService postManService;
+	
+	/** The response. */
+	@Autowired
+	private HttpServletResponse response;
 
 	@RequestMapping(value = "/api/fxo/purpose/list", method = { RequestMethod.GET })
 	public ResponseWrapper<List<PurposeOfTransactionDto>> getFcPurposeofTrnx() {
@@ -118,6 +126,11 @@ public class FxOrderController {
 	@RequestMapping(value = "/api/fxo/address/list", method = { RequestMethod.GET })
 	public ResponseWrapper<List<ShippingAddressDto>> getFcSaleAddress() {
 		return ResponseWrapper.buildList(fcSaleOrderClient.getFcSaleAddress());
+	}
+	
+	@RequestMapping(value = "/api/fxo/address-new/list", method = { RequestMethod.GET })
+	public ResponseWrapper<List<ShippingAddressDto>> getFcSaleAddressNew() {
+		return ResponseWrapper.buildList(fcSaleOrderClient.getFcSaleAddressNew());
 	}
 
 	@RequestMapping(value = "/api/fxo/address/types", method = { RequestMethod.GET })
@@ -223,5 +236,24 @@ public class FxOrderController {
 			@RequestParam(required = false) BigDecimal docNo) {
 		return ResponseWrapper
 				.build(fcSaleOrderClient.getFxOrderTransactionStatus(docNo));
+	}
+	
+
+	/**
+	 * Prints the fx order history.
+	 *
+	 * @param wrapper the wrapper
+	 * @return the response wrapper
+	 * @throws IOException      Signals that an I/O exception has occurred.
+	 * @throws PostManException the post man exception
+	 */
+	@ApiOperation(value = "Returns tx order transaction history")
+	@RequestMapping(value = "/api/user/tranx/fx-order/print_history", method = { RequestMethod.POST })
+	public ResponseWrapper<List<Map<String, Object>>> printFxOrderHistory(
+			@RequestBody ResponseWrapper<List<Map<String, Object>>> wrapper) throws IOException, PostManException {
+		File file = postManService.processTemplate(new File(TemplatesMX.FXO_STATMENT, wrapper, File.Type.PDF))
+				.getResult();
+		file.create(response, true);
+		return wrapper;
 	}
 }

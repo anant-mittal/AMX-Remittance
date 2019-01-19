@@ -102,7 +102,8 @@ public class ConstantDocument {
 	public static final String CND_ACK="CND_ACK";
 	
 	/** end Here **/
-	public static final String P = "P";	
+	public static final String P = "P";
+	public static final String R = "R";
 	public static final String FC_SALE = "FC Sale";
 	public static final String USER_TYPE_DRIVER = "D";
 
@@ -110,4 +111,5 @@ public class ConstantDocument {
 	public static final BigDecimal BIZ_COMPONENT_ID_BEDOUIN_ID = new BigDecimal(197);
 	public static final BigDecimal MURQAB_FOREIGNCURRENCY = new BigDecimal(89);
 
+	public static final String ARTICLE_20_CODE = "20";
 }

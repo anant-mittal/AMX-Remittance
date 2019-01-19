@@ -2,18 +2,19 @@ package com.amx.jax.services;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.transaction.Transactional;
+
 import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -21,8 +22,7 @@ import com.amx.amxlib.constant.NotificationConstants;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.PersonInfo;
 import com.amx.jax.api.BoolRespModel;
-import com.amx.jax.auditlog.FcSaleOrderStatusChangeAuditEvent;
-import com.amx.jax.auditlog.JaxAuditEvent;
+import com.amx.jax.client.JaxStompClient;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.FcSaleApplicationDao;
 import com.amx.jax.dbmodel.ShippingAddressDetail;
@@ -31,9 +31,9 @@ import com.amx.jax.dbmodel.fx.FxDeliveryRemark;
 import com.amx.jax.dbmodel.fx.StatusMaster;
 import com.amx.jax.dbmodel.fx.VwFxDeliveryDetailsModel;
 import com.amx.jax.error.JaxError;
-import com.amx.jax.logger.AuditEvent;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.manager.FcSaleAddressManager;
+import com.amx.jax.manager.FcSaleBranchOrderManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.model.request.fx.FcSaleDeliveryDetailUpdateReceiptRequest;
@@ -43,10 +43,12 @@ import com.amx.jax.model.response.OtpPrefixDto;
 import com.amx.jax.model.response.fx.FxDeliveryDetailDto;
 import com.amx.jax.model.response.fx.FxDeliveryDetailNotificationDto;
 import com.amx.jax.model.response.fx.ShippingAddressDto;
+import com.amx.jax.notification.fx.FcSaleEventManager;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.CryptoUtil;
+import com.amx.utils.DateUtil;
 import com.amx.utils.Random;
 
 @Component
@@ -69,6 +71,13 @@ public class FcSaleDeliveryService {
 	FcSaleAddressManager fcSaleAddressManager;
 	@Autowired
 	AuditService auditService;
+	@Autowired
+	JaxStompClient jaxStompClient ; 
+	@Autowired
+	FcSaleEventManager fcSaleEventManager;
+	@Autowired
+	FcSaleBranchOrderManager fcSaleBranchOrderManager;
+
 
 	/**
 	 * @return today's order to be delivered for logged in driver
@@ -98,6 +107,7 @@ public class FcSaleDeliveryService {
 				model.getShippingAddressId());
 		try {
 			BeanUtils.copyProperties(dto, model);
+			shippingAddress.setMobile(shippingAddressDto.getMobile());
 			BeanUtils.copyProperties(shippingAddressDto, shippingAddress);
 		} catch (Exception e) {
 		}
@@ -112,6 +122,7 @@ public class FcSaleDeliveryService {
 		dto.setOrderStatus(statusMaster.getStatusDescription());
 		dto.setOrderStatusCode(statusMaster.getStatusCode());
 		dto.setDeliveryDetailSeqId(model.getDeleviryDelSeqId());
+		dto.setDeliveryTimeSlot(DateUtil.formatDateTime(new Date()));
 		return dto;
 	}
 
@@ -128,6 +139,13 @@ public class FcSaleDeliveryService {
 		return dto;
 	}
 
+	/**
+	 * Marks fc sale order's status as delivered
+	 * 
+	 * @param fcSaleDeliveryMarkDeliveredRequest
+	 * @return
+	 */
+	@Transactional
 	public BoolRespModel markDelivered(FcSaleDeliveryMarkDeliveredRequest fcSaleDeliveryMarkDeliveredRequest) {
 		logger.debug("markDelivered request: {}", fcSaleDeliveryMarkDeliveredRequest);
 		FxDeliveryDetailsModel deliveryDetail = validateFxDeliveryModel(
@@ -145,6 +163,9 @@ public class FcSaleDeliveryService {
 		validateOtpStatus(deliveryDetail);
 		deliveryDetail.setOrderStatus(ConstantDocument.DVD);
 		fcSaleApplicationDao.saveDeliveryDetail(deliveryDetail);
+		fcSaleBranchOrderManager.currentStockNullify(deliveryDetail.getDeleviryDelSeqId(),
+				deliveryDetail.getDriverEmployeeId());
+		fcSaleBranchOrderManager.saveFCStockTransferDetails(deliveryDetail.getDeleviryDelSeqId(),null,deliveryDetail.getDriverEmployeeId(), ConstantDocument.DVD);
 		PersonInfo pinfo = userService.getPersonInfo(vwdeliveryDetail.getCustomerId());
 		Email email = new Email();
 		email.setSubject("FC Order Successfully Delivered");
@@ -173,7 +194,7 @@ public class FcSaleDeliveryService {
 		if (!deliveryDetail.getOrderStatus().equals(ConstantDocument.OFD)) {
 			throw new GlobalException(JaxError.FC_CURRENCY_DELIVERY_INVALID_STATUS, "Order status should be OFD");
 		}
-		deliveryDetail.setOrderStatus(ConstantDocument.CND);
+		deliveryDetail.setOrderStatus(ConstantDocument.CND_ACK);
 		deliveryDetail.setRemarksId(fcSaleDeliveryMarkNotDeliveredRequest.getDeleviryRemarkSeqId());
 		fcSaleApplicationDao.saveDeliveryDetail(deliveryDetail);
 
@@ -246,7 +267,7 @@ public class FcSaleDeliveryService {
 		jaxNotificationService.sendOtpSms(pinfo.getMobile(), notificationModel);
 		// send email otp
 		Email email = new Email();
-		email.setSubject("FC Order Successfully Delivered");
+		email.setSubject("FC Delivery OTP");
 		email.addTo(pinfo.getEmail());
 		email.setITemplate(TemplatesMX.FC_DELIVER_EMAIL_OTP);
 		email.setHtml(true);
@@ -301,6 +322,7 @@ public class FcSaleDeliveryService {
 	 * @param deliveryDetailSeqId
 	 * @return
 	 */
+	@Transactional
 	public BoolRespModel markAcknowledged(BigDecimal deliveryDetailSeqId) {
 		logger.debug("markAcknowledged request: deldetailid {}", deliveryDetailSeqId);
 		FxDeliveryDetailsModel deliveryDetail = validateFxDeliveryModel(deliveryDetailSeqId);
@@ -310,15 +332,14 @@ public class FcSaleDeliveryService {
 		}
 		deliveryDetail.setOrderStatus(ConstantDocument.OFD_CNF);
 		fcSaleApplicationDao.saveDeliveryDetail(deliveryDetail);
+		fcSaleBranchOrderManager.currentStockMigration(deliveryDetailSeqId, deliveryDetail.getDriverEmployeeId(),
+				deliveryDetail.getEmployeeId());
+		fcSaleBranchOrderManager.saveFCStockTransferDetails(deliveryDetailSeqId, deliveryDetail.getDriverEmployeeId(), deliveryDetail.getEmployeeId(), ConstantDocument.OFD_CNF);
 		logStatusChangeAuditEvent(deliveryDetailSeqId, oldOrderStatus);
 		return new BoolRespModel(true);
 	}
 
-	@Async
 	private void logStatusChangeAuditEvent(BigDecimal deliveryDetailSeqId, String oldOrderStatus) {
-		FxDeliveryDetailsModel deliveryDetailModel = fcSaleApplicationDao.getDeliveryDetailModel(deliveryDetailSeqId);
-		FcSaleOrderStatusChangeAuditEvent event = new FcSaleOrderStatusChangeAuditEvent(deliveryDetailModel,
-				oldOrderStatus, JaxAuditEvent.Type.FC_SALE_UPDATE_ORDER_STATUS);
-		auditService.log(event);
+		fcSaleEventManager.logStatusChangeAuditEvent(deliveryDetailSeqId, oldOrderStatus);
 	}
 }

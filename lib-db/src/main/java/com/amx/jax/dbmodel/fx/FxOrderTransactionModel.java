@@ -407,6 +407,14 @@ public class FxOrderTransactionModel implements Serializable {
 		this.inventoryId = inventoryId;
 	}
 
+	public String getTransactionReferenceNo() {
+		return transactionReferenceNo;
+	}
+
+	public void setTransactionReferenceNo(String transactionReferenceNo) {
+		this.transactionReferenceNo = transactionReferenceNo;
+	}
+
 }
 
 

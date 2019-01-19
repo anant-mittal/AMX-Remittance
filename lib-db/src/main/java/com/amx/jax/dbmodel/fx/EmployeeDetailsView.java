@@ -111,6 +111,9 @@ public class EmployeeDetailsView implements Serializable {
 	
 	@Column(name = "BRANCH_ID")
 	BigDecimal branchId;
+	
+	@Column(name = "GOVERNORATES")
+	BigDecimal governorates;
 
 	public BigDecimal getEmployeeId() {
 		return employeeId;
@@ -358,6 +361,14 @@ public class EmployeeDetailsView implements Serializable {
 
 	public void setBranchId(BigDecimal branchId) {
 		this.branchId = branchId;
+	}
+
+	public BigDecimal getGovernorates() {
+		return governorates;
+	}
+
+	public void setGovernorates(BigDecimal governorates) {
+		this.governorates = governorates;
 	}
 
 }

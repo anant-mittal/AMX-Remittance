@@ -196,6 +196,7 @@ public class FxOrderReportManager {
 				email = customerList.get(0).getEmail();
 				reportModel.setLoyaltyPoints(loyaltyPoints);
 				reportModel.setEmail(email);
+				reportModel.setCustomerReferenceId(customerReferenceId);
 			}else{
 				logger.error("customer not found :"+customerId);
 				throw new GlobalException(JaxError.INVALID_CUSTOMER, "customer not found");
@@ -406,6 +407,8 @@ public class FxOrderReportManager {
 		BigDecimal custoemrId = metaData.getCustomerId();
 		BigDecimal netAmount =BigDecimal.ZERO;
 		BigDecimal deliveryCharges =BigDecimal.ZERO;
+		String receiptNo="";
+		String trnxRefNo ="";
 		List<ReceiptPaymentApp> applReceipt = rcptPaymentAppl.getApplicationByPagdetailSeqIAndcustomerId(custoemrId, paymentSeqId);
 		if(JaxUtil.isNullZeroBigDecimalCheck(paymentSeqId)){
 			pgDetailsModel = payGDeatilsRepos.findOne(paymentSeqId);
@@ -417,18 +420,23 @@ public class FxOrderReportManager {
 			throw new GlobalException(JaxError.NO_RECORD_FOUND,"No record found :");
 		}
 		JaxTransactionStatus jaxTrnxStatus = getJaxTransactionStatus(pgDetailsModel,applReceipt);
-		String receiptNo="";
+		
 		if(applReceipt != null && !applReceipt.isEmpty()){
 			List<FxOrderTransactionModel> fxOrderTrnxList =  fxTransactionHistroyDao.getFxOrderTrnxListByCollectionDocNumber(custoemrId,applReceipt.get(0).getColDocNo(),applReceipt.get(0).getColDocFyr());
-			if(!fxOrderTrnxList.isEmpty()){
+			if(fxOrderTrnxList!=null && !fxOrderTrnxList.isEmpty()){
 				if(fxOrderTrnxList.get(0).getCollectionDocumentNo()!=null && fxOrderTrnxList.get(0).getCollectionDocumentFinYear()!=null){
 					receiptNo =  fxOrderTrnxList.get(0).getCollectionDocumentFinYear().toString()+"/"+fxOrderTrnxList.get(0).getCollectionDocumentNo().toString();
+					trnxRefNo =fxOrderTrnxList.get(0).getTransactionReferenceNo();
 				}
 				List<FxOrderTransactionHistroyDto> fxOrderTrnxListDto = applTrnxManager.convertFxHistDto(fxOrderTrnxList);
 				responseModel.setFxOrderTrnxHistroyDTO(fxOrderTrnxListDto);
 				responseModel.setReceiptNo(receiptNo);
 			}
-
+			if(!StringUtils.isBlank(trnxRefNo)){
+			responseModel.setTransactionReference(trnxRefNo);
+			}else{
+				responseModel.setTransactionReference(applReceipt.get(0).getDocumentFinanceYear().toString()+"/"+applReceipt.get(0).getDocumentNo());
+			}
 			for(ReceiptPaymentApp appl : applReceipt){
 				netAmount = netAmount.add(appl.getLocalTrnxAmount());
 			}

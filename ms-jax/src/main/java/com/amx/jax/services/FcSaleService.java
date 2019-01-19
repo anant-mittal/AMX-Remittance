@@ -21,7 +21,6 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.amx.amxlib.constant.NotificationConstants;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.constant.ConstantDocument;
@@ -70,7 +69,6 @@ import com.amx.jax.repository.ISourceOfIncomeDao;
 import com.amx.jax.repository.ITermsAndConditionRepository;
 import com.amx.jax.util.DateUtil;
 import com.amx.jax.util.JaxUtil;
-import com.amx.jax.util.StringUtil;
 import com.amx.jax.validation.FxOrderValidation;
 
 @Component
@@ -121,6 +119,9 @@ public class FcSaleService extends AbstractService {
 	
 	@Autowired
 	ICollectionRepository collRepos;
+	
+	@Autowired
+	JaxNotificationService jaxNotificationService;
 
 
 	/**
@@ -234,6 +235,13 @@ public class FcSaleService extends AbstractService {
 		if (shippingAddressList.isEmpty()) {
 			throw new GlobalException(JaxError.NO_RECORD_FOUND, "No data found");
 		}
+		return AmxApiResponse.buildList(shippingAddressList);
+	}
+	
+	public AmxApiResponse<ShippingAddressDto, Object> fetchFcSaleAddressNew() {
+		validation.validateHeaderInfo();
+		List<ShippingAddressDto> shippingAddressList = fcSaleAddresManager
+				.getShippingAddressDto(metaData.getCustomerId());
 		return AmxApiResponse.buildList(shippingAddressList);
 	}
 
@@ -418,20 +426,26 @@ public class FcSaleService extends AbstractService {
 			list.add(dto);
 		}
 		return list;
-
 	}
 	
 	public void sendKnetSuccessEmail(PaymentResponseDto payDto){
 		if(payDto!=null && (payDto.getResultCode().equalsIgnoreCase(ConstantDocument.CAPTURED) || payDto.getResultCode().equalsIgnoreCase(ConstantDocument.APPROVED))){
 			
 			if(JaxUtil.isNullZeroBigDecimalCheck(payDto.getCollectionDocumentNumber()) && JaxUtil.isNullZeroBigDecimalCheck(payDto.getCollectionFinanceYear())){
+				
 				BigDecimal countryId = metaData.getCountryId();
 				BigDecimal companyId = metaData.getCompanyId();
 				BigDecimal custoemrId = metaData.getCustomerId()==null?payDto.getCustomerId():metaData.getCustomerId();
 				List<Customer> customerList = customerDao.getCustomerByCustomerId(countryId, companyId, custoemrId);
+				FxOrderReportResponseDto reportResponseDto = reportManager.getReportDetails(custoemrId,payDto.getCollectionDocumentNumber(), payDto.getCollectionFinanceYear());
 				FxOrderDetailNotificationDto orderNotificationModel = new FxOrderDetailNotificationDto();
 				if(customerList!= null && !customerList.isEmpty()){
-					orderNotificationModel.setCustomerName(customerList.get(0).getFirstName()+" "+customerList.get(0).getMiddleName()==null?"":customerList.get(0).getMiddleName()+" "+customerList.get(0).getLastName()==null?"":customerList.get(0).getLastName());
+					String customerName = getCustomerFullName(customerList);
+					if(!StringUtils.isBlank(customerName)){
+						orderNotificationModel.setCustomerName(customerName);
+					}else{
+					 orderNotificationModel.setCustomerName(reportResponseDto.getCustomerName());
+					}
 					orderNotificationModel.setEmail(customerList.get(0).getEmail());
 					orderNotificationModel.setMobileNo(customerList.get(0).getMobile()==null?"":customerList.get(0).getMobile());
 					orderNotificationModel.setLoyaltyPoints(customerList.get(0).getLoyaltyPoints()==null?BigDecimal.ZERO:customerList.get(0).getLoyaltyPoints());
@@ -441,12 +455,16 @@ public class FcSaleService extends AbstractService {
 				orderNotificationModel.setLocalQurrencyQuote(currencyDao.getCurrencyList(collModel.getExCurrencyMaster().getCurrencyId()).get(0).getQuoteName());
 				orderNotificationModel.setReceiptNo(collModel.getDocumentFinanceYear().toString()+"/"+collModel.getDocumentNo().toString());
 				orderNotificationModel.setNetAmount(collModel.getNetAmount());
+				orderNotificationModel.setDeliveryDate(reportResponseDto.getDeliveryDate()==null?"":reportResponseDto.getDeliveryDate());
+				orderNotificationModel.setDeliveryTime(reportResponseDto.getDeliveryTime()==null?"":reportResponseDto.getDeliveryTime());
+				
+				
 					Email email = new Email();
 					email.setSubject("FC Delivery - Payment Success");
 					email.addTo(orderNotificationModel.getEmail());
 					email.setITemplate(TemplatesMX.FC_KNET_SUCCESS);
 					email.setHtml(true);
-					email.getModel().put(NotificationConstants.RESP_DATA_KEY, orderNotificationModel);
+					jaxNotificationService.sendTransactionNotification(reportResponseDto,orderNotificationModel);
 					}
 				}
 			}
@@ -455,5 +473,22 @@ public class FcSaleService extends AbstractService {
 		
 	}
 	
+public String getCustomerFullName(List<Customer> customerList){
+	String customerName =null;
+
+	if(customerList !=null && !customerList.isEmpty()){
+		if(customerList.get(0).getFirstName() !=null){
+			customerName = customerList.get(0).getFirstName(); 
+		}
+		if(!StringUtils.isEmpty(customerList.get(0).getMiddleName())){
+			customerName = customerName +" "+customerList.get(0).getMiddleName();
+		}
+		if(!StringUtils.isEmpty(customerList.get(0).getLastName())){
+			customerName = customerName+ " "+ customerList.get(0).getLastName();
+		}
+	}
+	return customerName;
+	}
+
 
 }

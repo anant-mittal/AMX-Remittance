@@ -1,11 +1,14 @@
 package com.amx.jax.logger;
 
+import com.amx.jax.dict.UserClient.UserDeviceClient;
 import com.amx.jax.exception.IExceptionEnum;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
 @JsonPropertyOrder({ "description", "component", "category", "type", "timestamp", "message" })
 public abstract class AuditEvent extends AbstractEvent {
 
@@ -21,9 +24,10 @@ public abstract class AuditEvent extends AbstractEvent {
 	protected String exceptionType;
 	protected String actorId;
 	protected Object data;
+	protected UserDeviceClient client;
 
 	public static enum Result {
-		DONE, FAIL, ERROR, PASS;
+		DONE, REJECTED, FAIL, ERROR, PASS;
 	}
 
 	public AuditEvent() {
@@ -134,6 +138,14 @@ public abstract class AuditEvent extends AbstractEvent {
 	@Override
 	public void clean() {
 
+	}
+
+	public UserDeviceClient getClient() {
+		return client;
+	}
+
+	public void setClient(UserDeviceClient client) {
+		this.client = client;
 	}
 
 }

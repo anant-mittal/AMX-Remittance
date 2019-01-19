@@ -46,6 +46,7 @@ public class TrnaxBeneCredit implements ITunnelSubscriber<DBEvent> {
 	private static final String LANG_ID = "LANG_ID";
 	private static final String TENANT = "TENANT";
 	private static final String CURNAME = "CURNAME";
+	private static final String TYPE = "TYPE";
 
 	@Override
 	public void onMessage(String channel, DBEvent event) {
@@ -60,6 +61,8 @@ public class TrnaxBeneCredit implements ITunnelSubscriber<DBEvent> {
 		String trnxDate = ArgUtil.parseAsString(event.getData().get(TRNDATE));
 		String langId = ArgUtil.parseAsString(event.getData().get(LANG_ID));
 		String curName = ArgUtil.parseAsString(event.getData().get(CURNAME));
+		String type = ArgUtil.parseAsString(event.getData().get(TYPE));
+
 
 		NumberFormat myFormat = NumberFormat.getInstance();
 		myFormat.setGroupingUsed(true);
@@ -91,7 +94,19 @@ public class TrnaxBeneCredit implements ITunnelSubscriber<DBEvent> {
 			email.addTo(emailId);
 			email.setHtml(true);
 			email.setSubject("Transaction Credit Notification"); // changed as per BA
-			email.setITemplate(TemplatesMX.BRANCH_FEEDBACK);
+			switch (type) {
+			case "CASH":
+				email.setITemplate(TemplatesMX.CASH);
+				break;
+			case "TT":
+				email.setITemplate(TemplatesMX.TT);
+				break;
+			case "EFT":
+				email.setITemplate(TemplatesMX.EFT);
+				break;
+			default:
+				break;
+			}
 			postManClient.sendEmailAsync(email);
 		}
 
@@ -101,7 +116,21 @@ public class TrnaxBeneCredit implements ITunnelSubscriber<DBEvent> {
 
 		if (!ArgUtil.isEmpty(custId)) {
 			PushMessage pushMessage = new PushMessage();
-			pushMessage.setITemplate(TemplatesMX.BRANCH_FEEDBACK);
+			
+			switch (type) {
+			case "CASH":
+				pushMessage.setITemplate(TemplatesMX.CASH);
+				break;
+			case "TT":
+				pushMessage.setITemplate(TemplatesMX.TT);
+				break;
+			case "EFT":
+				pushMessage.setITemplate(TemplatesMX.EFT);
+				break;
+			default:
+				break;
+			}
+		
 			pushMessage.addToUser(custId);
 			pushMessage.setModel(wrapper);
 			pushNotifyClient.send(pushMessage);

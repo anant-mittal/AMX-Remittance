@@ -42,6 +42,8 @@ public class AppConfig {
 	public static final String APP_AUTH_KEY = "${app.auth.key}";
 	public static final String APP_AUTH_ENABLED = "${app.auth.enabled}";
 
+	public static final String DEFAULT_TENANT = "${default.tenant}";
+
 	public static final String JAX_CDN_URL = "${jax.cdn.url}";
 	public static final String JAX_APP_URL = "${jax.app.url}";
 	public static final String JAX_SERVICE_URL = "${jax.service.url}";
@@ -52,6 +54,8 @@ public class AppConfig {
 	public static final String JAX_SSO_URL = "${jax.sso.url}";
 	public static final String JAX_AUTH_URL = "${jax.auth.url}";
 	
+	public static final String SPRING_REDIS_HOST = "${spring.redis.host}";
+	public static final String SPRING_REDIS_PORT = "${spring.redis.port}";
 	public static final String JAX_PRICER_URL = "${jax.pricer.url}";
 
 	@Value(APP_ENV)
@@ -101,6 +105,10 @@ public class AppConfig {
 	@AppParamKey(AppParam.APP_CACHE)
 	private Boolean cache;
 
+	@Value(DEFAULT_TENANT)
+	@AppParamKey(AppParam.DEFAULT_TENANT)
+	private Tenant defaultTenant;
+
 	@Value(JAX_CDN_URL)
 	@AppParamKey(AppParam.JAX_CDN_URL)
 	private String cdnURL;
@@ -133,6 +141,14 @@ public class AppConfig {
 	@AppParamKey(AppParam.JAX_AUTH_URL)
 	private String authURL;
 	
+	@Value(SPRING_REDIS_HOST)
+	@AppParamKey(AppParam.SPRING_REDIS_HOST)
+	private String redisSpringHost;
+	
+	@Value(SPRING_REDIS_PORT)
+	@AppParamKey(AppParam.SPRING_REDIS_PORT)
+	private String redisSpringPort;
+
 	@Value(JAX_PRICER_URL)
 	@AppParamKey(AppParam.JAX_PRICER_URL)
 	private String pricerURL;
@@ -146,6 +162,9 @@ public class AppConfig {
 
 	@Value("${server.session.cookie.secure}")
 	private boolean cookieSecure;
+
+	@Value("${spring.profiles.active}")
+	private String[] springProfile;
 
 	@Value("${app.audit.file.print}")
 	String[] printableAuditMarkers;
@@ -314,6 +333,18 @@ public class AppConfig {
 
 	public String getAppPrefix() {
 		return appPrefix;
+	}
+
+	@Autowired
+	private Environment environment;
+
+	@PostConstruct
+	public void init() {
+		TenantProperties.setEnviroment(environment);
+	}
+
+	public Tenant getDefaultTenant() {
+		return defaultTenant;
 	}
 
 }

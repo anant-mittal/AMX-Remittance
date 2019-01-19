@@ -4,6 +4,7 @@
 package com.amx.jax.rbaac.trnx;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 import com.amx.jax.model.OtpData;
 import com.amx.jax.rbaac.constants.RbaacServiceConstants.LOGIN_TYPE;
@@ -25,6 +26,8 @@ public final class UserOtpData implements Serializable {
 	/** The employee. */
 	private Employee employee;
 
+	private BigDecimal partnerEmployeeId;
+
 	/** The login type. */
 	private LOGIN_TYPE loginType;
 
@@ -36,6 +39,7 @@ public final class UserOtpData implements Serializable {
 
 	/** The otp attempt count. */
 	private int otpAttemptCount;
+	
 
 	/**
 	 * Gets the auth transaction id.
@@ -75,6 +79,14 @@ public final class UserOtpData implements Serializable {
 		this.employee = employee;
 	}
 
+	public BigDecimal getPartnerEmployeeId() {
+		return partnerEmployeeId;
+	}
+
+	public void setPartnerEmployeeId(BigDecimal partnerEmployeeId) {
+		this.partnerEmployeeId = partnerEmployeeId;
+	}
+
 	/**
 	 * Gets the login type.
 	 *
@@ -87,7 +99,8 @@ public final class UserOtpData implements Serializable {
 	/**
 	 * Sets the login type.
 	 *
-	 * @param loginType the new login type
+	 * @param loginType
+	 *            the new login type
 	 */
 	public void setLoginType(LOGIN_TYPE loginType) {
 		this.loginType = loginType;
@@ -124,7 +137,8 @@ public final class UserOtpData implements Serializable {
 	/**
 	 * Sets the partner otp data.
 	 *
-	 * @param partnerOtpData the new partner otp data
+	 * @param partnerOtpData
+	 *            the new partner otp data
 	 */
 	public void setPartnerOtpData(OtpData partnerOtpData) {
 		this.partnerOtpData = partnerOtpData;

@@ -2,6 +2,7 @@ package com.amx.utils;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.math.BigDecimal;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -118,6 +119,10 @@ public final class JsonUtil {
 			return getMapper().convertValue(object, Map.class);
 		}
 
+		public <T> T toType(Object object, TypeReference<T> toValueTypeRef) {
+			return getMapper().convertValue(object, toValueTypeRef);
+		}
+
 		/**
 		 * To json.
 		 *
@@ -135,13 +140,20 @@ public final class JsonUtil {
 
 	/** The Constant instance. */
 	public static final JsonUtil.JsonUtilConfigurable instance;
-	static {
+
+	public static ObjectMapper createNewMapper(String modeulName) {
 		ObjectMapper mapper = new ObjectMapper();
-		SimpleModule module = new SimpleModule("MyModule", new Version(1, 0, 0, null, null, null));
+		SimpleModule module = new SimpleModule(modeulName, new Version(1, 0, 0, null, null, null));
 		module.addSerializer(EnumById.class, new EnumByIdSerializer());
 		module.addSerializer(EnumType.class, new EnumTypeSerializer());
+		module.addSerializer(BigDecimal.class, new BigDecimalSerializer());
 		module.addSerializer(JsonSerializerType.class, new JsonSerializerTypeSerializer());
 		mapper.registerModule(module);
+		return mapper;
+	}
+
+	static {
+		ObjectMapper mapper = createNewMapper("MyModule");
 		instance = new JsonUtil.JsonUtilConfigurable(mapper);
 	}
 
@@ -189,6 +201,23 @@ public final class JsonUtil {
 	 */
 	public static Map<String, Object> toMap(Object object) {
 		return instance.toMap(object);
+	}
+
+	public static Map<String, String> toStringMap(Object object) {
+		return instance.toType(object, new TypeReference<Map<String, String>>() {
+		});
+	}
+
+	/**
+	 * This will remove any Object binding, final map will contain only primitive
+	 * types at leaf node level
+	 * 
+	 * @param object
+	 * @return
+	 */
+	public static Map<String, Object> toJsonMap(Object object) {
+		return JsonUtil.fromJson(JsonUtil.toJson(object), new TypeReference<Map<String, Object>>() {
+		});
 	}
 
 	/**
@@ -289,5 +318,19 @@ class EnumTypeSerializer extends JsonSerializer<EnumType> {
 	public void serialize(EnumType value, JsonGenerator gen, SerializerProvider serializers)
 			throws IOException, JsonProcessingException {
 		gen.writeString(value.name());
+	}
+}
+
+class BigDecimalSerializer extends JsonSerializer<BigDecimal> {
+
+	@Override
+	public void serialize(BigDecimal value, JsonGenerator gen, SerializerProvider serializers)
+			throws IOException, JsonProcessingException {
+		if (!ArgUtil.isEmpty(value)) {
+			// gen.writeString(value.toPlainString());
+			// gen.writeNumber(value);
+			// gen.writeNumber(value.doubleValue());
+			gen.writeNumber(value.toPlainString());
+		}
 	}
 }

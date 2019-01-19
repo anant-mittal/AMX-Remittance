@@ -20,6 +20,7 @@ import com.amx.jax.model.response.ArticleDetailsDescDto;
 import com.amx.jax.model.response.ArticleMasterDescDto;
 import com.amx.jax.model.response.ComponentDataDto;
 import com.amx.jax.model.response.IncomeRangeDto;
+import com.amx.jax.model.response.customer.OffsiteCustomerDataDTO;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -37,7 +38,7 @@ public class OffsiteCustRegClientTest extends AbstractClientTest {
 		assertNotNull(response.getResult());
 	}
 
-	@Test
+	//@Test
 	public void testIdTypeList() {
 		setDefaults();
 		AmxApiResponse<ComponentDataDto, Object> response = null;
@@ -75,7 +76,7 @@ public class OffsiteCustRegClientTest extends AbstractClientTest {
 		assertNotNull(response.getResult());
 	}
 
-	// @Test
+	@Test
 	public void testIncomeRangeList() {
 		setDefaults();
 		EmploymentDetailsRequest model = new EmploymentDetailsRequest();
@@ -111,4 +112,14 @@ public class OffsiteCustRegClientTest extends AbstractClientTest {
 		assertNotNull(response.getResult());
 	}
 
+	//@Test
+	public void testForCustomerData() {
+		setDefaults();
+		AmxApiResponse<OffsiteCustomerDataDTO, Object> response = null;
+		String identityInt = "100006640795";
+		BigDecimal identityType = new BigDecimal(198);
+		response = offsiteClient.getOffsiteCustomerData(identityInt, identityType);
+		assertNotNull("Response is null", response);
+		assertNotNull(response.getResult());
+	}
 }

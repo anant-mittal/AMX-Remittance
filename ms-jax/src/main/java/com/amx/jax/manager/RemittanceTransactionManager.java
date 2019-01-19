@@ -45,6 +45,7 @@ import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
 import com.amx.jax.auditlog.JaxTransactionEvent;
 import com.amx.jax.config.JaxProperties;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.constant.JaxDbConfig;
 import com.amx.jax.constants.JaxChannel;
 import com.amx.jax.constants.JaxTransactionStatus;
 import com.amx.jax.dal.BizcomponentDao;
@@ -78,10 +79,12 @@ import com.amx.jax.logger.AuditService;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.VTransferRepository;
+import com.amx.jax.service.CountryService;
 import com.amx.jax.service.CurrencyMasterService;
 import com.amx.jax.service.LoyalityPointService;
 import com.amx.jax.service.ParameterService;
 import com.amx.jax.services.BeneficiaryCheckService;
+import com.amx.jax.services.JaxConfigService;
 import com.amx.jax.services.RemittanceApplicationService;
 import com.amx.jax.services.RoutingService;
 import com.amx.jax.services.TransactionHistroyService;
@@ -185,6 +188,10 @@ public class RemittanceTransactionManager {
 	NewExchangeRateService newExchangeRateService;
 	@Autowired
 	PromotionManager promotionManager;
+	@Autowired
+	CountryService countryService;
+	@Autowired
+	JaxConfigService jaxConfigService;
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -203,6 +210,7 @@ public class RemittanceTransactionManager {
 		remitApplParametersMap.put("P_BENEFICIARY_MASTER_ID", beneficiary.getBeneficaryMasterSeqId());
 		addBeneficiaryParameters(beneficiary);
 		validateBlackListedBene(beneficiary);
+		//validateRiskyBene(beneficiary, customer);  //it is not required at the time of trnx ,the procedure will take care for existing bene with different nationality
 		validatedObjects.put("BENEFICIARY", beneficiary);
 		HashMap<String, Object> beneBankDetails = getBeneBankDetails(beneficiary);
 		remitApplParametersMap.putAll(beneBankDetails);
@@ -279,6 +287,17 @@ public class RemittanceTransactionManager {
 		applyRoudingLogic(responseModel.getExRateBreakup());
 		return responseModel;
 
+	}
+
+	private void validateRiskyBene(BenificiaryListView beneficiary, Customer customer) {
+		if (jaxConfigService.getBooleanConfigValue(JaxDbConfig.BLOCK_BENE_RISK_TRANSACTION, true)) {
+			if (beneficiary.getCountryId().intValue() != customer.getNationalityId().intValue()) {
+				int beneCountryRisk = countryService.getCountryMaster(beneficiary.getCountryId()).getBeneCountryRisk();
+				if (beneCountryRisk == 1) {
+					throw new GlobalException(JaxError.BENE_COUNTRY_RISK, "Bene country risk");
+				}
+			}
+		}
 	}
 
 	private void setLoyalityPointFlags(Customer customer, RemittanceTransactionResponsetModel responseModel) {
@@ -796,6 +815,7 @@ public class RemittanceTransactionManager {
 				.getRemittanceTransaction(request.getApplicationDocumentNumber(), request.getDocumentFinancialYear());
 		RemittanceApplication application = remitAppDao.getApplication(request.getApplicationDocumentNumber(),
 				request.getDocumentFinancialYear());
+		remittanceApplicationService.checkForSuspiciousPaymentAttempts(application.getRemittanceApplicationId());
 		if (remittanceTransaction != null) {
 			BigDecimal cutomerReference = remittanceTransaction.getCustomerId();
 			BigDecimal remittancedocfyr = remittanceTransaction.getDocumentFinancialyear();

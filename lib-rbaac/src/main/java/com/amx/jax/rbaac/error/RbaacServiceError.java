@@ -19,6 +19,9 @@ public enum RbaacServiceError implements IExceptionEnum {
 	/** The invalid otp. */
 	INVALID_OTP,
 	
+	/** The invalid otp. */
+	OTP_TIMED_OUT,
+	
 	INVALID_PARTNER_OTP,
 
 	/** The otp limit exceeded. */
@@ -80,7 +83,9 @@ public enum RbaacServiceError implements IExceptionEnum {
 	CLIENT_NOT_ACTIVE, CLIENT_INVALID_PAIR_TOKEN, 
 	CLIENT_INVALID_SESSION_TOKEN, CLIENT_ANOTHER_ALREADY_ACTIVE, 
 	CLIENT_NOT_LOGGGED_IN, CLIENT_ALREADY_ACTIVE, CLIENT_EXPIRED_SESSION_TOKEN, 
-	CLIENT_EXPIRED_VALIDATE_OTP_TIME;
+	CLIENT_EXPIRED_VALIDATE_OTP_TIME,
+	
+	EMPLOYEE_NOT_FOUND;
 
 	//@formatter:on
 

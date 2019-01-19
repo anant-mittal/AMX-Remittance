@@ -264,12 +264,15 @@
                             <table width="100%" style="width: 100%">
                                 <tr>
                                     <td>
-                                        <h5>Dear <span  th:text="${data.firstName}"></span>   <span  th:text="${data.middleName}"></span>   <span  th:text="${data.lastName}"></span>,</h5><br/>
+                                        <h5>Dear <span  th:text="${data.firstName}"></span> <span  th:text="${data.lastName}"></span>,</h5><br/>
 										<p class="lead">Greetings from <span th:text="${_tu.prop('company.name')}" th:remove="tag"></span>!</p><br/>
 
-                                        <p class="lead">Congratulations! You have successfully completed registration with us, the number one service provider for exchange of money, making remittances and transferring funds anywhere across the globe! Your Online Registration for the Remittance facility has been authorized. You can now send money to your registered accounts, completely online.</p>
-									   <p class="lead">Thank you for using <a th:href="@{'https://' +${_tu.prop('company.website.url')}}"><span th:text="${_tu.prop('company.website.url')}"></span></a>.</p>
-
+                                        <p class="lead">Congratulations! You have successfully completed registration. We are the number one service provider for exchange of money, making remittances and transferring funds anywhere across the globe!  </p>
+										<p class="lead"><span>You can now do remittances, place target rate orders and order foreign currency to your doorstep, all from the convenience of the online platform or using the App.
+										</span></p>
+								   		<p class="lead">Thank you for using <a th:href="@{'https://' +${_tu.prop('company.website.url')}}"><span th:text="${_tu.prop('company.website.url')}"></span></a>.</p>
+										
+										
                                         <!-- A Real Hero (and a real human being) -->
                                         <p style="padding:40px 0" align="center"><img src="cid:images/product-1.png"/></p><!-- /hero -->
                                         <h4 align="center">There are a lot of reasons to continue transacting with <span th:text="${_tu.prop('company.name')}" th:remove="tag"></span> and few of these are:</h4>

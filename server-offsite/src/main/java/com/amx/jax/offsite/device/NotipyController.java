@@ -10,11 +10,13 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.IDeviceStateService;
 import com.amx.jax.device.DeviceConstants;
 import com.amx.jax.device.DeviceData;
+import com.amx.jax.device.DeviceRequest;
 import com.amx.jax.device.NotipyBox;
 import com.amx.jax.device.NotipyData;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.rbaac.RbaacServiceClient;
 import com.amx.jax.rbaac.dto.DevicePairOtpResponse;
+import com.amx.jax.sso.server.ApiHeaderAnnotations.ApiDeviceSessionHeaders;
 import com.amx.jax.swagger.IStatusCodeListPlugin.ApiStatusService;
 import com.amx.utils.ArgUtil;
 
@@ -36,6 +38,7 @@ public class NotipyController {
 	@Autowired
 	private NotipyBox notipyBox;
 
+	@ApiDeviceSessionHeaders
 	@RequestMapping(value = { DeviceConstants.Path.DEVICE_STATUS_NOTIPY }, method = { RequestMethod.GET })
 	public AmxApiResponse<NotipyData, Object> getCardDetails()
 			throws InterruptedException {

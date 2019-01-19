@@ -230,7 +230,7 @@ public class RbaacServiceControllerTest implements IRbaacService {
 
 	@Override
 	public AmxApiResponse<BoolRespModel, Object> createEmployeeSystemMapping(BigDecimal employeeId,
-			Integer countryBranchSystemInventoryId) {
+			BigDecimal countryBranchSystemInventoryId) {
 		// TODO Auto-generated method stub
 		return null;
 	}

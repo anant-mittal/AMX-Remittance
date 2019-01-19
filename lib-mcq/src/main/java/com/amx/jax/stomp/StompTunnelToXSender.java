@@ -3,6 +3,7 @@ package com.amx.jax.stomp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.messaging.core.MessageSendingOperations;
 
 import com.amx.jax.tunnel.ITunnelSubscriber;
@@ -11,6 +12,7 @@ import com.amx.jax.tunnel.TunnelEventXchange;
 import com.amx.utils.ArgUtil;
 
 @TunnelEventMapping(scheme = TunnelEventXchange.SHOUT_LISTNER, integrity = false)
+@ConditionalOnProperty("app.stomp")
 public class StompTunnelToXSender implements ITunnelSubscriber<StompTunnelEvent> {
 
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
@@ -22,7 +24,7 @@ public class StompTunnelToXSender implements ITunnelSubscriber<StompTunnelEvent>
 	@Autowired
 	StompTunnelSessionManager stompTunnelSessionManager;
 
-	@Autowired
+	@Autowired(required = false)
 	private MessageSendingOperations<String> messagingTemplate;
 
 	@Override

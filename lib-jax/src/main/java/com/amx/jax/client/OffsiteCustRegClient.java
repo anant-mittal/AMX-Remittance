@@ -1,5 +1,6 @@
 package com.amx.jax.client;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Map;
 
@@ -30,6 +31,7 @@ import com.amx.jax.model.response.ComponentDataDto;
 import com.amx.jax.model.response.CustomerInfo;
 import com.amx.jax.model.response.FieldListDto;
 import com.amx.jax.model.response.IncomeRangeDto;
+import com.amx.jax.model.response.customer.OffsiteCustomerDataDTO;
 import com.amx.jax.rest.RestService;
 import com.amx.jax.scope.TenantContextHolder;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -239,6 +241,21 @@ public class OffsiteCustRegClient implements ICustRegService {
 					.path(CustRegApiEndPoints.SAVE_OFFSITE_LOGIN)
 					.post(customerCredential)
 					.as(new ParameterizedTypeReference<AmxApiResponse<CustomerCredential, Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in saveLoginDetailOffsite : ", e);
+			return JaxSystemError.evaluate(e);
+		} // end of try-catch}
+	}
+
+	@Override
+	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerData(String identityInt,
+			BigDecimal identityType) {
+		try {
+			return restService.ajax(appConfig.getJaxURL()).meta(new JaxMetaInfo())
+					.path(CustRegApiEndPoints.GET_OFFSITE_CUSTOMER_DATA).queryParam(Params.IDENTITY_INT, identityInt)
+					.queryParam(Params.IDENTITY_TYPE, identityType).get()
+					.as(new ParameterizedTypeReference<AmxApiResponse<OffsiteCustomerDataDTO, Object>>() {
 					});
 		} catch (Exception e) {
 			LOGGER.error("exception in saveLoginDetailOffsite : ", e);

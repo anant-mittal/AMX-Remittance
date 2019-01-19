@@ -62,7 +62,7 @@ public class CollectionModel implements Serializable {
 	private List<ForeignCurrencyAdjust> foreinCurrenecyAdjust;
 	private String cashDeclarationIndicator;
 	private String totalAmountDeclarationIndicator;
-	
+    private BigDecimal deliveryCharges;
 	
 	
 	
@@ -368,6 +368,15 @@ public class CollectionModel implements Serializable {
 	public void setTotalAmountDeclarationIndicator(
 			String totalAmountDeclarationIndicator) {
 		this.totalAmountDeclarationIndicator = totalAmountDeclarationIndicator;
+	}
+
+	@Column(name="DELIVERY_CHARGES")
+	public BigDecimal getDeliveryCharges() {
+		return deliveryCharges;
+	}
+
+	public void setDeliveryCharges(BigDecimal deliveryCharges) {
+		this.deliveryCharges = deliveryCharges;
 	}
 	
 }

@@ -40,6 +40,50 @@ var tunnelClient = (function(win) {
 		}
 		return this.$connectd;
 	}
+	
+	function TunnelClient (){
+		this.ids = [];
+	}
+	TunnelClient.prototype = {
+		on : function subscribe(topic, fun) {
+			var THAT = this;
+			onConnect().then(function() {
+				THAT.ids.push(stompClient.subscribe("/topic" + topic, function(greeting) {
+						fun(JSON.parse(greeting.body).data, topic, greeting);
+				}));
+			});
+			onConnect().then(function() {
+				THAT.ids.push(stompClient.subscribe("/queue/" + sessionToken + topic, function(greeting) {
+						fun(JSON.parse(greeting.body).data, topic, greeting);
+				}));
+			});
+			return this;
+		},	
+		send : function send(topic, msg) {
+			onConnect().then(function() {
+				stompClient.send("/app" + topic, {}, JSON.stringify(msg));
+			});
+			return this;
+		},
+		ping : function send(topic, msg) {
+			//if(!pong){
+				this.on("/pong", function(pong,pong1,pong2,pong3){
+					console.log("PONG : ",pong,pong1,pong2,pong3)
+				});
+				pong = true;
+			//}
+			this.send("/ping",{ ping : "Hello"});
+			return this;
+		},
+		off : function(){
+			console.log(this.ids)
+			for(var i in this.ids){
+				this.ids[i].unsubscribe();
+			}
+		}
+	}
+	
+	
 	return {
 		config : function (_config){
 			for(var key in _config){
@@ -50,18 +94,8 @@ var tunnelClient = (function(win) {
 			onConnect();
 			return this;
 		},
-		on : function subscribe(topic, fun) {
-			onConnect().then(function() {
-				return stompClient.subscribe("/topic" + topic, function(greeting) {
-						fun(JSON.parse(greeting.body), topic, greeting);
-				});
-			});
-			onConnect().then(function() {
-				return stompClient.subscribe("/queue/" + sessionToken + topic, function(greeting) {
-						fun(JSON.parse(greeting.body), topic, greeting);
-				});
-			});
-			return this;
+		instance :  function(){
+			return new TunnelClient();
 		},
 		disconnect : function disconnect() {
 			if (stompClient !== null) {
@@ -69,22 +103,6 @@ var tunnelClient = (function(win) {
 			}
 			setConnected(false);
 			console.log("Disconnected");
-			return this;
-		},
-		send : function send(topic, msg) {
-			onConnect().then(function() {
-				stompClient.send("/app" + topic, {}, JSON.stringify(msg));
-			});
-			return this;
-		},
-		ping : function send(topic, msg) {
-			if(!pong){
-				this.on("/pong", function(pong,pong1,pong2,pong3){
-					console.log("PONG : ",pong,pong1,pong2,pong3)
-				});
-				pong = true;
-			}
-			this.send("/ping",{ ping : "Hello"});
 			return this;
 		}
 	};

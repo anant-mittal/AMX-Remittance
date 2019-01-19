@@ -123,7 +123,9 @@ public class TemplateService {
 			TemplateUtils.reverseFlag(true);
 		}
 
-		log.info("====" + locale.toString() + "======" + reverse + "   " + TemplateUtils.reverseFlag());
+		if(log.isDebugEnabled()){
+			log.debug("====" + locale.toString() + "======" + reverse + "   " + TemplateUtils.reverseFlag());
+		}
 
 		Context context = new Context(locale);
 

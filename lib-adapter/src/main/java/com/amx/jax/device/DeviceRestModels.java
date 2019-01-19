@@ -2,50 +2,13 @@ package com.amx.jax.device;
 
 import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.swagger.ApiMockModelProperty;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 public class DeviceRestModels {
 
-	public static class NetAddress {
-		String mac;
-		String localIp;
-		String hostName;
-		String userName;
-
-		public String getHostName() {
-			return hostName;
-		}
-
-		public void setHostName(String hostName) {
-			this.hostName = hostName;
-		}
-
-		public String getUserName() {
-			return userName;
-		}
-
-		public void setUserName(String userName) {
-			this.userName = userName;
-		}
-
-		public String getMac() {
-			return mac;
-		}
-
-		public void setMac(String mac) {
-			this.mac = mac;
-		}
-
-		public String getLocalIp() {
-			return localIp;
-		}
-
-		public void setLocalIp(String localIp) {
-			this.localIp = localIp;
-		}
-	}
-
 	@JsonDeserialize(as = DeviceRestModel.class)
+	@JsonIgnoreProperties(ignoreUnknown = true)
 	public interface DevicePairingRequest {
 
 		@ApiMockModelProperty(example = "284052306594", required = false)
@@ -66,7 +29,16 @@ public class DeviceRestModels {
 	}
 
 	@JsonDeserialize(as = DeviceRestModel.class)
-	public interface DevicePairingCreds extends DevicePairingRequest {
+	@JsonIgnoreProperties(ignoreUnknown = true)
+	public interface DeviceModelConfig {
+		long getOtpTtl();
+
+		void setOtpTtl(long otpValidity);
+	}
+
+	@JsonDeserialize(as = DeviceRestModel.class)
+	@JsonIgnoreProperties(ignoreUnknown = true)
+	public interface DevicePairingCreds extends DevicePairingRequest, DeviceModelConfig {
 
 		void setDeviceRegToken(String deviceRegToken);
 
@@ -76,15 +48,21 @@ public class DeviceRestModels {
 
 		void setDeviceRegId(String deviceRegId);
 
+		String getDeviceSecret();
+
+		void setDeviceSecret(String deviceSecret);
+
 	}
 
 	@JsonDeserialize(as = DeviceRestModel.class)
+	@JsonIgnoreProperties(ignoreUnknown = true)
 	public interface SessionPairingRequest extends DevicePairingCreds {
 
 	}
 
 	@JsonDeserialize(as = DeviceRestModel.class)
-	public interface SessionPairingCreds {
+	@JsonIgnoreProperties(ignoreUnknown = true)
+	public interface SessionPairingCreds extends DeviceModelConfig {
 
 		void setDeviceSessionToken(String sessionPairingToken);
 
@@ -101,6 +79,7 @@ public class DeviceRestModels {
 
 	}
 
+	@JsonIgnoreProperties(ignoreUnknown = true)
 	public static class DeviceRestModel
 			implements DevicePairingRequest, DevicePairingCreds, SessionPairingRequest, SessionPairingCreds {
 
@@ -117,6 +96,10 @@ public class DeviceRestModels {
 		String sessionOTP;
 
 		String deviceRequestKey;
+
+		String deviceSecret;
+
+		private long otpTtl;
 
 		@Override
 		public String getDeivceTerminalId() {
@@ -196,6 +179,26 @@ public class DeviceRestModels {
 		@Override
 		public void setIdentity(String identity) {
 			this.identity = identity;
+		}
+
+		@Override
+		public String getDeviceSecret() {
+			return this.deviceSecret;
+		}
+
+		@Override
+		public void setDeviceSecret(String deviceSecret) {
+			this.deviceSecret = deviceSecret;
+		}
+
+		@Override
+		public long getOtpTtl() {
+			return this.otpTtl;
+		}
+
+		@Override
+		public void setOtpTtl(long otpTtl) {
+			this.otpTtl = otpTtl;
 		}
 
 	}

@@ -53,6 +53,9 @@ public class ShippingAddressDetail implements java.io.Serializable {
 	private String buildingNo;
 	private String telephoneCode;
 	private String addressType;
+	private BigDecimal goverAreaId;
+	private BigDecimal governateId;
+
 
 
 	public ShippingAddressDetail() {
@@ -309,6 +312,24 @@ public class ShippingAddressDetail implements java.io.Serializable {
 
 	public void setAddressType(String addressType) {
 		this.addressType = addressType;
+	}
+
+	@Column(name="GOVERNORATES_AREA_ID")
+	public BigDecimal getGoverAreaId() {
+		return goverAreaId;
+	}
+
+	public void setGoverAreaId(BigDecimal goverAreaId) {
+		this.goverAreaId = goverAreaId;
+	}
+
+	@Column(name="GOVERNORATES_ID")
+	public BigDecimal getGovernateId() {
+		return governateId;
+	}
+
+	public void setGovernateId(BigDecimal governateId) {
+		this.governateId = governateId;
 	}
 
 

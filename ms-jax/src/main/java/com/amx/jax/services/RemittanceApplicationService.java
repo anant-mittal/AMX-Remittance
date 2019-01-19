@@ -14,13 +14,23 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.constant.NotificationConstants;
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.jax.config.JaxTenantProperties;
 import com.amx.jax.dao.ApplicationProcedureDao;
+import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dao.RemittanceProcedureDao;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
+import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
+import com.amx.jax.error.JaxError;
+import com.amx.jax.meta.MetaData;
 import com.amx.jax.payg.PaymentResponseDto;
+import com.amx.jax.postman.model.Email;
+import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.repository.RemittanceApplicationRepository;
+import com.amx.jax.userservice.service.UserService;
+import com.amx.libjax.model.postman.SuspiciousTransactionPaymentDto;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -30,12 +40,22 @@ public class RemittanceApplicationService {
 	
 	@Autowired
 	RemittanceApplicationRepository remittanceApplicationRepository;
-	
 	@Autowired
 	ApplicationProcedureDao applRemitDao;
-	
 	@Autowired
 	RemittanceProcedureDao remitDao;
+	@Autowired
+	MetaData metaData;
+	@Autowired
+	UserService userService;
+	@Autowired
+	RemittanceTransactionService remittanceTransactionService ; 
+	@Autowired
+	RemittanceApplicationDao remittanceApplicationDao; 
+	@Autowired
+	JaxTenantProperties jaxTenantProperties;
+	@Autowired
+	JaxNotificationService jaxNotificationService;
 	
 	Logger logger = LoggerFactory.getLogger(RemittanceApplicationService.class);
 	
@@ -198,4 +218,33 @@ public void updatePayTokenNull(List<RemittanceApplication> lstPayIdDetails,Payme
 		return resultMap;
 	}
 
+	public void checkForSuspiciousPaymentAttempts(BigDecimal remittanceApplicationId) {
+		Long count = remittanceApplicationRepository.getFailedTransactionAttemptCount(metaData.getCustomerId());
+		if (count > 2) {
+			// deactivate user and send mail to compliance
+			logger.info("suspicious failed payment attempt found,  remittanceApplicationId id: {}, customer id {}",
+					remittanceApplicationId, metaData.getCustomerId());
+			userService.deActivateFsCustomer(metaData.getCustomerId());
+			SuspiciousTransactionPaymentDto notificationModel = remittanceTransactionService
+					.getSuspiciousTransactionPaymentDto(remittanceApplicationId, count + 1);
+			Email email = new Email();
+			email.setSubject("User ID Block");
+			email.addTo(jaxTenantProperties.getComplianceEmail());
+			email.setITemplate(TemplatesMX.SUSPICIOUS_USER);
+			email.setHtml(true);
+			email.getModel().put(NotificationConstants.RESP_DATA_KEY, notificationModel);
+			jaxNotificationService.sendEmail(email);
+			throw new GlobalException(JaxError.UNAUTHORIZED,
+					"Please visit branch/compliance team to activate the account");
+		}
+	}
+	
+	public RemittanceApplication getRemittanceApplicationByTransactionId(BigDecimal remittanceTransactionId) {
+		RemittanceTransaction remitTrxn = remittanceTransactionService.getRemittanceTransactionById(remittanceTransactionId);
+		return remittanceApplicationDao.getApplication(remitTrxn.getApplicationDocumentNo(), remitTrxn.getApplicationdocumentFinancialyear());
+	}
+	
+	public RemittanceApplication getRemittanceApplicationById(BigDecimal remittanceApplicationId) {
+		return remittanceApplicationDao.getApplication(remittanceApplicationId);
+	}
 }

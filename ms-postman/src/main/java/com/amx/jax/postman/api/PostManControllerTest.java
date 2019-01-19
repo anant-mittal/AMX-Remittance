@@ -38,6 +38,7 @@ import com.amx.jax.postman.model.Message;
 import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.postman.service.PostManServiceImpl;
+import com.amx.utils.ArgUtil;
 import com.amx.utils.IoUtils;
 import com.amx.utils.JsonUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -98,7 +99,7 @@ public class PostManControllerTest {
 	 *
 	 * @return the message
 	 */
-	@RequestMapping(value = "exception")
+	@RequestMapping(value = "exception", method = RequestMethod.GET)
 	public Message notifySlack() {
 
 		try {
@@ -113,8 +114,7 @@ public class PostManControllerTest {
 	 * Location.
 	 *
 	 * @return the geo location
-	 * @throws PostManException
-	 *             the post man exception
+	 * @throws PostManException the post man exception
 	 */
 	@RequestMapping(value = PostManUrls.GEO_LOC, method = RequestMethod.GET)
 	public GeoLocation location() throws PostManException {
@@ -131,11 +131,9 @@ public class PostManControllerTest {
 	/**
 	 * Prints the.
 	 *
-	 * @param tnt
-	 *            the tnt
+	 * @param tnt the tnt
 	 * @return the message
-	 * @throws PostManException
-	 *             the post man exception
+	 * @throws PostManException the post man exception
 	 */
 	@RequestMapping(value = PostManUrls.PROCESS_TEMPLATE + "/print", method = RequestMethod.GET)
 	public Message print(@RequestParam Tenant tnt) throws PostManException {
@@ -151,15 +149,11 @@ public class PostManControllerTest {
 	/**
 	 * Fb push.
 	 *
-	 * @param msg
-	 *            the msg
+	 * @param msg the msg
 	 * @return the push message
-	 * @throws PostManException
-	 *             the post man exception
-	 * @throws InterruptedException
-	 *             the interrupted exception
-	 * @throws ExecutionException
-	 *             the execution exception
+	 * @throws PostManException     the post man exception
+	 * @throws InterruptedException the interrupted exception
+	 * @throws ExecutionException   the execution exception
 	 */
 	@RequestMapping(value = PostManUrls.NOTIFY_PUSH, method = RequestMethod.POST)
 	public PushMessage fbPush(@RequestBody PushMessage msg)
@@ -171,17 +165,12 @@ public class PostManControllerTest {
 	/**
 	 * Fb push.
 	 *
-	 * @param token
-	 *            the token
-	 * @param topic
-	 *            the topic
+	 * @param token the token
+	 * @param topic the topic
 	 * @return the string
-	 * @throws PostManException
-	 *             the post man exception
-	 * @throws InterruptedException
-	 *             the interrupted exception
-	 * @throws ExecutionException
-	 *             the execution exception
+	 * @throws PostManException     the post man exception
+	 * @throws InterruptedException the interrupted exception
+	 * @throws ExecutionException   the execution exception
 	 */
 	@RequestMapping(value = PostManUrls.NOTIFY_PUSH_SUBSCRIBE, method = RequestMethod.POST)
 	public String fbPush(@RequestParam String token, @PathVariable String topic)
@@ -193,29 +182,22 @@ public class PostManControllerTest {
 	/**
 	 * Process template.
 	 *
-	 * @param template
-	 *            the template
-	 * @param ext
-	 *            the ext
-	 * @param email
-	 *            the email
-	 * @param data
-	 *            the data
-	 * @param tnt
-	 *            the tnt
-	 * @param lib
-	 *            the lib
+	 * @param template the template
+	 * @param ext      the ext
+	 * @param email    the email
+	 * @param data     the data
+	 * @param tnt      the tnt
+	 * @param lib      the lib
 	 * @return the string
-	 * @throws IOException
-	 *             Signals that an I/O exception has occurred.
-	 * @throws PostManException
-	 *             the post man exception
+	 * @throws IOException      Signals that an I/O exception has occurred.
+	 * @throws PostManException the post man exception
 	 */
 	@RequestMapping(value = PostManUrls.PROCESS_TEMPLATE + "/{template}.{ext}", method = RequestMethod.GET)
 	public String processTemplate(@PathVariable("template") TemplatesMX template, @PathVariable("ext") String ext,
 			@RequestParam(name = "email", required = false) String email,
 			@RequestBody(required = false) Map<String, Object> data, @RequestParam(required = false) Tenant tnt,
-			@RequestParam(required = false) File.PDFConverter lib)
+			@RequestParam(required = false) File.PDFConverter lib,
+			@RequestParam(required = false) TemplatesMX attachment)
 			throws IOException, /* DocumentException, */ PostManException {
 
 		Map<String, Object> map = readJsonWithObjectMapper("templates/dummy/" + template.getSampleJSON());
@@ -254,9 +236,18 @@ public class PostManControllerTest {
 				// this.readImageWithObjectMapper(null);
 
 				File file2 = new File();
-				file2.setITemplate(template);
+
+				if (ArgUtil.isEmpty(attachment)) {
+					file2.setITemplate(template);
+					file2.setModel(map);
+				} else {
+					file2.setITemplate(attachment);
+					Map<String, Object> map2 = readJsonWithObjectMapper(
+							"templates/dummy/" + attachment.getSampleJSON());
+					file2.setModel(map2);
+				}
+
 				file2.setType(File.Type.PDF);
-				file2.setModel(map);
 				file2.setConverter(lib);
 
 				eml.addFile(file2);
@@ -273,11 +264,9 @@ public class PostManControllerTest {
 	/**
 	 * Read json with object mapper.
 	 *
-	 * @param jsonFile
-	 *            the json file
+	 * @param jsonFile the json file
 	 * @return the map
-	 * @throws IOException
-	 *             Signals that an I/O exception has occurred.
+	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	@SuppressWarnings("unchecked")
 	public Map<String, Object> readJsonWithObjectMapper(String jsonFile) throws IOException {
@@ -289,11 +278,9 @@ public class PostManControllerTest {
 	/**
 	 * Read image with object mapper.
 	 *
-	 * @param jsonFile
-	 *            the json file
+	 * @param jsonFile the json file
 	 * @return the input stream source
-	 * @throws IOException
-	 *             Signals that an I/O exception has occurred.
+	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public InputStreamSource readImageWithObjectMapper(String jsonFile) throws IOException {
 		// return objectMapper.readValue(new File(jsonFile), Map.class);

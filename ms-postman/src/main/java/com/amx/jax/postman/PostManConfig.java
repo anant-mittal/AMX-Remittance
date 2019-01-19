@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import com.amx.jax.dict.Language;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.Message;
+import com.amx.jax.postman.model.Notipy.Channel;
 import com.amx.jax.scope.TenantScoped;
 import com.amx.jax.scope.TenantValue;
 
@@ -30,6 +31,33 @@ public class PostManConfig {
 	@TenantValue("${slack.exception.channel}")
 	private String exceptionChannelCode;
 
+	@TenantValue("${slack.channel.notipy.tnt}")
+	private String channelNotipy;
+	@TenantValue("${slack.channel.deployer.tnt}")
+	private String channelDeployer;
+	@TenantValue("${slack.channel.genral.tnt}")
+	private String channelGenral;
+	@TenantValue("${slack.channel.inquiry.tnt}")
+	private String channelInquiry;
+
+	public String getChannelCode(Channel channel) {
+		if (channel == null) {
+			return channelGenral;
+		}
+		switch (channel) {
+		case NOTIPY:
+			return channelNotipy;
+		case DEPLOYER:
+			return channelDeployer;
+		case INQUIRY:
+			return channelInquiry;
+		case GENERAL:
+			return channelGenral;
+		default:
+			return channelGenral;
+		}
+	}
+
 	/**
 	 * Gets the tenant.
 	 *
@@ -51,8 +79,7 @@ public class PostManConfig {
 	/**
 	 * Gets the local.
 	 *
-	 * @param file
-	 *            the file
+	 * @param file the file
 	 * @return the local
 	 */
 	public Locale getLocal(File file) {
@@ -121,6 +148,18 @@ public class PostManConfig {
 	@Value("${spring.mail.from}")
 	private String mailDefaultSender;
 
+	@Value("${spring.mail.retry.count}")
+	private Integer emailRetryCount;
+
+	@Value("${spring.mail.retry.batch}")
+	private Integer emailRetryBatch;
+
+	@Value("${spring.mail.retry.push}")
+	private Integer emailRetryPush;
+
+	@Value("${spring.mail.retry.poll}")
+	private Integer emailRetryPoll;
+
 	public String getMailFrom() {
 		return mailFrom;
 	}
@@ -163,6 +202,38 @@ public class PostManConfig {
 
 	public String getMailDefaultSender() {
 		return mailDefaultSender;
+	}
+
+	public Integer getEmailRetryCount() {
+		return emailRetryCount;
+	}
+
+	public void setEmailRetryCount(Integer emailRetryCount) {
+		this.emailRetryCount = emailRetryCount;
+	}
+
+	public Integer getEmailRetryBatch() {
+		return emailRetryBatch;
+	}
+
+	public void setEmailRetryBatch(Integer emailRetryBatch) {
+		this.emailRetryBatch = emailRetryBatch;
+	}
+
+	public Integer getEmailRetryPush() {
+		return emailRetryPush;
+	}
+
+	public void setEmailRetryPush(Integer emailRetryPush) {
+		this.emailRetryPush = emailRetryPush;
+	}
+
+	public Integer getEmailRetryPoll() {
+		return emailRetryPoll;
+	}
+
+	public void setEmailRetryPoll(Integer emailRetryPoll) {
+		this.emailRetryPoll = emailRetryPoll;
 	}
 
 }

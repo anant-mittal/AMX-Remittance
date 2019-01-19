@@ -1,0 +1,4 @@
+{
+	"_subject": "Transaction Credit Notification",
+	"_message": "Your transaction with us dated [[${data.date}]] having Trans Ref No: [[${data.refno}]] for [[${data.currency}]] [[${data.amount}]] has been successfully transferred to the beneficiary account.  You now have  [[${data.loyaltypoints}]] loyalty points."
+}

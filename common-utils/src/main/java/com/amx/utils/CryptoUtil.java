@@ -14,8 +14,9 @@ public final class CryptoUtil {
 	private static final Logger LOGGER = LoggerFactory.getLogger(CryptoUtil.class);
 
 	private final static int INTERVAL = 30; // 30 secs
-	private final static int INTERVAL_MILLIS = INTERVAL * 1000;
-	private final static String ALGO_SHA1 = "SHA1";
+	private final static int TOLERANCE = 30; // 30 secs
+	// private final static int INTERVAL_MILLIS = INTERVAL * 1000;
+	// private final static String ALGO_SHA1 = "SHA1";
 	private final static String PASS_DELIMITER = "#";
 	private final static String DEFAULT_ENCODING = "UTF-8";
 	private final static char[] hexArray = "0123456789ABCDEF".toCharArray();
@@ -32,10 +33,22 @@ public final class CryptoUtil {
 	/** The Constant SHA2. */
 	private static final String SHA2 = "SHA-256";
 
+	/**
+	 * 
+	 * @param interval
+	 *            : In Seconds
+	 * @param secretKey
+	 * @param message
+	 * @param currentTime
+	 *            : In MilliSeconds
+	 * @return
+	 */
 	public static String generateHMAC(long interval, String secretKey, String message, long currentTime) {
 		try {
-			Long epoch = Math.round(currentTime / 1000.0);
-			String elapsed = Long.toString(epoch / interval);
+
+			// Long epoch = Math.round(currentTime / 1000.0);
+
+			String elapsed = Long.toString(currentTime / (interval * 1000));
 			String password = String.join(PASS_DELIMITER, elapsed, secretKey, message);
 			// System.out.println(interval + " " + secretKey + " " + message + " " +
 			// currentTime + " " + password);
@@ -53,7 +66,8 @@ public final class CryptoUtil {
 
 	/**
 	 * 
-	 * @param interval  in seconds
+	 * @param interval
+	 *            in seconds
 	 * @param secretKey
 	 * @param message
 	 * @return
@@ -71,24 +85,52 @@ public final class CryptoUtil {
 		return generateHMAC(secretKey, message, System.currentTimeMillis());
 	}
 
-	public static boolean validateHMAC(long interval, String secretKey, String message, long currentTime, String hash) {
-		LOGGER.debug("validateHMAC I:{} S:{} M:{} C:{} H:{}", interval, secretKey, message, currentTime, hash);
+	public static boolean validateHMAC(long currentTime, long interval, long tolerance, String secretKey,
+			String message, String hash) {
+		LOGGER.debug("validateHMAC I:{} S:{} M:{} C:{} H:{} T:{}", interval, secretKey, message, currentTime, hash,
+				tolerance);
 		if (generateHMAC(interval, secretKey, message).equals(hash)) {
 			return true;
-		} else if (generateHMAC(interval, secretKey, message, currentTime - interval * 1000).equals(hash)) {
+		} else if (generateHMAC(interval, secretKey, message, currentTime - tolerance * 1000).equals(hash)) {
 			return true;
-		} else if (generateHMAC(interval, secretKey, message, currentTime + interval * 1000).equals(hash)) {
+		} else if (generateHMAC(interval, secretKey, message, currentTime + tolerance * 1000).equals(hash)) {
 			return true;
 		}
 		return false;
 	}
 
+	public static boolean validateNumHMAC(long currentTime, long interval, long tolerance, String secretKey,
+			String message, String numHash) {
+		LOGGER.debug("validateHMAC I:{} S:{} M:{} C:{} H:{} T:{}", interval, secretKey, message, currentTime, numHash,
+				tolerance);
+		if (toNumeric(numHash.length(), generateHMAC(interval, secretKey, message)).equals(numHash)) {
+			return true;
+		} else if (toNumeric(numHash.length(),
+				generateHMAC(interval, secretKey, message, currentTime - tolerance * 1000)).equals(numHash)) {
+			return true;
+		} else if (toNumeric(numHash.length(),
+				generateHMAC(interval, secretKey, message, currentTime + tolerance * 1000)).equals(numHash)) {
+			return true;
+		}
+		return false;
+	}
+
+	@Deprecated
+	public static boolean validateHMAC(long interval, String secretKey, String message, long currentTime, String hash) {
+		return validateHMAC(currentTime, interval, interval, secretKey, message, hash);
+	}
+
+	public static boolean validateHMAC(long interval, long tolerance, String secretKey, String message, String hash) {
+		return validateHMAC(System.currentTimeMillis(), interval, tolerance, secretKey, message, hash);
+	}
+
+	@Deprecated
 	public static boolean validateHMAC(long interval, String secretKey, String message, String hash) {
 		return validateHMAC(interval, secretKey, message, System.currentTimeMillis(), hash);
 	}
 
 	public static boolean validateHMAC(String secretKey, String message, String publicToken) {
-		return validateHMAC(INTERVAL, secretKey, message, publicToken);
+		return validateHMAC(INTERVAL, TOLERANCE, secretKey, message, publicToken);
 	}
 
 	public static String toNumeric(int length, String hash) {
@@ -104,6 +146,21 @@ public final class CryptoUtil {
 		return ArgUtil.parseAsString(hashCode * passLenFill);
 	}
 
+	public static String toHex(int length, String hash) {
+		// length = length*2;
+		char[] hashChars = hash.toCharArray();
+		int totalInt = 0;
+		for (int i = 0; i < hashChars.length; i++) {
+			int cint = hashChars[i];
+			totalInt = (cint * cint * i) + totalInt;
+		}
+		long hashCode = Math.max(totalInt % Math.round(Math.pow(16, length)), 2);
+		int passLenDiff = (length - String.valueOf(Long.toHexString(hashCode)).length());
+		long passLenFill = Math.max(Math.round(Math.pow(16, passLenDiff)) - 1, 1);
+		// return (Long.toHexString(hashCode * passLenFill));
+		return (Long.toHexString(hashCode * passLenFill) + "FFFFFF").substring(0, length);
+	}
+
 	private static String bytesToHex(byte[] bytes) {
 		char[] hexChars = new char[bytes.length * 2];
 		for (int j = 0; j < bytes.length; j++) {
@@ -117,9 +174,11 @@ public final class CryptoUtil {
 	/**
 	 * Gets the m d5 hash.
 	 *
-	 * @param str the str
+	 * @param str
+	 *            the str
 	 * @return md5 hashed string
-	 * @throws NoSuchAlgorithmException the no such algorithm exception
+	 * @throws NoSuchAlgorithmException
+	 *             the no such algorithm exception
 	 */
 	public static String getMD5Hash(String str) throws NoSuchAlgorithmException {
 		return getMD5Hash(str.getBytes());
@@ -128,9 +187,11 @@ public final class CryptoUtil {
 	/**
 	 * Gets the m d5 hash.
 	 *
-	 * @param byteArray the byte array
+	 * @param byteArray
+	 *            the byte array
 	 * @return md5 hashed string
-	 * @throws NoSuchAlgorithmException the no such algorithm exception
+	 * @throws NoSuchAlgorithmException
+	 *             the no such algorithm exception
 	 */
 	public static String getMD5Hash(byte[] byteArray) throws NoSuchAlgorithmException {
 		return getHashedStrFor(byteArray, MD5);
@@ -139,9 +200,11 @@ public final class CryptoUtil {
 	/**
 	 * Gets the SH a1 hash.
 	 *
-	 * @param str the str
+	 * @param str
+	 *            the str
 	 * @return sha1 hashed string
-	 * @throws NoSuchAlgorithmException the no such algorithm exception
+	 * @throws NoSuchAlgorithmException
+	 *             the no such algorithm exception
 	 */
 	public static String getSHA1Hash(String str) throws NoSuchAlgorithmException {
 		return getSHA1Hash(str.getBytes());
@@ -150,9 +213,11 @@ public final class CryptoUtil {
 	/**
 	 * Gets the SH a1 hash.
 	 *
-	 * @param byteArray the byte array
+	 * @param byteArray
+	 *            the byte array
 	 * @return sha1 hashed string
-	 * @throws NoSuchAlgorithmException the no such algorithm exception
+	 * @throws NoSuchAlgorithmException
+	 *             the no such algorithm exception
 	 */
 	public static String getSHA1Hash(byte[] byteArray) throws NoSuchAlgorithmException {
 		return getHashedStrFor(byteArray, SHA1);
@@ -161,9 +226,11 @@ public final class CryptoUtil {
 	/**
 	 * Gets the SH a2 hash.
 	 *
-	 * @param str the str
+	 * @param str
+	 *            the str
 	 * @return sha2 hashed string
-	 * @throws NoSuchAlgorithmException the no such algorithm exception
+	 * @throws NoSuchAlgorithmException
+	 *             the no such algorithm exception
 	 */
 	public static String getSHA2Hash(String str) throws NoSuchAlgorithmException {
 		return getSHA2Hash(str.getBytes());
@@ -172,9 +239,11 @@ public final class CryptoUtil {
 	/**
 	 * Gets the SH a2 hash.
 	 *
-	 * @param byteArray the byte array
+	 * @param byteArray
+	 *            the byte array
 	 * @return sha2 hashed string
-	 * @throws NoSuchAlgorithmException the no such algorithm exception
+	 * @throws NoSuchAlgorithmException
+	 *             the no such algorithm exception
 	 */
 	public static String getSHA2Hash(byte[] byteArray) throws NoSuchAlgorithmException {
 		return getHashedStrFor(byteArray, SHA2);
@@ -183,10 +252,13 @@ public final class CryptoUtil {
 	/**
 	 * Gets the hashed str for.
 	 *
-	 * @param byteArray the byte array
-	 * @param algorithm the algorithm
+	 * @param byteArray
+	 *            the byte array
+	 * @param algorithm
+	 *            the algorithm
 	 * @return the hashed str for
-	 * @throws NoSuchAlgorithmException the no such algorithm exception
+	 * @throws NoSuchAlgorithmException
+	 *             the no such algorithm exception
 	 */
 	private static String getHashedStrFor(byte[] byteArray, String algorithm) throws NoSuchAlgorithmException {
 
@@ -208,6 +280,7 @@ public final class CryptoUtil {
 	public static class HashBuilder implements Serializable {
 		private static final long serialVersionUID = 3866060536613924880L;
 		private long interval;
+		private long tolerance;
 		private String secret;
 		private String message;
 		private long currentTime;
@@ -217,6 +290,7 @@ public final class CryptoUtil {
 		public HashBuilder() {
 			this.currentTime = System.currentTimeMillis();
 			this.interval = INTERVAL;
+			this.tolerance = TOLERANCE;
 		}
 
 		/**
@@ -227,6 +301,11 @@ public final class CryptoUtil {
 		 */
 		public HashBuilder interval(long interval) {
 			this.interval = interval;
+			return this;
+		}
+
+		public HashBuilder tolerance(long tolerance) {
+			this.tolerance = tolerance;
 			return this;
 		}
 
@@ -293,6 +372,11 @@ public final class CryptoUtil {
 			return this;
 		}
 
+		public HashBuilder toHex(int length) {
+			this.output = CryptoUtil.toHex(length, this.hash);
+			return this;
+		}
+
 		public String hash() {
 			return hash;
 		}
@@ -302,7 +386,17 @@ public final class CryptoUtil {
 		}
 
 		public boolean validate(String hash) {
-			return CryptoUtil.validateHMAC(this.interval, this.secret, this.message, this.currentTime, hash);
+			// return CryptoUtil.validateHMAC(this.interval, this.secret, this.message,
+			// this.currentTime, hash);
+
+			return CryptoUtil.validateHMAC(this.currentTime, this.interval, this.tolerance, this.secret, this.message,
+					hash);
+
+		}
+
+		public boolean validateNumHMAC(String numHash) {
+			return CryptoUtil.validateNumHMAC(this.currentTime, this.interval, this.tolerance, this.secret,
+					this.message, numHash);
 		}
 	}
 

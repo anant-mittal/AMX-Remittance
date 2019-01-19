@@ -82,14 +82,21 @@
 				</configuration>
 			</plugin>
 
-			<!-- <plugin> <groupId>org.sonarsource.scanner.maven</groupId> <artifactId>sonar-maven-plugin</artifactId> 
-				<version>3.3.0.603</version> </plugin> -->
+			<plugin>
+				<groupId>org.sonarsource.scanner.maven</groupId>
+				<artifactId>sonar-maven-plugin</artifactId>
+				<version>3.3.0.603</version>
+			</plugin>
 		</plugins>
 	</build>
 
-	<!-- <pluginRepositories> <pluginRepository> <id>sonatype-snapshots</id> 
-		<name>Sonatype Snapshots</name> <url>https://oss.sonatype.org/content/repositories/snapshots/</url> 
-		</pluginRepository> </pluginRepositories> -->
+	<pluginRepositories>
+		<pluginRepository>
+			<id>sonatype-snapshots</id>
+			<name>Sonatype Snapshots</name>
+			<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+		</pluginRepository>
+	</pluginRepositories>
 
 	<modules>
 		<module>amxeco-parent</module>
@@ -120,11 +127,13 @@
 		
 
 		<module>server-ui</module>
+		
+		<module>server-common/server-common-branch</module>
+		<module>server-branch</module>
 		<module>server-offsite</module>
 		<!-- <module>server-stomp</module> -->
 
 		<module>sw-adapter</module>
-		<module>server-branch</module>
 		<module>test-size</module>
 		<!-- <module>server-kiosk</module> -->
 		<!-- <module>server-sample</module> -->
