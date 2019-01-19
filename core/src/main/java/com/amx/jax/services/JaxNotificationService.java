@@ -160,14 +160,26 @@ public class JaxNotificationService {
 	
 	public void sendProfileChangeNotificationMobile(CustomerModel customerModel, PersonInfo personinfo, String oldMobile) {
 		if (customerModel.getMobile() != null) {
-			SMS sms = new SMS();
+			SMS smsOld = new SMS();
 			// to new and old
-			sms.addTo(oldMobile, customerModel.getMobile());
-			sms.getModel().put(RESP_DATA_KEY, personinfo);
-			sms.setITemplate(TemplatesMX.PROFILE_CHANGE_SMS);
+			smsOld.addTo(oldMobile, customerModel.getMobile());
+			smsOld.getModel().put(RESP_DATA_KEY, personinfo);
+			smsOld.setITemplate(TemplatesMX.PROFILE_CHANGE_SMS);
 
 			try {
-				postManService.sendSMSAsync(sms);
+				postManService.sendSMSAsync(smsOld);
+			} catch (PostManException e) {
+				logger.error("error in sendProfileChangeNotificationMobile", e);
+			}
+
+			SMS smsNew = new SMS();
+			// to new and old
+			smsNew.addTo(oldMobile, customerModel.getMobile());
+			smsNew.getModel().put(RESP_DATA_KEY, personinfo);
+			smsNew.setITemplate(TemplatesMX.PROFILE_CHANGE_SMS);
+
+			try {
+				postManService.sendSMSAsync(smsNew);
 			} catch (PostManException e) {
 				logger.error("error in sendProfileChangeNotificationMobile", e);
 			}
