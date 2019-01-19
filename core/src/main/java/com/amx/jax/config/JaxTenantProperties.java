@@ -16,6 +16,9 @@ public class JaxTenantProperties {
 	private Boolean isDynamicPricingEnabled;
 
 	public Boolean getIsDynamicPricingEnabled() {
+		if (isDynamicPricingEnabled == null) {
+			return Boolean.FALSE;
+		}
 		return isDynamicPricingEnabled;
 	}
 

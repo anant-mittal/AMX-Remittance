@@ -44,6 +44,7 @@ import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
 import com.amx.jax.auditlog.JaxTransactionEvent;
 import com.amx.jax.config.JaxProperties;
+import com.amx.jax.config.JaxTenantProperties;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxDbConfig;
 import com.amx.jax.constants.JaxChannel;
@@ -192,6 +193,8 @@ public class RemittanceTransactionManager {
 	CountryService countryService;
 	@Autowired
 	JaxConfigService jaxConfigService;
+	@Autowired
+	JaxTenantProperties jaxTenantProperties ; 
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -569,11 +572,16 @@ public class RemittanceTransactionManager {
 		BigDecimal fcAmount = model.getForeignAmount();
 		BigDecimal lcAmount = model.getLocalAmount();
 		ExchangeRateBreakup exchangeRateBreakup;
-		if (jaxProperties.getExrateBestRateLogicEnable()) {
-			BigDecimal routingBankId = (BigDecimal) remitApplParametersMap.get("P_ROUTING_BANK_ID");
-			BigDecimal fCurrencyId = (BigDecimal) remitApplParametersMap.get("P_FOREIGN_CURRENCY_ID");
-			exchangeRateBreakup = newExchangeRateService.getExchangeRateBreakUp(fCurrencyId, lcAmount, fcAmount,
-					routingBankId);
+		BigDecimal routingBankId = (BigDecimal) remitApplParametersMap.get("P_ROUTING_BANK_ID");
+		BigDecimal fCurrencyId = (BigDecimal) remitApplParametersMap.get("P_FOREIGN_CURRENCY_ID");
+		BigDecimal beneBankCountryId  = (BigDecimal) remitApplParametersMap.get("P_BENEFICIARY_COUNTRY_ID");
+		
+		if (jaxTenantProperties.getIsDynamicPricingEnabled()) {
+			exchangeRateBreakup = newExchangeRateService.getExchangeRateBreakUpUsingDynamicPricing(fCurrencyId,
+					lcAmount, fcAmount, beneBankCountryId, routingBankId);
+		} else if (jaxProperties.getExrateBestRateLogicEnable()) {
+			exchangeRateBreakup = newExchangeRateService.getExchangeRateBreakUpUsingBestRate(fCurrencyId, lcAmount,
+					fcAmount, routingBankId);
 		} else {
 			exchangeRateBreakup = createExchangeRateBreakUp(exchangeRates, model, responseModel);
 		}

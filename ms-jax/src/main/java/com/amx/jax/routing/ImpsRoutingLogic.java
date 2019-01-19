@@ -109,8 +109,9 @@ public class ImpsRoutingLogic implements IRoutingLogic {
 		BigDecimal localAmount = (BigDecimal) inputTemp.get("P_LOCAL_AMT");
 		BigDecimal toCurrencyId = (BigDecimal) inputTemp.get("P_CURRENCY_ID");
 		BigDecimal routingBankId = (BigDecimal) inputTemp.get("P_ROUTING_BANK_ID");
+		BigDecimal beneBankCountryId = (BigDecimal) inputTemp.get("P_BENEFICIARY_COUNTRY_ID");
 		ExchangeRateBreakup exRateBreakup = newExchangeRateService.getExchangeRateBreakup(toCurrencyId, localAmount,
-				routingBankId);
+				routingBankId, beneBankCountryId);
 		return exRateBreakup.getConvertedFCAmount();
 
 	}

@@ -35,8 +35,8 @@ public class PricerTest {
 		setDefaults();
 		BigDecimal fromCurrency = BigDecimal.ONE;
 		BigDecimal toCurrency = new BigDecimal(4);
-		ExchangeRateResponseModel result = jaxDynamicPriceService.getExchangeRatese(fromCurrency, toCurrency,
-				BigDecimal.ONE);
+		ExchangeRateResponseModel result = jaxDynamicPriceService.getExchangeRates(fromCurrency, toCurrency,
+				BigDecimal.ONE, null, new BigDecimal(94), null);
 		assertNotNull(result);
 
 	}

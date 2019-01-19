@@ -2,6 +2,7 @@ package com.amx.jax.exrateservice.service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -32,18 +33,24 @@ public class JaxDynamicPriceService {
 	@Autowired
 	ExchangeRateService exchangeRateService;
 
-	public ExchangeRateResponseModel getExchangeRatese(BigDecimal fromCurrency, BigDecimal toCurrency,
-			BigDecimal lcAmount) {
+	public ExchangeRateResponseModel getExchangeRates(BigDecimal fromCurrency, BigDecimal toCurrency,
+			BigDecimal lcAmount, BigDecimal foreignAmount, BigDecimal beneBankCountryId, BigDecimal routingBankId) {
 		PricingRequestDTO pricingRequestDTO = new PricingRequestDTO();
 		pricingRequestDTO.setCustomerId(metaData.getCustomerId());
 		pricingRequestDTO.setChannel(metaData.getChannel().getClientChannel());
 		pricingRequestDTO.setCountryBranchId(metaData.getCountryBranchId());
 		pricingRequestDTO.setForeignCurrencyId(toCurrency);
 		pricingRequestDTO.setLocalAmount(lcAmount);
+		pricingRequestDTO.setForeignAmount(foreignAmount);
 		pricingRequestDTO.setLocalCountryId(metaData.getCountryId());
 		pricingRequestDTO.setLocalCurrencyId(fromCurrency);
-		pricingRequestDTO.setPricingLevel(PRICE_BY.COUNTRY);
-		pricingRequestDTO.setForeignCountryId(new BigDecimal(94));
+		if (routingBankId != null) {
+			pricingRequestDTO.setRoutingBankIds(Arrays.asList(routingBankId));
+			pricingRequestDTO.setPricingLevel(PRICE_BY.ROUTING_BANK);
+		} else {
+			pricingRequestDTO.setPricingLevel(PRICE_BY.COUNTRY);
+		}
+		pricingRequestDTO.setForeignCountryId(beneBankCountryId);
 
 		AmxApiResponse<PricingResponseDTO, Object> apiResponse = pricerServiceClient
 				.fetchPriceForCustomer(pricingRequestDTO);
