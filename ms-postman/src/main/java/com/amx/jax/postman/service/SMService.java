@@ -1,6 +1,7 @@
 package com.amx.jax.postman.service;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -195,7 +196,9 @@ public class SMService {
 		if (!appConfig.isProdMode() && (phone != null && phone.length() == 10)) {
 
 			Map<String, Object> map = MapBuilder.map().put("sender", senderId).put("route", route).put("country", "91")
-					.put(messagePath, sms.toText()).put(toPath, phone).toMap();
+					.put(messagePath,
+							URLEncoder.encode( sms.toText(), "UTF-8" )
+					).put(toPath, phone).toMap();
 			return restService.ajax(remoteUrl).header("authkey", authKey).header("content-type", "application/json")
 					.post(JsonUtil.toJson(map)).asString();
 

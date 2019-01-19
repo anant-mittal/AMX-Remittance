@@ -112,4 +112,5 @@ public class ConstantDocument {
 	public static final BigDecimal MURQAB_FOREIGNCURRENCY = new BigDecimal(89);
 
 	public static final String ARTICLE_20_CODE = "20";
+	public static final BigDecimal BIZ_COMPONENT_ID_NEW_CIVIL_ID = new BigDecimal(2000);
 }
