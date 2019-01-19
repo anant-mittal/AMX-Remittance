@@ -12,12 +12,14 @@ public class CActivityEvent extends AuditEvent {
 
 	public static enum Type implements EventType {
 
-		BENE_ADD, BENE_UPDATE, FC_UPDATE,
+		BENE_ADD, BENE_UPDATE,
 
-		APPLICATION_CREATED,
+		APPLICATION_CREATED, APPLICATION_UPDATE,
 
-		DELETE, ENABLED, DISABLED,
+		FC_UPDATE,
+
 		GEO_LOCATION;
+
 		@Override
 		public EventMarker marker() {
 			return EventMarker.AUDIT;
