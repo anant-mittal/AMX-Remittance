@@ -279,12 +279,8 @@ a {
 										<td class="content-block"><strong>Dear <span  th:text="${data.firstName}"></span>  <span  th:text="${data.middleName}"></span>  <span  th:text="${data.lastName}"></span>,</strong>
 										</td>
 									</tr>
-									<tr th:switch="${change_type}">
-										<td class="content-block" th:case="'PASSWORD_CHANGE'">Your <span th:text="${_tu.prop('company.name')}" th:remove="tag"></span> Online account password have been changed. If it's not you, please contact our customer care executive @ <span th:text="${_tu.prop('company.telephone')}" th:remove="tag"></span> or <span th:text="${_tu.prop('support.contact.from')}" th:remove="tag"></span> for more information.</td>
-										<td class="content-block" th:case="'SECURITY_QUESTION_CHANGE'">Your <span th:text="${_tu.prop('company.name')}" th:remove="tag"></span> Online account security credentials have been changed. If it's not you, please contact our customer care executive @ <span th:text="${_tu.prop('company.telephone')}" th:remove="tag"></span> or <span th:text="${_tu.prop('support.contact.from')}" th:remove="tag"></span> for more information.</td>
-										<td class="content-block" th:case="'IMAGE_CHANGE'">Your <span th:text="${_tu.prop('company.name')}" th:remove="tag"></span> Online account security credentials have been changed. If it's not you, please contact our customer care executive @ <span th:text="${_tu.prop('company.telephone')}" th:remove="tag"></span> or <span th:text="${_tu.prop('support.contact.from')}" th:remove="tag"></span> for more information.</td>
-										<td class="content-block" th:case="'MOBILE_CHANGE'">Your <span th:text="${_tu.prop('company.name')}" th:remove="tag"></span>  account registered Phone Number has been successfully updated with us. This phone number will be used for all communication from <span th:text="${_tu.prop('company.name')}" th:remove="tag"></span></td>
-										<td class="content-block" th:case="'EMAIL_CHANGE'">Your <span th:text="${_tu.prop('company.name')}" th:remove="tag"></span> account registered Email ID has been successfully updated with us. This email ID will be used for all communication from <span th:text="${_tu.prop('company.name')}" th:remove="tag"></span></td>
+									<tr>
+										<td class="content-block">Your registered email address with <span th:text="${_tu.prop('company.name')}" th:remove="tag"></span> Online account have been changed. If it's not you or you want to revert the email ID to the old email ID, please contact customer care @ <span th:text="${_tu.prop('company.telephone')}" th:remove="tag"></span> or <span th:text="${_tu.prop('support.contact.from')}" th:remove="tag"></span> for more information.</td>
 									</tr>								
 									<tr>
 										<td class="content-block">Thanks and Regards,<br/>
