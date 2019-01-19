@@ -21,6 +21,7 @@ import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
+import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.auth.QuestModelDTO;
 import com.amx.jax.services.CustomerDataVerificationService;
 import com.amx.jax.userservice.service.UserService;
@@ -40,9 +41,12 @@ public class CustomerController {
 
 	@Autowired
 	private CustomerDataVerificationService customerDataVerificationService;
-	
+
 	@Autowired
 	private UserValidationService userValidationService;
+
+	@Autowired
+	MetaData metaData;
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -137,14 +141,14 @@ public class CustomerController {
 	@RequestMapping(value = "/unlock/", method = RequestMethod.GET)
 	public ApiResponse unlockCustomer() {
 		logger.info("in unlockCustomer Request ");
-		ApiResponse response = userService.unlockCustomer();
+		ApiResponse response = userService.unlockCustomer(metaData.getCustomerId());
 		return response;
 	}
 
 	@RequestMapping(value = "/deactivate/", method = RequestMethod.GET)
 	public ApiResponse deActivateCustomer() {
 		logger.info("in deActivateCustomer Request ");
-		ApiResponse response = userService.deactivateCustomer();
+		ApiResponse response = userService.deactivateCustomer(metaData.getCustomerId());
 		return response;
 	}
 
@@ -200,8 +204,8 @@ public class CustomerController {
 		ApiResponse response = customerDataVerificationService.saveVerificationData(model);
 		return response;
 	}
-	
-	//-- Email and Mobile update New API 
+
+	// -- Email and Mobile update New API
 	@RequestMapping(value = "/saveEmailOrMobile", method = RequestMethod.POST)
 	public ApiResponse saveMobile(@RequestBody CustomerModel customerModel) {
 		logger.info("New API for Save updated Email or Mobile Request : " + customerModel.toString());

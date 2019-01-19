@@ -16,8 +16,9 @@ public class JaxAuditFilter implements AuditFilter<CActivityEvent> {
 
 	@Override
 	public void doFilter(CActivityEvent event) {
-		if (!ArgUtil.isEmpty(metaData.getCustomerId())) {
-			event.setCustomer(metaData.getCustomerId());
+		if (!ArgUtil.isEmpty(metaData.getCustomerId())
+				&& ArgUtil.isEmpty(event.getCustomerId())) {
+			event.setCustomerId(metaData.getCustomerId());
 		}
 	}
 
