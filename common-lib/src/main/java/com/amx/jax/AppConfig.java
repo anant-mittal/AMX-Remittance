@@ -5,17 +5,23 @@ import java.util.Collections;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.PostConstruct;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
 import com.amx.jax.dict.Project;
+import com.amx.jax.dict.Tenant;
 import com.amx.jax.filter.AppClientErrorHanlder;
 import com.amx.jax.filter.AppClientInterceptor;
+import com.amx.jax.scope.TenantProperties;
 import com.amx.utils.ArgUtil;
 
 @Configuration
