@@ -31,6 +31,7 @@ import com.amx.jax.rbaac.manager.DeviceManager;
 import com.amx.jax.rbaac.validation.DeviceValidation;
 import com.amx.utils.CryptoUtil;
 import com.amx.utils.Random;
+import com.amx.utils.TimeUtils;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -174,7 +175,10 @@ public class DeviceService extends AbstractService {
 		Device device = deviceDao.findDevice(deviceRegId);
 		deviceValidation.validateDevice(device);
 		String sessionTokenGen = deviceManager.generateSessionPairToken(device);
-		if (!deviceSessionToken.equals(sessionTokenGen)) {
+		if (!deviceSessionToken.equals(device.getSessionToken()) ||
+				TimeUtils.isDead(device.getModifiedDate().getTime(), deviceManager.getDeviceSessionTimeout() * 1000)
+		// || !deviceSessionToken.equals(sessionTokenGen)
+		) {
 			throw new AuthServiceException(RbaacServiceError.CLIENT_EXPIRED_SESSION_TOKEN, "Session token is expired");
 		}
 		deviceValidation.validateOtpValidationTimeLimit(deviceRegId);
