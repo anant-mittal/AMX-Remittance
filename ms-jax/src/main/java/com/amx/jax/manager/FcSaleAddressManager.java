@@ -545,8 +545,7 @@ public class FcSaleAddressManager extends AbstractModel {
 		if(sb!=null){
 			address = sb.toString();
 		}
-		
-	}
+
 		return address;
 	}
 	

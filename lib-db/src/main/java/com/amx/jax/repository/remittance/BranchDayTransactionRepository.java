@@ -13,7 +13,7 @@ import com.amx.jax.dbmodel.remittance.BranchDayTransactionView;
 
 public interface BranchDayTransactionRepository extends CrudRepository<BranchDayTransactionView, Serializable>{
 	
-	@Query(value="select * from VW_EX_BRANCH_DAY_TRNX_ENQUIRY where ACCOUNT_MMYYYY =to_date(:accountMMYYYY,'dd/MM/yyyyy') and COUNTRY_BRANCH_ID=:countryBranchId and EMPLOYEE_ID =:employeeId and trunc(DOCUMENT_DATE)=to_date(:documentDate,'dd/MM/yyyy') " ,nativeQuery = true)
+	@Query(value="select * from VW_EX_BRANCH_DAY_TRNX_ENQUIRY where ACCOUNT_MMYYYY =to_date(:accountMMYYYY,'dd/MM/yyyy') and COUNTRY_BRANCH_ID=:countryBranchId and EMPLOYEE_ID =:employeeId and trunc(DOCUMENT_DATE)=to_date(:documentDate,'dd/MM/yyyy') " ,nativeQuery = true)
 	 public List<BranchDayTransactionView> getTotalTrnxCount(@Param("accountMMYYYY") String accountMMYYYY,
 			 @Param("countryBranchId") BigDecimal countryBranchId,
 			 @Param("employeeId") BigDecimal employeeId,

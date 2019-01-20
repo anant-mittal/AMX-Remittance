@@ -16,6 +16,7 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.remittance.IRemittanceService;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.response.remittance.UserwiseTransactionDto;
+import com.amx.jax.services.BranchRemittanceService;
 
 @RestController
 public class BranchRemittanceController implements IRemittanceService {
@@ -24,11 +25,12 @@ public class BranchRemittanceController implements IRemittanceService {
 	@Autowired
 	MetaData metaData;
 	
+	@Autowired
+	BranchRemittanceService branchRemitService;
+	
 	@RequestMapping(value = Path.BR_REMITTANCE_USER_WISE_COUNT, method = RequestMethod.GET)
 	public AmxApiResponse<UserwiseTransactionDto, Object> getTotalCount(@RequestParam(value =Params.TRNX_DATE,required=true) String transactiondate){
-		return null;
+		logger.info("user wise total getTotalCount " + transactiondate);
+		return branchRemitService.getTotalCount(transactiondate);
 	}
-	
-
-
 }

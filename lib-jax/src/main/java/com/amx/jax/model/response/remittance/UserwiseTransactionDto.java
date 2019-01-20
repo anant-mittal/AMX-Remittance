@@ -5,122 +5,35 @@ import java.util.Date;
 
 public class UserwiseTransactionDto {
 
-	private BigDecimal idNo;
-	private String transactionType;
-	private String collectionMode;
-	private BigDecimal countryBranchId;
-	private String customerRef;
-	private BigDecimal documentCode;
-	private Date documentDate;
-	private BigDecimal documentFinanceYear;
-	private BigDecimal documentId;
-	private BigDecimal documentNo;
-	private BigDecimal foreignTranxAmount;
-	private BigDecimal localTranxAmount;
-	private BigDecimal refundAmount;
-	private String oldEmos;
-	private String mtcNo;
-	private BigDecimal customerId;
-	private BigDecimal cash;
+	
+	
+	
+	private BigDecimal refundAmount= new BigDecimal(0);
+	private BigDecimal cash= new BigDecimal(0);
+	private BigDecimal cheque= new BigDecimal(0);
+	private BigDecimal kNet= new BigDecimal(0);
+	private BigDecimal others= new BigDecimal(0);
+	private BigDecimal cheqe= new BigDecimal(0);
+	private BigDecimal bankTransfer= new BigDecimal(0);
+	private BigDecimal lastTrnx= new BigDecimal(0);
+	private BigDecimal totaltrnx=new BigDecimal(0);
+	private BigDecimal employeeId;
+	
+	
+/*	private String refundAmount;
+	private BigDecimal cash ;
 	private BigDecimal cheque;
-	private BigDecimal kNet;
-	private BigDecimal others;
-	public BigDecimal getIdNo() {
-		return idNo;
-	}
-	public void setIdNo(BigDecimal idNo) {
-		this.idNo = idNo;
-	}
-	public String getTransactionType() {
-		return transactionType;
-	}
-	public void setTransactionType(String transactionType) {
-		this.transactionType = transactionType;
-	}
-	public String getCollectionMode() {
-		return collectionMode;
-	}
-	public void setCollectionMode(String collectionMode) {
-		this.collectionMode = collectionMode;
-	}
-	public BigDecimal getCountryBranchId() {
-		return countryBranchId;
-	}
-	public void setCountryBranchId(BigDecimal countryBranchId) {
-		this.countryBranchId = countryBranchId;
-	}
-	public String getCustomerRef() {
-		return customerRef;
-	}
-	public void setCustomerRef(String customerRef) {
-		this.customerRef = customerRef;
-	}
-	public BigDecimal getDocumentCode() {
-		return documentCode;
-	}
-	public void setDocumentCode(BigDecimal documentCode) {
-		this.documentCode = documentCode;
-	}
-	public Date getDocumentDate() {
-		return documentDate;
-	}
-	public void setDocumentDate(Date documentDate) {
-		this.documentDate = documentDate;
-	}
-	public BigDecimal getDocumentFinanceYear() {
-		return documentFinanceYear;
-	}
-	public void setDocumentFinanceYear(BigDecimal documentFinanceYear) {
-		this.documentFinanceYear = documentFinanceYear;
-	}
-	public BigDecimal getDocumentId() {
-		return documentId;
-	}
-	public void setDocumentId(BigDecimal documentId) {
-		this.documentId = documentId;
-	}
-	public BigDecimal getDocumentNo() {
-		return documentNo;
-	}
-	public void setDocumentNo(BigDecimal documentNo) {
-		this.documentNo = documentNo;
-	}
-	public BigDecimal getForeignTranxAmount() {
-		return foreignTranxAmount;
-	}
-	public void setForeignTranxAmount(BigDecimal foreignTranxAmount) {
-		this.foreignTranxAmount = foreignTranxAmount;
-	}
-	public BigDecimal getLocalTranxAmount() {
-		return localTranxAmount;
-	}
-	public void setLocalTranxAmount(BigDecimal localTranxAmount) {
-		this.localTranxAmount = localTranxAmount;
-	}
-	public BigDecimal getRefundAmount() {
-		return refundAmount;
-	}
-	public void setRefundAmount(BigDecimal refundAmount) {
-		this.refundAmount = refundAmount;
-	}
-	public String getOldEmos() {
-		return oldEmos;
-	}
-	public void setOldEmos(String oldEmos) {
-		this.oldEmos = oldEmos;
-	}
-	public String getMtcNo() {
-		return mtcNo;
-	}
-	public void setMtcNo(String mtcNo) {
-		this.mtcNo = mtcNo;
-	}
-	public BigDecimal getCustomerId() {
-		return customerId;
-	}
-	public void setCustomerId(BigDecimal customerId) {
-		this.customerId = customerId;
-	}
+	private BigDecimal kNet ;
+	private BigDecimal others ;
+	private BigDecimal cheqe ;
+	private BigDecimal bankTransfer ;
+	private BigDecimal lastTrnx ;
+	private BigDecimal totaltrnx;
+	private BigDecimal employeeId;*/
+	
+	
+	
+	
 	public BigDecimal getCash() {
 		return cash;
 	}
@@ -144,6 +57,42 @@ public class UserwiseTransactionDto {
 	}
 	public void setOthers(BigDecimal others) {
 		this.others = others;
+	}
+	public BigDecimal getCheqe() {
+		return cheqe;
+	}
+	public void setCheqe(BigDecimal cheqe) {
+		this.cheqe = cheqe;
+	}
+	public BigDecimal getBankTransfer() {
+		return bankTransfer;
+	}
+	public void setBankTransfer(BigDecimal bankTransfer) {
+		this.bankTransfer = bankTransfer;
+	}
+	public BigDecimal getLastTrnx() {
+		return lastTrnx;
+	}
+	public void setLastTrnx(BigDecimal lastTrnx) {
+		this.lastTrnx = lastTrnx;
+	}
+	public BigDecimal getTotaltrnx() {
+		return totaltrnx;
+	}
+	public void setTotaltrnx(BigDecimal totaltrnx) {
+		this.totaltrnx = totaltrnx;
+	}
+	public BigDecimal getEmployeeId() {
+		return employeeId;
+	}
+	public void setEmployeeId(BigDecimal employeeId) {
+		this.employeeId = employeeId;
+	}
+	public BigDecimal getRefundAmount() {
+		return refundAmount;
+	}
+	public void setRefundAmount(BigDecimal refundAmount) {
+		this.refundAmount = refundAmount;
 	}
 	
 }

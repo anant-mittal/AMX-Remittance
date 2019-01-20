@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
@@ -16,6 +17,7 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.remittance.IRemittanceService.Params;
 import com.amx.jax.dbmodel.PurposeOfTransaction;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.manager.BranchRemittanceManager;
 import com.amx.jax.model.response.fx.PurposeOfTransactionDto;
 import com.amx.jax.model.response.remittance.UserwiseTransactionDto;
 
@@ -25,22 +27,14 @@ import com.amx.jax.model.response.remittance.UserwiseTransactionDto;
 public class BranchRemittanceService extends AbstractService{
 	Logger logger = LoggerFactory.getLogger(getClass());
 	
-	/**
-	 * @return :to get the fc sale purpose of Trnx
-	 */
-	/*public AmxApiResponse<PurposeOfTransactionDto, Object> getPurposeofTrnxList() {
-		List<PurposeOfTransaction> purposeofTrnxList = purposetrnxDao.getPurposeOfTrnx();
-		if (purposeofTrnxList.isEmpty()) {
-			throw new GlobalException(JaxError.NO_RECORD_FOUND, "No data found");
-		}
-		return AmxApiResponse.buildList(convertPurposeOfTrnxDto(purposeofTrnxList));
-	}
-	*/
 	
-	public AmxApiResponse<UserwiseTransactionDto, Object> getTotalCount(BigDecimal countryBranchId,BigDecimal employeeId,String transactiondate){
-		List<UserwiseTransactionDto>  trnxCount = null;
-		
-		return null;//AmxApiResponse.buildList();
+	
+	@Autowired
+	BranchRemittanceManager branchRemitManager;
+	
+	public AmxApiResponse<UserwiseTransactionDto, Object> getTotalCount(String transactiondate){
+		UserwiseTransactionDto userDto  = branchRemitManager.getTotalTrnxUserWise(transactiondate);
+		return AmxApiResponse.build(userDto);
 	}
 	
 }
