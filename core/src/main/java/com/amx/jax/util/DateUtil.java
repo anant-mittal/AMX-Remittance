@@ -19,6 +19,8 @@ import org.springframework.stereotype.Component;
 import com.amx.jax.model.response.fx.TimeSlotDto;
 
 
+
+
 /*
  * Auth: Rabil
  * Date: 25/11/2017
@@ -212,8 +214,10 @@ public class DateUtil {
 			    
 			    if(mm<9) {
 			    	mmS +=mm;
+			    }else {
+			    	mmS =String.valueOf(mm);
 			    }
-			    accountingMonthYear ="01"+"/"+mm+"/"+yyyy;
+			    accountingMonthYear ="01"+"/"+mmS+"/"+yyyy;
 			   }
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

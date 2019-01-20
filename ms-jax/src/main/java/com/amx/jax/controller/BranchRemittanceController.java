@@ -29,7 +29,7 @@ public class BranchRemittanceController implements IRemittanceService {
 	BranchRemittanceService branchRemitService;
 	
 	@RequestMapping(value = Path.BR_REMITTANCE_USER_WISE_COUNT, method = RequestMethod.GET)
-	public AmxApiResponse<UserwiseTransactionDto, Object> getTotalCount(@RequestParam(value =Params.TRNX_DATE,required=true) String transactiondate){
+	public AmxApiResponse<UserwiseTransactionDto, Object> getTotalCount(@RequestParam(value =Params.TRNX_DATE,required=false) String transactiondate){
 		logger.info("user wise total getTotalCount " + transactiondate);
 		return branchRemitService.getTotalCount(transactiondate);
 	}
