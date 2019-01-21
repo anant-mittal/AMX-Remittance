@@ -25,6 +25,10 @@ public class SessionEvent extends AuditEvent {
 	String userKey = null;
 	String sessionId = null;
 
+	public SessionEvent() {
+		super();
+	}
+
 	public String getSessionId() {
 		return sessionId;
 	}
