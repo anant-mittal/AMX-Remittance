@@ -63,7 +63,6 @@ public interface IBeneficiaryOnlineDao extends JpaRepository<BenificiaryListView
 	@Query(value= "select b1.* from JAX_VW_LIST_BENEFICIARY b1 where b1.BANK_ID not in (select ROUTING_BANK_ID from ex_routing_header)", nativeQuery=true)
 	public List<BenificiaryListView> listBeneficiaryForPOloadTest();
 	
-	public List<BenificiaryListView> findByIsActiveAndCurrencyIdAndBankIdNotIn(String isActive, BigDecimal currencyId,
-			List<BigDecimal> bankIds, Pageable pageable);
+	public List<BenificiaryListView> findByIsActiveAndCurrencyIdAndBankIdNotIn(String isActive, BigDecimal currencyId,List<BigDecimal> bankIds, Pageable pageable);
 
 }

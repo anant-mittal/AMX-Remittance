@@ -100,9 +100,7 @@ public class RemittanceApplicationManager {
 	 *            exchange rate, net amount etc
 	 * @return
 	 **/
-	public RemittanceApplication createRemittanceApplication(RemittanceTransactionRequestModel requestModel,
-			Map<String, Object> validatedObjects, RemittanceTransactionResponsetModel validationResults,
-			Map<String, Object> remitApplParametersMap) {
+	public RemittanceApplication createRemittanceApplication(RemittanceTransactionRequestModel requestModel,Map<String, Object> validatedObjects, RemittanceTransactionResponsetModel validationResults,Map<String, Object> remitApplParametersMap) {
 		RemittanceApplication remittanceApplication = new RemittanceApplication();
 
 		BigDecimal localCurrencyId = metaData.getDefaultCurrencyId();

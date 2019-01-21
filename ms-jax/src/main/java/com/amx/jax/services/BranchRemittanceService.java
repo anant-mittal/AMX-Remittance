@@ -17,7 +17,9 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.remittance.IRemittanceService.Params;
 import com.amx.jax.dbmodel.PurposeOfTransaction;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.manager.BranchRemittanceApplManager;
 import com.amx.jax.manager.BranchRemittanceManager;
+import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.response.fx.PurposeOfTransactionDto;
 import com.amx.jax.model.response.remittance.UserwiseTransactionDto;
 
@@ -32,9 +34,14 @@ public class BranchRemittanceService extends AbstractService{
 	@Autowired
 	BranchRemittanceManager branchRemitManager;
 	
-	public AmxApiResponse<UserwiseTransactionDto, Object> getTotalCount(String transactiondate){
-		UserwiseTransactionDto userDto  = branchRemitManager.getTotalTrnxUserWise(transactiondate);
-		return AmxApiResponse.build(userDto);
+	@Autowired
+	BranchRemittanceApplManager branchRemitApplManager;
+	
+	
+	
+	public AmxApiResponse<Object, Object> saveBranchApplicationManager(BranchRemittanceApplRequestModel applRequestModel){
+		branchRemitApplManager.saveBranchApplication(applRequestModel);
+		return null;
 	}
 	
 }
