@@ -369,7 +369,7 @@ public class UserService extends AbstractUserService {
 	public ApiResponse sendOtpForCivilId(String civilId, List<CommunicationChannel> channels,
 			CustomerModel customerModel, Boolean initRegistration) {
 		if (StringUtils.isNotBlank(civilId)) {
-			if (tenantContext.getKey().equals("OMN")) {
+			if(tenantContext.getKey().equals("OMN")) {
 				tenantContext.get().validateCivilId(civilId);
 			}
 		}
@@ -392,13 +392,13 @@ public class UserService extends AbstractUserService {
 		}
 		logger.info("customerId is --> " + customerId);
 		userValidationService.validateCustomerVerification(customerId);
-		// userValidationService.validateCivilId(civilId);
-
-		// --- Validate IdentityInt
+		//userValidationService.validateCivilId(civilId);
+		
+		// --- Validate IdentityInt 
 		Customer customerType = custDao.getCustomerByCivilId(civilId);
 		if (null != customerType) {
 			BigDecimal indentityType = customerType.getIdentityTypeId();
-			userValidationService.validateIdentityInt(civilId, indentityType);
+		userValidationService.validateIdentityInt(civilId, indentityType);
 		}
 
 		CivilIdOtpModel model = new CivilIdOtpModel();
@@ -564,9 +564,9 @@ public class UserService extends AbstractUserService {
 	}
 
 	public ApiResponse loginUser(String userId, String password) {
-		if (tenantContext.getKey().equals("OMN")) {
+		if(tenantContext.getKey().equals("OMN")) {
 			tenantContext.get().validateCivilId(userId);
-		}
+		}	
 		List<Customer> validCustomer = userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(userId,
 				JaxApiFlow.LOGIN);
 		CustomerOnlineRegistration onlineCustomer = custDao
@@ -698,13 +698,13 @@ public class UserService extends AbstractUserService {
 		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(custId);
 		onlineCustomer.setPassword(cryptoUtil.getHash(onlineCustomer.getUserName(), model.getPassword()));
 		custDao.saveOnlineCustomer(onlineCustomer);
-
+		
 		CustomerModel outputModel = convert(onlineCustomer);
 		if (outputModel.getEmail() != null) {
 			jaxNotificationService.sendProfileChangeNotificationEmail(model, outputModel.getPersoninfo());
 			logger.info("The update password mail notification success");
 		}
-
+		
 		BoolRespModel responseModel = new BoolRespModel(true);
 		auditService.log(auditEvent.result(Result.DONE));
 		return AmxApiResponse.build(responseModel);
@@ -744,7 +744,7 @@ public class UserService extends AbstractUserService {
 		}
 		return output;
 	}
-
+	
 	public LoginLogoutHistory getLastLogoutHistoryByUserName(String userName) {
 
 		Sort sort = new Sort(Direction.DESC, "logoutTime");
@@ -1034,11 +1034,11 @@ public class UserService extends AbstractUserService {
 	public Customer getCustById(BigDecimal id) {
 		return repo.findOne(id);
 	}
-
+	
 	public Customer getCustomerDetails(String loginId) {
 		return repo.getCustomerDetails(loginId);
 	}
-
+	
 	public void deActivateFsCustomer(BigDecimal customerId) {
 		Customer customer = repo.findOne(customerId);
 		customer.setIsActive(ConstantDocument.Deleted);

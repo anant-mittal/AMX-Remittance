@@ -4,6 +4,9 @@ package com.amx.jax.ui.api;
 import java.math.BigDecimal;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,6 +26,7 @@ import com.amx.jax.client.JaxPushNotificationClient;
 import com.amx.jax.dict.UserClient.AppType;
 import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.logger.AuditActor;
+import com.amx.jax.logger.LoggerService;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.ui.WebAppConfig;
@@ -42,6 +46,7 @@ import com.amx.jax.ui.service.LoginService;
 import com.amx.jax.ui.service.SessionService;
 import com.amx.jax.ui.service.TenantService;
 import com.amx.jax.ui.service.UserService;
+import com.amx.utils.ArgUtil;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -52,6 +57,8 @@ import io.swagger.annotations.ApiOperation;
 @RestController
 @Api(value = "User APIs")
 public class UserController {
+
+	private static Logger LOGGER = LoggerService.getLogger(UserController.class);
 
 	/** The login service. */
 	@Autowired
@@ -152,9 +159,13 @@ public class UserController {
 	 */
 	@RequestMapping(value = "/pub/user/notify/hotpoint", method = { RequestMethod.POST })
 	public ResponseWrapper<Object> meNotify(@RequestParam(required = false) String token,
-			@RequestParam(required = false) GeoHotPoints hotpoint, @RequestParam BigDecimal customerId)
+			@RequestParam(required = false) GeoHotPoints hotpoint, @RequestParam BigDecimal customerId,
+			 HttpServletRequest request)
 			throws PostManException {
 		AppContextUtil.setActorId(new AuditActor(AuditActor.ActorType.GUEST, customerId));
+		if (ArgUtil.isEmpty(hotpoint)) {
+			LOGGER.error("HOTPOINT:{} not defined for customer {} ",request.getParameter("hotpoint"),customerId);
+		}
 		return new ResponseWrapper<Object>(hotPointService.notify(customerId, token, hotpoint));
 	}
 
