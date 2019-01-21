@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,7 +54,7 @@ public class RemittanceTransactionRequestValidator {
 	@Autowired
 	IAdditionalBankDetailsDao additionalBankDetailsDao;
 	@Autowired
-	JaxFieldService jaxFieldService ;
+	JaxFieldService jaxFieldService;
 	@Autowired
 	DateUtil dateUtil;
 
@@ -128,16 +127,17 @@ public class RemittanceTransactionRequestValidator {
 			if (flexFieldValueInRequest == null) {
 				requiredFlexFields.add(dto);
 			} else {
-				if (field.getPossibleValues() != null  && hasFieldValueChanged(field, flexFieldValueInRequest)) {
+				if (field.getPossibleValues() != null && hasFieldValueChanged(field, flexFieldValueInRequest)) {
 					requiredFlexFields.add(dto);
 				}
 			}
 		}
 		// update jaxfield defination from db
-		List<JaxFieldDto> jaxFieldDtos = requiredFlexFields.stream().map(i -> i.getField()).collect(Collectors.toList());
+		List<JaxFieldDto> jaxFieldDtos = requiredFlexFields.stream().map(i -> i.getField())
+				.collect(Collectors.toList());
 		jaxFieldService.updateDtoFromDb(jaxFieldDtos);
 		updateAdditionalValidations(jaxFieldDtos);
-		
+
 		if (!requiredFlexFields.isEmpty()) {
 			LOGGER.error(requiredFlexFields.toString());
 			AdditionalFlexRequiredException exp = new AdditionalFlexRequiredException(
@@ -218,12 +218,12 @@ public class RemittanceTransactionRequestValidator {
 
 	private boolean hasFieldValueChanged(JaxFieldDto field, FlexFieldDto flexFieldValue) {
 		boolean changedValue = true;
-			for (Object value : field.getPossibleValues()) {
-				JaxFieldValueDto jaxFieldValueDto = (JaxFieldValueDto) value;
-				if (jaxFieldValueDto.getValue().equals(flexFieldValue)) {
-					changedValue = false;
-				}
+		for (Object value : field.getPossibleValues()) {
+			JaxFieldValueDto jaxFieldValueDto = (JaxFieldValueDto) value;
+			if (jaxFieldValueDto.getValue().equals(flexFieldValue)) {
+				changedValue = false;
 			}
+		}
 		return changedValue;
 	}
 
@@ -242,15 +242,4 @@ public class RemittanceTransactionRequestValidator {
 		}).collect(Collectors.toList());
 	}
 
-	public void validateAdditionalFields(RemittanceTransactionRequestModel model) {
-		ApiResponse<JaxConditionalFieldDto> apiResponse = jaxFieldService.getJaxFieldsForEntity(new GetJaxFieldRequest(JaxFieldEntity.REMITTANCE_ONLINE));
-		List<JaxConditionalFieldDto> jaxConditionalFieldDto = apiResponse.getResults();
-		if(CollectionUtils.isNotEmpty(jaxConditionalFieldDto)) {
-			Map<String, Object> additionalFields = model.getAdditionalFields();
-			GlobalException ex = new GlobalException(JaxError.ADDTIONAL_FLEX_FIELD_REQUIRED, "additional fields required");
-			jaxConditionalFieldDto.get(0).getField().setDtoPath("additionalFields.beneIBAN");
-			ex.setMeta(jaxConditionalFieldDto);
-			throw ex;
-		}
-	}
 }
