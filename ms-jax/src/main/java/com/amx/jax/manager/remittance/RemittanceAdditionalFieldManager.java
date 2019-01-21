@@ -1,9 +1,11 @@
 package com.amx.jax.manager.remittance;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,21 +49,22 @@ public class RemittanceAdditionalFieldManager {
 		List<JaxConditionalFieldDto> missingJaxConditionalFields = new ArrayList<>();
 		Map<String, Object> additionalFields = model.getAdditionalFields();
 		boolean isAdditionalFieldMissing = false;
-		BenificiaryListView beneficiaryDetail = beneficiaryService.getBeneByIdNo(model.getBeneId());
-		String ibanFlag = bankService.getBankById(beneficiaryDetail.getBankId()).getIbanFlag();
+
 		for (JaxConditionalFieldDto jaxConditionalField : allJaxConditionalFields) {
-			Object fieldValue = additionalFields.get(jaxConditionalField.getField().getName());
-			if (fieldValue == null) {
-				boolean isBeneIbanFieldRequired = JaxDynamicField.BENE_BANK_IBAN_NUMBER.name().equals(
-						jaxConditionalField.getField().getName()) && ConstantDocument.Yes.equalsIgnoreCase(ibanFlag);
-				if (!isBeneIbanFieldRequired) {
-					continue;
+			if (additionalFields == null || additionalFields.get(jaxConditionalField.getField().getName()) == null) {
+				//iban field
+				if (JaxDynamicField.BENE_BANK_IBAN_NUMBER.name().equals(jaxConditionalField.getField().getName())) {
+					boolean isBeneIbanFieldRequired = isBeneIbanFieldRequired(model.getBeneId());
+					if (!isBeneIbanFieldRequired) {
+						continue;
+					}
 				}
 				jaxConditionalField.getField()
-						.setDtoPath("additionalFields." + jaxConditionalField.getField().getDtoPath());
+						.setDtoPath("additionalFields." + jaxConditionalField.getField().getName());
 				missingJaxConditionalFields.add(jaxConditionalField);
 				isAdditionalFieldMissing = true;
 			} else {
+				Object fieldValue = additionalFields.get(jaxConditionalField.getField().getName());
 				jaxFieldService.validateJaxFieldRegEx(jaxConditionalField.getField(), (String) fieldValue);
 			}
 		}
@@ -73,25 +76,40 @@ public class RemittanceAdditionalFieldManager {
 		}
 	}
 
+	private boolean isBeneIbanFieldRequired(BigDecimal beneId) {
+		BenificiaryListView beneficiaryDetail = beneficiaryService.getBeneByIdNo(beneId);
+		String ibanFlag = bankService.getBankById(beneficiaryDetail.getBankId()).getIbanFlag();
+		if(!ConstantDocument.Yes.equalsIgnoreCase(ibanFlag)) {
+			return false;
+		}
+		BeneficaryAccount beneficaryAccount = beneficiaryService
+				.getBeneAccountByAccountSeqId(beneficiaryDetail.getBeneficiaryAccountSeqId());
+		if( StringUtils.isBlank(beneficaryAccount.getIbanNumber())) {
+			return true;
+		}
+		return false;
+	}
+
 	public void processAdditionalFields(RemittanceTransactionRequestModel model) {
 		ApiResponse<JaxConditionalFieldDto> apiResponse = jaxFieldService
 				.getJaxFieldsForEntity(new GetJaxFieldRequest(JaxFieldEntity.REMITTANCE_ONLINE));
 		List<JaxConditionalFieldDto> allJaxConditionalFields = apiResponse.getResults();
 		Map<String, Object> fieldValues = model.getAdditionalFields();
-		for (JaxConditionalFieldDto jaxConditionalField : allJaxConditionalFields) {
-			if (JaxDynamicField.BENE_BANK_IBAN_NUMBER.name().equals(jaxConditionalField.getField().getName())
-					&& fieldValues.get(jaxConditionalField.getField().getName()) != null) {
-				// set iban number
-				String ibanNumber = (String) fieldValues.get(jaxConditionalField.getField().getName());
-				BenificiaryListView beneficiaryDetail = beneficiaryService.getBeneByIdNo(model.getBeneId());
-				BeneficaryAccount beneficaryAccount = beneficiaryService
-						.getBeneAccountByAccountSeqId(beneficiaryDetail.getBeneficiaryAccountSeqId());
-				beneficaryAccount.setIbanNumber(ibanNumber);
-				logger.info("setting iban number for bene bank account seq id {} , IBAN : {} ",
-						beneficiaryDetail.getBeneficiaryAccountSeqId(), ibanNumber);
-				beneficiaryService.saveBeneAccount(beneficaryAccount);
+		if (allJaxConditionalFields != null && fieldValues != null) {
+			for (JaxConditionalFieldDto jaxConditionalField : allJaxConditionalFields) {
+				if (JaxDynamicField.BENE_BANK_IBAN_NUMBER.name().equals(jaxConditionalField.getField().getName())
+						&& fieldValues.get(jaxConditionalField.getField().getName()) != null) {
+					// set iban number
+					String ibanNumber = (String) fieldValues.get(jaxConditionalField.getField().getName());
+					BenificiaryListView beneficiaryDetail = beneficiaryService.getBeneByIdNo(model.getBeneId());
+					BeneficaryAccount beneficaryAccount = beneficiaryService
+							.getBeneAccountByAccountSeqId(beneficiaryDetail.getBeneficiaryAccountSeqId());
+					beneficaryAccount.setIbanNumber(ibanNumber);
+					logger.info("setting iban number for bene bank account seq id {} , IBAN : {} ",
+							beneficiaryDetail.getBeneficiaryAccountSeqId(), ibanNumber);
+					beneficiaryService.saveBeneAccount(beneficaryAccount);
+				}
 			}
 		}
-
 	}
 }
