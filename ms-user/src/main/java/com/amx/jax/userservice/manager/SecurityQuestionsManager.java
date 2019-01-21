@@ -65,9 +65,6 @@ public class SecurityQuestionsManager {
 					"Random questions size can't be more than 4");
 		}
 		List<BigDecimal> questions = new ArrayList<>();
-		questions.add(onlineCustomer.getSecurityQuestion1());
-		questions.add(onlineCustomer.getSecurityQuestion2());
-		questions.add(onlineCustomer.getSecurityQuestion3());
 		questions.add(onlineCustomer.getSecurityQuestion4());
 		questions.add(onlineCustomer.getSecurityQuestion5());
 		List<BigDecimal> randomQuestoids = util.getRandomIntegersFromList(questions, size);
@@ -84,21 +81,12 @@ public class SecurityQuestionsManager {
 
 		QuestModelDTO q1 = CustomerDataVerificationQuestion.Q1.getQuestModelDTO();
 		QuestModelDTO q2 = CustomerDataVerificationQuestion.Q2.getQuestModelDTO();
-		QuestModelDTO q3 = CustomerDataVerificationQuestion.Q3.getQuestModelDTO();
-		QuestModelDTO q4 = CustomerDataVerificationQuestion.Q4.getQuestModelDTO();
-		QuestModelDTO q5 = CustomerDataVerificationQuestion.Q5.getQuestModelDTO();
 		q1.setQuestAnswerModelDTO(getAnswerModelForQ1());
-		q2.setQuestAnswerModelDTO(getRelationShips());
-		q3.setQuestAnswerModelDTO(getListOfMonths());
-		q4.setQuestAnswerModelDTO(getAnswerModelForQ4());
-		q5.setQuestAnswerModelDTO(getExpiryDateForQ5());
+		q2.setQuestAnswerModelDTO(getExpiryDateForQ2());
 		List<QuestModelDTO> result = new ArrayList<>();
 		Map<Integer, QuestModelDTO> maps = new HashMap<>();
 		maps.put(1, q1);
 		maps.put(2, q2);
-		maps.put(3, q3);
-		maps.put(4, q4);
-		maps.put(5, q5);
 		int randQKey = ThreadLocalRandom.current().nextInt(1, 4);
 		result.add(maps.get(randQKey));
 		return result;
@@ -107,25 +95,19 @@ public class SecurityQuestionsManager {
 	
 	public List<QuestModelDTO> getDataVerificationRandomQuestions(Integer size) {
 
-		QuestModelDTO q4 = CustomerDataVerificationQuestion.Q4.getQuestModelDTO();
-		QuestModelDTO q5 = CustomerDataVerificationQuestion.Q5.getQuestModelDTO();
+		QuestModelDTO q1 = CustomerDataVerificationQuestion.Q1.getQuestModelDTO();
+		QuestModelDTO q2 = CustomerDataVerificationQuestion.Q2.getQuestModelDTO();
 		
-		q4.setQuestAnswerModelDTO(getAnswerModelForQ4());
-		q5.setQuestAnswerModelDTO(getExpiryDateForQ5());
+		q1.setQuestAnswerModelDTO(getAnswerModelForQ1());
+		q2.setQuestAnswerModelDTO(getExpiryDateForQ2());
 		List<QuestModelDTO> result = new ArrayList<>();
 		Map<Integer, QuestModelDTO> maps = new HashMap<>();
-		maps.put(1, q4);
-		maps.put(2, q5);
+		maps.put(1, q1);
+		maps.put(2, q2);
 		int randQKey = ThreadLocalRandom.current().nextInt(1, 3);
 		result.add(maps.get(randQKey));
 		return result;
 
-	}
-
-	private QuestAnswerModelDTO getAnswerModelForQ1() {
-		QuestAnswerModelDTO dto = new QuestAnswerModelDTO();
-		dto.setAnswerType("text");
-		return dto;
 	}
 
 	private QuestAnswerModelDTO getListOfMonths() {
@@ -158,13 +140,13 @@ public class SecurityQuestionsManager {
 		return dto;
 	}
 	
-	private QuestAnswerModelDTO getAnswerModelForQ4() {
+	private QuestAnswerModelDTO getAnswerModelForQ1() {
 		QuestAnswerModelDTO dto = new QuestAnswerModelDTO();
 		dto.setAnswerType("text");
 		return dto;
 	}
 
-	private QuestAnswerModelDTO getExpiryDateForQ5() {
+	private QuestAnswerModelDTO getExpiryDateForQ2() {
 		QuestAnswerModelDTO dto = new QuestAnswerModelDTO();
 		dto.setAnswerType("date");
 		return dto;

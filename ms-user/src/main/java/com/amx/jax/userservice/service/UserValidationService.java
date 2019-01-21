@@ -52,6 +52,7 @@ import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.auth.CustomerRequestAuthMeta;
 import com.amx.jax.model.auth.QuestModelDTO;
+import com.amx.jax.repository.IContactDetailDao;
 import com.amx.jax.scope.TenantContext;
 import com.amx.jax.userservice.constant.CustomerDataVerificationQuestion;
 import com.amx.jax.userservice.dao.CusmosDao;
@@ -131,6 +132,9 @@ public class UserValidationService {
 	
 	@Autowired
 	MetaData metaData;
+	
+	@Autowired
+	IContactDetailDao contactDetailDao;
 	
 
 	private DateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
@@ -792,18 +796,18 @@ public class UserValidationService {
 		String answer = JaxAuthContext.getSecAns();
 
 		Customer customerInfo = custDao.getCustById(metaData.getCustomerId());
+		ContactDetail contactDetailsLocal = contactDetailDao.getContactDetailForLocal(metaData.getCustomerId());
 
 		switch (question) {
-		case Q4: {
-			String mobileNumber = customerInfo.getMobile();
-			String correctAnswer = mobileNumber.substring(mobileNumber.length() - 4);
-			if (!correctAnswer.equalsIgnoreCase(answer)) {
+		case Q1: {
+			String correctState = contactDetailsLocal.getFsStateMaster().getFsStateMasterDescs().get(0).getStateName();
+			if (!correctState.equalsIgnoreCase(answer)) {
 				throw new GlobalException(JaxError.INVALIDATE_ANSWER, "Given Answer is Invalid");
 			}
 			break;
 		}
 		
-		case Q5: {
+		case Q2: {
 			Date identityExpiry = customerInfo.getIdentityExpiredDate();
 			Date givenDate = com.amx.jax.util.DateUtil.convertStringToDate(answer);
 			if (!DateUtils.isSameDay(identityExpiry, givenDate)) {

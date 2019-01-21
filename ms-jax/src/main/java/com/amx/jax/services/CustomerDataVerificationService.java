@@ -26,12 +26,14 @@ import com.amx.jax.JaxAuthContext;
 import com.amx.jax.JaxAuthCache.JaxAuthMeta;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.BenificiaryListView;
+import com.amx.jax.dbmodel.ContactDetail;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.CustomerVerification;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.auth.QuestModelDTO;
+import com.amx.jax.repository.IContactDetailDao;
 import com.amx.jax.userservice.constant.CustomerDataVerificationQuestion;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.repository.CustomerVerificationRepository;
@@ -71,6 +73,9 @@ public class CustomerDataVerificationService extends AbstractService {
 	
 	@Autowired
 	JaxAuthCache jaxAuthCache;
+	
+	@Autowired
+	IContactDetailDao contactDetailDao;
 
 	public void setAdditionalData(List<QuestModelDTO> list) {
 
@@ -95,38 +100,29 @@ public class CustomerDataVerificationService extends AbstractService {
 	private void saveVerificationData(List<SecurityQuestionModel> verificationAnswers) {
 		CustomerVerification cv = customerVerificationRepository
 				.findBycustomerIdAndVerificationType(metaData.getCustomerId(), "EMAIL");
+		Customer customerInfo= custDao.getCustById(metaData.getCustomerId());
+		ContactDetail contactDetailsLocal = contactDetailDao.getContactDetailForLocal(metaData.getCustomerId());
 		verificationAnswers.forEach(i -> {
 			boolean verificationDone = false;
 			if (i.getQuestionSrNo().equals(BigDecimal.ONE)) {
-				BigDecimal beneficiaryRelationShipSeqId = txnhistoryService.getLastTransaction(metaData.getCustomerId()).getBeneficiaryRelationSeqId();
-				String actualAnswer = beneService.getBeneBybeneficiaryRelationShipSeqId(beneficiaryRelationShipSeqId).getFirstName();
+				String correctState = contactDetailsLocal.getFsStateMaster().getFsStateMasterDescs().get(0).getStateName();
 				String givenAnswer = i.getAnswer();
 				logger.info(
-						"Q1: in saveVerificationData. actualAnswer: " + actualAnswer + " givenAnswer: " + givenAnswer);
-				if (actualAnswer.equalsIgnoreCase(givenAnswer)) {
+						"Q1: in saveVerificationData. correctState: " + correctState + " givenAnswer: " + givenAnswer);
+				if (correctState.equalsIgnoreCase(givenAnswer)) {
 					verificationDone = true;
 				}
 			}
+			
 			if (i.getQuestionSrNo().equals(new BigDecimal(2))) {
-				BigDecimal ansKey = new BigDecimal(i.getAnswerKey());
-				BenificiaryListView randombene = beneService.getBeneByIdNo(ansKey);
-				String actualAnswer = randombene.getRelationShipId().toString();
+				Date identityExpiry = customerInfo.getIdentityExpiredDate();
+				
 				String givenAnswer = i.getAnswer();
+				Date givenDate = com.amx.jax.util.DateUtil.convertStringToDate(givenAnswer);
 				logger.info(
-						"Q2: in saveVerificationData. actualAnswer: " + actualAnswer + " givenAnswer: " + givenAnswer);
-				if (actualAnswer.equalsIgnoreCase(givenAnswer)) {
-					verificationDone = true;
-				}
-			}
-			if (i.getQuestionSrNo().equals(new BigDecimal(3))) {
-				Date lastRemittanceDate =  txnhistoryService.getLastTransaction(metaData.getCustomerId()).getDocumentDate();
-				Calendar cal = Calendar.getInstance();
-				cal.setTime(lastRemittanceDate);
-				String givenAnswer = i.getAnswer();
-				String actualAnswer = util.getShortMonth(cal.get(Calendar.MONTH));
-				logger.info(
-						"Q3: in saveVerificationData. actualAnswer: " + actualAnswer + " givenAnswer: " + givenAnswer);
-				if (actualAnswer.equalsIgnoreCase(givenAnswer)) {
+						"Q2: in saveVerificationData. identityExpiry: " + identityExpiry + " givenDate: " + givenDate);
+				
+				if (DateUtils.isSameDay(identityExpiry, givenDate)) {
 					verificationDone = true;
 				}
 			}
