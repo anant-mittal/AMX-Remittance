@@ -1,4 +1,4 @@
-package com.amx.jax.services;
+package com.amx.jax.branchremittance.service;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -14,14 +14,15 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.branchremittance.manager.BranchRemittanceApplManager;
+import com.amx.jax.branchremittance.manager.BranchRemittanceManager;
 import com.amx.jax.client.remittance.IRemittanceService.Params;
 import com.amx.jax.dbmodel.PurposeOfTransaction;
 import com.amx.jax.error.JaxError;
-import com.amx.jax.manager.BranchRemittanceApplManager;
-import com.amx.jax.manager.BranchRemittanceManager;
 import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.response.fx.PurposeOfTransactionDto;
 import com.amx.jax.model.response.remittance.UserwiseTransactionDto;
+import com.amx.jax.services.AbstractService;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)

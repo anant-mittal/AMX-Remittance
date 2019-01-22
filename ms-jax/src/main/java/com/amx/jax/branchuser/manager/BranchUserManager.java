@@ -1,4 +1,4 @@
-package com.amx.jax.manager;
+package com.amx.jax.branchuser.manager;
 
 import java.math.BigDecimal;
 import java.util.Date;

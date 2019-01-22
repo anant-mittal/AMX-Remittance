@@ -1,4 +1,4 @@
-package com.amx.jax.services;
+package com.amx.jax.branchuser.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,8 +9,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.jax.api.AmxApiResponse;
-import com.amx.jax.manager.BranchUserManager;
+import com.amx.jax.branchuser.manager.BranchUserManager;
 import com.amx.jax.model.response.remittance.UserwiseTransactionDto;
+import com.amx.jax.services.AbstractService;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)

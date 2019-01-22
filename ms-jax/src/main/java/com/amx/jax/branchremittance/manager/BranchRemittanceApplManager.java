@@ -1,5 +1,9 @@
-package com.amx.jax.manager;
+package com.amx.jax.branchremittance.manager;
 
+/**
+ * @author rabil 
+ * @date 21/01/2019
+ */
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -19,14 +23,16 @@ public class BranchRemittanceApplManager {
 
 	
 	public void saveBranchApplication(BranchRemittanceApplRequestModel requestApplModel) {
-		//Customer Validation
-		//Beneficiary validation
-		//checkingStaffIdNumberWithCustomer
-		 
+		/**checkingStaffIdNumberWithCustomer **/
 		 branchRemitManager.checkingStaffIdNumberWithCustomer();
+		 /**checking bene account exception  **/
 		 branchRemitManager.beneAccountException(requestApplModel.getRelationshipId());
+		 /**checking bene account type **/
 		 branchRemitManager.checkBeneAccountType(requestApplModel.getRelationshipId());
+		 /**checking bene additional details **/
 		 branchRemitManager.beneAddCheck(requestApplModel.getRelationshipId());
+		 /**checking banned bank details **/
+		 branchRemitManager.bannedBankCheck(requestApplModel.getRelationshipId());
 		
 	}
 

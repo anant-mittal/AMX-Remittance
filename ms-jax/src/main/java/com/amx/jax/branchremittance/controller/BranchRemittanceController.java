@@ -1,4 +1,4 @@
-package com.amx.jax.controller;
+package com.amx.jax.branchremittance.controller;
 /**
  * @author rabil
  * @date  17/01/2019 
@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.branchremittance.service.BranchRemittanceService;
 import com.amx.jax.client.remittance.IRemittanceService;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.response.remittance.UserwiseTransactionDto;
-import com.amx.jax.services.BranchRemittanceService;
 
 @RestController
 public class BranchRemittanceController implements IRemittanceService {

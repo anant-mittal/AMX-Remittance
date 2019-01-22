@@ -1,11 +1,14 @@
-package com.amx.jax.manager;
+package com.amx.jax.branchremittance.manager;
 
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +21,7 @@ import org.springframework.web.context.WebApplicationContext;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.dao.ApplicationProcedureDao;
 import com.amx.jax.dbmodel.AccountTypeFromViewModel;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.CollectDetailModel;
@@ -100,6 +104,9 @@ public class BranchRemittanceManager  extends AbstractModel {
 	
 	@Autowired
 	BeneficiaryService beneService;
+	
+	@Autowired
+	ApplicationProcedureDao applProcedureDao;
 	
 	
 	
@@ -184,6 +191,27 @@ public class BranchRemittanceManager  extends AbstractModel {
 			}
 		}
 		
+		
+	}
+	
+	public void bannedBankCheck(BigDecimal beneRelId) {
+		Map<String, Object> inputValues = new HashMap<>();
+		BenificiaryListView beneficaryDetails =beneficiaryRepository.findBybeneficiaryRelationShipSeqId(beneRelId);
+		inputValues.put("P_APPLICATION_COUNTRY_ID", beneficaryDetails.getApplicationCountryId());
+		inputValues.put("P_BENEFICIARY_BANK_ID", beneficaryDetails.getBankId());
+		inputValues.put("P_BENEFICIARY_MASTER_ID", beneficaryDetails.getBeneficaryMasterSeqId());
+		Map<String, Object> output = applProcedureDao.getBannedBankCheckProcedure(inputValues);
+		if(output!=null) {
+			String errorMessage = (String)output.get("P_ERROR_MESSAGE");
+			String alertMessage = (String)output.get("P_ALERT_MESSAGE");
+			
+			if (errorMessage != null) {
+				throw new GlobalException(JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL, errorMessage);
+			}
+			if (alertMessage != null) {
+				throw new GlobalException(JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL, alertMessage);
+			}
+		}
 		
 	}
 	
