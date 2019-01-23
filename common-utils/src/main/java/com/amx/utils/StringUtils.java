@@ -32,4 +32,8 @@ public final class StringUtils {
 		}
 		return (int) Math.abs(hash % max);
 	}
+
+	public static String trim(String str) {
+		return (str == null) ? str : str.trim();
+	}
 }

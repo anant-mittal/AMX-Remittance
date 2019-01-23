@@ -95,7 +95,7 @@ public class TemplateUtils {
 		}
 
 		String localeFile = String.format("%s_%s", file,
-				ArgUtil.parseAsString(tnt, Constants.BLANK).toLowerCase());
+				locale.getLanguage());
 		if (templateFiles.containsKey(localeFile)) {
 			templateFiles.put(specficFile, localeFile);
 			return tenantFile;
