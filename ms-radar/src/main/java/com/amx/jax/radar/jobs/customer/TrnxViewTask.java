@@ -52,7 +52,7 @@ public class TrnxViewTask extends AbstractDBSyncTask {
 		String dateStringLimit = GridConstants.GRID_TIME_FORMATTER_JAVA
 				.format(new Date(lastUpdateDateNowLimit));
 
-		LOGGER.info("Pg:{},Time:{} {} - {}", lastPage, lastUpdateDateNow, dateString, dateStringLimit);
+		LOGGER.info("Pg:{},Tm:{} {}-{}", lastPage, lastUpdateDateNow, dateString, dateStringLimit);
 
 		GridQuery gridQuery = getForwardQuery(lastPage, PAGE_SIZE, TIME_TRACK_KEY, dateString, dateStringLimit);
 
@@ -88,6 +88,8 @@ public class TrnxViewTask extends AbstractDBSyncTask {
 			}
 		}
 
+		LOGGER.info("Pg:{}, Rcds:{},{}, Nxt:{}", lastPage, x.getResults().size(),lastIdNow, lastUpdateDateNow);
+
 		if (lastIdNow.equalsIgnoreCase(lastId) && x.getResults().size() > 0) {
 			// Same data records case, nothing to do
 			return;
@@ -95,7 +97,6 @@ public class TrnxViewTask extends AbstractDBSyncTask {
 
 		lastId = lastIdNow;
 
-		LOGGER.info("Pg:{}, Rcds:{}, Nxt:{}", lastPage, x.getResults().size(), lastUpdateDateNow);
 		long todayOffset = System.currentTimeMillis() - AmxCurConstants.INTERVAL_DAYS;
 		if (x.getResults().size() > 0) {
 			intervalDays = 10;
@@ -131,7 +132,7 @@ public class TrnxViewTask extends AbstractDBSyncTask {
 		String dateStringLimit = GridConstants.GRID_TIME_FORMATTER_JAVA
 				.format(new Date(lastUpdateDateNowLimit));
 
-		LOGGER.info("Pg:-{},Time:{} {} - {}", lastPage, lastUpdateDateNow, dateString, dateStringLimit);
+		LOGGER.info("Pg:{},Tm:{} {}-{}", lastPage, lastUpdateDateNow, dateString, dateStringLimit);
 
 		GridQuery gridQuery = getReverseQuery(lastPage, PAGE_SIZE, TIME_TRACK_KEY, dateString, dateStringLimit);
 
@@ -167,7 +168,7 @@ public class TrnxViewTask extends AbstractDBSyncTask {
 			}
 		}
 
-		LOGGER.info("Pg:{}, Rcds:{}, Nxt:{}", lastPage, x.getResults().size(), lastUpdateDateNow);
+		LOGGER.info("Pg:{}, Rcds:{},{}, Nxt:{}", lastPage, x.getResults().size(),lastIdNow, lastUpdateDateNow);
 
 		if (lastIdNow.equalsIgnoreCase(lastId) && x.getResults().size() > 0) {
 			// Same data records case, nothing to do
