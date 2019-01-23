@@ -1,6 +1,7 @@
 package com.amx.amxlib.meta.model;
 
 import java.math.BigDecimal;
+import java.util.Comparator;
 
 public class AdditionalBankDetailsViewDto {
 	  private BigDecimal srlId;
@@ -102,4 +103,15 @@ public class AdditionalBankDetailsViewDto {
 		this.fieldType = fieldType;
 	}
 
+	public static class AdditionalBankDetailsViewDtoComparator implements Comparator<AdditionalBankDetailsViewDto> {
+
+		@Override
+		public int compare(AdditionalBankDetailsViewDto arg0, AdditionalBankDetailsViewDto arg1) {
+			if(null != arg0.getAmieceDescription()) {
+				return arg0.getAmieceDescription().compareTo(arg1.getAmieceDescription());
+			}
+			return 0;
+		}
+		
+	}
 }
