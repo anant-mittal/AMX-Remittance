@@ -81,6 +81,7 @@ public class CustomerViewTask extends AbstractDBSyncTask {
 				document.setTimestamp(creationDate);
 				document.setCustomer(record);
 				builder.update(oracleVarsCache.getCustomerIndex(), "customer", document);
+				lastIdNow = ArgUtil.parseAsString(document.getId(), Constants.BLANK);
 			} catch (Exception e) {
 				LOGGER.error("CustomerViewTask Excep", e);
 			}
@@ -150,6 +151,7 @@ public class CustomerViewTask extends AbstractDBSyncTask {
 				document.setTimestamp(creationDate);
 				document.setCustomer(record);
 				builder.update(oracleVarsCache.getCustomerIndex(), "customer", document);
+				lastIdNow = ArgUtil.parseAsString(document.getId(), Constants.BLANK);
 			} catch (Exception e) {
 				LOGGER.error("CustomerViewTask Excep", e);
 			}
