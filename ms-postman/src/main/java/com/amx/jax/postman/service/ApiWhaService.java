@@ -63,8 +63,9 @@ public class ApiWhaService {
 		} catch (Exception e) {
 			auditService.excep(pMGaugeEvent.set(message).result(Result.ERROR), e);
 		}
-
 		return message;
-
 	}
+	
+	
+	
 }
