@@ -166,13 +166,14 @@ public class TrnxViewTask extends AbstractDBSyncTask {
 			}
 		}
 
+		LOGGER.info("Pg:{}, Rcds:{}, Nxt:{}", lastPage, x.getResults().size(), lastUpdateDateNow);
+		
 		if (lastIdNow.equalsIgnoreCase(lastId)) {
 			// Same data records case, nothing to do
 			return;
 		}
 		lastId = lastIdNow;
 
-		LOGGER.info("Pg:{}, Rcds:{}, Nxt:{}", lastPage, x.getResults().size(), lastUpdateDateNow);
 		if (x.getResults().size() > 0) {
 			esRepository.bulk(builder.build());
 			oracleVarsCache.setTranxScannedStamp(lastUpdateDateNow, true);

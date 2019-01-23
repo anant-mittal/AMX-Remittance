@@ -122,7 +122,6 @@ public class CustomerViewTask extends AbstractDBSyncTask {
 
 		LOGGER.info("Pg:-{},Time:{} {} - {}", lastPage, lastUpdateDateNow, dateString, dateStringLimit);
 
-		
 		GridQuery gridQuery = getReverseQuery(lastPage, PAGE_SIZE, TIME_TRACK_KEY, dateString, dateStringLimit);
 
 		GridViewBuilder<CustomerDetailViewRecord> y = gridService
@@ -156,13 +155,14 @@ public class CustomerViewTask extends AbstractDBSyncTask {
 			}
 		}
 
+		LOGGER.info("Pg:{}, Rcds:{}, Nxt:{}", lastPage, x.getResults().size(), lastUpdateDateNow);
+
 		if (lastIdNow.equalsIgnoreCase(lastId)) {
 			// Same data records case, nothing to do
 			return;
 		}
 		lastId = lastIdNow;
 
-		LOGGER.info("Pg:{}, Rcds:{}, Nxt:{}", lastPage, x.getResults().size(), lastUpdateDateNow);
 		if (x.getResults().size() > 0) {
 			esRepository.bulk(builder.build());
 			oracleVarsCache.setCustomerScannedStamp(lastUpdateDateNow, true);
