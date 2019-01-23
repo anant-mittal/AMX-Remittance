@@ -117,6 +117,6 @@ public class ConstantDocument {
 	public static final String CHEQUE="B";
 	public static final String OTHER="O";
 	
-	
+	public static final String PARAM_POS_BANK="BPOS";
 	
 }

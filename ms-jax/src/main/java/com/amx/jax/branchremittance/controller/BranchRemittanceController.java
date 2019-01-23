@@ -4,19 +4,30 @@ package com.amx.jax.branchremittance.controller;
  * @date  17/01/2019 
  */
 
+import java.math.BigDecimal;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.branchremittance.service.BranchRemittanceService;
 import com.amx.jax.client.remittance.IRemittanceService;
 import com.amx.jax.meta.MetaData;
-import com.amx.jax.model.response.remittance.UserwiseTransactionDto;
+import com.amx.jax.model.ResourceDTO;
+import com.amx.jax.model.request.remittance.CustomerBankRequest;
+import com.amx.jax.model.response.fx.UserStockDto;
+import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
+import com.amx.jax.model.response.remittance.CustomerShoppingCartDto;
+import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
+import com.amx.jax.model.response.remittance.PaymentModeOfPaymentDto;
 
 @RestController
 public class BranchRemittanceController implements IRemittanceService {
@@ -28,5 +39,105 @@ public class BranchRemittanceController implements IRemittanceService {
 	@Autowired
 	BranchRemittanceService branchRemitService;
 	
-
+	/**
+	 * fetch customer shopping cart application
+	 * 
+	 */
+	@RequestMapping(value = Path.BR_REMITTANCE_SHOPPING_CART, method = RequestMethod.GET)
+	@Override
+	public AmxApiResponse<CustomerShoppingCartDto, Object> fetchCustomerShoppingCart(){
+		logger.info("fetchCustomerShoppingCart");
+		return branchRemitService.fetchCustomerShoppingCart();
+	}
+	
+	/**
+	 * fetch mode of payment
+	 * 
+	 */
+	@RequestMapping(value = Path.BR_REMITTANCE_MODE_OF_PAYMENT, method = RequestMethod.GET)
+	@Override
+	public AmxApiResponse<PaymentModeOfPaymentDto, Object> fetchModeOfPayment(){
+		logger.info("fetchModeOfPayment");
+		return branchRemitService.fetchModeOfPayment();
+	}
+	
+	/**
+	 * fetch local bank list
+	 * 
+	 */
+	@RequestMapping(value = Path.BR_REMITTANCE_LOCAL_BANKS, method = RequestMethod.GET)
+	@Override
+	public AmxApiResponse<LocalBankDetailsDto, Object> fetchLocalBanks(){
+		logger.info("fetchLocalBanks");
+		return branchRemitService.fetchLocalBanks();
+	}
+	
+	/**
+	 * fetch customer Banks added
+	 * 
+	 */
+	@RequestMapping(value = Path.BR_REMITTANCE_CUSTOMER_BANKS, method = RequestMethod.GET)
+	@Override
+	public AmxApiResponse<CustomerBankDetailsDto, Object> fetchCustomerLocalBanks(){
+		logger.info("fetchCustomerLocalBanks");
+		return branchRemitService.fetchCustomerLocalBanks();
+	}
+	
+	/**
+	 * fetch customer Banks Names by bank Id and Customer Id
+	 * 
+	 */
+	@RequestMapping(value = Path.BR_REMITTANCE_BANK_CUSTOMER_NAMES, method = RequestMethod.GET)
+	@Override
+	public AmxApiResponse<String, Object> fetchCustomerBankNames(@RequestParam(value = "bankId", required = true) BigDecimal bankId){
+		logger.info("fetchCustomerBankNames");
+		return branchRemitService.fetchCustomerBankNames(bankId);
+	}
+	
+	/**
+	 * fetch pos banks list
+	 * 
+	 */
+	@RequestMapping(value = Path.BR_REMITTANCE_POS_BANKS, method = RequestMethod.GET)
+	@Override
+	public AmxApiResponse<ResourceDTO, Object> fetchPosBanks(){
+		logger.info("fetchPosBanks");
+		return branchRemitService.fetchPosBanks();
+	}
+	
+	/**
+	 * fetch pay in stock local currency
+	 * 
+	 */
+	@RequestMapping(value = Path.BR_REMITTANCE_LOCAL_CURRENCY_DENOMINATION, method = RequestMethod.GET)
+	@Override
+	public AmxApiResponse<UserStockDto, Object> fetchLocalCurrencyDenomination(){
+		logger.info("fetchLocalCurrencyDenomination");
+		return branchRemitService.fetchLocalCurrencyDenomination();
+	}
+	
+	/**
+	 * fetch pay in stock local currency for refund
+	 * 
+	 */
+	@RequestMapping(value = Path.BR_REMITTANCE_LOCAL_CURRENCY_REFUND_DENOMINATION, method = RequestMethod.GET)
+	@Override
+	public AmxApiResponse<UserStockDto, Object> fetchLocalCurrencyRefundDenomination(){
+		logger.info("fetchLocalCurrencyRefundDenomination");
+		return branchRemitService.fetchLocalCurrencyRefundDenomination();
+	}
+	
+	/**
+	 * save the customer bank details
+	 * 
+	 */
+	@RequestMapping(value = Path.BR_REMITTANCE_SAVE_CUSTOMER_BANKS, method = RequestMethod.POST)
+	@Override
+	public AmxApiResponse<BoolRespModel,Object> saveCustomerBankDetails(@RequestBody List<CustomerBankRequest> customerBank){
+		logger.info("saveCustomerBankDetails"+customerBank);
+		BoolRespModel result = branchRemitService.saveCustomerBankDetails(customerBank);
+		return AmxApiResponse.build(result);
+	}
+	
+	
 }
