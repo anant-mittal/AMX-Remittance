@@ -14,9 +14,10 @@ public class OracleVarsCache extends CacheBox<String> {
 	public static final Long START_TIME = 978287400000L;
 	private static final String ASC_SEPERATOR = "-";
 	private static final String DESC_SEPERATOR = "-desc-";
-	private static final String CUSTOMER_RESET_COUNTER = "11";
-	private static final String TRANSACTION_RESET_COUNTER = "11";
+
 	public static final String DOC_VERSION = "v3";
+	private static final String CUSTOMER_RESET_COUNTER = "12";
+	private static final String TRANSACTION_RESET_COUNTER = "12";
 
 	/**
 	 * Instantiates a new logged in users.
