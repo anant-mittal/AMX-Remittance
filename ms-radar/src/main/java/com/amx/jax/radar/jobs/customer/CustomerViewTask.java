@@ -87,7 +87,7 @@ public class CustomerViewTask extends AbstractDBSyncTask {
 			}
 		}
 
-		if (lastIdNow.equalsIgnoreCase(lastId)) {
+		if (lastIdNow.equalsIgnoreCase(lastId) && x.getResults().size() > 0) {
 			// Same data records case, nothing to do
 			return;
 		}
@@ -159,7 +159,8 @@ public class CustomerViewTask extends AbstractDBSyncTask {
 
 		LOGGER.info("Pg:{}, Rcds:{}, Nxt:{}", lastPage, x.getResults().size(), lastUpdateDateNow);
 
-		if (lastIdNow.equalsIgnoreCase(lastId)) {
+
+		if (lastIdNow.equalsIgnoreCase(lastId) && x.getResults().size() > 0) {
 			// Same data records case, nothing to do
 			return;
 		}

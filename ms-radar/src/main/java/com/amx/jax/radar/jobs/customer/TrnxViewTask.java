@@ -88,10 +88,11 @@ public class TrnxViewTask extends AbstractDBSyncTask {
 			}
 		}
 
-		if (lastIdNow.equalsIgnoreCase(lastId)) {
+		if (lastIdNow.equalsIgnoreCase(lastId) && x.getResults().size() > 0) {
 			// Same data records case, nothing to do
 			return;
 		}
+
 		lastId = lastIdNow;
 
 		LOGGER.info("Pg:{}, Rcds:{}, Nxt:{}", lastPage, x.getResults().size(), lastUpdateDateNow);
@@ -167,11 +168,12 @@ public class TrnxViewTask extends AbstractDBSyncTask {
 		}
 
 		LOGGER.info("Pg:{}, Rcds:{}, Nxt:{}", lastPage, x.getResults().size(), lastUpdateDateNow);
-		
-		if (lastIdNow.equalsIgnoreCase(lastId)) {
+
+		if (lastIdNow.equalsIgnoreCase(lastId) && x.getResults().size() > 0) {
 			// Same data records case, nothing to do
 			return;
 		}
+
 		lastId = lastIdNow;
 
 		if (x.getResults().size() > 0) {
