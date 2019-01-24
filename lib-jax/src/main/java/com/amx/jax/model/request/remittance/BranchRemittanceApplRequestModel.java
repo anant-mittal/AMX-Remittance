@@ -3,6 +3,11 @@ package com.amx.jax.model.request.remittance;
 import java.math.BigDecimal;
 import java.util.Map;
 
+import javax.validation.constraints.NotNull;
+
+import com.amx.jax.model.response.remittance.BranchExchangeRateBreakup;
+import com.amx.jax.model.response.remittance.FlexFieldDto;
+
 
 public class BranchRemittanceApplRequestModel {
 	
@@ -17,6 +22,12 @@ public class BranchRemittanceApplRequestModel {
 	private String eOtp;
 	private Map<String, Object> flexFields;
 	private BigDecimal domXRate;
+	@NotNull
+	private BranchExchangeRateBreakup branchExRateBreakup;
+	public Map<String, FlexFieldDto> flexFieldDtoMap;
+	private String signature;
+	
+	
 	public BigDecimal getRelationshipId() {
 		return relationshipId;
 	}
@@ -82,6 +93,24 @@ public class BranchRemittanceApplRequestModel {
 	}
 	public void setDomXRate(BigDecimal domXRate) {
 		this.domXRate = domXRate;
+	}
+	public BranchExchangeRateBreakup getBranchExRateBreakup() {
+		return branchExRateBreakup;
+	}
+	public void setBranchExRateBreakup(BranchExchangeRateBreakup branchExRateBreakup) {
+		this.branchExRateBreakup = branchExRateBreakup;
+	}
+	public String getSignature() {
+		return signature;
+	}
+	public void setSignature(String signature) {
+		this.signature = signature;
+	}
+	public Map<String, FlexFieldDto> getFlexFieldDtoMap() {
+		return flexFieldDtoMap;
+	}
+	public void setFlexFieldDtoMap(Map<String, FlexFieldDto> flexFieldDtoMap) {
+		this.flexFieldDtoMap = flexFieldDtoMap;
 	}
 
 

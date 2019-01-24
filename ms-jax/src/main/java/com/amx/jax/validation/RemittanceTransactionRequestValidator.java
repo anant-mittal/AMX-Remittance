@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 import com.amx.amxlib.constant.JaxFieldEntity;
 import com.amx.amxlib.exception.AdditionalFlexRequiredException;
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.model.FlexFieldDto;
+
 import com.amx.amxlib.model.JaxConditionalFieldDto;
 import com.amx.amxlib.model.JaxFieldDto;
 import com.amx.amxlib.model.JaxFieldValueDto;
@@ -32,6 +32,7 @@ import com.amx.jax.dbmodel.remittance.AdditionalBankRuleMap;
 import com.amx.jax.dbmodel.remittance.AdditionalDataDisplayView;
 import com.amx.jax.dbmodel.remittance.FlexFiledView;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.model.response.remittance.FlexFieldDto;
 import com.amx.jax.repository.IAdditionalBankDetailsDao;
 import com.amx.jax.repository.IAdditionalBankRuleMapDao;
 import com.amx.jax.repository.IAdditionalDataDisplayDao;
@@ -61,8 +62,7 @@ public class RemittanceTransactionRequestValidator {
 
 		ExchangeRateBreakup oldExchangeRate = request.getExRateBreakup();
 		ExchangeRateBreakup newExchangeRate = response.getExRateBreakup();
-		oldExchangeRate
-				.setRate(oldExchangeRate.getRate().setScale(newExchangeRate.getRate().scale(), RoundingMode.HALF_UP));
+		oldExchangeRate.setRate(oldExchangeRate.getRate().setScale(newExchangeRate.getRate().scale(), RoundingMode.HALF_UP));
 		if (oldExchangeRate.compareTo(newExchangeRate) != 0) {
 			throw new GlobalException(JaxError.EXCHANGE_RATE_CHANGED, "Exchange rate has been changed");
 		}

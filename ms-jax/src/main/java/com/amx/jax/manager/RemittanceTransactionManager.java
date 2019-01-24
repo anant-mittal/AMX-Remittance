@@ -675,7 +675,7 @@ public class RemittanceTransactionManager {
 		return beneBankDetails;
 	}
 
-	private void validateBlackListedBene(BenificiaryListView beneficiary) {
+	public void validateBlackListedBene(BenificiaryListView beneficiary) {
 		List<BlackListModel> blist = blistDao.getBlackByName(beneficiary.getBenificaryName());
 		if (blist != null && !blist.isEmpty()) {
 			throw new GlobalException(BLACK_LISTED_CUSTOMER.getStatusKey(),

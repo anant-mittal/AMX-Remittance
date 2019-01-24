@@ -58,6 +58,7 @@ public class ConstantDocument {
 	public static final String MM_DD_YYYY_DATE_FORMAT = "MM/dd/yyyy";
 	
 	public static final BigDecimal SERVICE_MASTER_ID_TT = new BigDecimal(102);
+	public static final BigDecimal SERVICE_MASTER_ID_DD = new BigDecimal(104);
 	
 	public static final String VOUCHER_ONLINE_PROMOTION_STR = "CHICKEN KING SAGAR VOUCHER";
 	public static final BigDecimal IDENTITY_FOR_ID_PROOF = new BigDecimal(48);
@@ -116,7 +117,9 @@ public class ConstantDocument {
 	public static final String BANK_TRANSFER="T";
 	public static final String CHEQUE="B";
 	public static final String OTHER="O";
-	
+	public static final String BRANCH="BRANCH";
 	public static final String PARAM_POS_BANK="BPOS";
+	public static final String COUNTER="C";
+	
 	
 }

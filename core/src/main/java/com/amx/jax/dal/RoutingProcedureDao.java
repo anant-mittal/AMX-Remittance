@@ -6,6 +6,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.transaction.Transactional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -154,6 +156,24 @@ public class RoutingProcedureDao {
 			deliveryModeId = (BigDecimal) itr.next().get("DELIVERY_MODE_ID");
 		}
 		return deliveryModeId;
+	}
+	
+	
+	
+	public BigDecimal  getWbLimit() {
+		BigDecimal wbLimit = BigDecimal.ZERO;
+		String sql = "  SELECT A.NUMERIC_FIELD1  FROM   EX_PARAMETER_DETAILS  A, EX_APPLICATION_SETUP B  WHERE  A.RECORD_ID = 'CLMT' "
+				+ " AND    NVL(A.ISACTIVE,' ')  =   'Y';";
+		List<BigDecimal> list = new ArrayList<>();
+		try {
+			list = jdbcTemplate.queryForList(sql, BigDecimal.class);
+		} catch (Exception e) {
+			LOGGER.info("error in getDistinctCurrencyList : ", e);
+		}
+		if(list!= null && !list.isEmpty()) {
+			wbLimit = list.get(0);
+		}
+		return wbLimit;
 	}
 
 }
