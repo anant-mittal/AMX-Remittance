@@ -19,7 +19,15 @@ public class SSOUser implements Serializable {
 
 	private boolean authDone = false;
 	private String tranxId;
+	private Long loginTime;
 	private EmployeeDetailsDTO userDetails = null;
+
+	public String getUserId() {
+		if (userDetails == null) {
+			return null;
+		}
+		return ArgUtil.parseAsString(userDetails.getEmployeeId());
+	}
 
 	private String selfSAC;
 	private String partnerSAC;
@@ -29,6 +37,11 @@ public class SSOUser implements Serializable {
 	}
 
 	public void setAuthDone(boolean authDone) {
+		if (authDone) {
+			this.loginTime = System.currentTimeMillis();
+		} else {
+			this.loginTime = 0L;
+		}
 		this.authDone = authDone;
 	}
 
@@ -79,6 +92,14 @@ public class SSOUser implements Serializable {
 	public void generateSAC() {
 		this.selfSAC = Random.randomAlphaNumeric(6);
 		this.partnerSAC = Random.randomAlphaNumeric(6);
+	}
+
+	public Long getLoginTime() {
+		return loginTime;
+	}
+
+	public void setLoginTime(Long loginTime) {
+		this.loginTime = loginTime;
 	}
 
 }
