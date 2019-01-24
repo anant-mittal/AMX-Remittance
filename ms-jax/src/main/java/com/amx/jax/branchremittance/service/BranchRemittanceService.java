@@ -130,11 +130,15 @@ public class BranchRemittanceService extends AbstractService{
 		return new BoolRespModel(saveStatus);
 	}
 	
-	
-	
 	public AmxApiResponse<Object, Object> saveBranchApplicationManager(BranchRemittanceApplRequestModel applRequestModel){
 		branchRemitApplManager.saveBranchApplication(applRequestModel);
 		return null;
+	}
+	
+	public BoolRespModel validationStaffCredentials(String staffUserName,String staffPassword) {
+		BigDecimal countryBranchCode = null;
+		Boolean validateStatus = branchRemittancePaymentManager.validationStaffCredentials(staffUserName,staffPassword,countryBranchCode);
+		return new BoolRespModel(validateStatus);
 	}
 	
 }

@@ -186,6 +186,22 @@ public class RemittanceClient  implements IRemittanceService{
 			return JaxSystemError.evaluate(e);
 		} // end of try-catch
 	}
+
+	@Override
+	public AmxApiResponse<BoolRespModel, Object> validationStaffCredentials(String staffUserName,String staffPassword) {
+		try {
+			LOGGER.debug("in validationStaffCredentials :"+staffUserName + " " + staffPassword);
+			return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_VALIDATE_STAFF_CREDENTIALS).meta(new JaxMetaInfo())
+					.queryParam(Params.STAFF_USERNAME, staffUserName).meta(new JaxMetaInfo())
+					.queryParam(Params.STAFF_PASSWORD, staffPassword)
+					.get()
+					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in validationStaffCredentials : ", e);
+			return JaxSystemError.evaluate(e);
+		} // end of try-catch
+	}
 	
 }
 

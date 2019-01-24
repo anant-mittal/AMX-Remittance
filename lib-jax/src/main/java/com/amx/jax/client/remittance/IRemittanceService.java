@@ -30,11 +30,14 @@ public interface IRemittanceService extends  IJaxService {
 		public static final String BR_REMITTANCE_LOCAL_CURRENCY_DENOMINATION = PREFIX + "/local-currency-denomination/";
 		public static final String BR_REMITTANCE_LOCAL_CURRENCY_REFUND_DENOMINATION = PREFIX + "/local-currency-refund-denomination/";
 		public static final String BR_REMITTANCE_SAVE_CUSTOMER_BANKS = PREFIX + "/save-customer-banks/";
+		public static final String BR_REMITTANCE_VALIDATE_STAFF_CREDENTIALS = PREFIX + "/validate-staff-credentails/";
 	}
 
 	public static class Params {
 		public static final String TRNX_DATE = "transactiondate";
 		public static final String BANK_ID = "bankId";
+		public static final String STAFF_USERNAME = "staffUserName";
+		public static final String STAFF_PASSWORD = "staffPassword";
 	}
 	
 	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND,JaxError.NULL_CUSTOMER_ID,JaxError.NULL_CURRENCY_ID})
@@ -62,6 +65,8 @@ public interface IRemittanceService extends  IJaxService {
 	AmxApiResponse<UserStockDto, Object> fetchLocalCurrencyRefundDenomination();
 
 	AmxApiResponse<BoolRespModel, Object> saveCustomerBankDetails(List<CustomerBankRequest> customerBank);
+
+	AmxApiResponse<BoolRespModel, Object> validationStaffCredentials(String staffUserName, String staffPassword);
 
 }
 

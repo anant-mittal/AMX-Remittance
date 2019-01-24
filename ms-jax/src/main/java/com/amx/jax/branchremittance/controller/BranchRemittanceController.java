@@ -139,5 +139,15 @@ public class BranchRemittanceController implements IRemittanceService {
 		return AmxApiResponse.build(result);
 	}
 	
+	/**
+	 * validate staff user name and password
+	 * 
+	 */
+	@RequestMapping(value = Path.BR_REMITTANCE_VALIDATE_STAFF_CREDENTIALS, method = RequestMethod.POST)
+	@Override
+	public AmxApiResponse<BoolRespModel,Object> validationStaffCredentials(@RequestParam(value = "staffUserName", required = true) String staffUserName,@RequestParam(value = "staffPassword", required = true) String staffPassword){
+		BoolRespModel result = null;
+		return AmxApiResponse.build(result);
+	}
 	
 }
