@@ -55,8 +55,8 @@ public class SSOUser implements Serializable {
 			this.loginTime = System.currentTimeMillis();
 			Cookie kooky = new Cookie("AMXSESSION", "ok");
 			kooky.setMaxAge(15);
-			kooky.setHttpOnly(appConfig.isCookieHttpOnly());
-			kooky.setSecure(appConfig.isCookieSecure());
+			kooky.setHttpOnly(false);
+			kooky.setSecure(false);
 			kooky.setPath("/");
 			commonHttpRequest.setCookie(kooky);
 		} else {
