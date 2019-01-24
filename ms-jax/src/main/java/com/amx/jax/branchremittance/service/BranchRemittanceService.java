@@ -28,6 +28,7 @@ import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.request.remittance.CustomerBankRequest;
 import com.amx.jax.model.response.fx.PurposeOfTransactionDto;
 import com.amx.jax.model.response.fx.UserStockDto;
+import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
 import com.amx.jax.model.response.remittance.CustomerShoppingCartDto;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
@@ -60,6 +61,12 @@ public class BranchRemittanceService extends AbstractService{
 	
 	@Autowired
 	BranchRemittancePaymentManager branchRemittancePaymentManager;
+
+	
+	public AmxApiResponse<BranchRemittanceApplResponseDto, Object> saveBranchRemittanceApplication(BranchRemittanceApplRequestModel requestApplModel){
+		BranchRemittanceApplResponseDto applResponseDto = branchRemitApplManager.saveBranchRemittanceApplication(requestApplModel);
+		return AmxApiResponse.build(applResponseDto);
+	}
 	
 	
 	public AmxApiResponse<CustomerShoppingCartDto, Object> fetchCustomerShoppingCart(){
@@ -130,10 +137,7 @@ public class BranchRemittanceService extends AbstractService{
 		return new BoolRespModel(saveStatus);
 	}
 	
-	public AmxApiResponse<Object, Object> saveBranchApplicationManager(BranchRemittanceApplRequestModel applRequestModel){
-		branchRemitApplManager.saveBranchApplication(applRequestModel);
-		return null;
-	}
+
 	
 	public BoolRespModel validationStaffCredentials(String staffUserName,String staffPassword) {
 		BigDecimal countryBranchCode = null;

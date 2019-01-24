@@ -26,6 +26,9 @@ public class BranchRemittanceApplRequestModel {
 	private BranchExchangeRateBreakup branchExRateBreakup;
 	public Map<String, FlexFieldDto> flexFieldDtoMap;
 	private String signature;
+	private String amlRemarks;
+
+	
 	
 	
 	public BigDecimal getRelationshipId() {
@@ -111,6 +114,12 @@ public class BranchRemittanceApplRequestModel {
 	}
 	public void setFlexFieldDtoMap(Map<String, FlexFieldDto> flexFieldDtoMap) {
 		this.flexFieldDtoMap = flexFieldDtoMap;
+	}
+	public String getAmlRemarks() {
+		return amlRemarks;
+	}
+	public void setAmlRemarks(String amlRemarks) {
+		this.amlRemarks = amlRemarks;
 	}
 
 

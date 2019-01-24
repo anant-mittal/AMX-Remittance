@@ -279,7 +279,7 @@ public class BranchRemittanceManager  extends AbstractModel {
 			inputValues.put("P_SERVICE_MASTER_ID", map.get("P_SERVICE_MASTER_ID"));
 			inputValues.put("P_DELIVERY_MODE_ID", map.get("P_DELIVERY_MODE_ID"));
 			inputValues.put("P_REMITTANCE_MODE_ID", map.get("P_REMITTANCE_MODE_ID")); 
-			inputValues.put("P_FOREIGN_CURRENCY_ID", BigDecimal.ZERO); //NC
+			inputValues.put("P_FOREIGN_CURRENCY_ID", beneficaryDetails.getCurrencyId()); //NC
 			inputValues.put("P_SELECTED_CURRENCY_ID", BigDecimal.ZERO); // NC
 			inputValues.put("P_CUSTOMER_ID", metaData.getCustomerId());
 			inputValues.put("P_CUSTOMER_TYPE", metaData.getCustomerId());

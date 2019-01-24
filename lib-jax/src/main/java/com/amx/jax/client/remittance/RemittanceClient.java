@@ -14,8 +14,10 @@ import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.client.fx.FcSaleOrderClient;
 import com.amx.jax.exception.JaxSystemError;
 import com.amx.jax.model.ResourceDTO;
+import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.request.remittance.CustomerBankRequest;
 import com.amx.jax.model.response.fx.UserStockDto;
+import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
 import com.amx.jax.model.response.remittance.CustomerShoppingCartDto;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
@@ -30,6 +32,29 @@ public class RemittanceClient  implements IRemittanceService{
 	
 	@Autowired
 	AppConfig appConfig;
+	
+	
+	/**
+	 * Save the application
+	 */
+	
+	@Override
+	public AmxApiResponse<BranchRemittanceApplResponseDto, Object> saveBranchRemittanceApplication(BranchRemittanceApplRequestModel requestModel) {
+		try {
+			LOGGER.debug("in saveBranchRemittanceApplication :"+requestModel);
+			return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_SAVE_APPL).meta(new JaxMetaInfo())
+					.post(requestModel)
+					.as(new ParameterizedTypeReference<AmxApiResponse<BranchRemittanceApplResponseDto,Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in saveCustomerBankDetails : ", e);
+			return JaxSystemError.evaluate(e);
+		} // end of try-catch
+	}
+		
+
+	
+	
 
 	/**
 	 * fetch customer shopping cart application
@@ -202,6 +227,8 @@ public class RemittanceClient  implements IRemittanceService{
 			return JaxSystemError.evaluate(e);
 		} // end of try-catch
 	}
-	
+
+
+
 }
 

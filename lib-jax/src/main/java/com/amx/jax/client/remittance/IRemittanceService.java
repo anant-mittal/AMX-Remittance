@@ -9,8 +9,10 @@ import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.error.ApiJaxStatusBuilder.ApiJaxStatus;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.model.ResourceDTO;
+import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.request.remittance.CustomerBankRequest;
 import com.amx.jax.model.response.fx.UserStockDto;
+import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
 import com.amx.jax.model.response.remittance.CustomerShoppingCartDto;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
@@ -21,6 +23,8 @@ public interface IRemittanceService extends  IJaxService {
 	
 	public static class Path {
 		public static final String PREFIX = "/branch/remittance/";
+		
+		public static final String BR_REMITTANCE_SAVE_APPL = PREFIX + "/save-appl/";
 		public static final String BR_REMITTANCE_SHOPPING_CART = PREFIX + "/shopping-cart/";
 		public static final String BR_REMITTANCE_MODE_OF_PAYMENT = PREFIX + "/mode-of-payment/";
 		public static final String BR_REMITTANCE_LOCAL_BANKS = PREFIX + "/local-banks/";
@@ -39,6 +43,12 @@ public interface IRemittanceService extends  IJaxService {
 		public static final String STAFF_USERNAME = "staffUserName";
 		public static final String STAFF_PASSWORD = "staffPassword";
 	}
+	
+	
+	
+	
+	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND,JaxError.NULL_CUSTOMER_ID,JaxError.NULL_CURRENCY_ID})
+	AmxApiResponse<BranchRemittanceApplResponseDto, Object> saveBranchRemittanceApplication(BranchRemittanceApplRequestModel requestModel);
 	
 	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND,JaxError.NULL_CUSTOMER_ID,JaxError.NULL_CURRENCY_ID})
 	AmxApiResponse<CustomerShoppingCartDto, Object> fetchCustomerShoppingCart();

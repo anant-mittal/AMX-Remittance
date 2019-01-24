@@ -22,8 +22,10 @@ import com.amx.jax.branchremittance.service.BranchRemittanceService;
 import com.amx.jax.client.remittance.IRemittanceService;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.ResourceDTO;
+import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.request.remittance.CustomerBankRequest;
 import com.amx.jax.model.response.fx.UserStockDto;
+import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
 import com.amx.jax.model.response.remittance.CustomerShoppingCartDto;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
@@ -38,6 +40,18 @@ public class BranchRemittanceController implements IRemittanceService {
 	
 	@Autowired
 	BranchRemittanceService branchRemitService;
+	
+	
+	
+	@RequestMapping(value = Path.BR_REMITTANCE_SAVE_APPL, method = RequestMethod.POST)
+	@Override
+	public AmxApiResponse<BranchRemittanceApplResponseDto, Object> saveBranchRemittanceApplication(BranchRemittanceApplRequestModel requestModel) {
+		logger.info("saveBranchRemittanceApplication :"+requestModel);
+		return branchRemitService.saveBranchRemittanceApplication(requestModel);
+	}
+	
+	
+	
 	
 	/**
 	 * fetch customer shopping cart application
@@ -138,6 +152,8 @@ public class BranchRemittanceController implements IRemittanceService {
 		BoolRespModel result = branchRemitService.saveCustomerBankDetails(customerBank);
 		return AmxApiResponse.build(result);
 	}
+
+
 	
 	/**
 	 * validate staff user name and password

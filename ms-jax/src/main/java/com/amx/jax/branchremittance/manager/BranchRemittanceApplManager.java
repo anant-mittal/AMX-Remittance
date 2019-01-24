@@ -25,6 +25,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.jax.branchremittance.dao.BranchRemittanceDao;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.ApplicationSetup;
 import com.amx.jax.dbmodel.BankMasterModel;
@@ -43,6 +44,7 @@ import com.amx.jax.dbmodel.remittance.AdditionalInstructionData;
 import com.amx.jax.dbmodel.remittance.BankBranch;
 import com.amx.jax.dbmodel.remittance.DeliveryMode;
 import com.amx.jax.dbmodel.remittance.Document;
+import com.amx.jax.dbmodel.remittance.RemitApplAmlModel;
 import com.amx.jax.dbmodel.remittance.RemittanceAppBenificiary;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.RemittanceModeMaster;
@@ -52,6 +54,8 @@ import com.amx.jax.manager.RemittanceTransactionManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.response.remittance.AmlCheckResponseDto;
+import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
+import com.amx.jax.model.response.remittance.CustomerShoppingCartDto;
 import com.amx.jax.model.response.remittance.FlexFieldDto;
 import com.amx.jax.repository.IApplicationCountryRepository;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
@@ -121,11 +125,17 @@ public class BranchRemittanceApplManager {
 	@Resource
 	private Map<String, Object> remitApplParametersMap;
 	
-
+	@Autowired
+	BranchRemittanceDao brRemittanceDao;
+	
+	@Autowired
+	BranchRemittancePaymentManager  branchRemittancePaymentManager; 
 	
 
 	
-	public void saveBranchApplication(BranchRemittanceApplRequestModel requestApplModel) {
+
+	
+	public BranchRemittanceApplResponseDto saveBranchRemittanceApplication(BranchRemittanceApplRequestModel requestApplModel) {
 		Map<String,Object> hashMap = new HashMap<>();
 		
 		/*To fetch customer details **/
@@ -163,13 +173,36 @@ public class BranchRemittanceApplManager {
 		hashMap.put("APPL_REQ_MODEL", requestApplModel);
 		hashMap.put("BENEFICIARY_DETAILS", beneficaryDetails);
 		hashMap.put("CUSTOMER", customer);
+		hashMap.put("AML_CHECK", amlList);
 
 
-		/** create applciation **/
+		/* create applciation */
 		RemittanceApplication remittanceApplication = this.createRemittanceApplication(hashMap);
 		RemittanceAppBenificiary remittanceAppBeneficairy = this.createRemittanceAppBeneficiary(remittanceApplication,hashMap);
 		List<AdditionalInstructionData> additioalInstructionData = this.createAdditionalInstnData(remittanceApplication, hashMap);
+		List<RemitApplAmlModel> amlData = this.saveRemittanceAppAML(remittanceApplication,hashMap);
 		
+		/* Saving application deatils */
+		HashMap<String, Object> mapAllDetailApplSave = new HashMap<String, Object>();
+		mapAllDetailApplSave.put("EX_APPL_TRNX", remittanceApplication);
+		mapAllDetailApplSave.put("EX_APPL_BENE", remittanceAppBeneficairy);
+		mapAllDetailApplSave.put("EX_APPL_ADDL", additioalInstructionData);
+		mapAllDetailApplSave.put("EX_APPL_AML", amlData);
+		brRemittanceDao.saveAllApplications(mapAllDetailApplSave);
+		List<CustomerShoppingCartDto> shoppingCartList = branchRemittancePaymentManager.fetchCustomerShoppingCart(customer.getCustomerId(),metaData.getDefaultCurrencyId());
+		
+		BranchRemittanceApplResponseDto applResponseDto = new BranchRemittanceApplResponseDto();
+		BigDecimal totalLocalAmount = BigDecimal.ZERO;
+		
+		if(shoppingCartList!= null && !shoppingCartList.isEmpty()) {
+			applResponseDto.setShoppingCartDetails(shoppingCartList);
+			for(CustomerShoppingCartDto dto : shoppingCartList) {
+				totalLocalAmount=totalLocalAmount.add(dto.getLocalNextTranxAmount());
+			}
+			applResponseDto.setTotalLocalAmount(totalLocalAmount);
+		}
+		
+		return applResponseDto;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -239,9 +272,13 @@ public class BranchRemittanceApplManager {
 			remittanceApplication.setExCountryBranch(countryBranch);
 			// fin year
 			UserFinancialYear userFinancialYear = finanacialService.getUserFinancialYear();
+			if(userFinancialYear!=null) {
 			remittanceApplication.setExUserFinancialYearByDocumentFinanceYear(userFinancialYear);
 			remittanceApplication.setTransactionFinancialyear(userFinancialYear.getFinancialYear());
 			remittanceApplication.setDocumentFinancialyear(userFinancialYear.getFinancialYear());
+			}else {
+				throw new GlobalException(JaxError.NULL_FINANCIAL_YEAR,"Financial error is not defined");
+			}
 			
 			// routing Country
 			CountryMaster bencountrymaster = new CountryMaster();
@@ -473,6 +510,43 @@ public class BranchRemittanceApplManager {
 
 		return additionalInsData;
 	}
+
+	
+		/* saving data to Remittance Application AML */
+		@SuppressWarnings("unchecked")
+		public List<RemitApplAmlModel> saveRemittanceAppAML(RemittanceApplication remittanceApplication,Map hashMap){
+			List<AmlCheckResponseDto> amlList =(List<AmlCheckResponseDto>)hashMap.get("AML_CHECK");
+			BranchRemittanceApplRequestModel requestApplModel = (BranchRemittanceApplRequestModel)hashMap.get("APPL_REQ_MODEL");
+
+			List<RemitApplAmlModel> remitApplAmlList = new ArrayList<RemitApplAmlModel>();
+
+			try {
+				for(AmlCheckResponseDto amlDto :amlList) {
+					RemitApplAmlModel amlModel = new RemitApplAmlModel();
+
+					RemitApplAmlModel remitApplAml = new RemitApplAmlModel();
+					remitApplAml.setCompanyId(remittanceApplication.getFsCompanyMaster().getCompanyId());
+					remitApplAml.setRemittanceApplicationId(remittanceApplication.getRemittanceApplicationId());
+					remitApplAml.setCountryId(remittanceApplication.getFsCountryMasterByApplicationCountryId().getCountryId());
+					remitApplAml.setCreatedBy(remittanceApplication.getCreatedBy());
+					remitApplAml.setCreatedDate(new Date());
+					remitApplAml.setIsactive(ConstantDocument.Yes);
+					remitApplAml.setAuthorizedBy(null); //Required 
+					remitApplAml.setAuthType(null); //Required 
+					remitApplAml.setBlackListReason(amlDto.getMessageDescription());
+					remitApplAml.setBlackListRemarks(requestApplModel.getAmlRemarks());
+					
+					
+					remitApplAmlList.add(remitApplAml);
+					
+				}
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+				
+			}
+			return remitApplAmlList;
+		}
 
 
 	
