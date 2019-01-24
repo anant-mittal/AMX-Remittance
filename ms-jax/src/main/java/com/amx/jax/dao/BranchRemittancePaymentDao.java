@@ -12,6 +12,7 @@ import com.amx.jax.dbmodel.ParameterDetails;
 import com.amx.jax.dbmodel.remittance.CustomerBank;
 import com.amx.jax.dbmodel.remittance.LocalBankDetailsView;
 import com.amx.jax.dbmodel.remittance.ShoppingCartDetails;
+import com.amx.jax.dbmodel.remittance.StaffAuthorizationView;
 import com.amx.jax.repository.CurrencyWiseDenominationRepository;
 import com.amx.jax.repository.ICustomerRepository;
 import com.amx.jax.repository.IShoppingCartDetailsRepository;
@@ -19,6 +20,7 @@ import com.amx.jax.repository.ParameterDetailsRespository;
 import com.amx.jax.repository.PaymentModeRepository;
 import com.amx.jax.repository.remittance.CustomerBankRepository;
 import com.amx.jax.repository.remittance.LocalBankDetailsRepository;
+import com.amx.jax.repository.remittance.StaffAuthorizationRepository;
 
 @Component
 public class BranchRemittancePaymentDao {
@@ -43,6 +45,9 @@ public class BranchRemittancePaymentDao {
 	
 	@Autowired
 	CustomerBankRepository customerBankRepository;
+	
+	@Autowired
+	StaffAuthorizationRepository staffAuthorizationRepository;
 	
 	public List<ShoppingCartDetails> fetchCustomerShoppingCart(BigDecimal customerId){
 		return shoppingCartDetailsRepository.findByCustomerId(customerId);
@@ -78,6 +83,14 @@ public class BranchRemittancePaymentDao {
 	
 	public List<String> fetchCustomerBankNames(BigDecimal customerId,BigDecimal bankId){
 		return localBankDetailsRepository.fetchCustomerBankNames(customerId,bankId);
+	}
+	
+	public List<StaffAuthorizationView> fetchStaffDetailsForValidation(BigDecimal countryBranchCode){
+		return staffAuthorizationRepository.fetchStaffAuthorization();
+	}
+	
+	public BigDecimal validationStaffCredentials(String userName,String password,BigDecimal countryBranchCode){
+		return staffAuthorizationRepository.validationStaffCredentials(userName,password);
 	}
 
 }

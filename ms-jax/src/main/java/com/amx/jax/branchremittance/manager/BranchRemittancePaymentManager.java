@@ -26,6 +26,7 @@ import com.amx.jax.dbmodel.ParameterDetails;
 import com.amx.jax.dbmodel.remittance.CustomerBank;
 import com.amx.jax.dbmodel.remittance.LocalBankDetailsView;
 import com.amx.jax.dbmodel.remittance.ShoppingCartDetails;
+import com.amx.jax.dbmodel.remittance.StaffAuthorizationView;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.manager.FcSaleBranchOrderManager;
 import com.amx.jax.meta.MetaData;
@@ -57,7 +58,7 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 
 	@Autowired
 	BranchRemittancePaymentDao branchRemittancePaymentDao;
-	
+
 	@Autowired
 	FcSaleBranchOrderManager fcSaleBranchOrderManager;
 
@@ -197,7 +198,7 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 
 		return lstModeofPayment;
 	}
-	
+
 	/* 
 	 * @param   :fetch local bank list
 	 * @return LocalBankDetailsDto
@@ -210,10 +211,10 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 		}else {
 			throw new GlobalException(JaxError.NO_RECORD_FOUND, "No records found for local banks");
 		}
-		
+
 		return lstLocalBanksDto;
 	}
-	
+
 	/* 
 	 * @param   :fetch customer local bank list
 	 * @return LocalBankDetailsDto
@@ -244,10 +245,10 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 				}
 			}
 		}
-		
+
 		return lstCustBanksDto;
 	}
-	
+
 	public LocalBankDetailsDto convertCartDto(LocalBankDetailsView lstlocalBanksView) {
 		LocalBankDetailsDto dto = new LocalBankDetailsDto();
 		try {
@@ -257,12 +258,12 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 		}
 		return dto;
 	}
-	
+
 	public List<String> fetchCustomerNames(BigDecimal customerId,BigDecimal bankId){
 		List<String> lstCustDetails = branchRemittancePaymentDao.fetchCustomerBankNames(customerId,bankId);
 		return lstCustDetails;
 	}
-	
+
 	/* 
 	 * @param   :fetch pos banks list
 	 * @return ResourceDTO
@@ -278,7 +279,7 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 			throw new GlobalException(JaxError.NO_RECORD_FOUND, "No records found for pos banks");
 		}
 	}
-	
+
 	/* 
 	 * @param   :fetch pay in stock local currency
 	 * @return UserStockDto
@@ -300,10 +301,14 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 		}else {
 			throw new GlobalException(JaxError.NO_RECORD_FOUND, "No records found for local currency denomination");
 		}
-		
+
 		return lstUserStockDto;
 	}
-	
+
+	/* 
+	 * @param   :save customer bank [KNET] details
+	 * @return True or False
+	 */
 	public Boolean saveCustomerBankDetails(List<CustomerBankRequest> customerBank,BigDecimal appcountryId,BigDecimal employeeId,BigDecimal customerId,BigDecimal companyId) {
 		Boolean status = Boolean.FALSE;
 		Customer customer = null;
@@ -315,7 +320,7 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 		}else {
 			throw new GlobalException(JaxError.NO_RECORD_FOUND, "No customer records found");
 		}
-		
+
 		if(customerBank != null && customerBank.size() != 0) {
 			for (CustomerBankRequest customerBankRequest : customerBank) {
 				CustomerBank customerBankDt = new CustomerBank();
@@ -337,8 +342,37 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 		}else {
 			throw new GlobalException(JaxError.NO_RECORD_FOUND, "No records found to save customer details");
 		}
-		
+
 		return status;
+	}
+
+	/* 
+	 * @param   :fetch staff credentials details for validation
+	 * @return StaffAuthorizationView
+	 */
+	public List<StaffAuthorizationView> fetchStaffDetailsForValidation(BigDecimal countryBranchCode) {
+		List<StaffAuthorizationView> lstStaffAuth = branchRemittancePaymentDao.fetchStaffDetailsForValidation(countryBranchCode);
+		if(lstStaffAuth != null && lstStaffAuth.size() != 0) {
+			// continue
+		}else {
+			throw new GlobalException(JaxError.NO_RECORD_FOUND, "No records found to staff validation details");
+		}
+		return lstStaffAuth;
+	}
+
+	/* 
+	 * @param   : validate staff user name and password
+	 * @return True or False
+	 */
+	public Boolean validationStaffCredentials(String userName,String password,BigDecimal countryBranchCode) {
+		Boolean validStatus = Boolean.FALSE;
+		BigDecimal validate = branchRemittancePaymentDao.validationStaffCredentials(userName,password,countryBranchCode);
+		if(validate != null && validate.compareTo(BigDecimal.ZERO) != 0) {
+			validStatus = Boolean.TRUE;
+		}else {
+			validStatus = Boolean.FALSE;
+		}
+		return validStatus;
 	}
 
 }
