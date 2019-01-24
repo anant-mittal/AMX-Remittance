@@ -2,11 +2,16 @@ package com.amx.jax.sso;
 
 import java.io.Serializable;
 
+import javax.servlet.http.Cookie;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.AppConfig;
 import com.amx.jax.AppContextUtil;
+import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Random;
@@ -16,6 +21,15 @@ import com.amx.utils.Random;
 public class SSOUser implements Serializable {
 
 	private static final long serialVersionUID = 5846957265338654300L;
+
+	@Autowired
+	CommonHttpRequest commonHttpRequest;
+
+	@Autowired
+	AppConfig appConfig;
+
+	@Autowired
+	SSOConfig ssoConfig;
 
 	private boolean authDone = false;
 	private String tranxId;
@@ -39,10 +53,27 @@ public class SSOUser implements Serializable {
 	public void setAuthDone(boolean authDone) {
 		if (authDone) {
 			this.loginTime = System.currentTimeMillis();
+			Cookie kooky = new Cookie("AMXSESSION", "" + this.loginTime);
+			kooky.setMaxAge(10);
+			kooky.setHttpOnly(appConfig.isCookieHttpOnly());
+			kooky.setSecure(appConfig.isCookieSecure());
+			kooky.setPath("/");
+			commonHttpRequest.setCookie(kooky);
 		} else {
 			this.loginTime = 0L;
 		}
 		this.authDone = authDone;
+	}
+
+	public boolean isAMXCookieValid() {
+		if (ssoConfig.isBrowserSessionPersist()) {
+			return true;
+		}
+		Cookie kooky = commonHttpRequest.getCookie("AMXSESSION");
+		if (kooky == null) {
+			return false;
+		}
+		return true;
 	}
 
 	public String getTranxId() {

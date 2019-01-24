@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.AppConfig;
+import com.amx.jax.sso.SSOConfig;
 import com.amx.jax.sso.SSOConstants;
 import com.amx.jax.sso.SSOUser;
 import com.amx.jax.sso.SSOUserSessions;
