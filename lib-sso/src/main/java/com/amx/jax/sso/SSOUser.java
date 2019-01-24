@@ -53,8 +53,8 @@ public class SSOUser implements Serializable {
 	public void setAuthDone(boolean authDone) {
 		if (authDone) {
 			this.loginTime = System.currentTimeMillis();
-			Cookie kooky = new Cookie("AMXSESSION", "" + this.loginTime);
-			kooky.setMaxAge(10);
+			Cookie kooky = new Cookie("AMXSESSION", "ok");
+			kooky.setMaxAge(15);
 			kooky.setHttpOnly(appConfig.isCookieHttpOnly());
 			kooky.setSecure(appConfig.isCookieSecure());
 			kooky.setPath("/");
