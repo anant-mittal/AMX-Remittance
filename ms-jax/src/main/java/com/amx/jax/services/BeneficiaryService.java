@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -412,6 +413,8 @@ public class BeneficiaryService extends AbstractService {
 		if (beneList.isEmpty()) {
 			beneList = beneficiaryOnlineDao.getOnlineBeneListFromView(customerId, applicationCountryId);
 		}
+		beneList = beneList.stream().filter(i -> ConstantDocument.Yes.equalsIgnoreCase(i.getIsActive()))
+				.collect(Collectors.toList());
 		if (beneList.isEmpty()) {
 			throw new GlobalException(JaxError.BENEFICIARY_LIST_NOT_FOUND, "My favourite eneficiary list is not found");
 		} else {
