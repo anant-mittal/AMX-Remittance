@@ -1,5 +1,7 @@
 package com.amx.jax.postman.service;
 
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,15 +13,17 @@ import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.postman.PostManConfig;
 import com.amx.jax.postman.audit.PMGaugeEvent;
+import com.amx.jax.postman.events.UserInboxEvent;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.WAMessage;
 import com.amx.jax.rest.RestService;
+import com.amx.jax.tunnel.TunnelService;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.Constants;
 
 @Component
 public class ApiWhaService {
 
-	/** The logger. */
 	private static Logger LOGGER = LoggerService.getLogger(ApiWhaService.class);
 
 	@Value("${apiwha.api.key}")
@@ -31,6 +35,8 @@ public class ApiWhaService {
 	private AuditService auditService;
 	@Autowired
 	private FileService fileService;
+	@Autowired
+	private TunnelService tunnelService;
 
 	@Autowired
 	private PostManConfig postManConfig;
@@ -65,7 +71,16 @@ public class ApiWhaService {
 		}
 		return message;
 	}
-	
-	
-	
+
+	public void onMessage(Map<String, Object> dataMap) {
+		String event = ArgUtil.parseAsString(dataMap.get("event"), Constants.BLANK);
+		if ("INBOX".equals(event)) {
+			UserInboxEvent userInboxEvent = new UserInboxEvent();
+			userInboxEvent.setFrom(ArgUtil.parseAsString(dataMap.get("from"), Constants.BLANK));
+			userInboxEvent.setTo(ArgUtil.parseAsString(dataMap.get("to"), Constants.BLANK));
+			userInboxEvent.setMessage(ArgUtil.parseAsString(dataMap.get("text"), Constants.BLANK));
+			tunnelService.task(userInboxEvent);
+		}
+	}
+
 }
