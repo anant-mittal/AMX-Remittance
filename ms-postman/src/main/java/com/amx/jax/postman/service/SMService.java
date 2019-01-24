@@ -28,6 +28,7 @@ import com.amx.jax.rest.RestService.Ajax.RestMethod;
 import com.amx.jax.scope.TenantScoped;
 import com.amx.jax.scope.TenantValue;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.Constants;
 import com.amx.utils.CryptoUtil;
 import com.amx.utils.JsonPath;
 import com.amx.utils.JsonUtil;
@@ -108,7 +109,7 @@ public class SMService {
 	/** The template service. */
 	@Autowired
 	private TemplateService templateService;
-	
+
 	@Autowired
 	private FileService fileService;
 
@@ -143,15 +144,15 @@ public class SMService {
 			if (sms.getTemplate() != null) {
 				Context context = new Context(postManConfig.getLocal(sms));
 				context.setVariables(sms.getModel());
-				
+
 				File file = new File();
 				file.setTemplate(sms.getTemplate());
 				file.setModel(sms.getModel());
 				file.setLang(sms.getLang());
-				
-				sms.setMessage(fileService.create(file).getContent() 
-						//templateService.processHtml(sms.getITemplate(), context)
-						);
+
+				sms.setMessage(fileService.create(file).getContent()
+				// templateService.processHtml(sms.getITemplate(), context)
+				);
 			}
 
 			if (ArgUtil.isEmpty(to)) {
@@ -197,15 +198,15 @@ public class SMService {
 
 			Map<String, Object> map = MapBuilder.map().put("sender", senderId).put("route", route).put("country", "91")
 					.put(messagePath,
-							URLEncoder.encode( sms.toText(), "UTF-8" )
-					).put(toPath, phone).toMap();
+							URLEncoder.encode(sms.toText(), "UTF-8"))
+					.put(toPath, phone.trim()).toMap();
 			return restService.ajax(remoteUrl).header("authkey", authKey).header("content-type", "application/json")
 					.post(JsonUtil.toJson(map)).asString();
 
 		} else if (phone != null) {
 
 			Map<String, String> params = new HashMap<String, String>();
-			params.put("mobile", phone);
+			params.put("mobile", phone.trim());
 			params.put("text", sms.toText());
 			params.put("username", username);
 			params.put("password", password);
