@@ -28,6 +28,7 @@ public class SSOUserSessions extends CacheBox<Long> {
 			return true;
 		}
 		if (thisUserLoginTime >= latestUserLoginTime) {
+			this.put(userid, thisUserLoginTime);
 			return true;
 		}
 		return false;

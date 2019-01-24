@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.AppConfig;
 import com.amx.jax.sso.SSOConstants;
 import com.amx.jax.sso.SSOUser;
 import com.amx.jax.sso.SSOUserSessions;
@@ -28,6 +29,9 @@ public class SSOAuthFilter implements Filter {
 
 	@Autowired
 	SSOUserSessions sSOUserSessions;
+
+	@Autowired
+	AppConfig appConfig;
 
 	/*
 	 * (non-Javadoc)
@@ -53,7 +57,7 @@ public class SSOAuthFilter implements Filter {
 			sSOUser.setAuthDone(false);
 			HttpServletResponse response = ((HttpServletResponse) resp);
 			response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
-			response.setHeader("Location", SSOConstants.APP_LOGOUT_URL);
+			response.setHeader("Location", appConfig.getAppPrefix() + SSOConstants.APP_LOGOUT_URL);
 		} else {
 			chain.doFilter(req, resp);
 		}
