@@ -57,20 +57,21 @@ public class TrnxViewTask extends ARadarTask {
 	@Autowired
 	OracleVarsCache oracleVarsCache;
 
-	private Long lastUpdateDateNow = 0L;
+	long intervalDays = 10;
 
 	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_SEC * 10)
 	public void doTask() {
-		doTask(0);
-	}
-
-	public void doTask(int lastPage) {
 		AppContextUtil.setTenant(TenantContextHolder.currentSite(appConfig.getDefaultTenant()));
 		AppContextUtil.getTraceId(true, true);
 		AppContextUtil.init();
+		doTask(0);
+		doTaskRev(0);
+	}
 
-		lastUpdateDateNow = oracleVarsCache.getTranxScannedStamp();
-		Long lastUpdateDateNowLimit = lastUpdateDateNow + (10 * AmxCurConstants.INTERVAL_DAYS);
+	public void doTask(int lastPage) {
+
+		Long lastUpdateDateNow = oracleVarsCache.getTranxScannedStamp(false);
+		Long lastUpdateDateNowLimit = lastUpdateDateNow + (intervalDays * AmxCurConstants.INTERVAL_DAYS);
 
 		String dateString = GridConstants.GRID_TIME_FORMATTER_JAVA.format(new Date(lastUpdateDateNow));
 		String dateStringLimit = GridConstants.GRID_TIME_FORMATTER_JAVA
@@ -133,14 +134,106 @@ public class TrnxViewTask extends ARadarTask {
 		}
 
 		LOGGER.info("Pg:{}, Rcds:{}, Nxt:{}", lastPage, x.getResults().size(), lastUpdateDateNow);
+		long todayOffset = System.currentTimeMillis() - AmxCurConstants.INTERVAL_DAYS;
 		if (x.getResults().size() > 0) {
+			intervalDays = 10;
 			esRepository.bulk(builder.build());
-			oracleVarsCache.setTranxScannedStamp(lastUpdateDateNow);
-			if (lastUpdateDateNowStart == lastUpdateDateNow) {
+			oracleVarsCache.setTranxScannedStamp(lastUpdateDateNow, false);
+			if (lastUpdateDateNowStart == lastUpdateDateNow || (x.getResults().size() == 1000 && lastPage < 10)) {
 				doTask(lastPage + 1);
 			}
-		} else if (lastUpdateDateNowLimit < (System.currentTimeMillis() - AmxCurConstants.INTERVAL_DAYS)) {
-			oracleVarsCache.setTranxScannedStamp(lastUpdateDateNowLimit);
+		} else if (lastUpdateDateNowLimit < todayOffset) {
+			intervalDays++;
+			oracleVarsCache.setTranxScannedStamp(lastUpdateDateNowLimit, false);
+		} else {
+			oracleVarsCache
+					.setTranxScannedStamp(Math.min(todayOffset, lastUpdateDateNow + AmxCurConstants.INTERVAL_DAYS),
+							false);
+		}
+
+	}
+
+	public void doTaskRev(int lastPage) {
+
+		Long lastUpdateDateNowFrwrds = oracleVarsCache.getTranxScannedStamp(false);
+		Long lastUpdateDateNow = oracleVarsCache.getTranxScannedStamp(true);
+
+		if (lastUpdateDateNow < lastUpdateDateNowFrwrds
+				|| lastUpdateDateNow < OracleVarsCache.START_TIME) {
+			return;
+		}
+
+		Long lastUpdateDateNowLimit = lastUpdateDateNow - (10 * AmxCurConstants.INTERVAL_DAYS);
+
+		String dateString = GridConstants.GRID_TIME_FORMATTER_JAVA.format(new Date(lastUpdateDateNow));
+		String dateStringLimit = GridConstants.GRID_TIME_FORMATTER_JAVA
+				.format(new Date(lastUpdateDateNowLimit));
+
+		LOGGER.info("Pg:-{},Time:{} {} - {}", lastPage, lastUpdateDateNow, dateString, dateStringLimit);
+
+		GridQuery gridQuery = new GridQuery();
+		gridQuery.setPageNo(lastPage);
+		gridQuery.setPageSize(1000);
+		gridQuery.setPaginated(false);
+		gridQuery.setColumns(new ArrayList<GridColumn>());
+		GridColumn column = new GridColumn();
+		column.setKey("lastUpdateDate");
+		column.setOperator(FilterOperater.STE);
+		column.setDataType(FilterDataType.TIME);
+		column.setValue(dateString);
+		column.setSortDir(SortOrder.DESC);
+		gridQuery.getColumns().add(column);
+
+		GridColumn column2 = new GridColumn();
+		column2.setKey("lastUpdateDate");
+		column2.setOperator(FilterOperater.GT);
+		column2.setDataType(FilterDataType.TIME);
+		column2.setValue(dateStringLimit);
+		column2.setSortDir(SortOrder.DESC);
+		gridQuery.getColumns().add(column2);
+
+		gridQuery.setSortBy(0);
+		gridQuery.setSortOrder(SortOrder.DESC);
+
+		GridViewBuilder<TranxViewRecord> y = gridService
+				.view(GridView.VW_KIBANA_TRNX, gridQuery);
+
+		AmxApiResponse<TranxViewRecord, GridMeta> x = y.get();
+
+		BulkRequestBuilder builder = new BulkRequestBuilder();
+
+		Long lastUpdateDateNowStart = lastUpdateDateNow;
+		for (TranxViewRecord record : x.getResults()) {
+			try {
+				// Long lastUpdateDate = DateUtil.toUTC(record.getLastUpdateDate());
+				Long lastUpdateDate = record.getLastUpdateDate().getTime();
+				LOGGER.debug("DIFF {}", lastUpdateDateNow - lastUpdateDate);
+				if (lastUpdateDate < lastUpdateDateNow) {
+					lastUpdateDateNow = lastUpdateDate;
+				}
+
+				BigDecimal appId = ArgUtil.parseAsBigDecimal(record.getId());
+				Date creationDate = ArgUtil.parseAsSimpleDate(record.getLastUpdateDate());
+				OracleViewDocument document = new OracleViewDocument();
+				document.setId("appxn-" + appId);
+				document.setTimestamp(creationDate);
+				document.setTrnx(record);
+				document.normalizeTrnx();
+				builder.update(oracleVarsCache.getTranxIndex(), "appxn", document);
+			} catch (Exception e) {
+				LOGGER.error("TranxViewRecordRev Excep", e);
+			}
+		}
+
+		LOGGER.info("Pg:{}, Rcds:{}, Nxt:{}", lastPage, x.getResults().size(), lastUpdateDateNow);
+		if (x.getResults().size() > 0) {
+			esRepository.bulk(builder.build());
+			oracleVarsCache.setTranxScannedStamp(lastUpdateDateNow, true);
+			if ((lastUpdateDateNowStart == lastUpdateDateNow) || (x.getResults().size() == 1000 && lastPage < 2)) {
+				doTaskRev(lastPage + 1);
+			}
+		} else {
+			oracleVarsCache.setTranxScannedStamp(lastUpdateDateNowLimit, true);
 		}
 
 	}

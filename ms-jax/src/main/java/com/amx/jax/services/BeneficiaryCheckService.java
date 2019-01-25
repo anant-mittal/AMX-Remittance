@@ -149,7 +149,6 @@ public class BeneficiaryCheckService extends AbstractService {
 
 				errorDesc = "RELATIONSHIP NOT UPDATED FOR THIS CUSTOMER AND BENEFICIARY.PLEASE UPDATE THE SAME";
 				errorStatusDto = this.setBeneError(JaxError.RECORD_NOT_FOUND.toString(), errorDesc);
-
 				errorListDto.add(errorStatusDto);
 			}
 		} else {

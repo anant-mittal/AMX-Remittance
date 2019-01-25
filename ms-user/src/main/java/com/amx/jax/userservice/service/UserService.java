@@ -221,6 +221,7 @@ public class UserService extends AbstractUserService {
 		}
 		Customer cust = custDao.getCustById(customerId);
 		String oldEmail = cust.getEmail();
+		String oldMobile = cust.getMobile();
 
 		CustomerOnlineRegistration onlineCust = custDao.getOnlineCustomerByCustomerId(customerId);
 		if (onlineCust == null) {
@@ -258,6 +259,7 @@ public class UserService extends AbstractUserService {
 					onlineCust.getEmail());
 		} else {
 			jaxNotificationService.sendProfileChangeNotificationEmail(model, outputModel.getPersoninfo());
+			jaxNotificationService.sendProfileChangeNotificationMobile(model, outputModel.getPersoninfo(), oldMobile);
 		}
 
 		return response;
@@ -343,12 +345,14 @@ public class UserService extends AbstractUserService {
 			}
 		}
 		BigDecimal customerId = metaData.getCustomerId();
+		Customer customer = null;
 		if (customerId != null) {
+			customer = custDao.getCustById(customerId);
 			civilId = custDao.getCustById(customerId).getIdentityInt();
 		}
 		if (customerId == null && civilId != null) {
 			userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(civilId, JaxApiFlow.SIGNUP_ONLINE);
-			Customer customer = custDao.getCustomerByCivilId(civilId);
+			customer = custDao.getCustomerByCivilId(civilId);
 			if (customer == null && !Boolean.TRUE.equals(initRegistration)) {
 				throw new GlobalException(JaxError.INVALID_CIVIL_ID, "Invalid civil Id passed");
 			}
@@ -364,8 +368,7 @@ public class UserService extends AbstractUserService {
 		//userValidationService.validateCivilId(civilId);
 		
 		// --- Validate IdentityInt 
-		Customer customerType = custDao.getCustomerByCivilId(civilId);
-		BigDecimal indentityType = customerType.getIdentityTypeId();
+		BigDecimal indentityType = customer.getIdentityTypeId();
 		userValidationService.validateIdentityInt(civilId, indentityType);
 
 		CivilIdOtpModel model = new CivilIdOtpModel();
@@ -398,7 +401,7 @@ public class UserService extends AbstractUserService {
 				: onlineCust.getTokenSentCount().add(new BigDecimal(1));
 		onlineCust.setTokenSentCount(tokenSentCount);
 		custDao.saveOnlineCustomer(onlineCust);
-		Customer customer = custDao.getCustById(onlineCust.getCustomerId());
+		customer = custDao.getCustById(onlineCust.getCustomerId());
 		model.setFirstName(customer.getFirstName());
 		model.setLastName(customer.getLastName());
 		model.setCustomerId(onlineCust.getCustomerId());
