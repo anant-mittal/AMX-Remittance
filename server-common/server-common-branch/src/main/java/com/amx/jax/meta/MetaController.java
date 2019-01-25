@@ -26,7 +26,7 @@ import io.swagger.annotations.Api;
  * The Class MetaController.
  */
 @RestController
-@Api(value = "Customer Meta APIs")
+@Api(value = "Branch Meta APIs")
 public class MetaController {
 
 	private static final Logger LOGGER = LoggerService.getLogger(MetaController.class);
