@@ -60,10 +60,14 @@ public class ImpsRoutingLogic implements IRoutingLogic {
 	public void apply(Map<String, Object> input, Map<String, Object> output) {
 		LOGGER.info("in ifsc routing logic with input, {}", input);
 		Map<String, Object> inputTemp = new HashMap<String, Object>(input);
+		BigDecimal routingCountryId = (BigDecimal) inputTemp.get("P_ROUTING_COUNTRY_ID");
+		if (!(ConstantDocument.SERVICE_MASTER_ID_TT.equals(input.get("P_SERVICE_MASTER_ID"))
+				&& routingCountryId.intValue() == 94)) {
+			return;
+		}
 		try {
 			inputTemp.put("P_SERVICE_MASTER_ID", ConstantDocument.SERVICE_MASTER_ID_TT);
 
-			BigDecimal routingCountryId = (BigDecimal) inputTemp.get("P_ROUTING_COUNTRY_ID");
 			BigDecimal beneCountryId = (BigDecimal) inputTemp.get("P_BENEFICIARY_COUNTRY_ID");
 			BigDecimal beneBankId = (BigDecimal) inputTemp.get("P_BENEFICIARY_BANK_ID");
 			BigDecimal fcurrencyId = (BigDecimal) inputTemp.get("P_CURRENCY_ID");
