@@ -149,10 +149,11 @@ public class BeneficiaryCheckService extends AbstractService {
 
 				errorDesc = "RELATIONSHIP NOT UPDATED FOR THIS CUSTOMER AND BENEFICIARY.PLEASE UPDATE THE SAME";
 				errorStatusDto = this.setBeneError(JaxError.RECORD_NOT_FOUND.toString(), errorDesc);
-
+				beneDto.setUpdateNeeded(true);
 				errorListDto.add(errorStatusDto);
 			}
 		} else {
+			beneDto.setUpdateNeeded(true);
 			errorDesc = "Beneficiary master id shouldnot be blank in relationship";
 			errorStatusDto = this.setBeneError(JaxError.NULL_CHECK.toString(), errorDesc);
 			errorListDto.add(errorStatusDto);
