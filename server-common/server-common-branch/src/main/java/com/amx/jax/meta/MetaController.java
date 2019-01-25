@@ -1,4 +1,4 @@
-package com.amx.jax.offsite.controller;
+package com.amx.jax.meta;
 
 import java.math.BigDecimal;
 
@@ -16,7 +16,9 @@ import com.amx.amxlib.meta.model.ViewDistrictDto;
 import com.amx.amxlib.meta.model.ViewStateDto;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.MetaClient;
+import com.amx.jax.client.OffsiteCustRegClient;
 import com.amx.jax.logger.LoggerService;
+import com.amx.jax.model.response.ComponentDataDto;
 
 import io.swagger.annotations.Api;
 
@@ -49,8 +51,7 @@ public class MetaController {
 	/**
 	 * Gets the list of districts for state.
 	 *
-	 * @param stateId
-	 *            the state id
+	 * @param stateId the state id
 	 * @return the list of districts for state
 	 */
 	@RequestMapping(value = { "/pub/meta/district/list" }, method = { RequestMethod.GET })
@@ -61,8 +62,7 @@ public class MetaController {
 	/**
 	 * Gets the list of cities for district.
 	 *
-	 * @param districtId
-	 *            the district id
+	 * @param districtId the district id
 	 * @return the list of cities for district
 	 */
 	@RequestMapping(value = { "/pub/meta/city/list" }, method = { RequestMethod.GET })
@@ -80,4 +80,11 @@ public class MetaController {
 		return metaClient.getAllPrefix();
 	}
 
+	@Autowired
+	private OffsiteCustRegClient offsiteCustRegClient;
+
+	@RequestMapping(value = "/pub/meta/id_type/list", method = RequestMethod.GET)
+	public AmxApiResponse<ComponentDataDto, Object> getIdTypes() {
+		return offsiteCustRegClient.getIdTypes();
+	}
 }
