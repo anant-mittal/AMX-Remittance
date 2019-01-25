@@ -151,7 +151,7 @@ public class CustomerDiscountManager {
 
 				// Get Bank wise Rates for Foreign Currency
 				bankExRateDetail.setSellRateNet(RemitPriceManager.createBreakUpForFcCur(discountedSellRate,
-						pricingRequestDTO.getLocalAmount()));
+						pricingRequestDTO.getForeignAmount()));
 
 			}
 
