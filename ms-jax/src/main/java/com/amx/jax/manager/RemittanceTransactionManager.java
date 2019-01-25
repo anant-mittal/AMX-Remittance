@@ -219,6 +219,7 @@ public class RemittanceTransactionManager {
 		HashMap<String, Object> beneBankDetails = getBeneBankDetails(beneficiary);
 		remitApplParametersMap.putAll(beneBankDetails);
 		Map<String, Object> routingDetails = routingService.getRoutingDetails(remitApplParametersMap);
+
 		remitApplParametersMap.putAll(routingDetails);
 		remitApplParametersMap.put("P_BENEFICIARY_SWIFT_BANK1", routingDetails.get("P_SWIFT"));
 		remitApplParametersMap.put("P_BENEFICARY_ACCOUNT_SEQ_ID", beneficiary.getBeneficiaryAccountSeqId());
