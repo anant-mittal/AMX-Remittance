@@ -19,6 +19,10 @@ public class GetJaxFieldRequest {
 		this.entity = jaxFieldEntity;
 	}
 
+	public GetJaxFieldRequest() {
+		super();
+	}
+
 	@Override
 	public String toString() {
 		return "GetJaxFieldRequest [condition=" + condition + ", entity=" + entity + "]";
