@@ -76,6 +76,7 @@ import com.amx.jax.exrateservice.dao.PipsMasterDao;
 import com.amx.jax.exrateservice.service.NewExchangeRateService;
 import com.amx.jax.logger.AuditEvent;
 import com.amx.jax.logger.AuditService;
+import com.amx.jax.manager.remittance.RemittanceAdditionalFieldManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.VTransferRepository;
@@ -170,6 +171,8 @@ public class RemittanceTransactionManager {
 
 	@Autowired
 	private RemittanceTransactionRequestValidator remittanceTransactionRequestValidator;
+	@Autowired
+	RemittanceAdditionalFieldManager remittanceAdditionalFieldManager;
 
 	@Autowired
 	private UserService userService;
@@ -735,6 +738,7 @@ public class RemittanceTransactionManager {
 			remittanceTransactionRequestValidator.validateExchangeRate(model, validationResults);
 			remittanceTransactionRequestValidator.validateFlexFields(model, remitApplParametersMap);
 		}
+		remittanceAdditionalFieldManager.validateAdditionalFields(model);
 		// validate routing bank requirements
 		ExchangeRateBreakup breakup = validationResults.getExRateBreakup();
 		BigDecimal netAmountPayable = breakup.getNetAmount();
@@ -742,6 +746,7 @@ public class RemittanceTransactionManager {
 		deactivatePreviousApplications();
 		validateAdditionalCheck();
 		validateAdditionalBeneDetails(model);
+		remittanceAdditionalFieldManager.processAdditionalFields(model);
 		RemittanceApplication remittanceApplication = remitAppManager.createRemittanceApplication(model,
 				validatedObjects, validationResults, remitApplParametersMap);
 		RemittanceAppBenificiary remittanceAppBeneficairy = remitAppBeneManager
