@@ -1,5 +1,6 @@
-package com.amx.jax.postman.model;
+package com.amx.jax.postman.events;
 
+import com.amx.jax.postman.model.Message;
 import com.amx.jax.tunnel.ITunnelEvent;
 
 public class UserMessageEvent extends Message implements ITunnelEvent {

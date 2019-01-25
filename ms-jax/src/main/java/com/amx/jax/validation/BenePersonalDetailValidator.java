@@ -110,20 +110,12 @@ public class BenePersonalDetailValidator implements Validator {
 
 		int benePhoneLength = benePersonalDetailModel.getMobileNumber().toString().length();
 
-		int minLength = serviceAppList.stream().mapToInt(i -> {
-			if (i.getMinLenght() != null) {
-				return i.getMinLenght().intValue();
-			} else {
-				return Integer.MAX_VALUE;
-			}
+		int minLength = serviceAppList.stream().filter(i -> i.getMinLenght()  != null).mapToInt(i -> {
+            return i.getMinLenght().intValue();
 		}).min().orElse(-1);
-
-		int maxLength = serviceAppList.stream().mapToInt(i -> {
-			if (i.getMaxLenght() != null) {
-				return i.getMaxLenght().intValue();
-			} else {
-				return Integer.MIN_VALUE;
-			}
+            
+		int maxLength = serviceAppList.stream().filter(i -> i.getMaxLenght()  != null).mapToInt(i -> {
+			return i.getMaxLenght().intValue();
 		}).max().orElse(-1);
 
 		if (maxLength > 0 && benePhoneLength > maxLength) {
@@ -134,6 +126,7 @@ public class BenePersonalDetailValidator implements Validator {
 			throw new GlobalException(JaxError.VALIDATION_LENGTH_MOBILE,
 					ExceptionMessageKey.build(JaxError.VALIDATION_LENGTH_MOBILE, minLength, maxLength));
 		}
+		
 	}
 
 }

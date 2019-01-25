@@ -31,7 +31,7 @@ public class BenePersonalDetailModel extends AbstractModel {
 	private String thirdName;
 	@Size(min=1, max=50, message="fourthName should be between 1 and 50 characters")
 	private String fourthName;
-	@Size(min=1, max=50, message="fifthName should be between 1 and 50 characters")
+	@Size(min=0, max=50, message="fifthName should be between 0 and 50 characters")
 	private String fifthName;
 	private String nationality;
 	@Size(min=1, max=50, message="localFirstName should be between 1 and 50 characters")
@@ -42,7 +42,7 @@ public class BenePersonalDetailModel extends AbstractModel {
 	private String localThirdName;
 	@Size(min=1, max=50, message="localFourthName should be between 1 and 50 characters")
 	private String localFourthName;
-	@Size(min=1, max=50, message="localFifthName should be between 1 and 50 characters")
+	@Size(min=0, max=50, message="localFifthName should be between 0 and 50 characters")
 	private String localFifthName;
 	// bene contact
 	private String telephoneNumber;

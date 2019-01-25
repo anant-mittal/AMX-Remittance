@@ -105,10 +105,6 @@ public class SMService {
 	@Autowired
 	private ContactCleanerService contactService;
 
-	/** The template service. */
-	@Autowired
-	private TemplateService templateService;
-	
 	@Autowired
 	private FileService fileService;
 
@@ -197,15 +193,15 @@ public class SMService {
 
 			Map<String, Object> map = MapBuilder.map().put("sender", senderId).put("route", route).put("country", "91")
 					.put(messagePath,
-							URLEncoder.encode( sms.toText(), "UTF-8" )
-					).put(toPath, phone).toMap();
+							URLEncoder.encode(sms.toText(), "UTF-8"))
+					.put(toPath, phone.trim()).toMap();
 			return restService.ajax(remoteUrl).header("authkey", authKey).header("content-type", "application/json")
 					.post(JsonUtil.toJson(map)).asString();
 
 		} else if (phone != null) {
 
 			Map<String, String> params = new HashMap<String, String>();
-			params.put("mobile", phone);
+			params.put("mobile", phone.trim());
 			params.put("text", sms.toText());
 			params.put("username", username);
 			params.put("password", password);

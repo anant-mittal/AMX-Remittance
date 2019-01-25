@@ -53,20 +53,24 @@ public class WhatsAppController {
 	}
 
 	@RequestMapping(value = PostManUrls.WHATS_APP_SEND, method = RequestMethod.GET)
-	public WAMessage sendWhatsAppGet(@RequestParam String to, @RequestParam String message) throws PostManException {
+	public WAMessage sendWhatsAppGet(@RequestParam String to, @RequestParam String message,
+			@RequestParam(required = false) WAMessage.Channel channel) throws PostManException {
 		WAMessage msg = new WAMessage();
 		msg.addTo(to);
 		msg.setMessage(message);
+		msg.setChannel(channel);
 		whatsAppService.send(msg);
 		return msg;
 	}
 
 	@RequestMapping(value = PostManUrls.WHATS_APP_SEND, method = {
 			RequestMethod.POST }, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-	public WAMessage sendWhatsAppForm(@RequestParam String to, @RequestParam String message) throws PostManException {
+	public WAMessage sendWhatsAppForm(@RequestParam String to, @RequestParam String message,
+			@RequestParam(required = false) WAMessage.Channel channel) throws PostManException {
 		WAMessage msg = new WAMessage();
 		msg.addTo(to);
 		msg.setMessage(message);
+		msg.setChannel(channel);
 		whatsAppService.send(msg);
 		return msg;
 	}
