@@ -96,7 +96,7 @@ public class SSOServerController {
 		map.put(SSOConstants.SECURITY_CODE_KEY, ssoUser.getSelfSAC());
 		map.put(SSOConstants.PARTNER_SECURITY_CODE_KEY, ssoUser.getPartnerSAC());
 		String adapterUrl = sSOConfig.getAdapterUrl();
-		Cookie kooky = commonHttpRequest.getCookie("adapter");
+		Cookie kooky = commonHttpRequest.getCookie("adapter.url");
 		if (kooky != null) {
 			adapterUrl = ArgUtil.parseAsString(kooky.getValue(), adapterUrl);
 		}
