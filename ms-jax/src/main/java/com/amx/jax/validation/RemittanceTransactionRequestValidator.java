@@ -17,7 +17,6 @@ import org.springframework.stereotype.Component;
 import com.amx.amxlib.constant.JaxFieldEntity;
 import com.amx.amxlib.exception.AdditionalFlexRequiredException;
 import com.amx.amxlib.exception.jax.GlobalException;
-
 import com.amx.amxlib.model.JaxConditionalFieldDto;
 import com.amx.amxlib.model.JaxFieldDto;
 import com.amx.amxlib.model.JaxFieldValueDto;

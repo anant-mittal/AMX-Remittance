@@ -1,11 +1,20 @@
 package com.amx.jax.model;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.amx.utils.ArgUtil;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
+ * Use this class to return response,
+ * 
+ * Entity should be create by implmenting IResourceEntity and use
+ * {@link ResourceDTO.create(IResourceEntity))} to create its instance
+ * 
+ * @see {@link com.amx.jax.model.IResourceEntity}
+ * @author lalittanwar
  * @author Prashant
  *
  */
@@ -79,9 +88,21 @@ public class ResourceDTO implements IResourceEntity {
 	public static ResourceDTO create(IResourceEntity entity) {
 		ResourceDTO dto = new ResourceDTO();
 		dto.setResourceId(entity.resourceId());
-		dto.setResourceName(entity.resourceName());
 		dto.setResourceCode(entity.resourceCode());
+		dto.setResourceName(entity.resourceName());
 		return dto;
+	}
+
+	public static List<ResourceDTO> create(List<IResourceEntity> entityList) {
+		List<ResourceDTO> list = new ArrayList<ResourceDTO>();
+		for (IResourceEntity entity : entityList) {
+			ResourceDTO dto = new ResourceDTO();
+			dto.setResourceId(entity.resourceId());
+			dto.setResourceCode(entity.resourceCode());
+			dto.setResourceName(entity.resourceName());
+			list.add(dto);
+		}
+		return list;
 	}
 
 	public BigDecimal getResourceId() {

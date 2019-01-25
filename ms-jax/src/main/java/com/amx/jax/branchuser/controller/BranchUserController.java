@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.api.AmxApiResponse;
-import com.amx.jax.branchremittance.service.BranchRemittanceService;
 import com.amx.jax.branchuser.service.BranchUserService;
 import com.amx.jax.client.branch.IBranchService;
 import com.amx.jax.meta.MetaData;
