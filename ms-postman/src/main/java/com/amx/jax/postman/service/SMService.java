@@ -28,7 +28,6 @@ import com.amx.jax.rest.RestService.Ajax.RestMethod;
 import com.amx.jax.scope.TenantScoped;
 import com.amx.jax.scope.TenantValue;
 import com.amx.utils.ArgUtil;
-import com.amx.utils.Constants;
 import com.amx.utils.CryptoUtil;
 import com.amx.utils.JsonPath;
 import com.amx.utils.JsonUtil;
@@ -106,10 +105,6 @@ public class SMService {
 	@Autowired
 	private ContactCleanerService contactService;
 
-	/** The template service. */
-	@Autowired
-	private TemplateService templateService;
-
 	@Autowired
 	private FileService fileService;
 
@@ -144,15 +139,15 @@ public class SMService {
 			if (sms.getTemplate() != null) {
 				Context context = new Context(postManConfig.getLocal(sms));
 				context.setVariables(sms.getModel());
-
+				
 				File file = new File();
 				file.setTemplate(sms.getTemplate());
 				file.setModel(sms.getModel());
 				file.setLang(sms.getLang());
-
-				sms.setMessage(fileService.create(file).getContent()
-				// templateService.processHtml(sms.getITemplate(), context)
-				);
+				
+				sms.setMessage(fileService.create(file).getContent() 
+						//templateService.processHtml(sms.getITemplate(), context)
+						);
 			}
 
 			if (ArgUtil.isEmpty(to)) {

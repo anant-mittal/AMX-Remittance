@@ -93,7 +93,7 @@ public class AppClientInterceptor implements ClientHttpRequestInterceptor {
 		for (Entry<String, List<String>> header : headers) {
 			headerMap.put(header.getKey(), header.getValue());
 		}
-		LOGGER.debug("*** REQT_OUT_HEADER *****: {}", headerMap.toString());
+		LOGGER.debug("*** REQT_IN_HEADER *****: {}", headerMap.toString());
 		LOGGER.debug("*** RESP_IN_BODY    *****: {}", inputStringBuilder.toString());
 		return responseWrapper;
 	}

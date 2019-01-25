@@ -24,6 +24,9 @@ public class WhatsAppService {
 	@Autowired
 	RedissonClient redisson;
 
+	@Autowired
+	ApiWhaService apiWhaService;
+
 	private RBlockingQueue<WAMessage> getQueue(BigDecimal queueId) {
 		if (ArgUtil.isEmpty(queueId) || queueId.equals(BigDecimal.ZERO)) {
 			return redisson.getBlockingQueue(WHATS_MESSAGES);
@@ -34,8 +37,12 @@ public class WhatsAppService {
 	@Async(ExecutorConfig.EXECUTER_DIAMOND)
 	public WAMessage send(WAMessage message) {
 		message.setId(AppContextUtil.getTraceId());
-		RBlockingQueue<WAMessage> queue = getQueue(BigDecimal.ZERO);
-		queue.add(message);
+		if (WAMessage.Channel.APIWHA == message.getChannel()) {
+			apiWhaService.sendWAMessage(message);
+		} else {
+			RBlockingQueue<WAMessage> queue = getQueue(BigDecimal.ZERO);
+			queue.add(message);
+		}
 		return message;
 	}
 
