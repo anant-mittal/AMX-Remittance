@@ -45,7 +45,7 @@ public class BranchRemittanceController implements IRemittanceService {
 	
 	@RequestMapping(value = Path.BR_REMITTANCE_SAVE_APPL, method = RequestMethod.POST)
 	@Override
-	public AmxApiResponse<BranchRemittanceApplResponseDto, Object> saveBranchRemittanceApplication(BranchRemittanceApplRequestModel requestModel) {
+	public AmxApiResponse<BranchRemittanceApplResponseDto, Object> saveBranchRemittanceApplication(@RequestBody BranchRemittanceApplRequestModel requestModel) {
 		logger.info("saveBranchRemittanceApplication :"+requestModel);
 		return branchRemitService.saveBranchRemittanceApplication(requestModel);
 	}
