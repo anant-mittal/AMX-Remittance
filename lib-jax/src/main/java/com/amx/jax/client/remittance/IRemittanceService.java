@@ -47,7 +47,11 @@ public interface IRemittanceService extends  IJaxService {
 	
 	
 	
-	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND,JaxError.NULL_CUSTOMER_ID,JaxError.NULL_CURRENCY_ID})
+	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND,JaxError.NULL_CUSTOMER_ID,
+		JaxError.NULL_CURRENCY_ID,JaxError.NULL_EMPLOYEE_ID,JaxError.TRNX_NOT_ALLOWED_ON_YOUR_OWN_LOGIN,
+		JaxError.BENE_ACCOUNT_TYPE_MISMATCH,
+		JaxError.ROUTING_SETUP_ERROR,
+		JaxError.EXCHANGE_RATE_ERROR})
 	AmxApiResponse<BranchRemittanceApplResponseDto, Object> saveBranchRemittanceApplication(BranchRemittanceApplRequestModel requestModel);
 	
 	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND,JaxError.NULL_CUSTOMER_ID,JaxError.NULL_CURRENCY_ID})

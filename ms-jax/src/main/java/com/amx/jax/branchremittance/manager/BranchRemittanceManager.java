@@ -1,5 +1,8 @@
 package com.amx.jax.branchremittance.manager;
 
+import static com.amx.jax.error.JaxError.COMISSION_NOT_DEFINED_FOR_ROUTING_BANK;
+import static com.amx.jax.error.JaxError.TOO_MANY_COMISSION_NOT_DEFINED_FOR_ROUTING_BANK;
+
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -16,8 +19,11 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.constant.LoyalityPointState;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
+import com.amx.amxlib.model.response.ExchangeRateBreakup;
+import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dal.RoutingProcedureDao;
 import com.amx.jax.dao.ApplicationProcedureDao;
@@ -33,6 +39,7 @@ import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.AbstractModel;
 import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.response.remittance.AmlCheckResponseDto;
+import com.amx.jax.model.response.remittance.BranchExchangeRateBreakup;
 import com.amx.jax.repository.IAccountTypeFromViewDao;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.ICollectionDetailRepository;
@@ -129,7 +136,7 @@ public class BranchRemittanceManager  extends AbstractModel {
 	
 	
 	
-	public boolean checkingStaffIdNumberWithCustomer() {
+	public void checkingStaffIdNumberWithCustomer() {
 		boolean checkStatus = Boolean.FALSE;
 		BigDecimal customerId = metaData.getCustomerId();
 		BigDecimal employeeId = metaData.getEmployeeId();
@@ -143,7 +150,11 @@ public class BranchRemittanceManager  extends AbstractModel {
 		
 		if(JaxUtil.isNullZeroBigDecimalCheck(employeeId)) {
 			empDetails = employeeDetailsRepository.findByEmployeeId(employeeId);
+			if(empDetails!=null) {
 			employeeIdentityId = empDetails.getCivilId();
+			}else {
+				throw new GlobalException(JaxError.NULL_EMPLOYEE_ID,"Employee deails not found ");
+			}
 		}else {
 			throw new GlobalException(JaxError.NULL_EMPLOYEE_ID,"Employee Id should not be blank");
 		}
@@ -153,12 +164,9 @@ public class BranchRemittanceManager  extends AbstractModel {
 			 customerIdentityId = customerList.get(0).getIdentityInt();
 		 }
 		 if(employeeIdentityId!= null && customerIdentityId!=null && employeeIdentityId.equalsIgnoreCase(customerIdentityId)) {
-			 checkStatus = Boolean.TRUE;
-		 }else {
 			 throw new GlobalException(JaxError.TRNX_NOT_ALLOWED_ON_YOUR_OWN_LOGIN,"Transaction cannot be done on your own login account");
 		 }
 		
-		return checkStatus;
 	}
 	
 	public boolean beneAccountException(BenificiaryListView beneficaryDetails) {
@@ -178,7 +186,7 @@ public class BranchRemittanceManager  extends AbstractModel {
 	}
 	
 	
-	public boolean checkBeneAccountType(BenificiaryListView beneficaryDetails) {
+	public void checkBeneAccountType(BenificiaryListView beneficaryDetails) {
 		boolean chkAccType = Boolean.FALSE;
 		List<AccountTypeFromViewModel> lstAccType = accountTypeRepository.getAccountTypeByCountryId(beneficaryDetails.getBenificaryCountry());
 		if (lstAccType != null && lstAccType.size() != 0) {
@@ -193,7 +201,7 @@ public class BranchRemittanceManager  extends AbstractModel {
 			 throw new GlobalException(JaxError.BENE_ACCOUNT_TYPE_MISMATCH,"Account Type Mismatch, Please edit and save the beneficairy ");
 		}
 		
-	return chkAccType;
+
 	}
 	
 	
@@ -245,6 +253,7 @@ public class BranchRemittanceManager  extends AbstractModel {
 			inputValues.put("P_CURRENCY_ID", beneficaryDetails.getCurrencyId());
 			inputValues.put("P_SERVICE_GROUP_CODE", beneficaryDetails.getServiceGroupCode());
 			inputValues.put("P_BENEFICARY_ACCOUNT_SEQ_ID", beneficaryDetails.getBeneficiaryAccountSeqId());
+			logger.debug("output :"+inputValues.toString());
 			if(beneficaryDetails.getServiceGroupCode() !=null && beneficaryDetails.getServiceGroupCode().equalsIgnoreCase(ConstantDocument.SERVICE_GROUP_CODE_CASH)) {
 				outPut =  routingService.getRoutingDetails(inputValues);
 			}else if(beneficaryDetails.getServiceGroupCode() !=null && beneficaryDetails.getServiceGroupCode().equalsIgnoreCase(ConstantDocument.SERVICE_GROUP_CODE_BANK)) {
@@ -269,6 +278,9 @@ public class BranchRemittanceManager  extends AbstractModel {
 		try {
 			
 			BenificiaryListView beneficaryDetails =beneficiaryRepository.findBybeneficiaryRelationShipSeqId(requestModel.getRelationshipId());
+			BranchExchangeRateBreakup brExchRateBreakup =  requestModel.getBranchExRateBreakup();
+			
+			
 			Map<String, Object> inputValues = new HashMap<>();
 			inputValues.put("P_USER_TYPE", ConstantDocument.BRANCH);
 			inputValues.put("P_APPLICATION_COUNTRY_ID", beneficaryDetails.getApplicationCountryId());
@@ -280,7 +292,7 @@ public class BranchRemittanceManager  extends AbstractModel {
 			inputValues.put("P_DELIVERY_MODE_ID", map.get("P_DELIVERY_MODE_ID"));
 			inputValues.put("P_REMITTANCE_MODE_ID", map.get("P_REMITTANCE_MODE_ID")); 
 			inputValues.put("P_FOREIGN_CURRENCY_ID", beneficaryDetails.getCurrencyId()); //NC
-			inputValues.put("P_SELECTED_CURRENCY_ID", BigDecimal.ZERO); // NC
+			inputValues.put("P_SELECTED_CURRENCY_ID", getSelectedCurrency(beneficaryDetails.getCurrencyId(), requestModel)); // NC
 			inputValues.put("P_CUSTOMER_ID", metaData.getCustomerId());
 			inputValues.put("P_CUSTOMER_TYPE", metaData.getCustomerId());
 			inputValues.put("P_LOYALTY_POINTS_IND", requestModel.isAvailLoyalityPoints()==true?ConstantDocument.Yes:ConstantDocument.No);
@@ -298,6 +310,9 @@ public class BranchRemittanceManager  extends AbstractModel {
 			inputValues.put("P_APPROVAL_YEAR", BigDecimal.ZERO);
 			inputValues.put("P_APPROVAL_NO", BigDecimal.ZERO);
 			outPut = applProcedureDao.getExchangeRateForBranch(inputValues);
+			if(outPut!=null && outPut.get("P_ERROR_MESSAGE")!=null){
+				throw new GlobalException(JaxError.EXCHANGE_RATE_ERROR, outPut.get("P_ERROR_MESSAGE").toString());
+			}
 			
 		}catch(Exception e) {
 			e.printStackTrace();
@@ -506,6 +521,96 @@ public class BranchRemittanceManager  extends AbstractModel {
 		Map<String, Object> output = applProcedureDao.getDocumentSeriality(applCountryId, companyId, documentId,financialYear, processIn, branchId);
 		return (BigDecimal) output.get("P_DOC_NO");
 	}	
+	
+	
+	
+	
+	
+	
+	
+	
+/*	
+	private BigDecimal reCalculateComission() {
+		logger.debug("recalculating comission ");
+		BigDecimal custtype = bizcomponentDao.findCustomerTypeId("I");
+		remitApplParametersMap.put("P_CUSTYPE_ID", custtype);
+		BigDecimal comission = exchangeRateProcedureDao.getCommission(remitApplParametersMap);
+		logger.debug("newCommission 95: " + comission);
+		if (comission == null) {
+			remitApplParametersMap.put("P_CUSTYPE_ID", new BigDecimal(777));
+			comission = exchangeRateProcedureDao.getCommission(remitApplParametersMap);
+		}
+		logger.debug("newCommission: " + comission);
+		return comission;
+	}
+
+	private Map<String, Object> getCommissionRange(ExchangeRateBreakup breakup) {
+
+		remitApplParametersMap.put("P_CALCULATED_FC_AMOUNT", breakup.getConvertedFCAmount());
+		BigDecimal custtype = bizcomponentDao.findCustomerTypeId("I");
+		remitApplParametersMap.put("P_CUSTYPE_ID", custtype);
+		Map<String, Object> comissionRangeMap = exchangeRateProcedureDao.getCommissionRange(remitApplParametersMap);
+		if (comissionRangeMap.get("FROM_AMOUNT") == null || comissionRangeMap.get("TO_AMOUNT") == null) {
+			remitApplParametersMap.put("P_CUSTYPE_ID", new BigDecimal(777));
+			comissionRangeMap = exchangeRateProcedureDao.getCommissionRange(remitApplParametersMap);
+		}
+		logger.info("comissionRangeMap: " + comissionRangeMap.toString());
+		return comissionRangeMap;
+
+	}
+
+	private void recalculateDeliveryAndRemittanceModeId() {
+		
+		if (remitApplParametersMap.get("P_CALCULATED_FC_AMOUNT") != null) {
+			
+			BigDecimal custtype = bizcomponentDao.findCustomerTypeId("I");
+			remitApplParametersMap.put("P_CUSTYPE_ID", custtype);
+			Map<String, Object> outputMap = exchangeRateProcedureDao
+					.findRemittanceAndDevlieryModeId(remitApplParametersMap);
+			if (outputMap.size() == 0) {
+				remitApplParametersMap.put("P_CUSTYPE_ID", new BigDecimal(777));
+				outputMap = exchangeRateProcedureDao.findRemittanceAndDevlieryModeId(remitApplParametersMap);
+			}
+			if (outputMap.size() > 2) {
+				throw new GlobalException(
+						TOO_MANY_COMISSION_NOT_DEFINED_FOR_ROUTING_BANK,
+						"TOO MANY COMMISSION DEFINED for rounting bankid: "
+								+ remitApplParametersMap.get("P_ROUTING_BANK_ID"));
+			}
+
+			if (outputMap.get("P_DELIVERY_MODE_ID") == null) {
+				throw new GlobalException(COMISSION_NOT_DEFINED_FOR_ROUTING_BANK,
+						"COMMISSION NOT DEFINED BankId: " + remitApplParametersMap.get("P_ROUTING_BANK_ID"));
+			}
+			remitApplParametersMap.putAll(outputMap);
+		}
+	}
+
+	private void setLoyalityPointIndicaters(RemittanceTransactionResponsetModel responseModel) {
+		if (responseModel.getCanRedeemLoyalityPoints() == null) {
+			BigDecimal maxLoyalityPointRedeem = responseModel.getMaxLoyalityPointsAvailableForTxn();
+			BigDecimal loyalityPointsAvailable = responseModel.getTotalLoyalityPoints();
+			if (loyalityPointsAvailable == null
+					|| (loyalityPointsAvailable.longValue() < maxLoyalityPointRedeem.longValue())) {
+				responseModel.setCanRedeemLoyalityPoints(false);
+				responseModel.setLoyalityPointState(LoyalityPointState.CAN_NOT_AVAIL);
+			} else {
+				responseModel.setCanRedeemLoyalityPoints(true);
+			}
+		}
+	}
+	*/
+	
+	
+	
+	public BigDecimal getSelectedCurrency(BigDecimal foreignCurrencyId,BranchRemittanceApplRequestModel requestApplModel) {
+		if (JaxUtil.isNullZeroBigDecimalCheck(requestApplModel.getForeignAmount())) {
+			return foreignCurrencyId;
+		}
+		return metaData.getDefaultCurrencyId();
+	}
+	
+	
 	
 	private BeneficiaryListDTO convertBeneModelToDto(BenificiaryListView beneModel) {
 		BeneficiaryListDTO dto = new BeneficiaryListDTO();

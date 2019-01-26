@@ -1115,32 +1115,32 @@ public class ApplicationProcedureDao {
 				cs = connection.prepareCall(proc);
 				// In Parameters
 				cs.setBigDecimal(1, (BigDecimal)inputValues.get("P_APPLICATION_COUNTRY_ID"));
-				cs.setBigDecimal(2, (BigDecimal)inputValues.get("P_ROUTING_COUNTRY_ID"));
-				cs.setBigDecimal(3, (BigDecimal)inputValues.get("P_BRANCH_ID"));
-				cs.setBigDecimal(4, (BigDecimal)inputValues.get("P_COMPANY_ID"));
-				cs.setBigDecimal(5, (BigDecimal)inputValues.get("P_ROUTING_BANK_ID"));
-				cs.setBigDecimal(6, (BigDecimal)inputValues.get("P_SERVICE_MASTER_ID"));
-				cs.setBigDecimal(7, (BigDecimal)inputValues.get("P_DELIVERY_MODE_ID"));
-				cs.setBigDecimal(8, (BigDecimal)inputValues.get("P_REMITTANCE_MODE_ID"));
-				cs.setBigDecimal(9, (BigDecimal)inputValues.get("P_FOREIGN_CURRENCY_ID"));
-				cs.setBigDecimal(10, (BigDecimal)inputValues.get("P_SELECTED_CURRENCY_ID"));
-				cs.setBigDecimal(11, (BigDecimal)inputValues.get("P_CUSTOMER_ID"));
+				cs.setBigDecimal(2, inputValues.get("P_ROUTING_COUNTRY_ID")==null?BigDecimal.ZERO:(BigDecimal)inputValues.get("P_ROUTING_COUNTRY_ID"));
+				cs.setBigDecimal(3, inputValues.get("P_BRANCH_ID")==null?BigDecimal.ZERO:(BigDecimal)inputValues.get("P_BRANCH_ID"));
+				cs.setBigDecimal(4, inputValues.get("P_COMPANY_ID")==null?BigDecimal.ZERO:(BigDecimal)inputValues.get("P_COMPANY_ID"));
+				cs.setBigDecimal(5, inputValues.get("P_ROUTING_BANK_ID")==null?BigDecimal.ZERO:(BigDecimal)inputValues.get("P_ROUTING_BANK_ID"));
+				cs.setBigDecimal(6, inputValues.get("P_SERVICE_MASTER_ID")==null?BigDecimal.ZERO:(BigDecimal)inputValues.get("P_SERVICE_MASTER_ID"));
+				cs.setBigDecimal(7, inputValues.get("P_DELIVERY_MODE_ID")==null?BigDecimal.ZERO:(BigDecimal)inputValues.get("P_DELIVERY_MODE_ID"));
+				cs.setBigDecimal(8, inputValues.get("P_REMITTANCE_MODE_ID")==null?BigDecimal.ZERO:(BigDecimal)inputValues.get("P_REMITTANCE_MODE_ID"));
+				cs.setBigDecimal(9, inputValues.get("P_FOREIGN_CURRENCY_ID")==null?BigDecimal.ZERO:(BigDecimal)inputValues.get("P_FOREIGN_CURRENCY_ID"));
+				cs.setBigDecimal(10, inputValues.get("P_SELECTED_CURRENCY_ID")==null?BigDecimal.ZERO:(BigDecimal)inputValues.get("P_SELECTED_CURRENCY_ID"));
+				cs.setBigDecimal(11, inputValues.get("P_CUSTOMER_ID")==null?BigDecimal.ZERO:(BigDecimal)inputValues.get("P_CUSTOMER_ID"));
 				cs.setString(12, inputValues.get("P_CUSTOMER_TYPE").toString());
-				cs.setString(13, inputValues.get("P_LOYALTY_POINTS_IND").toString());
-				cs.setString(14, inputValues.get("P_SPECIAL_DEAL_RATE").toString());
-				cs.setString(15, inputValues.get("P_OVERSEAS_CHRG_IND").toString());
-				cs.setBigDecimal(16, (BigDecimal)inputValues.get("P_SELECTED_CURRENCY_AMOUNT"));
-				cs.setString(17, inputValues.get("P_SPOT_RATE").toString());
-				cs.setString(18, inputValues.get("P_CASH_ROUND_IND").toString());
-				cs.setBigDecimal(19, (BigDecimal)inputValues.get("P_ROUTING_BANK_BRANCH_ID"));
-				cs.setBigDecimal(20, (BigDecimal)inputValues.get("P_BENE_ID"));
-				cs.setBigDecimal(21, (BigDecimal)inputValues.get("P_BENE_COUNTRY_ID"));
-				cs.setBigDecimal(22, (BigDecimal)inputValues.get("P_BENE_BANK_ID"));
-				cs.setBigDecimal(23, (BigDecimal)inputValues.get("P_BENE_BANK_BRANCH_ID"));
-				cs.setString(24, inputValues.get("P_BENE_ACCOUNT_NO").toString());// 24--INPUT
+				cs.setString(13, inputValues.get("P_LOYALTY_POINTS_IND")==null?"N":inputValues.get("P_LOYALTY_POINTS_IND").toString());
+				cs.setString(14, inputValues.get("P_SPECIAL_DEAL_RATE")==null?"":inputValues.get("P_SPECIAL_DEAL_RATE").toString());
+				cs.setString(15, inputValues.get("P_OVERSEAS_CHRG_IND")==null?"":inputValues.get("P_OVERSEAS_CHRG_IND").toString());
+				cs.setBigDecimal(16, inputValues.get("P_SELECTED_CURRENCY_AMOUNT")==null?BigDecimal.ZERO:(BigDecimal)inputValues.get("P_SELECTED_CURRENCY_AMOUNT"));
+				cs.setString(17, inputValues.get("P_SPOT_RATE")==null?"":inputValues.get("P_SPOT_RATE").toString());
+				cs.setString(18, inputValues.get("P_CASH_ROUND_IND")==null?"":inputValues.get("P_CASH_ROUND_IND").toString());
+				cs.setBigDecimal(19, inputValues.get("P_ROUTING_BANK_BRANCH_ID")==null?BigDecimal.ZERO:(BigDecimal)inputValues.get("P_ROUTING_BANK_BRANCH_ID"));
+				cs.setBigDecimal(20, inputValues.get("P_BENE_ID")==null?BigDecimal.ZERO:(BigDecimal)inputValues.get("P_BENE_ID"));
+				cs.setBigDecimal(21, inputValues.get("P_BENE_COUNTRY_ID")==null?BigDecimal.ZERO:(BigDecimal)inputValues.get("P_BENE_COUNTRY_ID"));
+				cs.setBigDecimal(22, inputValues.get("P_BENE_BANK_ID")==null?BigDecimal.ZERO:(BigDecimal)inputValues.get("P_BENE_BANK_ID"));
+				cs.setBigDecimal(23, inputValues.get("P_BENE_BANK_BRANCH_ID")==null?BigDecimal.ZERO:(BigDecimal)inputValues.get("P_BENE_BANK_BRANCH_ID"));
+				cs.setString(24, inputValues.get("P_BENE_ACCOUNT_NO")==null?"":inputValues.get("P_BENE_ACCOUNT_NO").toString());// 24--INPUT
 
-				cs.setBigDecimal(25, (BigDecimal)inputValues.get("P_APPROVAL_YEAR"));// 25--INPUT
-				cs.setBigDecimal(26, (BigDecimal)inputValues.get("P_APPROVAL_NO"));// 26--INPUT
+				cs.setBigDecimal(25, inputValues.get("P_APPROVAL_YEAR")==null?BigDecimal.ZERO:(BigDecimal)inputValues.get("P_APPROVAL_YEAR"));// 25--INPUT
+				cs.setBigDecimal(26, inputValues.get("P_APPROVAL_NO")==null?BigDecimal.ZERO:(BigDecimal)inputValues.get("P_APPROVAL_NO"));// 26--INPUT
 
 				cs.registerOutParameter(27, java.sql.Types.INTEGER);
 				cs.registerOutParameter(28, java.sql.Types.INTEGER);
