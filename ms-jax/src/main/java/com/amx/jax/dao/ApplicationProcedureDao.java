@@ -1050,13 +1050,13 @@ public class ApplicationProcedureDao {
 			String proc = "{ call EX_GET_ROUTING_SET_UP (?,?,?,?,?,?,?,?,?,?,?,?,?,?) } ";
 			cs = connection.prepareCall(proc);
 			// In Parameters
-			cs.setBigDecimal(1, (BigDecimal)inputValue.get("P_APPLICATION_COUNTRY_ID"));
-			cs.setString(2, inputValue.get("P_USER_TYPE").toString());
-			cs.setBigDecimal(3, (BigDecimal)inputValue.get("P_BENE_COUNTRY_ID"));
-			cs.setBigDecimal(4, (BigDecimal)inputValue.get("P_BENE_BANK_ID"));
-			cs.setBigDecimal(5, (BigDecimal)inputValue.get("P_BENE_BANK_BRANCH_ID"));
-			cs.setString(6, inputValue.get("P_SERVICE_GROUP_CODE").toString());
-			cs.setBigDecimal(7, (BigDecimal)inputValue.get("P_CURRENCY_ID"));
+			cs.setBigDecimal(1,inputValue.get("P_APPLICATION_COUNTRY_ID")==null?BigDecimal.ZERO:(BigDecimal)inputValue.get("P_APPLICATION_COUNTRY_ID"));
+			cs.setString(2, inputValue.get("P_USER_TYPE")==null?"":inputValue.get("P_USER_TYPE").toString());
+			cs.setBigDecimal(3, inputValue.get("P_BENE_COUNTRY_ID")==null?BigDecimal.ZERO:(BigDecimal)inputValue.get("P_BENE_COUNTRY_ID"));
+			cs.setBigDecimal(4, inputValue.get("P_BENE_BANK_ID")==null?BigDecimal.ZERO:(BigDecimal)inputValue.get("P_BENE_BANK_ID"));
+			cs.setBigDecimal(5, inputValue.get("P_BENE_BANK_BRANCH_ID")==null?BigDecimal.ZERO:(BigDecimal)inputValue.get("P_BENE_BANK_BRANCH_ID"));
+			cs.setString(6, inputValue.get("P_SERVICE_GROUP_CODE")==null?"":inputValue.get("P_SERVICE_GROUP_CODE").toString());
+			cs.setBigDecimal(7, inputValue.get("P_CURRENCY_ID")==null?BigDecimal.ZERO:(BigDecimal)inputValue.get("P_CURRENCY_ID"));
 			// Out Parameters
 			cs.registerOutParameter(8, java.sql.Types.NUMERIC);
 			cs.registerOutParameter(9, java.sql.Types.NUMERIC);

@@ -40,6 +40,7 @@ import com.amx.jax.model.AbstractModel;
 import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.response.remittance.AmlCheckResponseDto;
 import com.amx.jax.model.response.remittance.BranchExchangeRateBreakup;
+import com.amx.jax.model.response.remittance.ServiceDto;
 import com.amx.jax.repository.IAccountTypeFromViewDao;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.ICollectionDetailRepository;
@@ -263,6 +264,10 @@ public class BranchRemittanceManager  extends AbstractModel {
 			logger.debug("output :"+outPut.toString());
 			if (outPut !=null && outPut.get("P_ERROR_MESSAGE") != null) {
 				throw new GlobalException(JaxError.ROUTING_SETUP_ERROR, outPut.get("P_ERROR_MESSAGE").toString());
+			}else {
+				if(outPut.get("P_SERVICE_MASTER_ID") == null) {
+					List<Map<String, Object>> listofService =routingPro.getServiceList(inputValues);
+				}
 			}
 		}catch(Exception e) {
 			e.printStackTrace();

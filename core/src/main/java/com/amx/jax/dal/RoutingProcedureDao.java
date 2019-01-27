@@ -158,6 +158,39 @@ public class RoutingProcedureDao {
 		return deliveryModeId;
 	}
 	
+	/** added
+	 * purpos : to get the service  deatails list.
+	 * 
+	 **/
+	
+	
+	public List<Map<String, Object>> getServiceList(Map<String, Object> inputValues){
+		
+
+		LOGGER.info("in getDeliveryModeIdForCash,input values: {}", inputValues);
+		
+		String sql = "SELECT DISTINCT f.SERVICE_CODE,F.SERVICE_DESCRIPTION,  F.SERVICE_MASTER_ID "
+					+ " FROM   V_EX_ROUTING_DETAILS F " 
+					+ " WHERE  BENE_BANK_ID = ?"
+					+ " AND    BENE_BANK_BRANCH_ID = ?  AND    F.COUNTRY_ID =?"
+					+ " AND    F.CURRENCY_ID  = ? AND    F.SERVICE_GROUP_CODE  = ?"
+					+ " AND    APPLICATION_COUNTRY_ID=? ";
+		 	List<Object> inputList = new ArrayList<>();
+			inputList.add(inputValues.get("P_BENE_BANK_ID")==null?BigDecimal.ZERO:(BigDecimal)inputValues.get("P_BENE_BANK_ID"));
+			inputList.add(inputValues.get("P_BENE_BANK_BRANCH_ID")==null?BigDecimal.ZERO:(BigDecimal)inputValues.get("P_BENE_BANK_BRANCH_ID"));
+			inputList.add(inputValues.get("P_BENE_COUNTRY_ID")==null?BigDecimal.ZERO:(BigDecimal)inputValues.get("P_BENE_COUNTRY_ID"));
+			inputList.add(inputValues.get("P_CURRENCY_ID")==null?BigDecimal.ZERO:(BigDecimal)inputValues.get("P_CURRENCY_ID"));
+			inputList.add(inputValues.get("P_SERVICE_GROUP_CODE")==null?"":inputValues.get("P_SERVICE_GROUP_CODE").toString());
+			inputList.add(inputValues.get("P_APPLICATION_COUNTRY_ID")==null?BigDecimal.ZERO:(BigDecimal)inputValues.get("P_APPLICATION_COUNTRY_ID"));
+			List<Map<String, Object>> outputList = jdbcTemplate.queryForList(sql, inputList.toArray());
+			LOGGER.info("in getDeliveryModeIdForCash,output values: {}", outputList);
+			
+		    return outputList;
+		
+	}
+	
+	
+	
 	
 	
 	public BigDecimal  getWbLimit() {
