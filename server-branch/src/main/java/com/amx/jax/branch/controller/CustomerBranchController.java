@@ -29,11 +29,11 @@ public class CustomerBranchController {
 	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getCustomerDetails(@RequestParam String identity,
 			@RequestParam BigDecimal identityType,
 			@RequestParam boolean session) {
-		AmxApiResponse<OffsiteCustomerDataDTO, Object> customerResponse = offsiteCustRegClient.getOffsiteCustomerData(
+		AmxApiResponse<OffsiteCustomerDataDTO, Object> customerResponse = offsiteCustRegClient.getCustomerDetails(
 				identity,
 				identityType);
 		if (session) {
-			branchSession.setCustomerId(customerResponse.getResult().getIdentityTypeId());
+			branchSession.setCustomerId(customerResponse.getResult().getCustomerPersonalDetail().getCustomerId());
 		}
 		return customerResponse;
 	}
