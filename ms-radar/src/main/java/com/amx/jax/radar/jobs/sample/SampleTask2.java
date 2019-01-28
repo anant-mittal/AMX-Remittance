@@ -8,6 +8,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import com.amx.jax.AppConfig;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.mcq.MCQ;
 import com.amx.jax.rates.AmxCurConstants;
@@ -24,14 +25,17 @@ public class SampleTask2 {
 	@Autowired
 	private MCQ mcq;
 
+	@Autowired
+	AppConfig appConfig;
+
 	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_SEC * 5)
 	public void doTask() throws InterruptedException {
 		if (mcq.claimLeaderShip(this.getClass().getName(), AmxCurConstants.INTERVAL_SEC * 5)) {
 			Thread.sleep(AmxCurConstants.INTERVAL_SEC * 3);
-			LOGGER.info("======= I am doing my Task");
+			LOGGER.info("======= I am doing my Task @ {}", appConfig.getSpringAppName());
 			mcq.resignLeaderShip(this.getClass());
 		} else {
-			LOGGER.info("======= I NOT doing my Task");
+			LOGGER.info("======= I NOT doing my Task @ {}", appConfig.getSpringAppName());
 		}
 	}
 
