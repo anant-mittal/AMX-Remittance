@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
+import com.amx.amxlib.meta.model.RemittancePageDto;
 import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.amxlib.model.response.PurposeOfTransactionModel;
 import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
@@ -63,6 +64,14 @@ public class RemitBranchController {
 	@RequestMapping(value = "/api/remitt/bnfcry/list", method = { RequestMethod.POST })
 	public AmxApiResponse<BeneficiaryListDTO, Object> beneList() {
 		return AmxApiResponse.buildList(beneClient.getBeneficiaryList(new BigDecimal(0)).getResults());
+	}
+
+	@RequestMapping(value = "/api/remitt/tranxrate", method = { RequestMethod.POST })
+	public AmxApiResponse<RemittancePageDto, Object> defaultBeneficiary(
+			@RequestParam(required = false) BigDecimal beneId,
+			@RequestParam(required = false) BigDecimal transactionId) {
+		return AmxApiResponse.buildList(beneClient.defaultBeneficiary(beneId, transactionId)
+				.getResults());
 	}
 
 	@RequestMapping(value = "/api/remitt/tranxrate", method = { RequestMethod.POST })
