@@ -31,8 +31,8 @@ public class MCQ {
 
 		String previousLeader = map.putIfAbsent(key, appConfig.getSpringAppName(), timeinMilliSeconds,
 				TimeUnit.MILLISECONDS);
+		LOGGER.info("Leader:{} for key:{}", previousLeader, key);
 		if (previousLeader == null) {
-			LOGGER.info("Leader: {} for key:{}", previousLeader, key);
 			return true;
 		}
 
