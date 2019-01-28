@@ -10,8 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.amx.jax.AppConfig;
-import com.amx.jax.radar.jobs.sample.SampleTask;
-import com.amx.jax.tunnel.TunnelEventXchange;
 
 @Service
 public class MCQ {
