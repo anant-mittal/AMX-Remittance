@@ -24,6 +24,7 @@ import com.amx.jax.client.remittance.RemittanceClient;
 import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.request.remittance.CustomerBankRequest;
+import com.amx.jax.model.response.SourceOfIncomeDto;
 import com.amx.jax.model.response.fx.FcSaleOrderManagementDTO;
 import com.amx.jax.model.response.fx.UserStockDto;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
@@ -59,6 +60,11 @@ public class RemitBranchController {
 	@RequestMapping(value = "/api/remitt/purpose/list", method = { RequestMethod.POST })
 	public AmxApiResponse<PurposeOfTransactionModel, Object> getPurposeList(@RequestParam BigDecimal beneId) {
 		return AmxApiResponse.buildList(remitClient.getPurposeOfTransactions(beneId).getResults());
+	}
+
+	@RequestMapping(value = "/api/meta/income_sources/list", method = { RequestMethod.POST })
+	public AmxApiResponse<SourceOfIncomeDto, Object> getSourceOfIncome() {
+		return AmxApiResponse.buildList(remitClient.getSourceOfIncome().getResults());
 	}
 
 	@RequestMapping(value = "/api/remitt/bnfcry/list", method = { RequestMethod.POST })

@@ -87,4 +87,5 @@ public class MetaController {
 	public AmxApiResponse<ComponentDataDto, Object> getIdTypes() {
 		return offsiteCustRegClient.getIdTypes();
 	}
+
 }
