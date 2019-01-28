@@ -18,10 +18,12 @@ import com.amx.amxlib.constant.JaxFieldEntity;
 import com.amx.amxlib.exception.AdditionalFlexRequiredException;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.FlexFieldDto;
+import com.amx.amxlib.model.GetJaxFieldRequest;
 import com.amx.amxlib.model.JaxConditionalFieldDto;
 import com.amx.amxlib.model.JaxFieldDto;
 import com.amx.amxlib.model.JaxFieldValueDto;
 import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
+import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ExchangeRateBreakup;
 import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.jax.constant.ConstantDocument;
@@ -52,7 +54,7 @@ public class RemittanceTransactionRequestValidator {
 	@Autowired
 	IAdditionalBankDetailsDao additionalBankDetailsDao;
 	@Autowired
-	JaxFieldService jaxFieldService ;
+	JaxFieldService jaxFieldService;
 	@Autowired
 	DateUtil dateUtil;
 
@@ -125,16 +127,17 @@ public class RemittanceTransactionRequestValidator {
 			if (flexFieldValueInRequest == null) {
 				requiredFlexFields.add(dto);
 			} else {
-				if (field.getPossibleValues() != null  && hasFieldValueChanged(field, flexFieldValueInRequest)) {
+				if (field.getPossibleValues() != null && hasFieldValueChanged(field, flexFieldValueInRequest)) {
 					requiredFlexFields.add(dto);
 				}
 			}
 		}
 		// update jaxfield defination from db
-		List<JaxFieldDto> jaxFieldDtos = requiredFlexFields.stream().map(i -> i.getField()).collect(Collectors.toList());
+		List<JaxFieldDto> jaxFieldDtos = requiredFlexFields.stream().map(i -> i.getField())
+				.collect(Collectors.toList());
 		jaxFieldService.updateDtoFromDb(jaxFieldDtos);
 		updateAdditionalValidations(jaxFieldDtos);
-		
+
 		if (!requiredFlexFields.isEmpty()) {
 			LOGGER.error(requiredFlexFields.toString());
 			AdditionalFlexRequiredException exp = new AdditionalFlexRequiredException(
@@ -215,12 +218,12 @@ public class RemittanceTransactionRequestValidator {
 
 	private boolean hasFieldValueChanged(JaxFieldDto field, FlexFieldDto flexFieldValue) {
 		boolean changedValue = true;
-			for (Object value : field.getPossibleValues()) {
-				JaxFieldValueDto jaxFieldValueDto = (JaxFieldValueDto) value;
-				if (jaxFieldValueDto.getValue().equals(flexFieldValue)) {
-					changedValue = false;
-				}
+		for (Object value : field.getPossibleValues()) {
+			JaxFieldValueDto jaxFieldValueDto = (JaxFieldValueDto) value;
+			if (jaxFieldValueDto.getValue().equals(flexFieldValue)) {
+				changedValue = false;
 			}
+		}
 		return changedValue;
 	}
 
@@ -238,4 +241,5 @@ public class RemittanceTransactionRequestValidator {
 			return dto;
 		}).collect(Collectors.toList());
 	}
+
 }

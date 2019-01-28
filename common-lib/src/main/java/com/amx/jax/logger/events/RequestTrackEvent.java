@@ -16,7 +16,12 @@ import com.amx.jax.logger.AuditEvent;
 import com.amx.jax.tunnel.TunnelEventXchange;
 import com.amx.jax.tunnel.TunnelMessage;
 import com.amx.utils.HttpUtils;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+@JsonInclude(Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class RequestTrackEvent extends AuditEvent {
 
 	private static final long serialVersionUID = -8735500343787196557L;

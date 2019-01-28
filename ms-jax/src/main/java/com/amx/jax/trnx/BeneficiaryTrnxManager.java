@@ -190,6 +190,7 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 				beneficaryAccount.setBankBranchId(accountDetails.getBankBranchId());
 			}
 			beneficaryAccount.setBankAccountTypeId(accountDetails.getBankAccountTypeId());
+			beneficaryAccount.setIbanNumber(accountDetails.getIbanNumber());
 
 			beneficiaryAccountDao.save(beneficaryAccount);
 			logger.info("created new bene account id: " + beneficaryAccount.getBeneficaryAccountSeqId());

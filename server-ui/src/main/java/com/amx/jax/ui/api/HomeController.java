@@ -207,4 +207,9 @@ public class HomeController {
 		context.setVariables(model.asMap());
 		return templateEngine.process("json/apple-app-site-association", context);
 	}
+
+	@RequestMapping(value = { "/pub/verification" }, method = { RequestMethod.GET })
+	public String verification(Model model, @RequestParam String id, @RequestParam String key) {
+		return "terms";
+	}
 }

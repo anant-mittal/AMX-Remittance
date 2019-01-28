@@ -52,6 +52,7 @@ public class BankMasterModel implements java.io.Serializable {
 	private String remarks;
 	private String splitIndicator;
 	private BigDecimal bankCountryId;
+	private String ibanFlag;
 	
 	public BankMasterModel() {
 	}
@@ -563,6 +564,15 @@ public class BankMasterModel implements java.io.Serializable {
 		} else if (!zipCode.equals(other.zipCode))
 			return false;
 		return true;
+	}
+
+	@Column(name = "IBAN_FLAG")
+	public String getIbanFlag() {
+		return ibanFlag;
+	}
+
+	public void setIbanFlag(String ibanFlag) {
+		this.ibanFlag = ibanFlag;
 	}
 	 
 	 
