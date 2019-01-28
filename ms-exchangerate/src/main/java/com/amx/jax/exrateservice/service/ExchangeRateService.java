@@ -28,7 +28,7 @@ import com.amx.amxlib.meta.model.ViewCompanyDetailDTO;
 import com.amx.amxlib.model.MinMaxExRateDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
-import com.amx.amxlib.model.response.ExchangeRateBreakup;
+
 import com.amx.amxlib.model.response.ExchangeRateResponseModel;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.api.AmxApiResponse;
@@ -43,6 +43,7 @@ import com.amx.jax.exrateservice.dao.ExchangeRateDao;
 import com.amx.jax.exrateservice.dao.PipsMasterDao;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.response.CurrencyMasterDTO;
+import com.amx.jax.model.response.ExchangeRateBreakup;
 import com.amx.jax.service.BankMetaService;
 import com.amx.jax.service.CompanyService;
 import com.amx.jax.service.CurrencyMasterService;

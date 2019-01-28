@@ -8,10 +8,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
 import org.apache.commons.lang.StringUtils;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 /**
@@ -26,10 +28,11 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
-import com.amx.amxlib.model.response.ExchangeRateBreakup;
+
 import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.jax.branchremittance.dao.BranchRemittanceDao;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dbmodel.ApplicationSetup;
 import com.amx.jax.dbmodel.BankMasterModel;
 import com.amx.jax.dbmodel.BenificiaryListView;
@@ -47,11 +50,14 @@ import com.amx.jax.dbmodel.remittance.AdditionalInstructionData;
 import com.amx.jax.dbmodel.remittance.BankBranch;
 import com.amx.jax.dbmodel.remittance.DeliveryMode;
 import com.amx.jax.dbmodel.remittance.Document;
+import com.amx.jax.dbmodel.remittance.FlexFiledView;
 import com.amx.jax.dbmodel.remittance.RemitApplAmlModel;
 import com.amx.jax.dbmodel.remittance.RemittanceAppBenificiary;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.RemittanceModeMaster;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.manager.OldRemittanceApplicationAdditionalDataManager;
+import com.amx.jax.manager.RemittanceApplicationAdditionalDataManager;
 import com.amx.jax.manager.RemittanceApplicationManager;
 import com.amx.jax.manager.RemittanceTransactionManager;
 import com.amx.jax.meta.MetaData;
@@ -139,8 +145,15 @@ public class BranchRemittanceApplManager {
 	@Autowired
 	LoyalityPointService loyalityPointService;
 	
-
+	@Autowired
+	RemittanceApplicationDao remittApplDao;
 	
+
+	@Autowired
+	private RemittanceApplicationAdditionalDataManager remittanceAppAddlDataManager;
+
+	@Autowired
+	private OldRemittanceApplicationAdditionalDataManager oldRemittanceApplicationAdditionalDataManager;
 
 	
 	public BranchRemittanceApplResponseDto saveBranchRemittanceApplication(BranchRemittanceApplRequestModel requestApplModel) {
@@ -174,7 +187,7 @@ public class BranchRemittanceApplManager {
 		
 		
 		
-		branchRemitManager.validateAdditionalCheck(branchRoutingDetails,customer,beneficaryDetails);
+		branchRemitManager.validateAdditionalCheck(branchRoutingDetails,customer,beneficaryDetails,(BigDecimal)branchExchangeRate.get("P_LOCAL_NET_PAYABLE"));
 		//validateAdditionalBeneDetails(model);
 		
 		
@@ -186,11 +199,17 @@ public class BranchRemittanceApplManager {
 		hashMap.put("CUSTOMER", customer);
 		hashMap.put("AML_CHECK", amlList);
 
-
+		
+		
+		
 		/* create applciation */
 		RemittanceApplication remittanceApplication = this.createRemittanceApplication(hashMap);
 		RemittanceAppBenificiary remittanceAppBeneficairy = this.createRemittanceAppBeneficiary(remittanceApplication,hashMap);
-		List<AdditionalInstructionData> additioalInstructionData = this.createAdditionalInstnData(remittanceApplication, hashMap);
+		//List<AdditionalInstructionData> additioalInstructionData = this.createAdditionalInstnData(remittanceApplication, hashMap);
+		// List<AdditionalInstructionData> additioalInstructionData =oldRemittanceApplicationAdditionalDataManager.createAdditionalInstnData(remittanceApplication);
+		List<AdditionalInstructionData>  additioalInstructionData = remittanceAppAddlDataManager.createAdditionalInstnDataForBranch(remittanceApplication,hashMap);
+		
+		//RemittanceTransactionRequestModel
 		List<RemitApplAmlModel> amlData = this.saveRemittanceAppAML(remittanceApplication,hashMap);
 		
 		/* Saving application deatils */
@@ -281,7 +300,7 @@ public class BranchRemittanceApplManager {
 			remittanceApplication.setCompanyCode(companyDetails.getCompanyCode());
 			// branch id
 			CountryBranch countryBranch = bankMetaService.getCountryBranchById((metaData.getCountryBranchId()));
-			remittanceApplication.setLoccod(metaData.getCountryBranchId());
+			remittanceApplication.setLoccod(countryBranch.getBranchId());
 			remittanceApplication.setExCountryBranch(countryBranch);
 			// fin year
 			UserFinancialYear userFinancialYear = finanacialService.getUserFinancialYear();
@@ -312,6 +331,7 @@ public class BranchRemittanceApplManager {
 			// Customer id
 			remittanceApplication.setFsCustomer(customer);
 			remittanceApplication.setCustomerRef(customer.getCustomerReference());
+			remittanceApplication.setCustomerName(getCustomerFullName(customer));
 
 			// Routing Bank
 			BankMasterModel bankmaster = new BankMasterModel();
@@ -325,44 +345,33 @@ public class BranchRemittanceApplManager {
 			// document date
 			remittanceApplication.setDocumentDate(new Date());
 			remittanceApplication.setDebitAccountNo(beneDetails.getBankAccountNumber());
+			
 			// rates
-			
-			//setApplicableRates(remittanceApplication, requestModel, validationResults); NT CHECK
-			
-			
 			if(JaxUtil.isNullZeroBigDecimalCheck(rateBreakUp.getConvertedFCAmount())) {
 				remittanceApplication.setForeignTranxAmount(rateBreakUp.getConvertedFCAmount());
 			}else {
-				throw new GlobalException(JaxError.INVALID_FC_AMOUNT,"Invalid foreign Amount");
-				
+				remittanceApplication.setForeignTranxAmount(branchExchangeRate.get("P_LOCAL_NET_SENT")==null?BigDecimal.ZERO:(BigDecimal)branchExchangeRate.get("P_LOCAL_NET_SENT"));
+				//throw new GlobalException(JaxError.INVALID_FC_AMOUNT,"Invalid foreign Amount");
 			}
-			
-			
 			if(JaxUtil.isNullZeroBigDecimalCheck(rateBreakUp.getConvertedLCAmount())) {
-				remittanceApplication.setForeignTranxAmount(rateBreakUp.getConvertedLCAmount());
+				remittanceApplication.setLocalTranxAmount(rateBreakUp.getConvertedLCAmount());
 			}else {
-				throw new GlobalException(JaxError.INVALID_FC_AMOUNT,"Invalid local Amount");
-				
+				remittanceApplication.setLocalTranxAmount(branchExchangeRate.get("P_LOCAL_GROSS_AMOUNT")==null?BigDecimal.ZERO:(BigDecimal)branchExchangeRate.get("P_LOCAL_GROSS_AMOUNT"));
+				//throw new GlobalException(JaxError.INVALID_FC_AMOUNT,"Invalid local Amount");
 			}
-			remittanceApplication.setExchangeRateApplied(rateBreakUp.getInverseRate());
-			
-			remittanceApplication.setLocalCommisionAmount(branchExchangeRate.get("P_LOCAL_COMMISION_AMOUNT")==null?BigDecimal.ZERO:(BigDecimal)branchExchangeRate.get("P_LOCAL_COMMISION_AMOUNT"));
-			
-			
-			/*if(JaxUtil.isNullZeroBigDecimalCheck(rateBreakUp.getTxnFee())) {
-				remittanceApplication.setLocalCommisionAmount(rateBreakUp.getTxnFee());
-			}else {
-				
-			}*/
-		
-			remittanceApplication.setLocalChargeAmount(BigDecimal.ZERO);
-			remittanceApplication.setLocalDeliveryAmount(BigDecimal.ZERO);
-			remittanceApplication.setLocalNetTranxAmount(rateBreakUp.getNetAmountWithoutLoyality());
-			//remittanceApplication.setLoyaltyPointsEncashed(loyalityPointsEncashed); NC 
-			
 			if(JaxUtil.isNullZeroBigDecimalCheck(rateBreakUp.getNetAmountWithoutLoyality())) {
 				remittanceApplication.setLocalNetTranxAmount(rateBreakUp.getNetAmountWithoutLoyality());
+			}else {
+				remittanceApplication.setLocalNetTranxAmount(branchExchangeRate.get("P_LOCAL_NET_PAYABLE")==null?BigDecimal.ZERO:(BigDecimal)branchExchangeRate.get("P_LOCAL_NET_PAYABLE"));
 			}
+			remittanceApplication.setExchangeRateApplied(rateBreakUp.getInverseRate());
+			remittanceApplication.setLocalCommisionAmount(branchExchangeRate.get("P_LOCAL_COMMISION_AMOUNT")==null?BigDecimal.ZERO:(BigDecimal)branchExchangeRate.get("P_LOCAL_COMMISION_AMOUNT"));
+			remittanceApplication.setLocalChargeAmount(BigDecimal.ZERO);
+			remittanceApplication.setLocalDeliveryAmount(BigDecimal.ZERO);
+			remittanceApplication.setLoyaltyPointsEncashed(BigDecimal.ZERO); 
+			
+			remittanceApplication.setLoyaltyPointInd(applRequestModel.isAvailLoyalityPoints()==true?ConstantDocument.Yes:ConstantDocument.No);
+			
 			
 			remittanceApplication.setDocumentFinancialyear(userFinancialYear.getFinancialYear());
 			remittanceApplication.setSelectedCurrencyId(selectedCurrencyId);
@@ -479,7 +488,7 @@ public class BranchRemittanceApplManager {
 		return remittanceAppBenificary;
 	}
 	
-	public List<AdditionalInstructionData> createAdditionalInstnData(RemittanceApplication remittanceApplication,Map hashMap) {
+/*	public List<AdditionalInstructionData> createAdditionalInstnData(RemittanceApplication remittanceApplication,Map hashMap) {
 
 		logger.info(" Enter into saveAdditionalInstnData ");
 
@@ -488,7 +497,24 @@ public class BranchRemittanceApplManager {
 		Map<String, Object> branchRoutingDetails =(Map)hashMap.get("ROUTING_DETAILS_MAP");
 		BranchRemittanceApplRequestModel requestApplModel = (BranchRemittanceApplRequestModel)hashMap.get("APPL_REQ_MODEL");
 		
-		Map<String, FlexFieldDto> flexFields = requestApplModel.getFlexFieldDtoMap(); 
+		//Map<String, FlexFieldDto> flexFields = requestApplModel.getFlexFieldDtoMap();
+		List<FlexFiledView> allFlexFields = remittApplDao.getFlexFields();
+		Map<String, FlexFieldDto> requestFlexFields = requestApplModel.getFlexFieldDtoMap();
+		
+		
+		
+		if (requestFlexFields == null) {
+			requestFlexFields = new HashMap<>();
+			requestApplModel.setFlexFieldDtoMap(requestFlexFields);
+		} else {
+			validateFlexFieldValues(requestFlexFields);
+		}
+		
+		
+		
+		
+		List<String> flexiFieldIn = allFlexFields.stream().map(i -> i.getFieldName()).collect(Collectors.toList());
+		Map<String, FlexFieldDto> flexFields  = remittApplDao.getFlexFields();
 		flexFields.forEach((k, v) -> {
 			BigDecimal bankId = (BigDecimal) branchRoutingDetails.get("P_ROUTING_BANK_ID");
 			BigDecimal remittanceModeId = (BigDecimal) branchRoutingDetails.get("P_REMITTANCE_MODE_ID");
@@ -507,7 +533,7 @@ public class BranchRemittanceApplManager {
 		logger.info(" Exit from saveAdditionalInstnData ");
 
 		return lstAddInstrData;
-	}
+	}*/
 
 	// checking Indic1,Indic2,Indic3,Indic4,Indic5
 	private AdditionalInstructionData createAdditionalIndicatorsData(RemittanceApplication remittanceApplication,BigDecimal applicationCountryId, String indicatorCode, String amiecCode, String flexFieldValue,BigDecimal additionalBankRuleId) {
@@ -645,25 +671,7 @@ public class BranchRemittanceApplManager {
 	
 
 	
-	
-/*	private void setApplicableRates(RemittanceApplication remittanceApplication,RemittanceTransactionRequestModel requestModel, BranchRemittanceApplRequestModel validationResults) {
-		BranchExchangeRateBreakup breakup = validationResults.getBranchExRateBreakup();
 
-		BigDecimal loyalityPointsEncashed = BigDecimal.ZERO;
-		if (loyalityPointsAvailed(requestModel, validationResults)) {
-			loyalityPointsEncashed = loyalityPointService.getVwLoyalityEncash().getEquivalentAmount();
-		}
-		remittanceApplication.setForeignTranxAmount(breakup.getConvertedFCAmount());
-		remittanceApplication.setLocalTranxAmount(breakup.getConvertedLCAmount());
-		remittanceApplication.setExchangeRateApplied(breakup.getInverseRate());
-		remittanceApplication.setLocalCommisionAmount(validationResults.getTxnFee());
-		remittanceApplication.setLocalChargeAmount(BigDecimal.ZERO);
-		remittanceApplication.setLocalDeliveryAmount(BigDecimal.ZERO);
-		remittanceApplication.setLocalNetTranxAmount(breakup.getNetAmountWithoutLoyality());
-		remittanceApplication.setLoyaltyPointsEncashed(loyalityPointsEncashed);
-
-	}*/
-	
 	
 	public Boolean loyalityPointsAvailed(RemittanceTransactionRequestModel requestModel,RemittanceTransactionResponsetModel responseModel) {
 		if (requestModel.isAvailLoyalityPoints() && responseModel.getCanRedeemLoyalityPoints()) {
@@ -671,6 +679,27 @@ public class BranchRemittanceApplManager {
 		}
 		return false;
 	}
+	
+	
+	
+	
+	public String getCustomerFullName(Customer customer){
+		String customerName =null;
+
+		if(customer !=null){
+			if(customer.getFirstName() !=null){
+				customerName = customer.getFirstName(); 
+			}
+			if(!StringUtils.isEmpty(customer.getMiddleName())){
+				customerName = customerName +" "+customer.getMiddleName();
+			}
+			if(!StringUtils.isEmpty(customer.getLastName())){
+				customerName = customerName+ " "+ customer.getLastName();
+			}
+		}
+		return customerName;
+		}
+	
 	
 	
 	public java.sql.Clob stringToClob(String source) throws Exception {

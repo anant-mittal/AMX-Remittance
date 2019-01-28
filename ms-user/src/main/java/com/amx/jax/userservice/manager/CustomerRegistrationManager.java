@@ -32,16 +32,23 @@ import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerIdProof;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.DistrictMaster;
+import com.amx.jax.dbmodel.EmployeeDetails;
 import com.amx.jax.dbmodel.StateMaster;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.OtpData;
+import com.amx.jax.model.request.CustomerEmploymentDetails;
 import com.amx.jax.model.request.CustomerPersonalDetail;
+import com.amx.jax.model.request.HomeAddressDetails;
+import com.amx.jax.model.request.LocalAddressDetails;
+import com.amx.jax.model.response.customer.OffsiteCustomerDataDTO;
+import com.amx.jax.repository.CustomerEmployeeDetailsRepository;
 import com.amx.jax.trnx.CustomerRegistrationTrnxModel;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.repository.ContactDetailsRepository;
 import com.amx.jax.userservice.repository.CustomerIdProofRepository;
 import com.amx.jax.userservice.repository.CustomerRepository;
+import com.amx.jax.userservice.service.ContactDetailService;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.JaxUtil;
@@ -76,7 +83,15 @@ public class CustomerRegistrationManager extends CustomerTransactionModel<Custom
 	BizcomponentDao bizcomponentDao;
 	@Autowired
 	UserService userService;
-
+	
+	
+	@Autowired
+	ContactDetailService contactDetailService; 
+	
+	@Autowired
+	CustomerEmployeeDetailsRepository customerEmployeeDetailsRepository;
+	
+	
 	@Override
 	public CustomerRegistrationTrnxModel getDefault() {
 		CustomerRegistrationTrnxModel model = new CustomerRegistrationTrnxModel();
@@ -307,4 +322,96 @@ public class CustomerRegistrationManager extends CustomerTransactionModel<Custom
 		customerIdProofRepository.save(custProof);
 
 	}
+	
+	public OffsiteCustomerDataDTO getCustomerDeatils(String  identityInt,BigDecimal identityTypeId) {
+		OffsiteCustomerDataDTO offsiteCustomer = new OffsiteCustomerDataDTO();
+		CustomerPersonalDetail customerDetails = new CustomerPersonalDetail();
+		
+		LOGGER.debug("identityInt :"+identityInt+"\t identityTypeId :"+identityTypeId+"\t country id "+jaxMetaInfo.getCountryId());
+		Customer customer = customerRepository.getCustomerDetails(identityInt, identityTypeId,jaxMetaInfo.getCountryId());
+	
+		if(customer!=null) {
+			
+			if(customer.getIsActive()!= null && !customer.getIsActive().equalsIgnoreCase(ConstantDocument.Yes)) {
+				throw new GlobalException(JaxError.CUSTOMER_INACTIVE,"Customer is inactive :"+identityInt +"\t identityTypeId :"+identityTypeId);
+			}
+			
+			offsiteCustomer.setIdentityInt(customer.getIdentityInt());
+			offsiteCustomer.setIdentityTypeId(customer.getIdentityTypeId());
+			customerDetails.setCustomerId(customer.getCustomerId());
+			customerDetails.setCountryId(customer.getCountryId());
+			customerDetails.setNationalityId(customer.getNationalityId());
+			customerDetails.setIdentityInt(customer.getIdentityInt());
+			customerDetails.setTitle(customer.getTitle());
+			customerDetails.setFirstName(customer.getFirstName());
+			customerDetails.setLastName(customer.getLastName());
+			customerDetails.setEmail(customer.getEmail());
+			customerDetails.setMobile(customer.getMobile());
+			customerDetails.setTelPrefix(customer.getPrefixCodeMobile());
+			customerDetails.setFirstNameLocal(customer.getFirstNameLocal());
+			customerDetails.setLastNameLocal(customer.getLastNameLocal());
+			customerDetails.setExpiryDate(customer.getIdentityExpiredDate());
+			customerDetails.setDateOfBirth(customer.getDateOfBirth());
+			customerDetails.setIdentityTypeId(customer.getIdentityTypeId());
+			customerDetails.setInsurance(customer.getMedicalInsuranceInd());
+			customerDetails.setWatsAppMobileNo(customer.getMobileOther());
+			customerDetails.setWatsAppTelePrefix(customer.getPrefixCodeMobileOther());
+			customerDetails.setIsWatsApp(customer.getIsMobileWhatsApp());
+			customerDetails.setRegistrationType(customer.getCustomerRegistrationType());
+			
+			offsiteCustomer.setCustomerPersonalDetail(customerDetails);
+			
+			//--- Local Address Data	
+			LocalAddressDetails localAddress = new LocalAddressDetails();
+			ContactDetail localData = contactDetailService.getContactsForLocal(customer);
+			if(localData != null) {
+				localAddress.setContactTypeId(localData.getFsBizComponentDataByContactTypeId().getComponentDataId());
+				localAddress.setBlock(localData.getBlock());
+				localAddress.setStreet(localData.getStreet());
+				localAddress.setHouse(localData.getBuildingNo());
+				localAddress.setFlat(localData.getFlat());
+				if(null != localData.getFsCountryMaster()) {
+					localAddress.setCountryId(localData.getFsCountryMaster().getCountryId());
+				}
+				if(null != localData.getFsStateMaster()) {
+					localAddress.setStateId(localData.getFsStateMaster().getStateId());
+				}
+				if(null != localData.getFsDistrictMaster()) {
+					localAddress.setDistrictId(localData.getFsDistrictMaster().getDistrictId());
+				}
+				if(null != localData.getFsCityMaster()) {
+					localAddress.setCityId(localData.getFsCityMaster().getCityId());
+				}
+				offsiteCustomer.setLocalAddressDetails(localAddress);
+			}
+			//--- Home Address Data
+			HomeAddressDetails homeAddress = new HomeAddressDetails();
+			ContactDetail homeData = contactDetailService.getContactsForHome(customer);
+			if(homeData != null) {
+				homeAddress.setContactTypeId(homeData.getFsBizComponentDataByContactTypeId().getComponentDataId());
+				homeAddress.setBlock(homeData.getBlock());
+				homeAddress.setStreet(homeData.getStreet());
+				homeAddress.setHouse(homeData.getBuildingNo());
+				homeAddress.setFlat(homeData.getFlat());
+				if(null != homeData.getFsCountryMaster()) {
+					homeAddress.setCountryId(homeData.getFsCountryMaster().getCountryId());
+				}
+				if(null != homeData.getFsStateMaster()) {
+					homeAddress.setStateId(homeData.getFsStateMaster().getStateId());
+				}	
+				if(null != homeData.getFsDistrictMaster()) {
+					homeAddress.setDistrictId(homeData.getFsDistrictMaster().getDistrictId());
+				}	
+				if(null != homeData.getFsCityMaster()) {
+					homeAddress.setCityId(homeData.getFsCityMaster().getCityId());		
+				}
+				offsiteCustomer.setHomeAddressDestails(homeAddress);
+			}
+		}else {
+			throw new GlobalException(JaxError.NO_RECORD_FOUND,"Customer details not found :"+identityInt +"\t identityTypeId :"+identityTypeId);
+		}
+		
+		return offsiteCustomer;
+	}
+	
 }

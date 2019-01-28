@@ -1075,12 +1075,12 @@ public class ApplicationProcedureDao {
 			BigDecimal pDeliveryModeId = cs.getBigDecimal(13);
 			String pErrorMesg = cs.getString(14);
 
-			output.put("P_SERVICE_MASTER_ID", pServiceMasterId == null ? "0" : pServiceMasterId.toPlainString());
-			output.put("P_ROUTING_COUNTRY_ID", pRoutingCountryId == null ? "0" : pRoutingCountryId.toPlainString());
-			output.put("P_ROUTING_BANK_ID", pRoutingBankId == null ? "0" : pRoutingBankId.toPlainString());
-			output.put("P_ROUTING_BANK_BRANCH_ID",pRoutingBranchId == null ? "0" : pRoutingBranchId.toPlainString());
-			output.put("P_REMITTANCE_MODE_ID", pRemittanceModeId == null ? "0" : pRemittanceModeId.toPlainString());
-			output.put("P_DELIVERY_MODE_ID", pDeliveryModeId == null ? "0" : pDeliveryModeId.toPlainString());
+			output.put("P_SERVICE_MASTER_ID", pServiceMasterId == null ? BigDecimal.ZERO : pServiceMasterId);
+			output.put("P_ROUTING_COUNTRY_ID", pRoutingCountryId == null ? BigDecimal.ZERO  : pRoutingCountryId);
+			output.put("P_ROUTING_BANK_ID", pRoutingBankId == null ? BigDecimal.ZERO  : pRoutingBankId);
+			output.put("P_ROUTING_BANK_BRANCH_ID",pRoutingBranchId == null ? BigDecimal.ZERO  : pRoutingBranchId);
+			output.put("P_REMITTANCE_MODE_ID", pRemittanceModeId == null ? BigDecimal.ZERO  : pRemittanceModeId);
+			output.put("P_DELIVERY_MODE_ID", pDeliveryModeId == null ? BigDecimal.ZERO  : pDeliveryModeId);
 			output.put("P_ERROR_MESSAGE", pErrorMesg);
 			
 		} catch (DataAccessException | SQLException e) {
@@ -1114,7 +1114,7 @@ public class ApplicationProcedureDao {
 				String proc = "{ call EX_GET_EXCHANGE_RATE (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) } ";
 				cs = connection.prepareCall(proc);
 				// In Parameters
-				cs.setBigDecimal(1, (BigDecimal)inputValues.get("P_APPLICATION_COUNTRY_ID"));
+				cs.setBigDecimal(1, inputValues.get("P_APPLICATION_COUNTRY_ID")==null?BigDecimal.ZERO:(BigDecimal)inputValues.get("P_APPLICATION_COUNTRY_ID"));
 				cs.setBigDecimal(2, inputValues.get("P_ROUTING_COUNTRY_ID")==null?BigDecimal.ZERO:(BigDecimal)inputValues.get("P_ROUTING_COUNTRY_ID"));
 				cs.setBigDecimal(3, inputValues.get("P_BRANCH_ID")==null?BigDecimal.ZERO:(BigDecimal)inputValues.get("P_BRANCH_ID"));
 				cs.setBigDecimal(4, inputValues.get("P_COMPANY_ID")==null?BigDecimal.ZERO:(BigDecimal)inputValues.get("P_COMPANY_ID"));
@@ -1154,17 +1154,17 @@ public class ApplicationProcedureDao {
 				cs.registerOutParameter(36, java.sql.Types.INTEGER);
 				cs.registerOutParameter(37, java.sql.Types.VARCHAR);
 				cs.execute();
-				output.put("P_EXCHANGE_RATE_APPLIED",cs.getBigDecimal(27) == null ? "0" : cs.getBigDecimal(27).toPlainString());
-				output.put("P_LOCAL_CHARGE_AMOUNT",cs.getBigDecimal(28) == null ? "0" : cs.getBigDecimal(28).toPlainString());
-				output.put("P_LOCAL_COMMISION_AMOUNT",cs.getBigDecimal(29) == null ? "0" : cs.getBigDecimal(29).toPlainString());
-				output.put("P_LOCAL_GROSS_AMOUNT",cs.getBigDecimal(30) == null ? "0" : cs.getBigDecimal(30).toPlainString());
-				output.put("P_LOYALTY_AMOUNT",cs.getBigDecimal(31) == null ? "0" : cs.getBigDecimal(31).toPlainString());
-				output.put("P_LOCAL_NET_PAYABLE",cs.getBigDecimal(32) == null ? "0" : cs.getBigDecimal(32).toPlainString());
-				output.put("P_LOCAL_NET_SENT",cs.getBigDecimal(33) == null ? "0" : cs.getBigDecimal(33).toPlainString());
-				output.put("P_NEW_REMITTANCE_MODE_ID",cs.getBigDecimal(34) == null ? "0" : cs.getBigDecimal(34).toPlainString());
-				output.put("P_NEW_DELIVERY_MODE_ID",cs.getBigDecimal(35) == null ? "0" : cs.getBigDecimal(35).toPlainString());
-				output.put("P_ICASH_COST_RATE",cs.getBigDecimal(36) == null ? "0" : cs.getBigDecimal(36).toPlainString());
-				output.put("P_ERROR_MESSAGE", cs.getString(37) == null ? "" : cs.getString(37));
+				output.put("P_EXCHANGE_RATE_APPLIED",cs.getBigDecimal(27) == null ? BigDecimal.ZERO: cs.getBigDecimal(27));
+				output.put("P_LOCAL_CHARGE_AMOUNT",cs.getBigDecimal(28) == null ? BigDecimal.ZERO : cs.getBigDecimal(28));
+				output.put("P_LOCAL_COMMISION_AMOUNT",cs.getBigDecimal(29) == null ? BigDecimal.ZERO : cs.getBigDecimal(29));
+				output.put("P_LOCAL_GROSS_AMOUNT",cs.getBigDecimal(30) == null ? BigDecimal.ZERO : cs.getBigDecimal(30));
+				output.put("P_LOYALTY_AMOUNT",cs.getBigDecimal(31) == null ? BigDecimal.ZERO : cs.getBigDecimal(31));
+				output.put("P_LOCAL_NET_PAYABLE",cs.getBigDecimal(32) == null ? BigDecimal.ZERO : cs.getBigDecimal(32));
+				output.put("P_LOCAL_NET_SENT",cs.getBigDecimal(33) == null ? BigDecimal.ZERO : cs.getBigDecimal(33));
+				output.put("P_NEW_REMITTANCE_MODE_ID",cs.getBigDecimal(34) == null ? BigDecimal.ZERO : cs.getBigDecimal(34));
+				output.put("P_NEW_DELIVERY_MODE_ID",cs.getBigDecimal(35) == null ? BigDecimal.ZERO : cs.getBigDecimal(35));
+				output.put("P_ICASH_COST_RATE",cs.getBigDecimal(36) == null ? BigDecimal.ZERO : cs.getBigDecimal(36));
+				output.put("P_ERROR_MESSAGE", cs.getString(37));
 			
 			} catch (DataAccessException | SQLException e) {
 				LOGGER.error("error in EX_GET_EXCHANGE_RATE :", e);

@@ -116,6 +116,8 @@ public class CustomerPersonalDetail extends AbstractModel {
 	
 	@ApiMockModelProperty(example = "OFF_CUSTOMER")
 	private CustomerRegistrationType registrationType;
+	
+	BigDecimal customerId;
 
 	public CustomerRegistrationType getRegistrationType() {
 		return registrationType;
@@ -286,6 +288,14 @@ public class CustomerPersonalDetail extends AbstractModel {
 				+ ", dateOfBirth=" + dateOfBirth + ", identityTypeId=" + identityTypeId + ", insurance=" + insurance
 				+ ", watsAppTelePrefix=" + watsAppTelePrefix + ", watsAppMobileNo=" + watsAppMobileNo  
 				+ ", isWatsApp=" + isWatsApp + "]";
+	}
+
+	public BigDecimal getCustomerId() {
+		return customerId;
+	}
+
+	public void setCustomerId(BigDecimal customerId) {
+		this.customerId = customerId;
 	}
 
 }

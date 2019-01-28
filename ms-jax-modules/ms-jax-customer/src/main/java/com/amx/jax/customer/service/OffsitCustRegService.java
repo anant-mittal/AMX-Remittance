@@ -1001,6 +1001,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		CustomerPersonalDetail customerDetails = new CustomerPersonalDetail();
 		Customer customer = customerRepository.getCustomerData(identityInt, identityTypeId);
 		if(customer != null) {
+			
 			customerDetails.setCountryId(customer.getCountryId());
 			customerDetails.setNationalityId(customer.getNationalityId());
 			customerDetails.setIdentityInt(customer.getIdentityInt());
@@ -1082,7 +1083,6 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 				employmentDetails.setArticleDetailsId(customer.getFsArticleDetails().getArticleDetailId());
 				employmentDetails.setArticleId(customer.getFsArticleDetails().getFsArticleMaster().getArticleId());
 				employmentDetails.setIncomeRangeId(customer.getFsIncomeRangeMaster().getIncomeRangeId());
-				
 				offsiteCustomer.setCustomerEmploymentDetails(employmentDetails);
 			}	
 		}
@@ -1091,4 +1091,21 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		}
 		return AmxApiResponse.build(offsiteCustomer); 
 	}
+	
+	/**
+	 * To fetch customer details
+	 * auth    : MRU
+	 * purpose : to fethc custoemr deatails 
+	 */
+	
+	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getCustomerDetails(String identityInt, BigDecimal identityTypeId) {
+		OffsiteCustomerDataDTO offsiteCustomer =customerRegistrationManager.getCustomerDeatils(identityInt, identityTypeId);
+		return AmxApiResponse.build(offsiteCustomer); 
+		
+	}
+	
+	
+	
+	
+	
 }

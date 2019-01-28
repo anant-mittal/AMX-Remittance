@@ -1,8 +1,5 @@
 package com.amx.jax.branchremittance.manager;
 
-import static com.amx.jax.error.JaxError.COMISSION_NOT_DEFINED_FOR_ROUTING_BANK;
-import static com.amx.jax.error.JaxError.TOO_MANY_COMISSION_NOT_DEFINED_FOR_ROUTING_BANK;
-
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -19,18 +16,18 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.amx.amxlib.constant.LoyalityPointState;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
-import com.amx.amxlib.model.response.ExchangeRateBreakup;
-import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.dal.BizcomponentDao;
 import com.amx.jax.dal.RoutingProcedureDao;
 import com.amx.jax.dao.ApplicationProcedureDao;
 import com.amx.jax.dbmodel.AccountTypeFromViewModel;
 import com.amx.jax.dbmodel.BankMasterModel;
 import com.amx.jax.dbmodel.BenificiaryListView;
+import com.amx.jax.dbmodel.BizComponentData;
 import com.amx.jax.dbmodel.Customer;
+import com.amx.jax.dbmodel.CustomerIdProof;
 import com.amx.jax.dbmodel.fx.EmployeeDetailsView;
 import com.amx.jax.dbmodel.remittance.BeneficiaryAccountException;
 import com.amx.jax.error.JaxError;
@@ -40,7 +37,6 @@ import com.amx.jax.model.AbstractModel;
 import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.response.remittance.AmlCheckResponseDto;
 import com.amx.jax.model.response.remittance.BranchExchangeRateBreakup;
-import com.amx.jax.model.response.remittance.ServiceDto;
 import com.amx.jax.repository.IAccountTypeFromViewDao;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.ICollectionDetailRepository;
@@ -54,6 +50,7 @@ import com.amx.jax.services.BankService;
 import com.amx.jax.services.BeneficiaryCheckService;
 import com.amx.jax.services.BeneficiaryService;
 import com.amx.jax.services.RoutingService;
+import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.repository.CustomerIdProofRepository;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.validation.FxOrderValidation;
@@ -132,6 +129,18 @@ public class BranchRemittanceManager  extends AbstractModel {
 	
 	@Autowired
 	CustomerIdProofRepository customerIdProof ;
+	
+	@Autowired
+	BizcomponentDao bizCompDao;
+	
+	@Autowired
+	private CustomerDao custDao;
+	
+	@Autowired
+	CustomerIdProofRepository idProofDao;
+	
+	//@Autowired
+	//RemittanceTransactionRequestValidator requestTrnxValidator;
 	
 	
 	
@@ -284,6 +293,8 @@ public class BranchRemittanceManager  extends AbstractModel {
 			
 			BenificiaryListView beneficaryDetails =beneficiaryRepository.findBybeneficiaryRelationShipSeqId(requestModel.getRelationshipId());
 			BranchExchangeRateBreakup brExchRateBreakup =  requestModel.getBranchExRateBreakup();
+			Customer customer = custDao.getCustById(metaData.getCustomerId());
+			String customerType =getCustomerType(customer.getCustomerTypeId());  
 			
 			
 			Map<String, Object> inputValues = new HashMap<>();
@@ -299,11 +310,11 @@ public class BranchRemittanceManager  extends AbstractModel {
 			inputValues.put("P_FOREIGN_CURRENCY_ID", beneficaryDetails.getCurrencyId()); //NC
 			inputValues.put("P_SELECTED_CURRENCY_ID", getSelectedCurrency(beneficaryDetails.getCurrencyId(), requestModel)); // NC
 			inputValues.put("P_CUSTOMER_ID", metaData.getCustomerId());
-			inputValues.put("P_CUSTOMER_TYPE", metaData.getCustomerId());
+			inputValues.put("P_CUSTOMER_TYPE", customerType);
 			inputValues.put("P_LOYALTY_POINTS_IND", requestModel.isAvailLoyalityPoints()==true?ConstantDocument.Yes:ConstantDocument.No);
 			inputValues.put("P_SPECIAL_DEAL_RATE", null);
 			inputValues.put("P_OVERSEAS_CHRG_IND", null);
-			inputValues.put("P_SELECTED_CURRENCY_AMOUNT", requestModel.getBranchExRateBreakup().getConvertedFCAmount());
+			inputValues.put("P_SELECTED_CURRENCY_AMOUNT", getSelectedCurrencyAmount(beneficaryDetails.getCurrencyId(), requestModel));//requestModel.getBranchExRateBreakup().getConvertedFCAmount());
 			inputValues.put("P_SPOT_RATE", null);
 			inputValues.put("P_CASH_ROUND_IND", null);
 			inputValues.put("P_ROUTING_BANK_BRANCH_ID", map.get("P_ROUTING_BANK_BRANCH_ID"));
@@ -478,13 +489,15 @@ public class BranchRemittanceManager  extends AbstractModel {
 	
 	
 	
-	 public void validateAdditionalCheck(Map<String, Object> branchRoutingDetails,Customer customer,BenificiaryListView beneficaryDetails){
+	 public void validateAdditionalCheck(Map<String, Object> branchRoutingDetails,Customer customer,BenificiaryListView beneficaryDetails,BigDecimal localNetAmount){
+		 // EX_APPL_ADDL_CHECKS
 		 BigDecimal customerId = BigDecimal.ZERO;
 		 String allowNoBank = null;
 		 
 		 BigDecimal  routingBankId   = branchRoutingDetails.get("P_ROUTING_BANK_ID")==null?BigDecimal.ZERO:(BigDecimal)branchRoutingDetails.get("P_ROUTING_BANK_ID");
 		 BigDecimal  serviceMasterId = branchRoutingDetails.get("P_SERVICE_MASTER_ID")==null?BigDecimal.ZERO:(BigDecimal)branchRoutingDetails.get("P_SERVICE_MASTER_ID");
 		 BigDecimal  beneBankId   = beneficaryDetails.getBankId()==null?BigDecimal.ZERO:beneficaryDetails.getBankId();
+		 
 		 
 		 if(customer!=null) {
 		  customerId     =customer.getCustomerId();
@@ -514,7 +527,17 @@ public class BranchRemittanceManager  extends AbstractModel {
 		 }
 		 
 		 BigDecimal wbLimit = routingPro.getWbLimit();
+		 List<CustomerIdProof> list = idProofDao.getCustomerImageValidation(customerId, ConstantDocument.BIZ_COMPONENT_ID_CIVIL_ID);
 		 
+		 if(list!=null && !list.isEmpty() && list.size()>1) {
+			 throw new GlobalException(JaxError.INVALID_CUSTOMER, " Customer has many ID Proofs-'-"+customerId);
+		 }
+		 
+		 if(list!=null && list.size()==1 && JaxUtil.isNullZeroBigDecimalCheck(wbLimit)) {
+			if(localNetAmount.compareTo(wbLimit)==1) {
+				 throw new GlobalException(JaxError.INVALID_BENE_BANK, " Non ID card holders cannot exceed amount-"+wbLimit);
+			}
+		 }
 		 
 		 
 	 }
@@ -615,7 +638,26 @@ public class BranchRemittanceManager  extends AbstractModel {
 		return metaData.getDefaultCurrencyId();
 	}
 	
+	public BigDecimal getSelectedCurrencyAmount(BigDecimal selectedCurrency,BranchRemittanceApplRequestModel requestApplModel) {
+		if (JaxUtil.isNullZeroBigDecimalCheck(requestApplModel.getForeignAmount())){
+			return requestApplModel.getForeignAmount();
+		}else {
+			return requestApplModel.getLocalAmount();
+		}
+		
+	}
 	
+	
+	public String getCustomerType(BigDecimal componentDataId) {
+	 BizComponentData bizComData  =bizCompDao.getBizComponentDataByComponmentDataId(componentDataId);
+	 String customerType = ConstantDocument.Individual;
+	 if(bizComData!=null) {
+		 customerType = bizComData.getComponentCode();
+	 }else {
+		 throw new GlobalException(JaxError.INVALID_BENE_BANK, " Customer type is not defined "+componentDataId);
+	 }
+		return customerType;
+	}
 	
 	private BeneficiaryListDTO convertBeneModelToDto(BenificiaryListView beneModel) {
 		BeneficiaryListDTO dto = new BeneficiaryListDTO();

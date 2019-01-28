@@ -24,13 +24,14 @@ import com.amx.amxlib.model.JaxConditionalFieldDto;
 import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.amxlib.model.request.RemittanceTransactionStatusRequestModel;
 import com.amx.amxlib.model.response.ApiResponse;
-import com.amx.amxlib.model.response.ExchangeRateBreakup;
+
 import com.amx.amxlib.model.response.PurposeOfTransactionModel;
 import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.dict.Tenant;
+import com.amx.jax.model.response.ExchangeRateBreakup;
 import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.utils.JsonUtil;

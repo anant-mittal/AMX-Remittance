@@ -196,7 +196,7 @@ public class RoutingProcedureDao {
 	public BigDecimal  getWbLimit() {
 		BigDecimal wbLimit = BigDecimal.ZERO;
 		String sql = "  SELECT A.NUMERIC_FIELD1  FROM   EX_PARAMETER_DETAILS  A, EX_APPLICATION_SETUP B  WHERE  A.RECORD_ID = 'CLMT' "
-				+ " AND    NVL(A.ISACTIVE,' ')  =   'Y';";
+				+ " AND    NVL(A.ISACTIVE,' ')  =   'Y'";
 		List<BigDecimal> list = new ArrayList<>();
 		try {
 			list = jdbcTemplate.queryForList(sql, BigDecimal.class);

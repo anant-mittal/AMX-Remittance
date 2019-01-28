@@ -18,8 +18,6 @@ public class BranchRemittanceApplRequestModel {
 	private boolean availLoyalityPoints;
 	private BigDecimal additionalBankRuleFiledId;
 	private BigDecimal srlId;
-	private String mOtp;
-	private String eOtp;
 	private Map<String, Object> flexFields;
 	private BigDecimal domXRate;
 	@NotNull
@@ -73,18 +71,8 @@ public class BranchRemittanceApplRequestModel {
 	public void setSrlId(BigDecimal srlId) {
 		this.srlId = srlId;
 	}
-	public String getmOtp() {
-		return mOtp;
-	}
-	public void setmOtp(String mOtp) {
-		this.mOtp = mOtp;
-	}
-	public String geteOtp() {
-		return eOtp;
-	}
-	public void seteOtp(String eOtp) {
-		this.eOtp = eOtp;
-	}
+	
+	
 	public Map<String, Object> getFlexFields() {
 		return flexFields;
 	}
