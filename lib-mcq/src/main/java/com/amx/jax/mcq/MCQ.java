@@ -48,7 +48,7 @@ public class MCQ {
 			return false;
 		}
 
-		return isPrivateLeader(key, timeinSeconds);
+		return isPrivateLeader(key, timeinMilliSeconds);
 	}
 
 	public <T> boolean claimLeaderShip(Class<T> class1, long timeinMilliSeconds) {

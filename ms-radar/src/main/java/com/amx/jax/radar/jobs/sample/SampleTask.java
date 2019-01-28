@@ -32,7 +32,8 @@ public class SampleTask {
 	public void doTask() throws InterruptedException {
 		if (mcq.claimLeaderShip(SampleTask.class, AmxCurConstants.INTERVAL_SEC * 10)) {
 			Thread.sleep(AmxCurConstants.INTERVAL_SEC * 3);
-			LOGGER.info("======= I am doing my Task @ {}", appConfig.getSpringAppName());
+			LOGGER.info("======= I DID my Task @ {} # {}", appConfig.getSpringAppName(),
+					Math.round(System.currentTimeMillis() / 5000) - 309737000);
 			mcq.resignLeaderShip(SampleTask.class);
 		} else {
 			LOGGER.info("======= I NOT doing my Task @ {}", appConfig.getSpringAppName());
