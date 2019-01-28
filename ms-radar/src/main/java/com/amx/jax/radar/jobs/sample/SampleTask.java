@@ -35,8 +35,6 @@ public class SampleTask {
 			LOGGER.info("======= I DID my Task @ {} # {}", appConfig.getSpringAppName(),
 					Math.round(System.currentTimeMillis() / 7000) - 309737000);
 			mcq.resignLeaderShip(SampleTask.class);
-		} else {
-			LOGGER.info("======= I NOT doing my Task @ {}", appConfig.getSpringAppName());
 		}
 	}
 
