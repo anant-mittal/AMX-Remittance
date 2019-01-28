@@ -1,0 +1,108 @@
+{
+  "aggs": {
+    "2": {
+      "terms": {
+        "field": "trnx.channel.keyword",
+        "size": 10,
+        "order": {
+          "_count": "desc"
+        },
+        "missing": "__missing__"
+      },
+      "aggs": {
+        "3": {
+          "date_range": {
+            "field": "@timestamp",
+            "ranges": [
+              {
+                "from": "now-1d",
+                "to": null
+              },
+              {
+                "from": "now-1w",
+                "to": null
+              },
+              {
+                "from": "now-1M",
+                "to": null
+              },
+              {
+                "from": "now-1y",
+                "to": null
+              }
+            ]
+          },
+          "aggs": {
+            "4": {
+              "sum": {
+                "field": "trnx.domTrnxAmount"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "size": 0,
+  "_source": {
+    "excludes": []
+  },
+  "stored_fields": [
+    "*"
+  ],
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "match_all": {}
+        },
+        {
+          "match_all": {}
+        },
+        {
+          "match_phrase": {
+            "customer.identity.keyword": {
+              "query": "284052306594"
+            }
+          }
+        },
+        {
+          "range": {
+            "@timestamp": {
+              "gte": 917291743282,
+              "lte": 1548443743282,
+              "format": "epoch_millis"
+            }
+          }
+        },
+        {
+          "match_phrase": {
+            "_type": {
+              "query": "appxn"
+            }
+          }
+        },
+        {
+          "bool": {
+            "should": [
+              {
+                "match_phrase": {
+                  "trnx.trnxStatus.keyword": "PAID"
+                }
+              },
+              {
+                "match_phrase": {
+                  "trnx.trnxStatus.keyword": "DONE"
+                }
+              }
+            ],
+            "minimum_should_match": 1
+          }
+        }
+      ],
+      "filter": [],
+      "should": [],
+      "must_not": []
+    }
+  }
+}
