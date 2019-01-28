@@ -1,7 +1,5 @@
 package com.amx.jax.radar.jobs.sample;
 
-import org.redisson.api.RLock;
-import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -11,6 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import com.amx.jax.logger.LoggerService;
+import com.amx.jax.mcq.MCQ;
 import com.amx.jax.rates.AmxCurConstants;
 
 @Configuration
@@ -23,15 +22,17 @@ public class SampleTask {
 	private static final Logger LOGGER = LoggerService.getLogger(SampleTask.class);
 
 	@Autowired
-	private RedissonClient redisson;
+	private MCQ mcq;
 
 	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_SEC * 2)
 	public void doTask() throws InterruptedException {
-		RLock lock = redisson.getLock("anyLock");
-		lock.lock();
-		Thread.sleep(AmxCurConstants.INTERVAL_SEC * 3);
-		LOGGER.info("=======");
-		lock.unlock();
+		if (mcq.claimLeaderShip(this.getClass().getName(), AmxCurConstants.INTERVAL_SEC * 3)) {
+			Thread.sleep(AmxCurConstants.INTERVAL_SEC * 3);
+			LOGGER.info("======= I am doing my Task");
+			mcq.resignLeaderShip(this.getClass());
+		} else {
+			LOGGER.info("======= I NOT doing my Task");
+		}
 	}
 
 }
