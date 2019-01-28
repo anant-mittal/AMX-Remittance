@@ -172,16 +172,16 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 				if (paymentModes.length >= 6) {
 					PaymentModeOfPaymentDto lstModePayment = new PaymentModeOfPaymentDto();
 					if(paymentModes[0] != null) {
-						lstModePayment.setPaymentModeId(new BigDecimal(paymentModes[0].toString()));
+						lstModePayment.setResourceId(new BigDecimal(paymentModes[0].toString()));
 					}
 					if(paymentModes[1] != null) {
 						lstModePayment.setPaymentModeDescId(new BigDecimal(paymentModes[1].toString()));
 					}
 					if(paymentModes[2] != null) {
-						lstModePayment.setPaymentModeCode(paymentModes[2].toString());
+						lstModePayment.setResourceCode(paymentModes[2].toString());
 					}
 					if(paymentModes[3] != null) {
-						lstModePayment.setPaymentModeName(paymentModes[3].toString());
+						lstModePayment.setResourceName(paymentModes[3].toString());
 					}
 					if(paymentModes[4] != null) {
 						lstModePayment.setLanguageId(new BigDecimal(paymentModes[4].toString()));

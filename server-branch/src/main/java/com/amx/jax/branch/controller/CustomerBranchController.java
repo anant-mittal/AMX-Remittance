@@ -9,22 +9,33 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.branch.beans.BranchSession;
 import com.amx.jax.client.OffsiteCustRegClient;
 import com.amx.jax.model.response.customer.OffsiteCustomerDataDTO;
 
 import io.swagger.annotations.Api;
 
 @RestController
-@Api(value = "Remit  APIs")
+@Api(value = "Customer APIs")
 public class CustomerBranchController {
 
 	@Autowired
 	OffsiteCustRegClient offsiteCustRegClient;
 
+	@Autowired
+	BranchSession branchSession;
+
 	@RequestMapping(value = "/api/customer/details", method = { RequestMethod.GET })
 	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getCustomerDetails(@RequestParam String identity,
-			BigDecimal identityType) {
-		return offsiteCustRegClient.getOffsiteCustomerData(identity, identityType);
+			@RequestParam BigDecimal identityType,
+			@RequestParam boolean session) {
+		AmxApiResponse<OffsiteCustomerDataDTO, Object> customerResponse = offsiteCustRegClient.getOffsiteCustomerData(
+				identity,
+				identityType);
+		if (session) {
+			branchSession.setCustomerId(customerResponse.getResult().getIdentityTypeId());
+		}
+		return customerResponse;
 	}
 
 }

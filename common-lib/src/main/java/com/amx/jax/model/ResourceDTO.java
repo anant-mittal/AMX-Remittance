@@ -96,10 +96,7 @@ public class ResourceDTO implements IResourceEntity {
 	public static List<ResourceDTO> create(List<IResourceEntity> entityList) {
 		List<ResourceDTO> list = new ArrayList<ResourceDTO>();
 		for (IResourceEntity entity : entityList) {
-			ResourceDTO dto = new ResourceDTO();
-			dto.setResourceId(entity.resourceId());
-			dto.setResourceCode(entity.resourceCode());
-			dto.setResourceName(entity.resourceName());
+			ResourceDTO dto = create(entity);
 			list.add(dto);
 		}
 		return list;
@@ -116,4 +113,5 @@ public class ResourceDTO implements IResourceEntity {
 	public String getResourceCode() {
 		return resourceCode;
 	}
+
 }
