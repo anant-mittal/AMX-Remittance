@@ -17,7 +17,7 @@ import com.amx.jax.rates.AmxCurConstants;
 @EnableScheduling
 @Component
 @Service
-//@ConditionalOnExpression(TestSizeApp.ENABLE_JOBS)
+@ConditionalOnExpression(TestSizeApp.ENABLE_JOBS)
 public class SampleTask2 {
 
 	private static final Logger LOGGER = LoggerService.getLogger(SampleTask2.class);
@@ -30,7 +30,7 @@ public class SampleTask2 {
 
 	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_SEC * 5)
 	public void doTask() throws InterruptedException {
-		if (mcq.claimLeaderShip(SampleTask2.class, AmxCurConstants.INTERVAL_SEC * 5)) {
+		if (mcq.claimLeaderShip(SampleTask2.class, AmxCurConstants.INTERVAL_SEC * 10)) {
 			Thread.sleep(AmxCurConstants.INTERVAL_SEC * 3);
 			LOGGER.info("======= I am doing my Task @ {}", appConfig.getSpringAppName());
 			mcq.resignLeaderShip(SampleTask2.class);

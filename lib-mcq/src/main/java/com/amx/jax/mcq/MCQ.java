@@ -25,12 +25,14 @@ public class MCQ {
 
 	boolean leader;
 
-	private boolean isPrivateLeader(String key, long timeinSeconds) {
+	private boolean isPrivateLeader(String key, long timeinMilliSeconds) {
 		RMapCache<String, String> map = redisson
 				.getMapCache("MCQFLAGS");
 
-		String previousLeader = map.putIfAbsent(key, appConfig.getSpringAppName(), 5, TimeUnit.SECONDS);
+		String previousLeader = map.putIfAbsent(key, appConfig.getSpringAppName(), timeinMilliSeconds,
+				TimeUnit.MILLISECONDS);
 		if (previousLeader == null) {
+			LOGGER.info("Leader: {} for key:{}", previousLeader, key);
 			return true;
 		}
 
@@ -40,7 +42,7 @@ public class MCQ {
 		return false;
 	}
 
-	public boolean claimLeaderShip(String key, long timeinSeconds) {
+	public boolean claimLeaderShip(String key, long timeinMilliSeconds) {
 
 		if (redisson == null) {
 			return false;
@@ -49,8 +51,8 @@ public class MCQ {
 		return isPrivateLeader(key, timeinSeconds);
 	}
 
-	public <T> boolean claimLeaderShip(Class<T> class1, long timeinSeconds) {
-		return this.claimLeaderShip(class1.getName(), timeinSeconds);
+	public <T> boolean claimLeaderShip(Class<T> class1, long timeinMilliSeconds) {
+		return this.claimLeaderShip(class1.getName(), timeinMilliSeconds);
 	}
 
 	public boolean resignLeaderShip(String key) {
