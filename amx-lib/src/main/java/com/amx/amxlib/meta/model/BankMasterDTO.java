@@ -3,8 +3,8 @@ package com.amx.amxlib.meta.model;
 import java.math.BigDecimal;
 import java.util.Comparator;
 
-import com.amx.amxlib.model.response.ExchangeRateBreakup;
 import com.amx.jax.model.AbstractModel;
+import com.amx.jax.model.response.ExchangeRateBreakup;
 
 public class BankMasterDTO extends AbstractModel implements Comparable<BankMasterDTO> {
 
