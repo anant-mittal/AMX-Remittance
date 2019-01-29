@@ -7,17 +7,27 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.jax.model.response.customer.OffsiteCustomerDataDTO;
+
 @Component
 @Scope(value = WebApplicationContext.SCOPE_SESSION, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class BranchSession {
-	private BigDecimal customerId;
+
+	private OffsiteCustomerDataDTO customer;
 
 	public BigDecimal getCustomerId() {
-		return customerId;
+		if (customer != null && customer.getCustomerPersonalDetail() != null) {
+			return customer.getCustomerPersonalDetail().getCustomerId();
+		}
+		return null;
 	}
 
-	public void setCustomerId(BigDecimal customerId) {
-		this.customerId = customerId;
+	public void setCustomer(OffsiteCustomerDataDTO customer) {
+		this.customer = customer;
+	}
+
+	public OffsiteCustomerDataDTO getCustomer() {
+		return customer;
 	}
 
 }

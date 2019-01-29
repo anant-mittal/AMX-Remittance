@@ -25,17 +25,28 @@ public class CustomerBranchController {
 	@Autowired
 	BranchSession branchSession;
 
-	@RequestMapping(value = "/api/customer/details", method = { RequestMethod.GET })
-	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getCustomerDetails(@RequestParam String identity,
+	@RequestMapping(value = "/api/customer/details", method = { RequestMethod.POST })
+	public AmxApiResponse<OffsiteCustomerDataDTO, Object> setCustomerDetails(@RequestParam String identity,
 			@RequestParam BigDecimal identityType,
 			@RequestParam boolean session) {
 		AmxApiResponse<OffsiteCustomerDataDTO, Object> customerResponse = offsiteCustRegClient.getCustomerDetails(
 				identity,
 				identityType);
 		if (session) {
-			branchSession.setCustomerId(customerResponse.getResult().getCustomerPersonalDetail().getCustomerId());
+			branchSession.setCustomer(customerResponse.getResult());
 		}
 		return customerResponse;
+	}
+
+	@RequestMapping(value = "/api/customer/details", method = { RequestMethod.GET })
+	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getCustomerDetails() {
+		return AmxApiResponse.build(branchSession.getCustomer());
+	}
+
+	@RequestMapping(value = "/api/customer/details", method = { RequestMethod.DELETE })
+	public AmxApiResponse<OffsiteCustomerDataDTO, Object> clearCustomerDetails() {
+		branchSession.setCustomer(null);
+		return AmxApiResponse.build(branchSession.getCustomer());
 	}
 
 }
