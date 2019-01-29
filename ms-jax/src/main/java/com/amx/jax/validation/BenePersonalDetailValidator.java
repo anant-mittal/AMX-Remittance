@@ -108,25 +108,26 @@ public class BenePersonalDetailValidator implements Validator {
 				metaData.getCountryId(), benePersonalDetailModel.getCountryId(),
 				beneficiaryTrnxModel.getBeneAccountModel().getCurrencyId());
 
-		int benePhoneLength = benePersonalDetailModel.getMobileNumber().toString().length();
-
-		int minLength = serviceAppList.stream().filter(i -> i.getMinLenght()  != null).mapToInt(i -> {
-            return i.getMinLenght().intValue();
-		}).min().orElse(-1);
-            
-		int maxLength = serviceAppList.stream().filter(i -> i.getMaxLenght()  != null).mapToInt(i -> {
-			return i.getMaxLenght().intValue();
-		}).max().orElse(-1);
-
-		if (maxLength > 0 && benePhoneLength > maxLength) {
-			throw new GlobalException(JaxError.VALIDATION_LENGTH_MOBILE,
-					ExceptionMessageKey.build(JaxError.VALIDATION_LENGTH_MOBILE, minLength, maxLength));
+		if(null != benePersonalDetailModel.getMobileNumber()) {
+			int benePhoneLength = benePersonalDetailModel.getMobileNumber().toString().length();
+	
+			int minLength = serviceAppList.stream().filter(i -> i.getMinLenght()  != null).mapToInt(i -> {
+	            return i.getMinLenght().intValue();
+			}).min().orElse(-1);
+	            
+			int maxLength = serviceAppList.stream().filter(i -> i.getMaxLenght()  != null).mapToInt(i -> {
+				return i.getMaxLenght().intValue();
+			}).max().orElse(-1);
+	
+			if (maxLength > 0 && benePhoneLength > maxLength) {
+				throw new GlobalException(JaxError.VALIDATION_LENGTH_MOBILE,
+						ExceptionMessageKey.build(JaxError.VALIDATION_LENGTH_MOBILE, minLength, maxLength));
+			}
+			if (minLength > 0 && benePhoneLength < minLength) {
+				throw new GlobalException(JaxError.VALIDATION_LENGTH_MOBILE,
+						ExceptionMessageKey.build(JaxError.VALIDATION_LENGTH_MOBILE, minLength, maxLength));
+			}
 		}
-		if (minLength > 0 && benePhoneLength < minLength) {
-			throw new GlobalException(JaxError.VALIDATION_LENGTH_MOBILE,
-					ExceptionMessageKey.build(JaxError.VALIDATION_LENGTH_MOBILE, minLength, maxLength));
-		}
-		
 	}
 
 }
