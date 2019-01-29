@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Resource;
+
 import org.apache.commons.beanutils.BeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +20,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
+import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dal.BizcomponentDao;
 import com.amx.jax.dal.RoutingProcedureDao;
@@ -31,6 +34,7 @@ import com.amx.jax.dbmodel.CustomerIdProof;
 import com.amx.jax.dbmodel.fx.EmployeeDetailsView;
 import com.amx.jax.dbmodel.remittance.BeneficiaryAccountException;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.manager.RemittanceApplicationManager;
 import com.amx.jax.manager.RemittanceTransactionManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.AbstractModel;
@@ -142,7 +146,14 @@ public class BranchRemittanceManager  extends AbstractModel {
 	//@Autowired
 	//RemittanceTransactionRequestValidator requestTrnxValidator;
 	
+	@Resource
+	private Map<String, Object> remitApplParametersMap;
 	
+	@Autowired
+	RemittanceApplicationManager remitApplTrnxManager;
+	
+/*	@Autowired
+	RemittanceTransactionRequestModel requestModel;*/
 	
 	
 	
@@ -291,7 +302,7 @@ public class BranchRemittanceManager  extends AbstractModel {
 		Map<String, Object> outPut = new HashMap<>();
 		try {
 			
-			BenificiaryListView beneficaryDetails =beneficiaryRepository.findBybeneficiaryRelationShipSeqId(requestModel.getRelationshipId());
+			BenificiaryListView beneficaryDetails =beneficiaryRepository.findBybeneficiaryRelationShipSeqId(requestModel.getBeneId());
 			BranchExchangeRateBreakup brExchRateBreakup =  requestModel.getBranchExRateBreakup();
 			Customer customer = custDao.getCustById(metaData.getCustomerId());
 			String customerType =getCustomerType(customer.getCustomerTypeId());  
@@ -345,7 +356,7 @@ public class BranchRemittanceManager  extends AbstractModel {
 		Map<String, Object> outPut = new HashMap<>();
 		List<AmlCheckResponseDto> listAmlMessage = new ArrayList<>();
 		try {
-			BenificiaryListView beneficaryDetails =beneficiaryRepository.findBybeneficiaryRelationShipSeqId(requestModel.getRelationshipId());
+			BenificiaryListView beneficaryDetails =beneficiaryRepository.findBybeneficiaryRelationShipSeqId(requestModel.getBeneId());
 			Map<String, Object> inputValues = new HashMap<>();
 			inputValues.put("P_APPLICATION_COUNTRY_ID", beneficaryDetails.getApplicationCountryId());
 			inputValues.put("P_BENE_COUNTRY_ID",beneficaryDetails.getBenificaryCountry());
@@ -543,7 +554,67 @@ public class BranchRemittanceManager  extends AbstractModel {
 	 }
 	
 	
+	 public Map<String, Object> validateAdditionalBeneDetails(Map<String ,Object> branchRoutingDetails,Map<String ,Object> branchExchangeRate,BenificiaryListView beneficaryDetails) {
+		 
+		    BigDecimal beneficaryMasterId = beneficaryDetails.getBeneficaryMasterSeqId();
+			BigDecimal beneficaryBankId = beneficaryDetails.getBankId();
+			BigDecimal beneficaryBankBranchId = beneficaryDetails.getBranchId();
+			BigDecimal beneAccNumSeqId = beneficaryDetails.getBeneficiaryAccountSeqId();
+			BigDecimal routingCountry = (BigDecimal) branchRoutingDetails.get("P_ROUTING_COUNTRY_ID");
+			BigDecimal routingBank = (BigDecimal) branchRoutingDetails.get("P_ROUTING_BANK_ID");
+			BigDecimal routingBranch = (BigDecimal) branchRoutingDetails.get("P_ROUTING_BANK_BRANCH_ID");
+			BigDecimal serviceMasterId = (BigDecimal) branchRoutingDetails.get("P_SERVICE_MASTER_ID");
+			BigDecimal applicationCountryId = beneficaryDetails.getApplicationCountryId();
+			BigDecimal currencyId =beneficaryDetails.getCurrencyId();
+			BigDecimal remitMode = (BigDecimal) branchExchangeRate.get("P_REMITTANCE_MODE_ID");
+			BigDecimal deliveryMode = (BigDecimal) branchExchangeRate.get("P_DELIVERY_MODE_ID");
+			/** Added by Rabil on 03 May 2018 **/
+			BigDecimal beneficaryRelationSeqId = beneficaryDetails.getBeneficiaryRelationShipSeqId();
+			
+			Map<String, Object> inputValues = new HashMap<>();
+			inputValues.put("P_BENEFICIARY_MASTER_ID", beneficaryMasterId);
+			inputValues.put("P_BENEFICIARY_BANK_ID", beneficaryBankId);
+			inputValues.put("P_BENEFICIARY_BRANCH_ID", beneficaryBankBranchId);
+			inputValues.put("P_BENEFICARY_ACCOUNT_SEQ_ID", beneAccNumSeqId);
+			inputValues.put("P_ROUTING_COUNTRY_ID", routingCountry);
+			inputValues.put("P_ROUTING_BANK_ID", routingBank);
+			inputValues.put("P_ROUTING_BANK_BRANCH_ID", routingBranch);
+			inputValues.put("P_SERVICE_MASTER_ID", serviceMasterId);
+			inputValues.put("P_APPLICATION_COUNTRY_ID", applicationCountryId);
+			inputValues.put("P_CURRENCY_ID", currencyId);
+			inputValues.put("P_REMITTANCE_MODE_ID", remitMode);
+			inputValues.put("P_DELIVERY_MODE_ID", deliveryMode);
+			inputValues.put("P_BENE_RELATION_SEQ_ID", beneficaryRelationSeqId);
+		 
+		 Map<String, Object> outPut = applProcedureDao.toFetchDetilaFromAddtionalBenficiaryDetails(inputValues);
+			if(outPut!=null && outPut.get("P_ERROR_MESSAGE")!=null){
+				throw new GlobalException(JaxError.BENE_ADD_CHECK_ERROR, outPut.get("P_ERROR_MESSAGE").toString());
+			}
+			
+			return outPut;
+	 }
+	 
 	
+	 
+	 public void validateAdditionalErrorMessages(Map<String ,Object> hashMap) {
+		 	BranchRemittanceApplRequestModel applRequestModel = (BranchRemittanceApplRequestModel)hashMap.get("APPL_REQ_MODEL");
+			Map<String, Object> branchRoutingDetails =(HashMap)hashMap.get("ROUTING_DETAILS_MAP");
+			Map<String, Object> branchExchangeRate =(HashMap)hashMap.get("EXCH_RATE_MAP");
+			BenificiaryListView beneDetails  =(BenificiaryListView) hashMap.get("BENEFICIARY_DETAILS");
+			
+			RemittanceTransactionRequestModel requestModel = new RemittanceTransactionRequestModel();
+			requestModel.setAdditionalBankRuleFiledId(applRequestModel.getAdditionalBankRuleFiledId());
+			requestModel.setSrlId(applRequestModel.getSrlId());
+			
+			remitApplParametersMap.put("P_APPLICATION_COUNTRY_ID", beneDetails.getApplicationCountryId());
+			remitApplParametersMap.put("P_ROUTING_COUNTRY_ID",(BigDecimal) branchRoutingDetails.get("P_ROUTING_COUNTRY_ID"));
+			remitApplParametersMap.put("P_ROUTING_BANK_ID",(BigDecimal) branchRoutingDetails.get("P_ROUTING_BANK_ID"));
+			remitApplParametersMap.put("P_FOREIGN_CURRENCY_ID",beneDetails.getCurrencyId());
+			remitApplParametersMap.put("P_REMITTANCE_MODE_ID",(BigDecimal) branchExchangeRate.get("P_REMITTANCE_MODE_ID"));
+			remitApplParametersMap.put("P_DELIVERY_MODE_ID",(BigDecimal) branchExchangeRate.get("P_DELIVERY_MODE_ID"));
+			remitApplTrnxManager.validateAdditionalErrorMessages(requestModel);
+	 }
+	 
 	
 	public BigDecimal generateDocumentNumber(BigDecimal applCountryId, BigDecimal companyId,BigDecimal documentId, BigDecimal financialYear, String processIn, BigDecimal branchId) {
 		Map<String, Object> output = applProcedureDao.getDocumentSeriality(applCountryId, companyId, documentId,financialYear, processIn, branchId);

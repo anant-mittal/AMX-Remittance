@@ -478,7 +478,7 @@ public class ApplicationProcedureDao {
 		BigDecimal applicationCountyId = (BigDecimal) inputValues.get("P_APPLICATION_COUNTRY_ID");
 		BigDecimal routingCountryId = (BigDecimal) inputValues.get(P_ROUTING_COUNTRY_ID);
 		BigDecimal routingBankId = (BigDecimal) inputValues.get("P_ROUTING_BANK_ID");
-		BigDecimal currencyId = (BigDecimal) inputValues.get("P_CURRENCY_ID");
+		BigDecimal currencyId = (BigDecimal) inputValues.get("P_FOREIGN_CURRENCY_ID");//inputValues.get("P_CURRENCY_ID"); Need to check by Rabil with Prashant
 		BigDecimal remittanceId = (BigDecimal) inputValues.get("P_REMITTANCE_MODE_ID");
 		BigDecimal deliveryId = (BigDecimal) inputValues.get("P_DELIVERY_MODE_ID");
 		String furtherInstruction = inputValues.get("P_FURTHER_INSTR") == null ? null

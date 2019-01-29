@@ -793,8 +793,7 @@ public class RemittanceTransactionManager {
 	}
 
 	private void validateAdditionalBeneDetails(RemittanceTransactionRequestModel model) {
-		Map<String, Object> output = applicationProcedureDao
-				.toFetchDetilaFromAddtionalBenficiaryDetails(remitApplParametersMap);
+		Map<String, Object> output = applicationProcedureDao.toFetchDetilaFromAddtionalBenficiaryDetails(remitApplParametersMap);
 		remitApplParametersMap.putAll(output);
 		if (isSaveRemittanceFlow) {
 			BenificiaryListView beneficiary = beneficiaryOnlineDao.findOne(model.getBeneId());

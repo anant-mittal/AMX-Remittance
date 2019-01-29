@@ -16,7 +16,7 @@ import com.amx.utils.JsonUtil;
 
 public class BranchRemittanceApplRequestModel {
 	
-	private BigDecimal relationshipId;
+	private BigDecimal beneId;
 	private BigDecimal sourceOfFund;
 	private BigDecimal localAmount;
 	private BigDecimal foreignAmount;
@@ -30,16 +30,12 @@ public class BranchRemittanceApplRequestModel {
 	public Map<String, FlexFieldDto> flexFieldDtoMap;
 	private String signature;
 	private String amlRemarks;
+	
 
 	
 	
 	
-	public BigDecimal getRelationshipId() {
-		return relationshipId;
-	}
-	public void setRelationshipId(BigDecimal relationshipId) {
-		this.relationshipId = relationshipId;
-	}
+	
 	public BigDecimal getSourceOfFund() {
 		return sourceOfFund;
 	}
@@ -142,6 +138,13 @@ public class BranchRemittanceApplRequestModel {
 				.collect(Collectors.toMap(x -> x.getKey(), x -> JsonUtil.toJson(x.getValue())));
 		return output;
 	}
+	public BigDecimal getBeneId() {
+		return beneId;
+	}
+	public void setBeneId(BigDecimal beneId) {
+		this.beneId = beneId;
+	}
+
 
 
 }

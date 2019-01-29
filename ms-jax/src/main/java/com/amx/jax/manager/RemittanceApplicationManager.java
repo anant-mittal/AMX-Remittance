@@ -250,13 +250,11 @@ public class RemittanceApplicationManager {
 		}
 	}
 
-	private void validateAdditionalErrorMessages(RemittanceTransactionRequestModel requestModel) {
+	public void validateAdditionalErrorMessages(RemittanceTransactionRequestModel requestModel) {
 		remitApplParametersMap.put("P_FURTHER_INSTR", "URGENT");
-		Map<String, Object> errorResponse = applicationProcedureDao
-				.toFetchPurtherInstractionErrorMessaage(remitApplParametersMap);
+		Map<String, Object> errorResponse = applicationProcedureDao.toFetchPurtherInstractionErrorMessaage(remitApplParametersMap);
 		String errorMessage = (String) errorResponse.get("P_ERRMSG");
-		Map<String, Object> furtherSwiftAdditionalDetails = applicationProcedureDao
-				.fetchAdditionalBankRuleIndicators(remitApplParametersMap);
+		Map<String, Object> furtherSwiftAdditionalDetails = applicationProcedureDao.fetchAdditionalBankRuleIndicators(remitApplParametersMap);
 		remitApplParametersMap.putAll(furtherSwiftAdditionalDetails);
 		remitApplParametersMap.put("P_ADDITIONAL_BANK_RULE_ID_1", requestModel.getAdditionalBankRuleFiledId());
 		if (requestModel.getSrlId() != null) {
@@ -273,8 +271,7 @@ public class RemittanceApplicationManager {
 			AdditionalBankDetailsViewx additionaBnankDetail = bankService.getAdditionalBankDetail(srlId,
 					foreignCurrencyId, bankId, remittanceModeId, deliveryModeId);
 			if (additionaBnankDetail != null) {
-				logger.info("additionaBnankDetail getServiceApplicabilityRuleId: "
-						+ additionaBnankDetail.getServiceApplicabilityRuleId());
+				logger.info("additionaBnankDetail getServiceApplicabilityRuleId: "+ additionaBnankDetail.getServiceApplicabilityRuleId());
 				remitApplParametersMap.put("P_AMIEC_CODE_1", additionaBnankDetail.getAmiecCode());
 				remitApplParametersMap.put("P_FLEX_FIELD_VALUE_1", additionaBnankDetail.getAmieceDescription());
 				remitApplParametersMap.put("P_FLEX_FIELD_CODE_1", additionaBnankDetail.getFlexField());
