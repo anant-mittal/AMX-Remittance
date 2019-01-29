@@ -262,11 +262,10 @@ public class OffsiteCustRegClient implements ICustRegService {
 			return JaxSystemError.evaluate(e);
 		} // end of try-catch}
 	}
-	
 
-	
 	@Override
-	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerDetails(String identityInt,BigDecimal identityType) {
+	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerDetails(String identityInt,
+			BigDecimal identityType) {
 		try {
 			return restService.ajax(appConfig.getJaxURL()).meta(new JaxMetaInfo())
 					.path(CustRegApiEndPoints.GET_CUSTOMER_DEATILS).queryParam(Params.IDENTITY_INT, identityInt)
@@ -278,6 +277,5 @@ public class OffsiteCustRegClient implements ICustRegService {
 			return JaxSystemError.evaluate(e);
 		} // end of try-c
 	}
-
 
 }
