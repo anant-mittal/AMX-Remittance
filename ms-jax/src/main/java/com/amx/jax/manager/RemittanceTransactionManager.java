@@ -43,7 +43,7 @@ import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
 import com.amx.jax.auditlog.JaxTransactionEvent;
-import com.amx.jax.config.JaxProperties;
+import com.amx.jax.config.JaxTenantProperties;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxDbConfig;
 import com.amx.jax.constants.JaxChannel;
@@ -186,7 +186,7 @@ public class RemittanceTransactionManager {
 	@Autowired
 	RoutingService routingService;
 	@Autowired
-	JaxProperties jaxProperties;
+	JaxTenantProperties jaxTenantProperties;
 	@Autowired
 	NewExchangeRateService newExchangeRateService;
 	@Autowired
@@ -251,7 +251,7 @@ public class RemittanceTransactionManager {
 				+ routingBankId + "\t serviceMasterId :" + serviceMasterId);
 		List<ExchangeRateApprovalDetModel> exchangeRates = exchangeRateDao.getExchangeRatesForRoutingBank(currencyId,
 				meta.getCountryBranchId(), rountingCountryId, applicationCountryId, routingBankId, serviceMasterId);
-		if (!jaxProperties.getExrateBestRateLogicEnable() && (exchangeRates == null || exchangeRates.isEmpty())) {
+		if (!jaxTenantProperties.getExrateBestRateLogicEnable() && (exchangeRates == null || exchangeRates.isEmpty())) {
 			throw new GlobalException(REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL,
 					"No exchange rate found for bank- " + routingBankId);
 		}
@@ -572,7 +572,7 @@ public class RemittanceTransactionManager {
 		BigDecimal fcAmount = model.getForeignAmount();
 		BigDecimal lcAmount = model.getLocalAmount();
 		ExchangeRateBreakup exchangeRateBreakup;
-		if (jaxProperties.getExrateBestRateLogicEnable()) {
+		if (jaxTenantProperties.getExrateBestRateLogicEnable()) {
 			BigDecimal routingBankId = (BigDecimal) remitApplParametersMap.get("P_ROUTING_BANK_ID");
 			BigDecimal fCurrencyId = (BigDecimal) remitApplParametersMap.get("P_FOREIGN_CURRENCY_ID");
 			exchangeRateBreakup = newExchangeRateService.getExchangeRateBreakUp(fCurrencyId, lcAmount, fcAmount,
@@ -734,7 +734,7 @@ public class RemittanceTransactionManager {
 	public RemittanceApplicationResponseModel saveApplication(RemittanceTransactionRequestModel model) {
 		this.isSaveRemittanceFlow = true;
 		RemittanceTransactionResponsetModel validationResults = this.validateTransactionData(model);
-		if (jaxProperties.getFlexFieldEnabled()) {
+		if (jaxTenantProperties.getFlexFieldEnabled()) {
 			remittanceTransactionRequestValidator.validateExchangeRate(model, validationResults);
 			remittanceTransactionRequestValidator.validateFlexFields(model, remitApplParametersMap);
 		}
@@ -752,7 +752,7 @@ public class RemittanceTransactionManager {
 		RemittanceAppBenificiary remittanceAppBeneficairy = remitAppBeneManager
 				.createRemittanceAppBeneficiary(remittanceApplication);
 		List<AdditionalInstructionData> additionalInstrumentData;
-		if (jaxProperties.getFlexFieldEnabled()) {
+		if (jaxTenantProperties.getFlexFieldEnabled()) {
 			additionalInstrumentData = remittanceAppAddlDataManager.createAdditionalInstnData(remittanceApplication,
 					model);
 		} else {

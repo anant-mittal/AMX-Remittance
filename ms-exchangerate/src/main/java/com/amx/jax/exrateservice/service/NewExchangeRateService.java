@@ -20,6 +20,7 @@ import com.amx.amxlib.model.response.ExchangeRateBreakup;
 import com.amx.amxlib.model.response.ExchangeRateResponseModel;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.config.JaxProperties;
+import com.amx.jax.config.JaxTenantProperties;
 import com.amx.jax.dbmodel.PipsMaster;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.util.RoundUtil;
@@ -33,7 +34,7 @@ import com.amx.jax.util.RoundUtil;
 public class NewExchangeRateService extends ExchangeRateService {
 
 	@Autowired
-	JaxProperties jaxProperties;
+	JaxTenantProperties jaxTenantProperties;
 
 	/*
 	 * (non-Javadoc)
@@ -44,7 +45,7 @@ public class NewExchangeRateService extends ExchangeRateService {
 	 */
 	public ApiResponse<ExchangeRateResponseModel> getExchangeRatesForOnline(BigDecimal fromCurrency, BigDecimal toCurrency, BigDecimal lcAmount,
 			BigDecimal bankId) {
-		if (!jaxProperties.getExrateBestRateLogicEnable()) {
+		if (!jaxTenantProperties.getExrateBestRateLogicEnable()) {
 			return super.getExchangeRatesForOnline(fromCurrency, toCurrency, lcAmount, bankId);
 		}
 		logger.info("In getExchangeRatesForOnline, parames- " + fromCurrency + " toCurrency " + toCurrency + " amount "

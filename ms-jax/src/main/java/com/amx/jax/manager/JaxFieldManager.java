@@ -16,7 +16,7 @@ import com.amx.amxlib.model.ValidationRegexDto;
 public class JaxFieldManager {
 
 	public void validateJaxFieldRegEx(JaxFieldDto jaxField, String value) {
-		if (jaxField.getAdditionalValidations() != null) {
+		if (jaxField.getAdditionalValidations() != null && Boolean.TRUE.equals(jaxField.getRequired())) {
 			for (ValidationRegexDto validationRegexDto : jaxField.getValidationRegex()) {
 				Pattern pattern = Pattern.compile(validationRegexDto.getValue());
 				if (!pattern.matcher(value).matches()) {
