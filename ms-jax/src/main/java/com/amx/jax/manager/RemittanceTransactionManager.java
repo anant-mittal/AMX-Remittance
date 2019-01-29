@@ -738,7 +738,7 @@ public class RemittanceTransactionManager {
 			remittanceTransactionRequestValidator.validateExchangeRate(model, validationResults);
 			remittanceTransactionRequestValidator.validateFlexFields(model, remitApplParametersMap);
 		}
-		remittanceAdditionalFieldManager.validateAdditionalFields(model);
+		remittanceAdditionalFieldManager.validateAdditionalFields(model, remitApplParametersMap);
 		// validate routing bank requirements
 		ExchangeRateBreakup breakup = validationResults.getExRateBreakup();
 		BigDecimal netAmountPayable = breakup.getNetAmount();

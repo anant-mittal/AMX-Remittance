@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -24,7 +25,9 @@ import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxDynamicField;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.bene.BeneficaryAccount;
+import com.amx.jax.dbmodel.remittance.AdditionalDataDisplayView;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.repository.IAdditionalDataDisplayDao;
 import com.amx.jax.services.BankService;
 import com.amx.jax.services.BeneficiaryService;
 import com.amx.jax.services.JaxFieldService;
@@ -39,25 +42,25 @@ public class RemittanceAdditionalFieldManager {
 	BeneficiaryService beneficiaryService;
 	@Autowired
 	BankService bankService;
+	@Autowired
+	IAdditionalDataDisplayDao additionalDataDisplayDao;
 
 	Logger logger = LoggerFactory.getLogger(getClass());
 
-	public void validateAdditionalFields(RemittanceTransactionRequestModel model) {
+	public void validateAdditionalFields(RemittanceTransactionRequestModel model,
+			Map<String, Object> remitApplParametersMap) {
 		ApiResponse<JaxConditionalFieldDto> apiResponse = jaxFieldService
 				.getJaxFieldsForEntity(new GetJaxFieldRequest(JaxFieldEntity.REMITTANCE_ONLINE));
 		List<JaxConditionalFieldDto> allJaxConditionalFields = apiResponse.getResults();
+		Map<String, AdditionalDataDisplayView> flexFieldMap = getAdditionalDataDisplayMap(remitApplParametersMap);
 		List<JaxConditionalFieldDto> missingJaxConditionalFields = new ArrayList<>();
 		Map<String, Object> additionalFields = model.getAdditionalFields();
 		boolean isAdditionalFieldMissing = false;
 
 		for (JaxConditionalFieldDto jaxConditionalField : allJaxConditionalFields) {
 			if (additionalFields == null || additionalFields.get(jaxConditionalField.getField().getName()) == null) {
-				//iban field
-				if (JaxDynamicField.BENE_BANK_IBAN_NUMBER.name().equals(jaxConditionalField.getField().getName())) {
-					boolean isBeneIbanFieldRequired = isBeneIbanFieldRequired(model.getBeneId());
-					if (!isBeneIbanFieldRequired) {
-						continue;
-					}
+				if (!isDynamicFieldRequired(jaxConditionalField, model, flexFieldMap)) {
+					continue;
 				}
 				jaxConditionalField.getField()
 						.setDtoPath("additionalFields." + jaxConditionalField.getField().getName());
@@ -76,15 +79,44 @@ public class RemittanceAdditionalFieldManager {
 		}
 	}
 
+	private Map<String, AdditionalDataDisplayView> getAdditionalDataDisplayMap(
+			Map<String, Object> remitApplParametersMap) {
+		BigDecimal applicationCountryId = (BigDecimal) remitApplParametersMap.get("P_APPLICATION_COUNTRY_ID");
+		BigDecimal routingCountryId = (BigDecimal) remitApplParametersMap.get("P_ROUTING_COUNTRY_ID");
+		BigDecimal remittanceModeId = (BigDecimal) remitApplParametersMap.get("P_REMITTANCE_MODE_ID");
+		BigDecimal deliveryModeId = (BigDecimal) remitApplParametersMap.get("P_DELIVERY_MODE_ID");
+		BigDecimal foreignCurrencyId = (BigDecimal) remitApplParametersMap.get("P_FOREIGN_CURRENCY_ID");
+
+		List<AdditionalDataDisplayView> additionalDataRequired = additionalDataDisplayDao
+				.getAdditionalDataFromServiceApplicability(applicationCountryId, routingCountryId, foreignCurrencyId,
+						remittanceModeId, deliveryModeId, JaxDynamicField.getAllAdditionalFlexFields());
+		return additionalDataRequired.stream().collect(Collectors.toMap(i -> i.getFlexField(), i -> i));
+	}
+
+	private boolean isDynamicFieldRequired(JaxConditionalFieldDto jaxConditionalField,
+			RemittanceTransactionRequestModel model, Map<String, AdditionalDataDisplayView> flexFieldMap) {
+		JaxDynamicField jaxDynamicField = JaxDynamicField.valueOf(jaxConditionalField.getField().getName());
+		if (jaxDynamicField.getFlexField() != null && flexFieldMap.get(jaxDynamicField.getFlexField()) == null) {
+			return false;
+		}
+		switch (jaxDynamicField) {
+		case BENE_BANK_IBAN_NUMBER:
+			boolean isBeneIbanFieldRequired = isBeneIbanFieldRequired(model.getBeneId());
+			return isBeneIbanFieldRequired;
+		default:
+			return true;
+		}
+	}
+
 	private boolean isBeneIbanFieldRequired(BigDecimal beneId) {
 		BenificiaryListView beneficiaryDetail = beneficiaryService.getBeneByIdNo(beneId);
 		String ibanFlag = bankService.getBankById(beneficiaryDetail.getBankId()).getIbanFlag();
-		if(!ConstantDocument.Yes.equalsIgnoreCase(ibanFlag)) {
+		if (!ConstantDocument.Yes.equalsIgnoreCase(ibanFlag)) {
 			return false;
 		}
 		BeneficaryAccount beneficaryAccount = beneficiaryService
 				.getBeneAccountByAccountSeqId(beneficiaryDetail.getBeneficiaryAccountSeqId());
-		if( StringUtils.isBlank(beneficaryAccount.getIbanNumber())) {
+		if (StringUtils.isBlank(beneficaryAccount.getIbanNumber())) {
 			return true;
 		}
 		return false;
