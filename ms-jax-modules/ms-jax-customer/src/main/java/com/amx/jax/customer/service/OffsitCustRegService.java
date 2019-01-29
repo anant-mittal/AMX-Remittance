@@ -1022,6 +1022,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 			customerDetails.setIsWatsApp(customer.getIsMobileWhatsApp());
 			customerDetails.setRegistrationType(customer.getCustomerRegistrationType());
 			
+			
 			offsiteCustomer.setCustomerPersonalDetail(customerDetails);
 			
 			//--- Local Address Data	
@@ -1098,10 +1099,10 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 	 * purpose : to fethc custoemr deatails 
 	 */
 	
-	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getCustomerDetails(String identityInt, BigDecimal identityTypeId) {
+	@Override
+	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerDetails(String identityInt,BigDecimal identityTypeId) {
 		OffsiteCustomerDataDTO offsiteCustomer =customerRegistrationManager.getCustomerDeatils(identityInt, identityTypeId);
 		return AmxApiResponse.build(offsiteCustomer); 
-		
 	}
 	
 	

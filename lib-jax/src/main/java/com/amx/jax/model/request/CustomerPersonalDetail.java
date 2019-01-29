@@ -118,6 +118,7 @@ public class CustomerPersonalDetail extends AbstractModel {
 	private CustomerRegistrationType registrationType;
 	
 	BigDecimal customerId;
+	String customerSignature;
 
 	public CustomerRegistrationType getRegistrationType() {
 		return registrationType;
@@ -296,6 +297,14 @@ public class CustomerPersonalDetail extends AbstractModel {
 
 	public void setCustomerId(BigDecimal customerId) {
 		this.customerId = customerId;
+	}
+
+	public String getCustomerSignature() {
+		return customerSignature;
+	}
+
+	public void setCustomerSignature(String customerSignature) {
+		this.customerSignature = customerSignature;
 	}
 
 }

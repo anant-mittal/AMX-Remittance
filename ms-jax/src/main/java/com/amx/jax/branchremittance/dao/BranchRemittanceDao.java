@@ -42,7 +42,7 @@ public class BranchRemittanceDao {
 	public void saveAllApplications(HashMap<String, Object> mapAllDetailApplSave) {
 		RemittanceApplication saveApplTrnx= (RemittanceApplication)  mapAllDetailApplSave.get("EX_APPL_TRNX");
 		RemittanceAppBenificiary saveApplBene = (RemittanceAppBenificiary)mapAllDetailApplSave.get("EX_APPL_BENE") ;
-		List<AdditionalInstructionData> saveApplAddlData = (List<AdditionalInstructionData>) mapAllDetailApplSave.get("EX_APPL_BENE");
+		List<AdditionalInstructionData> saveApplAddlData = (List<AdditionalInstructionData>) mapAllDetailApplSave.get("EX_APPL_ADDL");
 		List<RemitApplAmlModel> saveApplAmlList = (List<RemitApplAmlModel>) mapAllDetailApplSave.get("EX_APPL_AML");
 		
 		if(saveApplTrnx!=null) {

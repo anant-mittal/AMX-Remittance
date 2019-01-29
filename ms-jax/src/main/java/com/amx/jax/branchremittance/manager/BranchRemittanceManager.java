@@ -278,9 +278,9 @@ public class BranchRemittanceManager  extends AbstractModel {
 					List<Map<String, Object>> listofService =routingPro.getServiceList(inputValues);
 				}
 			}
-		}catch(Exception e) {
-			e.printStackTrace();
-			logger.debug("getRoutingSetupDeatils  for Branch:"+e.getMessage());
+		}catch(GlobalException e){
+			logger.error("routing  procedure", e.getErrorMessage() + "" +e.getErrorKey());
+			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}
 		return outPut; 
 	}
@@ -330,9 +330,9 @@ public class BranchRemittanceManager  extends AbstractModel {
 				throw new GlobalException(JaxError.EXCHANGE_RATE_ERROR, outPut.get("P_ERROR_MESSAGE").toString());
 			}
 			
-		}catch(Exception e) {
-			e.printStackTrace();
-			logger.debug("getExchangeRateForBranch :"+e.getMessage());
+		}catch(GlobalException e){
+			logger.error("exchange rate procedure", e.getErrorMessage() + "" +e.getErrorKey());
+			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}
 		return outPut; 
 	}
@@ -360,14 +360,14 @@ public class BranchRemittanceManager  extends AbstractModel {
 				dto.setMessageCode("MESSAGE1");
 				dto.setMessageDescription(outPut.get("MESSAGE1").toString());
 				dto.setAmlFlag(ConstantDocument.Yes);
-				listAmlMessage.add(dto);
+				//listAmlMessage.add(dto);
 				}
 				if( outPut.get("MESSAGE2")!=null) {
 					AmlCheckResponseDto dto = new AmlCheckResponseDto();
 					dto.setMessageCode("MESSAGE2");
 					dto.setMessageDescription(outPut.get("MESSAGE2").toString());
 					dto.setAmlFlag(ConstantDocument.Yes);
-					listAmlMessage.add(dto);
+					//listAmlMessage.add(dto);
 					}
 				
 				if( outPut.get("MESSAGE3")!=null) {
@@ -375,7 +375,7 @@ public class BranchRemittanceManager  extends AbstractModel {
 					dto.setMessageCode("MESSAGE3");
 					dto.setMessageDescription(outPut.get("MESSAGE3").toString());
 					dto.setAmlFlag(ConstantDocument.Yes);
-					listAmlMessage.add(dto);
+					//listAmlMessage.add(dto);
 					}
 				if( outPut.get("MESSAGE4")!=null) {
 					AmlCheckResponseDto dto = new AmlCheckResponseDto();
@@ -412,7 +412,7 @@ public class BranchRemittanceManager  extends AbstractModel {
 					dto.setMessageDescription(outPut.get("RANGE3FROM").toString()+" - "+ outPut.get("RANGE3TO")==null?"0":outPut.get("RANGE3TO").toString());
 					dto.setRangeSlab(outPut.get("RANGE3COUNT")==null?"0":outPut.get("RANGE3COUNT").toString());
 					dto.setAmlFlag(ConstantDocument.Yes);
-					listAmlMessage.add(dto);
+					//listAmlMessage.add(dto);
 				}
 				
 				if(outPut.get("RANGE4FROM")!=null) {
@@ -421,7 +421,7 @@ public class BranchRemittanceManager  extends AbstractModel {
 					dto.setMessageDescription(outPut.get("RANGE4FROM").toString()+" - "+ outPut.get("RANGE4TO")==null?"0":outPut.get("RANGE4TO").toString());
 					dto.setRangeSlab(outPut.get("RANGE4COUNT")==null?"0":outPut.get("RANGE4COUNT").toString());
 					dto.setAmlFlag(ConstantDocument.Yes);
-					listAmlMessage.add(dto);
+					//listAmlMessage.add(dto);
 				}
 				if(outPut.get("RANGE5FROM")!=null) {
 					AmlCheckResponseDto dto = new AmlCheckResponseDto();
@@ -429,7 +429,7 @@ public class BranchRemittanceManager  extends AbstractModel {
 					dto.setMessageDescription(outPut.get("RANGE5FROM").toString()+" - "+ outPut.get("RANGE5TO")==null?"0":outPut.get("RANGE5TO").toString());
 					dto.setRangeSlab(outPut.get("RANGE5COUNT")==null?"0":outPut.get("RANGE5COUNT").toString());
 					dto.setAmlFlag(ConstantDocument.Yes);
-					listAmlMessage.add(dto);
+					//listAmlMessage.add(dto);
 				}
 				if(outPut.get("RANGE6FROM")!=null) {
 					AmlCheckResponseDto dto = new AmlCheckResponseDto();
@@ -437,7 +437,7 @@ public class BranchRemittanceManager  extends AbstractModel {
 					dto.setMessageDescription(outPut.get("RANGE6FROM").toString()+" - "+ outPut.get("RANGE6TO")==null?"0":outPut.get("RANGE6TO").toString());
 					dto.setRangeSlab(outPut.get("RANGE6COUNT")==null?"0":outPut.get("RANGE6COUNT").toString());
 					dto.setAmlFlag(ConstantDocument.Yes);
-					listAmlMessage.add(dto);
+					//listAmlMessage.add(dto);
 				}
 				
 			}
@@ -475,9 +475,9 @@ public class BranchRemittanceManager  extends AbstractModel {
 			
 		}
 			
-		}catch(Exception e) {
-			e.printStackTrace();
-			logger.debug("getExchangeRateForBranch :"+e.getMessage());
+		}catch(GlobalException e){
+			logger.error("aml procedure", e.getErrorMessage() + "" +e.getErrorKey());
+			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}
 		return listAmlMessage; 
 	}

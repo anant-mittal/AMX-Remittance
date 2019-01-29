@@ -264,7 +264,9 @@ public class OffsiteCustRegClient implements ICustRegService {
 	}
 	
 
-	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getCustomerDetails(String identityInt,BigDecimal identityType) {
+	
+	@Override
+	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerDetails(String identityInt,BigDecimal identityType) {
 		try {
 			return restService.ajax(appConfig.getJaxURL()).meta(new JaxMetaInfo())
 					.path(CustRegApiEndPoints.GET_CUSTOMER_DEATILS).queryParam(Params.IDENTITY_INT, identityInt)
@@ -274,7 +276,7 @@ public class OffsiteCustRegClient implements ICustRegService {
 		} catch (Exception e) {
 			LOGGER.error("exception in saveLoginDetailOffsite : ", e);
 			return JaxSystemError.evaluate(e);
-		} // end of try-catch}
+		} // end of try-c
 	}
 
 

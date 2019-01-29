@@ -358,6 +358,7 @@ public class CustomerRegistrationManager extends CustomerTransactionModel<Custom
 			customerDetails.setWatsAppTelePrefix(customer.getPrefixCodeMobileOther());
 			customerDetails.setIsWatsApp(customer.getIsMobileWhatsApp());
 			customerDetails.setRegistrationType(customer.getCustomerRegistrationType());
+			customerDetails.setCustomerSignature(customer.getSignatureSpecimenClob());
 			
 			offsiteCustomer.setCustomerPersonalDetail(customerDetails);
 			

@@ -8,12 +8,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
 import org.apache.commons.lang.StringUtils;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 /**
@@ -28,7 +26,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
-
 import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.jax.branchremittance.dao.BranchRemittanceDao;
 import com.amx.jax.constant.ConstantDocument;
@@ -44,13 +41,11 @@ import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.UserFinancialYear;
 import com.amx.jax.dbmodel.ViewCompanyDetails;
 import com.amx.jax.dbmodel.fx.EmployeeDetailsView;
-import com.amx.jax.dbmodel.remittance.AdditionalBankDetailsViewx;
 import com.amx.jax.dbmodel.remittance.AdditionalBankRuleMap;
 import com.amx.jax.dbmodel.remittance.AdditionalInstructionData;
 import com.amx.jax.dbmodel.remittance.BankBranch;
 import com.amx.jax.dbmodel.remittance.DeliveryMode;
 import com.amx.jax.dbmodel.remittance.Document;
-import com.amx.jax.dbmodel.remittance.FlexFiledView;
 import com.amx.jax.dbmodel.remittance.RemitApplAmlModel;
 import com.amx.jax.dbmodel.remittance.RemittanceAppBenificiary;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
@@ -66,7 +61,6 @@ import com.amx.jax.model.response.remittance.AmlCheckResponseDto;
 import com.amx.jax.model.response.remittance.BranchExchangeRateBreakup;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.CustomerShoppingCartDto;
-import com.amx.jax.model.response.remittance.FlexFieldDto;
 import com.amx.jax.repository.IApplicationCountryRepository;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.ICurrencyDao;
@@ -192,7 +186,7 @@ public class BranchRemittanceApplManager {
 		
 		
 		
-		hashMap.put("ROUTING_DETAILS_MAP", hashMap);
+		hashMap.put("ROUTING_DETAILS_MAP", branchRoutingDetails);
 		hashMap.put("EXCH_RATE_MAP", branchExchangeRate);
 		hashMap.put("APPL_REQ_MODEL", requestApplModel);
 		hashMap.put("BENEFICIARY_DETAILS", beneficaryDetails);
@@ -205,8 +199,6 @@ public class BranchRemittanceApplManager {
 		/* create applciation */
 		RemittanceApplication remittanceApplication = this.createRemittanceApplication(hashMap);
 		RemittanceAppBenificiary remittanceAppBeneficairy = this.createRemittanceAppBeneficiary(remittanceApplication,hashMap);
-		//List<AdditionalInstructionData> additioalInstructionData = this.createAdditionalInstnData(remittanceApplication, hashMap);
-		// List<AdditionalInstructionData> additioalInstructionData =oldRemittanceApplicationAdditionalDataManager.createAdditionalInstnData(remittanceApplication);
 		List<AdditionalInstructionData>  additioalInstructionData = remittanceAppAddlDataManager.createAdditionalInstnDataForBranch(remittanceApplication,hashMap);
 		
 		//RemittanceTransactionRequestModel
@@ -236,23 +228,26 @@ public class BranchRemittanceApplManager {
 	}
 
 	@SuppressWarnings("unchecked")
-	private RemittanceApplication createRemittanceApplication(Map<String,Object> hashMap) {
+	private RemittanceApplication createRemittanceApplication(Map<String,Object> hashMap){
 		
 		RemittanceApplication remittanceApplication = new RemittanceApplication();
 		try {
 			BranchRemittanceApplRequestModel applRequestModel = (BranchRemittanceApplRequestModel)hashMap.get("APPL_REQ_MODEL");
-			Map<String, Object> branchRoutingDetails =(Map)hashMap.get("ROUTING_DETAILS_MAP");
-			Map<String, Object> branchExchangeRate =(Map)hashMap.get("EXCH_RATE_MAP");
+			Map<String, Object> branchRoutingDetails =(HashMap)hashMap.get("ROUTING_DETAILS_MAP");
+			Map<String, Object> branchExchangeRate =(HashMap)hashMap.get("EXCH_RATE_MAP");
 			BenificiaryListView beneDetails  =(BenificiaryListView) hashMap.get("BENEFICIARY_DETAILS");
 			BranchExchangeRateBreakup rateBreakUp = applRequestModel.getBranchExRateBreakup();
 			
+			System.out.println("branchRoutingDetails :"+branchRoutingDetails.toString());
+			
+			System.out.println("branchExchangeRate :"+branchExchangeRate.toString());
 			
 			
 			
 			BigDecimal routingCountryId = (BigDecimal) branchRoutingDetails.get("P_ROUTING_COUNTRY_ID");
 			Customer customer = (Customer) hashMap.get("CUSTOMER");
-			BigDecimal routingBankId = (BigDecimal) branchExchangeRate.get("P_ROUTING_BANK_ID");
-			BigDecimal routingBankBranchId = (BigDecimal) branchExchangeRate.get("P_ROUTING_BANK_BRANCH_ID");
+			BigDecimal routingBankId = (BigDecimal) branchRoutingDetails.get("P_ROUTING_BANK_ID");
+			BigDecimal routingBankBranchId = (BigDecimal) branchRoutingDetails.get("P_ROUTING_BANK_BRANCH_ID");
 			BigDecimal foreignCurrencyId = beneDetails.getCurrencyId();
 			BigDecimal deliveryId = (BigDecimal) branchExchangeRate.get("P_DELIVERY_MODE_ID");
 			BigDecimal remittanceId = (BigDecimal) branchExchangeRate.get("P_REMITTANCE_MODE_ID");
@@ -299,7 +294,7 @@ public class BranchRemittanceApplManager {
 			ViewCompanyDetails companyDetails = companyService.getCompanyDetailsById(applSetup.getCompanyId());
 			remittanceApplication.setCompanyCode(companyDetails.getCompanyCode());
 			// branch id
-			CountryBranch countryBranch = bankMetaService.getCountryBranchById((metaData.getCountryBranchId()));
+			CountryBranch countryBranch = bankMetaService.getCountryBranchById(getEmployeeDetails().getCountryBranchId()); //user branch not customer branch
 			remittanceApplication.setLoccod(countryBranch.getBranchId());
 			remittanceApplication.setExCountryBranch(countryBranch);
 			// fin year
@@ -364,7 +359,14 @@ public class BranchRemittanceApplManager {
 			}else {
 				remittanceApplication.setLocalNetTranxAmount(branchExchangeRate.get("P_LOCAL_NET_PAYABLE")==null?BigDecimal.ZERO:(BigDecimal)branchExchangeRate.get("P_LOCAL_NET_PAYABLE"));
 			}
-			remittanceApplication.setExchangeRateApplied(rateBreakUp.getInverseRate());
+			
+			if(JaxUtil.isNullZeroBigDecimalCheck(rateBreakUp.getInverseRate())) {
+				remittanceApplication.setExchangeRateApplied(rateBreakUp.getInverseRate());
+			}else {
+				remittanceApplication.setExchangeRateApplied(branchExchangeRate.get("P_EXCHANGE_RATE_APPLIED")==null?BigDecimal.ZERO:(BigDecimal)branchExchangeRate.get("P_EXCHANGE_RATE_APPLIED"));
+			}
+			
+			
 			remittanceApplication.setLocalCommisionAmount(branchExchangeRate.get("P_LOCAL_COMMISION_AMOUNT")==null?BigDecimal.ZERO:(BigDecimal)branchExchangeRate.get("P_LOCAL_COMMISION_AMOUNT"));
 			remittanceApplication.setLocalChargeAmount(BigDecimal.ZERO);
 			remittanceApplication.setLocalDeliveryAmount(BigDecimal.ZERO);
@@ -395,24 +397,29 @@ public class BranchRemittanceApplManager {
 				throw new GlobalException(JaxError.INVALID_APPLICATION_DOCUMENT_NO,"Application document number shouldnot be null or blank");
 			}			
 			
-			remittanceApplication.setPaymentId(remittanceApplication.getDocumentNo().toString());
+			
 			remittanceApplication.setWuIpAddress(metaData.getDeviceIp());
 			remittanceApplication.setInstruction("URGENT");
 			
+			
 			if(!StringUtils.isBlank(applRequestModel.getSignature())) {
-			remittanceApplication.setCustomerSignatureClob(stringToClob(applRequestModel.getSignature()));
+				try {
+				remittanceApplication.setCustomerSignatureClob(stringToClob(applRequestModel.getSignature()));
+				}catch(Exception e) {
+					e.printStackTrace();
+				}
 			}else {
 				throw new GlobalException(JaxError.CUSTOMER__SIGNATURE_UNAVAILABLE,"Customer signature required");
 			}
 			
 			return remittanceApplication;
 			
-		}catch(Exception e) {
-			e.printStackTrace();
-			logger.debug("create applciation :"+e.getMessage());
+		}catch(GlobalException e){
+			logger.error("create application", e.getErrorMessage() + "" +e.getErrorKey());
+			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}
 		
-		return remittanceApplication;
+		
 	}
 	
 	private RemittanceAppBenificiary createRemittanceAppBeneficiary(RemittanceApplication remittanceApplication,Map<String, Object> hashMap) {
@@ -533,8 +540,8 @@ public class BranchRemittanceApplManager {
 		logger.info(" Exit from saveAdditionalInstnData ");
 
 		return lstAddInstrData;
-	}*/
-
+	}
+*/
 	// checking Indic1,Indic2,Indic3,Indic4,Indic5
 	private AdditionalInstructionData createAdditionalIndicatorsData(RemittanceApplication remittanceApplication,BigDecimal applicationCountryId, String indicatorCode, String amiecCode, String flexFieldValue,BigDecimal additionalBankRuleId) {
 

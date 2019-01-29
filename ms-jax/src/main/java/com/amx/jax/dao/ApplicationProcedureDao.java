@@ -1161,8 +1161,8 @@ public class ApplicationProcedureDao {
 				output.put("P_LOYALTY_AMOUNT",cs.getBigDecimal(31) == null ? BigDecimal.ZERO : cs.getBigDecimal(31));
 				output.put("P_LOCAL_NET_PAYABLE",cs.getBigDecimal(32) == null ? BigDecimal.ZERO : cs.getBigDecimal(32));
 				output.put("P_LOCAL_NET_SENT",cs.getBigDecimal(33) == null ? BigDecimal.ZERO : cs.getBigDecimal(33));
-				output.put("P_NEW_REMITTANCE_MODE_ID",cs.getBigDecimal(34) == null ? BigDecimal.ZERO : cs.getBigDecimal(34));
-				output.put("P_NEW_DELIVERY_MODE_ID",cs.getBigDecimal(35) == null ? BigDecimal.ZERO : cs.getBigDecimal(35));
+				output.put("P_REMITTANCE_MODE_ID",cs.getBigDecimal(34) == null ? BigDecimal.ZERO : cs.getBigDecimal(34));
+				output.put("P_DELIVERY_MODE_ID",cs.getBigDecimal(35) == null ? BigDecimal.ZERO : cs.getBigDecimal(35));
 				output.put("P_ICASH_COST_RATE",cs.getBigDecimal(36) == null ? BigDecimal.ZERO : cs.getBigDecimal(36));
 				output.put("P_ERROR_MESSAGE", cs.getString(37));
 			

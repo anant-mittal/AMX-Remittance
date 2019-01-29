@@ -68,8 +68,7 @@ public class RemittanceTransactionRequestValidator {
 		}
 	}
 
-	public void validateFlexFields(RemittanceTransactionRequestModel request,
-			Map<String, Object> remitApplParametersMap) {
+	public void validateFlexFields(RemittanceTransactionRequestModel request,Map<String, Object> remitApplParametersMap) {
 		request.populateFlexFieldDtoMap();
 		List<FlexFiledView> allFlexFields = remittanceApplicationDao.getFlexFields();
 		Map<String, FlexFieldDto> requestFlexFields = request.getFlexFieldDtoMap();
@@ -79,8 +78,7 @@ public class RemittanceTransactionRequestValidator {
 		} else {
 			validateFlexFieldValues(requestFlexFields);
 		}
-		requestFlexFields.put("INDIC1",
-				new FlexFieldDto(request.getAdditionalBankRuleFiledId(), request.getSrlId(), null));
+		requestFlexFields.put("INDIC1",new FlexFieldDto(request.getAdditionalBankRuleFiledId(), request.getSrlId(), null));
 		BigDecimal applicationCountryId = (BigDecimal) remitApplParametersMap.get("P_APPLICATION_COUNTRY_ID");
 		BigDecimal routingCountryId = (BigDecimal) remitApplParametersMap.get("P_ROUTING_COUNTRY_ID");
 		BigDecimal remittanceModeId = (BigDecimal) remitApplParametersMap.get("P_REMITTANCE_MODE_ID");

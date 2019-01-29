@@ -99,5 +99,8 @@ public interface ICustRegService extends IJaxService {
 	AmxApiResponse<CustomerCredential, Object> saveLoginDetailOffsite(CustomerCredential customerCredential);
 	
 	AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerData(String identityInt, BigDecimal identityType);
+	
+	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND})
+	AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerDetails(String identityInt, BigDecimal identityType);
 
 }
