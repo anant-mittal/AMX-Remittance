@@ -45,13 +45,13 @@ public class AppClientInterceptor implements ClientHttpRequestInterceptor {
 		RequestTrackEvent requestTrackEvent = new RequestTrackEvent(request);
 		AuditServiceClient.trackStatic(requestTrackEvent);
 
-		if (AppParam.PRINT_TRACK_BODY.isEnabled() || LOGGER.isDebugEnabled() || true) {
+		if (AppParam.PRINT_TRACK_BODY.isEnabled() || LOGGER.isDebugEnabled()) {
 			LinkedMultiValueMap<String, String> headerMap = new LinkedMultiValueMap<String, String>();
 			Collection<Entry<String, List<String>>> headers = request.getHeaders().entrySet();
 			for (Entry<String, List<String>> header : headers) {
 				headerMap.put(header.getKey(), header.getValue());
 			}
-			LOGGER.info("*** REQT_OUT_HEADER *****: {}", headerMap.toString());
+			LOGGER.debug("*** REQT_OUT_HEADER *****: {}", headerMap.toString());
 			LOGGER.debug("*** REQT_OUT_BODY   *****: {}", new String(body, "UTF-8"));
 		}
 

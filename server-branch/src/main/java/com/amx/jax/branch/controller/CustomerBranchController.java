@@ -25,7 +25,7 @@ public class CustomerBranchController {
 	@Autowired
 	BranchSession branchSession;
 
-	@RequestMapping(value = "/pub/customer/details", method = { RequestMethod.POST })
+	@RequestMapping(value = "/api/customer/details", method = { RequestMethod.POST })
 	public AmxApiResponse<OffsiteCustomerDataDTO, Object> setCustomerDetails(@RequestParam String identity,
 			@RequestParam BigDecimal identityType,
 			@RequestParam boolean session) {

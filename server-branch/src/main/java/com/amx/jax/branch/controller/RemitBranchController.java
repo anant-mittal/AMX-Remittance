@@ -66,7 +66,7 @@ public class RemitBranchController {
 		return AmxApiResponse.buildList(remitClient.getSourceOfIncome().getResults());
 	}
 
-	@RequestMapping(value = "/pub/remitt/bnfcry/list", method = { RequestMethod.POST })
+	@RequestMapping(value = "/api/remitt/bnfcry/list", method = { RequestMethod.POST })
 	public AmxApiResponse<BeneficiaryListDTO, Object> beneList() {
 		return AmxApiResponse.buildList(beneClient.getBeneficiaryList(new BigDecimal(0)).getResults());
 	}

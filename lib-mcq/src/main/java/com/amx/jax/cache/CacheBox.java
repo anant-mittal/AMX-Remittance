@@ -31,7 +31,6 @@ public class CacheBox<T> implements ICacheBox<T> {
 
 	public RLocalCachedMap<String, T> map() {
 		if (redisson != null) {
-
 			if (locker == null) {
 				locker = new BlockingHashMap<String, T>();
 			}

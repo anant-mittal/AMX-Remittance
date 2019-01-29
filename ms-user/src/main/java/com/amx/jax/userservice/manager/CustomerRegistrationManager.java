@@ -229,17 +229,6 @@ public class CustomerRegistrationManager extends CustomerTransactionModel<Custom
 		return JaxTransactionModel.CUSTOMER_REGISTRATION_MODEL.toString() + "_" + identityInt;
 	}
 
-	@Override
-	protected String getTranxId() {
-		String key = ArgUtil.parseAsString(ContextUtil.map().get(AppConstants.TRANX_ID_XKEY));
-		if (ArgUtil.isEmptyString(key)) {
-			key = getJaxTransactionId();
-			ContextUtil.map().put(AppConstants.TRANX_ID_XKEY, key);
-			LOGGER.info("************ Creating New Tranx Id {} *******************", key);
-		}
-		return super.getTranxId();
-	}
-
 	public String getIdentityInt() {
 		return identityInt;
 	}
