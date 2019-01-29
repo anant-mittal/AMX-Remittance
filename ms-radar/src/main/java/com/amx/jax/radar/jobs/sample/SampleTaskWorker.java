@@ -14,6 +14,6 @@ public class SampleTaskWorker implements ITunnelSubscriber<SampleTaskEvent> {
 
 	@Override
 	public void onMessage(String channel, SampleTaskEvent task) {
-		LOGGER.info("DONE T:{} by C:{} M:{}", task.getQueue(), task.getCandidate());
+		LOGGER.info("DONE T:{} by C:{} M:{}", task.getQueue(), task.getCandidate(),task.getMessage());
 	}
 }

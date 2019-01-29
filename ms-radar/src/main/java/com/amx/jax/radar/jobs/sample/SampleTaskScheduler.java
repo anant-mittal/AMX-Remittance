@@ -2,7 +2,6 @@ package com.amx.jax.radar.jobs.sample;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -13,9 +12,10 @@ import com.amx.jax.AppConfig;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.mcq.Candidate;
 import com.amx.jax.mcq.MCQ;
-import com.amx.jax.radar.TestSizeApp;
 import com.amx.jax.rates.AmxCurConstants;
 import com.amx.jax.tunnel.TunnelService;
+
+import net.javacrumbs.shedlock.core.SchedulerLock;
 
 @Configuration
 @EnableScheduling
@@ -35,16 +35,18 @@ public class SampleTaskScheduler {
 	private TunnelService tunnelService;
 
 	@Autowired
-	AppConfig appConfig;
+	private AppConfig appConfig;
 
+	@SchedulerLock(name = "SampleTaskScheduler", lockAtLeastFor = AmxCurConstants.INTERVAL_SEC * 2,
+			lockAtMostFor = AmxCurConstants.INTERVAL_MIN)
 	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_SEC * 2)
 	public void doTask() throws InterruptedException {
-		if (mcq.lead(lock)) {
-			Thread.sleep(AmxCurConstants.INTERVAL_SEC * 5);
-			tunnelService.shout(new SampleTaskEvent(lock.queue(), lock.getId(),
-					appConfig.getSpringAppName()));
-			mcq.resign(lock);
-		}
+		// if (mcq.lead(lock)) {
+		Thread.sleep(AmxCurConstants.INTERVAL_SEC * 5);
+		tunnelService.shout(new SampleTaskEvent(lock.queue(), lock.getId(),
+				appConfig.getSpringAppName()));
+		mcq.resign(lock);
+		// }
 	}
 
 }
