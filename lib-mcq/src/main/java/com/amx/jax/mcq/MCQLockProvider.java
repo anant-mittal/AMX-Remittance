@@ -26,8 +26,8 @@ public class MCQLockProvider implements LockProvider {
 		Expiration maxExpiration = getExpiration(lockConfiguration.getLockAtMostUntil());
 		Expiration minExpiration = getExpiration(lockConfiguration.getLockAtLeastUntil());
 
-		Candidate candidate = new Candidate().fixedDelay(maxExpiration.getExpirationTimeInMilliseconds())
-				.maxAge(minExpiration.getExpirationTimeInMilliseconds()).queue(lockConfiguration.getName());
+		Candidate candidate = new Candidate().fixedDelay(minExpiration.getExpirationTimeInMilliseconds())
+				.maxAge(maxExpiration.getExpirationTimeInMilliseconds()).queue(lockConfiguration.getName());
 
 		if (this.mcq.lead(candidate)) {
 			return Optional.of(new MCQLock(mcq, candidate));
