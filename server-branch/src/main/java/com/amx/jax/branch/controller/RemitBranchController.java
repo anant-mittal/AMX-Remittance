@@ -37,7 +37,6 @@ import com.amx.jax.swagger.IStatusCodeListPlugin.ApiStatusService;
 
 import io.swagger.annotations.Api;
 
-@PreAuthorize("hasPermission('CUSTOMER_MGMT.FXORDER', 'VIEW')")
 @RestController
 @Api(value = "Remit  APIs")
 @ApiStatusService(IRbaacService.class)
@@ -67,7 +66,7 @@ public class RemitBranchController {
 		return AmxApiResponse.buildList(remitClient.getSourceOfIncome().getResults());
 	}
 
-	@RequestMapping(value = "/api/remitt/bnfcry/list", method = { RequestMethod.POST })
+	@RequestMapping(value = "/pub/remitt/bnfcry/list", method = { RequestMethod.POST })
 	public AmxApiResponse<BeneficiaryListDTO, Object> beneList() {
 		return AmxApiResponse.buildList(beneClient.getBeneficiaryList(new BigDecimal(0)).getResults());
 	}
