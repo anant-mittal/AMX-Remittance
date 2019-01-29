@@ -1,5 +1,8 @@
 package com.amx.jax.mcq;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.redisson.api.RMapCache;
@@ -15,6 +18,7 @@ import com.amx.jax.AppConfig;
 public class MCQ {
 
 	private Logger LOGGER = LoggerFactory.getLogger(MCQ.class);
+	private Map<String, String> leaders = Collections.synchronizedMap(new HashMap<String, String>());
 	private Object lock = new Object();
 
 	@Autowired(required = false)
@@ -25,43 +29,53 @@ public class MCQ {
 
 	boolean leader;
 
-	private boolean isPrivateLeader(String key, long timeinMilliSeconds) {
-		RMapCache<String, String> map = redisson
-				.getMapCache("MCQFLAGS");
-
-		String previousLeader = map.putIfAbsent(key, appConfig.getSpringAppName(), timeinMilliSeconds,
-				TimeUnit.MILLISECONDS);
-		LOGGER.info("Leader:{} for key:{}", previousLeader, key);
-		if (previousLeader == null) {
-			return true;
-		}
-
-		if (appConfig.getSpringAppName().equalsIgnoreCase(previousLeader)) {
-			return true;
-		}
-		return false;
-	}
-
-	public boolean claimLeaderShip(String key, long timeinMilliSeconds) {
+	/**
+	 * 
+	 * @param queue
+	 * @param maxAge in millis
+	 * @param myId
+	 * @return
+	 */
+	private String challenge(String queue, long maxAge, String id) {
 
 		if (redisson == null) {
-			return false;
+			return null;
 		}
 
-		return isPrivateLeader(key, timeinMilliSeconds);
-	}
-
-	public <T> boolean claimLeaderShip(Class<T> class1, long timeinMilliSeconds) {
-		return this.claimLeaderShip(class1.getName(), timeinMilliSeconds);
-	}
-
-	public boolean resignLeaderShip(String key) {
 		RMapCache<String, String> map = redisson
 				.getMapCache("MCQFLAGS");
-		return map.remove(key, appConfig.getSpringAppName());
+
+		String previousLeader = map.putIfAbsent(queue, id, maxAge,
+				TimeUnit.MILLISECONDS);
+		if (previousLeader == null) {
+			return id;
+		}
+		return previousLeader;
 	}
 
-	public <T> boolean resignLeaderShip(Class<T> class1) {
-		return this.resignLeaderShip(class1.getName());
+	public boolean lead(Candidate candidate) {
+		String winnerId = challenge(candidate.queue(), candidate.maxAge(), candidate.getId());
+		if (candidate.getId().equals(winnerId)) {
+			candidate.setLeader(true);
+		} else {
+			candidate.setLeader(false);
+		}
+		leaders.put(candidate.queue(), winnerId);
+		LOGGER.info("Leader:{} for key:{}", winnerId, candidate.queue());
+		return candidate.isLeader();
 	}
+
+	public boolean resign(Candidate candidate) {
+		RMapCache<String, String> map = redisson
+				.getMapCache("MCQFLAGS");
+		if (candidate.getId().equals(leaders.get(candidate.queue()))) {
+			if (candidate.getId().equals(map.get(candidate.queue()))) {
+				map.put(candidate.queue(), candidate.getId(), candidate.fixedDelay(),
+						TimeUnit.MILLISECONDS);
+			}
+			leaders.remove(candidate.queue());
+		}
+		return true;
+	}
+
 }

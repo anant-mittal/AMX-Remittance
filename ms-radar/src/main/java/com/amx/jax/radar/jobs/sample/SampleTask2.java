@@ -32,7 +32,8 @@ public class SampleTask2 {
 
 	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_SEC * 5)
 	public void doTask() throws InterruptedException {
-		if (mcq.claimLeaderShip(SampleTask2.class, AmxCurConstants.INTERVAL_SEC * 10)) {
+		boolean x;
+		if (x = mcq.claimLeaderShip(SampleTask2.class, AmxCurConstants.INTERVAL_SEC * 10)) {
 			Thread.sleep(AmxCurConstants.INTERVAL_SEC * 3);
 			LOGGER.info("======= I am doing my Task @ {}", appConfig.getSpringAppName());
 			mcq.resignLeaderShip(SampleTask2.class);
