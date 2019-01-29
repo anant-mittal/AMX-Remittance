@@ -52,6 +52,15 @@ public class TunnelService implements ITunnelService {
 	}
 
 	/**
+	 * @see #shout(String, Object)
+	 * @param event
+	 * @return
+	 */
+	public <E extends ITunnelEvent> long shout(E event) {
+		return this.shout(event.getClass().getName(), event);
+	}
+
+	/**
 	 * For broadcast purpose, it will send event to all the listeners which are
 	 * listening, actively, messages are QUEUED, so there's guarantee of messages
 	 * being deliver if client goes down at the time of SEND was triggered.
