@@ -61,7 +61,7 @@ public class MCQ {
 			candidate.setLeader(false);
 		}
 		leaders.put(candidate.queue(), winnerId);
-		LOGGER.info("Leader:{} for key:{}", winnerId, candidate.queue());
+		LOGGER.debug("Leader:{} for key:{}", winnerId, candidate.queue());
 		return candidate.isLeader();
 	}
 

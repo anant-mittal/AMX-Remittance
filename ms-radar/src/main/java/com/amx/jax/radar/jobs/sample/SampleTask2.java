@@ -20,7 +20,7 @@ import com.amx.jax.rates.AmxCurConstants;
 @EnableScheduling
 @Component
 @Service
-@ConditionalOnExpression(TestSizeApp.ENABLE_JOBS)
+@ConditionalOnExpression(TestSizeApp.ENABLE_JOBS_DEBUG)
 public class SampleTask2 {
 
 	private static final Logger LOGGER = LoggerService.getLogger(SampleTask2.class);

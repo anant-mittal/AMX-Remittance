@@ -25,6 +25,8 @@ import com.amx.jax.rates.AmxCurConstants;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
 
+import net.javacrumbs.shedlock.core.SchedulerLock;
+
 @Configuration
 @EnableScheduling
 @Component
@@ -38,6 +40,9 @@ public class TrnxViewTask extends AbstractDBSyncTask {
 
 	long intervalDays = 10;
 
+	@SchedulerLock(name = "TrnxViewTask",
+			lockAtLeastFor = AmxCurConstants.INTERVAL_SEC * 10,
+			lockAtMostFor = AmxCurConstants.INTERVAL_MIN)
 	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_SEC * 10)
 	public void doTask() {
 		this.doBothTask();
@@ -88,7 +93,7 @@ public class TrnxViewTask extends AbstractDBSyncTask {
 			}
 		}
 
-		LOGGER.info("Pg:{}, Rcds:{},{}, Nxt:{}", lastPage, x.getResults().size(),lastIdNow, lastUpdateDateNow);
+		LOGGER.info("Pg:{}, Rcds:{},{}, Nxt:{}", lastPage, x.getResults().size(), lastIdNow, lastUpdateDateNow);
 
 		if (lastIdNow.equalsIgnoreCase(lastId) && x.getResults().size() > 0) {
 			// Same data records case, nothing to do
@@ -168,7 +173,7 @@ public class TrnxViewTask extends AbstractDBSyncTask {
 			}
 		}
 
-		LOGGER.info("Pg:{}, Rcds:{},{}, Nxt:{}", lastPage, x.getResults().size(),lastIdNow, lastUpdateDateNow);
+		LOGGER.info("Pg:{}, Rcds:{},{}, Nxt:{}", lastPage, x.getResults().size(), lastIdNow, lastUpdateDateNow);
 
 		if (lastIdNow.equalsIgnoreCase(lastId) && x.getResults().size() > 0) {
 			// Same data records case, nothing to do

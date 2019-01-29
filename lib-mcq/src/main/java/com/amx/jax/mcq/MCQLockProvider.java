@@ -22,11 +22,19 @@ public class MCQLockProvider implements LockProvider {
 	@Override
 	public Optional<SimpleLock> lock(LockConfiguration lockConfiguration) {
 
-		Expiration maxExpiration = getExpiration(lockConfiguration.getLockAtMostUntil());
-		Expiration minExpiration = getExpiration(lockConfiguration.getLockAtLeastUntil());
+		long maxExpiration = Math.max(0,
+				getExpiration(lockConfiguration.getLockAtMostUntil()).getExpirationTimeInMilliseconds());
+		long minExpiration = Math.max(1000,
+				getExpiration(lockConfiguration.getLockAtLeastUntil()).getExpirationTimeInMilliseconds());
 
-		Candidate candidate = new Candidate().fixedDelay(minExpiration.getExpirationTimeInMilliseconds())
-				.maxAge(maxExpiration.getExpirationTimeInMilliseconds()).queue(lockConfiguration.getName());
+		if (maxExpiration == 0L) {
+			maxExpiration = minExpiration + 120000;
+		}
+
+		Candidate candidate = new Candidate()
+				.fixedDelay(Math.min(minExpiration, maxExpiration))
+				.maxAge(Math.max(minExpiration, maxExpiration))
+				.queue(lockConfiguration.getName());
 
 		if (this.mcq.lead(candidate)) {
 			return Optional.of(new MCQLock(mcq, candidate));
