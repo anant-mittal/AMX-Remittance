@@ -43,7 +43,7 @@ public class SampleTaskScheduler {
 	public void doTask() throws InterruptedException {
 		// if (mcq.lead(lock)) {
 		Thread.sleep(AmxCurConstants.INTERVAL_SEC * 5);
-		tunnelService.shout(new SampleTaskEvent(lock.queue(), lock.getId(),
+		tunnelService.shout(new SampleTaskEvent("SampleTaskScheduler", lock.getId(),
 				appConfig.getSpringAppName()));
 		mcq.resign(lock);
 		// }
