@@ -264,7 +264,9 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 		BeneficaryContact beneficaryContact = new BeneficaryContact();
 		beneficaryContact.setApplicationCountryId(metaData.getCountryId());
 		beneficaryContact.setBeneficaryMasterId(beneficaryMasterId);
-		beneficaryContact.setCountryTelCode(beneDetails.getCountryTelCode());
+		if(beneDetails.getMobileNumber() != null) {
+			beneficaryContact.setCountryTelCode(beneDetails.getCountryTelCode());
+		}	
 		beneficaryContact.setCreatedBy(getCreatedBy());
 		beneficaryContact.setCreatedDate(new Date());
 		beneficaryContact.setIsActive(ConstantDocument.Yes);
