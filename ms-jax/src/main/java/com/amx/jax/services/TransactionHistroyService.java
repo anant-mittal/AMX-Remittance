@@ -243,7 +243,7 @@ public class TransactionHistroyService extends AbstractService {
 		return hist.getDocumentNumber().toString() + hist.getDocumentFinanceYear().toString();
 	}
 
-	private BeneficiaryListDTO convertBeneModelToDto(BenificiaryListView beneModel) {
+	public BeneficiaryListDTO convertBeneModelToDto(BenificiaryListView beneModel) {
 		BeneficiaryListDTO dto = new BeneficiaryListDTO();
 		try {
 			BeanUtils.copyProperties(dto, beneModel);
