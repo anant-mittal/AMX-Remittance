@@ -1,4 +1,4 @@
-package com.amx.jax.offsite.device;
+package com.amx.jax.terminal;
 
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
@@ -23,12 +23,11 @@ import com.amx.jax.client.DeviceStateClient;
 import com.amx.jax.client.IDeviceStateService;
 import com.amx.jax.device.TerminalBox;
 import com.amx.jax.device.TerminalData;
-import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.model.request.device.SignaturePadCustomerRegStateMetaInfo;
 import com.amx.jax.model.request.device.SignaturePadFCPurchaseSaleInfo;
 import com.amx.jax.model.request.device.SignaturePadRemittanceInfo;
-import com.amx.jax.offsite.device.TerminalConstants.Path;
 import com.amx.jax.swagger.IStatusCodeListPlugin.ApiStatusService;
+import com.amx.jax.terminal.TerminalConstants.Path;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.HttpUtils;
 import com.amx.utils.Urly;
@@ -36,6 +35,11 @@ import com.amx.utils.Urly;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
+/**
+ * @deprecated Should be used for JavaBranch Application
+ * 
+ */
+@Deprecated
 @Controller
 @Api(value = "Terminal APIs")
 @ApiStatusService(IDeviceStateService.class)
@@ -49,6 +53,9 @@ public class TerminalController {
 
 	@Autowired
 	private AppConfig appConfig;
+
+	@Autowired
+	TerminalService terminalService;
 
 	@RequestMapping(value = { Path.TERMINAL_STATUS_PING }, method = { RequestMethod.GET })
 	public String getPing(@RequestParam String state, @RequestParam String terminalId,
@@ -96,10 +103,7 @@ public class TerminalController {
 	public AmxApiResponse<BoolRespModel, Object> updateRemittanceState(
 			@RequestParam Integer terminalId, @RequestParam BigDecimal employeeId,
 			@RequestBody SignaturePadRemittanceInfo signaturePadRemittanceInfo) {
-		terminalBox.updateStamp(terminalId);
-
-		return deviceClient.updateRemittanceState(ClientType.SIGNATURE_PAD, terminalId,
-				signaturePadRemittanceInfo, employeeId);
+		return terminalService.updateRemittanceState(terminalId, employeeId, signaturePadRemittanceInfo);
 	}
 
 	@ResponseBody
@@ -108,10 +112,8 @@ public class TerminalController {
 	public AmxApiResponse<BoolRespModel, Object> updateFcPurchase(@RequestParam Integer terminalId,
 			@RequestParam BigDecimal employeeId,
 			@RequestBody SignaturePadFCPurchaseSaleInfo signaturePadRemittanceInfo) {
-		terminalBox.updateStamp(terminalId);
 
-		return deviceClient.updateFcPurchase(ClientType.SIGNATURE_PAD, terminalId,
-				signaturePadRemittanceInfo, employeeId);
+		return terminalService.updateFcPurchaseState(terminalId, employeeId, signaturePadRemittanceInfo);
 	}
 
 	@ResponseBody
@@ -120,10 +122,7 @@ public class TerminalController {
 	public AmxApiResponse<BoolRespModel, Object> updateFcSale(@RequestParam Integer terminalId,
 			@RequestParam BigDecimal employeeId,
 			@RequestBody SignaturePadFCPurchaseSaleInfo signaturePadRemittanceInfo) {
-		terminalBox.updateStamp(terminalId);
-
-		return deviceClient.updateFcSale(ClientType.SIGNATURE_PAD, terminalId,
-				signaturePadRemittanceInfo, employeeId);
+		return terminalService.updateFcSaleState(terminalId, employeeId, signaturePadRemittanceInfo);
 	}
 
 	@ResponseBody
@@ -132,10 +131,7 @@ public class TerminalController {
 	public AmxApiResponse<BoolRespModel, Object> updateCustomerRegStateData(
 			@RequestParam Integer terminalId, @RequestParam BigDecimal employeeId,
 			@RequestBody SignaturePadCustomerRegStateMetaInfo signaturePadRemittanceInfo) {
-		terminalBox.updateStamp(terminalId);
-
-		return deviceClient.updateCustomerRegStateData(ClientType.SIGNATURE_PAD, terminalId,
-				signaturePadRemittanceInfo, employeeId);
+		return terminalService.updateCustomerRegStateData(terminalId, employeeId, signaturePadRemittanceInfo);
 	}
 
 }

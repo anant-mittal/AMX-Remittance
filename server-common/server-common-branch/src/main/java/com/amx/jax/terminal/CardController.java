@@ -1,4 +1,4 @@
-package com.amx.jax.offsite.device;
+package com.amx.jax.terminal;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;

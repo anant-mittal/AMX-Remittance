@@ -1,4 +1,4 @@
-package com.amx.jax.offsite.device.signpad;
+package com.amx.jax.signpad;
 
 import java.io.Serializable;
 
