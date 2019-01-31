@@ -110,6 +110,7 @@ public class DeviceManager {
 		}
 	}
 
+	@Deprecated
 	public void validateSessionToken(String sessionToken, Integer registrationId) {
 		DeviceStateInfo deviceStateInfo = deviceDao.findBySessionToken(sessionToken, registrationId);
 		if (deviceStateInfo == null) {

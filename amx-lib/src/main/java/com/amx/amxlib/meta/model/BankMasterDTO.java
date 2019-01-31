@@ -13,6 +13,7 @@ public class BankMasterDTO extends AbstractModel implements Comparable<BankMaste
 	private String bankFullName;
 	private String bankShortName;
 	private BigDecimal bankCountryId;
+	private boolean ibanRequired;
 
 	private ExchangeRateBreakup exRateBreakup;
 
@@ -143,5 +144,13 @@ public class BankMasterDTO extends AbstractModel implements Comparable<BankMaste
 			return 0;
 		}
 
+	}
+
+	public boolean getIbanRequired() {
+		return ibanRequired;
+	}
+
+	public void setIbanRequired(boolean ibanRequired) {
+		this.ibanRequired = ibanRequired;
 	}
 }

@@ -64,7 +64,13 @@ public class BankMetaService extends AbstractService {
 	private List<BankMasterDTO> convert(List<BankMasterModel> banks) {
 
 		List<BankMasterDTO> bankdtos = new ArrayList<>();
-		banks.forEach(i -> bankdtos.add(convert(i)));
+		banks.forEach(i -> {
+			BankMasterDTO bankDto = convert(i);
+			if (ConstantDocument.Yes.equalsIgnoreCase(i.getIbanFlag())) {
+				bankDto.setIbanRequired(true);
+			}
+			bankdtos.add(bankDto);
+		});
 		return bankdtos;
 	}
 

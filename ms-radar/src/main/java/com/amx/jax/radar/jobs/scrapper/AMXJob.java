@@ -29,6 +29,8 @@ import com.amx.jax.rates.AmxCurRate;
 import com.amx.jax.rates.AmxCurRateRepository;
 import com.amx.utils.ArgUtil;
 
+import net.javacrumbs.shedlock.core.SchedulerLock;
+
 @Configuration
 @EnableScheduling
 @Component
@@ -47,6 +49,9 @@ public class AMXJob extends ARadarTask {
 
 	public static final Logger LOGGER = LoggerService.getLogger(AMXJob.class);
 
+	@SchedulerLock(name = "AMXJob",
+			lockAtLeastFor = AmxCurConstants.INTERVAL_MIN_30,
+			lockAtMostFor = AmxCurConstants.INTERVAL_HRS)
 	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_MIN_30)
 	public void doTask() {
 

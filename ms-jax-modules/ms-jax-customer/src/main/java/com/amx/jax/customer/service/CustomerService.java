@@ -16,12 +16,14 @@ import com.amx.jax.dal.BizcomponentDao;
 import com.amx.jax.dbmodel.ContactDetail;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerIdProof;
+import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.response.customer.CustomerContactDto;
 import com.amx.jax.model.response.customer.CustomerDto;
 import com.amx.jax.model.response.customer.CustomerIdProofDto;
 import com.amx.jax.model.response.customer.CustomerIncomeRangeDto;
 import com.amx.jax.repository.IContactDetailDao;
 import com.amx.jax.repository.ICustomerRepository;
+import com.amx.jax.service.CountryService;
 import com.amx.jax.services.AbstractService;
 import com.amx.jax.userservice.dao.CustomerIdProofDao;
 import com.amx.jax.userservice.service.UserService;
@@ -41,6 +43,10 @@ public class CustomerService extends AbstractService {
 	UserService userService;
 	@Autowired
 	ArticleDao articleDao ;
+	@Autowired
+	CountryService countryService;
+	@Autowired
+	MetaData metaData;
 
 	public ApiResponse getCustomer(BigDecimal countryId, String userId) {
 		List<Customer> customerList = customerRepository.getCustomer(countryId, userId);
@@ -108,6 +114,7 @@ public class CustomerService extends AbstractService {
 	public CustomerDto getCustomerDto(BigDecimal customerId) {
 		Customer customer = customerRepository.findOne(customerId);
 		CustomerDto customerDto = new CustomerDto();
+		customerDto.setNationality(countryService.getCountryMasterDesc(customer.getNationalityId(), metaData.getLanguageId()).getNationality());
 		try {
 			BeanUtils.copyProperties(customerDto, customer);
 		} catch (Exception e) {

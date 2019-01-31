@@ -25,6 +25,8 @@ import com.amx.jax.rates.AmxCurConstants;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
 
+import net.javacrumbs.shedlock.core.SchedulerLock;
+
 @Configuration
 @EnableScheduling
 @Component
@@ -37,6 +39,9 @@ public class CustomerViewTask extends AbstractDBSyncTask {
 	public static final int PAGE_SIZE = 1000;
 	public static final Long TIME_PAGE_DELTA = 30 * AmxCurConstants.INTERVAL_DAYS;
 
+	@SchedulerLock(name = "CustomerViewTask",
+			lockAtLeastFor = AmxCurConstants.INTERVAL_SEC * 10,
+			lockAtMostFor = AmxCurConstants.INTERVAL_MIN)
 	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_SEC * 30)
 	public void doTask() {
 		this.doBothTask();

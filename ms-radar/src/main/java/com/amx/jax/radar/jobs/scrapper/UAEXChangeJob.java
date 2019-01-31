@@ -29,6 +29,8 @@ import com.amx.jax.rates.AmxCurRateRepository;
 import com.amx.utils.ArgUtil;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
+import net.javacrumbs.shedlock.core.SchedulerLock;
+
 @Configuration
 @EnableScheduling
 @Component
@@ -56,6 +58,9 @@ public class UAEXChangeJob extends ARadarTask {
 
 	public static final Logger LOGGER = LoggerService.getLogger(UAEXChangeJob.class);
 
+	@SchedulerLock(name = "UAEXChangeJob",
+			lockAtLeastFor = AmxCurConstants.INTERVAL_MIN_30,
+			lockAtMostFor = AmxCurConstants.INTERVAL_HRS)
 	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_MIN_30)
 	public void doTask() {
 
