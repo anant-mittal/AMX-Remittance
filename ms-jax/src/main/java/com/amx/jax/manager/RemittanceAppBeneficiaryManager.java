@@ -6,6 +6,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -107,12 +108,19 @@ public class RemittanceAppBeneficiaryManager {
 
 	private void setBeneDetails(RemittanceAppBenificiary remittanceAppBenificary, BenificiaryListView beneficiaryDT) {
 		// Bene details
-		if (beneficiaryDT.getBankAccountNumber() != null) {
-			remittanceAppBenificary.setBeneficiaryAccountNo(beneficiaryDT.getBankAccountNumber());
-		}
+		remittanceAppBenificary.setBeneficiaryAccountNo(getAccountNumber(beneficiaryDT));
 		remittanceAppBenificary.setBeneficiaryName(beneficiaryDT.getBenificaryName());
 		remittanceAppBenificary.setBeneficiaryBank(beneficiaryDT.getBankName());
 		remittanceAppBenificary.setBeneficiaryBranch(beneficiaryDT.getBankBranchName());
+	}
+	
+	private String getAccountNumber(BenificiaryListView beneficiaryDT) {
+		String iBanFlag = bankService.getBankById(beneficiaryDT.getBankId()).getIbanFlag();
+		String accountNumber = beneficiaryDT.getBankAccountNumber();
+		if (ConstantDocument.Yes.equalsIgnoreCase(iBanFlag) && StringUtils.isNotBlank(beneficiaryDT.getIbanNumber())) {
+			accountNumber = beneficiaryDT.getIbanNumber();
+		}
+		return accountNumber;
 	}
 
 	private void setAdditionalBeneficiaryDetails(RemittanceAppBenificiary remittanceAppBenificary) {

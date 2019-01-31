@@ -37,4 +37,13 @@ public class CustomerIdProofDao {
 		return idProofList;
 	}
 
+	public List<CustomerIdProof> getActiveCustomeridProofForIdType(BigDecimal customerId, BigDecimal identityTypeId) {
+		List<CustomerIdProof> idProofList = customerIdProofRepository.getCustomerImageValidation(customerId,
+				identityTypeId);
+		return idProofList;
+	}
+
+	public void save(List<CustomerIdProof> customerIdProof) {
+		customerIdProofRepository.save(customerIdProof);
+	}
 }

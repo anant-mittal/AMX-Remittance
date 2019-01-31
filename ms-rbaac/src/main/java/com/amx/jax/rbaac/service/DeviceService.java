@@ -71,6 +71,18 @@ public class DeviceService extends AbstractService {
 				deviceDao.saveDevices(devices);
 			}
 		}
+		if (device.getEmployeeId() != null) {
+			List<Device> devices = deviceDao.findAllActiveDevicesForEmployee(device.getEmployeeId(),
+					device.getDeviceType());
+			if (!CollectionUtils.isEmpty(devices)) {
+				for (Device d : devices) {
+					if (!d.equals(device)) {
+						d.setStatus("N");
+					}
+				}
+				deviceDao.saveDevices(devices);
+			}
+		}
 		deviceDao.saveDevice(device);
 	}
 
