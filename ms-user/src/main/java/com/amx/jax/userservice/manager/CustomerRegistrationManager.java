@@ -18,9 +18,8 @@ import com.amx.amxlib.constant.PrefixEnum;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.CustomerHomeAddress;
 import com.amx.amxlib.model.SecurityQuestionModel;
-import com.amx.jax.AppConstants;
 import com.amx.jax.CustomerCredential;
-import com.amx.jax.cache.CustomerTransactionModel;
+import com.amx.jax.cache.TransactionModel;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxTransactionModel;
 import com.amx.jax.constants.CustomerRegistrationType;
@@ -32,12 +31,10 @@ import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerIdProof;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.DistrictMaster;
-import com.amx.jax.dbmodel.EmployeeDetails;
 import com.amx.jax.dbmodel.StateMaster;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.OtpData;
-import com.amx.jax.model.request.CustomerEmploymentDetails;
 import com.amx.jax.model.request.CustomerPersonalDetail;
 import com.amx.jax.model.request.HomeAddressDetails;
 import com.amx.jax.model.request.LocalAddressDetails;
@@ -52,13 +49,11 @@ import com.amx.jax.userservice.service.ContactDetailService;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.JaxUtil;
-import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
-import com.amx.utils.ContextUtil;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
-public class CustomerRegistrationManager extends CustomerTransactionModel<CustomerRegistrationTrnxModel> {
+public class CustomerRegistrationManager extends TransactionModel<CustomerRegistrationTrnxModel> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CustomerRegistrationManager.class);
 
