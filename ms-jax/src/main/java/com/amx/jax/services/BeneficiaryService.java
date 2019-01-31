@@ -37,6 +37,7 @@ import com.amx.amxlib.meta.model.RemittancePageDto;
 import com.amx.amxlib.meta.model.RoutingBankMasterDTO;
 import com.amx.amxlib.meta.model.ServiceGroupMasterDescDto;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
+import com.amx.amxlib.model.BeneAccountModel;
 import com.amx.amxlib.model.BeneRelationsDescriptionDto;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.PersonInfo;
@@ -416,7 +417,7 @@ public class BeneficiaryService extends AbstractService {
 		beneList = beneList.stream().filter(i -> ConstantDocument.Yes.equalsIgnoreCase(i.getIsActive()))
 				.collect(Collectors.toList());
 		if (beneList.isEmpty()) {
-			throw new GlobalException(JaxError.BENEFICIARY_LIST_NOT_FOUND, "My favourite eneficiary list is not found");
+			throw new GlobalException(JaxError.BENEFICIARY_LIST_NOT_FOUND, "My favourite beneficiary list is not found");
 		} else {
 			response.getData().getValues().addAll(convertBeneList(beneList));
 			response.setResponseStatus(ResponseStatus.OK);
@@ -880,6 +881,10 @@ public class BeneficiaryService extends AbstractService {
 
 	public BeneficaryAccount getBeneAccountByAccountSeqId(BigDecimal beneAccountSeqId) {
 		return beneficaryAccountRepository.findOne(beneAccountSeqId);
+	}
+	
+	public void saveBeneAccount(BeneficaryAccount beneficaryAccount) {
+		beneficaryAccountRepository.save(beneficaryAccount);
 	}
 
 	/**
