@@ -34,7 +34,7 @@ public class PricerServiceClient implements PricerService {
 
 		LOGGER.info("Pricing Request Called for : Customer Id: {}, transaction Id: {}, with TraceId: {}",
 				pricingRequestDTO.getCustomerId(), AppContextUtil.getTranxId(), AppContextUtil.getTraceId());
-		LOGGER.debug("Pricing request json : {}", JsonUtil.toJson(pricingRequestDTO));
+		LOGGER.info("Pricing request json : {}", JsonUtil.toJson(pricingRequestDTO));
 		return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.FETCH_PRICE_CUSTOMER)
 				.post(pricingRequestDTO)
 				.as(new ParameterizedTypeReference<AmxApiResponse<PricingResponseDTO, Object>>() {

@@ -59,8 +59,13 @@ public class JaxDynamicPriceService {
 		List<ExchangeRateDetails> sellRateDetails = apiResponse.getResult().getSellRateDetails();
 		for (ExchangeRateDetails sellRateDetail : sellRateDetails) {
 			BankMasterDTO dto = bankMetaService.convert(bankMetaService.getBankMasterbyId(sellRateDetail.getBankId()));
+			if(foreignAmount != null) {
+				dto.setExRateBreakup(
+						exchangeRateService.createBreakUpFromForeignCurrency(sellRateDetail.getSellRateNet().getInverseRate(), foreignAmount));
+			}else {
 			dto.setExRateBreakup(
 					exchangeRateService.createBreakUp(sellRateDetail.getSellRateNet().getInverseRate(), lcAmount));
+			}
 			bankWiseRates.add(dto);
 		}
 		exchangeRateResponseModel.setBankWiseRates(bankWiseRates);
