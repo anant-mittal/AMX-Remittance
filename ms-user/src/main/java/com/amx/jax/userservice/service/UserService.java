@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -48,6 +50,7 @@ import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.ContactDetail;
 import com.amx.jax.dbmodel.CountryMasterView;
 import com.amx.jax.dbmodel.Customer;
+import com.amx.jax.dbmodel.CustomerIdProof;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.CustomerRemittanceTransactionView;
 import com.amx.jax.dbmodel.CustomerVerification;
@@ -74,6 +77,7 @@ import com.amx.jax.scope.TenantContext;
 import com.amx.jax.services.JaxNotificationService;
 import com.amx.jax.userservice.dao.AbstractUserDao;
 import com.amx.jax.userservice.dao.CustomerDao;
+import com.amx.jax.userservice.dao.CustomerIdProofDao;
 import com.amx.jax.userservice.manager.SecurityQuestionsManager;
 import com.amx.jax.userservice.repository.CustomerRepository;
 import com.amx.jax.userservice.repository.LoginLogoutHistoryRepository;
@@ -155,6 +159,8 @@ public class UserService extends AbstractUserService {
 
 	@Autowired
 	AuditService auditService;
+	@Autowired
+	CustomerIdProofDao customerIdProofDao;
 
 	@Override
 	public ApiResponse registerUser(AbstractUserModel userModel) {
@@ -1009,9 +1015,18 @@ public class UserService extends AbstractUserService {
 		return repo.getCustomerDetails(loginId);
 	}
 	
+	@Transactional
 	public void deActivateFsCustomer(BigDecimal customerId) {
 		Customer customer = repo.findOne(customerId);
 		customer.setIsActive(ConstantDocument.Deleted);
+		List<CustomerIdProof> activeIdProofs = customerIdProofDao.getActiveCustomeridProofForIdType(customerId,
+				customer.getIdentityTypeId());
+		for (CustomerIdProof customerIdProof : activeIdProofs) {
+			customerIdProof.setIdentityStatus(ConstantDocument.No);
+		}
+		if (!CollectionUtils.isEmpty(activeIdProofs)) {
+			customerIdProofDao.save(activeIdProofs);
+		}
 		repo.save(customer);
 	}
 }

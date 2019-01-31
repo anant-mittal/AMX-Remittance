@@ -417,7 +417,7 @@ public class BeneficiaryService extends AbstractService {
 		beneList = beneList.stream().filter(i -> ConstantDocument.Yes.equalsIgnoreCase(i.getIsActive()))
 				.collect(Collectors.toList());
 		if (beneList.isEmpty()) {
-			throw new GlobalException(JaxError.BENEFICIARY_LIST_NOT_FOUND, "My favourite eneficiary list is not found");
+			throw new GlobalException(JaxError.BENEFICIARY_LIST_NOT_FOUND, "My favourite beneficiary list is not found");
 		} else {
 			response.getData().getValues().addAll(convertBeneList(beneList));
 			response.setResponseStatus(ResponseStatus.OK);
