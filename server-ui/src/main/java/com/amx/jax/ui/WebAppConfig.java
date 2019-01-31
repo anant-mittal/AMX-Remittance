@@ -1,5 +1,6 @@
 package com.amx.jax.ui;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -13,6 +14,12 @@ import com.amx.jax.ui.UIConstants.Features;
 @TenantScoped
 @Component
 public class WebAppConfig {
+
+	@Autowired
+	SSOTranx2 sSOTranx2;
+
+	@Autowired
+	SSOTranx sSOTranx;
 
 	/** The clean CDN url. */
 	@Value("${jax.cdn.url}")

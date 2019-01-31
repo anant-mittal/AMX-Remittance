@@ -6,6 +6,13 @@ import org.slf4j.LoggerFactory;
 import com.amx.jax.AppContextUtil;
 import com.amx.utils.ArgUtil;
 
+/**
+ * @deprecated use {@link com.amx.jax.def.ATxCacheBox}
+ * @author lalittanwar
+ *
+ * @param <T>
+ */
+@Deprecated
 public abstract class ATransactionModel<T> {
 
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());

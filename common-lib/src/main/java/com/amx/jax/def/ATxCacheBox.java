@@ -32,6 +32,10 @@ public abstract class ATxCacheBox<T> {
 		return key;
 	}
 
+	private String getCacheKey(String key) {
+		return this.getClass().getSimpleName() + "-" + key;
+	}
+
 	/**
 	 * Returns the value to which the specified key is mapped, or {@code null} if
 	 * this map contains no mapping for the key.
@@ -43,7 +47,7 @@ public abstract class ATxCacheBox<T> {
 	 *         this map contains no mapping for the key
 	 */
 	public T get() {
-		return this.getCacheBox().get(getTranxId());
+		return this.getCacheBox().get(getCacheKey(getTranxId()));
 	};
 
 	/**
@@ -53,12 +57,11 @@ public abstract class ATxCacheBox<T> {
 	 * If {@link MapWriter} is defined then new map entry is stored in write-through
 	 * mode.
 	 *
-	 * @param value
-	 *            - map value
+	 * @param value - map value
 	 * @return previous associated value
 	 */
 	public T put(T value) {
-		return this.getCacheBox().put(getTranxId(), value);
+		return this.getCacheBox().put(getCacheKey(getTranxId()), value);
 	};
 
 	/**
@@ -69,14 +72,13 @@ public abstract class ATxCacheBox<T> {
 	 * If {@link MapWriter} is defined then new map entry is stored in write-through
 	 * mode.
 	 *
-	 * @param value
-	 *            - map value
+	 * @param value - map value
 	 * @return <code>null</code> if key is a new one in the hash and value was set.
 	 *         Previous value if key already exists in the hash and change hasn't
 	 *         been made.
 	 */
 	public T putIfAbsent(T value) {
-		return this.getCacheBox().putIfAbsent(getTranxId(), value);
+		return this.getCacheBox().putIfAbsent(getCacheKey(getTranxId()), value);
 	};
 
 	/**
@@ -90,7 +92,7 @@ public abstract class ATxCacheBox<T> {
 	 *         <code>false</code>.
 	 */
 	public T remove() {
-		return this.getCacheBox().remove(getTranxId());
+		return this.getCacheBox().remove(getCacheKey(getTranxId()));
 	};
 
 	/**
@@ -101,13 +103,12 @@ public abstract class ATxCacheBox<T> {
 	 * If {@link MapWriter} is defined then new <code>value</code>is written in
 	 * write-through mode.
 	 *
-	 * @param value
-	 *            - map value
+	 * @param value - map value
 	 * @return previous associated value or <code>null</code> if there wasn't any
 	 *         association and change hasn't been made
 	 */
 	public T replace(T value) {
-		return this.getCacheBox().put(getTranxId(), value);
+		return this.getCacheBox().put(getCacheKey(getTranxId()), value);
 	};
 
 	/**
@@ -118,15 +119,13 @@ public abstract class ATxCacheBox<T> {
 	 * If {@link MapWriter} is defined then <code>newValue</code>is written in
 	 * write-through mode.
 	 * 
-	 * @param oldValue
-	 *            - map old value
-	 * @param newValue
-	 *            - map new value
+	 * @param oldValue - map old value
+	 * @param newValue - map new value
 	 * @return <code>true</code> if value has been replaced otherwise
 	 *         <code>false</code>.
 	 */
 	public boolean replace(T oldValue, T newValue) {
-		return this.getCacheBox().replace(getTranxId(), oldValue, newValue);
+		return this.getCacheBox().replace(getCacheKey(getTranxId()), oldValue, newValue);
 	};
 
 	/**
@@ -142,7 +141,7 @@ public abstract class ATxCacheBox<T> {
 	 *         specified but non existing keys
 	 */
 	public long fastRemove() {
-		return this.getCacheBox().fastRemove(getTranxId());
+		return this.getCacheBox().fastRemove(getCacheKey(getTranxId()));
 	};
 
 	/**
@@ -155,14 +154,13 @@ public abstract class ATxCacheBox<T> {
 	 * If {@link MapWriter} is defined then new map entry is stored in write-through
 	 * mode.
 	 *
-	 * @param value
-	 *            - map value
+	 * @param value - map value
 	 * @return <code>true</code> if key is a new key in the hash and value was set.
 	 *         <code>false</code> if key already exists in the hash and the value
 	 *         was updated.
 	 */
 	public boolean fastPut(T value) {
-		return this.getCacheBox().fastPut(getTranxId(), value);
+		return this.getCacheBox().fastPut(getCacheKey(getTranxId()), value);
 	};
 
 	/**
@@ -176,14 +174,13 @@ public abstract class ATxCacheBox<T> {
 	 * If {@link MapWriter} is defined then new map entry is stored in write-through
 	 * mode.
 	 *
-	 * @param value
-	 *            - map value
+	 * @param value - map value
 	 * @return <code>true</code> if key is a new one in the hash and value was set.
 	 *         <code>false</code> if key already exists in the hash and change
 	 *         hasn't been made.
 	 */
 	public boolean fastPutIfAbsent(T value) {
-		return this.getCacheBox().fastPutIfAbsent(getTranxId(), value);
+		return this.getCacheBox().fastPutIfAbsent(getCacheKey(getTranxId()), value);
 	};
 
 	/**
@@ -193,13 +190,12 @@ public abstract class ATxCacheBox<T> {
 	 * If {@link MapWriter} is defined then <code>key</code>is deleted in
 	 * write-through mode.
 	 *
-	 * @param value
-	 *            - map value
+	 * @param value - map value
 	 * @return <code>true</code> if map entry has been replaced otherwise
 	 *         <code>false</code>.
 	 */
 	public boolean remove(Object value) {
-		return this.getCacheBox().remove(getTranxId(), value);
+		return this.getCacheBox().remove(getCacheKey(getTranxId()), value);
 	};
 
 	/**
@@ -210,13 +206,11 @@ public abstract class ATxCacheBox<T> {
 	 *           the key is absent. Implementations which support null values
 	 *           <strong>must</strong> override this default implementation.
 	 *
-	 * @throws ClassCastException
-	 *             {@inheritDoc}
-	 * @throws NullPointerException
-	 *             {@inheritDoc}
+	 * @throws ClassCastException   {@inheritDoc}
+	 * @throws NullPointerException {@inheritDoc}
 	 * @since 1.8
 	 */
 	public T getOrDefault(T defaultValue) {
-		return this.getCacheBox().getOrDefault(getTranxId(), defaultValue);
+		return this.getCacheBox().getOrDefault(getCacheKey(getTranxId()), defaultValue);
 	};
 }

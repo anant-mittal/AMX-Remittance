@@ -24,6 +24,10 @@ public class CacheBox<T> implements ICacheBox<T> {
 	@Autowired(required = false)
 	RedissonClient redisson;
 
+	public void setClient(RedissonClient redisson) {
+		this.redisson = redisson;
+	}
+
 	String cahceName = getClass().getName();
 
 	private RLocalCachedMap<String, T> cache = null;
