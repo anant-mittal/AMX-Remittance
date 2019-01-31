@@ -176,7 +176,8 @@ public class DeviceService extends AbstractService {
 		deviceValidation.validateDevice(device);
 		String sessionTokenGen = deviceManager.generateSessionPairToken(device);
 		if (!deviceSessionToken.equals(device.getSessionToken()) ||
-				TimeUtils.isDead(device.getModifiedDate().getTime(), deviceManager.getDeviceSessionTimeout() * 1000)
+				TimeUtils.isDead(device.getOtpTokenCreatedDate().getTime(),
+						deviceManager.getDeviceSessionTimeout() * 1000)
 		// || !deviceSessionToken.equals(sessionTokenGen)
 		) {
 			throw new AuthServiceException(RbaacServiceError.CLIENT_EXPIRED_SESSION_TOKEN, "Session token is expired");
