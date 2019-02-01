@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -21,6 +22,7 @@ import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.EmployeeInfo;
 import com.amx.amxlib.model.PersonInfo;
 import com.amx.amxlib.model.notification.RemittanceTransactionFailureAlertModel;
+import com.amx.jax.async.ExecutorConfig;
 import com.amx.jax.dbmodel.ApplicationSetup;
 import com.amx.jax.dbmodel.ExEmailNotification;
 import com.amx.jax.dict.Tenant;
@@ -247,7 +249,8 @@ public class JaxNotificationService {
 		logger.info("Email to - " + pinfo.getEmail() + " first name : " + pinfo.getFirstName());
 		sendEmail(email);
 	}
-
+	
+	@Async(ExecutorConfig.EXECUTER_TASK)
 	public void sendEmail(Email email) {
 		try {
 			postManService.sendEmailAsync(email);

@@ -257,7 +257,7 @@ public class RemittanceTransactionManager {
 				+ routingBankId + "\t serviceMasterId :" + serviceMasterId);
 		List<ExchangeRateApprovalDetModel> exchangeRates = exchangeRateDao.getExchangeRatesForRoutingBank(currencyId,
 				meta.getCountryBranchId(), rountingCountryId, applicationCountryId, routingBankId, serviceMasterId);
-		if (!jaxProperties.getExrateBestRateLogicEnable() && !jaxTenantProperties.getIsDynamicPricingEnabled()
+		if (!jaxTenantProperties.getExrateBestRateLogicEnable() && !jaxTenantProperties.getIsDynamicPricingEnabled()
 				&& (exchangeRates == null || exchangeRates.isEmpty())) {
 			throw new GlobalException(REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL,
 					"No exchange rate found for bank- " + routingBankId);
@@ -586,7 +586,7 @@ public class RemittanceTransactionManager {
 		if (jaxTenantProperties.getIsDynamicPricingEnabled()) {
 			exchangeRateBreakup = newExchangeRateService.getExchangeRateBreakUpUsingDynamicPricing(fCurrencyId,
 					lcAmount, fcAmount, beneBankCountryId, routingBankId);
-		} else if (jaxProperties.getExrateBestRateLogicEnable()) {
+		} else if (jaxTenantProperties.getExrateBestRateLogicEnable()) {
 			exchangeRateBreakup = newExchangeRateService.getExchangeRateBreakUpUsingBestRate(fCurrencyId, lcAmount,
 					fcAmount, routingBankId);
 		} else {

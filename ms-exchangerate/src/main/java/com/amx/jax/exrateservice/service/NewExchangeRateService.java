@@ -35,8 +35,6 @@ import com.amx.jax.util.RoundUtil;
 public class NewExchangeRateService extends ExchangeRateService {
 
 	@Autowired
-	JaxProperties jaxProperties;
-	@Autowired
 	JaxDynamicPriceService jaxDynamicPriceService;
 	@Autowired
 	JaxTenantProperties jaxTenantProperties;
@@ -59,7 +57,7 @@ public class NewExchangeRateService extends ExchangeRateService {
 			response.getData().setType(outputModel.getModelType());
 			return response;
 		}
-		if (!jaxProperties.getExrateBestRateLogicEnable()) {
+		if (!jaxTenantProperties.getExrateBestRateLogicEnable()) {
 			return super.getExchangeRatesForOnline(fromCurrency, toCurrency, lcAmount, routingBankId);
 		}
 		logger.info("In getExchangeRatesForOnline, parames- " + fromCurrency + " toCurrency " + toCurrency + " amount "
