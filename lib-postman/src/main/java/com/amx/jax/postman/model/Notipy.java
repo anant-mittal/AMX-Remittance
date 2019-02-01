@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Notipy extends Message {
 
 	private static final long serialVersionUID = -8315838727087594607L;
@@ -13,7 +16,7 @@ public class Notipy extends Message {
 		ALMEX, MODEX
 	}
 
-	public static enum Channel {
+	public static enum Channel implements IChannel {
 		NOTIPY("C9AK11W2K"), ALERTY("CET4055AB"), FEED("CET8JSKFZ"), DEPLOYER("C8L3GL92A"),
 		GENERAL("C7F823MLJ"), INQUIRY("CAQ4WUNAZ", Workspace.MODEX);
 

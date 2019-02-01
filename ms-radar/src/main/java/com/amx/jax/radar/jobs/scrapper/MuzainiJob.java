@@ -28,6 +28,8 @@ import com.amx.jax.rest.RestService;
 import com.amx.utils.ArgUtil;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
+import net.javacrumbs.shedlock.core.SchedulerLock;
+
 @Configuration
 @EnableScheduling
 @Component
@@ -45,6 +47,9 @@ public class MuzainiJob {
 
 	public static final Logger LOGGER = LoggerService.getLogger(MuzainiJob.class);
 
+	@SchedulerLock(name = "MuzainiJob",
+			lockAtLeastFor = AmxCurConstants.INTERVAL_MIN_30,
+			lockAtMostFor = AmxCurConstants.INTERVAL_HRS)
 	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_MIN_30)
 	public void fetchAmanKuwaitModels() {
 

@@ -18,6 +18,7 @@ import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.config.JaxProperties;
+import com.amx.jax.config.JaxTenantProperties;
 import com.amx.jax.dal.ExchangeRateProcedureDao;
 import com.amx.jax.dao.CurrencyMasterDao;
 import com.amx.jax.dbmodel.CurrencyMasterModel;
@@ -63,7 +64,7 @@ public class CurrencyMasterService extends AbstractService {
 	MetaService metaSerivce;
 	
 	@Autowired
-	JaxProperties jaxProperties; 
+	JaxTenantProperties jaxTenantProperties; 
 	
 	private Logger logger = Logger.getLogger(CurrencyMasterService.class);
 
@@ -222,7 +223,7 @@ public class CurrencyMasterService extends AbstractService {
 		List<CurrencyMasterDTO> currencyListDto = new ArrayList<>();
 		currencyList.forEach(currency -> {
 			CurrencyMasterModel currencyMaster = allCurrencies.get(currency.getCurrencyId());
-			if (jaxProperties.getBeneThreeCountryCheck() && !beneCountryId.equals(currencyMaster.getCountryId())) {
+			if (jaxTenantProperties.getBeneThreeCountryCheck() && !beneCountryId.equals(currencyMaster.getCountryId())) {
 				return;
 			}
 			currencyListDto.add(convertModel(currencyMaster));

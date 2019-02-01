@@ -9,8 +9,11 @@ import java.util.Map;
 import com.amx.jax.dict.Language;
 import com.amx.jax.postman.model.ITemplates.ITemplate;
 import com.amx.utils.JsonUtil;
+import com.amx.utils.StringUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Message implements Serializable {
 
 	private static final long serialVersionUID = 1363933600245334964L;
@@ -19,6 +22,9 @@ public class Message implements Serializable {
 
 	public static enum Status {
 		INIT, SENT, DELIVERED, READ, NOT_SENT, FAILED
+	}
+
+	public static interface IChannel {
 	}
 
 	protected long timestamp;
@@ -127,7 +133,7 @@ public class Message implements Serializable {
 	 */
 	public void addTo(String... recieverIds) {
 		for (String recieverId : recieverIds) {
-			this.to.add(recieverId);
+			this.to.add(StringUtils.trim(recieverId));
 		}
 	}
 

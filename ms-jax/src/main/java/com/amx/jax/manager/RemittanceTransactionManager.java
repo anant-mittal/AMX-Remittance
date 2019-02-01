@@ -191,7 +191,7 @@ public class RemittanceTransactionManager {
 	@Autowired
 	RoutingService routingService;
 	@Autowired
-	JaxProperties jaxProperties;
+	JaxTenantProperties jaxTenantProperties;
 	@Autowired
 	NewExchangeRateService newExchangeRateService;
 	@Autowired
@@ -200,8 +200,6 @@ public class RemittanceTransactionManager {
 	CountryService countryService;
 	@Autowired
 	JaxConfigService jaxConfigService;
-	@Autowired
-	JaxTenantProperties jaxTenantProperties ; 
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -748,11 +746,11 @@ public class RemittanceTransactionManager {
 	public RemittanceApplicationResponseModel saveApplication(RemittanceTransactionRequestModel model) {
 		this.isSaveRemittanceFlow = true;
 		RemittanceTransactionResponsetModel validationResults = this.validateTransactionData(model);
-		if (jaxProperties.getFlexFieldEnabled()) {
+		if (jaxTenantProperties.getFlexFieldEnabled()) {
 			remittanceTransactionRequestValidator.validateExchangeRate(model, validationResults);
 			remittanceTransactionRequestValidator.validateFlexFields(model, remitApplParametersMap);
 		}
-		remittanceAdditionalFieldManager.validateAdditionalFields(model);
+		remittanceAdditionalFieldManager.validateAdditionalFields(model, remitApplParametersMap);
 		// validate routing bank requirements
 		ExchangeRateBreakup breakup = validationResults.getExRateBreakup();
 		BigDecimal netAmountPayable = breakup.getNetAmount();
@@ -766,7 +764,7 @@ public class RemittanceTransactionManager {
 		RemittanceAppBenificiary remittanceAppBeneficairy = remitAppBeneManager
 				.createRemittanceAppBeneficiary(remittanceApplication);
 		List<AdditionalInstructionData> additionalInstrumentData;
-		if (jaxProperties.getFlexFieldEnabled()) {
+		if (jaxTenantProperties.getFlexFieldEnabled()) {
 			additionalInstrumentData = remittanceAppAddlDataManager.createAdditionalInstnData(remittanceApplication,
 					model);
 		} else {
