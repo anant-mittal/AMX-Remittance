@@ -16,7 +16,8 @@ public class CustomerValidationService {
 	private CountryUtil util;
 
 	public boolean validateIdentityInt(String civilId, String countryCode, BigDecimal identityType) {
-		if(identityType.equals(ConstantDocument.BIZ_COMPONENT_ID_CIVIL_ID)){
+		if(identityType.equals(ConstantDocument.BIZ_COMPONENT_ID_CIVIL_ID) || 
+				identityType.equals(ConstantDocument.BIZ_COMPONENT_ID_NEW_CIVIL_ID)){
 			return validateCivilId(civilId, countryCode);
 		}
 		if(identityType.equals(ConstantDocument.BIZ_COMPONENT_ID_GCC_ID)){
@@ -26,7 +27,7 @@ public class CustomerValidationService {
 			return validateBedouinId(civilId, countryCode);
 		}
 		
-		return false;
+		return true;
 	}
 	
 	public boolean validateCivilId(String civilId, String countryCode) {

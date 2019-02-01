@@ -14,9 +14,6 @@ public class SessionEvent extends AuditEvent {
 
 		@Override
 		public EventMarker marker() {
-			if (this == SESSION_AUTHED || this == SESSION_EXPIRED || this == SESSION_UNAUTHED) {
-				return EventMarker.AUDIT;
-			}
 			return EventMarker.GAUGE;
 		}
 	}

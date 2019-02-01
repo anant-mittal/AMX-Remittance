@@ -9,6 +9,7 @@ import static com.amx.jax.error.JaxError.TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED;
 import static com.amx.jax.error.JaxError.TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED_NEW_BENE;
 import static com.amx.jax.error.JaxError.TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED_PER_BENE;
 
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
@@ -20,6 +21,8 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +36,7 @@ import com.amx.amxlib.constant.AuthType;
 import com.amx.amxlib.constant.CommunicationChannel;
 import com.amx.amxlib.constant.LoyalityPointState;
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.PromotionDto;
@@ -77,6 +81,7 @@ import com.amx.jax.exrateservice.dao.PipsMasterDao;
 import com.amx.jax.exrateservice.service.NewExchangeRateService;
 import com.amx.jax.logger.AuditEvent;
 import com.amx.jax.logger.AuditService;
+import com.amx.jax.manager.remittance.RemittanceAdditionalFieldManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.VTransferRepository;
@@ -171,6 +176,8 @@ public class RemittanceTransactionManager {
 
 	@Autowired
 	private RemittanceTransactionRequestValidator remittanceTransactionRequestValidator;
+	@Autowired
+	RemittanceAdditionalFieldManager remittanceAdditionalFieldManager;
 
 	@Autowired
 	private UserService userService;
@@ -218,6 +225,7 @@ public class RemittanceTransactionManager {
 		HashMap<String, Object> beneBankDetails = getBeneBankDetails(beneficiary);
 		remitApplParametersMap.putAll(beneBankDetails);
 		Map<String, Object> routingDetails = routingService.getRoutingDetails(remitApplParametersMap);
+
 		remitApplParametersMap.putAll(routingDetails);
 		remitApplParametersMap.put("P_BENEFICIARY_SWIFT_BANK1", routingDetails.get("P_SWIFT"));
 		remitApplParametersMap.put("P_BENEFICARY_ACCOUNT_SEQ_ID", beneficiary.getBeneficiaryAccountSeqId());
@@ -744,6 +752,7 @@ public class RemittanceTransactionManager {
 			remittanceTransactionRequestValidator.validateExchangeRate(model, validationResults);
 			remittanceTransactionRequestValidator.validateFlexFields(model, remitApplParametersMap);
 		}
+		remittanceAdditionalFieldManager.validateAdditionalFields(model);
 		// validate routing bank requirements
 		ExchangeRateBreakup breakup = validationResults.getExRateBreakup();
 		BigDecimal netAmountPayable = breakup.getNetAmount();
@@ -751,6 +760,7 @@ public class RemittanceTransactionManager {
 		deactivatePreviousApplications();
 		validateAdditionalCheck();
 		validateAdditionalBeneDetails(model);
+		remittanceAdditionalFieldManager.processAdditionalFields(model);
 		RemittanceApplication remittanceApplication = remitAppManager.createRemittanceApplication(model,
 				validatedObjects, validationResults, remitApplParametersMap);
 		RemittanceAppBenificiary remittanceAppBeneficairy = remitAppBeneManager
@@ -810,9 +820,16 @@ public class RemittanceTransactionManager {
 				throw new GlobalException(
 						"The selected beneficiary is deactivated. Please activate the beneficiary to proceed with the transaction.");
 			}
+						
+			// Beneficiary not allow to remit if any data missing
+			BeneficiaryListDTO beneDtoCheck = beneCheckService.beneCheck(transactionHistroyService.convertBeneModelToDto(beneficiary));
+			
+			if(CollectionUtils.isNotEmpty(beneDtoCheck.getBeneficiaryErrorStatus() )) {
+				throw new GlobalException(beneDtoCheck.getBeneficiaryErrorStatus().get(0).getErrorDesc());
+			}
 		}
 	}
-
+	
 	private void validateAdditionalCheck() {
 		applicationProcedureDao.getAdditionalCheckProcedure(remitApplParametersMap);
 	}

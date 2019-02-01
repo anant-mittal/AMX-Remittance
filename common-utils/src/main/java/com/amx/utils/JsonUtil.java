@@ -10,6 +10,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import com.amx.utils.ArgUtil.EnumById;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.Version;
@@ -148,6 +149,7 @@ public final class JsonUtil {
 		module.addSerializer(EnumType.class, new EnumTypeSerializer());
 		module.addSerializer(BigDecimal.class, new BigDecimalSerializer());
 		module.addSerializer(JsonSerializerType.class, new JsonSerializerTypeSerializer());
+		mapper.setSerializationInclusion(Include.NON_NULL);
 		mapper.registerModule(module);
 		return mapper;
 	}

@@ -23,6 +23,7 @@ import com.amx.amxlib.model.trnx.BeneficiaryTrnxModel;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.ServiceApplicabilityField;
 import com.amx.jax.dao.BlackListDao;
+import com.amx.jax.dbmodel.BankMasterModel;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.BlackListModel;
 import com.amx.jax.dbmodel.ServiceApplicabilityRule;
@@ -100,8 +101,20 @@ public class BeneficiaryValidationService {
 		// validate only for BANK channel and not for CASH channel
 		if (!BigDecimal.ONE.equals(beneAccountModel.getServiceGroupId())) {
 			validateBankAccountNumber(beneAccountModel);
+			validateIban(beneAccountModel);
 			validateDuplicateBankAccount(beneAccountModel);
 			validateSwiftCode(beneAccountModel);
+		}
+	}
+
+	private void validateIban(BeneAccountModel beneAccountModel) {
+		BankMasterModel bankMaster = bankService.getBankById(beneAccountModel.getBankId());
+		if (bankMaster == null) {
+			return;
+		}
+		String ibanFlag = bankMaster.getIbanFlag();
+		if (ConstantDocument.Yes.equalsIgnoreCase(ibanFlag) && StringUtils.isBlank(beneAccountModel.getIbanNumber())) {
+			throw new GlobalException(JaxError.BANK_IBAN_EMPTY, "IBAN is required");
 		}
 	}
 
