@@ -243,7 +243,7 @@ public class RemitPriceManager {
 		/**
 		 * Get All Cost rates from GLCBAL
 		 */
-		Map<BigDecimal, ViewExGLCBAL> bankGlcBalMap = getGLCBALRates(currencyId, routingBankIds);
+		Map<BigDecimal, List<ViewExGLCBAL>> bankGlcBalMap = getGLCBALRates(currencyId, routingBankIds);
 
 		if (bankGlcBalMap == null || bankGlcBalMap.isEmpty()) {
 			throw new PricerServiceException(PricerServiceError.MISSING_GLCBAL_ENTRIES,
@@ -275,12 +275,14 @@ public class RemitPriceManager {
 
 			BigDecimal bankId = rate.getBankMaster().getBankId();
 
-			ViewExGLCBAL viewExGLCBAL = bankGlcBalMap.get(bankId);
+			// ViewExGLCBAL viewExGLCBAL = bankGlcBalMap.get(bankId);
 
-			if (null != viewExGLCBAL) {
+			BigDecimal avgBankGLCBALRate = pricingRateDetailsDTO.getAvgRateGLCForBank(bankId);
+
+			if (null != avgBankGLCBALRate) {
 
 				// Update GLCBAL Rate to Markup Adjusted Rates
-				BigDecimal adjustedSellRate = viewExGLCBAL.getRateAvgRate().add(margin.getMarginMarkup());
+				BigDecimal adjustedSellRate = avgBankGLCBALRate.add(margin.getMarginMarkup());
 
 				if (bankExchangeRateMap.containsKey(bankId)) {
 
@@ -346,11 +348,19 @@ public class RemitPriceManager {
 		return margin;
 	}
 
-	private Map<BigDecimal, ViewExGLCBAL> getGLCBALRates(BigDecimal currencyId, List<BigDecimal> routingBankIds) {
+	/**
+	 * Average Rate Computation changed to compute the weighted Average of all the
+	 * GLCBAL
+	 * 
+	 * @param currencyId
+	 * @param routingBankIds
+	 * @return
+	 */
+	private Map<BigDecimal, List<ViewExGLCBAL>> getGLCBALRates(BigDecimal currencyId, List<BigDecimal> routingBankIds) {
 
 		String curCode = StringUtils.leftPad(String.valueOf(currencyId.intValue()), 3, "0");
 
-		Map<BigDecimal, ViewExGLCBAL> bankGlcBalMap = new HashMap<BigDecimal, ViewExGLCBAL>();
+		Map<BigDecimal, List<ViewExGLCBAL>> bankGlcBalMap = new HashMap<BigDecimal, List<ViewExGLCBAL>>();
 
 		List<ViewExGLCBAL> glcbalRatesForBanks = viewExGLCBALDao.getGLCBALforCurrencyAndBank(curCode, routingBankIds);
 
@@ -358,14 +368,21 @@ public class RemitPriceManager {
 
 			if (bankGlcBalMap.containsKey(viewExGLCBAL.getBankId())) {
 
-				ViewExGLCBAL viewExGLCBALPrev = bankGlcBalMap.get(viewExGLCBAL.getBankId());
+				bankGlcBalMap.get(viewExGLCBAL.getBankId()).add(viewExGLCBAL);
 
-				// Considering only the rates with Max GLCBAL
-				if (viewExGLCBALPrev.getRateFcCurBal().compareTo(viewExGLCBAL.getRateCurBal()) < 0) {
-					bankGlcBalMap.put(viewExGLCBAL.getBankId(), viewExGLCBAL);
-				}
+				/**
+				 * This Logic is DISABLED // Considering only the rates with Max GLCBAL if
+				 * (viewExGLCBALPrev.getRateFcCurBal().compareTo(viewExGLCBAL.getRateCurBal()) <
+				 * 0) { bankGlcBalMap.put(viewExGLCBAL.getBankId(), viewExGLCBAL); }
+				 */
+
 			} else {
-				bankGlcBalMap.put(viewExGLCBAL.getBankId(), viewExGLCBAL);
+
+				List<ViewExGLCBAL> glcBalList = new ArrayList<ViewExGLCBAL>();
+
+				glcBalList.add(viewExGLCBAL);
+
+				bankGlcBalMap.put(viewExGLCBAL.getBankId(), glcBalList);
 			}
 
 		}

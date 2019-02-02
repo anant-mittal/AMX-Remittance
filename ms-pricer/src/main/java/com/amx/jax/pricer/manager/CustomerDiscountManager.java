@@ -22,7 +22,6 @@ import com.amx.jax.pricer.dbmodel.ChannelDiscount;
 import com.amx.jax.pricer.dbmodel.Customer;
 import com.amx.jax.pricer.dbmodel.CustomerCategoryDiscount;
 import com.amx.jax.pricer.dbmodel.PipsMaster;
-import com.amx.jax.pricer.dbmodel.ViewExGLCBAL;
 import com.amx.jax.pricer.dto.ExchangeRateDetails;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.util.PricingRateDetailsDTO;
@@ -99,7 +98,8 @@ public class CustomerDiscountManager {
 			BigDecimal amountSlabPips = BIGD_ZERO;
 
 			if (bankAmountSlabDiscounts.containsKey(bankExRateDetail.getBankId().longValue())) {
-				TreeMap<BigDecimal, PipsMaster> pipsMap = bankAmountSlabDiscounts.get(bankExRateDetail.getBankId().longValue());
+				TreeMap<BigDecimal, PipsMaster> pipsMap = bankAmountSlabDiscounts
+						.get(bankExRateDetail.getBankId().longValue());
 				for (Entry<BigDecimal, PipsMaster> entry : pipsMap.entrySet()) {
 
 					if (bankExRateDetail.getSellRateBase().getConvertedFCAmount().compareTo(entry.getKey()) <= 0) {
@@ -116,18 +116,25 @@ public class CustomerDiscountManager {
 
 			totalDiscountPips.add(ccDiscountPips);
 
-			BigDecimal discountedSellRate = bankExRateDetail.getSellRateBase().getInverseRate().subtract(totalDiscountPips);
+			BigDecimal discountedSellRate = bankExRateDetail.getSellRateBase().getInverseRate()
+					.subtract(totalDiscountPips);
 
 			/**
 			 * Compute Base Sell rate : Cost + Margin
 			 */
 			BigDecimal adjustedBaseSellRate = BIGD_ZERO;
 
-			if (pricingRateDetailsDTO.getBankGlcBalMap() != null) {
+			if (pricingRateDetailsDTO.getAvgRateGLCForBank(bankExRateDetail.getBankId()) != null) {
 
-				ViewExGLCBAL viewExGLCBAL = pricingRateDetailsDTO.getBankGlcBalMap().get(bankExRateDetail.getBankId());
+				// Old Logic
+				// ViewExGLCBAL viewExGLCBAL =
+				// pricingRateDetailsDTO.getBankGlcBalMap().get(bankExRateDetail.getBankId());
 
-				adjustedBaseSellRate = viewExGLCBAL.getRateAvgRate().add(margin);
+				// adjustedBaseSellRate = viewExGLCBAL.getRateAvgRate().add(margin);
+
+				// New Logic
+				adjustedBaseSellRate = pricingRateDetailsDTO.getAvgRateGLCForBank(bankExRateDetail.getBankId())
+						.add(margin);
 
 			}
 
@@ -138,7 +145,8 @@ public class CustomerDiscountManager {
 			bankExRateDetail.setDiscountPipsDetails(new HashMap<DISCOUNT_TYPE, String>());
 
 			bankExRateDetail.getDiscountPipsDetails().put(DISCOUNT_TYPE.CHANNEL, channelDiscountPips.toPlainString());
-			bankExRateDetail.getDiscountPipsDetails().put(DISCOUNT_TYPE.CUSTOMER_CATEGORY, ccDiscountPips.toPlainString());
+			bankExRateDetail.getDiscountPipsDetails().put(DISCOUNT_TYPE.CUSTOMER_CATEGORY,
+					ccDiscountPips.toPlainString());
 			bankExRateDetail.getDiscountPipsDetails().put(DISCOUNT_TYPE.AMOUNT_SLAB, amountSlabPips.toPlainString());
 
 			if (pricingRequestDTO.getLocalAmount() != null) {

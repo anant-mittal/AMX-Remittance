@@ -1,6 +1,7 @@
 package com.amx.jax.pricer.util;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,17 +17,19 @@ public class PricingRateDetailsDTO {
 
 	private Map<BigDecimal, BankDetailsDTO> bankDetails;
 
-	private Map<BigDecimal, ViewExGLCBAL> bankGlcBalMap;
+	private Map<BigDecimal, List<ViewExGLCBAL>> bankGlcBalMap;
+
+	private Map<BigDecimal, BigDecimal> bankGLCBALAvgRateMap;
 
 	private OnlineMarginMarkup margin;
 
 	private Map<String, Object> info = new HashMap<String, Object>();
 
-	public Map<BigDecimal, ViewExGLCBAL> getBankGlcBalMap() {
+	public Map<BigDecimal, List<ViewExGLCBAL>> getBankGlcBalMap() {
 		return bankGlcBalMap;
 	}
 
-	public void setBankGlcBalMap(Map<BigDecimal, ViewExGLCBAL> bankGlcBalMap) {
+	public void setBankGlcBalMap(Map<BigDecimal, List<ViewExGLCBAL>> bankGlcBalMap) {
 		this.bankGlcBalMap = bankGlcBalMap;
 	}
 
@@ -60,6 +63,43 @@ public class PricingRateDetailsDTO {
 
 	public void setInfo(Map<String, Object> info) {
 		this.info = info;
+	}
+
+	/**
+	 * Get Average GLCBAL Rate
+	 * 
+	 * @param bankId
+	 * @return
+	 */
+	public BigDecimal getAvgRateGLCForBank(BigDecimal bankId) {
+
+		if (null == this.bankGLCBALAvgRateMap || !this.bankGLCBALAvgRateMap.containsKey(bankId)) {
+			// Compute and Save Avg Rate
+
+			if (!this.bankGlcBalMap.containsKey(bankId)) {
+				return null;
+			}
+
+			List<ViewExGLCBAL> glcBalList = this.bankGlcBalMap.get(bankId);
+
+			BigDecimal sumRateCurBal = new BigDecimal(0);
+			BigDecimal sumRateFcCurBal = new BigDecimal(0);
+
+			for (ViewExGLCBAL glcbal : glcBalList) {
+				sumRateCurBal.add(null == glcbal.getRateCurBal() ? new BigDecimal(0) : glcbal.getRateCurBal());
+				sumRateFcCurBal.add(null == glcbal.getRateFcCurBal() ? new BigDecimal(0) : glcbal.getRateFcCurBal());
+			}
+
+			BigDecimal avgRate = sumRateCurBal.divide(sumRateFcCurBal, 10, RoundingMode.HALF_UP);
+
+			this.bankGLCBALAvgRateMap.put(bankId, avgRate);
+
+			return avgRate;
+
+		} else {
+			return this.bankGLCBALAvgRateMap.get(bankId);
+		}
+
 	}
 
 }
