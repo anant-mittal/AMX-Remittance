@@ -19,7 +19,7 @@ public class PricingRateDetailsDTO {
 
 	private Map<BigDecimal, List<ViewExGLCBAL>> bankGlcBalMap;
 
-	private Map<BigDecimal, BigDecimal> bankGLCBALAvgRateMap;
+	private Map<BigDecimal, BigDecimal> bankGLCBALAvgRateMap = new HashMap<BigDecimal, BigDecimal>();
 
 	private OnlineMarginMarkup margin;
 
@@ -73,7 +73,7 @@ public class PricingRateDetailsDTO {
 	 */
 	public BigDecimal getAvgRateGLCForBank(BigDecimal bankId) {
 
-		if (null == this.bankGLCBALAvgRateMap || !this.bankGLCBALAvgRateMap.containsKey(bankId)) {
+		if (!this.bankGLCBALAvgRateMap.containsKey(bankId)) {
 			// Compute and Save Avg Rate
 
 			if (!this.bankGlcBalMap.containsKey(bankId)) {
@@ -86,11 +86,17 @@ public class PricingRateDetailsDTO {
 			BigDecimal sumRateFcCurBal = new BigDecimal(0);
 
 			for (ViewExGLCBAL glcbal : glcBalList) {
-				sumRateCurBal.add(null == glcbal.getRateCurBal() ? new BigDecimal(0) : glcbal.getRateCurBal());
-				sumRateFcCurBal.add(null == glcbal.getRateFcCurBal() ? new BigDecimal(0) : glcbal.getRateFcCurBal());
+				sumRateCurBal = sumRateCurBal
+						.add(null == glcbal.getRateCurBal() ? new BigDecimal(0) : glcbal.getRateCurBal());
+				sumRateFcCurBal = sumRateFcCurBal
+						.add(null == glcbal.getRateFcCurBal() ? new BigDecimal(0) : glcbal.getRateFcCurBal());
 			}
 
-			BigDecimal avgRate = sumRateCurBal.divide(sumRateFcCurBal, 10, RoundingMode.HALF_UP);
+			BigDecimal avgRate = new BigDecimal(0);
+
+			if (sumRateCurBal.doubleValue() != 0 || sumRateFcCurBal.doubleValue() != 0) {
+				avgRate = sumRateCurBal.divide(sumRateFcCurBal, 10, RoundingMode.HALF_UP);
+			}
 
 			this.bankGLCBALAvgRateMap.put(bankId, avgRate);
 

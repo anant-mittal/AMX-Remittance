@@ -70,8 +70,8 @@ public class PricingService {
 
 		pricingResponseDTO.setSellRateDetails(pricingRateDetailsDTO.getSellRateDetails());
 
-		Collections.sort(pricingResponseDTO.getSellRateDetails());
-		
+		Collections.sort(pricingResponseDTO.getSellRateDetails(), Collections.reverseOrder());
+
 		pricingResponseDTO.setInfo(pricingRateDetailsDTO.getInfo());
 
 		/*
@@ -106,7 +106,9 @@ public class PricingService {
 
 		pricingResponseDTO.setSellRateDetails(pricingRateDetailsDTO.getSellRateDetails());
 
-		Collections.sort(pricingResponseDTO.getSellRateDetails());
+		Collections.sort(pricingResponseDTO.getSellRateDetails(), Collections.reverseOrder());
+
+		Collections.reverse(pricingResponseDTO.getSellRateDetails());
 
 		return pricingResponseDTO;
 	}
