@@ -132,6 +132,11 @@ public class FxOrderTransactionModel implements Serializable {
 	@Column(name="INVENTORY_ID")
 	private String inventoryId;
 	
+	@Column(name="OTP_TOKEN_PREFIX")
+	private String otpTokenPrefix;
+	
+	@Column(name="OTP_TOKEN_CUSTOMER")
+	private String otpTokenCustomer;
 
 	public BigDecimal getIdno() {
 		return idno;
@@ -415,6 +420,22 @@ public class FxOrderTransactionModel implements Serializable {
 		this.transactionReferenceNo = transactionReferenceNo;
 	}
 
+	public String getOtpTokenPrefix() {
+		return otpTokenPrefix;
+	}
+
+	public void setOtpTokenPrefix(String otpTokenPrefix) {
+		this.otpTokenPrefix = otpTokenPrefix;
+	}
+
+	public String getOtpTokenCustomer() {
+		return otpTokenCustomer;
+	}
+
+	public void setOtpTokenCustomer(String otpTokenCustomer) {
+		this.otpTokenCustomer = otpTokenCustomer;
+	}
+	
 }
 
 
