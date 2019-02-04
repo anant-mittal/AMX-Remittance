@@ -3,20 +3,19 @@ package com.amx.jax.model.response.remittance;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.amx.jax.model.ResourceDTO;
+
 /**
  * auth : MRU
  * 
  */
 public class RoutingResponseDto {
 	List<RoutingServiceDto> serviceList = new ArrayList<>();
-	List<RoutingCountryDto> routingCountrydto = new ArrayList<>();
+	List<ResourceDTO> routingCountrydto = new ArrayList<>();
 	List<RoutingBankDto> routingBankDto = new ArrayList<>();
 	List<RoutingBranchDto> routingBankBranchDto = new ArrayList<>();
 	List<RemittanceModeDto> remittanceModeList = new ArrayList<>();
 	List<DeliveryModeDto> deliveryModeList = new ArrayList<>();
-	
-	
-	
 
 	public List<RoutingServiceDto> getServiceList() {
 		return serviceList;
@@ -26,11 +25,11 @@ public class RoutingResponseDto {
 		this.serviceList = serviceList;
 	}
 
-	public List<RoutingCountryDto> getRoutingCountrydto() {
+	public List<ResourceDTO> getRoutingCountrydto() {
 		return routingCountrydto;
 	}
 
-	public void setRoutingCountrydto(List<RoutingCountryDto> routingCountrydto) {
+	public void setRoutingCountrydto(List<ResourceDTO> routingCountrydto) {
 		this.routingCountrydto = routingCountrydto;
 	}
 
@@ -66,6 +65,4 @@ public class RoutingResponseDto {
 		this.deliveryModeList = deliveryModeList;
 	}
 
-	
-	
 }

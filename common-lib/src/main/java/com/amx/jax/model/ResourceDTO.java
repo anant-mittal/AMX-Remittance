@@ -1,5 +1,6 @@
 package com.amx.jax.model;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,28 +19,36 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author Prashant
  *
  */
-public class ResourceDTO implements IResourceEntity {
+public class ResourceDTO implements IResourceEntity, Serializable {
+
+	private static final long serialVersionUID = -5802360864645036772L;
 
 	/**
 	 * db identifier of resource
 	 */
 	@JsonProperty("_id")
-	BigDecimal resourceId;
+	protected BigDecimal resourceId;
 
 	/**
 	 * name of resource
 	 */
 	@JsonProperty("_name")
-	String resourceName;
+	protected String resourceName;
 
 	/**
 	 * A short name for resource, eg:- ISO3 codes for Countries
 	 */
 	@JsonProperty("_code")
-	String resourceCode;
+	protected String resourceCode;
 
 	public ResourceDTO() {
 
+	}
+
+	public ResourceDTO(IResourceEntity resource) {
+		this.resourceId = resource.resourceId();
+		this.resourceName = resource.resourceName();
+		this.resourceCode = resource.resourceCode();
 	}
 
 	public ResourceDTO(BigDecimal resourceId, String resourceName, String resourceCode) {
@@ -85,11 +94,15 @@ public class ResourceDTO implements IResourceEntity {
 		this.resourceCode = ArgUtil.parseAsString(resourceCode);
 	}
 
+	public void importFrom(IResourceEntity entity) {
+		this.resourceId = entity.resourceId();
+		this.resourceCode = entity.resourceCode();
+		this.resourceName = entity.resourceName();
+	}
+
 	public static ResourceDTO create(IResourceEntity entity) {
 		ResourceDTO dto = new ResourceDTO();
-		dto.setResourceId(entity.resourceId());
-		dto.setResourceCode(entity.resourceCode());
-		dto.setResourceName(entity.resourceName());
+		dto.importFrom(entity);
 		return dto;
 	}
 

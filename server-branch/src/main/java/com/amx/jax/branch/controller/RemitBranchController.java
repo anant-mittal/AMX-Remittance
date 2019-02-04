@@ -27,13 +27,16 @@ import com.amx.jax.model.request.remittance.CustomerBankRequest;
 import com.amx.jax.model.response.SourceOfIncomeDto;
 import com.amx.jax.model.response.fx.FcSaleOrderManagementDTO;
 import com.amx.jax.model.response.fx.UserStockDto;
+import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
 import com.amx.jax.model.response.remittance.CustomerShoppingCartDto;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
 import com.amx.jax.model.response.remittance.PaymentModeOfPaymentDto;
+import com.amx.jax.model.response.remittance.RoutingResponseDto;
 import com.amx.jax.rbaac.IRbaacService;
 import com.amx.jax.swagger.IStatusCodeListPlugin.ApiStatusService;
+import com.amx.utils.ArgUtil;
 
 import io.swagger.annotations.Api;
 
@@ -57,13 +60,24 @@ public class RemitBranchController {
 	}
 
 	@RequestMapping(value = "/api/remitt/purpose/list", method = { RequestMethod.POST })
-	public AmxApiResponse<PurposeOfTransactionModel, Object> getPurposeList(@RequestParam BigDecimal beneId) {
-		return AmxApiResponse.buildList(remitClient.getPurposeOfTransactions(beneId).getResults());
+	public AmxApiResponse<AdditionalExchAmiecDto, Object> getPurposeList(@RequestParam BigDecimal beneId) {
+		return branchRemittanceClient.getPurposeOfTrnx(beneId);
 	}
 
-	@RequestMapping(value = "/api/meta/income_sources/list", method = { RequestMethod.POST })
+	@RequestMapping(value = "/api/remitt/income_sources/list", method = { RequestMethod.POST })
 	public AmxApiResponse<SourceOfIncomeDto, Object> getSourceOfIncome() {
 		return AmxApiResponse.buildList(remitClient.getSourceOfIncome().getResults());
+	}
+
+	@RequestMapping(value = "/api/remitt/routing/list", method = { RequestMethod.POST })
+	public AmxApiResponse<RoutingResponseDto, Object> getRoutingSetupDeatils(
+			@RequestParam BigDecimal beneId,
+			@RequestParam(required = false) BigDecimal serviceId) {
+
+		if (ArgUtil.isEmpty(serviceId)) {
+			return branchRemittanceClient.getRoutingSetupDeatils(beneId);
+		}
+		return branchRemittanceClient.getRoutingDetailsByServiceId(beneId, serviceId);
 	}
 
 	@RequestMapping(value = "/api/remitt/bnfcry/list", method = { RequestMethod.POST })
