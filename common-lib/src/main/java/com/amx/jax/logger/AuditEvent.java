@@ -2,6 +2,7 @@ package com.amx.jax.logger;
 
 import com.amx.jax.dict.UserClient.UserDeviceClient;
 import com.amx.jax.exception.IExceptionEnum;
+import com.amx.utils.ArgUtil;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -9,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonPropertyOrder({ "description", "component", "category", "type", "timestamp", "message" })
+@JsonPropertyOrder({ "description", "message", "component", "category", "type", "result", "timestamp" })
 public abstract class AuditEvent extends AbstractEvent {
 
 	private static final long serialVersionUID = -1539116953165424464L;
@@ -149,7 +150,12 @@ public abstract class AuditEvent extends AbstractEvent {
 	}
 
 	public AuditEvent result(Result result) {
-		this.result = result;
+		this.setResult(result);
+		return this;
+	}
+
+	public AuditEvent message(Object message) {
+		this.setMessage(ArgUtil.parseAsString(message));
 		return this;
 	}
 

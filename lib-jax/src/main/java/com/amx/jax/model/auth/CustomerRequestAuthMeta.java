@@ -4,6 +4,25 @@ public class CustomerRequestAuthMeta {
 	String mOtpPrefix;
 	String eOtpPrefix;
 	QuestModelDTO ques;
+	
+	
+	public CustomerRequestAuthMeta(String mOtpPrefix, String eOtpPrefix, QuestModelDTO ques) {
+		super();
+		this.mOtpPrefix = mOtpPrefix;
+		this.eOtpPrefix = eOtpPrefix;
+		this.ques = ques;
+	}
+	
+	public CustomerRequestAuthMeta(String mOtpPrefix, String eOtpPrefix) {
+		super();
+		this.mOtpPrefix = mOtpPrefix;
+		this.eOtpPrefix = eOtpPrefix;
+	}
+
+	public CustomerRequestAuthMeta(QuestModelDTO ques) {
+		super();
+		this.ques = ques;
+	}
 
 	public String getmOtpPrefix() {
 		return mOtpPrefix;

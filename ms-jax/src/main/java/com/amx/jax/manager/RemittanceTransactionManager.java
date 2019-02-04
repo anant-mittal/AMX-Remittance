@@ -78,8 +78,10 @@ import com.amx.jax.error.JaxError;
 import com.amx.jax.exrateservice.dao.ExchangeRateDao;
 import com.amx.jax.exrateservice.dao.PipsMasterDao;
 import com.amx.jax.exrateservice.service.NewExchangeRateService;
-import com.amx.jax.logger.AuditEvent;
+import com.amx.jax.logger.AuditEvent.Result;
 import com.amx.jax.logger.AuditService;
+import com.amx.jax.logger.events.CActivityEvent;
+import com.amx.jax.logger.events.CActivityEvent.Type;
 import com.amx.jax.manager.remittance.RemittanceAdditionalFieldManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
@@ -222,7 +224,6 @@ public class RemittanceTransactionManager {
 		HashMap<String, Object> beneBankDetails = getBeneBankDetails(beneficiary);
 		remitApplParametersMap.putAll(beneBankDetails);
 		Map<String, Object> routingDetails = routingService.getRoutingDetails(remitApplParametersMap);
-
 		remitApplParametersMap.putAll(routingDetails);
 		remitApplParametersMap.put("P_BENEFICIARY_SWIFT_BANK1", routingDetails.get("P_SWIFT"));
 		remitApplParametersMap.put("P_BENEFICARY_ACCOUNT_SEQ_ID", beneficiary.getBeneficiaryAccountSeqId());
@@ -783,17 +784,14 @@ public class RemittanceTransactionManager {
 		remiteAppModel.setCivilIdOtpModel(civilIdOtpModel);
 
 		logger.info("Application saved successfully, response: " + remiteAppModel.toString());
-		auditService.log(createTransactionEvent(remiteAppModel, JaxTransactionStatus.APPLICATION_CREATED));
+
+		auditService.log(
+				new CActivityEvent(Type.APPLICATION_CREATED,
+						String.format("{}/{}", remiteAppModel.getDocumentFinancialYear(),
+								remiteAppModel.getDocumentIdForPayment())).field("STATUS")
+										.to(JaxTransactionStatus.APPLICATION_CREATED).result(Result.DONE));
 		return remiteAppModel;
 
-	}
-
-	private AuditEvent createTransactionEvent(RemittanceApplicationResponseModel remiteAppModel,
-			JaxTransactionStatus status) {
-
-		AuditEvent trnxAuditEvent = new JaxTransactionEvent(status, remiteAppModel.getDocumentIdForPayment(),
-				remiteAppModel.getDocumentFinancialYear());
-		return trnxAuditEvent;
 	}
 
 	private void deactivatePreviousApplications() {
@@ -820,7 +818,7 @@ public class RemittanceTransactionManager {
 			}
 		}
 	}
-	
+
 	private void validateAdditionalCheck() {
 		applicationProcedureDao.getAdditionalCheckProcedure(remitApplParametersMap);
 	}
