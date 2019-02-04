@@ -11,22 +11,41 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonPropertyOrder({ AuditEvent.PROP_DESC, "msg", "component", "category", "type", "result", "timestamp" })
+@JsonPropertyOrder({ AuditEvent.PROP_DESC, AuditEvent.PROP_MSG, AbstractEvent.PROP_COMPONENT, AbstractEvent.PROP_CATG,
+		AbstractEvent.PROP_TYPE, AuditEvent.PROP_RESULT, AbstractEvent.PROP_TIMSTAMP })
 public abstract class AuditEvent extends AbstractEvent {
 
+	public static final String PROP_MSG = "msg";
 	public static final String PROP_DESC = "desc";
+	public static final String PROP_RESULT = "rslt";
 	private static final long serialVersionUID = -1539116953165424464L;
+
+	@JsonProperty(PROP_RESULT)
 	protected Result result;
+
 	protected IExceptionEnum errorCode;
+
+	@JsonProperty("trxTym")
 	protected long tranxTime;
+
+	@JsonProperty("trcTym")
 	protected long traceTime;
+
+	@JsonProperty("evtTym")
 	protected long eventTime;
 
 	@JsonProperty(PROP_DESC)
 	protected String description = null;
+
+	@JsonProperty(PROP_MSG)
 	protected String message;
+
+	@JsonProperty("excp")
 	protected String exception;
+
+	@JsonProperty("excpTyp")
 	protected String exceptionType;
+
 	protected String actorId;
 	protected Object data;
 	protected UserDeviceClient client;
