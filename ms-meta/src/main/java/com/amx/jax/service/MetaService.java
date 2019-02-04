@@ -28,6 +28,7 @@ import com.amx.amxlib.meta.model.ViewGovernateDto;
 import com.amx.amxlib.model.OnlineConfigurationDto;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.config.JaxProperties;
+import com.amx.jax.config.JaxTenantProperties;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.OnlineConfiguration;
 import com.amx.jax.dbmodel.ViewAreaModel;
@@ -103,7 +104,7 @@ public class MetaService extends AbstractService {
 	@Autowired
 	JaxUtil jaxUtil;
 	@Autowired
-	JaxProperties jaxProperties;
+	JaxTenantProperties jaxTenantProperties;
 
 	public AmxApiResponse<ViewCityDto, Object> getDistrictCity(BigDecimal districtId, BigDecimal languageId) {
 		List<ViewCity> cityList = cityDao.getCityByDistrictId(districtId, languageId);
@@ -226,7 +227,7 @@ public class MetaService extends AbstractService {
 		final List<ServiceGroupMasterDescDto> outputDto = new ArrayList<>();
 		output.forEach(i -> {
 			boolean isCash = i.getServiceGroupMasterId().getServiceGroupId().equals(BigDecimal.ONE);
-			if (isCash && jaxProperties.getCashDisable()) {
+			if (isCash && jaxTenantProperties.getCashDisable()) {
 				return;
 			}
 			ServiceGroupMasterDescDto dto = new ServiceGroupMasterDescDto();

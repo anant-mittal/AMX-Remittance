@@ -145,7 +145,7 @@ table {
 			return dfd.promise();
 		}
 		return $.ajax({
-			url : "/pub/device/pair",
+			url : "/offsite/pub/device/pair",
 			method : 'POST',
 			dataType : 'json',
 			contentType : "application/json",
@@ -173,7 +173,7 @@ table {
 	function activateDevice() {
 		if (!$activateDevice) {
 			$activateDevice = $.ajax({
-				url : "/pub/device/activate",
+				url : "/offsite/pub/device/activate",
 				method : 'POST',
 				dataType : 'json',
 				//contentType : "application/json",
@@ -211,7 +211,7 @@ table {
 				return dfd.promise();
 			}
 			return $.ajax({
-				url : '/pub/device/session',
+				url : '/offsite/pub/device/session',
 				headers : {
 					'x-device-reg-id' : deviceRegId,
 					'x-device-reg-token' : deviceRegToken
@@ -236,7 +236,7 @@ table {
 	}
 	function validateSession() {
 		return $.ajax({
-			url : "/pub/device/session/pair",
+			url : "/offsite/pub/device/session/pair",
 			method : 'POST',
 			dataType : 'json',
 			//contentType : "application/json",
@@ -252,7 +252,7 @@ table {
 
 	function hmac() {
 		if (deviceRegId && deviceRequestKey) {
-			return $.getJSON("/pub/amx/hmac", {
+			return $.getJSON("/offsite/pub/amx/hmac", {
 				interval : 30,
 				secret : deviceRequestKey,
 				message : deviceRegId,
@@ -274,7 +274,7 @@ table {
 		pairSession().then(
 				function(resp) {
 					return $.ajax({
-						url : '/pub/signpad/status/activity',
+						url : '/offsite/pub/signpad/status/activity',
 						headers : {
 							'x-device-reg-id' : deviceRegId,
 							'x-device-reg-token' : deviceRegToken,
@@ -298,7 +298,7 @@ table {
 							function() {
 								$("#signature img").attr(
 										"src",
-										"/pub/signpad/signature?x-device-reg-id="
+										"/offsite/pub/signpad/signature?x-device-reg-id="
 												+ deviceRegId);
 								setTimeout(poll, 3000);
 							})
