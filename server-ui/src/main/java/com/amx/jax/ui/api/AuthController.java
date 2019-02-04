@@ -7,9 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.model.SecurityQuestionModel;
+import com.amx.jax.JaxAuthContext;
+import com.amx.jax.ui.config.UIServerError;
 import com.amx.jax.ui.model.AuthDataInterface.AuthRequest;
 import com.amx.jax.ui.model.AuthDataInterface.AuthResponse;
 import com.amx.jax.ui.model.UserMetaData;
@@ -18,6 +21,7 @@ import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.response.WebResponseStatus;
 import com.amx.jax.ui.service.LoginService;
 import com.amx.jax.ui.service.SessionService;
+import com.amx.utils.ArgUtil;
 
 import io.swagger.annotations.Api;
 
@@ -42,8 +46,7 @@ public class AuthController {
 	/**
 	 * Asks for user login and password.
 	 *
-	 * @param authData
-	 *            the auth data
+	 * @param authData the auth data
 	 * @return the response wrapper
 	 */
 	@RequestMapping(value = "/pub/auth/login", method = { RequestMethod.POST })
@@ -54,22 +57,31 @@ public class AuthController {
 	/**
 	 * Login sec ques.
 	 *
-	 * @param authData
-	 *            the auth data
+	 * @param authData the auth data
 	 * @return the response wrapper
 	 */
 	@RequestMapping(value = "/pub/auth/secques", method = { RequestMethod.POST })
-	public ResponseWrapper<AuthResponse> loginSecQues(@Valid @RequestBody AuthRequest authData) {
-		return loginService.loginSecQues(authData.getAnswer(), authData.getmOtp());
+	public ResponseWrapper<AuthResponse> loginSecQues(@Valid @RequestBody AuthRequest authData,
+			@RequestParam(required = false) boolean useOTP) {
+		useOTP = ArgUtil.parseAsBoolean(useOTP, false);
+		String otp = authData.getmOtp();
+		if (useOTP) {
+			otp = JaxAuthContext.mOtp(otp);
+			if (ArgUtil.isEmpty(otp)) {
+				loginService.sendOTP(authData.getIdentity(), null);
+				throw new UIServerError(WebResponseStatus.OTP_REQUIRED);
+			}
+		}
+		return loginService.loginSecQues(authData.getAnswer(), otp);
 	}
 
 	/**
 	 * Send OTP.
 	 *
-	 * @param authData
-	 *            the auth data
+	 * @param authData the auth data
 	 * @return the response wrapper
 	 */
+	@Deprecated
 	@RequestMapping(value = "/pub/auth/otp", method = { RequestMethod.POST })
 	public ResponseWrapper<AuthResponse> sendOTP(@Valid @RequestBody AuthRequest authData) {
 		return loginService.sendOTP(authData.getIdentity(), null);
@@ -78,8 +90,7 @@ public class AuthController {
 	/**
 	 * Inits the reset.
 	 *
-	 * @param authData
-	 *            the auth data
+	 * @param authData the auth data
 	 * @return the response wrapper
 	 */
 	@RequestMapping(value = "/pub/auth/reset", method = { RequestMethod.POST })
@@ -94,8 +105,7 @@ public class AuthController {
 	/**
 	 * Reset password.
 	 *
-	 * @param authData
-	 *            the auth data
+	 * @param authData the auth data
 	 * @return the response wrapper
 	 */
 	@RequestMapping(value = "/pub/auth/password", method = { RequestMethod.POST })

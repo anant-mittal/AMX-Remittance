@@ -223,7 +223,8 @@ public class FcSaleAddressManager extends AbstractModel {
 				}
 				shippingAddressDto.setCustomerId(shippingAddressDetail.getFsCustomer().getCustomerId());
 				shippingAddressDto.setCompanyId(companyId);
-				shippingAddressDto.setMobile(shippingAddressDetail.getMobile());
+				//shippingAddressDto.setMobile(shippingAddressDetail.getMobile());
+				shippingAddressDto.setMobile(shippingAddressDetail.getFsCustomer().getMobile());
 				shippingAddressDto.setLocalContactBuilding(shippingAddressDetail.getBuildingNo());
 				shippingAddressDto.setStreet(shippingAddressDetail.getStreet());
 				shippingAddressDto.setBlockNo(shippingAddressDetail.getBlock());
@@ -309,7 +310,9 @@ public class FcSaleAddressManager extends AbstractModel {
 				throw new GlobalException(JaxError.CUSTOMER_NOT_FOUND,"Customer  id not found ");
 			}
 
-			if (StringUtils.isBlank(requestModel.getMobile())) {
+			/*
+			  4703  FC Order Enhancement - Customer App 
+			  if (StringUtils.isBlank(requestModel.getMobile())) {
 				throw new GlobalException(JaxError.INVALID_MOBILE_NUMBER, "Invalid Mobile Number");
 			}else {
 				if (!pattern.matcher(requestModel.getMobile()).matches()) {
@@ -325,7 +328,7 @@ public class FcSaleAddressManager extends AbstractModel {
 				if (!pattern.matcher(requestModel.getTelPrefix()).matches()) {
 					throw new GlobalException(JaxError.INVALID_MOBILE_PREFIX, "Invalid Tele Prefix");
 				}
-			}
+			}*/
 
 			shipAdd.setCreationDate(new Date());
 			shipAdd.setActiveStatus(ConstantDocument.Yes);
@@ -515,32 +518,34 @@ public class FcSaleAddressManager extends AbstractModel {
 		StringBuffer sb = new StringBuffer();
 		String concat =",";
 		if (shippingAddressDto != null) {
-			sb = sb.append(shippingAddressDto.getStreet() == null ? "" : "Street "+  shippingAddressDto.getStreet() +concat)
-					.append(shippingAddressDto.getBlock() == null ? "" : "Block " + shippingAddressDto.getBlockNo() + concat)
-					.append(shippingAddressDto.getBuildingNo() == null ? "" : "House no. " + shippingAddressDto.getBuildingNo() + concat)
-					.append(shippingAddressDto.getFlat() == null ? "" : "Flat "+  shippingAddressDto.getHouse() +concat);
+			sb = sb.append(shippingAddressDto.getStreet() == null ? "" : "Street "+  shippingAddressDto.getStreet())
+					.append(shippingAddressDto.getBlock() == null ? "" : concat + "Block " + shippingAddressDto.getBlockNo())
+					.append(shippingAddressDto.getBuildingNo() == null ? "" : concat + "House no. " + shippingAddressDto.getBuildingNo())
+					.append(shippingAddressDto.getFlat() == null ? "" : concat + "Flat "+  shippingAddressDto.getHouse());
 					
 			if (shippingAddressDto.getLocalContactCity() != null) {
-				sb.append("City ").append(shippingAddressDto.getLocalContactCity() == null ? ""
-						: shippingAddressDto.getLocalContactCity()).append(concat);
+				sb.append(concat).append("City ").append(shippingAddressDto.getLocalContactCity() == null ? "": shippingAddressDto.getLocalContactCity());
 			}
-			sb.append(
-					shippingAddressDto.getGovernoatesDto() == null ? "" : shippingAddressDto.getGovernoatesDto().getResourceName() + concat);
-			sb.append(
-					shippingAddressDto.getGovtAreaDesc() == null ? "" : shippingAddressDto.getGovtAreaDesc() + concat);
-			sb.append(shippingAddressDto.getLocalContactDistrict() == null ? ""
-					: shippingAddressDto.getLocalContactDistrict() + concat);
-			sb.append(shippingAddressDto.getLocalContactState() == null ? ""
-					: shippingAddressDto.getLocalContactState() + concat);
-			sb.append("Contact ").append(shippingAddressDto.getMobile() == null ? "" : shippingAddressDto.getMobile());
+			if(shippingAddressDto.getGovernoatesDto()!=null && !shippingAddressDto.getGovernoatesDto().equals("")) {
+				sb.append(concat).append(shippingAddressDto.getGovernoatesDto().getResourceName());
+			}
+			if(shippingAddressDto.getGovtAreaDesc()!=null && !shippingAddressDto.getGovtAreaDesc().equals("")) {
+				sb.append(concat).append(shippingAddressDto.getGovtAreaDesc());
+			}
+			if(shippingAddressDto.getLocalContactDistrict()!=null && !shippingAddressDto.getLocalContactDistrict().equals("")) {
+				sb.append(concat).append(shippingAddressDto.getLocalContactDistrict());
+			}
+			
+			if(shippingAddressDto.getLocalContactState()!=null && !shippingAddressDto.getLocalContactState().equals("")) {
+				sb.append(concat).append(shippingAddressDto.getLocalContactState());
 
 		}
 		if(sb!=null){
 			address = sb.toString();
 		}
-		return address;
+		
 	}
-	
-	
+		return address;
+}
 	
 }

@@ -148,4 +148,9 @@ public abstract class AuditEvent extends AbstractEvent {
 		this.client = client;
 	}
 
+	public AuditEvent result(Result result) {
+		this.result = result;
+		return this;
+	}
+
 }

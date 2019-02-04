@@ -25,7 +25,6 @@ public class Utils {
 		}
 		StringBuilder sb = new StringBuilder();
 		Iterator<String> stit = listOfItems.iterator();
-
 		while (stit.hasNext()) {
 			sb.append(stit.next());
 			if (stit.hasNext()) {

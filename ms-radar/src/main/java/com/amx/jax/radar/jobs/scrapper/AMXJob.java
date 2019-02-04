@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -18,6 +19,7 @@ import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.dict.Language;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.radar.ARadarTask;
+import com.amx.jax.radar.TestSizeApp;
 import com.amx.jax.rates.AmxCurConstants;
 import com.amx.jax.rates.AmxCurConstants.RCur;
 import com.amx.jax.rates.AmxCurConstants.RSource;
@@ -27,10 +29,13 @@ import com.amx.jax.rates.AmxCurRate;
 import com.amx.jax.rates.AmxCurRateRepository;
 import com.amx.utils.ArgUtil;
 
+import net.javacrumbs.shedlock.core.SchedulerLock;
+
 @Configuration
 @EnableScheduling
 @Component
 @Service
+@ConditionalOnExpression(TestSizeApp.ENABLE_JOBS)
 public class AMXJob extends ARadarTask {
 
 	@Autowired
@@ -42,10 +47,15 @@ public class AMXJob extends ARadarTask {
 	@Autowired
 	private JaxMetaInfo jaxMetaInfo;
 
-	Logger logger = LoggerService.getLogger(AMXJob.class);
+	public static final Logger LOGGER = LoggerService.getLogger(AMXJob.class);
 
+	@SchedulerLock(name = "AMXJob",
+			lockAtLeastFor = AmxCurConstants.INTERVAL_MIN_30,
+			lockAtMostFor = AmxCurConstants.INTERVAL_HRS)
 	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_MIN_30)
 	public void doTask() {
+
+		LOGGER.info("Scrapper Task");
 
 		jaxMetaInfo.setCountryId(TenantContextHolder.currentSite().getBDCode());
 		jaxMetaInfo.setTenant(TenantContextHolder.currentSite());

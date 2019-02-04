@@ -162,6 +162,16 @@ public class CommonHttpRequest {
 		}
 	}
 
+	public void setCookie(Cookie kooky) {
+		if (response != null) {
+			response.addCookie(kooky);
+		}
+	}
+
+	public Cookie getCookie(String name) {
+		return WebUtils.getCookie(request, name);
+	}
+
 	public String setBrowserId(String browserIdNew) {
 		String browserId = null;
 		if (request != null) {

@@ -10,6 +10,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.radar.ARadarTask;
+import com.amx.jax.radar.TestSizeApp;
 import com.amx.jax.rates.AmxCurConstants;
 import com.amx.jax.rates.AmxCurConstants.RCur;
 import com.amx.jax.rates.AmxCurConstants.RSource;
@@ -28,10 +30,13 @@ import com.amx.jax.rest.RestService;
 import com.amx.utils.ArgUtil;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
+import net.javacrumbs.shedlock.core.SchedulerLock;
+
 @Configuration
 @EnableScheduling
 @Component
 @Service
+@ConditionalOnExpression(TestSizeApp.ENABLE_JOBS)
 public class BECKuwaitJob extends ARadarTask {
 
 	@Autowired
@@ -42,10 +47,16 @@ public class BECKuwaitJob extends ARadarTask {
 
 	XmlMapper xmlMapper = new XmlMapper();
 
-	Logger logger = LoggerService.getLogger(BECKuwaitJob.class);
+	public static final Logger LOGGER = LoggerService.getLogger(BECKuwaitJob.class);
 
+	@SchedulerLock(name = "BECKuwaitJob",
+			lockAtLeastFor = AmxCurConstants.INTERVAL_MIN_30,
+			lockAtMostFor = AmxCurConstants.INTERVAL_HRS)
 	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_MIN_30)
 	public void doTask() {
+
+		LOGGER.info("Scrapper Task");
+
 		try {
 			Document doc = Jsoup.connect("https://www.bec.com.kw/currency-exchange-rates?atype=money&continent=popular")
 					.get();

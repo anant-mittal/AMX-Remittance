@@ -87,7 +87,7 @@ public class UserClient {
 		OFFSITE_PAD(DeviceType.TABLET), KIOSK(DeviceType.COMPUTER), DELIVERY_APP(DeviceType.MOBILE),
 
 		// Customer Facing interfaces
-		ONLINE_WEB(DeviceType.COMPUTER), ONLINE_ANDROID(DeviceType.MOBILE), ONLINE_IOS(DeviceType.MOBILE),
+		ONLINE_WEB(DeviceType.COMPUTER), ONLINE_AND(DeviceType.MOBILE), ONLINE_IOS(DeviceType.MOBILE),
 
 		// Unknown
 		UNKNOWN;

@@ -108,22 +108,16 @@ public class BenePersonalDetailValidator implements Validator {
 				metaData.getCountryId(), benePersonalDetailModel.getCountryId(),
 				beneficiaryTrnxModel.getBeneAccountModel().getCurrencyId());
 
-		int benePhoneLength = benePersonalDetailModel.getMobileNumber().toString().length();
+		int benePhoneLength = (null != benePersonalDetailModel.getMobileNumber())
+				? benePersonalDetailModel.getMobileNumber().toString().length()
+				: 0;
 
-		int minLength = serviceAppList.stream().mapToInt(i -> {
-			if (i.getMinLenght() != null) {
-				return i.getMinLenght().intValue();
-			} else {
-				return Integer.MAX_VALUE;
-			}
+		int minLength = serviceAppList.stream().filter(i -> i.getMinLenght() != null).mapToInt(i -> {
+			return i.getMinLenght().intValue();
 		}).min().orElse(-1);
 
-		int maxLength = serviceAppList.stream().mapToInt(i -> {
-			if (i.getMaxLenght() != null) {
-				return i.getMaxLenght().intValue();
-			} else {
-				return Integer.MIN_VALUE;
-			}
+		int maxLength = serviceAppList.stream().filter(i -> i.getMaxLenght() != null).mapToInt(i -> {
+			return i.getMaxLenght().intValue();
 		}).max().orElse(-1);
 
 		if (maxLength > 0 && benePhoneLength > maxLength) {

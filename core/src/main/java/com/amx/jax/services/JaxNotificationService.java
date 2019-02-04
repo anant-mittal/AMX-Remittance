@@ -48,6 +48,8 @@ public class JaxNotificationService {
 	Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	private final String SUBJECT_ACCOUNT_UPDATE = "Account Update";
+	private final String SUBJECT_EMAIL_CHANGE = "Al Mulla Exchange Account - Email ID Change";
+	private final String SUBJECT_PHONE_CHANGE = "Al Mulla Exchange Account - Phone Number Change";
 
 	public void sendTransactionNotification(RemittanceReceiptSubreport remittanceReceiptSubreport, PersonInfo pinfo) {
 
@@ -121,18 +123,18 @@ public class JaxNotificationService {
 			email.getModel().put("change_type", ChangeType.IMAGE_CHANGE);
 
 		} else if (customerModel.getMobile() != null) {
-			email.setSubject(SUBJECT_ACCOUNT_UPDATE);
+			email.setSubject(SUBJECT_PHONE_CHANGE);
 			email.getModel().put("change_type", ChangeType.MOBILE_CHANGE);
 
 		} else if (customerModel.getEmail() != null) {
-			email.setSubject(SUBJECT_ACCOUNT_UPDATE);
+			email.setSubject(SUBJECT_EMAIL_CHANGE);
 			email.getModel().put("change_type", ChangeType.EMAIL_CHANGE);
 
 			emailToOld = new Email();
-			emailToOld.setSubject(SUBJECT_ACCOUNT_UPDATE);
+			emailToOld.setSubject(SUBJECT_EMAIL_CHANGE);
 			emailToOld.getModel().put("change_type", ChangeType.EMAIL_CHANGE);
 			emailToOld.addTo(customerModel.getEmail());
-			emailToOld.setITemplate(TemplatesMX.PROFILE_CHANGE);
+			emailToOld.setITemplate(TemplatesMX.EMAIL_CHANGE_OLD_EMAIL);
 			emailToOld.setHtml(true);
 
 			PersonInfo oldPinfo = null;
@@ -155,6 +157,34 @@ public class JaxNotificationService {
 		logger.info("Email to - " + pinfo.getEmail() + " first name : " + pinfo.getFirstName());
 		sendEmail(email);
 	} // end of sendProfileChangeNotificationEmail
+	
+	public void sendProfileChangeNotificationMobile(CustomerModel customerModel, PersonInfo personinfo, String oldMobile) {
+		if (customerModel.getMobile() != null) {
+			SMS smsOld = new SMS();
+			// to new and old
+			smsOld.addTo(oldMobile);
+			smsOld.getModel().put(RESP_DATA_KEY, personinfo);
+			smsOld.setITemplate(TemplatesMX.PROFILE_CHANGE_SMS);
+
+			try {
+				postManService.sendSMSAsync(smsOld);
+			} catch (PostManException e) {
+				logger.error("error in sendProfileChangeNotificationMobile", e);
+			}
+
+			SMS smsNew = new SMS();
+			// to new and old
+			smsNew.addTo(customerModel.getMobile());
+			smsNew.getModel().put(RESP_DATA_KEY, personinfo);
+			smsNew.setITemplate(TemplatesMX.PROFILE_CHANGE_SMS);
+
+			try {
+				postManService.sendSMSAsync(smsNew);
+			} catch (PostManException e) {
+				logger.error("error in sendProfileChangeNotificationMobile", e);
+			}
+		}
+	}
 
 	public void sendOtpSms(PersonInfo pinfo, CivilIdOtpModel model) {
 		sendOtpSms(pinfo, model, TemplatesMX.RESET_OTP_SMS);
@@ -290,4 +320,5 @@ public class JaxNotificationService {
 			logger.error("error in sendOtpSms", e);
 		}
 	} // end of sendOtpSms
+
 }

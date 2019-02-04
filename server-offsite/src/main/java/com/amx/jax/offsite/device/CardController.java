@@ -15,6 +15,7 @@ import com.amx.jax.device.CardData;
 import com.amx.jax.device.CardReader;
 import com.amx.jax.device.DeviceConstants;
 import com.amx.jax.device.DeviceData;
+import com.amx.jax.device.DeviceRequest;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.sso.server.ApiHeaderAnnotations.ApiDeviceSessionHeaders;
 import com.amx.jax.stomp.StompTunnelService;

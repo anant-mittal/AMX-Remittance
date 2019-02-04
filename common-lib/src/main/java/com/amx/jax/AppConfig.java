@@ -18,6 +18,7 @@ import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
 import com.amx.jax.dict.Project;
+import com.amx.jax.dict.Tenant;
 import com.amx.jax.filter.AppClientErrorHanlder;
 import com.amx.jax.filter.AppClientInterceptor;
 import com.amx.jax.scope.TenantProperties;
@@ -39,13 +40,16 @@ public class AppConfig {
 	public static final String APP_CACHE = "${app.cache}";
 	public static final String APP_LOGGER = "${app.logger}";
 
-    public static final String APP_CONTEXT_PREFIX = "${server.contextPath}";
-    
+	public static final String APP_CONTEXT_PREFIX = "${server.contextPath}";
+	public static final String SPRING_APP_NAME = "${spring.application.name}";
+
 	@Deprecated
 	public static final String APP_CLASS = "${app.class}";
 
 	public static final String APP_AUTH_KEY = "${app.auth.key}";
 	public static final String APP_AUTH_ENABLED = "${app.auth.enabled}";
+
+	public static final String DEFAULT_TENANT = "${default.tenant}";
 
 	public static final String JAX_CDN_URL = "${jax.cdn.url}";
 	public static final String JAX_APP_URL = "${jax.app.url}";
@@ -71,6 +75,10 @@ public class AppConfig {
 	@Value(APP_NAME)
 	@AppParamKey(AppParam.APP_NAME)
 	private String appName;
+	
+	@Value(SPRING_APP_NAME)
+	@AppParamKey(AppParam.SPRING_APP_NAME)
+	private String springAppName;
 
 	@Value(APP_ID)
 	@AppParamKey(AppParam.APP_ID)
@@ -106,6 +114,10 @@ public class AppConfig {
 	@Value(APP_CACHE)
 	@AppParamKey(AppParam.APP_CACHE)
 	private Boolean cache;
+
+	@Value(DEFAULT_TENANT)
+	@AppParamKey(AppParam.DEFAULT_TENANT)
+	private Tenant defaultTenant;
 
 	@Value(JAX_CDN_URL)
 	@AppParamKey(AppParam.JAX_CDN_URL)
@@ -149,8 +161,8 @@ public class AppConfig {
 
 	@Value(APP_CONTEXT_PREFIX)
 	@AppParamKey(AppParam.APP_CONTEXT_PREFIX)
-    private String appPrefix;
-    
+	private String appPrefix;
+
 	@Value("${server.session.cookie.http-only}")
 	private boolean cookieHttpOnly;
 
@@ -164,7 +176,7 @@ public class AppConfig {
 	String[] printableAuditMarkers;
 
 	@Value("${app.audit.file.skip}")
-    String[] skipAuditMarkers;
+	String[] skipAuditMarkers;
 
 	public boolean isCookieHttpOnly() {
 		return cookieHttpOnly;
@@ -216,8 +228,8 @@ public class AppConfig {
 
 	public String getLoggerURL() {
 		return loggerURL;
-    }
-    
+	}
+
 	@Bean
 	public AppParam loadAppParams() {
 
@@ -323,10 +335,18 @@ public class AppConfig {
 
 	@Autowired
 	private Environment environment;
-	
+
 	@PostConstruct
 	public void init() {
 		TenantProperties.setEnviroment(environment);
+	}
+
+	public Tenant getDefaultTenant() {
+		return defaultTenant;
+	}
+
+	public String getSpringAppName() {
+		return springAppName;
 	}
 
 }

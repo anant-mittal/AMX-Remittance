@@ -113,6 +113,12 @@ public class DeviceDao {
 				deviceType, Constants.YES);
 		return devices;
 	}
+	
+	public List<Device> findAllActiveDevicesForEmployee(BigDecimal employeeId, ClientType deviceType) {
+		List<Device> devices = deviceRepository.findByEmployeeIdAndDeviceTypeAndStatus(employeeId, deviceType,
+				Constants.YES);
+		return devices;
+	}
 
 	public Device findLatestDevice(BigDecimal branchSystemInvId, ClientType deviceType) {
 		return deviceRepository.findFirst1ByBranchSystemInventoryIdAndDeviceType(branchSystemInvId, deviceType,

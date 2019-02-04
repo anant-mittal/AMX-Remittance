@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.amx.jax.AppConfig;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.DeviceStateClient;
@@ -45,6 +46,9 @@ public class TerminalController {
 
 	@Autowired
 	private TerminalBox terminalBox;
+
+	@Autowired
+	private AppConfig appConfig;
 
 	@RequestMapping(value = { Path.TERMINAL_STATUS_PING }, method = { RequestMethod.GET })
 	public String getPing(@RequestParam String state, @RequestParam String terminalId,
@@ -77,10 +81,11 @@ public class TerminalController {
 		}
 
 		model.addAttribute("url",
-				Urly.parse(HttpUtils.getServerName(request)).setPath(Path.TERMINAL_STATUS_PING)
-						.addParameter("terminalId", terminalId).addParameter("state", state)
-						.addParameter("status", status).addParameter("pageStamp", pageStamp)
-						.addParameter("startStamp", startStamp)
+				Urly.parse(HttpUtils.getServerName(request)).path(appConfig.getAppPrefix())
+						.path(Path.TERMINAL_STATUS_PING)
+						.queryParam("terminalId", terminalId).queryParam("state", state)
+						.queryParam("status", status).queryParam("pageStamp", pageStamp)
+						.queryParam("startStamp", startStamp)
 						.getURL());
 		return "js/signpad";
 	}

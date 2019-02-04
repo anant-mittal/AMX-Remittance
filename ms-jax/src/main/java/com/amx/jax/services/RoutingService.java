@@ -13,6 +13,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.config.JaxProperties;
+import com.amx.jax.config.JaxTenantProperties;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dal.RoutingProcedureDao;
 import com.amx.jax.dao.ApplicationProcedureDao;
@@ -37,7 +38,7 @@ public class RoutingService {
 	@Autowired
 	List<IRoutingLogic> routingLogics;
 	@Autowired
-	JaxProperties jaxProperties;
+	JaxTenantProperties jaxTenantProperties;
 
 	public Map<String, Object> getRoutingDetails(Map<String, Object> inputValue) {
 		Map<String, Object> output;
@@ -71,9 +72,9 @@ public class RoutingService {
 	}
 
 	public Map<String, Object> getRoutingDetail(Map<String, Object> inputValue) {
-		if (jaxProperties.getRoutingProcOthDisable()) {
+		if (jaxTenantProperties.getRoutingProcOthDisable()) {
 			return applicationProcedureDao.getRoutingDetails(inputValue);
-		} else if (jaxProperties.getExrateBestRateLogicEnable()) {
+		} else if (jaxTenantProperties.getExrateBestRateLogicEnable()) {
 			return applicationProcedureDao.getRoutingDetailFromOthRateProcedure(inputValue);
 		} else {
 			return applicationProcedureDao.getRoutingDetailFromOthProcedure(inputValue);

@@ -1,9 +1,12 @@
 package com.amx.jax.radar;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.elasticsearch.ElasticsearchException;
+import org.elasticsearch.action.bulk.BulkRequest;
+import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetRequest;
@@ -18,12 +21,11 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.amx.jax.logger.LoggerService;
-import com.amx.utils.JsonUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 public class AESRepository {
 
-	Logger LOGGER = LoggerService.getLogger(AESRepository.class);
+	public static final Logger LOGGER = LoggerService.getLogger(AESRepository.class);
 
 	@Autowired
 	private RestHighLevelClient restHighLevelClient;
@@ -31,7 +33,7 @@ public class AESRepository {
 	public Map<String, Object> insert(String index, String type, AESDocument rate) {
 
 		// vote.setId(UUID.randomUUID().toString());
-		Map<String, Object> dataMap = JsonUtil.toMap(rate);
+		Map<String, Object> dataMap = ESDocumentParser.toMap(rate);
 		IndexRequest indexRequest = new IndexRequest(index, type, rate.getId())
 				.source(dataMap);
 		try {
@@ -67,7 +69,7 @@ public class AESRepository {
 		Map<String, Object> error = new HashMap<>();
 		error.put("Error", "Unable to update vote");
 		try {
-			String voteJson = JsonUtil.getMapper().writeValueAsString(vote);
+			String voteJson = ESDocumentParser.toJson(vote);
 			updateRequest.upsert(voteJson, XContentType.JSON);
 			updateRequest.doc(voteJson, XContentType.JSON);
 			UpdateResponse updateResponse = restHighLevelClient.update(updateRequest);
@@ -88,6 +90,48 @@ public class AESRepository {
 		} catch (java.io.IOException e) {
 			LOGGER.error("java.io.IOException", e);
 		}
+	}
+
+	public Map<String, Object> bulk(BulkRequest bulk) {
+		Map<String, Object> error = new HashMap<>();
+		try {
+			BulkResponse bulkResponse = restHighLevelClient.bulk(bulk);
+			error.put("items", bulkResponse.getItems());
+		} catch (IOException e) {
+			error.put("Error", "Unable to update vote");
+		}
+		return error;
+	}
+
+	public static class BulkRequestBuilder {
+
+		BulkRequest request;
+
+		public BulkRequestBuilder() {
+			this.request = new BulkRequest();
+		}
+
+		public BulkRequest build() {
+			return this.request;
+		}
+
+		public BulkRequestBuilder update(String index, String type, AESDocument vote) {
+			return this.updateById(index, type, vote.getId(), vote);
+		}
+
+		public BulkRequestBuilder updateById(String index, String type, String id, AESDocument vote) {
+			UpdateRequest updateRequest = new UpdateRequest(index, type, id);
+			try {
+				String voteJson = ESDocumentParser.toJson(vote);
+				updateRequest.upsert(voteJson, XContentType.JSON);
+				updateRequest.doc(voteJson, XContentType.JSON);
+				this.request.add(updateRequest);
+			} catch (JsonProcessingException e) {
+				LOGGER.error("JsonProcessingException", e);
+			}
+			return this;
+		}
+
 	}
 
 }
