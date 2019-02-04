@@ -61,6 +61,7 @@ import com.amx.jax.model.response.remittance.AmlCheckResponseDto;
 import com.amx.jax.model.response.remittance.BranchExchangeRateBreakup;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.CustomerShoppingCartDto;
+import com.amx.jax.model.response.remittance.RoutingResponseDto;
 import com.amx.jax.repository.IApplicationCountryRepository;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.ICurrencyDao;
@@ -145,6 +146,9 @@ public class BranchRemittanceApplManager {
 
 	@Autowired
 	RemittanceApplicationAdditionalDataManager remittanceAppAddlDataManager;
+	
+	@Autowired
+	BranchRoutingManager branchRoutingManager;
 
 
 	
@@ -168,21 +172,36 @@ public class BranchRemittanceApplManager {
 		 /* validate blck list bene **/
 		 branchRemitManager.validateBlackListedBene(beneficaryDetails);
 		 /* get Routing setup details **/
-		 Map<String, Object> branchRoutingDetails = branchRemitManager.getRoutingSetupDeatils(beneficaryDetails);
-		 logger.info("branchRoutingDetails :"+branchRoutingDetails.toString());
+		 //Map<String, Object> branchRoutingDetails =branchRemitManager.getRoutingSetupDeatils(beneficaryDetails);
+		 RoutingResponseDto branchRoutingDto= branchRoutingManager.getRoutingSetup(requestApplModel);
+		 
+		 //logger.info("branchRoutingDetails :"+branchRoutingDetails.toString());
 		 /* get exchange setup details **/
-		 Map<String, Object> branchExchangeRate =branchRemitManager.getExchangeRateForBranch(requestApplModel, branchRoutingDetails);
+		 //Map<String, Object> branchExchangeRate =branchRemitManager.getExchangeRateForBranch(requestApplModel, branchRoutingDetails);
+		 Map<String, Object> branchExchangeRate =branchRemitManager.getExchangeRateForBranch(requestApplModel,branchRoutingDto);
 		 logger.info("branchExchangeRate :"+branchExchangeRate.toString());
 		 /* get aml cehck   details **/
 		List<AmlCheckResponseDto> amlList= branchRemitManager.amlTranxAmountCheckForRemittance(requestApplModel,branchExchangeRate);
 		 logger.info("amlList :"+amlList.toString());
 		 /* additional check **/
-		branchRemitManager.validateAdditionalCheck(branchRoutingDetails,customer,beneficaryDetails,(BigDecimal)branchExchangeRate.get("P_LOCAL_NET_PAYABLE"));
+		//branchRemitManager.validateAdditionalCheck(branchRoutingDetails,customer,beneficaryDetails,(BigDecimal)branchExchangeRate.get("P_LOCAL_NET_PAYABLE"));
+		 
+		 branchRemitManager.validateAdditionalCheck(branchRoutingDto,customer,beneficaryDetails,(BigDecimal)branchExchangeRate.get("P_LOCAL_NET_PAYABLE"));
+		 
+		 
+		 
 		/** bene additional check **/
-		Map<String, Object> addBeneDetails =branchRemitManager.validateAdditionalBeneDetails(branchRoutingDetails,branchExchangeRate,beneficaryDetails);
+		//Map<String, Object> addBeneDetails =branchRemitManager.validateAdditionalBeneDetails(branchRoutingDetails,branchExchangeRate,beneficaryDetails);
+		 
+		 Map<String, Object> addBeneDetails =branchRemitManager.validateAdditionalBeneDetails(branchRoutingDto,branchExchangeRate,beneficaryDetails);
+		 
+		 
 		
 		
-		hashMap.put("ROUTING_DETAILS_MAP", branchRoutingDetails);
+		//hashMap.put("ROUTING_DETAILS_MAP", branchRoutingDetails);
+		
+		
+		hashMap.put("ROUTING_DETAILS_DTO", branchRoutingDto);
 		hashMap.put("EXCH_RATE_MAP", branchExchangeRate);
 		hashMap.put("APPL_REQ_MODEL", requestApplModel);
 		hashMap.put("BENEFICIARY_DETAILS", beneficaryDetails);

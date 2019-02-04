@@ -25,11 +25,13 @@ import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.request.remittance.CustomerBankRequest;
 import com.amx.jax.model.response.fx.UserStockDto;
+import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
 import com.amx.jax.model.response.remittance.CustomerShoppingCartDto;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
 import com.amx.jax.model.response.remittance.PaymentModeOfPaymentDto;
+import com.amx.jax.model.response.remittance.RoutingResponseDto;
 
 @RestController
 public class BranchRemittanceController implements IRemittanceService {
@@ -164,6 +166,34 @@ public class BranchRemittanceController implements IRemittanceService {
 	public AmxApiResponse<BoolRespModel,Object> validationStaffCredentials(@RequestParam(value = "staffUserName", required = true) String staffUserName,@RequestParam(value = "staffPassword", required = true) String staffPassword){
 		BoolRespModel result = branchRemitService.validationStaffCredentials(staffUserName, staffPassword);
 		return AmxApiResponse.build(result);
+	}
+
+
+
+
+	@RequestMapping(value = Path.BR_REMITTANCE_ROUTING, method = RequestMethod.GET)
+	@Override
+	public AmxApiResponse<RoutingResponseDto, Object> getRoutingSetupDeatils(@RequestParam(value = "beneRelaId", required = true)BigDecimal beneRelaId) {
+		logger.info("getRoutingSetupDeatils :"+beneRelaId);
+		return branchRemitService.getRoutingDetails(beneRelaId);
+	}
+
+
+
+	@RequestMapping(value = Path.BR_REMITTANCE_ROUTING_BY_SERVICE, method = RequestMethod.POST)	
+	@Override
+	public AmxApiResponse<RoutingResponseDto, Object> getRoutingDetailsByServiceId(@RequestParam(value = "beneRelaId", required = true) BigDecimal beneRelaId,@RequestParam(value = "serviceMasterId", required = true) BigDecimal serviceMasterId) {
+		logger.info("getRoutingSetupDeatils :"+beneRelaId+"\t serviceMasterId :"+serviceMasterId);
+		return branchRemitService.getRoutingDetailsByServiceId(beneRelaId,serviceMasterId);
+	}
+
+
+
+	@RequestMapping(value = Path.BR_REMITTANCE_PURPOSE_OF_TRNX, method = RequestMethod.GET)
+	@Override
+	public AmxApiResponse<AdditionalExchAmiecDto, Object> getPurposeOfTrnx(BigDecimal beneRelaId) {
+		logger.info("getPurposeOfTrnx :"+beneRelaId);
+		return branchRemitService.getPurposeOfTrnx(beneRelaId);
 	}
 	
 }

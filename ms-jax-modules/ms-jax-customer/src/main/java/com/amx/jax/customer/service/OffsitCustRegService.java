@@ -332,8 +332,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 
 	private ArticleMasterDescDto convert(Map<String, Object> i) {
 		ArticleMasterDescDto dto = new ArticleMasterDescDto();
-		dto.setArticleDescId(
-				new BigDecimal(i.get("ARTICLE_DESC_ID") != null ? i.get("ARTICLE_DESC_ID").toString() : null));
+		dto.setArticleDescId(new BigDecimal(i.get("ARTICLE_DESC_ID") != null ? i.get("ARTICLE_DESC_ID").toString() : null));
 		dto.setArticleDescription(i.get("ARTICLE_DESC") != null ? i.get("ARTICLE_DESC").toString() : null);
 		dto.setArticleId(new BigDecimal(i.get("ARTICLE_ID") != null ? i.get("ARTICLE_ID").toString() : null));
 		dto.setLanguageType(new BigDecimal(i.get("LANGUAGE_ID").toString()));

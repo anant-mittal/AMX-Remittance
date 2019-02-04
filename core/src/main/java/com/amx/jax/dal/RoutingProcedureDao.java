@@ -208,5 +208,185 @@ public class RoutingProcedureDao {
 		}
 		return wbLimit;
 	}
+	
+	
 
+	
+	public List<Map<String, Object>> getRoutingCountryId(Map<String, Object> inputValues) {
+		LOGGER.info("in getRoutingBankBranchIdFromDb,input values: {}", inputValues);
+		
+		String sql = "SELECT ROUTING_COUNTRY_ID ,COUNTRY_NAME "
+				+ "FROM ( " + " SELECT DISTINCT F.ROUTING_COUNTRY_ID,F.COUNTRY_NAME   "
+				+ " FROM   V_EX_ROUTING_DETAILS F " + " "
+				+ " WHERE  F.APPLICATION_COUNTRY_ID= ?" 
+				+ " AND    F.BENE_BANK_ID =  ? "
+				+ " AND    F.BENE_BANK_BRANCH_ID= ?" 
+				+ " AND    F.COUNTRY_ID = ? "
+				+ " AND    F.CURRENCY_ID  =  ?"
+				+ " AND    F.SERVICE_MASTER_ID  = ? "
+				+ " AND    F.ROUTING_BANK_ID   =  DECODE( ?,101,?,F.ROUTING_BANK_ID))";
+		
+		LOGGER.info("in getRoutingCountryId,input values: {}", sql);	
+		
+		List<Object> inputList = new ArrayList<>();
+		inputList.add(inputValues.get("P_APPLICATION_COUNTRY_ID"));
+		inputList.add(inputValues.get("P_BENE_BANK_ID"));
+		inputList.add(inputValues.get("P_BENE_BANK_BRANCH_ID"));
+		inputList.add(inputValues.get("P_BENE_COUNTRY_ID"));
+		inputList.add(inputValues.get("P_CURRENCY_ID"));
+		inputList.add(inputValues.get("P_SERVICE_MASTER_ID"));
+		inputList.add(inputValues.get("P_SERVICE_MASTER_ID"));
+		inputList.add(inputValues.get("P_BENE_BANK_ID"));
+		List<Map<String, Object>> outputList = jdbcTemplate.queryForList(sql, inputList.toArray());
+		return outputList;
+
+	}
+	
+	//ROUTING_BANK_ID
+	public List<Map<String, Object>> getRoutingCountryBank(Map<String, Object> inputValues) {
+		LOGGER.info("in getRoutingBankBranchIdFromDb,input values: {}", inputValues);
+		
+		String sql = "SELECT ROUTING_BANK_ID ,ROUTING_BANK_NAME,ROUTING_BANK_CODE "
+				+ "FROM ( " + " SELECT DISTINCT F.ROUTING_BANK_ID,F.ROUTING_BANK_NAME,F.ROUTING_BANK_CODE   "
+				+ " FROM   V_EX_ROUTING_DETAILS F " + " "
+				+ " WHERE  F.APPLICATION_COUNTRY_ID= ?" 
+				+ " AND    F.BENE_BANK_ID =  ? "
+				+ " AND    F.BENE_BANK_BRANCH_ID= ?" 
+				+ " AND    F.COUNTRY_ID = ? "
+				+ " AND    F.CURRENCY_ID  =  ?"
+				+ " AND    F.SERVICE_MASTER_ID  = ? "
+				+ " AND    F.ROUTING_BANK_ID   =  DECODE( ?,101,?,F.ROUTING_BANK_ID)"
+				+ " AND    F.ROUTING_COUNTRY_ID =?)";
+		
+		LOGGER.info("in getRoutingCountryBank,input values: {}", sql);	
+		
+		List<Object> inputList = new ArrayList<>();
+		inputList.add(inputValues.get("P_APPLICATION_COUNTRY_ID"));
+		inputList.add(inputValues.get("P_BENE_BANK_ID"));
+		inputList.add(inputValues.get("P_BENE_BANK_BRANCH_ID"));
+		inputList.add(inputValues.get("P_BENE_COUNTRY_ID"));
+		inputList.add(inputValues.get("P_CURRENCY_ID"));
+		inputList.add(inputValues.get("P_SERVICE_MASTER_ID"));
+		inputList.add(inputValues.get("P_SERVICE_MASTER_ID"));
+		inputList.add(inputValues.get("P_BENE_BANK_ID"));
+		inputList.add(inputValues.get("P_ROUTING_COUNTRY_ID"));
+		List<Map<String, Object>> outputList = jdbcTemplate.queryForList(sql, inputList.toArray());
+		return outputList;
+
+	}
+	
+	
+	//Remittance list
+		public List<Map<String, Object>> getRemittanceModeList(Map<String, Object> inputValues) {
+			LOGGER.info("in getRoutingBankBranchIdFromDb,input values: {}", inputValues);
+			
+			String sql = "SELECT REMITTANCE_MODE_ID ,REMITTANCE_CODE,REMITTANCE_DESCRIPTION "
+					+ "FROM ( " + " SELECT DISTINCT F.REMITTANCE_MODE_ID,F.REMITTANCE_CODE,REMITTANCE_DESCRIPTION   "
+					+ " FROM   V_EX_ROUTING_DETAILS F " + " "
+					+ " WHERE  F.APPLICATION_COUNTRY_ID= ?" 
+					+ " AND    F.BENE_BANK_ID =  ? "
+					+ " AND    F.BENE_BANK_BRANCH_ID= ?" 
+					+ " AND    F.COUNTRY_ID = ? "
+					+ " AND    F.CURRENCY_ID  =  ?"
+					+ " AND    F.SERVICE_MASTER_ID  = ? "
+					+ " AND    F.ROUTING_BANK_ID   =  DECODE( ?,101,?,F.ROUTING_BANK_ID)"
+					+ " AND    F.ROUTING_COUNTRY_ID =?"
+					+ " AND F.ROUTING_BANK_ID =?)";
+			
+			LOGGER.info("in getRoutingCountryBank,input values: {}", sql);	
+			
+			List<Object> inputList = new ArrayList<>();
+			inputList.add(inputValues.get("P_APPLICATION_COUNTRY_ID"));
+			inputList.add(inputValues.get("P_BENE_BANK_ID"));
+			inputList.add(inputValues.get("P_BENE_BANK_BRANCH_ID"));
+			inputList.add(inputValues.get("P_BENE_COUNTRY_ID"));
+			inputList.add(inputValues.get("P_CURRENCY_ID"));
+			inputList.add(inputValues.get("P_SERVICE_MASTER_ID"));
+			inputList.add(inputValues.get("P_SERVICE_MASTER_ID"));
+			inputList.add(inputValues.get("P_BENE_BANK_ID"));
+			inputList.add(inputValues.get("P_ROUTING_COUNTRY_ID"));
+			inputList.add(inputValues.get("P_ROUTING_BANK_ID"));
+			List<Map<String, Object>> outputList = jdbcTemplate.queryForList(sql, inputList.toArray());
+			return outputList;
+
+		}
+		
+		
+		//Delivery  list
+		 public List<Map<String, Object>> getDeliveryModeList(Map<String, Object> inputValues) {
+					LOGGER.info("in getRoutingBankBranchIdFromDb,input values: {}", inputValues);
+					
+					String sql = "SELECT DELIVERY_MODE_ID ,DELIVERY_CODE,DELIVERY_DESCRIPTION "
+							+ "FROM ( " + " SELECT DISTINCT F.DELIVERY_MODE_ID,F.DELIVERY_CODE ,DELIVERY_DESCRIPTION  "
+							+ " FROM   V_EX_ROUTING_DETAILS F " + " "
+							+ " WHERE  F.APPLICATION_COUNTRY_ID= ?" 
+							+ " AND    F.BENE_BANK_ID =  ? "
+							+ " AND    F.BENE_BANK_BRANCH_ID= ?" 
+							+ " AND    F.COUNTRY_ID = ? "
+							+ " AND    F.CURRENCY_ID  =  ?"
+							+ " AND    F.SERVICE_MASTER_ID  = ? "
+							+ " AND    F.ROUTING_BANK_ID   =  DECODE( ?,101,?,F.ROUTING_BANK_ID)"
+							+ " AND    F.ROUTING_COUNTRY_ID =?"
+							+ " AND    F.ROUTING_BANK_ID =?"
+							+ " AND    F.REMITTANCE_MODE_ID =?)";
+					
+					LOGGER.info("in getRoutingCountryBank,input values: {}", sql);	
+					
+					List<Object> inputList = new ArrayList<>();
+					inputList.add(inputValues.get("P_APPLICATION_COUNTRY_ID"));
+					inputList.add(inputValues.get("P_BENE_BANK_ID"));
+					inputList.add(inputValues.get("P_BENE_BANK_BRANCH_ID"));
+					inputList.add(inputValues.get("P_BENE_COUNTRY_ID"));
+					inputList.add(inputValues.get("P_CURRENCY_ID"));
+					inputList.add(inputValues.get("P_SERVICE_MASTER_ID"));
+					inputList.add(inputValues.get("P_SERVICE_MASTER_ID"));
+					inputList.add(inputValues.get("P_BENE_BANK_ID"));
+					inputList.add(inputValues.get("P_ROUTING_COUNTRY_ID"));
+					inputList.add(inputValues.get("P_ROUTING_BANK_ID"));
+					inputList.add(inputValues.get("P_REMITTANCE_MODE_ID"));
+					List<Map<String, Object>> outputList = jdbcTemplate.queryForList(sql, inputList.toArray());
+					return outputList;
+
+				}
+				
+			
+		//Delivery  list
+		 public List<Map<String, Object>> getRoutingBranchList(Map<String, Object> inputValues) {
+					LOGGER.info("in getRoutingBankBranchIdFromDb,input values: {}", inputValues);
+					
+					String sql = "SELECT BANK_BRANCH_ID ,BRANCH_CODE,BRANCH_FULL_NAME "
+							+ "FROM ( " + " SELECT DISTINCT F.BANK_BRANCH_ID,BRANCH_CODE,F.BRANCH_FULL_NAME   "
+							+ " FROM   V_EX_ROUTING_DETAILS F " + " "
+							+ " WHERE  F.APPLICATION_COUNTRY_ID= ?" 
+							+ " AND    F.BENE_BANK_ID =  ? "
+							+ " AND    F.BENE_BANK_BRANCH_ID= ?" 
+							+ " AND    F.COUNTRY_ID = ? "
+							+ " AND    F.CURRENCY_ID  =  ?"
+							+ " AND    F.SERVICE_MASTER_ID  = ? "
+							+ " AND    F.ROUTING_BANK_ID   =  DECODE( ?,101,?,F.ROUTING_BANK_ID)"
+							+ " AND    F.ROUTING_COUNTRY_ID =?"
+							+ " AND    F.ROUTING_BANK_ID =?"
+							+ " AND    F.REMITTANCE_MODE_ID =?"
+							+ "	AND    F.DELIVERY_MODE_ID =?)";
+					
+					LOGGER.info("in getRoutingCountryBank,input values: {}", sql);	
+					
+					List<Object> inputList = new ArrayList<>();
+					inputList.add(inputValues.get("P_APPLICATION_COUNTRY_ID"));
+					inputList.add(inputValues.get("P_BENE_BANK_ID"));
+					inputList.add(inputValues.get("P_BENE_BANK_BRANCH_ID"));
+					inputList.add(inputValues.get("P_BENE_COUNTRY_ID"));
+					inputList.add(inputValues.get("P_CURRENCY_ID"));
+					inputList.add(inputValues.get("P_SERVICE_MASTER_ID"));
+					inputList.add(inputValues.get("P_SERVICE_MASTER_ID"));
+					inputList.add(inputValues.get("P_BENE_BANK_ID"));
+					inputList.add(inputValues.get("P_ROUTING_COUNTRY_ID"));
+					inputList.add(inputValues.get("P_ROUTING_BANK_ID"));
+					inputList.add(inputValues.get("P_REMITTANCE_MODE_ID"));
+					inputList.add(inputValues.get("P_DELIVERY_MODE_ID"));
+					List<Map<String, Object>> outputList = jdbcTemplate.queryForList(sql, inputList.toArray());
+					return outputList;
+
+				}
+	
 }

@@ -29,19 +29,30 @@ import com.amx.jax.dbmodel.AccountTypeFromViewModel;
 import com.amx.jax.dbmodel.BankMasterModel;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.BizComponentData;
+import com.amx.jax.dbmodel.CountryMaster;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerIdProof;
 import com.amx.jax.dbmodel.fx.EmployeeDetailsView;
+import com.amx.jax.dbmodel.remittance.AdditionalBankRuleAmiec;
 import com.amx.jax.dbmodel.remittance.BeneficiaryAccountException;
+import com.amx.jax.dbmodel.remittance.LocalBankDetailsView;
+import com.amx.jax.dbmodel.remittance.ViewRoutingDetails;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.manager.RemittanceApplicationManager;
 import com.amx.jax.manager.RemittanceTransactionManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.AbstractModel;
 import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
+import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.AmlCheckResponseDto;
 import com.amx.jax.model.response.remittance.BranchExchangeRateBreakup;
+import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
+import com.amx.jax.model.response.remittance.RoutingBankDto;
+import com.amx.jax.model.response.remittance.RoutingCountryDto;
+import com.amx.jax.model.response.remittance.RoutingResponseDto;
+import com.amx.jax.model.response.remittance.RoutingServiceDto;
 import com.amx.jax.repository.IAccountTypeFromViewDao;
+import com.amx.jax.repository.IAdditionalBankRuleAmiecRepository;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.ICollectionDetailRepository;
 import com.amx.jax.repository.ICurrencyDao;
@@ -143,17 +154,16 @@ public class BranchRemittanceManager  extends AbstractModel {
 	@Autowired
 	CustomerIdProofRepository idProofDao;
 	
-	//@Autowired
-	//RemittanceTransactionRequestValidator requestTrnxValidator;
-	
 	@Resource
 	private Map<String, Object> remitApplParametersMap;
 	
 	@Autowired
 	RemittanceApplicationManager remitApplTrnxManager;
 	
-/*	@Autowired
-	RemittanceTransactionRequestModel requestModel;*/
+	@Autowired
+	IAdditionalBankRuleAmiecRepository amiecBankRuleRepo;
+
+
 	
 	
 	
@@ -260,45 +270,12 @@ public class BranchRemittanceManager  extends AbstractModel {
 
 	
 	
-	public Map<String, Object> getRoutingSetupDeatils(BenificiaryListView beneficaryDetails){
-		Map<String, Object> outPut = new HashMap<>();
-		try {
-			Map<String, Object> inputValues = new HashMap<>();
-			
-			inputValues.put("P_USER_TYPE", ConstantDocument.BRANCH);
-			inputValues.put("P_APPLICATION_COUNTRY_ID", beneficaryDetails.getApplicationCountryId());
-			inputValues.put("P_BENE_COUNTRY_ID", beneficaryDetails.getBenificaryCountry());
-			inputValues.put("P_BENE_BANK_ID", beneficaryDetails.getBankId());
-			inputValues.put("P_BENE_BANK_BRANCH_ID", beneficaryDetails.getBranchId());
-			inputValues.put("P_SERVICE_GROUP_CODE", beneficaryDetails.getServiceGroupCode());
-			inputValues.put("P_CURRENCY_ID", beneficaryDetails.getCurrencyId());
-			inputValues.put("P_SERVICE_GROUP_CODE", beneficaryDetails.getServiceGroupCode());
-			inputValues.put("P_BENEFICARY_ACCOUNT_SEQ_ID", beneficaryDetails.getBeneficiaryAccountSeqId());
-			logger.debug("output :"+inputValues.toString());
-			if(beneficaryDetails.getServiceGroupCode() !=null && beneficaryDetails.getServiceGroupCode().equalsIgnoreCase(ConstantDocument.SERVICE_GROUP_CODE_CASH)) {
-				outPut =  routingService.getRoutingDetails(inputValues);
-			}else if(beneficaryDetails.getServiceGroupCode() !=null && beneficaryDetails.getServiceGroupCode().equalsIgnoreCase(ConstantDocument.SERVICE_GROUP_CODE_BANK)) {
-				outPut = applProcedureDao.getRoutingBankSetupDetailsForBranch(inputValues);
-			}
-			
-			logger.debug("output :"+outPut.toString());
-			if (outPut !=null && outPut.get("P_ERROR_MESSAGE") != null) {
-				throw new GlobalException(JaxError.ROUTING_SETUP_ERROR, outPut.get("P_ERROR_MESSAGE").toString());
-			}else {
-				if(outPut.get("P_SERVICE_MASTER_ID") == null) {
-					List<Map<String, Object>> listofService =routingPro.getServiceList(inputValues);
-				}
-			}
-		}catch(GlobalException e){
-			logger.error("routing  procedure", e.getErrorMessage() + "" +e.getErrorKey());
-			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
-		}
-		return outPut; 
-	}
 	
 	
 	
-	public Map<String ,Object> getExchangeRateForBranch(BranchRemittanceApplRequestModel requestModel,Map<String ,Object> map){
+	//public Map<String ,Object> getExchangeRateForBranch(BranchRemittanceApplRequestModel requestModel,Map<String ,Object> map){
+	public Map<String ,Object> getExchangeRateForBranch(BranchRemittanceApplRequestModel requestModel,RoutingResponseDto branchRoutingDto){
+	
 		Map<String, Object> outPut = new HashMap<>();
 		try {
 			
@@ -306,18 +283,42 @@ public class BranchRemittanceManager  extends AbstractModel {
 			BranchExchangeRateBreakup brExchRateBreakup =  requestModel.getBranchExRateBreakup();
 			Customer customer = custDao.getCustById(metaData.getCustomerId());
 			String customerType =getCustomerType(customer.getCustomerTypeId());  
+			BigDecimal routingBankId = BigDecimal.ZERO;
+			BigDecimal serviceMasterId = BigDecimal.ZERO;
+			BigDecimal remittancModeId = BigDecimal.ZERO;
+			
+			if(requestModel.getRoutingBankId().compareTo(BigDecimal.ZERO)>0) {
+				routingBankId = requestModel.getRoutingBankId();
+			}else {
+				routingBankId =branchRoutingDto.getRoutingBankDto().get(0).getRoutingBankId();
+			}
+			
+			
+			if(requestModel.getServiceMasterId().compareTo(BigDecimal.ZERO)>0) {
+				serviceMasterId = requestModel.getServiceMasterId();
+			}else {
+				serviceMasterId =branchRoutingDto.getServiceList().get(0).getServiceMasterId();
+			}
+			
+			
+			if(requestModel.getRemittancModeId().compareTo(BigDecimal.ZERO)>0) {
+				remittancModeId = requestModel.getRemittancModeId();
+			}else {
+				remittancModeId =branchRoutingDto.getRemittanceModeList().get(0).getRemittanceModeId();
+			}
+			
 			
 			
 			Map<String, Object> inputValues = new HashMap<>();
 			inputValues.put("P_USER_TYPE", ConstantDocument.BRANCH);
 			inputValues.put("P_APPLICATION_COUNTRY_ID", beneficaryDetails.getApplicationCountryId());
-			inputValues.put("P_ROUTING_COUNTRY_ID", map.get("P_ROUTING_COUNTRY_ID"));
+			inputValues.put("P_ROUTING_COUNTRY_ID",branchRoutingDto.getRoutingCountrydto().get(0).getRoutingCountryId()); // map.get("P_ROUTING_COUNTRY_ID"));
 			inputValues.put("P_BRANCH_ID",metaData.getCountryBranchId());
 			inputValues.put("P_COMPANY_ID",metaData.getCompanyId());
-			inputValues.put("P_ROUTING_BANK_ID", map.get("P_ROUTING_BANK_ID"));
-			inputValues.put("P_SERVICE_MASTER_ID", map.get("P_SERVICE_MASTER_ID"));
-			inputValues.put("P_DELIVERY_MODE_ID", map.get("P_DELIVERY_MODE_ID"));
-			inputValues.put("P_REMITTANCE_MODE_ID", map.get("P_REMITTANCE_MODE_ID")); 
+			inputValues.put("P_ROUTING_BANK_ID", routingBankId);//map.get("P_ROUTING_BANK_ID"));
+			inputValues.put("P_SERVICE_MASTER_ID", serviceMasterId);// map.get("P_SERVICE_MASTER_ID"));
+			inputValues.put("P_DELIVERY_MODE_ID", branchRoutingDto.getDeliveryModeList().get(0).getDeliveryModeId());//map.get("P_DELIVERY_MODE_ID"));
+			inputValues.put("P_REMITTANCE_MODE_ID", requestModel.getRemittancModeId());//map.get("P_REMITTANCE_MODE_ID")); 
 			inputValues.put("P_FOREIGN_CURRENCY_ID", beneficaryDetails.getCurrencyId()); //NC
 			inputValues.put("P_SELECTED_CURRENCY_ID", getSelectedCurrency(beneficaryDetails.getCurrencyId(), requestModel)); // NC
 			inputValues.put("P_CUSTOMER_ID", metaData.getCustomerId());
@@ -328,7 +329,7 @@ public class BranchRemittanceManager  extends AbstractModel {
 			inputValues.put("P_SELECTED_CURRENCY_AMOUNT", getSelectedCurrencyAmount(beneficaryDetails.getCurrencyId(), requestModel));//requestModel.getBranchExRateBreakup().getConvertedFCAmount());
 			inputValues.put("P_SPOT_RATE", null);
 			inputValues.put("P_CASH_ROUND_IND", null);
-			inputValues.put("P_ROUTING_BANK_BRANCH_ID", map.get("P_ROUTING_BANK_BRANCH_ID"));
+			inputValues.put("P_ROUTING_BANK_BRANCH_ID", branchRoutingDto.getRoutingBankBranchDto().get(0).getBankBranchId());//map.get("P_ROUTING_BANK_BRANCH_ID"));
 			inputValues.put("P_BENE_ID", beneficaryDetails.getBeneficaryMasterSeqId());
 			inputValues.put("P_BENE_COUNTRY_ID", beneficaryDetails.getBenificaryCountry());
 			inputValues.put("P_BENE_BANK_ID", beneficaryDetails.getBenificaryCountry());
@@ -500,15 +501,20 @@ public class BranchRemittanceManager  extends AbstractModel {
 	
 	
 	
-	 public void validateAdditionalCheck(Map<String, Object> branchRoutingDetails,Customer customer,BenificiaryListView beneficaryDetails,BigDecimal localNetAmount){
+	 public void validateAdditionalCheck(RoutingResponseDto branchRoutingDto,Customer customer,BenificiaryListView beneficaryDetails,BigDecimal localNetAmount){
 		 // EX_APPL_ADDL_CHECKS
 		 BigDecimal customerId = BigDecimal.ZERO;
 		 String allowNoBank = null;
 		 
-		 BigDecimal  routingBankId   = branchRoutingDetails.get("P_ROUTING_BANK_ID")==null?BigDecimal.ZERO:(BigDecimal)branchRoutingDetails.get("P_ROUTING_BANK_ID");
+	/*	 BigDecimal  routingBankId   = branchRoutingDetails.get("P_ROUTING_BANK_ID")==null?BigDecimal.ZERO:(BigDecimal)branchRoutingDetails.get("P_ROUTING_BANK_ID");
 		 BigDecimal  serviceMasterId = branchRoutingDetails.get("P_SERVICE_MASTER_ID")==null?BigDecimal.ZERO:(BigDecimal)branchRoutingDetails.get("P_SERVICE_MASTER_ID");
-		 BigDecimal  beneBankId   = beneficaryDetails.getBankId()==null?BigDecimal.ZERO:beneficaryDetails.getBankId();
+		 BigDecimal  beneBankId   = beneficaryDetails.getBankId()==null?BigDecimal.ZERO:beneficaryDetails.getBankId();*/
 		 
+		 
+		 
+		 BigDecimal  routingBankId   = branchRoutingDto.getRoutingBankDto().get(0).getRoutingBankId();
+		 BigDecimal  serviceMasterId = branchRoutingDto.getServiceList().get(0).getServiceMasterId();
+		 BigDecimal  beneBankId   = beneficaryDetails.getBankId()==null?BigDecimal.ZERO:beneficaryDetails.getBankId();
 		 
 		 if(customer!=null) {
 		  customerId     =customer.getCustomerId();
@@ -554,21 +560,27 @@ public class BranchRemittanceManager  extends AbstractModel {
 	 }
 	
 	
-	 public Map<String, Object> validateAdditionalBeneDetails(Map<String ,Object> branchRoutingDetails,Map<String ,Object> branchExchangeRate,BenificiaryListView beneficaryDetails) {
+	 public Map<String, Object> validateAdditionalBeneDetails(RoutingResponseDto branchRoutingDto,Map<String ,Object> branchExchangeRate,BenificiaryListView beneficaryDetails) {
 		 
 		    BigDecimal beneficaryMasterId = beneficaryDetails.getBeneficaryMasterSeqId();
 			BigDecimal beneficaryBankId = beneficaryDetails.getBankId();
 			BigDecimal beneficaryBankBranchId = beneficaryDetails.getBranchId();
 			BigDecimal beneAccNumSeqId = beneficaryDetails.getBeneficiaryAccountSeqId();
-			BigDecimal routingCountry = (BigDecimal) branchRoutingDetails.get("P_ROUTING_COUNTRY_ID");
+			/*BigDecimal routingCountry = (BigDecimal) branchRoutingDetails.get("P_ROUTING_COUNTRY_ID");
 			BigDecimal routingBank = (BigDecimal) branchRoutingDetails.get("P_ROUTING_BANK_ID");
 			BigDecimal routingBranch = (BigDecimal) branchRoutingDetails.get("P_ROUTING_BANK_BRANCH_ID");
-			BigDecimal serviceMasterId = (BigDecimal) branchRoutingDetails.get("P_SERVICE_MASTER_ID");
+			BigDecimal serviceMasterId = (BigDecimal) branchRoutingDetails.get("P_SERVICE_MASTER_ID");*/
+			
+			BigDecimal routingCountry = branchRoutingDto.getRoutingCountrydto().get(0).getRoutingCountryId();
+			BigDecimal routingBank = branchRoutingDto.getRoutingBankDto().get(0).getRoutingBankId();
+			BigDecimal routingBranch = branchRoutingDto.getRoutingBankBranchDto().get(0).getBankBranchId();
+			BigDecimal serviceMasterId = branchRoutingDto.getServiceList().get(0).getServiceMasterId();
+			
+			
 			BigDecimal applicationCountryId = beneficaryDetails.getApplicationCountryId();
 			BigDecimal currencyId =beneficaryDetails.getCurrencyId();
 			BigDecimal remitMode = (BigDecimal) branchExchangeRate.get("P_REMITTANCE_MODE_ID");
 			BigDecimal deliveryMode = (BigDecimal) branchExchangeRate.get("P_DELIVERY_MODE_ID");
-			/** Added by Rabil on 03 May 2018 **/
 			BigDecimal beneficaryRelationSeqId = beneficaryDetails.getBeneficiaryRelationShipSeqId();
 			
 			Map<String, Object> inputValues = new HashMap<>();
@@ -740,5 +752,86 @@ public class BranchRemittanceManager  extends AbstractModel {
 		return dto;
 	}
 	
+	
+
+	
+	
+	private  RoutingServiceDto  convertToService(ViewRoutingDetails routingDetails) {
+		
+		RoutingServiceDto serDto = new RoutingServiceDto();
+		try {
+			BeanUtils.copyProperties(serDto, routingDetails);
+		} catch (IllegalAccessException | InvocationTargetException e) {
+			logger.error("convertModel  to convert currency", e);
+		}
+		return serDto;
+	}
+	
+	
+
+	
+	
+   private  RoutingCountryDto  convertToRoutingCountry(ViewRoutingDetails routingDetails) {
+		
+	RoutingCountryDto serDto = new RoutingCountryDto();
+		try {
+			BeanUtils.copyProperties(serDto, routingDetails);
+		} catch (IllegalAccessException | InvocationTargetException e) {
+			logger.error("convertModel  to convert currency", e);
+		}
+		return serDto;
+	}
+	
+
+	
+  private  RoutingBankDto  convertToRoutingBank(ViewRoutingDetails routingDetails) {
+	  RoutingBankDto serDto = new RoutingBankDto();
+		try {
+			BeanUtils.copyProperties(serDto, routingDetails);
+		} catch (IllegalAccessException | InvocationTargetException e) {
+			logger.error("convertModel  to convert currency", e);
+		}
+		return serDto;
+	}
+	
+  
+  
+  public List<AdditionalExchAmiecDto> getPurposeOfTrnx(BigDecimal beneRelId){
+	  BenificiaryListView beneficaryDetails =beneficiaryRepository.findBybeneficiaryRelationShipSeqId(beneRelId);
+		
+		if(beneficaryDetails==null) {
+			throw new GlobalException(JaxError.BENEFICIARY_LIST_NOT_FOUND,"Beneficairy not found "+beneRelId);
+			
+		}	
+		
+		List<AdditionalExchAmiecDto> purposeofTrnx = new ArrayList<>();	
+	  CountryMaster cntMaster = new CountryMaster();
+	  cntMaster.setCountryId(beneficaryDetails.getBenificaryCountry());
+	  List<AdditionalBankRuleAmiec> amiecRuleMap = amiecBankRuleRepo.getPurposeOfTrnxByCountryId(cntMaster);
+	  
+	  if(amiecRuleMap != null && amiecRuleMap.size() != 0) {
+		 return convertPurposeOfTrnxDto(amiecRuleMap);
+		}else {
+			throw new GlobalException(JaxError.NO_RECORD_FOUND, "No records found");
+		}
+  }
+  
+  public List<AdditionalExchAmiecDto> convertPurposeOfTrnxDto(List<AdditionalBankRuleAmiec> amiecRuleMap ) {
+	  List<AdditionalExchAmiecDto>  dto = new ArrayList<>();
+		
+	  	for(AdditionalBankRuleAmiec amiec : amiecRuleMap) {
+	  		AdditionalExchAmiecDto amiecDto = new AdditionalExchAmiecDto();
+	  		amiecDto.setFlexField(amiec.getFlexField());
+	  		amiecDto.setAmiecCode(amiec.getAmiecCode());
+	  		amiecDto.setAmiecDescription(amiec.getAmiecDescription());
+	  		amiecDto.setCountryId(amiec.getCountryId().getCountryId());
+	  		amiecDto.setAdditionalBankRuleDetailId(amiec.getAdditionalBankRuleDetailId());
+	  		dto.add(amiecDto);
+	  	}
+	  
+		return dto;
+	}
+
+  
 }	
 

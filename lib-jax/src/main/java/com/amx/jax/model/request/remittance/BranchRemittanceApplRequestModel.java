@@ -30,6 +30,9 @@ public class BranchRemittanceApplRequestModel {
 	public Map<String, FlexFieldDto> flexFieldDtoMap;
 	private String signature;
 	private String amlRemarks;
+	private BigDecimal serviceMasterId;
+	private BigDecimal routingBankId;
+	private BigDecimal remittancModeId;
 	
 
 	
@@ -143,6 +146,24 @@ public class BranchRemittanceApplRequestModel {
 	}
 	public void setBeneId(BigDecimal beneId) {
 		this.beneId = beneId;
+	}
+	public BigDecimal getServiceMasterId() {
+		return serviceMasterId;
+	}
+	public void setServiceMasterId(BigDecimal serviceMasterId) {
+		this.serviceMasterId = serviceMasterId;
+	}
+	public BigDecimal getRoutingBankId() {
+		return routingBankId;
+	}
+	public void setRoutingBankId(BigDecimal routingBankId) {
+		this.routingBankId = routingBankId;
+	}
+	public BigDecimal getRemittancModeId() {
+		return remittancModeId;
+	}
+	public void setRemittancModeId(BigDecimal remittancModeId) {
+		this.remittancModeId = remittancModeId;
 	}
 
 

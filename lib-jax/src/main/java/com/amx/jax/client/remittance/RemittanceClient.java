@@ -18,11 +18,13 @@ import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.request.remittance.CustomerBankRequest;
 import com.amx.jax.model.response.fx.UserStockDto;
+import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
 import com.amx.jax.model.response.remittance.CustomerShoppingCartDto;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
 import com.amx.jax.model.response.remittance.PaymentModeOfPaymentDto;
+import com.amx.jax.model.response.remittance.RoutingResponseDto;
 import com.amx.jax.rest.RestService;
 
 @Component
@@ -228,6 +230,64 @@ public class RemittanceClient  implements IRemittanceService{
 			LOGGER.error("exception in validationStaffCredentials : ", e);
 			return JaxSystemError.evaluate(e);
 		} // end of try-catch
+	}
+
+
+
+
+
+	@Override
+	public AmxApiResponse<RoutingResponseDto, Object> getRoutingSetupDeatils(BigDecimal beneRelaId) {
+		try {
+			LOGGER.debug("in getRoutingSetupDeatils :"+beneRelaId );
+			return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_ROUTING).meta(new JaxMetaInfo())
+					.queryParam(Params.BENE_RELATION_SHIP_ID, beneRelaId).meta(new JaxMetaInfo())
+					.get()
+					.as(new ParameterizedTypeReference<AmxApiResponse<RoutingResponseDto, Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in validationStaffCredentials : ", e);
+			return JaxSystemError.evaluate(e);
+		} // end of try-cat
+	}
+
+
+
+
+
+	@Override
+	public AmxApiResponse<RoutingResponseDto, Object> getRoutingDetailsByServiceId(BigDecimal beneRelaId,BigDecimal serviceMasterId) {
+		try {
+		LOGGER.debug("in getRoutingSetupDeatils :"+beneRelaId );
+		return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_ROUTING_BY_SERVICE).meta(new JaxMetaInfo())
+				.queryParam(Params.BENE_RELATION_SHIP_ID, beneRelaId).meta(new JaxMetaInfo())
+				.queryParam(Params.SERVICE_MASTER_ID, serviceMasterId)
+				.get()
+				.as(new ParameterizedTypeReference<AmxApiResponse<RoutingResponseDto, Object>>() {
+				});
+	} catch (Exception e) {
+		LOGGER.error("exception in validationStaffCredentials : ", e);
+		return JaxSystemError.evaluate(e);
+	} // end of try-cat
+	}
+
+
+
+
+
+	@Override
+	public AmxApiResponse<AdditionalExchAmiecDto, Object> getPurposeOfTrnx(BigDecimal beneRelaId) {
+		try {
+			LOGGER.debug("in getRoutingSetupDeatils :"+beneRelaId );
+			return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_PURPOSE_OF_TRNX).meta(new JaxMetaInfo())
+					.queryParam(Params.BENE_RELATION_SHIP_ID, beneRelaId).meta(new JaxMetaInfo())
+					.get()
+					.as(new ParameterizedTypeReference<AmxApiResponse<AdditionalExchAmiecDto, Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in validationStaffCredentials : ", e);
+			return JaxSystemError.evaluate(e);
+		} // end of try-cat
 	}
 
 

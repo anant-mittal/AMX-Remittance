@@ -12,11 +12,13 @@ import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.request.remittance.CustomerBankRequest;
 import com.amx.jax.model.response.fx.UserStockDto;
+import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
 import com.amx.jax.model.response.remittance.CustomerShoppingCartDto;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
 import com.amx.jax.model.response.remittance.PaymentModeOfPaymentDto;
+import com.amx.jax.model.response.remittance.RoutingResponseDto;
 
 public interface IRemittanceService extends  IJaxService {
 
@@ -35,6 +37,10 @@ public interface IRemittanceService extends  IJaxService {
 		public static final String BR_REMITTANCE_LOCAL_CURRENCY_REFUND_DENOMINATION = PREFIX + "/local-currency-refund-denomination/";
 		public static final String BR_REMITTANCE_SAVE_CUSTOMER_BANKS = PREFIX + "/save-customer-banks/";
 		public static final String BR_REMITTANCE_VALIDATE_STAFF_CREDENTIALS = PREFIX + "/validate-staff-credentails/";
+		public static final String BR_REMITTANCE_ROUTING = PREFIX + "/get-routing-details/";
+		public static final String BR_REMITTANCE_ROUTING_BY_SERVICE = PREFIX + "/get-routing-details-by-serviceid/";
+		public static final String BR_REMITTANCE_PURPOSE_OF_TRNX = PREFIX + "/get-purpose-of-trnx/";
+		
 	}
 
 	public static class Params {
@@ -42,6 +48,8 @@ public interface IRemittanceService extends  IJaxService {
 		public static final String BANK_ID = "bankId";
 		public static final String STAFF_USERNAME = "staffUserName";
 		public static final String STAFF_PASSWORD = "staffPassword";
+		public static final String BENE_RELATION_SHIP_ID = "beneRelationshipId";
+		public static final String SERVICE_MASTER_ID = "serviceMasterId";
 	}
 	
 	
@@ -81,6 +89,17 @@ public interface IRemittanceService extends  IJaxService {
 	AmxApiResponse<BoolRespModel, Object> saveCustomerBankDetails(List<CustomerBankRequest> customerBank);
 
 	AmxApiResponse<BoolRespModel, Object> validationStaffCredentials(String staffUserName, String staffPassword);
+	
+	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND,JaxError.SERVICE_NOT_FOUND,JaxError.ROUTING_COUNTRY_NOT_FOUND,JaxError.ROUTING_BANK_COUNTRY_NOT_FOUND,JaxError.ROUTING_BANK_BRANCH_NOT_FOUND,JaxError.DELIVERY_MODE_NOT_FOUND,JaxError.REMITTANCE_MODE_NOT_FOUND})
+	AmxApiResponse<RoutingResponseDto,Object> getRoutingSetupDeatils(BigDecimal beneRelaId);
+	
+	
+	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND,JaxError.SERVICE_NOT_FOUND,JaxError.ROUTING_COUNTRY_NOT_FOUND,JaxError.ROUTING_BANK_COUNTRY_NOT_FOUND,JaxError.ROUTING_BANK_BRANCH_NOT_FOUND,JaxError.DELIVERY_MODE_NOT_FOUND,JaxError.REMITTANCE_MODE_NOT_FOUND})
+	AmxApiResponse<RoutingResponseDto,Object> getRoutingDetailsByServiceId(BigDecimal beneRelaId,BigDecimal serviceMasterId);
+	
+	
+	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND})
+	AmxApiResponse<AdditionalExchAmiecDto,Object> getPurposeOfTrnx(BigDecimal beneRelaId);
 
 }
 

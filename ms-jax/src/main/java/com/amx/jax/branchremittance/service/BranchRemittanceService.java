@@ -16,17 +16,20 @@ import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.branchremittance.manager.BranchRemittanceApplManager;
 import com.amx.jax.branchremittance.manager.BranchRemittanceManager;
 import com.amx.jax.branchremittance.manager.BranchRemittancePaymentManager;
+import com.amx.jax.branchremittance.manager.BranchRoutingManager;
 import com.amx.jax.manager.FcSaleBranchOrderManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.request.remittance.CustomerBankRequest;
 import com.amx.jax.model.response.fx.UserStockDto;
+import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
 import com.amx.jax.model.response.remittance.CustomerShoppingCartDto;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
 import com.amx.jax.model.response.remittance.PaymentModeOfPaymentDto;
+import com.amx.jax.model.response.remittance.RoutingResponseDto;
 import com.amx.jax.services.AbstractService;
 import com.amx.jax.validation.FxOrderValidation;
 
@@ -54,6 +57,9 @@ public class BranchRemittanceService extends AbstractService{
 	
 	@Autowired
 	BranchRemittancePaymentManager branchRemittancePaymentManager;
+	
+	@Autowired
+	BranchRoutingManager branchRoutingManager;
 
 	
 	public AmxApiResponse<BranchRemittanceApplResponseDto, Object> saveBranchRemittanceApplication(BranchRemittanceApplRequestModel requestApplModel){
@@ -138,4 +144,22 @@ public class BranchRemittanceService extends AbstractService{
 		return new BoolRespModel(validateStatus);
 	}
 	
+	
+	public AmxApiResponse<RoutingResponseDto,Object> getRoutingDetails(BigDecimal beneRelaId) {
+		RoutingResponseDto respondeDto = branchRoutingManager.getRoutingSetupDeatils(beneRelaId);
+		return AmxApiResponse.build(respondeDto);
+	}
+	
+	
+	
+	public AmxApiResponse<RoutingResponseDto,Object> getRoutingDetailsByServiceId(BigDecimal beneRelaId,BigDecimal serviceMasterId) {
+		RoutingResponseDto respondeDto = branchRoutingManager.getRoutingDetailsByServiceId(beneRelaId,serviceMasterId);
+		return AmxApiResponse.build(respondeDto);
+	}
+
+	public AmxApiResponse<AdditionalExchAmiecDto, Object> getPurposeOfTrnx(BigDecimal beneRelaId){
+		List<AdditionalExchAmiecDto> dto =  branchRemitManager.getPurposeOfTrnx(beneRelaId);
+		return AmxApiResponse.buildList(dto);
+		
+	}
 }

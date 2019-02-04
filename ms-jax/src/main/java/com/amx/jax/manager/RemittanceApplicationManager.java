@@ -261,8 +261,6 @@ public class RemittanceApplicationManager {
 			BigDecimal srlId = requestModel.getSrlId();
 			logger.info("Srl Id received: " + srlId);
 			BigDecimal bankId = (BigDecimal) remitApplParametersMap.get("P_ROUTING_BANK_ID");
-			// BigDecimal countryId = (BigDecimal)
-			// remitApplParametersMap.get("P_ROUTING_COUNTRY_ID");
 			BigDecimal remittanceModeId = (BigDecimal) remitApplParametersMap.get("P_REMITTANCE_MODE_ID");
 			BigDecimal deliveryModeId = (BigDecimal) remitApplParametersMap.get("P_DELIVERY_MODE_ID");
 			BigDecimal foreignCurrencyId = (BigDecimal) remitApplParametersMap.get("P_FOREIGN_CURRENCY_ID");
