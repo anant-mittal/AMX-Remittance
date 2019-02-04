@@ -5,20 +5,24 @@ import com.amx.jax.exception.IExceptionEnum;
 import com.amx.utils.ArgUtil;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonPropertyOrder({ "description", "message", "component", "category", "type", "result", "timestamp" })
+@JsonPropertyOrder({ AuditEvent.PROP_DESC, "msg", "component", "category", "type", "result", "timestamp" })
 public abstract class AuditEvent extends AbstractEvent {
 
+	public static final String PROP_DESC = "desc";
 	private static final long serialVersionUID = -1539116953165424464L;
 	protected Result result;
 	protected IExceptionEnum errorCode;
 	protected long tranxTime;
 	protected long traceTime;
 	protected long eventTime;
+
+	@JsonProperty(PROP_DESC)
 	protected String description = null;
 	protected String message;
 	protected String exception;
