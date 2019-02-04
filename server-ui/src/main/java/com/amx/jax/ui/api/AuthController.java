@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.model.SecurityQuestionModel;
-import com.amx.jax.AppContextUtil;
 import com.amx.jax.JaxAuthContext;
 import com.amx.jax.ui.config.UIServerError;
 import com.amx.jax.ui.model.AuthDataInterface.AuthRequest;
@@ -69,6 +68,7 @@ public class AuthController {
 		if (useOTP) {
 			otp = ArgUtil.ifNotEmpty(otp, JaxAuthContext.getMotp());
 			if (ArgUtil.isEmpty(otp)) {
+				loginService.sendOTP(authData.getIdentity(), null);
 				throw new UIServerError(WebResponseStatus.OTP_REQUIRED);
 			}
 		}
@@ -81,6 +81,7 @@ public class AuthController {
 	 * @param authData the auth data
 	 * @return the response wrapper
 	 */
+	@Deprecated
 	@RequestMapping(value = "/pub/auth/otp", method = { RequestMethod.POST })
 	public ResponseWrapper<AuthResponse> sendOTP(@Valid @RequestBody AuthRequest authData) {
 		return loginService.sendOTP(authData.getIdentity(), null);
