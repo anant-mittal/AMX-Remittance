@@ -303,7 +303,7 @@ public class BranchRemittanceManager extends AbstractModel {
 			inputValues.put("P_USER_TYPE", ConstantDocument.BRANCH);
 			inputValues.put("P_APPLICATION_COUNTRY_ID", beneficaryDetails.getApplicationCountryId());
 			inputValues.put("P_ROUTING_COUNTRY_ID",
-					branchRoutingDto.getRoutingCountrydto().get(0).getRoutingCountryId()); // map.get("P_ROUTING_COUNTRY_ID"));
+					branchRoutingDto.getRoutingCountrydto().get(0).getResourceId()); // map.get("P_ROUTING_COUNTRY_ID"));
 			inputValues.put("P_BRANCH_ID", metaData.getCountryBranchId());
 			inputValues.put("P_COMPANY_ID", metaData.getCompanyId());
 			inputValues.put("P_ROUTING_BANK_ID", routingBankId);// map.get("P_ROUTING_BANK_ID"));
@@ -595,7 +595,7 @@ public class BranchRemittanceManager extends AbstractModel {
 		 * branchRoutingDetails.get("P_SERVICE_MASTER_ID");
 		 */
 
-		BigDecimal routingCountry = branchRoutingDto.getRoutingCountrydto().get(0).getRoutingCountryId();
+		BigDecimal routingCountry = branchRoutingDto.getRoutingCountrydto().get(0).getResourceId();
 		BigDecimal routingBank = branchRoutingDto.getRoutingBankDto().get(0).getRoutingBankId();
 		BigDecimal routingBranch = branchRoutingDto.getRoutingBankBranchDto().get(0).getBankBranchId();
 		BigDecimal serviceMasterId = branchRoutingDto.getServiceList().get(0).getServiceMasterId();
