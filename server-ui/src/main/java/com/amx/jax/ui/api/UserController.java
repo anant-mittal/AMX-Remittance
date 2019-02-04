@@ -362,6 +362,7 @@ public class UserController {
 
 		mOtp = JaxAuthContext.mOtp(ArgUtil.ifNotEmpty(userUpdateRequest.getmOtp(), mOtp, mOtpHeader));
 		eOtp = JaxAuthContext.mOtp(ArgUtil.ifNotEmpty(userUpdateRequest.geteOtp(), eOtp, eOtpHeader));
+		LOGGER.debug("OTPS M:{}, O:{}", mOtp, eOtp);
 
 		// mOtp = (mOtp == null) ? (mOtpHeader == null ? userUpdateRequest.getmOtp() :
 		// mOtpHeader) : mOtp;
@@ -369,7 +370,7 @@ public class UserController {
 		// eOtpHeader) : eOtp;
 
 		ResponseWrapperM<Object, AuthResponseOTPprefix> wrapper = new ResponseWrapperM<>();
-		if (mOtp == null && eOtp == null) {
+		if (ArgUtil.isEmpty(mOtp) && ArgUtil.isEmpty(eOtp)) {
 			CivilIdOtpModel model = jaxService.setDefaults().getUserclient()
 					.sendOtpForMobileUpdate(userUpdateRequest.getPhone()).getResult();
 			wrapper.setMeta(new AuthData());
