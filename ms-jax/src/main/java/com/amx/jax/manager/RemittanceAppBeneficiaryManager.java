@@ -63,8 +63,6 @@ public class RemittanceAppBeneficiaryManager {
 		logger.info(" Enter into saveRemittanceAppBenificary ");
 		RemittanceAppBenificiary remittanceAppBenificary = new RemittanceAppBenificiary();
 		BenificiaryListView beneficiaryDT = (BenificiaryListView) remitApplParametersMap.get("BENEFICIARY");
-		//refresh the bene view to get flex fields
-		beneficiaryDT = beneficiaryService.getBeneByIdNo(beneficiaryDT.getBeneficiaryRelationShipSeqId());
 		String telNumber = beneficiaryService.getBeneficiaryContactNumber(beneficiaryDT.getBeneficaryMasterSeqId());
 		remittanceAppBenificary = new RemittanceAppBenificiary();
 
@@ -119,9 +117,11 @@ public class RemittanceAppBeneficiaryManager {
 	private String getAccountNumber(BenificiaryListView beneficiaryDT) {
 		String iBanFlag = bankService.getBankById(beneficiaryDT.getBankId()).getIbanFlag();
 		String accountNumber = beneficiaryDT.getBankAccountNumber();
-		logger.debug("iBanFlag: {} , iBANNum: {}", iBanFlag, beneficiaryDT.getIbanNumber());
-		if (ConstantDocument.Yes.equalsIgnoreCase(iBanFlag) && StringUtils.isNotBlank(beneficiaryDT.getIbanNumber())) {
-			accountNumber = beneficiaryDT.getIbanNumber();
+		String ibanNumber = beneficiaryService.getBeneAccountByAccountSeqId(beneficiaryDT.getBeneficiaryAccountSeqId())
+				.getIbanNumber();
+		logger.debug("iBanFlag: {} , iBANNum: {}", iBanFlag, ibanNumber);
+		if (ConstantDocument.Yes.equalsIgnoreCase(iBanFlag) && StringUtils.isNotBlank(ibanNumber)) {
+			accountNumber = ibanNumber;
 		}
 		return accountNumber;
 	}
