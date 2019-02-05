@@ -27,7 +27,7 @@ public class SnapApiController {
 			throws IOException {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("lte", "now");
-		params.put("gte", "now-5y");
+		params.put("gte", "now-20y");
 		return snapQueryService.execute(SnapQueryTemplate.CUSTOMERS_JOINED, params);
 	}
 

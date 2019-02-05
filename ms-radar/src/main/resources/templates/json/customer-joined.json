@@ -20,6 +20,10 @@
           {
             "key": "last_year",
             "from": "now-1y"
+          },
+          {
+            "key": "last_year",
+            "from": "now-20y"
           }
         ]
       }
@@ -44,6 +48,10 @@
           {
             "key": "last_year",
             "from": "now-1y"
+          },
+          {
+            "key": "last_year",
+            "from": "now-20y"
           }
         ]
       }
