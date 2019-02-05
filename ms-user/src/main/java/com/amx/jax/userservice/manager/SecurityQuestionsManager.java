@@ -87,7 +87,7 @@ public class SecurityQuestionsManager {
 		Map<Integer, QuestModelDTO> maps = new HashMap<>();
 		maps.put(1, q1);
 		maps.put(2, q2);
-		int randQKey = ThreadLocalRandom.current().nextInt(1, 4);
+		int randQKey = ThreadLocalRandom.current().nextInt(1, 3);
 		result.add(maps.get(randQKey));
 		return result;
 
