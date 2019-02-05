@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.dict.Tenant;
 import com.amx.jax.http.ApiRequest;
 import com.amx.jax.http.RequestType;
 import com.amx.jax.tunnel.TunnelEvent;
@@ -52,8 +54,16 @@ public class BrokerController {
 	@ApiRequest(type = RequestType.POLL)
 	@RequestMapping(value = "/pub/events/pong", method = { RequestMethod.POST })
 	public AmxApiResponse<Object, Object> pollEvents(BigDecimal eventId) {
-		brokerService.pushNewEventNotifications();
+		brokerService.pushNewEventNotifications(AppContextUtil.getTenant());
 		return AmxApiResponse.build();
 	}
+	
+	@ApiRequest(type = RequestType.POLL)
+	@RequestMapping(value = "/pub/amx/broker", method = { RequestMethod.POST })
+	public AmxApiResponse<Object, Object> brokerPing() {
+		brokerService.pushNewEventNotifications(AppContextUtil.getTenant());
+		return AmxApiResponse.build();
+	}
+
 
 }

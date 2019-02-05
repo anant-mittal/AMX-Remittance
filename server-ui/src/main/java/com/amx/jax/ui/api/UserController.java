@@ -303,7 +303,7 @@ public class UserController {
 			@RequestBody UserUpdateRequest userUpdateRequest) {
 
 		mOtp = JaxAuthContext.mOtp(ArgUtil.ifNotEmpty(userUpdateRequest.getmOtp(), mOtp, mOtpHeader));
-		eOtp = JaxAuthContext.mOtp(ArgUtil.ifNotEmpty(userUpdateRequest.geteOtp(), eOtp, eOtpHeader));
+		eOtp = JaxAuthContext.eOtp(ArgUtil.ifNotEmpty(userUpdateRequest.geteOtp(), eOtp, eOtpHeader));
 
 //		mOtp = (mOtp == null) ? (mOtpHeader == null ? userUpdateRequest.getmOtp() : mOtpHeader) : mOtp;
 //		eOtp = (eOtp == null) ? (eOtpHeader == null ? userUpdateRequest.geteOtp() : eOtpHeader) : eOtp;
@@ -361,7 +361,7 @@ public class UserController {
 			@RequestBody UserUpdateRequest userUpdateRequest) {
 
 		mOtp = JaxAuthContext.mOtp(ArgUtil.ifNotEmpty(userUpdateRequest.getmOtp(), mOtp, mOtpHeader));
-		eOtp = JaxAuthContext.mOtp(ArgUtil.ifNotEmpty(userUpdateRequest.geteOtp(), eOtp, eOtpHeader));
+		eOtp = JaxAuthContext.eOtp(ArgUtil.ifNotEmpty(userUpdateRequest.geteOtp(), eOtp, eOtpHeader));
 		LOGGER.debug("OTPS M:{}, O:{}", mOtp, eOtp);
 
 		// mOtp = (mOtp == null) ? (mOtpHeader == null ? userUpdateRequest.getmOtp() :
