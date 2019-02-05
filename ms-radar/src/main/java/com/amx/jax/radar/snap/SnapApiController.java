@@ -18,7 +18,7 @@ import com.amx.utils.JsonUtil;
 public class SnapApiController {
 
 	@Autowired
-	private SnapQueryTemplateService snapQueryTemplateService;
+	private SnapQueryService snapQueryTemplateService;
 
 	@Autowired
 	RestService restService;
@@ -28,7 +28,7 @@ public class SnapApiController {
 	public Map<String, Object> customerJoined() throws IOException {
 
 		Map<String, Object> queryStr = JsonUtil
-				.getMapFromJsonString(snapQueryTemplateService.process(null, null));
+				.getMapFromJsonString(snapQueryTemplateService.buildQueryString(null, null));
 
 		return restService.ajax("http://10.28.42.21:9200/oracle-v3-tranx-v4/_search").post(queryStr).asMap();
 	}

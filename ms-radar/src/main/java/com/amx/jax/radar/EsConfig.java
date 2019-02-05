@@ -28,6 +28,9 @@ public class EsConfig extends AbstractFactoryBean {
 	@Value("${elasticsearch.port}")
 	private String clusterPort;
 
+	@Value("${elasticsearch.url}")
+	private String clusterUrl;
+
 	private RestHighLevelClient restHighLevelClient;
 
 	@Override
@@ -60,12 +63,23 @@ public class EsConfig extends AbstractFactoryBean {
 		try {
 			restHighLevelClient = new RestHighLevelClient(
 					RestClient.builder(
-							new HttpHost(clusterHost, ArgUtil.parseAsInteger(clusterPort), "http")
-					)
-			);
+							new HttpHost(clusterHost, ArgUtil.parseAsInteger(clusterPort), "http")));
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
 		}
 		return restHighLevelClient;
 	}
+
+	public String getClusterHost() {
+		return clusterHost;
+	}
+
+	public String getClusterPort() {
+		return clusterPort;
+	}
+
+	public String getClusterUrl() {
+		return clusterUrl;
+	}
+
 }
