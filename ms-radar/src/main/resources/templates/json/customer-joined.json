@@ -22,7 +22,7 @@
             "from": "now-1y"
           },
           {
-            "key": "last_year",
+            "key": "all_time",
             "from": "now-20y"
           }
         ]
@@ -50,7 +50,7 @@
             "from": "now-1y"
           },
           {
-            "key": "last_year",
+            "key": "all_time",
             "from": "now-20y"
           }
         ]
