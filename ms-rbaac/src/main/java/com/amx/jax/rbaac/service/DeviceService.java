@@ -162,6 +162,7 @@ public class DeviceService extends AbstractService {
 		Device device = deviceDao.findDevice(new BigDecimal(countryBranchSystemInventoryId), deviceType);
 		deviceValidation.validateDevice(device);
 		deviceValidation.validateDeviceOtpToken(device, otp);
+		deviceValidation.validateOtpValidationTimeLimit(device.getRegistrationId());
 		// session pair success
 		device.setState(DeviceState.SESSION_PAIRED);
 		deviceDao.saveDevice(device);
