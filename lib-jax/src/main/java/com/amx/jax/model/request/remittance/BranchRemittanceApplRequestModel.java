@@ -22,7 +22,6 @@ public class BranchRemittanceApplRequestModel {
 	private BigDecimal foreignAmount;
 	private boolean availLoyalityPoints;
 	private BigDecimal additionalBankRuleFiledId;
-	private BigDecimal srlId;
 	private Map<String, Object> flexFields;
 	private BigDecimal domXRate;
 	@NotNull
@@ -32,7 +31,10 @@ public class BranchRemittanceApplRequestModel {
 	private String amlRemarks;
 	private BigDecimal serviceMasterId;
 	private BigDecimal routingBankId;
+	private BigDecimal routingCountryId;
 	private BigDecimal remittancModeId;
+	private BigDecimal purposeOfTrnxId;
+
 	
 
 	
@@ -68,12 +70,6 @@ public class BranchRemittanceApplRequestModel {
 	}
 	public void setAdditionalBankRuleFiledId(BigDecimal additionalBankRuleFiledId) {
 		this.additionalBankRuleFiledId = additionalBankRuleFiledId;
-	}
-	public BigDecimal getSrlId() {
-		return srlId;
-	}
-	public void setSrlId(BigDecimal srlId) {
-		this.srlId = srlId;
 	}
 	
 	
@@ -137,8 +133,7 @@ public class BranchRemittanceApplRequestModel {
 	private Map<String, String> createFlexFieldMap(Map<String, Object> flexFields2) {
 
 		Set<Entry<String, Object>> es = flexFields2.entrySet();
-		Map<String, String> output = es.stream()
-				.collect(Collectors.toMap(x -> x.getKey(), x -> JsonUtil.toJson(x.getValue())));
+		Map<String, String> output = es.stream().collect(Collectors.toMap(x -> x.getKey(), x -> JsonUtil.toJson(x.getValue())));
 		return output;
 	}
 	public BigDecimal getBeneId() {
@@ -164,6 +159,18 @@ public class BranchRemittanceApplRequestModel {
 	}
 	public void setRemittancModeId(BigDecimal remittancModeId) {
 		this.remittancModeId = remittancModeId;
+	}
+	public BigDecimal getPurposeOfTrnxId() {
+		return purposeOfTrnxId;
+	}
+	public void setPurposeOfTrnxId(BigDecimal purposeOfTrnxId) {
+		this.purposeOfTrnxId = purposeOfTrnxId;
+	}
+	public BigDecimal getRoutingCountryId() {
+		return routingCountryId;
+	}
+	public void setRoutingCountryId(BigDecimal routingCountryId) {
+		this.routingCountryId = routingCountryId;
 	}
 
 

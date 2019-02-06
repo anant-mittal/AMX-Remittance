@@ -210,6 +210,7 @@ public class BranchRoutingManager {
 					service.setServiceCode(view.get(0).getServiceCode());
 					service.setServiceMasterId(view.get(0).getServiceMasterId());
 					service.setServiceGroupCode(view.get(0).getServiceGroupCode());
+					service.setServiceDescription(view.get(0).getServiceDescription());
 					listOfService.add(service);
 					routingResponseDto.setServiceList(listOfService);
 					if (routingcountryId.compareTo(BigDecimal.ZERO) > 0) {
@@ -524,10 +525,11 @@ public class BranchRoutingManager {
 		return routingResponseDto;
 	}
 
-	public RoutingResponseDto getRoutingDetailsByServiceIdAndBankId(BigDecimal beneRelaId, BigDecimal serviceMasterId,
-			BigDecimal routingBankId) {
+	public RoutingResponseDto getRemittanceDetailsByServiceIdAndBankId(BigDecimal beneRelaId, BigDecimal serviceMasterId,
+			BigDecimal routingCountryId,BigDecimal routingBankId,BigDecimal remittanceModeId) {
 		Map<String, Object> inputValues = getBeneMapSet(beneRelaId);
 		inputValues.put("P_SERVICE_MASTER_ID", serviceMasterId);
+		inputValues.put("P_ROUTING_COUNTRY_ID", routingCountryId);
 		inputValues.put("P_ROUTING_BANK_ID", routingBankId);
 		List<RoutingServiceDto> listOfService = new ArrayList<>();
 		List<ViewServiceDetails> view = serviceViewRepo.findByServiceMasterId(serviceMasterId);
@@ -537,7 +539,7 @@ public class BranchRoutingManager {
 		service.setServiceGroupCode(view.get(0).getServiceGroupCode());
 		listOfService.add(service);
 		routingResponseDto.setServiceList(listOfService);
-		getRoutingCountryList(inputValues);
+		getRemittanceModeList(inputValues);
 		return routingResponseDto;
 	}
 
@@ -549,6 +551,7 @@ public class BranchRoutingManager {
 		} else {
 			getRoutingSetupDeatils(requestApplModel.getBeneId());
 		}
+		
 
 		return routingResponseDto;
 

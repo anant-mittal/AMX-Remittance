@@ -122,5 +122,14 @@ public class ConstantDocument {
 	public static final String PARAM_POS_BANK="BPOS";
 	public static final String COUNTER="C";
 	
+	public static final String DECL_REPORT_FOR_CASH="14";
+	public static final String DECL_REPORT_FOR_TOT_AMOUNT="15";
+	public static final String FC_DECL_REPORT_FOR_TOT_AMOUNT="39";
+	public static final String FC_SALE_REMIT = "FC Sale Remmit";
+	public static final String C = "C";
+
+	
+	
+
 	
 }

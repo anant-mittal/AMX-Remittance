@@ -19,4 +19,6 @@ public interface LocalBankDetailsRepository extends CrudRepository<LocalBankDeta
 	@Query(value = "Select Distinct(Debit_Card_Name) from Ex_Customer_Bank where Customer_Id = ?1 and Bank_Id = ?2 and Isactive = 'Y'", nativeQuery = true)
 	public List<String> fetchCustomerBankNames(BigDecimal customerId,BigDecimal bankId);
 
+	public LocalBankDetailsView findByChequeBankCode(String chequeBankCode);
+
 }

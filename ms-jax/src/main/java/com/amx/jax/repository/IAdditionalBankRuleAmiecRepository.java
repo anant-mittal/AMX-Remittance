@@ -15,5 +15,7 @@ public interface IAdditionalBankRuleAmiecRepository extends CrudRepository<Addit
 	
 	@Query("select r from AdditionalBankRuleAmiec r where countryId=?1 and r.flexField='INDIC1' and r.isActive='Y'")
 	List<AdditionalBankRuleAmiec> getPurposeOfTrnxByCountryId(CountryMaster countryMaster);
+	
+	
 
 }

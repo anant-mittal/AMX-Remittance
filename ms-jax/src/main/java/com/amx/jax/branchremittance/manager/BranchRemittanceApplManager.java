@@ -188,7 +188,11 @@ public class BranchRemittanceApplManager {
 		 
 		 branchRemitManager.validateAdditionalCheck(branchRoutingDto,customer,beneficaryDetails,(BigDecimal)branchExchangeRate.get("P_LOCAL_NET_PAYABLE"));
 		 
+		 if(!JaxUtil.isNullZeroBigDecimalCheck(requestApplModel.getRoutingBankId())) {
+			 requestApplModel.setRoutingBankId(branchRoutingDto.getRoutingBankDto().get(0).getRoutingBankId());
+		 }
 		 
+		
 		 
 		/** bene additional check **/
 		//Map<String, Object> addBeneDetails =branchRemitManager.validateAdditionalBeneDetails(branchRoutingDetails,branchExchangeRate,beneficaryDetails);
@@ -250,21 +254,19 @@ public class BranchRemittanceApplManager {
 		RemittanceApplication remittanceApplication = new RemittanceApplication();
 		try {
 			BranchRemittanceApplRequestModel applRequestModel = (BranchRemittanceApplRequestModel)hashMap.get("APPL_REQ_MODEL");
-			Map<String, Object> branchRoutingDetails =(HashMap)hashMap.get("ROUTING_DETAILS_MAP");
+			//Map<String, Object> branchRoutingDetails =(HashMap)hashMap.get("ROUTING_DETAILS_MAP");
+			
+			RoutingResponseDto branchRoutingDto = (RoutingResponseDto)hashMap.get("ROUTING_DETAILS_DTO");
 			Map<String, Object> branchExchangeRate =(HashMap)hashMap.get("EXCH_RATE_MAP");
 			BenificiaryListView beneDetails  =(BenificiaryListView) hashMap.get("BENEFICIARY_DETAILS");
 			BranchExchangeRateBreakup rateBreakUp = applRequestModel.getBranchExRateBreakup();
 			
-			System.out.println("branchRoutingDetails :"+branchRoutingDetails.toString());
-			
-			System.out.println("branchExchangeRate :"+branchExchangeRate.toString());
 			
 			
-			
-			BigDecimal routingCountryId = (BigDecimal) branchRoutingDetails.get("P_ROUTING_COUNTRY_ID");
+			BigDecimal routingCountryId = branchRoutingDto.getRoutingCountrydto().get(0).getResourceId();
 			Customer customer = (Customer) hashMap.get("CUSTOMER");
-			BigDecimal routingBankId = (BigDecimal) branchRoutingDetails.get("P_ROUTING_BANK_ID");
-			BigDecimal routingBankBranchId = (BigDecimal) branchRoutingDetails.get("P_ROUTING_BANK_BRANCH_ID");
+			BigDecimal routingBankId = branchRoutingDto.getRoutingBankDto().get(0).getRoutingBankId();
+			BigDecimal routingBankBranchId = (BigDecimal) branchRoutingDto.getRoutingBankBranchDto().get(0).getBankBranchId();
 			BigDecimal foreignCurrencyId = beneDetails.getCurrencyId();
 			BigDecimal deliveryId = (BigDecimal) branchExchangeRate.get("P_DELIVERY_MODE_ID");
 			BigDecimal remittanceId = (BigDecimal) branchExchangeRate.get("P_REMITTANCE_MODE_ID");
@@ -694,7 +696,7 @@ public class BranchRemittanceApplManager {
 	public EmployeeDetailsView getEmployeeDetails() {
 		EmployeeDetailsView empDetails = employeeDetailsRepository.findByEmployeeId(metaData.getEmployeeId());
 		if(empDetails==null) {
-			throw new GlobalException(JaxError.NULL_EMPLOYEE_ID,"Employee id should not blank"+metaData.getEmployeeId());
+			throw new GlobalException(JaxError.NULL_EMPLOYEE_ID,"Employee detais not found"+metaData.getEmployeeId());
 		}else if(empDetails!=null && !empDetails.getIsActive().equalsIgnoreCase(ConstantDocument.Yes)) {
 			throw new GlobalException(JaxError.INACTIVE_EMPLOYEE,"Employee is not active "+metaData.getEmployeeId());
 		}else if(empDetails!=null && StringUtils.isBlank(empDetails.getUserName())) {

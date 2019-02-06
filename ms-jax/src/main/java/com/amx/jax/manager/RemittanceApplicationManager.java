@@ -266,8 +266,7 @@ public class RemittanceApplicationManager {
 			BigDecimal foreignCurrencyId = (BigDecimal) remitApplParametersMap.get("P_FOREIGN_CURRENCY_ID");
 			logger.info("bankId: " + bankId + "remittanceModeId: " + remittanceModeId + "deliveryModeId "
 					+ deliveryModeId + " foreignCurrencyId: " + foreignCurrencyId);
-			AdditionalBankDetailsViewx additionaBnankDetail = bankService.getAdditionalBankDetail(srlId,
-					foreignCurrencyId, bankId, remittanceModeId, deliveryModeId);
+			AdditionalBankDetailsViewx additionaBnankDetail = bankService.getAdditionalBankDetail(srlId,foreignCurrencyId, bankId, remittanceModeId, deliveryModeId);
 			if (additionaBnankDetail != null) {
 				logger.info("additionaBnankDetail getServiceApplicabilityRuleId: "+ additionaBnankDetail.getServiceApplicabilityRuleId());
 				remitApplParametersMap.put("P_AMIEC_CODE_1", additionaBnankDetail.getAmiecCode());

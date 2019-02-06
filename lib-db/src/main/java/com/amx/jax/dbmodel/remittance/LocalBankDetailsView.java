@@ -1,5 +1,6 @@
 package com.amx.jax.dbmodel.remittance;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 import javax.persistence.Column;
@@ -7,9 +8,11 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.amx.jax.model.IResourceEntity;
+
 @Entity
 @Table(name="V_EX_CBNK")
-public class LocalBankDetailsView {
+public class LocalBankDetailsView implements Serializable {
 
 	private BigDecimal rowId;
 	private BigDecimal applicationCountryId;
@@ -110,5 +113,5 @@ public class LocalBankDetailsView {
 	public void setDebitCardLength(BigDecimal debitCardLength) {
 		this.debitCardLength = debitCardLength;
 	}
-
+	
 }
