@@ -7,9 +7,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +15,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
-
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.PurposeOfRemittanceReportBean;
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
@@ -271,9 +268,9 @@ public class ReportManagerService extends AbstractService{
 
 
 				if (view.getBeneCityName() != null && view.getBeneDistrictName() != null && view.getBeneStateName() != null) {
-					obj.setAddress(view.getBeneCityName() + "," + view.getBeneDistrictName() + "," + view.getBeneStateName());
+					obj.setAddress(view.getBeneCityName() + ", " + view.getBeneDistrictName() + ", " + view.getBeneStateName());
 				} else if (view.getBeneCityName() == null && view.getBeneDistrictName() != null && view.getBeneStateName() != null) {
-					obj.setAddress(view.getBeneDistrictName() + "," + view.getBeneStateName());
+					obj.setAddress(view.getBeneDistrictName() + ", " + view.getBeneStateName());
 				} else if (view.getBeneCityName() == null && view.getBeneDistrictName() == null && view.getBeneStateName() != null) {
 					obj.setAddress(view.getBeneStateName());
 				} else if (view.getBeneCityName() != null && view.getBeneDistrictName() == null && view.getBeneStateName() != null) {
@@ -299,7 +296,8 @@ public class ReportManagerService extends AbstractService{
 				String currencyAndAmount=null;
 				BigDecimal foreignTransationAmount=RoundUtil.roundBigDecimal((view.getForeignTransactionAmount()),currencyDao.getCurrencyList(view.getForeignCurrencyId()).get(0).getDecinalNumber().intValue());
 				if(view.getCurrencyQuoteName()!=null && foreignTransationAmount!=null){
-					currencyAndAmount = view.getCurrencyQuoteName()+"     ******"+foreignTransationAmount;
+														
+					currencyAndAmount = view.getCurrencyQuoteName()+"     "+foreignTransationAmount; 
 				}
 				obj.setCurrencyAndAmount(currencyAndAmount);
 				List<PurposeOfRemittanceViewModel>  purposeOfRemittanceList =   purposeOfRemittance.getPurposeOfRemittance(view.getDocumentNo(),view.getDocumentFinancialYear());
@@ -327,22 +325,22 @@ public class ReportManagerService extends AbstractService{
 				}
 				if(view.getLocalTransactionAmount()!=null && view.getLocalTransactionCurrencyId()!=null){
 					BigDecimal transationAmount=RoundUtil.roundBigDecimal((view.getLocalTransactionAmount()),decimalPerCurrency);
-					obj.setLocalTransactionAmount(currencyQuoteName+"     ******"+transationAmount.toString());
+					obj.setLocalTransactionAmount(currencyQuoteName+"     "+transationAmount.toString()); 
 				}
 
 				if(view.getLocalCommissionAmount()!=null && view.getLocalTransactionCurrencyId()!=null){
 					BigDecimal localCommitionAmount=RoundUtil.roundBigDecimal((view.getLocalCommissionAmount()),decimalPerCurrency);
-					obj.setCommision(currencyQuoteName+"     ******"+localCommitionAmount.toString());
+					obj.setCommision(currencyQuoteName+"     "+localCommitionAmount.toString()); 
 				}
 
 				if(view.getLocalChargeAmount()!=null && view.getLocalTransactionCurrencyId()!=null){
 					BigDecimal localChargeAmount=RoundUtil.roundBigDecimal((view.getLocalChargeAmount()),decimalPerCurrency);
-					obj.setOtherCharges(currencyQuoteName+"     ******"+localChargeAmount.toString());
+					obj.setOtherCharges(currencyQuoteName+"     "+localChargeAmount.toString()); 
 				}
 
 				if(view.getLocalNetTransactionAmount()!=null && view.getLocalTransactionCurrencyId()!=null){
 					BigDecimal netAmount=RoundUtil.roundBigDecimal((view.getLocalNetTransactionAmount()),decimalPerCurrency);
-					obj.setTotalAmount(currencyQuoteName+"     ******"+netAmount.toString());
+					obj.setTotalAmount(currencyQuoteName+"     "+netAmount.toString()); 
 				}
 
 				obj.setFutherInstructions(view.getInstructions());
@@ -357,17 +355,17 @@ public class ReportManagerService extends AbstractService{
 
 				if(collectionDetailView.getNetAmount()!=null && view.getLocalTransactionCurrencyId()!=null){
 					BigDecimal collectNetAmount=RoundUtil.roundBigDecimal((collectionDetailView.getNetAmount()),decimalPerCurrency);
-					obj.setNetAmount(currencyQuoteName+"     ******"+collectNetAmount);
+					obj.setNetAmount(currencyQuoteName+"     "+collectNetAmount);
 				}
 
 				if(collectionDetailView.getPaidAmount()!=null && view.getLocalTransactionCurrencyId()!=null){
 					BigDecimal collectPaidAmount=RoundUtil.roundBigDecimal((collectionDetailView.getPaidAmount()),decimalPerCurrency);
-					obj.setPaidAmount(currencyQuoteName+"     ******"+collectPaidAmount);
+					obj.setPaidAmount(currencyQuoteName+"     "+collectPaidAmount); 
 				}
 
 				if(collectionDetailView.getRefundedAmount()!=null && view.getLocalTransactionCurrencyId()!=null){
 					BigDecimal collectRefundAmount=RoundUtil.roundBigDecimal((collectionDetailView.getRefundedAmount()),decimalPerCurrency);
-					obj.setRefundedAmount(currencyQuoteName+"     ******"+collectRefundAmount);
+					obj.setRefundedAmount(currencyQuoteName+"     "+collectRefundAmount); 
 				}
 
 				
@@ -392,12 +390,12 @@ public class ReportManagerService extends AbstractService{
 					obj.setLessLoyaltyEncasement(null);					
 				}else{
 					BigDecimal loyaltyAmount=RoundUtil.roundBigDecimal((lessLoyaltyEncash),currencyDao.getCurrencyList(view.getLocalTransactionCurrencyId()).get(0).getDecinalNumber().intValue());
-					obj.setLessLoyaltyEncasement(currencyQuoteName+"     ******"+loyaltyAmount);
+					obj.setLessLoyaltyEncasement(currencyQuoteName+"     "+loyaltyAmount);
 				}
 
 				if(amountPayable!=null && currencyQuoteName!=null && view.getLocalTransactionCurrencyId()!=null){
 					BigDecimal payable=RoundUtil.roundBigDecimal((amountPayable),currencyDao.getCurrencyList(view.getLocalTransactionCurrencyId()).get(0).getDecinalNumber().intValue());
-					obj.setAmountPayable(currencyQuoteName+"     ******"+payable);
+					obj.setAmountPayable(currencyQuoteName+"     "+payable); 
 				}
   
 				// Added by Rabil
@@ -550,17 +548,6 @@ public List<RemittanceReportBean> calculateCollectionMode(RemittanceTransactionV
 			// TODO Auto-generated method stub
 			return null;
 		}
-
-
-
-
-
-
-
-
-
-
-
 
 		@Override
 		public Class<?> getModelClass() {

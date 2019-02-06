@@ -725,6 +725,8 @@ public class BeneficiaryService extends AbstractService {
 		List<RoutingBankMasterDTO> list = new ArrayList<RoutingBankMasterDTO>();
 
 		for (ServiceProviderModel routingMasterRecord : serviceProviderList) {
+			
+			
 			RoutingBankMasterDTO routingMasterDTO = new RoutingBankMasterDTO();
 			routingMasterDTO.setApplicationCountryId(routingMasterRecord.getApplicationCountryId());
 			routingMasterDTO.setRoutingCountryId(routingMasterRecord.getRoutingCountryId());

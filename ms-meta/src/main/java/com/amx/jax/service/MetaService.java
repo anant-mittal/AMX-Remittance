@@ -217,25 +217,32 @@ public class MetaService extends AbstractService {
 
 	public AmxApiResponse<ServiceGroupMasterDescDto, Object> getServiceGroups() {
 		List<ServiceGroupMasterDescDto> outputDto = getServiceGroupDto();
+				
 		return AmxApiResponse.buildList(outputDto);
 	}
 
 	private List<ServiceGroupMasterDescDto> getServiceGroupDto() {
 		List<ServiceGroupMasterDesc> output = serviceGroupMasterDescRepository
 				.findActiveByLanguageId(metaData.getLanguageId());
+		
+		
 		final List<ServiceGroupMasterDescDto> outputDto = new ArrayList<>();
+	
 		output.forEach(i -> {
 			boolean isCash = i.getServiceGroupMasterId().getServiceGroupId().equals(BigDecimal.ONE);
 			if (isCash && jaxProperties.getCashDisable()) {
 				return;
 			}
-			ServiceGroupMasterDescDto dto = new ServiceGroupMasterDescDto();
+			ServiceGroupMasterDescDto dto = new ServiceGroupMasterDescDto();	
+			
 			dto.setServiceGroupMasterId(i.getServiceGroupMasterId().getServiceGroupId());
 			dto.setServiceGroupDesc(i.getServiceGroupDesc());
 			dto.setServiceGroupShortDesc(i.getServiceGroupShortDesc());
+			
 			outputDto.add(dto);
-
-		});
+		
+		}
+		        );
 		return outputDto;
 	}
 
