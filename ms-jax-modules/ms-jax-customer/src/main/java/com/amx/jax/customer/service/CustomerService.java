@@ -114,11 +114,16 @@ public class CustomerService extends AbstractService {
 	public CustomerDto getCustomerDto(BigDecimal customerId) {
 		Customer customer = customerRepository.findOne(customerId);
 		CustomerDto customerDto = new CustomerDto();
-		customerDto.setNationality(countryService.getCountryMasterDesc(customer.getNationalityId(), metaData.getLanguageId()).getNationality());
+		if (customer.getNationalityId() != null) {
+			customerDto.setNationality(countryService
+					.getCountryMasterDesc(customer.getNationalityId(), metaData.getLanguageId()).getNationality());
+		}
 		try {
 			BeanUtils.copyProperties(customerDto, customer);
 		} catch (Exception e) {
 		}
+		customerDto.setTitle(getTitleDescription(customer.getTitle()));
+		customerDto.setTitleLocal(getTitleDescription(customer.getTitleLocal()));
 		return customerDto;
 	}
 
@@ -145,4 +150,11 @@ public class CustomerService extends AbstractService {
 		return dto;
 	}
 
+	private String getTitleDescription(String titleBizComponentId) {
+		String titleDescription = null;
+		if (titleBizComponentId != null) {
+			titleDescription = bizcomponentDao.getBizComponentDataDescByComponmentId(titleBizComponentId).getDataDesc();
+		}
+		return titleDescription;
+	}
 }
