@@ -262,7 +262,7 @@ public class RemittanceClient  implements IRemittanceService{
 		return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_ROUTING_BY_SERVICE).meta(new JaxMetaInfo())
 				.queryParam(Params.BENE_RELATION_SHIP_ID, beneRelaId).meta(new JaxMetaInfo())
 				.queryParam(Params.SERVICE_MASTER_ID, serviceMasterId)
-				.get()
+				.post()
 				.as(new ParameterizedTypeReference<AmxApiResponse<RoutingResponseDto, Object>>() {
 				});
 	} catch (Exception e) {

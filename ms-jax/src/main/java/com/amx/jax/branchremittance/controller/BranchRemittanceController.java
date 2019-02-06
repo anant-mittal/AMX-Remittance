@@ -182,7 +182,7 @@ public class BranchRemittanceController implements IRemittanceService {
 
 	@RequestMapping(value = Path.BR_REMITTANCE_ROUTING_BY_SERVICE, method = RequestMethod.POST)	
 	@Override
-	public AmxApiResponse<RoutingResponseDto, Object> getRoutingDetailsByServiceId(@RequestParam(value = "beneRelaId", required = true) BigDecimal beneRelaId,@RequestParam(value = "serviceMasterId", required = true) BigDecimal serviceMasterId) {
+	public AmxApiResponse<RoutingResponseDto, Object> getRoutingDetailsByServiceId(@RequestParam(value = Params.BENE_RELATION_SHIP_ID, required = true) BigDecimal beneRelaId,@RequestParam(value = "serviceMasterId", required = true) BigDecimal serviceMasterId) {
 		logger.info("getRoutingSetupDeatils :"+beneRelaId+"\t serviceMasterId :"+serviceMasterId);
 		return branchRemitService.getRoutingDetailsByServiceId(beneRelaId,serviceMasterId);
 	}
