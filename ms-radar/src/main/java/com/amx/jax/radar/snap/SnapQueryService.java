@@ -44,24 +44,12 @@ public class SnapQueryService {
 		return this.processJson(template, context);
 	}
 
-	public Map<String, Object> getQuery(SnapQueryTemplate template, Map<String, Object> params) throws IOException {
-		return JsonUtil.getMapFromJsonString(this.buildQueryString(template, params));
+	public Map<String, Object> buildQuery(SnapQueryTemplate template, Map<String, Object> map) throws IOException {
+		return JsonUtil.getMapFromJsonString(this.buildQueryString(template, map));
 	}
 
-	public Map<String, Object> executeQuery(Map<String, Object> query, String index) throws IOException {
-		Map<String, Object> x = restService.ajax(ssConfig.getClusterUrl()).path(index + "/_search").post(query)
-				.asMap();
-		x.put("aggs", query.get("aggs"));
-		return x;
-	}
-
-	public Map<String, Object> executeQuery(Map<String, Object> query) throws IOException {
-		return executeQuery(query, "oracle-*");
-	}
-
-	public Map<String, Object> execute(SnapQueryTemplate template, Map<String, Object> params) throws IOException {
-		Map<String, Object> query = getQuery(template, params);
-		return executeQuery(query, template.getIndex());
+	public Map<String, Object> getQuery(Map<String, Object> query) throws IOException {
+		return restService.ajax(ssConfig.getClusterUrl()).path("oracle-v3-tranx-v4/_search").post(query).asMap();
 	}
 
 }

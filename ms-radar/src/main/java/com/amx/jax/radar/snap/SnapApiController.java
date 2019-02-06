@@ -40,4 +40,5 @@ public class SnapApiController {
 		params.put("gte", "now-5y");
 		return snapQueryService.execute(SnapQueryTemplate.TRANX_DONE, params);
 	}
+
 }
