@@ -12,7 +12,7 @@ import javax.persistence.Table;
  * The Class ViewExGLCBAL.
  */
 @Entity
-@Table(name = "VW_EX_GLCBAL_NEW")
+@Table(name = "VW_EX_GLCBAL")
 public class ViewExGLCBAL implements Serializable {
 
 	/** The Constant serialVersionUID. */
