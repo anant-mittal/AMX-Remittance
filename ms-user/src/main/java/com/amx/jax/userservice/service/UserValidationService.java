@@ -49,6 +49,7 @@ import com.amx.jax.dbmodel.CustomerVerification;
 import com.amx.jax.dbmodel.DmsDocumentModel;
 import com.amx.jax.dbmodel.ViewOnlineCustomerCheck;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.exception.ExceptionMessageKey;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.auth.CustomerRequestAuthMeta;
 import com.amx.jax.model.auth.QuestModelDTO;
@@ -581,12 +582,14 @@ public class UserValidationService {
 
 	protected void validateMobileNumberLength(Customer customer, String mobile) {
 
-		ValidationClient validationClient = validationClients.getValidationClient(customer.getCountryId().toString());
-		if (!validationClient.isValidMobileNumber(mobile)) {
-			throw new GlobalException(JaxError.INCORRECT_LENGTH, "Mobile Number length is not correct.");
-		}
-	}
-
+        ValidationClient validationClient = validationClients.getValidationClient(customer.getCountryId().toString());
+        if (!validationClient.isValidMobileNumber(mobile)) {
+            throw new GlobalException(JaxError.INCORRECT_LENGTH,
+                    ExceptionMessageKey.build(JaxError.INCORRECT_LENGTH, validationClient.mobileLength())
+                    ,"Length of mobile number should be of " +validationClient.mobileLength()+ " digits");
+        }
+    }
+	
 	protected void isMobileExist(Customer customer, String mobile) {
 
 		ValidationClient validationClient = validationClients.getValidationClient(customer.getCountryId().toString());
