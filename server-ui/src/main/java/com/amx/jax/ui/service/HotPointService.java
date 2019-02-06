@@ -9,6 +9,7 @@ import com.amx.jax.postman.PostManException;
 import com.amx.jax.task.events.GeoNotifyTask;
 import com.amx.jax.tunnel.TunnelService;
 import com.amx.jax.ui.WebAppConfig;
+import com.amx.utils.ArgUtil;
 
 /**
  * The Class HotPointService.
@@ -38,7 +39,7 @@ public class HotPointService {
 	public GeoNotifyTask notify(BigDecimal customerId, String token, GeoHotPoints hotpoint) throws PostManException {
 		GeoNotifyTask task = new GeoNotifyTask();
 		task.setCustomerId(customerId);
-		task.setGeoPoint(hotpoint.toString());
+		task.setGeoPoint(ArgUtil.parseAsString(hotpoint));
 		task.setAppTitle(webAppConfig.getAppTitle());
 		if (webAppConfig.isNotifyGeoEnabled()) {
 			tunnelService.task(task);

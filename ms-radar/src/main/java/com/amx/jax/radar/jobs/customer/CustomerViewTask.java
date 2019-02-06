@@ -1,11 +1,9 @@
 package com.amx.jax.radar.jobs.customer;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Date;
 
 import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -13,94 +11,54 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-import com.amx.jax.AppConfig;
-import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
-import com.amx.jax.grid.GridColumn;
 import com.amx.jax.grid.GridConstants;
-import com.amx.jax.grid.GridConstants.FilterDataType;
-import com.amx.jax.grid.GridConstants.FilterOperater;
 import com.amx.jax.grid.GridMeta;
 import com.amx.jax.grid.GridQuery;
-import com.amx.jax.grid.GridService;
 import com.amx.jax.grid.GridService.GridViewBuilder;
 import com.amx.jax.grid.GridView;
-import com.amx.jax.grid.SortOrder;
 import com.amx.jax.grid.views.CustomerDetailViewRecord;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.radar.AESRepository.BulkRequestBuilder;
-import com.amx.jax.radar.ARadarTask;
-import com.amx.jax.radar.ESRepository;
 import com.amx.jax.radar.TestSizeApp;
 import com.amx.jax.rates.AmxCurConstants;
-import com.amx.jax.scope.TenantContextHolder;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.Constants;
+
+import net.javacrumbs.shedlock.core.SchedulerLock;
 
 @Configuration
 @EnableScheduling
 @Component
 @Service
 @ConditionalOnExpression(TestSizeApp.ENABLE_JOBS)
-public class CustomerViewTask extends ARadarTask {
+public class CustomerViewTask extends AbstractDBSyncTask {
 
 	private static final Logger LOGGER = LoggerService.getLogger(CustomerViewTask.class);
+	private static final String TIME_TRACK_KEY = "lastUpdateDate";
+	public static final int PAGE_SIZE = 1000;
+	public static final Long TIME_PAGE_DELTA = 30 * AmxCurConstants.INTERVAL_DAYS;
 
-	@Autowired
-	private ESRepository esRepository;
-
-	@Autowired
-	GridService gridService;
-
-	@Autowired
-	private AppConfig appConfig;
-
-	@Autowired
-	private OracleVarsCache oracleVarsCache;
-
+	@SchedulerLock(name = "CustomerViewTask",
+			lockAtLeastFor = AmxCurConstants.INTERVAL_SEC * 10,
+			lockAtMostFor = AmxCurConstants.INTERVAL_MIN)
 	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_SEC * 30)
 	public void doTask() {
-		AppContextUtil.setTenant(TenantContextHolder.currentSite(appConfig.getDefaultTenant()));
-		AppContextUtil.getTraceId(true, true);
-		AppContextUtil.init();
-		doTask(0);
-		doTaskRev(0);
+		this.doBothTask();
 	}
 
-	public void doTask(int lastPage) {
+	public void doTask(int lastPage, String lastId) {
 
 		Long lastUpdateDateNow = oracleVarsCache.getCustomerScannedStamp(false);
-		Long lastUpdateDateNowLimit = lastUpdateDateNow + (30 * AmxCurConstants.INTERVAL_DAYS);
+		Long lastUpdateDateNowLimit = lastUpdateDateNow + TIME_PAGE_DELTA;
 
 		String dateString = GridConstants.GRID_TIME_FORMATTER_JAVA.format(new Date(lastUpdateDateNow));
 		String dateStringLimit = GridConstants.GRID_TIME_FORMATTER_JAVA
 				.format(new Date(lastUpdateDateNowLimit));
 
-		LOGGER.info("Pg:{},Time:{} {} - {}", lastPage, lastUpdateDateNow, dateString, dateStringLimit);
+		LOGGER.info("Pg:{},Tm:{} {}-{}", lastPage, lastUpdateDateNow, dateString, dateStringLimit);
 
-		GridQuery gridQuery = new GridQuery();
-		gridQuery.setPageNo(lastPage);
-		gridQuery.setPageSize(1000);
-		gridQuery.setPaginated(false);
-		gridQuery.setColumns(new ArrayList<GridColumn>());
-
-		GridColumn column = new GridColumn();
-		column.setKey("lastUpdateDate");
-		column.setOperator(FilterOperater.GTE);
-		column.setDataType(FilterDataType.TIME);
-		column.setValue(dateString);
-		column.setSortDir(SortOrder.ASC);
-		gridQuery.getColumns().add(column);
-
-		GridColumn column2 = new GridColumn();
-		column2.setKey("lastUpdateDate");
-		column2.setOperator(FilterOperater.ST);
-		column2.setDataType(FilterDataType.TIME);
-		column2.setValue(dateStringLimit);
-		column2.setSortDir(SortOrder.ASC);
-		gridQuery.getColumns().add(column2);
-
-		gridQuery.setSortBy(0);
-		gridQuery.setSortOrder(SortOrder.ASC);
+		GridQuery gridQuery = getForwardQuery(lastPage, PAGE_SIZE, TIME_TRACK_KEY, dateString, dateStringLimit);
 
 		GridViewBuilder<CustomerDetailViewRecord> y = gridService
 				.view(GridView.VW_CUSTOMER_KIBANA, gridQuery);
@@ -110,6 +68,7 @@ public class CustomerViewTask extends ARadarTask {
 		BulkRequestBuilder builder = new BulkRequestBuilder();
 
 		Long lastUpdateDateNowStart = lastUpdateDateNow;
+		String lastIdNow = Constants.BLANK;
 		for (CustomerDetailViewRecord record : x.getResults()) {
 
 			try {
@@ -127,24 +86,32 @@ public class CustomerViewTask extends ARadarTask {
 				document.setTimestamp(creationDate);
 				document.setCustomer(record);
 				builder.update(oracleVarsCache.getCustomerIndex(), "customer", document);
+				lastIdNow = ArgUtil.parseAsString(document.getId(), Constants.BLANK);
 			} catch (Exception e) {
 				LOGGER.error("CustomerViewTask Excep", e);
 			}
 		}
 
-		LOGGER.info("Pg:{}, Rcds:{}, Nxt:{}", lastPage, x.getResults().size(), lastUpdateDateNow);
+		LOGGER.info("Pg:{}, Rcds:{},{}, Nxt:{}", lastPage, x.getResults().size(), lastIdNow, lastUpdateDateNow);
+
+		if (lastIdNow.equalsIgnoreCase(lastId) && x.getResults().size() > 0) {
+			// Same data records case, nothing to do
+			return;
+		}
+		lastId = lastIdNow;
+
 		if (x.getResults().size() > 0) {
 			esRepository.bulk(builder.build());
 			oracleVarsCache.setCustomerScannedStamp(lastUpdateDateNow, false);
 			if ((lastUpdateDateNowStart == lastUpdateDateNow) || (x.getResults().size() == 1000 && lastPage < 10)) {
-				doTask(lastPage + 1);
+				doTask(lastPage + 1, lastIdNow);
 			}
 		} else if (lastUpdateDateNowLimit < (System.currentTimeMillis() - AmxCurConstants.INTERVAL_DAYS)) {
 			oracleVarsCache.setCustomerScannedStamp(lastUpdateDateNowLimit, false);
 		}
 	}
 
-	public void doTaskRev(int lastPage) {
+	public void doTaskRev(int lastPage, String lastId) {
 
 		Long lastUpdateDateNow = oracleVarsCache.getCustomerScannedStamp(true);
 		Long lastUpdateDateNowFrwrds = oracleVarsCache.getCustomerScannedStamp(false);
@@ -154,38 +121,15 @@ public class CustomerViewTask extends ARadarTask {
 			return;
 		}
 
-		Long lastUpdateDateNowLimit = lastUpdateDateNow - (30 * AmxCurConstants.INTERVAL_DAYS);
+		Long lastUpdateDateNowLimit = lastUpdateDateNow - TIME_PAGE_DELTA;
 
 		String dateString = GridConstants.GRID_TIME_FORMATTER_JAVA.format(new Date(lastUpdateDateNow));
 		String dateStringLimit = GridConstants.GRID_TIME_FORMATTER_JAVA
 				.format(new Date(lastUpdateDateNowLimit));
 
-		LOGGER.info("Pg:-{},Time:{} {} - {}", lastPage, lastUpdateDateNow, dateString, dateStringLimit);
+		LOGGER.info("Pg:{},Tm:{} {}-{}", lastPage, lastUpdateDateNow, dateString, dateStringLimit);
 
-		GridQuery gridQuery = new GridQuery();
-		gridQuery.setPageNo(lastPage);
-		gridQuery.setPageSize(1000);
-		gridQuery.setPaginated(false);
-		gridQuery.setColumns(new ArrayList<GridColumn>());
-
-		GridColumn column = new GridColumn();
-		column.setKey("lastUpdateDate");
-		column.setOperator(FilterOperater.STE);
-		column.setDataType(FilterDataType.TIME);
-		column.setValue(dateString);
-		column.setSortDir(SortOrder.DESC);
-		gridQuery.getColumns().add(column);
-
-		GridColumn column2 = new GridColumn();
-		column2.setKey("lastUpdateDate");
-		column2.setOperator(FilterOperater.GT);
-		column2.setDataType(FilterDataType.TIME);
-		column2.setValue(dateStringLimit);
-		column2.setSortDir(SortOrder.DESC);
-		gridQuery.getColumns().add(column2);
-
-		gridQuery.setSortBy(0);
-		gridQuery.setSortOrder(SortOrder.DESC);
+		GridQuery gridQuery = getReverseQuery(lastPage, PAGE_SIZE, TIME_TRACK_KEY, dateString, dateStringLimit);
 
 		GridViewBuilder<CustomerDetailViewRecord> y = gridService
 				.view(GridView.VW_CUSTOMER_KIBANA, gridQuery);
@@ -195,6 +139,7 @@ public class CustomerViewTask extends ARadarTask {
 		BulkRequestBuilder builder = new BulkRequestBuilder();
 
 		Long lastUpdateDateNowStart = lastUpdateDateNow;
+		String lastIdNow = Constants.BLANK;
 		for (CustomerDetailViewRecord record : x.getResults()) {
 
 			try {
@@ -212,17 +157,25 @@ public class CustomerViewTask extends ARadarTask {
 				document.setTimestamp(creationDate);
 				document.setCustomer(record);
 				builder.update(oracleVarsCache.getCustomerIndex(), "customer", document);
+				lastIdNow = ArgUtil.parseAsString(document.getId(), Constants.BLANK);
 			} catch (Exception e) {
 				LOGGER.error("CustomerViewTask Excep", e);
 			}
 		}
 
-		LOGGER.info("Pg:{}, Rcds:{}, Nxt:{}", lastPage, x.getResults().size(), lastUpdateDateNow);
+		LOGGER.info("Pg:{}, Rcds:{},{}, Nxt:{}", lastPage, x.getResults().size(), lastIdNow, lastUpdateDateNow);
+
+		if (lastIdNow.equalsIgnoreCase(lastId) && x.getResults().size() > 0) {
+			// Same data records case, nothing to do
+			return;
+		}
+		lastId = lastIdNow;
+
 		if (x.getResults().size() > 0) {
 			esRepository.bulk(builder.build());
 			oracleVarsCache.setCustomerScannedStamp(lastUpdateDateNow, true);
 			if ((lastUpdateDateNowStart == lastUpdateDateNow) || (x.getResults().size() == 1000 && lastPage < 2)) {
-				doTaskRev(lastPage + 1);
+				doTaskRev(lastPage + 1, lastIdNow);
 			}
 		} else {
 			oracleVarsCache.setCustomerScannedStamp(lastUpdateDateNowLimit, true);

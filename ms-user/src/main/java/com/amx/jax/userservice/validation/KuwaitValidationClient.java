@@ -56,4 +56,9 @@ public class KuwaitValidationClient implements ValidationClient {
 		return false;
 	}
 
+	@Override
+	public int mobileLength() {
+		return MOBILE_LENGTH.intValue();
+	}
+
 }

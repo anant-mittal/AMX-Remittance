@@ -60,4 +60,9 @@ public class BahrainValidationClient implements ValidationClient {
 		return false;
 	}
 
+	@Override
+	public int mobileLength() {
+		return MOBILE_LENGTH.intValue();
+	}
+
 }

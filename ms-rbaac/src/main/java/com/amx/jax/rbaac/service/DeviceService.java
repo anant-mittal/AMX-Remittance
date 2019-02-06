@@ -31,6 +31,7 @@ import com.amx.jax.rbaac.manager.DeviceManager;
 import com.amx.jax.rbaac.validation.DeviceValidation;
 import com.amx.utils.CryptoUtil;
 import com.amx.utils.Random;
+import com.amx.utils.TimeUtils;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -60,6 +61,18 @@ public class DeviceService extends AbstractService {
 		device.setState(DeviceState.REGISTERED);
 		if (device.getBranchSystemInventoryId() != null) {
 			List<Device> devices = deviceDao.findAllActiveDevices(device.getBranchSystemInventoryId(),
+					device.getDeviceType());
+			if (!CollectionUtils.isEmpty(devices)) {
+				for (Device d : devices) {
+					if (!d.equals(device)) {
+						d.setStatus("N");
+		}
+				}
+				deviceDao.saveDevices(devices);
+			}
+		}
+		if (device.getEmployeeId() != null) {
+			List<Device> devices = deviceDao.findAllActiveDevicesForEmployee(device.getEmployeeId(),
 					device.getDeviceType());
 			if (!CollectionUtils.isEmpty(devices)) {
 				for (Device d : devices) {
@@ -149,6 +162,7 @@ public class DeviceService extends AbstractService {
 		Device device = deviceDao.findDevice(new BigDecimal(countryBranchSystemInventoryId), deviceType);
 		deviceValidation.validateDevice(device);
 		deviceValidation.validateDeviceOtpToken(device, otp);
+		deviceValidation.validateOtpValidationTimeLimit(device.getRegistrationId());
 		// session pair success
 		device.setState(DeviceState.SESSION_PAIRED);
 		deviceDao.saveDevice(device);
@@ -174,7 +188,11 @@ public class DeviceService extends AbstractService {
 		Device device = deviceDao.findDevice(deviceRegId);
 		deviceValidation.validateDevice(device);
 		String sessionTokenGen = deviceManager.generateSessionPairToken(device);
-		if (!deviceSessionToken.equals(sessionTokenGen)) {
+		if (!deviceSessionToken.equals(device.getSessionToken()) ||
+				TimeUtils.isDead(device.getOtpTokenCreatedDate().getTime(),
+						deviceManager.getDeviceSessionTimeout() * 1000)
+		// || !deviceSessionToken.equals(sessionTokenGen)
+		) {
 			throw new AuthServiceException(RbaacServiceError.CLIENT_EXPIRED_SESSION_TOKEN, "Session token is expired");
 		}
 		deviceValidation.validateOtpValidationTimeLimit(deviceRegId);

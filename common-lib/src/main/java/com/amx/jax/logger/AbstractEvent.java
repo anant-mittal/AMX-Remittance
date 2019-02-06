@@ -3,9 +3,14 @@ package com.amx.jax.logger;
 import java.io.Serializable;
 
 import com.amx.utils.EnumType;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public abstract class AbstractEvent implements Serializable {
 
+	public static final String PROP_CATG = "catg";
+	public static final String PROP_COMPONENT = "ms";
+	public static final String PROP_TIMSTAMP = "ts";
+	public static final String PROP_TYPE = "type";
 	private static final long serialVersionUID = -3042991299608634785L;
 
 	public enum EventMarker implements EnumType {
@@ -57,9 +62,17 @@ public abstract class AbstractEvent implements Serializable {
 		EventMarker marker();
 	}
 
+	@JsonProperty(PROP_COMPONENT)
 	protected String component;
+
+	@JsonProperty(PROP_CATG)
 	protected String category = getClass().getSimpleName();
+
+	
+	@JsonProperty(PROP_TYPE)
 	protected EventType type;
+
+	@JsonProperty(PROP_TIMSTAMP)
 	protected long timestamp;
 
 	public AbstractEvent() {

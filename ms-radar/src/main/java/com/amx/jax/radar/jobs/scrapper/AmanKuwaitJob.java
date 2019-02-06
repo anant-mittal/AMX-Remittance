@@ -23,6 +23,8 @@ import com.amx.jax.rates.AmxCurRateRepository;
 import com.amx.jax.rest.RestService;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
+import net.javacrumbs.shedlock.core.SchedulerLock;
+
 @Configuration
 @EnableScheduling
 @Component
@@ -40,6 +42,9 @@ public class AmanKuwaitJob extends ARadarTask {
 
 	XmlMapper xmlMapper = new XmlMapper();
 
+	@SchedulerLock(name = "AmanKuwaitJob",
+			lockAtLeastFor = AmxCurConstants.INTERVAL_MIN_30,
+			lockAtMostFor = AmxCurConstants.INTERVAL_HRS)
 	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_MIN_30)
 	public void doTask() {
 

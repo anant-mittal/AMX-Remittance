@@ -4,6 +4,9 @@ package com.amx.jax.ui.api;
 import java.math.BigDecimal;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,10 +22,12 @@ import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.CustomerNotificationDTO;
 import com.amx.jax.AppConfig;
 import com.amx.jax.AppContextUtil;
+import com.amx.jax.JaxAuthContext;
 import com.amx.jax.client.JaxPushNotificationClient;
 import com.amx.jax.dict.UserClient.AppType;
 import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.logger.AuditActor;
+import com.amx.jax.logger.LoggerService;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.ui.WebAppConfig;
@@ -42,6 +47,7 @@ import com.amx.jax.ui.service.LoginService;
 import com.amx.jax.ui.service.SessionService;
 import com.amx.jax.ui.service.TenantService;
 import com.amx.jax.ui.service.UserService;
+import com.amx.utils.ArgUtil;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -52,6 +58,8 @@ import io.swagger.annotations.ApiOperation;
 @RestController
 @Api(value = "User APIs")
 public class UserController {
+
+	private static Logger LOGGER = LoggerService.getLogger(UserController.class);
 
 	/** The login service. */
 	@Autowired
@@ -152,9 +160,13 @@ public class UserController {
 	 */
 	@RequestMapping(value = "/pub/user/notify/hotpoint", method = { RequestMethod.POST })
 	public ResponseWrapper<Object> meNotify(@RequestParam(required = false) String token,
-			@RequestParam(required = false) GeoHotPoints hotpoint, @RequestParam BigDecimal customerId)
+			@RequestParam(required = false) GeoHotPoints hotpoint, @RequestParam BigDecimal customerId,
+			HttpServletRequest request)
 			throws PostManException {
 		AppContextUtil.setActorId(new AuditActor(AuditActor.ActorType.GUEST, customerId));
+		if (ArgUtil.isEmpty(hotpoint)) {
+			LOGGER.error("HOTPOINT:{} not defined for customer {} ", request.getParameter("hotpoint"), customerId);
+		}
 		return new ResponseWrapper<Object>(hotPointService.notify(customerId, token, hotpoint));
 	}
 
@@ -217,7 +229,11 @@ public class UserController {
 	@RequestMapping(value = "/api/user/password", method = {
 			RequestMethod.POST }, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 	public ResponseWrapper<UserUpdateResponse> changePassword(@RequestParam(required = false) String oldPassword,
-			@RequestParam String password, @RequestParam String mOtp, @RequestParam(required = false) String eOtp) {
+			@RequestParam String password,
+			@Deprecated @RequestParam String mOtp,
+			@Deprecated @RequestParam(required = false) String eOtp) {
+		JaxAuthContext.mOtp(mOtp);
+		JaxAuthContext.eOtp(eOtp);
 		return userService.updatepwd(password, mOtp, eOtp);
 	}
 
@@ -230,11 +246,16 @@ public class UserController {
 	@ApiOperation(value = "new API to update password with Object")
 	@RequestMapping(value = "/api/user/password/**", method = { RequestMethod.POST })
 	public ResponseWrapperM<Object, AuthResponseOTPprefix> changePasswordJSON(
-			@RequestHeader(value = "mOtp", required = false) String mOtpHeader,
-			@RequestParam(required = false) String mOtp,
+			@Deprecated @RequestHeader(value = "mOtp", required = false) String mOtpHeader,
+			@Deprecated @RequestParam(required = false) String mOtp,
 			@RequestBody UserUpdateRequest userUpdateRequest) {
 		ResponseWrapperM<Object, AuthResponseOTPprefix> wrapper = new ResponseWrapperM<>();
-		mOtp = (mOtp == null) ? (mOtpHeader == null ? userUpdateRequest.getmOtp() : mOtpHeader) : mOtp;
+
+		mOtp = JaxAuthContext.mOtp(ArgUtil.ifNotEmpty(userUpdateRequest.getmOtp(), mOtp, mOtpHeader));
+
+		// mOtp = (mOtp == null) ? (mOtpHeader == null ? userUpdateRequest.getmOtp() :
+		// mOtpHeader) : mOtp;
+
 		if (mOtp == null) {
 			wrapper.setMeta(new AuthData());
 			wrapper.getMeta().setmOtpPrefix(loginService.sendOTP(null, null).getData().getmOtpPrefix());
@@ -260,7 +281,10 @@ public class UserController {
 	@RequestMapping(value = "/api/user/email", method = {
 			RequestMethod.POST }, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 	public ResponseWrapper<UserUpdateResponse> updateEmail(@RequestParam String email,
-			@RequestParam(required = false) String mOtp, @RequestParam(required = false) String eOtp) {
+			@Deprecated @RequestParam(required = false) String mOtp,
+			@Deprecated @RequestParam(required = false) String eOtp) {
+		mOtp = JaxAuthContext.mOtp(mOtp);
+		eOtp = JaxAuthContext.eOtp(eOtp);
 		return userService.updateEmail(email, mOtp, eOtp);
 	}
 
@@ -272,12 +296,18 @@ public class UserController {
 	 */
 	@RequestMapping(value = "/api/user/email/**", method = { RequestMethod.POST })
 	public ResponseWrapperM<Object, AuthResponseOTPprefix> updateEmailJSON(
-			@RequestHeader(value = "mOtp", required = false) String mOtpHeader,
-			@RequestHeader(value = "eOtp", required = false) String eOtpHeader,
-			@RequestParam(required = false) String mOtp, @RequestParam(required = false) String eOtp,
+			@Deprecated @RequestHeader(value = "mOtp", required = false) String mOtpHeader,
+			@Deprecated @RequestHeader(value = "eOtp", required = false) String eOtpHeader,
+			@Deprecated @RequestParam(required = false) String mOtp,
+			@Deprecated @RequestParam(required = false) String eOtp,
 			@RequestBody UserUpdateRequest userUpdateRequest) {
-		mOtp = (mOtp == null) ? (mOtpHeader == null ? userUpdateRequest.getmOtp() : mOtpHeader) : mOtp;
-		eOtp = (eOtp == null) ? (eOtpHeader == null ? userUpdateRequest.geteOtp() : eOtpHeader) : eOtp;
+
+		mOtp = JaxAuthContext.mOtp(ArgUtil.ifNotEmpty(userUpdateRequest.getmOtp(), mOtp, mOtpHeader));
+		eOtp = JaxAuthContext.eOtp(ArgUtil.ifNotEmpty(userUpdateRequest.geteOtp(), eOtp, eOtpHeader));
+
+//		mOtp = (mOtp == null) ? (mOtpHeader == null ? userUpdateRequest.getmOtp() : mOtpHeader) : mOtp;
+//		eOtp = (eOtp == null) ? (eOtpHeader == null ? userUpdateRequest.geteOtp() : eOtpHeader) : eOtp;
+
 		ResponseWrapperM<Object, AuthResponseOTPprefix> wrapper = new ResponseWrapperM<>();
 		if (mOtp == null && eOtp == null) {
 			CivilIdOtpModel model = jaxService.setDefaults().getUserclient()
@@ -308,7 +338,11 @@ public class UserController {
 	@RequestMapping(value = "/api/user/phone", method = {
 			RequestMethod.POST }, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 	public ResponseWrapper<UserUpdateResponse> updatePhone(@RequestParam String phone,
-			@RequestParam(required = false) String mOtp, @RequestParam(required = false) String eOtp) {
+			@Deprecated @RequestParam(required = false) String mOtp,
+			@Deprecated @RequestParam(required = false) String eOtp) {
+		mOtp = JaxAuthContext.mOtp(mOtp);
+		eOtp = JaxAuthContext.eOtp(eOtp);
+		;
 		return userService.updatePhone(phone, mOtp, eOtp);
 	}
 
@@ -320,14 +354,23 @@ public class UserController {
 	 */
 	@RequestMapping(value = "/api/user/phone/**", method = { RequestMethod.POST })
 	public ResponseWrapperM<Object, AuthResponseOTPprefix> updatePhoneJSON(
-			@RequestHeader(value = "mOtp", required = false) String mOtpHeader,
-			@RequestHeader(value = "eOtp", required = false) String eOtpHeader,
-			@RequestParam(required = false) String mOtp, @RequestParam(required = false) String eOtp,
+			@Deprecated @RequestHeader(value = "mOtp", required = false) String mOtpHeader,
+			@Deprecated @RequestHeader(value = "eOtp", required = false) String eOtpHeader,
+			@Deprecated @RequestParam(required = false) String mOtp,
+			@Deprecated @RequestParam(required = false) String eOtp,
 			@RequestBody UserUpdateRequest userUpdateRequest) {
-		mOtp = (mOtp == null) ? (mOtpHeader == null ? userUpdateRequest.getmOtp() : mOtpHeader) : mOtp;
-		eOtp = (eOtp == null) ? (eOtpHeader == null ? userUpdateRequest.geteOtp() : eOtpHeader) : eOtp;
+
+		mOtp = JaxAuthContext.mOtp(ArgUtil.ifNotEmpty(userUpdateRequest.getmOtp(), mOtp, mOtpHeader));
+		eOtp = JaxAuthContext.eOtp(ArgUtil.ifNotEmpty(userUpdateRequest.geteOtp(), eOtp, eOtpHeader));
+		LOGGER.debug("OTPS M:{}, O:{}", mOtp, eOtp);
+
+		// mOtp = (mOtp == null) ? (mOtpHeader == null ? userUpdateRequest.getmOtp() :
+		// mOtpHeader) : mOtp;
+		// eOtp = (eOtp == null) ? (eOtpHeader == null ? userUpdateRequest.geteOtp() :
+		// eOtpHeader) : eOtp;
+
 		ResponseWrapperM<Object, AuthResponseOTPprefix> wrapper = new ResponseWrapperM<>();
-		if (mOtp == null && eOtp == null) {
+		if (ArgUtil.isEmpty(mOtp) && ArgUtil.isEmpty(eOtp)) {
 			CivilIdOtpModel model = jaxService.setDefaults().getUserclient()
 					.sendOtpForMobileUpdate(userUpdateRequest.getPhone()).getResult();
 			wrapper.setMeta(new AuthData());
@@ -352,11 +395,12 @@ public class UserController {
 	 */
 	@RequestMapping(value = "/api/user/secques", method = { RequestMethod.POST })
 	public ResponseWrapperM<Object, AuthResponseOTPprefix> regSecQues(
-			@RequestHeader(value = "mOtp", required = false) String mOtpHeader,
-			@RequestParam(required = false) String mOtp,
+			@Deprecated @RequestHeader(value = "mOtp", required = false) String mOtpHeader,
+			@Deprecated @RequestParam(required = false) String mOtp,
 			@RequestBody UserUpdateRequest userUpdateData) {
 		ResponseWrapperM<Object, AuthResponseOTPprefix> wrapper = new ResponseWrapperM<>();
-		mOtp = (mOtp == null) ? (mOtpHeader == null ? userUpdateData.getmOtp() : mOtpHeader) : mOtp;
+		mOtp = JaxAuthContext.mOtp(ArgUtil.ifNotEmpty(userUpdateData.getmOtp(), mOtp, mOtpHeader));
+//		mOtp = (mOtp == null) ? (mOtpHeader == null ? userUpdateData.getmOtp() : mOtpHeader) : mOtp;
 		if (mOtp == null) {
 			wrapper.setMeta(new AuthData());
 			wrapper.getMeta().setmOtpPrefix(loginService.sendOTP(null, null).getData().getmOtpPrefix());
@@ -376,11 +420,13 @@ public class UserController {
 	 */
 	@RequestMapping(value = "/api/user/phising", method = { RequestMethod.POST })
 	public ResponseWrapperM<Object, AuthResponseOTPprefix> updatePhising(
-			@RequestHeader(value = "mOtp", required = false) String mOtpHeader,
-			@RequestParam(required = false) String mOtp,
+			@Deprecated @RequestHeader(value = "mOtp", required = false) String mOtpHeader,
+			@Deprecated @RequestParam(required = false) String mOtp,
 			@RequestBody UserUpdateRequest userUpdateData) {
 		ResponseWrapperM<Object, AuthResponseOTPprefix> wrapper = new ResponseWrapperM<>();
-		mOtp = (mOtp == null) ? (mOtpHeader == null ? userUpdateData.getmOtp() : mOtpHeader) : mOtp;
+		mOtp = JaxAuthContext.mOtp(ArgUtil.ifNotEmpty(userUpdateData.getmOtp(), mOtp, mOtpHeader));
+		// mOtp = (mOtp == null) ? (mOtpHeader == null ? userUpdateData.getmOtp() :
+		// mOtpHeader) : mOtp;
 		if (mOtp == null) {
 			wrapper.setMeta(new AuthData());
 			wrapper.getMeta().setmOtpPrefix(loginService.sendOTP(null, null).getData().getmOtpPrefix());
@@ -404,6 +450,8 @@ public class UserController {
 	@RequestMapping(value = "/api/user/otpsend", method = { RequestMethod.POST })
 	public ResponseWrapper<AuthResponse> sendOTP(@RequestParam(required = false) String mOtp,
 			@RequestParam(required = false) String eOtp) {
+		mOtp = JaxAuthContext.mOtp(mOtp);
+		eOtp = JaxAuthContext.eOtp(eOtp);
 		if (mOtp == null) {
 			return loginService.sendOTP(null, null);
 		} else {

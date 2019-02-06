@@ -1,6 +1,7 @@
 package com.amx.jax.model.response.customer;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 
 public class CustomerDto implements Serializable {
@@ -23,6 +24,7 @@ public class CustomerDto implements Serializable {
 	String email;
 	Boolean medicalInsuranceInd;
 	Boolean pepsIndicator;
+	String nationality;
 
 	public String getTitle() {
 		return title;
@@ -158,6 +160,14 @@ public class CustomerDto implements Serializable {
 
 	public void setPepsIndicator(Boolean pepsIndicator) {
 		this.pepsIndicator = pepsIndicator;
+	}
+
+	public String getNationality() {
+		return nationality;
+	}
+
+	public void setNationality(String nationality) {
+		this.nationality = nationality;
 	}
 
 }

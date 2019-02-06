@@ -20,6 +20,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +34,7 @@ import com.amx.amxlib.constant.AuthType;
 import com.amx.amxlib.constant.CommunicationChannel;
 import com.amx.amxlib.constant.LoyalityPointState;
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.PromotionDto;
@@ -42,7 +44,6 @@ import com.amx.amxlib.model.response.ExchangeRateBreakup;
 import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
-import com.amx.jax.auditlog.JaxTransactionEvent;
 import com.amx.jax.config.JaxTenantProperties;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxDbConfig;
@@ -74,8 +75,10 @@ import com.amx.jax.error.JaxError;
 import com.amx.jax.exrateservice.dao.ExchangeRateDao;
 import com.amx.jax.exrateservice.dao.PipsMasterDao;
 import com.amx.jax.exrateservice.service.NewExchangeRateService;
-import com.amx.jax.logger.AuditEvent;
+import com.amx.jax.logger.AuditEvent.Result;
 import com.amx.jax.logger.AuditService;
+import com.amx.jax.logger.events.CActivityEvent;
+import com.amx.jax.logger.events.CActivityEvent.Type;
 import com.amx.jax.manager.remittance.RemittanceAdditionalFieldManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
@@ -778,17 +781,14 @@ public class RemittanceTransactionManager {
 		remiteAppModel.setCivilIdOtpModel(civilIdOtpModel);
 
 		logger.info("Application saved successfully, response: " + remiteAppModel.toString());
-		auditService.log(createTransactionEvent(remiteAppModel, JaxTransactionStatus.APPLICATION_CREATED));
+
+		auditService.log(
+				new CActivityEvent(Type.APPLICATION_CREATED,
+						String.format("{}/{}", remiteAppModel.getDocumentFinancialYear(),
+								remiteAppModel.getDocumentIdForPayment())).field("STATUS")
+										.to(JaxTransactionStatus.APPLICATION_CREATED).result(Result.DONE));
 		return remiteAppModel;
 
-	}
-
-	private AuditEvent createTransactionEvent(RemittanceApplicationResponseModel remiteAppModel,
-			JaxTransactionStatus status) {
-
-		AuditEvent trnxAuditEvent = new JaxTransactionEvent(status, remiteAppModel.getDocumentIdForPayment(),
-				remiteAppModel.getDocumentFinancialYear());
-		return trnxAuditEvent;
 	}
 
 	private void deactivatePreviousApplications() {
@@ -805,6 +805,13 @@ public class RemittanceTransactionManager {
 			if (!ConstantDocument.Yes.equals(beneficiary.getIsActive())) {
 				throw new GlobalException(
 						"The selected beneficiary is deactivated. Please activate the beneficiary to proceed with the transaction.");
+			}
+						
+			// Beneficiary not allow to remit if any data missing
+			BeneficiaryListDTO beneDtoCheck = beneCheckService.beneCheck(transactionHistroyService.convertBeneModelToDto(beneficiary));
+			
+			if(CollectionUtils.isNotEmpty(beneDtoCheck.getBeneficiaryErrorStatus() )) {
+				throw new GlobalException(beneDtoCheck.getBeneficiaryErrorStatus().get(0).getErrorDesc());
 			}
 		}
 	}
