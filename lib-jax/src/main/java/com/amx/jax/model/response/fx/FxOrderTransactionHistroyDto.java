@@ -59,8 +59,8 @@ public class FxOrderTransactionHistroyDto {
 	private String deliveryAddress;
 	private String inventoryId;
 	
-	
-	
+	private String otpTokenPrefix;
+	private String otpTokenCustomer;
 
 	public BigDecimal getIdno() {
 		return idno;
@@ -365,6 +365,22 @@ public class FxOrderTransactionHistroyDto {
 
 	public void setInventoryId(String inventoryId) {
 		this.inventoryId = inventoryId;
+	}
+
+	public String getOtpTokenPrefix() {
+		return otpTokenPrefix;
+	}
+
+	public void setOtpTokenPrefix(String otpTokenPrefix) {
+		this.otpTokenPrefix = otpTokenPrefix;
+	}
+
+	public String getOtpTokenCustomer() {
+		return otpTokenCustomer;
+	}
+
+	public void setOtpTokenCustomer(String otpTokenCustomer) {
+		this.otpTokenCustomer = otpTokenCustomer;
 	}
 
 	
