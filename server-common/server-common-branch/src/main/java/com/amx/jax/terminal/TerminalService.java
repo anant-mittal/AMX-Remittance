@@ -26,32 +26,44 @@ public class TerminalService {
 	public AmxApiResponse<BoolRespModel, Object> updateRemittanceState(
 			Integer terminalId, BigDecimal employeeId,
 			SignaturePadRemittanceInfo signaturePadRemittanceInfo) {
-		return deviceClient.updateRemittanceState(ClientType.SIGNATURE_PAD, terminalId,
-				signaturePadRemittanceInfo, employeeId);
+		try {
+			return deviceClient.updateRemittanceState(ClientType.SIGNATURE_PAD, terminalId,
+					signaturePadRemittanceInfo, employeeId);
+		} finally {
+			terminalBox.updateStamp(terminalId);
+		}
 	}
 
 	public AmxApiResponse<BoolRespModel, Object> updateFcPurchaseState(
 			Integer terminalId, BigDecimal employeeId,
 			SignaturePadFCPurchaseSaleInfo signaturePadRemittanceInfo) {
-		terminalBox.updateStamp(terminalId);
-		return deviceClient.updateFcPurchase(ClientType.SIGNATURE_PAD, terminalId,
-				signaturePadRemittanceInfo, employeeId);
+		try {
+			return deviceClient.updateFcPurchase(ClientType.SIGNATURE_PAD, terminalId,
+					signaturePadRemittanceInfo, employeeId);
+		} finally {
+			terminalBox.updateStamp(terminalId);
+		}
 	}
 
 	public AmxApiResponse<BoolRespModel, Object> updateFcSaleState(Integer terminalId,
 			BigDecimal employeeId,
 			SignaturePadFCPurchaseSaleInfo signaturePadRemittanceInfo) {
-		terminalBox.updateStamp(terminalId);
-
-		return deviceClient.updateFcSale(ClientType.SIGNATURE_PAD, terminalId,
-				signaturePadRemittanceInfo, employeeId);
+		try {
+			return deviceClient.updateFcSale(ClientType.SIGNATURE_PAD, terminalId,
+					signaturePadRemittanceInfo, employeeId);
+		} finally {
+			terminalBox.updateStamp(terminalId);
+		}
 	}
 
 	public AmxApiResponse<BoolRespModel, Object> updateCustomerRegStateData(
 			Integer terminalId, BigDecimal employeeId,
 			SignaturePadCustomerRegStateMetaInfo signaturePadRemittanceInfo) {
-		terminalBox.updateStamp(terminalId);
-		return deviceClient.updateCustomerRegStateData(ClientType.SIGNATURE_PAD, terminalId,
-				signaturePadRemittanceInfo, employeeId);
+		try {
+			return deviceClient.updateCustomerRegStateData(ClientType.SIGNATURE_PAD, terminalId,
+					signaturePadRemittanceInfo, employeeId);
+		} finally {
+			terminalBox.updateStamp(terminalId);
+		}
 	}
 }
