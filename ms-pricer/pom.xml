@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<artifactId>ms-pricer</artifactId>
+	<packaging>jar</packaging>
+	<name>ms-pricer</name>
+	<description>Dynamic Pricing and Routing</description>
+
+	<parent>
+		<groupId>com.amx.jax</groupId>
+		<artifactId>amxeco</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath> <!-- lookup parent from repository -->
+	</parent>
+
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<thymeleaf.version>3.0.2.RELEASE</thymeleaf.version>
+		<thymeleaf-layout-dialect.version>2.1.1</thymeleaf-layout-dialect.version>
+		<itext.version>7.1.1</itext.version>
+		<itext.pdfhtml.version>2.0.1</itext.pdfhtml.version>
+		<itext.pdfcalligraph.version>2.0.0</itext.pdfcalligraph.version>
+		<itext5.version>5.5.13</itext5.version>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.amx.jax</groupId>
+			<artifactId>common-amx</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.amx.jax</groupId>
+			<artifactId>lib-mcq</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.amx.jax</groupId>
+			<artifactId>lib-rbaac</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.amx.jax</groupId>
+			<artifactId>lib-postman</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.amx.jax</groupId>
+			<artifactId>lib-db</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.amx.jax</groupId>
+			<artifactId>lib-monitor</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.amx.jax</groupId>
+			<artifactId>lib-pricer</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- dependency>
+			<groupId>com.zaxxer</groupId>
+			<artifactId>HikariCP</artifactId>
+			<version>3.2.0</version>
+		</dependency-->
+
+
+		<!-- dependency> <groupId>com.amx.jax</groupId> <artifactId>ms-exchangerate</artifactId> 
+			<version>0.0.1-SNAPSHOT</version> </dependency -->
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<executable>true</executable>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+
+</project>
