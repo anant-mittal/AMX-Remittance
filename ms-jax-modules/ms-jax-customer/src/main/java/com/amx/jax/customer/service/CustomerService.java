@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -47,6 +49,8 @@ public class CustomerService extends AbstractService {
 	CountryService countryService;
 	@Autowired
 	MetaData metaData;
+	
+	static final Logger LOGGER = LoggerFactory.getLogger(CustomerService.class);
 
 	public ApiResponse getCustomer(BigDecimal countryId, String userId) {
 		List<Customer> customerList = customerRepository.getCustomer(countryId, userId);
@@ -123,7 +127,6 @@ public class CustomerService extends AbstractService {
 		} catch (Exception e) {
 		}
 		customerDto.setTitle(getTitleDescription(customer.getTitle()));
-		customerDto.setTitleLocal(getTitleDescription(customer.getTitleLocal()));
 		return customerDto;
 	}
 
@@ -153,7 +156,12 @@ public class CustomerService extends AbstractService {
 	private String getTitleDescription(String titleBizComponentId) {
 		String titleDescription = null;
 		if (titleBizComponentId != null) {
-			titleDescription = bizcomponentDao.getBizComponentDataDescByComponmentId(titleBizComponentId).getDataDesc();
+			try {
+				titleDescription = bizcomponentDao.getBizComponentDataDescByComponmentId(titleBizComponentId)
+						.getDataDesc();
+			} catch (NumberFormatException e) {
+				LOGGER.error("Invalid title in fs_customer table value: {}", titleBizComponentId);
+			}
 		}
 		return titleDescription;
 	}
