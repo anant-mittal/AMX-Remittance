@@ -25,13 +25,15 @@ import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeR
 public class BranchRemittanceExchangeRateService {
 
 	static final Logger LOGGER = LoggerFactory.getLogger(BranchRemittanceExchangeRateService.class);
-	
+
 	@Autowired
 	BranchRemittanceExchangeRateManager branchRemittanceExchangeRateManager;
 
 	public AmxApiResponse<BranchRemittanceGetExchangeRateResponse, Object> getExchaneRate(
 			BranchRemittanceGetExchangeRateRequest request) {
 		branchRemittanceExchangeRateManager.validateGetExchangRateRequest(request);
+		BranchRemittanceGetExchangeRateResponse respnose = branchRemittanceExchangeRateManager
+				.getExchangeRateResponse(request);
 		return null;
 	}
 }

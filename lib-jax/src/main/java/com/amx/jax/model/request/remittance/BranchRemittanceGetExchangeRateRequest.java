@@ -13,13 +13,13 @@ import javax.validation.constraints.NotNull;
  */
 public class BranchRemittanceGetExchangeRateRequest {
 
-	@NotNull
+	@NotNull(message = "bene id can not be null")
 	Long beneficiaryRelationshipSeqId;
 	BigDecimal localAmount;
 	BigDecimal foreignAmount;
-	@NotNull
+	@NotNull(message = "correspondanceBankId can not be null")
 	Long correspondanceBankId;
-	@NotNull
+	@NotNull(message = "serviceIndicatorId can not be null")
 	Long serviceIndicatorId;
 
 	public Long getBeneficiaryRelationshipSeqId() {
