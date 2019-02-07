@@ -594,4 +594,43 @@ public class UserClient extends AbstractJaxServiceClient {
 			throw new JaxSystemError();
 		} // end of try-catch
 	} // end of customerLoggedIn
+	
+	public ApiResponse<CustomerModel> saveEmailNew(String email) {
+		try {
+			CustomerModel custModel = new CustomerModel();
+			custModel.setEmail(email);
+			custModel.setCustomerId(jaxMetaInfo.getCustomerId());
+			HttpEntity<CustomerModel> requestEntity = new HttpEntity<CustomerModel>(custModel, getHeader());
+			String sendOtpUrl = this.getBaseUrl() + CUSTOMER_ENDPOINT + "/saveEmailOrMobile";
+			LOGGER.info("Calling saveEmailNew API : " + sendOtpUrl);
+			return restService.ajax(sendOtpUrl).post(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
+					});
+		} catch (AbstractJaxException ae) {
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("Exception in saveEmailNew API : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
+
+	}
+	
+	public ApiResponse<CustomerModel> saveMobileNew(String mobile) {
+		try {
+			CustomerModel custModel = new CustomerModel();
+			custModel.setMobile(mobile);
+			custModel.setCustomerId(jaxMetaInfo.getCustomerId());
+			HttpEntity<CustomerModel> requestEntity = new HttpEntity<CustomerModel>(custModel, getHeader());
+			String sendOtpUrl = this.getBaseUrl() + CUSTOMER_ENDPOINT + "/saveEmailOrMobile";
+			LOGGER.info("Calling saveMobileNew API : " + sendOtpUrl);
+			return restService.ajax(sendOtpUrl).post(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
+					});
+		} catch (AbstractJaxException ae) {
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("Exception in saveMobileNew API : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
+	}
 }

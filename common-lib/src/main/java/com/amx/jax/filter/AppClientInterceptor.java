@@ -28,8 +28,6 @@ import com.amx.utils.CryptoUtil;
 @Component
 public class AppClientInterceptor implements ClientHttpRequestInterceptor {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(AppClientInterceptor.class);
-
 	@Autowired
 	AppConfig appConfig;
 
@@ -45,57 +43,13 @@ public class AppClientInterceptor implements ClientHttpRequestInterceptor {
 		RequestTrackEvent requestTrackEvent = new RequestTrackEvent(request);
 		AuditServiceClient.trackStatic(requestTrackEvent);
 
-		if (AppParam.PRINT_TRACK_BODY.isEnabled() || LOGGER.isDebugEnabled()) {
-			LinkedMultiValueMap<String, String> headerMap = new LinkedMultiValueMap<String, String>();
-			Collection<Entry<String, List<String>>> headers = request.getHeaders().entrySet();
-			for (Entry<String, List<String>> header : headers) {
-				headerMap.put(header.getKey(), header.getValue());
-			}
-			LOGGER.debug("*** REQT_OUT_HEADER *****: {}", headerMap.toString());
-			LOGGER.debug("*** REQT_OUT_BODY   *****: {}", new String(body, "UTF-8"));
-		}
+		AppRequestUtil.printIfDebug(request, body);
 
 		ClientHttpResponse response = execution.execute(request, body);
 		AppContextUtil.importAppContextFrom(response.getHeaders());
 		AuditServiceClient.trackStatic(new RequestTrackEvent(response, request));
 
-		if (AppParam.PRINT_TRACK_BODY.isEnabled() || LOGGER.isDebugEnabled()) {
-			return traceResponse(response);
-		}
-
-		return response;
-	}
-
-	private ClientHttpResponse traceResponse(ClientHttpResponse response) throws IOException {
-		final ClientHttpResponse responseWrapper = new BufferingClientHttpResponseWrapper(response);
-		StringBuilder inputStringBuilder = new StringBuilder();
-		BufferedReader bufferedReader = null;
-		try {
-			bufferedReader = new BufferedReader(
-					new InputStreamReader(responseWrapper.getBody(), "UTF-8"));
-			String line = bufferedReader.readLine();
-			while (line != null) {
-				inputStringBuilder.append(line);
-				inputStringBuilder.append('\n');
-				line = bufferedReader.readLine();
-			}
-		} catch (Exception e) {
-			LOGGER.error("traceResponse", e);
-		} finally {
-			if (bufferedReader != null) {
-				bufferedReader.close();
-			}
-		}
-
-		// this.header = response.getHeaders();
-		LinkedMultiValueMap<String, String> headerMap = new LinkedMultiValueMap<String, String>();
-		Collection<Entry<String, List<String>>> headers = response.getHeaders().entrySet();
-		for (Entry<String, List<String>> header : headers) {
-			headerMap.put(header.getKey(), header.getValue());
-		}
-		LOGGER.debug("*** REQT_IN_HEADER *****: {}", headerMap.toString());
-		LOGGER.debug("*** RESP_IN_BODY    *****: {}", inputStringBuilder.toString());
-		return responseWrapper;
+		return AppRequestUtil.printIfDebug(response);
 	}
 
 }

@@ -59,21 +59,30 @@ public class DeviceService extends AbstractService {
 	public void activateDevice(Device device) {
 		device.setStatus("Y");
 		device.setState(DeviceState.REGISTERED);
-		List<Device> existingDevices = null;
 		if (device.getBranchSystemInventoryId() != null) {
-			existingDevices = deviceDao.findAllActiveDevices(device.getBranchSystemInventoryId(), device.getDeviceType());
-		} else if (device.getEmployeeId() != null) {
-			existingDevices = deviceDao.findAllActiveDevicesForEmployee(device.getEmployeeId(), device.getDeviceType());
+			List<Device> devices = deviceDao.findAllActiveDevices(device.getBranchSystemInventoryId(),
+					device.getDeviceType());
+			if (!CollectionUtils.isEmpty(devices)) {
+				for (Device d : devices) {
+					if (!d.equals(device)) {
+						d.setStatus("N");
 		}
-		if (!CollectionUtils.isEmpty(existingDevices)) {
-			for (Device d : existingDevices) {
-				if (!d.equals(device)) {
-					d.setStatus("N");
 				}
+				deviceDao.saveDevices(devices);
 			}
-			deviceDao.saveDevices(existingDevices);
 		}
-
+		if (device.getEmployeeId() != null) {
+			List<Device> devices = deviceDao.findAllActiveDevicesForEmployee(device.getEmployeeId(),
+					device.getDeviceType());
+			if (!CollectionUtils.isEmpty(devices)) {
+				for (Device d : devices) {
+					if (!d.equals(device)) {
+						d.setStatus("N");
+					}
+				}
+				deviceDao.saveDevices(devices);
+			}
+		}
 		deviceDao.saveDevice(device);
 	}
 
@@ -153,6 +162,7 @@ public class DeviceService extends AbstractService {
 		Device device = deviceDao.findDevice(new BigDecimal(countryBranchSystemInventoryId), deviceType);
 		deviceValidation.validateDevice(device);
 		deviceValidation.validateDeviceOtpToken(device, otp);
+		deviceValidation.validateOtpValidationTimeLimit(device.getRegistrationId());
 		// session pair success
 		device.setState(DeviceState.SESSION_PAIRED);
 		deviceDao.saveDevice(device);
@@ -179,7 +189,8 @@ public class DeviceService extends AbstractService {
 		deviceValidation.validateDevice(device);
 		String sessionTokenGen = deviceManager.generateSessionPairToken(device);
 		if (!deviceSessionToken.equals(device.getSessionToken()) ||
-				TimeUtils.isDead(device.getModifiedDate().getTime(), deviceManager.getDeviceSessionTimeout() * 1000)
+				TimeUtils.isDead(device.getOtpTokenCreatedDate().getTime(),
+						deviceManager.getDeviceSessionTimeout() * 1000)
 		// || !deviceSessionToken.equals(sessionTokenGen)
 		) {
 			throw new AuthServiceException(RbaacServiceError.CLIENT_EXPIRED_SESSION_TOKEN, "Session token is expired");

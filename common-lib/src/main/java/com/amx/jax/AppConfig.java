@@ -41,6 +41,7 @@ public class AppConfig {
 	public static final String APP_LOGGER = "${app.logger}";
 
 	public static final String APP_CONTEXT_PREFIX = "${server.contextPath}";
+	public static final String SPRING_APP_NAME = "${spring.application.name}";
 
 	@Deprecated
 	public static final String APP_CLASS = "${app.class}";
@@ -74,6 +75,10 @@ public class AppConfig {
 	@Value(APP_NAME)
 	@AppParamKey(AppParam.APP_NAME)
 	private String appName;
+	
+	@Value(SPRING_APP_NAME)
+	@AppParamKey(AppParam.SPRING_APP_NAME)
+	private String springAppName;
 
 	@Value(APP_ID)
 	@AppParamKey(AppParam.APP_ID)
@@ -338,6 +343,10 @@ public class AppConfig {
 
 	public Tenant getDefaultTenant() {
 		return defaultTenant;
+	}
+
+	public String getSpringAppName() {
+		return springAppName;
 	}
 
 }

@@ -21,7 +21,7 @@ public class JaxClientConfig {
 	public MockParam basicParam() {
 		return new MockParamBuilder().name(AppConstants.REQUEST_PARAMS_XKEY)
 				.description(AppConstants.REQUEST_PARAMS_XKEY)
-				.defaultValue(JsonUtil.toJson(new JaxAuthMeta("123456", "234567", "black")))
+				.defaultValue(JsonUtil.toJson(new JaxAuthMeta("", "", "")))
 				.parameterType(MockParamBuilder.MockParamType.HEADER).required(true).build();
 	}
 }
