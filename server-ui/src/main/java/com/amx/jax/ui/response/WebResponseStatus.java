@@ -7,6 +7,8 @@ import com.amx.jax.exception.IExceptionEnum;
  */
 public enum WebResponseStatus implements IExceptionEnum {
 
+	
+	UI_SERVER_ERROR("000"),
 	/** The already active. */
 	// Registration - CIVIL ID validation
 	ALREADY_ACTIVE("302"),
@@ -51,6 +53,7 @@ public enum WebResponseStatus implements IExceptionEnum {
 	// Info Required
 	DOTP_REQUIRED("300"),
 	MOTP_REQUIRED("300"),
+	OTP_REQUIRED("300"),
 
 	/** The unknown jax error. */
 	UNKNOWN_JAX_ERROR("500"),

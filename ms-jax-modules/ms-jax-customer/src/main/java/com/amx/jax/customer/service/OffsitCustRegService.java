@@ -39,10 +39,9 @@ import com.amx.jax.CustomerCredential;
 import com.amx.jax.ICustRegService;
 import com.amx.jax.amxlib.config.OtpSettings;
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.auditlog.CustomerAuditEvent;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constants.CustomerRegistrationType;
-import com.amx.jax.customer.CustomerAuditEvent;
-import com.amx.jax.customer.CustomerAuditEvent.Type;
 import com.amx.jax.dal.ArticleDao;
 import com.amx.jax.dal.BizcomponentDao;
 import com.amx.jax.dal.FieldListDao;
@@ -67,8 +66,10 @@ import com.amx.jax.dbmodel.ProfessionMasterView;
 import com.amx.jax.dbmodel.StateMaster;
 import com.amx.jax.dbmodel.UserFinancialYear;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.logger.AuditEvent.Result;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.LoggerService;
+import com.amx.jax.logger.events.CActivityEvent;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.CardDetail;
 import com.amx.jax.model.OtpData;
@@ -256,6 +257,12 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 			OffsiteCustomerRegistrationRequest offsiteCustRegModel) {
 
 		OtpData otpData = customerRegistrationManager.get().getOtpData();
+
+		CActivityEvent auditEvent = new CActivityEvent(CActivityEvent.Type.VALIDATION)
+				.target(offsiteCustRegModel.getMobile()).target(offsiteCustRegModel.getEmail())
+				.customer(offsiteCustRegModel.getIdentityInt()); // Audit
+
+		boolean otpMisMatch = false;
 		try {
 			if (StringUtils.isBlank(offsiteCustRegModel.getmOtp())) {
 				auditService.excep(new CustomerAuditEvent(Type.VALIDATE_OTP, offsiteCustRegModel),
@@ -264,10 +271,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 			}
 			resetAttempts(otpData);
 			if (otpData.getValidateOtpAttempts() >= otpSettings.getMaxValidateOtpAttempts()) {
-				auditService.excep(new CustomerAuditEvent(Type.VALIDATE_OTP, offsiteCustRegModel),
-						new GlobalException(
-								JaxError.VALIDATE_OTP_LIMIT_EXCEEDED,
-								"Sorry, you cannot proceed to register. Please try to register after 12 midnight"));
+				auditService.log(auditEvent.result(Result.REJECTED).message(JaxError.VALIDATE_OTP_LIMIT_EXCEEDED));
 				throw new GlobalException(
 						JaxError.VALIDATE_OTP_LIMIT_EXCEEDED,
 						"Sorry, you cannot proceed to register. Please try to register after 12 midnight");
@@ -275,11 +279,13 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 			
 			// actual validation logic
 			if (!otpData.getmOtp().equals(offsiteCustRegModel.getmOtp())) {
+				otpMisMatch = true;
 				otpMismatch(otpData);
 			}
 			
 			if (!StringUtils.isBlank(offsiteCustRegModel.geteOtp())) {
 				if (!otpData.geteOtp().equals(offsiteCustRegModel.geteOtp())) {
+					otpMisMatch = true;
 					otpMismatch(otpData);
 				}
 			}
@@ -287,11 +293,14 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 			otpData.setOtpValidated(true);
 			otpData.resetCounts();
 		} finally {
+			if (otpMisMatch) {
+				auditService.log(auditEvent.result(Result.FAIL).message(JaxError.INVALID_OTP));
+			}
 			customerRegistrationManager.saveOtpData(otpData);
 		}
 		AmxApiResponse<String, Object> obj = AmxApiResponse.build("Customer Email And Mobile Validation Successfully");
 		obj.setMessageKey("AUTH_SUCCESS");
-		auditService.log(new CustomerAuditEvent(Type.VALIDATE_OTP, offsiteCustRegModel));
+		auditService.log(auditEvent.result(Result.DONE)); // Audit
 		return obj;
 
 	}
@@ -332,7 +341,8 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 
 	private ArticleMasterDescDto convert(Map<String, Object> i) {
 		ArticleMasterDescDto dto = new ArticleMasterDescDto();
-		dto.setArticleDescId(new BigDecimal(i.get("ARTICLE_DESC_ID") != null ? i.get("ARTICLE_DESC_ID").toString() : null));
+		dto.setArticleDescId(
+				new BigDecimal(i.get("ARTICLE_DESC_ID") != null ? i.get("ARTICLE_DESC_ID").toString() : null));
 		dto.setArticleDescription(i.get("ARTICLE_DESC") != null ? i.get("ARTICLE_DESC").toString() : null);
 		dto.setArticleId(new BigDecimal(i.get("ARTICLE_ID") != null ? i.get("ARTICLE_ID").toString() : null));
 		dto.setLanguageType(new BigDecimal(i.get("LANGUAGE_ID").toString()));
@@ -342,14 +352,10 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 	public AmxApiResponse<ArticleDetailsDescDto, Object> getDesignationListResponse(EmploymentDetailsRequest model) {
 		BigDecimal articleId = model.getArticleId();
 		List<Map<String, Object>> designationList = articleDao.getDesignationData(articleId, metaData.getLanguageId());
-		EmploymentDetailsRequest details = new EmploymentDetailsRequest(articleId, null, null);
 		if (designationList == null || designationList.isEmpty()) {
-			auditService.excep(new CustomerAuditEvent(Type.DESIGNATION_LIST, details),
-					new GlobalException(JaxError.EMPTY_DESIGNATION_LIST, "Designation List Is Empty "));
 			throw new GlobalException(JaxError.EMPTY_DESIGNATION_LIST, "Designation List Is Empty ");
 		}
 		List<ArticleDetailsDescDto> designationDataList = convertDesignation(designationList);
-		auditService.log(new CustomerAuditEvent(Type.DESIGNATION_LIST, details));
 		return AmxApiResponse.buildList(designationDataList);
 	}
 
@@ -377,14 +383,10 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		BigDecimal countryId = metaData.getCountryId();
 		BigDecimal articleDetailsId = model.getArticleDetailsId();
 		List<Map<String, Object>> incomeRangeList = articleDao.getIncomeRange(countryId, articleDetailsId);
-		EmploymentDetailsRequest details = new EmploymentDetailsRequest(null, articleDetailsId, countryId);
 		if (incomeRangeList == null || incomeRangeList.isEmpty()) {
-			auditService.excep(new CustomerAuditEvent(Type.INCOME_RANGE, details),
-					new GlobalException(JaxError.EMPTY_INCOME_RANGE, "Income Range List Is Empty "));
 			throw new GlobalException(JaxError.EMPTY_INCOME_RANGE, "Income Range List Is Empty ");
 		}
 		List<IncomeRangeDto> incomeRangeDataList = convertIncomeRange(incomeRangeList);
-		auditService.log(new CustomerAuditEvent(Type.INCOME_RANGE, details));
 		return AmxApiResponse.buildList(incomeRangeDataList);
 	}
 
@@ -430,11 +432,8 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 			}
 		}
 		if (map == null || map.isEmpty()) {
-			auditService.excep(new CustomerAuditEvent(Type.FIELD_LIST, model),
-					new GlobalException(JaxError.EMPTY_FIELD_CONDITION, "Field Condition is Empty "));
 			throw new GlobalException(JaxError.EMPTY_FIELD_CONDITION, "Field Condition is Empty ");
 		}
-		auditService.log(new CustomerAuditEvent(Type.FIELD_LIST, model));
 		return AmxApiResponse.build(map);
 	}
 
@@ -496,13 +495,14 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		commitCustomerHomeContact(model.getHomeAddressDestails(), customer, customerDetails);
 		commitOnlineCustomerIdProof(model, customer);
 		commitEmploymentDetails(model.getCustomerEmploymentDetails(), customer, model.getLocalAddressDetails());
-		auditService.log(new CustomerAuditEvent(Type.CUST_INFO, model));
+		auditService.log(new CActivityEvent(CActivityEvent.Type.PROFILE_UPDATE).result(Result.DONE));
 		CustomerInfo info = new CustomerInfo();
 		info.setCustomerId(customer.getCustomerId());
 		return AmxApiResponse.build(info);
 	}
 
-	private void commitEmploymentDetails(CustomerEmploymentDetails customerEmploymentDetails, Customer customer, LocalAddressDetails localAddressDetails) {
+	private void commitEmploymentDetails(CustomerEmploymentDetails customerEmploymentDetails, Customer customer,
+			LocalAddressDetails localAddressDetails) {
 		if (customerEmploymentDetails != null) {
 			
 			EmployeeDetails employeeModel = customerEmployeeDetailsRepository.getCustomerEmploymentData(customer);
@@ -515,7 +515,8 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 			
 			if(customerEmploymentDetails.getEmploymentTypeId().compareTo(new BigDecimal(222)) != 0) {
 				employeeModel.setFsBizComponentDataByOccupationId(
-						bizcomponentDao.getBizComponentDataByComponmentDataId(customerEmploymentDetails.getProfessionId()));
+						bizcomponentDao
+								.getBizComponentDataByComponmentDataId(customerEmploymentDetails.getProfessionId()));
 				employeeModel.setEmployerName(customerEmploymentDetails.getEmployer());
 				
 			}
@@ -611,21 +612,19 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		Customer customer = new Customer();
 		customer = customerRepository.getCustomerByCivilIdAndIsActive(customerDetails.getIdentityInt(),
 				customerDetails.getCountryId(), customerDetails.getIdentityTypeId());
-		/*if (customer != null) {
-			if (customer.getIdentityTypeId().equals(new BigDecimal(198))) {
-				throw new GlobalException(JaxError.EXISTING_CIVIL_ID, "Customer Civil Id Already Exist");
-			}
-			if (customer.getIdentityTypeId().equals(new BigDecimal(204))) {
-				throw new GlobalException(JaxError.EXISTING_PASSPORT, "Passport Number Already Exist");
-			}
-			if (customer.getIdentityTypeId().equals(new BigDecimal(201))) {
-				throw new GlobalException(JaxError.EXISTING_GCC_ID, "GCC ID Already Exist");
-			}
-			if (customer.getIdentityTypeId().equals(new BigDecimal(197))) {
-				throw new GlobalException(JaxError.EXISTING_BEDOUIN_ID, "BEDOUIN ID Already Exist");
-			}
-
-		}*/
+		/*
+		 * if (customer != null) { if (customer.getIdentityTypeId().equals(new
+		 * BigDecimal(198))) { throw new GlobalException(JaxError.EXISTING_CIVIL_ID,
+		 * "Customer Civil Id Already Exist"); } if
+		 * (customer.getIdentityTypeId().equals(new BigDecimal(204))) { throw new
+		 * GlobalException(JaxError.EXISTING_PASSPORT, "Passport Number Already Exist");
+		 * } if (customer.getIdentityTypeId().equals(new BigDecimal(201))) { throw new
+		 * GlobalException(JaxError.EXISTING_GCC_ID, "GCC ID Already Exist"); } if
+		 * (customer.getIdentityTypeId().equals(new BigDecimal(197))) { throw new
+		 * GlobalException(JaxError.EXISTING_BEDOUIN_ID, "BEDOUIN ID Already Exist"); }
+		 * 
+		 * }
+		 */
 		
 		if(customer == null) {
 			customer = new Customer();
@@ -640,8 +639,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 			if(!customer.getEmail().equals(customerDetails.getEmail())) {
 				tenantContext.get().validateEmailId(customerDetails.getEmail());
 			}
-		}
-		else {
+		} else {
 			tenantContext.get().validateEmailId(customerDetails.getEmail());
 		}
 		
@@ -649,8 +647,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 			if(!customer.getMobile().equals(customerDetails.getMobile())) {
 				tenantContext.get().validateDuplicateMobile(customerDetails.getMobile());
 			}
-		}
-		else {
+		} else {
 			tenantContext.get().validateDuplicateMobile(customerDetails.getMobile());
 		}
 		countryMetaValidation.validateMobileNumber(customerDetails.getCountryId(), customerDetails.getMobile());
@@ -668,7 +665,8 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		customer.setTitleLocal(getTitleLocal(prefixEnum.getTitleLocal()));
 		customer.setLoyaltyPoints(BigDecimal.ZERO);
 		customer.setCompanyId(metaData.getCompanyId());
-		customer.setCustomerTypeId(bizcomponentDao.getBizComponentDataByComponmentCode(ConstantDocument.Individual).getComponentDataId());
+		customer.setCustomerTypeId(
+				bizcomponentDao.getBizComponentDataByComponmentCode(ConstantDocument.Individual).getComponentDataId());
 		customer.setLanguageId(metaData.getLanguageId());
 		customer.setBranchCode(metaData.getCountryBranchId());
 		customer.setNationalityId(customerDetails.getNationalityId());
@@ -720,7 +718,8 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 	private void commitOnlineCustomerIdProof(CustomerInfoRequest model, Customer customer) {
 		
 		CustomerIdProof custProof = null;
-		List<CustomerIdProof> customerIdProofs = customerIdProofRepository.getCustomerIdProofByCustomerId(customer.getCustomerId());
+		List<CustomerIdProof> customerIdProofs = customerIdProofRepository
+				.getCustomerIdProofByCustomerId(customer.getCustomerId());
 		if(!customerIdProofs.isEmpty()) {
 			custProof = customerIdProofs.get(0);
 		}
@@ -732,7 +731,9 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		custProof.setFsCustomer(customerData);
 		custProof.setLanguageId(metaData.getLanguageId());
 		BizComponentData customerType = new BizComponentData();
-		customerType.setComponentDataId(bizcomponentDao.getComponentId(Constants.CUSTOMERTYPE_INDU, metaData.getLanguageId()).getFsBizComponentData().getComponentDataId());
+		customerType.setComponentDataId(
+				bizcomponentDao.getComponentId(Constants.CUSTOMERTYPE_INDU, metaData.getLanguageId())
+						.getFsBizComponentData().getComponentDataId());
 		custProof.setFsBizComponentDataByCustomerTypeId(customerType);
 		custProof.setIdentityInt(customer.getIdentityInt());
 		custProof.setIdentityStatus(Constants.CUST_ACTIVE_INDICATOR);
@@ -750,22 +751,23 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 
 	@Override
 	public AmxApiResponse<String, Object> saveCustomeKycDocument(ImageSubmissionRequest model) throws ParseException {
+
+		CActivityEvent auditEvent = new CActivityEvent(CActivityEvent.Type.PROFILE_UPDATE)
+				.field("KYC_DOC");
+
 		if (model != null) {
 			if (metaData.getCustomerId() == null) {
-				auditService.excep(new CustomerAuditEvent(Type.KYC_DOC, metaData.getCustomerId()),
-						new GlobalException(JaxError.NULL_CUSTOMER_ID, "Customer Id is not available"));
+				auditService.log(auditEvent.result(Result.REJECTED).message(JaxError.NULL_CUSTOMER_ID));
 				throw new GlobalException(JaxError.NULL_CUSTOMER_ID, "Customer Id is not available");
 			}
 			Customer customer = customerRepository.getCustomerByCustomerIdAndIsActive(metaData.getCustomerId(),
 					Constants.NO);
 			if (customer == null) {
-				auditService.excep(new CustomerAuditEvent(Type.KYC_DOC, metaData.getCustomerId()),
-						new GlobalException(JaxError.INVALID_CUSTOMER, "Customer is Invalid"));
+				auditService.log(auditEvent.result(Result.REJECTED).message(JaxError.INVALID_CUSTOMER));
 				throw new GlobalException(JaxError.INVALID_CUSTOMER, "Customer is Invalid");
 			}
 			if (model.getImage() == null) {
-				auditService.excep(new CustomerAuditEvent(Type.KYC_DOC, metaData.getCustomerId()),
-						new GlobalException(JaxError.IMAGE_NOT_AVAILABLE, "Image is not available"));
+				auditService.log(auditEvent.result(Result.REJECTED).message(JaxError.IMAGE_NOT_AVAILABLE));
 				throw new GlobalException(JaxError.IMAGE_NOT_AVAILABLE, "Image is not available");
 			}
 
@@ -778,8 +780,10 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 				docblobRepository.save(documentDetails);
 			}
 		} else {
+			auditService.log(auditEvent.result(Result.FAIL).message(JaxError.IMAGE_NOT_AVAILABLE));
 			throw new GlobalException(JaxError.IMAGE_NOT_AVAILABLE, "Image data is not available");
 		}
+		auditService.log(auditEvent.result(Result.DONE));
 		return AmxApiResponse.build("Document Uploaded Successfully");
 	}
 
@@ -841,26 +845,28 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		if (model == null) {
 			throw new GlobalException(JaxError.SIGNATURE_NOT_AVAILABLE, "Image data is not available");
 		}
+
+		CActivityEvent auditEvent = new CActivityEvent(CActivityEvent.Type.PROFILE_UPDATE)
+				.field("SIGNATURE");
+
 		if (metaData.getCustomerId() == null) {
-			auditService.excep(new CustomerAuditEvent(Type.SIGNATURE, metaData.getCustomerId()),
-					new GlobalException(JaxError.NULL_CUSTOMER_ID, "Customer Id is not available"));
+			auditService.log(auditEvent.result(Result.REJECTED).message(JaxError.NULL_CUSTOMER_ID));
 			throw new GlobalException(JaxError.NULL_CUSTOMER_ID, "Customer Id is not available");
 		}
 		if (model.getImage() == null) {
-			auditService.excep(new CustomerAuditEvent(Type.SIGNATURE, metaData.getCustomerId()),
-					new GlobalException(JaxError.NULL_CUSTOMER_ID, "Signature not available for this customer"));
+			auditService.log(auditEvent.result(Result.REJECTED).message(JaxError.SIGNATURE_NOT_AVAILABLE));
 			throw new GlobalException(JaxError.SIGNATURE_NOT_AVAILABLE, "Signature not available");
 		}
 		Customer customer = customerRepository.getCustomerByCustomerIdAndIsActive(metaData.getCustomerId(),
 				Constants.NO);
 		if (customer == null) {
-			auditService.excep(new CustomerAuditEvent(Type.SIGNATURE, metaData.getCustomerId()),
-					new GlobalException(JaxError.INVALID_CUSTOMER, "Customer is Invalid"));
+			auditService.log(auditEvent.result(Result.REJECTED).message(JaxError.INVALID_CUSTOMER));
 			throw new GlobalException(JaxError.INVALID_CUSTOMER, "Customer is Invalid");
 		}
 		customer.setSignatureSpecimenClob(model.getImage().get(0));
 		customer.setPepsIndicator(model.getPoliticallyExposed());
 		customerRepository.save(customer);
+		auditService.log(auditEvent.result(Result.DONE));
 		return AmxApiResponse.build("Signature Uploaded Successfully");
 	}
 
@@ -902,8 +908,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 					tenantContext.get().validateEmailId(customerPersonalDetail.getEmail());
 				}
 			}
-		}	
-		else {
+		} else {
 			tenantContext.get().validateEmailId(customerPersonalDetail.getEmail());
 		}
 		
@@ -913,8 +918,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 					tenantContext.get().validateDuplicateMobile(customerPersonalDetail.getMobile());
 				}
 			}
-		}	
-		else {
+		} else {
 			tenantContext.get().validateDuplicateMobile(customerPersonalDetail.getMobile());
 		}
 		
@@ -961,7 +965,8 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		customerCredentialValidator.validate(customerRegistrationManager.get(),  null);
 		
 		CustomerRegistrationTrnxModel model = customerRegistrationManager.get();
-		Customer customer = customerDao.getCustomerByIdentityInt(model.getCustomerPersonalDetail().getIdentityInt()).get(0);
+		Customer customer = customerDao.getCustomerByIdentityInt(model.getCustomerPersonalDetail().getIdentityInt())
+				.get(0);
 		commitOnlineCustomer(model, customer);		
 		
 		Customer customerDetails = customerService.getCustomerDetails(customerCredential.getLoginId());
@@ -990,7 +995,8 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		customerDao.saveOnlineCustomer(customerOnlineRegistration);
 	}
 
-	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerData(String identityInt, BigDecimal identityTypeId) {
+	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerData(String identityInt,
+			BigDecimal identityTypeId) {
 		
 		OffsiteCustomerDataDTO offsiteCustomer = new OffsiteCustomerDataDTO();
 		offsiteCustomer.setIdentityInt(identityInt);
@@ -1000,7 +1006,6 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		CustomerPersonalDetail customerDetails = new CustomerPersonalDetail();
 		Customer customer = customerRepository.getCustomerData(identityInt, identityTypeId);
 		if(customer != null) {
-			
 			customerDetails.setCountryId(customer.getCountryId());
 			customerDetails.setNationalityId(customer.getNationalityId());
 			customerDetails.setIdentityInt(customer.getIdentityInt());
@@ -1020,7 +1025,6 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 			customerDetails.setWatsAppTelePrefix(customer.getPrefixCodeMobileOther());
 			customerDetails.setIsWatsApp(customer.getIsMobileWhatsApp());
 			customerDetails.setRegistrationType(customer.getCustomerRegistrationType());
-			
 			
 			offsiteCustomer.setCustomerPersonalDetail(customerDetails);
 			
@@ -1075,18 +1079,20 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 			EmployeeDetails employmentData = customerEmployeeDetailsRepository.getCustomerEmploymentData(customer);
 			if(employmentData != null) {
 				employmentDetails.setEmployer(employmentData.getEmployerName());
-				employmentDetails.setEmploymentTypeId(employmentData.getFsBizComponentDataByEmploymentTypeId().getComponentDataId());
-				employmentDetails.setProfessionId(employmentData.getFsBizComponentDataByOccupationId().getComponentDataId());
+				employmentDetails.setEmploymentTypeId(
+						employmentData.getFsBizComponentDataByEmploymentTypeId().getComponentDataId());
+				employmentDetails
+						.setProfessionId(employmentData.getFsBizComponentDataByOccupationId().getComponentDataId());
 				employmentDetails.setStateId(employmentData.getFsStateMaster());
 				employmentDetails.setDistrictId(employmentData.getFsDistrictMaster());
 				employmentDetails.setCountryId(employmentData.getFsCountryMaster().getCountryId());
 				employmentDetails.setArticleDetailsId(customer.getFsArticleDetails().getArticleDetailId());
 				employmentDetails.setArticleId(customer.getFsArticleDetails().getFsArticleMaster().getArticleId());
 				employmentDetails.setIncomeRangeId(customer.getFsIncomeRangeMaster().getIncomeRangeId());
+				
 				offsiteCustomer.setCustomerEmploymentDetails(employmentDetails);
 			}	
-		}
-		else {
+		} else {
 			throw new GlobalException(ResponseStatus.NOT_FOUND.toString());
 		}
 		return AmxApiResponse.build(offsiteCustomer); 

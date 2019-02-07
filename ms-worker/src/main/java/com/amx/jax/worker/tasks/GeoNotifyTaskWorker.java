@@ -90,7 +90,7 @@ public class GeoNotifyTaskWorker implements ITunnelSubscriber<GeoNotifyTask> {
 			}
 		}
 		CActivityEvent event = new CActivityEvent(CActivityEvent.Type.GEO_LOCATION);
-		event.setCustomer(ArgUtil.parseAsString(task.getCustomerId()));
+		event.setCustomerId(task.getCustomerId());
 		Map<String, Object> data = new HashMap<String, Object>();
 		data.put("hotpoint", task.getGeoPoint());
 		data.put("messages", messages);

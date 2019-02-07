@@ -21,7 +21,6 @@ import com.amx.amxlib.model.JaxConditionalFieldDto;
 import com.amx.amxlib.model.JaxFieldDto;
 import com.amx.amxlib.model.JaxFieldValueDto;
 import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
-
 import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.FlexFieldBehaviour;
@@ -62,13 +61,15 @@ public class RemittanceTransactionRequestValidator {
 
 		ExchangeRateBreakup oldExchangeRate = request.getExRateBreakup();
 		ExchangeRateBreakup newExchangeRate = response.getExRateBreakup();
-		oldExchangeRate.setRate(oldExchangeRate.getRate().setScale(newExchangeRate.getRate().scale(), RoundingMode.HALF_UP));
+		oldExchangeRate
+				.setRate(oldExchangeRate.getRate().setScale(newExchangeRate.getRate().scale(), RoundingMode.HALF_UP));
 		if (oldExchangeRate.compareTo(newExchangeRate) != 0) {
 			throw new GlobalException(JaxError.EXCHANGE_RATE_CHANGED, "Exchange rate has been changed");
 		}
 	}
 
-	public void validateFlexFields(RemittanceTransactionRequestModel request,Map<String, Object> remitApplParametersMap) {
+	public void validateFlexFields(RemittanceTransactionRequestModel request,
+			Map<String, Object> remitApplParametersMap) {
 		request.populateFlexFieldDtoMap();
 		List<FlexFiledView> allFlexFields = remittanceApplicationDao.getFlexFields();
 		Map<String, FlexFieldDto> requestFlexFields = request.getFlexFieldDtoMap();
@@ -78,7 +79,8 @@ public class RemittanceTransactionRequestValidator {
 		} else {
 			validateFlexFieldValues(requestFlexFields);
 		}
-		requestFlexFields.put("INDIC1",new FlexFieldDto(request.getAdditionalBankRuleFiledId(), request.getSrlId(), null));
+		requestFlexFields.put("INDIC1",
+				new FlexFieldDto(request.getAdditionalBankRuleFiledId(), request.getSrlId(), null));
 		BigDecimal applicationCountryId = (BigDecimal) remitApplParametersMap.get("P_APPLICATION_COUNTRY_ID");
 		BigDecimal routingCountryId = (BigDecimal) remitApplParametersMap.get("P_ROUTING_COUNTRY_ID");
 		BigDecimal remittanceModeId = (BigDecimal) remitApplParametersMap.get("P_REMITTANCE_MODE_ID");

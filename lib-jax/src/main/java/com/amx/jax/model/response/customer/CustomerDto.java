@@ -23,6 +23,7 @@ public class CustomerDto implements Serializable {
 	String email;
 	Boolean medicalInsuranceInd;
 	Boolean pepsIndicator;
+	String nationality;
 
 	public String getTitle() {
 		return title;
@@ -158,6 +159,14 @@ public class CustomerDto implements Serializable {
 
 	public void setPepsIndicator(Boolean pepsIndicator) {
 		this.pepsIndicator = pepsIndicator;
+	}
+
+	public String getNationality() {
+		return nationality;
+	}
+
+	public void setNationality(String nationality) {
+		this.nationality = nationality;
 	}
 
 }

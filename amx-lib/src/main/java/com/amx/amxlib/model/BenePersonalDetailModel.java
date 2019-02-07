@@ -46,7 +46,7 @@ public class BenePersonalDetailModel extends AbstractModel {
 	private String localFifthName;
 	// bene contact
 	private String telephoneNumber;
-	@NotNull
+	
 	private BigDecimal mobileNumber;
 	@NotNull
 	private String countryTelCode;

@@ -19,6 +19,7 @@ import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.JaxConditionalFieldRule;
 import com.amx.jax.dbmodel.JaxField;
 import com.amx.jax.dbmodel.ValidationRegex;
+import com.amx.jax.manager.JaxFieldManager;
 import com.amx.jax.repository.JaxConditionalFieldRuleRepository;
 import com.amx.jax.repository.JaxFieldRepository;
 import com.amx.jax.util.JaxUtil;
@@ -32,22 +33,23 @@ public class JaxFieldService extends AbstractService {
 
 	@Autowired
 	JaxUtil jaxUtil;
-
 	@Autowired
 	JaxConditionalFieldRuleRepository jaxConditionalFieldRuleRepository;
-
 	@Autowired
 	JaxFieldRepository jaxFieldRepository;
+	@Autowired
+	JaxFieldManager jaxFieldManager;
 
 	@Override
 	public String getModelType() {
 		return "jax-field";
 	}
 
-	public ApiResponse getJaxFieldsForEntity(GetJaxFieldRequest request) {
-		ApiResponse apiResponse = getBlackApiResponse();
+	public ApiResponse<JaxConditionalFieldDto> getJaxFieldsForEntity(GetJaxFieldRequest request) {
+		ApiResponse<JaxConditionalFieldDto> apiResponse = getBlackApiResponse();
 		List<JaxConditionalFieldRule> fieldList = null;
-		if (request.getCondition().getConditionKey() != null && request.getCondition().getConditionValue() != null) {
+		if (request.getCondition() != null && request.getCondition().getConditionKey() != null
+				&& request.getCondition().getConditionValue() != null) {
 			fieldList = jaxConditionalFieldRuleRepository.findByEntityNameAndConditionKeyAndConditionValue(
 					request.getEntity(), request.getCondition().getConditionKey(),
 					request.getCondition().getConditionValue());
@@ -127,13 +129,17 @@ public class JaxFieldService extends AbstractService {
 	public void updateDtoFromDb(List<JaxFieldDto> jaxFieldDtos) {
 		List<String> names = jaxFieldDtos.stream().map(i -> i.getLabel()).collect(Collectors.toList());
 		List<JaxField> jaxFields = jaxFieldRepository.findByNameIn(names);
-		final Map<String, JaxField> jaxFieldDbMap = jaxFields.stream().collect(Collectors.toMap(JaxField::getName, x -> x));
+		final Map<String, JaxField> jaxFieldDbMap = jaxFields.stream()
+				.collect(Collectors.toMap(JaxField::getName, x -> x));
 		jaxFieldDtos.forEach(i -> {
 			JaxField valueFromDB = jaxFieldDbMap.get(i.getLabel());
-			if(valueFromDB != null) {
+			if (valueFromDB != null) {
 				jaxUtil.convertNotNull(valueFromDB, i);
 			}
 		});
 	}
 
+	public void validateJaxFieldRegEx(JaxFieldDto jaxField, String value) {
+		jaxFieldManager.validateJaxFieldRegEx(jaxField, value);
+	}
 }

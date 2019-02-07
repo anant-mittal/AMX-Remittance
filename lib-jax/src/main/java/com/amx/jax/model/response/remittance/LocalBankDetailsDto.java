@@ -1,7 +1,6 @@
 package com.amx.jax.model.response.remittance;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 public class LocalBankDetailsDto {
 	

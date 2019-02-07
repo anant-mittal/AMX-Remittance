@@ -31,6 +31,6 @@ public interface ValidationClient {
 	 */
 	public Boolean isMobileExist(String mobile);
 	
-	
+	public int mobileLength();
 
 }

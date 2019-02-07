@@ -303,8 +303,7 @@ public class UserAuthService {
 
 			userOtpCache.remove(employeeNo);
 
-			throw new AuthServiceException(RbaacServiceError.OTP_TIMED_OUT,
-					"Invalid OTP: OTP is timedOut");
+			throw new AuthServiceException(RbaacServiceError.OTP_TIMED_OUT, "Invalid OTP: OTP is timedOut");
 		}
 
 		Employee employee = userOtpData.getEmployee();
@@ -484,6 +483,17 @@ public class UserAuthService {
 			throw new AuthServiceException(RbaacServiceError.USER_ACCOUNT_LOCKED,
 					"User Account Locked : User Account Login is Suspended, from: " + validEmployee.getLockDate()
 							+ " for Login Type : " + userType);
+		}
+
+		/**
+		 * Check if Employee has a Phone Number.
+		 * 
+		 * Validity of phone number is not checked.
+		 */
+
+		if (StringUtils.isEmpty(validEmployee.getTelephoneNumber())) {
+			throw new AuthServiceException(RbaacServiceError.INVALID_PHONE_NUMBER,
+					"Phone Number is Invalid or Missing for : " + userType);
 		}
 
 		return validEmployee;

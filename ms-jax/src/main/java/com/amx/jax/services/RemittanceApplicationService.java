@@ -226,7 +226,7 @@ public void updatePayTokenNull(List<RemittanceApplication> lstPayIdDetails,Payme
 					remittanceApplicationId, metaData.getCustomerId());
 			userService.deActivateFsCustomer(metaData.getCustomerId());
 			SuspiciousTransactionPaymentDto notificationModel = remittanceTransactionService
-					.getSuspiciousTransactionPaymentDto(remittanceApplicationId, count + 1);
+					.getSuspiciousTransactionPaymentDto(remittanceApplicationId, count);
 			Email email = new Email();
 			email.setSubject("User ID Block");
 			email.addTo(jaxTenantProperties.getComplianceEmail());
