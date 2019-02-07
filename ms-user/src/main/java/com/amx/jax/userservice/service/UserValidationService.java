@@ -382,6 +382,7 @@ public class UserValidationService {
 			if (lockCnt > 0 && onlineCustomer.getLockDt() != null) {
 				if (midnightTomorrow.compareTo(onlineCustomer.getLockDt()) > 0) {
 					onlineCustomer.setLockCnt(new BigDecimal(0));
+					onlineCustomer.setLockDt(null);
 					custDao.saveOnlineCustomer(onlineCustomer);
 					lockCnt = 0;
 				}
