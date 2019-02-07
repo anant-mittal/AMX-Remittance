@@ -265,8 +265,6 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		boolean otpMisMatch = false;
 		try {
 			if (StringUtils.isBlank(offsiteCustRegModel.getmOtp())) {
-				auditService.excep(new CustomerAuditEvent(Type.VALIDATE_OTP, offsiteCustRegModel),
-						new GlobalException(JaxError.MISSING_OTP, "Otp field is required"));
 				throw new GlobalException(JaxError.MISSING_OTP, "Otp field is required");
 			}
 			resetAttempts(otpData);
