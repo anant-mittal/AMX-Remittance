@@ -24,11 +24,7 @@ import com.amx.jax.dbmodel.CurrencyWiseDenomination;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.ForeignCurrencyAdjust;
 import com.amx.jax.dbmodel.PaymentModeModel;
-<<<<<<< HEAD
 import com.amx.jax.dbmodel.ViewCompanyDetails;
-import com.amx.jax.dbmodel.emp.Employee;
-=======
->>>>>>> branch 'fs_remittance' of git@gitlab.com:almullagroup/amx-jax.git
 import com.amx.jax.dbmodel.fx.EmployeeDetailsView;
 import com.amx.jax.dbmodel.remittance.LocalBankDetailsView;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
