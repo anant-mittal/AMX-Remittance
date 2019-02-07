@@ -71,7 +71,7 @@ public class AuthController {
 		if (useOTP) {
 			otp = JaxAuthContext.mOtp(otp);
 			if (ArgUtil.isEmpty(otp)) {
-				AuthResponse model = loginService.sendOTP(authData.getIdentity(), null).getResult();
+				AuthResponse model = loginService.sendOTP(authData.getIdentity(), null).getData();
 				throw new UIServerError(new AmxApiError(WebResponseStatus.MOTP_REQUIRED).meta(model));
 			}
 		}
