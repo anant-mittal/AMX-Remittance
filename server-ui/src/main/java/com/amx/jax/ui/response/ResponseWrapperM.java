@@ -4,6 +4,7 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.exception.AmxApiException;
 import com.amx.jax.ui.UIConstants;
+import com.amx.jax.ui.model.AuthDataInterface.AuthResponse;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.ContextUtil;
 
@@ -208,6 +209,15 @@ public class ResponseWrapperM<T, M> extends AmxApiResponse<T, M> {
 		this.setStatus(status);
 		this.message = excep.getMessage();
 		this.exception = excep.getClass().getName();
+	}
+
+	@SuppressWarnings("unchecked")
+	public void copy(ResponseWrapper<T> responseWrapper) {
+		this.data = responseWrapper.getData();
+		this.results = responseWrapper.getResults();
+		if (!ArgUtil.isEmpty(responseWrapper.getMeta())) {
+			this.meta = (M) responseWrapper.getMeta();
+		}
 	}
 
 }
