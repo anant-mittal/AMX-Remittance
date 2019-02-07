@@ -69,7 +69,7 @@ public class AuthController {
 			otp = JaxAuthContext.mOtp(otp);
 			if (ArgUtil.isEmpty(otp)) {
 				loginService.sendOTP(authData.getIdentity(), null);
-				throw new UIServerError(WebResponseStatus.OTP_REQUIRED);
+				throw new UIServerError(WebResponseStatus.MOTP_REQUIRED);
 			}
 		}
 		return loginService.loginSecQues(authData.getAnswer(), otp);
