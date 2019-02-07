@@ -1,7 +1,6 @@
 package com.amx.jax.model.response.remittance;
 
 import java.math.BigDecimal;
-import java.util.Date;
 
 import com.amx.jax.model.response.fx.UserStockDto;
 

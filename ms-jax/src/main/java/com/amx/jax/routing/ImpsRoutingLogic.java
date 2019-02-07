@@ -21,7 +21,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.exception.jax.GlobalException;
-
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dal.BizcomponentDao;
 import com.amx.jax.dao.BankDao;

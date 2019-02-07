@@ -19,7 +19,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
-
 import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.ApplicationProcedureDao;

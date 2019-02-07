@@ -2,8 +2,8 @@ package com.amx.jax.client.branch;
 
 import com.amx.jax.IJaxService;
 import com.amx.jax.api.AmxApiResponse;
-import com.amx.jax.error.JaxError;
 import com.amx.jax.error.ApiJaxStatusBuilder.ApiJaxStatus;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.model.response.remittance.UserwiseTransactionDto;
 
 public interface IBranchService extends IJaxService{
