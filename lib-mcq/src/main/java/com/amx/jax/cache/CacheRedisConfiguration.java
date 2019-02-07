@@ -35,7 +35,7 @@ import net.javacrumbs.shedlock.spring.annotation.EnableSchedulerLock;
 // @EnableRedissonHttpSession
 @ConditionalOnProperty("app.cache")
 @AutoConfigureAfter(RedisAutoConfiguration.class)
-@EnableSchedulerLock(defaultLockAtMostFor = "PT30S")
+//@EnableSchedulerLock(defaultLockAtMostFor = "PT30S")
 public class CacheRedisConfiguration
 // extends AbstractHttpSessionApplicationInitializer
 {
