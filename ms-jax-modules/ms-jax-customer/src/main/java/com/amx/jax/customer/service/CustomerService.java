@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -47,6 +49,8 @@ public class CustomerService extends AbstractService {
 	CountryService countryService;
 	@Autowired
 	MetaData metaData;
+	
+	static final Logger LOGGER = LoggerFactory.getLogger(CustomerService.class);
 
 	public ApiResponse getCustomer(BigDecimal countryId, String userId) {
 		List<Customer> customerList = customerRepository.getCustomer(countryId, userId);
@@ -114,11 +118,15 @@ public class CustomerService extends AbstractService {
 	public CustomerDto getCustomerDto(BigDecimal customerId) {
 		Customer customer = customerRepository.findOne(customerId);
 		CustomerDto customerDto = new CustomerDto();
-		customerDto.setNationality(countryService.getCountryMasterDesc(customer.getNationalityId(), metaData.getLanguageId()).getNationality());
+		if (customer.getNationalityId() != null) {
+			customerDto.setNationality(countryService
+					.getCountryMasterDesc(customer.getNationalityId(), metaData.getLanguageId()).getNationality());
+		}
 		try {
 			BeanUtils.copyProperties(customerDto, customer);
 		} catch (Exception e) {
 		}
+		customerDto.setTitle(getTitleDescription(customer.getTitle()));
 		return customerDto;
 	}
 
@@ -145,4 +153,16 @@ public class CustomerService extends AbstractService {
 		return dto;
 	}
 
+	private String getTitleDescription(String titleBizComponentId) {
+		String titleDescription = null;
+		if (titleBizComponentId != null) {
+			try {
+				titleDescription = bizcomponentDao.getBizComponentDataDescByComponmentId(titleBizComponentId)
+						.getDataDesc();
+			} catch (NumberFormatException e) {
+				LOGGER.error("Invalid title in fs_customer table value: {}", titleBizComponentId);
+			}
+		}
+		return titleDescription;
+	}
 }

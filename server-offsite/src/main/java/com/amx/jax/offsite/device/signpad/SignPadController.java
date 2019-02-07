@@ -71,9 +71,11 @@ public class SignPadController {
 		TerminalData terminalData = terminalBox.getOrDefault(deviceData.getTerminalId());
 		SignPadData signPadData = signPadBox.getOrDefault(deviceData.getTerminalId());
 
+		boolean isTerminalUpdated = signPadData.getUpdatestamp() < terminalData.getUpdatestamp();
+
 		if (ArgUtil.isEmpty(signPadData)
 				|| ArgUtil.isEmpty(signPadData.getDeviceState())
-				|| signPadData.getUpdatestamp() < terminalData.getUpdatestamp()
+				|| isTerminalUpdated
 				|| deviceData.getUpdatestamp() > signPadData.getUpdatestamp()) {
 
 			DevicePairOtpResponse devAuthResp = rbaacServiceClient.validateDeviceSessionToken(
