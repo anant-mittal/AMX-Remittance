@@ -7,6 +7,8 @@ package com.amx.jax.branchremittance.controller;
 import java.math.BigDecimal;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,11 +20,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
+import com.amx.jax.branchremittance.service.BranchRemittanceExchangeRateService;
 import com.amx.jax.branchremittance.service.BranchRemittanceService;
 import com.amx.jax.client.remittance.IRemittanceService;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
+import com.amx.jax.model.request.remittance.BranchRemittanceGetExchangeRateRequest;
 import com.amx.jax.model.request.remittance.CustomerBankRequest;
 import com.amx.jax.model.response.fx.UserStockDto;
 import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
@@ -32,6 +36,7 @@ import com.amx.jax.model.response.remittance.CustomerShoppingCartDto;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
 import com.amx.jax.model.response.remittance.PaymentModeOfPaymentDto;
 import com.amx.jax.model.response.remittance.RoutingResponseDto;
+import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeRateResponse;
 
 @RestController
 public class BranchRemittanceController implements IRemittanceService {
@@ -39,9 +44,10 @@ public class BranchRemittanceController implements IRemittanceService {
 
 	@Autowired
 	MetaData metaData;
-
 	@Autowired
 	BranchRemittanceService branchRemitService;
+	@Autowired
+	BranchRemittanceExchangeRateService branchRemittanceExchangeRateService;
 
 	@RequestMapping(value = Path.BR_REMITTANCE_SAVE_APPL, method = RequestMethod.POST)
 	@Override
@@ -191,4 +197,11 @@ public class BranchRemittanceController implements IRemittanceService {
 		return branchRemitService.getPurposeOfTrnx(beneRelaId);
 	}
 
+	@RequestMapping(value = Path.BR_REMITTANCE_GET_EXCHANGE_RATE, method = RequestMethod.POST)
+	@Override
+	public AmxApiResponse<BranchRemittanceGetExchangeRateResponse, Object> getExchaneRate(
+			@Valid @RequestBody BranchRemittanceGetExchangeRateRequest request) {
+		logger.debug("getExchaneRate : " + request);
+		return branchRemittanceExchangeRateService.getExchaneRate(request);
+	}
 }

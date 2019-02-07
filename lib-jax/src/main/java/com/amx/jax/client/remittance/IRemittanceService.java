@@ -10,6 +10,7 @@ import com.amx.jax.error.ApiJaxStatusBuilder.ApiJaxStatus;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
+import com.amx.jax.model.request.remittance.BranchRemittanceGetExchangeRateRequest;
 import com.amx.jax.model.request.remittance.CustomerBankRequest;
 import com.amx.jax.model.response.fx.UserStockDto;
 import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
@@ -19,6 +20,7 @@ import com.amx.jax.model.response.remittance.CustomerShoppingCartDto;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
 import com.amx.jax.model.response.remittance.PaymentModeOfPaymentDto;
 import com.amx.jax.model.response.remittance.RoutingResponseDto;
+import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeRateResponse;
 
 public interface IRemittanceService extends  IJaxService {
 
@@ -40,6 +42,7 @@ public interface IRemittanceService extends  IJaxService {
 		public static final String BR_REMITTANCE_ROUTING = PREFIX + "/get-routing-details/";
 		public static final String BR_REMITTANCE_ROUTING_BY_SERVICE = PREFIX + "/get-routing-details-by-serviceid/";
 		public static final String BR_REMITTANCE_PURPOSE_OF_TRNX = PREFIX + "/get-purpose-of-trnx/";
+		public static final String BR_REMITTANCE_GET_EXCHANGE_RATE = PREFIX + "/get-exchange-rate/";
 		
 	}
 
@@ -100,6 +103,10 @@ public interface IRemittanceService extends  IJaxService {
 	
 	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND})
 	AmxApiResponse<AdditionalExchAmiecDto,Object> getPurposeOfTrnx(BigDecimal beneRelaId);
+	
+	@ApiJaxStatus({ JaxError.INVALID_AMOUNT})
+	AmxApiResponse<BranchRemittanceGetExchangeRateResponse, Object> getExchaneRate(
+			BranchRemittanceGetExchangeRateRequest request);
 
 }
 
