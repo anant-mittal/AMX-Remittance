@@ -104,7 +104,7 @@ public interface IRemittanceService extends  IJaxService {
 	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND})
 	AmxApiResponse<AdditionalExchAmiecDto,Object> getPurposeOfTrnx(BigDecimal beneRelaId);
 	
-	@ApiJaxStatus({ JaxError.INVALID_AMOUNT})
+	@ApiJaxStatus({ JaxError.INVALID_AMOUNT , JaxError.EXCHANGE_RATE_NOT_FOUND, JaxError.DATA_NOT_FOUND})
 	AmxApiResponse<BranchRemittanceGetExchangeRateResponse, Object> getExchaneRate(
 			BranchRemittanceGetExchangeRateRequest request);
 

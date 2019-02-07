@@ -40,7 +40,8 @@ public class JaxDynamicPriceService {
 	ExchangeRateService exchangeRateService;
 
 	public ExchangeRateResponseModel getExchangeRates(BigDecimal fromCurrency, BigDecimal toCurrency,
-			BigDecimal lcAmount, BigDecimal foreignAmount, BigDecimal beneBankCountryId, BigDecimal routingBankId) {
+			BigDecimal lcAmount, BigDecimal foreignAmount, BigDecimal beneBankCountryId, BigDecimal routingBankId,
+			BigDecimal serviceIndicatorId) {
 		PricingRequestDTO pricingRequestDTO = new PricingRequestDTO();
 		pricingRequestDTO.setCustomerId(metaData.getCustomerId());
 		pricingRequestDTO.setChannel(metaData.getChannel().getClientChannel());
@@ -68,6 +69,9 @@ public class JaxDynamicPriceService {
 		List<BankMasterDTO> bankWiseRates = new ArrayList<>();
 		List<ExchangeRateDetails> sellRateDetails = apiResponse.getResult().getSellRateDetails();
 		for (ExchangeRateDetails sellRateDetail : sellRateDetails) {
+			if (serviceIndicatorId != null && !serviceIndicatorId.equals(sellRateDetail.getServiceIndicatorId())) {
+				continue;
+			}
 			BankMasterDTO dto = bankMetaService.convert(bankMetaService.getBankMasterbyId(sellRateDetail.getBankId()));
 			if (foreignAmount != null) {
 				dto.setExRateBreakup(exchangeRateService.createBreakUpFromForeignCurrency(
@@ -85,4 +89,9 @@ public class JaxDynamicPriceService {
 		return exchangeRateResponseModel;
 	}
 
+	public ExchangeRateResponseModel getExchangeRates(BigDecimal fromCurrency, BigDecimal toCurrency,
+			BigDecimal lcAmount, BigDecimal foreignAmount, BigDecimal beneBankCountryId, BigDecimal routingBankId) {
+		return getExchangeRates(fromCurrency, toCurrency, lcAmount, foreignAmount, beneBankCountryId, routingBankId,
+				null);
+	}
 }

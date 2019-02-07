@@ -29,11 +29,10 @@ public class BranchRemittanceExchangeRateService {
 	@Autowired
 	BranchRemittanceExchangeRateManager branchRemittanceExchangeRateManager;
 
-	public AmxApiResponse<BranchRemittanceGetExchangeRateResponse, Object> getExchaneRate(
-			BranchRemittanceGetExchangeRateRequest request) {
+	public AmxApiResponse<BranchRemittanceGetExchangeRateResponse, Object> getExchaneRate(BranchRemittanceGetExchangeRateRequest request) {
 		branchRemittanceExchangeRateManager.validateGetExchangRateRequest(request);
-		BranchRemittanceGetExchangeRateResponse respnose = branchRemittanceExchangeRateManager
-				.getExchangeRateResponse(request);
-		return null;
+		BranchRemittanceGetExchangeRateResponse result = branchRemittanceExchangeRateManager.getExchangeRateResponse(request);
+
+		return AmxApiResponse.build(result);
 	}
 }
