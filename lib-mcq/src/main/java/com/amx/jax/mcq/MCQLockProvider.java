@@ -7,64 +7,56 @@ import java.util.concurrent.TimeUnit;
 
 import org.springframework.data.redis.core.types.Expiration;
 
-import net.javacrumbs.shedlock.core.LockConfiguration;
-import net.javacrumbs.shedlock.core.LockProvider;
-import net.javacrumbs.shedlock.core.SimpleLock;
 
-public class MCQLockProvider implements LockProvider {
-
-	private MCQLock mcq;
-
-	public MCQLockProvider(MCQLock mcq) {
-		this.mcq = mcq;
-	}
-
-	@Override
-	public Optional<SimpleLock> lock(LockConfiguration lockConfiguration) {
-
-		long maxExpiration = Math.max(0,
-				getExpiration(lockConfiguration.getLockAtMostUntil()).getExpirationTimeInMilliseconds());
-		long minExpiration = Math.max(1000,
-				getExpiration(lockConfiguration.getLockAtLeastUntil()).getExpirationTimeInMilliseconds());
-
-		if (maxExpiration == 0L) {
-			maxExpiration = minExpiration + 120000;
-		}
-
-		Candidate candidate = new Candidate()
-				.fixedDelay(Math.min(minExpiration, maxExpiration))
-				.maxAge(Math.max(minExpiration, maxExpiration))
-				.queue(lockConfiguration.getName());
-
-		if (this.mcq.lead(candidate)) {
-			return Optional.of(new MCQLock(mcq, candidate));
-		} else {
-			return Optional.empty();
-		}
-	}
-
-	private static Expiration getExpiration(Instant until) {
-		return Expiration.from(getMsUntil(until), TimeUnit.MILLISECONDS);
-	}
-
-	private static long getMsUntil(Instant until) {
-		return Duration.between(Instant.now(), until).toMillis();
-	}
-
-	private static final class MCQLock implements SimpleLock {
-
-		private Candidate candidate;
-		private MCQLock mcq;
-
-		public MCQLock(MCQLock mcq, Candidate candidate) {
-			this.mcq = mcq;
-			this.candidate = candidate;
-		}
-
-		@Override
-		public void unlock() {
-			this.mcq.resign(candidate);
-		}
-
-	}
-}
+//public class MCQLockProvider {
+//
+//
+//	@Override
+//	public Optional<SimpleLock> lock(LockConfiguration lockConfiguration) {
+//
+//		long maxExpiration = Math.max(0,
+//				getExpiration(lockConfiguration.getLockAtMostUntil()).getExpirationTimeInMilliseconds());
+//		long minExpiration = Math.max(1000,
+//				getExpiration(lockConfiguration.getLockAtLeastUntil()).getExpirationTimeInMilliseconds());
+//
+//		if (maxExpiration == 0L) {
+//			maxExpiration = minExpiration + 120000;
+//		}
+//
+//		Candidate candidate = new Candidate()
+//				.fixedDelay(Math.min(minExpiration, maxExpiration))
+//				.maxAge(Math.max(minExpiration, maxExpiration))
+//				.queue(lockConfiguration.getName());
+//
+//		if (this.mcq.lead(candidate)) {
+//			return Optional.of(new MCQLock(mcq, candidate));
+//		} else {
+//			return Optional.empty();
+//		}
+//	}
+//
+//	private static Expiration getExpiration(Instant until) {
+//		return Expiration.from(getMsUntil(until), TimeUnit.MILLISECONDS);
+//	}
+//
+//	private static long getMsUntil(Instant until) {
+//		return Duration.between(Instant.now(), until).toMillis();
+//	}
+//
+//	private static final class MCQLock implements SimpleLock {
+//
+//		private Candidate candidate;
+//		private MCQLock mcq;
+//
+//		public MCQLock(MCQLock mcq, Candidate candidate) {
+//			this.mcq = mcq;
+//			this.candidate = candidate;
+//		}
+//
+//		@Override
+//		public void unlock() {
+//			this.mcq.resign(candidate);
+//		}
+//
+//	}
+//}
