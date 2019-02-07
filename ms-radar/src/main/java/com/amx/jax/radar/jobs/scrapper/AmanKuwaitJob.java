@@ -12,6 +12,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import com.amx.jax.logger.LoggerService;
+import com.amx.jax.mcq.Candidate;
+import com.amx.jax.mcq.MCQLock;
 import com.amx.jax.radar.ARadarTask;
 import com.amx.jax.radar.TestSizeApp;
 import com.amx.jax.rates.AmxCurConstants;
@@ -22,8 +24,6 @@ import com.amx.jax.rates.AmxCurRate;
 import com.amx.jax.rates.AmxCurRateRepository;
 import com.amx.jax.rest.RestService;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-
-import net.javacrumbs.shedlock.core.SchedulerLock;
 
 @Configuration
 @EnableScheduling
@@ -40,14 +40,23 @@ public class AmanKuwaitJob extends ARadarTask {
 	@Autowired
 	private AmxCurRateRepository curRateRepository;
 
-	XmlMapper xmlMapper = new XmlMapper();
+	private XmlMapper xmlMapper = new XmlMapper();
 
-	@SchedulerLock(name = "AmanKuwaitJob",
-			lockAtLeastFor = AmxCurConstants.INTERVAL_MIN_30,
-			lockAtMostFor = AmxCurConstants.INTERVAL_HRS)
+	private Candidate LOCK = new Candidate().fixedDelay(AmxCurConstants.INTERVAL_MIN_30)
+			.maxAge(AmxCurConstants.INTERVAL_HRS).queue(AmanKuwaitJob.class);
+
+	@Autowired
+	private MCQLock mcq;
+
 	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_MIN_30)
-	public void doTask() {
+	public void lockedTask() {
+		if (mcq.lead(LOCK)) {
+			doTask();
+			mcq.resign(LOCK);
+		}
+	}
 
+	public void doTask() {
 		LOGGER.info("Scrapper Task");
 
 		String response = restService.ajax("http://www.amankuwait.com/AmanWebsite/RateSheet/RateSheet.aspx")

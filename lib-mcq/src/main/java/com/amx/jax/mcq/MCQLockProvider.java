@@ -13,9 +13,9 @@ import net.javacrumbs.shedlock.core.SimpleLock;
 
 public class MCQLockProvider implements LockProvider {
 
-	private MCQ mcq;
+	private MCQLock mcq;
 
-	public MCQLockProvider(MCQ mcq) {
+	public MCQLockProvider(MCQLock mcq) {
 		this.mcq = mcq;
 	}
 
@@ -54,9 +54,9 @@ public class MCQLockProvider implements LockProvider {
 	private static final class MCQLock implements SimpleLock {
 
 		private Candidate candidate;
-		private MCQ mcq;
+		private MCQLock mcq;
 
-		public MCQLock(MCQ mcq, Candidate candidate) {
+		public MCQLock(MCQLock mcq, Candidate candidate) {
 			this.mcq = mcq;
 			this.candidate = candidate;
 		}
