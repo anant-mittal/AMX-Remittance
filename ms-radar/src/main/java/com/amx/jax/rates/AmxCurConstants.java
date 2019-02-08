@@ -1,5 +1,8 @@
 package com.amx.jax.rates;
 
+import com.amx.jax.mcq.Candidate;
+import com.amx.jax.radar.jobs.sample.SampleTask2;
+
 public class AmxCurConstants {
 
 	public static enum RCur {
@@ -35,4 +38,5 @@ public class AmxCurConstants {
 	public static final int INTERVAL_MIN_10 = 10 * 60 * 1000;
 	public static final int INTERVAL_TEST = 2 * 1000;
 	public static final int INTERVAL_TASK = 30 * 1000;
+
 }

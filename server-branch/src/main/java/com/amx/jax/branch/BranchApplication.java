@@ -15,7 +15,7 @@ import com.amx.jax.client.configs.JaxMetaInfo;
 
 @SpringBootApplication
 @ComponentScan("com.amx.jax")
-//@EnableAsync(proxyTargetClass = true)
+@EnableAsync(proxyTargetClass = true)
 public class BranchApplication extends SpringBootServletInitializer {
 
 	public static void main(String[] args) {

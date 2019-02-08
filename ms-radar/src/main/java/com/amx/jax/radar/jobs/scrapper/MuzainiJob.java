@@ -17,6 +17,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import com.amx.jax.logger.LoggerService;
+import com.amx.jax.mcq.Candidate;
+import com.amx.jax.mcq.MCQLock;
 import com.amx.jax.radar.TestSizeApp;
 import com.amx.jax.rates.AmxCurConstants;
 import com.amx.jax.rates.AmxCurConstants.RCur;
@@ -27,8 +29,6 @@ import com.amx.jax.rates.AmxCurRateRepository;
 import com.amx.jax.rest.RestService;
 import com.amx.utils.ArgUtil;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-
-import net.javacrumbs.shedlock.core.SchedulerLock;
 
 @Configuration
 @EnableScheduling
@@ -47,14 +47,22 @@ public class MuzainiJob {
 
 	public static final Logger LOGGER = LoggerService.getLogger(MuzainiJob.class);
 
-	@SchedulerLock(name = "MuzainiJob",
-			lockAtLeastFor = AmxCurConstants.INTERVAL_MIN_30,
-			lockAtMostFor = AmxCurConstants.INTERVAL_HRS)
+	private Candidate LOCK = new Candidate().fixedDelay(AmxCurConstants.INTERVAL_MIN_30)
+			.maxAge(AmxCurConstants.INTERVAL_HRS).queue(MuzainiJob.class);
+
+	@Autowired
+	private MCQLock mcq;
+
 	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_MIN_30)
-	public void fetchAmanKuwaitModels() {
+	public void lockedTask() {
+		if (mcq.lead(LOCK)) {
+			doTask();
+			mcq.resign(LOCK);
+		}
+	}
 
+	public void doTask() {
 		LOGGER.info("Scrapper Task");
-
 		try {
 			Document doc = Jsoup.connect("http://www.muzaini.com/ExchangeRates.aspx")
 					.data("ddlCurrency", "KWD")

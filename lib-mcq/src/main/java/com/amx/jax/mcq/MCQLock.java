@@ -15,9 +15,9 @@ import org.springframework.stereotype.Service;
 import com.amx.jax.AppConfig;
 
 @Service
-public class MCQ {
+public class MCQLock {
 
-	private Logger LOGGER = LoggerFactory.getLogger(MCQ.class);
+	private Logger LOGGER = LoggerFactory.getLogger(MCQLock.class);
 	private Map<String, String> leaders = Collections.synchronizedMap(new HashMap<String, String>());
 	private Object lock = new Object();
 

@@ -18,7 +18,6 @@ public class ExecutorConfig extends AsyncConfigurerSupport {
 	public static final String EXECUTER_GOLD = "gldExec";
 	public static final String EXECUTER_PLATINUM = "pltnmExe";
 	public static final String EXECUTER_DIAMOND = "dmndExec";
-	public static final String EXECUTER_TASK = "task";
 
 	@Override
 	@Bean
@@ -79,11 +78,4 @@ public class ExecutorConfig extends AsyncConfigurerSupport {
 		return executor;
 	}
 
-	//@Bean(name = EXECUTER_TASK)
-	public ThreadPoolTaskScheduler threadPoolTaskScheduler() {
-		ThreadPoolTaskScheduler threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
-		threadPoolTaskScheduler.setPoolSize(10);
-		threadPoolTaskScheduler.setThreadNamePrefix(EXECUTER_TASK + "-");
-		return threadPoolTaskScheduler;
-	}
 }

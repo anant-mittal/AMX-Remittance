@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -19,13 +20,13 @@ import com.amx.jax.grid.GridService.GridViewBuilder;
 import com.amx.jax.grid.GridView;
 import com.amx.jax.grid.views.CustomerDetailViewRecord;
 import com.amx.jax.logger.LoggerService;
+import com.amx.jax.mcq.Candidate;
+import com.amx.jax.mcq.MCQLock;
 import com.amx.jax.radar.AESRepository.BulkRequestBuilder;
 import com.amx.jax.radar.TestSizeApp;
 import com.amx.jax.rates.AmxCurConstants;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
-
-import net.javacrumbs.shedlock.core.SchedulerLock;
 
 @Configuration
 @EnableScheduling
@@ -39,12 +40,18 @@ public class CustomerViewTask extends AbstractDBSyncTask {
 	public static final int PAGE_SIZE = 1000;
 	public static final Long TIME_PAGE_DELTA = 30 * AmxCurConstants.INTERVAL_DAYS;
 
-	@SchedulerLock(name = "CustomerViewTask",
-			lockAtLeastFor = AmxCurConstants.INTERVAL_SEC * 10,
-			lockAtMostFor = AmxCurConstants.INTERVAL_MIN)
+	private static final Candidate LOCK = new Candidate().fixedDelay(AmxCurConstants.INTERVAL_SEC * 30)
+			.maxAge(AmxCurConstants.INTERVAL_MIN).queue(CustomerViewTask.class);
+
+	@Autowired
+	private MCQLock mcq;
+
 	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_SEC * 30)
 	public void doTask() {
-		this.doBothTask();
+		if (mcq.lead(LOCK)) {
+			this.doBothTask();
+			mcq.resign(LOCK);
+		}
 	}
 
 	public void doTask(int lastPage, String lastId) {
