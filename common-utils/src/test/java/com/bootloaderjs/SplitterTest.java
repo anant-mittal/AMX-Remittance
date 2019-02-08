@@ -20,24 +20,8 @@ public class SplitterTest { // Noncompliant
 	 */
 	public static void main(String[] args) {
 
-		String testString = "EMAIL:dssds;MOBILE:sdsdsdsdsds;CUST_NAME:dsdsdsdsds;TRNXAMT:wewewewewe;"
-				+ "LOYALTY:wedrererr;TRNREF:wewewewewe;TRNDATE:wewewewew;LANG_ID:wxfgtrtrtrt;TNT:rtrtrtr";
-
-		int num = 1000000;
-		long timeout = System.currentTimeMillis();
-		for (int i = 0; i < num; i++) {
-			Map<String, String> event_data_map = StringUtils.getMapFromString(
-					SPLITTER_CHAR,
-					KEY_VALUE_SEPARATOR_CHAR, testString);
-		}
-		System.out.println("Guava" + TimeUtils.timeSince(timeout));
-		timeout = System.currentTimeMillis();
-//		for (int i = 0; i < num; i++) {
-//			Map<String, String> event_data_map = StringUtils.getMapFromStringCommon(
-//					SPLITTER_CHAR,
-//					KEY_VALUE_SEPARATOR_CHAR, testString);
-//		}
-		System.out.println("Norm" + TimeUtils.timeSince(timeout));
+		String testString = "com.amx.jax.mcq.SampleTask2$$EnhancerBySpringCGLIB$$82858f05";
+		System.out.println(testString.split("\\$\\$")[0]);
 	}
 
 }

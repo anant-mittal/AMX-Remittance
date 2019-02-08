@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import com.amx.jax.AppConfig;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.mcq.Candidate;
-import com.amx.jax.mcq.MCQLock;
+import com.amx.jax.mcq.MCQLocker;
 import com.amx.jax.radar.TestSizeApp;
 import com.amx.jax.rates.AmxCurConstants;
 
@@ -28,7 +28,7 @@ public class SampleTask2 {
 			.maxAge(AmxCurConstants.INTERVAL_MIN).queue(SampleTask2.class);
 
 	@Autowired
-	private MCQLock mcq;
+	private MCQLocker mcq;
 
 	@Autowired
 	AppConfig appConfig;

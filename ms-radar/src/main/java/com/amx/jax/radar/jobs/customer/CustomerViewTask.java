@@ -21,7 +21,7 @@ import com.amx.jax.grid.GridView;
 import com.amx.jax.grid.views.CustomerDetailViewRecord;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.mcq.Candidate;
-import com.amx.jax.mcq.MCQLock;
+import com.amx.jax.mcq.MCQLocker;
 import com.amx.jax.radar.AESRepository.BulkRequestBuilder;
 import com.amx.jax.radar.TestSizeApp;
 import com.amx.jax.rates.AmxCurConstants;
@@ -44,7 +44,7 @@ public class CustomerViewTask extends AbstractDBSyncTask {
 			.maxAge(AmxCurConstants.INTERVAL_MIN).queue(CustomerViewTask.class);
 
 	@Autowired
-	private MCQLock mcq;
+	private MCQLocker mcq;
 
 	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_SEC * 30)
 	public void doTask() {

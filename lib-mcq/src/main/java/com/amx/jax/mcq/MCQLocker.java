@@ -14,10 +14,12 @@ import org.springframework.stereotype.Service;
 
 import com.amx.jax.AppConfig;
 
-@Service
-public class MCQLock {
+import net.javacrumbs.shedlock.core.LockingTaskExecutor.Task;
 
-	private Logger LOGGER = LoggerFactory.getLogger(MCQLock.class);
+@Service
+public class MCQLocker {
+
+	private Logger LOGGER = LoggerFactory.getLogger(MCQLocker.class);
 	private Map<String, String> leaders = Collections.synchronizedMap(new HashMap<String, String>());
 	private Object lock = new Object();
 
@@ -37,11 +39,9 @@ public class MCQLock {
 	 * @return
 	 */
 	private String challenge(String queue, long maxAge, String id) {
-
 		if (redisson == null) {
 			return null;
 		}
-
 		RMapCache<String, String> map = redisson
 				.getMapCache("MCQFLAGS");
 
@@ -76,6 +76,31 @@ public class MCQLock {
 			leaders.remove(candidate.queue());
 		}
 		return true;
+	}
+
+	public void executeWithLock(Runnable task, Candidate lock) {
+		try {
+			executeWithLock((Task) task::run, lock);
+		} catch (RuntimeException | Error e) {
+			throw e;
+		} catch (Throwable throwable) {
+			// Should not happen
+			throw new IllegalStateException(throwable);
+		}
+	}
+
+	public void executeWithLock(Task task, Candidate lock) throws Throwable {
+		if (lead(lock)) {
+			try {
+				LOGGER.info("Locked {} FD:{}", lock.queue(),lock.fixedDelay());
+				task.call();
+			} finally {
+				resign(lock);
+				LOGGER.debug("Unlocked {}.", lock.queue());
+			}
+		} else {
+			LOGGER.debug("Not executing {}. It's locked.", lock.queue());
+		}
 	}
 
 }

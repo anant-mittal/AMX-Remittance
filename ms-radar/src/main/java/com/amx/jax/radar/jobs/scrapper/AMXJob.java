@@ -19,7 +19,7 @@ import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.dict.Language;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.mcq.Candidate;
-import com.amx.jax.mcq.MCQLock;
+import com.amx.jax.mcq.MCQLocker;
 import com.amx.jax.radar.ARadarTask;
 import com.amx.jax.radar.TestSizeApp;
 import com.amx.jax.rates.AmxCurConstants;
@@ -53,7 +53,7 @@ public class AMXJob extends ARadarTask {
 			.maxAge(AmxCurConstants.INTERVAL_HRS).queue(AMXJob.class);
 
 	@Autowired
-	private MCQLock mcq;
+	private MCQLocker mcq;
 
 	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_MIN_30)
 	public void lockedTask() {
