@@ -500,10 +500,10 @@ public class UserService extends AbstractUserService {
 			logger.info("Generated otp for civilid email- " + userId + " is " + randmOtp);
 		}
 
-		JaxAuthMeta jaxAuthMeta = jaxAuthCache.getOrDefault(metaData.getCustomerId().toString(), new JaxAuthMeta());
+		/*JaxAuthMeta jaxAuthMeta = jaxAuthCache.getOrDefault(metaData.getCustomerId().toString(), new JaxAuthMeta());
 		jaxAuthMeta.seteOtp(randeOtp);
 		jaxAuthMeta.setmOtp(randmOtp);
-		jaxAuthCache.fastPut(metaData.getCustomerId().toString(), jaxAuthMeta);
+		jaxAuthCache.fastPut(metaData.getCustomerId().toString(), jaxAuthMeta);*/
 
 		logger.info("Generated otp for civilid mobile- " + userId + " is " + randmOtp);
 	}
