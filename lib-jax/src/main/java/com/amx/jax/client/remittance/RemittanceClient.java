@@ -299,11 +299,17 @@ public class RemittanceClient  implements IRemittanceService{
 	@Override
 	public AmxApiResponse<BranchRemittanceGetExchangeRateResponse, Object> getExchaneRate(
 			BranchRemittanceGetExchangeRateRequest request) {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			LOGGER.debug("in getExchaneRate :" + request);
+			return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_GET_EXCHANGE_RATE)
+					.meta(new JaxMetaInfo()).post(request)
+					.as(new ParameterizedTypeReference<AmxApiResponse<BranchRemittanceGetExchangeRateResponse, Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in getExchaneRate : ", e);
+			return JaxSystemError.evaluate(e);
+		}
 	}
-
-
 
 }
 
