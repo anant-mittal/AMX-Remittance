@@ -42,6 +42,7 @@ import com.amx.jax.manager.RemittanceApplicationManager;
 import com.amx.jax.manager.RemittanceTransactionManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.AbstractModel;
+import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.AmlCheckResponseDto;
@@ -336,7 +337,7 @@ public class BranchRemittanceManager extends AbstractModel {
 			inputValues.put("P_ROUTING_BANK_BRANCH_ID", branchRoutingDto.getRoutingBankBranchDto().get(0).getBankBranchId());//map.get("P_ROUTING_BANK_BRANCH_ID"));
 			inputValues.put("P_BENE_ID", beneficaryDetails.getBeneficaryMasterSeqId());
 			inputValues.put("P_BENE_COUNTRY_ID", beneficaryDetails.getBenificaryCountry());
-			inputValues.put("P_BENE_BANK_ID", beneficaryDetails.getBenificaryCountry());
+			inputValues.put("P_BENE_BANK_ID", beneficaryDetails.getBankId());
 			inputValues.put("P_BENE_BANK_BRANCH_ID", beneficaryDetails.getBranchId());
 			inputValues.put("P_BENE_ACCOUNT_NO", beneficaryDetails.getBankAccountNumber());
 			inputValues.put("P_APPROVAL_YEAR", BigDecimal.ZERO);
@@ -606,15 +607,13 @@ public class BranchRemittanceManager extends AbstractModel {
 	 }
 	 
 	
-	 
+	 @SuppressWarnings("unchecked")
 	 public void validateAdditionalErrorMessages(Map<String ,Object> hashMap) {
 		 	BranchRemittanceApplRequestModel applRequestModel = (BranchRemittanceApplRequestModel)hashMap.get("APPL_REQ_MODEL");
-			//Map<String, Object> branchRoutingDetails =(HashMap)hashMap.get("ROUTING_DETAILS_MAP");
+			
 			Map<String, Object> branchExchangeRate =(HashMap)hashMap.get("EXCH_RATE_MAP");
 			BenificiaryListView beneDetails  =(BenificiaryListView) hashMap.get("BENEFICIARY_DETAILS");
-			
 			RoutingResponseDto branchRoutingDto = (RoutingResponseDto)hashMap.get("ROUTING_DETAILS_DTO");
-			
 			RemittanceTransactionRequestModel requestModel = new RemittanceTransactionRequestModel();
 			requestModel.setAdditionalBankRuleFiledId(applRequestModel.getAdditionalBankRuleFiledId());
 			
@@ -742,11 +741,12 @@ public class BranchRemittanceManager extends AbstractModel {
 		
 	  	for(AdditionalBankRuleAmiec amiec : amiecRuleMap) {
 	  		AdditionalExchAmiecDto amiecDto = new AdditionalExchAmiecDto();
+	  		amiecDto.setResourceId(amiec.getAdditionalBankRuleDetailId());
+	  		amiecDto.setResourceCode(amiec.getAmiecCode());
+	  		amiecDto.setResourceName(amiec.getAmiecDescription());
 	  		amiecDto.setFlexField(amiec.getFlexField());
-	  		amiecDto.setAmiecCode(amiec.getAmiecCode());
-	  		amiecDto.setAmiecDescription(amiec.getAmiecDescription());
 	  		amiecDto.setCountryId(amiec.getCountryId().getCountryId());
-	  		amiecDto.setAdditionalBankRuleDetailId(amiec.getAdditionalBankRuleDetailId());
+	  		amiecDto.setAdditionalBankFieldId(amiec.getAdditionalBankFieldId().getAdditionalBankRuleId());
 	  		dto.add(amiecDto);
 	  	}
 	  

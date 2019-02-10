@@ -167,8 +167,7 @@ public class RemittanceTransactionService extends AbstractService {
 		if (model.getDomXRate() == null) {
 			model.setDomXRate(respModel.getExRateBreakup().getRate());
 		}
-		ExchangeRateBreakup exRateBreakup = newExchangeRateService.calcEquivalentAmount(model,
-				fcDecimalNumber.intValue());
+		ExchangeRateBreakup exRateBreakup = newExchangeRateService.calcEquivalentAmount(model,fcDecimalNumber.intValue());
 		exRateBreakup.setFcDecimalNumber(respModel.getExRateBreakup().getFcDecimalNumber());
 		exRateBreakup.setLcDecimalNumber(respModel.getExRateBreakup().getLcDecimalNumber());
 		respModel.setExRateBreakup(exRateBreakup);

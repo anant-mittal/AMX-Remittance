@@ -6,21 +6,24 @@ import com.amx.jax.model.ResourceDTO;
 
 public class AdditionalExchAmiecDto extends ResourceDTO {
 
-	private BigDecimal additionalBankRuleDetailId;
+	
+
+	
+	//private BigDecimal additionalBankRuleDetailId;
 	private BigDecimal countryId;
 	private String flexField;
-	private String amiecCode;
-	private String amiecDescription;
-	private String isActive;
+	//private String amiecCode;
+	//private String amiecDescription;
+	//private String isActive;
 	private BigDecimal additionalBankFieldId;
 
-	public BigDecimal getAdditionalBankRuleDetailId() {
+	/*public BigDecimal getAdditionalBankRuleDetailId() {
 		return additionalBankRuleDetailId;
 	}
 
 	public void setAdditionalBankRuleDetailId(BigDecimal additionalBankRuleDetailId) {
 		this.additionalBankRuleDetailId = additionalBankRuleDetailId;
-	}
+	}*/
 
 	public BigDecimal getCountryId() {
 		return countryId;
@@ -38,7 +41,7 @@ public class AdditionalExchAmiecDto extends ResourceDTO {
 		this.flexField = flexField;
 	}
 
-	public String getAmiecCode() {
+	/*public String getAmiecCode() {
 		return amiecCode;
 	}
 
@@ -60,7 +63,7 @@ public class AdditionalExchAmiecDto extends ResourceDTO {
 
 	public void setIsActive(String isActive) {
 		this.isActive = isActive;
-	}
+	}*/
 
 	public BigDecimal getAdditionalBankFieldId() {
 		return additionalBankFieldId;
@@ -69,5 +72,7 @@ public class AdditionalExchAmiecDto extends ResourceDTO {
 	public void setAdditionalBankFieldId(BigDecimal additionalBankFieldId) {
 		this.additionalBankFieldId = additionalBankFieldId;
 	}
+
+	
 
 }

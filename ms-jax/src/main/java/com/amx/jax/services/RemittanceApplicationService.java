@@ -241,7 +241,7 @@ public void updatePayTokenNull(List<RemittanceApplication> lstPayIdDetails,Payme
 	
 	public RemittanceApplication getRemittanceApplicationByTransactionId(BigDecimal remittanceTransactionId) {
 		RemittanceTransaction remitTrxn = remittanceTransactionService.getRemittanceTransactionById(remittanceTransactionId);
-		return remittanceApplicationDao.getApplication(remitTrxn.getApplicationDocumentNo(), remitTrxn.getApplicationdocumentFinancialyear());
+		return remittanceApplicationDao.getApplication(remitTrxn.getApplicationDocumentNo(), remitTrxn.getApplicationFinanceYear());
 	}
 	
 	public RemittanceApplication getRemittanceApplicationById(BigDecimal remittanceApplicationId) {

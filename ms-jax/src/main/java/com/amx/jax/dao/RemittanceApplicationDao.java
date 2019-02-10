@@ -84,8 +84,7 @@ public class RemittanceApplicationDao {
 			BigDecimal applicationfinYear) {
 		RemittanceTransaction remittanceTransactionView = null;
 		if (applicationDocumentNumber != null && applicationfinYear != null) {
-			remittanceTransactionView = remittanceTransactionRepository
-					.findByapplicationDocumentNoAndApplicationdocumentFinancialyear(applicationDocumentNumber,
+			remittanceTransactionView = remittanceTransactionRepository.findByapplicationDocumentNoAndApplicationFinanceYear(applicationDocumentNumber,
 							applicationfinYear);
 		}
 		return remittanceTransactionView;
@@ -95,8 +94,7 @@ public class RemittanceApplicationDao {
 			BigDecimal remittanceFinYear) {
 		RemittanceTransaction remittanceTransactionView = null;
 		if (remittanceDocumentNumber != null && remittanceFinYear != null) {
-			remittanceTransactionView = remittanceTransactionRepository
-					.findByDocumentNoAndDocumentFinancialyear(remittanceDocumentNumber, remittanceFinYear);
+			remittanceTransactionView = remittanceTransactionRepository.findByDocumentNoAndDocumentFinanceYear(remittanceDocumentNumber, remittanceFinYear);
 		}
 		return remittanceTransactionView;
 	}

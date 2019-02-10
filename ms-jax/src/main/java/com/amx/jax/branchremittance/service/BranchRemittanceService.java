@@ -16,11 +16,13 @@ import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.branchremittance.manager.BranchRemittanceApplManager;
 import com.amx.jax.branchremittance.manager.BranchRemittanceManager;
 import com.amx.jax.branchremittance.manager.BranchRemittancePaymentManager;
+import com.amx.jax.branchremittance.manager.BranchRemittanceSaveManager;
 import com.amx.jax.branchremittance.manager.BranchRoutingManager;
 import com.amx.jax.manager.FcSaleBranchOrderManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
+import com.amx.jax.model.request.remittance.BranchRemittanceRequestModel;
 import com.amx.jax.model.request.remittance.CustomerBankRequest;
 import com.amx.jax.model.response.fx.UserStockDto;
 import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
@@ -29,6 +31,7 @@ import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
 import com.amx.jax.model.response.remittance.CustomerShoppingCartDto;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
 import com.amx.jax.model.response.remittance.PaymentModeOfPaymentDto;
+import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.model.response.remittance.RoutingResponseDto;
 import com.amx.jax.services.AbstractService;
 import com.amx.jax.validation.FxOrderValidation;
@@ -60,6 +63,9 @@ public class BranchRemittanceService extends AbstractService{
 	
 	@Autowired
 	BranchRoutingManager branchRoutingManager;
+	
+	@Autowired
+	BranchRemittanceSaveManager branchRemittanceSaveManager;
 
 	
 	public AmxApiResponse<BranchRemittanceApplResponseDto, Object> saveBranchRemittanceApplication(BranchRemittanceApplRequestModel requestApplModel){
@@ -160,6 +166,11 @@ public class BranchRemittanceService extends AbstractService{
 	public AmxApiResponse<AdditionalExchAmiecDto, Object> getPurposeOfTrnx(BigDecimal beneRelaId){
 		List<AdditionalExchAmiecDto> dto =  branchRemitManager.getPurposeOfTrnx(beneRelaId);
 		return AmxApiResponse.buildList(dto);
-		
 	}
+	
+	public AmxApiResponse<RemittanceResponseDto, Object> saveRemittanceTransaction(BranchRemittanceRequestModel remittanceRequestModel){
+		 RemittanceResponseDto dto = branchRemittanceSaveManager.saveRemittance(remittanceRequestModel);
+		 return AmxApiResponse.build(dto);
+	 }
+	
 }

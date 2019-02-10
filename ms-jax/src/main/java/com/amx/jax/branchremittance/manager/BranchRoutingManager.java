@@ -537,6 +537,8 @@ public class BranchRoutingManager {
 		service.setServiceCode(view.get(0).getServiceCode());
 		service.setServiceMasterId(view.get(0).getServiceMasterId());
 		service.setServiceGroupCode(view.get(0).getServiceGroupCode());
+		service.setServiceDescription(view.get(0).getServiceDescription());
+		
 		listOfService.add(service);
 		routingResponseDto.setServiceList(listOfService);
 		getRemittanceModeList(inputValues);
@@ -544,11 +546,20 @@ public class BranchRoutingManager {
 	}
 
 	public RoutingResponseDto getRoutingSetup(BranchRemittanceApplRequestModel requestApplModel) {
-
-		if (JaxUtil.isNullZeroBigDecimalCheck(requestApplModel.getBeneId())
+		BigDecimal beneRelId = requestApplModel.getBeneId();
+		BigDecimal serviceMasterId = requestApplModel.getServiceMasterId();
+		BigDecimal routingCountryId = requestApplModel.getRoutingCountryId();
+		BigDecimal routingBankId = requestApplModel.getRoutingBankId();
+		BigDecimal remittanceModeId = requestApplModel.getRemittancModeId();
+		
+		if(JaxUtil.isNullZeroBigDecimalCheck(requestApplModel.getBeneId())
+				&& JaxUtil.isNullZeroBigDecimalCheck(requestApplModel.getServiceMasterId())
+				&& JaxUtil.isNullZeroBigDecimalCheck(requestApplModel.getRoutingCountryId())) {
+			getRemittanceDetailsByServiceIdAndBankId(beneRelId,serviceMasterId,routingCountryId,routingBankId,remittanceModeId);
+		}else if (JaxUtil.isNullZeroBigDecimalCheck(requestApplModel.getBeneId())
 				&& JaxUtil.isNullZeroBigDecimalCheck(requestApplModel.getServiceMasterId())) {
 			getRoutingDetailsByServiceId(requestApplModel.getBeneId(), requestApplModel.getServiceMasterId());
-		} else {
+		}else {
 			getRoutingSetupDeatils(requestApplModel.getBeneId());
 		}
 		

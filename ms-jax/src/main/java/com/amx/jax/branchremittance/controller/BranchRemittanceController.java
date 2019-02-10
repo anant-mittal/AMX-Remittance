@@ -27,6 +27,7 @@ import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.request.remittance.BranchRemittanceGetExchangeRateRequest;
+import com.amx.jax.model.request.remittance.BranchRemittanceRequestModel;
 import com.amx.jax.model.request.remittance.CustomerBankRequest;
 import com.amx.jax.model.response.fx.UserStockDto;
 import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
@@ -35,6 +36,7 @@ import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
 import com.amx.jax.model.response.remittance.CustomerShoppingCartDto;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
 import com.amx.jax.model.response.remittance.PaymentModeOfPaymentDto;
+import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.model.response.remittance.RoutingResponseDto;
 import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeRateResponse;
 
@@ -203,5 +205,12 @@ public class BranchRemittanceController implements IRemittanceService {
 			@Valid @RequestBody BranchRemittanceGetExchangeRateRequest request) {
 		logger.debug("getExchaneRate : " + request);
 		return branchRemittanceExchangeRateService.getExchaneRate(request);
+	}
+
+	@RequestMapping(value=Path.BR_REMITTANCE_SAVE_TRANSACTION,method=RequestMethod.POST)
+	@Override
+	public AmxApiResponse<RemittanceResponseDto, Object> saveRemittanceTransaction(@RequestBody @Valid BranchRemittanceRequestModel remittanceRequestModel) {
+		logger.debug("saveRemittanceTransaction : " + remittanceRequestModel);
+		return branchRemitService.saveRemittanceTransaction(remittanceRequestModel);
 	}
 }

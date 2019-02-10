@@ -17,6 +17,7 @@ import com.amx.jax.exception.JaxSystemError;
 import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.request.remittance.BranchRemittanceGetExchangeRateRequest;
+import com.amx.jax.model.request.remittance.BranchRemittanceRequestModel;
 import com.amx.jax.model.request.remittance.CustomerBankRequest;
 import com.amx.jax.model.response.fx.UserStockDto;
 import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
@@ -25,6 +26,7 @@ import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
 import com.amx.jax.model.response.remittance.CustomerShoppingCartDto;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
 import com.amx.jax.model.response.remittance.PaymentModeOfPaymentDto;
+import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.model.response.remittance.RoutingResponseDto;
 import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeRateResponse;
 import com.amx.jax.rest.RestService;
@@ -294,8 +296,6 @@ public class RemittanceClient  implements IRemittanceService{
 
 
 
-
-
 	@Override
 	public AmxApiResponse<BranchRemittanceGetExchangeRateResponse, Object> getExchaneRate(
 			BranchRemittanceGetExchangeRateRequest request) {
@@ -309,6 +309,25 @@ public class RemittanceClient  implements IRemittanceService{
 			LOGGER.error("exception in getExchaneRate : ", e);
 			return JaxSystemError.evaluate(e);
 		}
+	}
+
+
+
+
+
+	@Override
+	public AmxApiResponse<RemittanceResponseDto, Object> saveRemittanceTransaction(BranchRemittanceRequestModel remittanceRequestModel) {
+		try {
+			LOGGER.debug("in saveRemittanceTransaction :" + remittanceRequestModel);
+			return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_SAVE_TRANSACTION)
+					.meta(new JaxMetaInfo()).post(remittanceRequestModel)
+					.as(new ParameterizedTypeReference<AmxApiResponse<RemittanceResponseDto, Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in getExchaneRate : ", e);
+			return JaxSystemError.evaluate(e);
+		}
+		
 	}
 
 }

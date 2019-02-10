@@ -126,7 +126,15 @@ public class ConstantDocument {
 	public static final String DECL_REPORT_FOR_TOT_AMOUNT="15";
 	public static final String FC_DECL_REPORT_FOR_TOT_AMOUNT="39";
 	public static final String FC_SALE_REMIT = "FC Sale Remmit";
+	/** for Cash collection **/
 	public static final String C = "C";
+	/** for Cash Refund **/
+	public static final String F = "F"; 
+	public static final String FILE_CREATION = "F";
+	public static final String WEB_SERVICE = "F";
+	public static final String A="A";
+	
+	
 
 	
 	

@@ -222,8 +222,8 @@ public class RemittanceController {
 	public ApiResponse getReceiptJson(@RequestParam BigDecimal appDocNo, @RequestParam BigDecimal appDocFinYear) {
 		RemittanceTransaction remittanceTransaction = remitAppDao.getRemittanceTransaction(appDocNo, appDocFinYear);
 
-		BigDecimal cutomerReference = remittanceTransaction.getCustomerId();
-		BigDecimal remittancedocfyr = remittanceTransaction.getDocumentFinancialyear();
+		BigDecimal cutomerReference = remittanceTransaction.getCustomerId().getCustomerId();
+		BigDecimal remittancedocfyr = remittanceTransaction.getDocumentFinanceYear();
 		BigDecimal remittancedocNumber = remittanceTransaction.getDocumentNo();
 
 		TransactionHistroyDTO transactionHistoryDto = transactionHistroyService

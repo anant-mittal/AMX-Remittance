@@ -2,6 +2,7 @@ package com.amx.jax.dal;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -388,5 +390,49 @@ public class RoutingProcedureDao {
 					return outputList;
 
 				}
+		 
+		 
+		 /**
+		  * 
+		  * @param inputMap : checking bank service rule whether file upload or web service
+		  * @return
+		  */
+		 @Transactional
+			public Map<String, Object> checkBankServiceRule(RemittanceTransaction remitTrnx) {
+				LOGGER.info("in Please check bank service rule, input mpa:  " );
+				
+				String sql = " SELECT B.TRANSFER_MODE,B.TRANSFER_MODE_ID "
+						+ " FROM   EX_BANK_SERVICE_RULE A, EX_TRANSFER_MODE B "
+						+" WHERE  A.TRANSFER_MODE_ID = B.TRANSFER_MODE_ID "
+						+" AND    A.APPLICATION_COUNTRY_ID = ? "
+						+" AND    A.COUNTRY_ID             = ? "
+						+" AND    A.CURRENCY_ID            = ? "
+						+" AND    A.BANK_ID                = ? "
+						+" AND    A.REMITTANCE_MODE_ID     = ? "
+						+" AND    A.DELIVERY_MODE_ID       = ? ";
+				LOGGER.debug("sql :"+sql);
+				
+				List<BigDecimal> inputList = new ArrayList<>();
+				inputList.add(remitTrnx.getApplicationCountryId().getCountryId());
+				inputList.add(remitTrnx.getBankCountryId().getCountryId());
+				inputList.add(remitTrnx.getForeignCurrencyId().getCurrencyId());
+				inputList.add(remitTrnx.getBankId().getBankId());
+				inputList.add(remitTrnx.getRemittanceModeId().getRemittanceModeId());
+				inputList.add(remitTrnx.getDeliveryModeId().getDeliveryModeId());
+				
+				Map<String, Object> output = new HashMap<>();
+				try {
+					LOGGER.info("SQL  Please check bank service rule outrput : " +sql+"\n inputList.toArray() :"+inputList.toArray());
+					Map<String, Object> outputMap = jdbcTemplate.queryForMap(sql, inputList.toArray());
+					output.put("P_TRANSFER_MODE", outputMap.get("TRANSFER_MODE"));
+					output.put("P_TRANSFER_MODE_ID", outputMap.get("TRANSFER_MODE_ID"));
+				} catch (Exception e) {
+					LOGGER.info("error in Please check bank service rule : " +e);
+				}
+				return output;
+
+			}
+
+		 
 	
 }

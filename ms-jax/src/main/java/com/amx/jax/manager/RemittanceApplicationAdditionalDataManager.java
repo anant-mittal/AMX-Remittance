@@ -169,16 +169,19 @@ public class RemittanceApplicationAdditionalDataManager {
 		}
 		AdditionalBankRuleAmiec amiecDetails = getBankRuleAmiecDescription(remittanceTransactionRequestModel.getPurposeOfTrnxId());
 		
+		//EX_AMIEC_AND_BANK_MAPPING 
 		
 		requestFlexFields.put("INDIC1",new FlexFieldDto(amiecDetails.getAdditionalBankFieldId().getAdditionalBankRuleId(), remittanceTransactionRequestModel.getPurposeOfTrnxId(), amiecDetails.getAmiecDescription()));
 		
 		List<AdditionalInstructionData> lstAddInstrData = new ArrayList<AdditionalInstructionData>();
+		
+		
+		
 		requestFlexFields.forEach((k, v) -> {
 			BigDecimal bankId =remittanceTransactionRequestModel.getRoutingBankId();//(BigDecimal) routingSetupDetails.get("P_ROUTING_BANK_ID");
 			BigDecimal remittanceModeId = (BigDecimal) remitApplExchMap.get("P_REMITTANCE_MODE_ID");
 			BigDecimal deliveryModeId = (BigDecimal) remitApplExchMap.get("P_DELIVERY_MODE_ID");
 			BigDecimal foreignCurrencyId = beneDetails.getCurrencyId();
-			
 			if (v.getSrlId() != null) {
 				AdditionalInstructionData additionalInsDataTmp = createAdditionalIndicatorsData(remittanceApplication,applicationCountryId, k, amiecDetails.getAmiecCode(),amiecDetails.getAmiecDescription(), amiecDetails.getAdditionalBankFieldId().getAdditionalBankRuleId());	
 				lstAddInstrData.add(additionalInsDataTmp);
