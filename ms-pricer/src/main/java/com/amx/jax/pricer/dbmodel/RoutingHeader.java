@@ -34,7 +34,7 @@ public class RoutingHeader implements java.io.Serializable {
 	private String approvedBy;
 	private Date approvedDate;
 	private String isActive;
-	private String activateImps;
+	//private String activateImps;
 
 	public RoutingHeader() {
 		super();
@@ -196,13 +196,13 @@ public class RoutingHeader implements java.io.Serializable {
 		this.remittanceModeId = remittanceModeId;
 	}
 
-	@Column(name = "ACTIVATE_IMPS")
+	/*@Column(name = "ACTIVATE_IMPS")
 	public String getActivateImps() {
 		return activateImps;
 	}
 
 	public void setActivateImps(String activateImps) {
 		this.activateImps = activateImps;
-	}
+	}*/
 
 }
