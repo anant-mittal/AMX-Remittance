@@ -50,17 +50,15 @@ public class MCQLockConfigExtractor {
 
 	public Optional<LockConfiguration> getLockConfiguration(Object target, Method method) {
 		SchedulerLock annotation = findAnnotation(target, method);
-		Scheduled annotationScheduled = findAnnotationScheduled(target, method);
-
-		String alterNateName = null;
-		if (LockContext.BY_CLASS.equals(annotation.context())) {
-			alterNateName = String.format("%s", getClassName(target));
-		} else { // LockContext.BY_METHOD
-			alterNateName = String.format("%s#%s", getClassName(target),
-					method.getName());
-		}
-
 		if (shouldLock(annotation)) {
+			Scheduled annotationScheduled = findAnnotationScheduled(target, method);
+			String alterNateName = null;
+			if (LockContext.BY_CLASS.equals(annotation.context())) {
+				alterNateName = String.format("%s", getClassName(target));
+			} else { // LockContext.BY_METHOD
+				alterNateName = String.format("%s#%s", getClassName(target),
+						method.getName());
+			}
 			return Optional.of(getLockConfiguration(annotation, annotationScheduled, alterNateName));
 		} else {
 			return Optional.empty();
