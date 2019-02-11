@@ -12,10 +12,10 @@ import com.amx.jax.AppConfig;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.mcq.shedlock.SchedulerLock;
 
-@Configuration
-@EnableScheduling
-@Component
-@Service
+//@Configuration
+//@EnableScheduling
+//@Component
+//@Service
 public class SampleTask3 {
 
 	private static final Logger LOGGER = LoggerService.getLogger(SampleTask3.class);

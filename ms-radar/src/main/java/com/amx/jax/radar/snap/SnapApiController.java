@@ -41,4 +41,14 @@ public class SnapApiController {
 		return snapQueryService.execute(SnapQueryTemplate.TRANX_DONE, params);
 	}
 
+	@ResponseBody
+	@RequestMapping(value = "/snap/api/xrate/sell_transfer", method = RequestMethod.GET)
+	public Map<String, Object> xrateOnline()
+			throws IOException {
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("lte", "now");
+		params.put("gte", "now-5y");
+		return snapQueryService.execute(SnapQueryTemplate.XRATE_SELL_TRANSFER, params);
+	}
+
 }
