@@ -53,7 +53,7 @@ public class MCQLockConfigExtractor {
 		Scheduled annotationScheduled = findAnnotationScheduled(target, method);
 
 		String alterNateName = null;
-		if (annotation.context().equals(LockContext.BY_CLASS)) {
+		if (LockContext.BY_CLASS.equals(annotation.context())) {
 			alterNateName = String.format("%s", getClassName(target));
 		} else { // LockContext.BY_METHOD
 			alterNateName = String.format("%s#%s", getClassName(target),

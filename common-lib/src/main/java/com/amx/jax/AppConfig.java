@@ -21,6 +21,7 @@ import com.amx.jax.dict.Project;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.filter.AppClientErrorHanlder;
 import com.amx.jax.filter.AppClientInterceptor;
+import com.amx.jax.scope.TenantContext;
 import com.amx.jax.scope.TenantProperties;
 import com.amx.utils.ArgUtil;
 
@@ -60,7 +61,7 @@ public class AppConfig {
 	public static final String JAX_LOGGER_URL = "${jax.logger.url}";
 	public static final String JAX_SSO_URL = "${jax.sso.url}";
 	public static final String JAX_AUTH_URL = "${jax.auth.url}";
-	
+
 	public static final String SPRING_REDIS_HOST = "${spring.redis.host}";
 	public static final String SPRING_REDIS_PORT = "${spring.redis.port}";
 	public static final String JAX_PRICER_URL = "${jax.pricer.url}";
@@ -76,7 +77,7 @@ public class AppConfig {
 	@Value(APP_NAME)
 	@AppParamKey(AppParam.APP_NAME)
 	private String appName;
-	
+
 	@Value(SPRING_APP_NAME)
 	@AppParamKey(AppParam.SPRING_APP_NAME)
 	private String springAppName;
@@ -151,11 +152,11 @@ public class AppConfig {
 	@Value(JAX_AUTH_URL)
 	@AppParamKey(AppParam.JAX_AUTH_URL)
 	private String authURL;
-	
+
 	@Value(SPRING_REDIS_HOST)
 	@AppParamKey(AppParam.SPRING_REDIS_HOST)
 	private String redisSpringHost;
-	
+
 	@Value(SPRING_REDIS_PORT)
 	@AppParamKey(AppParam.SPRING_REDIS_PORT)
 	private String redisSpringPort;
@@ -352,6 +353,9 @@ public class AppConfig {
 	@PostConstruct
 	public void init() {
 		TenantProperties.setEnviroment(environment);
+		if (defaultTenant != null) {
+			Tenant.DEFAULT = defaultTenant;
+		}
 	}
 
 	public Tenant getDefaultTenant() {

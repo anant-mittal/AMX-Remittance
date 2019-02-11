@@ -184,7 +184,7 @@ public enum Tenant {
 
 	NONE("none", 0, null);
 
-	public static final Tenant DEFAULT = KWT;
+	public static Tenant DEFAULT = KWT;
 
 	public static Map<String, Tenant> mapping = new HashMap<String, Tenant>();
 	public static final Pattern pattern = Pattern.compile("^(.+?)-(.+?)$");
