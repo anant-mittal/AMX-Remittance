@@ -61,6 +61,10 @@ public class CustomerDetailViewRecord implements GridViewRecord {
 	private Date creationDate;
 
 	@ESDocFormat(ESDocFormat.Type.DATE)
+	@Column(name = "ONLINE_CREATION_DATE")
+	private Date creationDateOnline;
+
+	@ESDocFormat(ESDocFormat.Type.DATE)
 	@Column(name = "LAST_UPDATED")
 	private Date updateDate;
 
@@ -238,6 +242,14 @@ public class CustomerDetailViewRecord implements GridViewRecord {
 
 	public void setTypeId(BigDecimal typeId) {
 		this.typeId = typeId;
+	}
+
+	public Date getCreationDateOnline() {
+		return creationDateOnline;
+	}
+
+	public void setCreationDateOnline(Date creationDateOnline) {
+		this.creationDateOnline = creationDateOnline;
 	}
 
 }

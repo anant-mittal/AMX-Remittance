@@ -16,7 +16,7 @@ public class OracleVarsCache extends CacheBox<String> {
 	private static final String DESC_SEPERATOR = "-desc-";
 
 	public static final String DOC_VERSION = "v3";
-	private static final String CUSTOMER_RESET_COUNTER = "14";
+	private static final String CUSTOMER_RESET_COUNTER = "15";
 	private static final String TRANSACTION_RESET_COUNTER = "14";
 
 	/**
