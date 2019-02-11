@@ -10,8 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.amx.jax.AppConfig;
 import com.amx.jax.logger.LoggerService;
-
-import net.javacrumbs.shedlock.core.SchedulerLock;
+import com.amx.jax.mcq.shedlock.SchedulerLock;
 
 @Configuration
 @EnableScheduling

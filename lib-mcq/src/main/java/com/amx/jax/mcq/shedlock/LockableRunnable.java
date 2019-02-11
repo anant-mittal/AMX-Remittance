@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.javacrumbs.shedlock.core;
+package com.amx.jax.mcq.shedlock;
 
 import static java.util.Objects.requireNonNull;
 
@@ -21,7 +21,7 @@ import com.amx.jax.mcq.Candidate;
 import com.amx.jax.mcq.MCQLocker;
 
 /**
- * Executes wrapped runnable using {@link LockManager#executeWithLock(Runnable)}
+ * Executes wrapped runnable
  */
 public class LockableRunnable implements Runnable {
 	private final Runnable task;

@@ -15,8 +15,8 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import org.springframework.util.StringValueResolver;
 
-import net.javacrumbs.shedlock.core.LockConfiguration;
-import net.javacrumbs.shedlock.core.LockableRunnable;
+import com.amx.jax.mcq.shedlock.LockConfiguration;
+import com.amx.jax.mcq.shedlock.LockableRunnable;
 
 @Configuration
 public class MCQSchedulerConfig implements SchedulingConfigurer, EmbeddedValueResolverAware {

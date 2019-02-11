@@ -13,8 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.amx.jax.AppConfig;
-
-import net.javacrumbs.shedlock.core.LockingTaskExecutor.Task;
+import com.amx.jax.mcq.shedlock.LockingTaskExecutor.Task;
 
 @Service
 public class MCQLocker {

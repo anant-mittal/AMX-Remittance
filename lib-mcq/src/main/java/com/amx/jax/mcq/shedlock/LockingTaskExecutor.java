@@ -13,18 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.javacrumbs.shedlock.core;
+package com.amx.jax.mcq.shedlock;
 
-import java.util.Optional;
-
-/**
- * Provides lock implementation.
- */
-public interface LockProvider {
-
+public interface LockingTaskExecutor {
     /**
-     * @return If empty optional has been returned, lock could not be acquired. The lock
-     * has to be released by the callee.
+     * Executes task if it's not already running.
      */
-    Optional<SimpleLock> lock(LockConfiguration lockConfiguration);
+    void executeWithLock(Runnable task, LockConfiguration lockConfig);
+
+    void executeWithLock(Task task, LockConfiguration lockConfig) throws Throwable;
+
+    @FunctionalInterface
+    interface Task {
+        void call() throws Throwable;
+    }
 }

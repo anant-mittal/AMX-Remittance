@@ -20,11 +20,10 @@ import org.springframework.scheduling.support.ScheduledMethodRunnable;
 import org.springframework.util.StringUtils;
 import org.springframework.util.StringValueResolver;
 
+import com.amx.jax.mcq.shedlock.LockConfiguration;
+import com.amx.jax.mcq.shedlock.LockConfigurationExtractor;
+import com.amx.jax.mcq.shedlock.SchedulerLock;
 import com.amx.utils.ArgUtil;
-
-import net.javacrumbs.shedlock.core.LockConfiguration;
-import net.javacrumbs.shedlock.core.LockConfigurationExtractor;
-import net.javacrumbs.shedlock.core.SchedulerLock;
 
 public class MCQLockConfigExtractor implements LockConfigurationExtractor {
 	private final TemporalAmount defaultLockAtMostFor;
