@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -21,7 +20,6 @@ import com.amx.jax.grid.GridView;
 import com.amx.jax.grid.views.TranxViewRecord;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.mcq.Candidate;
-import com.amx.jax.mcq.MCQLocker;
 import com.amx.jax.mcq.shedlock.SchedulerLock;
 import com.amx.jax.mcq.shedlock.SchedulerLock.LockContext;
 import com.amx.jax.radar.AESRepository.BulkRequestBuilder;
