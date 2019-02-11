@@ -42,7 +42,7 @@ public class ExchangeRateTest {
 		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
 		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
 		ApiResponse<ExchangeRateResponseModel> response = null;
-		response = client.getExchangeRate(new BigDecimal(1), new BigDecimal(4), new BigDecimal(1), null);
+		response = client.getExchangeRate(new BigDecimal(1), new BigDecimal(4), new BigDecimal(1), null, null);
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());
 		assertNotNull(response.getResult().getModelType());
