@@ -23,6 +23,7 @@ import com.amx.jax.client.RemitClient;
 import com.amx.jax.client.remittance.RemittanceClient;
 import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
+import com.amx.jax.model.request.remittance.BranchRemittanceGetExchangeRateRequest;
 import com.amx.jax.model.request.remittance.CustomerBankRequest;
 import com.amx.jax.model.response.SourceOfIncomeDto;
 import com.amx.jax.model.response.fx.FcSaleOrderManagementDTO;
@@ -34,6 +35,7 @@ import com.amx.jax.model.response.remittance.CustomerShoppingCartDto;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
 import com.amx.jax.model.response.remittance.PaymentModeOfPaymentDto;
 import com.amx.jax.model.response.remittance.RoutingResponseDto;
+import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeRateResponse;
 import com.amx.jax.rbaac.IRbaacService;
 import com.amx.jax.swagger.IStatusCodeListPlugin.ApiStatusService;
 import com.amx.utils.ArgUtil;
@@ -94,9 +96,9 @@ public class RemitBranchController {
 	}
 
 	@RequestMapping(value = "/api/remitt/tranxrate", method = { RequestMethod.POST })
-	public AmxApiResponse<RemittanceTransactionResponsetModel, Object> bnfcryCheck(
-			@RequestBody RemittanceTransactionRequestModel request) {
-		return AmxApiResponse.buildList(remitClient.validateTransaction(request).getResults());
+	public AmxApiResponse<BranchRemittanceGetExchangeRateResponse, Object> bnfcryCheck(
+			@RequestBody BranchRemittanceGetExchangeRateRequest request) {
+		return AmxApiResponse.buildList(branchRemittanceClient.getExchaneRate(request).getResults());
 	}
 
 	@RequestMapping(value = "/api/remitt/save", method = { RequestMethod.POST })
