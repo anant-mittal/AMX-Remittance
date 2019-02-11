@@ -11,7 +11,7 @@ import javax.validation.constraints.NotNull;
  * @author Prashant
  *
  */
-public class BranchRemittanceGetExchangeRateRequest {
+public class BranchRemittanceGetExchangeRateRequest implements IRemittanceApplicationParams {
 
 	@NotNull(message = "bene id can not be null")
 	Long beneficiaryRelationshipSeqId;

@@ -2,14 +2,14 @@ package com.amx.jax.model.response.remittance.branch;
 
 import java.math.BigDecimal;
 
-import com.amx.jax.model.response.ExchangeRateBreakup;
+import com.amx.jax.model.response.remittance.BranchExchangeRateBreakup;
 
 public class BranchRemittanceGetExchangeRateResponse {
 
 	BigDecimal txnFee;
 	BigDecimal totalLoyalityPoints;
 	BigDecimal maxLoyalityPointsAvailableForTxn;
-	ExchangeRateBreakup exRateBreakup;
+	BranchExchangeRateBreakup exRateBreakup;
 	Boolean canRedeemLoyalityPoints;
 
 	public BigDecimal getTxnFee() {
@@ -36,11 +36,11 @@ public class BranchRemittanceGetExchangeRateResponse {
 		this.maxLoyalityPointsAvailableForTxn = maxLoyalityPointsAvailableForTxn;
 	}
 
-	public ExchangeRateBreakup getExRateBreakup() {
+	public BranchExchangeRateBreakup getExRateBreakup() {
 		return exRateBreakup;
 	}
 
-	public void setExRateBreakup(ExchangeRateBreakup exRateBreakup) {
+	public void setExRateBreakup(BranchExchangeRateBreakup exRateBreakup) {
 		this.exRateBreakup = exRateBreakup;
 	}
 

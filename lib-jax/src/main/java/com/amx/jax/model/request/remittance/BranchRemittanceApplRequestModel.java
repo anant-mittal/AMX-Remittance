@@ -14,7 +14,7 @@ import com.amx.jax.model.response.remittance.FlexFieldDto;
 import com.amx.utils.JsonUtil;
 
 
-public class BranchRemittanceApplRequestModel {
+public class BranchRemittanceApplRequestModel implements IRemittanceApplicationParams {
 	
 	private BigDecimal beneId;
 	private BigDecimal sourceOfFund;
@@ -171,6 +171,18 @@ public class BranchRemittanceApplRequestModel {
 	}
 	public void setRoutingCountryId(BigDecimal routingCountryId) {
 		this.routingCountryId = routingCountryId;
+	}
+	@Override
+	public Long getBeneficiaryRelationshipSeqId() {
+		return this.beneId.longValue();
+	}
+	@Override
+	public Long getCorrespondanceBankId() {
+		return routingBankId.longValue();
+	}
+	@Override
+	public Long getServiceIndicatorId() {
+		return serviceMasterId.longValue();
 	}
 
 

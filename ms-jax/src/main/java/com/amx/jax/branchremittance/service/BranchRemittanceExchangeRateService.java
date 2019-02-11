@@ -14,6 +14,7 @@ import org.springframework.web.context.WebApplicationContext;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.branchremittance.manager.BranchRemittanceExchangeRateManager;
 import com.amx.jax.model.request.remittance.BranchRemittanceGetExchangeRateRequest;
+import com.amx.jax.model.request.remittance.IRemittanceApplicationParams;
 import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeRateResponse;
 
 /**
@@ -29,7 +30,7 @@ public class BranchRemittanceExchangeRateService {
 	@Autowired
 	BranchRemittanceExchangeRateManager branchRemittanceExchangeRateManager;
 
-	public AmxApiResponse<BranchRemittanceGetExchangeRateResponse, Object> getExchaneRate(BranchRemittanceGetExchangeRateRequest request) {
+	public AmxApiResponse<BranchRemittanceGetExchangeRateResponse, Object> getExchaneRate(IRemittanceApplicationParams request) {
 		branchRemittanceExchangeRateManager.validateGetExchangRateRequest(request);
 		BranchRemittanceGetExchangeRateResponse result = branchRemittanceExchangeRateManager.getExchangeRateResponse(request);
 

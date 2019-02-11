@@ -55,7 +55,7 @@ public class BranchRemittanceController implements IRemittanceService {
 	@Override
 	public AmxApiResponse<BranchRemittanceApplResponseDto, Object> saveBranchRemittanceApplication(
 			@RequestBody BranchRemittanceApplRequestModel requestModel) {
-		logger.info("saveBranchRemittanceApplication :" + requestModel);
+		logger.debug("saveBranchRemittanceApplication :" + requestModel);
 		return branchRemitService.saveBranchRemittanceApplication(requestModel);
 	}
 
@@ -66,7 +66,7 @@ public class BranchRemittanceController implements IRemittanceService {
 	@RequestMapping(value = Path.BR_REMITTANCE_SHOPPING_CART, method = RequestMethod.GET)
 	@Override
 	public AmxApiResponse<CustomerShoppingCartDto, Object> fetchCustomerShoppingCart() {
-		logger.info("fetchCustomerShoppingCart");
+		logger.debug("fetchCustomerShoppingCart");
 		return branchRemitService.fetchCustomerShoppingCart();
 	}
 
@@ -77,7 +77,7 @@ public class BranchRemittanceController implements IRemittanceService {
 	@RequestMapping(value = Path.BR_REMITTANCE_MODE_OF_PAYMENT, method = RequestMethod.GET)
 	@Override
 	public AmxApiResponse<PaymentModeOfPaymentDto, Object> fetchModeOfPayment() {
-		logger.info("fetchModeOfPayment");
+		logger.debug("fetchModeOfPayment");
 		return branchRemitService.fetchModeOfPayment();
 	}
 
@@ -88,7 +88,7 @@ public class BranchRemittanceController implements IRemittanceService {
 	@RequestMapping(value = Path.BR_REMITTANCE_LOCAL_BANKS, method = RequestMethod.GET)
 	@Override
 	public AmxApiResponse<LocalBankDetailsDto, Object> fetchLocalBanks() {
-		logger.info("fetchLocalBanks");
+		logger.debug("fetchLocalBanks");
 		return branchRemitService.fetchLocalBanks();
 	}
 
@@ -99,7 +99,7 @@ public class BranchRemittanceController implements IRemittanceService {
 	@RequestMapping(value = Path.BR_REMITTANCE_CUSTOMER_BANKS, method = RequestMethod.GET)
 	@Override
 	public AmxApiResponse<CustomerBankDetailsDto, Object> fetchCustomerLocalBanks() {
-		logger.info("fetchCustomerLocalBanks");
+		logger.debug("fetchCustomerLocalBanks");
 		return branchRemitService.fetchCustomerLocalBanks();
 	}
 
@@ -111,7 +111,7 @@ public class BranchRemittanceController implements IRemittanceService {
 	@Override
 	public AmxApiResponse<String, Object> fetchCustomerBankNames(
 			@RequestParam(value = "bankId", required = true) BigDecimal bankId) {
-		logger.info("fetchCustomerBankNames");
+		logger.debug("fetchCustomerBankNames");
 		return branchRemitService.fetchCustomerBankNames(bankId);
 	}
 
@@ -122,7 +122,7 @@ public class BranchRemittanceController implements IRemittanceService {
 	@RequestMapping(value = Path.BR_REMITTANCE_POS_BANKS, method = RequestMethod.GET)
 	@Override
 	public AmxApiResponse<ResourceDTO, Object> fetchPosBanks() {
-		logger.info("fetchPosBanks");
+		logger.debug("fetchPosBanks");
 		return branchRemitService.fetchPosBanks();
 	}
 
@@ -133,7 +133,7 @@ public class BranchRemittanceController implements IRemittanceService {
 	@RequestMapping(value = Path.BR_REMITTANCE_LOCAL_CURRENCY_DENOMINATION, method = RequestMethod.GET)
 	@Override
 	public AmxApiResponse<UserStockDto, Object> fetchLocalCurrencyDenomination() {
-		logger.info("fetchLocalCurrencyDenomination");
+		logger.debug("fetchLocalCurrencyDenomination");
 		return branchRemitService.fetchLocalCurrencyDenomination();
 	}
 
@@ -144,7 +144,7 @@ public class BranchRemittanceController implements IRemittanceService {
 	@RequestMapping(value = Path.BR_REMITTANCE_LOCAL_CURRENCY_REFUND_DENOMINATION, method = RequestMethod.GET)
 	@Override
 	public AmxApiResponse<UserStockDto, Object> fetchLocalCurrencyRefundDenomination() {
-		logger.info("fetchLocalCurrencyRefundDenomination");
+		logger.debug("fetchLocalCurrencyRefundDenomination");
 		return branchRemitService.fetchLocalCurrencyRefundDenomination();
 	}
 
@@ -156,7 +156,7 @@ public class BranchRemittanceController implements IRemittanceService {
 	@Override
 	public AmxApiResponse<BoolRespModel, Object> saveCustomerBankDetails(
 			@RequestBody List<CustomerBankRequest> customerBank) {
-		logger.info("saveCustomerBankDetails" + customerBank);
+		logger.debug("saveCustomerBankDetails" + customerBank);
 		BoolRespModel result = branchRemitService.saveCustomerBankDetails(customerBank);
 		return AmxApiResponse.build(result);
 	}
@@ -178,7 +178,7 @@ public class BranchRemittanceController implements IRemittanceService {
 	@Override
 	public AmxApiResponse<RoutingResponseDto, Object> getRoutingSetupDeatils(
 			@RequestParam(value = Params.BENE_RELATION_SHIP_ID, required = true) BigDecimal beneRelaId) {
-		logger.info("getRoutingSetupDeatils :" + beneRelaId);
+		logger.debug("getRoutingSetupDeatils :" + beneRelaId);
 		return branchRemitService.getRoutingDetails(beneRelaId);
 	}
 
@@ -187,7 +187,7 @@ public class BranchRemittanceController implements IRemittanceService {
 	public AmxApiResponse<RoutingResponseDto, Object> getRoutingDetailsByServiceId(
 			@RequestParam(value = Params.BENE_RELATION_SHIP_ID, required = true) BigDecimal beneRelaId,
 			@RequestParam(value = "serviceMasterId", required = true) BigDecimal serviceMasterId) {
-		logger.info("getRoutingSetupDeatils :" + beneRelaId + "\t serviceMasterId :" + serviceMasterId);
+		logger.debug("getRoutingSetupDeatils :" + beneRelaId + "\t serviceMasterId :" + serviceMasterId);
 		return branchRemitService.getRoutingDetailsByServiceId(beneRelaId, serviceMasterId);
 	}
 
@@ -195,7 +195,7 @@ public class BranchRemittanceController implements IRemittanceService {
 	@Override
 	public AmxApiResponse<AdditionalExchAmiecDto, Object> getPurposeOfTrnx(
 			@RequestParam(value = Params.BENE_RELATION_SHIP_ID) BigDecimal beneRelaId) {
-		logger.info("getPurposeOfTrnx :" + beneRelaId);
+		logger.debug("getPurposeOfTrnx :" + beneRelaId);
 		return branchRemitService.getPurposeOfTrnx(beneRelaId);
 	}
 
