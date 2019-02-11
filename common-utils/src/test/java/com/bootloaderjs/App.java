@@ -1,6 +1,9 @@
 package com.bootloaderjs;
 
+import java.util.Calendar;
 import java.util.regex.Pattern;
+
+import com.amx.utils.TimeUtils;
 
 public class App { // Noncompliant
 
@@ -14,8 +17,12 @@ public class App { // Noncompliant
 	public static void main(String[] args) {
 		long timeout = 100L;
 		long minute = System.currentTimeMillis() / (1000 * 60);
+
+		Calendar calendar = Calendar.getInstance();
+		System.out.println("** " + calendar.get(Calendar.HOUR_OF_DAY) + "   " + calendar.get(Calendar.MINUTE));
 		System.out.println(
-				"==" + minute + "===" + rotateTime(1000 * 1, 0x3));
+				"==" + TimeUtils.inHourSlot(4, 1) + "==" + TimeUtils.inHourSlot(4, 2) + "   "
+						+ TimeUtils.inHourSlot(4, 3));
 	}
 
 	private static long rotateTime(long millis, int i) {

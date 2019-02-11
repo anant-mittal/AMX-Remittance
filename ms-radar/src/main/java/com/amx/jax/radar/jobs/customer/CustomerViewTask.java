@@ -22,11 +22,14 @@ import com.amx.jax.grid.views.CustomerDetailViewRecord;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.mcq.Candidate;
 import com.amx.jax.mcq.MCQLocker;
+import com.amx.jax.mcq.shedlock.SchedulerLock;
+import com.amx.jax.mcq.shedlock.SchedulerLock.LockContext;
 import com.amx.jax.radar.AESRepository.BulkRequestBuilder;
 import com.amx.jax.radar.TestSizeApp;
 import com.amx.jax.rates.AmxCurConstants;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
+import com.amx.utils.TimeUtils;
 
 @Configuration
 @EnableScheduling
@@ -43,15 +46,25 @@ public class CustomerViewTask extends AbstractDBSyncTask {
 	private static final Candidate LOCK = new Candidate().fixedDelay(AmxCurConstants.INTERVAL_SEC * 30)
 			.maxAge(AmxCurConstants.INTERVAL_MIN).queue(CustomerViewTask.class);
 
-	@Autowired
-	private MCQLocker mcq;
-
+	@SchedulerLock(lockMaxAge = AmxCurConstants.INTERVAL_MIN * 30, context = LockContext.BY_CLASS)
 	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_SEC * 30)
-	public void doTask() {
-		if (mcq.lead(LOCK)) {
-			this.doBothTask();
-			mcq.resign(LOCK);
+	public void doTaskModeNight() {
+		if (TimeUtils.inHourSlot(4, 1)) {
+			this.doTask();
 		}
+	}
+
+	@SchedulerLock(lockMaxAge = AmxCurConstants.INTERVAL_MIN * 30, context = LockContext.BY_CLASS)
+	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_MIN * 10)
+	public void doTaskModeDay() {
+		if (!TimeUtils.inHourSlot(4, 1)) {
+			this.doTask();
+		}
+	}
+
+	@Override
+	public void doTask() {
+		this.doBothTask();
 	}
 
 	public void doTask(int lastPage, String lastId) {

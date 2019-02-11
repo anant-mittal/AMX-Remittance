@@ -23,10 +23,17 @@ import java.lang.annotation.Target;
 @Target({ ElementType.METHOD, ElementType.ANNOTATION_TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface SchedulerLock {
+
+	public static enum LockContext {
+		BY_UNIQUE, BY_CLASS, BY_METHOD
+	}
+
 	/**
 	 * Lock name.
 	 */
 	String name() default "";
+
+	LockContext context() default LockContext.BY_METHOD;
 
 	/**
 	 * How long (in ms) the lock should be kept in case the machine which obtained
