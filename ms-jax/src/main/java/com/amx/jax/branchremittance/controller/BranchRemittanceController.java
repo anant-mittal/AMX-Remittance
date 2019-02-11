@@ -54,8 +54,8 @@ public class BranchRemittanceController implements IRemittanceService {
 	@RequestMapping(value = Path.BR_REMITTANCE_SAVE_APPL, method = RequestMethod.POST)
 	@Override
 	public AmxApiResponse<BranchRemittanceApplResponseDto, Object> saveBranchRemittanceApplication(
-			@RequestBody BranchRemittanceApplRequestModel requestModel) {
-		logger.debug("saveBranchRemittanceApplication :" + requestModel);
+			@Valid @RequestBody BranchRemittanceApplRequestModel requestModel) {
+		logger.info("saveBranchRemittanceApplication :" + requestModel);
 		return branchRemitService.saveBranchRemittanceApplication(requestModel);
 	}
 
@@ -111,7 +111,7 @@ public class BranchRemittanceController implements IRemittanceService {
 	@Override
 	public AmxApiResponse<String, Object> fetchCustomerBankNames(
 			@RequestParam(value = "bankId", required = true) BigDecimal bankId) {
-		logger.debug("fetchCustomerBankNames");
+		logger.info("fetchCustomerBankNames");
 		return branchRemitService.fetchCustomerBankNames(bankId);
 	}
 
@@ -178,7 +178,7 @@ public class BranchRemittanceController implements IRemittanceService {
 	@Override
 	public AmxApiResponse<RoutingResponseDto, Object> getRoutingSetupDeatils(
 			@RequestParam(value = Params.BENE_RELATION_SHIP_ID, required = true) BigDecimal beneRelaId) {
-		logger.debug("getRoutingSetupDeatils :" + beneRelaId);
+		logger.info("getRoutingSetupDeatils :" + beneRelaId);
 		return branchRemitService.getRoutingDetails(beneRelaId);
 	}
 

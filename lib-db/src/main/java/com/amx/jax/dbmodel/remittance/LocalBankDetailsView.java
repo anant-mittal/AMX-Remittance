@@ -14,6 +14,10 @@ import com.amx.jax.model.IResourceEntity;
 @Table(name="V_EX_CBNK")
 public class LocalBankDetailsView implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4296215686785516417L;
 	private BigDecimal rowId;
 	private BigDecimal applicationCountryId;
 	private BigDecimal chequeBankId;

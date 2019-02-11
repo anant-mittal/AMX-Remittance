@@ -196,6 +196,15 @@ public class DateUtil {
    
     return timeSlotDto;
 }
+	
+	public static  Date daysAddInCurrentDate(int noOfDays) {
+		GregorianCalendar calendar = new GregorianCalendar();
+		calendar.setTime(new Date());
+	    calendar.add(Calendar.DATE, noOfDays);
+	    return calendar.getTime();
+	}
+	
+	
 	 public static String getAccountingMonthYearNew(String transactionDate) {
 		   String accountingMonthYear=null;
 		try {
@@ -225,6 +234,4 @@ public class DateUtil {
 		}
 		   return accountingMonthYear;
 	   }
-
-	
 }

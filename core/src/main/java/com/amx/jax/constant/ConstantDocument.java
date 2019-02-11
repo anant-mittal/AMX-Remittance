@@ -14,6 +14,7 @@ public class ConstantDocument {
 	public static final BigDecimal APPLICATION_DOCUMENT_ID = new BigDecimal(1);
 	public static final BigDecimal COLLECTION_DOCUMENT_ID = new BigDecimal(2);
 	public static final BigDecimal REMITTANCE_DOCUMENT_ID = new BigDecimal(3);
+	
 	// document codes
 	public static final BigDecimal DOCUMENT_CODE_CUSTOMER_SERIAL_NUMBER = new BigDecimal(8);
 	// peronsl remittancew
@@ -40,6 +41,7 @@ public class ConstantDocument {
 	public static final BigDecimal CONTACT_TYPE_FOR_LOCAL = new BigDecimal(49);
 	public static final BigDecimal CONTACT_TYPE_FOR_HOME = new BigDecimal(50);
 	public static final BigDecimal REMITTANCE_DOCUMENT_CODE = new BigDecimal(3);
+	public static final BigDecimal VOUCHER_DOCUMENT_CODE = new BigDecimal(69);
 
 	public static final String JOAMX_USER = "JOAMX_USER";
 
@@ -133,6 +135,7 @@ public class ConstantDocument {
 	public static final String FILE_CREATION = "F";
 	public static final String WEB_SERVICE = "F";
 	public static final String A="A";
+	public static final String CLAIM="CLAIM";
 	
 	
 
