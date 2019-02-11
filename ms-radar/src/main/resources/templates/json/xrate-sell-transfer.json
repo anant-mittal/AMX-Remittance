@@ -1,14 +1,14 @@
 {
   "aggs": {
-    "2": {
+    "slots": {
       "date_histogram": {
         "field": "@timestamp",
-        "interval": "1d",
+        "interval": "[[${interval}]]",
         "time_zone": "Asia/Kolkata",
         "min_doc_count": 1
       },
       "aggs": {
-        "1": {
+        "rate": {
           "avg": {
             "field": "rRate"
           }
