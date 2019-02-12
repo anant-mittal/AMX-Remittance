@@ -76,12 +76,9 @@ public class UserAuthService {
 	/**
 	 * Verify user details.
 	 * 
-	 * @param employeeNo
-	 *            the emp code
-	 * @param identity
-	 *            the identity
-	 * @param ipAddress
-	 *            the ip address
+	 * @param employeeNo the emp code
+	 * @param identity   the identity
+	 * @param ipAddress  the ip address
 	 * @return the user auth init response DTO
 	 * 
 	 * @flow: -> Get Employee ||->-> Multiple Employees -> Error ||->-> Employee Not
@@ -343,7 +340,7 @@ public class UserAuthService {
 			/**
 			 * Check if Offline OTP is valid for Self
 			 */
-			isAuthorized = validateOfflineOtp(mOtp, employee.getEmployeeId(), userOtpData.getOtpData());
+			isAuthorized = validateOfflineOtp(mOtp, employee.getEmployeeId(), userOtpData.getOtpData().getmOtpPrefix());
 		}
 
 		/**
@@ -360,7 +357,7 @@ public class UserAuthService {
 				 * Validate Partner Offline OTP
 				 */
 				isAuthorized = validateOfflineOtp(reqDto.getPartnerMOtp(), userOtpData.getPartnerEmployeeId(),
-						userOtpData.getPartnerOtpData());
+						userOtpData.getPartnerOtpData().getmOtpPrefix());
 			}
 		}
 
@@ -418,7 +415,7 @@ public class UserAuthService {
 	 * @param initOtpData
 	 * @return
 	 */
-	private boolean validateOfflineOtp(String otp, BigDecimal employeeId, OtpData initOtpData) {
+	public boolean validateOfflineOtp(String otp, BigDecimal employeeId, String sac) {
 
 		Device otpDevice = deviceService.getDeviceByEmployeeAndDeviceType(ClientType.NOTP_APP, employeeId);
 
@@ -428,7 +425,7 @@ public class UserAuthService {
 
 		HashBuilder builder = new HashBuilder().currentTime(System.currentTimeMillis())
 				.interval(AmxConstants.OFFLINE_OTP_TTL).tolerance(AmxConstants.OFFLINE_OTP_TOLERANCE)
-				.secret(otpDevice.getClientSecreteKey()).message(initOtpData.getmOtpPrefix());
+				.secret(otpDevice.getClientSecreteKey()).message(sac);
 
 		if (!builder.validateNumHMAC(otp)) {
 			return Boolean.FALSE;
