@@ -24,14 +24,12 @@ public class NotpDTO implements Serializable {
 	@NotNull(message = "Employee Id can not be Null or Empty")
 	private BigDecimal employeeId;
 
-	@NotBlank(message = "SAC cannot be Null or Empty")
 	private String sac;
 
 	private String otp;
 
 	private boolean verfied;
 
-	@NotBlank(message = "Ip Address Can not be Null or Empty")
 	private String ipAddress;
 
 	/**
