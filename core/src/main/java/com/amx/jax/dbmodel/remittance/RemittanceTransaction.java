@@ -123,6 +123,7 @@ public class RemittanceTransaction implements Serializable {
 	private String agentCode;
 	private String modeOfTransfer;
 	
+	
 
 	
 	public RemittanceTransaction() {

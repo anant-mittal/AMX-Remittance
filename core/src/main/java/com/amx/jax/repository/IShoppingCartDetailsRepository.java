@@ -10,5 +10,7 @@ import com.amx.jax.dbmodel.remittance.ShoppingCartDetails;
 public interface IShoppingCartDetailsRepository extends CrudRepository<ShoppingCartDetails, BigDecimal> {
 	
 	public List<ShoppingCartDetails> findByCustomerId(BigDecimal customerId);
+	
+	public ShoppingCartDetails  findByCustomerIdAndRemittanceApplicationId(BigDecimal customerId,BigDecimal remittanceApplicationId);
 
 }

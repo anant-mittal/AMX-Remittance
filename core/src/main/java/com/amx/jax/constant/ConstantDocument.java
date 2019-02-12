@@ -133,7 +133,7 @@ public class ConstantDocument {
 	/** for Cash Refund **/
 	public static final String F = "F"; 
 	public static final String FILE_CREATION = "F";
-	public static final String WEB_SERVICE = "F";
+	public static final String WEB_SERVICE = "W";
 	public static final String A="A";
 	public static final String CLAIM="CLAIM";
 	

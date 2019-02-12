@@ -11,7 +11,7 @@ public class BranchRemittanceRequestModel {
 
 	List<BranchApplicationDto> remittanceApplicationId =new ArrayList<>();
 	List<RemittanceCollectionDto> collctionModeDto = new ArrayList<>();
-	UserStockDto currencyRefundDenomination = new UserStockDto();
+	List<UserStockDto> currencyRefundDenomination = new ArrayList<>();
 	BigDecimal paidAmount = BigDecimal.ZERO;
 	BigDecimal totalTrnxAmount = BigDecimal.ZERO;
 	
@@ -20,10 +20,10 @@ public class BranchRemittanceRequestModel {
 	
 
 	
-		public UserStockDto getCurrencyRefundDenomination() {
+		public List<UserStockDto> getCurrencyRefundDenomination() {
 			return currencyRefundDenomination;
 		}
-		public void setCurrencyRefundDenomination(UserStockDto currencyRefundDenomination) {
+		public void setCurrencyRefundDenomination(List<UserStockDto> currencyRefundDenomination) {
 			this.currencyRefundDenomination = currencyRefundDenomination;
 		}
 		public List<RemittanceCollectionDto> getCollctionModeDto() {

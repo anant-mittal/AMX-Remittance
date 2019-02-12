@@ -7,6 +7,8 @@ import java.util.Map;
 
 import javax.transaction.Transactional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -51,6 +53,8 @@ import com.amx.jax.util.JaxUtil;
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class BranchRemittanceDao {
 
+	private Logger logger = LoggerFactory.getLogger(getClass());
+	
 	@Autowired
 	RemittanceApplicationRepository appRepo;
 
@@ -186,7 +190,11 @@ public class BranchRemittanceDao {
 
 	public void updateApplication(List<RemittanceTransaction> remitTrnxList) {
 		for (RemittanceTransaction remitTrnx : remitTrnxList) {
+			
+			logger.info("remitTrnx.getApplicationDocumentNo() :"+remitTrnx.getApplicationDocumentNo()+"\t docfyr :"+remitTrnx.getApplicationFinanceYear());
 			RemittanceApplication appl = appRepo.fetchRemitApplTrnx(remitTrnx.getApplicationDocumentNo(), remitTrnx.getApplicationFinanceYear());
+			
+			
 			if (appl != null) {
 				appl.setRemittanceApplicationId(appl.getRemittanceApplicationId());
 				appl.setTransactionFinancialyear(remitTrnx.getDocumentFinanceYear());

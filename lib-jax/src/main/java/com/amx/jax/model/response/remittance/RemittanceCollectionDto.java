@@ -1,6 +1,8 @@
 package com.amx.jax.model.response.remittance;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.amx.jax.model.response.fx.UserStockDto;
 
@@ -14,7 +16,9 @@ public class RemittanceCollectionDto {
 	private String colchequeRefNo;
 	private String approvalNo;
 	private String colCardHolderName;
-	UserStockDto currencyDenomination = new UserStockDto();
+	
+	List<UserStockDto> currencyDenominationList = new ArrayList<>();
+	
 	public BigDecimal getPaymentModeId() {
 		return paymentModeId;
 	}
@@ -48,12 +52,12 @@ public class RemittanceCollectionDto {
 	public void setColCardHolderName(String colCardHolderName) {
 		this.colCardHolderName = colCardHolderName;
 	}
-	public UserStockDto getCurrencyDenomination() {
-		return currencyDenomination;
+	//public UserStockDto getCurrencyDenomination() {
+	/*	return currencyDenomination;
 	}
 	public void setCurrencyDenomination(UserStockDto currencyDenomination) {
 		this.currencyDenomination = currencyDenomination;
-	}
+	}*/
 	public String getApprovalNo() {
 		return approvalNo;
 	}
@@ -71,6 +75,12 @@ public class RemittanceCollectionDto {
 	}
 	public void setColchequeDate(String colchequeDate) {
 		this.colchequeDate = colchequeDate;
+	}
+	public List<UserStockDto> getCurrencyDenominationList() {
+		return currencyDenominationList;
+	}
+	public void setCurrencyDenominationList(List<UserStockDto> currencyDenominationList) {
+		this.currencyDenominationList = currencyDenominationList;
 	}
 
 	

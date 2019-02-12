@@ -31,7 +31,7 @@ public class RoutingProcedureDao {
 	@Autowired
 	JdbcTemplate jdbcTemplate;
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationCoreProcedureDao.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(RoutingProcedureDao.class);
 
 	public BigDecimal getRoutingBankBranchIdForCash(Map<String, Object> inputValues) {
 		BigDecimal routingBankBranchId = null;
@@ -461,8 +461,6 @@ public class RoutingProcedureDao {
 				}
 				
 			 return ecmCode;
-			 
-			 
 		 }
 		 
 		 
