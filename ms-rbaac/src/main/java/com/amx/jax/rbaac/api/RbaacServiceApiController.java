@@ -276,7 +276,7 @@ public class RbaacServiceApiController implements IRbaacService {
 
 	@RequestMapping(value = ApiEndPoints.NOTP_VERIFY, method = RequestMethod.POST)
 	@Override
-	public AmxApiResponse<NotpDTO, Object> verifyOTP(NotpDTO reqDTO) {
+	public AmxApiResponse<NotpDTO, Object> verifyOTP(@Valid @RequestBody NotpDTO reqDTO) {
 		reqDTO.setVerfied(userAuthService.validateOfflineOtp(reqDTO.getOtp(), reqDTO.getEmployeeId(), reqDTO.getSac()));
 		return AmxApiResponse.build(reqDTO);
 	}
