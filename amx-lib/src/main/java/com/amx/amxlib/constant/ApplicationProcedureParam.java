@@ -3,7 +3,9 @@
  */
 package com.amx.amxlib.constant;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Represents constant parameters used as input or output of db stored
@@ -53,6 +55,15 @@ public enum ApplicationProcedureParam {
 	}
 
 	ApplicationProcedureParam() {
+	}
+
+	public void putValue(Map<String, Object> map, Object value) {
+		if (this.aliasNames != null && this.aliasNames.length > 0) {
+			for (String alias : aliasNames) {
+				map.put(alias, value);
+			}
+		}
+		map.put(this.toString(), value);
 	}
 
 }

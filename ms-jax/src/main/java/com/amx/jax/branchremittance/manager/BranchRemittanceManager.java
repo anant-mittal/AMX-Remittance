@@ -304,8 +304,8 @@ public class BranchRemittanceManager extends AbstractModel {
 			}
 			
 			
-			if(requestModel.getRemittancModeId().compareTo(BigDecimal.ZERO)>0) {
-				remittancModeId = requestModel.getRemittancModeId();
+			if(requestModel.getRemittanceModeId().compareTo(BigDecimal.ZERO)>0) {
+				remittancModeId = requestModel.getRemittanceModeId();
 			}else {
 				remittancModeId =branchRoutingDto.getRemittanceModeList().get(0).getRemittanceModeId();
 			}

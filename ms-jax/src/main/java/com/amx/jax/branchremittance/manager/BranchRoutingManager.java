@@ -549,7 +549,7 @@ public class BranchRoutingManager {
 		BigDecimal serviceMasterId = requestApplModel.getServiceMasterId();
 		BigDecimal routingCountryId = requestApplModel.getRoutingCountryId();
 		BigDecimal routingBankId = requestApplModel.getRoutingBankId();
-		BigDecimal remittanceModeId = requestApplModel.getRemittancModeId();
+		BigDecimal remittanceModeId = requestApplModel.getRemittanceModeId();
 		
 		if(JaxUtil.isNullZeroBigDecimalCheck(requestApplModel.getBeneId())
 				&& JaxUtil.isNullZeroBigDecimalCheck(requestApplModel.getServiceMasterId())

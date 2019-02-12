@@ -32,7 +32,7 @@ public class BranchRemittanceApplRequestModel implements IRemittanceApplicationP
 	private BigDecimal serviceMasterId;
 	private BigDecimal routingBankId;
 	private BigDecimal routingCountryId;
-	private BigDecimal remittancModeId;
+	private BigDecimal remittanceModeId;
 	private BigDecimal purposeOfTrnxId;
 
 	
@@ -154,11 +154,11 @@ public class BranchRemittanceApplRequestModel implements IRemittanceApplicationP
 	public void setRoutingBankId(BigDecimal routingBankId) {
 		this.routingBankId = routingBankId;
 	}
-	public BigDecimal getRemittancModeId() {
-		return remittancModeId;
+	public BigDecimal getRemittanceModeId() {
+		return remittanceModeId;
 	}
-	public void setRemittancModeId(BigDecimal remittancModeId) {
-		this.remittancModeId = remittancModeId;
+	public void setRemittanceModeId(BigDecimal remittancModeId) {
+		this.remittanceModeId = remittancModeId;
 	}
 	public BigDecimal getPurposeOfTrnxId() {
 		return purposeOfTrnxId;
