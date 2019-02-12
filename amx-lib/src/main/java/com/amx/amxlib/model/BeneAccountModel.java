@@ -3,6 +3,8 @@ package com.amx.amxlib.model;
 import java.math.BigDecimal;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
 import com.amx.jax.model.AbstractModel;
 
@@ -17,7 +19,11 @@ public class BeneAccountModel extends AbstractModel {
 	@NotNull(message="Bank Id may not be null")
 	private BigDecimal bankId; //agent master
 	private BigDecimal bankBranchId;
+	@Pattern(regexp = "^[A-Za-z0-9]+$", message = "Invalid Account Number, only alphanumeric allowed")
 	private String bankAccountNumber;
+	@Pattern(regexp = "^[A-Za-z0-9]+$", message = "Invalid ibanNumber, only alphanumeric allowed")
+	@Size(min=1, max=60)
+	private String ibanNumber;
 	@NotNull(message="Currency Id may not be null")
 	private BigDecimal currencyId;
 	@NotNull(message="Service Group Id may not be null")
@@ -147,6 +153,14 @@ public class BeneAccountModel extends AbstractModel {
 		} else {
 			return serviceProviderBranchId;
 		}
+	}
+
+	public String getIbanNumber() {
+		return ibanNumber;
+	}
+
+	public void setIbanNumber(String ibanNumber) {
+		this.ibanNumber = ibanNumber;
 	}
 
 }

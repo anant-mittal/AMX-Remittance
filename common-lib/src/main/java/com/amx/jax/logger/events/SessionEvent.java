@@ -14,9 +14,6 @@ public class SessionEvent extends AuditEvent {
 
 		@Override
 		public EventMarker marker() {
-			if (this == SESSION_AUTHED || this == SESSION_EXPIRED || this == SESSION_UNAUTHED) {
-				return EventMarker.AUDIT;
-			}
 			return EventMarker.GAUGE;
 		}
 	}
@@ -24,6 +21,10 @@ public class SessionEvent extends AuditEvent {
 	UserAgent agent = null;
 	String userKey = null;
 	String sessionId = null;
+
+	public SessionEvent() {
+		super();
+	}
 
 	public String getSessionId() {
 		return sessionId;

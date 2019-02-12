@@ -27,6 +27,11 @@ public class AmxApiError extends AResponse<Object> {
 		this.message = errorMessage;
 	}
 
+	public AmxApiError(IExceptionEnum error) {
+		super();
+		this.statusKey = ArgUtil.isEmpty(error) ? null : error.getStatusKey();
+	}
+
 	public AmxApiError() {
 		super();
 	}
@@ -37,6 +42,11 @@ public class AmxApiError extends AResponse<Object> {
 
 	public void setErrorKey(String errorKey) {
 		this.errorKey = errorKey;
+	}
+
+	public AmxApiError meta(Object meta) {
+		this.meta = meta;
+		return this;
 	}
 
 }

@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -36,6 +37,7 @@ import com.amx.amxlib.meta.model.RemittancePageDto;
 import com.amx.amxlib.meta.model.RoutingBankMasterDTO;
 import com.amx.amxlib.meta.model.ServiceGroupMasterDescDto;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
+import com.amx.amxlib.model.BeneAccountModel;
 import com.amx.amxlib.model.BeneRelationsDescriptionDto;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.PersonInfo;
@@ -45,6 +47,7 @@ import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.amxlib.model.RoutingBankMasterParam;
 import com.amx.jax.config.JaxProperties;
+import com.amx.jax.config.JaxTenantProperties;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxDbConfig;
 import com.amx.jax.dal.RoutingDao;
@@ -62,6 +65,7 @@ import com.amx.jax.dbmodel.ServiceProviderModel;
 import com.amx.jax.dbmodel.SwiftMasterView;
 import com.amx.jax.dbmodel.bene.BeneficaryAccount;
 import com.amx.jax.dbmodel.bene.BeneficaryContact;
+import com.amx.jax.dbmodel.bene.BeneficaryMaster;
 import com.amx.jax.dbmodel.bene.BeneficaryRelationship;
 import com.amx.jax.dbmodel.bene.RelationsDescription;
 import com.amx.jax.error.JaxError;
@@ -75,6 +79,7 @@ import com.amx.jax.repository.BeneficaryAccountRepository;
 import com.amx.jax.repository.CountryRepository;
 import com.amx.jax.repository.IBeneficaryContactDao;
 import com.amx.jax.repository.IBeneficiaryCountryDao;
+import com.amx.jax.repository.IBeneficiaryMasterDao;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.IBeneficiaryRelationshipDao;
 import com.amx.jax.repository.ICurrencyDao;
@@ -154,7 +159,7 @@ public class BeneficiaryService extends AbstractService {
 	@Autowired
 	BeneficaryAccountRepository beneficaryAccountRepository;
 	@Autowired
-	JaxProperties jaxProperties;
+	JaxTenantProperties jaxTenantProperties;
 
 	@Autowired
 	AuditService auditService;
@@ -164,6 +169,8 @@ public class BeneficiaryService extends AbstractService {
 	RoutingDao routingDao;
 	@Autowired
 	JaxConfigService jaxConfigService;
+	@Autowired
+	IBeneficiaryMasterDao beneficaryMasterRepository;
 
 	public ApiResponse getBeneficiaryListForOnline(BigDecimal customerId, BigDecimal applicationCountryId,
 			BigDecimal beneCountryId) {
@@ -441,8 +448,10 @@ public class BeneficiaryService extends AbstractService {
 		if (beneList.isEmpty()) {
 			beneList = beneficiaryOnlineDao.getOnlineBeneListFromView(customerId, applicationCountryId);
 		}
+		beneList = beneList.stream().filter(i -> ConstantDocument.Yes.equalsIgnoreCase(i.getIsActive()))
+				.collect(Collectors.toList());
 		if (beneList.isEmpty()) {
-			throw new GlobalException(JaxError.BENEFICIARY_LIST_NOT_FOUND, "My favourite eneficiary list is not found");
+			throw new GlobalException(JaxError.BENEFICIARY_LIST_NOT_FOUND, "My favourite beneficiary list is not found");
 		} else {
 			response.getData().getValues().addAll(convertBeneList(beneList));
 			response.setResponseStatus(ResponseStatus.OK);
@@ -768,6 +777,8 @@ public class BeneficiaryService extends AbstractService {
 		List<RoutingBankMasterDTO> list = new ArrayList<RoutingBankMasterDTO>();
 
 		for (ServiceProviderModel routingMasterRecord : serviceProviderList) {
+			
+			
 			RoutingBankMasterDTO routingMasterDTO = new RoutingBankMasterDTO();
 			routingMasterDTO.setApplicationCountryId(routingMasterRecord.getApplicationCountryId());
 			routingMasterDTO.setRoutingCountryId(routingMasterRecord.getRoutingCountryId());
@@ -877,7 +888,7 @@ public class BeneficiaryService extends AbstractService {
 	public ApiResponse getBeneficiaryCountryListWithChannelingForOnline(BigDecimal customerId) {
 
 		List<CountryMasterView> countryList;
-		if (jaxProperties.getBeneThreeCountryCheck()) {
+		if (jaxTenantProperties.getBeneThreeCountryCheck()) {
 			countryList = countryRepository.getBeneCountryList(metaData.getLanguageId());
 		} else {
 			if (jaxConfigService.getBooleanConfigValue(JaxDbConfig.BLOCK_BENE_RISK_TRANSACTION, true)) {
@@ -911,7 +922,7 @@ public class BeneficiaryService extends AbstractService {
 			listData.add(map.get(BigDecimal.valueOf(2)));
 			CountryMasterDTO model = new CountryMasterDTO();
 			jaxUtil.convert(beneCountry, model);
-			if (!jaxProperties.getCashDisable()) {
+			if (!jaxTenantProperties.getCashDisable()) {
 				if (supportedServiceGroupList.contains(model.getCountryId())) {
 					listData.add(map.get(BigDecimal.valueOf(1)));
 				}
@@ -924,6 +935,14 @@ public class BeneficiaryService extends AbstractService {
 
 	public BeneficaryAccount getBeneAccountByAccountSeqId(BigDecimal beneAccountSeqId) {
 		return beneficaryAccountRepository.findOne(beneAccountSeqId);
+	}
+	
+	public void saveBeneAccount(BeneficaryAccount beneficaryAccount) {
+		beneficaryAccountRepository.save(beneficaryAccount);
+	}
+	
+	public void saveBeneMaster(BeneficaryMaster beneficaryMaster) {
+		beneficaryMasterRepository.save(beneficaryMaster);
 	}
 
 	/**
@@ -1044,6 +1063,10 @@ public class BeneficiaryService extends AbstractService {
 	public List<BeneficiaryCountryView> getBeneficiaryByCountry(BigDecimal beneCountryId) {
 		return beneficiaryCountryDao.findByCustomerIdAndBeneCountry(metaData.getCustomerId(), beneCountryId);
 	}
+	
+	public BeneficaryMaster getBeneficiaryMasterBybeneficaryMasterSeqId(BigDecimal beneficaryMasterSeqId) {
+		return beneficaryMasterRepository.findOne(beneficaryMasterSeqId);
+	}	
 
 	/**
 	 * whether bene is suspicous based on past transactions

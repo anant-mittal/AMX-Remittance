@@ -255,8 +255,11 @@ public class FcSaleDeliveryService {
 		String mOtp = Random.randomNumeric(6);
 		String mOtpPrefix = Random.randomAlpha(3);
 		String hashedmOtp = cryptoUtil.generateHash(deliveryDetailSeqId.toString(), mOtp);
+		//String hashedCustOtp = cryptoUtil.encryptAES(deliveryDetailSeqId.toString(), mOtp);
+		String hashedCustOtp = cryptoUtil.encryptCOTP(mOtp, deliveryDetailSeqId.toString());
 		fxDeliveryDetailsModel.setOtpToken(hashedmOtp);
 		fxDeliveryDetailsModel.setOtpTokenPrefix(mOtpPrefix);
+		fxDeliveryDetailsModel.setOtpTokenCustomer(hashedCustOtp);
 		fxDeliveryDetailsModel.setOtpValidated(ConstantDocument.No);
 		fcSaleApplicationDao.saveDeliveryDetail(fxDeliveryDetailsModel);
 
@@ -289,6 +292,14 @@ public class FcSaleDeliveryService {
 		if (!hashedmOtp.equals(dbHashedmOtpToken)) {
 			throw new GlobalException(JaxError.INVALID_OTP, "mOtp is not valid");
 		}
+		
+		// validating customerOtp
+		String hashedCustOtp = cryptoUtil.encryptCOTP(mOtp.toString(), deliveryDetailSeqId.toString());
+		String dbHashedcustOtpToken = fxDeliveryDetailsModel.getOtpTokenCustomer();
+		if (!hashedCustOtp.equals(dbHashedcustOtpToken)) {
+			throw new GlobalException(JaxError.INVALID_OTP, "Customer Otp is not valid");
+		}
+		
 		fxDeliveryDetailsModel.setOtpValidated(ConstantDocument.Yes);
 		fcSaleApplicationDao.saveDeliveryDetail(fxDeliveryDetailsModel);
 		return new BoolRespModel(true);

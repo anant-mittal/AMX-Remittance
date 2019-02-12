@@ -64,6 +64,9 @@ public enum RbaacServiceError implements IExceptionEnum {
 
 	/** The user account locked. */
 	USER_ACCOUNT_LOCKED,
+	
+	/** The invalid phone number. */
+	INVALID_PHONE_NUMBER,
 
 	/** The duplicate role. */
 	DUPLICATE_ROLE,

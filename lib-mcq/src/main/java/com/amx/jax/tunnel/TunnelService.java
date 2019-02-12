@@ -31,7 +31,10 @@ public class TunnelService implements ITunnelService {
 	 * Though all the listeners can be informed, qualification is done based on
 	 * {@link TunnelEventXchange}
 	 * 
+	 * @reliable false
+	 * @uniqueness once per listener-instance in network per event
 	 */
+	@Override
 	public <T> long shout(String topic, T messagePayload) {
 		if (redisson == null) {
 			LOGGER.error("No Redissson Client Instance Available");
@@ -52,6 +55,19 @@ public class TunnelService implements ITunnelService {
 	}
 
 	/**
+	 * @see #shout(String, Object)
+	 * @param event
+	 * @return
+	 * 
+	 * @reliable false
+	 * @uniqueness once per listener-instance in network per event
+	 */
+	@Override
+	public <E extends ITunnelEvent> long shout(E event) {
+		return this.shout(event.getClass().getName(), event);
+	}
+
+	/**
 	 * For broadcast purpose, it will send event to all the listeners which are
 	 * listening, actively, messages are QUEUED, so there's guarantee of messages
 	 * being deliver if client goes down at the time of SEND was triggered.
@@ -59,7 +75,11 @@ public class TunnelService implements ITunnelService {
 	 * Though all the listeners can be informed, qualification is done based on
 	 * {@link TunnelEventXchange}
 	 * 
+	 * @reliable true
+	 * @uniqueness once per listener-class in network per event
+	 * 
 	 */
+	@Override
 	public <T> long send(String topic, T messagePayload) {
 		if (redisson == null) {
 			LOGGER.error("No Redissson Client Instance Available");
@@ -84,7 +104,11 @@ public class TunnelService implements ITunnelService {
 	 * @param topic          - name of task
 	 * @param messagePayload - data to be used for task
 	 * @return
+	 * 
+	 * @reliable true
+	 * @uniqueness only one task will execute per event
 	 */
+	@Override
 	public <T> long task(String topic, T messagePayload) {
 		if (redisson == null) {
 			return 0L;
@@ -109,6 +133,7 @@ public class TunnelService implements ITunnelService {
 	 * @param event - task event it has be unique
 	 * @return
 	 */
+	@Override
 	public <E extends ITunnelEvent> long task(E event) {
 		return this.task(event.getClass().getName(), event);
 	}
@@ -118,6 +143,7 @@ public class TunnelService implements ITunnelService {
 	 * one client qualified with {@link TunnelEventMapping#scheme()} as
 	 * {@link TunnelEventXchange#AUDIT}
 	 */
+	@Override
 	public <T> long audit(String topic, T messagePayload) {
 		if (redisson == null) {
 			return 0L;

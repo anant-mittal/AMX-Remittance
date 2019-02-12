@@ -97,7 +97,7 @@ public class FxOrderBranchController {
 				
 		if (File.Type.PDF.equals(ext)) {
 			File file = postManService.processTemplate(
-					new File(duplicate ? TemplatesMX.FXO_RECEIPT : TemplatesMX.FXO_RECEIPT,
+					new File(duplicate ? TemplatesMX.FXO_RECEIPT_BRANCH : TemplatesMX.FXO_RECEIPT_BRANCH,
 							wrapper, File.Type.PDF))
 					.getResult();
 			// file.create(response, false);
@@ -109,7 +109,7 @@ public class FxOrderBranchController {
 
 		} else if (File.Type.HTML.equals(ext)) {
 			File file = postManService.processTemplate(
-					new File(duplicate ? TemplatesMX.FXO_RECEIPT : TemplatesMX.FXO_RECEIPT,
+					new File(duplicate ? TemplatesMX.FXO_RECEIPT_BRANCH : TemplatesMX.FXO_RECEIPT_BRANCH,
 							wrapper, File.Type.HTML))
 					.getResult();
 			

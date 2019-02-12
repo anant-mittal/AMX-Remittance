@@ -190,6 +190,7 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 				beneficaryAccount.setBankBranchId(accountDetails.getBankBranchId());
 			}
 			beneficaryAccount.setBankAccountTypeId(accountDetails.getBankAccountTypeId());
+			beneficaryAccount.setIbanNumber(accountDetails.getIbanNumber());
 
 			beneficiaryAccountDao.save(beneficaryAccount);
 			logger.info("created new bene account id: " + beneficaryAccount.getBeneficaryAccountSeqId());
@@ -264,7 +265,9 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 		BeneficaryContact beneficaryContact = new BeneficaryContact();
 		beneficaryContact.setApplicationCountryId(metaData.getCountryId());
 		beneficaryContact.setBeneficaryMasterId(beneficaryMasterId);
-		beneficaryContact.setCountryTelCode(beneDetails.getCountryTelCode());
+		if(beneDetails.getMobileNumber() != null) {
+			beneficaryContact.setCountryTelCode(beneDetails.getCountryTelCode());
+		}	
 		beneficaryContact.setCreatedBy(getCreatedBy());
 		beneficaryContact.setCreatedDate(new Date());
 		beneficaryContact.setIsActive(ConstantDocument.Yes);
