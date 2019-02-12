@@ -3,6 +3,7 @@ package com.amx.jax.radar.jobs.customer;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.cache.CacheBox;
+import com.amx.jax.radar.EsConfig;
 import com.amx.utils.ArgUtil;
 
 /**
@@ -27,11 +28,11 @@ public class OracleVarsCache extends CacheBox<String> {
 	}
 
 	public String getTranxIndex() {
-		return "oracle-" + DOC_VERSION + "-tranx-v4";
+		return EsConfig.indexName("oracle-" + DOC_VERSION + "-tranx-v4");
 	}
 
 	public String getCustomerIndex() {
-		return "oracle-" + DOC_VERSION + "-customer-v4";
+		return EsConfig.indexName("oracle-" + DOC_VERSION + "-customer-v4");
 	}
 
 	public Long getCustomerScannedStamp(boolean reverse) {

@@ -20,6 +20,8 @@ import org.elasticsearch.common.xcontent.XContentType;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.amx.jax.AppContextUtil;
+import com.amx.jax.AppParam;
 import com.amx.jax.logger.LoggerService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -122,6 +124,7 @@ public class AESRepository {
 		public BulkRequestBuilder updateById(String index, String type, String id, AESDocument vote) {
 			UpdateRequest updateRequest = new UpdateRequest(index, type, id);
 			try {
+				updateRequest.index(index);
 				String voteJson = ESDocumentParser.toJson(vote);
 				updateRequest.upsert(voteJson, XContentType.JSON);
 				updateRequest.doc(voteJson, XContentType.JSON);

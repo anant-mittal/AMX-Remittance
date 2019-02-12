@@ -2,6 +2,8 @@ package com.amx.jax.radar;
 
 import java.util.Date;
 
+import com.amx.jax.AppContextUtil;
+import com.amx.jax.dict.Tenant;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -15,9 +17,11 @@ public class AESDocument {
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZZ")
 	@JsonProperty(value = "@timestamp")
 	private Date timestamp;
+	private Tenant tnt = Tenant.DEFAULT;
 
 	public AESDocument() {
 		this.timestamp = new Date(System.currentTimeMillis());
+		this.tnt = AppContextUtil.getTenant();
 	}
 
 	public String getId() {
@@ -34,5 +38,13 @@ public class AESDocument {
 
 	public void setTimestamp(Date timestamp) {
 		this.timestamp = timestamp;
+	}
+
+	public Tenant getTnt() {
+		return tnt;
+	}
+
+	public void setTnt(Tenant tnt) {
+		this.tnt = tnt;
 	}
 }

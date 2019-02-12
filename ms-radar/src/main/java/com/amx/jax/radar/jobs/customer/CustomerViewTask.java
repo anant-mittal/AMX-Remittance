@@ -23,6 +23,7 @@ import com.amx.jax.mcq.Candidate;
 import com.amx.jax.mcq.shedlock.SchedulerLock;
 import com.amx.jax.mcq.shedlock.SchedulerLock.LockContext;
 import com.amx.jax.radar.AESRepository.BulkRequestBuilder;
+import com.amx.jax.radar.EsConfig;
 import com.amx.jax.radar.TestSizeApp;
 import com.amx.jax.rates.AmxCurConstants;
 import com.amx.utils.ArgUtil;
