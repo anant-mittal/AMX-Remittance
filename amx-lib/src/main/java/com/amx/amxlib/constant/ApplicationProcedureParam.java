@@ -31,26 +31,25 @@ public enum ApplicationProcedureParam {
 	P_DELIVERY_MODE_ID,
 	P_REMITTANCE_MODE_ID,
 	P_USER_TYPE,
-	P_CURRENCY_ID,
 	P_DOCUMENT_ID,
 	P_SERVICE_GROUP_CODE,
 	P_DOCUMENT_CODE,
 	P_USER_FINANCIAL_YEAR,
-	P_FOREIGN_TRANX_AMOUNT,
 	P_CUSTOMER_ID,
 	P_SERVICE_MASTER_ID,
 	P_LC_AMOUNT,
-	P_FC_AMOUNT,
+	P_FC_AMOUNT("P_FOREIGN_TRANX_AMOUNT"),
+	P_CALCULATED_FC_AMOUNT,
 	P_LOCAL_COMMISION_CURRENCY_ID,
 	P_ROUTING_BANK_BRANCH_ID,
 	P_ROUTING_BANK_ID,
-	P_FOREIGN_CURRENCY_ID,
+	P_FOREIGN_CURRENCY_ID("P_CURRENCY_ID"),
 	P_ROUTING_COUNTRY_ID,
 	P_BRANCH_ID;
 
 	String[] aliasNames;
 
-	private ApplicationProcedureParam(String[] aliasNames) {
+	private ApplicationProcedureParam(String... aliasNames) {
 		this.aliasNames = aliasNames;
 	}
 
@@ -64,6 +63,22 @@ public enum ApplicationProcedureParam {
 			}
 		}
 		map.put(this.toString(), value);
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T> T getValue(Map<String, Object> map) {
+		T value = (T) map.get(this.toString());
+		if (value == null) {
+			if (this.aliasNames != null && this.aliasNames.length > 0) {
+				for (String alias : aliasNames) {
+					if (map.get(alias) != null) {
+						value = (T) map.get(alias);
+						break;
+					}
+				}
+			}
+		}
+		return value;
 	}
 
 }

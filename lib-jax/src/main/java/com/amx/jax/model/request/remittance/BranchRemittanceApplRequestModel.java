@@ -172,19 +172,35 @@ public class BranchRemittanceApplRequestModel implements IRemittanceApplicationP
 	public void setRoutingCountryId(BigDecimal routingCountryId) {
 		this.routingCountryId = routingCountryId;
 	}
+	
 	@Override
-	public Long getBeneficiaryRelationshipSeqId() {
-		return this.beneId.longValue();
+	public BigDecimal getBeneficiaryRelationshipSeqIdBD() {
+		return this.beneId;
 	}
 	@Override
-	public Long getCorrespondanceBankId() {
-		return routingBankId.longValue();
+	public BigDecimal getLocalAmountBD() {
+		return this.localAmount;
 	}
 	@Override
-	public Long getServiceIndicatorId() {
-		return serviceMasterId.longValue();
+	public BigDecimal getForeignAmountBD() {
+		return this.foreignAmount;
 	}
-
-
+	@Override
+	public BigDecimal getCorrespondanceBankIdBD() {
+		return this.routingBankId;
+	}
+	@Override
+	public BigDecimal getServiceIndicatorIdBD() {
+		return this.serviceMasterId;
+	}
+	@Override
+	public BigDecimal getDeliveryModeIdBD() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public BigDecimal getRemitModeIdBD() {
+		return this.remittanceModeId;
+	}
 
 }

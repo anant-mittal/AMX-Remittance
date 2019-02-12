@@ -11,14 +11,18 @@ import java.math.BigDecimal;
  */
 public interface IRemittanceApplicationParams {
 
-	Long getBeneficiaryRelationshipSeqId();
+	BigDecimal getBeneficiaryRelationshipSeqIdBD();
 
-	BigDecimal getLocalAmount();
+	BigDecimal getLocalAmountBD();
 
-	BigDecimal getForeignAmount();
+	BigDecimal getForeignAmountBD();
 
-	Long getCorrespondanceBankId();
+	BigDecimal getCorrespondanceBankIdBD();
 
-	Long getServiceIndicatorId();
+	BigDecimal getServiceIndicatorIdBD();
+
+	BigDecimal getDeliveryModeIdBD();
+
+	BigDecimal getRemitModeIdBD();
 
 }

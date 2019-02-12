@@ -1,4 +1,4 @@
-package com.amx.amxlib.constant;
+package com.amx.jax.model.response.remittance;
 
 /**
  * State of loyality points

@@ -21,6 +21,10 @@ public class BranchRemittanceGetExchangeRateRequest implements IRemittanceApplic
 	Long correspondanceBankId;
 	@NotNull(message = "serviceIndicatorId can not be null")
 	Long serviceIndicatorId;
+	@NotNull(message = "remittanceModeId can not be null")
+	Long remittanceModeId;
+	@NotNull(message = "deliveryModeId can not be null")
+	Long deliveryModeId;
 
 	public Long getBeneficiaryRelationshipSeqId() {
 		return beneficiaryRelationshipSeqId;
@@ -67,5 +71,56 @@ public class BranchRemittanceGetExchangeRateRequest implements IRemittanceApplic
 		return "BranchRemittanceGetExchangeRateRequest [beneficiaryRelationshipSeqId=" + beneficiaryRelationshipSeqId
 				+ ", localAmount=" + localAmount + ", foreignAmount=" + foreignAmount + ", correspondanceBankId="
 				+ correspondanceBankId + ", serviceIndicatorId=" + serviceIndicatorId + "]";
+	}
+
+	@Override
+	public BigDecimal getBeneficiaryRelationshipSeqIdBD() {
+		return BigDecimal.valueOf(this.beneficiaryRelationshipSeqId);
+	}
+
+	@Override
+	public BigDecimal getLocalAmountBD() {
+		return this.localAmount;
+	}
+
+	@Override
+	public BigDecimal getForeignAmountBD() {
+		return this.foreignAmount;
+	}
+
+	@Override
+	public BigDecimal getCorrespondanceBankIdBD() {
+		return BigDecimal.valueOf(this.correspondanceBankId);
+	}
+
+	@Override
+	public BigDecimal getServiceIndicatorIdBD() {
+		return BigDecimal.valueOf(this.serviceIndicatorId);
+	}
+
+	@Override
+	public BigDecimal getDeliveryModeIdBD() {
+		return BigDecimal.valueOf(this.deliveryModeId);
+	}
+
+	@Override
+	public BigDecimal getRemitModeIdBD() {
+		return BigDecimal.valueOf(this.remittanceModeId);
+	}
+
+	public Long getRemittanceModeId() {
+		return remittanceModeId;
+	}
+
+	public void setRemittanceModeId(Long remittanceModeId) {
+		this.remittanceModeId = remittanceModeId;
+	}
+
+	public Long getDeliveryModeId() {
+		return deliveryModeId;
+	}
+
+	public void setDeliveryModeId(Long deliveryModeId) {
+		this.deliveryModeId = deliveryModeId;
 	}
 }

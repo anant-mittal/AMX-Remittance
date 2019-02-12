@@ -1,11 +1,10 @@
 /**
  * 
  */
-package com.amx.amxlib.model.response;
+package com.amx.jax.model.response.remittance;
 
 import java.math.BigDecimal;
 
-import com.amx.amxlib.constant.LoyalityPointState;
 import com.amx.jax.model.AbstractModel;
 import com.amx.jax.model.response.ExchangeRateBreakup;
 
