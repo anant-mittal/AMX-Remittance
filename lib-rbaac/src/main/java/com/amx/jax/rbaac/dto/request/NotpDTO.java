@@ -6,6 +6,8 @@ package com.amx.jax.rbaac.dto.request;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
+import javax.validation.constraints.NotNull;
+
 import org.hibernate.validator.constraints.NotBlank;
 
 /**
@@ -19,7 +21,7 @@ public class NotpDTO implements Serializable {
 	private static final long serialVersionUID = 4920057845794220028L;
 
 	/** The employee no. */
-	@NotBlank(message = "Employee Id can not be Null or Empty")
+	@NotNull(message = "Employee Id can not be Null or Empty")
 	private BigDecimal employeeId;
 
 	@NotBlank(message = "SAC cannot be Null or Empty")
