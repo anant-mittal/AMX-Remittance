@@ -21,11 +21,11 @@ import org.springframework.util.StringUtils;
 import org.springframework.util.StringValueResolver;
 
 import com.amx.jax.mcq.shedlock.LockConfiguration;
-import com.amx.jax.mcq.shedlock.LockConfigurationExtractor;
 import com.amx.jax.mcq.shedlock.SchedulerLock;
+import com.amx.jax.mcq.shedlock.SchedulerLock.LockContext;
 import com.amx.utils.ArgUtil;
 
-public class MCQLockConfigExtractor implements LockConfigurationExtractor {
+public class MCQLockConfigExtractor {
 	private final TemporalAmount defaultLockAtMostFor;
 	private final TemporalAmount defaultLockAtLeastFor;
 	private final StringValueResolver embeddedValueResolver;
@@ -38,7 +38,6 @@ public class MCQLockConfigExtractor implements LockConfigurationExtractor {
 		this.embeddedValueResolver = embeddedValueResolver;
 	}
 
-	@Override
 	public Optional<LockConfiguration> getLockConfiguration(Runnable task) {
 		if (task instanceof ScheduledMethodRunnable) {
 			ScheduledMethodRunnable scheduledMethodRunnable = (ScheduledMethodRunnable) task;
@@ -51,10 +50,15 @@ public class MCQLockConfigExtractor implements LockConfigurationExtractor {
 
 	public Optional<LockConfiguration> getLockConfiguration(Object target, Method method) {
 		SchedulerLock annotation = findAnnotation(target, method);
-		Scheduled annotationScheduled = findAnnotationScheduled(target, method);
-		String alterNateName = String.format("%s#%s", getClassName(target),
-				method.getName());
 		if (shouldLock(annotation)) {
+			Scheduled annotationScheduled = findAnnotationScheduled(target, method);
+			String alterNateName = null;
+			if (LockContext.BY_CLASS.equals(annotation.context())) {
+				alterNateName = String.format("%s", getClassName(target));
+			} else { // LockContext.BY_METHOD
+				alterNateName = String.format("%s#%s", getClassName(target),
+						method.getName());
+			}
 			return Optional.of(getLockConfiguration(annotation, annotationScheduled, alterNateName));
 		} else {
 			return Optional.empty();

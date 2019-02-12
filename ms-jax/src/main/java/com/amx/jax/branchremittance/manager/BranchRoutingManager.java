@@ -214,8 +214,7 @@ public class BranchRoutingManager {
 					listOfService.add(service);
 					routingResponseDto.setServiceList(listOfService);
 					if (routingcountryId.compareTo(BigDecimal.ZERO) > 0) {
-						List<CountryMasterView> countryMasterView = countryRepository
-								.findByLanguageIdAndCountryId(languageId, routingcountryId);
+						List<CountryMasterView> countryMasterView = countryRepository.findByLanguageIdAndCountryId(languageId, routingcountryId);
 						List<ResourceDTO> routCount = new ArrayList<ResourceDTO>();
 						ResourceDTO rout = new ResourceDTO();
 						rout.setResourceId(countryMasterView.get(0).getCountryId());

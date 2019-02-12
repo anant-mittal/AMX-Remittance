@@ -18,8 +18,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
+import com.amx.jax.error.JaxError;
+import com.amx.jax.util.JaxUtil;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -434,5 +437,34 @@ public class RoutingProcedureDao {
 			}
 
 		 
-	
+		 public BigDecimal getEcmCode() {
+			BigDecimal ecmCode= BigDecimal.ZERO;
+			 
+			 String sql="SELECT ECM_CODE  		"
+			 		+ "  FROM   MST_ENCASHMENT 	" 
+			 		+ "  WHERE  TRUNC(SYSDATE) BETWEEN EFF_DATE_FROM AND EFF_DATE_TO " 
+			 		+ "  AND    ACTIVE_FLG = 'Y' AND    POINTS =  1000";
+			 
+			 LOGGER.debug("in sgetEcmCode ql :  "+sql );
+			 List<Object> inputList = new ArrayList<>();
+			 
+			 List<Map<String, Object>> outputList = jdbcTemplate.queryForList(sql, inputList.toArray());
+				LOGGER.info("in getRemittanceModeIdForCash,output values: {}", outputList);
+				Iterator<Map<String, Object>> itr = outputList.iterator();
+			
+				while (itr.hasNext()) {
+					ecmCode = (BigDecimal) itr.next().get("ECM_CODE");
+				}
+			 
+				if(!JaxUtil.isNullZeroBigDecimalCheck(ecmCode)) {
+					throw new GlobalException(JaxError.INVALID_CLAIM_CODE,"The claim code you have entered is not available in our records.");
+				}
+				
+			 return ecmCode;
+			 
+			 
+		 }
+		 
+		 
+		 
 }

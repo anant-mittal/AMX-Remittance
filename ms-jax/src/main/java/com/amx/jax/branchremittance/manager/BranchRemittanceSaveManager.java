@@ -4,14 +4,19 @@ package com.amx.jax.branchremittance.manager;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.transaction.Transactional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.branchremittance.dao.BranchRemittanceDao;
@@ -32,6 +37,8 @@ import com.amx.jax.dbmodel.fx.EmployeeDetailsView;
 import com.amx.jax.dbmodel.remittance.AdditionalInstructionData;
 import com.amx.jax.dbmodel.remittance.Document;
 import com.amx.jax.dbmodel.remittance.LocalBankDetailsView;
+import com.amx.jax.dbmodel.remittance.LoyaltyClaimRequest;
+import com.amx.jax.dbmodel.remittance.LoyaltyPointsModel;
 import com.amx.jax.dbmodel.remittance.RemitApplAmlModel;
 import com.amx.jax.dbmodel.remittance.RemittanceAdditionalInstructionData;
 import com.amx.jax.dbmodel.remittance.RemittanceAml;
@@ -61,6 +68,7 @@ import com.amx.jax.service.CompanyService;
 import com.amx.jax.util.DateUtil;
 import com.amx.jax.util.JaxUtil;
 
+@Component
 public class BranchRemittanceSaveManager {
 	
 	private Logger logger = LoggerFactory.getLogger(getClass());
@@ -119,6 +127,7 @@ public class BranchRemittanceSaveManager {
 	 * @return : saveing application to remittance
 	 */
 	
+	@Transactional
 	public RemittanceResponseDto saveRemittance(BranchRemittanceRequestModel remittanceRequestModel) {
 		RemittanceResponseDto responseDto  = new RemittanceResponseDto();
 		
@@ -131,24 +140,24 @@ public class BranchRemittanceSaveManager {
 			List<CollectDetailModel> 	collectionDetails		=saveCollectionDetail(remittanceRequestModel,collectionModel);
 			List<ForeignCurrencyAdjust> currencyAdjustList 		=saveForeignCurrencyAdjust(remittanceRequestModel,collectionModel);
 			List<RemittanceTransaction> remitTrnxList      		=saveRemittanceTrnx(remittanceRequestModel,collectionModel);
-			
-			//List<RemittanceBenificiary> remitBeneList      		=saveBeneTrnx(remitTrnxList);
-			Map<String,RemittanceBenificiary>  remitBeneList = saveBeneTrnx(remitTrnxList);
-			
-			Map<String,RemittanceAdditionalInstructionData> addInstList=saveRemitnaceinstructionData(remitTrnxList);
-			Map<String,RemittanceAml>			amlList					=saveRemittanceAml(remitTrnxList);											
-			
+			List<RemittanceBenificiary> remitBeneList      		=saveBeneTrnx(remitTrnxList);
+			List<RemittanceAdditionalInstructionData> addInstList=saveRemitnaceinstructionData(remitTrnxList);
+			List<RemittanceAml>			amlList					=saveRemittanceAml(remitTrnxList);											
+			LoyaltyClaimRequest loyaltyClaim          			=saveLoyalTyClaimRequest(collectionDetails);
+			List<LoyaltyPointsModel> loyaltyPoints 				= saveLoyaltyPoints(remitTrnxList);
+					
+					
 			HashMap<String, Object> mapAllDetailRemitSave = new HashMap<String, Object>();
 			mapAllDetailRemitSave.put("EX_COLLECT",collectionModel);
 			mapAllDetailRemitSave.put("EX_COLLECT_DET",collectionDetails);
+			mapAllDetailRemitSave.put("LYL_CLAIM",loyaltyClaim);
 			mapAllDetailRemitSave.put("EX_CURR_ADJUST",currencyAdjustList);
 			mapAllDetailRemitSave.put("EX_REMIT_TRNX", remitTrnxList);
 			mapAllDetailRemitSave.put("EX_REMIT_BENE", remitBeneList);
 			mapAllDetailRemitSave.put("EX_REMIT_ADDL", addInstList);
 			mapAllDetailRemitSave.put("EX_REMIT_AML", amlList);
-			brRemittanceDao.saveRemittanceTransaction(mapAllDetailRemitSave);
-			
-			
+			mapAllDetailRemitSave.put("LOYALTY_POINTS", loyaltyPoints);
+			responseDto = brRemittanceDao.saveRemittanceTransaction(mapAllDetailRemitSave);
 			
 		}catch (GlobalException e) {
 			logger.error("routing  procedure", e.getErrorMessage() + "" + e.getErrorKey());
@@ -188,7 +197,12 @@ public class BranchRemittanceSaveManager {
 		try {
 			if(shoppingCartList!=null && !shoppingCartList.isEmpty()) {
 				
-				RemittanceApplication appl =  remittanceApplicationRepository.findOne(shoppingCartList.get(0).getApplicationId());
+				//RemittanceApplication appl =  remittanceApplicationRepository.findOne(shoppingCartList.get(0).getApplicationId());
+				
+				Customer customerid = new Customer();
+				customerid.setCustomerId(metaData.getCustomerId());
+				RemittanceApplication appl =  remittanceApplicationRepository.getApplicationForRemittance(customerid,shoppingCartList.get(0).getApplicationId());
+				
 				
 				collection.setApplicationCountryId(appl.getFsCountryMasterByApplicationCountryId().getCountryId());
 				collection.setFsCustomer(appl.getFsCustomer());
@@ -239,6 +253,7 @@ public class BranchRemittanceSaveManager {
 	public List<CollectDetailModel> saveCollectionDetail(BranchRemittanceRequestModel remittanceRequestModel,CollectionModel collect){
 		
 		List<CollectDetailModel> collectionDetailModelList = new ArrayList<CollectDetailModel>();
+		List<BranchApplicationDto> shoppingCartList = remittanceRequestModel.getRemittanceApplicationId();
 		
 		int i = 1;
 		BigDecimal totalAmt = BigDecimal.ZERO;
@@ -262,6 +277,10 @@ public class BranchRemittanceSaveManager {
 			collectDetails.setDocumentLineNo(new BigDecimal(i++));
 			collectDetails.setExCurrencyMaster(collect.getExCurrencyMaster());
 			collectDetails.setCollAmt(collectDataTable.getPaymentAmount());
+			
+			collectDetails.setLocCode(collect.getLocCode());
+			collectDetails.setCompanyCode(collect.getCompanyCode());
+			collectDetails.setDocumentFinanceYear(collect.getDocumentFinanceYear());
 			
 			collectDetails.setPaymentModeId(collectDataTable.getPaymentModeId());
 			PaymentModeModel payMode = getPaymentModeDetailsById(collectDataTable.getPaymentModeId());
@@ -291,6 +310,66 @@ public class BranchRemittanceSaveManager {
 	
 			collectionDetailModelList.add(collectDetails);
 		}
+		
+		//For Loyalty  Claim
+		BigDecimal loyaltyAmount = BigDecimal.ZERO;
+		Boolean lyaltyInd = false;
+		
+		if(shoppingCartList!=null && !shoppingCartList.isEmpty()) {
+			
+			for(BranchApplicationDto applDto :  shoppingCartList) {
+				RemittanceApplication appl = remittanceApplicationRepository.findOne(applDto.getApplicationId());
+				if(appl!=null && appl.getLoyaltyPointInd().equalsIgnoreCase(ConstantDocument.Yes)) {
+					lyaltyInd = true;
+					loyaltyAmount = loyaltyAmount.add(appl.getLoyaltyPointsEncashed());
+				}
+			}
+				
+				
+			
+				if(lyaltyInd && loyaltyAmount.compareTo(BigDecimal.ZERO)>0) {
+					CollectDetailModel collectDetails = new CollectDetailModel();
+					
+					collectDetails.setCashCollectionId(collect);
+					Customer customer = new Customer();
+					customer.setCustomerId(collect.getFsCustomer().getCustomerId());
+					collectDetails.setFsCustomer(customer);
+					
+					CountryMaster appcountrymaster = new CountryMaster();
+					appcountrymaster.setCountryId(collect.getApplicationCountryId());
+					collectDetails.setFsCountryMaster(appcountrymaster);
+					collectDetails.setLocCode(collect.getLocCode());
+					collectDetails.setCompanyCode(collect.getCompanyCode());
+					collectDetails.setDocumentFinanceYear(collect.getDocumentFinanceYear());
+					
+					collectDetails.setDocumentCode(collect.getDocumentCode());
+					collectDetails.setExBankBranch(collect.getExBankBranch());
+					collectDetails.setDocumentDate(new Date());
+					collectDetails.setDocumentLineNo(new BigDecimal(i++));
+					collectDetails.setExCurrencyMaster(collect.getExCurrencyMaster());
+					collectDetails.setCollAmt(new BigDecimal(1));
+					PaymentModeModel payMode = paymentModeRepository.getPaymentModeDetails(ConstantDocument.VOCHERCODE);
+					collectDetails.setCollectionMode(payMode.getPaymentModeCode());
+					collectDetails.setPaymentModeId(payMode.getPaymentModeId());
+					
+					collectDetails.setVoucherYear(collect.getDocumentFinanceYear());
+					
+					BigDecimal documentNo = generateDocumentNumber(collect.getApplicationCountryId(),
+							collect.getFsCompanyMaster().getCompanyId(),ConstantDocument.VOUCHER_DOCUMENT_CODE,collect.getDocumentFinanceYear(),collect.getLocCode());
+					
+					if(documentNo!=null && documentNo.compareTo(BigDecimal.ZERO)!=0){
+						collectDetails.setVoucherNo(documentNo);
+				    }else{
+				    	throw new GlobalException(JaxError.INVALID_VOUCHER_DOCUMENT_NO, "Document Seriality  setup  not  defined for Voucher ");
+				    }
+					
+					collectionDetailModelList.add(collectDetails);
+				
+				}	
+			
+		}
+		
+		
 		return collectionDetailModelList;
 		
 	}
@@ -299,6 +378,15 @@ public class BranchRemittanceSaveManager {
 	
 	public List<ForeignCurrencyAdjust> saveForeignCurrencyAdjust(BranchRemittanceRequestModel remittanceRequestModel,CollectionModel  collect){
 		List<ForeignCurrencyAdjust> currencyAdjustListList = new ArrayList<>();
+		
+		List<BranchApplicationDto> shoppingCartList = remittanceRequestModel.getRemittanceApplicationId();
+		RemittanceApplication appl  =new RemittanceApplication();
+		
+		if(shoppingCartList!=null && !shoppingCartList.isEmpty()) {
+			Customer customerid = new Customer();
+			customerid.setCustomerId(metaData.getCustomerId());
+			appl =  remittanceApplicationRepository.getApplicationForRemittance(customerid,shoppingCartList.get(0).getApplicationId());
+		}
 		
 		
 		List<RemittanceCollectionDto> collectionDetails = remittanceRequestModel.getCollctionModeDto();
@@ -323,7 +411,7 @@ public class BranchRemittanceSaveManager {
 					CurrencyWiseDenomination denominationMaster = new CurrencyWiseDenomination();
 					denominationMaster.setDenominationId(currencyCashDenomination.getDenominationId());
 					foreignCurrencyAdjust.setFsDenominationId(denominationMaster);
-					//foreignCurrencyAdjust.setExchangeRate(shoppingCartDetails.getExchangeRateApplied());
+					foreignCurrencyAdjust.setExchangeRate(appl.getExchangeRateApplied());
 					foreignCurrencyAdjust.setDenaminationAmount(currencyCashDenomination.getDenominationAmount());
 					foreignCurrencyAdjust.setDocumentFinanceYear(collect.getDocumentFinanceYear());
 					foreignCurrencyAdjust.setDocumentCode(ConstantDocument.COLLECTION_DOCUMENT_ID);
@@ -391,7 +479,14 @@ public class BranchRemittanceSaveManager {
 			
 			for(BranchApplicationDto applDto : shoppingCartList) {
 				RemittanceTransaction remitTrnx = new RemittanceTransaction();
-				RemittanceApplication appl =  remittanceApplicationRepository.findOne(shoppingCartList.get(0).getApplicationId());
+				//RemittanceApplication appl =  remittanceApplicationRepository.findOne(shoppingCartList.get(0).getApplicationId());
+				
+				
+				Customer customerid = new Customer();
+				customerid.setCustomerId(metaData.getCustomerId());
+				RemittanceApplication appl =  remittanceApplicationRepository.getApplicationForRemittance(customerid,shoppingCartList.get(0).getApplicationId());
+				
+				
 				if(appl!=null && appl.getIsactive().equalsIgnoreCase(ConstantDocument.Yes)) {
 					remitTrnx.setAccountMmyyyy(appl.getAccountMmyyyy());
 					remitTrnx.setApplicationCountryId(appl.getFsCountryMasterByApplicationCountryId());
@@ -493,10 +588,8 @@ public class BranchRemittanceSaveManager {
 	
 	
 	
-public   Map<String,RemittanceBenificiary>  saveBeneTrnx(List<RemittanceTransaction> remitTrnxList){
-	//List<RemittanceBenificiary> remitBeneList    = new ArrayList<>();
-	Map<String,RemittanceBenificiary> remitBeneList    = new HashMap<>();
-	
+public   List<RemittanceBenificiary>  saveBeneTrnx(List<RemittanceTransaction> remitTrnxList){
+	List<RemittanceBenificiary> remitBeneList    = new ArrayList<>();
 	for(RemittanceTransaction remitTrnx : remitTrnxList) {
 		RemittanceAppBenificiary applBene = applBeneRepository.findOne(remitTrnx.getApplicationDocumentNo());
 		if(applBene!=null) {
@@ -540,12 +633,13 @@ public   Map<String,RemittanceBenificiary>  saveBeneTrnx(List<RemittanceTransact
 			remitBene.setExUserFinancialYear(getFinancialYearObj(remitTrnx.getDocumentFinanceYear()));
 			remitBene.setIsactive(ConstantDocument.Yes);
 			
-			//remitBeneList.add(remitBene);
-			remitBeneList.put(remitTrnx.getApplicationFinanceYear()+"/"+remitTrnx.getApplicationDocumentNo(), remitBene);
+			remitBeneList.add(remitBene);
 
 		}else {
 			throw new GlobalException(JaxError.NO_RECORD_FOUND,"Record found in appl bene for remittacne :"+remitTrnx.getApplicationDocumentNo());
 		}
+
+		
 	}
 	
 	return remitBeneList;
@@ -553,8 +647,8 @@ public   Map<String,RemittanceBenificiary>  saveBeneTrnx(List<RemittanceTransact
 	
 	
 
-public   Map<String,RemittanceAdditionalInstructionData>   saveRemitnaceinstructionData(List<RemittanceTransaction> remitTrnxList){
-	Map<String,RemittanceAdditionalInstructionData> addInsData = new HashMap<>();
+public   List<RemittanceAdditionalInstructionData>   saveRemitnaceinstructionData(List<RemittanceTransaction> remitTrnxList){
+	 List<RemittanceAdditionalInstructionData> addInsData = new ArrayList<>();
 	 
 	 for(RemittanceTransaction remitTrnx : remitTrnxList) {
 			AdditionalInstructionData applInstrucData = addInstrDataRepository.findOne(remitTrnx.getApplicationDocumentNo());
@@ -577,7 +671,7 @@ public   Map<String,RemittanceAdditionalInstructionData>   saveRemitnaceinstruct
 			remitAddData.setFsCountryMaster(remitTrnx.getApplicationCountryId());
 			remitAddData.setDocumentFinanceYear(remitTrnx.getDocumentFinanceYear());
 			remitAddData.setIsactive(ConstantDocument.Yes);
-			addInsData.put(applInstrucData.getDocumentFinanceYear()+"/"+applInstrucData.getDocumentNo(),remitAddData);
+			addInsData.add(remitAddData);
 			
 		}else {
 			throw new GlobalException(JaxError.NO_RECORD_FOUND,"Record found in appl additional instruction  :"+remitTrnx.getApplicationDocumentNo());
@@ -589,8 +683,8 @@ public   Map<String,RemittanceAdditionalInstructionData>   saveRemitnaceinstruct
 }
 
 
-public Map<String,RemittanceAml>	saveRemittanceAml(List<RemittanceTransaction> remitTrnxList){
-	Map<String,RemittanceAml>	amlList =new HashMap<>();	
+public List<RemittanceAml>	saveRemittanceAml(List<RemittanceTransaction> remitTrnxList){
+	List<RemittanceAml>	amlList =new ArrayList<>();	
 	
 	 for(RemittanceTransaction remitTrnx : remitTrnxList) {
 			RemitApplAmlModel applAml = applAmlRepository.findOne(remitTrnx.getApplicationDocumentNo());
@@ -608,7 +702,8 @@ public Map<String,RemittanceAml>	saveRemittanceAml(List<RemittanceTransaction> r
 				remitAml.setBlackListUser(applAml.getBlackListUser());
 				remitAml.setIsactive(ConstantDocument.Yes);
 				remitAml.setExRemittancefromAml(remitTrnx);
-				amlList.put(remitTrnx.getApplicationFinanceYear()+"/"+remitTrnx.getApplicationDocumentNo(),remitAml);
+				amlList.add(remitAml);
+				
 			}
 			
 	}
@@ -617,6 +712,60 @@ public Map<String,RemittanceAml>	saveRemittanceAml(List<RemittanceTransaction> r
 	
 }
 
+
+private LoyaltyClaimRequest saveLoyalTyClaimRequest(List<CollectDetailModel> collectDetailModelList) {
+	LoyaltyClaimRequest Lclaim = new LoyaltyClaimRequest();
+	
+	if(collectDetailModelList!=null && !collectDetailModelList.isEmpty()) {
+		
+		for(CollectDetailModel collectDetail : collectDetailModelList) {
+			
+			if(collectDetail.getCollectionMode().equalsIgnoreCase(ConstantDocument.VOCHERCODE)) {
+				Lclaim.setClaimDate(new Date());
+				Lclaim.setClaimPoints(new BigDecimal(1000));
+				Lclaim.setEcLocCode(collectDetail.getLocCode());
+				Lclaim.setDocfyr(collectDetail.getDocumentFinanceYear());
+				Lclaim.setEcmCode(routingProDao.getEcmCode());
+				Lclaim.setEcDocDate(new Date());
+				Lclaim.setEcValue(collectDetail.getCollAmt());
+				Lclaim.setVoucherNo(collectDetail.getVoucherNo());
+				
+			}
+		}
+		
+	}
+	
+	return Lclaim;
+}
+
+
+public List<LoyaltyPointsModel> saveLoyaltyPoints(List<RemittanceTransaction> remittTransactionList){
+	 List<LoyaltyPointsModel> loyaltyPoints = new ArrayList<>();
+		
+		if(remittTransactionList!=null && !remittTransactionList.isEmpty()) {
+			for(RemittanceTransaction applDto : remittTransactionList) {
+			
+				if(applDto!=null && applDto.getLoyaltyPointsInd().equalsIgnoreCase(ConstantDocument.Yes)) {
+					LoyaltyPointsModel lpoints = new LoyaltyPointsModel();
+					
+					lpoints.setAccMonth(applDto.getAccountMmyyyy());
+					lpoints.setCustomerReference(applDto.getCustomerRef());
+					lpoints.setCompCode(applDto.getCompanyCode());
+					lpoints.setTransDate(new Date());
+					lpoints.setLoyaltyPoints(new BigDecimal(-1000));
+					lpoints.setDocfyr(applDto.getDocumentFinanceYear());
+					lpoints.setTrnRefNo(applDto.getDocumentNo());
+					lpoints.setType(ConstantDocument.CLAIM);
+					lpoints.setCalcFlag(ConstantDocument.R);
+					lpoints.setProcessDate(new Date());
+					lpoints.setDocCode(applDto.getDocumentCode());
+					lpoints.setProcessDate(DateUtil.daysAddInCurrentDate(365));
+					loyaltyPoints.add(lpoints);
+				}
+			}
+		}
+	 return loyaltyPoints;
+}
 
 	
 	public BigDecimal getDeclarationReportAmount(String authType) {
@@ -652,9 +801,13 @@ public Map<String,RemittanceAml>	saveRemittanceAml(List<RemittanceTransaction> r
 	}
 	
 public BigDecimal generateDocumentNumber(BigDecimal appCountryId,BigDecimal companyId,BigDecimal documentId,BigDecimal finYear,BigDecimal branchId) {
-	Map<String, Object> output = applicationProcedureDao.getDocumentSeriality(appCountryId, companyId, documentId,finYear, ConstantDocument.A, branchId);
+	Map<String, Object> output = applicationProcedureDao.getDocumentSeriality(appCountryId, companyId, documentId,finYear, ConstantDocument.Update, branchId);
 	return (BigDecimal) output.get("P_DOC_NO");
 	}
+
+
+
+
 
  public TransferDto getTrasnferModeByBankServiceRule(RemittanceTransaction remitTrnx){
 	 Map<String,Object> mapBankServiceRule= routingProDao.checkBankServiceRule(remitTrnx);

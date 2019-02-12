@@ -28,6 +28,7 @@ import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.jax.branchremittance.dao.BranchRemittanceDao;
+import com.amx.jax.branchremittance.service.BranchRemittanceExchangeRateService;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dbmodel.ApplicationSetup;
@@ -147,6 +148,9 @@ public class BranchRemittanceApplManager {
 	
 	@Autowired
 	BranchRoutingManager branchRoutingManager;
+	
+	@Autowired
+	BranchRemittanceExchangeRateService branchExchRateService;
 
 
 	
@@ -177,6 +181,13 @@ public class BranchRemittanceApplManager {
 		 /* get exchange setup details **/
 		 //Map<String, Object> branchExchangeRate =branchRemitManager.getExchangeRateForBranch(requestApplModel, branchRoutingDetails);
 		 Map<String, Object> branchExchangeRate =branchRemitManager.getExchangeRateForBranch(requestApplModel,branchRoutingDto);
+		 
+		 
+		 //Priccing 
+		 //branchExchRateService.getExchaneRate(requestApplModel);
+		 
+		 
+		 
 		 logger.info("branchExchangeRate :"+branchExchangeRate.toString());
 		 /* get aml cehck   details **/
 		List<AmlCheckResponseDto> amlList= branchRemitManager.amlTranxAmountCheckForRemittance(requestApplModel,branchExchangeRate);

@@ -60,7 +60,6 @@ public class MCQLocker {
 			candidate.setLeader(false);
 		}
 		leaders.put(candidate.queue(), winnerId);
-		LOGGER.debug("Leader:{} for key:{}", winnerId, candidate.queue());
 		return candidate.isLeader();
 	}
 
@@ -91,7 +90,7 @@ public class MCQLocker {
 	public void executeWithLock(Task task, Candidate lock) throws Throwable {
 		if (lead(lock)) {
 			try {
-				LOGGER.info("Locked {} FD:{}", lock.queue(),lock.fixedDelay());
+				LOGGER.debug("Locked {} FD:{}", lock.queue(), lock.fixedDelay());
 				task.call();
 			} finally {
 				resign(lock);

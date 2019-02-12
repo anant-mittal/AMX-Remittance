@@ -1,5 +1,7 @@
 package com.amx.utils;
 
+import java.util.Calendar;
+
 /**
  * The Class TimeUtils.
  */
@@ -36,4 +38,18 @@ public class TimeUtils {
 	public static long getReverseRotationNumber(long millis, int i) {
 		return i - (System.currentTimeMillis() / (millis)) & i;
 	}
+
+	/**
+	 * 
+	 * @param totalSlots  - number slots days needs to be devided into
+	 * @param indexOfSlot - slot index starting from 0
+	 * @return
+	 */
+	public static boolean inHourSlot(int totalSlots, int indexOfSlot) {
+		Calendar calendar = Calendar.getInstance();
+		int currentIndex = calendar.get(Calendar.HOUR_OF_DAY) / (24 / totalSlots);
+		return currentIndex == indexOfSlot;
+
+	}
+
 }
