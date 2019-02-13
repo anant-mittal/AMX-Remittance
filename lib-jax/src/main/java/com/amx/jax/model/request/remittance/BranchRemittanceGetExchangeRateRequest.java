@@ -7,6 +7,8 @@ import java.math.BigDecimal;
 
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * @author Prashant
  *
@@ -74,36 +76,43 @@ public class BranchRemittanceGetExchangeRateRequest implements IRemittanceApplic
 	}
 
 	@Override
+	@JsonIgnore
 	public BigDecimal getBeneficiaryRelationshipSeqIdBD() {
 		return BigDecimal.valueOf(this.beneficiaryRelationshipSeqId);
 	}
 
 	@Override
+	@JsonIgnore
 	public BigDecimal getLocalAmountBD() {
 		return this.localAmount;
 	}
 
 	@Override
+	@JsonIgnore
 	public BigDecimal getForeignAmountBD() {
 		return this.foreignAmount;
 	}
 
 	@Override
+	@JsonIgnore
 	public BigDecimal getCorrespondanceBankIdBD() {
 		return BigDecimal.valueOf(this.correspondanceBankId);
 	}
 
 	@Override
+	@JsonIgnore
 	public BigDecimal getServiceIndicatorIdBD() {
 		return BigDecimal.valueOf(this.serviceIndicatorId);
 	}
 
 	@Override
+	@JsonIgnore
 	public BigDecimal getDeliveryModeIdBD() {
 		return BigDecimal.valueOf(this.deliveryModeId);
 	}
 
 	@Override
+	@JsonIgnore
 	public BigDecimal getRemitModeIdBD() {
 		return BigDecimal.valueOf(this.remittanceModeId);
 	}

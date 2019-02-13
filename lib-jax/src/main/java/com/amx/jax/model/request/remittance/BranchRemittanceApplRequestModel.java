@@ -12,6 +12,7 @@ import javax.validation.constraints.NotNull;
 import com.amx.jax.model.response.remittance.BranchExchangeRateBreakup;
 import com.amx.jax.model.response.remittance.FlexFieldDto;
 import com.amx.utils.JsonUtil;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 
 public class BranchRemittanceApplRequestModel implements IRemittanceApplicationParams {
@@ -174,31 +175,38 @@ public class BranchRemittanceApplRequestModel implements IRemittanceApplicationP
 	}
 	
 	@Override
+	@JsonIgnore
 	public BigDecimal getBeneficiaryRelationshipSeqIdBD() {
 		return this.beneId;
 	}
 	@Override
+	@JsonIgnore
 	public BigDecimal getLocalAmountBD() {
 		return this.localAmount;
 	}
 	@Override
+	@JsonIgnore
 	public BigDecimal getForeignAmountBD() {
 		return this.foreignAmount;
 	}
 	@Override
+	@JsonIgnore
 	public BigDecimal getCorrespondanceBankIdBD() {
 		return this.routingBankId;
 	}
 	@Override
+	@JsonIgnore
 	public BigDecimal getServiceIndicatorIdBD() {
 		return this.serviceMasterId;
 	}
 	@Override
+	@JsonIgnore
 	public BigDecimal getDeliveryModeIdBD() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 	@Override
+	@JsonIgnore
 	public BigDecimal getRemitModeIdBD() {
 		return this.remittanceModeId;
 	}
