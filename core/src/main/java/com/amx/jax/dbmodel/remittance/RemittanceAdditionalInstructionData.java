@@ -45,9 +45,8 @@ public class RemittanceAdditionalInstructionData implements Serializable {
 	private Date modifiedDate;
 	private String isactive;
 	private String flexFieldValue;
-	private Date approvedDate;
-	private String approvedBy;
 	private String amiecCode;
+	private BigDecimal companyCode;
 
 	public RemittanceAdditionalInstructionData() {
 	}
@@ -217,24 +216,7 @@ public class RemittanceAdditionalInstructionData implements Serializable {
 		this.flexFieldValue = flexFieldValue;
 	}
 
-	@Column(name = "APPROVED_DATE")
-	public Date getApprovedDate() {
-		return approvedDate;
-	}
-
-	public void setApprovedDate(Date approvedDate) {
-		this.approvedDate = approvedDate;
-	}
-
-	@Column(name = "APPROVED_BY")
-	public String getApprovedBy() {
-		return approvedBy;
-	}
-
-	public void setApprovedBy(String approvedBy) {
-		this.approvedBy = approvedBy;
-	}
-
+	
 	@Column(name="AMIEC_CODE")
 	public String getAmiecCode() {
 		return amiecCode;
@@ -244,6 +226,15 @@ public class RemittanceAdditionalInstructionData implements Serializable {
 		this.amiecCode = amiecCode;
 	}
 
+	@Column(name="COMPANY_CODE")
+	public BigDecimal getCompanyCode() {
+		return companyCode;
+	}
+
+	public void setCompanyCode(BigDecimal companyCode) {
+		this.companyCode = companyCode;
+	}
 	
 	
 }
+			

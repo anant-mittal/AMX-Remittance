@@ -131,6 +131,11 @@ public class BranchRemittanceSaveManager {
 	FinancialService finanacialService;
 	
 	
+	List<RemittanceAml>			amlList	 = new ArrayList<>();
+	List<RemittanceBenificiary> remitBeneList   = new ArrayList<>();
+	List<RemittanceAdditionalInstructionData> addInstList = new ArrayList<>();
+	List<LoyaltyPointsModel> loyaltyPoints 	 = new ArrayList<>();
+	
 	
 	/**
 	 * 
@@ -141,12 +146,8 @@ public class BranchRemittanceSaveManager {
 	@Transactional
 	public RemittanceResponseDto saveRemittance(BranchRemittanceRequestModel remittanceRequestModel) {
 		RemittanceResponseDto responseDto  = new RemittanceResponseDto();
+		
 	
-		
-		
-		
-		
-		
 		
 		try {
 			List<BranchApplicationDto> shoppingCartList = new ArrayList<>();
@@ -157,11 +158,12 @@ public class BranchRemittanceSaveManager {
 			List<CollectDetailModel> 	collectionDetails		=saveCollectionDetail(remittanceRequestModel,collectionModel);
 			List<ForeignCurrencyAdjust> currencyAdjustList 		=saveForeignCurrencyAdjust(remittanceRequestModel,collectionModel);
 			List<RemittanceTransaction> remitTrnxList      		=saveRemittanceTrnx(remittanceRequestModel,collectionModel);
-			List<RemittanceBenificiary> remitBeneList      		=saveBeneTrnx(remitTrnxList);
-			List<RemittanceAdditionalInstructionData> addInstList=saveRemitnaceinstructionData(remitTrnxList);
-			List<RemittanceAml>			amlList					=saveRemittanceAml(remitTrnxList);											
 			LoyaltyClaimRequest loyaltyClaim          			=saveLoyalTyClaimRequest(collectionDetails);
-			List<LoyaltyPointsModel> loyaltyPoints 				= saveLoyaltyPoints(remitTrnxList);
+			//List<RemittanceBenificiary> remitBeneList      		=saveBeneTrnx(remitTrnxList);
+			//List<RemittanceAdditionalInstructionData> addInstList=saveRemitnaceinstructionData(remitTrnxList);
+			//List<RemittanceAml>			amlList					=saveRemittanceAml(remittanceRequestModel,remitTrnxList);											
+			
+			//List<LoyaltyPointsModel> loyaltyPoints 				= saveLoyaltyPoints(remitTrnxList);
 					
 			collectedAmountValidation(collectionModel,collectionDetails,currencyAdjustList);	
 			
@@ -438,6 +440,7 @@ public class BranchRemittanceSaveManager {
 					foreignCurrencyAdjust.setDenaminationAmount(currencyCashDenomination.getDenominationAmount());
 					foreignCurrencyAdjust.setDocumentFinanceYear(collect.getDocumentFinanceYear());
 					foreignCurrencyAdjust.setDocumentCode(ConstantDocument.COLLECTION_DOCUMENT_ID);
+					foreignCurrencyAdjust.setDocumentNo(collect.getDocumentNo());
 					foreignCurrencyAdjust.setDocumentLineNumber(new BigDecimal(++i));
 					foreignCurrencyAdjust.setAccountmmyyyy(collect.getAccountMMYYYY());
 					foreignCurrencyAdjust.setCountryBranch(collect.getExBankBranch());
@@ -539,7 +542,7 @@ public class BranchRemittanceSaveManager {
 					remitTrnx.setCustomerId(appl.getFsCustomer());
 					remitTrnx.setCustomerName(appl.getCustomerName());
 					remitTrnx.setCustomerRef(appl.getCustomerRef());
-					remitTrnx.setCustomerSignatureClob(appl.getCustomerSignatureClob());
+					//remitTrnx.setCustomerSignatureClob(appl.getCustomerSignatureClob());
 					remitTrnx.setDebitAccountNo(appl.getDebitAccountNo()); //need to check
 					remitTrnx.setDeliveryModeId(appl.getExDeliveryMode());
 					remitTrnx.setDocumentDate(new Date());
@@ -595,7 +598,6 @@ public class BranchRemittanceSaveManager {
 					remitTrnx.setOriginalExchangeRate(appl.getOriginalExchangeRate());
 					remitTrnx.setRemittanceModeId(appl.getExRemittanceMode());
 					remitTrnx.setSourceofincome(appl.getSourceofincome());
-					remitTrnx.setCustomerSignatureClob(appl.getCustomerSignatureClob());
 					TransferDto trnaferType = getTrasnferModeByBankServiceRule(remitTrnx);
 					remitTrnx.setFileCreation(trnaferType.getTrasnferMode());
 					remitTrnx.setTransferMode(trnaferType.getTrasnferMode());
@@ -604,6 +606,11 @@ public class BranchRemittanceSaveManager {
 					remitTrnx.setWesternUnionMtcno(appl.getWesternUnionMtcno());
 					remitTrnx.setWuIpAddress(metaData.getDeviceIp());
 					remitTrnxList.add(remitTrnx);
+					
+					saveBeneTrnx(appl, remitTrnx);
+					saveRemitnaceinstructionData(appl,remitTrnx);
+					saveRemittanceAml(appl, remitTrnx);
+					saveLoyaltyPoints(remitTrnx);
 				}
 			}
 			
@@ -614,12 +621,10 @@ public class BranchRemittanceSaveManager {
 		return remitTrnxList;
 	}
 	
-	
-	
-public   List<RemittanceBenificiary>  saveBeneTrnx(List<RemittanceTransaction> remitTrnxList){
-	List<RemittanceBenificiary> remitBeneList    = new ArrayList<>();
-	for(RemittanceTransaction remitTrnx : remitTrnxList) {
-		RemittanceAppBenificiary applBene = applBeneRepository.findOne(remitTrnx.getApplicationDocumentNo());
+public   List<RemittanceBenificiary>  saveBeneTrnx(RemittanceApplication applicationNo,RemittanceTransaction remitTrnx){
+	 remitBeneList    = new ArrayList<>();
+	if(applicationNo!=null) {
+		RemittanceAppBenificiary applBene = applBeneRepository.findByExRemittanceAppfromBenfi(applicationNo);
 		if(applBene!=null) {
 			RemittanceBenificiary remitBene = new RemittanceBenificiary();
 			
@@ -660,30 +665,25 @@ public   List<RemittanceBenificiary>  saveBeneTrnx(List<RemittanceTransaction> r
 			remitBene.setExRemittancefromBenfi(remitTrnx);
 			remitBene.setExUserFinancialYear(getFinancialYearObj(remitTrnx.getDocumentFinanceYear()));
 			remitBene.setIsactive(ConstantDocument.Yes);
-			
 			remitBeneList.add(remitBene);
 
 		}else {
 			throw new GlobalException(JaxError.NO_RECORD_FOUND,"Record found in appl bene for remittacne :"+remitTrnx.getApplicationDocumentNo());
 		}
-
-		
+	}else {
+		throw new GlobalException(JaxError.NO_RECORD_FOUND,"Record found in appl bene for remittacne :"+remitTrnx.getApplicationDocumentNo());
 	}
 	
 	return remitBeneList;
 }
 	
-	
-
-public   List<RemittanceAdditionalInstructionData>   saveRemitnaceinstructionData(List<RemittanceTransaction> remitTrnxList){
-	 List<RemittanceAdditionalInstructionData> addInsData = new ArrayList<>();
-	 
-	 for(RemittanceTransaction remitTrnx : remitTrnxList) {
-			AdditionalInstructionData applInstrucData = addInstrDataRepository.findOne(remitTrnx.getApplicationDocumentNo());
+public   List<RemittanceAdditionalInstructionData>   saveRemitnaceinstructionData(RemittanceApplication applicationNo,RemittanceTransaction remitTrnx){
+	 addInstList = new ArrayList<>();
+	 if(applicationNo!=null) {
+			AdditionalInstructionData applInstrucData = addInstrDataRepository.findByExRemittanceApplication(applicationNo);
 		
 			if(applInstrucData!=null) {
 			RemittanceAdditionalInstructionData remitAddData = new RemittanceAdditionalInstructionData();
-			
 			remitAddData.setAdditionalBankFieldsId(applInstrucData.getAdditionalBankFieldsId());
 			remitAddData.setAmiecCode(applInstrucData.getAmiecCode());
 			remitAddData.setCreatedBy(remitTrnx.getCreatedBy());
@@ -697,48 +697,55 @@ public   List<RemittanceAdditionalInstructionData>   saveRemitnaceinstructionDat
 			remitAddData.setExRemittanceTransaction(remitTrnx);
 			remitAddData.setFsCompanyMaster(remitTrnx.getCompanyId());
 			remitAddData.setFsCountryMaster(remitTrnx.getApplicationCountryId());
+			remitAddData.setCompanyCode(applInstrucData.getFsCompanyMaster().getCompanyCode());
 			remitAddData.setDocumentFinanceYear(remitTrnx.getDocumentFinanceYear());
 			remitAddData.setIsactive(ConstantDocument.Yes);
-			addInsData.add(remitAddData);
+			addInstList.add(remitAddData);
 			
 		}else {
 			throw new GlobalException(JaxError.NO_RECORD_FOUND,"Record found in appl additional instruction  :"+remitTrnx.getApplicationDocumentNo());
 		}
-	 }	
+	 }else {
+			throw new GlobalException(JaxError.NO_RECORD_FOUND,"Record found in appl additional instruction  :"+remitTrnx.getApplicationDocumentNo());
+		}
 	 
-	 return addInsData;
+	 return addInstList;
 	
 }
 
 
-public List<RemittanceAml>	saveRemittanceAml(List<RemittanceTransaction> remitTrnxList){
-	List<RemittanceAml>	amlList =new ArrayList<>();	
 	
-	 for(RemittanceTransaction remitTrnx : remitTrnxList) {
-			RemitApplAmlModel applAml = applAmlRepository.findOne(remitTrnx.getApplicationDocumentNo());
-			if(applAml!=null) {
-				RemittanceAml remitAml = new RemittanceAml();
-				remitAml.setAuthorizedBy(applAml.getAuthorizedBy());
-				remitAml.setAuthType(applAml.getAuthType());
-				remitAml.setCreatedBy(remitTrnx.getCreatedBy());
-				remitAml.setCreatedDate(new Date());
-				remitAml.setBlackListDate(new Date());
-				remitAml.setBlackListReason(applAml.getBlackListReason());
-				remitAml.setBlackListRemarks(applAml.getBlackListRemarks());
-				remitAml.setFsCompanyMaster(remitTrnx.getCompanyId());
-				remitAml.setFsCountryMaster(remitTrnx.getApplicationCountryId());
-				remitAml.setBlackListUser(applAml.getBlackListUser());
-				remitAml.setIsactive(ConstantDocument.Yes);
-				remitAml.setExRemittancefromAml(remitTrnx);
-				amlList.add(remitAml);
-				
-			}
-			
+
+
+
+
+public List<RemittanceAml>	saveRemittanceAml(RemittanceApplication applicationNo,RemittanceTransaction remitTrnx){
+	
+	if(applicationNo!=null) {
+	RemitApplAmlModel applAml = applAmlRepository.findByRemittanceApplicationId(applicationNo.getRemittanceApplicationId());
+		if(applAml!=null) {
+			RemittanceAml remitAml = new RemittanceAml();
+			remitAml.setAuthorizedBy(applAml.getAuthorizedBy());
+			remitAml.setAuthType(applAml.getAuthType());
+			remitAml.setCreatedBy(remitTrnx.getCreatedBy());
+			remitAml.setCreatedDate(new Date());
+			remitAml.setBlackListDate(new Date());
+			remitAml.setBlackListReason(applAml.getBlackListReason());
+			remitAml.setBlackListRemarks(applAml.getBlackListRemarks());
+			remitAml.setFsCompanyMaster(remitTrnx.getCompanyId());
+			remitAml.setFsCountryMaster(remitTrnx.getApplicationCountryId());
+			remitAml.setBlackListUser(applAml.getBlackListUser());
+			remitAml.setIsactive(ConstantDocument.Yes);
+			remitAml.setExRemittancefromAml(remitTrnx);
+			amlList.add(remitAml);
+		}
 	}
-	 
-	 return amlList;
+
+return amlList;
 	
 }
+
+
 
 
 private LoyaltyClaimRequest saveLoyalTyClaimRequest(List<CollectDetailModel> collectDetailModelList) {
@@ -765,15 +772,13 @@ private LoyaltyClaimRequest saveLoyalTyClaimRequest(List<CollectDetailModel> col
 }
 
 
-public List<LoyaltyPointsModel> saveLoyaltyPoints(List<RemittanceTransaction> remittTransactionList){
-	 List<LoyaltyPointsModel> loyaltyPoints = new ArrayList<>();
+public List<LoyaltyPointsModel> saveLoyaltyPoints(RemittanceTransaction applDto){
+	 loyaltyPoints = new ArrayList<>();
 		
-		if(remittTransactionList!=null && !remittTransactionList.isEmpty()) {
-			for(RemittanceTransaction applDto : remittTransactionList) {
-			
-				if(applDto!=null && applDto.getLoyaltyPointsInd().equalsIgnoreCase(ConstantDocument.Yes)) {
+		if(applDto!=null) {
+			//for(RemittanceTransaction applDto : remittTransactionList) {
+				if(applDto!=null && JaxUtil.isNullZeroBigDecimalCheck(applDto.getLoyaltyPointsEncashed()) && applDto.getLoyaltyPointsInd().equalsIgnoreCase(ConstantDocument.Yes)) {
 					LoyaltyPointsModel lpoints = new LoyaltyPointsModel();
-					
 					lpoints.setAccMonth(applDto.getAccountMmyyyy());
 					lpoints.setCustomerReference(applDto.getCustomerRef());
 					lpoints.setCompCode(applDto.getCompanyCode());
@@ -788,10 +793,11 @@ public List<LoyaltyPointsModel> saveLoyaltyPoints(List<RemittanceTransaction> re
 					lpoints.setProcessDate(DateUtil.daysAddInCurrentDate(365));
 					loyaltyPoints.add(lpoints);
 				}
-			}
+			//}
 		}
 	 return loyaltyPoints;
 }
+
 
 
 

@@ -537,11 +537,48 @@ public class BranchRoutingManager {
 		service.setServiceMasterId(view.get(0).getServiceMasterId());
 		service.setServiceGroupCode(view.get(0).getServiceGroupCode());
 		service.setServiceDescription(view.get(0).getServiceDescription());
-		
 		listOfService.add(service);
 		routingResponseDto.setServiceList(listOfService);
-		getRemittanceModeList(inputValues);
-		return routingResponseDto;
+		if(JaxUtil.isNullZeroBigDecimalCheck(routingCountryId)) {
+			List<CountryMasterView> countryMasterView = countryRepository.findByLanguageIdAndCountryId(metaData.getLanguageId(), routingCountryId);
+			List<ResourceDTO> routCount = new ArrayList<ResourceDTO>();
+			ResourceDTO rout = new ResourceDTO();
+			rout.setResourceId(countryMasterView.get(0).getCountryId());
+			rout.setResourceName(countryMasterView.get(0).getCountryName());
+			routCount.add(rout);
+			routingResponseDto.setRoutingCountrydto(routCount);
+			if(JaxUtil.isNullZeroBigDecimalCheck(routingBankId)) {
+				List<RoutingBankDto> lisOfRoutingBank = new ArrayList<>();
+				List<BanksView> bankView = bankMaster.getBankListByBankId(routingBankId);
+				RoutingBankDto bankDto = new RoutingBankDto();
+				bankDto.setRoutingBankId(bankView.get(0).getBankId());
+				bankDto.setRoutingBankCode(bankView.get(0).getBankCode());
+				bankDto.setRoutingBankName(bankView.get(0).getBankFullName());
+				lisOfRoutingBank.add(bankDto);
+				routingResponseDto.setRoutingBankDto(lisOfRoutingBank);
+				if(JaxUtil.isNullZeroBigDecimalCheck(remittanceModeId)) {
+					List<RemittanceModeDto> remitModeDtoLst = new ArrayList<>();
+					RemittanceModeDto remitModeDto = new RemittanceModeDto();
+					List<ViewRemittanceMode> list = remittanceModeRepository.findByRemittanceModeIdAndLanguageId(remittanceModeId, metaData.getLanguageId());
+					remitModeDto.setRemittanceModeId(list.get(0).getRemittanceModeId());
+					remitModeDto.setRemittancCode(list.get(0).getRemittancCode());
+					remitModeDto.setRemittanceDescription(list.get(0).getRemittanceDescription());
+					remitModeDtoLst.add(remitModeDto);
+					routingResponseDto.setRemittanceModeList(remitModeDtoLst);
+					inputValues.put("P_REMITTANCE_MODE_ID", list.get(0).getRemittanceModeId());
+					getDeliveryModeList(inputValues);
+				}else {
+					getRemittanceModeList(inputValues);
+				}
+			}else {
+					getRoutingCountryBankList(inputValues);
+				}
+			
+			
+		}else {
+			getRoutingCountryList(inputValues);
+		}	
+	return routingResponseDto;
 	}
 
 	public RoutingResponseDto getRoutingSetup(BranchRemittanceApplRequestModel requestApplModel) {

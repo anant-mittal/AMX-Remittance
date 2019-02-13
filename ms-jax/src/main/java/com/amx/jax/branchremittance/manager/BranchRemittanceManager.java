@@ -48,6 +48,7 @@ import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.AmlCheckResponseDto;
 import com.amx.jax.model.response.remittance.BranchExchangeRateBreakup;
 import com.amx.jax.model.response.remittance.RoutingResponseDto;
+import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeRateResponse;
 import com.amx.jax.repository.IAccountTypeFromViewDao;
 import com.amx.jax.repository.IAdditionalBankRuleAmiecRepository;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
@@ -290,21 +291,21 @@ public class BranchRemittanceManager extends AbstractModel {
 			BigDecimal remittancModeId = BigDecimal.ZERO;
 			
 			
-			if(requestModel.getRoutingBankId().compareTo(BigDecimal.ZERO)>0) {
+			if(JaxUtil.isNullZeroBigDecimalCheck(requestModel.getRoutingBankId()) && requestModel.getRoutingBankId().compareTo(BigDecimal.ZERO)>0) {
 				routingBankId = requestModel.getRoutingBankId();
 			}else {
 				routingBankId =branchRoutingDto.getRoutingBankDto().get(0).getRoutingBankId();
 			}
 			
 			
-			if(requestModel.getServiceMasterId().compareTo(BigDecimal.ZERO)>0) {
+			if(JaxUtil.isNullZeroBigDecimalCheck(requestModel.getServiceMasterId()) && requestModel.getServiceMasterId().compareTo(BigDecimal.ZERO)>0) {
 				serviceMasterId = requestModel.getServiceMasterId();
 			}else {
 				serviceMasterId =branchRoutingDto.getServiceList().get(0).getServiceMasterId();
 			}
 			
 			
-			if(requestModel.getRemittanceModeId().compareTo(BigDecimal.ZERO)>0) {
+			if(JaxUtil.isNullZeroBigDecimalCheck(requestModel.getRemittanceModeId()) && requestModel.getRemittanceModeId().compareTo(BigDecimal.ZERO)>0) {
 				remittancModeId = requestModel.getRemittanceModeId();
 			}else {
 				remittancModeId =branchRoutingDto.getRemittanceModeList().get(0).getRemittanceModeId();
@@ -355,7 +356,7 @@ public class BranchRemittanceManager extends AbstractModel {
 	}
 
 	
-	public List<AmlCheckResponseDto> amlTranxAmountCheckForRemittance(BranchRemittanceApplRequestModel requestModel,Map<String ,Object> map){
+	public List<AmlCheckResponseDto> amlTranxAmountCheckForRemittance(BranchRemittanceApplRequestModel requestModel,BranchRemittanceGetExchangeRateResponse exchangeRateResposne){
 		Map<String, Object> outPut = new HashMap<>();
 		List<AmlCheckResponseDto> listAmlMessage = new ArrayList<>();
 		try {
@@ -365,7 +366,7 @@ public class BranchRemittanceManager extends AbstractModel {
 			inputValues.put("P_BENE_COUNTRY_ID",beneficaryDetails.getBenificaryCountry());
 			inputValues.put("P_CUSTOMER_ID",metaData.getCustomerId());
 			inputValues.put("P_BENE_ID",beneficaryDetails.getBeneficaryMasterSeqId());
-			inputValues.put("P_FC_AMOUNT",map.get("P_LOCAL_NET_SENT")); //need to check
+			inputValues.put("P_FC_AMOUNT",exchangeRateResposne.getExRateBreakup().getConvertedFCAmount()); //need to check
 			outPut = applProcedureDao.amlTranxAmountCheckForRemittance(inputValues);
 			
 			if(outPut!=null) {
@@ -560,7 +561,7 @@ public class BranchRemittanceManager extends AbstractModel {
 	 }
 	
 	
-	 public Map<String, Object> validateAdditionalBeneDetails(RoutingResponseDto branchRoutingDto,Map<String ,Object> branchExchangeRate,BenificiaryListView beneficaryDetails) {
+	 public Map<String, Object> validateAdditionalBeneDetails(RoutingResponseDto branchRoutingDto,BranchRemittanceGetExchangeRateResponse exchangeRateResposne ,BenificiaryListView beneficaryDetails) {
 		 
 		    BigDecimal beneficaryMasterId = beneficaryDetails.getBeneficaryMasterSeqId();
 			BigDecimal beneficaryBankId = beneficaryDetails.getBankId();
@@ -579,8 +580,8 @@ public class BranchRemittanceManager extends AbstractModel {
 			
 			BigDecimal applicationCountryId = beneficaryDetails.getApplicationCountryId();
 			BigDecimal currencyId =beneficaryDetails.getCurrencyId();
-			BigDecimal remitMode = (BigDecimal) branchExchangeRate.get("P_REMITTANCE_MODE_ID");
-			BigDecimal deliveryMode = (BigDecimal) branchExchangeRate.get("P_DELIVERY_MODE_ID");
+			BigDecimal remitMode = branchRoutingDto.getRemittanceModeList().get(0).getRemittanceModeId();//(BigDecimal) branchExchangeRate.get("P_REMITTANCE_MODE_ID");
+			BigDecimal deliveryMode = branchRoutingDto.getDeliveryModeList().get(0).getDeliveryModeId();//(BigDecimal) branchExchangeRate.get("P_DELIVERY_MODE_ID");
 			BigDecimal beneficaryRelationSeqId = beneficaryDetails.getBeneficiaryRelationShipSeqId();
 			
 			Map<String, Object> inputValues = new HashMap<>();
@@ -611,7 +612,8 @@ public class BranchRemittanceManager extends AbstractModel {
 	 public void validateAdditionalErrorMessages(Map<String ,Object> hashMap) {
 		 	BranchRemittanceApplRequestModel applRequestModel = (BranchRemittanceApplRequestModel)hashMap.get("APPL_REQ_MODEL");
 			
-			Map<String, Object> branchExchangeRate =(HashMap)hashMap.get("EXCH_RATE_MAP");
+			//Map<String, Object> branchExchangeRate =(HashMap)hashMap.get("EXCH_RATE_MAP");
+		 	//BranchRemittanceGetExchangeRateResponse branchExchangeRate =(BranchRemittanceGetExchangeRateResponse)hashMap.get("EXCH_RATE_MAP");
 			BenificiaryListView beneDetails  =(BenificiaryListView) hashMap.get("BENEFICIARY_DETAILS");
 			RoutingResponseDto branchRoutingDto = (RoutingResponseDto)hashMap.get("ROUTING_DETAILS_DTO");
 			RemittanceTransactionRequestModel requestModel = new RemittanceTransactionRequestModel();
@@ -621,8 +623,8 @@ public class BranchRemittanceManager extends AbstractModel {
 			remitApplParametersMap.put("P_ROUTING_COUNTRY_ID",branchRoutingDto.getRoutingCountrydto().get(0).getResourceId());
 			remitApplParametersMap.put("P_ROUTING_BANK_ID",applRequestModel.getRoutingBankId());
 			remitApplParametersMap.put("P_FOREIGN_CURRENCY_ID",beneDetails.getCurrencyId());
-			remitApplParametersMap.put("P_REMITTANCE_MODE_ID",(BigDecimal) branchExchangeRate.get("P_REMITTANCE_MODE_ID"));
-			remitApplParametersMap.put("P_DELIVERY_MODE_ID",(BigDecimal) branchExchangeRate.get("P_DELIVERY_MODE_ID"));
+			remitApplParametersMap.put("P_REMITTANCE_MODE_ID",applRequestModel.getRemittanceModeId());
+			remitApplParametersMap.put("P_DELIVERY_MODE_ID",applRequestModel.getDeliveryModeId());
 			validateAdditionalErrorMessages(applRequestModel);
 	 }
 	 

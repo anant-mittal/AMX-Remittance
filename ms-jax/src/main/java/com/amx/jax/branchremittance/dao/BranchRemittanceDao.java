@@ -150,7 +150,7 @@ public class BranchRemittanceDao {
 			collectDetailRepository.save(collectDetailsModel);
 		}
 
-		if (lylClaim != null) {
+		if (lylClaim != null && JaxUtil.isNullZeroBigDecimalCheck(lylClaim.getVoucherNo())) {
 			loyaltyClaimRepo.save(lylClaim);
 		}
 
@@ -193,10 +193,8 @@ public class BranchRemittanceDao {
 			
 			logger.info("remitTrnx.getApplicationDocumentNo() :"+remitTrnx.getApplicationDocumentNo()+"\t docfyr :"+remitTrnx.getApplicationFinanceYear());
 			RemittanceApplication appl = appRepo.fetchRemitApplTrnx(remitTrnx.getApplicationDocumentNo(), remitTrnx.getApplicationFinanceYear());
-			
-			
 			if (appl != null) {
-				appl.setRemittanceApplicationId(appl.getRemittanceApplicationId());
+				appl = appRepo.findOne(appl.getRemittanceApplicationId());
 				appl.setTransactionFinancialyear(remitTrnx.getDocumentFinanceYear());
 				appl.setExUserFinancialYearByTransactionFinanceYearID(new UserFinancialYear(remitTrnx.getDocumentFinanceYr()));
 				appl.setTransactionDocumentNo(remitTrnx.getDocumentNo());

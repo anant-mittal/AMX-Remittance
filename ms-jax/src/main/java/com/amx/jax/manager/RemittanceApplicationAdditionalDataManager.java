@@ -153,8 +153,8 @@ public class RemittanceApplicationAdditionalDataManager {
 		BigDecimal applicationCountryId = metaData.getCountryId();
 		
 		BranchRemittanceApplRequestModel remittanceTransactionRequestModel =(BranchRemittanceApplRequestModel)remitApplParaMap.get("APPL_REQ_MODEL");
-		Map<String,Object> remitApplExchMap =(HashMap)remitApplParaMap.get("EXCH_RATE_MAP");
-		Map<String,Object> routingSetupDetails =(HashMap)remitApplParaMap.get("ROUTING_DETAILS_MAP");
+		//Map<String,Object> remitApplExchMap =(HashMap)remitApplParaMap.get("EXCH_RATE_MAP");
+		//Map<String,Object> routingSetupDetails =(HashMap)remitApplParaMap.get("ROUTING_DETAILS_MAP");
 		BenificiaryListView beneDetails = (BenificiaryListView) remitApplParaMap.get("BENEFICIARY_DETAILS");
 		
 		remittanceTransactionRequestModel.populateFlexFieldDtoMap();
@@ -179,8 +179,8 @@ public class RemittanceApplicationAdditionalDataManager {
 		
 		requestFlexFields.forEach((k, v) -> {
 			BigDecimal bankId =remittanceTransactionRequestModel.getRoutingBankId();//(BigDecimal) routingSetupDetails.get("P_ROUTING_BANK_ID");
-			BigDecimal remittanceModeId = (BigDecimal) remitApplExchMap.get("P_REMITTANCE_MODE_ID");
-			BigDecimal deliveryModeId = (BigDecimal) remitApplExchMap.get("P_DELIVERY_MODE_ID");
+			BigDecimal remittanceModeId = remittanceTransactionRequestModel.getRemittanceModeId();
+			BigDecimal deliveryModeId = remittanceTransactionRequestModel.getDeliveryModeId();
 			BigDecimal foreignCurrencyId = beneDetails.getCurrencyId();
 			if (v.getSrlId() != null) {
 				AdditionalInstructionData additionalInsDataTmp = createAdditionalIndicatorsData(remittanceApplication,applicationCountryId, k, amiecDetails.getAmiecCode(),amiecDetails.getAmiecDescription(), amiecDetails.getAdditionalBankFieldId().getAdditionalBankRuleId());	

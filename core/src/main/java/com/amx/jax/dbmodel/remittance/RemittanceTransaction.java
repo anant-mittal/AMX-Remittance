@@ -97,7 +97,7 @@ public class RemittanceTransaction implements Serializable {
 	private String highValueAuthUser;
 	private Date highValueAuthDate;
 	private String customerSignature;
-	private Clob customerSignatureClob;
+	//private Clob customerSignatureClob;
 	private BigDecimal documentFinanceYr;
 	private BigDecimal sourceofincome;
 	private String instruction;
@@ -231,7 +231,7 @@ public class RemittanceTransaction implements Serializable {
 		this.highValueAuthUser = highValueAuthUser;
 		this.highValueAuthDate = highValueAuthDate;
 		this.customerSignature = customerSignature;
-		this.customerSignatureClob = customerSignatureClob;
+		//this.customerSignatureClob = customerSignatureClob;
 		this.documentFinanceYr = documentFinanceYr;
 		this.sourceofincome = sourceofincome;
 		this.instruction = instruction;
@@ -779,13 +779,13 @@ public class RemittanceTransaction implements Serializable {
 		this.instruction = instruction;
 	}
 
-	@Column(name="SIGNATURE_SPECIMEN_CLOB")
+	/*@Column(name="SIGNATURE_SPECIMEN_CLOB")
 	public Clob getCustomerSignatureClob() {
 		return customerSignatureClob;
 	}
 	public void setCustomerSignatureClob(Clob customerSignatureClob) {
 		this.customerSignatureClob = customerSignatureClob;
-	}
+	}*/
 
 	@Column(name="DW_FLAG")
 	public String getDwFlag() {

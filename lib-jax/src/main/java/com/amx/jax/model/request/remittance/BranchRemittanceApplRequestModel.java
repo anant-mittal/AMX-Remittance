@@ -35,6 +35,7 @@ public class BranchRemittanceApplRequestModel implements IRemittanceApplicationP
 	private BigDecimal routingCountryId;
 	private BigDecimal remittanceModeId;
 	private BigDecimal purposeOfTrnxId;
+	private BigDecimal deliveryModeId;
 
 	
 
@@ -203,12 +204,18 @@ public class BranchRemittanceApplRequestModel implements IRemittanceApplicationP
 	@JsonIgnore
 	public BigDecimal getDeliveryModeIdBD() {
 		// TODO Auto-generated method stub
-		return null;
+		return this.deliveryModeId;
 	}
 	@Override
 	@JsonIgnore
 	public BigDecimal getRemitModeIdBD() {
 		return this.remittanceModeId;
+	}
+	public BigDecimal getDeliveryModeId() {
+		return deliveryModeId;
+	}
+	public void setDeliveryModeId(BigDecimal deliveryModeId) {
+		this.deliveryModeId = deliveryModeId;
 	}
 
 }

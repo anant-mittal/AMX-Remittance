@@ -61,6 +61,7 @@ import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.CustomerShoppingCartDto;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
 import com.amx.jax.model.response.remittance.RoutingResponseDto;
+import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeRateResponse;
 import com.amx.jax.repository.IApplicationCountryRepository;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.ICurrencyDao;
@@ -180,22 +181,26 @@ public class BranchRemittanceApplManager {
 		 //logger.info("branchRoutingDetails :"+branchRoutingDetails.toString());
 		 /* get exchange setup details **/
 		 //Map<String, Object> branchExchangeRate =branchRemitManager.getExchangeRateForBranch(requestApplModel, branchRoutingDetails);
-		 Map<String, Object> branchExchangeRate =branchRemitManager.getExchangeRateForBranch(requestApplModel,branchRoutingDto);
+		 //Map<String, Object> branchExchangeRate =branchRemitManager.getExchangeRateForBranch(requestApplModel,branchRoutingDto);
 		 
 		 
-		 //Priccing 
-		 //branchExchRateService.getExchaneRate(requestApplModel);
+		 //Priccing API
+		 BranchRemittanceGetExchangeRateResponse exchangeRateResposne = branchExchRateService.getExchaneRate(requestApplModel).getResult();
+		
 		 
 		 
 		 
-		 logger.info("branchExchangeRate :"+branchExchangeRate.toString());
+		 logger.debug("branchExchangeRate :"+exchangeRateResposne);
 		 /* get aml cehck   details **/
-		List<AmlCheckResponseDto> amlList= branchRemitManager.amlTranxAmountCheckForRemittance(requestApplModel,branchExchangeRate);
+		//List<AmlCheckResponseDto> amlList= branchRemitManager.amlTranxAmountCheckForRemittance(requestApplModel,branchExchangeRate);
+		 
+		 List<AmlCheckResponseDto> amlList= branchRemitManager.amlTranxAmountCheckForRemittance(requestApplModel,exchangeRateResposne);
+		 
 		 logger.info("amlList :"+amlList.toString());
 		 /* additional check **/
 		//branchRemitManager.validateAdditionalCheck(branchRoutingDetails,customer,beneficaryDetails,(BigDecimal)branchExchangeRate.get("P_LOCAL_NET_PAYABLE"));
 		 
-		 branchRemitManager.validateAdditionalCheck(branchRoutingDto,customer,beneficaryDetails,(BigDecimal)branchExchangeRate.get("P_LOCAL_NET_PAYABLE"));
+		 branchRemitManager.validateAdditionalCheck(branchRoutingDto,customer,beneficaryDetails,exchangeRateResposne.getExRateBreakup().getNetAmount());
 		 
 		 if(!JaxUtil.isNullZeroBigDecimalCheck(requestApplModel.getRoutingBankId())) {
 			 requestApplModel.setRoutingBankId(branchRoutingDto.getRoutingBankDto().get(0).getRoutingBankId());
@@ -206,7 +211,7 @@ public class BranchRemittanceApplManager {
 		/** bene additional check **/
 		//Map<String, Object> addBeneDetails =branchRemitManager.validateAdditionalBeneDetails(branchRoutingDetails,branchExchangeRate,beneficaryDetails);
 		 
-		 Map<String, Object> addBeneDetails =branchRemitManager.validateAdditionalBeneDetails(branchRoutingDto,branchExchangeRate,beneficaryDetails);
+		 Map<String, Object> addBeneDetails =branchRemitManager.validateAdditionalBeneDetails(branchRoutingDto,exchangeRateResposne,beneficaryDetails);
 		 
 		 
 		
@@ -215,7 +220,7 @@ public class BranchRemittanceApplManager {
 		
 		
 		hashMap.put("ROUTING_DETAILS_DTO", branchRoutingDto);
-		hashMap.put("EXCH_RATE_MAP", branchExchangeRate);
+		hashMap.put("EXCH_RATE_MAP", exchangeRateResposne);
 		hashMap.put("APPL_REQ_MODEL", requestApplModel);
 		hashMap.put("BENEFICIARY_DETAILS", beneficaryDetails);
 		hashMap.put("ADD_BENE_DETAILS", addBeneDetails);
@@ -266,9 +271,13 @@ public class BranchRemittanceApplManager {
 			//Map<String, Object> branchRoutingDetails =(HashMap)hashMap.get("ROUTING_DETAILS_MAP");
 			
 			RoutingResponseDto branchRoutingDto = (RoutingResponseDto)hashMap.get("ROUTING_DETAILS_DTO");
-			Map<String, Object> branchExchangeRate =(HashMap)hashMap.get("EXCH_RATE_MAP");
+			//Map<String, Object> branchExchangeRate =(HashMap)hashMap.get("EXCH_RATE_MAP");
+			
+			BranchRemittanceGetExchangeRateResponse branchExchangeRate =(BranchRemittanceGetExchangeRateResponse)hashMap.get("EXCH_RATE_MAP");
+			
 			BenificiaryListView beneDetails  =(BenificiaryListView) hashMap.get("BENEFICIARY_DETAILS");
 			BranchExchangeRateBreakup rateBreakUp = applRequestModel.getBranchExRateBreakup();
+			
 			
 			
 			
@@ -277,8 +286,8 @@ public class BranchRemittanceApplManager {
 			BigDecimal routingBankId = branchRoutingDto.getRoutingBankDto().get(0).getRoutingBankId();
 			BigDecimal routingBankBranchId = (BigDecimal) branchRoutingDto.getRoutingBankBranchDto().get(0).getBankBranchId();
 			BigDecimal foreignCurrencyId = beneDetails.getCurrencyId();
-			BigDecimal deliveryId = (BigDecimal) branchExchangeRate.get("P_DELIVERY_MODE_ID");
-			BigDecimal remittanceId = (BigDecimal) branchExchangeRate.get("P_REMITTANCE_MODE_ID");
+			BigDecimal deliveryId =branchRoutingDto.getDeliveryModeList().get(0).getDeliveryModeId(); //(BigDecimal) branchExchangeRate.get("P_DELIVERY_MODE_ID");
+			BigDecimal remittanceId = applRequestModel.getRemittanceModeId();//(BigDecimal) branchExchangeRate.get("P_REMITTANCE_MODE_ID");
 			
 			BigDecimal selectedCurrencyId = branchRemitManager.getSelectedCurrency(foreignCurrencyId, applRequestModel);
 			
@@ -372,30 +381,38 @@ public class BranchRemittanceApplManager {
 			// rates
 			if(JaxUtil.isNullZeroBigDecimalCheck(rateBreakUp.getConvertedFCAmount())) {
 				remittanceApplication.setForeignTranxAmount(rateBreakUp.getConvertedFCAmount());
+			}else if(JaxUtil.isNullZeroBigDecimalCheck(branchExchangeRate.getExRateBreakup().getConvertedFCAmount())){
+				remittanceApplication.setForeignTranxAmount(branchExchangeRate.getExRateBreakup().getConvertedFCAmount());
 			}else {
-				remittanceApplication.setForeignTranxAmount(branchExchangeRate.get("P_LOCAL_NET_SENT")==null?BigDecimal.ZERO:(BigDecimal)branchExchangeRate.get("P_LOCAL_NET_SENT"));
-				//throw new GlobalException(JaxError.INVALID_FC_AMOUNT,"Invalid foreign Amount");
+				throw new GlobalException(JaxError.INVALID_FC_AMOUNT,"Invalid foreign Amount");
 			}
 			if(JaxUtil.isNullZeroBigDecimalCheck(rateBreakUp.getConvertedLCAmount())) {
 				remittanceApplication.setLocalTranxAmount(rateBreakUp.getConvertedLCAmount());
+			}else if(JaxUtil.isNullZeroBigDecimalCheck(branchExchangeRate.getExRateBreakup().getConvertedLCAmount())){
+				remittanceApplication.setLocalTranxAmount(branchExchangeRate.getExRateBreakup().getConvertedLCAmount());
 			}else {
-				remittanceApplication.setLocalTranxAmount(branchExchangeRate.get("P_LOCAL_GROSS_AMOUNT")==null?BigDecimal.ZERO:(BigDecimal)branchExchangeRate.get("P_LOCAL_GROSS_AMOUNT"));
-				//throw new GlobalException(JaxError.INVALID_FC_AMOUNT,"Invalid local Amount");
+				throw new GlobalException(JaxError.INVALID_FC_AMOUNT,"Invalid local Amount");
 			}
 			if(JaxUtil.isNullZeroBigDecimalCheck(rateBreakUp.getNetAmountWithoutLoyality())) {
 				remittanceApplication.setLocalNetTranxAmount(rateBreakUp.getNetAmountWithoutLoyality());
+			}else if(JaxUtil.isNullZeroBigDecimalCheck(branchExchangeRate.getExRateBreakup().getNetAmountWithoutLoyality())){
+				remittanceApplication.setLocalNetTranxAmount(branchExchangeRate.getExRateBreakup().getNetAmountWithoutLoyality());
 			}else {
-				remittanceApplication.setLocalNetTranxAmount(branchExchangeRate.get("P_LOCAL_NET_PAYABLE")==null?BigDecimal.ZERO:(BigDecimal)branchExchangeRate.get("P_LOCAL_NET_PAYABLE"));
+				
+				throw new GlobalException(JaxError.INVALID_FC_AMOUNT,"Invalid local Amount");
 			}
 			
 			if(JaxUtil.isNullZeroBigDecimalCheck(rateBreakUp.getInverseRate())) {
 				remittanceApplication.setExchangeRateApplied(rateBreakUp.getInverseRate());
+			}else if(JaxUtil.isNullZeroBigDecimalCheck(branchExchangeRate.getExRateBreakup().getInverseRate())){
+				remittanceApplication.setExchangeRateApplied(branchExchangeRate.getExRateBreakup().getInverseRate());
 			}else {
-				remittanceApplication.setExchangeRateApplied(branchExchangeRate.get("P_EXCHANGE_RATE_APPLIED")==null?BigDecimal.ZERO:(BigDecimal)branchExchangeRate.get("P_EXCHANGE_RATE_APPLIED"));
+			
+				throw new GlobalException(JaxError.EXCHANGE_RATE_ERROR,"Invalid exchange rate");
 			}
 			
 			
-			remittanceApplication.setLocalCommisionAmount(branchExchangeRate.get("P_LOCAL_COMMISION_AMOUNT")==null?BigDecimal.ZERO:(BigDecimal)branchExchangeRate.get("P_LOCAL_COMMISION_AMOUNT"));
+			remittanceApplication.setLocalCommisionAmount(branchExchangeRate.getTxnFee());
 			remittanceApplication.setLocalChargeAmount(BigDecimal.ZERO);
 			remittanceApplication.setLocalDeliveryAmount(BigDecimal.ZERO);
 			remittanceApplication.setLoyaltyPointsEncashed(BigDecimal.ZERO); 

@@ -294,10 +294,8 @@ public class RemittanceTransactionManager {
 
 	}
 	
-	public BigDecimal getCommissionAmount(BigDecimal routingBankId, BigDecimal rountingCountryId, BigDecimal currencyId,
-			BigDecimal remittanceMode, BigDecimal deliveryMode) {
-		List<BankServiceRule> rules = bankServiceRuleDao.getBankServiceRule(routingBankId, rountingCountryId, currencyId, remittanceMode,
-				deliveryMode);
+	public BigDecimal getCommissionAmount(BigDecimal routingBankId, BigDecimal rountingCountryId, BigDecimal currencyId,BigDecimal remittanceMode, BigDecimal deliveryMode) {
+		List<BankServiceRule> rules = bankServiceRuleDao.getBankServiceRule(routingBankId, rountingCountryId, currencyId, remittanceMode,deliveryMode);
 		BankServiceRule appliedRule = rules.get(0);
 		List<BankCharges> charges = appliedRule.getBankCharges();
 		BankCharges bankCharge = getApplicableCharge(charges);
