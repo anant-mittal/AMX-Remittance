@@ -10,6 +10,7 @@ public abstract class AbstractRemittanceApplicationRequestModel extends Abstract
 	protected BigDecimal localAmount;
 	protected BigDecimal foreignAmount;
 	protected boolean availLoyalityPoints;
+	protected BigDecimal domXRate;
 	
 	/**
 	 * @return exiting exrate breakup
@@ -46,5 +47,13 @@ public abstract class AbstractRemittanceApplicationRequestModel extends Abstract
 
 	public void setAvailLoyalityPoints(boolean availLoyalityPoints) {
 		this.availLoyalityPoints = availLoyalityPoints;
+	}
+	
+	public BigDecimal getDomXRate() {
+		return domXRate;
+	}
+
+	public void setDomXRate(BigDecimal domXRate) {
+		this.domXRate = domXRate;
 	}
 }

@@ -18,11 +18,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class BranchRemittanceApplRequestModel extends RemittanceAdditionalBeneFieldModel implements IRemittanceApplicationParams {
 	
-	private BigDecimal sourceOfFund;
-	private BigDecimal localAmount;
-	private BigDecimal foreignAmount;
-	private boolean availLoyalityPoints;
-	private BigDecimal domXRate;
 	@NotNull
 	private BranchExchangeRateBreakup branchExRateBreakup;
 	private String signature;
@@ -62,12 +57,7 @@ public class BranchRemittanceApplRequestModel extends RemittanceAdditionalBeneFi
 	public void setAvailLoyalityPoints(boolean availLoyalityPoints) {
 		this.availLoyalityPoints = availLoyalityPoints;
 	}
-	public BigDecimal getDomXRate() {
-		return domXRate;
-	}
-	public void setDomXRate(BigDecimal domXRate) {
-		this.domXRate = domXRate;
-	}
+
 	public BranchExchangeRateBreakup getBranchExRateBreakup() {
 		return branchExRateBreakup;
 	}
@@ -80,12 +70,14 @@ public class BranchRemittanceApplRequestModel extends RemittanceAdditionalBeneFi
 	public void setSignature(String signature) {
 		this.signature = signature;
 	}
+
 	public String getAmlRemarks() {
 		return amlRemarks;
 	}
 	public void setAmlRemarks(String amlRemarks) {
 		this.amlRemarks = amlRemarks;
 	}
+	
 	public BigDecimal getServiceMasterId() {
 		return serviceMasterId;
 	}
@@ -104,6 +96,7 @@ public class BranchRemittanceApplRequestModel extends RemittanceAdditionalBeneFi
 	public void setRemittanceModeId(BigDecimal remittancModeId) {
 		this.remittanceModeId = remittancModeId;
 	}
+	
 	public BigDecimal getRoutingCountryId() {
 		return routingCountryId;
 	}

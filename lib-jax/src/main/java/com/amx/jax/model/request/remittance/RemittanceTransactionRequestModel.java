@@ -25,16 +25,7 @@ public class RemittanceTransactionRequestModel extends RemittanceAdditionalBeneF
 	@NotNull
 	private ExchangeRateBreakup exRateBreakup;
 	private BigDecimal placeOrderId;
-	private BigDecimal domXRate;
 
-
-	public BigDecimal getDomXRate() {
-		return domXRate;
-	}
-
-	public void setDomXRate(BigDecimal domXRate) {
-		this.domXRate = domXRate;
-	}
 
 	/*
 	 * (non-Javadoc)
