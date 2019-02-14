@@ -146,9 +146,7 @@ public class BranchRemittanceSaveManager {
 	@Transactional
 	public RemittanceResponseDto saveRemittance(BranchRemittanceRequestModel remittanceRequestModel) {
 		RemittanceResponseDto responseDto  = new RemittanceResponseDto();
-		
-	
-		
+			
 		try {
 			List<BranchApplicationDto> shoppingCartList = new ArrayList<>();
 			shoppingCartList = remittanceRequestModel.getRemittanceApplicationId();
@@ -159,14 +157,8 @@ public class BranchRemittanceSaveManager {
 			List<ForeignCurrencyAdjust> currencyAdjustList 		=saveForeignCurrencyAdjust(remittanceRequestModel,collectionModel);
 			List<RemittanceTransaction> remitTrnxList      		=saveRemittanceTrnx(remittanceRequestModel,collectionModel);
 			LoyaltyClaimRequest loyaltyClaim          			=saveLoyalTyClaimRequest(collectionDetails);
-			//List<RemittanceBenificiary> remitBeneList      		=saveBeneTrnx(remitTrnxList);
-			//List<RemittanceAdditionalInstructionData> addInstList=saveRemitnaceinstructionData(remitTrnxList);
-			//List<RemittanceAml>			amlList					=saveRemittanceAml(remittanceRequestModel,remitTrnxList);											
-			
-			//List<LoyaltyPointsModel> loyaltyPoints 				= saveLoyaltyPoints(remitTrnxList);
 					
-			collectedAmountValidation(collectionModel,collectionDetails,currencyAdjustList);	
-			
+			collectedAmountValidation(collectionModel,collectionDetails,currencyAdjustList);
 			HashMap<String, Object> mapAllDetailRemitSave = new HashMap<String, Object>();
 			mapAllDetailRemitSave.put("EX_COLLECT",collectionModel);
 			mapAllDetailRemitSave.put("EX_COLLECT_DET",collectionDetails);
@@ -182,6 +174,12 @@ public class BranchRemittanceSaveManager {
 		}catch (GlobalException e) {
 			logger.error("routing  procedure", e.getErrorMessage() + "" + e.getErrorKey());
 			throw new GlobalException(e.getErrorKey(), e.getErrorMessage());
+		}finally {
+			amlList	 = new ArrayList<>();
+			remitBeneList   = new ArrayList<>();
+			addInstList = new ArrayList<>();
+			loyaltyPoints 	 = new ArrayList<>();
+			
 		}
 		
 		return responseDto;
@@ -216,8 +214,6 @@ public class BranchRemittanceSaveManager {
 		
 		try {
 			if(shoppingCartList!=null && !shoppingCartList.isEmpty()) {
-				
-				//RemittanceApplication appl =  remittanceApplicationRepository.findOne(shoppingCartList.get(0).getApplicationId());
 				
 				Customer customerid = new Customer();
 				customerid.setCustomerId(metaData.getCustomerId());
@@ -622,7 +618,7 @@ public class BranchRemittanceSaveManager {
 	}
 	
 public   List<RemittanceBenificiary>  saveBeneTrnx(RemittanceApplication applicationNo,RemittanceTransaction remitTrnx){
-	 remitBeneList    = new ArrayList<>();
+	
 	if(applicationNo!=null) {
 		RemittanceAppBenificiary applBene = applBeneRepository.findByExRemittanceAppfromBenfi(applicationNo);
 		if(applBene!=null) {
@@ -678,7 +674,7 @@ public   List<RemittanceBenificiary>  saveBeneTrnx(RemittanceApplication applica
 }
 	
 public   List<RemittanceAdditionalInstructionData>   saveRemitnaceinstructionData(RemittanceApplication applicationNo,RemittanceTransaction remitTrnx){
-	 addInstList = new ArrayList<>();
+	
 	 if(applicationNo!=null) {
 			AdditionalInstructionData applInstrucData = addInstrDataRepository.findByExRemittanceApplication(applicationNo);
 		
@@ -773,7 +769,7 @@ private LoyaltyClaimRequest saveLoyalTyClaimRequest(List<CollectDetailModel> col
 
 
 public List<LoyaltyPointsModel> saveLoyaltyPoints(RemittanceTransaction applDto){
-	 loyaltyPoints = new ArrayList<>();
+	
 		
 		if(applDto!=null) {
 			//for(RemittanceTransaction applDto : remittTransactionList) {

@@ -185,7 +185,7 @@ public class BranchRemittanceApplManager {
 		 //logger.info("branchRoutingDetails :"+branchRoutingDetails.toString());
 		 /* get exchange setup details **/
 		 //Map<String, Object> branchExchangeRate =branchRemitManager.getExchangeRateForBranch(requestApplModel, branchRoutingDetails);
-		 Map<String, Object> branchExchangeRate =branchRemitManager.getExchangeRateForBranch(requestApplModel,branchRoutingDto);
+		 //Map<String, Object> branchExchangeRate =branchRemitManager.getExchangeRateForBranch(requestApplModel,branchRoutingDto);
 		 
 		 
 		 //Priccing API
