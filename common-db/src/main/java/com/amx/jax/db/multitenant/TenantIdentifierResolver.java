@@ -1,4 +1,4 @@
-package com.amx.jax.radar.db;
+package com.amx.jax.db.multitenant;
 
 import org.hibernate.context.spi.CurrentTenantIdentifierResolver;
 import org.springframework.stereotype.Component;

@@ -21,7 +21,6 @@ import com.amx.jax.tunnel.DBEvent;
 import com.amx.jax.tunnel.TunnelService;
 import com.amx.utils.StringUtils;
 import com.amx.utils.TimeUtils;
-import com.amx.utils.UniqueID;
 
 @Component
 @TenantScoped
@@ -41,7 +40,7 @@ public class BrokerService {
 	@Autowired
 	TunnelService tunnelService;
 
-	public void pushNewEventNotifications(Tenant tenant) {
+	public void pushNewEventNotifications(Tenant tenant, String sessionId) {
 
 		if (this.serviceTenant == null) {
 			this.serviceTenant = tenant;
@@ -67,6 +66,8 @@ public class BrokerService {
 		STATUS_MAP.put(this.serviceTenant.toString(), printStamp);
 
 		for (EventNotificationView current_event_record : event_list) {
+			AppContextUtil.setTenant(tenant);
+			AppContextUtil.setSessionId(sessionId);
 			AppContextUtil.getTraceId(true, true);
 			AppContextUtil.init();
 			try {
@@ -111,7 +112,7 @@ public class BrokerService {
 		}
 	}
 
-	public void cleanUpEventNotificationRecords(Tenant tenant) {
+	public void cleanUpEventNotificationRecords(Tenant tenant, String sessionId) {
 		logger.debug("Delete proccess started on the table EX_EVENT_NOTIFICATION...");
 		try {
 			eventNotificationDao

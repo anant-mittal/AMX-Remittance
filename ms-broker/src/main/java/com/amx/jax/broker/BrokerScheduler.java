@@ -37,7 +37,7 @@ public class BrokerScheduler {
 				AppContextUtil.setSessionId(sessionId);
 				AppContextUtil.getTraceId(true, true);
 				AppContextUtil.init();
-				brokerService.pushNewEventNotifications(tenant);
+				brokerService.pushNewEventNotifications(tenant, sessionId);
 			} catch (Exception e) {
 				logger.error("Scheduler Fetch ERROR", e);
 			}
@@ -53,7 +53,11 @@ public class BrokerScheduler {
 		for (Tenant tenant : tenants) {
 			try {
 				AppContextUtil.setTenant(tenant);
-				brokerService.cleanUpEventNotificationRecords(tenant);
+				String sessionId = UniqueID.generateString();
+				AppContextUtil.setSessionId(sessionId);
+				AppContextUtil.getTraceId(true, true);
+				AppContextUtil.init();
+				brokerService.cleanUpEventNotificationRecords(tenant, sessionId);
 			} catch (Exception e) {
 				logger.error("Scheduler Delete ERROR", e);
 			}
