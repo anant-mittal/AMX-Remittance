@@ -52,6 +52,7 @@ import com.amx.jax.dbmodel.remittance.RemittanceModeMaster;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.manager.RemittanceApplicationAdditionalDataManager;
 import com.amx.jax.manager.RemittanceApplicationManager;
+import com.amx.jax.manager.remittance.RemittanceAdditionalFieldManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
@@ -156,6 +157,9 @@ public class BranchRemittanceApplManager {
 	
 	@Autowired
 	RemittanceTransactionRequestValidator remittanceTransactionRequestValidator;
+	
+	@Autowired
+	RemittanceAdditionalFieldManager remittanceAdditionalFieldManager;
 
 
 	
@@ -194,8 +198,10 @@ public class BranchRemittanceApplManager {
 		 
 		 //Priccing 
 		 //branchExchRateService.getExchaneRate(requestApplModel);
-		 //remittanceTransactionRequestValidator.validateFlexFields(requestApplModel, remitApplParametersMap);
-		 
+		 remittanceTransactionRequestValidator.validateExchangeRate(requestApplModel, exchangeRateResposne);
+		 remittanceTransactionRequestValidator.validateFlexFields(requestApplModel, remitApplParametersMap);
+		 remittanceAdditionalFieldManager.validateAdditionalFields(requestApplModel, remitApplParametersMap);
+		 remittanceAdditionalFieldManager.processAdditionalFields(requestApplModel);
 		 
 		 logger.debug("branchExchangeRate :"+exchangeRateResposne);
 		 /* get aml cehck   details **/

@@ -28,6 +28,7 @@ import com.amx.jax.dbmodel.remittance.AdditionalBankRuleMap;
 import com.amx.jax.dbmodel.remittance.AdditionalDataDisplayView;
 import com.amx.jax.dbmodel.remittance.FlexFiledView;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.model.request.remittance.AbstractRemittanceApplicationRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceAdditionalBeneFieldModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.model.response.ExchangeRateBreakup;
@@ -57,10 +58,10 @@ public class RemittanceTransactionRequestValidator {
 	@Autowired
 	DateUtil dateUtil;
 
-	public void validateExchangeRate(RemittanceTransactionRequestModel request,
+	public void validateExchangeRate(AbstractRemittanceApplicationRequestModel request,
 			RemittanceTransactionResponsetModel response) {
 
-		ExchangeRateBreakup oldExchangeRate = request.getExRateBreakup();
+		ExchangeRateBreakup oldExchangeRate = request.getExchangeRateBreakup();
 		ExchangeRateBreakup newExchangeRate = response.getExRateBreakup();
 		oldExchangeRate
 				.setRate(oldExchangeRate.getRate().setScale(newExchangeRate.getRate().scale(), RoundingMode.HALF_UP));
