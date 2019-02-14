@@ -19,6 +19,7 @@ public class BeneAccountModel extends AbstractModel {
 	@NotNull(message="Bank Id may not be null")
 	private BigDecimal bankId; //agent master
 	private BigDecimal bankBranchId;
+	@Pattern(regexp = "^[A-Za-z0-9]+$", message = "Invalid Account Number, only alphanumeric allowed")
 	private String bankAccountNumber;
 	@Pattern(regexp = "^[A-Za-z0-9]+$", message = "Invalid ibanNumber, only alphanumeric allowed")
 	@Size(min=1, max=60)
