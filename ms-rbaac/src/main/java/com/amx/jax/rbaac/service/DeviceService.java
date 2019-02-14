@@ -162,6 +162,7 @@ public class DeviceService extends AbstractService {
 		Device device = deviceDao.findDevice(new BigDecimal(countryBranchSystemInventoryId), deviceType);
 		deviceValidation.validateDevice(device);
 		deviceValidation.validateDeviceOtpToken(device, otp);
+		deviceValidation.validateOtpValidationTimeLimit(device.getRegistrationId());
 		// session pair success
 		device.setState(DeviceState.SESSION_PAIRED);
 		deviceDao.saveDevice(device);
@@ -184,6 +185,8 @@ public class DeviceService extends AbstractService {
 	}
 
 	public DevicePairOtpResponse validateDeviceSessionPairToken(BigDecimal deviceRegId, String deviceSessionToken) {
+		logger.debug("validateDeviceSessionPairToken method params: deviceRegId {}, deviceSessionToken {}", deviceRegId,
+				deviceSessionToken);
 		Device device = deviceDao.findDevice(deviceRegId);
 		deviceValidation.validateDevice(device);
 		String sessionTokenGen = deviceManager.generateSessionPairToken(device);

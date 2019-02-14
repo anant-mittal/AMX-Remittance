@@ -40,7 +40,7 @@ public class UIServerError extends AmxApiException {
 
 	@Override
 	public IExceptionEnum getErrorIdEnum(String errorId) {
-		return WebResponseStatus.UI_SERVER_ERROR;
+		return WebResponseStatus.valueOf(errorId);
 	}
 
 	public static <T> T evaluate(Exception e) {

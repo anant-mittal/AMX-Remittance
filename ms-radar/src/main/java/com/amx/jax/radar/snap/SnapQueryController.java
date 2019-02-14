@@ -12,13 +12,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.amx.jax.rest.RestService;
-import com.amx.utils.JsonUtil;
 
 @Controller
 public class SnapQueryController {
 
 	@Autowired
-	private SnapQueryTemplateService snapQueryTemplateService;
+	private SnapQueryService snapQueryTemplateService;
 
 	@Autowired
 	RestService restService;
@@ -27,18 +26,14 @@ public class SnapQueryController {
 	@RequestMapping(value = "/snap/query/{snapView}", method = RequestMethod.POST)
 	public Map<String, Object> snapQuery(@PathVariable(value = "snapView") SnapQueryTemplate snapView,
 			@RequestBody Map<String, Object> params) throws IOException {
-		return JsonUtil.getMapFromJsonString(snapQueryTemplateService.process(snapView, params));
+		return snapQueryTemplateService.getQuery(snapView, params);
 	}
 
 	@ResponseBody
 	@RequestMapping(value = "/snap/view/{snapView}", method = RequestMethod.POST)
 	public Map<String, Object> snapView(@PathVariable(value = "snapView") SnapQueryTemplate snapView,
 			@RequestBody Map<String, Object> params) throws IOException {
-
-		Map<String, Object> queryStr = JsonUtil
-				.getMapFromJsonString(snapQueryTemplateService.process(snapView, params));
-
-		return restService.ajax("http://10.28.42.21:9200/oracle-v3-tranx-v4/_search").post(queryStr).asMap();
+		return snapQueryTemplateService.execute(snapView, params);
 	}
 
 }

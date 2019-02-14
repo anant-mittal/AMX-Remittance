@@ -11,7 +11,7 @@ import com.amx.jax.dbmodel.ViewDistrict;
 
 public interface IViewDistrictDAO  extends JpaRepository<ViewDistrict, Serializable>{
 	
-	@Query("Select t from ViewDistrict t where t.stateId =?1 and t.districtId =?2 and t.languageId=?3")
+	@Query("Select t from ViewDistrict t where t.stateId =?1 and t.districtId =?2 and t.languageId=?3 order by districtDesc")
 	public List<ViewDistrict> getDistrict(BigDecimal stateId,BigDecimal districtId,BigDecimal languageId);
 	
 

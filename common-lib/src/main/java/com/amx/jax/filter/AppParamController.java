@@ -1,11 +1,13 @@
 package com.amx.jax.filter;
 
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -19,7 +21,9 @@ import com.amx.jax.http.RequestType;
 import com.amx.jax.model.UserDevice;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.JsonUtil;
 import com.amx.utils.CryptoUtil.HashBuilder;
+import com.fasterxml.jackson.core.type.TypeReference;
 
 @RestController
 public class AppParamController {
@@ -64,6 +68,23 @@ public class AppParamController {
 		map.put("hmac", builder.toHMAC().output());
 		map.put("numeric", builder.toNumeric(length).output());
 		return map;
+	}
+
+	@RequestMapping(value = "/pub/amx/json/decode/b64", method = RequestMethod.POST)
+	public Map<String, Object> jsonDecodeB64(@RequestParam String jsond) {
+		byte[] decodedBytes = Base64.getDecoder().decode(jsond);
+		String requestParamsJson = new String(decodedBytes);
+		if (!ArgUtil.isEmpty(requestParamsJson)) {
+			return JsonUtil.fromJson(requestParamsJson, new TypeReference<Map<String, Object>>() {
+			});
+		}
+		return null;
+	}
+
+	@RequestMapping(value = "/pub/amx/json/encode/b64", method = RequestMethod.POST)
+	public String jsonEncodeB64(@RequestBody Map<String, Object> json) {
+		String callbackUrl = JsonUtil.toJson(json);
+		return Base64.getEncoder().encodeToString(callbackUrl.getBytes());
 	}
 
 }

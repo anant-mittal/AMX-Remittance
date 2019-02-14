@@ -9,7 +9,6 @@ import static com.amx.jax.error.JaxError.TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED;
 import static com.amx.jax.error.JaxError.TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED_NEW_BENE;
 import static com.amx.jax.error.JaxError.TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED_PER_BENE;
 
-import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
@@ -21,7 +20,6 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -46,8 +44,6 @@ import com.amx.amxlib.model.response.ExchangeRateBreakup;
 import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
-import com.amx.jax.auditlog.JaxTransactionEvent;
-import com.amx.jax.config.JaxProperties;
 import com.amx.jax.config.JaxTenantProperties;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxDbConfig;
@@ -80,7 +76,10 @@ import com.amx.jax.exrateservice.dao.ExchangeRateDao;
 import com.amx.jax.exrateservice.dao.PipsMasterDao;
 import com.amx.jax.exrateservice.service.NewExchangeRateService;
 import com.amx.jax.logger.AuditEvent;
+import com.amx.jax.logger.AuditEvent.Result;
 import com.amx.jax.logger.AuditService;
+import com.amx.jax.logger.events.CActivityEvent;
+import com.amx.jax.logger.events.CActivityEvent.Type;
 import com.amx.jax.manager.remittance.RemittanceAdditionalFieldManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
@@ -223,7 +222,6 @@ public class RemittanceTransactionManager {
 		HashMap<String, Object> beneBankDetails = getBeneBankDetails(beneficiary);
 		remitApplParametersMap.putAll(beneBankDetails);
 		Map<String, Object> routingDetails = routingService.getRoutingDetails(remitApplParametersMap);
-
 		remitApplParametersMap.putAll(routingDetails);
 		remitApplParametersMap.put("P_BENEFICIARY_SWIFT_BANK1", routingDetails.get("P_SWIFT"));
 		remitApplParametersMap.put("P_BENEFICARY_ACCOUNT_SEQ_ID", beneficiary.getBeneficiaryAccountSeqId());
@@ -790,17 +788,14 @@ public class RemittanceTransactionManager {
 		remiteAppModel.setCivilIdOtpModel(civilIdOtpModel);
 
 		logger.info("Application saved successfully, response: " + remiteAppModel.toString());
-		auditService.log(createTransactionEvent(remiteAppModel, JaxTransactionStatus.APPLICATION_CREATED));
+
+		auditService.log(
+				new CActivityEvent(Type.APPLICATION_CREATED,
+						String.format("{}/{}", remiteAppModel.getDocumentFinancialYear(),
+								remiteAppModel.getDocumentIdForPayment())).field("STATUS")
+										.to(JaxTransactionStatus.APPLICATION_CREATED).result(Result.DONE));
 		return remiteAppModel;
 
-	}
-
-	private AuditEvent createTransactionEvent(RemittanceApplicationResponseModel remiteAppModel,
-			JaxTransactionStatus status) {
-
-		AuditEvent trnxAuditEvent = new JaxTransactionEvent(status, remiteAppModel.getDocumentIdForPayment(),
-				remiteAppModel.getDocumentFinancialYear());
-		return trnxAuditEvent;
 	}
 
 	private void deactivatePreviousApplications() {
@@ -827,7 +822,7 @@ public class RemittanceTransactionManager {
 			}
 		}
 	}
-	
+
 	private void validateAdditionalCheck() {
 		applicationProcedureDao.getAdditionalCheckProcedure(remitApplParametersMap);
 	}

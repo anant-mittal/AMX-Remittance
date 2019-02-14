@@ -825,6 +825,8 @@ public class FcSaleApplicationTransactionManager extends AbstractModel {
 				fianlDto.setForeignCurrencyCode(multiForeignQuotoName);
 				fianlDto.setOrderStatusCode(dto.getOrderStatusCode());
 				fianlDto.setInventoryId(collectionInventoryIdMap.get(dto.getCollectionDocumentNo()));
+				fianlDto.setOtpTokenPrefix(dto.getOtpTokenPrefix());
+				fianlDto.setOtpTokenCustomer(dto.getOtpTokenCustomer());
 				finalFxOrderListDto.add(fianlDto);
 			}
 

@@ -101,6 +101,9 @@ public class FxDeliveryDetailsModel implements Serializable{
 	@Column(name = "COLLECTION_DOCUMENT_NO")
 	private BigDecimal colDocNo;
 	
+	@Column(name="OTP_TOKEN_CUSTOMER")
+	private String otpTokenCustomer;
+	
 	public String getOtpValidated() {
 		return otpValidated;
 	}
@@ -267,6 +270,15 @@ public class FxDeliveryDetailsModel implements Serializable{
 	public void setColDocNo(BigDecimal colDocNo) {
 		this.colDocNo = colDocNo;
 	}
+
+	public String getOtpTokenCustomer() {
+		return otpTokenCustomer;
+	}
+	
+	public void setOtpTokenCustomer(String otpTokenCustomer) {
+		this.otpTokenCustomer = otpTokenCustomer;
+	}
+	
 	
 }
 

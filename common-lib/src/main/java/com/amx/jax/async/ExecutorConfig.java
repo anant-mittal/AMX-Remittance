@@ -79,8 +79,8 @@ public class ExecutorConfig extends AsyncConfigurerSupport {
 		return executor;
 	}
 
-	@Bean
-	public ThreadPoolTaskScheduler threadPoolTaskScheduler() {
+	@Bean(name = EXECUTER_TASK)
+	public ThreadPoolTaskScheduler taskThreadPoolTaskScheduler() {
 		ThreadPoolTaskScheduler threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
 		threadPoolTaskScheduler.setPoolSize(10);
 		threadPoolTaskScheduler.setThreadNamePrefix(EXECUTER_TASK + "-");
