@@ -194,7 +194,7 @@ public class BranchRemittanceApplManager {
 		 
 		 //Priccing 
 		 //branchExchRateService.getExchaneRate(requestApplModel);
-		 remittanceTransactionRequestValidator.validateFlexFields(requestApplModel, remitApplParametersMap);
+		 //remittanceTransactionRequestValidator.validateFlexFields(requestApplModel, remitApplParametersMap);
 		 
 		 
 		 logger.debug("branchExchangeRate :"+exchangeRateResposne);
