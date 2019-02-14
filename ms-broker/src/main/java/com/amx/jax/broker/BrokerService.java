@@ -62,6 +62,8 @@ public class BrokerService {
 			} else {
 				printDelay = 1000L;
 			}
+		} else {
+			logger.debug("Total {} Events fetched from DB, after waiting {} secs", totalEvents, printDelay);
 		}
 
 		STATUS_MAP.put(this.serviceTenant.toString(), printStamp);
@@ -114,7 +116,7 @@ public class BrokerService {
 	}
 
 	public void cleanUpEventNotificationRecords(Tenant tenant) {
-		logger.info("Delete proccess started on the table EX_EVENT_NOTIFICATION...");
+		logger.debug("Delete proccess started on the table EX_EVENT_NOTIFICATION...");
 		try {
 			eventNotificationDao
 					.deleteEventNotificationRecordList(eventNotificationDao.getEventNotificationRecordsToDelete());
