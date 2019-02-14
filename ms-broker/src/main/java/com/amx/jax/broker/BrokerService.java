@@ -47,8 +47,6 @@ public class BrokerService {
 			this.serviceTenant = tenant;
 		}
 
-		String sessionId = UniqueID.generateString();
-
 		List<EventNotificationView> event_list = eventNotificationDao.getNewlyInserted_EventNotificationRecords();
 
 		int totalEvents = event_list.size();
@@ -69,8 +67,6 @@ public class BrokerService {
 		STATUS_MAP.put(this.serviceTenant.toString(), printStamp);
 
 		for (EventNotificationView current_event_record : event_list) {
-			AppContextUtil.setTenant(tenant);
-			AppContextUtil.setSessionId(sessionId);
 			AppContextUtil.getTraceId(true, true);
 			AppContextUtil.init();
 			try {

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.logger.LoggerService;
+import com.amx.utils.UniqueID;
 
 @Configuration
 @EnableScheduling
@@ -32,6 +33,9 @@ public class BrokerScheduler {
 		for (Tenant tenant : tenants) {
 			try {
 				AppContextUtil.setTenant(tenant);
+				String sessionId = UniqueID.generateString();
+				AppContextUtil.setSessionId(sessionId);
+				AppContextUtil.getTraceId(true, true);
 				brokerService.pushNewEventNotifications(tenant);
 			} catch (Exception e) {
 				logger.error("Scheduler Fetch ERROR", e);
