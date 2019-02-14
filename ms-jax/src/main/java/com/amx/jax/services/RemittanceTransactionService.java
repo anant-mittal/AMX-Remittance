@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.amxlib.model.request.RemittanceTransactionStatusRequestModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
@@ -27,6 +26,7 @@ import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.exrateservice.service.NewExchangeRateService;
 import com.amx.jax.manager.RemittanceTransactionManager;
+import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.model.response.ExchangeRateBreakup;
 import com.amx.jax.model.response.SourceOfIncomeDto;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;

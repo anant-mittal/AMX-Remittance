@@ -21,7 +21,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
-import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dal.BizcomponentDao;
 import com.amx.jax.dal.RoutingProcedureDao;
@@ -44,6 +43,7 @@ import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.AbstractModel;
 import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
+import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.AmlCheckResponseDto;
 import com.amx.jax.model.response.remittance.BranchExchangeRateBreakup;

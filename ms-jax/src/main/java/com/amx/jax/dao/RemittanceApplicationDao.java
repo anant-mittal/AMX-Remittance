@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.jax.dbmodel.PlaceOrder;
 import com.amx.jax.dbmodel.RemittanceTransactionView;
 import com.amx.jax.dbmodel.remittance.AdditionalInstructionData;
@@ -23,6 +22,7 @@ import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.manager.RemittanceApplicationManager;
+import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.repository.AdditionalInstructionDataRepository;
 import com.amx.jax.repository.IFlexFiledView;
 import com.amx.jax.repository.IPlaceOrderDao;

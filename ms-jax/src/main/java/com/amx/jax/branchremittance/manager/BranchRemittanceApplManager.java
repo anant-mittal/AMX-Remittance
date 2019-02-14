@@ -55,6 +55,7 @@ import com.amx.jax.manager.RemittanceApplicationAdditionalDataManager;
 import com.amx.jax.manager.RemittanceApplicationManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
+import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.model.response.remittance.AmlCheckResponseDto;
 import com.amx.jax.model.response.remittance.BranchExchangeRateBreakup;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
@@ -76,6 +77,7 @@ import com.amx.jax.services.BeneficiaryService;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.util.DateUtil;
 import com.amx.jax.util.JaxUtil;
+import com.amx.jax.validation.RemittanceTransactionRequestValidator;
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Component
@@ -152,6 +154,9 @@ public class BranchRemittanceApplManager {
 	
 	@Autowired
 	BranchRemittanceExchangeRateService branchExchRateService;
+	
+	@Autowired
+	RemittanceTransactionRequestValidator remittanceTransactionRequestValidator;
 
 
 	
@@ -181,13 +186,16 @@ public class BranchRemittanceApplManager {
 		 //logger.info("branchRoutingDetails :"+branchRoutingDetails.toString());
 		 /* get exchange setup details **/
 		 //Map<String, Object> branchExchangeRate =branchRemitManager.getExchangeRateForBranch(requestApplModel, branchRoutingDetails);
-		 //Map<String, Object> branchExchangeRate =branchRemitManager.getExchangeRateForBranch(requestApplModel,branchRoutingDto);
+		 Map<String, Object> branchExchangeRate =branchRemitManager.getExchangeRateForBranch(requestApplModel,branchRoutingDto);
 		 
 		 
 		 //Priccing API
 		 BranchRemittanceGetExchangeRateResponse exchangeRateResposne = branchExchRateService.getExchaneRate(requestApplModel).getResult();
 		
 		 
+		 //Priccing 
+		 //branchExchRateService.getExchaneRate(requestApplModel);
+		 remittanceTransactionRequestValidator.validateFlexFields(requestApplModel, remitApplParametersMap);
 		 
 		 
 		 logger.debug("branchExchangeRate :"+exchangeRateResposne);
@@ -277,7 +285,6 @@ public class BranchRemittanceApplManager {
 			
 			BenificiaryListView beneDetails  =(BenificiaryListView) hashMap.get("BENEFICIARY_DETAILS");
 			BranchExchangeRateBreakup rateBreakUp = applRequestModel.getBranchExRateBreakup();
-			
 			
 			
 			

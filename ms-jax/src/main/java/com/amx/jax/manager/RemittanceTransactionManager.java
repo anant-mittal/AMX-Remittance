@@ -39,7 +39,6 @@ import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.PromotionDto;
-import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.amxlib.model.request.RemittanceTransactionStatusRequestModel;
 import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
@@ -80,6 +79,8 @@ import com.amx.jax.logger.events.CActivityEvent;
 import com.amx.jax.logger.events.CActivityEvent.Type;
 import com.amx.jax.manager.remittance.RemittanceAdditionalFieldManager;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.request.remittance.AbstractRemittanceApplicationRequestModel;
+import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.model.response.ExchangeRateBreakup;
 import com.amx.jax.model.response.remittance.LoyalityPointState;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
@@ -324,7 +325,7 @@ public class RemittanceTransactionManager {
 				.setMaxLoyalityPointsAvailableForTxn(loyalityPointService.getVwLoyalityEncash().getLoyalityPoint());
 	}
 
-	private void applyRoudingLogic(ExchangeRateBreakup exRatebreakUp) {
+	public void applyRoudingLogic(ExchangeRateBreakup exRatebreakUp) {
 		BigDecimal fcurrencyId = (BigDecimal) remitApplParametersMap.get("P_FOREIGN_CURRENCY_ID");
 		BigDecimal localCurrencyId = meta.getDefaultCurrencyId();
 		exRatebreakUp.setFcDecimalNumber(currencyMasterService.getCurrencyMasterById(fcurrencyId).getDecinalNumber());
@@ -597,6 +598,13 @@ public class RemittanceTransactionManager {
 			exchangeRateBreakup = createExchangeRateBreakUp(exchangeRates, model, responseModel);
 		}
 
+		setNetAmountAndLoyalityState(exchangeRateBreakup, model, responseModel, comission);
+		return exchangeRateBreakup;
+
+	}
+
+	public void setNetAmountAndLoyalityState(ExchangeRateBreakup exchangeRateBreakup, AbstractRemittanceApplicationRequestModel model,
+			RemittanceTransactionResponsetModel responseModel, BigDecimal comission) {
 		BigDecimal netAmount = exchangeRateBreakup.getConvertedLCAmount().add(comission);
 		exchangeRateBreakup.setNetAmountWithoutLoyality(netAmount);
 
@@ -605,13 +613,10 @@ public class RemittanceTransactionManager {
 			responseModel.setLoyalityPointState(LoyalityPointState.CAN_NOT_AVAIL);
 		}
 		if (remitAppManager.loyalityPointsAvailed(model, responseModel)) {
-			exchangeRateBreakup
-					.setNetAmount(netAmount.subtract(loyalityPointService.getVwLoyalityEncash().getEquivalentAmount()));
+			exchangeRateBreakup.setNetAmount(netAmount.subtract(loyalityPointService.getVwLoyalityEncash().getEquivalentAmount()));
 		} else {
 			exchangeRateBreakup.setNetAmount(netAmount);
 		}
-		return exchangeRateBreakup;
-
 	}
 
 	private ExchangeRateBreakup createExchangeRateBreakUp(List<ExchangeRateApprovalDetModel> exchangeRates,

@@ -1,4 +1,4 @@
-package com.amx.amxlib.model.request;
+package com.amx.jax.model.request.remittance;
 
 import java.math.BigDecimal;
 

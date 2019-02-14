@@ -18,8 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.meta.model.CustomerRatingDTO;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
-import com.amx.amxlib.model.request.IRemitTransReqPurpose;
-import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.amxlib.model.request.RemittanceTransactionStatusRequestModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.api.AmxApiResponse;
@@ -30,6 +28,8 @@ import com.amx.jax.dbmodel.CustomerRating;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.manager.RemittancePaymentManager;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.request.remittance.IRemitTransReqPurpose;
+import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.services.CustomerRatingService;
 import com.amx.jax.services.PurposeOfTransactionService;

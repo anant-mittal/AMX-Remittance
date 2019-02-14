@@ -23,7 +23,10 @@ import com.amx.jax.exrateservice.service.JaxDynamicPriceService;
 import com.amx.jax.manager.RemittanceTransactionManager;
 import com.amx.jax.manager.remittance.RemittanceApplicationParamManager;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.request.remittance.AbstractRemittanceApplicationRequestModel;
+import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.request.remittance.IRemittanceApplicationParams;
+import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.model.response.remittance.BranchExchangeRateBreakup;
 import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeRateResponse;
 import com.amx.jax.services.BeneficiaryService;
@@ -82,12 +85,27 @@ public class BranchRemittanceExchangeRateManager {
 		BranchRemittanceGetExchangeRateResponse result = new BranchRemittanceGetExchangeRateResponse();
 		BranchExchangeRateBreakup branchExchangeRate = new BranchExchangeRateBreakup(exchangeRateResponseModel.getExRateBreakup());
 		result.setExRateBreakup(branchExchangeRate);
-		//trnx fee
-		result.setTxnFee(getComission());
-		//loyality points
+		// trnx fee
+		BigDecimal commission = getComission();
+		result.setTxnFee(commission);
+		// loyality points
 		remittanceTransactionManager.setLoyalityPointFlags(customer, result);
 		remittanceTransactionManager.setLoyalityPointIndicaters(result);
+		BranchRemittanceApplRequestModel remittanceApplRequestModel = buildRemittanceTransactionModel(request);
+		remittanceTransactionManager.setNetAmountAndLoyalityState(branchExchangeRate, remittanceApplRequestModel, result, commission);
+		remittanceTransactionManager.applyRoudingLogic(branchExchangeRate);
 		return result;
+	}
+
+	private BranchRemittanceApplRequestModel buildRemittanceTransactionModel(IRemittanceApplicationParams request) {
+
+		BranchRemittanceApplRequestModel model = new BranchRemittanceApplRequestModel();
+		model.setBeneId(request.getBeneficiaryRelationshipSeqIdBD());
+		model.setAvailLoyalityPoints(request.getAvailLoyalityPoints());
+		model.setLocalAmount(request.getLocalAmountBD());
+		model.setForeignAmount(request.getForeignAmountBD());
+
+		return model;
 	}
 
 	private BigDecimal getComission() {

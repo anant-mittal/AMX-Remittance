@@ -17,7 +17,6 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dbmodel.BenificiaryListView;
@@ -32,6 +31,7 @@ import com.amx.jax.dbmodel.remittance.FlexFiledView;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
+import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.model.response.remittance.FlexFieldDto;
 import com.amx.jax.repository.IAdditionalBankRuleAmiecRepository;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;

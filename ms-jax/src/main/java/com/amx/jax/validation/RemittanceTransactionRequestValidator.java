@@ -20,7 +20,6 @@ import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.JaxConditionalFieldDto;
 import com.amx.amxlib.model.JaxFieldDto;
 import com.amx.amxlib.model.JaxFieldValueDto;
-import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.FlexFieldBehaviour;
 import com.amx.jax.dao.RemittanceApplicationDao;
@@ -29,6 +28,8 @@ import com.amx.jax.dbmodel.remittance.AdditionalBankRuleMap;
 import com.amx.jax.dbmodel.remittance.AdditionalDataDisplayView;
 import com.amx.jax.dbmodel.remittance.FlexFiledView;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.model.request.remittance.RemittanceAdditionalBeneFieldModel;
+import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.model.response.ExchangeRateBreakup;
 import com.amx.jax.model.response.remittance.FlexFieldDto;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
@@ -68,7 +69,7 @@ public class RemittanceTransactionRequestValidator {
 		}
 	}
 
-	public void validateFlexFields(RemittanceTransactionRequestModel request,
+	public void validateFlexFields(RemittanceAdditionalBeneFieldModel request,
 			Map<String, Object> remitApplParametersMap) {
 		request.populateFlexFieldDtoMap();
 		List<FlexFiledView> allFlexFields = remittanceApplicationDao.getFlexFields();
