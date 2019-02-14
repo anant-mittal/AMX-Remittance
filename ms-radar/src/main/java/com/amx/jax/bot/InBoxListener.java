@@ -1,4 +1,4 @@
-package com.amx.jax.worker.bot;
+package com.amx.jax.bot;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
