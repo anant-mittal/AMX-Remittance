@@ -5,12 +5,9 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -121,9 +118,6 @@ public class Customer implements java.io.Serializable {
 	private String identityInt;
 	private BigDecimal identityFor;
 	private BigDecimal identityTypeId;
-
-	// Customer Category Discount
-	private CustomerCategoryDiscount customerCategoryDiscount;
 
 	public Customer() {
 	}
@@ -864,16 +858,6 @@ public class Customer implements java.io.Serializable {
 
 	public void setIdentityTypeId(BigDecimal identityTypeId) {
 		this.identityTypeId = identityTypeId;
-	}
-
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "CUSTOMER_CATEGORY_ID")
-	public CustomerCategoryDiscount getCustomerCategoryDiscount() {
-		return customerCategoryDiscount;
-	}
-
-	public void setCustomerCategoryDiscount(CustomerCategoryDiscount customerCategoryDiscount) {
-		this.customerCategoryDiscount = customerCategoryDiscount;
 	}
 
 	@Override

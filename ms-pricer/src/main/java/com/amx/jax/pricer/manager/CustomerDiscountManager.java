@@ -17,10 +17,12 @@ import org.springframework.stereotype.Component;
 import com.amx.jax.dict.UserClient.Channel;
 import com.amx.jax.pricer.dao.ChannelDiscountDao;
 import com.amx.jax.pricer.dao.CustCatDiscountDao;
+import com.amx.jax.pricer.dao.CustomerExtendedDao;
 import com.amx.jax.pricer.dao.PipsMasterDao;
 import com.amx.jax.pricer.dbmodel.ChannelDiscount;
 import com.amx.jax.pricer.dbmodel.Customer;
 import com.amx.jax.pricer.dbmodel.CustomerCategoryDiscount;
+import com.amx.jax.pricer.dbmodel.CustomerExtended;
 import com.amx.jax.pricer.dbmodel.PipsMaster;
 import com.amx.jax.pricer.dto.ExchangeRateDetails;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
@@ -39,6 +41,9 @@ public class CustomerDiscountManager {
 	@Autowired
 	ChannelDiscountDao channelDiscountDao;
 
+	@Autowired
+	CustomerExtendedDao customerExtendedDao;
+
 	@Resource
 	PricingRateDetailsDTO pricingRateDetailsDTO;
 
@@ -51,10 +56,10 @@ public class CustomerDiscountManager {
 		ChannelDiscount channelDiscount = channelDiscountDao.getDiscountByChannel(pricingRequestDTO.getChannel());
 		BigDecimal channelDiscountPips = (null != channelDiscount ? channelDiscount.getDiscountPips() : BIGD_ZERO);
 
-		// CustomerCategoryDiscount ccDiscount =
-		// custCatDiscountDao.getDiscountByCustomerCategory("PLATINUM");
+		CustomerExtended customerExtended = customerExtendedDao
+				.getCustomerExtendedByCustomerId(customer.getCustomerId());
 
-		CustomerCategoryDiscount ccDiscount = customer.getCustomerCategoryDiscount();
+		CustomerCategoryDiscount ccDiscount = customerExtended.getCustomerCategoryDiscount();
 
 		BigDecimal ccDiscountPips = (null != ccDiscount ? ccDiscount.getDiscountPips() : BIGD_ZERO);
 
