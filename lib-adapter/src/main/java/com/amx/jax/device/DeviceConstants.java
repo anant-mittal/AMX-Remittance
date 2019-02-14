@@ -32,6 +32,8 @@ public class DeviceConstants {
 		public static final String SESSION_TERMINAL = "/pub/device/session/terminal";
 		public static final String DEVICE_STATUS_CARD = "/pub/device/status/card";
 		public static final String DEVICE_STATUS_NOTIPY = "/pub/notipy/status";
+		public static final String DEVICE_SEND_NOTIPY = "/pub/notipy/send";
+		public static final String DEVICE_VERIFY_NOTIPY = "/pub/notipy/verify";
 
 		@Deprecated
 		public static final String DEVICE_STATUS_ACTIVITY = "/pub/device/status/activity";

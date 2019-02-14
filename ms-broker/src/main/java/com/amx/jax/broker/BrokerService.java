@@ -21,7 +21,6 @@ import com.amx.jax.tunnel.DBEvent;
 import com.amx.jax.tunnel.TunnelService;
 import com.amx.utils.StringUtils;
 import com.amx.utils.TimeUtils;
-import com.amx.utils.UniqueID;
 
 @Component
 @TenantScoped
@@ -41,13 +40,11 @@ public class BrokerService {
 	@Autowired
 	TunnelService tunnelService;
 
-	public void pushNewEventNotifications(Tenant tenant) {
+	public void pushNewEventNotifications(Tenant tenant, String sessionId) {
 
 		if (this.serviceTenant == null) {
 			this.serviceTenant = tenant;
 		}
-
-		String sessionId = UniqueID.generateString();
 
 		List<EventNotificationView> event_list = eventNotificationDao.getNewlyInserted_EventNotificationRecords();
 
@@ -62,6 +59,8 @@ public class BrokerService {
 			} else {
 				printDelay = 1000L;
 			}
+		} else {
+			logger.debug("Total {} Events fetched from DB, after waiting {} secs", totalEvents, printDelay);
 		}
 
 		STATUS_MAP.put(this.serviceTenant.toString(), printStamp);
@@ -113,8 +112,8 @@ public class BrokerService {
 		}
 	}
 
-	public void cleanUpEventNotificationRecords(Tenant tenant) {
-		logger.info("Delete proccess started on the table EX_EVENT_NOTIFICATION...");
+	public void cleanUpEventNotificationRecords(Tenant tenant, String sessionId) {
+		logger.debug("Delete proccess started on the table EX_EVENT_NOTIFICATION...");
 		try {
 			eventNotificationDao
 					.deleteEventNotificationRecordList(eventNotificationDao.getEventNotificationRecordsToDelete());

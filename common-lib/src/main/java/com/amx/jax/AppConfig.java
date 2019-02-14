@@ -29,6 +29,8 @@ import com.amx.utils.ArgUtil;
 @PropertySource("classpath:application-lib.properties")
 public class AppConfig {
 
+	private static final String PROP_SUFFIX = "}";
+	private static final String PROP_PREFIX = "${";
 	public static final Pattern pattern = Pattern.compile("^\\$\\{(.*)\\}$");
 	public static final String APP_ENV = "${app.env}";
 	public static final String APP_GROUP = "${app.group}";
