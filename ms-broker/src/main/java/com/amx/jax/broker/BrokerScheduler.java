@@ -36,6 +36,7 @@ public class BrokerScheduler {
 				String sessionId = UniqueID.generateString();
 				AppContextUtil.setSessionId(sessionId);
 				AppContextUtil.getTraceId(true, true);
+				AppContextUtil.init();
 				brokerService.pushNewEventNotifications(tenant);
 			} catch (Exception e) {
 				logger.error("Scheduler Fetch ERROR", e);
