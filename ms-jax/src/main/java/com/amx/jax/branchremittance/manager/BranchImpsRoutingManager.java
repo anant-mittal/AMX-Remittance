@@ -17,10 +17,14 @@ import org.springframework.web.context.WebApplicationContext;
 import com.amx.amxlib.constant.ApplicationProcedureParam;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.branchremittance.service.BranchRemittanceExchangeRateService;
+import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.remittance.IRemittanceApplicationParams;
+import com.amx.jax.model.response.remittance.DeliveryModeDto;
+import com.amx.jax.model.response.remittance.RemittanceModeDto;
 import com.amx.jax.model.response.remittance.RoutingBankDto;
+import com.amx.jax.model.response.remittance.RoutingBranchDto;
 import com.amx.jax.model.response.remittance.RoutingResponseDto;
-import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeRateResponse;
+import com.amx.jax.model.response.remittance.RoutingServiceDto;
 import com.amx.jax.routing.ImpsRoutingLogic;
 import static com.amx.amxlib.constant.ApplicationProcedureParam.*;
 
@@ -38,6 +42,8 @@ public class BranchImpsRoutingManager {
 	Map<String, Object> remitApplParametersMap;
 	@Autowired
 	BranchRoutingManager branchRoutingManager;
+	@Autowired
+	MetaData metaData;
 
 	/**
 	 * modifies routingResponseDto passed in method argument if IMPS routing is
@@ -52,19 +58,30 @@ public class BranchImpsRoutingManager {
 		// call getexchange rate method to populated remitApplParametersMap
 		branchRemittanceExchangeRateService.getExchaneRate(remittanceApplicationParams);
 		Map<String, Object> impsOutputParams = new HashMap<>();
+
 		impsRoutingLogic.apply(remitApplParametersMap, impsOutputParams);
 		BigDecimal routingBankIdImps = P_ROUTING_BANK_ID.getValue(impsOutputParams);
 		if (routingBankIdImps != null) {
+			LOGGER.debug("IMPS logic applicable for remittanceApplicationParams: {}", remittanceApplicationParams.toString());
 			routingResponseDto.getRoutingBankDto().clear();
 			routingResponseDto.getRoutingBankBranchDto().clear();
 			routingResponseDto.getRemittanceModeList().clear();
 			routingResponseDto.getDeliveryModeList().clear();
 			routingResponseDto.getServiceList().clear();
-			LOGGER.debug("IMPS logic applicable for remittanceApplicationParams: {}", remittanceApplicationParams.toString());
-			// routing bank change
+			BigDecimal routingBankBranchIdImps = P_ROUTING_BANK_BRANCH_ID.getValue(impsOutputParams);
+			BigDecimal remittanceModeId = P_REMITTANCE_MODE_ID.getValue(impsOutputParams);
+			BigDecimal deliveryModeId = P_DELIVERY_MODE_ID.getValue(impsOutputParams);
+			BigDecimal serviceId = P_SERVICE_MASTER_ID.getValue(impsOutputParams);
 			RoutingBankDto routingBankDto = branchRoutingManager.getRoutingBankDto(routingBankIdImps);
+			RoutingBranchDto routingBankBranchIdDto = branchRoutingManager.getRoutingBranchDto(routingBankBranchIdImps);
+			RemittanceModeDto remittanceModeIdDto = branchRoutingManager.getRemittanceModeDto(remittanceModeId, metaData.getLanguageId());
+			DeliveryModeDto deliveryModeIdDto = branchRoutingManager.getDeliveryModeDto(deliveryModeId, metaData.getLanguageId());
+			RoutingServiceDto serviceDto = branchRoutingManager.getServiceDto(serviceId);
 			routingResponseDto.getRoutingBankDto().add(routingBankDto);
-
+			routingResponseDto.getRoutingBankBranchDto().add(routingBankBranchIdDto);
+			routingResponseDto.getRemittanceModeList().add(remittanceModeIdDto);
+			routingResponseDto.getDeliveryModeList().add(deliveryModeIdDto);
+			routingResponseDto.getServiceList().add(serviceDto);
 		}
 	}
 }
