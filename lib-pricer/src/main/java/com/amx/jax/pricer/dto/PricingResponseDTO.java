@@ -5,6 +5,8 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
+import com.amx.jax.pricer.var.PricerServiceConstants.CUSTOMER_CATEGORY;
+
 public class PricingResponseDTO implements Serializable {
 
 	/**
@@ -17,6 +19,8 @@ public class PricingResponseDTO implements Serializable {
 	private Map<BigDecimal, BankDetailsDTO> bankDetails;
 
 	private Map<String, Object> info;
+
+	private CUSTOMER_CATEGORY customerCategory;
 
 	public List<ExchangeRateDetails> getSellRateDetails() {
 		return sellRateDetails;
@@ -40,6 +44,14 @@ public class PricingResponseDTO implements Serializable {
 
 	public void setInfo(Map<String, Object> info) {
 		this.info = info;
+	}
+
+	public CUSTOMER_CATEGORY getCustomerCategory() {
+		return customerCategory;
+	}
+
+	public void setCustomerCategory(CUSTOMER_CATEGORY customerCategory) {
+		this.customerCategory = customerCategory;
 	}
 
 }

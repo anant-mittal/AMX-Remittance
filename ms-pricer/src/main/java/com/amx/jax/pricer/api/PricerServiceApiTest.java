@@ -29,7 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.dict.UserClient.Channel;
-import com.amx.jax.pricer.PricerService;
+import com.amx.jax.pricer.ProbotExchangeRateService;
 import com.amx.jax.pricer.PricerServiceClient;
 import com.amx.jax.pricer.dto.BankDetailsDTO;
 import com.amx.jax.pricer.dto.ExchangeRateDetails;
@@ -46,7 +46,7 @@ import com.amx.utils.ArgUtil;
  */
 @RestController
 @RequestMapping("test/")
-public class PricerServiceApiTest implements PricerService {
+public class PricerServiceApiTest implements ProbotExchangeRateService {
 
 	/** The rbaac service client. */
 	@Autowired
