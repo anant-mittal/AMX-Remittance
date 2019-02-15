@@ -35,6 +35,14 @@ public class RemittanceApplicationParamManager {
 		P_ROUTING_BANK_ID.putValue(remitApplParametersMap, remittanceApplicationParams.getCorrespondanceBankIdBD());
 		P_REMITTANCE_MODE_ID.putValue(remitApplParametersMap, remittanceApplicationParams.getRemitModeIdBD());
 		P_DELIVERY_MODE_ID.putValue(remitApplParametersMap, remittanceApplicationParams.getDeliveryModeIdBD());
-		P_CALCULATED_FC_AMOUNT.putValue(remitApplParametersMap, exchangeRateBreakup.getConvertedFCAmount());
+		if (exchangeRateBreakup != null) {
+			P_CALCULATED_FC_AMOUNT.putValue(remitApplParametersMap, exchangeRateBreakup.getConvertedFCAmount());
+		}
+		if (remittanceApplicationParams.getLocalAmountBD() != null) {
+			P_LC_AMOUNT.putValue(remitApplParametersMap, remittanceApplicationParams.getLocalAmountBD());
+		}
+		if (remittanceApplicationParams.getForeignAmountBD() != null) {
+			P_FC_AMOUNT.putValue(remitApplParametersMap, remittanceApplicationParams.getForeignAmountBD());
+		}
 	}
 }
