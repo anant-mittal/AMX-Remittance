@@ -4,7 +4,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>ms-pricer</artifactId>
+	<artifactId>ms-probot</artifactId>
 	<packaging>jar</packaging>
 	<name>ms-pricer</name>
 	<description>Dynamic Pricing and Routing</description>
@@ -61,7 +61,7 @@
 
 		<dependency>
 			<groupId>com.amx.jax</groupId>
-			<artifactId>lib-pricer</artifactId>
+			<artifactId>lib-probot</artifactId>
 		</dependency>
 
 		<dependency>

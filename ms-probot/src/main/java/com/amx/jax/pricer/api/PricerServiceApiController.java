@@ -19,7 +19,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
-import com.amx.jax.pricer.PricerService;
+import com.amx.jax.pricer.ProbotExchangeRateService;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.dto.PricingResponseDTO;
 import com.amx.jax.pricer.service.PricingService;
@@ -27,7 +27,7 @@ import com.amx.jax.pricer.util.PricingRateDetailsDTO;
 import com.amx.jax.pricer.var.PricerServiceConstants;
 
 @RestController
-public class PricerServiceApiController implements PricerService {
+public class PricerServiceApiController implements ProbotExchangeRateService {
 
 	/** The Constant LOGGER. */
 	private static final Logger LOGGER = LoggerFactory.getLogger(PricerServiceApiController.class);
@@ -78,5 +78,6 @@ public class PricerServiceApiController implements PricerService {
 		return AmxApiResponse.build(pricingResponseDTO);
 
 	}
+
 
 }
