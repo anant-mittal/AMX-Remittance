@@ -16,11 +16,5 @@ public interface ProbotExchangeRateService extends AbstractProbotInterface {
 			PricerServiceError.INVALID_CUSTOMER })
 	public AmxApiResponse<PricingResponseDTO, Object> fetchBasePrice(PricingRequestDTO pricingRequestDTO);
 	
-	
-	/*@PricerApiStatus({ PricerServiceError.MISSING_AMOUNT, PricerServiceError.MISSING_ROUTING_BANK_IDS,
-		PricerServiceError.INVALID_CUSTOMER })
-	public AmxApiResponse<PricingResponseDTO, Object> fetchDiscountedPrice(PricingRequestDTO pricingRequestDTO);*/
-	
-	
 
 }
