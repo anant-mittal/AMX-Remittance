@@ -58,7 +58,7 @@
 
 			<dependency>
 				<groupId>com.amx.jax</groupId>
-				<artifactId>lib-pricer</artifactId>
+				<artifactId>lib-probot</artifactId>
 				<version>${amx.version}</version>
 			</dependency>
 

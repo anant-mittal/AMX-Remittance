@@ -11,7 +11,7 @@ public interface PricerService {
 	public static class ApiEndPoints {
 
 		/** The Constant SERVICE_PREFIX. */
-		private static final String SERVICE_PREFIX = "/pricer";
+		private static final String SERVICE_PREFIX = "/probot";
 
 		/** The Constant API_VERSION_V1. */
 		private static final String API_VERSION_V1 = "/v1";
