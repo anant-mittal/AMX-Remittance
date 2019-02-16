@@ -27,6 +27,7 @@ import com.amx.jax.pricer.dbmodel.PipsMaster;
 import com.amx.jax.pricer.dto.ExchangeRateDetails;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.util.PricingRateDetailsDTO;
+import com.amx.jax.pricer.var.PricerServiceConstants.CUSTOMER_CATEGORY;
 import com.amx.jax.pricer.var.PricerServiceConstants.DISCOUNT_TYPE;
 
 @Component
@@ -51,17 +52,27 @@ public class CustomerDiscountManager {
 
 	private static BigDecimal BIGD_ZERO = new BigDecimal(0);
 
-	public void getDiscountedRates(PricingRequestDTO pricingRequestDTO, Customer customer) {
+	public void getDiscountedRates(PricingRequestDTO pricingRequestDTO, Customer customer,
+			CUSTOMER_CATEGORY customerCategory) {
 
+		// Compute Channel Discount
 		ChannelDiscount channelDiscount = channelDiscountDao.getDiscountByChannel(pricingRequestDTO.getChannel());
 		BigDecimal channelDiscountPips = (null != channelDiscount ? channelDiscount.getDiscountPips() : BIGD_ZERO);
 
-		CustomerExtended customerExtended = customerExtendedDao
-				.getCustomerExtendedByCustomerId(customer.getCustomerId());
+		// Compute Customer category Discount
+		BigDecimal ccDiscountPips;
+		if (customer != null) {
+			CustomerExtended customerExtended = customerExtendedDao
+					.getCustomerExtendedByCustomerId(customer.getCustomerId());
 
-		CustomerCategoryDiscount ccDiscount = customerExtended.getCustomerCategoryDiscount();
+			CustomerCategoryDiscount ccDiscount = customerExtended.getCustomerCategoryDiscount();
 
-		BigDecimal ccDiscountPips = (null != ccDiscount ? ccDiscount.getDiscountPips() : BIGD_ZERO);
+			ccDiscountPips = (null != ccDiscount ? ccDiscount.getDiscountPips() : BIGD_ZERO);
+		} else {
+			CustomerCategoryDiscount ccDiscount = custCatDiscountDao
+					.getDiscountByCustomerCategory(customerCategory.name());
+			ccDiscountPips = (null != ccDiscount ? ccDiscount.getDiscountPips() : BIGD_ZERO);
+		}
 
 		List<BigDecimal> validBankIds = new ArrayList<BigDecimal>(pricingRateDetailsDTO.getBankDetails().keySet());
 

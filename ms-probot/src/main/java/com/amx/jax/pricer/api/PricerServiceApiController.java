@@ -1,6 +1,7 @@
 package com.amx.jax.pricer.api;
 
 import java.util.HashMap;
+import java.util.List;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
@@ -79,5 +80,33 @@ public class PricerServiceApiController implements ProbotExchangeRateService {
 
 	}
 
+	/*@Override
+	@RequestMapping(value = ApiEndPoints.FETCH_DISCOUNTED_RATES, method = RequestMethod.POST)
+	public AmxApiResponse<PricingResponseDTO, Object> fetchCustomercategoryDiscountedRates(
+			PricingRequestDTO pricingRequestDTO) {
+
+		LOGGER.info("Received Discounted Rate Request " + " with TraceId: " + AppContextUtil.getTraceId());
+		List<PricingResponseDTO> pricingResponseDTOList = pricingService
+				.fetchDiscountedRatesAcrossCustCategories(pricingRequestDTO);
+
+		return AmxApiResponse.buildList(pricingResponseDTOList);
+	}*/
+	
+	@Override
+	@RequestMapping(value = ApiEndPoints.FETCH_DISCOUNTED_RATES, method = RequestMethod.POST)
+	public AmxApiResponse<PricingResponseDTO, Object> fetchDiscountedRates(
+			@RequestBody @Valid PricingRequestDTO pricingRequestDTO) {
+
+		LOGGER.info("Received Fetch Discounted Rate Request " + " with TraceId: " + AppContextUtil.getTraceId());
+
+		LOGGER.info("Received Discounted Rate Request " + " with TraceId: " + AppContextUtil.getTraceId());
+		List<PricingResponseDTO> pricingResponseDTOList = pricingService
+				.fetchDiscountedRatesAcrossCustCategories(pricingRequestDTO);
+
+		return AmxApiResponse.buildList(pricingResponseDTOList);
+
+	}
+	
+	
 
 }

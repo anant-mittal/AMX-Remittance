@@ -14,7 +14,7 @@ public interface AbstractProbotInterface {
 
 		public static final String FETCH_BASE_PRICE = SERVICE_PREFIX + API_VERSION_V1 + "/fetch-base-price";
 
-		public static final String FETCH_DISCOUNTED_PRICE = SERVICE_PREFIX + API_VERSION_V1 + "/fetch-discounted-price";
+		public static final String FETCH_DISCOUNTED_RATES = SERVICE_PREFIX + API_VERSION_V1 + "/fetch-discounted-rates";
 		
 		// Service Controllers for Exchange Rate Related Data
 		
