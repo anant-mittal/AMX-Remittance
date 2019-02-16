@@ -1,4 +1,4 @@
-package com.amx.utils;
+package com.amx.jax.json;
 
 
 /**

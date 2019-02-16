@@ -6,12 +6,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.boot.jackson.JsonComponent;
+
+import com.amx.jax.json.JsonSerializerType;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonPath;
-import com.amx.utils.JsonSerializerType;
 import com.amx.utils.JsonUtil;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+@JsonComponent
 public class SnapModels {
 
 	private static final String BUCKETS = "buckets";
@@ -24,7 +27,7 @@ public class SnapModels {
 	private static final JsonPath SOURCE = new JsonPath(SOURCE_KEY);
 
 	@JsonIgnoreProperties(ignoreUnknown = true)
-	public static class MapModel implements JsonSerializerType<Map<String, Object>> {
+	public static class MapModel implements JsonSerializerType<Object> {
 		protected Map<String, Object> map;
 
 		@SuppressWarnings("unchecked")
@@ -48,12 +51,17 @@ public class SnapModels {
 			return ArgUtil.parseAsBigDecimal(this.get(key));
 		}
 
+		@SuppressWarnings("unchecked")
+		public MapModel getMap(String key) {
+			return new MapModel((Map<String, Object>) this.get(key));
+		}
+
 		public MapModel(Map<String, Object> map) {
 			this.map = map;
 		}
 
 		@Override
-		public Map<String, Object> toObject() {
+		public Object toObject() {
 			return this.map;
 		}
 	}
@@ -112,6 +120,10 @@ public class SnapModels {
 				}
 			}
 			return hits;
+		}
+
+		public Long getTotal() {
+			return this.getLong("total");
 		}
 
 	}
