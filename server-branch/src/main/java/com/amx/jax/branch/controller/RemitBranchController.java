@@ -3,7 +3,6 @@ package com.amx.jax.branch.controller;
 import java.math.BigDecimal;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -12,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.amxlib.meta.model.RemittancePageDto;
-import com.amx.amxlib.model.response.PurposeOfTransactionModel;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.api.ListRequestModel;
@@ -22,8 +20,8 @@ import com.amx.jax.client.remittance.RemittanceClient;
 import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.request.remittance.BranchRemittanceGetExchangeRateRequest;
+import com.amx.jax.model.request.remittance.BranchRemittanceRequestModel;
 import com.amx.jax.model.request.remittance.CustomerBankRequest;
-import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.model.response.SourceOfIncomeDto;
 import com.amx.jax.model.response.fx.FcSaleOrderManagementDTO;
 import com.amx.jax.model.response.fx.UserStockDto;
@@ -33,7 +31,7 @@ import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
 import com.amx.jax.model.response.remittance.CustomerShoppingCartDto;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
 import com.amx.jax.model.response.remittance.PaymentModeOfPaymentDto;
-import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
+import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.model.response.remittance.RoutingResponseDto;
 import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeRateResponse;
 import com.amx.jax.rbaac.IRbaacService;
@@ -105,6 +103,12 @@ public class RemitBranchController {
 	public AmxApiResponse<BranchRemittanceApplResponseDto, Object> saveBranchRemittanceApplication(
 			@RequestBody BranchRemittanceApplRequestModel requestModel) {
 		return branchRemittanceClient.saveBranchRemittanceApplication(requestModel);
+	}
+
+	@RequestMapping(value = "/api/remitt/cart/submit", method = { RequestMethod.POST })
+	public AmxApiResponse<RemittanceResponseDto, Object> saveRemittanceTransaction(
+			@RequestBody BranchRemittanceRequestModel requestModel) {
+		return branchRemittanceClient.saveRemittanceTransaction(requestModel);
 	}
 
 	@RequestMapping(value = "/api/remitt/cart/fetch", method = { RequestMethod.POST })
