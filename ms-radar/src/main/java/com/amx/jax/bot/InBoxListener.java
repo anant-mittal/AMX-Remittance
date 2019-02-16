@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.amx.jax.postman.client.WhatsAppClient;
@@ -21,6 +23,8 @@ import com.amx.utils.ArgUtil;
 @TunnelEventMapping(byEvent = UserInboxEvent.class, scheme = TunnelEventXchange.TASK_WORKER)
 public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(InBoxListener.class);
+
 	@Autowired
 	WhatsAppClient whatsAppClient;
 
@@ -34,6 +38,9 @@ public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 			query.put("searchKey", "customer.mobile");
 			query.put("searchValue", event.getFrom().replace("+965", "")
 					.replace("+91", "").replace(" ", ""));
+
+			LOGGER.info("Recieved {} {} ", event.getFrom(), event.getMessage());
+
 			try {
 				String message = "";
 				SnapModelWrapper x = snapQueryService.execute(SnapQueryTemplate.CUSTOMERS_PROFILE, query);
@@ -51,7 +58,7 @@ public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 				reply.setMessage(message);
 				whatsAppClient.send(reply);
 			} catch (IOException e) {
-				e.printStackTrace();
+				LOGGER.error("BOT EXCEPTION", e);
 			}
 
 		}
