@@ -115,11 +115,7 @@ public class CustomerDiscountManager {
 				} // for
 			}
 
-			BigDecimal totalDiscountPips = amountSlabPips;
-
-			totalDiscountPips.add(channelDiscountPips);
-
-			totalDiscountPips.add(ccDiscountPips);
+			BigDecimal totalDiscountPips = amountSlabPips.add(channelDiscountPips).add(ccDiscountPips);
 
 			BigDecimal discountedSellRate = bankExRateDetail.getSellRateBase().getInverseRate()
 					.subtract(totalDiscountPips);
