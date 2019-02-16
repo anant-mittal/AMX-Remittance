@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.amx.jax.radar.snap.SnapModels.SnapModelWrapper;
 import com.amx.jax.rates.AmxCurConstants.RCur;
 import com.amx.jax.rest.RestService;
 
@@ -25,7 +26,7 @@ public class SnapApiController {
 
 	@ResponseBody
 	@RequestMapping(value = "/snap/api/customer/joined", method = RequestMethod.GET)
-	public Map<String, Object> customerJoined()
+	public SnapModelWrapper customerJoined()
 			throws IOException {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("lte", "now");
@@ -35,7 +36,7 @@ public class SnapApiController {
 
 	@ResponseBody
 	@RequestMapping(value = "/snap/api/tranx/done", method = RequestMethod.GET)
-	public Map<String, Object> tranxDone()
+	public SnapModelWrapper tranxDone()
 			throws IOException {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("lte", "now");
@@ -49,7 +50,7 @@ public class SnapApiController {
 
 	@ResponseBody
 	@RequestMapping(value = "/snap/api/xrate/sell_transfer", method = RequestMethod.GET)
-	public Map<String, Object> xrateOnline(@RequestParam XRateGraph graph, @RequestParam RCur forCur,
+	public SnapModelWrapper xrateOnline(@RequestParam XRateGraph graph, @RequestParam RCur forCur,
 			@RequestParam RCur domCur)
 			throws IOException {
 		Map<String, Object> params = new HashMap<String, Object>();

@@ -12,6 +12,7 @@ import org.thymeleaf.context.Context;
 import org.thymeleaf.spring4.SpringTemplateEngine;
 
 import com.amx.jax.radar.EsConfig;
+import com.amx.jax.radar.snap.SnapModels.SnapModelWrapper;
 import com.amx.jax.rest.RestService;
 import com.amx.utils.JsonUtil;
 
@@ -48,18 +49,19 @@ public class SnapQueryService {
 		return JsonUtil.getMapFromJsonString(this.buildQueryString(template, params));
 	}
 
-	public Map<String, Object> executeQuery(Map<String, Object> query, String index) throws IOException {
+	public SnapModelWrapper executeQuery(Map<String, Object> query, String index) throws IOException {
 		Map<String, Object> x = restService.ajax(ssConfig.getClusterUrl()).path(index + "/_search").post(query)
 				.asMap();
 		x.put("aggs", query.get("aggs"));
-		return x;
+
+		return new SnapModelWrapper(x);
 	}
 
-	public Map<String, Object> executeQuery(Map<String, Object> query) throws IOException {
+	public SnapModelWrapper executeQuery(Map<String, Object> query) throws IOException {
 		return executeQuery(query, "oracle-v3-*-v4");
 	}
 
-	public Map<String, Object> execute(SnapQueryTemplate template, Map<String, Object> params) throws IOException {
+	public SnapModelWrapper execute(SnapQueryTemplate template, Map<String, Object> params) throws IOException {
 		Map<String, Object> query = getQuery(template, params);
 		return executeQuery(query, template.getIndex());
 	}
