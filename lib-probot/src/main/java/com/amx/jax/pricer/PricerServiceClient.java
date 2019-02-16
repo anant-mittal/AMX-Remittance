@@ -51,4 +51,16 @@ public class PricerServiceClient implements ProbotExchangeRateService {
 				});
 	}
 
+	@Override
+	public AmxApiResponse<PricingResponseDTO, Object> fetchDiscountedRates(
+			PricingRequestDTO pricingRequestDTO) {
+		LOGGER.info("Get Discounted Rate/Price Request Called for : transaction Id: {}, with TraceId: {}",
+				AppContextUtil.getTranxId(), AppContextUtil.getTraceId());
+
+		return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.FETCH_DISCOUNTED_RATES)
+				.post(pricingRequestDTO)
+				.as(new ParameterizedTypeReference<AmxApiResponse<PricingResponseDTO, Object>>() {
+				});
+	}
+
 }

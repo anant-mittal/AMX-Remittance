@@ -33,6 +33,12 @@ public interface ExchangeRateApprovalDetRepository extends CrudRepository<Exchan
 	List<ExchangeRateApprovalDetModel> getBranchExchangeRatesForRoutingBanks(BigDecimal currencyId,
 			BigDecimal countryBranchId, BigDecimal countryId, BigDecimal applicationCountryId,
 			List<BigDecimal> routingBankIds);
+	
+	@Query("select rate from ExchangeRateApprovalDetModel rate where rate.currencyId=?1 and rate.countryBranchId=?2 "
+			+ "and rate.countryId=?3 and rate.applicationCountryId=?4 and rate.bankMaster.bankId in (?5) and rate.serviceId in (?6)")
+	List<ExchangeRateApprovalDetModel> getBranchExchangeRatesForRoutingBankAndServiceIds(BigDecimal currencyId,
+			BigDecimal countryBranchId, BigDecimal countryId, BigDecimal applicationCountryId,
+			List<BigDecimal> routingBankIds, List<BigDecimal> serviceIds);
 
 	@Query("select rate from ExchangeRateApprovalDetModel rate where rate.currencyId=?1 "
 			+ "and rate.countryId=?2 and rate.applicationCountryId=?3 and rate.bankMaster.bankId in (?4)")

@@ -183,10 +183,24 @@ public class RemitPriceManager {
 						"Invalid Routing Bank Ids : None Found : " + requestDto.getRoutingBankIds());
 			}
 
-			List<ExchangeRateApprovalDetModel> bankExchangeRates = exchangeRateDao
-					.getBranchExchangeRatesForRoutingBanks(requestDto.getForeignCurrencyId(),
-							requestDto.getCountryBranchId(), requestDto.getForeignCountryId(),
-							requestDto.getLocalCountryId(), validBankIds);
+			List<ExchangeRateApprovalDetModel> bankExchangeRates;
+
+			// Filter Bank Exchange rates for Required Service Indicator Ids
+			if (requestDto.getServiceIndicatorId() != null) {
+
+				List<BigDecimal> serviceIdsList = new ArrayList<BigDecimal>();
+				serviceIdsList.add(requestDto.getServiceIndicatorId());
+
+				bankExchangeRates = exchangeRateDao.getBranchExchangeRatesForRoutingBanksAndServiceIds(
+						requestDto.getForeignCurrencyId(), requestDto.getCountryBranchId(),
+						requestDto.getForeignCountryId(), requestDto.getLocalCountryId(), validBankIds, serviceIdsList);
+			} else {
+
+				bankExchangeRates = exchangeRateDao.getBranchExchangeRatesForRoutingBanks(
+						requestDto.getForeignCurrencyId(), requestDto.getCountryBranchId(),
+						requestDto.getForeignCountryId(), requestDto.getLocalCountryId(), validBankIds);
+
+			}
 
 			if (bankExchangeRates == null || bankExchangeRates.isEmpty()) {
 				throw new PricerServiceException(PricerServiceError.MISSING_VALID_EXCHANGE_RATES,
