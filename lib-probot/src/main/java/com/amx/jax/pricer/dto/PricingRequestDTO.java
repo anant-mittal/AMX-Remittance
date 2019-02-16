@@ -38,6 +38,8 @@ public class PricingRequestDTO implements Serializable {
 	private BigDecimal countryBranchId;
 
 	private List<BigDecimal> routingBankIds;
+	
+	private BigDecimal serviceIndicatorId;
 
 	@NotNull(message = "Pricing Level Can not be Null or Empty")
 	private PRICE_BY pricingLevel;
@@ -141,6 +143,14 @@ public class PricingRequestDTO implements Serializable {
 
 	public void setInfo(Map<String, Object> info) {
 		this.info = info;
+	}
+
+	public BigDecimal getServiceIndicatorId() {
+		return serviceIndicatorId;
+	}
+
+	public void setServiceIndicatorId(BigDecimal serviceIndicatorId) {
+		this.serviceIndicatorId = serviceIndicatorId;
 	}
 
 }

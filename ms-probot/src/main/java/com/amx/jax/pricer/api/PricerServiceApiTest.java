@@ -67,6 +67,13 @@ public class PricerServiceApiTest implements ProbotExchangeRateService {
 		return pricerServiceClient.fetchBasePrice(pricingRequestDTO);
 	}
 
+	@Override
+	@RequestMapping(value = ApiEndPoints.FETCH_DISCOUNTED_RATES, method = RequestMethod.POST)
+	public AmxApiResponse<PricingResponseDTO, Object> fetchDiscountedRates(
+			PricingRequestDTO pricingRequestDTO) {
+		return pricerServiceClient.fetchDiscountedRates(pricingRequestDTO);
+	}
+
 	@RequestMapping(value = ApiEndPoints.PRICE_TEST, method = RequestMethod.POST)
 	public ResponseEntity<byte[]> pricingLoadTest(@RequestParam("file") MultipartFile uploadfile)
 			throws IOException, InterruptedException, ExecutionException {
@@ -247,8 +254,8 @@ public class PricerServiceApiTest implements ProbotExchangeRateService {
 		strBuilder.append(", ConvertedFCAmount");
 		strBuilder.append(", ConvertedLCAmount");
 		strBuilder.append(", TimeToExec");
-		//strBuilder.append(", TRATE_IDS");
-		//strBuilder.append(", RoutingHeaderIds");
+		// strBuilder.append(", TRATE_IDS");
+		// strBuilder.append(", RoutingHeaderIds");
 
 		long srNo = 0;
 
@@ -302,8 +309,8 @@ public class PricerServiceApiTest implements ProbotExchangeRateService {
 							strBuilder.append(", " + bankRate.getSellRateNet().getConvertedFCAmount());
 							strBuilder.append(", " + bankRate.getSellRateNet().getConvertedLCAmount());
 							strBuilder.append(", " + tte);
-							//strBuilder.append(", " + response.getInfo().get("TRATE_IDS"));
-							//strBuilder.append(", " + response.getInfo().get("RH_IDS"));
+							// strBuilder.append(", " + response.getInfo().get("TRATE_IDS"));
+							// strBuilder.append(", " + response.getInfo().get("RH_IDS"));
 
 						}
 

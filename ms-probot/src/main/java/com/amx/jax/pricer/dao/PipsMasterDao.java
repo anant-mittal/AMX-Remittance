@@ -22,7 +22,6 @@ public class PipsMasterDao {
 	@Autowired
 	private PipsMasterRepository repo;
 
-	@Autowired
 	private static final Logger logger = LoggerFactory.getLogger(PipsMasterDao.class);
 
 	public List<PipsMaster> getPipsForOnline(BigDecimal toCurrency, BigDecimal countryBranchId) {
