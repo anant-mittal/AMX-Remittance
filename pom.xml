@@ -111,7 +111,7 @@
 		<module>core</module>
 		<module>jax-client</module>
 		<module>lib-adapter</module>
-		<module>lib-pricer</module>
+		<module>lib-probot</module>
 
 		<!-- Exchange Services -->
 		<module>ms-meta</module>
@@ -123,7 +123,7 @@
 		<module>ms-rbaac</module>
 		<module>ms-worker</module>
 		<module>ms-radar</module>
-		<module>ms-pricer</module>
+		<module>ms-probot</module>
 		
 
 		<module>server-ui</module>
