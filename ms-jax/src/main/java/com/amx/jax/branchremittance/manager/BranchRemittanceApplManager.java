@@ -198,10 +198,12 @@ public class BranchRemittanceApplManager {
 		 
 		 //Priccing 
 		 //branchExchRateService.getExchaneRate(requestApplModel);
+
 		 remittanceTransactionRequestValidator.validateExchangeRate(requestApplModel, exchangeRateResposne);
 		 remittanceTransactionRequestValidator.validateFlexFields(requestApplModel, remitApplParametersMap);
 		 remittanceAdditionalFieldManager.validateAdditionalFields(requestApplModel, remitApplParametersMap);
 		 remittanceAdditionalFieldManager.processAdditionalFields(requestApplModel);
+
 		 
 		 logger.debug("branchExchangeRate :"+exchangeRateResposne);
 		 /* get aml cehck   details **/
@@ -259,18 +261,7 @@ public class BranchRemittanceApplManager {
 		mapAllDetailApplSave.put("EX_APPL_ADDL", additioalInstructionData);
 		mapAllDetailApplSave.put("EX_APPL_AML", amlData);
 		brRemittanceDao.saveAllApplications(mapAllDetailApplSave);
-		List<CustomerShoppingCartDto> shoppingCartList = branchRemittancePaymentManager.fetchCustomerShoppingCart(customer.getCustomerId(),metaData.getDefaultCurrencyId());
-		
-		BranchRemittanceApplResponseDto applResponseDto = new BranchRemittanceApplResponseDto();
-		BigDecimal totalLocalAmount = BigDecimal.ZERO;
-		
-		if(shoppingCartList!= null && !shoppingCartList.isEmpty()) {
-			applResponseDto.setShoppingCartDetails(shoppingCartList);
-			for(CustomerShoppingCartDto dto : shoppingCartList) {
-				totalLocalAmount=totalLocalAmount.add(dto.getLocalNextTranxAmount());
-			}
-			applResponseDto.setTotalLocalAmount(totalLocalAmount);
-		}
+		BranchRemittanceApplResponseDto applResponseDto = branchRemittancePaymentManager.fetchCustomerShoppingCart(customer.getCustomerId(),metaData.getDefaultCurrencyId());
 		
 		return applResponseDto;
 	}

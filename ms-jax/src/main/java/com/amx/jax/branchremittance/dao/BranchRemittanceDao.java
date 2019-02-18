@@ -16,10 +16,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.amxlib.model.CustomerModel;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.ApplicationProcedureDao;
 import com.amx.jax.dbmodel.CollectDetailModel;
 import com.amx.jax.dbmodel.CollectionModel;
+import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.ForeignCurrencyAdjust;
 import com.amx.jax.dbmodel.UserFinancialYear;
 import com.amx.jax.dbmodel.remittance.AdditionalInstructionData;
@@ -188,6 +190,7 @@ public class BranchRemittanceDao {
 		return (BigDecimal) output.get("P_DOC_NO");
 	}
 
+	
 	public void updateApplication(List<RemittanceTransaction> remitTrnxList) {
 		for (RemittanceTransaction remitTrnx : remitTrnxList) {
 			
@@ -200,7 +203,8 @@ public class BranchRemittanceDao {
 				appl.setTransactionDocumentNo(remitTrnx.getDocumentNo());
 				appl.setApplicaitonStatus(ConstantDocument.T);
 				appl.setBlackListIndicator(remitTrnx.getBlackListIndicator());
-				appRepo.save(appl);
+				appRepo.updateApplicationDetails(appl.getFsCustomer(), appl.getRemittanceApplicationId(), remitTrnx.getDocumentFinanceYear(), remitTrnx.getDocumentNo(), new UserFinancialYear(remitTrnx.getDocumentFinanceYr()));
+				//appRepo.save(appl);
 			}
 
 		}

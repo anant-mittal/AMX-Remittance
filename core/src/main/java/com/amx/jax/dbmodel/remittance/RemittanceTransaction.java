@@ -3,7 +3,9 @@ package com.amx.jax.dbmodel.remittance;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.Clob;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,6 +15,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -97,7 +100,7 @@ public class RemittanceTransaction implements Serializable {
 	private String highValueAuthUser;
 	private Date highValueAuthDate;
 	private String customerSignature;
-	//private Clob customerSignatureClob;
+	private Clob customerSignatureClob;
 	private BigDecimal documentFinanceYr;
 	private BigDecimal sourceofincome;
 	private String instruction;
@@ -124,6 +127,9 @@ public class RemittanceTransaction implements Serializable {
 	private String modeOfTransfer;
 	
 	
+	private List<RemittanceAdditionalInstructionData> exAdditionalInstructionDatas = new ArrayList<RemittanceAdditionalInstructionData>(0);
+	private List<RemittanceAml> exRemitAmls = new ArrayList<RemittanceAml>(0);
+	private List<RemittanceBenificiary> exRemittanceBenificiary = new ArrayList<RemittanceBenificiary>(0);
 
 	
 	public RemittanceTransaction() {
@@ -779,13 +785,13 @@ public class RemittanceTransaction implements Serializable {
 		this.instruction = instruction;
 	}
 
-	/*@Column(name="SIGNATURE_SPECIMEN_CLOB")
+	@Column(name="SIGNATURE_SPECIMEN_CLOB")
 	public Clob getCustomerSignatureClob() {
 		return customerSignatureClob;
 	}
 	public void setCustomerSignatureClob(Clob customerSignatureClob) {
 		this.customerSignatureClob = customerSignatureClob;
-	}*/
+	}
 
 	@Column(name="DW_FLAG")
 	public String getDwFlag() {
@@ -956,6 +962,36 @@ public class RemittanceTransaction implements Serializable {
 
 	public void setModeOfTransfer(String modeOfTransfer) {
 		this.modeOfTransfer = modeOfTransfer;
+	}
+	
+	@OneToMany(fetch = FetchType.LAZY, mappedBy ="exRemittanceTransaction")
+	public List<RemittanceAdditionalInstructionData> getExAdditionalInstructionDatas() {
+		return exAdditionalInstructionDatas;
+	}
+
+	public void setExAdditionalInstructionDatas(List<RemittanceAdditionalInstructionData> exAdditionalInstructionDatas) {
+		this.exAdditionalInstructionDatas = exAdditionalInstructionDatas;
+	}
+
+	
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "exRemittancefromAml")
+	public List<RemittanceAml> getExRemitAmls() {
+		return exRemitAmls;
+	}
+
+	public void setExRemitAmls(List<RemittanceAml> exRemitAmls) {
+		this.exRemitAmls = exRemitAmls;
+	}
+	
+	
+
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "exRemittancefromBenfi")
+	public List<RemittanceBenificiary> getExRemittanceBenificiary() {
+		return exRemittanceBenificiary;
+	}
+
+	public void setExRemittanceBenificiary(List<RemittanceBenificiary> exRemittanceBenificiary) {
+		this.exRemittanceBenificiary = exRemittanceBenificiary;
 	}
 	
 }

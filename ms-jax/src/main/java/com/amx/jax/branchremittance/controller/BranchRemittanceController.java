@@ -65,7 +65,7 @@ public class BranchRemittanceController implements IRemittanceService {
 	 */
 	@RequestMapping(value = Path.BR_REMITTANCE_SHOPPING_CART, method = RequestMethod.GET)
 	@Override
-	public AmxApiResponse<CustomerShoppingCartDto, Object> fetchCustomerShoppingCart() {
+	public AmxApiResponse<BranchRemittanceApplResponseDto, Object> fetchCustomerShoppingCart() {
 		logger.debug("fetchCustomerShoppingCart");
 		return branchRemitService.fetchCustomerShoppingCart();
 	}

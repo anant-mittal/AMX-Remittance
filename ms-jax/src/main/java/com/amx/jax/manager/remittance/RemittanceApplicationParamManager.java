@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import com.amx.jax.dbmodel.BankMasterModel;
 import com.amx.jax.dbmodel.BenificiaryListView;
+import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.remittance.IRemittanceApplicationParams;
 import com.amx.jax.model.response.ExchangeRateBreakup;
 import com.amx.jax.services.BankService;
@@ -30,6 +31,7 @@ public class RemittanceApplicationParamManager {
 	public void populateRemittanceApplicationParamMap(IRemittanceApplicationParams remittanceApplicationParams,
 			BenificiaryListView beneficiaryView, ExchangeRateBreakup exchangeRateBreakup) {
 		BankMasterModel routintBankMaster = bankService.getBankById(remittanceApplicationParams.getCorrespondanceBankIdBD());
+		P_APPLICATION_COUNTRY_ID.putValue(remitApplParametersMap, beneficiaryView.getApplicationCountryId());
 		P_ROUTING_COUNTRY_ID.putValue(remitApplParametersMap, routintBankMaster.getBankCountryId());
 		P_FOREIGN_CURRENCY_ID.putValue(remitApplParametersMap, beneficiaryView.getCurrencyId());
 		P_ROUTING_BANK_ID.putValue(remitApplParametersMap, remittanceApplicationParams.getCorrespondanceBankIdBD());

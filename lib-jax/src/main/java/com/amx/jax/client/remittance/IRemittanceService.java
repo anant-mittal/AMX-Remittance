@@ -68,7 +68,7 @@ public interface IRemittanceService extends  IJaxService {
 	AmxApiResponse<BranchRemittanceApplResponseDto, Object> saveBranchRemittanceApplication(BranchRemittanceApplRequestModel requestModel);
 	
 	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND,JaxError.NULL_CUSTOMER_ID,JaxError.NULL_CURRENCY_ID})
-	AmxApiResponse<CustomerShoppingCartDto, Object> fetchCustomerShoppingCart();
+	AmxApiResponse<BranchRemittanceApplResponseDto, Object> fetchCustomerShoppingCart();
 
 	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND})
 	AmxApiResponse<PaymentModeOfPaymentDto, Object> fetchModeOfPayment();

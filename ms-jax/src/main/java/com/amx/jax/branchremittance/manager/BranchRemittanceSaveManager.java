@@ -54,6 +54,7 @@ import com.amx.jax.model.response.fx.UserStockDto;
 import com.amx.jax.model.response.remittance.RemittanceCollectionDto;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.model.response.remittance.TransferDto;
+import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.repository.AdditionalInstructionDataRepository;
 import com.amx.jax.repository.AuthenticationLimitCheckDAO;
 import com.amx.jax.repository.BankMasterRepository;
@@ -67,6 +68,7 @@ import com.amx.jax.repository.RemittanceApplicationRepository;
 import com.amx.jax.repository.remittance.LocalBankDetailsRepository;
 import com.amx.jax.service.CompanyService;
 import com.amx.jax.service.FinancialService;
+import com.amx.jax.services.RemittanceApplicationService;
 import com.amx.jax.util.DateUtil;
 import com.amx.jax.util.JaxUtil;
 
@@ -130,6 +132,9 @@ public class BranchRemittanceSaveManager {
 	@Autowired
 	FinancialService finanacialService;
 	
+	@Autowired
+	RemittanceApplicationService remittanceApplicationService;
+	
 	
 	List<RemittanceAml>			amlList	 = new ArrayList<>();
 	List<RemittanceBenificiary> remitBeneList   = new ArrayList<>();
@@ -170,6 +175,18 @@ public class BranchRemittanceSaveManager {
 			mapAllDetailRemitSave.put("EX_REMIT_AML", amlList);
 			mapAllDetailRemitSave.put("LOYALTY_POINTS", loyaltyPoints);
 			responseDto = brRemittanceDao.saveRemittanceTransaction(mapAllDetailRemitSave);
+			if(responseDto!=null && JaxUtil.isNullZeroBigDecimalCheck(responseDto.getCollectionDocumentNo())) {
+				PaymentResponseDto paymentResponse = new PaymentResponseDto();
+				paymentResponse.setCollectionDocumentCode(responseDto.getCollectionDocumentCode());
+				paymentResponse.setCollectionDocumentNumber(responseDto.getCollectionDocumentNo());
+				paymentResponse.setCollectionFinanceYear(responseDto.getCollectionDocumentFYear());
+				paymentResponse.setCompanyId(metaData.getCompanyId());
+				paymentResponse.setApplicationCountryId(metaData.getCountryId());
+				paymentResponse.setCustomerId(metaData.getCustomerId());
+				remittanceApplicationService.saveRemittancetoOldEmos(paymentResponse);
+			}else {
+				logger.error("NOT moved to old emos ", responseDto.getCollectionDocumentNo() + "" +responseDto.getCollectionDocumentCode()+" "+responseDto.getCollectionDocumentFYear());
+			}
 			
 		}catch (GlobalException e) {
 			logger.error("routing  procedure", e.getErrorMessage() + "" + e.getErrorKey());
@@ -277,6 +294,8 @@ public class BranchRemittanceSaveManager {
 		int i = 1;
 		BigDecimal totalAmt = BigDecimal.ZERO;
 		List<RemittanceCollectionDto> collectionDetails = remittanceRequestModel.getCollctionModeDto();
+		
+		
 		for (RemittanceCollectionDto collectDataTable : collectionDetails) {
 			
 			CollectDetailModel collectDetails = new CollectDetailModel();
@@ -294,9 +313,17 @@ public class BranchRemittanceSaveManager {
 			collectDetails.setExBankBranch(collect.getExBankBranch());
 			collectDetails.setDocumentDate(new Date());
 			collectDetails.setDocumentLineNo(new BigDecimal(i++));
+			
+			collectDetails.setDocumentId(collect.getDocumentId());
+			collectDetails.setDocumentNo(collect.getDocumentNo());
+			collectDetails.setFsCompanyMaster(collect.getFsCompanyMaster());
+			collectDetails.setIsActive(ConstantDocument.Yes);
+			collectDetails.setAcyymm(collect.getAccountMMYYYY());
+			collectDetails.setCreatedBy(collect.getCreatedBy());
+			collectDetails.setCreatedDate(new Date());
+			
 			collectDetails.setExCurrencyMaster(collect.getExCurrencyMaster());
 			collectDetails.setCollAmt(collectDataTable.getPaymentAmount());
-			
 			collectDetails.setLocCode(collect.getLocCode());
 			collectDetails.setCompanyCode(collect.getCompanyCode());
 			collectDetails.setDocumentFinanceYear(collect.getDocumentFinanceYear());
@@ -326,10 +353,10 @@ public class BranchRemittanceSaveManager {
 				collectDetails.setChequeRef(collectDataTable.getColchequeRefNo());
 				collectDetails.setChequeBankRef(collectDataTable.getChequeBankCode());
 			}
+			
 	
 			collectionDetailModelList.add(collectDetails);
 		}
-		
 		//For Loyalty  Claim
 		BigDecimal loyaltyAmount = BigDecimal.ZERO;
 		Boolean lyaltyInd = false;
@@ -360,6 +387,15 @@ public class BranchRemittanceSaveManager {
 					collectDetails.setLocCode(collect.getLocCode());
 					collectDetails.setCompanyCode(collect.getCompanyCode());
 					collectDetails.setDocumentFinanceYear(collect.getDocumentFinanceYear());
+					
+					collectDetails.setDocumentId(collect.getDocumentId());
+					collectDetails.setDocumentNo(collect.getDocumentNo());
+					collectDetails.setFsCompanyMaster(collect.getFsCompanyMaster());
+					collectDetails.setIsActive(ConstantDocument.Yes);
+					collectDetails.setAcyymm(collect.getAccountMMYYYY());
+					collectDetails.setCreatedBy(collect.getCreatedBy());
+					collectDetails.setCreatedDate(new Date());
+					
 					
 					collectDetails.setDocumentCode(collect.getDocumentCode());
 					collectDetails.setExBankBranch(collect.getExBankBranch());
@@ -415,6 +451,7 @@ public class BranchRemittanceSaveManager {
 		int j=0;
 		/** For Collection **/
 			for (RemittanceCollectionDto collectDataTable : collectionDetails) {
+				
 				List<UserStockDto> currencyDenomination = collectDataTable.getCurrencyDenominationList();
 				
 				for(UserStockDto currencyCashDenomination :currencyDenomination) {
@@ -428,6 +465,10 @@ public class BranchRemittanceSaveManager {
 					foreignCurrencyAdjust.setFsCurrencyMaster(collect.getExCurrencyMaster());
 					foreignCurrencyAdjust.setNotesQuantity(currencyCashDenomination.getDenominationQuatity());
 					foreignCurrencyAdjust.setAdjustmentAmount(currencyCashDenomination.getDenominationPrice());
+					foreignCurrencyAdjust.setFsCompanyMaster(appl.getFsCompanyMaster());
+					foreignCurrencyAdjust.setCompanyCode(appl.getCompanyCode());
+					foreignCurrencyAdjust.setDocumentId(collect.getDocumentId());
+					
 					
 					CurrencyWiseDenomination denominationMaster = new CurrencyWiseDenomination();
 					denominationMaster.setDenominationId(currencyCashDenomination.getDenominationId());
@@ -446,6 +487,9 @@ public class BranchRemittanceSaveManager {
 					
 					foreignCurrencyAdjust.setCreatedDate(new Date());
 					foreignCurrencyAdjust.setCreatedBy(collect.getCreatedBy());
+					foreignCurrencyAdjust.setApprovalBy(collect.getCreatedBy());
+					foreignCurrencyAdjust.setApprovalDate(new Date());
+					
 					foreignCurrencyAdjust.setCollect(collect);
 					currencyAdjustListList.add(foreignCurrencyAdjust);
 				}
@@ -480,7 +524,11 @@ public class BranchRemittanceSaveManager {
 				foreignCurrencyRefundAdjust.setDocumentStatus(ConstantDocument.Yes);
 				foreignCurrencyRefundAdjust.setTransactionType(ConstantDocument.F);
 				
+				foreignCurrencyRefundAdjust.setDocumentId(collect.getDocumentId());
 				foreignCurrencyRefundAdjust.setCreatedDate(new Date());
+				foreignCurrencyRefundAdjust.setApprovalBy(collect.getCreatedBy());
+				foreignCurrencyRefundAdjust.setApprovalDate(new Date());
+				
 				foreignCurrencyRefundAdjust.setCreatedBy(collect.getCreatedBy());
 				foreignCurrencyRefundAdjust.setCollect(collect);
 				currencyAdjustListList.add(foreignCurrencyRefundAdjust);
@@ -538,7 +586,8 @@ public class BranchRemittanceSaveManager {
 					remitTrnx.setCustomerId(appl.getFsCustomer());
 					remitTrnx.setCustomerName(appl.getCustomerName());
 					remitTrnx.setCustomerRef(appl.getCustomerRef());
-					//remitTrnx.setCustomerSignatureClob(appl.getCustomerSignatureClob());
+				
+					remitTrnx.setCustomerSignatureClob(appl.getCustomerSignatureClob());
 					remitTrnx.setDebitAccountNo(appl.getDebitAccountNo()); //need to check
 					remitTrnx.setDeliveryModeId(appl.getExDeliveryMode());
 					remitTrnx.setDocumentDate(new Date());
@@ -594,6 +643,7 @@ public class BranchRemittanceSaveManager {
 					remitTrnx.setOriginalExchangeRate(appl.getOriginalExchangeRate());
 					remitTrnx.setRemittanceModeId(appl.getExRemittanceMode());
 					remitTrnx.setSourceofincome(appl.getSourceofincome());
+					remitTrnx.setLocalCommisionCurrencyId(appl.getExCurrencyMasterByLocalTranxCurrencyId());
 					TransferDto trnaferType = getTrasnferModeByBankServiceRule(remitTrnx);
 					remitTrnx.setFileCreation(trnaferType.getTrasnferMode());
 					remitTrnx.setTransferMode(trnaferType.getTrasnferMode());
@@ -626,7 +676,7 @@ public   List<RemittanceBenificiary>  saveBeneTrnx(RemittanceApplication applica
 			
 			remitBene.setBeneficiaryAccountNo(applBene.getBeneficiaryAccountNo());
 			remitBene.setBeneficiaryAccountSeqId(applBene.getBeneficiaryAccountSeqId());
-			remitBene.setBeneficiaryBank(remitBene.getBeneficiaryBank());
+			remitBene.setBeneficiaryBank(applBene.getBeneficiaryBank());
 			remitBene.setBeneficiaryBankBranchId(applBene.getBeneficiaryBankBranchId());
 			remitBene.setBeneficiaryBankCountryId(applBene.getBeneficiaryBankCountryId());
 			remitBene.setBeneficiaryBankId(applBene.getBeneficiaryBankId());
@@ -649,8 +699,8 @@ public   List<RemittanceBenificiary>  saveBeneTrnx(RemittanceApplication applica
 			remitBene.setBeneficiarySwiftBank1(applBene.getBeneficiarySwiftBank1());
 			remitBene.setBeneficiarySwiftBank1Id(applBene.getBeneficiarySwiftBank1Id());
 			remitBene.setBeneficiarySwiftBank2(applBene.getBeneficiarySwiftBank2());
-			remitBene.setBeneficiarySwiftBank2Id(remitBene.getBeneficiarySwiftBank2Id());
-			remitBene.setBeneficiaryTelephoneNumber(remitBene.getBeneficiaryTelephoneNumber());
+			remitBene.setBeneficiarySwiftBank2Id(applBene.getBeneficiarySwiftBank2Id());
+			remitBene.setBeneficiaryTelephoneNumber(applBene.getBeneficiaryTelephoneNumber());
 			remitBene.setCreatedBy(remitTrnx.getCreatedBy());
 			remitBene.setCreatedDate(new Date());
 			remitBene.setDocumentCode(remitTrnx.getDocumentCode());
@@ -696,6 +746,8 @@ public   List<RemittanceAdditionalInstructionData>   saveRemitnaceinstructionDat
 			remitAddData.setCompanyCode(applInstrucData.getFsCompanyMaster().getCompanyCode());
 			remitAddData.setDocumentFinanceYear(remitTrnx.getDocumentFinanceYear());
 			remitAddData.setIsactive(ConstantDocument.Yes);
+			
+		
 			addInstList.add(remitAddData);
 			
 		}else {

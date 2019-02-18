@@ -22,12 +22,14 @@ import com.amx.jax.dbmodel.CountryMaster;
 import com.amx.jax.dbmodel.UserFinancialYear;
 
 @Entity
-@Table(name = "EX_REMIT_ADDL_DATA")
+@Table(name ="EX_REMIT_ADDL_DATA")
 public class RemittanceAdditionalInstructionData implements Serializable {
 
 	/**
 	 * 
 	 */
+	
+	 
 	private static final long serialVersionUID = 1L;
 	private BigDecimal remittanceTrnxAddDataId; //REMITTANCE_TRANX_ADD_DATA_ID
 	private Document exDocument;
@@ -103,16 +105,13 @@ public class RemittanceAdditionalInstructionData implements Serializable {
 		this.exUserFinancialYear = exUserFinancialYear;
 	}
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "REMITTANCE_TRANSACTION_ID")
-	public RemittanceTransaction exRemittanceTransaction() {
-		return this.exRemittanceTransaction;
-	}
+	
 
 	public void setExRemittanceTransaction(RemittanceTransaction exRemittanceTransaction) {
 		this.exRemittanceTransaction = exRemittanceTransaction;
 	}
-
+	
+	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "APPLICATION_COUNTRY_ID")
 	public CountryMaster getFsCountryMaster() {
@@ -233,6 +232,12 @@ public class RemittanceAdditionalInstructionData implements Serializable {
 
 	public void setCompanyCode(BigDecimal companyCode) {
 		this.companyCode = companyCode;
+	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "REMITTANCE_TRANSACTION_ID")
+	public RemittanceTransaction getExRemittanceTransaction() {
+		return exRemittanceTransaction;
 	}
 	
 	

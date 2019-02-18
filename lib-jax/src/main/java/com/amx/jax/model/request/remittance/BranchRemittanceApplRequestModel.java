@@ -26,6 +26,7 @@ public class BranchRemittanceApplRequestModel extends RemittanceAdditionalBeneFi
 	private BigDecimal routingBankId;
 	private BigDecimal routingCountryId;
 	private BigDecimal remittanceModeId;
+	
 
 	private BigDecimal deliveryModeId;
 

@@ -5,7 +5,13 @@ import java.util.List;
 
 public class BranchRemittanceApplResponseDto {
 
+	/*Total Gross amount */
 	BigDecimal totalLocalAmount =BigDecimal.ZERO;
+	/* total net amount with commission */
+	BigDecimal totalNetAmount =BigDecimal.ZERO;
+	BigDecimal totalTrnxFees =BigDecimal.ZERO;
+	BigDecimal totalLyltyPointAmt =BigDecimal.ZERO;
+	
 	List<CustomerShoppingCartDto> shoppingCartDetails;
 	public BigDecimal getTotalLocalAmount() {
 		return totalLocalAmount;
@@ -18,5 +24,23 @@ public class BranchRemittanceApplResponseDto {
 	}
 	public void setShoppingCartDetails(List<CustomerShoppingCartDto> shoppingCartDetails) {
 		this.shoppingCartDetails = shoppingCartDetails;
+	}
+	public BigDecimal getTotalNetAmount() {
+		return totalNetAmount;
+	}
+	public void setTotalNetAmount(BigDecimal totalNetAmount) {
+		this.totalNetAmount = totalNetAmount;
+	}
+	public BigDecimal getTotalTrnxFees() {
+		return totalTrnxFees;
+	}
+	public void setTotalTrnxFees(BigDecimal totalTrnxFees) {
+		this.totalTrnxFees = totalTrnxFees;
+	}
+	public BigDecimal getTotalLyltyPointAmt() {
+		return totalLyltyPointAmt;
+	}
+	public void setTotalLyltyPointAmt(BigDecimal totalLyltyPointAmt) {
+		this.totalLyltyPointAmt = totalLyltyPointAmt;
 	}
 }

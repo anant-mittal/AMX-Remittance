@@ -19,6 +19,7 @@ import org.springframework.web.context.WebApplicationContext;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.BranchRemittancePaymentDao;
+import com.amx.jax.dbmodel.BanksView;
 import com.amx.jax.dbmodel.CurrencyMasterModel;
 import com.amx.jax.dbmodel.CurrencyWiseDenomination;
 import com.amx.jax.dbmodel.Customer;
@@ -36,10 +37,12 @@ import com.amx.jax.model.request.remittance.CustomerBankRequest;
 import com.amx.jax.model.response.fx.FxEmployeeDetailsDto;
 import com.amx.jax.model.response.fx.FxExchangeRateBreakup;
 import com.amx.jax.model.response.fx.UserStockDto;
+import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
 import com.amx.jax.model.response.remittance.CustomerShoppingCartDto;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
 import com.amx.jax.model.response.remittance.PaymentModeOfPaymentDto;
+import com.amx.jax.repository.IBankMasterFromViewDao;
 import com.amx.jax.service.CurrencyMasterService;
 import com.amx.jax.util.RoundUtil;
 
@@ -61,12 +64,28 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 
 	@Autowired
 	FcSaleBranchOrderManager fcSaleBranchOrderManager;
+	
+	@Autowired
+	IBankMasterFromViewDao bankMaster;
+	
+	
+	
+
 
 	/* 
 	 * @param   :fetch customer shopping cart application
 	 * @return CustomerShoppingCartDto
 	 */
-	public List<CustomerShoppingCartDto> fetchCustomerShoppingCart(BigDecimal customerId,BigDecimal localCurrencyId){
+	public BranchRemittanceApplResponseDto fetchCustomerShoppingCart(BigDecimal customerId,BigDecimal localCurrencyId){
+		BranchRemittanceApplResponseDto cartList = new BranchRemittanceApplResponseDto();
+		/** Total gross amount without commission **/
+		BigDecimal totalLocalAmount =BigDecimal.ZERO;
+		/* total net amount with commission */
+		BigDecimal totalNetAmount =BigDecimal.ZERO;
+		BigDecimal totalTrnxFees =BigDecimal.ZERO;
+		BigDecimal totalLyltyPointAmt =BigDecimal.ZERO;
+		
+		
 		List<CustomerShoppingCartDto> lstCustShpcrt = new ArrayList<>();
 		FxExchangeRateBreakup breakup = new FxExchangeRateBreakup();
 		BigDecimal decimalNumber = BigDecimal.ZERO;
@@ -77,6 +96,15 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 			if(lstCustomerShopping != null && lstCustomerShopping.size() != 0) {
 				for (ShoppingCartDetails customerApplDto : lstCustomerShopping) {
 					BigDecimal fcCurrencyId = customerApplDto.getForeignCurrency();
+					totalLocalAmount = totalLocalAmount.add(customerApplDto.getLocalTranxAmount());
+					totalNetAmount   =totalNetAmount.add(customerApplDto.getLocalNextTranxAmount());
+					totalTrnxFees    =totalTrnxFees.add(customerApplDto.getLocalCommisionAmount());
+					totalLyltyPointAmt =totalLyltyPointAmt.add(customerApplDto.getLoyaltsPointencahsed()==null?BigDecimal.ZERO:customerApplDto.getLoyaltsPointencahsed());
+					
+					cartList.setTotalLocalAmount(totalLocalAmount);
+					cartList.setTotalNetAmount(totalNetAmount.subtract(totalLyltyPointAmt));
+					cartList.setTotalTrnxFees(totalTrnxFees);
+					cartList.setTotalLyltyPointAmt(totalLyltyPointAmt);
 					if(fcCurrencyId == null || fcCurrencyId.compareTo(BigDecimal.ZERO) == 0){
 						throw new GlobalException(JaxError.NULL_CURRENCY_ID, "Null foreign currency id passed");
 					}
@@ -84,24 +112,23 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 					if(currencyMaster != null) {
 						breakup.setFcDecimalNumber(currencyMaster.getDecinalNumber() == null ? decimalNumber : currencyMaster.getDecinalNumber());
 						lstCustShpcrt.add(createCustomerShoppingCartDto(customerApplDto,localCurrencyId,fcCurrencyId,breakup));
+						cartList.setShoppingCartDetails(lstCustShpcrt);
+						
 					}else {
 						throw new GlobalException(JaxError.INVALID_CURRENCY_ID, "Invalid foreign currency id passed");
 					}
 				}
-			}else {
-				throw new GlobalException(JaxError.NO_RECORD_FOUND, "No application records found for customer");
 			}
 		}else {
 			throw new GlobalException(JaxError.INVALID_CURRENCY_ID, "Invalid local currency id passed");
 		}
 
-		return lstCustShpcrt;
+		return cartList;
 	}
 
 	private CustomerShoppingCartDto createCustomerShoppingCartDto(ShoppingCartDetails shoppingCartDetails,BigDecimal localCurrencyId,BigDecimal fcCurrencyId,FxExchangeRateBreakup breakup) {
 
 		CustomerShoppingCartDto shoppingCartDataTableBean = new CustomerShoppingCartDto();
-
 		shoppingCartDataTableBean.setRemittanceApplicationId(shoppingCartDetails.getRemittanceApplicationId());
 		shoppingCartDataTableBean.setApplicationType(shoppingCartDetails.getApplicationType());
 		shoppingCartDataTableBean.setApplicationTypeDesc(shoppingCartDetails.getApplicationTypeDesc());
@@ -134,6 +161,10 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 		shoppingCartDataTableBean.setLoyaltsPointencahsed(shoppingCartDetails.getLoyaltsPointencahsed());
 		shoppingCartDataTableBean.setAmtbCouponencahsed(shoppingCartDetails.getAmtbCouponEncashed());
 		shoppingCartDataTableBean.setSelectedrecord(Boolean.FALSE);
+		shoppingCartDataTableBean.setSourceOfIncomeDesc(shoppingCartDetails.getSourceOfIncomeDesc());
+		shoppingCartDataTableBean.setRemittanceDesc(shoppingCartDetails.getRemittanceDescription());
+		shoppingCartDataTableBean.setDeliveryDesc(shoppingCartDetails.getDeliveryDescription());
+		
 		if (shoppingCartDetails.getForeignTranxAmount() != null && breakup.getFcDecimalNumber() != null) {
 			shoppingCartDataTableBean.setForeignTranxAmount(RoundUtil.roundBigDecimal(shoppingCartDetails.getForeignTranxAmount(),breakup.getFcDecimalNumber().intValue()));
 		}
@@ -155,7 +186,8 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 		} else {
 			shoppingCartDataTableBean.setSpldealStatus(ConstantDocument.No);
 		}
-
+		shoppingCartDataTableBean.setRoutingBank(bankMaster.getBankListByBankId(shoppingCartDetails.getRoutingBankId()).get(0).getBankFullName());
+		
 		return shoppingCartDataTableBean;
 	}
 

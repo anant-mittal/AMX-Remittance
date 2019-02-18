@@ -65,6 +65,7 @@ public class ShoppingCartDetails implements Serializable {
 	private String foreignCurrencyDesc;
 	private String paymentId;
 	private BigDecimal amtbCouponEncashed;
+	private BigDecimal routingBankId;
 
 	public ShoppingCartDetails() {
 		super();
@@ -463,6 +464,15 @@ public class ShoppingCartDetails implements Serializable {
 	}
 	public void setAmtbCouponEncashed(BigDecimal amtbCouponEncashed) {
 		this.amtbCouponEncashed = amtbCouponEncashed;
+	}
+
+	@Column(name="BANK_ID")
+	public BigDecimal getRoutingBankId() {
+		return routingBankId;
+	}
+
+	public void setRoutingBankId(BigDecimal routingBankId) {
+		this.routingBankId = routingBankId;
 	}
 	
 }

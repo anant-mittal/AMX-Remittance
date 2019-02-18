@@ -69,11 +69,11 @@ public class RemittanceClient  implements IRemittanceService{
 	 * 
 	 */
 	@Override
-	public AmxApiResponse<CustomerShoppingCartDto, Object> fetchCustomerShoppingCart() {
+	public AmxApiResponse<BranchRemittanceApplResponseDto, Object> fetchCustomerShoppingCart() {
 		try {
 			LOGGER.debug("in fetchCustomerShoppingCart :");
 			return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_SHOPPING_CART).meta(new JaxMetaInfo()).get()
-					.as(new ParameterizedTypeReference<AmxApiResponse<CustomerShoppingCartDto, Object>>() {
+					.as(new ParameterizedTypeReference<AmxApiResponse<BranchRemittanceApplResponseDto, Object>>() {
 					});
 		} catch (Exception e) {
 			LOGGER.error("exception in fetchCustomerShoppingCart : ", e);

@@ -7,7 +7,8 @@ public class CustomerShoppingCartDto implements Serializable{
 
 	private static final long serialVersionUID = 2315791709068216697L;
 	
-	private BigDecimal remittanceAppBeneficiaryId;        
+	private BigDecimal remittanceApplicationId;      
+
 	private BigDecimal companyId;        
 	private BigDecimal documentFinanceYear;        
 	private BigDecimal documentId;       
@@ -25,7 +26,6 @@ public class CustomerShoppingCartDto implements Serializable{
 	private String beneficiarySecondName;  
 	private String beneficiaryThirdName;  
 	private String beneficiaryFourthName;  
-	private BigDecimal remittanceApplicationId;        
 	private BigDecimal foreignTranxAmount;  
 	private BigDecimal localTranxAmount;        
 	private BigDecimal localCommisionAmount;        
@@ -48,7 +48,12 @@ public class CustomerShoppingCartDto implements Serializable{
 	private String loyaltsPointIndicator;
 	private BigDecimal amtbCouponencahsed;
 	private Boolean booRenderCheckBox;
-	
+	private String sourceOfIncomeDesc;
+	private String deliveryDesc;
+	private String remittanceDesc;
+	private String purposeOfTrnx;
+	private String routingBank;
+	private BigDecimal remittanceAppBeneficiaryId;        
 	public BigDecimal getDocumentNo() {
 		return documentNo;
 	}
@@ -334,6 +339,37 @@ public class CustomerShoppingCartDto implements Serializable{
 	}
 	public void setBooRenderCheckBox(Boolean booRenderCheckBox) {
 		this.booRenderCheckBox = booRenderCheckBox;
+	}
+	
+	public String getDeliveryDesc() {
+		return deliveryDesc;
+	}
+	public void setDeliveryDesc(String deliveryDesc) {
+		this.deliveryDesc = deliveryDesc;
+	}
+	public String getRemittanceDesc() {
+		return remittanceDesc;
+	}
+	public void setRemittanceDesc(String remittanceDesc) {
+		this.remittanceDesc = remittanceDesc;
+	}
+	public String getPurposeOfTrnx() {
+		return purposeOfTrnx;
+	}
+	public void setPurposeOfTrnx(String purposeOfTrnx) {
+		this.purposeOfTrnx = purposeOfTrnx;
+	}
+	public String getRoutingBank() {
+		return routingBank;
+	}
+	public void setRoutingBank(String routingBank) {
+		this.routingBank = routingBank;
+	}
+	public String getSourceOfIncomeDesc() {
+		return sourceOfIncomeDesc;
+	}
+	public void setSourceOfIncomeDesc(String sourceOfIncomeDesc) {
+		this.sourceOfIncomeDesc = sourceOfIncomeDesc;
 	}
 	
 }

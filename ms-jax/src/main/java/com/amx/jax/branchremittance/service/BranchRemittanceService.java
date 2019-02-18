@@ -74,12 +74,13 @@ public class BranchRemittanceService extends AbstractService{
 	}
 	
 	
-	public AmxApiResponse<CustomerShoppingCartDto, Object> fetchCustomerShoppingCart(){
+	public AmxApiResponse<BranchRemittanceApplResponseDto, Object> fetchCustomerShoppingCart(){
 		validation.validateHeaderInfo();
 		BigDecimal customerId = metaData.getCustomerId();
 		BigDecimal localCurrencyId = metaData.getDefaultCurrencyId();
-		List<CustomerShoppingCartDto> custShpCart = branchRemittancePaymentManager.fetchCustomerShoppingCart(customerId,localCurrencyId);
-		return AmxApiResponse.buildList(custShpCart);
+		BranchRemittanceApplResponseDto custShpCart = branchRemittancePaymentManager.fetchCustomerShoppingCart(customerId,localCurrencyId);
+		
+		return AmxApiResponse.build(custShpCart);
 	}
 	
 	public AmxApiResponse<PaymentModeOfPaymentDto, Object> fetchModeOfPayment(){

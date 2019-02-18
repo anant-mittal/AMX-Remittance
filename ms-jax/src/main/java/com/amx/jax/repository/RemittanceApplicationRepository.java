@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.RemittanceTransactionView;
+import com.amx.jax.dbmodel.UserFinancialYear;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 
 @Transactional
@@ -40,4 +41,12 @@ public interface RemittanceApplicationRepository extends CrudRepository<Remittan
 	
 	@Query("select ra from RemittanceApplication ra where ra.fsCustomer=:customerid and ra.remittanceApplicationId=:remittanceApplicationId and ra.isactive='Y' and  trunc(sysdate)=trunc(createdDate)")
 	public RemittanceApplication getApplicationForRemittance(@Param("customerid") Customer customerid,@Param("remittanceApplicationId") BigDecimal remittanceApplicationId);
+	
+	
+	 @Query("update RemittanceApplication a set a.transactionDocumentNo = :docNo,a.transactionFinancialyear=:docFyr ,a.exUserFinancialYearByTransactionFinanceYearID =:docFyrId , "
+	 		+ " a.applicaitonStatus ='T' WHERE a.fsCustomer=:customerId and a.remittanceApplicationId =:remittanceApplicationId")
+	 public void updateApplicationDetails(@Param("customerId") Customer customerId,@Param("remittanceApplicationId") BigDecimal remittanceApplicationId,
+			 @Param("docFyr") BigDecimal docFyr,@Param("docNo") BigDecimal docNo,@Param("docFyrId") UserFinancialYear docFyrId);
+
+	
 }
