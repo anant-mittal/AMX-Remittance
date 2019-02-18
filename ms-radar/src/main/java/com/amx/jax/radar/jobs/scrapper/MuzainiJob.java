@@ -10,6 +10,7 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -34,7 +35,8 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 @EnableScheduling
 @Component
 @Service
-@ConditionalOnExpression(TestSizeApp.ENABLE_JOBS)
+//@ConditionalOnExpression(TestSizeApp.ENABLE_JOBS)
+@ConditionalOnProperty("jax.jobs.scrapper.rate")
 public class MuzainiJob {
 
 	@Autowired
