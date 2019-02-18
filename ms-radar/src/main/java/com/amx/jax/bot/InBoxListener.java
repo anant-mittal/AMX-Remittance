@@ -19,11 +19,15 @@ import com.amx.jax.tunnel.ITunnelSubscriber;
 import com.amx.jax.tunnel.TunnelEventMapping;
 import com.amx.jax.tunnel.TunnelEventXchange;
 import com.amx.utils.ArgUtil;
+import com.google.i18n.phonenumbers.NumberParseException;
+import com.google.i18n.phonenumbers.PhoneNumberUtil;
+import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
 
 @TunnelEventMapping(byEvent = UserInboxEvent.class, scheme = TunnelEventXchange.TASK_WORKER)
 public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(InBoxListener.class);
+	private static final PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
 
 	@Autowired
 	WhatsAppClient whatsAppClient;
@@ -34,14 +38,16 @@ public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 	@Override
 	public void onMessage(String channel, UserInboxEvent event) {
 		if (!ArgUtil.isEmpty(event.getWaChannel())) {
-			Map<String, Object> query = new HashMap<String, Object>();
-			query.put("searchKey", "customer.mobile");
-			query.put("searchValue", event.getFrom().replace("+965", "")
-					.replace("+91", "").replace(" ", ""));
-
-			LOGGER.info("Recieved {} {} ", event.getFrom(), event.getMessage());
-
 			try {
+				PhoneNumber swissNumberProto = phoneUtil.parse("+" + event.getFrom(), "IN");
+
+				Map<String, Object> query = new HashMap<String, Object>();
+				query.put("gte", "now-20y");
+				query.put("lte", "now");
+				query.put("searchKey", "customer.mobile");
+				query.put("searchValue", swissNumberProto.getNationalNumber());
+
+				LOGGER.info("Recieved {} {} ", swissNumberProto.getNationalNumber(), event.getMessage());
 				String message = "";
 				SnapModelWrapper x = snapQueryService.execute(SnapQueryTemplate.CUSTOMERS_PROFILE, query);
 				if (x.getHits().getTotal() > 0) {
@@ -57,7 +63,7 @@ public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 				reply.addTo(event.getFrom());
 				reply.setMessage(message);
 				whatsAppClient.send(reply);
-			} catch (IOException e) {
+			} catch (IOException | NumberParseException e) {
 				LOGGER.error("BOT EXCEPTION", e);
 			}
 
