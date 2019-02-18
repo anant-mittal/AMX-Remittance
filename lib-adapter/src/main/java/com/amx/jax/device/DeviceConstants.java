@@ -7,7 +7,7 @@ import com.amx.utils.CryptoUtil;
 public class DeviceConstants {
 
 	public static final class Config {
-		public static final long REQUEST_TOKEN_VALIDITY = 30;
+		public static final long REQUEST_TOKEN_VALIDITY = 60;
 		public static final long SESSION_TOKEN_VALIDITY = 3 * 3600;
 	}
 
