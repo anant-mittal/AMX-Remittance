@@ -67,6 +67,7 @@ public class AppParamController {
 		}
 		map.put("hmac", builder.toHMAC().output());
 		map.put("numeric", builder.toNumeric(length).output());
+		map.put("complex", builder.toComplex(length).output());
 		return map;
 	}
 
