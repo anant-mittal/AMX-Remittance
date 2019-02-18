@@ -8,6 +8,9 @@ public class DeviceConstants {
 
 	public static final class Config {
 		public static final long REQUEST_TOKEN_VALIDITY = 60;
+
+		@Deprecated
+		public static final long REQUEST_TOKEN_VALIDITY_OLD = 30;
 		public static final long SESSION_TOKEN_VALIDITY = 3 * 3600;
 	}
 
@@ -61,7 +64,10 @@ public class DeviceConstants {
 	public static boolean validateDeviceReqToken(String deviceReqKey, String deviceRegId, String deviceReqToken) {
 		return CryptoUtil.validateHMAC(
 				DeviceConstants.Config.REQUEST_TOKEN_VALIDITY, deviceReqKey, deviceRegId,
-				deviceReqToken);
+				deviceReqToken)
+				|| CryptoUtil.validateHMAC(
+						DeviceConstants.Config.REQUEST_TOKEN_VALIDITY_OLD, deviceReqKey, deviceRegId,
+						deviceReqToken);
 	}
 
 	public static String generateSessionPairingTokenX(String deviceRegToken, String sessionPairingToken) {
