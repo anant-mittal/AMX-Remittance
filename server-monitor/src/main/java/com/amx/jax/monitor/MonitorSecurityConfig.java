@@ -22,7 +22,7 @@ public class MonitorSecurityConfig extends WebSecurityConfigurerAdapter {
 				.csrf().disable();
 		http
 				.authorizeRequests()
-				.antMatchers("/login.html", "/**/*.css", "/img/**", "/third-party/**")
+				.antMatchers("/login.html", "/**/*.css", "/img/**", "/third-party/**","api/applications**")
 				.permitAll();
 		http
 				.authorizeRequests()
