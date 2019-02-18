@@ -28,10 +28,10 @@ import com.amx.jax.pricer.util.PricingRateDetailsDTO;
 import com.amx.jax.pricer.var.PricerServiceConstants;
 
 @RestController
-public class PricerServiceApiController implements ProbotExchangeRateService {
+public class ProbotExchRateApiController implements ProbotExchangeRateService {
 
 	/** The Constant LOGGER. */
-	private static final Logger LOGGER = LoggerFactory.getLogger(PricerServiceApiController.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ProbotExchRateApiController.class);
 
 	@Resource
 	PricingService pricingService;
@@ -79,18 +79,7 @@ public class PricerServiceApiController implements ProbotExchangeRateService {
 		return AmxApiResponse.build(pricingResponseDTO);
 
 	}
-
-	/*@Override
-	@RequestMapping(value = ApiEndPoints.FETCH_DISCOUNTED_RATES, method = RequestMethod.POST)
-	public AmxApiResponse<PricingResponseDTO, Object> fetchCustomercategoryDiscountedRates(
-			PricingRequestDTO pricingRequestDTO) {
-
-		LOGGER.info("Received Discounted Rate Request " + " with TraceId: " + AppContextUtil.getTraceId());
-		List<PricingResponseDTO> pricingResponseDTOList = pricingService
-				.fetchDiscountedRatesAcrossCustCategories(pricingRequestDTO);
-
-		return AmxApiResponse.buildList(pricingResponseDTOList);
-	}*/
+	
 	
 	@Override
 	@RequestMapping(value = ApiEndPoints.FETCH_DISCOUNTED_RATES, method = RequestMethod.POST)
