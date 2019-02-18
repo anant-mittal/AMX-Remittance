@@ -28,7 +28,6 @@ import com.amx.jax.model.response.fx.UserStockDto;
 import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
-import com.amx.jax.model.response.remittance.CustomerShoppingCartDto;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
 import com.amx.jax.model.response.remittance.PaymentModeOfPaymentDto;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
@@ -112,7 +111,7 @@ public class RemitBranchController {
 	}
 
 	@RequestMapping(value = "/api/remitt/cart/fetch", method = { RequestMethod.POST })
-	public AmxApiResponse<CustomerShoppingCartDto, Object> fetchCustomerShoppingCart(
+	public AmxApiResponse<BranchRemittanceApplResponseDto, Object> fetchCustomerShoppingCart(
 			@RequestBody BranchRemittanceApplRequestModel requestModel) {
 		return branchRemittanceClient.fetchCustomerShoppingCart();
 	}
