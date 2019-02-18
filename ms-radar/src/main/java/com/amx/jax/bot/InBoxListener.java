@@ -33,7 +33,7 @@ public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 
 	@Override
 	public void onMessage(String channel, UserInboxEvent event) {
-		if (ArgUtil.isEmpty(event.getWaChannel())) {
+		if (!ArgUtil.isEmpty(event.getWaChannel())) {
 			Map<String, Object> query = new HashMap<String, Object>();
 			query.put("searchKey", "customer.mobile");
 			query.put("searchValue", event.getFrom().replace("+965", "")
