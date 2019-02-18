@@ -42,6 +42,7 @@ public class AppConfig {
 	public static final String APP_DEBUG = "${app.debug}";
 	public static final String APP_CACHE = "${app.cache}";
 	public static final String APP_LOGGER = "${app.logger}";
+	public static final String APP_MONITOR = "${app.monitor}";
 
 	public static final String APP_CONTEXT_PREFIX = "${server.contextPath}";
 	public static final String SPRING_APP_NAME = "${spring.application.name}";
@@ -107,6 +108,10 @@ public class AppConfig {
 	@Value(APP_LOGGER)
 	@AppParamKey(AppParam.APP_LOGGER)
 	private boolean logger;
+
+	@Value(APP_MONITOR)
+	@AppParamKey(AppParam.APP_MONITOR)
+	private boolean monitor;
 
 	@Value(APP_AUTH_KEY)
 	private String appAuthKey;
