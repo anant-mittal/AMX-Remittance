@@ -1,12 +1,14 @@
 package com.amx.jax.client.snap;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.amx.jax.AppConfig;
 import com.amx.jax.client.snap.SnapModels.SnapModelWrapper;
 import com.amx.jax.dict.Currency;
 import com.amx.jax.rest.RestService;
 
+@Component
 public class SnapServiceClient implements ISnapService {
 
 	@Autowired
