@@ -19,6 +19,12 @@ multitenancy:
         password: QEMOS
         driverClassName: oracle.jdbc.OracleDriver
       -
+        tenantId: KWD
+        url: jdbc:oracle:thin:@10.28.42.10:1521:DEMOS
+        username: DEMOS
+        password: DEMOS
+        driverClassName: oracle.jdbc.OracleDriver
+      -
         tenantId: BHR
         url: jdbc:oracle:thin:@10.28.42.10:1521:TBHEMOS
         username: tbexchdba

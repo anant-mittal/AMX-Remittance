@@ -14,6 +14,9 @@ public enum Tenant {
 
 	/** Dev Environments **/
 	KWT2("KW", 91, "Kuwait Alt", true), BRNDEV("BH", 104, "Bahrain dev", true), OMNDEV("OM", 82, "oman dev", true),
+	
+	// Prod Backup - Dev
+	KWD("KWD", 91, "Kuwait Prod Backup", true),
 
 	AND("AD", 91, "Andorra"), ARE("AE", 91, "United Arab Emirates"), AFG("AF", 91, "Afghanistan"),
 
