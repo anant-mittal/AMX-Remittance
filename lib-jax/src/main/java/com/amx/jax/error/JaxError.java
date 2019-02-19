@@ -253,7 +253,10 @@ public enum JaxError implements IExceptionEnum {
 	INVALID_VOUCHER_DOCUMENT_NO,
 	INVALID_CLAIM_CODE,
 	AMOUNT_MISMATCH,
-	SIGNATURE_NOT_FOUND;
+	SIGNATURE_NOT_FOUND,
+	
+	// for validate Currency pair
+	INVALID_PAIR_ID;
 
 	@Deprecated
 	public String getCode() {
