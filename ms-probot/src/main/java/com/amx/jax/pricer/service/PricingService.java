@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import com.amx.jax.pricer.dao.CustomerDao;
 import com.amx.jax.pricer.dbmodel.Customer;
+import com.amx.jax.pricer.dto.DprRequestDto;
 import com.amx.jax.pricer.dto.ExchangeRateDetails;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.dto.PricingResponseDTO;
@@ -23,7 +24,8 @@ import com.amx.jax.pricer.exception.PricerServiceError;
 import com.amx.jax.pricer.exception.PricerServiceException;
 import com.amx.jax.pricer.manager.CustomerDiscountManager;
 import com.amx.jax.pricer.manager.RemitPriceManager;
-import com.amx.jax.pricer.util.PricingRateDetailsDTO;
+import com.amx.jax.pricer.manager.RemitRoutingManager;
+import com.amx.jax.pricer.util.ExchangeRateRequestDataCache;
 import com.amx.jax.pricer.var.PricerServiceConstants.CUSTOMER_CATEGORY;
 import com.amx.jax.pricer.var.PricerServiceConstants.PRICE_BY;
 
@@ -46,8 +48,11 @@ public class PricingService {
 	@Autowired
 	CustomerDiscountManager customerDiscountManager;
 
+	@Autowired
+	RemitRoutingManager remitRoutingManager;
+
 	@Resource
-	PricingRateDetailsDTO pricingRateDetailsDTO;
+	ExchangeRateRequestDataCache exchangeRateRequestDataCache;
 
 	public PricingResponseDTO fetchRemitPricesForCustomer(PricingRequestDTO pricingRequestDTO) {
 
@@ -70,13 +75,13 @@ public class PricingService {
 
 		PricingResponseDTO pricingResponseDTO = new PricingResponseDTO();
 
-		pricingResponseDTO.setBankDetails(pricingRateDetailsDTO.getBankDetails());
+		pricingResponseDTO.setBankDetails(exchangeRateRequestDataCache.getBankDetails());
 
-		pricingResponseDTO.setSellRateDetails(pricingRateDetailsDTO.getSellRateDetails());
+		pricingResponseDTO.setSellRateDetails(exchangeRateRequestDataCache.getSellRateDetails());
 
 		Collections.sort(pricingResponseDTO.getSellRateDetails(), Collections.reverseOrder());
 
-		pricingResponseDTO.setInfo(pricingRateDetailsDTO.getInfo());
+		pricingResponseDTO.setInfo(exchangeRateRequestDataCache.getInfo());
 
 		/*
 		 * Map<String, BankRateDetailsDTO> baseRateBankDetails = new HashMap<String,
@@ -106,9 +111,9 @@ public class PricingService {
 
 		PricingResponseDTO pricingResponseDTO = new PricingResponseDTO();
 
-		pricingResponseDTO.setBankDetails(pricingRateDetailsDTO.getBankDetails());
+		pricingResponseDTO.setBankDetails(exchangeRateRequestDataCache.getBankDetails());
 
-		pricingResponseDTO.setSellRateDetails(pricingRateDetailsDTO.getSellRateDetails());
+		pricingResponseDTO.setSellRateDetails(exchangeRateRequestDataCache.getSellRateDetails());
 
 		Collections.sort(pricingResponseDTO.getSellRateDetails(), Collections.reverseOrder());
 
@@ -127,11 +132,11 @@ public class PricingService {
 			customerDiscountManager.getDiscountedRates(pricingRequestDTO, null, cc);
 			PricingResponseDTO pricingResponseDTO = new PricingResponseDTO();
 
-			pricingResponseDTO.setBankDetails(pricingRateDetailsDTO.getBankDetails());
+			pricingResponseDTO.setBankDetails(exchangeRateRequestDataCache.getBankDetails());
 
 			List<ExchangeRateDetails> exRateDetails = new ArrayList<ExchangeRateDetails>();
 
-			for (ExchangeRateDetails exRateDetail : pricingRateDetailsDTO.getSellRateDetails()) {
+			for (ExchangeRateDetails exRateDetail : exchangeRateRequestDataCache.getSellRateDetails()) {
 
 				exRateDetails.add(exRateDetail.clone());
 
@@ -143,12 +148,20 @@ public class PricingService {
 
 			Collections.sort(pricingResponseDTO.getSellRateDetails(), Collections.reverseOrder());
 
-			pricingResponseDTO.setInfo(pricingRateDetailsDTO.getInfo());
+			pricingResponseDTO.setInfo(exchangeRateRequestDataCache.getInfo());
 
 			allDiscountedRates.add(pricingResponseDTO);
 		}
 
 		return allDiscountedRates;
+
+	}
+
+	public PricingResponseDTO fetchRemitRoutesAndPrices(DprRequestDto dprRequestDto) {
+
+		remitRoutingManager.getRoutingMatrixForRemittance(dprRequestDto);
+
+		return null;
 
 	}
 

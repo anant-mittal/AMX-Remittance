@@ -21,10 +21,11 @@ import org.springframework.web.context.WebApplicationContext;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.pricer.ProbotExchangeRateService;
+import com.amx.jax.pricer.dto.DprRequestDto;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.dto.PricingResponseDTO;
 import com.amx.jax.pricer.service.PricingService;
-import com.amx.jax.pricer.util.PricingRateDetailsDTO;
+import com.amx.jax.pricer.util.ExchangeRateRequestDataCache;
 import com.amx.jax.pricer.var.PricerServiceConstants;
 
 @RestController
@@ -38,9 +39,9 @@ public class ProbotExchRateApiController implements ProbotExchangeRateService {
 
 	@Bean
 	@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
-	public PricingRateDetailsDTO PricingRateDetailsDTO() {
-		PricingRateDetailsDTO pricingRateDetailsDTO = new PricingRateDetailsDTO();
-		return pricingRateDetailsDTO;
+	public ExchangeRateRequestDataCache ExchangeRateRequestDataCache() {
+		ExchangeRateRequestDataCache exchangeRateRequestDataCache = new ExchangeRateRequestDataCache();
+		return exchangeRateRequestDataCache;
 	}
 
 	@Override
@@ -79,8 +80,7 @@ public class ProbotExchRateApiController implements ProbotExchangeRateService {
 		return AmxApiResponse.build(pricingResponseDTO);
 
 	}
-	
-	
+
 	@Override
 	@RequestMapping(value = ApiEndPoints.FETCH_DISCOUNTED_RATES, method = RequestMethod.POST)
 	public AmxApiResponse<PricingResponseDTO, Object> fetchDiscountedRates(
@@ -88,14 +88,25 @@ public class ProbotExchRateApiController implements ProbotExchangeRateService {
 
 		LOGGER.info("Received Fetch Discounted Rate Request " + " with TraceId: " + AppContextUtil.getTraceId());
 
-		LOGGER.info("Received Discounted Rate Request " + " with TraceId: " + AppContextUtil.getTraceId());
 		List<PricingResponseDTO> pricingResponseDTOList = pricingService
 				.fetchDiscountedRatesAcrossCustCategories(pricingRequestDTO);
 
 		return AmxApiResponse.buildList(pricingResponseDTOList);
 
 	}
-	
-	
+
+	@Override
+	@RequestMapping(value = ApiEndPoints.FETCH_REMIT_ROUTES_PRICES, method = RequestMethod.POST)
+	public AmxApiResponse<PricingResponseDTO, Object> fetchRemitRoutesAndPrices(
+			@RequestBody @Valid DprRequestDto dprRequestDTO) {
+
+		LOGGER.info("Received Fetch Remit Routes and Prices Request for Customer and beneficiary" + " with TraceId: "
+				+ AppContextUtil.getTraceId());
+
+		PricingResponseDTO pricingResponseDTO = pricingService.fetchRemitRoutesAndPrices(dprRequestDTO);
+
+		return AmxApiResponse.build(pricingResponseDTO);
+
+	}
 
 }

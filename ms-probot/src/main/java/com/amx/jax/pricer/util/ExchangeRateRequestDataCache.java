@@ -8,10 +8,11 @@ import java.util.Map;
 
 import com.amx.jax.pricer.dbmodel.OnlineMarginMarkup;
 import com.amx.jax.pricer.dbmodel.ViewExGLCBAL;
+import com.amx.jax.pricer.dbmodel.ViewExRoutingMatrix;
 import com.amx.jax.pricer.dto.BankDetailsDTO;
 import com.amx.jax.pricer.dto.ExchangeRateDetails;
 
-public class PricingRateDetailsDTO {
+public class ExchangeRateRequestDataCache {
 
 	private List<ExchangeRateDetails> sellRateDetails;
 
@@ -22,6 +23,8 @@ public class PricingRateDetailsDTO {
 	private Map<BigDecimal, BigDecimal> bankGLCBALAvgRateMap = new HashMap<BigDecimal, BigDecimal>();
 
 	private OnlineMarginMarkup margin;
+	
+	private List<ViewExRoutingMatrix> routingMatrix;
 
 	private Map<String, Object> info = new HashMap<String, Object>();
 
@@ -55,6 +58,14 @@ public class PricingRateDetailsDTO {
 
 	public void setBankDetails(Map<BigDecimal, BankDetailsDTO> bankDetails) {
 		this.bankDetails = bankDetails;
+	}
+
+	public List<ViewExRoutingMatrix> getRoutingMatrix() {
+		return routingMatrix;
+	}
+
+	public void setRoutingMatrix(List<ViewExRoutingMatrix> routingMatrix) {
+		this.routingMatrix = routingMatrix;
 	}
 
 	public Map<String, Object> getInfo() {

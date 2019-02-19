@@ -32,6 +32,7 @@ import com.amx.jax.dict.UserClient.Channel;
 import com.amx.jax.pricer.ProbotExchangeRateService;
 import com.amx.jax.pricer.PricerServiceClient;
 import com.amx.jax.pricer.dto.BankDetailsDTO;
+import com.amx.jax.pricer.dto.DprRequestDto;
 import com.amx.jax.pricer.dto.ExchangeRateDetails;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.dto.PricingResponseDTO;
@@ -69,9 +70,14 @@ public class PricerServiceApiTest implements ProbotExchangeRateService {
 
 	@Override
 	@RequestMapping(value = ApiEndPoints.FETCH_DISCOUNTED_RATES, method = RequestMethod.POST)
-	public AmxApiResponse<PricingResponseDTO, Object> fetchDiscountedRates(
-			PricingRequestDTO pricingRequestDTO) {
+	public AmxApiResponse<PricingResponseDTO, Object> fetchDiscountedRates(PricingRequestDTO pricingRequestDTO) {
 		return pricerServiceClient.fetchDiscountedRates(pricingRequestDTO);
+	}
+
+	@Override
+	@RequestMapping(value = ApiEndPoints.FETCH_REMIT_ROUTES_PRICES, method = RequestMethod.POST)
+	public AmxApiResponse<PricingResponseDTO, Object> fetchRemitRoutesAndPrices(DprRequestDto dprRequestDTO) {
+		return pricerServiceClient.fetchRemitRoutesAndPrices(dprRequestDTO);
 	}
 
 	@RequestMapping(value = ApiEndPoints.PRICE_TEST, method = RequestMethod.POST)

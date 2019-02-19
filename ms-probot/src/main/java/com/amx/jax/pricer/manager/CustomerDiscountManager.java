@@ -26,7 +26,7 @@ import com.amx.jax.pricer.dbmodel.CustomerExtended;
 import com.amx.jax.pricer.dbmodel.PipsMaster;
 import com.amx.jax.pricer.dto.ExchangeRateDetails;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
-import com.amx.jax.pricer.util.PricingRateDetailsDTO;
+import com.amx.jax.pricer.util.ExchangeRateRequestDataCache;
 import com.amx.jax.pricer.var.PricerServiceConstants.CUSTOMER_CATEGORY;
 import com.amx.jax.pricer.var.PricerServiceConstants.DISCOUNT_TYPE;
 
@@ -46,7 +46,7 @@ public class CustomerDiscountManager {
 	CustomerExtendedDao customerExtendedDao;
 
 	@Resource
-	PricingRateDetailsDTO pricingRateDetailsDTO;
+	ExchangeRateRequestDataCache exchangeRateRequestDataCache;
 
 	private static BigDecimal PIPS_BANK_ID = new BigDecimal(78);
 
@@ -74,7 +74,7 @@ public class CustomerDiscountManager {
 			ccDiscountPips = (null != ccDiscount ? ccDiscount.getDiscountPips() : BIGD_ZERO);
 		}
 
-		List<BigDecimal> validBankIds = new ArrayList<BigDecimal>(pricingRateDetailsDTO.getBankDetails().keySet());
+		List<BigDecimal> validBankIds = new ArrayList<BigDecimal>(exchangeRateRequestDataCache.getBankDetails().keySet());
 
 		List<PipsMaster> pipsList = pipsMasterDao.getPipsForFcCurAndBank(pricingRequestDTO.getForeignCurrencyId(),
 				PIPS_BANK_ID, pricingRequestDTO.getForeignCountryId(), validBankIds);
@@ -105,11 +105,11 @@ public class CustomerDiscountManager {
 		// List<BankRateDetailsDTO> discountedRatesNPrices = new
 		// ArrayList<BankRateDetailsDTO>();
 
-		BigDecimal margin = pricingRateDetailsDTO.getMargin() != null
-				? pricingRateDetailsDTO.getMargin().getMarginMarkup()
+		BigDecimal margin = exchangeRateRequestDataCache.getMargin() != null
+				? exchangeRateRequestDataCache.getMargin().getMarginMarkup()
 				: BIGD_ZERO;
 
-		for (ExchangeRateDetails bankExRateDetail : pricingRateDetailsDTO.getSellRateDetails()) {
+		for (ExchangeRateDetails bankExRateDetail : exchangeRateRequestDataCache.getSellRateDetails()) {
 
 			BigDecimal amountSlabPips = BIGD_ZERO;
 
@@ -136,16 +136,16 @@ public class CustomerDiscountManager {
 			 */
 			BigDecimal adjustedBaseSellRate = BIGD_ZERO;
 
-			if (pricingRateDetailsDTO.getAvgRateGLCForBank(bankExRateDetail.getBankId()) != null) {
+			if (exchangeRateRequestDataCache.getAvgRateGLCForBank(bankExRateDetail.getBankId()) != null) {
 
 				// Old Logic
 				// ViewExGLCBAL viewExGLCBAL =
-				// pricingRateDetailsDTO.getBankGlcBalMap().get(bankExRateDetail.getBankId());
+				// exchangeRateRequestDataCache.getBankGlcBalMap().get(bankExRateDetail.getBankId());
 
 				// adjustedBaseSellRate = viewExGLCBAL.getRateAvgRate().add(margin);
 
 				// New Logic
-				adjustedBaseSellRate = pricingRateDetailsDTO.getAvgRateGLCForBank(bankExRateDetail.getBankId())
+				adjustedBaseSellRate = exchangeRateRequestDataCache.getAvgRateGLCForBank(bankExRateDetail.getBankId())
 						.add(margin);
 
 			}

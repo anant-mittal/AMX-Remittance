@@ -13,9 +13,9 @@ import com.amx.jax.pricer.repository.ViewExRoutingMatrixRepository;
 public class ViewExRoutingMatrixDao {
 
 	@Autowired
-	ViewExRoutingMatrixRepository viewExRoutingMatrixRepository;
+	private ViewExRoutingMatrixRepository viewExRoutingMatrixRepository;
 
-	List<ViewExRoutingMatrix> getRoutingMatrix(BigDecimal applicationCountryId, BigDecimal beneCountryId,
+	public List<ViewExRoutingMatrix> getRoutingMatrix(BigDecimal applicationCountryId, BigDecimal beneCountryId,
 			BigDecimal beneBankId, BigDecimal beneBankBranchId, BigDecimal currencyId) {
 		return viewExRoutingMatrixRepository.findRoutingMatrix(applicationCountryId, beneCountryId, beneBankId,
 				beneBankBranchId, currencyId);
