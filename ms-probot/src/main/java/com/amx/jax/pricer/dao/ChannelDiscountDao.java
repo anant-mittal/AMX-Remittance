@@ -1,5 +1,7 @@
 package com.amx.jax.pricer.dao;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -19,6 +21,11 @@ public class ChannelDiscountDao {
 
 	public ChannelDiscount saveDiscountForChannel(ChannelDiscount channelDiscount) {
 		return channelDiscountRepository.save(channelDiscount);
+	}
+
+	public List<ChannelDiscount> getDiscountByAllChannel() {
+		// TODO Auto-generated method stub
+		return (List<ChannelDiscount>) channelDiscountRepository.findAll();
 	}
 
 }

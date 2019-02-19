@@ -21,6 +21,9 @@ public interface AbstractProbotInterface {
 		public static final String GET_CB_AND_PRODUCTS = SERVICE_PREFIX + API_VERSION_V1 + "/get-cb-and-products";
 		
 		public static final String PRICE_TEST = SERVICE_PREFIX + API_VERSION_V1 + "/price-test";
+		
+		// Service Controllers for Discount Management Data
+		public static final String GET_DISCOUNT_MGMT = SERVICE_PREFIX + API_VERSION_V1 + "/get-discount-mgmt";
 
 	}
 }
