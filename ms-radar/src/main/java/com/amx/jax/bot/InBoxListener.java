@@ -8,13 +8,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.amx.jax.client.snap.SnapModels.MapModel;
+import com.amx.jax.client.snap.SnapModels.SnapModelWrapper;
+import com.amx.jax.client.snap.SnapQueryTemplate;
 import com.amx.jax.postman.client.WhatsAppClient;
 import com.amx.jax.postman.events.UserInboxEvent;
 import com.amx.jax.postman.model.WAMessage;
-import com.amx.jax.radar.snap.SnapModels.MapModel;
-import com.amx.jax.radar.snap.SnapModels.SnapModelWrapper;
 import com.amx.jax.radar.snap.SnapQueryService;
-import com.amx.jax.radar.snap.SnapQueryTemplate;
 import com.amx.jax.tunnel.ITunnelSubscriber;
 import com.amx.jax.tunnel.TunnelEventMapping;
 import com.amx.jax.tunnel.TunnelEventXchange;
@@ -63,7 +63,7 @@ public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 				reply.addTo(event.getFrom());
 				reply.setMessage(message);
 				whatsAppClient.send(reply);
-			} catch (IOException | NumberParseException e) {
+			} catch (NumberParseException e) {
 				LOGGER.error("BOT EXCEPTION", e);
 			}
 

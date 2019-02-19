@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -17,16 +16,15 @@ import org.springframework.stereotype.Service;
 import com.amx.amxlib.model.MinMaxExRateDTO;
 import com.amx.jax.client.ExchangeRateClient;
 import com.amx.jax.client.configs.JaxMetaInfo;
+import com.amx.jax.client.snap.ISnapService.RateSource;
+import com.amx.jax.client.snap.ISnapService.RateType;
+import com.amx.jax.dict.Currency;
 import com.amx.jax.dict.Language;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.mcq.Candidate;
 import com.amx.jax.mcq.MCQLocker;
 import com.amx.jax.radar.ARadarTask;
-import com.amx.jax.radar.TestSizeApp;
 import com.amx.jax.rates.AmxCurConstants;
-import com.amx.jax.rates.AmxCurConstants.RCur;
-import com.amx.jax.rates.AmxCurConstants.RSource;
-import com.amx.jax.rates.AmxCurConstants.RType;
 import com.amx.jax.rates.AmxCurRate;
 import com.amx.jax.rates.AmxCurRateRepository;
 import com.amx.jax.scope.TenantContextHolder;
@@ -77,18 +75,18 @@ public class AMXJob extends ARadarTask {
 
 		List<MinMaxExRateDTO> rates = xRateClient.getMinMaxExchangeRate().getResults();
 
-		RType type = RType.SELL_TRNSFR;
+		RateType type = RateType.SELL_TRNSFR;
 
 		for (MinMaxExRateDTO minMaxExRateDTO : rates) {
 
-			AmxCurConstants.RCur cur = (RCur) ArgUtil.parseAsEnum(minMaxExRateDTO.getToCurrency().getQuoteName(),
-					AmxCurConstants.RCur.UNKNOWN);
-			if (!AmxCurConstants.RCur.UNKNOWN.equals(cur)) {
+			Currency cur = (Currency) ArgUtil.parseAsEnum(minMaxExRateDTO.getToCurrency().getQuoteName(),
+					Currency.UNKNOWN);
+			if (!Currency.UNKNOWN.equals(cur)) {
 				BigDecimal rate = ArgUtil.parseAsBigDecimal(minMaxExRateDTO.getMaxExrate());
 				if (!ArgUtil.isEmpty(rate)) {
 					AmxCurRate trnsfrRate = new AmxCurRate();
-					trnsfrRate.setrSrc(RSource.AMX);
-					trnsfrRate.setrDomCur(RCur.KWD);
+					trnsfrRate.setrSrc(RateSource.AMX);
+					trnsfrRate.setrDomCur(Currency.KWD);
 					trnsfrRate.setrForCur(cur);
 					trnsfrRate.setrType(type);
 					trnsfrRate.setrRate(rate);

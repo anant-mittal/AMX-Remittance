@@ -10,7 +10,6 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -18,15 +17,14 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import com.amx.jax.client.snap.ISnapService.RateSource;
+import com.amx.jax.client.snap.ISnapService.RateType;
+import com.amx.jax.dict.Currency;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.mcq.Candidate;
 import com.amx.jax.mcq.MCQLocker;
 import com.amx.jax.radar.ARadarTask;
-import com.amx.jax.radar.TestSizeApp;
 import com.amx.jax.rates.AmxCurConstants;
-import com.amx.jax.rates.AmxCurConstants.RCur;
-import com.amx.jax.rates.AmxCurConstants.RSource;
-import com.amx.jax.rates.AmxCurConstants.RType;
 import com.amx.jax.rates.AmxCurRate;
 import com.amx.jax.rates.AmxCurRateRepository;
 import com.amx.jax.rest.RestService;
@@ -76,16 +74,16 @@ public class BECKuwaitJob extends ARadarTask {
 			if (transferTabs.size() > 0) {
 				Elements trs = transferTabs.get(0).select("tr");
 				for (Element tr : trs) {
-					AmxCurConstants.RCur cur = (RCur) ArgUtil.parseAsEnum(tr.select(".bfc-country-code").text(),
-							AmxCurConstants.RCur.UNKNOWN);
-					if (!AmxCurConstants.RCur.UNKNOWN.equals(cur)) {
+					Currency cur = (Currency) ArgUtil.parseAsEnum(tr.select(".bfc-country-code").text(),
+							Currency.UNKNOWN);
+					if (!Currency.UNKNOWN.equals(cur)) {
 						BigDecimal rate = ArgUtil.parseAsBigDecimal(tr.select(".tg-buy .bfc-currency-rates").text());
 						if (!ArgUtil.isEmpty(rate)) {
 							AmxCurRate trnsfrRate = new AmxCurRate();
-							trnsfrRate.setrSrc(RSource.BECKWT);
-							trnsfrRate.setrDomCur(RCur.KWD);
+							trnsfrRate.setrSrc(RateSource.BECKWT);
+							trnsfrRate.setrDomCur(Currency.KWD);
 							trnsfrRate.setrForCur(cur);
-							trnsfrRate.setrType(RType.SELL_TRNSFR);
+							trnsfrRate.setrType(RateType.SELL_TRNSFR);
 							trnsfrRate.setrRate(BigDecimal.ONE.divide(rate, 12, RoundingMode.CEILING));
 							curRateRepository.insertRate(trnsfrRate);
 						}
@@ -97,16 +95,16 @@ public class BECKuwaitJob extends ARadarTask {
 			if (xTabs.size() > 0) {
 				Elements trs = xTabs.get(0).select("tr");
 				for (Element tr : trs) {
-					AmxCurConstants.RCur cur = (RCur) ArgUtil.parseAsEnum(tr.select(".bfc-country-code").text(),
-							AmxCurConstants.RCur.UNKNOWN);
-					if (!AmxCurConstants.RCur.UNKNOWN.equals(cur)) {
+					Currency cur = (Currency) ArgUtil.parseAsEnum(tr.select(".bfc-country-code").text(),
+							Currency.UNKNOWN);
+					if (!Currency.UNKNOWN.equals(cur)) {
 
-						AmxCurRate buyCash = new AmxCurRate(RSource.BECKWT, RCur.KWD, cur);
+						AmxCurRate buyCash = new AmxCurRate(RateSource.BECKWT, Currency.KWD, cur);
 
 						BigDecimal buyCashRate = ArgUtil
 								.parseAsBigDecimal(tr.select(".tg-buy .bfc-currency-rates").text());
 						if (!ArgUtil.isEmpty(buyCashRate)) {
-							buyCash.setrType(RType.BUY_CASH);
+							buyCash.setrType(RateType.BUY_CASH);
 							buyCash.setrRate(BigDecimal.ONE.divide(buyCashRate, 12, RoundingMode.CEILING));
 							curRateRepository.insertRate(buyCash);
 						}
@@ -115,7 +113,7 @@ public class BECKuwaitJob extends ARadarTask {
 						BigDecimal sellCashRate = ArgUtil
 								.parseAsBigDecimal(tr.select(".tg-buy .bfc-currency-rates").text());
 						if (!ArgUtil.isEmpty(sellCashRate)) {
-							sellCash.setrType(RType.SELL_CASH);
+							sellCash.setrType(RateType.SELL_CASH);
 							sellCash.setrRate(BigDecimal.ONE.divide(sellCashRate, 12, RoundingMode.CEILING));
 							curRateRepository.insertRate(sellCash);
 						}

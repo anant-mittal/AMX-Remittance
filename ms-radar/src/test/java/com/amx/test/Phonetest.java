@@ -1,25 +1,9 @@
 package com.amx.test;
 
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.net.URISyntaxException;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.jsoup.Connection;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-
-import com.amx.jax.rates.AmxCurConstants;
-import com.amx.jax.rates.AmxCurConstants.RCur;
-import com.amx.jax.rates.AmxCurConstants.RSource;
-import com.amx.jax.rates.AmxCurConstants.RType;
-import com.amx.jax.rates.AmxCurRate;
-import com.amx.utils.ArgUtil;
-import com.amx.utils.JsonUtil;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;

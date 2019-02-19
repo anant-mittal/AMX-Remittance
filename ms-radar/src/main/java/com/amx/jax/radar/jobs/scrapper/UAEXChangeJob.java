@@ -10,7 +10,6 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -18,15 +17,14 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import com.amx.jax.client.snap.ISnapService.RateSource;
+import com.amx.jax.client.snap.ISnapService.RateType;
+import com.amx.jax.dict.Currency;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.mcq.Candidate;
 import com.amx.jax.mcq.MCQLocker;
 import com.amx.jax.radar.ARadarTask;
-import com.amx.jax.radar.TestSizeApp;
 import com.amx.jax.rates.AmxCurConstants;
-import com.amx.jax.rates.AmxCurConstants.RCur;
-import com.amx.jax.rates.AmxCurConstants.RSource;
-import com.amx.jax.rates.AmxCurConstants.RType;
 import com.amx.jax.rates.AmxCurRate;
 import com.amx.jax.rates.AmxCurRateRepository;
 import com.amx.utils.ArgUtil;
@@ -93,7 +91,7 @@ public class UAEXChangeJob extends ARadarTask {
 					.data(PARAM_AHREF_EXCHANGE, VALUE_EXCHANGE_RATES);
 
 			Document doc1 = con1.post();
-			fetchrates(doc1, RType.SELL_TRNSFR);
+			fetchrates(doc1, RateType.SELL_TRNSFR);
 
 			Connection con2 = Jsoup.connect(UAE_XCHANGE_URL)
 					.referrer(UAE_XCHANGE_URL);
@@ -109,7 +107,7 @@ public class UAEXChangeJob extends ARadarTask {
 					.data(PARAM_ANCHOR_FOREX, VALUE_FOREX_RATES);
 
 			Document doc2 = con2.post();
-			fetchrates(doc2, RType.SELL_CASH);
+			fetchrates(doc2, RateType.SELL_CASH);
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -117,18 +115,18 @@ public class UAEXChangeJob extends ARadarTask {
 
 	}
 
-	public void fetchrates(Document doc, RType type) {
+	public void fetchrates(Document doc, RateType type) {
 		Elements trs = doc.select("#ctl10_updatepnl table.table tbody tr");
 		for (Element tr : trs) {
 			Elements tds = tr.select("td");
-			AmxCurConstants.RCur cur = (RCur) ArgUtil.parseAsEnum(tds.get(2).text(),
-					AmxCurConstants.RCur.UNKNOWN);
-			if (!AmxCurConstants.RCur.UNKNOWN.equals(cur) && tds.size() >= 3) {
+			Currency cur = (Currency) ArgUtil.parseAsEnum(tds.get(2).text(),
+					Currency.UNKNOWN);
+			if (!Currency.UNKNOWN.equals(cur) && tds.size() >= 3) {
 				BigDecimal rate = ArgUtil.parseAsBigDecimal(tds.get(3).text());
 				if (!ArgUtil.isEmpty(rate)) {
 					AmxCurRate trnsfrRate = new AmxCurRate();
-					trnsfrRate.setrSrc(RSource.UAEXCHANGE);
-					trnsfrRate.setrDomCur(RCur.KWD);
+					trnsfrRate.setrSrc(RateSource.UAEXCHANGE);
+					trnsfrRate.setrDomCur(Currency.KWD);
 					trnsfrRate.setrForCur(cur);
 					trnsfrRate.setrType(type);
 					trnsfrRate.setrRate(rate);

@@ -1,6 +1,5 @@
 package com.amx.jax.radar.snap;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,12 +10,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.amx.jax.radar.snap.SnapModels.SnapModelWrapper;
-import com.amx.jax.rates.AmxCurConstants.RCur;
+import com.amx.jax.client.snap.ISnapService;
+import com.amx.jax.client.snap.SnapModels.SnapModelWrapper;
+import com.amx.jax.client.snap.SnapQueryTemplate;
+import com.amx.jax.dict.Currency;
 import com.amx.jax.rest.RestService;
 
 @Controller
-public class SnapApiController {
+public class SnapApiController implements ISnapService {
 
 	@Autowired
 	private SnapQueryService snapQueryService;
@@ -24,35 +25,31 @@ public class SnapApiController {
 	@Autowired
 	RestService restService;
 
+	@Override
 	@ResponseBody
-	@RequestMapping(value = "/snap/api/customer/joined", method = RequestMethod.GET)
-	public SnapModelWrapper customerJoined()
-			throws IOException {
+	@RequestMapping(value = Path.SNAP_API_CUSTOMER_JOINED, method = RequestMethod.GET)
+	public SnapModelWrapper getCustomerStats() {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("lte", "now");
 		params.put("gte", "now-20y");
 		return snapQueryService.execute(SnapQueryTemplate.CUSTOMERS_JOINED, params);
 	}
 
+	@Override
 	@ResponseBody
-	@RequestMapping(value = "/snap/api/tranx/done", method = RequestMethod.GET)
-	public SnapModelWrapper tranxDone()
-			throws IOException {
+	@RequestMapping(value = Path.SNAP_API_TRANX_DONE, method = RequestMethod.GET)
+	public SnapModelWrapper getTranxStats() {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("lte", "now");
 		params.put("gte", "now-5y");
 		return snapQueryService.execute(SnapQueryTemplate.TRANX_DONE, params);
 	}
 
-	public static enum XRateGraph {
-		WEEK1, MONTH1, YEAR1, YEAR2, YEAR5
-	}
-
+	@Override
 	@ResponseBody
-	@RequestMapping(value = "/snap/api/xrate/sell_transfer", method = RequestMethod.GET)
-	public SnapModelWrapper xrateOnline(@RequestParam XRateGraph graph, @RequestParam RCur forCur,
-			@RequestParam RCur domCur)
-			throws IOException {
+	@RequestMapping(value = Path.SNAP_API_XRATE_SELL_TRANSFER, method = RequestMethod.GET)
+	public SnapModelWrapper getXRateStats(@RequestParam StatsSpan graph, @RequestParam Currency forCur,
+			@RequestParam Currency domCur) {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("lte", "now");
 

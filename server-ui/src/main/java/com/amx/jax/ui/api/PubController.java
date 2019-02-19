@@ -19,6 +19,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.amxlib.model.MinMaxExRateDTO;
 import com.amx.jax.AmxConfig;
 import com.amx.jax.AppConfig;
+import com.amx.jax.AppContextUtil;
+import com.amx.jax.client.snap.SnapModels.SnapModelWrapper;
+import com.amx.jax.dict.Currency;
+import com.amx.jax.client.snap.SnapServiceClient;
+import com.amx.jax.client.snap.ISnapService.StatsSpan;
 import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.postman.GeoLocationService;
 import com.amx.jax.postman.PostManException;
@@ -227,6 +232,24 @@ public class PubController {
 			log.error("/pub/contact", e);
 		}
 		return wrapper;
+	}
+
+	@Autowired
+	SnapServiceClient snapServiceClient;
+
+	@RequestMapping(value = "/pub/stats/customer", method = { RequestMethod.GET })
+	public SnapModelWrapper customerStats() {
+		return snapServiceClient.getCustomerStats();
+	}
+
+	@RequestMapping(value = "/pub/stats/tranx", method = { RequestMethod.GET })
+	public SnapModelWrapper trnaxStats() {
+		return snapServiceClient.getTranxStats();
+	}
+
+	@RequestMapping(value = "/pub/stats/rates", method = { RequestMethod.GET })
+	public SnapModelWrapper trnaxStats(@RequestParam StatsSpan graph, @RequestParam Currency forCur) {
+		return snapServiceClient.getXRateStats(graph, forCur, AppContextUtil.getTenant().getCurrency());
 	}
 
 }

@@ -1,4 +1,4 @@
-package com.amx.jax.radar.snap;
+package com.amx.jax.client.snap;
 
 public enum SnapQueryTemplate {
 	CUSTOMER_LIMIT("customer-limit", "oracle-v3-*-v4"),

@@ -64,6 +64,7 @@ public class AppConfig {
 	public static final String JAX_LOGGER_URL = "${jax.logger.url}";
 	public static final String JAX_SSO_URL = "${jax.sso.url}";
 	public static final String JAX_AUTH_URL = "${jax.auth.url}";
+	public static final String JAX_RADAR_URL = "${jax.radar.url}";
 
 	public static final String SPRING_REDIS_HOST = "${spring.redis.host}";
 	public static final String SPRING_REDIS_PORT = "${spring.redis.port}";
@@ -159,6 +160,10 @@ public class AppConfig {
 	@Value(JAX_AUTH_URL)
 	@AppParamKey(AppParam.JAX_AUTH_URL)
 	private String authURL;
+
+	@Value(JAX_RADAR_URL)
+	@AppParamKey(AppParam.JAX_RADAR_URL)
+	private String radarURL;
 
 	@Value(SPRING_REDIS_HOST)
 	@AppParamKey(AppParam.SPRING_REDIS_HOST)
@@ -371,6 +376,10 @@ public class AppConfig {
 
 	public String getSpringAppName() {
 		return springAppName;
+	}
+
+	public String getRadarURL() {
+		return radarURL;
 	}
 
 }

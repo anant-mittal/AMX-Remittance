@@ -11,8 +11,10 @@ import org.springframework.stereotype.Component;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring4.SpringTemplateEngine;
 
+import com.amx.jax.client.snap.SnapQueryTemplate;
+import com.amx.jax.client.snap.SnapModels.SnapModelWrapper;
+import com.amx.jax.client.snap.SnapQueryException;
 import com.amx.jax.radar.EsConfig;
-import com.amx.jax.radar.snap.SnapModels.SnapModelWrapper;
 import com.amx.jax.rest.RestService;
 import com.amx.utils.JsonUtil;
 
@@ -49,11 +51,10 @@ public class SnapQueryService {
 		return JsonUtil.getMapFromJsonString(this.buildQueryString(template, params));
 	}
 
-	public SnapModelWrapper executeQuery(Map<String, Object> query, String index) throws IOException {
+	public SnapModelWrapper executeQuery(Map<String, Object> query, String index) {
 		Map<String, Object> x = restService.ajax(ssConfig.getClusterUrl()).path(index + "/_search").post(query)
 				.asMap();
-		x.put("aggs", query.get("aggs"));
-
+		// x.put("aggs", query.get("aggs"));
 		return new SnapModelWrapper(x);
 	}
 
@@ -61,9 +62,15 @@ public class SnapQueryService {
 		return executeQuery(query, "oracle-v3-*-v4");
 	}
 
-	public SnapModelWrapper execute(SnapQueryTemplate template, Map<String, Object> params) throws IOException {
-		Map<String, Object> query = getQuery(template, params);
+	public SnapModelWrapper execute(SnapQueryTemplate template, Map<String, Object> params) {
+		Map<String, Object> query = null;
+		try {
+			query = getQuery(template, params);
+		} catch (IOException e) {
+			throw new SnapQueryException(SnapQueryException.SnapServiceCodes.INVALID_QUERY);
+		}
 		return executeQuery(query, template.getIndex());
+
 	}
 
 }

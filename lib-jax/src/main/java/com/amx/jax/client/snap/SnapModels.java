@@ -1,4 +1,4 @@
-package com.amx.jax.radar.snap;
+package com.amx.jax.client.snap;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -6,15 +6,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.boot.jackson.JsonComponent;
-
 import com.amx.jax.json.JsonSerializerType;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonPath;
 import com.amx.utils.JsonUtil;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-@JsonComponent
 public class SnapModels {
 
 	private static final String BUCKETS = "buckets";

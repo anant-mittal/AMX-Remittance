@@ -2,10 +2,10 @@ package com.amx.jax.rates;
 
 import java.math.BigDecimal;
 
+import com.amx.jax.client.snap.ISnapService.RateSource;
+import com.amx.jax.client.snap.ISnapService.RateType;
+import com.amx.jax.dict.Currency;
 import com.amx.jax.radar.AESDocument;
-import com.amx.jax.rates.AmxCurConstants.RCur;
-import com.amx.jax.rates.AmxCurConstants.RSource;
-import com.amx.jax.rates.AmxCurConstants.RType;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -17,61 +17,61 @@ public class AmxCurRate extends AESDocument {
 		super();
 	}
 
-	public AmxCurRate(RType rType) {
+	public AmxCurRate(RateType rType) {
 		this();
 		this.rType = rType;
 	}
 
-	public AmxCurRate(RType rType, BigDecimal rRate) {
+	public AmxCurRate(RateType rType, BigDecimal rRate) {
 		this();
 		this.rType = rType;
 		this.rRate = rRate;
 	}
 
-	public AmxCurRate(RSource rSrc, RCur rDomCur, RCur rForCur) {
+	public AmxCurRate(RateSource rSrc, Currency rDomCur, Currency rForCur) {
 		this();
 		this.rSrc = rSrc;
 		this.rDomCur = rDomCur;
 		this.rForCur = rForCur;
 	}
 
-	private RSource rSrc;
-	private RCur rForCur;
-	private RCur rDomCur;
-	private RType rType;
+	private RateSource rSrc;
+	private Currency rForCur;
+	private Currency rDomCur;
+	private RateType rType;
 
 	@JsonFormat(shape = JsonFormat.Shape.NUMBER_FLOAT)
 	private BigDecimal rRate;
 
-	public RSource getrSrc() {
+	public RateSource getrSrc() {
 		return rSrc;
 	}
 
-	public void setrSrc(RSource rSrc) {
+	public void setrSrc(RateSource rSrc) {
 		this.rSrc = rSrc;
 	}
 
-	public RCur getrForCur() {
+	public Currency getrForCur() {
 		return rForCur;
 	}
 
-	public void setrForCur(RCur rForCur) {
+	public void setrForCur(Currency rForCur) {
 		this.rForCur = rForCur;
 	}
 
-	public RCur getrDomCur() {
+	public Currency getrDomCur() {
 		return rDomCur;
 	}
 
-	public void setrDomCur(RCur rDomCur) {
+	public void setrDomCur(Currency rDomCur) {
 		this.rDomCur = rDomCur;
 	}
 
-	public RType getrType() {
+	public RateType getrType() {
 		return rType;
 	}
 
-	public void setrType(RType rType) {
+	public void setrType(RateType rType) {
 		this.rType = rType;
 	}
 
@@ -92,13 +92,13 @@ public class AmxCurRate extends AESDocument {
 		return rate;
 	}
 
-	public AmxCurRate clone(RType rType) {
+	public AmxCurRate clone(RateType rType) {
 		AmxCurRate rate = this.clone();
 		rate.setrType(rType);
 		return rate;
 	}
 
-	public AmxCurRate clone(RType rType, BigDecimal rRate) {
+	public AmxCurRate clone(RateType rType, BigDecimal rRate) {
 		AmxCurRate rate = this.clone();
 		rate.setrType(rType);
 		rate.setrRate(rRate);
