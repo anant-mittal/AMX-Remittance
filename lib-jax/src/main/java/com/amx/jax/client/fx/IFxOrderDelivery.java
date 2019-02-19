@@ -28,6 +28,7 @@ public interface IFxOrderDelivery extends IJaxService {
 		public static final String FX_DELIVERY_SEND_OTP = PREFIX + "/send-otp/";
 		public static final String FX_DELIVERY_VERIFY_OTP = PREFIX + "/verify-otp/";
 		public static final String FX_DELIVERY_LIST_DELIVERY_REMARK = PREFIX + "/list-del-remark/";
+		public static final String FX_DELIVERY_HISTORICAL_LIST_ORDER = PREFIX + "/list-orders-historical/";
 	}
 
 	public static class Params {
@@ -71,5 +72,8 @@ public interface IFxOrderDelivery extends IJaxService {
 	@ApiJaxStatus({ JaxError.FC_CURRENCY_DELIVERY_DETAIL_NOT_FOUND, JaxError.FC_CURRENCY_DELIVERY_INVALID_STATUS,
 			JaxError.INVALID_EMPLOYEE, JaxError.FC_CURRENCY_DELIVERY_INVALID_STATUS })
 	AmxApiResponse<BoolRespModel, Object> markAcknowledged(BigDecimal deliveryDetailSeqId);
+
+	@ApiJaxStatus(JaxError.JAX_FIELD_VALIDATION_FAILURE)
+	AmxApiResponse<FxDeliveryDetailDto, Object> listHistoricalOrders();
 
 }
