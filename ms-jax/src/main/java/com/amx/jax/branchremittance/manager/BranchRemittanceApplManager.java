@@ -200,10 +200,10 @@ public class BranchRemittanceApplManager {
 		 //branchExchRateService.getExchaneRate(requestApplModel);
 
 		 remittanceTransactionRequestValidator.validateExchangeRate(requestApplModel, exchangeRateResposne);
-		 remittanceTransactionRequestValidator.validateFlexFields(requestApplModel, remitApplParametersMap);
+		 /*remittanceTransactionRequestValidator.validateFlexFields(requestApplModel, remitApplParametersMap);
 		 remittanceAdditionalFieldManager.validateAdditionalFields(requestApplModel, remitApplParametersMap);
 		 remittanceAdditionalFieldManager.processAdditionalFields(requestApplModel);
-
+*/
 		 
 		 logger.debug("branchExchangeRate :"+exchangeRateResposne);
 		 /* get aml cehck   details **/
