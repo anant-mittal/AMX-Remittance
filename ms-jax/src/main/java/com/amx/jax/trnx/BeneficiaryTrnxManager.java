@@ -132,7 +132,6 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 		return beneficiaryTrnxModel;
 	}
 
-	@Async(ExecutorConfig.DEFAULT)
 	private void sendAlertEmailForCreationError(BeneficiaryTrnxModel beneficiaryTrnxModel, BeneficaryRelationship beneRelationship) {
 		String[] recieverIds = jaxEmailNotificationService.getBeneCreationErrorEmailList();
 		if (recieverIds != null) {
