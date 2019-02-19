@@ -21,6 +21,8 @@ public interface AbstractProbotInterface {
 		public static final String GET_CB_AND_PRODUCTS = SERVICE_PREFIX + API_VERSION_V1 + "/get-cb-and-products";
 
 		public static final String PRICE_TEST = SERVICE_PREFIX + API_VERSION_V1 + "/price-test";
+		
+		public static final String HOLIDAY_LIST = SERVICE_PREFIX + API_VERSION_V1 + "/holiday_list";
 
 		// Service Controllers for Dynamic Routing and Pricing
 		public static final String FETCH_REMIT_ROUTES_PRICES = SERVICE_PREFIX + API_VERSION_V1 + "/fetch-remit-routes-prices";

@@ -13,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.amx.jax.pricer.dao.CustomerDao;
 import com.amx.jax.pricer.dbmodel.Customer;
 import com.amx.jax.pricer.dto.DprRequestDto;
@@ -119,6 +118,7 @@ public class PricingService {
 
 		return pricingResponseDTO;
 	}
+	
 
 	public List<PricingResponseDTO> fetchDiscountedRatesAcrossCustCategories(PricingRequestDTO pricingRequestDTO) {
 		validatePricingRequest(pricingRequestDTO, Boolean.FALSE);
@@ -156,6 +156,8 @@ public class PricingService {
 		return allDiscountedRates;
 
 	}
+	
+	
 
 	public PricingResponseDTO fetchRemitRoutesAndPrices(DprRequestDto dprRequestDto) {
 
