@@ -54,11 +54,10 @@ public class BranchImpsRoutingManager {
 	 * @param remittanceApplicationParams
 	 *            - remittance application parameters
 	 */
-	public void checkAndapplyImpsRouting(RoutingResponseDto routingResponseDto, IRemittanceApplicationParams remittanceApplicationParams) {
-		// call getexchange rate method to populated remitApplParametersMap
-		branchRemittanceExchangeRateService.getExchaneRate(remittanceApplicationParams);
+	public boolean checkAndApplyImpsRouting(RoutingResponseDto routingResponseDto,
+			IRemittanceApplicationParams remittanceApplicationParams) {
 		Map<String, Object> impsOutputParams = new HashMap<>();
-
+		boolean impsApplicable = false;
 		impsRoutingLogic.apply(remitApplParametersMap, impsOutputParams);
 		BigDecimal routingBankIdImps = P_ROUTING_BANK_ID.getValue(impsOutputParams);
 		if (routingBankIdImps != null) {
@@ -82,6 +81,8 @@ public class BranchImpsRoutingManager {
 			routingResponseDto.getRemittanceModeList().add(remittanceModeIdDto);
 			routingResponseDto.getDeliveryModeList().add(deliveryModeIdDto);
 			routingResponseDto.getServiceList().add(serviceDto);
+			impsApplicable = true;
 		}
+		return impsApplicable;
 	}
 }

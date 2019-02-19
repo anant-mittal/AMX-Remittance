@@ -156,4 +156,17 @@ public class BranchRemittanceApplRequestModel extends RemittanceAdditionalBeneFi
 		return this.branchExRateBreakup;
 	}
 
+	public static BranchRemittanceApplRequestModel getInstance(IRemittanceApplicationParams request) {
+		BranchRemittanceApplRequestModel model = new BranchRemittanceApplRequestModel();
+		model.setAvailLoyalityPoints(request.getAvailLoyalityPoints());
+		model.setBeneId(request.getBeneficiaryRelationshipSeqIdBD());
+		model.setRoutingBankId(request.getCorrespondanceBankIdBD());
+		model.setDeliveryModeId(request.getDeliveryModeIdBD());
+		model.setRemittanceModeId(request.getRemitModeIdBD());
+		model.setLocalAmount(request.getLocalAmountBD());
+		model.setRemittanceModeId(request.getRemitModeIdBD());
+		model.setServiceMasterId(request.getServiceIndicatorIdBD());
+		return model;
+	}
+
 }

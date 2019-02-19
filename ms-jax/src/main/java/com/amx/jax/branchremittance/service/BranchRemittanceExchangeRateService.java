@@ -3,6 +3,10 @@
  */
 package com.amx.jax.branchremittance.service;
 
+import java.util.Map;
+
+import javax.annotation.Resource;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,10 +15,15 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.constant.ApplicationProcedureParam;
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.branchremittance.manager.BranchImpsRoutingManager;
 import com.amx.jax.branchremittance.manager.BranchRemittanceExchangeRateManager;
+import com.amx.jax.branchremittance.manager.BranchRoutingManager;
+import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.request.remittance.BranchRemittanceGetExchangeRateRequest;
 import com.amx.jax.model.request.remittance.IRemittanceApplicationParams;
+import com.amx.jax.model.response.remittance.RoutingResponseDto;
 import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeRateResponse;
 
 /**
@@ -29,11 +38,24 @@ public class BranchRemittanceExchangeRateService {
 
 	@Autowired
 	BranchRemittanceExchangeRateManager branchRemittanceExchangeRateManager;
+	@Autowired
+	BranchRoutingManager branchRoutingManager;
+	@Autowired
+	BranchImpsRoutingManager branchImpsRoutingManager;
+	@Resource
+	Map<String, Object> remitApplParametersMap;
 
 	public AmxApiResponse<BranchRemittanceGetExchangeRateResponse, Object> getExchaneRate(IRemittanceApplicationParams request) {
 		branchRemittanceExchangeRateManager.validateGetExchangRateRequest(request);
 		BranchRemittanceGetExchangeRateResponse result = branchRemittanceExchangeRateManager.getExchangeRateResponse(request);
-
+		RoutingResponseDto routingResponseDto = new RoutingResponseDto();
+		boolean isImpsApplicable = branchImpsRoutingManager.checkAndApplyImpsRouting(routingResponseDto, request);
+		if (!isImpsApplicable) {
+			BranchRemittanceApplRequestModel requestApplModel = BranchRemittanceApplRequestModel.getInstance(request);
+			requestApplModel.setRoutingCountryId(ApplicationProcedureParam.P_ROUTING_COUNTRY_ID.getValue(remitApplParametersMap));
+			routingResponseDto = branchRoutingManager.getRoutingSetup(requestApplModel);
+		}
+		result.setRoutingResponseDto(routingResponseDto);
 		return AmxApiResponse.build(result);
 	}
 }
