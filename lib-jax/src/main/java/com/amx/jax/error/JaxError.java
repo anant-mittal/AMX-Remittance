@@ -252,7 +252,8 @@ public enum JaxError implements IExceptionEnum {
 	INVALID_REMITTANCE_DOCUMENT_NO,
 	INVALID_VOUCHER_DOCUMENT_NO,
 	INVALID_CLAIM_CODE,
-	AMOUNT_MISMATCH;
+	AMOUNT_MISMATCH,
+	SIGNATURE_NOT_FOUND;
 
 	@Deprecated
 	public String getCode() {

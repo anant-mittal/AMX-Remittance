@@ -11,6 +11,7 @@ public class BranchRemittanceApplResponseDto {
 	BigDecimal totalNetAmount =BigDecimal.ZERO;
 	BigDecimal totalTrnxFees =BigDecimal.ZERO;
 	BigDecimal totalLyltyPointAmt =BigDecimal.ZERO;
+	BigDecimal totalLoyaltyPointAvaliable =BigDecimal.ZERO;
 	
 	List<CustomerShoppingCartDto> shoppingCartDetails;
 	public BigDecimal getTotalLocalAmount() {
@@ -42,5 +43,11 @@ public class BranchRemittanceApplResponseDto {
 	}
 	public void setTotalLyltyPointAmt(BigDecimal totalLyltyPointAmt) {
 		this.totalLyltyPointAmt = totalLyltyPointAmt;
+	}
+	public BigDecimal getTotalLoyaltyPointAvaliable() {
+		return totalLoyaltyPointAvaliable;
+	}
+	public void setTotalLoyaltyPointAvaliable(BigDecimal totalLoyaltyPointAvaliable) {
+		this.totalLoyaltyPointAvaliable = totalLoyaltyPointAvaliable;
 	}
 }

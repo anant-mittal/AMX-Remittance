@@ -66,6 +66,7 @@ public class ShoppingCartDetails implements Serializable {
 	private String paymentId;
 	private BigDecimal amtbCouponEncashed;
 	private BigDecimal routingBankId;
+	private BigDecimal beneRelationseqId;
 
 	public ShoppingCartDetails() {
 		super();
@@ -473,6 +474,15 @@ public class ShoppingCartDetails implements Serializable {
 
 	public void setRoutingBankId(BigDecimal routingBankId) {
 		this.routingBankId = routingBankId;
+	}
+
+	@Column(name="BENEFICARY_RELATIONSHIP_SEQ_ID")
+	public BigDecimal getBeneRelationseqId() {
+		return beneRelationseqId;
+	}
+
+	public void setBeneRelationseqId(BigDecimal beneRelationseqId) {
+		this.beneRelationseqId = beneRelationseqId;
 	}
 	
 }

@@ -53,7 +53,12 @@ public class CustomerShoppingCartDto implements Serializable{
 	private String remittanceDesc;
 	private String purposeOfTrnx;
 	private String routingBank;
-	private BigDecimal remittanceAppBeneficiaryId;        
+	private BigDecimal remittanceAppBeneficiaryId;  
+	private BigDecimal beneRelationseqId;
+	private BigDecimal sourceOfIncomeId;
+	private BigDecimal purposeOfTrnxId;
+	
+	
 	public BigDecimal getDocumentNo() {
 		return documentNo;
 	}
@@ -370,6 +375,24 @@ public class CustomerShoppingCartDto implements Serializable{
 	}
 	public void setSourceOfIncomeDesc(String sourceOfIncomeDesc) {
 		this.sourceOfIncomeDesc = sourceOfIncomeDesc;
+	}
+	public BigDecimal getBeneRelationseqId() {
+		return beneRelationseqId;
+	}
+	public void setBeneRelationseqId(BigDecimal beneRelationseqId) {
+		this.beneRelationseqId = beneRelationseqId;
+	}
+	public BigDecimal getSourceOfIncomeId() {
+		return sourceOfIncomeId;
+	}
+	public void setSourceOfIncomeId(BigDecimal sourceOfIncomeId) {
+		this.sourceOfIncomeId = sourceOfIncomeId;
+	}
+	public BigDecimal getPurposeOfTrnxId() {
+		return purposeOfTrnxId;
+	}
+	public void setPurposeOfTrnxId(BigDecimal purposeOfTrnxId) {
+		this.purposeOfTrnxId = purposeOfTrnxId;
 	}
 	
 }
