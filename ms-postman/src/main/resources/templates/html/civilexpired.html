@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width"/>
 
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <title>Al Mulla Exchange</title>
+    <title><span th:text="${_tu.prop('company.idtype')}" th:remove="tag"></span> has been expired</title>
 
     <style type="text/css">
         /* -------------------------------------
@@ -267,8 +267,8 @@
                                         <h5>Dear <span  th:text="${data.customer}"></span>,</h5><br/>
 										<p class="lead">Greetings from <span th:text="${_tu.prop('company.name')}" th:remove="tag"></span> !</p><br/>
 										<p class="lead">Thank you for using <a th:href="@{'https://' +${_tu.prop('company.website.url')}}"><span th:text="${_tu.prop('company.website.url')}"></span></a> for your remittance and hope you had a pleasant experience.</p>
-                                        <p class="lead">This is to inform you that your Civil ID has expired as on <span  th:text="${data.date}"></span>. Due to this, you will not be able to do any online/mobile transactions.</p>
-									   <p class="lead">Kindly get your Civil ID is updated at the branch to be able to do online/mobile transactions.</p>
+                                        <p class="lead">This is to inform you that your <span th:text="${_tu.prop('company.idtype')}" th:remove="tag"></span> has expired as on <span  th:text="${data.date}"></span>. Due to this, you will not be able to do any online/mobile transactions.</p>
+									   <p class="lead">Kindly get your  is updated at the branch to be able to do online/mobile transactions.</p>
                                         <!-- A Real Hero (and a real human being) -->
                                         <p style="padding:40px 0" align="center"><img src="cid:images/product-1.png"/></p><!-- /hero -->
                                         <h4 align="center">There are a lot of reasons to continue transacting with <span th:text="${_tu.prop('company.name')}" th:remove="tag"></span> and few of these are:</h4>
