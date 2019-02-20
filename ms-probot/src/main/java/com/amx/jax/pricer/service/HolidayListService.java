@@ -1,7 +1,9 @@
 package com.amx.jax.pricer.service;
 
 import java.math.BigDecimal;
+
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,10 +17,10 @@ public class HolidayListService {
 	@Autowired
 	HolidayListDao holidayListDao;
 		
-public List<HolidayResponseDTO> getHolidayList(BigDecimal countryId){
+public List<HolidayResponseDTO> getHolidayList(BigDecimal countryId, String fromDate, String toDate){
 	List<HolidayResponseDTO> holidayResponseDTO = new ArrayList<HolidayResponseDTO>();
 	
-		List<HolidayListMasterModel> holidaylist = holidayListDao.getHolidayListForDateRange(countryId);
+		List<HolidayListMasterModel> holidaylist = holidayListDao.getHolidayListForDateRange(countryId, fromDate, toDate);
 	
 		if(!holidaylist.isEmpty()) {
 			for(HolidayListMasterModel rec : holidaylist) {
@@ -40,5 +42,7 @@ public List<HolidayResponseDTO> getHolidayList(BigDecimal countryId){
 
 	return holidayResponseDTO;
 }
+
+
 	
 }

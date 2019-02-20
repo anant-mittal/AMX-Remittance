@@ -1,6 +1,7 @@
 package com.amx.jax.pricer.dao;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -13,10 +14,12 @@ public class HolidayListDao {
 	@Autowired
 	HolidayListRepository holidayListRepository;
 
-	public List<HolidayListMasterModel> getHolidayListForDateRange(BigDecimal countryId) {
-	List<HolidayListMasterModel> holidayList = holidayListRepository.getHolidayList(countryId);
+	public List<HolidayListMasterModel> getHolidayListForDateRange(BigDecimal countryId, String fromDate, String toDate) {
+	List<HolidayListMasterModel> holidayList = holidayListRepository.getHolidayList(countryId,fromDate,toDate);
 		
 		return holidayList;
 	}
+	
+
 
 	}

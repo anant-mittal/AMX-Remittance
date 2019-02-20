@@ -1,5 +1,7 @@
 package com.amx.jax.pricer.api;
 
+import java.math.BigDecimal;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import javax.annotation.Resource;
@@ -14,6 +16,7 @@ import org.springframework.util.StopWatch;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.WebApplicationContext;
 import com.amx.jax.AppContextUtil;
@@ -115,12 +118,17 @@ public class ProbotExchRateApiController implements ProbotExchangeRateService {
 	
 	@RequestMapping(value = ApiEndPoints.HOLIDAY_LIST, method = RequestMethod.POST)
 	public List<HolidayResponseDTO> fetchHolidayList(
-			@RequestBody @Valid HolidayRequestDTO holidayRequestDTO) {
+			@RequestParam(required = true, value = "Id") BigDecimal Id,
+			@RequestParam(required = true, value = "fromDate") String fromDate,
+			@RequestParam(required = true, value = "toDate") String toDate)
+			{
+			
 
 		LOGGER.info("Received Holiday List Request " + " with TraceId: "
 		+ AppContextUtil.getTraceId());
 
-		List<HolidayResponseDTO> holidayResponseDTO = holidayService.getHolidayList(holidayRequestDTO.getCountryId());
+		List<HolidayResponseDTO> holidayResponseDTO = holidayService.getHolidayList(Id,fromDate,toDate);
+		
 
 		return holidayResponseDTO;
 
