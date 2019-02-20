@@ -57,6 +57,7 @@ public class CustomerBank implements Serializable{
 	private String stsRemarks;
 	private String bankPrefix;
 	private String bankSuffix;
+	private BigDecimal relationsId;
 	
 	public CustomerBank() {
 		super();
@@ -215,6 +216,15 @@ public class CustomerBank implements Serializable{
 	}
 	public void setBankSuffix(String bankSuffix) {
 		this.bankSuffix = bankSuffix;
+	}
+
+	@Column(name="RELATIONS_ID")
+	public BigDecimal getRelationsId() {
+		return relationsId;
+	}
+
+	public void setRelationsId(BigDecimal relationsId) {
+		this.relationsId = relationsId;
 	}
 
 }

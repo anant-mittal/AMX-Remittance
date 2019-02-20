@@ -8,6 +8,8 @@ public class CustomerBankRequest {
 	private String bankCode;
 	private String collectionMode;
 	private String debitCardName;
+	private BigDecimal relationsId;
+	
 	
 	public BigDecimal getBankId() {
 		return bankId;
@@ -35,6 +37,12 @@ public class CustomerBankRequest {
 	}
 	public void setDebitCardName(String debitCardName) {
 		this.debitCardName = debitCardName;
+	}
+	public BigDecimal getRelationsId() {
+		return relationsId;
+	}
+	public void setRelationsId(BigDecimal relationsId) {
+		this.relationsId = relationsId;
 	}
 	
 }
