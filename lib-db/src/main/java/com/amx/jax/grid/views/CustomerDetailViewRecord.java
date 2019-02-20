@@ -56,6 +56,9 @@ public class CustomerDetailViewRecord implements GridViewRecord {
 	@Column(name = "EMAIL")
 	private String email;
 
+	@Column(name = "WHATSAPP_NO")
+	private String whatsapp;
+
 	@ESDocFormat(ESDocFormat.Type.DATE)
 	@Column(name = "CREATION_DATE")
 	private Date creationDate;
@@ -238,6 +241,14 @@ public class CustomerDetailViewRecord implements GridViewRecord {
 
 	public void setTypeId(BigDecimal typeId) {
 		this.typeId = typeId;
+	}
+
+	public String getWhatsapp() {
+		return whatsapp;
+	}
+
+	public void setWhatsapp(String whatsapp) {
+		this.whatsapp = whatsapp;
 	}
 
 }
