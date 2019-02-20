@@ -268,8 +268,8 @@
 										<p class="lead">Greetings from <span th:text="${_tu.prop('company.name')}" th:remove="tag"></span> !</p><br/>
 										<p class="lead">Thank you for using <a th:href="@{'https://' +${_tu.prop('company.website.url')}}"><span th:text="${_tu.prop('company.website.url')}"></span></a> for your remittance and hope you had a pleasant experience.</p> 
                                         
-                                        <p class="lead">This is to remind you that your Civil ID is expiring as on <span  th:text="${data.date}"></span>. After renewal, kindly update the new Civil ID card details at the branch.</p>
-									   <p class="lead">NOTE: You will not be able to do any online/mobile transactions, unless your new CIVIL ID is updated at the branch.</p>
+                                        <p class="lead">This is to remind you that your <span th:text="${_tu.prop('company.idtype')}" th:remove="tag"></span> is expiring as on <span  th:text="${data.date}"></span>. After renewal, kindly update the new <span th:text="${_tu.prop('company.idtype')}" th:remove="tag"></span> card details at the branch.</p>
+									   <p class="lead">NOTE: You will not be able to do any online/mobile transactions, unless your new <span th:text="${_tu.prop('company.idtype')}" th:remove="tag"></span> is updated at the branch.</p>
                                         <!-- A Real Hero (and a real human being) -->
                                         <p style="padding:40px 0" align="center"><img src="cid:images/product-1.png"/></p><!-- /hero -->
                                         <h4 align="center">There are a lot of reasons to continue transacting with <span th:text="${_tu.prop('company.name')}" th:remove="tag"></span> and few of these are:</h4>
