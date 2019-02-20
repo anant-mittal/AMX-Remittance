@@ -9,12 +9,14 @@ import com.amx.jax.AppConfig;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.logger.LoggerService;
+import com.amx.jax.pricer.dto.DiscountMgmtReqDTO;
+import com.amx.jax.pricer.dto.DiscountMgmtRespDTO;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.dto.PricingResponseDTO;
 import com.amx.jax.rest.RestService;
 
 @Component
-public class PricerServiceClient implements ProbotExchangeRateService {
+public class PricerServiceClient implements ProbotExchangeRateService, ProbotDataService {
 
 	/** The Constant LOGGER. */
 	private static final Logger LOGGER = LoggerService.getLogger(PricerServiceClient.class);
@@ -52,8 +54,7 @@ public class PricerServiceClient implements ProbotExchangeRateService {
 	}
 
 	@Override
-	public AmxApiResponse<PricingResponseDTO, Object> fetchDiscountedRates(
-			PricingRequestDTO pricingRequestDTO) {
+	public AmxApiResponse<PricingResponseDTO, Object> fetchDiscountedRates(PricingRequestDTO pricingRequestDTO) {
 		LOGGER.info("Get Discounted Rate/Price Request Called for : transaction Id: {}, with TraceId: {}",
 				AppContextUtil.getTranxId(), AppContextUtil.getTraceId());
 
@@ -61,6 +62,17 @@ public class PricerServiceClient implements ProbotExchangeRateService {
 				.post(pricingRequestDTO)
 				.as(new ParameterizedTypeReference<AmxApiResponse<PricingResponseDTO, Object>>() {
 				});
+	}
+
+	@Override
+	public AmxApiResponse<DiscountMgmtRespDTO, Object> getDiscountManagemet(DiscountMgmtReqDTO discountMgmtReqDTO) {
+		LOGGER.info("Get Discounted Mgmt Amount Slab : transaction Id: {}, with TraceId: {}",
+				AppContextUtil.getTranxId(), AppContextUtil.getTraceId());
+
+		return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.GET_DISCOUNT_MGMT).post(discountMgmtReqDTO)
+				.as(new ParameterizedTypeReference<AmxApiResponse<DiscountMgmtRespDTO, Object>>() {
+				});
+
 	}
 
 }
