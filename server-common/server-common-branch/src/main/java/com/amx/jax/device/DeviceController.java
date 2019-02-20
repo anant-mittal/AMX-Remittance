@@ -145,6 +145,8 @@ public class DeviceController {
 	public AmxApiResponse<Object, Object> webAppLogin() {
 		DeviceData deviceData = deviceRequestValidator.validateRequest();
 		String terminalId = deviceData.getTerminalId();
+		LOGGER.debug("TerminalPairing R:{} T:{} Tx:{}", deviceRequestValidator.getDeviceRegId(),
+				terminalId, AppContextUtil.getTranxId());
 		sSOTranx.get().setBranchAdapterId(deviceRequestValidator.getDeviceRegId());
 		sSOTranx.get().getUserClient().setTerminalId(ArgUtil.parseAsBigDecimal(terminalId));
 		// sSOTranx.get().getUserClient().setDeviceRegId(deviceRequestValidator.getDeviceRegId());
