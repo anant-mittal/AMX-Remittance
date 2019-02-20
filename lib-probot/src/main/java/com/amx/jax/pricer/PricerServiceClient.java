@@ -10,12 +10,14 @@ import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.pricer.dto.DprRequestDto;
+import com.amx.jax.pricer.dto.HolidayRequestDTO;
+import com.amx.jax.pricer.dto.HolidayResponseDTO;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.dto.PricingResponseDTO;
 import com.amx.jax.rest.RestService;
 
 @Component
-public class PricerServiceClient implements ProbotExchangeRateService {
+public class PricerServiceClient implements ProbotExchangeRateService{
 
 	/** The Constant LOGGER. */
 	private static final Logger LOGGER = LoggerService.getLogger(PricerServiceClient.class);
@@ -71,6 +73,15 @@ public class PricerServiceClient implements ProbotExchangeRateService {
 
 		return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.FETCH_REMIT_ROUTES_PRICES).post(dprRequestDTO)
 				.as(new ParameterizedTypeReference<AmxApiResponse<PricingResponseDTO, Object>>() {
+				});
+	}
+	
+	public AmxApiResponse<HolidayResponseDTO, Object> fetchHolidayList(HolidayRequestDTO holidayRequestDTO) {
+
+		LOGGER.info("Get Holiday List for Given CountryId and Event Date");
+
+		 return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.HOLIDAY_LIST).post(holidayRequestDTO)
+				.as(new ParameterizedTypeReference<AmxApiResponse<HolidayResponseDTO, Object>>() {
 				});
 	}
 

@@ -2,12 +2,11 @@ package com.amx.jax.pricer.api;
 
 import java.util.HashMap;
 import java.util.List;
-
 import javax.annotation.Resource;
 import javax.validation.Valid;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -17,13 +16,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.WebApplicationContext;
-
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.pricer.ProbotExchangeRateService;
 import com.amx.jax.pricer.dto.DprRequestDto;
+import com.amx.jax.pricer.dto.HolidayRequestDTO;
+import com.amx.jax.pricer.dto.HolidayResponseDTO;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.dto.PricingResponseDTO;
+import com.amx.jax.pricer.service.HolidayListService;
 import com.amx.jax.pricer.service.PricingService;
 import com.amx.jax.pricer.util.ExchangeRateRequestDataCache;
 import com.amx.jax.pricer.var.PricerServiceConstants;
@@ -36,6 +37,9 @@ public class ProbotExchRateApiController implements ProbotExchangeRateService {
 
 	@Resource
 	PricingService pricingService;
+	
+	@Autowired
+	HolidayListService holidayService;
 
 	@Bean
 	@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -106,6 +110,19 @@ public class ProbotExchRateApiController implements ProbotExchangeRateService {
 		PricingResponseDTO pricingResponseDTO = pricingService.fetchRemitRoutesAndPrices(dprRequestDTO);
 
 		return AmxApiResponse.build(pricingResponseDTO);
+
+	}
+	
+	@RequestMapping(value = ApiEndPoints.HOLIDAY_LIST, method = RequestMethod.POST)
+	public List<HolidayResponseDTO> fetchHolidayList(
+			@RequestBody @Valid HolidayRequestDTO holidayRequestDTO) {
+
+		LOGGER.info("Received Holiday List Request " + " with TraceId: "
+		+ AppContextUtil.getTraceId());
+
+		List<HolidayResponseDTO> holidayResponseDTO = holidayService.getHolidayList(holidayRequestDTO.getCountryId());
+
+		return holidayResponseDTO;
 
 	}
 

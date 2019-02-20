@@ -1,9 +1,14 @@
-package com.amx.jax.pricer.util;
+package com.amx.jax.pricer.dto;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
-public class HolidayListDto {
+public class HolidayResponseDTO implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	
 	private String eventName;
 	private BigDecimal countryId;
@@ -68,6 +73,13 @@ public class HolidayListDto {
 	public void setEventCategory(String eventCategory) {
 		this.eventCategory = eventCategory;
 	}
+	@Override
+	public String toString() {
+		return "HolidayResponseDTO [eventName=" + eventName + ", countryId=" + countryId + ", eventYear=" + eventYear
+				+ ", eventDate=" + eventDate + ", eventDayOfTheWeek=" + eventDayOfTheWeek + ", startTime=" + startTime
+				+ ", endTime=" + endTime + ", allDayEvent=" + allDayEvent + ", eventCategory=" + eventCategory + "]";
+	}
+	
 	
 	
 	

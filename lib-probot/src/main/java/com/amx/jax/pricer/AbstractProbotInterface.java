@@ -22,7 +22,7 @@ public interface AbstractProbotInterface {
 
 		public static final String PRICE_TEST = SERVICE_PREFIX + API_VERSION_V1 + "/price-test";
 		
-		public static final String HOLIDAY_LIST = SERVICE_PREFIX + API_VERSION_V1 + "/holiday_list";
+		public static final String HOLIDAY_LIST = SERVICE_PREFIX + API_VERSION_V1 + "/get-holiday-list";
 
 		// Service Controllers for Dynamic Routing and Pricing
 		public static final String FETCH_REMIT_ROUTES_PRICES = SERVICE_PREFIX + API_VERSION_V1 + "/fetch-remit-routes-prices";
