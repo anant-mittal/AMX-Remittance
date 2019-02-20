@@ -22,12 +22,14 @@ import com.amx.amxlib.model.JaxFieldDto;
 import com.amx.amxlib.model.JaxFieldValueDto;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.FlexFieldBehaviour;
+import com.amx.jax.constants.JaxChannel;
 import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dbmodel.remittance.AdditionalBankDetailsViewx;
 import com.amx.jax.dbmodel.remittance.AdditionalBankRuleMap;
 import com.amx.jax.dbmodel.remittance.AdditionalDataDisplayView;
 import com.amx.jax.dbmodel.remittance.FlexFiledView;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.remittance.AbstractRemittanceApplicationRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceAdditionalBeneFieldModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
@@ -57,7 +59,9 @@ public class RemittanceTransactionRequestValidator {
 	JaxFieldService jaxFieldService ;
 	@Autowired
 	DateUtil dateUtil;
-
+	@Autowired
+	MetaData metaData;
+	
 	public void validateExchangeRate(AbstractRemittanceApplicationRequestModel request,
 			RemittanceTransactionResponsetModel response) {
 
@@ -91,6 +95,10 @@ public class RemittanceTransactionRequestValidator {
 		BigDecimal routingBankId = (BigDecimal) remitApplParametersMap.get("P_ROUTING_BANK_ID");
 
 		List<String> flexiFieldIn = allFlexFields.stream().map(i -> i.getFieldName()).collect(Collectors.toList());
+		// remove indic1 validation from branch and other channels
+		if (!JaxChannel.ONLINE.equals(metaData.getChannel())) {
+			flexiFieldIn.remove(ConstantDocument.INDIC1);
+		}
 
 		List<AdditionalDataDisplayView> additionalDataRequired = additionalDataDisplayDao
 				.getAdditionalDataFromServiceApplicability(applicationCountryId, routingCountryId, foreignCurrencyId,
