@@ -24,6 +24,7 @@ import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.dto.PricingResponseDTO;
 import com.amx.jax.pricer.var.PricerServiceConstants.PRICE_BY;
 import com.amx.jax.service.BankMetaService;
+import com.amx.utils.JsonUtil;
 
 @Service
 public class JaxDynamicPriceService {
@@ -60,6 +61,7 @@ public class JaxDynamicPriceService {
 		pricingRequestDTO.setForeignCountryId(beneBankCountryId);
 		AmxApiResponse<PricingResponseDTO, Object> apiResponse = null;
 		try {
+			LOGGER.debug("Pricing request json : {}", JsonUtil.toJson(pricingRequestDTO));
 			apiResponse = pricerServiceClient.fetchPriceForCustomer(pricingRequestDTO);
 		} catch (Exception e) {
 			LOGGER.debug("No exchange data found from pricer, error is: ", e);
