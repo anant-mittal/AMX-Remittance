@@ -149,6 +149,8 @@ public class DeviceController {
 		// sSOTranx.get().getUserClient().setDeviceRegId(deviceRequestValidator.getDeviceRegId());
 		// sSOTranx.get().getUserClient().setGlobalIpAddress(deviceData.getGlobalIp());
 		// sSOTranx.get().getUserClient().setLocalIpAddress(deviceData.getLocalIp());
+		LOGGER.debug("TerminalPairing R:{} T:{}", sSOTranx.get().getBranchAdapterId(),
+				sSOTranx.get().getUserClient().getTerminalId());
 		sSOTranx.save();
 		return AmxApiResponse.build(terminalId, deviceRequestValidator.getDeviceRegId());
 	}

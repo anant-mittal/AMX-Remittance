@@ -36,4 +36,23 @@ public final class StringUtils {
 	public static String trim(String str) {
 		return (str == null) ? str : str.trim();
 	}
+
+	public static String pad(String src, String pad, int alignment, int trim) {
+		if (alignment == 0) {
+			String fullPart = pad + src;
+			if (trim == 0) {
+				return fullPart.substring(Math.min(src.length(), pad.length()));
+			} else {
+				return fullPart.substring(src.length());
+			}
+		} else {
+			String fullPart = src + pad;
+			if (trim == 0) {
+				return fullPart.substring(0, Math.max(src.length(), pad.length()));
+			} else {
+				return fullPart.substring(0, pad.length());
+			}
+		}
+
+	}
 }
