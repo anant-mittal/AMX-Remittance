@@ -28,6 +28,7 @@ import com.amx.amxlib.model.AbstractUserModel;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
+import com.amx.amxlib.model.UserFingerprintResponseModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.jax.api.AmxApiResponse;
@@ -631,6 +632,39 @@ public class UserClient extends AbstractJaxServiceClient {
 		} catch (Exception e) {
 			LOGGER.error("Exception in saveMobileNew API : ", e);
 			throw new JaxSystemError();
+		} // end of try-catch
+	}
+	
+
+	public AmxApiResponse<UserFingerprintResponseModel, Object> linkDeviceId(String identityInt) {
+		try {
+			String url = this.getBaseUrl() + USER_API_ENDPOINT + "/link-deviceid/";
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
+			return restService.ajax(url).post(requestEntity).queryParam("identityInt",identityInt)
+					.as(new ParameterizedTypeReference<AmxApiResponse<UserFingerprintResponseModel, Object>>() {
+					});
+
+		} catch (AbstractJaxException ae) {
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in linkDeviceId : ", e);
+			throw new JaxSystemError(e);
+		} // end of try-catch
+	}
+	
+	public AmxApiResponse<UserFingerprintResponseModel, Object> linkDeviceIdLoggedinUser() {
+		try {
+			String url = this.getBaseUrl() + USER_API_ENDPOINT + "/link-device-loggedin-user/";
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
+			return restService.ajax(url).post(requestEntity)
+					.as(new ParameterizedTypeReference<AmxApiResponse<UserFingerprintResponseModel, Object>>() {
+					});
+
+		} catch (AbstractJaxException ae) {
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in linkDeviceloggedinUser : ", e);
+			throw new JaxSystemError(e);
 		} // end of try-catch
 	}
 }

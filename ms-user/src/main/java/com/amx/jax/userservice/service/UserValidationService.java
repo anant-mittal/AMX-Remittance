@@ -67,6 +67,7 @@ import com.amx.jax.userservice.validation.ValidationClients;
 import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.validation.CustomerValidationService;
+import com.amx.utils.Constants;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -464,6 +465,33 @@ public class UserValidationService {
 		return onlineCustomer;
 	}
 
+	protected CustomerOnlineRegistration validateOnlineCustomerByIdentityId(String identityInt,
+			BigDecimal identityType) {
+		Customer customer = custDao.getActiveCustomerByIndentityIntAndType(identityInt, identityType);
+		
+		if (customer == null) {
+			throw new GlobalException(JaxError.CUSTOMER_NOT_FOUND.getStatusKey(), "Online Customer id not found");
+		}
+		
+		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(customer.getCustomerId());
+		if (onlineCustomer == null) {
+			throw new GlobalException(JaxError.CUSTOMER_NOT_FOUND.getStatusKey(), "Online Customer id not found");
+		}
+		return onlineCustomer;
+	}
+	
+	protected CustomerOnlineRegistration validateOnlineCustomerByIdentityId(BigDecimal customerId) {
+		Customer customer = custDao.getCustById(customerId);
+		if (customer == null) {
+			throw new GlobalException(JaxError.CUSTOMER_NOT_FOUND.getStatusKey(), "Online Customer id not found");
+		}
+		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(customer.getCustomerId());
+		if (onlineCustomer == null) {
+			throw new GlobalException(JaxError.CUSTOMER_NOT_FOUND.getStatusKey(), "Online Customer id not found");
+		}
+		return onlineCustomer;
+	}
+
 	public void validateOtpFlow(CustomerModel model) {
 		if (model.isRegistrationFlow()) {
 			return;
@@ -825,5 +853,13 @@ public class UserValidationService {
 
 		}
 	}
+	
+	
+	public void validateIdentityInt(String identityInt, String identityType) {
+		BigDecimal identyType = new BigDecimal(identityType);
+		tenantContext.get().validateIdentityInt(identityInt, identyType);
+
+	}
+	
 
 }

@@ -74,12 +74,26 @@ public class CustomerOnlineRegistration {
 	
 	private String deviceId;
 	private String deviceType;
-	
-
-
-
+	private String devicePassword;
+	private String fingerprintDeviceId;
 	
 	
+	
+	public String getFingerprintDeviceId() {
+		return fingerprintDeviceId;
+	}
+
+	public void setFingerprintDeviceId(String fingerprintDeviceId) {
+		this.fingerprintDeviceId = fingerprintDeviceId;
+	}
+	public String getDevicePassword() {
+		return devicePassword;
+	}
+
+	public void setDevicePassword(String devicePassword) {
+		this.devicePassword = devicePassword;
+	}
+
 	/** added by Prashant */
 	public CustomerOnlineRegistration(Customer cust) {
 		this.customerId = cust.getCustomerId();

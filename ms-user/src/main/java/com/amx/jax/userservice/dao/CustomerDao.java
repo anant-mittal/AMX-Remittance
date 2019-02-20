@@ -75,6 +75,10 @@ public class CustomerDao {
 	public List<Customer> getCustomerByIdentityInt(String identityInt) {
 		return repo.getCustomerByIdentityInt(identityInt);
 	}
+	
+	public Customer getActiveCustomerByIndentityIntAndType(String identityInt, BigDecimal identityType) {
+		return repo.getActiveCustomerByIndentityIntAndType(identityInt, identityType);
+	}
 
 	@Transactional
 	public CustomerOnlineRegistration getOnlineCustById(BigDecimal id) {

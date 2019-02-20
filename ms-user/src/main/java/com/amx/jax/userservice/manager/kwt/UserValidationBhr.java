@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -18,16 +19,20 @@ import com.amx.jax.scope.TenantSpecific;
 import com.amx.jax.userservice.dao.CustomerIdProofDao;
 import com.amx.jax.userservice.repository.CustomerRepository;
 import com.amx.jax.userservice.service.CustomerValidationContext.CustomerValidation;
+import com.amx.utils.Constants;
 
 @Component
 @TenantSpecific(value = { Tenant.BHR, Tenant.BRN, Tenant.BRNDEV })
 public class UserValidationBhr implements CustomerValidation {
-
+	Logger logger= Logger.getLogger(UserValidationBhr.class);
 	@Autowired
 	private CustomerIdProofDao idproofDao;
 	
 	@Autowired
 	private CustomerRepository customerRepo;
+	
+	@Autowired
+	private UserValidationBhr userValidationBhr;
 
 	@Override
 	public void validateCustIdProofs(BigDecimal custId) {

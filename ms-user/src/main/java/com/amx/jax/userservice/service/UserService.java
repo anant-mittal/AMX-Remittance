@@ -2,6 +2,9 @@ package com.amx.jax.userservice.service;
 
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
@@ -34,6 +37,7 @@ import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.PersonInfo;
 import com.amx.amxlib.model.SecurityQuestionModel;
+import com.amx.amxlib.model.UserFingerprintResponseModel;
 import com.amx.amxlib.model.UserModel;
 import com.amx.amxlib.model.UserVerificationCheckListDTO;
 import com.amx.amxlib.model.response.ApiResponse;
@@ -90,6 +94,9 @@ import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.StringUtil;
 import com.amx.utils.Random;
+
+
+import net.bytebuddy.utility.privilege.GetSystemPropertyAction;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -186,6 +193,11 @@ public class UserService extends AbstractUserService {
 
 	@Autowired
 	JaxAuthCache jaxAuthCache;
+	
+	@Autowired
+	UserService userService;
+	
+	
 
 	@Override
 	public ApiResponse registerUser(AbstractUserModel userModel) {
@@ -1058,5 +1070,44 @@ public class UserService extends AbstractUserService {
 			customerIdProofDao.save(activeIdProofs);
 		}
 		repo.save(customer);
+	}
+	
+	public UserFingerprintResponseModel linkDeviceId(String identityInt, String identityType) {
+		userValidationService.validateIdentityInt(identityInt, identityType);
+		BigDecimal bdidentityType = new BigDecimal(identityType);
+		CustomerOnlineRegistration customerOnlineRegistration = userValidationService.validateOnlineCustomerByIdentityId(identityInt, bdidentityType);
+		String hashpassword = userService.generateFingerPrintPassword();
+		UserFingerprintResponseModel userFingerprintResponsemodel = new UserFingerprintResponseModel();
+		userFingerprintResponsemodel.setPassword(hashpassword);
+		customerOnlineRegistration.setFingerprintDeviceId(metaData.getDeviceId());
+		customerOnlineRegistration.setDevicePassword(hashpassword);
+		custDao.saveOnlineCustomer(customerOnlineRegistration);
+		return userFingerprintResponsemodel;
+
+	}
+	
+	public UserFingerprintResponseModel linkDeviceId(BigDecimal customerId) {
+		
+		CustomerOnlineRegistration customerOnlineRegistration = userValidationService
+				.validateOnlineCustomerByIdentityId(customerId);
+		String hashpassword = userService.generateFingerPrintPassword();
+		UserFingerprintResponseModel userFingerprintResponsemodel = new UserFingerprintResponseModel();
+		userFingerprintResponsemodel.setPassword(hashpassword);
+		customerOnlineRegistration.setFingerprintDeviceId(metaData.getDeviceId());
+		customerOnlineRegistration.setDevicePassword(hashpassword);
+		custDao.saveOnlineCustomer(customerOnlineRegistration);
+		return userFingerprintResponsemodel;
+	}
+
+	public String generateFingerPrintPassword() {
+		String password = Random.randomPassword(6);
+		String hashpassword = null;
+		try {
+			hashpassword = com.amx.utils.CryptoUtil.getSHA2Hash(password);
+		} catch (NoSuchAlgorithmException e) {
+			logger.error("Exception thrown for incorrect algorithm ", e);
+		}
+		return hashpassword;
+		
 	}
 }
