@@ -17,7 +17,7 @@ import com.amx.jax.pricer.dto.PricingResponseDTO;
 import com.amx.jax.rest.RestService;
 
 @Component
-public class PricerServiceClient implements ProbotExchangeRateService{
+public class PricerServiceClient implements ProbotExchangeRateService, ProbotDataService{
 
 	/** The Constant LOGGER. */
 	private static final Logger LOGGER = LoggerService.getLogger(PricerServiceClient.class);

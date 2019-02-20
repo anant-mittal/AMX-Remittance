@@ -31,6 +31,7 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.dict.UserClient.Channel;
 import com.amx.jax.pricer.ProbotExchangeRateService;
 import com.amx.jax.pricer.PricerServiceClient;
+import com.amx.jax.pricer.ProbotDataService;
 import com.amx.jax.pricer.dto.BankDetailsDTO;
 import com.amx.jax.pricer.dto.DprRequestDto;
 import com.amx.jax.pricer.dto.ExchangeRateDetails;
@@ -47,7 +48,7 @@ import com.amx.utils.ArgUtil;
  */
 @RestController
 @RequestMapping("test/")
-public class PricerServiceApiTest implements ProbotExchangeRateService {
+public class PricerServiceApiTest implements ProbotExchangeRateService, ProbotDataService {
 
 	/** The rbaac service client. */
 	@Autowired
