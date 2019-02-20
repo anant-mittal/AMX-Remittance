@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.AmxConstants;
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.branch.common.OffsiteStatus.ApiOffisteStatus;
@@ -149,8 +150,8 @@ public class DeviceController {
 		// sSOTranx.get().getUserClient().setDeviceRegId(deviceRequestValidator.getDeviceRegId());
 		// sSOTranx.get().getUserClient().setGlobalIpAddress(deviceData.getGlobalIp());
 		// sSOTranx.get().getUserClient().setLocalIpAddress(deviceData.getLocalIp());
-		LOGGER.debug("TerminalPairing R:{} T:{}", sSOTranx.get().getBranchAdapterId(),
-				sSOTranx.get().getUserClient().getTerminalId());
+		LOGGER.debug("TerminalPairing R:{} T:{} Tx:{}", sSOTranx.get().getBranchAdapterId(),
+				sSOTranx.get().getUserClient().getTerminalId(), AppContextUtil.getTranxId());
 		sSOTranx.save();
 		return AmxApiResponse.build(terminalId, deviceRequestValidator.getDeviceRegId());
 	}

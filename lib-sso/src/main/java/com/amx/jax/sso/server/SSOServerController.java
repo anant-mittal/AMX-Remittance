@@ -94,8 +94,8 @@ public class SSOServerController {
 		map.put(SSOConstants.PARAM_SSO_LOGIN_URL, appConfig.getAppPrefix() + SSOConstants.SSO_LOGIN_URL_DO);
 		map.put(SSOConstants.PARAM_SSO_LOGIN_PREFIX, appConfig.getAppPrefix());
 		map.put(SSOConstants.SECURITY_CODE_KEY, ssoUser.getSelfSAC());
-        map.put(SSOConstants.PARTNER_SECURITY_CODE_KEY, ssoUser.getPartnerSAC());
-        map.put(SSOConstants.ADAPTER_URL, sSOConfig.getAdapterUrl());
+		map.put(SSOConstants.PARTNER_SECURITY_CODE_KEY, ssoUser.getPartnerSAC());
+		map.put(SSOConstants.ADAPTER_URL, sSOConfig.getAdapterUrl());
 		return map;
 	}
 
