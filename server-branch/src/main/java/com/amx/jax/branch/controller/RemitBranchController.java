@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.amxlib.meta.model.RemittancePageDto;
+import com.amx.amxlib.model.BeneRelationsDescriptionDto;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.api.ListRequestModel;
@@ -69,8 +70,7 @@ public class RemitBranchController {
 	}
 
 	@RequestMapping(value = "/api/remitt/routing/list", method = { RequestMethod.POST })
-	public AmxApiResponse<RoutingResponseDto, Object> getRoutingSetupDeatils(
-			@RequestParam BigDecimal beneId,
+	public AmxApiResponse<RoutingResponseDto, Object> getRoutingSetupDeatils(@RequestParam BigDecimal beneId,
 			@RequestParam(required = false) BigDecimal serviceId) {
 
 		if (ArgUtil.isEmpty(serviceId)) {
@@ -88,8 +88,7 @@ public class RemitBranchController {
 	public AmxApiResponse<RemittancePageDto, Object> defaultBeneficiary(
 			@RequestParam(required = false) BigDecimal beneId,
 			@RequestParam(required = false) BigDecimal transactionId) {
-		return AmxApiResponse.buildList(beneClient.defaultBeneficiary(beneId, transactionId)
-				.getResults());
+		return AmxApiResponse.buildList(beneClient.defaultBeneficiary(beneId, transactionId).getResults());
 	}
 
 	@RequestMapping(value = "/api/remitt/tranxrate", method = { RequestMethod.POST })
@@ -159,4 +158,8 @@ public class RemitBranchController {
 		return branchRemittanceClient.saveCustomerBankDetails(customerbanks.getValues());
 	}
 
+	@RequestMapping(value = "/api/remitt/customer_bank/relations", method = { RequestMethod.GET })
+	public AmxApiResponse<BeneRelationsDescriptionDto, Object> getBeneficiaryRelations() {
+		return AmxApiResponse.buildList(beneClient.getBeneficiaryRelations().getResults());
+	}
 }
