@@ -10,6 +10,7 @@ import com.amx.amxlib.model.CountryBranchDTO;
 import com.amx.jax.IDiscManagementService;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.configs.JaxMetaInfo;
+import com.amx.jax.pricer.PricerServiceClient;
 import com.amx.jax.rest.RestService;
 
 @Component
@@ -18,6 +19,9 @@ public class DiscountMgmtClient extends AbstractJaxServiceClient implements IDis
 	
 	@Autowired
 	RestService restService;
+	
+	@Autowired
+	PricerServiceClient pricerServiceClient;
 
 	public AmxApiResponse<CountryBranchDTO, Object> getCountryBranchList() {
 		
