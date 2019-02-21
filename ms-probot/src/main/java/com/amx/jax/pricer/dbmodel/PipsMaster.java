@@ -39,6 +39,8 @@ public class PipsMaster implements Serializable {
 	private String approvedBy;
 	private Date approvedDate;
 	private BigDecimal derivedSellRate;
+	private BigDecimal minDiscountPips;
+	private BigDecimal maxDiscountPips;
 
 	// private String pipsTypeCode;
 
@@ -206,6 +208,24 @@ public class PipsMaster implements Serializable {
 
 	public void setDerivedSellRate(BigDecimal derivedSellRate) {
 		this.derivedSellRate = derivedSellRate;
+	}
+
+	@Column(name = "MIN_DISCOUNT_PIPS")
+	public BigDecimal getMinDiscountPips() {
+		return minDiscountPips;
+	}
+
+	public void setMinDiscountPips(BigDecimal minDiscountPips) {
+		this.minDiscountPips = minDiscountPips;
+	}
+
+	@Column(name = "MAX_DISCOUNT_PIPS")
+	public BigDecimal getMaxDiscountPips() {
+		return maxDiscountPips;
+	}
+
+	public void setMaxDiscountPips(BigDecimal maxDiscountPips) {
+		this.maxDiscountPips = maxDiscountPips;
 	}
 
 	@Override

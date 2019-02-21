@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import com.amx.jax.AppContextUtil;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.ClazzUtil;
 
 /**
  * TO start with we are using RCache from Redisson, so following all conventions
@@ -32,8 +33,18 @@ public abstract class ATxCacheBox<T> {
 		return key;
 	}
 
+	String clazzName = null;
+
+	public String getClazzName() {
+		if (this.clazzName == null) {
+			this.clazzName = ClazzUtil.getClassName(this);
+		}
+		return clazzName;
+	}
+
 	private String getCacheKey(String key) {
-		return this.getClass().getSimpleName() + "-" + key;
+		// return this.getClazzName() + "-" + key;
+		return key;
 	}
 
 	/**

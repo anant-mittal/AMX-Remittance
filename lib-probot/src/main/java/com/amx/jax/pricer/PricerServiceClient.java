@@ -72,17 +72,23 @@ public class PricerServiceClient implements ProbotExchangeRateService, ProbotDat
 		LOGGER.info("Get Discounted Mgmt Amount Slab : transaction Id: {}, with TraceId: {}",
 				AppContextUtil.getTranxId(), AppContextUtil.getTraceId());
 
-		return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.GET_DISCOUNT_MGMT).post(discountMgmtReqDTO)
+		return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.GET_DISCOUNT_DETAILS).post(discountMgmtReqDTO)
 				.as(new ParameterizedTypeReference<AmxApiResponse<DiscountMgmtRespDTO, Object>>() {
 				});
 
 	}
 
 	@Override
-	public AmxApiResponse<RoutBanksAndServiceRespDTO, Object> getRbankAndService(BigDecimal countryId,
+	public AmxApiResponse<RoutBanksAndServiceRespDTO, Object> getRbanksAndServices(BigDecimal countryId,
 			BigDecimal currencyId) {
-		// TODO Auto-generated method stub
-		return null;
+		LOGGER.info("Get Routing Banks and Services : transaction Id: {}, with TraceId: {}",
+				AppContextUtil.getTranxId(), AppContextUtil.getTraceId());
+		
+		return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.GET_ROUTBANKS_AND_SEVICES).
+				queryParam("countryId", countryId).queryParam("currencyId", currencyId).post()
+				.as(new ParameterizedTypeReference<AmxApiResponse<RoutBanksAndServiceRespDTO, Object>>() {
+				});
+		
 	}
 
 }
