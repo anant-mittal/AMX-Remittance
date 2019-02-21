@@ -24,6 +24,8 @@ public interface AbstractProbotInterface {
 		
 		// Service Controllers for Discount Management Data
 		public static final String GET_DISCOUNT_MGMT = SERVICE_PREFIX + API_VERSION_V1 + "/get-discount-mgmt";
+		
+		public static final String GET_ROUTBANK_AND_SEVICE = SERVICE_PREFIX + API_VERSION_V1 + "/get-routbank-and-service";
 
 	}
 }
