@@ -40,8 +40,8 @@ public class JaxDynamicPriceService {
 
 	public ExchangeRateResponseModel getExchangeRatesWithDiscount(BigDecimal fromCurrency, BigDecimal toCurrency,
 			BigDecimal lcAmount, BigDecimal foreignAmount, BigDecimal countryId, BigDecimal routingBankId) {
-		PricingRequestDTO pricingRequestDTO = createPricingRequest(routingBankId, routingBankId, routingBankId,
-				routingBankId, routingBankId, routingBankId);
+		PricingRequestDTO pricingRequestDTO = createPricingRequest(fromCurrency, toCurrency, lcAmount, foreignAmount,
+				countryId, routingBankId);
 		AmxApiResponse<PricingResponseDTO, Object> apiResponse = null;
 		try {
 			apiResponse = pricerServiceClient.fetchPriceForCustomer(pricingRequestDTO);
@@ -56,8 +56,8 @@ public class JaxDynamicPriceService {
 
 	public ExchangeRateResponseModel getBaseExchangeRates(BigDecimal fromCurrency, BigDecimal toCurrency,
 			BigDecimal lcAmount, BigDecimal foreignAmount, BigDecimal countryId, BigDecimal routingBankId) {
-		PricingRequestDTO pricingRequestDTO = createPricingRequest(routingBankId, routingBankId, routingBankId,
-				routingBankId, routingBankId, routingBankId);
+		PricingRequestDTO pricingRequestDTO = createPricingRequest(fromCurrency, toCurrency, lcAmount, foreignAmount,
+				countryId, routingBankId);
 		AmxApiResponse<PricingResponseDTO, Object> apiResponse = null;
 		try {
 			apiResponse = pricerServiceClient.fetchBasePrice(pricingRequestDTO);
