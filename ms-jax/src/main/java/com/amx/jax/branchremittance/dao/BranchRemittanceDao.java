@@ -52,7 +52,7 @@ import com.amx.jax.repository.remittance.ILoyaltyPointRepository;
 import com.amx.jax.util.JaxUtil;
 
 @Component
-@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
+//@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class BranchRemittanceDao {
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
@@ -159,8 +159,11 @@ public class BranchRemittanceDao {
 		if (foreignCurrencyAdjust != null && !foreignCurrencyAdjust.isEmpty()) {
 			foreignCurrAdjustRepository.save(foreignCurrencyAdjust);
 		}
+		
+	
 
 		if (remitTrnxList != null && !remitTrnxList.isEmpty()) {
+			
 			remitTrnxRepository.save(remitTrnxList);
 
 			if (remitBeneList != null && !remitBeneList.isEmpty()) {
@@ -178,8 +181,8 @@ public class BranchRemittanceDao {
 			if(loyaltyPoitns!=null && !loyaltyPoitns.isEmpty()) {
 				loyalPointsRepository.save(loyaltyPoitns);
 			}
-			
 		}
+	
 		updateApplication(remitTrnxList);
 
 		return responseDto;
@@ -203,8 +206,8 @@ public class BranchRemittanceDao {
 				appl.setTransactionDocumentNo(remitTrnx.getDocumentNo());
 				appl.setApplicaitonStatus(ConstantDocument.T);
 				appl.setBlackListIndicator(remitTrnx.getBlackListIndicator());
-				appRepo.updateApplicationDetails(appl.getFsCustomer(), appl.getRemittanceApplicationId(), remitTrnx.getDocumentFinanceYear(), remitTrnx.getDocumentNo(), new UserFinancialYear(remitTrnx.getDocumentFinanceYr()));
-				//appRepo.save(appl);
+				//appRepo.updateApplicationDetails(appl.getFsCustomer(), appl.getRemittanceApplicationId(), remitTrnx.getDocumentFinanceYear(), remitTrnx.getDocumentNo(), new UserFinancialYear(remitTrnx.getDocumentFinanceYr()));
+				appRepo.save(appl);
 			}
 
 		}

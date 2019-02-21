@@ -170,7 +170,8 @@ public class BranchRemittanceService extends AbstractService{
 	}
 	
 	public AmxApiResponse<RemittanceResponseDto, Object> saveRemittanceTransaction(BranchRemittanceRequestModel remittanceRequestModel){
-		 RemittanceResponseDto dto = branchRemittanceSaveManager.saveRemittance(remittanceRequestModel);
+		// RemittanceResponseDto dto = branchRemittanceSaveManager.saveRemittance(remittanceRequestModel);
+		 RemittanceResponseDto dto = branchRemittanceSaveManager.saveRemittanceTrnx(remittanceRequestModel);
 		 return AmxApiResponse.build(dto);
 	 }
 	

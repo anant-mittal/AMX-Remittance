@@ -14,7 +14,7 @@ import com.amx.jax.dbmodel.RemittanceTransactionView;
 import com.amx.jax.dbmodel.UserFinancialYear;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 
-@Transactional
+//@Transactional
 public interface RemittanceApplicationRepository extends CrudRepository<RemittanceApplication, BigDecimal> {
 
 	@Query("select ra from RemittanceApplication ra where ra.paymentId=:paymentId")

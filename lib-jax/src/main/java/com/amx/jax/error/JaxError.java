@@ -254,9 +254,9 @@ public enum JaxError implements IExceptionEnum {
 	INVALID_CLAIM_CODE,
 	AMOUNT_MISMATCH,
 	SIGNATURE_NOT_FOUND,
-	
 	// for validate Currency pair
-	INVALID_PAIR_ID;
+	INVALID_PAIR_ID,
+	ID_TYPE_LENGTH_NOT_DEFINED;
 
 	@Deprecated
 	public String getCode() {

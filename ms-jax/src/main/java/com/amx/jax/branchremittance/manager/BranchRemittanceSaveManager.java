@@ -1,7 +1,12 @@
 package com.amx.jax.branchremittance.manager;
 
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.Reader;
 import java.math.BigDecimal;
+import java.sql.Clob;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -11,6 +16,7 @@ import java.util.Map;
 
 import javax.transaction.Transactional;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -148,14 +154,37 @@ public class BranchRemittanceSaveManager {
 	 * @return : saveing application to remittance
 	 */
 	
-	@Transactional
+
+	public RemittanceResponseDto saveRemittanceTrnx(BranchRemittanceRequestModel remittanceRequestModel) {
+		
+		List<BranchApplicationDto> shoppingCartList = new ArrayList<>();
+		shoppingCartList = remittanceRequestModel.getRemittanceApplicationId();
+		//updateApplicationStatus(shoppingCartList);
+		RemittanceResponseDto responseDto = saveRemittance(remittanceRequestModel);
+		
+		if(responseDto!=null && JaxUtil.isNullZeroBigDecimalCheck(responseDto.getCollectionDocumentNo())) {
+			PaymentResponseDto paymentResponse = new PaymentResponseDto();
+			paymentResponse.setCollectionDocumentCode(responseDto.getCollectionDocumentCode());
+			paymentResponse.setCollectionDocumentNumber(responseDto.getCollectionDocumentNo());
+			paymentResponse.setCollectionFinanceYear(responseDto.getCollectionDocumentFYear());
+			paymentResponse.setCompanyId(metaData.getCompanyId());
+			paymentResponse.setApplicationCountryId(metaData.getCountryId());
+			paymentResponse.setCustomerId(metaData.getCustomerId());
+			remittanceApplicationService.saveRemittancetoOldEmos(paymentResponse);
+		}else {
+			logger.error("NOT moved to old emos ", responseDto.getCollectionDocumentNo() + "" +responseDto.getCollectionDocumentCode()+" "+responseDto.getCollectionDocumentFYear());
+		}
+		return responseDto;
+	}
+	
+	
 	public RemittanceResponseDto saveRemittance(BranchRemittanceRequestModel remittanceRequestModel) {
 		RemittanceResponseDto responseDto  = new RemittanceResponseDto();
 			
 		try {
-			List<BranchApplicationDto> shoppingCartList = new ArrayList<>();
+		/*	List<BranchApplicationDto> shoppingCartList = new ArrayList<>();
 			shoppingCartList = remittanceRequestModel.getRemittanceApplicationId();
-			updateApplicationStatus(shoppingCartList);
+			updateApplicationStatus(shoppingCartList);*/
 			
 			CollectionModel 			collectionModel 	    =saveCollect(remittanceRequestModel);
 			List<CollectDetailModel> 	collectionDetails		=saveCollectionDetail(remittanceRequestModel,collectionModel);
@@ -175,23 +204,12 @@ public class BranchRemittanceSaveManager {
 			mapAllDetailRemitSave.put("EX_REMIT_AML", amlList);
 			mapAllDetailRemitSave.put("LOYALTY_POINTS", loyaltyPoints);
 			responseDto = brRemittanceDao.saveRemittanceTransaction(mapAllDetailRemitSave);
-			if(responseDto!=null && JaxUtil.isNullZeroBigDecimalCheck(responseDto.getCollectionDocumentNo())) {
-				PaymentResponseDto paymentResponse = new PaymentResponseDto();
-				paymentResponse.setCollectionDocumentCode(responseDto.getCollectionDocumentCode());
-				paymentResponse.setCollectionDocumentNumber(responseDto.getCollectionDocumentNo());
-				paymentResponse.setCollectionFinanceYear(responseDto.getCollectionDocumentFYear());
-				paymentResponse.setCompanyId(metaData.getCompanyId());
-				paymentResponse.setApplicationCountryId(metaData.getCountryId());
-				paymentResponse.setCustomerId(metaData.getCustomerId());
-				remittanceApplicationService.saveRemittancetoOldEmos(paymentResponse);
-			}else {
-				logger.error("NOT moved to old emos ", responseDto.getCollectionDocumentNo() + "" +responseDto.getCollectionDocumentCode()+" "+responseDto.getCollectionDocumentFYear());
-			}
 			
 		}catch (GlobalException e) {
 			logger.error("routing  procedure", e.getErrorMessage() + "" + e.getErrorKey());
 			throw new GlobalException(e.getErrorKey(), e.getErrorMessage());
 		}finally {
+			
 			amlList	 = new ArrayList<>();
 			remitBeneList   = new ArrayList<>();
 			addInstList = new ArrayList<>();
@@ -432,6 +450,7 @@ public class BranchRemittanceSaveManager {
 	
 	
 	public List<ForeignCurrencyAdjust> saveForeignCurrencyAdjust(BranchRemittanceRequestModel remittanceRequestModel,CollectionModel  collect){
+		
 		List<ForeignCurrencyAdjust> currencyAdjustListList = new ArrayList<>();
 		
 		List<BranchApplicationDto> shoppingCartList = remittanceRequestModel.getRemittanceApplicationId();
@@ -468,6 +487,7 @@ public class BranchRemittanceSaveManager {
 					foreignCurrencyAdjust.setFsCompanyMaster(appl.getFsCompanyMaster());
 					foreignCurrencyAdjust.setCompanyCode(appl.getCompanyCode());
 					foreignCurrencyAdjust.setDocumentId(collect.getDocumentId());
+					foreignCurrencyAdjust.setOracleUser(collect.getCreatedBy());
 					
 					
 					CurrencyWiseDenomination denominationMaster = new CurrencyWiseDenomination();
@@ -510,6 +530,7 @@ public class BranchRemittanceSaveManager {
 				foreignCurrencyRefundAdjust.setFsCurrencyMaster(collect.getExCurrencyMaster());
 				foreignCurrencyRefundAdjust.setNotesQuantity(currencyRefundDenomination.getDenominationQuatity());
 				foreignCurrencyRefundAdjust.setAdjustmentAmount(currencyRefundDenomination.getDenominationPrice());
+				foreignCurrencyRefundAdjust.setOracleUser(collect.getCreatedBy());
 				
 				CurrencyWiseDenomination denominationMaster = new CurrencyWiseDenomination();
 				denominationMaster.setDenominationId(currencyRefundDenomination.getDenominationId());
@@ -586,7 +607,26 @@ public class BranchRemittanceSaveManager {
 					remitTrnx.setCustomerId(appl.getFsCustomer());
 					remitTrnx.setCustomerName(appl.getCustomerName());
 					remitTrnx.setCustomerRef(appl.getCustomerRef());
-				
+					//String str = readClobAsString(appl.getCustomerSignatureClob());
+					//String str= convertClobToStringVs(appl.getCustomerSignatureClob());
+					/*String str=null;
+					try {
+						str = appl.getCustomerSignatureClob().getSubString(1, (int) appl.getCustomerSignatureClob().length());
+					} catch (SQLException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} 
+					
+					
+					if(!StringUtils.isBlank(str)) {
+						try {
+							remitTrnx.setCustomerSignatureClob(stringToClob(str));
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}*/
+					
 					remitTrnx.setCustomerSignatureClob(appl.getCustomerSignatureClob());
 					remitTrnx.setDebitAccountNo(appl.getDebitAccountNo()); //need to check
 					remitTrnx.setDeliveryModeId(appl.getExDeliveryMode());
@@ -602,13 +642,7 @@ public class BranchRemittanceSaveManager {
 					}else {
 						throw new GlobalException(JaxError.INVALID_REMITTANCE_DOCUMENT_CODE,"Document ID could not be updated in our records.");
 					}
-					BigDecimal documentNo =generateDocumentNumber(appl.getFsCountryMasterByApplicationCountryId().getCountryId(),appl.getFsCompanyMaster().getCompanyId(),remitTrnx.getDocumentId().getDocumentCode(),remitTrnx.getDocumentFinanceYear(),remitTrnx.getBranchId().getBranchId());
 					
-					if(documentNo!=null && documentNo.compareTo(BigDecimal.ZERO)!=0){
-						remitTrnx.setDocumentNo(documentNo);
-				    }else{
-				    	throw new GlobalException(JaxError.INVALID_REMITTANCE_DOCUMENT_NO, "Document Seriality  setup  not defined for Remittance.");
-				    }
 					
 					 
 					
@@ -651,6 +685,15 @@ public class BranchRemittanceSaveManager {
 					remitTrnx.setUsdAmount(appl.getUsdAmt());
 					remitTrnx.setWesternUnionMtcno(appl.getWesternUnionMtcno());
 					remitTrnx.setWuIpAddress(metaData.getDeviceIp());
+					
+					BigDecimal documentNo =generateDocumentNumber(appl.getFsCountryMasterByApplicationCountryId().getCountryId(),appl.getFsCompanyMaster().getCompanyId(),remitTrnx.getDocumentId().getDocumentCode(),remitTrnx.getDocumentFinanceYear(),remitTrnx.getBranchId().getBranchId());
+					
+					if(documentNo!=null && documentNo.compareTo(BigDecimal.ZERO)!=0){
+						remitTrnx.setDocumentNo(documentNo);
+				    }else{
+				    	throw new GlobalException(JaxError.INVALID_REMITTANCE_DOCUMENT_NO, "Document Seriality  setup  not defined for Remittance.");
+				    }
+					
 					remitTrnxList.add(remitTrnx);
 					
 					saveBeneTrnx(appl, remitTrnx);
@@ -994,4 +1037,78 @@ public BigDecimal generateDocumentNumber(BigDecimal appCountryId,BigDecimal comp
 	 return financeYearObj;
  }
 
+ public String convertClobToStringVs(Clob clob) {
+	 String signatureStr = null;
+	 try {
+		  signatureStr  = clob.getSubString(1, (int) clob.length());
+	 }catch(Exception e){
+		 e.printStackTrace();
+		logger.debug("convertClobToStringVs "+e.getMessage());
+		 throw new GlobalException(JaxError.SIGNATURE_NOT_FOUND, e.getMessage());
+	 }
+	 return signatureStr;
+ }
+ 
+ public java.sql.Clob stringToClob(String source) throws Exception {
+		try {
+			return new javax.sql.rowset.serial.SerialClob(source.toCharArray());
+		} catch (Exception e) {
+			return null;
+		}
+	}
+ 
+ 
+ protected String readClobAsString(Clob clob )
+ {
+   StringBuffer sb = null;
+   Reader reader = null;
+   try {
+     reader = clob.getCharacterStream();
+     if ( reader == null ) {
+       return null;
+     }
+       sb = new StringBuffer((int)clob.length()/* 4096=guess at size of data to read */);
+       char[] charbuf = new char[(int)clob.length()/* 4096=4k buffer to read data into */];
+       for( int i = reader.read( charbuf ); i > 0; i = reader.read( charbuf ) ) {
+         sb.append( charbuf, 0, i );
+       }
+   } catch(Exception e ) {
+	   logger.debug("readClobAsString "+e.getMessage());
+	   throw new GlobalException(JaxError.SIGNATURE_NOT_FOUND, e.getMessage());
+   } finally{
+	   if ( reader != null ) {
+         try {
+			reader.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+       }
+   }
+   return sb.toString();
+ }
+ 
+ 
+ @SuppressWarnings("unused")
+private String clobToString(Clob data) {
+     StringBuilder sb = new StringBuilder();
+     try {
+         Reader reader = data.getCharacterStream();
+         BufferedReader br = new BufferedReader(reader);
+
+         String line;
+         while(null != (line = br.readLine())) {
+             sb.append(line);
+         }
+         br.close();
+     } catch (SQLException e) {
+    	 logger.error("Could not convert CLOB to string",e);
+         return e.toString();
+     } catch (IOException e) {
+    	 logger.error("Could not convert CLOB to string",e);
+         return e.toString();
+     }
+     return sb.toString();
+ }
+ 
 }
