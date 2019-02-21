@@ -70,11 +70,15 @@ public class BranchRemittanceGetExchangeRateRequest implements IRemittanceApplic
 		this.serviceIndicatorId = serviceIndicatorId;
 	}
 
+	
+
 	@Override
 	public String toString() {
 		return "BranchRemittanceGetExchangeRateRequest [beneficiaryRelationshipSeqId=" + beneficiaryRelationshipSeqId
 				+ ", localAmount=" + localAmount + ", foreignAmount=" + foreignAmount + ", correspondanceBankId="
-				+ correspondanceBankId + ", serviceIndicatorId=" + serviceIndicatorId + "]";
+				+ correspondanceBankId + ", serviceIndicatorId=" + serviceIndicatorId + ", remittanceModeId="
+				+ remittanceModeId + ", deliveryModeId=" + deliveryModeId + ", availLoyalityPoints="
+				+ availLoyalityPoints + "]";
 	}
 
 	@Override
