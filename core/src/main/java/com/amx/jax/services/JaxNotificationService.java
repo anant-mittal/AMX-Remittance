@@ -48,8 +48,8 @@ public class JaxNotificationService {
 	Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	private final String SUBJECT_ACCOUNT_UPDATE = "Account Update";
-	private final String SUBJECT_EMAIL_CHANGE = "Al Mulla Exchange Account - Email ID Change";
-	private final String SUBJECT_PHONE_CHANGE = "Al Mulla Exchange Account - Phone Number Change";
+	private final String SUBJECT_EMAIL_CHANGE = "Modern Exchange Account - Email ID Change";
+	private final String SUBJECT_PHONE_CHANGE = "Modern Exchange Account - Phone number Change";
 
 	public void sendTransactionNotification(RemittanceReceiptSubreport remittanceReceiptSubreport, PersonInfo pinfo) {
 
