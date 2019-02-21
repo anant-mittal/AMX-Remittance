@@ -90,6 +90,9 @@ public class CustomerDao {
 		return repo.findOne(id);
 	}
 	
+	
+	
+	
 	public List<PlaceOrderCustomer> getPersonInfoById(List<BigDecimal> customerIds) {
 		List<PlaceOrderCustomer> poCustomers = new ArrayList<>();
 		List<List<BigDecimal>> partitions = Lists.partition(customerIds, 999);

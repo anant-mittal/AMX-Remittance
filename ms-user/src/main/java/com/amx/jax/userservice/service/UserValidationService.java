@@ -1,6 +1,7 @@
 package com.amx.jax.userservice.service;
 
 import java.math.BigDecimal;
+import java.security.NoSuchAlgorithmException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -204,6 +205,26 @@ public class UserValidationService {
 		String dbPwd = customer.getPassword();
 		String passwordhashed = cryptoUtil.getHash(customer.getUserName(), password);
 		if (!dbPwd.equals(passwordhashed)) {
+			Integer attemptsLeft = incrementLockCount(customer);
+			String errorExpression = JaxError.WRONG_PASSWORD.toString();
+			if (attemptsLeft > 0) {
+				errorExpression = jaxUtil.buildErrorExpression(JaxError.WRONG_PASSWORDS_ATTEMPTS.toString(),
+						attemptsLeft);
+			}
+			throw new GlobalException(errorExpression, "Incorrect/wrong password");
+		}
+	}
+	
+	protected void validateDevicePassword(CustomerOnlineRegistration customer, String password) {
+		String dbPassword = customer.getDevicePassword();
+		String passwordHashed = null;
+		try {
+			passwordHashed = com.amx.utils.CryptoUtil.getSHA2Hash(password);
+		} catch (NoSuchAlgorithmException e) {
+			logger.error("Exception thrown for incorrect algorithm ", e);
+			throw new GlobalException("Unable to generate hashed password");
+		}
+		if (!dbPassword.equals(passwordHashed)) {
 			Integer attemptsLeft = incrementLockCount(customer);
 			String errorExpression = JaxError.WRONG_PASSWORD.toString();
 			if (attemptsLeft > 0) {
@@ -491,6 +512,8 @@ public class UserValidationService {
 		}
 		return onlineCustomer;
 	}
+	
+	
 
 	public void validateOtpFlow(CustomerModel model) {
 		if (model.isRegistrationFlow()) {

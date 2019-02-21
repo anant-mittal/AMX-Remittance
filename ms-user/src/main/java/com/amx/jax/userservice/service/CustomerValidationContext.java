@@ -28,7 +28,7 @@ public class CustomerValidationContext extends TenantContext<CustomerValidation>
 		public void validateDuplicateMobile(String mobileNo);
 
 		public default void validateIdentityInt(String identityInt, BigDecimal identityType) {
-			BigDecimal identityTypeCivilID = new BigDecimal(Constants.IDENTITY_TYPE_ID);
+			BigDecimal identityTypeCivilID = new BigDecimal(Constants.IDENTITY_TYPE_CIVIL_ID_STR);
 			if (identityTypeCivilID.equals(identityType)) {
 				validateCivilId(identityInt);
 			}

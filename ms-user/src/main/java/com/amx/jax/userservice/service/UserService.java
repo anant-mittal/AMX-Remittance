@@ -1087,27 +1087,40 @@ public class UserService extends AbstractUserService {
 	}
 	
 	public UserFingerprintResponseModel linkDeviceId(BigDecimal customerId) {
-		
+
 		CustomerOnlineRegistration customerOnlineRegistration = userValidationService
 				.validateOnlineCustomerByIdentityId(customerId);
-		String hashpassword = userService.generateFingerPrintPassword();
+		String hashPassword = userService.generateFingerPrintPassword();
 		UserFingerprintResponseModel userFingerprintResponsemodel = new UserFingerprintResponseModel();
-		userFingerprintResponsemodel.setPassword(hashpassword);
+		userFingerprintResponsemodel.setPassword(hashPassword);
 		customerOnlineRegistration.setFingerprintDeviceId(metaData.getDeviceId());
-		customerOnlineRegistration.setDevicePassword(hashpassword);
+		customerOnlineRegistration.setDevicePassword(hashPassword);
 		custDao.saveOnlineCustomer(customerOnlineRegistration);
 		return userFingerprintResponsemodel;
 	}
 
 	public String generateFingerPrintPassword() {
 		String password = Random.randomPassword(6);
+		logger.debug("The password is " + password);
 		String hashpassword = null;
 		try {
 			hashpassword = com.amx.utils.CryptoUtil.getSHA2Hash(password);
 		} catch (NoSuchAlgorithmException e) {
 			logger.error("Exception thrown for incorrect algorithm ", e);
+			throw new GlobalException("Unable to generate fingerprint password");
 		}
 		return hashpassword;
-		
+
+	}
+
+	public CustomerModel loginCustomerByFingerprint(String civilId, String identityTypeStr, String password) {
+		userValidationService.validateIdentityInt(civilId, identityTypeStr);
+		BigDecimal identityType = new BigDecimal(identityTypeStr);
+
+		CustomerOnlineRegistration customerOnlineRegistration = userValidationService
+				.validateOnlineCustomerByIdentityId(civilId, identityType);
+		userValidationService.validateDevicePassword(customerOnlineRegistration, password);
+		CustomerModel customerModel = convert(customerOnlineRegistration);
+		return customerModel;
 	}
 }

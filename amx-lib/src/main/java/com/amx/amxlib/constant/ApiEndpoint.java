@@ -131,6 +131,8 @@ public class ApiEndpoint {
 	
 	public static final String LINK_DEVICEID = "/link-deviceid/";
 	
-	public static final String LINK_DEVICE_LOGGEDIN_CUSTOMER = "/link-device-loggedin-user/";
+	public static final String LINK_DEVICE_LOGGEDIN_CUSTOMER = "/link-device-loggedin-customer/";
+	
+	public static final String LOGIN_CUSTOMER_BY_FINGERPRINT = "/login-customer-by-fingerprint/";
 
 }

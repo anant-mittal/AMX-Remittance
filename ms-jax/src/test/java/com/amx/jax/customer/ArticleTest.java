@@ -14,8 +14,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.UserFingerprintResponseModel;
 import com.amx.jax.dal.ArticleDao;
+import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.scope.TenantContextHolder;
@@ -61,4 +63,12 @@ public class ArticleTest {
 		assertNotNull(userFingerprintResponseModel.getPassword());
 
 	}
+	
+	@Test
+	public void testLoginCustomerByFingerprint() {
+		CustomerModel customerModel = userService.loginCustomerByFingerprint("284052306594", "198", "7A/+/0");
+		assertNotNull(customerModel.getIdentityId());
+	}
+	
+	
 }

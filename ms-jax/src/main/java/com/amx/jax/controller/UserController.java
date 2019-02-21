@@ -3,6 +3,7 @@ package com.amx.jax.controller;
 import static com.amx.amxlib.constant.ApiEndpoint.USER_API_ENDPOINT;
 import static com.amx.amxlib.constant.ApiEndpoint.LINK_DEVICE_LOGGEDIN_CUSTOMER;
 import static com.amx.amxlib.constant.ApiEndpoint.LINK_DEVICEID;
+import static com.amx.amxlib.constant.ApiEndpoint.LOGIN_CUSTOMER_BY_FINGERPRINT;
 
 import java.math.BigDecimal;
 import java.text.MessageFormat;
@@ -69,10 +70,10 @@ public class UserController {
 		ApiResponse response = userService.getCustomerInfo(countryId, companyId, customerId);
 		return response;
 	}
-	
+
 	@RequestMapping(value = LINK_DEVICEID, method = RequestMethod.POST)
 	public AmxApiResponse<UserFingerprintResponseModel, Object> linkDeviceId(@RequestParam String identityInt,
-			@ApiIgnore @ApiParam(hidden = true) @RequestParam(defaultValue = Constants.IDENTITY_TYPE_ID) String identityType) {
+			@ApiIgnore @ApiParam(hidden = true) @RequestParam(defaultValue = Constants.IDENTITY_TYPE_CIVIL_ID_STR) String identityType) {
 		logger.debug(MessageFormat.format("IdentityInt value is {0} :", identityInt));
 		logger.debug(MessageFormat.format("IdentityType value is {0} :", identityType));
 
@@ -80,14 +81,20 @@ public class UserController {
 		return AmxApiResponse.build(userFingerprintResponseModel);
 
 	}
-	
-	@RequestMapping(value=LINK_DEVICE_LOGGEDIN_CUSTOMER, method = RequestMethod.POST)
-	public AmxApiResponse<UserFingerprintResponseModel, Object> linkDeviceId()
-	{
+
+	@RequestMapping(value = LINK_DEVICE_LOGGEDIN_CUSTOMER, method = RequestMethod.POST)
+	public AmxApiResponse<UserFingerprintResponseModel, Object> linkDeviceId() {
 		UserFingerprintResponseModel userFingerprintResponseModel = userService.linkDeviceId(metaData.getCustomerId());
 		return AmxApiResponse.build(userFingerprintResponseModel);
 	}
-	
-	
+
+	@RequestMapping(value = LOGIN_CUSTOMER_BY_FINGERPRINT, method = RequestMethod.POST)
+	public AmxApiResponse<CustomerModel, Object> loginCustomerByFingerprint(@RequestParam String identityInt,
+			@RequestParam(defaultValue = Constants.IDENTITY_TYPE_CIVIL_ID_STR) String identityType, @RequestParam String password) {
+		logger.debug(MessageFormat.format("IdentityInt value is {0} :", identityInt));
+		logger.debug(MessageFormat.format("IdentityType value is {0} :", identityType));
+		CustomerModel customerModel = userService.loginCustomerByFingerprint(identityInt, identityType, password);
+		return AmxApiResponse.build(customerModel);
+	}
 
 }
