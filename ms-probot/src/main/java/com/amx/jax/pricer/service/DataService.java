@@ -83,6 +83,8 @@ public class DataService {
 			channelDetail.setChannel(discList.getChannel());
 			channelDetail.setDiscountPips(discList.getDiscountPips());
 			channelDetail.setIsActive(discList.getIsActive());
+			channelDetail.setMinDiscountPips(discList.getMinDiscountPips());
+			channelDetail.setMaxDiscountPips(discList.getMaxDiscountPips());
 
 			list.add(channelDetail);
 		}
@@ -99,6 +101,8 @@ public class DataService {
 			custCategoryDetail.setCustomerCategory(custDiscList.getCustomerCategory());
 			custCategoryDetail.setDiscountPips(custDiscList.getDiscountPips());
 			custCategoryDetail.setIsActive(custDiscList.getIsActive());
+			custCategoryDetail.setMinDiscountPips(custDiscList.getMinDiscountPips());
+			custCategoryDetail.setMaxDiscountPips(custDiscList.getMaxDiscountPips());
 
 			list.add(custCategoryDetail);
 		}
@@ -129,6 +133,8 @@ public class DataService {
 					amountSlabDetail.setCountryName(pipsMasterList.getCountryMaster().getFsCountryMasterDescs().get(0).getCountryName());
 				}
 			}
+			amountSlabDetail.setMinDiscountPips(pipsMasterList.getMinDiscountPips());
+			amountSlabDetail.setMaxDiscountPips(pipsMasterList.getMaxDiscountPips());			
 
 			list.add(amountSlabDetail);
 		}
