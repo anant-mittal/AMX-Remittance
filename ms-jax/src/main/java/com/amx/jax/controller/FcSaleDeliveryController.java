@@ -123,4 +123,17 @@ public class FcSaleDeliveryController implements IFxOrderDelivery {
 		BoolRespModel result = fcSaleDeliveryService.markAcknowledged(deliveryDetailSeqId);
 		return AmxApiResponse.build(result);
 	}
+	
+	
+	/**
+	 * @return fx order delivery details for historical for emp id in meta
+	 * 
+	 */
+	@RequestMapping(value = Path.FX_DELIVERY_HISTORICAL_LIST_ORDER, method = RequestMethod.GET)
+	@Override
+	@ApiOperation("Lists historical order for driver employee present in metadata")
+	public AmxApiResponse<FxDeliveryDetailDto, Object> listHistoricalOrders() {
+		List<FxDeliveryDetailDto> resultList = fcSaleDeliveryService.listHistoricalOrders();
+		return AmxApiResponse.buildList(resultList);
+	}
 }

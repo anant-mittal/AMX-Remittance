@@ -111,7 +111,7 @@ public class DeviceStateService extends AbstractService {
 		}
 	}
 
-	private SignaturePadCustomerRegStateInfo getCustomerRegData(Integer customerId) {
+	public SignaturePadCustomerRegStateInfo getCustomerRegData(Integer customerId) {
 
 		SignaturePadCustomerRegStateInfo info = new SignaturePadCustomerRegStateInfo();
 		BigDecimal customerIdBd = new BigDecimal(customerId);
