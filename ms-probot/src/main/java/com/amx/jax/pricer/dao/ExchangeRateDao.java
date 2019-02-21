@@ -52,6 +52,14 @@ public class ExchangeRateDao {
 		return repo.getBranchExchangeRatesForRoutingBanks(currencyId, countryBranchId, countryId, applicationCountryId,
 				routingBankIds);
 	}
+	
+	public List<ExchangeRateApprovalDetModel> getBranchExchangeRatesForRoutingBanksAndServiceIds(BigDecimal currencyId,
+			BigDecimal countryBranchId, BigDecimal countryId, BigDecimal applicationCountryId,
+			List<BigDecimal> routingBankIds, List<BigDecimal> serviceIds) {
+
+		return repo.getBranchExchangeRatesForRoutingBankAndServiceIds(currencyId, countryBranchId, countryId,
+				applicationCountryId, routingBankIds, serviceIds);
+	}
 
 	public List<ExchangeRateApprovalDetModel> getExchangeRatesForRoutingBanks(BigDecimal currencyId,
 			BigDecimal countryId, BigDecimal applicationCountryId, List<BigDecimal> routingBankIds) {
