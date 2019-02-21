@@ -6,27 +6,16 @@ import org.slf4j.LoggerFactory;
 import com.amx.jax.AppContextUtil;
 import com.amx.utils.ArgUtil;
 
+/**
+ * @deprecated use {@link com.amx.jax.def.ATxCacheBox}
+ * @author lalittanwar
+ *
+ * @param <T>
+ */
+@Deprecated
 public abstract class ATransactionModel<T> {
 
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
-
-	public class CacheBoxWrapper {
-		T model = null;
-
-		public T getModel() {
-			return model;
-		}
-
-		public void setModel(T model) {
-			this.model = model;
-		}
-
-		public CacheBoxWrapper(T model) {
-			super();
-			this.model = model;
-		}
-
-	}
 
 	public abstract ICacheBox<T> getCacheBox();
 
@@ -42,8 +31,12 @@ public abstract class ATransactionModel<T> {
 		return key;
 	}
 
+	private String getCacheKey(String key) {
+		return this.getClass().getSimpleName() + "-" + key;
+	}
+
 	public T save(T model) {
-		getCacheBox().put(getTranxId(), model);
+		getCacheBox().put(getCacheKey(getTranxId()), model);
 		return model;
 	}
 
@@ -57,7 +50,7 @@ public abstract class ATransactionModel<T> {
 	}
 
 	public void clear(String tranxId) {
-		getCacheBox().remove(tranxId);
+		getCacheBox().remove(getCacheKey(tranxId));
 	}
 
 	public T get() {
@@ -69,7 +62,7 @@ public abstract class ATransactionModel<T> {
 	}
 
 	public T get(T defaultValue) {
-		return getCacheBox().getOrDefault(getTranxId(), defaultValue);
+		return getCacheBox().getOrDefault(getCacheKey(getTranxId()), defaultValue);
 	}
 
 	public abstract T init();
