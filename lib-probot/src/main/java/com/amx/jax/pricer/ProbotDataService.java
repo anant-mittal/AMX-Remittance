@@ -11,6 +11,6 @@ public interface ProbotDataService  extends AbstractProbotInterface{
 
 	public AmxApiResponse<DiscountMgmtRespDTO, Object> getDiscountManagemet(DiscountMgmtReqDTO discountMgmtReqDTO);
 	
-	public AmxApiResponse<RoutBanksAndServiceRespDTO, Object> getRbankAndService(BigDecimal countryId, BigDecimal currencyId);
+	public AmxApiResponse<RoutBanksAndServiceRespDTO, Object> getRbanksAndServices(BigDecimal countryId, BigDecimal currencyId);
 	
 }

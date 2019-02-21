@@ -23,11 +23,10 @@ import com.amx.jax.pricer.dto.CustomerCategoryDetails;
 import com.amx.jax.pricer.dto.DiscountMgmtReqDTO;
 import com.amx.jax.pricer.dto.DiscountMgmtRespDTO;
 import com.amx.jax.pricer.dto.RoutBanksAndServiceRespDTO;
-import com.amx.jax.pricer.repository.ServiceMasterDescRepository;
 import com.amx.jax.pricer.var.PricerServiceConstants.DISCOUNT_TYPE;
 
 @Service
-public class DiscountService {
+public class DataService {
 
 	@Autowired
 	ChannelDiscountDao channelDiscountDao;
@@ -136,7 +135,7 @@ public class DiscountService {
 		return list;
 	}
 
-	public List<RoutBanksAndServiceRespDTO> getRoutBankAndService(BigDecimal countryId, BigDecimal currencyId) {
+	public List<RoutBanksAndServiceRespDTO> getRoutBanksAndServices(BigDecimal countryId, BigDecimal currencyId) {
 		List<RoutingHeader> rountingHeaderData = routingDao.getRoutHeadersByCountryIdAndCurrenyId(countryId, currencyId);
 		List<RoutBanksAndServiceRespDTO> routBanksAndServiceRespDTO = convertRoutBankAndService(rountingHeaderData);
 		return routBanksAndServiceRespDTO;
