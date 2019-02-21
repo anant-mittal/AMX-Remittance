@@ -3,8 +3,10 @@ package com.amx.jax.branch.controller;
 import java.math.BigDecimal;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.api.AmxApiResponse;
@@ -40,13 +42,13 @@ public class BForexOutlookController implements IForexOutlookService {
 
 	
 	@RequestMapping(value = "/api/outlook/currencypair/saveorupdate", method = { RequestMethod.POST })
-	public AmxApiResponse<BoolRespModel, Object> saveUpdateCurrencyPair(ForexOutLookRequest dto) {
+	public AmxApiResponse<BoolRespModel, Object> saveUpdateCurrencyPair(@RequestBody ForexOutLookRequest forexOutlookRequest) {
 		// TODO Auto-generated method stub
-		return forexOutlookClient.saveUpdateCurrencyPair(dto);
+			return forexOutlookClient.saveUpdateCurrencyPair(forexOutlookRequest);
 	}
 
 	@RequestMapping(value = "/api/outlook/currencypair/delete", method = { RequestMethod.POST })
-	public AmxApiResponse<BoolRespModel, Object> deleteCurrencyPair(BigDecimal pairId) {
+	public AmxApiResponse<BoolRespModel, Object> deleteCurrencyPair(@RequestParam(value = "pairId", required = true)BigDecimal pairId) {
 		// TODO Auto-generated method stub
 		return forexOutlookClient.deleteCurrencyPair(pairId);
 	}
