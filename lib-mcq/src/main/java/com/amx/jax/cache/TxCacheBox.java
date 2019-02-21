@@ -16,7 +16,7 @@ public abstract class TxCacheBox<T> extends ATxCacheBox<T> {
 	@Override
 	public ICacheBox<T> getCacheBox() {
 		if (cache == null) {
-			this.cache = new CacheBox<T>();
+			this.cache = new CacheBox<T>("txcb-" + this.getClazzName());
 			this.cache.setClient(redisson);
 		}
 		return this.cache;
