@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 
 import com.amx.jax.branch.beans.BranchSession;
 import com.amx.jax.client.configs.JaxMetaInfo;
+import com.amx.jax.constants.JaxChannel;
 import com.amx.jax.rest.IMetaRequestOutFilter;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.jax.sso.SSOUser;
@@ -33,8 +34,8 @@ public class BranchMetaOutFilter implements IMetaRequestOutFilter<JaxMetaInfo> {
 	public void outFilter(JaxMetaInfo requestMeta) {
 		requestMeta.setTenant(TenantContextHolder.currentSite());
 		requestMeta.setTraceId(ContextUtil.getTraceId());
+		requestMeta.setChannel(JaxChannel.BRANCH);
 
-		// HardCoded
 		if (!ArgUtil.isEmpty(ssoUser.getUserDetails())) {
 			requestMeta.setEmployeeId(ssoUser.getUserDetails().getEmployeeId());
 			requestMeta.setCountryBranchId(ssoUser.getUserDetails().getCountryBranchId());
