@@ -51,13 +51,13 @@ public class DataService {
 		DiscountMgmtRespDTO discountMgmtRespDTO = new DiscountMgmtRespDTO();
 
 		if (discountMgmtReqDTO.getDiscountType().contains(DISCOUNT_TYPE.CHANNEL)) {
-			List<ChannelDiscount> channelDiscount = channelDiscountDao.getDiscountByAllChannel();
+			List<ChannelDiscount> channelDiscount = channelDiscountDao.getDiscountForAllChannel();
 			List<ChannelDetails> channelData = convertChannelData(channelDiscount);
 			discountMgmtRespDTO.setChannelDetails(channelData);
 		}
 
 		if (discountMgmtReqDTO.getDiscountType().contains(DISCOUNT_TYPE.CUSTOMER_CATEGORY)) {
-			List<CustomerCategoryDiscount> custCatDiscount = custCatDiscountDao.getDiscountByAllCustCategory();
+			List<CustomerCategoryDiscount> custCatDiscount = custCatDiscountDao.getDiscountForAllCustCategory();
 			List<CustomerCategoryDetails> custCategoryData = convertCustCategoryData(custCatDiscount);
 			discountMgmtRespDTO.setCustomerCategoryDetails(custCategoryData);
 		}
