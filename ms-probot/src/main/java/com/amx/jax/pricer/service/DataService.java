@@ -1,5 +1,6 @@
 package com.amx.jax.pricer.service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,18 +10,23 @@ import org.springframework.stereotype.Service;
 import com.amx.jax.pricer.dao.ChannelDiscountDao;
 import com.amx.jax.pricer.dao.CustCatDiscountDao;
 import com.amx.jax.pricer.dao.PipsMasterDao;
+import com.amx.jax.pricer.dao.RoutingDao;
+import com.amx.jax.pricer.dbmodel.BankMasterModel;
 import com.amx.jax.pricer.dbmodel.ChannelDiscount;
 import com.amx.jax.pricer.dbmodel.CustomerCategoryDiscount;
 import com.amx.jax.pricer.dbmodel.PipsMaster;
+import com.amx.jax.pricer.dbmodel.RoutingHeader;
+import com.amx.jax.pricer.dbmodel.ServiceMasterDesc;
 import com.amx.jax.pricer.dto.AmountSlabDetails;
 import com.amx.jax.pricer.dto.ChannelDetails;
 import com.amx.jax.pricer.dto.CustomerCategoryDetails;
 import com.amx.jax.pricer.dto.DiscountMgmtReqDTO;
 import com.amx.jax.pricer.dto.DiscountMgmtRespDTO;
+import com.amx.jax.pricer.dto.RoutBanksAndServiceRespDTO;
 import com.amx.jax.pricer.var.PricerServiceConstants.DISCOUNT_TYPE;
 
 @Service
-public class DiscountService {
+public class DataService {
 
 	@Autowired
 	ChannelDiscountDao channelDiscountDao;
@@ -30,19 +36,28 @@ public class DiscountService {
 
 	@Autowired
 	PipsMasterDao pipsMasterDao;
+	
+	@Autowired
+	RoutingDao routingDao;
+	
+	@Autowired
+	BankService bankService;
+	
+	@Autowired
+	ServiceMasterDescService serviceMasterDescService;
 
 	public DiscountMgmtRespDTO getDiscountManagementData(DiscountMgmtReqDTO discountMgmtReqDTO) {
 
 		DiscountMgmtRespDTO discountMgmtRespDTO = new DiscountMgmtRespDTO();
 
 		if (discountMgmtReqDTO.getDiscountType().contains(DISCOUNT_TYPE.CHANNEL)) {
-			List<ChannelDiscount> channelDiscount = channelDiscountDao.getDiscountByAllChannel();
+			List<ChannelDiscount> channelDiscount = channelDiscountDao.getDiscountForAllChannel();
 			List<ChannelDetails> channelData = convertChannelData(channelDiscount);
 			discountMgmtRespDTO.setChannelDetails(channelData);
 		}
 
 		if (discountMgmtReqDTO.getDiscountType().contains(DISCOUNT_TYPE.CUSTOMER_CATEGORY)) {
-			List<CustomerCategoryDiscount> custCatDiscount = custCatDiscountDao.getDiscountByAllCustCategory();
+			List<CustomerCategoryDiscount> custCatDiscount = custCatDiscountDao.getDiscountForAllCustCategory();
 			List<CustomerCategoryDetails> custCategoryData = convertCustCategoryData(custCatDiscount);
 			discountMgmtRespDTO.setCustomerCategoryDetails(custCategoryData);
 		}
@@ -68,6 +83,8 @@ public class DiscountService {
 			channelDetail.setChannel(discList.getChannel());
 			channelDetail.setDiscountPips(discList.getDiscountPips());
 			channelDetail.setIsActive(discList.getIsActive());
+			channelDetail.setMinDiscountPips(discList.getMinDiscountPips());
+			channelDetail.setMaxDiscountPips(discList.getMaxDiscountPips());
 
 			list.add(channelDetail);
 		}
@@ -84,6 +101,8 @@ public class DiscountService {
 			custCategoryDetail.setCustomerCategory(custDiscList.getCustomerCategory());
 			custCategoryDetail.setDiscountPips(custDiscList.getDiscountPips());
 			custCategoryDetail.setIsActive(custDiscList.getIsActive());
+			custCategoryDetail.setMinDiscountPips(custDiscList.getMinDiscountPips());
+			custCategoryDetail.setMaxDiscountPips(custDiscList.getMaxDiscountPips());
 
 			list.add(custCategoryDetail);
 		}
@@ -114,8 +133,39 @@ public class DiscountService {
 					amountSlabDetail.setCountryName(pipsMasterList.getCountryMaster().getFsCountryMasterDescs().get(0).getCountryName());
 				}
 			}
+			amountSlabDetail.setMinDiscountPips(pipsMasterList.getMinDiscountPips());
+			amountSlabDetail.setMaxDiscountPips(pipsMasterList.getMaxDiscountPips());			
 
 			list.add(amountSlabDetail);
+		}
+		return list;
+	}
+
+	public List<RoutBanksAndServiceRespDTO> getRoutBanksAndServices(BigDecimal countryId, BigDecimal currencyId) {
+		List<RoutingHeader> rountingHeaderData = routingDao.getRoutHeadersByCountryIdAndCurrenyId(countryId, currencyId);
+		List<RoutBanksAndServiceRespDTO> routBanksAndServiceRespDTO = convertRoutBankAndService(rountingHeaderData);
+		return routBanksAndServiceRespDTO;
+	}
+
+	private List<RoutBanksAndServiceRespDTO> convertRoutBankAndService(List<RoutingHeader> rountingHeaderData) {
+		List<RoutBanksAndServiceRespDTO> list = new ArrayList<>();
+		for(RoutingHeader routingData : rountingHeaderData) {
+			RoutBanksAndServiceRespDTO routBanksAndServiceRespData = new RoutBanksAndServiceRespDTO();
+			routBanksAndServiceRespData.setRoutingBankId(routingData.getRoutingBankId());
+			
+			BankMasterModel bankName = bankService.getBankById(routingData.getRoutingBankId());
+			if(null != bankName) {
+				routBanksAndServiceRespData.setRoutingBankName(bankName.getBankFullName());
+			}
+			
+			routBanksAndServiceRespData.setServiceId(routingData.getServiceMasterId());
+			
+			ServiceMasterDesc serviceName = serviceMasterDescService.getServiceById(routingData.getServiceMasterId());
+			if(null != serviceName) {
+				routBanksAndServiceRespData.setServiceDesc(serviceName.getServiceDesc());
+			}
+			
+			list.add(routBanksAndServiceRespData);
 		}
 		return list;
 	}

@@ -27,6 +27,10 @@ public class AmountSlabDetails implements Serializable {
 
 	private BigDecimal discountPips;
 
+	private BigDecimal minDiscountPips;
+
+	private BigDecimal maxDiscountPips;
+
 	public BigDecimal getPipsMasterId() {
 		return pipsMasterId;
 	}
@@ -105,6 +109,22 @@ public class AmountSlabDetails implements Serializable {
 
 	public void setDiscountPips(BigDecimal discountPips) {
 		this.discountPips = discountPips;
+	}
+
+	public BigDecimal getMinDiscountPips() {
+		return minDiscountPips;
+	}
+
+	public void setMinDiscountPips(BigDecimal minDiscountPips) {
+		this.minDiscountPips = minDiscountPips;
+	}
+
+	public BigDecimal getMaxDiscountPips() {
+		return maxDiscountPips;
+	}
+
+	public void setMaxDiscountPips(BigDecimal maxDiscountPips) {
+		this.maxDiscountPips = maxDiscountPips;
 	}
 
 }

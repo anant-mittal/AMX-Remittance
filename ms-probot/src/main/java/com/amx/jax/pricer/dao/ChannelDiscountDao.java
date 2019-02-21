@@ -23,8 +23,7 @@ public class ChannelDiscountDao {
 		return channelDiscountRepository.save(channelDiscount);
 	}
 
-	public List<ChannelDiscount> getDiscountByAllChannel() {
-		// TODO Auto-generated method stub
+	public List<ChannelDiscount> getDiscountForAllChannel() {
 		return (List<ChannelDiscount>) channelDiscountRepository.findAll();
 	}
 

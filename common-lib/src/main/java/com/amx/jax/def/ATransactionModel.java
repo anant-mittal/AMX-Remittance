@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import com.amx.jax.AppContextUtil;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.ClazzUtil;
 
 /**
  * @deprecated use {@link com.amx.jax.def.ATxCacheBox}
@@ -31,8 +32,18 @@ public abstract class ATransactionModel<T> {
 		return key;
 	}
 
+	String clazzName = null;
+
+	public String getClazzName() {
+		if (this.clazzName == null) {
+			this.clazzName = ClazzUtil.getClassName(this);
+		}
+		return clazzName;
+	}
+
 	private String getCacheKey(String key) {
-		return this.getClass().getSimpleName() + "-" + key;
+		// return this.getClazzName() + "-" + key;
+		return key;
 	}
 
 	public T save(T model) {

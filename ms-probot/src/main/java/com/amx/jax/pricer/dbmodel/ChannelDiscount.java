@@ -62,6 +62,12 @@ public class ChannelDiscount implements Serializable {
 	@Column(name = "APPROVED_DATE")
 	private Date approvedDate;
 
+	@Column(name = "MIN_DISCOUNT_PIPS")
+	private BigDecimal minDiscountPips;
+
+	@Column(name = "MAX_DISCOUNT_PIPS")
+	private BigDecimal maxDiscountPips;
+
 	public BigDecimal getId() {
 		return id;
 	}
@@ -156,6 +162,22 @@ public class ChannelDiscount implements Serializable {
 
 	public void setApprovedDate(Date approvedDate) {
 		this.approvedDate = approvedDate;
+	}
+
+	public BigDecimal getMinDiscountPips() {
+		return minDiscountPips;
+	}
+
+	public void setMinDiscountPips(BigDecimal minDiscountPips) {
+		this.minDiscountPips = minDiscountPips;
+	}
+
+	public BigDecimal getMaxDiscountPips() {
+		return maxDiscountPips;
+	}
+
+	public void setMaxDiscountPips(BigDecimal maxDiscountPips) {
+		this.maxDiscountPips = maxDiscountPips;
 	}
 
 }

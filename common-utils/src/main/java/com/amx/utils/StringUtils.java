@@ -2,8 +2,33 @@ package com.amx.utils;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public final class StringUtils {
+
+	public static class StringMatcher {
+		String str;
+		Matcher m;
+
+		public StringMatcher(String str) {
+			this.str = str;
+		}
+
+		public boolean match(Pattern pattern) {
+			this.m = pattern.matcher(str);
+			return this.m != null;
+		}
+
+		public boolean find() {
+			return this.m != null && this.m.find();
+		}
+
+		public String group(int index) {
+			return this.m.group(index);
+		}
+
+	}
 
 	public static boolean isNotBlank(String str) {
 		return !ArgUtil.isEmptyString(str);

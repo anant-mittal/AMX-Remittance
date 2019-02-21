@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 public class CustomerCategoryDetails implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	private BigDecimal id;
 
 	private String customerCategory;
@@ -14,6 +14,10 @@ public class CustomerCategoryDetails implements Serializable {
 	private BigDecimal discountPips;
 
 	private String isActive;
+
+	private BigDecimal minDiscountPips;
+
+	private BigDecimal maxDiscountPips;
 
 	public BigDecimal getId() {
 		return id;
@@ -45,6 +49,22 @@ public class CustomerCategoryDetails implements Serializable {
 
 	public void setIsActive(String isActive) {
 		this.isActive = isActive;
+	}
+
+	public BigDecimal getMinDiscountPips() {
+		return minDiscountPips;
+	}
+
+	public void setMinDiscountPips(BigDecimal minDiscountPips) {
+		this.minDiscountPips = minDiscountPips;
+	}
+
+	public BigDecimal getMaxDiscountPips() {
+		return maxDiscountPips;
+	}
+
+	public void setMaxDiscountPips(BigDecimal maxDiscountPips) {
+		this.maxDiscountPips = maxDiscountPips;
 	}
 
 }

@@ -22,7 +22,7 @@ public class CustCatDiscountDao {
 		return custCatDiscountRepository.save(customerCategoryDiscount);
 	}
 
-	public List<CustomerCategoryDiscount> getDiscountByAllCustCategory() {
+	public List<CustomerCategoryDiscount> getDiscountForAllCustCategory() {
 		// TODO Auto-generated method stub
 		return (List<CustomerCategoryDiscount>) custCatDiscountRepository.findAll();
 	}
