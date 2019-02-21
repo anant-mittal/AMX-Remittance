@@ -1,11 +1,12 @@
 package com.amx.jax.pricer.api;
 
 import java.math.BigDecimal;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+
 import javax.annotation.Resource;
 import javax.validation.Valid;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,11 +20,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.WebApplicationContext;
+
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.pricer.ProbotExchangeRateService;
 import com.amx.jax.pricer.dto.DprRequestDto;
-import com.amx.jax.pricer.dto.HolidayRequestDTO;
 import com.amx.jax.pricer.dto.HolidayResponseDTO;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.dto.PricingResponseDTO;
@@ -88,6 +89,18 @@ public class ProbotExchRateApiController implements ProbotExchangeRateService {
 
 	}
 
+	/*@Override
+	@RequestMapping(value = ApiEndPoints.FETCH_DISCOUNTED_RATES, method = RequestMethod.POST)
+	public AmxApiResponse<PricingResponseDTO, Object> fetchCustomercategoryDiscountedRates(
+			PricingRequestDTO pricingRequestDTO) {
+
+		LOGGER.info("Received Discounted Rate Request " + " with TraceId: " + AppContextUtil.getTraceId());
+		List<PricingResponseDTO> pricingResponseDTOList = pricingService
+				.fetchDiscountedRatesAcrossCustCategories(pricingRequestDTO);
+
+		return AmxApiResponse.buildList(pricingResponseDTOList);
+	}*/
+	
 	@Override
 	@RequestMapping(value = ApiEndPoints.FETCH_DISCOUNTED_RATES, method = RequestMethod.POST)
 	public AmxApiResponse<PricingResponseDTO, Object> fetchDiscountedRates(
@@ -95,6 +108,7 @@ public class ProbotExchRateApiController implements ProbotExchangeRateService {
 
 		LOGGER.info("Received Fetch Discounted Rate Request " + " with TraceId: " + AppContextUtil.getTraceId());
 
+		LOGGER.info("Received Discounted Rate Request " + " with TraceId: " + AppContextUtil.getTraceId());
 		List<PricingResponseDTO> pricingResponseDTOList = pricingService
 				.fetchDiscountedRatesAcrossCustCategories(pricingRequestDTO);
 

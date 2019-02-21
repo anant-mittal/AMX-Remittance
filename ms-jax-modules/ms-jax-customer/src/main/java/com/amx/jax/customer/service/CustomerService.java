@@ -147,13 +147,9 @@ public class CustomerService extends AbstractService {
 	public CustomerIncomeRangeDto getCustomerIncomeRangeDto(BigDecimal customerId) {
 		CustomerIncomeRangeDto dto = new CustomerIncomeRangeDto();
 		Customer customer = customerRepository.findOne(customerId);
-		List<Map<String, Object>> incomeRange = articleDao.getIncomeRangeForCustomer(customer);
-		if (CollectionUtils.isNotEmpty(incomeRange)) {
-			Map<String, Object> incomeRangeData = articleDao.getIncomeRangeForCustomer(customer).get(0);
-			dto.setArticleDetailDesc(incomeRangeData.get("ARTICLE_DETAIL_DESC").toString());
-			dto.setArticleeDescription(incomeRangeData.get("ARTICLE_DESC").toString());
-			dto.setMonthlyIncome(incomeRangeData.get("MONTHLY_INCOME").toString());
-		}
+		dto.setArticleDetailDesc(articleDao.getAricleDetailDesc(customer));
+		dto.setArticleeDescription(articleDao.getArticleDesc(customer));
+		dto.setMonthlyIncome(articleDao.getMonthlyIncomeRange(customer));
 		return dto;
 	}
 

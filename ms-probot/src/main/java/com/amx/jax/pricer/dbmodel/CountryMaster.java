@@ -2,13 +2,17 @@ package com.amx.jax.pricer.dbmodel;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -65,8 +69,8 @@ import com.amg.exchange.treasury.model.TreasuryStandardInstruction;
  * 
  * Description: TODO
  ********************************************************************************************************************/
-//@Cacheable  
-//@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+// @Cacheable
+// @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @Entity
 @Table(name = "FS_COUNTRY_MASTER")
 public class CountryMaster implements Serializable {
@@ -80,30 +84,26 @@ public class CountryMaster implements Serializable {
 	private String countryTelCode;
 	private String countryActive;
 	private String businessCountry;
-	//private List<CountryMasterDesc> fsCountryMasterDescs = new ArrayList<CountryMasterDesc>();
+	private List<CountryMasterDesc> fsCountryMasterDescs = new ArrayList<CountryMasterDesc>();
+	//private CountryMasterDesc fsCountryMasterDescs;
 	private String createdBy;
 	private Date createdDate;
 	private String isActive;
 	private Date approvedDate;
 	private String approvedBy;
 	private String countryMobileLength;
-	
-	
+
 	public CountryMaster(BigDecimal countryId) {
 		this.countryId = countryId;
 	}
 
-	public CountryMaster(){
-		
+	public CountryMaster() {
+
 	}
-			
 
-
-	
-	
 	@Id
-	@GeneratedValue(generator="fs_country_master_seq",strategy=GenerationType.SEQUENCE)
-	@SequenceGenerator(name="fs_country_master_seq",sequenceName="FS_COUNTRY_MASTER_SEQ",allocationSize=1)
+	@GeneratedValue(generator = "fs_country_master_seq", strategy = GenerationType.SEQUENCE)
+	@SequenceGenerator(name = "fs_country_master_seq", sequenceName = "FS_COUNTRY_MASTER_SEQ", allocationSize = 1)
 	@Column(name = "COUNTRY_ID", unique = true, nullable = false, precision = 22, scale = 0)
 	public BigDecimal getCountryId() {
 		return this.countryId;
@@ -166,16 +166,15 @@ public class CountryMaster implements Serializable {
 	public void setCountryActive(String countryActive) {
 		this.countryActive = countryActive;
 	}
-	
-	/*@OneToMany(fetch = FetchType.EAGER, mappedBy = "fsCountryMaster")
-	public List<CountryMasterDesc> getFsCountryMasterDescs() {
-		return this.fsCountryMasterDescs;
-	}*/
 
-	/*public void setFsCountryMasterDescs(
-			List<CountryMasterDesc> fsCountryMasterDescs) {
-		this.fsCountryMasterDescs = fsCountryMasterDescs;
-	}*/
+	
+	 @OneToMany(fetch = FetchType.EAGER, mappedBy = "fsCountryMaster") public
+	 List<CountryMasterDesc> getFsCountryMasterDescs() { return
+	 this.fsCountryMasterDescs; }
+	 
+	 public void setFsCountryMasterDescs( List<CountryMasterDesc>
+	 fsCountryMasterDescs) { this.fsCountryMasterDescs = fsCountryMasterDescs; }
+	 
 
 	@Column(name = "BUSINESS_COUNTRY", length = 1)
 	public String getBusinessCountry() {
@@ -203,7 +202,7 @@ public class CountryMaster implements Serializable {
 	public void setCreatedDate(Date createdDate) {
 		this.createdDate = createdDate;
 	}
-	
+
 	@Column(name = "ISACTIVE")
 	public String getIsActive() {
 		return isActive;
@@ -212,7 +211,7 @@ public class CountryMaster implements Serializable {
 	public void setIsActive(String isActive) {
 		this.isActive = isActive;
 	}
-	
+
 	@Column(name = "APPROVED_DATE")
 	public Date getApprovedDate() {
 		return approvedDate;
@@ -221,7 +220,7 @@ public class CountryMaster implements Serializable {
 	public void setApprovedDate(Date approvedDate) {
 		this.approvedDate = approvedDate;
 	}
-	
+
 	@Column(name = "APPROVED_BY")
 	public String getApprovedBy() {
 		return approvedBy;
@@ -239,7 +238,4 @@ public class CountryMaster implements Serializable {
 	public void setCountryMobileLength(String countryMobileLength) {
 		this.countryMobileLength = countryMobileLength;
 	}
-	
-	
-	
 }

@@ -29,6 +29,7 @@ import com.amx.jax.rbaac.error.RbaacServiceError;
 import com.amx.jax.rbaac.exception.AuthServiceException;
 import com.amx.jax.rbaac.manager.DeviceManager;
 import com.amx.jax.rbaac.validation.DeviceValidation;
+import com.amx.jax.util.ParamValidator;
 import com.amx.utils.CryptoUtil;
 import com.amx.utils.Random;
 import com.amx.utils.TimeUtils;
@@ -187,6 +188,8 @@ public class DeviceService extends AbstractService {
 	public DevicePairOtpResponse validateDeviceSessionPairToken(BigDecimal deviceRegId, String deviceSessionToken) {
 		logger.debug("validateDeviceSessionPairToken method params: deviceRegId {}, deviceSessionToken {}", deviceRegId,
 				deviceSessionToken);
+		ParamValidator.validateNotNull(deviceRegId, "deviceRegId may not be null");
+		ParamValidator.validateNotEmpty(deviceSessionToken, "deviceSessionToken may not be empty");
 		Device device = deviceDao.findDevice(deviceRegId);
 		deviceValidation.validateDevice(device);
 		String sessionTokenGen = deviceManager.generateSessionPairToken(device);

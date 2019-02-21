@@ -2,6 +2,8 @@ package com.bootloaderjs;
 
 import java.util.regex.Pattern;
 
+import com.amx.utils.StringUtils;
+
 public class App { // Noncompliant
 
 	public static final Pattern pattern = Pattern.compile("^com.amx.jax.logger.client.AuditFilter<(.*)>$");
@@ -12,10 +14,22 @@ public class App { // Noncompliant
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		long timeout = 100L;
-		long minute = System.currentTimeMillis() / (1000 * 60);
-		System.out.println(
-				"==" + minute + "===" + rotateTime(1000 * 1, 0x3));
+		printAndCheck(StringUtils.pad("abdefg", "xxxx", 0, 1), "defg");
+		printAndCheck(StringUtils.pad("abdefg", "xxxxxxx", 0, 1), "xabdefg");
+
+		printAndCheck(StringUtils.pad("abdefg", "xxxx", 1, 1), "abde");
+		printAndCheck(StringUtils.pad("abdefg", "xxxxxxx", 1, 1), "abdefgx");
+
+		printAndCheck(StringUtils.pad("abdefg", "xxxx", 0, 0), "abdefg");
+		printAndCheck(StringUtils.pad("abdefg", "xxxxxxx", 0, 0), "xabdefg");
+
+		printAndCheck(StringUtils.pad("abdefg", "xxxx", 1, 0), "abdefg");
+		printAndCheck(StringUtils.pad("abdefg", "xxxxxxx", 1, 0), "abdefgx");
+
+	}
+
+	public static void printAndCheck(String str, String check) {
+		System.out.println(String.format("%15s === %15s %15s", str.equals(check), check, str));
 	}
 
 	private static long rotateTime(long millis, int i) {

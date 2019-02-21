@@ -230,8 +230,10 @@ public enum JaxError implements IExceptionEnum {
 	SECURITY_QUE_ANS,
 	SEC_ANS_REQUIRED,
 	BOTH_OTP_REQUIRED,
-	OTP_AND_SEC_ANSWER_REQUIRED;
+	OTP_AND_SEC_ANSWER_REQUIRED,
 	
+	// for validate Currency pair
+	INVALID_PAIR_ID;
 
 	@Deprecated
 	public String getCode() {

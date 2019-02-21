@@ -15,6 +15,7 @@ import javax.swing.JPanel;
 
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.adapter.ACardReaderService.CardStatus;
 import com.amx.jax.adapter.ACardReaderService.DataStatus;
 import com.amx.jax.adapter.ACardReaderService.DeviceStatus;
@@ -117,6 +118,8 @@ public class SWAdapterGUI extends JFrame {
 		constraints.anchor = GridBagConstraints.CENTER;
 		JButton refreshButton = new JButton("Refresh");
 		refreshButton.addActionListener((ActionEvent event) -> {
+			AppContextUtil.getTraceId();
+			AppContextUtil.init();
 			ACardReaderService.CONTEXT.reset();
 		});
 		newPanel.add(refreshButton, constraints);
