@@ -1,8 +1,8 @@
 package com.amx.jax.bot;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +19,7 @@ import com.amx.jax.tunnel.ITunnelSubscriber;
 import com.amx.jax.tunnel.TunnelEventMapping;
 import com.amx.jax.tunnel.TunnelEventXchange;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.StringUtils.StringMatcher;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
@@ -28,6 +29,8 @@ public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(InBoxListener.class);
 	private static final PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
+
+	public static final Pattern LINK_CIVIL_ID = Pattern.compile("^LINK (.*)$");
 
 	@Autowired
 	WhatsAppClient whatsAppClient;
@@ -40,28 +43,55 @@ public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 		if (!ArgUtil.isEmpty(event.getWaChannel())) {
 			try {
 				PhoneNumber swissNumberProto = phoneUtil.parse("+" + event.getFrom(), "IN");
-
-				Map<String, Object> query = new HashMap<String, Object>();
-				query.put("gte", "now-20y");
-				query.put("lte", "now");
-				query.put("searchKey", "customer.mobile");
-				query.put("searchValue", swissNumberProto.getNationalNumber());
-
 				LOGGER.info("Recieved {} {} ", swissNumberProto.getNationalNumber(), event.getMessage());
-				String message = "";
-				SnapModelWrapper x = snapQueryService.execute(SnapQueryTemplate.CUSTOMERS_PROFILE, query);
-				if (x.getHits().getTotal() > 0) {
-					MapModel customer = x.getHits().getHits().get(0).getSource().getMap("customer");
-					message = String.format("Hello %s, You account is linked with this whatsapp account, thanx.",
-							customer.getString("name"));
+				String replyMessage = "";
+
+				StringMatcher matcher = new StringMatcher(event.getMessage().toUpperCase());
+
+				if (matcher.match(LINK_CIVIL_ID) && matcher.find()) {
+					String civilId = matcher.group(1);
+					Map<String, Object> query = new HashMap<String, Object>();
+					query.put("gte", "now-20y");
+					query.put("lte", "now");
+					query.put("searchKey", "customer.identity");
+					query.put("searchValue", civilId);
+					SnapModelWrapper x = snapQueryService.execute(SnapQueryTemplate.CUSTOMERS_PROFILE, query);
+
+					if (x.getHits().getTotal() > 0) {
+						MapModel customer = x.getHits().getHits().get(0).getSource().getMap("customer");
+						replyMessage = String.format(
+								"Hello, Your request has been recieved to link CivilID %s with WhatsApp %s. "
+										+ "Please visit branch or online to get it verified.",
+								customer.getString("name"), civilId, swissNumberProto.getNationalNumber());
+					} else {
+						replyMessage = "We cannot find any account linked with this civild id, Kindyl visit branch or online to create new account";
+					}
 				} else {
-					message = "We cannot find any account linked with this number please visit nearest branch";
+
+					Map<String, Object> query = new HashMap<String, Object>();
+					query.put("gte", "now-20y");
+					query.put("lte", "now");
+					query.put("searchKey", "customer.mobile");
+					query.put("searchValue", swissNumberProto.getNationalNumber());
+
+					SnapModelWrapper x = snapQueryService.execute(SnapQueryTemplate.CUSTOMERS_PROFILE, query);
+
+					if (x.getHits().getTotal() > 0) {
+						MapModel customer = x.getHits().getHits().get(0).getSource().getMap("customer");
+						replyMessage = String.format(
+								"Hello %s, You account is linked with this whatsapp account, thanx.",
+								customer.getString("name"));
+					} else {
+						replyMessage = "We cannot find any account linked with this number please enter "
+								+ "your civil id in format LINK <CIVILID> to link this WhatsApp number to your civilid. ie:- LINK 285030905179";
+					}
 				}
+
 				WAMessage reply = new WAMessage();
 				reply.setQueue(event.getQueue());
 				reply.setChannel(event.getWaChannel());
 				reply.addTo(event.getFrom());
-				reply.setMessage(message);
+				reply.setMessage(replyMessage);
 				whatsAppClient.send(reply);
 			} catch (NumberParseException e) {
 				LOGGER.error("BOT EXCEPTION", e);
