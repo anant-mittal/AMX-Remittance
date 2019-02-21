@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.thavam.util.concurrent.blockingMap.BlockingHashMap;
 
 import com.amx.jax.def.ICacheBox;
+import com.amx.utils.ClazzUtil;
 
 public class CacheBox<T> implements ICacheBox<T> {
 
@@ -24,6 +25,10 @@ public class CacheBox<T> implements ICacheBox<T> {
 	@Autowired(required = false)
 	RedissonClient redisson;
 
+	public void setClient(RedissonClient redisson) {
+		this.redisson = redisson;
+	}
+
 	String cahceName = getClass().getName();
 
 	private RLocalCachedMap<String, T> cache = null;
@@ -31,7 +36,6 @@ public class CacheBox<T> implements ICacheBox<T> {
 
 	public RLocalCachedMap<String, T> map() {
 		if (redisson != null) {
-
 			if (locker == null) {
 				locker = new BlockingHashMap<String, T>();
 			}
@@ -44,6 +48,9 @@ public class CacheBox<T> implements ICacheBox<T> {
 	}
 
 	public String getCahceName() {
+		if (this.cahceName == null) {
+			this.cahceName = ClazzUtil.getClassName(this);
+		}
 		return cahceName;
 	}
 
