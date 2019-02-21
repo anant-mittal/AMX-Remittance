@@ -52,7 +52,7 @@ public class ForexOutlookController implements IForexOutlookService {
 	@Override
 	public AmxApiResponse<BoolRespModel, Object> saveUpdateCurrencyPair(@RequestBody @Valid ForexOutLookRequest dto) {
 		LOGGER.debug("saveUpdateCurrencyPair controller" + dto.toString());
-		forexOutlookService.validateForexOutlookDto(dto);
+		forexOutlookService.validateForexOutlookDto(dto.getPairId());
 		BigDecimal appCountryId = metaData.getCountryId();
 		BigDecimal langId = metaData.getLanguageId();
 		BigDecimal custId = metaData.getCustomerId();
@@ -64,6 +64,7 @@ public class ForexOutlookController implements IForexOutlookService {
 	@Override
 	public AmxApiResponse<BoolRespModel, Object> deleteCurrencyPair(
 			@RequestParam(name = Params.PAIR_ID) BigDecimal pairId) {
+		forexOutlookService.validateForexOutlookDto(pairId);
 		BoolRespModel response = forexOutlookService.deleteCurrencyPair(pairId);
 		return AmxApiResponse.build(response);
 

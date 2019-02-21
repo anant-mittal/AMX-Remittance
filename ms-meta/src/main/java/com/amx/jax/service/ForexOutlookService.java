@@ -133,7 +133,7 @@ public class ForexOutlookService extends AbstractService {
 					metaData.getLanguageId());
 			if (!curPairHistoryList.isEmpty()) {
 				ForexOutlook rec = curPairHistoryList.get(0);
-				rec.setIsActive("N");
+				rec.setIsActive("D");
 				rec.setModifiedDate(new Date());
 				forexOutlookDao.save(rec);
 			} else {
@@ -147,11 +147,11 @@ public class ForexOutlookService extends AbstractService {
 		return new BoolRespModel(Boolean.TRUE);
 	}
 
-	public void validateForexOutlookDto(ForexOutLookRequest dto) {
+	public void validateForexOutlookDto(BigDecimal pairId) {
 
 		List<CurrencyPairView> currencyPairList = currencyPairRepository.findAll();
 
-		if (currencyPairList.contains(dto.getPairId())) {
+		if (currencyPairList.contains(pairId)) {
 			throw new GlobalException(JaxError.INVALID_PAIR_ID, "Invalid Pair Id ");
 
 		}
