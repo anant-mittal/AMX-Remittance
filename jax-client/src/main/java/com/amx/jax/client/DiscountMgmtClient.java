@@ -1,5 +1,7 @@
 package com.amx.jax.client;
 
+import java.math.BigDecimal;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
@@ -11,6 +13,11 @@ import com.amx.jax.IDiscManagementService;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.pricer.PricerServiceClient;
+import com.amx.jax.pricer.dto.DiscountMgmtReqDTO;
+import com.amx.jax.pricer.dto.DiscountMgmtRespDTO;
+import com.amx.jax.pricer.dto.PricingRequestDTO;
+import com.amx.jax.pricer.dto.PricingResponseDTO;
+import com.amx.jax.pricer.dto.RoutBanksAndServiceRespDTO;
 import com.amx.jax.rest.RestService;
 
 @Component
@@ -35,5 +42,19 @@ public class DiscountMgmtClient extends AbstractJaxServiceClient implements IDis
 			return JaxSystemError.evaluate(ae);
 		} 
 	}
+	
+	public AmxApiResponse<PricingResponseDTO, Object> fetchDiscountedRates(PricingRequestDTO pricingRequestDTO) {
+		return pricerServiceClient.fetchDiscountedRates(pricingRequestDTO);
+	}
+	
+	public AmxApiResponse<DiscountMgmtRespDTO, Object> getDiscountManagemet(DiscountMgmtReqDTO discountMgmtReqDTO) {
+		return pricerServiceClient.getDiscountManagemet(discountMgmtReqDTO);
+	}
 
+	public AmxApiResponse<RoutBanksAndServiceRespDTO, Object> getRbanksAndServices(BigDecimal countryId,
+			BigDecimal currencyId) {
+		return pricerServiceClient.getRbanksAndServices(countryId, currencyId);
+	}
+	
+	
 }
