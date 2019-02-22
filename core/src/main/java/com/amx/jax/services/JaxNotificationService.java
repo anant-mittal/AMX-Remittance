@@ -46,12 +46,15 @@ public class JaxNotificationService {
 
 	@Autowired
 	private PostManService postManService;
+	
+	@Autowired
+	JaxNotificationService jaxNotificationService;
 
 	Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	private final String SUBJECT_ACCOUNT_UPDATE = "Account Update";
-	private final String SUBJECT_EMAIL_CHANGE = "Al Mulla Exchange Account - Email ID Change";
-	private final String SUBJECT_PHONE_CHANGE = "Al Mulla Exchange Account - Phone Number Change";
+	private final String SUBJECT_EMAIL_CHANGE = "Modern Exchange Account - Email ID Change";
+	private final String SUBJECT_PHONE_CHANGE = "Modern Exchange Account - Phone number Change";
 
 	public void sendTransactionNotification(RemittanceReceiptSubreport remittanceReceiptSubreport, PersonInfo pinfo) {
 
@@ -125,11 +128,13 @@ public class JaxNotificationService {
 			email.getModel().put("change_type", ChangeType.IMAGE_CHANGE);
 
 		} else if (customerModel.getMobile() != null) {
-			email.setSubject(SUBJECT_PHONE_CHANGE);
+			String subject = jaxNotificationService.sendEmailChangeSubject();
+			email.setSubject(subject);
 			email.getModel().put("change_type", ChangeType.MOBILE_CHANGE);
 
 		} else if (customerModel.getEmail() != null) {
-			email.setSubject(SUBJECT_EMAIL_CHANGE);
+			String subject = jaxNotificationService.sendMobileNumberChangeSubject();
+			email.setSubject(subject);
 			email.getModel().put("change_type", ChangeType.EMAIL_CHANGE);
 
 			emailToOld = new Email();
@@ -323,5 +328,30 @@ public class JaxNotificationService {
 			logger.error("error in sendOtpSms", e);
 		}
 	} // end of sendOtpSms
+	
+	
+	public String sendEmailChangeSubject() {
+
+		if (TenantContextHolder.currentSite().equals(Tenant.KWT)) {
+			return "Almulla Exchange Account - Email ID Change";
+		} else if (TenantContextHolder.currentSite().equals(Tenant.BHR)) {
+			return "Modern Exchange Account - Email ID Change";
+		} else if (TenantContextHolder.currentSite().equals(Tenant.OMN)) {
+			return "Almulla Exchange Account - Email ID Change";
+		}
+		return "Almulla Exchange Account - Email ID Change";
+	}
+
+	public String sendMobileNumberChangeSubject() {
+
+		if (TenantContextHolder.currentSite().equals(Tenant.KWT)) {
+			return "Almulla Exchange Account - Phone number Change";
+		} else if (TenantContextHolder.currentSite().equals(Tenant.BHR)) {
+			return "Modern Exchange Account - Phone number Change";
+		} else if (TenantContextHolder.currentSite().equals(Tenant.OMN)) {
+			return "Almulla Exchange Account - Phone number Change";
+		}
+		return "Almulla Exchange Account - Phone number Change";
+	}
 
 }

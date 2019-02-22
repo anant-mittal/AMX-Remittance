@@ -44,7 +44,6 @@ public class BeneficiaryDao {
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
-	@Transactional
 	public List<BigDecimal> getRoutingBankMasterList() {
 		String sql = "select distinct(COUNTRY_ID) from V_EX_ROUTING_AGENTS where SERVICE_GROUP_ID = "
 				+ "(select service_group_id from ex_service_group where service_group_code='C' and " + "isactive='Y')";
