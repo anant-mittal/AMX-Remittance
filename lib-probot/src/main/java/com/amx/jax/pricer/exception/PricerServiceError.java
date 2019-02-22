@@ -29,6 +29,11 @@ public enum PricerServiceError implements IExceptionEnum {
 	
 	MISSING_VALID_EXCHANGE_RATES,
 	
+	INVALID_CHANNEL_DISC_PIPS,
+
+	INVALID_CUST_CAT_DISC_PIPS,
+	
+	INVALID_AMT_SLAB_DISC_PIPS,
 	/** The unknown exception. */
 	// MISC
 	UNKNOWN_EXCEPTION;

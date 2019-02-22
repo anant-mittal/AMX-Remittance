@@ -14,4 +14,6 @@ public interface ChannelDiscountRepository extends CrudRepository<ChannelDiscoun
 
 	ChannelDiscount findByChannel(Channel channel);
 
+	ChannelDiscount findById(BigDecimal id);
+
 }

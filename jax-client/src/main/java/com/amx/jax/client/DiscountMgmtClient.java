@@ -14,7 +14,7 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.pricer.PricerServiceClient;
 import com.amx.jax.pricer.dto.DiscountMgmtReqDTO;
-import com.amx.jax.pricer.dto.DiscountMgmtRespDTO;
+import com.amx.jax.pricer.dto.DiscountDetailsReqRespDTO;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.dto.PricingResponseDTO;
 import com.amx.jax.pricer.dto.RoutBanksAndServiceRespDTO;
@@ -47,7 +47,7 @@ public class DiscountMgmtClient extends AbstractJaxServiceClient implements IDis
 		return pricerServiceClient.fetchDiscountedRates(pricingRequestDTO);
 	}
 	
-	public AmxApiResponse<DiscountMgmtRespDTO, Object> getDiscountManagemetDetails(DiscountMgmtReqDTO discountMgmtReqDTO) {
+	public AmxApiResponse<DiscountDetailsReqRespDTO, Object> getDiscountManagemetDetails(DiscountMgmtReqDTO discountMgmtReqDTO) {
 		return pricerServiceClient.getDiscountManagemet(discountMgmtReqDTO);
 	}
 
@@ -56,5 +56,8 @@ public class DiscountMgmtClient extends AbstractJaxServiceClient implements IDis
 		return pricerServiceClient.getRbanksAndServices(countryId, currencyId);
 	}
 	
+	public AmxApiResponse<DiscountDetailsReqRespDTO, Object> saveDiscountDetails(DiscountDetailsReqRespDTO discountMgmtReqDTO){
+		return pricerServiceClient.saveDiscountDetails(discountMgmtReqDTO);
+	}
 	
 }
