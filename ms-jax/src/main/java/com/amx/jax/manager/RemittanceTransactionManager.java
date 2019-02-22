@@ -75,6 +75,7 @@ import com.amx.jax.error.JaxError;
 import com.amx.jax.exrateservice.dao.ExchangeRateDao;
 import com.amx.jax.exrateservice.dao.PipsMasterDao;
 import com.amx.jax.exrateservice.service.NewExchangeRateService;
+import com.amx.jax.logger.AuditEvent;
 import com.amx.jax.logger.AuditEvent.Result;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.events.CActivityEvent;
@@ -254,7 +255,8 @@ public class RemittanceTransactionManager {
 				+ routingBankId + "\t serviceMasterId :" + serviceMasterId);
 		List<ExchangeRateApprovalDetModel> exchangeRates = exchangeRateDao.getExchangeRatesForRoutingBank(currencyId,
 				meta.getCountryBranchId(), rountingCountryId, applicationCountryId, routingBankId, serviceMasterId);
-		if (!jaxTenantProperties.getExrateBestRateLogicEnable() && (exchangeRates == null || exchangeRates.isEmpty())) {
+		if (!jaxTenantProperties.getExrateBestRateLogicEnable() && !jaxTenantProperties.getIsDynamicPricingEnabled()
+				&& (exchangeRates == null || exchangeRates.isEmpty())) {
 			throw new GlobalException(REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL,
 					"No exchange rate found for bank- " + routingBankId);
 		}
@@ -575,11 +577,16 @@ public class RemittanceTransactionManager {
 		BigDecimal fcAmount = model.getForeignAmount();
 		BigDecimal lcAmount = model.getLocalAmount();
 		ExchangeRateBreakup exchangeRateBreakup;
-		if (jaxTenantProperties.getExrateBestRateLogicEnable()) {
-			BigDecimal routingBankId = (BigDecimal) remitApplParametersMap.get("P_ROUTING_BANK_ID");
-			BigDecimal fCurrencyId = (BigDecimal) remitApplParametersMap.get("P_FOREIGN_CURRENCY_ID");
-			exchangeRateBreakup = newExchangeRateService.getExchangeRateBreakUp(fCurrencyId, lcAmount, fcAmount,
-					routingBankId);
+		BigDecimal routingBankId = (BigDecimal) remitApplParametersMap.get("P_ROUTING_BANK_ID");
+		BigDecimal fCurrencyId = (BigDecimal) remitApplParametersMap.get("P_FOREIGN_CURRENCY_ID");
+		BigDecimal routingCountryId  = (BigDecimal) remitApplParametersMap.get("P_ROUTING_COUNTRY_ID");
+		
+		if (jaxTenantProperties.getIsDynamicPricingEnabled()) {
+			exchangeRateBreakup = newExchangeRateService.getExchangeRateBreakUpUsingDynamicPricing(fCurrencyId,
+					lcAmount, fcAmount, routingCountryId, routingBankId);
+		} else if (jaxTenantProperties.getExrateBestRateLogicEnable()) {
+			exchangeRateBreakup = newExchangeRateService.getExchangeRateBreakUpUsingBestRate(fCurrencyId, lcAmount,
+					fcAmount, routingBankId);
 		} else {
 			exchangeRateBreakup = createExchangeRateBreakUp(exchangeRates, model, responseModel);
 		}

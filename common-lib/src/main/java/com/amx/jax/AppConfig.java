@@ -65,6 +65,7 @@ public class AppConfig {
 
 	public static final String SPRING_REDIS_HOST = "${spring.redis.host}";
 	public static final String SPRING_REDIS_PORT = "${spring.redis.port}";
+	public static final String JAX_PRICER_URL = "${jax.pricer.url}";
 
 	@Value(APP_ENV)
 	@AppParamKey(AppParam.APP_ENV)
@@ -160,6 +161,10 @@ public class AppConfig {
 	@Value(SPRING_REDIS_PORT)
 	@AppParamKey(AppParam.SPRING_REDIS_PORT)
 	private String redisSpringPort;
+
+	@Value(JAX_PRICER_URL)
+	@AppParamKey(AppParam.JAX_PRICER_URL)
+	private String pricerURL;
 
 	@Value(APP_CONTEXT_PREFIX)
 	@AppParamKey(AppParam.APP_CONTEXT_PREFIX)
@@ -292,6 +297,14 @@ public class AppConfig {
 
 	public void setAuthURL(String authURL) {
 		this.authURL = authURL;
+	}
+
+	public final String getPricerURL() {
+		return pricerURL;
+	}
+
+	public final void setPricerURL(String pricerURL) {
+		this.pricerURL = pricerURL;
 	}
 
 	public String getAppAuthKey() {

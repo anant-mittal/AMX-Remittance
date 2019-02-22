@@ -266,7 +266,7 @@ public class RemittController {
 	 */
 	@RequestMapping(value = "/api/remitt/xrate", method = { RequestMethod.POST })
 	public ResponseWrapper<XRateData> xrate(@RequestParam(required = false) BigDecimal forCur,
-			@RequestParam(required = false) BigDecimal domAmount) {
+			@RequestParam(required = false) BigDecimal domAmount, @RequestParam(required = false) BigDecimal beneBankCountryId) {
 		ResponseWrapper<XRateData> wrapper = new ResponseWrapper<XRateData>(new XRateData());
 
 		CurrencyMasterDTO domCur = tenantContext.getDomCurrency();
@@ -279,7 +279,7 @@ public class RemittController {
 			ExchangeRateResponseModel resp;
 			try {
 				resp = jaxService.setDefaults().getxRateClient()
-						.getExchangeRate(domCur.getCurrencyId(), forCurcy.getCurrencyId(), domAmount, null).getResult();
+						.getExchangeRate(domCur.getCurrencyId(), forCurcy.getCurrencyId(), domAmount, null, beneBankCountryId).getResult();
 				wrapper.getData().setForXRate(resp.getExRateBreakup().getInverseRate());
 				wrapper.getData().setDomXRate(resp.getExRateBreakup().getRate());
 				wrapper.getData().setForAmount(resp.getExRateBreakup().getConvertedFCAmount());

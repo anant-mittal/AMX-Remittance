@@ -56,6 +56,12 @@
 				<version>${amx.version}</version>
 			</dependency>
 
+			<dependency>
+				<groupId>com.amx.jax</groupId>
+				<artifactId>lib-probot</artifactId>
+				<version>${amx.version}</version>
+			</dependency>
+
 		</dependencies>
 
 	</dependencyManagement>
@@ -105,6 +111,7 @@
 		<module>core</module>
 		<module>jax-client</module>
 		<module>lib-adapter</module>
+		<module>lib-probot</module>
 
 		<!-- Exchange Services -->
 		<module>ms-meta</module>
@@ -116,6 +123,8 @@
 		<module>ms-rbaac</module>
 		<module>ms-worker</module>
 		<module>ms-radar</module>
+		<module>ms-probot</module>
+		
 
 		<module>server-ui</module>
 		
@@ -130,3 +139,4 @@
 		<!-- <module>server-sample</module> -->
 	</modules>
 </project>
+
