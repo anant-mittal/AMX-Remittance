@@ -72,4 +72,22 @@ public class JaxConfigService extends AbstractService {
 		response.getData().getValues().add(new BooleanResponse());
 		return response;
 	}
+	
+	public Integer getIntegerConfigValue(JaxDbConfig key, Integer defaultValue) {
+		JaxConfig jaxConfig = repo.findByType(key.toString());
+		if (jaxConfig != null && jaxConfig.getValue() != null) {
+			return Integer.parseInt(jaxConfig.getValue());
+		} else {
+			return defaultValue;
+		}
+	}
+	
+	public Integer getIntegerConfigValue(JaxDbConfig jaxDbConfig) {
+		JaxConfig jaxConfig = repo.findByType(jaxDbConfig.toString());
+		if (jaxConfig != null && jaxConfig.getValue() != null) {
+			return Integer.parseInt(jaxConfig.getValue());
+		} else {
+			return jaxDbConfig.getDefaultValue();
+		}
+	}
 }

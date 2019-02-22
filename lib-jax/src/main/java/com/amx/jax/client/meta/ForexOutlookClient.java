@@ -19,8 +19,8 @@ import com.amx.jax.model.response.fx.ForexOutLookResponseDTO;
 import com.amx.jax.rest.RestService;
 
 @Component
-public class ForexOutlookClient implements  IForexOutlookService{
-	
+public class ForexOutlookClient implements IForexOutlookService {
+
 	private static final Logger LOGGER = LoggerService.getLogger(ForexOutlookClient.class);
 
 	@Autowired
@@ -29,67 +29,65 @@ public class ForexOutlookClient implements  IForexOutlookService{
 	@Autowired
 	AppConfig appConfig;
 
-
 	@Override
 	public AmxApiResponse<CurrencyPairDTO, Object> getCurrencyPairList() {
 		// TODO Auto-generated method stub
 		try {
-			LOGGER.debug("in CurrencyPairInfo");
-			String url = appConfig.getJaxURL() + Path.CURRENCY_PAIR_GET;
-			return restService.ajax(url).meta(new JaxMetaInfo())
+			LOGGER.debug("in CurrencyPairInfo :");
+			return restService.ajax(appConfig.getJaxURL() + Path.CURRENCY_PAIR_GET).meta(new JaxMetaInfo()).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<CurrencyPairDTO, Object>>() {
 					});
 		} catch (Exception e) {
 			LOGGER.error("exception in CurrencyPairInfo : ", e);
 			return JaxSystemError.evaluate(e);
-		}
+		} // end of try-catch
+
 	}
-	
+
 	@Override
 	public AmxApiResponse<ForexOutLookResponseDTO, Object> getCurpairHistory() {
+
 		try {
-			LOGGER.debug("in getCurpairHistory");
-			String url = appConfig.getJaxURL() + Path.CURRENCY_PAIR_HISTORY_GET;
-			return restService.ajax(url).meta(new JaxMetaInfo())
-					.as(new ParameterizedTypeReference<AmxApiResponse<ForexOutLookResponseDTO, Object>>() {
+			LOGGER.debug("in getCurpairHistory :");
+			return restService.ajax(appConfig.getJaxURL() + Path.CURRENCY_PAIR_HISTORY_GET).meta(new JaxMetaInfo())
+					.get().as(new ParameterizedTypeReference<AmxApiResponse<ForexOutLookResponseDTO, Object>>() {
 					});
 		} catch (Exception e) {
-			LOGGER.error("exception in getCurpairHistory : ", e);
+			LOGGER.error("exception in CurrencyPairInfo : ", e);
 			return JaxSystemError.evaluate(e);
-		}
+		} // end of try-catch
 	}
-	
-
 
 	@Override
-	public AmxApiResponse<BoolRespModel, Object> saveUpdateCurrencyPair(ForexOutLookRequest dto) {
+	public AmxApiResponse<BoolRespModel, Object> saveUpdateCurrencyPair(ForexOutLookRequest forexOutlookRequest) {
 		try {
-			LOGGER.debug("in SaveOrUpdate");
-			String url = appConfig.getJaxURL() + Path.CURRENCY_PAIR_SAVE_UPDATE;
-			return restService.ajax(url).meta(new JaxMetaInfo())
+			LOGGER.info("in SaveOrUpdate :" + "msg :" + forexOutlookRequest.getMessage() + "pairId :"
+					+ forexOutlookRequest.getPairId()+"appConfig.getJaxURL()"+appConfig.getJaxURL());
+			return restService.ajax(appConfig.getJaxURL() + Path.CURRENCY_PAIR_SAVE_UPDATE).meta(new JaxMetaInfo())
+					.post(forexOutlookRequest)
+
 					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
 					});
 		} catch (Exception e) {
+			LOGGER.info("Inside exception");
 			LOGGER.error("exception in SaveOrUpdate : ", e);
 			return JaxSystemError.evaluate(e);
-		}
-	}
+		} // end of try-catch
 
-	
+	}
 
 	@Override
 	public AmxApiResponse<BoolRespModel, Object> deleteCurrencyPair(BigDecimal pairId) {
-		// TODO Auto-generated method stub
 		try {
-		LOGGER.debug("in deleteCurrencyPair");
-		String url = appConfig.getJaxURL() + Path.CURRENCY_PAIR_DELETE;
-		return restService.ajax(url).meta(new JaxMetaInfo())
-				.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
-				});
-	} catch (Exception e) {
-		LOGGER.error("exception in deleteCurrencyPair : ", e);
-		return JaxSystemError.evaluate(e);
-	}
+			LOGGER.debug("in deleteCurrencyPair :" + pairId);
+			return restService.ajax(appConfig.getJaxURL() + Path.CURRENCY_PAIR_DELETE).meta(new JaxMetaInfo())
+					.queryParam(Params.PAIR_ID, pairId).post()
+					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in deleteCurrencyPair client : ", e);
+			return JaxSystemError.evaluate(e);
+		} // end of try-catch
 	}
 
 }

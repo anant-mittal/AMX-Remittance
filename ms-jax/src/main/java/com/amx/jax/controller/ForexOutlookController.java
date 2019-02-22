@@ -50,13 +50,13 @@ public class ForexOutlookController implements IForexOutlookService {
 
 	@RequestMapping(value = Path.CURRENCY_PAIR_SAVE_UPDATE, method = RequestMethod.POST)
 	@Override
-	public AmxApiResponse<BoolRespModel, Object> saveUpdateCurrencyPair(@RequestBody @Valid ForexOutLookRequest dto) {
+	public AmxApiResponse<BoolRespModel, Object> saveUpdateCurrencyPair(@RequestBody ForexOutLookRequest dto) {
 		LOGGER.debug("saveUpdateCurrencyPair controller" + dto.toString());
 		forexOutlookService.validateForexOutlookDto(dto.getPairId());
 		BigDecimal appCountryId = metaData.getCountryId();
 		BigDecimal langId = metaData.getLanguageId();
-		BigDecimal custId = metaData.getCustomerId();
-		BoolRespModel response = forexOutlookService.saveUpdateCurrencyPair(dto, appCountryId, langId, custId);
+		BigDecimal empId = metaData.getEmployeeId();
+		BoolRespModel response = forexOutlookService.saveUpdateCurrencyPair(dto, appCountryId, langId, empId);
 		return AmxApiResponse.build(response);
 	}
 
