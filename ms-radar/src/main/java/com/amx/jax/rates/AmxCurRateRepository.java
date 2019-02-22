@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.radar.AESRepository;
+import com.amx.jax.radar.EsConfig;
 import com.amx.utils.ArgUtil;
 
 @Repository
@@ -21,21 +22,21 @@ public class AmxCurRateRepository extends AESRepository {
 	public AmxCurRate insertRate(AmxCurRate rate) {
 		if (!ArgUtil.isEmpty(rate) && !ArgUtil.isEmpty(rate.getrRate())
 				&& rate.getrRate().compareTo(BigDecimal.ZERO) > 0) {
-			super.insert(index, type, rate);
+			super.insert(EsConfig.indexName(index), type, rate);
 		}
 		return rate;
 	}
 
 	public Map<String, Object> getRateById(String id) {
-		return super.getById(index, type, id);
+		return super.getById(EsConfig.indexName(index), type, id);
 	}
 
 	public Map<String, Object> updateRateById(String id, AmxCurRate vote) {
-		return this.updateById(index, type, id, vote);
+		return this.updateById(EsConfig.indexName(index), type, id, vote);
 	}
 
 	public void deleteRateById(String id) {
-		this.deleteById(index, type, id);
+		this.deleteById(EsConfig.indexName(index), type, id);
 	}
 
 }

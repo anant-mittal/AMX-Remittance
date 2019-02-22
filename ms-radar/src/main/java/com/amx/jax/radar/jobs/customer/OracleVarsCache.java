@@ -20,6 +20,27 @@ public class OracleVarsCache extends CacheBox<String> {
 	private static final String CUSTOMER_RESET_COUNTER = "15";
 	private static final String TRANSACTION_RESET_COUNTER = "14";
 
+	public static enum DBSyncJobs {
+		CUSTOMER("customer-v4", 15), TRANSACTION("customer-v4", 14),
+		XRATE("xrate-v4", 15);
+
+		String indexName;
+		int resetCounter;
+
+		DBSyncJobs(String indexName, int resetCounter) {
+			this.indexName = indexName;
+			this.resetCounter = resetCounter;
+		}
+
+		public String getIndexName() {
+			return indexName;
+		}
+
+		public int getResetCounter() {
+			return resetCounter;
+		}
+	}
+
 	/**
 	 * Instantiates a new logged in users.
 	 */
@@ -33,6 +54,10 @@ public class OracleVarsCache extends CacheBox<String> {
 
 	public String getCustomerIndex() {
 		return EsConfig.indexName("oracle-" + DOC_VERSION + "-customer-v4");
+	}
+
+	public String getIndex(DBSyncJobs job) {
+		return EsConfig.indexName("oracle-" + DOC_VERSION + "-" + job.getIndexName());
 	}
 
 	public Long getCustomerScannedStamp(boolean reverse) {
@@ -68,6 +93,24 @@ public class OracleVarsCache extends CacheBox<String> {
 		} else {
 			this.put(getTranxIndex() + ASC_SEPERATOR + TRANSACTION_RESET_COUNTER,
 					ArgUtil.parseAsString(tranxScannedStamp));
+		}
+	}
+
+	public Long get(DBSyncJobs job, boolean reverse) {
+		if (reverse) {
+			return ArgUtil.parseAsLong(this.get(getIndex(job) + DESC_SEPERATOR + job.getResetCounter()),
+					System.currentTimeMillis());
+		}
+		return ArgUtil.parseAsLong(this.get(getIndex(job) + ASC_SEPERATOR + job.getResetCounter()), START_TIME);
+	}
+
+	public void set(DBSyncJobs job, Long jobScannedStamp, boolean reverse) {
+		if (reverse) {
+			this.put(getIndex(job) + DESC_SEPERATOR + job.getResetCounter(),
+					ArgUtil.parseAsString(jobScannedStamp));
+		} else {
+			this.put(getIndex(job) + ASC_SEPERATOR + job.getResetCounter(),
+					ArgUtil.parseAsString(jobScannedStamp));
 		}
 	}
 

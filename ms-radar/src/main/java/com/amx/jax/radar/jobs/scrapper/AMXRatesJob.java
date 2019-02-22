@@ -36,7 +36,7 @@ import com.amx.utils.ArgUtil;
 @Service
 //@ConditionalOnExpression(TestSizeApp.ENABLE_JOBS)
 @ConditionalOnProperty("jax.jobs.scrapper.rate")
-public class AMXJob extends ARadarTask {
+public class AMXRatesJob extends ARadarTask {
 
 	@Autowired
 	private AmxCurRateRepository curRateRepository;
@@ -47,10 +47,10 @@ public class AMXJob extends ARadarTask {
 	@Autowired
 	private JaxMetaInfo jaxMetaInfo;
 
-	public static final Logger LOGGER = LoggerService.getLogger(AMXJob.class);
+	public static final Logger LOGGER = LoggerService.getLogger(AMXRatesJob.class);
 
 	private Candidate LOCK = new Candidate().fixedDelay(AmxCurConstants.INTERVAL_MIN_30)
-			.maxAge(AmxCurConstants.INTERVAL_HRS).queue(AMXJob.class);
+			.maxAge(AmxCurConstants.INTERVAL_HRS).queue(AMXRatesJob.class);
 
 	@Autowired
 	private MCQLocker mcq;

@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.amx.jax.AppConfig;
+import com.amx.jax.dict.Tenant;
 import com.amx.jax.mcq.shedlock.LockingTaskExecutor.Task;
 
 @Service
@@ -23,10 +24,10 @@ public class MCQLocker {
 	private Object lock = new Object();
 
 	@Autowired(required = false)
-	RedissonClient redisson;
+	private RedissonClient redisson;
 
 	@Autowired
-	AppConfig appConfig;
+	private AppConfig appConfig;
 
 	boolean leader;
 
@@ -87,8 +88,17 @@ public class MCQLocker {
 		}
 	}
 
+	public boolean isTenant(Candidate candidate) {
+		if (!Tenant.NONE.equals(candidate.tenant())) {
+			if (appConfig.getDefaultTenant() != candidate.tenant()) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	public void executeWithLock(Task task, Candidate lock) throws Throwable {
-		if (lead(lock)) {
+		if (isTenant(lock) && lead(lock)) {
 			try {
 				LOGGER.debug("Locked {} FD:{}", lock.queue(), lock.fixedDelay());
 				task.call();
