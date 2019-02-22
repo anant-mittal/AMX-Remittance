@@ -251,5 +251,11 @@ public class PubController {
 	public SnapModelWrapper trnaxStats(@RequestParam StatsSpan graph, @RequestParam Currency forCur) {
 		return snapServiceClient.getXRateStats(graph, forCur, AppContextUtil.getTenant().getCurrency());
 	}
+	
+	@RequestMapping(value = "/pub/forex/outlook", method = { RequestMethod.GET })
+	public SnapModelWrapper forexOutlook(@RequestParam StatsSpan graph, @RequestParam Currency forCur) {
+		
+		return snapServiceClient.getXRateStats(graph, forCur, AppContextUtil.getTenant().getCurrency());
+	}
 
 }
