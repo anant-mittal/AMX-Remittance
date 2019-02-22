@@ -43,6 +43,10 @@
 			<scope>test</scope>
 		</dependency>
 
+		<dependency>
+			<groupId>com.amx.jax</groupId>
+			<artifactId>lib-probot</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>
