@@ -19,7 +19,7 @@ import com.amx.jax.pricer.ProbotDataService;
 import com.amx.jax.pricer.dto.DiscountMgmtReqDTO;
 import com.amx.jax.pricer.dto.DiscountDetailsReqRespDTO;
 import com.amx.jax.pricer.dto.RoutBanksAndServiceRespDTO;
-import com.amx.jax.pricer.service.DataService;
+import com.amx.jax.pricer.service.ExchangeDataService;
 
 @RestController
 public class ProbotDataServiceApiController implements ProbotDataService{
@@ -28,7 +28,7 @@ public class ProbotDataServiceApiController implements ProbotDataService{
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProbotDataServiceApiController.class);
 	
 	@Resource
-	DataService dataService;
+	ExchangeDataService dataService;
 
 	@Override
 	@RequestMapping(value = ApiEndPoints.GET_DISCOUNT_DETAILS, method = RequestMethod.POST)
