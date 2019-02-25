@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import com.amx.jax.AppConfig;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.mcq.shedlock.LockingTaskExecutor.Task;
+import com.amx.utils.ArgUtil;
 
 @Service
 public class MCQLocker {
@@ -89,7 +90,7 @@ public class MCQLocker {
 	}
 
 	public boolean isTenant(Candidate candidate) {
-		if (!Tenant.NONE.equals(candidate.tenant())) {
+		if (!ArgUtil.isEmpty(candidate.tenant()) && !Tenant.NONE.equals(candidate.tenant())) {
 			if (appConfig.getDefaultTenant() != candidate.tenant()) {
 				return false;
 			}

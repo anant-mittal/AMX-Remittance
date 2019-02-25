@@ -21,8 +21,9 @@ public class OracleVarsCache extends CacheBox<String> {
 	private static final String TRANSACTION_RESET_COUNTER = "14";
 
 	public static enum DBSyncJobs {
-		CUSTOMER("customer-v4", 15), TRANSACTION("customer-v4", 14),
-		XRATE("xrate-v4", 15);
+		CUSTOMER("oracle-" + DOC_VERSION + "-customer-v4", 15),
+		TRANSACTION("oracle-" + DOC_VERSION + "-tranx-v4", 14),
+		XRATE("market-" + DOC_VERSION + "-xrate-v4", 15);
 
 		String indexName;
 		int resetCounter;
@@ -57,7 +58,7 @@ public class OracleVarsCache extends CacheBox<String> {
 	}
 
 	public String getIndex(DBSyncJobs job) {
-		return EsConfig.indexName("oracle-" + DOC_VERSION + "-" + job.getIndexName());
+		return EsConfig.indexName(job.getIndexName());
 	}
 
 	public Long getCustomerScannedStamp(boolean reverse) {
@@ -96,22 +97,30 @@ public class OracleVarsCache extends CacheBox<String> {
 		}
 	}
 
-	public Long get(DBSyncJobs job, boolean reverse) {
-		if (reverse) {
-			return ArgUtil.parseAsLong(this.get(getIndex(job) + DESC_SEPERATOR + job.getResetCounter()),
-					System.currentTimeMillis());
-		}
-		return ArgUtil.parseAsLong(this.get(getIndex(job) + ASC_SEPERATOR + job.getResetCounter()), START_TIME);
+	private String getStampStart(DBSyncJobs job) {
+		return this.get(getIndex(job) + ASC_SEPERATOR + job.getResetCounter());
 	}
 
-	public void set(DBSyncJobs job, Long jobScannedStamp, boolean reverse) {
-		if (reverse) {
-			this.put(getIndex(job) + DESC_SEPERATOR + job.getResetCounter(),
-					ArgUtil.parseAsString(jobScannedStamp));
-		} else {
-			this.put(getIndex(job) + ASC_SEPERATOR + job.getResetCounter(),
-					ArgUtil.parseAsString(jobScannedStamp));
-		}
+	private String getStampEnd(DBSyncJobs job) {
+		return this.get(getIndex(job) + DESC_SEPERATOR + job.getResetCounter());
+	}
+
+	public Long getStampStartTime(DBSyncJobs job) {
+		return ArgUtil.parseAsLong(getStampStart(job), START_TIME);
+	}
+
+	public Long getStampEndTime(DBSyncJobs job) {
+		return ArgUtil.parseAsLong(getStampEnd(job), System.currentTimeMillis());
+	}
+
+	public void setStampStart(DBSyncJobs job, Object jobScannedStamp) {
+		this.put(getIndex(job) + ASC_SEPERATOR + job.getResetCounter(),
+				ArgUtil.parseAsString(jobScannedStamp));
+	}
+
+	public void setStampEnd(DBSyncJobs job, Object jobScannedStamp) {
+		this.put(getIndex(job) + DESC_SEPERATOR + job.getResetCounter(),
+				ArgUtil.parseAsString(jobScannedStamp));
 	}
 
 }
