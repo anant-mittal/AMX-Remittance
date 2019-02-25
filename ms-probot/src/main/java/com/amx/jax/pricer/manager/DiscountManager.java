@@ -6,10 +6,12 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.pricer.dao.BankMasterDao;
 import com.amx.jax.pricer.dao.ChannelDiscountDao;
 import com.amx.jax.pricer.dao.CustCatDiscountDao;
 import com.amx.jax.pricer.dao.PipsMasterDao;
 import com.amx.jax.pricer.dao.RoutingDao;
+import com.amx.jax.pricer.dao.ServiceMasterDescDao;
 import com.amx.jax.pricer.dbmodel.BankMasterModel;
 import com.amx.jax.pricer.dbmodel.ChannelDiscount;
 import com.amx.jax.pricer.dbmodel.CustomerCategoryDiscount;
@@ -22,8 +24,6 @@ import com.amx.jax.pricer.dto.CustomerCategoryDetails;
 import com.amx.jax.pricer.dto.RoutBanksAndServiceRespDTO;
 import com.amx.jax.pricer.exception.PricerServiceError;
 import com.amx.jax.pricer.exception.PricerServiceException;
-import com.amx.jax.pricer.service.BankService;
-import com.amx.jax.pricer.service.ServiceMasterDescService;
 
 @Component
 public class DiscountManager {
@@ -41,10 +41,10 @@ public class DiscountManager {
 	RoutingDao routingDao;
 
 	@Autowired
-	BankService bankService;
+	BankMasterDao bankMasterDao;
 
 	@Autowired
-	ServiceMasterDescService serviceMasterDescService;
+	ServiceMasterDescDao serviceMasterDescDao;
 
 	// ------ To get Discount details Start here ------
 	public List<ChannelDetails> convertChannelData(List<ChannelDiscount> channelDiscount) {
@@ -122,14 +122,14 @@ public class DiscountManager {
 			RoutBanksAndServiceRespDTO routBanksAndServiceRespData = new RoutBanksAndServiceRespDTO();
 			routBanksAndServiceRespData.setRoutingBankId(routingData.getRoutingBankId());
 
-			BankMasterModel bankName = bankService.getBankById(routingData.getRoutingBankId());
+			BankMasterModel bankName = bankMasterDao.getBankById(routingData.getRoutingBankId());
 			if (null != bankName) {
 				routBanksAndServiceRespData.setRoutingBankName(bankName.getBankFullName());
 			}
 
 			routBanksAndServiceRespData.setServiceId(routingData.getServiceMasterId());
 
-			ServiceMasterDesc serviceName = serviceMasterDescService.getServiceById(routingData.getServiceMasterId());
+			ServiceMasterDesc serviceName = serviceMasterDescDao.getServiceById(routingData.getServiceMasterId());
 			if (null != serviceName) {
 				routBanksAndServiceRespData.setServiceDesc(serviceName.getServiceDesc());
 			}

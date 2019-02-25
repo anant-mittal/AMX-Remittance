@@ -7,10 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.pricer.dao.BankMasterDao;
 import com.amx.jax.pricer.dao.ChannelDiscountDao;
 import com.amx.jax.pricer.dao.CustCatDiscountDao;
 import com.amx.jax.pricer.dao.PipsMasterDao;
 import com.amx.jax.pricer.dao.RoutingDao;
+import com.amx.jax.pricer.dao.ServiceMasterDescDao;
 import com.amx.jax.pricer.dbmodel.ChannelDiscount;
 import com.amx.jax.pricer.dbmodel.CustomerCategoryDiscount;
 import com.amx.jax.pricer.dbmodel.PipsMaster;
@@ -40,10 +42,10 @@ public class ExchangeDataService {
 	RoutingDao routingDao;
 	
 	@Autowired
-	BankService bankService;
+	BankMasterDao bankMasterDao;
 	
 	@Autowired
-	ServiceMasterDescService serviceMasterDescService;
+	ServiceMasterDescDao serviceMasterDescDao;
 	
 	@Autowired
 	DiscountManager discountManager;
