@@ -1,6 +1,7 @@
 package com.amx.jax.pricer;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -22,7 +23,7 @@ import com.amx.jax.pricer.dto.RoutBanksAndServiceRespDTO;
 import com.amx.jax.rest.RestService;
 
 @Component
-public class PricerServiceClient implements ProbotExchangeRateService, ProbotDataService{
+public class PricerServiceClient implements ProbotExchangeRateService, ProbotDataService {
 
 	/** The Constant LOGGER. */
 	private static final Logger LOGGER = LoggerService.getLogger(PricerServiceClient.class);
@@ -34,7 +35,6 @@ public class PricerServiceClient implements ProbotExchangeRateService, ProbotDat
 	/** The app config. */
 	@Autowired
 	AppConfig appConfig;
-	
 
 	@Override
 	public AmxApiResponse<PricingResponseDTO, Object> fetchPriceForCustomer(PricingRequestDTO pricingRequestDTO) {
@@ -76,7 +76,8 @@ public class PricerServiceClient implements ProbotExchangeRateService, ProbotDat
 		LOGGER.info("Get Discounted Mgmt Amount Slab : transaction Id: {}, with TraceId: {}",
 				AppContextUtil.getTranxId(), AppContextUtil.getTraceId());
 
-		return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.GET_DISCOUNT_DETAILS).post(discountMgmtReqDTO)
+		return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.GET_DISCOUNT_DETAILS)
+				.post(discountMgmtReqDTO)
 				.as(new ParameterizedTypeReference<AmxApiResponse<DiscountMgmtRespDTO, Object>>() {
 				});
 
@@ -87,35 +88,35 @@ public class PricerServiceClient implements ProbotExchangeRateService, ProbotDat
 			BigDecimal currencyId) {
 		LOGGER.info("Get Routing Banks and Services : transaction Id: {}, with TraceId: {}",
 				AppContextUtil.getTranxId(), AppContextUtil.getTraceId());
-		
-		return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.GET_ROUTBANKS_AND_SEVICES).
-				queryParam("countryId", countryId).queryParam("currencyId", currencyId).post()
+
+		return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.GET_ROUTBANKS_AND_SEVICES)
+				.queryParam("countryId", countryId).queryParam("currencyId", currencyId).post()
 				.as(new ParameterizedTypeReference<AmxApiResponse<RoutBanksAndServiceRespDTO, Object>>() {
 				});
-		
+
 	}
 
-@Override
+	@Override
 	public AmxApiResponse<PricingResponseDTO, Object> fetchRemitRoutesAndPrices(DprRequestDto dprRequestDTO) {
 
 		LOGGER.info("Get Remit Routes for Rate/Price Request Called for : transaction Id: {}, with TraceId: {}",
 				AppContextUtil.getTranxId(), AppContextUtil.getTraceId());
 
-		return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.FETCH_REMIT_ROUTES_PRICES).post(dprRequestDTO)
-				.as(new ParameterizedTypeReference<AmxApiResponse<PricingResponseDTO, Object>>() {
+		return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.FETCH_REMIT_ROUTES_PRICES)
+				.post(dprRequestDTO).as(new ParameterizedTypeReference<AmxApiResponse<PricingResponseDTO, Object>>() {
 				});
 	}
-	
-	public List<HolidayResponseDTO> fetchHolidayList(BigDecimal CountryId, String fromDate, String toDate) {
+
+	@Override
+	public List<HolidayResponseDTO> fetchHolidayList(BigDecimal CountryId, Date fromDate, Date toDate) {
 
 		LOGGER.info("Get Holiday List for Given CountryId and Event Date");
 		ProbotDataService probotService = null;
-		
-      @SuppressWarnings("null")
-	List<HolidayResponseDTO> holidayResponseDTO = probotService.fetchHolidayList(CountryId, fromDate,toDate);
-		
+
+		@SuppressWarnings("null")
+		List<HolidayResponseDTO> holidayResponseDTO = probotService.fetchHolidayList(CountryId, fromDate, toDate);
+
 		return holidayResponseDTO;
 	}
 
 }
-

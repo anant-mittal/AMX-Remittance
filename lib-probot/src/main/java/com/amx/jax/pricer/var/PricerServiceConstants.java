@@ -32,4 +32,20 @@ public final class PricerServiceConstants {
 		BRONZE, SILVER, GOLD, PLATINUM;
 	}
 
+	public static enum SERVICE_GROUP {
+
+		CASH("C"), BANK("B");
+
+		private String groupCode;
+
+		private SERVICE_GROUP(String groupCode) {
+			this.groupCode = groupCode;
+		}
+
+		public String getGroupCode() {
+			return this.groupCode;
+		}
+		
+	}
+
 }

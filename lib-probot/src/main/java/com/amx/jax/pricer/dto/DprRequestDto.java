@@ -6,6 +6,7 @@ import java.math.BigDecimal;
 import javax.validation.constraints.NotNull;
 
 import com.amx.jax.dict.UserClient.Channel;
+import com.amx.jax.pricer.var.PricerServiceConstants.SERVICE_GROUP;
 
 public class DprRequestDto implements Serializable {
 
@@ -42,9 +43,20 @@ public class DprRequestDto implements Serializable {
 
 	@NotNull(message = "Beneficiary Bank Id Can not be Null or Empty")
 	private BigDecimal beneficiaryBankId;
-	
+
 	@NotNull(message = "Beneficiary Branch Id Can not be Null or Empty")
 	private BigDecimal beneficiaryBranchId;
+
+	@NotNull(message = "Service Group Can not be Null or Empty")
+	private SERVICE_GROUP serviceGroup;
+
+	public SERVICE_GROUP getServiceGroup() {
+		return serviceGroup;
+	}
+
+	public void setServiceGroup(SERVICE_GROUP serviceGroup) {
+		this.serviceGroup = serviceGroup;
+	}
 
 	public BigDecimal getCustomerId() {
 		return customerId;
@@ -141,7 +153,5 @@ public class DprRequestDto implements Serializable {
 	public void setBeneficiaryBranchId(BigDecimal beneficiaryBranchId) {
 		this.beneficiaryBranchId = beneficiaryBranchId;
 	}
-	
-	
 
 }

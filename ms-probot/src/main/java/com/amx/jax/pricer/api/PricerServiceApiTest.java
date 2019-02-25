@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,7 @@ import java.util.concurrent.Future;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -60,9 +62,9 @@ public class PricerServiceApiTest implements ProbotExchangeRateService, ProbotDa
 
 	@Autowired
 	PricerTestService pricerTestService;
-	
+
 	@Autowired
-    HolidayListService holidayListService;
+	HolidayListService holidayListService;
 
 	@Override
 	@RequestMapping(value = ApiEndPoints.FETCH_PRICE_CUSTOMER, method = RequestMethod.POST)
@@ -86,6 +88,18 @@ public class PricerServiceApiTest implements ProbotExchangeRateService, ProbotDa
 	@RequestMapping(value = ApiEndPoints.FETCH_REMIT_ROUTES_PRICES, method = RequestMethod.POST)
 	public AmxApiResponse<PricingResponseDTO, Object> fetchRemitRoutesAndPrices(DprRequestDto dprRequestDTO) {
 		return pricerServiceClient.fetchRemitRoutesAndPrices(dprRequestDTO);
+	}
+
+	@Override
+	@RequestMapping(value = ApiEndPoints.HOLIDAY_LIST, method = RequestMethod.POST)
+	public List<HolidayResponseDTO> fetchHolidayList(@RequestParam(required = true) BigDecimal countryId,
+			@RequestParam(required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fromDate,
+			@RequestParam(required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") Date toDate) {
+
+		List<HolidayResponseDTO> holidayResponseDTO = holidayListService.getHolidayList(countryId, fromDate, toDate);
+
+		return holidayResponseDTO;
+
 	}
 
 	@RequestMapping(value = ApiEndPoints.PRICE_TEST, method = RequestMethod.POST)
@@ -420,18 +434,6 @@ public class PricerServiceApiTest implements ProbotExchangeRateService, ProbotDa
 		return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/octet-stream"))
 				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + "Results.csv" + "\"").body(media);
 
-	}
-
-	
-	@Override
-	@RequestMapping(value = ApiEndPoints.HOLIDAY_LIST, method = RequestMethod.POST)
-	public List<HolidayResponseDTO> fetchHolidayList(BigDecimal countryId, String fromDate, String toDate) {
-		
-      List<HolidayResponseDTO> holidayResponseDTO = holidayListService.getHolidayList(countryId,fromDate,toDate);
-		
-
-		return holidayResponseDTO;
-	
 	}
 
 	@Override

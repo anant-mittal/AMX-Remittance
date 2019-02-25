@@ -16,8 +16,8 @@ public class ViewExRoutingMatrixDao {
 	private ViewExRoutingMatrixRepository viewExRoutingMatrixRepository;
 
 	public List<ViewExRoutingMatrix> getRoutingMatrix(BigDecimal applicationCountryId, BigDecimal beneCountryId,
-			BigDecimal beneBankId, BigDecimal beneBankBranchId, BigDecimal currencyId) {
+			BigDecimal beneBankId, BigDecimal beneBankBranchId, BigDecimal currencyId, String serviceGroupCode) {
 		return viewExRoutingMatrixRepository.findRoutingMatrix(applicationCountryId, beneCountryId, beneBankId,
-				beneBankBranchId, currencyId);
+				beneBankBranchId, currencyId, serviceGroupCode);
 	}
 }

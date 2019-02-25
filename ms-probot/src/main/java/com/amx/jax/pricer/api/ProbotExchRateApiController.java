@@ -127,21 +127,4 @@ public class ProbotExchRateApiController implements ProbotExchangeRateService {
 	}
 	
 
-	/*@RequestMapping(value = ApiEndPoints.HOLIDAY_LIST, method = RequestMethod.POST)
-	public List<HolidayResponseDTO> fetchHolidayList(
-			@RequestParam(required = true, value = "Id") BigDecimal Id,
-			@RequestParam(required = true, value = "fromDate") String fromDate,
-			@RequestParam(required = true, value = "toDate") String toDate)
-			{
-			
-
-		LOGGER.info("Received Holiday List Request " + " with TraceId: "
-		+ AppContextUtil.getTraceId());
-
-		List<HolidayResponseDTO> holidayResponseDTO = holidayService.getHolidayList(Id,fromDate,toDate);
-		
-
-		return holidayResponseDTO;
-	}
-*/
 }
