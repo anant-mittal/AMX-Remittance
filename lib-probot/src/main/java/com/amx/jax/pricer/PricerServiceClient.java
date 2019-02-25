@@ -1,6 +1,7 @@
 package com.amx.jax.pricer;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +15,6 @@ import com.amx.jax.logger.LoggerService;
 import com.amx.jax.pricer.dto.DiscountMgmtReqDTO;
 import com.amx.jax.pricer.dto.DiscountMgmtRespDTO;
 import com.amx.jax.pricer.dto.DprRequestDto;
-import com.amx.jax.pricer.dto.HolidayRequestDTO;
 import com.amx.jax.pricer.dto.HolidayResponseDTO;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.dto.PricingResponseDTO;
@@ -34,6 +34,7 @@ public class PricerServiceClient implements ProbotExchangeRateService, ProbotDat
 	/** The app config. */
 	@Autowired
 	AppConfig appConfig;
+	
 
 	@Override
 	public AmxApiResponse<PricingResponseDTO, Object> fetchPriceForCustomer(PricingRequestDTO pricingRequestDTO) {
@@ -60,8 +61,7 @@ public class PricerServiceClient implements ProbotExchangeRateService, ProbotDat
 	}
 
 	@Override
-	public AmxApiResponse<PricingResponseDTO, Object> fetchDiscountedRates(
-			PricingRequestDTO pricingRequestDTO) {
+	public AmxApiResponse<PricingResponseDTO, Object> fetchDiscountedRates(PricingRequestDTO pricingRequestDTO) {
 		LOGGER.info("Get Discounted Rate/Price Request Called for : transaction Id: {}, with TraceId: {}",
 				AppContextUtil.getTranxId(), AppContextUtil.getTraceId());
 
@@ -106,14 +106,16 @@ public class PricerServiceClient implements ProbotExchangeRateService, ProbotDat
 				});
 	}
 	
-	public AmxApiResponse<HolidayResponseDTO, Object> fetchHolidayList(HolidayRequestDTO holidayRequestDTO) {
+	public List<HolidayResponseDTO> fetchHolidayList(BigDecimal CountryId, String fromDate, String toDate) {
 
 		LOGGER.info("Get Holiday List for Given CountryId and Event Date");
-
-		 return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.HOLIDAY_LIST).post(holidayRequestDTO)
-				.as(new ParameterizedTypeReference<AmxApiResponse<HolidayResponseDTO, Object>>() {
-				});
+		ProbotDataService probotService = null;
+		
+      @SuppressWarnings("null")
+	List<HolidayResponseDTO> holidayResponseDTO = probotService.fetchHolidayList(CountryId, fromDate,toDate);
+		
+		return holidayResponseDTO;
 	}
-	
 
 }
+

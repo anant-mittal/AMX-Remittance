@@ -26,17 +26,22 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.dict.UserClient.Channel;
 import com.amx.jax.pricer.PricerServiceClient;
+import com.amx.jax.pricer.ProbotDataService;
 import com.amx.jax.pricer.ProbotExchangeRateService;
 import com.amx.jax.pricer.dto.BankDetailsDTO;
+import com.amx.jax.pricer.dto.DiscountMgmtReqDTO;
+import com.amx.jax.pricer.dto.DiscountMgmtRespDTO;
 import com.amx.jax.pricer.dto.DprRequestDto;
 import com.amx.jax.pricer.dto.ExchangeRateDetails;
+import com.amx.jax.pricer.dto.HolidayResponseDTO;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.dto.PricingResponseDTO;
+import com.amx.jax.pricer.dto.RoutBanksAndServiceRespDTO;
 import com.amx.jax.pricer.exception.PricerServiceException;
+import com.amx.jax.pricer.service.HolidayListService;
 import com.amx.jax.pricer.service.PricerTestService;
 import com.amx.jax.pricer.var.PricerServiceConstants;
 import com.amx.jax.pricer.var.PricerServiceConstants.PRICE_BY;
@@ -47,7 +52,7 @@ import com.amx.utils.ArgUtil;
  */
 @RestController
 @RequestMapping("test/")
-public class PricerServiceApiTest implements ProbotExchangeRateService {
+public class PricerServiceApiTest implements ProbotExchangeRateService, ProbotDataService {
 
 	/** The rbaac service client. */
 	@Autowired
@@ -55,6 +60,9 @@ public class PricerServiceApiTest implements ProbotExchangeRateService {
 
 	@Autowired
 	PricerTestService pricerTestService;
+	
+	@Autowired
+    HolidayListService holidayListService;
 
 	@Override
 	@RequestMapping(value = ApiEndPoints.FETCH_PRICE_CUSTOMER, method = RequestMethod.POST)
@@ -414,4 +422,28 @@ public class PricerServiceApiTest implements ProbotExchangeRateService {
 
 	}
 
+	
+	@Override
+	@RequestMapping(value = ApiEndPoints.HOLIDAY_LIST, method = RequestMethod.POST)
+	public List<HolidayResponseDTO> fetchHolidayList(BigDecimal countryId, String fromDate, String toDate) {
+		
+      List<HolidayResponseDTO> holidayResponseDTO = holidayListService.getHolidayList(countryId,fromDate,toDate);
+		
+
+		return holidayResponseDTO;
+	
+	}
+
+	@Override
+	public AmxApiResponse<DiscountMgmtRespDTO, Object> getDiscountManagemet(DiscountMgmtReqDTO discountMgmtReqDTO) {
+		// TODO Subodh To Fix This
+		return null;
+	}
+
+	@Override
+	public AmxApiResponse<RoutBanksAndServiceRespDTO, Object> getRbanksAndServices(BigDecimal countryId,
+			BigDecimal currencyId) {
+		// TODO Subodh To Fix This
+		return null;
+	}
 }
