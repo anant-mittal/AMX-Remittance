@@ -16,8 +16,8 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.DiscountMgmtClient;
 import com.amx.jax.client.MetaClient;
 import com.amx.jax.model.response.CurrencyMasterDTO;
+import com.amx.jax.pricer.dto.DiscountDetailsReqRespDTO;
 import com.amx.jax.pricer.dto.DiscountMgmtReqDTO;
-import com.amx.jax.pricer.dto.DiscountMgmtRespDTO;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.dto.PricingResponseDTO;
 import com.amx.jax.pricer.dto.RoutBanksAndServiceRespDTO;
@@ -32,20 +32,20 @@ public class BDiscountMgmtController {
 
 	@Autowired
 	DiscountMgmtClient discountMgmtClient;
-	
+
 	@Autowired
 	MetaClient metaClient;
-	
-	
+
 	@RequestMapping(value = "/api/discount/country/list", method = { RequestMethod.GET })
 	public AmxApiResponse<CountryMasterDTO, Object> getAllCountry() {
-	
+
 		return metaClient.getAllCountry();
 	}
-	
+
 	@RequestMapping(value = "/api/discount/currency/list", method = { RequestMethod.GET })
-	public AmxApiResponse<CurrencyMasterDTO, Object> getCurrencyByCountryId(@RequestParam(value = "countryId", required = true)BigDecimal countryId) {
-		
+	public AmxApiResponse<CurrencyMasterDTO, Object> getCurrencyByCountryId(
+			@RequestParam(value = "countryId", required = true) BigDecimal countryId) {
+
 		return metaClient.getCurrencyByCountryId(countryId);
 	}
 
@@ -54,7 +54,7 @@ public class BDiscountMgmtController {
 
 		return discountMgmtClient.getCountryBranchList();
 	}
-	
+
 	@RequestMapping(value = "/api/discount/RbanksAndServices/list", method = { RequestMethod.POST })
 	public AmxApiResponse<RoutBanksAndServiceRespDTO, Object> getRbanksAndServices(
 			@RequestParam(value = "countryId", required = true) BigDecimal countryId,
@@ -62,20 +62,27 @@ public class BDiscountMgmtController {
 		return discountMgmtClient.getRbanksAndServices(countryId, currencyId);
 	}
 
-	@RequestMapping(value = "/api/discount/rates/list", method = { RequestMethod.GET })
+	@RequestMapping(value = "/api/discount/rates/list", method = { RequestMethod.POST })
 	public AmxApiResponse<PricingResponseDTO, Object> fetchDiscountedRates(
 			@RequestBody PricingRequestDTO pricingRequestDTO) {
 
 		return discountMgmtClient.fetchDiscountedRates(pricingRequestDTO);
 	}
 
-	@RequestMapping(value = "/api/discount/getDiscountDetails", method = { RequestMethod.POST })
-	public AmxApiResponse<DiscountMgmtRespDTO, Object> getDiscountManagemetDetails(
-			@RequestBody DiscountMgmtReqDTO discountMgmtReqDTO) {
 
+	/*
+	 * @RequestMapping(value = "/api/discount/getDiscountDetails", method = {
+	 * RequestMethod.POST }) public AmxApiResponse<DiscountDetailsReqRespDTO,
+	 * Object> getDiscountManagemetDetails(DiscountMgmtReqDTO discountMgmtReqDTO) {
+	 * 
+	 * @RequestBody DiscountMgmtReqDTO discountMgmtReqDTO) {
+	 * 
+	 * return discountMgmtClient.getDiscountManagemetDetails(discountMgmtReqDTO); }
+	 */
+	@RequestMapping(value = "/api/discount/getDiscountDetails", method = { RequestMethod.POST })
+	public AmxApiResponse<DiscountDetailsReqRespDTO, Object> getDiscountManagemetDetails(
+			DiscountMgmtReqDTO discountMgmtReqDTO) {
 		return discountMgmtClient.getDiscountManagemetDetails(discountMgmtReqDTO);
 	}
-
-	
 
 }
