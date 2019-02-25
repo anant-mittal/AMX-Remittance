@@ -10,15 +10,17 @@ public class ForexOutLookResponseDTO extends ResourceDTO {
 	 * 
 	 */
 	private static final long serialVersionUID = 4292890337204886660L;
-	private Date modifiedDate;
+	
 	private String message;
 	private String curpairName;
+	private String modifiedDate;
 	
 	
-	public Date getModifiedDate() {
+	
+	public String getModifiedDate() {
 		return modifiedDate;
 	}
-	public void setModifiedDate(Date modifiedDate) {
+	public void setModifiedDate(String modifiedDate) {
 		this.modifiedDate = modifiedDate;
 	}
 	public String getMessage() {
