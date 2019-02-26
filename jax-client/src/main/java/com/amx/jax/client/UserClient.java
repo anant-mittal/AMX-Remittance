@@ -15,6 +15,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.amx.amxlib.constant.ApiEndpoint;
 import com.amx.amxlib.exception.AbstractJaxException;
 import com.amx.amxlib.exception.AlreadyExistsException;
 import com.amx.amxlib.exception.CustomerValidationException;
@@ -668,12 +669,11 @@ public class UserClient extends AbstractJaxServiceClient {
 
 	public AmxApiResponse<CustomerModel, Object> loginUserByFingerprint(String civilId, String password) {
 		try {
-			String url = this.getBaseUrl() + USER_API_ENDPOINT + "/login-customer-by-fingerprint/";
+			String url = this.getBaseUrl() + USER_API_ENDPOINT + ApiEndpoint.LOGIN_CUSTOMER_BY_FINGERPRINT;
 			return restService.ajax(url).queryParam("civilId", civilId)
 					.queryParam("password", password).meta(new JaxMetaInfo()).post()
 					.as(new ParameterizedTypeReference<AmxApiResponse<CustomerModel, Object>>() {
 					});
-
 		} catch (AbstractJaxException ae) {
 			LOGGER.error("exception in loginUserByFingerprint : ", ae);
 			throw ae;

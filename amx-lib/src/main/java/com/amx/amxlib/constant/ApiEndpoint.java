@@ -128,11 +128,11 @@ public class ApiEndpoint {
 	public static final String SAVE_USER_ROLE_ENDPOINT = "/api/user/role/";
 
 	public static final String SAVE_USER_PERM_ENDPOINT = "/api/user/perms/";
-	
+
 	public static final String LINK_DEVICEID = "/link-deviceid/";
-	
+
 	public static final String LINK_DEVICE_LOGGEDIN_CUSTOMER = "/link-device-loggedin-customer/";
-	
+
 	public static final String LOGIN_CUSTOMER_BY_FINGERPRINT = "/login-customer-by-fingerprint/";
 
 }
