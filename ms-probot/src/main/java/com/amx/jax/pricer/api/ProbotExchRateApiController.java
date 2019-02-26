@@ -86,17 +86,6 @@ public class ProbotExchRateApiController implements ProbotExchangeRateService {
 
 	}
 
-	/*@Override
-	@RequestMapping(value = ApiEndPoints.FETCH_DISCOUNTED_RATES, method = RequestMethod.POST)
-	public AmxApiResponse<PricingResponseDTO, Object> fetchCustomercategoryDiscountedRates(
-			PricingRequestDTO pricingRequestDTO) {
-
-		LOGGER.info("Received Discounted Rate Request " + " with TraceId: " + AppContextUtil.getTraceId());
-		List<PricingResponseDTO> pricingResponseDTOList = pricingService
-				.fetchDiscountedRatesAcrossCustCategories(pricingRequestDTO);
-
-		return AmxApiResponse.buildList(pricingResponseDTOList);
-	}*/
 	
 	@Override
 	@RequestMapping(value = ApiEndPoints.FETCH_DISCOUNTED_RATES, method = RequestMethod.POST)

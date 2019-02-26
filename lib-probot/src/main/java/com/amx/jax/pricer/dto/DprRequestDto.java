@@ -5,17 +5,16 @@ import java.math.BigDecimal;
 
 import javax.validation.constraints.NotNull;
 
-import com.amx.jax.dict.UserClient.Channel;
 import com.amx.jax.pricer.var.PricerServiceConstants.SERVICE_GROUP;
 
-public class DprRequestDto implements Serializable {
+public class DprRequestDto extends PricingRequestDTO  implements Serializable {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -3112085486390742452L;
 
-	private BigDecimal customerId;
+/*	private BigDecimal customerId;
 
 	@NotNull(message = "Local Country Id Can not be Null or Empty")
 	private BigDecimal localCountryId;
@@ -24,6 +23,7 @@ public class DprRequestDto implements Serializable {
 	private BigDecimal foreignCountryId;
 
 	private BigDecimal localAmount;
+	
 	private BigDecimal foreignAmount;
 
 	@NotNull(message = "Local Currency Id Can not be Null or Empty")
@@ -37,7 +37,8 @@ public class DprRequestDto implements Serializable {
 
 	@NotNull(message = "Channel Can not be Null or Empty")
 	private Channel channel;
-
+*/
+	
 	@NotNull(message = "Beneficiary Id Can not be Null or Empty")
 	private BigDecimal beneficiaryId;
 
@@ -58,77 +59,7 @@ public class DprRequestDto implements Serializable {
 		this.serviceGroup = serviceGroup;
 	}
 
-	public BigDecimal getCustomerId() {
-		return customerId;
-	}
-
-	public void setCustomerId(BigDecimal customerId) {
-		this.customerId = customerId;
-	}
-
-	public BigDecimal getLocalCountryId() {
-		return localCountryId;
-	}
-
-	public void setLocalCountryId(BigDecimal localCountryId) {
-		this.localCountryId = localCountryId;
-	}
-
-	public BigDecimal getForeignCountryId() {
-		return foreignCountryId;
-	}
-
-	public void setForeignCountryId(BigDecimal foreignCountryId) {
-		this.foreignCountryId = foreignCountryId;
-	}
-
-	public BigDecimal getLocalAmount() {
-		return localAmount;
-	}
-
-	public void setLocalAmount(BigDecimal localAmount) {
-		this.localAmount = localAmount;
-	}
-
-	public BigDecimal getForeignAmount() {
-		return foreignAmount;
-	}
-
-	public void setForeignAmount(BigDecimal foreignAmount) {
-		this.foreignAmount = foreignAmount;
-	}
-
-	public BigDecimal getLocalCurrencyId() {
-		return localCurrencyId;
-	}
-
-	public void setLocalCurrencyId(BigDecimal localCurrencyId) {
-		this.localCurrencyId = localCurrencyId;
-	}
-
-	public BigDecimal getForeignCurrencyId() {
-		return foreignCurrencyId;
-	}
-
-	public void setForeignCurrencyId(BigDecimal foreignCurrencyId) {
-		this.foreignCurrencyId = foreignCurrencyId;
-	}
-
-	public BigDecimal getCountryBranchId() {
-		return countryBranchId;
-	}
-
-	public void setCountryBranchId(BigDecimal countryBranchId) {
-		this.countryBranchId = countryBranchId;
-	}
-
-	public Channel getChannel() {
-		return channel;
-	}
-
-	public void setChannel(Channel channel) {
-		this.channel = channel;
-	}
+	/*O*/
 
 	public BigDecimal getBeneficiaryId() {
 		return beneficiaryId;

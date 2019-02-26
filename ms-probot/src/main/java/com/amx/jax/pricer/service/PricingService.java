@@ -3,9 +3,11 @@
  */
 package com.amx.jax.pricer.service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
@@ -13,8 +15,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import com.amx.jax.pricer.dao.CustomerDao;
 import com.amx.jax.pricer.dbmodel.Customer;
+import com.amx.jax.pricer.dbmodel.ViewExRoutingMatrix;
 import com.amx.jax.pricer.dto.DprRequestDto;
 import com.amx.jax.pricer.dto.ExchangeRateDetails;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
@@ -82,23 +86,6 @@ public class PricingService {
 
 		pricingResponseDTO.setInfo(exchangeRateRequestDataCache.getInfo());
 
-		/*
-		 * Map<String, BankRateDetailsDTO> baseRateBankDetails = new HashMap<String,
-		 * BankRateDetailsDTO>();
-		 * 
-		 * pricingResponseDTO.setBankDetails(new HashMap<BigDecimal, BankDetailsDTO>());
-		 * 
-		 * for (BankRateDetailsDTO baseBankRate : bankRateDetailsDTOs) {
-		 * 
-		 * String key = baseBankRate.getBankId().longValue() + "" +
-		 * baseBankRate.getServiceIndicatorId() == null ? "" :
-		 * baseBankRate.getServiceIndicatorId().longValue() + "";
-		 * 
-		 * baseRateBankDetails.put(key, baseBankRate); }
-		 */
-
-		// pricingResponseDTO.set
-
 		return pricingResponseDTO;
 	}
 
@@ -118,7 +105,6 @@ public class PricingService {
 
 		return pricingResponseDTO;
 	}
-	
 
 	public List<PricingResponseDTO> fetchDiscountedRatesAcrossCustCategories(PricingRequestDTO pricingRequestDTO) {
 		validatePricingRequest(pricingRequestDTO, Boolean.FALSE);
@@ -156,14 +142,29 @@ public class PricingService {
 		return allDiscountedRates;
 
 	}
-	
-	
 
 	public PricingResponseDTO fetchRemitRoutesAndPrices(DprRequestDto dprRequestDto) {
 
-		remitRoutingManager.getRoutingMatrixForRemittance(dprRequestDto);
+		List<ViewExRoutingMatrix> routingMatrix = remitRoutingManager.getRoutingMatrixForRemittance(dprRequestDto);
 
-		return null;
+		List<BigDecimal> routingBankIds = routingMatrix.stream().map(rm -> rm.getRoutingBankId()).distinct()
+				.collect(Collectors.toList());
+		
+		dprRequestDto.setRoutingBankIds(routingBankIds);
+
+		dprRequestDto.setPricingLevel(PRICE_BY.ROUTING_BANK);
+		
+		remitPriceManager.computeBaseSellRatesPrices(dprRequestDto);
+		
+		PricingResponseDTO pricingResponseDTO = new PricingResponseDTO();
+
+		pricingResponseDTO.setBankDetails(exchangeRateRequestDataCache.getBankDetails());
+
+		pricingResponseDTO.setSellRateDetails(exchangeRateRequestDataCache.getSellRateDetails());
+
+		Collections.sort(pricingResponseDTO.getSellRateDetails(), Collections.reverseOrder());
+
+		return pricingResponseDTO;
 
 	}
 
