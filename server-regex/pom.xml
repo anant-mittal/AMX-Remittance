@@ -17,22 +17,18 @@
 	<properties>
 		<java.version>1.8</java.version>
 		<es.version>6.3.0</es.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<thymeleaf.version>3.0.2.RELEASE</thymeleaf.version>
+		<thymeleaf-layout-dialect.version>2.1.1</thymeleaf-layout-dialect.version>
 	</properties>
 
 	<dependencies>
 		<dependency>
 			<groupId>com.amx.jax</groupId>
 			<artifactId>common-lib</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>junit</groupId>
-					<artifactId>junit</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.springframework.boot</groupId>
-					<artifactId>spring-boot-starter-test</artifactId>
-				</exclusion>
-			</exclusions>
+			<!-- <exclusions> <exclusion> <groupId>junit</groupId> <artifactId>junit</artifactId> 
+				</exclusion> <exclusion> <groupId>org.springframework.boot</groupId> <artifactId>spring-boot-starter-test</artifactId> 
+				</exclusion> </exclusions> -->
 		</dependency>
 	</dependencies>
 

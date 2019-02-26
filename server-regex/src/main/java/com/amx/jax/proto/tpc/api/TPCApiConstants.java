@@ -33,7 +33,8 @@ public class TPCApiConstants {
 		public static final String CUSTOMER_SOURCE_LIST = "/tpc/customer/source/list";
 		public static final String CUSTOMER_PURPOSE_LIST = "/tpc/customer/purpose/list";
 		public static final String CUSTOMER_REMIT_INQUIRY = "/tpc/customer/remit/inquiry";
-		public static final String CUSTOMER_REMIT_CONFIRM = "/tpc/customer/remit/confirm";
+		public static final String CUSTOMER_REMIT_APPLICATION = "/tpc/customer/remit/application";
+		public static final String CUSTOMER_REMIT_PAYMENT = "/tpc/customer/remit/payment";
 		public static final String CUSTOMER_REMIT_VERIFY = "/tpc/customer/remit/verify";
 	}
 
@@ -47,7 +48,7 @@ public class TPCApiConstants {
 	@Retention(RetentionPolicy.RUNTIME)
 	@ApiMockParams({
 			@ApiMockParam(name = TPCApiConstants.Keys.CLIENT_SESSION_TOKEN_XKEY, value = "Client Session Token",
-				paramType = MockParamType.HEADER) })
+					paramType = MockParamType.HEADER) })
 	public @interface TPCApiClientHeaders {
 
 	}
@@ -56,9 +57,9 @@ public class TPCApiConstants {
 	@Retention(RetentionPolicy.RUNTIME)
 	@ApiMockParams({
 			@ApiMockParam(name = TPCApiConstants.Keys.CLIENT_SESSION_TOKEN_XKEY, value = "Client Session Token",
-				paramType = MockParamType.HEADER),
+					paramType = MockParamType.HEADER),
 			@ApiMockParam(name = TPCApiConstants.Keys.CUSTOMER_SESSION_TOKEN_XKEY, value = "Customer Token",
-				paramType = MockParamType.HEADER),
+					paramType = MockParamType.HEADER),
 	})
 	public @interface TPCApiCustomerHeaders {
 
