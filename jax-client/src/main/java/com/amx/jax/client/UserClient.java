@@ -638,8 +638,8 @@ public class UserClient extends AbstractJaxServiceClient {
 	public AmxApiResponse<UserFingerprintResponseModel, Object> linkDeviceId(String identityInt) {
 		try {
 			String url = this.getBaseUrl() + USER_API_ENDPOINT + "/link-deviceid/";
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			return restService.ajax(url).post(requestEntity).queryParam("identityInt", identityInt)
+			return restService.ajax(url).queryParam("identityInt", identityInt).meta(new JaxMetaInfo())
+					.post()
 					.as(new ParameterizedTypeReference<AmxApiResponse<UserFingerprintResponseModel, Object>>() {
 					});
 
@@ -654,8 +654,7 @@ public class UserClient extends AbstractJaxServiceClient {
 	public AmxApiResponse<UserFingerprintResponseModel, Object> linkDeviceIdLoggedinUser() {
 		try {
 			String url = this.getBaseUrl() + USER_API_ENDPOINT + "/link-device-loggedin-customer/";
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			return restService.ajax(url).post(requestEntity)
+			return restService.ajax(url).meta(new JaxMetaInfo()).post()
 					.as(new ParameterizedTypeReference<AmxApiResponse<UserFingerprintResponseModel, Object>>() {
 					});
 
@@ -670,9 +669,8 @@ public class UserClient extends AbstractJaxServiceClient {
 	public AmxApiResponse<CustomerModel, Object> loginUserByFingerprint(String civilId, String password) {
 		try {
 			String url = this.getBaseUrl() + USER_API_ENDPOINT + "/login-customer-by-fingerprint/";
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			return restService.ajax(url).post(requestEntity).queryParam("civilId", civilId)
-					.queryParam("password", password)
+			return restService.ajax(url).queryParam("civilId", civilId)
+					.queryParam("password", password).meta(new JaxMetaInfo()).post()
 					.as(new ParameterizedTypeReference<AmxApiResponse<CustomerModel, Object>>() {
 					});
 
