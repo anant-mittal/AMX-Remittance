@@ -54,7 +54,11 @@ public class AuthController {
 	 */
 	@RequestMapping(value = "/pub/auth/login", method = { RequestMethod.POST })
 	public ResponseWrapper<AuthResponse> login(@Valid @RequestBody AuthRequest authData) {
-		return loginService.login(authData.getIdentity(), authData.getPassword());
+		if (!ArgUtil.isEmpty(authData.getDeviceToken())) {
+			return loginService.loginByDevice(authData.getIdentity(), authData.getDeviceToken());
+		} else {
+			return loginService.login(authData.getIdentity(), authData.getPassword());
+		}
 	}
 
 	/**

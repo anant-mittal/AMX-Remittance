@@ -4,7 +4,6 @@ import static com.amx.amxlib.constant.ApiEndpoint.CUSTOMER_ENDPOINT;
 import static com.amx.amxlib.constant.ApiEndpoint.UPDATE_CUSTOMER_PASSWORD_ENDPOINT;
 import static com.amx.amxlib.constant.ApiEndpoint.USER_API_ENDPOINT;
 
-
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -32,14 +31,12 @@ import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.UserFingerprintResponseModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
-
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.model.UserDevice;
 import com.amx.jax.model.auth.QuestModelDTO;
 import com.amx.jax.rest.RestService;
-
 
 @Component
 public class UserClient extends AbstractJaxServiceClient {
@@ -598,7 +595,7 @@ public class UserClient extends AbstractJaxServiceClient {
 			throw new JaxSystemError();
 		} // end of try-catch
 	} // end of customerLoggedIn
-	
+
 	public ApiResponse<CustomerModel> saveEmailNew(String email) {
 		try {
 			CustomerModel custModel = new CustomerModel();
@@ -618,7 +615,7 @@ public class UserClient extends AbstractJaxServiceClient {
 		} // end of try-catch
 
 	}
-	
+
 	public ApiResponse<CustomerModel> saveMobileNew(String mobile) {
 		try {
 			CustomerModel custModel = new CustomerModel();
@@ -637,13 +634,12 @@ public class UserClient extends AbstractJaxServiceClient {
 			throw new JaxSystemError();
 		} // end of try-catch
 	}
-	
 
 	public AmxApiResponse<UserFingerprintResponseModel, Object> linkDeviceId(String identityInt) {
 		try {
 			String url = this.getBaseUrl() + USER_API_ENDPOINT + "/link-deviceid/";
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			return restService.ajax(url).post(requestEntity).queryParam("identityInt",identityInt)
+			return restService.ajax(url).post(requestEntity).queryParam("identityInt", identityInt)
 					.as(new ParameterizedTypeReference<AmxApiResponse<UserFingerprintResponseModel, Object>>() {
 					});
 
@@ -654,7 +650,7 @@ public class UserClient extends AbstractJaxServiceClient {
 			throw new JaxSystemError(e);
 		} // end of try-catch
 	}
-	
+
 	public AmxApiResponse<UserFingerprintResponseModel, Object> linkDeviceIdLoggedinUser() {
 		try {
 			String url = this.getBaseUrl() + USER_API_ENDPOINT + "/link-device-loggedin-customer/";
@@ -670,12 +666,13 @@ public class UserClient extends AbstractJaxServiceClient {
 			throw new JaxSystemError(e);
 		} // end of try-catch
 	}
-	
+
 	public AmxApiResponse<CustomerModel, Object> loginUserByFingerprint(String civilId, String password) {
 		try {
 			String url = this.getBaseUrl() + USER_API_ENDPOINT + "/login-customer-by-fingerprint/";
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			return restService.ajax(url).post(requestEntity).queryParam("civilId", civilId).queryParam("password", password)
+			return restService.ajax(url).post(requestEntity).queryParam("civilId", civilId)
+					.queryParam("password", password)
 					.as(new ParameterizedTypeReference<AmxApiResponse<CustomerModel, Object>>() {
 					});
 
