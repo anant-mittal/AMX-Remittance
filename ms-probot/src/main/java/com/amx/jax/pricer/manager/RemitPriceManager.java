@@ -110,7 +110,7 @@ public class RemitPriceManager {
 			}
 
 			// This is code for fetching prices for online Channel
-			List<BigDecimal> validBankIds = getValidBankIds(requestDto.getForeignCountryId(),
+			List<BigDecimal> validBankIds = getValidRoutingBankIds(requestDto.getForeignCountryId(),
 					requestDto.getForeignCurrencyId(), requestDto.getPricingLevel(), requestDto.getRoutingBankIds());
 
 			if (validBankIds.isEmpty()) {
@@ -172,7 +172,7 @@ public class RemitPriceManager {
 
 			// This is code for fetching prices for Other Channel
 
-			List<BigDecimal> validBankIds = getValidBankIds(requestDto.getForeignCountryId(),
+			List<BigDecimal> validBankIds = getValidRoutingBankIds(requestDto.getForeignCountryId(),
 					requestDto.getForeignCurrencyId(), requestDto.getPricingLevel(), requestDto.getRoutingBankIds());
 
 			if (validBankIds.isEmpty()) {
@@ -239,7 +239,8 @@ public class RemitPriceManager {
 			/**
 			 * For Further computations
 			 */
-			exchangeRateRequestDataCache.setBankGlcBalMap(getGLCBALRates(requestDto.getForeignCurrencyId(), validBankIds));
+			exchangeRateRequestDataCache
+					.setBankGlcBalMap(getGLCBALRates(requestDto.getForeignCurrencyId(), validBankIds));
 
 			/**
 			 * Get margin for the Rate
@@ -325,23 +326,6 @@ public class RemitPriceManager {
 			}
 		}
 
-		/*
-		 * System.out.
-		 * println(" ===================== ALL GLC BAL Rates ===================== ");
-		 * 
-		 * for (Entry<BigDecimal, ViewExGLCBAL> entry : bankGlcBalMap.entrySet()) {
-		 * System.out.println(" GLCBAL Rate ==> " + entry.getValue().toString()); }
-		 */
-
-		/*
-		 * System.out.
-		 * println(" ===================== ALL Exchange Rate  Master Rates ===================== "
-		 * );
-		 * 
-		 * for (Entry<BigDecimal, ExchangeRateAPRDET> exchangeRate :
-		 * bankExchangeRateMap.entrySet()) { System.out.println(" Exchange Rate ==> " +
-		 * exchangeRate.toString()); }
-		 */
 
 		return bankExchangeRateMap;
 	}
@@ -405,8 +389,8 @@ public class RemitPriceManager {
 
 	}
 
-	private List<BigDecimal> getValidBankIds(BigDecimal fCountryId, BigDecimal fCurrencyId, PRICE_BY pricingLevel,
-			List<BigDecimal> routingBnaks) {
+	private List<BigDecimal> getValidRoutingBankIds(BigDecimal fCountryId, BigDecimal fCurrencyId, PRICE_BY pricingLevel,
+			List<BigDecimal> routingBanks) {
 
 		/**
 		 * Old Code for fetching the Routing Bank Ids from VW_EX_TRATE
@@ -421,33 +405,25 @@ public class RemitPriceManager {
 		List<BigDecimal> availableBankIds = routingHeaders.stream().map(rh -> rh.getRoutingBankId()).distinct().sorted()
 				.collect(Collectors.toList());
 
-		// String routingHeaderIds =
-		// rhList.stream().map(Object::toString).collect(Collectors.joining("# "));
-
-		// String trateIds =
-		// validBankIds.stream().distinct().sorted().map(Object::toString)
-		// .collect(Collectors.joining("# "));
-
-		// exchangeRateRequestDataCache.getInfo().put("TRATE_IDS", trateIds);
-		// exchangeRateRequestDataCache.getInfo().put("RH_IDS", routingHeaderIds);
-
 		/** End: Routing Bank Find **/
 
 		List<BigDecimal> validBankIds;
 
-		if (PRICE_BY.ROUTING_BANK.equals(pricingLevel) && routingBnaks != null && !routingBnaks.isEmpty()) {
+		if (PRICE_BY.ROUTING_BANK.equals(pricingLevel) && routingBanks != null && !routingBanks.isEmpty()) {
 
-			routingBnaks.forEach(bId -> {
+			routingBanks.forEach(bId -> {
 				if (!availableBankIds.contains(bId)) {
 					throw new PricerServiceException(PricerServiceError.INVALID_ROUTING_BANK_IDS,
 							" Routing Bank Id is Invalid: " + bId.toString());
 				}
 			});
 
-			validBankIds = routingBnaks;
+			validBankIds = routingBanks;
 
-		} else {
+		} else if (PRICE_BY.COUNTRY.equals(pricingLevel)) {
 			validBankIds = availableBankIds;
+		} else {
+			validBankIds = new ArrayList<BigDecimal>();
 		}
 
 		return validBankIds;
