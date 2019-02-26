@@ -1072,19 +1072,7 @@ public class UserService extends AbstractUserService {
 		repo.save(customer);
 	}
 	
-	public UserFingerprintResponseModel linkDeviceId(String identityInt, String identityType) {
-		userValidationService.validateIdentityInt(identityInt, identityType);
-		BigDecimal bdidentityType = new BigDecimal(identityType);
-		CustomerOnlineRegistration customerOnlineRegistration = userValidationService.validateOnlineCustomerByIdentityId(identityInt, bdidentityType);
-		String hashpassword = userService.generateFingerPrintPassword();
-		UserFingerprintResponseModel userFingerprintResponsemodel = new UserFingerprintResponseModel();
-		userFingerprintResponsemodel.setPassword(hashpassword);
-		customerOnlineRegistration.setFingerprintDeviceId(metaData.getDeviceId());
-		customerOnlineRegistration.setDevicePassword(hashpassword);
-		custDao.saveOnlineCustomer(customerOnlineRegistration);
-		return userFingerprintResponsemodel;
-
-	}
+	
 	
 	public UserFingerprintResponseModel linkDeviceId(BigDecimal customerId) {
 

@@ -254,7 +254,7 @@ public class UserClientTest extends AbstractTestClient {
 		assertNotNull(response.getResult());
 	}
 	
-	@Test
+	//@Test
 	public void saveMobileNew() throws IOException, ResourceNotFoundException, InvalidInputException,
 	RemittanceTransactionValidationException, LimitExeededException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
@@ -269,7 +269,7 @@ public class UserClientTest extends AbstractTestClient {
 		assertNotNull(response.getResult());
 	}
 	
-	@Test
+	//@Test
 	public void positivetestLinkDeviceId() throws IOException, ResourceNotFoundException, InvalidInputException,
 			RemittanceTransactionValidationException, LimitExeededException {
 		jaxMetaInfo.setDeviceId("301019967");
@@ -289,7 +289,7 @@ public class UserClientTest extends AbstractTestClient {
 
 	}
 
-	@Test
+	//@Test
 	public void negativetestLinkDeviceId() throws IOException, ResourceNotFoundException, InvalidInputException,
 			RemittanceTransactionValidationException, LimitExeededException {
 		jaxMetaInfo.setDeviceId("301019967");
@@ -315,7 +315,7 @@ public class UserClientTest extends AbstractTestClient {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
 		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
-		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
+		jaxMetaInfo.setCustomerId(new BigDecimal(573));
 		jaxMetaInfo.setChannel(JaxChannel.ONLINE);
 		jaxMetaInfo.setTenant(Tenant.KWT);
 		jaxMetaInfo.setLanguageId(new BigDecimal(1));
@@ -334,7 +334,7 @@ public class UserClientTest extends AbstractTestClient {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
 		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
-		jaxMetaInfo.setCustomerId(new BigDecimal(123));
+		jaxMetaInfo.setCustomerId(new BigDecimal(12));
 		jaxMetaInfo.setChannel(JaxChannel.ONLINE);
 		jaxMetaInfo.setTenant(Tenant.KWT);
 		jaxMetaInfo.setLanguageId(new BigDecimal(1));
@@ -346,39 +346,39 @@ public class UserClientTest extends AbstractTestClient {
 
 	}
 	
-	@Test
+	//@Test
 	public void positivetestLoginCustomerByFingerprint() throws IOException, ResourceNotFoundException,
 			InvalidInputException, RemittanceTransactionValidationException, LimitExeededException {
 		jaxMetaInfo.setDeviceId("301019967");
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
 		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
-		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
+		jaxMetaInfo.setCustomerId(new BigDecimal(573));
 		jaxMetaInfo.setChannel(JaxChannel.ONLINE);
 		jaxMetaInfo.setTenant(Tenant.KWT);
 		jaxMetaInfo.setLanguageId(new BigDecimal(1));
 		jaxMetaInfo.setEmployeeId(new BigDecimal(265));
 		AmxApiResponse<CustomerModel, Object> response = null;
-		response = client.loginUserByFingerprint("289072104474", "47*0TW");
+		response = client.loginUserByFingerprint("281050207628", ")Q%7G=");
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());
 
 	}
 	
-	@Test
+	//@Test
 	public void negativetestLoginCustomerByFingerprint() throws IOException, ResourceNotFoundException,
 			InvalidInputException, RemittanceTransactionValidationException, LimitExeededException {
 		jaxMetaInfo.setDeviceId("301019967");
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
 		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
-		jaxMetaInfo.setCustomerId(new BigDecimal(123));
+		jaxMetaInfo.setCustomerId(new BigDecimal(573));
 		jaxMetaInfo.setChannel(JaxChannel.ONLINE);
 		jaxMetaInfo.setTenant(Tenant.KWT);
 		jaxMetaInfo.setLanguageId(new BigDecimal(1));
 		jaxMetaInfo.setEmployeeId(new BigDecimal(265));
 		AmxApiResponse<CustomerModel, Object> response = null;
-		response = client.loginUserByFingerprint("289072104474", "7A/+/");
+		response = client.loginUserByFingerprint("281050207628", "7A/+/");
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());
 

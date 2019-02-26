@@ -5,6 +5,8 @@ import static com.amx.amxlib.constant.ApiEndpoint.UPDATE_CUSTOMER_PASSWORD_ENDPO
 import static com.amx.amxlib.constant.ApiEndpoint.USER_API_ENDPOINT;
 
 
+
+
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -16,6 +18,8 @@ import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.amx.amxlib.constant.ApiEndpoint.MetaApi;
+import com.amx.amxlib.constant.ApiEndpoint.UserApi;
 import com.amx.amxlib.exception.AbstractJaxException;
 import com.amx.amxlib.exception.AlreadyExistsException;
 import com.amx.amxlib.exception.CustomerValidationException;
@@ -25,6 +29,7 @@ import com.amx.amxlib.exception.JaxSystemError;
 import com.amx.amxlib.exception.LimitExeededException;
 import com.amx.amxlib.exception.UnknownJaxError;
 import com.amx.amxlib.meta.model.CustomerDto;
+import com.amx.amxlib.meta.model.ViewGovernateAreaDto;
 import com.amx.amxlib.model.AbstractUserModel;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
@@ -655,36 +660,35 @@ public class UserClient extends AbstractJaxServiceClient {
 		} // end of try-catch
 	}
 	
+	
+	
 	public AmxApiResponse<UserFingerprintResponseModel, Object> linkDeviceIdLoggedinUser() {
 		try {
-			String url = this.getBaseUrl() + USER_API_ENDPOINT + "/link-device-loggedin-customer/";
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			return restService.ajax(url).post(requestEntity)
+
+			return restService.ajax(appConfig.getJaxURL()).path(UserApi.PREFIX +UserApi.LINK_DEVICE_LOGGEDIN_USER)
+					.meta(new JaxMetaInfo()).post()
 					.as(new ParameterizedTypeReference<AmxApiResponse<UserFingerprintResponseModel, Object>>() {
 					});
-
-		} catch (AbstractJaxException ae) {
-			throw ae;
-		} catch (Exception e) {
-			LOGGER.error("exception in linkDeviceloggedinUser : ", e);
-			throw new JaxSystemError(e);
-		} // end of try-catch
+		} catch (Exception ae) {
+			LOGGER.error("exception in linkDeviceloggedinUser : ", ae);
+			return JaxSystemError.evaluate(ae);
+		}
 	}
+	
+	
+	
 	
 	public AmxApiResponse<CustomerModel, Object> loginUserByFingerprint(String civilId, String password) {
 		try {
-			String url = this.getBaseUrl() + USER_API_ENDPOINT + "/login-customer-by-fingerprint/";
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			return restService.ajax(url).post(requestEntity).queryParam("civilId", civilId).queryParam("password", password)
+			
+			return restService.ajax(appConfig.getJaxURL())
+					.path(UserApi.PREFIX + UserApi.LOGIN_CUSTOMER_BY_FINGERPRINT).meta(new JaxMetaInfo()).post()
+					.queryParam(UserApi.IDENTITYINT, civilId).queryParam(UserApi.PASSWORD, password).post()
 					.as(new ParameterizedTypeReference<AmxApiResponse<CustomerModel, Object>>() {
 					});
-
-		} catch (AbstractJaxException ae) {
+		} catch (Exception ae) {
 			LOGGER.error("exception in loginUserByFingerprint : ", ae);
-			throw ae;
-		} catch (Exception e) {
-			LOGGER.error("exception in loginUserByFingerprint : ", e);
-			throw new JaxSystemError(e);
-		} // end of try-catch
+			return JaxSystemError.evaluate(ae);
+		}
 	}
 }
