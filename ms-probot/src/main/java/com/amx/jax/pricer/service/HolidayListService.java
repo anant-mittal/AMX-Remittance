@@ -17,6 +17,7 @@ public class HolidayListService {
 	HolidayListManager holidayListManager;
 
 	public List<HolidayResponseDTO> getHolidayList(BigDecimal countryId, Date fromDate, Date toDate) {
+		
 		return holidayListManager.getHolidayList(countryId, fromDate, toDate);
 	}
 

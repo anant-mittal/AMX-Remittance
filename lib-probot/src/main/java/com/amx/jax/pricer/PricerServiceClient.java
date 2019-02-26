@@ -1,8 +1,9 @@
 package com.amx.jax.pricer;
 
 import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -108,15 +109,19 @@ public class PricerServiceClient implements ProbotExchangeRateService, ProbotDat
 	}
 
 	@Override
-	public List<HolidayResponseDTO> fetchHolidayList(BigDecimal CountryId, Date fromDate, Date toDate) {
+	public AmxApiResponse<HolidayResponseDTO, Object> fetchHolidayList(BigDecimal countryId, Date fromDate,
+			Date toDate) {
 
 		LOGGER.info("Get Holiday List for Given CountryId and Event Date");
-		ProbotDataService probotService = null;
 
-		@SuppressWarnings("null")
-		List<HolidayResponseDTO> holidayResponseDTO = probotService.fetchHolidayList(CountryId, fromDate, toDate);
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-		return holidayResponseDTO;
+		return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.GET_HOLIDAYS_DATE_RANGE)
+				.queryParam("countryId", countryId).queryParam("fromDate", dateFormat.format(fromDate))
+				.queryParam("toDate", dateFormat.format(toDate)).post()
+				.as(new ParameterizedTypeReference<AmxApiResponse<HolidayResponseDTO, Object>>() {
+				});
+
 	}
 
 }

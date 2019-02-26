@@ -63,8 +63,8 @@ public class PricerServiceApiTest implements ProbotExchangeRateService, ProbotDa
 	@Autowired
 	PricerTestService pricerTestService;
 
-	@Autowired
-	HolidayListService holidayListService;
+	// @Autowired
+	// HolidayListService holidayListService;
 
 	@Override
 	@RequestMapping(value = ApiEndPoints.FETCH_PRICE_CUSTOMER, method = RequestMethod.POST)
@@ -91,14 +91,13 @@ public class PricerServiceApiTest implements ProbotExchangeRateService, ProbotDa
 	}
 
 	@Override
-	@RequestMapping(value = ApiEndPoints.HOLIDAY_LIST, method = RequestMethod.POST)
-	public List<HolidayResponseDTO> fetchHolidayList(@RequestParam(required = true) BigDecimal countryId,
+	@RequestMapping(value = ApiEndPoints.GET_HOLIDAYS_DATE_RANGE, method = RequestMethod.POST)
+	public AmxApiResponse<HolidayResponseDTO, Object> fetchHolidayList(
+			@RequestParam(required = true) BigDecimal countryId,
 			@RequestParam(required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fromDate,
 			@RequestParam(required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") Date toDate) {
 
-		List<HolidayResponseDTO> holidayResponseDTO = holidayListService.getHolidayList(countryId, fromDate, toDate);
-
-		return holidayResponseDTO;
+		return pricerServiceClient.fetchHolidayList(countryId, fromDate, toDate);
 
 	}
 

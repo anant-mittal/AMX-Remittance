@@ -63,16 +63,19 @@ public class ProbotDataServiceApiController implements ProbotDataService {
 	}
 
 	@Override
-	@RequestMapping(value = ApiEndPoints.HOLIDAY_LIST, method = RequestMethod.POST)
-	public List<HolidayResponseDTO> fetchHolidayList(@RequestParam(required = true) BigDecimal countryId,
+	@RequestMapping(value = ApiEndPoints.GET_HOLIDAYS_DATE_RANGE, method = RequestMethod.POST)
+	public AmxApiResponse<HolidayResponseDTO, Object> fetchHolidayList(
+			@RequestParam(required = true) BigDecimal countryId,
 			@RequestParam(required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fromDate,
 			@RequestParam(required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") Date toDate) {
 
 		LOGGER.info("Received Holiday List Request " + " with TraceId: " + AppContextUtil.getTraceId());
+		
+		System.out.println(" === Controller Called === ");
 
 		List<HolidayResponseDTO> holidayResponseDTO = holidayService.getHolidayList(countryId, fromDate, toDate);
 
-		return holidayResponseDTO;
+		return AmxApiResponse.buildList(holidayResponseDTO);
 	}
 
 }
