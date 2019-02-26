@@ -37,14 +37,12 @@ import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.UserFingerprintResponseModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
-
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.model.UserDevice;
 import com.amx.jax.model.auth.QuestModelDTO;
 import com.amx.jax.rest.RestService;
-
 
 @Component
 public class UserClient extends AbstractJaxServiceClient {
@@ -603,7 +601,7 @@ public class UserClient extends AbstractJaxServiceClient {
 			throw new JaxSystemError();
 		} // end of try-catch
 	} // end of customerLoggedIn
-	
+
 	public ApiResponse<CustomerModel> saveEmailNew(String email) {
 		try {
 			CustomerModel custModel = new CustomerModel();
@@ -623,7 +621,7 @@ public class UserClient extends AbstractJaxServiceClient {
 		} // end of try-catch
 
 	}
-	
+
 	public ApiResponse<CustomerModel> saveMobileNew(String mobile) {
 		try {
 			CustomerModel custModel = new CustomerModel();
@@ -642,13 +640,12 @@ public class UserClient extends AbstractJaxServiceClient {
 			throw new JaxSystemError();
 		} // end of try-catch
 	}
-	
 
 	public AmxApiResponse<UserFingerprintResponseModel, Object> linkDeviceId(String identityInt) {
 		try {
 			String url = this.getBaseUrl() + USER_API_ENDPOINT + "/link-deviceid/";
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			return restService.ajax(url).post(requestEntity).queryParam("identityInt",identityInt)
+			return restService.ajax(url).queryParam("identityInt", identityInt).meta(new JaxMetaInfo())
+					.post()
 					.as(new ParameterizedTypeReference<AmxApiResponse<UserFingerprintResponseModel, Object>>() {
 					});
 
@@ -667,6 +664,7 @@ public class UserClient extends AbstractJaxServiceClient {
 
 			return restService.ajax(appConfig.getJaxURL()).path(UserApi.PREFIX +UserApi.LINK_DEVICE_LOGGEDIN_USER)
 					.meta(new JaxMetaInfo()).post()
+
 					.as(new ParameterizedTypeReference<AmxApiResponse<UserFingerprintResponseModel, Object>>() {
 					});
 		} catch (Exception ae) {
@@ -674,7 +672,7 @@ public class UserClient extends AbstractJaxServiceClient {
 			return JaxSystemError.evaluate(ae);
 		}
 	}
-	
+
 	
 	
 	
@@ -687,6 +685,7 @@ public class UserClient extends AbstractJaxServiceClient {
 					.as(new ParameterizedTypeReference<AmxApiResponse<CustomerModel, Object>>() {
 					});
 		} catch (Exception ae) {
+
 			LOGGER.error("exception in loginUserByFingerprint : ", ae);
 			return JaxSystemError.evaluate(ae);
 		}
