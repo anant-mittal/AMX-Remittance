@@ -27,7 +27,7 @@ import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.dto.PricingResponseDTO;
 import com.amx.jax.pricer.service.HolidayListService;
 import com.amx.jax.pricer.service.PricingService;
-import com.amx.jax.pricer.util.ExchangeRateRequestDataCache;
+import com.amx.jax.pricer.util.ExchangeRequestTransientDataCache;
 import com.amx.jax.pricer.var.PricerServiceConstants;
 
 @RestController
@@ -44,9 +44,9 @@ public class ProbotExchRateApiController implements ProbotExchangeRateService {
 
 	@Bean
 	@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
-	public ExchangeRateRequestDataCache ExchangeRateRequestDataCache() {
-		ExchangeRateRequestDataCache exchangeRateRequestDataCache = new ExchangeRateRequestDataCache();
-		return exchangeRateRequestDataCache;
+	public ExchangeRequestTransientDataCache ExchangeRequestTransientDataCache() {
+		ExchangeRequestTransientDataCache exchangeRequestTransientDataCache = new ExchangeRequestTransientDataCache();
+		return exchangeRequestTransientDataCache;
 	}
 
 	@Override

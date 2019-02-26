@@ -6,21 +6,25 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.NavigableMap;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import com.amx.utils.CryptoUtil;
+import com.amx.utils.DateUtil;
 import com.amx.utils.JsonUtil;
 
 public final class RuntimeTest {
 
 	public static class A implements Comparable<A>, Serializable {
-		
+
 		private static final long serialVersionUID = 1L;
-		
+
 		public BigDecimal i;
 		public int j;
 
@@ -31,6 +35,34 @@ public final class RuntimeTest {
 	}
 
 	public static void main(String[] args) throws NoSuchAlgorithmException {
+
+		System.out.println(" Date Now  ==>  "
+				+ DateUtil.formatDate(DateUtil.getCurrentDateWithTime("Indian/Mauritius"), "us", "24_hr"));
+
+		
+		NavigableMap<Integer, String> map = new TreeMap<Integer, String>();
+		
+		
+		
+		map.put(12, "a");
+		map.put(11, "b");
+		map.put(10, "c");
+		map.put(9, "d");
+		map.put(8, "e");
+		map.put(7, "a");
+		map.put(6, "a");
+		map.put(5, "a");
+		map.put(4, "a");
+		map.put(3, "a");
+		map.put(2, "a");
+		map.put(1, "a");
+		
+		Map<Integer, String> subMap = map.subMap(3, true, 10, true);
+		
+		System.out.println(" Sub Map ==> "+ JsonUtil.toJson(subMap));
+		
+		if (true)
+			return;
 
 		System.out.println(" ======== String Test ======= " + "Y".equalsIgnoreCase(null));
 
@@ -84,14 +116,14 @@ public final class RuntimeTest {
 
 		for (int j = 0; j < 10; j++) {
 			A a1 = new A();
-			a1.i = new BigDecimal(10-j);
+			a1.i = new BigDecimal(10 - j);
 			a1.j = j;
 
 			ts.add(a1);
 		}
-		
+
 		Collections.sort(ts);
-		
+
 		System.out.println(" All Sets ==> " + JsonUtil.toJson(ts));
 
 	}
