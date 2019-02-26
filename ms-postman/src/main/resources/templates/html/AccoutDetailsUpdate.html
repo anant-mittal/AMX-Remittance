@@ -4,10 +4,7 @@
 <head>
 <meta name="viewport" content="width=device-width" />
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<title th:switch="${change_type}">
-	<span class="content-block" th:case="'MOBILE_CHANGE'" th:remove="tag"><span th:text="${_tu.prop('company.name')}" th:remove="tag"></span> Mobile Number Change</span>
-	<span class="content-block" th:case="'EMAIL_CHANGE'" th:remove="tag"><span th:text="${_tu.prop('company.name')}" th:remove="tag"></span> Email ID Change</span>
-</title>
+<title><span th:if="${change_type} == 'MOBILE_CHANGE'" th:text="${_tu.prop('company.name')} + '  Mobile Number Change'" th:remove="tag"></span> <span th:if="${change_type} == 'EMAIL_CHANGE'"  th:text="${_tu.prop('company.name')} + '   Email ID Change'" th:remove="tag"></span> </title>
 <style>
 * {	
 	margin: 0;
@@ -264,7 +261,6 @@ a {
 </style>
 </head>
 <body itemtype="http://schema.org/EmailMessage">
-
 
 	<table class="body-wrap">
 		<tr>
