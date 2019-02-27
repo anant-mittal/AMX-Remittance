@@ -3,6 +3,7 @@ package com.amx.jax.grid;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.amx.jax.dbmodel.BranchSystemDetail;
 import com.amx.jax.dbmodel.Device;
 import com.amx.jax.dbmodel.employee.UserSession;
 import com.amx.jax.grid.views.CustomerDetailViewRecord;
@@ -23,6 +24,7 @@ public class GridViewFactory {
 		map.put(GridView.USER_SESSION, new GridInfo<UserSession>(UserSession.class));
 
 		map.put(GridView.VW_FS_EMPLOYEE, new GridInfo<EmployeeDetailViewRecord>(EmployeeDetailViewRecord.class));
+		map.put(GridView.EX_BRANCH_SYSTEM_INVENTORY, new GridInfo<BranchSystemDetail>(BranchSystemDetail.class));
 
 		map.put(GridView.DEVICE_CLIENT, new GridInfo<Device>(Device.class));
 		map.put(GridView.VW_CUSTOMER_KIBANA, new GridInfo<CustomerDetailViewRecord>(CustomerDetailViewRecord.class));
