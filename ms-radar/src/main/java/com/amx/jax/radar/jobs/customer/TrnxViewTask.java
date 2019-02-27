@@ -61,6 +61,7 @@ public class TrnxViewTask extends AbstractDBSyncTask {
 	}
 
 	@Override
+	//@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_SEC * 10)
 	public void doTask() {
 		this.doBothTask();
 	}

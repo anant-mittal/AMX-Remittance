@@ -45,14 +45,13 @@ public class AMXKWTRatesService extends AbstractDBSyncTask {
 	public static final Logger LOGGER = LoggerService.getLogger(AMXKWTRatesService.class);
 	private static final String TIME_TRACK_KEY = "processDate";
 	private static final int PAGE_SIZE = 3000;
-	private static final long TIME_GAP_FIX = 1000 * 60 * 15;
 
 	@SchedulerLock(lockMaxAge = AmxCurConstants.INTERVAL_HRS, context = LockContext.BY_CLASS)
 	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_SEC * 30)
 	public void doTask() {
-		if (TimeUtils.inHourSlot(4, 0)) {
+		//if (TimeUtils.inHourSlot(4, 0)) {
 			this.doBothTask();
-		}
+		//}
 	}
 
 	@Override

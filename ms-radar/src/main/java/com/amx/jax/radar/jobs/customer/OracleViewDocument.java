@@ -16,12 +16,14 @@ public class OracleViewDocument extends AESDocument {
 
 	public OracleViewDocument(CustomerDetailViewRecord customer) {
 		super("customer");
+		this.customer = customer;
 		this.id = "customer-" + ArgUtil.parseAsBigDecimal(customer.getId());
 		this.timestamp = ArgUtil.parseAsSimpleDate(customer.getLastUpdateDate());
 	}
 
 	public OracleViewDocument(TranxViewRecord trnx) {
 		super("trnx");
+		this.trnx = trnx;
 		this.id = "appxn-" + ArgUtil.parseAsBigDecimal(trnx.getId());
 		this.timestamp = ArgUtil.parseAsSimpleDate(trnx.getLastUpdateDate());
 		this.normalizeTrnx();
@@ -29,6 +31,7 @@ public class OracleViewDocument extends AESDocument {
 
 	public OracleViewDocument(AmxCurRate xrate) {
 		super("xrate");
+		this.xrate = xrate;
 		this.timestamp = ArgUtil.parseAsSimpleDate(xrate.getTimestamp());
 		this.id = ("xrate-" + "-" + xrate.getrSrc() + "-" + xrate.getrForCur() + "-"
 				+ this.getTimestamp().getTime() / TIME_GAP_FIX).toLowerCase();
