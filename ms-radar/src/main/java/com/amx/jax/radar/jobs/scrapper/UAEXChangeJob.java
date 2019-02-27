@@ -159,11 +159,9 @@ public class UAEXChangeJob extends ARadarTask {
 	 * @return
 	 */
 	public BigDecimal adjustRate(RateType type, Currency cur, BigDecimal rate) {
-		if (Currency.OMR.equals(cur)) {
-			if (BigDecimal.ONE.compareTo(rate) == 1) {
-				return rate.divide(THOUSAND, 12, RoundingMode.CEILING);
-			}
-		} else if (Currency.QAR.equals(cur)) {
+		if (Currency.OMR.equals(cur) || Currency.QAR.equals(cur) ||
+				Currency.SAR.equals(cur) || Currency.AED.equals(cur)
+				|| Currency.BHD.equals(cur)) {
 			if (BigDecimal.ONE.compareTo(rate) == 1) {
 				return rate.divide(THOUSAND, 12, RoundingMode.CEILING);
 			}
