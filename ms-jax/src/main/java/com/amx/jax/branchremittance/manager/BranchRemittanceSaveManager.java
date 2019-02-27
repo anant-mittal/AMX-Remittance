@@ -927,18 +927,28 @@ public void collectedAmountValidation(CollectionModel collectionModel,List<Colle
 	}
 	
 	
-	if(currencyAdjustList!=null && !currencyAdjustList.isEmpty()) {
-		BigDecimal totalCurrencyAdjustCollect =BigDecimal.ZERO;
-		BigDecimal totalCurrencyAdjustRefund=BigDecimal.ZERO;
-		totalCurrencyAdjustCollect = currencyAdjustList.stream().filter(a->a.getTransactionType().equalsIgnoreCase(ConstantDocument.CASH)).map(ForeignCurrencyAdjust::getAdjustmentAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
-		totalCurrencyAdjustRefund  =currencyAdjustList.stream().filter(a->a.getTransactionType().equalsIgnoreCase(ConstantDocument.F)).map(ForeignCurrencyAdjust::getAdjustmentAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
-		totalCurrencyAdjust =totalCurrencyAdjustCollect.subtract(totalCurrencyAdjustRefund);
-	}else {
-		throw new GlobalException(JaxError.AMOUNT_MISMATCH,"The currency count could not be updated in the currency adjustment table.");
+	if(totalCashAmount.compareTo(BigDecimal.ZERO)>0) {
+		if(currencyAdjustList!=null && !currencyAdjustList.isEmpty()) {
+			BigDecimal totalCurrencyAdjustCollect =BigDecimal.ZERO;
+			BigDecimal totalCurrencyAdjustRefund=BigDecimal.ZERO;
+			totalCurrencyAdjustCollect = currencyAdjustList.stream().filter(a->a.getTransactionType().equalsIgnoreCase(ConstantDocument.CASH)).map(ForeignCurrencyAdjust::getAdjustmentAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+			totalCurrencyAdjustRefund  =currencyAdjustList.stream().filter(a->a.getTransactionType().equalsIgnoreCase(ConstantDocument.F)).map(ForeignCurrencyAdjust::getAdjustmentAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+			totalCurrencyAdjust =totalCurrencyAdjustCollect.subtract(totalCurrencyAdjustRefund);
+		}else {
+			throw new GlobalException(JaxError.AMOUNT_MISMATCH,"The currency count could not be updated in the currency adjustment table.");
+		}
 	}
 	
 	
+	
+/*	
 	if(totalCollectedAmount.subtract(refundAmount).compareTo(totalCurrencyAdjust)!=0) {
+		throw new GlobalException(JaxError.AMOUNT_MISMATCH,"Mismatch found in cash collected and Denomination entered.");
+	}*/
+	
+	
+	
+	if(totalCashAmount.subtract(refundAmount).compareTo(totalCurrencyAdjust)!=0) {
 		throw new GlobalException(JaxError.AMOUNT_MISMATCH,"Mismatch found in cash collected and Denomination entered.");
 	}
 	
@@ -1044,7 +1054,7 @@ public BigDecimal generateDocumentNumber(BigDecimal appCountryId,BigDecimal comp
 	 }catch(Exception e){
 		 e.printStackTrace();
 		logger.debug("convertClobToStringVs "+e.getMessage());
-		 throw new GlobalException(JaxError.SIGNATURE_NOT_FOUND, e.getMessage());
+		 throw new GlobalException(JaxError.CUSTOMER__SIGNATURE_UNAVAILABLE, e.getMessage());
 	 }
 	 return signatureStr;
  }
@@ -1074,7 +1084,7 @@ public BigDecimal generateDocumentNumber(BigDecimal appCountryId,BigDecimal comp
        }
    } catch(Exception e ) {
 	   logger.debug("readClobAsString "+e.getMessage());
-	   throw new GlobalException(JaxError.SIGNATURE_NOT_FOUND, e.getMessage());
+	   throw new GlobalException(JaxError.CUSTOMER__SIGNATURE_UNAVAILABLE, e.getMessage());
    } finally{
 	   if ( reader != null ) {
          try {

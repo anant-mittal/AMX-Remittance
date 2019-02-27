@@ -46,12 +46,14 @@ import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.CustomerVerification;
 import com.amx.jax.dbmodel.DmsDocumentModel;
 import com.amx.jax.dbmodel.ViewOnlineCustomerCheck;
+import com.amx.jax.dbmodel.remittance.BlackListDetailModel;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.exception.ExceptionMessageKey;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.auth.CustomerRequestAuthMeta;
 import com.amx.jax.model.auth.QuestModelDTO;
 import com.amx.jax.repository.IContactDetailDao;
+import com.amx.jax.repository.remittance.IBlackListDetailRepository;
 import com.amx.jax.scope.TenantContext;
 import com.amx.jax.userservice.constant.CustomerDataVerificationQuestion;
 import com.amx.jax.userservice.dao.CusmosDao;
@@ -134,6 +136,9 @@ public class UserValidationService {
 
 	@Autowired
 	IContactDetailDao contactDetailDao;
+	
+	@Autowired
+	IBlackListDetailRepository blackListDtRepo;
 
 	private DateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
@@ -210,7 +215,7 @@ public class UserValidationService {
 		}
 	}
 
-	protected void validateCustIdProofs(BigDecimal custId) {
+	public void validateCustIdProofs(BigDecimal custId) {
 		if (tenantContext.get() != null) {
 			tenantContext.get().validateCustIdProofs(custId);
 			return;
@@ -224,7 +229,7 @@ public class UserValidationService {
 		}
 	}
 
-	private void validateIdProof(CustomerIdProof idProof) {
+	public void validateIdProof(CustomerIdProof idProof) {
 
 		String scanSystem = idProof.getScanSystem();
 		if (idProof.getIdentityExpiryDate() != null && idProof.getIdentityExpiryDate().compareTo(new Date()) < 0) {
@@ -259,7 +264,7 @@ public class UserValidationService {
 		}
 	}
 
-	protected void validateCustomerData(CustomerOnlineRegistration onlineCust, Customer customer) {
+	public void validateCustomerData(CustomerOnlineRegistration onlineCust, Customer customer) {
 
 		if (customer.getCustomerReference() == null) {
 			throw new GlobalException(JaxError.INVALID_CUSTOMER_REFERENCE, "Invalid Customer Reference");
@@ -285,7 +290,7 @@ public class UserValidationService {
 
 	}
 
-	private void validateOldEmosData(Customer customer) {
+	public void validateOldEmosData(Customer customer) {
 		if (customer.getCustomerReference() == null) {
 			throw new GlobalException(JaxError.OLD_EMOS_USER_NOT_FOUND, "Old customer records not found in EMOS");
 		}
@@ -299,7 +304,7 @@ public class UserValidationService {
 		}
 	}
 
-	private void validateCustContact(Customer customer) {
+	public void validateCustContact(Customer customer) {
 
 		List<ContactDetail> contactDetails = contactDetailService.getContactDetail(customer.getCustomerId());
 		if (CollectionUtils.isEmpty(contactDetails)) {
@@ -327,7 +332,7 @@ public class UserValidationService {
 		}
 	}
 
-	void validateBlackListedCustomerForLogin(Customer customer) {
+	public void validateBlackListedCustomerForLogin(Customer customer) {
 
 		StringBuffer engNamesbuf = new StringBuffer();
 		if (StringUtils.isNotBlank(customer.getFirstName())) {
@@ -361,6 +366,8 @@ public class UserValidationService {
 						"Your account is locked as we have found that your name has been black-listed by CBK.");
 			}
 		}
+		
+		
 	}
 
 	protected void validateCustomerSecurityQuestions(List<SecurityQuestionModel> answers,
@@ -830,4 +837,12 @@ public class UserValidationService {
 		}
 	}
 
+	public void validateBlackListedCustomer(Customer customer) {
+		
+		String idType ="C"; 
+		List<BlackListDetailModel> blist = blackListDtRepo.findByIdNumberAndIdType(customer.getIdentityInt(),idType);
+		if (blist != null && !blist.isEmpty()) {
+			throw new GlobalException(JaxError.BLACK_LISTED_EXISTING_CIVIL_ID.getStatusKey(),"Your account is locked as we have found that your name has been black-listed by CBK.");
+		}
+	}
 }
