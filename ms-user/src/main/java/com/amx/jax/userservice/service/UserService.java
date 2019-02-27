@@ -1078,17 +1078,18 @@ public class UserService extends AbstractUserService {
 
 		CustomerOnlineRegistration customerOnlineRegistration = userValidationService
 				.validateOnlineCustomerByIdentityId(customerId);
-		String hashPassword = userService.generateFingerPrintPassword();
+		String password = Random.randomPassword(6);
+		String hashPassword = userService.generateFingerPrintPassword(password);
 		UserFingerprintResponseModel userFingerprintResponsemodel = new UserFingerprintResponseModel();
-		userFingerprintResponsemodel.setPassword(hashPassword);
+		userFingerprintResponsemodel.setPassword(password);
 		customerOnlineRegistration.setFingerprintDeviceId(metaData.getDeviceId());
 		customerOnlineRegistration.setDevicePassword(hashPassword);
 		custDao.saveOnlineCustomer(customerOnlineRegistration);
 		return userFingerprintResponsemodel;
 	}
 
-	public String generateFingerPrintPassword() {
-		String password = Random.randomPassword(6);
+	public String generateFingerPrintPassword(String password) {
+		
 		logger.debug("The password is " + password);
 		String hashpassword = null;
 		try {
