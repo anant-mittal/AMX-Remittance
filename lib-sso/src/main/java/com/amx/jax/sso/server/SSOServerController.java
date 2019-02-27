@@ -189,6 +189,7 @@ public class SSOServerController {
 									commonHttpRequest.get(DeviceConstants.Keys.CLIENT_SESSION_TOKEN_XKEY));
 				}
 
+				ssoUser.setUserClient(ssomodel.getUserClient());
 				UserAuthInitReqDTO init = new UserAuthInitReqDTO();
 				init.setEmployeeNo(formdata.getEcnumber());
 				init.setIdentity(formdata.getIdentity());

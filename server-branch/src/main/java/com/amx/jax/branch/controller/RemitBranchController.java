@@ -64,9 +64,6 @@ public class RemitBranchController {
 	@Autowired
 	private SSOUser ssoUser;
 
-	@Autowired
-	private SSOTranx sSOTranx;
-
 	@RequestMapping(value = "/api/remitt/order/list", method = { RequestMethod.GET })
 	public AmxApiResponse<FcSaleOrderManagementDTO, Object> getOrderList() {
 		return null;
@@ -177,9 +174,9 @@ public class RemitBranchController {
 	}
 
 	@RequestMapping(value = "/api/remitt/signpad/submit", method = { RequestMethod.POST })
-	public AmxApiResponse<BoolRespModel, Object> updateFcPurchase(
+	public AmxApiResponse<BoolRespModel, Object> updateRemittanceStatus(
 			@RequestBody SignaturePadRemittanceInfo signaturePadRemittanceInfo) {
-		return terminalService.updateRemittanceState(sSOTranx.get().getUserClient().getTerminalId().intValue(),
+		return terminalService.updateRemittanceState(ssoUser.getUserClient().getTerminalId().intValue(),
 				ssoUser.getUserDetails().getEmployeeId(), signaturePadRemittanceInfo);
 	}
 }
