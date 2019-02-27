@@ -2,6 +2,7 @@ package com.amx.jax.radar.jobs.scrapper;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
@@ -137,7 +138,7 @@ public class UAEXChangeJob extends ARadarTask {
 					trnsfrRate.setrDomCur(Currency.KWD);
 					trnsfrRate.setrForCur(cur);
 					trnsfrRate.setrType(type);
-					trnsfrRate.setrRate(rate);
+					trnsfrRate.setrRate(adjustRate(type, cur, rate));
 					// System.out.println(JsonUtil.toJson(trnsfrRate));
 					builder.update(oracleVarsCache.getIndex(DBSyncJobs.XRATE),
 							new OracleViewDocument(trnsfrRate));
@@ -145,6 +146,29 @@ public class UAEXChangeJob extends ARadarTask {
 			}
 		}
 		esRepository.bulk(builder.build());
+	}
+
+	public static final BigDecimal THOUSAND = new BigDecimal(1000);
+
+	/**
+	 * Rate Adjustment against KWD only
+	 * 
+	 * @param type
+	 * @param cur
+	 * @param rate
+	 * @return
+	 */
+	public BigDecimal adjustRate(RateType type, Currency cur, BigDecimal rate) {
+		if (Currency.OMR.equals(cur)) {
+			if (BigDecimal.ONE.compareTo(rate) == 1) {
+				return rate.divide(THOUSAND, 12, RoundingMode.CEILING);
+			}
+		} else if (Currency.QAR.equals(cur)) {
+			if (BigDecimal.ONE.compareTo(rate) == 1) {
+				return rate.divide(THOUSAND, 12, RoundingMode.CEILING);
+			}
+		}
+		return rate;
 	}
 
 }

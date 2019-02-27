@@ -42,12 +42,18 @@ public class AmxCurRate {
 		this.rForCur = rForCur;
 	}
 
+	@JsonProperty(value = "src")
 	private RateSource rSrc;
+	@JsonProperty(value = "forCur")
 	private Currency rForCur;
+	@JsonProperty(value = "domCur")
 	private Currency rDomCur;
+
+	@JsonProperty(value = "rateType")
 	private RateType rType;
 
 	@JsonFormat(shape = JsonFormat.Shape.NUMBER_FLOAT)
+	@JsonProperty(value = "rate")
 	private BigDecimal rRate;
 
 	public RateSource getrSrc() {

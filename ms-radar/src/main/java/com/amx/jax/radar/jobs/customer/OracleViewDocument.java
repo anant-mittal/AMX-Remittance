@@ -82,7 +82,7 @@ public class OracleViewDocument extends AESDocument {
 		this.xrate = xrate;
 	}
 
-	private static final long TIME_GAP_FIX = 1000 * 60 * 15;
+	private static final long TIME_GAP_FIX = 1000 * 60 * 30;
 
 	public OracleViewDocument xrate(AmxCurRate xrate) {
 		this.xrate = xrate;
