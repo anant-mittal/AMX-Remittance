@@ -4,9 +4,6 @@ import static com.amx.amxlib.constant.ApiEndpoint.CUSTOMER_ENDPOINT;
 import static com.amx.amxlib.constant.ApiEndpoint.UPDATE_CUSTOMER_PASSWORD_ENDPOINT;
 import static com.amx.amxlib.constant.ApiEndpoint.USER_API_ENDPOINT;
 
-
-
-
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -588,10 +585,9 @@ public class UserClient extends AbstractJaxServiceClient {
 			CustomerModel custModel = new CustomerModel();
 			custModel.setCustomerId(jaxMetaInfo.getCustomerId());
 
-			HttpEntity<CustomerModel> requestEntity = new HttpEntity<CustomerModel>(custModel, getHeader());
 			String sendOtpUrl = this.getBaseUrl() + CUSTOMER_ENDPOINT + "/logged/in/";
 			LOGGER.info("calling customer logged in api: " + sendOtpUrl);
-			return restService.ajax(sendOtpUrl).post(requestEntity)
+			return restService.ajax(sendOtpUrl).meta(new JaxMetaInfo()).post(custModel)
 					.as(new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
 					});
 		} catch (AbstractJaxException ae) {
@@ -656,13 +652,11 @@ public class UserClient extends AbstractJaxServiceClient {
 			throw new JaxSystemError(e);
 		} // end of try-catch
 	}
-	
-	
-	
+
 	public AmxApiResponse<UserFingerprintResponseModel, Object> linkDeviceIdLoggedinUser() {
 		try {
 
-			return restService.ajax(appConfig.getJaxURL()).path(UserApi.PREFIX +UserApi.LINK_DEVICE_LOGGEDIN_USER)
+			return restService.ajax(appConfig.getJaxURL()).path(UserApi.PREFIX + UserApi.LINK_DEVICE_LOGGEDIN_USER)
 					.meta(new JaxMetaInfo()).post()
 
 					.as(new ParameterizedTypeReference<AmxApiResponse<UserFingerprintResponseModel, Object>>() {
@@ -673,12 +667,9 @@ public class UserClient extends AbstractJaxServiceClient {
 		}
 	}
 
-	
-	
-	
 	public AmxApiResponse<CustomerModel, Object> loginUserByFingerprint(String civilId, String password) {
 		try {
-			
+
 			return restService.ajax(appConfig.getJaxURL())
 					.path(UserApi.PREFIX + UserApi.LOGIN_CUSTOMER_BY_FINGERPRINT).meta(new JaxMetaInfo()).post()
 					.queryParam(UserApi.IDENTITYINT, civilId).queryParam(UserApi.PASSWORD, password).post()

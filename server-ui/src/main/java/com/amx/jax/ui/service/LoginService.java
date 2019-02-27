@@ -110,7 +110,7 @@ public class LoginService {
 	}
 
 	public ResponseWrapper<AuthResponse> loginByDevice(String identity, String deviceToken) {
-		ResponseWrapper<AuthResponse> wrapper = new ResponseWrapper<AuthResponse>(null);
+		ResponseWrapper<AuthResponse> wrapper = new ResponseWrapper<AuthResponse>(new AuthData());
 		sessionService.clear();
 		sessionService.getGuestSession().initFlow(AuthState.AuthFlow.LOGIN, AuthStep.DEVICEPASS);
 		CustomerModel customerModel;
@@ -196,7 +196,7 @@ public class LoginService {
 				sessionService.getGuestSession().getState().isFlow(AuthState.AuthFlow.LOGIN));
 
 		if (sessionService.getGuestSession().getState().isFlow(AuthState.AuthFlow.LOGIN)) {
-			jaxService.getUserclient().customerLoggedIn(sessionService.getAppDevice().getUserDevice());
+			jaxService.setDefaults().getUserclient().customerLoggedIn(sessionService.getAppDevice().getUserDevice());
 
 			wrapper.setRedirectUrl(sessionService.getGuestSession().getReturnUrl());
 			sessionService.getGuestSession().setReturnUrl(null);
