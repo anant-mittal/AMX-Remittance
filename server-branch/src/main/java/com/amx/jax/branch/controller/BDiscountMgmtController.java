@@ -69,20 +69,15 @@ public class BDiscountMgmtController {
 		return discountMgmtClient.fetchDiscountedRates(pricingRequestDTO);
 	}
 
-
-	/*
-	 * @RequestMapping(value = "/api/discount/getDiscountDetails", method = {
-	 * RequestMethod.POST }) public AmxApiResponse<DiscountDetailsReqRespDTO,
-	 * Object> getDiscountManagemetDetails(DiscountMgmtReqDTO discountMgmtReqDTO) {
-	 * 
-	 * @RequestBody DiscountMgmtReqDTO discountMgmtReqDTO) {
-	 * 
-	 * return discountMgmtClient.getDiscountManagemetDetails(discountMgmtReqDTO); }
-	 */
 	@RequestMapping(value = "/api/discount/getDiscountDetails", method = { RequestMethod.POST })
-	public AmxApiResponse<DiscountDetailsReqRespDTO, Object> getDiscountManagemetDetails(
+	public AmxApiResponse<DiscountDetailsReqRespDTO, Object> getDiscountManagemetDetails(@RequestBody
 			DiscountMgmtReqDTO discountMgmtReqDTO) {
 		return discountMgmtClient.getDiscountManagemetDetails(discountMgmtReqDTO);
+	}
+	@RequestMapping(value = "/api/discount/saveDiscountDetails", method = { RequestMethod.POST })
+	public AmxApiResponse<DiscountDetailsReqRespDTO, Object> saveDiscountDetails(@RequestBody DiscountDetailsReqRespDTO discountMgmtReqDTO){
+		return discountMgmtClient.saveDiscountDetails(discountMgmtReqDTO);
+	
 	}
 
 }
