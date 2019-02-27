@@ -19,6 +19,7 @@ import com.amx.jax.client.BeneClient;
 import com.amx.jax.client.RemitClient;
 import com.amx.jax.client.remittance.RemittanceClient;
 import com.amx.jax.model.ResourceDTO;
+import com.amx.jax.model.request.device.SignaturePadRemittanceInfo;
 import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.request.remittance.BranchRemittanceGetExchangeRateRequest;
 import com.amx.jax.model.request.remittance.BranchRemittanceRequestModel;
@@ -35,7 +36,10 @@ import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.model.response.remittance.RoutingResponseDto;
 import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeRateResponse;
 import com.amx.jax.rbaac.IRbaacService;
+import com.amx.jax.sso.SSOTranx;
+import com.amx.jax.sso.SSOUser;
 import com.amx.jax.swagger.IStatusCodeListPlugin.ApiStatusService;
+import com.amx.jax.terminal.TerminalService;
 import com.amx.utils.ArgUtil;
 
 import io.swagger.annotations.Api;
@@ -53,6 +57,15 @@ public class RemitBranchController {
 
 	@Autowired
 	private BeneClient beneClient;
+
+	@Autowired
+	TerminalService terminalService;
+
+	@Autowired
+	private SSOUser ssoUser;
+
+	@Autowired
+	private SSOTranx sSOTranx;
 
 	@RequestMapping(value = "/api/remitt/order/list", method = { RequestMethod.GET })
 	public AmxApiResponse<FcSaleOrderManagementDTO, Object> getOrderList() {
@@ -161,5 +174,12 @@ public class RemitBranchController {
 	@RequestMapping(value = "/api/remitt/customer_bank/relations", method = { RequestMethod.GET })
 	public AmxApiResponse<BeneRelationsDescriptionDto, Object> getBeneficiaryRelations() {
 		return AmxApiResponse.buildList(beneClient.getBeneficiaryRelations().getResults());
+	}
+
+	@RequestMapping(value = "/api/remitt/signpad/submit", method = { RequestMethod.POST })
+	public AmxApiResponse<BoolRespModel, Object> updateFcPurchase(
+			@RequestBody SignaturePadRemittanceInfo signaturePadRemittanceInfo) {
+		return terminalService.updateRemittanceState(sSOTranx.get().getUserClient().getTerminalId().intValue(),
+				ssoUser.getUserDetails().getEmployeeId(), signaturePadRemittanceInfo);
 	}
 }
