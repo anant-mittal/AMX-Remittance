@@ -32,7 +32,6 @@ import com.amx.jax.rates.AmxCurConstants;
 import com.amx.jax.rates.AmxCurRate;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
-import com.amx.utils.TimeUtils;
 
 @Configuration
 @EnableScheduling

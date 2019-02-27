@@ -5,8 +5,8 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.persistence.Column;
+import javax.persistence.Embeddable;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -20,6 +20,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 */
 @Entity
 @Table(name = "EX_V_RATE_PATTERN")
+@Embeddable
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class XRateViewRecord implements Serializable {
@@ -27,9 +28,6 @@ public class XRateViewRecord implements Serializable {
 	private static final long serialVersionUID = 7477672120827921904L;
 
 	@Id
-	@GeneratedValue
-	private String id;
-
 	@ESDocFormat(ESDocFormat.Type.DATE)
 	@Column(name = "PROCESS_DATE")
 	private Date processDate;
@@ -63,14 +61,6 @@ public class XRateViewRecord implements Serializable {
 
 	public void setCurrencyCode(String currencyCode) {
 		this.currencyCode = currencyCode;
-	}
-
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
 	}
 
 }
