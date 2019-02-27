@@ -31,7 +31,8 @@ public final class AuthDataInterface {
 		 *
 		 * @param identity the new identity
 		 */
-		void setIdentity(String identity);
+		public void setIdentity(String identity);
+
 	}
 
 	/**
@@ -166,6 +167,9 @@ public final class AuthDataInterface {
 	public interface AuthRequest extends AuthRequestIdentity, AuthRequestPassword, AuthRequestSecAns, AuthRequestOTP,
 			AuthRequestFingerprint {
 
+		public String getLockId();
+
+		public void setLockId(String lockId);
 	}
 
 	/**

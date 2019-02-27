@@ -25,10 +25,14 @@ public class AuthData extends AbstractModel implements AuthResponse, AuthRequest
 	@Pattern(regexp = AppConstants.Validator.IDENTITY)
 	private String identity = null;
 
+	private String identityLock = null;
+
 	/** The password. */
 	private String password = null;
 
 	private String deviceToken = null;
+
+	private String lockId = null;
 
 	/*
 	 * (non-Javadoc)
@@ -387,6 +391,16 @@ public class AuthData extends AbstractModel implements AuthResponse, AuthRequest
 	@Override
 	public void setDeviceToken(String deviceToken) {
 		this.deviceToken = deviceToken;
+	}
+
+	@Override
+	public String getLockId() {
+		return lockId;
+	}
+
+	@Override
+	public void setLockId(String lockId) {
+		this.lockId = lockId;
 	}
 
 }
