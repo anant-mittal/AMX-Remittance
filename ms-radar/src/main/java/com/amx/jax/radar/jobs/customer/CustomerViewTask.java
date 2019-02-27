@@ -1,10 +1,8 @@
 package com.amx.jax.radar.jobs.customer;
 
-import java.math.BigDecimal;
 import java.util.Date;
 
 import org.slf4j.Logger;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -24,8 +22,6 @@ import com.amx.jax.mcq.Candidate;
 import com.amx.jax.mcq.shedlock.SchedulerLock;
 import com.amx.jax.mcq.shedlock.SchedulerLock.LockContext;
 import com.amx.jax.radar.AESRepository.BulkRequestBuilder;
-import com.amx.jax.radar.EsConfig;
-import com.amx.jax.radar.TestSizeApp;
 import com.amx.jax.rates.AmxCurConstants;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
@@ -100,13 +96,8 @@ public class CustomerViewTask extends AbstractDBSyncTask {
 					lastUpdateDateNow = lastUpdateDate;
 				}
 
-				BigDecimal customerId = ArgUtil.parseAsBigDecimal(record.getId());
-				Date creationDate = ArgUtil.parseAsSimpleDate(record.getLastUpdateDate());
-				OracleViewDocument document = new OracleViewDocument();
-				document.setId("customer-" + customerId);
-				document.setTimestamp(creationDate);
-				document.setCustomer(record);
-				builder.update(oracleVarsCache.getCustomerIndex(), "customer", document);
+				OracleViewDocument document = new OracleViewDocument(record);
+				builder.update(oracleVarsCache.getCustomerIndex(), document);
 				lastIdNow = ArgUtil.parseAsString(document.getId(), Constants.BLANK);
 			} catch (Exception e) {
 				LOGGER.error("CustomerViewTask Excep", e);
@@ -171,13 +162,8 @@ public class CustomerViewTask extends AbstractDBSyncTask {
 					lastUpdateDateNow = lastUpdateDate;
 				}
 
-				BigDecimal customerId = ArgUtil.parseAsBigDecimal(record.getId());
-				Date creationDate = ArgUtil.parseAsSimpleDate(record.getLastUpdateDate());
-				OracleViewDocument document = new OracleViewDocument();
-				document.setId("customer-" + customerId);
-				document.setTimestamp(creationDate);
-				document.setCustomer(record);
-				builder.update(oracleVarsCache.getCustomerIndex(), "customer", document);
+				OracleViewDocument document = new OracleViewDocument(record);
+				builder.update(oracleVarsCache.getCustomerIndex(), document);
 				lastIdNow = ArgUtil.parseAsString(document.getId(), Constants.BLANK);
 			} catch (Exception e) {
 				LOGGER.error("CustomerViewTask Excep", e);

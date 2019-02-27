@@ -1,21 +1,28 @@
 package com.amx.jax.rates;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.client.snap.ISnapService.RateSource;
 import com.amx.jax.client.snap.ISnapService.RateType;
 import com.amx.jax.dict.Currency;
 import com.amx.jax.radar.AESDocument;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 //@Document(indexName = "polls", type = "vote")
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class AmxCurRate extends AESDocument {
+public class AmxCurRate {
 
 	public AmxCurRate() {
-		super();
+		this.timestamp = new Date(System.currentTimeMillis());
 	}
+
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZZ")
+	@JsonProperty(value = "timestamp")
+	protected Date timestamp;
 
 	public AmxCurRate(RateType rType) {
 		this();
@@ -88,7 +95,6 @@ public class AmxCurRate extends AESDocument {
 		rate.setrSrc(rSrc);
 		rate.setrDomCur(rDomCur);
 		rate.setrForCur(rForCur);
-		rate.setTimestamp(this.getTimestamp());
 		return rate;
 	}
 
@@ -103,6 +109,14 @@ public class AmxCurRate extends AESDocument {
 		rate.setrType(rType);
 		rate.setrRate(rRate);
 		return rate;
+	}
+
+	public Date getTimestamp() {
+		return timestamp;
+	}
+
+	public void setTimestamp(Date timestamp) {
+		this.timestamp = timestamp;
 	}
 
 }

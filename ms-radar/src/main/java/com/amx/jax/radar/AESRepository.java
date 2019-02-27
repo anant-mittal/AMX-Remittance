@@ -121,6 +121,10 @@ public class AESRepository {
 			return this.updateById(index, type, vote.getId(), vote);
 		}
 
+		public BulkRequestBuilder update(String index, AESDocument vote) {
+			return this.updateById(index, vote.getType(), vote.getId(), vote);
+		}
+
 		public BulkRequestBuilder updateById(String index, String type, String id, AESDocument vote) {
 			UpdateRequest updateRequest = new UpdateRequest(index, type, id);
 			try {

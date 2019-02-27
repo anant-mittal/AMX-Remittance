@@ -2,7 +2,6 @@ package com.amx.jax.radar.jobs.scrapper;
 
 import java.io.IOException;
 
-import org.redisson.api.RType;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -18,10 +17,14 @@ import com.amx.jax.dict.Currency;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.mcq.Candidate;
 import com.amx.jax.mcq.MCQLocker;
+import com.amx.jax.radar.AESRepository.BulkRequestBuilder;
 import com.amx.jax.radar.ARadarTask;
+import com.amx.jax.radar.ESRepository;
+import com.amx.jax.radar.jobs.customer.OracleVarsCache;
+import com.amx.jax.radar.jobs.customer.OracleVarsCache.DBSyncJobs;
+import com.amx.jax.radar.jobs.customer.OracleViewDocument;
 import com.amx.jax.rates.AmxCurConstants;
 import com.amx.jax.rates.AmxCurRate;
-import com.amx.jax.rates.AmxCurRateRepository;
 import com.amx.jax.rest.RestService;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
@@ -39,7 +42,10 @@ public class AmanKuwaitJob extends ARadarTask {
 	private RestService restService;
 
 	@Autowired
-	private AmxCurRateRepository curRateRepository;
+	public ESRepository esRepository;
+
+	@Autowired
+	public OracleVarsCache oracleVarsCache;
 
 	private XmlMapper xmlMapper = new XmlMapper();
 
@@ -65,6 +71,7 @@ public class AmanKuwaitJob extends ARadarTask {
 		// xmlMapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
 		try {
 			AmanKuwaitModels.Rates rates2 = xmlMapper.readValue(response, AmanKuwaitModels.Rates.class);
+			BulkRequestBuilder builder = new BulkRequestBuilder();
 			for (AmanKuwaitModels.CurRates rates : rates2.getCurRates()) {
 				AmxCurRate trnsfrRate = new AmxCurRate();
 				trnsfrRate.setrSrc(RateSource.AMANKUWAIT);
@@ -73,14 +80,19 @@ public class AmanKuwaitJob extends ARadarTask {
 
 				trnsfrRate.setrType(RateType.SELL_TRNSFR);
 				trnsfrRate.setrRate(rates.getKdrate());
-				curRateRepository.insertRate(trnsfrRate);
+
+				builder.update(oracleVarsCache.getIndex(DBSyncJobs.XRATE),
+						new OracleViewDocument(trnsfrRate));
 
 				AmxCurRate buyCash = trnsfrRate.clone(RateType.BUY_CASH, rates.getBuyrate());
-				curRateRepository.insertRate(buyCash);
+				builder.update(oracleVarsCache.getIndex(DBSyncJobs.XRATE),
+						new OracleViewDocument(buyCash));
 
 				AmxCurRate sellCash = trnsfrRate.clone(RateType.SELL_CASH, rates.getSellrate());
-				curRateRepository.insertRate(sellCash);
+				builder.update(oracleVarsCache.getIndex(DBSyncJobs.XRATE),
+						new OracleViewDocument(sellCash));
 			}
+			esRepository.bulk(builder.build());
 
 		} catch (IOException e) {
 			e.printStackTrace();
