@@ -16,14 +16,14 @@ public class OracleVarsCache extends CacheBox<String> {
 	private static final String ASC_SEPERATOR = "-";
 	private static final String DESC_SEPERATOR = "-desc-";
 
-	public static final String DOC_VERSION = "v3";
+	public static final String DOC_VERSION = "v4";
 	private static final String CUSTOMER_RESET_COUNTER = "15";
 	private static final String TRANSACTION_RESET_COUNTER = "14";
 
 	public static enum DBSyncJobs {
-		CUSTOMER("oracle-" + DOC_VERSION + "-customer-v4", 15),
-		TRANSACTION("oracle-" + DOC_VERSION + "-tranx-v4", 14),
-		XRATE("oracle-" + DOC_VERSION + "-xrate-v4", 15);
+		CUSTOMER("oracle-" + DOC_VERSION + "-customer-v5", 15),
+		TRANSACTION("oracle-" + DOC_VERSION + "-tranx-v5", 14),
+		XRATE("oracle-" + DOC_VERSION + "-xrate-v5", 15);
 
 		String indexName;
 		int resetCounter;
