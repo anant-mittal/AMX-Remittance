@@ -209,7 +209,6 @@ public class BranchRemittanceSaveManager {
 			logger.error("routing  procedure", e.getErrorMessage() + "" + e.getErrorKey());
 			throw new GlobalException(e.getErrorKey(), e.getErrorMessage());
 		}finally {
-			
 			amlList	 = new ArrayList<>();
 			remitBeneList   = new ArrayList<>();
 			addInstList = new ArrayList<>();
@@ -531,6 +530,8 @@ public class BranchRemittanceSaveManager {
 				foreignCurrencyRefundAdjust.setNotesQuantity(currencyRefundDenomination.getDenominationQuatity());
 				foreignCurrencyRefundAdjust.setAdjustmentAmount(currencyRefundDenomination.getDenominationPrice());
 				foreignCurrencyRefundAdjust.setOracleUser(collect.getCreatedBy());
+				foreignCurrencyRefundAdjust.setFsCompanyMaster(appl.getFsCompanyMaster());
+				foreignCurrencyRefundAdjust.setCompanyCode(appl.getCompanyCode());
 				
 				CurrencyWiseDenomination denominationMaster = new CurrencyWiseDenomination();
 				denominationMaster.setDenominationId(currencyRefundDenomination.getDenominationId());
@@ -544,6 +545,7 @@ public class BranchRemittanceSaveManager {
 				foreignCurrencyRefundAdjust.setProgNumber(ConstantDocument.FC_SALE_REMIT);
 				foreignCurrencyRefundAdjust.setDocumentStatus(ConstantDocument.Yes);
 				foreignCurrencyRefundAdjust.setTransactionType(ConstantDocument.F);
+				foreignCurrencyRefundAdjust.setDocumentNo(collect.getDocumentNo());
 				
 				foreignCurrencyRefundAdjust.setDocumentId(collect.getDocumentId());
 				foreignCurrencyRefundAdjust.setCreatedDate(new Date());
