@@ -23,6 +23,7 @@ import com.amx.jax.pricer.dto.CustomerCategoryDetails;
 import com.amx.jax.pricer.dto.DiscountMgmtReqDTO;
 import com.amx.jax.pricer.dto.DiscountDetailsReqRespDTO;
 import com.amx.jax.pricer.dto.RoutBanksAndServiceRespDTO;
+import com.amx.jax.pricer.exception.PricerServiceException;
 import com.amx.jax.pricer.manager.DiscountManager;
 import com.amx.jax.pricer.var.PricerServiceConstants.DISCOUNT_TYPE;
 
@@ -80,6 +81,9 @@ public class ExchangeDataService {
 
 	public List<RoutBanksAndServiceRespDTO> getRoutBanksAndServices(BigDecimal countryId, BigDecimal currencyId) {
 		List<RoutingHeader> rountingHeaderData = routingDao.getRoutHeadersByCountryIdAndCurrenyId(countryId, currencyId);
+		if (rountingHeaderData.isEmpty()) {
+			throw new PricerServiceException("Routing details not avaliable");
+		}
 		List<RoutBanksAndServiceRespDTO> routBanksAndServiceRespDTO = discountManager.convertRoutBankAndService(rountingHeaderData);
 		return routBanksAndServiceRespDTO;
 	}
