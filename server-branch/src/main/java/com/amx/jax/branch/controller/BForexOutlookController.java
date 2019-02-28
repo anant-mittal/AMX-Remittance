@@ -34,7 +34,7 @@ public class BForexOutlookController implements IForexOutlookService {
 		return forexOutlookClient.getCurrencyPairList();
 	}
 
-	@RequestMapping(value = "/api/out-look/history/list", method = { RequestMethod.GET })
+	@RequestMapping(value = "/api/outlook/history/list", method = { RequestMethod.GET })
 	public AmxApiResponse<ForexOutLookResponseDTO, Object> getCurpairHistory() {
 		// TODO Auto-generated method stub
 		return forexOutlookClient.getCurpairHistory();
