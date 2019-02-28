@@ -1,6 +1,7 @@
 package com.amx.jax.radar.jobs.customer;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,6 +79,7 @@ public class CustomerDataUpdateListner implements ITunnelSubscriber<DBEvent> {
 		for (CustomerDetailViewRecord record : x.getResults()) {
 			try {
 				OracleViewDocument document = new OracleViewDocument(record);
+				document.setTimestamp(new Date(System.currentTimeMillis()));
 				builder.update(oracleVarsCache.getCustomerIndex(), document);
 			} catch (Exception e) {
 				LOGGER.error("CustomerViewTask Excep", e);
