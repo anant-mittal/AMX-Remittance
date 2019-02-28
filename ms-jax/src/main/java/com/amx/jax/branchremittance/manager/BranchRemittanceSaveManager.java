@@ -934,6 +934,12 @@ public void collectedAmountValidation(CollectionModel collectionModel,List<Colle
 			totalCurrencyAdjustCollect = currencyAdjustList.stream().filter(a->a.getTransactionType().equalsIgnoreCase(ConstantDocument.CASH)).map(ForeignCurrencyAdjust::getAdjustmentAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
 			totalCurrencyAdjustRefund  =currencyAdjustList.stream().filter(a->a.getTransactionType().equalsIgnoreCase(ConstantDocument.F)).map(ForeignCurrencyAdjust::getAdjustmentAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
 			totalCurrencyAdjust =totalCurrencyAdjustCollect.subtract(totalCurrencyAdjustRefund);
+			
+			
+			if(totalCashAmount.subtract(refundAmount).compareTo(totalCurrencyAdjust)!=0) {
+				throw new GlobalException(JaxError.AMOUNT_MISMATCH,"Mismatch found in cash collected and Denomination entered.");
+			}
+			
 		}else {
 			throw new GlobalException(JaxError.AMOUNT_MISMATCH,"The currency count could not be updated in the currency adjustment table.");
 		}
@@ -948,9 +954,9 @@ public void collectedAmountValidation(CollectionModel collectionModel,List<Colle
 	
 	
 	
-	if(totalCashAmount.subtract(refundAmount).compareTo(totalCurrencyAdjust)!=0) {
+/*	if(totalCashAmount.subtract(refundAmount).compareTo(totalCurrencyAdjust)!=0) {
 		throw new GlobalException(JaxError.AMOUNT_MISMATCH,"Mismatch found in cash collected and Denomination entered.");
-	}
+	}*/
 	
 	
 }
@@ -1068,7 +1074,7 @@ public BigDecimal generateDocumentNumber(BigDecimal appCountryId,BigDecimal comp
 	}
  
  
- protected String readClobAsString(Clob clob )
+/* protected String readClobAsString(Clob clob )
  {
    StringBuffer sb = null;
    Reader reader = null;
@@ -1077,8 +1083,8 @@ public BigDecimal generateDocumentNumber(BigDecimal appCountryId,BigDecimal comp
      if ( reader == null ) {
        return null;
      }
-       sb = new StringBuffer((int)clob.length()/* 4096=guess at size of data to read */);
-       char[] charbuf = new char[(int)clob.length()/* 4096=4k buffer to read data into */];
+       sb = new StringBuffer((int)clob.length() 4096=guess at size of data to read );
+       char[] charbuf = new char[(int)clob.length() 4096=4k buffer to read data into ];
        for( int i = reader.read( charbuf ); i > 0; i = reader.read( charbuf ) ) {
          sb.append( charbuf, 0, i );
        }
@@ -1097,9 +1103,9 @@ public BigDecimal generateDocumentNumber(BigDecimal appCountryId,BigDecimal comp
    }
    return sb.toString();
  }
+ */
  
- 
- @SuppressWarnings("unused")
+/* @SuppressWarnings("unused")
 private String clobToString(Clob data) {
      StringBuilder sb = new StringBuilder();
      try {
@@ -1119,6 +1125,6 @@ private String clobToString(Clob data) {
          return e.toString();
      }
      return sb.toString();
- }
+ }*/
  
 }

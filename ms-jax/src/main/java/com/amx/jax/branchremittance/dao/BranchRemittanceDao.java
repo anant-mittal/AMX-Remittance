@@ -206,11 +206,19 @@ public class BranchRemittanceDao {
 				appl.setTransactionDocumentNo(remitTrnx.getDocumentNo());
 				appl.setApplicaitonStatus(ConstantDocument.T);
 				appl.setBlackListIndicator(remitTrnx.getBlackListIndicator());
-				//appRepo.updateApplicationDetails(appl.getFsCustomer(), appl.getRemittanceApplicationId(), remitTrnx.getDocumentFinanceYear(), remitTrnx.getDocumentNo(), new UserFinancialYear(remitTrnx.getDocumentFinanceYr()));
 				appRepo.save(appl);
 			}
 
 		}
-
 	}
+	
+	public void deleteFromCart(BigDecimal applId,String status) {
+		RemittanceApplication appl = appRepo.findOne(applId);
+		if (appl != null) {
+			appl.setApplicaitonStatus(status);
+			appRepo.save(appl);
+		}
+	}
+	
+	
 }

@@ -46,6 +46,7 @@ public interface IRemittanceService extends  IJaxService {
 		public static final String BR_REMITTANCE_PURPOSE_OF_TRNX = PREFIX + "/get-purpose-of-trnx/";
 		public static final String BR_REMITTANCE_GET_EXCHANGE_RATE = PREFIX + "/get-exchrate/";
 		public static final String BR_REMITTANCE_SAVE_TRANSACTION = PREFIX + "/save-remittance-transaction/";
+		public static final String BR_REMITTANCE_DELETE_APPLICATION = PREFIX + "/delete-application/";
 	}
 
 	public static class Params {
@@ -55,6 +56,7 @@ public interface IRemittanceService extends  IJaxService {
 		public static final String STAFF_PASSWORD = "staffPassword";
 		public static final String BENE_RELATION_SHIP_ID = "beneRelationshipId";
 		public static final String SERVICE_MASTER_ID = "serviceMasterId";
+		public static final String APPLICATION_ID = "remittanceApplicationId";
 	}
 	
 	
@@ -112,6 +114,8 @@ public interface IRemittanceService extends  IJaxService {
 	
 	@ApiJaxStatus({ JaxError.INVALID_AMOUNT , JaxError.EXCHANGE_RATE_NOT_FOUND, JaxError.DATA_NOT_FOUND,JaxError.INVALID_COLLECTION_DOCUMENT_NO,JaxError.INVALID_REMITTANCE_DOCUMENT_NO})
 	AmxApiResponse<RemittanceResponseDto, Object> saveRemittanceTransaction(BranchRemittanceRequestModel remittanceRequestModel);
+
+	AmxApiResponse<BranchRemittanceApplResponseDto, Object> deleteFromShoppingCart(BigDecimal remittanceApplicationId);
 
 }
 

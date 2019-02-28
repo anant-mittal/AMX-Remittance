@@ -57,6 +57,7 @@ public class CustomerShoppingCartDto implements Serializable{
 	private BigDecimal beneRelationseqId;
 	private BigDecimal sourceOfIncomeId;
 	private BigDecimal purposeOfTrnxId;
+	private BigDecimal domXRate;
 	
 	
 	public BigDecimal getDocumentNo() {
@@ -393,6 +394,12 @@ public class CustomerShoppingCartDto implements Serializable{
 	}
 	public void setPurposeOfTrnxId(BigDecimal purposeOfTrnxId) {
 		this.purposeOfTrnxId = purposeOfTrnxId;
+	}
+	public BigDecimal getDomXRate() {
+		return domXRate;
+	}
+	public void setDomXRate(BigDecimal domXRate) {
+		this.domXRate = domXRate;
 	}
 	
 }

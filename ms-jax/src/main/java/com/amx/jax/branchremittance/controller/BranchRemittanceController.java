@@ -213,4 +213,14 @@ public class BranchRemittanceController implements IRemittanceService {
 		logger.debug("saveRemittanceTransaction : " + remittanceRequestModel);
 		return branchRemitService.saveRemittanceTransaction(remittanceRequestModel);
 	}
+	
+	
+	@RequestMapping(value = Path.BR_REMITTANCE_DELETE_APPLICATION, method = RequestMethod.POST)
+	@Override
+	public AmxApiResponse<BranchRemittanceApplResponseDto, Object> deleteFromShoppingCart(@RequestParam(value = Params.APPLICATION_ID, required = true) BigDecimal remittanceApplicationId){
+		logger.debug("deleteFromShoppingCart");
+		return branchRemitService.deleteFromShoppingCart(remittanceApplicationId);
+	}
+
+	
 }

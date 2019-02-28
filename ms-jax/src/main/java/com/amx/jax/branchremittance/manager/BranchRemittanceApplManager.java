@@ -743,7 +743,7 @@ public class BranchRemittanceApplManager {
 	
 	
 	
-	
+
 	public String getCustomerFullName(Customer customer){
 		String customerName =null;
 
@@ -771,6 +771,9 @@ public class BranchRemittanceApplManager {
 		}
 	}
 	
-
-	
+ public BranchRemittanceApplResponseDto deleteFromShoppingCart(BigDecimal remittanceAppliId) {
+	 brRemittanceDao.deleteFromCart(remittanceAppliId, ConstantDocument.Deleted);
+	 BranchRemittanceApplResponseDto applResponseDto = branchRemittancePaymentManager.fetchCustomerShoppingCart(metaData.getCustomerId(),metaData.getDefaultCurrencyId());
+	 return applResponseDto;
+ }
 }

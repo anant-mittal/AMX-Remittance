@@ -175,4 +175,9 @@ public class BranchRemittanceService extends AbstractService{
 		 return AmxApiResponse.build(dto);
 	 }
 	
+
+	public AmxApiResponse<BranchRemittanceApplResponseDto, Object> deleteFromShoppingCart(BigDecimal remittanceApplicationId){
+		BranchRemittanceApplResponseDto applResponseDto = branchRemitApplManager.deleteFromShoppingCart(remittanceApplicationId);
+		return AmxApiResponse.build(applResponseDto);
+	}
 }

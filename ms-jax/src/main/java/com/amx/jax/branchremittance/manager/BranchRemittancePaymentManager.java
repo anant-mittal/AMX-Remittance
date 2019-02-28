@@ -116,7 +116,6 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 						totalCustomerLoyaltyPoits = totalCustomerLoyaltyPoits.subtract(new BigDecimal(1000));
 					}
 					
-					
 					cartList.setTotalLocalAmount(totalLocalAmount);
 					cartList.setTotalNetAmount(totalNetAmount.subtract(totalLyltyPointAmt));
 					cartList.setTotalTrnxFees(totalTrnxFees);
@@ -207,9 +206,7 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 		shoppingCartDataTableBean.setRoutingBank(bankMaster.getBankListByBankId(shoppingCartDetails.getRoutingBankId()).get(0).getBankFullName());
 		shoppingCartDataTableBean.setBeneRelationseqId(shoppingCartDetails.getBeneRelationseqId());
 		shoppingCartDataTableBean.setSourceOfIncomeId(shoppingCartDetails.getSourceofincome()==null?BigDecimal.ZERO:new BigDecimal(shoppingCartDetails.getSourceofincome()));
-		
-		
-		
+		//shoppingCartDataTableBean.setDomXRate(BigDecimal.ONE.divide(shoppingCartDetails.getExchangeRateApplied()));
 		return shoppingCartDataTableBean;
 	}
 
