@@ -53,8 +53,6 @@ public class JaxNotificationService {
 	Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	private final String SUBJECT_ACCOUNT_UPDATE = "Account Update";
-	private final String SUBJECT_EMAIL_CHANGE = "Modern Exchange Account - Email ID Change";
-	private final String SUBJECT_PHONE_CHANGE = "Modern Exchange Account - Phone number Change";
 
 	public void sendTransactionNotification(RemittanceReceiptSubreport remittanceReceiptSubreport, PersonInfo pinfo) {
 
@@ -128,17 +126,15 @@ public class JaxNotificationService {
 			email.getModel().put("change_type", ChangeType.IMAGE_CHANGE);
 
 		} else if (customerModel.getMobile() != null) {
-			String subject = jaxNotificationService.sendEmailChangeSubject();
-			email.setSubject(subject);
+			
 			email.getModel().put("change_type", ChangeType.MOBILE_CHANGE);
 
-		} else if (customerModel.getEmail() != null) {
-			String subject = jaxNotificationService.sendMobileNumberChangeSubject();
-			email.setSubject(subject);
+		}  else if (customerModel.getEmail() != null) {
+			
 			email.getModel().put("change_type", ChangeType.EMAIL_CHANGE);
 
 			emailToOld = new Email();
-			emailToOld.setSubject(SUBJECT_EMAIL_CHANGE);
+			
 			emailToOld.getModel().put("change_type", ChangeType.EMAIL_CHANGE);
 			emailToOld.addTo(customerModel.getEmail());
 			emailToOld.setITemplate(TemplatesMX.EMAIL_CHANGE_OLD_EMAIL);

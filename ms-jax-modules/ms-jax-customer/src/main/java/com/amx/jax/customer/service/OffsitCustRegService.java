@@ -579,7 +579,9 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 			contactDetail.setFsCountryMaster(new CountryMaster(homeAddressDestails.getCountryId()));
 			contactDetail.setFsDistrictMaster(new DistrictMaster(homeAddressDestails.getDistrictId()));
 			contactDetail.setFsStateMaster(new StateMaster(homeAddressDestails.getStateId()));
-			contactDetail.setFsCityMaster(new CityMaster(homeAddressDestails.getCityId()));
+			if(null != homeAddressDestails.getCityId()) {
+				contactDetail.setFsCityMaster(new CityMaster(homeAddressDestails.getCityId()));
+			}
 			contactDetail.setBuildingNo(homeAddressDestails.getHouse());
 			contactDetail.setFlat(homeAddressDestails.getFlat());
 			contactDetail.setStreet(homeAddressDestails.getStreet());
