@@ -21,11 +21,13 @@ import com.amx.jax.dict.Project;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.filter.AppClientErrorHanlder;
 import com.amx.jax.filter.AppClientInterceptor;
-import com.amx.jax.scope.TenantContext;
 import com.amx.jax.scope.TenantProperties;
+import com.amx.jax.scope.TenantScoped;
+import com.amx.jax.scope.TenantValue;
 import com.amx.utils.ArgUtil;
 
 @Configuration
+@TenantScoped
 @PropertySource("classpath:application-lib.properties")
 public class AppConfig {
 
@@ -195,6 +197,9 @@ public class AppConfig {
 
 	@Value("${app.audit.file.skip}")
 	String[] skipAuditMarkers;
+
+	@Value("${encrypted.app.property}")
+	String appSpecifcDecryptedProp;
 
 	public boolean isCookieHttpOnly() {
 		return cookieHttpOnly;
@@ -380,6 +385,10 @@ public class AppConfig {
 
 	public String getRadarURL() {
 		return radarURL;
+	}
+
+	public String getAppSpecifcDecryptedProp() {
+		return appSpecifcDecryptedProp;
 	}
 
 }

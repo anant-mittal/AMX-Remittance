@@ -8,6 +8,7 @@ public class SplitterTest { // Noncompliant
 	public static final Pattern pattern = Pattern.compile("^com.amx.jax.logger.client.AuditFilter<(.*)>$");
 	public static final Pattern LINK_CIVIL_ID = Pattern.compile("^LINK (.*)$");
 	public static final Pattern LINKD_CIVIL_ID = Pattern.compile("^LINKD <(.*)>$");
+	public static final Pattern ENCRYPTED_PROPERTIES = Pattern.compile("^ENC\\((.*)\\)$");
 
 	public static final String SPLITTER_CHAR = ";";
 	public static final String KEY_VALUE_SEPARATOR_CHAR = ":";
@@ -22,8 +23,8 @@ public class SplitterTest { // Noncompliant
 	}
 
 	public static void linCivilIdCheck() {
-		String testString = "LINK 123287238723982";
-		Matcher x = LINK_CIVIL_ID.matcher(testString);
+		String testString = "ENC(uTSqb9grs1+vUv3iN8lItC0kl65lMG+8)";
+		Matcher x = ENCRYPTED_PROPERTIES.matcher(testString);
 		if(x.find()) {
 			System.out.println(x.group(1));
 		} else {
