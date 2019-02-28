@@ -1,4 +1,4 @@
-package com.amx.jax.worker.bot;
+package com.amx.jax.bot;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -20,6 +20,7 @@ public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 	public void onMessage(String channel, UserInboxEvent event) {
 		if (ArgUtil.isEmpty(event.getWaChannel())) {
 			WAMessage reply = new WAMessage();
+			reply.setQueue(event.getQueue());
 			reply.setChannel(event.getWaChannel());
 			reply.addTo(event.getFrom());
 			reply.setMessage("Hi this is Alex from AMX, how can I help you?");
