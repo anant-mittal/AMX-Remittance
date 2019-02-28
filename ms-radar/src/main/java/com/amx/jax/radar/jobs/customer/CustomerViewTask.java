@@ -18,7 +18,6 @@ import com.amx.jax.grid.GridService.GridViewBuilder;
 import com.amx.jax.grid.GridView;
 import com.amx.jax.grid.views.CustomerDetailViewRecord;
 import com.amx.jax.logger.LoggerService;
-import com.amx.jax.mcq.Candidate;
 import com.amx.jax.mcq.shedlock.SchedulerLock;
 import com.amx.jax.mcq.shedlock.SchedulerLock.LockContext;
 import com.amx.jax.radar.AESRepository.BulkRequestBuilder;
@@ -37,24 +36,22 @@ public class CustomerViewTask extends AbstractDBSyncTask {
 
 	private static final Logger LOGGER = LoggerService.getLogger(CustomerViewTask.class);
 	private static final String TIME_TRACK_KEY = "lastUpdateDate";
-	public static final int PAGE_SIZE = 1000;
+	public static final int PAGE_SIZE = 3000;
 	public static final Long TIME_PAGE_DELTA = 30 * AmxCurConstants.INTERVAL_DAYS;
-
-	private static final Candidate LOCK = new Candidate().fixedDelay(AmxCurConstants.INTERVAL_SEC * 30)
-			.maxAge(AmxCurConstants.INTERVAL_MIN).queue(CustomerViewTask.class);
 
 	@SchedulerLock(lockMaxAge = AmxCurConstants.INTERVAL_MIN * 30, context = LockContext.BY_CLASS)
 	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_SEC * 30)
 	public void doTaskModeNight() {
-		if (TimeUtils.inHourSlot(4, 1)) {
+		if (TimeUtils.inHourSlot(4, 0)) {
 			this.doTask();
 		}
 	}
 
-	@SchedulerLock(lockMaxAge = AmxCurConstants.INTERVAL_MIN * 30, context = LockContext.BY_CLASS)
-	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_MIN * 30)
+	// @SchedulerLock(lockMaxAge = AmxCurConstants.INTERVAL_MIN * 30, context =
+	// LockContext.BY_CLASS)
+	// @Scheduled(fixedDelay = AmxCurConstants.INTERVAL_MIN * 30)
 	public void doTaskModeDay() {
-		if (!TimeUtils.inHourSlot(4, 1)) {
+		if (!TimeUtils.inHourSlot(4, 0)) {
 			this.doTask();
 		}
 	}
@@ -124,6 +121,12 @@ public class CustomerViewTask extends AbstractDBSyncTask {
 	}
 
 	public void doTaskRev(int lastPage, String lastId) {
+		// Comment the follwoing line if reverse scan is not required
+		this.doTaskRev2(lastPage, lastId);
+	}
+
+	@Deprecated
+	public void doTaskRev2(int lastPage, String lastId) {
 
 		Long lastUpdateDateNow = oracleVarsCache.getCustomerScannedStamp(true);
 		Long lastUpdateDateNowFrwrds = oracleVarsCache.getCustomerScannedStamp(false);

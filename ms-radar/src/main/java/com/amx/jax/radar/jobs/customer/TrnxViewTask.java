@@ -41,13 +41,10 @@ public class TrnxViewTask extends AbstractDBSyncTask {
 
 	long intervalDays = 10;
 
-	private static final Candidate LOCK = new Candidate().fixedDelay(AmxCurConstants.INTERVAL_SEC * 10)
-			.maxAge(AmxCurConstants.INTERVAL_MIN).queue(TrnxViewTask.class);
-
 	@SchedulerLock(lockMaxAge = AmxCurConstants.INTERVAL_MIN * 30, context = LockContext.BY_CLASS)
 	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_SEC * 15)
 	public void doTaskModeNight() {
-		if (TimeUtils.inHourSlot(4, 1)) {
+		if (TimeUtils.inHourSlot(4, 0)) {
 			this.doTask();
 		}
 	}
@@ -55,13 +52,13 @@ public class TrnxViewTask extends AbstractDBSyncTask {
 	@SchedulerLock(lockMaxAge = AmxCurConstants.INTERVAL_MIN * 30, context = LockContext.BY_CLASS)
 	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_MIN * 10)
 	public void doTaskModeDay() {
-		if (!TimeUtils.inHourSlot(4, 1)) {
+		if (!TimeUtils.inHourSlot(4, 0)) {
 			this.doTask();
 		}
 	}
 
 	@Override
-	//@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_SEC * 10)
+	// @Scheduled(fixedDelay = AmxCurConstants.INTERVAL_SEC * 10)
 	public void doTask() {
 		this.doBothTask();
 	}
