@@ -173,7 +173,7 @@ public class RemitBranchController {
 		return AmxApiResponse.buildList(beneClient.getBeneficiaryRelations().getResults());
 	}
 
-	@RequestMapping(value = "/api/remitt/signpad/submit", method = { RequestMethod.POST })
+	@RequestMapping(value = "/api/remitt/status/update", method = { RequestMethod.POST })
 	public AmxApiResponse<BoolRespModel, Object> updateRemittanceStatus(
 			@RequestBody SignaturePadRemittanceInfo signaturePadRemittanceInfo) {
 		return terminalService.updateRemittanceState(ssoUser.getUserClient().getTerminalId().intValue(),
