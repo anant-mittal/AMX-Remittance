@@ -55,11 +55,28 @@ public interface ExchangeRateApprovalDetRepository extends CrudRepository<Exchan
 	List<ExchangeRateAPRDET> getSellRatesForRoutingBanks(BigDecimal currencyId, BigDecimal countryId,
 			BigDecimal applicationCountryId, List<BigDecimal> routingBankIds, List<BigDecimal> serviceIds);*/
 
-	// @formatter:on
-
+	/*
+	 * Old Query
+	 
 	@Query("select new com.amx.jax.pricer.dbmodel.ExchangeRateAPRDET(isActive, sellRateMin, sellRateMax, serviceId, "
 			+ "	bankMaster) from ExchangeRateApprovalDetModel rate where rate.currencyId=?1 "
 			+ " and rate.applicationCountryId=?2 and rate.bankMaster.bankId in (?3) " + " and rate.serviceId in (?4) "
+			+ " group by rate.isActive, rate.sellRateMin, rate.sellRateMax, rate.serviceId, rate.bankMaster"
+			+ " order by rate.bankMaster, rate.serviceId")
+	List<ExchangeRateAPRDET> getSellRatesForRoutingBanks(BigDecimal currencyId, BigDecimal applicationCountryId,
+			List<BigDecimal> routingBankIds, List<BigDecimal> serviceIds);
+	*/
+	
+	// @formatter:on
+
+	/**
+	 * New Query
+	 */
+	@Query("select new com.amx.jax.pricer.dbmodel.ExchangeRateAPRDET(isActive, sellRateMin, sellRateMax, serviceId, "
+			+ "	bankMaster) from ExchangeRateApprovalDetModel rate where rate.currencyId=?1 "
+			+ " and rate.applicationCountryId=?2 and rate.bankMaster.bankId in (?3) " + " and rate.serviceId in (?4) "
+			+ " and rate.isActive='Y'"
+			+ " and rate.countryBranchId in (select countryBranchId from CountryBranch cb where cb.isActive='Y')"
 			+ " group by rate.isActive, rate.sellRateMin, rate.sellRateMax, rate.serviceId, rate.bankMaster"
 			+ " order by rate.bankMaster, rate.serviceId")
 	List<ExchangeRateAPRDET> getSellRatesForRoutingBanks(BigDecimal currencyId, BigDecimal applicationCountryId,
