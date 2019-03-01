@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import org.thymeleaf.context.Context;
 
 import com.amx.jax.logger.AuditEvent.Result;
+import com.amx.jax.dict.Channel;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.postman.PostManConfig;
@@ -76,6 +77,7 @@ public class ApiWhaService {
 		String event = ArgUtil.parseAsString(dataMap.get("event"), Constants.BLANK);
 		if ("INBOX".equals(event)) {
 			UserInboxEvent userInboxEvent = new UserInboxEvent();
+			userInboxEvent.setWaChannel(WAMessage.Channel.APIWHA);
 			userInboxEvent.setFrom(ArgUtil.parseAsString(dataMap.get("from"), Constants.BLANK));
 			userInboxEvent.setTo(ArgUtil.parseAsString(dataMap.get("to"), Constants.BLANK));
 			userInboxEvent.setMessage(ArgUtil.parseAsString(dataMap.get("text"), Constants.BLANK));

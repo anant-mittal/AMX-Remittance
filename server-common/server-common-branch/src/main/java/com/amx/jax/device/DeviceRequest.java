@@ -1,5 +1,7 @@
 package com.amx.jax.device;
 
+import java.math.BigDecimal;
+
 import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
@@ -44,6 +46,10 @@ public class DeviceRequest {
 
 	public String getDeviceRequestToken() {
 		return commonHttpRequest.get(DeviceConstants.Keys.CLIENT_REQ_TOKEN_XKEY);
+	}
+
+	public long getDeviceRequestTime() {
+		return ArgUtil.parseAsLong(commonHttpRequest.get(DeviceConstants.Keys.DEVICE_REQ_TIME_XKEY), 0L);
 	}
 
 	public DeviceData getDeviceData() {
@@ -97,7 +103,8 @@ public class DeviceRequest {
 		// Same logic on client side
 		if (!DeviceConstants.validateDeviceReqToken(deviceData.getDeviceReqKey(), getDeviceRegId(),
 				getDeviceRequestToken())) {
-			throw new OffsiteServerError(OffsiteServerCodes.INVALID_CLIENT_REQUEST);
+			throw new OffsiteServerError(OffsiteServerCodes.INVALID_CLIENT_REQUEST,
+					String.format("Time Difference %s", System.currentTimeMillis() - getDeviceRequestTime()));
 		}
 		return deviceData;
 	}
