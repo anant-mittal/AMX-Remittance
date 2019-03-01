@@ -3,8 +3,6 @@ package com.amx.jax.terminal;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -49,9 +47,6 @@ import io.swagger.annotations.ApiOperation;
 public class TerminalController {
 
 	@Autowired
-	private DeviceStateClient deviceClient;
-
-	@Autowired
 	private TerminalBox terminalBox;
 
 	@Autowired
@@ -60,8 +55,8 @@ public class TerminalController {
 	@Autowired
 	TerminalService terminalService;
 
-	@Autowired
-	SSOUser sSOUser;
+	@Autowired(required = false)
+	private SSOUser sSOUser;
 
 	public static class PingStatus {
 		public String state;
