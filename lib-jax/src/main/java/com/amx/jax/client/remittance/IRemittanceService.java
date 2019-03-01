@@ -81,7 +81,7 @@ public interface IRemittanceService extends  IJaxService {
 	AmxApiResponse<CustomerBankDetailsDto, Object> fetchCustomerLocalBanks();
 	
 	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND})
-	AmxApiResponse<String, Object> fetchCustomerBankNames(BigDecimal bankId);
+	AmxApiResponse<CustomerBankDetailsDto, Object> fetchCustomerBankNames(BigDecimal bankId);
 
 	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND})
 	AmxApiResponse<ResourceDTO, Object> fetchPosBanks();

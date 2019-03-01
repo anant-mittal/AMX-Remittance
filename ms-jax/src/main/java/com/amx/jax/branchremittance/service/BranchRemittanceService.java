@@ -105,12 +105,21 @@ public class BranchRemittanceService extends AbstractService{
 		return AmxApiResponse.buildList(lstLocalBanks);
 	}
 	
-	public AmxApiResponse<String, Object> fetchCustomerBankNames(BigDecimal bankId){
+	/*public AmxApiResponse<CustomerBankDetailsDto, Object> fetchCustomerBankNames(BigDecimal bankId){
 		validation.validateHeaderInfo();
 		BigDecimal customerId = metaData.getCustomerId();
-		List<String> lstCustomerNames = branchRemittancePaymentManager.fetchCustomerNames(customerId,bankId);
-		return AmxApiResponse.buildList(lstCustomerNames);
-	}
+		List<Object[]> lstCustomerNames = branchRemittancePaymentManager.fetchCustomerNames(customerId,bankId);
+		return AmxApiResponse.build(lstCustomerNames);
+		//return AmxApiResponse.buildList(lstCustomerNames);
+	}*/
+	
+	public AmxApiResponse<CustomerBankDetailsDto, Object> fetchCustomerBankNames(BigDecimal bankId){
+	validation.validateHeaderInfo();
+	BigDecimal customerId = metaData.getCustomerId();
+	CustomerBankDetailsDto customerBankDetailDto = branchRemittancePaymentManager.fetchCustomerNames(customerId,bankId);
+	return AmxApiResponse.build(customerBankDetailDto);
+	//return AmxApiResponse.buildList(lstCustomerNames);
+}
 	
 	public AmxApiResponse<ResourceDTO, Object> fetchPosBanks(){
 		List<ResourceDTO> lstPosBanks = branchRemittancePaymentManager.fetchPosBanks();

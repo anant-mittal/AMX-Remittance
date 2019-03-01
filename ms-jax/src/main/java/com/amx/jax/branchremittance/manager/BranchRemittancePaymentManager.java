@@ -2,6 +2,7 @@ package com.amx.jax.branchremittance.manager;
 
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -135,6 +136,8 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 						throw new GlobalException(JaxError.INVALID_CURRENCY_ID, "Invalid foreign currency id passed");
 					}
 				}
+			}else {
+				cartList.setTotalLoyaltyPointAvaliable(totalCustomerLoyaltyPoits);
 			}
 		}else {
 			throw new GlobalException(JaxError.INVALID_CURRENCY_ID, "Invalid local currency id passed");
@@ -206,7 +209,11 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 		shoppingCartDataTableBean.setRoutingBank(bankMaster.getBankListByBankId(shoppingCartDetails.getRoutingBankId()).get(0).getBankFullName());
 		shoppingCartDataTableBean.setBeneRelationseqId(shoppingCartDetails.getBeneRelationseqId());
 		shoppingCartDataTableBean.setSourceOfIncomeId(shoppingCartDetails.getSourceofincome()==null?BigDecimal.ZERO:new BigDecimal(shoppingCartDetails.getSourceofincome()));
-		//shoppingCartDataTableBean.setDomXRate(BigDecimal.ONE.divide(shoppingCartDetails.getExchangeRateApplied()));
+		shoppingCartDataTableBean.setDomXRate(RoundUtil.roundBigDecimal(BigDecimal.ONE.divide(shoppingCartDetails.getExchangeRateApplied(),10,RoundingMode.HALF_UP),breakup.getFcDecimalNumber().intValue()));
+		
+	
+		
+		
 		return shoppingCartDataTableBean;
 	}
 
@@ -281,8 +288,29 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 				for (LocalBankDetailsDto localBankDetailsDto : lstCustLocalBanksDto) {
 					CustomerBankDetailsDto customerBankDetailsDto = new CustomerBankDetailsDto();
 					customerBankDetailsDto.setLocalBankDetailsDto(localBankDetailsDto);
-					List<String> custBankName = fetchCustomerNames(customerId, localBankDetailsDto.getChequeBankId());
-					customerBankDetailsDto.setCustomerNames(custBankName);
+					customerBankDetailsDto = fetchCustomerNames(customerId, localBankDetailsDto.getChequeBankId());
+					
+					/*List<Object[]> custBankName = fetchCustomerNames(customerId, localBankDetailsDto.getChequeBankId());
+					if (custBankName != null && custBankName.size() != 0) {
+						for (Object object : custBankName) {
+							Object[] custBankNameObject = (Object[]) object;
+							
+							if(custBankNameObject[0]!=null) {
+								List<String> nameList = new ArrayList<>();
+								nameList.add(custBankNameObject[0].toString());
+								customerBankDetailsDto.setCustomerNames(nameList);
+							}
+							if(custBankNameObject[1]!=null) {
+								List<BigDecimal> relationList = new ArrayList<>();
+								relationList.add(new BigDecimal(custBankNameObject[1].toString()));
+								customerBankDetailsDto.setRelationId(relationList);
+							}
+							
+						}
+					}
+					*/
+					
+					//customerBankDetailsDto.setCustomerNames(new ArrayList(custBankName.get(0).));
 					lstCustBanksDto.add(customerBankDetailsDto);
 				}
 			}
@@ -310,11 +338,43 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 		return dto;
 	}
 
-	public List<String> fetchCustomerNames(BigDecimal customerId,BigDecimal bankId){
+	/*public List<String> fetchCustomerNames(BigDecimal customerId,BigDecimal bankId){
 		List<String> lstCustDetails = branchRemittancePaymentDao.fetchCustomerBankNames(customerId,bankId);
 		return lstCustDetails;
 	}
+*/
+	
+	public CustomerBankDetailsDto fetchCustomerNames(BigDecimal customerId,BigDecimal bankId){
+		CustomerBankDetailsDto customerBankDetailsDto = new CustomerBankDetailsDto();
+	List<Object[]> custBankName = branchRemittancePaymentDao.fetchCustomerBankNames(customerId,bankId);
+	if (custBankName != null && custBankName.size() != 0) {
+		for (Object object : custBankName) {
+			Object[] custBankNameObject = (Object[]) object;
+			if(custBankNameObject[0]!=null) {
+				List<String> nameList = new ArrayList<>();
+				nameList.add(custBankNameObject[0].toString());
+				customerBankDetailsDto.setCustomerNames(nameList);
+			}
+			if(custBankNameObject[1]!=null) {
+				List<BigDecimal> relationList = new ArrayList<>();
+				relationList.add(new BigDecimal(custBankNameObject[1].toString()));
+				customerBankDetailsDto.setRelationId(relationList);
+			}
+			
+		}
+	}
+	
+	
+	//customerBankDetailsDto.setCustomerNames(new ArrayList(custBankName.get(0).));
+	//lstCustBanksDto.add(customerBankDetailsDto);
+	
+	
+	return customerBankDetailsDto;
+	//return lstCustDetails;
+}
 
+	
+	
 	/* 
 	 * @param   :fetch pos banks list
 	 * @return ResourceDTO

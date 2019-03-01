@@ -136,13 +136,13 @@ public class RemittanceClient  implements IRemittanceService{
 	 * 
 	 */
 	@Override
-	public AmxApiResponse<String, Object> fetchCustomerBankNames(BigDecimal bankId) {
+	public AmxApiResponse<CustomerBankDetailsDto, Object> fetchCustomerBankNames(BigDecimal bankId) {
 		try {
 			LOGGER.debug("in fetchCustomerBankNames :"+bankId);
 			return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_BANK_CUSTOMER_NAMES).meta(new JaxMetaInfo())
 					.queryParam(Params.BANK_ID, bankId)
 					.get()
-					.as(new ParameterizedTypeReference<AmxApiResponse<String, Object>>() {
+					.as(new ParameterizedTypeReference<AmxApiResponse<CustomerBankDetailsDto, Object>>() {
 					});
 		} catch (Exception e) {
 			LOGGER.error("exception in fetchCustomerBankNames : ", e);

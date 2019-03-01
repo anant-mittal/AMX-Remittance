@@ -109,7 +109,7 @@ public class BranchRemittanceController implements IRemittanceService {
 	 */
 	@RequestMapping(value = Path.BR_REMITTANCE_BANK_CUSTOMER_NAMES, method = RequestMethod.GET)
 	@Override
-	public AmxApiResponse<String, Object> fetchCustomerBankNames(
+	public AmxApiResponse<CustomerBankDetailsDto, Object> fetchCustomerBankNames(
 			@RequestParam(value = "bankId", required = true) BigDecimal bankId) {
 		logger.info("fetchCustomerBankNames");
 		return branchRemitService.fetchCustomerBankNames(bankId);

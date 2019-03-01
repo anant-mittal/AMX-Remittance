@@ -2,7 +2,10 @@ package com.amx.jax.branchremittance.manager;
 
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
+import java.text.Collator;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -732,7 +735,7 @@ public class BranchRemittanceManager extends AbstractModel {
 	  List<AdditionalBankRuleAmiec> amiecRuleMap = amiecBankRuleRepo.getPurposeOfTrnxByCountryId(cntMaster);
 	  
 	  if(amiecRuleMap != null && amiecRuleMap.size() != 0) {
-		 return convertPurposeOfTrnxDto(amiecRuleMap);
+		 return convertPurposeOfTrnxDto(amiecRuleMap);//Collections.sort(amiecRuleMap));
 		}else {
 			throw new GlobalException(JaxError.NO_RECORD_FOUND, "No records found");
 		}
@@ -745,7 +748,7 @@ public class BranchRemittanceManager extends AbstractModel {
 	  		AdditionalExchAmiecDto amiecDto = new AdditionalExchAmiecDto();
 	  		amiecDto.setResourceId(amiec.getAdditionalBankRuleDetailId());
 	  		amiecDto.setResourceCode(amiec.getAmiecCode());
-	  		amiecDto.setResourceName(amiec.getAmiecDescription());
+	  		amiecDto.setResourceName(amiec.getAmiecDescription().toUpperCase());
 	  		amiecDto.setFlexField(amiec.getFlexField());
 	  		amiecDto.setCountryId(amiec.getCountryId().getCountryId());
 	  		amiecDto.setAdditionalBankFieldId(amiec.getAdditionalBankFieldId().getAdditionalBankRuleId());
