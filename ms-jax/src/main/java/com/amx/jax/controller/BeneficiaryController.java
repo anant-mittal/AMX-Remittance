@@ -75,8 +75,8 @@ public class BeneficiaryController {
 		BigDecimal customerId = metaData.getCustomerId();
 		BigDecimal applicationCountryId = metaData.getCountryId();
 		JaxChannel channel = metaData.getChannel();
-		LOGGER.debug("userType :" + channel.name() + "\t customerId :" + customerId + "\t applicationCountryId :"
-				+ applicationCountryId + "\t beneCountryId :" + beneCountryId);
+		/*LOGGER.debug("userType :" + channel.name() + "\t customerId :" + customerId + "\t applicationCountryId :"
+				+ applicationCountryId + "\t beneCountryId :" + beneCountryId);*/
 
 		if (channel != null && channel.equals(JaxChannel.BRANCH)) {
 			return beneService.getBeneficiaryListForBranch(customerId, applicationCountryId, beneCountryId);
