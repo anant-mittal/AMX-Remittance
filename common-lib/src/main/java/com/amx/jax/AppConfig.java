@@ -28,6 +28,8 @@ import com.amx.utils.ArgUtil;
 @PropertySource("classpath:application-lib.properties")
 public class AppConfig {
 
+	private static final String PROP_SUFFIX = "}";
+	private static final String PROP_PREFIX = "${";
 	public static final Pattern pattern = Pattern.compile("^\\$\\{(.*)\\}$");
 	public static final String APP_ENV = "${app.env}";
 	public static final String APP_GROUP = "${app.group}";
@@ -60,7 +62,7 @@ public class AppConfig {
 	public static final String JAX_LOGGER_URL = "${jax.logger.url}";
 	public static final String JAX_SSO_URL = "${jax.sso.url}";
 	public static final String JAX_AUTH_URL = "${jax.auth.url}";
-	
+
 	public static final String SPRING_REDIS_HOST = "${spring.redis.host}";
 	public static final String SPRING_REDIS_PORT = "${spring.redis.port}";
 	public static final String JAX_PRICER_URL = "${jax.pricer.url}";
@@ -76,7 +78,7 @@ public class AppConfig {
 	@Value(APP_NAME)
 	@AppParamKey(AppParam.APP_NAME)
 	private String appName;
-	
+
 	@Value(SPRING_APP_NAME)
 	@AppParamKey(AppParam.SPRING_APP_NAME)
 	private String springAppName;
@@ -151,11 +153,11 @@ public class AppConfig {
 	@Value(JAX_AUTH_URL)
 	@AppParamKey(AppParam.JAX_AUTH_URL)
 	private String authURL;
-	
+
 	@Value(SPRING_REDIS_HOST)
 	@AppParamKey(AppParam.SPRING_REDIS_HOST)
 	private String redisSpringHost;
-	
+
 	@Value(SPRING_REDIS_PORT)
 	@AppParamKey(AppParam.SPRING_REDIS_PORT)
 	private String redisSpringPort;

@@ -19,15 +19,15 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.pricer.ProbotDataService;
+import com.amx.jax.pricer.dto.DiscountDetailsReqRespDTO;
 import com.amx.jax.pricer.dto.DiscountMgmtReqDTO;
-import com.amx.jax.pricer.dto.DiscountMgmtRespDTO;
 import com.amx.jax.pricer.dto.HolidayResponseDTO;
 import com.amx.jax.pricer.dto.RoutBanksAndServiceRespDTO;
-import com.amx.jax.pricer.service.DataService;
+import com.amx.jax.pricer.service.ExchangeDataService;
 import com.amx.jax.pricer.service.HolidayListService;
 
 @RestController
-public class ProbotDataServiceApiController implements ProbotDataService {
+public class ProbotDataServiceApiController implements ProbotDataService{
 
 	/** The Constant LOGGER. */
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProbotDataServiceApiController.class);
@@ -36,16 +36,15 @@ public class ProbotDataServiceApiController implements ProbotDataService {
 	HolidayListService holidayService;
 
 	@Autowired
-	DataService dataService;
+	ExchangeDataService dataService;
 
 	@Override
 	@RequestMapping(value = ApiEndPoints.GET_DISCOUNT_DETAILS, method = RequestMethod.POST)
-	public AmxApiResponse<DiscountMgmtRespDTO, Object> getDiscountManagemet(
+	public AmxApiResponse<DiscountDetailsReqRespDTO, Object> getDiscountManagemet(
 			@RequestBody @Valid DiscountMgmtReqDTO discountMgmtReqDTO) {
 		LOGGER.info("In Get API of Discount Management");
-
-		DiscountMgmtRespDTO discountMgmtRespDTO = dataService.getDiscountManagementData(discountMgmtReqDTO);
-
+		DiscountDetailsReqRespDTO discountMgmtRespDTO = dataService.getDiscountManagementData(discountMgmtReqDTO);
+		
 		return AmxApiResponse.build(discountMgmtRespDTO);
 	}
 
@@ -76,5 +75,14 @@ public class ProbotDataServiceApiController implements ProbotDataService {
 
 		return AmxApiResponse.buildList(holidayResponseDTO);
 	}
+	
+	@Override
+    @RequestMapping(value = ApiEndPoints.SAVE_DISCOUNT_DETAILS, method = RequestMethod.POST)
+    public AmxApiResponse<DiscountDetailsReqRespDTO, Object> saveDiscountDetails(
+            @RequestBody DiscountDetailsReqRespDTO discountdetailsRequestDTO) {
+        LOGGER.info("In Save API of Discount Details");
+                
+        return dataService.saveDiscountDetails(discountdetailsRequestDTO);
+    }
 
 }

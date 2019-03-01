@@ -1,4 +1,4 @@
-package com.amx.jax.pricer.service;
+package com.amx.jax.pricer.dao;
 
 import java.math.BigDecimal;
 
@@ -9,7 +9,7 @@ import com.amx.jax.pricer.dbmodel.BankMasterModel;
 import com.amx.jax.pricer.repository.BankMasterRepository;
 
 @Component
-public class BankService {
+public class BankMasterDao {
 
 	@Autowired
 	BankMasterRepository bankMasterRepository;

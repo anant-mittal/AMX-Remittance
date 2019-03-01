@@ -11,15 +11,11 @@ import com.amx.jax.AppConfig;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.configs.JaxMetaInfo;
-import com.amx.jax.client.fx.IFxBranchOrderService.Params;
-import com.amx.jax.client.fx.IFxBranchOrderService.Path;
 import com.amx.jax.exception.JaxSystemError;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.model.request.fx.ForexOutLookRequest;
 import com.amx.jax.model.response.fx.CurrencyPairDTO;
 import com.amx.jax.model.response.fx.ForexOutLookResponseDTO;
-import com.amx.jax.model.response.fx.FxOrderReportResponseDto;
-import com.amx.jax.model.response.fx.UserStockDto;
 import com.amx.jax.rest.RestService;
 
 @Component
@@ -65,17 +61,19 @@ public class ForexOutlookClient implements IForexOutlookService {
 	@Override
 	public AmxApiResponse<BoolRespModel, Object> saveUpdateCurrencyPair(ForexOutLookRequest forexOutlookRequest) {
 		try {
-			LOGGER.debug("in SaveOrUpdate :"+"msg :"+forexOutlookRequest.getMessage()+"pairId :"+forexOutlookRequest.getPairId());
+			LOGGER.info("in SaveOrUpdate :" + "msg :" + forexOutlookRequest.getMessage() + "pairId :"
+					+ forexOutlookRequest.getPairId()+"appConfig.getJaxURL()"+appConfig.getJaxURL());
 			return restService.ajax(appConfig.getJaxURL() + Path.CURRENCY_PAIR_SAVE_UPDATE).meta(new JaxMetaInfo())
 					.post(forexOutlookRequest)
-					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel,Object>>() {
+
+					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
 					});
 		} catch (Exception e) {
 			LOGGER.info("Inside exception");
 			LOGGER.error("exception in SaveOrUpdate : ", e);
 			return JaxSystemError.evaluate(e);
 		} // end of try-catch
-	
+
 	}
 
 	@Override

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.api.ListRequestModel;
 import com.amx.jax.logger.AuditEvent.Result;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.postman.PostManException;
@@ -76,8 +77,18 @@ public class WhatsAppController {
 	}
 
 	@RequestMapping(value = PostManUrls.WHATS_APP_POLL, method = RequestMethod.GET)
-	public WAMessage pollWhatsApp(BigDecimal q) throws PostManException, InterruptedException {
+	public WAMessage pollWhatsApp(@RequestParam BigDecimal q)
+			throws PostManException, InterruptedException {
 		return whatsAppService.poll(ArgUtil.parseAsBigDecimal(q, BigDecimal.ZERO));
+	}
+
+	@RequestMapping(value = PostManUrls.WHATS_APP_POLL, method = RequestMethod.POST)
+	public WAMessage pollWhatsApp(@RequestParam BigDecimal q, @RequestBody ListRequestModel<Map<String, String>> data)
+			throws PostManException, InterruptedException {
+		if (data.getValues().size() > 0) {
+			whatsAppService.onMessage(data, q);
+		}
+		return new WAMessage();
 	}
 
 	@RequestMapping(value = PostManUrls.WHATS_APP_STATS, method = RequestMethod.GET)

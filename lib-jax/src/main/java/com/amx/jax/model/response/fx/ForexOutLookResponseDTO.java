@@ -10,20 +10,34 @@ public class ForexOutLookResponseDTO extends ResourceDTO {
 	 * 
 	 */
 	private static final long serialVersionUID = 4292890337204886660L;
-	private String isActive;
-	private Date modifiedDate;
-	public String getIsActive() {
-		return isActive;
-	}
-	public void setIsActive(String isActive) {
-		this.isActive = isActive;
-	}
-	public Date getModifiedDate() {
+	
+	private String message;
+	private String curpairName;
+	private String modifiedDate;
+	
+	
+	
+	public String getModifiedDate() {
 		return modifiedDate;
 	}
-	public void setModifiedDate(Date modifiedDate) {
+	public void setModifiedDate(String modifiedDate) {
 		this.modifiedDate = modifiedDate;
 	}
+	public String getMessage() {
+		return message;
+	}
+	public void setMessage(String message) {
+		this.message = message;
+	}
+	public String getCurpairName() {
+		return curpairName;
+	}
+	public void setCurpairName(String curpairName) {
+		this.curpairName = curpairName;
+	}
+	
+	
+	
 	
 
 }

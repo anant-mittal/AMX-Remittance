@@ -1,6 +1,8 @@
 package com.amx.jax.service;
 
 import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -60,6 +62,7 @@ public class ForexOutlookService extends AbstractService {
 	public List<ForexOutLookResponseDTO> getCurpairHistory() {
 		List<ForexOutlook> curPairHistoryList = forexOutlookDao.findAll();
 
+
 		LOGGER.debug("getCurpairHistory Size" + curPairHistoryList.size());
 
 		if (curPairHistoryList.isEmpty()) {
@@ -69,9 +72,19 @@ public class ForexOutlookService extends AbstractService {
 		List<ForexOutLookResponseDTO> dtoList = new ArrayList<ForexOutLookResponseDTO>();
 		for (ForexOutlook entity : curPairHistoryList) {
 			ForexOutLookResponseDTO dto = new ForexOutLookResponseDTO();
+			CurrencyPairView currencyPairList = currencyPairRepository.getCurrencyPairById(entity.getPairId());
+
 			dto.importFrom(entity);
-			dto.setIsActive(entity.getIsActive());
-			dto.setModifiedDate(entity.getModifiedDate());
+			
+			Date date=entity.getModifiedDate();
+			DateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy");
+			 
+	        String strDate = dateFormat.format(date);
+	         dto.setModifiedDate(strDate);
+			LOGGER.info("modified date"+entity.getModifiedDate());
+			dto.setCurpairName(currencyPairList.getCurPairName());
+			dto.setMessage(entity.getOutlookDesc());
+			
 			dtoList.add(dto);
 
 		}
@@ -80,7 +93,7 @@ public class ForexOutlookService extends AbstractService {
 	}
 
 	public BoolRespModel saveUpdateCurrencyPair(ForexOutLookRequest dto, BigDecimal appContryId, BigDecimal langId,
-			BigDecimal custId) {
+			BigDecimal empId) {
 		
 		LOGGER.debug("dto in service" + dto.toString());
 
@@ -96,7 +109,7 @@ public class ForexOutlookService extends AbstractService {
 					LOGGER.debug("saveUpdateCurrencyPair currpair list " + fxoList.toString());
 					for (ForexOutlook rec : fxoList) {
 						rec.setOutlookDesc(dto.getMessage());
-						rec.setModifiedBy(custId.toString());
+						rec.setModifiedBy(empId.toString());
 						forexOutlookDao.save(rec);
 					}
 				} else {
@@ -109,8 +122,8 @@ public class ForexOutlookService extends AbstractService {
 					forexOut.setIsActive("Y");
 					forexOut.setCreatedDate(new Date());
 					forexOut.setModifiedDate(new Date());
-					forexOut.setCreatedBy(custId.toString());
-					forexOut.setModifiedBy(custId.toString());
+					forexOut.setCreatedBy(empId.toString());
+					forexOut.setModifiedBy(empId.toString());
 
 					forexOutlookDao.save(forexOut);
 				}
@@ -120,6 +133,8 @@ public class ForexOutlookService extends AbstractService {
 		}
 
 		catch (Exception e) {
+			LOGGER.info("message",e.getStackTrace());
+			LOGGER.error("exception in saving : ", e);
 			return new BoolRespModel(Boolean.FALSE);
 		}
 

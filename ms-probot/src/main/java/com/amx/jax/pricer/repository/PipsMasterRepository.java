@@ -67,4 +67,6 @@ public interface PipsMasterRepository extends CrudRepository<PipsMaster, BigDeci
 			+ " ISACTIVE='Y' order by BANK_ID", nativeQuery = true)
 	public List<PipsMaster> getPipsMasterForAmountSlab(BigDecimal countryId, BigDecimal currencyId);
 
+	public PipsMaster findByPipsMasterId(BigDecimal pipsMasterId);
+	
 }

@@ -14,8 +14,8 @@ import com.amx.jax.AppConfig;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.logger.LoggerService;
+import com.amx.jax.pricer.dto.DiscountDetailsReqRespDTO;
 import com.amx.jax.pricer.dto.DiscountMgmtReqDTO;
-import com.amx.jax.pricer.dto.DiscountMgmtRespDTO;
 import com.amx.jax.pricer.dto.DprRequestDto;
 import com.amx.jax.pricer.dto.HolidayResponseDTO;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
@@ -73,13 +73,12 @@ public class PricerServiceClient implements ProbotExchangeRateService, ProbotDat
 	}
 
 	@Override
-	public AmxApiResponse<DiscountMgmtRespDTO, Object> getDiscountManagemet(DiscountMgmtReqDTO discountMgmtReqDTO) {
+	public AmxApiResponse<DiscountDetailsReqRespDTO, Object> getDiscountManagemet(DiscountMgmtReqDTO discountMgmtReqDTO) {
 		LOGGER.info("Get Discounted Mgmt Amount Slab : transaction Id: {}, with TraceId: {}",
 				AppContextUtil.getTranxId(), AppContextUtil.getTraceId());
 
-		return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.GET_DISCOUNT_DETAILS)
-				.post(discountMgmtReqDTO)
-				.as(new ParameterizedTypeReference<AmxApiResponse<DiscountMgmtRespDTO, Object>>() {
+		return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.GET_DISCOUNT_DETAILS).post(discountMgmtReqDTO)
+				.as(new ParameterizedTypeReference<AmxApiResponse<DiscountDetailsReqRespDTO, Object>>() {
 				});
 
 	}
@@ -89,11 +88,12 @@ public class PricerServiceClient implements ProbotExchangeRateService, ProbotDat
 			BigDecimal currencyId) {
 		LOGGER.info("Get Routing Banks and Services : transaction Id: {}, with TraceId: {}",
 				AppContextUtil.getTranxId(), AppContextUtil.getTraceId());
-
-		return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.GET_ROUTBANKS_AND_SEVICES)
-				.queryParam("countryId", countryId).queryParam("currencyId", currencyId).post()
+		
+		return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.GET_ROUTBANKS_AND_SEVICES).
+				queryParam("countryId", countryId).queryParam("currencyId", currencyId).post()
 				.as(new ParameterizedTypeReference<AmxApiResponse<RoutBanksAndServiceRespDTO, Object>>() {
 				});
+		
 
 	}
 
@@ -122,6 +122,17 @@ public class PricerServiceClient implements ProbotExchangeRateService, ProbotDat
 				.as(new ParameterizedTypeReference<AmxApiResponse<HolidayResponseDTO, Object>>() {
 				});
 
+	}
+        
+        @Override
+	public AmxApiResponse<DiscountDetailsReqRespDTO, Object> saveDiscountDetails(DiscountDetailsReqRespDTO discountMgmtReqDTO) {
+		LOGGER.info("Save Discount Management Details : transaction Id: {}, with TraceId: {}",
+				AppContextUtil.getTranxId(), AppContextUtil.getTraceId());
+
+		return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.SAVE_DISCOUNT_DETAILS)
+				.post(discountMgmtReqDTO)
+				.as(new ParameterizedTypeReference<AmxApiResponse<DiscountDetailsReqRespDTO, Object>>() {
+				});
 	}
 
 }

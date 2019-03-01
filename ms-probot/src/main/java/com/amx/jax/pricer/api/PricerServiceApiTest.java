@@ -28,14 +28,15 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.dict.UserClient.Channel;
 import com.amx.jax.pricer.PricerServiceClient;
 import com.amx.jax.pricer.ProbotDataService;
 import com.amx.jax.pricer.ProbotExchangeRateService;
 import com.amx.jax.pricer.dto.BankDetailsDTO;
+import com.amx.jax.pricer.dto.DiscountDetailsReqRespDTO;
 import com.amx.jax.pricer.dto.DiscountMgmtReqDTO;
-import com.amx.jax.pricer.dto.DiscountMgmtRespDTO;
 import com.amx.jax.pricer.dto.DprRequestDto;
 import com.amx.jax.pricer.dto.ExchangeRateDetails;
 import com.amx.jax.pricer.dto.HolidayResponseDTO;
@@ -43,7 +44,6 @@ import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.dto.PricingResponseDTO;
 import com.amx.jax.pricer.dto.RoutBanksAndServiceRespDTO;
 import com.amx.jax.pricer.exception.PricerServiceException;
-import com.amx.jax.pricer.service.HolidayListService;
 import com.amx.jax.pricer.service.PricerTestService;
 import com.amx.jax.pricer.var.PricerServiceConstants;
 import com.amx.jax.pricer.var.PricerServiceConstants.PRICE_BY;
@@ -434,12 +434,7 @@ public class PricerServiceApiTest implements ProbotExchangeRateService, ProbotDa
 				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + "Results.csv" + "\"").body(media);
 
 	}
-
-	@Override
-	public AmxApiResponse<DiscountMgmtRespDTO, Object> getDiscountManagemet(DiscountMgmtReqDTO discountMgmtReqDTO) {
-		// TODO Subodh To Fix This
-		return null;
-	}
+	
 
 	@Override
 	public AmxApiResponse<RoutBanksAndServiceRespDTO, Object> getRbanksAndServices(BigDecimal countryId,
@@ -447,4 +442,20 @@ public class PricerServiceApiTest implements ProbotExchangeRateService, ProbotDa
 		// TODO Subodh To Fix This
 		return null;
 	}
+
+	@Override
+	public AmxApiResponse<DiscountDetailsReqRespDTO, Object> saveDiscountDetails(
+			DiscountDetailsReqRespDTO discountMgmtReqDTO) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public AmxApiResponse<DiscountDetailsReqRespDTO, Object> getDiscountManagemet(
+			DiscountMgmtReqDTO discountMgmtReqDTO) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	
 }
