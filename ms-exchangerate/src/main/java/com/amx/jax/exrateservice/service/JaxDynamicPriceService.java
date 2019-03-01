@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.BankMasterDTO;
-import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ExchangeRateResponseModel;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.error.JaxError;
@@ -45,7 +44,6 @@ public class JaxDynamicPriceService {
 				countryId, routingBankId);
 		AmxApiResponse<PricingResponseDTO, Object> apiResponse = null;
 		try {
-			LOGGER.debug("Pricing request json : {}", JsonUtil.toJson(pricingRequestDTO));
 			apiResponse = pricerServiceClient.fetchPriceForCustomer(pricingRequestDTO);
 		} catch (Exception e) {
 			LOGGER.debug("No exchange data found from pricer, error is: ", e);
@@ -78,9 +76,6 @@ public class JaxDynamicPriceService {
 		List<BankMasterDTO> bankWiseRates = new ArrayList<>();
 		List<ExchangeRateDetails> sellRateDetails = apiResponse.getResult().getSellRateDetails();
 		for (ExchangeRateDetails sellRateDetail : sellRateDetails) {
-			if (serviceIndicatorId != null && !serviceIndicatorId.equals(sellRateDetail.getServiceIndicatorId())) {
-				continue;
-			}
 			BankMasterDTO dto = bankMetaService.convert(bankMetaService.getBankMasterbyId(sellRateDetail.getBankId()));
 			if (foreignAmount != null) {
 				dto.setExRateBreakup(exchangeRateService.createBreakUpFromForeignCurrency(
@@ -117,12 +112,6 @@ public class JaxDynamicPriceService {
 		}
 		pricingRequestDTO.setForeignCountryId(beneBankCountryId);
 		return pricingRequestDTO;
-	}
-
-	public ExchangeRateResponseModel getExchangeRates(BigDecimal fromCurrency, BigDecimal toCurrency,
-			BigDecimal lcAmount, BigDecimal foreignAmount, BigDecimal beneBankCountryId, BigDecimal routingBankId) {
-		return getExchangeRates(fromCurrency, toCurrency, lcAmount, foreignAmount, beneBankCountryId, routingBankId,
-				null);
 	}
 
 }
