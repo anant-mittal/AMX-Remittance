@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.amx.jax.AppConfig;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
-import com.amx.jax.client.DeviceStateClient;
 import com.amx.jax.client.IDeviceStateService;
 import com.amx.jax.device.TerminalBox;
 import com.amx.jax.device.TerminalData;

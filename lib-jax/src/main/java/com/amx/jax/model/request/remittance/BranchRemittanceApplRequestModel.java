@@ -1,18 +1,11 @@
 package com.amx.jax.model.request.remittance;
 
 import java.math.BigDecimal;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
 
 import com.amx.jax.model.response.ExchangeRateBreakup;
 import com.amx.jax.model.response.remittance.BranchExchangeRateBreakup;
-import com.amx.jax.model.response.remittance.FlexFieldDto;
-import com.amx.utils.JsonUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 
