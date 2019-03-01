@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
-import javax.annotation.Resource;
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
@@ -36,7 +35,7 @@ public class ProbotDataServiceApiController implements ProbotDataService {
 	@Autowired
 	HolidayListService holidayService;
 
-	@Resource
+	@Autowired
 	DataService dataService;
 
 	@Override

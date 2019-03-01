@@ -3,17 +3,20 @@ package com.amx.jax.auth;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.security.NoSuchAlgorithmException;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.NavigableMap;
 import java.util.TreeMap;
-import java.util.TreeSet;
 
 import com.amx.utils.CryptoUtil;
 import com.amx.utils.DateUtil;
@@ -40,6 +43,39 @@ public final class RuntimeTest {
 				+ DateUtil.formatDate(DateUtil.getCurrentDateWithTime("Indian/Mauritius"), "us", "24_hr"));
 
 		
+		
+		
+		ZoneId zoneId = ZoneId.of("Asia/Kuwait");
+		ZoneOffset offset = ZoneId.of("Asia/Kuwait").getRules().getOffset(Instant.now());
+
+		
+		LocalDateTime ldt = LocalDateTime.ofEpochSecond(System.currentTimeMillis(), 0, offset);
+		
+		ZonedDateTime zdt = ZonedDateTime.ofInstant(Instant.now(), zoneId);
+		
+		
+		
+		
+		System.out.println(" Local Date 1 ==> " + ldt.toString());
+		
+		System.out.println(" Zone Date 1 ==> " + zdt);
+		
+		
+		System.out.println("\n\n Local Date Now ==> " + LocalDateTime.now());
+		
+		System.out.println(" Zone Date Now ==> " + ZonedDateTime.now());
+		
+		
+		//ZoneId zoneId = ZoneId.of("Indian/Mauritius");
+		
+		
+		//System.out.println(" Zone Id ==>" + zoneId.getId() +" : " + zoneId.getAvailableZoneIds());
+		
+		System.out.println(" Hour ==>" + Calendar.getInstance().get(Calendar.HOUR_OF_DAY));
+		
+		System.out.println(" Hour ==>" + Calendar.getInstance().get(Calendar.MINUTE));
+		
+		
 		NavigableMap<Integer, String> map = new TreeMap<Integer, String>();
 		
 		
@@ -60,6 +96,8 @@ public final class RuntimeTest {
 		Map<Integer, String> subMap = map.subMap(3, true, 10, true);
 		
 		System.out.println(" Sub Map ==> "+ JsonUtil.toJson(subMap));
+		
+		
 		
 		if (true)
 			return;

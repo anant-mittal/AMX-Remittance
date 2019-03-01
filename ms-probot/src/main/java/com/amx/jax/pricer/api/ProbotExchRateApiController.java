@@ -3,7 +3,6 @@ package com.amx.jax.pricer.api;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.annotation.Resource;
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
@@ -36,9 +35,9 @@ public class ProbotExchRateApiController implements ProbotExchangeRateService {
 	/** The Constant LOGGER. */
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProbotExchRateApiController.class);
 
-	@Resource
+	@Autowired
 	PricingService pricingService;
-	
+
 	@Autowired
 	HolidayListService holidayService;
 
@@ -86,7 +85,6 @@ public class ProbotExchRateApiController implements ProbotExchangeRateService {
 
 	}
 
-	
 	@Override
 	@RequestMapping(value = ApiEndPoints.FETCH_DISCOUNTED_RATES, method = RequestMethod.POST)
 	public AmxApiResponse<PricingResponseDTO, Object> fetchDiscountedRates(
@@ -114,6 +112,5 @@ public class ProbotExchRateApiController implements ProbotExchangeRateService {
 		return AmxApiResponse.build(pricingResponseDTO);
 
 	}
-	
 
 }

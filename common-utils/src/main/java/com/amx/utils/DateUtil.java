@@ -226,11 +226,11 @@ public final class DateUtil {
 	/**
 	 * Gets the current date with time.
 	 *
-	 * @param ID the id
+	 * @param timezoneId the id
 	 * @return : unix timestamp for the current time
 	 */
-	public static long getCurrentDateWithTime(String ID) {
-		TimeZone timeZone = TimeZone.getTimeZone(ID);
+	public static long getCurrentDateWithTime(String timezoneId) {
+		TimeZone timeZone = TimeZone.getTimeZone(timezoneId);
 		return getCurrentDateWithTime(timeZone);
 	}
 

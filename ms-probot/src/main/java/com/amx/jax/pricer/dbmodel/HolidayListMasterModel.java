@@ -11,10 +11,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-	
+
 @Entity
 @Table(name = "JAX_PR_HOLIDAY_MASTER")
-public class HolidayListMasterModel implements Serializable {
+public class HolidayListMasterModel implements Serializable, Comparable<HolidayListMasterModel> {
 
 	/**
 	 * 
@@ -37,14 +37,14 @@ public class HolidayListMasterModel implements Serializable {
 	private Date createdDate;
 	private String modifiedBy;
 	private Date modifiedDate;
-	
+
 	public HolidayListMasterModel() {
 	}
 
 	public HolidayListMasterModel(BigDecimal id) {
 		this.id = id;
 	}
-	
+
 	@Id
 	@GeneratedValue(generator = "jax_pr_holiday_mas_seq", strategy = GenerationType.SEQUENCE)
 	@SequenceGenerator(name = "jax_pr_holiday_mas_seq", sequenceName = "JAX_PR_HOLIDAY_MAS_SEQ", allocationSize = 1)
@@ -200,34 +200,20 @@ public class HolidayListMasterModel implements Serializable {
 	public void setModifiedDate(Date modifiedDate) {
 		this.modifiedDate = modifiedDate;
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	 
-	
-	
-	
-	
-	
-	
-	 
-	
-	
-	
-	
-	
 
-	
-	
-	
-	
-	
+	@Override
+	public int compareTo(HolidayListMasterModel that) {
+
+		if (this.eventDate == null)
+			if (that == null || that.eventDate == null)
+				return 0; // equal
+			else
+				return -1; // null is before other strings
+		else if (that.eventDate == null)
+			return 1; // all other strings are after null
+		else
+			return this.eventDate.compareTo(that.eventDate);
+
+	}
 
 }

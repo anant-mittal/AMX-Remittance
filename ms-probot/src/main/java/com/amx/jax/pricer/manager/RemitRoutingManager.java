@@ -1,7 +1,6 @@
 package com.amx.jax.pricer.manager;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -14,6 +13,7 @@ import org.springframework.stereotype.Component;
 import com.amx.jax.pricer.dao.ViewExRoutingMatrixDao;
 import com.amx.jax.pricer.dbmodel.ViewExRoutingMatrix;
 import com.amx.jax.pricer.dto.DprRequestDto;
+import com.amx.jax.pricer.dto.EstimatedDeliveryDetails;
 import com.amx.jax.pricer.exception.PricerServiceError;
 import com.amx.jax.pricer.exception.PricerServiceException;
 import com.amx.jax.pricer.util.ExchangeRequestTransientDataCache;
@@ -68,6 +68,18 @@ public class RemitRoutingManager {
 
 		return routingMatrix;
 
+	}
+
+	public EstimatedDeliveryDetails getEstimatedBlockDelivery(long startTT, String timezone, long weekFrom, long weekTo,
+			long weekHrsFrom, long weekHrsTo, long weekEndFrom, long weekEndTo, long weekEndHrsFrom, long weekEndHrsTo,
+			long processTimeInHrs, boolean noHolidayLag) {
+
+		EstimatedDeliveryDetails estimatedDeliveryDetails = new EstimatedDeliveryDetails();
+		
+		
+		
+		
+		return null;
 	}
 
 }

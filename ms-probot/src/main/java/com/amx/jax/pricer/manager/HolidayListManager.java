@@ -2,6 +2,7 @@ package com.amx.jax.pricer.manager;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -15,17 +16,16 @@ import com.amx.jax.pricer.dto.HolidayResponseDTO;
 
 @Component
 public class HolidayListManager {
-	
+
 	@Autowired
 	HolidayListDao holidayListDao;
 
-	@CacheForTenant
+	//@CacheForTenant
 	public List<HolidayResponseDTO> getHolidayList(BigDecimal countryId, Date fromDate, Date toDate) {
-		
+
 		List<HolidayResponseDTO> holidayResponseDTO = new ArrayList<HolidayResponseDTO>();
 
-		List<HolidayListMasterModel> holidaylist = holidayListDao.getHolidayListForDateRange(countryId, fromDate,
-				toDate);
+		List<HolidayListMasterModel> holidaylist = getHoidaysForCountryAndDateRange(countryId, fromDate, toDate);
 
 		if (!holidaylist.isEmpty()) {
 			for (HolidayListMasterModel rec : holidaylist) {
@@ -47,5 +47,27 @@ public class HolidayListManager {
 
 		return holidayResponseDTO;
 	}
-	
+
+	/**
+	 * 
+	 * @param countryId
+	 * @param fromDate
+	 * @param toDate
+	 * @return
+	 */
+	@CacheForTenant
+	public List<HolidayListMasterModel> getHoidaysForCountryAndDateRange(BigDecimal countryId, Date fromDate,
+			Date toDate) {
+		List<HolidayListMasterModel> holidaylist = holidayListDao.getHolidayListForDateRange(countryId, fromDate,
+				toDate);
+
+		if (null == holidaylist) {
+			holidaylist = new ArrayList<HolidayListMasterModel>();
+		}
+
+		Collections.sort(holidaylist);
+
+		return holidaylist;
+	}
+
 }
