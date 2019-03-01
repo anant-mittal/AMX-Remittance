@@ -60,7 +60,6 @@ public class ForexOutlookService extends AbstractService {
 	public List<ForexOutLookResponseDTO> getCurpairHistory() {
 		List<ForexOutlook> curPairHistoryList = forexOutlookDao.findAll();
 
-
 		LOGGER.debug("getCurpairHistory Size" + curPairHistoryList.size());
 
 		if (curPairHistoryList.isEmpty()) {
@@ -76,7 +75,7 @@ public class ForexOutlookService extends AbstractService {
 			dto.setModifiedDate(entity.getModifiedDate());
 			dto.setCurpairName(currencyPairList.getCurPairName());
 			dto.setMessage(entity.getOutlookDesc());
-			
+
 			dtoList.add(dto);
 
 		}
@@ -86,7 +85,7 @@ public class ForexOutlookService extends AbstractService {
 
 	public BoolRespModel saveUpdateCurrencyPair(ForexOutLookRequest dto, BigDecimal appContryId, BigDecimal langId,
 			BigDecimal empId) {
-		
+
 		LOGGER.debug("dto in service" + dto.toString());
 
 		List<ForexOutlook> fxoList = null;
@@ -125,7 +124,7 @@ public class ForexOutlookService extends AbstractService {
 		}
 
 		catch (Exception e) {
-			LOGGER.info("message",e.getStackTrace());
+			LOGGER.info("message", e.getStackTrace());
 			LOGGER.error("exception in saving : ", e);
 			return new BoolRespModel(Boolean.FALSE);
 		}

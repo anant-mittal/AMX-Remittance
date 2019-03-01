@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.BankMasterDTO;
-import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ExchangeRateResponseModel;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.error.JaxError;
@@ -39,6 +38,22 @@ public class JaxDynamicPriceService {
 	BankMetaService bankMetaService;
 	@Autowired
 	ExchangeRateService exchangeRateService;
+
+	public ExchangeRateResponseModel getExchangeRatesWithDiscount(BigDecimal fromCurrency, BigDecimal toCurrency,
+			BigDecimal lcAmount, BigDecimal foreignAmount, BigDecimal countryId, BigDecimal routingBankId) {
+		PricingRequestDTO pricingRequestDTO = createPricingRequest(fromCurrency, toCurrency, lcAmount, foreignAmount,
+				countryId, routingBankId);
+		AmxApiResponse<PricingResponseDTO, Object> apiResponse = null;
+		try {
+			apiResponse = pricerServiceClient.fetchPriceForCustomer(pricingRequestDTO);
+		} catch (Exception e) {
+			LOGGER.debug("No exchange data found from pricer, error is: ", e);
+			throw new GlobalException(JaxError.EXCHANGE_RATE_NOT_FOUND, "No exchange data found");
+		}
+		ExchangeRateResponseModel exchangeRateResponseModel = createExchangeRateResponseModel(apiResponse, lcAmount,
+				foreignAmount, null);
+		return exchangeRateResponseModel;
+	}
 
 	public ExchangeRateResponseModel getExchangeRates(BigDecimal fromCurrency, BigDecimal toCurrency,
 			BigDecimal lcAmount, BigDecimal foreignAmount, BigDecimal beneBankCountryId, BigDecimal routingBankId,
