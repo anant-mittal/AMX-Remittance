@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
@@ -93,8 +94,8 @@ public class SSOServerController {
 		map.put(SSOConstants.PARAM_SSO_LOGIN_URL, appConfig.getAppPrefix() + SSOConstants.SSO_LOGIN_URL_DO);
 		map.put(SSOConstants.PARAM_SSO_LOGIN_PREFIX, appConfig.getAppPrefix());
 		map.put(SSOConstants.SECURITY_CODE_KEY, ssoUser.getSelfSAC());
-        map.put(SSOConstants.PARTNER_SECURITY_CODE_KEY, ssoUser.getPartnerSAC());
-        map.put(SSOConstants.ADAPTER_URL, sSOConfig.getAdapterUrl());
+		map.put(SSOConstants.PARTNER_SECURITY_CODE_KEY, ssoUser.getPartnerSAC());
+		map.put(SSOConstants.ADAPTER_URL, sSOConfig.getAdapterUrl());
 		return map;
 	}
 
@@ -164,6 +165,8 @@ public class SSOServerController {
 				if (appConfig.isSwaggerEnabled() && !ArgUtil.isEmpty(deviceType)) {
 					ssomodel.getUserClient().setDeviceType(deviceType);
 				}
+				LOGGER.debug("TerminalPairing R:{} T:{}", sSOTranx.get().getBranchAdapterId(),
+						sSOTranx.get().getUserClient().getTerminalId());
 
 				if (!ArgUtil.isEmpty(sSOTranx.get().getBranchAdapterId())) {
 					// Terminal Login

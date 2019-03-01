@@ -1,17 +1,36 @@
 package com.amx.jax.auth;
 
+import java.io.Serializable;
+import java.math.BigDecimal;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
 
 import com.amx.utils.CryptoUtil;
 import com.amx.utils.JsonUtil;
 
 public final class RuntimeTest {
 
-	public static void main(String[] args) throws NoSuchAlgorithmException, InterruptedException {
+	public static class A implements Comparable<A>, Serializable {
+		
+		private static final long serialVersionUID = 1L;
+		
+		public BigDecimal i;
+		public int j;
+
+		@Override
+		public int compareTo(A o) {
+			return this.i.compareTo(o.i);
+		}
+	}
+
+	public static void main(String[] args) throws NoSuchAlgorithmException {
 
 		System.out.println(" ======== String Test ======= " + "Y".equalsIgnoreCase(null));
 
@@ -61,22 +80,19 @@ public final class RuntimeTest {
 
 		System.out.println(" Device Pair Token ==> " + devicePairTokenStr);
 
-		for (int i = 0; i < 50; i++) {
-			
-			long timeNow = System.currentTimeMillis();
+		List<A> ts = new LinkedList<A>();
 
-			System.out.println(
-					"\n HMAC Current " + i + " ==> " + CryptoUtil.generateHMAC(10, "abc", "message", timeNow));
-			
-			System.out.println(
-					" HMAC Before " + i + " ==> " + CryptoUtil.generateHMAC(10, "abc", "message", timeNow - 5000));
-			
-			System.out.println(
-					" HMAC After " + i + " ==> " + CryptoUtil.generateHMAC(10, "abc", "message", timeNow + 5000));
+		for (int j = 0; j < 10; j++) {
+			A a1 = new A();
+			a1.i = new BigDecimal(10-j);
+			a1.j = j;
 
-			Thread.sleep(1 * 1000);
-
+			ts.add(a1);
 		}
+		
+		Collections.sort(ts);
+		
+		System.out.println(" All Sets ==> " + JsonUtil.toJson(ts));
 
 	}
 

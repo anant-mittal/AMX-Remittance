@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.amx.jax.client.snap.SnapQueryTemplate;
+import com.amx.jax.client.snap.SnapModels.SnapModelWrapper;
 import com.amx.jax.rest.RestService;
 
 @Controller
@@ -31,7 +33,7 @@ public class SnapQueryController {
 
 	@ResponseBody
 	@RequestMapping(value = "/snap/view/{snapView}", method = RequestMethod.POST)
-	public Map<String, Object> snapView(@PathVariable(value = "snapView") SnapQueryTemplate snapView,
+	public SnapModelWrapper snapView(@PathVariable(value = "snapView") SnapQueryTemplate snapView,
 			@RequestBody Map<String, Object> params) throws IOException {
 		return snapQueryTemplateService.execute(snapView, params);
 	}

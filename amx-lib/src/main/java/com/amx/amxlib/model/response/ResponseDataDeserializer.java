@@ -49,6 +49,7 @@ import com.amx.jax.model.response.CurrencyMasterDTO;
 import com.amx.jax.model.response.SourceOfIncomeDto;
 import com.amx.jax.model.response.fx.FxExchangeRateDto;
 import com.amx.jax.model.response.fx.PurposeOfTransactionDto;
+import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
 import com.amx.jax.payg.PaymentResponseDto;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;

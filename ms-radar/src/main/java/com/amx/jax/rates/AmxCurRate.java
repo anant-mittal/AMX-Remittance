@@ -1,77 +1,90 @@
 package com.amx.jax.rates;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
+import com.amx.jax.AppContextUtil;
+import com.amx.jax.client.snap.ISnapService.RateSource;
+import com.amx.jax.client.snap.ISnapService.RateType;
+import com.amx.jax.dict.Currency;
 import com.amx.jax.radar.AESDocument;
-import com.amx.jax.rates.AmxCurConstants.RCur;
-import com.amx.jax.rates.AmxCurConstants.RSource;
-import com.amx.jax.rates.AmxCurConstants.RType;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 //@Document(indexName = "polls", type = "vote")
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class AmxCurRate extends AESDocument {
+public class AmxCurRate {
 
 	public AmxCurRate() {
-		super();
+		this.timestamp = new Date(System.currentTimeMillis());
 	}
 
-	public AmxCurRate(RType rType) {
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZZ")
+	@JsonProperty(value = "timestamp")
+	protected Date timestamp;
+
+	public AmxCurRate(RateType rType) {
 		this();
 		this.rType = rType;
 	}
 
-	public AmxCurRate(RType rType, BigDecimal rRate) {
+	public AmxCurRate(RateType rType, BigDecimal rRate) {
 		this();
 		this.rType = rType;
 		this.rRate = rRate;
 	}
 
-	public AmxCurRate(RSource rSrc, RCur rDomCur, RCur rForCur) {
+	public AmxCurRate(RateSource rSrc, Currency rDomCur, Currency rForCur) {
 		this();
 		this.rSrc = rSrc;
 		this.rDomCur = rDomCur;
 		this.rForCur = rForCur;
 	}
 
-	private RSource rSrc;
-	private RCur rForCur;
-	private RCur rDomCur;
-	private RType rType;
+	@JsonProperty(value = "src")
+	private RateSource rSrc;
+	@JsonProperty(value = "forCur")
+	private Currency rForCur;
+	@JsonProperty(value = "domCur")
+	private Currency rDomCur;
+
+	@JsonProperty(value = "rateType")
+	private RateType rType;
 
 	@JsonFormat(shape = JsonFormat.Shape.NUMBER_FLOAT)
+	@JsonProperty(value = "rate")
 	private BigDecimal rRate;
 
-	public RSource getrSrc() {
+	public RateSource getrSrc() {
 		return rSrc;
 	}
 
-	public void setrSrc(RSource rSrc) {
+	public void setrSrc(RateSource rSrc) {
 		this.rSrc = rSrc;
 	}
 
-	public RCur getrForCur() {
+	public Currency getrForCur() {
 		return rForCur;
 	}
 
-	public void setrForCur(RCur rForCur) {
+	public void setrForCur(Currency rForCur) {
 		this.rForCur = rForCur;
 	}
 
-	public RCur getrDomCur() {
+	public Currency getrDomCur() {
 		return rDomCur;
 	}
 
-	public void setrDomCur(RCur rDomCur) {
+	public void setrDomCur(Currency rDomCur) {
 		this.rDomCur = rDomCur;
 	}
 
-	public RType getrType() {
+	public RateType getrType() {
 		return rType;
 	}
 
-	public void setrType(RType rType) {
+	public void setrType(RateType rType) {
 		this.rType = rType;
 	}
 
@@ -88,21 +101,28 @@ public class AmxCurRate extends AESDocument {
 		rate.setrSrc(rSrc);
 		rate.setrDomCur(rDomCur);
 		rate.setrForCur(rForCur);
-		rate.setTimestamp(this.getTimestamp());
 		return rate;
 	}
 
-	public AmxCurRate clone(RType rType) {
+	public AmxCurRate clone(RateType rType) {
 		AmxCurRate rate = this.clone();
 		rate.setrType(rType);
 		return rate;
 	}
 
-	public AmxCurRate clone(RType rType, BigDecimal rRate) {
+	public AmxCurRate clone(RateType rType, BigDecimal rRate) {
 		AmxCurRate rate = this.clone();
 		rate.setrType(rType);
 		rate.setrRate(rRate);
 		return rate;
+	}
+
+	public Date getTimestamp() {
+		return timestamp;
+	}
+
+	public void setTimestamp(Date timestamp) {
+		this.timestamp = timestamp;
 	}
 
 }

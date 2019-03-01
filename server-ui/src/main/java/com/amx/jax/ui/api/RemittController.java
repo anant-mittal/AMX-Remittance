@@ -29,16 +29,16 @@ import com.amx.amxlib.meta.model.CustomerRatingDTO;
 import com.amx.amxlib.meta.model.RemittancePageDto;
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
-import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.amxlib.model.request.RemittanceTransactionStatusRequestModel;
 import com.amx.amxlib.model.response.ExchangeRateResponseModel;
 import com.amx.amxlib.model.response.PurposeOfTransactionModel;
 import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
-import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
 import com.amx.jax.dict.Language;
 import com.amx.jax.logger.LoggerService;
+import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.model.response.CurrencyMasterDTO;
+import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
 import com.amx.jax.payg.PayGParams;
 import com.amx.jax.payg.PayGService;
 import com.amx.jax.postman.PostManException;
@@ -266,7 +266,7 @@ public class RemittController {
 	 */
 	@RequestMapping(value = "/api/remitt/xrate", method = { RequestMethod.POST })
 	public ResponseWrapper<XRateData> xrate(@RequestParam(required = false) BigDecimal forCur,
-			@RequestParam(required = false) BigDecimal domAmount) {
+			@RequestParam(required = false) BigDecimal domAmount, @RequestParam(required = false) BigDecimal beneBankCountryId) {
 		ResponseWrapper<XRateData> wrapper = new ResponseWrapper<XRateData>(new XRateData());
 
 		CurrencyMasterDTO domCur = tenantContext.getDomCurrency();
@@ -279,7 +279,7 @@ public class RemittController {
 			ExchangeRateResponseModel resp;
 			try {
 				resp = jaxService.setDefaults().getxRateClient()
-						.getExchangeRate(domCur.getCurrencyId(), forCurcy.getCurrencyId(), domAmount, null).getResult();
+						.getExchangeRate(domCur.getCurrencyId(), forCurcy.getCurrencyId(), domAmount, null, beneBankCountryId).getResult();
 				wrapper.getData().setForXRate(resp.getExRateBreakup().getInverseRate());
 				wrapper.getData().setDomXRate(resp.getExRateBreakup().getRate());
 				wrapper.getData().setForAmount(resp.getExRateBreakup().getConvertedFCAmount());

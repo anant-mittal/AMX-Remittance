@@ -1,7 +1,6 @@
 package com.amx.jax.model.response.customer;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.util.Date;
 
 public class CustomerDto implements Serializable {

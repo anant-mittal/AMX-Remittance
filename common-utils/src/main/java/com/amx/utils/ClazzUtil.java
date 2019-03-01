@@ -23,7 +23,14 @@ public class ClazzUtil {
 
 	public static Pattern getGenericTypePattern(Class<?> clazz) {
 		return Pattern.compile(
-				"^" + clazz.getName() + "<(.*)>$"
-		);
+				"^" + clazz.getName() + "<(.*)>$");
+	}
+
+	public static String getClassName(Object target) {
+		return target.getClass().getName().split("\\$")[0];
+	}
+
+	public static String getSimpleClassName(Object target) {
+		return target.getClass().getSimpleName().split("\\$")[0];
 	}
 }

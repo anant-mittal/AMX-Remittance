@@ -90,14 +90,6 @@ public class JaxMetaServiceFilter implements IMetaRequestInFilter<JaxMetaInfo> {
 			}
 		}
 
-		if (metaData.getLanguageId() != null) {
-			ViewCompanyDetails company = companyService.getCompanyDetail(metaData.getLanguageId());
-			metaData.setCompanyId(company.getCompanyId());
-			BigDecimal defaultCurrencyId = currencyMasterService
-					.getCurrencyMasterByCountryId(company.getApplicationCountryId()).get(0).getCurrencyId();
-			metaData.setDefaultCurrencyId(defaultCurrencyId);
-		}
-
 		if (ArgUtil.isEmpty(metaData.getCountryId())) {
 			metaData.setCountryId(amxConfig.getDefaultCountryId());
 		}
@@ -112,6 +104,14 @@ public class JaxMetaServiceFilter implements IMetaRequestInFilter<JaxMetaInfo> {
 		}
 		if (ArgUtil.isEmpty(metaData.getCountryBranchId())) {
 			metaData.setCountryBranchId(amxConfig.getDefaultBranchId());
+		}
+		if (metaData.getLanguageId() != null) {
+			ViewCompanyDetails company = companyService.getCompanyDetail(metaData.getLanguageId());
+			metaData.setCompanyId(company.getCompanyId());
+			BigDecimal defaultCurrencyId = currencyMasterService
+					.getCurrencyMasterByCountryId(company.getApplicationCountryId()).get(0).getCurrencyId();
+			metaData.setDefaultCurrencyId(defaultCurrencyId);
+			metaData.setCountryId(company.getApplicationCountryId());
 		}
 
 	}

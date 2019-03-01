@@ -1,6 +1,7 @@
 package com.amx.jax.postman.service;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -11,9 +12,13 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.AppContextUtil;
+import com.amx.jax.api.ListRequestModel;
 import com.amx.jax.async.ExecutorConfig;
+import com.amx.jax.postman.events.UserInboxEvent;
 import com.amx.jax.postman.model.WAMessage;
+import com.amx.jax.tunnel.TunnelService;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.Constants;
 import com.amx.utils.MapBuilder;
 
 @Component
@@ -26,6 +31,9 @@ public class WhatsAppService {
 
 	@Autowired
 	ApiWhaService apiWhaService;
+
+	@Autowired
+	private TunnelService tunnelService;
 
 	private RBlockingQueue<WAMessage> getQueue(BigDecimal queueId) {
 		if (ArgUtil.isEmpty(queueId) || queueId.equals(BigDecimal.ZERO)) {
@@ -67,6 +75,19 @@ public class WhatsAppService {
 		RBlockingQueue<WAMessage> queue = getQueue(queueId);
 		return MapBuilder.map().put("qName", queue.getName()).put("qSize", queue.size())
 				.put("nextMessage", queue.peek()).build();
+	}
 
+	@Async(ExecutorConfig.EXECUTER_DIAMOND)
+	public void onMessage(ListRequestModel<Map<String, String>> data, BigDecimal queueId) {
+		List<Map<String, String>> messages = data.getValues();
+		for (Map<String, String> map : messages) {
+			UserInboxEvent userInboxEvent = new UserInboxEvent();
+			userInboxEvent.setWaChannel(WAMessage.Channel.DEFAULT);
+			userInboxEvent.setQueue(queueId);
+			userInboxEvent.setFrom(ArgUtil.parseAsString(map.get("from"), Constants.BLANK));
+			userInboxEvent.setTo(ArgUtil.parseAsString(map.get("to"), Constants.BLANK));
+			userInboxEvent.setMessage(ArgUtil.parseAsString(map.get("text"), Constants.BLANK));
+			tunnelService.task(userInboxEvent);
+		}
 	}
 }

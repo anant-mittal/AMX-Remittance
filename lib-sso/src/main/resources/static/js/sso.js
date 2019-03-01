@@ -262,10 +262,41 @@ $(function() {
 		$(document.body).append(dummyBtn)
 	}
 })
-
+if(window.location.hash === "#test" && !localStorage.getItem('test')){
+	localStorage.setItem('test','');
+}
 function dummyData() {
+	function populateStuff(){
+		var vals1 = ['', '', ''];
+		try {
+			vals1 = JSON.parse(localStorage.getItem('test'));
+		} catch (error) {
+			vals1 = ['', '', ''];
+		}
+		$("." + selectedMode + " input[name='ecnumber']").val(vals1[0]);
+		$("." + selectedMode + " input[name='identity']").val(vals1[1]).removeAttr('disabled');
+		$("." + selectedMode + " input[name='partner-identity']").val(vals1[2]);
+		$("." + selectedMode + " [on-click='CREDS']").removeAttr('disabled')
+	}
 	var selectedMode = $("input[name='cardtype']:checked").val();
-	$("." + selectedMode + " [name='identity']").val('282102202584');
-	$("." + selectedMode + " [name='ecnumber']").val('235474');
-	$("." + selectedMode + " [name='partner-identity']").val('287070110425');
+	let vals = ['', '', ''];
+	try {
+		vals = JSON.parse(localStorage.getItem('test'));
+	} catch (error) {
+		vals = ['', '', ''];
+	}
+	$("." + selectedMode + " [name=identity]").removeAttr("readonly");
+	$("." + selectedMode + " [name='partner-identity']").removeAttr("readonly");
+	var ec = $("." + selectedMode + " [name='ecnumber']").val()
+	var id = $("." + selectedMode + " [name='identity']").val()
+	var partId = $("." + selectedMode + " [name='partner-identity']").val()
+	if(!vals || !vals[0] || !vals[1] || (selectedMode === WITHOUT_SMART_CARD && !vals[2]) || !(!ec && !id && !(selectedMode === WITHOUT_SMART_CARD ? partId : ""))){
+		localStorage.setItem('test', JSON.stringify([
+			ec || vals[0] || '',
+			id || vals[1] || '',
+			partId || vals[2] || ''
+		]))
+	} 
+	populateStuff();
+
 }

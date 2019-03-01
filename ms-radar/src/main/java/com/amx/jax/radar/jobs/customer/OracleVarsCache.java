@@ -3,6 +3,7 @@ package com.amx.jax.radar.jobs.customer;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.cache.CacheBox;
+import com.amx.jax.radar.EsConfig;
 import com.amx.utils.ArgUtil;
 
 /**
@@ -15,9 +16,31 @@ public class OracleVarsCache extends CacheBox<String> {
 	private static final String ASC_SEPERATOR = "-";
 	private static final String DESC_SEPERATOR = "-desc-";
 
-	public static final String DOC_VERSION = "v3";
-	private static final String CUSTOMER_RESET_COUNTER = "14";
+	public static final String DOC_VERSION = "v4";
+	private static final String CUSTOMER_RESET_COUNTER = "15";
 	private static final String TRANSACTION_RESET_COUNTER = "14";
+
+	public static enum DBSyncJobs {
+		CUSTOMER("oracle-" + DOC_VERSION + "-customer-v5", 15),
+		TRANSACTION("oracle-" + DOC_VERSION + "-tranx-v5", 14),
+		XRATE("oracle-" + DOC_VERSION + "-xrate-v5", 15);
+
+		String indexName;
+		int resetCounter;
+
+		DBSyncJobs(String indexName, int resetCounter) {
+			this.indexName = indexName;
+			this.resetCounter = resetCounter;
+		}
+
+		public String getIndexName() {
+			return indexName;
+		}
+
+		public int getResetCounter() {
+			return resetCounter;
+		}
+	}
 
 	/**
 	 * Instantiates a new logged in users.
@@ -27,11 +50,15 @@ public class OracleVarsCache extends CacheBox<String> {
 	}
 
 	public String getTranxIndex() {
-		return "oracle-" + DOC_VERSION + "-tranx-v4";
+		return EsConfig.indexName("oracle-" + DOC_VERSION + "-tranx-v4");
 	}
 
 	public String getCustomerIndex() {
-		return "oracle-" + DOC_VERSION + "-customer-v4";
+		return EsConfig.indexName("oracle-" + DOC_VERSION + "-customer-v4");
+	}
+
+	public String getIndex(DBSyncJobs job) {
+		return EsConfig.indexName(job.getIndexName());
 	}
 
 	public Long getCustomerScannedStamp(boolean reverse) {
@@ -68,6 +95,32 @@ public class OracleVarsCache extends CacheBox<String> {
 			this.put(getTranxIndex() + ASC_SEPERATOR + TRANSACTION_RESET_COUNTER,
 					ArgUtil.parseAsString(tranxScannedStamp));
 		}
+	}
+
+	private String getStampStart(DBSyncJobs job) {
+		return this.get(getIndex(job) + ASC_SEPERATOR + job.getResetCounter());
+	}
+
+	private String getStampEnd(DBSyncJobs job) {
+		return this.get(getIndex(job) + DESC_SEPERATOR + job.getResetCounter());
+	}
+
+	public Long getStampStartTime(DBSyncJobs job) {
+		return ArgUtil.parseAsLong(getStampStart(job), START_TIME);
+	}
+
+	public Long getStampEndTime(DBSyncJobs job) {
+		return ArgUtil.parseAsLong(getStampEnd(job), System.currentTimeMillis());
+	}
+
+	public void setStampStart(DBSyncJobs job, Object jobScannedStamp) {
+		this.put(getIndex(job) + ASC_SEPERATOR + job.getResetCounter(),
+				ArgUtil.parseAsString(jobScannedStamp));
+	}
+
+	public void setStampEnd(DBSyncJobs job, Object jobScannedStamp) {
+		this.put(getIndex(job) + DESC_SEPERATOR + job.getResetCounter(),
+				ArgUtil.parseAsString(jobScannedStamp));
 	}
 
 }

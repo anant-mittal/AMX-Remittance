@@ -176,4 +176,18 @@ public class FxOrderDeliveryClient implements IFxOrderDelivery {
 		}
 	}
 
+	@Override
+	public AmxApiResponse<FxDeliveryDetailDto, Object> listHistoricalOrders() {
+		try {
+			LOGGER.debug("in listHistoricalOrders");
+			String url = appConfig.getJaxURL() + Path.FX_DELIVERY_HISTORICAL_LIST_ORDER;
+			return restService.ajax(url).meta(new JaxMetaInfo()).get()
+					.as(new ParameterizedTypeReference<AmxApiResponse<FxDeliveryDetailDto, Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in listHistoricalOrders : ", e);
+			return JaxSystemError.evaluate(e);
+		}
+	}
+
 }

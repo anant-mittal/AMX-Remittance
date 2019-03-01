@@ -12,5 +12,9 @@ public interface IBeneBankBlackCheckDao extends JpaRepository<BankBlWorld, Seria
 	
 	@Query(value="SELECT * FROM   BNKBLWORD WHERE  blword  like '%?1%'" ,nativeQuery=true)
 	public List<BankBlWorld> getCheckBankBanned(String inputString);
+	
+	
+	@Query(value="SELECT * FROM   BNKBLWORD WHERE  blword  like '%?1%' AND NVL(RECSTS,' ') <> 'D'" ,nativeQuery=true)
+	public List<BankBlWorld> getCheckBnakBeneBanned(String inputString);
 
 }

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.AmxConstants;
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.branch.common.OffsiteStatus.ApiOffisteStatus;
@@ -86,7 +87,8 @@ public class DeviceController {
 		DevicePairingCreds creds = DeviceRestModels.get();
 		creds.setDeviceRegToken(deviceDto.getPairToken());
 		creds.setDeviceRegId(ArgUtil.parseAsString(deviceDto.getRegistrationId()));
-		creds.setOtpTtl(AmxConstants.OTP_TTL);
+		creds.setOtpTtl(AmxConstants.OFFLINE_OTP_TTL);
+		creds.setRequestTtl(DeviceConstants.Config.REQUEST_TOKEN_VALIDITY);
 		creds.setDeviceSecret(deviceDto.getDeviceSecret());
 		return AmxApiResponse.build(creds);
 	}
@@ -143,11 +145,15 @@ public class DeviceController {
 	public AmxApiResponse<Object, Object> webAppLogin() {
 		DeviceData deviceData = deviceRequestValidator.validateRequest();
 		String terminalId = deviceData.getTerminalId();
+		LOGGER.debug("TerminalPairing R:{} T:{} Tx:{}", deviceRequestValidator.getDeviceRegId(),
+				terminalId, AppContextUtil.getTranxId());
 		sSOTranx.get().setBranchAdapterId(deviceRequestValidator.getDeviceRegId());
 		sSOTranx.get().getUserClient().setTerminalId(ArgUtil.parseAsBigDecimal(terminalId));
 		// sSOTranx.get().getUserClient().setDeviceRegId(deviceRequestValidator.getDeviceRegId());
 		// sSOTranx.get().getUserClient().setGlobalIpAddress(deviceData.getGlobalIp());
 		// sSOTranx.get().getUserClient().setLocalIpAddress(deviceData.getLocalIp());
+		LOGGER.debug("TerminalPairing R:{} T:{} Tx:{}", sSOTranx.get().getBranchAdapterId(),
+				sSOTranx.get().getUserClient().getTerminalId(), AppContextUtil.getTranxId());
 		sSOTranx.save();
 		return AmxApiResponse.build(terminalId, deviceRequestValidator.getDeviceRegId());
 	}

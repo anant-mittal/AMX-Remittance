@@ -1,7 +1,10 @@
 package com.amx.jax.device;
 
+import java.math.BigDecimal;
+
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -11,11 +14,14 @@ import com.amx.jax.branch.common.OffsiteStatus.OffsiteServerError;
 import com.amx.jax.device.DeviceRestModels.DevicePairingCreds;
 import com.amx.jax.device.DeviceRestModels.SessionPairingCreds;
 import com.amx.jax.http.CommonHttpRequest;
+import com.amx.jax.logger.LoggerService;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Random;
 
 @Component
 public class DeviceRequest {
+
+	private static final Logger LOGGER = LoggerService.getLogger(DeviceRequest.class);
 
 	@Autowired
 	CommonHttpRequest commonHttpRequest;
@@ -40,6 +46,10 @@ public class DeviceRequest {
 
 	public String getDeviceRequestToken() {
 		return commonHttpRequest.get(DeviceConstants.Keys.CLIENT_REQ_TOKEN_XKEY);
+	}
+
+	public long getDeviceRequestTime() {
+		return ArgUtil.parseAsLong(commonHttpRequest.get(DeviceConstants.Keys.DEVICE_REQ_TIME_XKEY), 0L);
 	}
 
 	public DeviceData getDeviceData() {
@@ -73,7 +83,10 @@ public class DeviceRequest {
 			throw new OffsiteServerError(OffsiteServerCodes.INVALID_CLIENT_SESSION, "Missing SessionPairingToken");
 		}
 
+		LOGGER.debug("validateSession for RID:{} C:{}", devicePairingCreds.getDeviceRegId(), DeviceData.class.getName());
+
 		DeviceData deviceData = deviceBox.get(devicePairingCreds.getDeviceRegId());
+
 		if (deviceData == null) {
 			throw new OffsiteServerError(OffsiteServerCodes.INVALID_CLIENT_SESSION, "Invalid Device");
 		}
@@ -90,7 +103,8 @@ public class DeviceRequest {
 		// Same logic on client side
 		if (!DeviceConstants.validateDeviceReqToken(deviceData.getDeviceReqKey(), getDeviceRegId(),
 				getDeviceRequestToken())) {
-			throw new OffsiteServerError(OffsiteServerCodes.INVALID_CLIENT_REQUEST);
+			throw new OffsiteServerError(OffsiteServerCodes.INVALID_CLIENT_REQUEST,
+					String.format("Time Difference %s", System.currentTimeMillis() - getDeviceRequestTime()));
 		}
 		return deviceData;
 	}
@@ -120,6 +134,7 @@ public class DeviceRequest {
 		deviceData.setUpdatestamp(System.currentTimeMillis());
 		deviceData.setLocalIp(commonHttpRequest.get(AppConstants.DEVICE_IP_LOCAL_XKEY));
 		deviceData.setGlobalIp(commonHttpRequest.getIPAddress());
+		LOGGER.debug("createSession RID:{} C:{}", deviceRegKey, DeviceData.class.getName());
 		deviceBox.put(deviceRegKey, deviceData);
 		response.setHeader(DeviceConstants.Keys.DEVICE_REQ_KEY_XKEY, deviceData.getDeviceReqKey());
 

@@ -295,4 +295,13 @@ public class BeneficiaryValidationService {
 		}
 	}
 
+	public BenificiaryListView validateBeneficiary(BigDecimal beneficiaryRelationshipSeqId) {
+		BenificiaryListView beneficiaryView = beneficiaryService.getBeneByIdNo(beneficiaryRelationshipSeqId);
+		if (beneficiaryView == null) {
+			throw new GlobalException(JaxError.DATA_NOT_FOUND,
+					"Beneficiary data not found for bene rel id: " + beneficiaryRelationshipSeqId);
+		}
+		return beneficiaryView;
+	}
+
 }

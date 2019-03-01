@@ -19,6 +19,7 @@ import com.amx.jax.scope.TenantContextHolder;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.ContextUtil;
 import com.amx.utils.JsonUtil;
+import com.amx.utils.StringUtils;
 import com.amx.utils.UniqueID;
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -137,6 +138,10 @@ public class AppContextUtil {
 
 	public static void setTranxId(String tranxId) {
 		ContextUtil.map().put(AppConstants.TRANX_ID_XKEY, tranxId);
+	}
+
+	public static void setFlowfix(String flowfix) {
+		ContextUtil.setFlowfix(flowfix);
 	}
 
 	public static void setTraceTime(long timestamp) {

@@ -19,7 +19,6 @@ import com.amx.amxlib.constant.JaxFieldEntity;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.GetJaxFieldRequest;
 import com.amx.amxlib.model.JaxConditionalFieldDto;
-import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxDynamicField;
@@ -28,6 +27,8 @@ import com.amx.jax.dbmodel.bene.BeneficaryAccount;
 import com.amx.jax.dbmodel.bene.BeneficaryMaster;
 import com.amx.jax.dbmodel.remittance.AdditionalDataDisplayView;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.model.request.remittance.RemittanceAdditionalBeneFieldModel;
+import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.repository.IAdditionalDataDisplayDao;
 import com.amx.jax.services.BankService;
 import com.amx.jax.services.BeneficiaryService;
@@ -48,7 +49,7 @@ public class RemittanceAdditionalFieldManager {
 
 	Logger logger = LoggerFactory.getLogger(getClass());
 
-	public void validateAdditionalFields(RemittanceTransactionRequestModel model,
+	public void validateAdditionalFields(RemittanceAdditionalBeneFieldModel model,
 			Map<String, Object> remitApplParametersMap) {
 		ApiResponse<JaxConditionalFieldDto> apiResponse = jaxFieldService
 				.getJaxFieldsForEntity(new GetJaxFieldRequest(JaxFieldEntity.REMITTANCE_ONLINE));
@@ -112,7 +113,7 @@ public class RemittanceAdditionalFieldManager {
 	}
 
 	private boolean isDynamicFieldRequired(JaxConditionalFieldDto jaxConditionalField,
-			RemittanceTransactionRequestModel model, Map<String, AdditionalDataDisplayView> flexFieldMap) {
+			RemittanceAdditionalBeneFieldModel model, Map<String, AdditionalDataDisplayView> flexFieldMap) {
 		JaxDynamicField jaxDynamicField = JaxDynamicField.valueOf(jaxConditionalField.getField().getName());
 		if (jaxDynamicField.getFlexField() != null && flexFieldMap.get(jaxDynamicField.getFlexField()) == null) {
 			return false;
@@ -140,7 +141,7 @@ public class RemittanceAdditionalFieldManager {
 		return false;
 	}
 
-	public void processAdditionalFields(RemittanceTransactionRequestModel model) {
+	public void processAdditionalFields(RemittanceAdditionalBeneFieldModel model) {
 		ApiResponse<JaxConditionalFieldDto> apiResponse = jaxFieldService
 				.getJaxFieldsForEntity(new GetJaxFieldRequest(JaxFieldEntity.REMITTANCE_ONLINE));
 		List<JaxConditionalFieldDto> allJaxConditionalFields = apiResponse.getResults();
