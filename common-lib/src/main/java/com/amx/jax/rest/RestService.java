@@ -176,6 +176,15 @@ public class RestService {
 			return this;
 		}
 
+		public Ajax path(String appContext, String path) {
+
+			String contextPath = appContext.startsWith("/") ? appContext : "/" + appContext;
+			String apiPath = path.startsWith("/") ? path : "/" + path;
+
+			builder.path(contextPath + apiPath);
+			return this;
+		}
+
 		public Ajax pathParam(String paramKey, Object paramValue) {
 			uriParams.put(paramKey, ArgUtil.parseAsString(paramValue));
 			return this;
@@ -383,8 +392,8 @@ public class RestService {
 
 	}
 
-	public static <T extends RequestMetaInfo> void exportMetaToStatic(
-			IMetaRequestOutFilter<T> restMetaFilter, HttpHeaders httpHeaders) {
+	public static <T extends RequestMetaInfo> void exportMetaToStatic(IMetaRequestOutFilter<T> restMetaFilter,
+			HttpHeaders httpHeaders) {
 		if (restMetaFilter != null) {
 			T meta = restMetaFilter.exportMeta();
 			httpHeaders.add(AppConstants.META_XKEY, JsonUtil.toJson(meta));
