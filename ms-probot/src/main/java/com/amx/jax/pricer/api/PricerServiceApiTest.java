@@ -247,8 +247,8 @@ public class PricerServiceApiTest implements ProbotExchangeRateService {
 		strBuilder.append(", ConvertedFCAmount");
 		strBuilder.append(", ConvertedLCAmount");
 		strBuilder.append(", TimeToExec");
-		//strBuilder.append(", TRATE_IDS");
-		//strBuilder.append(", RoutingHeaderIds");
+		// strBuilder.append(", TRATE_IDS");
+		// strBuilder.append(", RoutingHeaderIds");
 
 		long srNo = 0;
 
@@ -302,8 +302,8 @@ public class PricerServiceApiTest implements ProbotExchangeRateService {
 							strBuilder.append(", " + bankRate.getSellRateNet().getConvertedFCAmount());
 							strBuilder.append(", " + bankRate.getSellRateNet().getConvertedLCAmount());
 							strBuilder.append(", " + tte);
-							//strBuilder.append(", " + response.getInfo().get("TRATE_IDS"));
-							//strBuilder.append(", " + response.getInfo().get("RH_IDS"));
+							// strBuilder.append(", " + response.getInfo().get("TRATE_IDS"));
+							// strBuilder.append(", " + response.getInfo().get("RH_IDS"));
 
 						}
 
@@ -399,6 +399,18 @@ public class PricerServiceApiTest implements ProbotExchangeRateService {
 		return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/octet-stream"))
 				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + "Results.csv" + "\"").body(media);
 
+	}
+
+	@RequestMapping(value = ApiEndPoints.SERVICE_TEST, method = RequestMethod.GET)
+	public AmxApiResponse<Map<String, String>, Object> testService() {
+
+		Map<String, String> testResp = new HashMap<String, String>();
+
+		testResp.put("status", "OK");
+
+		AmxApiResponse<Map<String, String>, Object> amxApiResponse = AmxApiResponse.build(testResp);
+
+		return amxApiResponse;
 	}
 
 }
