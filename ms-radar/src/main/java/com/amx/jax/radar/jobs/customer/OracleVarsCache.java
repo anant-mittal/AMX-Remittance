@@ -22,7 +22,7 @@ public class OracleVarsCache extends CacheBox<String> {
 
 	public static enum DBSyncJobs {
 		CUSTOMER("oracle-" + DOC_VERSION + "-customer-v5", 15),
-		TRANSACTION("oracle-" + DOC_VERSION + "-tranx-v5", 14),
+		TRANSACTION("oracle-" + DOC_VERSION + "-tranx-v6", 15),
 		XRATE("oracle-" + DOC_VERSION + "-xrate-v5", 15);
 
 		String indexName;
