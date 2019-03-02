@@ -143,7 +143,7 @@ public class RemitBranchController {
 	}
 
 	@RequestMapping(value = "/api/remitt/customer_bank/name", method = { RequestMethod.GET })
-	public AmxApiResponse<String, Object> fetchCustomerBankNames(@RequestParam BigDecimal bankId) {
+	public AmxApiResponse<CustomerBankDetailsDto, Object>fetchCustomerBankNames(@RequestParam BigDecimal bankId) {
 		return branchRemittanceClient.fetchCustomerBankNames(bankId);
 	}
 
