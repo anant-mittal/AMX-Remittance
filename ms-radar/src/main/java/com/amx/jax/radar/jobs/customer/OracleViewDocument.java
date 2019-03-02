@@ -4,6 +4,7 @@ import java.util.Date;
 
 import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.dict.UserClient.UserDeviceClient;
+import com.amx.jax.grid.views.BeneViewRecord;
 import com.amx.jax.grid.views.BranchUserViewRecord;
 import com.amx.jax.grid.views.BranchViewRecord;
 import com.amx.jax.grid.views.CustomerDetailViewRecord;
@@ -20,6 +21,7 @@ public class OracleViewDocument extends AESDocument {
 	BranchViewRecord branch;
 	BranchUserViewRecord user;
 	UserDeviceClient client;
+	BeneViewRecord bene;
 
 	public OracleViewDocument(CustomerDetailViewRecord customer) {
 		super("customer");
@@ -92,6 +94,17 @@ public class OracleViewDocument extends AESDocument {
 
 		this.branch.setAreaName(this.trnx.getBranchAreaName());
 		this.trnx.setBranchAreaName(null);
+
+		// Bene Details
+		this.bene = new BeneViewRecord();
+		this.bene.setBranchId(this.trnx.getBeneBankBranchId());
+		this.trnx.setBeneBankBranchId(null);
+		this.bene.setBranchName(this.trnx.getBeneBankBranchName());
+		this.trnx.setBeneBankBranchName(null);
+		this.bene.setBankId(this.trnx.getBeneBankId());
+		this.trnx.setBeneBankId(null);
+		this.bene.setBankName(this.trnx.getBeneBankName());
+		this.trnx.setBeneBankName(null);
 
 		this.user = new BranchUserViewRecord();
 
