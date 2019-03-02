@@ -5,15 +5,6 @@ import java.math.BigDecimal;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.amxlib.meta.model.RemittancePageDto;
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
@@ -22,9 +13,11 @@ import com.amx.amxlib.model.BeneRelationsDescriptionDto;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.api.ListRequestModel;
+import com.amx.jax.branch.BranchMetaOutFilter;
 import com.amx.jax.client.BeneClient;
 import com.amx.jax.client.RemitClient;
 import com.amx.jax.client.remittance.RemittanceClient;
+import com.amx.jax.http.CommonHttpRequest.CommonMediaType;
 import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.model.request.device.SignaturePadRemittanceInfo;
 import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
@@ -50,8 +43,19 @@ import com.amx.jax.rbaac.IRbaacService;
 import com.amx.jax.sso.SSOUser;
 import com.amx.jax.swagger.IStatusCodeListPlugin.ApiStatusService;
 import com.amx.jax.terminal.TerminalService;
+import com.amx.jax.utils.PostManUtil;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -198,14 +202,19 @@ public class RemitBranchController {
 				ssoUser.getUserDetails().getEmployeeId(), signaturePadRemittanceInfo);
 	}
 
+	@Autowired
+	BranchMetaOutFilter branchMetaOutFilter;
+
 	@ApiOperation(value = "Returns transaction reciept:")
-	@RequestMapping(value = "/api/remitt/tranx/report.{ext}", method = { RequestMethod.GET })
-	public @ResponseBody String report(@RequestParam(required = false) BigDecimal collectionDocumentNo,
+	@RequestMapping(value = "/api/remitt/tranx/report", method = { RequestMethod.GET }, produces = {
+			CommonMediaType.APPLICATION_JSON_VALUE, CommonMediaType.APPLICATION_V0_JSON_VALUE,
+			CommonMediaType.APPLICATION_PDF_VALUE, CommonMediaType.TEXT_HTML_VALUE })
+	public ResponseEntity<byte[]> report(@RequestParam(required = false) BigDecimal collectionDocumentNo,
 			@RequestParam(required = false) BigDecimal documentNumber,
 			@RequestParam(required = false) BigDecimal documentFinanceYear,
 			@RequestParam(required = false) BigDecimal collectionDocumentFinYear,
 			@RequestParam(required = false) BigDecimal collectionDocumentCode,
-			@RequestParam(required = false) BigDecimal customerReference, @PathVariable("ext") String ext,
+			@RequestParam(required = false) BigDecimal customerReference, @RequestParam("ext") File.Type ext,
 			@RequestParam(required = false) Boolean duplicate) throws PostManException, IOException {
 
 		duplicate = ArgUtil.parseAsBoolean(duplicate, false);
@@ -221,23 +230,30 @@ public class RemitBranchController {
 		tranxDTO.setCustomerReference(customerReference);
 
 		RemittanceReceiptSubreport rspt = remitClient
-				.report(tranxDTO, !duplicate.booleanValue()).getResult();
+				.report(tranxDTO, !duplicate.booleanValue(), branchMetaOutFilter.exportMeta()).getResult();
 		AmxApiResponse<RemittanceReceiptSubreport, Object> wrapper = AmxApiResponse.buildData(rspt);
-		if ("pdf".equals(ext)) {
+		if (File.Type.PDF.equals(ext)) {
 			File file = postManService.processTemplate(
 					new File(duplicate ? TemplatesMX.REMIT_RECEIPT_COPY_JASPER : TemplatesMX.REMIT_RECEIPT_JASPER,
 							wrapper, File.Type.PDF))
 					.getResult();
-			file.create(response, false);
-			return null;
-		} else if ("html".equals(ext)) {
+			return PostManUtil.download(file);
+			// file.create(response, false);
+			// return null;
+		} else if (File.Type.HTML.equals(ext)) {
 			File file = postManService.processTemplate(
 					new File(duplicate ? TemplatesMX.REMIT_RECEIPT_COPY_JASPER : TemplatesMX.REMIT_RECEIPT_JASPER,
 							wrapper, null))
 					.getResult();
-			return file.getContent();
+			// return file.getContent();
+			return PostManUtil.download(file);
 		} else {
-			return JsonUtil.toJson(wrapper);
+			String json = JsonUtil.toJson(AmxApiResponse.build(wrapper));
+			return ResponseEntity.ok().contentLength(json.length())
+					.contentType(MediaType.valueOf(File.Type.JSON.getContentType())).body(json.getBytes());
 		}
+		// else {
+		// return JsonUtil.toJson(wrapper);
+		// }
 	}
 }
