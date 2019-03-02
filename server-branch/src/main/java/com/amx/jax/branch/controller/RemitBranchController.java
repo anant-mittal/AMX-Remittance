@@ -1,16 +1,23 @@
 package com.amx.jax.branch.controller;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.amxlib.meta.model.RemittancePageDto;
+import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
+import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.BeneRelationsDescriptionDto;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
@@ -35,14 +42,19 @@ import com.amx.jax.model.response.remittance.PaymentModeOfPaymentDto;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.model.response.remittance.RoutingResponseDto;
 import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeRateResponse;
+import com.amx.jax.postman.PostManException;
+import com.amx.jax.postman.PostManService;
+import com.amx.jax.postman.model.File;
+import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.rbaac.IRbaacService;
-import com.amx.jax.sso.SSOTranx;
 import com.amx.jax.sso.SSOUser;
 import com.amx.jax.swagger.IStatusCodeListPlugin.ApiStatusService;
 import com.amx.jax.terminal.TerminalService;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.JsonUtil;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 @RestController
 @Api(value = "Remit  APIs")
@@ -63,6 +75,12 @@ public class RemitBranchController {
 
 	@Autowired
 	private SSOUser ssoUser;
+
+	@Autowired
+	private PostManService postManService;
+
+	@Autowired
+	private HttpServletResponse response;
 
 	@RequestMapping(value = "/api/remitt/order/list", method = { RequestMethod.GET })
 	public AmxApiResponse<FcSaleOrderManagementDTO, Object> getOrderList() {
@@ -143,7 +161,7 @@ public class RemitBranchController {
 	}
 
 	@RequestMapping(value = "/api/remitt/customer_bank/name", method = { RequestMethod.GET })
-	public AmxApiResponse<CustomerBankDetailsDto, Object>fetchCustomerBankNames(@RequestParam BigDecimal bankId) {
+	public AmxApiResponse<CustomerBankDetailsDto, Object> fetchCustomerBankNames(@RequestParam BigDecimal bankId) {
 		return branchRemittanceClient.fetchCustomerBankNames(bankId);
 	}
 
@@ -178,5 +196,48 @@ public class RemitBranchController {
 			@RequestBody SignaturePadRemittanceInfo signaturePadRemittanceInfo) {
 		return terminalService.updateRemittanceState(ssoUser.getUserClient().getTerminalId().intValue(),
 				ssoUser.getUserDetails().getEmployeeId(), signaturePadRemittanceInfo);
+	}
+
+	@ApiOperation(value = "Returns transaction reciept:")
+	@RequestMapping(value = "/api/remitt/tranx/report.{ext}", method = { RequestMethod.GET })
+	public @ResponseBody String report(@RequestParam(required = false) BigDecimal collectionDocumentNo,
+			@RequestParam(required = false) BigDecimal documentNumber,
+			@RequestParam(required = false) BigDecimal documentFinanceYear,
+			@RequestParam(required = false) BigDecimal collectionDocumentFinYear,
+			@RequestParam(required = false) BigDecimal collectionDocumentCode,
+			@RequestParam(required = false) BigDecimal customerReference, @PathVariable("ext") String ext,
+			@RequestParam(required = false) Boolean duplicate) throws PostManException, IOException {
+
+		duplicate = ArgUtil.parseAsBoolean(duplicate, false);
+		// duplicate = (duplicate == null || duplicate.booleanValue() == false) ? false
+		// : true;
+
+		TransactionHistroyDTO tranxDTO = new TransactionHistroyDTO();
+		tranxDTO.setCollectionDocumentNo(collectionDocumentNo);
+		tranxDTO.setDocumentNumber(documentNumber);
+		tranxDTO.setDocumentFinanceYear(documentFinanceYear);
+		tranxDTO.setCollectionDocumentFinYear(collectionDocumentFinYear);
+		tranxDTO.setCollectionDocumentCode(collectionDocumentCode);
+		tranxDTO.setCustomerReference(customerReference);
+
+		RemittanceReceiptSubreport rspt = remitClient
+				.report(tranxDTO, !duplicate.booleanValue()).getResult();
+		AmxApiResponse<RemittanceReceiptSubreport, Object> wrapper = AmxApiResponse.buildData(rspt);
+		if ("pdf".equals(ext)) {
+			File file = postManService.processTemplate(
+					new File(duplicate ? TemplatesMX.REMIT_RECEIPT_COPY_JASPER : TemplatesMX.REMIT_RECEIPT_JASPER,
+							wrapper, File.Type.PDF))
+					.getResult();
+			file.create(response, false);
+			return null;
+		} else if ("html".equals(ext)) {
+			File file = postManService.processTemplate(
+					new File(duplicate ? TemplatesMX.REMIT_RECEIPT_COPY_JASPER : TemplatesMX.REMIT_RECEIPT_JASPER,
+							wrapper, null))
+					.getResult();
+			return file.getContent();
+		} else {
+			return JsonUtil.toJson(wrapper);
+		}
 	}
 }
