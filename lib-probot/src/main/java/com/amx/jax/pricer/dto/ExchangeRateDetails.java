@@ -65,7 +65,14 @@ public class ExchangeRateDetails implements Serializable, Comparable<ExchangeRat
 
 	@Override
 	public int compareTo(ExchangeRateDetails o) {
-		return this.sellRateNet.compareTo(o.sellRateNet);
+
+		if (null != this.sellRateNet && null != o.sellRateNet) {
+			return this.sellRateNet.compareTo(o.sellRateNet);
+		} else if (null != this.sellRateBase && null != o.sellRateBase) {
+			return this.sellRateBase.compareTo(o.sellRateBase);
+		}
+
+		return 1;
 	}
 
 }
