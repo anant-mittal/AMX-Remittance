@@ -62,7 +62,7 @@ public class PricerServiceClient implements ProbotExchangeRateService, ProbotDat
 				AppContextUtil.getTranxId(), AppContextUtil.getTraceId());
 
 		return restService.ajax(appConfig.getPricerURL())
-				.path(appConfig.getAppPrefix(), ApiEndPoints.FETCH_DISCOUNTED_RATES).post(pricingRequestDTO)
+				.path(ApiEndPoints.FETCH_DISCOUNTED_RATES).post(pricingRequestDTO)
 				.as(new ParameterizedTypeReference<AmxApiResponse<PricingResponseDTO, Object>>() {
 				});
 	}
@@ -74,7 +74,7 @@ public class PricerServiceClient implements ProbotExchangeRateService, ProbotDat
 				AppContextUtil.getTranxId(), AppContextUtil.getTraceId());
 
 		return restService.ajax(appConfig.getPricerURL())
-				.path(appConfig.getAppPrefix(), ApiEndPoints.GET_DISCOUNT_DETAILS).post(discountMgmtReqDTO)
+				.path(ApiEndPoints.GET_DISCOUNT_DETAILS).post(discountMgmtReqDTO)
 				.as(new ParameterizedTypeReference<AmxApiResponse<DiscountDetailsReqRespDTO, Object>>() {
 				});
 
@@ -87,7 +87,7 @@ public class PricerServiceClient implements ProbotExchangeRateService, ProbotDat
 				AppContextUtil.getTranxId(), AppContextUtil.getTraceId());
 
 		return restService.ajax(appConfig.getPricerURL())
-				.path(appConfig.getAppPrefix(), ApiEndPoints.GET_ROUTBANKS_AND_SEVICES)
+				.path(ApiEndPoints.GET_ROUTBANKS_AND_SEVICES)
 				.queryParam("countryId", countryId).queryParam("currencyId", currencyId).post()
 				.as(new ParameterizedTypeReference<AmxApiResponse<RoutBanksAndServiceRespDTO, Object>>() {
 				});
@@ -101,7 +101,7 @@ public class PricerServiceClient implements ProbotExchangeRateService, ProbotDat
 				AppContextUtil.getTranxId(), AppContextUtil.getTraceId());
 
 		return restService.ajax(appConfig.getPricerURL())
-				.path(appConfig.getAppPrefix(), ApiEndPoints.SAVE_DISCOUNT_DETAILS).post(discountMgmtReqDTO)
+				.path(ApiEndPoints.SAVE_DISCOUNT_DETAILS).post(discountMgmtReqDTO)
 				.as(new ParameterizedTypeReference<AmxApiResponse<DiscountDetailsReqRespDTO, Object>>() {
 				});
 	}
