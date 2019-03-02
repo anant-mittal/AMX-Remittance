@@ -33,8 +33,8 @@ public class PricerServiceClient implements ProbotExchangeRateService {
 		LOGGER.info("Pricing Request Called for : Customer Id: {}, transaction Id: {}, with TraceId: {}",
 				pricingRequestDTO.getCustomerId(), AppContextUtil.getTranxId(), AppContextUtil.getTraceId());
 
-		return restService.ajax(appConfig.getPricerURL())
-				.path(appConfig.getAppPrefix(), ApiEndPoints.FETCH_PRICE_CUSTOMER).post(pricingRequestDTO)
+		return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.FETCH_PRICE_CUSTOMER)
+				.post(pricingRequestDTO)
 				.as(new ParameterizedTypeReference<AmxApiResponse<PricingResponseDTO, Object>>() {
 				});
 
@@ -46,8 +46,7 @@ public class PricerServiceClient implements ProbotExchangeRateService {
 		LOGGER.info("Rate/Price Check Request Called for : transaction Id: {}, with TraceId: {}",
 				AppContextUtil.getTranxId(), AppContextUtil.getTraceId());
 
-		return restService.ajax(appConfig.getPricerURL()).path(appConfig.getAppPrefix(), ApiEndPoints.FETCH_BASE_PRICE)
-				.post(pricingRequestDTO)
+		return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.FETCH_BASE_PRICE).post(pricingRequestDTO)
 				.as(new ParameterizedTypeReference<AmxApiResponse<PricingResponseDTO, Object>>() {
 				});
 	}
