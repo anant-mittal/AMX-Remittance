@@ -176,15 +176,6 @@ public class RestService {
 			return this;
 		}
 
-		public Ajax path(String appContext, String path) {
-
-			String contextPath = appContext.startsWith("/") ? appContext : "/" + appContext;
-			String apiPath = path.startsWith("/") ? path : "/" + path;
-
-			builder.path(contextPath + apiPath);
-			return this;
-		}
-
 		public Ajax pathParam(String paramKey, Object paramValue) {
 			uriParams.put(paramKey, ArgUtil.parseAsString(paramValue));
 			return this;
