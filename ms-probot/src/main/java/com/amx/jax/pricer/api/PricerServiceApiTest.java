@@ -31,12 +31,18 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.dict.UserClient.Channel;
-import com.amx.jax.pricer.ProbotExchangeRateService;
 import com.amx.jax.pricer.PricerServiceClient;
+import com.amx.jax.pricer.ProbotDataService;
+import com.amx.jax.pricer.ProbotExchangeRateService;
 import com.amx.jax.pricer.dto.BankDetailsDTO;
+import com.amx.jax.pricer.dto.DiscountDetailsReqRespDTO;
+import com.amx.jax.pricer.dto.DiscountMgmtReqDTO;
+import com.amx.jax.pricer.dto.DprRequestDto;
 import com.amx.jax.pricer.dto.ExchangeRateDetails;
+import com.amx.jax.pricer.dto.HolidayResponseDTO;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.dto.PricingResponseDTO;
+import com.amx.jax.pricer.dto.RoutBanksAndServiceRespDTO;
 import com.amx.jax.pricer.exception.PricerServiceException;
 import com.amx.jax.pricer.service.PricerTestService;
 import com.amx.jax.pricer.var.PricerServiceConstants;
@@ -74,8 +80,7 @@ public class PricerServiceApiTest implements ProbotExchangeRateService, ProbotDa
 
 	@Override
 	@RequestMapping(value = ApiEndPoints.FETCH_DISCOUNTED_RATES, method = RequestMethod.POST)
-	public AmxApiResponse<PricingResponseDTO, Object> fetchDiscountedRates(
-			PricingRequestDTO pricingRequestDTO) {
+	public AmxApiResponse<PricingResponseDTO, Object> fetchDiscountedRates(PricingRequestDTO pricingRequestDTO) {
 		return pricerServiceClient.fetchDiscountedRates(pricingRequestDTO);
 	}
 
@@ -429,7 +434,6 @@ public class PricerServiceApiTest implements ProbotExchangeRateService, ProbotDa
 				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + "Results.csv" + "\"").body(media);
 
 	}
-	
 
 	@Override
 	public AmxApiResponse<RoutBanksAndServiceRespDTO, Object> getRbanksAndServices(BigDecimal countryId,
@@ -452,5 +456,16 @@ public class PricerServiceApiTest implements ProbotExchangeRateService, ProbotDa
 		return null;
 	}
 
-	
+	@RequestMapping(value = ApiEndPoints.SERVICE_TEST, method = RequestMethod.GET)
+	public AmxApiResponse<Map<String, String>, Object> testService() {
+
+		Map<String, String> testResp = new HashMap<String, String>();
+
+		testResp.put("status", "OK");
+
+		AmxApiResponse<Map<String, String>, Object> amxApiResponse = AmxApiResponse.build(testResp);
+
+		return amxApiResponse;
+	}
+
 }
