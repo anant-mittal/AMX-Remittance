@@ -4,7 +4,9 @@ public interface AbstractProbotInterface {
 	public static class ApiEndPoints {
 
 		/** The Constant SERVICE_PREFIX. */
-		private static final String SERVICE_PREFIX = "/probot";
+		// private static final String SERVICE_PREFIX = "/probot";
+
+		private static final String SERVICE_PREFIX = "";
 
 		/** The Constant API_VERSION_V1. */
 		private static final String API_VERSION_V1 = "/v1";
@@ -33,6 +35,7 @@ public interface AbstractProbotInterface {
 		public static final String GET_ROUTBANKS_AND_SEVICES = SERVICE_PREFIX + API_VERSION_V1 + "/get-routbanks-and-services";
 		
 		public static final String SAVE_DISCOUNT_DETAILS = SERVICE_PREFIX + API_VERSION_V1 + "/save-discount-details";
+		public static final String SERVICE_TEST = SERVICE_PREFIX + API_VERSION_V1 + "/service-test";
 
 	}
 }
