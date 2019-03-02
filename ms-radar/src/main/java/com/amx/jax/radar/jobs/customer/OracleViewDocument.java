@@ -2,6 +2,10 @@ package com.amx.jax.radar.jobs.customer;
 
 import java.util.Date;
 
+import com.amx.jax.dict.UserClient.ClientType;
+import com.amx.jax.dict.UserClient.UserDeviceClient;
+import com.amx.jax.grid.views.BranchUserViewRecord;
+import com.amx.jax.grid.views.BranchViewRecord;
 import com.amx.jax.grid.views.CustomerDetailViewRecord;
 import com.amx.jax.grid.views.TranxViewRecord;
 import com.amx.jax.radar.AESDocument;
@@ -13,6 +17,9 @@ public class OracleViewDocument extends AESDocument {
 	CustomerDetailViewRecord customer;
 	TranxViewRecord trnx;
 	AmxCurRate xrate;
+	BranchViewRecord branch;
+	BranchUserViewRecord user;
+	UserDeviceClient client;
 
 	public OracleViewDocument(CustomerDetailViewRecord customer) {
 		super("customer");
@@ -24,7 +31,7 @@ public class OracleViewDocument extends AESDocument {
 	public OracleViewDocument(TranxViewRecord trnx) {
 		super("trnx");
 		this.trnx = trnx;
-		this.id = "appxn-" + ArgUtil.parseAsBigDecimal(trnx.getId());
+		this.id = "trnx-" + ArgUtil.parseAsBigDecimal(trnx.getId());
 		this.timestamp = ArgUtil.parseAsSimpleDate(trnx.getLastUpdateDate());
 		this.normalizeTrnx();
 	}
@@ -71,6 +78,39 @@ public class OracleViewDocument extends AESDocument {
 
 		this.customer.setNationality(this.trnx.getCustmerNation());
 		this.trnx.setCustmerNation(null);
+
+		this.branch = new BranchViewRecord();
+
+		this.branch.setId(this.trnx.getCountryBranchId());
+		this.trnx.setCountryBranchId(null);
+
+		this.branch.setName(this.trnx.getCountryBranchName());
+		this.trnx.setCountryBranchName(null);
+
+		this.branch.setAreaId(this.trnx.getBranchAreaId());
+		this.trnx.setBranchAreaId(null);
+
+		this.branch.setAreaName(this.trnx.getBranchAreaName());
+		this.trnx.setBranchAreaName(null);
+
+		this.user = new BranchUserViewRecord();
+
+		this.user.setName(this.trnx.getBranchUser());
+		this.trnx.setBranchUser(null);
+
+		// Client Info
+		this.client = new UserDeviceClient();
+		this.client.setIp(this.trnx.getClientIp());
+		this.trnx.setClientIp(null);
+
+		this.client.setFingerprint(this.trnx.getClientId());
+		this.trnx.setClientId(null);
+
+		Object clientType = ArgUtil.parseAsEnum(this.trnx.getClientType(), ClientType.UNKNOWN);
+		if (!ArgUtil.isEmpty(clientType)) {
+			this.client.setClientType((ClientType) clientType);
+			this.trnx.setClientType(null);
+		}
 
 	}
 

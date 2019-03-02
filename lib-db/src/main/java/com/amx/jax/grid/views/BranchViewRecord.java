@@ -1,0 +1,65 @@
+package com.amx.jax.grid.views;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+
+import javax.persistence.Column;
+import javax.persistence.Id;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+//@Entity
+//@Table(name = "VW_KIBANA_BRANCH")
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class BranchViewRecord implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+
+	@Id
+	@Column(name = "COUNTRY_BRANCH_ID")
+	private BigDecimal id;
+
+	@Column(name = "COUNTRY_BRANCH_NAME")
+	private String name;
+
+	@Column(name = "BRANCH_AREA_ID")
+	private String areaId;
+
+	@Column(name = "BRANCH_AREA_NAME")
+	private String areaName;
+
+	public BigDecimal getId() {
+		return id;
+	}
+
+	public void setId(BigDecimal id) {
+		this.id = id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getAreaId() {
+		return areaId;
+	}
+
+	public void setAreaId(String areaId) {
+		this.areaId = areaId;
+	}
+
+	public String getAreaName() {
+		return areaName;
+	}
+
+	public void setAreaName(String areaName) {
+		this.areaName = areaName;
+	}
+
+}

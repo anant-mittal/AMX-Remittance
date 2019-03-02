@@ -13,9 +13,6 @@ import com.amx.jax.grid.GridViewRecord;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-/*
- * Author Rahamathali Shaik
-*/
 @Entity
 @Table(name = "VW_CUSTOMER_KIBANA")
 @JsonInclude(JsonInclude.Include.NON_EMPTY)

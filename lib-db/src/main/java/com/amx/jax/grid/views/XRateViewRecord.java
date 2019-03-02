@@ -15,9 +15,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-/*
- * Author Rahamathali Shaik
-*/
 @Entity
 @Table(name = "EX_V_RATE_PATTERN")
 @Embeddable
