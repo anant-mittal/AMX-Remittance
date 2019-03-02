@@ -151,4 +151,36 @@ public class OracleViewDocument extends AESDocument {
 		this.id = id;
 		return this;
 	}
+
+	public BranchViewRecord getBranch() {
+		return branch;
+	}
+
+	public void setBranch(BranchViewRecord branch) {
+		this.branch = branch;
+	}
+
+	public BranchUserViewRecord getUser() {
+		return user;
+	}
+
+	public void setUser(BranchUserViewRecord user) {
+		this.user = user;
+	}
+
+	public UserDeviceClient getClient() {
+		return client;
+	}
+
+	public void setClient(UserDeviceClient client) {
+		this.client = client;
+	}
+
+	public BeneViewRecord getBene() {
+		return bene;
+	}
+
+	public void setBene(BeneViewRecord bene) {
+		this.bene = bene;
+	}
 }
