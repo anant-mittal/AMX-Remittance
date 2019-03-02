@@ -287,8 +287,8 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 			if(lstCustLocalBanksDto != null && lstCustLocalBanksDto.size() != 0) {
 				for (LocalBankDetailsDto localBankDetailsDto : lstCustLocalBanksDto) {
 					CustomerBankDetailsDto customerBankDetailsDto = new CustomerBankDetailsDto();
-					customerBankDetailsDto.setLocalBankDetailsDto(localBankDetailsDto);
 					customerBankDetailsDto = fetchCustomerNames(customerId, localBankDetailsDto.getChequeBankId());
+					customerBankDetailsDto.setLocalBankDetailsDto(localBankDetailsDto);
 					
 					/*List<Object[]> custBankName = fetchCustomerNames(customerId, localBankDetailsDto.getChequeBankId());
 					if (custBankName != null && custBankName.size() != 0) {
@@ -311,6 +311,7 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 					*/
 					
 					//customerBankDetailsDto.setCustomerNames(new ArrayList(custBankName.get(0).));
+					
 					lstCustBanksDto.add(customerBankDetailsDto);
 				}
 			}

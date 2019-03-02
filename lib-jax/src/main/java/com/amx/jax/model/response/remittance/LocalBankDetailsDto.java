@@ -15,7 +15,7 @@ public class LocalBankDetailsDto {
 	private String checkGlNumber;
 	private String knetGlNo;
 	private BigDecimal debitCardLength;
-	private BigDecimal relationId;
+
 	
 	public BigDecimal getRowId() {
 		return rowId;
