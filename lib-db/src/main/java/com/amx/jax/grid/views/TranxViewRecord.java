@@ -147,7 +147,7 @@ public class TranxViewRecord implements Serializable {
 
 	// Revenue
 	@Column(name = "TRNX_ACCOUNT_MMYYYY")
-	private BigDecimal trnxAccountMonth;
+	private String trnxAccountMonth;
 
 	@Column(name = "EXCHANGE_GAIN")
 	private BigDecimal exchangeGain;
@@ -579,11 +579,11 @@ public class TranxViewRecord implements Serializable {
 		this.serviceType = serviceType;
 	}
 
-	public BigDecimal getTrnxAccountMonth() {
+	public String getTrnxAccountMonth() {
 		return trnxAccountMonth;
 	}
 
-	public void setTrnxAccountMonth(BigDecimal trnxAccountMonth) {
+	public void setTrnxAccountMonth(String trnxAccountMonth) {
 		this.trnxAccountMonth = trnxAccountMonth;
 	}
 
