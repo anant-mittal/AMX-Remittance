@@ -18,7 +18,7 @@ public class OracleVarsCache extends CacheBox<String> {
 
 	public static final String DOC_VERSION = "v4";
 	private static final String CUSTOMER_RESET_COUNTER = "15";
-	private static final String TRANSACTION_RESET_COUNTER = "14";
+	private static final String TRANSACTION_RESET_COUNTER = "15";
 
 	public static enum DBSyncJobs {
 		CUSTOMER("oracle-" + DOC_VERSION + "-customer-v5", 15),

@@ -105,6 +105,8 @@ public class OracleViewDocument extends AESDocument {
 		this.trnx.setBeneBankId(null);
 		this.bene.setBankName(this.trnx.getBeneBankName());
 		this.trnx.setBeneBankName(null);
+		this.bene.setCountryCode(this.trnx.getBeneCountryCode());
+		this.trnx.setBeneCountryCode(null);
 
 		this.user = new BranchUserViewRecord();
 
