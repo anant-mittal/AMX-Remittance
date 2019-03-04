@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring4.SpringTemplateEngine;
 
-import com.amx.jax.client.snap.SnapQueryTemplate;
+import com.amx.jax.client.snap.SnapConstants.SnapQueryTemplate;
 import com.amx.jax.client.snap.SnapModels.SnapModelWrapper;
 import com.amx.jax.client.snap.SnapQueryException;
 import com.amx.jax.radar.EsConfig;

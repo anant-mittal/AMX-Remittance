@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.amx.jax.client.snap.SnapQueryTemplate;
+import com.amx.jax.client.snap.SnapConstants.SnapQueryTemplate;
 import com.amx.jax.client.snap.SnapModels.SnapModelWrapper;
 import com.amx.jax.rest.RestService;
 
