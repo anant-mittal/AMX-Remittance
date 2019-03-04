@@ -418,7 +418,7 @@ public class BranchRemittanceApplManager {
 			remittanceApplication.setLoyaltyPointsEncashed(BigDecimal.ZERO); 
 			
 			BigDecimal loyalityPointsEncashed = BigDecimal.ZERO;
-			if(applRequestModel.isAvailLoyalityPoints()) {
+			if(applRequestModel.isAvailLoyalityPoints() && JaxUtil.isNullZeroBigDecimalCheck(customer.getLoyaltyPoints()) && customer.getLoyaltyPoints().compareTo(new BigDecimal(1000))>=0) {
 				remittanceApplication.setLoyaltyPointInd(ConstantDocument.Yes);
 				loyalityPointsEncashed = loyalityPointService.getVwLoyalityEncash().getEquivalentAmount();
 				
@@ -428,10 +428,6 @@ public class BranchRemittanceApplManager {
 			remittanceApplication.setLoyaltyPointsEncashed(loyalityPointsEncashed); 
 			
 		
-			
-			//remittanceApplication.setLoyaltyPointInd(applRequestModel.isAvailLoyalityPoints()==true?ConstantDocument.Yes:ConstantDocument.No);
-			
-			
 			remittanceApplication.setDocumentFinancialyear(userFinancialYear.getFinancialYear());
 			remittanceApplication.setSelectedCurrencyId(selectedCurrencyId);
 
