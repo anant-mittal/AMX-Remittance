@@ -41,7 +41,8 @@ public class JaxDynamicPriceService {
 	ExchangeRateService exchangeRateService;
 
 	public ExchangeRateResponseModel getExchangeRatesWithDiscount(BigDecimal fromCurrency, BigDecimal toCurrency,
-			BigDecimal lcAmount, BigDecimal foreignAmount, BigDecimal countryId, BigDecimal routingBankId) {
+			BigDecimal lcAmount, BigDecimal foreignAmount, BigDecimal countryId, BigDecimal routingBankId,
+			BigDecimal serviceIndicatorId) {
 		PricingRequestDTO pricingRequestDTO = createPricingRequest(fromCurrency, toCurrency, lcAmount, foreignAmount,
 				countryId, routingBankId);
 		AmxApiResponse<PricingResponseDTO, Object> apiResponse = null;
@@ -50,15 +51,16 @@ public class JaxDynamicPriceService {
 			apiResponse = pricerServiceClient.fetchPriceForCustomer(pricingRequestDTO);
 		} catch (Exception e) {
 			LOGGER.debug("No exchange data found from pricer, error is: ", e);
-			throw new GlobalException(JaxError.EXCHANGE_RATE_NOT_FOUND, "No exchange data found"+e.getMessage());
+			throw new GlobalException(JaxError.EXCHANGE_RATE_NOT_FOUND, "No exchange data found" + e.getMessage());
 		}
 		ExchangeRateResponseModel exchangeRateResponseModel = createExchangeRateResponseModel(apiResponse, lcAmount,
-				foreignAmount);
+				foreignAmount, serviceIndicatorId);
 		return exchangeRateResponseModel;
 	}
 
 	public ExchangeRateResponseModel getBaseExchangeRates(BigDecimal fromCurrency, BigDecimal toCurrency,
-			BigDecimal lcAmount, BigDecimal foreignAmount, BigDecimal countryId, BigDecimal routingBankId) {
+			BigDecimal lcAmount, BigDecimal foreignAmount, BigDecimal countryId, BigDecimal routingBankId,
+			BigDecimal serviceIndicatorId) {
 		PricingRequestDTO pricingRequestDTO = createPricingRequest(fromCurrency, toCurrency, lcAmount, foreignAmount,
 				countryId, routingBankId);
 		AmxApiResponse<PricingResponseDTO, Object> apiResponse = null;
@@ -69,12 +71,13 @@ public class JaxDynamicPriceService {
 			throw new GlobalException(JaxError.EXCHANGE_RATE_NOT_FOUND, "No exchange data found");
 		}
 		ExchangeRateResponseModel exchangeRateResponseModel = createExchangeRateResponseModel(apiResponse, lcAmount,
-				foreignAmount);
+				foreignAmount, serviceIndicatorId);
 		return exchangeRateResponseModel;
 	}
 
 	private ExchangeRateResponseModel createExchangeRateResponseModel(
-			AmxApiResponse<PricingResponseDTO, Object> apiResponse, BigDecimal lcAmount, BigDecimal foreignAmount) {
+			AmxApiResponse<PricingResponseDTO, Object> apiResponse, BigDecimal lcAmount, BigDecimal foreignAmount,
+			BigDecimal serviceIndicatorId) {
 		ExchangeRateResponseModel exchangeRateResponseModel = new ExchangeRateResponseModel();
 		List<BankMasterDTO> bankWiseRates = new ArrayList<>();
 		List<ExchangeRateDetails> sellRateDetails = apiResponse.getResult().getSellRateDetails();

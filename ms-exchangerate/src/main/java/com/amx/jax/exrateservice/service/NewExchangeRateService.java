@@ -52,7 +52,7 @@ public class NewExchangeRateService extends ExchangeRateService {
 		ApiResponse<ExchangeRateResponseModel> response = getBlackApiResponse();
 		if (jaxTenantProperties.getIsDynamicPricingEnabled() && beneBankCountryId != null) {
 			outputModel = jaxDynamicPriceService.getExchangeRatesWithDiscount(fromCurrency, toCurrency, lcAmount, null,
-					beneBankCountryId, routingBankId);
+					beneBankCountryId, routingBankId, null);
 			response.getData().getValues().add(outputModel);
 			response.getData().setType(outputModel.getModelType());
 			return response;
@@ -136,7 +136,7 @@ public class NewExchangeRateService extends ExchangeRateService {
 	public ExchangeRateBreakup getExchangeRateBreakUpUsingDynamicPricing(BigDecimal toCurrency, BigDecimal lcAmount,
 			BigDecimal fcAmount, BigDecimal countryId, BigDecimal routingBankId) {
 		ExchangeRateResponseModel exchangeRateResponseModel = jaxDynamicPriceService.getExchangeRatesWithDiscount(
-				meta.getDefaultCurrencyId(), toCurrency, lcAmount, fcAmount, countryId, routingBankId);
+				meta.getDefaultCurrencyId(), toCurrency, lcAmount, fcAmount, countryId, routingBankId, null);
 		return exchangeRateResponseModel.getExRateBreakup();
 	}
 

@@ -76,7 +76,7 @@ public class ExchangeRateDao {
 	public List<ExchangeRateAPRDET> getUniqueSellRatesForRoutingBanks(BigDecimal currencyId, BigDecimal countryId,
 			BigDecimal applicationCountryId, List<BigDecimal> routingBankIds, List<BigDecimal> serviceIds) {
 
-		return repo.getSellRatesForRoutingBanks(currencyId, countryId, applicationCountryId, routingBankIds,
+		return repo.getSellRatesForRoutingBanks(currencyId, applicationCountryId, routingBankIds,
 				serviceIds);
 	}
 	
