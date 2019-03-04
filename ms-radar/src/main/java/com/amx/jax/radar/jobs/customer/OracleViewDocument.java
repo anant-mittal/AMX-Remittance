@@ -1,5 +1,6 @@
 package com.amx.jax.radar.jobs.customer;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import com.amx.jax.dict.UserClient.ClientType;
@@ -42,8 +43,12 @@ public class OracleViewDocument extends AESDocument {
 		super("xrate");
 		this.xrate = xrate;
 		this.timestamp = ArgUtil.parseAsSimpleDate(xrate.getTimestamp());
-		this.id = ("xrate-" + "-" + xrate.getrSrc() + "-" + xrate.getrForCur() + "-"
+		this.id = ("xrate-" + xrate.getrSrc() + "-" + xrate.getrType().getCode() + "-" + xrate.getrForCur() + "-"
 				+ this.getTimestamp().getTime() / TIME_GAP_FIX).toLowerCase();
+		if (!(!ArgUtil.isEmpty(xrate) && !ArgUtil.isEmpty(xrate.getrRate())
+				&& xrate.getrRate().compareTo(BigDecimal.ZERO) > 0)) {
+			this.empty = true;
+		}
 
 	}
 

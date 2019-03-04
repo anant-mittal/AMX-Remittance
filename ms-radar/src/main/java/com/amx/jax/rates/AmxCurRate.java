@@ -3,11 +3,9 @@ package com.amx.jax.rates;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import com.amx.jax.AppContextUtil;
 import com.amx.jax.client.snap.ISnapService.RateSource;
 import com.amx.jax.client.snap.ISnapService.RateType;
 import com.amx.jax.dict.Currency;
-import com.amx.jax.radar.AESDocument;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -97,24 +95,23 @@ public class AmxCurRate {
 	}
 
 	public AmxCurRate clone() {
-		AmxCurRate rate = new AmxCurRate();
-		rate.setrSrc(rSrc);
-		rate.setrDomCur(rDomCur);
-		rate.setrForCur(rForCur);
-		return rate;
+		AmxCurRate newRate = new AmxCurRate();
+		newRate.setrSrc(rSrc);
+		newRate.setrDomCur(rDomCur);
+		newRate.setrForCur(rForCur);
+		return newRate;
 	}
 
-	public AmxCurRate clone(RateType rType) {
-		AmxCurRate rate = this.clone();
-		rate.setrType(rType);
-		return rate;
+	public AmxCurRate clone(RateType type) {
+		AmxCurRate newRate = this.clone();
+		newRate.setrType(type);
+		return newRate;
 	}
 
-	public AmxCurRate clone(RateType rType, BigDecimal rRate) {
-		AmxCurRate rate = this.clone();
-		rate.setrType(rType);
-		rate.setrRate(rRate);
-		return rate;
+	public AmxCurRate clone(RateType type, BigDecimal rateValue) {
+		AmxCurRate newRate = this.clone(type);
+		newRate.setrRate(rateValue);
+		return newRate;
 	}
 
 	public Date getTimestamp() {

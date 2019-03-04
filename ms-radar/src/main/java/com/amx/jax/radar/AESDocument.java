@@ -23,9 +23,13 @@ public class AESDocument {
 	@JsonIgnore
 	protected String type;
 
+	@JsonIgnore
+	protected boolean empty;
+
 	public AESDocument() {
 		this.timestamp = new Date(System.currentTimeMillis());
 		this.tnt = AppContextUtil.getTenant();
+		this.empty = false;
 	}
 
 	public AESDocument(String type) {
@@ -69,5 +73,13 @@ public class AESDocument {
 
 	public void setType(String type) {
 		this.type = type;
+	}
+
+	public boolean isEmpty() {
+		return empty;
+	}
+
+	public void setEmpty(boolean empty) {
+		this.empty = empty;
 	}
 }

@@ -55,12 +55,12 @@ public class AmanKuwaitJob extends ARadarTask {
 	@Autowired
 	private MCQLocker mcq;
 
-	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_MIN_30)
+	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_SEC * 10)
 	public void lockedTask() {
-		if (mcq.lead(LOCK)) {
-			doTask();
-			mcq.resign(LOCK);
-		}
+		// if (mcq.lead(LOCK)) {
+		doTask();
+		mcq.resign(LOCK);
+		// }
 	}
 
 	public void doTask() {
