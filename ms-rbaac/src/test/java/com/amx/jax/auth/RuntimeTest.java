@@ -2,6 +2,7 @@ package com.amx.jax.auth;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -21,6 +22,7 @@ import java.util.TreeMap;
 import com.amx.utils.CryptoUtil;
 import com.amx.utils.DateUtil;
 import com.amx.utils.JsonUtil;
+import com.amx.utils.RoundUtil;
 
 public final class RuntimeTest {
 
@@ -54,7 +56,11 @@ public final class RuntimeTest {
 		ZonedDateTime zdt = ZonedDateTime.ofInstant(Instant.now(), zoneId);
 		
 		
+		BigDecimal bd = new BigDecimal("0.00000000093933");
 		
+		//BigDecimal bd = new BigDecimal("9.3933000000E-10");
+		
+		System.out.println("\n\n Big Decimal ==>" +  bd.toPlainString()+" : "+ RoundUtil.round(bd.doubleValue(), 20) + "\n\n");
 		
 		System.out.println(" Local Date 1 ==> " + ldt.toString());
 		
