@@ -373,17 +373,6 @@ public class BranchRemittanceSaveManager {
 				collectDetails.setChequeBankRef(collectDataTable.getChequeBankCode());
 			}
 			
-			/*
-			if(payMode.getPaymentModeCode().equalsIgnoreCase(ConstantDocument.VOUCHER)) {
-				collectDetails.setVoucherYear(collect.getDocumentFinanceYear());
-				BigDecimal documentNo = generateDocumentNumber(collect.getApplicationCountryId(),collect.getFsCompanyMaster().getCompanyId(),ConstantDocument.VOUCHER_DOCUMENT_CODE,collect.getDocumentFinanceYear(),collect.getLocCode());
-				if(documentNo!=null && documentNo.compareTo(BigDecimal.ZERO)!=0){
-					collectDetails.setVoucherNo(documentNo);
-			    }else{
-			    	throw new GlobalException(JaxError.INVALID_VOUCHER_DOCUMENT_NO, "Document Seriality  setup  not  defined for Voucher ");
-			    }
-				
-			}*/
 		collectionDetailModelList.add(collectDetails);
 		}
 		//For Loyalty  Claim
@@ -462,56 +451,7 @@ public class BranchRemittanceSaveManager {
 	
 	
 	
-	/*public CollectDetailModel checkVoucher(CollectionModel collect,BigDecimal vouchAmount) {
-		CollectDetailModel collectDetails = new CollectDetailModel();
-		
-		//RemittanceApplication appl = remittanceApplicationRepository.findOne(applDto.getApplicationId());
-		
-		
-		collectDetails.setCashCollectionId(collect);
-		Customer customer = new Customer();
-		customer.setCustomerId(collect.getFsCustomer().getCustomerId());
-		collectDetails.setFsCustomer(customer);
-		
-		CountryMaster appcountrymaster = new CountryMaster();
-		appcountrymaster.setCountryId(collect.getApplicationCountryId());
-		collectDetails.setFsCountryMaster(appcountrymaster);
-		collectDetails.setLocCode(collect.getLocCode());
-		collectDetails.setCompanyCode(collect.getCompanyCode());
-		collectDetails.setDocumentFinanceYear(collect.getDocumentFinanceYear());
-		
-		collectDetails.setDocumentId(collect.getDocumentId());
-		collectDetails.setDocumentNo(collect.getDocumentNo());
-		collectDetails.setFsCompanyMaster(collect.getFsCompanyMaster());
-		collectDetails.setIsActive(ConstantDocument.Yes);
-		collectDetails.setAcyymm(collect.getAccountMMYYYY());
-		collectDetails.setCreatedBy(collect.getCreatedBy());
-		collectDetails.setCreatedDate(new Date());
-		
-		
-		collectDetails.setDocumentCode(collect.getDocumentCode());
-		collectDetails.setExBankBranch(collect.getExBankBranch());
-		collectDetails.setDocumentDate(new Date());
-		collectDetails.setDocumentLineNo(new BigDecimal(i++));
-		collectDetails.setExCurrencyMaster(collect.getExCurrencyMaster());
-		collectDetails.setCollAmt(vouchAmount);
-		PaymentModeModel payMode = paymentModeRepository.getPaymentModeDetails(ConstantDocument.VOCHERCODE);
-		collectDetails.setCollectionMode(payMode.getPaymentModeCode());
-		collectDetails.setPaymentModeId(payMode.getPaymentModeId());
-		
-		collectDetails.setVoucherYear(collect.getDocumentFinanceYear());
-		
-		BigDecimal documentNo = generateDocumentNumber(collect.getApplicationCountryId(),collect.getFsCompanyMaster().getCompanyId(),ConstantDocument.VOUCHER_DOCUMENT_CODE,collect.getDocumentFinanceYear(),collect.getLocCode());
-		
-		if(documentNo!=null && documentNo.compareTo(BigDecimal.ZERO)!=0){
-			collectDetails.setVoucherNo(documentNo);
-	    }else{
-	    	throw new GlobalException(JaxError.INVALID_VOUCHER_DOCUMENT_NO, "Document Seriality  setup  not  defined for Voucher ");
-	    }
-		
-		return collectDetails;
-		
-	}*/
+	
 	
 	
 	public List<ForeignCurrencyAdjust> saveForeignCurrencyAdjust(BranchRemittanceRequestModel remittanceRequestModel,CollectionModel  collect){
@@ -881,7 +821,7 @@ public   List<RemittanceAdditionalInstructionData>   saveRemitnaceinstructionDat
 public List<RemittanceAml>	saveRemittanceAml(RemittanceApplication applicationNo,RemittanceTransaction remitTrnx){
 	
 	if(applicationNo!=null) {
-	RemitApplAmlModel applAml = applAmlRepository.findByRemittanceApplicationId(applicationNo.getRemittanceApplicationId());
+	RemitApplAmlModel applAml = applAmlRepository.findByExRemittanceAppfromAml(applicationNo);
 		if(applAml!=null) {
 			RemittanceAml remitAml = new RemittanceAml();
 			remitAml.setAuthorizedBy(applAml.getAuthorizedBy());

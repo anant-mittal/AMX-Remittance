@@ -373,14 +373,14 @@ public class BranchRemittanceManager extends AbstractModel {
 			outPut = applProcedureDao.amlTranxAmountCheckForRemittance(inputValues);
 			
 			if(outPut!=null) {
-				if( outPut.get("MESSAGE1")!=null) {
+				if( outPut.get("MESSAGE1")!=null && outPut.get("MESSAGE1")!="") {
 				AmlCheckResponseDto dto = new AmlCheckResponseDto();
 				dto.setMessageCode("MESSAGE1");
 				dto.setMessageDescription(outPut.get("MESSAGE1").toString());
 				dto.setAmlFlag(ConstantDocument.Yes);
 				//listAmlMessage.add(dto);
 				}
-				if( outPut.get("MESSAGE2")!=null) {
+				if( outPut.get("MESSAGE2")!=null && outPut.get("MESSAGE2")!="") {
 					AmlCheckResponseDto dto = new AmlCheckResponseDto();
 					dto.setMessageCode("MESSAGE2");
 					dto.setMessageDescription(outPut.get("MESSAGE2").toString());
@@ -388,43 +388,43 @@ public class BranchRemittanceManager extends AbstractModel {
 					//listAmlMessage.add(dto);
 					}
 				
-				if( outPut.get("MESSAGE3")!=null) {
+				if( outPut.get("MESSAGE3")!=null && outPut.get("MESSAGE3")!="") {
 					AmlCheckResponseDto dto = new AmlCheckResponseDto();
 					dto.setMessageCode("MESSAGE3");
 					dto.setMessageDescription(outPut.get("MESSAGE3").toString());
 					dto.setAmlFlag(ConstantDocument.Yes);
 					//listAmlMessage.add(dto);
 					}
-				if( outPut.get("MESSAGE4")!=null) {
+				if( outPut.get("MESSAGE4")!=null && outPut.get("MESSAGE4")!="") {
 					AmlCheckResponseDto dto = new AmlCheckResponseDto();
 					dto.setMessageCode("MESSAGE4");
 					dto.setMessageDescription(outPut.get("MESSAGE4").toString());
 					dto.setAmlFlag(ConstantDocument.Yes);
-					listAmlMessage.add(dto);
+					//listAmlMessage.add(dto);
 					}
 				
 				if(outPut.get("MESSAGE3")!=null) {
 					
 				
-				if(outPut.get("RANGE1FROM")!=null) {
+				if(outPut.get("RANGE1FROM")!=null && !outPut.get("RANGE1FROM").equals("")) {
 					AmlCheckResponseDto dto = new AmlCheckResponseDto();
 					dto.setMessageCode("RANGE1FROM - RANGE1TO");
 					dto.setMessageDescription(outPut.get("RANGE1FROM").toString()+" - " + outPut.get("RANGE1TO")==null?"0":outPut.get("RANGE1TO").toString());
 					dto.setRangeSlab(outPut.get("RANGE1COUNT")==null?"0":outPut.get("RANGE1COUNT").toString());
 					dto.setAmlFlag(ConstantDocument.Yes);
-					listAmlMessage.add(dto);
+					//listAmlMessage.add(dto);
 				}
 					
-				if(outPut.get("RANGE2FROM")!=null) {
+				if(outPut.get("RANGE2FROM")!=null && !outPut.get("RANGE2FROM").equals("")) {
 					AmlCheckResponseDto dto = new AmlCheckResponseDto();
 					dto.setMessageCode("RANGE2FROM - RANGE2TO" );
 					dto.setMessageDescription(outPut.get("RANGE2FROM").toString()+" - " + outPut.get("RANGE2TO")==null?"0":outPut.get("RANGE2TO").toString());
 					dto.setRangeSlab(outPut.get("RANGE2COUNT")==null?"0":outPut.get("RANGE2COUNT").toString());
 					dto.setAmlFlag(ConstantDocument.Yes);
-					listAmlMessage.add(dto);
+					//listAmlMessage.add(dto);
 				}
 				
-				if(outPut.get("RANGE3FROM")!=null) {
+				if(outPut.get("RANGE3FROM")!=null && !outPut.get("RANGE3FROM").equals("")) {
 					AmlCheckResponseDto dto = new AmlCheckResponseDto();
 					dto.setMessageCode("RANGE3FROM - RANGE3TO");
 					dto.setMessageDescription(outPut.get("RANGE3FROM").toString()+" - "+ outPut.get("RANGE3TO")==null?"0":outPut.get("RANGE3TO").toString());
@@ -433,7 +433,7 @@ public class BranchRemittanceManager extends AbstractModel {
 					//listAmlMessage.add(dto);
 				}
 				
-				if(outPut.get("RANGE4FROM")!=null) {
+				if(outPut.get("RANGE4FROM")!=null && !outPut.get("RANGE4FROM").equals("")) {
 					AmlCheckResponseDto dto = new AmlCheckResponseDto();
 					dto.setMessageCode("RANGE4FROM - RANGE4TO");
 					dto.setMessageDescription(outPut.get("RANGE4FROM").toString()+" - "+ outPut.get("RANGE4TO")==null?"0":outPut.get("RANGE4TO").toString());
@@ -441,7 +441,7 @@ public class BranchRemittanceManager extends AbstractModel {
 					dto.setAmlFlag(ConstantDocument.Yes);
 					//listAmlMessage.add(dto);
 				}
-				if(outPut.get("RANGE5FROM")!=null) {
+				if(outPut.get("RANGE5FROM")!=null && !outPut.get("RANGE5FROM").equals("")) {
 					AmlCheckResponseDto dto = new AmlCheckResponseDto();
 					dto.setMessageCode("RANGE5FROM - RANGE5TO");
 					dto.setMessageDescription(outPut.get("RANGE5FROM").toString()+" - "+ outPut.get("RANGE5TO")==null?"0":outPut.get("RANGE5TO").toString());
@@ -449,7 +449,7 @@ public class BranchRemittanceManager extends AbstractModel {
 					dto.setAmlFlag(ConstantDocument.Yes);
 					//listAmlMessage.add(dto);
 				}
-				if(outPut.get("RANGE6FROM")!=null) {
+				if(outPut.get("RANGE6FROM")!=null && !outPut.get("RANGE6FROM").equals("")) {
 					AmlCheckResponseDto dto = new AmlCheckResponseDto();
 					dto.setMessageCode("RANGE6FROM - RANGE6TO");
 					dto.setMessageDescription(outPut.get("RANGE6FROM").toString()+" - "+ outPut.get("RANGE6TO")==null?"0":outPut.get("RANGE6TO").toString());
@@ -547,19 +547,22 @@ public class BranchRemittanceManager extends AbstractModel {
 			 throw new GlobalException(JaxError.INVALID_BENE_BANK, " Routing and beneficary bank cannot be the same for TT "+routingBankId +"\t serviceMasterId :"+serviceMasterId+"\t beneBankId :"+beneBankId);
 		 }
 		 
-		 BigDecimal wbLimit = routingPro.getWbLimit();
-		 List<CustomerIdProof> list = idProofDao.getCustomerImageValidation(customerId, ConstantDocument.BIZ_COMPONENT_ID_CIVIL_ID);
-		 
-		 if(list!=null && !list.isEmpty() && list.size()>1) {
-			 throw new GlobalException(JaxError.INVALID_CUSTOMER, " Customer has many ID Proofs-'-"+customerId);
-		 }
-		 
-		 if(list!=null && list.size()==1 && JaxUtil.isNullZeroBigDecimalCheck(wbLimit)) {
-			if(localNetAmount.compareTo(wbLimit)==1) {
-				 throw new GlobalException(JaxError.INVALID_BENE_BANK, " Non ID card holders cannot exceed amount-"+wbLimit);
-			}
-		 }
-		 
+		 if(customer.getCustomerTypeId().compareTo(new BigDecimal(91))==0){ //Checking for retails 
+			 List<CustomerIdProof> list = idProofDao.getCustomerImageValidation(customerId, ConstantDocument.BIZ_COMPONENT_ID_CIVIL_ID);
+			 
+			 BigDecimal wbLimit = routingPro.getWbLimit();
+			
+			 
+			 if(list!=null && !list.isEmpty() && list.size()>1) {
+				 throw new GlobalException(JaxError.INVALID_CUSTOMER, " Customer has many ID Proofs-'-"+customerId);
+			 }
+			 
+			 if(list!=null && list.size()==1 && JaxUtil.isNullZeroBigDecimalCheck(wbLimit) && (list.get(0).getIdentityTypeId().compareTo(ConstantDocument.BIZ_COMPONENT_ID_CIVIL_ID)==0?true:false)) {
+				if(localNetAmount.compareTo(wbLimit)==1) {
+					 throw new GlobalException(JaxError.INVALID_BENE_BANK, " Non ID card holders cannot exceed amount-"+wbLimit);
+				}
+			 }
+		}
 		 
 	 }
 	

@@ -669,7 +669,7 @@ public class BranchRemittanceApplManager {
 
 					RemitApplAmlModel remitApplAml = new RemitApplAmlModel();
 					remitApplAml.setCompanyId(remittanceApplication.getFsCompanyMaster().getCompanyId());
-					remitApplAml.setRemittanceApplicationId(remittanceApplication.getRemittanceApplicationId());
+					remitApplAml.setExRemittanceAppfromAml(remittanceApplication);
 					remitApplAml.setCountryId(remittanceApplication.getFsCountryMasterByApplicationCountryId().getCountryId());
 					remitApplAml.setCreatedBy(remittanceApplication.getCreatedBy());
 					remitApplAml.setCreatedDate(new Date());
