@@ -19,6 +19,7 @@ import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
 import com.amx.jax.model.response.remittance.PaymentModeOfPaymentDto;
+import com.amx.jax.model.response.remittance.RemittanceDeclarationReportDto;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.model.response.remittance.RoutingResponseDto;
 import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeRateResponse;
@@ -46,6 +47,7 @@ public interface IRemittanceService extends  IJaxService {
 		public static final String BR_REMITTANCE_GET_EXCHANGE_RATE = PREFIX + "/get-exchrate/";
 		public static final String BR_REMITTANCE_SAVE_TRANSACTION = PREFIX + "/save-remittance-transaction/";
 		public static final String BR_REMITTANCE_DELETE_APPLICATION = PREFIX + "/delete-application/";
+		public static final String BR_DECLARATION_REPORT			=PREFIX + "/get-declartion-report/";
 	}
 
 	public static class Params {
@@ -56,6 +58,9 @@ public interface IRemittanceService extends  IJaxService {
 		public static final String BENE_RELATION_SHIP_ID = "beneRelationshipId";
 		public static final String SERVICE_MASTER_ID = "serviceMasterId";
 		public static final String APPLICATION_ID = "remittanceApplicationId";
+		public static final String COLLECTION_DOC_NO = "collectionDocNo";
+		public static final String COLLECTION_DOC_FY = "collectionDocYear";
+		public static final String COLLECTION_DOC_CODE = "collectionDocCode";
 	}
 	
 	
@@ -113,8 +118,11 @@ public interface IRemittanceService extends  IJaxService {
 	
 	@ApiJaxStatus({ JaxError.INVALID_AMOUNT , JaxError.EXCHANGE_RATE_NOT_FOUND, JaxError.DATA_NOT_FOUND,JaxError.INVALID_COLLECTION_DOCUMENT_NO,JaxError.INVALID_REMITTANCE_DOCUMENT_NO})
 	AmxApiResponse<RemittanceResponseDto, Object> saveRemittanceTransaction(BranchRemittanceRequestModel remittanceRequestModel);
-
 	AmxApiResponse<BranchRemittanceApplResponseDto, Object> deleteFromShoppingCart(BigDecimal remittanceApplicationId);
+	
+	
+	@ApiJaxStatus({JaxError.INVALID_COLLECTION_DOCUMENT_NO, JaxError.DATA_NOT_FOUND})
+	AmxApiResponse<RemittanceDeclarationReportDto,Object> fetchCustomerDeclarationReport(BigDecimal collectionDocNo,BigDecimal collectionDocYear ,BigDecimal collectionDocCode);
 
 }
 

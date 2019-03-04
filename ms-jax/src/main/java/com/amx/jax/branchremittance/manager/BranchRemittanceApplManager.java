@@ -60,6 +60,7 @@ import com.amx.jax.model.response.remittance.AmlCheckResponseDto;
 import com.amx.jax.model.response.remittance.BranchExchangeRateBreakup;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.CustomerShoppingCartDto;
+import com.amx.jax.model.response.remittance.RemittanceDeclarationReportDto;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
 import com.amx.jax.model.response.remittance.RoutingResponseDto;
 import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeRateResponse;
@@ -319,8 +320,8 @@ public class BranchRemittanceApplManager {
 			remittanceApplication.setSpotRateInd(ConstantDocument.No);
 			
 			
+		
 			
-			//remittanceApplication.setLoyaltyPointInd(loyalityPointsAvailed(requestModel, validationResults) ? ConstantDocument.Yes : ConstantDocument.No); NC
 			
 			
 			// company Id and code
@@ -416,7 +417,19 @@ public class BranchRemittanceApplManager {
 			remittanceApplication.setLocalDeliveryAmount(BigDecimal.ZERO);
 			remittanceApplication.setLoyaltyPointsEncashed(BigDecimal.ZERO); 
 			
-			remittanceApplication.setLoyaltyPointInd(applRequestModel.isAvailLoyalityPoints()==true?ConstantDocument.Yes:ConstantDocument.No);
+			BigDecimal loyalityPointsEncashed = BigDecimal.ZERO;
+			if(applRequestModel.isAvailLoyalityPoints()) {
+				remittanceApplication.setLoyaltyPointInd(ConstantDocument.Yes);
+				loyalityPointsEncashed = loyalityPointService.getVwLoyalityEncash().getEquivalentAmount();
+				
+			}else {
+				remittanceApplication.setLoyaltyPointInd(ConstantDocument.No);
+			}
+			remittanceApplication.setLoyaltyPointsEncashed(loyalityPointsEncashed); 
+			
+		
+			
+			//remittanceApplication.setLoyaltyPointInd(applRequestModel.isAvailLoyalityPoints()==true?ConstantDocument.Yes:ConstantDocument.No);
 			
 			
 			remittanceApplication.setDocumentFinancialyear(userFinancialYear.getFinancialYear());
@@ -776,4 +789,8 @@ public class BranchRemittanceApplManager {
 	 BranchRemittanceApplResponseDto applResponseDto = branchRemittancePaymentManager.fetchCustomerShoppingCart(metaData.getCustomerId(),metaData.getDefaultCurrencyId());
 	 return applResponseDto;
  }
+ 
+
+ 
+ 
 }

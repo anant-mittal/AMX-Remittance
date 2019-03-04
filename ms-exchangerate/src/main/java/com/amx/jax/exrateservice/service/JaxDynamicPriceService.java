@@ -65,7 +65,7 @@ public class JaxDynamicPriceService {
 			apiResponse = pricerServiceClient.fetchPriceForCustomer(pricingRequestDTO);
 		} catch (Exception e) {
 			LOGGER.debug("No exchange data found from pricer, error is: ", e);
-			throw new GlobalException(JaxError.EXCHANGE_RATE_NOT_FOUND, "No exchange data found");
+			throw new GlobalException(JaxError.EXCHANGE_RATE_NOT_FOUND, "No exchange data found"+e.getMessage());
 		}
 		ExchangeRateResponseModel exchangeRateResponseModel = new ExchangeRateResponseModel();
 		List<BankMasterDTO> bankWiseRates = new ArrayList<>();

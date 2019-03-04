@@ -36,6 +36,7 @@ import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
 import com.amx.jax.model.response.remittance.CustomerShoppingCartDto;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
 import com.amx.jax.model.response.remittance.PaymentModeOfPaymentDto;
+import com.amx.jax.model.response.remittance.RemittanceDeclarationReportDto;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.model.response.remittance.RoutingResponseDto;
 import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeRateResponse;
@@ -220,6 +221,12 @@ public class BranchRemittanceController implements IRemittanceService {
 	public AmxApiResponse<BranchRemittanceApplResponseDto, Object> deleteFromShoppingCart(@RequestParam(value = Params.APPLICATION_ID, required = true) BigDecimal remittanceApplicationId){
 		logger.debug("deleteFromShoppingCart");
 		return branchRemitService.deleteFromShoppingCart(remittanceApplicationId);
+	}
+
+	@RequestMapping(value = Path.BR_DECLARATION_REPORT, method = RequestMethod.POST)
+	@Override
+	public AmxApiResponse<RemittanceDeclarationReportDto, Object> fetchCustomerDeclarationReport(BigDecimal collectionDocNo, BigDecimal collectionDocYear,BigDecimal collectionDocCode) {
+		return branchRemitService.fetchCustomerDeclarationReport(collectionDocNo,collectionDocYear,collectionDocCode);
 	}
 
 	

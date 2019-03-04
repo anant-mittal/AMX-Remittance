@@ -18,6 +18,7 @@ import com.amx.jax.branchremittance.manager.BranchRemittanceManager;
 import com.amx.jax.branchremittance.manager.BranchRemittancePaymentManager;
 import com.amx.jax.branchremittance.manager.BranchRemittanceSaveManager;
 import com.amx.jax.branchremittance.manager.BranchRoutingManager;
+import com.amx.jax.branchremittance.manager.ReportManager;
 import com.amx.jax.manager.FcSaleBranchOrderManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.ResourceDTO;
@@ -31,6 +32,7 @@ import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
 import com.amx.jax.model.response.remittance.CustomerShoppingCartDto;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
 import com.amx.jax.model.response.remittance.PaymentModeOfPaymentDto;
+import com.amx.jax.model.response.remittance.RemittanceDeclarationReportDto;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.model.response.remittance.RoutingResponseDto;
 import com.amx.jax.services.AbstractService;
@@ -66,6 +68,10 @@ public class BranchRemittanceService extends AbstractService{
 	
 	@Autowired
 	BranchRemittanceSaveManager branchRemittanceSaveManager;
+	
+	@Autowired
+	ReportManager reportManager;
+	
 
 	
 	public AmxApiResponse<BranchRemittanceApplResponseDto, Object> saveBranchRemittanceApplication(BranchRemittanceApplRequestModel requestApplModel){
@@ -118,7 +124,6 @@ public class BranchRemittanceService extends AbstractService{
 	BigDecimal customerId = metaData.getCustomerId();
 	CustomerBankDetailsDto customerBankDetailDto = branchRemittancePaymentManager.fetchCustomerNames(customerId,bankId);
 	return AmxApiResponse.build(customerBankDetailDto);
-	//return AmxApiResponse.buildList(lstCustomerNames);
 }
 	
 	public AmxApiResponse<ResourceDTO, Object> fetchPosBanks(){
@@ -187,6 +192,12 @@ public class BranchRemittanceService extends AbstractService{
 
 	public AmxApiResponse<BranchRemittanceApplResponseDto, Object> deleteFromShoppingCart(BigDecimal remittanceApplicationId){
 		BranchRemittanceApplResponseDto applResponseDto = branchRemitApplManager.deleteFromShoppingCart(remittanceApplicationId);
+		return AmxApiResponse.build(applResponseDto);
+	}
+	
+	
+	public AmxApiResponse<RemittanceDeclarationReportDto,Object> fetchCustomerDeclarationReport(BigDecimal collectionDocNo, BigDecimal collectionDocYear,BigDecimal collectionDocCode){
+		RemittanceDeclarationReportDto applResponseDto = reportManager.fetchCustomerDeclarationReport(collectionDocNo,collectionDocYear,collectionDocCode);
 		return AmxApiResponse.build(applResponseDto);
 	}
 }

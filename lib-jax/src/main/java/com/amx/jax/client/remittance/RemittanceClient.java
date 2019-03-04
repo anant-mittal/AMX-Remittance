@@ -25,6 +25,7 @@ import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
 import com.amx.jax.model.response.remittance.PaymentModeOfPaymentDto;
+import com.amx.jax.model.response.remittance.RemittanceDeclarationReportDto;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.model.response.remittance.RoutingResponseDto;
 import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeRateResponse;
@@ -347,6 +348,28 @@ public class RemittanceClient  implements IRemittanceService{
 			return JaxSystemError.evaluate(e);
 		} // end of try-cat
 		
+	}
+
+
+
+
+
+	@Override
+	public AmxApiResponse<RemittanceDeclarationReportDto, Object> fetchCustomerDeclarationReport(BigDecimal collectionDocNo, BigDecimal collectionDocYear,
+			BigDecimal collectionDocCode) {
+		try {
+			LOGGER.debug("in fetchCustomerDeclarationReport :"+collectionDocNo );
+			return restService.ajax(appConfig.getJaxURL() + Path.BR_DECLARATION_REPORT).meta(new JaxMetaInfo())
+					.queryParam(Params.COLLECTION_DOC_NO, collectionDocNo).meta(new JaxMetaInfo())
+					.queryParam(Params.COLLECTION_DOC_FY, collectionDocYear)
+					.queryParam(Params.COLLECTION_DOC_CODE, collectionDocCode)
+					.post()
+					.as(new ParameterizedTypeReference<AmxApiResponse<RemittanceDeclarationReportDto, Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in deleteFromShoppingCart : ", e);
+			return JaxSystemError.evaluate(e);
+		} // end of try-cat
 	}
 
 }

@@ -137,6 +137,7 @@ public class ConstantDocument {
 	public static final String WEB_SERVICE = "W";
 	public static final String A="A";
 	public static final String CLAIM="CLAIM";
+	public static final String VOUCHER="V";
 	
 	
 

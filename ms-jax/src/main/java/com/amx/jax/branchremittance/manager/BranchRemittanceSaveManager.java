@@ -349,6 +349,8 @@ public class BranchRemittanceSaveManager {
 			PaymentModeModel payMode = getPaymentModeDetailsById(collectDataTable.getPaymentModeId());
 			collectDetails.setCollectionMode(payMode.getPaymentModeCode());
 			
+		
+			
 			if(payMode.getPaymentModeCode().equalsIgnoreCase(ConstantDocument.KNET_CODE)) {
 				collectDetails.setChequeBankRef(collectDataTable.getChequeBankCode());
 				collectDetails.setDbCardName(collectDataTable.getColCardHolderName());
@@ -371,8 +373,18 @@ public class BranchRemittanceSaveManager {
 				collectDetails.setChequeBankRef(collectDataTable.getChequeBankCode());
 			}
 			
-	
-			collectionDetailModelList.add(collectDetails);
+			/*
+			if(payMode.getPaymentModeCode().equalsIgnoreCase(ConstantDocument.VOUCHER)) {
+				collectDetails.setVoucherYear(collect.getDocumentFinanceYear());
+				BigDecimal documentNo = generateDocumentNumber(collect.getApplicationCountryId(),collect.getFsCompanyMaster().getCompanyId(),ConstantDocument.VOUCHER_DOCUMENT_CODE,collect.getDocumentFinanceYear(),collect.getLocCode());
+				if(documentNo!=null && documentNo.compareTo(BigDecimal.ZERO)!=0){
+					collectDetails.setVoucherNo(documentNo);
+			    }else{
+			    	throw new GlobalException(JaxError.INVALID_VOUCHER_DOCUMENT_NO, "Document Seriality  setup  not  defined for Voucher ");
+			    }
+				
+			}*/
+		collectionDetailModelList.add(collectDetails);
 		}
 		//For Loyalty  Claim
 		BigDecimal loyaltyAmount = BigDecimal.ZERO;
@@ -439,13 +451,67 @@ public class BranchRemittanceSaveManager {
 				
 				}	
 			
-		}
+		} 
 		
 		
 		return collectionDetailModelList;
 		
 	}
 	
+	
+	
+	
+	
+	/*public CollectDetailModel checkVoucher(CollectionModel collect,BigDecimal vouchAmount) {
+		CollectDetailModel collectDetails = new CollectDetailModel();
+		
+		//RemittanceApplication appl = remittanceApplicationRepository.findOne(applDto.getApplicationId());
+		
+		
+		collectDetails.setCashCollectionId(collect);
+		Customer customer = new Customer();
+		customer.setCustomerId(collect.getFsCustomer().getCustomerId());
+		collectDetails.setFsCustomer(customer);
+		
+		CountryMaster appcountrymaster = new CountryMaster();
+		appcountrymaster.setCountryId(collect.getApplicationCountryId());
+		collectDetails.setFsCountryMaster(appcountrymaster);
+		collectDetails.setLocCode(collect.getLocCode());
+		collectDetails.setCompanyCode(collect.getCompanyCode());
+		collectDetails.setDocumentFinanceYear(collect.getDocumentFinanceYear());
+		
+		collectDetails.setDocumentId(collect.getDocumentId());
+		collectDetails.setDocumentNo(collect.getDocumentNo());
+		collectDetails.setFsCompanyMaster(collect.getFsCompanyMaster());
+		collectDetails.setIsActive(ConstantDocument.Yes);
+		collectDetails.setAcyymm(collect.getAccountMMYYYY());
+		collectDetails.setCreatedBy(collect.getCreatedBy());
+		collectDetails.setCreatedDate(new Date());
+		
+		
+		collectDetails.setDocumentCode(collect.getDocumentCode());
+		collectDetails.setExBankBranch(collect.getExBankBranch());
+		collectDetails.setDocumentDate(new Date());
+		collectDetails.setDocumentLineNo(new BigDecimal(i++));
+		collectDetails.setExCurrencyMaster(collect.getExCurrencyMaster());
+		collectDetails.setCollAmt(vouchAmount);
+		PaymentModeModel payMode = paymentModeRepository.getPaymentModeDetails(ConstantDocument.VOCHERCODE);
+		collectDetails.setCollectionMode(payMode.getPaymentModeCode());
+		collectDetails.setPaymentModeId(payMode.getPaymentModeId());
+		
+		collectDetails.setVoucherYear(collect.getDocumentFinanceYear());
+		
+		BigDecimal documentNo = generateDocumentNumber(collect.getApplicationCountryId(),collect.getFsCompanyMaster().getCompanyId(),ConstantDocument.VOUCHER_DOCUMENT_CODE,collect.getDocumentFinanceYear(),collect.getLocCode());
+		
+		if(documentNo!=null && documentNo.compareTo(BigDecimal.ZERO)!=0){
+			collectDetails.setVoucherNo(documentNo);
+	    }else{
+	    	throw new GlobalException(JaxError.INVALID_VOUCHER_DOCUMENT_NO, "Document Seriality  setup  not  defined for Voucher ");
+	    }
+		
+		return collectDetails;
+		
+	}*/
 	
 	
 	public List<ForeignCurrencyAdjust> saveForeignCurrencyAdjust(BranchRemittanceRequestModel remittanceRequestModel,CollectionModel  collect){
@@ -1076,57 +1142,5 @@ public BigDecimal generateDocumentNumber(BigDecimal appCountryId,BigDecimal comp
 	}
  
  
-/* protected String readClobAsString(Clob clob )
- {
-   StringBuffer sb = null;
-   Reader reader = null;
-   try {
-     reader = clob.getCharacterStream();
-     if ( reader == null ) {
-       return null;
-     }
-       sb = new StringBuffer((int)clob.length() 4096=guess at size of data to read );
-       char[] charbuf = new char[(int)clob.length() 4096=4k buffer to read data into ];
-       for( int i = reader.read( charbuf ); i > 0; i = reader.read( charbuf ) ) {
-         sb.append( charbuf, 0, i );
-       }
-   } catch(Exception e ) {
-	   logger.debug("readClobAsString "+e.getMessage());
-	   throw new GlobalException(JaxError.CUSTOMER__SIGNATURE_UNAVAILABLE, e.getMessage());
-   } finally{
-	   if ( reader != null ) {
-         try {
-			reader.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-       }
-   }
-   return sb.toString();
- }
- */
- 
-/* @SuppressWarnings("unused")
-private String clobToString(Clob data) {
-     StringBuilder sb = new StringBuilder();
-     try {
-         Reader reader = data.getCharacterStream();
-         BufferedReader br = new BufferedReader(reader);
 
-         String line;
-         while(null != (line = br.readLine())) {
-             sb.append(line);
-         }
-         br.close();
-     } catch (SQLException e) {
-    	 logger.error("Could not convert CLOB to string",e);
-         return e.toString();
-     } catch (IOException e) {
-    	 logger.error("Could not convert CLOB to string",e);
-         return e.toString();
-     }
-     return sb.toString();
- }*/
- 
 }

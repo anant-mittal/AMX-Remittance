@@ -118,10 +118,11 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 					}
 					
 					cartList.setTotalLocalAmount(totalLocalAmount);
-					cartList.setTotalNetAmount(totalNetAmount.subtract(totalLyltyPointAmt));
+					cartList.setTotalNetAmount(totalNetAmount);//.subtract(totalLyltyPointAmt));
 					cartList.setTotalTrnxFees(totalTrnxFees);
 					cartList.setTotalLyltyPointAmt(totalLyltyPointAmt);
 					cartList.setTotalLoyaltyPointAvaliable(totalCustomerLoyaltyPoits);
+					cartList.setTotalNetCollectionAmount(totalNetAmount.subtract(totalLyltyPointAmt));
 					
 					if(fcCurrencyId == null || fcCurrencyId.compareTo(BigDecimal.ZERO) == 0){
 						throw new GlobalException(JaxError.NULL_CURRENCY_ID, "Null foreign currency id passed");
