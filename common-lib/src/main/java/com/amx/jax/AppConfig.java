@@ -310,11 +310,11 @@ public class AppConfig {
 		this.authURL = authURL;
 	}
 
-	public final String getPricerURL() {
+	public  String getPricerURL() {
 		return pricerURL;
 	}
 
-	public final void setPricerURL(String pricerURL) {
+	public  void setPricerURL(String pricerURL) {
 		this.pricerURL = pricerURL;
 	}
 
