@@ -41,6 +41,10 @@ public class ChannelDetails implements Serializable {
 		return discountPips;
 	}
 
+	public String getDiscountPipsPT() {
+		return discountPips == null ? null : discountPips.toPlainString();
+	}
+
 	public void setDiscountPips(BigDecimal discountPips) {
 		this.discountPips = discountPips;
 	}
@@ -57,12 +61,20 @@ public class ChannelDetails implements Serializable {
 		return minDiscountPips;
 	}
 
+	public String getMinDiscountPipsPT() {
+		return minDiscountPips == null ? null : minDiscountPips.toPlainString();
+	}
+
 	public void setMinDiscountPips(BigDecimal minDiscountPips) {
 		this.minDiscountPips = minDiscountPips;
 	}
 
 	public BigDecimal getMaxDiscountPips() {
 		return maxDiscountPips;
+	}
+
+	public String getMaxDiscountPipsPT() {
+		return maxDiscountPips == null ? null : maxDiscountPips.toPlainString();
 	}
 
 	public void setMaxDiscountPips(BigDecimal maxDiscountPips) {
