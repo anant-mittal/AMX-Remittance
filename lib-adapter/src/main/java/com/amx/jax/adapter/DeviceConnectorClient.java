@@ -130,7 +130,7 @@ public class DeviceConnectorClient {
 		try {
 			return restService.ajax(offSiteUrl)
 					.meta(new DeviceMetaInfo())
-					.path(DeviceConstants.Path.SESSION_CREATE)
+					.path(DeviceConstants.Path.DEVICE_SESSION)
 					.header(AppConstants.DEVICE_ID_XKEY, address.getMac())
 					.header(AppConstants.DEVICE_IP_LOCAL_XKEY, address.getLocalIp())
 					.header(DeviceConstants.Keys.CLIENT_REG_KEY_XKEY, devicePairingCreds.getDeviceRegId())
@@ -138,7 +138,7 @@ public class DeviceConnectorClient {
 					.get().as(new ParameterizedTypeReference<AmxApiResponse<SessionPairingCreds, Object>>() {
 					});
 		} catch (Exception e) {
-			LOGGER.error(DeviceConstants.Path.SESSION_CREATE, e);
+			LOGGER.error(DeviceConstants.Path.DEVICE_SESSION, e);
 			return AmxApiException.evaluate(e);
 		}
 	}
