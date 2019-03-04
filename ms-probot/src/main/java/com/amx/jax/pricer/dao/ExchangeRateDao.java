@@ -79,5 +79,6 @@ public class ExchangeRateDao {
 		return repo.getSellRatesForRoutingBanks(currencyId, countryId, applicationCountryId, routingBankIds,
 				serviceIds);
 	}
+	
 
 }

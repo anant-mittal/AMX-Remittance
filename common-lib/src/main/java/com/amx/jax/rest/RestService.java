@@ -383,8 +383,8 @@ public class RestService {
 
 	}
 
-	public static <T extends RequestMetaInfo> void exportMetaToStatic(
-			IMetaRequestOutFilter<T> restMetaFilter, HttpHeaders httpHeaders) {
+	public static <T extends RequestMetaInfo> void exportMetaToStatic(IMetaRequestOutFilter<T> restMetaFilter,
+			HttpHeaders httpHeaders) {
 		if (restMetaFilter != null) {
 			T meta = restMetaFilter.exportMeta();
 			httpHeaders.add(AppConstants.META_XKEY, JsonUtil.toJson(meta));

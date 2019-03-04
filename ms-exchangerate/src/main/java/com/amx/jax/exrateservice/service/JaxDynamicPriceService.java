@@ -40,25 +40,10 @@ public class JaxDynamicPriceService {
 	@Autowired
 	ExchangeRateService exchangeRateService;
 
-	public ExchangeRateResponseModel getExchangeRates(BigDecimal fromCurrency, BigDecimal toCurrency,
-			BigDecimal lcAmount, BigDecimal foreignAmount, BigDecimal beneBankCountryId, BigDecimal routingBankId,
-			BigDecimal serviceIndicatorId) {
-		PricingRequestDTO pricingRequestDTO = new PricingRequestDTO();
-		pricingRequestDTO.setCustomerId(metaData.getCustomerId());
-		pricingRequestDTO.setChannel(metaData.getChannel().getClientChannel());
-		pricingRequestDTO.setCountryBranchId(metaData.getCountryBranchId());
-		pricingRequestDTO.setForeignCurrencyId(toCurrency);
-		pricingRequestDTO.setLocalAmount(lcAmount);
-		pricingRequestDTO.setForeignAmount(foreignAmount);
-		pricingRequestDTO.setLocalCountryId(metaData.getCountryId());
-		pricingRequestDTO.setLocalCurrencyId(fromCurrency);
-		if (routingBankId != null) {
-			pricingRequestDTO.setRoutingBankIds(Arrays.asList(routingBankId));
-			pricingRequestDTO.setPricingLevel(PRICE_BY.ROUTING_BANK);
-		} else {
-			pricingRequestDTO.setPricingLevel(PRICE_BY.COUNTRY);
-		}
-		pricingRequestDTO.setForeignCountryId(beneBankCountryId);
+	public ExchangeRateResponseModel getExchangeRatesWithDiscount(BigDecimal fromCurrency, BigDecimal toCurrency,
+			BigDecimal lcAmount, BigDecimal foreignAmount, BigDecimal countryId, BigDecimal routingBankId) {
+		PricingRequestDTO pricingRequestDTO = createPricingRequest(fromCurrency, toCurrency, lcAmount, foreignAmount,
+				countryId, routingBankId);
 		AmxApiResponse<PricingResponseDTO, Object> apiResponse = null;
 		try {
 			LOGGER.debug("Pricing request json : {}", JsonUtil.toJson(pricingRequestDTO));
@@ -67,6 +52,29 @@ public class JaxDynamicPriceService {
 			LOGGER.debug("No exchange data found from pricer, error is: ", e);
 			throw new GlobalException(JaxError.EXCHANGE_RATE_NOT_FOUND, "No exchange data found"+e.getMessage());
 		}
+		ExchangeRateResponseModel exchangeRateResponseModel = createExchangeRateResponseModel(apiResponse, lcAmount,
+				foreignAmount);
+		return exchangeRateResponseModel;
+	}
+
+	public ExchangeRateResponseModel getBaseExchangeRates(BigDecimal fromCurrency, BigDecimal toCurrency,
+			BigDecimal lcAmount, BigDecimal foreignAmount, BigDecimal countryId, BigDecimal routingBankId) {
+		PricingRequestDTO pricingRequestDTO = createPricingRequest(fromCurrency, toCurrency, lcAmount, foreignAmount,
+				countryId, routingBankId);
+		AmxApiResponse<PricingResponseDTO, Object> apiResponse = null;
+		try {
+			apiResponse = pricerServiceClient.fetchBasePrice(pricingRequestDTO);
+		} catch (Exception e) {
+			LOGGER.debug("No exchange data found from pricer, error is: ", e);
+			throw new GlobalException(JaxError.EXCHANGE_RATE_NOT_FOUND, "No exchange data found");
+		}
+		ExchangeRateResponseModel exchangeRateResponseModel = createExchangeRateResponseModel(apiResponse, lcAmount,
+				foreignAmount);
+		return exchangeRateResponseModel;
+	}
+
+	private ExchangeRateResponseModel createExchangeRateResponseModel(
+			AmxApiResponse<PricingResponseDTO, Object> apiResponse, BigDecimal lcAmount, BigDecimal foreignAmount) {
 		ExchangeRateResponseModel exchangeRateResponseModel = new ExchangeRateResponseModel();
 		List<BankMasterDTO> bankWiseRates = new ArrayList<>();
 		List<ExchangeRateDetails> sellRateDetails = apiResponse.getResult().getSellRateDetails();
@@ -91,9 +99,25 @@ public class JaxDynamicPriceService {
 		return exchangeRateResponseModel;
 	}
 
-	public ExchangeRateResponseModel getExchangeRates(BigDecimal fromCurrency, BigDecimal toCurrency,
-			BigDecimal lcAmount, BigDecimal foreignAmount, BigDecimal beneBankCountryId, BigDecimal routingBankId) {
-		return getExchangeRates(fromCurrency, toCurrency, lcAmount, foreignAmount, beneBankCountryId, routingBankId,
-				null);
+	private PricingRequestDTO createPricingRequest(BigDecimal fromCurrency, BigDecimal toCurrency, BigDecimal lcAmount,
+			BigDecimal foreignAmount, BigDecimal beneBankCountryId, BigDecimal routingBankId) {
+		PricingRequestDTO pricingRequestDTO = new PricingRequestDTO();
+		pricingRequestDTO.setCustomerId(metaData.getCustomerId());
+		pricingRequestDTO.setChannel(metaData.getChannel().getClientChannel());
+		pricingRequestDTO.setCountryBranchId(metaData.getCountryBranchId());
+		pricingRequestDTO.setForeignCurrencyId(toCurrency);
+		pricingRequestDTO.setLocalAmount(lcAmount);
+		pricingRequestDTO.setForeignAmount(foreignAmount);
+		pricingRequestDTO.setLocalCountryId(metaData.getCountryId());
+		pricingRequestDTO.setLocalCurrencyId(fromCurrency);
+		if (routingBankId != null) {
+			pricingRequestDTO.setRoutingBankIds(Arrays.asList(routingBankId));
+			pricingRequestDTO.setPricingLevel(PRICE_BY.ROUTING_BANK);
+		} else {
+			pricingRequestDTO.setPricingLevel(PRICE_BY.COUNTRY);
+		}
+		pricingRequestDTO.setForeignCountryId(beneBankCountryId);
+		return pricingRequestDTO;
 	}
+
 }

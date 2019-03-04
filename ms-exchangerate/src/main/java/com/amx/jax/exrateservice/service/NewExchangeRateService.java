@@ -51,7 +51,7 @@ public class NewExchangeRateService extends ExchangeRateService {
 		ExchangeRateResponseModel outputModel = null;
 		ApiResponse<ExchangeRateResponseModel> response = getBlackApiResponse();
 		if (jaxTenantProperties.getIsDynamicPricingEnabled() && beneBankCountryId != null) {
-			outputModel = jaxDynamicPriceService.getExchangeRates(fromCurrency, toCurrency, lcAmount, null,
+			outputModel = jaxDynamicPriceService.getExchangeRatesWithDiscount(fromCurrency, toCurrency, lcAmount, null,
 					beneBankCountryId, routingBankId);
 			response.getData().getValues().add(outputModel);
 			response.getData().setType(outputModel.getModelType());
@@ -129,14 +129,14 @@ public class NewExchangeRateService extends ExchangeRateService {
 	 * @param toCurrency
 	 * @param lcAmount
 	 * @param fcAmount
-	 * @param beneBankCountryId
+	 * @param countryId
 	 * @param routingBankId
 	 * @return
 	 */
 	public ExchangeRateBreakup getExchangeRateBreakUpUsingDynamicPricing(BigDecimal toCurrency, BigDecimal lcAmount,
-			BigDecimal fcAmount, BigDecimal beneBankCountryId, BigDecimal routingBankId) {
-		ExchangeRateResponseModel exchangeRateResponseModel = jaxDynamicPriceService.getExchangeRates(
-				meta.getDefaultCurrencyId(), toCurrency, lcAmount, fcAmount, beneBankCountryId, routingBankId);
+			BigDecimal fcAmount, BigDecimal countryId, BigDecimal routingBankId) {
+		ExchangeRateResponseModel exchangeRateResponseModel = jaxDynamicPriceService.getExchangeRatesWithDiscount(
+				meta.getDefaultCurrencyId(), toCurrency, lcAmount, fcAmount, countryId, routingBankId);
 		return exchangeRateResponseModel.getExRateBreakup();
 	}
 
