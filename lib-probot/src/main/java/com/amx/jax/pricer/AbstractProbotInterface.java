@@ -24,8 +24,6 @@ public interface AbstractProbotInterface {
 
 		public static final String PRICE_TEST = SERVICE_PREFIX + API_VERSION_V1 + "/price-test";
 		
-		public static final String PRICE_TEST = SERVICE_PREFIX + API_VERSION_V1 + "/price-test";
-		
 		// Service Controllers for Discount Management Data
 		public static final String GET_DISCOUNT_DETAILS = SERVICE_PREFIX + API_VERSION_V1 + "/get-discount-details";
 		
