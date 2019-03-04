@@ -1,6 +1,11 @@
 package com.amx.jax.pricer.manager;
 
+import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -11,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.pricer.dao.ViewExRoutingMatrixDao;
+import com.amx.jax.pricer.dbmodel.HolidayListMasterModel;
 import com.amx.jax.pricer.dbmodel.ViewExRoutingMatrix;
 import com.amx.jax.pricer.dto.DprRequestDto;
 import com.amx.jax.pricer.dto.EstimatedDeliveryDetails;
@@ -18,6 +24,7 @@ import com.amx.jax.pricer.exception.PricerServiceError;
 import com.amx.jax.pricer.exception.PricerServiceException;
 import com.amx.jax.pricer.util.ExchangeRequestTransientDataCache;
 import com.amx.jax.pricer.util.RoutingTransientDataComputationObject;
+import com.amx.utils.DateUtil;
 import com.amx.utils.JsonUtil;
 
 @Component
@@ -28,6 +35,9 @@ public class RemitRoutingManager {
 
 	@Autowired
 	ViewExRoutingMatrixDao viewExRoutingMatrixDao;
+
+	@Autowired
+	HolidayListManager holidayListManager;
 
 	@Resource
 	ExchangeRequestTransientDataCache exchangeRequestTransientDataCache;
@@ -72,13 +82,27 @@ public class RemitRoutingManager {
 
 	public EstimatedDeliveryDetails getEstimatedBlockDelivery(long startTT, String timezone, long weekFrom, long weekTo,
 			long weekHrsFrom, long weekHrsTo, long weekEndFrom, long weekEndTo, long weekEndHrsFrom, long weekEndHrsTo,
-			long processTimeInHrs, boolean noHolidayLag) {
+			long processTimeInHrs, boolean noHolidayLag, BigDecimal countryId) {
 
 		EstimatedDeliveryDetails estimatedDeliveryDetails = new EstimatedDeliveryDetails();
-		
-		
-		
-		
+
+		// Get An instantaneous point on the time-line for EPOCH TT
+		Instant epochInstant = Instant.ofEpochMilli(startTT);
+
+		// Get the appropriate Timezone
+		ZoneId zoneId = ZoneId.of(timezone);
+
+		// Compute the Correct Zone Date and Time of Block Delivery BEGIN
+		ZonedDateTime beginZonedDT = ZonedDateTime.ofInstant(epochInstant, zoneId);
+
+		List<HolidayListMasterModel> holidays;
+		if (!noHolidayLag) {
+			holidays = holidayListManager.getHoidaysForCountryAndDateRange(countryId,
+					Date.from(beginZonedDT.toInstant()), Date.from(beginZonedDT.plusMonths(2).toInstant()));
+		} else {
+			holidays = new ArrayList<HolidayListMasterModel>();
+		}
+
 		return null;
 	}
 
