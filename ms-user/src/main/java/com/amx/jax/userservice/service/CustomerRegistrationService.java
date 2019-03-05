@@ -140,10 +140,10 @@ public class CustomerRegistrationService extends AbstractService {
 		customerRegistrationManager.saveLoginDetail(customerCredential);
 		customerCredentialValidator.validate(customerRegistrationManager.get(),  null);
 		customerRegistrationManager.commit();	
-		/*
+	/*	
 		Customer customerDetails = userService.getCustomerDetails(customerCredential.getLoginId());
 		
-		CustomerOnlineRegistration loginCustomer = onlineCustomer.getLoginCustomersById(customerDetails.getCustomerId());*/
+		CustomerOnlineRegistration loginCustomer = onlineCustomer.getLoginCustomersById(customerDetails.getCustomerId());
 		
 
 		
@@ -151,7 +151,9 @@ public class CustomerRegistrationService extends AbstractService {
 		CustomerOnlineRegistration loginCustomer = onlineCustomer.getLoginCustomersById(customerCredential.getLoginId());
 		
 		Customer customerDetails = userService.getCustomerDetails(loginCustomer.getUserName());
-		
+		*/
+		CustomerOnlineRegistration loginCustomer = onlineCustomer.getLoginCustomersById(customerCredential.getLoginId());
+		Customer customerDetails = userService.getCustomerDetails(loginCustomer.getUserName());
 		ApplicationSetup applicationSetupData = applicationSetup.getApplicationSetupDetails();
 		PersonInfo personinfo = new PersonInfo();
 		try {
