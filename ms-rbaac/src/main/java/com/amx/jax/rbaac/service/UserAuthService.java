@@ -222,7 +222,7 @@ public class UserAuthService {
 						.secret(otpDevice.getClientSecreteKey()).message(selfOtpData.getmOtpPrefix());
 
 				userOtpManager.sendToSlack("Offline OTP for Emp: " + employeeNo, " Self ", selfOtpData.getmOtpPrefix(),
-						builder.toHMAC().toNumeric(AmxConstants.OTP_LENGTH).output());
+						builder.toHMAC().toComplex(AmxConstants.OTP_LENGTH).output());
 
 			}
 
@@ -240,7 +240,7 @@ public class UserAuthService {
 
 					userOtpManager.sendToSlack("Offline OTP for Emp: " + employeeNo, " Partner ",
 							userOtpData.getPartnerOtpData().getmOtpPrefix(),
-							builderP.toHMAC().toNumeric(AmxConstants.OTP_LENGTH).output());
+							builderP.toHMAC().toComplex(AmxConstants.OTP_LENGTH).output());
 
 				}
 
