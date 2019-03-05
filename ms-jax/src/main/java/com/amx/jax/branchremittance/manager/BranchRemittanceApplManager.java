@@ -813,11 +813,11 @@ public class BranchRemittanceApplManager {
 	 BigDecimal terminalId = metaData.getTerminalId();
 	 
 	 logger.debug("ipaddress :"+ipaddress+"\t CustomerId :"+metaData.getCustomerId()+"\t terminalId :"+terminalId);
-	 BranchSystemDetail brSystemDetails = branchSystemDetailRepository.findByIpAddress(ipaddress);
+	// BranchSystemDetail brSystemDetails = branchSystemDetailRepository.findByIpAddress(ipaddress);
 	// if(brSystemDetails!=null) {
-		 BigDecimal inventoryId = brSystemDetails.getCountryBranchSystemInventoryId();
+		// BigDecimal inventoryId = brSystemDetails.getCountryBranchSystemInventoryId();
 		 if(JaxUtil.isNullZeroBigDecimalCheck(terminalId)) {
-			 Device deviceClient = deviceRepository.findByDeviceTypeAndBranchSystemInventoryIdAndStatus(ClientType.SIGNATURE_PAD, inventoryId,ConstantDocument.Yes);
+			 Device deviceClient = deviceRepository.findByDeviceTypeAndBranchSystemInventoryIdAndStatus(ClientType.SIGNATURE_PAD, terminalId,ConstantDocument.Yes);
 			 DeviceStateInfo deviceStateInfo =  deviceStateRepository.findOne(deviceClient.getRegistrationId());
 			 if(deviceStateInfo!=null && deviceStateInfo.getSignature()!=null) {
 				 signature = deviceStateInfo.getSignature();
