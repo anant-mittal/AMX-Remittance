@@ -10,6 +10,6 @@ import com.amx.jax.dict.UserClient.ClientType;
 
 public interface IDeviceRepository  extends CrudRepository<Device, Serializable>{
 	
-	public Device findByDeviceTypeAndBranchSystemInventoryId(ClientType deviceType,BigDecimal branchSystemInventoryId);
+	public Device findByDeviceTypeAndBranchSystemInventoryIdAndStatus(ClientType deviceType,BigDecimal branchSystemInventoryId,String status);
 
 }

@@ -815,7 +815,7 @@ public class BranchRemittanceApplManager {
 	 if(brSystemDetails!=null) {
 		 BigDecimal inventoryId = brSystemDetails.getCountryBranchSystemInventoryId();
 		 if(JaxUtil.isNullZeroBigDecimalCheck(inventoryId)) {
-			 Device deviceClient = deviceRepository.findByDeviceTypeAndBranchSystemInventoryId(ClientType.SIGNATURE_PAD, inventoryId);
+			 Device deviceClient = deviceRepository.findByDeviceTypeAndBranchSystemInventoryIdAndStatus(ClientType.SIGNATURE_PAD, inventoryId,ConstantDocument.Yes);
 			 DeviceStateInfo deviceStateInfo =  deviceStateRepository.findOne(deviceClient.getRegistrationId());
 			 if(deviceStateInfo!=null && deviceStateInfo.getSignature()!=null) {
 				 signature = deviceStateInfo.getSignature();
