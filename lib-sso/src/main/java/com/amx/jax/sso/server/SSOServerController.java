@@ -161,7 +161,8 @@ public class SSOServerController {
 
 			if (SSOAuthStep.CREDS == json) {
 
-				SSOAuditEvent auditEvent = new SSOAuditEvent(SSOAuditEvent.Type.LOGIN_INIT).clientType(clientType);
+				SSOAuditEvent auditEvent = new SSOAuditEvent(SSOAuditEvent.Type.LOGIN_INIT, Result.FAIL)
+						.clientType(clientType);
 
 				ssoUser.generateSAC();
 
@@ -229,16 +230,16 @@ public class SSOServerController {
 					}
 					result.setStatusEnum(SSOServerCodes.OTP_REQUIRED);
 					auditEvent.setSuccess(true);
+					// Audit
+					auditEvent.result(Result.DONE);
 				} finally {
-					if (!auditEvent.isSuccess()) {
-						auditEvent.result(Result.FAIL);
-					}
 					auditService.log(auditEvent);
 				}
 
 			} else if ((SSOAuthStep.OTP == json) && formdata.getMotp() != null) {
 
-				SSOAuditEvent auditEvent = new SSOAuditEvent(SSOAuditEvent.Type.LOGIN_OTP).clientType(clientType);
+				SSOAuditEvent auditEvent = new SSOAuditEvent(SSOAuditEvent.Type.LOGIN_OTP, Result.FAIL)
+						.clientType(clientType);
 				try {
 					String terminalId = ArgUtil.parseAsString(sSOTranx.get().getUserClient().getTerminalId());
 
@@ -281,11 +282,8 @@ public class SSOServerController {
 					}
 
 					// Audit
-					auditEvent.setSuccess(true);
+					auditEvent.result(Result.DONE);
 				} finally {
-					if (!auditEvent.isSuccess()) {
-						auditEvent.result(Result.FAIL);
-					}
 					auditService.log(auditEvent);
 				}
 			}
