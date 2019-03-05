@@ -408,4 +408,16 @@ public class PricerServiceApiTest implements ProbotExchangeRateService {
 
 	}
 
+	@RequestMapping(value = ApiEndPoints.SERVICE_TEST, method = RequestMethod.GET)
+	public AmxApiResponse<Map<String, String>, Object> testService() {
+
+		Map<String, String> testResp = new HashMap<String, String>();
+
+		testResp.put("status", "OK");
+
+		AmxApiResponse<Map<String, String>, Object> amxApiResponse = AmxApiResponse.build(testResp);
+
+		return amxApiResponse;
+	}
+
 }

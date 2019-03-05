@@ -22,12 +22,10 @@ import com.amx.jax.dict.Tenant;
 import com.amx.jax.filter.AppClientErrorHanlder;
 import com.amx.jax.filter.AppClientInterceptor;
 import com.amx.jax.scope.TenantProperties;
-import com.amx.jax.scope.TenantScoped;
 import com.amx.utils.ArgUtil;
 import com.ulisesbocchio.jasyptspringboot.annotation.EnableEncryptableProperties;
 
 @Configuration
-@TenantScoped
 @PropertySource("classpath:application-lib.properties")
 @EnableEncryptableProperties
 public class AppConfig {

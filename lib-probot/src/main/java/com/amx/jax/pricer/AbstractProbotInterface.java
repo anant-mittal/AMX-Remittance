@@ -4,7 +4,9 @@ public interface AbstractProbotInterface {
 	public static class ApiEndPoints {
 
 		/** The Constant SERVICE_PREFIX. */
-		private static final String SERVICE_PREFIX = "/probot";
+		// private static final String SERVICE_PREFIX = "/probot";
+
+		private static final String SERVICE_PREFIX = "";
 
 		/** The Constant API_VERSION_V1. */
 		private static final String API_VERSION_V1 = "/v1";
@@ -22,6 +24,7 @@ public interface AbstractProbotInterface {
 		
 		public static final String PRICE_TEST = SERVICE_PREFIX + API_VERSION_V1 + "/price-test";
 		
+		public static final String SERVICE_TEST = SERVICE_PREFIX + API_VERSION_V1 + "/service-test";
 		// Service Controllers for Discount Management Data
 		public static final String GET_DISCOUNT_DETAILS = SERVICE_PREFIX + API_VERSION_V1 + "/get-discount-details";
 		
