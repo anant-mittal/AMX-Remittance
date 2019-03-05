@@ -30,6 +30,8 @@ import com.amx.jax.dbmodel.BizComponentData;
 import com.amx.jax.dbmodel.ContactDetail;
 import com.amx.jax.dbmodel.CountryMaster;
 import com.amx.jax.dbmodel.Customer;
+import com.amx.jax.dbmodel.CustomerCategoryDiscountModel;
+import com.amx.jax.dbmodel.CustomerExtendedModel;
 import com.amx.jax.dbmodel.CustomerIdProof;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.DistrictMaster;
@@ -38,11 +40,14 @@ import com.amx.jax.dbmodel.remittance.IDNumberLengthCheckView;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.OtpData;
+import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.model.request.CustomerPersonalDetail;
 import com.amx.jax.model.request.HomeAddressDetails;
 import com.amx.jax.model.request.LocalAddressDetails;
 import com.amx.jax.model.response.customer.OffsiteCustomerDataDTO;
 import com.amx.jax.repository.CustomerEmployeeDetailsRepository;
+import com.amx.jax.repository.ICustomerCategoryDiscountRepo;
+import com.amx.jax.repository.ICustomerExtendedRepository;
 import com.amx.jax.repository.remittance.IIdNumberLengthCheckRepository;
 import com.amx.jax.trnx.CustomerRegistrationTrnxModel;
 import com.amx.jax.userservice.dao.CustomerDao;
@@ -106,6 +111,12 @@ public class CustomerRegistrationManager extends TransactionModel<CustomerRegist
 	
 	@Autowired
 	UserValidationService userValidationService;
+	
+	@Autowired
+	ICustomerExtendedRepository customerExtendedRepo;
+	
+	@Autowired
+	ICustomerCategoryDiscountRepo customerCategoryRepository;
 	
 	
 	@Override
@@ -379,6 +390,7 @@ public class CustomerRegistrationManager extends TransactionModel<CustomerRegist
 			//userValidationService.validateBlackListedCustomer(customer);
 			
 			
+			
 			offsiteCustomer.setIdentityInt(customer.getIdentityInt());
 			offsiteCustomer.setIdentityTypeId(customer.getIdentityTypeId());
 			customerDetails.setCustomerId(customer.getCustomerId());
@@ -402,6 +414,7 @@ public class CustomerRegistrationManager extends TransactionModel<CustomerRegist
 			customerDetails.setIsWatsApp(customer.getIsMobileWhatsApp());
 			customerDetails.setRegistrationType(customer.getCustomerRegistrationType());
 			customerDetails.setCustomerSignature(customer.getSignatureSpecimenClob());
+			customerDetails.setCustomerCategory(getCustomerCategory(customer.getCustomerId()));
 			
 			offsiteCustomer.setCustomerPersonalDetail(customerDetails);
 			
@@ -459,5 +472,18 @@ public class CustomerRegistrationManager extends TransactionModel<CustomerRegist
 	}
 	
 	
+private ResourceDTO getCustomerCategory(BigDecimal customerId) {
+	ResourceDTO dto = new ResourceDTO();
+	CustomerExtendedModel customerExtendedModel =  customerExtendedRepo.findByCustomerId(customerId);
+	if(customerExtendedModel != null) {
+		CustomerCategoryDiscountModel categorydiscountModel = customerCategoryRepository.findByIdAndIsActive(customerExtendedModel.getCustCatMasterId(),ConstantDocument.Yes);
+		
+		dto.setResourceId(categorydiscountModel.getId());
+		dto.setResourceName(categorydiscountModel.getCustomerCatagory());
+	}
+	return dto ; 
+}
 
+
+	
 }

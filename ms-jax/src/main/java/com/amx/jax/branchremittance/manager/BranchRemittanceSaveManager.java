@@ -1,12 +1,8 @@
 package com.amx.jax.branchremittance.manager;
 
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.Reader;
 import java.math.BigDecimal;
 import java.sql.Clob;
-import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -14,9 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.transaction.Transactional;
-
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

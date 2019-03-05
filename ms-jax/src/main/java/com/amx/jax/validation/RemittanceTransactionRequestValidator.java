@@ -67,8 +67,7 @@ public class RemittanceTransactionRequestValidator {
 
 		ExchangeRateBreakup oldExchangeRate = request.getExchangeRateBreakup();
 		ExchangeRateBreakup newExchangeRate = response.getExRateBreakup();
-		oldExchangeRate
-.setRate(oldExchangeRate.getRate().setScale(newExchangeRate.getRate().scale(), RoundingMode.HALF_UP));
+		oldExchangeRate.setRate(oldExchangeRate.getRate().setScale(newExchangeRate.getRate().scale(), RoundingMode.HALF_UP));
 		if (oldExchangeRate.compareTo(newExchangeRate) != 0) {
 			throw new GlobalException(JaxError.EXCHANGE_RATE_CHANGED, "Exchange rate has been changed");
 		}
@@ -85,8 +84,7 @@ public class RemittanceTransactionRequestValidator {
 		} else {
 			validateFlexFieldValues(requestFlexFields);
 		}
-		requestFlexFields.put("INDIC1",
-				new FlexFieldDto(request.getAdditionalBankRuleFiledId(), request.getSrlId(), null));
+		requestFlexFields.put("INDIC1",new FlexFieldDto(request.getAdditionalBankRuleFiledId(), request.getSrlId(), null));
 		BigDecimal applicationCountryId = (BigDecimal) remitApplParametersMap.get("P_APPLICATION_COUNTRY_ID");
 		BigDecimal routingCountryId = (BigDecimal) remitApplParametersMap.get("P_ROUTING_COUNTRY_ID");
 		BigDecimal remittanceModeId = (BigDecimal) remitApplParametersMap.get("P_REMITTANCE_MODE_ID");
@@ -100,16 +98,13 @@ public class RemittanceTransactionRequestValidator {
 			flexiFieldIn.remove(ConstantDocument.INDIC1);
 		}
 
-		List<AdditionalDataDisplayView> additionalDataRequired = additionalDataDisplayDao
-				.getAdditionalDataFromServiceApplicability(applicationCountryId, routingCountryId, foreignCurrencyId,
-						remittanceModeId, deliveryModeId, flexiFieldIn.toArray(new String[flexiFieldIn.size()]));
+		List<AdditionalDataDisplayView> additionalDataRequired = additionalDataDisplayDao.getAdditionalDataFromServiceApplicability(applicationCountryId, routingCountryId, foreignCurrencyId,remittanceModeId, deliveryModeId, flexiFieldIn.toArray(new String[flexiFieldIn.size()]));
 		List<JaxConditionalFieldDto> requiredFlexFields = new ArrayList<>();
 		for (AdditionalDataDisplayView flexField : additionalDataRequired) {
 			FlexFieldDto flexFieldValueInRequest = requestFlexFields.get(flexField.getFlexField());
 
 			String fieldBehaviour = flexField.getFieldBehaviour();
-			List<AdditionalBankRuleMap> addtionalBankRules = additionalBankRuleMapDao
-					.getDynamicLevelMatch(routingCountryId, flexField.getFlexField());
+			List<AdditionalBankRuleMap> addtionalBankRules = additionalBankRuleMapDao.getDynamicLevelMatch(routingCountryId, flexField.getFlexField());
 			// bank rule for this flex field
 			AdditionalBankRuleMap bankRule = addtionalBankRules.get(0);
 			JaxConditionalFieldDto dto = new JaxConditionalFieldDto();
@@ -124,9 +119,7 @@ public class RemittanceTransactionRequestValidator {
 			dto.setId(bankRule.getAdditionalBankRuleId());
 			if (FlexFieldBehaviour.PRE_DEFINED.toString().equals(fieldBehaviour)) {
 				field.setType(FlexFieldBehaviour.PRE_DEFINED.getFieldType().toString());
-				List<JaxFieldValueDto> amiecValues = getAmiecValues(bankRule.getFlexField(), routingCountryId,
-						deliveryModeId, remittanceModeId, routingBankId, foreignCurrencyId,
-						bankRule.getAdditionalBankRuleId());
+				List<JaxFieldValueDto> amiecValues = getAmiecValues(bankRule.getFlexField(), routingCountryId,deliveryModeId, remittanceModeId, routingBankId, foreignCurrencyId,bankRule.getAdditionalBankRuleId());
 				field.setPossibleValues(amiecValues);
 			} else {
 				field.setType(FlexFieldBehaviour.USER_ENTERABLE.getFieldType().toString());
@@ -147,8 +140,7 @@ public class RemittanceTransactionRequestValidator {
 		
 		if (!requiredFlexFields.isEmpty()) {
 			LOGGER.error(requiredFlexFields.toString());
-			AdditionalFlexRequiredException exp = new AdditionalFlexRequiredException(
-					"Addtional flex fields are required", JaxError.ADDTIONAL_FLEX_FIELD_REQUIRED);
+			AdditionalFlexRequiredException exp = new AdditionalFlexRequiredException("Addtional flex fields are required", JaxError.ADDTIONAL_FLEX_FIELD_REQUIRED);
 			processFlexFields(requiredFlexFields);
 			exp.setMeta(requiredFlexFields);
 			throw exp;
