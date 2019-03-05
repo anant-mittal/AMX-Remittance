@@ -77,14 +77,15 @@ public class DeviceController {
 		String deivceTerminalIp = req.getDeivceTerminalId();
 		ClientType deivceClientType = req.getDeivceClientType();
 
+		AppContextUtil.getUserClient().setClientType(deivceClientType);
+
 		if ((ArgUtil.isEmpty(deivceTerminalIp) && ArgUtil.isEmpty(req.getIdentity()))
 				|| ArgUtil.isEmpty(deivceClientType)) {
 			throw new OffsiteServerError(OffsiteServerCodes.CLIENT_UNKNOWN, "hoho");
 		}
 
 		SSOAuditEvent auditEvent = new SSOAuditEvent(SSOAuditEvent.Type.DEVICE_PAIR, Result.FAIL)
-				.terminalIp(deivceTerminalIp)
-				.clientType(deivceClientType);
+				.terminalIp(deivceTerminalIp);
 
 		try {
 			// validate Device with jax
@@ -150,10 +151,11 @@ public class DeviceController {
 		creds.setOtpTtl(AmxConstants.OTP_TTL);
 		String meta = ArgUtil.isEmpty(resp.getEmpId()) ? resp.getTermialId() : resp.getEmpId();
 
+		AppContextUtil.getUserClient().setClientType(resp.getDeviceType());
+
 		// Audit
 		auditService.log(new SSOAuditEvent(SSOAuditEvent.Type.DEVICE_SESSION_CREATED)
 				.terminalId(resp.getTermialId())
-				.clientType(resp.getDeviceType())
 				.deviceRegId(deviceRegId));
 
 		return AmxApiResponse.build(creds, meta);
@@ -168,11 +170,10 @@ public class DeviceController {
 				deviceType, terminalId,
 				mOtp);
 		deviceRequestValidator.updateStamp(resp.getResult().getDeviceRegId());
-
 		// Audit
+		AppContextUtil.getUserClient().setClientType(resp.getResult().getDeviceType());
 		auditService.log(new SSOAuditEvent(SSOAuditEvent.Type.DEVICE_SESSION_PAIR)
 				.terminalId(resp.getResult().getTermialId())
-				.clientType(resp.getResult().getDeviceType())
 				.deviceRegId(resp.getResult().getDeviceRegId()));
 
 		return resp;
@@ -180,7 +181,9 @@ public class DeviceController {
 
 	@RequestMapping(value = { DeviceConstants.Path.SESSION_TERMINAL }, method = { RequestMethod.GET })
 	public AmxApiResponse<Object, Object> webAppLogin() {
+
 		DeviceData deviceData = deviceRequestValidator.validateRequest();
+
 		String terminalId = deviceData.getTerminalId();
 		sSOTranx.get().setBranchAdapterId(deviceRequestValidator.getDeviceRegId());
 		sSOTranx.get().getUserClient().setTerminalId(ArgUtil.parseAsBigDecimal(terminalId));
@@ -190,9 +193,10 @@ public class DeviceController {
 		sSOTranx.save();
 
 		// Audit
+		AppContextUtil.getUserClient().setClientType(ClientType.BRANCH_ADAPTER);
 		auditService.log(new SSOAuditEvent(SSOAuditEvent.Type.SESSION_TERMINAL_MAP)
 				.terminalId(sSOTranx.get().getUserClient().getTerminalId())
-				.clientType(ClientType.BRANCH_ADAPTER).deviceRegId(sSOTranx.get().getBranchAdapterId()));
+				.deviceRegId(sSOTranx.get().getBranchAdapterId()));
 
 		return AmxApiResponse.build(terminalId, deviceRequestValidator.getDeviceRegId());
 	}

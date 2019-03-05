@@ -1,5 +1,8 @@
 package com.amx.jax.sso;
 
+import java.io.Serializable;
+
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.logger.AuditEvent;
 import com.amx.utils.ArgUtil;
@@ -21,88 +24,90 @@ public class SSOAuditEvent extends AuditEvent {
 		}
 	}
 
-	String terminalId;
-	String terminalIp;
-	String deviceId;
-	String deviceRegId;
-	String identity;
-	ClientType clientType;
+	@JsonIgnoreProperties(ignoreUnknown = true)
+	public static class SSOAuditData implements Serializable {
+		private static final long serialVersionUID = -1765231313729431488L;
+		String terminalId;
+		String terminalIp;
+		String deviceRegId;
+		String identity;
+
+		public String getTerminalId() {
+			return terminalId;
+		}
+
+		public void setTerminalId(String terminalId) {
+			this.terminalId = terminalId;
+		}
+
+		public String getTerminalIp() {
+			return terminalIp;
+		}
+
+		public void setTerminalIp(String terminalIp) {
+			this.terminalIp = terminalIp;
+		}
+
+		public String getDeviceRegId() {
+			return deviceRegId;
+		}
+
+		public void setDeviceRegId(String deviceRegId) {
+			this.deviceRegId = deviceRegId;
+		}
+
+		public String getIdentity() {
+			return identity;
+		}
+
+		public void setIdentity(String identity) {
+			this.identity = identity;
+		}
+	}
+
+	private SSOAuditData auth;
 
 	public SSOAuditEvent(Type eventType) {
 		super(eventType);
+		this.auth = new SSOAuditData();
 	}
 
 	public SSOAuditEvent(Type eventType, Result result) {
 		super(eventType, result);
-	}
-
-	public SSOAuditEvent deviceId(Object deviceId) {
-		this.deviceId = ArgUtil.parseAsString(deviceId);
-		return this;
+		this.auth = new SSOAuditData();
 	}
 
 	public SSOAuditEvent identity(Object identity) {
-		this.identity = ArgUtil.parseAsString(identity);
+		this.auth.setIdentity(ArgUtil.parseAsString(identity));
 		return this;
 	}
 
 	public SSOAuditEvent terminalId(Object terminalId) {
-		this.terminalId = ArgUtil.parseAsString(terminalId);
+		this.auth.setTerminalId(ArgUtil.parseAsString(terminalId));
 		return this;
 	}
 
 	public SSOAuditEvent terminalIp(Object terminalIp) {
-		this.terminalIp = ArgUtil.parseAsString(terminalIp);
+		this.auth.setTerminalIp(ArgUtil.parseAsString(terminalIp));
 		return this;
 	}
 
 	public SSOAuditEvent deviceRegId(Object deviceRegId) {
-		this.deviceRegId = ArgUtil.parseAsString(deviceRegId);
+		this.auth.setDeviceRegId(ArgUtil.parseAsString(deviceRegId));
 		return this;
 	}
 
 	public SSOAuditEvent clientType(ClientType clientType) {
-		this.clientType = clientType;
+		AppContextUtil.getUserClient().setClientType(clientType);
 		return this;
 	}
 
-	public String getTerminalId() {
-		return terminalId;
+	public SSOAuditData getAuth() {
+		return auth;
 	}
 
-	public void setTerminalId(String terminalId) {
-		this.terminalId = terminalId;
+	public void setAuth(SSOAuditData auth) {
+		this.auth = auth;
 	}
 
-	public String getTerminalIp() {
-		return terminalIp;
-	}
-
-	public void setTerminalIp(String terminalIp) {
-		this.terminalIp = terminalIp;
-	}
-
-	public String getDeviceRegId() {
-		return deviceRegId;
-	}
-
-	public void setDeviceRegId(String deviceRegId) {
-		this.deviceRegId = deviceRegId;
-	}
-
-	public ClientType getClientType() {
-		return clientType;
-	}
-
-	public void setClientType(ClientType clientType) {
-		this.clientType = clientType;
-	}
-
-	public String getDeviceId() {
-		return deviceId;
-	}
-
-	public void setDeviceId(String deviceId) {
-		this.deviceId = deviceId;
-	}
 }
