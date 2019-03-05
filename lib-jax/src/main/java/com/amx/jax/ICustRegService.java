@@ -43,6 +43,7 @@ public interface ICustRegService extends IJaxService {
 		public static final String SCAN_CARD = PREFIX + "/scan_card";
 		public static final String SAVE_OFFSITE_LOGIN = PREFIX + "/offsite-save-login-detail";
 		public static final String GET_OFFSITE_CUSTOMER_DATA = PREFIX + "/getOffsiteCustomerData";
+		public static final String GET_OFFSITE_CUSTOMER_DATA_V1 = PREFIX + "/getOffsiteCustomerData/v1";
 	}
 	
 	public static class Params {

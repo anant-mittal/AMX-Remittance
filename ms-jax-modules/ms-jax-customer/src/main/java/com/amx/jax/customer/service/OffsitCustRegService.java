@@ -82,6 +82,7 @@ import com.amx.jax.model.request.HomeAddressDetails;
 import com.amx.jax.model.request.ImageSubmissionRequest;
 import com.amx.jax.model.request.LocalAddressDetails;
 import com.amx.jax.model.request.OffsiteCustomerRegistrationRequest;
+import com.amx.jax.model.request.customer.GetOffsiteCustomerDetailRequest;
 import com.amx.jax.model.response.ArticleDetailsDescDto;
 import com.amx.jax.model.response.ArticleMasterDescDto;
 import com.amx.jax.model.response.ComponentDataDto;
@@ -1094,5 +1095,10 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 			throw new GlobalException(ResponseStatus.NOT_FOUND.toString());
 		}
 		return AmxApiResponse.build(offsiteCustomer);
+	}
+
+	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerData(
+			GetOffsiteCustomerDetailRequest request) {
+		
 	}
 }
