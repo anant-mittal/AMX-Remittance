@@ -255,7 +255,8 @@ public enum JaxError implements IExceptionEnum {
 	AMOUNT_MISMATCH,
 	// for validate Currency pair
 	INVALID_PAIR_ID,
-	ID_TYPE_LENGTH_NOT_DEFINED;
+	ID_TYPE_LENGTH_NOT_DEFINED,
+	INVENTORY_ID_NOT_EXISTS;
 
 	@Deprecated
 	public String getCode() {

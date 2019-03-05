@@ -1,6 +1,7 @@
 package com.amx.jax.branchremittance.manager;
 
 import java.math.BigDecimal;
+import java.sql.ClientInfoStatus;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -32,11 +33,14 @@ import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dbmodel.ApplicationSetup;
 import com.amx.jax.dbmodel.BankMasterModel;
 import com.amx.jax.dbmodel.BenificiaryListView;
+import com.amx.jax.dbmodel.BranchSystemDetail;
 import com.amx.jax.dbmodel.CompanyMaster;
 import com.amx.jax.dbmodel.CountryBranch;
 import com.amx.jax.dbmodel.CountryMaster;
 import com.amx.jax.dbmodel.CurrencyMasterModel;
 import com.amx.jax.dbmodel.Customer;
+import com.amx.jax.dbmodel.Device;
+import com.amx.jax.dbmodel.DeviceStateInfo;
 import com.amx.jax.dbmodel.UserFinancialYear;
 import com.amx.jax.dbmodel.ViewCompanyDetails;
 import com.amx.jax.dbmodel.fx.EmployeeDetailsView;
@@ -49,6 +53,7 @@ import com.amx.jax.dbmodel.remittance.RemitApplAmlModel;
 import com.amx.jax.dbmodel.remittance.RemittanceAppBenificiary;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.RemittanceModeMaster;
+import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.manager.RemittanceApplicationAdditionalDataManager;
 import com.amx.jax.manager.RemittanceApplicationManager;
@@ -64,9 +69,12 @@ import com.amx.jax.model.response.remittance.RemittanceDeclarationReportDto;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
 import com.amx.jax.model.response.remittance.RoutingResponseDto;
 import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeRateResponse;
+import com.amx.jax.repository.BranchSystemDetailRepository;
+import com.amx.jax.repository.DeviceStateRepository;
 import com.amx.jax.repository.IApplicationCountryRepository;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.ICurrencyDao;
+import com.amx.jax.repository.IDeviceRepository;
 import com.amx.jax.repository.IDocumentDao;
 import com.amx.jax.repository.fx.EmployeeDetailsRepository;
 import com.amx.jax.service.BankMetaService;
@@ -161,6 +169,15 @@ public class BranchRemittanceApplManager {
 	
 	@Autowired
 	RemittanceAdditionalFieldManager remittanceAdditionalFieldManager;
+	
+	@Autowired
+	DeviceStateRepository deviceStateRepository;
+	
+	@Autowired
+	private BranchSystemDetailRepository branchSystemDetailRepository;
+	
+	@Autowired
+	IDeviceRepository deviceRepository;
 
 
 	
@@ -268,6 +285,19 @@ public class BranchRemittanceApplManager {
 		
 		RemittanceApplication remittanceApplication = new RemittanceApplication();
 		try {
+			
+			String signature = getCustomerSignature();
+
+			if(!StringUtils.isBlank(signature)) {
+				try {
+				remittanceApplication.setCustomerSignatureClob(stringToClob(signature));
+				}catch(Exception e) {
+					e.printStackTrace();
+				}
+			}else {
+				throw new GlobalException(JaxError.CUSTOMER__SIGNATURE_UNAVAILABLE,"Customer signature required");
+			}
+			
 			BranchRemittanceApplRequestModel applRequestModel = (BranchRemittanceApplRequestModel)hashMap.get("APPL_REQ_MODEL");
 			//Map<String, Object> branchRoutingDetails =(HashMap)hashMap.get("ROUTING_DETAILS_MAP");
 			
@@ -454,16 +484,6 @@ public class BranchRemittanceApplManager {
 			remittanceApplication.setWuIpAddress(metaData.getDeviceIp());
 			remittanceApplication.setInstruction("URGENT");
 			
-			
-			if(!StringUtils.isBlank(applRequestModel.getSignature())) {
-				try {
-				remittanceApplication.setCustomerSignatureClob(stringToClob(applRequestModel.getSignature()));
-				}catch(Exception e) {
-					e.printStackTrace();
-				}
-			}else {
-				throw new GlobalException(JaxError.CUSTOMER__SIGNATURE_UNAVAILABLE,"Customer signature required");
-			}
 			
 			return remittanceApplication;
 			
@@ -787,6 +807,26 @@ public class BranchRemittanceApplManager {
  }
  
 
+ public String getCustomerSignature() {
+	 String signature = null;
+	 String ipaddress = metaData.getDeviceIp();
+	 logger.debug("ipaddress :"+ipaddress+"\t CustomerId :"+metaData.getCustomerId());
+	 BranchSystemDetail brSystemDetails = branchSystemDetailRepository.findByIpAddress(ipaddress);
+	 if(brSystemDetails!=null) {
+		 BigDecimal inventoryId = brSystemDetails.getCountryBranchSystemInventoryId();
+		 if(JaxUtil.isNullZeroBigDecimalCheck(inventoryId)) {
+			 Device deviceClient = deviceRepository.findByDeviceTypeAndBranchSystemInventoryId(ClientType.SIGNATURE_PAD, inventoryId);
+			 DeviceStateInfo deviceStateInfo =  deviceStateRepository.findOne(deviceClient.getRegistrationId());
+			 if(deviceStateInfo!=null && deviceStateInfo.getSignature()!=null) {
+				 signature = deviceStateInfo.getSignature();
+			 }
+		 }else {
+			 throw new GlobalException(JaxError.INVENTORY_ID_NOT_EXISTS,"Branch system inventory doesnot exist "+inventoryId);
+		 }
+	 }
+	 
+	 return signature;
+ }
  
  
 }
