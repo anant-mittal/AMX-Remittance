@@ -216,7 +216,7 @@ public class BranchRemittanceApplManager {
 		 remittanceTransactionRequestValidator.validateExchangeRate(requestApplModel, exchangeRateResposne);
 		 remittanceTransactionRequestValidator.validateFlexFields(requestApplModel, remitApplParametersMap);
 		 remittanceAdditionalFieldManager.validateAdditionalFields(requestApplModel, remitApplParametersMap);
-		 remittanceAdditionalFieldManager.processAdditionalFields(requestApplModel);
+		// remittanceAdditionalFieldManager.processAdditionalFields(requestApplModel); for testing purpose we blocked
 
 		 
 		 logger.debug("branchExchangeRate :"+exchangeRateResposne);
@@ -810,19 +810,21 @@ public class BranchRemittanceApplManager {
  public String getCustomerSignature() {
 	 String signature = null;
 	 String ipaddress = metaData.getDeviceIp();
-	 logger.debug("ipaddress :"+ipaddress+"\t CustomerId :"+metaData.getCustomerId());
+	 BigDecimal terminalId = metaData.getTerminalId();
+	 
+	 logger.debug("ipaddress :"+ipaddress+"\t CustomerId :"+metaData.getCustomerId()+"\t terminalId :"+terminalId);
 	 BranchSystemDetail brSystemDetails = branchSystemDetailRepository.findByIpAddress(ipaddress);
-	 if(brSystemDetails!=null) {
+	// if(brSystemDetails!=null) {
 		 BigDecimal inventoryId = brSystemDetails.getCountryBranchSystemInventoryId();
-		 if(JaxUtil.isNullZeroBigDecimalCheck(inventoryId)) {
+		 if(JaxUtil.isNullZeroBigDecimalCheck(terminalId)) {
 			 Device deviceClient = deviceRepository.findByDeviceTypeAndBranchSystemInventoryIdAndStatus(ClientType.SIGNATURE_PAD, inventoryId,ConstantDocument.Yes);
 			 DeviceStateInfo deviceStateInfo =  deviceStateRepository.findOne(deviceClient.getRegistrationId());
 			 if(deviceStateInfo!=null && deviceStateInfo.getSignature()!=null) {
 				 signature = deviceStateInfo.getSignature();
 			 }
-		 }else {
+		 /*}else {
 			 throw new GlobalException(JaxError.INVENTORY_ID_NOT_EXISTS,"Branch system inventory doesnot exist "+inventoryId);
-		 }
+		 }*/
 	 }
 	 
 	 return signature;

@@ -46,6 +46,7 @@ public class MetaData implements IMetaData {
 	private String deviceType;
 	private String appType;
 	private BigDecimal employeeId;
+	private BigDecimal terminalId;
 
 	/**
 	 * This returns service factory object depending on site country
@@ -178,6 +179,14 @@ public class MetaData implements IMetaData {
 
 	public void setEmployeeId(BigDecimal employeeId) {
 		this.employeeId = employeeId;
+	}
+
+	public BigDecimal getTerminalId() {
+		return terminalId;
+	}
+
+	public void setTerminalId(BigDecimal terminalId) {
+		this.terminalId = terminalId;
 	}
 
 }

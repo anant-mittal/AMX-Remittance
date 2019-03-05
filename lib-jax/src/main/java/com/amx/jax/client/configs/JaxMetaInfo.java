@@ -49,6 +49,7 @@ public class JaxMetaInfo extends RequestMetaInfo {
 		info.setDeviceType(this.getDeviceType());
 		info.setAppType(this.getAppType());
 		info.setEmployeeId(this.getEmployeeId());
+		info.setTerminalId(this.terminalId);
 		return info;
 	}
 
