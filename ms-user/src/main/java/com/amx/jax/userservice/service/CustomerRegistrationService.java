@@ -19,6 +19,7 @@ import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.CustomerCredential;
 import com.amx.jax.dbmodel.ApplicationSetup;
 import com.amx.jax.dbmodel.Customer;
+import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.model.dto.SendOtpModel;
 import com.amx.jax.model.request.CustomerPersonalDetail;
 import com.amx.jax.repository.IApplicationCountryRepository;
@@ -27,6 +28,7 @@ import com.amx.jax.services.JaxNotificationService;
 import com.amx.jax.trnx.CustomerRegistrationTrnxModel;
 import com.amx.jax.userservice.manager.CustomerRegistrationManager;
 import com.amx.jax.userservice.manager.CustomerRegistrationOtpManager;
+import com.amx.jax.userservice.repository.OnlineCustomerRepository;
 import com.amx.jax.userservice.validation.CustomerCredentialValidator;
 import com.amx.jax.userservice.validation.CustomerPersonalDetailValidator;
 import com.amx.jax.userservice.validation.CustomerPhishigImageValidator;
@@ -68,6 +70,8 @@ public class CustomerRegistrationService extends AbstractService {
 	IApplicationCountryRepository applicationSetup;
 	@Autowired
 	UserService userService ; 
+	@Autowired
+	OnlineCustomerRepository onlineCustomer;
 	
 	/**
 	 * Sends otp initiating trnx
@@ -136,7 +140,10 @@ public class CustomerRegistrationService extends AbstractService {
 		customerRegistrationManager.saveLoginDetail(customerCredential);
 		customerCredentialValidator.validate(customerRegistrationManager.get(),  null);
 		customerRegistrationManager.commit();
-		Customer customerDetails = userService.getCustomerDetails(customerCredential.getLoginId());
+		
+		CustomerOnlineRegistration loginCustomer = onlineCustomer.getOnlineCustomersByLoginId(customerCredential.getLoginId());		
+		
+		Customer customerDetails = userService.getCustomerDetails(loginCustomer.getLoginId());
 		ApplicationSetup applicationSetupData = applicationSetup.getApplicationSetupDetails();
 		PersonInfo personinfo = new PersonInfo();
 		try {
