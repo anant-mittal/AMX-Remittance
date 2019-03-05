@@ -1,10 +1,8 @@
 package com.amx.jax.radar.jobs.customer;
 
-import java.math.BigDecimal;
 import java.util.Date;
 
 import org.slf4j.Logger;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -20,11 +18,10 @@ import com.amx.jax.grid.GridService.GridViewBuilder;
 import com.amx.jax.grid.GridView;
 import com.amx.jax.grid.views.TranxViewRecord;
 import com.amx.jax.logger.LoggerService;
-import com.amx.jax.mcq.Candidate;
 import com.amx.jax.mcq.shedlock.SchedulerLock;
 import com.amx.jax.mcq.shedlock.SchedulerLock.LockContext;
 import com.amx.jax.radar.AESRepository.BulkRequestBuilder;
-import com.amx.jax.radar.TestSizeApp;
+import com.amx.jax.radar.jobs.customer.OracleVarsCache.DBSyncJobs;
 import com.amx.jax.rates.AmxCurConstants;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
@@ -44,13 +41,10 @@ public class TrnxViewTask extends AbstractDBSyncTask {
 
 	long intervalDays = 10;
 
-	private static final Candidate LOCK = new Candidate().fixedDelay(AmxCurConstants.INTERVAL_SEC * 10)
-			.maxAge(AmxCurConstants.INTERVAL_MIN).queue(TrnxViewTask.class);
-
 	@SchedulerLock(lockMaxAge = AmxCurConstants.INTERVAL_MIN * 30, context = LockContext.BY_CLASS)
 	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_SEC * 15)
 	public void doTaskModeNight() {
-		if (TimeUtils.inHourSlot(4, 1)) {
+		if (TimeUtils.inHourSlot(4, 0)) {
 			this.doTask();
 		}
 	}
@@ -58,19 +52,20 @@ public class TrnxViewTask extends AbstractDBSyncTask {
 	@SchedulerLock(lockMaxAge = AmxCurConstants.INTERVAL_MIN * 30, context = LockContext.BY_CLASS)
 	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_MIN * 10)
 	public void doTaskModeDay() {
-		if (!TimeUtils.inHourSlot(4, 1)) {
+		if (!TimeUtils.inHourSlot(4, 0)) {
 			this.doTask();
 		}
 	}
 
 	@Override
+	// @Scheduled(fixedDelay = AmxCurConstants.INTERVAL_SEC * 10)
 	public void doTask() {
 		this.doBothTask();
 	}
 
 	public void doTask(int lastPage, String lastId) {
 
-		Long lastUpdateDateNow = oracleVarsCache.getTranxScannedStamp(false);
+		Long lastUpdateDateNow = oracleVarsCache.getStampStartTime(DBSyncJobs.TRANSACTION);
 		Long lastUpdateDateNowLimit = lastUpdateDateNow + (intervalDays * AmxCurConstants.INTERVAL_DAYS);
 
 		String dateString = GridConstants.GRID_TIME_FORMATTER_JAVA.format(new Date(lastUpdateDateNow));
@@ -98,16 +93,9 @@ public class TrnxViewTask extends AbstractDBSyncTask {
 				if (lastUpdateDate > lastUpdateDateNow) {
 					lastUpdateDateNow = lastUpdateDate;
 				}
-
-				BigDecimal appId = ArgUtil.parseAsBigDecimal(record.getId());
-				Date creationDate = ArgUtil.parseAsSimpleDate(record.getLastUpdateDate());
-				OracleViewDocument document = new OracleViewDocument();
-				document.setId("appxn-" + appId);
-				document.setTimestamp(creationDate);
-				document.setTrnx(record);
-				document.normalizeTrnx();
+				OracleViewDocument document = new OracleViewDocument(record);
 				lastIdNow = ArgUtil.parseAsString(document.getId(), Constants.BLANK);
-				builder.update(oracleVarsCache.getTranxIndex(), "appxn", document);
+				builder.update(oracleVarsCache.getTranxIndex(), document);
 			} catch (Exception e) {
 				LOGGER.error("TranxViewRecord Excep", e);
 			}
@@ -126,25 +114,25 @@ public class TrnxViewTask extends AbstractDBSyncTask {
 		if (x.getResults().size() > 0) {
 			intervalDays = 10;
 			esRepository.bulk(builder.build());
-			oracleVarsCache.setTranxScannedStamp(lastUpdateDateNow, false);
+			oracleVarsCache.setStampStart(DBSyncJobs.TRANSACTION, lastUpdateDateNow);
 			if ((lastUpdateDateNowStart == lastUpdateDateNow) || (x.getResults().size() == 1000 && lastPage < 10)) {
 				doTask(lastPage + 1, lastId);
 			}
 		} else if (lastUpdateDateNowLimit < todayOffset) {
 			intervalDays++;
-			oracleVarsCache.setTranxScannedStamp(lastUpdateDateNowLimit, false);
+			oracleVarsCache.setStampStart(DBSyncJobs.TRANSACTION, lastUpdateDateNowLimit);
 		} else {
 			oracleVarsCache
-					.setTranxScannedStamp(Math.min(todayOffset, lastUpdateDateNow + AmxCurConstants.INTERVAL_DAYS),
-							false);
+					.setStampStart(DBSyncJobs.TRANSACTION,
+							Math.min(todayOffset, lastUpdateDateNow + AmxCurConstants.INTERVAL_DAYS));
 		}
 
 	}
 
 	public void doTaskRev(int lastPage, String lastId) {
 
-		Long lastUpdateDateNowFrwrds = oracleVarsCache.getTranxScannedStamp(false);
-		Long lastUpdateDateNow = oracleVarsCache.getTranxScannedStamp(true);
+		Long lastUpdateDateNowFrwrds = oracleVarsCache.getStampStartTime(DBSyncJobs.TRANSACTION);
+		Long lastUpdateDateNow = oracleVarsCache.getStampEndTime(DBSyncJobs.TRANSACTION);
 
 		if (lastUpdateDateNow < lastUpdateDateNowFrwrds
 				|| lastUpdateDateNow < OracleVarsCache.START_TIME) {
@@ -179,15 +167,9 @@ public class TrnxViewTask extends AbstractDBSyncTask {
 					lastUpdateDateNow = lastUpdateDate;
 				}
 
-				BigDecimal appId = ArgUtil.parseAsBigDecimal(record.getId());
-				Date creationDate = ArgUtil.parseAsSimpleDate(record.getLastUpdateDate());
-				OracleViewDocument document = new OracleViewDocument();
-				document.setId("appxn-" + appId);
-				document.setTimestamp(creationDate);
-				document.setTrnx(record);
-				document.normalizeTrnx();
+				OracleViewDocument document = new OracleViewDocument(record);
 				lastIdNow = ArgUtil.parseAsString(document.getId(), Constants.BLANK);
-				builder.update(oracleVarsCache.getTranxIndex(), "appxn", document);
+				builder.update(oracleVarsCache.getTranxIndex(), document);
 			} catch (Exception e) {
 				LOGGER.error("TranxViewRecordRev Excep", e);
 			}
@@ -204,12 +186,12 @@ public class TrnxViewTask extends AbstractDBSyncTask {
 
 		if (x.getResults().size() > 0) {
 			esRepository.bulk(builder.build());
-			oracleVarsCache.setTranxScannedStamp(lastUpdateDateNow, true);
+			oracleVarsCache.setStampEnd(DBSyncJobs.TRANSACTION, lastUpdateDateNow);
 			if ((lastUpdateDateNowStart == lastUpdateDateNow) || (x.getResults().size() == 1000 && lastPage < 2)) {
 				doTaskRev(lastPage + 1, lastId);
 			}
 		} else {
-			oracleVarsCache.setTranxScannedStamp(lastUpdateDateNowLimit, true);
+			oracleVarsCache.setStampEnd(DBSyncJobs.TRANSACTION, lastUpdateDateNowLimit);
 		}
 
 	}

@@ -1,10 +1,8 @@
 package com.amx.jax.radar.jobs.customer;
 
-import java.math.BigDecimal;
 import java.util.Date;
 
 import org.slf4j.Logger;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -20,12 +18,10 @@ import com.amx.jax.grid.GridService.GridViewBuilder;
 import com.amx.jax.grid.GridView;
 import com.amx.jax.grid.views.CustomerDetailViewRecord;
 import com.amx.jax.logger.LoggerService;
-import com.amx.jax.mcq.Candidate;
 import com.amx.jax.mcq.shedlock.SchedulerLock;
 import com.amx.jax.mcq.shedlock.SchedulerLock.LockContext;
 import com.amx.jax.radar.AESRepository.BulkRequestBuilder;
-import com.amx.jax.radar.EsConfig;
-import com.amx.jax.radar.TestSizeApp;
+import com.amx.jax.radar.jobs.customer.OracleVarsCache.DBSyncJobs;
 import com.amx.jax.rates.AmxCurConstants;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
@@ -41,24 +37,22 @@ public class CustomerViewTask extends AbstractDBSyncTask {
 
 	private static final Logger LOGGER = LoggerService.getLogger(CustomerViewTask.class);
 	private static final String TIME_TRACK_KEY = "lastUpdateDate";
-	public static final int PAGE_SIZE = 1000;
+	public static final int PAGE_SIZE = 3000;
 	public static final Long TIME_PAGE_DELTA = 30 * AmxCurConstants.INTERVAL_DAYS;
-
-	private static final Candidate LOCK = new Candidate().fixedDelay(AmxCurConstants.INTERVAL_SEC * 30)
-			.maxAge(AmxCurConstants.INTERVAL_MIN).queue(CustomerViewTask.class);
 
 	@SchedulerLock(lockMaxAge = AmxCurConstants.INTERVAL_MIN * 30, context = LockContext.BY_CLASS)
 	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_SEC * 30)
 	public void doTaskModeNight() {
-		if (TimeUtils.inHourSlot(4, 1)) {
+		if (TimeUtils.inHourSlot(4, 0)) {
 			this.doTask();
 		}
 	}
 
-	@SchedulerLock(lockMaxAge = AmxCurConstants.INTERVAL_MIN * 30, context = LockContext.BY_CLASS)
-	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_MIN * 30)
+	// @SchedulerLock(lockMaxAge = AmxCurConstants.INTERVAL_MIN * 30, context =
+	// LockContext.BY_CLASS)
+	// @Scheduled(fixedDelay = AmxCurConstants.INTERVAL_MIN * 30)
 	public void doTaskModeDay() {
-		if (!TimeUtils.inHourSlot(4, 1)) {
+		if (!TimeUtils.inHourSlot(4, 0)) {
 			this.doTask();
 		}
 	}
@@ -70,7 +64,7 @@ public class CustomerViewTask extends AbstractDBSyncTask {
 
 	public void doTask(int lastPage, String lastId) {
 
-		Long lastUpdateDateNow = oracleVarsCache.getCustomerScannedStamp(false);
+		Long lastUpdateDateNow = oracleVarsCache.getStampStartTime(DBSyncJobs.CUSTOMER);
 		Long lastUpdateDateNowLimit = lastUpdateDateNow + TIME_PAGE_DELTA;
 
 		String dateString = GridConstants.GRID_TIME_FORMATTER_JAVA.format(new Date(lastUpdateDateNow));
@@ -100,13 +94,8 @@ public class CustomerViewTask extends AbstractDBSyncTask {
 					lastUpdateDateNow = lastUpdateDate;
 				}
 
-				BigDecimal customerId = ArgUtil.parseAsBigDecimal(record.getId());
-				Date creationDate = ArgUtil.parseAsSimpleDate(record.getLastUpdateDate());
-				OracleViewDocument document = new OracleViewDocument();
-				document.setId("customer-" + customerId);
-				document.setTimestamp(creationDate);
-				document.setCustomer(record);
-				builder.update(oracleVarsCache.getCustomerIndex(), "customer", document);
+				OracleViewDocument document = new OracleViewDocument(record);
+				builder.update(oracleVarsCache.getCustomerIndex(), document);
 				lastIdNow = ArgUtil.parseAsString(document.getId(), Constants.BLANK);
 			} catch (Exception e) {
 				LOGGER.error("CustomerViewTask Excep", e);
@@ -123,19 +112,25 @@ public class CustomerViewTask extends AbstractDBSyncTask {
 
 		if (x.getResults().size() > 0) {
 			esRepository.bulk(builder.build());
-			oracleVarsCache.setCustomerScannedStamp(lastUpdateDateNow, false);
+			oracleVarsCache.setStampStart(DBSyncJobs.CUSTOMER, lastUpdateDateNow);
 			if ((lastUpdateDateNowStart == lastUpdateDateNow) || (x.getResults().size() == 1000 && lastPage < 10)) {
 				doTask(lastPage + 1, lastIdNow);
 			}
 		} else if (lastUpdateDateNowLimit < (System.currentTimeMillis() - AmxCurConstants.INTERVAL_DAYS)) {
-			oracleVarsCache.setCustomerScannedStamp(lastUpdateDateNowLimit, false);
+			oracleVarsCache.setStampStart(DBSyncJobs.CUSTOMER, lastUpdateDateNowLimit);
 		}
 	}
 
 	public void doTaskRev(int lastPage, String lastId) {
+		// Comment the follwoing line if reverse scan is not required
+		this.doTaskRev2(lastPage, lastId);
+	}
 
-		Long lastUpdateDateNow = oracleVarsCache.getCustomerScannedStamp(true);
-		Long lastUpdateDateNowFrwrds = oracleVarsCache.getCustomerScannedStamp(false);
+	@Deprecated
+	public void doTaskRev2(int lastPage, String lastId) {
+
+		Long lastUpdateDateNow = oracleVarsCache.getStampEndTime(DBSyncJobs.CUSTOMER);
+		Long lastUpdateDateNowFrwrds = oracleVarsCache.getStampStartTime(DBSyncJobs.CUSTOMER);
 
 		if (lastUpdateDateNow < lastUpdateDateNowFrwrds
 				|| lastUpdateDateNow < OracleVarsCache.START_TIME) {
@@ -171,13 +166,8 @@ public class CustomerViewTask extends AbstractDBSyncTask {
 					lastUpdateDateNow = lastUpdateDate;
 				}
 
-				BigDecimal customerId = ArgUtil.parseAsBigDecimal(record.getId());
-				Date creationDate = ArgUtil.parseAsSimpleDate(record.getLastUpdateDate());
-				OracleViewDocument document = new OracleViewDocument();
-				document.setId("customer-" + customerId);
-				document.setTimestamp(creationDate);
-				document.setCustomer(record);
-				builder.update(oracleVarsCache.getCustomerIndex(), "customer", document);
+				OracleViewDocument document = new OracleViewDocument(record);
+				builder.update(oracleVarsCache.getCustomerIndex(), document);
 				lastIdNow = ArgUtil.parseAsString(document.getId(), Constants.BLANK);
 			} catch (Exception e) {
 				LOGGER.error("CustomerViewTask Excep", e);
@@ -194,12 +184,12 @@ public class CustomerViewTask extends AbstractDBSyncTask {
 
 		if (x.getResults().size() > 0) {
 			esRepository.bulk(builder.build());
-			oracleVarsCache.setCustomerScannedStamp(lastUpdateDateNow, true);
+			oracleVarsCache.setStampEnd(DBSyncJobs.CUSTOMER, lastUpdateDateNow);
 			if ((lastUpdateDateNowStart == lastUpdateDateNow) || (x.getResults().size() == 1000 && lastPage < 2)) {
 				doTaskRev(lastPage + 1, lastIdNow);
 			}
 		} else {
-			oracleVarsCache.setCustomerScannedStamp(lastUpdateDateNowLimit, true);
+			oracleVarsCache.setStampEnd(DBSyncJobs.CUSTOMER, lastUpdateDateNowLimit);
 		}
 	}
 

@@ -75,7 +75,8 @@ public class MCQLockConfigExtractor {
 		return new LockConfiguration(
 				ArgUtil.ifNotEmpty(getName(annotation), alterNateName),
 				now.plus(getLockAtMostFor(annotation, annotationScheduled)),
-				now.plus(getLockAtLeastFor(annotation, annotationScheduled)));
+				now.plus(getLockAtLeastFor(annotation, annotationScheduled)),
+				annotation.tenent());
 	}
 
 	private String getName(SchedulerLock annotation) {

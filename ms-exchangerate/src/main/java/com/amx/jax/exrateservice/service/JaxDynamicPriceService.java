@@ -123,4 +123,10 @@ public class JaxDynamicPriceService {
 		return pricingRequestDTO;
 	}
 
+	public ExchangeRateResponseModel getExchangeRates(BigDecimal fromCurrency, BigDecimal toCurrency,
+			BigDecimal lcAmount, BigDecimal foreignAmount, BigDecimal beneBankCountryId, BigDecimal routingBankId) {
+		return getExchangeRates(fromCurrency, toCurrency, lcAmount, foreignAmount, beneBankCountryId, routingBankId,
+				null);
+	}
+
 }

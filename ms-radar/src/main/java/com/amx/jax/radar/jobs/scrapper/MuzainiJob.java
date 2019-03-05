@@ -22,9 +22,13 @@ import com.amx.jax.dict.Currency;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.mcq.Candidate;
 import com.amx.jax.mcq.MCQLocker;
+import com.amx.jax.radar.AESRepository.BulkRequestBuilder;
+import com.amx.jax.radar.ESRepository;
+import com.amx.jax.radar.jobs.customer.OracleVarsCache;
+import com.amx.jax.radar.jobs.customer.OracleVarsCache.DBSyncJobs;
+import com.amx.jax.radar.jobs.customer.OracleViewDocument;
 import com.amx.jax.rates.AmxCurConstants;
 import com.amx.jax.rates.AmxCurRate;
-import com.amx.jax.rates.AmxCurRateRepository;
 import com.amx.jax.rest.RestService;
 import com.amx.utils.ArgUtil;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
@@ -41,7 +45,10 @@ public class MuzainiJob {
 	RestService restService;
 
 	@Autowired
-	private AmxCurRateRepository curRateRepository;
+	public ESRepository esRepository;
+
+	@Autowired
+	public OracleVarsCache oracleVarsCache;
 
 	XmlMapper xmlMapper = new XmlMapper();
 
@@ -71,6 +78,7 @@ public class MuzainiJob {
 					.post();
 
 			Elements trs = doc.select("#UpdatePanel1 table.ex-table tbody tr");
+			BulkRequestBuilder builder = new BulkRequestBuilder();
 			for (Element tr : trs) {
 				Elements tds = tr.select("td");
 				Currency cur = (Currency) ArgUtil.parseAsEnum(tds.get(0).text(),
@@ -85,14 +93,16 @@ public class MuzainiJob {
 					if (!ArgUtil.isEmpty(rate)) {
 						sellTrnsfrRate.setrType(RateType.SELL_TRNSFR);
 						sellTrnsfrRate.setrRate(rate);
-						curRateRepository.insertRate(sellTrnsfrRate);
+						builder.update(oracleVarsCache.getIndex(DBSyncJobs.XRATE),
+								new OracleViewDocument(sellTrnsfrRate));
 					}
 					AmxCurRate sellCash = sellTrnsfrRate.clone();
 					BigDecimal sellCashRate = ArgUtil.parseAsBigDecimal(tds.get(3).text());
 					if (!ArgUtil.isEmpty(sellCashRate)) {
 						sellCash.setrType(RateType.SELL_CASH);
 						sellTrnsfrRate.setrRate(sellCashRate);
-						curRateRepository.insertRate(sellCash);
+						builder.update(oracleVarsCache.getIndex(DBSyncJobs.XRATE),
+								new OracleViewDocument(sellCash));
 					}
 
 					AmxCurRate buyCash = sellTrnsfrRate.clone();
@@ -100,10 +110,12 @@ public class MuzainiJob {
 					if (!ArgUtil.isEmpty(buyCashRate)) {
 						buyCash.setrType(RateType.BUY_CASH);
 						sellTrnsfrRate.setrRate(buyCashRate);
-						curRateRepository.insertRate(buyCash);
+						builder.update(oracleVarsCache.getIndex(DBSyncJobs.XRATE),
+								new OracleViewDocument(buyCash));
 					}
 				}
 			}
+			esRepository.bulk(builder.build());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

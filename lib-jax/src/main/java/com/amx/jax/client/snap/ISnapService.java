@@ -16,7 +16,20 @@ public interface ISnapService {
 	}
 
 	public static enum RateType {
-		BUY_CASH, SELL_CASH, SELL_TRNSFR,
+		BUY_CASH("BC"), SELL_CASH("SC"), SELL_TRNSFR("ST");
+		String code;
+
+		public String getCode() {
+			return code;
+		}
+
+		public void setCode(String code) {
+			this.code = code;
+		}
+
+		RateType(String code) {
+			this.code = code;
+		}
 	}
 
 	public static enum RateSource {

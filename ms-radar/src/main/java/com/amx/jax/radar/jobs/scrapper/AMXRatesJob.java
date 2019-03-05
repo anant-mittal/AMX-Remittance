@@ -23,10 +23,14 @@ import com.amx.jax.dict.Language;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.mcq.Candidate;
 import com.amx.jax.mcq.MCQLocker;
+import com.amx.jax.radar.AESRepository.BulkRequestBuilder;
 import com.amx.jax.radar.ARadarTask;
+import com.amx.jax.radar.ESRepository;
+import com.amx.jax.radar.jobs.customer.OracleVarsCache;
+import com.amx.jax.radar.jobs.customer.OracleVarsCache.DBSyncJobs;
+import com.amx.jax.radar.jobs.customer.OracleViewDocument;
 import com.amx.jax.rates.AmxCurConstants;
 import com.amx.jax.rates.AmxCurRate;
-import com.amx.jax.rates.AmxCurRateRepository;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.utils.ArgUtil;
 
@@ -36,10 +40,13 @@ import com.amx.utils.ArgUtil;
 @Service
 //@ConditionalOnExpression(TestSizeApp.ENABLE_JOBS)
 @ConditionalOnProperty("jax.jobs.scrapper.rate")
-public class AMXJob extends ARadarTask {
+public class AMXRatesJob extends ARadarTask {
 
 	@Autowired
-	private AmxCurRateRepository curRateRepository;
+	public ESRepository esRepository;
+
+	@Autowired
+	public OracleVarsCache oracleVarsCache;
 
 	@Autowired
 	private ExchangeRateClient xRateClient;
@@ -47,10 +54,10 @@ public class AMXJob extends ARadarTask {
 	@Autowired
 	private JaxMetaInfo jaxMetaInfo;
 
-	public static final Logger LOGGER = LoggerService.getLogger(AMXJob.class);
+	public static final Logger LOGGER = LoggerService.getLogger(AMXRatesJob.class);
 
 	private Candidate LOCK = new Candidate().fixedDelay(AmxCurConstants.INTERVAL_MIN_30)
-			.maxAge(AmxCurConstants.INTERVAL_HRS).queue(AMXJob.class);
+			.maxAge(AmxCurConstants.INTERVAL_HRS).queue(AMXRatesJob.class);
 
 	@Autowired
 	private MCQLocker mcq;
@@ -77,6 +84,8 @@ public class AMXJob extends ARadarTask {
 
 		RateType type = RateType.SELL_TRNSFR;
 
+		BulkRequestBuilder builder = new BulkRequestBuilder();
+
 		for (MinMaxExRateDTO minMaxExRateDTO : rates) {
 
 			Currency cur = (Currency) ArgUtil.parseAsEnum(minMaxExRateDTO.getToCurrency().getQuoteName(),
@@ -92,10 +101,13 @@ public class AMXJob extends ARadarTask {
 					trnsfrRate.setrRate(rate);
 					trnsfrRate.setrRate(BigDecimal.ONE.divide(rate, 12, RoundingMode.CEILING));
 					// System.out.println(JsonUtil.toJson(trnsfrRate));
-					curRateRepository.insertRate(trnsfrRate);
+					builder.update(oracleVarsCache.getIndex(DBSyncJobs.XRATE),
+							new OracleViewDocument(trnsfrRate));
 				}
 			}
 		}
+
+		esRepository.bulk(builder.build());
 
 	}
 

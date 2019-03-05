@@ -2,6 +2,7 @@ package com.amx.jax.radar.jobs.scrapper;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
@@ -23,10 +24,14 @@ import com.amx.jax.dict.Currency;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.mcq.Candidate;
 import com.amx.jax.mcq.MCQLocker;
+import com.amx.jax.radar.AESRepository.BulkRequestBuilder;
 import com.amx.jax.radar.ARadarTask;
+import com.amx.jax.radar.ESRepository;
+import com.amx.jax.radar.jobs.customer.OracleVarsCache;
+import com.amx.jax.radar.jobs.customer.OracleVarsCache.DBSyncJobs;
+import com.amx.jax.radar.jobs.customer.OracleViewDocument;
 import com.amx.jax.rates.AmxCurConstants;
 import com.amx.jax.rates.AmxCurRate;
-import com.amx.jax.rates.AmxCurRateRepository;
 import com.amx.utils.ArgUtil;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
@@ -52,7 +57,10 @@ public class UAEXChangeJob extends ARadarTask {
 	private static final String TAG_INPUT = "input";
 
 	@Autowired
-	private AmxCurRateRepository curRateRepository;
+	public ESRepository esRepository;
+
+	@Autowired
+	public OracleVarsCache oracleVarsCache;
 
 	XmlMapper xmlMapper = new XmlMapper();
 
@@ -117,6 +125,7 @@ public class UAEXChangeJob extends ARadarTask {
 
 	public void fetchrates(Document doc, RateType type) {
 		Elements trs = doc.select("#ctl10_updatepnl table.table tbody tr");
+		BulkRequestBuilder builder = new BulkRequestBuilder();
 		for (Element tr : trs) {
 			Elements tds = tr.select("td");
 			Currency cur = (Currency) ArgUtil.parseAsEnum(tds.get(2).text(),
@@ -129,12 +138,35 @@ public class UAEXChangeJob extends ARadarTask {
 					trnsfrRate.setrDomCur(Currency.KWD);
 					trnsfrRate.setrForCur(cur);
 					trnsfrRate.setrType(type);
-					trnsfrRate.setrRate(rate);
+					trnsfrRate.setrRate(adjustRate(type, cur, rate));
 					// System.out.println(JsonUtil.toJson(trnsfrRate));
-					curRateRepository.insertRate(trnsfrRate);
+					builder.update(oracleVarsCache.getIndex(DBSyncJobs.XRATE),
+							new OracleViewDocument(trnsfrRate));
 				}
 			}
 		}
+		esRepository.bulk(builder.build());
+	}
+
+	public static final BigDecimal THOUSAND = new BigDecimal(1000);
+
+	/**
+	 * Rate Adjustment against KWD only
+	 * 
+	 * @param type
+	 * @param cur
+	 * @param rate
+	 * @return
+	 */
+	public BigDecimal adjustRate(RateType type, Currency cur, BigDecimal rate) {
+		if (Currency.OMR.equals(cur) || Currency.QAR.equals(cur) ||
+				Currency.SAR.equals(cur) || Currency.AED.equals(cur)
+				|| Currency.BHD.equals(cur)) {
+			if (BigDecimal.ONE.compareTo(rate) == 1) {
+				return rate.divide(THOUSAND, 12, RoundingMode.CEILING);
+			}
+		}
+		return rate;
 	}
 
 }

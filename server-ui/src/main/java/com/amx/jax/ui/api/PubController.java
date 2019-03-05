@@ -20,11 +20,15 @@ import com.amx.amxlib.model.MinMaxExRateDTO;
 import com.amx.jax.AmxConfig;
 import com.amx.jax.AppConfig;
 import com.amx.jax.AppContextUtil;
-import com.amx.jax.client.snap.SnapModels.SnapModelWrapper;
-import com.amx.jax.dict.Currency;
-import com.amx.jax.client.snap.SnapServiceClient;
+import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.client.meta.ForexOutlookClient;
 import com.amx.jax.client.snap.ISnapService.StatsSpan;
+import com.amx.jax.client.snap.SnapModels.SnapModelWrapper;
+import com.amx.jax.client.snap.SnapServiceClient;
+import com.amx.jax.dict.Currency;
 import com.amx.jax.http.CommonHttpRequest;
+import com.amx.jax.model.response.fx.CurrencyPairDTO;
+import com.amx.jax.model.response.fx.ForexOutLookResponseDTO;
 import com.amx.jax.postman.GeoLocationService;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
@@ -237,6 +241,9 @@ public class PubController {
 	@Autowired
 	SnapServiceClient snapServiceClient;
 
+	@Autowired
+	ForexOutlookClient forexOutlookClient;
+
 	@RequestMapping(value = "/pub/stats/customer", method = { RequestMethod.GET })
 	public SnapModelWrapper customerStats() {
 		return snapServiceClient.getCustomerStats();
@@ -250,6 +257,16 @@ public class PubController {
 	@RequestMapping(value = "/pub/stats/rates", method = { RequestMethod.GET })
 	public SnapModelWrapper trnaxStats(@RequestParam StatsSpan graph, @RequestParam Currency forCur) {
 		return snapServiceClient.getXRateStats(graph, forCur, AppContextUtil.getTenant().getCurrency());
+	}
+
+	@RequestMapping(value = "/pub/forex/outlook/currencypair", method = { RequestMethod.GET })
+	public AmxApiResponse<CurrencyPairDTO, Object> getForexOutlookCurrencies() {
+		return forexOutlookClient.getCurrencyPairList();
+	}
+
+	@RequestMapping(value = "/pub/forex/outlook/messages", method = { RequestMethod.GET })
+	public AmxApiResponse<ForexOutLookResponseDTO, Object> getForexOutlookMessages() {
+		return forexOutlookClient.getCurpairHistory();
 	}
 
 }

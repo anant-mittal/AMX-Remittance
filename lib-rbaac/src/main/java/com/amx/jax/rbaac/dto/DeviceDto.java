@@ -11,6 +11,8 @@ public class DeviceDto {
 
 	BigDecimal registrationId;
 
+	BigDecimal termialId;
+
 	String deviceId;
 
 	String deviceType;
@@ -69,6 +71,14 @@ public class DeviceDto {
 
 	public void setDeviceSecret(String deviceSecret) {
 		this.deviceSecret = deviceSecret;
+	}
+
+	public BigDecimal getTermialId() {
+		return termialId;
+	}
+
+	public void setTermialId(BigDecimal termialId) {
+		this.termialId = termialId;
 	}
 
 }

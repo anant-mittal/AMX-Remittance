@@ -8,9 +8,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.amx.jax.client.snap.SnapConstants.SnapQueryTemplate;
 import com.amx.jax.client.snap.SnapModels.MapModel;
 import com.amx.jax.client.snap.SnapModels.SnapModelWrapper;
-import com.amx.jax.client.snap.SnapQueryTemplate;
 import com.amx.jax.postman.client.WhatsAppClient;
 import com.amx.jax.postman.events.UserInboxEvent;
 import com.amx.jax.postman.model.WAMessage;

@@ -24,9 +24,11 @@ import com.amx.jax.filter.AppClientInterceptor;
 import com.amx.jax.scope.TenantContext;
 import com.amx.jax.scope.TenantProperties;
 import com.amx.utils.ArgUtil;
+import com.ulisesbocchio.jasyptspringboot.annotation.EnableEncryptableProperties;
 
 @Configuration
 @PropertySource("classpath:application-lib.properties")
+@EnableEncryptableProperties
 public class AppConfig {
 
 	private static final String PROP_SUFFIX = "}";
@@ -196,6 +198,9 @@ public class AppConfig {
 	@Value("${app.audit.file.skip}")
 	String[] skipAuditMarkers;
 
+	@Value("${encrypted.app.property}")
+	String appSpecifcDecryptedProp;
+
 	public boolean isCookieHttpOnly() {
 		return cookieHttpOnly;
 	}
@@ -310,11 +315,11 @@ public class AppConfig {
 		this.authURL = authURL;
 	}
 
-	public  String getPricerURL() {
+	public String getPricerURL() {
 		return pricerURL;
 	}
 
-	public  void setPricerURL(String pricerURL) {
+	public void setPricerURL(String pricerURL) {
 		this.pricerURL = pricerURL;
 	}
 
@@ -380,6 +385,10 @@ public class AppConfig {
 
 	public String getRadarURL() {
 		return radarURL;
+	}
+
+	public String getAppSpecifcDecryptedProp() {
+		return appSpecifcDecryptedProp;
 	}
 
 }

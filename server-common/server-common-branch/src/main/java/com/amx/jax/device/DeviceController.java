@@ -23,6 +23,7 @@ import com.amx.jax.device.DeviceRestModels.DevicePairingRequest;
 import com.amx.jax.device.DeviceRestModels.SessionPairingCreds;
 import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.http.CommonHttpRequest;
+import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.model.response.BranchSystemDetailDto;
 import com.amx.jax.rbaac.IRbaacService;
@@ -59,6 +60,9 @@ public class DeviceController {
 	@Autowired
 	private SSOTranx sSOTranx;
 
+	@Autowired
+	private AuditService auditService;
+
 	@RequestMapping(value = { DeviceConstants.Path.DEVICE_TERMINALS }, method = { RequestMethod.GET })
 	public AmxApiResponse<BranchSystemDetailDto, Object> getTerminals() {
 		return metaClient.listBranchSystemInventory();
@@ -68,10 +72,10 @@ public class DeviceController {
 	@RequestMapping(value = { DeviceConstants.Path.DEVICE_PAIR }, method = { RequestMethod.POST })
 	public AmxApiResponse<DevicePairingCreds, Object> registerNewDevice(@Valid @RequestBody DevicePairingRequest req) {
 
-		String deivceTerminalId = req.getDeivceTerminalId();
+		String deivceTerminalIp = req.getDeivceTerminalId();
 		ClientType deivceClientType = req.getDeivceClientType();
 
-		if ((ArgUtil.isEmpty(deivceTerminalId) && ArgUtil.isEmpty(req.getIdentity()))
+		if ((ArgUtil.isEmpty(deivceTerminalIp) && ArgUtil.isEmpty(req.getIdentity()))
 				|| ArgUtil.isEmpty(deivceClientType)) {
 			throw new OffsiteServerError(OffsiteServerCodes.CLIENT_UNKNOWN, "hoho");
 		}
@@ -79,7 +83,7 @@ public class DeviceController {
 		// validate Device with jax
 		DeviceRegistrationRequest deviceRegistrationRequest = new DeviceRegistrationRequest();
 		deviceRegistrationRequest.setDeviceType(deivceClientType);
-		deviceRegistrationRequest.setBranchSystemIp(deivceTerminalId);
+		deviceRegistrationRequest.setBranchSystemIp(deivceTerminalIp);
 		deviceRegistrationRequest.setDeviceId(commonHttpRequest.getDeviceId());
 		deviceRegistrationRequest.setIdentityInt(req.getIdentity());
 		DeviceDto deviceDto = rbaacServiceClient.registerNewDevice(deviceRegistrationRequest).getResult();
@@ -90,9 +94,17 @@ public class DeviceController {
 		creds.setOtpTtl(AmxConstants.OFFLINE_OTP_TTL);
 		creds.setRequestTtl(DeviceConstants.Config.REQUEST_TOKEN_VALIDITY);
 		creds.setDeviceSecret(deviceDto.getDeviceSecret());
+
+		// Audit
+		auditService.log(new DeviceAuditEvent(DeviceAuditEvent.Type.DEVICE_PAIR)
+				.terminalIp(deivceTerminalIp)
+				.clientType(deivceClientType)
+				.deviceRegId(deviceDto.getRegistrationId()));
+
 		return AmxApiResponse.build(creds);
 	}
 
+	@Deprecated
 	@ApiOffisteStatus({ OffsiteServerCodes.CLIENT_UNKNOWN })
 	@RequestMapping(value = { DeviceConstants.Path.DEVICE_ACTIVATE }, method = { RequestMethod.POST })
 	public AmxApiResponse<BoolRespModel, Object> activateDevice(
@@ -102,6 +114,7 @@ public class DeviceController {
 		return rbaacServiceClient.activateDevice(deviceRegId, mOtp);
 	}
 
+	@Deprecated
 	@ApiOffisteStatus({ OffsiteServerCodes.CLIENT_UNKNOWN })
 	@RequestMapping(value = { DeviceConstants.Path.DEVICE_DEACTIVATE }, method = { RequestMethod.POST })
 	public AmxApiResponse<BoolRespModel, Object> deActivateDevice(
@@ -112,7 +125,7 @@ public class DeviceController {
 
 	@ApiDeviceHeaders
 	@ApiOffisteStatus({ OffsiteServerCodes.CLIENT_UNKNOWN })
-	@RequestMapping(value = { DeviceConstants.Path.SESSION_CREATE }, method = { RequestMethod.GET })
+	@RequestMapping(value = { DeviceConstants.Path.DEVICE_SESSION }, method = { RequestMethod.GET })
 	public AmxApiResponse<SessionPairingCreds, Object> sendOtpForPairing() {
 
 		deviceRequestValidator.validateDevice();
@@ -127,9 +140,17 @@ public class DeviceController {
 				resp.getTermialId(), resp.getEmpId());
 		creds.setOtpTtl(AmxConstants.OTP_TTL);
 		String meta = ArgUtil.isEmpty(resp.getEmpId()) ? resp.getTermialId() : resp.getEmpId();
+
+		// Audit
+		auditService.log(new DeviceAuditEvent(DeviceAuditEvent.Type.DEVICE_SESSION)
+				.terminalId(resp.getTermialId())
+				.clientType(resp.getDeviceType())
+				.deviceRegId(deviceRegId));
+
 		return AmxApiResponse.build(creds, meta);
 	}
 
+	@Deprecated
 	@RequestMapping(value = DeviceConstants.Path.SESSION_PAIR, method = RequestMethod.POST)
 	public AmxApiResponse<DevicePairOtpResponse, BoolRespModel> validateOtpForPairing(
 			@RequestParam ClientType deviceType,
@@ -138,6 +159,13 @@ public class DeviceController {
 				deviceType, terminalId,
 				mOtp);
 		deviceRequestValidator.updateStamp(resp.getResult().getDeviceRegId());
+
+		// Audit
+		auditService.log(new DeviceAuditEvent(DeviceAuditEvent.Type.SESSION_PAIR)
+				.terminalId(resp.getResult().getTermialId())
+				.clientType(resp.getResult().getDeviceType())
+				.deviceRegId(resp.getResult().getDeviceRegId()));
+
 		return resp;
 	}
 
@@ -145,16 +173,18 @@ public class DeviceController {
 	public AmxApiResponse<Object, Object> webAppLogin() {
 		DeviceData deviceData = deviceRequestValidator.validateRequest();
 		String terminalId = deviceData.getTerminalId();
-		LOGGER.debug("TerminalPairing R:{} T:{} Tx:{}", deviceRequestValidator.getDeviceRegId(),
-				terminalId, AppContextUtil.getTranxId());
 		sSOTranx.get().setBranchAdapterId(deviceRequestValidator.getDeviceRegId());
 		sSOTranx.get().getUserClient().setTerminalId(ArgUtil.parseAsBigDecimal(terminalId));
 		// sSOTranx.get().getUserClient().setDeviceRegId(deviceRequestValidator.getDeviceRegId());
 		// sSOTranx.get().getUserClient().setGlobalIpAddress(deviceData.getGlobalIp());
 		// sSOTranx.get().getUserClient().setLocalIpAddress(deviceData.getLocalIp());
-		LOGGER.debug("TerminalPairing R:{} T:{} Tx:{}", sSOTranx.get().getBranchAdapterId(),
-				sSOTranx.get().getUserClient().getTerminalId(), AppContextUtil.getTranxId());
 		sSOTranx.save();
+
+		// Audit
+		auditService.log(new DeviceAuditEvent(DeviceAuditEvent.Type.SESSION_TERMINAL)
+				.terminalId(sSOTranx.get().getUserClient().getTerminalId())
+				.clientType(ClientType.BRANCH_ADAPTER).deviceRegId(sSOTranx.get().getBranchAdapterId()));
+
 		return AmxApiResponse.build(terminalId, deviceRequestValidator.getDeviceRegId());
 	}
 

@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.regex.Pattern;
 
+import org.springframework.data.redis.core.TimeoutUtils;
+
+import com.amx.utils.TimeUtils;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
@@ -23,6 +26,8 @@ public class Phonetest { // Noncompliant
 	 * @throws IOException
 	 */
 	public static void main(String[] args) throws URISyntaxException, IOException {
+
+		System.out.println("====" + TimeUtils.inHourSlot(4, 1));
 		String swissNumberStr = "+96551780287";
 		PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
 		try {

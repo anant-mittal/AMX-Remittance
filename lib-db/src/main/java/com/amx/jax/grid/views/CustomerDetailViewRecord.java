@@ -13,9 +13,6 @@ import com.amx.jax.grid.GridViewRecord;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-/*
- * Author Rahamathali Shaik
-*/
 @Entity
 @Table(name = "VW_CUSTOMER_KIBANA")
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -53,11 +50,23 @@ public class CustomerDetailViewRecord implements GridViewRecord {
 	@Column(name = "MOBILE")
 	private String mobile;
 
+	@Column(name = "PREFIX_CODE_MOBILE")
+	private String mobilePrefix;
+
+	@Column(name = "OTHER_CONTACTNO")
+	private String mobileOther;
+
+	@Column(name = "PREFIX_CODE_MOBILE_OTH")
+	private String mobileOtherPrefix;
+
 	@Column(name = "EMAIL")
 	private String email;
 
 	@Column(name = "WHATSAPP_NO")
 	private String whatsapp;
+
+	@Column(name = "WHATSAPP_PREFIX_CODE")
+	private String whatsappPrefix;
 
 	@ESDocFormat(ESDocFormat.Type.DATE)
 	@Column(name = "CREATION_DATE")
@@ -254,11 +263,44 @@ public class CustomerDetailViewRecord implements GridViewRecord {
 	public void setWhatsapp(String whatsapp) {
 		this.whatsapp = whatsapp;
 	}
+
 	public Date getCreationDateOnline() {
 		return creationDateOnline;
 	}
 
 	public void setCreationDateOnline(Date creationDateOnline) {
 		this.creationDateOnline = creationDateOnline;
+	}
+
+	public String getMobilePrefix() {
+		return mobilePrefix;
+	}
+
+	public void setMobilePrefix(String mobilePrefix) {
+		this.mobilePrefix = mobilePrefix;
+	}
+
+	public String getMobileOther() {
+		return mobileOther;
+	}
+
+	public void setMobileOther(String mobileOther) {
+		this.mobileOther = mobileOther;
+	}
+
+	public String getMobileOtherPrefix() {
+		return mobileOtherPrefix;
+	}
+
+	public void setMobileOtherPrefix(String mobileOtherPrefix) {
+		this.mobileOtherPrefix = mobileOtherPrefix;
+	}
+
+	public String getWhatsappPrefix() {
+		return whatsappPrefix;
+	}
+
+	public void setWhatsappPrefix(String whatsappPrefix) {
+		this.whatsappPrefix = whatsappPrefix;
 	}
 }

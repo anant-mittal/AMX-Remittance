@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.amx.jax.client.snap.ISnapService;
+import com.amx.jax.client.snap.SnapConstants.SnapQueryTemplate;
 import com.amx.jax.client.snap.SnapModels.SnapModelWrapper;
-import com.amx.jax.client.snap.SnapQueryTemplate;
 import com.amx.jax.dict.Currency;
 import com.amx.jax.rest.RestService;
 
