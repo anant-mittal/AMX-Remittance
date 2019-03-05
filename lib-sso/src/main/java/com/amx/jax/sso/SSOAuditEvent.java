@@ -2,6 +2,7 @@ package com.amx.jax.sso;
 
 import java.io.Serializable;
 
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.logger.AuditEvent;
 import com.amx.utils.ArgUtil;
@@ -28,10 +29,8 @@ public class SSOAuditEvent extends AuditEvent {
 		private static final long serialVersionUID = -1765231313729431488L;
 		String terminalId;
 		String terminalIp;
-		String deviceId;
 		String deviceRegId;
 		String identity;
-		ClientType clientType;
 
 		public String getTerminalId() {
 			return terminalId;
@@ -57,22 +56,6 @@ public class SSOAuditEvent extends AuditEvent {
 			this.deviceRegId = deviceRegId;
 		}
 
-		public ClientType getClientType() {
-			return clientType;
-		}
-
-		public void setClientType(ClientType clientType) {
-			this.clientType = clientType;
-		}
-
-		public String getDeviceId() {
-			return deviceId;
-		}
-
-		public void setDeviceId(String deviceId) {
-			this.deviceId = deviceId;
-		}
-
 		public String getIdentity() {
 			return identity;
 		}
@@ -92,11 +75,6 @@ public class SSOAuditEvent extends AuditEvent {
 	public SSOAuditEvent(Type eventType, Result result) {
 		super(eventType, result);
 		this.auth = new SSOAuditData();
-	}
-
-	public SSOAuditEvent deviceId(Object deviceId) {
-		this.auth.setDeviceId(ArgUtil.parseAsString(deviceId));
-		return this;
 	}
 
 	public SSOAuditEvent identity(Object identity) {
@@ -120,7 +98,7 @@ public class SSOAuditEvent extends AuditEvent {
 	}
 
 	public SSOAuditEvent clientType(ClientType clientType) {
-		this.auth.setClientType(clientType);
+		AppContextUtil.getUserClient().setClientType(clientType);
 		return this;
 	}
 

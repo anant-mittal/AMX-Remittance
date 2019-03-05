@@ -129,12 +129,10 @@ public class AppRequestFilter implements Filter {
 			if (!StringUtils.isEmpty(userClientJson)) {
 				AppContextUtil.setUserClient(JsonUtil.fromJson(userClientJson, UserDeviceClient.class));
 			} else {
-				UserDevice userDevice = commonHttpRequest.instance(req, resp, appConfig).getUserDevice();
+				UserDeviceClient userDevice = commonHttpRequest.instance(req, resp, appConfig).getUserDevice()
+						.toUserDeviceClient();
 				UserDeviceClient userClient = AppContextUtil.getUserClient();
-				userClient.setDeviceType(userDevice.getType());
-				userClient.setAppType(userDevice.getAppType());
-				userClient.setIp(userDevice.getIp());
-				userClient.setFingerprint(userDevice.getFingerprint());
+				userClient.importFrom(userDevice);
 				AppContextUtil.setUserClient(userClient);
 			}
 

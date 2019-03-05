@@ -279,7 +279,9 @@ public class CommonHttpRequest {
 
 		if (appType == null) {
 			appType = null;
-			if (userDevice.getPlatform() == DevicePlatform.ANDROID
+			if(userDevice.getUserAgent().getBrowser() != Browser.UNKNOWN) {
+				appType = AppType.WEB;
+			} else if (userDevice.getPlatform() == DevicePlatform.ANDROID
 					&& userDevice.getUserAgent().getBrowser() == Browser.UNKNOWN) {
 				appType = AppType.ANDROID;
 			} else if (userDevice.getPlatform() == DevicePlatform.IOS

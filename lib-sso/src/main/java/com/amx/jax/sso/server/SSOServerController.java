@@ -30,6 +30,7 @@ import com.amx.jax.device.DeviceConstants;
 import com.amx.jax.device.DeviceData;
 import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.dict.UserClient.DeviceType;
+import com.amx.jax.dict.UserClient.UserDeviceClient;
 import com.amx.jax.http.ApiRequest;
 import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.http.CommonHttpRequest.CommonMediaType;
@@ -37,7 +38,6 @@ import com.amx.jax.http.RequestType;
 import com.amx.jax.logger.AuditEvent.Result;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.LoggerService;
-import com.amx.jax.model.UserDevice;
 import com.amx.jax.rbaac.RbaacServiceClient;
 import com.amx.jax.rbaac.constants.RbaacServiceConstants.LOGIN_TYPE;
 import com.amx.jax.rbaac.dto.request.UserAuthInitReqDTO;
@@ -156,20 +156,23 @@ public class SSOServerController {
 		AmxApiResponse<Object, Map<String, Object>> result = AmxApiResponse.buildMeta(model);
 		result.setStatusEnum(SSOServerCodes.AUTH_REQUIRED);
 
+		AppContextUtil.getUserClient().setClientType(clientType);
+
 		if (sSOTranx.get() != null) {
-			UserDevice userDevice = commonHttpRequest.getUserDevice();
+
+			UserDeviceClient userDeviceClient = commonHttpRequest.getUserDevice().toUserDeviceClient();
 
 			if (SSOAuthStep.CREDS == json) {
 
-				SSOAuditEvent auditEvent = new SSOAuditEvent(SSOAuditEvent.Type.LOGIN_INIT, Result.FAIL)
-						.clientType(clientType);
+				// Audit
+				SSOAuditEvent auditEvent = new SSOAuditEvent(SSOAuditEvent.Type.LOGIN_INIT, Result.FAIL);
 
 				ssoUser.generateSAC();
 
 				SSOModel ssomodel = sSOTranx.get();
-				ssomodel.getUserClient().setDeviceType(userDevice.getType());
+				ssomodel.getUserClient().setDeviceType(userDeviceClient.getDeviceType());
 				ssomodel.getUserClient().setClientType(clientType);
-				ssomodel.getUserClient().setGlobalIpAddress(userDevice.getIp());
+				ssomodel.getUserClient().setGlobalIpAddress(userDeviceClient.getIp());
 
 				if (appConfig.isSwaggerEnabled() && !ArgUtil.isEmpty(deviceType)) {
 					ssomodel.getUserClient().setDeviceType(deviceType);
@@ -180,7 +183,8 @@ public class SSOServerController {
 					DeviceData branchDeviceData = deviceBox.get(sSOTranx.get().getBranchAdapterId());
 					ssomodel.getUserClient().setLocalIpAddress(branchDeviceData.getLocalIp());
 					ssomodel.getUserClient().setTerminalId(ArgUtil.parseAsBigDecimal(branchDeviceData.getTerminalId()));
-					LOGGER.info("Gloabal IPs THIS: {} ADAPTER: {}", userDevice.getIp(), branchDeviceData.getGlobalIp());
+					LOGGER.info("Gloabal IPs THIS: {} ADAPTER: {}", userDeviceClient.getIp(),
+							branchDeviceData.getGlobalIp());
 
 					// Audit
 					auditEvent.terminalId(sSOTranx.get().getUserClient().getTerminalId())
@@ -189,8 +193,8 @@ public class SSOServerController {
 				} else {
 					// Device LOGIN
 					String deviceRegId = commonHttpRequest.get(DeviceConstants.Keys.CLIENT_REG_KEY_XKEY);
-					ssomodel.getUserClient().setLocalIpAddress(userDevice.getIp());
-					ssomodel.getUserClient().setDeviceId(userDevice.getFingerprint());
+					ssomodel.getUserClient().setLocalIpAddress(userDeviceClient.getIp());
+					ssomodel.getUserClient().setDeviceId(userDeviceClient.getFingerprint());
 					ssomodel.getUserClient()
 							.setDeviceRegId(ArgUtil.parseAsBigDecimal(deviceRegId));
 					ssomodel.getUserClient()
@@ -200,7 +204,7 @@ public class SSOServerController {
 							.setDeviceSessionToken(
 									commonHttpRequest.get(DeviceConstants.Keys.CLIENT_SESSION_TOKEN_XKEY));
 					// Audit
-					auditEvent.deviceId(userDevice.getFingerprint()).deviceRegId(deviceRegId);
+					auditEvent.deviceRegId(deviceRegId);
 				}
 
 				UserAuthInitReqDTO init = new UserAuthInitReqDTO();
@@ -247,20 +251,19 @@ public class SSOServerController {
 					auth.setEmployeeNo(formdata.getEcnumber());
 
 					if (ArgUtil.isEmpty(terminalId)) {
-						auth.setIpAddress(userDevice.getIp());
+						auth.setIpAddress(userDeviceClient.getIp());
 					} else {
 						auth.setIpAddress(terminalId);
 					}
 
-					auth.setDeviceId(userDevice.getFingerprint());
+					auth.setDeviceId(userDeviceClient.getFingerprint());
 					auth.setmOtp(formdata.getMotp());
 					if (loginType == LOGIN_TYPE.ASSISTED) {
 						auth.setPartnerMOtp(formdata.getPartnerMOtp());
 					}
 
 					// Audit
-					auditEvent.terminalId(terminalId).terminalIp(userDevice.getIp())
-							.deviceId(userDevice.getFingerprint());
+					auditEvent.terminalId(terminalId).terminalIp(userDeviceClient.getIp());
 
 					EmployeeDetailsDTO empDto = rbaacServiceClient.authoriseUser(auth).getResult();
 					sSOTranx.setUserDetails(empDto);

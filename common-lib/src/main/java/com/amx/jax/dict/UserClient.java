@@ -186,6 +186,15 @@ public class UserClient {
 		public void setClientType(ClientType clientType) {
 			this.clientType = clientType;
 		}
+
+		public UserDeviceClient importFrom(UserDeviceClient userDevice) {
+			this.setDeviceType(userDevice.getDeviceType());
+			this.setAppType(userDevice.getAppType());
+			this.setIp(userDevice.getIp());
+			this.setFingerprint(userDevice.getFingerprint());
+			this.setClientType(userDevice.getClientType());
+			return this;
+		}
 	}
 
 }
