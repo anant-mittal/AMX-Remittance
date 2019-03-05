@@ -102,4 +102,12 @@ public class SSOAuditEvent extends AuditEvent {
 		return this;
 	}
 
+	public SSOAuditData getAuth() {
+		return auth;
+	}
+
+	public void setAuth(SSOAuditData auth) {
+		this.auth = auth;
+	}
+
 }
