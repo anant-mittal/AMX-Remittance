@@ -814,8 +814,9 @@ public   List<RemittanceAdditionalInstructionData>   saveRemitnaceinstructionDat
 public List<RemittanceAml>	saveRemittanceAml(RemittanceApplication applicationNo,RemittanceTransaction remitTrnx){
 	
 	if(applicationNo!=null) {
-	RemitApplAmlModel applAml = applAmlRepository.findByExRemittanceAppfromAml(applicationNo);
-		if(applAml!=null) {
+		List<RemitApplAmlModel> applAmlList = applAmlRepository.findByExRemittanceAppfromAml(applicationNo);
+		if(applAmlList!=null && !applAmlList.isEmpty()) {
+			for(RemitApplAmlModel applAml :applAmlList) {
 			RemittanceAml remitAml = new RemittanceAml();
 			remitAml.setAuthorizedBy(applAml.getAuthorizedBy());
 			remitAml.setAuthType(applAml.getAuthType());
@@ -830,6 +831,7 @@ public List<RemittanceAml>	saveRemittanceAml(RemittanceApplication applicationNo
 			remitAml.setIsactive(ConstantDocument.Yes);
 			remitAml.setExRemittancefromAml(remitTrnx);
 			amlList.add(remitAml);
+			}
 		}
 	}
 
