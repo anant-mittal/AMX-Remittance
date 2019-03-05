@@ -139,15 +139,16 @@ public class CustomerRegistrationService extends AbstractService {
 	public ApiResponse saveLoginDetail(CustomerCredential customerCredential) {
 		customerRegistrationManager.saveLoginDetail(customerCredential);
 		customerCredentialValidator.validate(customerRegistrationManager.get(),  null);
-		customerRegistrationManager.commit();
+		customerRegistrationManager.commit();	
 		
-		CustomerOnlineRegistration loginCustomer = onlineCustomer.getOnlineCustomersByLoginId(customerCredential.getLoginId());		
+		Customer customerDetails = userService.getCustomerDetails(customerCredential.getLoginId());
 		
-		Customer customerDetails = userService.getCustomerDetails(loginCustomer.getLoginId());
+		CustomerOnlineRegistration loginCustomer = onlineCustomer.getLoginCustomersById(customerDetails.getCustomerId());
+		
 		ApplicationSetup applicationSetupData = applicationSetup.getApplicationSetupDetails();
 		PersonInfo personinfo = new PersonInfo();
 		try {
-			BeanUtils.copyProperties(personinfo, customerDetails);
+			BeanUtils.copyProperties(personinfo, loginCustomer);
 		} catch (Exception e) {
 		}
 		jaxNotificationService.sendPartialRegistraionMail(personinfo, applicationSetupData);
