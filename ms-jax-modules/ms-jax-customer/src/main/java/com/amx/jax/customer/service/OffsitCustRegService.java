@@ -41,6 +41,7 @@ import com.amx.jax.amxlib.config.OtpSettings;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constants.CustomerRegistrationType;
+import com.amx.jax.customer.manager.OffsiteCustomerRegValidator;
 import com.amx.jax.dal.ArticleDao;
 import com.amx.jax.dal.BizcomponentDao;
 import com.amx.jax.dal.FieldListDao;
@@ -235,6 +236,9 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 
 	@Autowired
 	private CryptoUtil cryptoUtil;
+	
+	@Autowired
+	OffsiteCustomerRegValidator offsiteCustomerRegValidator;
 
 	public AmxApiResponse<ComponentDataDto, Object> getIdTypes() {
 		List<Map<String, Object>> tempList = bizcomponentDao
@@ -1099,6 +1103,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 
 	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerData(
 			GetOffsiteCustomerDetailRequest request) {
-		
+		offsiteCustomerRegValidator.validateGetOffsiteCustomerDetailRequest(request);
+		return getOffsiteCustomerData(request.getIdentityInt(), request.getIdentityType());
 	}
 }

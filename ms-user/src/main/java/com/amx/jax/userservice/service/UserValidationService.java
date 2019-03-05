@@ -192,7 +192,7 @@ public class UserValidationService {
 	}
 	
 	//Validate IdentityInt
-	protected void validateIdentityInt(String civilId, BigDecimal identityType) {
+	public void validateIdentityInt(String civilId, BigDecimal identityType) {
 		boolean isValid = custValidation.validateIdentityInt(civilId, meta.getCountry().getCountryCode(), identityType);
 		if (!isValid) {
 			throw new InvalidCivilIdException("Id " + civilId + " is not valid!");
@@ -631,16 +631,22 @@ public class UserValidationService {
 		}
 		onlineCustomer.setTokenSentCount(BigDecimal.ZERO);
 	}
+	
+	public List<Customer> validateNonActiveOrNonRegisteredCustomerStatus(String identityInt, JaxApiFlow apiFlow) {
+		return validateNonActiveOrNonRegisteredCustomerStatus(identityInt, ConstantDocument.BIZ_COMPONENT_ID_CIVIL_ID,
+				apiFlow);
+	}
 
 	/**
 	 * validates inactive or not registered customers status
 	 * @return 
 	 */
 	@SuppressWarnings("unused")
-	public List<Customer> validateNonActiveOrNonRegisteredCustomerStatus(String identityInt, JaxApiFlow apiFlow) {
+	public List<Customer> validateNonActiveOrNonRegisteredCustomerStatus(String identityInt, BigDecimal identityType,
+			JaxApiFlow apiFlow) {
 		List<Customer> customers = null;
 
-		customers = custDao.getCustomerByIdentityInt(identityInt);
+		customers = custDao.getCustomerByIdentityInt(identityInt, identityType);
 		if (CollectionUtils.isEmpty(customers) && apiFlow == JaxApiFlow.SIGNUP_DEFAULT) {
 			return customers;
 		}
@@ -649,7 +655,7 @@ public class UserValidationService {
 		}
 		// duplicate records check
 		if (customers != null && customers.size() > 1) {
-			customers = custDao.findActiveCustomers(identityInt);
+			customers = custDao.findActiveCustomers(identityInt, identityType);
 			boolean isSingleRecord = (customers != null && customers.size() == 1);
 			if (!isSingleRecord) {
 				throw new GlobalException(JaxError.DUPLICATE_CUSTOMER_NOT_ACTIVE_BRANCH,
@@ -664,10 +670,19 @@ public class UserValidationService {
 		case SIGNUP_DEFAULT:
 			validateCustomerForSignUpDefault(customers.get(0));
 			break;
+		case OFFSITE_REGISTRATION:
+			validateCustomerForOffisteReg(customers.get(0));
+			break;
 		default:
 			validateCustomerDefault(customers.get(0));
 		}
 		return customers;
+	}
+
+	private void validateCustomerForOffisteReg(Customer customer) {
+		if (ConstantDocument.Yes.equalsIgnoreCase(customer.getIsActive())) {
+			throw new GlobalException(JaxError.CUSTOMER_ACTIVE_BRANCH, "Customer active in branch");
+		}
 	}
 
 	private void validateCustomerDefault(Customer customer) {
