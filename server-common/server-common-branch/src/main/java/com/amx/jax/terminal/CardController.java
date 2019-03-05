@@ -13,13 +13,13 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.IDeviceStateService;
 import com.amx.jax.device.CardData;
 import com.amx.jax.device.CardReader;
-import com.amx.jax.device.DeviceAuditEvent;
 import com.amx.jax.device.DeviceConstants;
 import com.amx.jax.device.DeviceData;
 import com.amx.jax.device.DeviceRequest;
 import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.LoggerService;
+import com.amx.jax.sso.SSOAuditEvent;
 import com.amx.jax.sso.server.ApiHeaderAnnotations.ApiDeviceSessionHeaders;
 import com.amx.jax.stomp.StompTunnelService;
 import com.amx.jax.swagger.IStatusCodeListPlugin.ApiStatusService;
@@ -60,7 +60,7 @@ public class CardController {
 
 		// Audit
 		if (!ArgUtil.isEmpty(reader.getData())) {
-			auditService.log(new DeviceAuditEvent(DeviceAuditEvent.Type.CARD_SCANNED)
+			auditService.log(new SSOAuditEvent(SSOAuditEvent.Type.CARD_SCANNED)
 					.terminalId(deviceData.getTerminalId())
 					.clientType(ClientType.BRANCH_ADAPTER)
 					.deviceRegId(deviceData.getRegId())

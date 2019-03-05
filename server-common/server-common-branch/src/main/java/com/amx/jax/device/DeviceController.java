@@ -23,6 +23,7 @@ import com.amx.jax.device.DeviceRestModels.DevicePairingRequest;
 import com.amx.jax.device.DeviceRestModels.SessionPairingCreds;
 import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.http.CommonHttpRequest;
+import com.amx.jax.logger.AuditEvent.Result;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.model.response.BranchSystemDetailDto;
@@ -31,6 +32,7 @@ import com.amx.jax.rbaac.RbaacServiceClient;
 import com.amx.jax.rbaac.dto.DeviceDto;
 import com.amx.jax.rbaac.dto.DevicePairOtpResponse;
 import com.amx.jax.rbaac.dto.request.DeviceRegistrationRequest;
+import com.amx.jax.sso.SSOAuditEvent;
 import com.amx.jax.sso.SSOTranx;
 import com.amx.jax.sso.server.ApiHeaderAnnotations.ApiDeviceHeaders;
 import com.amx.jax.swagger.IStatusCodeListPlugin.ApiStatusService;
@@ -80,28 +82,35 @@ public class DeviceController {
 			throw new OffsiteServerError(OffsiteServerCodes.CLIENT_UNKNOWN, "hoho");
 		}
 
-		// validate Device with jax
-		DeviceRegistrationRequest deviceRegistrationRequest = new DeviceRegistrationRequest();
-		deviceRegistrationRequest.setDeviceType(deivceClientType);
-		deviceRegistrationRequest.setBranchSystemIp(deivceTerminalIp);
-		deviceRegistrationRequest.setDeviceId(commonHttpRequest.getDeviceId());
-		deviceRegistrationRequest.setIdentityInt(req.getIdentity());
-		DeviceDto deviceDto = rbaacServiceClient.registerNewDevice(deviceRegistrationRequest).getResult();
-
-		DevicePairingCreds creds = DeviceRestModels.get();
-		creds.setDeviceRegToken(deviceDto.getPairToken());
-		creds.setDeviceRegId(ArgUtil.parseAsString(deviceDto.getRegistrationId()));
-		creds.setOtpTtl(AmxConstants.OFFLINE_OTP_TTL);
-		creds.setRequestTtl(DeviceConstants.Config.REQUEST_TOKEN_VALIDITY);
-		creds.setDeviceSecret(deviceDto.getDeviceSecret());
-
-		// Audit
-		auditService.log(new DeviceAuditEvent(DeviceAuditEvent.Type.DEVICE_PAIR)
+		SSOAuditEvent auditEvent = new SSOAuditEvent(SSOAuditEvent.Type.DEVICE_PAIR, Result.FAIL)
 				.terminalIp(deivceTerminalIp)
-				.clientType(deivceClientType)
-				.deviceRegId(deviceDto.getRegistrationId()));
+				.clientType(deivceClientType);
 
-		return AmxApiResponse.build(creds);
+		try {
+			// validate Device with jax
+			DeviceRegistrationRequest deviceRegistrationRequest = new DeviceRegistrationRequest();
+			deviceRegistrationRequest.setDeviceType(deivceClientType);
+			deviceRegistrationRequest.setBranchSystemIp(deivceTerminalIp);
+			deviceRegistrationRequest.setDeviceId(commonHttpRequest.getDeviceId());
+			deviceRegistrationRequest.setIdentityInt(req.getIdentity());
+			DeviceDto deviceDto = rbaacServiceClient.registerNewDevice(deviceRegistrationRequest).getResult();
+
+			DevicePairingCreds creds = DeviceRestModels.get();
+			creds.setDeviceRegToken(deviceDto.getPairToken());
+			creds.setDeviceRegId(ArgUtil.parseAsString(deviceDto.getRegistrationId()));
+			creds.setOtpTtl(AmxConstants.OFFLINE_OTP_TTL);
+			creds.setRequestTtl(DeviceConstants.Config.REQUEST_TOKEN_VALIDITY);
+			creds.setDeviceSecret(deviceDto.getDeviceSecret());
+			// Audit
+			auditEvent.terminalId(deviceDto.getTermialId())
+					.deviceRegId(deviceDto.getRegistrationId()).setResult(Result.DONE);
+
+			return AmxApiResponse.build(creds);
+		} finally {
+			// Audit
+			auditService.log(auditEvent);
+		}
+
 	}
 
 	@Deprecated
@@ -142,7 +151,7 @@ public class DeviceController {
 		String meta = ArgUtil.isEmpty(resp.getEmpId()) ? resp.getTermialId() : resp.getEmpId();
 
 		// Audit
-		auditService.log(new DeviceAuditEvent(DeviceAuditEvent.Type.DEVICE_SESSION)
+		auditService.log(new SSOAuditEvent(SSOAuditEvent.Type.DEVICE_SESSION_CREATED)
 				.terminalId(resp.getTermialId())
 				.clientType(resp.getDeviceType())
 				.deviceRegId(deviceRegId));
@@ -161,7 +170,7 @@ public class DeviceController {
 		deviceRequestValidator.updateStamp(resp.getResult().getDeviceRegId());
 
 		// Audit
-		auditService.log(new DeviceAuditEvent(DeviceAuditEvent.Type.SESSION_PAIR)
+		auditService.log(new SSOAuditEvent(SSOAuditEvent.Type.DEVICE_SESSION_PAIR)
 				.terminalId(resp.getResult().getTermialId())
 				.clientType(resp.getResult().getDeviceType())
 				.deviceRegId(resp.getResult().getDeviceRegId()));
@@ -181,7 +190,7 @@ public class DeviceController {
 		sSOTranx.save();
 
 		// Audit
-		auditService.log(new DeviceAuditEvent(DeviceAuditEvent.Type.SESSION_TERMINAL)
+		auditService.log(new SSOAuditEvent(SSOAuditEvent.Type.SESSION_TERMINAL_MAP)
 				.terminalId(sSOTranx.get().getUserClient().getTerminalId())
 				.clientType(ClientType.BRANCH_ADAPTER).deviceRegId(sSOTranx.get().getBranchAdapterId()));
 

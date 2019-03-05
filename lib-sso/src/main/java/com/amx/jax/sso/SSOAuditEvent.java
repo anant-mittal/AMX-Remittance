@@ -1,4 +1,4 @@
-package com.amx.jax.device;
+package com.amx.jax.sso;
 
 import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.logger.AuditEvent;
@@ -6,12 +6,13 @@ import com.amx.utils.ArgUtil;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class DeviceAuditEvent extends AuditEvent {
+public class SSOAuditEvent extends AuditEvent {
 
 	private static final long serialVersionUID = 3330563732707068857L;
 
 	public static enum Type implements EventType {
-		DEVICE_PAIR, DEVICE_SESSION, SESSION_PAIR, SESSION_TERMINAL, CARD_SCANNED
+		DEVICE_PAIR, DEVICE_SESSION_CREATED, DEVICE_SESSION_PAIR, SESSION_TERMINAL_MAP, CARD_SCANNED,
+		LOGIN_INIT, LOGIN_OTP
 
 		;
 		@Override
@@ -22,35 +23,45 @@ public class DeviceAuditEvent extends AuditEvent {
 
 	String terminalId;
 	String terminalIp;
+	String deviceId;
 	String deviceRegId;
 	String identity;
 	ClientType clientType;
 
-	public DeviceAuditEvent(Type eventType) {
+	public SSOAuditEvent(Type eventType) {
 		super(eventType);
 	}
 
-	public DeviceAuditEvent identity(Object identity) {
+	public SSOAuditEvent(Type eventType, Result result) {
+		super(eventType, result);
+	}
+
+	public SSOAuditEvent deviceId(Object deviceId) {
+		this.deviceId = ArgUtil.parseAsString(deviceId);
+		return this;
+	}
+
+	public SSOAuditEvent identity(Object identity) {
 		this.identity = ArgUtil.parseAsString(identity);
 		return this;
 	}
 
-	public DeviceAuditEvent terminalId(Object terminalId) {
+	public SSOAuditEvent terminalId(Object terminalId) {
 		this.terminalId = ArgUtil.parseAsString(terminalId);
 		return this;
 	}
 
-	public DeviceAuditEvent terminalIp(Object terminalIp) {
+	public SSOAuditEvent terminalIp(Object terminalIp) {
 		this.terminalIp = ArgUtil.parseAsString(terminalIp);
 		return this;
 	}
 
-	public DeviceAuditEvent deviceRegId(Object deviceRegId) {
+	public SSOAuditEvent deviceRegId(Object deviceRegId) {
 		this.deviceRegId = ArgUtil.parseAsString(deviceRegId);
 		return this;
 	}
 
-	public DeviceAuditEvent clientType(ClientType clientType) {
+	public SSOAuditEvent clientType(ClientType clientType) {
 		this.clientType = clientType;
 		return this;
 	}
@@ -85,5 +96,13 @@ public class DeviceAuditEvent extends AuditEvent {
 
 	public void setClientType(ClientType clientType) {
 		this.clientType = clientType;
+	}
+
+	public String getDeviceId() {
+		return deviceId;
+	}
+
+	public void setDeviceId(String deviceId) {
+		this.deviceId = deviceId;
 	}
 }
