@@ -127,6 +127,7 @@ public class BranchRemittanceDao {
 	@SuppressWarnings("unchecked")
 	public RemittanceResponseDto saveRemittanceTransaction(HashMap<String, Object> mapAllDetailRemitSave) {
 
+		try {
 		RemittanceResponseDto responseDto = new RemittanceResponseDto();
 
 		CollectionModel collectModel = (CollectionModel) mapAllDetailRemitSave.get("EX_COLLECT");
@@ -186,6 +187,10 @@ public class BranchRemittanceDao {
 		updateApplication(remitTrnxList);
 
 		return responseDto;
+		}catch(Exception e) {
+			throw new GlobalException(JaxError.UNKNOWN_JAX_ERROR,e.getMessage());
+		}
+		
 	}
 
 	public BigDecimal generateDocumentNumber(BigDecimal appCountryId, BigDecimal companyId, BigDecimal documentId, BigDecimal finYear, BigDecimal branchId) {
