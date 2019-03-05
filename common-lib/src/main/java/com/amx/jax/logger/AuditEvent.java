@@ -3,6 +3,7 @@ package com.amx.jax.logger;
 import com.amx.jax.dict.UserClient.UserDeviceClient;
 import com.amx.jax.exception.IExceptionEnum;
 import com.amx.utils.ArgUtil;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -49,6 +50,9 @@ public abstract class AuditEvent extends AbstractEvent {
 	protected String actorId;
 	protected Object data;
 	protected UserDeviceClient client;
+
+	@JsonIgnore
+	boolean success;
 
 	public static enum Result {
 		DONE, REJECTED, FAIL, ERROR, PASS;
@@ -180,6 +184,14 @@ public abstract class AuditEvent extends AbstractEvent {
 	public AuditEvent message(Object message) {
 		this.setMessage(ArgUtil.parseAsString(message));
 		return this;
+	}
+
+	public boolean isSuccess() {
+		return success;
+	}
+
+	public void setSuccess(boolean success) {
+		this.success = success;
 	}
 
 }
