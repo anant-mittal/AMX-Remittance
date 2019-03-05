@@ -55,7 +55,7 @@ public abstract class AuditEvent extends AbstractEvent {
 	boolean success;
 
 	public static enum Result {
-		DONE, REJECTED, FAIL, ERROR, PASS;
+		DEFAULT, DONE, REJECTED, FAIL, ERROR, PASS;
 	}
 
 	public AuditEvent() {

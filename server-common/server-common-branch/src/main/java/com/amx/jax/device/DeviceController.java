@@ -23,6 +23,7 @@ import com.amx.jax.device.DeviceRestModels.DevicePairingRequest;
 import com.amx.jax.device.DeviceRestModels.SessionPairingCreds;
 import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.http.CommonHttpRequest;
+import com.amx.jax.logger.AuditEvent.Result;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.model.response.BranchSystemDetailDto;
@@ -81,28 +82,35 @@ public class DeviceController {
 			throw new OffsiteServerError(OffsiteServerCodes.CLIENT_UNKNOWN, "hoho");
 		}
 
-		// validate Device with jax
-		DeviceRegistrationRequest deviceRegistrationRequest = new DeviceRegistrationRequest();
-		deviceRegistrationRequest.setDeviceType(deivceClientType);
-		deviceRegistrationRequest.setBranchSystemIp(deivceTerminalIp);
-		deviceRegistrationRequest.setDeviceId(commonHttpRequest.getDeviceId());
-		deviceRegistrationRequest.setIdentityInt(req.getIdentity());
-		DeviceDto deviceDto = rbaacServiceClient.registerNewDevice(deviceRegistrationRequest).getResult();
-
-		DevicePairingCreds creds = DeviceRestModels.get();
-		creds.setDeviceRegToken(deviceDto.getPairToken());
-		creds.setDeviceRegId(ArgUtil.parseAsString(deviceDto.getRegistrationId()));
-		creds.setOtpTtl(AmxConstants.OFFLINE_OTP_TTL);
-		creds.setRequestTtl(DeviceConstants.Config.REQUEST_TOKEN_VALIDITY);
-		creds.setDeviceSecret(deviceDto.getDeviceSecret());
-
-		// Audit
-		auditService.log(new SSOAuditEvent(SSOAuditEvent.Type.DEVICE_PAIR)
+		SSOAuditEvent auditEvent = new SSOAuditEvent(SSOAuditEvent.Type.DEVICE_PAIR, Result.FAIL)
 				.terminalIp(deivceTerminalIp)
-				.clientType(deivceClientType)
-				.deviceRegId(deviceDto.getRegistrationId()));
+				.clientType(deivceClientType);
 
-		return AmxApiResponse.build(creds);
+		try {
+			// validate Device with jax
+			DeviceRegistrationRequest deviceRegistrationRequest = new DeviceRegistrationRequest();
+			deviceRegistrationRequest.setDeviceType(deivceClientType);
+			deviceRegistrationRequest.setBranchSystemIp(deivceTerminalIp);
+			deviceRegistrationRequest.setDeviceId(commonHttpRequest.getDeviceId());
+			deviceRegistrationRequest.setIdentityInt(req.getIdentity());
+			DeviceDto deviceDto = rbaacServiceClient.registerNewDevice(deviceRegistrationRequest).getResult();
+
+			DevicePairingCreds creds = DeviceRestModels.get();
+			creds.setDeviceRegToken(deviceDto.getPairToken());
+			creds.setDeviceRegId(ArgUtil.parseAsString(deviceDto.getRegistrationId()));
+			creds.setOtpTtl(AmxConstants.OFFLINE_OTP_TTL);
+			creds.setRequestTtl(DeviceConstants.Config.REQUEST_TOKEN_VALIDITY);
+			creds.setDeviceSecret(deviceDto.getDeviceSecret());
+			// Audit
+			auditEvent.terminalId(deviceDto.getTermialId())
+					.deviceRegId(deviceDto.getRegistrationId()).setResult(Result.DONE);
+
+			return AmxApiResponse.build(creds);
+		} finally {
+			// Audit
+			auditService.log(auditEvent);
+		}
+
 	}
 
 	@Deprecated

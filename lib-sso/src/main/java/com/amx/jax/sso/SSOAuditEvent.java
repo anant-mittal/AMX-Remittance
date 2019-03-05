@@ -32,6 +32,10 @@ public class SSOAuditEvent extends AuditEvent {
 		super(eventType);
 	}
 
+	public SSOAuditEvent(Type eventType, Result result) {
+		super(eventType, result);
+	}
+
 	public SSOAuditEvent deviceId(Object deviceId) {
 		this.deviceId = ArgUtil.parseAsString(deviceId);
 		return this;
