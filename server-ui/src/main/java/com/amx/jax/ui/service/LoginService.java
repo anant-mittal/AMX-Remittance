@@ -109,6 +109,24 @@ public class LoginService {
 		return wrapper;
 	}
 
+	public ResponseWrapper<AuthResponse> loginByDevice(String identity, String deviceToken) {
+		ResponseWrapper<AuthResponse> wrapper = new ResponseWrapper<AuthResponse>(new AuthData());
+		sessionService.clear();
+		sessionService.getGuestSession().initFlow(AuthState.AuthFlow.LOGIN, AuthStep.DEVICEPASS);
+		CustomerModel customerModel;
+		sessionService.getGuestSession().setIdentity(identity);
+
+		customerModel = jaxService.setDefaults().getUserclient().loginUserByFingerprint(identity, deviceToken)
+				.getResult();
+		if (customerModel == null) {
+			throw new JaxSystemError();
+		}
+
+		sessionService.getGuestSession().setCustomerModel(customerModel);
+
+		return loginSuccess(wrapper, AuthStep.DEVICEPASS, customerModel);
+	}
+
 	/**
 	 * Login sec ques.
 	 *
@@ -135,23 +153,7 @@ public class LoginService {
 				throw new JaxSystemError();
 			}
 
-			/*
-			 * TODO:- need to evaluate this condition it has some backward compatibility
-			 * consideration
-			 */
-			sessionService.authorize(customerModel,
-					sessionService.getGuestSession().getState().isFlow(AuthState.AuthFlow.LOGIN));
-
-			if (sessionService.getGuestSession().getState().isFlow(AuthState.AuthFlow.LOGIN)) {
-				jaxService.getUserclient().customerLoggedIn(sessionService.getAppDevice().getUserDevice());
-
-				wrapper.setRedirectUrl(sessionService.getGuestSession().getReturnUrl());
-				sessionService.getGuestSession().setReturnUrl(null);
-			}
-
-			wrapper.setMessage(WebResponseStatus.AUTH_DONE, ResponseMessage.AUTH_SUCCESS);
-			sessionService.getGuestSession().endStep(AuthStep.SECQUES);
-			wrapper.getData().setState(sessionService.getGuestSession().getState());
+			loginSuccess(wrapper, AuthStep.SECQUES, customerModel);
 
 		} catch (GlobalException e) {
 			if (e.getError() == JaxError.INCORRECT_SECURITY_QUESTION_ANSWER) {
@@ -181,6 +183,28 @@ public class LoginService {
 		} catch (Exception e) {
 			UIServerError.evaluate(e);
 		}
+		return wrapper;
+	}
+
+	public ResponseWrapper<AuthResponse> loginSuccess(ResponseWrapper<AuthResponse> wrapper, AuthStep secques,
+			CustomerModel customerModel) {
+		/*
+		 * TODO:- need to evaluate this condition it has some backward compatibility
+		 * consideration
+		 */
+		sessionService.authorize(customerModel,
+				sessionService.getGuestSession().getState().isFlow(AuthState.AuthFlow.LOGIN));
+
+		if (sessionService.getGuestSession().getState().isFlow(AuthState.AuthFlow.LOGIN)) {
+			jaxService.setDefaults().getUserclient().customerLoggedIn(sessionService.getAppDevice().getUserDevice());
+
+			wrapper.setRedirectUrl(sessionService.getGuestSession().getReturnUrl());
+			sessionService.getGuestSession().setReturnUrl(null);
+		}
+
+		wrapper.setMessage(WebResponseStatus.AUTH_DONE, ResponseMessage.AUTH_SUCCESS);
+		sessionService.getGuestSession().endStep(secques);
+		wrapper.getData().setState(sessionService.getGuestSession().getState());
 		return wrapper;
 	}
 

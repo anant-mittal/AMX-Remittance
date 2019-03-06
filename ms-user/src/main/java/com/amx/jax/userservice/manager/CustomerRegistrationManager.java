@@ -302,7 +302,7 @@ public class CustomerRegistrationManager extends TransactionModel<CustomerRegist
 		custProof.setIdentityStatus(Constants.CUST_ACTIVE_INDICATOR);
 		custProof.setCreatedBy(customer.getIdentityInt());
 		custProof.setCreationDate(new Date());
-		custProof.setIdentityTypeId(new BigDecimal(Constants.IDENTITY_TYPE_ID));
+		custProof.setIdentityTypeId(new BigDecimal(Constants.IDENTITY_TYPE_CIVIL_ID_STR));
 		customerIdProofRepository.save(custProof);
 
 	}

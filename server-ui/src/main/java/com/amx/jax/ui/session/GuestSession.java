@@ -65,8 +65,7 @@ public class GuestSession implements Serializable {
 	/**
 	 * Sets the lang.
 	 *
-	 * @param lang
-	 *            the new lang
+	 * @param lang the new lang
 	 */
 	public void setLanguage(Language lang) {
 		this.language = lang;
@@ -86,8 +85,7 @@ public class GuestSession implements Serializable {
 	/**
 	 * Sets the state.
 	 *
-	 * @param state
-	 *            the new state
+	 * @param state the new state
 	 */
 	public void setState(AuthState state) {
 		this.state = state;
@@ -108,8 +106,7 @@ public class GuestSession implements Serializable {
 	/**
 	 * Sets the identity.
 	 *
-	 * @param identiy
-	 *            the new identity
+	 * @param identiy the new identity
 	 */
 	public void setIdentity(String identiy) {
 		this.identity = identiy;
@@ -121,8 +118,7 @@ public class GuestSession implements Serializable {
 	/**
 	 * Sets the return url.
 	 *
-	 * @param returnUrl
-	 *            the new return url
+	 * @param returnUrl the new return url
 	 */
 	public void setReturnUrl(String returnUrl) {
 		this.returnUrl = returnUrl;
@@ -131,21 +127,23 @@ public class GuestSession implements Serializable {
 	/**
 	 * Inits the flow.
 	 *
-	 * @param flow
-	 *            the flow
+	 * @param flow the flow
 	 */
-	public void initFlow(AuthFlow flow) {
+	public void initFlow(AuthFlow flow, AuthStep step) {
 		state.flow = flow;
-		state.cStep = null;
+		state.cStep = step;
 		state.timestamp = System.currentTimeMillis();
 		state.nStep = tenantContext.get().getNextAuthStep(state);
+	}
+
+	public void initFlow(AuthFlow flow) {
+		this.initFlow(flow, null);
 	}
 
 	/**
 	 * Inits the step.
 	 *
-	 * @param step
-	 *            the step
+	 * @param step the step
 	 */
 	public void initStep(AuthStep step) {
 		if (step != state.nStep) {
@@ -157,8 +155,7 @@ public class GuestSession implements Serializable {
 	/**
 	 * End step.
 	 *
-	 * @param step
-	 *            the step
+	 * @param step the step
 	 * @return the auth state
 	 */
 	public AuthState endStep(AuthStep step) {
@@ -180,8 +177,7 @@ public class GuestSession implements Serializable {
 	/**
 	 * Gets the next token.
 	 *
-	 * @param key
-	 *            the key
+	 * @param key the key
 	 * @return the next token
 	 */
 	public String getNextToken(String key) {
@@ -194,10 +190,8 @@ public class GuestSession implements Serializable {
 	/**
 	 * Validate.
 	 *
-	 * @param curEnd
-	 *            the cur end
-	 * @param validEnds
-	 *            the valid ends
+	 * @param curEnd    the cur end
+	 * @param validEnds the valid ends
 	 */
 	public void validate(String curEnd, String[] validEnds) {
 		Cookie kooky = new Cookie(UIConstants.SEQ_KEY, this.getNextToken(curEnd));
@@ -220,8 +214,7 @@ public class GuestSession implements Serializable {
 	/**
 	 * Sets the hits.
 	 *
-	 * @param hits
-	 *            the new hits
+	 * @param hits the new hits
 	 */
 	public void setHits(Integer hits) {
 		this.hits = hits;
@@ -250,8 +243,7 @@ public class GuestSession implements Serializable {
 	/**
 	 * Sets the customer model.
 	 *
-	 * @param customerModel
-	 *            the new customer model
+	 * @param customerModel the new customer model
 	 */
 	public void setCustomerModel(CustomerModel customerModel) {
 		this.customerModel = customerModel;
@@ -271,8 +263,7 @@ public class GuestSession implements Serializable {
 	/**
 	 * Sets the ques index.
 	 *
-	 * @param quesIndex
-	 *            the new ques index
+	 * @param quesIndex the new ques index
 	 */
 	public void setQuesIndex(Integer quesIndex) {
 		this.quesIndex = quesIndex;
@@ -288,8 +279,7 @@ public class GuestSession implements Serializable {
 	/**
 	 * Started.
 	 *
-	 * @throws Exception
-	 *             the exception
+	 * @throws Exception the exception
 	 */
 	@PostConstruct
 	public void started() {
@@ -301,8 +291,7 @@ public class GuestSession implements Serializable {
 	/**
 	 * Ended.
 	 *
-	 * @throws Exception
-	 *             the exception
+	 * @throws Exception the exception
 	 */
 	@PreDestroy
 	public void ended() {

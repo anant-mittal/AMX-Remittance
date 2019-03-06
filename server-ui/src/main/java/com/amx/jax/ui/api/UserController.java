@@ -20,9 +20,11 @@ import com.amx.amxlib.meta.model.CustomerDto;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.CustomerNotificationDTO;
+import com.amx.amxlib.model.UserFingerprintResponseModel;
 import com.amx.jax.AppConfig;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.JaxAuthContext;
+import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.JaxPushNotificationClient;
 import com.amx.jax.dict.UserClient.AppType;
 import com.amx.jax.http.CommonHttpRequest;
@@ -457,5 +459,10 @@ public class UserController {
 		} else {
 			return loginService.verifyResetPassword(null, mOtp, null);
 		}
+	}
+
+	@RequestMapping(value = "/api/user/device/link", method = { RequestMethod.POST })
+	public ResponseWrapper<UserFingerprintResponseModel> linkDevice() {
+		return ResponseWrapper.build(jaxService.getUserclient().linkDeviceIdLoggedinUser());
 	}
 }
