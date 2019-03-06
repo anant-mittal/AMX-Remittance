@@ -37,4 +37,8 @@ public class DeviceBox extends CacheBox<DeviceData> {
 			this.fastPut(deviceRegidStr, deviceData);
 		}
 	}
+
+	public Object version() {
+		return 1;
+	}
 }

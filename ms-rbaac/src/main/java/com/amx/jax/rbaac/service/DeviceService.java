@@ -67,7 +67,7 @@ public class DeviceService extends AbstractService {
 				for (Device d : devices) {
 					if (!d.equals(device)) {
 						d.setStatus("N");
-		}
+					}
 				}
 				deviceDao.saveDevices(devices);
 			}
@@ -135,6 +135,7 @@ public class DeviceService extends AbstractService {
 		DeviceDto dto = new DeviceDto();
 		try {
 			BeanUtils.copyProperties(dto, newDevice);
+			dto.setTermialId(newDevice.getBranchSystemInventoryId());
 		} catch (Exception e) {
 		}
 		dto.setPairToken(devicePairToken);

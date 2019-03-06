@@ -1,6 +1,5 @@
 package com.amx.jax.dbmodel.remittance;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -16,15 +15,16 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import com.amx.jax.dbmodel.CountryMaster;
+import com.amx.jax.model.IResourceEntity;
 
 @Entity
 @Table(name = "EX_ADDITIONAL_EXCHANGE_DATA")
-public class AdditionalBankRuleAmiec implements Serializable {
+public class AdditionalBankRuleAmiec implements IResourceEntity {
 
 	private static final long serialVersionUID = 1L;
 
 	public AdditionalBankRuleAmiec() {
-		
+
 	}
 
 	private BigDecimal additionalBankRuleDetailId;
@@ -40,18 +40,14 @@ public class AdditionalBankRuleAmiec implements Serializable {
 	private AdditionalBankRuleMap additionalBankFieldId;
 	private Date approvedDate;
 	private String approvedBy;
-	
+
 	private String remarks;
-	
-	
-	
-	
+
 	public AdditionalBankRuleAmiec(BigDecimal additionalBankRuleDetailId,
-			CountryMaster countryId,String flexField,String amiecCode,
-			String amiecDescription, String createdBy, Date createdDate,String modifiedBy,
-	 Date modifiedDate,	 String isActive, AdditionalBankRuleMap additionalBankFieldId,
-	 Date approvedDate,	 String approvedBy
-			) {
+			CountryMaster countryId, String flexField, String amiecCode,
+			String amiecDescription, String createdBy, Date createdDate, String modifiedBy,
+			Date modifiedDate, String isActive, AdditionalBankRuleMap additionalBankFieldId,
+			Date approvedDate, String approvedBy) {
 		super();
 		this.additionalBankRuleDetailId = additionalBankRuleDetailId;
 		this.countryId = countryId;
@@ -65,13 +61,13 @@ public class AdditionalBankRuleAmiec implements Serializable {
 		this.approvedDate = approvedDate;
 		this.approvedBy = approvedBy;
 		this.additionalBankFieldId = additionalBankFieldId;
-		
+
 	}
-		
 
 	@Id
 	@GeneratedValue(generator = "ex_addl_bank_rule_detail_seq", strategy = GenerationType.SEQUENCE)
-	@SequenceGenerator(name = "ex_addl_bank_rule_detail_seq", sequenceName = "EX_ADD_BANK_RULE_AMIEC_SEQ", allocationSize = 1)
+	@SequenceGenerator(name = "ex_addl_bank_rule_detail_seq", sequenceName = "EX_ADD_BANK_RULE_AMIEC_SEQ",
+			allocationSize = 1)
 	@Column(name = "ADDITIONAL_BANK_RULE_AMIEC_ID", unique = true, nullable = false, precision = 22, scale = 0)
 	public BigDecimal getAdditionalBankRuleDetailId() {
 		return additionalBankRuleDetailId;
@@ -118,7 +114,7 @@ public class AdditionalBankRuleAmiec implements Serializable {
 	public void setAmiecDescription(String amiecDescription) {
 		this.amiecDescription = amiecDescription;
 	}
-	
+
 	@Column(name = "CREATED_BY")
 	public String getCreatedBy() {
 		return createdBy;
@@ -200,8 +196,20 @@ public class AdditionalBankRuleAmiec implements Serializable {
 	public void setRemarks(String remarks) {
 		this.remarks = remarks;
 	}
-	
-	
-	
+
+	@Override
+	public BigDecimal resourceId() {
+		return this.additionalBankRuleDetailId;
+	}
+
+	@Override
+	public String resourceName() {
+		return this.amiecDescription;
+	}
+
+	@Override
+	public String resourceCode() {
+		return this.amiecCode;
+	}
 
 }

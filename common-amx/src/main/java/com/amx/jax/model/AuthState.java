@@ -47,6 +47,7 @@ public class AuthState implements Serializable {
 	 */
 	public static enum AuthStep {
 
+		DEVICEPASS,
 		/** The userpass. */
 		USERPASS,
 		/** The secques. */

@@ -137,6 +137,7 @@ public class DeviceManager {
 		if (device.getEmployeeId() != null) {
 			resp.setEmpId(device.getEmployeeId().toString());
 		}
+		resp.setDeviceType(device.getDeviceType());
 		resp.setDeviceState(device.getState());
 		return resp;
 	}

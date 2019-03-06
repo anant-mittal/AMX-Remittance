@@ -1,0 +1,99 @@
+{
+  "took" : 14867,
+  "timed_out" : false,
+  "_shards" : {
+    "total" : 10,
+    "successful" : 10,
+    "skipped" : 0,
+    "failed" : 0
+  },
+  "hits" : {
+    "total" : 1565365,
+    "max_score" : 0.0,
+    "hits" : [ ]
+  },
+  "aggregations" : {
+    "tranx" : {
+      "buckets" : [
+        {
+          "key" : "last_year",
+          "from" : 1.518672678172E12,
+          "from_as_string" : "2018-02-15T05:31:18.172Z",
+          "doc_count" : 1193,
+          "channel" : {
+            "doc_count_error_upper_bound" : 0,
+            "sum_other_doc_count" : 0,
+            "buckets" : [
+              {
+                "key" : "ONLINE",
+                "doc_count" : 882
+              },
+              {
+                "key" : "ANDROID",
+                "doc_count" : 216
+              },
+              {
+                "key" : "IOS",
+                "doc_count" : 53
+              },
+              {
+                "key" : "KIOSK",
+                "doc_count" : 23
+              },
+              {
+                "key" : "BRANCH",
+                "doc_count" : 19
+              }
+            ]
+          }
+        },
+        {
+          "key" : "last_month",
+          "from" : 1.547530278172E12,
+          "from_as_string" : "2019-01-15T05:31:18.172Z",
+          "doc_count" : 78,
+          "channel" : {
+            "doc_count_error_upper_bound" : 0,
+            "sum_other_doc_count" : 0,
+            "buckets" : [
+              {
+                "key" : "ONLINE",
+                "doc_count" : 65
+              },
+              {
+                "key" : "ANDROID",
+                "doc_count" : 10
+              },
+              {
+                "key" : "IOS",
+                "doc_count" : 3
+              }
+            ]
+          }
+        },
+        {
+          "key" : "last_week",
+          "from" : 1.549603878172E12,
+          "from_as_string" : "2019-02-08T05:31:18.172Z",
+          "doc_count" : 0,
+          "channel" : {
+            "doc_count_error_upper_bound" : 0,
+            "sum_other_doc_count" : 0,
+            "buckets" : [ ]
+          }
+        },
+        {
+          "key" : "last_day",
+          "from" : 1.550122278172E12,
+          "from_as_string" : "2019-02-14T05:31:18.172Z",
+          "doc_count" : 0,
+          "channel" : {
+            "doc_count_error_upper_bound" : 0,
+            "sum_other_doc_count" : 0,
+            "buckets" : [ ]
+          }
+        }
+      ]
+    }
+  }
+}

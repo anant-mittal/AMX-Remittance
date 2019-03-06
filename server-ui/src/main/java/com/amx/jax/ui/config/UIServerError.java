@@ -5,7 +5,7 @@ import com.amx.amxlib.exception.JaxSystemError;
 import com.amx.jax.exception.AmxApiError;
 import com.amx.jax.exception.AmxApiException;
 import com.amx.jax.exception.IExceptionEnum;
-import com.amx.jax.ui.response.WebResponseStatus;
+import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
 
 public class UIServerError extends AmxApiException {
 
@@ -19,16 +19,16 @@ public class UIServerError extends AmxApiException {
 
 	public UIServerError() {
 		super("UI Server error occured");
-		this.setError(WebResponseStatus.UI_SERVER_ERROR);
+		this.setError(OWAStatusStatusCodes.UI_SERVER_ERROR);
 	}
 
 	public UIServerError(Exception e) {
 		super(e);
 		reportable = true;
-		this.setError(WebResponseStatus.UI_SERVER_ERROR);
+		this.setError(OWAStatusStatusCodes.UI_SERVER_ERROR);
 	}
 
-	public UIServerError(WebResponseStatus error) {
+	public UIServerError(OWAStatusStatusCodes error) {
 		super("UI Server error occured");
 		this.setError(error);
 	}
@@ -40,7 +40,7 @@ public class UIServerError extends AmxApiException {
 
 	@Override
 	public IExceptionEnum getErrorIdEnum(String errorId) {
-		return WebResponseStatus.valueOf(errorId);
+		return OWAStatusStatusCodes.valueOf(errorId);
 	}
 
 	public static <T> T evaluate(Exception e) {

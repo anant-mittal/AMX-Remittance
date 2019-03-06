@@ -5,6 +5,7 @@ import java.io.Serializable;
 import com.amx.jax.dict.UserClient.AppType;
 import com.amx.jax.dict.UserClient.DevicePlatform;
 import com.amx.jax.dict.UserClient.DeviceType;
+import com.amx.jax.dict.UserClient.UserDeviceClient;
 
 import eu.bitwalker.useragentutils.UserAgent;
 
@@ -133,6 +134,16 @@ public class UserDevice implements Serializable {
 
 	public void setUserAgent(UserAgent userAgent) {
 		this.userAgent = userAgent;
+	}
+
+	public UserDeviceClient toUserDeviceClient() {
+		UserDeviceClient userClient = new UserDeviceClient();
+		userClient.setDeviceType(this.getType());
+		userClient.setAppType(this.getAppType());
+		userClient.setIp(this.getIp());
+		userClient.setFingerprint(this.getFingerprint());
+		return userClient;
+
 	}
 
 }

@@ -1,0 +1,89 @@
+{
+  "aggs": {
+    "slots": {
+      "date_histogram": {
+        "field": "@timestamp",
+        "interval": "[[${interval}]]",
+        "time_zone": "Asia/Kolkata",
+        "min_doc_count": 1
+      },
+      "aggs": {
+        "rate": {
+          "avg": {
+            "field": "rRate"
+          }
+        }
+      }
+    }
+  },
+  "size": 0,
+  "_source": {
+    "excludes": []
+  },
+  "stored_fields": [
+    "*"
+  ],
+  "script_fields": {},
+  "docvalue_fields": [
+    {
+      "field": "@timestamp",
+      "format": "date_time"
+    }
+  ],
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "match_all": {}
+        },
+        {
+          "range": {
+            "@timestamp": {
+              "gte": "[[${gte}]]",
+              "lte": "[[${lte}]]",
+              "format": "epoch_millis"
+            }
+          }
+        },
+        {
+          "match_phrase": {
+            "_type": {
+              "query": "currate"
+            }
+          }
+        },
+        {
+          "match_phrase": {
+            "rSrc.keyword": {
+              "query": "[[${rSrc}]]"
+            }
+          }
+        },
+        {
+          "match_phrase": {
+            "rType.keyword": {
+              "query": "[[${rType}]]"
+            }
+          }
+        },
+        {
+          "match_phrase": {
+            "rDomCur.keyword": {
+              "query": "[[${rDomCur}]]"
+            }
+          }
+        },
+        {
+          "match_phrase": {
+            "rForCur.keyword": {
+             "query": "[[${rForCur}]]"
+            }
+          }
+        }
+      ],
+      "filter": [],
+      "should": [],
+      "must_not": []
+    }
+  }
+}

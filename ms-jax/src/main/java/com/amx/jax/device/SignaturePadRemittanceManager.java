@@ -58,7 +58,7 @@ public class SignaturePadRemittanceManager extends ASignaturePadManager {
 		RemittanceTransaction remittanceTransaction = remitAppDao.getRemittanceTransactionById(remittanceTransactionId);
 		logger.debug("inside getRemittanceReceiptData with remittanceTransactionId: {} ", remittanceTransactionId);
 		TransactionHistroyDTO trxnDto = transactionHistroyService.getTransactionHistoryDto(
-				remittanceTransaction.getCustomerId(), remittanceTransaction.getDocumentFinancialyear(),
+				remittanceTransaction.getCustomerId().getCustomerId(), remittanceTransaction.getDocumentFinanceYear(),
 				remittanceTransaction.getDocumentNo());
 		trxnDto.setApplicationCountryId(metaData.getCountryId());
 		reportManagerService.generatePersonalRemittanceReceiptReportDetails(trxnDto, Boolean.FALSE);

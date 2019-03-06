@@ -19,7 +19,16 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.amxlib.model.MinMaxExRateDTO;
 import com.amx.jax.AmxConfig;
 import com.amx.jax.AppConfig;
+import com.amx.jax.AppContextUtil;
+import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.client.meta.ForexOutlookClient;
+import com.amx.jax.client.snap.ISnapService.StatsSpan;
+import com.amx.jax.client.snap.SnapModels.SnapModelWrapper;
+import com.amx.jax.client.snap.SnapServiceClient;
+import com.amx.jax.dict.Currency;
 import com.amx.jax.http.CommonHttpRequest;
+import com.amx.jax.model.response.fx.CurrencyPairDTO;
+import com.amx.jax.model.response.fx.ForexOutLookResponseDTO;
 import com.amx.jax.postman.GeoLocationService;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
@@ -29,10 +38,10 @@ import com.amx.jax.postman.model.GeoLocation;
 import com.amx.jax.postman.model.SupportEmail;
 import com.amx.jax.sample.CalcLibs;
 import com.amx.jax.tunnel.TunnelService;
+import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
 import com.amx.jax.ui.model.ServerStatus;
 import com.amx.jax.ui.response.ResponseMeta;
 import com.amx.jax.ui.response.ResponseWrapper;
-import com.amx.jax.ui.response.WebResponseStatus;
 import com.amx.jax.ui.service.AppEnvironment;
 import com.amx.jax.ui.service.JaxService;
 import com.amx.jax.ui.service.SessionService;
@@ -189,7 +198,7 @@ public class PubController {
 			postManService.sendEmailToSupprt(email);
 			wrapper.setData(email);
 		} catch (Exception e) {
-			wrapper.setStatusKey(WebResponseStatus.ERROR);
+			wrapper.setStatusKey(OWAStatusStatusCodes.ERROR);
 			log.error("/pub/report", e);
 		}
 		return wrapper;
@@ -220,13 +229,44 @@ public class PubController {
 				postManService.sendEmailToSupprt(email);
 				wrapper.setData(email);
 			} else {
-				wrapper.setStatusKey(WebResponseStatus.ERROR);
+				wrapper.setStatusKey(OWAStatusStatusCodes.ERROR);
 			}
 		} catch (Exception e) {
-			wrapper.setStatusKey(WebResponseStatus.ERROR);
+			wrapper.setStatusKey(OWAStatusStatusCodes.ERROR);
 			log.error("/pub/contact", e);
 		}
 		return wrapper;
+	}
+
+	@Autowired
+	SnapServiceClient snapServiceClient;
+
+	@Autowired
+	ForexOutlookClient forexOutlookClient;
+
+	@RequestMapping(value = "/pub/stats/customer", method = { RequestMethod.GET })
+	public SnapModelWrapper customerStats() {
+		return snapServiceClient.getCustomerStats();
+	}
+
+	@RequestMapping(value = "/pub/stats/tranx", method = { RequestMethod.GET })
+	public SnapModelWrapper trnaxStats() {
+		return snapServiceClient.getTranxStats();
+	}
+
+	@RequestMapping(value = "/pub/stats/rates", method = { RequestMethod.GET })
+	public SnapModelWrapper trnaxStats(@RequestParam StatsSpan graph, @RequestParam Currency forCur) {
+		return snapServiceClient.getXRateStats(graph, forCur, AppContextUtil.getTenant().getCurrency());
+	}
+
+	@RequestMapping(value = "/pub/forex/outlook/currencypair", method = { RequestMethod.GET })
+	public AmxApiResponse<CurrencyPairDTO, Object> getForexOutlookCurrencies() {
+		return forexOutlookClient.getCurrencyPairList();
+	}
+
+	@RequestMapping(value = "/pub/forex/outlook/messages", method = { RequestMethod.GET })
+	public AmxApiResponse<ForexOutLookResponseDTO, Object> getForexOutlookMessages() {
+		return forexOutlookClient.getCurpairHistory();
 	}
 
 }

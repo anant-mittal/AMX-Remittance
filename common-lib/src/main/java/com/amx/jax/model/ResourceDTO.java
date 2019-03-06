@@ -1,4 +1,5 @@
 package com.amx.jax.model;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -104,7 +105,7 @@ public class ResourceDTO implements IResourceEntity, Serializable {
 		dto.importFrom(entity);
 		return dto;
 	}
-	
+
 	public static List<ResourceDTO> create(List<IResourceEntity> entityList) {
 		List<ResourceDTO> list = new ArrayList<ResourceDTO>();
 		for (IResourceEntity entity : entityList) {

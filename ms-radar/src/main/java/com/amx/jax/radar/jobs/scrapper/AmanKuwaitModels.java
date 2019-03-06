@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
 
-import com.amx.jax.rates.AmxCurConstants.RCur;
+import com.amx.jax.dict.Currency;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
@@ -53,7 +53,7 @@ public class AmanKuwaitModels {
 		@JacksonXmlProperty(localName = "Name")
 		private String name;
 		@JacksonXmlProperty(localName = "Code")
-		private RCur code;
+		private Currency code;
 		@JacksonXmlProperty(localName = "BRate")
 		private BigDecimal buyrate;
 		@JacksonXmlProperty(localName = "SRate")
@@ -86,11 +86,11 @@ public class AmanKuwaitModels {
 			this.name = name;
 		}
 
-		public RCur getCode() {
+		public Currency getCode() {
 			return code;
 		}
 
-		public void setCode(RCur code) {
+		public void setCode(Currency code) {
 			this.code = code;
 		}
 

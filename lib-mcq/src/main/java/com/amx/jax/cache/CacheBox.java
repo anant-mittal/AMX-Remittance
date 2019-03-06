@@ -38,7 +38,9 @@ public class CacheBox<T> implements ICacheBox<T> {
 			if (locker == null) {
 				locker = new BlockingHashMap<String, T>();
 			}
-			String localCacheName = ArgUtil.isEmpty(getCahceName()) ? getClazzName() : getCahceName();
+			String localCacheName = String.format("%s-%s",
+					(ArgUtil.isEmpty(getCahceName()) ? getClazzName() : getCahceName()),
+					version());
 			if (cache == null) {
 				cache = redisson.getLocalCachedMap(localCacheName,
 						localCacheOptions);
@@ -163,6 +165,10 @@ public class CacheBox<T> implements ICacheBox<T> {
 	@Override
 	public T getDefault() {
 		return null;
+	}
+
+	public Object version() {
+		return 0;
 	}
 
 }

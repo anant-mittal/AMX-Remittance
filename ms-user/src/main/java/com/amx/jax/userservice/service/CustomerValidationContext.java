@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.amx.jax.scope.TenantContext;
 import com.amx.jax.userservice.service.CustomerValidationContext.CustomerValidation;
+import com.amx.utils.Constants;
 
 @Service
 public class CustomerValidationContext extends TenantContext<CustomerValidation> {
@@ -19,13 +20,19 @@ public class CustomerValidationContext extends TenantContext<CustomerValidation>
 
 	public interface CustomerValidation {
 		public void validateCustIdProofs(BigDecimal custId);
-		
+
 		public void validateCivilId(String civilId);
-		
+
 		public void validateEmailId(String emailId);
-		
+
 		public void validateDuplicateMobile(String mobileNo);
-		
+
+		public default void validateIdentityInt(String identityInt, BigDecimal identityType) {
+			BigDecimal identityTypeCivilID = new BigDecimal(Constants.IDENTITY_TYPE_CIVIL_ID_STR);
+			if (identityTypeCivilID.equals(identityType)) {
+				validateCivilId(identityInt);
+			}
+		}
 	}
 
 }

@@ -75,6 +75,10 @@ public class CustomerDao {
 	public List<Customer> getCustomerByIdentityInt(String identityInt) {
 		return repo.getCustomerByIdentityInt(identityInt);
 	}
+	
+	public Customer getActiveCustomerByIndentityIntAndType(String identityInt, BigDecimal identityType) {
+		return repo.getActiveCustomerByIndentityIntAndType(identityInt, identityType);
+	}
 
 	@Transactional
 	public CustomerOnlineRegistration getOnlineCustById(BigDecimal id) {
@@ -85,6 +89,9 @@ public class CustomerDao {
 	public Customer getCustById(BigDecimal id) {
 		return repo.findOne(id);
 	}
+	
+	
+	
 	
 	public List<PlaceOrderCustomer> getPersonInfoById(List<BigDecimal> customerIds) {
 		List<PlaceOrderCustomer> poCustomers = new ArrayList<>();

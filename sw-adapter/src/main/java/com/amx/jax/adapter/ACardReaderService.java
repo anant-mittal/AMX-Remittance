@@ -84,7 +84,6 @@ public abstract class ACardReaderService {
 
 	boolean isLocal = false;
 
-	@Value("${local.identity}")
 	String localIdentity;
 
 	public String getServerUrl() {
@@ -95,6 +94,7 @@ public abstract class ACardReaderService {
 				if (ArgUtil.isEmpty(serverUrl)) {
 					serverUrl = environment.getProperty("adapter.local.url");
 					this.isLocal = true;
+					this.localIdentity = environment.getProperty("local.identity");
 				}
 				if (ArgUtil.isEmpty(serverDB)) {
 					serverDB = environment.getProperty("adapter.local.db");

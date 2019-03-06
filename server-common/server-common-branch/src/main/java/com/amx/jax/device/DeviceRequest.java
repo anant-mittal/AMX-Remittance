@@ -83,7 +83,8 @@ public class DeviceRequest {
 			throw new OffsiteServerError(OffsiteServerCodes.INVALID_CLIENT_SESSION, "Missing SessionPairingToken");
 		}
 
-		LOGGER.debug("validateSession for RID:{} C:{}", devicePairingCreds.getDeviceRegId(), DeviceData.class.getName());
+		LOGGER.debug("validateSession for RID:{} C:{}", devicePairingCreds.getDeviceRegId(),
+				DeviceData.class.getName());
 
 		DeviceData deviceData = deviceBox.get(devicePairingCreds.getDeviceRegId());
 
@@ -134,6 +135,7 @@ public class DeviceRequest {
 		deviceData.setUpdatestamp(System.currentTimeMillis());
 		deviceData.setLocalIp(commonHttpRequest.get(AppConstants.DEVICE_IP_LOCAL_XKEY));
 		deviceData.setGlobalIp(commonHttpRequest.getIPAddress());
+		deviceData.setRegId(deviceRegKey);
 		LOGGER.debug("createSession RID:{} C:{}", deviceRegKey, DeviceData.class.getName());
 		deviceBox.put(deviceRegKey, deviceData);
 		response.setHeader(DeviceConstants.Keys.DEVICE_REQ_KEY_XKEY, deviceData.getDeviceReqKey());

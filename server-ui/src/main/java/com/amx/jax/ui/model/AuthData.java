@@ -25,8 +25,14 @@ public class AuthData extends AbstractModel implements AuthResponse, AuthRequest
 	@Pattern(regexp = AppConstants.Validator.IDENTITY)
 	private String identity = null;
 
+	private String identityLock = null;
+
 	/** The password. */
 	private String password = null;
+
+	private String deviceToken = null;
+
+	private String lockId = null;
 
 	/*
 	 * (non-Javadoc)
@@ -233,8 +239,7 @@ public class AuthData extends AbstractModel implements AuthResponse, AuthRequest
 	/**
 	 * Sets the otp prefix.
 	 *
-	 * @param otpPrefix
-	 *            the new otp prefix
+	 * @param otpPrefix the new otp prefix
 	 */
 	public void setOtpPrefix(String otpPrefix) {
 		this.otpPrefix = otpPrefix;
@@ -252,8 +257,7 @@ public class AuthData extends AbstractModel implements AuthResponse, AuthRequest
 	/**
 	 * Sets the otp.
 	 *
-	 * @param otp
-	 *            the new otp
+	 * @param otp the new otp
 	 */
 	public void setOtp(String otp) {
 		this.otp = otp;
@@ -271,8 +275,7 @@ public class AuthData extends AbstractModel implements AuthResponse, AuthRequest
 	/**
 	 * Sets the image id.
 	 *
-	 * @param imageId
-	 *            the new image id
+	 * @param imageId the new image id
 	 */
 	public void setImageId(String imageId) {
 		this.imageId = imageId;
@@ -290,8 +293,7 @@ public class AuthData extends AbstractModel implements AuthResponse, AuthRequest
 	/**
 	 * Sets the image caption.
 	 *
-	 * @param imageCaption
-	 *            the new image caption
+	 * @param imageCaption the new image caption
 	 */
 	public void setImageCaption(String imageCaption) {
 		this.imageCaption = imageCaption;
@@ -375,11 +377,30 @@ public class AuthData extends AbstractModel implements AuthResponse, AuthRequest
 	/**
 	 * Sets the nounce.
 	 *
-	 * @param nounce
-	 *            the new nounce
+	 * @param nounce the new nounce
 	 */
 	public void setNounce(String nounce) {
 		this.nounce = nounce;
+	}
+
+	@Override
+	public String getDeviceToken() {
+		return deviceToken;
+	}
+
+	@Override
+	public void setDeviceToken(String deviceToken) {
+		this.deviceToken = deviceToken;
+	}
+
+	@Override
+	public String getLockId() {
+		return lockId;
+	}
+
+	@Override
+	public void setLockId(String lockId) {
+		this.lockId = lockId;
 	}
 
 }
