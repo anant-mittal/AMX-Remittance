@@ -14,6 +14,7 @@ import javax.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.cache.ComputeRequestTransientDataCache;
 import com.amx.jax.dict.UserClient.Channel;
 import com.amx.jax.pricer.dao.ChannelDiscountDao;
 import com.amx.jax.pricer.dao.CustCatDiscountDao;
@@ -26,7 +27,6 @@ import com.amx.jax.pricer.dbmodel.CustomerExtended;
 import com.amx.jax.pricer.dbmodel.PipsMaster;
 import com.amx.jax.pricer.dto.ExchangeRateDetails;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
-import com.amx.jax.pricer.util.ExchangeRequestTransientDataCache;
 import com.amx.jax.pricer.var.PricerServiceConstants.CUSTOMER_CATEGORY;
 import com.amx.jax.pricer.var.PricerServiceConstants.DISCOUNT_TYPE;
 
@@ -46,7 +46,7 @@ public class CustomerDiscountManager {
 	CustomerExtendedDao customerExtendedDao;
 
 	@Resource
-	ExchangeRequestTransientDataCache exchangeRequestTransientDataCache;
+	ComputeRequestTransientDataCache computeRequestTransientDataCache;
 
 	private static BigDecimal PIPS_BANK_ID = new BigDecimal(78);
 
@@ -74,7 +74,7 @@ public class CustomerDiscountManager {
 			ccDiscountPips = (null != ccDiscount ? ccDiscount.getDiscountPips() : BIGD_ZERO);
 		}
 
-		List<BigDecimal> validBankIds = new ArrayList<BigDecimal>(exchangeRequestTransientDataCache.getBankDetails().keySet());
+		List<BigDecimal> validBankIds = new ArrayList<BigDecimal>(computeRequestTransientDataCache.getBankDetails().keySet());
 
 		List<PipsMaster> pipsList = pipsMasterDao.getPipsForFcCurAndBank(pricingRequestDTO.getForeignCurrencyId(),
 				PIPS_BANK_ID, pricingRequestDTO.getForeignCountryId(), validBankIds);
@@ -105,11 +105,11 @@ public class CustomerDiscountManager {
 		// List<BankRateDetailsDTO> discountedRatesNPrices = new
 		// ArrayList<BankRateDetailsDTO>();
 
-		BigDecimal margin = exchangeRequestTransientDataCache.getMargin() != null
-				? exchangeRequestTransientDataCache.getMargin().getMarginMarkup()
+		BigDecimal margin = computeRequestTransientDataCache.getMargin() != null
+				? computeRequestTransientDataCache.getMargin().getMarginMarkup()
 				: BIGD_ZERO;
 
-		for (ExchangeRateDetails bankExRateDetail : exchangeRequestTransientDataCache.getSellRateDetails()) {
+		for (ExchangeRateDetails bankExRateDetail : computeRequestTransientDataCache.getSellRateDetails()) {
 
 			BigDecimal amountSlabPips = BIGD_ZERO;
 
@@ -136,16 +136,16 @@ public class CustomerDiscountManager {
 			 */
 			BigDecimal adjustedBaseSellRate = BIGD_ZERO;
 
-			if (exchangeRequestTransientDataCache.getAvgRateGLCForBank(bankExRateDetail.getBankId()) != null) {
+			if (computeRequestTransientDataCache.getAvgRateGLCForBank(bankExRateDetail.getBankId()) != null) {
 
 				// Old Logic
 				// ViewExGLCBAL viewExGLCBAL =
-				// exchangeRequestTransientDataCache.getBankGlcBalMap().get(bankExRateDetail.getBankId());
+				// computeRequestTransientDataCache.getBankGlcBalMap().get(bankExRateDetail.getBankId());
 
 				// adjustedBaseSellRate = viewExGLCBAL.getRateAvgRate().add(margin);
 
 				// New Logic
-				adjustedBaseSellRate = exchangeRequestTransientDataCache.getAvgRateGLCForBank(bankExRateDetail.getBankId())
+				adjustedBaseSellRate = computeRequestTransientDataCache.getAvgRateGLCForBank(bankExRateDetail.getBankId())
 						.add(margin);
 
 			}

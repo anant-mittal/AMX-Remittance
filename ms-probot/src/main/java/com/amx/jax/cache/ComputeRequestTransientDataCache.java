@@ -1,4 +1,4 @@
-package com.amx.jax.pricer.util;
+package com.amx.jax.cache;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -10,8 +10,9 @@ import com.amx.jax.pricer.dbmodel.OnlineMarginMarkup;
 import com.amx.jax.pricer.dbmodel.ViewExGLCBAL;
 import com.amx.jax.pricer.dto.BankDetailsDTO;
 import com.amx.jax.pricer.dto.ExchangeRateDetails;
+import com.amx.jax.pricer.util.RoutingTransientDataComputationObject;
 
-public class ExchangeRequestTransientDataCache {
+public class ComputeRequestTransientDataCache {
 
 	private List<ExchangeRateDetails> sellRateDetails;
 

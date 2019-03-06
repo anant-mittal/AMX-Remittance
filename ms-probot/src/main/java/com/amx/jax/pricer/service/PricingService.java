@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.amx.jax.cache.ComputeRequestTransientDataCache;
 import com.amx.jax.pricer.dao.CustomerDao;
 import com.amx.jax.pricer.dbmodel.Customer;
 import com.amx.jax.pricer.dbmodel.ViewExRoutingMatrix;
@@ -28,7 +29,6 @@ import com.amx.jax.pricer.exception.PricerServiceException;
 import com.amx.jax.pricer.manager.CustomerDiscountManager;
 import com.amx.jax.pricer.manager.RemitPriceManager;
 import com.amx.jax.pricer.manager.RemitRoutingManager;
-import com.amx.jax.pricer.util.ExchangeRequestTransientDataCache;
 import com.amx.jax.pricer.var.PricerServiceConstants.CUSTOMER_CATEGORY;
 import com.amx.jax.pricer.var.PricerServiceConstants.PRICE_BY;
 
@@ -55,7 +55,7 @@ public class PricingService {
 	RemitRoutingManager remitRoutingManager;
 
 	@Resource
-	ExchangeRequestTransientDataCache exchangeRequestTransientDataCache;
+	ComputeRequestTransientDataCache computeRequestTransientDataCache;
 
 	public PricingResponseDTO fetchRemitPricesForCustomer(PricingRequestDTO pricingRequestDTO) {
 
@@ -78,13 +78,13 @@ public class PricingService {
 
 		PricingResponseDTO pricingResponseDTO = new PricingResponseDTO();
 
-		pricingResponseDTO.setBankDetails(exchangeRequestTransientDataCache.getBankDetails());
+		pricingResponseDTO.setBankDetails(computeRequestTransientDataCache.getBankDetails());
 
-		pricingResponseDTO.setSellRateDetails(exchangeRequestTransientDataCache.getSellRateDetails());
+		pricingResponseDTO.setSellRateDetails(computeRequestTransientDataCache.getSellRateDetails());
 
 		Collections.sort(pricingResponseDTO.getSellRateDetails(), Collections.reverseOrder());
 
-		pricingResponseDTO.setInfo(exchangeRequestTransientDataCache.getInfo());
+		pricingResponseDTO.setInfo(computeRequestTransientDataCache.getInfo());
 
 		return pricingResponseDTO;
 	}
@@ -97,9 +97,9 @@ public class PricingService {
 
 		PricingResponseDTO pricingResponseDTO = new PricingResponseDTO();
 
-		pricingResponseDTO.setBankDetails(exchangeRequestTransientDataCache.getBankDetails());
+		pricingResponseDTO.setBankDetails(computeRequestTransientDataCache.getBankDetails());
 
-		pricingResponseDTO.setSellRateDetails(exchangeRequestTransientDataCache.getSellRateDetails());
+		pricingResponseDTO.setSellRateDetails(computeRequestTransientDataCache.getSellRateDetails());
 
 		Collections.sort(pricingResponseDTO.getSellRateDetails(), Collections.reverseOrder());
 
@@ -118,11 +118,11 @@ public class PricingService {
 			customerDiscountManager.getDiscountedRates(pricingRequestDTO, null, cc);
 			PricingResponseDTO pricingResponseDTO = new PricingResponseDTO();
 
-			pricingResponseDTO.setBankDetails(exchangeRequestTransientDataCache.getBankDetails());
+			pricingResponseDTO.setBankDetails(computeRequestTransientDataCache.getBankDetails());
 
 			List<ExchangeRateDetails> exRateDetails = new ArrayList<ExchangeRateDetails>();
 
-			for (ExchangeRateDetails exRateDetail : exchangeRequestTransientDataCache.getSellRateDetails()) {
+			for (ExchangeRateDetails exRateDetail : computeRequestTransientDataCache.getSellRateDetails()) {
 
 				exRateDetails.add(exRateDetail.clone());
 
@@ -134,7 +134,7 @@ public class PricingService {
 
 			Collections.sort(pricingResponseDTO.getSellRateDetails(), Collections.reverseOrder());
 
-			pricingResponseDTO.setInfo(exchangeRequestTransientDataCache.getInfo());
+			pricingResponseDTO.setInfo(computeRequestTransientDataCache.getInfo());
 
 			allDiscountedRates.add(pricingResponseDTO);
 		}
@@ -147,20 +147,56 @@ public class PricingService {
 
 		List<ViewExRoutingMatrix> routingMatrix = remitRoutingManager.getRoutingMatrixForRemittance(dprRequestDto);
 
+		ViewExRoutingMatrix oneMatrix = routingMatrix.get(0);
+		
+		/*
+		 * ******** TimeZones **********
+		 * Asia/Kolkata
+		 * Asia/Kuwait
+		 * Asia/Karachi
+		 * America/New_York
+		 * Asia/Singapore
+		 * Australia/Sydney
+		 * America/Los_Angeles
+		 * 
+		 */
+
+		remitRoutingManager.getEstimatedBlockDelivery(System.currentTimeMillis(), "Asia/Kolkata", 
+				oneMatrix.getWeekFrom(), oneMatrix.getWeekTo(), oneMatrix.getWeekHoursFrom(), oneMatrix.getWeekHoursTo(), 
+				oneMatrix.getWeekendFrom(), oneMatrix.getWeekendTo(), oneMatrix.getWeekendHoursFrom(), oneMatrix.getWeekendHoursTo(),
+				oneMatrix.getDelievryMinutes(), Boolean.FALSE, oneMatrix.getRoutingCountryId());
+		
+		
+		remitRoutingManager.getEstimatedBlockDelivery(System.currentTimeMillis(), "Asia/Kuwait", 
+				oneMatrix.getWeekFrom(), oneMatrix.getWeekTo(), oneMatrix.getWeekHoursFrom(), oneMatrix.getWeekHoursTo(), 
+				oneMatrix.getWeekendFrom(), oneMatrix.getWeekendTo(), oneMatrix.getWeekendHoursFrom(), oneMatrix.getWeekendHoursTo(),
+				oneMatrix.getDelievryMinutes(), Boolean.FALSE, oneMatrix.getRoutingCountryId());
+		
+		remitRoutingManager.getEstimatedBlockDelivery(System.currentTimeMillis(), "America/New_York", 
+				oneMatrix.getWeekFrom(), oneMatrix.getWeekTo(), oneMatrix.getWeekHoursFrom(), oneMatrix.getWeekHoursTo(), 
+				oneMatrix.getWeekendFrom(), oneMatrix.getWeekendTo(), oneMatrix.getWeekendHoursFrom(), oneMatrix.getWeekendHoursTo(),
+				oneMatrix.getDelievryMinutes(), Boolean.FALSE, oneMatrix.getRoutingCountryId());
+		
+		remitRoutingManager.getEstimatedBlockDelivery(System.currentTimeMillis(), "Australia/Sydney", 
+				oneMatrix.getWeekFrom(), oneMatrix.getWeekTo(), oneMatrix.getWeekHoursFrom(), oneMatrix.getWeekHoursTo(), 
+				oneMatrix.getWeekendFrom(), oneMatrix.getWeekendTo(), oneMatrix.getWeekendHoursFrom(), oneMatrix.getWeekendHoursTo(),
+				oneMatrix.getDelievryMinutes(), Boolean.FALSE, oneMatrix.getRoutingCountryId());
+
+		
 		List<BigDecimal> routingBankIds = routingMatrix.stream().map(rm -> rm.getRoutingBankId()).distinct()
 				.collect(Collectors.toList());
-		
+
 		dprRequestDto.setRoutingBankIds(routingBankIds);
 
 		dprRequestDto.setPricingLevel(PRICE_BY.ROUTING_BANK);
-		
+
 		remitPriceManager.computeBaseSellRatesPrices(dprRequestDto);
-		
+
 		PricingResponseDTO pricingResponseDTO = new PricingResponseDTO();
 
-		pricingResponseDTO.setBankDetails(exchangeRequestTransientDataCache.getBankDetails());
+		pricingResponseDTO.setBankDetails(computeRequestTransientDataCache.getBankDetails());
 
-		pricingResponseDTO.setSellRateDetails(exchangeRequestTransientDataCache.getSellRateDetails());
+		pricingResponseDTO.setSellRateDetails(computeRequestTransientDataCache.getSellRateDetails());
 
 		Collections.sort(pricingResponseDTO.getSellRateDetails(), Collections.reverseOrder());
 

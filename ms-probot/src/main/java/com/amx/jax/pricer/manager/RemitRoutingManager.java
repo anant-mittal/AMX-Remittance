@@ -15,6 +15,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.cache.ComputeRequestTransientDataCache;
+import com.amx.jax.cache.WorkingHoursData;
 import com.amx.jax.pricer.dao.ViewExRoutingMatrixDao;
 import com.amx.jax.pricer.dbmodel.HolidayListMasterModel;
 import com.amx.jax.pricer.dbmodel.ViewExRoutingMatrix;
@@ -22,9 +24,7 @@ import com.amx.jax.pricer.dto.DprRequestDto;
 import com.amx.jax.pricer.dto.EstimatedDeliveryDetails;
 import com.amx.jax.pricer.exception.PricerServiceError;
 import com.amx.jax.pricer.exception.PricerServiceException;
-import com.amx.jax.pricer.util.ExchangeRequestTransientDataCache;
 import com.amx.jax.pricer.util.RoutingTransientDataComputationObject;
-import com.amx.utils.DateUtil;
 import com.amx.utils.JsonUtil;
 
 @Component
@@ -40,7 +40,7 @@ public class RemitRoutingManager {
 	HolidayListManager holidayListManager;
 
 	@Resource
-	ExchangeRequestTransientDataCache exchangeRequestTransientDataCache;
+	ComputeRequestTransientDataCache computeRequestTransientDataCache;
 
 	public List<ViewExRoutingMatrix> getRoutingMatrixForRemittance(DprRequestDto dprRequestDto) {
 
@@ -74,15 +74,16 @@ public class RemitRoutingManager {
 			routingComputationObjects.add(obj);
 		}
 
-		exchangeRequestTransientDataCache.setRoutingMatrix(routingComputationObjects);
+		computeRequestTransientDataCache.setRoutingMatrix(routingComputationObjects);
 
 		return routingMatrix;
 
 	}
 
-	public EstimatedDeliveryDetails getEstimatedBlockDelivery(long startTT, String timezone, long weekFrom, long weekTo,
-			long weekHrsFrom, long weekHrsTo, long weekEndFrom, long weekEndTo, long weekEndHrsFrom, long weekEndHrsTo,
-			long processTimeInHrs, boolean noHolidayLag, BigDecimal countryId) {
+	public EstimatedDeliveryDetails getEstimatedBlockDelivery(long startTT, String timezone, BigDecimal weekFrom,
+			BigDecimal weekTo, BigDecimal weekHrsFrom, BigDecimal weekHrsTo, BigDecimal weekEndFrom,
+			BigDecimal weekEndTo, BigDecimal weekEndHrsFrom, BigDecimal weekEndHrsTo, BigDecimal processTimeInHrs,
+			boolean noHolidayLag, BigDecimal countryId) {
 
 		EstimatedDeliveryDetails estimatedDeliveryDetails = new EstimatedDeliveryDetails();
 
@@ -102,10 +103,24 @@ public class RemitRoutingManager {
 		} else {
 			holidays = new ArrayList<HolidayListMasterModel>();
 		}
+
+		System.out.println("######## Zonned Date Now ==> " + beginZonedDT);
 		
+		System.out.println(" Current Day of week ==> " + beginZonedDT.getDayOfWeek().getValue());
 		
+		System.out.println(" Current Day Ordinal ==> " + beginZonedDT.getDayOfWeek().ordinal());
 
 		return null;
+	}
+
+	private WorkingHoursData computeWorkMatrix(BigDecimal weekFrom,
+			BigDecimal weekTo, BigDecimal weekHrsFrom, BigDecimal weekHrsTo, BigDecimal weekEndFrom,
+			BigDecimal weekEndTo, BigDecimal weekEndHrsFrom, BigDecimal weekEndHrsTo, BigDecimal processTimeInHrs) {
+		
+		WorkingHoursData workingHoursData = new WorkingHoursData();
+		
+		
+		return workingHoursData;
 	}
 
 }

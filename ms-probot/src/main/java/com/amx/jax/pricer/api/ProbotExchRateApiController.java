@@ -20,13 +20,13 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.cache.ComputeRequestTransientDataCache;
 import com.amx.jax.pricer.ProbotExchangeRateService;
 import com.amx.jax.pricer.dto.DprRequestDto;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.dto.PricingResponseDTO;
 import com.amx.jax.pricer.service.HolidayListService;
 import com.amx.jax.pricer.service.PricingService;
-import com.amx.jax.pricer.util.ExchangeRequestTransientDataCache;
 import com.amx.jax.pricer.var.PricerServiceConstants;
 
 @RestController
@@ -43,9 +43,9 @@ public class ProbotExchRateApiController implements ProbotExchangeRateService {
 
 	@Bean
 	@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
-	public ExchangeRequestTransientDataCache ExchangeRequestTransientDataCache() {
-		ExchangeRequestTransientDataCache exchangeRequestTransientDataCache = new ExchangeRequestTransientDataCache();
-		return exchangeRequestTransientDataCache;
+	public ComputeRequestTransientDataCache ComputeRequestTransientDataCache() {
+		ComputeRequestTransientDataCache computeRequestTransientDataCache = new ComputeRequestTransientDataCache();
+		return computeRequestTransientDataCache;
 	}
 
 	@Override

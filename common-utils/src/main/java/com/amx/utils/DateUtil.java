@@ -15,7 +15,7 @@ import java.util.TimeZone;
 /**
  * The Class DateUtil.
  */
-// Needs further Customizations 
+// Needs further Customizations
 public final class DateUtil {
 
 	/** The Constant GMT. */
@@ -29,7 +29,7 @@ public final class DateUtil {
 
 	/** The Constant DEFAULT_DATE_FORMAT. */
 	private static final String DEFAULT_DATE_FORMAT = "MM/dd/yyyy";
-	
+
 	/** The Constant DEFAULT_DATE_TIME_FORMAT. */
 	private static final String DEFAULT_DATE_TIME_FORMAT = "dd/MM/yyyy HH:mm";
 
@@ -70,7 +70,8 @@ public final class DateUtil {
 	/**
 	 * Parses the date.
 	 *
-	 * @param dateStr the date str
+	 * @param dateStr
+	 *            the date str
 	 * @return the date
 	 */
 	public static Date parseDate(String dateStr) {
@@ -95,7 +96,8 @@ public final class DateUtil {
 	/**
 	 * Format date.
 	 *
-	 * @param dateStr the date str
+	 * @param dateStr
+	 *            the date str
 	 * @return the string
 	 */
 	public static String formatDate(String dateStr) {
@@ -110,9 +112,12 @@ public final class DateUtil {
 	/**
 	 * Format date.
 	 *
-	 * @param timestamp  the timestamp
-	 * @param dateFormat the date format
-	 * @param timeFormat the time format
+	 * @param timestamp
+	 *            the timestamp
+	 * @param dateFormat
+	 *            the date format
+	 * @param timeFormat
+	 *            the time format
 	 * @return the string
 	 */
 	public static String formatDate(long timestamp, String dateFormat, String timeFormat) {
@@ -127,14 +132,15 @@ public final class DateUtil {
 	/**
 	 * Format date.
 	 *
-	 * @param date the date
+	 * @param date
+	 *            the date
 	 * @return the string
 	 */
 	public static String formatDate(Date date) {
 		SimpleDateFormat format = new SimpleDateFormat(DEFAULT_DATE_FORMAT);
 		return format.format(date);
 	}
-	
+
 	/**
 	 * @param date
 	 * @return the string
@@ -147,8 +153,10 @@ public final class DateUtil {
 	/**
 	 * Forward date.
 	 *
-	 * @param date the date
-	 * @param time the time
+	 * @param date
+	 *            the date
+	 * @param time
+	 *            the time
 	 * @return the date
 	 */
 	public static Date forwardDate(Date date, long time) {
@@ -158,8 +166,10 @@ public final class DateUtil {
 	/**
 	 * Backward date.
 	 *
-	 * @param date the date
-	 * @param time the time
+	 * @param date
+	 *            the date
+	 * @param time
+	 *            the time
 	 * @return the date
 	 */
 	public static Date backwardDate(Date date, long time) {
@@ -179,7 +189,8 @@ public final class DateUtil {
 	 * This function returns date in required timezone. This doesn't return correct
 	 * time.
 	 *
-	 * @param id the id
+	 * @param id
+	 *            the id
 	 * @return the current time
 	 */
 	public static long getCurrentTime(String id) {
@@ -191,7 +202,8 @@ public final class DateUtil {
 	 * This function returns date in required timezone. This doesn't return correct
 	 * time.
 	 *
-	 * @param timeZone the time zone
+	 * @param timeZone
+	 *            the time zone
 	 * @return the current time
 	 */
 	public static long getCurrentTime(TimeZone timeZone) {
@@ -226,7 +238,8 @@ public final class DateUtil {
 	/**
 	 * Gets the current date with time.
 	 *
-	 * @param timezoneId the id
+	 * @param timezoneId
+	 *            the id
 	 * @return : unix timestamp for the current time
 	 */
 	public static long getCurrentDateWithTime(String timezoneId) {
@@ -237,8 +250,9 @@ public final class DateUtil {
 	/**
 	 * Getting timezone offset in milliseconds from GMT.
 	 *
-	 * @param id is timezone. e.g. "GMT +8:30", or for Day Light Saving
-	 *           "Europe/London"
+	 * @param id
+	 *            is timezone. e.g. "GMT +8:30", or for Day Light Saving
+	 *            "Europe/London"
 	 * @return : current offset in milliseconds from GMT
 	 */
 	public static long getOffSet(String id) {
@@ -250,8 +264,9 @@ public final class DateUtil {
 	/**
 	 * Getting timezone offset in milliseconds from GMT.
 	 *
-	 * @param id is timezone. e.g. "GMT +8:30", or for Day Light Saving
-	 *           "Europe/London"
+	 * @param id
+	 *            is timezone. e.g. "GMT +8:30", or for Day Light Saving
+	 *            "Europe/London"
 	 * @return : current offset in milliseconds from GMT
 	 */
 	public static long getOffSetWithDst(String id) {
@@ -264,7 +279,8 @@ public final class DateUtil {
 	/**
 	 * This funcion returns date & time in required timezone.
 	 *
-	 * @param timeZone the time zone
+	 * @param timeZone
+	 *            the time zone
 	 * @return : unix timestamp for the current time
 	 */
 	public static long getCurrentDateWithTime(TimeZone timeZone) {
@@ -284,7 +300,8 @@ public final class DateUtil {
 	/**
 	 * Gets the current date with time and offset.
 	 *
-	 * @param id the id
+	 * @param id
+	 *            the id
 	 * @return the current date with time and offset
 	 */
 	public static long getCurrentDateWithTimeAndOffset(String id) {
@@ -295,7 +312,8 @@ public final class DateUtil {
 	/**
 	 * This funcion returns date & time in required timezone with dst offset.
 	 *
-	 * @param timeZone the time zone
+	 * @param timeZone
+	 *            the time zone
 	 * @return : unix timestamp for the current time
 	 */
 	public static long getCurrentDateWithTimeAndOffset(TimeZone timeZone) {
@@ -306,8 +324,10 @@ public final class DateUtil {
 	/**
 	 * Gets the date with time and offset.
 	 *
-	 * @param id        the id
-	 * @param timestamp the timestamp
+	 * @param id
+	 *            the id
+	 * @param timestamp
+	 *            the timestamp
 	 * @return the date with time and offset
 	 */
 	public static long getDateWithTimeAndOffset(String id, long timestamp) {
@@ -319,8 +339,10 @@ public final class DateUtil {
 	/**
 	 * Gets the time and offset.
 	 *
-	 * @param userTimeZoneCal the user time zone cal
-	 * @param timestamp       the timestamp
+	 * @param userTimeZoneCal
+	 *            the user time zone cal
+	 * @param timestamp
+	 *            the timestamp
 	 * @return the time and offset
 	 */
 	public static long getTimeAndOffset(Calendar userTimeZoneCal, long timestamp) {
@@ -339,7 +361,8 @@ public final class DateUtil {
 	/**
 	 * Removes the time.
 	 *
-	 * @param date the date
+	 * @param date
+	 *            the date
 	 * @return : Date with hours, minutes, second, milliseconds as 0
 	 */
 	public static Date removeTime(Date date) {
@@ -360,8 +383,10 @@ public final class DateUtil {
 	/**
 	 * Removes the time.
 	 *
-	 * @param date     the date
-	 * @param timezone the timezone
+	 * @param date
+	 *            the date
+	 * @param timezone
+	 *            the timezone
 	 * @return : Date with hours, minutes, second, milliseconds as 0
 	 */
 	public static Date removeTime(Date date, TimeZone timezone) {
@@ -383,7 +408,8 @@ public final class DateUtil {
 	/**
 	 * Parse the date. Set the time as GMT 12 noon.
 	 *
-	 * @param date the date
+	 * @param date
+	 *            the date
 	 * @return : Date with the time as GMT 12 noon.
 	 */
 	public static Date setDefaultGMTTime(Date date) {
@@ -404,7 +430,8 @@ public final class DateUtil {
 	/**
 	 * Convenience method to convert Unix timestamp to human readable date.
 	 *
-	 * @param ts the ts
+	 * @param ts
+	 *            the ts
 	 * @return : Human Readable Date
 	 */
 	public static String getReadableDateFromUnixTimestamp(long ts) {
@@ -415,8 +442,10 @@ public final class DateUtil {
 	/**
 	 * Gets the diff in days.
 	 *
-	 * @param ts1 From Timestamp in milliseconds
-	 * @param ts2 To Timestamp in milliseconds
+	 * @param ts1
+	 *            From Timestamp in milliseconds
+	 * @param ts2
+	 *            To Timestamp in milliseconds
 	 * @return Difference in Days between ts1 and ts2.
 	 */
 	public static long getDiffInDays(long ts1, long ts2) {
@@ -426,8 +455,10 @@ public final class DateUtil {
 	/**
 	 * Forward ts by days.
 	 *
-	 * @param ts   From Timestamp in milliseconds
-	 * @param days No of days
+	 * @param ts
+	 *            From Timestamp in milliseconds
+	 * @param days
+	 *            No of days
 	 * @return Timestamp forwarded by 'days'
 	 */
 	public static long forwardTsByDays(long ts, int days) {
@@ -437,7 +468,8 @@ public final class DateUtil {
 	/**
 	 * Gets the date start.
 	 *
-	 * @param ts unix time stamp
+	 * @param ts
+	 *            unix time stamp
 	 * @return unix time stamp (milliseconds)
 	 */
 	public static long getDateStart(long ts) {
@@ -458,7 +490,8 @@ public final class DateUtil {
 	/**
 	 * Gets the date end.
 	 *
-	 * @param ts unix time stamp
+	 * @param ts
+	 *            unix time stamp
 	 * @return unix time stamp (milliseconds)
 	 */
 	public static long getDateEnd(long ts) {
@@ -479,7 +512,8 @@ public final class DateUtil {
 	/**
 	 * Today or after.
 	 *
-	 * @param ts : timestamp
+	 * @param ts
+	 *            : timestamp
 	 * @return true (if ts >= start timestamp of the current day), false
 	 *         (otherwise).
 	 */
@@ -496,7 +530,8 @@ public final class DateUtil {
 	/**
 	 * Today or before.
 	 *
-	 * @param ts : timestamp
+	 * @param ts
+	 *            : timestamp
 	 * @return true (if ts < start timestamp of the next day), false (otherwise).
 	 */
 	public static boolean todayOrBefore(long ts) {
@@ -512,9 +547,12 @@ public final class DateUtil {
 	/**
 	 * Today or after.
 	 *
-	 * @param year  the year
-	 * @param month the month
-	 * @param date  the date
+	 * @param year
+	 *            the year
+	 * @param month
+	 *            the month
+	 * @param date
+	 *            the date
 	 * @return true, if successful
 	 */
 	public static boolean todayOrAfter(int year, int month, int date) {
@@ -538,9 +576,12 @@ public final class DateUtil {
 	/**
 	 * Today or before.
 	 *
-	 * @param year  the year
-	 * @param month the month
-	 * @param date  the date
+	 * @param year
+	 *            the year
+	 * @param month
+	 *            the month
+	 * @param date
+	 *            the date
 	 * @return true, if successful
 	 */
 	public static boolean todayOrBefore(int year, int month, int date) {
@@ -564,18 +605,19 @@ public final class DateUtil {
 	/**
 	 * As date.
 	 *
-	 * @param localDate the local date
+	 * @param localDate
+	 *            the local date
 	 * @return the date
 	 */
 	public static Date asDate(LocalDate localDate) {
-		return Date.from(localDate.atStartOfDay().atZone(ZoneId.of("UTC"))
-				.toInstant());
+		return Date.from(localDate.atStartOfDay().atZone(ZoneId.of("UTC")).toInstant());
 	}
 
 	/**
 	 * As date.
 	 *
-	 * @param localDateTime the local date time
+	 * @param localDateTime
+	 *            the local date time
 	 * @return the date
 	 */
 	public static Date asDate(LocalDateTime localDateTime) {
@@ -585,30 +627,32 @@ public final class DateUtil {
 	/**
 	 * As local date.
 	 *
-	 * @param date the date
+	 * @param date
+	 *            the date
 	 * @return the local date
 	 */
 	public static LocalDate asLocalDate(Date date) {
-		return Instant.ofEpochMilli(date.getTime()).atZone(ZoneId.of("UTC"))
-				.toLocalDate();
+		return Instant.ofEpochMilli(date.getTime()).atZone(ZoneId.of("UTC")).toLocalDate();
 	}
 
 	/**
 	 * As local date time.
 	 *
-	 * @param date the date
+	 * @param date
+	 *            the date
 	 * @return the local date time
 	 */
 	public static LocalDateTime asLocalDateTime(Date date) {
-		return Instant.ofEpochMilli(date.getTime()).atZone(ZoneId.of("UTC"))
-				.toLocalDateTime();
+		return Instant.ofEpochMilli(date.getTime()).atZone(ZoneId.of("UTC")).toLocalDateTime();
 	}
 
 	/**
 	 * Returns timestamp according to timezone and DST.
 	 *
-	 * @param id        the id
-	 * @param timestamp the timestamp
+	 * @param id
+	 *            the id
+	 * @param timestamp
+	 *            the timestamp
 	 * @return the date with time and offset DST
 	 */
 	public static long getDateWithTimeAndOffsetDST(String id, long timestamp) {
@@ -629,6 +673,64 @@ public final class DateUtil {
 		String oldString = sdf.format(date);
 		sdf.setTimeZone(new SimpleTimeZone(SimpleTimeZone.UTC_TIME, "UTC"));
 		return sdf.parse(oldString).getTime();
+	}
+
+	/**
+	 * Converts ArabicDayOfWeek to ISO-DayOfWeek
+	 * 
+	 * @param arabicDayOfWeek
+	 * @return
+	 */
+	public static int arabicToISODayOfWeek(int arabicDayOfWeek) {
+
+		switch (arabicDayOfWeek) {
+		case 1:
+			return 7;
+		case 2:
+			return 1;
+		case 3:
+			return 2;
+		case 4:
+			return 3;
+		case 5:
+			return 4;
+		case 6:
+			return 5;
+		case 7:
+			return 6;
+		default:
+			return -1;
+		}
+
+	}
+
+	/**
+	 * Converts ISO-DayOfWeek to ArabicDayOfWeek
+	 * 
+	 * @param ISODayOfWeek
+	 * @return
+	 */
+	public static int ISOToArabicDayOfWeek(int ISODayOfWeek) {
+
+		switch (ISODayOfWeek) {
+		case 1:
+			return 2;
+		case 2:
+			return 3;
+		case 3:
+			return 4;
+		case 4:
+			return 5;
+		case 5:
+			return 6;
+		case 6:
+			return 7;
+		case 7:
+			return 1;
+		default:
+			return -1;
+		}
+
 	}
 
 }

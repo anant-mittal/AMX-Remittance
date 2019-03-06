@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.cache.ComputeRequestTransientDataCache;
 import com.amx.jax.dict.UserClient.Channel;
 import com.amx.jax.pricer.dao.CountryBranchDao;
 import com.amx.jax.pricer.dao.ExchangeRateDao;
@@ -40,7 +41,6 @@ import com.amx.jax.pricer.dto.ExchangeRateDetails;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.exception.PricerServiceError;
 import com.amx.jax.pricer.exception.PricerServiceException;
-import com.amx.jax.pricer.util.ExchangeRequestTransientDataCache;
 import com.amx.jax.pricer.var.PricerServiceConstants.PRICE_BY;
 
 @Component
@@ -71,7 +71,7 @@ public class RemitPriceManager {
 	RoutingDao routingDao;
 
 	@Resource
-	ExchangeRequestTransientDataCache exchangeRequestTransientDataCache;
+	ComputeRequestTransientDataCache computeRequestTransientDataCache;
 
 	private static List<BigDecimal> ValidServiceIndicatorIds = new ArrayList<BigDecimal>();
 
@@ -85,17 +85,17 @@ public class RemitPriceManager {
 	/**
 	 * Function to compute Base Sell Rates, Cost Rate, Banks Details and other
 	 * related data Result Data is computed and saved into <b>@Resource
-	 * ExchangeRequestTransientDataCache </b>
+	 * ComputeRequestTransientDataCache </b>
 	 * 
 	 * @param requestDto
 	 */
 	public void computeBaseSellRatesPrices(PricingRequestDTO requestDto) {
 
 		List<ExchangeRateDetails> bankWiseRates = new ArrayList<ExchangeRateDetails>();
-		exchangeRequestTransientDataCache.setSellRateDetails(bankWiseRates);
+		computeRequestTransientDataCache.setSellRateDetails(bankWiseRates);
 
 		Map<BigDecimal, BankDetailsDTO> bankIdDetailsMap = new HashMap<BigDecimal, BankDetailsDTO>();
-		exchangeRequestTransientDataCache.setBankDetails(bankIdDetailsMap);
+		computeRequestTransientDataCache.setBankDetails(bankIdDetailsMap);
 
 		if ((Channel.ONLINE.equals(requestDto.getChannel()) || Channel.MOBILE.equals(requestDto.getChannel()))) {
 
@@ -239,13 +239,13 @@ public class RemitPriceManager {
 			/**
 			 * For Further computations
 			 */
-			exchangeRequestTransientDataCache
+			computeRequestTransientDataCache
 					.setBankGlcBalMap(getGLCBALRates(requestDto.getForeignCurrencyId(), validBankIds));
 
 			/**
 			 * Get margin for the Rate
 			 */
-			exchangeRequestTransientDataCache.setMargin(getOnlineMarginMarkup(requestDto.getLocalCountryId(),
+			computeRequestTransientDataCache.setMargin(getOnlineMarginMarkup(requestDto.getLocalCountryId(),
 					requestDto.getForeignCountryId(), requestDto.getForeignCurrencyId()));
 
 		} // else
@@ -269,7 +269,7 @@ public class RemitPriceManager {
 		/**
 		 * For Further computations
 		 */
-		exchangeRequestTransientDataCache.setBankGlcBalMap(bankGlcBalMap);
+		computeRequestTransientDataCache.setBankGlcBalMap(bankGlcBalMap);
 
 		/**
 		 * Get margin for the Rate
@@ -279,7 +279,7 @@ public class RemitPriceManager {
 		/**
 		 * For Further computations
 		 */
-		exchangeRequestTransientDataCache.setMargin(margin);
+		computeRequestTransientDataCache.setMargin(margin);
 
 		List<ExchangeRateAPRDET> exchangeRates = exchangeRateDao.getUniqueSellRatesForRoutingBanks(currencyId,
 				foreignCountryId, applicationCountryId, routingBankIds, ValidServiceIndicatorIds);
@@ -292,7 +292,7 @@ public class RemitPriceManager {
 
 			// ViewExGLCBAL viewExGLCBAL = bankGlcBalMap.get(bankId);
 
-			BigDecimal avgBankGLCBALRate = exchangeRequestTransientDataCache.getAvgRateGLCForBank(bankId);
+			BigDecimal avgBankGLCBALRate = computeRequestTransientDataCache.getAvgRateGLCForBank(bankId);
 
 			if (null != avgBankGLCBALRate) {
 
@@ -497,8 +497,8 @@ public class RemitPriceManager {
 		List<PipsMaster> pips = pipsMasterDao.getPipsMasterForLcCur(toCurrency, lcAmount, countryBranchId,
 				foreignCountryId, validBankIds);
 
-		if (this.exchangeRequestTransientDataCache.getBankDetails() == null) {
-			this.exchangeRequestTransientDataCache.setBankDetails(new HashMap<BigDecimal, BankDetailsDTO>());
+		if (this.computeRequestTransientDataCache.getBankDetails() == null) {
+			this.computeRequestTransientDataCache.setBankDetails(new HashMap<BigDecimal, BankDetailsDTO>());
 		}
 
 		if (pips != null && !pips.isEmpty()) {
@@ -510,7 +510,7 @@ public class RemitPriceManager {
 						.setSellRateBase(createBreakUpForLcCur(i.getDerivedSellRate().add(i.getPipsNo()), lcAmount));
 
 				exchangeRateDetailList.add(exRateDetails);
-				this.exchangeRequestTransientDataCache.getBankDetails().put(dto.getBankId(), dto);
+				this.computeRequestTransientDataCache.getBankDetails().put(dto.getBankId(), dto);
 			});
 		}
 
@@ -525,8 +525,8 @@ public class RemitPriceManager {
 		List<PipsMaster> pips = pipsMasterDao.getPipsMasterForFcCur(toCurrency, fcAmount, countryBranchId,
 				foreignCountryId, validBankIds);
 
-		if (this.exchangeRequestTransientDataCache.getBankDetails() == null) {
-			this.exchangeRequestTransientDataCache.setBankDetails(new HashMap<BigDecimal, BankDetailsDTO>());
+		if (this.computeRequestTransientDataCache.getBankDetails() == null) {
+			this.computeRequestTransientDataCache.setBankDetails(new HashMap<BigDecimal, BankDetailsDTO>());
 		}
 
 		if (pips != null && !pips.isEmpty()) {
@@ -538,7 +538,7 @@ public class RemitPriceManager {
 						.setSellRateBase(createBreakUpForFcCur(i.getDerivedSellRate().add(i.getPipsNo()), fcAmount));
 
 				exchangeRateDetailList.add(exRateDetails);
-				this.exchangeRequestTransientDataCache.getBankDetails().put(dto.getBankId(), dto);
+				this.computeRequestTransientDataCache.getBankDetails().put(dto.getBankId(), dto);
 
 			});
 		}
