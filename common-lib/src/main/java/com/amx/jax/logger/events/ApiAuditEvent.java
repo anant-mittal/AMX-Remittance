@@ -1,5 +1,7 @@
 package com.amx.jax.logger.events;
 
+import java.util.Map;
+
 import com.amx.jax.exception.AmxApiException;
 import com.amx.jax.logger.AuditEvent;
 import com.amx.utils.ArgUtil;
@@ -16,6 +18,8 @@ public class ApiAuditEvent extends AuditEvent {
 		}
 	}
 
+	private Map<String, String> details;
+
 	public ApiAuditEvent(Type type, AmxApiException excep) {
 		super(type);
 		this.message = excep.getErrorMessage();
@@ -23,11 +27,20 @@ public class ApiAuditEvent extends AuditEvent {
 		this.description = String.format("%s_%s:%s", this.type, this.result,
 				ArgUtil.isEmpty(excep.getErrorKey()) ? ArgUtil.parseAsString(excep.getError())
 						: excep.getErrorKey());
+		this.details = excep.getDetailMap();
 
 	}
 
 	public ApiAuditEvent(AmxApiException excep) {
 		this(Type.API, excep);
+	}
+
+	public Map<String, String> getDetails() {
+		return details;
+	}
+
+	public void setDetails(Map<String, String> details) {
+		this.details = details;
 	}
 
 }
