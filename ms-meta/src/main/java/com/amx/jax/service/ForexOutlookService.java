@@ -1,6 +1,8 @@
 package com.amx.jax.service;
 
 import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -72,7 +74,13 @@ public class ForexOutlookService extends AbstractService {
 			CurrencyPairView currencyPairList = currencyPairRepository.getCurrencyPairById(entity.getPairId());
 
 			dto.importFrom(entity);
-			dto.setModifiedDate(entity.getModifiedDate());
+			
+			Date date=entity.getModifiedDate();
+			DateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy");
+			 
+	        String strDate = dateFormat.format(date);
+	         dto.setModifiedDate(strDate);
+			LOGGER.info("modified date"+entity.getModifiedDate());
 			dto.setCurpairName(currencyPairList.getCurPairName());
 			dto.setMessage(entity.getOutlookDesc());
 

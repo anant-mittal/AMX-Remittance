@@ -1,5 +1,6 @@
 package com.amx.jax.pricer.dao;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,4 +28,11 @@ public class CustCatDiscountDao {
 		return (List<CustomerCategoryDiscount>) custCatDiscountRepository.findAll();
 	}
 
+	public CustomerCategoryDiscount getCustCatDiscountById(BigDecimal id) {
+		return custCatDiscountRepository.findById(id);
+	}
+	
+	public void saveDiscountForCustomer(List<CustomerCategoryDiscount> channelDiscounts) {
+		custCatDiscountRepository.save(channelDiscounts);
+	}
 }

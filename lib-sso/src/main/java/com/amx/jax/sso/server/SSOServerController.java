@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
@@ -100,7 +101,14 @@ public class SSOServerController {
 		map.put(SSOConstants.PARAM_SSO_LOGIN_PREFIX, appConfig.getAppPrefix());
 		map.put(SSOConstants.SECURITY_CODE_KEY, ssoUser.getSelfSAC());
 		map.put(SSOConstants.PARTNER_SECURITY_CODE_KEY, ssoUser.getPartnerSAC());
-		map.put(SSOConstants.ADAPTER_URL, sSOConfig.getAdapterUrl());
+
+		String adapterUrl = sSOConfig.getAdapterUrl();
+		Cookie kooky = commonHttpRequest.getCookie("adapter.url");
+		if (kooky != null) {
+			adapterUrl = ArgUtil.parseAsString(kooky.getValue(), adapterUrl);
+		}
+		map.put(SSOConstants.ADAPTER_URL, adapterUrl);
+
 		return map;
 	}
 
@@ -165,7 +173,8 @@ public class SSOServerController {
 			if (SSOAuthStep.CREDS == json) {
 
 				// Audit
-				SSOAuditEvent auditEvent = new SSOAuditEvent(SSOAuditEvent.Type.LOGIN_INIT, Result.FAIL);
+				SSOAuditEvent auditEvent = new SSOAuditEvent(SSOAuditEvent.Type.LOGIN_INIT, Result.FAIL)
+						.identity(formdata.getIdentity()).empno(formdata.getEcnumber());
 
 				ssoUser.generateSAC();
 
@@ -234,7 +243,6 @@ public class SSOServerController {
 								ssoUser.getPartnerSAC());
 					}
 					result.setStatusEnum(SSOServerCodes.OTP_REQUIRED);
-					auditEvent.setSuccess(true);
 					// Audit
 					auditEvent.result(Result.DONE);
 				} finally {

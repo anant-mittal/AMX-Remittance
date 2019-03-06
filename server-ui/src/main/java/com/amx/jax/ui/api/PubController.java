@@ -38,10 +38,10 @@ import com.amx.jax.postman.model.GeoLocation;
 import com.amx.jax.postman.model.SupportEmail;
 import com.amx.jax.sample.CalcLibs;
 import com.amx.jax.tunnel.TunnelService;
+import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
 import com.amx.jax.ui.model.ServerStatus;
 import com.amx.jax.ui.response.ResponseMeta;
 import com.amx.jax.ui.response.ResponseWrapper;
-import com.amx.jax.ui.response.WebResponseStatus;
 import com.amx.jax.ui.service.AppEnvironment;
 import com.amx.jax.ui.service.JaxService;
 import com.amx.jax.ui.service.SessionService;
@@ -198,7 +198,7 @@ public class PubController {
 			postManService.sendEmailToSupprt(email);
 			wrapper.setData(email);
 		} catch (Exception e) {
-			wrapper.setStatusKey(WebResponseStatus.ERROR);
+			wrapper.setStatusKey(OWAStatusStatusCodes.ERROR);
 			log.error("/pub/report", e);
 		}
 		return wrapper;
@@ -229,10 +229,10 @@ public class PubController {
 				postManService.sendEmailToSupprt(email);
 				wrapper.setData(email);
 			} else {
-				wrapper.setStatusKey(WebResponseStatus.ERROR);
+				wrapper.setStatusKey(OWAStatusStatusCodes.ERROR);
 			}
 		} catch (Exception e) {
-			wrapper.setStatusKey(WebResponseStatus.ERROR);
+			wrapper.setStatusKey(OWAStatusStatusCodes.ERROR);
 			log.error("/pub/contact", e);
 		}
 		return wrapper;

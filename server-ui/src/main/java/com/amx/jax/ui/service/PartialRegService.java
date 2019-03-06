@@ -13,11 +13,11 @@ import com.amx.jax.model.AuthState;
 import com.amx.jax.model.AuthState.AuthStep;
 import com.amx.jax.model.dto.SendOtpModel;
 import com.amx.jax.model.request.CustomerPersonalDetail;
+import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
 import com.amx.jax.ui.model.AuthData;
 import com.amx.jax.ui.model.UserUpdateData;
 import com.amx.jax.ui.response.ResponseMessage;
 import com.amx.jax.ui.response.ResponseWrapper;
-import com.amx.jax.ui.response.WebResponseStatus;
 
 /**
  * The Class PartialRegService.
@@ -55,7 +55,7 @@ public class PartialRegService {
 		sessionService.getGuestSession().getState().setValidId(true);
 		wrapper.getData().setmOtpPrefix((model.getmOtpPrefix()));
 		wrapper.getData().seteOtpPrefix((model.geteOtpPrefix()));
-		wrapper.setMessage(WebResponseStatus.OTP_SENT);
+		wrapper.setMessage(OWAStatusStatusCodes.OTP_SENT);
 
 		sessionService.getGuestSession().endStep(AuthStep.IDVALID);
 		wrapper.getData().setState(sessionService.getGuestSession().getState());
@@ -80,10 +80,10 @@ public class PartialRegService {
 			// update Session/State
 			sessionService.getGuestSession().getState().setValidMotp(true);
 			sessionService.getGuestSession().getState().setValidEotp(true);
-			wrapper.setMessage(WebResponseStatus.VERIFY_SUCCESS, ResponseMessage.AUTH_SUCCESS);
+			wrapper.setMessage(OWAStatusStatusCodes.VERIFY_SUCCESS, ResponseMessage.AUTH_SUCCESS);
 			sessionService.getGuestSession().endStep(AuthStep.DOTPVFY);
 		} else {
-			wrapper.setMessage(WebResponseStatus.VERIFY_FAILED);
+			wrapper.setMessage(OWAStatusStatusCodes.VERIFY_FAILED);
 		}
 
 		wrapper.getData().setState(sessionService.getGuestSession().getState());
@@ -107,10 +107,10 @@ public class PartialRegService {
 			// update Session/State
 			sessionService.getGuestSession().getState().setValidMotp(true);
 			sessionService.getGuestSession().getState().setValidEotp(true);
-			wrapper.setMessage(WebResponseStatus.USER_UPDATE_SUCCESS);
+			wrapper.setMessage(OWAStatusStatusCodes.USER_UPDATE_SUCCESS);
 			sessionService.getGuestSession().endStep(AuthStep.SAVE_HOME);
 		} else {
-			wrapper.setMessage(WebResponseStatus.USER_UPDATE_FAILED);
+			wrapper.setMessage(OWAStatusStatusCodes.USER_UPDATE_FAILED);
 		}
 
 		wrapper.getData().setState(sessionService.getGuestSession().getState());
@@ -133,7 +133,7 @@ public class PartialRegService {
 				.getResult();
 
 		if (boolResp.isSuccess()) {
-			wrapper.setMessage(WebResponseStatus.USER_UPDATE_SUCCESS);
+			wrapper.setMessage(OWAStatusStatusCodes.USER_UPDATE_SUCCESS);
 			sessionService.getGuestSession().endStep(AuthStep.SECQ_SET);
 		}
 
@@ -156,7 +156,7 @@ public class PartialRegService {
 
 		jaxClient.setDefaults().getCustRegClient().savePhishiingImage(caption, imageUrl).getResult();
 
-		wrapper.setMessage(WebResponseStatus.USER_UPDATE_SUCCESS, "Phishing Image Updated");
+		wrapper.setMessage(OWAStatusStatusCodes.USER_UPDATE_SUCCESS, "Phishing Image Updated");
 		sessionService.getGuestSession().endStep(AuthStep.CAPTION_SET);
 		wrapper.getData().setState(sessionService.getGuestSession().getState());
 		return wrapper;
@@ -175,7 +175,7 @@ public class PartialRegService {
 
 		jaxClient.setDefaults().getCustRegClient().saveLoginDetail(customerCredential, Boolean.TRUE).getResult();
 
-		wrapper.setMessage(WebResponseStatus.USER_UPDATE_SUCCESS, "LoginId and Password updated");
+		wrapper.setMessage(OWAStatusStatusCodes.USER_UPDATE_SUCCESS, "LoginId and Password updated");
 		sessionService.getGuestSession().endStep(AuthStep.CREDS_SET);
 		wrapper.getData().setState(sessionService.getGuestSession().getState());
 

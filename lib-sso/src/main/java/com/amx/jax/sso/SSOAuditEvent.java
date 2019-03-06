@@ -31,6 +31,7 @@ public class SSOAuditEvent extends AuditEvent {
 		String terminalIp;
 		String deviceRegId;
 		String identity;
+		String empno;
 
 		public String getTerminalId() {
 			return terminalId;
@@ -63,6 +64,14 @@ public class SSOAuditEvent extends AuditEvent {
 		public void setIdentity(String identity) {
 			this.identity = identity;
 		}
+
+		public String getEmpno() {
+			return empno;
+		}
+
+		public void setEmpno(String empno) {
+			this.empno = empno;
+		}
 	}
 
 	private SSOAuditData auth;
@@ -79,6 +88,11 @@ public class SSOAuditEvent extends AuditEvent {
 
 	public SSOAuditEvent identity(Object identity) {
 		this.auth.setIdentity(ArgUtil.parseAsString(identity));
+		return this;
+	}
+
+	public SSOAuditEvent empno(Object empno) {
+		this.auth.setEmpno(ArgUtil.parseAsString(empno));
 		return this;
 	}
 

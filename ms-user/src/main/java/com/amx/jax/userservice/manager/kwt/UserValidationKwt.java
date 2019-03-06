@@ -2,10 +2,13 @@ package com.amx.jax.userservice.manager.kwt;
 
 import java.math.BigDecimal;
 import java.text.DateFormat;
+import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.log4j.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -23,12 +26,14 @@ import com.amx.jax.scope.TenantSpecific;
 import com.amx.jax.userservice.dao.CustomerIdProofDao;
 import com.amx.jax.userservice.dao.DmsDocumentDao;
 import com.amx.jax.userservice.repository.CustomerRepository;
+import com.amx.jax.userservice.service.UserValidationService;
 import com.amx.jax.userservice.service.CustomerValidationContext.CustomerValidation;
+import com.amx.utils.Constants;
 
 @Component
 @TenantSpecific(value = { Tenant.KWT, Tenant.KWT2 })
 public class UserValidationKwt implements CustomerValidation {
-
+	Logger logger = Logger.getLogger(UserValidationKwt.class);
 	@Autowired
 	private CustomerIdProofDao idproofDao;
 

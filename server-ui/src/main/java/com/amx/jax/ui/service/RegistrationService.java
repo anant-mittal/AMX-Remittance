@@ -14,11 +14,11 @@ import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.model.AuthState;
 import com.amx.jax.model.AuthState.AuthStep;
 import com.amx.jax.model.auth.QuestModelDTO;
+import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
 import com.amx.jax.ui.model.AuthData;
 import com.amx.jax.ui.model.UserUpdateData;
 import com.amx.jax.ui.response.ResponseMessage;
 import com.amx.jax.ui.response.ResponseWrapper;
-import com.amx.jax.ui.response.WebResponseStatus;
 import com.amx.jax.ui.session.UserSession;
 
 /**
@@ -65,13 +65,13 @@ public class RegistrationService {
 		CivilIdOtpModel model = jaxClient.setDefaults().getUserclient().initRegistration(identity).getResult();
 		// Check if response was successful
 		if (model.getIsActiveCustomer()) {
-			wrapper.setMessage(WebResponseStatus.ALREADY_ACTIVE, ResponseMessage.USER_ALREADY_ACTIVE);
+			wrapper.setMessage(OWAStatusStatusCodes.ALREADY_ACTIVE, ResponseMessage.USER_ALREADY_ACTIVE);
 		} else {
 			sessionService.getGuestSession().getState().setValidId(true);
 
 			wrapper.getData().setmOtpPrefix((model.getmOtpPrefix()));
 			wrapper.getData().seteOtpPrefix((model.geteOtpPrefix()));
-			wrapper.setMessage(WebResponseStatus.OTP_SENT);
+			wrapper.setMessage(OWAStatusStatusCodes.OTP_SENT);
 
 			sessionService.getGuestSession().endStep(AuthStep.IDVALID);
 			wrapper.getData().setState(sessionService.getGuestSession().getState());
@@ -97,7 +97,7 @@ public class RegistrationService {
 		sessionService.authorize(model, true);
 		initActivation(wrapper);
 		sessionService.getGuestSession().endStep(AuthStep.MOTPVFY);
-		wrapper.setMessage(WebResponseStatus.VERIFY_SUCCESS, ResponseMessage.AUTH_SUCCESS);
+		wrapper.setMessage(OWAStatusStatusCodes.VERIFY_SUCCESS, ResponseMessage.AUTH_SUCCESS);
 		return wrapper;
 	}
 
@@ -133,7 +133,7 @@ public class RegistrationService {
 			wrapper.getData().setQues(ques);
 		}
 
-		wrapper.setMessage(WebResponseStatus.VERIFY_SUCCESS, ResponseMessage.AUTH_SUCCESS);
+		wrapper.setMessage(OWAStatusStatusCodes.VERIFY_SUCCESS, ResponseMessage.AUTH_SUCCESS);
 		sessionService.getGuestSession().endStep(AuthStep.MOTPVFY);
 		wrapper.getData().setState(sessionService.getGuestSession().getState());
 
@@ -163,7 +163,7 @@ public class RegistrationService {
 				.getResult();
 		// update Session/State
 		sessionService.getGuestSession().getState().setValidDataVer(true);
-		wrapper.setMessage(WebResponseStatus.VERIFY_SUCCESS, ResponseMessage.AUTH_SUCCESS);
+		wrapper.setMessage(OWAStatusStatusCodes.VERIFY_SUCCESS, ResponseMessage.AUTH_SUCCESS);
 		sessionService.getGuestSession().endStep(AuthStep.DATA_VERIFY);
 		wrapper.getData().setState(sessionService.getGuestSession().getState());
 		return wrapper;
@@ -221,7 +221,7 @@ public class RegistrationService {
 				.saveSecurityQuestions(securityquestions, mOtp, eOtp).getResult();
 
 		wrapper.getData().setSecQuesAns(customerModel.getSecurityquestions());
-		wrapper.setMessage(WebResponseStatus.USER_UPDATE_SUCCESS, "Question Answer Saved Scfuly");
+		wrapper.setMessage(OWAStatusStatusCodes.USER_UPDATE_SUCCESS, "Question Answer Saved Scfuly");
 		sessionService.getGuestSession().endStep(AuthStep.SECQ_SET);
 		wrapper.getData().setState(sessionService.getGuestSession().getState());
 		return wrapper;
@@ -246,7 +246,7 @@ public class RegistrationService {
 
 		jaxClient.setDefaults().getUserclient().savePhishiingImage(caption, imageUrl, mOtp, eOtp).getResult();
 
-		wrapper.setMessage(WebResponseStatus.USER_UPDATE_SUCCESS, "Phishing Image Updated");
+		wrapper.setMessage(OWAStatusStatusCodes.USER_UPDATE_SUCCESS, "Phishing Image Updated");
 		sessionService.getGuestSession().endStep(AuthStep.CAPTION_SET);
 		wrapper.getData().setState(sessionService.getGuestSession().getState());
 		return wrapper;
@@ -281,7 +281,7 @@ public class RegistrationService {
 			jaxClient.getUserclient().customerLoggedIn(sessionService.getAppDevice().getUserDevice());
 		}
 
-		wrapper.setMessage(WebResponseStatus.USER_UPDATE_SUCCESS, "LoginId and Password updated");
+		wrapper.setMessage(OWAStatusStatusCodes.USER_UPDATE_SUCCESS, "LoginId and Password updated");
 		sessionService.getGuestSession().endStep(AuthStep.CREDS_SET);
 		wrapper.getData().setState(sessionService.getGuestSession().getState());
 
