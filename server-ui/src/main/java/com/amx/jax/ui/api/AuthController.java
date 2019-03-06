@@ -52,7 +52,7 @@ public class AuthController {
 	@RequestMapping(value = "/pub/auth/login", method = { RequestMethod.POST })
 	public ResponseWrapper<AuthResponse> login(@Valid @RequestBody AuthRequest authData) {
 
-		if (!ArgUtil.isEmpty(authData.getLockId()) && authData.getLockId().equalsIgnoreCase(authData.getIdentity())) {
+		if (!ArgUtil.isEmpty(authData.getLockId()) && !authData.getLockId().equalsIgnoreCase(authData.getIdentity())) {
 			throw new UIServerError(OWAStatusStatusCodes.DEVICE_LOCKED);
 		}
 
