@@ -26,9 +26,9 @@ import com.amx.jax.repository.IApplicationCountryRepository;
 import com.amx.jax.services.AbstractService;
 import com.amx.jax.services.JaxNotificationService;
 import com.amx.jax.trnx.CustomerRegistrationTrnxModel;
+import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.manager.CustomerRegistrationManager;
 import com.amx.jax.userservice.manager.CustomerRegistrationOtpManager;
-import com.amx.jax.userservice.repository.CustomerRepository;
 import com.amx.jax.userservice.repository.OnlineCustomerRepository;
 import com.amx.jax.userservice.validation.CustomerCredentialValidator;
 import com.amx.jax.userservice.validation.CustomerPersonalDetailValidator;
@@ -48,6 +48,9 @@ public class CustomerRegistrationService extends AbstractService {
 	public String getModelType() {
 		return "customer-registration";
 	}
+	
+	@Autowired
+	private CustomerDao custDao;
 
 	@Autowired
 	JaxUtil util;
@@ -73,8 +76,7 @@ public class CustomerRegistrationService extends AbstractService {
 	UserService userService ; 
 	@Autowired
 	OnlineCustomerRepository onlineCustomer;
-	@Autowired
-	CustomerRepository customerRepo;
+	
 	
 	/**
 	 * Sends otp initiating trnx
@@ -143,9 +145,9 @@ public class CustomerRegistrationService extends AbstractService {
 		customerRegistrationManager.saveLoginDetail(customerCredential);
 		customerCredentialValidator.validate(customerRegistrationManager.get(),  null);
 		
-		CustomerOnlineRegistration custIdd = onlineCustomer.getCustomerIDByuserId(customerCredential.getLoginId());
+		CustomerOnlineRegistration custIdd = custDao.getCustomerIDByuserId(customerCredential.getLoginId());
 		
-		Customer customerDet = customerRepo.getCustomerDetailsByCustomerId(custIdd.getCustomerId());
+		Customer customerDet = userService.getCustomerDetailsByCustomerId(custIdd.getCustomerId());
 				
 		ApplicationSetup applicationSetupData = applicationSetup.getApplicationSetupDetails();
 		PersonInfo personinfo = new PersonInfo();
