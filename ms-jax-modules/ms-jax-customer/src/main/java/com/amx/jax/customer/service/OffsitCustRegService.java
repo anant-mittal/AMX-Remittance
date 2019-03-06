@@ -39,7 +39,6 @@ import com.amx.jax.CustomerCredential;
 import com.amx.jax.ICustRegService;
 import com.amx.jax.amxlib.config.OtpSettings;
 import com.amx.jax.api.AmxApiResponse;
-import com.amx.jax.auditlog.CustomerAuditEvent;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constants.CustomerRegistrationType;
 import com.amx.jax.dal.ArticleDao;

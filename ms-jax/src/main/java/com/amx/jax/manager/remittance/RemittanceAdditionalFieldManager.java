@@ -28,7 +28,6 @@ import com.amx.jax.dbmodel.bene.BeneficaryMaster;
 import com.amx.jax.dbmodel.remittance.AdditionalDataDisplayView;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.model.request.remittance.RemittanceAdditionalBeneFieldModel;
-import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.repository.IAdditionalDataDisplayDao;
 import com.amx.jax.services.BankService;
 import com.amx.jax.services.BeneficiaryService;

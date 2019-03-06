@@ -246,4 +246,15 @@ public abstract class AmxApiException extends AmxException {
 		return this;
 	}
 
+	/**
+	 * To set meta values, for exception, possible cases : Prefix Value in case OTP
+	 * is required for the api to complete its task
+	 * 
+	 * @param meta
+	 * @return
+	 */
+	public AmxApiException meta(Object meta) {
+		this.setMeta(meta);
+		return this;
+	}
 }

@@ -1,7 +1,5 @@
 package com.amx.jax.device;
 
-import java.math.BigDecimal;
-
 import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;

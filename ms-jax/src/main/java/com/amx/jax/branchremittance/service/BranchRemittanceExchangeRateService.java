@@ -21,7 +21,6 @@ import com.amx.jax.branchremittance.manager.BranchImpsRoutingManager;
 import com.amx.jax.branchremittance.manager.BranchRemittanceExchangeRateManager;
 import com.amx.jax.branchremittance.manager.BranchRoutingManager;
 import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
-import com.amx.jax.model.request.remittance.BranchRemittanceGetExchangeRateRequest;
 import com.amx.jax.model.request.remittance.IRemittanceApplicationParams;
 import com.amx.jax.model.response.remittance.RoutingResponseDto;
 import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeRateResponse;
