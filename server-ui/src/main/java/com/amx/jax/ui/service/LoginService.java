@@ -21,13 +21,13 @@ import com.amx.jax.model.AuthState.AuthStep;
 import com.amx.jax.model.auth.QuestModelDTO;
 import com.amx.jax.ui.audit.CAuthEvent;
 import com.amx.jax.ui.config.HttpUnauthorizedException;
+import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
 import com.amx.jax.ui.config.UIServerError;
 import com.amx.jax.ui.model.AuthData;
 import com.amx.jax.ui.model.AuthDataInterface.AuthResponse;
 import com.amx.jax.ui.model.UserUpdateData;
 import com.amx.jax.ui.response.ResponseMessage;
 import com.amx.jax.ui.response.ResponseWrapper;
-import com.amx.jax.ui.response.WebResponseStatus;
 import com.amx.jax.ui.session.UserSession;
 import com.amx.utils.ListManager;
 
@@ -103,7 +103,7 @@ public class LoginService {
 		}
 		sessionService.getGuestSession().setCustomerModel(customerModel);
 		wrapper.setData(getRandomSecurityQuestion(customerModel));
-		wrapper.setMessage(WebResponseStatus.AUTH_OK, "Password is Correct");
+		wrapper.setMessage(OWAStatusStatusCodes.AUTH_OK, "Password is Correct");
 		sessionService.getGuestSession().endStep(AuthStep.USERPASS);
 		wrapper.getData().setState(sessionService.getGuestSession().getState());
 		return wrapper;
@@ -173,7 +173,7 @@ public class LoginService {
 						wrapper.getData().setQues(questModelDTO);
 					}
 				}
-				wrapper.setMessage(WebResponseStatus.AUTH_FAILED, e);
+				wrapper.setMessage(OWAStatusStatusCodes.AUTH_FAILED, e);
 				auditService.log(new CAuthEvent(sessionService.getGuestSession().getState(), CAuthEvent.Result.FAIL,
 						e.getError()));
 			} else {
@@ -202,7 +202,7 @@ public class LoginService {
 			sessionService.getGuestSession().setReturnUrl(null);
 		}
 
-		wrapper.setMessage(WebResponseStatus.AUTH_DONE, ResponseMessage.AUTH_SUCCESS);
+		wrapper.setMessage(OWAStatusStatusCodes.AUTH_DONE, ResponseMessage.AUTH_SUCCESS);
 		sessionService.getGuestSession().endStep(secques);
 		wrapper.getData().setState(sessionService.getGuestSession().getState());
 		return wrapper;
@@ -227,7 +227,7 @@ public class LoginService {
 		// append info in response data
 		wrapper.getData().setmOtpPrefix(model.getmOtpPrefix());
 		wrapper.getData().seteOtpPrefix(model.geteOtpPrefix());
-		wrapper.setMessage(WebResponseStatus.OTP_SENT, "OTP generated and sent");
+		wrapper.setMessage(OWAStatusStatusCodes.OTP_SENT, "OTP generated and sent");
 		return wrapper;
 	}
 
@@ -247,7 +247,7 @@ public class LoginService {
 		CivilIdOtpModel model = jaxService.setDefaults().getUserclient().sendResetOtpForCivilId(identity).getResult();
 		wrapper.getData().setmOtpPrefix(model.getmOtpPrefix());
 		wrapper.getData().seteOtpPrefix(model.geteOtpPrefix());
-		wrapper.setMessage(WebResponseStatus.OTP_SENT, "OTP generated and sent");
+		wrapper.setMessage(OWAStatusStatusCodes.OTP_SENT, "OTP generated and sent");
 		sessionService.getGuestSession().endStep(AuthStep.IDVALID);
 		wrapper.getData().setState(sessionService.getGuestSession().getState());
 		return wrapper;
@@ -272,7 +272,7 @@ public class LoginService {
 		sessionService.getGuestSession().setCustomerModel(model);
 		wrapper.setData(getRandomSecurityQuestion(model));
 
-		wrapper.setMessage(WebResponseStatus.VERIFY_SUCCESS, ResponseMessage.AUTH_SUCCESS);
+		wrapper.setMessage(OWAStatusStatusCodes.VERIFY_SUCCESS, ResponseMessage.AUTH_SUCCESS);
 		sessionService.getGuestSession().endStep(AuthStep.MOTPVFY);
 		wrapper.getData().setState(sessionService.getGuestSession().getState());
 		return wrapper;
@@ -298,7 +298,7 @@ public class LoginService {
 		}
 		BoolRespModel model = jaxService.setDefaults().getUserclient().updatePassword(password, mOtp, eOtp).getResult();
 		if (model.isSuccess()) {
-			wrapper.setMessage(WebResponseStatus.USER_UPDATE_SUCCESS, "Password Updated Succesfully");
+			wrapper.setMessage(OWAStatusStatusCodes.USER_UPDATE_SUCCESS, "Password Updated Succesfully");
 			sessionService.getGuestSession().endStep(AuthStep.CREDS_SET);
 			wrapper.getData().setState(sessionService.getGuestSession().getState());
 		}

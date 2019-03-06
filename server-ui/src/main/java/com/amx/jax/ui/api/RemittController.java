@@ -47,13 +47,13 @@ import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.ui.UIConstants;
+import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
 import com.amx.jax.ui.model.AuthData;
 import com.amx.jax.ui.model.AuthDataInterface.AuthResponseOTPprefix;
 import com.amx.jax.ui.model.UserBean;
 import com.amx.jax.ui.model.XRateData;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.response.ResponseWrapperM;
-import com.amx.jax.ui.response.WebResponseStatus;
 import com.amx.jax.ui.service.JaxService;
 import com.amx.jax.ui.service.SessionService;
 import com.amx.jax.ui.service.TenantService;
@@ -285,7 +285,7 @@ public class RemittController {
 				wrapper.getData().setForAmount(resp.getExRateBreakup().getConvertedFCAmount());
 				wrapper.getData().setBeneBanks(resp.getBankWiseRates());
 			} catch (ResourceNotFoundException | InvalidInputException e) {
-				wrapper.setMessage(WebResponseStatus.ERROR, e);
+				wrapper.setMessage(OWAStatusStatusCodes.ERROR, e);
 			}
 		}
 		return wrapper;
@@ -356,7 +356,7 @@ public class RemittController {
 			wrapper.setData(respTxMdl);
 			wrapper.setMeta(jaxService.setDefaults().getRemitClient().getPurposeOfTransactions(request).getResults());
 		} catch (RemittanceTransactionValidationException | LimitExeededException e) {
-			wrapper.setMessage(WebResponseStatus.ERROR, e);
+			wrapper.setMessage(OWAStatusStatusCodes.ERROR, e);
 		}
 		return wrapper;
 	}
@@ -386,7 +386,7 @@ public class RemittController {
 			if (respTxMdl.getCivilIdOtpModel() != null && respTxMdl.getCivilIdOtpModel().getmOtpPrefix() != null) {
 				wrapper.setMeta(new AuthData());
 				wrapper.getMeta().setmOtpPrefix(respTxMdl.getCivilIdOtpModel().getmOtpPrefix());
-				wrapper.setStatus(WebResponseStatus.MOTP_REQUIRED);
+				wrapper.setStatus(OWAStatusStatusCodes.MOTP_REQUIRED);
 			} else {
 				PayGParams payment = new PayGParams();
 				payment.setDocFy(respTxMdl.getDocumentFinancialYear());
@@ -401,7 +401,7 @@ public class RemittController {
 
 		} catch (RemittanceTransactionValidationException | LimitExeededException | MalformedURLException
 				| URISyntaxException e) {
-			wrapper.setMessage(WebResponseStatus.ERROR, e);
+			wrapper.setMessage(OWAStatusStatusCodes.ERROR, e);
 		}
 		return wrapper;
 	}
