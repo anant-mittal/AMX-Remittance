@@ -218,6 +218,11 @@ public class CustomerDao {
 		return onlineCustRepo.getOnlineCustomerByLoginIdOrUserName(loginId);
 	}
 	
+	public CustomerOnlineRegistration getCustomerIDByuserId(String loginId) {
+		return onlineCustRepo.getCustomerIDByuserId(loginId);
+	}
+	
+
 	public List<CustomerOnlineRegistration> getOnlineCustomerWithStatusByLoginIdOrUserName(String loginId) {
 		return onlineCustRepo.getOnlineCustomerWithStatusByLoginIdOrUserName(loginId);
 	}
