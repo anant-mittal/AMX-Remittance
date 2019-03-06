@@ -25,6 +25,7 @@ import com.amx.jax.pricer.dto.EstimatedDeliveryDetails;
 import com.amx.jax.pricer.exception.PricerServiceError;
 import com.amx.jax.pricer.exception.PricerServiceException;
 import com.amx.jax.pricer.util.RoutingTransientDataComputationObject;
+import com.amx.utils.DateUtil;
 import com.amx.utils.JsonUtil;
 
 @Component
@@ -105,21 +106,28 @@ public class RemitRoutingManager {
 		}
 
 		System.out.println("######## Zonned Date Now ==> " + beginZonedDT);
-		
+
 		System.out.println(" Current Day of week ==> " + beginZonedDT.getDayOfWeek().getValue());
-		
+
 		System.out.println(" Current Day Ordinal ==> " + beginZonedDT.getDayOfWeek().ordinal());
 
 		return null;
 	}
 
-	private WorkingHoursData computeWorkMatrix(BigDecimal weekFrom,
-			BigDecimal weekTo, BigDecimal weekHrsFrom, BigDecimal weekHrsTo, BigDecimal weekEndFrom,
-			BigDecimal weekEndTo, BigDecimal weekEndHrsFrom, BigDecimal weekEndHrsTo, BigDecimal processTimeInHrs) {
-		
+	private WorkingHoursData computeWorkMatrix(BigDecimal weekFrom, BigDecimal weekTo, BigDecimal weekHrsFrom,
+			BigDecimal weekHrsTo, BigDecimal weekEndFrom, BigDecimal weekEndTo, BigDecimal weekEndHrsFrom,
+			BigDecimal weekEndHrsTo, BigDecimal processTimeInHrs) {
+
 		WorkingHoursData workingHoursData = new WorkingHoursData();
+
+		// Set Work Hours For the WeekDays.
+		//INvalid Days of week
+		
+		workingHoursData.setWorkHrsThroughArabicDoW(weekFrom.intValue(), weekTo.intValue(), weekHrsFrom.intValue(),
+				weekHrsTo.intValue());
 		
 		
+
 		return workingHoursData;
 	}
 

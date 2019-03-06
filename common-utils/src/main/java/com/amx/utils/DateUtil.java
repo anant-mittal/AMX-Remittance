@@ -733,4 +733,11 @@ public final class DateUtil {
 
 	}
 
+	public static boolean isValidDayOfWeek(int dayOfWeek) {
+		if (dayOfWeek >= 1 && dayOfWeek <= 7)
+			return true;
+
+		return false;
+	}
+
 }

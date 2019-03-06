@@ -20,7 +20,7 @@ public class WorkingHoursData {
 	// Processing Time in Hours or Fraction of it.
 	private double processTimeInHrs;
 
-	private WorkingHoursData() {
+	public WorkingHoursData() {
 		Arrays.fill(workWeek, false);
 		Arrays.fill(workTimeFromInHrsMins, 0);
 		Arrays.fill(workTimeToInHrsMins, 0);
@@ -47,13 +47,17 @@ public class WorkingHoursData {
 		this.processTimeInHrs = processTimeInHrs;
 	}
 
-	public void setWorkDayOnArabicDoW(int arabicDayOfWeek) {
+	public boolean setWorkDayOnArabicDoW(int arabicDayOfWeek) {
 
 		int ISODayOfWeek = DateUtil.arabicToISODayOfWeek(arabicDayOfWeek);
 
 		// Mon : 1 through Sun : 7
-		if (ISODayOfWeek >= 1 && ISODayOfWeek <= 7)
+		if (DateUtil.isValidDayOfWeek(ISODayOfWeek)) {
 			workWeek[arabicDayOfWeek - 1] = true;
+			return true;
+		}
+
+		return false;
 	}
 
 	/**
@@ -65,7 +69,7 @@ public class WorkingHoursData {
 	public boolean setWorkDaysThroughArabicDoW(int arabicStartDay, int arabicEndDay) {
 
 		// range Out of Bound
-		if (arabicStartDay < 1 || arabicStartDay > 7 || arabicEndDay < 1 || arabicEndDay > 7)
+		if (!DateUtil.isValidDayOfWeek(arabicStartDay) || !DateUtil.isValidDayOfWeek(arabicEndDay))
 			return false;
 
 		int startDay = DateUtil.arabicToISODayOfWeek(arabicStartDay);
