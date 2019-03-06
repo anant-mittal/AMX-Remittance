@@ -165,7 +165,8 @@ public class SSOServerController {
 			if (SSOAuthStep.CREDS == json) {
 
 				// Audit
-				SSOAuditEvent auditEvent = new SSOAuditEvent(SSOAuditEvent.Type.LOGIN_INIT, Result.FAIL);
+				SSOAuditEvent auditEvent = new SSOAuditEvent(SSOAuditEvent.Type.LOGIN_INIT, Result.FAIL)
+						.identity(formdata.getIdentity()).empno(formdata.getEcnumber());
 
 				ssoUser.generateSAC();
 
@@ -233,7 +234,6 @@ public class SSOServerController {
 								ssoUser.getPartnerSAC());
 					}
 					result.setStatusEnum(SSOServerCodes.OTP_REQUIRED);
-					auditEvent.setSuccess(true);
 					// Audit
 					auditEvent.result(Result.DONE);
 				} finally {
