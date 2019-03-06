@@ -138,8 +138,8 @@ public class CustomerRegistrationService extends AbstractService {
 	 */
 	public ApiResponse saveLoginDetail(CustomerCredential customerCredential) {
 		customerRegistrationManager.saveLoginDetail(customerCredential);
-		customerCredentialValidator.validate(customerRegistrationManager.get(),  null);
-		customerRegistrationManager.commit();	
+		//customerCredentialValidator.validate(customerRegistrationManager.get(),  null);
+		//customerRegistrationManager.commit();	
 	/*	
 		Customer customerDetails = userService.getCustomerDetails(customerCredential.getLoginId());
 		
