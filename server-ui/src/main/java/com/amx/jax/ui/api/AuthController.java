@@ -54,6 +54,11 @@ public class AuthController {
 	 */
 	@RequestMapping(value = "/pub/auth/login", method = { RequestMethod.POST })
 	public ResponseWrapper<AuthResponse> login(@Valid @RequestBody AuthRequest authData) {
+
+		if (!ArgUtil.isEmpty(authData.getLockId()) && authData.getLockId().equalsIgnoreCase(authData.getIdentity())) {
+			throw new UIServerError(WebResponseStatus.DEVICE_LOCKED);
+		}
+
 		if (!ArgUtil.isEmpty(authData.getDeviceToken())) {
 			return loginService.loginByDevice(authData.getIdentity(), authData.getDeviceToken());
 		} else {

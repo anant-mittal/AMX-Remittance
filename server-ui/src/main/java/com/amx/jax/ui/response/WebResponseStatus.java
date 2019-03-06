@@ -7,11 +7,11 @@ import com.amx.jax.exception.IExceptionEnum;
  */
 public enum WebResponseStatus implements IExceptionEnum {
 
-	
 	UI_SERVER_ERROR("000"),
 	/** The already active. */
 	// Registration - CIVIL ID validation
 	ALREADY_ACTIVE("302"),
+	DEVICE_LOCKED("302"),
 	/** The invalid id. */
 	INVALID_ID("200"),
 	/** The otp sent. */
