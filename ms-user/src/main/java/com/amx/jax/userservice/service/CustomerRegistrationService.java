@@ -28,6 +28,7 @@ import com.amx.jax.services.JaxNotificationService;
 import com.amx.jax.trnx.CustomerRegistrationTrnxModel;
 import com.amx.jax.userservice.manager.CustomerRegistrationManager;
 import com.amx.jax.userservice.manager.CustomerRegistrationOtpManager;
+import com.amx.jax.userservice.repository.CustomerRepository;
 import com.amx.jax.userservice.repository.OnlineCustomerRepository;
 import com.amx.jax.userservice.validation.CustomerCredentialValidator;
 import com.amx.jax.userservice.validation.CustomerPersonalDetailValidator;
@@ -72,6 +73,8 @@ public class CustomerRegistrationService extends AbstractService {
 	UserService userService ; 
 	@Autowired
 	OnlineCustomerRepository onlineCustomer;
+	@Autowired
+	CustomerRepository customerRepo;
 	
 	/**
 	 * Sends otp initiating trnx
@@ -138,26 +141,16 @@ public class CustomerRegistrationService extends AbstractService {
 	 */
 	public ApiResponse saveLoginDetail(CustomerCredential customerCredential) {
 		customerRegistrationManager.saveLoginDetail(customerCredential);
-		//customerCredentialValidator.validate(customerRegistrationManager.get(),  null);
-		//customerRegistrationManager.commit();	
-	/*	
-		Customer customerDetails = userService.getCustomerDetails(customerCredential.getLoginId());
+		customerCredentialValidator.validate(customerRegistrationManager.get(),  null);
 		
-		CustomerOnlineRegistration loginCustomer = onlineCustomer.getLoginCustomersById(customerDetails.getCustomerId());
+		CustomerOnlineRegistration custIdd = onlineCustomer.getCustomerIDByuserId(customerCredential.getLoginId());
 		
-
-		
-		
-		CustomerOnlineRegistration loginCustomer = onlineCustomer.getLoginCustomersById(customerCredential.getLoginId());
-		
-		Customer customerDetails = userService.getCustomerDetails(loginCustomer.getUserName());
-		*/
-		CustomerOnlineRegistration loginCustomer = onlineCustomer.getLoginCustomersById(customerCredential.getLoginId());
-		Customer customerDetails = userService.getCustomerDetails(loginCustomer.getUserName());
+		Customer customerDet = customerRepo.getCustomerDetailsByCustomerId(custIdd.getCustomerId());
+				
 		ApplicationSetup applicationSetupData = applicationSetup.getApplicationSetupDetails();
 		PersonInfo personinfo = new PersonInfo();
 		try {
-			BeanUtils.copyProperties(personinfo, customerDetails);
+			BeanUtils.copyProperties(personinfo, customerDet);
 		} catch (Exception e) {
 		}
 		jaxNotificationService.sendPartialRegistraionMail(personinfo, applicationSetupData);
