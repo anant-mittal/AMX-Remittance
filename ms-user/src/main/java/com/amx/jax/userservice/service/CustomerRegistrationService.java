@@ -19,14 +19,12 @@ import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.CustomerCredential;
 import com.amx.jax.dbmodel.ApplicationSetup;
 import com.amx.jax.dbmodel.Customer;
-import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.model.dto.SendOtpModel;
 import com.amx.jax.model.request.CustomerPersonalDetail;
 import com.amx.jax.repository.IApplicationCountryRepository;
 import com.amx.jax.services.AbstractService;
 import com.amx.jax.services.JaxNotificationService;
 import com.amx.jax.trnx.CustomerRegistrationTrnxModel;
-import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.manager.CustomerRegistrationManager;
 import com.amx.jax.userservice.manager.CustomerRegistrationOtpManager;
 import com.amx.jax.userservice.repository.OnlineCustomerRepository;
@@ -48,9 +46,6 @@ public class CustomerRegistrationService extends AbstractService {
 	public String getModelType() {
 		return "customer-registration";
 	}
-	
-	@Autowired
-	private CustomerDao custDao;
 
 	@Autowired
 	JaxUtil util;
@@ -143,22 +138,17 @@ public class CustomerRegistrationService extends AbstractService {
 	 */
 	public ApiResponse saveLoginDetail(CustomerCredential customerCredential) {
 		customerRegistrationManager.saveLoginDetail(customerCredential);
-		//customerCredentialValidator.validate(customerRegistrationManager.get(),  null);
+		customerCredentialValidator.validate(customerRegistrationManager.get(),  null);
 		customerRegistrationManager.commit();
-		
-		
-		
-		CustomerOnlineRegistration custIdd = custDao.getCustomerIDByuserId(customerCredential.getLoginId());
-		
-		Customer customerDet = userService.getCustomerDetailsByCustomerId(custIdd.getCustomerId());
-				
+		Customer customerDetails = userService.getCustomerDetails(customerCredential.getLoginId());
 		ApplicationSetup applicationSetupData = applicationSetup.getApplicationSetupDetails();
 		PersonInfo personinfo = new PersonInfo();
 		try {
-			BeanUtils.copyProperties(personinfo, customerDet);
+			BeanUtils.copyProperties(personinfo, customerDetails);
 		} catch (Exception e) {
 		}
 		jaxNotificationService.sendPartialRegistraionMail(personinfo, applicationSetupData);
 		return getBooleanResponse();
 	}
+	
 }
