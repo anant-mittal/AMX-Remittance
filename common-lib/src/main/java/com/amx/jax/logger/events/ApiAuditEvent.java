@@ -17,12 +17,13 @@ public class ApiAuditEvent extends AuditEvent {
 	}
 
 	public ApiAuditEvent(Type type, AmxApiException excep) {
-		this.type = type;
+		super(type);
 		this.message = excep.getErrorMessage();
+		this.result = Result.ERROR;
 		this.description = String.format("%s_%s:%s", this.type, this.result,
 				ArgUtil.isEmpty(excep.getErrorKey()) ? ArgUtil.parseAsString(excep.getError())
 						: excep.getErrorKey());
-		this.result = Result.ERROR;
+
 	}
 
 	public ApiAuditEvent(AmxApiException excep) {
