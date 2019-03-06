@@ -146,10 +146,7 @@ public class CustomerRegistrationService extends AbstractService {
 		//customerCredentialValidator.validate(customerRegistrationManager.get(),  null);
 		customerRegistrationManager.commit();
 		
-		
-		
 		CustomerOnlineRegistration custIdd = custDao.getCustomerIDByuserId(customerCredential.getLoginId());
-		
 		Customer customerDet = userService.getCustomerDetailsByCustomerId(custIdd.getCustomerId());
 				
 		ApplicationSetup applicationSetupData = applicationSetup.getApplicationSetupDetails();
@@ -161,6 +158,4 @@ public class CustomerRegistrationService extends AbstractService {
 		jaxNotificationService.sendPartialRegistraionMail(personinfo, applicationSetupData);
 		return getBooleanResponse();
 	}
-	
-	
 }
