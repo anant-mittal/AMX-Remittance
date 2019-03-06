@@ -3,11 +3,16 @@ package com.amx.jax.tunnel;
 public enum TunnelEventXchange {
 	/**
 	 * Event will be delivered to ALL Components
+	 * 
+	 * @see com.amx.jax.tunnel.ITunnelService#shout(String, Object)
 	 */
 	SHOUT_LISTNER("SD"),
 
 	/**
-	 * Event will be delivered to Only ONE Component
+	 * Events deleivered by
+	 * 
+	 * @see com.amx.jax.tunnel.ITunnelService#send(String, Object)
+	 * 
 	 */
 	SEND_LISTNER("SH"),
 
@@ -16,6 +21,7 @@ public enum TunnelEventXchange {
 	 * 
 	 */
 	TASK_WORKER("TW"),
+
 	/**
 	 * For Audit purpose only
 	 */

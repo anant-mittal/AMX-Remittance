@@ -68,6 +68,7 @@ public class ConstantDocument {
 	public static final String FX_AD = "FXAD";
 	/** LOA -Local Office Address ,LHA -Local home Address **/
 	public static final String FX_LHA = "LHA";
+	public static final String FX_LOA = "LOA";
 	public static final String S = "S";	
 	public static final BigDecimal DOCUMENT_CODE_FOR_FCSALE_APPLICATION =new BigDecimal(1);
 	public static final BigDecimal DOCUMENT_CODE_FOR_FCSALE = new BigDecimal(74);
@@ -97,8 +98,19 @@ public class ConstantDocument {
 	public static final String OFD_ACK="OFD_ACK";
 	// PCK for --PACKED
 	public static final String PCK="PCK";
+	public static final String OFD_CNF="OFD_CNF";
+	public static final String CND_ACK="CND_ACK";
+	
 	/** end Here **/
-	public static final String P = "P";	
+	public static final String P = "P";
+	public static final String R = "R";
 	public static final String FC_SALE = "FC Sale";
+	public static final String USER_TYPE_DRIVER = "D";
 
+	public static final BigDecimal BIZ_COMPONENT_ID_GCC_ID = new BigDecimal(201);
+	public static final BigDecimal BIZ_COMPONENT_ID_BEDOUIN_ID = new BigDecimal(197);
+	public static final BigDecimal MURQAB_FOREIGNCURRENCY = new BigDecimal(89);
+
+	public static final String ARTICLE_20_CODE = "20";
+	public static final BigDecimal BIZ_COMPONENT_ID_NEW_CIVIL_ID = new BigDecimal(2000);
 }

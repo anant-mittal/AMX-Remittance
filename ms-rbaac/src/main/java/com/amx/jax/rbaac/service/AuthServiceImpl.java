@@ -103,7 +103,7 @@ public class AuthServiceImpl implements AuthService {
 
 		} catch (Exception e) {
 			LOGGER.info(e.getMessage());
-			throw new AuthServiceException("saveEnums fail ", e.getMessage());
+			throw new AuthServiceException(e.getMessage(), "saveEnums fail ");
 		}
 		return AmxApiResponse.build(new BoolRespModel(savesStatus));
 	}
@@ -155,7 +155,7 @@ public class AuthServiceImpl implements AuthService {
 
 		} catch (Exception e) {
 			LOGGER.info(e.getMessage());
-			throw new AuthServiceException("saveModule fail ", e.getMessage());
+			throw new AuthServiceException(e.getMessage(), "saveModule fail ");
 		}
 
 		return savesStatus;
@@ -206,7 +206,7 @@ public class AuthServiceImpl implements AuthService {
 
 		} catch (Exception e) {
 			LOGGER.info(e.getMessage());
-			throw new AuthServiceException("saveFunctionalityTypeMaster fail ", e.getMessage());
+			throw new AuthServiceException(e.getMessage(), "saveFunctionalityTypeMaster fail ");
 		}
 
 		return savesStatus;
@@ -257,7 +257,7 @@ public class AuthServiceImpl implements AuthService {
 			}
 		} catch (Exception e) {
 			LOGGER.info(e.getMessage());
-			throw new AuthServiceException("savePermissionScopeMaster fail ", e.getMessage());
+			throw new AuthServiceException(e.getMessage(), "savePermissionScopeMaster fail ");
 		}
 
 		return savesStatus;
@@ -337,7 +337,7 @@ public class AuthServiceImpl implements AuthService {
 
 		} catch (Exception e) {
 			LOGGER.info(e.getMessage());
-			throw new AuthServiceException("savePermission fail ", e.getMessage());
+			throw new AuthServiceException(e.getMessage(), "savePermission fail ");
 		}
 
 		return savesStatus;
@@ -417,7 +417,7 @@ public class AuthServiceImpl implements AuthService {
 
 		} catch (Exception e) {
 			LOGGER.info(e.getMessage());
-			throw new AuthServiceException("saveRoleMaster fail ", e.getMessage());
+			throw new AuthServiceException(e.getMessage(), "saveRoleMaster fail ");
 		}
 		AmxApiResponse<BoolRespModel, Object> response = new AmxApiResponse<BoolRespModel, Object>();
 		response.addResult(new BoolRespModel(savesStatus));
@@ -450,7 +450,7 @@ public class AuthServiceImpl implements AuthService {
 				userM.setEmployeeId(user.getEmployeeId());
 				if (user.getRoleId() != null && user.getRoleId().compareTo(roleId) == 0) {
 					// error already exist
-					throw new AuthServiceException("saveAssignRoleToUser fail ", RbaacServiceError.ALREADY_EXIST);
+					throw new AuthServiceException(RbaacServiceError.ALREADY_EXIST, "saveAssignRoleToUser fail ");
 				} else {
 					userM.setRoleId(roleId);
 				}
@@ -463,7 +463,7 @@ public class AuthServiceImpl implements AuthService {
 			savesStatus = Boolean.TRUE;
 		} catch (Exception e) {
 			LOGGER.info(e.getMessage());
-			throw new AuthServiceException("saveAssignRoleToUser fail ", e.getMessage());
+			throw new AuthServiceException(e.getMessage(), "saveAssignRoleToUser fail ");
 		}
 
 		return AmxApiResponse.build(new BoolRespModel(savesStatus));
@@ -517,7 +517,7 @@ public class AuthServiceImpl implements AuthService {
 			savesStatus = Boolean.TRUE;
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
-			throw new AuthServiceException("saveAssignPermToRole fail ", e.getMessage());
+			throw new AuthServiceException(e.getMessage(), "saveAssignPermToRole fail ");
 		}
 
 		return AmxApiResponse.build(new BoolRespModel(savesStatus));
@@ -552,7 +552,7 @@ public class AuthServiceImpl implements AuthService {
 			return amxResp;
 		} catch (Exception e) {
 			LOGGER.info(e.getMessage());
-			throw new AuthServiceException("sendOtp fail ", e.getMessage());
+			throw new AuthServiceException(e.getMessage(), "sendOtp fail ");
 		}
 	}
 
@@ -566,19 +566,19 @@ public class AuthServiceImpl implements AuthService {
 		UserOtpData otpData = userOtpCache.get(emp.getEmployeeNumber());
 
 		if(null == otpData) {
-			throw new AuthServiceException("Invalid OTP", RbaacServiceError.INVALID_OTP);
+			throw new AuthServiceException(RbaacServiceError.INVALID_OTP, "Invalid OTP");
 		}
 		
 		if (!otpData.getOtpData().getmOtp().equalsIgnoreCase(mOtp)) {
 			otpData.incrementOtpAttemptCount();
-			throw new AuthServiceException("Invalid OTP", RbaacServiceError.INVALID_OTP);
+			throw new AuthServiceException(RbaacServiceError.INVALID_OTP, "Invalid OTP");
 		}
 
 		userOtpCache.remove(emp.getEmployeeNumber());
 
 		if (otpData.getOtpAttemptCount() >= 3) {
 
-			throw new AuthServiceException("Otp Count Exceeded", RbaacServiceError.OTP_LIMIT_EXCEEDED);
+			throw new AuthServiceException(RbaacServiceError.OTP_LIMIT_EXCEEDED, "Otp Count Exceeded");
 		}
 
 		EmployeeDetailsDTO empDetail = new EmployeeDetailsDTO();
@@ -619,16 +619,16 @@ public class AuthServiceImpl implements AuthService {
 
 					return sendOtp(emp);
 				} else {
-					throw new AuthServiceException("Employee Details not available",
-							RbaacServiceError.INVALID_USER_DETAILS);
+					throw new AuthServiceException(RbaacServiceError.INVALID_USER_DETAILS,
+							"Employee Details not available");
 				}
 			} else {
-				throw new AuthServiceException("Employee Number and Civil Id Manadatory",
-						RbaacServiceError.INVALID_OR_MISSING_DATA);
+				throw new AuthServiceException(RbaacServiceError.INVALID_OR_MISSING_DATA,
+						"Employee Number and Civil Id Manadatory");
 			}
 		} catch (Exception e) {
 			LOGGER.info(e.getMessage());
-			throw new AuthServiceException("verifyUserDetails fail ", e.getMessage());
+			throw new AuthServiceException(e.getMessage(), "verifyUserDetails fail ");
 		}
 	}
 
@@ -640,11 +640,11 @@ public class AuthServiceImpl implements AuthService {
 			if (emp != null) {
 				return validateOtp(emp, mOtp);
 			} else {
-				throw new AuthServiceException("Employee Details not available", RbaacServiceError.INVALID_USER_DETAILS);
+				throw new AuthServiceException(RbaacServiceError.INVALID_USER_DETAILS, "Employee Details not available");
 			}
 		} else {
-			throw new AuthServiceException("Employee Number and Civil Id Manadatory",
-					RbaacServiceError.INVALID_OR_MISSING_DATA);
+			throw new AuthServiceException(RbaacServiceError.INVALID_OR_MISSING_DATA,
+					"Employee Number and Civil Id Manadatory");
 		}
 
 	}

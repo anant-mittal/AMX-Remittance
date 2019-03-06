@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.exception.jax.InvalidCivilIdException;
+import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerIdProof;
 import com.amx.jax.dict.Tenant;
@@ -30,14 +31,20 @@ public class UserValidationBhr implements CustomerValidation {
 
 	@Override
 	public void validateCustIdProofs(BigDecimal custId) {
-		List<CustomerIdProof> idProofs = idproofDao.getCustomerIdProofs(custId);
+		List<CustomerIdProof> idProofs = idproofDao.getCustomerIdProofsExpiry(custId);
+		
 		for (CustomerIdProof idProof : idProofs) {
+			boolean isCivilId = ConstantDocument.BIZ_COMPONENT_ID_CIVIL_ID.equals(idProof.getIdentityTypeId());
 			if (!idProof.getIdentityExpiryDate().after(new Date())) {
-				throw new GlobalException("Identity proof are expired", JaxError.ID_PROOF_EXPIRED);
+				if (isCivilId) {
+					throw new GlobalException("CPR Id is expired", JaxError.CIVIL_ID_EXPIRED);
+				} else {
+					throw new GlobalException("Identity proof are expired", JaxError.ID_PROOF_EXPIRED);
+				}
 			}
 		}
 		if (idProofs.isEmpty()) {
-			throw new GlobalException("ID proofs not available, contact branch", JaxError.NO_ID_PROOFS_AVAILABLE);
+			throw new GlobalException(JaxError.NO_ID_PROOFS_AVAILABLE, "ID proofs not available, contact branch");
 		}
 	}
 
@@ -60,7 +67,7 @@ public class UserValidationBhr implements CustomerValidation {
 	public void validateEmailId(String emailId) {
 		List<Customer> list = customerRepo.getCustomerByEmailId(emailId);	
 		if (list != null && list.size()!=0) {
-			throw new GlobalException("Email Id already exist", JaxError.ALREADY_EXIST_EMAIL);
+			throw new GlobalException(JaxError.ALREADY_EXIST_EMAIL, "Email Id already exist");
 		}
 		
 	}
@@ -69,9 +76,10 @@ public class UserValidationBhr implements CustomerValidation {
 	public void validateDuplicateMobile(String mobileNo) {
 		List<Customer> list = customerRepo.getCustomerByMobileCheck(mobileNo);
 		if (list != null && list.size()!=0) {
-			throw new GlobalException("Mobile Number already exist", JaxError.ALREADY_EXIST_MOBILE);
+			throw new GlobalException(JaxError.ALREADY_EXIST_MOBILE, "Mobile Number already exist");
 		}
 		
 	}
+
 
 }

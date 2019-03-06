@@ -5,10 +5,8 @@ package com.amx.jax.dao;
  */
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -183,9 +181,9 @@ public class FcSaleApplicationDao {
 	public void updatePaygDetails(List<ReceiptPaymentApp> listOfRecAppl,PaymentResponseDto paymentResponse){
 		try{
 			
-			if(!listOfRecAppl.isEmpty()){
+			if(listOfRecAppl !=null && !listOfRecAppl.isEmpty()){
 				for(ReceiptPaymentApp appl :listOfRecAppl){
-					appl.setIsActive(ConstantDocument.Deleted);
+					//appl.setIsActive(ConstantDocument.Deleted);
 					appl.setApplicationStatus(null);
 					appl.setModifiedDate(new Date());
 					updateCartDetails(appl);
@@ -205,12 +203,12 @@ public class FcSaleApplicationDao {
 				pgRepository.save(pgModel);
 			}else{
 				logger.error("Update after PG details Payment Id :"+paymentResponse.getPaymentId()+"\t Udf 3--Pg trnx seq Id :"+paymentResponse.getUdf3()+"Result code :"+paymentResponse.getResultCode());
-				throw new GlobalException("PG updatio failed",JaxError.PAYMENT_UPDATION_FAILED);
+				throw new GlobalException(JaxError.PAYMENT_UPDATION_FAILED,"PG updatio failed");
 			}
 		}catch (Exception e) {
 			e.printStackTrace();
 			logger.error("catch Update after PG details Payment Id :"+paymentResponse.getPaymentId()+"\t Udf 3--Pg trnx seq Id :"+paymentResponse.getUdf3()+"Result code :"+paymentResponse.getResultCode());
-			throw new GlobalException("PG updatio failed",JaxError.PAYMENT_UPDATION_FAILED);
+			throw new GlobalException(JaxError.PAYMENT_UPDATION_FAILED,"PG updatio failed");
 		}
 		
 	}
@@ -240,7 +238,7 @@ public class FcSaleApplicationDao {
 				 output.put("P_ERROR_MESG", "ERROR_WHILE_SAVING_COLLECTION_DETAILS");
 			 }
 			 
-			 if(!receiptPaymentList.isEmpty()){
+			 if(receiptPaymentList !=null && !receiptPaymentList.isEmpty()){
 				 for(ReceiptPayment rcpt : receiptPaymentList){
 					 rcpt.setColDocNo(collection.getDocumentNo());
 					 rcpt.setColDocFyr(collection.getDocumentFinanceYear());
@@ -248,7 +246,7 @@ public class FcSaleApplicationDao {
 					 receiptPaymentRespository.save(rcpt);
 					 //Update the Application Receipt
 					 updateAppicationReceiptPayment(rcpt);
-					 updateDeliveryDetails(rcpt.getDeliveryDetSeqId());
+					 updateDeliveryDetails(rcpt.getDeliveryDetSeqId(),collection.getDocumentNo(),collection.getDocumentFinanceYear());
 				 }//end of for loop.
 			 }else{
 				 output.put("P_ERROR_MESG", "ERROR_RCPT_APPLICATION_SAVE");
@@ -341,9 +339,12 @@ public class FcSaleApplicationDao {
 		return fxDeliveryDetailsRepository.findOne(deliveryDetailSeqId);
 	}
 	
-	public void updateDeliveryDetails(BigDecimal delDelSeqId){
+	public void updateDeliveryDetails(BigDecimal delDelSeqId,BigDecimal colldocNo,BigDecimal collDocfyr){
 		FxDeliveryDetailsModel deliveryDetails = fxDeliveryDetailsRepository.findOne(delDelSeqId);
 		if(deliveryDetails!=null){
+			deliveryDetails.setDeleviryDelSeqId(deliveryDetails.getDeleviryDelSeqId());
+			deliveryDetails.setColDocFyr(collDocfyr);
+			deliveryDetails.setColDocNo(colldocNo);
 			deliveryDetails.setOrderStatus(ConstantDocument.ORD);
 		}
 	}
@@ -355,32 +356,15 @@ public class FcSaleApplicationDao {
 	public List<FxDeliveryRemark> listDeliveryRemark() {
 		return fxDeliveryRemarkRepository.findByIsActive(ConstantDocument.Yes);
 	}
-	
-	
-/*	public BigDecimal getFxTrnxLimit(Map<String, Object> inputValues) {
-		BigDecimal totalAmount = BigDecimal.ZERO;
-		BigDecimal fcAmount = (BigDecimal)inputValues.get("FC_AMOUNT");
-		BigDecimal customerId = (BigDecimal)inputValues.get("CUSTOMER_ID");
-		logger.info("inputValues :" +inputValues.toString());
-		String sql =" select sum(amt)  totalamount from ("
-					+" select sum(A.LOCAL_NET_AMOUNT) amt from EX_APPL_RECEIPT_PAYMENT A where  A.customer_id ="+customerId+" "
-					+" and   trunc(A.CREATED_DATE)=trunc(sysdate)  and a.isactive='Y' union all "
-					+" select sum(A.LOCAL_NET_AMOUNT) amt from EX_RECEIPT_PAYMENT A where  A.customer_id ="+customerId+" "
-					+ " and   trunc(A.CREATED_DATE)=trunc(sysdate)  and a.isactive='Y' ) t2 ";
 
-		List<Object> inputList = new ArrayList<>();
-		inputList.add(inputValues.get("CUSTOMER_ID"));
-		List<Map<String, Object>> outputList = jdbcTemplate.queryForList(sql, inputList.toArray());
-		logger.info("Output : "+outputList.toString());
-		Iterator<Map<String, Object>> itr = outputList.iterator();
-		while (itr.hasNext()) {
-			totalAmount = (BigDecimal) itr.next().get("totalamount");
-		}
-		
-		totalAmount = totalAmount.add(fcAmount);
-		return totalAmount;
-
+	/**
+	 * @param employeeId - driver employee id
+	 * @param noOfDays - day window to show order history
+	 * @return
+	 */
+	public List<VwFxDeliveryDetailsModel> listHistoricalOrders(BigDecimal driverEmployeeId, int noOfDays) {
+		return vwFxDeliveryDetailsRepository.findHistoricalDriverOrders(driverEmployeeId,  noOfDays);
 	}
-	*/
+
 	
 }

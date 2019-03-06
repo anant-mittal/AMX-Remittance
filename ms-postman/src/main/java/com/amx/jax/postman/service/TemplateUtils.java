@@ -3,6 +3,7 @@ package com.amx.jax.postman.service;
 import java.awt.Image;
 import java.io.IOException;
 import java.text.Bidi;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -10,11 +11,13 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.dict.Tenant;
 import com.amx.jax.scope.TenantProperties;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
@@ -35,6 +38,8 @@ public class TemplateUtils {
 
 	/** The Constant base64. */
 	private static final Map<String, String> base64 = new ConcurrentHashMap<String, String>();
+	private static final Map<String, String> templateFiles = new ConcurrentHashMap<String, String>();
+	private static boolean IS_TEMPLATE_SCANNED = false;
 
 	/** The tenant properties. */
 	@Autowired
@@ -48,11 +53,63 @@ public class TemplateUtils {
 	@Autowired
 	private ApplicationContext applicationContext;
 
+	@Value("classpath*:*/templates/html/*.html")
+	private Resource[] htmlFiles;
+
+	@Value("classpath*:*/templates/json/*.json")
+	private Resource[] jsonFiles;
+
+	@Value("classpath*:*/templates/jasper/*.jrxml")
+	private Resource[] jasperFiles;
+
+	public String getTemplateFile(String file, Tenant tnt, Locale locale) {
+		if (!IS_TEMPLATE_SCANNED) {
+			for (Resource resource : htmlFiles) {
+				String[] fileName = resource.getFilename().split("\\.(?=[^\\.]+$)");
+				String filePath = "html/" + fileName[0];
+				templateFiles.put(filePath, filePath);
+			}
+			for (Resource resource : jsonFiles) {
+				String[] fileName = resource.getFilename().split("\\.(?=[^\\.]+$)");
+				String filePath = "json/" + fileName[0];
+				templateFiles.put(filePath, filePath);
+			}
+			for (Resource resource : jasperFiles) {
+				String[] fileName = resource.getFilename().split("\\.(?=[^\\.]+$)");
+				String filePath = "jasper/" + fileName[0];
+				templateFiles.put(filePath, filePath);
+			}
+			IS_TEMPLATE_SCANNED = true;
+		}
+		String specficFile = String.format("%s_%s.%s", file, locale.getLanguage(),
+				ArgUtil.parseAsString(tnt, Constants.BLANK).toLowerCase());
+		if (templateFiles.containsKey(specficFile)) {
+			return templateFiles.get(specficFile);
+		}
+
+		String tenantFile = String.format("%s.%s", file,
+				ArgUtil.parseAsString(tnt, Constants.BLANK).toLowerCase());
+		if (templateFiles.containsKey(tenantFile)) {
+			templateFiles.put(specficFile, tenantFile);
+			return tenantFile;
+		}
+
+		String localeFile = String.format("%s_%s", file,
+				locale.getLanguage());
+		if (templateFiles.containsKey(localeFile)) {
+			templateFiles.put(specficFile, localeFile);
+			return tenantFile;
+		}
+
+		templateFiles.put(specficFile, file);
+
+		return file;
+	}
+
 	/**
 	 * Prop.
 	 *
-	 * @param key
-	 *            the key
+	 * @param key the key
 	 * @return the string
 	 */
 	public String prop(String key) {
@@ -66,10 +123,8 @@ public class TemplateUtils {
 	/**
 	 * Image.
 	 *
-	 * @param key
-	 *            the key
-	 * @param clean
-	 *            the clean
+	 * @param key   the key
+	 * @param clean the clean
 	 * @return the string
 	 */
 	public String image(String key, boolean clean) {
@@ -82,13 +137,10 @@ public class TemplateUtils {
 	/**
 	 * Image jasper.
 	 *
-	 * @param key
-	 *            the key
-	 * @param clean
-	 *            the clean
+	 * @param key   the key
+	 * @param clean the clean
 	 * @return the image
-	 * @throws JRException
-	 *             the JR exception
+	 * @throws JRException the JR exception
 	 */
 	public Image imageJasper(String key, boolean clean) throws JRException {
 		return net.sf.jasperreports.engine.util.JRImageLoader.getInstance(new SimpleJasperReportsContext())
@@ -98,8 +150,7 @@ public class TemplateUtils {
 	/**
 	 * Image.
 	 *
-	 * @param key
-	 *            the key
+	 * @param key the key
 	 * @return the string
 	 */
 	public String image(String key) {
@@ -109,11 +160,9 @@ public class TemplateUtils {
 	/**
 	 * Image jasper.
 	 *
-	 * @param key
-	 *            the key
+	 * @param key the key
 	 * @return the image
-	 * @throws JRException
-	 *             the JR exception
+	 * @throws JRException the JR exception
 	 */
 	public Image imageJasper(String key) throws JRException {
 		return this.imageJasper(key, false);
@@ -122,8 +171,7 @@ public class TemplateUtils {
 	/**
 	 * Reverse flag.
 	 *
-	 * @param set
-	 *            the set
+	 * @param set the set
 	 */
 	public static void reverseFlag(boolean set) {
 		ContextUtil.map().put("reverseflag", true);
@@ -141,8 +189,7 @@ public class TemplateUtils {
 	/**
 	 * Reverse.
 	 *
-	 * @param str
-	 *            the str
+	 * @param str the str
 	 * @return the string
 	 */
 	public String reverse(String str) {
@@ -165,8 +212,7 @@ public class TemplateUtils {
 	/**
 	 * Fix bi di.
 	 *
-	 * @param wordTemp
-	 *            the word temp
+	 * @param wordTemp the word temp
 	 * @return the string
 	 */
 	public static String fixBiDi(String wordTemp) {
@@ -218,11 +264,9 @@ public class TemplateUtils {
 	/**
 	 * Read as base 64 string.
 	 *
-	 * @param contentId
-	 *            the content id
+	 * @param contentId the content id
 	 * @return the string
-	 * @throws IOException
-	 *             Signals that an I/O exception has occurred.
+	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public String readAsBase64String(String contentId) throws IOException {
 		StringBuilder sb = new StringBuilder();
@@ -243,11 +287,9 @@ public class TemplateUtils {
 	/**
 	 * Read as resource.
 	 *
-	 * @param contentId
-	 *            the content id
+	 * @param contentId the content id
 	 * @return the resource
-	 * @throws IOException
-	 *             Signals that an I/O exception has occurred.
+	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public Resource readAsResource(String contentId) throws IOException {
 		return applicationContext.getResource("classpath:" + contentId);
@@ -256,8 +298,7 @@ public class TemplateUtils {
 	/**
 	 * Fix bi di check.
 	 *
-	 * @param parseAsString
-	 *            the parse as string
+	 * @param parseAsString the parse as string
 	 * @return the string
 	 */
 	public static String fixBiDiCheck(String parseAsString) {

@@ -20,12 +20,12 @@ import com.amx.jax.client.DeviceStateClient;
 import com.amx.jax.client.IDeviceStateService;
 import com.amx.jax.constant.DeviceState;
 import com.amx.jax.device.DeviceData;
+import com.amx.jax.device.DeviceRequest;
 import com.amx.jax.device.TerminalBox;
 import com.amx.jax.device.TerminalData;
 import com.amx.jax.http.ApiRequest;
 import com.amx.jax.http.RequestType;
 import com.amx.jax.model.response.DeviceStatusInfoDto;
-import com.amx.jax.offsite.device.DeviceRequest;
 import com.amx.jax.offsite.device.TerminalConstants.Path;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.File.Type;
@@ -71,9 +71,11 @@ public class SignPadController {
 		TerminalData terminalData = terminalBox.getOrDefault(deviceData.getTerminalId());
 		SignPadData signPadData = signPadBox.getOrDefault(deviceData.getTerminalId());
 
+		boolean isTerminalUpdated = signPadData.getUpdatestamp() < terminalData.getUpdatestamp();
+
 		if (ArgUtil.isEmpty(signPadData)
 				|| ArgUtil.isEmpty(signPadData.getDeviceState())
-				|| signPadData.getUpdatestamp() < terminalData.getUpdatestamp()
+				|| isTerminalUpdated
 				|| deviceData.getUpdatestamp() > signPadData.getUpdatestamp()) {
 
 			DevicePairOtpResponse devAuthResp = rbaacServiceClient.validateDeviceSessionToken(

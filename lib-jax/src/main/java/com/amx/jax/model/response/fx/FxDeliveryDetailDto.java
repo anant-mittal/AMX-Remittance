@@ -5,21 +5,22 @@ import java.math.BigDecimal;
 public class FxDeliveryDetailDto {
 
 	String customerName;
-	String mobile;
 	String deliveryTimeSlot;
 	ShippingAddressDto address;
 	String transactionRefId;
-	String inventoryId;//
+	String inventoryId;
 	String deliveryRemark;
 	String orderStatus;
+	String orderStatusCode;
 	BigDecimal deliveryDetailSeqId;
+	String otpTokenPrefix;
 
-	public String getMobile() {
-		return mobile;
+	public String getOtpTokenPrefix() {
+		return otpTokenPrefix;
 	}
 
-	public void setMobile(String mobile) {
-		this.mobile = mobile;
+	public void setOtpTokenPrefix(String otpTokenPrefix) {
+		this.otpTokenPrefix = otpTokenPrefix;
 	}
 
 	public ShippingAddressDto getAddress() {
@@ -84,6 +85,14 @@ public class FxDeliveryDetailDto {
 
 	public void setDeliveryDetailSeqId(BigDecimal deliveryDetailSeqId) {
 		this.deliveryDetailSeqId = deliveryDetailSeqId;
+	}
+
+	public String getOrderStatusCode() {
+		return orderStatusCode;
+	}
+
+	public void setOrderStatusCode(String orderStatusCode) {
+		this.orderStatusCode = orderStatusCode;
 	}
 
 

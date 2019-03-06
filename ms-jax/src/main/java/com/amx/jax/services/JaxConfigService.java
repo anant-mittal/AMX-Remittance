@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.jax.amxlib.config.OtpSettings;
+import com.amx.jax.constant.JaxDbConfig;
 import com.amx.jax.dbmodel.JaxConfig;
 import com.amx.jax.repository.JaxConfigRepository;
 import com.amx.jax.util.ConverterUtil;
@@ -54,6 +55,15 @@ public class JaxConfigService extends AbstractService {
 			return defaultValue;
 		}
 	}
+	
+	public Boolean getBooleanConfigValue(JaxDbConfig key, Boolean defaultValue) {
+		JaxConfig jaxConfig = repo.findByType(key.toString());
+		if (jaxConfig != null && jaxConfig.getValue() != null) {
+			return Boolean.parseBoolean(jaxConfig.getValue());
+		} else {
+			return defaultValue;
+		}
+	}
 
 	@SuppressWarnings({ "rawtypes" })
 	public ApiResponse saveOtpSettings(OtpSettings settings) {
@@ -61,5 +71,23 @@ public class JaxConfigService extends AbstractService {
 		this.saveConfig(OtpSettings.getType(), converterUtil.marshall(settings));
 		response.getData().getValues().add(new BooleanResponse());
 		return response;
+	}
+	
+	public Integer getIntegerConfigValue(JaxDbConfig key, Integer defaultValue) {
+		JaxConfig jaxConfig = repo.findByType(key.toString());
+		if (jaxConfig != null && jaxConfig.getValue() != null) {
+			return Integer.parseInt(jaxConfig.getValue());
+		} else {
+			return defaultValue;
+		}
+	}
+	
+	public Integer getIntegerConfigValue(JaxDbConfig jaxDbConfig) {
+		JaxConfig jaxConfig = repo.findByType(jaxDbConfig.toString());
+		if (jaxConfig != null && jaxConfig.getValue() != null) {
+			return Integer.parseInt(jaxConfig.getValue());
+		} else {
+			return jaxDbConfig.getDefaultValue();
+		}
 	}
 }

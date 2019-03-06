@@ -77,12 +77,39 @@ public class FxDeliveryDetailsModel implements Serializable{
 	@Column(name = "OTP_TOKEN")
 	String otpToken;
 	
+	@Column(name = "OTP_TOKEN_PREFIX")
+	String otpTokenPrefix;
+
 	@Column(name = "ORDER_LOCK")
 	Date orderLock;
 	
 	@Column(name = "EMPLOYEE_ID")
 	BigDecimal employeeId;
 	
+	@Column(name = "OTP_VALIDATED")
+	String otpValidated;
+	
+	@Column(name = "FROM_BRANCH_ID")
+	BigDecimal fromBranchId;
+	
+	@Column(name = "TO_BRANCH_ID")
+	BigDecimal toBranchId;
+	
+	@Column(name = "COLLECTION_DOC_FINANCE_YEAR")
+	private BigDecimal colDocFyr;
+	
+	@Column(name = "COLLECTION_DOCUMENT_NO")
+	private BigDecimal colDocNo;
+	
+	@Column(name="OTP_TOKEN_CUSTOMER")
+	private String otpTokenCustomer;
+	
+	public String getOtpValidated() {
+		return otpValidated;
+	}
+	public void setOtpValidated(String otpValidated) {
+		this.otpValidated = otpValidated;
+	}
 	public BigDecimal getDeleviryDelSeqId() {
 		return deleviryDelSeqId;
 	}
@@ -207,6 +234,51 @@ public class FxDeliveryDetailsModel implements Serializable{
 	public void setEmployeeId(BigDecimal employeeId) {
 		this.employeeId = employeeId;
 	}
+	
+	public String getOtpTokenPrefix() {
+		return otpTokenPrefix;
+	}
+	
+	public void setOtpTokenPrefix(String otpTokenPrefix) {
+		this.otpTokenPrefix = otpTokenPrefix;
+	}
+	
+	public BigDecimal getFromBranchId() {
+		return fromBranchId;
+	}
+	
+	public void setFromBranchId(BigDecimal fromBranchId) {
+		this.fromBranchId = fromBranchId;
+	}
+	
+	public BigDecimal getToBranchId() {
+		return toBranchId;
+	}
+	
+	public void setToBranchId(BigDecimal toBranchId) {
+		this.toBranchId = toBranchId;
+	}
+	public BigDecimal getColDocFyr() {
+		return colDocFyr;
+	}
+	public void setColDocFyr(BigDecimal colDocFyr) {
+		this.colDocFyr = colDocFyr;
+	}
+	public BigDecimal getColDocNo() {
+		return colDocNo;
+	}
+	public void setColDocNo(BigDecimal colDocNo) {
+		this.colDocNo = colDocNo;
+	}
+
+	public String getOtpTokenCustomer() {
+		return otpTokenCustomer;
+	}
+	
+	public void setOtpTokenCustomer(String otpTokenCustomer) {
+		this.otpTokenCustomer = otpTokenCustomer;
+	}
+	
 	
 }
 

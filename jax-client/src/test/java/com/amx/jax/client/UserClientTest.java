@@ -21,7 +21,6 @@ import com.amx.amxlib.exception.LimitExeededException;
 import com.amx.amxlib.exception.RemittanceTransactionValidationException;
 import com.amx.amxlib.exception.ResourceNotFoundException;
 import com.amx.amxlib.meta.model.CustomerDto;
-import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
@@ -30,6 +29,7 @@ import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.model.UserDevice;
+import com.amx.jax.model.auth.QuestModelDTO;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -116,7 +116,7 @@ public class UserClientTest extends AbstractTestClient {
 		assertNotNull(response.getResult());
 	}
 
-	 @Test
+	// @Test
 	public void testLoginSuccess() throws IOException, ResourceNotFoundException, InvalidInputException,
 			RemittanceTransactionValidationException, LimitExeededException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
@@ -232,6 +232,36 @@ public class UserClientTest extends AbstractTestClient {
 		jaxMetaInfo.setTenant(Tenant.KWT2);
 		ApiResponse<CivilIdOtpModel> response = null;
 		response = client.initRegistration("123");
+		assertNotNull("Response is null", response);
+		assertNotNull(response.getResult());
+	}
+	
+	@Test
+	public void saveEmailNew() throws IOException, ResourceNotFoundException, InvalidInputException,
+	RemittanceTransactionValidationException, LimitExeededException {
+		jaxMetaInfo.setCountryId(new BigDecimal(91));
+		jaxMetaInfo.setCompanyId(new BigDecimal(1));
+		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
+		jaxMetaInfo.setCustomerId(new BigDecimal(931428));
+		ApiResponse<CustomerModel> response = null;
+		String email = "viki.sangani@almullagroup.com";
+		
+		response = client.saveEmailNew(email);
+		assertNotNull("Response is null", response);
+		assertNotNull(response.getResult());
+	}
+	
+	//@Test
+	public void saveMobileNew() throws IOException, ResourceNotFoundException, InvalidInputException,
+	RemittanceTransactionValidationException, LimitExeededException {
+		jaxMetaInfo.setCountryId(new BigDecimal(91));
+		jaxMetaInfo.setCompanyId(new BigDecimal(1));
+		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
+		jaxMetaInfo.setCustomerId(new BigDecimal(931428));
+		ApiResponse<CustomerModel> response = null;
+		String mobile = "5456421";
+		
+		response = client.saveEmailNew(mobile);
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());
 	}

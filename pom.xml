@@ -56,6 +56,12 @@
 				<version>${amx.version}</version>
 			</dependency>
 
+			<dependency>
+				<groupId>com.amx.jax</groupId>
+				<artifactId>lib-probot</artifactId>
+				<version>${amx.version}</version>
+			</dependency>
+
 		</dependencies>
 
 	</dependencyManagement>
@@ -76,14 +82,21 @@
 				</configuration>
 			</plugin>
 
-			<!-- <plugin> <groupId>org.sonarsource.scanner.maven</groupId> <artifactId>sonar-maven-plugin</artifactId> 
-				<version>3.3.0.603</version> </plugin> -->
+			<plugin>
+				<groupId>org.sonarsource.scanner.maven</groupId>
+				<artifactId>sonar-maven-plugin</artifactId>
+				<version>3.3.0.603</version>
+			</plugin>
 		</plugins>
 	</build>
 
-	<!-- <pluginRepositories> <pluginRepository> <id>sonatype-snapshots</id> 
-		<name>Sonatype Snapshots</name> <url>https://oss.sonatype.org/content/repositories/snapshots/</url> 
-		</pluginRepository> </pluginRepositories> -->
+	<pluginRepositories>
+		<pluginRepository>
+			<id>sonatype-snapshots</id>
+			<name>Sonatype Snapshots</name>
+			<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+		</pluginRepository>
+	</pluginRepositories>
 
 	<modules>
 		<module>amxeco-parent</module>
@@ -98,6 +111,7 @@
 		<module>core</module>
 		<module>jax-client</module>
 		<module>lib-adapter</module>
+		<module>lib-probot</module>
 
 		<!-- Exchange Services -->
 		<module>ms-meta</module>
@@ -109,15 +123,20 @@
 		<module>ms-rbaac</module>
 		<module>ms-worker</module>
 		<module>ms-radar</module>
+		<module>ms-probot</module>
+		
 
 		<module>server-ui</module>
+		
+		<module>server-common/server-common-branch</module>
+		<module>server-branch</module>
 		<module>server-offsite</module>
 		<!-- <module>server-stomp</module> -->
 
 		<module>sw-adapter</module>
-		<module>server-branch</module>
 		<module>test-size</module>
 		<!-- <module>server-kiosk</module> -->
 		<!-- <module>server-sample</module> -->
 	</modules>
 </project>
+

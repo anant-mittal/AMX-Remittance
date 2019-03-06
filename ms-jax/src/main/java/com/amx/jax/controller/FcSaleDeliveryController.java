@@ -20,6 +20,7 @@ import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.model.request.fx.FcSaleDeliveryDetailUpdateReceiptRequest;
 import com.amx.jax.model.request.fx.FcSaleDeliveryMarkDeliveredRequest;
 import com.amx.jax.model.request.fx.FcSaleDeliveryMarkNotDeliveredRequest;
+import com.amx.jax.model.response.OtpPrefixDto;
 import com.amx.jax.model.response.fx.FxDeliveryDetailDto;
 import com.amx.jax.services.FcSaleDeliveryService;
 
@@ -85,8 +86,8 @@ public class FcSaleDeliveryController implements IFxOrderDelivery {
 	@RequestMapping(value = Path.FX_DELIVERY_SEND_OTP, method = RequestMethod.GET)
 	@Override
 	@ApiOperation("Send otp to the customer")
-	public AmxApiResponse<BoolRespModel, Object> sendOtp(@RequestParam BigDecimal deliveryDetailSeqId) {
-		BoolRespModel result = fcSaleDeliveryService.sendOtp(deliveryDetailSeqId);
+	public AmxApiResponse<OtpPrefixDto, Object> sendOtp(@RequestParam BigDecimal deliveryDetailSeqId) {
+		OtpPrefixDto result = fcSaleDeliveryService.sendOtp(deliveryDetailSeqId, true);
 		return AmxApiResponse.build(result);
 	}
 
@@ -94,7 +95,7 @@ public class FcSaleDeliveryController implements IFxOrderDelivery {
 	@Override
 	@ApiOperation("Verify otp sent to customer")
 	public AmxApiResponse<BoolRespModel, Object> verifyOtp(@RequestParam BigDecimal deliveryDetailSeqId,
-			@RequestParam BigDecimal mOtp) {
+			@RequestParam String mOtp) {
 		BoolRespModel result = fcSaleDeliveryService.verifyOtp(deliveryDetailSeqId, mOtp);
 		return AmxApiResponse.build(result);
 	}
@@ -121,5 +122,18 @@ public class FcSaleDeliveryController implements IFxOrderDelivery {
 	public AmxApiResponse<BoolRespModel, Object> markAcknowledged(@RequestParam BigDecimal deliveryDetailSeqId) {
 		BoolRespModel result = fcSaleDeliveryService.markAcknowledged(deliveryDetailSeqId);
 		return AmxApiResponse.build(result);
+	}
+	
+	
+	/**
+	 * @return fx order delivery details for historical for emp id in meta
+	 * 
+	 */
+	@RequestMapping(value = Path.FX_DELIVERY_HISTORICAL_LIST_ORDER, method = RequestMethod.GET)
+	@Override
+	@ApiOperation("Lists historical order for driver employee present in metadata")
+	public AmxApiResponse<FxDeliveryDetailDto, Object> listHistoricalOrders() {
+		List<FxDeliveryDetailDto> resultList = fcSaleDeliveryService.listHistoricalOrders();
+		return AmxApiResponse.buildList(resultList);
 	}
 }

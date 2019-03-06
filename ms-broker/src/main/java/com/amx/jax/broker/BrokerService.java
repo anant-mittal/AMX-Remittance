@@ -1,13 +1,14 @@
 package com.amx.jax.broker;
 
 import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.broker.dao.EventNotificationDao;
@@ -15,30 +16,35 @@ import com.amx.jax.broker.entity.EventNotificationEntity;
 import com.amx.jax.broker.entity.EventNotificationView;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.logger.LoggerService;
-import com.amx.jax.tunnel.DBEvents;
+import com.amx.jax.scope.TenantScoped;
+import com.amx.jax.tunnel.DBEvent;
 import com.amx.jax.tunnel.TunnelService;
 import com.amx.utils.StringUtils;
 import com.amx.utils.TimeUtils;
-import com.amx.utils.UniqueID;
 
 @Component
-@Service
+@TenantScoped
 public class BrokerService {
 
 	Logger logger = LoggerService.getLogger(BrokerService.class);
 
+	private static Map<String, Object> STATUS_MAP = Collections.synchronizedMap(new HashMap<String, Object>());
+
 	@Autowired
 	private EventNotificationDao eventNotificationDao;
 
+	private Tenant serviceTenant;
 	private long printDelay = 1000L;
 	private long printStamp = 0L;
 
 	@Autowired
 	TunnelService tunnelService;
 
-	public void pushNewEventNotifications() {
+	public void pushNewEventNotifications(Tenant tenant, String sessionId) {
 
-		String sessionId = UniqueID.generateString();
+		if (this.serviceTenant == null) {
+			this.serviceTenant = tenant;
+		}
 
 		List<EventNotificationView> event_list = eventNotificationDao.getNewlyInserted_EventNotificationRecords();
 
@@ -53,10 +59,14 @@ public class BrokerService {
 			} else {
 				printDelay = 1000L;
 			}
+		} else {
+			logger.debug("Total {} Events fetched from DB, after waiting {} secs", totalEvents, printDelay);
 		}
 
+		STATUS_MAP.put(this.serviceTenant.toString(), printStamp);
+
 		for (EventNotificationView current_event_record : event_list) {
-			AppContextUtil.setTenant(Tenant.KWT);
+			AppContextUtil.setTenant(tenant);
 			AppContextUtil.setSessionId(sessionId);
 			AppContextUtil.getTraceId(true, true);
 			AppContextUtil.init();
@@ -69,7 +79,7 @@ public class BrokerService {
 						BrokerConstants.KEY_VALUE_SEPARATOR_CHAR, current_event_record.getEvent_data());
 
 				// Push to Message Queue
-				DBEvents event = new DBEvents();
+				DBEvent event = new DBEvent();
 				event.setEventCode(current_event_record.getEvent_code());
 				event.setPriority(current_event_record.getEvent_priority());
 				event.setData(event_data_map);
@@ -102,8 +112,8 @@ public class BrokerService {
 		}
 	}
 
-	public void cleanUpEventNotificationRecords() {
-		logger.info("Delete proccess started on the table EX_EVENT_NOTIFICATION...");
+	public void cleanUpEventNotificationRecords(Tenant tenant, String sessionId) {
+		logger.debug("Delete proccess started on the table EX_EVENT_NOTIFICATION...");
 		try {
 			eventNotificationDao
 					.deleteEventNotificationRecordList(eventNotificationDao.getEventNotificationRecordsToDelete());

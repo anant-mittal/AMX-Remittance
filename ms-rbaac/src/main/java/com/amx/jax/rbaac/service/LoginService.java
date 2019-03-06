@@ -155,7 +155,7 @@ public class LoginService extends AbstractService {
 
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
-			throw new AuthServiceException("saveEnums fail ", e.getMessage());
+			throw new AuthServiceException(e.getMessage(), "saveEnums fail ");
 		}
 
 		return getBooleanResponse(savesStatus);
@@ -213,7 +213,7 @@ public class LoginService extends AbstractService {
 
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
-			throw new AuthServiceException("saveModule fail ", e.getMessage());
+			throw new AuthServiceException(e.getMessage(), "saveModule fail ");
 		}
 
 		return savesStatus;
@@ -269,7 +269,7 @@ public class LoginService extends AbstractService {
 
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
-			throw new AuthServiceException("saveFunctionalityTypeMaster fail ", e.getMessage());
+			throw new AuthServiceException(e.getMessage(), "saveFunctionalityTypeMaster fail ");
 		}
 
 		return savesStatus;
@@ -325,7 +325,7 @@ public class LoginService extends AbstractService {
 			}
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
-			throw new AuthServiceException("savePermissionScopeMaster fail ", e.getMessage());
+			throw new AuthServiceException(e.getMessage(), "savePermissionScopeMaster fail ");
 		}
 
 		return savesStatus;
@@ -424,7 +424,7 @@ public class LoginService extends AbstractService {
 
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
-			throw new AuthServiceException("savePermission fail ", e.getMessage());
+			throw new AuthServiceException(e.getMessage(), "savePermission fail ");
 		}
 
 		return savesStatus;
@@ -536,7 +536,7 @@ public class LoginService extends AbstractService {
 
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
-			throw new AuthServiceException("saveRoleMaster fail ", e.getMessage());
+			throw new AuthServiceException(e.getMessage(), "saveRoleMaster fail ");
 		}
 
 		return getBooleanResponse(savesStatus);
@@ -592,7 +592,7 @@ public class LoginService extends AbstractService {
 					userM.setEmployeeId(user.getEmployeeId());
 					if (user.getRoleId() != null && user.getRoleId().compareTo(roleId) == 0) {
 						// error already exist
-						throw new AuthServiceException("saveAssignRoleToUser fail ", RbaacServiceError.ALREADY_EXIST);
+						throw new AuthServiceException(RbaacServiceError.ALREADY_EXIST, "saveAssignRoleToUser fail ");
 					} else {
 						userM.setRoleId(roleId);
 					}
@@ -604,11 +604,11 @@ public class LoginService extends AbstractService {
 				rbaacDao.saveRoleToUser(userM);
 				savesStatus = Boolean.TRUE;
 			} else {
-				throw new AuthServiceException("saveAssignRoleToUser fail ", RbaacServiceError.INVALID_USER_DETAILS);
+				throw new AuthServiceException(RbaacServiceError.INVALID_USER_DETAILS, "saveAssignRoleToUser fail ");
 			}
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
-			throw new AuthServiceException("saveAssignRoleToUser fail ", e.getMessage());
+			throw new AuthServiceException(e.getMessage(), "saveAssignRoleToUser fail ");
 		}
 
 		return getBooleanResponse(savesStatus);
@@ -682,7 +682,7 @@ public class LoginService extends AbstractService {
 			savesStatus = Boolean.TRUE;
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
-			throw new AuthServiceException("saveAssignPermToRole fail ", e.getMessage());
+			throw new AuthServiceException(e.getMessage(), "saveAssignPermToRole fail ");
 		}
 
 		return getBooleanResponse(savesStatus);
@@ -709,7 +709,7 @@ public class LoginService extends AbstractService {
 			apiResponse.getData().setType("send-otp-model");
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
-			throw new AuthServiceException("sendOtp fail ", e.getMessage());
+			throw new AuthServiceException(e.getMessage(), "sendOtp fail ");
 		}
 
 		return apiResponse;
@@ -779,16 +779,16 @@ public class LoginService extends AbstractService {
 				if (emp != null) {
 					apiResponse = sendOtp(emp);
 				} else {
-					throw new AuthServiceException("Employee Details not available",
-							RbaacServiceError.INVALID_USER_DETAILS);
+					throw new AuthServiceException(RbaacServiceError.INVALID_USER_DETAILS,
+							"Employee Details not available");
 				}
 			} else {
-				throw new AuthServiceException("Employee Number and Civil Id Manadatory",
-						RbaacServiceError.INVALID_OR_MISSING_DATA);
+				throw new AuthServiceException(RbaacServiceError.INVALID_OR_MISSING_DATA,
+						"Employee Number and Civil Id Manadatory");
 			}
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
-			throw new AuthServiceException("verifyUserDetails fail ", e.getMessage());
+			throw new AuthServiceException(e.getMessage(), "verifyUserDetails fail ");
 		}
 
 		return apiResponse;
@@ -816,16 +816,16 @@ public class LoginService extends AbstractService {
 				if (emp != null) {
 					apiResponse = validateOtp(emp, mOtp);
 				} else {
-					throw new AuthServiceException("Employee Details not available",
-							RbaacServiceError.INVALID_USER_DETAILS);
+					throw new AuthServiceException(RbaacServiceError.INVALID_USER_DETAILS,
+							"Employee Details not available");
 				}
 			} else {
-				throw new AuthServiceException("Employee Number and Civil Id Manadatory",
-						RbaacServiceError.INVALID_OR_MISSING_DATA);
+				throw new AuthServiceException(RbaacServiceError.INVALID_OR_MISSING_DATA,
+						"Employee Number and Civil Id Manadatory");
 			}
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
-			throw new AuthServiceException("verifyUserOTPDetails fail ", e.getMessage());
+			throw new AuthServiceException(e.getMessage(), "verifyUserOTPDetails fail ");
 		}
 
 		return apiResponse;

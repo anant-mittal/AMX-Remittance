@@ -1,15 +1,36 @@
 package com.amx.jax.auth;
 
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
 
+import com.amx.utils.CryptoUtil;
 import com.amx.utils.JsonUtil;
 
 public final class RuntimeTest {
 
-	public static void main(String[] args) {
+	public static class A implements Comparable<A>, Serializable {
+		
+		private static final long serialVersionUID = 1L;
+		
+		public BigDecimal i;
+		public int j;
+
+		@Override
+		public int compareTo(A o) {
+			return this.i.compareTo(o.i);
+		}
+	}
+
+	public static void main(String[] args) throws NoSuchAlgorithmException {
 
 		System.out.println(" ======== String Test ======= " + "Y".equalsIgnoreCase(null));
 
@@ -33,7 +54,8 @@ public final class RuntimeTest {
 
 		System.out.println(" JSON ==> " + JsonUtil.toJson(outMap));
 
-		Map<String, Map<String, Object>> revJsonMap =  (Map<String, Map<String, Object>>)JsonUtil.fromJson(JsonUtil.toJson(outMap), Map.class);
+		Map<String, Map<String, Object>> revJsonMap = (Map<String, Map<String, Object>>) JsonUtil
+				.fromJson(JsonUtil.toJson(outMap), Map.class);
 
 		System.out.println(" Rev MAP ==> " + JsonUtil.toJson(revJsonMap));
 
@@ -53,6 +75,24 @@ public final class RuntimeTest {
 		System.out.println(" List Json ==> " + jsonL);
 
 		System.out.println(" From Json ==>" + JsonUtil.fromJson(jsonL, List.class));
+
+		String devicePairTokenStr = CryptoUtil.getSHA2Hash("HFOSQUZNXGGNF" + Long.toString(10l));
+
+		System.out.println(" Device Pair Token ==> " + devicePairTokenStr);
+
+		List<A> ts = new LinkedList<A>();
+
+		for (int j = 0; j < 10; j++) {
+			A a1 = new A();
+			a1.i = new BigDecimal(10-j);
+			a1.j = j;
+
+			ts.add(a1);
+		}
+		
+		Collections.sort(ts);
+		
+		System.out.println(" All Sets ==> " + JsonUtil.toJson(ts));
 
 	}
 

@@ -10,7 +10,7 @@ import java.util.Map;
 
 import org.apache.commons.beanutils.BeanUtils;
 
-import com.amx.jax.rbaac.RbaacConstants;
+import com.amx.jax.rbaac.constants.RbaacServiceConstants;
 import com.amx.jax.rbaac.dbmodel.Employee;
 import com.amx.jax.rbaac.dbmodel.Role;
 import com.amx.jax.rbaac.dbmodel.UserRoleMapping;
@@ -64,7 +64,7 @@ public final class ObjectConverter {
 		}
 
 		if (employee.getLockCount() != null
-				&& employee.getLockCount().intValue() >= RbaacConstants.EMPLOYEE_MAX_LOCK_COUNT) {
+				&& employee.getLockCount().intValue() >= RbaacServiceConstants.EMPLOYEE_MAX_LOCK_COUNT) {
 			empDetail.setIsLocked(Boolean.TRUE);
 		} else {
 			empDetail.setIsActive(Boolean.FALSE);

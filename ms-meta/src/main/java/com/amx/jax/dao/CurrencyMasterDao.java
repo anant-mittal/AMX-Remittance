@@ -53,5 +53,10 @@ public class CurrencyMasterDao {
 				new Object[] { applicationCountryId, beneCountryId, serviceGroupId, routingBankId }, BigDecimal.class);
 		return outputList;
 	}
+	
+	public Map<BigDecimal, CurrencyMasterModel> getSelectedCurrencyMap(List<String> currencyId) {
+		List<CurrencyMasterModel> list = repo.fetchCurrencyMaster(currencyId);
+		return list.stream().collect(Collectors.toMap(CurrencyMasterModel::getCurrencyId, c -> c));
+	}
 
 }

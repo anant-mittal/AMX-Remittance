@@ -15,15 +15,15 @@ import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.postman.model.TemplatesMX;
+import com.amx.jax.tunnel.DBEvent;
 import com.amx.jax.tunnel.ITunnelSubscriber;
-import com.amx.jax.tunnel.TunnelEvent;
 import com.amx.jax.tunnel.TunnelEventMapping;
 import com.amx.jax.tunnel.TunnelEventXchange;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;
 
 @TunnelEventMapping(topic = AmxTunnelEvents.Names.CIVIL_ID_EXPIRY, scheme = TunnelEventXchange.TASK_WORKER)
-public class CivilIDExpiryListner implements ITunnelSubscriber<TunnelEvent> {
+public class CivilIDExpiryListner implements ITunnelSubscriber<DBEvent> {
 
 	@Autowired
 	PostManClient postManClient;
@@ -48,7 +48,7 @@ public class CivilIDExpiryListner implements ITunnelSubscriber<TunnelEvent> {
 	// {"FROMAMOUNT":"1","TOAMOUNT":"300000","CNTRYID":"94","CURRID":"4","BANKID":"1256","DRVSELLRATE":".004524"}}
 
 	@Override
-	public void onMessage(String channel, TunnelEvent event) {
+	public void onMessage(String channel, DBEvent event) {
 		LOGGER.info("======onMessage1==={} ====  {}", channel, JsonUtil.toJson(event));
 		String emailId = ArgUtil.parseAsString(event.getData().get(EMAIL));
 		String langId = ArgUtil.parseAsString(event.getData().get(LANG_ID));
@@ -79,9 +79,9 @@ public class CivilIDExpiryListner implements ITunnelSubscriber<TunnelEvent> {
 
 			if (ArgUtil.areEqual(expired, "0")) {
 				email.setITemplate(TemplatesMX.CIVILID_EXPIRY);
-				email.setSubject("Civil ID Expiry Reminder"); // Given by Umesh
+				
 			} else {
-				email.setSubject("Civil ID has been expired"); // Given by Umesh
+				
 				email.setITemplate(TemplatesMX.CIVILID_EXPIRED);
 			}
 			postManClient.sendEmailAsync(email);

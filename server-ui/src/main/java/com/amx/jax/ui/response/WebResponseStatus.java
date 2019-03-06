@@ -1,10 +1,14 @@
 package com.amx.jax.ui.response;
 
+import com.amx.jax.exception.IExceptionEnum;
+
 /**
  * The Enum WebResponseStatus.
  */
-public enum WebResponseStatus {
+public enum WebResponseStatus implements IExceptionEnum {
 
+	
+	UI_SERVER_ERROR("000"),
 	/** The already active. */
 	// Registration - CIVIL ID validation
 	ALREADY_ACTIVE("302"),
@@ -49,6 +53,7 @@ public enum WebResponseStatus {
 	// Info Required
 	DOTP_REQUIRED("300"),
 	MOTP_REQUIRED("300"),
+	OTP_REQUIRED("300"),
 
 	/** The unknown jax error. */
 	UNKNOWN_JAX_ERROR("500"),
@@ -83,11 +88,20 @@ public enum WebResponseStatus {
 	/**
 	 * Instantiates a new web response status.
 	 *
-	 * @param code
-	 *            the code
+	 * @param code the code
 	 */
 	WebResponseStatus(String code) {
 		this.code = code;
+	}
+
+	@Override
+	public String getStatusKey() {
+		return this.toString();
+	}
+
+	@Override
+	public int getStatusCode() {
+		return this.ordinal();
 	}
 
 }

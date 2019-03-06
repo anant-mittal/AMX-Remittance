@@ -11,15 +11,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.meta.model.QuestAnswerModelDTO;
-import com.amx.amxlib.meta.model.QuestModelDTO;
-import com.amx.amxlib.model.AbstractAnswer;
-import com.amx.amxlib.model.OptionAnswer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.OnlineQuestModel;
 import com.amx.jax.dbmodel.bene.RelationsDescription;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.auth.AbstractAnswer;
+import com.amx.jax.model.auth.OptionAnswer;
+import com.amx.jax.model.auth.QuestAnswerModelDTO;
+import com.amx.jax.model.auth.QuestModelDTO;
 import com.amx.jax.repository.IQuestionAnswerRepository;
 import com.amx.jax.service.QuestionAnswerService;
 import com.amx.jax.userservice.constant.CustomerDataVerificationQuestion;
@@ -58,16 +58,13 @@ public class SecurityQuestionsManager {
 	public List<QuestModelDTO> generateRandomQuestions(CustomerOnlineRegistration onlineCustomer, Integer size,
 			Integer customerId) {
 		if (onlineCustomer == null) {
-			throw new GlobalException("Online Customer id not found", JaxError.CUSTOMER_NOT_FOUND.getStatusKey());
+			throw new GlobalException(JaxError.CUSTOMER_NOT_FOUND.getStatusKey(), "Online Customer id not found");
 		}
 		if (size > 4) {
-			throw new GlobalException("Random questions size can't be more than 4",
-					JaxError.INVALID_RANDOM_QUEST_SIZE.getStatusKey());
+			throw new GlobalException(JaxError.INVALID_RANDOM_QUEST_SIZE.getStatusKey(),
+					"Random questions size can't be more than 4");
 		}
 		List<BigDecimal> questions = new ArrayList<>();
-		questions.add(onlineCustomer.getSecurityQuestion1());
-		questions.add(onlineCustomer.getSecurityQuestion2());
-		questions.add(onlineCustomer.getSecurityQuestion3());
 		questions.add(onlineCustomer.getSecurityQuestion4());
 		questions.add(onlineCustomer.getSecurityQuestion5());
 		List<BigDecimal> randomQuestoids = util.getRandomIntegersFromList(questions, size);
@@ -79,30 +76,38 @@ public class SecurityQuestionsManager {
 	public List<QuestModelDTO> getDataVerificationRandomQuestions(CustomerOnlineRegistration onlineCustomer, Integer size,
 			BigDecimal customerId) {
 		if (onlineCustomer == null) {
-			throw new GlobalException("Online Customer id not found", JaxError.CUSTOMER_NOT_FOUND.getStatusKey());
+			throw new GlobalException(JaxError.CUSTOMER_NOT_FOUND.getStatusKey(), "Online Customer id not found");
 		}
 
 		QuestModelDTO q1 = CustomerDataVerificationQuestion.Q1.getQuestModelDTO();
 		QuestModelDTO q2 = CustomerDataVerificationQuestion.Q2.getQuestModelDTO();
-		QuestModelDTO q3 = CustomerDataVerificationQuestion.Q3.getQuestModelDTO();
 		q1.setQuestAnswerModelDTO(getAnswerModelForQ1());
-		q2.setQuestAnswerModelDTO(getRelationShips());
-		q3.setQuestAnswerModelDTO(getListOfMonths());
+		q2.setQuestAnswerModelDTO(getExpiryDateForQ2());
 		List<QuestModelDTO> result = new ArrayList<>();
 		Map<Integer, QuestModelDTO> maps = new HashMap<>();
 		maps.put(1, q1);
 		maps.put(2, q2);
-		maps.put(3, q3);
-		int randQKey = ThreadLocalRandom.current().nextInt(1, 4);
+		int randQKey = ThreadLocalRandom.current().nextInt(1, 3);
 		result.add(maps.get(randQKey));
 		return result;
 
 	}
+	
+	public List<QuestModelDTO> getDataVerificationRandomQuestions(Integer size) {
 
-	private QuestAnswerModelDTO getAnswerModelForQ1() {
-		QuestAnswerModelDTO dto = new QuestAnswerModelDTO();
-		dto.setAnswerType("text");
-		return dto;
+		QuestModelDTO q1 = CustomerDataVerificationQuestion.Q1.getQuestModelDTO();
+		QuestModelDTO q2 = CustomerDataVerificationQuestion.Q2.getQuestModelDTO();
+		
+		q1.setQuestAnswerModelDTO(getAnswerModelForQ1());
+		q2.setQuestAnswerModelDTO(getExpiryDateForQ2());
+		List<QuestModelDTO> result = new ArrayList<>();
+		Map<Integer, QuestModelDTO> maps = new HashMap<>();
+		maps.put(1, q1);
+		maps.put(2, q2);
+		int randQKey = ThreadLocalRandom.current().nextInt(1, 3);
+		result.add(maps.get(randQKey));
+		return result;
+
 	}
 
 	private QuestAnswerModelDTO getListOfMonths() {
@@ -132,6 +137,18 @@ public class SecurityQuestionsManager {
 			answer.setOptionValue(i.getLocalRelationsDesc());
 			possibleAnswers.add(answer);
 		});
+		return dto;
+	}
+	
+	private QuestAnswerModelDTO getAnswerModelForQ1() {
+		QuestAnswerModelDTO dto = new QuestAnswerModelDTO();
+		dto.setAnswerType("text");
+		return dto;
+	}
+
+	private QuestAnswerModelDTO getExpiryDateForQ2() {
+		QuestAnswerModelDTO dto = new QuestAnswerModelDTO();
+		dto.setAnswerType("date");
 		return dto;
 	}
 }

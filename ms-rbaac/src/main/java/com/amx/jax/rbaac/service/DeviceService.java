@@ -20,7 +20,6 @@ import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.constant.DeviceState;
 import com.amx.jax.dbmodel.Device;
 import com.amx.jax.dict.UserClient.ClientType;
-import com.amx.jax.rbaac.RbaacConstants;
 import com.amx.jax.rbaac.constants.RbaacServiceConstants;
 import com.amx.jax.rbaac.dao.DeviceDao;
 import com.amx.jax.rbaac.dto.DeviceDto;
@@ -30,8 +29,10 @@ import com.amx.jax.rbaac.error.RbaacServiceError;
 import com.amx.jax.rbaac.exception.AuthServiceException;
 import com.amx.jax.rbaac.manager.DeviceManager;
 import com.amx.jax.rbaac.validation.DeviceValidation;
+import com.amx.jax.util.ParamValidator;
 import com.amx.utils.CryptoUtil;
 import com.amx.utils.Random;
+import com.amx.utils.TimeUtils;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -58,15 +59,30 @@ public class DeviceService extends AbstractService {
 	@Transactional
 	public void activateDevice(Device device) {
 		device.setStatus("Y");
-		List<Device> devices = deviceDao.findAllActiveDevices(device.getBranchSystemInventoryId(),
-				device.getDeviceType());
-		if (!CollectionUtils.isEmpty(devices)) {
-			for (Device d : devices) {
-				if (!d.equals(device)) {
-					d.setStatus("N");
+		device.setState(DeviceState.REGISTERED);
+		if (device.getBranchSystemInventoryId() != null) {
+			List<Device> devices = deviceDao.findAllActiveDevices(device.getBranchSystemInventoryId(),
+					device.getDeviceType());
+			if (!CollectionUtils.isEmpty(devices)) {
+				for (Device d : devices) {
+					if (!d.equals(device)) {
+						d.setStatus("N");
+		}
 				}
+				deviceDao.saveDevices(devices);
 			}
-			deviceDao.saveDevices(devices);
+		}
+		if (device.getEmployeeId() != null) {
+			List<Device> devices = deviceDao.findAllActiveDevicesForEmployee(device.getEmployeeId(),
+					device.getDeviceType());
+			if (!CollectionUtils.isEmpty(devices)) {
+				for (Device d : devices) {
+					if (!d.equals(device)) {
+						d.setStatus("N");
+					}
+				}
+				deviceDao.saveDevices(devices);
+			}
 		}
 		deviceDao.saveDevice(device);
 	}
@@ -87,6 +103,7 @@ public class DeviceService extends AbstractService {
 
 	public void deactivateDevice(Device device) {
 		device.setStatus("N");
+		device.setState(DeviceState.REGISTERED_NOT_ACTIVE);
 		deviceDao.saveDevice(device);
 	}
 
@@ -100,26 +117,28 @@ public class DeviceService extends AbstractService {
 
 		Device newDevice = deviceDao.saveDevice(request, registerDeviceByDefault);
 		DeviceState deviceState;
-		if (RbaacConstants.YES.equals(newDevice.getStatus())) {
+		if (RbaacServiceConstants.YES.equals(newDevice.getStatus())) {
 			deviceState = DeviceState.REGISTERED;
 		} else {
 			deviceState = DeviceState.REGISTERED_NOT_ACTIVE;
 		}
 		newDevice.setState(deviceState);
 		String devicePairToken = Random.randomAlpha(13);
-		String devicePairTokenStr = devicePairToken + newDevice.getRegistrationId().toString();
-		try {
-			newDevice.setPairToken(CryptoUtil.getSHA2Hash(devicePairTokenStr));
-		} catch (Exception e) {
-		}
+		String clientSecret = Random.randomAlpha(13);
+
+		newDevice.setPairToken(this.getDevicePairTokenHash(devicePairToken, newDevice.getRegistrationId()));
+		newDevice.setClientSecret(clientSecret);
 		deviceDao.saveDevice(newDevice);
+
 		logger.info("device registered with id: {}", newDevice.getRegistrationId());
+
 		DeviceDto dto = new DeviceDto();
 		try {
 			BeanUtils.copyProperties(dto, newDevice);
 		} catch (Exception e) {
 		}
 		dto.setPairToken(devicePairToken);
+		dto.setDeviceSecret(newDevice.getClientSecreteKey());
 		return dto;
 	}
 
@@ -144,6 +163,7 @@ public class DeviceService extends AbstractService {
 		Device device = deviceDao.findDevice(new BigDecimal(countryBranchSystemInventoryId), deviceType);
 		deviceValidation.validateDevice(device);
 		deviceValidation.validateDeviceOtpToken(device, otp);
+		deviceValidation.validateOtpValidationTimeLimit(device.getRegistrationId());
 		// session pair success
 		device.setState(DeviceState.SESSION_PAIRED);
 		deviceDao.saveDevice(device);
@@ -160,17 +180,25 @@ public class DeviceService extends AbstractService {
 		} catch (NoSuchAlgorithmException e) {
 		}
 		if (!device.getPairToken().equals(derivedPairToken)) {
-			throw new AuthServiceException("Invalid paire token", RbaacServiceError.CLIENT_INVALID_PAIR_TOKEN);
+			throw new AuthServiceException(RbaacServiceError.CLIENT_INVALID_PAIR_TOKEN, "Invalid paire token");
 		}
 		return deviceManager.generateDevicePaireOtpResponse(device);
 	}
 
 	public DevicePairOtpResponse validateDeviceSessionPairToken(BigDecimal deviceRegId, String deviceSessionToken) {
+		logger.debug("validateDeviceSessionPairToken method params: deviceRegId {}, deviceSessionToken {}", deviceRegId,
+				deviceSessionToken);
+		ParamValidator.validateNotNull(deviceRegId, "deviceRegId may not be null");
+		ParamValidator.validateNotEmpty(deviceSessionToken, "deviceSessionToken may not be empty");
 		Device device = deviceDao.findDevice(deviceRegId);
 		deviceValidation.validateDevice(device);
 		String sessionTokenGen = deviceManager.generateSessionPairToken(device);
-		if (!deviceSessionToken.equals(sessionTokenGen)) {
-			throw new AuthServiceException("Session token is expired", RbaacServiceError.CLIENT_EXPIRED_SESSION_TOKEN);
+		if (!deviceSessionToken.equals(device.getSessionToken()) ||
+				TimeUtils.isDead(device.getOtpTokenCreatedDate().getTime(),
+						deviceManager.getDeviceSessionTimeout() * 1000)
+		// || !deviceSessionToken.equals(sessionTokenGen)
+		) {
+			throw new AuthServiceException(RbaacServiceError.CLIENT_EXPIRED_SESSION_TOKEN, "Session token is expired");
 		}
 		deviceValidation.validateOtpValidationTimeLimit(deviceRegId);
 		return deviceManager.generateDevicePaireOtpResponse(device);
@@ -180,7 +208,7 @@ public class DeviceService extends AbstractService {
 			BigDecimal countryBranchSystemInventoryId) {
 		List<Device> devices = deviceDao.findAllActiveDevices(countryBranchSystemInventoryId, deviceClientType);
 		if (CollectionUtils.isEmpty(devices)) {
-			throw new AuthServiceException("No device found", RbaacServiceError.CLIENT_NOT_FOUND);
+			throw new AuthServiceException(RbaacServiceError.CLIENT_NOT_FOUND, "No device found");
 		}
 		return devices.get(0).getRegistrationId();
 	}
@@ -204,8 +232,8 @@ public class DeviceService extends AbstractService {
 			if (device == null || employeeId.longValue() != device.getEmployeeId().longValue()
 					|| !deviceId.equalsIgnoreCase(device.getDeviceId())) {
 
-				throw new AuthServiceException("Invalid Device Client : Not Paired or Not Mapped",
-						RbaacServiceError.DEVICE_CLIENT_INVALID);
+				throw new AuthServiceException(RbaacServiceError.DEVICE_CLIENT_INVALID,
+						"Invalid Device Client : Not Paired or Not Mapped");
 
 			}
 
@@ -213,18 +241,41 @@ public class DeviceService extends AbstractService {
 
 			Device device = deviceDao.findDevice(deviceRegId);
 
-			if (device == null || employeeId.longValue() != device.getEmployeeId().longValue()
-					|| !deviceId.equalsIgnoreCase(device.getDeviceId())
-					|| !deviceRegToken.equalsIgnoreCase(deviceRegToken)) {
+			String pairTokenHash = this.getDevicePairTokenHash(deviceRegToken, deviceRegId);
 
-				throw new AuthServiceException("Invalid Device Client : Not Paired or Not Mapped",
-						RbaacServiceError.DEVICE_CLIENT_INVALID);
+			if (device == null) {
+				throw new AuthServiceException(RbaacServiceError.DEVICE_CLIENT_INVALID, "No valid device is found");
+			} else if (employeeId.longValue() != device.getEmployeeId().longValue()
+					|| !deviceId.equalsIgnoreCase(device.getDeviceId())) {
+				throw new AuthServiceException(RbaacServiceError.DEVICE_CLIENT_INVALID,
+						"Incorrect Employee or Device Mapping : Contact Support");
+			} else if (null == device.getPairToken() || !device.getPairToken().equalsIgnoreCase(pairTokenHash)) {
+				throw new AuthServiceException(RbaacServiceError.DEVICE_CLIENT_INVALID,
+						"Invalid Device Pairing : Pair Device Again");
 
+			} else if (!RbaacServiceConstants.YES.equalsIgnoreCase(device.getStatus())) {
+
+				logger.info("====== WARNING : Inactive Device Client : Contact Support ======");
+
+				throw new AuthServiceException(RbaacServiceError.CLIENT_NOT_ACTIVE,
+						"Inactive Device Client : Contact Support");
 			}
 
 		}
 
 		return Boolean.TRUE;
+	}
+
+	private String getDevicePairTokenHash(String pairToken, BigDecimal deviceRegId) {
+
+		try {
+			String devicePairTokenStr = pairToken + Long.toString(deviceRegId.longValue());
+			return CryptoUtil.getSHA2Hash(devicePairTokenStr);
+
+		} catch (Exception e) {
+		}
+
+		return null;
 	}
 
 }

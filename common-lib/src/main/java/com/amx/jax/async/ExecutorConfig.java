@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.annotation.AsyncConfigurerSupport;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
 @Configuration
 public class ExecutorConfig extends AsyncConfigurerSupport {
@@ -17,12 +18,13 @@ public class ExecutorConfig extends AsyncConfigurerSupport {
 	public static final String EXECUTER_GOLD = "goldExecutor";
 	public static final String EXECUTER_PLATINUM = "platinumExecutor";
 	public static final String EXECUTER_DIAMOND = "diamondExecutor";
+	public static final String EXECUTER_TASK = "task";
 
 	@Override
 	@Bean
 	public Executor getAsyncExecutor() {
 		ContextAwarePoolExecutor executor = new ContextAwarePoolExecutor();
-		executor.setCorePoolSize(20);
+		executor.setCorePoolSize(5);
 		executor.setThreadNamePrefix(DEFAULT + "-");
 		executor.initialize();
 		return executor;
@@ -75,5 +77,13 @@ public class ExecutorConfig extends AsyncConfigurerSupport {
 		executor.setThreadNamePrefix(EXECUTER_BRONZE + "-");
 		executor.initialize();
 		return executor;
+	}
+
+	@Bean(name = EXECUTER_TASK)
+	public ThreadPoolTaskScheduler taskThreadPoolTaskScheduler() {
+		ThreadPoolTaskScheduler threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
+		threadPoolTaskScheduler.setPoolSize(10);
+		threadPoolTaskScheduler.setThreadNamePrefix(EXECUTER_TASK + "-");
+		return threadPoolTaskScheduler;
 	}
 }

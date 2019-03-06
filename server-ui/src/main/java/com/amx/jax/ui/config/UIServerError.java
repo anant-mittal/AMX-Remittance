@@ -5,25 +5,13 @@ import com.amx.amxlib.exception.JaxSystemError;
 import com.amx.jax.exception.AmxApiError;
 import com.amx.jax.exception.AmxApiException;
 import com.amx.jax.exception.IExceptionEnum;
+import com.amx.jax.ui.response.WebResponseStatus;
 
 public class UIServerError extends AmxApiException {
 
-	public enum UIServerCodes implements IExceptionEnum {
-		UI_SERVER_ERROR;
-
-		@Override
-		public String getStatusKey() {
-			return this.toString();
-		}
-
-		@Override
-		public int getStatusCode() {
-			return this.ordinal();
-		}
-
-	}
-
 	private static final long serialVersionUID = 1L;
+
+	private boolean reportable = false;
 
 	public UIServerError(AmxApiError error) {
 		super(error);
@@ -31,12 +19,18 @@ public class UIServerError extends AmxApiException {
 
 	public UIServerError() {
 		super("UI Server error occured");
-		this.setError(UIServerCodes.UI_SERVER_ERROR);
+		this.setError(WebResponseStatus.UI_SERVER_ERROR);
 	}
 
 	public UIServerError(Exception e) {
 		super(e);
-		this.setError(UIServerCodes.UI_SERVER_ERROR);
+		reportable = true;
+		this.setError(WebResponseStatus.UI_SERVER_ERROR);
+	}
+
+	public UIServerError(WebResponseStatus error) {
+		super("UI Server error occured");
+		this.setError(error);
 	}
 
 	@Override
@@ -46,7 +40,7 @@ public class UIServerError extends AmxApiException {
 
 	@Override
 	public IExceptionEnum getErrorIdEnum(String errorId) {
-		return UIServerCodes.UI_SERVER_ERROR;
+		return WebResponseStatus.valueOf(errorId);
 	}
 
 	public static <T> T evaluate(Exception e) {
@@ -61,7 +55,7 @@ public class UIServerError extends AmxApiException {
 
 	@Override
 	public boolean isReportable() {
-		return true;
+		return reportable;
 	}
 
 }

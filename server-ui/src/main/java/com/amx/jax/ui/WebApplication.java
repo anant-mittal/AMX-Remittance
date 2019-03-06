@@ -42,8 +42,7 @@ public class WebApplication extends SpringBootServletInitializer {
 	/**
 	 * The main method.
 	 *
-	 * @param args
-	 *            the arguments
+	 * @param args the arguments
 	 */
 	public static void main(String[] args) {
 		SpringApplication.run(WebApplication.class, args);
@@ -80,8 +79,7 @@ public class WebApplication extends SpringBootServletInitializer {
 	/**
 	 * Security filter chain registration.
 	 *
-	 * @param securityProperties
-	 *            the security properties
+	 * @param securityProperties the security properties
 	 * @return the delegating filter proxy registration bean
 	 */
 	@Bean
@@ -103,5 +101,4 @@ public class WebApplication extends SpringBootServletInitializer {
 	public JaxMetaInfo jaxMetaInfo() {
 		return new JaxMetaInfo();
 	}
-
 }

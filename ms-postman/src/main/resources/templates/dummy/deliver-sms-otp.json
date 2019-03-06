@@ -1,5 +1,6 @@
 {
-  "mOtp":"123",
+ "data":{ 
+ "mOtp":"123",
   "mOtpPrefix":"AMX",
   "deliveryDetail":{
      "customerName":"CHIRANJEEVI VEERAVALLI",
@@ -10,5 +11,6 @@
      "deliveryRemark":null,
      "orderStatus":"Returned",
      "deliveryDetailSeqId":5
+  }
   }
 }

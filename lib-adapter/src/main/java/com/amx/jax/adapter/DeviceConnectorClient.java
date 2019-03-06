@@ -16,11 +16,11 @@ import com.amx.jax.device.DeviceConstants;
 import com.amx.jax.device.DeviceMetaInfo;
 import com.amx.jax.device.DeviceRestModels.DevicePairingCreds;
 import com.amx.jax.device.DeviceRestModels.DevicePairingRequest;
-import com.amx.jax.device.DeviceRestModels.NetAddress;
 import com.amx.jax.device.DeviceRestModels.SessionPairingCreds;
 import com.amx.jax.dict.UserClient;
 import com.amx.jax.exception.AmxApiException;
 import com.amx.jax.rest.RestService;
+import com.amx.utils.NetworkAdapter.NetAddress;
 
 @Configuration
 @PropertySource("classpath:application-adapter.properties")
@@ -156,6 +156,7 @@ public class DeviceConnectorClient {
 					.header(DeviceConstants.Keys.CLIENT_REG_TOKEN_XKEY, devicePairingCreds.getDeviceRegToken())
 
 					.header(DeviceConstants.Keys.CLIENT_SESSION_TOKEN_XKEY, sessionPairingCreds.getDeviceSessionToken())
+					.header(DeviceConstants.Keys.DEVICE_REQ_TIME_XKEY, System.currentTimeMillis())
 					.header(DeviceConstants.Keys.CLIENT_REQ_TOKEN_XKEY,
 							DeviceConstants.generateDeviceReqToken(sessionPairingCreds, devicePairingCreds))
 					.get().as(new ParameterizedTypeReference<AmxApiResponse<Object, Object>>() {

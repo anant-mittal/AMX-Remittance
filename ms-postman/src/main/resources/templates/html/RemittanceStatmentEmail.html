@@ -292,7 +292,7 @@
 	                        </div><!-- /content -->
 	
 	                        <!-- content -->
-	                        <div class="content points" style="  max-width:600px; margin:0 auto; display:block;">
+	                        <div th:if="${_tu.prop('tenant')}  != 'omn'" class="content points" style="  max-width:600px; margin:0 auto; display:block;">
 	                            <table width="100%" style="width: 100%">
 	                                <tr>
 	                                    <td class="small" width="66" style="vertical-align: top; padding-right:10px;"><img width="66" height="66"
@@ -369,7 +369,7 @@
 
                                         <!-- Callout Panel -->
                                         <p class="callout">Our online solution <a th:href="@{'https://' +${_tu.prop('company.website.url')}}"><span th:text="${_tu.prop('company.website.url')}"></span></a>
-                                            provides even finer rates and a bonus 150 loyalty points with each transaction.<br /><br />
+                                            provides even finer rates <span th:if="${_tu.prop('tenant')}  != 'omn'">and a bonus 150 loyalty points </span> with each transaction.<br /><br />
                                             Follow us on social media, facebook, twitter and instagram for our latest
                                             updates, product roll outs, special offers and events.<br /><br />
                                             We would love to hear your opinion and suggestions to make us better. You can write to

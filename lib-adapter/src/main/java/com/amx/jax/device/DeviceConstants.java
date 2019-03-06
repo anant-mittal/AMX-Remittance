@@ -7,7 +7,10 @@ import com.amx.utils.CryptoUtil;
 public class DeviceConstants {
 
 	public static final class Config {
-		public static final long REQUEST_TOKEN_VALIDITY = 30;
+		public static final long REQUEST_TOKEN_VALIDITY = 60;
+
+		@Deprecated
+		public static final long REQUEST_TOKEN_VALIDITY_OLD = 30;
 		public static final long SESSION_TOKEN_VALIDITY = 3 * 3600;
 	}
 
@@ -17,6 +20,7 @@ public class DeviceConstants {
 
 		public static final String CLIENT_SESSION_TOKEN_XKEY = "x-device-session-token";
 
+		public static final String DEVICE_REQ_TIME_XKEY = "x-device-req-time";
 		public static final String DEVICE_REQ_KEY_XKEY = "x-device-req-key";
 		public static final String CLIENT_REQ_TOKEN_XKEY = "x-device-req-token";
 	}
@@ -31,6 +35,8 @@ public class DeviceConstants {
 		public static final String SESSION_TERMINAL = "/pub/device/session/terminal";
 		public static final String DEVICE_STATUS_CARD = "/pub/device/status/card";
 		public static final String DEVICE_STATUS_NOTIPY = "/pub/notipy/status";
+		public static final String DEVICE_SEND_NOTIPY = "/pub/notipy/send";
+		public static final String DEVICE_VERIFY_NOTIPY = "/pub/notipy/verify";
 
 		@Deprecated
 		public static final String DEVICE_STATUS_ACTIVITY = "/pub/device/status/activity";
@@ -45,8 +51,8 @@ public class DeviceConstants {
 		public static final String PARAM_DEVICE_REG_ID = "deviceRegId";
 	}
 
-	public static String generateDeviceReqToken(String deviceReqKey, String deviceRegToken) {
-		return CryptoUtil.generateHMAC(DeviceConstants.Config.REQUEST_TOKEN_VALIDITY, deviceReqKey, deviceRegToken);
+	public static String generateDeviceReqToken(String deviceReqKey, String deviceRegId) {
+		return CryptoUtil.generateHMAC(DeviceConstants.Config.REQUEST_TOKEN_VALIDITY, deviceReqKey, deviceRegId);
 	}
 
 	public static String generateDeviceReqToken(
@@ -55,10 +61,13 @@ public class DeviceConstants {
 		return generateDeviceReqToken(sessionPairingCreds.getDeviceRequestKey(), devicePairingCreds.getDeviceRegId());
 	}
 
-	public static boolean validateDeviceReqToken(String deviceReqKey, String deviceRegKey, String deviceReqToken) {
+	public static boolean validateDeviceReqToken(String deviceReqKey, String deviceRegId, String deviceReqToken) {
 		return CryptoUtil.validateHMAC(
-				DeviceConstants.Config.REQUEST_TOKEN_VALIDITY, deviceReqKey, deviceRegKey,
-				deviceReqToken);
+				DeviceConstants.Config.REQUEST_TOKEN_VALIDITY, deviceReqKey, deviceRegId,
+				deviceReqToken)
+				|| CryptoUtil.validateHMAC(
+						DeviceConstants.Config.REQUEST_TOKEN_VALIDITY_OLD, deviceReqKey, deviceRegId,
+						deviceReqToken);
 	}
 
 	public static String generateSessionPairingTokenX(String deviceRegToken, String sessionPairingToken) {

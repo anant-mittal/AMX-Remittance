@@ -29,6 +29,7 @@ import com.amx.jax.rbaac.dto.DeviceDto;
 import com.amx.jax.rbaac.dto.DevicePairOtpResponse;
 import com.amx.jax.rbaac.dto.request.DeviceRegistrationRequest;
 import com.amx.jax.rbaac.dto.request.EmployeeDetailsRequestDTO;
+import com.amx.jax.rbaac.dto.request.NotpDTO;
 import com.amx.jax.rbaac.dto.request.RoleRequestDTO;
 import com.amx.jax.rbaac.dto.request.UserAuthInitReqDTO;
 import com.amx.jax.rbaac.dto.request.UserAuthorisationReqDTO;
@@ -82,8 +83,7 @@ public class RbaacServiceApiController implements IRbaacService {
 	/**
 	 * Init User Authentication.
 	 *
-	 * @param userAuthInitReqDTO
-	 *            the user auth init req DTO
+	 * @param userAuthInitReqDTO the user auth init req DTO
 	 * @return the amx api response
 	 */
 	@Override
@@ -95,7 +95,9 @@ public class RbaacServiceApiController implements IRbaacService {
 				+ userAuthInitReqDTO.getUserClientDto().getGlobalIpAddress() + " from device Id: "
 				+ userAuthInitReqDTO.getUserClientDto().getDeviceId() + " with TraceId: "
 				+ AppContextUtil.getTraceId());
-		
+
+		LOGGER.info("User Auth Init Request Dto : " + userAuthInitReqDTO.toString());
+
 		UserAuthInitResponseDTO userAuthInitResponseDTO = userAuthService.verifyUserDetails(userAuthInitReqDTO);
 
 		return AmxApiResponse.build(userAuthInitResponseDTO);
@@ -272,6 +274,13 @@ public class RbaacServiceApiController implements IRbaacService {
 		return AmxApiResponse.build("Success");
 	}
 
+	@RequestMapping(value = ApiEndPoints.NOTP_VERIFY, method = RequestMethod.POST)
+	@Override
+	public AmxApiResponse<NotpDTO, Object> verifyOTP(@Valid @RequestBody NotpDTO reqDTO) {
+		reqDTO.setVerfied(userAuthService.validateOfflineOtp(reqDTO.getOtp(), reqDTO.getEmployeeId(), reqDTO.getSac()));
+		return AmxApiResponse.build(reqDTO);
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -391,6 +400,16 @@ public class RbaacServiceApiController implements IRbaacService {
 				deviceId, filterRole);
 
 		return AmxApiResponse.build(roleMappingForEmplyee);
+	}
+
+	@Override
+	@RequestMapping(value = ApiEndPoints.EMPLOYEE_SYSTEM_MAPPING_CREATE, method = RequestMethod.POST)
+	public AmxApiResponse<BoolRespModel, Object> createEmployeeSystemMapping(
+			@RequestParam(name = Params.EMPLOYEE_ID) BigDecimal employeeId,
+			@RequestParam(name = Params.TERMINAL_ID) BigDecimal countryBranchSystemInventoryId) {
+		BoolRespModel response = userAccountService.createEmployeeSystemMapping(employeeId,
+				countryBranchSystemInventoryId);
+		return AmxApiResponse.build(response);
 	}
 
 }

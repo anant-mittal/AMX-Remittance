@@ -1,6 +1,5 @@
 package com.amx.jax.dbmodel;
 
-import java.beans.Transient;
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -8,6 +7,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+
+import org.apache.commons.lang.StringUtils;
 
 import com.amx.jax.model.IResourceEntity;
 
@@ -48,6 +49,8 @@ public class CountryMasterView implements java.io.Serializable, IResourceEntity 
 	private String languageCode;
 	private String languageName;
 	private String countryMobileLength;
+	private Integer beneCountryRisk;
+	private Integer remitterCountryRisk;
 
 	public CountryMasterView() {
 		super();
@@ -173,7 +176,7 @@ public class CountryMasterView implements java.io.Serializable, IResourceEntity 
 
 	@Column(name = "COUNTRY_TEL_CODE")
 	public String getCountryTelCode() {
-		return countryTelCode;
+		return StringUtils.stripStart(countryTelCode, "0");
 	}
 
 	public void setCountryTelCode(String countryTelCode) {
@@ -265,6 +268,24 @@ public class CountryMasterView implements java.io.Serializable, IResourceEntity 
 	@Override
 	public String resourceCode() {
 		return this.countryISOCode;
+	}
+
+	@Column(name = "bene_country_risk")
+	public Integer getBeneCountryRisk() {
+		return beneCountryRisk;
+	}
+
+	public void setBeneCountryRisk(Integer beneCountryRisk) {
+		this.beneCountryRisk = beneCountryRisk;
+	}
+
+	@Column(name = "remitter_country_risk")
+	public Integer getRemitterCountryRisk() {
+		return remitterCountryRisk;
+	}
+
+	public void setRemitterCountryRisk(Integer remitterCountryRisk) {
+		this.remitterCountryRisk = remitterCountryRisk;
 	}
 
 }

@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -22,6 +23,7 @@ import com.amx.amxlib.model.PersonInfo;
 import com.amx.amxlib.model.PromotionDto;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.async.ExecutorConfig;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.JaxEmployeeDao;
 import com.amx.jax.dao.RemittanceApplicationDao;
@@ -34,10 +36,12 @@ import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.dbmodel.remittance.ShoppingCartDetails;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.payg.PaymentResponseDto;
+import com.amx.jax.postman.model.Email;
 import com.amx.jax.repository.IPlaceOrderDao;
 import com.amx.jax.repository.IShoppingCartDetailsDao;
 import com.amx.jax.repository.RemittanceApplicationRepository;
 import com.amx.jax.service.FinancialService;
+import com.amx.jax.service.JaxEmailNotificationService;
 import com.amx.jax.services.AbstractService;
 import com.amx.jax.services.JaxNotificationService;
 import com.amx.jax.services.RemittanceApplicationService;
@@ -93,6 +97,8 @@ public class RemittancePaymentManager extends AbstractService{
     IPlaceOrderDao placeOrderdao;
 	@Autowired
 	RemittanceManager remittanceManager;
+	@Autowired
+	JaxEmailNotificationService jaxEmailNotificationService;
 	
 	public ApiResponse<PaymentResponseDto> paymentCapture(PaymentResponseDto paymentResponse) {
 		ApiResponse response = null;
@@ -119,11 +125,11 @@ public class RemittancePaymentManager extends AbstractService{
 			{
 				
 				lstPayIdDetails = applicationDao.fetchRemitApplTrnxRecordsByCustomerPayId(paymentResponse.getUdf3(),new Customer(paymentResponse.getCustomerId()));
-				
-			//	logger.info("Appl :"+lstPayIdDetails.get(0).getRemittanceApplicationId()+"\n Company Id :"+lstPayIdDetails.get(0).getFsCompanyMaster().getCompanyId());
-				
 				paymentResponse.setCompanyId(lstPayIdDetails.get(0).getFsCompanyMaster().getCompanyId());
-				
+				if (lstPayIdDetails.get(0).getResultCode() != null) {
+					logger.info("Existing payment id found: {}", lstPayIdDetails.get(0).getPaymentId());
+					return response;
+				}
 				remittanceApplicationService.updatePaymentDetails(lstPayIdDetails, paymentResponse);
 				/** Calling stored procedure  insertRemittanceOnline **/
 				remitanceMap = remittanceApplicationService.saveRemittance(paymentResponse);
@@ -189,7 +195,6 @@ public class RemittancePaymentManager extends AbstractService{
 						} catch (Exception e) {
 						}
 						notificationService.sendTransactionNotification(rrsrl.get(0), personinfo);
-						/*remittanceManager.afterRemittanceSteps(remittanceTransaction);*/
 					} catch (Exception e) {
 						logger.error("error while sending transaction notification", e);
 					}
@@ -207,31 +212,46 @@ public class RemittancePaymentManager extends AbstractService{
 				
 			}else{
 				logger.info("PaymentResponseDto "+paymentResponse.getPaymentId()+"\t Result :"+paymentResponse.getResultCode()+"\t Custoemr Id :"+paymentResponse.getCustomerId());
-				
-				
 				lstPayIdDetails =applicationDao.fetchRemitApplTrnxRecordsByCustomerPayId(paymentResponse.getUdf3(),new Customer(paymentResponse.getCustomerId()));
 				if(!lstPayIdDetails.isEmpty()) {
 					remittanceApplicationService.updatePayTokenNull(lstPayIdDetails, paymentResponse);
 				}
 				response.setResponseStatus(ResponseStatus.INTERNAL_ERROR);
-				//throw new GlobalException("Remittance error :"+errorMsg,JaxError.PG_ERROR);
 			}
 			
 		}catch(Exception e) {
 			e.printStackTrace();
 			
 			lstPayIdDetails =applicationDao.fetchRemitApplTrnxRecordsByCustomerPayId(paymentResponse.getUdf3(),new Customer(paymentResponse.getCustomerId()));
+			if (lstPayIdDetails.get(0).getResultCode() != null) {
+				logger.info("Existing payment id found: {}", lstPayIdDetails.get(0).getPaymentId());
+				return response;
+			}
 			if(!lstPayIdDetails.isEmpty()) {
 				remittanceApplicationService.updatePayTokenNull(lstPayIdDetails, paymentResponse);
 			}
 			
-			throw new GlobalException("Remittance error :"+errorMsg,JaxError.PG_ERROR);
+			throw new GlobalException(JaxError.PG_ERROR,"Remittance error :"+errorMsg);
 		}
-		
 		response.getData().getValues().add(paymentResponse);
 	    response.getData().setType("pg_remit_response");
-		
+		checkAndSendAlertEmail(errorMsg, paymentResponse);
 		return response;
+	}
+
+	@Async(ExecutorConfig.DEFAULT)
+	private void checkAndSendAlertEmail(String errorMsg, PaymentResponseDto paymentResponse) {
+		String[] receiverList = jaxEmailNotificationService.getBeneCreationErrorEmailList();
+		if (StringUtils.isNotBlank(errorMsg) && receiverList != null && receiverList.length > 0) {
+			StringBuffer message = new StringBuffer();
+			message.append("errorMsg: ").append(errorMsg);
+			message.append("paymentResponse: ").append(paymentResponse);
+			Email email = new Email();
+			email.setSubject("Remittance creation failure");
+			email.addTo(receiverList);
+			email.setMessage(message.toString());
+			notificationService.sendEmail(email);
+		}
 	}
 
 	private void setMetaInfo(TransactionHistroyDTO transactionHistroyDTO, PaymentResponseDto paymentResponse) {

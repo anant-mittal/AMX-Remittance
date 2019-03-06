@@ -21,13 +21,14 @@ import com.amx.jax.device.DeviceRestModels;
 import com.amx.jax.device.DeviceRestModels.DevicePairingCreds;
 import com.amx.jax.device.DeviceRestModels.DevicePairingRequest;
 import com.amx.jax.device.DeviceRestModels.DeviceRestModel;
-import com.amx.jax.device.DeviceRestModels.NetAddress;
 import com.amx.jax.device.DeviceRestModels.SessionPairingCreds;
 import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.exception.AmxApiException;
 import com.amx.jax.exception.AmxException;
 import com.amx.jax.logger.LoggerService;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.NetworkAdapter;
+import com.amx.utils.NetworkAdapter.NetAddress;
 import com.amx.utils.TimeUtils;
 
 import net.east301.keyring.BackendNotSupportedException;
@@ -37,7 +38,7 @@ import net.east301.keyring.util.LockException;
 
 public abstract class ACardReaderService {
 
-	public static String CARD_READER_KEY = CardData.class.getName();
+	public static final String CARD_READER_KEY = CardData.class.getName();
 	private static final Logger LOGGER = LoggerService.getLogger(ACardReaderService.class);
 	public static ACardReaderService CONTEXT = null;
 	protected static CardReader READER = new CardReader();
@@ -57,11 +58,11 @@ public abstract class ACardReaderService {
 	}
 
 	public static enum CardStatus {
-		ERROR, NOCARD, REMOVED, FOUND, READING, SCANNED;
+		ERROR, NOCARD, REMOVED, FOUND, READING, CARD_NOT_GENUINE, CARD_EXPIRED, SCANNED;
 	}
 
 	public static enum DataStatus {
-		READ_ERROR, SYNC_ERROR, EMPTY, VALID_DATA, SYNCING, SYNCED;
+		READ_ERROR, SYNC_ERROR, EMPTY, INVALID, VALID_DATA, SYNCING, SYNCED;
 	}
 
 	// @Value("${device.terminal.id}")
@@ -83,16 +84,18 @@ public abstract class ACardReaderService {
 
 	public String getServerUrl() {
 		if (ArgUtil.isEmpty(serverUrl)) {
-			serverUrl = environment.getProperty("adapter." + tnt + "." + env + ".url");
-			String serverDB = environment.getProperty("adapter." + tnt + "." + env + ".db");
-			if (ArgUtil.isEmpty(serverUrl)) {
-				serverUrl = environment.getProperty("adapter.local.url");
+			synchronized (lock) {
+				serverUrl = environment.getProperty("adapter." + tnt + "." + env + ".url");
+				String serverDB = environment.getProperty("adapter." + tnt + "." + env + ".db");
+				if (ArgUtil.isEmpty(serverUrl)) {
+					serverUrl = environment.getProperty("adapter.local.url");
+				}
+				if (ArgUtil.isEmpty(serverDB)) {
+					serverDB = environment.getProperty("adapter.local.db");
+				}
+				KeyUtil.setServiceName(serverDB);
+				adapterServiceClient.setOffSiteUrl(serverUrl);
 			}
-			if (ArgUtil.isEmpty(serverDB)) {
-				serverDB = environment.getProperty("adapter.local.db");
-			}
-			KeyUtil.setServiceName(serverDB);
-			adapterServiceClient.setOffSiteUrl(serverUrl);
 		}
 		return serverUrl;
 	}
@@ -131,11 +134,15 @@ public abstract class ACardReaderService {
 
 	public DevicePairingCreds getDevicePairingCreds() {
 
-		if (getAddress() == null) {
+		if (ArgUtil.isEmpty(getServerUrl())) {
 			return null;
 		}
 
-		if (devicePairingCreds != null) {
+		if (ArgUtil.isEmpty(getAddress() == null)) {
+			return null;
+		}
+
+		if (!ArgUtil.isEmpty(devicePairingCreds)) {
 			return devicePairingCreds;
 		}
 
@@ -153,11 +160,11 @@ public abstract class ACardReaderService {
 				LOGGER.error("pairing Exception:IOException", ex);
 				return null;
 			} catch (KeyStoreException e) {
-				e.printStackTrace();
+				LOGGER.error("KeyStoreException", e);
 			} catch (CertificateException e) {
-				e.printStackTrace();
+				LOGGER.error("CertificateException", e);
 			} catch (NoSuchAlgorithmException e) {
-				e.printStackTrace();
+				LOGGER.error("NoSuchAlgorithmException", e);
 			}
 
 			try {
@@ -222,7 +229,7 @@ public abstract class ACardReaderService {
 					}
 				} catch (AmxApiException e) {
 					status(DeviceStatus.PAIRING_ERROR);
-					SWAdapterGUI.CONTEXT.log("SERVICE ERROR : " + e.getErrorKey());
+					SWAdapterGUI.CONTEXT.log("SERVICE ERROR : " + e.getErrorKey(), e.getErrorMessage());
 				} catch (AmxException e) {
 					status(DeviceStatus.PAIRING_ERROR);
 					SWAdapterGUI.CONTEXT.log("SERVICE ERROR : " + e.getMessage());
@@ -249,16 +256,19 @@ public abstract class ACardReaderService {
 				status(DeviceStatus.SESSION_CREATED);
 			} catch (AmxApiException e) {
 				status(DeviceStatus.SESSION_ERROR);
-				SWAdapterGUI.CONTEXT.log(e.getErrorKey() + " - REGID : " + devicePairingCreds.getDeviceRegId());
+				SWAdapterGUI.CONTEXT.log(e.getErrorKey() + " - REGID : " + devicePairingCreds.getDeviceRegId(),
+						e.getErrorMessage());
 				if ("CLIENT_INVALID_PAIR_TOKEN".equals(e.getErrorKey())) {
 					devicePairingCredsValid = false;
 				} else if ("CLIENT_NOT_FOUND".equals(e.getErrorKey())) {
 					devicePairingCredsValid = false;
 					terminalId = null;
 				}
+				LOGGER.error("getSessionPairingCreds" + e);
 			} catch (AmxException e) {
 				status(DeviceStatus.SESSION_ERROR);
 				SWAdapterGUI.CONTEXT.log("SERVICE ERROR : " + e.getMessage());
+				LOGGER.error("getSessionPairingCreds" + e);
 			} catch (Exception e) {
 				status(DeviceStatus.SESSION_ERROR);
 				SWAdapterGUI.CONTEXT.log("CLIENT ERROR : " + e.getMessage());
@@ -315,9 +325,11 @@ public abstract class ACardReaderService {
 		} catch (AmxApiException e) {
 			status(DataStatus.SYNC_ERROR);
 			SWAdapterGUI.CONTEXT.log("SERVICE ERROR : " + e.getErrorKey());
+			LOGGER.error(getServerUrl(), e);
 		} catch (AmxException e) {
 			status(DataStatus.SYNC_ERROR);
 			SWAdapterGUI.CONTEXT.log("SERVICE ERROR : " + e.getMessage());
+			LOGGER.error(getServerUrl(), e);
 		} catch (InterruptedException e) {
 			status(DataStatus.SYNC_ERROR);
 			LOGGER.error(getServerUrl(), e);
@@ -390,7 +402,7 @@ public abstract class ACardReaderService {
 			READER.setData(cardData.isValid() ? cardData : null);
 			READER.setCardActiveTime(cardData.getTimestamp());
 			READER.setDeviceActiveTime(Math.max(READER.getDeviceActiveTime(), cardData.getTimestamp()));
-			status(DataStatus.VALID_DATA);
+			status(getDataStatus(cardData));
 			MAP.put(CARD_READER_KEY, cardData);
 		}
 	}
@@ -402,11 +414,13 @@ public abstract class ACardReaderService {
 			readerStarted = start();
 		}
 		CardData data = poll();
-		if (data != null && data.isValid()) {
+		DataStatus dataStatus = getDataStatus(data);
+		status(dataStatus);
+		if (DataStatus.VALID_DATA.equals(dataStatus)) {
 			SWAdapterGUI.CONTEXT.log("ID : " + data.getIdentity());
+		}
+		if (!DataStatus.EMPTY.equals(dataStatus)) {
 			push(data);
-		} else {
-			status(DataStatus.EMPTY);
 		}
 		return READER;
 	}
@@ -472,6 +486,16 @@ public abstract class ACardReaderService {
 
 	public DataStatus getDataStatusValue() {
 		return dataStatusValue;
+	}
+
+	// UTILS FUNXIONS
+	private static DataStatus getDataStatus(CardData cardData) {
+		if (ArgUtil.isEmpty(cardData)) {
+			return DataStatus.EMPTY;
+		} else if (!cardData.isValid()) {
+			return DataStatus.INVALID;
+		}
+		return DataStatus.VALID_DATA;
 	}
 
 }

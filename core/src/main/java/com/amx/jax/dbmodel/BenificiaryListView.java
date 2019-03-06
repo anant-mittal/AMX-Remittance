@@ -92,7 +92,7 @@ public class BenificiaryListView implements Serializable {
 	private String serviceGroupName;
 	private String myFavouriteBene;
 	private String bankShortNames;
-	
+	private String ibanNumber;
 	
 
 	@Id
@@ -673,5 +673,13 @@ public class BenificiaryListView implements Serializable {
 	}
 	public void setBankShortNames(String bankShortNames) {
 		this.bankShortNames = bankShortNames;
+	}
+	
+	@Column(name = "IBAN_NUMBER")
+	public String getIbanNumber() {
+		return ibanNumber;
+	}
+	public void setIbanNumber(String ibanNumber) {
+		this.ibanNumber = ibanNumber;
 	}
 }

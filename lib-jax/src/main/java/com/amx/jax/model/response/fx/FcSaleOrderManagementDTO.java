@@ -44,6 +44,12 @@ public class FcSaleOrderManagementDTO extends AbstractModel {
 	String orderLock;
 	BigDecimal employeeId;
 	Boolean orderEmployee;
+	String deliveryAddress;
+	BigDecimal fromBranchId;
+	BigDecimal toBranchId;
+	BigDecimal recPayCountryBranchId;
+	BigDecimal recPayBranchId;
+	BigDecimal governateId;
 	List<FcSaleCurrencyAmountModel> mutipleFcAmount;
 	List<UserStockDto> fcDenomination;
 	
@@ -285,4 +291,46 @@ public class FcSaleOrderManagementDTO extends AbstractModel {
 		this.fcDenomination = fcDenomination;
 	}
 	
+	public String getDeliveryAddress() {
+		return deliveryAddress;
+	}
+	public void setDeliveryAddress(String deliveryAddress) {
+		this.deliveryAddress = deliveryAddress;
+	}
+	
+	public BigDecimal getFromBranchId() {
+		return fromBranchId;
+	}
+	public void setFromBranchId(BigDecimal fromBranchId) {
+		this.fromBranchId = fromBranchId;
+	}
+	
+	public BigDecimal getToBranchId() {
+		return toBranchId;
+	}
+	public void setToBranchId(BigDecimal toBranchId) {
+		this.toBranchId = toBranchId;
+	}
+	
+	public BigDecimal getRecPayCountryBranchId() {
+		return recPayCountryBranchId;
+	}
+	public void setRecPayCountryBranchId(BigDecimal recPayCountryBranchId) {
+		this.recPayCountryBranchId = recPayCountryBranchId;
+	}
+	
+	public BigDecimal getRecPayBranchId() {
+		return recPayBranchId;
+	}
+	public void setRecPayBranchId(BigDecimal recPayBranchId) {
+		this.recPayBranchId = recPayBranchId;
+	}
+	
+	public BigDecimal getGovernateId() {
+		return governateId;
+	}
+	public void setGovernateId(BigDecimal governateId) {
+		this.governateId = governateId;
+	}
+
 }

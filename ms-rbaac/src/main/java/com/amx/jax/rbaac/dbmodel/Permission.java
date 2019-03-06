@@ -16,7 +16,7 @@ import javax.persistence.Table;
  * The Class Permission.
  */
 @Entity
-@Table(name = "JX_RB_PERMISSION" )
+@Table(name = "JAX_RB_PERMISSION" )
 public class Permission  implements Serializable {
 
 	/** The Constant serialVersionUID. */

@@ -44,12 +44,10 @@ public class UserAuthInitReqDTO implements Serializable {
 	/** Security Access Code for partner. */
 	private String partnerSAC;
 
-	
 	/** The user client dto. */
 	@NotNull(message = "User Client Info Can not be Null or Empty")
 	private UserClientDto userClientDto;
-	
-	
+
 	/**
 	 * Gets the employee no.
 	 *
@@ -138,7 +136,8 @@ public class UserAuthInitReqDTO implements Serializable {
 	/**
 	 * Sets the self SAC.
 	 *
-	 * @param selfSAC the new self SAC
+	 * @param selfSAC
+	 *            the new self SAC
 	 */
 	public void setSelfSAC(String selfSAC) {
 		this.selfSAC = selfSAC;
@@ -156,7 +155,8 @@ public class UserAuthInitReqDTO implements Serializable {
 	/**
 	 * Sets the partner SAC.
 	 *
-	 * @param partnerSAC the new partner SAC
+	 * @param partnerSAC
+	 *            the new partner SAC
 	 */
 	public void setPartnerSAC(String partnerSAC) {
 		this.partnerSAC = partnerSAC;
@@ -174,10 +174,18 @@ public class UserAuthInitReqDTO implements Serializable {
 	/**
 	 * Sets the user client dto.
 	 *
-	 * @param userClientDto the new user client dto
+	 * @param userClientDto
+	 *            the new user client dto
 	 */
 	public void setUserClientDto(UserClientDto userClientDto) {
 		this.userClientDto = userClientDto;
+	}
+
+	@Override
+	public String toString() {
+		return "UserAuthInitReqDTO [employeeNo=" + employeeNo + ", identity=" + identity + ", partnerIdentity="
+				+ partnerIdentity + ", loginType=" + loginType + ", selfSAC=" + selfSAC + ", partnerSAC=" + partnerSAC
+				+ ", userClientDto=" + userClientDto.toString() + "]";
 	}
 
 }

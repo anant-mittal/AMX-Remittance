@@ -21,7 +21,7 @@ import javax.persistence.Table;
  * @author abhijeet
  */
 @Entity
-@Table(name = "JX_RB_SCOPE" )
+@Table(name = "JAX_RB_SCOPE" )
 public class PermScope implements Serializable {
 
 	/** The Constant serialVersionUID. */

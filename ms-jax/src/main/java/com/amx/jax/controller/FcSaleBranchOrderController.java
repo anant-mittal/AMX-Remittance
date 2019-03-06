@@ -109,7 +109,8 @@ public class FcSaleBranchOrderController implements IFxBranchOrderService {
 	public AmxApiResponse<BoolRespModel,Object> assignDriver(@RequestParam(value = "orderNumber", required = true) BigDecimal orderNumber,@RequestParam(value = "orderYear", required = true) BigDecimal orderYear,@RequestParam(value = "driverId", required = true) BigDecimal driverId) {
 		BigDecimal countryId = metaData.getCountryId();
 		BigDecimal employeeId = metaData.getEmployeeId();
-		BoolRespModel result = fcSaleBranch.assignDriver(countryId,orderNumber,orderYear,driverId,employeeId);
+		BigDecimal companyId = metaData.getCompanyId();
+		BoolRespModel result = fcSaleBranch.assignDriver(countryId,orderNumber,orderYear,driverId,employeeId,companyId);
 		return AmxApiResponse.build(result);
 	}
 	
@@ -163,6 +164,57 @@ public class FcSaleBranchOrderController implements IFxBranchOrderService {
 		BigDecimal employeeId = metaData.getEmployeeId();
 		BoolRespModel result = fcSaleBranch.dispatchOrder(countryId, orderNumber, orderYear, employeeId);
 		return AmxApiResponse.build(result);
+	}
+	
+	/**
+	 * To get the order to Acknowledge driver
+	 * 
+	 */
+	@RequestMapping(value = Path.FC_ACKNOWLEDGE_DRIVE , method = RequestMethod.POST)
+	@Override
+	public AmxApiResponse<BoolRespModel,Object> acknowledgeDrive(@RequestParam(value = "orderNumber", required = true) BigDecimal orderNumber,@RequestParam(value = "orderYear", required = true) BigDecimal orderYear){
+		BigDecimal countryId = metaData.getCountryId();
+		BigDecimal employeeId = metaData.getEmployeeId();
+		BoolRespModel result = fcSaleBranch.acknowledgeDriver(countryId, orderNumber, orderYear, employeeId);
+		return AmxApiResponse.build(result);
+	}
+	
+	/**
+	 * To get the order to return Acknowledge
+	 * 
+	 */
+	@RequestMapping(value = Path.FC_RETURN_ACKNOWLEDGE , method = RequestMethod.POST)
+	@Override
+	public AmxApiResponse<BoolRespModel,Object> returnAcknowledge(@RequestParam(value = "orderNumber", required = true) BigDecimal orderNumber,@RequestParam(value = "orderYear", required = true) BigDecimal orderYear){
+		BigDecimal countryId = metaData.getCountryId();
+		BigDecimal employeeId = metaData.getEmployeeId();
+		BoolRespModel result = fcSaleBranch.returnAcknowledge(countryId, orderNumber, orderYear, employeeId);
+		return AmxApiResponse.build(result);
+	}
+	
+	/**
+	 * To get the order to accept cancellation
+	 * 
+	 */
+	@RequestMapping(value = Path.FC_ACCEPT_CANCELLATION , method = RequestMethod.POST)
+	@Override
+	public AmxApiResponse<BoolRespModel,Object> acceptCancellation(@RequestParam(value = "orderNumber", required = true) BigDecimal orderNumber,@RequestParam(value = "orderYear", required = true) BigDecimal orderYear){
+		BigDecimal countryId = metaData.getCountryId();
+		BigDecimal employeeId = metaData.getEmployeeId();
+		BoolRespModel result = fcSaleBranch.acceptCancellation(countryId, orderNumber, orderYear, employeeId);
+		return AmxApiResponse.build(result);
+	}
+	
+	/**
+	 * To get the re-print document order 
+	 * 
+	 */
+	@RequestMapping(value = Path.FC_REPRINT_ORDER , method = RequestMethod.GET)
+	@Override
+	public AmxApiResponse<FxOrderReportResponseDto,Object> reprintOrder(@RequestParam(value = "orderNumber", required = true) BigDecimal orderNumber,@RequestParam(value = "orderYear", required = true) BigDecimal orderYear){
+		BigDecimal countryId = metaData.getCountryId();
+		BigDecimal employeeId = metaData.getEmployeeId();
+		return fcSaleBranch.reprintOrder(countryId, orderNumber, orderYear, employeeId);
 	}
 
 }

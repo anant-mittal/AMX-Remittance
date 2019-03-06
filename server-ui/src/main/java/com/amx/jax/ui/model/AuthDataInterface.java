@@ -2,9 +2,9 @@ package com.amx.jax.ui.model;
 
 import java.util.List;
 
-import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.jax.model.AuthState;
+import com.amx.jax.model.auth.QuestModelDTO;
 import com.amx.jax.swagger.ApiMockModelProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
@@ -29,8 +29,7 @@ public final class AuthDataInterface {
 		/**
 		 * Sets the identity.
 		 *
-		 * @param identity
-		 *            the new identity
+		 * @param identity the new identity
 		 */
 		void setIdentity(String identity);
 	}
@@ -51,8 +50,7 @@ public final class AuthDataInterface {
 		/**
 		 * Sets the password.
 		 *
-		 * @param password
-		 *            the new password
+		 * @param password the new password
 		 */
 		void setPassword(String password);
 	}
@@ -72,8 +70,7 @@ public final class AuthDataInterface {
 		/**
 		 * Sets the answer.
 		 *
-		 * @param answer
-		 *            the new answer
+		 * @param answer the new answer
 		 */
 		void setAnswer(SecurityQuestionModel answer);
 	}
@@ -89,15 +86,16 @@ public final class AuthDataInterface {
 		 *
 		 * @return the m otp
 		 */
+		@Deprecated
 		@ApiMockModelProperty(example = "345678")
 		String getmOtp();
 
 		/**
 		 * Sets the m otp.
 		 *
-		 * @param mOtp
-		 *            the new m otp
+		 * @param mOtp the new m otp
 		 */
+		@Deprecated
 		void setmOtp(String mOtp);
 
 		/**
@@ -105,15 +103,16 @@ public final class AuthDataInterface {
 		 *
 		 * @return the e otp
 		 */
+		@Deprecated
 		@ApiMockModelProperty(example = "654321")
 		String geteOtp();
 
 		/**
 		 * Sets the e otp.
 		 *
-		 * @param eOtp
-		 *            the new e otp
+		 * @param eOtp the new e otp
 		 */
+		@Deprecated
 		void seteOtp(String eOtp);
 	}
 
@@ -132,8 +131,7 @@ public final class AuthDataInterface {
 		/**
 		 * Sets the m otp prefix.
 		 *
-		 * @param getmOtpPrefix
-		 *            the new m otp prefix
+		 * @param getmOtpPrefix the new m otp prefix
 		 */
 		public void setmOtpPrefix(String getmOtpPrefix);
 
@@ -147,8 +145,7 @@ public final class AuthDataInterface {
 		/**
 		 * Sets the e otp prefix.
 		 *
-		 * @param geteOtpPrefix
-		 *            the new e otp prefix
+		 * @param geteOtpPrefix the new e otp prefix
 		 */
 		public void seteOtpPrefix(String geteOtpPrefix);
 	}
@@ -176,8 +173,7 @@ public final class AuthDataInterface {
 		/**
 		 * Sets the state.
 		 *
-		 * @param state
-		 *            the new state
+		 * @param state the new state
 		 */
 		public void setState(AuthState state);
 
@@ -193,8 +189,7 @@ public final class AuthDataInterface {
 		/**
 		 * Sets the question.
 		 *
-		 * @param description
-		 *            the new question
+		 * @param description the new question
 		 * @deprecated - keeping it only for backward compatibility
 		 */
 		@Deprecated
@@ -210,8 +205,7 @@ public final class AuthDataInterface {
 		/**
 		 * Sets the ques.
 		 *
-		 * @param questModelDTO
-		 *            the new ques
+		 * @param questModelDTO the new ques
 		 */
 		public void setQues(QuestModelDTO questModelDTO);
 
@@ -233,8 +227,7 @@ public final class AuthDataInterface {
 		/**
 		 * Sets the sec ques ans.
 		 *
-		 * @param secQuesAns
-		 *            the new sec ques ans
+		 * @param secQuesAns the new sec ques ans
 		 */
 		public void setSecQuesAns(List<SecurityQuestionModel> secQuesAns);
 
@@ -249,8 +242,7 @@ public final class AuthDataInterface {
 		/**
 		 * Sets the email.
 		 *
-		 * @param email
-		 *            the new email
+		 * @param email the new email
 		 */
 		public void setEmail(String email);
 
@@ -265,8 +257,7 @@ public final class AuthDataInterface {
 		/**
 		 * Sets the phone.
 		 *
-		 * @param phone
-		 *            the new phone
+		 * @param phone the new phone
 		 */
 		public void setPhone(String phone);
 
@@ -280,8 +271,7 @@ public final class AuthDataInterface {
 		/**
 		 * Sets the image url.
 		 *
-		 * @param imageUrl
-		 *            the new image url
+		 * @param imageUrl the new image url
 		 */
 		public void setImageUrl(String imageUrl);
 
@@ -295,8 +285,7 @@ public final class AuthDataInterface {
 		/**
 		 * Sets the caption.
 		 *
-		 * @param caption
-		 *            the new caption
+		 * @param caption the new caption
 		 */
 		public void setCaption(String caption);
 	}

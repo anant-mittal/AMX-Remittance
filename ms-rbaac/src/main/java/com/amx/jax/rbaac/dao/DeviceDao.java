@@ -21,6 +21,7 @@ import com.amx.jax.rbaac.exception.AuthServiceException;
 import com.amx.jax.rbaac.repository.DeviceRepository;
 import com.amx.jax.rbaac.service.BranchSystemDetailService;
 import com.amx.jax.util.CryptoUtil;
+import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
 
 @Component
@@ -53,6 +54,12 @@ public class DeviceDao {
 		}
 		if (request.getIdentityInt() != null) {
 			Employee employee = rbaacDao.fetchEmpDetails(request.getIdentityInt());
+
+			if (ArgUtil.isEmpty(employee)) {
+				throw new AuthServiceException(RbaacServiceError.INVALID_USER_DETAILS,
+						"Cannot find user with provided details");
+			}
+
 			device.setEmployeeId(employee.getEmployeeId());
 		}
 		device.setCreatedBy("JOMAX_ONLINE");
@@ -80,7 +87,7 @@ public class DeviceDao {
 				deviceType, Constants.YES);
 		Device device = null;
 		if (devices != null && devices.size() > 1) {
-			throw new AuthServiceException("Too many devices activated", RbaacServiceError.CLIENT_TOO_MANY_ACTIVE);
+			throw new AuthServiceException(RbaacServiceError.CLIENT_TOO_MANY_ACTIVE, "Too many devices activated");
 		}
 		if (devices != null && devices.size() == 1) {
 			device = devices.get(0);
@@ -93,7 +100,7 @@ public class DeviceDao {
 				Constants.YES);
 		Device device = null;
 		if (devices != null && devices.size() > 1) {
-			throw new AuthServiceException("Too many devices activated", RbaacServiceError.CLIENT_TOO_MANY_ACTIVE);
+			throw new AuthServiceException(RbaacServiceError.CLIENT_TOO_MANY_ACTIVE, "Too many devices activated");
 		}
 		if (devices != null && devices.size() == 1) {
 			device = devices.get(0);
@@ -104,6 +111,12 @@ public class DeviceDao {
 	public List<Device> findAllActiveDevices(BigDecimal branchSystemInvId, ClientType deviceType) {
 		List<Device> devices = deviceRepository.findByBranchSystemInventoryIdAndDeviceTypeAndStatus(branchSystemInvId,
 				deviceType, Constants.YES);
+		return devices;
+	}
+	
+	public List<Device> findAllActiveDevicesForEmployee(BigDecimal employeeId, ClientType deviceType) {
+		List<Device> devices = deviceRepository.findByEmployeeIdAndDeviceTypeAndStatus(employeeId, deviceType,
+				Constants.YES);
 		return devices;
 	}
 

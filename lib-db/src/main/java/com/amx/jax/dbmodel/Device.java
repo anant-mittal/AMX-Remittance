@@ -1,6 +1,7 @@
 package com.amx.jax.dbmodel;
 
 import java.math.BigDecimal;
+import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -16,14 +17,15 @@ import javax.persistence.Table;
 
 import com.amx.jax.constant.DeviceState;
 import com.amx.jax.dict.UserClient.ClientType;
+import com.amx.utils.CryptoUtil;
 
 @Entity
 @Table(name = "JAX_RB_DEVICE_CLIENT")
 public class Device {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "JAX_DEVICE_SEQ")
-	@SequenceGenerator(name = "JAX_DEVICE_SEQ", sequenceName = "JAX_DEVICE_SEQ", allocationSize = 1)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "JAX_RB_DEVICE_SEQ")
+	@SequenceGenerator(name = "JAX_RB_DEVICE_SEQ", sequenceName = "JAX_RB_DEVICE_SEQ", allocationSize = 1)
 	@Column(name = "REGISTRATION_ID")
 	BigDecimal registrationId;
 
@@ -61,6 +63,9 @@ public class Device {
 
 	@Column(name = "OTP_TOKEN")
 	String otpToken;
+	
+	@Column(name = "CLIENT_SECRET")
+	String clientSecret;
 	
 	@Column(name = "OTP_TOKEN_CREATED_DATE")
 	Date otpTokenCreatedDate;
@@ -178,6 +183,10 @@ public class Device {
 		this.pairToken = pairToken;
 	}
 
+	public void setClientSecret(String clientSecret) {
+		this.clientSecret = clientSecret;
+	}
+
 	public String getSessionToken() {
 		return sessionToken;
 	}
@@ -210,4 +219,18 @@ public class Device {
 		this.employeeId = employeeId;
 	}
 
+	/**
+	 * Create client secret key used to generate otp. Will be sent for first time
+	 * 
+	 * @param newDevice
+	 * @return
+	 */
+	public String getClientSecreteKey() {
+		String clientSecretKey = null;
+		try {
+			clientSecretKey = CryptoUtil.getSHA2Hash(this.clientSecret + this.getPairToken());
+		} catch (NoSuchAlgorithmException e) {
+		}
+		return clientSecretKey;
+	}
 }

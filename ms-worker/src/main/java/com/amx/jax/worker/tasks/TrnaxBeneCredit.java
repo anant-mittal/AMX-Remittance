@@ -16,15 +16,15 @@ import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.postman.model.TemplatesMX;
+import com.amx.jax.tunnel.DBEvent;
 import com.amx.jax.tunnel.ITunnelSubscriber;
-import com.amx.jax.tunnel.TunnelEvent;
 import com.amx.jax.tunnel.TunnelEventMapping;
 import com.amx.jax.tunnel.TunnelEventXchange;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;
 
 @TunnelEventMapping(topic = AmxTunnelEvents.Names.TRNX_BENE_CREDIT, scheme = TunnelEventXchange.TASK_WORKER)
-public class TrnaxBeneCredit implements ITunnelSubscriber<TunnelEvent> {
+public class TrnaxBeneCredit implements ITunnelSubscriber<DBEvent> {
 
 	@Autowired
 	PostManClient postManClient;
@@ -46,9 +46,10 @@ public class TrnaxBeneCredit implements ITunnelSubscriber<TunnelEvent> {
 	private static final String LANG_ID = "LANG_ID";
 	private static final String TENANT = "TENANT";
 	private static final String CURNAME = "CURNAME";
+	private static final String TYPE = "TYPE";
 
 	@Override
-	public void onMessage(String channel, TunnelEvent event) {
+	public void onMessage(String channel, DBEvent event) {
 		LOGGER.info("======onMessage1==={} ====  {}", channel, JsonUtil.toJson(event));
 		String emailId = ArgUtil.parseAsString(event.getData().get(EMAIL));
 		String smsNo = ArgUtil.parseAsString(event.getData().get(MOBILE));
@@ -60,11 +61,13 @@ public class TrnaxBeneCredit implements ITunnelSubscriber<TunnelEvent> {
 		String trnxDate = ArgUtil.parseAsString(event.getData().get(TRNDATE));
 		String langId = ArgUtil.parseAsString(event.getData().get(LANG_ID));
 		String curName = ArgUtil.parseAsString(event.getData().get(CURNAME));
+		String type = ArgUtil.parseAsString(event.getData().get(TYPE));
+
 
 		NumberFormat myFormat = NumberFormat.getInstance();
 		myFormat.setGroupingUsed(true);
 		String trnxAmountval = myFormat.format(trnxAmount);
-				
+
 		Map<String, Object> wrapper = new HashMap<String, Object>();
 		Map<String, Object> modeldata = new HashMap<String, Object>();
 		modeldata.put("to", emailId);
@@ -91,7 +94,19 @@ public class TrnaxBeneCredit implements ITunnelSubscriber<TunnelEvent> {
 			email.addTo(emailId);
 			email.setHtml(true);
 			email.setSubject("Transaction Credit Notification"); // changed as per BA
-			email.setITemplate(TemplatesMX.BRANCH_FEEDBACK);
+			switch (type) {
+			case "CASH":
+				email.setITemplate(TemplatesMX.CASH);
+				break;
+			case "TT":
+				email.setITemplate(TemplatesMX.TT);
+				break;
+			case "EFT":
+				email.setITemplate(TemplatesMX.EFT);
+				break;
+			default:
+				break;
+			}
 			postManClient.sendEmailAsync(email);
 		}
 
@@ -101,7 +116,21 @@ public class TrnaxBeneCredit implements ITunnelSubscriber<TunnelEvent> {
 
 		if (!ArgUtil.isEmpty(custId)) {
 			PushMessage pushMessage = new PushMessage();
-			pushMessage.setITemplate(TemplatesMX.BRANCH_FEEDBACK);
+			
+			switch (type) {
+			case "CASH":
+				pushMessage.setITemplate(TemplatesMX.CASH);
+				break;
+			case "TT":
+				pushMessage.setITemplate(TemplatesMX.TT);
+				break;
+			case "EFT":
+				pushMessage.setITemplate(TemplatesMX.EFT);
+				break;
+			default:
+				break;
+			}
+		
 			pushMessage.addToUser(custId);
 			pushMessage.setModel(wrapper);
 			pushNotifyClient.send(pushMessage);

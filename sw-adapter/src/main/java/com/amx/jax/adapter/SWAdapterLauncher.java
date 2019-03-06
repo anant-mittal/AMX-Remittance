@@ -8,7 +8,6 @@ import java.net.URISyntaxException;
 
 import javax.annotation.PostConstruct;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -21,7 +20,6 @@ import org.springframework.boot.autoconfigure.websocket.WebSocketAutoConfigurati
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.core.env.Environment;
 
 @SpringBootApplication
 @ComponentScan(value = "com.amx.jax")
@@ -57,7 +55,7 @@ public class SWAdapterLauncher {
 			SWAdapterGUI ex = ctx.getBean(SWAdapterGUI.class);
 			SWAdapterGUI.CONTEXT = ex;
 			ex.setVisible(true);
-			opnePage();
+			// opnePage();
 		});
 	}
 

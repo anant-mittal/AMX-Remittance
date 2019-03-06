@@ -1,9 +1,6 @@
 package com.amx.jax.rbaac.exception;
 
 import java.lang.reflect.Constructor;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 
@@ -12,7 +9,6 @@ import com.amx.jax.exception.AmxApiException;
 import com.amx.jax.exception.IExceptionEnum;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.rbaac.error.RbaacServiceError;
-import com.amx.jax.util.JaxUtil;
 
 /**
  * The Class AuthServiceException.
@@ -28,8 +24,7 @@ public class AuthServiceException extends AmxApiException {
 	/**
 	 * Instantiates a new auth service exception.
 	 *
-	 * @param errorMessage
-	 *            the error message
+	 * @param errorMessage the error message
 	 */
 	public AuthServiceException(String errorMessage) {
 		super(errorMessage);
@@ -37,33 +32,30 @@ public class AuthServiceException extends AmxApiException {
 
 	/**
 	 * Instantiates a new auth service exception.
-	 *
-	 * @param errorMessage
-	 *            the error message
-	 * @param errorCode
-	 *            the error code
+	 * 
+	 * @deprecated Declare IExceptionEnum for String errorCode, and pass the message
+	 * 
+	 * @param errorCode    the error code
+	 * @param errorMessage the error message
 	 */
-	public AuthServiceException(String errorMessage, String errorCode) {
-		super(errorMessage, errorCode);
+	public AuthServiceException(String errorCode, String errorMessage) {
+		super(errorCode, errorMessage);
 	}
 
 	/**
 	 * Instantiates a new auth service exception.
 	 *
-	 * @param errorMessage
-	 *            the error message
-	 * @param error
-	 *            the error
+	 * @param error        the error
+	 * @param errorMessage the error message
 	 */
-	public AuthServiceException(String errorMessage, RbaacServiceError error) {
-		super(errorMessage, error.getStatusKey());
+	public AuthServiceException(RbaacServiceError error, String errorMessage) {
+		super(error, errorMessage);
 	}
 
 	/**
 	 * Instantiates a new auth service exception.
 	 *
-	 * @param error
-	 *            the error
+	 * @param error the error
 	 */
 	public AuthServiceException(AmxApiError error) {
 		super(error);
@@ -72,41 +64,7 @@ public class AuthServiceException extends AmxApiException {
 	/**
 	 * Instantiates a new auth service exception.
 	 *
-	 * @param error
-	 *            the error
-	 * @param expressions
-	 *            the expressions
-	 */
-	public AuthServiceException(RbaacServiceError error, Object... expressions) {
-		JaxUtil util = new JaxUtil();
-		List<String> list = Arrays.asList(expressions).stream().map(i -> i.toString()).collect(Collectors.toList());
-		this.errorKey = util.buildErrorExpressions(error.getStatusKey(), list);
-
-	}
-
-	/**
-	 * Instantiates a new auth service exception.
-	 *
-	 * @param errorMessage
-	 *            the error message
-	 * @param error
-	 *            the error
-	 * @param expressions
-	 *            the expressions
-	 */
-	public AuthServiceException(String errorMessage, RbaacServiceError error, Object... expressions) {
-		JaxUtil util = new JaxUtil();
-		List<String> list = Arrays.asList(expressions).stream().map(i -> i.toString()).collect(Collectors.toList());
-		this.errorKey = util.buildErrorExpressions(error.getStatusKey(), list);
-		this.errorMessage = errorMessage;
-
-	}
-
-	/**
-	 * Instantiates a new auth service exception.
-	 *
-	 * @param e
-	 *            the e
+	 * @param e the e
 	 */
 	public AuthServiceException(Exception e) {
 		super(e);

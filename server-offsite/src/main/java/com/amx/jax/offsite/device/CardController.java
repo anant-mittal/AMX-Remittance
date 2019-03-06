@@ -15,8 +15,10 @@ import com.amx.jax.device.CardData;
 import com.amx.jax.device.CardReader;
 import com.amx.jax.device.DeviceConstants;
 import com.amx.jax.device.DeviceData;
+import com.amx.jax.device.DeviceRequest;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.sso.server.ApiHeaderAnnotations.ApiDeviceSessionHeaders;
+import com.amx.jax.stomp.StompTunnelService;
 import com.amx.jax.swagger.IStatusCodeListPlugin.ApiStatusService;
 import com.amx.utils.ArgUtil;
 
@@ -35,11 +37,21 @@ public class CardController {
 	@Autowired
 	private IDeviceConnecter iCardService;
 
+	@Autowired
+	private StompTunnelService stompTunnel;
+
 	@ApiDeviceSessionHeaders
 	@RequestMapping(value = { DeviceConstants.Path.DEVICE_STATUS_CARD }, method = { RequestMethod.POST })
 	public AmxApiResponse<CardData, Object> saveCardDetails(@RequestBody CardReader reader) {
 		DeviceData deviceData = deviceRequestValidator.validateRequest();
+
 		iCardService.saveCardDetailsByTerminal(deviceData.getTerminalId(), reader.getData());
+
+		CardData cardData = ArgUtil.ifNotEmpty(reader.getData(), new CardData());
+		stompTunnel.sendToAll(
+				"/card/details/" + deviceData.getTerminalId() + "/" + deviceRequestValidator.getDeviceRegId(),
+				cardData);
+
 		return AmxApiResponse.build(reader.getData());
 	}
 

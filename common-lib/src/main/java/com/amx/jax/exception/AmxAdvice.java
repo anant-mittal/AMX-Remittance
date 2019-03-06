@@ -1,6 +1,7 @@
 package com.amx.jax.exception;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -9,8 +10,10 @@ import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 
 import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -23,13 +26,21 @@ import com.amx.jax.AppConstants;
 import com.amx.jax.api.AmxFieldError;
 import com.amx.jax.exception.ApiHttpExceptions.ApiHttpArgException;
 import com.amx.jax.exception.ApiHttpExceptions.ApiStatusCodes;
+import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.LoggerService;
+import com.amx.jax.logger.events.ApiAuditEvent;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.HttpUtils;
+import com.amx.utils.Utils;
+import com.fasterxml.jackson.databind.JsonMappingException.Reference;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 
 public abstract class AmxAdvice {
 
 	private Logger logger = LoggerService.getLogger(AmxAdvice.class);
+
+	@Autowired
+	private AuditService auditService;
 
 	@ExceptionHandler(AmxApiException.class)
 	@ResponseBody
@@ -52,8 +63,7 @@ public abstract class AmxAdvice {
 	}
 
 	private void alert(AmxApiException ex) {
-		logger.error("Exception occured in controller " + ex.getClass().getName() + " error message: "
-				+ ex.getErrorMessage() + " error code: " + ex.getErrorKey(), ex);
+		auditService.log(new ApiAuditEvent(ex), ex);
 	}
 
 	public void alert(Exception ex) {
@@ -106,6 +116,50 @@ public abstract class AmxAdvice {
 	 * @param response the response
 	 * @return the response entity
 	 */
+	@ExceptionHandler(HttpMessageNotReadableException.class)
+	@ResponseBody
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	protected ResponseEntity<AmxApiError> handle(HttpMessageNotReadableException ex, HttpServletRequest request,
+			HttpServletResponse response) {
+		List<AmxFieldError> errors = new ArrayList<AmxFieldError>();
+
+		// newError.setField(ex.getName());
+		Throwable x = ex.getRootCause();
+		if (x instanceof InvalidFormatException) {
+			InvalidFormatException x1 = (InvalidFormatException) x;
+			AmxFieldError newError = new AmxFieldError();
+
+			StringBuilder sb = new StringBuilder();
+			Iterator<Reference> stit = x1.getPath().iterator();
+			while (stit.hasNext()) {
+				Reference ref = stit.next();
+				sb.append(ref.getFieldName());
+				if (stit.hasNext()) {
+					sb.append(".");
+				}
+			}
+
+			newError.setField(sb.toString());
+			newError.setObzect(x1.getPathReference());
+			newError.setDescription(HttpUtils.sanitze(x1.getOriginalMessage()));
+			errors.add(newError);
+		} else {
+			AmxFieldError newError = new AmxFieldError();
+			newError.setDescription(HttpUtils.sanitze(ex.getMessage()));
+			errors.add(newError);
+		}
+
+		return badRequest(ex, errors, request, response, ApiStatusCodes.PARAM_INVALID);
+	}
+
+	/**
+	 * Handle.
+	 *
+	 * @param ex       the ex
+	 * @param request  the request
+	 * @param response the response
+	 * @return the response entity
+	 */
 	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
 	@ResponseBody
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -118,8 +172,7 @@ public abstract class AmxAdvice {
 		errors.add(newError);
 		return badRequest(ex, errors, request, response, ApiStatusCodes.PARAM_TYPE_MISMATCH);
 	}
-	
-	
+
 	/**
 	 * Handle.
 	 *

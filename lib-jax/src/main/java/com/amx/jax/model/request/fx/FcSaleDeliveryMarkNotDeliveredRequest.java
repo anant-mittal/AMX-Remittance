@@ -26,4 +26,10 @@ public class FcSaleDeliveryMarkNotDeliveredRequest {
 	public void setDeleviryRemarkSeqId(BigDecimal deleviryRemarkSeqId) {
 		this.deliveryRemarkSeqId = deleviryRemarkSeqId;
 	}
+
+	@Override
+	public String toString() {
+		return "FcSaleDeliveryMarkNotDeliveredRequest [deliveryDetailSeqId=" + deliveryDetailSeqId
+				+ ", deliveryRemarkSeqId=" + deliveryRemarkSeqId + "]";
+	}
 }

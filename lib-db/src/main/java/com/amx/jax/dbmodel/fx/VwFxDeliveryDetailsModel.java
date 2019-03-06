@@ -35,10 +35,10 @@ public class VwFxDeliveryDetailsModel implements Serializable {
 
 	@Column(name = "CUSTOMER_NAME")
 	String customerName;
-	
-	@Column(name= "CUSTOMER_ID")
+
+	@Column(name = "CUSTOMER_ID")
 	BigDecimal customerId;
-	
+
 	@Column(name = "DELIVERY_DATE")
 	@Temporal(TemporalType.DATE)
 	Date deliveryDate;
@@ -52,14 +52,33 @@ public class VwFxDeliveryDetailsModel implements Serializable {
 	@Column(name = "DRIVER_EMPLOYEE_ID")
 	BigDecimal driverEmployeeId;
 
-	@Column(name = "EX_SHIPPING_ADDR_ID")
+	@Column(name = "SHIPPING_ADDRESS_ID")
 	BigDecimal shippingAddressId;
-
-	@Column(name = "MOBILE")
-	String mobile;
 
 	@Column(name = "ORDER_STATUS")
 	String orderStatus;
+
+	@Column(name = "INVENTORY_ID")
+	String inventoryId;
+
+	@Column(name = "OTP_TOKEN_PREFIX")
+	String otpTokenPrefix;
+
+	public String getOtpTokenPrefix() {
+		return otpTokenPrefix;
+	}
+
+	public void setOtpTokenPrefix(String otpTokenPrefix) {
+		this.otpTokenPrefix = otpTokenPrefix;
+	}
+
+	public String getInventoryId() {
+		return inventoryId;
+	}
+
+	public void setInventoryId(String inventoryId) {
+		this.inventoryId = inventoryId;
+	}
 
 	public BigDecimal getDeleviryDelSeqId() {
 		return deleviryDelSeqId;
@@ -123,14 +142,6 @@ public class VwFxDeliveryDetailsModel implements Serializable {
 
 	public void setShippingAddressId(BigDecimal shippingAddressId) {
 		this.shippingAddressId = shippingAddressId;
-	}
-
-	public String getMobile() {
-		return mobile;
-	}
-
-	public void setMobile(String mobile) {
-		this.mobile = mobile;
 	}
 
 	public BigDecimal getDeliveryRemarkId() {

@@ -32,4 +32,8 @@ public interface RemittanceApplicationRepository extends CrudRepository<Remittan
 
 	@Query("select rv from RemittanceApplication rv where rv.documentNo=?1 and rv.documentFinancialyear = ?2")
 	public RemittanceApplication fetchRemitApplTrnx(BigDecimal applicationDocumentNo, BigDecimal docFinYear);
+	
+	@Query(value = "select count(*) from EX_appl_trnx where customer_id = ?1 and CREATED_DATE between sysdate - interval '30' minute and sysdate "
+			+ "and RESULT_CODE != 'CAPTURED'", nativeQuery = true)
+	public Long getFailedTransactionAttemptCount(BigDecimal customerId);
 }

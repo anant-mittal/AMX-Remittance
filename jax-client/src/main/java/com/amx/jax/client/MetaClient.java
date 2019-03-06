@@ -25,19 +25,21 @@ import com.amx.amxlib.meta.model.CountryMasterDTO;
 import com.amx.amxlib.meta.model.JaxMetaParameter;
 import com.amx.amxlib.meta.model.MultiCountryDTO;
 import com.amx.amxlib.meta.model.PrefixDTO;
-import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.meta.model.ServiceGroupMasterDescDto;
 import com.amx.amxlib.meta.model.TermsAndConditionDTO;
 import com.amx.amxlib.meta.model.UserFinancialYearDTO;
 import com.amx.amxlib.meta.model.ViewAreaDto;
 import com.amx.amxlib.meta.model.ViewCityDto;
 import com.amx.amxlib.meta.model.ViewDistrictDto;
+import com.amx.amxlib.meta.model.ViewGovernateAreaDto;
+import com.amx.amxlib.meta.model.ViewGovernateDto;
 import com.amx.amxlib.meta.model.ViewStateDto;
 import com.amx.amxlib.meta.model.WhyDoAskInformationDTO;
 import com.amx.amxlib.model.OnlineConfigurationDto;
 import com.amx.amxlib.model.request.GetBankBranchRequest;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.configs.JaxMetaInfo;
+import com.amx.jax.model.auth.QuestModelDTO;
 import com.amx.jax.model.response.BranchSystemDetailDto;
 import com.amx.jax.model.response.CurrencyMasterDTO;
 import com.amx.jax.rest.RestService;
@@ -571,6 +573,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 	}
 	
 	
+	@Deprecated
 	public AmxApiResponse<ViewAreaDto, Object> getAreaList() {
 		try {
 			return restService.ajax(appConfig.getJaxURL())
@@ -584,5 +587,36 @@ public class MetaClient extends AbstractJaxServiceClient {
 	}
 	
 	
+	
+	
+	
+	public AmxApiResponse<ViewGovernateDto, Object> getGovernateList() {
+		try {
+			return restService.ajax(appConfig.getJaxURL())
+					.path(MetaApi.PREFIX + MetaApi.API_GOVERNATE_LIST).meta(new JaxMetaInfo()).get()
+					.as(new ParameterizedTypeReference<AmxApiResponse<ViewGovernateDto, Object>>() {
+					});
+		} catch (Exception ae) {
+			LOGGER.error("exception in area list : ", ae);
+			return JaxSystemError.evaluate(ae);
+		}
+	}
+	
 
+	public AmxApiResponse<ViewGovernateAreaDto, Object> getGovernateAreaList(BigDecimal governateId) {
+		try {
+			LOGGER.debug("in governateId :"+governateId);
+			return restService.ajax(appConfig.getJaxURL())
+					.path(MetaApi.PREFIX + MetaApi.API_GOVERNATE_AREA_LIST).meta(new JaxMetaInfo()).get()
+					.queryParam(MetaApi.PARAM_GOVERONATE_ID, governateId).get()
+					.as(new ParameterizedTypeReference<AmxApiResponse<ViewGovernateAreaDto, Object>>() {
+					});
+		} catch (Exception ae) {
+			LOGGER.error("exception in area list : ", ae);
+			return JaxSystemError.evaluate(ae);
+		}
+	}
+	
+	
+	
 }

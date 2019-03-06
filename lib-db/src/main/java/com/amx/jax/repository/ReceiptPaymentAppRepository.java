@@ -32,4 +32,6 @@ public interface ReceiptPaymentAppRepository extends CrudRepository<ReceiptPayme
 	@Query("select appl from ReceiptPaymentApp appl where appl.customerId=:customerId and appl.pgPaymentSeqDtlId =:pgPaymentSeqDtlId")
 	public List<ReceiptPaymentApp> getApplicationByPagdetailSeqIAndcustomerId(@Param("customerId") BigDecimal customerId, @Param("pgPaymentSeqDtlId") BigDecimal pgPaymentSeqDtlId);
 	
+	public ReceiptPaymentApp findByCustomerIdAndTransactionFinanceYearAndTransactionRefNo(BigDecimal customerId,BigDecimal transactionYear,BigDecimal transactionNo);
+	
 }

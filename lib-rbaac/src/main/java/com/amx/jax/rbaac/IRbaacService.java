@@ -9,6 +9,7 @@ import com.amx.jax.rbaac.dto.DeviceDto;
 import com.amx.jax.rbaac.dto.DevicePairOtpResponse;
 import com.amx.jax.rbaac.dto.request.DeviceRegistrationRequest;
 import com.amx.jax.rbaac.dto.request.EmployeeDetailsRequestDTO;
+import com.amx.jax.rbaac.dto.request.NotpDTO;
 import com.amx.jax.rbaac.dto.request.RoleRequestDTO;
 import com.amx.jax.rbaac.dto.request.UserAuthInitReqDTO;
 import com.amx.jax.rbaac.dto.request.UserAuthorisationReqDTO;
@@ -70,22 +71,27 @@ public interface IRbaacService {
 
 		/** The Constant TEST_POST. */
 		public static final String TEST_POST = SERVICE_PREFIX + API_VERSION_V1 + "/test/post";
-		
+
 		public static final String DEVICE_PREFIX = SERVICE_PREFIX + API_VERSION_V1 + "/device";
-		
+
 		public static final String DEVICE_ACTIVATE = DEVICE_PREFIX + "/activate";
 		public static final String DEVICE_DEACTIVATE = DEVICE_PREFIX + "/deactivate";
 		public static final String DEVICE_CREATE_SESSION = DEVICE_PREFIX + "/createsession";
-		public static final String DEVICE_PAIR_SESSION =  DEVICE_PREFIX + "/pairsession";
-		public static final String DEVICE_VALIDATE_SESSION_TOKEN =  DEVICE_PREFIX + "/validate-sessiontoken";
+		public static final String DEVICE_PAIR_SESSION = DEVICE_PREFIX + "/pairsession";
+		public static final String DEVICE_VALIDATE_SESSION_TOKEN = DEVICE_PREFIX + "/validate-sessiontoken";
 		public static final String DEVICE_REG = DEVICE_PREFIX + "/register";
-		public static final String DEVICE_GET_DEVICE_REG_ID =  DEVICE_PREFIX + "/get-deviceregid";
-		
+		public static final String DEVICE_GET_DEVICE_REG_ID = DEVICE_PREFIX + "/get-deviceregid";
+		public static final String NOTP_VERIFY = DEVICE_PREFIX + "/notp/verify";
+
 		/** The Constant GET_ROLE_MAPPING_FOR_EMPLOYEE. */
-		public static final String GET_ROLE_MAPPING_FOR_EMPLOYEE = SERVICE_PREFIX + API_VERSION_V1 + "/roles/alloc/get-role-map-for-employee";
+		public static final String GET_ROLE_MAPPING_FOR_EMPLOYEE = SERVICE_PREFIX + API_VERSION_V1
+				+ "/roles/alloc/get-role-map-for-employee";
+
+		public static final String EMPLOYEE_SYSTEM_MAPPING_CREATE = SERVICE_PREFIX + API_VERSION_V1
+				+ "/employee-system/create";
 
 	}
-	
+
 	public static class Params {
 
 		public static final String TERMINAL_ID = "countryBranchSystemInventoryId";
@@ -105,33 +111,32 @@ public interface IRbaacService {
 	 * Begins process of user Authentication with employee details - empCode,
 	 * CivilId and Access Terminal IP .
 	 *
-	 * @param userAuthInitReqDTO
-	 *            the user auth init req DTO
+	 * @param userAuthInitReqDTO the user auth init req DTO
 	 * @return the amx api response
 	 */
 	@RbaacApiStatus({ RbaacServiceError.INVALID_OR_MISSING_DATA, RbaacServiceError.INVALID_USER_DETAILS,
 			RbaacServiceError.MULTIPLE_USERS, RbaacServiceError.USER_NOT_ACTIVE_OR_DELETED,
-			RbaacServiceError.USER_ACCOUNT_LOCKED })
+			RbaacServiceError.USER_ACCOUNT_LOCKED, RbaacServiceError.INVALID_OR_MISSING_CREDENTIALS,
+			RbaacServiceError.INVALID_OR_MISSING_PARTNER_IDENTITY, RbaacServiceError.CLIENT_NOT_FOUND,
+			RbaacServiceError.INVALID_OR_MISSING_TERMINAL_ID, RbaacServiceError.BRANCH_SYSTEM_NOT_FOUND,
+			RbaacServiceError.INVALID_OR_MISSING_DEVICE_ID, RbaacServiceError.DEVICE_CLIENT_INVALID })
 	public AmxApiResponse<UserAuthInitResponseDTO, Object> initAuthForUser(UserAuthInitReqDTO userAuthInitReqDTO);
 
 	/**
 	 * Authorise user.
 	 *
-	 * @param reqDto
-	 *            the req dto
+	 * @param reqDto the req dto
 	 * @return the amx api response
 	 */
 	@RbaacApiStatus({ RbaacServiceError.INVALID_OR_MISSING_DATA, RbaacServiceError.INVALID_OTP,
-			RbaacServiceError.USER_ACCOUNT_LOCKED })
+			RbaacServiceError.USER_ACCOUNT_LOCKED, RbaacServiceError.INVALID_PARTNER_OTP })
 	public AmxApiResponse<EmployeeDetailsDTO, Object> authoriseUser(UserAuthorisationReqDTO reqDto);
 
 	/**
 	 * Gets the all permissions.
 	 *
-	 * @param ipAddr
-	 *            the ip addr
-	 * @param deviceId
-	 *            the device id
+	 * @param ipAddr   the ip addr
+	 * @param deviceId the device id
 	 * @return the all permissions
 	 */
 	@RbaacApiStatus({ RbaacServiceError.INCOMPATIBLE_DATA_TYPE })
@@ -140,10 +145,8 @@ public interface IRbaacService {
 	/**
 	 * Gets the all roles.
 	 *
-	 * @param ipAddr
-	 *            the ip addr
-	 * @param deviceId
-	 *            the device id
+	 * @param ipAddr   the ip addr
+	 * @param deviceId the device id
 	 * @return the all roles
 	 */
 	@RbaacApiStatus({})
@@ -152,8 +155,7 @@ public interface IRbaacService {
 	/**
 	 * Save role.
 	 *
-	 * @param roleRequestDTO
-	 *            the role request DTO
+	 * @param roleRequestDTO the role request DTO
 	 * @return the amx api response
 	 */
 	@RbaacApiStatus({ RbaacServiceError.INVALID_ROLE, RbaacServiceError.DUPLICATE_ROLE,
@@ -164,12 +166,9 @@ public interface IRbaacService {
 	/**
 	 * Gets the user role mappings for branch.
 	 *
-	 * @param countryBranchId
-	 *            the country branch id
-	 * @param ipAddr
-	 *            the ip addr
-	 * @param deviceId
-	 *            the device id
+	 * @param countryBranchId the country branch id
+	 * @param ipAddr          the ip addr
+	 * @param deviceId        the device id
 	 * @return the user role mappings for branch
 	 */
 	@RbaacApiStatus({})
@@ -179,8 +178,7 @@ public interface IRbaacService {
 	/**
 	 * Update user role mappings.
 	 *
-	 * @param urmRequestDTO
-	 *            the urm request DTO
+	 * @param urmRequestDTO the urm request DTO
 	 * @return the amx api response
 	 */
 	@RbaacApiStatus({ RbaacServiceError.INVALID_USER_ROLE_MAPPINGS,
@@ -190,8 +188,7 @@ public interface IRbaacService {
 	/**
 	 * Update employee account details.
 	 *
-	 * @param employeeDTO
-	 *            the employee DTO
+	 * @param employeeDTO the employee DTO
 	 * @return the amx api response
 	 */
 	@RbaacApiStatus({})
@@ -211,10 +208,10 @@ public interface IRbaacService {
 	 * @return the amx api response
 	 */
 	public AmxApiResponse<String, Object> testPost();
-	
-	
+
 	/**
 	 * registers new device
+	 * 
 	 * @param request
 	 * @return
 	 * 
@@ -224,13 +221,14 @@ public interface IRbaacService {
 
 	/**
 	 * activates device
+	 * 
 	 * @param deviceRegId mandatory
-	 * @param mOtp optional
+	 * @param mOtp        optional
 	 * @return
 	 * 
 	 */
 	@RbaacApiStatus({ RbaacServiceError.CLIENT_NOT_FOUND })
-	public  AmxApiResponse<BoolRespModel, Object> activateDevice(Integer deviceRegId, String mOtp);
+	public AmxApiResponse<BoolRespModel, Object> activateDevice(Integer deviceRegId, String mOtp);
 
 	/**
 	 * @param deviceRegId
@@ -238,36 +236,39 @@ public interface IRbaacService {
 	 * 
 	 */
 	@RbaacApiStatus(RbaacServiceError.CLIENT_NOT_FOUND)
-	public  AmxApiResponse<BoolRespModel, Object> deactivateDevice(Integer deviceRegId);
+	public AmxApiResponse<BoolRespModel, Object> deactivateDevice(Integer deviceRegId);
 
 	/**
 	 * creates session
+	 * 
 	 * @param deviceRegId
 	 * @param paireToken
 	 * @return
 	 * 
 	 */
-	public  AmxApiResponse<DevicePairOtpResponse, Object> createDeviceSession(Integer deviceRegId, String paireToken);
+	public AmxApiResponse<DevicePairOtpResponse, Object> createDeviceSession(Integer deviceRegId, String paireToken);
 
 	/**
 	 * pair device session
+	 * 
 	 * @param deviceType
 	 * @param countryBranchSystemInventoryId
 	 * @param otp
 	 * @return
 	 * 
 	 */
-	public  AmxApiResponse<DevicePairOtpResponse, BoolRespModel> pairDeviceSession(ClientType deviceType,
+	public AmxApiResponse<DevicePairOtpResponse, BoolRespModel> pairDeviceSession(ClientType deviceType,
 			Integer countryBranchSystemInventoryId, String otp);
 
 	/**
 	 * validates device session token
+	 * 
 	 * @param deviceRegId
 	 * @param deviceSessionToken
 	 * @return
 	 * 
 	 */
-	public  AmxApiResponse<DevicePairOtpResponse, Object> validateDeviceSessionToken(BigDecimal deviceRegId,
+	public AmxApiResponse<DevicePairOtpResponse, Object> validateDeviceSessionToken(BigDecimal deviceRegId,
 			String deviceSessionToken);
 
 	/**
@@ -277,12 +278,16 @@ public interface IRbaacService {
 	 * @return device registration id
 	 * 
 	 */
-	public  AmxApiResponse<BigDecimal, Object> getDeviceRegIdByBranchInventoryId(ClientType deviceClientType,
+	public AmxApiResponse<BigDecimal, Object> getDeviceRegIdByBranchInventoryId(ClientType deviceClientType,
 			BigDecimal countryBranchSystemInventoryId);
-	
-	
+
 	@RbaacApiStatus({})
 	public AmxApiResponse<RoleMappingForEmployee, Object> getRoleMappingsForEmployee(BigDecimal employeeId,
 			String ipAddr, String deviceId, Boolean filterRole);
+
+	AmxApiResponse<BoolRespModel, Object> createEmployeeSystemMapping(BigDecimal employeeId,
+			BigDecimal countryBranchSystemInventoryId);
+
+	public AmxApiResponse<NotpDTO, Object> verifyOTP(NotpDTO notpDTO);
 
 }

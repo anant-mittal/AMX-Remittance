@@ -33,11 +33,11 @@ public class UserValidationOmn implements CustomerValidation {
 		List<CustomerIdProof> idProofs = idproofDao.getCustomerIdProofs(custId);
 		for (CustomerIdProof idProof : idProofs) {
 			if (!idProof.getIdentityExpiryDate().after(new Date())) {
-				throw new GlobalException("Identity proof are expired", JaxError.ID_PROOF_EXPIRED);
+				throw new GlobalException(JaxError.ID_PROOF_EXPIRED, "Identity proof are expired");
 			}
 		}
 		if (idProofs.isEmpty()) {
-			throw new GlobalException("ID proofs not available, contact branch", JaxError.NO_ID_PROOFS_AVAILABLE);
+			throw new GlobalException(JaxError.NO_ID_PROOFS_AVAILABLE, "ID proofs not available, contact branch");
 		}
 	}
 
@@ -50,6 +50,9 @@ public class UserValidationOmn implements CustomerValidation {
 	}
 
 	public boolean isValid(String civilId) {
+		if (civilId.startsWith("0")) {
+			return false;
+		}
 		if (civilId.length() >= 4 && civilId.length() <= 12) {
 			return true;
 		}
@@ -60,7 +63,7 @@ public class UserValidationOmn implements CustomerValidation {
 	public void validateEmailId(String emailId) {
 		List<Customer> list = customerRepo.getCustomerByEmailId(emailId);	
 		if (list != null && list.size()!=0) {
-			throw new GlobalException("Email Id already exist", JaxError.ALREADY_EXIST_EMAIL);
+			throw new GlobalException(JaxError.ALREADY_EXIST_EMAIL, "Email Id already exist");
 		}
 		
 	}
@@ -69,7 +72,7 @@ public class UserValidationOmn implements CustomerValidation {
 	public void validateDuplicateMobile(String mobileNo) {
 		List<Customer> list = customerRepo.getCustomerByMobileCheck(mobileNo);
 		if (list != null && list.size()!=0) {
-			throw new GlobalException("Mobile Number already exist", JaxError.ALREADY_EXIST_MOBILE);
+			throw new GlobalException(JaxError.ALREADY_EXIST_MOBILE, "Mobile Number already exist");
 		}
 		
 	}

@@ -2,10 +2,6 @@ package com.amx.jax.model.request;
 
 import java.math.BigDecimal;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
-
 import com.amx.jax.model.response.fx.AddressTypeDto;
 /** this model represents customer shipping address **/
 public class CustomerShippingAddressRequestModel {
@@ -15,23 +11,20 @@ public class CustomerShippingAddressRequestModel {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	@NotNull(message="Country Id may not be null")
 	private BigDecimal countryId;
 
-	@NotNull(message="State Id may not be null")
 	private BigDecimal stateId;
 
-	@NotNull(message="District Id may not be null")
 	private BigDecimal districtId;
 
-	@NotNull(message="Mobile may not be null")
-	@Pattern(regexp = "^[1-8]\\d*$",message="Invalid Mobile No")
-	@Size(min = 8)	
+	//@NotNull(message="Mobile may not be null")
+	//@Pattern(regexp = "^[1-9]\\d*$",message="Invalid Mobile No")
+	//@Size(min = 8)	
 	private String mobile;
 
 	/** country telephone prefix */
-	@NotNull(message="telPrefix may not be null")
-	@Pattern(regexp = "^[1-9]\\d*$",message="Invalid Tele Prefix")
+	//@NotNull(message="telPrefix may not be null")
+	//@Pattern(regexp = "^[1-9]\\d*$",message="Invalid Tele Prefix")
 	private String telPrefix;
 	
 	String block;
@@ -39,11 +32,13 @@ public class CustomerShippingAddressRequestModel {
 	String flatNo;
 	String buildingNo;
 	private BigDecimal cityId;
-	private String modelType;
 	private BigDecimal areaCode;
 	private String addressType;
 	private AddressTypeDto addressTypeDto;
-
+	private BigDecimal govermentId;
+	private BigDecimal govermentAreaId;
+	
+	
 	public BigDecimal getCountryId() {
 		return countryId;
 	}
@@ -157,6 +152,22 @@ public class CustomerShippingAddressRequestModel {
 
 	public void setAddressTypeDto(AddressTypeDto addressTypeDto) {
 		this.addressTypeDto = addressTypeDto;
+	}
+
+	public BigDecimal getGovermentId() {
+		return govermentId;
+	}
+
+	public void setGovermentId(BigDecimal govermentId) {
+		this.govermentId = govermentId;
+	}
+
+	public BigDecimal getGovermentAreaId() {
+		return govermentAreaId;
+	}
+
+	public void setGovermentAreaId(BigDecimal govermentAreaId) {
+		this.govermentAreaId = govermentAreaId;
 	}
 
 	

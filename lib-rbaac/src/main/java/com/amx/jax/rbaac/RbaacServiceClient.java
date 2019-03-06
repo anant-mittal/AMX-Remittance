@@ -20,6 +20,7 @@ import com.amx.jax.rbaac.dto.DeviceDto;
 import com.amx.jax.rbaac.dto.DevicePairOtpResponse;
 import com.amx.jax.rbaac.dto.request.DeviceRegistrationRequest;
 import com.amx.jax.rbaac.dto.request.EmployeeDetailsRequestDTO;
+import com.amx.jax.rbaac.dto.request.NotpDTO;
 import com.amx.jax.rbaac.dto.request.RoleRequestDTO;
 import com.amx.jax.rbaac.dto.request.UserAuthInitReqDTO;
 import com.amx.jax.rbaac.dto.request.UserAuthorisationReqDTO;
@@ -236,6 +237,16 @@ public class RbaacServiceClient implements IRbaacService {
 	}
 
 	@Override
+	public AmxApiResponse<NotpDTO, Object> verifyOTP(NotpDTO reqDTO) {
+		LOGGER.debug("verify OTP");
+		String url = appConfig.getAuthURL() + ApiEndPoints.NOTP_VERIFY;
+		return restService.ajax(url).post(reqDTO)
+				.as(new ParameterizedTypeReference<AmxApiResponse<NotpDTO, Object>>() {
+				});
+
+	}
+
+	@Override
 	public AmxApiResponse<DeviceDto, Object> registerNewDevice(DeviceRegistrationRequest request) {
 		LOGGER.debug("in registerNewDevice");
 		String url = appConfig.getAuthURL() + ApiEndPoints.DEVICE_REG;
@@ -316,6 +327,18 @@ public class RbaacServiceClient implements IRbaacService {
 				.queryParam("employeeId", employeeId).queryParam("ipAddress", ipAddress)
 				.queryParam("deviceId", deviceId).queryParam("filterRole", filterRole).post()
 				.as(new ParameterizedTypeReference<AmxApiResponse<RoleMappingForEmployee, Object>>() {
+				});
+	}
+
+	@Override
+	public AmxApiResponse<BoolRespModel, Object> createEmployeeSystemMapping(BigDecimal employeeId,
+			BigDecimal countryBranchSystemInventoryId) {
+
+		LOGGER.debug("in createEmployeeSystemMapping");
+
+		return restService.ajax(appConfig.getAuthURL()).path(ApiEndPoints.EMPLOYEE_SYSTEM_MAPPING_CREATE)
+				.field(Params.EMPLOYEE_ID, employeeId).field(Params.TERMINAL_ID, countryBranchSystemInventoryId)
+				.postForm().as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
 				});
 	}
 

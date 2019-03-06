@@ -1,7 +1,6 @@
 package com.amx.jax.sso.server;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -94,7 +93,8 @@ public class SSOServerController {
 		map.put(SSOConstants.PARAM_SSO_LOGIN_URL, appConfig.getAppPrefix() + SSOConstants.SSO_LOGIN_URL_DO);
 		map.put(SSOConstants.PARAM_SSO_LOGIN_PREFIX, appConfig.getAppPrefix());
 		map.put(SSOConstants.SECURITY_CODE_KEY, ssoUser.getSelfSAC());
-		map.put(SSOConstants.PARTNER_SECURITY_CODE_KEY, ssoUser.getPartnerSAC());
+        map.put(SSOConstants.PARTNER_SECURITY_CODE_KEY, ssoUser.getPartnerSAC());
+        map.put(SSOConstants.ADAPTER_URL, sSOConfig.getAdapterUrl());
 		return map;
 	}
 
@@ -119,32 +119,6 @@ public class SSOServerController {
 		return JsonUtil.toJson(result);
 	}
 
-	/**
-	 * @deprecated do not use this
-	 * 
-	 * @param username
-	 * @param password
-	 * @param model
-	 * @param html
-	 * @return
-	 * @throws MalformedURLException
-	 * @throws URISyntaxException
-	 */
-	@Deprecated
-	@RequestMapping(value = SSOConstants.SSO_LOGIN_URL_HTML, method = RequestMethod.POST)
-	public String sendOTP(@RequestParam String username, @RequestParam String password, Model model,
-			@PathVariable(required = false, value = "htmlstep") @ApiParam(defaultValue = "DO") SSOAuthStep html)
-			throws MalformedURLException, URISyntaxException {
-		model.addAllAttributes(getModelMap());
-		if (sSOConfig.getAdminuser().equals(username) && sSOConfig.getAdminpass().equals(password)) {
-			return SSOConstants.REDIRECT + Urly.parse(sSOTranx.get().getAppUrl())
-					.queryParam(AppConstants.TRANX_ID_XKEY, AppContextUtil.getTranxId())
-					.queryParam(SSOConstants.PARAM_STEP, SSOAuthStep.DONE)
-					.queryParam(SSOConstants.PARAM_SOTP, sSOTranx.get().getAppToken()).getURL();
-		}
-		return SSOConstants.SSO_INDEX_PAGE;
-	}
-
 	@ApiDeviceHeaders
 	@ApiSSOStatus({ SSOServerCodes.AUTH_REQUIRED, SSOServerCodes.AUTH_DONE, SSOServerCodes.OTP_REQUIRED })
 	@RequestMapping(value = SSOConstants.SSO_LOGIN_URL_JSON, method = { RequestMethod.POST }, produces = {
@@ -156,9 +130,11 @@ public class SSOServerController {
 			@RequestParam(required = false) DeviceType deviceType,
 			@RequestParam(required = false) ClientType clientType,
 			@RequestParam(required = false, defaultValue = "SELF") LOGIN_TYPE loginType,
+			@RequestParam(required = false, value = SSOConstants.IS_RETURN) Boolean isReturn,
 			@RequestParam(required = false) Boolean redirect) throws URISyntaxException, IOException {
 
 		redirect = ArgUtil.parseAsBoolean(redirect, true);
+		isReturn = ArgUtil.parseAsBoolean(isReturn, false);
 
 		if (json == SSOAuthStep.DO) {
 			json = formdata.getStep();
@@ -231,7 +207,7 @@ public class SSOServerController {
 						ssoUser.getSelfSAC());
 
 				if (loginType == LOGIN_TYPE.ASSISTED) {
-					model.put("partnerMOtpPrefix", ssoUser.getSelfSAC());
+					model.put("partnerMOtpPrefix", ssoUser.getPartnerSAC());
 					adapterServiceClient.sendSACtoEmployee(ArgUtil.parseAsString(initResp.getPartnerEmployeeId()),
 							ssoUser.getPartnerSAC());
 				}
@@ -259,14 +235,18 @@ public class SSOServerController {
 				EmployeeDetailsDTO empDto = rbaacServiceClient.authoriseUser(auth).getResult();
 				sSOTranx.setUserDetails(empDto);
 
-				String redirectUrl = Urly.parse(sSOTranx.get().getAppUrl())
+				String redirectUrl = Urly.parse(
+						ArgUtil.ifNotEmpty(sSOTranx.get().getAppUrl(),
+								appConfig.getAppPrefix() + SSOConstants.APP_LOGIN_URL_DONE))
 						.queryParam(AppConstants.TRANX_ID_XKEY, AppContextUtil.getTranxId())
 						.queryParam(SSOConstants.PARAM_STEP, SSOAuthStep.DONE)
-						.queryParam(SSOConstants.PARAM_SOTP, sSOTranx.get().getAppToken()).getURL();
+						.queryParam(SSOConstants.PARAM_SOTP, sSOTranx.get().getAppToken())
+						.queryParam(SSOConstants.IS_RETURN, isReturn)
+						.getURL();
 				model.put(SSOConstants.PARAM_REDIRECT, redirectUrl);
 				result.setRedirectUrl(redirectUrl);
+				result.setStatusEnum(SSOServerCodes.AUTH_DONE);
 				if (redirect) {
-					result.setStatusEnum(SSOServerCodes.AUTH_DONE);
 					resp.setHeader("Location", redirectUrl);
 					resp.setStatus(302);
 				}

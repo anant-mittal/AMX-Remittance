@@ -16,8 +16,10 @@ public class ApiHeaderAnnotations {
 	@Retention(RetentionPolicy.RUNTIME)
 	@ApiMockParams({
 			@ApiMockParam(name = DeviceConstants.Keys.CLIENT_REG_KEY_XKEY, value = "Device Registration Id",
+					defaultValue = "99999999",
 					paramType = MockParamType.HEADER),
 			@ApiMockParam(name = DeviceConstants.Keys.CLIENT_REG_TOKEN_XKEY, value = "Device Registration Token",
+					defaultValue = "99999999",
 					paramType = MockParamType.HEADER) })
 	public @interface ApiDeviceHeaders {
 
@@ -27,8 +29,10 @@ public class ApiHeaderAnnotations {
 	@Retention(RetentionPolicy.RUNTIME)
 	@ApiMockParams({
 			@ApiMockParam(name = DeviceConstants.Keys.CLIENT_REG_KEY_XKEY, value = "Device Registration Id",
+					defaultValue = "99999999",
 					paramType = MockParamType.HEADER),
 			@ApiMockParam(name = DeviceConstants.Keys.CLIENT_REG_TOKEN_XKEY, value = "Device Registration Token",
+					defaultValue = "99999999",
 					paramType = MockParamType.HEADER),
 			@ApiMockParam(name = DeviceConstants.Keys.CLIENT_SESSION_TOKEN_XKEY, value = "Device Session Token",
 					paramType = MockParamType.HEADER),

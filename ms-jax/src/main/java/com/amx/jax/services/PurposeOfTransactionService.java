@@ -3,6 +3,7 @@ package com.amx.jax.services;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -232,6 +233,7 @@ public class PurposeOfTransactionService extends AbstractService {
 	private List<AdditionalBankDetailsViewDto> convertViewModel(List<AdditionalBankDetailsViewx> listAdditionaView) {
 		List<AdditionalBankDetailsViewDto> listView = new ArrayList<>();
 		listAdditionaView.forEach(viewModel -> listView.add(convertAddModelToDto(viewModel)));
+		Collections.sort(listView, new AdditionalBankDetailsViewDto.AdditionalBankDetailsViewDtoComparator());
 		return listView;
 	}
 

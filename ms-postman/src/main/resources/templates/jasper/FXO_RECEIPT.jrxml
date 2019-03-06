@@ -187,7 +187,7 @@
                                           pdfFontName="fonts/all/arial.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$F{tranx}.get("/fxOrderTrnxList/[0]/customerId") + " / " + $F{tranx}.get("/fxOrderTrnxList/[0]/customerName")]]>
+                                    <![CDATA[$F{tranx}.get("/fxOrderTrnxList/[0]/customerReference") + " / " + $F{tranx}.get("/fxOrderTrnxList/[0]/customerName")]]>
                                     </textFieldExpression>
                             </textField>
  
@@ -540,56 +540,11 @@
                         </frame>
                         <!--##################Location  END####################-->
                         
-                           <!--################## Phone No START####################-->
-                        <frame>
-                            <reportElement x="5" y="245" width="585" height="15"/>
-                            <staticText>
-                                <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "14" backcolor = "#FFFFFF" />
-                                <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
-                                <textElement />
-                                <text><![CDATA[]]></text>
-                            </staticText>
-                            <staticText>
-                                <reportElement x="0" y="3" width="185" height="15" isPrintWhenDetailOverflows="true"/>
-                                <textElement>
-                                    <font fontName="Arial" size="8" isItalic="true"
-                                          pdfFontName="fonts/all/arialbd.ttf"/>
-                                </textElement>
-                                <text><![CDATA[Phone No]]></text>
-                            </staticText>
-
-                            <textField isStretchWithOverflow="true">
-                                <reportElement x="100" y="4" width="485" height="15"
-                                               forecolor="#000000"
-                                               isPrintWhenDetailOverflows="true"/>
-                                <textElement textAlignment="Left">
-                                    <font fontName="Arial" size="8" isItalic="true"
-                                          pdfFontName="fonts/all/arial.ttf"/>
-                                </textElement>
-                                <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$F{tranx}.get("phoneNumber")]]>
-                                </textFieldExpression>
-                            </textField>
-
-                            <textField isStretchWithOverflow="true">
-                                <reportElement x="485" y="4" width="100" height="15"
-                                               forecolor="#000000"
-                                               isPrintWhenDetailOverflows="true"/>
-                                <textElement textAlignment="Right">
-                                    <font fontName="Arial" size="8" isItalic="true"
-                                          pdfFontName="fonts/all/arialbd.ttf"/>
-                                </textElement>
-                                <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$R{label.phoneNo}]]>
-                                </textFieldExpression>
-                            </textField>
-
-                        </frame>
-                        <!--##################Location / Phone No END####################-->
+                         
                         
  						   <!--##################Receipt No START####################-->
                         <frame>
-                            <reportElement x="5" y="260" width="585" height="15"/>
+                            <reportElement x="5" y="245" width="585" height="15"/>
                             <staticText>
                                 <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "14" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
@@ -637,7 +592,7 @@
                         
                           <!--##################Date START####################-->
                         <frame>
-                            <reportElement x="5" y="275" width="585" height="15"/>
+                            <reportElement x="5" y="260" width="585" height="15"/>
                             <staticText>
                                 <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "14" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
@@ -683,7 +638,7 @@
                         <!--##################Date END####################-->
                          <!--##################Foreign Currency Details START####################-->
                         <frame>
-                            <reportElement x="5" y="290" width="585" height="15"/>
+                            <reportElement x="5" y="275" width="585" height="15"/>
                             <staticText>
                                 <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "14" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.1" lineColor = "#000000" /></box>
@@ -713,26 +668,14 @@
                                 </textFieldExpression>
                             </textField>
                             
-                             <textField isStretchWithOverflow="true">
-                                <reportElement x="485" y="4" width="100" height="15"
-                                               forecolor="#000000"
-                                               isPrintWhenDetailOverflows="true"/>
-                                <textElement textAlignment="Right">
-                                    <font fontName="Arial" size="8" isItalic="true"
-                                          pdfFontName="fonts/all/arialbd.ttf"/>
-                                </textElement>
-                                <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$R{label.foreignCurDetails}]]>
-                                </textFieldExpression>
-                            </textField>
-
+                            
                         </frame>
                         <!--##################Foreign Currency Details END####################-->
                         
                         
                            <!--##################Foreign Currency Exchange START####################-->
                         <frame>
-                            <reportElement x="5" y="305" width="585" height="15"/>
+                            <reportElement x="5" y="290" width="585" height="15"/>
                             <staticText>
                                 <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "14" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
@@ -781,7 +724,7 @@
                           
                          <!--##################Sale Amount####################-->
                         <frame>
-                            <reportElement x="5" y="320" width="585" height="15"/>
+                            <reportElement x="5" y="305" width="585" height="15"/>
                             <staticText>
                                 <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "14" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
@@ -829,7 +772,7 @@
  					
                          <!--##################Exchange Rate START####################-->
                         <frame>
-                            <reportElement x="5" y="335" width="585" height="15"/>
+                            <reportElement x="5" y="320" width="585" height="15"/>
                             <staticText>
                                 <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "14" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
@@ -876,7 +819,7 @@
                         
                         <!--##################Purchase Amount START####################-->
                         <frame>
-                            <reportElement x="5" y="350" width="585" height="15"/>
+                            <reportElement x="5" y="335" width="585" height="15"/>
                             <staticText>
                                 <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "14" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
@@ -924,7 +867,7 @@
                         
                           <!--##################Delivery Charges START####################-->
                         <frame>
-                            <reportElement x="5" y="365" width="585" height="15"/>
+                            <reportElement x="5" y="350" width="585" height="15"/>
                             <staticText>
                                 <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "14" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
@@ -971,7 +914,7 @@
                         
                          <!--##################Net Amount START####################-->
                         <frame>
-                            <reportElement x="5" y="380" width="585" height="15"/>
+                            <reportElement x="5" y="365" width="585" height="15"/>
                             <staticText>
                                 <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "14" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
@@ -1018,7 +961,7 @@
                         
                           <!--#################Source of Income START####################-->
                         <frame>
-                            <reportElement x="5" y="395" width="585" height="15"/>
+                            <reportElement x="5" y="380" width="585" height="15"/>
                             <staticText>
                                 <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "14" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
@@ -1065,7 +1008,7 @@
                         
                         <!--#################Purpose of Transaction START####################-->
                         <frame>
-                            <reportElement x="5" y="410" width="585" height="15"/>
+                            <reportElement x="5" y="395" width="585" height="15"/>
                             <staticText>
                                 <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "14" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
@@ -1112,7 +1055,7 @@
                         
                          <!--#################Country of Travel START####################-->
                         <frame>
-                            <reportElement x="5" y="425" width="585" height="15"/>
+                            <reportElement x="5" y="410" width="585" height="15"/>
                             <staticText>
                                 <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "14" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
@@ -1159,7 +1102,7 @@
                         
                           <!--#################Travel Date Range START####################-->
                         <frame>
-                            <reportElement x="5" y="440" width="585" height="15"/>
+                            <reportElement x="5" y="425" width="585" height="15"/>
                             <staticText>
                                 <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "14" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.1" lineColor = "#000000" /></box>
@@ -1207,7 +1150,7 @@
                       
                          <!--##################Payment Details START####################-->
                         <frame>
-                            <reportElement x="5" y="455" width="585" height="14"/>
+                            <reportElement x="5" y="440" width="585" height="14"/>
                             <staticText>
                                 <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "14" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
@@ -1255,7 +1198,7 @@
 
               		 <!--##################Amount Paid START####################-->
                         <frame>
-                            <reportElement x="5" y="470" width="585" height="15"/>
+                            <reportElement x="5" y="455" width="585" height="15"/>
                             <staticText>
                                 <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "14" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
@@ -1303,7 +1246,7 @@
 
                         <!--##################Amount Refund START####################-->
                         <frame>
-                            <reportElement x="5" y="485" width="585" height="15"/>
+                            <reportElement x="5" y="470" width="585" height="15"/>
                             <staticText>
                                 <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "14" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
@@ -1351,7 +1294,7 @@
                        
                         <!--##################Net Paid Amount START####################-->
                         <frame>
-                            <reportElement x="5" y="500" width="585" height="15"/>
+                            <reportElement x="5" y="485" width="585" height="15"/>
                             <staticText>
                                 <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "14" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
@@ -1399,7 +1342,7 @@
                         
                 <!--################## paymentMode START####################-->
                         <frame>
-                            <reportElement x="5" y="515" width="585" height="45"/>
+                            <reportElement x="5" y="500" width="585" height="45"/>
                             <staticText>
                                 <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "14" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
@@ -1450,7 +1393,7 @@
                         
  				 <!--################## Approved No START####################-->
                         <frame>
-                            <reportElement x="5" y="530" width="585" height="45"/>
+                            <reportElement x="5" y="515" width="585" height="45"/>
                             <staticText>
                                 <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "14" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
@@ -1500,7 +1443,7 @@
                         
                          <!--##################Transaction Id START####################-->
                         <frame>
-                            <reportElement x="5" y="545" width="585" height="45"/>
+                            <reportElement x="5" y="530" width="585" height="45"/>
                             <staticText>
                                 <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "14" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
@@ -1513,7 +1456,7 @@
                                     <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
-                                <text><![CDATA[Transaction Id ]]></text>
+                                <text><![CDATA[K-NET Transaction ID ]]></text>
                             </staticText>
 
                             <textField isStretchWithOverflow="true">
@@ -1549,7 +1492,7 @@
                         
                          <!--##################K-NET Receipt Date Time START####################-->
                         <frame>
-                            <reportElement x="5" y="560" width="585" height="45"/>
+                            <reportElement x="5" y="545" width="585" height="45"/>
                             <staticText>
                                 <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "14" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
@@ -1599,7 +1542,7 @@
                         
                             <!--##################Customer Name  START####################-->
                         <frame>
-                            <reportElement x="5" y="575" width="585" height="15"/>
+                            <reportElement x="5" y="560" width="585" height="15"/>
                             <staticText>
                                 <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "14" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
@@ -1649,7 +1592,7 @@
                     
                      <!--##################Customer Signature START####################-->
                         <frame>
-                            <reportElement x="5" y="590" width="585" height="45"/>
+                            <reportElement x="5" y="575" width="585" height="45"/>
                             <staticText>
                                 <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "44" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>

@@ -16,12 +16,26 @@ public class SSOConfig {
 	@Value("${amx.server.password}")
 	String adminpass;
 
+	@Value("${adapter.url}")
+	String adapterUrl;
+
+	@Value("${server.session.browser.persistent}")
+	boolean browserSessionPersist;
+
+	public String getAdapterUrl() {
+		return adapterUrl;
+	}
+
 	public String getAdminuser() {
 		return adminuser;
 	}
 
 	public String getAdminpass() {
 		return adminpass;
+	}
+
+	public boolean isBrowserSessionPersist() {
+		return browserSessionPersist;
 	}
 
 }
