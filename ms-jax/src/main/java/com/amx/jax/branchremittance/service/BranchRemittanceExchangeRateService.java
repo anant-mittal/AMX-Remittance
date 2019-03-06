@@ -56,6 +56,7 @@ public class BranchRemittanceExchangeRateService {
 			routingResponseDto = branchRoutingManager.getRoutingSetup(requestApplModel);
 		}
 		result.setRoutingResponseDto(routingResponseDto);
-		return AmxApiResponse.build(result);
+		Object flexFields = branchRemittanceExchangeRateManager.fetchFlexFields(routingResponseDto, request);
+		return AmxApiResponse.build(result, flexFields);
 	}
 }
