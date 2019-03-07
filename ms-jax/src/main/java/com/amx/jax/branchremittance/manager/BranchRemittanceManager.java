@@ -52,8 +52,10 @@ import com.amx.jax.model.response.remittance.AmlCheckResponseDto;
 import com.amx.jax.model.response.remittance.BranchExchangeRateBreakup;
 import com.amx.jax.model.response.remittance.RoutingResponseDto;
 import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeRateResponse;
+import com.amx.jax.repository.BankMasterRepository;
 import com.amx.jax.repository.IAccountTypeFromViewDao;
 import com.amx.jax.repository.IAdditionalBankRuleAmiecRepository;
+import com.amx.jax.repository.IBankMasterFromViewDao;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.ICollectionDetailRepository;
 import com.amx.jax.repository.ICurrencyDao;
@@ -171,6 +173,10 @@ public class BranchRemittanceManager extends AbstractModel {
 	@Autowired
 	BranchRoutingManager branchRoutingManager;
 	
+
+	@Autowired
+	BankMasterRepository bankMasterDao;
+	
 	
 	
 	public void checkingStaffIdNumberWithCustomer() {
@@ -244,10 +250,25 @@ public class BranchRemittanceManager extends AbstractModel {
 	
 	public void beneAddCheck(BenificiaryListView beneficaryDetails) {
 		BeneficiaryListDTO checkdto = beneCheckService.beneCheck(convertBeneModelToDto(beneficaryDetails));
+		
+		String iBanFlag = null;
 		if(checkdto!=null) {
 			if(checkdto.getBeneficiaryErrorStatus()!=null && checkdto.getBeneficiaryErrorStatus().size()>0) {
 				throw new GlobalException(checkdto.getBeneficiaryErrorStatus().get(0).getErrorCode(),checkdto.getBeneficiaryErrorStatus().get(0).getErrorDesc());
 			}
+		}
+		
+		BankMasterModel bankMaster = bankService.getBankById(beneficaryDetails.getBankId());
+		if(bankMaster!=null) {
+			iBanFlag = bankMaster.getIbanFlag();
+		}
+		if (ConstantDocument.Yes.equalsIgnoreCase(iBanFlag) && StringUtils.isBlank(beneficaryDetails.getIbanNumber())) {
+			throw new GlobalException(JaxError.BANK_IBAN_EMPTY," IBAN account number shoulnot be blank for Banking channel .Please contact branch for update");
+		}
+		
+		
+		if(!JaxUtil.isNullZeroBigDecimalCheck(beneficaryDetails.getMapSequenceId())) {
+			throw new GlobalException(JaxError.BENE_MAP_SEQ_MISSING,"Beneficairy map seq is missing , please update beneficiray");
 		}
 		
 		

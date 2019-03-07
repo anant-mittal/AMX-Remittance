@@ -257,7 +257,8 @@ public enum JaxError implements IExceptionEnum {
 	INVALID_PAIR_ID,
 	ID_TYPE_LENGTH_NOT_DEFINED,
 	INVENTORY_ID_NOT_EXISTS,
-	AMOUNT_VALIDATION;
+	AMOUNT_VALIDATION,
+	BENE_MAP_SEQ_MISSING;
 
 	@Deprecated
 	public String getCode() {

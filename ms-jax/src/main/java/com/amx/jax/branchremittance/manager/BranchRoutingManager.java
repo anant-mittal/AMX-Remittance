@@ -40,6 +40,7 @@ import com.amx.jax.model.response.remittance.RoutingBankDto;
 import com.amx.jax.model.response.remittance.RoutingBranchDto;
 import com.amx.jax.model.response.remittance.RoutingResponseDto;
 import com.amx.jax.model.response.remittance.RoutingServiceDto;
+import com.amx.jax.repository.BankMasterRepository;
 import com.amx.jax.repository.CountryRepository;
 import com.amx.jax.repository.IAccountTypeFromViewDao;
 import com.amx.jax.repository.IBankBranchView;
@@ -168,6 +169,11 @@ public class BranchRoutingManager {
 
 	@Autowired
 	IViewRemittanceMode remittanceModeRepository;
+	
+	
+	@Autowired
+	BranchRemittanceManager branceRemittanceManager;
+	
 
 	RoutingResponseDto routingResponseDto = new RoutingResponseDto();
 
@@ -183,6 +189,8 @@ public class BranchRoutingManager {
 
 			Map<String, Object> inputValues = getBeneMapSet(beneRelaId);
 			String serviceGroupCode = inputValues.get("P_SERVICE_GROUP_CODE").toString();
+			
+			
 
 			logger.debug("output :" + inputValues.toString());
 			if (serviceGroupCode.equalsIgnoreCase(ConstantDocument.SERVICE_GROUP_CODE_CASH)) {
@@ -202,7 +210,8 @@ public class BranchRoutingManager {
 				BigDecimal remittanceId = (BigDecimal) outPut.get("P_REMITTANCE_MODE_ID");
 				BigDecimal deliveryId = (BigDecimal) outPut.get("P_DELIVERY_MODE_ID");
 				BigDecimal routingcountryId = (BigDecimal) outPut.get("P_ROUTING_COUNTRY_ID");
-
+				inputValues.put("P_SERVICE_MASTER_ID",serviceMasterId);
+				
 				if (serviceMasterId.compareTo(BigDecimal.ZERO) != 0) {
 					List<RoutingServiceDto> listOfService = new ArrayList<>();
 					listOfService.add(getServiceDto(serviceMasterId));
@@ -215,7 +224,7 @@ public class BranchRoutingManager {
 						rout.setResourceName(countryMasterView.get(0).getCountryName());
 						routCount.add(rout);
 						routingResponseDto.setRoutingCountrydto(routCount);
-
+						inputValues.put("P_ROUTING_COUNTRY_ID",countryMasterView.get(0).getCountryId());
 						if (routingBankId.compareTo(BigDecimal.ZERO) > 0) {
 							List<RoutingBankDto> lisOfRoutingBank = new ArrayList<>();
 							lisOfRoutingBank.add(getRoutingBankDto(routingBankId));
@@ -462,11 +471,13 @@ public class BranchRoutingManager {
 
 	public Map<String, Object> getBeneMapSet(BigDecimal beneRelaId) {
 		BenificiaryListView beneficaryDetails = beneficiaryRepository.findBybeneficiaryRelationShipSeqId(beneRelaId);
-
 		if (beneficaryDetails == null) {
 			throw new GlobalException(JaxError.BENEFICIARY_LIST_NOT_FOUND, "Beneficairy not found " + beneRelaId);
 
 		}
+		
+		branceRemittanceManager.beneAddCheck(beneficaryDetails);
+		
 		Map<String, Object> inputValues = new HashMap<>();
 
 		inputValues.put("P_USER_TYPE", ConstantDocument.BRANCH);
