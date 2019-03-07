@@ -23,10 +23,20 @@ public class BranchRemittanceApplRequestModel extends RemittanceAdditionalBeneFi
 
 	private BigDecimal deliveryModeId;
 
+	public BranchRemittanceApplRequestModel() {
+		super();
+	}
 	
-	
-	
-	
+	public BranchRemittanceApplRequestModel(IRemittanceApplicationParams getExchangeRateRequest) {
+		this.beneId = getExchangeRateRequest.getBeneficiaryRelationshipSeqIdBD();
+		this.routingBankId = getExchangeRateRequest.getCorrespondanceBankIdBD();
+		this.deliveryModeId = getExchangeRateRequest.getDeliveryModeIdBD();
+		this.foreignAmount = getExchangeRateRequest.getForeignAmountBD();
+		this.localAmount = getExchangeRateRequest.getLocalAmountBD();
+		this.remittanceModeId = getExchangeRateRequest.getRemitModeIdBD();
+		this.serviceMasterId = getExchangeRateRequest.getServiceIndicatorIdBD();
+	}
+
 	public BigDecimal getSourceOfFund() {
 		return sourceOfFund;
 	}

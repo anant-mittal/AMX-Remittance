@@ -126,7 +126,7 @@ public class RemitBranchController {
 	@RequestMapping(value = "/api/remitt/tranxrate", method = { RequestMethod.POST })
 	public AmxApiResponse<BranchRemittanceGetExchangeRateResponse, Object> bnfcryCheck(
 			@RequestBody BranchRemittanceGetExchangeRateRequest request) {
-		return AmxApiResponse.buildList(branchRemittanceClient.getExchaneRate(request).getResults());
+		return branchRemittanceClient.getExchaneRate(request);
 	}
 
 	@RequestMapping(value = "/api/remitt/save", method = { RequestMethod.POST })
@@ -255,5 +255,32 @@ public class RemitBranchController {
 		// else {
 		// return JsonUtil.toJson(wrapper);
 		// }
+	}
+
+	@RequestMapping(value = "/api/remitt/tranx/email", method = { RequestMethod.GET })
+	public AmxApiResponse<BoolRespModel, Object> sendEmail(
+			@RequestParam(required = false) BigDecimal collectionDocumentNo,
+			@RequestParam(required = false) BigDecimal documentNumber,
+			@RequestParam(required = false) BigDecimal documentFinanceYear,
+			@RequestParam(required = false) BigDecimal collectionDocumentFinYear,
+			@RequestParam(required = false) BigDecimal collectionDocumentCode,
+			@RequestParam(required = false) BigDecimal customerReference, @RequestParam("ext") File.Type ext,
+			@RequestParam(required = false) Boolean duplicate) throws PostManException, IOException {
+
+		TransactionHistroyDTO tranxDTO = new TransactionHistroyDTO();
+		tranxDTO.setCollectionDocumentNo(collectionDocumentNo);
+		tranxDTO.setDocumentNumber(documentNumber);
+		tranxDTO.setDocumentFinanceYear(documentFinanceYear);
+		tranxDTO.setCollectionDocumentFinYear(collectionDocumentFinYear);
+		tranxDTO.setCollectionDocumentCode(collectionDocumentCode);
+		tranxDTO.setCustomerReference(customerReference);
+
+		RemittanceReceiptSubreport rspt = remitClient
+				.report(tranxDTO, !duplicate.booleanValue(), branchMetaOutFilter.exportMeta()).getResult();
+		AmxApiResponse<RemittanceReceiptSubreport, Object> wrapper = AmxApiResponse.buildData(rspt);
+
+		AmxApiResponse<BoolRespModel, Object> resp = new AmxApiResponse<BoolRespModel, Object>();
+		return resp;
+
 	}
 }

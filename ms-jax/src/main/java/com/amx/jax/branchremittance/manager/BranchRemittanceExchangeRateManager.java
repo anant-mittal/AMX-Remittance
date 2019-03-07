@@ -1,6 +1,9 @@
 package com.amx.jax.branchremittance.manager;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -14,6 +17,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.amxlib.model.JaxConditionalFieldDto;
 import com.amx.amxlib.model.response.ExchangeRateResponseModel;
 import com.amx.amxlib.util.JaxValidationUtil;
 import com.amx.jax.dbmodel.BenificiaryListView;
@@ -21,17 +25,21 @@ import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.exrateservice.service.JaxDynamicPriceService;
 import com.amx.jax.manager.RemittanceTransactionManager;
+import com.amx.jax.manager.remittance.RemittanceAdditionalFieldManager;
 import com.amx.jax.manager.remittance.RemittanceApplicationParamManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.remittance.AbstractRemittanceApplicationRequestModel;
 import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.request.remittance.IRemittanceApplicationParams;
+import com.amx.jax.model.request.remittance.RemittanceAdditionalBeneFieldModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.model.response.remittance.BranchExchangeRateBreakup;
+import com.amx.jax.model.response.remittance.RoutingResponseDto;
 import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeRateResponse;
 import com.amx.jax.services.BeneficiaryService;
 import com.amx.jax.services.BeneficiaryValidationService;
 import com.amx.jax.userservice.service.UserService;
+import com.amx.jax.validation.RemittanceTransactionRequestValidator;
 
 import static com.amx.amxlib.constant.ApplicationProcedureParam.*;
 
@@ -57,6 +65,10 @@ public class BranchRemittanceExchangeRateManager {
 	Map<String, Object> remitApplParametersMap;
 	@Autowired
 	UserService userService;
+	@Autowired
+	RemittanceAdditionalFieldManager remittanceAdditionalFieldManager;
+	@Autowired
+	RemittanceTransactionRequestValidator remittanceTransactionRequestValidator;
 
 	public void validateGetExchangRateRequest(IRemittanceApplicationParams request) {
 
@@ -121,5 +133,25 @@ public class BranchRemittanceExchangeRateManager {
 			commission = newCommission;
 		}
 		return commission;
+	}
+
+	public Object fetchFlexFields(IRemittanceApplicationParams exchangeRateRequest) {
+		BranchRemittanceApplRequestModel branchRemittanceApplRequestModel = new BranchRemittanceApplRequestModel(exchangeRateRequest);
+		List<JaxConditionalFieldDto> flexFields = new ArrayList<>();
+		try {
+			remittanceAdditionalFieldManager.validateAdditionalFields(branchRemittanceApplRequestModel, remitApplParametersMap);
+		} catch (GlobalException ex) {
+			if (ex.getMeta() != null) {
+				flexFields.addAll((Collection<? extends JaxConditionalFieldDto>) ex.getMeta());
+			}
+		}
+		try {
+			remittanceTransactionRequestValidator.validateFlexFields(branchRemittanceApplRequestModel, remitApplParametersMap);
+		} catch (GlobalException ex) {
+			if (ex.getMeta() != null) {
+				flexFields.addAll((Collection<? extends JaxConditionalFieldDto>) ex.getMeta());
+			}
+		}
+		return flexFields;
 	}
 }

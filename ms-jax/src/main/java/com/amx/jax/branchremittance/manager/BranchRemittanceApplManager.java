@@ -216,7 +216,7 @@ public class BranchRemittanceApplManager {
 		 remittanceTransactionRequestValidator.validateExchangeRate(requestApplModel, exchangeRateResposne);
 		 remittanceTransactionRequestValidator.validateFlexFields(requestApplModel, remitApplParametersMap);
 		 remittanceAdditionalFieldManager.validateAdditionalFields(requestApplModel, remitApplParametersMap);
-		// remittanceAdditionalFieldManager.processAdditionalFields(requestApplModel); for testing purpose we blocked
+		 remittanceAdditionalFieldManager.processAdditionalFields(requestApplModel); 
 
 		 
 		 logger.debug("branchExchangeRate :"+exchangeRateResposne);
@@ -286,7 +286,7 @@ public class BranchRemittanceApplManager {
 		RemittanceApplication remittanceApplication = new RemittanceApplication();
 		try {
 			
-			String signature = getCustomerSignature();
+			String signature =getCustomerSignature();
 
 			if(!StringUtils.isBlank(signature)) {
 				try {
