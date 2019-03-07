@@ -135,7 +135,7 @@ public class BranchRemittanceExchangeRateManager {
 		return commission;
 	}
 
-	public Object fetchFlexFields(RoutingResponseDto routingResponseDto, IRemittanceApplicationParams exchangeRateRequest) {
+	public Object fetchFlexFields(IRemittanceApplicationParams exchangeRateRequest) {
 		BranchRemittanceApplRequestModel branchRemittanceApplRequestModel = new BranchRemittanceApplRequestModel(exchangeRateRequest);
 		List<JaxConditionalFieldDto> flexFields = new ArrayList<>();
 		try {
