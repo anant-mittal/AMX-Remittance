@@ -54,29 +54,29 @@
         },
         {
           "match_phrase": {
-            "rSrc.keyword": {
-              "query": "[[${rSrc}]]"
+            "xrate.src.keyword": {
+              "query": "[[${xrate.src}]]"
             }
           }
         },
         {
           "match_phrase": {
-            "rType.keyword": {
-              "query": "[[${rType}]]"
+            "xrate.rateType.keyword": {
+              "query": "[[${xrate.rateType}]]"
             }
           }
         },
         {
           "match_phrase": {
-            "rDomCur.keyword": {
-              "query": "[[${rDomCur}]]"
+            "xrate.domCur.keyword": {
+              "query": "[[${xrate.domCur}]]"
             }
           }
         },
         {
           "match_phrase": {
-            "rForCur.keyword": {
-             "query": "[[${rForCur}]]"
+            "xrate.forCur.keyword": {
+             "query": "[[${xrate.forCur}]]"
             }
           }
         }

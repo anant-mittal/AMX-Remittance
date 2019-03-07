@@ -48,8 +48,9 @@ public class SnapApiController implements ISnapService {
 	@Override
 	@ResponseBody
 	@RequestMapping(value = Path.SNAP_API_XRATE_SELL_TRANSFER, method = RequestMethod.GET)
-	public SnapModelWrapper getXRateStats(@RequestParam StatsSpan graph, @RequestParam Currency forCur,
-			@RequestParam Currency domCur) {
+	public SnapModelWrapper getXRateStats(@RequestParam StatsSpan graph,
+			@RequestParam(defaultValue = "INR") Currency forCur,
+			@RequestParam(defaultValue = "KWD") Currency domCur) {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("lte", "now");
 
@@ -75,10 +76,10 @@ public class SnapApiController implements ISnapService {
 			params.put("interval", "1d");
 			break;
 		}
-		params.put("rSrc", "AMX");
-		params.put("rType", "SELL_TRNSFR");
-		params.put("rForCur", forCur);
-		params.put("rDomCur", domCur);
+		params.put("xrate.src", RateSource.AMX.toString());
+		params.put("xrate.rateType", RateType.SELL_TRNSFR.toString());
+		params.put("xrate.forCur", forCur);
+		params.put("xrate.domCur", domCur);
 		return snapQueryService.execute(SnapQueryTemplate.XRATE_SELL_TRANSFER, params);
 	}
 
