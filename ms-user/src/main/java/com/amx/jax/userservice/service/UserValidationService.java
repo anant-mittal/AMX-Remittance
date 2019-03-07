@@ -726,7 +726,7 @@ public class UserValidationService {
 			throw new GlobalException(JaxError.CUSTOMER_NOT_ACTIVE_BRANCH,
 					"Customer not active in branch, go to branch ");
 		}
-		validateBlockedCustomerForOnlineReg(customer);
+		// validateBlockedCustomerForOnlineReg(customer);
 	}
 	
 	private void validateBlockedCustomerForOnlineReg(Customer customer) {
