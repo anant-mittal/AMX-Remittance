@@ -72,6 +72,8 @@ public class RbaacServiceClient implements IRbaacService {
 				userAuthInitReqDTO.getEmployeeNo(), userAuthInitReqDTO.getIdentity(), ipAddr,
 				AppContextUtil.getTraceId());
 
+		LOGGER.info("Auth URL ==>  " + appConfig.getAuthURL());
+
 		return restService.ajax(appConfig.getAuthURL()).path(ApiEndPoints.INIT_AUTH).post(userAuthInitReqDTO)
 				.as(new ParameterizedTypeReference<AmxApiResponse<UserAuthInitResponseDTO, Object>>() {
 				});
@@ -240,9 +242,8 @@ public class RbaacServiceClient implements IRbaacService {
 	public AmxApiResponse<NotpDTO, Object> verifyOTP(NotpDTO reqDTO) {
 		LOGGER.debug("verify OTP");
 		String url = appConfig.getAuthURL() + ApiEndPoints.NOTP_VERIFY;
-		return restService.ajax(url).post(reqDTO)
-				.as(new ParameterizedTypeReference<AmxApiResponse<NotpDTO, Object>>() {
-				});
+		return restService.ajax(url).post(reqDTO).as(new ParameterizedTypeReference<AmxApiResponse<NotpDTO, Object>>() {
+		});
 
 	}
 
