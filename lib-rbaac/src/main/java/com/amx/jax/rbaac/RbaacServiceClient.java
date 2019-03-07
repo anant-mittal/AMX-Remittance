@@ -72,8 +72,6 @@ public class RbaacServiceClient implements IRbaacService {
 				userAuthInitReqDTO.getEmployeeNo(), userAuthInitReqDTO.getIdentity(), ipAddr,
 				AppContextUtil.getTraceId());
 
-		LOGGER.info("Auth URL ==>  " + appConfig.getAuthURL());
-
 		return restService.ajax(appConfig.getAuthURL()).path(ApiEndPoints.INIT_AUTH).post(userAuthInitReqDTO)
 				.as(new ParameterizedTypeReference<AmxApiResponse<UserAuthInitResponseDTO, Object>>() {
 				});
