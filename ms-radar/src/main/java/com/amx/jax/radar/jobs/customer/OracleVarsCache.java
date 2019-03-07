@@ -57,13 +57,19 @@ public class OracleVarsCache extends CacheBox<String> {
 	}
 
 	public String getTranxIndex() {
-		return EsConfig.indexName("oracle-" + DOC_VERSION + "-tranx-v4");
+		return EsConfig.indexName(DBSyncJobs.TRANSACTION_JOB.getIndexName());
 	}
 
 	public String getCustomerIndex() {
-		return EsConfig.indexName("oracle-" + DOC_VERSION + "-customer-v4");
+		return EsConfig.indexName(DBSyncJobs.CUSTOMER_JOB.getIndexName());
 	}
 
+	/**
+	 * Index to write data into
+	 * 
+	 * @param job
+	 * @return
+	 */
 	public String getIndex(DBSyncJobs job) {
 		return EsConfig.indexName(job.getIndexName());
 	}

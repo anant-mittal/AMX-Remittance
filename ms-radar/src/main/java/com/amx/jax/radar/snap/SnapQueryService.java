@@ -60,6 +60,7 @@ public class SnapQueryService {
 				EsConfig.indexName(index) + "/_search").post(query)
 				.asMap();
 		// x.put("aggs", query.get("aggs"));
+		System.out.println(JsonUtil.toJson(query));
 		return new SnapModelWrapper(x);
 	}
 
