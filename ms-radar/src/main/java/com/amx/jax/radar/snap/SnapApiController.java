@@ -76,10 +76,10 @@ public class SnapApiController implements ISnapService {
 			params.put("interval", "1d");
 			break;
 		}
-		params.put("xrate.src", RateSource.AMX.toString());
-		params.put("xrate.rateType", RateType.SELL_TRNSFR.toString());
-		params.put("xrate.forCur", forCur);
-		params.put("xrate.domCur", domCur);
+		params.put("xrate_src", RateSource.AMX.toString());
+		params.put("xrate_rateType", RateType.SELL_TRNSFR.toString());
+		params.put("xrate_forCur", forCur);
+		params.put("xrate_domCur", domCur);
 		return snapQueryService.execute(SnapQueryTemplate.XRATE_SELL_TRANSFER, params);
 	}
 

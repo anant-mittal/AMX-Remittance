@@ -48,35 +48,35 @@
         {
           "match_phrase": {
             "_type": {
-              "query": "currate"
+              "query": "xrate"
             }
           }
         },
         {
           "match_phrase": {
             "xrate.src.keyword": {
-              "query": "[[${xrate.src}]]"
+              "query": "[[${xrate_src}]]"
             }
           }
         },
         {
           "match_phrase": {
             "xrate.rateType.keyword": {
-              "query": "[[${xrate.rateType}]]"
+              "query": "[[${xrate_rateType}]]"
             }
           }
         },
         {
           "match_phrase": {
             "xrate.domCur.keyword": {
-              "query": "[[${xrate.domCur}]]"
+              "query": "[[${xrate_domCur}]]"
             }
           }
         },
         {
           "match_phrase": {
             "xrate.forCur.keyword": {
-             "query": "[[${xrate.forCur}]]"
+             "query": "[[${xrate_forCur}]]"
             }
           }
         }
