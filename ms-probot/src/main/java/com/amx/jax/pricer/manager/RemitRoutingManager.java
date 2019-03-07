@@ -97,19 +97,21 @@ public class RemitRoutingManager {
 		// Compute the Correct Zone Date and Time of Block Delivery BEGIN
 		ZonedDateTime beginZonedDT = ZonedDateTime.ofInstant(epochInstant, zoneId);
 
-		List<HolidayListMasterModel> holidays;
 		if (!noHolidayLag) {
-			holidays = holidayListManager.getHoidaysForCountryAndDateRange(countryId,
+			List<HolidayListMasterModel> sortedHolidays = holidayListManager.getHoidaysForCountryAndDateRange(countryId,
 					Date.from(beginZonedDT.toInstant()), Date.from(beginZonedDT.plusMonths(2).toInstant()));
-		} else {
-			holidays = new ArrayList<HolidayListMasterModel>();
+
+			computeRequestTransientDataCache.setHolidaysForCountry(countryId, sortedHolidays);
+
 		}
 
-		System.out.println("######## Zonned Date Now ==> " + beginZonedDT);
+		WorkingHoursData workingHoursData = this.computeWorkMatrix(weekFrom, weekTo, weekHrsFrom, weekHrsTo,
+				weekEndFrom, weekEndTo, weekEndHrsFrom, weekEndHrsTo, processTimeInHrs);
 
-		System.out.println(" Current Day of week ==> " + beginZonedDT.getDayOfWeek().getValue());
+		workingHoursData.setProcessTimeInHrs(processTimeInHrs.doubleValue());
 
-		System.out.println(" Current Day Ordinal ==> " + beginZonedDT.getDayOfWeek().ordinal());
+		ZonedDateTime goodBusinessDT = this.getGoodBusinessDateTime(beginZonedDT, workingHoursData, countryId,
+				noHolidayLag);
 
 		return null;
 	}
@@ -121,14 +123,46 @@ public class RemitRoutingManager {
 		WorkingHoursData workingHoursData = new WorkingHoursData();
 
 		// Set Work Hours For the WeekDays.
-		//INvalid Days of week
-		
-		workingHoursData.setWorkHrsThroughArabicDoW(weekFrom.intValue(), weekTo.intValue(), weekHrsFrom.intValue(),
-				weekHrsTo.intValue());
-		
-		
+		if (DateUtil.isValidDayOfWeek(weekFrom.intValue()) && DateUtil.isValidDayOfWeek(weekTo.intValue())) {
+			workingHoursData.setWorkHrsThroughArabicDoW(weekFrom.intValue(), weekTo.intValue(), weekHrsFrom.intValue(),
+					weekHrsTo.intValue());
+		}
+
+		// Set Work Hours For the WeekEnd.
+		if (DateUtil.isValidDayOfWeek(weekEndFrom.intValue()) && DateUtil.isValidDayOfWeek(weekEndTo.intValue())) {
+			workingHoursData.setWorkHrsThroughArabicDoW(weekEndFrom.intValue(), weekEndTo.intValue(),
+					weekEndHrsFrom.intValue(), weekEndHrsTo.intValue());
+		}
 
 		return workingHoursData;
+	}
+
+	private ZonedDateTime getGoodBusinessDateTime(ZonedDateTime beginZonedDT, WorkingHoursData workHrsData,
+			BigDecimal countryId, boolean noHolidayLag) {
+
+		List<HolidayListMasterModel> sortedHolidays;
+
+		if (!noHolidayLag) {
+			sortedHolidays = computeRequestTransientDataCache.getHolidaysForCountryId(countryId);
+		} else {
+			sortedHolidays = null;
+		}
+
+		int beginDayIndex = beginZonedDT.getDayOfWeek().getValue();
+
+		boolean isWorking = workHrsData.isWorkingDayTime(beginDayIndex,
+				DateUtil.getHrMinIntVal(beginZonedDT.getHour(), beginZonedDT.getMinute()));
+		
+		ZonedDateTime dPlusOne = 
+				
+		//System.out.println(" Date Now ==> " + beginZonedDT);
+
+		//System.out.println(" Work Matrix ==> " + JsonUtil.toJson(workHrsData));
+
+		//System.out.println(" Is Working ==> " + isWorking);
+
+		return null;
+
 	}
 
 }

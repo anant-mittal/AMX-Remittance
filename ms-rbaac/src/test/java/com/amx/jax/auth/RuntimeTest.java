@@ -44,48 +44,44 @@ public final class RuntimeTest {
 		System.out.println(" Date Now  ==>  "
 				+ DateUtil.formatDate(DateUtil.getCurrentDateWithTime("Indian/Mauritius"), "us", "24_hr"));
 
-		
-		
-		
-		ZoneId zoneId = ZoneId.of("Asia/Kuwait");
-		ZoneOffset offset = ZoneId.of("Asia/Kuwait").getRules().getOffset(Instant.now());
+		/*
+		 * ******** TimeZones ********** Asia/Kolkata Asia/Kuwait Asia/Karachi
+		 * America/New_York Asia/Singapore Australia/Sydney America/Los_Angeles
+		 */
+		ZoneId zoneId = ZoneId.of("America/Los_Angeles");
 
-		
-		LocalDateTime ldt = LocalDateTime.ofEpochSecond(System.currentTimeMillis(), 0, offset);
-		
 		ZonedDateTime zdt = ZonedDateTime.ofInstant(Instant.now(), zoneId);
-		
-		
+
+		System.out.println(" Hour ==>   " + zdt.getHour());
+
+		System.out.println(" Minutes ==>   " + zdt.getMinute());
+
+		System.out.println(" Hour Minutes ==>   " + (zdt.getHour() * 100 + zdt.getMinute()));
+
 		BigDecimal bd = new BigDecimal("0.00000000093933");
-		
-		//BigDecimal bd = new BigDecimal("9.3933000000E-10");
-		
-		System.out.println("\n\n Big Decimal ==>" +  bd.toPlainString()+" : "+ RoundUtil.round(bd.doubleValue(), 20) + "\n\n");
-		
-		System.out.println(" Local Date 1 ==> " + ldt.toString());
-		
+
+		// BigDecimal bd = new BigDecimal("9.3933000000E-10");
+
+		System.out.println(
+				"\n\n Big Decimal ==>" + bd.toPlainString() + " : " + RoundUtil.round(bd.doubleValue(), 20) + "\n\n");
+
 		System.out.println(" Zone Date 1 ==> " + zdt);
-		
-		
+
 		System.out.println("\n\n Local Date Now ==> " + LocalDateTime.now());
-		
+
 		System.out.println(" Zone Date Now ==> " + ZonedDateTime.now());
-		
-		
-		//ZoneId zoneId = ZoneId.of("Indian/Mauritius");
-		
-		
-		//System.out.println(" Zone Id ==>" + zoneId.getId() +" : " + zoneId.getAvailableZoneIds());
-		
+
+		// ZoneId zoneId = ZoneId.of("Indian/Mauritius");
+
+		// System.out.println(" Zone Id ==>" + zoneId.getId() +" : " +
+		// zoneId.getAvailableZoneIds());
+
 		System.out.println(" Hour ==>" + Calendar.getInstance().get(Calendar.HOUR_OF_DAY));
-		
+
 		System.out.println(" Hour ==>" + Calendar.getInstance().get(Calendar.MINUTE));
-		
-		
+
 		NavigableMap<Integer, String> map = new TreeMap<Integer, String>();
-		
-		
-		
+
 		map.put(12, "a");
 		map.put(11, "b");
 		map.put(10, "c");
@@ -98,13 +94,11 @@ public final class RuntimeTest {
 		map.put(3, "a");
 		map.put(2, "a");
 		map.put(1, "a");
-		
+
 		Map<Integer, String> subMap = map.subMap(3, true, 10, true);
-		
-		System.out.println(" Sub Map ==> "+ JsonUtil.toJson(subMap));
-		
-		
-		
+
+		System.out.println(" Sub Map ==> " + JsonUtil.toJson(subMap));
+
 		if (true)
 			return;
 

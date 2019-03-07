@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.amx.jax.pricer.dbmodel.HolidayListMasterModel;
 import com.amx.jax.pricer.dbmodel.OnlineMarginMarkup;
 import com.amx.jax.pricer.dbmodel.ViewExGLCBAL;
 import com.amx.jax.pricer.dto.BankDetailsDTO;
@@ -23,8 +24,10 @@ public class ComputeRequestTransientDataCache {
 	private Map<BigDecimal, BigDecimal> bankGLCBALAvgRateMap = new HashMap<BigDecimal, BigDecimal>();
 
 	private OnlineMarginMarkup margin;
-	
-	private List<RoutingTransientDataComputationObject> routingMatrixData; 
+
+	private List<RoutingTransientDataComputationObject> routingMatrixData;
+
+	private Map<BigDecimal, List<HolidayListMasterModel>> countryHolidays = new HashMap<BigDecimal, List<HolidayListMasterModel>>();
 
 	private Map<String, Object> info = new HashMap<String, Object>();
 
@@ -74,6 +77,26 @@ public class ComputeRequestTransientDataCache {
 
 	public void setInfo(Map<String, Object> info) {
 		this.info = info;
+	}
+
+	public List<RoutingTransientDataComputationObject> getRoutingMatrixData() {
+		return routingMatrixData;
+	}
+
+	public void setRoutingMatrixData(List<RoutingTransientDataComputationObject> routingMatrixData) {
+		this.routingMatrixData = routingMatrixData;
+	}
+
+	public Map<BigDecimal, List<HolidayListMasterModel>> getCountryHolidays() {
+		return countryHolidays;
+	}
+
+	public List<HolidayListMasterModel> getHolidaysForCountryId(BigDecimal countryId) {
+		return countryHolidays.get(countryId);
+	}
+
+	public void setHolidaysForCountry(BigDecimal countryId, List<HolidayListMasterModel> holidayList) {
+		countryHolidays.put(countryId, holidayList);
 	}
 
 	/**

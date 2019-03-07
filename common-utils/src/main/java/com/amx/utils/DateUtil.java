@@ -7,6 +7,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.SimpleTimeZone;
@@ -675,6 +676,14 @@ public final class DateUtil {
 		return sdf.parse(oldString).getTime();
 	}
 
+	public static ZonedDateTime getNextZonedDay(ZonedDateTime curDateTime) {
+
+		ZonedDateTime dPlusOne = curDateTime.plusDays(1);
+
+		return dPlusOne.withHour(0).withMinute(0).withSecond(0).withNano(0);
+
+	}
+
 	/**
 	 * Converts ArabicDayOfWeek to ISO-DayOfWeek
 	 * 
@@ -738,6 +747,12 @@ public final class DateUtil {
 			return true;
 
 		return false;
+	}
+
+	public static int getHrMinIntVal(int hourOfDay, int minOfHr) {
+
+		return hourOfDay * 100 + minOfHr;
+
 	}
 
 }

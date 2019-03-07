@@ -105,7 +105,7 @@ public class WorkingHoursData {
 		if (!isWorkWeek)
 			return false;
 
-		for (int i = 0; i <= workWeek.length; i++) {
+		for (int i = 0; i < workWeek.length; i++) {
 			if (true == workWeek[i]) {
 				workTimeFromInHrsMins[i] = workTimeFrom;
 				workTimeToInHrsMins[i] = workTimeTo;
@@ -114,6 +114,19 @@ public class WorkingHoursData {
 
 		return true;
 
+	}
+
+	public boolean isWorkingDay(int dayOfWeekIndex) {
+		return DateUtil.isValidDayOfWeek(dayOfWeekIndex) ? this.workWeek[dayOfWeekIndex - 1] : false;
+	}
+
+	public boolean isWorkingDayTime(int dayOfWeekIndex, int compareToTime) {
+		if (isWorkingDay(dayOfWeekIndex)) {
+			return (workTimeFromInHrsMins[dayOfWeekIndex - 1] <= compareToTime
+					&& workTimeToInHrsMins[dayOfWeekIndex - 1] > compareToTime) ? true : false;
+		}
+
+		return false;
 	}
 
 }

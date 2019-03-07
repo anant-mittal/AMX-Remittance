@@ -147,42 +147,48 @@ public class PricingService {
 
 		List<ViewExRoutingMatrix> routingMatrix = remitRoutingManager.getRoutingMatrixForRemittance(dprRequestDto);
 
-		ViewExRoutingMatrix oneMatrix = routingMatrix.get(0);
-		
+		for (ViewExRoutingMatrix oneMatrix : routingMatrix) {
+
+			remitRoutingManager.getEstimatedBlockDelivery(System.currentTimeMillis(), "Australia/Sydney",
+					oneMatrix.getWeekFrom(), oneMatrix.getWeekTo(), oneMatrix.getWeekHoursFrom(),
+					oneMatrix.getWeekHoursTo(), oneMatrix.getWeekendFrom(), oneMatrix.getWeekendTo(),
+					oneMatrix.getWeekendHoursFrom(), oneMatrix.getWeekendHoursTo(), oneMatrix.getDelievryMinutes(),
+					Boolean.FALSE, oneMatrix.getRoutingCountryId());
+
+		}
 		/*
-		 * ******** TimeZones **********
-		 * Asia/Kolkata
-		 * Asia/Kuwait
-		 * Asia/Karachi
-		 * America/New_York
-		 * Asia/Singapore
-		 * Australia/Sydney
-		 * America/Los_Angeles
+		 * ******** TimeZones ********** Asia/Kolkata Asia/Kuwait Asia/Karachi
+		 * America/New_York Asia/Singapore Australia/Sydney America/Los_Angeles
 		 * 
 		 */
 
-		remitRoutingManager.getEstimatedBlockDelivery(System.currentTimeMillis(), "Asia/Kolkata", 
-				oneMatrix.getWeekFrom(), oneMatrix.getWeekTo(), oneMatrix.getWeekHoursFrom(), oneMatrix.getWeekHoursTo(), 
-				oneMatrix.getWeekendFrom(), oneMatrix.getWeekendTo(), oneMatrix.getWeekendHoursFrom(), oneMatrix.getWeekendHoursTo(),
-				oneMatrix.getDelievryMinutes(), Boolean.FALSE, oneMatrix.getRoutingCountryId());
-		
-		
-		remitRoutingManager.getEstimatedBlockDelivery(System.currentTimeMillis(), "Asia/Kuwait", 
-				oneMatrix.getWeekFrom(), oneMatrix.getWeekTo(), oneMatrix.getWeekHoursFrom(), oneMatrix.getWeekHoursTo(), 
-				oneMatrix.getWeekendFrom(), oneMatrix.getWeekendTo(), oneMatrix.getWeekendHoursFrom(), oneMatrix.getWeekendHoursTo(),
-				oneMatrix.getDelievryMinutes(), Boolean.FALSE, oneMatrix.getRoutingCountryId());
-		
-		remitRoutingManager.getEstimatedBlockDelivery(System.currentTimeMillis(), "America/New_York", 
-				oneMatrix.getWeekFrom(), oneMatrix.getWeekTo(), oneMatrix.getWeekHoursFrom(), oneMatrix.getWeekHoursTo(), 
-				oneMatrix.getWeekendFrom(), oneMatrix.getWeekendTo(), oneMatrix.getWeekendHoursFrom(), oneMatrix.getWeekendHoursTo(),
-				oneMatrix.getDelievryMinutes(), Boolean.FALSE, oneMatrix.getRoutingCountryId());
-		
-		remitRoutingManager.getEstimatedBlockDelivery(System.currentTimeMillis(), "Australia/Sydney", 
-				oneMatrix.getWeekFrom(), oneMatrix.getWeekTo(), oneMatrix.getWeekHoursFrom(), oneMatrix.getWeekHoursTo(), 
-				oneMatrix.getWeekendFrom(), oneMatrix.getWeekendTo(), oneMatrix.getWeekendHoursFrom(), oneMatrix.getWeekendHoursTo(),
-				oneMatrix.getDelievryMinutes(), Boolean.FALSE, oneMatrix.getRoutingCountryId());
+		/*
+		 * remitRoutingManager.getEstimatedBlockDelivery(System.currentTimeMillis(),
+		 * "Asia/Kolkata", oneMatrix.getWeekFrom(), oneMatrix.getWeekTo(),
+		 * oneMatrix.getWeekHoursFrom(), oneMatrix.getWeekHoursTo(),
+		 * oneMatrix.getWeekendFrom(), oneMatrix.getWeekendTo(),
+		 * oneMatrix.getWeekendHoursFrom(), oneMatrix.getWeekendHoursTo(),
+		 * oneMatrix.getDelievryMinutes(), Boolean.FALSE,
+		 * oneMatrix.getRoutingCountryId());
+		 * 
+		 * 
+		 * remitRoutingManager.getEstimatedBlockDelivery(System.currentTimeMillis(),
+		 * "Asia/Kuwait", oneMatrix.getWeekFrom(), oneMatrix.getWeekTo(),
+		 * oneMatrix.getWeekHoursFrom(), oneMatrix.getWeekHoursTo(),
+		 * oneMatrix.getWeekendFrom(), oneMatrix.getWeekendTo(),
+		 * oneMatrix.getWeekendHoursFrom(), oneMatrix.getWeekendHoursTo(),
+		 * oneMatrix.getDelievryMinutes(), Boolean.FALSE,
+		 * oneMatrix.getRoutingCountryId());
+		 * 
+		 * remitRoutingManager.getEstimatedBlockDelivery(System.currentTimeMillis(),
+		 * "America/New_York", oneMatrix.getWeekFrom(), oneMatrix.getWeekTo(),
+		 * oneMatrix.getWeekHoursFrom(), oneMatrix.getWeekHoursTo(),
+		 * oneMatrix.getWeekendFrom(), oneMatrix.getWeekendTo(),
+		 * oneMatrix.getWeekendHoursFrom(), oneMatrix.getWeekendHoursTo(),
+		 * oneMatrix.getDelievryMinutes(), Boolean.FALSE,
+		 * oneMatrix.getRoutingCountryId());
+		 */
 
-		
 		List<BigDecimal> routingBankIds = routingMatrix.stream().map(rm -> rm.getRoutingBankId()).distinct()
 				.collect(Collectors.toList());
 
