@@ -81,15 +81,15 @@ public class AmanKuwaitJob extends ARadarTask {
 				trnsfrRate.setrType(RateType.SELL_TRNSFR);
 				trnsfrRate.setrRate(rates.getKdrate());
 
-				builder.update(oracleVarsCache.getIndex(DBSyncJobs.XRATE),
+				builder.update(oracleVarsCache.getIndex(DBSyncJobs.XRATE_JOB),
 						new OracleViewDocument(trnsfrRate));
 
 				AmxCurRate buyCash = trnsfrRate.clone(RateType.BUY_CASH, rates.getBuyrate());
-				builder.update(oracleVarsCache.getIndex(DBSyncJobs.XRATE),
+				builder.update(oracleVarsCache.getIndex(DBSyncJobs.XRATE_JOB),
 						new OracleViewDocument(buyCash));
 
 				AmxCurRate sellCash = trnsfrRate.clone(RateType.SELL_CASH, rates.getSellrate());
-				builder.update(oracleVarsCache.getIndex(DBSyncJobs.XRATE),
+				builder.update(oracleVarsCache.getIndex(DBSyncJobs.XRATE_JOB),
 						new OracleViewDocument(sellCash));
 			}
 			esRepository.bulk(builder.build());

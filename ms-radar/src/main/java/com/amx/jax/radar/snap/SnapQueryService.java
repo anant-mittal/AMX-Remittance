@@ -16,6 +16,7 @@ import com.amx.jax.client.snap.SnapModels.SnapModelWrapper;
 import com.amx.jax.client.snap.SnapQueryException;
 import com.amx.jax.radar.EsConfig;
 import com.amx.jax.rest.RestService;
+import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;
 
 /**
@@ -43,6 +44,9 @@ public class SnapQueryService {
 	public String buildQueryString(SnapQueryTemplate template, Map<String, Object> map) {
 		Locale locale = new Locale("en");
 		Context context = new Context(locale);
+		if (!map.containsKey("_type")) {
+			map.put("_type", template.getIndexName());
+		}
 		context.setVariables(map);
 		return this.processJson(template, context);
 	}

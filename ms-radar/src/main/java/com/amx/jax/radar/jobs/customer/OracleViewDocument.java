@@ -3,6 +3,7 @@ package com.amx.jax.radar.jobs.customer;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import com.amx.jax.client.snap.SnapConstants.SnapIndexName;
 import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.dict.UserClient.UserDeviceClient;
 import com.amx.jax.grid.views.BeneViewRecord;
@@ -25,14 +26,14 @@ public class OracleViewDocument extends AESDocument {
 	BeneViewRecord bene;
 
 	public OracleViewDocument(CustomerDetailViewRecord customer) {
-		super("customer");
+		super(SnapIndexName.CUSTOMER);
 		this.customer = customer;
 		this.id = "customer-" + ArgUtil.parseAsBigDecimal(customer.getId());
 		this.timestamp = ArgUtil.parseAsSimpleDate(customer.getLastUpdateDate());
 	}
 
 	public OracleViewDocument(TranxViewRecord trnx) {
-		super("trnx");
+		super(SnapIndexName.TRANX);
 		this.trnx = trnx;
 		this.id = "trnx-" + ArgUtil.parseAsBigDecimal(trnx.getId());
 		this.timestamp = ArgUtil.parseAsSimpleDate(trnx.getLastUpdateDate());
@@ -40,7 +41,7 @@ public class OracleViewDocument extends AESDocument {
 	}
 
 	public OracleViewDocument(AmxCurRate xrate) {
-		super("xrate");
+		super(SnapIndexName.XRATE);
 		this.xrate = xrate;
 		this.timestamp = ArgUtil.parseAsSimpleDate(xrate.getTimestamp());
 		this.id = ("xrate-" + xrate.getrSrc() + "-" + xrate.getrType().getCode() + "-" + xrate.getrForCur() + "-"

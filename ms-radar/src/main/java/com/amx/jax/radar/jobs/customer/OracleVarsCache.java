@@ -18,13 +18,11 @@ public class OracleVarsCache extends CacheBox<String> {
 	private static final String DESC_SEPERATOR = "-desc-";
 
 	public static final String DOC_VERSION = SnapConstants.DOC_VERSION;
-	private static final String CUSTOMER_RESET_COUNTER = "15";
-	private static final String TRANSACTION_RESET_COUNTER = "15";
 
 	public static enum DBSyncJobs {
-		CUSTOMER(SnapConstants.CUSTOMER, "v5", 15),
-		TRANSACTION(SnapConstants.TRANX, "v7", 15),
-		XRATE(SnapConstants.XRATE, "v5", 15);
+		CUSTOMER_JOB(SnapConstants.SnapIndexName.CUSTOMER, "v5", 15),
+		TRANSACTION_JOB(SnapConstants.SnapIndexName.TRANX, "v8", 15),
+		XRATE_JOB(SnapConstants.SnapIndexName.XRATE, "v5", 15);
 
 		String indexName;
 		int resetCounter;

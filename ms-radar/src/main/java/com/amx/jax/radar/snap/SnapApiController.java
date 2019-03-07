@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.amx.jax.client.snap.ISnapService;
+import com.amx.jax.client.snap.SnapConstants.SnapIndexName;
 import com.amx.jax.client.snap.SnapConstants.SnapQueryTemplate;
 import com.amx.jax.client.snap.SnapModels.SnapModelWrapper;
 import com.amx.jax.dict.Currency;
@@ -42,6 +43,7 @@ public class SnapApiController implements ISnapService {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("lte", "now");
 		params.put("gte", "now-5y");
+		params.put("_type", SnapIndexName.TRANX);
 		return snapQueryService.execute(SnapQueryTemplate.TRANX_DONE, params);
 	}
 
