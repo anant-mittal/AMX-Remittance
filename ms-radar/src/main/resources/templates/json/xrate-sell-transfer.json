@@ -10,7 +10,7 @@
       "aggs": {
         "rate": {
           "avg": {
-            "field": "rRate"
+            "field": "xrate.rate"
           }
         }
       }
