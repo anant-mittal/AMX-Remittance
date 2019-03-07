@@ -73,11 +73,13 @@ public class PricerServiceClient implements ProbotExchangeRateService, ProbotDat
 	}
 
 	@Override
-	public AmxApiResponse<DiscountDetailsReqRespDTO, Object> getDiscountManagemet(DiscountMgmtReqDTO discountMgmtReqDTO) {
+	public AmxApiResponse<DiscountDetailsReqRespDTO, Object> getDiscountManagemet(
+			DiscountMgmtReqDTO discountMgmtReqDTO) {
 		LOGGER.info("Get Discounted Mgmt Amount Slab : transaction Id: {}, with TraceId: {}",
 				AppContextUtil.getTranxId(), AppContextUtil.getTraceId());
 
-		return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.GET_DISCOUNT_DETAILS).post(discountMgmtReqDTO)
+		return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.GET_DISCOUNT_DETAILS)
+				.post(discountMgmtReqDTO)
 				.as(new ParameterizedTypeReference<AmxApiResponse<DiscountDetailsReqRespDTO, Object>>() {
 				});
 
@@ -88,12 +90,11 @@ public class PricerServiceClient implements ProbotExchangeRateService, ProbotDat
 			BigDecimal currencyId) {
 		LOGGER.info("Get Routing Banks and Services : transaction Id: {}, with TraceId: {}",
 				AppContextUtil.getTranxId(), AppContextUtil.getTraceId());
-		
-		return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.GET_ROUTBANKS_AND_SEVICES).
-				queryParam("countryId", countryId).queryParam("currencyId", currencyId).post()
+
+		return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.GET_ROUTBANKS_AND_SEVICES)
+				.queryParam("countryId", countryId).queryParam("currencyId", currencyId).post()
 				.as(new ParameterizedTypeReference<AmxApiResponse<RoutBanksAndServiceRespDTO, Object>>() {
 				});
-		
 
 	}
 
@@ -123,9 +124,10 @@ public class PricerServiceClient implements ProbotExchangeRateService, ProbotDat
 				});
 
 	}
-        
-        @Override
-	public AmxApiResponse<DiscountDetailsReqRespDTO, Object> saveDiscountDetails(DiscountDetailsReqRespDTO discountMgmtReqDTO) {
+
+	@Override
+	public AmxApiResponse<DiscountDetailsReqRespDTO, Object> saveDiscountDetails(
+			DiscountDetailsReqRespDTO discountMgmtReqDTO) {
 		LOGGER.info("Save Discount Management Details : transaction Id: {}, with TraceId: {}",
 				AppContextUtil.getTranxId(), AppContextUtil.getTraceId());
 
