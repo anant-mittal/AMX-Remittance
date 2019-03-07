@@ -126,7 +126,7 @@ public class RemitBranchController {
 	@RequestMapping(value = "/api/remitt/tranxrate", method = { RequestMethod.POST })
 	public AmxApiResponse<BranchRemittanceGetExchangeRateResponse, Object> bnfcryCheck(
 			@RequestBody BranchRemittanceGetExchangeRateRequest request) {
-		return AmxApiResponse.buildList(branchRemittanceClient.getExchaneRate(request).getResults());
+		return branchRemittanceClient.getExchaneRate(request);
 	}
 
 	@RequestMapping(value = "/api/remitt/save", method = { RequestMethod.POST })
