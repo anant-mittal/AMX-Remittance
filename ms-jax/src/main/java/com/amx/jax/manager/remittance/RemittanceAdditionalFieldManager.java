@@ -84,7 +84,7 @@ public class RemittanceAdditionalFieldManager {
 	}
 
 	private void setDefaultDataFromDb(List<JaxConditionalFieldDto> allJaxConditionalFields,
-			RemittanceTransactionRequestModel model) {
+			RemittanceAdditionalBeneFieldModel model) {
 		if (allJaxConditionalFields != null) {
 			BenificiaryListView beneficiaryDetail = beneficiaryService.getBeneByIdNo(model.getBeneId());
 			BeneficaryMaster beneficaryMaster = beneficiaryService
