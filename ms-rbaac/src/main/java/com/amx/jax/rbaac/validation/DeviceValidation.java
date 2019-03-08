@@ -78,13 +78,6 @@ public class DeviceValidation {
 		}
 	}
 	
-	public void validateDeviceRegIdndPairtoken(Integer deviceRegId,String paireToken) {
-		if(deviceRegId ==null || paireToken==null) {
-					throw new AuthServiceException("DeviceRegId or paireToken should not be blank");
-				}
-		
-	}
-
 	/**
 	 * validates device reg request
 	 * 
