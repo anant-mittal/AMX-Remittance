@@ -10,7 +10,7 @@
       "aggs": {
         "rate": {
           "avg": {
-            "field": "rRate"
+            "field": "xrate.rate"
           }
         }
       }
@@ -48,35 +48,35 @@
         {
           "match_phrase": {
             "_type": {
-              "query": "currate"
+              "query": "xrate"
             }
           }
         },
         {
           "match_phrase": {
-            "rSrc.keyword": {
-              "query": "[[${rSrc}]]"
+            "xrate.src.keyword": {
+              "query": "[[${xrate_src}]]"
             }
           }
         },
         {
           "match_phrase": {
-            "rType.keyword": {
-              "query": "[[${rType}]]"
+            "xrate.rateType.keyword": {
+              "query": "[[${xrate_rateType}]]"
             }
           }
         },
         {
           "match_phrase": {
-            "rDomCur.keyword": {
-              "query": "[[${rDomCur}]]"
+            "xrate.domCur.keyword": {
+              "query": "[[${xrate_domCur}]]"
             }
           }
         },
         {
           "match_phrase": {
-            "rForCur.keyword": {
-             "query": "[[${rForCur}]]"
+            "xrate.forCur.keyword": {
+             "query": "[[${xrate_forCur}]]"
             }
           }
         }

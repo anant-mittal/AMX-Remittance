@@ -1,5 +1,11 @@
 package com.amx.jax.branchremittance.manager;
 
+import static com.amx.amxlib.constant.ApplicationProcedureParam.P_DELIVERY_MODE_ID;
+import static com.amx.amxlib.constant.ApplicationProcedureParam.P_FOREIGN_CURRENCY_ID;
+import static com.amx.amxlib.constant.ApplicationProcedureParam.P_REMITTANCE_MODE_ID;
+import static com.amx.amxlib.constant.ApplicationProcedureParam.P_ROUTING_BANK_ID;
+import static com.amx.amxlib.constant.ApplicationProcedureParam.P_ROUTING_COUNTRY_ID;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;

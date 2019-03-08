@@ -95,7 +95,7 @@ public class AMXRatesJob extends ARadarTask {
 					trnsfrRate.setrRate(rate);
 					trnsfrRate.setrRate(BigDecimal.ONE.divide(rate, 12, RoundingMode.CEILING));
 					// System.out.println(JsonUtil.toJson(trnsfrRate));
-					builder.update(oracleVarsCache.getIndex(DBSyncJobs.XRATE),
+					builder.update(oracleVarsCache.getIndex(DBSyncJobs.XRATE_JOB),
 							new OracleViewDocument(trnsfrRate));
 				}
 			}

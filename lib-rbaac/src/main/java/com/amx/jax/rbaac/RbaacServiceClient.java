@@ -240,9 +240,8 @@ public class RbaacServiceClient implements IRbaacService {
 	public AmxApiResponse<NotpDTO, Object> verifyOTP(NotpDTO reqDTO) {
 		LOGGER.debug("verify OTP");
 		String url = appConfig.getAuthURL() + ApiEndPoints.NOTP_VERIFY;
-		return restService.ajax(url).post(reqDTO)
-				.as(new ParameterizedTypeReference<AmxApiResponse<NotpDTO, Object>>() {
-				});
+		return restService.ajax(url).post(reqDTO).as(new ParameterizedTypeReference<AmxApiResponse<NotpDTO, Object>>() {
+		});
 
 	}
 

@@ -18,10 +18,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.model.CustomerModel;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.BranchRemittancePaymentDao;
-import com.amx.jax.dbmodel.BanksView;
 import com.amx.jax.dbmodel.CurrencyMasterModel;
 import com.amx.jax.dbmodel.CurrencyWiseDenomination;
 import com.amx.jax.dbmodel.Customer;

@@ -39,7 +39,6 @@ import com.amx.jax.CustomerCredential;
 import com.amx.jax.ICustRegService;
 import com.amx.jax.amxlib.config.OtpSettings;
 import com.amx.jax.api.AmxApiResponse;
-import com.amx.jax.auditlog.CustomerAuditEvent;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constants.CustomerRegistrationType;
 import com.amx.jax.dal.ArticleDao;
@@ -601,31 +600,12 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		}
 	}
 
-	/*
-	 * private void revalidateOtp(OtpData otpData) { if (!otpData.isOtpValidated())
-	 * { throw new GlobalException("otp is not validated",
-	 * JaxError.OTP_NOT_VALIDATED); } }
-	 */
 
 	private Customer commitCustomer(com.amx.jax.model.request.CustomerPersonalDetail customerDetails,
 			CustomerEmploymentDetails customerEmploymentDetails) {
 		Customer customer = new Customer();
 		customer = customerRepository.getCustomerByCivilIdAndIsActive(customerDetails.getIdentityInt(),
 				customerDetails.getCountryId(), customerDetails.getIdentityTypeId());
-		/*
-		 * if (customer != null) { if (customer.getIdentityTypeId().equals(new
-		 * BigDecimal(198))) { throw new GlobalException(JaxError.EXISTING_CIVIL_ID,
-		 * "Customer Civil Id Already Exist"); } if
-		 * (customer.getIdentityTypeId().equals(new BigDecimal(204))) { throw new
-		 * GlobalException(JaxError.EXISTING_PASSPORT, "Passport Number Already Exist");
-		 * } if (customer.getIdentityTypeId().equals(new BigDecimal(201))) { throw new
-		 * GlobalException(JaxError.EXISTING_GCC_ID, "GCC ID Already Exist"); } if
-		 * (customer.getIdentityTypeId().equals(new BigDecimal(197))) { throw new
-		 * GlobalException(JaxError.EXISTING_BEDOUIN_ID, "BEDOUIN ID Already Exist"); }
-		 * 
-		 * }
-		 */
-		
 		if(customer == null) {
 			customer = new Customer();
 		}
@@ -687,13 +667,8 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		customer.setMedicalInsuranceInd(customerDetails.getInsurance());
 		if (customerDetails.getIdentityTypeId().toString().equals("204")) {
 			customer.setIdentityExpiredDate(customerDetails.getExpiryDate());
-			// commented by Prashant
-			//customer.setExpiryDate(customerDetails.getExpiryDate());
-			//customer.setIssueDate(customerDetails.getIssueDate());
 		} else {
 			customer.setIdentityExpiredDate(customerDetails.getExpiryDate());
-			//customer.setExpiryDate(null);
-			//customer.setIssueDate(null);
 		}
 		customer.setIdentityInt(customerDetails.getIdentityInt());
 		
@@ -704,7 +679,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 			customer.setFsIncomeRangeMaster(
 					articleDao.getIncomeRangeMasterByIncomeRangeId(customerEmploymentDetails.getIncomeRangeId()));
 		}
-
+		userValidationService.validateBlackListedCustomerForLogin(customer);
 		LOGGER.info("generated customer ref: {}", customerReference);
 		LOGGER.info("Createing new customer record, civil id- {}", customerDetails.getIdentityInt());
 		customerRepository.save(customer);

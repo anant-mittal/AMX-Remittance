@@ -424,6 +424,7 @@ public class BeneficiaryService extends AbstractService {
 			}
 
 			remitPageDto.setBeneficiaryDto(beneDto);
+			remitPageDto.setForCur(getCurrencyDTO(beneDto.getCurrencyId()));
 			if (trnxView != null) {
 				remitPageDto.setTrnxHistDto(convertTranHistDto(trnxView));
 			}

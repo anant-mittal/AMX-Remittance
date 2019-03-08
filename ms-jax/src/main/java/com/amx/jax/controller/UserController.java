@@ -2,7 +2,6 @@ package com.amx.jax.controller;
 
 import static com.amx.amxlib.constant.ApiEndpoint.USER_API_ENDPOINT;
 
-import static com.amx.amxlib.constant.ApiEndpoint.LINK_DEVICEID;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 
@@ -17,20 +16,13 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.amxlib.constant.ApiEndpoint.UserApi;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.UserFingerprintResponseModel;
-import com.amx.amxlib.model.UserIdentityModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.api.AmxApiResponse;
-import com.amx.jax.api.BoolRespModel;
-import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.userservice.service.UserValidationService;
 import com.amx.utils.Constants;
-import com.amx.utils.Random;
-
-import io.swagger.annotations.ApiParam;
-import springfox.documentation.annotations.ApiIgnore;
 
 @RestController
 @RequestMapping(USER_API_ENDPOINT)

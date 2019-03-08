@@ -1,6 +1,15 @@
 package com.amx.jax.manager.remittance;
 
-import java.math.BigDecimal;
+import static com.amx.amxlib.constant.ApplicationProcedureParam.P_APPLICATION_COUNTRY_ID;
+import static com.amx.amxlib.constant.ApplicationProcedureParam.P_CALCULATED_FC_AMOUNT;
+import static com.amx.amxlib.constant.ApplicationProcedureParam.P_DELIVERY_MODE_ID;
+import static com.amx.amxlib.constant.ApplicationProcedureParam.P_FC_AMOUNT;
+import static com.amx.amxlib.constant.ApplicationProcedureParam.P_FOREIGN_CURRENCY_ID;
+import static com.amx.amxlib.constant.ApplicationProcedureParam.P_LC_AMOUNT;
+import static com.amx.amxlib.constant.ApplicationProcedureParam.P_REMITTANCE_MODE_ID;
+import static com.amx.amxlib.constant.ApplicationProcedureParam.P_ROUTING_BANK_ID;
+import static com.amx.amxlib.constant.ApplicationProcedureParam.P_ROUTING_COUNTRY_ID;
+
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -10,11 +19,9 @@ import org.springframework.stereotype.Component;
 
 import com.amx.jax.dbmodel.BankMasterModel;
 import com.amx.jax.dbmodel.BenificiaryListView;
-import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.remittance.IRemittanceApplicationParams;
 import com.amx.jax.model.response.ExchangeRateBreakup;
 import com.amx.jax.services.BankService;
-import static com.amx.amxlib.constant.ApplicationProcedureParam.*;
 
 /**
  * @author Prashant

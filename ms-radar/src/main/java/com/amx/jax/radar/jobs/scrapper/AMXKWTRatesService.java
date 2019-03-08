@@ -58,7 +58,7 @@ public class AMXKWTRatesService extends AbstractDBSyncTask {
 	public void doTask(int lastPage, String lastId) {
 		LOGGER.info("Scrapper Task");
 
-		Long lastUpdateDateNow = oracleVarsCache.getStampStartTime(DBSyncJobs.XRATE);
+		Long lastUpdateDateNow = oracleVarsCache.getStampStartTime(DBSyncJobs.XRATE_JOB);
 		Long lastUpdateDateNowLimit = System.currentTimeMillis(); // lastUpdateDateNow + (20 * 365 *
 																	// AmxCurConstants.INTERVAL_DAYS);
 
@@ -102,7 +102,7 @@ public class AMXKWTRatesService extends AbstractDBSyncTask {
 						trnsfrRate.setTimestamp(ArgUtil.parseAsSimpleDate(xrate.getProcessDate()));
 						OracleViewDocument document = new OracleViewDocument(trnsfrRate);
 						lastIdNow = document.getId();
-						builder.update(oracleVarsCache.getIndex(DBSyncJobs.XRATE), document);
+						builder.update(oracleVarsCache.getIndex(DBSyncJobs.XRATE_JOB), document);
 					}
 				}
 			} catch (Exception e) {
@@ -120,13 +120,13 @@ public class AMXKWTRatesService extends AbstractDBSyncTask {
 
 		if (x.getResults().size() > 0) {
 			esRepository.bulk(builder.build());
-			oracleVarsCache.setStampStart(DBSyncJobs.XRATE, lastUpdateDateNow);
+			oracleVarsCache.setStampStart(DBSyncJobs.XRATE_JOB, lastUpdateDateNow);
 			if ((lastUpdateDateNowStart == lastUpdateDateNow)
 					|| (x.getResults().size() == PAGE_SIZE && lastPage < 10)) {
 				doTask(lastPage + 1, lastIdNow);
 			}
 		} else if (lastUpdateDateNowLimit < (System.currentTimeMillis() - AmxCurConstants.INTERVAL_DAYS)) {
-			oracleVarsCache.setStampStart(DBSyncJobs.XRATE, lastUpdateDateNowLimit);
+			oracleVarsCache.setStampStart(DBSyncJobs.XRATE_JOB, lastUpdateDateNowLimit);
 		}
 	}
 
