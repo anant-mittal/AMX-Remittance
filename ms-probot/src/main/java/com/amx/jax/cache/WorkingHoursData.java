@@ -100,22 +100,49 @@ public class WorkingHoursData {
 
 	}
 
-	public boolean setWorkHrsThroughArabicDoW(int arabicStartDay, int arabicEndDay, int workTimeFrom, int workTimeTo) {
+	public boolean setWorkHrsThroughArabicDoW(int arabicStartDay, int arabicEndDay, double workTimeFrom,
+			double workTimeTo) {
 
-		Boolean isWorkWeek = this.setWorkDaysThroughArabicDoW(arabicStartDay, arabicEndDay);
+		int parsedWorkTimeFrom = DateUtil.getHrMinIntVal(String.valueOf(workTimeFrom), "\\.");
+		int parsedWorkTimeTo = DateUtil.getHrMinIntVal(String.valueOf(workTimeTo), "\\.");
 
-		if (!isWorkWeek)
+		if (!isValidHrMin(parsedWorkTimeFrom) || !isValidHrMin(parsedWorkTimeTo)) {
+			return false;
+		}
+
+		// range Out of Bound
+		if (!DateUtil.isValidDayOfWeek(arabicStartDay) || !DateUtil.isValidDayOfWeek(arabicEndDay))
 			return false;
 
-		for (int i = 0; i < workWeek.length; i++) {
-			if (true == workWeek[i]) {
-				workTimeFromInHrsMins[i] = workTimeFrom;
-				workTimeToInHrsMins[i] = workTimeTo;
+		int startDay = DateUtil.arabicToISODayOfWeek(arabicStartDay);
+		int endDay = DateUtil.arabicToISODayOfWeek(arabicEndDay);
+
+		if (startDay <= endDay) {
+			// Case Where Range is Straight
+
+			for (int i = startDay - 1; i < endDay; i++) {
+				workWeek[i] = true;
+				workTimeFromInHrsMins[i] = parsedWorkTimeFrom;
+				workTimeToInHrsMins[i] = parsedWorkTimeTo;
 			}
+
+		} else {
+			// Case where Range is Circular-Reverse
+			for (int i = startDay - 1; i < 7; i++) {
+				workWeek[i] = true;
+				workTimeFromInHrsMins[i] = parsedWorkTimeFrom;
+				workTimeToInHrsMins[i] = parsedWorkTimeTo;
+			}
+
+			for (int i = 0; i < endDay; i++) {
+				workWeek[i] = true;
+				workTimeFromInHrsMins[i] = parsedWorkTimeFrom;
+				workTimeToInHrsMins[i] = parsedWorkTimeTo;
+			}
+
 		}
 
 		return true;
-
 	}
 
 	public boolean isWorkingDay(int dayOfWeekIndex) {

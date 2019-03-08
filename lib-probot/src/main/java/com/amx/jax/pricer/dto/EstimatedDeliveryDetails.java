@@ -1,6 +1,6 @@
 package com.amx.jax.pricer.dto;
 
-import java.util.Date;
+import java.time.ZonedDateTime;
 
 public class EstimatedDeliveryDetails {
 
@@ -14,9 +14,9 @@ public class EstimatedDeliveryDetails {
 
 	private long completionTT;
 
-	private Date completionDateLocal;
+	private ZonedDateTime completionDateLocal;
 
-	private Date completionDateForeign;
+	private ZonedDateTime completionDateForeign;
 
 	private String timezone;
 
@@ -60,19 +60,19 @@ public class EstimatedDeliveryDetails {
 		this.completionTT = completionTT;
 	}
 
-	public Date getCompletionDateLocal() {
+	public ZonedDateTime getCompletionDateLocal() {
 		return completionDateLocal;
 	}
 
-	public void setCompletionDateLocal(Date completionDateLocal) {
+	public void setCompletionDateLocal(ZonedDateTime completionDateLocal) {
 		this.completionDateLocal = completionDateLocal;
 	}
 
-	public Date getCompletionDateForeign() {
+	public ZonedDateTime getCompletionDateForeign() {
 		return completionDateForeign;
 	}
 
-	public void setCompletionDateForeign(Date completionDateForeign) {
+	public void setCompletionDateForeign(ZonedDateTime completionDateForeign) {
 		this.completionDateForeign = completionDateForeign;
 	}
 

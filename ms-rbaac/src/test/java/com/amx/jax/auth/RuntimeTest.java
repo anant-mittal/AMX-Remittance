@@ -72,10 +72,10 @@ public final class RuntimeTest {
 
 		System.out.println(
 				"Date String ==>  " + zdt.toString() + " Formatted Date String ==>  " + DateUtil.formatDateTime(zdt));
-		
+
 		System.out.println(
 				"Date String ==>  " + date2.toString() + " Formatted Date String ==>  " + DateUtil.formatDate(date2));
-		
+
 		BigDecimal bd = new BigDecimal("0.00000000093933");
 
 		// BigDecimal bd = new BigDecimal("9.3933000000E-10");
@@ -83,12 +83,30 @@ public final class RuntimeTest {
 		System.out.println(
 				"\n\n Big Decimal ==>" + bd.toPlainString() + " : " + RoundUtil.round(bd.doubleValue(), 20) + "\n\n");
 
+		zdt = DateUtil.getNextZonedDay(zdt);
+		
 		System.out.println(" Zone Date 1 ==> " + zdt);
 
-		System.out.println("\n\n Local Date Now ==> " + LocalDateTime.now());
+		System.out.println(" Zone Date + 0.25Hrs ==> " + zdt.plusMinutes((long) (0.25 * 60) % 60));
+		
+		System.out.println(" Zone Date + 1.25Hrs ==> " + zdt.plusMinutes((long) (1.25 * 60) % 60));
+		
+		System.out.println(" Zone Date + 1.30Hrs ==> " + zdt.plusMinutes((long) (1.30 * 60) % 60));
+		
+		System.out.println(" Zone Date + 1.50Hrs ==> " + zdt.plusMinutes((long) (1.50 * 60) % 60));
+		
+		
+		System.out.println("\n\n HourMin ==>" + DateUtil.getHrMinIntVal(23, 100));
+		
+		BigDecimal d = new BigDecimal(1000.100) ;
+		
+		System.out.println("\n\n HourMin Split ==>" + Math.round( d.doubleValue() % 1));
+		
 
-		System.out.println(" Zone Date Now ==> " + ZonedDateTime.now());
-
+		
+		
+		
+		
 		// ZoneId zoneId = ZoneId.of("Indian/Mauritius");
 
 		// System.out.println(" Zone Id ==>" + zoneId.getId() +" : " +

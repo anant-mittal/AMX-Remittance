@@ -86,8 +86,6 @@ public class RemitRoutingManager {
 			BigDecimal weekEndTo, BigDecimal weekEndHrsFrom, BigDecimal weekEndHrsTo, BigDecimal processTimeInHrs,
 			boolean noHolidayLag, BigDecimal countryId) {
 
-		EstimatedDeliveryDetails estimatedDeliveryDetails = new EstimatedDeliveryDetails();
-
 		// Get An instantaneous point on the time-line for EPOCH TT
 		Instant epochInstant = Instant.ofEpochMilli(startTT);
 
@@ -113,6 +111,14 @@ public class RemitRoutingManager {
 		ZonedDateTime goodBusinessDT = this.getGoodBusinessDateTime(beginZonedDT, workingHoursData, countryId,
 				noHolidayLag);
 
+		EstimatedDeliveryDetails estimatedDeliveryDetails = new EstimatedDeliveryDetails();
+
+		long procTimeInMin = Math.round(processTimeInHrs.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue() * 60);
+
+		goodBusinessDT = goodBusinessDT.plusMinutes(procTimeInMin);
+
+		System.out.println(" Estimated Delivery Date Time ===> " + goodBusinessDT);
+
 		return null;
 	}
 
@@ -124,15 +130,17 @@ public class RemitRoutingManager {
 
 		// Set Work Hours For the WeekDays.
 		if (DateUtil.isValidDayOfWeek(weekFrom.intValue()) && DateUtil.isValidDayOfWeek(weekTo.intValue())) {
-			workingHoursData.setWorkHrsThroughArabicDoW(weekFrom.intValue(), weekTo.intValue(), weekHrsFrom.intValue(),
-					weekHrsTo.intValue());
+			workingHoursData.setWorkHrsThroughArabicDoW(weekFrom.intValue(), weekTo.intValue(),
+					weekHrsFrom.doubleValue(), weekHrsTo.doubleValue());
 		}
 
 		// Set Work Hours For the WeekEnd.
 		if (DateUtil.isValidDayOfWeek(weekEndFrom.intValue()) && DateUtil.isValidDayOfWeek(weekEndTo.intValue())) {
 			workingHoursData.setWorkHrsThroughArabicDoW(weekEndFrom.intValue(), weekEndTo.intValue(),
-					weekEndHrsFrom.intValue(), weekEndHrsTo.intValue());
+					weekEndHrsFrom.doubleValue(), weekEndHrsTo.doubleValue());
 		}
+
+		System.out.println(" Work Week matrix ==> " + JsonUtil.toJson(workingHoursData) );
 
 		return workingHoursData;
 	}
@@ -165,8 +173,10 @@ public class RemitRoutingManager {
 
 				} else if (workHrsData.isBeforeWorkingHours(dayOfWeek, hrMinIntVal)) {
 					int hrMinOffset = workHrsData.getWorkWindowTimeOffset(dayOfWeek, hrMinIntVal);
-					return estimatedGoodBusinessDay.plusHours(workHrsData.extractHour(hrMinOffset))
-							.plusMinutes(workHrsData.extractHour(hrMinOffset));
+					if (hrMinOffset >= 0) {
+						return estimatedGoodBusinessDay.plusHours(workHrsData.extractHour(hrMinOffset))
+								.plusMinutes(workHrsData.extractHour(hrMinOffset));
+					}
 				}
 			}
 
@@ -178,21 +188,8 @@ public class RemitRoutingManager {
 
 		}
 
-		/*
-		 * int beginDayIndex = beginZonedDT.getDayOfWeek().getValue();
-		 * 
-		 * boolean isWorking = workHrsData.isWorkingDayTime(beginDayIndex,
-		 * DateUtil.getHrMinIntVal(beginZonedDT.getHour(), beginZonedDT.getMinute()));
-		 */
-		// ZonedDateTime dPlusOne =
-
-		// System.out.println(" Date Now ==> " + beginZonedDT);
-
-		// System.out.println(" Work Matrix ==> " + JsonUtil.toJson(workHrsData));
-
-		// System.out.println(" Is Working ==> " + isWorking);
-
-		return null;
+		// Return Default - Estimated Good Business : D+100
+		return estimatedGoodBusinessDay;
 
 	}
 
