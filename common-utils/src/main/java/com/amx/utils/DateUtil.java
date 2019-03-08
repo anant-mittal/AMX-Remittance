@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.SimpleTimeZone;
@@ -29,7 +30,7 @@ public final class DateUtil {
 	public static final long ONEDAY = 86400L * 1000L;
 
 	/** The Constant DEFAULT_DATE_FORMAT. */
-	private static final String DEFAULT_DATE_FORMAT = "MM/dd/yyyy";
+	private static final String DEFAULT_DATE_FORMAT = "dd/MM/yyyy";
 
 	/** The Constant DEFAULT_DATE_TIME_FORMAT. */
 	private static final String DEFAULT_DATE_TIME_FORMAT = "dd/MM/yyyy HH:mm";
@@ -149,6 +150,15 @@ public final class DateUtil {
 	public static String formatDateTime(Date date) {
 		SimpleDateFormat sdf = new SimpleDateFormat(DEFAULT_DATE_TIME_FORMAT);
 		return sdf.format(date);
+	}
+
+	/**
+	 * @param date
+	 * @return
+	 */
+	public static String formatDateTime(ZonedDateTime date) {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DEFAULT_DATE_FORMAT);
+		return date.format(formatter);
 	}
 
 	/**
@@ -404,6 +414,30 @@ public final class DateUtil {
 		// Put it back in the Date object
 		date = cal.getTime();
 		return date;
+	}
+
+	/**
+	 * returns current Date Set with
+	 * 
+	 * @param hour
+	 * @param minutes
+	 * @param seconds
+	 * @param milliSecs
+	 * @return
+	 */
+	public static Date getCurrentDateAtTime(int hour, int minutes, int seconds, int milliSecs) {
+
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(new Date());
+
+		// Set time fields to zero
+		cal.set(Calendar.HOUR_OF_DAY, hour);
+		cal.set(Calendar.MINUTE, minutes);
+		cal.set(Calendar.SECOND, seconds);
+		cal.set(Calendar.MILLISECOND, milliSecs);
+
+		// Put it back in the Date object
+		return cal.getTime();
 	}
 
 	/**
@@ -676,6 +710,13 @@ public final class DateUtil {
 		return sdf.parse(oldString).getTime();
 	}
 
+	/**
+	 * Returns Next-Day Date for the given Zoned Date. <B> Time is Reset to ZERO #
+	 * Hr:Min:Sec:Nano :: 00:00:00:000 </B>
+	 * 
+	 * @param curDateTime
+	 * @return
+	 */
 	public static ZonedDateTime getNextZonedDay(ZonedDateTime curDateTime) {
 
 		ZonedDateTime dPlusOne = curDateTime.plusDays(1);

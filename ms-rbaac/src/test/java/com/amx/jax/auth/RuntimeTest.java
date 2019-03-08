@@ -2,22 +2,22 @@ package com.amx.jax.auth;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.NavigableMap;
 import java.util.TreeMap;
+import java.util.concurrent.TimeUnit;
 
 import com.amx.utils.CryptoUtil;
 import com.amx.utils.DateUtil;
@@ -58,6 +58,24 @@ public final class RuntimeTest {
 
 		System.out.println(" Hour Minutes ==>   " + (zdt.getHour() * 100 + zdt.getMinute()));
 
+		Date date1 = DateUtil.getCurrentDateAtTime(5, 90, 0, 0);
+
+		Date date2 = DateUtil.getCurrentDateAtTime(23, 30, 0, 0);
+
+		long diffInMillies = date2.getTime() - date1.getTime();
+
+		long diffHr = TimeUnit.HOURS.convert(diffInMillies, TimeUnit.MILLISECONDS);
+		long diffMin = TimeUnit.MINUTES.convert(diffInMillies, TimeUnit.MILLISECONDS);
+
+		System.out.println(" Hours difference ==>  " + diffHr);
+		System.out.println(" Minutes difference ==>  " + (diffMin - (diffHr * 60)));
+
+		System.out.println(
+				"Date String ==>  " + zdt.toString() + " Formatted Date String ==>  " + DateUtil.formatDateTime(zdt));
+		
+		System.out.println(
+				"Date String ==>  " + date2.toString() + " Formatted Date String ==>  " + DateUtil.formatDate(date2));
+		
 		BigDecimal bd = new BigDecimal("0.00000000093933");
 
 		// BigDecimal bd = new BigDecimal("9.3933000000E-10");

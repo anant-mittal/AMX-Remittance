@@ -97,7 +97,7 @@ public class RemitRoutingManager {
 		// Compute the Correct Zone Date and Time of Block Delivery BEGIN
 		ZonedDateTime beginZonedDT = ZonedDateTime.ofInstant(epochInstant, zoneId);
 
-		if (!noHolidayLag) {
+		if (!noHolidayLag && !computeRequestTransientDataCache.isHolidayListSetForCountry(countryId)) {
 			List<HolidayListMasterModel> sortedHolidays = holidayListManager.getHoidaysForCountryAndDateRange(countryId,
 					Date.from(beginZonedDT.toInstant()), Date.from(beginZonedDT.plusMonths(2).toInstant()));
 
@@ -140,26 +140,57 @@ public class RemitRoutingManager {
 	private ZonedDateTime getGoodBusinessDateTime(ZonedDateTime beginZonedDT, WorkingHoursData workHrsData,
 			BigDecimal countryId, boolean noHolidayLag) {
 
-		List<HolidayListMasterModel> sortedHolidays;
+		ZonedDateTime estimatedGoodBusinessDay = beginZonedDT;
 
-		if (!noHolidayLag) {
-			sortedHolidays = computeRequestTransientDataCache.getHolidaysForCountryId(countryId);
-		} else {
-			sortedHolidays = null;
+		for (int i = 0; i < 100; i++) {
+			/**
+			 * Find out if the estimated Good Business Day is a real Good Business Day.
+			 */
+
+			// Check if holidays not applicable or its a holiday on this day.
+			if (noHolidayLag || !computeRequestTransientDataCache.isHolidayOn(countryId, estimatedGoodBusinessDay)) {
+
+				int dayOfWeek = estimatedGoodBusinessDay.getDayOfWeek().getValue();
+				int hourOfDay = estimatedGoodBusinessDay.getHour();
+				int minOfHr = estimatedGoodBusinessDay.getMinute();
+
+				int hrMinIntVal = DateUtil.getHrMinIntVal(hourOfDay, minOfHr);
+
+				// Current Date Time is Working
+				if (workHrsData.isWorkingDayTime(dayOfWeek, hrMinIntVal)) {
+
+					// No Holiday Lag or No Holiday on the Date
+
+					return estimatedGoodBusinessDay;
+
+				} else if (workHrsData.isBeforeWorkingHours(dayOfWeek, hrMinIntVal)) {
+					int hrMinOffset = workHrsData.getWorkWindowTimeOffset(dayOfWeek, hrMinIntVal);
+					return estimatedGoodBusinessDay.plusHours(workHrsData.extractHour(hrMinOffset))
+							.plusMinutes(workHrsData.extractHour(hrMinOffset));
+				}
+			}
+
+			/**
+			 * If the estimated GBD is not working day - roll on to the next day.
+			 */
+
+			estimatedGoodBusinessDay = DateUtil.getNextZonedDay(estimatedGoodBusinessDay);
+
 		}
 
-		int beginDayIndex = beginZonedDT.getDayOfWeek().getValue();
+		/*
+		 * int beginDayIndex = beginZonedDT.getDayOfWeek().getValue();
+		 * 
+		 * boolean isWorking = workHrsData.isWorkingDayTime(beginDayIndex,
+		 * DateUtil.getHrMinIntVal(beginZonedDT.getHour(), beginZonedDT.getMinute()));
+		 */
+		// ZonedDateTime dPlusOne =
 
-		boolean isWorking = workHrsData.isWorkingDayTime(beginDayIndex,
-				DateUtil.getHrMinIntVal(beginZonedDT.getHour(), beginZonedDT.getMinute()));
-		
-		ZonedDateTime dPlusOne = 
-				
-		//System.out.println(" Date Now ==> " + beginZonedDT);
+		// System.out.println(" Date Now ==> " + beginZonedDT);
 
-		//System.out.println(" Work Matrix ==> " + JsonUtil.toJson(workHrsData));
+		// System.out.println(" Work Matrix ==> " + JsonUtil.toJson(workHrsData));
 
-		//System.out.println(" Is Working ==> " + isWorking);
+		// System.out.println(" Is Working ==> " + isWorking);
 
 		return null;
 

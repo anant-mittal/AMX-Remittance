@@ -2,6 +2,8 @@ package com.amx.jax.cache;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.ZonedDateTime;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +14,7 @@ import com.amx.jax.pricer.dbmodel.ViewExGLCBAL;
 import com.amx.jax.pricer.dto.BankDetailsDTO;
 import com.amx.jax.pricer.dto.ExchangeRateDetails;
 import com.amx.jax.pricer.util.RoutingTransientDataComputationObject;
+import com.amx.utils.DateUtil;
 
 public class ComputeRequestTransientDataCache {
 
@@ -27,7 +30,7 @@ public class ComputeRequestTransientDataCache {
 
 	private List<RoutingTransientDataComputationObject> routingMatrixData;
 
-	private Map<BigDecimal, List<HolidayListMasterModel>> countryHolidays = new HashMap<BigDecimal, List<HolidayListMasterModel>>();
+	private Map<BigDecimal, Map<String, HolidayListMasterModel>> countryHolidays = new HashMap<BigDecimal, Map<String, HolidayListMasterModel>>();
 
 	private Map<String, Object> info = new HashMap<String, Object>();
 
@@ -87,16 +90,55 @@ public class ComputeRequestTransientDataCache {
 		this.routingMatrixData = routingMatrixData;
 	}
 
-	public Map<BigDecimal, List<HolidayListMasterModel>> getCountryHolidays() {
-		return countryHolidays;
+	public boolean isHolidayListSetForCountry(BigDecimal countryId) {
+		return countryHolidays.containsKey(countryId);
 	}
 
 	public List<HolidayListMasterModel> getHolidaysForCountryId(BigDecimal countryId) {
-		return countryHolidays.get(countryId);
+		Map<String, HolidayListMasterModel> holidayMap = countryHolidays.get(countryId);
+
+		if (null != holidayMap) {
+			return Collections.list(Collections.enumeration(holidayMap.values()));
+		}
+
+		return null;
 	}
 
 	public void setHolidaysForCountry(BigDecimal countryId, List<HolidayListMasterModel> holidayList) {
-		countryHolidays.put(countryId, holidayList);
+
+		if (null == holidayList || holidayList.isEmpty()) {
+			countryHolidays.put(countryId, new HashMap<String, HolidayListMasterModel>());
+			return;
+		}
+
+		Map<String, HolidayListMasterModel> dateHolidayMap = new HashMap<String, HolidayListMasterModel>();
+
+		for (HolidayListMasterModel holiday : holidayList) {
+
+			if (holiday.getEventDate() != null) {
+				dateHolidayMap.put(DateUtil.formatDate(holiday.getEventDate()), holiday);
+			}
+
+		}
+
+		countryHolidays.put(countryId, dateHolidayMap);
+
+	}
+
+	public boolean isHolidayOn(BigDecimal countryId, ZonedDateTime date) {
+
+		if (countryHolidays.containsKey(countryId) && (null != countryHolidays.get(countryId))) {
+			return countryHolidays.get(countryId).containsKey(DateUtil.formatDateTime(date));
+		}
+
+		return false;
+	}
+
+	public HolidayListMasterModel getHolidayInfoOn(BigDecimal countryId, ZonedDateTime date) {
+		if (isHolidayOn(countryId, date)) {
+			return countryHolidays.get(countryId).get(DateUtil.formatDateTime(date));
+		}
+		return null;
 	}
 
 	/**

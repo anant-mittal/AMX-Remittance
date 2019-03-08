@@ -1,6 +1,8 @@
 package com.amx.jax.cache;
 
 import java.util.Arrays;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import com.amx.utils.DateUtil;
 
@@ -127,6 +129,87 @@ public class WorkingHoursData {
 		}
 
 		return false;
+	}
+
+	public boolean isBeforeWorkingHours(int dayOfWeekIndex, int compareToTime) {
+		if (isWorkingDay(dayOfWeekIndex)) {
+			return workTimeFromInHrsMins[dayOfWeekIndex - 1] > compareToTime ? true : false;
+		}
+		return false;
+	}
+
+	public boolean isAfterWorkingHours(int dayOfWeekIndex, int compareToTime) {
+		if (isWorkingDay(dayOfWeekIndex)) {
+			return workTimeToInHrsMins[dayOfWeekIndex - 1] < compareToTime ? true : false;
+		}
+		return true;
+	}
+
+	public int getWorkWindowTimeOffset(int dayOfWeekIndex, int hourMinNow) {
+		if (isWorkingDay(dayOfWeekIndex) && (hourMinNow >= 0 && hourMinNow <= 2400)
+				&& !isAfterWorkingHours(dayOfWeekIndex, hourMinNow)) {
+
+			// Case if time is within the working window.
+			if (isWorkingDayTime(dayOfWeekIndex, hourMinNow)) {
+				return 0;
+			}
+
+			// Case Where time is before the work window
+
+			int curHr = extractHour(hourMinNow);
+			int curMin = extractMinute(hourMinNow);
+
+			int workStartHr = extractHour(workTimeFromInHrsMins[dayOfWeekIndex - 1]);
+			int workStartMin = extractMinute(workTimeFromInHrsMins[dayOfWeekIndex - 1]);
+
+			Date nowDate = DateUtil.getCurrentDateAtTime(curHr, curMin, 0, 0);
+
+			Date workStartDate = DateUtil.getCurrentDateAtTime(workStartHr, workStartMin, 0, 0);
+
+			long diffInMilliSec = workStartDate.getTime() - nowDate.getTime();
+
+			long diffHr = TimeUnit.HOURS.convert(diffInMilliSec, TimeUnit.MILLISECONDS);
+			long diffMin = TimeUnit.MINUTES.convert(diffInMilliSec, TimeUnit.MILLISECONDS) - (diffHr * 60);
+
+			return (int) (diffHr * 100 + diffMin);
+
+		}
+
+		return -1;
+	}
+
+	public boolean isValidHrMin(int hourMinVal) {
+
+		int hr = extractHour(hourMinVal);
+		int min = extractMinute(hourMinVal);
+
+		if (hr >= 0 && min >= 0) {
+			return true;
+		}
+
+		return false;
+	}
+
+	public int extractHour(int hourMinVal) {
+		if (hourMinVal >= 0 && hourMinVal <= 2400) {
+			int hr = hourMinVal / 100;
+			if (hr >= 0 && hr <= 24) {
+				return hr;
+			}
+		}
+
+		return -1;
+	}
+
+	public int extractMinute(int hourMinVal) {
+		if (hourMinVal >= 0 && hourMinVal <= 2400) {
+			int min = hourMinVal % 100;
+			if (min >= 0 && min <= 60) {
+				return min;
+			}
+		}
+
+		return -1;
 	}
 
 }
