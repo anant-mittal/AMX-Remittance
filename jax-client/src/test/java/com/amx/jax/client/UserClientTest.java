@@ -4,6 +4,7 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.Arrays;
 import java.util.List;
 
@@ -21,13 +22,16 @@ import com.amx.amxlib.exception.LimitExeededException;
 import com.amx.amxlib.exception.RemittanceTransactionValidationException;
 import com.amx.amxlib.exception.ResourceNotFoundException;
 import com.amx.amxlib.meta.model.CustomerDto;
+import com.amx.amxlib.meta.model.IncomeDto;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
+import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.dict.Tenant;
+
 import com.amx.jax.model.UserDevice;
 import com.amx.jax.model.auth.QuestModelDTO;
 
@@ -42,7 +46,9 @@ public class UserClientTest extends AbstractTestClient {
 
 	@Autowired
 	UserClient client;
-
+	
+	
+	
 	// @Test
 	public void getMyProfileInfo() throws IOException, ResourceNotFoundException, InvalidInputException,
 			RemittanceTransactionValidationException, LimitExeededException {
@@ -236,7 +242,7 @@ public class UserClientTest extends AbstractTestClient {
 		assertNotNull(response.getResult());
 	}
 	
-	@Test
+	//@Test
 	public void saveEmailNew() throws IOException, ResourceNotFoundException, InvalidInputException,
 	RemittanceTransactionValidationException, LimitExeededException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
@@ -264,5 +270,42 @@ public class UserClientTest extends AbstractTestClient {
 		response = client.saveEmailNew(mobile);
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());
+	}
+	//@Test
+	public void testIncome() {
+		setDefaults();
+		AmxApiResponse<IncomeDto, Object> response = null;
+		response = client.getIncome();
+		assertNotNull("Response is null", response);
+		assertNotNull(response);
+	}
+	
+	@Test
+	public void saveAnnualIncome(){
+		setDefaults();
+		AmxApiResponse<IncomeDto, Object> response = null;
+		IncomeDto incomeDto = new IncomeDto();
+
+		incomeDto.setApplicationCountryId(new BigDecimal(91));
+		incomeDto.setIncomeRangeFrom(new BigDecimal(5001));
+		incomeDto.setIncomeRangeTo(new BigDecimal(99999999));
+		incomeDto.setFullName("RABIL UDDIN MIR MIR RAJAK");
+		incomeDto.setArticleDetailId(new BigDecimal(1));
+		incomeDto.setCompanyName("Al Mulla");
+		incomeDto.setImage("qwerty");
+		
+		response = client.saveAnnualIncome(incomeDto);
+		assertNotNull("Response is null", response);
+		assertNotNull(response);
+	}
+	
+	//@Test
+	public void forceAnnualIncomeUpdate() {
+		setDefaults();
+		Boolean response = false;		
+		response = client.forceAnnualIncomeUpdate();
+		assertNotNull("Response is null", response);
+		assertNotNull(response);
+		
 	}
 }

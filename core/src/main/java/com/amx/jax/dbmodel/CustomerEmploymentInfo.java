@@ -57,7 +57,10 @@ public class CustomerEmploymentInfo implements java.io.Serializable {
     private Date creationDate;
     private Date lastUpdated;
     private String isActive;
-
+    
+    public CustomerEmploymentInfo() {
+    	
+    }
     public CustomerEmploymentInfo(BigDecimal custEmpInfoId) {
         this.custEmpInfoId = custEmpInfoId;
     }

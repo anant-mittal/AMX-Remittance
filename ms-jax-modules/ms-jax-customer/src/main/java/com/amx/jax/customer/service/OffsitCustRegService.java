@@ -355,26 +355,47 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		List<ArticleDetailsDescDto> designationDataList = convertDesignation(designationList);
 		return AmxApiResponse.buildList(designationDataList);
 	}
+	
+	public AmxApiResponse<ArticleDetailsDescDto, Object> getDesignationList() {
+		
+		List<Map<String, Object>> designationList = articleDao.getDesignationsByCustomer(metaData.getLanguageId(),metaData.getCustomerId());
+		LOGGER.debug("The list is returned from dao");
+		if (designationList == null || designationList.isEmpty()) {
+			throw new GlobalException(JaxError.EMPTY_DESIGNATION_LIST, "Designation List Is Empty ");
+		}
+		LOGGER.debug("The list is not empty");
+		List<ArticleDetailsDescDto> designationDataList = convertDesignation(designationList);
+		LOGGER.debug("The list is ",designationDataList);
+		return AmxApiResponse.buildList(designationDataList);
+	}
 
 	private List<ArticleDetailsDescDto> convertDesignation(List<Map<String, Object>> designationList) {
 		List<ArticleDetailsDescDto> output = new ArrayList<>();
 		designationList.forEach(i -> {
 			output.add(convertDesignation(i));
 		});
+		LOGGER.debug("List Output is :",output);
 		return output;
 	}
 
-	private ArticleDetailsDescDto convertDesignation(Map<String, Object> i) {
+	private ArticleDetailsDescDto convertDesignation(Map<String, Object> designationMap) {
 		ArticleDetailsDescDto dto = new ArticleDetailsDescDto();
+		LOGGER.debug("Dto is declared and  is empty");
 		dto.setArticleDetailsDesc(
-				i.get("ARTICLE_DETAIL_DESC") != null ? i.get("ARTICLE_DETAIL_DESC").toString() : null);
-		dto.setArticleDetailsDescId(new BigDecimal(
-				i.get("ARTICLE_DETAILS_DESC_ID") != null ? i.get("ARTICLE_DETAILS_DESC_ID").toString() : null));
+				designationMap.get("ARTICLE_DETAIL_DESC") != null ? designationMap.get("ARTICLE_DETAIL_DESC").toString() : null);
+		LOGGER.debug("Dto Desc is set");
+		dto.setArticleDetailsDescId(
+				designationMap.get("ARTICLE_DETAILS_DESC_ID") != null ? new BigDecimal(designationMap.get("ARTICLE_DETAILS_DESC_ID").toString()) : null);
+		LOGGER.debug("Dto DescId is set");
 		dto.setArticleDetailsId(
-				new BigDecimal(i.get("ARTICLE_DETAILS_ID") != null ? i.get("ARTICLE_DETAILS_ID").toString() : null));
-		dto.setLanguageId(new BigDecimal(i.get("LANGUAGE_ID") != null ? i.get("LANGUAGE_ID").toString() : null));
+				designationMap.get("ARTICLE_DETAIL_ID") != null ?new BigDecimal( designationMap.get("ARTICLE_DETAIL_ID").toString()): null);
+		LOGGER.debug("Dto ArticleDetailId is set");
+		dto.setLanguageId(designationMap.get("LANGUAGE_ID") != null ? new BigDecimal(designationMap.get("LANGUAGE_ID").toString()) : null);
+		LOGGER.debug("Dto is set");
 		return dto;
 	}
+	
+	
 
 	public AmxApiResponse<IncomeRangeDto, Object> getIncomeRangeResponse(EmploymentDetailsRequest model) {
 		BigDecimal countryId = metaData.getCountryId();

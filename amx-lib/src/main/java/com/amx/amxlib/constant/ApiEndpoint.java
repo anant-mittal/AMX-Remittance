@@ -70,6 +70,8 @@ public class ApiEndpoint {
 		public static final String API_AREA_LIST = "/arealist/";
 		public static final String API_GOVERNATE_LIST = "/governatelist/";
 		public static final String API_GOVERNATE_AREA_LIST = "/governatearealist/";
+		public static final String API_DESIGNATION = "/designationslist/";
+		public static final String API_DECLARATION = "/declaration/";
 
 	}
 
@@ -128,5 +130,18 @@ public class ApiEndpoint {
 	public static final String SAVE_USER_ROLE_ENDPOINT = "/api/user/role/";
 
 	public static final String SAVE_USER_PERM_ENDPOINT = "/api/user/perms/";
+	
+	public final class CustomerApi{
+		//Prefix
+		public static final String PREFIX = CUSTOMER_ENDPOINT;
+		
+		//Paths
+		public static final String GET_ANNUAL_INCOME_RANGE = "/getAnnualIncome/";
+		public static final String SAVE_ANNUAL_INCOME = "/saveAnnualIncome/";
+		public static final String FORCE_ANNUAL_INCOME_UPDATE = "/forceAnnualIncomeUpdate/";
+		
+		//params
+		public static final String PARAM_INCOMEDTO = "incomeDto";
+	}
 
 }

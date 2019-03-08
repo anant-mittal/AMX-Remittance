@@ -262,5 +262,19 @@ public class OffsiteCustRegClient implements ICustRegService {
 			return JaxSystemError.evaluate(e);
 		} // end of try-catch}
 	}
+	
+	
+	@Override
+	public AmxApiResponse<ArticleDetailsDescDto, Object> getDesignationList() {
+		try {
+			return restService.ajax(appConfig.getJaxURL()).meta(new JaxMetaInfo())
+					.path(CustRegApiEndPoints.DESIGNATION_LIST).get()
+					.as(new ParameterizedTypeReference<AmxApiResponse<ArticleDetailsDescDto, Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in getDesignationListResponse : ", e);
+			return JaxSystemError.evaluate(e);
+		} // end of try-catch
+	}
 
 }

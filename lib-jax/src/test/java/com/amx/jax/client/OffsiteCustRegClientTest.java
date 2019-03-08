@@ -13,6 +13,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.amx.jax.api.AmxApiResponse;
+
+import com.amx.jax.logger.LoggerService;
 import com.amx.jax.model.dto.SendOtpModel;
 import com.amx.jax.model.request.CustomerPersonalDetail;
 import com.amx.jax.model.request.EmploymentDetailsRequest;
@@ -22,10 +24,12 @@ import com.amx.jax.model.response.ComponentDataDto;
 import com.amx.jax.model.response.IncomeRangeDto;
 import com.amx.jax.model.response.customer.OffsiteCustomerDataDTO;
 
+import ch.qos.logback.classic.Logger;
+
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class OffsiteCustRegClientTest extends AbstractClientTest {
-
+	private static final Logger LOGGER = (Logger) LoggerService.getLogger(OffsiteCustRegClientTest.class);
 	@Autowired
 	OffsiteCustRegClient offsiteClient;
 
@@ -65,7 +69,7 @@ public class OffsiteCustRegClientTest extends AbstractClientTest {
 		assertNotNull(response.getResult());
 	}
 
-	// @Test
+	 //@Test
 	public void testDesignationList() {
 		setDefaults();
 		EmploymentDetailsRequest model = new EmploymentDetailsRequest();
@@ -76,7 +80,7 @@ public class OffsiteCustRegClientTest extends AbstractClientTest {
 		assertNotNull(response.getResult());
 	}
 
-	@Test
+	//@Test
 	public void testIncomeRangeList() {
 		setDefaults();
 		EmploymentDetailsRequest model = new EmploymentDetailsRequest();
@@ -119,6 +123,17 @@ public class OffsiteCustRegClientTest extends AbstractClientTest {
 		String identityInt = "100006640795";
 		BigDecimal identityType = new BigDecimal(198);
 		response = offsiteClient.getOffsiteCustomerData(identityInt, identityType);
+		assertNotNull("Response is null", response);
+		assertNotNull(response.getResult());
+	}
+
+	@Test
+	public void testForDesignationList() {
+		setDefaults();
+		AmxApiResponse<ArticleDetailsDescDto, Object> response = null;
+		LOGGER.debug("Response not set");
+		response = offsiteClient.getDesignationList();
+		LOGGER.debug("Response is set");
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());
 	}

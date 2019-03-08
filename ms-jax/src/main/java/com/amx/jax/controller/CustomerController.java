@@ -3,6 +3,7 @@ package com.amx.jax.controller;
 import static com.amx.amxlib.constant.ApiEndpoint.CUSTOMER_ENDPOINT;
 import static com.amx.amxlib.constant.ApiEndpoint.UPDATE_CUSTOMER_PASSWORD_ENDPOINT;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +17,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.amxlib.constant.ApiEndpoint.CustomerApi;
 import com.amx.amxlib.constant.CommunicationChannel;
+import com.amx.amxlib.meta.model.IncomeDto;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.api.AmxApiResponse;
@@ -24,6 +27,7 @@ import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.auth.QuestModelDTO;
 import com.amx.jax.services.CustomerDataVerificationService;
+import com.amx.jax.userservice.service.AnnualIncomeService;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.userservice.service.UserValidationService;
 import com.amx.jax.util.ConverterUtil;
@@ -47,6 +51,9 @@ public class CustomerController {
 
 	@Autowired
 	MetaData metaData;
+	
+	@Autowired
+	AnnualIncomeService annualIncomeService;
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -216,4 +223,20 @@ public class CustomerController {
 		ApiResponse response = userService.saveCustomer(customerModel);
 		return response;
 	}
+	
+	@RequestMapping(value =  CustomerApi.GET_ANNUAL_INCOME_RANGE , method = RequestMethod.POST)
+	public AmxApiResponse<IncomeDto, Object> getAnnuaIncome(){
+		return annualIncomeService.getAnnualIncome(metaData.getCustomerId());
+	}
+
+	@RequestMapping(value = CustomerApi.SAVE_ANNUAL_INCOME, method = RequestMethod.POST)
+	public AmxApiResponse<IncomeDto, Object> saveAnnualIncome(@RequestBody IncomeDto incomeDto) throws ParseException {
+		return annualIncomeService.saveAnnualIncome(incomeDto);
+	}
+	@RequestMapping(value = CustomerApi.FORCE_ANNUAL_INCOME_UPDATE ,method = RequestMethod.POST)
+	public Boolean forceAnnualIncomeUpdate() {
+		return annualIncomeService.forceUpdateAnnualIncome();
+	}
+	
+	
 }

@@ -43,6 +43,8 @@ public interface ICustRegService extends IJaxService {
 		public static final String SCAN_CARD = PREFIX + "/scan_card";
 		public static final String SAVE_OFFSITE_LOGIN = PREFIX + "/offsite-save-login-detail";
 		public static final String GET_OFFSITE_CUSTOMER_DATA = PREFIX + "/getOffsiteCustomerData";
+		
+		public static final String DESIGNATION_LIST = PREFIX + "/getDesignationList";
 	}
 	
 	public static class Params {
@@ -94,6 +96,9 @@ public interface ICustRegService extends IJaxService {
 
 	@ApiJaxStatus({ JaxError.ALREADY_EXIST_EMAIL, JaxError.INVALID_MOBILE_NUMBER })
 	AmxApiResponse<SendOtpModel, Object> sendOtp(CustomerPersonalDetail customerPersonalDetail);
+	
+	@ApiJaxStatus({ JaxError.EMPTY_DESIGNATION_LIST })
+	AmxApiResponse<ArticleDetailsDescDto, Object> getDesignationList();
 	
 	AmxApiResponse<CustomerCredential, Object> saveLoginDetailOffsite(CustomerCredential customerCredential);
 	

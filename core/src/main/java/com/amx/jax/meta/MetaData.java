@@ -46,6 +46,16 @@ public class MetaData implements IMetaData {
     private String deviceType;
     private String appType;
     private BigDecimal employeeId;
+    
+    private Boolean annualIncomeForceUpdate;
+	public Boolean getAnnualIncomeForceUpdate() {
+		return annualIncomeForceUpdate;
+	}
+
+	public void setAnnualIncomeForceUpdate(Boolean annualIncomeForceUpdate) {
+		this.annualIncomeForceUpdate = annualIncomeForceUpdate;
+	}
+
 	/**
 	 * This returns service factory object depending on site country
 	 */

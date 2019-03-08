@@ -1,5 +1,6 @@
 package com.amx.jax.client;
 
+import static com.amx.amxlib.constant.ApiEndpoint.BENE_API_ENDPOINT;
 import static com.amx.amxlib.constant.ApiEndpoint.CUSTOMER_ENDPOINT;
 import static com.amx.amxlib.constant.ApiEndpoint.UPDATE_CUSTOMER_PASSWORD_ENDPOINT;
 import static com.amx.amxlib.constant.ApiEndpoint.USER_API_ENDPOINT;
@@ -15,6 +16,8 @@ import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.amx.amxlib.constant.ApiEndpoint.CustomerApi;
+import com.amx.amxlib.constant.ApiEndpoint.MetaApi;
 import com.amx.amxlib.exception.AbstractJaxException;
 import com.amx.amxlib.exception.AlreadyExistsException;
 import com.amx.amxlib.exception.CustomerValidationException;
@@ -24,12 +27,17 @@ import com.amx.amxlib.exception.JaxSystemError;
 import com.amx.amxlib.exception.LimitExeededException;
 import com.amx.amxlib.exception.UnknownJaxError;
 import com.amx.amxlib.meta.model.CustomerDto;
+import com.amx.amxlib.meta.model.DeclarationDTO;
+import com.amx.amxlib.meta.model.IncomeDto;
+import com.amx.amxlib.meta.model.ViewGovernateAreaDto;
 import com.amx.amxlib.model.AbstractUserModel;
+import com.amx.amxlib.model.BeneAccountModel;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
+import com.amx.amxlib.model.response.JaxTransactionResponse;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.configs.JaxMetaInfo;
@@ -632,5 +640,49 @@ public class UserClient extends AbstractJaxServiceClient {
 			LOGGER.error("Exception in saveMobileNew API : ", e);
 			throw new JaxSystemError();
 		} // end of try-catch
+	}
+	
+	public AmxApiResponse<IncomeDto, Object> getIncome() {
+		try {
+
+			return restService.ajax(appConfig.getJaxURL()).path(CustomerApi.PREFIX+ CustomerApi.GET_ANNUAL_INCOME_RANGE)
+					.meta(new JaxMetaInfo()).post()
+					.as(new ParameterizedTypeReference<AmxApiResponse<IncomeDto, Object>>() {
+					});
+		} catch (Exception ae) {
+			LOGGER.error("exception in Annual Income : ", ae);
+			return JaxSystemError.evaluate(ae);
+		}
+	}
+	
+	public AmxApiResponse<IncomeDto, Object> saveAnnualIncome(IncomeDto incomeDto){
+		try {
+			HttpEntity<IncomeDto> requestEntity = new HttpEntity<IncomeDto>(incomeDto,
+					getHeader());
+			String url = this.getBaseUrl() + CustomerApi.PREFIX + CustomerApi.SAVE_ANNUAL_INCOME;
+			return restService.ajax(url).post(requestEntity)
+					.as(new ParameterizedTypeReference<AmxApiResponse<IncomeDto, Object>>() {
+					});
+		} catch (AbstractJaxException ae) {
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in saveAnnualIncome: ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
+
+		
+	}
+	
+	public Boolean forceAnnualIncomeUpdate() {
+		try {
+
+			return restService.ajax(appConfig.getJaxURL()).path(CustomerApi.PREFIX + CustomerApi.FORCE_ANNUAL_INCOME_UPDATE)
+					.meta(new JaxMetaInfo()).post()
+					.as(new ParameterizedTypeReference<Boolean>() {
+					});
+		} catch (Exception ae) {
+			LOGGER.error("exception in ForceUpdateAnnualIncome : ", ae);
+			return JaxSystemError.evaluate(ae);
+		}
 	}
 }
