@@ -33,8 +33,7 @@ public class JaxMetaInfo extends RequestMetaInfo {
 
 	private BigDecimal employeeId;
 
-	public JaxMetaInfo copy() {
-		JaxMetaInfo info = new JaxMetaInfo();
+	public JaxMetaInfo copyTo(JaxMetaInfo info) {
 		info.setCountryId(this.getCountryId());
 		info.setChannel(this.getChannel());
 		info.setCompanyId(this.getCompanyId());
@@ -49,6 +48,10 @@ public class JaxMetaInfo extends RequestMetaInfo {
 		info.setAppType(this.getAppType());
 		info.setEmployeeId(this.getEmployeeId());
 		return info;
+	}
+
+	public JaxMetaInfo copy() {
+		return this.copyTo(new JaxMetaInfo());
 	}
 
 	public String getDeviceId() {

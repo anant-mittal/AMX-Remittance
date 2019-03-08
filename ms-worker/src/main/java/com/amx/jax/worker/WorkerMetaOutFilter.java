@@ -24,6 +24,7 @@ public class WorkerMetaOutFilter implements IMetaRequestOutFilter<JaxMetaInfo> {
 
 	@Override
 	public void outFilter(JaxMetaInfo requestMeta) {
+		jaxMetaInfo.copyTo(requestMeta);
 		requestMeta.setChannel(JaxChannel.SYSTEM);
 	}
 
