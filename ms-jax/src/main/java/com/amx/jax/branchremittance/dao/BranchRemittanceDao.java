@@ -145,6 +145,7 @@ public class BranchRemittanceDao {
 			}
 			collectModel.setDocumentNo(documentNo);
 			collectRepository.save(collectModel);
+			responseDto.setReceiptNo(collectModel.getDocumentFinanceYear()+"/"+collectModel.getDocumentNo());
 			responseDto.setCollectionDocumentNo(collectModel.getDocumentNo());
 			responseDto.setCollectionDocumentFYear(collectModel.getDocumentFinanceYear());
 			responseDto.setCollectionDocumentCode(collectModel.getDocumentCode());

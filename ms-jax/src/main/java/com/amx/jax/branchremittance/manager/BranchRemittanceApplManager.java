@@ -1,6 +1,7 @@
 package com.amx.jax.branchremittance.manager;
 
 import java.math.BigDecimal;
+import java.sql.ClientInfoStatus;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -168,7 +169,7 @@ public class BranchRemittanceApplManager {
 	
 	@Autowired
 	RemittanceAdditionalFieldManager remittanceAdditionalFieldManager;
-
+	
 	@Autowired
 	DeviceStateRepository deviceStateRepository;
 	
@@ -215,7 +216,7 @@ public class BranchRemittanceApplManager {
 		 remittanceTransactionRequestValidator.validateExchangeRate(requestApplModel, exchangeRateResposne);
 		 remittanceTransactionRequestValidator.validateFlexFields(requestApplModel, remitApplParametersMap);
 		 remittanceAdditionalFieldManager.validateAdditionalFields(requestApplModel, remitApplParametersMap);
-		 remittanceAdditionalFieldManager.processAdditionalFields(requestApplModel);
+		 remittanceAdditionalFieldManager.processAdditionalFields(requestApplModel); 
 
 		 
 		 logger.debug("branchExchangeRate :"+exchangeRateResposne);
@@ -349,8 +350,8 @@ public class BranchRemittanceApplManager {
 			remittanceApplication.setSpotRateInd(ConstantDocument.No);
 			
 			
+		
 			
-			//remittanceApplication.setLoyaltyPointInd(loyalityPointsAvailed(requestModel, validationResults) ? ConstantDocument.Yes : ConstantDocument.No); NC
 			
 			
 			// company Id and code
@@ -456,7 +457,7 @@ public class BranchRemittanceApplManager {
 			}
 			remittanceApplication.setLoyaltyPointsEncashed(loyalityPointsEncashed); 
 			
-			
+		
 			remittanceApplication.setDocumentFinancialyear(userFinancialYear.getFinancialYear());
 			remittanceApplication.setSelectedCurrencyId(selectedCurrencyId);
 
@@ -530,7 +531,8 @@ public class BranchRemittanceApplManager {
 		
 		
 		if (beneficiaryDT.getBankAccountNumber() != null) {
-			remittanceAppBenificary.setBeneficiaryAccountNo(beneficiaryDT.getBankAccountNumber());
+			//remittanceAppBenificary.setBeneficiaryAccountNo(beneficiaryDT.getBankAccountNumber());
+			remittanceAppBenificary.setBeneficiaryAccountNo(getAccountNumber(beneficiaryDT));
 		}
 		
 		remittanceAppBenificary.setBeneficiaryBank(beneficiaryDT.getBankName());
@@ -772,7 +774,7 @@ public class BranchRemittanceApplManager {
 	
 	
 	
-	
+
 	public String getCustomerFullName(Customer customer){
 		String customerName =null;
 
@@ -829,6 +831,17 @@ public class BranchRemittanceApplManager {
 	 
 	 return signature;
  }
-
-	
+ 
+ 
+	private String getAccountNumber(BenificiaryListView beneficiaryDT) {
+		String iBanFlag = bankService.getBankById(beneficiaryDT.getBankId()).getIbanFlag();
+		String accountNumber = beneficiaryDT.getBankAccountNumber();
+		String ibanNumber = beneficiaryService.getBeneAccountByAccountSeqId(beneficiaryDT.getBeneficiaryAccountSeqId()).getIbanNumber();
+		logger.debug("iBanFlag: {} , iBANNum: {}", iBanFlag, ibanNumber);
+		if (ConstantDocument.Yes.equalsIgnoreCase(iBanFlag) && StringUtils.isNotBlank(ibanNumber)) {
+			accountNumber = ibanNumber;
+		}
+		return accountNumber;
+	}
+ 
 }
