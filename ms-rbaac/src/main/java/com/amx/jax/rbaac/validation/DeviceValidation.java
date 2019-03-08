@@ -69,6 +69,13 @@ public class DeviceValidation {
 			throw new AuthServiceException("otp lenght should be 6");
 		}
 	}
+	
+	public void validateDeviceRegIdndPairtoken(Integer deviceRegId,String paireToken) {
+		if(deviceRegId ==null || paireToken==null) {
+					throw new AuthServiceException("DeviceRegId or paireToken should not be blank");
+				}
+		
+	}
 
 	/**
 	 * validates device reg request
