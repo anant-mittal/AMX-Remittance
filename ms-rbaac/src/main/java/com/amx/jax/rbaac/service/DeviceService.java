@@ -67,7 +67,7 @@ public class DeviceService extends AbstractService {
 				for (Device d : devices) {
 					if (!d.equals(device)) {
 						d.setStatus("N");
-					}
+		}
 				}
 				deviceDao.saveDevices(devices);
 			}

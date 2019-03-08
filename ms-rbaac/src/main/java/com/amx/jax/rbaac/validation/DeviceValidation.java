@@ -60,6 +60,14 @@ public class DeviceValidation {
 			throw new AuthServiceException("Invalid pair otp");
 		}
 	}
+	
+	public void validateDeviceRegIdndPairtoken(Integer deviceRegId,String paireToken) {
+		
+		if(deviceRegId ==null || paireToken==null) {
+			throw new AuthServiceException("DeviceRegId or paireToken should not be blank");
+		}
+		
+	}
 
 	public void validateOtp(String otp) {
 		if (StringUtils.isBlank(otp)) {

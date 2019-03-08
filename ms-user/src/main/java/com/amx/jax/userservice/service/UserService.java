@@ -1057,6 +1057,10 @@ public class UserService extends AbstractUserService {
 		return repo.getCustomerDetails(loginId);
 	}
 	
+	public Customer getCustomerDetailsByCustomerId(BigDecimal custId) {
+		return repo.getCustomerDetailsByCustomerId(custId);
+	}
+	
 	@Transactional
 	public void deActivateFsCustomer(BigDecimal customerId) {
 		Customer customer = repo.findOne(customerId);
