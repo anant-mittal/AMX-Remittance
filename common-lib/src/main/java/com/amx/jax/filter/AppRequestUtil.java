@@ -98,13 +98,15 @@ public class AppRequestUtil {
 	}
 
 	public static void printIfDebug(HttpRequest request, byte[] body) throws UnsupportedEncodingException {
-		LinkedMultiValueMap<String, String> headerMap = new LinkedMultiValueMap<String, String>();
-		Collection<Entry<String, List<String>>> headers = request.getHeaders().entrySet();
-		for (Entry<String, List<String>> header : headers) {
-			headerMap.put(header.getKey(), header.getValue());
+		if (LOGGER.isDebugEnabled()) {
+			LinkedMultiValueMap<String, String> headerMap = new LinkedMultiValueMap<String, String>();
+			Collection<Entry<String, List<String>>> headers = request.getHeaders().entrySet();
+			for (Entry<String, List<String>> header : headers) {
+				headerMap.put(header.getKey(), header.getValue());
+			}
+			LOGGER.debug("===== RQT-OUT-HEDR >>>>>: {}", headerMap.toString());
+			LOGGER.debug("===== RQT-OUT-BODY >>>>>: {}", new String(body, "UTF-8"));
 		}
-		LOGGER.debug("===== RQT-OUT-HEDR >>>>>: {}", headerMap.toString());
-		LOGGER.debug("===== RQT-OUT-BODY >>>>>: {}", new String(body, "UTF-8"));
 	}
 
 }
