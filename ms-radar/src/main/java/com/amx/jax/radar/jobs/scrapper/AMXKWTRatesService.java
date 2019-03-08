@@ -47,7 +47,7 @@ public class AMXKWTRatesService extends AbstractDBSyncTask {
 	private static final int PAGE_SIZE = 3000;
 
 	@SchedulerLock(lockMaxAge = AmxCurConstants.INTERVAL_HRS, context = LockContext.BY_CLASS)
-	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_MIN * 50)
+	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_MIN_30)
 	public void doTask() {
 		if (TimeUtils.inHourSlot(4, 0)) {
 			this.doBothTask();
