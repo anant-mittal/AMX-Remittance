@@ -349,7 +349,7 @@ public class UserValidationService {
 		}
 	}
 
-	void validateBlackListedCustomerForLogin(Customer customer) {
+	public void validateBlackListedCustomerForLogin(Customer customer) {
 
 		StringBuffer engNamesbuf = new StringBuffer();
 		if (StringUtils.isNotBlank(customer.getFirstName())) {
