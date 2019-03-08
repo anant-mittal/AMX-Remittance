@@ -39,7 +39,7 @@ public class TrnxViewTask extends AbstractDBSyncTask {
 	private static final String TIME_TRACK_KEY = "lastUpdateDate";
 	private static final int PAGE_SIZE = 3000;
 
-	long intervalDays = 10;
+	long intervalDays = 20;
 
 	@SchedulerLock(lockMaxAge = AmxCurConstants.INTERVAL_MIN * 30, context = LockContext.BY_CLASS)
 	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_SEC * 15)
