@@ -268,7 +268,7 @@ public class BranchRemittanceApplManager {
 		RemittanceApplication remittanceApplication = new RemittanceApplication();
 		try {
 			
-			String signature ="test";// getCustomerSignature();
+			String signature =getCustomerSignature();
 
 			if(!StringUtils.isBlank(signature)) {
 				try {
@@ -790,18 +790,13 @@ public class BranchRemittanceApplManager {
 	 BigDecimal terminalId = metaData.getTerminalId();
 	 
 	 logger.debug("ipaddress :"+ipaddress+"\t CustomerId :"+metaData.getCustomerId()+"\t terminalId :"+terminalId);
-	// BranchSystemDetail brSystemDetails = branchSystemDetailRepository.findByIpAddress(ipaddress);
-	// if(brSystemDetails!=null) {
-		// BigDecimal inventoryId = brSystemDetails.getCountryBranchSystemInventoryId();
+	
 		 if(JaxUtil.isNullZeroBigDecimalCheck(terminalId)) {
 			 Device deviceClient = deviceRepository.findByDeviceTypeAndBranchSystemInventoryIdAndStatus(ClientType.SIGNATURE_PAD, terminalId,ConstantDocument.Yes);
 			 DeviceStateInfo deviceStateInfo =  deviceStateRepository.findOne(deviceClient.getRegistrationId());
 			 if(deviceStateInfo!=null && deviceStateInfo.getSignature()!=null) {
 				 signature = deviceStateInfo.getSignature();
 			 }
-		 /*}else {
-			 throw new GlobalException(JaxError.INVENTORY_ID_NOT_EXISTS,"Branch system inventory doesnot exist "+inventoryId);
-		 }*/
 	 }
 	 
 	 return signature;
