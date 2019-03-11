@@ -23,9 +23,11 @@ import com.amx.jax.filter.AppClientErrorHanlder;
 import com.amx.jax.filter.AppClientInterceptor;
 import com.amx.jax.scope.TenantProperties;
 import com.amx.utils.ArgUtil;
+import com.ulisesbocchio.jasyptspringboot.annotation.EnableEncryptableProperties;
 
 @Configuration
 @PropertySource("classpath:application-lib.properties")
+@EnableEncryptableProperties
 public class AppConfig {
 
 	private static final String PROP_SUFFIX = "}";
@@ -41,6 +43,7 @@ public class AppConfig {
 	public static final String APP_DEBUG = "${app.debug}";
 	public static final String APP_CACHE = "${app.cache}";
 	public static final String APP_LOGGER = "${app.logger}";
+	public static final String APP_MONITOR = "${app.monitor}";
 
 	public static final String APP_CONTEXT_PREFIX = "${server.contextPath}";
 	public static final String SPRING_APP_NAME = "${spring.application.name}";
@@ -62,6 +65,7 @@ public class AppConfig {
 	public static final String JAX_LOGGER_URL = "${jax.logger.url}";
 	public static final String JAX_SSO_URL = "${jax.sso.url}";
 	public static final String JAX_AUTH_URL = "${jax.auth.url}";
+	public static final String JAX_RADAR_URL = "${jax.radar.url}";
 
 	public static final String SPRING_REDIS_HOST = "${spring.redis.host}";
 	public static final String SPRING_REDIS_PORT = "${spring.redis.port}";
@@ -106,6 +110,10 @@ public class AppConfig {
 	@Value(APP_LOGGER)
 	@AppParamKey(AppParam.APP_LOGGER)
 	private boolean logger;
+
+	@Value(APP_MONITOR)
+	@AppParamKey(AppParam.APP_MONITOR)
+	private boolean monitor;
 
 	@Value(APP_AUTH_KEY)
 	private String appAuthKey;
@@ -154,6 +162,10 @@ public class AppConfig {
 	@AppParamKey(AppParam.JAX_AUTH_URL)
 	private String authURL;
 
+	@Value(JAX_RADAR_URL)
+	@AppParamKey(AppParam.JAX_RADAR_URL)
+	private String radarURL;
+
 	@Value(SPRING_REDIS_HOST)
 	@AppParamKey(AppParam.SPRING_REDIS_HOST)
 	private String redisSpringHost;
@@ -184,6 +196,9 @@ public class AppConfig {
 
 	@Value("${app.audit.file.skip}")
 	String[] skipAuditMarkers;
+
+	@Value("${encrypted.app.property}")
+	String appSpecifcDecryptedProp;
 
 	public boolean isCookieHttpOnly() {
 		return cookieHttpOnly;
@@ -299,11 +314,11 @@ public class AppConfig {
 		this.authURL = authURL;
 	}
 
-	public  String getPricerURL() {
+	public String getPricerURL() {
 		return pricerURL;
 	}
 
-	public  void setPricerURL(String pricerURL) {
+	public void setPricerURL(String pricerURL) {
 		this.pricerURL = pricerURL;
 	}
 
@@ -354,6 +369,9 @@ public class AppConfig {
 	@PostConstruct
 	public void init() {
 		TenantProperties.setEnviroment(environment);
+		if (defaultTenant != null) {
+			Tenant.DEFAULT = defaultTenant;
+		}
 	}
 
 	public Tenant getDefaultTenant() {
@@ -362,6 +380,14 @@ public class AppConfig {
 
 	public String getSpringAppName() {
 		return springAppName;
+	}
+
+	public String getRadarURL() {
+		return radarURL;
+	}
+
+	public String getAppSpecifcDecryptedProp() {
+		return appSpecifcDecryptedProp;
 	}
 
 }

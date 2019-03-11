@@ -1,6 +1,6 @@
 {
   "aggs": {
-    "join-inteval": {
+    "join_inteval": {
       "date_range": {
         "field": "customer.creationDate",
         "ranges": [
@@ -28,7 +28,7 @@
         ]
       }
     },
-    "online-inteval": {
+    "online_inteval": {
       "date_range": {
         "field": "customer.lastUpdateDate",
         "ranges": [

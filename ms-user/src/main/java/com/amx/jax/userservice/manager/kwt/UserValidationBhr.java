@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -18,21 +19,25 @@ import com.amx.jax.scope.TenantSpecific;
 import com.amx.jax.userservice.dao.CustomerIdProofDao;
 import com.amx.jax.userservice.repository.CustomerRepository;
 import com.amx.jax.userservice.service.CustomerValidationContext.CustomerValidation;
+import com.amx.utils.Constants;
 
 @Component
-@TenantSpecific(value = { Tenant.BHR, Tenant.BRN, Tenant.BRNDEV })
+@TenantSpecific(value = { Tenant.BHR, Tenant.BRNDEV })
 public class UserValidationBhr implements CustomerValidation {
-
+	Logger logger= Logger.getLogger(UserValidationBhr.class);
 	@Autowired
 	private CustomerIdProofDao idproofDao;
-	
+
 	@Autowired
 	private CustomerRepository customerRepo;
+	
+	@Autowired
+	private UserValidationBhr userValidationBhr;
 
 	@Override
 	public void validateCustIdProofs(BigDecimal custId) {
 		List<CustomerIdProof> idProofs = idproofDao.getCustomerIdProofsExpiry(custId);
-		
+
 		for (CustomerIdProof idProof : idProofs) {
 			boolean isCivilId = ConstantDocument.BIZ_COMPONENT_ID_CIVIL_ID.equals(idProof.getIdentityTypeId());
 			if (!idProof.getIdentityExpiryDate().after(new Date())) {
@@ -65,21 +70,20 @@ public class UserValidationBhr implements CustomerValidation {
 
 	@Override
 	public void validateEmailId(String emailId) {
-		List<Customer> list = customerRepo.getCustomerByEmailId(emailId);	
-		if (list != null && list.size()!=0) {
+		List<Customer> list = customerRepo.getCustomerByEmailId(emailId);
+		if (list != null && list.size() != 0) {
 			throw new GlobalException(JaxError.ALREADY_EXIST_EMAIL, "Email Id already exist");
 		}
-		
+
 	}
 
 	@Override
 	public void validateDuplicateMobile(String mobileNo) {
 		List<Customer> list = customerRepo.getCustomerByMobileCheck(mobileNo);
-		if (list != null && list.size()!=0) {
+		if (list != null && list.size() != 0) {
 			throw new GlobalException(JaxError.ALREADY_EXIST_MOBILE, "Mobile Number already exist");
 		}
-		
-	}
 
+	}
 
 }

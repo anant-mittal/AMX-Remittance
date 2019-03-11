@@ -222,7 +222,7 @@ public class UserAuthService {
 						.secret(otpDevice.getClientSecreteKey()).message(selfOtpData.getmOtpPrefix());
 
 				userOtpManager.sendToSlack("Offline OTP for Emp: " + employeeNo, " Self ", selfOtpData.getmOtpPrefix(),
-						builder.toHMAC().toNumeric(AmxConstants.OTP_LENGTH).output());
+						builder.toHMAC().toComplex(AmxConstants.OTP_LENGTH).output());
 
 			}
 
@@ -240,7 +240,7 @@ public class UserAuthService {
 
 					userOtpManager.sendToSlack("Offline OTP for Emp: " + employeeNo, " Partner ",
 							userOtpData.getPartnerOtpData().getmOtpPrefix(),
-							builderP.toHMAC().toNumeric(AmxConstants.OTP_LENGTH).output());
+							builderP.toHMAC().toComplex(AmxConstants.OTP_LENGTH).output());
 
 				}
 
@@ -427,7 +427,7 @@ public class UserAuthService {
 				.interval(AmxConstants.OFFLINE_OTP_TTL).tolerance(AmxConstants.OFFLINE_OTP_TOLERANCE)
 				.secret(otpDevice.getClientSecreteKey()).message(sac);
 
-		if (!builder.validateNumHMAC(otp)) {
+		if (!builder.validateComplexHMAC(otp)) {
 			return Boolean.FALSE;
 		}
 
@@ -490,7 +490,7 @@ public class UserAuthService {
 
 		if (StringUtils.isEmpty(validEmployee.getTelephoneNumber())) {
 			throw new AuthServiceException(RbaacServiceError.INVALID_PHONE_NUMBER,
-					"Phone Number is Invalid or Missing for : " + userType);
+					"The mobile number is invalid for the user");
 		}
 
 		return validEmployee;

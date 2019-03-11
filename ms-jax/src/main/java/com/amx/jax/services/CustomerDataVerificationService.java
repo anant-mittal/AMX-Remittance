@@ -1,7 +1,6 @@
 package com.amx.jax.services;
 
 import java.math.BigDecimal;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -22,10 +21,7 @@ import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.JaxAuthCache;
-import com.amx.jax.JaxAuthContext;
-import com.amx.jax.JaxAuthCache.JaxAuthMeta;
 import com.amx.jax.constant.ConstantDocument;
-import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.ContactDetail;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
@@ -34,7 +30,6 @@ import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.auth.QuestModelDTO;
 import com.amx.jax.repository.IContactDetailDao;
-import com.amx.jax.userservice.constant.CustomerDataVerificationQuestion;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.repository.CustomerVerificationRepository;
 import com.amx.jax.userservice.service.UserService;

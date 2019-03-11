@@ -20,7 +20,7 @@ public class TenantContextHolder {
 	}
 
 	public static void setDefault() {
-		ContextUtil.map().put(TENANT, Tenant.KWT);
+		ContextUtil.map().put(TENANT, Tenant.DEFAULT);
 	}
 
 	private static Tenant currentSite(boolean returnDefault, Tenant defaultTnt) {
@@ -43,7 +43,7 @@ public class TenantContextHolder {
 	 * @return
 	 */
 	public static Tenant currentSite(boolean returnDefault) {
-		return currentSite(returnDefault, Tenant.KWT);
+		return currentSite(returnDefault, Tenant.DEFAULT);
 	}
 
 	/**

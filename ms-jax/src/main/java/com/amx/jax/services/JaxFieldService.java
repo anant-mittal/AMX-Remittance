@@ -3,13 +3,11 @@ package com.amx.jax.services;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.GetJaxFieldRequest;
 import com.amx.amxlib.model.JaxConditionalFieldDto;
 import com.amx.amxlib.model.JaxFieldDto;

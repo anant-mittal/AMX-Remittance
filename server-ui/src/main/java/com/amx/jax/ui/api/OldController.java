@@ -14,11 +14,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.jax.AppConstants;
+import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
 import com.amx.jax.ui.model.AuthDataInterface.AuthResponse;
 import com.amx.jax.ui.model.UserMetaData;
 import com.amx.jax.ui.model.UserUpdateData;
 import com.amx.jax.ui.response.ResponseWrapper;
-import com.amx.jax.ui.response.WebResponseStatus;
 import com.amx.jax.ui.service.LoginService;
 import com.amx.jax.ui.service.RegistrationService;
 import com.amx.jax.ui.service.SessionService;
@@ -133,7 +133,7 @@ public class OldController {
 	public ResponseWrapper<UserMetaData> logout() {
 		ResponseWrapper<UserMetaData> wrapper = new ResponseWrapper<UserMetaData>(new UserMetaData());
 		sessionService.logout();
-		wrapper.setMessage(WebResponseStatus.LOGOUT_DONE, "User logged out successfully");
+		wrapper.setMessage(OWAStatusStatusCodes.LOGOUT_DONE, "User logged out successfully");
 		return wrapper;
 	}
 

@@ -2,9 +2,7 @@ package com.amx.test;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.net.URISyntaxException;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.jsoup.Connection;
@@ -13,10 +11,9 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import com.amx.jax.rates.AmxCurConstants;
-import com.amx.jax.rates.AmxCurConstants.RCur;
-import com.amx.jax.rates.AmxCurConstants.RSource;
-import com.amx.jax.rates.AmxCurConstants.RType;
+import com.amx.jax.client.snap.ISnapService.RateSource;
+import com.amx.jax.client.snap.ISnapService.RateType;
+import com.amx.jax.dict.Currency;
 import com.amx.jax.rates.AmxCurRate;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;
@@ -52,7 +49,7 @@ public class App { // Noncompliant
 				.data("ctl00$ctl10$ahrefExchange", "Exchange Rates");
 
 		Document doc1 = con1.post();
-		printUAERates(doc1, RType.SELL_TRNSFR);
+		printUAERates(doc1, RateType.SELL_TRNSFR);
 
 		Connection con2 = Jsoup.connect("https://www.uaeexchange.com.kw/Rates.aspx")
 				.referrer("https://www.uaeexchange.com.kw/Rates.aspx");
@@ -69,22 +66,22 @@ public class App { // Noncompliant
 
 		System.out.println("RAte ============");
 		Document doc2 = con2.post();
-		printUAERates(doc2, RType.SELL_CASH);
+		printUAERates(doc2, RateType.SELL_CASH);
 		System.out.println("Ends ============");
 	}
 
-	public static void printUAERates(Document doc, RType type) {
+	public static void printUAERates(Document doc, RateType type) {
 		Elements trs = doc.select("#ctl10_updatepnl table.table tbody tr");
 		for (Element tr : trs) {
 			Elements tds = tr.select("td");
-			AmxCurConstants.RCur cur = (RCur) ArgUtil.parseAsEnum(tds.get(2).text(),
-					AmxCurConstants.RCur.UNKNOWN);
-			if (!AmxCurConstants.RCur.UNKNOWN.equals(cur) && tds.size() >= 3) {
+			Currency cur = (Currency) ArgUtil.parseAsEnum(tds.get(2).text(),
+					Currency.UNKNOWN);
+			if (!Currency.UNKNOWN.equals(cur) && tds.size() >= 3) {
 				BigDecimal rate = ArgUtil.parseAsBigDecimal(tds.get(3).text());
 				if (!ArgUtil.isEmpty(rate)) {
 					AmxCurRate trnsfrRate = new AmxCurRate();
-					trnsfrRate.setrSrc(RSource.MUZAINI);
-					trnsfrRate.setrDomCur(RCur.KWD);
+					trnsfrRate.setrSrc(RateSource.MUZAINI);
+					trnsfrRate.setrDomCur(Currency.KWD);
 					trnsfrRate.setrForCur(cur);
 					trnsfrRate.setrType(type);
 					trnsfrRate.setrRate(rate);

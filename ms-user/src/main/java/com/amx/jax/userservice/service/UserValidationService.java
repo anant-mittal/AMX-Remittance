@@ -1,6 +1,7 @@
 package com.amx.jax.userservice.service;
 
 import java.math.BigDecimal;
+import java.security.NoSuchAlgorithmException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -31,6 +32,7 @@ import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.JaxConditionalFieldDto;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.jax.JaxAuthCache;
+import com.amx.jax.JaxAuthCache.JaxAuthMeta;
 import com.amx.jax.JaxAuthContext;
 import com.amx.jax.JaxAuthCache.JaxAuthMeta;
 import com.amx.jax.amxlib.config.OtpSettings;
@@ -67,6 +69,7 @@ import com.amx.jax.userservice.validation.ValidationClients;
 import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.validation.CustomerValidationService;
+import com.amx.utils.Constants;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -185,15 +188,15 @@ public class UserValidationService {
 	}
 
 	protected void validateCivilId(String civilId) {
-		boolean isValid = custValidation.validateCivilId(civilId, meta.getCountry().getCountryCode());
+		boolean isValid = custValidation.validateCivilId(civilId, meta.getCountry().getISO2Code());
 		if (!isValid) {
 			throw new InvalidCivilIdException("Civil Id " + civilId + " is not valid!");
 		}
 	}
-	
-	//Validate IdentityInt
+
+	// Validate IdentityInt
 	public void validateIdentityInt(String civilId, BigDecimal identityType) {
-		boolean isValid = custValidation.validateIdentityInt(civilId, meta.getCountry().getCountryCode(), identityType);
+		boolean isValid = custValidation.validateIdentityInt(civilId, meta.getCountry().getISO2Code(), identityType);
 		if (!isValid) {
 			throw new InvalidCivilIdException("Id " + civilId + " is not valid!");
 		}
@@ -203,6 +206,26 @@ public class UserValidationService {
 		String dbPwd = customer.getPassword();
 		String passwordhashed = cryptoUtil.getHash(customer.getUserName(), password);
 		if (!dbPwd.equals(passwordhashed)) {
+			Integer attemptsLeft = incrementLockCount(customer);
+			String errorExpression = JaxError.WRONG_PASSWORD.toString();
+			if (attemptsLeft > 0) {
+				errorExpression = jaxUtil.buildErrorExpression(JaxError.WRONG_PASSWORDS_ATTEMPTS.toString(),
+						attemptsLeft);
+			}
+			throw new GlobalException(errorExpression, "Incorrect/wrong password");
+		}
+	}
+	
+	protected void validateDevicePassword(CustomerOnlineRegistration customer, String password) {
+		String dbPassword = customer.getDevicePassword();
+		String passwordHashed = null;
+		try {
+			passwordHashed = com.amx.utils.CryptoUtil.getSHA2Hash(password);
+		} catch (NoSuchAlgorithmException e) {
+			logger.error("Exception thrown for incorrect algorithm ", e);
+			throw new GlobalException("Unable to generate hashed password");
+		}
+		if (!dbPassword.equals(passwordHashed)) {
 			Integer attemptsLeft = incrementLockCount(customer);
 			String errorExpression = JaxError.WRONG_PASSWORD.toString();
 			if (attemptsLeft > 0) {
@@ -329,8 +352,8 @@ public class UserValidationService {
 			throw new GlobalException(JaxError.MISSING_LOCAL_CONTACT_DETAILS, "No local details found");
 		}
 	}
-	
-	void validateBlackListedCustomerForLogin(Customer customer) {
+
+	public void validateBlackListedCustomerForLogin(Customer customer) {
 
 		StringBuffer engNamesbuf = new StringBuffer();
 		if (StringUtils.isNotBlank(customer.getFirstName())) {
@@ -463,6 +486,35 @@ public class UserValidationService {
 		}
 		return onlineCustomer;
 	}
+
+	protected CustomerOnlineRegistration validateOnlineCustomerByIdentityId(String identityInt,
+			BigDecimal identityType) {
+		Customer customer = custDao.getActiveCustomerByIndentityIntAndType(identityInt, identityType);
+		
+		if (customer == null) {
+			throw new GlobalException(JaxError.CUSTOMER_NOT_FOUND.getStatusKey(), "Online Customer id not found");
+		}
+		
+		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(customer.getCustomerId());
+		if (onlineCustomer == null) {
+			throw new GlobalException(JaxError.CUSTOMER_NOT_FOUND.getStatusKey(), "Online Customer id not found");
+		}
+		return onlineCustomer;
+	}
+	
+	protected CustomerOnlineRegistration validateOnlineCustomerByIdentityId(BigDecimal customerId) {
+		Customer customer = custDao.getCustById(customerId);
+		if (customer == null) {
+			throw new GlobalException(JaxError.CUSTOMER_NOT_FOUND.getStatusKey(), "Online Customer id not found");
+		}
+		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(customer.getCustomerId());
+		if (onlineCustomer == null) {
+			throw new GlobalException(JaxError.CUSTOMER_NOT_FOUND.getStatusKey(), "Online Customer id not found");
+		}
+		return onlineCustomer;
+	}
+	
+	
 
 	public void validateOtpFlow(CustomerModel model) {
 		if (model.isRegistrationFlow()) {
@@ -741,7 +793,7 @@ public class UserValidationService {
 			throw new GlobalException(JaxError.CUSTOMER_NOT_ACTIVE_BRANCH,
 					"Customer not active in branch, go to branch ");
 		}
-		validateBlockedCustomerForOnlineReg(customer);
+		// validateBlockedCustomerForOnlineReg(customer);
 	}
 	
 	private void validateBlockedCustomerForOnlineReg(Customer customer) {
@@ -840,5 +892,13 @@ public class UserValidationService {
 
 		}
 	}
+	
+	
+	public void validateIdentityInt(String identityInt, String identityType) {
+		BigDecimal identyType = new BigDecimal(identityType);
+		tenantContext.get().validateIdentityInt(identityInt, identyType);
+
+	}
+	
 
 }

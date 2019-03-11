@@ -135,6 +135,7 @@ public class DeviceService extends AbstractService {
 		DeviceDto dto = new DeviceDto();
 		try {
 			BeanUtils.copyProperties(dto, newDevice);
+			dto.setTermialId(newDevice.getBranchSystemInventoryId());
 		} catch (Exception e) {
 		}
 		dto.setPairToken(devicePairToken);
@@ -151,6 +152,7 @@ public class DeviceService extends AbstractService {
 	}
 
 	public DevicePairOtpResponse sendOtpForPairing(Integer deviceRegId, String paireToken) {
+		deviceValidation.validateDeviceRegIdndPairtoken(deviceRegId,paireToken); 		
 		Device device = deviceDao.findDevice(new BigDecimal(deviceRegId));
 		validateDevicePairToken(new BigDecimal(deviceRegId), paireToken);
 		DevicePairOtpResponse response = deviceManager.generateOtp(device);

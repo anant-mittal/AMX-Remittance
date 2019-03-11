@@ -1,6 +1,9 @@
 package com.amx.jax.exception;
 
 import java.lang.reflect.Constructor;
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.springframework.http.HttpStatus;
@@ -31,6 +34,8 @@ public abstract class AmxApiException extends AmxException {
 	protected String errorMessage;
 
 	AmxApiError apiError;
+
+	Map<String, String> detailMap = null;
 
 	public AmxApiException() {
 		super(null, null, true, false);
@@ -168,5 +173,88 @@ public abstract class AmxApiException extends AmxException {
 		} else {
 			throw e;
 		}
+	}
+
+	public Map<String, String> getDetailMap() {
+		if (detailMap == null) {
+			detailMap = new HashMap<String, String>();
+		}
+		return detailMap;
+	}
+
+	public void setDetailMap(Map<String, String> detailMap) {
+		this.detailMap = detailMap;
+	}
+
+	/**
+	 * This detail is useful for detailed debugging/audit, it is nver sent to ui
+	 * 
+	 * @param key
+	 * @param value
+	 * @return
+	 */
+	public AmxApiException put(String key, String value) {
+		this.getDetailMap().put(key, value);
+		return this;
+	}
+
+	/**
+	 * Same as {@link #put(String, String)}
+	 * 
+	 * @param key
+	 * @param value
+	 * @return
+	 */
+	public AmxApiException put(String key, BigDecimal value) {
+		this.getDetailMap().put(key, ArgUtil.parseAsString(value));
+		return this;
+	}
+
+	/**
+	 * Same as {@link #put(String, String)}
+	 * 
+	 * @param key
+	 * @param value
+	 * @return
+	 */
+	public AmxApiException put(String key, Long value) {
+		this.getDetailMap().put(key, ArgUtil.parseAsString(value));
+		return this;
+	}
+
+	/**
+	 * Same as {@link #put(String, String)}
+	 * 
+	 * @param key
+	 * @param value
+	 * @return
+	 */
+	public AmxApiException put(String key, Integer value) {
+		this.getDetailMap().put(key, ArgUtil.parseAsString(value));
+		return this;
+	}
+
+	/**
+	 * Same as {@link #put(String, String)}
+	 * 
+	 * @param key
+	 * @param value
+	 * @return
+	 */
+	public <E extends Enum<E>> AmxApiException put(String key, E value) {
+		this.getDetailMap().put(key, ArgUtil.parseAsString(value));
+		return this;
+	}
+
+	/**
+	 * To set meta values, for exception, possible cases : Prefix Value in case OTP
+	 * is required for the api to complete its task
+	 * 
+	 * @param meta
+	 * @return
+	 */
+	public AmxApiException meta(Object meta) {
+		this.setMeta(meta);
+		return this;
 	}
 }

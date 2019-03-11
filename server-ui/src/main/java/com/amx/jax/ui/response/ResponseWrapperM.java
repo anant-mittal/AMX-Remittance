@@ -4,7 +4,7 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.exception.AmxApiException;
 import com.amx.jax.ui.UIConstants;
-import com.amx.jax.ui.model.AuthDataInterface.AuthResponse;
+import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.ContextUtil;
 
@@ -117,12 +117,12 @@ public class ResponseWrapperM<T, M> extends AmxApiResponse<T, M> {
 	 *
 	 * @param status the new status
 	 */
-	public void setStatus(WebResponseStatus status) {
+	public void setStatus(OWAStatusStatusCodes status) {
 		this.statusKey = status.name();
 		this.status = status.getCode();
 	}
 
-	public void setStatusKey(WebResponseStatus error) {
+	public void setStatusKey(OWAStatusStatusCodes error) {
 		this.statusKey = error.name();
 	}
 
@@ -131,7 +131,7 @@ public class ResponseWrapperM<T, M> extends AmxApiResponse<T, M> {
 	 *
 	 * @param status the new message
 	 */
-	public void setMessage(WebResponseStatus status) {
+	public void setMessage(OWAStatusStatusCodes status) {
 		this.setStatus(status);
 	}
 
@@ -141,7 +141,7 @@ public class ResponseWrapperM<T, M> extends AmxApiResponse<T, M> {
 	 * @param status  the status
 	 * @param message the message
 	 */
-	public void setMessage(WebResponseStatus status, String message) {
+	public void setMessage(OWAStatusStatusCodes status, String message) {
 		this.setStatus(status);
 		this.message = message;
 	}
@@ -152,7 +152,7 @@ public class ResponseWrapperM<T, M> extends AmxApiResponse<T, M> {
 	 * @param status          the status
 	 * @param responseMessage the response message
 	 */
-	public void setMessage(WebResponseStatus status, ResponseMessage responseMessage) {
+	public void setMessage(OWAStatusStatusCodes status, ResponseMessage responseMessage) {
 		this.setStatus(status);
 		this.messageKey = responseMessage.toString();
 		this.message = responseMessage.getMessage();
@@ -165,7 +165,7 @@ public class ResponseWrapperM<T, M> extends AmxApiResponse<T, M> {
 	 * @param messageKey the message key
 	 * @param message    the message
 	 */
-	public void setMessage(WebResponseStatus status, String messageKey, String message) {
+	public void setMessage(OWAStatusStatusCodes status, String messageKey, String message) {
 		this.setStatus(status);
 		this.messageKey = messageKey;
 		this.message = message;
@@ -178,7 +178,7 @@ public class ResponseWrapperM<T, M> extends AmxApiResponse<T, M> {
 	 * @param jaxError the jax error
 	 * @param message  the message
 	 */
-	public void setMessage(WebResponseStatus status, JaxError jaxError, String message) {
+	public void setMessage(OWAStatusStatusCodes status, JaxError jaxError, String message) {
 		this.setStatus(status);
 		this.messageKey = jaxError.toString();
 		this.message = message;
@@ -191,7 +191,7 @@ public class ResponseWrapperM<T, M> extends AmxApiResponse<T, M> {
 	 * @param jaxExcep the jax excep
 	 */
 	@SuppressWarnings("unchecked")
-	public void setMessage(WebResponseStatus status, AmxApiException jaxExcep) {
+	public void setMessage(OWAStatusStatusCodes status, AmxApiException jaxExcep) {
 		this.setMessage(status, jaxExcep.getErrorKey(), jaxExcep.getErrorMessage());
 		if (!ArgUtil.isEmpty(jaxExcep.getError())) {
 			this.statusKey = jaxExcep.getError().getStatusKey();
@@ -205,7 +205,7 @@ public class ResponseWrapperM<T, M> extends AmxApiResponse<T, M> {
 	 * @param status the status
 	 * @param excep  the excep
 	 */
-	public void setMessage(WebResponseStatus status, Exception excep) {
+	public void setMessage(OWAStatusStatusCodes status, Exception excep) {
 		this.setStatus(status);
 		this.message = excep.getMessage();
 		this.exception = excep.getClass().getName();

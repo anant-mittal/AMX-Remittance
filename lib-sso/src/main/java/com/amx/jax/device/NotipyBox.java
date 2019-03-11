@@ -18,4 +18,7 @@ public class NotipyBox extends CacheBox<NotipyData> {
 		return new NotipyData();
 	}
 
+	public Object version() {
+		return 1;
+	}
 }

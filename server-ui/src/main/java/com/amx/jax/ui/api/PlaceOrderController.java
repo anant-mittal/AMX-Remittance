@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.model.PlaceOrderDTO;
-import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
-import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
+import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
+import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.service.JaxService;
 

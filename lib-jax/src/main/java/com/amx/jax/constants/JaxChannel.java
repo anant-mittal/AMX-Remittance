@@ -27,6 +27,12 @@ public enum JaxChannel {
 		public Channel getClientChannel() {
 			return UserClient.Channel.BRANCH;
 		}
+	},
+	SYSTEM {
+		@Override
+		public Channel getClientChannel() {
+			return UserClient.Channel.SYSTEM;
+		}
 	};
 
 	public abstract UserClient.Channel getClientChannel();

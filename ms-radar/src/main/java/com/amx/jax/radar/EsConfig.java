@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.AbstractFactoryBean;
 import org.springframework.context.annotation.Configuration;
 
+import com.amx.jax.AppContextUtil;
+import com.amx.jax.AppParam;
 import com.amx.utils.ArgUtil;
 
 @Configuration
@@ -80,6 +82,10 @@ public class EsConfig extends AbstractFactoryBean {
 
 	public String getClusterUrl() {
 		return clusterUrl;
+	}
+
+	public static String indexName(String name) {
+		return String.format("%s-%s-%s", AppParam.APP_ENV.getValue(), AppContextUtil.getTenant(), name).toLowerCase();
 	}
 
 }

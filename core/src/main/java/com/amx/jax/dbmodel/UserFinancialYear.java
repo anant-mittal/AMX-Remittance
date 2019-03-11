@@ -47,6 +47,11 @@ public class UserFinancialYear implements Serializable {
 	public UserFinancialYear(){
 		
 	}
+	
+	public UserFinancialYear(BigDecimal financialYearID){
+		this.financialYearID = financialYearID;
+		
+	}
 	/**
 	 * @param financialYearID
 	 * @param financialYear

@@ -33,19 +33,20 @@ public class MetaData implements IMetaData {
 	private BigDecimal defaultCurrencyId;
 
 	private JaxChannel channel;
-	
+
 	private BigDecimal customerId;
-	
+
 	private BigDecimal countryBranchId;
-	
+
 	private Tenant tenant = Tenant.DEFAULT;
-	
+
 	private String deviceIp;
 	private String deviceId;
-    private String referrer;
-    private String deviceType;
-    private String appType;
-    private BigDecimal employeeId;
+	private String referrer;
+	private String deviceType;
+	private String appType;
+	private BigDecimal employeeId;
+
 	/**
 	 * This returns service factory object depending on site country
 	 */
@@ -55,9 +56,8 @@ public class MetaData implements IMetaData {
 		return null;
 	}
 
-	public Country getCountry() {
-		Country country = Country.countryIdToCountryMap.get(countryId.intValue());
-		return country;
+	public Tenant getCountry() {
+		return Tenant.fromCountryId(countryId.intValue());
 	}
 
 	public BigDecimal getCompanyId() {
@@ -148,8 +148,6 @@ public class MetaData implements IMetaData {
 		this.deviceId = deviceId;
 	}
 
-	
-
 	public String getReferrer() {
 		return referrer;
 	}
@@ -181,7 +179,5 @@ public class MetaData implements IMetaData {
 	public void setEmployeeId(BigDecimal employeeId) {
 		this.employeeId = employeeId;
 	}
-
-	
 
 }

@@ -198,6 +198,8 @@ public class FcSaleBranchOrderManager {
 							userStockDto.setStockId(userStockDt.getStockId());
 							userStock.add(userStockDto);
 						}
+					}else {
+						throw new GlobalException(JaxError.NO_RECORD_FOUND, "No records found for user stock");
 					}
 				}else {
 					throw new GlobalException(JaxError.INVALID_EMPLOYEE,"Employee details userName,countryBranchId is empty");

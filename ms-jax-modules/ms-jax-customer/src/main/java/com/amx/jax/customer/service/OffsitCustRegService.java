@@ -616,21 +616,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		Customer customer = new Customer();
 		customer = customerRepository.getCustomerByCivilIdAndIsActive(customerDetails.getIdentityInt(),
 				customerDetails.getCountryId(), customerDetails.getIdentityTypeId());
-		/*
-		 * if (customer != null) { if (customer.getIdentityTypeId().equals(new
-		 * BigDecimal(198))) { throw new GlobalException(JaxError.EXISTING_CIVIL_ID,
-		 * "Customer Civil Id Already Exist"); } if
-		 * (customer.getIdentityTypeId().equals(new BigDecimal(204))) { throw new
-		 * GlobalException(JaxError.EXISTING_PASSPORT, "Passport Number Already Exist");
-		 * } if (customer.getIdentityTypeId().equals(new BigDecimal(201))) { throw new
-		 * GlobalException(JaxError.EXISTING_GCC_ID, "GCC ID Already Exist"); } if
-		 * (customer.getIdentityTypeId().equals(new BigDecimal(197))) { throw new
-		 * GlobalException(JaxError.EXISTING_BEDOUIN_ID, "BEDOUIN ID Already Exist"); }
-		 * 
-		 * }
-		 */
-
-		if (customer == null) {
+		if(customer == null) {
 			customer = new Customer();
 		}
 
@@ -707,7 +693,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 			customer.setFsIncomeRangeMaster(
 					articleDao.getIncomeRangeMasterByIncomeRangeId(customerEmploymentDetails.getIncomeRangeId()));
 		}
-
+		userValidationService.validateBlackListedCustomerForLogin(customer);
 		LOGGER.info("generated customer ref: {}", customerReference);
 		LOGGER.info("Createing new customer record, civil id- {}", customerDetails.getIdentityInt());
 		customerRepository.save(customer);
@@ -1100,10 +1086,27 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		}
 		return AmxApiResponse.build(offsiteCustomer);
 	}
+	
+	/**
+	 * To fetch customer details
+	 * auth    : MRU
+	 * purpose : to fethc custoemr deatails 
+	 */
+	
+	@Override
+	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerDetails(String identityInt,BigDecimal identityTypeId) {
+		OffsiteCustomerDataDTO offsiteCustomer =customerRegistrationManager.getCustomerDeatils(identityInt, identityTypeId);
+		return AmxApiResponse.build(offsiteCustomer); 
+	}
 
 	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerData(
 			GetOffsiteCustomerDetailRequest request) {
 		offsiteCustomerRegValidator.validateGetOffsiteCustomerDetailRequest(request);
 		return getOffsiteCustomerData(request.getIdentityInt(), request.getIdentityType());
 	}
+	
+	
+	
+	
+	
 }

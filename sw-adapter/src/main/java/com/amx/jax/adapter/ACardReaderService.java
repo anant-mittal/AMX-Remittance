@@ -82,6 +82,10 @@ public abstract class ACardReaderService {
 
 	String serverUrl;
 
+	boolean isLocal = false;
+
+	String localIdentity;
+
 	public String getServerUrl() {
 		if (ArgUtil.isEmpty(serverUrl)) {
 			synchronized (lock) {
@@ -89,6 +93,8 @@ public abstract class ACardReaderService {
 				String serverDB = environment.getProperty("adapter." + tnt + "." + env + ".db");
 				if (ArgUtil.isEmpty(serverUrl)) {
 					serverUrl = environment.getProperty("adapter.local.url");
+					this.isLocal = true;
+					this.localIdentity = environment.getProperty("local.identity");
 				}
 				if (ArgUtil.isEmpty(serverDB)) {
 					serverDB = environment.getProperty("adapter.local.db");
@@ -434,6 +440,18 @@ public abstract class ACardReaderService {
 	public void reset() {
 		LOGGER.debug("KWTCardReader:reset");
 		deviceStatus = DeviceStatus.DISCONNECTED;
+		if (this.isLocal) {
+			try {
+				CardReader reader = new CardReader();
+				reader.setData(new CardData());
+				reader.getData().setIdentity(localIdentity);
+				adapterServiceClient.saveCardDetailsByTerminal(terminalId, reader, address, devicePairingCreds,
+						sessionPairingCreds);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+
 	}
 
 	private void progress() {

@@ -12,5 +12,7 @@ import com.amx.jax.pricer.dbmodel.CustomerCategoryDiscount;
 public interface CustCatDiscountRepository extends CrudRepository<CustomerCategoryDiscount, BigDecimal> {
 
 	CustomerCategoryDiscount findByCustomerCategory(String customerCategory);
+	
+	CustomerCategoryDiscount findById(BigDecimal Id);
 
 }

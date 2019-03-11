@@ -14,5 +14,10 @@ public interface IBankBranchView extends JpaRepository<BankBranchView, Serializa
 	
 	@Query("select bb from BankBranchView bb where bb.bankId=:bankid and bb.bankBranchId=:branchid")
 	public List<BankBranchView> getBankBranch(@Param("bankid") BigDecimal bankid,@Param("branchid") BigDecimal branchid);
+	
+	
+	
+	
+	
 
 }
