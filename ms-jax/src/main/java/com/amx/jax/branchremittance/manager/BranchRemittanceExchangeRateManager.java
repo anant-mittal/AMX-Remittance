@@ -86,7 +86,7 @@ public class BranchRemittanceExchangeRateManager {
 	public BranchRemittanceGetExchangeRateResponse getExchangeRateResponse(IRemittanceApplicationParams request) {
 		BenificiaryListView beneficiaryView = beneValidationService.validateBeneficiary(request.getBeneficiaryRelationshipSeqIdBD());
 		Customer customer = userService.getCustById(metaData.getCustomerId());
-		ExchangeRateResponseModel exchangeRateResponseModel = jaxDynamicPriceService.getExchangeRatesWithDiscount(metaData.getDefaultCurrencyId(),
+ 		ExchangeRateResponseModel exchangeRateResponseModel = jaxDynamicPriceService.getExchangeRatesWithDiscount(metaData.getDefaultCurrencyId(),
 				beneficiaryView.getCurrencyId(), request.getLocalAmountBD(), request.getForeignAmountBD(), beneficiaryView.getCountryId(),
 				request.getCorrespondanceBankIdBD(), request.getServiceIndicatorIdBD());
 		if (exchangeRateResponseModel.getExRateBreakup() == null) {
@@ -140,6 +140,7 @@ public class BranchRemittanceExchangeRateManager {
 		List<JaxConditionalFieldDto> flexFields = new ArrayList<>();
 		try {
 			remittanceAdditionalFieldManager.validateAdditionalFields(branchRemittanceApplRequestModel, remitApplParametersMap);
+			
 		} catch (GlobalException ex) {
 			if (ex.getMeta() != null) {
 				flexFields.addAll((Collection<? extends JaxConditionalFieldDto>) ex.getMeta());
@@ -152,6 +153,17 @@ public class BranchRemittanceExchangeRateManager {
 				flexFields.addAll((Collection<? extends JaxConditionalFieldDto>) ex.getMeta());
 			}
 		}
+		
+		try {
+			flexFields  = remittanceAdditionalFieldManager.validateAmlCheck(branchRemittanceApplRequestModel);
+		} catch (GlobalException ex) {
+			if (ex.getMeta() != null) {
+				flexFields.addAll((Collection<? extends JaxConditionalFieldDto>) ex.getMeta());
+			}
+		}
+		
+		
+		
 		return flexFields;
 	}
 }

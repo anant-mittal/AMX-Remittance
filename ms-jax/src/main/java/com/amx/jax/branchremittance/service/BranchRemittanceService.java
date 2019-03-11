@@ -111,13 +111,7 @@ public class BranchRemittanceService extends AbstractService{
 		return AmxApiResponse.buildList(lstLocalBanks);
 	}
 	
-	/*public AmxApiResponse<CustomerBankDetailsDto, Object> fetchCustomerBankNames(BigDecimal bankId){
-		validation.validateHeaderInfo();
-		BigDecimal customerId = metaData.getCustomerId();
-		List<Object[]> lstCustomerNames = branchRemittancePaymentManager.fetchCustomerNames(customerId,bankId);
-		return AmxApiResponse.build(lstCustomerNames);
-		//return AmxApiResponse.buildList(lstCustomerNames);
-	}*/
+
 	
 	public AmxApiResponse<CustomerBankDetailsDto, Object> fetchCustomerBankNames(BigDecimal bankId){
 	validation.validateHeaderInfo();
@@ -184,7 +178,6 @@ public class BranchRemittanceService extends AbstractService{
 	}
 	
 	public AmxApiResponse<RemittanceResponseDto, Object> saveRemittanceTransaction(BranchRemittanceRequestModel remittanceRequestModel){
-		// RemittanceResponseDto dto = branchRemittanceSaveManager.saveRemittance(remittanceRequestModel);
 		 RemittanceResponseDto dto = branchRemittanceSaveManager.saveRemittanceTrnx(remittanceRequestModel);
 		 return AmxApiResponse.build(dto);
 	 }

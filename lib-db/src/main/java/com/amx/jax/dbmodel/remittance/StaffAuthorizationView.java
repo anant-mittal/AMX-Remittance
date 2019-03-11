@@ -14,6 +14,7 @@ public class StaffAuthorizationView {
 	private String userName;
 	private String password;
 	private BigDecimal id;
+	private BigDecimal locCode;
 
 	@Id
 	@Column(name = "IDNO")
@@ -38,7 +39,10 @@ public class StaffAuthorizationView {
 	public String getPassword() {
 		return password;
 	}
+	
+	
 
+	
 	public void setPassword(String password) {
 		this.password = password;
 	}
@@ -53,5 +57,14 @@ public class StaffAuthorizationView {
 		this.userName = userName;
 		this.password = password;
 		this.id = id;
+	}
+
+	@Column(name="LOCCOD")
+	public BigDecimal getLocCode() {
+		return locCode;
+	}
+
+	public void setLocCode(BigDecimal locCode) {
+		this.locCode = locCode;
 	}
 }

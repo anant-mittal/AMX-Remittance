@@ -19,6 +19,7 @@ public abstract class RemittanceAdditionalBeneFieldModel extends AbstractRemitta
 	private Map<String, FlexFieldDto> flexFieldDtoMap;
 	private Map<String, Object> additionalFields;
 	private BigDecimal purposeOfTrnxId;
+	private Map<String, Object> amlFieldValidation;
 
 	public Map<String, Object> getAdditionalFields() {
 		return additionalFields;
@@ -76,8 +77,7 @@ public abstract class RemittanceAdditionalBeneFieldModel extends AbstractRemitta
 				}
 				return flexFieldDto;
 			};
-			this.flexFieldDtoMap = flexFieldMap.entrySet().stream()
-					.collect(Collectors.toMap(Map.Entry::getKey, valueMapper));
+			this.flexFieldDtoMap = flexFieldMap.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, valueMapper));
 		}
 	}
 	
@@ -92,8 +92,7 @@ public abstract class RemittanceAdditionalBeneFieldModel extends AbstractRemitta
 	private Map<String, String> createFlexFieldMap(Map<String, Object> flexFields2) {
 
 		Set<Entry<String, Object>> es = flexFields2.entrySet();
-		Map<String, String> output = es.stream()
-				.collect(Collectors.toMap(x -> x.getKey(), x -> JsonUtil.toJson(x.getValue())));
+		Map<String, String> output = es.stream().collect(Collectors.toMap(x -> x.getKey(), x -> JsonUtil.toJson(x.getValue())));
 		return output;
 	}
 	
@@ -103,4 +102,15 @@ public abstract class RemittanceAdditionalBeneFieldModel extends AbstractRemitta
 	public void setPurposeOfTrnxId(BigDecimal purposeOfTrnxId) {
 		this.purposeOfTrnxId = purposeOfTrnxId;
 	}
+
+	public Map<String, Object> getAmlFieldValidation() {
+		return amlFieldValidation;
+	}
+
+	public void setAmlFieldValidation(Map<String, Object> amlFieldValidation) {
+		this.amlFieldValidation = amlFieldValidation;
+	}
+
+	
+	
 }

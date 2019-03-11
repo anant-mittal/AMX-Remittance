@@ -130,8 +130,7 @@ public class BranchRemittanceApplManager {
 	@Autowired
 	BeneficiaryService beneficiaryService;
 	
-	//@Autowired
-	//RemittanceTransactionManager remittanceTxnManger;
+	
 	
 	@Autowired
 	private CustomerDao custDao;
@@ -215,7 +214,8 @@ public class BranchRemittanceApplManager {
 		 
 		 logger.debug("branchExchangeRate :"+exchangeRateResposne);
 		 /* get aml cehck   details **/
-		 List<AmlCheckResponseDto> amlList= branchRemitManager.amlTranxAmountCheckForRemittance(requestApplModel,exchangeRateResposne);
+		 //List<AmlCheckResponseDto> amlList= branchRemitManager.amlTranxAmountCheckForRemittance(requestApplModel,exchangeRateResposne);
+		 List<AmlCheckResponseDto> amlList= branchRemitManager.amlTranxAmountCheckForRemittance(requestApplModel.getBeneId(),exchangeRateResposne.getExRateBreakup().getConvertedLCAmount());
 		 
 		 logger.info("amlList :"+amlList.toString());
 		 /* additional check **/
@@ -268,7 +268,7 @@ public class BranchRemittanceApplManager {
 		RemittanceApplication remittanceApplication = new RemittanceApplication();
 		try {
 			
-			String signature = getCustomerSignature();
+			String signature ="test";// getCustomerSignature();
 
 			if(!StringUtils.isBlank(signature)) {
 				try {
@@ -281,25 +281,19 @@ public class BranchRemittanceApplManager {
 			}
 			
 			BranchRemittanceApplRequestModel applRequestModel = (BranchRemittanceApplRequestModel)hashMap.get("APPL_REQ_MODEL");
-			//Map<String, Object> branchRoutingDetails =(HashMap)hashMap.get("ROUTING_DETAILS_MAP");
-			
 			RoutingResponseDto branchRoutingDto = (RoutingResponseDto)hashMap.get("ROUTING_DETAILS_DTO");
-			//Map<String, Object> branchExchangeRate =(HashMap)hashMap.get("EXCH_RATE_MAP");
-			
 			BranchRemittanceGetExchangeRateResponse branchExchangeRate =(BranchRemittanceGetExchangeRateResponse)hashMap.get("EXCH_RATE_MAP");
-			
 			BenificiaryListView beneDetails  =(BenificiaryListView) hashMap.get("BENEFICIARY_DETAILS");
+			
 			BranchExchangeRateBreakup rateBreakUp = applRequestModel.getBranchExRateBreakup();
-			
-			
 			
 			BigDecimal routingCountryId = branchRoutingDto.getRoutingCountrydto().get(0).getResourceId();
 			Customer customer = (Customer) hashMap.get("CUSTOMER");
 			BigDecimal routingBankId = branchRoutingDto.getRoutingBankDto().get(0).getRoutingBankId();
 			BigDecimal routingBankBranchId = (BigDecimal) branchRoutingDto.getRoutingBankBranchDto().get(0).getBankBranchId();
 			BigDecimal foreignCurrencyId = beneDetails.getCurrencyId();
-			BigDecimal deliveryId =branchRoutingDto.getDeliveryModeList().get(0).getDeliveryModeId(); //(BigDecimal) branchExchangeRate.get("P_DELIVERY_MODE_ID");
-			BigDecimal remittanceId = applRequestModel.getRemittanceModeId();//(BigDecimal) branchExchangeRate.get("P_REMITTANCE_MODE_ID");
+			BigDecimal deliveryId =branchRoutingDto.getDeliveryModeList().get(0).getDeliveryModeId(); 
+			BigDecimal remittanceId = applRequestModel.getRemittanceModeId();
 			
 			BigDecimal selectedCurrencyId = branchRemitManager.getSelectedCurrency(foreignCurrencyId, applRequestModel);
 			
