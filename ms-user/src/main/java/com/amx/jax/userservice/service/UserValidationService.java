@@ -732,9 +732,7 @@ public class UserValidationService {
 	}
 
 	private void validateCustomerForOffisteReg(Customer customer) {
-		if (ConstantDocument.Yes.equalsIgnoreCase(customer.getIsActive())) {
-			throw new GlobalException(JaxError.CUSTOMER_ACTIVE_BRANCH, "Customer active in branch");
-		}
+		
 	}
 
 	private void validateCustomerDefault(Customer customer) {

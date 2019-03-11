@@ -14,6 +14,19 @@ public class GetOffsiteCustomerDetailRequest {
 	Date issueDate;
 	Date expiryDate;
 	Date dateOfBirth;
+	
+	
+
+	public GetOffsiteCustomerDetailRequest() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	public GetOffsiteCustomerDetailRequest(String identityInt, BigDecimal identityType) {
+		super();
+		this.identityInt = identityInt;
+		this.identityType = identityType;
+	}
 
 	public String getIdentityInt() {
 		return identityInt;

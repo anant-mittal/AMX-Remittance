@@ -614,8 +614,9 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 	private Customer commitCustomer(com.amx.jax.model.request.CustomerPersonalDetail customerDetails,
 			CustomerEmploymentDetails customerEmploymentDetails) {
 		Customer customer = new Customer();
-		customer = customerRepository.getCustomerByCivilIdAndIsActive(customerDetails.getIdentityInt(),
+		List<Customer> customers = customerRepository.getCustomerByCivilIdAndIsActive(customerDetails.getIdentityInt(),
 				customerDetails.getCountryId(), customerDetails.getIdentityTypeId());
+		customer = offsiteCustomerRegValidator.validateOffsiteCustomerForRegistration(customers);
 		if(customer == null) {
 			customer = new Customer();
 		}
@@ -676,13 +677,8 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		customer.setMedicalInsuranceInd(customerDetails.getInsurance());
 		if (customerDetails.getIdentityTypeId().toString().equals("204")) {
 			customer.setIdentityExpiredDate(customerDetails.getExpiryDate());
-			// commented by Prashant
-			// customer.setExpiryDate(customerDetails.getExpiryDate());
-			// customer.setIssueDate(customerDetails.getIssueDate());
 		} else {
 			customer.setIdentityExpiredDate(customerDetails.getExpiryDate());
-			// customer.setExpiryDate(null);
-			// customer.setIssueDate(null);
 		}
 		customer.setIdentityInt(customerDetails.getIdentityInt());
 
@@ -1095,6 +1091,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 	
 	@Override
 	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerDetails(String identityInt,BigDecimal identityTypeId) {
+		offsiteCustomerRegValidator.validateGetOffsiteCustomerDetailRequest(new GetOffsiteCustomerDetailRequest(identityInt, identityTypeId));
 		OffsiteCustomerDataDTO offsiteCustomer =customerRegistrationManager.getCustomerDeatils(identityInt, identityTypeId);
 		return AmxApiResponse.build(offsiteCustomer); 
 	}

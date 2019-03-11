@@ -33,7 +33,7 @@ public interface CustomerRepository extends CrudRepository<Customer, BigDecimal>
 	public List<PlaceOrderCustomer> findPOCustomersByIds(List<BigDecimal> customerIds);
 
 	@Query("select c from Customer c where identityInt =?1 and countryId=?2 and identityTypeId = ?3 and   isActive in ('Y','N')")
-	public Customer getCustomerByCivilIdAndIsActive(String identityInt, BigDecimal countryId,BigDecimal identityTypeId);
+	public List<Customer> getCustomerByCivilIdAndIsActive(String identityInt, BigDecimal countryId,BigDecimal identityTypeId);
 	
 	public Customer getCustomerByCustomerIdAndIsActive(BigDecimal customerId, String isActive);
 
