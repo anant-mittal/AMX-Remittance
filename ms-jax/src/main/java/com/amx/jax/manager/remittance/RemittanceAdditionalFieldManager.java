@@ -251,7 +251,7 @@ public class RemittanceAdditionalFieldManager {
 							JaxFieldValueDto fieldValueDto = new JaxFieldValueDto();
 							filedDto.setDefaultValue(staff.getUserName());
 							fieldValueDto.setId(staff.getId());
-							fieldValueDto.setOptLable(jaxConditionalField.getField().getName());
+							fieldValueDto.setOptLable(staff.getUserName());
 							fieldValueDto.setValue(staff.getUserName());
 							possibleValues.add(fieldValueDto);
 						}
