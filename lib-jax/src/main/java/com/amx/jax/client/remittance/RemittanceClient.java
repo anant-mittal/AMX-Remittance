@@ -227,7 +227,7 @@ public class RemittanceClient  implements IRemittanceService{
 			return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_VALIDATE_STAFF_CREDENTIALS).meta(new JaxMetaInfo())
 					.queryParam(Params.STAFF_USERNAME, staffUserName).meta(new JaxMetaInfo())
 					.queryParam(Params.STAFF_PASSWORD, staffPassword)
-					.get()
+					.post()
 					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
 					});
 		} catch (Exception e) {
