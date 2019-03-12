@@ -149,7 +149,7 @@ public class PricingService {
 
 		for (ViewExRoutingMatrix oneMatrix : routingMatrix) {
 
-			remitRoutingManager.getEstimatedBlockDelivery(System.currentTimeMillis(), "Australia/Sydney",
+			remitRoutingManager.getEstimatedBlockDelivery(System.currentTimeMillis(), "Asia/Kolkata",
 					oneMatrix.getWeekFrom(), oneMatrix.getWeekTo(), oneMatrix.getWeekHoursFrom(),
 					oneMatrix.getWeekHoursTo(), oneMatrix.getWeekendFrom(), oneMatrix.getWeekendTo(),
 					oneMatrix.getWeekendHoursFrom(), oneMatrix.getWeekendHoursTo(), oneMatrix.getDelievryMinutes(),

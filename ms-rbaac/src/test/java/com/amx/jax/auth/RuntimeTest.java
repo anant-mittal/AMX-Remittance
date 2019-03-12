@@ -97,12 +97,13 @@ public final class RuntimeTest {
 		
 		System.out.println("\n\n HourMin ==>" + DateUtil.getHrMinIntVal(23, 100));
 		
-		String d = "24.15" ;
-		String d2 = "8" ;
+		Date dt = new Date();
+		dt.setHours(48);
+		dt.setMinutes(25);
+		dt.setSeconds(00);
 		
-		System.out.println("\n\n HourMin Split d ==>" + DateUtil.getHrMinIntVal(d));
+		System.out.println("\n\n Date d ==>" + dt);
 		
-		System.out.println("\n\n HourMin Split d2==>" + DateUtil.getHrMinIntVal(d2));
 		
 		
 		

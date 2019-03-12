@@ -106,8 +106,6 @@ public class RemitRoutingManager {
 		WorkingHoursData workingHoursData = this.computeWorkMatrix(weekFrom, weekTo, weekHrsFrom, weekHrsTo,
 				weekEndFrom, weekEndTo, weekEndHrsFrom, weekEndHrsTo, processTimeInHrs);
 
-		workingHoursData.setProcessTimeInHrs(processTimeInHrs.doubleValue());
-
 		ZonedDateTime goodBusinessDT = this.getGoodBusinessDateTime(beginZonedDT, workingHoursData, countryId,
 				noHolidayLag);
 
@@ -140,7 +138,9 @@ public class RemitRoutingManager {
 					weekEndHrsFrom.doubleValue(), weekEndHrsTo.doubleValue());
 		}
 
-		System.out.println(" Work Week matrix ==> " + JsonUtil.toJson(workingHoursData) );
+		workingHoursData.setProcessTimeInHrs(processTimeInHrs.doubleValue());
+
+		System.out.println(" Work Week matrix ==> " + JsonUtil.toJson(workingHoursData));
 
 		return workingHoursData;
 	}
