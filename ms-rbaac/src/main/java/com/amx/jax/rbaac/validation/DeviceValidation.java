@@ -78,12 +78,10 @@ public class DeviceValidation {
 	}
 	
 	public void validateDeviceRegId(Integer deviceRegId) {
-		if(deviceRegId ==null) {
-					throw new AuthServiceException("DeviceRegId should not be blank");
-				}
-		
+		if (deviceRegId == null) {
+			throw new AuthServiceException("DeviceRegId should not be blank");
+		}
 	}
-
 
 	/**
 	 * validates device reg request
@@ -112,14 +110,6 @@ public class DeviceValidation {
 		return (existing != null);
 	}
 
-	public void validateSessionToken(String sessionToken, Integer registrationId) {
-		DeviceStateInfo deviceStateInfo = deviceDao.findBySessionToken(sessionToken, registrationId);
-		if (deviceStateInfo == null) {
-			throw new AuthServiceException(RbaacServiceError.CLIENT_INVALID_SESSION_TOKEN, "Invalid session token");
-		}
-
-	}
-
 	public void validateDevice(Integer deviceRegId) {
 
 		Device device = deviceDao.findDevice(new BigDecimal(deviceRegId));
@@ -141,7 +131,7 @@ public class DeviceValidation {
 		}
 	}
 
-	public void validateDeviceForActivation(Device device) {
+	public void validateNullDevice(Device device) {
 		if (device == null) {
 			throw new AuthServiceException(RbaacServiceError.CLIENT_NOT_FOUND, "No device found");
 		}

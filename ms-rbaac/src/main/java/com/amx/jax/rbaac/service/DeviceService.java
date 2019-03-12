@@ -30,6 +30,7 @@ import com.amx.jax.rbaac.exception.AuthServiceException;
 import com.amx.jax.rbaac.manager.DeviceManager;
 import com.amx.jax.rbaac.validation.DeviceValidation;
 import com.amx.jax.util.ParamValidator;
+import com.amx.utils.Constants;
 import com.amx.utils.CryptoUtil;
 import com.amx.utils.Random;
 import com.amx.utils.TimeUtils;
@@ -96,7 +97,7 @@ public class DeviceService extends AbstractService {
 	public BoolRespModel deactivateDevice(Integer deviceRegId) {
 		logger.info("In deactivateDevice with deviceRegId: {}", deviceRegId);
 		Device device = deviceDao.findDevice(new BigDecimal(deviceRegId));
-		deviceValidation.validateDeviceForActivation(device);
+		deviceValidation.validateNullDevice(device);
 		deactivateDevice(device);
 		return new BoolRespModel(Boolean.TRUE);
 	}
@@ -104,6 +105,12 @@ public class DeviceService extends AbstractService {
 	public void deactivateDevice(Device device) {
 		device.setStatus("N");
 		device.setState(DeviceState.REGISTERED_NOT_ACTIVE);
+		deviceDao.saveDevice(device);
+	}
+	
+	public void deleteDevice(Device device) {
+		device.setStatus(Constants.DELETED_SOFT);
+		device.setState(DeviceState.DELETED);
 		deviceDao.saveDevice(device);
 	}
 
@@ -147,8 +154,17 @@ public class DeviceService extends AbstractService {
 		logger.info("In activateDevice with deviceRegId: {}", deviceRegId);
 		deviceValidation.validateDeviceRegId(deviceRegId);
 		Device device = deviceDao.findDevice(new BigDecimal(deviceRegId));
-		deviceValidation.validateDeviceForActivation(device);
+		deviceValidation.validateNullDevice(device);
 		activateDevice(device);
+		return new BoolRespModel(Boolean.TRUE);
+	}
+	
+	public BoolRespModel deleteDevice(Integer deviceRegId) {
+		logger.info("In deleteDevice with deviceRegId: {}", deviceRegId);
+		deviceValidation.validateDeviceRegId(deviceRegId);
+		Device device = deviceDao.getDeviceByRegId(new BigDecimal(deviceRegId));
+		deviceValidation.validateNullDevice(device);
+		deleteDevice(device);
 		return new BoolRespModel(Boolean.TRUE);
 	}
 
