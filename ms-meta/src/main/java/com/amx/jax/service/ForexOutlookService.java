@@ -74,13 +74,13 @@ public class ForexOutlookService extends AbstractService {
 			CurrencyPairView currencyPairList = currencyPairRepository.getCurrencyPairById(entity.getPairId());
 
 			dto.importFrom(entity);
-			
-			Date date=entity.getModifiedDate();
+
+			Date date = entity.getModifiedDate();
 			DateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy");
-			 
-	        String strDate = dateFormat.format(date);
-	         dto.setModifiedDate(strDate);
-			LOGGER.info("modified date"+entity.getModifiedDate());
+
+			String strDate = dateFormat.format(date);
+			dto.setModifiedDate(strDate);
+			LOGGER.info("modified date" + entity.getModifiedDate());
 			dto.setCurpairName(currencyPairList.getCurPairName());
 			dto.setMessage(entity.getOutlookDesc());
 
@@ -134,7 +134,8 @@ public class ForexOutlookService extends AbstractService {
 
 		catch (Exception e) {
 			LOGGER.error("exception in saving : ", e);
-			return new BoolRespModel(Boolean.FALSE);
+			throw new GlobalException(JaxError.SAVE_FAILED, "Error occured while saving Currency Pair");
+
 		}
 
 		return new BoolRespModel(Boolean.TRUE);
@@ -154,7 +155,8 @@ public class ForexOutlookService extends AbstractService {
 				throw new GlobalException("No record found");
 			}
 		} catch (Exception e) {
-			return new BoolRespModel(Boolean.FALSE);
+			throw new GlobalException(JaxError.SAVE_FAILED, "Error occured while deleting Currency Pair");
+
 		}
 
 		LOGGER.debug("CurrencyPair Deleted ");
