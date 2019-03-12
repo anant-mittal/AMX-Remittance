@@ -211,6 +211,7 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 		shoppingCartDataTableBean.setBeneRelationseqId(shoppingCartDetails.getBeneRelationseqId());
 		shoppingCartDataTableBean.setSourceOfIncomeId(shoppingCartDetails.getSourceofincome()==null?BigDecimal.ZERO:new BigDecimal(shoppingCartDetails.getSourceofincome()));
 		shoppingCartDataTableBean.setDomXRate(RoundUtil.roundBigDecimal(BigDecimal.ONE.divide(shoppingCartDetails.getExchangeRateApplied(),10,RoundingMode.HALF_UP),breakup.getFcDecimalNumber().intValue()));
+		shoppingCartDataTableBean.setCustomerSignatureString(shoppingCartDetails.getCustomerSignatureClob());
 		
 	
 		
@@ -290,29 +291,6 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 					CustomerBankDetailsDto customerBankDetailsDto = new CustomerBankDetailsDto();
 					customerBankDetailsDto = fetchCustomerNames(customerId, localBankDetailsDto.getChequeBankId());
 					customerBankDetailsDto.setLocalBankDetailsDto(localBankDetailsDto);
-					
-					/*List<Object[]> custBankName = fetchCustomerNames(customerId, localBankDetailsDto.getChequeBankId());
-					if (custBankName != null && custBankName.size() != 0) {
-						for (Object object : custBankName) {
-							Object[] custBankNameObject = (Object[]) object;
-							
-							if(custBankNameObject[0]!=null) {
-								List<String> nameList = new ArrayList<>();
-								nameList.add(custBankNameObject[0].toString());
-								customerBankDetailsDto.setCustomerNames(nameList);
-							}
-							if(custBankNameObject[1]!=null) {
-								List<BigDecimal> relationList = new ArrayList<>();
-								relationList.add(new BigDecimal(custBankNameObject[1].toString()));
-								customerBankDetailsDto.setRelationId(relationList);
-							}
-							
-						}
-					}
-					*/
-					
-					//customerBankDetailsDto.setCustomerNames(new ArrayList(custBankName.get(0).));
-					
 					lstCustBanksDto.add(customerBankDetailsDto);
 				}
 			}
@@ -340,12 +318,6 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 		return dto;
 	}
 
-	/*public List<String> fetchCustomerNames(BigDecimal customerId,BigDecimal bankId){
-		List<String> lstCustDetails = branchRemittancePaymentDao.fetchCustomerBankNames(customerId,bankId);
-		return lstCustDetails;
-	}
-*/
-	
 	public CustomerBankDetailsDto fetchCustomerNames(BigDecimal customerId,BigDecimal bankId){
 		CustomerBankDetailsDto customerBankDetailsDto = new CustomerBankDetailsDto();
 	List<Object[]> custBankName = branchRemittancePaymentDao.fetchCustomerBankNames(customerId,bankId);

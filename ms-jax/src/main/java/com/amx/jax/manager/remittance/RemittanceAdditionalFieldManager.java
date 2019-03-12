@@ -235,16 +235,16 @@ public class RemittanceAdditionalFieldManager {
 			allJaxConditionalFields = apiResponse.getResults();
 			List<JaxConditionalFieldDto> missingJaxConditionalFields = new ArrayList<>();
 			Map<String, Object> amlFields = model.getAmlFieldValidation();
-			CountryBranch countryBranch = bankMetaService.getCountryBranchById(metaData.getCountryBranchId()); //user branch not customer branch
+			CountryBranch countryBranch = bankMetaService.getCountryBranchById(metaData.getCountryBranchId()); 
 			List<StaffAuthorizationView> staffList =  staffAuthorizationRepository.findByLocCode(countryBranch.getBranchId());
 			
 			
 			for (JaxConditionalFieldDto jaxConditionalField : allJaxConditionalFields) {
-					jaxConditionalField.getField().setDtoPath("amlValidation." + jaxConditionalField.getField().getName());
 					if(JaxDynamicField.AML_MESSAGE.name().equalsIgnoreCase(jaxConditionalField.getField().getName())) {
 						jaxConditionalField.getField().setDefaultValue(amlList.get(0)==null?"":amlList.get(0) .getMessageDescription());
 					}
 					if(JaxDynamicField.AML_USER_NAME.name().equalsIgnoreCase(jaxConditionalField.getField().getName())) {
+						jaxConditionalField.getField().setDtoPath("staffUserName");
 						List<JaxFieldValueDto> possibleValues =new ArrayList<>();
 						JaxFieldDto filedDto = new JaxFieldDto();
 						for(StaffAuthorizationView staff : staffList) {	
@@ -256,6 +256,10 @@ public class RemittanceAdditionalFieldManager {
 							possibleValues.add(fieldValueDto);
 						}
 						jaxConditionalField.getField().setPossibleValues(possibleValues);
+					}
+					
+					if(JaxDynamicField.AML_PASSWORD.name().equalsIgnoreCase(jaxConditionalField.getField().getName())) {
+						jaxConditionalField.getField().setDtoPath("staffPassword");
 					}
 					
 					missingJaxConditionalFields.add(jaxConditionalField);
