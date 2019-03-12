@@ -130,8 +130,7 @@ public class BranchRemittanceApplManager {
 	@Autowired
 	BeneficiaryService beneficiaryService;
 	
-	//@Autowired
-	//RemittanceTransactionManager remittanceTxnManger;
+	
 	
 	@Autowired
 	private CustomerDao custDao;
@@ -204,12 +203,6 @@ public class BranchRemittanceApplManager {
 		 //Map<String, Object> branchRoutingDetails =branchRemitManager.getRoutingSetupDeatils(beneficaryDetails);
 		 RoutingResponseDto branchRoutingDto= branchRoutingManager.getRoutingSetup(requestApplModel);
 		 
-		 //logger.info("branchRoutingDetails :"+branchRoutingDetails.toString());
-		 /* get exchange setup details **/
-		 //Map<String, Object> branchExchangeRate =branchRemitManager.getExchangeRateForBranch(requestApplModel, branchRoutingDetails);
-		 //Map<String, Object> branchExchangeRate =branchRemitManager.getExchangeRateForBranch(requestApplModel,branchRoutingDto);
-		 
-		 
 		 //Priccing API
 		 BranchRemittanceGetExchangeRateResponse exchangeRateResposne = branchExchRateService.getExchaneRate(requestApplModel).getResult();
 		 
@@ -221,33 +214,22 @@ public class BranchRemittanceApplManager {
 		 
 		 logger.debug("branchExchangeRate :"+exchangeRateResposne);
 		 /* get aml cehck   details **/
-		//List<AmlCheckResponseDto> amlList= branchRemitManager.amlTranxAmountCheckForRemittance(requestApplModel,branchExchangeRate);
-		 
-		 List<AmlCheckResponseDto> amlList= branchRemitManager.amlTranxAmountCheckForRemittance(requestApplModel,exchangeRateResposne);
+		 //List<AmlCheckResponseDto> amlList= branchRemitManager.amlTranxAmountCheckForRemittance(requestApplModel,exchangeRateResposne);
+		 List<AmlCheckResponseDto> amlList= branchRemitManager.amlTranxAmountCheckForRemittance(requestApplModel.getBeneId(),exchangeRateResposne.getExRateBreakup().getConvertedLCAmount());
 		 
 		 logger.info("amlList :"+amlList.toString());
 		 /* additional check **/
-		//branchRemitManager.validateAdditionalCheck(branchRoutingDetails,customer,beneficaryDetails,(BigDecimal)branchExchangeRate.get("P_LOCAL_NET_PAYABLE"));
-		 
+		
 		 branchRemitManager.validateAdditionalCheck(branchRoutingDto,customer,beneficaryDetails,exchangeRateResposne.getExRateBreakup().getNetAmount());
 		 
 		 if(!JaxUtil.isNullZeroBigDecimalCheck(requestApplModel.getRoutingBankId())) {
 			 requestApplModel.setRoutingBankId(branchRoutingDto.getRoutingBankDto().get(0).getRoutingBankId());
 		 }
 		 
-		
-		 
 		/** bene additional check **/
-		//Map<String, Object> addBeneDetails =branchRemitManager.validateAdditionalBeneDetails(branchRoutingDetails,branchExchangeRate,beneficaryDetails);
-		 
 		 Map<String, Object> addBeneDetails =branchRemitManager.validateAdditionalBeneDetails(branchRoutingDto,exchangeRateResposne,beneficaryDetails);
 		 
 		 
-		
-		
-		//hashMap.put("ROUTING_DETAILS_MAP", branchRoutingDetails);
-		
-		
 		hashMap.put("ROUTING_DETAILS_DTO", branchRoutingDto);
 		hashMap.put("EXCH_RATE_MAP", exchangeRateResposne);
 		hashMap.put("APPL_REQ_MODEL", requestApplModel);
@@ -299,25 +281,19 @@ public class BranchRemittanceApplManager {
 			}
 			
 			BranchRemittanceApplRequestModel applRequestModel = (BranchRemittanceApplRequestModel)hashMap.get("APPL_REQ_MODEL");
-			//Map<String, Object> branchRoutingDetails =(HashMap)hashMap.get("ROUTING_DETAILS_MAP");
-			
 			RoutingResponseDto branchRoutingDto = (RoutingResponseDto)hashMap.get("ROUTING_DETAILS_DTO");
-			//Map<String, Object> branchExchangeRate =(HashMap)hashMap.get("EXCH_RATE_MAP");
-			
 			BranchRemittanceGetExchangeRateResponse branchExchangeRate =(BranchRemittanceGetExchangeRateResponse)hashMap.get("EXCH_RATE_MAP");
-			
 			BenificiaryListView beneDetails  =(BenificiaryListView) hashMap.get("BENEFICIARY_DETAILS");
+			
 			BranchExchangeRateBreakup rateBreakUp = applRequestModel.getBranchExRateBreakup();
-			
-			
 			
 			BigDecimal routingCountryId = branchRoutingDto.getRoutingCountrydto().get(0).getResourceId();
 			Customer customer = (Customer) hashMap.get("CUSTOMER");
 			BigDecimal routingBankId = branchRoutingDto.getRoutingBankDto().get(0).getRoutingBankId();
 			BigDecimal routingBankBranchId = (BigDecimal) branchRoutingDto.getRoutingBankBranchDto().get(0).getBankBranchId();
 			BigDecimal foreignCurrencyId = beneDetails.getCurrencyId();
-			BigDecimal deliveryId =branchRoutingDto.getDeliveryModeList().get(0).getDeliveryModeId(); //(BigDecimal) branchExchangeRate.get("P_DELIVERY_MODE_ID");
-			BigDecimal remittanceId = applRequestModel.getRemittanceModeId();//(BigDecimal) branchExchangeRate.get("P_REMITTANCE_MODE_ID");
+			BigDecimal deliveryId =branchRoutingDto.getDeliveryModeList().get(0).getDeliveryModeId(); 
+			BigDecimal remittanceId = applRequestModel.getRemittanceModeId();
 			
 			BigDecimal selectedCurrencyId = branchRemitManager.getSelectedCurrency(foreignCurrencyId, applRequestModel);
 			
@@ -690,7 +666,6 @@ public class BranchRemittanceApplManager {
 
 					RemitApplAmlModel remitApplAml = new RemitApplAmlModel();
 					remitApplAml.setCompanyId(remittanceApplication.getFsCompanyMaster().getCompanyId());
-					//remitApplAml.setRemittanceApplicationId(remittanceApplication.getRemittanceApplicationId());
 					remitApplAml.setExRemittanceAppfromAml(remittanceApplication);
 					remitApplAml.setCountryId(remittanceApplication.getFsCountryMasterByApplicationCountryId().getCountryId());
 					remitApplAml.setCreatedBy(remittanceApplication.getCreatedBy());
@@ -815,18 +790,13 @@ public class BranchRemittanceApplManager {
 	 BigDecimal terminalId = metaData.getTerminalId();
 	 
 	 logger.debug("ipaddress :"+ipaddress+"\t CustomerId :"+metaData.getCustomerId()+"\t terminalId :"+terminalId);
-	// BranchSystemDetail brSystemDetails = branchSystemDetailRepository.findByIpAddress(ipaddress);
-	// if(brSystemDetails!=null) {
-		// BigDecimal inventoryId = brSystemDetails.getCountryBranchSystemInventoryId();
+	
 		 if(JaxUtil.isNullZeroBigDecimalCheck(terminalId)) {
 			 Device deviceClient = deviceRepository.findByDeviceTypeAndBranchSystemInventoryIdAndStatus(ClientType.SIGNATURE_PAD, terminalId,ConstantDocument.Yes);
 			 DeviceStateInfo deviceStateInfo =  deviceStateRepository.findOne(deviceClient.getRegistrationId());
 			 if(deviceStateInfo!=null && deviceStateInfo.getSignature()!=null) {
 				 signature = deviceStateInfo.getSignature();
 			 }
-		 /*}else {
-			 throw new GlobalException(JaxError.INVENTORY_ID_NOT_EXISTS,"Branch system inventory doesnot exist "+inventoryId);
-		 }*/
 	 }
 	 
 	 return signature;

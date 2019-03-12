@@ -22,5 +22,7 @@ public interface StaffAuthorizationRepository extends CrudRepository<StaffAuthor
 	
 	@Query(value = "Select * from VW_EX_DEBIT_AUTH where User_Name = ?1 and Password = ?2", nativeQuery = true)
 	public BigDecimal validationStaffCredentials(String userName,String password,BigDecimal countryBranchCode);
+	
+	public List<StaffAuthorizationView> findByLocCode(BigDecimal locCode);
 
 }

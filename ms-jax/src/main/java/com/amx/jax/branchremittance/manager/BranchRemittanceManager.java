@@ -44,6 +44,7 @@ import com.amx.jax.manager.RemittanceApplicationManager;
 import com.amx.jax.manager.RemittanceTransactionManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.AbstractModel;
+import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
@@ -379,17 +380,19 @@ public class BranchRemittanceManager extends AbstractModel {
 	}
 
 	
-	public List<AmlCheckResponseDto> amlTranxAmountCheckForRemittance(BranchRemittanceApplRequestModel requestModel,BranchRemittanceGetExchangeRateResponse exchangeRateResposne){
+	//public List<AmlCheckResponseDto> amlTranxAmountCheckForRemittance(BranchRemittanceApplRequestModel requestModel,BranchRemittanceGetExchangeRateResponse exchangeRateResposne){
+	
+	public List<AmlCheckResponseDto> amlTranxAmountCheckForRemittance(BigDecimal beneRelId,BigDecimal foreignamount){
 		Map<String, Object> outPut = new HashMap<>();
 		List<AmlCheckResponseDto> listAmlMessage = new ArrayList<>();
 		try {
-			BenificiaryListView beneficaryDetails =beneficiaryRepository.findBybeneficiaryRelationShipSeqId(requestModel.getBeneId());
+			BenificiaryListView beneficaryDetails =beneficiaryRepository.findBybeneficiaryRelationShipSeqId(beneRelId);
 			Map<String, Object> inputValues = new HashMap<>();
 			inputValues.put("P_APPLICATION_COUNTRY_ID", beneficaryDetails.getApplicationCountryId());
 			inputValues.put("P_BENE_COUNTRY_ID",beneficaryDetails.getBenificaryCountry());
 			inputValues.put("P_CUSTOMER_ID",metaData.getCustomerId());
 			inputValues.put("P_BENE_ID",beneficaryDetails.getBeneficaryMasterSeqId());
-			inputValues.put("P_FC_AMOUNT",exchangeRateResposne.getExRateBreakup().getConvertedFCAmount()); //need to check
+			inputValues.put("P_FC_AMOUNT",foreignamount); 
 			outPut = applProcedureDao.amlTranxAmountCheckForRemittance(inputValues);
 			
 			if(outPut!=null) {
@@ -405,7 +408,6 @@ public class BranchRemittanceManager extends AbstractModel {
 					dto.setMessageCode("MESSAGE2");
 					dto.setMessageDescription(outPut.get("MESSAGE2").toString());
 					dto.setAmlFlag(ConstantDocument.Yes);
-					//listAmlMessage.add(dto);
 					}
 				
 				if( outPut.get("MESSAGE3")!=null && outPut.get("MESSAGE3")!="") {
@@ -413,14 +415,12 @@ public class BranchRemittanceManager extends AbstractModel {
 					dto.setMessageCode("MESSAGE3");
 					dto.setMessageDescription(outPut.get("MESSAGE3").toString());
 					dto.setAmlFlag(ConstantDocument.Yes);
-					//listAmlMessage.add(dto);
 					}
 				if( outPut.get("MESSAGE4")!=null && outPut.get("MESSAGE4")!="") {
 					AmlCheckResponseDto dto = new AmlCheckResponseDto();
 					dto.setMessageCode("MESSAGE4");
 					dto.setMessageDescription(outPut.get("MESSAGE4").toString());
 					dto.setAmlFlag(ConstantDocument.Yes);
-					//listAmlMessage.add(dto);
 					}
 				
 				if(outPut.get("MESSAGE3")!=null) {
@@ -432,7 +432,7 @@ public class BranchRemittanceManager extends AbstractModel {
 					dto.setMessageDescription(outPut.get("RANGE1FROM").toString()+" - " + outPut.get("RANGE1TO")==null?"0":outPut.get("RANGE1TO").toString());
 					dto.setRangeSlab(outPut.get("RANGE1COUNT")==null?"0":outPut.get("RANGE1COUNT").toString());
 					dto.setAmlFlag(ConstantDocument.Yes);
-					//listAmlMessage.add(dto);
+					
 				}
 					
 				if(outPut.get("RANGE2FROM")!=null && !outPut.get("RANGE2FROM").equals("")) {
@@ -441,7 +441,7 @@ public class BranchRemittanceManager extends AbstractModel {
 					dto.setMessageDescription(outPut.get("RANGE2FROM").toString()+" - " + outPut.get("RANGE2TO")==null?"0":outPut.get("RANGE2TO").toString());
 					dto.setRangeSlab(outPut.get("RANGE2COUNT")==null?"0":outPut.get("RANGE2COUNT").toString());
 					dto.setAmlFlag(ConstantDocument.Yes);
-					//listAmlMessage.add(dto);
+				
 				}
 				
 				if(outPut.get("RANGE3FROM")!=null && !outPut.get("RANGE3FROM").equals("")) {
@@ -450,7 +450,7 @@ public class BranchRemittanceManager extends AbstractModel {
 					dto.setMessageDescription(outPut.get("RANGE3FROM").toString()+" - "+ outPut.get("RANGE3TO")==null?"0":outPut.get("RANGE3TO").toString());
 					dto.setRangeSlab(outPut.get("RANGE3COUNT")==null?"0":outPut.get("RANGE3COUNT").toString());
 					dto.setAmlFlag(ConstantDocument.Yes);
-					//listAmlMessage.add(dto);
+					
 				}
 				
 				if(outPut.get("RANGE4FROM")!=null && !outPut.get("RANGE4FROM").equals("")) {
@@ -459,7 +459,7 @@ public class BranchRemittanceManager extends AbstractModel {
 					dto.setMessageDescription(outPut.get("RANGE4FROM").toString()+" - "+ outPut.get("RANGE4TO")==null?"0":outPut.get("RANGE4TO").toString());
 					dto.setRangeSlab(outPut.get("RANGE4COUNT")==null?"0":outPut.get("RANGE4COUNT").toString());
 					dto.setAmlFlag(ConstantDocument.Yes);
-					//listAmlMessage.add(dto);
+					
 				}
 				if(outPut.get("RANGE5FROM")!=null && !outPut.get("RANGE5FROM").equals("")) {
 					AmlCheckResponseDto dto = new AmlCheckResponseDto();
@@ -467,7 +467,7 @@ public class BranchRemittanceManager extends AbstractModel {
 					dto.setMessageDescription(outPut.get("RANGE5FROM").toString()+" - "+ outPut.get("RANGE5TO")==null?"0":outPut.get("RANGE5TO").toString());
 					dto.setRangeSlab(outPut.get("RANGE5COUNT")==null?"0":outPut.get("RANGE5COUNT").toString());
 					dto.setAmlFlag(ConstantDocument.Yes);
-					//listAmlMessage.add(dto);
+					
 				}
 				if(outPut.get("RANGE6FROM")!=null && !outPut.get("RANGE6FROM").equals("")) {
 					AmlCheckResponseDto dto = new AmlCheckResponseDto();
@@ -475,7 +475,7 @@ public class BranchRemittanceManager extends AbstractModel {
 					dto.setMessageDescription(outPut.get("RANGE6FROM").toString()+" - "+ outPut.get("RANGE6TO")==null?"0":outPut.get("RANGE6TO").toString());
 					dto.setRangeSlab(outPut.get("RANGE6COUNT")==null?"0":outPut.get("RANGE6COUNT").toString());
 					dto.setAmlFlag(ConstantDocument.Yes);
-					//listAmlMessage.add(dto);
+					
 				}
 				
 			}
