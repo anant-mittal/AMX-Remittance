@@ -2,6 +2,7 @@ package com.amx.jax.pricer.util;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,15 +14,15 @@ import com.amx.jax.pricer.dto.ExchangeRateDetails;
 
 public class PricingRateDetailsDTO {
 
-	private List<ExchangeRateDetails> sellRateDetails;
+	private List<ExchangeRateDetails> sellRateDetails = new ArrayList<>();
 
-	private Map<BigDecimal, BankDetailsDTO> bankDetails;
+	private Map<BigDecimal, BankDetailsDTO> bankDetails = new HashMap<>();
 
-	private Map<BigDecimal, List<ViewExGLCBAL>> bankGlcBalMap;
+	private Map<BigDecimal, List<ViewExGLCBAL>> bankGlcBalMap = new HashMap<>();
 
 	private Map<BigDecimal, BigDecimal> bankGLCBALAvgRateMap = new HashMap<BigDecimal, BigDecimal>();
 
-	private OnlineMarginMarkup margin;
+	private OnlineMarginMarkup margin = null;
 
 	private Map<String, Object> info = new HashMap<String, Object>();
 

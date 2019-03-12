@@ -490,7 +490,7 @@ public class UserAuthService {
 
 		if (StringUtils.isEmpty(validEmployee.getTelephoneNumber())) {
 			throw new AuthServiceException(RbaacServiceError.INVALID_PHONE_NUMBER,
-					"Phone Number is Invalid or Missing for : " + userType);
+					"The mobile number is invalid for the user");
 		}
 
 		return validEmployee;
