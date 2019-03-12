@@ -792,16 +792,16 @@ public final class DateUtil {
 
 	public static int getHrMinIntVal(int hourOfDay, int minOfHr) {
 
-		int modifiedHr = (hourOfDay + minOfHr / 60) % 24;
+		int modifiedHr = hourOfDay + minOfHr / 60;
 		int modifiedMin = minOfHr % 60;
 
 		return modifiedHr * 100 + modifiedMin;
 
 	}
 
-	public static int getHrMinIntVal(String hrMinStr, String separator) {
+	public static int getHrMinIntVal(String hrMinStr) {
 
-		String[] hrMinArray = hrMinStr.split(separator);
+		String[] hrMinArray = hrMinStr.split("\\.");
 
 		int hourOfDay = Integer.parseInt(hrMinArray[0]);
 		int minOfHr = 0;

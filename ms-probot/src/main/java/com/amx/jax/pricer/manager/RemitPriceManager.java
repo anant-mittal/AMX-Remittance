@@ -368,12 +368,6 @@ public class RemitPriceManager {
 
 				bankGlcBalMap.get(viewExGLCBAL.getBankId()).add(viewExGLCBAL);
 
-				/**
-				 * This Logic is DISABLED // Considering only the rates with Max GLCBAL if
-				 * (viewExGLCBALPrev.getRateFcCurBal().compareTo(viewExGLCBAL.getRateCurBal()) <
-				 * 0) { bankGlcBalMap.put(viewExGLCBAL.getBankId(), viewExGLCBAL); }
-				 */
-
 			} else {
 
 				List<ViewExGLCBAL> glcBalList = new ArrayList<ViewExGLCBAL>();

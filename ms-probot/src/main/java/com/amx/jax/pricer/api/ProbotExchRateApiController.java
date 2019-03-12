@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
-import org.springframework.util.StopWatch;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -27,7 +26,6 @@ import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.dto.PricingResponseDTO;
 import com.amx.jax.pricer.service.HolidayListService;
 import com.amx.jax.pricer.service.PricingService;
-import com.amx.jax.pricer.var.PricerServiceConstants;
 
 @RestController
 public class ProbotExchRateApiController implements ProbotExchangeRateService {
@@ -56,17 +54,11 @@ public class ProbotExchRateApiController implements ProbotExchangeRateService {
 		LOGGER.info("Received Pricing Request from customer Id : " + pricingRequestDTO.getCustomerId()
 				+ " with TraceId: " + AppContextUtil.getTraceId());
 
-		StopWatch watch = new StopWatch();
-		watch.start();
-
 		PricingResponseDTO pricingResponseDTO = pricingService.fetchRemitPricesForCustomer(pricingRequestDTO);
-
-		watch.stop();
 
 		if (null == pricingResponseDTO.getInfo()) {
 			pricingResponseDTO.setInfo(new HashMap<>());
 		}
-		pricingResponseDTO.getInfo().put(PricerServiceConstants.TTE, watch.getLastTaskTimeMillis());
 
 		return AmxApiResponse.build(pricingResponseDTO);
 

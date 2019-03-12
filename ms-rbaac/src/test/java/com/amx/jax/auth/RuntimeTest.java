@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -98,11 +97,13 @@ public final class RuntimeTest {
 		
 		System.out.println("\n\n HourMin ==>" + DateUtil.getHrMinIntVal(23, 100));
 		
-		BigDecimal d = new BigDecimal(1000.100) ;
+		String d = "24.15" ;
+		String d2 = "8" ;
 		
-		System.out.println("\n\n HourMin Split ==>" + Math.round( d.doubleValue() % 1));
+		System.out.println("\n\n HourMin Split d ==>" + DateUtil.getHrMinIntVal(d));
 		
-
+		System.out.println("\n\n HourMin Split d2==>" + DateUtil.getHrMinIntVal(d2));
+		
 		
 		
 		

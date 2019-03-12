@@ -103,8 +103,8 @@ public class WorkingHoursData {
 	public boolean setWorkHrsThroughArabicDoW(int arabicStartDay, int arabicEndDay, double workTimeFrom,
 			double workTimeTo) {
 
-		int parsedWorkTimeFrom = DateUtil.getHrMinIntVal(String.valueOf(workTimeFrom), "\\.");
-		int parsedWorkTimeTo = DateUtil.getHrMinIntVal(String.valueOf(workTimeTo), "\\.");
+		int parsedWorkTimeFrom = DateUtil.getHrMinIntVal(String.valueOf(workTimeFrom));
+		int parsedWorkTimeTo = DateUtil.getHrMinIntVal(String.valueOf(workTimeTo));
 
 		if (!isValidHrMin(parsedWorkTimeFrom) || !isValidHrMin(parsedWorkTimeTo)) {
 			return false;
