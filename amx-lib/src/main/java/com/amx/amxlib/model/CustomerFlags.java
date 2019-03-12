@@ -1,13 +1,14 @@
 package com.amx.amxlib.model;
 
 public class CustomerFlags {
-	public Boolean annualIncomeForceUpdate;
 
-	public Boolean getAnnualIncomeForceUpdate() {
-		return annualIncomeForceUpdate;
+	public Boolean annualIncomeExpired;
+
+	public Boolean getAnnualIncomeExpired() {
+		return annualIncomeExpired;
 	}
 
-	public void setAnnualIncomeForceUpdate(Boolean annualIncomeForceUpdate) {
-		this.annualIncomeForceUpdate = annualIncomeForceUpdate;
+	public void setAnnualIncomeExpired(Boolean annualIncomeExpired) {
+		this.annualIncomeExpired = annualIncomeExpired;
 	}
 }

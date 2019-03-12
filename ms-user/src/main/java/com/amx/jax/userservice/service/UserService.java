@@ -250,7 +250,7 @@ public class UserService extends AbstractUserService {
 		Date annualIncomeUpdateDate = customer.getAnnualIncomeUpdatedDate();
 		CustomerFlags customerFlags = new CustomerFlags();
 		if (annualIncomeUpdateDate == null) {
-			customerFlags.setAnnualIncomeForceUpdate(Boolean.TRUE);
+			customerFlags.setAnnualIncomeExpired(Boolean.TRUE);
 			return customerModel;
 		}
 		Date currentDate = new Date();
@@ -258,9 +258,9 @@ public class UserService extends AbstractUserService {
 		long milliSecInYear = 31540000000L;
 
 		if (millisec >= milliSecInYear) {
-			customerFlags.setAnnualIncomeForceUpdate(Boolean.TRUE);
+			customerFlags.setAnnualIncomeExpired(Boolean.TRUE);
 		} else {
-			customerFlags.setAnnualIncomeForceUpdate(Boolean.FALSE);
+			customerFlags.setAnnualIncomeExpired(Boolean.FALSE);
 		}
 		customerModel.setFlags(customerFlags);
 		return customerModel;

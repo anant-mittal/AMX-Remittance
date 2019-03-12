@@ -46,9 +46,7 @@ public class UserClientTest extends AbstractTestClient {
 
 	@Autowired
 	UserClient client;
-	
-	
-	
+
 	// @Test
 	public void getMyProfileInfo() throws IOException, ResourceNotFoundException, InvalidInputException,
 			RemittanceTransactionValidationException, LimitExeededException {
@@ -98,7 +96,7 @@ public class UserClientTest extends AbstractTestClient {
 		setBahrainDefaults();
 		ApiResponse<CustomerModel> response = null;
 		ApiResponse<CivilIdOtpModel> otpResp = client.sendResetOtpForCivilId("450501485");
-		
+
 		String mobile = "1234567890";
 		String mOtp = otpResp.getResult().getmOtp();
 		String eOtp = otpResp.getResult().geteOtp();
@@ -218,7 +216,7 @@ public class UserClientTest extends AbstractTestClient {
 		assertNotNull(response.getResult());
 	}
 
-	//@Test
+	// @Test
 	public void sendResetOtp() throws IOException, ResourceNotFoundException, InvalidInputException,
 			RemittanceTransactionValidationException, LimitExeededException {
 		setDefaults();
@@ -241,37 +239,38 @@ public class UserClientTest extends AbstractTestClient {
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());
 	}
-	
-	//@Test
+
+	// @Test
 	public void saveEmailNew() throws IOException, ResourceNotFoundException, InvalidInputException,
-	RemittanceTransactionValidationException, LimitExeededException {
+			RemittanceTransactionValidationException, LimitExeededException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
 		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
 		jaxMetaInfo.setCustomerId(new BigDecimal(931428));
 		ApiResponse<CustomerModel> response = null;
 		String email = "viki.sangani@almullagroup.com";
-		
+
 		response = client.saveEmailNew(email);
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());
 	}
-	
-	//@Test
+
+	// @Test
 	public void saveMobileNew() throws IOException, ResourceNotFoundException, InvalidInputException,
-	RemittanceTransactionValidationException, LimitExeededException {
+			RemittanceTransactionValidationException, LimitExeededException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
 		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
 		jaxMetaInfo.setCustomerId(new BigDecimal(931428));
 		ApiResponse<CustomerModel> response = null;
 		String mobile = "5456421";
-		
+
 		response = client.saveEmailNew(mobile);
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());
 	}
-	//@Test
+
+	// @Test
 	public void testIncome() {
 		setDefaults();
 		AmxApiResponse<IncomeDto, Object> response = null;
@@ -279,9 +278,9 @@ public class UserClientTest extends AbstractTestClient {
 		assertNotNull("Response is null", response);
 		assertNotNull(response);
 	}
-	
+
 	@Test
-	public void saveAnnualIncome(){
+	public void saveAnnualIncome() {
 		setDefaults();
 		AmxApiResponse<IncomeDto, Object> response = null;
 		IncomeDto incomeDto = new IncomeDto();
@@ -293,19 +292,10 @@ public class UserClientTest extends AbstractTestClient {
 		incomeDto.setArticleDetailId(new BigDecimal(1));
 		incomeDto.setCompanyName("Al Mulla");
 		incomeDto.setImage("qwerty");
-		
+
 		response = client.saveAnnualIncome(incomeDto);
 		assertNotNull("Response is null", response);
 		assertNotNull(response);
 	}
-	
-	//@Test
-	public void forceAnnualIncomeUpdate() {
-		setDefaults();
-		Boolean response = false;		
-		response = client.forceAnnualIncomeUpdate();
-		assertNotNull("Response is null", response);
-		assertNotNull(response);
-		
-	}
+
 }
