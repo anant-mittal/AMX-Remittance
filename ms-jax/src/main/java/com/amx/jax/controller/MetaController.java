@@ -439,5 +439,10 @@ public class MetaController {
 		return metaService.getGovernateAreaList(governateId);
 	}
 	
+	@RequestMapping(value = MetaApi.API_STATUS_LIST, method = RequestMethod.GET)
+	public AmxApiResponse<ViewGovernateAreaDto, Object> getstatusList() {
+		return null;
+	}
+	
 	
 }

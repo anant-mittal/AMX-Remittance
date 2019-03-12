@@ -70,6 +70,7 @@ public class ApiEndpoint {
 		public static final String API_AREA_LIST = "/arealist/";
 		public static final String API_GOVERNATE_LIST = "/governatelist/";
 		public static final String API_GOVERNATE_AREA_LIST = "/governatearealist/";
+		public static final String API_STATUS_LIST = "/statuslist/";
 
 	}
 
