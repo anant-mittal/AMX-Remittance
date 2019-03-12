@@ -73,6 +73,18 @@ public class DeviceRequest {
 		return DeviceRestModels.getDevicePairingCreds(deviceRegId, deviceRegToken);
 	}
 
+	public boolean isDeviceAuthorized() {
+		String deviceRegId = getDeviceRegId();
+		String deviceRegToken = getDeviceRegToken();
+		if (!ArgUtil.isEmpty(deviceRegId) && !ArgUtil.isEmpty(deviceRegToken)) {
+			DeviceData deviceData = deviceBox.get(deviceRegId);
+			if (deviceData != null && ArgUtil.isEmpty(deviceData.getDeviceReqKey())) {
+				return false;
+			}
+		}
+		return true;
+	}	
+
 	public DeviceData validateSession() {
 		DevicePairingCreds devicePairingCreds = validateDevice();
 
