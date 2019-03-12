@@ -18,10 +18,12 @@ import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.UserFingerprintResponseModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.constant.JaxEvent;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.userservice.service.UserValidationService;
+import com.amx.jax.util.JaxContextUtil;
 import com.amx.utils.Constants;
 
 @RestController
@@ -74,7 +76,9 @@ public class UserController {
 			@RequestParam(defaultValue = Constants.IDENTITY_TYPE_CIVIL_ID_STR) String identityType, @RequestParam String password) {
 		logger.debug(MessageFormat.format("IdentityInt value is {0} :", identityInt));
 		logger.debug(MessageFormat.format("IdentityType value is {0} :", identityType));
+		JaxContextUtil.setJaxEvent(JaxEvent.FINGERPRINT_LOGIN_INCORRECT_ATTEMPT);
 		CustomerModel customerModel = userService.loginCustomerByFingerprint(identityInt, identityType, password);
+		
 		return AmxApiResponse.build(customerModel);
 	}
 
