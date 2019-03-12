@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.amx.amxlib.meta.model.JaxMetaParameter;
+import com.amx.amxlib.model.CustomerFlags;
 import com.amx.amxlib.model.PersonInfo;
 import com.amx.jax.dict.Language;
 import com.amx.jax.dict.Tenant;
@@ -57,6 +58,8 @@ public class UserMetaData extends AbstractModel {
 	String notificationGap = null;
 
 	String returnUrl = null;
+	
+	private CustomerFlags flags;
 
 	/** The hot points. */
 	GeoHotPoints[] hotPoints = GeoHotPoints.values();
@@ -420,6 +423,14 @@ public class UserMetaData extends AbstractModel {
 	 */
 	public void setNotificationGap(String notificationGap) {
 		this.notificationGap = notificationGap;
+	}
+
+	public CustomerFlags getFlags() {
+		return flags;
+	}
+
+	public void setFlags(CustomerFlags flags) {
+		this.flags = flags;
 	}
 
 }

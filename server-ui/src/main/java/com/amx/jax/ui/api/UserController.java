@@ -137,6 +137,7 @@ public class UserController {
 			wrapper.getData().setActive(true);
 			wrapper.getData().setCustomerId(sessionService.getUserSession().getCustomerModel().getCustomerId());
 			wrapper.getData().setInfo(sessionService.getUserSession().getCustomerModel().getPersoninfo());
+			wrapper.getData().setFlags(sessionService.getUserSession().getCustomerModel().getFlags());
 			wrapper.getData().setDomCurrency(tenantContext.getDomCurrency());
 			wrapper.getData().setConfig(jaxService.setDefaults().getMetaClient().getJaxMetaParameter().getResult());
 			wrapper.getData().getSubscriptions().addAll(userService.getNotifyTopics("/topics/"));

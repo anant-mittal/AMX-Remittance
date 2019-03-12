@@ -269,8 +269,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 			resetAttempts(otpData);
 			if (otpData.getValidateOtpAttempts() >= otpSettings.getMaxValidateOtpAttempts()) {
 				auditService.log(auditEvent.result(Result.REJECTED).message(JaxError.VALIDATE_OTP_LIMIT_EXCEEDED));
-				throw new GlobalException(
-						JaxError.VALIDATE_OTP_LIMIT_EXCEEDED,
+				throw new GlobalException(JaxError.VALIDATE_OTP_LIMIT_EXCEEDED,
 						"Sorry, you cannot proceed to register. Please try to register after 12 midnight");
 			}
 
@@ -355,17 +354,18 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		List<ArticleDetailsDescDto> designationDataList = convertDesignation(designationList);
 		return AmxApiResponse.buildList(designationDataList);
 	}
-	
+
 	public AmxApiResponse<ArticleDetailsDescDto, Object> getDesignationList() {
-		
-		List<Map<String, Object>> designationList = articleDao.getDesignationsByCustomer(metaData.getLanguageId(),metaData.getCustomerId());
+
+		List<Map<String, Object>> designationList = articleDao.getDesignationsByCustomer(metaData.getLanguageId(),
+				metaData.getCustomerId());
 		LOGGER.debug("The list is returned from dao");
 		if (designationList == null || designationList.isEmpty()) {
 			throw new GlobalException(JaxError.EMPTY_DESIGNATION_LIST, "Designation List Is Empty ");
 		}
 		LOGGER.debug("The list is not empty");
 		List<ArticleDetailsDescDto> designationDataList = convertDesignation(designationList);
-		LOGGER.debug("The list is ",designationDataList);
+		LOGGER.debug("The list is ", designationDataList);
 		return AmxApiResponse.buildList(designationDataList);
 	}
 
@@ -374,7 +374,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		designationList.forEach(i -> {
 			output.add(convertDesignation(i));
 		});
-		LOGGER.debug("List Output is :",output);
+		LOGGER.debug("List Output is :", output);
 		return output;
 	}
 
@@ -382,20 +382,23 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		ArticleDetailsDescDto dto = new ArticleDetailsDescDto();
 		LOGGER.debug("Dto is declared and  is empty");
 		dto.setArticleDetailsDesc(
-				designationMap.get("ARTICLE_DETAIL_DESC") != null ? designationMap.get("ARTICLE_DETAIL_DESC").toString() : null);
+				designationMap.get("ARTICLE_DETAIL_DESC") != null ? designationMap.get("ARTICLE_DETAIL_DESC").toString()
+						: null);
 		LOGGER.debug("Dto Desc is set");
-		dto.setArticleDetailsDescId(
-				designationMap.get("ARTICLE_DETAILS_DESC_ID") != null ? new BigDecimal(designationMap.get("ARTICLE_DETAILS_DESC_ID").toString()) : null);
+		dto.setArticleDetailsDescId(designationMap.get("ARTICLE_DETAILS_DESC_ID") != null
+				? new BigDecimal(designationMap.get("ARTICLE_DETAILS_DESC_ID").toString())
+				: null);
 		LOGGER.debug("Dto DescId is set");
-		dto.setArticleDetailsId(
-				designationMap.get("ARTICLE_DETAIL_ID") != null ?new BigDecimal( designationMap.get("ARTICLE_DETAIL_ID").toString()): null);
+		dto.setArticleDetailsId(designationMap.get("ARTICLE_DETAIL_ID") != null
+				? new BigDecimal(designationMap.get("ARTICLE_DETAIL_ID").toString())
+				: null);
 		LOGGER.debug("Dto ArticleDetailId is set");
-		dto.setLanguageId(designationMap.get("LANGUAGE_ID") != null ? new BigDecimal(designationMap.get("LANGUAGE_ID").toString()) : null);
+		dto.setLanguageId(
+				designationMap.get("LANGUAGE_ID") != null ? new BigDecimal(designationMap.get("LANGUAGE_ID").toString())
+						: null);
 		LOGGER.debug("Dto is set");
 		return dto;
 	}
-	
-	
 
 	public AmxApiResponse<IncomeRangeDto, Object> getIncomeRangeResponse(EmploymentDetailsRequest model) {
 		BigDecimal countryId = metaData.getCountryId();
@@ -532,9 +535,8 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 					.getBizComponentDataByComponmentDataId(customerEmploymentDetails.getEmploymentTypeId()));
 
 			if (customerEmploymentDetails.getEmploymentTypeId().compareTo(new BigDecimal(222)) != 0) {
-				employeeModel.setFsBizComponentDataByOccupationId(
-						bizcomponentDao
-								.getBizComponentDataByComponmentDataId(customerEmploymentDetails.getProfessionId()));
+				employeeModel.setFsBizComponentDataByOccupationId(bizcomponentDao
+						.getBizComponentDataByComponmentDataId(customerEmploymentDetails.getProfessionId()));
 				employeeModel.setEmployerName(customerEmploymentDetails.getEmployer());
 
 			}
@@ -769,8 +771,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 	@Override
 	public AmxApiResponse<String, Object> saveCustomeKycDocument(ImageSubmissionRequest model) throws ParseException {
 
-		CActivityEvent auditEvent = new CActivityEvent(CActivityEvent.Type.PROFILE_UPDATE)
-				.field("KYC_DOC");
+		CActivityEvent auditEvent = new CActivityEvent(CActivityEvent.Type.PROFILE_UPDATE).field("KYC_DOC");
 
 		if (model != null) {
 			if (metaData.getCustomerId() == null) {
@@ -863,8 +864,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 			throw new GlobalException(JaxError.SIGNATURE_NOT_AVAILABLE, "Image data is not available");
 		}
 
-		CActivityEvent auditEvent = new CActivityEvent(CActivityEvent.Type.PROFILE_UPDATE)
-				.field("SIGNATURE");
+		CActivityEvent auditEvent = new CActivityEvent(CActivityEvent.Type.PROFILE_UPDATE).field("SIGNATURE");
 
 		if (metaData.getCustomerId() == null) {
 			auditService.log(auditEvent.result(Result.REJECTED).message(JaxError.NULL_CUSTOMER_ID));
