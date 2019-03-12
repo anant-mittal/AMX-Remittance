@@ -61,14 +61,6 @@ public class DeviceValidation {
 		}
 	}
 	
-	public void validateDeviceRegIdndPairtoken(Integer deviceRegId,String paireToken) {
-		
-		if(deviceRegId ==null || paireToken==null) {
-			throw new AuthServiceException("DeviceRegId or paireToken should not be blank");
-		}
-		
-	}
-
 	public void validateOtp(String otp) {
 		if (StringUtils.isBlank(otp)) {
 			throw new AuthServiceException("otp can not be empty");
@@ -77,6 +69,21 @@ public class DeviceValidation {
 			throw new AuthServiceException("otp lenght should be 6");
 		}
 	}
+
+	public void validateDeviceRegIdndPairtoken(Integer deviceRegId,String paireToken) {
+		if(deviceRegId ==null || paireToken==null) {
+					throw new AuthServiceException("DeviceRegId or paireToken should not be blank");
+				}
+		
+	}
+	
+	public void validateDeviceRegId(Integer deviceRegId) {
+		if(deviceRegId ==null) {
+					throw new AuthServiceException("DeviceRegId should not be blank");
+				}
+		
+	}
+
 
 	/**
 	 * validates device reg request

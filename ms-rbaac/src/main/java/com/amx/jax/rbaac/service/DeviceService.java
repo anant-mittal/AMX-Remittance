@@ -145,6 +145,7 @@ public class DeviceService extends AbstractService {
 
 	public BoolRespModel activateDevice(Integer deviceRegId) {
 		logger.info("In activateDevice with deviceRegId: {}", deviceRegId);
+		deviceValidation.validateDeviceRegId(deviceRegId);
 		Device device = deviceDao.findDevice(new BigDecimal(deviceRegId));
 		deviceValidation.validateDeviceForActivation(device);
 		activateDevice(device);
@@ -280,4 +281,27 @@ public class DeviceService extends AbstractService {
 		return null;
 	}
 
+	public Device findDevice(BigDecimal deviceRegId) {
+		return deviceDao.findDevice(deviceRegId);
+	}
+	
+	public DeviceDto getDeviceByDeviceRegId(BigDecimal deviceRegId) {
+		Device device = findDevice(deviceRegId);
+		return convert(device);
+	}
+
+	public DeviceDto convert(Device device) {
+
+		DeviceDto deviceDtos = new DeviceDto();
+		deviceDtos.setDeviceId(device.getDeviceId());
+		deviceDtos.setRegistrationId(device.getRegistrationId());
+		deviceDtos.setDeviceType(device.getDeviceType().toString());
+		deviceDtos.setStatus(device.getStatus());
+		deviceDtos.setDeviceSecret(device.getOtpToken());
+		deviceDtos.setTermialId(device.getBranchSystemInventoryId());
+
+		return deviceDtos;
+	}
+	
+	
 }
