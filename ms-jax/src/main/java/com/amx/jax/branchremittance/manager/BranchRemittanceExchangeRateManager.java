@@ -8,6 +8,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -140,7 +141,7 @@ public class BranchRemittanceExchangeRateManager {
 		List<JaxConditionalFieldDto> flexFields = new ArrayList<>();
 		try {
 			remittanceAdditionalFieldManager.validateAdditionalFields(branchRemittanceApplRequestModel, remitApplParametersMap);
-			
+
 		} catch (GlobalException ex) {
 			if (ex.getMeta() != null) {
 				flexFields.addAll((Collection<? extends JaxConditionalFieldDto>) ex.getMeta());
@@ -153,17 +154,12 @@ public class BranchRemittanceExchangeRateManager {
 				flexFields.addAll((Collection<? extends JaxConditionalFieldDto>) ex.getMeta());
 			}
 		}
-		
-		try {
-			flexFields  = remittanceAdditionalFieldManager.validateAmlCheck(branchRemittanceApplRequestModel);
-		} catch (GlobalException ex) {
-			if (ex.getMeta() != null) {
-				flexFields.addAll((Collection<? extends JaxConditionalFieldDto>) ex.getMeta());
-			}
+
+		List<JaxConditionalFieldDto> amlFlexFields = remittanceAdditionalFieldManager.validateAmlCheck(branchRemittanceApplRequestModel);
+		if (CollectionUtils.isNotEmpty(amlFlexFields)) {
+			flexFields.addAll(amlFlexFields);
 		}
-		
-		
-		
+
 		return flexFields;
 	}
 }
