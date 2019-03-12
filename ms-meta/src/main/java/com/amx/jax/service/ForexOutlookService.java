@@ -108,6 +108,7 @@ public class ForexOutlookService extends AbstractService {
 					LOGGER.debug("saveUpdateCurrencyPair currpair list " + fxoList.toString());
 					for (ForexOutlook rec : fxoList) {
 						rec.setOutlookDesc(dto.getMessage());
+						rec.setModifiedDate(new Date());
 						rec.setModifiedBy(empId.toString());
 						forexOutlookDao.save(rec);
 					}
@@ -132,7 +133,6 @@ public class ForexOutlookService extends AbstractService {
 		}
 
 		catch (Exception e) {
-			LOGGER.info("message", e.getStackTrace());
 			LOGGER.error("exception in saving : ", e);
 			return new BoolRespModel(Boolean.FALSE);
 		}
