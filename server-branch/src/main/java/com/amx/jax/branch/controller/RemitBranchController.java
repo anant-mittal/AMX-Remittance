@@ -283,4 +283,17 @@ public class RemitBranchController {
 		return resp;
 
 	}
+
+	@RequestMapping(value = "/api/remitt/appl/delete", method = { RequestMethod.POST })
+	public AmxApiResponse<BranchRemittanceApplResponseDto, Object> deleteApplication(
+			@RequestParam(required = true) BigDecimal remittanceApplicationId) {
+		return branchRemittanceClient.deleteFromShoppingCart(remittanceApplicationId);
+	}
+
+	@RequestMapping(value = "/api/remitt/aml/verify", method = { RequestMethod.POST })
+	public AmxApiResponse<BoolRespModel, Object> validateAmlCredentials(
+			@RequestParam(value = "staffUserName", required = true) String staffUserName,
+			@RequestParam(value = "staffPassword", required = true) String staffPassword) {
+		return branchRemittanceClient.validationStaffCredentials(staffUserName, staffPassword);
+	}
 }
