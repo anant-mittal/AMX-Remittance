@@ -15,6 +15,7 @@ import com.amx.amxlib.meta.model.BankBranchDto;
 import com.amx.amxlib.meta.model.BankMasterDTO;
 import com.amx.amxlib.meta.model.BranchDetailDTO;
 import com.amx.amxlib.meta.model.CountryMasterDTO;
+import com.amx.amxlib.meta.model.DeclarationDTO;
 import com.amx.amxlib.meta.model.PrefixDTO;
 import com.amx.amxlib.meta.model.RoutingBankMasterDTO;
 import com.amx.amxlib.meta.model.ServiceGroupMasterDescDto;
@@ -29,7 +30,9 @@ import com.amx.amxlib.model.request.GetBankBranchRequest;
 import com.amx.jax.amxlib.model.RoutingBankMasterParam.RoutingBankMasterAgentBranchParam;
 import com.amx.jax.amxlib.model.RoutingBankMasterParam.RoutingBankMasterAgentParam;
 import com.amx.jax.amxlib.model.RoutingBankMasterParam.RoutingBankMasterServiceProviderParam;
+import com.amx.jax.client.OffsiteCustRegClient;
 import com.amx.jax.def.CacheForTenant;
+import com.amx.jax.model.response.ArticleDetailsDescDto;
 import com.amx.jax.model.response.CurrencyMasterDTO;
 import com.amx.jax.model.response.SourceOfIncomeDto;
 import com.amx.jax.ui.response.ResponseWrapper;
@@ -54,6 +57,9 @@ public class MetaController {
 	/** The tenant context. */
 	@Autowired
 	private TenantService tenantContext;
+
+	@Autowired
+	private OffsiteCustRegClient offsiteCustRegClient;
 
 	/**
 	 * Fund sources.
@@ -319,6 +325,16 @@ public class MetaController {
 	public ResponseWrapper<List<BranchDetailDTO>> getExchangeBranches() {
 		return new ResponseWrapper<List<BranchDetailDTO>>(
 				jaxService.setDefaults().getMetaClient().getAllBranchDetail().getResults());
+	}
+
+	@RequestMapping(value = { "/pub/meta/declaration/list" }, method = { RequestMethod.GET })
+	public ResponseWrapper<List<DeclarationDTO>> getDeclaration() {
+		return ResponseWrapper.buildList(jaxService.setDefaults().getMetaClient().getDeclaration());
+	}
+
+	@RequestMapping(value = { "/pub/meta/designation/list" }, method = { RequestMethod.GET })
+	public ResponseWrapper<List<ArticleDetailsDescDto>> getDesignationList() {
+		return ResponseWrapper.buildList(offsiteCustRegClient.getDesignationList());
 	}
 
 }

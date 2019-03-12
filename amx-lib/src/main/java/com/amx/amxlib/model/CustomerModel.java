@@ -40,6 +40,8 @@ public class CustomerModel extends AbstractModel implements ICustomerModel {
 
 	private boolean isRegistrationFlow;
 
+	private CustomerFlags flags;
+
 	public boolean isRegistrationFlow() {
 		return isRegistrationFlow;
 	}
@@ -181,6 +183,14 @@ public class CustomerModel extends AbstractModel implements ICustomerModel {
 
 	public void setVerificationAnswers(List<SecurityQuestionModel> verificationAnswers) {
 		this.verificationAnswers = verificationAnswers;
+	}
+
+	public CustomerFlags getFlags() {
+		return flags;
+	}
+
+	public void setFlags(CustomerFlags flags) {
+		this.flags = flags;
 	}
 
 }

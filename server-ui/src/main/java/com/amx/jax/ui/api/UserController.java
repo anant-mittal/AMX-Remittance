@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.meta.model.CustomerDto;
+import com.amx.amxlib.meta.model.IncomeDto;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.CustomerNotificationDTO;
@@ -458,4 +459,16 @@ public class UserController {
 			return loginService.verifyResetPassword(null, mOtp, null);
 		}
 	}
+
+	@RequestMapping(value = "/api/user/income", method = { RequestMethod.POST })
+	public ResponseWrapper<List<IncomeDto>> saveAnnualIncome(
+			@RequestBody IncomeDto incomeDto) {
+		return ResponseWrapper.buildList(jaxService.setDefaults().getUserclient().saveAnnualIncome(incomeDto));
+	}
+
+	@RequestMapping(value = "/api/user/income", method = { RequestMethod.GET })
+	public ResponseWrapper<List<IncomeDto>> getAnnualIncome() {
+		return ResponseWrapper.buildList(jaxService.setDefaults().getUserclient().getIncome());
+	}
+
 }
