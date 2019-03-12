@@ -21,7 +21,7 @@ import com.amx.jax.swagger.IStatusCodeListPlugin.ApiStatusService;
 
 import io.swagger.annotations.Api;
 
-//@PreAuthorize("hasPermission('MRKT_MGMT.FOREX_OUTLOOK', 'VIEW','UPDATE')")
+@PreAuthorize("hasPermission('MRKT_MGMT.FOREX_OUTLOOK', 'VIEW','UPDATE')")
 @RestController
 @Api(value = "Forex Outlook APIs")
 @ApiStatusService(IForexOutlookService.class)
