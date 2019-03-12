@@ -673,16 +673,4 @@ public class UserClient extends AbstractJaxServiceClient {
 		
 	}
 	
-	public Boolean forceAnnualIncomeUpdate() {
-		try {
-
-			return restService.ajax(appConfig.getJaxURL()).path(CustomerApi.PREFIX + CustomerApi.FORCE_ANNUAL_INCOME_UPDATE)
-					.meta(new JaxMetaInfo()).post()
-					.as(new ParameterizedTypeReference<Boolean>() {
-					});
-		} catch (Exception ae) {
-			LOGGER.error("exception in ForceUpdateAnnualIncome : ", ae);
-			return JaxSystemError.evaluate(ae);
-		}
-	}
 }

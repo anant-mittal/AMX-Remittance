@@ -233,10 +233,7 @@ public class CustomerController {
 	public AmxApiResponse<IncomeDto, Object> saveAnnualIncome(@RequestBody IncomeDto incomeDto) throws ParseException {
 		return annualIncomeService.saveAnnualIncome(incomeDto);
 	}
-	@RequestMapping(value = CustomerApi.FORCE_ANNUAL_INCOME_UPDATE ,method = RequestMethod.POST)
-	public Boolean forceAnnualIncomeUpdate() {
-		return annualIncomeService.forceUpdateAnnualIncome();
-	}
+	
 	
 	
 }

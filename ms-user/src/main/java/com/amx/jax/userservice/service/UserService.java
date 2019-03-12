@@ -31,6 +31,7 @@ import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.amxlib.meta.model.CustomerDto;
 import com.amx.amxlib.model.AbstractUserModel;
 import com.amx.amxlib.model.CivilIdOtpModel;
+import com.amx.amxlib.model.CustomerFlags;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.PersonInfo;
 import com.amx.amxlib.model.SecurityQuestionModel;
@@ -244,7 +245,27 @@ public class UserService extends AbstractUserService {
 		}
 		return model;
 	}
+	
+	public CustomerModel addAnnualIncomeForceFlag(CustomerModel customerModel, Customer customer) {
+		Date annualIncomeUpdateDate = customer.getAnnualIncomeUpdatedDate();
+		CustomerFlags customerFlags = new CustomerFlags();
+		if (annualIncomeUpdateDate == null) {
+			customerFlags.setAnnualIncomeForceUpdate(Boolean.TRUE);
+			return customerModel;
+		}
+		Date currentDate = new Date();
+		long millisec = currentDate.getTime() - annualIncomeUpdateDate.getTime();
+		long milliSecInYear = 31540000000L;
 
+		if (millisec >= milliSecInYear) {
+			customerFlags.setAnnualIncomeForceUpdate(Boolean.TRUE);
+		} else {
+			customerFlags.setAnnualIncomeForceUpdate(Boolean.FALSE);
+		}
+		customerModel.setFlags(customerFlags);
+		return customerModel;
+	}
+	
 	public ApiResponse saveCustomer(CustomerModel model) {
 		BigDecimal customerId = (model.getCustomerId() == null) ? metaData.getCustomerId() : model.getCustomerId();
 		if (customerId == null) {
@@ -595,9 +616,10 @@ public class UserService extends AbstractUserService {
 		userValidationService.validateBlackListedCustomerForLogin(customer);
 		ApiResponse response = getBlackApiResponse();
 		CustomerModel customerModel = convert(onlineCustomer);
+		CustomerModel cust  = addAnnualIncomeForceFlag(customerModel , customer);
 		// afterLoginSteps(onlineCustomer);
-		response.getData().getValues().add(customerModel);
-		response.getData().setType(customerModel.getModelType());
+		response.getData().getValues().add(cust);
+		response.getData().setType(cust.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);
 		return response;
 	}

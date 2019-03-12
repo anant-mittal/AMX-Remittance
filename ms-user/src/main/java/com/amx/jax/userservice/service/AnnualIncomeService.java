@@ -236,22 +236,5 @@ public class AnnualIncomeService {
 
 	}
 
-	public Boolean forceUpdateAnnualIncome() {
-		Customer customer = custDao.getCustById(metaData.getCustomerId());
-		Date date1 = customer.getAnnualIncomeUpdatedDate();
-		if (date1 == null) {
-			metaData.setAnnualIncomeForceUpdate(Boolean.TRUE);
-		}
-		Date date2 = new Date();
-		long bdmillisec = date2.getTime() - date1.getTime();
-		BigDecimal millisec = new BigDecimal(bdmillisec);
-		BigDecimal millisecinyear = new BigDecimal("31540000000");
-		if (millisec.compareTo(millisecinyear) == 1 || millisec.compareTo(millisecinyear) == 0) {
-			metaData.setAnnualIncomeForceUpdate(Boolean.TRUE);
-		} else {
-			metaData.setAnnualIncomeForceUpdate(Boolean.FALSE);
-		}
-		return metaData.getAnnualIncomeForceUpdate();
-	}
-
+	
 }
