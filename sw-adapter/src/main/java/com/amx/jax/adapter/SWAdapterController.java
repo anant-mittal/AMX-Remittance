@@ -96,7 +96,7 @@ public class SWAdapterController {
 				.replace("${DATA_STATUS}", String.format("%s", aCardReaderService.getDataStatusValue()))
 				.replace("${SERVER_URL}", String.format("%s", aCardReaderService.getServerUrl()))
 				.replace("${ADAPTER_VERSION}", String.format("%s", aCardReaderService.getVersion()))
-				.replace("${LOG}", String.format("%s", SWAdapterGUI.CONTEXT.LOG));
+				.replace("${LOG}", String.format("%s", SWAdapterGUI.LOG));
 	}
 
 }
