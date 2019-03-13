@@ -1,5 +1,7 @@
 package com.amx.jax.device;
 
+import java.math.BigDecimal;
+
 import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
@@ -83,7 +85,18 @@ public class DeviceRequest {
 			}
 		}
 		return true;
-	}	
+	}
+
+	public void unDeviceAuthorized(BigDecimal deviceRegId) {
+		if (!ArgUtil.isEmpty(deviceRegId)) {
+			String deviceRegIdStr = ArgUtil.parseAsString(deviceRegId);
+			DeviceData deviceData = deviceBox.get(deviceRegIdStr);
+			if (deviceData != null) {
+				deviceData.setDeviceReqKey(null);
+				deviceBox.put(deviceRegIdStr, deviceData);
+			}
+		}
+	}
 
 	public DeviceData validateSession() {
 		DevicePairingCreds devicePairingCreds = validateDevice();
