@@ -580,8 +580,9 @@ public class RemittanceTransactionManager {
 		BigDecimal routingBankId = (BigDecimal) remitApplParametersMap.get("P_ROUTING_BANK_ID");
 		BigDecimal fCurrencyId = (BigDecimal) remitApplParametersMap.get("P_FOREIGN_CURRENCY_ID");
 		BigDecimal routingCountryId  = (BigDecimal) remitApplParametersMap.get("P_ROUTING_COUNTRY_ID");
-		
-		if (jaxTenantProperties.getIsDynamicPricingEnabled()) {
+		String serviceGroupCode = remitApplParametersMap.get("P_SERVICE_GROUP_CODE").toString();
+		boolean isCashBene = ConstantDocument.SERVICE_GROUP_CODE_CASH.equals(serviceGroupCode);
+		if (jaxTenantProperties.getIsDynamicPricingEnabled() && !isCashBene) {
 			exchangeRateBreakup = newExchangeRateService.getExchangeRateBreakUpUsingDynamicPricing(fCurrencyId,
 					lcAmount, fcAmount, routingCountryId, routingBankId);
 		} else if (jaxTenantProperties.getExrateBestRateLogicEnable()) {
