@@ -29,7 +29,6 @@ import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.http.RequestType;
 import com.amx.jax.logger.client.AuditServiceClient;
 import com.amx.jax.logger.events.RequestTrackEvent;
-import com.amx.jax.model.UserDevice;
 import com.amx.jax.rest.AppRequestContextInFilter;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.utils.ArgUtil;
