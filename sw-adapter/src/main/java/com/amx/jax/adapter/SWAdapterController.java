@@ -86,6 +86,7 @@ public class SWAdapterController {
 		return body.replace("${REG_ID}", ArgUtil.isEmpty(aCardReaderService.getDevicePairingCreds())
 				? Constants.BLANK
 				: aCardReaderService.getDevicePairingCreds().getDeviceRegId())
+				.replace("${WIN_TITLE}", SWAdapterGUI.WIN_TITLE)
 				.replace("${HOST_NAME}", aCardReaderService.getAddress().getHostName())
 				.replace("${USER_NAME}", aCardReaderService.getAddress().getUserName())
 				.replace("${LOCAL_IP}", aCardReaderService.getAddress().getLocalIp())
@@ -93,6 +94,8 @@ public class SWAdapterController {
 				.replace("${DEVICE_STATUS}", String.format("%s", aCardReaderService.getDeviceStatus()))
 				.replace("${CARD_STATUS}", String.format("%s", aCardReaderService.getCardStatusValue()))
 				.replace("${DATA_STATUS}", String.format("%s", aCardReaderService.getDataStatusValue()))
+				.replace("${SERVER_URL}", String.format("%s", aCardReaderService.getServerUrl()))
+				.replace("${ADAPTER_VERSION}", String.format("%s", aCardReaderService.getVersion()))
 				.replace("${LOG}", String.format("%s", SWAdapterGUI.CONTEXT.LOG));
 	}
 

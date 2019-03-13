@@ -546,4 +546,8 @@ public abstract class ACardReaderService {
 		}
 		tntProp = tenantProperties.getProperties();
 	}
+
+	public String getVersion() {
+		return version;
+	}
 }
