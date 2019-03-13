@@ -85,20 +85,47 @@ public class PricingRateDetailsDTO {
 
 			BigDecimal sumRateCurBal = new BigDecimal(0);
 			BigDecimal sumRateFcCurBal = new BigDecimal(0);
+			BigDecimal avgRate = new BigDecimal(0);
 
-			for (ViewExGLCBAL glcbal : glcBalList) {
+			/** hot fix  13/03/2019 **/
+			if(glcBalList !=null && !glcBalList.isEmpty()) {
+				if(glcBalList.size()>1) {
+					for (ViewExGLCBAL glcbal : glcBalList) {
+						sumRateCurBal = sumRateCurBal
+								.add(null == glcbal.getRateCurBal() ? new BigDecimal(0) : glcbal.getRateCurBal());
+						sumRateFcCurBal = sumRateFcCurBal
+								.add(null == glcbal.getRateFcCurBal() ? new BigDecimal(0) : glcbal.getRateFcCurBal());
+
+
+					}
+
+					if (sumRateCurBal.doubleValue() != 0 || sumRateFcCurBal.doubleValue() != 0) {
+						avgRate = sumRateCurBal.divide(sumRateFcCurBal, 10, RoundingMode.HALF_UP);
+					}
+
+				}else {
+					for (ViewExGLCBAL glcbal : glcBalList) {
+						avgRate = glcbal.getRateAvgRate();
+					}
+				}
+
+			}
+
+			/** original  code **/ 
+			/*for (ViewExGLCBAL glcbal : glcBalList) {
 				sumRateCurBal = sumRateCurBal
 						.add(null == glcbal.getRateCurBal() ? new BigDecimal(0) : glcbal.getRateCurBal());
 				sumRateFcCurBal = sumRateFcCurBal
 						.add(null == glcbal.getRateFcCurBal() ? new BigDecimal(0) : glcbal.getRateFcCurBal());
+				
 			}
 
-			BigDecimal avgRate = new BigDecimal(0);
-
+			
 			if (sumRateCurBal.doubleValue() != 0 || sumRateFcCurBal.doubleValue() != 0) {
 				avgRate = sumRateCurBal.divide(sumRateFcCurBal, 10, RoundingMode.HALF_UP);
 			}
-
+			 */
+			
 			this.bankGLCBALAvgRateMap.put(bankId, avgRate);
 
 			return avgRate;
