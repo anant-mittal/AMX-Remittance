@@ -19,8 +19,11 @@ public class RemittanceParameterMapManager {
 	private Map<String, Object> remitApplParametersMap;
 
 	public boolean isCashChannel() {
-		String serviceGroupCode = remitApplParametersMap.get("P_SERVICE_GROUP_CODE").toString();
-		boolean isCashGroup = ConstantDocument.SERVICE_GROUP_CODE_CASH.equals(serviceGroupCode);
+		Object serviceGroupCode = remitApplParametersMap.get("P_SERVICE_GROUP_CODE");
+		boolean isCashGroup = false;
+		if (serviceGroupCode != null) {
+			isCashGroup = ConstantDocument.SERVICE_GROUP_CODE_CASH.equals(serviceGroupCode);
+		}
 		return isCashGroup;
 	}
 }
