@@ -148,12 +148,9 @@ public class AnnualIncomeService {
 		List<AnnualIncomeRangeDTO> output = new ArrayList<>();
 		for (IncomeModel incomeModel : incomeList) {
 			AnnualIncomeRangeDTO dto = new AnnualIncomeRangeDTO();
-			//dto.setApplicationCountryId(incomeModel.getApplicationCountryId());
 			dto.setIncomeRangeFrom(incomeModel.getIncomeRangeFrom());
 			dto.setIncomeRangeTo(incomeModel.getIncomeRangeTo());
-			//dto.setIncomeRangeMasterId(incomeModel.getIncomeRangeMasterId());
 			dto.setResourceId(incomeModel.getIncomeRangeMasterId());
-			//dto.setFullName(fullName);
 			output.add(dto);
 		}
 		return output;
@@ -178,7 +175,9 @@ public class AnnualIncomeService {
 			DocBlobUpload documentDetails = new DocBlobUpload();
 			documentDetails = getDocumentUploadDetails(incomeDto.getImage(), mappingData);
 			docblobRepository.save(documentDetails);
-
+			customerEmploymentInfo.setDocBlobId(mappingData.getDocBlobId());
+			customerEmploymentInfo.setFileName(incomeDto.getFileName());
+			
 		}
 		
 		custDao.saveCustomer(customer);
@@ -238,6 +237,22 @@ public class AnnualIncomeService {
 	public static byte[] decodeImage(String imageDataString) {
 		return Base64.decodeBase64(imageDataString);
 
+	}
+	
+	
+	
+	public AmxApiResponse<IncomeDto, Object> getAnnualIncomeDetails(){
+		Customer customer = custDao.getCustById(metaData.getCustomerId());
+		CustomerEmploymentInfo customerEmploymentInfo = incomeDao.getCustById(metaData.getCustomerId());
+		IncomeDto incomeDto = new IncomeDto();
+		incomeDto.setIncomeRangeFrom(customer.getAnnualIncomeFrom());
+		incomeDto.setIncomeRangeTo(customer.getAnnualIncomeTo());
+		incomeDto.setFullName(customer.getAnnualIncomeUpdatedBy());
+		incomeDto.setArticleDetailId(customer.getFsArticleDetails().getArticleDetailId());
+		incomeDto.setCompanyName(customerEmploymentInfo.getEmployerName());
+		incomeDto.setFileName(customerEmploymentInfo.getFileName());
+		return AmxApiResponse.build(incomeDto);
+	
 	}
 
 	

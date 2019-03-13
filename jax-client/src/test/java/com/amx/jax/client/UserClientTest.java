@@ -280,7 +280,7 @@ public class UserClientTest extends AbstractTestClient {
 		assertNotNull(response);
 	}
 
-	@Test
+	//@Test
 	public void saveAnnualIncome() {
 		setDefaults();
 		AmxApiResponse<IncomeDto, Object> response = null;
@@ -296,5 +296,15 @@ public class UserClientTest extends AbstractTestClient {
 		assertNotNull("Response is null", response);
 		assertNotNull(response);
 	}
+	
+	@Test
+	public void getAnnualIncomeDetails() {
+		setDefaults();
+		AmxApiResponse<IncomeDto, Object> response = null;
+		response = client.getAnnualIncomeDetais();
+		assertNotNull("Response is null", response);
+		assertNotNull(response);
+	}
+
 
 }

@@ -57,8 +57,25 @@ public class CustomerEmploymentInfo implements java.io.Serializable {
     private Date creationDate;
     private Date lastUpdated;
     private String isActive;
+    private BigDecimal docBlobId;
+    private String fileName;
     
-    public CustomerEmploymentInfo() {
+    @Column(name = "DOC_BLOB_ID")
+    public BigDecimal getDocBlobId() {
+		return docBlobId;
+	}
+	public void setDocBlobId(BigDecimal docBlobId) {
+		this.docBlobId = docBlobId;
+	}
+	
+	@Column(name = "UPLOADED_FILENAME")
+	public String getFileName() {
+		return fileName;
+	}
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
+	public CustomerEmploymentInfo() {
     	
     }
     public CustomerEmploymentInfo(BigDecimal custEmpInfoId) {

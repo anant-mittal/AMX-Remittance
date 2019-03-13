@@ -138,7 +138,7 @@ public class ApiEndpoint {
 		//Paths
 		public static final String GET_ANNUAL_INCOME_RANGE = "/getAnnualIncome/";
 		public static final String SAVE_ANNUAL_INCOME = "/saveAnnualIncome/";
-		public static final String FORCE_ANNUAL_INCOME_UPDATE = "/forceAnnualIncomeUpdate/";
+		public static final String GET_ANNUAL_INCOME_DETAILS = "/getAnnualIncomeDetails/";
 		
 		//params
 		public static final String PARAM_INCOMEDTO = "incomeDto";

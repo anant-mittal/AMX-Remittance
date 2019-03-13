@@ -235,6 +235,10 @@ public class CustomerController {
 		return annualIncomeService.saveAnnualIncome(incomeDto);
 	}
 	
+	@RequestMapping(value = CustomerApi.GET_ANNUAL_INCOME_DETAILS , method = RequestMethod.POST)
+	public AmxApiResponse<IncomeDto, Object> getAnnualIncomeDetails(){
+		return annualIncomeService.getAnnualIncomeDetails();
+	}
 	
 	
 }

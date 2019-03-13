@@ -13,6 +13,15 @@ public class IncomeDto {
 	public BigDecimal articleDetailId;
 	public String companyName;
 	public String image;
+	public String fileName;
+
+	public String getFileName() {
+		return fileName;
+	}
+
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
 
 	public String getImage() {
 		return image;

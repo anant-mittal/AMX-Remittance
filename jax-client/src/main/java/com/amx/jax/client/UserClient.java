@@ -674,4 +674,19 @@ public class UserClient extends AbstractJaxServiceClient {
 		
 	}
 	
+	public AmxApiResponse<IncomeDto, Object> getAnnualIncomeDetais() {
+		try {
+
+			return restService.ajax(appConfig.getJaxURL()).path(CustomerApi.PREFIX+ CustomerApi.GET_ANNUAL_INCOME_DETAILS)
+					.meta(new JaxMetaInfo()).post()
+					.as(new ParameterizedTypeReference<AmxApiResponse<IncomeDto, Object>>() {
+					});
+		} catch (Exception ae) {
+			LOGGER.error("exception in Annual Income details : ", ae);
+			return JaxSystemError.evaluate(ae);
+		}
+	}
+	
+	
+	
 }
