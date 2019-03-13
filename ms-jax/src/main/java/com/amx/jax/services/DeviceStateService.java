@@ -143,16 +143,19 @@ public class DeviceStateService extends AbstractService {
 
 	public BoolRespModel updateSignatureStateData(Integer deviceRegId, String imageUrlStr) {
 		//
+		validateDeviceRegId(deviceRegId);
 		devicestateValidation.validateDeviceRegIdndImageURL(deviceRegId, imageUrlStr);
-		
-		if((rbaacServiceClient.getDeviceByDeviceRegId(new BigDecimal(deviceRegId))) == null) {
-			throw new GlobalException("Invalid Device Registration Id");
-		}
 		DeviceStateInfo deviceStateInfo = deviceDao.getDeviceStateInfo(new BigDecimal(deviceRegId));
 		deviceStateInfo.setSignature(imageUrlStr);
 		deviceDao.saveDeviceInfo(deviceStateInfo);
 
 		return new BoolRespModel(Boolean.TRUE);
+	}
+
+	public void validateDeviceRegId(Integer deviceRegId) {
+		if((rbaacServiceClient.getDeviceByDeviceRegId(new BigDecimal(deviceRegId))) == null) {
+			throw new GlobalException("Invalid Device Registration Id");
+		}
 	}
 
 	public BoolRespModel clearDeviceState(Integer registrationId, String paireToken, String sessionToken) {

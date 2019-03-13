@@ -303,6 +303,10 @@ public class DeviceService extends AbstractService {
 	
 	public DeviceDto getDeviceByDeviceRegId(BigDecimal deviceRegId) {
 		Device device = findDevice(deviceRegId);
+		if (!RbaacServiceConstants.YES.equalsIgnoreCase(device.getStatus())) {
+			throw new AuthServiceException(RbaacServiceError.CLIENT_NOT_ACTIVE,
+					"Inactive Device Client : Contact Support");
+		}
 		return convert(device);
 	}
 
