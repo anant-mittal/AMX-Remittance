@@ -32,6 +32,7 @@ import com.amx.jax.amxlib.model.RoutingBankMasterParam.RoutingBankMasterAgentPar
 import com.amx.jax.amxlib.model.RoutingBankMasterParam.RoutingBankMasterServiceProviderParam;
 import com.amx.jax.client.OffsiteCustRegClient;
 import com.amx.jax.def.CacheForTenant;
+import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.model.response.ArticleDetailsDescDto;
 import com.amx.jax.model.response.CurrencyMasterDTO;
 import com.amx.jax.model.response.SourceOfIncomeDto;
@@ -333,7 +334,7 @@ public class MetaController {
 	}
 
 	@RequestMapping(value = { "/pub/meta/designation/list" }, method = { RequestMethod.GET })
-	public ResponseWrapper<List<ArticleDetailsDescDto>> getDesignationList() {
+	public ResponseWrapper<List<ResourceDTO>> getDesignationList() {
 		return ResponseWrapper.buildList(offsiteCustRegClient.getDesignationList());
 	}
 
