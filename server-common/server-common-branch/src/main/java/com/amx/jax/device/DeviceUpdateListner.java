@@ -11,7 +11,7 @@ import com.amx.jax.tunnel.TunnelEventMapping;
 import com.amx.jax.tunnel.TunnelEventXchange;
 import com.amx.utils.JsonUtil;
 
-@TunnelEventMapping(topic = AmxTunnelEvents.Names.DEVICE_STATUS_UPDATE, scheme = TunnelEventXchange.TASK_WORKER)
+@TunnelEventMapping(topic = AmxTunnelEvents.Names.UPDATE_DEVICE_STATUS, scheme = TunnelEventXchange.TASK_WORKER)
 public class DeviceUpdateListner implements ITunnelSubscriber<ResourceUpdateEvent> {
 
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
