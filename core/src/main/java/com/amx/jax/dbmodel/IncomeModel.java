@@ -79,18 +79,18 @@ public class IncomeModel implements IResourceEntity, Serializable {
 	
 	@Override
 	public BigDecimal resourceId() {
-		// TODO Auto-generated method stub
+		
 		return null;
 	}
 	@Override
 	public String resourceName() {
-		// TODO Auto-generated method stub
+		
 		return null;
 	}
 
 	@Override
 	public String resourceCode() {
-		// TODO Auto-generated method stub
+		
 		return null;
 	}
 	

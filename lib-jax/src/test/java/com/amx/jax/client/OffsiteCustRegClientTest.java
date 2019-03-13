@@ -15,6 +15,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import com.amx.jax.api.AmxApiResponse;
 
 import com.amx.jax.logger.LoggerService;
+import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.model.dto.SendOtpModel;
 import com.amx.jax.model.request.CustomerPersonalDetail;
 import com.amx.jax.model.request.EmploymentDetailsRequest;
@@ -130,7 +131,7 @@ public class OffsiteCustRegClientTest extends AbstractClientTest {
 	@Test
 	public void testForDesignationList() {
 		setDefaults();
-		AmxApiResponse<ArticleDetailsDescDto, Object> response = null;
+		AmxApiResponse<ResourceDTO, Object> response = null;
 		LOGGER.debug("Response not set");
 		response = offsiteClient.getDesignationList();
 		LOGGER.debug("Response is set");

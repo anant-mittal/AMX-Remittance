@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.amxlib.meta.model.AnnualIncomeRangeDTO;
 import com.amx.amxlib.meta.model.IncomeDto;
 import com.amx.jax.JaxAuthCache;
 import com.amx.jax.api.AmxApiResponse;
@@ -130,7 +131,7 @@ public class AnnualIncomeService {
 	@Autowired
 	IUserFinancialYearRepo userFinancialYearRepo;
 
-	public AmxApiResponse<IncomeDto, Object> getAnnualIncome(BigDecimal customerId) {
+	public AmxApiResponse<AnnualIncomeRangeDTO, Object> getAnnualIncome(BigDecimal customerId) {
 		List<IncomeModel> incomeList = incomeDao.getAnnualIncome(customerId);
 		Customer cust = custDao.getCustById(customerId);
 		String firstName = cust.getFirstName();
@@ -143,14 +144,16 @@ public class AnnualIncomeService {
 		return AmxApiResponse.buildList(convertIncomeDto(incomeList, fullName));
 	}
 
-	public List<IncomeDto> convertIncomeDto(List<IncomeModel> incomeList, String fullName) {
-		List<IncomeDto> output = new ArrayList<>();
+	public List<AnnualIncomeRangeDTO> convertIncomeDto(List<IncomeModel> incomeList, String fullName) {
+		List<AnnualIncomeRangeDTO> output = new ArrayList<>();
 		for (IncomeModel incomeModel : incomeList) {
-			IncomeDto dto = new IncomeDto();
-			dto.setApplicationCountryId(incomeModel.getApplicationCountryId());
+			AnnualIncomeRangeDTO dto = new AnnualIncomeRangeDTO();
+			//dto.setApplicationCountryId(incomeModel.getApplicationCountryId());
 			dto.setIncomeRangeFrom(incomeModel.getIncomeRangeFrom());
 			dto.setIncomeRangeTo(incomeModel.getIncomeRangeTo());
-			dto.setFullName(fullName);
+			//dto.setIncomeRangeMasterId(incomeModel.getIncomeRangeMasterId());
+			dto.setResourceId(incomeModel.getIncomeRangeMasterId());
+			//dto.setFullName(fullName);
 			output.add(dto);
 		}
 		return output;
@@ -166,17 +169,18 @@ public class AnnualIncomeService {
 		customer.setFsArticleDetails(articleDao.getArticleDetailsByArticleDetailId(incomeDto.getArticleDetailId()));
 		CustomerEmploymentInfo customerEmploymentInfo = incomeDao.getCustById(metaData.getCustomerId());
 		customerEmploymentInfo.setEmployerName(incomeDto.getCompanyName());
-		if (incomeDto.getImage() == null) {
+		if (incomeDto.getImage() != null) {
 
-			throw new GlobalException(JaxError.IMAGE_NOT_AVAILABLE, "Image is not available");
+			//throw new GlobalException(JaxError.IMAGE_NOT_AVAILABLE, "Image is not available");
+			DmsApplMapping mappingData = new DmsApplMapping();
+			mappingData = getDmsApplMappingData(customer);
+			idmsAppMappingRepository.save(mappingData);
+			DocBlobUpload documentDetails = new DocBlobUpload();
+			documentDetails = getDocumentUploadDetails(incomeDto.getImage(), mappingData);
+			docblobRepository.save(documentDetails);
+
 		}
-		DmsApplMapping mappingData = new DmsApplMapping();
-		mappingData = getDmsApplMappingData(customer);
-		idmsAppMappingRepository.save(mappingData);
-		DocBlobUpload documentDetails = new DocBlobUpload();
-		documentDetails = getDocumentUploadDetails(incomeDto.getImage(), mappingData);
-		docblobRepository.save(documentDetails);
-
+		
 		custDao.saveCustomer(customer);
 		incomeDao.saveCustomerEmploymentInfo(customerEmploymentInfo);
 		return AmxApiResponse.build(incomeDto);

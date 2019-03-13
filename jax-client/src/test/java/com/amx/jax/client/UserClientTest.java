@@ -21,6 +21,7 @@ import com.amx.amxlib.exception.JaxSystemError;
 import com.amx.amxlib.exception.LimitExeededException;
 import com.amx.amxlib.exception.RemittanceTransactionValidationException;
 import com.amx.amxlib.exception.ResourceNotFoundException;
+import com.amx.amxlib.meta.model.AnnualIncomeRangeDTO;
 import com.amx.amxlib.meta.model.CustomerDto;
 import com.amx.amxlib.meta.model.IncomeDto;
 import com.amx.amxlib.model.CivilIdOtpModel;
@@ -273,7 +274,7 @@ public class UserClientTest extends AbstractTestClient {
 	// @Test
 	public void testIncome() {
 		setDefaults();
-		AmxApiResponse<IncomeDto, Object> response = null;
+		AmxApiResponse<AnnualIncomeRangeDTO, Object> response = null;
 		response = client.getIncome();
 		assertNotNull("Response is null", response);
 		assertNotNull(response);
@@ -284,8 +285,6 @@ public class UserClientTest extends AbstractTestClient {
 		setDefaults();
 		AmxApiResponse<IncomeDto, Object> response = null;
 		IncomeDto incomeDto = new IncomeDto();
-
-		incomeDto.setApplicationCountryId(new BigDecimal(91));
 		incomeDto.setIncomeRangeFrom(new BigDecimal(5001));
 		incomeDto.setIncomeRangeTo(new BigDecimal(99999999));
 		incomeDto.setFullName("RABIL UDDIN MIR MIR RAJAK");

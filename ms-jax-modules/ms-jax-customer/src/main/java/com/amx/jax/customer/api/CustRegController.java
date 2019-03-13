@@ -21,6 +21,7 @@ import com.amx.jax.customer.service.OffsitCustRegService;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.CardDetail;
+import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.model.dto.SendOtpModel;
 import com.amx.jax.model.request.CustomerInfoRequest;
 import com.amx.jax.model.request.CustomerPersonalDetail;
@@ -149,7 +150,7 @@ public class CustRegController implements ICustRegService {
 	}
 	
 	@RequestMapping(value = CustRegApiEndPoints.DESIGNATION_LIST, method = RequestMethod.GET)
-	public AmxApiResponse<ArticleDetailsDescDto, Object> getDesignationList() {
+	public AmxApiResponse<ResourceDTO, Object> getDesignationList() {
 		return offsiteCustRegService.getDesignationList();
 	}
 }

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.amxlib.meta.model.AnnualIncomeRangeDTO;
 import com.amx.amxlib.meta.model.CustomerDto;
 import com.amx.amxlib.meta.model.IncomeDto;
 import com.amx.amxlib.model.CivilIdOtpModel;
@@ -468,7 +469,7 @@ public class UserController {
 	}
 
 	@RequestMapping(value = "/api/user/income", method = { RequestMethod.GET })
-	public ResponseWrapper<List<IncomeDto>> getAnnualIncome() {
+	public ResponseWrapper<List<AnnualIncomeRangeDTO>> getAnnualIncome() {
 		return ResponseWrapper.buildList(jaxService.setDefaults().getUserclient().getIncome());
 	}
 

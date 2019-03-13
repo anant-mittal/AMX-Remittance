@@ -8,6 +8,7 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.error.ApiJaxStatusBuilder.ApiJaxStatus;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.model.CardDetail;
+import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.model.dto.SendOtpModel;
 import com.amx.jax.model.request.CustomerInfoRequest;
 import com.amx.jax.model.request.CustomerPersonalDetail;
@@ -98,7 +99,7 @@ public interface ICustRegService extends IJaxService {
 	AmxApiResponse<SendOtpModel, Object> sendOtp(CustomerPersonalDetail customerPersonalDetail);
 	
 	@ApiJaxStatus({ JaxError.EMPTY_DESIGNATION_LIST })
-	AmxApiResponse<ArticleDetailsDescDto, Object> getDesignationList();
+	AmxApiResponse<ResourceDTO, Object> getDesignationList();
 	
 	AmxApiResponse<CustomerCredential, Object> saveLoginDetailOffsite(CustomerCredential customerCredential);
 	

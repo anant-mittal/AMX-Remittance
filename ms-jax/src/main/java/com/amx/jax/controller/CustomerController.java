@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.constant.ApiEndpoint.CustomerApi;
 import com.amx.amxlib.constant.CommunicationChannel;
+import com.amx.amxlib.meta.model.AnnualIncomeRangeDTO;
 import com.amx.amxlib.meta.model.IncomeDto;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.response.ApiResponse;
@@ -225,7 +226,7 @@ public class CustomerController {
 	}
 	
 	@RequestMapping(value =  CustomerApi.GET_ANNUAL_INCOME_RANGE , method = RequestMethod.POST)
-	public AmxApiResponse<IncomeDto, Object> getAnnuaIncome(){
+	public AmxApiResponse<AnnualIncomeRangeDTO, Object> getAnnuaIncome(){
 		return annualIncomeService.getAnnualIncome(metaData.getCustomerId());
 	}
 

@@ -72,6 +72,7 @@ import com.amx.jax.logger.events.CActivityEvent;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.CardDetail;
 import com.amx.jax.model.OtpData;
+import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.model.dto.SendOtpModel;
 import com.amx.jax.model.request.CustomerEmploymentDetails;
 import com.amx.jax.model.request.CustomerInfoRequest;
@@ -354,21 +355,6 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		List<ArticleDetailsDescDto> designationDataList = convertDesignation(designationList);
 		return AmxApiResponse.buildList(designationDataList);
 	}
-
-	public AmxApiResponse<ArticleDetailsDescDto, Object> getDesignationList() {
-
-		List<Map<String, Object>> designationList = articleDao.getDesignationsByCustomer(metaData.getLanguageId(),
-				metaData.getCustomerId());
-		LOGGER.debug("The list is returned from dao");
-		if (designationList == null || designationList.isEmpty()) {
-			throw new GlobalException(JaxError.EMPTY_DESIGNATION_LIST, "Designation List Is Empty ");
-		}
-		LOGGER.debug("The list is not empty");
-		List<ArticleDetailsDescDto> designationDataList = convertDesignation(designationList);
-		LOGGER.debug("The list is ", designationDataList);
-		return AmxApiResponse.buildList(designationDataList);
-	}
-
 	private List<ArticleDetailsDescDto> convertDesignation(List<Map<String, Object>> designationList) {
 		List<ArticleDetailsDescDto> output = new ArrayList<>();
 		designationList.forEach(i -> {
@@ -377,26 +363,56 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		LOGGER.debug("List Output is :", output);
 		return output;
 	}
-
+	
 	private ArticleDetailsDescDto convertDesignation(Map<String, Object> designationMap) {
 		ArticleDetailsDescDto dto = new ArticleDetailsDescDto();
 		LOGGER.debug("Dto is declared and  is empty");
-		dto.setArticleDetailsDesc(
+		dto.setResourceName(
 				designationMap.get("ARTICLE_DETAIL_DESC") != null ? designationMap.get("ARTICLE_DETAIL_DESC").toString()
 						: null);
-		LOGGER.debug("Dto Desc is set");
-		dto.setArticleDetailsDescId(designationMap.get("ARTICLE_DETAILS_DESC_ID") != null
-				? new BigDecimal(designationMap.get("ARTICLE_DETAILS_DESC_ID").toString())
-				: null);
 		LOGGER.debug("Dto DescId is set");
-		dto.setArticleDetailsId(designationMap.get("ARTICLE_DETAIL_ID") != null
+		dto.setResourceId(designationMap.get("ARTICLE_DETAIL_ID") != null
 				? new BigDecimal(designationMap.get("ARTICLE_DETAIL_ID").toString())
 				: null);
 		LOGGER.debug("Dto ArticleDetailId is set");
-		dto.setLanguageId(
-				designationMap.get("LANGUAGE_ID") != null ? new BigDecimal(designationMap.get("LANGUAGE_ID").toString())
+		return dto;
+	}
+
+	public AmxApiResponse<ResourceDTO, Object> getDesignationList() {
+
+		List<Map<String, Object>> designationList = articleDao.getDesignationsByCustomer(metaData.getLanguageId(),
+				metaData.getCustomerId());
+		LOGGER.debug("The list is returned from dao");
+		if (designationList == null || designationList.isEmpty()) {
+			throw new GlobalException(JaxError.EMPTY_DESIGNATION_LIST, "Designation List Is Empty ");
+		}
+		LOGGER.debug("The list is not empty");
+		List<ResourceDTO> designationDataList = convertDesignationIncome(designationList);
+		LOGGER.debug("The list is ", designationDataList);
+		return AmxApiResponse.buildList(designationDataList);
+	}
+	
+
+	private List<ResourceDTO> convertDesignationIncome(List<Map<String, Object>> designationList) {
+		List<ResourceDTO> output = new ArrayList<>();
+		designationList.forEach(i -> {
+			output.add(convertDesignationIncome(i));
+		});
+		LOGGER.debug("List Output is :", output);
+		return output;
+	}
+
+	private ResourceDTO convertDesignationIncome(Map<String, Object> designationMap) {
+		ResourceDTO dto = new ResourceDTO();
+		LOGGER.debug("Dto is declared and  is empty");
+		dto.setResourceName(
+				designationMap.get("ARTICLE_DETAIL_DESC") != null ? designationMap.get("ARTICLE_DETAIL_DESC").toString()
 						: null);
-		LOGGER.debug("Dto is set");
+		LOGGER.debug("Dto DescId is set");
+		dto.setResourceId(designationMap.get("ARTICLE_DETAIL_ID") != null
+				? new BigDecimal(designationMap.get("ARTICLE_DETAIL_ID").toString())
+				: null);
+		LOGGER.debug("Dto ArticleDetailId is set");
 		return dto;
 	}
 

@@ -26,6 +26,7 @@ import com.amx.amxlib.exception.InvalidInputException;
 import com.amx.amxlib.exception.JaxSystemError;
 import com.amx.amxlib.exception.LimitExeededException;
 import com.amx.amxlib.exception.UnknownJaxError;
+import com.amx.amxlib.meta.model.AnnualIncomeRangeDTO;
 import com.amx.amxlib.meta.model.CustomerDto;
 import com.amx.amxlib.meta.model.DeclarationDTO;
 import com.amx.amxlib.meta.model.IncomeDto;
@@ -642,12 +643,12 @@ public class UserClient extends AbstractJaxServiceClient {
 		} // end of try-catch
 	}
 	
-	public AmxApiResponse<IncomeDto, Object> getIncome() {
+	public AmxApiResponse<AnnualIncomeRangeDTO, Object> getIncome() {
 		try {
 
 			return restService.ajax(appConfig.getJaxURL()).path(CustomerApi.PREFIX+ CustomerApi.GET_ANNUAL_INCOME_RANGE)
 					.meta(new JaxMetaInfo()).post()
-					.as(new ParameterizedTypeReference<AmxApiResponse<IncomeDto, Object>>() {
+					.as(new ParameterizedTypeReference<AmxApiResponse<AnnualIncomeRangeDTO, Object>>() {
 					});
 		} catch (Exception ae) {
 			LOGGER.error("exception in Annual Income : ", ae);

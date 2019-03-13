@@ -231,6 +231,7 @@ public class UserService extends AbstractUserService {
 		try {
 			PersonInfo personinfo = new PersonInfo();
 			Customer customer = custDao.getCustById(cust.getCustomerId());
+			model = populateFlags(model, customer);
 			model.setEmail(customer.getEmail());
 			LoginLogoutHistory history = this.getLoginLogoutHistoryByUserName(cust.getUserName());
 			if (history != null) {
@@ -246,7 +247,7 @@ public class UserService extends AbstractUserService {
 		return model;
 	}
 	
-	public CustomerModel addAnnualIncomeForceFlag(CustomerModel customerModel, Customer customer) {
+	public CustomerModel populateFlags(CustomerModel customerModel, Customer customer) {
 		Date annualIncomeUpdateDate = customer.getAnnualIncomeUpdatedDate();
 		CustomerFlags customerFlags = new CustomerFlags();
 		if (annualIncomeUpdateDate == null) {
@@ -616,10 +617,10 @@ public class UserService extends AbstractUserService {
 		userValidationService.validateBlackListedCustomerForLogin(customer);
 		ApiResponse response = getBlackApiResponse();
 		CustomerModel customerModel = convert(onlineCustomer);
-		CustomerModel cust  = addAnnualIncomeForceFlag(customerModel , customer);
+		
 		// afterLoginSteps(onlineCustomer);
-		response.getData().getValues().add(cust);
-		response.getData().setType(cust.getModelType());
+		response.getData().getValues().add(customerModel);
+		response.getData().setType(customerModel.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);
 		return response;
 	}
