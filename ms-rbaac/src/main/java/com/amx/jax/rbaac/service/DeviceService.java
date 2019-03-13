@@ -227,7 +227,7 @@ public class DeviceService extends AbstractService {
 			BigDecimal countryBranchSystemInventoryId) {
 		List<Device> devices = deviceDao.findAllActiveDevices(countryBranchSystemInventoryId, deviceClientType);
 		if (CollectionUtils.isEmpty(devices)) {
-			throw new AuthServiceException(RbaacServiceError.CLIENT_NOT_FOUND, "No device found");
+			throw new AuthServiceException(RbaacServiceError.CLIENT_NOT_ACTIVE, "No device found");
 		}
 		return devices.get(0).getRegistrationId();
 	}
