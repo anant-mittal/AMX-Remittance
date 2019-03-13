@@ -49,10 +49,11 @@ public class SWAdapterGUI extends JFrame {
 	JLabel labelDescriptionDetail = new JLabel("....");
 	public static SWAdapterGUI CONTEXT = null;
 	public static String LOG = "";
+	public static String WIN_TITLE = "Al Mulla Exchange - BranchAdapter";
 
 	private void initUI() {
 
-		setTitle("Al Mulla Exchange - Branch Desktop Client");
+		setTitle(WIN_TITLE);
 		setSize(400, 400);
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -225,6 +226,13 @@ public class SWAdapterGUI extends JFrame {
 		LOG = message;
 		labelDescription.setText(message);
 		labelDescriptionDetail.setText(detail);
+	}
+
+	public static void updateTitle(String title) {
+		WIN_TITLE = title;
+		if (CONTEXT != null) {
+			CONTEXT.setTitle(WIN_TITLE);
+		}
 	}
 
 }

@@ -31,7 +31,6 @@ import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.exception.AmxApiException;
 import com.amx.jax.exception.AmxException;
 import com.amx.jax.logger.LoggerService;
-import com.amx.jax.scope.TenantContext;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.jax.scope.TenantProperties;
 import com.amx.utils.ArgUtil;
@@ -78,6 +77,9 @@ public abstract class ACardReaderService {
 	// @Value("${device.terminal.id}")
 	String terminalId;
 
+	@Value("${app.profile.version}")
+	String version;
+
 	@Value("${app.profile.tnt}")
 	String tnt;
 
@@ -116,6 +118,8 @@ public abstract class ACardReaderService {
 				}
 				KeyUtil.setServiceName(serverDB);
 				adapterServiceClient.setOffSiteUrl(serverUrl);
+				String winTitle = tntProp.getProperty("adapter.title");
+				SWAdapterGUI.updateTitle(String.format("%s - %s", winTitle, version));
 			}
 		}
 		return serverUrl;
