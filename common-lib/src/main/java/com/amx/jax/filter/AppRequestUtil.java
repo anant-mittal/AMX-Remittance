@@ -39,7 +39,7 @@ public class AppRequestUtil {
 	public static HttpServletRequest printIfDebug(HttpServletRequest req) {
 		if (LOGGER.isDebugEnabled()) {
 			LinkedMultiValueMap<String, String> headerMap = getHeader(req);
-			LOGGER.debug("*** RQT-IN-HEDR >>>>>>>: {}", headerMap.toString());
+			LOGGER.debug(">>>>> RQT-IN-HEDR =====: {}", headerMap.toString());
 		}
 		return req;
 	}
@@ -57,7 +57,7 @@ public class AppRequestUtil {
 	public static HttpServletResponse printIfDebug(HttpServletResponse resp) {
 		if (LOGGER.isDebugEnabled()) {
 			LinkedMultiValueMap<String, String> headerMap = getHeader(resp);
-			LOGGER.debug("**** RSP-OUT-HEDR <<<<<: {}", headerMap.toString());
+			LOGGER.debug("<<<<< RSP-OUT-HEDR =====: {}", headerMap.toString());
 		}
 		return resp;
 	}
@@ -90,21 +90,23 @@ public class AppRequestUtil {
 			for (Entry<String, List<String>> header : headers) {
 				headerMap.put(header.getKey(), header.getValue());
 			}
-			LOGGER.debug("<<<<< RSP-IN-HEDR *****: {}", headerMap.toString());
-			LOGGER.debug("<<<<< RSP-IN-BODY *****: {}", inputStringBuilder.toString());
+			LOGGER.debug("===== RSP-IN-HEDR <<<<<: {}", headerMap.toString());
+			LOGGER.debug("===== RSP-IN-BODY <<<<<: {}", inputStringBuilder.toString());
 			return responseWrapper;
 		}
 		return response;
 	}
 
 	public static void printIfDebug(HttpRequest request, byte[] body) throws UnsupportedEncodingException {
-		LinkedMultiValueMap<String, String> headerMap = new LinkedMultiValueMap<String, String>();
-		Collection<Entry<String, List<String>>> headers = request.getHeaders().entrySet();
-		for (Entry<String, List<String>> header : headers) {
-			headerMap.put(header.getKey(), header.getValue());
+		if (LOGGER.isDebugEnabled()) {
+			LinkedMultiValueMap<String, String> headerMap = new LinkedMultiValueMap<String, String>();
+			Collection<Entry<String, List<String>>> headers = request.getHeaders().entrySet();
+			for (Entry<String, List<String>> header : headers) {
+				headerMap.put(header.getKey(), header.getValue());
+			}
+			LOGGER.debug("===== RQT-OUT-HEDR >>>>>: {}", headerMap.toString());
+			LOGGER.debug("===== RQT-OUT-BODY >>>>>: {}", new String(body, "UTF-8"));
 		}
-		LOGGER.debug(">>>>> RQT-OUT-HEDR ****: {}", headerMap.toString());
-		LOGGER.debug(">>>>> RQT-OUT-BODY ****: {}", new String(body, "UTF-8"));
 	}
 
 }

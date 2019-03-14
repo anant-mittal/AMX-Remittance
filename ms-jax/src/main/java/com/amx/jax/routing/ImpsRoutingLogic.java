@@ -21,7 +21,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.model.response.ExchangeRateBreakup;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dal.BizcomponentDao;
 import com.amx.jax.dao.BankDao;
@@ -32,6 +31,7 @@ import com.amx.jax.dbmodel.remittance.ImpsMaster;
 import com.amx.jax.dbmodel.treasury.BankApplicability;
 import com.amx.jax.dbmodel.treasury.BankIndicator;
 import com.amx.jax.exrateservice.service.NewExchangeRateService;
+import com.amx.jax.model.response.ExchangeRateBreakup;
 import com.amx.jax.service.BankMetaService;
 import com.amx.jax.service.ImpsMasterService;
 import com.amx.jax.services.RoutingService;

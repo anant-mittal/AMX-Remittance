@@ -1,7 +1,13 @@
 package com.amx.jax.userservice.service;
 
+import static com.amx.amxlib.constant.NotificationConstants.REG_SUC;
+import static com.amx.amxlib.constant.NotificationConstants.RESP_DATA_KEY;
+
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
@@ -17,6 +23,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.context.WebApplicationContext;
@@ -34,6 +41,7 @@ import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.PersonInfo;
 import com.amx.amxlib.model.SecurityQuestionModel;
+import com.amx.amxlib.model.UserFingerprintResponseModel;
 import com.amx.amxlib.model.UserModel;
 import com.amx.amxlib.model.UserVerificationCheckListDTO;
 import com.amx.amxlib.model.response.ApiResponse;
@@ -43,6 +51,7 @@ import com.amx.jax.JaxAuthCache;
 import com.amx.jax.JaxAuthCache.JaxAuthMeta;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
+import com.amx.jax.async.ExecutorConfig;
 import com.amx.jax.auditlog.CustomerAuditEvent;
 import com.amx.jax.auditlog.JaxUserAuditEvent;
 import com.amx.jax.constant.ConstantDocument;
@@ -69,6 +78,10 @@ import com.amx.jax.logger.events.CActivityEvent;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.AbstractModel;
 import com.amx.jax.model.auth.QuestModelDTO;
+import com.amx.jax.postman.PostManException;
+import com.amx.jax.postman.PostManService;
+import com.amx.jax.postman.model.Email;
+import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.repository.CountryRepository;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.IContactDetailDao;
@@ -90,6 +103,9 @@ import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.StringUtil;
 import com.amx.utils.Random;
+
+
+import net.bytebuddy.utility.privilege.GetSystemPropertyAction;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -186,6 +202,13 @@ public class UserService extends AbstractUserService {
 
 	@Autowired
 	JaxAuthCache jaxAuthCache;
+	
+	@Autowired
+	UserService userService;
+	
+	@Autowired
+	private PostManService postManService;
+	
 
 	@Override
 	public ApiResponse registerUser(AbstractUserModel userModel) {
@@ -1062,5 +1085,70 @@ public class UserService extends AbstractUserService {
 			customerIdProofDao.save(activeIdProofs);
 		}
 		repo.save(customer);
+	}
+	
+	
+	
+	public UserFingerprintResponseModel linkDeviceId(BigDecimal customerId) {
+
+		CustomerOnlineRegistration customerOnlineRegistration = userValidationService
+				.validateOnlineCustomerByIdentityId(customerId);
+		
+		String password = Random.randomPassword(6);
+		String hashPassword = userService.generateFingerPrintPassword(password);
+		UserFingerprintResponseModel userFingerprintResponsemodel = new UserFingerprintResponseModel();
+		userFingerprintResponsemodel.setPassword(password);
+		customerOnlineRegistration.setFingerprintDeviceId(metaData.getDeviceId());
+		customerOnlineRegistration.setDevicePassword(hashPassword);
+		custDao.saveOnlineCustomer(customerOnlineRegistration);
+		
+		Customer customer = custDao.getCustById(customerOnlineRegistration.getCustomerId());
+		PersonInfo personinfo = new PersonInfo();
+		personinfo.setFirstName(customer.getFirstName());
+		personinfo.setMiddleName(customer.getMiddleName());
+		personinfo.setLastName(customer.getLastName());
+		Email email = new Email();
+		
+		email.addTo(customerOnlineRegistration.getEmail());
+		email.setITemplate(TemplatesMX.FINGERPRINT_LINKED_SUCCESS);
+		email.setHtml(true);
+		email.getModel().put(RESP_DATA_KEY, personinfo);
+
+		logger.debug("Email to - " + customerOnlineRegistration.getEmail());
+		sendEmail(email);
+		return userFingerprintResponsemodel;
+	}
+	@Async(ExecutorConfig.DEFAULT)
+	public void sendEmail(Email email) {
+		try {
+			postManService.sendEmailAsync(email);
+		} catch (PostManException e) {
+			logger.error("error in link fingerprint", e);
+		}
+	}
+
+	public String generateFingerPrintPassword(String password) {
+		
+		logger.debug("The password is " + password);
+		String hashpassword = null;
+		try {
+			hashpassword = com.amx.utils.CryptoUtil.getSHA2Hash(password);
+		} catch (NoSuchAlgorithmException e) {
+			logger.error("Exception thrown for incorrect algorithm ", e);
+			throw new GlobalException("Unable to generate fingerprint password");
+		}
+		return hashpassword;
+
+	}
+
+	public CustomerModel loginCustomerByFingerprint(String civilId, String identityTypeStr, String password) {
+		userValidationService.validateIdentityInt(civilId, identityTypeStr);
+		BigDecimal identityType = new BigDecimal(identityTypeStr);
+
+		CustomerOnlineRegistration customerOnlineRegistration = userValidationService
+				.validateOnlineCustomerByIdentityId(civilId, identityType);
+		userValidationService.validateDevicePassword(customerOnlineRegistration, password);
+		CustomerModel customerModel = convert(customerOnlineRegistration);
+		return customerModel;
 	}
 }

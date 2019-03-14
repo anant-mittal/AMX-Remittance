@@ -119,15 +119,22 @@ public class AESRepository {
 			return this.updateById(index, type, vote.getId(), vote);
 		}
 
+		public BulkRequestBuilder update(String index, AESDocument vote) {
+			return this.updateById(index, vote.getType(), vote.getId(), vote);
+		}
+
 		public BulkRequestBuilder updateById(String index, String type, String id, AESDocument vote) {
-			UpdateRequest updateRequest = new UpdateRequest(index, type, id);
-			try {
-				String voteJson = ESDocumentParser.toJson(vote);
-				updateRequest.upsert(voteJson, XContentType.JSON);
-				updateRequest.doc(voteJson, XContentType.JSON);
-				this.request.add(updateRequest);
-			} catch (JsonProcessingException e) {
-				LOGGER.error("JsonProcessingException", e);
+			if (!vote.isEmpty()) {
+				UpdateRequest updateRequest = new UpdateRequest(index, type, id);
+				try {
+					updateRequest.index(index);
+					String voteJson = ESDocumentParser.toJson(vote);
+					updateRequest.upsert(voteJson, XContentType.JSON);
+					updateRequest.doc(voteJson, XContentType.JSON);
+					this.request.add(updateRequest);
+				} catch (JsonProcessingException e) {
+					LOGGER.error("JsonProcessingException", e);
+				}
 			}
 			return this;
 		}

@@ -25,17 +25,11 @@ import com.amx.jax.def.CacheForSessionKey;
 import com.amx.jax.def.CacheForTenantKey;
 import com.amx.jax.def.CacheForThisKey;
 import com.amx.jax.def.CacheForUserKey;
-import com.amx.jax.mcq.MCQ;
-import com.amx.jax.mcq.MCQLockProvider;
-
-import net.javacrumbs.shedlock.core.LockProvider;
-import net.javacrumbs.shedlock.spring.annotation.EnableSchedulerLock;
 
 @Configuration
 // @EnableRedissonHttpSession
 @ConditionalOnProperty("app.cache")
 @AutoConfigureAfter(RedisAutoConfiguration.class)
-//@EnableSchedulerLock(defaultLockAtMostFor = "PT30S")
 public class CacheRedisConfiguration
 // extends AbstractHttpSessionApplicationInitializer
 {
@@ -97,11 +91,6 @@ public class CacheRedisConfiguration
 		config.put(CacheForTenantKey.CACHE, new CacheConfig(10 * 60 * 1000, 5 * 60 * 1000));
 
 		return new RedissonSpringCacheManager(redissonClient, config);
-	}
-
-	@Bean
-	public LockProvider lockProvider(MCQ mcq) {
-		return new MCQLockProvider(mcq);
 	}
 
 }

@@ -99,7 +99,7 @@
         {
           "match_phrase": {
             "_type": {
-              "query": "appxn"
+              "query": "[[${_type}]]"
             }
           }
         },

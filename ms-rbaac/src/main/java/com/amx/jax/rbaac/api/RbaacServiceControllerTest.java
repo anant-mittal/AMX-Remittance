@@ -240,4 +240,16 @@ public class RbaacServiceControllerTest implements IRbaacService {
 		return null;
 	}
 
+	@Override
+	public AmxApiResponse<DeviceDto, Object> getDeviceByDeviceRegId(BigDecimal deviceRegId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public AmxApiResponse<BoolRespModel, Object> deleteDevice(Integer deviceRegId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

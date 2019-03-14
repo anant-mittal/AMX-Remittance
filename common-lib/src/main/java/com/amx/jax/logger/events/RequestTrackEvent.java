@@ -18,6 +18,7 @@ import com.amx.jax.tunnel.TunnelMessage;
 import com.amx.utils.HttpUtils;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @JsonInclude(Include.NON_NULL)
@@ -37,6 +38,7 @@ public class RequestTrackEvent extends AuditEvent {
 	}
 
 	private AppContext context;
+	@JsonProperty("rspTym")
 	private long responseTime;
 	private String ip;
 

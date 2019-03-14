@@ -76,7 +76,8 @@ public class ProbotExchRateApiController implements ProbotExchangeRateService {
 		return AmxApiResponse.build(pricingResponseDTO);
 
 	}
-
+	
+	
 	@Override
 	@RequestMapping(value = ApiEndPoints.FETCH_DISCOUNTED_RATES, method = RequestMethod.POST)
 	public AmxApiResponse<PricingResponseDTO, Object> fetchDiscountedRates(

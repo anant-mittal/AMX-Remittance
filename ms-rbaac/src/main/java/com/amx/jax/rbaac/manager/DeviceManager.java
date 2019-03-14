@@ -110,19 +110,6 @@ public class DeviceManager {
 		}
 	}
 
-	@Deprecated
-	public void validateSessionToken(String sessionToken, Integer registrationId) {
-		DeviceStateInfo deviceStateInfo = deviceDao.findBySessionToken(sessionToken, registrationId);
-		if (deviceStateInfo == null) {
-			throw new AuthServiceException(RbaacServiceError.CLIENT_INVALID_SESSION_TOKEN, "Invalid session token");
-		}
-		Device device = deviceDao.findDevice(new BigDecimal(registrationId));
-		String sessionTokenGen = generateSessionPairToken(device);
-		if (!sessionToken.equals(sessionTokenGen)) {
-			throw new AuthServiceException(RbaacServiceError.CLIENT_EXPIRED_SESSION_TOKEN, "Session token is expired");
-		}
-	}
-
 	public void deactivateDevice(Device device) {
 		device.setStatus(RbaacServiceConstants.NO);
 		deviceDao.saveDevice(device);
@@ -137,6 +124,7 @@ public class DeviceManager {
 		if (device.getEmployeeId() != null) {
 			resp.setEmpId(device.getEmployeeId().toString());
 		}
+		resp.setDeviceType(device.getDeviceType());
 		resp.setDeviceState(device.getState());
 		return resp;
 	}

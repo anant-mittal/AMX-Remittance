@@ -2,10 +2,17 @@ package com.amx.jax.cache;
 
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.amx.jax.def.ATransactionModel;
 import com.amx.jax.def.ICacheBox;
 
+/**
+ * @deprecated use {@link com.amx.jax.cache.TxCacheBox}
+ * @author lalittanwar
+ *
+ * @param <T>
+ */
 @Deprecated
 public abstract class TransactionModel<T> extends ATransactionModel<T> {
 
