@@ -149,7 +149,7 @@ public class ApiEndpoint {
 		
 		public static final String LOGIN_CUSTOMER_BY_FINGERPRINT = "/login-customer-by-fingerprint/";
 		
-		
+		public static final String DELINK_FINGERPRINT = "/delink-fingerprint";
 		
 	}
 

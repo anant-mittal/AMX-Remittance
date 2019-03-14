@@ -1151,4 +1151,26 @@ public class UserService extends AbstractUserService {
 		CustomerModel customerModel = convert(customerOnlineRegistration);
 		return customerModel;
 	}
+	
+	public BoolRespModel delinkFingerprint() {
+		CustomerOnlineRegistration customerOnlineRegistration = custDao.getOnlineCustByCustomerId(metaData.getCustomerId());
+		customerOnlineRegistration.setFingerprintDeviceId("");
+		customerOnlineRegistration.setDevicePassword("");
+		custDao.saveOnlineCustomer(customerOnlineRegistration);
+		BoolRespModel boolRespModel = new BoolRespModel();
+		boolRespModel.setSuccess(Boolean.TRUE);
+		Customer customer = custDao.getCustById(customerOnlineRegistration.getCustomerId());
+		PersonInfo personinfo = new PersonInfo();
+		personinfo.setFirstName(customer.getFirstName());
+		personinfo.setMiddleName(customer.getMiddleName());
+		personinfo.setLastName(customer.getLastName());
+		Email email = new Email();
+		email.addTo(customerOnlineRegistration.getEmail());
+		email.setITemplate(TemplatesMX.FINGERPRINT_DELINKED_SUCCESS);
+		email.setHtml(true);
+		email.getModel().put(RESP_DATA_KEY, personinfo);
+		logger.debug("Email to - " + customerOnlineRegistration.getEmail());
+		sendEmail(email);
+		return boolRespModel;
+	}
 }

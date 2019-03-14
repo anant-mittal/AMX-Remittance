@@ -81,11 +81,6 @@ public class CustomerDao {
 	}
 
 	@Transactional
-	public CustomerOnlineRegistration getOnlineCustById(BigDecimal id) {
-		return onlineCustRepo.findOne(id);
-	}
-
-	@Transactional
 	public Customer getCustById(BigDecimal id) {
 		return repo.findOne(id);
 	}
