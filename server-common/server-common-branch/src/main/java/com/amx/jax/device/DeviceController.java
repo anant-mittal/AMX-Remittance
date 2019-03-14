@@ -201,4 +201,11 @@ public class DeviceController {
 		return AmxApiResponse.build(terminalId, deviceRequestValidator.getDeviceRegId());
 	}
 
+	@ApiOffisteStatus({ OffsiteServerCodes.CLIENT_UNKNOWN })
+	@RequestMapping(value = { DeviceConstants.Path.DEVICE_DELETE }, method = { RequestMethod.POST })
+	public AmxApiResponse<BoolRespModel, Object> deleteDevice(
+			@RequestParam Integer deviceRegId, @RequestParam ClientType deviceType) {
+		deviceRequestValidator.updateStamp(deviceRegId);
+		return rbaacServiceClient.deleteDevice(deviceRegId);
+	}
 }

@@ -257,4 +257,8 @@ public abstract class AmxApiException extends AmxException {
 		this.setMeta(meta);
 		return this;
 	}
+
+	public String toURL() {
+		return this.getClass().getName() + "/" + ArgUtil.parseAsString(error);
+	}
 }

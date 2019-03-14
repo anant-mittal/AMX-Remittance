@@ -30,6 +30,7 @@ import com.amx.jax.rbaac.exception.AuthServiceException;
 import com.amx.jax.rbaac.manager.DeviceManager;
 import com.amx.jax.rbaac.validation.DeviceValidation;
 import com.amx.jax.util.ParamValidator;
+import com.amx.utils.Constants;
 import com.amx.utils.CryptoUtil;
 import com.amx.utils.Random;
 import com.amx.utils.TimeUtils;
@@ -96,7 +97,7 @@ public class DeviceService extends AbstractService {
 	public BoolRespModel deactivateDevice(Integer deviceRegId) {
 		logger.info("In deactivateDevice with deviceRegId: {}", deviceRegId);
 		Device device = deviceDao.findDevice(new BigDecimal(deviceRegId));
-		deviceValidation.validateDeviceForActivation(device);
+		deviceValidation.validateNullDevice(device);
 		deactivateDevice(device);
 		return new BoolRespModel(Boolean.TRUE);
 	}
@@ -104,6 +105,12 @@ public class DeviceService extends AbstractService {
 	public void deactivateDevice(Device device) {
 		device.setStatus("N");
 		device.setState(DeviceState.REGISTERED_NOT_ACTIVE);
+		deviceDao.saveDevice(device);
+	}
+	
+	public void deleteDevice(Device device) {
+		device.setStatus(Constants.DELETED_SOFT);
+		device.setState(DeviceState.DELETED);
 		deviceDao.saveDevice(device);
 	}
 
@@ -145,9 +152,19 @@ public class DeviceService extends AbstractService {
 
 	public BoolRespModel activateDevice(Integer deviceRegId) {
 		logger.info("In activateDevice with deviceRegId: {}", deviceRegId);
+		deviceValidation.validateDeviceRegId(deviceRegId);
 		Device device = deviceDao.findDevice(new BigDecimal(deviceRegId));
-		deviceValidation.validateDeviceForActivation(device);
+		deviceValidation.validateNullDevice(device);
 		activateDevice(device);
+		return new BoolRespModel(Boolean.TRUE);
+	}
+	
+	public BoolRespModel deleteDevice(Integer deviceRegId) {
+		logger.info("In deleteDevice with deviceRegId: {}", deviceRegId);
+		deviceValidation.validateDeviceRegId(deviceRegId);
+		Device device = deviceDao.getDeviceByRegId(new BigDecimal(deviceRegId));
+		deviceValidation.validateNullDevice(device);
+		deleteDevice(device);
 		return new BoolRespModel(Boolean.TRUE);
 	}
 
@@ -210,7 +227,7 @@ public class DeviceService extends AbstractService {
 			BigDecimal countryBranchSystemInventoryId) {
 		List<Device> devices = deviceDao.findAllActiveDevices(countryBranchSystemInventoryId, deviceClientType);
 		if (CollectionUtils.isEmpty(devices)) {
-			throw new AuthServiceException(RbaacServiceError.CLIENT_NOT_FOUND, "No device found");
+			throw new AuthServiceException(RbaacServiceError.CLIENT_NOT_ACTIVE, "No device found");
 		}
 		return devices.get(0).getRegistrationId();
 	}
@@ -280,4 +297,31 @@ public class DeviceService extends AbstractService {
 		return null;
 	}
 
+	public Device findDevice(BigDecimal deviceRegId) {
+		return deviceDao.findDevice(deviceRegId);
+	}
+	
+	public DeviceDto getDeviceByDeviceRegId(BigDecimal deviceRegId) {
+		Device device = findDevice(deviceRegId);
+		if (!RbaacServiceConstants.YES.equalsIgnoreCase(device.getStatus())) {
+			throw new AuthServiceException(RbaacServiceError.CLIENT_NOT_ACTIVE,
+					"Inactive Device Client : Contact Support");
+		}
+		return convert(device);
+	}
+
+	public DeviceDto convert(Device device) {
+
+		DeviceDto deviceDtos = new DeviceDto();
+		deviceDtos.setDeviceId(device.getDeviceId());
+		deviceDtos.setRegistrationId(device.getRegistrationId());
+		deviceDtos.setDeviceType(device.getDeviceType().toString());
+		deviceDtos.setStatus(device.getStatus());
+		deviceDtos.setDeviceSecret(device.getOtpToken());
+		deviceDtos.setTermialId(device.getBranchSystemInventoryId());
+
+		return deviceDtos;
+	}
+	
+	
 }

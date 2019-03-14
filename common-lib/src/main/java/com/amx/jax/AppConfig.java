@@ -390,4 +390,8 @@ public class AppConfig {
 		return appSpecifcDecryptedProp;
 	}
 
+	public void setDefaultTenant(Tenant defaultTenant) {
+		this.defaultTenant = defaultTenant;
+	}
+
 }

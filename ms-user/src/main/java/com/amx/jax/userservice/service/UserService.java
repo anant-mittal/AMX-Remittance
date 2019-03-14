@@ -1,5 +1,8 @@
 package com.amx.jax.userservice.service;
 
+import static com.amx.amxlib.constant.NotificationConstants.REG_SUC;
+import static com.amx.amxlib.constant.NotificationConstants.RESP_DATA_KEY;
+
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -20,6 +23,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.context.WebApplicationContext;
@@ -47,6 +51,7 @@ import com.amx.jax.JaxAuthCache;
 import com.amx.jax.JaxAuthCache.JaxAuthMeta;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
+import com.amx.jax.async.ExecutorConfig;
 import com.amx.jax.auditlog.CustomerAuditEvent;
 import com.amx.jax.auditlog.JaxUserAuditEvent;
 import com.amx.jax.constant.ConstantDocument;
@@ -73,6 +78,10 @@ import com.amx.jax.logger.events.CActivityEvent;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.AbstractModel;
 import com.amx.jax.model.auth.QuestModelDTO;
+import com.amx.jax.postman.PostManException;
+import com.amx.jax.postman.PostManService;
+import com.amx.jax.postman.model.Email;
+import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.repository.CountryRepository;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.IContactDetailDao;
@@ -197,6 +206,8 @@ public class UserService extends AbstractUserService {
 	@Autowired
 	UserService userService;
 	
+	@Autowired
+	private PostManService postManService;
 	
 
 	@Override
@@ -1082,6 +1093,7 @@ public class UserService extends AbstractUserService {
 
 		CustomerOnlineRegistration customerOnlineRegistration = userValidationService
 				.validateOnlineCustomerByIdentityId(customerId);
+		
 		String password = Random.randomPassword(6);
 		String hashPassword = userService.generateFingerPrintPassword(password);
 		UserFingerprintResponseModel userFingerprintResponsemodel = new UserFingerprintResponseModel();
@@ -1089,7 +1101,30 @@ public class UserService extends AbstractUserService {
 		customerOnlineRegistration.setFingerprintDeviceId(metaData.getDeviceId());
 		customerOnlineRegistration.setDevicePassword(hashPassword);
 		custDao.saveOnlineCustomer(customerOnlineRegistration);
+		
+		Customer customer = custDao.getCustById(customerOnlineRegistration.getCustomerId());
+		PersonInfo personinfo = new PersonInfo();
+		personinfo.setFirstName(customer.getFirstName());
+		personinfo.setMiddleName(customer.getMiddleName());
+		personinfo.setLastName(customer.getLastName());
+		Email email = new Email();
+		
+		email.addTo(customerOnlineRegistration.getEmail());
+		email.setITemplate(TemplatesMX.FINGERPRINT_LINKED_SUCCESS);
+		email.setHtml(true);
+		email.getModel().put(RESP_DATA_KEY, personinfo);
+
+		logger.debug("Email to - " + customerOnlineRegistration.getEmail());
+		sendEmail(email);
 		return userFingerprintResponsemodel;
+	}
+	@Async(ExecutorConfig.DEFAULT)
+	public void sendEmail(Email email) {
+		try {
+			postManService.sendEmailAsync(email);
+		} catch (PostManException e) {
+			logger.error("error in link fingerprint", e);
+		}
 	}
 
 	public String generateFingerPrintPassword(String password) {

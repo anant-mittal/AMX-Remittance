@@ -18,6 +18,9 @@ import com.amx.jax.AppConfig;
 import com.amx.jax.AppParam;
 import com.amx.jax.AppTenantConfig;
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.exception.AmxApiError;
+import com.amx.jax.exception.AmxApiException;
+import com.amx.jax.exception.ExceptionFactory;
 import com.amx.jax.http.ApiRequest;
 import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.http.RequestType;
@@ -123,4 +126,10 @@ public class AppParamController {
 		return Base64.getEncoder().encodeToString(callbackUrl.getBytes());
 	}
 
+	@RequestMapping(value = "/pub/error/{exception}/{statusKey}", method = RequestMethod.GET)
+	public AmxApiError jsonEncodeB64(@RequestParam String status, @RequestParam String exception) {
+		AmxApiError error = new AmxApiError(status, status);
+		error.setException(exception);
+		return error;
+	}
 }

@@ -2,6 +2,7 @@ package com.amx.jax.adapter.kwt;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Component;
@@ -14,6 +15,7 @@ import pacicardlibrary.PaciException;
 @Configuration
 @EnableScheduling
 @Component
+@ConditionalOnProperty(value = ACardReaderService.PROP_TENANT_KEY, havingValue = "kwt")
 public class KWTCardReaderService extends ACardReaderService {
 
 	public static Logger LOGGER = LoggerFactory.getLogger(KWTCardReaderService.class);
