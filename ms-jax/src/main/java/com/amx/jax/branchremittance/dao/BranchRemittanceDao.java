@@ -239,8 +239,8 @@ public class BranchRemittanceDao {
 	public void deleteFromCart(BigDecimal applId,String status) {
 		RemittanceApplication appl = appRepo.findOne(applId);
 		if (appl != null) {
-			appl.setApplicaitonStatus(status);
-			appRepo.save(appl);
+			appl.setIsactive(status);
+			appRepo.save(appl);			
 		}
 	}
 	

@@ -465,7 +465,7 @@ public class CustomerRegistrationManager extends TransactionModel<CustomerRegist
 				offsiteCustomer.setHomeAddressDestails(homeAddress);
 			}
 		}else {
-			throw new GlobalException(JaxError.NO_RECORD_FOUND,"Customer details not found :"+identityInt +" identityTypeId :"+identityTypeId);
+			throw new GlobalException(JaxError.NO_RECORD_FOUND,"The customer does not exist in the system :"+identityInt);
 		}
 		
 		return offsiteCustomer;
