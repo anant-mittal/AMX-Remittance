@@ -982,7 +982,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 
 	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerData(String identityInt,
 			BigDecimal identityTypeId) {
-
+		offsiteCustomerRegValidator.validateGetOffsiteCustomerDetailRequest(new GetOffsiteCustomerDetailRequest(identityInt, identityTypeId));
 		OffsiteCustomerDataDTO offsiteCustomer = new OffsiteCustomerDataDTO();
 		offsiteCustomer.setIdentityInt(identityInt);
 		offsiteCustomer.setIdentityTypeId(identityTypeId);
@@ -1091,7 +1091,6 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 	
 	@Override
 	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerDetails(String identityInt,BigDecimal identityTypeId) {
-		offsiteCustomerRegValidator.validateGetOffsiteCustomerDetailRequest(new GetOffsiteCustomerDetailRequest(identityInt, identityTypeId));
 		OffsiteCustomerDataDTO offsiteCustomer =customerRegistrationManager.getCustomerDeatils(identityInt, identityTypeId);
 		return AmxApiResponse.build(offsiteCustomer); 
 	}
