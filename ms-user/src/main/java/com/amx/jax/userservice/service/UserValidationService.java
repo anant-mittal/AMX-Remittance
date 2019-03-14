@@ -236,7 +236,7 @@ public class UserValidationService {
 		}
 	}
 
-	protected void validateCustIdProofs(BigDecimal custId) {
+	public void validateCustIdProofs(BigDecimal custId) {
 		if (tenantContext.get() != null) {
 			tenantContext.get().validateCustIdProofs(custId);
 			return;
@@ -702,7 +702,8 @@ public class UserValidationService {
 		if (CollectionUtils.isEmpty(customers) && apiFlow == JaxApiFlow.SIGNUP_DEFAULT) {
 			return customers;
 		}
-		if (CollectionUtils.isEmpty(customers) && apiFlow != JaxApiFlow.SIGNUP_DEFAULT) {
+		if (CollectionUtils.isEmpty(customers) && apiFlow != JaxApiFlow.SIGNUP_DEFAULT
+				&& apiFlow != JaxApiFlow.OFFSITE_REGISTRATION) {
 			throw new GlobalException(JaxError.CUSTOMER_NOT_REGISTERED_BRANCH, "Customer not registered in branch ");
 		}
 		// duplicate records check
