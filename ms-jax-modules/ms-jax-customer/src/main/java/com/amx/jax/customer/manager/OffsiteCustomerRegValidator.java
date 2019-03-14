@@ -31,11 +31,8 @@ public class OffsiteCustomerRegValidator {
 	public void validateGetOffsiteCustomerDetailRequest(GetOffsiteCustomerDetailRequest request) {
 		userValidationService.validateIdentityInt(request.getIdentityInt(), request.getIdentityType());
 		// to validate duplicate account
-		List<Customer> customers = userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(request.getIdentityInt(),
+		userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(request.getIdentityInt(),
 				request.getIdentityType(), JaxApiFlow.OFFSITE_REGISTRATION);
-		if (CollectionUtils.isNotEmpty(customers) && ConstantDocument.Yes.equals(customers.get(0).getIsActive())) {
-			userValidationService.validateCustIdProofs(customers.get(0).getCustomerId());
-		}
 	}
 
 	/**

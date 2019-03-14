@@ -1080,6 +1080,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		} else {
 			throw new GlobalException(ResponseStatus.NOT_FOUND.toString());
 		}
+		offsiteCustomer.setCustomerFlags(userService.getCustomerFlags(customer.getCustomerId()));
 		return AmxApiResponse.build(offsiteCustomer);
 	}
 	

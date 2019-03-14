@@ -78,6 +78,7 @@ import com.amx.jax.logger.events.CActivityEvent;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.AbstractModel;
 import com.amx.jax.model.auth.QuestModelDTO;
+import com.amx.jax.model.response.customer.CustomerFlags;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Email;
@@ -95,6 +96,7 @@ import com.amx.jax.services.JaxNotificationService;
 import com.amx.jax.userservice.dao.AbstractUserDao;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.dao.CustomerIdProofDao;
+import com.amx.jax.userservice.manager.CustomerFlagManager;
 import com.amx.jax.userservice.manager.SecurityQuestionsManager;
 import com.amx.jax.userservice.repository.CustomerRepository;
 import com.amx.jax.userservice.repository.LoginLogoutHistoryRepository;
@@ -199,15 +201,14 @@ public class UserService extends AbstractUserService {
 	AuditService auditService;
 	@Autowired
 	CustomerIdProofDao customerIdProofDao;
-
 	@Autowired
 	JaxAuthCache jaxAuthCache;
-	
 	@Autowired
 	UserService userService;
-	
 	@Autowired
-	private PostManService postManService;
+	PostManService postManService;
+	@Autowired
+	CustomerFlagManager customerFlagManager;
 	
 
 	@Override
@@ -1150,5 +1151,13 @@ public class UserService extends AbstractUserService {
 		userValidationService.validateDevicePassword(customerOnlineRegistration, password);
 		CustomerModel customerModel = convert(customerOnlineRegistration);
 		return customerModel;
+	}
+	
+	public CustomerFlags getCustomerFlags(BigDecimal customerId) {
+		CustomerFlags customerFlags = null;
+		if (customerId != null) {
+			customerFlags = customerFlagManager.getCustomerFlags(customerId);
+		}
+		return customerFlags;
 	}
 }
