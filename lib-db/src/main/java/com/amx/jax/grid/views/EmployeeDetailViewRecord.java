@@ -9,9 +9,6 @@ import javax.persistence.Table;
 
 import com.amx.jax.grid.GridViewRecord;
 
-/*
- * Author Rahamathali Shaik
-*/
 @Entity
 @Table(name = "VW_FS_EMPLOYEE")
 public class EmployeeDetailViewRecord implements GridViewRecord {

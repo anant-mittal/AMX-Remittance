@@ -22,7 +22,6 @@ public class PipsMasterDao {
 	@Autowired
 	private PipsMasterRepository repo;
 
-	@Autowired
 	private static final Logger logger = LoggerFactory.getLogger(PipsMasterDao.class);
 
 	public List<PipsMaster> getPipsForOnline(BigDecimal toCurrency, BigDecimal countryBranchId) {
@@ -72,6 +71,18 @@ public class PipsMasterDao {
 	public List<PipsMaster> getPipsForFcCurAndBank(BigDecimal toCurrency, BigDecimal countryBranchId,
 			BigDecimal countryId, List<BigDecimal> validBankIds) {
 		return repo.getPipsForFcCurAndBank(toCurrency, countryBranchId, countryId, validBankIds);
+	}
+
+	public List<PipsMaster> getAmountSlab(BigDecimal countryId, BigDecimal currencyId) {
+		return repo.getPipsMasterForAmountSlab(countryId, currencyId);
+	}
+
+	public PipsMaster getPipsById(BigDecimal id) {
+		return repo.findByPipsMasterId(id);
+	}
+	
+	public void savePipsForDiscount(List<PipsMaster> pipslDiscounts) {
+		 repo.save(pipslDiscounts);
 	}
 
 }

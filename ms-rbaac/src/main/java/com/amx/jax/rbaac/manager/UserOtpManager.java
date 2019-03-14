@@ -62,7 +62,8 @@ public class UserOtpManager {
 
 		HashBuilder builder = new HashBuilder().interval(AmxConstants.SMS_OTP_TTL).secret(secret).message(sac);
 		otpData.setmOtpPrefix(sac);
-		otpData.setmOtp(builder.toHMAC().toNumeric(AmxConstants.OTP_LENGTH).output());
+		//otpData.setmOtp(builder.toHMAC().toNumeric(AmxConstants.OTP_LENGTH).output());
+		otpData.setmOtp(builder.toHMAC().toComplex(AmxConstants.OTP_LENGTH).output());
 
 		otpData.setHashedmOtp(getOtpHash(otpData.getmOtp()));
 

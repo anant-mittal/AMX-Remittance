@@ -155,7 +155,7 @@ public class JaxService implements IMetaRequestOutFilter<JaxMetaInfo>, AppReques
 	private MetaClient metaClient;
 
 	@Autowired
-	protected JaxMetaInfo jaxMetaInfo;
+	protected JaxMetaInfo jaxMetaInfoBean;
 
 	@Autowired
 	protected AmxConfig amxConfig;
@@ -195,8 +195,8 @@ public class JaxService implements IMetaRequestOutFilter<JaxMetaInfo>, AppReques
 	 * @return the jax service
 	 */
 	public JaxService setDefaults(BigDecimal customerId) {
-		populateCommon(jaxMetaInfo);
-		populateUser(jaxMetaInfo, customerId);
+		populateCommon(jaxMetaInfoBean);
+		populateUser(jaxMetaInfoBean, customerId);
 		return this;
 	}
 

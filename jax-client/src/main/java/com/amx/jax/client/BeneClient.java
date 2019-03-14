@@ -47,6 +47,7 @@ import com.amx.amxlib.model.trnx.BeneficiaryTrnxModel;
 import com.amx.jax.amxlib.model.RoutingBankMasterParam.RoutingBankMasterAgentBranchParam;
 import com.amx.jax.amxlib.model.RoutingBankMasterParam.RoutingBankMasterAgentParam;
 import com.amx.jax.amxlib.model.RoutingBankMasterParam.RoutingBankMasterServiceProviderParam;
+import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.client.util.ConverterUtility;
 import com.amx.jax.rest.RestService;
 
@@ -69,21 +70,14 @@ public class BeneClient extends AbstractJaxServiceClient {
 	 */
 	public ApiResponse<BeneficiaryListDTO> getBeneficiaryList(BigDecimal beneCountryId) {
 		try {
-			ResponseEntity<ApiResponse<BeneficiaryListDTO>> response;
-			MultiValueMap<String, String> headers = getHeader();
-			StringBuffer sb = new StringBuffer();
-			sb.append("?beneCountryId=").append(beneCountryId);
-			LOGGER.info("Bene Clinet to get bene list Input String :" + sb.toString());
-			String url = this.getBaseUrl() + BENE_API_ENDPOINT + "/beneList/" + sb.toString();
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
-			return restService.ajax(url).get(requestEntity)
+			return restService.ajax(appConfig.getJaxURL() + BENE_API_ENDPOINT + "/beneList/")
+					.queryParam("beneCountryId", beneCountryId)
+					.meta(new JaxMetaInfo()).get()
 					.as(new ParameterizedTypeReference<ApiResponse<BeneficiaryListDTO>>() {
 					});
-		} catch (AbstractJaxException ae) {
-			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getBeneficiaryList : ", e);
-			throw new JaxSystemError();
+			return JaxSystemError.evaluate(e);
 		} // end of try-catch
 	}
 
@@ -111,8 +105,7 @@ public class BeneClient extends AbstractJaxServiceClient {
 	/**
 	 * 
 	 * @author Chetan Pawar
-	 * @param beneCountryId
-	 *            remove 11-05-2018 - beneficiaryCountryId
+	 * @param beneCountryId remove 11-05-2018 - beneficiaryCountryId
 	 * @return beneficiaryCountry List
 	 */
 	public ApiResponse<CountryMasterDTO> getBeneficiaryCountryList() {
@@ -138,32 +131,15 @@ public class BeneClient extends AbstractJaxServiceClient {
 	public ApiResponse<RemittancePageDto> defaultBeneficiary(BigDecimal beneRealtionId, BigDecimal transactionId) {
 		try {
 			ResponseEntity<ApiResponse<RemittancePageDto>> response;
-
-			LOGGER.info("Default Beneficiary");
-
-			StringBuffer sb = new StringBuffer();
-
-			if (beneRealtionId != null || transactionId != null) {
-				sb.append("?");
-			}
-
-			if (beneRealtionId != null) {
-				sb.append("beneRelationId=").append(beneRealtionId).append("&");
-			}
-			if (transactionId != null) {
-				sb.append("transactionId=").append(transactionId);
-			}
-
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			String url = this.getBaseUrl() + BENE_API_ENDPOINT + "/defaultbene/" + sb.toString();
-			return restService.ajax(url).post(requestEntity)
+			return restService.ajax(appConfig.getJaxURL()).path(BENE_API_ENDPOINT + "/defaultbene/")
+					.queryParam("beneRelationId", beneRealtionId)
+					.queryParam("transactionId", transactionId)
+					.meta(new JaxMetaInfo()).post()
 					.as(new ParameterizedTypeReference<ApiResponse<RemittancePageDto>>() {
 					});
-		} catch (AbstractJaxException ae) {
-			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in defaultBeneficiary : ", e);
-			throw new JaxSystemError();
+			return JaxSystemError.evaluate(e);
 		} // end of try-catch
 	}
 
@@ -317,7 +293,8 @@ public class BeneClient extends AbstractJaxServiceClient {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public ApiResponse updateStatus(BigDecimal beneMasSeqId, String remarks, BeneStatus status,String mOtp, String eOtp) {
+	public ApiResponse updateStatus(BigDecimal beneMasSeqId, String remarks, BeneStatus status, String mOtp,
+			String eOtp) {
 		try {
 			StringBuffer sb = new StringBuffer();
 			sb.append("?beneMasSeqId=").append(beneMasSeqId);
@@ -325,7 +302,7 @@ public class BeneClient extends AbstractJaxServiceClient {
 			sb.append("&status=").append(status);
 			sb.append("&mOtp=").append(mOtp);
 			sb.append("&eOtp=").append(eOtp);
-			
+
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 			String url = this.getBaseUrl() + BENE_API_ENDPOINT + UPDAE_STATUS_ENDPOINT + sb.toString();
 			return restService.ajax(url).post(requestEntity).as(new ParameterizedTypeReference<ApiResponse>() {
@@ -341,8 +318,7 @@ public class BeneClient extends AbstractJaxServiceClient {
 	/**
 	 * Saves beneficiary bank account details in transaction
 	 * 
-	 * @param beneAccountModel
-	 *            - Bene account model
+	 * @param beneAccountModel - Bene account model
 	 */
 	public ApiResponse<JaxTransactionResponse> saveBeneAccountInTrnx(BeneAccountModel beneAccountModel) {
 		try {
@@ -363,8 +339,7 @@ public class BeneClient extends AbstractJaxServiceClient {
 	/**
 	 * Saves beneficiary personal details like contact, names etc
 	 * 
-	 * @param benePersonalDetailModel
-	 *            - BenePersonalDetail Model
+	 * @param benePersonalDetailModel - BenePersonalDetail Model
 	 */
 	public ApiResponse<JaxTransactionResponse> saveBenePersonalDetailInTrnx(
 			BenePersonalDetailModel benePersonalDetailModel) {
@@ -386,10 +361,8 @@ public class BeneClient extends AbstractJaxServiceClient {
 	/**
 	 * Commits the add beneficiary transaction in database by validating otp passed
 	 * 
-	 * @param mOtp
-	 *            - mobile otp
-	 * @param eOtp
-	 *            - email otp
+	 * @param mOtp - mobile otp
+	 * @param eOtp - email otp
 	 */
 	public ApiResponse<BeneficiaryTrnxModel> commitAddBeneTrnx(String mOtp, String eOtp) {
 		try {
@@ -411,8 +384,8 @@ public class BeneClient extends AbstractJaxServiceClient {
 	/**
 	 * Fetch list of service provider
 	 * 
-	 * @param param
-	 *            - object with routingCountryId and ServiceGroupId fields populated
+	 * @param param - object with routingCountryId and ServiceGroupId fields
+	 *              populated
 	 */
 	public ApiResponse<RoutingBankMasterDTO> getServiceProvider(RoutingBankMasterServiceProviderParam param) {
 
@@ -436,9 +409,8 @@ public class BeneClient extends AbstractJaxServiceClient {
 	/**
 	 * Fetch list of agent master
 	 * 
-	 * @param param
-	 *            - object with routingCountryId, routingBankId, currencyId,
-	 *            serviceGroupId fields populated
+	 * @param param - object with routingCountryId, routingBankId, currencyId,
+	 *              serviceGroupId fields populated
 	 * 
 	 */
 	public ApiResponse<RoutingBankMasterDTO> getAgentMaster(RoutingBankMasterAgentParam param) {
@@ -465,9 +437,8 @@ public class BeneClient extends AbstractJaxServiceClient {
 	/**
 	 * Fetch list of agent master
 	 * 
-	 * @param param
-	 *            - object with routingCountryId, routingBankId, currencyId,
-	 *            agentBankId and ServiceGroupId fields populated
+	 * @param param - object with routingCountryId, routingBankId, currencyId,
+	 *              agentBankId and ServiceGroupId fields populated
 	 * 
 	 */
 	public ApiResponse<RoutingBankMasterDTO> getAgentBranch(RoutingBankMasterAgentBranchParam param) {
@@ -490,21 +461,21 @@ public class BeneClient extends AbstractJaxServiceClient {
 			throw new JaxSystemError();
 		} // end of try-catch
 	}
-	
-    public ApiResponse<RemittancePageDto> poBeneficiary(BigDecimal placeOrderId) {
-        try {
-              HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-                String url = this.getBaseUrl() + BENE_API_ENDPOINT + "/pobene/";
-                UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url)
-                        .queryParam("placeOrderId", placeOrderId);
-                return restService.ajax(builder.build().encode().toUri()).get(requestEntity)
-                        .as(new ParameterizedTypeReference<ApiResponse<RemittancePageDto>>() {
-                        });
-        } catch (AbstractJaxException ae) {
-            throw ae;
-        } catch (Exception e) {
-            LOGGER.error("exception in defaultBeneficiary : ", e);
-            throw new JaxSystemError();
-        } // end of try-catch
-    }
+
+	public ApiResponse<RemittancePageDto> poBeneficiary(BigDecimal placeOrderId) {
+		try {
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
+			String url = this.getBaseUrl() + BENE_API_ENDPOINT + "/pobene/";
+			UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url)
+					.queryParam("placeOrderId", placeOrderId);
+			return restService.ajax(builder.build().encode().toUri()).get(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<RemittancePageDto>>() {
+					});
+		} catch (AbstractJaxException ae) {
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in defaultBeneficiary : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
+	}
 }

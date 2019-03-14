@@ -1,5 +1,6 @@
 package com.amx.jax.pricer.dbmodel;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -11,11 +12,12 @@ import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-
 @Entity
 @Table(name = "JAX_PR_CUST_CAT_DISCOUNT")
-public class CustomerCategoryDiscount {
+public class CustomerCategoryDiscount implements Serializable {
 
+	private static final long serialVersionUID = 5102691255371845605L;
+	
 	@Id
 	@GeneratedValue(generator = "cc_discount_seq", strategy = GenerationType.SEQUENCE)
 	@SequenceGenerator(name = "cc_discount_seq", sequenceName = "JAX_PR_CUSTOMER_DISCOUNT_SEQ", allocationSize = 1)
@@ -54,6 +56,12 @@ public class CustomerCategoryDiscount {
 
 	@Column(name = "APPROVED_DATE")
 	private Date approvedDate;
+
+	@Column(name = "MIN_DISCOUNT_PIPS")
+	private BigDecimal minDiscountPips;
+
+	@Column(name = "MAX_DISCOUNT_PIPS")
+	private BigDecimal maxDiscountPips;
 
 	public BigDecimal getId() {
 		return id;
@@ -149,6 +157,22 @@ public class CustomerCategoryDiscount {
 
 	public void setApprovedDate(Date approvedDate) {
 		this.approvedDate = approvedDate;
+	}
+
+	public BigDecimal getMinDiscountPips() {
+		return minDiscountPips;
+	}
+
+	public void setMinDiscountPips(BigDecimal minDiscountPips) {
+		this.minDiscountPips = minDiscountPips;
+	}
+
+	public BigDecimal getMaxDiscountPips() {
+		return maxDiscountPips;
+	}
+
+	public void setMaxDiscountPips(BigDecimal maxDiscountPips) {
+		this.maxDiscountPips = maxDiscountPips;
 	}
 
 }

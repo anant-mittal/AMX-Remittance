@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.amx.jax.error.JaxError;
+import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
 
 /**
  * The Class ResponseMeta.
@@ -16,7 +17,7 @@ public class ResponseMeta {
 	public ResponseMeta() {
 		super();
 		responseMessage = Arrays.asList(ResponseMessage.values());
-		responseStatus = Arrays.asList(WebResponseStatus.values());
+		responseStatus = Arrays.asList(OWAStatusStatusCodes.values());
 		jaxError = Arrays.asList(JaxError.values());
 	}
 
@@ -24,7 +25,7 @@ public class ResponseMeta {
 	List<ResponseMessage> responseMessage;
 
 	/** The response status. */
-	List<WebResponseStatus> responseStatus;
+	List<OWAStatusStatusCodes> responseStatus;
 
 	/** The jax error. */
 	List<JaxError> jaxError;
@@ -53,7 +54,7 @@ public class ResponseMeta {
 	 *
 	 * @return the response status
 	 */
-	public List<WebResponseStatus> getResponseStatus() {
+	public List<OWAStatusStatusCodes> getResponseStatus() {
 		return responseStatus;
 	}
 
@@ -63,7 +64,7 @@ public class ResponseMeta {
 	 * @param responseStatus
 	 *            the new response status
 	 */
-	public void setResponseStatus(List<WebResponseStatus> responseStatus) {
+	public void setResponseStatus(List<OWAStatusStatusCodes> responseStatus) {
 		this.responseStatus = responseStatus;
 	}
 

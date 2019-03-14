@@ -3,7 +3,9 @@
  */
 package com.amx.jax.pricer.service;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import javax.annotation.Resource;
 
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import com.amx.jax.pricer.dao.CustomerDao;
 import com.amx.jax.pricer.dbmodel.Customer;
+import com.amx.jax.pricer.dto.ExchangeRateDetails;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.dto.PricingResponseDTO;
 import com.amx.jax.pricer.exception.PricerServiceError;
@@ -21,6 +24,7 @@ import com.amx.jax.pricer.exception.PricerServiceException;
 import com.amx.jax.pricer.manager.CustomerDiscountManager;
 import com.amx.jax.pricer.manager.RemitPriceManager;
 import com.amx.jax.pricer.util.PricingRateDetailsDTO;
+import com.amx.jax.pricer.var.PricerServiceConstants.CUSTOMER_CATEGORY;
 import com.amx.jax.pricer.var.PricerServiceConstants.PRICE_BY;
 import com.amx.utils.JsonUtil;
 
@@ -63,7 +67,7 @@ public class PricingService {
 
 		remitPriceManager.computeBaseSellRatesPrices(pricingRequestDTO);
 
-		customerDiscountManager.getDiscountedRates(pricingRequestDTO, customer);
+		customerDiscountManager.getDiscountedRates(pricingRequestDTO, customer, CUSTOMER_CATEGORY.BRONZE);
 
 		PricingResponseDTO pricingResponseDTO = new PricingResponseDTO();
 
@@ -106,9 +110,44 @@ public class PricingService {
 
 		Collections.sort(pricingResponseDTO.getSellRateDetails(), Collections.reverseOrder());
 
-		Collections.reverse(pricingResponseDTO.getSellRateDetails());
-
 		return pricingResponseDTO;
+	}
+
+	public List<PricingResponseDTO> fetchDiscountedRatesAcrossCustCategories(PricingRequestDTO pricingRequestDTO) {
+		validatePricingRequest(pricingRequestDTO, Boolean.FALSE);
+
+		remitPriceManager.computeBaseSellRatesPrices(pricingRequestDTO);
+
+		List<PricingResponseDTO> allDiscountedRates = new ArrayList<PricingResponseDTO>();
+
+		for (CUSTOMER_CATEGORY cc : CUSTOMER_CATEGORY.values()) {
+
+			customerDiscountManager.getDiscountedRates(pricingRequestDTO, null, cc);
+			PricingResponseDTO pricingResponseDTO = new PricingResponseDTO();
+
+			pricingResponseDTO.setBankDetails(pricingRateDetailsDTO.getBankDetails());
+
+			List<ExchangeRateDetails> exRateDetails = new ArrayList<ExchangeRateDetails>();
+
+			for (ExchangeRateDetails exRateDetail : pricingRateDetailsDTO.getSellRateDetails()) {
+
+				exRateDetails.add(exRateDetail.clone());
+
+			}
+
+			pricingResponseDTO.setSellRateDetails(exRateDetails);
+
+			pricingResponseDTO.setCustomerCategory(cc);
+
+			Collections.sort(pricingResponseDTO.getSellRateDetails(), Collections.reverseOrder());
+
+			pricingResponseDTO.setInfo(pricingRateDetailsDTO.getInfo());
+
+			allDiscountedRates.add(pricingResponseDTO);
+		}
+
+		return allDiscountedRates;
+
 	}
 
 	private boolean validatePricingRequest(PricingRequestDTO pricingRequestDTO, boolean isCustomer) {

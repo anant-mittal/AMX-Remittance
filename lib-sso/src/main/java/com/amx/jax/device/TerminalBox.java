@@ -26,4 +26,8 @@ public class TerminalBox extends CacheBox<TerminalData> {
 			this.fastPut(terminalIdStr, terminalData);
 		}
 	}
+
+	public Object version() {
+		return 1;
+	}
 }

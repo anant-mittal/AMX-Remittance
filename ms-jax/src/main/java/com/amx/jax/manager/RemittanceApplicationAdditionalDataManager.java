@@ -3,6 +3,7 @@ package com.amx.jax.manager;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -16,17 +17,23 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.amx.amxlib.model.FlexFieldDto;
-import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.dao.RemittanceApplicationDao;
+import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.CompanyMaster;
 import com.amx.jax.dbmodel.CountryMaster;
 import com.amx.jax.dbmodel.remittance.AdditionalBankDetailsViewx;
+import com.amx.jax.dbmodel.remittance.AdditionalBankRuleAmiec;
 import com.amx.jax.dbmodel.remittance.AdditionalBankRuleMap;
 import com.amx.jax.dbmodel.remittance.AdditionalInstructionData;
 import com.amx.jax.dbmodel.remittance.Document;
+import com.amx.jax.dbmodel.remittance.FlexFiledView;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
+import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
+import com.amx.jax.model.response.remittance.FlexFieldDto;
+import com.amx.jax.repository.IAdditionalBankRuleAmiecRepository;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.services.BankService;
 
@@ -47,6 +54,15 @@ public class RemittanceApplicationAdditionalDataManager {
 
 	@Autowired
 	private BankService bankService;
+	
+	@Autowired
+	RemittanceApplicationDao remittanceApplicationDao;
+	
+	
+	@Autowired
+	IAdditionalBankRuleAmiecRepository amiecBankRuleRepo;
+	
+	
 
 	public List<AdditionalInstructionData> createAdditionalInstnData(RemittanceApplication remittanceApplication,
 			RemittanceTransactionRequestModel remittanceTransactionRequestModel) {
@@ -63,16 +79,11 @@ public class RemittanceApplicationAdditionalDataManager {
 			BigDecimal foreignCurrencyId = (BigDecimal) remitApplParametersMap.get("P_FOREIGN_CURRENCY_ID");
 			
 			if (v.getSrlId() != null) {
-				AdditionalBankDetailsViewx additionaBnankDetail = bankService.getAdditionalBankDetail(v.getSrlId(),
-						foreignCurrencyId, bankId, remittanceModeId, deliveryModeId);
-				AdditionalInstructionData additionalInsDataTmp = createAdditionalIndicatorsData(remittanceApplication,
-						applicationCountryId, k, additionaBnankDetail.getAmiecCode(),
-						additionaBnankDetail.getAmieceDescription(), v.getAdditionalBankRuleFiledId());
+				AdditionalBankDetailsViewx additionaBnankDetail = bankService.getAdditionalBankDetail(v.getSrlId(),foreignCurrencyId, bankId, remittanceModeId, deliveryModeId);
+				AdditionalInstructionData additionalInsDataTmp = createAdditionalIndicatorsData(remittanceApplication,applicationCountryId, k, additionaBnankDetail.getAmiecCode(),additionaBnankDetail.getAmieceDescription(), v.getAdditionalBankRuleFiledId());
 				lstAddInstrData.add(additionalInsDataTmp);
 			} else {
-				AdditionalInstructionData additionalInsDataTmp = createAdditionalIndicatorsData(remittanceApplication,
-						applicationCountryId, k, ConstantDocument.AMIEC_CODE, v.getAmieceDescription(),
-						v.getAdditionalBankRuleFiledId());
+				AdditionalInstructionData additionalInsDataTmp = createAdditionalIndicatorsData(remittanceApplication,applicationCountryId, k, ConstantDocument.AMIEC_CODE, v.getAmieceDescription(),v.getAdditionalBankRuleFiledId());
 				lstAddInstrData.add(additionalInsDataTmp);
 			}
 		});
@@ -117,7 +128,6 @@ public class RemittanceApplicationAdditionalDataManager {
 			additionalInsData.setAmiecCode(amiecCode);
 		} else {
 			additionalInsData.setAmiecCode(ConstantDocument.AMIEC_CODE);
-			// additionalInsData.setFlexFieldValue("ONLINE TEST");
 		}
 
 		additionalInsData.setExRemittanceApplication(remittanceApplication);
@@ -133,7 +143,65 @@ public class RemittanceApplicationAdditionalDataManager {
 
 		return additionalInsData;
 	}
+	
+	
+	
+	public List<AdditionalInstructionData> createAdditionalInstnDataForBranch(RemittanceApplication remittanceApplication, Map<String, Object> remitApplParaMap) {
 
+		logger.info(" Enter into saveAdditionalInstnData ");
+
+		BigDecimal applicationCountryId = metaData.getCountryId();
+		
+		BranchRemittanceApplRequestModel remittanceTransactionRequestModel =(BranchRemittanceApplRequestModel)remitApplParaMap.get("APPL_REQ_MODEL");
+		BenificiaryListView beneDetails = (BenificiaryListView) remitApplParaMap.get("BENEFICIARY_DETAILS");
+		
+		remittanceTransactionRequestModel.populateFlexFieldDtoMap();
+		
+		
+		
+		List<FlexFiledView> allFlexFields = remittanceApplicationDao.getFlexFields();
+		Map<String, FlexFieldDto> requestFlexFields = remittanceTransactionRequestModel.getFlexFieldDtoMap();
+		if (requestFlexFields == null) {
+			requestFlexFields = new HashMap<>();
+			remittanceTransactionRequestModel.setFlexFieldDtoMap(requestFlexFields);
+		}
+		AdditionalBankRuleAmiec amiecDetails = getBankRuleAmiecDescription(remittanceTransactionRequestModel.getPurposeOfTrnxId());
+		
+		//EX_AMIEC_AND_BANK_MAPPING 
+		
+		requestFlexFields.put("INDIC1",new FlexFieldDto(amiecDetails.getAdditionalBankFieldId().getAdditionalBankRuleId(), remittanceTransactionRequestModel.getPurposeOfTrnxId(), amiecDetails.getAmiecDescription()));
+		
+		List<AdditionalInstructionData> lstAddInstrData = new ArrayList<AdditionalInstructionData>();
+		
+		
+		
+		requestFlexFields.forEach((k, v) -> {
+			BigDecimal bankId =remittanceTransactionRequestModel.getRoutingBankId();//(BigDecimal) routingSetupDetails.get("P_ROUTING_BANK_ID");
+			BigDecimal remittanceModeId = remittanceTransactionRequestModel.getRemittanceModeId();
+			BigDecimal deliveryModeId = remittanceTransactionRequestModel.getDeliveryModeId();
+			BigDecimal foreignCurrencyId = beneDetails.getCurrencyId();
+			if (v.getSrlId() != null) {
+				AdditionalInstructionData additionalInsDataTmp = createAdditionalIndicatorsData(remittanceApplication,applicationCountryId, k, amiecDetails.getAmiecCode(),amiecDetails.getAmiecDescription(), amiecDetails.getAdditionalBankFieldId().getAdditionalBankRuleId());	
+				lstAddInstrData.add(additionalInsDataTmp);
+			} else {
+				AdditionalInstructionData additionalInsDataTmp = createAdditionalIndicatorsData(remittanceApplication,applicationCountryId, k, ConstantDocument.AMIEC_CODE, v.getAmieceDescription(),v.getAdditionalBankRuleFiledId());
+				lstAddInstrData.add(additionalInsDataTmp);
+			}
+		});
+
+		logger.info(" Exit from saveAdditionalInstnData ");
+
+		return lstAddInstrData;
+	}
+	
+
+	public  AdditionalBankRuleAmiec getBankRuleAmiecDescription(BigDecimal purposeOfTrnxId) {
+		AdditionalBankRuleAmiec amiec = amiecBankRuleRepo.findOne(purposeOfTrnxId);
+		return amiec;
+	}
+	
+	
+	
 	class AdditionalRuleDataParamer {
 		String pruleId;
 		String pamieCode;

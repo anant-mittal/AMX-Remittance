@@ -11,8 +11,12 @@ import org.springframework.stereotype.Component;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring4.SpringTemplateEngine;
 
+import com.amx.jax.client.snap.SnapConstants.SnapQueryTemplate;
+import com.amx.jax.client.snap.SnapModels.SnapModelWrapper;
+import com.amx.jax.client.snap.SnapQueryException;
 import com.amx.jax.radar.EsConfig;
 import com.amx.jax.rest.RestService;
+import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;
 
 /**
@@ -40,6 +44,9 @@ public class SnapQueryService {
 	public String buildQueryString(SnapQueryTemplate template, Map<String, Object> map) {
 		Locale locale = new Locale("en");
 		Context context = new Context(locale);
+		if (!map.containsKey("_type")) {
+			map.put("_type", template.getIndexName());
+		}
 		context.setVariables(map);
 		return this.processJson(template, context);
 	}
@@ -48,20 +55,28 @@ public class SnapQueryService {
 		return JsonUtil.getMapFromJsonString(this.buildQueryString(template, params));
 	}
 
-	public Map<String, Object> executeQuery(Map<String, Object> query, String index) throws IOException {
-		Map<String, Object> x = restService.ajax(ssConfig.getClusterUrl()).path(index + "/_search").post(query)
+	public SnapModelWrapper executeQuery(Map<String, Object> query, String index) {
+		Map<String, Object> x = restService.ajax(ssConfig.getClusterUrl()).path(
+				EsConfig.indexName(index) + "/_search").post(query)
 				.asMap();
-		x.put("aggs", query.get("aggs"));
-		return x;
+		// x.put("aggs", query.get("aggs"));
+		System.out.println(JsonUtil.toJson(query));
+		return new SnapModelWrapper(x);
 	}
 
-	public Map<String, Object> executeQuery(Map<String, Object> query) throws IOException {
+	public SnapModelWrapper executeQuery(Map<String, Object> query) throws IOException {
 		return executeQuery(query, "oracle-v3-*-v4");
 	}
 
-	public Map<String, Object> execute(SnapQueryTemplate template, Map<String, Object> params) throws IOException {
-		Map<String, Object> query = getQuery(template, params);
+	public SnapModelWrapper execute(SnapQueryTemplate template, Map<String, Object> params) {
+		Map<String, Object> query = null;
+		try {
+			query = getQuery(template, params);
+		} catch (IOException e) {
+			throw new SnapQueryException(SnapQueryException.SnapServiceCodes.INVALID_QUERY);
+		}
 		return executeQuery(query, template.getIndex());
+
 	}
 
 }

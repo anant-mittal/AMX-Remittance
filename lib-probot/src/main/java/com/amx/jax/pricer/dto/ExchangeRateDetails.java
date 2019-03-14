@@ -3,12 +3,13 @@ package com.amx.jax.pricer.dto;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
 
 import com.amx.jax.pricer.var.PricerServiceConstants.DISCOUNT_TYPE;
 
-public class ExchangeRateDetails implements Serializable, Comparable<ExchangeRateDetails> {
+public class ExchangeRateDetails implements Serializable, Cloneable, Comparable<ExchangeRateDetails> {
 
 	private static final long serialVersionUID = -4224946950188132064L;
 
@@ -74,5 +75,33 @@ public class ExchangeRateDetails implements Serializable, Comparable<ExchangeRat
 
 		return 1;
 	}
+
+	@Override
+	public ExchangeRateDetails clone() {
+
+		try {
+
+			ExchangeRateDetails cloned = (ExchangeRateDetails) super.clone();
+			cloned.discountPipsDetails = this.discountPipsDetails.entrySet().stream()
+					.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+			return cloned;
+
+		} catch (CloneNotSupportedException e) {
+
+			ExchangeRateDetails cloned = new ExchangeRateDetails();
+			cloned.bankId = this.bankId;
+			cloned.serviceIndicatorId = this.serviceIndicatorId;
+			cloned.sellRateBase = this.sellRateBase.clone();
+			cloned.sellRateNet = this.sellRateNet.clone();
+
+			cloned.discountPipsDetails = this.discountPipsDetails.entrySet().stream()
+					.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+			return cloned;
+
+		}
+
+	}// Clone
 
 }

@@ -8,7 +8,11 @@ import java.math.BigDecimal;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.mobile.device.Device;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.amx.jax.AppConfig;
 import com.amx.jax.AppContextUtil;
@@ -16,6 +20,8 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.logger.LoggerService;
+import com.amx.jax.rbaac.IRbaacService.ApiEndPoints;
+import com.amx.jax.rbaac.IRbaacService.Params;
 import com.amx.jax.rbaac.dto.DeviceDto;
 import com.amx.jax.rbaac.dto.DevicePairOtpResponse;
 import com.amx.jax.rbaac.dto.request.DeviceRegistrationRequest;
@@ -240,9 +246,8 @@ public class RbaacServiceClient implements IRbaacService {
 	public AmxApiResponse<NotpDTO, Object> verifyOTP(NotpDTO reqDTO) {
 		LOGGER.debug("verify OTP");
 		String url = appConfig.getAuthURL() + ApiEndPoints.NOTP_VERIFY;
-		return restService.ajax(url).post(reqDTO)
-				.as(new ParameterizedTypeReference<AmxApiResponse<NotpDTO, Object>>() {
-				});
+		return restService.ajax(url).post(reqDTO).as(new ParameterizedTypeReference<AmxApiResponse<NotpDTO, Object>>() {
+		});
 
 	}
 
@@ -316,6 +321,15 @@ public class RbaacServiceClient implements IRbaacService {
 				.as(new ParameterizedTypeReference<AmxApiResponse<BigDecimal, Object>>() {
 				});
 	}
+	
+	@Override
+	public AmxApiResponse<DeviceDto, Object> getDeviceByDeviceRegId(BigDecimal deviceRegId) {
+		LOGGER.debug("in getDeviceByDeviceRegId");
+		String url = appConfig.getAuthURL() + ApiEndPoints.DEVICE_GET_DEVICE_BY_DEVICE_REG_ID;
+		return restService.ajax(url).field(Params.DEVICE_REG_ID, deviceRegId).postForm()
+				.as(new ParameterizedTypeReference<AmxApiResponse<DeviceDto, Object>>() {
+				});
+	}
 
 	@Override
 	public AmxApiResponse<RoleMappingForEmployee, Object> getRoleMappingsForEmployee(BigDecimal employeeId,
@@ -342,4 +356,12 @@ public class RbaacServiceClient implements IRbaacService {
 				});
 	}
 
+	@Override
+	public AmxApiResponse<BoolRespModel, Object> deleteDevice(Integer deviceRegId) {
+		LOGGER.debug("in deleteDevice");
+		String url = appConfig.getAuthURL() + ApiEndPoints.DEVICE_DELETE;
+		return restService.ajax(url).field(Params.DEVICE_REG_ID, deviceRegId).postForm()
+				.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
+				});
+	}
 }

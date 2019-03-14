@@ -372,8 +372,7 @@ public class FcSaleApplicationTransactionManager extends AbstractModel {
 				}
 			}
 			try {
-				receiptPaymentAppl
-						.setAccountMMYYYY(new SimpleDateFormat("dd/MM/yyyy").parse(DateUtil.getCurrentAccMMYear()));
+				receiptPaymentAppl.setAccountMMYYYY(new SimpleDateFormat("dd/MM/yyyy").parse(DateUtil.getCurrentAccMMYear()));
 			} catch (ParseException e) {
 				logger.error("Error in saving application", e);
 			}

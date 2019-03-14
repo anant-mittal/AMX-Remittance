@@ -9,15 +9,16 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import com.amx.jax.json.CommonSerilizers.BigDecimalSerializer;
+import com.amx.jax.json.CommonSerilizers.EnumByIdSerializer;
+import com.amx.jax.json.CommonSerilizers.EnumTypeSerializer;
+import com.amx.jax.json.JsonSerializerType;
+import com.amx.jax.json.JsonSerializerTypeSerializer;
 import com.amx.utils.ArgUtil.EnumById;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
 /**
@@ -303,36 +304,4 @@ public final class JsonUtil {
 		});
 	}
 
-}
-
-class EnumByIdSerializer extends JsonSerializer<EnumById> {
-
-	@Override
-	public void serialize(EnumById value, JsonGenerator gen, SerializerProvider serializers)
-			throws IOException, JsonProcessingException {
-		gen.writeString(value.getId());
-	}
-}
-
-class EnumTypeSerializer extends JsonSerializer<EnumType> {
-
-	@Override
-	public void serialize(EnumType value, JsonGenerator gen, SerializerProvider serializers)
-			throws IOException, JsonProcessingException {
-		gen.writeString(value.name());
-	}
-}
-
-class BigDecimalSerializer extends JsonSerializer<BigDecimal> {
-
-	@Override
-	public void serialize(BigDecimal value, JsonGenerator gen, SerializerProvider serializers)
-			throws IOException, JsonProcessingException {
-		if (!ArgUtil.isEmpty(value)) {
-			// gen.writeString(value.toPlainString());
-			// gen.writeNumber(value);
-			// gen.writeNumber(value.doubleValue());
-			gen.writeNumber(value.toPlainString());
-		}
-	}
 }
