@@ -20,13 +20,13 @@ public class WorkingHoursData {
 	private int[] workTimeToInHrsMins = new int[7];
 
 	// Processing Time in Hours or Fraction of it.
-	private double processTimeInHrs;
+	private long totalProcessingTimeInMins;
 
 	public WorkingHoursData() {
 		Arrays.fill(workWeek, false);
 		Arrays.fill(workTimeFromInHrsMins, 0);
 		Arrays.fill(workTimeToInHrsMins, 0);
-		processTimeInHrs = 0;
+		totalProcessingTimeInMins = 0;
 	}
 
 	public boolean[] getWorkWeek() {
@@ -41,12 +41,12 @@ public class WorkingHoursData {
 		return workTimeToInHrsMins;
 	}
 
-	public double getProcessTimeInHrs() {
-		return processTimeInHrs;
+	public long getTotalProcessingTimeInMins() {
+		return totalProcessingTimeInMins;
 	}
 
-	public void setProcessTimeInHrs(double processTimeInHrs) {
-		this.processTimeInHrs = processTimeInHrs;
+	public void setTotalProcessingTimeInMins(long totalProcessingTimeInMins) {
+		this.totalProcessingTimeInMins = totalProcessingTimeInMins;
 	}
 
 	public boolean setWorkDayOnArabicDoW(int arabicDayOfWeek) {

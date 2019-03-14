@@ -111,9 +111,10 @@ public class RemitRoutingManager {
 
 		EstimatedDeliveryDetails estimatedDeliveryDetails = new EstimatedDeliveryDetails();
 
-		long procTimeInMin = Math.round(processTimeInHrs.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue() * 60);
+		// long procTimeInMin = Math.round(processTimeInHrs.setScale(2,
+		// BigDecimal.ROUND_HALF_UP).doubleValue() * 60);
 
-		goodBusinessDT = goodBusinessDT.plusMinutes(procTimeInMin);
+		goodBusinessDT = goodBusinessDT.plusMinutes(workingHoursData.getTotalProcessingTimeInMins());
 
 		System.out.println(" Estimated Delivery Date Time ===> " + goodBusinessDT);
 
@@ -138,7 +139,9 @@ public class RemitRoutingManager {
 					weekEndHrsFrom.doubleValue(), weekEndHrsTo.doubleValue());
 		}
 
-		workingHoursData.setProcessTimeInHrs(processTimeInHrs.doubleValue());
+		long procTimeInMin = Math.round(processTimeInHrs.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue() * 60);
+
+		workingHoursData.setTotalProcessingTimeInMins(procTimeInMin);
 
 		System.out.println(" Work Week matrix ==> " + JsonUtil.toJson(workingHoursData));
 

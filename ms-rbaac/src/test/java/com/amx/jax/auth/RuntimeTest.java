@@ -97,10 +97,7 @@ public final class RuntimeTest {
 		
 		System.out.println("\n\n HourMin ==>" + DateUtil.getHrMinIntVal(23, 100));
 		
-		Date dt = new Date();
-		dt.setHours(48);
-		dt.setMinutes(25);
-		dt.setSeconds(00);
+		Date dt = new Date(1552055789000l);
 		
 		System.out.println("\n\n Date d ==>" + dt);
 		
