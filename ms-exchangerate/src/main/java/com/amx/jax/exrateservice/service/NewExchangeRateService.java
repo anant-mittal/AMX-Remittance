@@ -17,11 +17,14 @@ import com.amx.amxlib.meta.model.BankMasterDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ExchangeRateResponseModel;
 import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.config.JaxProperties;
 import com.amx.jax.config.JaxTenantProperties;
 import com.amx.jax.dbmodel.PipsMaster;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.pricer.PricerServiceClient;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.model.response.ExchangeRateBreakup;
+import com.amx.jax.remittance.manager.RemittanceParameterMapManager;
 import com.amx.jax.util.RoundUtil;
 
 /**
@@ -36,6 +39,8 @@ public class NewExchangeRateService extends ExchangeRateService {
 	JaxDynamicPriceService jaxDynamicPriceService;
 	@Autowired
 	JaxTenantProperties jaxTenantProperties;
+	@Autowired
+	RemittanceParameterMapManager remittanceParameterMapManager;
 
 	/*
 	 * (non-Javadoc)
@@ -48,7 +53,7 @@ public class NewExchangeRateService extends ExchangeRateService {
 			BigDecimal toCurrency, BigDecimal lcAmount, BigDecimal routingBankId, BigDecimal beneBankCountryId) {
 		ExchangeRateResponseModel outputModel = null;
 		ApiResponse<ExchangeRateResponseModel> response = getBlackApiResponse();
-		if (jaxTenantProperties.getIsDynamicPricingEnabled() && beneBankCountryId != null) {
+		if (jaxTenantProperties.getIsDynamicPricingEnabled() && beneBankCountryId != null && !remittanceParameterMapManager.isCashChannel()) {
 			outputModel = jaxDynamicPriceService.getExchangeRatesWithDiscount(fromCurrency, toCurrency, lcAmount, null,
 					beneBankCountryId, routingBankId);
 			response.getData().getValues().add(outputModel);

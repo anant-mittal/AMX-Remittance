@@ -71,6 +71,7 @@ import com.amx.jax.error.JaxError;
 import com.amx.jax.exrateservice.dao.ExchangeRateDao;
 import com.amx.jax.exrateservice.dao.PipsMasterDao;
 import com.amx.jax.exrateservice.service.NewExchangeRateService;
+import com.amx.jax.logger.AuditEvent;
 import com.amx.jax.logger.AuditEvent.Result;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.events.CActivityEvent;
@@ -82,6 +83,7 @@ import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.model.response.ExchangeRateBreakup;
 import com.amx.jax.model.response.remittance.LoyalityPointState;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
+import com.amx.jax.remittance.manager.RemittanceParameterMapManager;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.VTransferRepository;
 import com.amx.jax.service.CountryService;
@@ -199,6 +201,8 @@ public class RemittanceTransactionManager {
 	CountryService countryService;
 	@Autowired
 	JaxConfigService jaxConfigService;
+	@Autowired
+	RemittanceParameterMapManager remittanceParameterMapManager;
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -222,7 +226,6 @@ public class RemittanceTransactionManager {
 		HashMap<String, Object> beneBankDetails = getBeneBankDetails(beneficiary);
 		remitApplParametersMap.putAll(beneBankDetails);
 		Map<String, Object> routingDetails = routingService.getRoutingDetails(remitApplParametersMap);
-
 		remitApplParametersMap.putAll(routingDetails);
 		remitApplParametersMap.put("P_BENEFICIARY_SWIFT_BANK1", routingDetails.get("P_SWIFT"));
 		remitApplParametersMap.put("P_BENEFICARY_ACCOUNT_SEQ_ID", beneficiary.getBeneficiaryAccountSeqId());
@@ -586,7 +589,7 @@ public class RemittanceTransactionManager {
 		BigDecimal fCurrencyId = (BigDecimal) remitApplParametersMap.get("P_FOREIGN_CURRENCY_ID");
 		BigDecimal routingCountryId  = (BigDecimal) remitApplParametersMap.get("P_ROUTING_COUNTRY_ID");
 		
-		if (jaxTenantProperties.getIsDynamicPricingEnabled()) {
+		if (jaxTenantProperties.getIsDynamicPricingEnabled() && !remittanceParameterMapManager.isCashChannel()) {
 			exchangeRateBreakup = newExchangeRateService.getExchangeRateBreakUpUsingDynamicPricing(fCurrencyId,
 					lcAmount, fcAmount, routingCountryId, routingBankId);
 		} else if (jaxTenantProperties.getExrateBestRateLogicEnable()) {
@@ -831,7 +834,7 @@ public class RemittanceTransactionManager {
 			}
 		}
 	}
-	
+
 	private void validateAdditionalCheck() {
 		applicationProcedureDao.getAdditionalCheckProcedure(remitApplParametersMap);
 	}
