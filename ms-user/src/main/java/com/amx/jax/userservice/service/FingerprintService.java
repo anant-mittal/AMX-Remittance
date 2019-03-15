@@ -190,22 +190,28 @@ public class FingerprintService {
 		personinfo.setFirstName(customer.getFirstName());
 		personinfo.setMiddleName(customer.getMiddleName());
 		personinfo.setLastName(customer.getLastName());
+		logger.info("Email to - " + customerOnlineRegistration.getEmail());
 		Email email = new Email();
-		
+		logger.info("setting to");
 		email.addTo(customerOnlineRegistration.getEmail());
+		logger.info("setting template");
 		email.setITemplate(TemplatesMX.FINGERPRINT_LINKED_SUCCESS);
+		logger.info("setting html");
 		email.setHtml(true);
+		logger.info("setting data");
 		email.getModel().put(RESP_DATA_KEY, personinfo);
 
-		logger.debug("Email to - " + customerOnlineRegistration.getEmail());
+		logger.info("Email to - " + customerOnlineRegistration.getEmail());
 		sendEmail(email);
 		return userFingerprintResponsemodel;
 	}
 	@Async(ExecutorConfig.DEFAULT)
 	public void sendEmail(Email email) {
 		try {
+			logger.info("email sent");
 			postManService.sendEmailAsync(email);
 		} catch (PostManException e) {
+			logger.info("email exception");
 			logger.error("error in link fingerprint", e);
 		}
 	}

@@ -216,7 +216,7 @@ public class UserValidationService {
 		String dbPassword = customer.getDevicePassword();
 		String passwordHashed = null;
 		try {
-			logger.debug("hashed psw not generated");
+			logger.info("hashed psw not generated");
 			passwordHashed = com.amx.utils.CryptoUtil.getSHA2Hash(password);
 		} catch (NoSuchAlgorithmException e) {
 			logger.error("Exception thrown for incorrect algorithm ", e);
@@ -226,7 +226,7 @@ public class UserValidationService {
 			Integer attemptsLeft = incrementLockCount(customer);
 			String errorExpression = JaxError.WRONG_PASSWORD.toString();
 			if (attemptsLeft > 0) {
-				logger.debug("attempts are still left");
+				logger.info("attempts are still left");
 				errorExpression = jaxUtil.buildErrorExpression(JaxError.WRONG_PASSWORDS_ATTEMPTS.toString(),
 						attemptsLeft);
 			}
@@ -460,11 +460,11 @@ public class UserValidationService {
 		onlineCustomer.setLockCnt(new BigDecimal(lockCnt));
 		custDao.saveOnlineCustomer(onlineCustomer);
 		if (lockCnt >= MAX_OTP_ATTEMPTS) {
-			logger.debug("lock count has exceeded");
+			logger.info("lock count has exceeded");
 			String errorExpression = JaxError.USER_LOGIN_ATTEMPT_EXCEEDED.toString();
-			logger.debug("throw exception that user login attempt has exceeded");
+			logger.info("throw exception that user login attempt has exceeded");
 			errorExpression = jaxUtil.buildErrorExpression(JaxError.USER_LOGIN_ATTEMPT_EXCEEDED.toString(), lockCnt);
-			logger.debug("error expression has been calculated");
+			logger.info("error expression has been calculated");
 			throw new GlobalException(errorExpression, "Customer is locked. No of attempts:- " + lockCnt);
 		}
 		return MAX_OTP_ATTEMPTS - lockCnt;
