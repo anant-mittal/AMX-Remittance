@@ -165,6 +165,8 @@ public class AnnualIncomeService {
 		customer.setAnnualIncomeUpdatedDate(new Date());
 		customer.setFsArticleDetails(articleDao.getArticleDetailsByArticleDetailId(incomeDto.getArticleDetailId()));
 		CustomerEmploymentInfo customerEmploymentInfo = incomeDao.getCustById(metaData.getCustomerId());
+		logger.info("cust emp info is "+customerEmploymentInfo.getDepartment());
+		logger.info("company name is"+incomeDto.getCompanyName());
 		customerEmploymentInfo.setEmployerName(incomeDto.getCompanyName());
 		logger.info("employee name is set:"+customerEmploymentInfo.getEmployerName());
 		if (incomeDto.getImage() != null && incomeDto.getFileName()!=null) {
