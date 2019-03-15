@@ -230,6 +230,7 @@ public class FingerprintService {
 
 		CustomerOnlineRegistration customerOnlineRegistration = userValidationService
 				.validateOnlineCustomerByIdentityId(civilId, identityType);
+		userValidationService.validateCustomerLockCount(customerOnlineRegistration);
 		userValidationService.validateDevicePassword(customerOnlineRegistration, password);
 		CustomerModel customerModel = convert(customerOnlineRegistration);
 		return customerModel;
