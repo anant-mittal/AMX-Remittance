@@ -39,9 +39,11 @@ public class FingerPrintLoginIncorrectAttempt implements IAlert {
 	@Override
 	public void sendAlert(AbstractJaxException ex) {
 		if (ex.getErrorKey() != null && ex.getErrorKey().startsWith(JaxError.USER_LOGIN_ATTEMPT_EXCEEDED.toString())) {
-			
+			logger.debug("setting details for mail");
 			CustomerOnlineRegistration customerOnlineRegistration = custDao.getOnlineCustByCustomerId(metaData.getCustomerId());
+			logger.debug("Email to - " + customerOnlineRegistration.getEmail());
 			Customer customer = custDao.getCustById(customerOnlineRegistration.getCustomerId());
+			logger.debug("Email to him - " + customer.getEmail());
 			PersonInfo personinfo = new PersonInfo();
 			personinfo.setFirstName(customer.getFirstName());
 			personinfo.setMiddleName(customer.getMiddleName());
@@ -49,9 +51,13 @@ public class FingerPrintLoginIncorrectAttempt implements IAlert {
 			Email email = new Email();
 
 			email.addTo(customerOnlineRegistration.getEmail());
+			logger.debug("setting to");
 			email.setITemplate(TemplatesMX.FINGERPRINT_DELINKED_ATTEMP_SUCCESS);
+			logger.debug("setting template");
 			email.setHtml(true);
+			logger.debug("setting html");
 			email.getModel().put(RESP_DATA_KEY, personinfo);
+			logger.debug("setting data");
 
 			logger.debug("Email to - " + customerOnlineRegistration.getEmail());
 			sendEmail(email);
@@ -59,8 +65,10 @@ public class FingerPrintLoginIncorrectAttempt implements IAlert {
 	}
 	public void sendEmail(Email email) {
 		try {
+			logger.debug("email sent");
 			postManService.sendEmailAsync(email);
 		} catch (PostManException e) {
+			logger.debug("email exception");
 			logger.error("error in incorrect attempts to link fingerprint", e);
 		}
 	}
