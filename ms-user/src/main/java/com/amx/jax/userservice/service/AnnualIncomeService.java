@@ -166,9 +166,11 @@ public class AnnualIncomeService {
 		customer.setFsArticleDetails(articleDao.getArticleDetailsByArticleDetailId(incomeDto.getArticleDetailId()));
 		CustomerEmploymentInfo customerEmploymentInfo = incomeDao.getCustById(metaData.getCustomerId());
 		customerEmploymentInfo.setEmployerName(incomeDto.getCompanyName());
-		if (incomeDto.getImage() != null) {
+		logger.info("employee name is set:"+customerEmploymentInfo.getEmployerName());
+		if (incomeDto.getImage() != null && incomeDto.getFileName()!=null) {
 
 			//throw new GlobalException(JaxError.IMAGE_NOT_AVAILABLE, "Image is not available");
+			logger.info("image is set");
 			DmsApplMapping mappingData = new DmsApplMapping();
 			mappingData = getDmsApplMappingData(customer);
 			idmsAppMappingRepository.save(mappingData);
@@ -179,7 +181,7 @@ public class AnnualIncomeService {
 			customerEmploymentInfo.setFileName(incomeDto.getFileName());
 			
 		}
-		
+		logger.info("details are set");
 		custDao.saveCustomer(customer);
 		incomeDao.saveCustomerEmploymentInfo(customerEmploymentInfo);
 		return AmxApiResponse.build(incomeDto);
