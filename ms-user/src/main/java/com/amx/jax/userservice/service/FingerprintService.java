@@ -175,10 +175,8 @@ public class FingerprintService {
 
 	
 	public UserFingerprintResponseModel linkDeviceId(BigDecimal customerId) {
-
 		CustomerOnlineRegistration customerOnlineRegistration = userValidationService
 				.validateOnlineCustomerByIdentityId(customerId);
-		
 		String password = Random.randomPassword(6);
 		String hashPassword = userService.generateFingerPrintPassword(password);
 		UserFingerprintResponseModel userFingerprintResponsemodel = new UserFingerprintResponseModel();
