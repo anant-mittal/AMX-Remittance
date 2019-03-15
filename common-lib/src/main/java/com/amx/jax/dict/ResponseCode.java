@@ -278,7 +278,10 @@ public enum ResponseCode {
     CUSTOMER_CARD_EXPIRED("54","The customer card is expired"),
     INCORRECT_PIN_NUMBER("55","Incorrect pin number"),
     INVALID_CARD_NUMBER_02("PY20006","Invalid Brand"),
-    EXCEEDS_WITHDRAW_LIMIT("61","The card exceeds withdrawal amount limit");
+    EXCEEDS_WITHDRAW_LIMIT("61","The card exceeds withdrawal amount limit"),
+    
+    //Added for Testing
+    ERROR_TEST_92("92", "92 - Unmapped Declined for Testing");
     
 	//public static final ResponseCode DEFAULT = RES_CODE_IPAY0200079;
 
@@ -300,6 +303,18 @@ public enum ResponseCode {
 	
 	public String getResponseDesc() {
 		return this.responseDesc;
+	}
+	
+	// response code method added by Subodh
+	public static ResponseCode getRespCodebyCode(String code) {
+		ResponseCode[] allCodes = ResponseCode.values();
+		for (ResponseCode respCode : allCodes) {
+			if (respCode.getResponseCode().equals(code)){
+				respCode.getResponseDesc();
+				return respCode;
+			}
+		}
+		return null;
 	}
 
 }

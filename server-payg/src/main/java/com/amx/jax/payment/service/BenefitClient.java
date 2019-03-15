@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import com.amx.jax.dict.PayGServiceCode;
+import com.amx.jax.dict.ResponseCode;
 import com.amx.jax.payg.PayGCodes;
 import com.amx.jax.payg.PayGParams;
 import com.amx.jax.payg.codes.BenefitCodes;
@@ -199,8 +200,17 @@ public class BenefitClient implements PayGClient {
 			LOGGER.info("Result from response Values ---> " + gatewayResponse.getErrorCategory());
 			gatewayResponse.setError(resultResponse);
 		}
+		
+		//-- get errorText by error
+		if(gatewayResponse.getError() != null) {
+			ResponseCode errorMessage = ResponseCode.getRespCodebyCode(gatewayResponse.getError());
+			if(errorMessage != null) {
+				gatewayResponse.setErrorText(errorMessage.getResponseDesc());
+				LOGGER.info("Error Code --> "+ errorMessage.getResponseCode()+ "Error Message --> " + errorMessage.getResponseDesc());
+			}
+		}
 
-		LOGGER.info("Params captured from BENEFIT : " + JsonUtil.toJson(gatewayResponse));
+		LOGGER.info("Params Captured From BENEFIT : " + JsonUtil.toJson(gatewayResponse));
 
 		paymentService.capturePayment(params, gatewayResponse);
 
