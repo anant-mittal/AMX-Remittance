@@ -5,6 +5,7 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -41,6 +42,8 @@ public class NewExchangeRateService extends ExchangeRateService {
 	JaxTenantProperties jaxTenantProperties;
 	@Autowired
 	RemittanceParameterMapManager remittanceParameterMapManager;
+	@Autowired
+	RoutingDetailService routingDetailService;
 
 	/*
 	 * (non-Javadoc)
@@ -53,9 +56,13 @@ public class NewExchangeRateService extends ExchangeRateService {
 			BigDecimal toCurrency, BigDecimal lcAmount, BigDecimal routingBankId, BigDecimal beneBankCountryId) {
 		ExchangeRateResponseModel outputModel = null;
 		ApiResponse<ExchangeRateResponseModel> response = getBlackApiResponse();
-		if (jaxTenantProperties.getIsDynamicPricingEnabled() && beneBankCountryId != null && !remittanceParameterMapManager.isCashChannel()) {
+		if (jaxTenantProperties.getIsDynamicPricingEnabled() && beneBankCountryId != null
+				&& !remittanceParameterMapManager.isCashChannel()) {
 			outputModel = jaxDynamicPriceService.getExchangeRatesWithDiscount(fromCurrency, toCurrency, lcAmount, null,
 					beneBankCountryId, routingBankId);
+			List<BankMasterDTO> cashChannelRates = getCashRateFromBestRateLogic(fromCurrency, toCurrency, lcAmount,
+					routingBankId, beneBankCountryId);
+			outputModel.getBankWiseRates().addAll(cashChannelRates);
 			response.getData().getValues().add(outputModel);
 			response.getData().setType(outputModel.getModelType());
 			return response;
@@ -63,6 +70,13 @@ public class NewExchangeRateService extends ExchangeRateService {
 		if (!jaxTenantProperties.getExrateBestRateLogicEnable()) {
 			return super.getExchangeRatesForOnline(fromCurrency, toCurrency, lcAmount, routingBankId);
 		}
+		return getExchangeRateFromBestRateLogic(fromCurrency, toCurrency, lcAmount, routingBankId, beneBankCountryId);
+	}
+
+	private ApiResponse<ExchangeRateResponseModel> getExchangeRateFromBestRateLogic(BigDecimal fromCurrency,
+			BigDecimal toCurrency, BigDecimal lcAmount, BigDecimal routingBankId, BigDecimal beneBankCountryId) {
+		ExchangeRateResponseModel outputModel = null;
+		ApiResponse<ExchangeRateResponseModel> response = getBlackApiResponse();
 		logger.info("In getExchangeRatesForOnline, parames- " + fromCurrency + " toCurrency " + toCurrency + " amount "
 				+ lcAmount + " bankId: " + routingBankId);
 		if (fromCurrency.equals(meta.getDefaultCurrencyId())) {
@@ -215,4 +229,18 @@ public class NewExchangeRateService extends ExchangeRateService {
 		return breakup;
 
 	}
+	
+
+	private List<BankMasterDTO> getCashRateFromBestRateLogic(BigDecimal fromCurrency, BigDecimal toCurrency,
+			BigDecimal lcAmount, BigDecimal routingBankId, BigDecimal beneBankCountryId) {
+		ApiResponse<ExchangeRateResponseModel> exchangeRateResponse = getExchangeRateFromBestRateLogic(fromCurrency,
+				toCurrency, lcAmount, routingBankId, beneBankCountryId);
+		List<BankMasterDTO> allExchangeRates = exchangeRateResponse.getResult().getBankWiseRates();
+		List<BigDecimal> cashRoutingBanks = routingDetailService.getCashRoutingBanks(toCurrency);
+		List<BankMasterDTO> allCashRates = allExchangeRates.stream().filter(i -> {
+			return cashRoutingBanks.contains(i.getBankId());
+		}).collect(Collectors.toList());
+		return allCashRates;
+	}
+
 }
