@@ -463,14 +463,15 @@ public class UserController {
 	}
 
 	@RequestMapping(value = "/api/user/income", method = { RequestMethod.POST })
-	public ResponseWrapper<List<IncomeDto>> saveAnnualIncome(
+	public ResponseWrapper<IncomeDto> saveAnnualIncome(
 			@RequestBody IncomeDto incomeDto) {
-		return ResponseWrapper.buildList(jaxService.setDefaults().getUserclient().saveAnnualIncome(incomeDto));
+		return ResponseWrapper.build(jaxService.setDefaults().getUserclient().saveAnnualIncome(incomeDto));
 	}
 
 	@RequestMapping(value = "/api/user/income", method = { RequestMethod.GET })
-	public ResponseWrapper<List<AnnualIncomeRangeDTO>> getAnnualIncome() {
-		return ResponseWrapper.buildList(jaxService.setDefaults().getUserclient().getIncome());
+	public ResponseWrapper<IncomeDto> getAnnualIncomeDetais() {
+		return ResponseWrapper.build(jaxService.setDefaults().getUserclient().getAnnualIncomeDetais());
 	}
+
 
 }

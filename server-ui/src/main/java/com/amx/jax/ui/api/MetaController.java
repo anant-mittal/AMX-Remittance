@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.meta.model.AccountTypeDto;
+import com.amx.amxlib.meta.model.AnnualIncomeRangeDTO;
 import com.amx.amxlib.meta.model.BankBranchDto;
 import com.amx.amxlib.meta.model.BankMasterDTO;
 import com.amx.amxlib.meta.model.BranchDetailDTO;
@@ -336,6 +337,11 @@ public class MetaController {
 	@RequestMapping(value = { "/pub/meta/designation/list" }, method = { RequestMethod.GET })
 	public ResponseWrapper<List<ResourceDTO>> getDesignationList() {
 		return ResponseWrapper.buildList(offsiteCustRegClient.getDesignationList());
+	}
+
+	@RequestMapping(value = "/pub/meta/income_range/list", method = { RequestMethod.GET })
+	public ResponseWrapper<List<AnnualIncomeRangeDTO>> getAnnualIncome() {
+		return ResponseWrapper.buildList(jaxService.setDefaults().getUserclient().getIncome());
 	}
 
 }
