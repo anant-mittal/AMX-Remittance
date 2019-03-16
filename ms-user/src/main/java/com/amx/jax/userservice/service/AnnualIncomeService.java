@@ -236,6 +236,9 @@ public class AnnualIncomeService {
 		mappingData.setIdentityExpiryDate(model.getIdentityExpiredDate());
 		mappingData.setIdentityInt(model.getIdentityInt());
 		mappingData.setIdentityIntId(model.getIdentityTypeId());
+		if(metaData.getEmployeeId()==null) {
+			mappingData.setCreatedBy("ONLINE");
+		}	
 		mappingData.setCreatedBy(metaData.getEmployeeId().toString());
 		mappingData.setCreatedOn(new Date());
 		return mappingData;
