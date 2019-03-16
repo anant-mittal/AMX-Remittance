@@ -240,7 +240,9 @@ public class AnnualIncomeService {
 			mappingData.setCreatedBy("WEB");
 			logger.info("created by is set");
 		}	
+		else {
 		mappingData.setCreatedBy(metaData.getEmployeeId().toString());
+		}
 		mappingData.setCreatedOn(new Date());
 		return mappingData;
 	}
