@@ -202,7 +202,7 @@ public class BenefitClient implements PayGClient {
 		}
 		
 		//-- get errorText by error
-		if(gatewayResponse.getError() != null) {
+		if(gatewayResponse.getError() != null && gatewayResponse.getErrorText() == null) {
 			ResponseCode errorMessage = ResponseCode.getRespCodebyCode(gatewayResponse.getError());
 			if(errorMessage != null) {
 				gatewayResponse.setErrorText(errorMessage.getResponseDesc());
