@@ -1,4 +1,3 @@
-
 package com.amx.jax.ui.api;
 
 import java.math.BigDecimal;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.amx.amxlib.meta.model.AnnualIncomeRangeDTO;
 import com.amx.amxlib.meta.model.CustomerDto;
 import com.amx.amxlib.meta.model.IncomeDto;
 import com.amx.amxlib.model.CivilIdOtpModel;
@@ -43,7 +41,6 @@ import com.amx.jax.ui.model.AuthDataInterface.UserUpdateResponse;
 import com.amx.jax.ui.model.UserMetaData;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.response.ResponseWrapperM;
-import com.amx.jax.ui.response.WebResponseStatus;
 import com.amx.jax.ui.service.GeoHotPoints;
 import com.amx.jax.ui.service.HotPointService;
 import com.amx.jax.ui.service.JaxService;

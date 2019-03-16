@@ -34,7 +34,6 @@ import com.amx.jax.amxlib.model.RoutingBankMasterParam.RoutingBankMasterServiceP
 import com.amx.jax.client.OffsiteCustRegClient;
 import com.amx.jax.def.CacheForTenant;
 import com.amx.jax.model.ResourceDTO;
-import com.amx.jax.model.response.ArticleDetailsDescDto;
 import com.amx.jax.model.response.CurrencyMasterDTO;
 import com.amx.jax.model.response.SourceOfIncomeDto;
 import com.amx.jax.ui.response.ResponseWrapper;
