@@ -79,6 +79,8 @@ public class OWAStatus extends IStatusCodeListPlugin<OWAStatusStatusCodes, ApiOW
 		MOTP_REQUIRED("300"),
 		OTP_REQUIRED("300"),
 
+		INCOME_UPDATE_REQUIRED,
+
 		/** The unknown jax error. */
 		UNKNOWN_JAX_ERROR("500"),
 
@@ -116,6 +118,10 @@ public class OWAStatus extends IStatusCodeListPlugin<OWAStatusStatusCodes, ApiOW
 		 */
 		OWAStatusStatusCodes(String code) {
 			this.code = code;
+		}
+
+		OWAStatusStatusCodes() {
+			this.code = "300";
 		}
 
 		@Override
