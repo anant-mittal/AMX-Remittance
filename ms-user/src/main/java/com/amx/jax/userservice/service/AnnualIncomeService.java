@@ -160,10 +160,15 @@ public class AnnualIncomeService {
 		Customer customer = custDao.getCustById(metaData.getCustomerId());
 		logger.debug("Object is : ");
 		customer.setAnnualIncomeFrom(incomeDto.getIncomeRangeFrom());
+		logger.debug("set income from : ");
 		customer.setAnnualIncomeTo(incomeDto.getIncomeRangeTo());
+		logger.debug("set income range to : ");
 		customer.setAnnualIncomeUpdatedBy(incomeDto.getFullName());
+		logger.debug("set income updated by : ");
 		customer.setAnnualIncomeUpdatedDate(new Date());
+		logger.debug("set income updated date : ");
 		customer.setFsArticleDetails(articleDao.getArticleDetailsByArticleDetailId(incomeDto.getArticleDetailId()));
+		logger.debug("set designation id : ");
 		CustomerEmploymentInfo customerEmploymentInfo = incomeDao.getCustById(metaData.getCustomerId());
 		logger.info("cust emp info is "+customerEmploymentInfo.getDepartment());
 		logger.info("company name is"+incomeDto.getCompanyName());
@@ -171,7 +176,7 @@ public class AnnualIncomeService {
 		logger.info("employee name is set:"+customerEmploymentInfo.getEmployerName());
 		if (incomeDto.getImage() != null && incomeDto.getFileName()!=null) {
 
-			//throw new GlobalException(JaxError.IMAGE_NOT_AVAILABLE, "Image is not available");
+			
 			logger.info("image is set");
 			DmsApplMapping mappingData = new DmsApplMapping();
 			mappingData = getDmsApplMappingData(customer);

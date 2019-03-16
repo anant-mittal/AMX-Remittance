@@ -280,24 +280,24 @@ public class UserClientTest extends AbstractTestClient {
 		assertNotNull(response);
 	}
 
-	//@Test
+	@Test
 	public void saveAnnualIncome() {
 		setDefaults();
 		AmxApiResponse<IncomeDto, Object> response = null;
 		IncomeDto incomeDto = new IncomeDto();
-		incomeDto.setIncomeRangeFrom(new BigDecimal(5001));
-		incomeDto.setIncomeRangeTo(new BigDecimal(99999999));
-		incomeDto.setFullName("RABIL UDDIN MIR MIR RAJAK");
+		incomeDto.setIncomeRangeFrom(new BigDecimal(1));
+		incomeDto.setIncomeRangeTo(new BigDecimal(100));
+		incomeDto.setFullName("KANMANISUBRAMANIANPALANIYAPPAN");
 		incomeDto.setArticleDetailId(new BigDecimal(1));
-		incomeDto.setCompanyName("Al Mulla");
-		incomeDto.setImage("qwerty");
+		//incomeDto.setCompanyName("ALMULLA");
+		//incomeDto.setImage("qwerty");
 
 		response = client.saveAnnualIncome(incomeDto);
 		assertNotNull("Response is null", response);
 		assertNotNull(response);
 	}
 	
-	@Test
+	//@Test
 	public void getAnnualIncomeDetails() {
 		setDefaults();
 		AmxApiResponse<IncomeDto, Object> response = null;
