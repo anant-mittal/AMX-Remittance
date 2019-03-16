@@ -603,7 +603,7 @@ public class UserClient extends AbstractJaxServiceClient {
 			throw new JaxSystemError();
 		} // end of try-catch
 	} // end of customerLoggedIn
-	
+
 	public ApiResponse<CustomerModel> saveEmailNew(String email) {
 		try {
 			CustomerModel custModel = new CustomerModel();
@@ -623,7 +623,7 @@ public class UserClient extends AbstractJaxServiceClient {
 		} // end of try-catch
 
 	}
-	
+
 	public ApiResponse<CustomerModel> saveMobileNew(String mobile) {
 		try {
 			CustomerModel custModel = new CustomerModel();
@@ -642,11 +642,12 @@ public class UserClient extends AbstractJaxServiceClient {
 			throw new JaxSystemError();
 		} // end of try-catch
 	}
-	
+
 	public AmxApiResponse<AnnualIncomeRangeDTO, Object> getIncome() {
 		try {
 
-			return restService.ajax(appConfig.getJaxURL()).path(CustomerApi.PREFIX+ CustomerApi.GET_ANNUAL_INCOME_RANGE)
+			return restService.ajax(appConfig.getJaxURL())
+					.path(CustomerApi.PREFIX + CustomerApi.GET_ANNUAL_INCOME_RANGE)
 					.meta(new JaxMetaInfo()).post()
 					.as(new ParameterizedTypeReference<AmxApiResponse<AnnualIncomeRangeDTO, Object>>() {
 					});
@@ -655,29 +656,24 @@ public class UserClient extends AbstractJaxServiceClient {
 			return JaxSystemError.evaluate(ae);
 		}
 	}
-	
-	public AmxApiResponse<IncomeDto, Object> saveAnnualIncome(IncomeDto incomeDto){
+
+	public AmxApiResponse<IncomeDto, Object> saveAnnualIncome(IncomeDto incomeDto) {
 		try {
-			HttpEntity<IncomeDto> requestEntity = new HttpEntity<IncomeDto>(incomeDto,
-					getHeader());
 			String url = this.getBaseUrl() + CustomerApi.PREFIX + CustomerApi.SAVE_ANNUAL_INCOME;
-			return restService.ajax(url).post(requestEntity)
+			return restService.ajax(url).meta(new JaxMetaInfo()).post(incomeDto)
 					.as(new ParameterizedTypeReference<AmxApiResponse<IncomeDto, Object>>() {
 					});
-		} catch (AbstractJaxException ae) {
-			throw ae;
-		} catch (Exception e) {
-			LOGGER.error("exception in saveAnnualIncome: ", e);
-			throw new JaxSystemError();
+		} catch (Exception ae) {
+			LOGGER.error("exception in saveAnnualIncome: ", ae);
+			return JaxSystemError.evaluate(ae);
 		} // end of try-catch
 
-		
 	}
-	
+
 	public AmxApiResponse<IncomeDto, Object> getAnnualIncomeDetais() {
 		try {
-
-			return restService.ajax(appConfig.getJaxURL()).path(CustomerApi.PREFIX+ CustomerApi.GET_ANNUAL_INCOME_DETAILS)
+			return restService.ajax(appConfig.getJaxURL())
+					.path(CustomerApi.PREFIX + CustomerApi.GET_ANNUAL_INCOME_DETAILS)
 					.meta(new JaxMetaInfo()).post()
 					.as(new ParameterizedTypeReference<AmxApiResponse<IncomeDto, Object>>() {
 					});
@@ -686,7 +682,5 @@ public class UserClient extends AbstractJaxServiceClient {
 			return JaxSystemError.evaluate(ae);
 		}
 	}
-	
-	
-	
+
 }
