@@ -70,12 +70,12 @@ public class NewExchangeRateService extends ExchangeRateService {
 					NewExchangeRateService.mergeExchangeRateResponse(bankChannelRates, cashChannelRates));
 			response.getData().getValues().add(outputModel);
 			response.getData().setType(outputModel.getModelType());
-		}
-		if (!jaxTenantProperties.getExrateBestRateLogicEnable()) {
+		} else if (!jaxTenantProperties.getExrateBestRateLogicEnable()) {
 			response = super.getExchangeRatesForOnline(fromCurrency, toCurrency, lcAmount, routingBankId);
+		} else {
+			response = getExchangeRateFromBestRateLogic(fromCurrency, toCurrency, lcAmount, routingBankId,
+					beneBankCountryId);
 		}
-		response = getExchangeRateFromBestRateLogic(fromCurrency, toCurrency, lcAmount, routingBankId,
-				beneBankCountryId);
 		sortRates(response);
 		return response;
 	}
