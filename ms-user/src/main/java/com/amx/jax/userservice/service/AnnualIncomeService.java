@@ -181,15 +181,22 @@ public class AnnualIncomeService {
 		customerEmploymentInfo.setEmployerName(incomeDto.getCompanyName());
 		logger.info("employee name is set:"+customerEmploymentInfo.getEmployerName());
 		if (incomeDto.getImage() != null && incomeDto.getFileName()!=null) {
-			logger.info("image is set");
+			logger.info("image is set 1");
 			DmsApplMapping mappingData = new DmsApplMapping();
+			
 			mappingData = getDmsApplMappingData(customer);
+			logger.info("hi");
 			idmsAppMappingRepository.save(mappingData);
+			logger.info("hello");
 			DocBlobUpload documentDetails = new DocBlobUpload();
 			documentDetails = getDocumentUploadDetails(incomeDto.getImage(), mappingData);
+			logger.info("hello hi");
 			docblobRepository.save(documentDetails);
+			logger.info("hi hello");
 			customerEmploymentInfo.setDocBlobId(mappingData.getDocBlobId());
+			logger.info("image is set 2");
 			customerEmploymentInfo.setFileName(incomeDto.getFileName());
+			logger.info("file is set 1");
 		}
 		else if(incomeDto.getImage() == null && incomeDto.getFileName() == null) {
 			customerEmploymentInfo.setDocBlobId(null);
