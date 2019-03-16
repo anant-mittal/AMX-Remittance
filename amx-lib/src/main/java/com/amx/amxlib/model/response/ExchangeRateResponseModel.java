@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.amx.amxlib.meta.model.BankMasterDTO;
 import com.amx.jax.model.AbstractModel;
+import com.amx.jax.model.response.ExchangeRateBreakup;
 
 public class ExchangeRateResponseModel extends AbstractModel {
 

@@ -31,7 +31,8 @@ public final class AuthDataInterface {
 		 *
 		 * @param identity the new identity
 		 */
-		void setIdentity(String identity);
+		public void setIdentity(String identity);
+
 	}
 
 	/**
@@ -150,12 +151,25 @@ public final class AuthDataInterface {
 		public void seteOtpPrefix(String geteOtpPrefix);
 	}
 
+	@JsonDeserialize(as = AuthData.class)
+	public interface AuthRequestFingerprint {
+
+		public void setDeviceToken(String deviceToken);
+
+		public String getDeviceToken();
+
+	}
+
 	/**
 	 * The Interface AuthRequest.
 	 */
 	@JsonDeserialize(as = AuthData.class)
-	public interface AuthRequest extends AuthRequestIdentity, AuthRequestPassword, AuthRequestSecAns, AuthRequestOTP {
+	public interface AuthRequest extends AuthRequestIdentity, AuthRequestPassword, AuthRequestSecAns, AuthRequestOTP,
+			AuthRequestFingerprint {
 
+		public String getLockId();
+
+		public void setLockId(String lockId);
 	}
 
 	/**

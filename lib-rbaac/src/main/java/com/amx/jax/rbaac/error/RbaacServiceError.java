@@ -79,6 +79,9 @@ public enum RbaacServiceError implements IExceptionEnum {
 
 	/** The unknown exception. */
 	UNKNOWN_EXCEPTION,
+	
+	/** The invalid device Registration Id. */
+	INVALID_DEVICE_REG_ID,
 
 	/**Device  errors **/
 	CLIENT_ALREADY_REGISTERED, CLIENT_NOT_FOUND, BRANCH_SYSTEM_NOT_FOUND, 
@@ -88,7 +91,8 @@ public enum RbaacServiceError implements IExceptionEnum {
 	CLIENT_NOT_LOGGGED_IN, CLIENT_ALREADY_ACTIVE, CLIENT_EXPIRED_SESSION_TOKEN, 
 	CLIENT_EXPIRED_VALIDATE_OTP_TIME,
 	
-	EMPLOYEE_NOT_FOUND;
+	EMPLOYEE_NOT_FOUND,
+	PARAM_INVALID;
 
 	//@formatter:on
 

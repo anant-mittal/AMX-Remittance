@@ -97,6 +97,9 @@ public class CustomerRemittanceTransactionView implements Serializable {
 	@Column(name="DOCUMENT_CODE")
 	private BigDecimal documentCode;
 	
+	@Column(name="CREATED_BY")
+	private String createdBy;
+	
 	
 	
 
@@ -314,5 +317,13 @@ public class CustomerRemittanceTransactionView implements Serializable {
 
 	public void setDocumentCode(BigDecimal documentCode) {
 		this.documentCode = documentCode;
+	}
+
+	public String getCreatedBy() {
+		return createdBy;
+	}
+
+	public void setCreatedBy(String createdBy) {
+		this.createdBy = createdBy;
 	}
 }

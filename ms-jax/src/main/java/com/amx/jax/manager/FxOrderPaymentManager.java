@@ -108,10 +108,13 @@ public class FxOrderPaymentManager {
 
 	@Autowired
 	PaymentModeRepository payModeRepositoy;
+	
 
 	@Autowired
 	AuditService auditService;
+	
 
+	
 	public PaymentResponseDto paymentCapture(PaymentResponseDto paymentResponse) {
 		logger.debug("paymment capture :" + paymentResponse.toString());
 		logger.debug("Customer Id :" + paymentResponse.getCustomerId());

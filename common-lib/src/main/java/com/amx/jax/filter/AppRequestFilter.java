@@ -29,7 +29,6 @@ import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.http.RequestType;
 import com.amx.jax.logger.client.AuditServiceClient;
 import com.amx.jax.logger.events.RequestTrackEvent;
-import com.amx.jax.model.UserDevice;
 import com.amx.jax.rest.AppRequestContextInFilter;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.utils.ArgUtil;
@@ -129,12 +128,10 @@ public class AppRequestFilter implements Filter {
 			if (!StringUtils.isEmpty(userClientJson)) {
 				AppContextUtil.setUserClient(JsonUtil.fromJson(userClientJson, UserDeviceClient.class));
 			} else {
-				UserDevice userDevice = commonHttpRequest.instance(req, resp, appConfig).getUserDevice();
+				UserDeviceClient userDevice = commonHttpRequest.instance(req, resp, appConfig).getUserDevice()
+						.toUserDeviceClient();
 				UserDeviceClient userClient = AppContextUtil.getUserClient();
-				userClient.setDeviceType(userDevice.getType());
-				userClient.setAppType(userDevice.getAppType());
-				userClient.setIp(userDevice.getIp());
-				userClient.setFingerprint(userDevice.getFingerprint());
+				userClient.importFrom(userDevice);
 				AppContextUtil.setUserClient(userClient);
 			}
 

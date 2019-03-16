@@ -22,6 +22,7 @@ import com.amx.amxlib.meta.model.IncomeDto;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.CustomerNotificationDTO;
+import com.amx.amxlib.model.UserFingerprintResponseModel;
 import com.amx.jax.AppConfig;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.JaxAuthContext;
@@ -33,6 +34,7 @@ import com.amx.jax.logger.LoggerService;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.ui.WebAppConfig;
+import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
 import com.amx.jax.ui.model.AuthData;
 import com.amx.jax.ui.model.AuthDataInterface.AuthResponse;
 import com.amx.jax.ui.model.AuthDataInterface.AuthResponseOTPprefix;
@@ -138,7 +140,6 @@ public class UserController {
 			wrapper.getData().setActive(true);
 			wrapper.getData().setCustomerId(sessionService.getUserSession().getCustomerModel().getCustomerId());
 			wrapper.getData().setInfo(sessionService.getUserSession().getCustomerModel().getPersoninfo());
-			wrapper.getData().setFlags(sessionService.getUserSession().getCustomerModel().getFlags());
 			wrapper.getData().setDomCurrency(tenantContext.getDomCurrency());
 			wrapper.getData().setConfig(jaxService.setDefaults().getMetaClient().getJaxMetaParameter().getResult());
 			wrapper.getData().getSubscriptions().addAll(userService.getNotifyTopics("/topics/"));
@@ -262,10 +263,10 @@ public class UserController {
 		if (mOtp == null) {
 			wrapper.setMeta(new AuthData());
 			wrapper.getMeta().setmOtpPrefix(loginService.sendOTP(null, null).getData().getmOtpPrefix());
-			wrapper.setStatus(WebResponseStatus.MOTP_REQUIRED);
+			wrapper.setStatus(OWAStatusStatusCodes.MOTP_REQUIRED);
 		} else {
 			wrapper.setData(userService.updatepwd(userUpdateRequest.getPassword(), mOtp, null));
-			wrapper.setStatus(WebResponseStatus.USER_UPDATE_SUCCESS);
+			wrapper.setStatus(OWAStatusStatusCodes.USER_UPDATE_SUCCESS);
 		}
 		return wrapper;
 //		return userService.updatepwd(userUpdateRequest.getPassword(), userUpdateRequest.getmOtp(),
@@ -318,13 +319,13 @@ public class UserController {
 			wrapper.setMeta(new AuthData());
 			wrapper.getMeta().setmOtpPrefix(model.getmOtpPrefix());
 			wrapper.getMeta().seteOtpPrefix(model.geteOtpPrefix());
-			wrapper.setStatus(WebResponseStatus.DOTP_REQUIRED);
+			wrapper.setStatus(OWAStatusStatusCodes.DOTP_REQUIRED);
 		} else {
 			CustomerModel model = jaxService.setDefaults().getUserclient()
 					.saveEmail(userUpdateRequest.getEmail(), mOtp, eOtp).getResult();
 			sessionService.getUserSession().getCustomerModel().setEmail(model.getEmail());
 			sessionService.getUserSession().getCustomerModel().getPersoninfo().setEmail(model.getEmail());
-			wrapper.setStatus(WebResponseStatus.USER_UPDATE_SUCCESS);
+			wrapper.setStatus(OWAStatusStatusCodes.USER_UPDATE_SUCCESS);
 		}
 		return wrapper;
 	}
@@ -379,13 +380,13 @@ public class UserController {
 			wrapper.setMeta(new AuthData());
 			wrapper.getMeta().setmOtpPrefix(model.getmOtpPrefix());
 			wrapper.getMeta().seteOtpPrefix(model.geteOtpPrefix());
-			wrapper.setStatus(WebResponseStatus.DOTP_REQUIRED);
+			wrapper.setStatus(OWAStatusStatusCodes.DOTP_REQUIRED);
 		} else {
 			CustomerModel model = jaxService.setDefaults().getUserclient()
 					.saveMobile(userUpdateRequest.getPhone(), mOtp, eOtp).getResult();
 			sessionService.getUserSession().getCustomerModel().setMobile(model.getMobile());
 			sessionService.getUserSession().getCustomerModel().getPersoninfo().setMobile(model.getMobile());
-			wrapper.setStatus(WebResponseStatus.USER_UPDATE_SUCCESS);
+			wrapper.setStatus(OWAStatusStatusCodes.USER_UPDATE_SUCCESS);
 		}
 		return wrapper;
 	}
@@ -407,10 +408,10 @@ public class UserController {
 		if (mOtp == null) {
 			wrapper.setMeta(new AuthData());
 			wrapper.getMeta().setmOtpPrefix(loginService.sendOTP(null, null).getData().getmOtpPrefix());
-			wrapper.setStatus(WebResponseStatus.MOTP_REQUIRED);
+			wrapper.setStatus(OWAStatusStatusCodes.MOTP_REQUIRED);
 		} else {
 			wrapper.setData(userService.updateSecQues(userUpdateData.getSecQuesAns(), mOtp, null));
-			wrapper.setStatus(WebResponseStatus.USER_UPDATE_SUCCESS);
+			wrapper.setStatus(OWAStatusStatusCodes.USER_UPDATE_SUCCESS);
 		}
 		return wrapper;
 	}
@@ -433,11 +434,11 @@ public class UserController {
 		if (mOtp == null) {
 			wrapper.setMeta(new AuthData());
 			wrapper.getMeta().setmOtpPrefix(loginService.sendOTP(null, null).getData().getmOtpPrefix());
-			wrapper.setStatus(WebResponseStatus.MOTP_REQUIRED);
+			wrapper.setStatus(OWAStatusStatusCodes.MOTP_REQUIRED);
 		} else {
 			wrapper.setData(userService.updatePhising(userUpdateData.getImageUrl(), userUpdateData.getCaption(),
 					mOtp, null));
-			wrapper.setStatus(WebResponseStatus.USER_UPDATE_SUCCESS);
+			wrapper.setStatus(OWAStatusStatusCodes.USER_UPDATE_SUCCESS);
 		}
 		return wrapper;
 	}
@@ -473,5 +474,8 @@ public class UserController {
 		return ResponseWrapper.build(jaxService.setDefaults().getUserclient().getAnnualIncomeDetais());
 	}
 
-
+	@RequestMapping(value = "/api/user/device/link", method = { RequestMethod.POST })
+	public ResponseWrapper<UserFingerprintResponseModel> linkDevice() {
+		return ResponseWrapper.build(jaxService.getUserclient().linkDeviceIdLoggedinUser());
+	}
 }

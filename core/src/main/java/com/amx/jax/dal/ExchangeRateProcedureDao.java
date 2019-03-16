@@ -26,7 +26,6 @@ public class ExchangeRateProcedureDao {
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
-	@Transactional
 	public Map<String, Object> findRemittanceAndDevlieryModeId(Map<String, Object> inputMap) {
 		LOGGER.info("in findRemittanceAndDevlieryModeId, input mpa:  " + inputMap.toString());
 		String sql = "SELECT DISTINCT A.REMITTANCE_MODE_ID," + "                A.DELIVERY_MODE_ID "
@@ -68,7 +67,6 @@ public class ExchangeRateProcedureDao {
 
 	}
 
-	@Transactional
 	public BigDecimal getCommission(Map<String, Object> inputMap) {
 
 		String sql = " SELECT B.CHARGE_AMOUNT" + "        FROM   EX_BANK_SERVICE_RULE A,"
@@ -100,7 +98,6 @@ public class ExchangeRateProcedureDao {
 
 	}
 
-	@Transactional
 	public List<BigDecimal> getBankIdsForExchangeRates(BigDecimal currencyid) {
 
 		String sql = "select distinct(BANK_ID)  from VW_EX_TRATE where CURRENCY_ID=? ";
@@ -116,7 +113,6 @@ public class ExchangeRateProcedureDao {
 	}
 	
 	
-	@Transactional
 	public List<BigDecimal> getDistinctCurrencyList() {
 		String sql = "select DISTINCT(CURRENCY_ID) from VW_EX_TRATE where BANK_ID IS NOT NULL";
 		List<BigDecimal> list = new ArrayList<>();
@@ -128,7 +124,6 @@ public class ExchangeRateProcedureDao {
 		return list;
 	}
 	
-	@Transactional
 	public Map<String, Object> getCommissionRange(Map<String, Object> inputMap) {
 
 		String sql = " SELECT MIN(B.FROM_AMOUNT) FROM_AMOUNT ,MAX(B.TO_AMOUNT) TO_AMOUNT " + "        FROM   EX_BANK_SERVICE_RULE A,"

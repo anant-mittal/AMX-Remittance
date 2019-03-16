@@ -27,11 +27,13 @@ import com.amx.jax.dbmodel.bene.BeneficaryContact;
 import com.amx.jax.dbmodel.bene.BeneficaryMaster;
 import com.amx.jax.dbmodel.bene.BeneficaryRelationship;
 import com.amx.jax.dbmodel.bene.BeneficaryStatus;
+import com.amx.jax.postman.model.Email;
 import com.amx.jax.repository.BeneficaryStatusRepository;
 import com.amx.jax.repository.IBeneficaryContactDao;
 import com.amx.jax.repository.IBeneficiaryAccountDao;
 import com.amx.jax.repository.IBeneficiaryMasterDao;
 import com.amx.jax.repository.IBeneficiaryRelationshipDao;
+import com.amx.jax.service.JaxEmailNotificationService;
 import com.amx.jax.service.MetaService;
 import com.amx.jax.service.ParameterService;
 import com.amx.jax.services.BankService;
@@ -84,6 +86,9 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 
 	@Autowired
 	BeneficiaryDao beneficiaryDao;
+	
+	@Autowired
+	JaxEmailNotificationService jaxEmailNotificationService;
 
 	@Override
 	public BeneficiaryTrnxModel init() {
@@ -116,10 +121,26 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 			logger.info("Map sequence is null for bene rel seq id: {}", beneRelationship.getBeneficaryRelationshipId());
 			populateOldEmosData(beneficiaryTrnxModel, beneMaster.getBeneficaryMasterSeqId(),
 					beneAccount);
+			if (beneRelationship.getMapSequenceId() == null) {
+				sendAlertEmailForCreationError(beneficiaryTrnxModel, beneRelationship);
+			}
 		}else {
 			logger.info("Map Sequence Id generated: {}", beneRelationship.getMapSequenceId());
 		}
 		return beneficiaryTrnxModel;
+	}
+
+	private void sendAlertEmailForCreationError(BeneficiaryTrnxModel beneficiaryTrnxModel, BeneficaryRelationship beneRelationship) {
+		String[] recieverIds = jaxEmailNotificationService.getBeneCreationErrorEmailList();
+		if (recieverIds != null) {
+			Email email = new Email();
+			StringBuffer message = new StringBuffer();
+			message.append("BeneRelationship id: ").append(beneRelationship.getBeneficaryRelationshipId());
+			message.append("\n ").append(beneficiaryTrnxModel.toString());
+			email.addTo(recieverIds);
+			email.setMessage(message.toString());
+			email.setSubject("Bene creation error");
+		}
 	}
 
 	/**

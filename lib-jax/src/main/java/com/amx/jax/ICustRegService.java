@@ -44,6 +44,7 @@ public interface ICustRegService extends IJaxService {
 		public static final String SCAN_CARD = PREFIX + "/scan_card";
 		public static final String SAVE_OFFSITE_LOGIN = PREFIX + "/offsite-save-login-detail";
 		public static final String GET_OFFSITE_CUSTOMER_DATA = PREFIX + "/getOffsiteCustomerData";
+		public static final String GET_CUSTOMER_DEATILS = PREFIX + "/customer-details";
 		
 		public static final String DESIGNATION_LIST = PREFIX + "/getDesignationList";
 	}
@@ -104,5 +105,8 @@ public interface ICustRegService extends IJaxService {
 	AmxApiResponse<CustomerCredential, Object> saveLoginDetailOffsite(CustomerCredential customerCredential);
 	
 	AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerData(String identityInt, BigDecimal identityType);
+	
+	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND})
+	AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerDetails(String identityInt, BigDecimal identityType);
 
 }

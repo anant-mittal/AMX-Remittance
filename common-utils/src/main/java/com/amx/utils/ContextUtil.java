@@ -3,7 +3,6 @@ package com.amx.utils;
 import java.util.HashMap;
 import java.util.Map;
 
-
 /**
  * The Class ContextUtil.
  */
@@ -18,6 +17,8 @@ public final class ContextUtil {
 
 	/** The Constant TRACE_ID. */
 	public static final String TRACE_ID = "traceId";
+	public static final String FLOW_FIX_KEY = "flowfix";
+	public static final String FLOW_FIX_DEFAULT = "xxx";
 
 	/** The Constant context. */
 	private static final ThreadLocal<Map<String, Object>> context = new ThreadLocal<Map<String, Object>>() {
@@ -39,8 +40,7 @@ public final class ContextUtil {
 	/**
 	 * Sets the.
 	 *
-	 * @param map
-	 *            the map
+	 * @param map the map
 	 */
 	public static void map(Map<String, Object> map) {
 		context.set(map);
@@ -57,8 +57,7 @@ public final class ContextUtil {
 	/**
 	 * Sets the trace id.
 	 *
-	 * @param traceId
-	 *            the new trace id
+	 * @param traceId the new trace id
 	 */
 	public static void setTraceId(long traceId) {
 		String trace_id = ArgUtil.parseAsString(traceId);
@@ -71,11 +70,14 @@ public final class ContextUtil {
 	/**
 	 * Sets the trace id.
 	 *
-	 * @param trace_id
-	 *            the new trace id
+	 * @param trace_id the new trace id
 	 */
 	public static void setTraceId(String trace_id) {
 		context.get().put(TRACE_ID, trace_id);
+	}
+
+	public static void setFlowfix(String flowfix) {
+		context.get().put(FLOW_FIX_KEY, flowfix);
 	}
 
 	/**
@@ -90,8 +92,7 @@ public final class ContextUtil {
 	/**
 	 * Gets the trace id.
 	 *
-	 * @param generate
-	 *            the generate
+	 * @param generate the generate
 	 * @return the trace id
 	 */
 	public static String getTraceId(boolean generate) {
@@ -109,10 +110,8 @@ public final class ContextUtil {
 	/**
 	 * Gets the trace id.
 	 *
-	 * @param generate
-	 *            the generate
-	 * @param midfix
-	 *            the midfix
+	 * @param generate the generate
+	 * @param midfix   the midfix
 	 * @return the trace id
 	 */
 	public static String getTraceId(boolean generate, String midfix) {
@@ -121,16 +120,21 @@ public final class ContextUtil {
 			if (!generate) {
 				return "";
 			}
-			traceId = UniqueID.generateSystemString(midfix);
+			traceId = UniqueID.generateSystemString(midfix, getFlowfix());
 			context.get().put(TRACE_ID, traceId);
 		}
 		return traceId;
 	}
 
 	public static String generateTraceId(String midfix) {
-		String traceId = UniqueID.generateSystemString(midfix);
+		String traceId = UniqueID.generateSystemString(midfix, getFlowfix());
 		context.get().put(TRACE_ID, traceId);
 		return traceId;
+	}
+
+	private static String getFlowfix() {
+		String flowfix = ArgUtil.parseAsString(context.get().get(FLOW_FIX_KEY), FLOW_FIX_DEFAULT);
+		return StringUtils.pad(flowfix, "xxx", 1, 1).toLowerCase();
 	}
 
 }

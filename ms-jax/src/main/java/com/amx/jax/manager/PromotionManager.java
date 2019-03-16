@@ -95,7 +95,7 @@ public class PromotionManager {
 				}
 			}
 			if (dto != null && remittanceTransaction.getDocumentNo() != null) {
-				dto.setTransactionReference(remittanceTransaction.getDocumentFinancialyear().toString() + " / "
+				dto.setTransactionReference(remittanceTransaction.getDocumentFinanceYear().toString() + " / "
 						+ remittanceTransaction.getDocumentNo().toString());
 			}
 			return dto;
@@ -127,7 +127,7 @@ public class PromotionManager {
 				try {
 					RemittanceTransaction remittanceApplication = remittanceApplicationDao
 							.getRemittanceTransactionByRemitDocNo(documentNoRemit, documentFinYearRemit);
-					PersonInfo personInfo = userService.getPersonInfo(remittanceApplication.getCustomerId());
+					PersonInfo personInfo = userService.getPersonInfo(remittanceApplication.getCustomerId().getCustomerId());
 					Email email = new Email();
 					email.setSubject(
 							"Today's winner " + DateUtil.todaysDateWithDDMMYY(Calendar.getInstance().getTime(), ""));

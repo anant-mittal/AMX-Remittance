@@ -101,4 +101,12 @@ public class PaymentResponseDto extends PayGModel {
 		this.product = product;
 	}
 
+	@Override
+	public String toString() {
+		return "PaymentResponseDto [customerId=" + customerId + ", companyId=" + companyId + ", resultCode="
+				+ resultCode + ", transactionId=" + transactionId + ", tranData=" + tranData + ", auth_appNo="
+				+ auth_appNo + ", referenceId=" + referenceId + ", postDate=" + postDate + ", userName=" + userName
+				+ ", product=" + product + "]";
+	}
+
 }

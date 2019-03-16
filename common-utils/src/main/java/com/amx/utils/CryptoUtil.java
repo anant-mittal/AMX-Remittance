@@ -115,6 +115,24 @@ public final class CryptoUtil {
 		return false;
 	}
 
+	public static boolean validateComplexHMAC(long currentTime, long interval, long tolerance, String secretKey,
+			String message, String complexHash) {
+
+		LOGGER.debug("validateHMAC I:{} S:{} M:{} C:{} H:{} T:{}", interval, secretKey, message, currentTime,
+				complexHash, tolerance);
+
+		if (toComplex(complexHash.length(), generateHMAC(interval, secretKey, message)).equals(complexHash)) {
+			return true;
+		} else if (toComplex(complexHash.length(),
+				generateHMAC(interval, secretKey, message, currentTime - tolerance * 1000)).equals(complexHash)) {
+			return true;
+		} else if (toNumeric(complexHash.length(),
+				generateHMAC(interval, secretKey, message, currentTime + tolerance * 1000)).equals(complexHash)) {
+			return true;
+		}
+		return false;
+	}
+
 	@Deprecated
 	public static boolean validateHMAC(long interval, String secretKey, String message, long currentTime, String hash) {
 		return validateHMAC(currentTime, interval, interval, secretKey, message, hash);
@@ -144,6 +162,31 @@ public final class CryptoUtil {
 		int passLenDiff = (length - String.valueOf(hashCode).length());
 		long passLenFill = Math.max(Math.round(Math.pow(10, passLenDiff)) - 1, 1);
 		return ArgUtil.parseAsString(hashCode * passLenFill);
+	}
+
+	private static final String COMPLEX_CHARS = "!@#$%^&*?0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	private static final int COMPLEX_CHARS_LEN = COMPLEX_CHARS.length();
+
+	public static String toComplex(int length, String hash) {
+		char[] hashChars = hash.toCharArray();
+		int totalInt = 0;
+		for (int i = 0; i < hashChars.length; i++) {
+			int cint = hashChars[i];
+			totalInt = (cint * cint * i) + totalInt;
+		}
+		int vlength = length * 2;
+		long hashCode = Math.max(totalInt % Math.round(Math.pow(10, vlength)), 2);
+		int passLenDiff = (vlength - String.valueOf(hashCode).length());
+		long passLenFill = Math.max(Math.round(Math.pow(10, passLenDiff)) - 1, 1);
+		long next = hashCode * passLenFill;
+		StringBuilder complexHash = new StringBuilder();
+		while (next > 0) {
+			long thisIndex = next % 100;
+			next = (next - thisIndex) / 100;
+			thisIndex = thisIndex % COMPLEX_CHARS_LEN;
+			complexHash.append(COMPLEX_CHARS.charAt((int) thisIndex));
+		}
+		return complexHash.toString();
 	}
 
 	public static String toHex(int length, String hash) {
@@ -372,6 +415,11 @@ public final class CryptoUtil {
 			return this;
 		}
 
+		public HashBuilder toComplex(int length) {
+			this.output = CryptoUtil.toComplex(length, this.hash);
+			return this;
+		}
+
 		public HashBuilder toHex(int length) {
 			this.output = CryptoUtil.toHex(length, this.hash);
 			return this;
@@ -398,6 +446,12 @@ public final class CryptoUtil {
 			return CryptoUtil.validateNumHMAC(this.currentTime, this.interval, this.tolerance, this.secret,
 					this.message, numHash);
 		}
+
+		public boolean validateComplexHMAC(String complexHash) {
+			return CryptoUtil.validateComplexHMAC(this.currentTime, this.interval, this.tolerance, this.secret,
+					this.message, complexHash);
+		}
+
 	}
 
 }

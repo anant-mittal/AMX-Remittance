@@ -1,0 +1,89 @@
+{
+  "aggs": {
+    "slots": {
+      "date_histogram": {
+        "field": "@timestamp",
+        "interval": "[[${interval}]]",
+        "time_zone": "Asia/Kolkata",
+        "min_doc_count": 1
+      },
+      "aggs": {
+        "rate": {
+          "avg": {
+            "field": "xrate.rate"
+          }
+        }
+      }
+    }
+  },
+  "size": 0,
+  "_source": {
+    "excludes": []
+  },
+  "stored_fields": [
+    "*"
+  ],
+  "script_fields": {},
+  "docvalue_fields": [
+    {
+      "field": "@timestamp",
+      "format": "date_time"
+    }
+  ],
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "match_all": {}
+        },
+        {
+          "range": {
+            "@timestamp": {
+              "gte": "[[${gte}]]",
+              "lte": "[[${lte}]]",
+              "format": "epoch_millis"
+            }
+          }
+        },
+        {
+          "match_phrase": {
+            "_type": {
+              "query": "xrate"
+            }
+          }
+        },
+        {
+          "match_phrase": {
+            "xrate.src.keyword": {
+              "query": "[[${xrate_src}]]"
+            }
+          }
+        },
+        {
+          "match_phrase": {
+            "xrate.rateType.keyword": {
+              "query": "[[${xrate_rateType}]]"
+            }
+          }
+        },
+        {
+          "match_phrase": {
+            "xrate.domCur.keyword": {
+              "query": "[[${xrate_domCur}]]"
+            }
+          }
+        },
+        {
+          "match_phrase": {
+            "xrate.forCur.keyword": {
+             "query": "[[${xrate_forCur}]]"
+            }
+          }
+        }
+      ],
+      "filter": [],
+      "should": [],
+      "must_not": []
+    }
+  }
+}

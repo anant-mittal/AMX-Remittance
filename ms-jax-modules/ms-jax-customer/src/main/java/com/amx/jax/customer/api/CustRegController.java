@@ -148,9 +148,19 @@ public class CustRegController implements ICustRegService {
 			@RequestParam(value = "identityType", required = true) BigDecimal identityType) {
 		return offsiteCustRegService.getOffsiteCustomerData(identityInt, identityType);
 	}
+
 	
 	@RequestMapping(value = CustRegApiEndPoints.DESIGNATION_LIST, method = RequestMethod.GET)
 	public AmxApiResponse<ResourceDTO, Object> getDesignationList() {
 		return offsiteCustRegService.getDesignationList();
 	}
+	
+	@RequestMapping(value = CustRegApiEndPoints.GET_CUSTOMER_DEATILS, method = RequestMethod.GET)
+	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerDetails(@RequestParam(value = "identityInt", required = true) String identityInt,
+			@RequestParam(value = "identityType", required = true) BigDecimal identityType) {
+		return offsiteCustRegService.getOffsiteCustomerDetails(identityInt, identityType);
+	}
+	
+	
+	
 }

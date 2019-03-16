@@ -1,9 +1,9 @@
 package com.amx.jax.userservice.service;
 
 import java.math.BigDecimal;
+import java.security.NoSuchAlgorithmException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -28,11 +28,10 @@ import com.amx.amxlib.exception.jax.InvalidOtpException;
 import com.amx.amxlib.exception.jax.UserNotFoundException;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
-import com.amx.amxlib.model.JaxConditionalFieldDto;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.jax.JaxAuthCache;
-import com.amx.jax.JaxAuthContext;
 import com.amx.jax.JaxAuthCache.JaxAuthMeta;
+import com.amx.jax.JaxAuthContext;
 import com.amx.jax.amxlib.config.OtpSettings;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.CustomerVerificationType;
@@ -67,6 +66,7 @@ import com.amx.jax.userservice.validation.ValidationClients;
 import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.validation.CustomerValidationService;
+import com.amx.utils.Constants;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -118,25 +118,24 @@ public class UserValidationService {
 
 	@Autowired
 	TenantContext<CustomerValidation> tenantContext;
-	
+
 	@Autowired
 	private UserValidationService userValidationService;
-	
+
 	@Autowired
 	UserService userService;
-	
-	@Autowired 
+
+	@Autowired
 	SecurityQuestionsManager securityQuestionsManager;
-	
+
 	@Autowired
 	JaxAuthCache jaxAuthCache;
-	
+
 	@Autowired
 	MetaData metaData;
-	
+
 	@Autowired
 	IContactDetailDao contactDetailDao;
-	
 
 	private DateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
@@ -185,15 +184,15 @@ public class UserValidationService {
 	}
 
 	protected void validateCivilId(String civilId) {
-		boolean isValid = custValidation.validateCivilId(civilId, meta.getCountry().getCountryCode());
+		boolean isValid = custValidation.validateCivilId(civilId, meta.getCountry().getISO2Code());
 		if (!isValid) {
 			throw new InvalidCivilIdException("Civil Id " + civilId + " is not valid!");
 		}
 	}
-	
-	//Validate IdentityInt
+
+	// Validate IdentityInt
 	protected void validateIdentityInt(String civilId, BigDecimal identityType) {
-		boolean isValid = custValidation.validateIdentityInt(civilId, meta.getCountry().getCountryCode(), identityType);
+		boolean isValid = custValidation.validateIdentityInt(civilId, meta.getCountry().getISO2Code(), identityType);
 		if (!isValid) {
 			throw new InvalidCivilIdException("Id " + civilId + " is not valid!");
 		}
@@ -206,6 +205,28 @@ public class UserValidationService {
 			Integer attemptsLeft = incrementLockCount(customer);
 			String errorExpression = JaxError.WRONG_PASSWORD.toString();
 			if (attemptsLeft > 0) {
+				errorExpression = jaxUtil.buildErrorExpression(JaxError.WRONG_PASSWORDS_ATTEMPTS.toString(),
+						attemptsLeft);
+			}
+			throw new GlobalException(errorExpression, "Incorrect/wrong password");
+		}
+	}
+	
+	protected void validateDevicePassword(CustomerOnlineRegistration customer, String password) {
+		String dbPassword = customer.getDevicePassword();
+		String passwordHashed = null;
+		try {
+			logger.debug("hashed psw not generated");
+			passwordHashed = com.amx.utils.CryptoUtil.getSHA2Hash(password);
+		} catch (NoSuchAlgorithmException e) {
+			logger.error("Exception thrown for incorrect algorithm ", e);
+			throw new GlobalException("Unable to generate hashed password");
+		}
+		if (!dbPassword.equals(passwordHashed)) {
+			Integer attemptsLeft = incrementLockCount(customer);
+			String errorExpression = JaxError.WRONG_PASSWORD.toString();
+			if (attemptsLeft > 0) {
+				logger.debug("attempts are still left");
 				errorExpression = jaxUtil.buildErrorExpression(JaxError.WRONG_PASSWORDS_ATTEMPTS.toString(),
 						attemptsLeft);
 			}
@@ -283,7 +304,7 @@ public class UserValidationService {
 		ViewOnlineCustomerCheck onlineCustView = custDao.getOnlineCustomerview(customer.getCustomerId());
 		if (onlineCustView != null && onlineCustView.getIdExpirtyDate() == null) {
 			throw new GlobalException(JaxError.ID_PROOF_EXPIRED, "ID is expired");
-		}		
+		}
 		validateOldEmosData(customer);
 
 	}
@@ -329,8 +350,8 @@ public class UserValidationService {
 			throw new GlobalException(JaxError.MISSING_LOCAL_CONTACT_DETAILS, "No local details found");
 		}
 	}
-	
-	void validateBlackListedCustomerForLogin(Customer customer) {
+
+	public void validateBlackListedCustomerForLogin(Customer customer) {
 
 		StringBuffer engNamesbuf = new StringBuffer();
 		if (StringUtils.isNotBlank(customer.getFirstName())) {
@@ -356,7 +377,7 @@ public class UserValidationService {
 		if (blist != null && !blist.isEmpty()) {
 			throw new GlobalException(JaxError.BLACK_LISTED_EXISTING_CIVIL_ID.getStatusKey(),
 					"Your account is locked as we have found that your name has been black-listed by CBK.");
-		}		
+		}
 		if (StringUtils.isNotBlank(localNamesbuf.toString())) {
 			blist = blistDao.getBlackByName(localNamesbuf.toString());
 			if (blist != null && !blist.isEmpty()) {
@@ -439,8 +460,11 @@ public class UserValidationService {
 		onlineCustomer.setLockCnt(new BigDecimal(lockCnt));
 		custDao.saveOnlineCustomer(onlineCustomer);
 		if (lockCnt >= MAX_OTP_ATTEMPTS) {
+			logger.debug("lock count has exceeded");
 			String errorExpression = JaxError.USER_LOGIN_ATTEMPT_EXCEEDED.toString();
+			logger.debug("throw exception that user login attempt has exceeded");
 			errorExpression = jaxUtil.buildErrorExpression(JaxError.USER_LOGIN_ATTEMPT_EXCEEDED.toString(), lockCnt);
+			logger.debug("error expression has been calculated");
 			throw new GlobalException(errorExpression, "Customer is locked. No of attempts:- " + lockCnt);
 		}
 		return MAX_OTP_ATTEMPTS - lockCnt;
@@ -463,6 +487,40 @@ public class UserValidationService {
 		}
 		return onlineCustomer;
 	}
+
+	protected CustomerOnlineRegistration validateOnlineCustomerByIdentityId(String identityInt,
+			BigDecimal identityType) {
+		Customer customer = custDao.getActiveCustomerByIndentityIntAndType(identityInt, identityType);
+		
+		if (customer == null) {
+			throw new GlobalException(JaxError.CUSTOMER_NOT_FOUND.getStatusKey(), "Online Customer id not found");
+		}
+		
+		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(customer.getCustomerId());
+		if (onlineCustomer == null) {
+			throw new GlobalException(JaxError.CUSTOMER_NOT_FOUND.getStatusKey(), "Online Customer id not found");
+		}
+		return onlineCustomer;
+	}
+	
+	protected CustomerOnlineRegistration validateOnlineCustomerByIdentityId(BigDecimal customerId) {
+		Customer customer = custDao.getCustById(customerId);
+		if (customer == null) {
+			throw new GlobalException(JaxError.CUSTOMER_NOT_FOUND.getStatusKey(), "Online Customer id not found");
+		}
+		if(!customer.getIdentityTypeId().toString().equals(Constants.IDENTITY_TYPE_CIVIL_ID_STR)) {
+			throw new GlobalException("Invalid Identity Type for fingerprint establish");
+		}
+			
+			
+		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(customer.getCustomerId());
+		if (onlineCustomer == null) {
+			throw new GlobalException(JaxError.CUSTOMER_NOT_FOUND.getStatusKey(), "Online Customer id not found");
+		}
+		return onlineCustomer;
+	}
+	
+	
 
 	public void validateOtpFlow(CustomerModel model) {
 		if (model.isRegistrationFlow()) {
@@ -503,7 +561,7 @@ public class UserValidationService {
 		}
 		this.unlockCustomer(onlineCustomer);
 	}
-	
+
 	private boolean isMOtpFlowRequired(CustomerModel model) {
 
 		boolean required = false;
@@ -539,24 +597,24 @@ public class UserValidationService {
 		}
 		return required;
 	}
-	
+
 	private boolean isSecurityQuestionRequired(CustomerModel model) {
 
 		boolean required = false;
 		if (model.getSecurityquestions() != null) {
 			required = true;
 		}
-				
+
 		return required;
 	}
-	
+
 	private boolean isVerificationAnswerRequired(CustomerModel model) {
 
 		boolean required = false;
 		if (model.getVerificationAnswers() != null) {
 			required = true;
 		}
-				
+
 		return required;
 	}
 
@@ -583,14 +641,14 @@ public class UserValidationService {
 
 	protected void validateMobileNumberLength(Customer customer, String mobile) {
 
-        ValidationClient validationClient = validationClients.getValidationClient(customer.getCountryId().toString());
-        if (!validationClient.isValidMobileNumber(mobile)) {
-            throw new GlobalException(JaxError.INCORRECT_LENGTH,
-                    ExceptionMessageKey.build(JaxError.INCORRECT_LENGTH, validationClient.mobileLength())
-                    ,"Length of mobile number should be of " +validationClient.mobileLength()+ " digits");
-        }
-    }
-	
+		ValidationClient validationClient = validationClients.getValidationClient(customer.getCountryId().toString());
+		if (!validationClient.isValidMobileNumber(mobile)) {
+			throw new GlobalException(JaxError.INCORRECT_LENGTH,
+					ExceptionMessageKey.build(JaxError.INCORRECT_LENGTH, validationClient.mobileLength()),
+					"Length of mobile number should be of " + validationClient.mobileLength() + " digits");
+		}
+	}
+
 	protected void isMobileExist(Customer customer, String mobile) {
 
 		ValidationClient validationClient = validationClients.getValidationClient(customer.getCountryId().toString());
@@ -622,7 +680,7 @@ public class UserValidationService {
 			throw new GlobalException(JaxError.CUSTOMER_INACTIVE, "Customer is not active");
 		}
 	}
-	
+
 	protected void unlockCustomer(CustomerOnlineRegistration onlineCustomer) {
 		if (onlineCustomer.getLockCnt() != null || onlineCustomer.getLockDt() != null) {
 			onlineCustomer.setLockCnt(null);
@@ -634,7 +692,8 @@ public class UserValidationService {
 
 	/**
 	 * validates inactive or not registered customers status
-	 * @return 
+	 * 
+	 * @return
 	 */
 	@SuppressWarnings("unused")
 	public List<Customer> validateNonActiveOrNonRegisteredCustomerStatus(String identityInt, JaxApiFlow apiFlow) {
@@ -707,9 +766,9 @@ public class UserValidationService {
 		if (onlineCustomer == null) {
 			throw new GlobalException(JaxError.CUSTOMER_NOT_REGISTERED_ONLINE, "Customer not registered in online");
 		}
-		
+
 		userValidationService.validateCustomerVerification(onlineCustomer.getCustomerId());
-		
+
 		if (!ConstantDocument.Yes.equals(onlineCustomer.getStatus())) {
 			throw new GlobalException(JaxError.CUSTOMER_NOT_ACTIVE_ONLINE, "Customer not active in online");
 		}
@@ -726,9 +785,9 @@ public class UserValidationService {
 			throw new GlobalException(JaxError.CUSTOMER_NOT_ACTIVE_BRANCH,
 					"Customer not active in branch, go to branch ");
 		}
-		validateBlockedCustomerForOnlineReg(customer);
+		// validateBlockedCustomerForOnlineReg(customer);
 	}
-	
+
 	private void validateBlockedCustomerForOnlineReg(Customer customer) {
 		// article 20
 		if (customer.getFsArticleDetails() != null) {
@@ -739,45 +798,51 @@ public class UserValidationService {
 			}
 		}
 	}
-	
+
 	public void validateEmailMobileUpdateFlow(CustomerModel customerModel, List<CommunicationChannel> channels) {
-		GlobalException ex =  null;
+		GlobalException ex = null;
 		JaxAuthMeta jaxAuthMeta = jaxAuthCache.getOrDefault(metaData.getCustomerId().toString(), new JaxAuthMeta());
-		
-		if(null == JaxAuthContext.getMotp() && null == JaxAuthContext.getEotp() && null == JaxAuthContext.getSecAns()) {
-			ex=  new GlobalException(JaxError.OTP_AND_SEC_ANSWER_REQUIRED.getStatusKey(), "motp, eOtp and Security Answer required");
-			CivilIdOtpModel civilIdOtpModel = (CivilIdOtpModel) userService.sendOtpForCivilId(customerModel.getIdentityId(),channels,null,null).getResult();
+
+		if (null == JaxAuthContext.getMotp() && null == JaxAuthContext.getEotp()
+				&& null == JaxAuthContext.getSecAns()) {
+			ex = new GlobalException(JaxError.OTP_AND_SEC_ANSWER_REQUIRED.getStatusKey(),
+					"motp, eOtp and Security Answer required");
+			CivilIdOtpModel civilIdOtpModel = (CivilIdOtpModel) userService
+					.sendOtpForCivilId(customerModel.getIdentityId(), channels, null, null).getResult();
 			QuestModelDTO secQuestion = securityQuestionsManager.getDataVerificationRandomQuestions(1).get(0);
-			ex.setMeta(new CustomerRequestAuthMeta(civilIdOtpModel.getmOtpPrefix(), civilIdOtpModel.geteOtpPrefix(),secQuestion));
+			ex.setMeta(new CustomerRequestAuthMeta(civilIdOtpModel.getmOtpPrefix(), civilIdOtpModel.geteOtpPrefix(),
+					secQuestion));
 			jaxAuthMeta.setQuestId(secQuestion.getQuestId());
 			jaxAuthCache.fastPut(metaData.getCustomerId().toString(), jaxAuthMeta);
 		}
-		
-		if(null == JaxAuthContext.getMotp() && null == JaxAuthContext.getEotp() && JaxAuthContext.getSecAns() != null) {
-			ex =  new GlobalException(JaxError.BOTH_OTP_REQUIRED.getStatusKey(), "motp and eOtp required");
-			CivilIdOtpModel civilIdOtpModel = (CivilIdOtpModel) userService.sendOtpForCivilId(customerModel.getIdentityId(),channels,null,null).getResult();
+
+		if (null == JaxAuthContext.getMotp() && null == JaxAuthContext.getEotp()
+				&& JaxAuthContext.getSecAns() != null) {
+			ex = new GlobalException(JaxError.BOTH_OTP_REQUIRED.getStatusKey(), "motp and eOtp required");
+			CivilIdOtpModel civilIdOtpModel = (CivilIdOtpModel) userService
+					.sendOtpForCivilId(customerModel.getIdentityId(), channels, null, null).getResult();
 			ex.setMeta(new CustomerRequestAuthMeta(civilIdOtpModel.getmOtpPrefix(), civilIdOtpModel.geteOtpPrefix()));
-			
+
 			jaxAuthCache.fastPut(metaData.getCustomerId().toString(), jaxAuthMeta);
 		}
-		
-		if(isSecurityAnsRequired(jaxAuthMeta)) {
+
+		if (isSecurityAnsRequired(jaxAuthMeta)) {
 			ex = new GlobalException(JaxError.SEC_ANS_REQUIRED.getStatusKey(), "Security Answer required");
 			QuestModelDTO secQuestion = securityQuestionsManager.getDataVerificationRandomQuestions(1).get(0);
 			ex.setMeta(new CustomerRequestAuthMeta(secQuestion));
 			jaxAuthMeta.setQuestId(secQuestion.getQuestId());
 			jaxAuthCache.fastPut(metaData.getCustomerId().toString(), jaxAuthMeta);
 		}
-		
-		if(ex != null) {
+
+		if (ex != null) {
 			throw ex;
 		}
 		customerModel.setMotp(JaxAuthContext.getMotp());
 		customerModel.setEotp(JaxAuthContext.getEotp());
 		validateSecurityAnswer();
-		
+
 	}
-	
+
 	private boolean isSecurityAnsRequired(JaxAuthMeta jaxAuthMeta) {
 		if (JaxAuthContext.getMotp() != null && JaxAuthContext.getEotp() != null
 				&& null == JaxAuthContext.getSecAns()) {
@@ -791,7 +856,7 @@ public class UserValidationService {
 
 	private void validateSecurityAnswer() {
 		JaxAuthMeta jaxAuthMeta = jaxAuthCache.getOrDefault(metaData.getCustomerId().toString(), new JaxAuthMeta());
-		
+
 		// get question from cache
 		CustomerDataVerificationQuestion question = CustomerDataVerificationQuestion
 				.getCustomerDataVerificationQuestionById(jaxAuthMeta.getQuestId());
@@ -810,7 +875,7 @@ public class UserValidationService {
 			}
 			break;
 		}
-		
+
 		case Q2: {
 			Date identityExpiry = customerInfo.getIdentityExpiredDate();
 			Date givenDate = com.amx.jax.util.DateUtil.convertStringToDate(answer);
@@ -819,11 +884,19 @@ public class UserValidationService {
 			}
 			break;
 		}
-		
+
 		default:
 			break;
 
 		}
 	}
+	
+	
+	public void validateIdentityInt(String identityInt, String identityType) {
+		BigDecimal identyType = new BigDecimal(identityType);
+		tenantContext.get().validateIdentityInt(identityInt, identyType);
+
+	}
+	
 
 }

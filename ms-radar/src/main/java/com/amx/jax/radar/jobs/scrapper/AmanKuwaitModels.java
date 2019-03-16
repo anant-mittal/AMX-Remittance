@@ -4,17 +4,39 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
 
-import com.amx.jax.rates.AmxCurConstants.RCur;
+import com.amx.jax.dict.Currency;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 
 public class AmanKuwaitModels {
 
+	public static interface Rates {
+		List<CurRates> getCurRates();
+	}
+
+	@JsonIgnoreProperties(ignoreUnknown = true)
+	public static class RatesJson implements Rates {
+
+		@JsonProperty("CRList")
+		private List<CurRates> curRates;
+
+		@Override
+		public List<CurRates> getCurRates() {
+			return curRates;
+		}
+
+		public void setCurRates(List<CurRates> curRates) {
+			this.curRates = curRates;
+		}
+
+	}
+
 	@JacksonXmlRootElement(localName = "Rates")
 	@JsonIgnoreProperties(ignoreUnknown = true)
-	public static class Rates implements Serializable {
+	public static class RatesXML implements Rates {
 
 		private static final long serialVersionUID = 3954809608842883968L;
 
@@ -48,16 +70,27 @@ public class AmanKuwaitModels {
 
 		private static final long serialVersionUID = 8632681886190975280L;
 
+		@JsonProperty("SortOrder")
 		@JacksonXmlProperty(localName = "SortOrder")
 		private String sortOrder;
+
+		@JsonProperty("Name")
 		@JacksonXmlProperty(localName = "Name")
 		private String name;
+
+		@JsonProperty("Code")
 		@JacksonXmlProperty(localName = "Code")
-		private RCur code;
+		private Currency code;
+
+		@JsonProperty("BRate")
 		@JacksonXmlProperty(localName = "BRate")
 		private BigDecimal buyrate;
+
+		@JsonProperty("SRate")
 		@JacksonXmlProperty(localName = "SRate")
 		private BigDecimal sellrate;
+
+		@JsonProperty("KDRate")
 		@JacksonXmlProperty(localName = "KDRate")
 		private BigDecimal kdrate;
 
@@ -86,11 +119,11 @@ public class AmanKuwaitModels {
 			this.name = name;
 		}
 
-		public RCur getCode() {
+		public Currency getCode() {
 			return code;
 		}
 
-		public void setCode(RCur code) {
+		public void setCode(Currency code) {
 			this.code = code;
 		}
 

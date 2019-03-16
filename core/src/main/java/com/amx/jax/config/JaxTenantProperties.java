@@ -12,6 +12,20 @@ public class JaxTenantProperties {
 
 	@TenantValue("${support.compliance.email}")
 	private String complianceEmail;
+	
+	@TenantValue("${dynamic.pricing.enabled}")
+	private Boolean isDynamicPricingEnabled;
+
+	public Boolean getIsDynamicPricingEnabled() {
+		if (isDynamicPricingEnabled == null) {
+			return Boolean.FALSE;
+		}
+		return isDynamicPricingEnabled;
+	}
+
+	public void setIsDynamicPricingEnabled(Boolean isDynamicPricingEnabled) {
+		this.isDynamicPricingEnabled = isDynamicPricingEnabled;
+	}
 
 	@TenantValue("${jax.properties.exrate.bestratelogic.enable}")
 	Boolean exrateBestRateLogicEnable;

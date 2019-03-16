@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
@@ -49,6 +50,11 @@
 			</dependency>
 			<dependency>
 				<groupId>com.amx.jax</groupId>
+				<artifactId>common-db</artifactId>
+				<version>${amx.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.amx.jax</groupId>
 				<artifactId>lib-mcq</artifactId>
 				<version>${amx.version}</version>
 			</dependency>
@@ -87,6 +93,7 @@
 		<!-- Common Libs -->
 		<module>../common-utils</module>
 		<module>../common-lib</module>
+		<module>../common-db</module>
 		<module>../lib-ext-jar</module>
 		<module>../lib-mcq</module>
 		<module>../lib-monitor</module>
@@ -97,6 +104,6 @@
 		<module>../ms-broker</module>
 		<module>../server-payg</module>
 		<module>../server-monitor</module>
-		
+
 	</modules>
 </project>

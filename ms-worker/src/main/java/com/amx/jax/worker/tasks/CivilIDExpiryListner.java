@@ -79,9 +79,9 @@ public class CivilIDExpiryListner implements ITunnelSubscriber<DBEvent> {
 
 			if (ArgUtil.areEqual(expired, "0")) {
 				email.setITemplate(TemplatesMX.CIVILID_EXPIRY);
-				email.setSubject("Civil ID Expiry Reminder"); // Given by Umesh
+				
 			} else {
-				email.setSubject("Civil ID has been expired"); // Given by Umesh
+				
 				email.setITemplate(TemplatesMX.CIVILID_EXPIRED);
 			}
 			postManClient.sendEmailAsync(email);

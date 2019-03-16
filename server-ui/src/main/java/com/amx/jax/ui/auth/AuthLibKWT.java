@@ -38,6 +38,8 @@ public class AuthLibKWT implements AuthLib {
 			return AuthState.AuthStep.USERPASS;
 		}
 		switch (authState.cStep) {
+		case DEVICEPASS:
+			return AuthState.AuthStep.COMPLETED;
 		case USERPASS:
 			return AuthState.AuthStep.SECQUES;
 		case SECQUES:

@@ -355,6 +355,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		List<ArticleDetailsDescDto> designationDataList = convertDesignation(designationList);
 		return AmxApiResponse.buildList(designationDataList);
 	}
+
 	private List<ArticleDetailsDescDto> convertDesignation(List<Map<String, Object>> designationList) {
 		List<ArticleDetailsDescDto> output = new ArrayList<>();
 		designationList.forEach(i -> {
@@ -363,7 +364,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		LOGGER.debug("List Output is :", output);
 		return output;
 	}
-	
+
 	private ArticleDetailsDescDto convertDesignation(Map<String, Object> designationMap) {
 		ArticleDetailsDescDto dto = new ArticleDetailsDescDto();
 		LOGGER.debug("Dto is declared and  is empty");
@@ -552,7 +553,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 
 			if (customerEmploymentDetails.getEmploymentTypeId().compareTo(new BigDecimal(222)) != 0) {
 				employeeModel.setFsBizComponentDataByOccupationId(bizcomponentDao
-						.getBizComponentDataByComponmentDataId(customerEmploymentDetails.getProfessionId()));
+								.getBizComponentDataByComponmentDataId(customerEmploymentDetails.getProfessionId()));
 				employeeModel.setEmployerName(customerEmploymentDetails.getEmployer());
 
 			}
@@ -618,7 +619,9 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 			contactDetail.setFsCountryMaster(new CountryMaster(homeAddressDestails.getCountryId()));
 			contactDetail.setFsDistrictMaster(new DistrictMaster(homeAddressDestails.getDistrictId()));
 			contactDetail.setFsStateMaster(new StateMaster(homeAddressDestails.getStateId()));
+			if(null != homeAddressDestails.getCityId()) {
 			contactDetail.setFsCityMaster(new CityMaster(homeAddressDestails.getCityId()));
+			}
 			contactDetail.setBuildingNo(homeAddressDestails.getHouse());
 			contactDetail.setFlat(homeAddressDestails.getFlat());
 			contactDetail.setStreet(homeAddressDestails.getStreet());
@@ -1130,4 +1133,21 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		}
 		return AmxApiResponse.build(offsiteCustomer);
 	}
+	
+	/**
+	 * To fetch customer details
+	 * auth    : MRU
+	 * purpose : to fethc custoemr deatails 
+	 */
+	
+	@Override
+	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerDetails(String identityInt,BigDecimal identityTypeId) {
+		OffsiteCustomerDataDTO offsiteCustomer =customerRegistrationManager.getCustomerDeatils(identityInt, identityTypeId);
+		return AmxApiResponse.build(offsiteCustomer); 
+	}
+	
+	
+	
+	
+	
 }

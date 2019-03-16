@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import com.amx.jax.dict.Country;
+import com.amx.jax.dict.Tenant;
 
 @Component
 public class CountryUtil {
@@ -13,7 +14,7 @@ public class CountryUtil {
 		if (StringUtils.isEmpty(countryCode)) {
 			return false;
 		}
-		if (Country.KUWAIT.getCountryCode().equals(countryCode)) {
+		if (Tenant.KWT.getISO2Code().equals(countryCode)) {
 			return true;
 		}
 		return false;
@@ -24,7 +25,7 @@ public class CountryUtil {
 		if (StringUtils.isEmpty(countryCode)) {
 			return false;
 		}
-		if (Country.BARAIN.getCountryCode().equals(countryCode)) {
+		if (Tenant.BHR.getISO2Code().equals(countryCode)) {
 			return true;
 		}
 		return false;
@@ -35,7 +36,7 @@ public class CountryUtil {
 		if (StringUtils.isEmpty(countryCode)) {
 			return false;
 		}
-		if (Country.OMAN.getCountryCode().equals(countryCode)) {
+		if (Tenant.OMN.getISO2Code().equals(countryCode)) {
 			return true;
 		}
 		return false;

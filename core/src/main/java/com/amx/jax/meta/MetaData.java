@@ -65,9 +65,8 @@ public class MetaData implements IMetaData {
 		return null;
 	}
 
-	public Country getCountry() {
-		Country country = Country.countryIdToCountryMap.get(countryId.intValue());
-		return country;
+	public Tenant getCountry() {
+		return Tenant.fromCountryId(countryId.intValue());
 	}
 
 	public BigDecimal getCompanyId() {
