@@ -2,6 +2,7 @@ package com.amx.jax.rbaac.service;
 
 import java.math.BigDecimal;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -20,6 +21,7 @@ import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.constant.DeviceState;
 import com.amx.jax.dbmodel.Device;
 import com.amx.jax.dict.UserClient.ClientType;
+import com.amx.jax.event.AmxTunnelEvents;
 import com.amx.jax.rbaac.constants.RbaacServiceConstants;
 import com.amx.jax.rbaac.dao.DeviceDao;
 import com.amx.jax.rbaac.dto.DeviceDto;
@@ -29,6 +31,8 @@ import com.amx.jax.rbaac.error.RbaacServiceError;
 import com.amx.jax.rbaac.exception.AuthServiceException;
 import com.amx.jax.rbaac.manager.DeviceManager;
 import com.amx.jax.rbaac.validation.DeviceValidation;
+import com.amx.jax.tunnel.ResourceUpdateEvent;
+import com.amx.jax.tunnel.TunnelService;
 import com.amx.jax.util.ParamValidator;
 import com.amx.utils.Constants;
 import com.amx.utils.CryptoUtil;
@@ -47,6 +51,8 @@ public class DeviceService extends AbstractService {
 	DeviceValidation deviceValidation;
 	@Autowired
 	DeviceManager deviceManager;
+	@Autowired
+	TunnelService tunnelService;
 
 	public static final long DEVICE_SESSION_TIMEOUT = 8 * 60 * 60; // in seconds
 
@@ -61,6 +67,7 @@ public class DeviceService extends AbstractService {
 	public void activateDevice(Device device) {
 		device.setStatus("Y");
 		device.setState(DeviceState.REGISTERED);
+		List<Device> deactivatedDevices = new ArrayList<Device>();
 		if (device.getBranchSystemInventoryId() != null) {
 			List<Device> devices = deviceDao.findAllActiveDevices(device.getBranchSystemInventoryId(),
 					device.getDeviceType());
@@ -68,7 +75,8 @@ public class DeviceService extends AbstractService {
 				for (Device d : devices) {
 					if (!d.equals(device)) {
 						d.setStatus("N");
-		}
+						deactivatedDevices.add(d);
+					}
 				}
 				deviceDao.saveDevices(devices);
 			}
@@ -80,11 +88,18 @@ public class DeviceService extends AbstractService {
 				for (Device d : devices) {
 					if (!d.equals(device)) {
 						d.setStatus("N");
+						deactivatedDevices.add(d);
 					}
 				}
 				deviceDao.saveDevices(devices);
 			}
 		}
+		// send device deactivated notification to other services
+		deactivatedDevices.forEach(i -> {
+			ResourceUpdateEvent event = new ResourceUpdateEvent();
+			event.setResourceId(i.getRegistrationId());
+			tunnelService.task(AmxTunnelEvents.UPDATE_DEVICE_STATUS.name(), event);
+		});
 		deviceDao.saveDevice(device);
 	}
 
