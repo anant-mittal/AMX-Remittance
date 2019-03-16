@@ -238,6 +238,7 @@ public class AnnualIncomeService {
 		mappingData.setIdentityIntId(model.getIdentityTypeId());
 		if(metaData.getEmployeeId()==null) {
 			mappingData.setCreatedBy("ONLINE");
+			logger.info("created by is set");
 		}	
 		mappingData.setCreatedBy(metaData.getEmployeeId().toString());
 		mappingData.setCreatedOn(new Date());
