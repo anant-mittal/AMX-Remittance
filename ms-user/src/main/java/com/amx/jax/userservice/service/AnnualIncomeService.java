@@ -28,11 +28,14 @@ import com.amx.jax.JaxAuthCache;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.dal.ArticleDao;
 import com.amx.jax.dal.ImageCheckDao;
+import com.amx.jax.dbmodel.CompanyMaster;
+import com.amx.jax.dbmodel.CountryMaster;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerEmploymentInfo;
 import com.amx.jax.dbmodel.DmsApplMapping;
 import com.amx.jax.dbmodel.DocBlobUpload;
 import com.amx.jax.dbmodel.IncomeModel;
+import com.amx.jax.dbmodel.LanguageType;
 import com.amx.jax.dbmodel.UserFinancialYear;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.logger.AuditService;
@@ -170,13 +173,14 @@ public class AnnualIncomeService {
 		customer.setFsArticleDetails(articleDao.getArticleDetailsByArticleDetailId(incomeDto.getArticleDetailId()));
 		logger.debug("set designation id : ");
 		CustomerEmploymentInfo customerEmploymentInfo = incomeDao.getCustById(metaData.getCustomerId());
+		if (customerEmploymentInfo == null) {
+			customerEmploymentInfo = createCustomerEmploymentInfo(incomeDto);
+		}
 		logger.info("cust emp info is "+customerEmploymentInfo.getDepartment());
 		logger.info("company name is"+incomeDto.getCompanyName());
 		customerEmploymentInfo.setEmployerName(incomeDto.getCompanyName());
 		logger.info("employee name is set:"+customerEmploymentInfo.getEmployerName());
 		if (incomeDto.getImage() != null && incomeDto.getFileName()!=null) {
-
-			
 			logger.info("image is set");
 			DmsApplMapping mappingData = new DmsApplMapping();
 			mappingData = getDmsApplMappingData(customer);
@@ -186,13 +190,26 @@ public class AnnualIncomeService {
 			docblobRepository.save(documentDetails);
 			customerEmploymentInfo.setDocBlobId(mappingData.getDocBlobId());
 			customerEmploymentInfo.setFileName(incomeDto.getFileName());
-			
 		}
 		logger.info("details are set");
 		custDao.saveCustomer(customer);
 		incomeDao.saveCustomerEmploymentInfo(customerEmploymentInfo);
 		return AmxApiResponse.build(incomeDto);
 
+	}
+
+	private CustomerEmploymentInfo createCustomerEmploymentInfo(IncomeDto incomeDto) {
+		// TODO Auto-generated method stub
+		CustomerEmploymentInfo custEmploymentInfo = new CustomerEmploymentInfo();
+		custEmploymentInfo.setEmployerName(incomeDto.getCompanyName());
+		custEmploymentInfo.setCreatedBy(incomeDto.getFullName());
+		custEmploymentInfo.setCreationDate(new Date());
+		custEmploymentInfo.setFsCountryMaster(new CountryMaster(metaData.getCountryId()));
+		custEmploymentInfo.setFsCompanyMaster(new CompanyMaster(metaData.getCompanyId()));
+		custEmploymentInfo.setFsLanguageType(new LanguageType(metaData.getLanguageId()));
+		custEmploymentInfo.setIsActive("Y");
+		custEmploymentInfo.setFsCustomer(new Customer(metaData.getCustomerId()));
+		return custEmploymentInfo;
 	}
 
 	private DmsApplMapping getDmsApplMappingData(Customer model) throws ParseException {
