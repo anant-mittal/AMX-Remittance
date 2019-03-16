@@ -191,6 +191,10 @@ public class AnnualIncomeService {
 			customerEmploymentInfo.setDocBlobId(mappingData.getDocBlobId());
 			customerEmploymentInfo.setFileName(incomeDto.getFileName());
 		}
+		else if(incomeDto.getImage() == null && incomeDto.getFileName() == null) {
+			customerEmploymentInfo.setDocBlobId(null);
+			customerEmploymentInfo.setFileName(null);
+		}
 		logger.info("details are set");
 		custDao.saveCustomer(customer);
 		incomeDao.saveCustomerEmploymentInfo(customerEmploymentInfo);
