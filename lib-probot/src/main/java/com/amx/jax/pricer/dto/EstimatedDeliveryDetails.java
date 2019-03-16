@@ -2,54 +2,56 @@ package com.amx.jax.pricer.dto;
 
 import java.time.ZonedDateTime;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 public class EstimatedDeliveryDetails {
 
-	private long processTimeTotalInHrs;
+	private long processTimeTotalInSeconds = 0;
 
-	private long processTimeOperationalInHrs;
+	private long processTimeOperationalInSeconds = 0;
 
-	private long operatinalDelayInDays;
+	private long processTimeAbsoluteInSeconds = 0;
 
-	private long holidayDelayInDays;
+	private long nonWorkingDelayInDays = 0;
 
-	private long completionTT;
+	private long holidayDelayInDays = 0;
 
-	private ZonedDateTime completionDateLocal;
+	private long completionTT = 0;
 
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
+	private ZonedDateTime startDateForeign;
+
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
 	private ZonedDateTime completionDateForeign;
 
-	private String timezone;
+	private boolean crossedMaxDeliveryDays = false;
 
-	public long getProcessTimeTotalInHrs() {
-		return processTimeTotalInHrs;
+	public long getProcessTimeTotalInSeconds() {
+		return processTimeTotalInSeconds;
 	}
 
-	public void setProcessTimeTotalInHrs(long processTimeTotalInHrs) {
-		this.processTimeTotalInHrs = processTimeTotalInHrs;
+	public long getProcessTimeOperationalInSeconds() {
+		return processTimeOperationalInSeconds;
 	}
 
-	public long getProcessTimeOperationalInHrs() {
-		return processTimeOperationalInHrs;
+	public long getProcessTimeAbsoluteInSeconds() {
+		return processTimeAbsoluteInSeconds;
 	}
 
-	public void setProcessTimeOperationalInHrs(long processTimeOperationalInHrs) {
-		this.processTimeOperationalInHrs = processTimeOperationalInHrs;
+	public long getNonWorkingDelayInDays() {
+		return nonWorkingDelayInDays;
 	}
 
-	public long getOperatinalDelayInDays() {
-		return operatinalDelayInDays;
-	}
-
-	public void setOperatinalDelayInDays(long operatinalDelayInDays) {
-		this.operatinalDelayInDays = operatinalDelayInDays;
+	public void addToNonWorkingDelayInDays(long operatinalDelayInDays) {
+		this.nonWorkingDelayInDays += operatinalDelayInDays;
 	}
 
 	public long getHolidayDelayInDays() {
 		return holidayDelayInDays;
 	}
 
-	public void setHolidayDelayInDays(long holidayDelayInDays) {
-		this.holidayDelayInDays = holidayDelayInDays;
+	public void addToHolidayDelayInDays(long holidayDelayInDays) {
+		this.holidayDelayInDays += holidayDelayInDays;
 	}
 
 	public long getCompletionTT() {
@@ -60,12 +62,12 @@ public class EstimatedDeliveryDetails {
 		this.completionTT = completionTT;
 	}
 
-	public ZonedDateTime getCompletionDateLocal() {
-		return completionDateLocal;
+	public ZonedDateTime getStartDateForeign() {
+		return startDateForeign;
 	}
 
-	public void setCompletionDateLocal(ZonedDateTime completionDateLocal) {
-		this.completionDateLocal = completionDateLocal;
+	public void setStartDateForeign(ZonedDateTime startDateforeign) {
+		this.startDateForeign = startDateforeign;
 	}
 
 	public ZonedDateTime getCompletionDateForeign() {
@@ -76,12 +78,34 @@ public class EstimatedDeliveryDetails {
 		this.completionDateForeign = completionDateForeign;
 	}
 
-	public String getTimezone() {
-		return timezone;
+	public boolean isCrossedMaxDeliveryDays() {
+		return crossedMaxDeliveryDays;
 	}
 
-	public void setTimezone(String timezone) {
-		this.timezone = timezone;
+	public void setCrossedMaxDeliveryDays(boolean crossedMaxDeliveryDays) {
+		this.crossedMaxDeliveryDays = crossedMaxDeliveryDays;
+	}
+
+	public void addToNonWorkingDelay(long days) {
+		this.nonWorkingDelayInDays += days;
+	}
+
+	public void addToHolidayDelay(long days) {
+		this.holidayDelayInDays += days;
+	}
+
+	public void addToProcessTimeAbsolute(long seconds) {
+		this.processTimeAbsoluteInSeconds += seconds;
+		addToProcessTimeOperational(seconds);
+	}
+
+	public void addToProcessTimeOperational(long seconds) {
+		this.processTimeOperationalInSeconds += seconds;
+		addToProcessTimeTotal(seconds);
+	}
+
+	public void addToProcessTimeTotal(long seconds) {
+		this.processTimeTotalInSeconds += seconds;
 	}
 
 }

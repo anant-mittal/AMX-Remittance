@@ -27,10 +27,10 @@ public class ComputeRequestTransientDataCache {
 
 	private Map<BigDecimal, BigDecimal> bankGLCBALAvgRateMap = new HashMap<BigDecimal, BigDecimal>();
 
-
 	private List<RoutingTransientDataComputationObject> routingMatrixData;
 
 	private Map<BigDecimal, Map<String, HolidayListMasterModel>> countryHolidays = new HashMap<BigDecimal, Map<String, HolidayListMasterModel>>();
+	
 	private OnlineMarginMarkup margin = null;
 
 	private Map<String, Object> info = new HashMap<String, Object>();

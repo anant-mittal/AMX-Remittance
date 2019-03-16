@@ -31,6 +31,8 @@ import com.amx.utils.JsonUtil;
 @Component
 public class RemitRoutingManager {
 
+	private static final int MAX_DELIVERY_ATTEMPT_DAYS = 100;
+
 	/** The Constant LOGGER. */
 	private static final Logger LOGGER = LoggerFactory.getLogger(RemitRoutingManager.class);
 
@@ -106,17 +108,25 @@ public class RemitRoutingManager {
 		WorkingHoursData workingHoursData = this.computeWorkMatrix(weekFrom, weekTo, weekHrsFrom, weekHrsTo,
 				weekEndFrom, weekEndTo, weekEndHrsFrom, weekEndHrsTo, processTimeInHrs);
 
-		ZonedDateTime goodBusinessDT = this.getGoodBusinessDateTime(beginZonedDT, workingHoursData, countryId,
-				noHolidayLag);
+		EstimatedDeliveryDetails goodBusinessDeliveryDT = this.getGoodBusinessDateTime(beginZonedDT, workingHoursData,
+				countryId, noHolidayLag);
 
-		EstimatedDeliveryDetails estimatedDeliveryDetails = new EstimatedDeliveryDetails();
+		/**
+		 * Add Delivery Processing Time to Arrive at the Block Completion Time.
+		 */
 
-		// long procTimeInMin = Math.round(processTimeInHrs.setScale(2,
-		// BigDecimal.ROUND_HALF_UP).doubleValue() * 60);
+		goodBusinessDeliveryDT.addToProcessTimeAbsolute(workingHoursData.getTotalProcessingTimeInSec());
 
-		goodBusinessDT = goodBusinessDT.plusMinutes(workingHoursData.getTotalProcessingTimeInMins());
+		/**
+		 * Compute Completion Time
+		 */
+		ZonedDateTime blockDeliveryCompletionDT = goodBusinessDeliveryDT.getStartDateForeign()
+				.plusSeconds(goodBusinessDeliveryDT.getProcessTimeAbsoluteInSeconds());
 
-		System.out.println(" Estimated Delivery Date Time ===> " + goodBusinessDT);
+		goodBusinessDeliveryDT.setCompletionDateForeign(blockDeliveryCompletionDT);
+		goodBusinessDeliveryDT.setCompletionTT(blockDeliveryCompletionDT.toInstant().toEpochMilli());
+
+		System.out.println(" Estimated Delivery Details ===> " + JsonUtil.toJson(goodBusinessDeliveryDT));
 
 		return null;
 	}
@@ -148,18 +158,39 @@ public class RemitRoutingManager {
 		return workingHoursData;
 	}
 
-	private ZonedDateTime getGoodBusinessDateTime(ZonedDateTime beginZonedDT, WorkingHoursData workHrsData,
+	/**
+	 * ** CRITICAL ** <br>
+	 * 
+	 * Computes the Good Business Day to Start the Block Delivery.
+	 * 
+	 * Blocks are : Correspondent Delivery, Processing Country and Bene Processing
+	 * 
+	 * @param beginZonedDT
+	 * @param workHrsData
+	 * @param countryId
+	 * @param noHolidayLag
+	 * @return
+	 */
+	private EstimatedDeliveryDetails getGoodBusinessDateTime(ZonedDateTime beginZonedDT, WorkingHoursData workHrsData,
 			BigDecimal countryId, boolean noHolidayLag) {
+
+		EstimatedDeliveryDetails estimatedDeliveryDetails = new EstimatedDeliveryDetails();
 
 		ZonedDateTime estimatedGoodBusinessDay = beginZonedDT;
 
-		for (int i = 0; i < 100; i++) {
+		for (int i = 0; i < MAX_DELIVERY_ATTEMPT_DAYS; i++) {
 			/**
 			 * Find out if the estimated Good Business Day is a real Good Business Day.
 			 */
 
-			// Check if holidays not applicable or its a holiday on this day.
-			if (noHolidayLag || !computeRequestTransientDataCache.isHolidayOn(countryId, estimatedGoodBusinessDay)) {
+			// Check if holidays not applicable or its not a holiday on this day.
+			boolean isHoliday = false;
+
+			// Default Working Status
+			boolean isWorking = true;
+
+			if (noHolidayLag || !(isHoliday = computeRequestTransientDataCache.isHolidayOn(countryId,
+					estimatedGoodBusinessDay))) {
 
 				int dayOfWeek = estimatedGoodBusinessDay.getDayOfWeek().getValue();
 				int hourOfDay = estimatedGoodBusinessDay.getHour();
@@ -172,27 +203,74 @@ public class RemitRoutingManager {
 
 					// No Holiday Lag or No Holiday on the Date
 
-					return estimatedGoodBusinessDay;
+					estimatedDeliveryDetails.setStartDateForeign(estimatedGoodBusinessDay);
+					return estimatedDeliveryDetails;
 
 				} else if (workHrsData.isBeforeWorkingHours(dayOfWeek, hrMinIntVal)) {
 					int hrMinOffset = workHrsData.getWorkWindowTimeOffset(dayOfWeek, hrMinIntVal);
 					if (hrMinOffset >= 0) {
-						return estimatedGoodBusinessDay.plusHours(workHrsData.extractHour(hrMinOffset))
-								.plusMinutes(workHrsData.extractHour(hrMinOffset));
+
+						int offsetHr = workHrsData.extractHour(hrMinOffset);
+						int offsetMin = workHrsData.extractMinute(hrMinOffset);
+						long offsetSecs = 60 * 60 * offsetHr + 60 * offsetMin;
+
+						estimatedGoodBusinessDay = estimatedGoodBusinessDay.plusHours(offsetHr).plusMinutes(offsetMin);
+
+						estimatedDeliveryDetails.addToProcessTimeOperational(offsetSecs);
+						estimatedDeliveryDetails.setStartDateForeign(estimatedGoodBusinessDay);
+
+						return estimatedDeliveryDetails;
+
 					}
 				}
+
+				// Either Its not working Day or its After working Hours
+				isWorking = false;
 			}
 
 			/**
 			 * If the estimated GBD is not working day - roll on to the next day.
 			 */
 
-			estimatedGoodBusinessDay = DateUtil.getNextZonedDay(estimatedGoodBusinessDay);
+			ZonedDateTime nextEstimatedGoodBusinessDay = DateUtil.getNextZonedDay(estimatedGoodBusinessDay);
 
-		}
+			long timeDiffInSec = nextEstimatedGoodBusinessDay.toInstant().getEpochSecond()
+					- estimatedGoodBusinessDay.toInstant().getEpochSecond();
+
+			// Next Day - Roll On conditions :
+
+			/**
+			 * 1. NO HOLIDAY / Holiday Not Applicable : <code> isHoliday = false</code> 1.1
+			 * Weekday Or Working WeekEnd : But Work Hours Have Elapsed :
+			 * <code> isWorking=false </code> 1.2 Non-Working Day : isWorking=false
+			 * 
+			 * 2. Is a HOLIDAY and HolidayApplicable <code> isHoliday = true</code> 2.1
+			 * DONT-Care for Working Lag
+			 * 
+			 */
+
+			if (!isHoliday && !isWorking) {
+
+				// Add Non Working Delay in Seconds till 12.00 PM mid night
+				estimatedDeliveryDetails.addToProcessTimeOperational(timeDiffInSec);
+				estimatedDeliveryDetails.addToNonWorkingDelay(1);
+
+			} else if (isHoliday) {
+
+				estimatedDeliveryDetails.addToProcessTimeTotal(timeDiffInSec);
+				estimatedDeliveryDetails.addToHolidayDelay(1);
+
+			}
+
+			estimatedGoodBusinessDay = nextEstimatedGoodBusinessDay;
+
+		} // for(int i...
 
 		// Return Default - Estimated Good Business : D+100
-		return estimatedGoodBusinessDay;
+
+		estimatedDeliveryDetails.setStartDateForeign(estimatedGoodBusinessDay);
+		estimatedDeliveryDetails.setCrossedMaxDeliveryDays(true);
+		return estimatedDeliveryDetails;
 
 	}
 

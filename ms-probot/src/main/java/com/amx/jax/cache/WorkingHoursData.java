@@ -45,6 +45,10 @@ public class WorkingHoursData {
 		return totalProcessingTimeInMins;
 	}
 
+	public long getTotalProcessingTimeInSec() {
+		return totalProcessingTimeInMins * 60;
+	}
+
 	public void setTotalProcessingTimeInMins(long totalProcessingTimeInMins) {
 		this.totalProcessingTimeInMins = totalProcessingTimeInMins;
 	}

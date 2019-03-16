@@ -714,12 +714,12 @@ public final class DateUtil {
 	 * Returns Next-Day Date for the given Zoned Date. <B> Time is Reset to ZERO #
 	 * Hr:Min:Sec:Nano :: 00:00:00:000 </B>
 	 * 
-	 * @param curDateTime
+	 * @param fromDateTime
 	 * @return
 	 */
-	public static ZonedDateTime getNextZonedDay(ZonedDateTime curDateTime) {
+	public static ZonedDateTime getNextZonedDay(ZonedDateTime fromDateTime) {
 
-		ZonedDateTime dPlusOne = curDateTime.plusDays(1);
+		ZonedDateTime dPlusOne = fromDateTime.plusDays(1);
 
 		return dPlusOne.withHour(0).withMinute(0).withSecond(0).withNano(0);
 
