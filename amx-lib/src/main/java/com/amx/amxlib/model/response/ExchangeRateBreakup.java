@@ -108,4 +108,29 @@ public class ExchangeRateBreakup implements Comparable<ExchangeRateBreakup> {
 		this.deliveryCharges = deliveryCharges;
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((rate == null) ? 0 : rate.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ExchangeRateBreakup other = (ExchangeRateBreakup) obj;
+		if (rate == null) {
+			if (other.rate != null)
+				return false;
+		} else if (!rate.equals(other.rate))
+			return false;
+		return true;
+	}
+
 }

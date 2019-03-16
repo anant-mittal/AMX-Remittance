@@ -3,8 +3,11 @@ package com.amx.jax.exrateservice.service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,15 +65,24 @@ public class NewExchangeRateService extends ExchangeRateService {
 					beneBankCountryId, routingBankId);
 			List<BankMasterDTO> cashChannelRates = getCashRateFromBestRateLogic(fromCurrency, toCurrency, lcAmount,
 					routingBankId, beneBankCountryId);
-			outputModel.getBankWiseRates().addAll(cashChannelRates);
+			List<BankMasterDTO> bankChannelRates = outputModel.getBankWiseRates();
+			outputModel.setBankWiseRates(
+					NewExchangeRateService.mergeExchangeRateResponse(bankChannelRates, cashChannelRates));
 			response.getData().getValues().add(outputModel);
 			response.getData().setType(outputModel.getModelType());
-			return response;
 		}
 		if (!jaxTenantProperties.getExrateBestRateLogicEnable()) {
-			return super.getExchangeRatesForOnline(fromCurrency, toCurrency, lcAmount, routingBankId);
+			response = super.getExchangeRatesForOnline(fromCurrency, toCurrency, lcAmount, routingBankId);
 		}
-		return getExchangeRateFromBestRateLogic(fromCurrency, toCurrency, lcAmount, routingBankId, beneBankCountryId);
+		response = getExchangeRateFromBestRateLogic(fromCurrency, toCurrency, lcAmount, routingBankId,
+				beneBankCountryId);
+		sortRates(response);
+		return response;
+	}
+
+	private void sortRates(ApiResponse<ExchangeRateResponseModel> response) {
+		List<BankMasterDTO> exchangeRates = response.getResult().getBankWiseRates();
+		Collections.sort(exchangeRates);
 	}
 
 	private ApiResponse<ExchangeRateResponseModel> getExchangeRateFromBestRateLogic(BigDecimal fromCurrency,
@@ -243,4 +255,14 @@ public class NewExchangeRateService extends ExchangeRateService {
 		return allCashRates;
 	}
 
+	public static List<BankMasterDTO> mergeExchangeRateResponse(List<BankMasterDTO> list1, List<BankMasterDTO> list2) {
+		Set<BankMasterDTO> bankMasterDtoSet = new HashSet<>();
+		if (list1 != null) {
+			bankMasterDtoSet.addAll(list1);
+		}
+		if (list2 != null) {
+			bankMasterDtoSet.addAll(list2);
+		}
+		return new ArrayList<>(bankMasterDtoSet);
+	}
 }
