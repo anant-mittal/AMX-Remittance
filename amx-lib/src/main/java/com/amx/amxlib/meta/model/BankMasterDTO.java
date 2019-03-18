@@ -14,6 +14,7 @@ public class BankMasterDTO extends AbstractModel implements Comparable<BankMaste
 	private String bankShortName;
 	private BigDecimal bankCountryId;
 	private boolean ibanRequired;
+	private Boolean isCashPayout;
 
 	private ExchangeRateBreakup exRateBreakup;
 
@@ -134,5 +135,13 @@ public class BankMasterDTO extends AbstractModel implements Comparable<BankMaste
 
 	public void setIbanRequired(boolean ibanRequired) {
 		this.ibanRequired = ibanRequired;
+	}
+
+	public Boolean getIsCashPayout() {
+		return isCashPayout;
+	}
+
+	public void setIsCashPayout(Boolean isCashPayout) {
+		this.isCashPayout = isCashPayout;
 	}
 }

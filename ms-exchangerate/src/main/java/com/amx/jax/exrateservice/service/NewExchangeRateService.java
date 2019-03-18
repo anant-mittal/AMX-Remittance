@@ -77,7 +77,27 @@ public class NewExchangeRateService extends ExchangeRateService {
 					beneBankCountryId);
 		}
 		sortRates(response);
+		addCashPayoutText(response);
 		return response;
+	}
+
+	private void addCashPayoutText(ApiResponse<ExchangeRateResponseModel> response) {
+		List<BankMasterDTO> exchangeRates = response.getResult().getBankWiseRates();
+		exchangeRates.forEach(i -> {
+			boolean isSameBankId = isSameBankId(i, exchangeRates);
+			if (Boolean.TRUE.equals(i.getIsCashPayout()) && isSameBankId) {
+				i.setBankFullName(i.getBankFullName() + " CASH PAYOUT");
+			}
+		});
+	}
+
+	private boolean isSameBankId(BankMasterDTO i, List<BankMasterDTO> exchangeRates) {
+		for (BankMasterDTO rate : exchangeRates) {
+			if (rate.getBankId().equals(i.getBankId())) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private void sortRates(ApiResponse<ExchangeRateResponseModel> response) {
