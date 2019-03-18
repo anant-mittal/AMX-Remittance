@@ -31,9 +31,15 @@ public class SWAdapterController {
 	private ApplicationContext applicationContext;
 
 	@ResponseBody
-	@RequestMapping(value = "/pub/card/kwt/read", method = RequestMethod.GET)
+	@RequestMapping(value = "/pub/card/read", method = RequestMethod.GET)
 	public CardReader readCard() throws InterruptedException {
 		return aCardReaderService.read();
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/pub/card/sync", method = RequestMethod.GET)
+	public CardReader syncCard() throws InterruptedException {
+		return aCardReaderService.sync();
 	}
 
 	@ResponseBody
@@ -50,6 +56,7 @@ public class SWAdapterController {
 						tranx);
 				tid = ArgUtil.parseAsString(x.getResult());
 				rid = ArgUtil.parseAsString(x.getMeta());
+				aCardReaderService.sync();
 			} catch (Exception e) {
 
 			}

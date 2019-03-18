@@ -450,6 +450,11 @@ public abstract class ACardReaderService {
 		return READER;
 	}
 
+	public CardReader sync() {
+		lastreadtime = 0L;
+		return READER;
+	}
+
 	private void clear() {
 		LOGGER.debug("KWTCardReader:clear:START");
 		push(new CardData());
