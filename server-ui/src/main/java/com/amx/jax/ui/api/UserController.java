@@ -24,6 +24,8 @@ import com.amx.amxlib.model.UserFingerprintResponseModel;
 import com.amx.jax.AppConfig;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.JaxAuthContext;
+import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.JaxPushNotificationClient;
 import com.amx.jax.dict.UserClient.AppType;
 import com.amx.jax.http.CommonHttpRequest;
@@ -463,5 +465,10 @@ public class UserController {
 	@RequestMapping(value = "/api/user/device/link", method = { RequestMethod.POST })
 	public ResponseWrapper<UserFingerprintResponseModel> linkDevice() {
 		return ResponseWrapper.build(jaxService.getUserclient().linkDeviceIdLoggedinUser());
+	}
+
+	@RequestMapping(value = "/api/user/device/delink", method = { RequestMethod.POST })
+	public AmxApiResponse<BoolRespModel, Object> delinkDevice() {
+		return ResponseWrapper.build(jaxService.getUserclient().delinkFingerprint());
 	}
 }

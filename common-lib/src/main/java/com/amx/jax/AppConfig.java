@@ -23,6 +23,9 @@ import com.amx.jax.filter.AppClientErrorHanlder;
 import com.amx.jax.filter.AppClientInterceptor;
 import com.amx.jax.scope.TenantProperties;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.JsonUtil.JsonUtilConfigurable;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ulisesbocchio.jasyptspringboot.annotation.EnableEncryptableProperties;
 
 @Configuration
@@ -294,6 +297,12 @@ public class AppConfig {
 		restTemplate.setInterceptors(Collections.singletonList(appClientInterceptor));
 		restTemplate.setErrorHandler(errorHandler);
 		return restTemplate;
+	}
+
+	//@Bean
+	public JsonUtilConfigurable jsonUtilConfigurable(ObjectMapper objectMapper) {
+		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		return new JsonUtilConfigurable(objectMapper);
 	}
 
 	@Bean

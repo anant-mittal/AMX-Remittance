@@ -1,12 +1,9 @@
 package com.amx.jax.userservice.service;
 
-import static com.amx.amxlib.constant.NotificationConstants.REG_SUC;
 import static com.amx.amxlib.constant.NotificationConstants.RESP_DATA_KEY;
 
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -48,12 +45,9 @@ import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.JaxAuthCache;
-import com.amx.jax.JaxAuthCache.JaxAuthMeta;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.async.ExecutorConfig;
-import com.amx.jax.auditlog.CustomerAuditEvent;
-import com.amx.jax.auditlog.JaxUserAuditEvent;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.CustomerVerificationType;
 import com.amx.jax.constant.JaxApiFlow;
@@ -71,7 +65,6 @@ import com.amx.jax.dbmodel.ViewCity;
 import com.amx.jax.dbmodel.ViewDistrict;
 import com.amx.jax.dbmodel.ViewState;
 import com.amx.jax.error.JaxError;
-import com.amx.jax.logger.AuditEvent;
 import com.amx.jax.logger.AuditEvent.Result;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.events.CActivityEvent;
@@ -103,9 +96,6 @@ import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.StringUtil;
 import com.amx.utils.Random;
-
-
-import net.bytebuddy.utility.privilege.GetSystemPropertyAction;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -202,13 +192,12 @@ public class UserService extends AbstractUserService {
 
 	@Autowired
 	JaxAuthCache jaxAuthCache;
-	
+
 	@Autowired
 	UserService userService;
-	
+
 	@Autowired
 	private PostManService postManService;
-	
 
 	@Override
 	public ApiResponse registerUser(AbstractUserModel userModel) {
@@ -398,7 +387,7 @@ public class UserService extends AbstractUserService {
 	public ApiResponse sendOtpForCivilId(String civilId, List<CommunicationChannel> channels,
 			CustomerModel customerModel, Boolean initRegistration) {
 		if (StringUtils.isNotBlank(civilId)) {
-			if(tenantContext.getKey().equals("OMN")) {
+			if (tenantContext.getKey().equals("OMN")) {
 				tenantContext.get().validateCivilId(civilId);
 			}
 		}
@@ -421,13 +410,13 @@ public class UserService extends AbstractUserService {
 		}
 		logger.info("customerId is --> " + customerId);
 		userValidationService.validateCustomerVerification(customerId);
-		//userValidationService.validateCivilId(civilId);
-		
-		// --- Validate IdentityInt 
+		// userValidationService.validateCivilId(civilId);
+
+		// --- Validate IdentityInt
 		Customer customerType = custDao.getCustomerByCivilId(civilId);
 		if (null != customerType) {
 			BigDecimal indentityType = customerType.getIdentityTypeId();
-		userValidationService.validateIdentityInt(civilId, indentityType);
+			userValidationService.validateIdentityInt(civilId, indentityType);
 		}
 
 		CivilIdOtpModel model = new CivilIdOtpModel();
@@ -523,10 +512,12 @@ public class UserService extends AbstractUserService {
 			logger.info("Generated otp for civilid email- " + userId + " is " + randmOtp);
 		}
 
-		/*JaxAuthMeta jaxAuthMeta = jaxAuthCache.getOrDefault(metaData.getCustomerId().toString(), new JaxAuthMeta());
-		jaxAuthMeta.seteOtp(randeOtp);
-		jaxAuthMeta.setmOtp(randmOtp);
-		jaxAuthCache.fastPut(metaData.getCustomerId().toString(), jaxAuthMeta);*/
+		/*
+		 * JaxAuthMeta jaxAuthMeta =
+		 * jaxAuthCache.getOrDefault(metaData.getCustomerId().toString(), new
+		 * JaxAuthMeta()); jaxAuthMeta.seteOtp(randeOtp); jaxAuthMeta.setmOtp(randmOtp);
+		 * jaxAuthCache.fastPut(metaData.getCustomerId().toString(), jaxAuthMeta);
+		 */
 
 		logger.info("Generated otp for civilid mobile- " + userId + " is " + randmOtp);
 	}
@@ -593,9 +584,9 @@ public class UserService extends AbstractUserService {
 	}
 
 	public ApiResponse loginUser(String userId, String password) {
-		if(tenantContext.getKey().equals("OMN")) {
+		if (tenantContext.getKey().equals("OMN")) {
 			tenantContext.get().validateCivilId(userId);
-		}	
+		}
 		List<Customer> validCustomer = userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(userId,
 				JaxApiFlow.LOGIN);
 		CustomerOnlineRegistration onlineCustomer = custDao
@@ -648,18 +639,10 @@ public class UserService extends AbstractUserService {
 	public ApiResponse generateRandomQuestions(Integer size, Integer customerId) {
 		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(new BigDecimal(customerId));
 		ApiResponse response = getBlackApiResponse();
-		try {
-			List<QuestModelDTO> result = secQmanager.generateRandomQuestions(onlineCustomer, size, customerId);
-			response.getData().getValues().addAll(result);
-		} catch (GlobalException e) {
-			auditService.log(createUserServiceEvent(new BigDecimal(customerId),
-					JaxUserAuditEvent.Type.SEC_QUE_GENERATE_EXCEPTION));
-			throw e;
-		}
+		List<QuestModelDTO> result = secQmanager.generateRandomQuestions(onlineCustomer, size, customerId);
+		response.getData().getValues().addAll(result);
 		response.getData().setType("quest");
 		response.setResponseStatus(ResponseStatus.OK);
-		auditService.log(
-				createUserServiceEvent(new BigDecimal(customerId), JaxUserAuditEvent.Type.SEC_QUE_GENERATE_SUCCESS));
 		return response;
 	}
 
@@ -727,13 +710,13 @@ public class UserService extends AbstractUserService {
 		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(custId);
 		onlineCustomer.setPassword(cryptoUtil.getHash(onlineCustomer.getUserName(), model.getPassword()));
 		custDao.saveOnlineCustomer(onlineCustomer);
-		
+
 		CustomerModel outputModel = convert(onlineCustomer);
 		if (outputModel.getEmail() != null) {
 			jaxNotificationService.sendProfileChangeNotificationEmail(model, outputModel.getPersoninfo());
 			logger.info("The update password mail notification success");
 		}
-		
+
 		BoolRespModel responseModel = new BoolRespModel(true);
 		auditService.log(auditEvent.result(Result.DONE));
 		return AmxApiResponse.build(responseModel);
@@ -773,7 +756,7 @@ public class UserService extends AbstractUserService {
 		}
 		return output;
 	}
-	
+
 	public LoginLogoutHistory getLastLogoutHistoryByUserName(String userName) {
 
 		Sort sort = new Sort(Direction.DESC, "logoutTime");
@@ -1055,23 +1038,18 @@ public class UserService extends AbstractUserService {
 		}
 	}
 
-	private AuditEvent createUserServiceEvent(BigDecimal customerId, JaxUserAuditEvent.Type type) {
-		AuditEvent beneAuditEvent = new CustomerAuditEvent(type, customerId);
-		return beneAuditEvent;
-	}
-
 	public Customer getCustById(BigDecimal id) {
 		return repo.findOne(id);
 	}
-	
+
 	public Customer getCustomerDetails(String loginId) {
 		return repo.getCustomerDetails(loginId);
 	}
-	
+
 	public Customer getCustomerDetailsByCustomerId(BigDecimal custId) {
 		return repo.getCustomerDetailsByCustomerId(custId);
 	}
-	
+
 	@Transactional
 	public void deActivateFsCustomer(BigDecimal customerId) {
 		Customer customer = repo.findOne(customerId);
@@ -1086,14 +1064,12 @@ public class UserService extends AbstractUserService {
 		}
 		repo.save(customer);
 	}
-	
-	
-	
+
 	public UserFingerprintResponseModel linkDeviceId(BigDecimal customerId) {
 
 		CustomerOnlineRegistration customerOnlineRegistration = userValidationService
 				.validateOnlineCustomerByIdentityId(customerId);
-		
+
 		String password = Random.randomPassword(6);
 		String hashPassword = userService.generateFingerPrintPassword(password);
 		UserFingerprintResponseModel userFingerprintResponsemodel = new UserFingerprintResponseModel();
@@ -1101,14 +1077,14 @@ public class UserService extends AbstractUserService {
 		customerOnlineRegistration.setFingerprintDeviceId(metaData.getDeviceId());
 		customerOnlineRegistration.setDevicePassword(hashPassword);
 		custDao.saveOnlineCustomer(customerOnlineRegistration);
-		
+
 		Customer customer = custDao.getCustById(customerOnlineRegistration.getCustomerId());
 		PersonInfo personinfo = new PersonInfo();
 		personinfo.setFirstName(customer.getFirstName());
 		personinfo.setMiddleName(customer.getMiddleName());
 		personinfo.setLastName(customer.getLastName());
 		Email email = new Email();
-		
+
 		email.addTo(customerOnlineRegistration.getEmail());
 		email.setITemplate(TemplatesMX.FINGERPRINT_LINKED_SUCCESS);
 		email.setHtml(true);
@@ -1118,6 +1094,7 @@ public class UserService extends AbstractUserService {
 		sendEmail(email);
 		return userFingerprintResponsemodel;
 	}
+
 	@Async(ExecutorConfig.DEFAULT)
 	public void sendEmail(Email email) {
 		try {
@@ -1128,7 +1105,7 @@ public class UserService extends AbstractUserService {
 	}
 
 	public String generateFingerPrintPassword(String password) {
-		
+
 		logger.debug("The password is " + password);
 		String hashpassword = null;
 		try {
@@ -1151,9 +1128,10 @@ public class UserService extends AbstractUserService {
 		CustomerModel customerModel = convert(customerOnlineRegistration);
 		return customerModel;
 	}
-	
+
 	public BoolRespModel delinkFingerprint() {
-		CustomerOnlineRegistration customerOnlineRegistration = custDao.getOnlineCustByCustomerId(metaData.getCustomerId());
+		CustomerOnlineRegistration customerOnlineRegistration = custDao
+				.getOnlineCustByCustomerId(metaData.getCustomerId());
 		customerOnlineRegistration.setFingerprintDeviceId("");
 		customerOnlineRegistration.setDevicePassword("");
 		custDao.saveOnlineCustomer(customerOnlineRegistration);
