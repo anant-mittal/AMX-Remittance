@@ -49,4 +49,8 @@ public interface RemittanceApplicationRepository extends CrudRepository<Remittan
 			 @Param("docFyr") BigDecimal docFyr,@Param("docNo") BigDecimal docNo,@Param("docFyrId") UserFinancialYear docFyrId);
 
 	
+	 @Query("select ra from RemittanceApplication ra where ra.fsCustomer=:customerid and ra.remittanceApplicationId=:remittanceApplicationId")
+		public RemittanceApplication getApplicationForDelete(@Param("customerid") Customer customerid,@Param("remittanceApplicationId") BigDecimal remittanceApplicationId);
+		
+	 
 }

@@ -229,5 +229,12 @@ public class BranchRemittanceController implements IRemittanceService {
 		return branchRemitService.fetchCustomerDeclarationReport(collectionDocNo,collectionDocYear,collectionDocCode);
 	}
 
+	@Override
+	@RequestMapping(value = Path.BR_DEACTIVE_ONLINE_APPL, method = RequestMethod.POST)
+	public AmxApiResponse<BoolRespModel, Object> deActivateOnlineApplication() {
+		BoolRespModel result =  branchRemitService.deActivateOnlineApplication();
+		return AmxApiResponse.build(result);
+	}
+
 	
 }

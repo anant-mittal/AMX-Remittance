@@ -36,6 +36,7 @@ import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.RemittanceBenificiary;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.repository.AdditionalInstructionDataRepository;
 import com.amx.jax.repository.ForeignCurrencyAdjustRepository;
@@ -109,6 +110,11 @@ public class BranchRemittanceDao {
 		List<RemitApplAmlModel> saveApplAmlList = (List<RemitApplAmlModel>) mapAllDetailApplSave.get("EX_APPL_AML");
 
 		if (saveApplTrnx != null) {
+			BigDecimal documentNo =generateDocumentNumber(saveApplTrnx.getFsCountryMasterByApplicationCountryId().getCountryId(),saveApplTrnx.getFsCompanyMaster().getCompanyId(),saveApplTrnx.getDocumentCode(),saveApplTrnx.getDocumentFinancialyear(),saveApplTrnx.getLoccod());
+			if(!JaxUtil.isNullZeroBigDecimalCheck(documentNo)){
+				throw new GlobalException(JaxError.INVALID_APPLICATION_DOCUMENT_NO,"Application document number shouldnot be null or blank");
+			}
+			saveApplTrnx.setDocumentNo(documentNo);
 			appRepo.save(saveApplTrnx);
 		}
 		if (saveApplBene != null) {
@@ -181,11 +187,13 @@ public class BranchRemittanceDao {
 				
 				if (remitBeneList != null && !remitBeneList.isEmpty()) {
 					RemittanceBenificiary remitBene = remitBeneList.get(i);
+					remitBene.setDocumentNo(documentNo);
 					remitBeneRepository.save(remitBene);
 				}
 				
 				if (addlTrnxList != null && !addlTrnxList.isEmpty()) {
 					RemittanceAdditionalInstructionData remitAdd = addlTrnxList.get(i);
+					remitAdd.setDocumentNo(documentNo);
 					remitAddRepository.save(remitAdd);
 				}
 
@@ -236,9 +244,11 @@ public class BranchRemittanceDao {
 		//}
 	}
 	
-	public void deleteFromCart(BigDecimal applId,String status) {
-		RemittanceApplication appl = appRepo.findOne(applId);
+	public void deleteFromCart(RemittanceApplication appl,String status) {
+		//RemittanceApplication appl = appRepo.findOne(applId);
+		
 		if (appl != null) {
+			appl.setRemittanceApplicationId(appl.getRemittanceApplicationId());
 			appl.setIsactive(status);
 			appRepo.save(appl);			
 		}

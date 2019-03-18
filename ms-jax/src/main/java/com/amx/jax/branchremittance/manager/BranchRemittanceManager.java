@@ -232,14 +232,21 @@ public class BranchRemittanceManager extends AbstractModel {
 	public void checkBeneAccountType(BenificiaryListView beneficaryDetails) {
 		boolean chkAccType = Boolean.FALSE;
 		List<AccountTypeFromViewModel> lstAccType = accountTypeRepository.getAccountTypeByCountryId(beneficaryDetails.getBenificaryCountry());
+		if((beneficaryDetails.getBankAccountNumber()!=null || beneficaryDetails.getIbanNumber()!=null) && beneficaryDetails.getBankAccountTypeId()!=null) {
 		if (lstAccType != null && lstAccType.size() != 0) {
 			for (AccountTypeFromViewModel accountTypeFromView : lstAccType) {
-				if (accountTypeFromView.getAdditionalAmiecId() != null && accountTypeFromView.getAdditionalAmiecId().compareTo(beneficaryDetails.getBankAccountTypeId()) == 0) {
+				if (beneficaryDetails.getBankAccountTypeId()!= null && accountTypeFromView.getAdditionalAmiecId() != null && accountTypeFromView.getAdditionalAmiecId().compareTo(beneficaryDetails.getBankAccountTypeId()) == 0) {
 					chkAccType = Boolean.TRUE;
 					break;
 				}
 			}
+		}else {
+			chkAccType = Boolean.FALSE;
 		}
+		
+	}else {
+		chkAccType = Boolean.TRUE;
+	}
 		if(!chkAccType) {
 			 throw new GlobalException(JaxError.BENE_ACCOUNT_TYPE_MISMATCH,"Account Type Mismatch, Please edit and save the beneficairy ");
 		}
@@ -361,7 +368,7 @@ public class BranchRemittanceManager extends AbstractModel {
 			inputValues.put("P_CASH_ROUND_IND", null);
 			inputValues.put("P_ROUTING_BANK_BRANCH_ID", branchRoutingDto.getRoutingBankBranchDto().get(0).getBankBranchId());//map.get("P_ROUTING_BANK_BRANCH_ID"));
 			inputValues.put("P_BENE_ID", beneficaryDetails.getBeneficaryMasterSeqId());
-			inputValues.put("P_BENE_COUNTRY_ID", beneficaryDetails.getBenificaryCountry());
+			inputValues.put("P_BENEFICIARY_COUNTRY_ID", beneficaryDetails.getBenificaryCountry());
 			inputValues.put("P_BENE_BANK_ID", beneficaryDetails.getBankId());
 			inputValues.put("P_BENE_BANK_BRANCH_ID", beneficaryDetails.getBranchId());
 			inputValues.put("P_BENE_ACCOUNT_NO", beneficaryDetails.getBankAccountNumber());
@@ -389,7 +396,7 @@ public class BranchRemittanceManager extends AbstractModel {
 			BenificiaryListView beneficaryDetails =beneficiaryRepository.findBybeneficiaryRelationShipSeqId(beneRelId);
 			Map<String, Object> inputValues = new HashMap<>();
 			inputValues.put("P_APPLICATION_COUNTRY_ID", beneficaryDetails.getApplicationCountryId());
-			inputValues.put("P_BENE_COUNTRY_ID",beneficaryDetails.getBenificaryCountry());
+			inputValues.put("P_BENEFICIARY_COUNTRY_ID",beneficaryDetails.getBenificaryCountry());
 			inputValues.put("P_CUSTOMER_ID",metaData.getCustomerId());
 			inputValues.put("P_BENE_ID",beneficaryDetails.getBeneficaryMasterSeqId());
 			inputValues.put("P_FC_AMOUNT",foreignamount); 

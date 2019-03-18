@@ -482,9 +482,9 @@ public class BranchRoutingManager {
 
 		inputValues.put("P_USER_TYPE", ConstantDocument.BRANCH);
 		inputValues.put("P_APPLICATION_COUNTRY_ID", beneficaryDetails.getApplicationCountryId());
-		inputValues.put("P_BENE_COUNTRY_ID", beneficaryDetails.getBenificaryCountry());
-		inputValues.put("P_BENE_BANK_ID", beneficaryDetails.getBankId());
-		inputValues.put("P_BENE_BANK_BRANCH_ID", beneficaryDetails.getBranchId());
+		inputValues.put("P_BENEFICIARY_COUNTRY_ID", beneficaryDetails.getBenificaryCountry()); //P_BENEFICIARY_COUNTRY_ID
+		inputValues.put("P_BENEFICIARY_BANK_ID", beneficaryDetails.getBankId());
+		inputValues.put("P_BENEFICIARY_BRANCH_ID", beneficaryDetails.getBranchId());
 		inputValues.put("P_SERVICE_GROUP_CODE", beneficaryDetails.getServiceGroupCode());
 		inputValues.put("P_CURRENCY_ID", beneficaryDetails.getCurrencyId());
 		inputValues.put("P_SERVICE_GROUP_CODE", beneficaryDetails.getServiceGroupCode());

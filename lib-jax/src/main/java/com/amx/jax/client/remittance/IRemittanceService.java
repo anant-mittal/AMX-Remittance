@@ -48,6 +48,7 @@ public interface IRemittanceService extends  IJaxService {
 		public static final String BR_REMITTANCE_SAVE_TRANSACTION = PREFIX + "/save-remittance-transaction/";
 		public static final String BR_REMITTANCE_DELETE_APPLICATION = PREFIX + "/delete-application/";
 		public static final String BR_DECLARATION_REPORT			=PREFIX + "/get-declartion-report/";
+		public static final String BR_DEACTIVE_ONLINE_APPL =  PREFIX + "/deactive-online-appl/";
 	}
 
 	public static class Params {
@@ -123,6 +124,8 @@ public interface IRemittanceService extends  IJaxService {
 	
 	@ApiJaxStatus({JaxError.INVALID_COLLECTION_DOCUMENT_NO, JaxError.DATA_NOT_FOUND})
 	AmxApiResponse<RemittanceDeclarationReportDto,Object> fetchCustomerDeclarationReport(BigDecimal collectionDocNo,BigDecimal collectionDocYear ,BigDecimal collectionDocCode);
+	
+	AmxApiResponse<BoolRespModel, Object> deActivateOnlineApplication();
 
 }
 
