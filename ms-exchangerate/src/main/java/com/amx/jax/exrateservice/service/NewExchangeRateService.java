@@ -271,6 +271,9 @@ public class NewExchangeRateService extends ExchangeRateService {
 		List<BigDecimal> cashRoutingBanks = routingDetailService.getCashRoutingBanks(toCurrency);
 		List<BankMasterDTO> allCashRates = allExchangeRates.stream().filter(i -> {
 			return cashRoutingBanks.contains(i.getBankId());
+		}).map(i -> {
+			i.setIsCashPayout(true);
+			return i;
 		}).collect(Collectors.toList());
 		return allCashRates;
 	}
