@@ -208,6 +208,9 @@ public class BenefitClient implements PayGClient {
 				gatewayResponse.setErrorText(errorMessage.getResponseDesc());
 				LOGGER.info("Error Code --> "+ errorMessage.getResponseCode()+ "Error Message --> " + errorMessage.getResponseDesc());
 			}
+			else {
+				gatewayResponse.setErrorText("Payment Failed");
+			}
 		}
 
 		LOGGER.info("Params Captured From BENEFIT : " + JsonUtil.toJson(gatewayResponse));
