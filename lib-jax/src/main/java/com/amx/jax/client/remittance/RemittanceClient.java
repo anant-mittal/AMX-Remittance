@@ -376,19 +376,5 @@ public class RemittanceClient  implements IRemittanceService{
 
 
 
-	@Override
-	public AmxApiResponse<BoolRespModel, Object> deActivateOnlineApplication() {
-		try {
-			return restService.ajax(appConfig.getJaxURL() + Path.BR_DEACTIVE_ONLINE_APPL).meta(new JaxMetaInfo())
-					.post()
-					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
-					});
-		} catch (Exception e) {
-			LOGGER.error("");
-			return JaxSystemError.evaluate(e);
-		} // end of try-catch
-		
-	}
-
 }
 

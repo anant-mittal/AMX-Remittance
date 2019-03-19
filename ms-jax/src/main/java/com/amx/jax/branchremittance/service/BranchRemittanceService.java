@@ -193,11 +193,6 @@ public class BranchRemittanceService extends AbstractService{
 		RemittanceDeclarationReportDto applResponseDto = reportManager.fetchCustomerDeclarationReport(collectionDocNo,collectionDocYear,collectionDocCode);
 		return AmxApiResponse.build(applResponseDto);
 	}
-	
-	public BoolRespModel deActivateOnlineApplication() {
-		Boolean validateStatus = branchRemitApplManager.deActivateOnlineApplication();
-		return new BoolRespModel(validateStatus);
-	}
-	
+
 
 }

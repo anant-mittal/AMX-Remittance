@@ -778,26 +778,5 @@ public class BranchRemittanceApplManager {
 	
 	
 	
-	public Boolean deActivateOnlineApplication() {
-		try {
-			
-			List<RemittanceApplication> listOfApplication = appRepository.deActivateNotUsedApplication(new Customer(metaData.getCustomerId()));
-			if(!listOfApplication.isEmpty() && listOfApplication!=null) {
-				for(RemittanceApplication application : listOfApplication) {
-					if(application.getLoccod().compareTo(ConstantDocument.ONLINE_BRANCH_LOC_CODE)==0) {
-					RemittanceApplication remittanceApplication =  appRepository.findOne(application.getRemittanceApplicationId());
-					remittanceApplication.setIsactive("D");
-					remittanceApplication.setApplicaitonStatus(null);
-					appRepository.save(remittanceApplication);
-					}
-				}
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new GlobalException("deActivateApplication faliled for custoemr:"+metaData.getCustomerId());
-		}
-		return true;
-	}
 	
 }

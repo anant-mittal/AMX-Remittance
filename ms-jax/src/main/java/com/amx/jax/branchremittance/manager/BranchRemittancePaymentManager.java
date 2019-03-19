@@ -28,6 +28,7 @@ import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.ParameterDetails;
 import com.amx.jax.dbmodel.remittance.CustomerBank;
 import com.amx.jax.dbmodel.remittance.LocalBankDetailsView;
+import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.ShoppingCartDetails;
 import com.amx.jax.dbmodel.remittance.StaffAuthorizationView;
 import com.amx.jax.error.JaxError;
@@ -46,6 +47,7 @@ import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
 import com.amx.jax.model.response.remittance.PaymentModeOfPaymentDto;
 import com.amx.jax.repository.IBankMasterFromViewDao;
 import com.amx.jax.repository.ICustomerRepository;
+import com.amx.jax.repository.RemittanceApplicationRepository;
 import com.amx.jax.service.CurrencyMasterService;
 import com.amx.jax.util.RoundUtil;
 
@@ -73,6 +75,9 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 	
 	@Autowired
 	ICustomerRepository customerRepos;
+	
+	@Autowired
+	RemittanceApplicationRepository appRepository;
 	
 	
 
@@ -103,6 +108,8 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 			if(customer!=null) {
 				totalCustomerLoyaltyPoits = customer.getLoyaltyPoints()==null?BigDecimal.ZERO:customer.getLoyaltyPoints();
 			}
+			
+			deActivateOnlineApplication();
 			
 			List<ShoppingCartDetails> lstCustomerShopping = branchRemittancePaymentDao.fetchCustomerShoppingCart(customerId);
 			if(lstCustomerShopping != null && lstCustomerShopping.size() != 0) {
@@ -461,4 +468,28 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 		return validStatus;
 	}
 
+	
+
+	public Boolean deActivateOnlineApplication() {
+		try {
+			
+			List<RemittanceApplication> listOfApplication = appRepository.deActivateNotUsedApplication(new Customer(metaData.getCustomerId()));
+			if(!listOfApplication.isEmpty() && listOfApplication!=null) {
+				for(RemittanceApplication application : listOfApplication) {
+					if(application.getLoccod().compareTo(ConstantDocument.ONLINE_BRANCH_LOC_CODE)==0) {
+					RemittanceApplication remittanceApplication =  appRepository.findOne(application.getRemittanceApplicationId());
+					remittanceApplication.setIsactive("D");
+					remittanceApplication.setApplicaitonStatus(null);
+					appRepository.save(remittanceApplication);
+					}
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new GlobalException("deActivateApplication faliled for custoemr:"+metaData.getCustomerId());
+		}
+		return true;
+	}
+	
 }

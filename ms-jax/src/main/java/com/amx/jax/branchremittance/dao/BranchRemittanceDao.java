@@ -10,22 +10,16 @@ import javax.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.model.CustomerModel;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.ApplicationProcedureDao;
 import com.amx.jax.dbmodel.CollectDetailModel;
 import com.amx.jax.dbmodel.CollectionModel;
-import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.ForeignCurrencyAdjust;
 import com.amx.jax.dbmodel.UserFinancialYear;
 import com.amx.jax.dbmodel.remittance.AdditionalInstructionData;
-import com.amx.jax.dbmodel.remittance.BeneficiaryAccountException;
 import com.amx.jax.dbmodel.remittance.LoyaltyClaimRequest;
 import com.amx.jax.dbmodel.remittance.LoyaltyPointsModel;
 import com.amx.jax.dbmodel.remittance.RemitApplAmlModel;
@@ -36,7 +30,6 @@ import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.RemittanceBenificiary;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.error.JaxError;
-import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.repository.AdditionalInstructionDataRepository;
 import com.amx.jax.repository.ForeignCurrencyAdjustRepository;
@@ -244,13 +237,18 @@ public class BranchRemittanceDao {
 		//}
 	}
 	
+	//@Transactional
 	public void deleteFromCart(RemittanceApplication appl,String status) {
 		//RemittanceApplication appl = appRepo.findOne(applId);
+		try {
 		
 		if (appl != null) {
 			appl.setRemittanceApplicationId(appl.getRemittanceApplicationId());
 			appl.setIsactive(status);
 			appRepo.save(appl);			
+		}
+		}catch(Exception e) {
+			throw new GlobalException(JaxError.UNKNOWN_JAX_ERROR,e.getMessage());
 		}
 	}
 	
