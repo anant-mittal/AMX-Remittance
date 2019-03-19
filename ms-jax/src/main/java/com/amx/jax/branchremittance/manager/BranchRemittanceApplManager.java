@@ -270,9 +270,9 @@ public class BranchRemittanceApplManager {
 		try {
 			
 			BranchRemittanceApplRequestModel applRequestModel = (BranchRemittanceApplRequestModel)hashMap.get("APPL_REQ_MODEL");
-			String signature =applRequestModel.getSignature();// for testing purpose
+			//String signature =applRequestModel.getSignature();// for testing purpose
 			
-			//String signature =getCustomerSignature();
+			String signature =getCustomerSignature();
 
 			if(!StringUtils.isBlank(signature)) {
 				try {
