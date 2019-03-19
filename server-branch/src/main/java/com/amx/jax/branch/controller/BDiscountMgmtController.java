@@ -80,5 +80,12 @@ public class BDiscountMgmtController {
 		return discountMgmtClient.saveDiscountDetails(discountMgmtReqDTO);
 
 	}
+	
+	@RequestMapping(value = "/api/discount/exchangeRateCurrency/list", method = { RequestMethod.GET })
+	public AmxApiResponse<CurrencyMasterDTO, Object> getAllExchangeRateCurrencyList() {
+
+		return metaClient.getAllExchangeRateCurrencyList();
+	}
+
 
 }
