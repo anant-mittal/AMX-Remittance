@@ -395,9 +395,11 @@ public class CommonHttpRequest {
 	public ApiRequestDetail getApiRequest(HttpServletRequest req) {
 		ApiRequestDetail detail = new ApiRequestDetail();
 		ApiRequest x = getApiRequestModel(req);
-		detail.setType(x.type());
-		detail.setUseAuthKey(x.useAuthKey());
-		detail.setUseAuthToken(x.useAuthToken());
+		if(!ArgUtil.isEmpty(x)) {
+			detail.setType(x.type());
+			detail.setUseAuthKey(x.useAuthKey());
+			detail.setUseAuthToken(x.useAuthToken());	
+		}
 
 		if (ArgUtil.isEmpty(detail.getType()) || RequestType.DEFAULT.equals(detail.getType())) {
 			detail.setType(RequestType.from(req));
