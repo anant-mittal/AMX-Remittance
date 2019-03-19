@@ -87,17 +87,14 @@ public class NewExchangeRateService extends ExchangeRateService {
 			boolean isSameBankId = isSameBankId(i, exchangeRates);
 			if (Boolean.TRUE.equals(i.getIsCashPayout()) && isSameBankId) {
 				i.setBankFullName(i.getBankFullName() + " CASH PAYOUT");
+				i.setBankCode(i.getBankCode() + "_C");
 			}
 		});
 	}
 
-	private boolean isSameBankId(BankMasterDTO i, List<BankMasterDTO> exchangeRates) {
-		for (BankMasterDTO rate : exchangeRates) {
-			if (rate.getBankId().equals(i.getBankId())) {
-				return true;
-			}
-		}
-		return false;
+	private boolean isSameBankId(BankMasterDTO rate, List<BankMasterDTO> exchangeRates) {
+		long matches = exchangeRates.stream().filter(i -> i.getBankId().equals(rate.getBankId())).count();
+		return matches > 1;
 	}
 
 	private void sortRates(ApiResponse<ExchangeRateResponseModel> response) {

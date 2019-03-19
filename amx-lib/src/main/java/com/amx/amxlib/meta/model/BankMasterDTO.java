@@ -5,8 +5,10 @@ import java.util.Comparator;
 
 import com.amx.amxlib.model.response.ExchangeRateBreakup;
 import com.amx.jax.model.AbstractModel;
+import com.amx.jax.model.IResourceEntity;
+import com.amx.jax.model.ResourceDTO;
 
-public class BankMasterDTO extends AbstractModel implements Comparable<BankMasterDTO> {
+public class BankMasterDTO extends ResourceDTO implements Comparable<BankMasterDTO> {
 
 	private BigDecimal bankId;
 	private String bankCode;
@@ -17,11 +19,6 @@ public class BankMasterDTO extends AbstractModel implements Comparable<BankMaste
 	private Boolean isCashPayout;
 
 	private ExchangeRateBreakup exRateBreakup;
-
-	@Override
-	public String getModelType() {
-		return "bankmaster";
-	}
 
 	public BigDecimal getBankId() {
 		return bankId;
@@ -144,4 +141,16 @@ public class BankMasterDTO extends AbstractModel implements Comparable<BankMaste
 	public void setIsCashPayout(Boolean isCashPayout) {
 		this.isCashPayout = isCashPayout;
 	}
+
+	@Override
+	public String getResourceCode() {
+		return this.bankCode;
+	}
+
+	@Override
+	public BigDecimal getResourceId() {
+		return this.bankId;
+	}
+	
+	
 }
