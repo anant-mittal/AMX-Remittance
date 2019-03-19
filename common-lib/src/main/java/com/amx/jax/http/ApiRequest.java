@@ -9,4 +9,9 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ApiRequest {
 	RequestType type() default RequestType.DEFAULT;
+
+	boolean useAuthKey() default false;
+
+	boolean useAuthToken() default false;
+
 }

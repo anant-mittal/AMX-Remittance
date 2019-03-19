@@ -233,9 +233,9 @@ public class FingerprintService {
 	public CustomerModel loginCustomerByFingerprint(String civilId, String identityTypeStr, String password) {
 		userValidationService.validateIdentityInt(civilId, identityTypeStr);
 		BigDecimal identityType = new BigDecimal(identityTypeStr);
-
 		CustomerOnlineRegistration customerOnlineRegistration = userValidationService
 				.validateOnlineCustomerByIdentityId(civilId, identityType);
+		logger.info("Customer id is "+metaData.getCustomerId());
 		userValidationService.validateCustomerLockCount(customerOnlineRegistration);
 		userValidationService.validateDevicePassword(customerOnlineRegistration, password);
 		CustomerModel customerModel = convert(customerOnlineRegistration);

@@ -87,11 +87,7 @@ public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 					}
 				}
 
-				WAMessage reply = new WAMessage();
-				reply.setQueue(event.getQueue());
-				reply.setChannel(event.getWaChannel());
-				reply.addTo(event.getFrom());
-				reply.setMessage(replyMessage);
+				WAMessage reply = event.replyWAMessage(replyMessage);
 				whatsAppClient.send(reply);
 			} catch (NumberParseException e) {
 				LOGGER.error("BOT EXCEPTION", e);
