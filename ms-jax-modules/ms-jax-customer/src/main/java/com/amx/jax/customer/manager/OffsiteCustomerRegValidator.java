@@ -3,6 +3,7 @@
  */
 package com.amx.jax.customer.manager;
 
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,10 +38,9 @@ public class OffsiteCustomerRegValidator {
 
 	/**
 	 * @param customers
-	 * @return active customer. If more than one record found with status 'N' then last updated customer is returned
-	 * If more than 1 actrive found then error is thrown
+	 *            validate cust for reg in ofsite
 	 */
-	public Customer validateOffsiteCustomerForRegistration(List<Customer> customers) {
+	public void validateOffsiteCustomerForRegistration(List<Customer> customers) {
 		Customer customer = null;
 		if (customers != null && customers.size() > 0) {
 			List<Customer> activeCustomers = customers.stream()
@@ -50,13 +50,12 @@ public class OffsiteCustomerRegValidator {
 						"Duplicate Customer not active in branch, please visit branch");
 			}
 			if (CollectionUtils.isNotEmpty(activeCustomers)) {
-				return activeCustomers.get(0);
+				customer = activeCustomers.get(0);
+				Date now = new Date();
+				if (customer.getIdentityExpiredDate().compareTo(now) > 0) {
+					throw new GlobalException(JaxError.CUSTOMER_ACTIVE_BRANCH, "Customer already active in branch");
+				}
 			}
-			customers.sort((c1, c2) -> {
-				return c1.getLastUpdated().compareTo(c2.getLastUpdated());
-			});
-			customer = customers.get(0);
 		}
-		return customer;
 	}
 }

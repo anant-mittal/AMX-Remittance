@@ -293,4 +293,8 @@ public class CustomerDao {
 		return repo.findActiveCustomers(identityInt, identityType);
 	}
 	
+	public List<Customer> getActiveCustomerByIndentityIntAndTypeAndIsActive(String identityInt, BigDecimal identityType, List<String> status){
+		return repo.getCustomerByIndentityIntAndTypeAndIsactive(identityInt, identityType, status);
+	}
+	
 }

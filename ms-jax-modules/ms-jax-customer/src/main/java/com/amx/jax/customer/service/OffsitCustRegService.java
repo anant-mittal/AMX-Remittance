@@ -41,6 +41,7 @@ import com.amx.jax.amxlib.config.OtpSettings;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constants.CustomerRegistrationType;
+import com.amx.jax.customer.manager.OffsiteCustomerRegManager;
 import com.amx.jax.customer.manager.OffsiteCustomerRegValidator;
 import com.amx.jax.dal.ArticleDao;
 import com.amx.jax.dal.BizcomponentDao;
@@ -236,9 +237,10 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 
 	@Autowired
 	private CryptoUtil cryptoUtil;
-	
 	@Autowired
 	OffsiteCustomerRegValidator offsiteCustomerRegValidator;
+	@Autowired
+	OffsiteCustomerRegManager offsiteCustomerRegManager;
 
 	public AmxApiResponse<ComponentDataDto, Object> getIdTypes() {
 		List<Map<String, Object>> tempList = bizcomponentDao
@@ -489,7 +491,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 	@Override
 	@Transactional
 	public AmxApiResponse<CustomerInfo, Object> saveCustomerInfo(CustomerInfoRequest model) {
-		// revalidateOtp(model.getOtpData());
+		LOGGER.debug("in saveCustomerInfo with request model: {}", model);
 		CustomerPersonalDetail customerDetails = new CustomerPersonalDetail();
 		jaxUtil.convert(model.getCustomerPersonalDetail(), customerDetails);
 		Customer customer = commitCustomer(customerDetails, model.getCustomerEmploymentDetails());
@@ -613,12 +615,15 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 
 	private Customer commitCustomer(com.amx.jax.model.request.CustomerPersonalDetail customerDetails,
 			CustomerEmploymentDetails customerEmploymentDetails) {
-		Customer customer = new Customer();
-		List<Customer> customers = customerRepository.getCustomerByCivilIdAndIsActive(customerDetails.getIdentityInt(),
-				customerDetails.getCountryId(), customerDetails.getIdentityTypeId());
-		customer = offsiteCustomerRegValidator.validateOffsiteCustomerForRegistration(customers);
-		if(customer == null) {
+		Customer customer = offsiteCustomerRegManager.getCustomerForRegistration(customerDetails.getIdentityInt(),
+				customerDetails.getIdentityTypeId());
+		if (customer == null) {
+			LOGGER.info("creating new customer for offiste registration. idint {} idtype {}",
+					customerDetails.getIdentityInt(), customerDetails.getIdentityTypeId());
 			customer = new Customer();
+		} else {
+			LOGGER.info("editing existing customer for offiste registration. idint {} idtype {}",
+					customerDetails.getIdentityInt(), customerDetails.getIdentityTypeId());
 		}
 
 		if (customerDetails.getIdentityTypeId().equals(new BigDecimal(198))) {
@@ -857,6 +862,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 
 	@Override
 	public AmxApiResponse<SendOtpModel, Object> sendOtp(CustomerPersonalDetail customerPersonalDetail) {
+		LOGGER.debug("in sendOtp customerPersonalDetail:{} ",customerPersonalDetail);
 		BeanPropertyBindingResult errors = new BeanPropertyBindingResult(customerPersonalDetail,
 				"customerPersonalDetail");
 		customerRegistrationManager.setIdentityInt(customerPersonalDetail.getIdentityInt());
@@ -982,6 +988,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 
 	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerData(String identityInt,
 			BigDecimal identityTypeId) {
+		LOGGER.debug("in getOffsiteCustomerData: identityInt {}, identityTypeId {}", identityInt, identityTypeId);
 		offsiteCustomerRegValidator.validateGetOffsiteCustomerDetailRequest(new GetOffsiteCustomerDetailRequest(identityInt, identityTypeId));
 		OffsiteCustomerDataDTO offsiteCustomer = new OffsiteCustomerDataDTO();
 		offsiteCustomer.setIdentityInt(identityInt);
@@ -989,7 +996,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 
 		// --- Customer Personal Data
 		CustomerPersonalDetail customerDetails = new CustomerPersonalDetail();
-		Customer customer = customerRepository.getCustomerData(identityInt, identityTypeId);
+		Customer customer = offsiteCustomerRegManager.getCustomerForRegistration(identityInt, identityTypeId);
 		if (customer != null) {
 			customerDetails.setCountryId(customer.getCountryId());
 			customerDetails.setNationalityId(customer.getNationalityId());
@@ -1092,6 +1099,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 	
 	@Override
 	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerDetails(String identityInt,BigDecimal identityTypeId) {
+		LOGGER.debug("in getOffsiteCustomerData: identityInt {}, identityTypeId {}", identityInt, identityTypeId);
 		OffsiteCustomerDataDTO offsiteCustomer =customerRegistrationManager.getCustomerDeatils(identityInt, identityTypeId);
 		return AmxApiResponse.build(offsiteCustomer); 
 	}
