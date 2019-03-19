@@ -56,8 +56,10 @@ public class SnapQueryService {
 	}
 
 	public SnapModelWrapper executeQuery(Map<String, Object> query, String index) {
-		Map<String, Object> x = restService.ajax(ssConfig.getClusterUrl()).path(
-				EsConfig.indexName(index) + "/_search").post(query)
+		Map<String, Object> x = restService.ajax(ssConfig.getClusterUrl())
+				.header(ssConfig.getBasicAuthHeader()).path(
+						EsConfig.indexName(index) + "/_search")
+				.post(query)
 				.asMap();
 		// x.put("aggs", query.get("aggs"));
 		System.out.println(JsonUtil.toJson(query));

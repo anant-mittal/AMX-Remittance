@@ -1,4 +1,4 @@
-package com.amx.jax.ui.config;
+package com.amx.jax.logger;
 
 import java.io.IOException;
 
@@ -8,25 +8,25 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.AppContextUtil;
-import com.amx.jax.logger.AuditActor;
-import com.amx.jax.ui.UIConstants;
-import com.amx.jax.ui.service.SessionService;
 
 /**
  * The Class WebAuthFilter.
  */
 @Component
-public class WebAuthFilter implements Filter {
+@Order(AuditRequestFilter.AUDIT_PRECEDENCE)
+public class AuditRequestFilter implements Filter {
 
-	/** The session service. */
-	@Autowired
-	SessionService sessionService;
+	public static final int AUDIT_PRECEDENCE = Ordered.HIGHEST_PRECEDENCE - 1;
+
+	@Autowired(required = false)
+	AuditDetailProvider auditDetailProvider;
 
 	/*
 	 * (non-Javadoc)
@@ -47,21 +47,10 @@ public class WebAuthFilter implements Filter {
 	@Override
 	public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain)
 			throws IOException, ServletException {
-
-		if (!sessionService.isRequestAuthorized()) {
-			HttpServletResponse response = ((HttpServletResponse) resp);
-			response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
-			response.setHeader("Location", "/logout");
-		} else {
-
-			String referrer = req.getParameter(UIConstants.REFERRER);
-			if (referrer != null) {
-				sessionService.getUserSession().setReferrer(referrer);
-			}
-
-			chain.doFilter(req, resp);
+		if (auditDetailProvider != null) {
+			AppContextUtil.setActorId(auditDetailProvider.getActor());
 		}
-
+		chain.doFilter(req, resp);
 	}
 
 	/*

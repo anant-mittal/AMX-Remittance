@@ -220,6 +220,7 @@ public class UserValidationService {
 		String dbPassword = customer.getDevicePassword();
 		String passwordHashed = null;
 		try {
+			logger.info("hashed psw not generated");
 			passwordHashed = com.amx.utils.CryptoUtil.getSHA2Hash(password);
 		} catch (NoSuchAlgorithmException e) {
 			logger.error("Exception thrown for incorrect algorithm ", e);
@@ -229,6 +230,7 @@ public class UserValidationService {
 			Integer attemptsLeft = incrementLockCount(customer);
 			String errorExpression = JaxError.WRONG_PASSWORD.toString();
 			if (attemptsLeft > 0) {
+				logger.info("attempts are still left");
 				errorExpression = jaxUtil.buildErrorExpression(JaxError.WRONG_PASSWORDS_ATTEMPTS.toString(),
 						attemptsLeft);
 			}
@@ -462,8 +464,11 @@ public class UserValidationService {
 		onlineCustomer.setLockCnt(new BigDecimal(lockCnt));
 		custDao.saveOnlineCustomer(onlineCustomer);
 		if (lockCnt >= MAX_OTP_ATTEMPTS) {
+			logger.info("lock count has exceeded");
 			String errorExpression = JaxError.USER_LOGIN_ATTEMPT_EXCEEDED.toString();
+			logger.info("throw exception that user login attempt has exceeded");
 			errorExpression = jaxUtil.buildErrorExpression(JaxError.USER_LOGIN_ATTEMPT_EXCEEDED.toString(), lockCnt);
+			logger.info("error expression has been calculated");
 			throw new GlobalException(errorExpression, "Customer is locked. No of attempts:- " + lockCnt);
 		}
 		return MAX_OTP_ATTEMPTS - lockCnt;
@@ -507,6 +512,11 @@ public class UserValidationService {
 		if (customer == null) {
 			throw new GlobalException(JaxError.CUSTOMER_NOT_FOUND.getStatusKey(), "Online Customer id not found");
 		}
+		if(!customer.getIdentityTypeId().toString().equals(Constants.IDENTITY_TYPE_CIVIL_ID_STR)) {
+			throw new GlobalException("Invalid Identity Type for fingerprint establish");
+		}
+			
+			
 		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(customer.getCustomerId());
 		if (onlineCustomer == null) {
 			throw new GlobalException(JaxError.CUSTOMER_NOT_FOUND.getStatusKey(), "Online Customer id not found");

@@ -21,6 +21,11 @@ import springfox.documentation.service.Parameter;
 import springfox.documentation.spi.service.contexts.OperationContext;
 import springfox.documentation.swagger.common.SwaggerPluginSupport;
 
+/**
+ * 
+ * @author lalittanwar
+ *
+ */
 @Component
 @Order(SwaggerPluginSupport.SWAGGER_PLUGIN_ORDER + 1000)
 public class ApiStatusBuilder extends IStatusCodeListPlugin<ApiStatusCodes, ApiStatus> {

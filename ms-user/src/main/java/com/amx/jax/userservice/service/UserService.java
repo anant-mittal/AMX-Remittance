@@ -52,8 +52,6 @@ import com.amx.jax.JaxAuthCache.JaxAuthMeta;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.async.ExecutorConfig;
-import com.amx.jax.auditlog.CustomerAuditEvent;
-import com.amx.jax.auditlog.JaxUserAuditEvent;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.CustomerVerificationType;
 import com.amx.jax.constant.JaxApiFlow;
@@ -201,10 +199,13 @@ public class UserService extends AbstractUserService {
 	AuditService auditService;
 	@Autowired
 	CustomerIdProofDao customerIdProofDao;
+
 	@Autowired
 	JaxAuthCache jaxAuthCache;
+	
 	@Autowired
 	UserService userService;
+	
 	@Autowired
 	PostManService postManService;
 	@Autowired
@@ -649,18 +650,10 @@ public class UserService extends AbstractUserService {
 	public ApiResponse generateRandomQuestions(Integer size, Integer customerId) {
 		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(new BigDecimal(customerId));
 		ApiResponse response = getBlackApiResponse();
-		try {
-			List<QuestModelDTO> result = secQmanager.generateRandomQuestions(onlineCustomer, size, customerId);
-			response.getData().getValues().addAll(result);
-		} catch (GlobalException e) {
-			auditService.log(createUserServiceEvent(new BigDecimal(customerId),
-					JaxUserAuditEvent.Type.SEC_QUE_GENERATE_EXCEPTION));
-			throw e;
-		}
+		List<QuestModelDTO> result = secQmanager.generateRandomQuestions(onlineCustomer, size, customerId);
+		response.getData().getValues().addAll(result);
 		response.getData().setType("quest");
 		response.setResponseStatus(ResponseStatus.OK);
-		auditService.log(
-				createUserServiceEvent(new BigDecimal(customerId), JaxUserAuditEvent.Type.SEC_QUE_GENERATE_SUCCESS));
 		return response;
 	}
 
@@ -1056,11 +1049,6 @@ public class UserService extends AbstractUserService {
 		}
 	}
 
-	private AuditEvent createUserServiceEvent(BigDecimal customerId, JaxUserAuditEvent.Type type) {
-		AuditEvent beneAuditEvent = new CustomerAuditEvent(type, customerId);
-		return beneAuditEvent;
-	}
-
 	public Customer getCustById(BigDecimal id) {
 		return repo.findOne(id);
 	}
@@ -1151,6 +1139,29 @@ public class UserService extends AbstractUserService {
 		userValidationService.validateDevicePassword(customerOnlineRegistration, password);
 		CustomerModel customerModel = convert(customerOnlineRegistration);
 		return customerModel;
+	}
+
+	public BoolRespModel delinkFingerprint() {
+		CustomerOnlineRegistration customerOnlineRegistration = custDao
+				.getOnlineCustByCustomerId(metaData.getCustomerId());
+		customerOnlineRegistration.setFingerprintDeviceId("");
+		customerOnlineRegistration.setDevicePassword("");
+		custDao.saveOnlineCustomer(customerOnlineRegistration);
+		BoolRespModel boolRespModel = new BoolRespModel();
+		boolRespModel.setSuccess(Boolean.TRUE);
+		Customer customer = custDao.getCustById(customerOnlineRegistration.getCustomerId());
+		PersonInfo personinfo = new PersonInfo();
+		personinfo.setFirstName(customer.getFirstName());
+		personinfo.setMiddleName(customer.getMiddleName());
+		personinfo.setLastName(customer.getLastName());
+		Email email = new Email();
+		email.addTo(customerOnlineRegistration.getEmail());
+		email.setITemplate(TemplatesMX.FINGERPRINT_DELINKED_SUCCESS);
+		email.setHtml(true);
+		email.getModel().put(RESP_DATA_KEY, personinfo);
+		logger.debug("Email to - " + customerOnlineRegistration.getEmail());
+		sendEmail(email);
+		return boolRespModel;
 	}
 	
 	public CustomerFlags getCustomerFlags(BigDecimal customerId) {

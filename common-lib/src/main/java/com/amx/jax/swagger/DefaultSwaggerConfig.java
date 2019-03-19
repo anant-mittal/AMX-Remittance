@@ -28,6 +28,11 @@ import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
+/**
+ * 
+ * @author lalittanwar
+ *
+ */
 @Configuration
 @EnableSwagger2
 @ConditionalOnProperty("app.swagger")
@@ -58,7 +63,7 @@ public class DefaultSwaggerConfig {
 					.modelRef(new ModelRef(PARAM_STRING)).parameterType(mockParam.getType().toString().toLowerCase())
 					.allowableValues(allowableValues).required(mockParam.isRequired()).hidden(mockParam.isHidden())
 					.build();
-			
+
 			operationParameters.add(parameter);
 		}
 

@@ -78,10 +78,6 @@ public class CustomerDao {
 		return repo.getActiveCustomerByIndentityIntAndType(identityInt, identityType);
 	}
 
-	public CustomerOnlineRegistration getOnlineCustById(BigDecimal id) {
-		return onlineCustRepo.findOne(id);
-	}
-
 	public Customer getCustById(BigDecimal id) {
 		return repo.findOne(id);
 	}

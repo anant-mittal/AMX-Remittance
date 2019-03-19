@@ -99,6 +99,7 @@ public class AESRepository {
 			error.put("items", bulkResponse.getItems());
 		} catch (IOException e) {
 			error.put("Error", "Unable to update vote");
+			LOGGER.error("java.io.IOException:Unable to bulk update", e);
 		}
 		return error;
 	}

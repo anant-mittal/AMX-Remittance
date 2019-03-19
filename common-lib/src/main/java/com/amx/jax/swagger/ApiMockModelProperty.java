@@ -7,6 +7,8 @@ import java.lang.annotation.Target;
 
 /**
  * Adds and manipulates data of a model property.
+ * 
+ * @author lalittanwar
  */
 @Target({ ElementType.METHOD, ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)

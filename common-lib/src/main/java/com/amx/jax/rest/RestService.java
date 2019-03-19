@@ -237,7 +237,9 @@ public class RestService {
 		}
 
 		public Ajax header(HttpHeaders header) {
-			this.headers = header;
+			if (!ArgUtil.isEmpty(header)) {
+				this.headers = header;
+			}
 			return this;
 		}
 
