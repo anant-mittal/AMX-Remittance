@@ -16,7 +16,6 @@ import com.amx.jax.client.snap.SnapModels.SnapModelWrapper;
 import com.amx.jax.client.snap.SnapQueryException;
 import com.amx.jax.radar.EsConfig;
 import com.amx.jax.rest.RestService;
-import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;
 
 /**
@@ -62,7 +61,7 @@ public class SnapQueryService {
 				.post(query)
 				.asMap();
 		// x.put("aggs", query.get("aggs"));
-		System.out.println(JsonUtil.toJson(query));
+		//System.out.println(JsonUtil.toJson(query));
 		return new SnapModelWrapper(x);
 	}
 
