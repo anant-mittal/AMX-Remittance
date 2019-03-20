@@ -25,6 +25,7 @@ import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.ImageSubmissionRequest;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.repository.CustomerIdProofRepository;
+import com.amx.jax.userservice.service.UserService;
 import com.amx.utils.Constants;
 
 @Service
@@ -41,6 +42,8 @@ public class OffsiteCustomerRegManager {
 	MetaData metaData;
 	@Autowired
 	CustomerIdProofRepository customerIdProofRepository;
+	@Autowired
+	UserService userService;
 
 	/**
 	 * Returns the customer for offiste registration. Only inactive /not registered/
@@ -71,13 +74,16 @@ public class OffsiteCustomerRegManager {
 		return customer;
 	}
 
+	/**
+	 * deletes previous active id proof
+	 * and activate new one
+	 * @param model
+	 * @param customer
+	 */
 	public void createIdProofForExpiredCivilId(ImageSubmissionRequest model, Customer customer) {
-
-		if (model.getIdentityExpiredDate() != null) {
-			// TODO deactivate previous record
-			customer.setIdentityExpiredDate(model.getIdentityExpiredDate());
-			commitOnlineCustomerIdProof(customer);
-		}
+		userService.deActivateCustomerIdProof(customer.getCustomerId());
+		customer.setIdentityExpiredDate(model.getIdentityExpiredDate());
+		commitOnlineCustomerIdProof(customer);
 	}
 
 	public void commitOnlineCustomerIdProof(Customer customer) {

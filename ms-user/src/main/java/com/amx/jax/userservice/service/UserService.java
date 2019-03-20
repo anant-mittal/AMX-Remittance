@@ -1171,4 +1171,20 @@ public class UserService extends AbstractUserService {
 		}
 		return customerFlags;
 	}
+
+	/**
+	 * deactivates id proof of customer
+	 * @param customerId
+	 */
+	public void deActivateCustomerIdProof(BigDecimal customerId) {
+		Customer customer = repo.findOne(customerId);
+		List<CustomerIdProof> activeIdProofs = customerIdProofDao.getActiveCustomeridProofForIdType(customerId,
+				customer.getIdentityTypeId());
+		for (CustomerIdProof customerIdProof : activeIdProofs) {
+			customerIdProof.setIdentityStatus(ConstantDocument.Deleted);
+		}
+		if (!CollectionUtils.isEmpty(activeIdProofs)) {
+			customerIdProofDao.save(activeIdProofs);
+		}
+	}
 }

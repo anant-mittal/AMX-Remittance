@@ -738,7 +738,9 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 				documentDetails = getDocumentUploadDetails(image, mappingData);
 				docblobRepository.save(documentDetails);
 			}
-			offsiteCustomerRegManager.createIdProofForExpiredCivilId(model, customer);
+			if (model.getIdentityExpiredDate() != null) {
+				offsiteCustomerRegManager.createIdProofForExpiredCivilId(model, customer);
+			}
 		} else {
 			auditService.log(auditEvent.result(Result.FAIL).message(JaxError.IMAGE_NOT_AVAILABLE));
 			throw new GlobalException(JaxError.IMAGE_NOT_AVAILABLE, "Image data is not available");
