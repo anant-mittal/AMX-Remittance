@@ -33,7 +33,14 @@ public class SnapApiController implements ISnapService {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("lte", "now");
 		params.put("gte", "now-20y");
-		return snapQueryService.execute(SnapQueryTemplate.CUSTOMERS_JOINED, params);
+		SnapModelWrapper resp = snapQueryService.execute(SnapQueryTemplate.CUSTOMERS_JOINED, params);
+		Map<String, Object> summary = resp.getSummary();
+		summary.put("all_time_customer",
+				resp.getAggregations().field("join_inteval").bucket("all_time").getDocCount());
+		summary.put("all_time_online_customer",
+				resp.getAggregations().field("join_inteval").bucket("all_time").field("isOnlineUser").bucket("Y")
+						.getDocCount());
+		return resp;
 	}
 
 	@Override
@@ -44,7 +51,14 @@ public class SnapApiController implements ISnapService {
 		params.put("lte", "now");
 		params.put("gte", "now-5y");
 		params.put("_type", SnapIndexName.TRANX);
-		return snapQueryService.execute(SnapQueryTemplate.TRANX_DONE, params);
+		SnapModelWrapper resp = snapQueryService.execute(SnapQueryTemplate.TRANX_DONE, params);
+		Map<String, Object> summary = resp.getSummary();
+		summary.put("all_time_customer",
+				resp.getAggregations().field("join_inteval").bucket("all_time").getDocCount());
+		summary.put("all_time_online_customer",
+				resp.getAggregations().field("join_inteval").bucket("all_time").field("isOnlineUser").bucket("Y")
+						.getDocCount());
+		return resp;
 	}
 
 	@Override
