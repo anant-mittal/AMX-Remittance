@@ -497,7 +497,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		Customer customer = commitCustomer(customerDetails, model.getCustomerEmploymentDetails());
 		commitCustomerLocalContact(model.getLocalAddressDetails(), customer, customerDetails);
 		commitCustomerHomeContact(model.getHomeAddressDestails(), customer, customerDetails);
-		commitOnlineCustomerIdProof(model, customer);
+		offsiteCustomerRegManager.commitOnlineCustomerIdProof(customer);
 		commitEmploymentDetails(model.getCustomerEmploymentDetails(), customer, model.getLocalAddressDetails());
 		auditService.log(new CActivityEvent(CActivityEvent.Type.PROFILE_UPDATE).result(Result.DONE));
 		CustomerInfo info = new CustomerInfo();
@@ -706,41 +706,9 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		return bizcomponentDao.getBizComponentDataDescByComponmentId(titleLocal).getDataDesc();
 	}
 
-	private void commitOnlineCustomerIdProof(CustomerInfoRequest model, Customer customer) {
-
-		CustomerIdProof custProof = null;
-		List<CustomerIdProof> customerIdProofs = customerIdProofRepository
-				.getCustomerIdProofByCustomerId(customer.getCustomerId());
-		if (!customerIdProofs.isEmpty()) {
-			custProof = customerIdProofs.get(0);
-		}
-		if (custProof == null) {
-			custProof = new CustomerIdProof();
-		}
-		Customer customerData = new Customer();
-		customerData.setCustomerId(customer.getCustomerId());
-		custProof.setFsCustomer(customerData);
-		custProof.setLanguageId(metaData.getLanguageId());
-		BizComponentData customerType = new BizComponentData();
-		customerType.setComponentDataId(
-				bizcomponentDao.getComponentId(Constants.CUSTOMERTYPE_INDU, metaData.getLanguageId())
-						.getFsBizComponentData().getComponentDataId());
-		custProof.setFsBizComponentDataByCustomerTypeId(customerType);
-		custProof.setIdentityInt(customer.getIdentityInt());
-		custProof.setIdentityStatus(Constants.CUST_ACTIVE_INDICATOR);
-		custProof.setCreatedBy(customer.getIdentityInt());
-		custProof.setCreationDate(new Date());
-		custProof.setIdentityTypeId(customer.getIdentityTypeId());
-
-		if (customer.getIdentityExpiredDate() != null) {
-			custProof.setIdentityExpiryDate(customer.getIdentityExpiredDate());
-		}
-		custProof.setIdentityFor(ConstantDocument.IDENTITY_FOR_ID_PROOF);
-		custProof.setScanSystem(Constants.CUST_DB_SCAN);
-		customerIdProofRepository.save(custProof);
-	}
 
 	@Override
+	@Transactional
 	public AmxApiResponse<String, Object> saveCustomeKycDocument(ImageSubmissionRequest model) throws ParseException {
 
 		CActivityEvent auditEvent = new CActivityEvent(CActivityEvent.Type.PROFILE_UPDATE)
@@ -770,6 +738,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 				documentDetails = getDocumentUploadDetails(image, mappingData);
 				docblobRepository.save(documentDetails);
 			}
+			offsiteCustomerRegManager.createIdProofForExpiredCivilId(model, customer);
 		} else {
 			auditService.log(auditEvent.result(Result.FAIL).message(JaxError.IMAGE_NOT_AVAILABLE));
 			throw new GlobalException(JaxError.IMAGE_NOT_AVAILABLE, "Image data is not available");
