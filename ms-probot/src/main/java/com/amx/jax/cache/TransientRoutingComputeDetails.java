@@ -1,9 +1,9 @@
-package com.amx.jax.pricer.util;
+package com.amx.jax.cache;
 
 import com.amx.jax.pricer.dbmodel.ViewExRoutingMatrix;
 import com.amx.jax.pricer.dto.EstimatedDeliveryDetails;
 
-public class RoutingTransientDataComputationObject {
+public class TransientRoutingComputeDetails {
 
 	private ViewExRoutingMatrix viewExRoutingMatrix;
 

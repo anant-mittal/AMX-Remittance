@@ -13,31 +13,6 @@ public class DprRequestDto extends PricingRequestDTO  implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = -3112085486390742452L;
-
-/*	private BigDecimal customerId;
-
-	@NotNull(message = "Local Country Id Can not be Null or Empty")
-	private BigDecimal localCountryId;
-
-	@NotNull(message = "Foreign Country Id Can not be Null or Empty")
-	private BigDecimal foreignCountryId;
-
-	private BigDecimal localAmount;
-	
-	private BigDecimal foreignAmount;
-
-	@NotNull(message = "Local Currency Id Can not be Null or Empty")
-	private BigDecimal localCurrencyId;
-
-	@NotNull(message = "Foreign Currency Id Can not be Null or Empty")
-	private BigDecimal foreignCurrencyId;
-
-	@NotNull(message = "Country Branch Id Can not be Null or Empty")
-	private BigDecimal countryBranchId;
-
-	@NotNull(message = "Channel Can not be Null or Empty")
-	private Channel channel;
-*/
 	
 	@NotNull(message = "Beneficiary Id Can not be Null or Empty")
 	private BigDecimal beneficiaryId;

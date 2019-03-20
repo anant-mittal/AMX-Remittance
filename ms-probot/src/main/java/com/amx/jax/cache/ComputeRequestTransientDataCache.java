@@ -14,7 +14,6 @@ import com.amx.jax.pricer.dbmodel.OnlineMarginMarkup;
 import com.amx.jax.pricer.dbmodel.ViewExGLCBAL;
 import com.amx.jax.pricer.dto.BankDetailsDTO;
 import com.amx.jax.pricer.dto.ExchangeRateDetails;
-import com.amx.jax.pricer.util.RoutingTransientDataComputationObject;
 import com.amx.utils.DateUtil;
 
 public class ComputeRequestTransientDataCache {
@@ -27,7 +26,7 @@ public class ComputeRequestTransientDataCache {
 
 	private Map<BigDecimal, BigDecimal> bankGLCBALAvgRateMap = new HashMap<BigDecimal, BigDecimal>();
 
-	private List<RoutingTransientDataComputationObject> routingMatrixData;
+	private List<TransientRoutingComputeDetails> routingMatrixData;
 
 	private Map<BigDecimal, Map<String, HolidayListMasterModel>> countryHolidays = new HashMap<BigDecimal, Map<String, HolidayListMasterModel>>();
 	
@@ -67,11 +66,11 @@ public class ComputeRequestTransientDataCache {
 		this.bankDetails = bankDetails;
 	}
 
-	public List<RoutingTransientDataComputationObject> getRoutingMatrix() {
+	public List<TransientRoutingComputeDetails> getRoutingMatrix() {
 		return routingMatrixData;
 	}
 
-	public void setRoutingMatrix(List<RoutingTransientDataComputationObject> routingMatrix) {
+	public void setRoutingMatrix(List<TransientRoutingComputeDetails> routingMatrix) {
 		this.routingMatrixData = routingMatrix;
 	}
 
@@ -83,11 +82,11 @@ public class ComputeRequestTransientDataCache {
 		this.info = info;
 	}
 
-	public List<RoutingTransientDataComputationObject> getRoutingMatrixData() {
+	public List<TransientRoutingComputeDetails> getRoutingMatrixData() {
 		return routingMatrixData;
 	}
 
-	public void setRoutingMatrixData(List<RoutingTransientDataComputationObject> routingMatrixData) {
+	public void setRoutingMatrixData(List<TransientRoutingComputeDetails> routingMatrixData) {
 		this.routingMatrixData = routingMatrixData;
 	}
 

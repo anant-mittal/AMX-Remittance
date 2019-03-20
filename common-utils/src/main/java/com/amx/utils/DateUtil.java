@@ -14,6 +14,7 @@ import java.util.Date;
 import java.util.SimpleTimeZone;
 import java.util.TimeZone;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Class DateUtil.
  */
@@ -144,7 +145,10 @@ public final class DateUtil {
 	}
 
 	/**
+	 * Format date time.
+	 *
 	 * @param date
+	 *            the date
 	 * @return the string
 	 */
 	public static String formatDateTime(Date date) {
@@ -153,8 +157,11 @@ public final class DateUtil {
 	}
 
 	/**
+	 * Format date time.
+	 *
 	 * @param date
-	 * @return
+	 *            the date
+	 * @return the string
 	 */
 	public static String formatDateTime(ZonedDateTime date) {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DEFAULT_DATE_FORMAT);
@@ -417,13 +424,17 @@ public final class DateUtil {
 	}
 
 	/**
-	 * returns current Date Set with
-	 * 
+	 * returns current Date Set with.
+	 *
 	 * @param hour
+	 *            the hour
 	 * @param minutes
+	 *            the minutes
 	 * @param seconds
+	 *            the seconds
 	 * @param milliSecs
-	 * @return
+	 *            the milli secs
+	 * @return the current date at time
 	 */
 	public static Date getCurrentDateAtTime(int hour, int minutes, int seconds, int milliSecs) {
 
@@ -697,11 +708,13 @@ public final class DateUtil {
 	}
 
 	/**
-	 * Use this function if you want to treat local Date as UTC
-	 * 
+	 * Use this function if you want to treat local Date as UTC.
+	 *
 	 * @param date
-	 * @return
+	 *            the date
+	 * @return the long
 	 * @throws ParseException
+	 *             the parse exception
 	 */
 	public static Long toUTC(Date date) throws ParseException {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
@@ -711,11 +724,15 @@ public final class DateUtil {
 	}
 
 	/**
+	 * Critical : Used By PROBOT For Date/Time Computations. <br>
+	 * <strong> DO NOT CHANGE or MODIFY </strong> <br>
+	 * 
 	 * Returns Next-Day Date for the given Zoned Date. <B> Time is Reset to ZERO #
 	 * Hr:Min:Sec:Nano :: 00:00:00:000 </B>
-	 * 
+	 *
 	 * @param fromDateTime
-	 * @return
+	 *            the from date time
+	 * @return the next zoned day
 	 */
 	public static ZonedDateTime getNextZonedDay(ZonedDateTime fromDateTime) {
 
@@ -726,10 +743,14 @@ public final class DateUtil {
 	}
 
 	/**
-	 * Converts ArabicDayOfWeek to ISO-DayOfWeek
+	 * * Critical : Used By PROBOT For Date/Time Computations. <br>
+	 * <strong> DO NOT CHANGE or MODIFY </strong> <br>
 	 * 
+	 * Converts ArabicDayOfWeek to ISO-DayOfWeek.
+	 *
 	 * @param arabicDayOfWeek
-	 * @return
+	 *            the arabic day of week
+	 * @return the int
 	 */
 	public static int arabicToISODayOfWeek(int arabicDayOfWeek) {
 
@@ -755,10 +776,14 @@ public final class DateUtil {
 	}
 
 	/**
-	 * Converts ISO-DayOfWeek to ArabicDayOfWeek
+	 * * Critical : Used By PROBOT For Date/Time Computations. <br>
+	 * <strong> DO NOT CHANGE or MODIFY </strong> <br>
 	 * 
+	 * Converts ISO-DayOfWeek to ArabicDayOfWeek.
+	 *
 	 * @param ISODayOfWeek
-	 * @return
+	 *            the ISO day of week
+	 * @return the int
 	 */
 	public static int ISOToArabicDayOfWeek(int ISODayOfWeek) {
 
@@ -783,6 +808,16 @@ public final class DateUtil {
 
 	}
 
+	/**
+	 * * Critical : Used By PROBOT For Date/Time Computations. <br>
+	 * <strong> DO NOT CHANGE or MODIFY </strong> <br>
+	 * 
+	 * Checks if is valid day of week.
+	 *
+	 * @param dayOfWeek
+	 *            the day of week
+	 * @return true, if is valid day of week
+	 */
 	public static boolean isValidDayOfWeek(int dayOfWeek) {
 		if (dayOfWeek >= 1 && dayOfWeek <= 7)
 			return true;
@@ -790,6 +825,18 @@ public final class DateUtil {
 		return false;
 	}
 
+	/**
+	 * * Critical : Used By PROBOT For Date/Time Computations. <br>
+	 * <strong> DO NOT CHANGE or MODIFY </strong> <br>
+	 * 
+	 * Gets the hr min int val.
+	 *
+	 * @param hourOfDay
+	 *            the hour of day
+	 * @param minOfHr
+	 *            the min of hr
+	 * @return the hr min int val
+	 */
 	public static int getHrMinIntVal(int hourOfDay, int minOfHr) {
 
 		int modifiedHr = hourOfDay + minOfHr / 60;
@@ -799,6 +846,16 @@ public final class DateUtil {
 
 	}
 
+	/**
+	 * * Critical : Used By PROBOT For Date/Time Computations. <br>
+	 * <strong> DO NOT CHANGE or MODIFY </strong> <br>
+	 * 
+	 * Gets the hr min int val.
+	 *
+	 * @param hrMinStr
+	 *            the hr min str
+	 * @return the hr min int val
+	 */
 	public static int getHrMinIntVal(String hrMinStr) {
 
 		String[] hrMinArray = hrMinStr.split("\\.");

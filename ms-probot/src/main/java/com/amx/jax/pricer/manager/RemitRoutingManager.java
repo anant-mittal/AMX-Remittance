@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.cache.ComputeRequestTransientDataCache;
+import com.amx.jax.cache.TransientRoutingComputeDetails;
 import com.amx.jax.cache.WorkingHoursData;
 import com.amx.jax.pricer.dao.ViewExRoutingMatrixDao;
 import com.amx.jax.pricer.dbmodel.HolidayListMasterModel;
@@ -24,14 +25,13 @@ import com.amx.jax.pricer.dto.DprRequestDto;
 import com.amx.jax.pricer.dto.EstimatedDeliveryDetails;
 import com.amx.jax.pricer.exception.PricerServiceError;
 import com.amx.jax.pricer.exception.PricerServiceException;
-import com.amx.jax.pricer.util.RoutingTransientDataComputationObject;
 import com.amx.utils.DateUtil;
 import com.amx.utils.JsonUtil;
 
 @Component
 public class RemitRoutingManager {
 
-	private static final int MAX_DELIVERY_ATTEMPT_DAYS = 100;
+	private static final int MAX_DELIVERY_ATTEMPT_DAYS = 60;
 
 	/** The Constant LOGGER. */
 	private static final Logger LOGGER = LoggerFactory.getLogger(RemitRoutingManager.class);
@@ -69,10 +69,10 @@ public class RemitRoutingManager {
 							+ dprRequestDto.getRoutingBankIds());
 		}
 
-		List<RoutingTransientDataComputationObject> routingComputationObjects = new ArrayList<RoutingTransientDataComputationObject>();
+		List<TransientRoutingComputeDetails> routingComputationObjects = new ArrayList<TransientRoutingComputeDetails>();
 
 		for (ViewExRoutingMatrix viewExRoutingMatrix : routingMatrix) {
-			RoutingTransientDataComputationObject obj = new RoutingTransientDataComputationObject();
+			TransientRoutingComputeDetails obj = new TransientRoutingComputeDetails();
 			obj.setViewExRoutingMatrix(viewExRoutingMatrix);
 			routingComputationObjects.add(obj);
 		}
@@ -99,7 +99,7 @@ public class RemitRoutingManager {
 
 		if (!noHolidayLag && !computeRequestTransientDataCache.isHolidayListSetForCountry(countryId)) {
 			List<HolidayListMasterModel> sortedHolidays = holidayListManager.getHoidaysForCountryAndDateRange(countryId,
-					Date.from(beginZonedDT.toInstant()), Date.from(beginZonedDT.plusMonths(2).toInstant()));
+					Date.from(beginZonedDT.toInstant()), Date.from(beginZonedDT.plusDays(MAX_DELIVERY_ATTEMPT_DAYS).toInstant()));
 
 			computeRequestTransientDataCache.setHolidaysForCountry(countryId, sortedHolidays);
 

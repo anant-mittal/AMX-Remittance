@@ -70,7 +70,10 @@ public final class RuntimeTest {
 		System.out.println(" Minutes difference ==>  " + (diffMin - (diffHr * 60)));
 
 		System.out.println(
-				"Date String ==>  " + zdt.toString() + " Formatted Date String ==>  " + DateUtil.formatDateTime(zdt));
+				"Zoned Date String ==>  " + zdt.toString() + " Formatted Date String ==>  " + DateUtil.formatDateTime(zdt));
+		
+		System.out.println(
+				"Zoned Date String+2 Months ==>  " + zdt.plusMonths(2) + " Formatted Date String ==>  " + DateUtil.formatDateTime(zdt));
 
 		System.out.println(
 				"Date String ==>  " + date2.toString() + " Formatted Date String ==>  " + DateUtil.formatDate(date2));
