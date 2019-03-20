@@ -962,13 +962,13 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 			BigDecimal identityTypeId) {
 		LOGGER.debug("in getOffsiteCustomerData: identityInt {}, identityTypeId {}", identityInt, identityTypeId);
 		offsiteCustomerRegValidator.validateGetOffsiteCustomerDetailRequest(new GetOffsiteCustomerDetailRequest(identityInt, identityTypeId));
+		Customer customer = offsiteCustomerRegManager.getCustomerForRegistration(identityInt, identityTypeId);
+		
 		OffsiteCustomerDataDTO offsiteCustomer = new OffsiteCustomerDataDTO();
 		offsiteCustomer.setIdentityInt(identityInt);
 		offsiteCustomer.setIdentityTypeId(identityTypeId);
-
-		// --- Customer Personal Data
 		CustomerPersonalDetail customerDetails = new CustomerPersonalDetail();
-		Customer customer = offsiteCustomerRegManager.getCustomerForRegistration(identityInt, identityTypeId);
+
 		if (customer != null) {
 			customerDetails.setCountryId(customer.getCountryId());
 			customerDetails.setNationalityId(customer.getNationalityId());
