@@ -686,6 +686,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 			customer.setIdentityExpiredDate(customerDetails.getExpiryDate());
 		}
 		customer.setIdentityInt(customerDetails.getIdentityInt());
+		customer.setShortName(customerDetails.getFirstName()+customerDetails.getLastName());
 
 		customer.setCustomerRegistrationType(CustomerRegistrationType.OFF_CUSTOMER);
 		if (customerEmploymentDetails != null) {
