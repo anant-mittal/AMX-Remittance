@@ -38,6 +38,15 @@ public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 	@Autowired
 	private SnapQueryService snapQueryService;
 
+	public static final String FOUND_MATCHED = "Thank you for verification. Your account is now linked to this whatsApp number.";
+	public static final String FOUND_MATCH_NOT = "Kindly visit branch to update your whatsapp communication number. "
+			+ "Retry sending the same WhatsApp message, after the number has been updated at our branch.";
+	public static final String FOUND_NOT = "We cannot find an account with this Civil ID. "
+			+ "Kindly check if civil id is correct or visit branch to create new account."
+			+ " You can also register online on https://www.almullaexchange.com";
+	public static final String ANY_TEXT = "We cannot find any account linked with this WhatsApp number."
+			+ " Please send Civili Id to link your account. Eg : LINK 123456789987";
+
 	@Override
 	public void onMessage(String channel, UserInboxEvent event) {
 		if (!ArgUtil.isEmpty(event.getWaChannel())) {
@@ -58,13 +67,11 @@ public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 					SnapModelWrapper x = snapQueryService.execute(SnapQueryTemplate.CUSTOMERS_PROFILE, query);
 
 					if (x.getHits().getTotal() > 0) {
-						MapModel customer = x.getHits().getHits().get(0).getSource().getMap("customer");
-						replyMessage = String.format(
-								"Hello, Your request has been recieved to link CivilID %s with WhatsApp %s. "
-										+ "Please visit branch or online to get it verified.",
-								customer.getString("name"), civilId, swissNumberProto.getNationalNumber());
+						// MapModel customer =
+						// x.getHits().getHits().get(0).getSource().getMap("customer");
+						replyMessage = FOUND_MATCHED;
 					} else {
-						replyMessage = "We cannot find any account linked with this civild id, Kindyl visit branch or online to create new account";
+						replyMessage = FOUND_NOT;
 					}
 				} else {
 
@@ -82,8 +89,7 @@ public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 								"Hello %s, You account is linked with this whatsapp account, thanx.",
 								customer.getString("name"));
 					} else {
-						replyMessage = "We cannot find any account linked with this number please enter "
-								+ "your civil id in format LINK <CIVILID> to link this WhatsApp number to your civilid. ie:- LINK 285030905179";
+						replyMessage = ANY_TEXT;
 					}
 				}
 
