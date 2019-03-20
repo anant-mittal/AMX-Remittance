@@ -2,6 +2,8 @@ package com.amx.jax.model.request;
 
 import java.math.BigDecimal;
 
+import javax.validation.constraints.Pattern;
+
 import com.amx.jax.model.response.fx.AddressTypeDto;
 /** this model represents customer shipping address **/
 public class CustomerShippingAddressRequestModel {
@@ -28,6 +30,7 @@ public class CustomerShippingAddressRequestModel {
 	private String telPrefix;
 	
 	String block;
+	@Pattern(regexp = "^[\\u0621-\\u064A\\u0660-\\u0669A-Za-z0-9 ,.-]+$", message = "Invalid Street, Only AlphaNumeric .,- allowed")
 	String street;
 	String flatNo;
 	String buildingNo;
