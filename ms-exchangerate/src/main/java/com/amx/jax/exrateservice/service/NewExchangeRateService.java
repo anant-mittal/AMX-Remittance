@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -57,12 +58,15 @@ public class NewExchangeRateService extends ExchangeRateService {
 	 */
 	public ApiResponse<ExchangeRateResponseModel> getExchangeRatesForOnline(BigDecimal fromCurrency,
 			BigDecimal toCurrency, BigDecimal lcAmount, BigDecimal routingBankId, BigDecimal beneBankCountryId) {
-		ExchangeRateResponseModel outputModel = null;
+		ExchangeRateResponseModel outputModel = new ExchangeRateResponseModel();
 		ApiResponse<ExchangeRateResponseModel> response = getBlackApiResponse();
 		if (jaxTenantProperties.getIsDynamicPricingEnabled() && beneBankCountryId != null
 				&& !remittanceParameterMapManager.isCashChannel()) {
-			outputModel = jaxDynamicPriceService.getExchangeRatesWithDiscount(fromCurrency, toCurrency, lcAmount, null,
-					beneBankCountryId, routingBankId);
+			try {
+				outputModel = jaxDynamicPriceService.getExchangeRatesWithDiscount(fromCurrency, toCurrency, lcAmount,
+						null, beneBankCountryId, routingBankId);
+			} catch (Exception e) {
+			}
 			List<BankMasterDTO> cashChannelRates = getCashRateFromBestRateLogic(fromCurrency, toCurrency, lcAmount,
 					routingBankId, beneBankCountryId);
 			List<BankMasterDTO> bankChannelRates = outputModel.getBankWiseRates();
@@ -78,7 +82,20 @@ public class NewExchangeRateService extends ExchangeRateService {
 		}
 		sortRates(response);
 		addCashPayoutText(response);
+		checkExchangeRateResponse(response);
+		
 		return response;
+	}
+
+	private void checkExchangeRateResponse(ApiResponse<ExchangeRateResponseModel> response) {
+		ExchangeRateResponseModel exchangeRateResponseModel = response.getResult();
+		List<BankMasterDTO> exRates = exchangeRateResponseModel.getBankWiseRates();
+		if (CollectionUtils.isEmpty(exRates)) {
+			throw new GlobalException(JaxError.EXCHANGE_RATE_NOT_FOUND, "No exchange data found");
+		}
+		if (exchangeRateResponseModel.getExRateBreakup() == null) {
+			exchangeRateResponseModel.setExRateBreakup(exRates.get(0).getExRateBreakup());
+		}
 	}
 
 	private void addCashPayoutText(ApiResponse<ExchangeRateResponseModel> response) {

@@ -46,10 +46,9 @@ public class JaxDynamicPriceService {
 		AmxApiResponse<PricingResponseDTO, Object> apiResponse = null;
 		try {
 			apiResponse = pricerServiceClient.fetchPriceForCustomer(pricingRequestDTO);
-		} catch (GlobalException e) {
-			LOGGER.debug("No exchange data found from pricer, error is: ", e);
 		} catch (Exception e) {
-			LOGGER.error("No exchange data found from pricer, error is: ", e);
+			LOGGER.debug("No exchange data found from pricer, error is: ", e);
+			throw new GlobalException(JaxError.EXCHANGE_RATE_NOT_FOUND, "No exchange data found");
 		}
 		ExchangeRateResponseModel exchangeRateResponseModel = createExchangeRateResponseModel(apiResponse, lcAmount,
 				foreignAmount, null);

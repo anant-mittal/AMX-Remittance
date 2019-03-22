@@ -360,7 +360,7 @@ public class UserClientTest extends AbstractTestClient {
 		jaxMetaInfo.setLanguageId(new BigDecimal(1));
 		jaxMetaInfo.setEmployeeId(new BigDecimal(265));
 		AmxApiResponse<CustomerModel, Object> response = null;
-		response = client.loginUserByFingerprint("281050207628", "<)B_.J", "1234" );
+		response = client.loginUserByFingerprint("281050207628", "<)B_.J");
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());
 
@@ -379,7 +379,7 @@ public class UserClientTest extends AbstractTestClient {
 		jaxMetaInfo.setLanguageId(new BigDecimal(1));
 		jaxMetaInfo.setEmployeeId(new BigDecimal(265));
 		AmxApiResponse<CustomerModel, Object> response = null;
-		response = client.loginUserByFingerprint("281050207628", "<)B_.J", "12");
+		response = client.loginUserByFingerprint("281050207628", "<)B_.J");
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());
 
