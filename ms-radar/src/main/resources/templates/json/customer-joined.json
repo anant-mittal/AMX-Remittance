@@ -23,14 +23,26 @@
           },
           {
             "key": "all_time",
-            "from": "now-20y"
+            "from": "now-25y"
           }
         ]
+      },
+      "aggs": {
+        "isOnlineUser": {
+          "terms": {
+            "field": "customer.isOnlineUser.keyword",
+            "size": 10,
+            "order": {
+              "_count": "desc"
+            },
+            "missing": "_"
+          }
+        }
       }
     },
     "online_inteval": {
       "date_range": {
-        "field": "customer.lastUpdateDate",
+        "field": "customer.creationDateOnline",
         "ranges": [
          {
             "key": "last_week",
