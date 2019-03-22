@@ -251,7 +251,7 @@ public class JaxNotificationService {
 		sendEmail(email);
 	}
 	
-	@Async(ExecutorConfig.DEFAULT)
+	@Async
 	public void sendEmail(Email email) {
 		try {
 			postManService.sendEmailAsync(email);
