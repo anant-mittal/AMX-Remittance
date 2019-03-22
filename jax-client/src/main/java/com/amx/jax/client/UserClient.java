@@ -667,12 +667,12 @@ public class UserClient extends AbstractJaxServiceClient {
 		}
 	}
 
-	public AmxApiResponse<CustomerModel, Object> loginUserByFingerprint(String civilId, String password) {
+	public AmxApiResponse<CustomerModel, Object> loginUserByFingerprint(String civilId, String password, String fingerprintDeviceId) {
 		try {
 
 			return restService.ajax(appConfig.getJaxURL())
 					.path(UserApi.PREFIX + UserApi.LOGIN_CUSTOMER_BY_FINGERPRINT).meta(new JaxMetaInfo()).post()
-					.queryParam(UserApi.IDENTITYINT, civilId).queryParam(UserApi.PASSWORD, password).post()
+					.queryParam(UserApi.IDENTITYINT, civilId).queryParam(UserApi.PASSWORD, password).queryParam(UserApi.FINGERPRINTDEVICEID, fingerprintDeviceId).post()
 					.as(new ParameterizedTypeReference<AmxApiResponse<CustomerModel, Object>>() {
 					});
 		} catch (Exception ae) {

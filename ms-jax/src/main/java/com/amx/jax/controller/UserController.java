@@ -78,11 +78,11 @@ public class UserController {
 
 	@RequestMapping(value = UserApi.LOGIN_CUSTOMER_BY_FINGERPRINT, method = RequestMethod.POST)
 	public AmxApiResponse<CustomerModel, Object> loginCustomerByFingerprint(@RequestParam String identityInt,
-			@RequestParam(defaultValue = Constants.IDENTITY_TYPE_CIVIL_ID_STR) String identityType, @RequestParam String password) {
+			@RequestParam(defaultValue = Constants.IDENTITY_TYPE_CIVIL_ID_STR) String identityType, @RequestParam String password, @RequestParam String fingerprintDeviceId) {
 		logger.debug(MessageFormat.format("IdentityInt value is {0} :", identityInt));
 		logger.debug(MessageFormat.format("IdentityType value is {0} :", identityType));
 		JaxContextUtil.setJaxEvent(JaxEvent.FINGERPRINT_LOGIN_INCORRECT_ATTEMPT);
-		CustomerModel customerModel = fingerprintService.loginCustomerByFingerprint(identityInt, identityType, password);
+		CustomerModel customerModel = fingerprintService.loginCustomerByFingerprint(identityInt, identityType, password, fingerprintDeviceId);
 		
 		return AmxApiResponse.build(customerModel);
 	}

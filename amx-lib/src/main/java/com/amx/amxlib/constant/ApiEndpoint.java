@@ -144,6 +144,8 @@ public class ApiEndpoint {
 		
 		public static final String PASSWORD = "password";
 		
+		public static final String FINGERPRINTDEVICEID = "fingerprintDeviceId";
+		
 		//Paths
 		public static final String LINK_DEVICE_LOGGEDIN_USER= "/link-device-loggedin-user/";
 		
