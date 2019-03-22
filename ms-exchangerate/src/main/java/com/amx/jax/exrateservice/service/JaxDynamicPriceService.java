@@ -46,9 +46,10 @@ public class JaxDynamicPriceService {
 		AmxApiResponse<PricingResponseDTO, Object> apiResponse = null;
 		try {
 			apiResponse = pricerServiceClient.fetchPriceForCustomer(pricingRequestDTO);
-		} catch (Exception e) {
+		} catch (GlobalException e) {
 			LOGGER.debug("No exchange data found from pricer, error is: ", e);
-			throw new GlobalException(JaxError.EXCHANGE_RATE_NOT_FOUND, "No exchange data found");
+		} catch (Exception e) {
+			LOGGER.error("No exchange data found from pricer, error is: ", e);
 		}
 		ExchangeRateResponseModel exchangeRateResponseModel = createExchangeRateResponseModel(apiResponse, lcAmount,
 				foreignAmount, null);
@@ -109,24 +110,28 @@ public class JaxDynamicPriceService {
 			BigDecimal serviceIndicatorId) {
 		ExchangeRateResponseModel exchangeRateResponseModel = new ExchangeRateResponseModel();
 		List<BankMasterDTO> bankWiseRates = new ArrayList<>();
-		List<ExchangeRateDetails> sellRateDetails = apiResponse.getResult().getSellRateDetails();
-		for (ExchangeRateDetails sellRateDetail : sellRateDetails) {
-			if (serviceIndicatorId != null && !serviceIndicatorId.equals(sellRateDetail.getServiceIndicatorId())) {
-				continue;
-			}
-			BankMasterDTO dto = bankMetaService.convert(bankMetaService.getBankMasterbyId(sellRateDetail.getBankId()));
-			if (foreignAmount != null) {
-				dto.setExRateBreakup(exchangeRateService.createBreakUpFromForeignCurrency(
-						sellRateDetail.getSellRateNet().getInverseRate(), foreignAmount));
-			} else {
-				dto.setExRateBreakup(
-						exchangeRateService.createBreakUp(sellRateDetail.getSellRateNet().getInverseRate(), lcAmount));
-			}
-			bankWiseRates.add(dto);
-		}
 		exchangeRateResponseModel.setBankWiseRates(bankWiseRates);
-		if (CollectionUtils.isNotEmpty(bankWiseRates)) {
-			exchangeRateResponseModel.setExRateBreakup(bankWiseRates.get(0).getExRateBreakup());
+		if (apiResponse != null) {
+			List<ExchangeRateDetails> sellRateDetails = apiResponse.getResult().getSellRateDetails();
+			for (ExchangeRateDetails sellRateDetail : sellRateDetails) {
+				if (serviceIndicatorId != null && !serviceIndicatorId.equals(sellRateDetail.getServiceIndicatorId())) {
+					continue;
+				}
+				BankMasterDTO dto = bankMetaService
+						.convert(bankMetaService.getBankMasterbyId(sellRateDetail.getBankId()));
+				if (foreignAmount != null) {
+					dto.setExRateBreakup(exchangeRateService.createBreakUpFromForeignCurrency(
+							sellRateDetail.getSellRateNet().getInverseRate(), foreignAmount));
+				} else {
+					dto.setExRateBreakup(exchangeRateService
+							.createBreakUp(sellRateDetail.getSellRateNet().getInverseRate(), lcAmount));
+				}
+				bankWiseRates.add(dto);
+			}
+			exchangeRateResponseModel.setBankWiseRates(bankWiseRates);
+			if (CollectionUtils.isNotEmpty(bankWiseRates)) {
+				exchangeRateResponseModel.setExRateBreakup(bankWiseRates.get(0).getExRateBreakup());
+			}
 		}
 		return exchangeRateResponseModel;
 	}
