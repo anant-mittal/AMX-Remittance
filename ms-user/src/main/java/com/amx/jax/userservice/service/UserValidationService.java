@@ -734,7 +734,7 @@ public class UserValidationService {
 			validateCustomerForSignUpDefault(customers.get(0));
 			break;
 		case OFFSITE_REGISTRATION:
-			validateCustomerForOffisteReg(customers.get(0));
+			validateCustomerForOffisteReg(customers);
 			break;
 		default:
 			validateCustomerDefault(customers.get(0));
@@ -742,7 +742,7 @@ public class UserValidationService {
 		return customers;
 	}
 
-	private void validateCustomerForOffisteReg(Customer customer) {
+	private void validateCustomerForOffisteReg(List<Customer> customer) {
 		
 	}
 
@@ -909,5 +909,11 @@ public class UserValidationService {
 
 	}
 	
+	public void validateFingerprintDeviceId(CustomerOnlineRegistration customer, String fingerprintDeviceId) {
+		String dbFingerprintDeviceId = customer.getFingerprintDeviceId();
+		if (!fingerprintDeviceId.equals(dbFingerprintDeviceId) || fingerprintDeviceId == null) {
+			throw new GlobalException(JaxError.FINGERPRINT_EXPIRED, "Fingerprint expired");
+		}
+	}
 
 }
