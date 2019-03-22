@@ -672,8 +672,7 @@ public class UserClient extends AbstractJaxServiceClient {
 
 			return restService.ajax(appConfig.getJaxURL())
 					.path(UserApi.PREFIX + UserApi.LOGIN_CUSTOMER_BY_FINGERPRINT).meta(new JaxMetaInfo()).post()
-					.queryParam(UserApi.IDENTITYINT, civilId).queryParam(UserApi.PASSWORD, password)
-					.post()
+					.queryParam(UserApi.IDENTITYINT, civilId).queryParam(UserApi.PASSWORD, password).post()
 					.as(new ParameterizedTypeReference<AmxApiResponse<CustomerModel, Object>>() {
 					});
 		} catch (Exception ae) {

@@ -236,6 +236,10 @@ public class FingerprintService {
 
 	public CustomerModel loginCustomerByFingerprint(String civilId, String identityTypeStr, String password, String fingerprintDeviceId) {
 		userValidationService.validateIdentityInt(civilId, identityTypeStr);
+		if(metaData.getDeviceId()==null) {
+			logger.error("device id null exception");
+			throw new GlobalException("Device id cannot be null");
+		}
 		BigDecimal identityType = new BigDecimal(identityTypeStr);
 		CustomerOnlineRegistration customerOnlineRegistration = userValidationService
 				.validateOnlineCustomerByIdentityId(civilId, identityType);
@@ -267,5 +271,30 @@ public class FingerprintService {
 		logger.debug("Email to - " + customerOnlineRegistration.getEmail());
 		sendEmail(email);
 		return boolRespModel;
+	}
+	public BoolRespModel resetFingerprint(String identity, String identityTypeStr) {
+		userValidationService.validateIdentityInt(identity, identityTypeStr);
+		BigDecimal identityType = new BigDecimal(identityTypeStr);
+		CustomerOnlineRegistration customerOnlineRegistration = userValidationService
+				.validateOnlineCustomerByIdentityId(identity, identityType);
+		customerOnlineRegistration.setFingerprintDeviceId(null);
+		customerOnlineRegistration.setDevicePassword(null);
+		custDao.saveOnlineCustomer(customerOnlineRegistration);
+		BoolRespModel boolRespModel = new BoolRespModel();
+		boolRespModel.setSuccess(Boolean.TRUE);
+		Customer customer = custDao.getActiveCustomerByIndentityIntAndType(identity,identityType);
+		PersonInfo personinfo = new PersonInfo();
+		personinfo.setFirstName(customer.getFirstName());
+		personinfo.setMiddleName(customer.getMiddleName());
+		personinfo.setLastName(customer.getLastName());
+		Email email = new Email();
+		email.addTo(customerOnlineRegistration.getEmail());
+		email.setITemplate(TemplatesMX.FINGERPRINT_DELINKED_ATTEMP_SUCCESS);
+		email.setHtml(true);
+		email.getModel().put(RESP_DATA_KEY, personinfo);
+		logger.debug("Email to - " + customerOnlineRegistration.getEmail());
+		sendEmail(email);
+		return boolRespModel;
+		
 	}
 }
