@@ -34,7 +34,7 @@ public class HolidayListManager {
 				holidayDTO.setAllDayEvent(rec.getAllDayEvent());
 				holidayDTO.setCountryId(rec.getCountryId());
 				holidayDTO.setEndTime(rec.getEndTime());
-				holidayDTO.setEventCategory(rec.getEcentCategory());
+				holidayDTO.setEventCategory(rec.getEventCategory());
 				holidayDTO.setEventDate(rec.getEventDate());
 				holidayDTO.setEventDayOfTheWeek(rec.getEventDayOfTheWeek());
 				holidayDTO.setEventName(rec.getEventName());

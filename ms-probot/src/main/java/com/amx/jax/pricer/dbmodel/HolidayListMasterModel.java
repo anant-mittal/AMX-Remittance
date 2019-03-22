@@ -29,7 +29,7 @@ public class HolidayListMasterModel implements Serializable, Comparable<HolidayL
 	private String startTime;
 	private String endTime;
 	private char allDayEvent;
-	private String ecentCategory;
+	private String eventCategory;
 	private char isActive;
 	private String info;
 	private BigDecimal flags;
@@ -130,12 +130,12 @@ public class HolidayListMasterModel implements Serializable, Comparable<HolidayL
 	}
 
 	@Column(name = "EVENT_CATEGORY")
-	public String getEcentCategory() {
-		return ecentCategory;
+	public String getEventCategory() {
+		return eventCategory;
 	}
 
-	public void setEcentCategory(String ecentCategory) {
-		this.ecentCategory = ecentCategory;
+	public void setEventCategory(String ecentCategory) {
+		this.eventCategory = ecentCategory;
 	}
 
 	@Column(name = "ISACTIVE")
