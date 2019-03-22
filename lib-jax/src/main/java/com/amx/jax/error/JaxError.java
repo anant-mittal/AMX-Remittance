@@ -256,7 +256,10 @@ public enum JaxError implements IExceptionEnum {
 	SIGNATURE_NOT_FOUND,
 	
 	// for validate Currency pair
-	INVALID_PAIR_ID;
+	INVALID_PAIR_ID,
+	
+	//for wrong fingerprint device
+	FINGERPRINT_EXPIRED;
 
 	@Deprecated
 	public String getCode() {

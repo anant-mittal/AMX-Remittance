@@ -177,6 +177,10 @@ public class FingerprintService {
 	public UserFingerprintResponseModel linkDeviceId(BigDecimal customerId) {
 		CustomerOnlineRegistration customerOnlineRegistration = userValidationService
 				.validateOnlineCustomerByIdentityId(customerId);
+		if(metaData.getDeviceId()==null) {
+			logger.error("device id null exception");
+			throw new GlobalException("Device id cannot be null");
+		}
 		String password = Random.randomPassword(6);
 		String hashPassword = userService.generateFingerPrintPassword(password);
 		UserFingerprintResponseModel userFingerprintResponsemodel = new UserFingerprintResponseModel();
@@ -230,13 +234,14 @@ public class FingerprintService {
 
 	}
 
-	public CustomerModel loginCustomerByFingerprint(String civilId, String identityTypeStr, String password) {
+	public CustomerModel loginCustomerByFingerprint(String civilId, String identityTypeStr, String password, String fingerprintDeviceId) {
 		userValidationService.validateIdentityInt(civilId, identityTypeStr);
 		BigDecimal identityType = new BigDecimal(identityTypeStr);
 		CustomerOnlineRegistration customerOnlineRegistration = userValidationService
 				.validateOnlineCustomerByIdentityId(civilId, identityType);
 		logger.info("Customer id is "+metaData.getCustomerId());
 		userValidationService.validateCustomerLockCount(customerOnlineRegistration);
+		userValidationService.validateFingerprintDeviceId(customerOnlineRegistration,fingerprintDeviceId);
 		userValidationService.validateDevicePassword(customerOnlineRegistration, password);
 		CustomerModel customerModel = convert(customerOnlineRegistration);
 		return customerModel;

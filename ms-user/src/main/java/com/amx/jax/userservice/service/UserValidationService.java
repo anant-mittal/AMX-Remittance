@@ -909,5 +909,11 @@ public class UserValidationService {
 
 	}
 	
+	public void validateFingerprintDeviceId(CustomerOnlineRegistration customer, String fingerprintDeviceId) {
+		String dbFingerprintDeviceId = customer.getFingerprintDeviceId();
+		if (!fingerprintDeviceId.equals(dbFingerprintDeviceId) || fingerprintDeviceId == null) {
+			throw new GlobalException(JaxError.FINGERPRINT_EXPIRED, "Fingerprint expired");
+		}
+	}
 
 }
