@@ -21,8 +21,11 @@ import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.JaxConditionalFieldDto;
 import com.amx.amxlib.model.response.ExchangeRateResponseModel;
 import com.amx.amxlib.util.JaxValidationUtil;
+import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.Customer;
+import com.amx.jax.dbmodel.CustomerEmploymentInfo;
+import com.amx.jax.dbmodel.remittance.CorporateMasterModel;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.exrateservice.service.JaxDynamicPriceService;
 import com.amx.jax.manager.RemittanceTransactionManager;
@@ -37,9 +40,12 @@ import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.model.response.remittance.BranchExchangeRateBreakup;
 import com.amx.jax.model.response.remittance.RoutingResponseDto;
 import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeRateResponse;
+import com.amx.jax.repository.ICustomerEmploymentInfoRepository;
+import com.amx.jax.repository.remittance.ICorporateMasterRepository;
 import com.amx.jax.services.BeneficiaryService;
 import com.amx.jax.services.BeneficiaryValidationService;
 import com.amx.jax.userservice.service.UserService;
+import com.amx.jax.util.JaxUtil;
 import com.amx.jax.validation.RemittanceTransactionRequestValidator;
 
 import static com.amx.amxlib.constant.ApplicationProcedureParam.*;
@@ -70,6 +76,12 @@ public class BranchRemittanceExchangeRateManager {
 	RemittanceAdditionalFieldManager remittanceAdditionalFieldManager;
 	@Autowired
 	RemittanceTransactionRequestValidator remittanceTransactionRequestValidator;
+	
+	@Autowired
+	ICorporateMasterRepository corporateMasterRepository;
+	
+	@Autowired
+	ICustomerEmploymentInfoRepository customerEmployeRepository;
 
 	public void validateGetExchangRateRequest(IRemittanceApplicationParams request) {
 
@@ -127,11 +139,15 @@ public class BranchRemittanceExchangeRateManager {
 		BigDecimal currencyId = P_FOREIGN_CURRENCY_ID.getValue(remitApplParametersMap);
 		BigDecimal remittanceMode = P_REMITTANCE_MODE_ID.getValue(remitApplParametersMap);
 		BigDecimal deliveryMode = P_DELIVERY_MODE_ID.getValue(remitApplParametersMap);
-		BigDecimal commission = remittanceTransactionManager.getCommissionAmount(routingBankId, rountingCountryId, currencyId,
-				remittanceMode, deliveryMode);
+		BigDecimal commission = remittanceTransactionManager.getCommissionAmount(routingBankId, rountingCountryId, currencyId,remittanceMode, deliveryMode);
 		BigDecimal newCommission = remittanceTransactionManager.reCalculateComission();
 		if (newCommission != null) {
 			commission = newCommission;
+		}
+		
+		BigDecimal corpDiscount = corporateDiscount();
+		if(JaxUtil.isNullZeroBigDecimalCheck(commission) && commission.compareTo(corpDiscount)>=0) {
+			commission =commission.subtract(corpDiscount);
 		}
 		return commission;
 	}
@@ -159,7 +175,29 @@ public class BranchRemittanceExchangeRateManager {
 		if (CollectionUtils.isNotEmpty(amlFlexFields)) {
 			flexFields.addAll(amlFlexFields);
 		}
-
 		return flexFields;
+	}
+	
+	/** Added by Rabil for corporate employee discount **/
+	public BigDecimal corporateDiscount() {
+		BigDecimal corpDiscount = BigDecimal.ZERO;
+		Customer customer = new Customer();
+		customer.setCustomerId(metaData.getCustomerId());
+		List<CustomerEmploymentInfo> empInfo = customerEmployeRepository.findByFsCustomerAndIsActive(customer, ConstantDocument.Yes);
+		if(empInfo!=null && !empInfo.isEmpty() && empInfo.size()>1) {
+			throw new GlobalException(JaxError.EXCHANGE_RATE_NOT_FOUND, "More than one record found for corporate employee discount on commission "+metaData.getCustomerId());
+		}
+		List<CorporateMasterModel> coporatList = corporateMasterRepository.findByCorporateMasterIdAndIsActive(empInfo.get(0).getCorporateMasterId(), ConstantDocument.Yes);
+		
+		if(coporatList !=null && !coporatList.isEmpty() && coporatList.size()>1) {
+			throw new GlobalException(JaxError.EXCHANGE_RATE_NOT_FOUND, "TOO MANY CORPORATE EMPLOYEE DISCOUNT ON COMMISSION DEFINED FOR COMPANY ID "+empInfo.get(0).getCorporateMasterId());
+		}
+		if(coporatList!=null && coporatList.size()==1) {
+			corpDiscount = coporatList.get(0).getDiscountOnCommission();
+		}
+		
+		
+		
+		return corpDiscount;
 	}
 }

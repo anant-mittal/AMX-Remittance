@@ -322,8 +322,7 @@ public class RemittanceTransactionManager {
 		} else {
 			responseModel.setTotalLoyalityPoints(BigDecimal.ZERO);
 		}
-		responseModel
-				.setMaxLoyalityPointsAvailableForTxn(loyalityPointService.getVwLoyalityEncash().getLoyalityPoint());
+		responseModel.setMaxLoyalityPointsAvailableForTxn(loyalityPointService.getVwLoyalityEncash().getLoyalityPoint());
 	}
 
 	public void applyRoudingLogic(ExchangeRateBreakup exRatebreakUp) {
@@ -609,12 +608,21 @@ public class RemittanceTransactionManager {
 		BigDecimal netAmount = exchangeRateBreakup.getConvertedLCAmount().add(comission);
 		exchangeRateBreakup.setNetAmountWithoutLoyality(netAmount);
 
-		if (comission == null || comission.intValue() == 0) {
+		//if (comission == null || comission.intValue() == 0) {
+		if(!JaxUtil.isNullZeroBigDecimalCheck(comission)) {
 			responseModel.setCanRedeemLoyalityPoints(false);
 			responseModel.setLoyalityPointState(LoyalityPointState.CAN_NOT_AVAIL);
 		}
 		if (remitAppManager.loyalityPointsAvailed(model, responseModel)) {
-			exchangeRateBreakup.setNetAmount(netAmount.subtract(loyalityPointService.getVwLoyalityEncash().getEquivalentAmount()));
+			/** old  logic  **/ 
+			 //exchangeRateBreakup.setNetAmount(netAmount.subtract(loyalityPointService.getVwLoyalityEncash().getEquivalentAmount()));
+			 /** Modified by Rabil for corporate employee discount on 24 Mar 2018  **/
+			BigDecimal loyaltyAmount = loyalityPointService.getVwLoyalityEncash().getEquivalentAmount();
+			if(JaxUtil.isNullZeroBigDecimalCheck(comission) && comission.compareTo(loyaltyAmount)>0) {
+				exchangeRateBreakup.setNetAmount(netAmount.subtract(loyalityPointService.getVwLoyalityEncash().getEquivalentAmount()));
+			}else {
+				exchangeRateBreakup.setNetAmount(netAmount.subtract(comission));
+			}
 		} else {
 			exchangeRateBreakup.setNetAmount(netAmount);
 		}

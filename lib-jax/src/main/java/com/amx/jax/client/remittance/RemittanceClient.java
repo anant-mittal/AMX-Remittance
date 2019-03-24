@@ -376,5 +376,26 @@ public class RemittanceClient  implements IRemittanceService{
 
 
 
+	@Override
+	public AmxApiResponse<BoolRespModel, Object> sendReceiptOnEmail(BigDecimal collectionDocNo, BigDecimal collectionDocYear, BigDecimal collectionDocCode) {
+		try {
+			LOGGER.debug("in fetchCustomerDeclarationReport :"+collectionDocNo );
+			return restService.ajax(appConfig.getJaxURL() + Path.BR_RECEIPT_ON_EMAIL).meta(new JaxMetaInfo())
+					.queryParam(Params.COLLECTION_DOC_NO, collectionDocNo).meta(new JaxMetaInfo())
+					.queryParam(Params.COLLECTION_DOC_FY, collectionDocYear)
+					.queryParam(Params.COLLECTION_DOC_CODE, collectionDocCode)
+					.post()
+					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in deleteFromShoppingCart : ", e);
+			return JaxSystemError.evaluate(e);
+		} // end of try-cat
+	}
+
+
+
+
+
 }
 

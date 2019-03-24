@@ -178,6 +178,9 @@ public class BranchRemittanceApplManager {
 	
 	@Autowired
 	RemittanceApplicationRepository appRepository;
+	
+	@Autowired
+	BranchRemittanceExchangeRateManager exchRateManager;
 
 
 	
@@ -430,11 +433,11 @@ public class BranchRemittanceApplManager {
 			BigDecimal loyalityPointsEncashed = BigDecimal.ZERO;
 			if(applRequestModel.isAvailLoyalityPoints() && JaxUtil.isNullZeroBigDecimalCheck(customer.getLoyaltyPoints()) && customer.getLoyaltyPoints().compareTo(new BigDecimal(1000))>=0) {
 				remittanceApplication.setLoyaltyPointInd(ConstantDocument.Yes);
-				loyalityPointsEncashed = loyalityPointService.getVwLoyalityEncash().getEquivalentAmount();
-				
+				loyalityPointsEncashed = getloyaltyAmountEncashed();
 			}else {
 				remittanceApplication.setLoyaltyPointInd(ConstantDocument.No);
 			}
+			
 			remittanceApplication.setLoyaltyPointsEncashed(loyalityPointsEncashed); 
 			
 		
@@ -622,7 +625,6 @@ public class BranchRemittanceApplManager {
 			try {
 				for(AmlCheckResponseDto amlDto :amlList) {
 					RemitApplAmlModel amlModel = new RemitApplAmlModel();
-
 					RemitApplAmlModel remitApplAml = new RemitApplAmlModel();
 					remitApplAml.setCompanyId(remittanceApplication.getFsCompanyMaster().getCompanyId());
 					remitApplAml.setExRemittanceAppfromAml(remittanceApplication);
@@ -738,9 +740,14 @@ public class BranchRemittanceApplManager {
 	
  public BranchRemittanceApplResponseDto deleteFromShoppingCart(BigDecimal remittanceAppliId) {
 	 
-	 RemittanceApplication appl = appRepository.getApplicationForDelete(new Customer(metaData.getCustomerId()),remittanceAppliId);
+	// RemittanceApplication appl = appRepository.getApplicationForDelete(new Customer(metaData.getCustomerId()),remittanceAppliId);
+	// appl.setIsactive(ConstantDocument.Deleted);
+	 //appl.setIsactive(ConstantDocument.Yes);
+	//brRemittanceDao.deleteFromCart(appl, ConstantDocument.Deleted);
+	// brRemittanceDao.deleteFromCart(appl);
 	 
-	 brRemittanceDao.deleteFromCart(appl, ConstantDocument.Deleted);
+	//brRemittanceDao.deleteFromCart(remittanceAppliId,ConstantDocument.Deleted);
+	brRemittanceDao.deleteFromCartUsingJdbcTemplate(remittanceAppliId,ConstantDocument.Deleted);
 	 BranchRemittanceApplResponseDto applResponseDto = branchRemittancePaymentManager.fetchCustomerShoppingCart(metaData.getCustomerId(),metaData.getDefaultCurrencyId());
 	 return applResponseDto;
  }
@@ -777,6 +784,15 @@ public class BranchRemittanceApplManager {
 	}
 	
 	
+	public BigDecimal getloyaltyAmountEncashed() {
+		BigDecimal discount = exchRateManager.corporateDiscount();
+		BigDecimal loyalityPoints = loyalityPointService.getVwLoyalityEncash().getLoyalityPoint();
+		BigDecimal loyalityPointsEncashed = loyalityPointService.getVwLoyalityEncash().getEquivalentAmount();
+		if(JaxUtil.isNullZeroBigDecimalCheck(loyalityPoints) && loyalityPointsEncashed.compareTo(discount)>0) {
+			loyalityPointsEncashed =loyalityPointsEncashed.subtract(discount);
+		}
+		return loyalityPointsEncashed;
+	}
 	
 	
 }

@@ -194,5 +194,11 @@ public class BranchRemittanceService extends AbstractService{
 		return AmxApiResponse.build(applResponseDto);
 	}
 
+	public BoolRespModel sendReceiptOnEmail(BigDecimal collectionDocNo,BigDecimal collectionDocYear ,BigDecimal collectionDocCode){
+		Boolean result = branchRemittanceSaveManager.sendReceiptOnEmail(collectionDocNo,collectionDocYear,collectionDocCode);
+		return new BoolRespModel(result);
+	}
+	
+	
 
 }

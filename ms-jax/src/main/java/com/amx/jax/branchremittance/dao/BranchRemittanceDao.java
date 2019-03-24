@@ -10,16 +10,23 @@ import javax.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.amxlib.model.CustomerModel;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.ApplicationProcedureDao;
 import com.amx.jax.dbmodel.CollectDetailModel;
 import com.amx.jax.dbmodel.CollectionModel;
+import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.ForeignCurrencyAdjust;
 import com.amx.jax.dbmodel.UserFinancialYear;
 import com.amx.jax.dbmodel.remittance.AdditionalInstructionData;
+import com.amx.jax.dbmodel.remittance.BeneficiaryAccountException;
 import com.amx.jax.dbmodel.remittance.LoyaltyClaimRequest;
 import com.amx.jax.dbmodel.remittance.LoyaltyPointsModel;
 import com.amx.jax.dbmodel.remittance.RemitApplAmlModel;
@@ -30,6 +37,7 @@ import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.RemittanceBenificiary;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.repository.AdditionalInstructionDataRepository;
 import com.amx.jax.repository.ForeignCurrencyAdjustRepository;
@@ -93,6 +101,13 @@ public class BranchRemittanceDao {
 	
 	@Autowired
 	ILoyaltyPointRepository loyalPointsRepository;
+	
+	@Autowired
+	MetaData metaData;
+	
+	@Autowired
+	JdbcTemplate jdbcTemplate;
+	
 
 	@Transactional
 	@SuppressWarnings("unchecked")
@@ -195,7 +210,7 @@ public class BranchRemittanceDao {
 					remitAmlRepository.save(remitaml);
 				}
 				i++;
-				updateApplication(remitTrnx);
+				//updateApplication(remitTrnx);
 		}
 			
 			if(loyaltyPoitns!=null && !loyaltyPoitns.isEmpty()) {
@@ -237,20 +252,45 @@ public class BranchRemittanceDao {
 		//}
 	}
 	
-	//@Transactional
-	public void deleteFromCart(RemittanceApplication appl,String status) {
-		//RemittanceApplication appl = appRepo.findOne(applId);
-		try {
+	//public void deleteFromCart(RemittanceApplication appl,String status) {
+	
+	@Transactional
+	public void deleteFromCart(BigDecimal applNo,String status) {
+		//RemittanceApplication appl = getApplicationDetails(applNo);
+		RemittanceApplication appl = appRepo.getApplicationForDelete(new Customer(metaData.getCustomerId()),applNo);
 		
 		if (appl != null) {
 			appl.setRemittanceApplicationId(appl.getRemittanceApplicationId());
 			appl.setIsactive(status);
 			appRepo.save(appl);			
 		}
-		}catch(Exception e) {
-			throw new GlobalException(JaxError.UNKNOWN_JAX_ERROR,e.getMessage());
-		}
+	}
+	
+	@Transactional
+	private RemittanceApplication getApplicationDetails(BigDecimal applNo) {
+		RemittanceApplication appl = appRepo.findOne(applNo);
+		return appl;
 	}
 	
 	
+	public void deleteFromCartUsingJdbcTemplate(BigDecimal applNo,String status) {
+		String sql ="UPDATE EX_APPL_TRNX set ISACTIVE='"+status+"' where REMITTANCE_APPLICATION_ID ="+applNo;
+		if(JaxUtil.isNullZeroBigDecimalCheck(applNo)) {
+			jdbcTemplate.update(sql);
+		}
+	}
+	
+	public void updateApplicationToMoveEmos(RemittanceResponseDto responseDto) {
+		List<RemittanceTransaction> remitTrnxList  = remitTrnxRepository.findByCollectionDocIdAndCollectionDocFinanceYearAndCollectionDocumentNo(responseDto.getCollectionDocumentCode(), responseDto.getCollectionDocumentFYear(), responseDto.getCollectionDocumentNo());
+		if(remitTrnxList!=null && !remitTrnxList.isEmpty()) {
+			for(RemittanceTransaction remitTrnx :remitTrnxList) {
+			RemittanceApplication appl = appRepo.getApplicationDetailsForUpdate(remitTrnx.getCustomerId(), remitTrnx.getApplicationDocumentNo(), remitTrnx.getApplicationFinanceYear());
+			if(JaxUtil.isNullZeroBigDecimalCheck(appl.getRemittanceApplicationId())) {
+			String sql ="UPDATE EX_APPL_TRNX set APPLICATION_STATUS='T' , TRANSACTION_FINANCE_YEAR ="+remitTrnx.getDocumentFinanceYr()+" ,TRANSACTION_DOCUMENT_NO="+remitTrnx.getDocumentNo()+" ,BLACK_LIST_INDICATOR ='"+remitTrnx.getBlackListIndicator()+"' where REMITTANCE_APPLICATION_ID ="+appl.getRemittanceApplicationId();
+			System.out.println("sql :"+sql);
+			jdbcTemplate.update(sql);
+			}
+		}
+	}
+ }
 }

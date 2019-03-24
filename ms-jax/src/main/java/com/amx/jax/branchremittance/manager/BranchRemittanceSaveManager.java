@@ -11,16 +11,24 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
+import com.amx.amxlib.meta.model.TransactionHistroyDTO;
+import com.amx.amxlib.model.PersonInfo;
+import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.branchremittance.dao.BranchRemittanceDao;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dal.RoutingProcedureDao;
 import com.amx.jax.dao.ApplicationProcedureDao;
+import com.amx.jax.dao.JaxEmployeeDao;
+import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dbmodel.AuthenticationLimitCheckView;
 import com.amx.jax.dbmodel.BankMasterModel;
 import com.amx.jax.dbmodel.CollectDetailModel;
@@ -50,6 +58,8 @@ import com.amx.jax.dbmodel.remittance.RemittanceBenificiary;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.dbmodel.remittance.ShoppingCartDetails;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.manager.PromotionManager;
+import com.amx.jax.manager.RemittanceManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.remittance.BranchApplicationDto;
 import com.amx.jax.model.request.remittance.BranchRemittanceRequestModel;
@@ -65,6 +75,7 @@ import com.amx.jax.repository.IBeneBankBlackCheckDao;
 import com.amx.jax.repository.ICurrencyDao;
 import com.amx.jax.repository.IDocumentDao;
 import com.amx.jax.repository.IPaymentModeDescRespo;
+import com.amx.jax.repository.IPlaceOrderDao;
 import com.amx.jax.repository.IRemitApplAmlRepository;
 import com.amx.jax.repository.IRemittanceAmlRepository;
 import com.amx.jax.repository.IRemittanceTransactionRepository;
@@ -75,7 +86,14 @@ import com.amx.jax.repository.RemittanceApplicationRepository;
 import com.amx.jax.repository.remittance.LocalBankDetailsRepository;
 import com.amx.jax.service.CompanyService;
 import com.amx.jax.service.FinancialService;
+import com.amx.jax.service.JaxEmailNotificationService;
+import com.amx.jax.services.JaxNotificationService;
 import com.amx.jax.services.RemittanceApplicationService;
+import com.amx.jax.services.ReportManagerService;
+import com.amx.jax.services.TransactionHistroyService;
+import com.amx.jax.userservice.dao.CusmosDao;
+import com.amx.jax.userservice.dao.CustomerDao;
+import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.DateUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.RoundUtil;
@@ -151,7 +169,37 @@ public class BranchRemittanceSaveManager {
 	
 	@Autowired
 	IRemittanceTransactionRepository remitTrnxRepository;
+	
+	@Autowired
+	TransactionHistroyService transactionHistroyService;
+	
+	@Autowired
+	private RemittanceApplicationDao remitAppDao;
+	
+	@Autowired
+	private ReportManagerService reportManagerService;
+	@Autowired
+	PromotionManager promotionManager;
+	@Autowired
+	JaxEmployeeDao employeeDao;
+	@Autowired
+	UserService userService;
+	
+    @Autowired
+    IPlaceOrderDao placeOrderdao;
+	@Autowired
+	RemittanceManager remittanceManager;
+	
+	@Autowired
+	JaxEmailNotificationService jaxEmailNotificationService;
+	
+	@Autowired
+	JaxNotificationService notificationService;
 
+	//@Autowired
+	//CustomerDao customerDao;
+	@Autowired
+	private CustomerDao customerDao;
 	
 	
 	List<RemittanceAml>			amlList	 = new ArrayList<>();
@@ -175,6 +223,7 @@ public class BranchRemittanceSaveManager {
 		RemittanceResponseDto responseDto = saveRemittance(remittanceRequestModel);
 		
 		if(responseDto!=null && JaxUtil.isNullZeroBigDecimalCheck(responseDto.getCollectionDocumentNo())) {
+			brRemittanceDao.updateApplicationToMoveEmos(responseDto);
 			PaymentResponseDto paymentResponse = new PaymentResponseDto();
 			paymentResponse.setCollectionDocumentCode(responseDto.getCollectionDocumentCode());
 			paymentResponse.setCollectionDocumentNumber(responseDto.getCollectionDocumentNo());
@@ -432,7 +481,7 @@ public class BranchRemittanceSaveManager {
 					collectDetails.setDocumentDate(new Date());
 					collectDetails.setDocumentLineNo(new BigDecimal(i++));
 					collectDetails.setExCurrencyMaster(collect.getExCurrencyMaster());
-					collectDetails.setCollAmt(new BigDecimal(1));
+					collectDetails.setCollAmt(loyaltyAmount);
 					PaymentModeModel payMode = paymentModeRepository.getPaymentModeDetails(ConstantDocument.VOCHERCODE);
 					collectDetails.setCollectionMode(payMode.getPaymentModeCode());
 					collectDetails.setPaymentModeId(payMode.getPaymentModeId());
@@ -849,7 +898,11 @@ private LoyaltyClaimRequest saveLoyalTyClaimRequest(List<CollectDetailModel> col
 		for(CollectDetailModel collectDetail : collectDetailModelList) {
 			if(collectDetail.getCollectionMode().equalsIgnoreCase(ConstantDocument.VOCHERCODE)) {
 				Lclaim.setClaimDate(new Date());
-				Lclaim.setClaimPoints(new BigDecimal(1000));
+				if(collectDetail.getCollAmt().compareTo(BigDecimal.ONE)>0) {
+					Lclaim.setClaimPoints(collectDetail.getCollAmt());
+				}else {
+					Lclaim.setClaimPoints(collectDetail.getCollAmt());
+				}
 				Lclaim.setEcLocCode(collectDetail.getLocCode());
 				Lclaim.setDocfyr(collectDetail.getDocumentFinanceYear());
 				Lclaim.setEcmCode(routingProDao.getEcmCode());
@@ -1107,7 +1160,44 @@ public BigDecimal generateDocumentNumber(BigDecimal appCountryId,BigDecimal comp
 		  
 	 }
 	
-	 
+ } 
+ 
+ 
+ public Boolean sendReceiptOnEmail(BigDecimal collectionDocNo,BigDecimal collectionDocYear ,BigDecimal collectionDocCode){
+	 Boolean validStatus = Boolean.FALSE;
+	 PaymentResponseDto paymentResponse =new PaymentResponseDto();
+	 try {
+	 TransactionHistroyDTO trxnDto = new TransactionHistroyDTO();
+		Customer customer = customerDao.getCustById(metaData.getCustomerId());
+		paymentResponse.setCollectionDocumentCode(collectionDocCode);
+		paymentResponse.setCollectionDocumentNumber(collectionDocNo);
+		paymentResponse.setCollectionFinanceYear(collectionDocYear);
+		
+		trxnDto.setCollectionDocumentCode(collectionDocCode);
+		trxnDto.setCollectionDocumentFinYear(collectionDocYear);
+		trxnDto.setCollectionDocumentNo(collectionDocNo);
+		trxnDto.setCustomerId(customer.getCustomerId());
+		trxnDto.setCompanyId(metaData.getCompanyId());
+		trxnDto.setLanguageId(metaData.getLanguageId());
+		trxnDto.setApplicationCountryId(metaData.getCountryId());
+		trxnDto.setCustomerReference(customer.getCustomerReference());
+		reportManagerService.generatePersonalRemittanceReceiptReportDetails(trxnDto, Boolean.TRUE);
+		List<RemittanceReceiptSubreport> rrsrl = reportManagerService.getRemittanceReceiptSubreportList();
+		PersonInfo personinfo = new PersonInfo();
+		try {
+			BeanUtils.copyProperties(personinfo, customer);
+		} catch (Exception e) {
+		}
+		
+		if(personinfo!=null && rrsrl != null && !StringUtils.isBlank(personinfo.getEmail())) {
+			notificationService.sendTransactionNotification(rrsrl.get(0), personinfo);
+			validStatus = Boolean.TRUE;
+		}
+	 }catch(Exception e) {
+		  validStatus = Boolean.FALSE;
+		  throw new  GlobalException(JaxError.UNKNOWN_JAX_ERROR,e.getMessage());
+	 }
+	    return validStatus;
  }
  
-}
+ }

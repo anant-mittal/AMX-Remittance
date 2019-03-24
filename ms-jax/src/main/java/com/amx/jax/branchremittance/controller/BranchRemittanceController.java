@@ -229,6 +229,13 @@ public class BranchRemittanceController implements IRemittanceService {
 		return branchRemitService.fetchCustomerDeclarationReport(collectionDocNo,collectionDocYear,collectionDocCode);
 	}
 
+	@RequestMapping(value=Path.BR_RECEIPT_ON_EMAIL,method=RequestMethod.POST)
+	@Override
+	public AmxApiResponse<BoolRespModel, Object> sendReceiptOnEmail(BigDecimal collectionDocNo, BigDecimal collectionDocYear, BigDecimal collectionDocCode) {
+		BoolRespModel result =  branchRemitService.sendReceiptOnEmail(collectionDocNo,collectionDocYear,collectionDocCode);
+		return AmxApiResponse.build(result);
+	}
+
 
 
 	
