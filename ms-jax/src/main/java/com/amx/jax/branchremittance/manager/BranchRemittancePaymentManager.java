@@ -115,13 +115,13 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 			if(lstCustomerShopping != null && lstCustomerShopping.size() != 0) {
 				for (ShoppingCartDetails customerApplDto : lstCustomerShopping) {
 					BigDecimal fcCurrencyId = customerApplDto.getForeignCurrency();
-					totalLocalAmount = totalLocalAmount.add(customerApplDto.getLocalTranxAmount());
-					totalNetAmount   =totalNetAmount.add(customerApplDto.getLocalNextTranxAmount());
-					totalTrnxFees    =totalTrnxFees.add(customerApplDto.getLocalCommisionAmount());
+					totalLocalAmount = totalLocalAmount.add(customerApplDto.getLocalTranxAmount()==null?BigDecimal.ZERO:customerApplDto.getLocalTranxAmount());
+					totalNetAmount   =totalNetAmount.add(customerApplDto.getLocalNextTranxAmount()==null?BigDecimal.ZERO:customerApplDto.getLocalNextTranxAmount());
+					totalTrnxFees    =totalTrnxFees.add(customerApplDto.getLocalCommisionAmount()==null?BigDecimal.ZERO:customerApplDto.getLocalCommisionAmount());
 					totalLyltyPointAmt =totalLyltyPointAmt.add(customerApplDto.getLoyaltsPointencahsed()==null?BigDecimal.ZERO:customerApplDto.getLoyaltsPointencahsed());
 					
 					if(customerApplDto.getLoyaltsPointIndicator()!=null && customerApplDto.getLoyaltsPointIndicator().equalsIgnoreCase(ConstantDocument.Yes) && totalCustomerLoyaltyPoits.compareTo(new BigDecimal(1000))>=0) {
-						totalCustomerLoyaltyPoits = totalCustomerLoyaltyPoits.subtract(new BigDecimal(1000));
+						totalCustomerLoyaltyPoits = totalCustomerLoyaltyPoits.subtract(customerApplDto.getLoyaltsPointencahsed()==null?BigDecimal.ZERO:customerApplDto.getLoyaltsPointencahsed());
 					}
 					
 					cartList.setTotalLocalAmount(totalLocalAmount);
@@ -129,7 +129,7 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 					cartList.setTotalTrnxFees(totalTrnxFees);
 					cartList.setTotalLyltyPointAmt(totalLyltyPointAmt);
 					cartList.setTotalLoyaltyPointAvaliable(totalCustomerLoyaltyPoits);
-					cartList.setTotalNetCollectionAmount(totalNetAmount.subtract(totalLyltyPointAmt));
+					cartList.setTotalNetCollectionAmount(totalNetAmount.subtract(totalLyltyPointAmt==null?BigDecimal.ZERO:totalLyltyPointAmt));
 					
 					if(fcCurrencyId == null || fcCurrencyId.compareTo(BigDecimal.ZERO) == 0){
 						throw new GlobalException(JaxError.NULL_CURRENCY_ID, "Null foreign currency id passed");

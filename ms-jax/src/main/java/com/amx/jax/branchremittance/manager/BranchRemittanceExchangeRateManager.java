@@ -183,11 +183,15 @@ public class BranchRemittanceExchangeRateManager {
 		BigDecimal corpDiscount = BigDecimal.ZERO;
 		Customer customer = new Customer();
 		customer.setCustomerId(metaData.getCustomerId());
+		List<CorporateMasterModel> coporatList = null;
 		List<CustomerEmploymentInfo> empInfo = customerEmployeRepository.findByFsCustomerAndIsActive(customer, ConstantDocument.Yes);
 		if(empInfo!=null && !empInfo.isEmpty() && empInfo.size()>1) {
 			throw new GlobalException(JaxError.EXCHANGE_RATE_NOT_FOUND, "More than one record found for corporate employee discount on commission "+metaData.getCustomerId());
 		}
-		List<CorporateMasterModel> coporatList = corporateMasterRepository.findByCorporateMasterIdAndIsActive(empInfo.get(0).getCorporateMasterId(), ConstantDocument.Yes);
+		
+		if(empInfo!=null && !empInfo.isEmpty() && empInfo.size()==1 ) {
+			coporatList = corporateMasterRepository.findByCorporateMasterIdAndIsActive(empInfo.get(0).getCorporateMasterId(), ConstantDocument.Yes);
+		}
 		
 		if(coporatList !=null && !coporatList.isEmpty() && coporatList.size()>1) {
 			throw new GlobalException(JaxError.EXCHANGE_RATE_NOT_FOUND, "TOO MANY CORPORATE EMPLOYEE DISCOUNT ON COMMISSION DEFINED FOR COMPANY ID "+empInfo.get(0).getCorporateMasterId());
