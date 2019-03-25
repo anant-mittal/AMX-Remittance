@@ -26,7 +26,6 @@ import com.amx.jax.client.JaxStompClient;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxDbConfig;
 import com.amx.jax.dao.FcSaleApplicationDao;
-import com.amx.jax.dbmodel.JaxConfig;
 import com.amx.jax.dbmodel.ShippingAddressDetail;
 import com.amx.jax.dbmodel.fx.FxDeliveryDetailsModel;
 import com.amx.jax.dbmodel.fx.FxDeliveryRemark;

@@ -1,5 +1,11 @@
 package com.amx.jax.branchremittance.manager;
 
+import static com.amx.amxlib.constant.ApplicationProcedureParam.P_DELIVERY_MODE_ID;
+import static com.amx.amxlib.constant.ApplicationProcedureParam.P_FOREIGN_CURRENCY_ID;
+import static com.amx.amxlib.constant.ApplicationProcedureParam.P_REMITTANCE_MODE_ID;
+import static com.amx.amxlib.constant.ApplicationProcedureParam.P_ROUTING_BANK_ID;
+import static com.amx.amxlib.constant.ApplicationProcedureParam.P_ROUTING_COUNTRY_ID;
+
 import java.math.BigDecimal;
 import java.util.Map;
 
@@ -23,17 +29,13 @@ import com.amx.jax.exrateservice.service.JaxDynamicPriceService;
 import com.amx.jax.manager.RemittanceTransactionManager;
 import com.amx.jax.manager.remittance.RemittanceApplicationParamManager;
 import com.amx.jax.meta.MetaData;
-import com.amx.jax.model.request.remittance.AbstractRemittanceApplicationRequestModel;
 import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.request.remittance.IRemittanceApplicationParams;
-import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.model.response.remittance.BranchExchangeRateBreakup;
 import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeRateResponse;
 import com.amx.jax.services.BeneficiaryService;
 import com.amx.jax.services.BeneficiaryValidationService;
 import com.amx.jax.userservice.service.UserService;
-
-import static com.amx.amxlib.constant.ApplicationProcedureParam.*;
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Component
@@ -63,9 +65,9 @@ public class BranchRemittanceExchangeRateManager {
 		if (request.getForeignAmountBD() == null && request.getLocalAmountBD() == null) {
 			throw new GlobalException(JaxError.INVALID_AMOUNT, "Either local or foreign amount must be present");
 		}
-		JaxValidationUtil.validatePositiveNumber(request.getForeignAmountBD(), "Foreign Amount should be positive",
+ 		JaxValidationUtil.validatePositiveNumber(request.getForeignAmountBD(), "Foreign Amount should be positive",
 				JaxError.INVALID_AMOUNT);
-		JaxValidationUtil.validatePositiveNumber(request.getForeignAmountBD(), "Local Amount should be positive", JaxError.INVALID_AMOUNT);
+		JaxValidationUtil.validatePositiveNumber(request.getLocalAmountBD(), "Local Amount should be positive", JaxError.INVALID_AMOUNT);
 		JaxValidationUtil.validatePositiveNumber(request.getCorrespondanceBankIdBD(), "corespondance bank must be positive number");
 		JaxValidationUtil.validatePositiveNumber(request.getBeneficiaryRelationshipSeqIdBD(), "bene seq id bank must be positive number");
 		JaxValidationUtil.validatePositiveNumber(request.getServiceIndicatorIdBD(), "service indic id bank must be positive number");

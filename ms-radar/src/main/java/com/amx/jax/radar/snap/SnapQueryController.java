@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.amx.jax.client.snap.SnapConstants.SnapQueryTemplate;
 import com.amx.jax.client.snap.SnapModels.SnapModelWrapper;
+import com.amx.jax.radar.jobs.customer.OracleVarsCache;
+import com.amx.jax.radar.jobs.customer.OracleVarsCache.DBSyncJobs;
 import com.amx.jax.rest.RestService;
 
 @Controller
@@ -23,6 +25,9 @@ public class SnapQueryController {
 
 	@Autowired
 	RestService restService;
+
+	@Autowired
+	OracleVarsCache oracleVarsCache;
 
 	@ResponseBody
 	@RequestMapping(value = "/snap/query/{snapView}", method = RequestMethod.POST)
@@ -36,6 +41,22 @@ public class SnapQueryController {
 	public SnapModelWrapper snapView(@PathVariable(value = "snapView") SnapQueryTemplate snapView,
 			@RequestBody Map<String, Object> params) throws IOException {
 		return snapQueryTemplateService.execute(snapView, params);
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/snap/reset/start/{dbSyncJobs}", method = RequestMethod.GET)
+	public String snapResetStart(@PathVariable(value = "dbSyncJobs") DBSyncJobs dbSyncJobs,
+			@RequestBody Map<String, Object> params) throws IOException {
+		oracleVarsCache.clearStampStart(dbSyncJobs);
+		return "CLEARED";
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/snap/reset/end/{dbSyncJobs}", method = RequestMethod.GET)
+	public String snapResetEnd(@PathVariable(value = "dbSyncJobs") DBSyncJobs dbSyncJobs,
+			@RequestBody Map<String, Object> params) throws IOException {
+		oracleVarsCache.clearStampEnd(dbSyncJobs);
+		return "CLEARED";
 	}
 
 }

@@ -1,5 +1,11 @@
 package com.amx.jax.branchremittance.manager;
 
+import static com.amx.amxlib.constant.ApplicationProcedureParam.P_DELIVERY_MODE_ID;
+import static com.amx.amxlib.constant.ApplicationProcedureParam.P_REMITTANCE_MODE_ID;
+import static com.amx.amxlib.constant.ApplicationProcedureParam.P_ROUTING_BANK_BRANCH_ID;
+import static com.amx.amxlib.constant.ApplicationProcedureParam.P_ROUTING_BANK_ID;
+import static com.amx.amxlib.constant.ApplicationProcedureParam.P_SERVICE_MASTER_ID;
+
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
@@ -14,8 +20,6 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.amx.amxlib.constant.ApplicationProcedureParam;
-import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.branchremittance.service.BranchRemittanceExchangeRateService;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.remittance.IRemittanceApplicationParams;
@@ -26,7 +30,6 @@ import com.amx.jax.model.response.remittance.RoutingBranchDto;
 import com.amx.jax.model.response.remittance.RoutingResponseDto;
 import com.amx.jax.model.response.remittance.RoutingServiceDto;
 import com.amx.jax.routing.ImpsRoutingLogic;
-import static com.amx.amxlib.constant.ApplicationProcedureParam.*;
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Component

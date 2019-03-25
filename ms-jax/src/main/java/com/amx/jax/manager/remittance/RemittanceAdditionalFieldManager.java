@@ -28,7 +28,6 @@ import com.amx.jax.dbmodel.bene.BeneficaryMaster;
 import com.amx.jax.dbmodel.remittance.AdditionalDataDisplayView;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.model.request.remittance.RemittanceAdditionalBeneFieldModel;
-import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.repository.IAdditionalDataDisplayDao;
 import com.amx.jax.services.BankService;
 import com.amx.jax.services.BeneficiaryService;
@@ -59,6 +58,7 @@ public class RemittanceAdditionalFieldManager {
 		Map<String, Object> additionalFields = model.getAdditionalFields();
 		boolean isAdditionalFieldMissing = false;
 		addDataFromAdditionalDataDisplay(allJaxConditionalFields, flexFieldMap);
+		setDefaultDataFromDb(allJaxConditionalFields, model);
 
 		for (JaxConditionalFieldDto jaxConditionalField : allJaxConditionalFields) {
 			if (additionalFields == null || additionalFields.get(jaxConditionalField.getField().getName()) == null) {
@@ -79,6 +79,32 @@ public class RemittanceAdditionalFieldManager {
 					"Additional fields required");
 			ex.setMeta(missingJaxConditionalFields);
 			throw ex;
+		}
+	}
+
+	private void setDefaultDataFromDb(List<JaxConditionalFieldDto> allJaxConditionalFields,
+			RemittanceAdditionalBeneFieldModel model) {
+		if (allJaxConditionalFields != null) {
+			BenificiaryListView beneficiaryDetail = beneficiaryService.getBeneByIdNo(model.getBeneId());
+			BeneficaryMaster beneficaryMaster = beneficiaryService
+					.getBeneficiaryMasterBybeneficaryMasterSeqId(beneficiaryDetail.getBeneficaryMasterSeqId());
+			for (JaxConditionalFieldDto jaxConditionalFieldDto : allJaxConditionalFields) {
+				JaxDynamicField jaxDynamicField = JaxDynamicField.valueOf(jaxConditionalFieldDto.getField().getName());
+
+				switch (jaxDynamicField) {
+				case BENE_FLAT_NO:
+					jaxConditionalFieldDto.getField().setDefaultValue(beneficaryMaster.getFlatNo());
+					break;
+				case BENE_HOUSE_NO:
+					jaxConditionalFieldDto.getField().setDefaultValue(beneficaryMaster.getBuildingNo());
+					break;
+				case BENE_STREET_NO:
+					jaxConditionalFieldDto.getField().setDefaultValue(beneficaryMaster.getStreetNo());
+					break;
+				default:
+					break;
+				}
+			}
 		}
 	}
 
@@ -115,8 +141,16 @@ public class RemittanceAdditionalFieldManager {
 	private boolean isDynamicFieldRequired(JaxConditionalFieldDto jaxConditionalField,
 			RemittanceAdditionalBeneFieldModel model, Map<String, AdditionalDataDisplayView> flexFieldMap) {
 		JaxDynamicField jaxDynamicField = JaxDynamicField.valueOf(jaxConditionalField.getField().getName());
-		if (jaxDynamicField.getFlexField() != null && flexFieldMap.get(jaxDynamicField.getFlexField()) == null) {
-			return false;
+		if (jaxDynamicField.getFlexField() != null) {
+			AdditionalDataDisplayView addlDataDisplay = flexFieldMap.get(jaxDynamicField.getFlexField());
+			if (addlDataDisplay == null) {
+				return false;
+			}
+			if (ConstantDocument.Yes.equalsIgnoreCase(addlDataDisplay.getIsActive())) {
+				return true;
+			} else {
+				return false;
+			}
 		}
 		switch (jaxDynamicField) {
 		case BENE_BANK_IBAN_NUMBER:
@@ -147,6 +181,9 @@ public class RemittanceAdditionalFieldManager {
 		List<JaxConditionalFieldDto> allJaxConditionalFields = apiResponse.getResults();
 		Map<String, Object> fieldValues = model.getAdditionalFields();
 		if (allJaxConditionalFields != null && fieldValues != null) {
+			BenificiaryListView beneficiaryDetail = beneficiaryService.getBeneByIdNo(model.getBeneId());
+			BeneficaryMaster beneficaryMaster = beneficiaryService
+					.getBeneficiaryMasterBybeneficaryMasterSeqId(beneficiaryDetail.getBeneficaryMasterSeqId());
 			for (JaxConditionalFieldDto jaxConditionalField : allJaxConditionalFields) {
 				Object fieldValue = fieldValues.get(jaxConditionalField.getField().getName());
 				if (fieldValue == null || StringUtils.isBlank(fieldValue.toString())) {
@@ -155,7 +192,6 @@ public class RemittanceAdditionalFieldManager {
 				if (JaxDynamicField.BENE_BANK_IBAN_NUMBER.name().equals(jaxConditionalField.getField().getName())) {
 					// set iban number
 					String ibanNumber = (String) fieldValue;
-					BenificiaryListView beneficiaryDetail = beneficiaryService.getBeneByIdNo(model.getBeneId());
 					BeneficaryAccount beneficaryAccount = beneficiaryService
 							.getBeneAccountByAccountSeqId(beneficiaryDetail.getBeneficiaryAccountSeqId());
 					beneficaryAccount.setIbanNumber(ibanNumber);
@@ -165,9 +201,6 @@ public class RemittanceAdditionalFieldManager {
 				}
 				if (JaxDynamicField.BENE_FLAT_NO.name().equals(jaxConditionalField.getField().getName())
 						&& fieldValue != null) {
-					BenificiaryListView beneficiaryDetail = beneficiaryService.getBeneByIdNo(model.getBeneId());
-					BeneficaryMaster beneficaryMaster = beneficiaryService
-							.getBeneficiaryMasterBybeneficaryMasterSeqId(beneficiaryDetail.getBeneficaryMasterSeqId());
 					beneficaryMaster.setFlatNo(fieldValue.toString());
 					logger.info("setting flat no number for bene master seq id {} , : {} ",
 							beneficiaryDetail.getBeneficaryMasterSeqId(), fieldValue);
@@ -175,9 +208,6 @@ public class RemittanceAdditionalFieldManager {
 				}
 				if (JaxDynamicField.BENE_HOUSE_NO.name().equals(jaxConditionalField.getField().getName())
 						&& fieldValue != null) {
-					BenificiaryListView beneficiaryDetail = beneficiaryService.getBeneByIdNo(model.getBeneId());
-					BeneficaryMaster beneficaryMaster = beneficiaryService
-							.getBeneficiaryMasterBybeneficaryMasterSeqId(beneficiaryDetail.getBeneficaryMasterSeqId());
 					beneficaryMaster.setBuildingNo(fieldValue.toString());
 					logger.info("setting house no number for bene master seq id {} , : {} ",
 							beneficiaryDetail.getBeneficaryMasterSeqId(), fieldValue);
@@ -185,9 +215,6 @@ public class RemittanceAdditionalFieldManager {
 				}
 				if (JaxDynamicField.BENE_STREET_NO.name().equals(jaxConditionalField.getField().getName())
 						&& fieldValue != null) {
-					BenificiaryListView beneficiaryDetail = beneficiaryService.getBeneByIdNo(model.getBeneId());
-					BeneficaryMaster beneficaryMaster = beneficiaryService
-							.getBeneficiaryMasterBybeneficaryMasterSeqId(beneficiaryDetail.getBeneficaryMasterSeqId());
 					beneficaryMaster.setStreetNo(fieldValue.toString());
 					logger.info("setting street no number for bene master seq id {} , : {} ",
 							beneficiaryDetail.getBeneficaryMasterSeqId(), fieldValue);

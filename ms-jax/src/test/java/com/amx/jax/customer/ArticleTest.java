@@ -17,7 +17,6 @@ import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.UserFingerprintResponseModel;
 import com.amx.jax.dal.ArticleDao;
-import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.scope.TenantContextHolder;

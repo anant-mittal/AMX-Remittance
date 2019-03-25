@@ -16,7 +16,7 @@ public class UserClient {
 	 *
 	 */
 	public enum Channel {
-		ONLINE, KIOSK, MOBILE, BRANCH, THIRD_PARTY;
+		ONLINE, KIOSK, MOBILE, BRANCH, THIRD_PARTY, SYSTEM, UNKNOWN;
 	}
 
 	/**
@@ -90,7 +90,7 @@ public class UserClient {
 		ONLINE_WEB(DeviceType.COMPUTER), ONLINE_AND(DeviceType.MOBILE), ONLINE_IOS(DeviceType.MOBILE),
 
 		// Unknown
-		UNKNOWN;
+		SYSTEM, UNKNOWN;
 
 		DeviceType deviceType;
 

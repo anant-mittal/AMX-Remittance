@@ -2,6 +2,7 @@ package com.amx.jax.pricer.util;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,15 +14,15 @@ import com.amx.jax.pricer.dto.ExchangeRateDetails;
 
 public class PricingRateDetailsDTO {
 
-	private List<ExchangeRateDetails> sellRateDetails;
+	private List<ExchangeRateDetails> sellRateDetails = new ArrayList<>();
 
-	private Map<BigDecimal, BankDetailsDTO> bankDetails;
+	private Map<BigDecimal, BankDetailsDTO> bankDetails = new HashMap<>();
 
-	private Map<BigDecimal, List<ViewExGLCBAL>> bankGlcBalMap;
+	private Map<BigDecimal, List<ViewExGLCBAL>> bankGlcBalMap = new HashMap<>();
 
 	private Map<BigDecimal, BigDecimal> bankGLCBALAvgRateMap = new HashMap<BigDecimal, BigDecimal>();
 
-	private OnlineMarginMarkup margin;
+	private OnlineMarginMarkup margin = null;
 
 	private Map<String, Object> info = new HashMap<String, Object>();
 
@@ -84,20 +85,47 @@ public class PricingRateDetailsDTO {
 
 			BigDecimal sumRateCurBal = new BigDecimal(0);
 			BigDecimal sumRateFcCurBal = new BigDecimal(0);
+			BigDecimal avgRate = new BigDecimal(0);
 
-			for (ViewExGLCBAL glcbal : glcBalList) {
+			/** hot fix  13/03/2019 **/
+			if(glcBalList !=null && !glcBalList.isEmpty()) {
+				if(glcBalList.size()>1) {
+					for (ViewExGLCBAL glcbal : glcBalList) {
+						sumRateCurBal = sumRateCurBal
+								.add(null == glcbal.getRateCurBal() ? new BigDecimal(0) : glcbal.getRateCurBal());
+						sumRateFcCurBal = sumRateFcCurBal
+								.add(null == glcbal.getRateFcCurBal() ? new BigDecimal(0) : glcbal.getRateFcCurBal());
+
+
+					}
+
+					if (sumRateCurBal.doubleValue() != 0 || sumRateFcCurBal.doubleValue() != 0) {
+						avgRate = sumRateCurBal.divide(sumRateFcCurBal, 10, RoundingMode.HALF_UP);
+					}
+
+				}else {
+					for (ViewExGLCBAL glcbal : glcBalList) {
+						avgRate = glcbal.getRateAvgRate();
+					}
+				}
+
+			}
+
+			/** original  code **/ 
+			/*for (ViewExGLCBAL glcbal : glcBalList) {
 				sumRateCurBal = sumRateCurBal
 						.add(null == glcbal.getRateCurBal() ? new BigDecimal(0) : glcbal.getRateCurBal());
 				sumRateFcCurBal = sumRateFcCurBal
 						.add(null == glcbal.getRateFcCurBal() ? new BigDecimal(0) : glcbal.getRateFcCurBal());
+				
 			}
 
-			BigDecimal avgRate = new BigDecimal(0);
-
+			
 			if (sumRateCurBal.doubleValue() != 0 || sumRateFcCurBal.doubleValue() != 0) {
 				avgRate = sumRateCurBal.divide(sumRateFcCurBal, 10, RoundingMode.HALF_UP);
 			}
-
+			 */
+			
 			this.bankGLCBALAvgRateMap.put(bankId, avgRate);
 
 			return avgRate;

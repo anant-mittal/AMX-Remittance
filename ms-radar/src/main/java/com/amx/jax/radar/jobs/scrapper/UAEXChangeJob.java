@@ -22,8 +22,8 @@ import com.amx.jax.client.snap.ISnapService.RateSource;
 import com.amx.jax.client.snap.ISnapService.RateType;
 import com.amx.jax.dict.Currency;
 import com.amx.jax.logger.LoggerService;
-import com.amx.jax.mcq.Candidate;
-import com.amx.jax.mcq.MCQLocker;
+import com.amx.jax.mcq.shedlock.SchedulerLock;
+import com.amx.jax.mcq.shedlock.SchedulerLock.LockContext;
 import com.amx.jax.radar.AESRepository.BulkRequestBuilder;
 import com.amx.jax.radar.ARadarTask;
 import com.amx.jax.radar.ESRepository;
@@ -66,18 +66,10 @@ public class UAEXChangeJob extends ARadarTask {
 
 	public static final Logger LOGGER = LoggerService.getLogger(UAEXChangeJob.class);
 
-	private Candidate LOCK = new Candidate().fixedDelay(AmxCurConstants.INTERVAL_MIN_30)
-			.maxAge(AmxCurConstants.INTERVAL_HRS).queue(UAEXChangeJob.class);
-
-	@Autowired
-	private MCQLocker mcq;
-
+	@SchedulerLock(lockMaxAge = AmxCurConstants.INTERVAL_HRS, context = LockContext.BY_CLASS)
 	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_MIN_30)
 	public void lockedTask() {
-		if (mcq.lead(LOCK)) {
-			doTask();
-			mcq.resign(LOCK);
-		}
+		doTask();
 	}
 
 	public void doTask() {
@@ -140,7 +132,7 @@ public class UAEXChangeJob extends ARadarTask {
 					trnsfrRate.setrType(type);
 					trnsfrRate.setrRate(adjustRate(type, cur, rate));
 					// System.out.println(JsonUtil.toJson(trnsfrRate));
-					builder.update(oracleVarsCache.getIndex(DBSyncJobs.XRATE),
+					builder.update(oracleVarsCache.getIndex(DBSyncJobs.XRATE_JOB),
 							new OracleViewDocument(trnsfrRate));
 				}
 			}

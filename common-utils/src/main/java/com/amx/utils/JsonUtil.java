@@ -18,6 +18,7 @@ import com.amx.utils.ArgUtil.EnumById;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
@@ -32,7 +33,7 @@ public final class JsonUtil {
 	/**
 	 * Instantiates a new json util.
 	 */
-	private JsonUtil() {
+	public JsonUtil() {
 		throw new IllegalStateException("This is a class with static methods and should not be instantiated");
 	}
 
@@ -151,6 +152,7 @@ public final class JsonUtil {
 		module.addSerializer(BigDecimal.class, new BigDecimalSerializer());
 		module.addSerializer(JsonSerializerType.class, new JsonSerializerTypeSerializer());
 		mapper.setSerializationInclusion(Include.NON_NULL);
+		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		mapper.registerModule(module);
 		return mapper;
 	}

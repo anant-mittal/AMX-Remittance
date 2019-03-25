@@ -181,6 +181,15 @@ public class CustomerEmploymentDetails {
 	public void setCompanyId(BigDecimal companyId) {
 		this.companyId = companyId;
 	}
+
+	@Override
+	public String toString() {
+		return "CustomerEmploymentDetails [employmentTypeId=" + employmentTypeId + ", professionId=" + professionId
+				+ ", employer=" + employer + ", articleId=" + articleId + ", articleDetailsId=" + articleDetailsId
+				+ ", incomeRangeId=" + incomeRangeId + ", area=" + area + ", block=" + block + ", street=" + street
+				+ ", postal=" + postal + ", officeTelephone=" + officeTelephone + ", cityId=" + cityId + ", districtId="
+				+ districtId + ", stateId=" + stateId + ", countryId=" + countryId + ", companyId=" + companyId + "]";
+	}
 	
 	
 

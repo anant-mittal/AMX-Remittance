@@ -18,13 +18,11 @@ public class OracleVarsCache extends CacheBox<String> {
 	private static final String DESC_SEPERATOR = "-desc-";
 
 	public static final String DOC_VERSION = SnapConstants.DOC_VERSION;
-	private static final String CUSTOMER_RESET_COUNTER = "15";
-	private static final String TRANSACTION_RESET_COUNTER = "15";
 
 	public static enum DBSyncJobs {
-		CUSTOMER(SnapConstants.CUSTOMER, "v5", 15),
-		TRANSACTION(SnapConstants.TRANX, "v7", 15),
-		XRATE(SnapConstants.XRATE, "v5", 15);
+		CUSTOMER_JOB(SnapConstants.SnapIndexName.CUSTOMER, "v5", 15),
+		TRANSACTION_JOB(SnapConstants.SnapIndexName.TRANX, "v8", 16),
+		XRATE_JOB(SnapConstants.SnapIndexName.XRATE, "v5", 15);
 
 		String indexName;
 		int resetCounter;
@@ -59,13 +57,19 @@ public class OracleVarsCache extends CacheBox<String> {
 	}
 
 	public String getTranxIndex() {
-		return EsConfig.indexName("oracle-" + DOC_VERSION + "-tranx-v4");
+		return EsConfig.indexName(DBSyncJobs.TRANSACTION_JOB.getIndexName());
 	}
 
 	public String getCustomerIndex() {
-		return EsConfig.indexName("oracle-" + DOC_VERSION + "-customer-v4");
+		return EsConfig.indexName(DBSyncJobs.CUSTOMER_JOB.getIndexName());
 	}
 
+	/**
+	 * Index to write data into
+	 * 
+	 * @param job
+	 * @return
+	 */
 	public String getIndex(DBSyncJobs job) {
 		return EsConfig.indexName(job.getIndexName());
 	}
@@ -94,6 +98,14 @@ public class OracleVarsCache extends CacheBox<String> {
 	public void setStampEnd(DBSyncJobs job, Object jobScannedStamp) {
 		this.put(getIndex(job) + DESC_SEPERATOR + job.getResetCounter(),
 				ArgUtil.parseAsString(jobScannedStamp));
+	}
+
+	public void clearStampStart(DBSyncJobs job) {
+		this.fastRemove(getIndex(job) + ASC_SEPERATOR + job.getResetCounter());
+	}
+
+	public void clearStampEnd(DBSyncJobs job) {
+		this.fastRemove(getIndex(job) + DESC_SEPERATOR + job.getResetCounter());
 	}
 
 }

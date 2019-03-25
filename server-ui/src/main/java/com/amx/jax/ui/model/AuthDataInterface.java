@@ -158,6 +158,10 @@ public final class AuthDataInterface {
 
 		public String getDeviceToken();
 
+		public String getLockId();
+
+		public void setLockId(String lockId);
+
 	}
 
 	/**
@@ -167,9 +171,6 @@ public final class AuthDataInterface {
 	public interface AuthRequest extends AuthRequestIdentity, AuthRequestPassword, AuthRequestSecAns, AuthRequestOTP,
 			AuthRequestFingerprint {
 
-		public String getLockId();
-
-		public void setLockId(String lockId);
 	}
 
 	/**

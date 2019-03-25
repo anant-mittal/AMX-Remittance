@@ -11,7 +11,6 @@ import org.springframework.data.jpa.repository.Query;
 
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 
-@Transactional
 public interface OnlineCustomerRepository extends JpaRepository<CustomerOnlineRegistration, Serializable> {
 
 	@Query("select c from CustomerOnlineRegistration c where countryId=?1 and userName=?2")
@@ -28,5 +27,13 @@ public interface OnlineCustomerRepository extends JpaRepository<CustomerOnlineRe
 	
 	@Query("select c from CustomerOnlineRegistration c where (loginId=?1 or userName=?1)")
 	public List<CustomerOnlineRegistration> getOnlineCustomerWithStatusByLoginIdOrUserName(String value);
+	
+	@Query("select c from CustomerOnlineRegistration c where loginId=?1")
+	public CustomerOnlineRegistration getLoginCustomersById(String userName);
+	
+	//
+	@Query("select c from CustomerOnlineRegistration c where loginId=?1")
+	public CustomerOnlineRegistration getCustomerIDByuserId(String userName);
+	
 
 }

@@ -65,7 +65,7 @@ public class TrnxViewTask extends AbstractDBSyncTask {
 
 	public void doTask(int lastPage, String lastId) {
 
-		Long lastUpdateDateNow = oracleVarsCache.getStampStartTime(DBSyncJobs.TRANSACTION);
+		Long lastUpdateDateNow = oracleVarsCache.getStampStartTime(DBSyncJobs.TRANSACTION_JOB);
 		Long lastUpdateDateNowLimit = lastUpdateDateNow + (intervalDays * AmxCurConstants.INTERVAL_DAYS);
 
 		String dateString = GridConstants.GRID_TIME_FORMATTER_JAVA.format(new Date(lastUpdateDateNow));
@@ -114,16 +114,16 @@ public class TrnxViewTask extends AbstractDBSyncTask {
 		if (x.getResults().size() > 0) {
 			intervalDays = 10;
 			esRepository.bulk(builder.build());
-			oracleVarsCache.setStampStart(DBSyncJobs.TRANSACTION, lastUpdateDateNow);
+			oracleVarsCache.setStampStart(DBSyncJobs.TRANSACTION_JOB, lastUpdateDateNow);
 			if ((lastUpdateDateNowStart == lastUpdateDateNow) || (x.getResults().size() == 1000 && lastPage < 10)) {
 				doTask(lastPage + 1, lastId);
 			}
 		} else if (lastUpdateDateNowLimit < todayOffset) {
 			intervalDays++;
-			oracleVarsCache.setStampStart(DBSyncJobs.TRANSACTION, lastUpdateDateNowLimit);
+			oracleVarsCache.setStampStart(DBSyncJobs.TRANSACTION_JOB, lastUpdateDateNowLimit);
 		} else {
 			oracleVarsCache
-					.setStampStart(DBSyncJobs.TRANSACTION,
+					.setStampStart(DBSyncJobs.TRANSACTION_JOB,
 							Math.min(todayOffset, lastUpdateDateNow + AmxCurConstants.INTERVAL_DAYS));
 		}
 
@@ -131,8 +131,8 @@ public class TrnxViewTask extends AbstractDBSyncTask {
 
 	public void doTaskRev(int lastPage, String lastId) {
 
-		Long lastUpdateDateNowFrwrds = oracleVarsCache.getStampStartTime(DBSyncJobs.TRANSACTION);
-		Long lastUpdateDateNow = oracleVarsCache.getStampEndTime(DBSyncJobs.TRANSACTION);
+		Long lastUpdateDateNowFrwrds = oracleVarsCache.getStampStartTime(DBSyncJobs.TRANSACTION_JOB);
+		Long lastUpdateDateNow = oracleVarsCache.getStampEndTime(DBSyncJobs.TRANSACTION_JOB);
 
 		if (lastUpdateDateNow < lastUpdateDateNowFrwrds
 				|| lastUpdateDateNow < OracleVarsCache.START_TIME) {
@@ -186,12 +186,12 @@ public class TrnxViewTask extends AbstractDBSyncTask {
 
 		if (x.getResults().size() > 0) {
 			esRepository.bulk(builder.build());
-			oracleVarsCache.setStampEnd(DBSyncJobs.TRANSACTION, lastUpdateDateNow);
+			oracleVarsCache.setStampEnd(DBSyncJobs.TRANSACTION_JOB, lastUpdateDateNow);
 			if ((lastUpdateDateNowStart == lastUpdateDateNow) || (x.getResults().size() == 1000 && lastPage < 2)) {
 				doTaskRev(lastPage + 1, lastId);
 			}
 		} else {
-			oracleVarsCache.setStampEnd(DBSyncJobs.TRANSACTION, lastUpdateDateNowLimit);
+			oracleVarsCache.setStampEnd(DBSyncJobs.TRANSACTION_JOB, lastUpdateDateNowLimit);
 		}
 
 	}

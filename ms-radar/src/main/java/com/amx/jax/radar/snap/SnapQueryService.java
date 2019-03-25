@@ -43,6 +43,9 @@ public class SnapQueryService {
 	public String buildQueryString(SnapQueryTemplate template, Map<String, Object> map) {
 		Locale locale = new Locale("en");
 		Context context = new Context(locale);
+		if (!map.containsKey("_type")) {
+			map.put("_type", template.getIndexName());
+		}
 		context.setVariables(map);
 		return this.processJson(template, context);
 	}
@@ -52,9 +55,13 @@ public class SnapQueryService {
 	}
 
 	public SnapModelWrapper executeQuery(Map<String, Object> query, String index) {
-		Map<String, Object> x = restService.ajax(ssConfig.getClusterUrl()).path(index + "/_search").post(query)
+		Map<String, Object> x = restService.ajax(ssConfig.getClusterUrl())
+				.header(ssConfig.getBasicAuthHeader()).path(
+						EsConfig.indexName(index) + "/_search")
+				.post(query)
 				.asMap();
 		// x.put("aggs", query.get("aggs"));
+		//System.out.println(JsonUtil.toJson(query));
 		return new SnapModelWrapper(x);
 	}
 

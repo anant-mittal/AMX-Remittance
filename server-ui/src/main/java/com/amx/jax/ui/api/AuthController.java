@@ -58,8 +58,10 @@ public class AuthController {
 
 		if (!ArgUtil.isEmpty(authData.getDeviceToken())) {
 			return loginService.loginByDevice(authData.getIdentity(), authData.getDeviceToken());
-		} else {
+		} else if (!ArgUtil.isEmpty(authData.getPassword())) {
 			return loginService.login(authData.getIdentity(), authData.getPassword());
+		} else {
+			throw new UIServerError(OWAStatusStatusCodes.MISSING_CREDENTIALS);
 		}
 	}
 

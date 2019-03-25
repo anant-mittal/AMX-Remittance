@@ -9,7 +9,10 @@ import com.amx.jax.filter.AppParamController;
 import com.amx.utils.ArgUtil;
 
 public enum RequestType {
-	DEFAULT(true, true), POLL(false, false), PING(true, false), PUBG(true, false);
+	DEFAULT(true, true), POLL(false, false), PING(true, false), PUBG(true, false),
+
+	NO_TRACK_PING(false, false);
+
 	boolean track = false;
 	boolean auth = true;
 

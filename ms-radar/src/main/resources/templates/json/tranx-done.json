@@ -43,44 +43,6 @@
   "stored_fields": [
     "*"
   ],
-  "docvalue_fields": [
-    {
-      "field": "@timestamp",
-      "format": "date_time"
-    },
-    {
-      "field": "customer.creationDate",
-      "format": "date_time"
-    },
-    {
-      "field": "customer.dateOfBirth",
-      "format": "date_time"
-    },
-    {
-      "field": "customer.lastTransactionDate",
-      "format": "date_time"
-    },
-    {
-      "field": "customer.lastUpdateDate",
-      "format": "date_time"
-    },
-    {
-      "field": "trnx.creationDate",
-      "format": "date_time"
-    },
-    {
-      "field": "trnx.lastUpdateDate",
-      "format": "date_time"
-    },
-    {
-      "field": "trnx.trnxDate",
-      "format": "date_time"
-    },
-    {
-      "field": "trnx.trnxPaidDate",
-      "format": "date_time"
-    }
-  ],
   "query": {
     "bool": {
       "must": [
@@ -99,7 +61,7 @@
         {
           "match_phrase": {
             "_type": {
-              "query": "appxn"
+              "query": "[[${_type}]]"
             }
           }
         },
