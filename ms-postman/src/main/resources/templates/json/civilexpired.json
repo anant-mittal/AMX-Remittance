@@ -1,4 +1,4 @@
 {
-	"_subject": "[[${_tu.prop('company.idtype')]] expiry alert",
-	"_message": "This is to inform you that your [[${_tu.prop('company.idtype')]] has expired as on [[${data.date}]]. Due to this, you will not be able to do any online/mobile transactions. Kindly get your [[${_tu.prop('company.idtype')]] is updated at the branch to be able to do online/mobile transactions."
+	"_subject": "[[${_tu.prop('company.idtype')}]] expiry alert",
+	"_message": "This is to inform you that your [[${_tu.prop('company.idtype')}]] has expired as on [[${data.date}]]. Due to this, you will not be able to do any online/mobile transactions. Kindly get your [[${_tu.prop('company.idtype')}]] is updated at the branch to be able to do online/mobile transactions."
 }
