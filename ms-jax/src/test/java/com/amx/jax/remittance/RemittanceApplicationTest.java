@@ -22,10 +22,10 @@ public class RemittanceApplicationTest extends AbstractTest {
 	BranchRemittanceDao brRemittanceDao;
 	
 
-	@Test
+	/*@Test
 	public void testSaveAplication() {
 		RemittanceApplication appl = new RemittanceApplication();
 		appl.setRemittanceApplicationId(new BigDecimal(2946240));
-		brRemittanceDao.deleteFromCart(appl, ConstantDocument.Deleted);
-	}
+		//brRemittanceDao.deleteFromCart(appl, ConstantDocument.Deleted);
+	}*/
 }
