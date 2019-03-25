@@ -77,7 +77,7 @@ public class DeviceValidation {
 			throw new AuthServiceException("otp lenght should be 6");
 		}
 	}
-	
+
 	/**
 	 * validates device reg request
 	 * 

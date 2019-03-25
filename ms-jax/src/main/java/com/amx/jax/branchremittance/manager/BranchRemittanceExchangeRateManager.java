@@ -65,9 +65,9 @@ public class BranchRemittanceExchangeRateManager {
 		if (request.getForeignAmountBD() == null && request.getLocalAmountBD() == null) {
 			throw new GlobalException(JaxError.INVALID_AMOUNT, "Either local or foreign amount must be present");
 		}
-		JaxValidationUtil.validatePositiveNumber(request.getForeignAmountBD(), "Foreign Amount should be positive",
+ 		JaxValidationUtil.validatePositiveNumber(request.getForeignAmountBD(), "Foreign Amount should be positive",
 				JaxError.INVALID_AMOUNT);
-		JaxValidationUtil.validatePositiveNumber(request.getForeignAmountBD(), "Local Amount should be positive", JaxError.INVALID_AMOUNT);
+		JaxValidationUtil.validatePositiveNumber(request.getLocalAmountBD(), "Local Amount should be positive", JaxError.INVALID_AMOUNT);
 		JaxValidationUtil.validatePositiveNumber(request.getCorrespondanceBankIdBD(), "corespondance bank must be positive number");
 		JaxValidationUtil.validatePositiveNumber(request.getBeneficiaryRelationshipSeqIdBD(), "bene seq id bank must be positive number");
 		JaxValidationUtil.validatePositiveNumber(request.getServiceIndicatorIdBD(), "service indic id bank must be positive number");

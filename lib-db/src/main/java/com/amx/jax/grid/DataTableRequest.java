@@ -169,7 +169,9 @@ public class DataTableRequest {
 			GridColumn colSpec = gridQuery.getColumns().get(i);
 			colSpec.setIndex(i);
 			if (i == sortableCol) {
-				colSpec.setSortDir(gridQuery.getSortOrder());
+				if (ArgUtil.isEmpty(colSpec.getSortDir())) {
+					colSpec.setSortDir(gridQuery.getSortOrder());
+				}
 				this.setOrder(colSpec);
 			}
 			if (!ArgUtil.isEmpty(colSpec.getSearch())) {

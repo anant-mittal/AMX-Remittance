@@ -107,8 +107,10 @@ public class CustomerRegistrationService extends AbstractService {
 	 * Save the customer home address
 	 */
 	public ApiResponse saveCustomerHomeAddress(CustomerHomeAddress customerHomeAddress) {
-		countryMetaValidation.validateMobileNumberLength(customerHomeAddress.getCountryId(),
-				customerHomeAddress.getMobile());
+		if(customerHomeAddress.getMobile() != null) {
+			countryMetaValidation.validateMobileNumberLength(customerHomeAddress.getCountryId(),
+					customerHomeAddress.getMobile());
+		}
 		customerRegistrationManager.saveHomeAddress(customerHomeAddress);
 		return getBooleanResponse();
 	}

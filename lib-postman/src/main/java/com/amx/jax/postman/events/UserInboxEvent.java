@@ -57,4 +57,13 @@ public class UserInboxEvent implements ITunnelEvent {
 		this.queue = queue;
 	}
 
+	public WAMessage replyWAMessage(String message) {
+		WAMessage reply = new WAMessage();
+		reply.setQueue(this.getQueue());
+		reply.setChannel(this.getWaChannel());
+		reply.addTo(this.getFrom());
+		reply.setMessage(message);
+		return reply;
+	}
+
 }

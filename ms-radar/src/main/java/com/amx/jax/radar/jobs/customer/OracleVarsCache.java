@@ -21,7 +21,7 @@ public class OracleVarsCache extends CacheBox<String> {
 
 	public static enum DBSyncJobs {
 		CUSTOMER_JOB(SnapConstants.SnapIndexName.CUSTOMER, "v5", 15),
-		TRANSACTION_JOB(SnapConstants.SnapIndexName.TRANX, "v8", 15),
+		TRANSACTION_JOB(SnapConstants.SnapIndexName.TRANX, "v8", 16),
 		XRATE_JOB(SnapConstants.SnapIndexName.XRATE, "v5", 15);
 
 		String indexName;
@@ -98,6 +98,14 @@ public class OracleVarsCache extends CacheBox<String> {
 	public void setStampEnd(DBSyncJobs job, Object jobScannedStamp) {
 		this.put(getIndex(job) + DESC_SEPERATOR + job.getResetCounter(),
 				ArgUtil.parseAsString(jobScannedStamp));
+	}
+
+	public void clearStampStart(DBSyncJobs job) {
+		this.fastRemove(getIndex(job) + ASC_SEPERATOR + job.getResetCounter());
+	}
+
+	public void clearStampEnd(DBSyncJobs job) {
+		this.fastRemove(getIndex(job) + DESC_SEPERATOR + job.getResetCounter());
 	}
 
 }

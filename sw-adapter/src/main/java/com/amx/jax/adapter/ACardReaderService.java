@@ -4,7 +4,10 @@ import java.io.IOException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
+import java.util.Properties;
 import java.util.concurrent.TimeUnit;
+
+import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +16,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.thavam.util.concurrent.blockingMap.BlockingHashMap;
 
+import com.amx.jax.AppConfig;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.device.CardData;
@@ -22,10 +26,13 @@ import com.amx.jax.device.DeviceRestModels.DevicePairingCreds;
 import com.amx.jax.device.DeviceRestModels.DevicePairingRequest;
 import com.amx.jax.device.DeviceRestModels.DeviceRestModel;
 import com.amx.jax.device.DeviceRestModels.SessionPairingCreds;
+import com.amx.jax.dict.Tenant;
 import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.exception.AmxApiException;
 import com.amx.jax.exception.AmxException;
 import com.amx.jax.logger.LoggerService;
+import com.amx.jax.scope.TenantContextHolder;
+import com.amx.jax.scope.TenantProperties;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.NetworkAdapter;
 import com.amx.utils.NetworkAdapter.NetAddress;
@@ -37,6 +44,8 @@ import net.east301.keyring.PasswordSaveException;
 import net.east301.keyring.util.LockException;
 
 public abstract class ACardReaderService {
+
+	public static final String PROP_TENANT_KEY = "app.profile.tnt";
 
 	public static final String CARD_READER_KEY = CardData.class.getName();
 	private static final Logger LOGGER = LoggerService.getLogger(ACardReaderService.class);
@@ -68,6 +77,9 @@ public abstract class ACardReaderService {
 	// @Value("${device.terminal.id}")
 	String terminalId;
 
+	@Value("${app.profile.version}")
+	String version;
+
 	@Value("${app.profile.tnt}")
 	String tnt;
 
@@ -76,6 +88,11 @@ public abstract class ACardReaderService {
 
 	@Autowired
 	private ConfigurableEnvironment environment;
+
+	@Autowired
+	TenantProperties tenantProperties;
+
+	Properties tntProp;
 
 	@Autowired
 	private DeviceConnectorClient adapterServiceClient;
@@ -89,8 +106,8 @@ public abstract class ACardReaderService {
 	public String getServerUrl() {
 		if (ArgUtil.isEmpty(serverUrl)) {
 			synchronized (lock) {
-				serverUrl = environment.getProperty("adapter." + tnt + "." + env + ".url");
-				String serverDB = environment.getProperty("adapter." + tnt + "." + env + ".db");
+				serverUrl = tntProp.getProperty("adapter." + tnt + "." + env + ".url");
+				String serverDB = tntProp.getProperty("adapter." + tnt + "." + env + ".db");
 				if (ArgUtil.isEmpty(serverUrl)) {
 					serverUrl = environment.getProperty("adapter.local.url");
 					this.isLocal = true;
@@ -101,6 +118,8 @@ public abstract class ACardReaderService {
 				}
 				KeyUtil.setServiceName(serverDB);
 				adapterServiceClient.setOffSiteUrl(serverUrl);
+				String winTitle = tntProp.getProperty("adapter.title");
+				SWAdapterGUI.updateTitle(String.format("%s - %s", winTitle, version));
 			}
 		}
 		return serverUrl;
@@ -431,6 +450,11 @@ public abstract class ACardReaderService {
 		return READER;
 	}
 
+	public CardReader sync() {
+		lastreadtime = 0L;
+		return READER;
+	}
+
 	private void clear() {
 		LOGGER.debug("KWTCardReader:clear:START");
 		push(new CardData());
@@ -516,4 +540,19 @@ public abstract class ACardReaderService {
 		return DataStatus.VALID_DATA;
 	}
 
+	@Autowired
+	AppConfig appConfig;
+
+	@PostConstruct
+	public void init() {
+		TenantContextHolder.setCurrent(tnt);
+		if (TenantContextHolder.currentSite() != null) {
+			Tenant.DEFAULT = TenantContextHolder.currentSite();
+		}
+		tntProp = tenantProperties.getProperties();
+	}
+
+	public String getVersion() {
+		return version;
+	}
 }

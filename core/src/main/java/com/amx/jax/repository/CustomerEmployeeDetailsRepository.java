@@ -11,6 +11,6 @@ import com.amx.jax.dbmodel.EmployeeDetails;
 
 public interface CustomerEmployeeDetailsRepository extends JpaRepository< EmployeeDetails, Serializable>{
 
-	@Query("select e from EmployeeDetails e where fsCustomer=?1 ")
+	@Query("select e from EmployeeDetails e where fsCustomer=?1  and isActive='Y'")
 	public EmployeeDetails getCustomerEmploymentData(Customer customerId);
 }

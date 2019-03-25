@@ -1,6 +1,7 @@
 package com.amx.jax.sso.server;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -230,6 +231,7 @@ public class SSOServerController {
 					init.setPartnerSAC(ssoUser.getPartnerSAC());
 				}
 				try {
+					//init.getUserClientDto().setTerminalId(new BigDecimal(1068));
 					UserAuthInitResponseDTO initResp = rbaacServiceClient.initAuthForUser(init).getResult();
 
 					model.put("mOtpPrefix", ssoUser.getSelfSAC());

@@ -120,11 +120,6 @@ public class DeviceDao {
 		return devices;
 	}
 
-	public Device findLatestDevice(BigDecimal branchSystemInvId, ClientType deviceType) {
-		return deviceRepository.findFirst1ByBranchSystemInventoryIdAndDeviceType(branchSystemInvId, deviceType,
-				new Sort("deviceId"));
-	}
-
 	public void saveDevice(Device device) {
 		deviceRepository.save(device);
 	}
@@ -133,12 +128,22 @@ public class DeviceDao {
 		deviceRepository.save(devices);
 	}
 
+	/**
+	 * device by validating deleted device
+	 * @param deviceRegId
+	 * @return
+	 */
 	public Device findDevice(BigDecimal deviceRegId) {
-		return deviceRepository.findOne(deviceRegId);
+		Device device = deviceRepository.findOne(deviceRegId);
+		if (device == null || Constants.DELETED_SOFT.equals(device.getStatus())) {
+			throw new AuthServiceException(RbaacServiceError.CLIENT_NOT_FOUND,
+					"Cannot find user with provided details");
+		}
+		return device;
 	}
 
-	public DeviceStateInfo findBySessionToken(String sessionToken, Integer registrationId) {
-		return deviceRepository.findBySessionTokenAndRegistrationId(sessionToken, new BigDecimal(registrationId));
+	public Device getDeviceByRegId(BigDecimal deviceRegId) {
+		Device device = deviceRepository.findOne(deviceRegId);
+		return device;
 	}
-
 }
