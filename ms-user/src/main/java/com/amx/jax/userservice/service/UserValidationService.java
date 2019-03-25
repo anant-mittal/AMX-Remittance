@@ -183,7 +183,7 @@ public class UserValidationService {
 		return customerVerification;
 	}
 
-	protected void validateCivilId(String civilId) {
+	public void validateCivilId(String civilId) {
 		boolean isValid = custValidation.validateCivilId(civilId, meta.getCountry().getISO2Code());
 		if (!isValid) {
 			throw new InvalidCivilIdException("Civil Id " + civilId + " is not valid!");
@@ -191,7 +191,7 @@ public class UserValidationService {
 	}
 
 	// Validate IdentityInt
-	protected void validateIdentityInt(String civilId, BigDecimal identityType) {
+	public void validateIdentityInt(String civilId, BigDecimal identityType) {
 		boolean isValid = custValidation.validateIdentityInt(civilId, meta.getCountry().getISO2Code(), identityType);
 		if (!isValid) {
 			throw new InvalidCivilIdException("Id " + civilId + " is not valid!");
@@ -888,5 +888,4 @@ public class UserValidationService {
 
 	}
 	
-
 }

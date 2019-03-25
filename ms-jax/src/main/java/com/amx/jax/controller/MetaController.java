@@ -28,7 +28,9 @@ import com.amx.amxlib.meta.model.ViewDistrictDto;
 import com.amx.amxlib.meta.model.ViewGovernateAreaDto;
 import com.amx.amxlib.meta.model.ViewGovernateDto;
 import com.amx.amxlib.meta.model.ViewStateDto;
+import com.amx.amxlib.meta.model.ViewStatusDto;
 import com.amx.amxlib.meta.model.WhyDoAskInformationDTO;
+import com.amx.amxlib.model.CountryBranchDTO;
 import com.amx.amxlib.model.OnlineConfigurationDto;
 import com.amx.amxlib.model.request.GetBankBranchRequest;
 import com.amx.jax.api.AmxApiResponse;
@@ -56,6 +58,7 @@ import com.amx.jax.service.BranchDetailService;
 import com.amx.jax.service.CollectionDetailViewService;
 import com.amx.jax.service.CollectionPaymentDetailsViewService;
 import com.amx.jax.service.CompanyService;
+import com.amx.jax.service.CountryBranchService;
 import com.amx.jax.service.CountryService;
 import com.amx.jax.service.CurrencyMasterService;
 import com.amx.jax.service.EmailMobileCheckService;
@@ -156,6 +159,10 @@ public class MetaController {
 
 	@Autowired
 	BranchDetailService branchDetailService;
+	
+	@Autowired
+	CountryBranchService countryBranchService;
+	
 
 	@RequestMapping(value = MetaApi.API_COUNTRY, method = RequestMethod.GET)
 	public AmxApiResponse<CountryMasterView, Object> getCountryListResponse() {
@@ -440,9 +447,15 @@ public class MetaController {
 	}
 	
 	@RequestMapping(value = MetaApi.API_STATUS_LIST, method = RequestMethod.GET)
-	public AmxApiResponse<ViewGovernateAreaDto, Object> getstatusList() {
-		return null;
+	public AmxApiResponse<ViewStatusDto, Object> getStatusList() {
+		return metaService.getStatusList();
 	}
+	
+	@RequestMapping(value = MetaApi.API_COUNTRY_BRANCH_LIST, method = RequestMethod.GET)
+	public AmxApiResponse<CountryBranchDTO, Object> getCountryBranchList() {
+		return countryBranchService.getCountryBranchList();
+	}
+	
 	
 	
 }

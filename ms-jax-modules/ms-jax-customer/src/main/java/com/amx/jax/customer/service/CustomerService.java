@@ -95,6 +95,12 @@ public class CustomerService extends AbstractService {
 		return userService.getCustomerDetails(loginId);
 	}
 
+	public Customer getCustomerDetailsByCustomerId(BigDecimal customerId){
+		
+		Customer customerDetails = customerRepository.getCustomerDetailsByCustomerId(customerId);
+
+		return customerDetails;
+	}
 	public CustomerContactDto getCustomerContactDto(BigDecimal customerId) {
 		CustomerContactDto customerContactDto = new CustomerContactDto();
 		List<ContactDetail> customerContacts = contactDetailRepository
@@ -150,6 +156,7 @@ public class CustomerService extends AbstractService {
 		dto.setMonthlyIncome(articleDao.getMonthlyIncomeRange(customer));
 		return dto;
 	}
+	
 
 	private String getTitleDescription(String titleBizComponentId) {
 		String titleDescription = null;

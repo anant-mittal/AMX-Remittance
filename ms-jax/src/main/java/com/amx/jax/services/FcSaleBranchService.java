@@ -5,7 +5,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,35 +12,75 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
-
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.dao.FcSaleBranchDao;
+import com.amx.jax.dbmodel.CountryBranch;
+import com.amx.jax.dbmodel.Customer;
+import com.amx.jax.dbmodel.fx.FxOrderTransactionModel;
 import com.amx.jax.dbmodel.fx.OrderManagementView;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.manager.FcDeliveryOrdersearchManager;
 import com.amx.jax.manager.FcSaleApplicationTransactionManager;
 import com.amx.jax.manager.FcSaleBranchOrderManager;
+import com.amx.jax.model.request.fx.FcDeliveryBranchOrderSearchRequest;
 import com.amx.jax.model.request.fx.FcSaleBranchDispatchRequest;
 import com.amx.jax.model.response.fx.FcEmployeeDetailsDto;
 import com.amx.jax.model.response.fx.FcSaleCurrencyAmountModel;
 import com.amx.jax.model.response.fx.FcSaleOrderManagementDTO;
 import com.amx.jax.model.response.fx.FxOrderReportResponseDto;
+import com.amx.jax.model.response.fx.FxOrderTransactionHistroyDto;
 import com.amx.jax.model.response.fx.UserStockDto;
+import com.amx.jax.repository.fx.FxDeliveryDetailsRepository;
+import com.amx.jax.repository.fx.VwFxDeliveryDetailsRepository;
+import com.amx.jax.service.CountryBranchService;
+import com.amx.jax.userservice.repository.CustomerRepository;
+import com.amx.jax.userservice.service.UserService;
+import com.amx.jax.userservice.service.UserValidationService;
 import com.amx.jax.util.RoundUtil;
+import com.amx.jax.validation.FcDeliveryBranchOrderSearchRequestValidation;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 @SuppressWarnings("rawtypes")
 public class FcSaleBranchService extends AbstractService{
 
-	Logger logger = LoggerFactory.getLogger(getClass());
+	public static final Logger logger = LoggerFactory.getLogger(FcSaleBranchService.class);
 
 	@Autowired
 	FcSaleBranchOrderManager branchOrderManager;
 
 	@Autowired
 	FcSaleApplicationTransactionManager fcSaleApplicationTransactionManager;
+	
+	@Autowired
+	VwFxDeliveryDetailsRepository vwFxDeliveryDetailsRepository;
+	
+	@Autowired
+	CustomerRepository customerRepo;
+	
+	@Autowired
+	UserService userService;
+	
+	@Autowired
+	CountryBranchService countryBranchService;
+	
+	@Autowired
+	FcSaleBranchDao fcSaleBranchDao;
+	
+	@Autowired
+	FcDeliveryOrdersearchManager fcDeliveryOrdersearchManager;
+	
+	@Autowired
+	UserValidationService userValidationService;
+	
+	@Autowired
+	FcDeliveryBranchOrderSearchRequestValidation fcDeliveryBranchOrderSearchRequestValidation;
+	
+	@Autowired
+	FxDeliveryDetailsRepository fxDeliveryDetailsRepository;
 
 	/* 
 	 * @param   :fetch List of Pending Orders
@@ -674,6 +713,102 @@ public class FcSaleBranchService extends AbstractService{
 
 		return new BoolRespModel(status);
 	}
+	
+	//Validation for OrderId
+	public void validateOrderId(FcDeliveryBranchOrderSearchRequest fcDeliveryBranchOrderSearchRequest) {
+		List<FxOrderTransactionModel> countryBranch = new ArrayList<>();
+		if(fcDeliveryBranchOrderSearchRequest.getOrderId().indexOf("/") > -1) {
+			countryBranch=	fxDeliveryDetailsRepository.searchTransactionRefNo(fcDeliveryBranchOrderSearchRequest.getOrderId());
+			if(countryBranch.isEmpty()) {
+				throw new GlobalException("Order Id is not found!");
+		}
+		}else {
+			throw new GlobalException("Invalid OrderId");
+	
+		}
+	}
+	
+	public AmxApiResponse<FxOrderTransactionHistroyDto, Object> searchOrder(
+			FcDeliveryBranchOrderSearchRequest fcDeliveryBranchOrderSearchRequest) {
+		List<FxOrderTransactionHistroyDto> fxOrderTransactionHistroyDto = new ArrayList<>();
+		logger.debug("FcDeliveryBranchOrderSearchRequest:"+fcDeliveryBranchOrderSearchRequest.toString());
+		AmxApiResponse<FxOrderTransactionHistroyDto, Object> result = null;
+		fcDeliveryBranchOrderSearchRequestValidation.validatingAll(fcDeliveryBranchOrderSearchRequest);
+		fcDeliveryBranchOrderSearchRequestValidation.validatingOrderStatusAndAll(fcDeliveryBranchOrderSearchRequest);
+		fcDeliveryBranchOrderSearchRequestValidation.validatingAllValues(fcDeliveryBranchOrderSearchRequest);
+		if (fcDeliveryBranchOrderSearchRequest.getOrderStatus() != null
+				&& fcDeliveryBranchOrderSearchRequest.getOrderId() != null
+				&& fcDeliveryBranchOrderSearchRequest.getCountryBranchId() != null
+				&& fcDeliveryBranchOrderSearchRequest.getCivilId() != null) {
+			CountryBranch countryBranch = countryBranchService
+					.getCountryBranchByCountryBranchId(fcDeliveryBranchOrderSearchRequest.getCountryBranchId());
+			Customer customerDetails = userService.getCustomerCustIdByCivilId(
+					fcDeliveryBranchOrderSearchRequest.getCivilId(), ConstantDocument.BIZ_COMPONENT_ID_CIVIL_ID);
+			logger.info("searchOrderDetails..");
+			fxOrderTransactionHistroyDto = fcDeliveryOrdersearchManager.searchOrderDetails(
+					fcDeliveryBranchOrderSearchRequest.getOrderId(), countryBranch.getBranchName(),
+					customerDetails.getCustomerId(), fcDeliveryBranchOrderSearchRequest.getOrderStatus());
+			result = AmxApiResponse.buildList(fxOrderTransactionHistroyDto);
+		} else if (fcDeliveryBranchOrderSearchRequest.getOrderStatus() != null
+				&& fcDeliveryBranchOrderSearchRequest.getOrderId() != null
+				&& fcDeliveryBranchOrderSearchRequest.getCountryBranchId() != null
+				&& fcDeliveryBranchOrderSearchRequest.getCivilId() == null) {
+			CountryBranch countryBranch = countryBranchService
+					.getCountryBranchByCountryBranchId(fcDeliveryBranchOrderSearchRequest.getCountryBranchId());
+			logger.info("searchOrderDetailsbyTxnIdNdBranchDesc..");
+			fxOrderTransactionHistroyDto = fcDeliveryOrdersearchManager.searchOrderDetailsbyTxnIdNdBranchDesc(
+					fcDeliveryBranchOrderSearchRequest.getOrderId(), countryBranch.getBranchName(),
+					fcDeliveryBranchOrderSearchRequest.getOrderStatus());
+			result = AmxApiResponse.buildList(fxOrderTransactionHistroyDto);
+		} else if (fcDeliveryBranchOrderSearchRequest.getOrderStatus() != null
+				&& fcDeliveryBranchOrderSearchRequest.getOrderId() != null
+				&& fcDeliveryBranchOrderSearchRequest.getCountryBranchId() == null
+				&& fcDeliveryBranchOrderSearchRequest.getCivilId() != null) {
+			Customer customerDetails = userService.getCustomerCustIdByCivilId(
+					fcDeliveryBranchOrderSearchRequest.getCivilId(), ConstantDocument.BIZ_COMPONENT_ID_CIVIL_ID);
+			logger.debug("searchOrderDetailsbyOrderIdNdCustId..");
+			fxOrderTransactionHistroyDto = fcDeliveryOrdersearchManager.searchOrderDetailsbyOrderIdNdCustId(
+					fcDeliveryBranchOrderSearchRequest.getOrderId(), customerDetails.getCustomerId(),
+					fcDeliveryBranchOrderSearchRequest.getOrderStatus());
+			result = AmxApiResponse.buildList(fxOrderTransactionHistroyDto);
+		} else if (fcDeliveryBranchOrderSearchRequest.getOrderStatus() != null
+				&& fcDeliveryBranchOrderSearchRequest.getOrderId() == null
+				&& fcDeliveryBranchOrderSearchRequest.getCountryBranchId() != null
+				&& fcDeliveryBranchOrderSearchRequest.getCivilId() != null) {
+			CountryBranch countryBranch = countryBranchService
+					.getCountryBranchByCountryBranchId(fcDeliveryBranchOrderSearchRequest.getCountryBranchId());
+			Customer customerDetails = userService.getCustomerCustIdByCivilId(
+					fcDeliveryBranchOrderSearchRequest.getCivilId(), ConstantDocument.BIZ_COMPONENT_ID_CIVIL_ID);
+			logger.debug("searchOrderDetailsByBranchDescNdCustID..");
+			fxOrderTransactionHistroyDto = fcDeliveryOrdersearchManager.searchOrderDetailsByBranchDescNdCustID(
+					countryBranch.getBranchName(), customerDetails.getCustomerId(),
+					fcDeliveryBranchOrderSearchRequest.getOrderStatus());
+			result = AmxApiResponse.buildList(fxOrderTransactionHistroyDto);
+		} else if (fcDeliveryBranchOrderSearchRequest.getOrderStatus() != null
+				&& fcDeliveryBranchOrderSearchRequest.getOrderId() != null) {
+			logger.debug("searchOrderDetailsByOrderId..");
+			fxOrderTransactionHistroyDto = fcDeliveryOrdersearchManager.searchOrderDetailsByOrderId(
+					fcDeliveryBranchOrderSearchRequest.getOrderId(),
+					fcDeliveryBranchOrderSearchRequest.getOrderStatus());
+			result = AmxApiResponse.buildList(fxOrderTransactionHistroyDto);
+		} else if (fcDeliveryBranchOrderSearchRequest.getOrderStatus() != null
+				&& fcDeliveryBranchOrderSearchRequest.getCountryBranchId() != null) {
+			CountryBranch countryBranch = countryBranchService
+					.getCountryBranchByCountryBranchId(fcDeliveryBranchOrderSearchRequest.getCountryBranchId());
+			logger.debug("searchOrderByBranchDesc..");
+			fxOrderTransactionHistroyDto = fcDeliveryOrdersearchManager.searchOrderByBranchDesc(
+					countryBranch.getBranchName(), fcDeliveryBranchOrderSearchRequest.getOrderStatus());
+		} else if (fcDeliveryBranchOrderSearchRequest.getOrderStatus() != null
+				&& fcDeliveryBranchOrderSearchRequest.getCivilId() != null) {
+			Customer customerDetails = userService.getCustomerCustIdByCivilId(
+					fcDeliveryBranchOrderSearchRequest.getCivilId(), ConstantDocument.BIZ_COMPONENT_ID_CIVIL_ID);
+			logger.debug("searchOrderDetailsByCustId..");
+			fxOrderTransactionHistroyDto = fcDeliveryOrdersearchManager.searchOrderDetailsByCustId(
+					customerDetails.getCustomerId(), fcDeliveryBranchOrderSearchRequest.getOrderStatus());
+		}
+		result = AmxApiResponse.buildList(fxOrderTransactionHistroyDto);
+		return result;
+	}
 
 	public AmxApiResponse<FxOrderReportResponseDto,Object> reprintOrder(BigDecimal applicationCountryId,BigDecimal orderNumber,BigDecimal orderYear,BigDecimal employeeId) {
 		FxOrderReportResponseDto fxOrderReportResponseDto = null;
@@ -706,4 +841,8 @@ public class FcSaleBranchService extends AbstractService{
 
 		return AmxApiResponse.build(fxOrderReportResponseDto);
 	}
+	
+	
+	
+	
 }
