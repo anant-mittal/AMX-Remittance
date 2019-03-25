@@ -970,6 +970,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		CustomerPersonalDetail customerDetails = new CustomerPersonalDetail();
 
 		if (customer != null) {
+			customerDetails.setCustomerId(customer.getCustomerId());
 			customerDetails.setCountryId(customer.getCountryId());
 			customerDetails.setNationalityId(customer.getNationalityId());
 			customerDetails.setIdentityInt(customer.getIdentityInt());
