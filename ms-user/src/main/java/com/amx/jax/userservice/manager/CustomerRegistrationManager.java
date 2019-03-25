@@ -119,6 +119,7 @@ public class CustomerRegistrationManager extends TransactionModel<CustomerRegist
 	ICustomerCategoryDiscountRepo customerCategoryRepository;
 	
 	
+	
 	@Override
 	public CustomerRegistrationTrnxModel getDefault() {
 		CustomerRegistrationTrnxModel model = new CustomerRegistrationTrnxModel();
@@ -363,6 +364,7 @@ public class CustomerRegistrationManager extends TransactionModel<CustomerRegist
 		
 		Customer customer = customerRepository.getCustomerDetails(identityInt, identityTypeId,jaxMetaInfo.getCountryId());
 		if(customer!=null) {
+			
 			if(StringUtils.isBlank(customer.getIsActive()) && customer.getIsActive().equalsIgnoreCase(ConstantDocument.No)) {
 				throw new GlobalException(JaxError.CUSTOMER_INACTIVE,"Customer is partialy registed :"+identityInt +"\t identityTypeId :"+identityTypeId);
 			}else if(StringUtils.isBlank(customer.getIsActive()) && customer.getIsActive().equalsIgnoreCase(ConstantDocument.Deleted)) {
@@ -371,7 +373,7 @@ public class CustomerRegistrationManager extends TransactionModel<CustomerRegist
 				throw new GlobalException(JaxError.CUSTOMER_INACTIVE,"Customer is blacklisted :"+identityInt +"\t identityTypeId :"+identityTypeId);
 			}
 			if(customer.getIdentityExpiredDate()!=null && customer.getIdentityExpiredDate().compareTo(new Date()) < 0) {
-				throw new GlobalException(JaxError.ID_PROOF_EXPIRED, "Id proof has been expired expired.");
+				throw new GlobalException(JaxError.ID_PROOF_EXPIRED, "Id proof has been expired.");
 			}
 			
 			if(customer.getSignatureSpecimenClob()==null){

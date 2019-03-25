@@ -340,7 +340,7 @@ public class RemittanceClient  implements IRemittanceService{
 			LOGGER.debug("in deleteFromShoppingCart :"+remittanceApplicationId );
 			return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_DELETE_APPLICATION).meta(new JaxMetaInfo())
 					.queryParam(Params.APPLICATION_ID, remittanceApplicationId).meta(new JaxMetaInfo())
-					.get()
+					.post()
 					.as(new ParameterizedTypeReference<AmxApiResponse<BranchRemittanceApplResponseDto, Object>>() {
 					});
 		} catch (Exception e) {
