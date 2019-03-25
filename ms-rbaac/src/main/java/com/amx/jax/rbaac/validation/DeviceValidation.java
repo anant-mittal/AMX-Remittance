@@ -60,13 +60,18 @@ public class DeviceValidation {
 			throw new AuthServiceException("Invalid pair otp");
 		}
 	}
-	
-	public void validateDeviceRegIdndPairtoken(Integer deviceRegId,String paireToken) {
-		
-		if(deviceRegId ==null || paireToken==null) {
+
+	public void validateDeviceRegIdndPairtoken(Integer deviceRegId, String paireToken) {
+		if (deviceRegId == null || paireToken == null) {
 			throw new AuthServiceException("DeviceRegId or paireToken should not be blank");
 		}
-		
+
+	}
+
+	public void validateDeviceRegId(Integer deviceRegId) {
+		if (deviceRegId == null) {
+			throw new AuthServiceException("DeviceRegId should not be blank");
+		}
 	}
 
 	public void validateOtp(String otp) {
@@ -105,14 +110,6 @@ public class DeviceValidation {
 		return (existing != null);
 	}
 
-	public void validateSessionToken(String sessionToken, Integer registrationId) {
-		DeviceStateInfo deviceStateInfo = deviceDao.findBySessionToken(sessionToken, registrationId);
-		if (deviceStateInfo == null) {
-			throw new AuthServiceException(RbaacServiceError.CLIENT_INVALID_SESSION_TOKEN, "Invalid session token");
-		}
-
-	}
-
 	public void validateDevice(Integer deviceRegId) {
 
 		Device device = deviceDao.findDevice(new BigDecimal(deviceRegId));
@@ -135,6 +132,12 @@ public class DeviceValidation {
 	}
 
 	public void validateDeviceForActivation(Device device) {
+		if (device == null) {
+			throw new AuthServiceException(RbaacServiceError.CLIENT_NOT_FOUND, "No device found");
+		}
+	}
+
+	public void validateNullDevice(Device device) {
 		if (device == null) {
 			throw new AuthServiceException(RbaacServiceError.CLIENT_NOT_FOUND, "No device found");
 		}
