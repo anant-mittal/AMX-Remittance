@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -61,13 +62,13 @@ public class OffsiteCustomerRegManager {
 		offsiteCustomerRegValidator.validateOffsiteCustomerForRegistration(customers);
 		if (CollectionUtils.isNotEmpty(customers)) {
 			Date now = new Date();
-			customer = customers.stream().filter(i -> {
+			Optional<Customer> customerOptional = customers.stream().filter(i -> {
 				Date idExpiryDate = i.getIdentityExpiredDate();
 				boolean isActive = ConstantDocument.Yes.equals(i.getIsActive());
 				boolean isIdExpired = idExpiryDate != null && idExpiryDate.compareTo(now) > 0;
 				return isActive && isIdExpired;
-			}).findFirst().get();
-			if (customer == null) {
+			}).findFirst();
+			if (!customerOptional.isPresent()) {
 				customer = customers.get(0);
 			}
 		}
