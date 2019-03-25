@@ -77,19 +77,27 @@ public class UserController {
 	}
 
 	@RequestMapping(value = UserApi.LOGIN_CUSTOMER_BY_FINGERPRINT, method = RequestMethod.POST)
-	public AmxApiResponse<CustomerModel, Object> loginCustomerByFingerprint(@RequestParam String identityInt,
-			@RequestParam(defaultValue = Constants.IDENTITY_TYPE_CIVIL_ID_STR) String identityType, @RequestParam String password, @RequestParam String fingerprintDeviceId) {
+	public AmxApiResponse<CustomerModel, Object> loginCustomerByFingerprint(@RequestParam(value = UserApi.IDENTITYINT) String identityInt,
+			@RequestParam(defaultValue = Constants.IDENTITY_TYPE_CIVIL_ID_STR) String identityType,
+			@RequestParam(value = UserApi.PASSWORD) String password) {
 		logger.debug(MessageFormat.format("IdentityInt value is {0} :", identityInt));
 		logger.debug(MessageFormat.format("IdentityType value is {0} :", identityType));
 		JaxContextUtil.setJaxEvent(JaxEvent.FINGERPRINT_LOGIN_INCORRECT_ATTEMPT);
-		CustomerModel customerModel = fingerprintService.loginCustomerByFingerprint(identityInt, identityType, password, fingerprintDeviceId);
-		
+		CustomerModel customerModel = fingerprintService.loginCustomerByFingerprint(identityInt, identityType, password,
+				metaData.getDeviceId());
+
 		return AmxApiResponse.build(customerModel);
 	}
 	
 	@RequestMapping(value = UserApi.DELINK_FINGERPRINT, method = RequestMethod.POST)
 	public  BoolRespModel delinkFingerprint() {
 		return fingerprintService.delinkFingerprint();
+	}
+	
+	@RequestMapping(value = UserApi.RESET_FINGERPRINT, method = RequestMethod.POST)
+	public BoolRespModel resetFingerprint(@RequestParam(value = UserApi.IDENTITYINT) String identity,
+			@RequestParam(defaultValue = Constants.IDENTITY_TYPE_CIVIL_ID_STR) String identityType) {
+		return fingerprintService.resetFingerprint(identity, identityType);
 	}
 
 }
