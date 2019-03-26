@@ -55,7 +55,7 @@ public class AmanKuwaitJob extends ARadarTask {
 	@Autowired
 	private MCQLocker mcq;
 
-	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_SEC * 10)
+	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_MIN_30)
 	public void lockedTask() {
 		// if (mcq.lead(LOCK)) {
 		doTask();
@@ -66,7 +66,7 @@ public class AmanKuwaitJob extends ARadarTask {
 	public void doTask() {
 		LOGGER.info("Scrapper Task");
 
-		String response = restService.ajax("http://www.amankuwait.com/AmanWebsite/RateSheet/RateSheet.aspx")
+		String response = restService.ajax("https://portal.amankuwait.com/amsweb/api/rate")
 				.get().asString();
 		// xmlMapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
 		try {
@@ -81,15 +81,15 @@ public class AmanKuwaitJob extends ARadarTask {
 				trnsfrRate.setrType(RateType.SELL_TRNSFR);
 				trnsfrRate.setrRate(rates.getKdrate());
 
-				builder.update(oracleVarsCache.getIndex(DBSyncJobs.XRATE),
+				builder.update(oracleVarsCache.getIndex(DBSyncJobs.XRATE_JOB),
 						new OracleViewDocument(trnsfrRate));
 
 				AmxCurRate buyCash = trnsfrRate.clone(RateType.BUY_CASH, rates.getBuyrate());
-				builder.update(oracleVarsCache.getIndex(DBSyncJobs.XRATE),
+				builder.update(oracleVarsCache.getIndex(DBSyncJobs.XRATE_JOB),
 						new OracleViewDocument(buyCash));
 
 				AmxCurRate sellCash = trnsfrRate.clone(RateType.SELL_CASH, rates.getSellrate());
-				builder.update(oracleVarsCache.getIndex(DBSyncJobs.XRATE),
+				builder.update(oracleVarsCache.getIndex(DBSyncJobs.XRATE_JOB),
 						new OracleViewDocument(sellCash));
 			}
 			esRepository.bulk(builder.build());

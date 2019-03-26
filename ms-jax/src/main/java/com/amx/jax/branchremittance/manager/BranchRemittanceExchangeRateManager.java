@@ -1,5 +1,11 @@
 package com.amx.jax.branchremittance.manager;
 
+import static com.amx.amxlib.constant.ApplicationProcedureParam.P_DELIVERY_MODE_ID;
+import static com.amx.amxlib.constant.ApplicationProcedureParam.P_FOREIGN_CURRENCY_ID;
+import static com.amx.amxlib.constant.ApplicationProcedureParam.P_REMITTANCE_MODE_ID;
+import static com.amx.amxlib.constant.ApplicationProcedureParam.P_ROUTING_BANK_ID;
+import static com.amx.amxlib.constant.ApplicationProcedureParam.P_ROUTING_COUNTRY_ID;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,13 +38,9 @@ import com.amx.jax.manager.RemittanceTransactionManager;
 import com.amx.jax.manager.remittance.RemittanceAdditionalFieldManager;
 import com.amx.jax.manager.remittance.RemittanceApplicationParamManager;
 import com.amx.jax.meta.MetaData;
-import com.amx.jax.model.request.remittance.AbstractRemittanceApplicationRequestModel;
 import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.request.remittance.IRemittanceApplicationParams;
-import com.amx.jax.model.request.remittance.RemittanceAdditionalBeneFieldModel;
-import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.model.response.remittance.BranchExchangeRateBreakup;
-import com.amx.jax.model.response.remittance.RoutingResponseDto;
 import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeRateResponse;
 import com.amx.jax.repository.ICustomerEmploymentInfoRepository;
 import com.amx.jax.repository.remittance.ICorporateMasterRepository;
@@ -47,8 +49,6 @@ import com.amx.jax.services.BeneficiaryValidationService;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.validation.RemittanceTransactionRequestValidator;
-
-import static com.amx.amxlib.constant.ApplicationProcedureParam.*;
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Component

@@ -59,8 +59,6 @@ public class CustomerShoppingCartDto implements Serializable{
 	private BigDecimal purposeOfTrnxId;
 	private BigDecimal domXRate;
 	private String customerSignatureString;
-
-	
 	
 	public BigDecimal getDocumentNo() {
 		return documentNo;

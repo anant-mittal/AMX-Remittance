@@ -17,9 +17,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.pricer.ProbotDataService;
 import com.amx.jax.pricer.dto.DiscountMgmtReqDTO;
-import com.amx.jax.pricer.dto.DiscountMgmtRespDTO;
+import com.amx.jax.pricer.dto.DiscountDetailsReqRespDTO;
 import com.amx.jax.pricer.dto.RoutBanksAndServiceRespDTO;
-import com.amx.jax.pricer.service.DataService;
+import com.amx.jax.pricer.service.ExchangeDataService;
 
 @RestController
 public class ProbotDataServiceApiController implements ProbotDataService{
@@ -28,15 +28,14 @@ public class ProbotDataServiceApiController implements ProbotDataService{
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProbotDataServiceApiController.class);
 	
 	@Resource
-	DataService dataService;
+	ExchangeDataService dataService;
 
 	@Override
 	@RequestMapping(value = ApiEndPoints.GET_DISCOUNT_DETAILS, method = RequestMethod.POST)
-	public AmxApiResponse<DiscountMgmtRespDTO, Object> getDiscountManagemet(
+	public AmxApiResponse<DiscountDetailsReqRespDTO, Object> getDiscountManagemet(
 			@RequestBody @Valid DiscountMgmtReqDTO discountMgmtReqDTO) {
 		LOGGER.info("In Get API of Discount Management");
-		
-		DiscountMgmtRespDTO discountMgmtRespDTO = dataService.getDiscountManagementData(discountMgmtReqDTO);
+		DiscountDetailsReqRespDTO discountMgmtRespDTO = dataService.getDiscountManagementData(discountMgmtReqDTO);
 		
 		return AmxApiResponse.build(discountMgmtRespDTO);
 	}
@@ -46,11 +45,17 @@ public class ProbotDataServiceApiController implements ProbotDataService{
 	public AmxApiResponse<RoutBanksAndServiceRespDTO, Object> getRbanksAndServices(
 			@RequestParam(required = true) BigDecimal countryId, @RequestParam(required = true) BigDecimal currencyId) {
 		LOGGER.info("In Get API of Routing Bank and Services");
-		
 		List<RoutBanksAndServiceRespDTO> routBanksAndServiceRespDTO = dataService.getRoutBanksAndServices(countryId, currencyId);
 		
 		return AmxApiResponse.buildList(routBanksAndServiceRespDTO);
 	}
-	
-	
+
+	@Override
+	@RequestMapping(value = ApiEndPoints.SAVE_DISCOUNT_DETAILS, method = RequestMethod.POST)
+	public AmxApiResponse<DiscountDetailsReqRespDTO, Object> saveDiscountDetails(
+			@RequestBody DiscountDetailsReqRespDTO discountdetailsRequestDTO) {
+		LOGGER.info("In Save API of Discount Details");
+				
+		return dataService.saveDiscountDetails(discountdetailsRequestDTO);
+	}
 }

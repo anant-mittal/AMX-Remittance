@@ -77,4 +77,12 @@ public class PipsMasterDao {
 		return repo.getPipsMasterForAmountSlab(countryId, currencyId);
 	}
 
+	public PipsMaster getPipsById(BigDecimal id) {
+		return repo.findByPipsMasterId(id);
+	}
+	
+	public void savePipsForDiscount(List<PipsMaster> pipslDiscounts) {
+		 repo.save(pipslDiscounts);
+	}
+
 }

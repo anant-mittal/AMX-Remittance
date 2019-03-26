@@ -80,6 +80,7 @@ public class RemittanceAdditionalFieldManager {
 		boolean isAdditionalFieldMissing = false;
 		addDataFromAdditionalDataDisplay(allJaxConditionalFields, flexFieldMap);
 		setDefaultDataFromDb(allJaxConditionalFields, model);
+
 		for (JaxConditionalFieldDto jaxConditionalField : allJaxConditionalFields) {
 			if (additionalFields == null || additionalFields.get(jaxConditionalField.getField().getName()) == null) {
 				if (!isDynamicFieldRequired(jaxConditionalField, model, flexFieldMap)) {

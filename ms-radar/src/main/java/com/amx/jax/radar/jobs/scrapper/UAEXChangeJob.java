@@ -140,7 +140,7 @@ public class UAEXChangeJob extends ARadarTask {
 					trnsfrRate.setrType(type);
 					trnsfrRate.setrRate(adjustRate(type, cur, rate));
 					// System.out.println(JsonUtil.toJson(trnsfrRate));
-					builder.update(oracleVarsCache.getIndex(DBSyncJobs.XRATE),
+					builder.update(oracleVarsCache.getIndex(DBSyncJobs.XRATE_JOB),
 							new OracleViewDocument(trnsfrRate));
 				}
 			}

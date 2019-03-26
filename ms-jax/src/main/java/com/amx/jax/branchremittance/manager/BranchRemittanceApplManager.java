@@ -39,7 +39,6 @@ import com.amx.jax.dbmodel.CurrencyMasterModel;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.Device;
 import com.amx.jax.dbmodel.DeviceStateInfo;
-import com.amx.jax.dbmodel.ReceiptPaymentApp;
 import com.amx.jax.dbmodel.UserFinancialYear;
 import com.amx.jax.dbmodel.ViewCompanyDetails;
 import com.amx.jax.dbmodel.fx.EmployeeDetailsView;
@@ -128,7 +127,8 @@ public class BranchRemittanceApplManager {
 	@Autowired
 	BeneficiaryService beneficiaryService;
 	
-	
+	//@Autowired
+	//RemittanceTransactionManager remittanceTxnManger;
 	
 	@Autowired
 	private CustomerDao custDao;
@@ -287,12 +287,15 @@ public class BranchRemittanceApplManager {
 				throw new GlobalException(JaxError.CUSTOMER__SIGNATURE_UNAVAILABLE,"Customer signature required");
 			}
 			
-			
 			RoutingResponseDto branchRoutingDto = (RoutingResponseDto)hashMap.get("ROUTING_DETAILS_DTO");
+			//Map<String, Object> branchExchangeRate =(HashMap)hashMap.get("EXCH_RATE_MAP");
+			
 			BranchRemittanceGetExchangeRateResponse branchExchangeRate =(BranchRemittanceGetExchangeRateResponse)hashMap.get("EXCH_RATE_MAP");
 			BenificiaryListView beneDetails  =(BenificiaryListView) hashMap.get("BENEFICIARY_DETAILS");
 			
 			BranchExchangeRateBreakup rateBreakUp = applRequestModel.getBranchExRateBreakup();
+			
+			
 			
 			BigDecimal routingCountryId = branchRoutingDto.getRoutingCountrydto().get(0).getResourceId();
 			Customer customer = (Customer) hashMap.get("CUSTOMER");
@@ -562,7 +565,53 @@ public class BranchRemittanceApplManager {
 		return remittanceAppBenificary;
 	}
 	
+/*	public List<AdditionalInstructionData> createAdditionalInstnData(RemittanceApplication remittanceApplication,Map hashMap) {
 
+		logger.info(" Enter into saveAdditionalInstnData ");
+
+		BigDecimal applicationCountryId = metaData.getCountryId();
+		List<AdditionalInstructionData> lstAddInstrData = new ArrayList<AdditionalInstructionData>();
+		Map<String, Object> branchRoutingDetails =(Map)hashMap.get("ROUTING_DETAILS_MAP");
+		BranchRemittanceApplRequestModel requestApplModel = (BranchRemittanceApplRequestModel)hashMap.get("APPL_REQ_MODEL");
+		
+		//Map<String, FlexFieldDto> flexFields = requestApplModel.getFlexFieldDtoMap();
+		List<FlexFiledView> allFlexFields = remittApplDao.getFlexFields();
+		Map<String, FlexFieldDto> requestFlexFields = requestApplModel.getFlexFieldDtoMap();
+		
+		
+		
+		if (requestFlexFields == null) {
+			requestFlexFields = new HashMap<>();
+			requestApplModel.setFlexFieldDtoMap(requestFlexFields);
+		} else {
+			validateFlexFieldValues(requestFlexFields);
+		}
+		
+		
+		
+		
+		List<String> flexiFieldIn = allFlexFields.stream().map(i -> i.getFieldName()).collect(Collectors.toList());
+		Map<String, FlexFieldDto> flexFields  = remittApplDao.getFlexFields();
+		flexFields.forEach((k, v) -> {
+			BigDecimal bankId = (BigDecimal) branchRoutingDetails.get("P_ROUTING_BANK_ID");
+			BigDecimal remittanceModeId = (BigDecimal) branchRoutingDetails.get("P_REMITTANCE_MODE_ID");
+			BigDecimal deliveryModeId = (BigDecimal) branchRoutingDetails.get("P_DELIVERY_MODE_ID");
+			BigDecimal foreignCurrencyId = (BigDecimal) branchRoutingDetails.get("P_FOREIGN_CURRENCY_ID");
+			
+			if (v.getSrlId() != null) {
+				AdditionalBankDetailsViewx additionaBnankDetail = bankService.getAdditionalBankDetail(v.getSrlId(),foreignCurrencyId, bankId, remittanceModeId, deliveryModeId);
+				AdditionalInstructionData additionalInsDataTmp = createAdditionalIndicatorsData(remittanceApplication,applicationCountryId, k, additionaBnankDetail.getAmiecCode(),additionaBnankDetail.getAmieceDescription(), v.getAdditionalBankRuleFiledId());
+				lstAddInstrData.add(additionalInsDataTmp);
+			} else {
+				AdditionalInstructionData additionalInsDataTmp = createAdditionalIndicatorsData(remittanceApplication,applicationCountryId, k, ConstantDocument.AMIEC_CODE, v.getAmieceDescription(),v.getAdditionalBankRuleFiledId());lstAddInstrData.add(additionalInsDataTmp);
+			}
+		});
+
+		logger.info(" Exit from saveAdditionalInstnData ");
+
+		return lstAddInstrData;
+	}
+*/
 	// checking Indic1,Indic2,Indic3,Indic4,Indic5
 	private AdditionalInstructionData createAdditionalIndicatorsData(RemittanceApplication remittanceApplication,BigDecimal applicationCountryId, String indicatorCode, String amiecCode, String flexFieldValue,BigDecimal additionalBankRuleId) {
 
@@ -625,6 +674,7 @@ public class BranchRemittanceApplManager {
 			try {
 				for(AmlCheckResponseDto amlDto :amlList) {
 					RemitApplAmlModel amlModel = new RemitApplAmlModel();
+
 					RemitApplAmlModel remitApplAml = new RemitApplAmlModel();
 					remitApplAml.setCompanyId(remittanceApplication.getFsCompanyMaster().getCompanyId());
 					remitApplAml.setExRemittanceAppfromAml(remittanceApplication);

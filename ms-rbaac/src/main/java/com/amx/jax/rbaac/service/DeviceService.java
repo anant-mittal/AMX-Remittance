@@ -67,7 +67,7 @@ public class DeviceService extends AbstractService {
 				for (Device d : devices) {
 					if (!d.equals(device)) {
 						d.setStatus("N");
-					}
+		}
 				}
 				deviceDao.saveDevices(devices);
 			}
@@ -152,7 +152,7 @@ public class DeviceService extends AbstractService {
 	}
 
 	public DevicePairOtpResponse sendOtpForPairing(Integer deviceRegId, String paireToken) {
-		deviceValidation.validateDeviceRegIdndPairtoken(deviceRegId,paireToken);
+		deviceValidation.validateDeviceRegIdndPairtoken(deviceRegId,paireToken); 		
 		Device device = deviceDao.findDevice(new BigDecimal(deviceRegId));
 		validateDevicePairToken(new BigDecimal(deviceRegId), paireToken);
 		DevicePairOtpResponse response = deviceManager.generateOtp(device);

@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
@@ -30,6 +31,7 @@ import com.amx.jax.device.DeviceConstants;
 import com.amx.jax.device.DeviceData;
 import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.dict.UserClient.DeviceType;
+import com.amx.jax.dict.UserClient.UserDeviceClient;
 import com.amx.jax.http.ApiRequest;
 import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.http.CommonHttpRequest.CommonMediaType;
@@ -37,7 +39,6 @@ import com.amx.jax.http.RequestType;
 import com.amx.jax.logger.AuditEvent.Result;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.LoggerService;
-import com.amx.jax.model.UserDevice;
 import com.amx.jax.rbaac.RbaacServiceClient;
 import com.amx.jax.rbaac.constants.RbaacServiceConstants.LOGIN_TYPE;
 import com.amx.jax.rbaac.dto.request.UserAuthInitReqDTO;
@@ -100,7 +101,14 @@ public class SSOServerController {
 		map.put(SSOConstants.PARAM_SSO_LOGIN_PREFIX, appConfig.getAppPrefix());
 		map.put(SSOConstants.SECURITY_CODE_KEY, ssoUser.getSelfSAC());
 		map.put(SSOConstants.PARTNER_SECURITY_CODE_KEY, ssoUser.getPartnerSAC());
-		map.put(SSOConstants.ADAPTER_URL, sSOConfig.getAdapterUrl());
+
+		String adapterUrl = sSOConfig.getAdapterUrl();
+		Cookie kooky = commonHttpRequest.getCookie("adapter.url");
+		if (kooky != null) {
+			adapterUrl = ArgUtil.parseAsString(kooky.getValue(), adapterUrl);
+		}
+		map.put(SSOConstants.ADAPTER_URL, adapterUrl);
+
 		return map;
 	}
 
@@ -156,19 +164,24 @@ public class SSOServerController {
 		AmxApiResponse<Object, Map<String, Object>> result = AmxApiResponse.buildMeta(model);
 		result.setStatusEnum(SSOServerCodes.AUTH_REQUIRED);
 
+		AppContextUtil.getUserClient().setClientType(clientType);
+
 		if (sSOTranx.get() != null) {
-			UserDevice userDevice = commonHttpRequest.getUserDevice();
+
+			UserDeviceClient userDeviceClient = commonHttpRequest.getUserDevice().toUserDeviceClient();
 
 			if (SSOAuthStep.CREDS == json) {
 
-				SSOAuditEvent auditEvent = new SSOAuditEvent(SSOAuditEvent.Type.LOGIN_INIT).clientType(clientType);
+				// Audit
+				SSOAuditEvent auditEvent = new SSOAuditEvent(SSOAuditEvent.Type.LOGIN_INIT, Result.FAIL)
+						.identity(formdata.getIdentity()).empno(formdata.getEcnumber());
 
 				ssoUser.generateSAC();
 
 				SSOModel ssomodel = sSOTranx.get();
-				ssomodel.getUserClient().setDeviceType(userDevice.getType());
+				ssomodel.getUserClient().setDeviceType(userDeviceClient.getDeviceType());
 				ssomodel.getUserClient().setClientType(clientType);
-				ssomodel.getUserClient().setGlobalIpAddress(userDevice.getIp());
+				ssomodel.getUserClient().setGlobalIpAddress(userDeviceClient.getIp());
 
 				if (appConfig.isSwaggerEnabled() && !ArgUtil.isEmpty(deviceType)) {
 					ssomodel.getUserClient().setDeviceType(deviceType);
@@ -179,7 +192,8 @@ public class SSOServerController {
 					DeviceData branchDeviceData = deviceBox.get(sSOTranx.get().getBranchAdapterId());
 					ssomodel.getUserClient().setLocalIpAddress(branchDeviceData.getLocalIp());
 					ssomodel.getUserClient().setTerminalId(ArgUtil.parseAsBigDecimal(branchDeviceData.getTerminalId()));
-					LOGGER.info("Gloabal IPs THIS: {} ADAPTER: {}", userDevice.getIp(), branchDeviceData.getGlobalIp());
+					LOGGER.info("Gloabal IPs THIS: {} ADAPTER: {}", userDeviceClient.getIp(),
+							branchDeviceData.getGlobalIp());
 
 					// Audit
 					auditEvent.terminalId(sSOTranx.get().getUserClient().getTerminalId())
@@ -188,8 +202,8 @@ public class SSOServerController {
 				} else {
 					// Device LOGIN
 					String deviceRegId = commonHttpRequest.get(DeviceConstants.Keys.CLIENT_REG_KEY_XKEY);
-					ssomodel.getUserClient().setLocalIpAddress(userDevice.getIp());
-					ssomodel.getUserClient().setDeviceId(userDevice.getFingerprint());
+					ssomodel.getUserClient().setLocalIpAddress(userDeviceClient.getIp());
+					ssomodel.getUserClient().setDeviceId(userDeviceClient.getFingerprint());
 					ssomodel.getUserClient()
 							.setDeviceRegId(ArgUtil.parseAsBigDecimal(deviceRegId));
 					ssomodel.getUserClient()
@@ -199,7 +213,7 @@ public class SSOServerController {
 							.setDeviceSessionToken(
 									commonHttpRequest.get(DeviceConstants.Keys.CLIENT_SESSION_TOKEN_XKEY));
 					// Audit
-					auditEvent.deviceId(userDevice.getFingerprint()).deviceRegId(deviceRegId);
+					auditEvent.deviceRegId(deviceRegId);
 				}
 
 				ssoUser.setUserClient(ssomodel.getUserClient());
@@ -229,17 +243,16 @@ public class SSOServerController {
 								ssoUser.getPartnerSAC());
 					}
 					result.setStatusEnum(SSOServerCodes.OTP_REQUIRED);
-					auditEvent.setSuccess(true);
+					// Audit
+					auditEvent.result(Result.DONE);
 				} finally {
-					if (!auditEvent.isSuccess()) {
-						auditEvent.result(Result.FAIL);
-					}
 					auditService.log(auditEvent);
 				}
 
 			} else if ((SSOAuthStep.OTP == json) && formdata.getMotp() != null) {
 
-				SSOAuditEvent auditEvent = new SSOAuditEvent(SSOAuditEvent.Type.LOGIN_OTP).clientType(clientType);
+				SSOAuditEvent auditEvent = new SSOAuditEvent(SSOAuditEvent.Type.LOGIN_OTP, Result.FAIL)
+						.clientType(clientType);
 				try {
 					String terminalId = ArgUtil.parseAsString(sSOTranx.get().getUserClient().getTerminalId());
 
@@ -247,20 +260,19 @@ public class SSOServerController {
 					auth.setEmployeeNo(formdata.getEcnumber());
 
 					if (ArgUtil.isEmpty(terminalId)) {
-						auth.setIpAddress(userDevice.getIp());
+						auth.setIpAddress(userDeviceClient.getIp());
 					} else {
 						auth.setIpAddress(terminalId);
 					}
 
-					auth.setDeviceId(userDevice.getFingerprint());
+					auth.setDeviceId(userDeviceClient.getFingerprint());
 					auth.setmOtp(formdata.getMotp());
 					if (loginType == LOGIN_TYPE.ASSISTED) {
 						auth.setPartnerMOtp(formdata.getPartnerMOtp());
 					}
 
 					// Audit
-					auditEvent.terminalId(terminalId).terminalIp(userDevice.getIp())
-							.deviceId(userDevice.getFingerprint());
+					auditEvent.terminalId(terminalId).terminalIp(userDeviceClient.getIp());
 
 					EmployeeDetailsDTO empDto = rbaacServiceClient.authoriseUser(auth).getResult();
 					sSOTranx.setUserDetails(empDto);
@@ -282,11 +294,8 @@ public class SSOServerController {
 					}
 
 					// Audit
-					auditEvent.setSuccess(true);
+					auditEvent.result(Result.DONE);
 				} finally {
-					if (!auditEvent.isSuccess()) {
-						auditEvent.result(Result.FAIL);
-					}
 					auditService.log(auditEvent);
 				}
 			}

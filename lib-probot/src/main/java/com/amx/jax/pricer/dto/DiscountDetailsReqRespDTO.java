@@ -3,7 +3,7 @@ package com.amx.jax.pricer.dto;
 import java.io.Serializable;
 import java.util.List;
 
-public class DiscountMgmtRespDTO implements Serializable {
+public class DiscountDetailsReqRespDTO implements Serializable {
 
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = -2594412775985894857L;

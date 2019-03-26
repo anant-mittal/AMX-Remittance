@@ -35,6 +35,7 @@ public class BrokerService {
 
 	private Tenant serviceTenant;
 	private long printDelay = 1000L;
+	private long printDelayLimit = 2 * 60 * 60 * 1000L;
 	private long printStamp = 0L;
 
 	@Autowired
@@ -55,7 +56,7 @@ public class BrokerService {
 			logger.info("Total {} Events fetched from DB, after waiting {} secs", totalEvents, printDelay);
 			printStamp = System.currentTimeMillis();
 			if (totalEvents == 0) {
-				printDelay = 2 * printDelay;
+				printDelay = Math.min(2 * printDelay, printDelayLimit);
 			} else {
 				printDelay = 1000L;
 			}

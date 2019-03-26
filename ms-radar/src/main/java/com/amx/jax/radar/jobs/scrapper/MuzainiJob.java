@@ -93,7 +93,7 @@ public class MuzainiJob {
 					if (!ArgUtil.isEmpty(rate)) {
 						sellTrnsfrRate.setrType(RateType.SELL_TRNSFR);
 						sellTrnsfrRate.setrRate(rate);
-						builder.update(oracleVarsCache.getIndex(DBSyncJobs.XRATE),
+						builder.update(oracleVarsCache.getIndex(DBSyncJobs.XRATE_JOB),
 								new OracleViewDocument(sellTrnsfrRate));
 					}
 					AmxCurRate sellCash = sellTrnsfrRate.clone();
@@ -101,7 +101,7 @@ public class MuzainiJob {
 					if (!ArgUtil.isEmpty(sellCashRate)) {
 						sellCash.setrType(RateType.SELL_CASH);
 						sellTrnsfrRate.setrRate(sellCashRate);
-						builder.update(oracleVarsCache.getIndex(DBSyncJobs.XRATE),
+						builder.update(oracleVarsCache.getIndex(DBSyncJobs.XRATE_JOB),
 								new OracleViewDocument(sellCash));
 					}
 
@@ -110,7 +110,7 @@ public class MuzainiJob {
 					if (!ArgUtil.isEmpty(buyCashRate)) {
 						buyCash.setrType(RateType.BUY_CASH);
 						sellTrnsfrRate.setrRate(buyCashRate);
-						builder.update(oracleVarsCache.getIndex(DBSyncJobs.XRATE),
+						builder.update(oracleVarsCache.getIndex(DBSyncJobs.XRATE_JOB),
 								new OracleViewDocument(buyCash));
 					}
 				}

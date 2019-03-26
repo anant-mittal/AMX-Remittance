@@ -526,7 +526,7 @@ public final class ArgUtil {
 	public static Enum parseAsEnum(Object value, Enum defaultValue) {
 		String enumString = parseAsString(value);
 		if (enumString == null) {
-			return null;
+			return defaultValue;
 		}
 		String enumStringCaps = enumString.toUpperCase();
 		if (defaultValue instanceof EnumType) {

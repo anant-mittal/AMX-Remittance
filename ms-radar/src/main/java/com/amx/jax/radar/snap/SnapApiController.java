@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.amx.jax.client.snap.ISnapService;
+import com.amx.jax.client.snap.SnapConstants.SnapIndexName;
 import com.amx.jax.client.snap.SnapConstants.SnapQueryTemplate;
 import com.amx.jax.client.snap.SnapModels.SnapModelWrapper;
 import com.amx.jax.dict.Currency;
@@ -42,14 +43,16 @@ public class SnapApiController implements ISnapService {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("lte", "now");
 		params.put("gte", "now-5y");
+		params.put("_type", SnapIndexName.TRANX);
 		return snapQueryService.execute(SnapQueryTemplate.TRANX_DONE, params);
 	}
 
 	@Override
 	@ResponseBody
 	@RequestMapping(value = Path.SNAP_API_XRATE_SELL_TRANSFER, method = RequestMethod.GET)
-	public SnapModelWrapper getXRateStats(@RequestParam StatsSpan graph, @RequestParam Currency forCur,
-			@RequestParam Currency domCur) {
+	public SnapModelWrapper getXRateStats(@RequestParam StatsSpan graph,
+			@RequestParam(defaultValue = "INR") Currency forCur,
+			@RequestParam(defaultValue = "KWD") Currency domCur) {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("lte", "now");
 
@@ -75,10 +78,10 @@ public class SnapApiController implements ISnapService {
 			params.put("interval", "1d");
 			break;
 		}
-		params.put("rSrc", "AMX");
-		params.put("rType", "SELL_TRNSFR");
-		params.put("rForCur", forCur);
-		params.put("rDomCur", domCur);
+		params.put("xrate_src", RateSource.AMX.toString());
+		params.put("xrate_rateType", RateType.SELL_TRNSFR.toString());
+		params.put("xrate_forCur", forCur);
+		params.put("xrate_domCur", domCur);
 		return snapQueryService.execute(SnapQueryTemplate.XRATE_SELL_TRANSFER, params);
 	}
 

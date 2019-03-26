@@ -48,6 +48,7 @@ public abstract class AuditEvent extends AbstractEvent {
 	protected String exceptionType;
 
 	protected String actorId;
+
 	protected Object data;
 	protected UserDeviceClient client;
 

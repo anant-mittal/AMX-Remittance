@@ -27,7 +27,6 @@ import com.amx.amxlib.meta.model.ViewGovernateAreaDto;
 import com.amx.amxlib.meta.model.ViewGovernateDto;
 import com.amx.amxlib.model.OnlineConfigurationDto;
 import com.amx.jax.api.AmxApiResponse;
-import com.amx.jax.config.JaxProperties;
 import com.amx.jax.config.JaxTenantProperties;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.OnlineConfiguration;

@@ -93,7 +93,7 @@ public class BECKuwaitJob extends ARadarTask {
 							trnsfrRate.setrForCur(cur);
 							trnsfrRate.setrType(RateType.SELL_TRNSFR);
 							trnsfrRate.setrRate(BigDecimal.ONE.divide(rate, 12, RoundingMode.CEILING));
-							builder.update(oracleVarsCache.getIndex(DBSyncJobs.XRATE),
+							builder.update(oracleVarsCache.getIndex(DBSyncJobs.XRATE_JOB),
 									new OracleViewDocument(trnsfrRate));
 						}
 					}
@@ -117,7 +117,7 @@ public class BECKuwaitJob extends ARadarTask {
 						if (!ArgUtil.isEmpty(buyCashRate)) {
 							buyCash.setrType(RateType.BUY_CASH);
 							buyCash.setrRate(BigDecimal.ONE.divide(buyCashRate, 12, RoundingMode.CEILING));
-							builder.update(oracleVarsCache.getIndex(DBSyncJobs.XRATE),
+							builder.update(oracleVarsCache.getIndex(DBSyncJobs.XRATE_JOB),
 									new OracleViewDocument(buyCash));
 						}
 
@@ -127,7 +127,7 @@ public class BECKuwaitJob extends ARadarTask {
 						if (!ArgUtil.isEmpty(sellCashRate)) {
 							sellCash.setrType(RateType.SELL_CASH);
 							sellCash.setrRate(BigDecimal.ONE.divide(sellCashRate, 12, RoundingMode.CEILING));
-							builder.update(oracleVarsCache.getIndex(DBSyncJobs.XRATE),
+							builder.update(oracleVarsCache.getIndex(DBSyncJobs.XRATE_JOB),
 									new OracleViewDocument(sellCash));
 						}
 
