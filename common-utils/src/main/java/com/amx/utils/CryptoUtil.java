@@ -126,7 +126,7 @@ public final class CryptoUtil {
 		} else if (toComplex(complexHash.length(),
 				generateHMAC(interval, secretKey, message, currentTime - tolerance * 1000)).equals(complexHash)) {
 			return true;
-		} else if (toNumeric(complexHash.length(),
+		} else if (toComplex(complexHash.length(),
 				generateHMAC(interval, secretKey, message, currentTime + tolerance * 1000)).equals(complexHash)) {
 			return true;
 		}
