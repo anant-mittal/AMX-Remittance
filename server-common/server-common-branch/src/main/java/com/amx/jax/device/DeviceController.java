@@ -37,6 +37,7 @@ import com.amx.jax.sso.SSOTranx;
 import com.amx.jax.sso.server.ApiHeaderAnnotations.ApiDeviceHeaders;
 import com.amx.jax.swagger.IStatusCodeListPlugin.ApiStatusService;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.CryptoUtil;
 
 import io.swagger.annotations.Api;
 
@@ -101,6 +102,7 @@ public class DeviceController {
 			creds.setDeviceRegId(ArgUtil.parseAsString(deviceDto.getRegistrationId()));
 			creds.setOtpTtl(AmxConstants.OFFLINE_OTP_TTL);
 			creds.setRequestTtl(DeviceConstants.Config.REQUEST_TOKEN_VALIDITY);
+			creds.setOtpChars(CryptoUtil.COMPLEX_CHARS);
 			creds.setDeviceSecret(deviceDto.getDeviceSecret());
 			// Audit
 			auditEvent.terminalId(deviceDto.getTermialId())
@@ -152,6 +154,7 @@ public class DeviceController {
 				resp.getTermialId(), resp.getEmpId());
 		creds.setOtpTtl(AmxConstants.OFFLINE_OTP_TTL);
 		creds.setRequestTtl(DeviceConstants.Config.REQUEST_TOKEN_VALIDITY);
+		creds.setOtpChars(CryptoUtil.COMPLEX_CHARS);
 		String meta = ArgUtil.isEmpty(resp.getEmpId()) ? resp.getTermialId() : resp.getEmpId();
 
 		AppContextUtil.getUserClient().setClientType(resp.getDeviceType());
