@@ -1,6 +1,7 @@
 package com.amx.jax.dal;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -120,6 +121,16 @@ public class ArticleDao {
 			LOGGER.debug("Error occured in getAricleDetailDesc", e);
 		}
 		return articleDetailDesc;
+	}
+	
+	public List<Map<String, Object>> getArticleDescriptionByArticleDetailId(BigDecimal articleDetailId ){
+			String sql = "SELECT D.ARTICLE_DETAIL_DESC FROM FS_ARTICLE_DETAILS C,FS_ARTICLE_DETAILS_DESC D"+
+						" WHERE C.ARTICLE_DETAIL_ID = D.ARTICLE_DETAILS_ID AND D.ARTICLE_DETAILS_ID = ? AND D.LANGUAGE_ID = ? AND C.ISACTIVE = 'Y'";
+			
+			List<Map<String, Object>> articleDetailDesc = jdbcTemplate.queryForList(sql,
+					new Object[] { articleDetailId, metaData.getLanguageId() });
+			
+			return articleDetailDesc;
 	}
 	
 	public String getMonthlyIncomeRange(Customer customer) {

@@ -389,7 +389,7 @@ public class UserClientTest extends AbstractTestClient {
 
 	}
 	
-	@Test
+	//@Test
 	public void delinkFingerprint() throws IOException, ResourceNotFoundException,
 	InvalidInputException, RemittanceTransactionValidationException, LimitExeededException {
 		jaxMetaInfo.setDeviceId("301019967");
@@ -423,9 +423,9 @@ public class UserClientTest extends AbstractTestClient {
 		IncomeDto incomeDto = new IncomeDto();
 		incomeDto.setIncomeRangeFrom(new BigDecimal(1));
 		incomeDto.setIncomeRangeTo(new BigDecimal(100));
-		incomeDto.setFullName("KANMANISUBRAMANIANPALANIYAPPAN");
+		
 		incomeDto.setArticleDetailId(new BigDecimal(1));
-		//incomeDto.setCompanyName("ALMULLA");
+		incomeDto.setCompanyName("ALMULLA");
 		//incomeDto.setImage("qwerty");
 
 		response = client.saveAnnualIncome(incomeDto);

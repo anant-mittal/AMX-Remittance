@@ -9,7 +9,7 @@ public class IncomeDto {
 	
 	public BigDecimal incomeRangeFrom;
 	public BigDecimal incomeRangeTo;
-	public String fullName;
+	
 	public BigDecimal articleDetailId;
 	public String companyName;
 	public String image;
@@ -47,15 +47,6 @@ public class IncomeDto {
 		this.articleDetailId = articleDetailId;
 	}
 
-	public String getFullName() {
-		return fullName;
-	}
-
-	public void setFullName(String fullName) {
-		this.fullName = fullName;
-	}
-
-	
 
 	public BigDecimal getIncomeRangeFrom() {
 		return incomeRangeFrom;

@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.sql.rowset.serial.SerialException;
 
@@ -136,18 +137,15 @@ public class AnnualIncomeService {
 
 	public AmxApiResponse<AnnualIncomeRangeDTO, Object> getAnnualIncome(BigDecimal customerId) {
 		List<IncomeModel> incomeList = incomeDao.getAnnualIncome(customerId);
-		Customer cust = custDao.getCustById(customerId);
-		String firstName = cust.getFirstName();
-		String middleName = cust.getMiddleName();
-		String lastName = cust.getLastName();
-		String fullName = firstName + middleName + lastName;
+		
+		
 		if (incomeList.isEmpty()) {
 			throw new GlobalException("Income list is not available");
 		}
-		return AmxApiResponse.buildList(convertIncomeDto(incomeList, fullName));
+		return AmxApiResponse.buildList(convertIncomeDto(incomeList));
 	}
 
-	public List<AnnualIncomeRangeDTO> convertIncomeDto(List<IncomeModel> incomeList, String fullName) {
+	public List<AnnualIncomeRangeDTO> convertIncomeDto(List<IncomeModel> incomeList) {
 		List<AnnualIncomeRangeDTO> output = new ArrayList<>();
 		for (IncomeModel incomeModel : incomeList) {
 			AnnualIncomeRangeDTO dto = new AnnualIncomeRangeDTO();
@@ -161,47 +159,92 @@ public class AnnualIncomeService {
 
 	public AmxApiResponse<IncomeDto, Object> saveAnnualIncome(IncomeDto incomeDto) throws ParseException {
 		Customer customer = custDao.getCustById(metaData.getCustomerId());
-		logger.debug("Object is : ");
+
+		if (incomeDto.getIncomeRangeFrom() == null || incomeDto.getIncomeRangeTo() == null) {
+			throw new GlobalException("Income range cannot be null");
+		}
+
+		IncomeModel incomeModel = incomeDao.getAnnualIncomeRangeId(incomeDto.getIncomeRangeFrom(),
+				incomeDto.getIncomeRangeTo());
+		if (incomeModel== null) {
+			throw new GlobalException("Invalid income range entered.Please enter a valid income range");
+		}
+
 		customer.setAnnualIncomeFrom(incomeDto.getIncomeRangeFrom());
-		logger.debug("set income from : ");
+
 		customer.setAnnualIncomeTo(incomeDto.getIncomeRangeTo());
-		logger.debug("set income range to : ");
-		customer.setAnnualIncomeUpdatedBy(incomeDto.getFullName());
-		logger.debug("set income updated by : ");
+
+		customer.setAnnualIncomeUpdatedBy(metaData.getCustomerId().toString());
+
 		customer.setAnnualIncomeUpdatedDate(new Date());
-		logger.debug("set income updated date : ");
+
+		if (incomeDto.getArticleDetailId() == null) {
+			throw new GlobalException("Article detail id can not be null");
+		}
+
+		List<Map<String, Object>> designationList = articleDao
+				.getArticleDescriptionByArticleDetailId(incomeDto.getArticleDetailId());
+		if (designationList.isEmpty()) {
+			throw new GlobalException("Invalid designation id entered");
+		}
+
 		customer.setFsArticleDetails(articleDao.getArticleDetailsByArticleDetailId(incomeDto.getArticleDetailId()));
 		logger.debug("set designation id : ");
 		CustomerEmploymentInfo customerEmploymentInfo = incomeDao.getCustById(metaData.getCustomerId());
 		if (customerEmploymentInfo == null) {
 			customerEmploymentInfo = createCustomerEmploymentInfo(incomeDto);
 		}
-		logger.info("cust emp info is "+customerEmploymentInfo.getDepartment());
-		logger.info("company name is"+incomeDto.getCompanyName());
+
+		if (incomeDto.getCompanyName() == null || incomeDto.getCompanyName() == "") {
+			throw new GlobalException("Company name cannot be null or empty");
+		}
 		customerEmploymentInfo.setEmployerName(incomeDto.getCompanyName());
-		logger.info("employee name is set:"+customerEmploymentInfo.getEmployerName());
-		if (incomeDto.getImage() != null && incomeDto.getFileName()!=null) {
+		logger.info("employee name is set:" + customerEmploymentInfo.getEmployerName());
+
+		if (incomeDto.getImage() != null && incomeDto.getFileName() != null) {
 			logger.info("image is set 1");
 			DmsApplMapping mappingData = new DmsApplMapping();
-			
+
 			mappingData = getDmsApplMappingData(customer);
 			logger.info("hi");
 			idmsAppMappingRepository.save(mappingData);
 			logger.info("hello");
 			DocBlobUpload documentDetails = new DocBlobUpload();
+			if (incomeDto.getImage().length() > 1048576) {
+				throw new GlobalException("Image size should be less than 1MB");
+			}
+
 			documentDetails = getDocumentUploadDetails(incomeDto.getImage(), mappingData);
 			logger.info("hello hi");
 			docblobRepository.save(documentDetails);
 			logger.info("hi hello");
 			customerEmploymentInfo.setDocBlobId(mappingData.getDocBlobId());
 			logger.info("image is set 2");
+
+			if (getFileExtension(incomeDto.getFileName()) == "") {
+				throw new GlobalException("Filename cannot be entered without extension");
+			}
+
+			if (getFileExtension(incomeDto.getFileName()) == "") {
+				throw new GlobalException("Filename cannot be entered without extension");
+			}
+			String fileExtension = getFileExtension(incomeDto.getFileName());
+			if (!(fileExtension.equalsIgnoreCase("pdf") || fileExtension.equalsIgnoreCase("jpg")
+					|| fileExtension.equalsIgnoreCase("png"))) {
+				throw new GlobalException("Filename extension can only be pdf,jpg and png");
+			}
+
 			customerEmploymentInfo.setFileName(incomeDto.getFileName());
 			logger.info("file is set 1");
-		}
-		else if(incomeDto.getImage() == null && incomeDto.getFileName() == null) {
+		} else if (incomeDto.getImage() == null && incomeDto.getFileName() == null) {
 			customerEmploymentInfo.setDocBlobId(null);
 			customerEmploymentInfo.setFileName(null);
 		}
+
+		else {
+			throw new GlobalException("Either image and filename both should be enterd or none of them");
+		}
+
 		logger.info("details are set");
 		custDao.saveCustomer(customer);
 		incomeDao.saveCustomerEmploymentInfo(customerEmploymentInfo);
@@ -213,7 +256,7 @@ public class AnnualIncomeService {
 		// TODO Auto-generated method stub
 		CustomerEmploymentInfo custEmploymentInfo = new CustomerEmploymentInfo();
 		custEmploymentInfo.setEmployerName(incomeDto.getCompanyName());
-		custEmploymentInfo.setCreatedBy(incomeDto.getFullName());
+		custEmploymentInfo.setCreatedBy(metaData.getCustomerId().toString());
 		custEmploymentInfo.setCreationDate(new Date());
 		custEmploymentInfo.setFsCountryMaster(new CountryMaster(metaData.getCountryId()));
 		custEmploymentInfo.setFsCompanyMaster(new CompanyMaster(metaData.getCompanyId()));
@@ -282,6 +325,13 @@ public class AnnualIncomeService {
 
 	}
 	
+	public static String getFileExtension(String fileName) {
+        
+        if(fileName.lastIndexOf(".") != -1 && fileName.lastIndexOf(".") != 0)
+        return fileName.substring(fileName.lastIndexOf(".")+1);
+        else return "";
+    }
+
 	
 	
 	public AmxApiResponse<IncomeDto, Object> getAnnualIncomeDetails(){
@@ -290,7 +340,7 @@ public class AnnualIncomeService {
 		IncomeDto incomeDto = new IncomeDto();
 		incomeDto.setIncomeRangeFrom(customer.getAnnualIncomeFrom());
 		incomeDto.setIncomeRangeTo(customer.getAnnualIncomeTo());
-		incomeDto.setFullName(customer.getAnnualIncomeUpdatedBy());
+		
 		incomeDto.setArticleDetailId(customer.getFsArticleDetails().getArticleDetailId());
 		incomeDto.setCompanyName(customerEmploymentInfo.getEmployerName());
 		incomeDto.setFileName(customerEmploymentInfo.getFileName());
