@@ -7,6 +7,9 @@ import java.util.List;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.amx.jax.swagger.ApiMockModelProperty;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonFormat.Shape;
+import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonFormatTypes;
 
 public class ImageSubmissionRequest implements Serializable {
 
@@ -21,7 +24,7 @@ public class ImageSubmissionRequest implements Serializable {
 	@ApiMockModelProperty(example="Y")
 	private String politicallyExposed;
 	
-	@DateTimeFormat(pattern = "dd/MM/yyyy")
+	@JsonFormat(shape = Shape.STRING, pattern = "dd/MM/yyyy")
 	private Date identityExpiredDate;
 
 	public List<String> getImage() {
