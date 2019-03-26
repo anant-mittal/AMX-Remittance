@@ -110,14 +110,6 @@ public class DeviceValidation {
 		return (existing != null);
 	}
 
-	public void validateSessionToken(String sessionToken, Integer registrationId) {
-		DeviceStateInfo deviceStateInfo = deviceDao.findBySessionToken(sessionToken, registrationId);
-		if (deviceStateInfo == null) {
-			throw new AuthServiceException(RbaacServiceError.CLIENT_INVALID_SESSION_TOKEN, "Invalid session token");
-		}
-
-	}
-
 	public void validateDevice(Integer deviceRegId) {
 
 		Device device = deviceDao.findDevice(new BigDecimal(deviceRegId));

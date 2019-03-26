@@ -64,7 +64,7 @@ public class NewExchangeRateService extends ExchangeRateService {
 				&& !remittanceParameterMapManager.isCashChannel()) {
 			try {
 				outputModel = jaxDynamicPriceService.getExchangeRatesWithDiscount(fromCurrency, toCurrency, lcAmount,
-						null, beneBankCountryId, routingBankId);
+						null, beneBankCountryId, routingBankId, null);
 			} catch (Exception e) {
 			}
 			List<BankMasterDTO> cashChannelRates = getCashRateFromBestRateLogic(fromCurrency, toCurrency, lcAmount,
@@ -193,7 +193,7 @@ public class NewExchangeRateService extends ExchangeRateService {
 	public ExchangeRateBreakup getExchangeRateBreakUpUsingDynamicPricing(BigDecimal toCurrency, BigDecimal lcAmount,
 			BigDecimal fcAmount, BigDecimal countryId, BigDecimal routingBankId) {
 		ExchangeRateResponseModel exchangeRateResponseModel = jaxDynamicPriceService.getExchangeRatesWithDiscount(
-				meta.getDefaultCurrencyId(), toCurrency, lcAmount, fcAmount, countryId, routingBankId);
+				meta.getDefaultCurrencyId(), toCurrency, lcAmount, fcAmount, countryId, routingBankId, null);
 		return exchangeRateResponseModel.getExRateBreakup();
 	}
 

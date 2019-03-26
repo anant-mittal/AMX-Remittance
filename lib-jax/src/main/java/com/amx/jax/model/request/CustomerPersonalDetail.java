@@ -313,12 +313,16 @@ public class CustomerPersonalDetail extends AbstractModel {
 
 	public ResourceDTO getCustomerCategory() {
 		return customerCategory;
+	}
+	
 	public String getShortName() {
 		return shortName;
 	}
 
 	public void setCustomerCategory(ResourceDTO customerCategory) {
 		this.customerCategory = customerCategory;
+	}
+	
 	public void setShortName(String shortName) {
 		this.shortName = shortName;
 	}

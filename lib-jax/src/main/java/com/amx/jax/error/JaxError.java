@@ -260,7 +260,7 @@ public enum JaxError implements IExceptionEnum {
 	ID_TYPE_LENGTH_NOT_DEFINED,
 	INVENTORY_ID_NOT_EXISTS,
 	AMOUNT_VALIDATION,
-	BENE_MAP_SEQ_MISSING;
+	BENE_MAP_SEQ_MISSING,
 	
 	//for wrong fingerprint device
 	FINGERPRINT_EXPIRED;
