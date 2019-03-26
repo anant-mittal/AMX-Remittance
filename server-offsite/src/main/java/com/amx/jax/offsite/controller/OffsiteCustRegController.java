@@ -119,7 +119,7 @@ public class OffsiteCustRegController {
 		AmxApiResponse<OffsiteCustomerDataDTO, Object> x = offsiteCustRegClient.getOffsiteCustomerData(identity,
 				identityType);
 		if (!ArgUtil.isEmpty(x.getResult())
-				&& ArgUtil.isEmpty(x.getResult().getCustomerPersonalDetail())) {
+				&& !ArgUtil.isEmpty(x.getResult().getCustomerPersonalDetail())) {
 			customerSession.setCustomerId(x.getResult().getCustomerPersonalDetail().getCustomerId());
 		}
 		return x;
