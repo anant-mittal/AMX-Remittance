@@ -45,16 +45,14 @@ public class SnapQueryController {
 
 	@ResponseBody
 	@RequestMapping(value = "/snap/reset/start/{dbSyncJobs}", method = RequestMethod.GET)
-	public String snapResetStart(@PathVariable(value = "dbSyncJobs") DBSyncJobs dbSyncJobs,
-			@RequestBody Map<String, Object> params) throws IOException {
+	public String snapResetStart(@PathVariable(value = "dbSyncJobs") DBSyncJobs dbSyncJobs) throws IOException {
 		oracleVarsCache.clearStampStart(dbSyncJobs);
 		return "CLEARED";
 	}
 
 	@ResponseBody
 	@RequestMapping(value = "/snap/reset/end/{dbSyncJobs}", method = RequestMethod.GET)
-	public String snapResetEnd(@PathVariable(value = "dbSyncJobs") DBSyncJobs dbSyncJobs,
-			@RequestBody Map<String, Object> params) throws IOException {
+	public String snapResetEnd(@PathVariable(value = "dbSyncJobs") DBSyncJobs dbSyncJobs) throws IOException {
 		oracleVarsCache.clearStampEnd(dbSyncJobs);
 		return "CLEARED";
 	}
