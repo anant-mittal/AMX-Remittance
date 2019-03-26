@@ -24,6 +24,9 @@ import com.amx.jax.filter.AppClientInterceptor;
 import com.amx.jax.scope.TenantContext;
 import com.amx.jax.scope.TenantProperties;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.JsonUtil.JsonUtilConfigurable;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ulisesbocchio.jasyptspringboot.annotation.EnableEncryptableProperties;
 
 @Configuration
@@ -53,6 +56,7 @@ public class AppConfig {
 	public static final String APP_CLASS = "${app.class}";
 
 	public static final String APP_AUTH_KEY = "${app.auth.key}";
+	public static final String APP_AUTH_TOKEN = "${app.auth.token}";
 	public static final String APP_AUTH_ENABLED = "${app.auth.enabled}";
 
 	public static final String DEFAULT_TENANT = "${default.tenant}";
@@ -118,6 +122,9 @@ public class AppConfig {
 
 	@Value(APP_AUTH_KEY)
 	private String appAuthKey;
+
+	@Value(APP_AUTH_TOKEN)
+	private String appAuthToken;
 
 	@Value(APP_AUTH_ENABLED)
 	@AppParamKey(AppParam.APP_AUTH_ENABLED)
@@ -297,6 +304,12 @@ public class AppConfig {
 		return restTemplate;
 	}
 
+	// @Bean
+	public JsonUtilConfigurable jsonUtilConfigurable(ObjectMapper objectMapper) {
+		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		return new JsonUtilConfigurable(objectMapper);
+	}
+
 	@Bean
 	public Project project(@Value("${app.project}") Project project) {
 		ProjectConfig.PROJECT = project;
@@ -389,6 +402,14 @@ public class AppConfig {
 
 	public String getAppSpecifcDecryptedProp() {
 		return appSpecifcDecryptedProp;
+	}
+
+	public void setDefaultTenant(Tenant defaultTenant) {
+		this.defaultTenant = defaultTenant;
+	}
+
+	public String getAppAuthToken() {
+		return appAuthToken;
 	}
 
 }

@@ -24,12 +24,6 @@
     "*"
   ],
   "script_fields": {},
-  "docvalue_fields": [
-    {
-      "field": "@timestamp",
-      "format": "date_time"
-    }
-  ],
   "query": {
     "bool": {
       "must": [

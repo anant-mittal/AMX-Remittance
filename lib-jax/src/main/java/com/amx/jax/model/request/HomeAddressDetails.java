@@ -105,4 +105,11 @@ public class HomeAddressDetails {
 		this.block = block;
 	}
 
+	@Override
+	public String toString() {
+		return "HomeAddressDetails [contactTypeId=" + contactTypeId + ", countryId=" + countryId + ", stateId="
+				+ stateId + ", districtId=" + districtId + ", cityId=" + cityId + ", house=" + house + ", flat=" + flat
+				+ ", street=" + street + ", block=" + block + "]";
+	}
+
 }

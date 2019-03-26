@@ -56,7 +56,6 @@ public class CustomerDao {
 	private CompanyService companyService;
 	
 
-	@Transactional
 	public Customer getCustomerByCivilId(String civilId) {
 		Customer cust = null;
 		BigDecimal countryId = meta.getCountryId();
@@ -71,7 +70,6 @@ public class CustomerDao {
 		return repo.findActiveCustomers(identityInt);
 	}
 	
-	@Transactional
 	public List<Customer> getCustomerByIdentityInt(String identityInt) {
 		return repo.getCustomerByIdentityInt(identityInt);
 	}
@@ -80,12 +78,6 @@ public class CustomerDao {
 		return repo.getActiveCustomerByIndentityIntAndType(identityInt, identityType);
 	}
 
-	@Transactional
-	public CustomerOnlineRegistration getOnlineCustById(BigDecimal id) {
-		return onlineCustRepo.findOne(id);
-	}
-
-	@Transactional
 	public Customer getCustById(BigDecimal id) {
 		return repo.findOne(id);
 	}
@@ -103,7 +95,6 @@ public class CustomerDao {
 		return poCustomers;
 	}
 
-	@Transactional
 	public CustomerOnlineRegistration getOnlineCustByCustomerId(BigDecimal customerId) {
 		CustomerOnlineRegistration onlineCust = null;
 		if (customerId != null) {
@@ -115,7 +106,6 @@ public class CustomerDao {
 		return onlineCust;
 	}
 
-	@Transactional
 	public CustomerOnlineRegistration getOnlineCustByUserId(String userName) {
 		BigDecimal countryId = meta.getCountryId();
 		CustomerOnlineRegistration customer = null;
@@ -289,6 +279,18 @@ public class CustomerDao {
 		Map<String, Object> output = applicationCoreProcedureDao.callProcedureCustReferenceNumber(
 				company.getCompanyCode(), ConstantDocument.DOCUMENT_CODE_CUSTOMER_SERIAL_NUMBER, docFinYear);
 		return (BigDecimal) output.get("P_DOCNO");
+	}
+
+	public List<Customer> getCustomerByIdentityInt(String identityInt, BigDecimal identityType) {
+		return repo.getCustomerByIdentityInt(identityInt, identityType);
+	}
+
+	public List<Customer> findActiveCustomers(String identityInt, BigDecimal identityType) {
+		return repo.findActiveCustomers(identityInt, identityType);
+	}
+	
+	public List<Customer> getActiveCustomerByIndentityIntAndTypeAndIsActive(String identityInt, BigDecimal identityType, List<String> status){
+		return repo.getCustomerByIndentityIntAndTypeAndIsactive(identityInt, identityType, status);
 	}
 	
 }

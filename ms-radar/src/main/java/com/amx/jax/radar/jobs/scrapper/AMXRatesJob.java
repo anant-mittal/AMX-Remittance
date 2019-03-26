@@ -21,8 +21,6 @@ import com.amx.jax.client.snap.ISnapService.RateType;
 import com.amx.jax.dict.Currency;
 import com.amx.jax.dict.Language;
 import com.amx.jax.logger.LoggerService;
-import com.amx.jax.mcq.Candidate;
-import com.amx.jax.mcq.MCQLocker;
 import com.amx.jax.mcq.shedlock.SchedulerLock;
 import com.amx.jax.mcq.shedlock.SchedulerLock.LockContext;
 import com.amx.jax.radar.AESRepository.BulkRequestBuilder;

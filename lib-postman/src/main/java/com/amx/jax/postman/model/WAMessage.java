@@ -44,4 +44,5 @@ public class WAMessage extends Message {
 	public void setQueue(BigDecimal queue) {
 		this.queue = queue;
 	}
+
 }

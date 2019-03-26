@@ -253,12 +253,17 @@ public enum JaxError implements IExceptionEnum {
 	INVALID_VOUCHER_DOCUMENT_NO,
 	INVALID_CLAIM_CODE,
 	AMOUNT_MISMATCH,
+	SIGNATURE_NOT_FOUND,
+	
 	// for validate Currency pair
 	INVALID_PAIR_ID,
 	ID_TYPE_LENGTH_NOT_DEFINED,
 	INVENTORY_ID_NOT_EXISTS,
 	AMOUNT_VALIDATION,
 	BENE_MAP_SEQ_MISSING;
+	
+	//for wrong fingerprint device
+	FINGERPRINT_EXPIRED;
 
 	@Deprecated
 	public String getCode() {

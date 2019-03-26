@@ -30,6 +30,15 @@ public class StompTunnelService {
 		tunnelService.shout(StompTunnelToAllSender.STOMP_TO_ALL, event);
 	}
 
+	/**
+	 * This method will work only if
+	 * {@link StompTunnelSessionManager#mapHTTPSession(stompSessionId, String)} has
+	 * been called already for the session
+	 * 
+	 * @param stompSessionId
+	 * @param topic
+	 * @param message
+	 */
 	@Async
 	public void sendTo(String stompSessionId, String topic, Object message) {
 		StompTunnelEvent event = new StompTunnelEvent();

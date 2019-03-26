@@ -12,7 +12,7 @@ import com.amx.jax.ui.WebAppConfig;
 import com.amx.utils.ArgUtil;
 
 /**
- * The Class HotPointService.
+ * @author lalit
  */
 @Component
 public class HotPointService {
@@ -28,13 +28,11 @@ public class HotPointService {
 	/**
 	 * Notify.
 	 *
-	 * @param customerId
-	 *            the customer id
+	 * @param customerId the customer id
 	 * @param hotpoint
 	 * @param token
 	 * @return the list
-	 * @throws PostManException
-	 *             the post man exception
+	 * @throws PostManException the post man exception
 	 */
 	public GeoNotifyTask notify(BigDecimal customerId, String token, GeoHotPoints hotpoint) throws PostManException {
 		GeoNotifyTask task = new GeoNotifyTask();
@@ -43,7 +41,7 @@ public class HotPointService {
 		task.setAppTitle(webAppConfig.getAppTitle());
 		if (webAppConfig.isNotifyGeoEnabled()) {
 			tunnelService.task(task);
-				}
+		}
 		return task;
 	}
 

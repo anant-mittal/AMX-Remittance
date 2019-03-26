@@ -30,6 +30,7 @@ public class DeviceConstants {
 		public static final String DEVICE_PAIR = "/pub/device/pair";
 		public static final String DEVICE_ACTIVATE = "/pub/device/activate";
 		public static final String DEVICE_DEACTIVATE = "/pub/device/deactivate";
+		public static final String DEVICE_DELETE = "/pub/device/delete";
 		public static final String DEVICE_SESSION = "/pub/device/session";
 		public static final String SESSION_PAIR = "/pub/device/session/pair";
 		public static final String SESSION_TERMINAL = "/pub/device/session/terminal";

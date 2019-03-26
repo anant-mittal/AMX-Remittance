@@ -3,6 +3,7 @@ package com.amx.jax.branch.controller;
 import java.math.BigDecimal;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -20,7 +21,7 @@ import com.amx.jax.swagger.IStatusCodeListPlugin.ApiStatusService;
 
 import io.swagger.annotations.Api;
 
-//@PreAuthorize("hasPermission('CUSTOMER_MGMT.FXORDER', 'VIEW')")
+//@PreAuthorize("hasPermission('MRKT_MGMT.FOREX_OUTLOOK', 'VIEW')")
 @RestController
 @Api(value = "Forex Outlook APIs")
 @ApiStatusService(IForexOutlookService.class)

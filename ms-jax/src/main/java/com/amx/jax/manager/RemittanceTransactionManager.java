@@ -71,6 +71,7 @@ import com.amx.jax.error.JaxError;
 import com.amx.jax.exrateservice.dao.ExchangeRateDao;
 import com.amx.jax.exrateservice.dao.PipsMasterDao;
 import com.amx.jax.exrateservice.service.NewExchangeRateService;
+import com.amx.jax.logger.AuditEvent;
 import com.amx.jax.logger.AuditEvent.Result;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.events.CActivityEvent;
@@ -82,6 +83,7 @@ import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.model.response.ExchangeRateBreakup;
 import com.amx.jax.model.response.remittance.LoyalityPointState;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
+import com.amx.jax.remittance.manager.RemittanceParameterMapManager;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.VTransferRepository;
 import com.amx.jax.service.CountryService;
@@ -199,6 +201,8 @@ public class RemittanceTransactionManager {
 	CountryService countryService;
 	@Autowired
 	JaxConfigService jaxConfigService;
+	@Autowired
+	RemittanceParameterMapManager remittanceParameterMapManager;
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -319,7 +323,8 @@ public class RemittanceTransactionManager {
 		} else {
 			responseModel.setTotalLoyalityPoints(BigDecimal.ZERO);
 		}
-		responseModel.setMaxLoyalityPointsAvailableForTxn(loyalityPointService.getVwLoyalityEncash().getLoyalityPoint());
+		responseModel
+				.setMaxLoyalityPointsAvailableForTxn(loyalityPointService.getVwLoyalityEncash().getLoyalityPoint());
 	}
 
 	public void applyRoudingLogic(ExchangeRateBreakup exRatebreakUp) {
@@ -583,9 +588,9 @@ public class RemittanceTransactionManager {
 		ExchangeRateBreakup exchangeRateBreakup;
 		BigDecimal routingBankId = (BigDecimal) remitApplParametersMap.get("P_ROUTING_BANK_ID");
 		BigDecimal fCurrencyId = (BigDecimal) remitApplParametersMap.get("P_FOREIGN_CURRENCY_ID");
-		BigDecimal routingCountryId  = (BigDecimal) remitApplParametersMap.get("P_ROUTING_COUNTRY_ID");
-		
-		if (jaxTenantProperties.getIsDynamicPricingEnabled()) {
+		BigDecimal routingCountryId = (BigDecimal) remitApplParametersMap.get("P_ROUTING_COUNTRY_ID");
+
+		if (jaxTenantProperties.getIsDynamicPricingEnabled() && !remittanceParameterMapManager.isCashChannel()) {
 			exchangeRateBreakup = newExchangeRateService.getExchangeRateBreakUpUsingDynamicPricing(fCurrencyId,
 					lcAmount, fcAmount, routingCountryId, routingBankId);
 		} else if (jaxTenantProperties.getExrateBestRateLogicEnable()) {

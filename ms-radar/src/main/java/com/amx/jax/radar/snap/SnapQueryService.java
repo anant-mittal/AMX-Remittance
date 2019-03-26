@@ -16,7 +16,6 @@ import com.amx.jax.client.snap.SnapModels.SnapModelWrapper;
 import com.amx.jax.client.snap.SnapQueryException;
 import com.amx.jax.radar.EsConfig;
 import com.amx.jax.rest.RestService;
-import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;
 
 /**
@@ -56,11 +55,13 @@ public class SnapQueryService {
 	}
 
 	public SnapModelWrapper executeQuery(Map<String, Object> query, String index) {
-		Map<String, Object> x = restService.ajax(ssConfig.getClusterUrl()).path(
-				EsConfig.indexName(index) + "/_search").post(query)
+		Map<String, Object> x = restService.ajax(ssConfig.getClusterUrl())
+				.header(ssConfig.getBasicAuthHeader()).path(
+						EsConfig.indexName(index) + "/_search")
+				.post(query)
 				.asMap();
 		// x.put("aggs", query.get("aggs"));
-		System.out.println(JsonUtil.toJson(query));
+		//System.out.println(JsonUtil.toJson(query));
 		return new SnapModelWrapper(x);
 	}
 

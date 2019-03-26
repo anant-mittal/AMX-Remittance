@@ -80,6 +80,8 @@ public class Constants {
 	
 	public static final String YES = "Y";
 	
+	public static final String DELETED_SOFT = "D";
+	
 	/** The Constant CUST_DB_SCAN. */
 	public static final String CUST_DB_SCAN = "D";
 

@@ -14,8 +14,10 @@ import org.jsoup.select.Elements;
 import com.amx.jax.client.snap.ISnapService.RateSource;
 import com.amx.jax.client.snap.ISnapService.RateType;
 import com.amx.jax.dict.Currency;
+import com.amx.jax.radar.jobs.scrapper.AmanKuwaitModels;
 import com.amx.jax.rates.AmxCurRate;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.FileUtil;
 import com.amx.utils.JsonUtil;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
@@ -33,6 +35,14 @@ public class App { // Noncompliant
 	 * @throws IOException
 	 */
 	public static void main(String[] args) throws URISyntaxException, IOException {
+		String json = FileUtil
+				.readFile("file://" + System.getProperty("user.dir")
+						+ "/src/test/java/com/amx/test/amankuwaitratesample.json");
+		AmanKuwaitModels.Rates rates2 = JsonUtil.getMapper().readValue(json, AmanKuwaitModels.RatesJson.class);
+		rates2.getCurRates();
+	}
+
+	public static void main2(String[] args) throws URISyntaxException, IOException {
 		System.out.println("Strat ============");
 		Document doc0 = Jsoup.connect("https://www.uaeexchange.com.kw/Rates.aspx").get();
 

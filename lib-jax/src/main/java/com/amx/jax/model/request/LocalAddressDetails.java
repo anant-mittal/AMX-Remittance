@@ -105,4 +105,11 @@ public class LocalAddressDetails {
 		this.contactTypeId = contactTypeId;
 	}
 
+	@Override
+	public String toString() {
+		return "LocalAddressDetails [contactTypeId=" + contactTypeId + ", block=" + block + ", street=" + street
+				+ ", house=" + house + ", flat=" + flat + ", countryId=" + countryId + ", stateId=" + stateId
+				+ ", districtId=" + districtId + ", cityId=" + cityId + "]";
+	}
+
 }
