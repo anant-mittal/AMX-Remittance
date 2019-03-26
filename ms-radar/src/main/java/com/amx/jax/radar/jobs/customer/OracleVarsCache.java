@@ -20,9 +20,9 @@ public class OracleVarsCache extends CacheBox<String> {
 	public static final String DOC_VERSION = SnapConstants.DOC_VERSION;
 
 	public static enum DBSyncJobs {
-		CUSTOMER_JOB(SnapConstants.SnapIndexName.CUSTOMER, "v5", 15),
-		TRANSACTION_JOB(SnapConstants.SnapIndexName.TRANX, "v8", 17),
-		XRATE_JOB(SnapConstants.SnapIndexName.XRATE, "v5", 15);
+		CUSTOMER_JOB(SnapConstants.SnapIndexName.CUSTOMER, "v5", 20),
+		TRANSACTION_JOB(SnapConstants.SnapIndexName.TRANX, "v8", 20),
+		XRATE_JOB(SnapConstants.SnapIndexName.XRATE, "v5", 20);
 
 		String indexName;
 		int resetCounter;
