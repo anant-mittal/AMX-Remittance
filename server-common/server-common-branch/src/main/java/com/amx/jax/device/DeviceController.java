@@ -150,7 +150,8 @@ public class DeviceController {
 				.getResult();
 		SessionPairingCreds creds = deviceRequestValidator.createSession(resp.getSessionPairToken(), resp.getOtp(),
 				resp.getTermialId(), resp.getEmpId());
-		creds.setOtpTtl(AmxConstants.OTP_TTL);
+		creds.setOtpTtl(AmxConstants.OFFLINE_OTP_TTL);
+		creds.setRequestTtl(DeviceConstants.Config.REQUEST_TOKEN_VALIDITY);
 		String meta = ArgUtil.isEmpty(resp.getEmpId()) ? resp.getTermialId() : resp.getEmpId();
 
 		AppContextUtil.getUserClient().setClientType(resp.getDeviceType());
