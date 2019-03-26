@@ -63,7 +63,8 @@ public class NotipyController {
 		return AmxApiResponse.build(notipyData);
 	}
 
-	@RequestMapping(value = { DeviceConstants.Path.DEVICE_SEND_NOTIPY }, method = { RequestMethod.GET })
+	@RequestMapping(value = { DeviceConstants.Path.DEVICE_SEND_NOTIPY },
+			method = { RequestMethod.GET, RequestMethod.POST })
 	public AmxApiResponse<NotipyData, Object> sendNotipy(@RequestParam String empId)
 			throws InterruptedException {
 		adapterServiceClient.sendSACtoEmployee(empId, Random.randomAlphaNumeric(6));
@@ -71,7 +72,8 @@ public class NotipyController {
 		return AmxApiResponse.build(notipyData);
 	}
 
-	@RequestMapping(value = { DeviceConstants.Path.DEVICE_VERIFY_NOTIPY }, method = { RequestMethod.GET })
+	@RequestMapping(value = { DeviceConstants.Path.DEVICE_VERIFY_NOTIPY },
+			method = { RequestMethod.GET, RequestMethod.POST })
 	public AmxApiResponse<NotpDTO, Object> verifyNotipy(@RequestParam BigDecimal empId, @RequestParam String sac,
 			@RequestParam String otp)
 			throws InterruptedException {
