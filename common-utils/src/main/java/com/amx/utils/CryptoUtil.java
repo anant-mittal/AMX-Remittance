@@ -164,7 +164,9 @@ public final class CryptoUtil {
 		return ArgUtil.parseAsString(hashCode * passLenFill);
 	}
 
-	private static final String COMPLEX_CHARS = "!@#$%^&*?0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	//private static final String COMPLEX_CHARS = "!@#$%^&*?0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	private static final String COMPLEX_CHARS = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
 	private static final int COMPLEX_CHARS_LEN = COMPLEX_CHARS.length();
 
 	public static String toComplex(int length, String hash) {
