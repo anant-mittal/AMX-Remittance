@@ -296,7 +296,7 @@ public class RoutingProcedureDao {
 					+ " AND    F.SERVICE_MASTER_ID  = ? "
 					+ " AND    F.ROUTING_BANK_ID   =  DECODE( ?,101,?,F.ROUTING_BANK_ID)"
 					+ " AND    F.ROUTING_COUNTRY_ID =?"
-					+ " AND F.ROUTING_BANK_ID =?)";
+					+ " AND F.ROUTING_BANK_ID =? ORDER BY F.REMITTANCE_MODE_ID)";
 			
 			LOGGER.info("in getRoutingCountryBank,input values: {}", sql);	
 			
@@ -333,7 +333,7 @@ public class RoutingProcedureDao {
 							+ " AND    F.ROUTING_BANK_ID   =  DECODE( ?,101,?,F.ROUTING_BANK_ID)"
 							+ " AND    F.ROUTING_COUNTRY_ID =?"
 							+ " AND    F.ROUTING_BANK_ID =?"
-							+ " AND    F.REMITTANCE_MODE_ID =?)";
+							+ " AND    F.REMITTANCE_MODE_ID =? ORDER BY F.DELIVERY_MODE_ID)";
 					
 					LOGGER.info("in getRoutingCountryBank,input values: {}", sql);	
 					
