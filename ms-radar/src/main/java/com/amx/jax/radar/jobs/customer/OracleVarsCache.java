@@ -21,7 +21,7 @@ public class OracleVarsCache extends CacheBox<String> {
 
 	public static enum DBSyncJobs {
 		CUSTOMER_JOB(SnapConstants.SnapIndexName.CUSTOMER, "v5", 15),
-		TRANSACTION_JOB(SnapConstants.SnapIndexName.TRANX, "v8", 16),
+		TRANSACTION_JOB(SnapConstants.SnapIndexName.TRANX, "v8", 17),
 		XRATE_JOB(SnapConstants.SnapIndexName.XRATE, "v5", 15);
 
 		String indexName;

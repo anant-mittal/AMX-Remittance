@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import com.amx.jax.client.snap.SnapConstants.SnapIndexName;
+import com.amx.jax.dict.UserClient.AppType;
 import com.amx.jax.dict.UserClient.Channel;
 import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.dict.UserClient.UserDeviceClient;
@@ -137,6 +138,17 @@ public class OracleViewDocument extends AESDocument {
 		Object channel = ArgUtil.parseAsEnum(this.trnx.getChannel(), Channel.UNKNOWN);
 		if (!ArgUtil.isEmpty(channel)) {
 			this.client.setChannel((Channel) channel);
+		}
+
+		Object appType = ArgUtil.parseAsEnum(this.trnx.getChannel(), AppType.UNKNOWN);
+		if (!ArgUtil.isEmpty(appType)) {
+			this.client.setAppType((AppType) appType);
+			if (AppType.ANDROID == this.client.getAppType() || AppType.IOS == this.client.getAppType()) {
+				this.client.setChannel(Channel.MOBILE);
+			}
+		}
+
+		if (!Channel.UNKNOWN.equals(this.client.getChannel())) {
 			this.trnx.setChannel(null);
 		}
 
