@@ -695,8 +695,7 @@ public class UserValidationService {
 	}
 	
 	public List<Customer> validateNonActiveOrNonRegisteredCustomerStatus(String identityInt, JaxApiFlow apiFlow) {
-		return validateNonActiveOrNonRegisteredCustomerStatus(identityInt, ConstantDocument.BIZ_COMPONENT_ID_CIVIL_ID,
-				apiFlow);
+		return validateNonActiveOrNonRegisteredCustomerStatus(identityInt, null, apiFlow);
 	}
 
 	/**
@@ -707,8 +706,11 @@ public class UserValidationService {
 	public List<Customer> validateNonActiveOrNonRegisteredCustomerStatus(String identityInt, BigDecimal identityType,
 			JaxApiFlow apiFlow) {
 		List<Customer> customers = null;
-
-		customers = custDao.getCustomerByIdentityInt(identityInt, identityType);
+		if (identityType != null) {
+			customers = custDao.getCustomerByIdentityInt(identityInt, identityType);
+		} else {
+			customers = custDao.getCustomerByIdentityInt(identityInt);
+		}
 		if (CollectionUtils.isEmpty(customers) && apiFlow == JaxApiFlow.SIGNUP_DEFAULT) {
 			return customers;
 		}
