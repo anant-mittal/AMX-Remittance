@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.amx.jax.client.snap.SnapConstants.SnapQueryTemplate;
@@ -55,6 +56,13 @@ public class SnapQueryController {
 	public String snapResetEnd(@PathVariable(value = "dbSyncJobs") DBSyncJobs dbSyncJobs) throws IOException {
 		oracleVarsCache.clearStampEnd(dbSyncJobs);
 		return "CLEARED";
+	}
+
+	@RequestMapping(value = "/snap/table/{snapView}", method = RequestMethod.GET)
+	public String table(@PathVariable(value = "snapView") SnapQueryTemplate snapView,
+			@RequestParam String gte, @RequestParam String lte) throws IOException {
+		
+		return "table";
 	}
 
 }
