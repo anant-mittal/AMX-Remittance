@@ -2,11 +2,11 @@ package com.amx.jax.userservice.constant;
 
 import java.math.BigDecimal;
 
-import com.amx.amxlib.meta.model.QuestModelDTO;
+import com.amx.jax.model.auth.QuestModelDTO;
 
 public enum CustomerDataVerificationQuestion {
 
-	Q1(1, "The first name of your beneficiary to whom you did the last transaction") {
+	Q1(1, "Which is the State of your home country?") {
 		@Override
 		public QuestModelDTO getQuestModelDTO() {
 			QuestModelDTO dto = new QuestModelDTO(Q1.getId(), Q1.getId(), Q1.getQuestion());
@@ -14,17 +14,10 @@ public enum CustomerDataVerificationQuestion {
 
 		}
 	},
-	Q2(2, "Relationship with beneficiary:  ${name}") {
+	Q2(2, "Identity Id Expiry Date") {
 		@Override
 		public QuestModelDTO getQuestModelDTO() {
 			QuestModelDTO dto = new QuestModelDTO(Q2.getId(), Q2.getId(), Q2.getQuestion());
-			return dto;
-		}
-	},
-	Q3(3, "Month of last transaction") {
-		@Override
-		public QuestModelDTO getQuestModelDTO() {
-			QuestModelDTO dto = new QuestModelDTO(Q3.getId(), Q3.getId(), Q3.getQuestion());
 			return dto;
 		}
 	};
@@ -53,5 +46,16 @@ public enum CustomerDataVerificationQuestion {
 
 	public void setQuestion(String question) {
 		this.question = question;
+	}
+	
+	public static CustomerDataVerificationQuestion getCustomerDataVerificationQuestionById(BigDecimal questId) {
+		CustomerDataVerificationQuestion[] allValues = CustomerDataVerificationQuestion.values();
+		CustomerDataVerificationQuestion question = null;
+		for (CustomerDataVerificationQuestion q : allValues) {
+			if (q.getId().equals(questId)) {
+				question = q;
+			}
+		}
+		return question;
 	}
 }

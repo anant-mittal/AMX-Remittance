@@ -11,8 +11,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.jax.client.configs.JaxMetaInfo;
-import com.amx.jax.def.MockParamBuilder;
-import com.amx.jax.def.MockParamBuilder.MockParam;
+import com.amx.jax.swagger.MockParamBuilder;
+import com.amx.jax.swagger.MockParamBuilder.MockParam;
 
 @SpringBootApplication
 @EnableTransactionManagement
@@ -22,6 +22,7 @@ public class JaxServiceApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(JaxServiceApplication.class, args);
+		//SysUtils.disableSysOut();
 	}
 
 	@Bean

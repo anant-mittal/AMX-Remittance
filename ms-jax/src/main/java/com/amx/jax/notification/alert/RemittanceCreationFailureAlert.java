@@ -17,6 +17,7 @@ import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.ExEmailNotification;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.IExEmailNotificationDao;
@@ -56,7 +57,9 @@ public class RemittanceCreationFailureAlert implements IAlert {
 
 	@Override
 	public void sendAlert(AbstractJaxException ex) {
-
+		if(!isApplicable(ex)) {
+			return;
+		}
 		PaymentResponseDto model = (PaymentResponseDto) JaxContextUtil.getRequestModel();
 		List<RemittanceApplication> lstPayIdDetails = null;
 		List<ExEmailNotification> emailid = null;
@@ -112,6 +115,13 @@ public class RemittanceCreationFailureAlert implements IAlert {
 	
 	@Override
 	public boolean isEnabled() {
+		return true;
+	}
+	
+	private boolean isApplicable(AbstractJaxException ex) {
+		if (ex.getErrorKey().equals(JaxError.ADDTIONAL_FLEX_FIELD_REQUIRED.toString())) {
+			return false;
+		}
 		return true;
 	}
 }

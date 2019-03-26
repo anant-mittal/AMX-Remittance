@@ -24,12 +24,10 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.BankMasterDTO;
-import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.meta.model.ViewCompanyDetailDTO;
 import com.amx.amxlib.model.MinMaxExRateDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
-import com.amx.amxlib.model.response.ExchangeRateBreakup;
 import com.amx.amxlib.model.response.ExchangeRateResponseModel;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.api.AmxApiResponse;
@@ -43,6 +41,8 @@ import com.amx.jax.error.JaxError;
 import com.amx.jax.exrateservice.dao.ExchangeRateDao;
 import com.amx.jax.exrateservice.dao.PipsMasterDao;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.response.CurrencyMasterDTO;
+import com.amx.jax.model.response.ExchangeRateBreakup;
 import com.amx.jax.service.BankMetaService;
 import com.amx.jax.service.CompanyService;
 import com.amx.jax.service.CurrencyMasterService;
@@ -102,14 +102,14 @@ public class ExchangeRateService extends AbstractService {
 		if (fromCurrency.equals(meta.getDefaultCurrencyId())) {
 			List<PipsMaster> pips = pipsDao.getPipsForOnline(toCurrency);
 			if (pips == null || pips.isEmpty()) {
-				throw new GlobalException("No exchange data found", JaxError.EXCHANGE_RATE_NOT_FOUND);
+				throw new GlobalException(JaxError.EXCHANGE_RATE_NOT_FOUND, "No exchange data found");
 			}
 			validateExchangeRateInputdata(lcAmount);
 			BigDecimal countryBranchId = meta.getCountryBranchId();
 			List<BigDecimal> validBankIds = exchangeRateProcedureDao.getBankIdsForExchangeRates(toCurrency);
 			
 			if (validBankIds.isEmpty()) {
-				throw new GlobalException("No exchange data found", JaxError.EXCHANGE_RATE_NOT_FOUND);
+				throw new GlobalException(JaxError.EXCHANGE_RATE_NOT_FOUND, "No exchange data found");
 			}
 			
 			CurrencyMasterModel toCurrencyMaster = currencyMasterDao.getCurrencyMasterById(toCurrency);
@@ -123,7 +123,7 @@ public class ExchangeRateService extends AbstractService {
 			}
 			List<BankMasterDTO> bankWiseRates = chooseBankWiseRates(toCurrency, applicableRatesWithDiscount, lcAmount);
 			if (equivalentAmount == null && (bankWiseRates == null || bankWiseRates.isEmpty())) {
-				throw new GlobalException("No exchange data found", JaxError.EXCHANGE_RATE_NOT_FOUND);
+				throw new GlobalException(JaxError.EXCHANGE_RATE_NOT_FOUND, "No exchange data found");
 			}
 			ExchangeRateResponseModel outputModel = new ExchangeRateResponseModel();
 			outputModel.setExRateBreakup(equivalentAmount);
@@ -302,7 +302,7 @@ public class ExchangeRateService extends AbstractService {
 
 	protected void validateExchangeRateInputdata(BigDecimal amount) {
 		if (amount.compareTo(new BigDecimal(0)) < 0) {
-			throw new GlobalException("No exchange data found", JaxError.INVALID_EXCHANGE_AMOUNT);
+			throw new GlobalException(JaxError.INVALID_EXCHANGE_AMOUNT, "No exchange data found");
 		}
 	}
 

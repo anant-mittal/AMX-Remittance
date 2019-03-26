@@ -11,10 +11,10 @@ import com.amx.jax.dbmodel.TermsAndCondition;
 
 public interface ITermsAndConditionRepository<T> extends JpaRepository<TermsAndCondition,BigDecimal>{
 	
-	@Query("Select t from TermsAndCondition t where languageId=?")
-	public List<TermsAndCondition> getTermsAndCondition(BigDecimal languageId);
+	@Query("Select t from TermsAndCondition t where languageId=?1 and moduleType=?2 and status=?3")
+	public List<TermsAndCondition> getTermsAndCondition(BigDecimal languageId,String moduleType,String status);
 	
-	@Query("Select t from TermsAndCondition t where languageId=:languageId and countryId=:countryId")
-	public List<TermsAndCondition> getTermsAndConditionBasedOnCountry(@Param("languageId") BigDecimal languageId,@Param("countryId") BigDecimal countryId);
+	@Query("Select t from TermsAndCondition t where languageId=:languageId and countryId=:countryId and moduleType=:moduleType and status=:status")
+	public List<TermsAndCondition> getTermsAndConditionBasedOnCountry(@Param("languageId") BigDecimal languageId,@Param("countryId") BigDecimal countryId,@Param("moduleType") String moduleType,@Param("status") String status);
 	
 }

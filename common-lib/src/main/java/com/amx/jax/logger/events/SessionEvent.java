@@ -1,27 +1,30 @@
 package com.amx.jax.logger.events;
 
 import com.amx.jax.logger.AuditEvent;
-import com.amx.jax.model.UserDevice;
+
+import eu.bitwalker.useragentutils.UserAgent;
 
 public class SessionEvent extends AuditEvent {
 
 	private static final long serialVersionUID = 6277691611931240782L;
 
 	public static enum Type implements EventType {
-		SESSION_CREATED, SESSION_STARTED, SESSION_AUTHED, SESSION_EXPIRED, SESSION_UNAUTHED, SESSION_ENDED, SESSION_DESTROYED;
+		SESSION_CREATED, SESSION_STARTED, SESSION_AUTHED, SESSION_EXPIRED, SESSION_UNAUTHED, SESSION_ENDED,
+		SESSION_DESTROYED;
 
 		@Override
 		public EventMarker marker() {
-			if (this == SESSION_AUTHED || this == SESSION_EXPIRED || this == SESSION_UNAUTHED) {
-				return EventMarker.AUDIT;
-			}
 			return EventMarker.GAUGE;
 		}
 	}
 
-	UserDevice device = new UserDevice();;
+	UserAgent agent = null;
 	String userKey = null;
 	String sessionId = null;
+
+	public SessionEvent() {
+		super();
+	}
 
 	public String getSessionId() {
 		return sessionId;
@@ -39,12 +42,12 @@ public class SessionEvent extends AuditEvent {
 		this.userKey = userKey;
 	}
 
-	public UserDevice getDevice() {
-		return device;
+	public UserAgent getAgent() {
+		return agent;
 	}
 
-	public void setDevice(UserDevice device) {
-		this.device = device;
+	public void setDevice(UserAgent agent) {
+		this.agent = agent;
 	}
 
 	public void setType(Type type) {

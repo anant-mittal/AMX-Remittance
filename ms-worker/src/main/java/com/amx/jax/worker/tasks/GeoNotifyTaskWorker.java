@@ -2,9 +2,7 @@ package com.amx.jax.worker.tasks;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +15,6 @@ import com.amx.jax.client.ExchangeRateClient;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.dict.Language;
 import com.amx.jax.logger.AuditService;
-import com.amx.jax.logger.events.CActivityEvent;
 import com.amx.jax.postman.client.PostManClient;
 import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.postman.model.PushMessage;
@@ -89,18 +86,11 @@ public class GeoNotifyTaskWorker implements ITunnelSubscriber<GeoNotifyTask> {
 				messages.add(messageStr);
 			}
 		}
-		CActivityEvent event = new CActivityEvent(CActivityEvent.Type.GEO_LOCATION);
-		event.setCustomer(ArgUtil.parseAsString(task.getCustomerId()));
-		Map<String, Object> data = new HashMap<String, Object>();
-		data.put("hotpoint", task.getGeoPoint());
-		data.put("messages", messages);
-		event.setData(data);
 
 		pushMessage.setSubject(customerNotificationTitle);
 		pushMessage.setLines(messages);
 		pushMessage.addToUser(task.getCustomerId());
 
-		auditService.log(event);
 		pushNotifyClient.sendDirect(pushMessage);
 
 	}

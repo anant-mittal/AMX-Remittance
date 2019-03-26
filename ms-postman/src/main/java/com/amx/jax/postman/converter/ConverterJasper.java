@@ -13,6 +13,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.support.MessageSourceResourceBundle;
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.postman.PostManConfig;
 import com.amx.jax.postman.converter.jasper.SimpleReportExporter;
 import com.amx.jax.postman.converter.jasper.SimpleReportFiller;
@@ -73,7 +74,11 @@ public class ConverterJasper implements FileConverter {
 	@Timed(name = "PDF_CREATION_JASPER", absolute = true)
 	public File toPDF(File file) throws JRException {
 
-		simpleReportFiller.setReportFileName("jasper/" + file.getITemplate().getFileName() + ".jrxml");
+		String jasperFileName = templateUtils.getTemplateFile(
+				"jasper/" + file.getITemplate().getFileName(), AppContextUtil.getTenant(),
+				postManConfig.getLocal(file));
+
+		simpleReportFiller.setReportFileName("templates/" + jasperFileName + ".jrxml");
 		simpleReportFiller.compileReport();
 
 		// ResourceBundle rb = ResourceBundle.getBundle("messages",
@@ -121,8 +126,7 @@ public class ConverterJasper implements FileConverter {
 	/**
 	 * To PDF 2.
 	 *
-	 * @param file
-	 *            the file
+	 * @param file the file
 	 * @return the file
 	 */
 	public File toPDF2(File file) {

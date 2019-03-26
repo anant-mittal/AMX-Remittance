@@ -23,6 +23,7 @@ import com.amx.amxlib.model.trnx.BeneficiaryTrnxModel;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.ServiceApplicabilityField;
 import com.amx.jax.dao.BlackListDao;
+import com.amx.jax.dbmodel.BankMasterModel;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.BlackListModel;
 import com.amx.jax.dbmodel.ServiceApplicabilityRule;
@@ -100,8 +101,20 @@ public class BeneficiaryValidationService {
 		// validate only for BANK channel and not for CASH channel
 		if (!BigDecimal.ONE.equals(beneAccountModel.getServiceGroupId())) {
 			validateBankAccountNumber(beneAccountModel);
+			validateIban(beneAccountModel);
 			validateDuplicateBankAccount(beneAccountModel);
 			validateSwiftCode(beneAccountModel);
+		}
+	}
+
+	private void validateIban(BeneAccountModel beneAccountModel) {
+		BankMasterModel bankMaster = bankService.getBankById(beneAccountModel.getBankId());
+		if (bankMaster == null) {
+			return;
+		}
+		String ibanFlag = bankMaster.getIbanFlag();
+		if (ConstantDocument.Yes.equalsIgnoreCase(ibanFlag) && StringUtils.isBlank(beneAccountModel.getIbanNumber())) {
+			throw new GlobalException(JaxError.BANK_IBAN_EMPTY, "IBAN is required");
 		}
 	}
 
@@ -113,7 +126,7 @@ public class BeneficiaryValidationService {
 		swiftRules.forEach(i -> {
 			if (ConstantDocument.Yes.equals(i.getMandatory())) {
 				if (StringUtils.isEmpty(beneAccountModel.getSwiftCode())) {
-					throw new GlobalException("Swift code is required", JaxError.BANK_SWIFT_EMPTY);
+					throw new GlobalException(JaxError.BANK_SWIFT_EMPTY, "Swift code is required");
 				}
 				validateSwiftCode(beneAccountModel.getSwiftCode());
 			}
@@ -137,7 +150,7 @@ public class BeneficiaryValidationService {
 				List<BeneficaryRelationship> beneRelationShip = beneficiaryService
 						.getBeneRelationShip(itr.getBeneficaryMasterId(), itr.getBeneficaryAccountSeqId());
 				if (beneRelationShip != null && !beneRelationShip.isEmpty()) {
-					throw new GlobalException("Duplicate Beneficiary Account", JaxError.DUPLICATE_BENE_BANK_ACCOUNT);
+					throw new GlobalException(JaxError.DUPLICATE_BENE_BANK_ACCOUNT, "Duplicate Beneficiary Account");
 				}
 			});
 		}
@@ -169,7 +182,7 @@ public class BeneficiaryValidationService {
 				String validLengths = accNumLength.stream().map(i -> i.toString()).collect(Collectors.joining(":"));
 				String errorExpression = jaxUtil
 						.buildErrorExpression(JaxError.INVALID_BANK_ACCOUNT_NUM_LENGTH.toString(), validLengths);
-				throw new GlobalException("Invalid Bank Account number length", errorExpression);
+				throw new GlobalException(errorExpression, "Invalid Bank Account number length");
 			}
 		}
 	}
@@ -247,7 +260,7 @@ public class BeneficiaryValidationService {
 			List<BeneficaryRelationship> beneRelationShip = beneficiaryService.getBeneRelationShip(
 					beneMaster.getBeneficaryMasterSeqId(), beneAccountMaster.getBeneficaryAccountSeqId());
 			if (beneRelationShip != null && !beneRelationShip.isEmpty()) {
-				throw new GlobalException("Duplicate Beneficiary  Cash Account", JaxError.DUPLICATE_BENE_CASH_ACCOUNT);
+				throw new GlobalException(JaxError.DUPLICATE_BENE_CASH_ACCOUNT, "Duplicate Beneficiary  Cash Account");
 			}
 		}
 	}
@@ -255,7 +268,7 @@ public class BeneficiaryValidationService {
 	private void validateSwiftCode(String swift) {
 		final Pattern pattern = Pattern.compile("^[A-Z]{6}[A-Z0-9]{2}([A-Z0-9]{3})?$");
 		if (!pattern.matcher(swift).matches()) {
-			throw new GlobalException("Invalid swift", JaxError.INVALID_BANK_SWIFT);
+			throw new GlobalException(JaxError.INVALID_BANK_SWIFT, "Invalid swift");
 		}
 
 	}
@@ -268,18 +281,27 @@ public class BeneficiaryValidationService {
 		if (!StringUtils.isBlank(beneInfo.getBenificaryName())) {
 			List<BlackListModel> blist = blackListDao.getBlackByName(beneInfo.getBenificaryName());
 			if (blist != null && !blist.isEmpty()) {
-				throw new GlobalException("The beneficiary you have selected has been black-listed by CBK ",
-						JaxError.BLACK_LISTED_BENEFICIARY.getCode());
+				throw new GlobalException(JaxError.BLACK_LISTED_BENEFICIARY.getCode(),
+						"The beneficiary you have selected has been black-listed by CBK ");
 			}
 		}
 		
 		if (!StringUtils.isBlank(beneInfo.getArbenificaryName())) {
 			List<BlackListModel> blist = blackListDao.getBlackByLocalName(beneInfo.getArbenificaryName());
 			if (blist != null && !blist.isEmpty()) {
-				throw new GlobalException("Beneficiary Arabic name found matching with black list ",
-						JaxError.BLACK_LISTED_ARABIC_BENEFICIARY.getCode());
+				throw new GlobalException(JaxError.BLACK_LISTED_ARABIC_BENEFICIARY.getCode(),
+						"Beneficiary Arabic name found matching with black list ");
 			}
 		}
+	}
+
+	public BenificiaryListView validateBeneficiary(BigDecimal beneficiaryRelationshipSeqId) {
+		BenificiaryListView beneficiaryView = beneficiaryService.getBeneByIdNo(beneficiaryRelationshipSeqId);
+		if (beneficiaryView == null) {
+			throw new GlobalException(JaxError.DATA_NOT_FOUND,
+					"Beneficiary data not found for bene rel id: " + beneficiaryRelationshipSeqId);
+		}
+		return beneficiaryView;
 	}
 
 }

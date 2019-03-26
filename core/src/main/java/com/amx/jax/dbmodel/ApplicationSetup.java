@@ -291,7 +291,7 @@ public class ApplicationSetup implements Serializable {
 	public void setOnlineDomUrl(String onlineDomUrl) {
 		this.onlineDomUrl = onlineDomUrl;
 	}
-
+	@Column(name="APPLICATION_COUNTRY_ID")
 	public BigDecimal getApplicationCountryId() {
 		return applicationCountryId;
 	}
@@ -300,6 +300,7 @@ public class ApplicationSetup implements Serializable {
 		this.applicationCountryId = applicationCountryId;
 	}
 
+	@Column(name="COMPANY_ID")
 	public BigDecimal getCompanyId() {
 		return companyId;
 	}

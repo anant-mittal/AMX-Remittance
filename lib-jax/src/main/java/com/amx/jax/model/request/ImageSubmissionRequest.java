@@ -1,9 +1,10 @@
 package com.amx.jax.model.request;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
-import io.swagger.annotations.ApiModelProperty;
+import com.amx.jax.swagger.ApiMockModelProperty;
 
 public class ImageSubmissionRequest implements Serializable {
 
@@ -15,8 +16,10 @@ public class ImageSubmissionRequest implements Serializable {
 	
 	private List<String> image;
 	
-	@ApiModelProperty(example="Y")
-	private String politicallyExposed;	
+	@ApiMockModelProperty(example="Y")
+	private String politicallyExposed;
+	
+	private Date identityExpiredDate;
 
 	public List<String> getImage() {
 		return image;
@@ -32,5 +35,14 @@ public class ImageSubmissionRequest implements Serializable {
 
 	public void setPoliticallyExposed(String politicallyExposed) {
 		this.politicallyExposed = politicallyExposed;
-	}	
+	}
+
+	public Date getIdentityExpiredDate() {
+		return identityExpiredDate;
+	}
+
+	public void setIdentityExpiredDate(Date identityExpiredDate) {
+		this.identityExpiredDate = identityExpiredDate;
+	}
+
 }

@@ -8,15 +8,22 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.api.BoolRespModel;
+import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.rbaac.IRbaacService;
 import com.amx.jax.rbaac.RbaacServiceClient;
+import com.amx.jax.rbaac.dto.DeviceDto;
+import com.amx.jax.rbaac.dto.DevicePairOtpResponse;
+import com.amx.jax.rbaac.dto.request.DeviceRegistrationRequest;
 import com.amx.jax.rbaac.dto.request.EmployeeDetailsRequestDTO;
+import com.amx.jax.rbaac.dto.request.NotpDTO;
 import com.amx.jax.rbaac.dto.request.RoleRequestDTO;
 import com.amx.jax.rbaac.dto.request.UserAuthInitReqDTO;
 import com.amx.jax.rbaac.dto.request.UserAuthorisationReqDTO;
 import com.amx.jax.rbaac.dto.request.UserRoleMappingsRequestDTO;
 import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
 import com.amx.jax.rbaac.dto.response.PermissionResposeDTO;
+import com.amx.jax.rbaac.dto.response.RoleMappingForEmployee;
 import com.amx.jax.rbaac.dto.response.RoleResponseDTO;
 import com.amx.jax.rbaac.dto.response.UserAuthInitResponseDTO;
 import com.amx.jax.rbaac.dto.response.UserRoleMappingDTO;
@@ -41,9 +48,8 @@ public class RbaacServiceControllerTest implements IRbaacService {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.amx.jax.rbaac.IRbaacService#initAuthForUser(com.amx.jax.rbaac.dto.request.
-	 * UserAuthInitReqDTO)
+	 * @see com.amx.jax.rbaac.IRbaacService#initAuthForUser(com.amx.jax.rbaac.dto.
+	 * request. UserAuthInitReqDTO)
 	 */
 	@Override
 	@ApiOperation("User Auth")
@@ -139,8 +145,8 @@ public class RbaacServiceControllerTest implements IRbaacService {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.amx.jax.rbaac.IRbaacService#updateEmployeeAccountDetails(com.amx.jax.rbaac
-	 * .dto.request.EmployeeDetailsRequestDTO)
+	 * com.amx.jax.rbaac.IRbaacService#updateEmployeeAccountDetails(com.amx.jax.
+	 * rbaac .dto.request.EmployeeDetailsRequestDTO)
 	 */
 	@Override
 	@ApiOperation("User Account Update / (In)Activate / (Un)Lock")
@@ -167,6 +173,82 @@ public class RbaacServiceControllerTest implements IRbaacService {
 	 */
 	@Override
 	public AmxApiResponse<String, Object> testPost() {
+		return null;
+	}
+
+	@Override
+	public AmxApiResponse<DeviceDto, Object> registerNewDevice(DeviceRegistrationRequest request) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public AmxApiResponse<BoolRespModel, Object> activateDevice(Integer deviceRegId, String mOtp) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public AmxApiResponse<BoolRespModel, Object> deactivateDevice(Integer deviceRegId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public AmxApiResponse<DevicePairOtpResponse, Object> createDeviceSession(Integer deviceRegId, String paireToken) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public AmxApiResponse<DevicePairOtpResponse, BoolRespModel> pairDeviceSession(ClientType deviceType,
+			Integer countryBranchSystemInventoryId, String otp) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public AmxApiResponse<DevicePairOtpResponse, Object> validateDeviceSessionToken(BigDecimal deviceRegId,
+			String deviceSessionToken) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public AmxApiResponse<BigDecimal, Object> getDeviceRegIdByBranchInventoryId(ClientType deviceClientType,
+			BigDecimal countryBranchSystemInventoryId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public AmxApiResponse<RoleMappingForEmployee, Object> getRoleMappingsForEmployee(BigDecimal employeeId,
+			String ipAddr, String deviceId, Boolean filterRole) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public AmxApiResponse<BoolRespModel, Object> createEmployeeSystemMapping(BigDecimal employeeId,
+			BigDecimal countryBranchSystemInventoryId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public AmxApiResponse<NotpDTO, Object> verifyOTP(NotpDTO notpDTO) {
+		return null;
+	}
+
+	@Override
+	public AmxApiResponse<DeviceDto, Object> getDeviceByDeviceRegId(BigDecimal deviceRegId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public AmxApiResponse<BoolRespModel, Object> deleteDevice(Integer deviceRegId) {
+		// TODO Auto-generated method stub
 		return null;
 	}
 

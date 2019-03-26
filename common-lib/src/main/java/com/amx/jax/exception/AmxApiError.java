@@ -7,52 +7,46 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AmxApiError extends AResponse<Object> {
 
-	private String errorId;
+	/**
+	 * errorKey is messageKey
+	 */
+	@Deprecated
+	private String errorKey;
 
-	private String errorMessage;
-
-	private String errorType; // IExceptionEnum
-
-	public AmxApiError(String errorId, String errorMessage, IExceptionEnum errorType) {
+	public AmxApiError(String errorKey, String errorMessage) {
 		super();
-		this.errorId = errorId;
-		this.errorMessage = errorMessage;
-		this.errorType = ArgUtil.parseAsString(errorType);
+		this.errorKey = errorKey;
+		this.message = errorMessage;
 	}
 
-	public AmxApiError(String errorId, String errorMessage) {
+	public AmxApiError(IExceptionEnum error, String errorKey, String errorMessage) {
 		super();
-		this.errorId = errorId;
-		this.errorMessage = errorMessage;
-		this.errorType = null;
+		this.statusKey = ArgUtil.isEmpty(error) ? null : error.getStatusKey();
+		this.errorKey = errorKey;
+		this.messageKey = errorKey;
+		this.message = errorMessage;
+	}
+
+	public AmxApiError(IExceptionEnum error) {
+		super();
+		this.statusKey = ArgUtil.isEmpty(error) ? null : error.getStatusKey();
 	}
 
 	public AmxApiError() {
 		super();
 	}
 
-	public String getErrorId() {
-		return errorId;
+	public String getErrorKey() {
+		return errorKey;
 	}
 
-	public void setErrorId(String errorId) {
-		this.errorId = errorId;
+	public void setErrorKey(String errorKey) {
+		this.errorKey = errorKey;
 	}
 
-	public String getErrorMessage() {
-		return errorMessage;
-	}
-
-	public void setErrorMessage(String errorMessage) {
-		this.errorMessage = errorMessage;
-	}
-
-	public String getErrorType() {
-		return errorType;
-	}
-
-	public void setErrorType(String errorType) {
-		this.errorType = errorType;
+	public AmxApiError meta(Object meta) {
+		this.meta = meta;
+		return this;
 	}
 
 }

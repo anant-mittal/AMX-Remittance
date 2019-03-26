@@ -3,6 +3,7 @@ package com.amx.jax.services;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,8 +23,6 @@ import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.AddAdditionalBankDataDto;
 import com.amx.amxlib.meta.model.AddDynamicLabel;
 import com.amx.amxlib.meta.model.AdditionalBankDetailsViewDto;
-import com.amx.amxlib.model.request.IRemitTransReqPurpose;
-import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.PurposeOfTransactionModel;
 import com.amx.amxlib.model.response.ResponseStatus;
@@ -34,6 +33,8 @@ import com.amx.jax.dbmodel.remittance.AdditionalBankRuleMap;
 import com.amx.jax.dbmodel.remittance.AdditionalDataDisplayView;
 import com.amx.jax.manager.RemittanceTransactionManager;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.request.remittance.IRemitTransReqPurpose;
+import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.repository.IAdditionalBankDetailsDao;
 import com.amx.jax.repository.IAdditionalBankRuleMapDao;
 import com.amx.jax.repository.IAdditionalDataDisplayDao;
@@ -70,8 +71,7 @@ public class PurposeOfTransactionService extends AbstractService {
 	public List<AddAdditionalBankDataDto> getPutrposeOfTransaction(BigDecimal applicationCountryId,
 			BigDecimal countryId, BigDecimal currencyId, BigDecimal remittanceModeId, BigDecimal deliveryModeId,
 			BigDecimal bankId) throws GlobalException {
-		logger.debug(
-				"in getPutrposeOfTransaction applicationCountryId:{}, countryId:{},currencyId:{}, remittanceModeId:{},deliveryModeId:{},bankId:{}",
+		logger.debug("in getPutrposeOfTransaction applicationCountryId:{}, countryId:{},currencyId:{}, remittanceModeId:{},deliveryModeId:{},bankId:{}",
 				applicationCountryId, countryId, currencyId, remittanceModeId, deliveryModeId, bankId);
 		List<AddAdditionalBankDataDto> listAdditionalBankDataTable = null;
 		List<AddDynamicLabel> listDynamicLabel = null;
@@ -80,9 +80,7 @@ public class PurposeOfTransactionService extends AbstractService {
 		try {
 			listAdditionalBankDataTable = new ArrayList<>();
 			listDynamicLabel = new ArrayList<>();
-			List<AdditionalDataDisplayView> serviceAppRuleList = additionalDataDisplayDao
-					.getAdditionalDataFromServiceApplicability(applicationCountryId, countryId, currencyId,
-							remittanceModeId, deliveryModeId,IAdditionalDataDisplayDao.flexiFieldIn);
+			List<AdditionalDataDisplayView> serviceAppRuleList = additionalDataDisplayDao.getAdditionalDataFromServiceApplicability(applicationCountryId, countryId, currencyId,remittanceModeId, deliveryModeId,IAdditionalDataDisplayDao.flexiFieldIn);
 			if (!serviceAppRuleList.isEmpty()) {
 				for (AdditionalDataDisplayView serviceRule : serviceAppRuleList) {
 					AddDynamicLabel addDynamic = new AddDynamicLabel();
@@ -104,8 +102,7 @@ public class PurposeOfTransactionService extends AbstractService {
 				}
 
 			}
-			listAdditionalBankDataTable = this.matchData(listDynamicLabel, countryId, currencyId, remittanceModeId,
-					deliveryModeId, bankId);
+			listAdditionalBankDataTable = this.matchData(listDynamicLabel, countryId, currencyId, remittanceModeId,deliveryModeId, bankId);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -236,6 +233,7 @@ public class PurposeOfTransactionService extends AbstractService {
 	private List<AdditionalBankDetailsViewDto> convertViewModel(List<AdditionalBankDetailsViewx> listAdditionaView) {
 		List<AdditionalBankDetailsViewDto> listView = new ArrayList<>();
 		listAdditionaView.forEach(viewModel -> listView.add(convertAddModelToDto(viewModel)));
+		Collections.sort(listView, new AdditionalBankDetailsViewDto.AdditionalBankDetailsViewDtoComparator());
 		return listView;
 	}
 
@@ -279,8 +277,7 @@ public class PurposeOfTransactionService extends AbstractService {
 		BigDecimal deliveryModeId = (BigDecimal) routingDetails.get("P_DELIVERY_MODE_ID");
 		BigDecimal bankId = (BigDecimal) routingDetails.get("P_ROUTING_BANK_ID");
 		
-		List<AddAdditionalBankDataDto> dto = this.getPutrposeOfTransaction(applicationCountryId, rountingCountry, currencyId,
-				remittanceModeId, deliveryModeId, bankId);
+		List<AddAdditionalBankDataDto> dto = this.getPutrposeOfTransaction(applicationCountryId, rountingCountry, currencyId,remittanceModeId, deliveryModeId, bankId);
 		PurposeOfTransactionModel purposeOfTxnModel = new PurposeOfTransactionModel();
 		purposeOfTxnModel.setDto(dto);
 		response.getData().getValues().add(purposeOfTxnModel);

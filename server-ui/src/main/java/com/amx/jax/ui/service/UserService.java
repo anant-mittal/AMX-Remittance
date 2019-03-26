@@ -11,15 +11,14 @@ import com.amx.amxlib.meta.model.CustomerDto;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
-import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.postman.model.PushMessage;
+import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
 import com.amx.jax.ui.model.AuthDataInterface.UserUpdateResponse;
 import com.amx.jax.ui.model.UserBean;
 import com.amx.jax.ui.model.UserUpdateData;
 import com.amx.jax.ui.response.ResponseWrapper;
-import com.amx.jax.ui.response.WebResponseStatus;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
 
@@ -96,12 +95,12 @@ public class UserService {
 			CivilIdOtpModel model = jaxService.setDefaults().getUserclient().sendOtpForEmailUpdate(email).getResult();
 			wrapper.getData().setmOtpPrefix(model.getmOtpPrefix());
 			wrapper.getData().seteOtpPrefix(model.geteOtpPrefix());
-			wrapper.setMessage(WebResponseStatus.USER_UPDATE_INIT, "OTP Sent for mobile update");
+			wrapper.setMessage(OWAStatusStatusCodes.USER_UPDATE_INIT, "OTP Sent for mobile update");
 		} else {
 			CustomerModel model = jaxService.setDefaults().getUserclient().saveEmail(email, mOtp, eOtp).getResult();
 			sessionService.getUserSession().getCustomerModel().setEmail(model.getEmail());
 			sessionService.getUserSession().getCustomerModel().getPersoninfo().setEmail(model.getEmail());
-			wrapper.setMessage(WebResponseStatus.USER_UPDATE_SUCCESS, "Email Updated");
+			wrapper.setMessage(OWAStatusStatusCodes.USER_UPDATE_SUCCESS, "Email Updated");
 		}
 		return wrapper;
 	}
@@ -120,12 +119,12 @@ public class UserService {
 			CivilIdOtpModel model = jaxService.setDefaults().getUserclient().sendOtpForMobileUpdate(phone).getResult();
 			wrapper.getData().setmOtpPrefix(model.getmOtpPrefix());
 			wrapper.getData().seteOtpPrefix(model.geteOtpPrefix());
-			wrapper.setMessage(WebResponseStatus.USER_UPDATE_INIT, "OTP Sent for email update");
+			wrapper.setMessage(OWAStatusStatusCodes.USER_UPDATE_INIT, "OTP Sent for email update");
 		} else {
 			CustomerModel model = jaxService.setDefaults().getUserclient().saveMobile(phone, mOtp, eOtp).getResult();
 			sessionService.getUserSession().getCustomerModel().setMobile(model.getMobile());
 			sessionService.getUserSession().getCustomerModel().getPersoninfo().setMobile(model.getMobile());
-			wrapper.setMessage(WebResponseStatus.USER_UPDATE_SUCCESS, "Mobile Updated");
+			wrapper.setMessage(OWAStatusStatusCodes.USER_UPDATE_SUCCESS, "Mobile Updated");
 		}
 		return wrapper;
 	}
@@ -142,7 +141,7 @@ public class UserService {
 			String eOtp) {
 		ResponseWrapper<UserUpdateResponse> wrapper = new ResponseWrapper<UserUpdateResponse>(new UserUpdateData());
 		jaxService.setDefaults().getUserclient().saveSecurityQuestions(securityquestions, mOtp, eOtp).getResult();
-		wrapper.setMessage(WebResponseStatus.USER_UPDATE_SUCCESS, "Question Answer Saved Scfuly");
+		wrapper.setMessage(OWAStatusStatusCodes.USER_UPDATE_SUCCESS, "Question Answer Saved Scfuly");
 		return wrapper;
 	}
 
@@ -158,7 +157,7 @@ public class UserService {
 	public ResponseWrapper<UserUpdateData> updatePhising(String imageUrl, String caption, String mOtp, String eOtp) {
 		ResponseWrapper<UserUpdateData> wrapper = new ResponseWrapper<UserUpdateData>(new UserUpdateData());
 		jaxService.setDefaults().getUserclient().savePhishiingImage(caption, imageUrl, mOtp, eOtp).getResult();
-		wrapper.setMessage(WebResponseStatus.USER_UPDATE_SUCCESS, "Phishing Image Updated");
+		wrapper.setMessage(OWAStatusStatusCodes.USER_UPDATE_SUCCESS, "Phishing Image Updated");
 		return wrapper;
 	}
 
@@ -174,7 +173,7 @@ public class UserService {
 		ResponseWrapper<UserUpdateResponse> wrapper = new ResponseWrapper<UserUpdateResponse>(new UserUpdateData());
 		BoolRespModel model = jaxService.setDefaults().getUserclient().updatePassword(password, mOtp, eOtp).getResult();
 		if (model.isSuccess()) {
-			wrapper.setMessage(WebResponseStatus.USER_UPDATE_SUCCESS, "Password Updated Succesfully");
+			wrapper.setMessage(OWAStatusStatusCodes.USER_UPDATE_SUCCESS, "Password Updated Succesfully");
 		}
 		return wrapper;
 	}

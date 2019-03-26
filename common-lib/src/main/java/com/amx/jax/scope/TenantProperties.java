@@ -7,11 +7,20 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.net.URL;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import org.apache.commons.lang.text.StrLookup;
+import org.apache.commons.lang.text.StrSubstitutor;
+import org.jasypt.util.text.BasicTextEncryptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.framework.AopProxyUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.dict.Language;
@@ -26,8 +35,48 @@ public class TenantProperties {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(TenantProperties.class);
 	private static TenantProperties obj = new TenantProperties();
+	private static Environment ENV;
+	public static final Pattern ENCRYPTED_PROPERTIES = Pattern.compile("^ENC\\((.*)\\)$");
+	public static BasicTextEncryptor textEncryptor = new BasicTextEncryptor();
 
 	private Properties properties = null;
+
+	TenantProperties() {
+	}
+
+	@Autowired
+	public TenantProperties(Environment env) {
+		if (ENV == null) {
+			setEnviroment(env);
+		}
+	}
+
+	public static void setEnviroment(Environment env) {
+		ENV = env;
+		String privateKey = ENV.getProperty("jasypt.encryptor.password");
+		if (!ArgUtil.isEmpty(env) && !ArgUtil.isEmpty(privateKey)) {
+			textEncryptor.setPasswordCharArray(privateKey.toCharArray());
+		}
+	}
+
+	public static String decryptProp(Object propertyValue) {
+		// return ArgUtil.parseAsString(propertyValue);
+		String propertyValueStr = ArgUtil.parseAsString(propertyValue);
+		Matcher x = ENCRYPTED_PROPERTIES.matcher(propertyValueStr);
+		if (x.find()) {
+			try {
+				return textEncryptor.decrypt(x.group(1));
+			} catch (Exception e) {
+				return propertyValueStr;
+			}
+
+		}
+		return propertyValueStr;
+	}
+
+	public static Environment getEnviroment() {
+		return ENV;
+	}
 
 	public Properties getProperties() {
 		if (properties == null) {
@@ -47,18 +96,20 @@ public class TenantProperties {
 			URL ufile = FileUtil.getResource(propertyFile, object.getClass());
 			if (ufile != null) {
 				inSideInputStream = ufile.openStream();
-				tenantProperties.load(inSideInputStream);
+				// tenantProperties.load(inSideInputStream);
+				tenantProperties.putAll(loadPropertiesMap(inSideInputStream));
 				LOGGER.info("Loaded Properties from classpath: {}", ufile.getPath());
 			}
 
 			outSideInputStream = FileUtil.getExternalResourceAsStream(propertyFile, object.getClass());
 			if (outSideInputStream != null) {
-				tenantProperties.load(outSideInputStream);
+				// tenantProperties.load(outSideInputStream);
+				tenantProperties.putAll(loadPropertiesMap(outSideInputStream));
 				LOGGER.info("Loaded Properties from jarpath: {}", propertyFile);
 			}
 
 		} catch (IllegalArgumentException | IOException e) {
-			LOGGER.error("readPropertyException", e);
+			LOGGER.error("readPropertyFileException", e);
 		} finally {
 			try {
 				if (outSideInputStream != null) {
@@ -72,6 +123,42 @@ public class TenantProperties {
 			}
 		}
 		return tenantProperties;
+	}
+
+	@SuppressWarnings("serial")
+	public static Map<String, String> loadPropertiesMap(InputStream s) throws IOException {
+		final Map<String, String> ordered = new LinkedHashMap<String, String>();
+		// Hack to use properties class to parse but our map for preserved order
+		Properties bp = new Properties() {
+			@Override
+			public synchronized Object put(Object key, Object value) {
+				ordered.put((String) key, (String) value);
+				return super.put(key, value);
+			}
+		};
+		bp.load(s);
+		final Map<String, String> resolved = new LinkedHashMap<String, String>(ordered.size());
+		StrSubstitutor sub = new StrSubstitutor(new StrLookup() {
+			@Override
+			public String lookup(String key) {
+				String value = resolved.get(key);
+
+				if (ArgUtil.isEmpty(value)) {
+					if (getEnviroment() != null) {
+						value = getEnviroment().getProperty(key);
+					}
+					if (ArgUtil.isEmpty(value)) {
+						value = System.getProperty(key);
+					}
+				}
+				return value;
+			}
+		});
+		for (String k : ordered.keySet()) {
+			String value = sub.replace(ordered.get(k));
+			resolved.put(k, value);
+		}
+		return resolved;
 	}
 
 	public static Object assignValues(String tenant, Object object) {
@@ -89,8 +176,9 @@ public class TenantProperties {
 						Type type = field.getGenericType();
 						String typeName = type.getTypeName();
 						field.setAccessible(true);
+
 						if ("java.lang.String".equals(typeName)) {
-							field.set(object, propertyValue);
+							field.set(object, decryptProp(propertyValue));
 						} else if ("int".equals(typeName) || "java.lang.Integer".equals(typeName)) {
 							field.set(object, ArgUtil.parseAsInteger(propertyValue));
 						} else if ("boolean".equals(typeName) || "java.lang.Boolean".equals(typeName)) {
@@ -115,8 +203,11 @@ public class TenantProperties {
 							o.fromString(ArgUtil.parseAsString(propertyValue));
 							field.set(object, o);
 						} else {
-							LOGGER.warn("********** Property Type Undefined *****  " + typeName);
-							field.set(object, ArgUtil.parseAsObject((Class<?>) type, propertyValue));
+							try {
+								field.set(object, ArgUtil.parseAsObject((Class<?>) type, propertyValue, true));
+							} catch (IllegalArgumentException e) {
+								LOGGER.warn("********** Property Type Undefined *****  {} {}", typeName, propertyValue);
+							}
 						}
 					}
 				}

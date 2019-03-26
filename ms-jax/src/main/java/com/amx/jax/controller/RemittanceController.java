@@ -18,8 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.meta.model.CustomerRatingDTO;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
-import com.amx.amxlib.model.request.IRemitTransReqPurpose;
-import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.amxlib.model.request.RemittanceTransactionStatusRequestModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.api.AmxApiResponse;
@@ -30,6 +28,8 @@ import com.amx.jax.dbmodel.CustomerRating;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.manager.RemittancePaymentManager;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.request.remittance.IRemitTransReqPurpose;
+import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.services.CustomerRatingService;
 import com.amx.jax.services.PurposeOfTransactionService;
@@ -114,6 +114,7 @@ public class RemittanceController {
 		logger.info("Country Id :" + transactionHistroyDTO.getApplicationCountryId() + "\t Currency Id :"
 				+ transactionHistroyDTO.getCurrencyId());
 
+		transactionHistroyDTO.setCompanyId(metaData.getCompanyId());
 		ApiResponse response = reportManagerService
 				.generatePersonalRemittanceReceiptReportDetails(transactionHistroyDTO, Boolean.TRUE);
 		return response;
@@ -194,6 +195,7 @@ public class RemittanceController {
 		return response;
 	}
 
+	
 	@RequestMapping(value = "/save-payment-id/", method = RequestMethod.POST)
 	public ApiResponse savePaymentId(@RequestBody PaymentResponseDto paymentResponse) {
 		logger.info("save-Remittance Controller :" + paymentResponse.getCustomerId() + "\t country ID :"
@@ -220,8 +222,8 @@ public class RemittanceController {
 	public ApiResponse getReceiptJson(@RequestParam BigDecimal appDocNo, @RequestParam BigDecimal appDocFinYear) {
 		RemittanceTransaction remittanceTransaction = remitAppDao.getRemittanceTransaction(appDocNo, appDocFinYear);
 
-		BigDecimal cutomerReference = remittanceTransaction.getCustomerId();
-		BigDecimal remittancedocfyr = remittanceTransaction.getDocumentFinancialyear();
+		BigDecimal cutomerReference = remittanceTransaction.getCustomerId().getCustomerId();
+		BigDecimal remittancedocfyr = remittanceTransaction.getDocumentFinanceYear();
 		BigDecimal remittancedocNumber = remittanceTransaction.getDocumentNo();
 
 		TransactionHistroyDTO transactionHistoryDto = transactionHistroyService

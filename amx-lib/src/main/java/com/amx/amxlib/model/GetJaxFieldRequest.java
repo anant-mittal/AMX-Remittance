@@ -14,9 +14,13 @@ public class GetJaxFieldRequest {
 		this.entity = entity;
 	}
 
+	public GetJaxFieldRequest(JaxFieldEntity jaxFieldEntity) {
+		super();
+		this.entity = jaxFieldEntity;
+	}
+
 	public GetJaxFieldRequest() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override

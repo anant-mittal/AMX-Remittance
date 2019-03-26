@@ -91,6 +91,8 @@ public class CountryMaster implements Serializable {
 	private Date approvedDate;
 	private String approvedBy;
 	private String countryMobileLength;
+	private Integer beneCountryRisk;
+	private Integer remitterCountryRisk;
 	
 	
 	public CountryMaster(BigDecimal countryId) {
@@ -243,7 +245,22 @@ public class CountryMaster implements Serializable {
 	public void setCountryMobileLength(String countryMobileLength) {
 		this.countryMobileLength = countryMobileLength;
 	}
-	
-	
-	
+
+	@Column(name = "bene_country_risk")
+	public Integer getBeneCountryRisk() {
+		return beneCountryRisk;
+	}
+
+	public void setBeneCountryRisk(Integer beneCountryRisk) {
+		this.beneCountryRisk = beneCountryRisk;
+	}
+
+	@Column(name = "remitter_country_risk")
+	public Integer getRemitterCountryRisk() {
+		return remitterCountryRisk;
+	}
+
+	public void setRemitterCountryRisk(Integer remitterCountryRisk) {
+		this.remitterCountryRisk = remitterCountryRisk;
+	}
 }

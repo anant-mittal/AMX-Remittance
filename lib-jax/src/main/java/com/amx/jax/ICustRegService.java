@@ -21,9 +21,10 @@ import com.amx.jax.model.response.ComponentDataDto;
 import com.amx.jax.model.response.CustomerInfo;
 import com.amx.jax.model.response.FieldListDto;
 import com.amx.jax.model.response.IncomeRangeDto;
+import com.amx.jax.model.response.customer.OffsiteCustomerDataDTO;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-public interface ICustRegService {
+public interface ICustRegService extends IJaxService {
 
 	public static class CustRegApiEndPoints {
 		public static final String PREFIX = "/offsite-cust-reg";
@@ -40,6 +41,15 @@ public interface ICustRegService {
 		public static final String SAVE_KYC_DOC = PREFIX + "/saveCustomerKYCDoc";
 		public static final String SAVE_SIGNATURE = PREFIX + "/saveCustomerSignature";
 		public static final String SCAN_CARD = PREFIX + "/scan_card";
+		public static final String SAVE_OFFSITE_LOGIN = PREFIX + "/offsite-save-login-detail";
+		public static final String GET_OFFSITE_CUSTOMER_DATA = PREFIX + "/getOffsiteCustomerData";
+		public static final String GET_CUSTOMER_DEATILS = PREFIX + "/customer-details";
+		public static final String GET_OFFSITE_CUSTOMER_DATA_V1 = PREFIX + "/getOffsiteCustomerData/v1";
+	}
+	
+	public static class Params {
+		public static final String IDENTITY_INT = "identityInt";
+		public static final String IDENTITY_TYPE = "identityType";
 	}
 
 	@JsonDeserialize(as = CustRegRequestModel.class)
@@ -75,8 +85,7 @@ public interface ICustRegService {
 
 	AmxApiResponse<CardDetail, Object> cardScan(CardDetail cardDetail);
 
-	@ApiJaxStatus({ JaxError.EXISTING_CIVIL_ID, JaxError.EXISTING_BEDOUIN_ID, JaxError.EXISTING_GCC_ID,
-			JaxError.EXISTING_PASSPORT, JaxError.INVALID_CIVIL_ID })
+	@ApiJaxStatus({ JaxError.EXISTING_CIVIL_ID, JaxError.EXISTING_BEDOUIN_ID, JaxError.EXISTING_GCC_ID,JaxError.EXISTING_PASSPORT, JaxError.INVALID_CIVIL_ID })
 	AmxApiResponse<CustomerInfo, Object> saveCustomerInfo(CustomerInfoRequest model);
 
 	@ApiJaxStatus({ JaxError.IMAGE_NOT_AVAILABLE, JaxError.NULL_CUSTOMER_ID, JaxError.INVALID_CUSTOMER })
@@ -87,5 +96,12 @@ public interface ICustRegService {
 
 	@ApiJaxStatus({ JaxError.ALREADY_EXIST_EMAIL, JaxError.INVALID_MOBILE_NUMBER })
 	AmxApiResponse<SendOtpModel, Object> sendOtp(CustomerPersonalDetail customerPersonalDetail);
+	
+	AmxApiResponse<CustomerCredential, Object> saveLoginDetailOffsite(CustomerCredential customerCredential);
+	
+	AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerData(String identityInt, BigDecimal identityType);
+	
+	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND})
+	AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerDetails(String identityInt, BigDecimal identityType);
 
 }

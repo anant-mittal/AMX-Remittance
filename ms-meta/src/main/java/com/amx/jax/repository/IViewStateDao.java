@@ -17,7 +17,7 @@ public interface IViewStateDao extends JpaRepository<ViewState, Serializable>{
 	
 	
 	
-	@Query("Select t from ViewState t where countryId=?1 and languageId=?2")
+	@Query("Select t from ViewState t where countryId=?1 and languageId=?2 order by stateName")
 	public List<ViewState> getStateForCountry(BigDecimal countryId,BigDecimal languageId);
 
 

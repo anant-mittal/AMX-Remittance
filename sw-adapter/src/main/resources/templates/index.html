@@ -1,0 +1,60 @@
+<meta http-equiv="refresh" content="5;url=http://127.0.0.1:8020" />
+
+<center>
+	<table align="center" border=1 cols=2>
+		<tr>
+			<td colspan="2" align="center">
+			<b>${WIN_TITLE}</b>
+			<br/>
+			<small>${SERVER_URL}</small>
+			</td>
+		</tr>
+		<tr>
+			<td>REG ID</td>
+			<td>${REG_ID}</td>
+		</tr>
+		<tr>
+			<td>TERMINAL</td>
+			<td>${TERMINAL_IP}</td>
+		</tr>
+		<tr>
+			<td>USER_NAME</td>
+			<td>${USER_NAME}</td>
+		</tr>
+		<tr>
+			<td>HOST_NAME</td>
+			<td>${HOST_NAME}</td>
+		</tr>
+		<tr>
+			<td>LOCAL_IP</td>
+			<td>${LOCAL_IP}</td>
+		</tr>
+		<tr>
+			<td>DEVICE_STATUS</td>
+			<td>${DEVICE_STATUS}</td>
+		</tr>
+		<tr>
+			<td>CARD_STATUS</td>
+			<td>${CARD_STATUS}</td>
+		</tr>
+		<tr>
+			<td>DATA_STATUS</td>
+			<td>${DATA_STATUS}</td>
+		</tr>
+		<tr>
+			<td align="center" colspan="2">
+				<div>&nbsp;</div>
+				<div>WAIT...</div>
+				<div>
+					<form method="post">
+						<input name="reset" value=true type=hidden />
+						<button type="submit">UnPair</button>
+					</form>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2">${LOG}</td>
+		</tr>
+	</table>
+</center>

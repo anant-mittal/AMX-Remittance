@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -17,27 +18,33 @@ import com.amx.jax.scope.TenantSpecific;
 import com.amx.jax.userservice.dao.CustomerIdProofDao;
 import com.amx.jax.userservice.repository.CustomerRepository;
 import com.amx.jax.userservice.service.CustomerValidationContext.CustomerValidation;
+import com.amx.utils.Constants;
 
 @Component
 @TenantSpecific(value = { Tenant.OMN, Tenant.OMNDEV })
 public class UserValidationOmn implements CustomerValidation {
 
+	Logger logger= Logger.getLogger(UserValidationOmn.class);
+	
 	@Autowired
 	private CustomerIdProofDao idproofDao;
 	
 	@Autowired
 	private CustomerRepository customerRepo;
+	
+	@Autowired
+	private UserValidationOmn userValidationOmn;
 
 	@Override
 	public void validateCustIdProofs(BigDecimal custId) {
 		List<CustomerIdProof> idProofs = idproofDao.getCustomerIdProofs(custId);
 		for (CustomerIdProof idProof : idProofs) {
 			if (!idProof.getIdentityExpiryDate().after(new Date())) {
-				throw new GlobalException("Identity proof are expired", JaxError.ID_PROOF_EXPIRED);
+				throw new GlobalException(JaxError.ID_PROOF_EXPIRED, "Identity proof are expired");
 			}
 		}
 		if (idProofs.isEmpty()) {
-			throw new GlobalException("ID proofs not available, contact branch", JaxError.NO_ID_PROOFS_AVAILABLE);
+			throw new GlobalException(JaxError.NO_ID_PROOFS_AVAILABLE, "ID proofs not available, contact branch");
 		}
 	}
 
@@ -50,6 +57,9 @@ public class UserValidationOmn implements CustomerValidation {
 	}
 
 	public boolean isValid(String civilId) {
+		if (civilId.startsWith("0")) {
+			return false;
+		}
 		if (civilId.length() >= 4 && civilId.length() <= 12) {
 			return true;
 		}
@@ -60,9 +70,17 @@ public class UserValidationOmn implements CustomerValidation {
 	public void validateEmailId(String emailId) {
 		List<Customer> list = customerRepo.getCustomerByEmailId(emailId);	
 		if (list != null && list.size()!=0) {
-			throw new GlobalException("Email Id already exist", JaxError.ALREADY_EXIST_EMAIL);
+			throw new GlobalException(JaxError.ALREADY_EXIST_EMAIL, "Email Id already exist");
 		}
 		
 	}
 
+	@Override
+	public void validateDuplicateMobile(String mobileNo) {
+		List<Customer> list = customerRepo.getCustomerByMobileCheck(mobileNo);
+		if (list != null && list.size()!=0) {
+			throw new GlobalException(JaxError.ALREADY_EXIST_MOBILE, "Mobile Number already exist");
+		}
+		
+	}
 }

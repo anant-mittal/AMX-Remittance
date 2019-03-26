@@ -1,9 +1,17 @@
 package com.amx.jax.model.request;
 
+import javax.validation.Valid;
+
 public class CustomerInfoRequest {
+	@Valid
 	CustomerPersonalDetail customerPersonalDetail;
+	
+	@Valid
 	LocalAddressDetails localAddressDetails;
+	
 	HomeAddressDetails homeAddressDestails;
+	
+	@Valid
 	CustomerEmploymentDetails customerEmploymentDetails;
 
 	/* OtpData otpData; */
@@ -39,10 +47,6 @@ public class CustomerInfoRequest {
 		this.customerEmploymentDetails = customerEmploymentDetails;
 	}
 
-	/*
-	 * public OtpData getOtpData() { return otpData; } public void
-	 * setOtpData(OtpData otpData) { this.otpData = otpData; }
-	 */
 	@Override
 	public String toString() {
 		return "CustomerInfoRequest [customerPersonalDetail=" + customerPersonalDetail + ", localAddressDetails="

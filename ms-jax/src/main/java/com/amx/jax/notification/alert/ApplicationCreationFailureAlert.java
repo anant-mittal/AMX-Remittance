@@ -15,10 +15,11 @@ import org.springframework.web.context.WebApplicationContext;
 import com.amx.amxlib.constant.CommunicationChannel;
 import com.amx.amxlib.exception.AbstractJaxException;
 import com.amx.amxlib.model.notification.RemittanceTransactionFailureAlertModel;
-import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.ExEmailNotification;
+import com.amx.jax.error.JaxError;
+import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.IExEmailNotificationDao;
 import com.amx.jax.service.TenantService;
@@ -55,7 +56,9 @@ public class ApplicationCreationFailureAlert implements IAlert {
 
 	@Override
 	public void sendAlert(AbstractJaxException ex) {
-	
+		if(!isApplicable(ex)) {
+			return;
+		}
 		RemittanceTransactionRequestModel model = (RemittanceTransactionRequestModel) JaxContextUtil.getRequestModel();
 		BenificiaryListView benificiaryListView = null;
 		List<ExEmailNotification> emailid =null;
@@ -100,6 +103,13 @@ public class ApplicationCreationFailureAlert implements IAlert {
 			e.printStackTrace();
 		}
 
+	}
+
+	private boolean isApplicable(AbstractJaxException ex) {
+		if (ex.getErrorKey().equals(JaxError.ADDTIONAL_FLEX_FIELD_REQUIRED.toString())) {
+			return false;
+		}
+		return true;
 	}
 
 	@Override

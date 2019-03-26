@@ -4,15 +4,34 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.amx.jax.sso.SSOConstants.SSOAuthStep;
+import com.amx.jax.swagger.ApiMockModelProperty;
 
 public class SSOLoginFormData {
 
 	SSOAuthStep step = null;
+
+	@ApiMockModelProperty(example = "235474")
 	String ecnumber = null;
-	String motp = null;
+	
+	@ApiMockModelProperty(example = "282102202584")
 	String identity = null;
+	
+	String partnerIdentity = null;
+	
+	String motp = null;
+	
+	String partnerMOtp = null;
+
 
 	Map<String, Object> cardata = new HashMap<String, Object>();
+	
+	public String getPartnerMOtp() {
+		return partnerMOtp;
+	}
+
+	public void setPartnerMOtp(String partnerMOtp) {
+		this.partnerMOtp = partnerMOtp;
+	}
 
 	public String getEcnumber() {
 		return ecnumber;
@@ -52,5 +71,13 @@ public class SSOLoginFormData {
 
 	public void setStep(SSOAuthStep step) {
 		this.step = step;
+	}
+
+	public String getPartnerIdentity() {
+		return partnerIdentity;
+	}
+
+	public void setPartnerIdentity(String partnerIdentity) {
+		this.partnerIdentity = partnerIdentity;
 	}
 }

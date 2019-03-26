@@ -1,29 +1,62 @@
 package com.amx.jax.logger;
 
+import com.amx.jax.dict.UserClient.UserDeviceClient;
 import com.amx.jax.exception.IExceptionEnum;
+import com.amx.utils.ArgUtil;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(Include.NON_NULL)
-@JsonPropertyOrder({ "description", "component", "category", "type", "timestamp", "message" })
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonPropertyOrder({ AuditEvent.PROP_DESC, AuditEvent.PROP_MSG, AbstractEvent.PROP_COMPONENT, AbstractEvent.PROP_CATG,
+		AbstractEvent.PROP_TYPE, AuditEvent.PROP_RESULT, AbstractEvent.PROP_TIMSTAMP })
 public abstract class AuditEvent extends AbstractEvent {
 
+	public static final String PROP_MSG = "msg";
+	public static final String PROP_DESC = "desc";
+	public static final String PROP_RESULT = "rslt";
 	private static final long serialVersionUID = -1539116953165424464L;
+
+	@JsonProperty(PROP_RESULT)
 	protected Result result;
+
 	protected IExceptionEnum errorCode;
+
+	@JsonProperty("trxTym")
 	protected long tranxTime;
+
+	@JsonProperty("trcTym")
 	protected long traceTime;
+
+	@JsonProperty("evtTym")
 	protected long eventTime;
+
+	@JsonProperty(PROP_DESC)
 	protected String description = null;
+
+	@JsonProperty(PROP_MSG)
 	protected String message;
+
+	@JsonProperty("excp")
 	protected String exception;
+
+	@JsonProperty("excpTyp")
 	protected String exceptionType;
+
 	protected String actorId;
+
 	protected Object data;
+	protected UserDeviceClient client;
+
+	@JsonIgnore
+	boolean success;
 
 	public static enum Result {
-		DONE, FAIL, ERROR, PASS;
+		DEFAULT, DONE, REJECTED, FAIL, ERROR, PASS;
 	}
 
 	public AuditEvent() {
@@ -134,6 +167,32 @@ public abstract class AuditEvent extends AbstractEvent {
 	@Override
 	public void clean() {
 
+	}
+
+	public UserDeviceClient getClient() {
+		return client;
+	}
+
+	public void setClient(UserDeviceClient client) {
+		this.client = client;
+	}
+
+	public AuditEvent result(Result result) {
+		this.setResult(result);
+		return this;
+	}
+
+	public AuditEvent message(Object message) {
+		this.setMessage(ArgUtil.parseAsString(message));
+		return this;
+	}
+
+	public boolean isSuccess() {
+		return success;
+	}
+
+	public void setSuccess(boolean success) {
+		this.success = success;
 	}
 
 }

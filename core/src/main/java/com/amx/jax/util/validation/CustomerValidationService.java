@@ -1,9 +1,12 @@
 package com.amx.jax.util.validation;
 
+import java.math.BigDecimal;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.util.CountryUtil;
 
 @Component
@@ -12,6 +15,21 @@ public class CustomerValidationService {
 	@Autowired
 	private CountryUtil util;
 
+	public boolean validateIdentityInt(String civilId, String countryCode, BigDecimal identityType) {
+		if(identityType.equals(ConstantDocument.BIZ_COMPONENT_ID_CIVIL_ID) || 
+				identityType.equals(ConstantDocument.BIZ_COMPONENT_ID_NEW_CIVIL_ID)){
+			return validateCivilId(civilId, countryCode);
+		}
+		if(identityType.equals(ConstantDocument.BIZ_COMPONENT_ID_GCC_ID)){
+			return validateGccId(civilId, countryCode);
+		}
+		if(identityType.equals(ConstantDocument.BIZ_COMPONENT_ID_BEDOUIN_ID)){
+			return validateBedouinId(civilId, countryCode);
+		}
+		
+		return true;
+	}
+	
 	public boolean validateCivilId(String civilId, String countryCode) {
 		if (StringUtils.isEmpty(civilId)) {
 			return false;
@@ -125,6 +143,32 @@ public class CustomerValidationService {
 			}
 		}
 		return message;
+	}
+	
+	public boolean validateGccId(String civilId, String countryCode) {
+		if (StringUtils.isEmpty(civilId)) {
+			return false;
+		}
+		
+		if (util.isKuwait(countryCode)) {
+			if (civilId.length() != 12) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	public boolean validateBedouinId(String civilId, String countryCode) {
+		if (StringUtils.isEmpty(civilId)) {
+			return false;
+		}
+		
+		if (util.isKuwait(countryCode)) {
+			if (civilId.length() != 12) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 }

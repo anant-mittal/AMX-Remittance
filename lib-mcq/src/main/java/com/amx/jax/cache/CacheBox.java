@@ -2,6 +2,7 @@ package com.amx.jax.cache;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import org.redisson.api.LocalCachedMapOptions;
 import org.redisson.api.LocalCachedMapOptions.EvictionPolicy;
@@ -10,9 +11,11 @@ import org.redisson.api.LocalCachedMapOptions.SyncStrategy;
 import org.redisson.api.RLocalCachedMap;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.thavam.util.concurrent.blockingMap.BlockingHashMap;
 
 import com.amx.jax.def.ICacheBox;
-
+import com.amx.utils.ArgUtil;
+import com.amx.utils.ClazzUtil;
 
 public class CacheBox<T> implements ICacheBox<T> {
 
@@ -23,20 +26,40 @@ public class CacheBox<T> implements ICacheBox<T> {
 	@Autowired(required = false)
 	RedissonClient redisson;
 
-	String cahceName = getClass().getName();
+	public void setClient(RedissonClient redisson) {
+		this.redisson = redisson;
+	}
 
 	private RLocalCachedMap<String, T> cache = null;
+	private BlockingHashMap<String, T> locker = null;
 
 	public RLocalCachedMap<String, T> map() {
 		if (redisson != null) {
-
-		if (cache == null) {
-			cache = redisson.getLocalCachedMap(getCahceName(), localCacheOptions);
-		}
-		return cache;
+			if (locker == null) {
+				locker = new BlockingHashMap<String, T>();
+			}
+			String localCacheName = String.format("%s-%s",
+					(ArgUtil.isEmpty(getCahceName()) ? getClazzName() : getCahceName()),
+					version());
+			if (cache == null) {
+				cache = redisson.getLocalCachedMap(localCacheName,
+						localCacheOptions);
+			}
+			return cache;
 		}
 		return null;
 	}
+
+	String clazzName = null;
+
+	public String getClazzName() {
+		if (this.clazzName == null) {
+			this.clazzName = ClazzUtil.getClassName(this);
+		}
+		return clazzName;
+	}
+
+	String cahceName = null;
 
 	public String getCahceName() {
 		return cahceName;
@@ -116,7 +139,36 @@ public class CacheBox<T> implements ICacheBox<T> {
 
 	@Override
 	public T getOrDefault(String key, T defaultValue) {
-		return this.map().getOrDefault(key, defaultValue);
+		try {
+			return this.map().getOrDefault(key, defaultValue);
+		} catch (Exception e) {
+			return defaultValue;
+		}
+	}
+
+	public T take(String key, long timeout, TimeUnit unit) throws InterruptedException {
+		T item = this.map().get(key);
+		long waiting = unit.toSeconds(timeout);
+		while (item == null && waiting > 0) {
+			item = locker.take(key, 1, unit);
+			item = this.map().get(key);
+			waiting--;
+		}
+		return item;
+	}
+
+	@Override
+	public T getOrDefault(String key) {
+		return getOrDefault(key, getDefault());
+	}
+
+	@Override
+	public T getDefault() {
+		return null;
+	}
+
+	public Object version() {
+		return 0;
 	}
 
 }

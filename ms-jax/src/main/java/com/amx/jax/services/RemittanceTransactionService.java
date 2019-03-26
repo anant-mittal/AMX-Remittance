@@ -12,23 +12,31 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.meta.model.SourceOfIncomeDto;
-import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.amxlib.model.request.RemittanceTransactionStatusRequestModel;
 import com.amx.amxlib.model.response.ApiResponse;
-import com.amx.amxlib.model.response.ExchangeRateBreakup;
 import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
-import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
 import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.dao.RemittanceApplicationDao;
+import com.amx.jax.dbmodel.BenificiaryListView;
+import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.RemittanceTransactionView;
 import com.amx.jax.dbmodel.SourceOfIncomeView;
+import com.amx.jax.dbmodel.remittance.RemittanceApplication;
+import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.exrateservice.service.NewExchangeRateService;
 import com.amx.jax.manager.RemittanceTransactionManager;
-import com.amx.jax.payg.PaymentResponseDto;
+import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
+import com.amx.jax.model.response.ExchangeRateBreakup;
+import com.amx.jax.model.response.SourceOfIncomeDto;
+import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
+import com.amx.jax.payg.PayGModel;
 import com.amx.jax.repository.IRemittanceTransactionDao;
 import com.amx.jax.repository.ISourceOfIncomeDao;
+import com.amx.jax.service.CountryService;
 import com.amx.jax.service.CurrencyMasterService;
+import com.amx.jax.userservice.service.UserService;
+import com.amx.libjax.model.postman.SuspiciousTransactionPaymentDto;
 
 @Service
 @SuppressWarnings("rawtypes")
@@ -49,6 +57,14 @@ public class RemittanceTransactionService extends AbstractService {
 	CurrencyMasterService currencyMasterService ; 
 	@Autowired
 	NewExchangeRateService newExchangeRateService;  
+	@Autowired
+	RemittanceApplicationDao remittanceApplicationDao;
+	@Autowired
+	RemittanceApplicationService remittanceApplicationService ; 
+	@Autowired
+	UserService userSerivce;
+	@Autowired
+	CountryService countryService;
 	
 	public ApiResponse getRemittanceTransactionDetails(BigDecimal collectionDocumentNo, BigDecimal fYear,
 			BigDecimal collectionDocumentCode) {
@@ -126,7 +142,7 @@ public class RemittanceTransactionService extends AbstractService {
 		return response;
 	}
 
-	public ApiResponse saveRemittance(PaymentResponseDto paymentResponseDto) {
+	public ApiResponse saveRemittance(PayGModel paymentResponseDto) {
 		ApiResponse response = getBlackApiResponse();
 		return response;
 
@@ -141,23 +157,56 @@ public class RemittanceTransactionService extends AbstractService {
 		return response;
 	}
 	
-	public ApiResponse calcEquivalentAmount(@RequestBody RemittanceTransactionRequestModel model) {
-		ApiResponse response = getBlackApiResponse();
+	@SuppressWarnings("unchecked")
+	public ApiResponse<RemittanceTransactionResponsetModel> calcEquivalentAmount(
+			@RequestBody RemittanceTransactionRequestModel model) {
+		ApiResponse<RemittanceTransactionResponsetModel> response = getBlackApiResponse();
 		RemittanceTransactionResponsetModel respModel = remittanceTxnManger.validateTransactionData(model);
 		BigDecimal fcCurrencyId = beneficiaryService.getBeneByIdNo(model.getBeneId()).getCurrencyId();
 		BigDecimal fcDecimalNumber = currencyMasterService.getCurrencyMasterById(fcCurrencyId).getDecinalNumber();
-
-		if (model.getDomXRate() != null) {
-			ExchangeRateBreakup exRateBreakup = newExchangeRateService.calcEquivalentAmount(model,
-					fcDecimalNumber.intValue());
-			exRateBreakup.setFcDecimalNumber(respModel.getExRateBreakup().getFcDecimalNumber());
-			exRateBreakup.setLcDecimalNumber(respModel.getExRateBreakup().getLcDecimalNumber());
-			respModel.setExRateBreakup(exRateBreakup);
+		if (model.getDomXRate() == null) {
+			model.setDomXRate(respModel.getExRateBreakup().getRate());
 		}
+		ExchangeRateBreakup exRateBreakup = newExchangeRateService.calcEquivalentAmount(model,fcDecimalNumber.intValue());
+		exRateBreakup.setFcDecimalNumber(respModel.getExRateBreakup().getFcDecimalNumber());
+		exRateBreakup.setLcDecimalNumber(respModel.getExRateBreakup().getLcDecimalNumber());
+		respModel.setExRateBreakup(exRateBreakup);
 		response.getData().getValues().add(respModel);
 		response.setResponseStatus(ResponseStatus.OK);
 		response.getData().setType(respModel.getModelType());
 		return response;
 	}
 
+	public SuspiciousTransactionPaymentDto getSuspiciousTransactionPaymentDto(BigDecimal remittanceApplicationId,
+			Long noOfAttempts) {
+		SuspiciousTransactionPaymentDto dto = new SuspiciousTransactionPaymentDto();
+		BenificiaryListView beneView = getBeneBybeneficiaryView(remittanceApplicationId);
+		dto.setBankName(beneView.getBankName());
+		dto.setBeneBankName(beneView.getBankName());
+		dto.setBeneName(beneView.getBenificaryName());
+		dto.setCountryName(beneView.getCountryName());
+		Customer customer = userSerivce.getCustById(beneView.getCustomerId());
+		dto.setCustomerEmailId(customer.getEmail());
+		dto.setCustomerMobile(customer.getMobile());
+		dto.setNationalityName(
+				countryService.getCountryMasterDesc(customer.getNationalityId(), BigDecimal.ONE).getCountryName());
+		dto.setNoOfAttempts(noOfAttempts);
+		dto.setProduct(beneView.getServiceGroupId().equals(BigDecimal.ONE) ? "CASH" : "BANK");
+		dto.setRemitterName(customer.getFirstName() + " " + customer.getLastName());
+		dto.setRemitterReferenceNo(customer.getIdentityInt());
+		return dto;
+	}
+	
+	public RemittanceTransaction getRemittanceTransactionById(BigDecimal remittanceTransactionId) {
+		return remittanceApplicationDao.getRemittanceTransactionById(remittanceTransactionId);
+	}
+	
+	public BenificiaryListView getBeneBybeneficiaryView(BigDecimal remittanceApplicationId) {
+
+		RemittanceApplication remittanceApplication = remittanceApplicationService
+				.getRemittanceApplicationById(remittanceApplicationId);
+		BigDecimal beneficiaryRelationShipSeqId = remittanceApplication.getExRemittanceAppBenificiary().get(0)
+				.getBeneficiaryRelationShipSeqId();
+		return beneficiaryService.getBeneBybeneficiaryRelationShipSeqId(beneficiaryRelationShipSeqId);
+	}
 }

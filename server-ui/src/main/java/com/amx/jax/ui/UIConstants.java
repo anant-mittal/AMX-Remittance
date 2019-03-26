@@ -31,7 +31,7 @@ public final class UIConstants extends Constants {
 	public static final int CACHE_TIME = 31556926;
 
 	public enum Features {
-		BENEFICIARY, PLACEORDER, RATE_ALERT, REMIT;
+		BENEFICIARY, PLACEORDER, RATE_ALERT, REMIT, FXORDER;
 
 		@JsonValue
 		@Override

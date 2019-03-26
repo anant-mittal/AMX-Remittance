@@ -3,9 +3,11 @@ package com.amx.amxlib.model;
 import java.math.BigDecimal;
 import java.util.List;
 
-import com.amx.amxlib.model.CustomerModelInterface.ICustomerModel;
 import com.amx.jax.model.AbstractModel;
+import com.amx.libjax.model.CustomerModelInterface.ICustomerModel;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CustomerModel extends AbstractModel implements ICustomerModel {
 
 	private static final long serialVersionUID = -8190742045911263443L;

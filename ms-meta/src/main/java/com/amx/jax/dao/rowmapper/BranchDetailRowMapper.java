@@ -36,6 +36,7 @@ public class BranchDetailRowMapper implements RowMapper<BranchDetailModel>
 		bdModel.setCountry(rs.getString("COUNTRY"));
 		bdModel.setPostalCode(rs.getString("PC"));
 		bdModel.setBranchTiming(rs.getString("BRANCH_TIMING"));
+		bdModel.setCountryBranchId(rs.getBigDecimal("COUNTRY_BRANCH_ID"));
 		
 		return bdModel;
 	}

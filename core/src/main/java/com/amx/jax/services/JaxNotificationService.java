@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -21,21 +22,23 @@ import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.EmployeeInfo;
 import com.amx.amxlib.model.PersonInfo;
 import com.amx.amxlib.model.notification.RemittanceTransactionFailureAlertModel;
-import com.amx.jax.AppConfig;
+import com.amx.jax.async.ExecutorConfig;
 import com.amx.jax.dbmodel.ApplicationSetup;
 import com.amx.jax.dbmodel.ExEmailNotification;
 import com.amx.jax.dict.Tenant;
+import com.amx.jax.model.response.fx.FxDeliveryDetailNotificationDto;
+import com.amx.jax.model.response.fx.FxOrderDetailNotificationDto;
+import com.amx.jax.model.response.fx.FxOrderReportResponseDto;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
-import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.postman.model.ChangeType;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
-import com.amx.jax.postman.model.Notipy;
-import com.amx.jax.postman.model.Notipy.Channel;
+import com.amx.jax.postman.model.Message;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.scope.TenantContextHolder;
+import com.amx.utils.CollectionUtil;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -43,12 +46,9 @@ public class JaxNotificationService {
 
 	@Autowired
 	private PostManService postManService;
-
+	
 	@Autowired
-	private PushNotifyClient pushNotifyClient;
-
-	@Autowired
-	private AppConfig appConfig;
+	JaxNotificationService jaxNotificationService;
 
 	Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -56,15 +56,15 @@ public class JaxNotificationService {
 
 	public void sendTransactionNotification(RemittanceReceiptSubreport remittanceReceiptSubreport, PersonInfo pinfo) {
 
-		logger.info("Sending txn notification to customer");
+		logger.debug("Sending txn notification to customer");
 		Email email = new Email();
-
-		logger.info("Tenant is ----> " + TenantContextHolder.currentSite());
 
 		if (TenantContextHolder.currentSite().equals(Tenant.KWT)) {
 			email.setSubject("Your transaction on AMX is successful");
 		} else if (TenantContextHolder.currentSite().equals(Tenant.BHR)) {
 			email.setSubject("Your transaction on MEC is successful");
+		}else if (TenantContextHolder.currentSite().equals(Tenant.OMN)) {
+		    email.setSubject("Your transaction on Modern Exchange - Oman is successful");
 		}
 
 		email.addTo(pinfo.getEmail());
@@ -74,11 +74,33 @@ public class JaxNotificationService {
 
 		File file = new File();
 		file.setITemplate(TemplatesMX.REMIT_RECEIPT_JASPER);
+		file.setName("TransactionReceipt");
 		file.setType(File.Type.PDF);
 		file.getModel().put(RESP_DATA_KEY, remittanceReceiptSubreport);
 
 		email.addFile(file);
-		logger.info("Email to - " + pinfo.getEmail() + " first name : " + pinfo.getFirstName());
+		logger.debug("Email to - " + pinfo.getEmail() + " first name : " + pinfo.getFirstName());
+		sendEmail(email);
+	}
+
+	public void sendTransactionNotification(FxOrderReportResponseDto remittanceReceiptSubreport,
+			FxOrderDetailNotificationDto pinfo) {
+
+		logger.debug("Sending txn notification to customer");
+		Email email = new Email();
+
+		email.addTo(pinfo.getEmail());
+		email.setITemplate(TemplatesMX.FC_KNET_SUCCESS);
+		email.setHtml(true);
+		email.getModel().put(RESP_DATA_KEY, pinfo);
+
+		File file = new File();
+		file.setITemplate(TemplatesMX.FXO_RECEIPT);
+		file.setType(File.Type.PDF);
+		file.getModel().put(Message.RESULTS_KEY, CollectionUtil.getList(remittanceReceiptSubreport));
+
+		email.addFile(file);
+		logger.debug("Email to - " + pinfo.getEmail() + " first name : " + pinfo.getCustomerName());
 		sendEmail(email);
 	}
 
@@ -104,18 +126,18 @@ public class JaxNotificationService {
 			email.getModel().put("change_type", ChangeType.IMAGE_CHANGE);
 
 		} else if (customerModel.getMobile() != null) {
-			email.setSubject(SUBJECT_ACCOUNT_UPDATE);
+			
 			email.getModel().put("change_type", ChangeType.MOBILE_CHANGE);
 
-		} else if (customerModel.getEmail() != null) {
-			email.setSubject(SUBJECT_ACCOUNT_UPDATE);
+		}  else if (customerModel.getEmail() != null) {
+			
 			email.getModel().put("change_type", ChangeType.EMAIL_CHANGE);
 
 			emailToOld = new Email();
-			emailToOld.setSubject(SUBJECT_ACCOUNT_UPDATE);
+			
 			emailToOld.getModel().put("change_type", ChangeType.EMAIL_CHANGE);
 			emailToOld.addTo(customerModel.getEmail());
-			emailToOld.setITemplate(TemplatesMX.PROFILE_CHANGE);
+			emailToOld.setITemplate(TemplatesMX.EMAIL_CHANGE_OLD_EMAIL);
 			emailToOld.setHtml(true);
 
 			PersonInfo oldPinfo = null;
@@ -138,8 +160,40 @@ public class JaxNotificationService {
 		logger.info("Email to - " + pinfo.getEmail() + " first name : " + pinfo.getFirstName());
 		sendEmail(email);
 	} // end of sendProfileChangeNotificationEmail
+	
+	public void sendProfileChangeNotificationMobile(CustomerModel customerModel, PersonInfo personinfo, String oldMobile) {
+		if (customerModel.getMobile() != null) {
+			SMS smsOld = new SMS();
+			// to new and old
+			smsOld.addTo(oldMobile);
+			smsOld.getModel().put(RESP_DATA_KEY, personinfo);
+			smsOld.setITemplate(TemplatesMX.PROFILE_CHANGE_SMS);
+
+			try {
+				postManService.sendSMSAsync(smsOld);
+			} catch (PostManException e) {
+				logger.error("error in sendProfileChangeNotificationMobile", e);
+			}
+
+			SMS smsNew = new SMS();
+			// to new and old
+			smsNew.addTo(customerModel.getMobile());
+			smsNew.getModel().put(RESP_DATA_KEY, personinfo);
+			smsNew.setITemplate(TemplatesMX.PROFILE_CHANGE_SMS);
+
+			try {
+				postManService.sendSMSAsync(smsNew);
+			} catch (PostManException e) {
+				logger.error("error in sendProfileChangeNotificationMobile", e);
+			}
+		}
+	}
 
 	public void sendOtpSms(PersonInfo pinfo, CivilIdOtpModel model) {
+		sendOtpSms(pinfo, model, TemplatesMX.RESET_OTP_SMS);
+	}
+
+	public void sendOtpSms(PersonInfo pinfo, CivilIdOtpModel model, TemplatesMX templateMX) {
 
 		logger.info(String.format("Sending OTP SMS to customer :%s on mobile_no :%s  ", pinfo.getFirstName(),
 				pinfo.getMobile()));
@@ -147,17 +201,27 @@ public class JaxNotificationService {
 		SMS sms = new SMS();
 		sms.addTo(pinfo.getMobile());
 		sms.getModel().put(RESP_DATA_KEY, model);
-		sms.setITemplate(TemplatesMX.RESET_OTP_SMS);
+		sms.setITemplate(templateMX);
 
 		try {
 			postManService.sendSMSAsync(sms);
-			if (!appConfig.isProdMode()) {
-				sendToSlack("mobile", sms.getTo().get(0), model.getmOtpPrefix(), model.getmOtp());
-			}
 		} catch (PostManException e) {
 			logger.error("error in sendOtpSms", e);
 		}
 	} // end of sendOtpSms
+
+	public void sendOtpSms(String mobile, FxDeliveryDetailNotificationDto model) {
+		SMS sms = new SMS();
+		sms.addTo(mobile);
+		sms.getModel().put(RESP_DATA_KEY, model);
+		sms.setITemplate(TemplatesMX.FC_DELIVER_SMS_OTP);
+
+		try {
+			postManService.sendSMSAsync(sms);
+		} catch (PostManException e) {
+			logger.error("error in sendOtpSms", e);
+		}
+	}
 
 	public void sendOtpEmail(PersonInfo pinfo, CivilIdOtpModel civilIdOtpModel) {
 
@@ -173,10 +237,6 @@ public class JaxNotificationService {
 		logger.info("Email to - " + pinfo.getEmail() + " first name : " + civilIdOtpModel.getFirstName());
 		sendEmail(email);
 
-		if (!appConfig.isProdMode()) {
-			sendToSlack("email", email.getTo().get(0), civilIdOtpModel.geteOtpPrefix(), civilIdOtpModel.geteOtp());
-		}
-
 	}// end of sendOtpEmail
 
 	public void sendNewRegistrationSuccessEmailNotification(PersonInfo pinfo, String emailid) {
@@ -190,20 +250,9 @@ public class JaxNotificationService {
 		logger.info("Email to - " + pinfo.getEmail() + " first name : " + pinfo.getFirstName());
 		sendEmail(email);
 	}
-
-	public void sendToSlack(String channel, String to, String prefix, String otp) {
-		Notipy msg = new Notipy();
-		msg.setMessage(String.format("%s = %s", channel, to));
-		msg.addLine(String.format("OTP = %s-%s", prefix, otp));
-		msg.setChannel(Channel.NOTIPY);
-		try {
-			postManService.notifySlack(msg);
-		} catch (PostManException e) {
-			logger.error("error in SlackNotify", e);
-		}
-	}
-
-	private void sendEmail(Email email) {
+	
+	@Async(ExecutorConfig.DEFAULT)
+	public void sendEmail(Email email) {
 		try {
 			postManService.sendEmailAsync(email);
 		} catch (PostManException e) {
@@ -271,11 +320,34 @@ public class JaxNotificationService {
 
 		try {
 			postManService.sendSMSAsync(sms);
-			if (!appConfig.isProdMode()) {
-				sendToSlack("mobile", sms.getTo().get(0), model.getmOtpPrefix(), model.getmOtp());
-			}
 		} catch (PostManException e) {
 			logger.error("error in sendOtpSms", e);
 		}
 	} // end of sendOtpSms
+	
+	
+	public String sendEmailChangeSubject() {
+
+		if (TenantContextHolder.currentSite().equals(Tenant.KWT)) {
+			return "Almulla Exchange Account - Email ID Change";
+		} else if (TenantContextHolder.currentSite().equals(Tenant.BHR)) {
+			return "Modern Exchange Account - Email ID Change";
+		} else if (TenantContextHolder.currentSite().equals(Tenant.OMN)) {
+			return "Almulla Exchange Account - Email ID Change";
+		}
+		return "Almulla Exchange Account - Email ID Change";
+	}
+
+	public String sendMobileNumberChangeSubject() {
+
+		if (TenantContextHolder.currentSite().equals(Tenant.KWT)) {
+			return "Almulla Exchange Account - Phone number Change";
+		} else if (TenantContextHolder.currentSite().equals(Tenant.BHR)) {
+			return "Modern Exchange Account - Phone number Change";
+		} else if (TenantContextHolder.currentSite().equals(Tenant.OMN)) {
+			return "Almulla Exchange Account - Phone number Change";
+		}
+		return "Almulla Exchange Account - Phone number Change";
+	}
+
 }

@@ -42,7 +42,8 @@ public class GeoLocationServiceImpl implements GeoLocationService {
 			try {
 				dbReader = new DatabaseReader.Builder(database).build();
 			} catch (IOException e) {
-				LOGGER.error("File : ext-resources/GeoLite2-City.mmdb is missing put it relative to jar ", e);
+				LOGGER.warn("File : ext-resources/GeoLite2-City.mmdb is missing put it relative to jar {}",
+						e.getMessage());
 			}
 		}
 		return dbReader;
@@ -57,7 +58,7 @@ public class GeoLocationServiceImpl implements GeoLocationService {
 
 	/** The default tennat id. */
 	@Value("${default.tenant}")
-	String defaultTennatId;
+	Tenant defaultTennatId;
 
 	/*
 	 * (non-Javadoc)
@@ -67,8 +68,6 @@ public class GeoLocationServiceImpl implements GeoLocationService {
 	@Override
 	public GeoLocation getLocation(String ip) throws PostManException {
 
-		Tenant tnt = Tenant.fromString(defaultTennatId, Tenant.KWT);
-
 		GeoLocation loc = new GeoLocation(ip);
 		try {
 			CityResponse response = this.getCity(ip);
@@ -77,9 +76,9 @@ public class GeoLocationServiceImpl implements GeoLocationService {
 			loc.setStateCode(response.getMostSpecificSubdivision().getIsoCode());
 			loc.setCountryCode(response.getCountry().getIsoCode());
 			loc.setContinentCode(response.getContinent().getCode());
-			loc.setTenant(Tenant.fromString(response.getCountry().getIsoCode(), tnt, true));
+			loc.setTenant(Tenant.fromString(response.getCountry().getIsoCode(), defaultTennatId, true));
 		} catch (Exception e) {
-			loc.setTenant(tnt);
+			loc.setTenant(defaultTennatId);
 			LOGGER.error("No location or IP " + ip, e);
 		}
 		return loc;// new GeoLocation(ip);
@@ -88,13 +87,10 @@ public class GeoLocationServiceImpl implements GeoLocationService {
 	/**
 	 * Gets the city.
 	 *
-	 * @param ip
-	 *            the ip
+	 * @param ip the ip
 	 * @return the city
-	 * @throws IOException
-	 *             Signals that an I/O exception has occurred.
-	 * @throws GeoIp2Exception
-	 *             the geo ip 2 exception
+	 * @throws IOException     Signals that an I/O exception has occurred.
+	 * @throws GeoIp2Exception the geo ip 2 exception
 	 */
 	public CityResponse getCity(String ip) throws IOException, GeoIp2Exception {
 		this.getDb();

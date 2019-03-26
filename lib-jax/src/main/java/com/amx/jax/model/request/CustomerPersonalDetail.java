@@ -10,8 +10,8 @@ import org.hibernate.validator.constraints.Email;
 import org.springframework.format.annotation.NumberFormat;
 
 import com.amx.jax.AbstractModel;
-
-import io.swagger.annotations.ApiModelProperty;
+import com.amx.jax.constants.CustomerRegistrationType;
+import com.amx.jax.swagger.ApiMockModelProperty;
 
 /**
  * Customer personal detail model
@@ -29,87 +29,106 @@ public class CustomerPersonalDetail extends AbstractModel {
 	/**
 	 * Residence country
 	 */
-	@ApiModelProperty(example="91")
-	@NotNull
+	@ApiMockModelProperty(example = "91")
+	@NotNull(message = "CountryId may not be null")
 	private BigDecimal countryId;
 
 	/**
 	 * nationality
 	 */
-	@ApiModelProperty(example="91")
-	@NotNull
+	@ApiMockModelProperty(example = "91")
+	@NotNull(message = "NationalityId may not be null")
 	private BigDecimal nationalityId;
 
 	/**
 	 * Civil id
 	 */
-	@NotNull
+	@NotNull(message = "IdentityInt may not be null")
 	@NumberFormat
-	@ApiModelProperty(example="268020406638")
+	@ApiMockModelProperty(example = "268020406638")
 	private String identityInt;
 
 	/**
 	 * Prefix/title
 	 */
-	@NotNull
-	@ApiModelProperty(example="180")
+	@NotNull(message = "Title may not be null")
+	@ApiMockModelProperty(example = "180")
 	private String title;
 
-	@NotNull
+	@NotNull(message = "FirstName may not be null")
 	@Size(min = 1)
-	@ApiModelProperty(example="Rakesh")
+	@ApiMockModelProperty(example = "Rakesh")
 	private String firstName;
 
-	@NotNull
+	@NotNull(message = "LastName may not be null")
 	@Size(min = 1)
-	@ApiModelProperty(example="Parmar")
+	@ApiMockModelProperty(example = "Parmar")
 	private String lastName;
 
 	/** email id */
-	@NotNull
+	@NotNull(message = "Email may not be null")
 	@Email
-	@ApiModelProperty(example="rakesh@gmail.com")
+	@ApiMockModelProperty(example = "rakesh@gmail.com", required = false)
 	private String email;
 
 	/** mobile without country tel prefix code */
-	@NotNull
+	@NotNull(message = "Mobile may not be null")
 	@Size(min = 1)
 	@NumberFormat
-	@ApiModelProperty(example="98714345")
+	@ApiMockModelProperty(example = "98714345")
 	private String mobile;
 
 	/** country telephone prefix */
-	@NotNull
+	@NotNull(message = "TelPrefix may not be null")
 	@NumberFormat
-	@ApiModelProperty(example="965")
+	@ApiMockModelProperty(example = "965")
 	private String telPrefix;
 
-	@ApiModelProperty(example="يبلءيا")
+	@ApiMockModelProperty(example = "يبلءيا")
 	private String firstNameLocal;
 
-	@ApiModelProperty(example="ءسيقبا")
+	@ApiMockModelProperty(example = "ءسيقبا")
 	private String lastNameLocal;
 
-	@ApiModelProperty(example="2018-09-12")
+	@ApiMockModelProperty(example = "2018-09-12")
 	private Date issueDate;
 
-	@ApiModelProperty(example="2018-09-12")
+	@ApiMockModelProperty(example = "2018-09-12")
 	private Date expiryDate;
 
-	@ApiModelProperty(example="2018-09-12")
+	@ApiMockModelProperty(example = "2018-09-12")
 	private Date dateOfBirth;
 
-	@ApiModelProperty(example="198")
+	@ApiMockModelProperty(example = "198")
 	private BigDecimal identityTypeId;
-	
-	@ApiModelProperty(example="Y")
+
+	@ApiMockModelProperty(example = "Y")
 	private String insurance;
-	
-	@ApiModelProperty(example="91")
+
+	@ApiMockModelProperty(example = "91")
 	private String watsAppTelePrefix;
+
+	@ApiMockModelProperty(example = "9321484252")
+	private BigDecimal watsAppMobileNo;
 	
-	@ApiModelProperty(example="9321484252")
-	private String watsAppMobileNo;
+	@ApiMockModelProperty(example = "Y")
+	private String isWatsApp;
+	
+	@ApiMockModelProperty(example = "OFF_CUSTOMER")
+	private CustomerRegistrationType registrationType;
+	
+	BigDecimal customerId;
+	String customerSignature;
+	
+	private String shortName;
+
+	public CustomerRegistrationType getRegistrationType() {
+		return registrationType;
+	}
+
+	public void setRegistrationType(CustomerRegistrationType registrationType) {
+		this.registrationType = registrationType;
+	}
 
 	public BigDecimal getCountryId() {
 		return countryId;
@@ -247,12 +266,20 @@ public class CustomerPersonalDetail extends AbstractModel {
 		this.watsAppTelePrefix = watsAppTelePrefix;
 	}
 
-	public String getWatsAppMobileNo() {
+	public BigDecimal getWatsAppMobileNo() {
 		return watsAppMobileNo;
 	}
 
-	public void setWatsAppMobileNo(String watsAppMobileNo) {
+	public void setWatsAppMobileNo(BigDecimal watsAppMobileNo) {
 		this.watsAppMobileNo = watsAppMobileNo;
+	}
+	
+	public String getIsWatsApp() {
+		return isWatsApp;
+	}
+
+	public void setIsWatsApp(String isWatsApp) {
+		this.isWatsApp = isWatsApp;
 	}
 
 	@Override
@@ -262,8 +289,32 @@ public class CustomerPersonalDetail extends AbstractModel {
 				+ email + ", mobile=" + mobile + ", telPrefix=" + telPrefix + ", firstNameLocal=" + firstNameLocal
 				+ ", lastNameLocal=" + lastNameLocal + ", issueDate=" + issueDate + ", expiryDate=" + expiryDate
 				+ ", dateOfBirth=" + dateOfBirth + ", identityTypeId=" + identityTypeId + ", insurance=" + insurance
-				+ ", watsAppTelePrefix=" + watsAppTelePrefix + ", watsAppMobileNo=" + watsAppMobileNo + "]";
+				+ ", watsAppTelePrefix=" + watsAppTelePrefix + ", watsAppMobileNo=" + watsAppMobileNo  
+				+ ", isWatsApp=" + isWatsApp + "]";
 	}
 
-	
+	public BigDecimal getCustomerId() {
+		return customerId;
+	}
+
+	public void setCustomerId(BigDecimal customerId) {
+		this.customerId = customerId;
+	}
+
+	public String getCustomerSignature() {
+		return customerSignature;
+	}
+
+	public void setCustomerSignature(String customerSignature) {
+		this.customerSignature = customerSignature;
+	}
+
+	public String getShortName() {
+		return shortName;
+	}
+
+	public void setShortName(String shortName) {
+		this.shortName = shortName;
+	}
+
 }

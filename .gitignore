@@ -10,6 +10,8 @@ tmp/
 *.tmp
 *.bak
 *.swp
+.vscode
+.factorypath
 # PDT-specific (PHP Development Tools)
 .buildpath
 /build/

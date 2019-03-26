@@ -12,13 +12,15 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.jax.config.JaxProperties;
+import com.amx.jax.config.JaxTenantProperties;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dal.RoutingProcedureDao;
 import com.amx.jax.dao.ApplicationProcedureDao;
+import com.amx.jax.dbmodel.CurrencyMasterModel;
 import com.amx.jax.dbmodel.bene.BeneficaryAccount;
 import com.amx.jax.dbmodel.meta.ServiceMaster;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.repository.routing.RoutingDetailRepository;
 import com.amx.jax.routing.IRoutingLogic;
 import com.amx.jax.service.MetaService;
 
@@ -37,8 +39,8 @@ public class RoutingService {
 	@Autowired
 	List<IRoutingLogic> routingLogics;
 	@Autowired
-	JaxProperties jaxProperties;
-
+	JaxTenantProperties jaxTenantProperties;
+	
 	public Map<String, Object> getRoutingDetails(Map<String, Object> inputValue) {
 		Map<String, Object> output;
 		String serviceGroupCode = inputValue.get("P_SERVICE_GROUP_CODE").toString();
@@ -71,9 +73,9 @@ public class RoutingService {
 	}
 
 	public Map<String, Object> getRoutingDetail(Map<String, Object> inputValue) {
-		if (jaxProperties.getRoutingProcOthDisable()) {
+		if (jaxTenantProperties.getRoutingProcOthDisable()) {
 			return applicationProcedureDao.getRoutingDetails(inputValue);
-		} else if (jaxProperties.getExrateBestRateLogicEnable()) {
+		} else if (jaxTenantProperties.getExrateBestRateLogicEnable()) {
 			return applicationProcedureDao.getRoutingDetailFromOthRateProcedure(inputValue);
 		} else {
 			return applicationProcedureDao.getRoutingDetailFromOthProcedure(inputValue);
@@ -82,10 +84,10 @@ public class RoutingService {
 
 	private void checkRemittanceAndDeliveryMode(Map<String, Object> inputValue) {
 		if (inputValue.get("P_REMITTANCE_MODE_ID") == null) {
-			throw new GlobalException("Service not available", JaxError.REMITTANCE_SERVICE_NOT_AVAILABLE);
+			throw new GlobalException(JaxError.REMITTANCE_SERVICE_NOT_AVAILABLE, "Service not available");
 		}
 		if (inputValue.get("P_DELIVERY_MODE_ID") == null) {
-			throw new GlobalException("Service not available", JaxError.REMITTANCE_SERVICE_NOT_AVAILABLE);
+			throw new GlobalException(JaxError.REMITTANCE_SERVICE_NOT_AVAILABLE, "Service not available");
 		}
 	}
 
@@ -102,4 +104,5 @@ public class RoutingService {
 			});
 		}
 	}
+	
 }

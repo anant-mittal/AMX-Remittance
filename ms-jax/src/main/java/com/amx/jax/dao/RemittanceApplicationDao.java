@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.jax.dbmodel.PlaceOrder;
 import com.amx.jax.dbmodel.RemittanceTransactionView;
 import com.amx.jax.dbmodel.remittance.AdditionalInstructionData;
@@ -23,6 +22,7 @@ import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.manager.RemittanceApplicationManager;
+import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.repository.AdditionalInstructionDataRepository;
 import com.amx.jax.repository.IFlexFiledView;
 import com.amx.jax.repository.IPlaceOrderDao;
@@ -58,6 +58,7 @@ public class RemittanceApplicationDao {
 	IFlexFiledView IFlexFiledView;
     @Autowired
     IPlaceOrderDao placeOrderdao;
+    
 	@Transactional
 	public void saveAllApplicationData(RemittanceApplication app, RemittanceAppBenificiary appBene,
 			List<AdditionalInstructionData> additionalInstrumentData) {
@@ -83,8 +84,7 @@ public class RemittanceApplicationDao {
 			BigDecimal applicationfinYear) {
 		RemittanceTransaction remittanceTransactionView = null;
 		if (applicationDocumentNumber != null && applicationfinYear != null) {
-			remittanceTransactionView = remittanceTransactionRepository
-					.findByapplicationDocumentNoAndApplicationdocumentFinancialyear(applicationDocumentNumber,
+			remittanceTransactionView = remittanceTransactionRepository.findByapplicationDocumentNoAndApplicationFinanceYear(applicationDocumentNumber,
 							applicationfinYear);
 		}
 		return remittanceTransactionView;
@@ -94,8 +94,7 @@ public class RemittanceApplicationDao {
 			BigDecimal remittanceFinYear) {
 		RemittanceTransaction remittanceTransactionView = null;
 		if (remittanceDocumentNumber != null && remittanceFinYear != null) {
-			remittanceTransactionView = remittanceTransactionRepository
-					.findByDocumentNoAndDocumentFinancialyear(remittanceDocumentNumber, remittanceFinYear);
+			remittanceTransactionView = remittanceTransactionRepository.findByDocumentNoAndDocumentFinanceYear(remittanceDocumentNumber, remittanceFinYear);
 		}
 		return remittanceTransactionView;
 	}
@@ -117,10 +116,18 @@ public class RemittanceApplicationDao {
 				placeOrderdao.save(po);
 			} else {
 				logger.info("Place Order not found for place_order_id: " + model.getPlaceOrderId());
-				throw new GlobalException("The order is not available", JaxError.PLACE_ORDER_NOT_ACTIVE_OR_EXPIRED);
+				throw new GlobalException(JaxError.PLACE_ORDER_NOT_ACTIVE_OR_EXPIRED, "The order is not available");
 			}
 			logger.info("Place Order updated for place_order_id: " + model.getPlaceOrderId());
 		}
 
+	}
+	
+	public RemittanceTransaction getRemittanceTransactionById(BigDecimal remittanceTransactionId) {
+		return remittanceTransactionRepository.findOne(remittanceTransactionId);
+	}
+
+	public RemittanceApplication getApplication(BigDecimal remittanceApplicationId) {
+		return appRepo.findOne(remittanceApplicationId);
 	}
 }

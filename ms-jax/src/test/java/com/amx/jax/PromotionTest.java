@@ -16,7 +16,7 @@ import com.amx.jax.dao.JaxEmployeeDao;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.manager.PromotionManager;
 import com.amx.jax.meta.MetaData;
-import com.amx.jax.multitenant.TenantContext;
+import com.amx.jax.scope.TenantContextHolder;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = JaxServiceApplication.class)
@@ -33,7 +33,8 @@ public class PromotionTest {
 
 	@Before
 	public void contextLoads() {
-		TenantContext.setCurrentTenant(Tenant.KWT2.toString());
+		TenantContextHolder.setCurrent(Tenant.KWT2);
+		//TenantContext.setCurrentTenant(Tenant.KWT2.toString());
 	}
 
 	// @Test

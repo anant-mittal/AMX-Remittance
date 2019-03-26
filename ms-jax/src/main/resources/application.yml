@@ -20,13 +20,13 @@ multitenancy:
         driverClassName: oracle.jdbc.OracleDriver
       -
         tenantId: BHR
-        url: jdbc:oracle:thin:@10.28.42.10:1521:TBHEMOS
-        username: tbexchdba
-        password: tbexchdba
+        url: jdbc:oracle:thin:@10.1.41.9:1545:QBHEMOS
+        username: QBHEMOS
+        password: QBHEMOS
         driverClassName: oracle.jdbc.OracleDriver
       -
         tenantId: OMN
-        url: jdbc:oracle:thin:@10.1.20.15:1521:TMEX
-        username: tmex
-        password: tmex
+        url: jdbc:oracle:thin:@10.28.42.10:1521:TMEX
+        username: tmexchdba
+        password: tmexchdba
         driverClassName: oracle.jdbc.OracleDriver

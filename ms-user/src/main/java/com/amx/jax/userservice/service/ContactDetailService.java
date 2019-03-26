@@ -9,6 +9,7 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.BizComponentData;
 import com.amx.jax.dbmodel.ContactDetail;
 import com.amx.jax.dbmodel.Customer;
@@ -32,5 +33,24 @@ public class ContactDetailService {
 		List<ContactDetail> contactDetailList = contactDetailRepository.getContactDetailByCotactId(new Customer(customerId),new BizComponentData(contactTypeId));
 		return contactDetailList;
 	}
+
+	public ContactDetail getContactsForLocal(Customer customer) {
+		ContactDetail contactDetail = null;
+		List<ContactDetail> contactDetails = contactDetailRepository.getContactDetailByCotactId(customer, new BizComponentData(ConstantDocument.CONTACT_TYPE_FOR_LOCAL));
+		if(!contactDetails.isEmpty()) {
+			contactDetail = contactDetails.get(0);
+		}
+		return contactDetail;
+	}
+
+	public ContactDetail getContactsForHome(Customer customer) {
+		ContactDetail contactDetail = null;
+		List<ContactDetail> contactDetails = contactDetailRepository.getContactDetailByCotactId(customer, new BizComponentData(ConstantDocument.CONTACT_TYPE_FOR_HOME));
+		if(!contactDetails.isEmpty()) {
+			contactDetail = contactDetails.get(0);
+		}
+		return contactDetail;
+	}
+	
 
 }

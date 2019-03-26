@@ -17,11 +17,12 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring4.SpringTemplateEngine;
 
+import com.amx.jax.AppContextUtil;
+import com.amx.jax.dict.Tenant;
 import com.amx.jax.postman.PostManConfig;
 import com.amx.jax.postman.custom.HelloDialect;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.ITemplates.ITemplate;
-import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.utils.IoUtils;
 
 /**
@@ -61,8 +62,7 @@ public class TemplateService {
 	/**
 	 * Instantiates a new template service.
 	 *
-	 * @param templateEngine
-	 *            the template engine
+	 * @param templateEngine the template engine
 	 */
 	@Autowired
 	TemplateService(TemplateEngine templateEngine) {
@@ -72,14 +72,14 @@ public class TemplateService {
 	/**
 	 * Process html.
 	 *
-	 * @param template
-	 *            the template
-	 * @param context
-	 *            the context
+	 * @param template the template
+	 * @param context  the context
 	 * @return the string
 	 */
-	public String processHtml(ITemplate template, Context context) {
-		String rawStr = templateEngine.process(template.getFileName(), context);
+	public String processHtml(ITemplate template, Context context, Locale locale) {
+		String rawStr = templateEngine.process(
+				templateUtils.getTemplateFile(template.getHtmlFile(), AppContextUtil.getTenant(), locale),
+				context);
 
 		Pattern p = Pattern.compile("src=\"inline:(.*?)\"");
 		Matcher m = p.matcher(rawStr);
@@ -96,15 +96,15 @@ public class TemplateService {
 		return rawStr;
 	}
 
-	public String processJson(ITemplate template, Context context) {
-		return templateEngine.process(template.getJsonFileName(), context);
+	public String processJson(ITemplate template, Context context, Locale locale) {
+		return templateEngine.process(
+				templateUtils.getTemplateFile(template.getJsonFile(), AppContextUtil.getTenant(), locale), context);
 	}
 
 	/**
 	 * Gets the local.
 	 *
-	 * @param file
-	 *            the file
+	 * @param file the file
 	 * @return the local
 	 */
 	private Locale getLocal(File file) {
@@ -117,8 +117,7 @@ public class TemplateService {
 	/**
 	 * Parses file.template and creates content;
 	 * 
-	 * @param file
-	 *            the file
+	 * @param file the file
 	 * @return the file
 	 */
 	public File process(File file) {
@@ -129,7 +128,9 @@ public class TemplateService {
 			TemplateUtils.reverseFlag(true);
 		}
 
-		log.info("====" + locale.toString() + "======" + reverse + "   " + TemplateUtils.reverseFlag());
+		if (log.isDebugEnabled()) {
+			log.debug("====" + locale.toString() + "======" + reverse + "   " + TemplateUtils.reverseFlag());
+		}
 
 		Context context = new Context(locale);
 
@@ -139,9 +140,9 @@ public class TemplateService {
 		if (file.getITemplate().isThymleaf()) {
 			String content;
 			if (file.getType() == File.Type.JSON) {
-				content = this.processJson(file.getITemplate(), context);
+				content = this.processJson(file.getITemplate(), context, locale);
 			} else {
-				content = this.processHtml(file.getITemplate(), context);
+				content = this.processHtml(file.getITemplate(), context, locale);
 			}
 			file.setContent(content);
 		}
@@ -151,24 +152,20 @@ public class TemplateService {
 	/**
 	 * Process text.
 	 *
-	 * @param template
-	 *            the template
-	 * @param context
-	 *            the context
+	 * @param template the template
+	 * @param context  the context
 	 * @return the string
 	 */
-	public String processText(TemplatesMX template, Context context) {
+	public String processText(ITemplate template, Context context) {
 		return textTemplateEngine.process(template.getFileName(), context);
 	}
 
 	/**
 	 * Read image as input stream source.
 	 *
-	 * @param contentId
-	 *            the content id
+	 * @param contentId the content id
 	 * @return the input stream source
-	 * @throws IOException
-	 *             Signals that an I/O exception has occurred.
+	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public InputStreamSource readImageAsInputStreamSource(String contentId) throws IOException {
 		InputStreamSource imageSource = new ByteArrayResource(

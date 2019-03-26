@@ -7,6 +7,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.AmxConfig;
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.client.BeneClient;
 import com.amx.jax.client.CustomerRegistrationClient;
 import com.amx.jax.client.ExchangeRateClient;
@@ -17,9 +19,17 @@ import com.amx.jax.client.RateAlertClient;
 import com.amx.jax.client.RemitClient;
 import com.amx.jax.client.UserClient;
 import com.amx.jax.client.configs.JaxMetaInfo;
-import com.amx.jax.rest.RestMetaRequestOutFilter;
+import com.amx.jax.dict.UserClient.AppType;
+import com.amx.jax.dict.UserClient.Channel;
+import com.amx.jax.dict.UserClient.ClientType;
+import com.amx.jax.dict.UserClient.UserDeviceClient;
+import com.amx.jax.http.CommonHttpRequest;
+import com.amx.jax.logger.AuditActor;
+import com.amx.jax.logger.AuditDetailProvider;
+import com.amx.jax.model.UserDevice;
+import com.amx.jax.rest.AppRequestContextInFilter;
+import com.amx.jax.rest.IMetaRequestOutFilter;
 import com.amx.jax.scope.TenantContextHolder;
-import com.amx.jax.ui.WebAppConfig;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.ContextUtil;
 
@@ -27,13 +37,12 @@ import com.amx.utils.ContextUtil;
  * The Class JaxService.
  */
 @Component
-public class JaxService extends RestMetaRequestOutFilter<JaxMetaInfo> {
+public class JaxService implements IMetaRequestOutFilter<JaxMetaInfo>, AppRequestContextInFilter, AuditDetailProvider {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 
-	public static final String DEFAULT_COMPANY_ID = "1";
-
-	public static final String DEFAULT_COUNTRY_BRANCH_ID = "78"; // online
+	@Autowired
+	CommonHttpRequest commonHttpRequest;
 
 	@Autowired
 	private SessionService sessionService;
@@ -148,39 +157,48 @@ public class JaxService extends RestMetaRequestOutFilter<JaxMetaInfo> {
 	private MetaClient metaClient;
 
 	@Autowired
-	protected JaxMetaInfo jaxMetaInfo;
+	protected JaxMetaInfo jaxMetaInfoBean;
 
 	@Autowired
-	protected WebAppConfig webAppConfig;
+	protected AmxConfig amxConfig;
 
 	private void populateCommon(JaxMetaInfo jaxMetaInfo) {
 		jaxMetaInfo.setTenant(TenantContextHolder.currentSite());
 		jaxMetaInfo.setTraceId(ContextUtil.getTraceId());
-		jaxMetaInfo.setCountryId(webAppConfig.getCountryId());
-		jaxMetaInfo.setCompanyId(webAppConfig.getCompanyId());
-		jaxMetaInfo.setLanguageId(webAppConfig.getLanguageId());
-		jaxMetaInfo.setCountryBranchId(webAppConfig.getCountrybranchId());
+		jaxMetaInfo.setCountryId(amxConfig.getDefaultCountryId());
+		jaxMetaInfo.setCompanyId(amxConfig.getDefaultCompanyId());
+		jaxMetaInfo.setLanguageId(amxConfig.getDefaultLanguageId());
+		jaxMetaInfo.setCountryBranchId(amxConfig.getDefaultBranchId());
+	}
+
+	private void populateUser(JaxMetaInfo jaxMetaInfo, BigDecimal customerId) {
+		jaxMetaInfo.setReferrer(sessionService.getUserSession().getReferrer());
+		jaxMetaInfo.setDeviceId(sessionService.getAppDevice().getUserDevice().getFingerprint());
+		jaxMetaInfo.setDeviceIp(sessionService.getAppDevice().getUserDevice().getIp());
+		jaxMetaInfo.setDeviceType(ArgUtil.parseAsString(sessionService.getAppDevice().getUserDevice().getType()));
+		jaxMetaInfo.setAppType(ArgUtil.parseAsString(sessionService.getAppDevice().getUserDevice().getAppType()));
+
+		jaxMetaInfo.setCustomerId(customerId);
+	}
+
+	private BigDecimal getCustomerId() {
+		if (sessionService.getUserSession().getCustomerModel() != null) {
+			return sessionService.getUserSession().getCustomerModel().getCustomerId();
+		} else if (sessionService.getGuestSession().getCustomerModel() != null) {
+			return sessionService.getGuestSession().getCustomerModel().getCustomerId();
+		}
+		return null;
 	}
 
 	/**
 	 * Sets the defaults.
 	 *
-	 * @param customerId
-	 *            the customer id
+	 * @param customerId the customer id
 	 * @return the jax service
 	 */
 	public JaxService setDefaults(BigDecimal customerId) {
-
-		populateCommon(jaxMetaInfo);
-
-		jaxMetaInfo.setReferrer(sessionService.getUserSession().getReferrer());
-		jaxMetaInfo.setDeviceId(sessionService.getAppDevice().getFingerprint());
-		jaxMetaInfo.setDeviceIp(sessionService.getAppDevice().getIp());
-		jaxMetaInfo.setDeviceType(ArgUtil.parseAsString(sessionService.getAppDevice().getType()));
-		jaxMetaInfo.setAppType(ArgUtil.parseAsString(sessionService.getAppDevice().getAppType()));
-
-		jaxMetaInfo.setCustomerId(customerId);
-
+		populateCommon(jaxMetaInfoBean);
+		populateUser(jaxMetaInfoBean, customerId);
 		return this;
 	}
 
@@ -190,19 +208,42 @@ public class JaxService extends RestMetaRequestOutFilter<JaxMetaInfo> {
 	 * @return the jax service
 	 */
 	public JaxService setDefaults() {
-		if (sessionService.getUserSession().getCustomerModel() != null) {
-			return this.setDefaults(sessionService.getUserSession().getCustomerModel().getCustomerId());
-		} else if (sessionService.getGuestSession().getCustomerModel() != null) {
-			return this.setDefaults(sessionService.getGuestSession().getCustomerModel().getCustomerId());
-		}
-		return this.setDefaults(null);
+		return this.setDefaults(getCustomerId());
+	}
+
+	@Override
+	public void outFilter(JaxMetaInfo requestMeta) {
+		populateCommon(requestMeta);
+		populateUser(requestMeta, getCustomerId());
 	}
 
 	@Override
 	public JaxMetaInfo exportMeta() {
 		JaxMetaInfo jaxMetaInfo = new JaxMetaInfo();
-		populateCommon(jaxMetaInfo);
+		outFilter(jaxMetaInfo);
 		return jaxMetaInfo;
+	}
+
+	@Override
+	public void appRequestContextInFilter() {
+		UserDevice userDevice = commonHttpRequest.getUserDevice();
+		UserDeviceClient userClient = AppContextUtil.getUserClient();
+		userClient.setChannel(Channel.ONLINE);
+		if (AppType.ANDROID.equals(userClient.getAppType())) {
+			userClient.setClientType(ClientType.ONLINE_AND);
+		} else if (AppType.IOS.equals(userClient.getAppType())) {
+			userClient.setClientType(ClientType.ONLINE_IOS);
+		} else if (AppType.WEB.equals(userClient.getAppType())) {
+			userClient.setClientType(ClientType.ONLINE_WEB);
+		} else {
+			userClient.setClientType(ClientType.UNKNOWN);
+		}
+	}
+
+	@Override
+	public AuditActor getActor() {
+		return new AuditActor(sessionService.getUserSession().isValid() ? AuditActor.ActorType.CUSTOMER
+				: AuditActor.ActorType.GUEST, sessionService.getUserSession().getUserid());
 	}
 
 }

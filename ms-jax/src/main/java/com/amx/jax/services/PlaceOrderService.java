@@ -28,6 +28,8 @@ import com.amx.jax.dbmodel.PlaceOrder;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
+import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.IPlaceOrderDao;
 import com.amx.jax.service.CurrencyMasterService;
@@ -62,6 +64,8 @@ public class PlaceOrderService extends AbstractService {
 	
 	@Autowired
 	BeneficiaryValidationService beneficiaryValidationService;
+	@Autowired
+	RemittanceTransactionService remittanceTransactionService ; 
 	/**
 	 * Saved place order
 	 * @param dto
@@ -90,7 +94,9 @@ public class PlaceOrderService extends AbstractService {
 			placeOrderModel.setBankId(poBene.getBankId());
 			placeOrderModel.setCountryId(poBene.getCountryId());
 			placeOrderModel.setCurrencyId(poBene.getCurrencyId());
-			
+			if (placeOrderModel.getReceiveAmount() == null) {
+				updateReceiveAmount(placeOrderModel);
+			}
 			placeOrderdao.save(placeOrderModel);
 			response.setResponseStatus(ResponseStatus.OK);
 			
@@ -100,6 +106,19 @@ public class PlaceOrderService extends AbstractService {
 		}
 		logger.info("Place Order saved for customer : " +customerId);       
 		return response;
+	}
+
+	private void updateReceiveAmount(PlaceOrder placeOrderModel) {
+		RemittanceTransactionRequestModel requestModel = new RemittanceTransactionRequestModel();
+		requestModel.setAvailLoyalityPoints(false);
+		requestModel.setBeneId(placeOrderModel.getBeneficiaryRelationshipSeqId());
+		requestModel.setDomXRate(placeOrderModel.getTargetExchangeRate());
+		requestModel.setLocalAmount(placeOrderModel.getPayAmount());
+		ApiResponse<RemittanceTransactionResponsetModel> apiResponse = remittanceTransactionService
+				.calcEquivalentAmount(requestModel);
+		RemittanceTransactionResponsetModel result = apiResponse.getResult();
+		BigDecimal equivalentFcAmount = result.getExRateBreakup().getConvertedFCAmount();
+		placeOrderModel.setReceiveAmount(equivalentFcAmount);
 	}
 
 	/**
@@ -332,7 +351,9 @@ public class PlaceOrderService extends AbstractService {
 				rec.setBankId(poBene.getBankId());
 				rec.setCountryId(poBene.getCountryId());
 				rec.setCurrencyId(poBene.getCurrencyId());
-				
+				if (rec.getReceiveAmount() == null) {
+					updateReceiveAmount(rec);
+				}
 				placeOrderdao.save(rec);
 				
 			}else {
@@ -446,8 +467,8 @@ public class PlaceOrderService extends AbstractService {
 	public void validatePlaceOrderDto(PlaceOrderDTO dto) {
 		// both foreign and domestic amounts should not be null
 		if(dto.getPayAmount() == null && dto.getReceiveAmount() == null) {
-			throw new GlobalException("Both PayAmount and ReceivedAmount should not be null ",
-					JaxError.PO_BOTH_PAY_RECEIVED_AMT_NULL);
+			throw new GlobalException(JaxError.PO_BOTH_PAY_RECEIVED_AMT_NULL,
+					"Both PayAmount and ReceivedAmount should not be null ");
 		}
 		
 		/*if(dto.getPayAmount() != null && dto.getReceiveAmount() != null) {

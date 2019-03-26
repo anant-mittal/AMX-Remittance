@@ -48,7 +48,8 @@ public class AuditServiceClient implements AuditService {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Autowired
-	public AuditServiceClient(AppConfig appConfig, List<AuditFilter> filters,
+	public AuditServiceClient(
+			AppConfig appConfig, List<AuditFilter> filters,
 			@Autowired(required = false) ITunnelService iTunnelService) {
 
 		String[] allowedMarkersList = appConfig.getPrintableAuditMarkers();
@@ -110,9 +111,9 @@ public class AuditServiceClient implements AuditService {
 	public static void publishAbstractEvent(Map<String, Object> map) {
 		try {
 			AppContext appContext = AppContextUtil.getContext();
-			map.put("traceId", appContext.getTraceId());
-			map.put("tranxId", appContext.getTranxId());
-			map.put("tenant", appContext.getTenant());
+			map.put(AbstractEvent.PROP_TRC_ID, appContext.getTraceId());
+			map.put(AbstractEvent.PROP_TRX_ID, appContext.getTranxId());
+			map.put("tnt", appContext.getTenant());
 			ITUNNEL_SERVICE.audit(AUDIT_EVENT_TOPIC, map);
 		} catch (Exception e) {
 			LOGGER2.error("Exception while Publishing Event", e);
@@ -140,16 +141,17 @@ public class AuditServiceClient implements AuditService {
 	 * 
 	 * @param marker
 	 * @param event
-	 * @param capture
-	 *            - true to capture value in logger service, default is false
+	 * @param capture - true to capture value in logger service, default is false
 	 * @return
 	 */
 	public static AuditLoggerResponse logAuditEvent(Marker marker, AuditEvent event, boolean capture) {
 		try {
 			captureDetails(event);
+			event.setClient(AppContextUtil.getUserClient());
+			event.setTranxId(AppContextUtil.getTranxId());
 			return logAbstractEvent(marker, event, capture);
 		} catch (Exception e) {
-			LOGGER2.error("Exception while logAuditEvent {}", JsonUtil.toJson(event),e);
+			LOGGER2.error("Exception while logAuditEvent {}", event.getErrorCode(), e);
 		}
 		return null;
 	}
@@ -258,6 +260,12 @@ public class AuditServiceClient implements AuditService {
 	public AuditLoggerResponse excep(AuditEvent event, Exception e) {
 		AuditServiceClient.captureException(event, e);
 		return this.excep(event);
+	}
+
+	@Override
+	public AuditLoggerResponse log(AuditEvent event, Exception e) {
+		AuditServiceClient.captureException(event, e);
+		return this.log(event);
 	}
 
 	@Override

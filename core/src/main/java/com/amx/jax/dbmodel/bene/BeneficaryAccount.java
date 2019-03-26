@@ -46,7 +46,7 @@ public class BeneficaryAccount implements Serializable {
 	private String recordStaus;
 	private Date lastJavaRemittence;
 	private Date lastEmosRemittance; 
-	
+	private String ibanNumber;
 	
 	
 	@Id
@@ -277,6 +277,14 @@ public class BeneficaryAccount implements Serializable {
 	}
 	public void setServiceGroupId(BigDecimal serviceGroupId) {
 		this.serviceGroupId = serviceGroupId;
+	}
+	
+	@Column(name = "IBAN_NUMBER")
+	public String getIbanNumber() {
+		return ibanNumber;
+	}
+	public void setIbanNumber(String ibanNumber) {
+		this.ibanNumber = ibanNumber;
 	}
 	
 }

@@ -27,16 +27,16 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import com.amx.jax.api.AmxFieldError;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.exception.AmxApiException;
-import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.model.AuthState;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.ui.audit.CAuthEvent;
+import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
 import com.amx.jax.ui.response.ResponseWrapper;
-import com.amx.jax.ui.response.WebResponseStatus;
 import com.amx.jax.ui.service.SessionService;
 import com.amx.jax.ui.session.GuestSession;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.HttpUtils;
 
 /**
  * The Class WebJaxAdvice.
@@ -66,12 +66,9 @@ public class WebJaxAdvice {
 	/**
 	 * Handle.
 	 *
-	 * @param exc
-	 *            the exc
-	 * @param request
-	 *            the request
-	 * @param response
-	 *            the response
+	 * @param exc      the exc
+	 * @param request  the request
+	 * @param response the response
 	 * @return the response entity
 	 */
 	@ExceptionHandler(AmxApiException.class)
@@ -79,9 +76,9 @@ public class WebJaxAdvice {
 			HttpServletResponse response) {
 		ResponseWrapper<Object> wrapper = new ResponseWrapper<Object>();
 
-		wrapper.setMessage(WebResponseStatus.UNKNOWN_JAX_ERROR, exc);
+		wrapper.setMessage(OWAStatusStatusCodes.UNKNOWN_JAX_ERROR, exc);
 
-		String errorKey = ArgUtil.parseAsString(exc.getErrorKey(), WebResponseStatus.UNKNOWN_JAX_ERROR.toString());
+		String errorKey = ArgUtil.parseAsString(exc.getErrorKey(), OWAStatusStatusCodes.UNKNOWN_JAX_ERROR.toString());
 		if (exc.isReportable()) {
 			LOG.error(errorKey, exc);
 			postManService.notifyException(errorKey, exc);
@@ -93,7 +90,8 @@ public class WebJaxAdvice {
 		if (state.getFlow() != null) {
 			auditService.log(new CAuthEvent(state, CAuthEvent.Result.FAIL, exc.getError()));
 		}
-		if (exc.getError() == JaxError.USER_LOGIN_ATTEMPT_EXCEEDED) {
+		if (exc.getError() == JaxError.USER_LOGIN_ATTEMPT_EXCEEDED
+				|| JaxError.UNAUTHORIZED.equals(exc.getError())) {
 			sessionService.unIndexUser();
 		}
 
@@ -105,8 +103,7 @@ public class WebJaxAdvice {
 	/**
 	 * Handle.
 	 *
-	 * @param exception
-	 *            the exception
+	 * @param exception the exception
 	 * @return the response entity
 	 */
 	@ExceptionHandler(ConstraintViolationException.class)
@@ -118,11 +115,11 @@ public class WebJaxAdvice {
 		for (ConstraintViolation<?> responseError : exception.getConstraintViolations()) {
 			AmxFieldError newError = new AmxFieldError();
 			newError.setField(responseError.getPropertyPath().toString());
-			newError.setDescription(CommonHttpRequest.sanitze(responseError.getMessage()));
+			newError.setDescription(HttpUtils.sanitze(responseError.getMessage()));
 			errors.add(newError);
 		}
 		wrapper.setErrors(errors);
-		wrapper.setStatus(WebResponseStatus.BAD_INPUT);
+		wrapper.setStatus(OWAStatusStatusCodes.BAD_INPUT);
 		wrapper.setException(exception.getClass().getName());
 		return new ResponseEntity<ResponseWrapper<Object>>(wrapper, HttpStatus.BAD_REQUEST);
 	}
@@ -130,8 +127,7 @@ public class WebJaxAdvice {
 	/**
 	 * Handle.
 	 *
-	 * @param exception
-	 *            the exception
+	 * @param exception the exception
 	 * @return the response entity
 	 */
 	@ExceptionHandler(HttpMessageNotReadableException.class)
@@ -141,10 +137,10 @@ public class WebJaxAdvice {
 		ResponseWrapper<Object> wrapper = new ResponseWrapper<Object>();
 		List<AmxFieldError> errors = new ArrayList<AmxFieldError>();
 		AmxFieldError newError = new AmxFieldError();
-		newError.setDescription(CommonHttpRequest.sanitze(exception.getMessage()));
+		newError.setDescription(HttpUtils.sanitze(exception.getMessage()));
 		errors.add(newError);
 		wrapper.setErrors(errors);
-		wrapper.setStatus(WebResponseStatus.BAD_INPUT);
+		wrapper.setStatus(OWAStatusStatusCodes.BAD_INPUT);
 		wrapper.setException(exception.getClass().getName());
 		return new ResponseEntity<ResponseWrapper<Object>>(wrapper, HttpStatus.BAD_REQUEST);
 	}
@@ -152,12 +148,9 @@ public class WebJaxAdvice {
 	/**
 	 * Handle.
 	 *
-	 * @param ex
-	 *            the ex
-	 * @param request
-	 *            the request
-	 * @param response
-	 *            the response
+	 * @param ex       the ex
+	 * @param request  the request
+	 * @param response the response
 	 * @return the response entity
 	 */
 	@ExceptionHandler(MethodArgumentNotValidException.class)
@@ -169,13 +162,13 @@ public class WebJaxAdvice {
 		for (FieldError error : ex.getBindingResult().getFieldErrors()) {
 			AmxFieldError newError = new AmxFieldError();
 			newError.setField(error.getField());
-			newError.setDescription(CommonHttpRequest.sanitze(error.getDefaultMessage()));
+			newError.setDescription(HttpUtils.sanitze(error.getDefaultMessage()));
 			errors.add(newError);
 		}
 		for (ObjectError error : ex.getBindingResult().getGlobalErrors()) {
 			AmxFieldError newError = new AmxFieldError();
 			newError.setObzect(error.getObjectName());
-			newError.setDescription(CommonHttpRequest.sanitze(error.getDefaultMessage()));
+			newError.setDescription(HttpUtils.sanitze(error.getDefaultMessage()));
 			errors.add(newError);
 		}
 		return notValidArgument(ex, errors, request, response);
@@ -184,12 +177,9 @@ public class WebJaxAdvice {
 	/**
 	 * Handle.
 	 *
-	 * @param ex
-	 *            the ex
-	 * @param request
-	 *            the request
-	 * @param response
-	 *            the response
+	 * @param ex       the ex
+	 * @param request  the request
+	 * @param response the response
 	 * @return the response entity
 	 */
 	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
@@ -200,7 +190,7 @@ public class WebJaxAdvice {
 		List<AmxFieldError> errors = new ArrayList<AmxFieldError>();
 		AmxFieldError newError = new AmxFieldError();
 		newError.setField(ex.getName());
-		newError.setDescription(CommonHttpRequest.sanitze(ex.getMessage()));
+		newError.setDescription(HttpUtils.sanitze(ex.getMessage()));
 		errors.add(newError);
 		return notValidArgument(ex, errors, request, response);
 	}
@@ -208,20 +198,16 @@ public class WebJaxAdvice {
 	/**
 	 * Not valid argument.
 	 *
-	 * @param ex
-	 *            the ex
-	 * @param errors
-	 *            the errors
-	 * @param request
-	 *            the request
-	 * @param response
-	 *            the response
+	 * @param ex       the ex
+	 * @param errors   the errors
+	 * @param request  the request
+	 * @param response the response
 	 * @return the response entity
 	 */
 	protected ResponseEntity<ResponseWrapper<Object>> notValidArgument(Exception ex, List<AmxFieldError> errors,
 			HttpServletRequest request, HttpServletResponse response) {
 		ResponseWrapper<Object> wrapper = new ResponseWrapper<Object>();
-		wrapper.setStatus(WebResponseStatus.BAD_INPUT);
+		wrapper.setStatus(OWAStatusStatusCodes.BAD_INPUT);
 		wrapper.setErrors(errors);
 		wrapper.setException(ex.getClass().getName());
 		return new ResponseEntity<ResponseWrapper<Object>>(wrapper, HttpStatus.BAD_REQUEST);
@@ -230,10 +216,8 @@ public class WebJaxAdvice {
 	/**
 	 * Handle all.
 	 *
-	 * @param ex
-	 *            the ex
-	 * @param request
-	 *            the request
+	 * @param ex      the ex
+	 * @param request the request
 	 * @return the response entity
 	 */
 	@ExceptionHandler({ Exception.class })
@@ -241,6 +225,7 @@ public class WebJaxAdvice {
 		ResponseWrapper<Object> wrapper = new ResponseWrapper<Object>();
 		wrapper.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
 		wrapper.setException(ex.getClass().getName());
+		LOG.error("In Advice Exception Captured", ex);
 		postManService.notifyException(wrapper.getStatus(), ex);
 		return new ResponseEntity<ResponseWrapper<Object>>(wrapper, HttpStatus.INTERNAL_SERVER_ERROR);
 	}

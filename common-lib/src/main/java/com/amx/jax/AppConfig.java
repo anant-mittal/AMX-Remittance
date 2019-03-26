@@ -5,25 +5,36 @@ import java.util.Collections;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.PostConstruct;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
 import com.amx.jax.dict.Project;
+import com.amx.jax.dict.Tenant;
 import com.amx.jax.filter.AppClientErrorHanlder;
 import com.amx.jax.filter.AppClientInterceptor;
+import com.amx.jax.scope.TenantProperties;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.JsonUtil.JsonUtilConfigurable;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ulisesbocchio.jasyptspringboot.annotation.EnableEncryptableProperties;
 
 @Configuration
 @PropertySource("classpath:application-lib.properties")
+@EnableEncryptableProperties
 public class AppConfig {
 
-	public static Project PROJECT = null;
-
+	private static final String PROP_SUFFIX = "}";
+	private static final String PROP_PREFIX = "${";
 	public static final Pattern pattern = Pattern.compile("^\\$\\{(.*)\\}$");
 	public static final String APP_ENV = "${app.env}";
 	public static final String APP_GROUP = "${app.group}";
@@ -35,12 +46,19 @@ public class AppConfig {
 	public static final String APP_DEBUG = "${app.debug}";
 	public static final String APP_CACHE = "${app.cache}";
 	public static final String APP_LOGGER = "${app.logger}";
+	public static final String APP_MONITOR = "${app.monitor}";
+
+	public static final String APP_CONTEXT_PREFIX = "${server.contextPath}";
+	public static final String SPRING_APP_NAME = "${spring.application.name}";
 
 	@Deprecated
 	public static final String APP_CLASS = "${app.class}";
 
 	public static final String APP_AUTH_KEY = "${app.auth.key}";
+	public static final String APP_AUTH_TOKEN = "${app.auth.token}";
 	public static final String APP_AUTH_ENABLED = "${app.auth.enabled}";
+
+	public static final String DEFAULT_TENANT = "${default.tenant}";
 
 	public static final String JAX_CDN_URL = "${jax.cdn.url}";
 	public static final String JAX_APP_URL = "${jax.app.url}";
@@ -51,6 +69,11 @@ public class AppConfig {
 	public static final String JAX_LOGGER_URL = "${jax.logger.url}";
 	public static final String JAX_SSO_URL = "${jax.sso.url}";
 	public static final String JAX_AUTH_URL = "${jax.auth.url}";
+	public static final String JAX_RADAR_URL = "${jax.radar.url}";
+
+	public static final String SPRING_REDIS_HOST = "${spring.redis.host}";
+	public static final String SPRING_REDIS_PORT = "${spring.redis.port}";
+	public static final String JAX_PRICER_URL = "${jax.pricer.url}";
 
 	@Value(APP_ENV)
 	@AppParamKey(AppParam.APP_ENV)
@@ -63,6 +86,10 @@ public class AppConfig {
 	@Value(APP_NAME)
 	@AppParamKey(AppParam.APP_NAME)
 	private String appName;
+
+	@Value(SPRING_APP_NAME)
+	@AppParamKey(AppParam.SPRING_APP_NAME)
+	private String springAppName;
 
 	@Value(APP_ID)
 	@AppParamKey(AppParam.APP_ID)
@@ -88,8 +115,15 @@ public class AppConfig {
 	@AppParamKey(AppParam.APP_LOGGER)
 	private boolean logger;
 
+	@Value(APP_MONITOR)
+	@AppParamKey(AppParam.APP_MONITOR)
+	private boolean monitor;
+
 	@Value(APP_AUTH_KEY)
 	private String appAuthKey;
+
+	@Value(APP_AUTH_TOKEN)
+	private String appAuthToken;
 
 	@Value(APP_AUTH_ENABLED)
 	@AppParamKey(AppParam.APP_AUTH_ENABLED)
@@ -98,6 +132,10 @@ public class AppConfig {
 	@Value(APP_CACHE)
 	@AppParamKey(AppParam.APP_CACHE)
 	private Boolean cache;
+
+	@Value(DEFAULT_TENANT)
+	@AppParamKey(AppParam.DEFAULT_TENANT)
+	private Tenant defaultTenant;
 
 	@Value(JAX_CDN_URL)
 	@AppParamKey(AppParam.JAX_CDN_URL)
@@ -131,17 +169,43 @@ public class AppConfig {
 	@AppParamKey(AppParam.JAX_AUTH_URL)
 	private String authURL;
 
+	@Value(JAX_RADAR_URL)
+	@AppParamKey(AppParam.JAX_RADAR_URL)
+	private String radarURL;
+
+	@Value(SPRING_REDIS_HOST)
+	@AppParamKey(AppParam.SPRING_REDIS_HOST)
+	private String redisSpringHost;
+
+	@Value(SPRING_REDIS_PORT)
+	@AppParamKey(AppParam.SPRING_REDIS_PORT)
+	private String redisSpringPort;
+
+	@Value(JAX_PRICER_URL)
+	@AppParamKey(AppParam.JAX_PRICER_URL)
+	private String pricerURL;
+
+	@Value(APP_CONTEXT_PREFIX)
+	@AppParamKey(AppParam.APP_CONTEXT_PREFIX)
+	private String appPrefix;
+
 	@Value("${server.session.cookie.http-only}")
 	private boolean cookieHttpOnly;
 
 	@Value("${server.session.cookie.secure}")
 	private boolean cookieSecure;
 
+	@Value("${spring.profiles.active}")
+	private String[] springProfile;
+
 	@Value("${app.audit.file.print}")
 	String[] printableAuditMarkers;
 
 	@Value("${app.audit.file.skip}")
 	String[] skipAuditMarkers;
+
+	@Value("${encrypted.app.property}")
+	String appSpecifcDecryptedProp;
 
 	public boolean isCookieHttpOnly() {
 		return cookieHttpOnly;
@@ -239,9 +303,15 @@ public class AppConfig {
 		return restTemplate;
 	}
 
+	// @Bean
+	public JsonUtilConfigurable jsonUtilConfigurable(ObjectMapper objectMapper) {
+		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		return new JsonUtilConfigurable(objectMapper);
+	}
+
 	@Bean
 	public Project project(@Value("${app.project}") Project project) {
-		PROJECT = project;
+		ProjectConfig.PROJECT = project;
 		return project;
 	}
 
@@ -255,6 +325,14 @@ public class AppConfig {
 
 	public void setAuthURL(String authURL) {
 		this.authURL = authURL;
+	}
+
+	public String getPricerURL() {
+		return pricerURL;
+	}
+
+	public void setPricerURL(String pricerURL) {
+		this.pricerURL = pricerURL;
 	}
 
 	public String getAppAuthKey() {
@@ -292,6 +370,45 @@ public class AppConfig {
 
 	public boolean isLogger() {
 		return logger;
+	}
+
+	public String getAppPrefix() {
+		return appPrefix;
+	}
+
+	@Autowired
+	private Environment environment;
+
+	@PostConstruct
+	public void init() {
+		TenantProperties.setEnviroment(environment);
+		if (defaultTenant != null) {
+			Tenant.DEFAULT = defaultTenant;
+		}
+	}
+
+	public Tenant getDefaultTenant() {
+		return defaultTenant;
+	}
+
+	public String getSpringAppName() {
+		return springAppName;
+	}
+
+	public String getRadarURL() {
+		return radarURL;
+	}
+
+	public String getAppSpecifcDecryptedProp() {
+		return appSpecifcDecryptedProp;
+	}
+
+	public void setDefaultTenant(Tenant defaultTenant) {
+		this.defaultTenant = defaultTenant;
+	}
+
+	public String getAppAuthToken() {
+		return appAuthToken;
 	}
 
 }

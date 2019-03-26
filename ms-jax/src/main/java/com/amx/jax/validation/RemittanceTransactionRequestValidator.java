@@ -17,21 +17,24 @@ import org.springframework.stereotype.Component;
 import com.amx.amxlib.constant.JaxFieldEntity;
 import com.amx.amxlib.exception.AdditionalFlexRequiredException;
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.model.FlexFieldDto;
 import com.amx.amxlib.model.JaxConditionalFieldDto;
 import com.amx.amxlib.model.JaxFieldDto;
 import com.amx.amxlib.model.JaxFieldValueDto;
-import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
-import com.amx.amxlib.model.response.ExchangeRateBreakup;
-import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.FlexFieldBehaviour;
+import com.amx.jax.constants.JaxChannel;
 import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dbmodel.remittance.AdditionalBankDetailsViewx;
 import com.amx.jax.dbmodel.remittance.AdditionalBankRuleMap;
 import com.amx.jax.dbmodel.remittance.AdditionalDataDisplayView;
 import com.amx.jax.dbmodel.remittance.FlexFiledView;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.request.remittance.AbstractRemittanceApplicationRequestModel;
+import com.amx.jax.model.request.remittance.RemittanceAdditionalBeneFieldModel;
+import com.amx.jax.model.response.ExchangeRateBreakup;
+import com.amx.jax.model.response.remittance.FlexFieldDto;
+import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
 import com.amx.jax.repository.IAdditionalBankDetailsDao;
 import com.amx.jax.repository.IAdditionalBankRuleMapDao;
 import com.amx.jax.repository.IAdditionalDataDisplayDao;
@@ -55,20 +58,22 @@ public class RemittanceTransactionRequestValidator {
 	JaxFieldService jaxFieldService ;
 	@Autowired
 	DateUtil dateUtil;
-
-	public void validateExchangeRate(RemittanceTransactionRequestModel request,
+	@Autowired
+	MetaData metaData;
+	
+	public void validateExchangeRate(AbstractRemittanceApplicationRequestModel request,
 			RemittanceTransactionResponsetModel response) {
 
-		ExchangeRateBreakup oldExchangeRate = request.getExRateBreakup();
+		ExchangeRateBreakup oldExchangeRate = request.getExchangeRateBreakup();
 		ExchangeRateBreakup newExchangeRate = response.getExRateBreakup();
 		oldExchangeRate
-				.setRate(oldExchangeRate.getRate().setScale(newExchangeRate.getRate().scale(), RoundingMode.HALF_UP));
+.setRate(oldExchangeRate.getRate().setScale(newExchangeRate.getRate().scale(), RoundingMode.HALF_UP));
 		if (oldExchangeRate.compareTo(newExchangeRate) != 0) {
-			throw new GlobalException("Exchange rate has been changed", JaxError.EXCHANGE_RATE_CHANGED);
+			throw new GlobalException(JaxError.EXCHANGE_RATE_CHANGED, "Exchange rate has been changed");
 		}
 	}
 
-	public void validateFlexFields(RemittanceTransactionRequestModel request,
+	public void validateFlexFields(RemittanceAdditionalBeneFieldModel request,
 			Map<String, Object> remitApplParametersMap) {
 		request.populateFlexFieldDtoMap();
 		List<FlexFiledView> allFlexFields = remittanceApplicationDao.getFlexFields();
@@ -89,6 +94,10 @@ public class RemittanceTransactionRequestValidator {
 		BigDecimal routingBankId = (BigDecimal) remitApplParametersMap.get("P_ROUTING_BANK_ID");
 
 		List<String> flexiFieldIn = allFlexFields.stream().map(i -> i.getFieldName()).collect(Collectors.toList());
+		// remove indic1 validation from branch and other channels
+		if (!JaxChannel.ONLINE.equals(metaData.getChannel())) {
+			flexiFieldIn.remove(ConstantDocument.INDIC1);
+		}
 
 		List<AdditionalDataDisplayView> additionalDataRequired = additionalDataDisplayDao
 				.getAdditionalDataFromServiceApplicability(applicationCountryId, routingCountryId, foreignCurrencyId,

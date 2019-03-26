@@ -59,4 +59,11 @@ public class BeneficiaryTrnxModel implements Serializable {
 		this.beneficaryMasterSeqId = beneficaryMasterSeqId;
 	}
 
+	@Override
+	public String toString() {
+		return "BeneficiaryTrnxModel [beneAccountModel=" + beneAccountModel + ", benePersonalDetailModel=" + benePersonalDetailModel
+				+ ", beneTransactionAmountLimit=" + beneTransactionAmountLimit + ", beneficaryAccountSeqId=" + beneficaryAccountSeqId
+				+ ", beneficaryMasterSeqId=" + beneficaryMasterSeqId + "]";
+	}
+
 }

@@ -9,6 +9,9 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringWriter;
+import java.sql.SQLException;
+
+import javax.sql.rowset.serial.SerialException;
 
 
 /**
@@ -115,6 +118,10 @@ public class IoUtils {
 		public byte[] toByteArray() {
 			return this.buffer.toByteArray();
 		}
+	}
+	
+	public static java.sql.Clob stringToClob(String source) throws SerialException, SQLException {
+		return new javax.sql.rowset.serial.SerialClob(source.toCharArray());
 	}
 
 }

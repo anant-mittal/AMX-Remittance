@@ -4,14 +4,22 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.time.DateUtils;
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
+
+import com.amx.jax.model.response.fx.TimeSlotDto;
+
+
+
 
 /*
  * Auth: Rabil
@@ -19,6 +27,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class DateUtil {
+	private static Logger logger = Logger.getLogger(DateUtil.class);
 
 	public static String todaysDateWithDDMMYY(Date date, String action) {
 		// action ->1 today Date else user defind date
@@ -138,5 +147,91 @@ public class DateUtil {
 		}
 	}
 	
+
 	
+	public static List<TimeSlotDto> getTimeSlotRange(int startTime,int endTime,int timeIntVal,int noofDay){
+	logger.info("getTimeRange for Fx Order date :\t startTime :"+startTime+"\t endTime:"+endTime+"\t timeIntVal :"+timeIntVal+"\t noofDay :"+noofDay);
+	List<String> timeSlotList = new ArrayList<>();
+	List<TimeSlotDto> timeSlotDto = new ArrayList<>();
+	Date d = new Date();
+	
+	SimpleDateFormat dateStr = new SimpleDateFormat("dd/MM/yyyy");
+    SimpleDateFormat sdf = new SimpleDateFormat("H");
+    String todayDate = dateStr.format(d);
+    int hour = Integer.parseInt(sdf.format(d));
+    int j =0;
+    String defaultZero =":00";
+    GregorianCalendar calendar = new GregorianCalendar();
+    Date now = calendar.getTime();
+    int startTimeNToday = startTime;
+   
+    	for(int n=0;n<=noofDay;n++){
+    		if(n==0){
+    			if (hour>=startTime){
+    		    	startTime =hour+timeIntVal; 
+    		    }
+    		}else{
+    			startTime=startTimeNToday;
+    		}
+    		
+	    	TimeSlotDto dto = new TimeSlotDto();
+	    	 timeSlotList = new ArrayList<>();
+	    	for (int i =startTime;i<endTime;  i = i+timeIntVal){
+	   		 j = i+timeIntVal;
+	   		 String str = "";
+	   		 if(j<=endTime){
+	   		 	str = String.valueOf(i)+defaultZero+ "-"+String.valueOf(j)+defaultZero;
+	   		  timeSlotList.add(str);
+	   		 }
+	   		
+	   		 dto.setTimeSlot(timeSlotList);
+	    	}
+	    	 calendar.add(calendar.DAY_OF_MONTH, n);
+	    	 Date dateD = calendar.getTime();
+	    	 dto.setDate(dateStr.format(dateD));
+	    	 timeSlotDto.add(dto);
+
+    }
+    
+   
+    return timeSlotDto;
+}
+	
+	public static  Date daysAddInCurrentDate(int noOfDays) {
+		GregorianCalendar calendar = new GregorianCalendar();
+		calendar.setTime(new Date());
+	    calendar.add(Calendar.DATE, noOfDays);
+	    return calendar.getTime();
+	}
+	
+	
+	 public static String getAccountingMonthYearNew(String transactionDate) {
+		   String accountingMonthYear=null;
+		try {
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+			
+			LocalDate date =LocalDate.parse(transactionDate, formatter);
+			   accountingMonthYear = null;
+			   int dd =0;
+			   int mm = 0;
+			   int yyyy = 0;
+			   String mmS ="0";
+			   if(date != null) {
+			    dd = date.getDayOfMonth();
+			    mm = date.getMonthValue();
+			    yyyy = date.getYear();
+			    
+			    if(mm<9) {
+			    	mmS +=mm;
+			    }else {
+			    	mmS =String.valueOf(mm);
+			    }
+			    accountingMonthYear ="01"+"/"+mmS+"/"+yyyy;
+			   }
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		   return accountingMonthYear;
+	   }
 }

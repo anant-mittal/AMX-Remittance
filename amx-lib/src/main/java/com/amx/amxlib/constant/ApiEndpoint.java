@@ -31,6 +31,7 @@ public class ApiEndpoint {
 		public static final String PARAM_CITY_ID = "cityId";
 		public static final String PARAM_COUNTRY_ID = "countryId";
 		public static final String PARAM_STATE_ID = "stateId";
+		public static final String PARAM_GOVERONATE_ID = "governateId";
 
 		// Paths
 		public static final String SEQ_QUEST_LIST = "/quest/list";
@@ -44,6 +45,7 @@ public class ApiEndpoint {
 		public static final String API_COUNTRY_BC = "/country/bc/";
 		public static final String API_TERMS_BY_lANG_ID = "/terms/lang";
 		public static final String API_TERMS_BY_lANG_COUNTRY_ID = "/terms/langcountry";
+		public static final String API_TERMS_BY_lANG_COUNTRY_ID_FOR_FX = "/terms/langcountry/fx";
 		public static final String API_WHY = "/why/";
 		public static final String EMAIL_CHECK = "/emailcheck/{emailId}";
 		public static final String API_FYEAR = "/fyear";
@@ -51,6 +53,7 @@ public class ApiEndpoint {
 		public static final String API_PREFIX = "/prefix/";
 		public static final String SERVICE_GROUP = "/service-group/";
 		public static final String API_BRANCH_DETAIL = "/branchdetail/";
+		public static final String API_BRANCH_SYSTEM_INV_LIST = "/branchsysteminventory/list/";
 		public static final String META_PARAMETER = "/meta-parameter/";
 		public static final String CURRENCY_BENE_SERVICE = "/currency/beneservice/";
 		public static final String API_ONLINE_CONFIG = "/onlineconfig/";
@@ -63,8 +66,10 @@ public class ApiEndpoint {
 		public static final String MULTI_COUNTRY = "/multicountry/";
 		public static final String EXCHANGE_RATE_CURRENCY_LIST = "/exchange-rate-currency/list/";
 		public static final String CURRENCY_ONLINE = "/currency/online/";
-
 		public static final String API_BANK_BRANCH_GET = "/bankbranch/get/";
+		public static final String API_AREA_LIST = "/arealist/";
+		public static final String API_GOVERNATE_LIST = "/governatelist/";
+		public static final String API_GOVERNATE_AREA_LIST = "/governatearealist/";
 
 	}
 
@@ -123,5 +128,29 @@ public class ApiEndpoint {
 	public static final String SAVE_USER_ROLE_ENDPOINT = "/api/user/role/";
 
 	public static final String SAVE_USER_PERM_ENDPOINT = "/api/user/perms/";
+
+	public static final String LINK_DEVICEID = "/link-deviceid/";
+	
+	//public static final String LINK_DEVICE_LOGGEDIN_CUSTOMER = "/link-device-loggedin-customer/";
+	
+	//public static final String LOGIN_CUSTOMER_BY_FINGERPRINT = "/login-customer-by-fingerprint/";
+	
+	public final class UserApi
+	{
+		public static final String PREFIX = USER_API_ENDPOINT;
+		
+		//Params
+		public static final String IDENTITYINT = "identityInt";
+		
+		public static final String PASSWORD = "password";
+		
+		//Paths
+		public static final String LINK_DEVICE_LOGGEDIN_USER= "/link-device-loggedin-user/";
+		
+		public static final String LOGIN_CUSTOMER_BY_FINGERPRINT = "/login-customer-by-fingerprint/";
+		
+		public static final String DELINK_FINGERPRINT = "/delink-fingerprint";
+		
+	}
 
 }

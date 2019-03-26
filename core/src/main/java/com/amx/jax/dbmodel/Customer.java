@@ -5,18 +5,23 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.PrePersist;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.Proxy;
+
+import com.amx.jax.constants.CustomerRegistrationType;
 
 
 @Entity
@@ -132,10 +137,18 @@ public class Customer implements java.io.Serializable {
 	private String identityInt;
 	private BigDecimal identityFor;
 	private BigDecimal identityTypeId;
-	private Date issueDate;
-	private Date expiryDate;
+	
+	//WhatsApp and Mobile Number related fields are add
+	private String prefixCodeMobile;
+	private BigDecimal mobileOther;
+	private String prefixCodeMobileOther;
+	private String isMobileWhatsApp;
+	private String isMobileOtherWhatsApp;
 	
 	private IncomeRangeMaster fsIncomeRangeMaster;
+	
+	/* Registration Type added */
+	private CustomerRegistrationType customerRegistrationType;
 	
 
 	public Customer() {
@@ -901,5 +914,66 @@ public class Customer implements java.io.Serializable {
 	public void setFsIncomeRangeMaster(IncomeRangeMaster fsIncomeRangeMaster) {
 		this.fsIncomeRangeMaster = fsIncomeRangeMaster;
 	}
+
+	@Column(name = "REGISTRATION_TYPE")
+	@Enumerated(value = EnumType.STRING)
+	public CustomerRegistrationType getCustomerRegistrationType() {
+		return customerRegistrationType;
+	}
+
+	public void setCustomerRegistrationType(CustomerRegistrationType customerRegistrationType) {
+		this.customerRegistrationType = customerRegistrationType;
+	}
+
+	
+	@Column(name = "PREFIX_CODE_MOBILE")
+	public String getPrefixCodeMobile() {
+		return prefixCodeMobile;
+	}
+
+	public void setPrefixCodeMobile(String prefixCodeMobile) {
+		this.prefixCodeMobile = prefixCodeMobile;
+	}
+
+	@Column(name = "MOBILE_OTH")
+	public BigDecimal getMobileOther() {
+		return mobileOther;
+	}
+
+	public void setMobileOther(BigDecimal mobileOther) {
+		this.mobileOther = mobileOther;
+	}
+
+	@Column(name = "PREFIX_CODE_MOBILE_OTH")
+	public String getPrefixCodeMobileOther() {
+		return prefixCodeMobileOther;
+	}
+
+	public void setPrefixCodeMobileOther(String prefixCodeMobileOther) {
+		this.prefixCodeMobileOther = prefixCodeMobileOther;
+	}
+
+	@Column(name = "IS_MOBILE_WHATSAPP")
+	public String getIsMobileWhatsApp() {
+		return isMobileWhatsApp;
+	}
+
+	public void setIsMobileWhatsApp(String isMobileWhatsApp) {
+		this.isMobileWhatsApp = isMobileWhatsApp;
+	}
+
+	@Column(name = "IS_MOBILE_OTH_WHATSAPP")
+	public String getIsMobileOtherWhatsApp() {
+		return isMobileOtherWhatsApp;
+	}
+
+	public void setIsMobileOtherWhatsApp(String isMobileOtherWhatsApp) {
+		this.isMobileOtherWhatsApp = isMobileOtherWhatsApp;
+	}
+	
+	@PrePersist
+	public void prePersist() {
+		this.lastUpdated = new Date();
+	}	
 
 }

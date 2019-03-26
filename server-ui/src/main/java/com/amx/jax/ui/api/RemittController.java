@@ -25,38 +25,40 @@ import com.amx.amxlib.exception.InvalidInputException;
 import com.amx.amxlib.exception.LimitExeededException;
 import com.amx.amxlib.exception.RemittanceTransactionValidationException;
 import com.amx.amxlib.exception.ResourceNotFoundException;
-import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.meta.model.CustomerRatingDTO;
 import com.amx.amxlib.meta.model.RemittancePageDto;
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
-import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.amxlib.model.request.RemittanceTransactionStatusRequestModel;
 import com.amx.amxlib.model.response.ExchangeRateResponseModel;
 import com.amx.amxlib.model.response.PurposeOfTransactionModel;
 import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
-import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
 import com.amx.jax.dict.Language;
 import com.amx.jax.logger.LoggerService;
-import com.amx.jax.payment.PayGService;
+import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
+import com.amx.jax.model.response.CurrencyMasterDTO;
+import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
+import com.amx.jax.payg.PayGParams;
+import com.amx.jax.payg.PayGService;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.ui.UIConstants;
+import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
 import com.amx.jax.ui.model.AuthData;
 import com.amx.jax.ui.model.AuthDataInterface.AuthResponseOTPprefix;
 import com.amx.jax.ui.model.UserBean;
 import com.amx.jax.ui.model.XRateData;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.response.ResponseWrapperM;
-import com.amx.jax.ui.response.WebResponseStatus;
 import com.amx.jax.ui.service.JaxService;
 import com.amx.jax.ui.service.SessionService;
 import com.amx.jax.ui.service.TenantService;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.HttpUtils;
 import com.amx.utils.JsonUtil;
 
 import io.swagger.annotations.Api;
@@ -114,17 +116,12 @@ public class RemittController {
 	/**
 	 * Send history.
 	 *
-	 * @param fromDate
-	 *            the from date
-	 * @param toDate
-	 *            the to date
-	 * @param docfyr
-	 *            the docfyr
+	 * @param fromDate the from date
+	 * @param toDate   the to date
+	 * @param docfyr   the docfyr
 	 * @return the response wrapper
-	 * @throws IOException
-	 *             Signals that an I/O exception has occurred.
-	 * @throws PostManException
-	 *             the post man exception
+	 * @throws IOException      Signals that an I/O exception has occurred.
+	 * @throws PostManException the post man exception
 	 */
 	@RequestMapping(value = "/api/user/tranx/print_history", method = { RequestMethod.GET })
 	public ResponseWrapper<List<TransactionHistroyDTO>> sendHistory(@RequestParam String fromDate,
@@ -154,13 +151,10 @@ public class RemittController {
 	/**
 	 * Prints the history.
 	 *
-	 * @param wrapper
-	 *            the wrapper
+	 * @param wrapper the wrapper
 	 * @return the response wrapper
-	 * @throws IOException
-	 *             Signals that an I/O exception has occurred.
-	 * @throws PostManException
-	 *             the post man exception
+	 * @throws IOException      Signals that an I/O exception has occurred.
+	 * @throws PostManException the post man exception
 	 */
 	@ApiOperation(value = "Returns transaction history")
 	@RequestMapping(value = "/api/user/tranx/print_history", method = { RequestMethod.POST })
@@ -175,17 +169,12 @@ public class RemittController {
 	/**
 	 * Tranxreport.
 	 *
-	 * @param tranxDTO
-	 *            the tranx DTO
-	 * @param duplicate
-	 *            the duplicate
-	 * @param skipd
-	 *            the skipd
+	 * @param tranxDTO  the tranx DTO
+	 * @param duplicate the duplicate
+	 * @param skipd     the skipd
 	 * @return the string
-	 * @throws IOException
-	 *             Signals that an I/O exception has occurred.
-	 * @throws PostManException
-	 *             the post man exception
+	 * @throws IOException      Signals that an I/O exception has occurred.
+	 * @throws PostManException the post man exception
 	 */
 	@ApiOperation(value = "Returns transaction reciept")
 	@RequestMapping(value = "/api/user/tranx/report", method = { RequestMethod.POST })
@@ -215,23 +204,15 @@ public class RemittController {
 	/**
 	 * Tranxreport ext.
 	 *
-	 * @param collectionDocumentNo
-	 *            the collection document no
-	 * @param collectionDocumentFinYear
-	 *            the collection document fin year
-	 * @param collectionDocumentCode
-	 *            the collection document code
-	 * @param customerReference
-	 *            the customer reference
-	 * @param ext
-	 *            the ext
-	 * @param duplicate
-	 *            the duplicate
+	 * @param collectionDocumentNo      the collection document no
+	 * @param collectionDocumentFinYear the collection document fin year
+	 * @param collectionDocumentCode    the collection document code
+	 * @param customerReference         the customer reference
+	 * @param ext                       the ext
+	 * @param duplicate                 the duplicate
 	 * @return the string
-	 * @throws PostManException
-	 *             the post man exception
-	 * @throws IOException
-	 *             Signals that an I/O exception has occurred.
+	 * @throws PostManException the post man exception
+	 * @throws IOException      Signals that an I/O exception has occurred.
 	 */
 	@ApiOperation(value = "Returns transaction reciept:")
 	@RequestMapping(value = "/api/user/tranx/report.{ext}", method = { RequestMethod.GET })
@@ -279,15 +260,13 @@ public class RemittController {
 	/**
 	 * Xrate.
 	 *
-	 * @param forCur
-	 *            the for cur
-	 * @param domAmount
-	 *            the dom amount
+	 * @param forCur    the for cur
+	 * @param domAmount the dom amount
 	 * @return the response wrapper
 	 */
 	@RequestMapping(value = "/api/remitt/xrate", method = { RequestMethod.POST })
 	public ResponseWrapper<XRateData> xrate(@RequestParam(required = false) BigDecimal forCur,
-			@RequestParam(required = false) BigDecimal domAmount) {
+			@RequestParam(required = false) BigDecimal domAmount, @RequestParam(required = false) BigDecimal beneBankCountryId) {
 		ResponseWrapper<XRateData> wrapper = new ResponseWrapper<XRateData>(new XRateData());
 
 		CurrencyMasterDTO domCur = tenantContext.getDomCurrency();
@@ -300,13 +279,13 @@ public class RemittController {
 			ExchangeRateResponseModel resp;
 			try {
 				resp = jaxService.setDefaults().getxRateClient()
-						.getExchangeRate(domCur.getCurrencyId(), forCurcy.getCurrencyId(), domAmount, null).getResult();
+						.getExchangeRate(domCur.getCurrencyId(), forCurcy.getCurrencyId(), domAmount, null, beneBankCountryId).getResult();
 				wrapper.getData().setForXRate(resp.getExRateBreakup().getInverseRate());
 				wrapper.getData().setDomXRate(resp.getExRateBreakup().getRate());
 				wrapper.getData().setForAmount(resp.getExRateBreakup().getConvertedFCAmount());
 				wrapper.getData().setBeneBanks(resp.getBankWiseRates());
 			} catch (ResourceNotFoundException | InvalidInputException e) {
-				wrapper.setMessage(WebResponseStatus.ERROR, e);
+				wrapper.setMessage(OWAStatusStatusCodes.ERROR, e);
 			}
 		}
 		return wrapper;
@@ -315,10 +294,8 @@ public class RemittController {
 	/**
 	 * Bnfcry check.
 	 *
-	 * @param beneId
-	 *            the bene id
-	 * @param transactionId
-	 *            the transaction id
+	 * @param beneId        the bene id
+	 * @param transactionId the transaction id
 	 * @return the response wrapper
 	 */
 	@RequestMapping(value = "/api/remitt/default", method = { RequestMethod.POST })
@@ -353,8 +330,7 @@ public class RemittController {
 	/**
 	 * Bnfcry check.
 	 *
-	 * @param beneId
-	 *            the bene id
+	 * @param beneId the bene id
 	 * @return the response wrapper
 	 */
 	@RequestMapping(value = "/api/remitt/purpose/list", method = { RequestMethod.POST })
@@ -367,8 +343,7 @@ public class RemittController {
 	/**
 	 * Bnfcry check.
 	 *
-	 * @param request
-	 *            the request
+	 * @param request the request
 	 * @return the response wrapper
 	 */
 	@RequestMapping(value = "/api/remitt/tranxrate", method = { RequestMethod.POST })
@@ -381,7 +356,7 @@ public class RemittController {
 			wrapper.setData(respTxMdl);
 			wrapper.setMeta(jaxService.setDefaults().getRemitClient().getPurposeOfTransactions(request).getResults());
 		} catch (RemittanceTransactionValidationException | LimitExeededException e) {
-			wrapper.setMessage(WebResponseStatus.ERROR, e);
+			wrapper.setMessage(OWAStatusStatusCodes.ERROR, e);
 		}
 		return wrapper;
 	}
@@ -389,10 +364,8 @@ public class RemittController {
 	/**
 	 * Creates the application.
 	 *
-	 * @param transactionRequestModel
-	 *            the transaction request model
-	 * @param request
-	 *            the request
+	 * @param transactionRequestModel the transaction request model
+	 * @param request                 the request
 	 * @return the response wrapper
 	 */
 	@RequestMapping(value = "/api/remitt/tranx/pay", method = { RequestMethod.POST })
@@ -413,15 +386,22 @@ public class RemittController {
 			if (respTxMdl.getCivilIdOtpModel() != null && respTxMdl.getCivilIdOtpModel().getmOtpPrefix() != null) {
 				wrapper.setMeta(new AuthData());
 				wrapper.getMeta().setmOtpPrefix(respTxMdl.getCivilIdOtpModel().getmOtpPrefix());
-				wrapper.setStatus(WebResponseStatus.MOTP_REQUIRED);
+				wrapper.setStatus(OWAStatusStatusCodes.MOTP_REQUIRED);
 			} else {
-				wrapper.setRedirectUrl(payGService.getPaymentUrl(respTxMdl,
-						"https://" + request.getServerName() + "/app/landing/remittance"));
+				PayGParams payment = new PayGParams();
+				payment.setDocFy(respTxMdl.getDocumentFinancialYear());
+				payment.setDocNo(respTxMdl.getDocumentIdForPayment());
+				payment.setTrackId(respTxMdl.getMerchantTrackId());
+				payment.setAmount(respTxMdl.getNetPayableAmount());
+				payment.setServiceCode(respTxMdl.getPgCode());
+
+				wrapper.setRedirectUrl(payGService.getPaymentUrl(payment,
+						HttpUtils.getServerName(request) + "/app/landing/remittance"));
 			}
 
 		} catch (RemittanceTransactionValidationException | LimitExeededException | MalformedURLException
 				| URISyntaxException e) {
-			wrapper.setMessage(WebResponseStatus.ERROR, e);
+			wrapper.setMessage(OWAStatusStatusCodes.ERROR, e);
 		}
 		return wrapper;
 	}
@@ -429,8 +409,7 @@ public class RemittController {
 	/**
 	 * App status.
 	 *
-	 * @param request
-	 *            the request
+	 * @param request the request
 	 * @return the response wrapper
 	 */
 	@RequestMapping(value = "/api/remitt/tranx/status", method = { RequestMethod.POST })

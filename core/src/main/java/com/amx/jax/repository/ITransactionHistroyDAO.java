@@ -76,4 +76,11 @@ public interface ITransactionHistroyDAO extends JpaRepository<CustomerRemittance
 	@Query("select th from CustomerRemittanceTransactionView th where th.customerId=:customerid and th.documentCode=:documentCode and th.transactionTypeDesc is not null order by th.documentDate desc")
 	public List<CustomerRemittanceTransactionView> getLastTransaction(@Param("customerid") BigDecimal customerid,
 			@Param("documentCode") BigDecimal documentCode, Pageable pageable);
+	
+	@Query("select count(th) from CustomerRemittanceTransactionView th where th.idno in ?1")
+	public Long getCountByBenerelationshipSeqId(List<BigDecimal> idNo);
+	
+	
+	@Query("select th from  CustomerRemittanceTransactionView th  where th.createdBy=:username and th.documentDate=(select max(f.documentDate) from CustomerRemittanceTransactionView f where f.createdBy=:username)")
+	public CustomerRemittanceTransactionView getLastTrnxAmountFortheCustomer(@Param("username") String username);
 }

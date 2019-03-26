@@ -1,7 +1,5 @@
 package com.amx.jax.logger;
 
-import java.math.BigDecimal;
-
 import com.amx.utils.ArgUtil;
 
 public class AuditActor {
@@ -24,9 +22,9 @@ public class AuditActor {
 	ActorType actorType;
 	String actorId;
 
-	public AuditActor(ActorType actorType, BigDecimal bigDecimal) {
+	public AuditActor(ActorType actorType, Object actorId) {
 		this.actorType = actorType;
-		this.actorId = ArgUtil.parseAsString(bigDecimal);
+		this.actorId = ArgUtil.parseAsString(actorId);
 	}
 
 	public ActorType getActorType() {

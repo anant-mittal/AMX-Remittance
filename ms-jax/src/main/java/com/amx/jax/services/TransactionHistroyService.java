@@ -59,7 +59,7 @@ public class TransactionHistroyService extends AbstractService {
 				.getTransactionHistroy(cutomerReference);
 		ApiResponse response = getBlackApiResponse();
 		if (trnxHisList.isEmpty()) {
-			throw new GlobalException("Transaction histroy not found",JaxError.TRANSACTION_HISTORY_NOT_FOUND);
+			throw new GlobalException(JaxError.TRANSACTION_HISTORY_NOT_FOUND,"Transaction histroy not found");
 		} else {
 		    
 			Set<BigDecimal> beneRelSeqSet = trnxHisList.stream().map(emp -> emp.getBeneficiaryRelationSeqId())
@@ -82,7 +82,7 @@ public class TransactionHistroyService extends AbstractService {
 				.getTransactionHistroyByDocumnet(cutomerReference, docfyr, docNumber); // , fromDate, toDate
 		ApiResponse response = getBlackApiResponse();
 		if (trnxHisList.isEmpty()) {
-			throw new GlobalException("Transaction histroy not found",JaxError.TRANSACTION_HISTORY_NOT_FOUND);
+			throw new GlobalException(JaxError.TRANSACTION_HISTORY_NOT_FOUND,"Transaction histroy not found");
 		} else {
 			response.getData().getValues().addAll(convert(trnxHisList));
 			response.setResponseStatus(ResponseStatus.OK);
@@ -112,7 +112,7 @@ public class TransactionHistroyService extends AbstractService {
 		}
 		ApiResponse response = getBlackApiResponse();
 		if (trnxHisList.isEmpty()) {
-			throw new GlobalException("Transaction histroy not found",JaxError.TRANSACTION_HISTORY_NOT_FOUND);
+			throw new GlobalException(JaxError.TRANSACTION_HISTORY_NOT_FOUND,"Transaction histroy not found");
 		} else {
 			response.getData().getValues().addAll(convert(trnxHisList));
 			response.setResponseStatus(ResponseStatus.OK);
@@ -243,7 +243,7 @@ public class TransactionHistroyService extends AbstractService {
 		return hist.getDocumentNumber().toString() + hist.getDocumentFinanceYear().toString();
 	}
 
-	private BeneficiaryListDTO convertBeneModelToDto(BenificiaryListView beneModel) {
+	public BeneficiaryListDTO convertBeneModelToDto(BenificiaryListView beneModel) {
 		BeneficiaryListDTO dto = new BeneficiaryListDTO();
 		try {
 			BeanUtils.copyProperties(dto, beneModel);

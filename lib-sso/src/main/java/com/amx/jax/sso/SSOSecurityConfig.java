@@ -12,8 +12,11 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 
+import com.amx.jax.AppConstants;
 import com.amx.jax.sso.client.SSOAuthProvider;
 import com.amx.jax.sso.client.SSOLoginUrlEntry;
+import com.amx.jax.swagger.MockParamBuilder;
+import com.amx.jax.swagger.MockParamBuilder.MockParam;
 
 @Configuration
 @EnableWebSecurity
@@ -65,4 +68,19 @@ public class SSOSecurityConfig extends WebSecurityConfigurerAdapter {
 		web.ignoring().antMatchers("/resources/**", "/static/**", "/css/**", "/js/**", "/images/**");
 	}
 
+	@Bean
+	public MockParam deviceIdParam() {
+		return new MockParamBuilder().name(AppConstants.DEVICE_ID_XKEY).description("Device ID")
+				.defaultValue("64a098c4c08d9ec2").parameterType(MockParamBuilder.MockParamType.HEADER).required(false)
+				.build();
+
+	}
+
+	@Bean
+	public MockParam deviceIPParam() {
+		return new MockParamBuilder().name(AppConstants.DEVICE_IP_XKEY).description("Device IP")
+				.defaultValue("124.124.15.25").parameterType(MockParamBuilder.MockParamType.HEADER).required(false)
+				.build();
+
+	}
 }

@@ -25,4 +25,25 @@ public class CustomerIdProofDao {
 				identityTypeId);
 		return idProofList;
 	}
+	
+	public List<CustomerIdProof> getCustomeridProofForIdType(BigDecimal customerId, BigDecimal identityTypeId) {
+		List<CustomerIdProof> idProofList = customerIdProofRepository.getCustomeridProofForIdType(customerId,
+				identityTypeId);
+		return idProofList;
+	}
+	
+	public List<CustomerIdProof> getCustomerIdProofsExpiry(BigDecimal customerId) {
+		List<CustomerIdProof> idProofList = customerIdProofRepository.getCustomerIdProofExpiryByCustomerId(customerId);
+		return idProofList;
+	}
+
+	public List<CustomerIdProof> getActiveCustomeridProofForIdType(BigDecimal customerId, BigDecimal identityTypeId) {
+		List<CustomerIdProof> idProofList = customerIdProofRepository.getCustomerImageValidation(customerId,
+				identityTypeId);
+		return idProofList;
+	}
+
+	public void save(List<CustomerIdProof> customerIdProof) {
+		customerIdProofRepository.save(customerIdProof);
+	}
 }

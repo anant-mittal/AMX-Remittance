@@ -16,9 +16,20 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.MinMaxExRateDTO;
+import com.amx.jax.AmxConfig;
 import com.amx.jax.AppConfig;
+import com.amx.jax.AppContextUtil;
+import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.client.meta.ForexOutlookClient;
+import com.amx.jax.client.snap.ISnapService.StatsSpan;
+import com.amx.jax.client.snap.SnapModels.SnapModelWrapper;
+import com.amx.jax.client.snap.SnapServiceClient;
+import com.amx.jax.dict.Currency;
 import com.amx.jax.http.CommonHttpRequest;
+import com.amx.jax.model.response.fx.CurrencyPairDTO;
+import com.amx.jax.model.response.fx.ForexOutLookResponseDTO;
 import com.amx.jax.postman.GeoLocationService;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
@@ -28,15 +39,16 @@ import com.amx.jax.postman.model.GeoLocation;
 import com.amx.jax.postman.model.SupportEmail;
 import com.amx.jax.sample.CalcLibs;
 import com.amx.jax.tunnel.TunnelService;
+import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
 import com.amx.jax.ui.model.ServerStatus;
 import com.amx.jax.ui.response.ResponseMeta;
 import com.amx.jax.ui.response.ResponseWrapper;
-import com.amx.jax.ui.response.WebResponseStatus;
 import com.amx.jax.ui.service.AppEnvironment;
 import com.amx.jax.ui.service.JaxService;
 import com.amx.jax.ui.service.SessionService;
 import com.amx.jax.ui.session.GuestSession;
 import com.amx.jax.ui.session.UserDeviceBean;
+import com.amx.utils.ArgUtil;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -86,6 +98,9 @@ public class PubController {
 	@Autowired
 	private AppConfig appConfig;
 
+	@Autowired
+	private AmxConfig amxConfig;
+
 	/** The session service. */
 	@Autowired
 	private SessionService sessionService;
@@ -105,8 +120,7 @@ public class PubController {
 	 * Gets the location.
 	 *
 	 * @return the location
-	 * @throws PostManException
-	 *             the post man exception
+	 * @throws PostManException the post man exception
 	 */
 	@ApiOperation(value = "Current Location ofr client")
 	@RequestMapping(value = "/pub/location", method = { RequestMethod.GET })
@@ -120,17 +134,12 @@ public class PubController {
 	/**
 	 * Status.
 	 *
-	 * @param tnt
-	 *            the tnt
-	 * @param httpSession
-	 *            the http session
-	 * @param request
-	 *            the request
-	 * @param device
-	 *            the device
+	 * @param tnt         the tnt
+	 * @param httpSession the http session
+	 * @param request     the request
+	 * @param device      the device
 	 * @return the response wrapper
-	 * @throws Exception
-	 *             the exception
+	 * @throws Exception the exception
 	 */
 	@ApiOperation(value = "Ping")
 	@RequestMapping(value = "/pub/ping", method = { RequestMethod.POST, RequestMethod.GET })
@@ -139,7 +148,8 @@ public class PubController {
 		ResponseWrapper<ServerStatus> wrapper = new ResponseWrapper<>(new ServerStatus());
 		Integer hits = guestSession.hitCounter();
 
-		userDevice.getType();
+		userDevice.resolve();
+
 		wrapper.getData().setDebug(env.isDebug());
 		wrapper.getData().setId(httpSession.getId());
 		wrapper.getData().setHits(hits);
@@ -151,10 +161,11 @@ public class PubController {
 		wrapper.getData().setRemoteAddr(request.getRemoteAddr());
 		wrapper.getData().setLocalAddress(request.getLocalAddr());
 		wrapper.getData().setScheme(request.getScheme());
-		wrapper.getData().setDevice(userDevice.toUserDevice());
+		wrapper.getData().setDevice(userDevice.getUserDevice());
 		wrapper.getData().message = calcLibs.get().getRSName();
 
-		log.info("==========appConfig======== {} == {} = {} {}", appConfig.isSwaggerEnabled(), appConfig.getAppName());
+		log.info("==========appConfig======== {} == {}", amxConfig.getDefaultCompanyId(),
+				amxConfig.getDefaultCountryId());
 
 		return wrapper;
 	}
@@ -171,8 +182,7 @@ public class PubController {
 	/**
 	 * Report us.
 	 *
-	 * @param email
-	 *            the email
+	 * @param email the email
 	 * @return the response wrapper
 	 */
 	@RequestMapping(value = "/pub/report", method = { RequestMethod.POST })
@@ -190,7 +200,7 @@ public class PubController {
 			postManService.sendEmailToSupprt(email);
 			wrapper.setData(email);
 		} catch (Exception e) {
-			wrapper.setStatusKey(WebResponseStatus.ERROR);
+			wrapper.setStatusKey(OWAStatusStatusCodes.ERROR);
 			log.error("/pub/report", e);
 		}
 		return wrapper;
@@ -199,24 +209,23 @@ public class PubController {
 	/**
 	 * Contact us.
 	 *
-	 * @param name
-	 *            the name
-	 * @param cemail
-	 *            the cemail
-	 * @param cphone
-	 *            the cphone
-	 * @param message
-	 *            the message
-	 * @param verify
-	 *            the verify
+	 * @param name    the name
+	 * @param cemail  the cemail
+	 * @param cphone  the cphone
+	 * @param message the message
+	 * @param verify  the verify
 	 * @return the response wrapper
 	 */
 	@RequestMapping(value = "/pub/contact", method = { RequestMethod.POST })
-	public ResponseWrapper<Email> contactUs(@RequestParam String name, @RequestParam String cemail,
-			@RequestParam String cphone, @RequestParam String message, @RequestParam String verify) {
+	public ResponseWrapper<Email> contactUs(@RequestParam(required = false) String name,
+			@RequestParam(required = false) String cemail,
+			@RequestParam(required = false) String cphone, @RequestParam String message,
+			@RequestParam(required = false) String verify) {
 		ResponseWrapper<Email> wrapper = new ResponseWrapper<>();
 		try {
-			if (googleService.verifyCaptcha(verify, httpService.getIPAddress())) {
+			if (!ArgUtil.isEmpty(name) && !ArgUtil.isEmpty(cemail)
+					&& !ArgUtil.isEmpty(cphone) && !ArgUtil.isEmpty(verify)
+					&& googleService.verifyCaptcha(verify, httpService.getIPAddress())) {
 				SupportEmail email = new SupportEmail();
 				email.setCaptchaCode(verify);
 				email.setVisitorName(name);
@@ -225,14 +234,57 @@ public class PubController {
 				email.setVisitorMessage(message);
 				postManService.sendEmailToSupprt(email);
 				wrapper.setData(email);
+			} else if (sessionService.getUserSession().isValid()
+					&& sessionService.getUserSession().getCustomerModel() != null) {
+				CustomerModel x = sessionService.getUserSession().getCustomerModel();
+				SupportEmail email = new SupportEmail();
+				email.setVisitorName(String.format("%s %s %s", x.getPersoninfo().getFirstName(),
+						x.getPersoninfo().getMiddleName(), x.getPersoninfo().getLastName()));
+				email.setVisitorPhone(ArgUtil.ifNotEmpty(x.getMobile(), x.getPersoninfo().getMobile()));
+				email.setVisitorEmail(ArgUtil.ifNotEmpty(x.getEmail(), x.getPersoninfo().getEmail(),
+						x.getPersoninfo().getAlterEmailId()));
+				email.setVisitorMessage(message);
+				postManService.sendEmailToSupprt(email);
+				wrapper.setData(email);
 			} else {
-				wrapper.setStatusKey(WebResponseStatus.ERROR);
+				wrapper.setStatusKey(OWAStatusStatusCodes.ERROR);
 			}
 		} catch (Exception e) {
-			wrapper.setStatusKey(WebResponseStatus.ERROR);
+			wrapper.setStatusKey(OWAStatusStatusCodes.ERROR);
 			log.error("/pub/contact", e);
 		}
 		return wrapper;
+	}
+
+	@Autowired
+	SnapServiceClient snapServiceClient;
+
+	@Autowired
+	ForexOutlookClient forexOutlookClient;
+
+	@RequestMapping(value = "/pub/stats/customer", method = { RequestMethod.GET })
+	public SnapModelWrapper customerStats() {
+		return snapServiceClient.getCustomerStats();
+	}
+
+	@RequestMapping(value = "/pub/stats/tranx", method = { RequestMethod.GET })
+	public SnapModelWrapper trnaxStats() {
+		return snapServiceClient.getTranxStats();
+	}
+
+	@RequestMapping(value = "/pub/stats/rates", method = { RequestMethod.GET })
+	public SnapModelWrapper trnaxStats(@RequestParam StatsSpan graph, @RequestParam Currency forCur) {
+		return snapServiceClient.getXRateStats(graph, forCur, AppContextUtil.getTenant().getCurrency());
+	}
+
+	@RequestMapping(value = "/pub/forex/outlook/currencypair", method = { RequestMethod.GET })
+	public AmxApiResponse<CurrencyPairDTO, Object> getForexOutlookCurrencies() {
+		return forexOutlookClient.getCurrencyPairList();
+	}
+
+	@RequestMapping(value = "/pub/forex/outlook/messages", method = { RequestMethod.GET })
+	public AmxApiResponse<ForexOutLookResponseDTO, Object> getForexOutlookMessages() {
+		return forexOutlookClient.getCurpairHistory();
 	}
 
 }

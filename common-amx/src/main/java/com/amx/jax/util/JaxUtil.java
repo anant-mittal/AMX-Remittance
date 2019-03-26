@@ -14,6 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.exception.ExceptionMessageKey;
+
 /**
  * The Class JaxUtil.
  */
@@ -42,10 +44,13 @@ public class JaxUtil {
 	/**
 	 * Builds the error expressions.
 	 *
+	 * @deprecated use
+	 *             {@link ExceptionMessageKey#build(com.amx.jax.exception.IExceptionEnum, Object...)}
 	 * @param respCode the resp code
-	 * @param values the values
+	 * @param values   the values
 	 * @return the string
 	 */
+	@Deprecated
 	public String buildErrorExpressions(String respCode, List<String> values) {
 		final String DELIM = ":";
 		StringBuffer sbuf = new StringBuffer();
@@ -64,7 +69,7 @@ public class JaxUtil {
 	 * Builds the error expression.
 	 *
 	 * @param respCode the resp code
-	 * @param value the value
+	 * @param value    the value
 	 * @return the string
 	 */
 	public String buildErrorExpression(String respCode, Object value) {
@@ -79,7 +84,7 @@ public class JaxUtil {
 	 * Gets the random integers from list.
 	 *
 	 * @param input the input
-	 * @param size the size
+	 * @param size  the size
 	 * @return the random integers from list
 	 */
 	public List<Integer> getRandomIntegersFromList(List<Integer> input, int size) {
@@ -116,7 +121,7 @@ public class JaxUtil {
 	 * Gets the random integers from list.
 	 *
 	 * @param questions the questions
-	 * @param size the size
+	 * @param size      the size
 	 * @return the random integers from list
 	 */
 	public List<BigDecimal> getRandomIntegersFromList(List<BigDecimal> questions, Integer size) {
@@ -145,8 +150,8 @@ public class JaxUtil {
 	/**
 	 * Find element.
 	 *
-	 * @param <T> the generic type
-	 * @param set the set
+	 * @param         <T> the generic type
+	 * @param set     the set
 	 * @param element the element
 	 * @return the t
 	 */
@@ -194,10 +199,10 @@ public class JaxUtil {
 	/**
 	 * Convert.
 	 *
-	 * @param <T> the generic type
-	 * @param <E> the element type
+	 * @param            <T> the generic type
+	 * @param            <E> the element type
 	 * @param fromObject the from object
-	 * @param toObject the to object
+	 * @param toObject   the to object
 	 */
 	public <T, E> void convert(T fromObject, E toObject) {
 		try {
@@ -206,14 +211,14 @@ public class JaxUtil {
 			logger.error("error in convert", e);
 		}
 	}
-	
+
 	/**
 	 * Converts only non null properties of bean
 	 *
-	 * @param <T> the generic type
-	 * @param <E> the element type
+	 * @param            <T> the generic type
+	 * @param            <E> the element type
 	 * @param fromObject the from object
-	 * @param toObject the to object
+	 * @param toObject   the to object
 	 */
 	public <T, E> void convertNotNull(T fromObject, E toObject) {
 		try {
@@ -222,6 +227,5 @@ public class JaxUtil {
 			logger.error("error in convert", e);
 		}
 	}
-	
-	
+
 }

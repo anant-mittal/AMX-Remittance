@@ -20,18 +20,21 @@ import org.thymeleaf.context.Context;
 import org.thymeleaf.spring4.SpringTemplateEngine;
 
 import com.amx.jax.AppConstants;
+import com.amx.jax.dict.AmxEnums.Products;
 import com.amx.jax.dict.Language;
 import com.amx.jax.error.ApiJaxStatusBuilder.ApiJaxStatus;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.http.ApiRequest;
 import com.amx.jax.http.CommonHttpRequest;
+import com.amx.jax.http.RequestType;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.rest.RestService;
 import com.amx.jax.ui.UIConstants;
 import com.amx.jax.ui.WebAppConfig;
+import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
 import com.amx.jax.ui.model.ServerStatus;
 import com.amx.jax.ui.response.ResponseMessage;
 import com.amx.jax.ui.response.ResponseWrapper;
-import com.amx.jax.ui.response.WebResponseStatus;
 import com.amx.jax.ui.service.JaxService;
 import com.amx.jax.ui.service.SessionService;
 import com.amx.jax.ui.session.UserDeviceBean;
@@ -105,8 +108,7 @@ public class HomeController {
 	/**
 	 * Login ping.
 	 *
-	 * @param request
-	 *            the request
+	 * @param request the request
 	 * @return the string
 	 */
 	@ApiJaxStatus({ JaxError.ACCOUNT_LENGTH, JaxError.ACCOUNT_TYPE_UPDATE })
@@ -115,31 +117,28 @@ public class HomeController {
 	public String loginPing(HttpServletRequest request) {
 		ResponseWrapper<ServerStatus> wrapper = new ResponseWrapper<ServerStatus>(new ServerStatus());
 		Integer hits = sessionService.getGuestSession().hitCounter();
-		userDevice.getType();
+		userDevice.resolve();
 		wrapper.getData().setHits(hits);
 		wrapper.getData().setDomain(request.getRequestURL().toString());
 		wrapper.getData().setRequestUri(request.getRequestURI());
 		wrapper.getData().setRemoteAddr(httpService.getIPAddress());
-		wrapper.getData().setDevice(userDevice.toUserDevice());
+		wrapper.getData().setDevice(userDevice.getUserDevice());
 		return JsonUtil.toJson(wrapper);
 	}
 
 	/**
 	 * Login J page.
 	 *
-	 * @param model
-	 *            the model
+	 * @param model the model
 	 * @return the string
 	 */
 	@RequestMapping(value = "/login/**", method = { RequestMethod.GET })
 	public String loginJPage(Model model) {
-		LOGGER.debug("This is debug Statment");
-		LOGGER.info("This is info Statment");
 		model.addAttribute("lang", httpService.getLanguage());
 		model.addAttribute("applicationTitle", webAppConfig.getAppTitle());
 		model.addAttribute("cdnUrl", webAppConfig.getCleanCDNUrl());
 		model.addAttribute(UIConstants.CDN_VERSION, getVersion());
-		model.addAttribute(AppConstants.DEVICE_ID_KEY, userDevice.getFingerprint());
+		model.addAttribute(AppConstants.DEVICE_ID_KEY, userDevice.getUserDevice().getFingerprint());
 		model.addAttribute("fcmSenderId", webAppConfig.getFcmSenderId());
 		return "app";
 	}
@@ -156,15 +155,14 @@ public class HomeController {
 		LOGGER.debug("This is debug Statment");
 		LOGGER.info("This is debug Statment");
 		ResponseWrapper<Object> wrapper = new ResponseWrapper<Object>(null);
-		wrapper.setMessage(WebResponseStatus.UNAUTHORIZED, ResponseMessage.UNAUTHORIZED);
+		wrapper.setMessage(OWAStatusStatusCodes.UNAUTHORIZED, ResponseMessage.UNAUTHORIZED);
 		return JsonUtil.toJson(wrapper);
 	}
 
 	/**
 	 * Default page.
 	 *
-	 * @param model
-	 *            the model
+	 * @param model the model
 	 * @return the string
 	 */
 	@RequestMapping(value = { "/register/**", "/app/**", "/home/**", "/" }, method = { RequestMethod.GET })
@@ -173,7 +171,7 @@ public class HomeController {
 		model.addAttribute("applicationTitle", webAppConfig.getAppTitle());
 		model.addAttribute("cdnUrl", webAppConfig.getCleanCDNUrl());
 		model.addAttribute(UIConstants.CDN_VERSION, getVersion());
-		model.addAttribute(AppConstants.DEVICE_ID_KEY, userDevice.getFingerprint());
+		model.addAttribute(AppConstants.DEVICE_ID_KEY, userDevice.getUserDevice().getFingerprint());
 		model.addAttribute("fcmSenderId", webAppConfig.getFcmSenderId());
 		return "app";
 	}
@@ -181,24 +179,29 @@ public class HomeController {
 	/**
 	 * Terms page.
 	 *
-	 * @param model
-	 *            the model
-	 * @param lang
-	 *            the lang
+	 * @param model the model
+	 * @param lang  the lang
 	 * @return the string
 	 */
 	@RequestMapping(value = { "/app/terms", "/pub/terms" }, method = { RequestMethod.GET })
-	public String termsPage(Model model, @RequestParam Language lang) {
+	public String termsPage(Model model, @RequestParam Language lang,
+			@RequestParam(required = false) Products product) {
 		model.addAttribute("lang", httpService.getLanguage());
 		sessionService.getGuestSession().setLanguage(lang);
-		model.addAttribute("terms", jaxService.setDefaults().getMetaClient().getTermsAndCondition().getResults());
+		if (ArgUtil.isEmpty(product) || Products.REMIT.equals(product)) {
+			model.addAttribute("terms", jaxService.setDefaults().getMetaClient().getTermsAndCondition().getResults());
+		} else if (Products.FXORDER.equals(product)) {
+			model.addAttribute("terms",
+					jaxService.setDefaults().getMetaClient().getTermsAndConditionAsPerCountryForFxOrder().getResults());
+		}
 		return "terms";
 	}
 
 	@Autowired
 	private SpringTemplateEngine templateEngine;
 
-	@RequestMapping(value = { "/apple-app-site-association" }, method = {
+	@ApiRequest(type = RequestType.NO_TRACK_PING)
+	@RequestMapping(value = { "/apple-app-site-association", "/.well-known/apple-app-site-association" }, method = {
 			RequestMethod.GET }, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public String applejson(Model model, HttpServletResponse response, Locale locale) {
@@ -206,5 +209,10 @@ public class HomeController {
 		Context context = new Context(locale);
 		context.setVariables(model.asMap());
 		return templateEngine.process("json/apple-app-site-association", context);
+	}
+
+	@RequestMapping(value = { "/pub/verification" }, method = { RequestMethod.GET })
+	public String verification(Model model, @RequestParam String id, @RequestParam String key) {
+		return "terms";
 	}
 }

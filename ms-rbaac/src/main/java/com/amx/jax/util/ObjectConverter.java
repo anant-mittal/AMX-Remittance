@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Map;
 
-import com.amx.jax.rbaac.RbaacConstants;
+import com.amx.jax.rbaac.constants.RbaacServiceConstants;
 import com.amx.jax.rbaac.dbmodel.Employee;
 import com.amx.jax.rbaac.dbmodel.Role;
 import com.amx.jax.rbaac.dbmodel.UserRoleMapping;
@@ -34,8 +34,16 @@ public final class ObjectConverter {
 
 		EmployeeDetailsDTO empDetail = new EmployeeDetailsDTO();
 
+		/*try {
+			BeanUtils.copyProperties(empDetail, employee);
+		} catch (IllegalAccessException | InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
+
 		empDetail.setCivilId(employee.getCivilId());
 		empDetail.setCountryId(employee.getCountryId());
+		empDetail.setCountryBranchId(employee.getFsCountryBranch());
 		empDetail.setDesignation(employee.getDesignation());
 		empDetail.setEmail(employee.getEmail());
 		empDetail.setEmployeeId(employee.getEmployeeId());
@@ -54,7 +62,7 @@ public final class ObjectConverter {
 		}
 
 		if (employee.getLockCount() != null
-				&& employee.getLockCount().intValue() >= RbaacConstants.EMPLOYEE_MAX_LOCK_COUNT) {
+				&& employee.getLockCount().intValue() >= RbaacServiceConstants.EMPLOYEE_MAX_LOCK_COUNT) {
 			empDetail.setIsLocked(Boolean.TRUE);
 		} else {
 			empDetail.setIsActive(Boolean.FALSE);

@@ -7,7 +7,9 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,8 +53,7 @@ public final class ArgUtil {
 	 * This method is called for generating the error message in case of Parameter
 	 * missing or invalid exceptions.
 	 *
-	 * @param object
-	 *            the object
+	 * @param object the object
 	 * @return : String indicating the type of the given object
 	 */
 	public static String getType(Object object) {
@@ -77,8 +78,7 @@ public final class ArgUtil {
 	/**
 	 * Gets the type enum.
 	 *
-	 * @param enumValue
-	 *            the enum value
+	 * @param enumValue the enum value
 	 * @return the type enum
 	 */
 	public static String[] getTypeEnum(Enum enumValue) {
@@ -86,6 +86,8 @@ public final class ArgUtil {
 		for (Object element : enumValue.getClass().getEnumConstants()) {
 			if (element instanceof EnumById) {
 				list.add(((EnumById) element).getId().toLowerCase());
+			} else if (element instanceof EnumType) {
+				list.add(((EnumType) element).name().toLowerCase());
 			} else {
 				list.add(((Enum) element).name().toLowerCase());
 			}
@@ -96,14 +98,10 @@ public final class ArgUtil {
 	/**
 	 * Parse as T.
 	 *
-	 * @param <T>
-	 *            the generic type
-	 * @param value
-	 *            the value
-	 * @param defaultValue
-	 *            the default value
-	 * @param required
-	 *            the required
+	 * @param              <T> the generic type
+	 * @param value        the value
+	 * @param defaultValue the default value
+	 * @param required     the required
 	 * @return the t
 	 */
 	public static <T> T parseAsT(Object value, T defaultValue, boolean required) {
@@ -146,8 +144,11 @@ public final class ArgUtil {
 		return (T) ret;
 	}
 
-	public static Object parseAsObject(Class clazz, Object objectvalue) {
+	public static Object parseAsObject(Class clazz, Object objectvalue, boolean required) {
 		String value = ArgUtil.parseAsString(objectvalue);
+		String typeName = clazz.getTypeName();
+		if (String.class == clazz)
+			return value;
 		if (Boolean.class == clazz)
 			return Boolean.parseBoolean(value);
 		if (Byte.class == clazz)
@@ -164,22 +165,24 @@ public final class ArgUtil {
 			return Double.parseDouble(value);
 		if (BigDecimal.class == clazz)
 			return parseAsBigDecimal(value);
+		if (clazz.isEnum())
+			return ArgUtil.parseAsEnumIgnoreCase(value, clazz);
+
+		if (required) {
+			throw new IllegalArgumentException("Cannot parse Object : " + objectvalue
+					+ " as " + typeName);
+		}
 		return value;
 	}
 
 	/**
 	 * Parse as List &lt;T&gt;.
 	 *
-	 * @param <T>
-	 *            the generic type
-	 * @param value
-	 *            the value
-	 * @param defaultValue
-	 *            the default value
-	 * @param defaultListValue
-	 *            the default list value
-	 * @param required
-	 *            the required
+	 * @param                  <T> the generic type
+	 * @param value            the value
+	 * @param defaultValue     the default value
+	 * @param defaultListValue the default list value
+	 * @param required         the required
 	 * @return the list
 	 */
 	public static <T> List<T> parseAsListOfT(Object value, T defaultValue, List<T> defaultListValue, boolean required) {
@@ -208,18 +211,12 @@ public final class ArgUtil {
 	/**
 	 * Parse as List&lt;List&lt;T&gt;&gt;.
 	 *
-	 * @param <T>
-	 *            the generic type
-	 * @param value
-	 *            the value
-	 * @param defaultValue
-	 *            the default value
-	 * @param defaultListValue
-	 *            the default list value
-	 * @param defaultListOfListValue
-	 *            the default list of list value
-	 * @param required
-	 *            the required
+	 * @param                        <T> the generic type
+	 * @param value                  the value
+	 * @param defaultValue           the default value
+	 * @param defaultListValue       the default list value
+	 * @param defaultListOfListValue the default list of list value
+	 * @param required               the required
 	 * @return the list
 	 */
 	public static <T> List<List<T>> parseAsListListOfT(Object value, T defaultValue, List<T> defaultListValue,
@@ -243,20 +240,13 @@ public final class ArgUtil {
 	/**
 	 * Parse as List&lt;List&lt;List&lt;T&gt;&gt;&gt;.
 	 *
-	 * @param <T>
-	 *            the generic type
-	 * @param value
-	 *            the value
-	 * @param defaultValue
-	 *            the default value
-	 * @param defaultListValue
-	 *            the default list value
-	 * @param defaultListListValue
-	 *            the default list list value
-	 * @param defaultListListOfListValue
-	 *            the default list list of list value
-	 * @param required
-	 *            the required
+	 * @param                            <T> the generic type
+	 * @param value                      the value
+	 * @param defaultValue               the default value
+	 * @param defaultListValue           the default list value
+	 * @param defaultListListValue       the default list list value
+	 * @param defaultListListOfListValue the default list list of list value
+	 * @param required                   the required
 	 * @return the list
 	 */
 	public static <T> List<List<List<T>>> parseAsListListListOfT(Object value, T defaultValue, List<T> defaultListValue,
@@ -288,8 +278,7 @@ public final class ArgUtil {
 	 * 3) String ("true" / "false")
 	 * </pre>
 	 *
-	 * @param value
-	 *            the value
+	 * @param value the value
 	 * @return : Boolean object if valid else null
 	 */
 	public static Boolean parseAsBoolean(Object value) {
@@ -306,10 +295,8 @@ public final class ArgUtil {
 	/**
 	 * Parses the as boolean.
 	 *
-	 * @param value
-	 *            the value
-	 * @param nullValue
-	 *            the null value
+	 * @param value     the value
+	 * @param nullValue the null value
 	 * @return the boolean
 	 */
 	public static Boolean parseAsBoolean(Object value, Boolean nullValue) {
@@ -331,8 +318,7 @@ public final class ArgUtil {
 	 * 5) String ("023567" / "011256" etc.) - Octal or base 8 if starts with 0
 	 * </pre>
 	 *
-	 * @param value
-	 *            the value
+	 * @param value the value
 	 * @return : Integer object if valid else null
 	 */
 	public static Integer parseAsInteger(Object value) {
@@ -368,10 +354,8 @@ public final class ArgUtil {
 	 * 5) String ("023567" / "011256" etc.) - Octal or base 8 if starts with 0
 	 * </pre>
 	 *
-	 * @param value
-	 *            the value
-	 * @param defaultValue
-	 *            the default value
+	 * @param value        the value
+	 * @param defaultValue the default value
 	 * @return : Long object if valid else null
 	 */
 	public static Long parseAsLong(Object value, Long defaultValue) {
@@ -396,8 +380,7 @@ public final class ArgUtil {
 	}
 
 	/**
-	 * @param value
-	 *            the value
+	 * @param value the value
 	 * @return the long
 	 */
 	public static Long parseAsLong(Object value) {
@@ -414,8 +397,7 @@ public final class ArgUtil {
 	 * </pre>
 	 * 
 	 * @param value
-	 * @param defaultValue
-	 *            [optional, default : null]
+	 * @param defaultValue [optional, default : null]
 	 * @return
 	 */
 	public static BigDecimal parseAsBigDecimal(Object value, BigDecimal defaultValue) {
@@ -454,8 +436,7 @@ public final class ArgUtil {
 	 * 3) String ("1" / "2" etc.)
 	 * </pre>
 	 *
-	 * @param value
-	 *            the value
+	 * @param value the value
 	 * @return : Double object if valid else null
 	 */
 
@@ -483,8 +464,7 @@ public final class ArgUtil {
 	 * 2) unix timestamp
 	 * </pre>
 	 *
-	 * @param value
-	 *            the value
+	 * @param value the value
 	 * @return : Date object if valid else null
 	 */
 	public static Date parseAsSimpleDate(Object value) {
@@ -499,8 +479,7 @@ public final class ArgUtil {
 	/**
 	 * Returns object.toString() if the object is not null else returns null
 	 *
-	 * @param object
-	 *            the object
+	 * @param object the object
 	 * @return : Returns object.toString() if the object is not null else returns
 	 *         null
 	 */
@@ -514,10 +493,9 @@ public final class ArgUtil {
 	/**
 	 * Parses the as string.
 	 *
-	 * @param object
-	 *            the object
-	 * @param defaultValue
-	 *            - if passed value is null or empty then default is returned.
+	 * @param object       the object
+	 * @param defaultValue - if passed value is null or empty then default is
+	 *                     returned.
 	 * @return the string
 	 */
 	public static String parseAsString(Object object, String defaultValue) {
@@ -530,8 +508,7 @@ public final class ArgUtil {
 	/**
 	 * Parses the as string.
 	 *
-	 * @param object
-	 *            the object
+	 * @param object the object
 	 * @return the string
 	 */
 	public static String[] parseAsStringArray(Object object) {
@@ -542,19 +519,25 @@ public final class ArgUtil {
 	/**
 	 * Parses the as enum.
 	 *
-	 * @param value
-	 *            the value
-	 * @param defaultValue
-	 *            the default value
+	 * @param value        the value
+	 * @param defaultValue the default value
 	 * @return the enum
 	 */
 	public static Enum parseAsEnum(Object value, Enum defaultValue) {
 		String enumString = parseAsString(value);
 		if (enumString == null) {
-			return null;
+			return defaultValue;
 		}
 		String enumStringCaps = enumString.toUpperCase();
-		if (defaultValue instanceof EnumById) {
+		if (defaultValue instanceof EnumType) {
+			for (Object enumValue : defaultValue.getClass().getEnumConstants()) {
+				if (enumString.equals(((EnumType) enumValue).name())
+						|| enumStringCaps.equals(((EnumType) enumValue).name())) {
+					return (Enum) enumValue;
+				}
+			}
+			return defaultValue;
+		} else if (defaultValue instanceof EnumById) {
 			for (Object enumValue : defaultValue.getClass().getEnumConstants()) {
 				if (enumString.equals(((EnumById) enumValue).getId())
 						|| enumStringCaps.equals(((EnumById) enumValue).getId())) {
@@ -590,6 +573,33 @@ public final class ArgUtil {
 		return null;
 	}
 
+	public static <T extends Enum> T parseAsEnumIgnoreCase(Object source, Class<T> enumType) {
+		String sourceStr = parseAsString(source);
+		if (sourceStr.isEmpty()) {
+			return null;
+		}
+		sourceStr = sourceStr.trim();
+		try {
+			return (T) Enum.valueOf(enumType, sourceStr);
+		} catch (Exception ex) {
+			String name = getLettersAndDigits(sourceStr);
+			for (T candidate : (Set<T>) EnumSet.allOf(enumType)) {
+				if (getLettersAndDigits(candidate.name()).equals(name)) {
+					return candidate;
+				}
+			}
+			throw new IllegalArgumentException("No enum constant "
+					+ enumType.getCanonicalName() + "." + source);
+		}
+	}
+
+	private static String getLettersAndDigits(String name) {
+		StringBuilder canonicalName = new StringBuilder(name.length());
+		name.chars().map((c) -> (char) c).filter(Character::isLetterOrDigit)
+				.map(Character::toLowerCase).forEach(canonicalName::append);
+		return canonicalName.toString();
+	}
+
 	public static <T extends Enum<T>> T[] parseAsEnumArray(Object value, Type componentType) {
 		Class<T> type = (Class<T>) componentType;
 		String[] str = ArgUtil.parseAsStringArray(value);
@@ -603,8 +613,7 @@ public final class ArgUtil {
 	/**
 	 * Checks if is object empty.
 	 *
-	 * @param object
-	 *            the object
+	 * @param object the object
 	 * @return true, if is object empty
 	 */
 	public static boolean isEmpty(Object object) {
@@ -623,8 +632,7 @@ public final class ArgUtil {
 	/**
 	 * Checks if is collection empty.
 	 *
-	 * @param collection
-	 *            the collection
+	 * @param collection the collection
 	 * @return true, if is collection empty
 	 */
 	static boolean isCollectionEmpty(Collection<?> collection) {
@@ -637,8 +645,7 @@ public final class ArgUtil {
 	/**
 	 * Checks if is empty string.
 	 *
-	 * @param str
-	 *            the str
+	 * @param str the str
 	 * @return true, if is empty string
 	 */
 	public static boolean isEmptyString(String str) {

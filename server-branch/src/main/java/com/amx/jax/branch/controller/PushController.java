@@ -6,6 +6,7 @@ import java.util.concurrent.ExecutionException;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -20,13 +21,14 @@ import com.amx.jax.dict.Tenant;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.postman.model.PushMessage;
+import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.jax.task.events.PromoNotifyTask;
-import com.amx.jax.tunnel.TunnelService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
 
+@PreAuthorize("hasPermission('MRKT_MGMT.PUSH_NOTIFICATION', 'SEND')")
 @RestController
 @Api(value = "Push Notifiation APIs")
 public class PushController {
@@ -48,7 +50,8 @@ public class PushController {
 
 	@RequestMapping(value = "/pub/list/branches", method = RequestMethod.POST)
 	public List<?> listOfNations(
-			@ApiParam(required = true, allowableValues = "KWT,BHR", value = "Select Tenant") @RequestParam Tenant tenant)
+			@ApiParam(required = true, allowableValues = "KWT,BHR,OMN", defaultValue = "KWT",
+					value = "Select Tenant") @RequestParam Tenant tenant)
 			throws PostManException, InterruptedException, ExecutionException {
 		if (tenant == Tenant.BHR) {
 			return Arrays.asList(BranchesBHR.values());
@@ -60,7 +63,11 @@ public class PushController {
 
 	@RequestMapping(value = "/api/notify/all", method = RequestMethod.POST)
 	public AmxApiResponse<PromoNotifyTask, Object> notifyAll(
-			@ApiParam(required = true, allowableValues = "KWT,BHR", value = "Select Tenant") @RequestParam Tenant tenant,
+
+			@ApiParam(required = true, allowableValues = "KWT,BHR,OMN", defaultValue = "KWT",
+					value = "Select Tenant") @RequestParam(name = TenantContextHolder.TENANT,
+							defaultValue = "KWT") Tenant tenant,
+
 			@RequestParam String message, @RequestParam String title) throws PostManException {
 
 		PromoNotifyTask task = new PromoNotifyTask();
@@ -73,7 +80,11 @@ public class PushController {
 
 	@RequestMapping(value = "/api/notify/nationality", method = RequestMethod.POST)
 	public AmxApiResponse<PromoNotifyTask, Object> notifyNational(
-			@ApiParam(required = true, allowableValues = "KWT,BHR", value = "Select Tenant") @RequestParam Tenant tenant,
+
+			@ApiParam(required = true, allowableValues = "KWT,BHR,OMN", defaultValue = "KWT",
+					value = "Select Tenant") @RequestParam(name = TenantContextHolder.TENANT,
+							defaultValue = "KWT") Tenant tenant,
+
 			@RequestParam Nations nationality, @RequestParam String message, @RequestParam String title)
 			throws PostManException {
 		PromoNotifyTask task = new PromoNotifyTask();
@@ -97,13 +108,15 @@ public class PushController {
 		msg.setMessage(task.getMessage());
 		msg.setSubject(task.getTitle());
 
+		msg.setITemplate(TemplatesMX.MARKETING_PUSH);
+
 		if (task.getNationality() == Nations.ALL) {
 			msg.addTopic(String.format(PushMessage.FORMAT_TO_ALL, tnt.toString().toLowerCase()));
 		} else {
 			msg.addTopic(String.format(PushMessage.FORMAT_TO_NATIONALITY, tnt.toString().toLowerCase(),
 					task.getNationality().getCode()));
 		}
-		pushNotifyClient.sendDirect(msg).getResult();
+		pushNotifyClient.sendDirect(msg);
 
 	}
 

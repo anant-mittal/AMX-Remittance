@@ -3,7 +3,6 @@ package com.amx.jax.service;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -65,7 +64,13 @@ public class BankMetaService extends AbstractService {
 	private List<BankMasterDTO> convert(List<BankMasterModel> banks) {
 
 		List<BankMasterDTO> bankdtos = new ArrayList<>();
-		banks.forEach(i -> bankdtos.add(convert(i)));
+		banks.forEach(i -> {
+			BankMasterDTO bankDto = convert(i);
+			if (ConstantDocument.Yes.equalsIgnoreCase(i.getIbanFlag())) {
+				bankDto.setIbanRequired(true);
+			}
+			bankdtos.add(bankDto);
+		});
 		return bankdtos;
 	}
 
@@ -110,19 +115,22 @@ public class BankMetaService extends AbstractService {
 		if (StringUtils.isNotBlank(ifsc)) {
 			ifsc = "%" + ifsc + "%";
 			branchesList.addAll(
-					vwBankBranchRepository.findByCountryIdAndBankIdAndIfscCodeIgnoreCaseLike(countryId, bankId, ifsc, sortByBranchName));
+					vwBankBranchRepository.findByCountryIdAndBankIdAndIfscCodeIgnoreCaseLike(countryId, bankId, ifsc,
+							sortByBranchName));
 			isparametersSet = true;
 		}
 		if (StringUtils.isNotBlank(swift)) {
 			swift = "%" + swift + "%";
 			branchesList.addAll(
-					vwBankBranchRepository.findByCountryIdAndBankIdAndSwiftIgnoreCaseLike(countryId, bankId, swift, sortByBranchName));
+					vwBankBranchRepository.findByCountryIdAndBankIdAndSwiftIgnoreCaseLike(countryId, bankId, swift,
+							sortByBranchName));
 			isparametersSet = true;
 		}
 		if (StringUtils.isNotBlank(branchName)) {
 			branchName = "%" + branchName + "%";
 			branchesList.addAll(vwBankBranchRepository
-					.findByCountryIdAndBankIdAndBranchFullNameIgnoreCaseLike(countryId, bankId, branchName, sortByBranchName));
+					.findByCountryIdAndBankIdAndBranchFullNameIgnoreCaseLike(countryId, bankId, branchName,
+							sortByBranchName));
 			isparametersSet = true;
 		}
 		if (!isparametersSet) {
@@ -130,7 +138,7 @@ public class BankMetaService extends AbstractService {
 		}
 
 		if (branchesList.isEmpty()) {
-			throw new GlobalException("Bank branch list is empty.", JaxError.BANK_BRANCH_SEARCH_EMPTY);
+			throw new GlobalException(JaxError.BANK_BRANCH_SEARCH_EMPTY, "Bank branch list is empty.");
 		}
 		return AmxApiResponse.buildList(convertBranchView(branchesList));
 	}
@@ -138,7 +146,7 @@ public class BankMetaService extends AbstractService {
 	private void validateGetBankBrancheRequest(GetBankBranchRequest request) {
 
 		if (request.getBankId() == null) {
-			throw new GlobalException("No Bank Id provided", JaxError.BANK_ID_NOT_PRESENT);
+			throw new GlobalException(JaxError.BANK_ID_NOT_PRESENT, "No Bank Id provided");
 		}
 	}
 

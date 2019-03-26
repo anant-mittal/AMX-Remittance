@@ -27,11 +27,13 @@ import com.amx.jax.dbmodel.bene.BeneficaryContact;
 import com.amx.jax.dbmodel.bene.BeneficaryMaster;
 import com.amx.jax.dbmodel.bene.BeneficaryRelationship;
 import com.amx.jax.dbmodel.bene.BeneficaryStatus;
+import com.amx.jax.postman.model.Email;
 import com.amx.jax.repository.BeneficaryStatusRepository;
 import com.amx.jax.repository.IBeneficaryContactDao;
 import com.amx.jax.repository.IBeneficiaryAccountDao;
 import com.amx.jax.repository.IBeneficiaryMasterDao;
 import com.amx.jax.repository.IBeneficiaryRelationshipDao;
+import com.amx.jax.service.JaxEmailNotificationService;
 import com.amx.jax.service.MetaService;
 import com.amx.jax.service.ParameterService;
 import com.amx.jax.services.BankService;
@@ -84,6 +86,9 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 
 	@Autowired
 	BeneficiaryDao beneficiaryDao;
+	
+	@Autowired
+	JaxEmailNotificationService jaxEmailNotificationService;
 
 	@Override
 	public BeneficiaryTrnxModel init() {
@@ -105,13 +110,37 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 		BeneficaryMaster beneMaster = commitBeneMaster(beneficiaryTrnxModel);
 		commitBeneContact(beneficiaryTrnxModel, beneMaster.getBeneficaryMasterSeqId());
 		BeneficaryAccount beneAccount = commitBeneAccount(beneficiaryTrnxModel, beneMaster.getBeneficaryMasterSeqId());
-		commitBeneRelationship(beneficiaryTrnxModel, beneMaster.getBeneficaryMasterSeqId(),
-				beneAccount.getBeneficaryAccountSeqId());
+		BeneficaryRelationship beneRelationship = commitBeneRelationship(beneficiaryTrnxModel,
+				beneMaster.getBeneficaryMasterSeqId(), beneAccount.getBeneficaryAccountSeqId());
 		logger.info("commit done");
+		logger.info("Beneficiary Relationship Sequence Id : " +beneRelationship.getBeneficaryRelationshipId());
 		populateOldEmosData(beneficiaryTrnxModel, beneMaster.getBeneficaryMasterSeqId(),
-				beneAccount.getBeneficaryAccountSeqId());
-
+				beneAccount);
+		beneRelationship = beneficiaryRelationshipDao.findOne(beneRelationship.getBeneficaryRelationshipId());
+		if (beneRelationship.getMapSequenceId() == null) {
+			logger.info("Map sequence is null for bene rel seq id: {}", beneRelationship.getBeneficaryRelationshipId());
+			populateOldEmosData(beneficiaryTrnxModel, beneMaster.getBeneficaryMasterSeqId(),
+					beneAccount);
+			if (beneRelationship.getMapSequenceId() == null) {
+				sendAlertEmailForCreationError(beneficiaryTrnxModel, beneRelationship);
+			}
+		}else {
+			logger.info("Map Sequence Id generated: {}", beneRelationship.getMapSequenceId());
+		}
 		return beneficiaryTrnxModel;
+	}
+
+	private void sendAlertEmailForCreationError(BeneficiaryTrnxModel beneficiaryTrnxModel, BeneficaryRelationship beneRelationship) {
+		String[] recieverIds = jaxEmailNotificationService.getBeneCreationErrorEmailList();
+		if (recieverIds != null) {
+			Email email = new Email();
+			StringBuffer message = new StringBuffer();
+			message.append("BeneRelationship id: ").append(beneRelationship.getBeneficaryRelationshipId());
+			message.append("\n ").append(beneficiaryTrnxModel.toString());
+			email.addTo(recieverIds);
+			email.setMessage(message.toString());
+			email.setSubject("Bene creation error");
+		}
 	}
 
 	/**
@@ -121,13 +150,13 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 	 * 
 	 */
 	private void populateOldEmosData(BeneficiaryTrnxModel beneficiaryTrnxModel, BigDecimal beneMasterSeqId,
-			BigDecimal beneAccountSeqId) {
+			BeneficaryAccount beneAccount) {
 		BeneAccountModel accModel = beneficiaryTrnxModel.getBeneAccountModel();
 		Map<String, Object> inputValues = new HashMap<>();
 		inputValues.put("P_BENE_MASTER_ID", beneMasterSeqId);
 		inputValues.put("P_BANK_ID", accModel.getBankId());
-		inputValues.put("P_BANK_BRANCH_ID", accModel.fetchBankBranchId());
-		inputValues.put("P_BENEFICARY_ACCOUNT_SEQ_ID", beneAccountSeqId);
+		inputValues.put("P_BANK_BRANCH_ID", beneAccount.getBankBranchId());
+		inputValues.put("P_BENEFICARY_ACCOUNT_SEQ_ID", beneAccount.getBeneficaryAccountSeqId());
 		inputValues.put("P_CURRENCY_ID", accModel.getCurrencyId());
 		inputValues.put("P_CUSTOMER_ID", metaData.getCustomerId());
 		beneficiaryDao.populateBeneDt(inputValues);
@@ -182,6 +211,7 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 				beneficaryAccount.setBankBranchId(accountDetails.getBankBranchId());
 			}
 			beneficaryAccount.setBankAccountTypeId(accountDetails.getBankAccountTypeId());
+			beneficaryAccount.setIbanNumber(accountDetails.getIbanNumber());
 
 			beneficiaryAccountDao.save(beneficaryAccount);
 			logger.info("created new bene account id: " + beneficaryAccount.getBeneficaryAccountSeqId());
@@ -208,9 +238,10 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 	 * @param beneficiaryTrnxModel
 	 * @param beneficaryMasterId
 	 * @param beneficaryAccountId
+	 * @return 
 	 * 
 	 */
-	private void commitBeneRelationship(BeneficiaryTrnxModel beneficiaryTrnxModel, BigDecimal beneficaryMasterId,
+	private BeneficaryRelationship commitBeneRelationship(BeneficiaryTrnxModel beneficiaryTrnxModel, BigDecimal beneficaryMasterId,
 			BigDecimal beneficaryAccountId) {
 		// TODO: set all 10 bene names in bene relationship
 		BenePersonalDetailModel beneDetaisl = beneficiaryTrnxModel.getBenePersonalDetailModel();
@@ -240,7 +271,7 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 		beneficaryRelationship.setDeviceType(metaData.getDeviceType());
 		
 		beneficiaryRelationshipDao.save(beneficaryRelationship);
-
+		return beneficaryRelationship;
 	}
 
 	/**
@@ -255,7 +286,9 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 		BeneficaryContact beneficaryContact = new BeneficaryContact();
 		beneficaryContact.setApplicationCountryId(metaData.getCountryId());
 		beneficaryContact.setBeneficaryMasterId(beneficaryMasterId);
-		beneficaryContact.setCountryTelCode(beneDetails.getCountryTelCode());
+		if(beneDetails.getMobileNumber() != null) {
+			beneficaryContact.setCountryTelCode(beneDetails.getCountryTelCode());
+		}	
 		beneficaryContact.setCreatedBy(getCreatedBy());
 		beneficaryContact.setCreatedDate(new Date());
 		beneficaryContact.setIsActive(ConstantDocument.Yes);

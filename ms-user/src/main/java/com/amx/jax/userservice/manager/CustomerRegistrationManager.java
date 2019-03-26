@@ -16,13 +16,13 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.constant.PrefixEnum;
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.model.CustomerCredential;
 import com.amx.amxlib.model.CustomerHomeAddress;
 import com.amx.amxlib.model.SecurityQuestionModel;
-import com.amx.jax.AppConstants;
-import com.amx.jax.cache.CustomerTransactionModel;
+import com.amx.jax.CustomerCredential;
+import com.amx.jax.cache.TransactionModel;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxTransactionModel;
+import com.amx.jax.constants.CustomerRegistrationType;
 import com.amx.jax.dal.BizcomponentDao;
 import com.amx.jax.dbmodel.BizComponentData;
 import com.amx.jax.dbmodel.ContactDetail;
@@ -36,21 +36,24 @@ import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.OtpData;
 import com.amx.jax.model.request.CustomerPersonalDetail;
+import com.amx.jax.model.request.HomeAddressDetails;
+import com.amx.jax.model.request.LocalAddressDetails;
+import com.amx.jax.model.response.customer.OffsiteCustomerDataDTO;
+import com.amx.jax.repository.CustomerEmployeeDetailsRepository;
 import com.amx.jax.trnx.CustomerRegistrationTrnxModel;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.repository.ContactDetailsRepository;
 import com.amx.jax.userservice.repository.CustomerIdProofRepository;
 import com.amx.jax.userservice.repository.CustomerRepository;
+import com.amx.jax.userservice.service.ContactDetailService;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.JaxUtil;
-import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
-import com.amx.utils.ContextUtil;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
-public class CustomerRegistrationManager extends CustomerTransactionModel<CustomerRegistrationTrnxModel> {
+public class CustomerRegistrationManager extends TransactionModel<CustomerRegistrationTrnxModel> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CustomerRegistrationManager.class);
 
@@ -75,7 +78,15 @@ public class CustomerRegistrationManager extends CustomerTransactionModel<Custom
 	BizcomponentDao bizcomponentDao;
 	@Autowired
 	UserService userService;
-
+	
+	
+	@Autowired
+	ContactDetailService contactDetailService; 
+	
+	@Autowired
+	CustomerEmployeeDetailsRepository customerEmployeeDetailsRepository;
+	
+	
 	@Override
 	public CustomerRegistrationTrnxModel getDefault() {
 		CustomerRegistrationTrnxModel model = new CustomerRegistrationTrnxModel();
@@ -127,7 +138,7 @@ public class CustomerRegistrationManager extends CustomerTransactionModel<Custom
 	 */
 	private void revalidateOtp(OtpData otpData) {
 		if (!otpData.isOtpValidated()) {
-			throw new GlobalException("otp is not validated", JaxError.OTP_NOT_VALIDATED);
+			throw new GlobalException(JaxError.OTP_NOT_VALIDATED, "otp is not validated");
 		}
 	}
 
@@ -197,6 +208,7 @@ public class CustomerRegistrationManager extends CustomerTransactionModel<Custom
 		customer.setMobile(customerPersonalDetail.getMobile());
 		customer.setIdentityFor(ConstantDocument.IDENTITY_FOR_ID_PROOF);
 		customer.setIdentityTypeId(ConstantDocument.BIZ_COMPONENT_ID_CIVIL_ID);
+		customer.setCustomerRegistrationType(CustomerRegistrationType.PARTIAL_REG);
 
 		LOGGER.info("generated customer ref: {}", customerReference);
 		LOGGER.info("Createing new customer record, civil id- {}", customerPersonalDetail.getIdentityInt());
@@ -210,17 +222,6 @@ public class CustomerRegistrationManager extends CustomerTransactionModel<Custom
 
 	public String getJaxTransactionId() {
 		return JaxTransactionModel.CUSTOMER_REGISTRATION_MODEL.toString() + "_" + identityInt;
-	}
-
-	@Override
-	protected String getTranxId() {
-		String key = ArgUtil.parseAsString(ContextUtil.map().get(AppConstants.TRANX_ID_XKEY));
-		if (ArgUtil.isEmptyString(key)) {
-			key = getJaxTransactionId();
-			ContextUtil.map().put(AppConstants.TRANX_ID_XKEY, key);
-			LOGGER.info("************ Creating New Tranx Id {} *******************", key);
-		}
-		return super.getTranxId();
 	}
 
 	public String getIdentityInt() {
@@ -301,8 +302,101 @@ public class CustomerRegistrationManager extends CustomerTransactionModel<Custom
 		custProof.setIdentityStatus(Constants.CUST_ACTIVE_INDICATOR);
 		custProof.setCreatedBy(customer.getIdentityInt());
 		custProof.setCreationDate(new Date());
-		custProof.setIdentityTypeId(new BigDecimal(Constants.IDENTITY_TYPE_ID));
+		custProof.setIdentityTypeId(new BigDecimal(Constants.IDENTITY_TYPE_CIVIL_ID_STR));
 		customerIdProofRepository.save(custProof);
 
 	}
+	
+	public OffsiteCustomerDataDTO getCustomerDeatils(String  identityInt,BigDecimal identityTypeId) {
+		OffsiteCustomerDataDTO offsiteCustomer = new OffsiteCustomerDataDTO();
+		CustomerPersonalDetail customerDetails = new CustomerPersonalDetail();
+		
+		LOGGER.debug("identityInt :"+identityInt+"\t identityTypeId :"+identityTypeId+"\t country id "+jaxMetaInfo.getCountryId());
+		Customer customer = customerRepository.getCustomerDetails(identityInt, identityTypeId,jaxMetaInfo.getCountryId());
+	
+		if(customer!=null) {
+			
+			if(customer.getIsActive()!= null && !customer.getIsActive().equalsIgnoreCase(ConstantDocument.Yes)) {
+				throw new GlobalException(JaxError.CUSTOMER_INACTIVE,"Customer is inactive :"+identityInt +"\t identityTypeId :"+identityTypeId);
+			}
+			
+			offsiteCustomer.setIdentityInt(customer.getIdentityInt());
+			offsiteCustomer.setIdentityTypeId(customer.getIdentityTypeId());
+			customerDetails.setCustomerId(customer.getCustomerId());
+			customerDetails.setCountryId(customer.getCountryId());
+			customerDetails.setNationalityId(customer.getNationalityId());
+			customerDetails.setIdentityInt(customer.getIdentityInt());
+			customerDetails.setTitle(customer.getTitle());
+			customerDetails.setFirstName(customer.getFirstName());
+			customerDetails.setLastName(customer.getLastName());
+			customerDetails.setEmail(customer.getEmail());
+			customerDetails.setMobile(customer.getMobile());
+			customerDetails.setTelPrefix(customer.getPrefixCodeMobile());
+			customerDetails.setFirstNameLocal(customer.getFirstNameLocal());
+			customerDetails.setLastNameLocal(customer.getLastNameLocal());
+			customerDetails.setExpiryDate(customer.getIdentityExpiredDate());
+			customerDetails.setDateOfBirth(customer.getDateOfBirth());
+			customerDetails.setIdentityTypeId(customer.getIdentityTypeId());
+			customerDetails.setInsurance(customer.getMedicalInsuranceInd());
+			customerDetails.setWatsAppMobileNo(customer.getMobileOther());
+			customerDetails.setWatsAppTelePrefix(customer.getPrefixCodeMobileOther());
+			customerDetails.setIsWatsApp(customer.getIsMobileWhatsApp());
+			customerDetails.setRegistrationType(customer.getCustomerRegistrationType());
+			customerDetails.setCustomerSignature(customer.getSignatureSpecimenClob());
+			
+			offsiteCustomer.setCustomerPersonalDetail(customerDetails);
+			
+			//--- Local Address Data	
+			LocalAddressDetails localAddress = new LocalAddressDetails();
+			ContactDetail localData = contactDetailService.getContactsForLocal(customer);
+			if(localData != null) {
+				localAddress.setContactTypeId(localData.getFsBizComponentDataByContactTypeId().getComponentDataId());
+				localAddress.setBlock(localData.getBlock());
+				localAddress.setStreet(localData.getStreet());
+				localAddress.setHouse(localData.getBuildingNo());
+				localAddress.setFlat(localData.getFlat());
+				if(null != localData.getFsCountryMaster()) {
+					localAddress.setCountryId(localData.getFsCountryMaster().getCountryId());
+				}
+				if(null != localData.getFsStateMaster()) {
+					localAddress.setStateId(localData.getFsStateMaster().getStateId());
+				}
+				if(null != localData.getFsDistrictMaster()) {
+					localAddress.setDistrictId(localData.getFsDistrictMaster().getDistrictId());
+				}
+				if(null != localData.getFsCityMaster()) {
+					localAddress.setCityId(localData.getFsCityMaster().getCityId());
+				}
+				offsiteCustomer.setLocalAddressDetails(localAddress);
+			}
+			//--- Home Address Data
+			HomeAddressDetails homeAddress = new HomeAddressDetails();
+			ContactDetail homeData = contactDetailService.getContactsForHome(customer);
+			if(homeData != null) {
+				homeAddress.setContactTypeId(homeData.getFsBizComponentDataByContactTypeId().getComponentDataId());
+				homeAddress.setBlock(homeData.getBlock());
+				homeAddress.setStreet(homeData.getStreet());
+				homeAddress.setHouse(homeData.getBuildingNo());
+				homeAddress.setFlat(homeData.getFlat());
+				if(null != homeData.getFsCountryMaster()) {
+					homeAddress.setCountryId(homeData.getFsCountryMaster().getCountryId());
+				}
+				if(null != homeData.getFsStateMaster()) {
+					homeAddress.setStateId(homeData.getFsStateMaster().getStateId());
+				}	
+				if(null != homeData.getFsDistrictMaster()) {
+					homeAddress.setDistrictId(homeData.getFsDistrictMaster().getDistrictId());
+				}	
+				if(null != homeData.getFsCityMaster()) {
+					homeAddress.setCityId(homeData.getFsCityMaster().getCityId());		
+				}
+				offsiteCustomer.setHomeAddressDestails(homeAddress);
+			}
+		}else {
+			throw new GlobalException(JaxError.NO_RECORD_FOUND,"Customer details not found :"+identityInt +"\t identityTypeId :"+identityTypeId);
+		}
+		
+		return offsiteCustomer;
+	}
+	
 }

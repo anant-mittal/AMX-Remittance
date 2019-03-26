@@ -1,9 +1,9 @@
 package com.amx.utils;
 
-
 /**
  * The Class Random.
  */
+import java.util.*;
 public class Random {
 
 	/**
@@ -15,12 +15,22 @@ public class Random {
 
 	/** The Constant ALPHA_NUMERIC_STRING. */
 	private static final String ALPHA_NUMERIC_STRING = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-	
+
+	/** The Constant HEXA_STRING. */
+	private static final String HEXA_STRING = "ABCDEF0123456789";
+
 	/** The Constant ALPHA_STRING. */
 	private static final String ALPHA_STRING = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-	
+
 	/** The Constant NUMERIC_STRING. */
 	private static final String NUMERIC_STRING = "0123456789";
+	
+	/** The Constant SPECIALCHARACTER_STRING. */
+	private static final String SPECIALCHARACTER_STRING = "!@#$%^&*_=+-/.?<>)";
+	
+	/** The Constant COMBINED_STRING. */
+	private static final String PASSWORD_STRING = ALPHA_NUMERIC_STRING + SPECIALCHARACTER_STRING; 
+	 
 
 	/**
 	 * Gets the int.
@@ -36,7 +46,7 @@ public class Random {
 	/**
 	 * Random alpha.
 	 *
-	 * @param count the count
+	 * @param count       the count
 	 * @param alphaString the alpha string
 	 * @return the string
 	 */
@@ -78,4 +88,16 @@ public class Random {
 	public static String randomAlphaNumeric(int count) {
 		return randomAlpha(count, ALPHA_NUMERIC_STRING);
 	}
+
+	public static String randomHexa(int count) {
+		return randomAlpha(count, HEXA_STRING);
+	}
+	
+	public static String randomPassword(int count) {
+
+		String password = randomAlpha(count, PASSWORD_STRING);
+		return password;
+	}
+	
+	
 }
