@@ -507,7 +507,7 @@ public class UserValidationService {
 		return onlineCustomer;
 	}
 	
-	protected CustomerOnlineRegistration validateOnlineCustomerByIdentityId(BigDecimal customerId) {
+	public CustomerOnlineRegistration validateOnlineCustomerByIdentityId(BigDecimal customerId) {
 		Customer customer = custDao.getCustById(customerId);
 		if (customer == null) {
 			throw new GlobalException(JaxError.CUSTOMER_NOT_FOUND.getStatusKey(), "Online Customer id not found");
