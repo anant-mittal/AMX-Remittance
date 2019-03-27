@@ -239,10 +239,12 @@ public class AnnualIncomeService {
 		} else if (incomeDto.getImage() == null && incomeDto.getFileName() == null) {
 			customerEmploymentInfo.setDocBlobId(null);
 			customerEmploymentInfo.setFileName(null);
+		} else if (incomeDto.getFileName() != null && incomeDto.getImage() == null) {
+			logger.info("Editing card details after initial upload");
 		}
-
+		
 		else {
-			throw new GlobalException("Either image and filename both should be enterd or none of them");
+			throw new GlobalException("If you have uploaded image also enter filename");
 		}
 
 		logger.info("details are set");
