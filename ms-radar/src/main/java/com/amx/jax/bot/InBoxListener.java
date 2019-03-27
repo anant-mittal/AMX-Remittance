@@ -1,24 +1,22 @@
 package com.amx.jax.bot;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.amx.jax.client.snap.SnapConstants.SnapQueryTemplate;
-import com.amx.jax.client.snap.SnapModels.MapModel;
-import com.amx.jax.client.snap.SnapModels.SnapModelWrapper;
+import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.grid.views.CustomerDetailViewRecord;
 import com.amx.jax.postman.client.WhatsAppClient;
 import com.amx.jax.postman.events.UserInboxEvent;
 import com.amx.jax.postman.model.WAMessage;
 import com.amx.jax.radar.service.CustomerDetailViewRecordService;
+import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.tunnel.ITunnelSubscriber;
 import com.amx.jax.tunnel.TunnelEventMapping;
 import com.amx.jax.tunnel.TunnelEventXchange;
+import com.amx.jax.util.AmxDBConstants;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.StringUtils.StringMatcher;
 import com.google.i18n.phonenumbers.NumberParseException;
@@ -37,7 +35,10 @@ public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 	WhatsAppClient whatsAppClient;
 
 	@Autowired
-	private CustomerDetailViewRecordService sustomerDetailViewRecordService;
+	private CustomerDetailViewRecordService customerDetailViewRecordService;
+
+	@Autowired
+	CustomerRepository customerRepository;
 
 	public static final String FOUND_MATCHED = "Thank you for verification. Your account is now linked to this whatsApp number.";
 	public static final String FOUND_MATCH_NOT = "Kindly visit branch to update your whatsapp communication number. "
@@ -73,30 +74,32 @@ public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 			LOGGER.info("Recieved {} {} ", swissNumberProto.getNationalNumber(), event.getMessage());
 			String replyMessage = "";
 			String swissNumberProtoString = ArgUtil.parseAsString(swissNumberProto.getNationalNumber());
+			String swissISDProtoString = ArgUtil.parseAsString(swissNumberProto.getCountryCode());
 
 			StringMatcher matcher = new StringMatcher(event.getMessage().toUpperCase());
 
 			if (matcher.match(LINK_CIVIL_ID) && matcher.find()) {
 				String civilId = matcher.group(1);
 
-				CustomerDetailViewRecord c = sustomerDetailViewRecordService.getByIndentity(civilId);
+				Customer customer = customerRepository.getCustomerOneByIdentityInt(civilId);
 
-				if (ArgUtil.isEmpty(c)) { // Customer no Found
+				if (ArgUtil.isEmpty(customer)) { // Customer no Found
 					replyMessage = FOUND_NOT;
-				} else if (!swissNumberProtoString.equalsIgnoreCase(c.getWhatsapp())) { // Customer number does not
-																						// match
+				} else if (!swissNumberProtoString.equalsIgnoreCase(customer.getWhatsapp())) { // Customer number does
 					replyMessage = FOUND_MATCH_NOT;
-				} else if ("Y".equalsIgnoreCase(c.getWhatsAppVerified())) { // Already Verified so no action
+				} else if (AmxDBConstants.Yes.equalsIgnoreCase(customer.getWhatsAppVerified())) { // Already Verified so
 					replyMessage = NO_ACTION;
 				} else { // Found and matched
+					customer.setWhatsAppVerified(AmxDBConstants.Yes);
+					customerRepository.save(customer);
 					replyMessage = FOUND_MATCHED;
 				}
 
 			} else {
-				CustomerDetailViewRecord c = sustomerDetailViewRecordService
-						.getByWhatsApp(swissNumberProtoString);
-				if (!ArgUtil.isEmpty(c)) {
-					if ("Y".equalsIgnoreCase(c.getWhatsAppVerified())) {
+				Customer customer = customerRepository.getCustomerByWhatsApp(swissISDProtoString,
+						swissNumberProtoString);
+				if (!ArgUtil.isEmpty(customer)) {
+					if (AmxDBConstants.Yes.equalsIgnoreCase(customer.getWhatsAppVerified())) {
 						replyMessage = NO_ACTION;
 					} else {
 						replyMessage = ANY_TEXT;
