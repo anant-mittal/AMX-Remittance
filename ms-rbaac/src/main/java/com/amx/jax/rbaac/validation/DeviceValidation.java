@@ -60,26 +60,26 @@ public class DeviceValidation {
 			throw new AuthServiceException("Invalid pair otp");
 		}
 	}
-	
+
+	public void validateDeviceRegIdndPairtoken(Integer deviceRegId, String paireToken) {
+		if (deviceRegId == null || paireToken == null) {
+			throw new AuthServiceException("DeviceRegId or paireToken should not be blank");
+		}
+
+	}
+
+	public void validateDeviceRegId(Integer deviceRegId) {
+		if (deviceRegId == null) {
+			throw new AuthServiceException("DeviceRegId should not be blank");
+		}
+	}
+
 	public void validateOtp(String otp) {
 		if (StringUtils.isBlank(otp)) {
 			throw new AuthServiceException("otp can not be empty");
 		}
 		if (otp.length() != 6) {
 			throw new AuthServiceException("otp lenght should be 6");
-		}
-	}
-
-	public void validateDeviceRegIdndPairtoken(Integer deviceRegId,String paireToken) {
-		if(deviceRegId ==null || paireToken==null) {
-					throw new AuthServiceException("DeviceRegId or paireToken should not be blank");
-				}
-		
-	}
-	
-	public void validateDeviceRegId(Integer deviceRegId) {
-		if (deviceRegId == null) {
-			throw new AuthServiceException("DeviceRegId should not be blank");
 		}
 	}
 
@@ -128,6 +128,12 @@ public class DeviceValidation {
 			return url;
 		} catch (MalformedURLException e) {
 			throw new AuthServiceException("image url is not valid");
+		}
+	}
+
+	public void validateDeviceForActivation(Device device) {
+		if (device == null) {
+			throw new AuthServiceException(RbaacServiceError.CLIENT_NOT_FOUND, "No device found");
 		}
 	}
 

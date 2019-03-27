@@ -12,7 +12,9 @@ import com.amx.jax.ui.WebAppConfig;
 import com.amx.utils.ArgUtil;
 
 /**
+ * This class is for sending geo notification to customer
  * @author lalit
+ * 
  */
 @Component
 public class HotPointService {
