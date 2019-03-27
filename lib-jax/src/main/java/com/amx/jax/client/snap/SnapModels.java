@@ -90,7 +90,7 @@ public class SnapModels {
 		}
 
 		public Hits getHits() {
-			Object hitsObject = map.get("hits");
+			Object hitsObject = map.get(HITS_KEY);
 			if (hitsObject instanceof Hits) {
 				return (Hits) hitsObject;
 			} else {
@@ -145,7 +145,7 @@ public class SnapModels {
 		}
 
 		public Source getSource() {
-			Object sourceObject = map.get("hits");
+			Object sourceObject = map.get(SOURCE_KEY);
 			if (sourceObject instanceof Source) {
 				return (Source) sourceObject;
 			} else {
@@ -154,6 +154,11 @@ public class SnapModels {
 				map.put(SOURCE_KEY, source);
 				return source;
 			}
+		}
+
+		public <T> T getSource(Class<T> clazz) {
+			Source source = this.getSource();
+			return JsonUtil.getMapper().convertValue(source.toObject(), clazz);
 		}
 
 		public String getId() {

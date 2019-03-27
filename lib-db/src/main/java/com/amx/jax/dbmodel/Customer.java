@@ -135,15 +135,6 @@ public class Customer implements java.io.Serializable {
 	private String isMobileWhatsApp;
 	private String isMobileOtherWhatsApp;
 
-	@Column(name = "WHATSAPP_NO")
-	private String whatsapp;
-
-	@Column(name = "WHATSAPP_PREFIX_CODE")
-	private String whatsappPrefix;
-
-	@Column(name = "WHATSAPP_VERIFIED")
-	private String whatsAppVerified;
-
 	private IncomeRangeMaster fsIncomeRangeMaster;
 
 	/* Registration Type added */
@@ -970,14 +961,20 @@ public class Customer implements java.io.Serializable {
 		this.lastUpdated = new Date();
 	}
 
-	public String getWhatsAppVerified() {
-		return whatsAppVerified;
+	private String whatsapp;
+
+	@Column(name = "WHATSAPP_NO")
+	public String getWhatsapp() {
+		return whatsapp;
 	}
 
-	public void setWhatsAppVerified(String whatsAppVerified) {
-		this.whatsAppVerified = whatsAppVerified;
+	public void setWhatsapp(String whatsapp) {
+		this.whatsapp = whatsapp;
 	}
 
+	private String whatsappPrefix;
+
+	@Column(name = "WHATSAPP_PREFIX_CODE")
 	public String getWhatsappPrefix() {
 		return whatsappPrefix;
 	}
@@ -986,12 +983,15 @@ public class Customer implements java.io.Serializable {
 		this.whatsappPrefix = whatsappPrefix;
 	}
 
-	public String getWhatsapp() {
-		return whatsapp;
+	private String whatsAppVerified;
+
+	@Column(name = "WHATSAPP_VERIFIED")
+	public String getWhatsAppVerified() {
+		return whatsAppVerified;
 	}
 
-	public void setWhatsapp(String whatsapp) {
-		this.whatsapp = whatsapp;
+	public void setWhatsAppVerified(String whatsAppVerified) {
+		this.whatsAppVerified = whatsAppVerified;
 	}
 
 }
