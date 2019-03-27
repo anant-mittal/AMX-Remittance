@@ -11,6 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.amxlib.meta.model.QuestAnswerModelDTO;
+import com.amx.amxlib.meta.model.QuestModelDTO;
+import com.amx.amxlib.model.AbstractAnswer;
+import com.amx.amxlib.model.OptionAnswer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.OnlineQuestModel;
 import com.amx.jax.dbmodel.bene.RelationsDescription;
@@ -65,6 +69,9 @@ public class SecurityQuestionsManager {
 					"Random questions size can't be more than 4");
 		}
 		List<BigDecimal> questions = new ArrayList<>();
+		questions.add(onlineCustomer.getSecurityQuestion1());
+		questions.add(onlineCustomer.getSecurityQuestion2());
+		questions.add(onlineCustomer.getSecurityQuestion3());
 		questions.add(onlineCustomer.getSecurityQuestion4());
 		questions.add(onlineCustomer.getSecurityQuestion5());
 		List<BigDecimal> randomQuestoids = util.getRandomIntegersFromList(questions, size);
@@ -81,6 +88,7 @@ public class SecurityQuestionsManager {
 
 		QuestModelDTO q1 = CustomerDataVerificationQuestion.Q1.getQuestModelDTO();
 		QuestModelDTO q2 = CustomerDataVerificationQuestion.Q2.getQuestModelDTO();
+		QuestModelDTO q3 = CustomerDataVerificationQuestion.Q3.getQuestModelDTO();
 		q1.setQuestAnswerModelDTO(getAnswerModelForQ1());
 		q2.setQuestAnswerModelDTO(getExpiryDateForQ2());
 		List<QuestModelDTO> result = new ArrayList<>();
@@ -92,7 +100,7 @@ public class SecurityQuestionsManager {
 		return result;
 
 	}
-	
+
 	public List<QuestModelDTO> getDataVerificationRandomQuestions(Integer size) {
 
 		QuestModelDTO q1 = CustomerDataVerificationQuestion.Q1.getQuestModelDTO();
