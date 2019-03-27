@@ -21,6 +21,7 @@ import com.amx.jax.dict.Project;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.filter.AppClientErrorHanlder;
 import com.amx.jax.filter.AppClientInterceptor;
+import com.amx.jax.scope.TenantContext;
 import com.amx.jax.scope.TenantProperties;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil.JsonUtilConfigurable;

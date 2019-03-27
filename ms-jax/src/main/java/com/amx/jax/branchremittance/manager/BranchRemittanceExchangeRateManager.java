@@ -7,10 +7,14 @@ import static com.amx.amxlib.constant.ApplicationProcedureParam.P_ROUTING_BANK_I
 import static com.amx.amxlib.constant.ApplicationProcedureParam.P_ROUTING_COUNTRY_ID;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,22 +24,31 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.amxlib.model.JaxConditionalFieldDto;
 import com.amx.amxlib.model.response.ExchangeRateResponseModel;
 import com.amx.amxlib.util.JaxValidationUtil;
+import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.Customer;
+import com.amx.jax.dbmodel.CustomerEmploymentInfo;
+import com.amx.jax.dbmodel.remittance.CorporateMasterModel;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.exrateservice.service.JaxDynamicPriceService;
 import com.amx.jax.manager.RemittanceTransactionManager;
+import com.amx.jax.manager.remittance.RemittanceAdditionalFieldManager;
 import com.amx.jax.manager.remittance.RemittanceApplicationParamManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.request.remittance.IRemittanceApplicationParams;
 import com.amx.jax.model.response.remittance.BranchExchangeRateBreakup;
 import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeRateResponse;
+import com.amx.jax.repository.ICustomerEmploymentInfoRepository;
+import com.amx.jax.repository.remittance.ICorporateMasterRepository;
 import com.amx.jax.services.BeneficiaryService;
 import com.amx.jax.services.BeneficiaryValidationService;
 import com.amx.jax.userservice.service.UserService;
+import com.amx.jax.util.JaxUtil;
+import com.amx.jax.validation.RemittanceTransactionRequestValidator;
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Component
@@ -59,6 +72,16 @@ public class BranchRemittanceExchangeRateManager {
 	Map<String, Object> remitApplParametersMap;
 	@Autowired
 	UserService userService;
+	@Autowired
+	RemittanceAdditionalFieldManager remittanceAdditionalFieldManager;
+	@Autowired
+	RemittanceTransactionRequestValidator remittanceTransactionRequestValidator;
+	
+	@Autowired
+	ICorporateMasterRepository corporateMasterRepository;
+	
+	@Autowired
+	ICustomerEmploymentInfoRepository customerEmployeRepository;
 
 	public void validateGetExchangRateRequest(IRemittanceApplicationParams request) {
 
@@ -76,7 +99,7 @@ public class BranchRemittanceExchangeRateManager {
 	public BranchRemittanceGetExchangeRateResponse getExchangeRateResponse(IRemittanceApplicationParams request) {
 		BenificiaryListView beneficiaryView = beneValidationService.validateBeneficiary(request.getBeneficiaryRelationshipSeqIdBD());
 		Customer customer = userService.getCustById(metaData.getCustomerId());
-		ExchangeRateResponseModel exchangeRateResponseModel = jaxDynamicPriceService.getExchangeRates(metaData.getDefaultCurrencyId(),
+ 		ExchangeRateResponseModel exchangeRateResponseModel = jaxDynamicPriceService.getExchangeRatesWithDiscount(metaData.getDefaultCurrencyId(),
 				beneficiaryView.getCurrencyId(), request.getLocalAmountBD(), request.getForeignAmountBD(), beneficiaryView.getCountryId(),
 				request.getCorrespondanceBankIdBD(), request.getServiceIndicatorIdBD());
 		if (exchangeRateResponseModel.getExRateBreakup() == null) {
@@ -116,12 +139,69 @@ public class BranchRemittanceExchangeRateManager {
 		BigDecimal currencyId = P_FOREIGN_CURRENCY_ID.getValue(remitApplParametersMap);
 		BigDecimal remittanceMode = P_REMITTANCE_MODE_ID.getValue(remitApplParametersMap);
 		BigDecimal deliveryMode = P_DELIVERY_MODE_ID.getValue(remitApplParametersMap);
-		BigDecimal commission = remittanceTransactionManager.getCommissionAmount(routingBankId, rountingCountryId, currencyId,
-				remittanceMode, deliveryMode);
+		BigDecimal commission = remittanceTransactionManager.getCommissionAmount(routingBankId, rountingCountryId, currencyId,remittanceMode, deliveryMode);
 		BigDecimal newCommission = remittanceTransactionManager.reCalculateComission();
 		if (newCommission != null) {
 			commission = newCommission;
 		}
+		
+		BigDecimal corpDiscount = corporateDiscount();
+		if(JaxUtil.isNullZeroBigDecimalCheck(commission) && commission.compareTo(corpDiscount)>=0) {
+			commission =commission.subtract(corpDiscount);
+		}
 		return commission;
+	}
+
+	public Object fetchFlexFields(IRemittanceApplicationParams exchangeRateRequest) {
+		BranchRemittanceApplRequestModel branchRemittanceApplRequestModel = new BranchRemittanceApplRequestModel(exchangeRateRequest);
+		List<JaxConditionalFieldDto> flexFields = new ArrayList<>();
+		try {
+			remittanceAdditionalFieldManager.validateAdditionalFields(branchRemittanceApplRequestModel, remitApplParametersMap);
+
+		} catch (GlobalException ex) {
+			if (ex.getMeta() != null) {
+				flexFields.addAll((Collection<? extends JaxConditionalFieldDto>) ex.getMeta());
+			}
+		}
+		try {
+			remittanceTransactionRequestValidator.validateFlexFields(branchRemittanceApplRequestModel, remitApplParametersMap);
+		} catch (GlobalException ex) {
+			if (ex.getMeta() != null) {
+				flexFields.addAll((Collection<? extends JaxConditionalFieldDto>) ex.getMeta());
+			}
+		}
+
+		List<JaxConditionalFieldDto> amlFlexFields = remittanceAdditionalFieldManager.validateAmlCheck(branchRemittanceApplRequestModel);
+		if (CollectionUtils.isNotEmpty(amlFlexFields)) {
+			flexFields.addAll(amlFlexFields);
+		}
+		return flexFields;
+	}
+	
+	/** Added by Rabil for corporate employee discount **/
+	public BigDecimal corporateDiscount() {
+		BigDecimal corpDiscount = BigDecimal.ZERO;
+		Customer customer = new Customer();
+		customer.setCustomerId(metaData.getCustomerId());
+		List<CorporateMasterModel> coporatList = null;
+		List<CustomerEmploymentInfo> empInfo = customerEmployeRepository.findByFsCustomerAndIsActive(customer, ConstantDocument.Yes);
+		if(empInfo!=null && !empInfo.isEmpty() && empInfo.size()>1) {
+			throw new GlobalException(JaxError.EXCHANGE_RATE_NOT_FOUND, "More than one record found for corporate employee discount on commission "+metaData.getCustomerId());
+		}
+		
+		if(empInfo!=null && !empInfo.isEmpty() && empInfo.size()==1 ) {
+			coporatList = corporateMasterRepository.findByCorporateMasterIdAndIsActive(empInfo.get(0).getCorporateMasterId(), ConstantDocument.Yes);
+		}
+		
+		if(coporatList !=null && !coporatList.isEmpty() && coporatList.size()>1) {
+			throw new GlobalException(JaxError.EXCHANGE_RATE_NOT_FOUND, "TOO MANY CORPORATE EMPLOYEE DISCOUNT ON COMMISSION DEFINED FOR COMPANY ID "+empInfo.get(0).getCorporateMasterId());
+		}
+		if(coporatList!=null && coporatList.size()==1) {
+			corpDiscount = coporatList.get(0).getDiscountOnCommission();
+		}
+		
+		
+		
+		return corpDiscount;
 	}
 }

@@ -31,6 +31,7 @@ import com.amx.jax.model.response.SourceOfIncomeDto;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
 import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.rest.RestService;
+import com.amx.utils.ArgUtil;
 
 @Component
 public class RemitClient extends AbstractJaxServiceClient {
@@ -76,7 +77,7 @@ public class RemitClient extends AbstractJaxServiceClient {
 	}
 
 	public ApiResponse<RemittanceReceiptSubreport> report(TransactionHistroyDTO transactionHistroyDTO,
-			Boolean promotion) {
+			Boolean promotion, JaxMetaInfo jaxMetaInfo) {
 		try {
 			BigDecimal countryId = jaxMetaInfo.getCountryId();
 			BigDecimal companyId = jaxMetaInfo.getCompanyId();
@@ -85,12 +86,13 @@ public class RemitClient extends AbstractJaxServiceClient {
 			transactionHistroyDTO.setCompanyId(companyId);
 			transactionHistroyDTO.setLanguageId(new BigDecimal(1));
 			transactionHistroyDTO.setCustomerId(customerId);
+
 			LOGGER.debug("Remit Client :" + countryId + "\t companyId :" + companyId + "\t customerId :" + customerId);
 			HttpEntity<String> requestEntity = new HttpEntity<String>(util.marshall(transactionHistroyDTO),
 					getHeader());
 			String sendOtpUrl = this.getBaseUrl() + REMIT_API_ENDPOINT + "/remitReport/";
-			return restService.ajax(sendOtpUrl).queryParam("promotion", promotion).post(requestEntity)
-					.as(new ParameterizedTypeReference<ApiResponse<RemittanceReceiptSubreport>>() {
+			return restService.ajax(sendOtpUrl).queryParam("promotion", promotion).meta(new JaxMetaInfo())
+					.post(requestEntity).as(new ParameterizedTypeReference<ApiResponse<RemittanceReceiptSubreport>>() {
 					});
 		} catch (AbstractJaxException ae) {
 			throw ae;
@@ -98,7 +100,11 @@ public class RemitClient extends AbstractJaxServiceClient {
 			LOGGER.error("exception in report : ", e);
 			throw new JaxSystemError();
 		} // end of try-catch
+	}
 
+	public ApiResponse<RemittanceReceiptSubreport> report(TransactionHistroyDTO transactionHistroyDTO,
+			Boolean promotion) {
+		return report(transactionHistroyDTO, promotion, jaxMetaInfo);
 	}
 
 	public ApiResponse<RemittanceTransactionResponsetModel> validateTransaction(

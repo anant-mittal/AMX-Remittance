@@ -34,7 +34,7 @@ public class RoutingProcedureDao {
 	private static final Logger LOGGER = LoggerFactory.getLogger(RoutingProcedureDao.class);
 
 	public BigDecimal getRoutingBankBranchIdForCash(Map<String, Object> inputValues) {
-		BigDecimal routingBankBranchId = null;
+		BigDecimal routingBankBranchId = inputValues.get("P_ROUTING_BANK_BRANCH_ID")==null?BigDecimal.ZERO:(BigDecimal)inputValues.get("P_ROUTING_BANK_BRANCH_ID");
 
 		String branchApplicability = getBranchApplicability(inputValues);
 		if (ConstantDocument.CONSTANT_ALL.equals(branchApplicability)) {
@@ -181,9 +181,9 @@ public class RoutingProcedureDao {
 					+ " AND    F.CURRENCY_ID  = ? AND    F.SERVICE_GROUP_CODE  = ?"
 					+ " AND    APPLICATION_COUNTRY_ID=? ";
 		 	List<Object> inputList = new ArrayList<>();
-			inputList.add(inputValues.get("P_BENE_BANK_ID")==null?BigDecimal.ZERO:(BigDecimal)inputValues.get("P_BENE_BANK_ID"));
-			inputList.add(inputValues.get("P_BENE_BANK_BRANCH_ID")==null?BigDecimal.ZERO:(BigDecimal)inputValues.get("P_BENE_BANK_BRANCH_ID"));
-			inputList.add(inputValues.get("P_BENE_COUNTRY_ID")==null?BigDecimal.ZERO:(BigDecimal)inputValues.get("P_BENE_COUNTRY_ID"));
+			inputList.add(inputValues.get("P_BENEFICIARY_BANK_ID")==null?BigDecimal.ZERO:(BigDecimal)inputValues.get("P_BENEFICIARY_BANK_ID"));
+			inputList.add(inputValues.get("P_BENEFICIARY_BRANCH_ID")==null?BigDecimal.ZERO:(BigDecimal)inputValues.get("P_BENEFICIARY_BRANCH_ID"));
+			inputList.add(inputValues.get("P_BENEFICIARY_COUNTRY_ID")==null?BigDecimal.ZERO:(BigDecimal)inputValues.get("P_BENEFICIARY_COUNTRY_ID"));
 			inputList.add(inputValues.get("P_CURRENCY_ID")==null?BigDecimal.ZERO:(BigDecimal)inputValues.get("P_CURRENCY_ID"));
 			inputList.add(inputValues.get("P_SERVICE_GROUP_CODE")==null?"":inputValues.get("P_SERVICE_GROUP_CODE").toString());
 			inputList.add(inputValues.get("P_APPLICATION_COUNTRY_ID")==null?BigDecimal.ZERO:(BigDecimal)inputValues.get("P_APPLICATION_COUNTRY_ID"));
@@ -235,13 +235,13 @@ public class RoutingProcedureDao {
 		
 		List<Object> inputList = new ArrayList<>();
 		inputList.add(inputValues.get("P_APPLICATION_COUNTRY_ID"));
-		inputList.add(inputValues.get("P_BENE_BANK_ID"));
-		inputList.add(inputValues.get("P_BENE_BANK_BRANCH_ID"));
-		inputList.add(inputValues.get("P_BENE_COUNTRY_ID"));
+		inputList.add(inputValues.get("P_BENEFICIARY_BANK_ID"));
+		inputList.add(inputValues.get("P_BENEFICIARY_BRANCH_ID"));
+		inputList.add(inputValues.get("P_BENEFICIARY_COUNTRY_ID"));
 		inputList.add(inputValues.get("P_CURRENCY_ID"));
 		inputList.add(inputValues.get("P_SERVICE_MASTER_ID"));
 		inputList.add(inputValues.get("P_SERVICE_MASTER_ID"));
-		inputList.add(inputValues.get("P_BENE_BANK_ID"));
+		inputList.add(inputValues.get("P_BENEFICIARY_BANK_ID"));
 		List<Map<String, Object>> outputList = jdbcTemplate.queryForList(sql, inputList.toArray());
 		return outputList;
 
@@ -267,13 +267,13 @@ public class RoutingProcedureDao {
 		
 		List<Object> inputList = new ArrayList<>();
 		inputList.add(inputValues.get("P_APPLICATION_COUNTRY_ID"));
-		inputList.add(inputValues.get("P_BENE_BANK_ID"));
-		inputList.add(inputValues.get("P_BENE_BANK_BRANCH_ID"));
-		inputList.add(inputValues.get("P_BENE_COUNTRY_ID"));
+		inputList.add(inputValues.get("P_BENEFICIARY_BANK_ID"));
+		inputList.add(inputValues.get("P_BENEFICIARY_BRANCH_ID"));
+		inputList.add(inputValues.get("P_BENEFICIARY_COUNTRY_ID"));
 		inputList.add(inputValues.get("P_CURRENCY_ID"));
 		inputList.add(inputValues.get("P_SERVICE_MASTER_ID"));
 		inputList.add(inputValues.get("P_SERVICE_MASTER_ID"));
-		inputList.add(inputValues.get("P_BENE_BANK_ID"));
+		inputList.add(inputValues.get("P_BENEFICIARY_BANK_ID"));
 		inputList.add(inputValues.get("P_ROUTING_COUNTRY_ID"));
 		List<Map<String, Object>> outputList = jdbcTemplate.queryForList(sql, inputList.toArray());
 		return outputList;
@@ -296,19 +296,19 @@ public class RoutingProcedureDao {
 					+ " AND    F.SERVICE_MASTER_ID  = ? "
 					+ " AND    F.ROUTING_BANK_ID   =  DECODE( ?,101,?,F.ROUTING_BANK_ID)"
 					+ " AND    F.ROUTING_COUNTRY_ID =?"
-					+ " AND F.ROUTING_BANK_ID =?)";
+					+ " AND F.ROUTING_BANK_ID =? ORDER BY F.REMITTANCE_MODE_ID)";
 			
 			LOGGER.info("in getRoutingCountryBank,input values: {}", sql);	
 			
 			List<Object> inputList = new ArrayList<>();
 			inputList.add(inputValues.get("P_APPLICATION_COUNTRY_ID"));
-			inputList.add(inputValues.get("P_BENE_BANK_ID"));
-			inputList.add(inputValues.get("P_BENE_BANK_BRANCH_ID"));
-			inputList.add(inputValues.get("P_BENE_COUNTRY_ID"));
+			inputList.add(inputValues.get("P_BENEFICIARY_BANK_ID"));
+			inputList.add(inputValues.get("P_BENEFICIARY_BRANCH_ID"));
+			inputList.add(inputValues.get("P_BENEFICIARY_COUNTRY_ID"));
 			inputList.add(inputValues.get("P_CURRENCY_ID"));
 			inputList.add(inputValues.get("P_SERVICE_MASTER_ID"));
 			inputList.add(inputValues.get("P_SERVICE_MASTER_ID"));
-			inputList.add(inputValues.get("P_BENE_BANK_ID"));
+			inputList.add(inputValues.get("P_BENEFICIARY_BANK_ID"));
 			inputList.add(inputValues.get("P_ROUTING_COUNTRY_ID"));
 			inputList.add(inputValues.get("P_ROUTING_BANK_ID"));
 			List<Map<String, Object>> outputList = jdbcTemplate.queryForList(sql, inputList.toArray());
@@ -333,19 +333,19 @@ public class RoutingProcedureDao {
 							+ " AND    F.ROUTING_BANK_ID   =  DECODE( ?,101,?,F.ROUTING_BANK_ID)"
 							+ " AND    F.ROUTING_COUNTRY_ID =?"
 							+ " AND    F.ROUTING_BANK_ID =?"
-							+ " AND    F.REMITTANCE_MODE_ID =?)";
+							+ " AND    F.REMITTANCE_MODE_ID =? ORDER BY F.DELIVERY_MODE_ID)";
 					
 					LOGGER.info("in getRoutingCountryBank,input values: {}", sql);	
 					
 					List<Object> inputList = new ArrayList<>();
 					inputList.add(inputValues.get("P_APPLICATION_COUNTRY_ID"));
-					inputList.add(inputValues.get("P_BENE_BANK_ID"));
-					inputList.add(inputValues.get("P_BENE_BANK_BRANCH_ID"));
-					inputList.add(inputValues.get("P_BENE_COUNTRY_ID"));
+					inputList.add(inputValues.get("P_BENEFICIARY_BANK_ID"));
+					inputList.add(inputValues.get("P_BENEFICIARY_BRANCH_ID"));
+					inputList.add(inputValues.get("P_BENEFICIARY_COUNTRY_ID"));
 					inputList.add(inputValues.get("P_CURRENCY_ID"));
 					inputList.add(inputValues.get("P_SERVICE_MASTER_ID"));
 					inputList.add(inputValues.get("P_SERVICE_MASTER_ID"));
-					inputList.add(inputValues.get("P_BENE_BANK_ID"));
+					inputList.add(inputValues.get("P_BENEFICIARY_BANK_ID"));
 					inputList.add(inputValues.get("P_ROUTING_COUNTRY_ID"));
 					inputList.add(inputValues.get("P_ROUTING_BANK_ID"));
 					inputList.add(inputValues.get("P_REMITTANCE_MODE_ID"));
@@ -378,13 +378,13 @@ public class RoutingProcedureDao {
 					
 					List<Object> inputList = new ArrayList<>();
 					inputList.add(inputValues.get("P_APPLICATION_COUNTRY_ID"));
-					inputList.add(inputValues.get("P_BENE_BANK_ID"));
-					inputList.add(inputValues.get("P_BENE_BANK_BRANCH_ID"));
-					inputList.add(inputValues.get("P_BENE_COUNTRY_ID"));
+					inputList.add(inputValues.get("P_BENEFICIARY_BANK_ID"));
+					inputList.add(inputValues.get("P_BENEFICIARY_BRANCH_ID"));
+					inputList.add(inputValues.get("P_BENEFICIARY_COUNTRY_ID"));
 					inputList.add(inputValues.get("P_CURRENCY_ID"));
 					inputList.add(inputValues.get("P_SERVICE_MASTER_ID"));
 					inputList.add(inputValues.get("P_SERVICE_MASTER_ID"));
-					inputList.add(inputValues.get("P_BENE_BANK_ID"));
+					inputList.add(inputValues.get("P_BENEFICIARY_BANK_ID"));
 					inputList.add(inputValues.get("P_ROUTING_COUNTRY_ID"));
 					inputList.add(inputValues.get("P_ROUTING_BANK_ID"));
 					inputList.add(inputValues.get("P_REMITTANCE_MODE_ID"));

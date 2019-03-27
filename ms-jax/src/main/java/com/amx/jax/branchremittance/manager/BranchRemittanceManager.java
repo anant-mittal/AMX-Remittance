@@ -2,7 +2,10 @@ package com.amx.jax.branchremittance.manager;
 
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
+import java.text.Collator;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +44,7 @@ import com.amx.jax.manager.RemittanceApplicationManager;
 import com.amx.jax.manager.RemittanceTransactionManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.AbstractModel;
+import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
@@ -48,8 +52,10 @@ import com.amx.jax.model.response.remittance.AmlCheckResponseDto;
 import com.amx.jax.model.response.remittance.BranchExchangeRateBreakup;
 import com.amx.jax.model.response.remittance.RoutingResponseDto;
 import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeRateResponse;
+import com.amx.jax.repository.BankMasterRepository;
 import com.amx.jax.repository.IAccountTypeFromViewDao;
 import com.amx.jax.repository.IAdditionalBankRuleAmiecRepository;
+import com.amx.jax.repository.IBankMasterFromViewDao;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.ICollectionDetailRepository;
 import com.amx.jax.repository.ICurrencyDao;
@@ -167,6 +173,10 @@ public class BranchRemittanceManager extends AbstractModel {
 	@Autowired
 	BranchRoutingManager branchRoutingManager;
 	
+
+	@Autowired
+	BankMasterRepository bankMasterDao;
+	
 	
 	
 	public void checkingStaffIdNumberWithCustomer() {
@@ -222,14 +232,21 @@ public class BranchRemittanceManager extends AbstractModel {
 	public void checkBeneAccountType(BenificiaryListView beneficaryDetails) {
 		boolean chkAccType = Boolean.FALSE;
 		List<AccountTypeFromViewModel> lstAccType = accountTypeRepository.getAccountTypeByCountryId(beneficaryDetails.getBenificaryCountry());
+		if((beneficaryDetails.getBankAccountNumber()!=null || beneficaryDetails.getIbanNumber()!=null) && beneficaryDetails.getBankAccountTypeId()!=null) {
 		if (lstAccType != null && lstAccType.size() != 0) {
 			for (AccountTypeFromViewModel accountTypeFromView : lstAccType) {
-				if (accountTypeFromView.getAdditionalAmiecId() != null && accountTypeFromView.getAdditionalAmiecId().compareTo(beneficaryDetails.getBankAccountTypeId()) == 0) {
+				if (beneficaryDetails.getBankAccountTypeId()!= null && accountTypeFromView.getAdditionalAmiecId() != null && accountTypeFromView.getAdditionalAmiecId().compareTo(beneficaryDetails.getBankAccountTypeId()) == 0) {
 					chkAccType = Boolean.TRUE;
 					break;
 				}
 			}
+		}else {
+			chkAccType = Boolean.FALSE;
 		}
+		
+	}else {
+		chkAccType = Boolean.TRUE;
+	}
 		if(!chkAccType) {
 			 throw new GlobalException(JaxError.BENE_ACCOUNT_TYPE_MISMATCH,"Account Type Mismatch, Please edit and save the beneficairy ");
 		}
@@ -240,10 +257,25 @@ public class BranchRemittanceManager extends AbstractModel {
 	
 	public void beneAddCheck(BenificiaryListView beneficaryDetails) {
 		BeneficiaryListDTO checkdto = beneCheckService.beneCheck(convertBeneModelToDto(beneficaryDetails));
+		
+		String iBanFlag = null;
 		if(checkdto!=null) {
 			if(checkdto.getBeneficiaryErrorStatus()!=null && checkdto.getBeneficiaryErrorStatus().size()>0) {
 				throw new GlobalException(checkdto.getBeneficiaryErrorStatus().get(0).getErrorCode(),checkdto.getBeneficiaryErrorStatus().get(0).getErrorDesc());
 			}
+		}
+		
+		BankMasterModel bankMaster = bankService.getBankById(beneficaryDetails.getBankId());
+		if(bankMaster!=null) {
+			iBanFlag = bankMaster.getIbanFlag();
+		}
+		if (ConstantDocument.Yes.equalsIgnoreCase(iBanFlag) && StringUtils.isBlank(beneficaryDetails.getIbanNumber())) {
+			throw new GlobalException(JaxError.BANK_IBAN_EMPTY," IBAN account number shoulnot be blank for Banking channel .Please contact branch for update");
+		}
+		
+		
+		if(!JaxUtil.isNullZeroBigDecimalCheck(beneficaryDetails.getMapSequenceId())) {
+			throw new GlobalException(JaxError.BENE_MAP_SEQ_MISSING,"Beneficairy map seq is missing , please update beneficiray");
 		}
 		
 		
@@ -336,7 +368,7 @@ public class BranchRemittanceManager extends AbstractModel {
 			inputValues.put("P_CASH_ROUND_IND", null);
 			inputValues.put("P_ROUTING_BANK_BRANCH_ID", branchRoutingDto.getRoutingBankBranchDto().get(0).getBankBranchId());//map.get("P_ROUTING_BANK_BRANCH_ID"));
 			inputValues.put("P_BENE_ID", beneficaryDetails.getBeneficaryMasterSeqId());
-			inputValues.put("P_BENE_COUNTRY_ID", beneficaryDetails.getBenificaryCountry());
+			inputValues.put("P_BENEFICIARY_COUNTRY_ID", beneficaryDetails.getBenificaryCountry());
 			inputValues.put("P_BENE_BANK_ID", beneficaryDetails.getBankId());
 			inputValues.put("P_BENE_BANK_BRANCH_ID", beneficaryDetails.getBranchId());
 			inputValues.put("P_BENE_ACCOUNT_NO", beneficaryDetails.getBankAccountNumber());
@@ -355,103 +387,102 @@ public class BranchRemittanceManager extends AbstractModel {
 	}
 
 	
-	public List<AmlCheckResponseDto> amlTranxAmountCheckForRemittance(BranchRemittanceApplRequestModel requestModel,BranchRemittanceGetExchangeRateResponse exchangeRateResposne){
+	//public List<AmlCheckResponseDto> amlTranxAmountCheckForRemittance(BranchRemittanceApplRequestModel requestModel,BranchRemittanceGetExchangeRateResponse exchangeRateResposne){
+	
+	public List<AmlCheckResponseDto> amlTranxAmountCheckForRemittance(BigDecimal beneRelId,BigDecimal foreignamount){
 		Map<String, Object> outPut = new HashMap<>();
 		List<AmlCheckResponseDto> listAmlMessage = new ArrayList<>();
 		try {
-			BenificiaryListView beneficaryDetails =beneficiaryRepository.findBybeneficiaryRelationShipSeqId(requestModel.getBeneId());
+			BenificiaryListView beneficaryDetails =beneficiaryRepository.findBybeneficiaryRelationShipSeqId(beneRelId);
 			Map<String, Object> inputValues = new HashMap<>();
 			inputValues.put("P_APPLICATION_COUNTRY_ID", beneficaryDetails.getApplicationCountryId());
-			inputValues.put("P_BENE_COUNTRY_ID",beneficaryDetails.getBenificaryCountry());
+			inputValues.put("P_BENEFICIARY_COUNTRY_ID",beneficaryDetails.getBenificaryCountry());
 			inputValues.put("P_CUSTOMER_ID",metaData.getCustomerId());
 			inputValues.put("P_BENE_ID",beneficaryDetails.getBeneficaryMasterSeqId());
-			inputValues.put("P_FC_AMOUNT",exchangeRateResposne.getExRateBreakup().getConvertedFCAmount()); //need to check
+			inputValues.put("P_FC_AMOUNT",foreignamount); 
 			outPut = applProcedureDao.amlTranxAmountCheckForRemittance(inputValues);
 			
 			if(outPut!=null) {
-				if( outPut.get("MESSAGE1")!=null) {
+				if( outPut.get("MESSAGE1")!=null && outPut.get("MESSAGE1")!="") {
 				AmlCheckResponseDto dto = new AmlCheckResponseDto();
 				dto.setMessageCode("MESSAGE1");
 				dto.setMessageDescription(outPut.get("MESSAGE1").toString());
 				dto.setAmlFlag(ConstantDocument.Yes);
 				//listAmlMessage.add(dto);
 				}
-				if( outPut.get("MESSAGE2")!=null) {
+				if( outPut.get("MESSAGE2")!=null && outPut.get("MESSAGE2")!="") {
 					AmlCheckResponseDto dto = new AmlCheckResponseDto();
 					dto.setMessageCode("MESSAGE2");
 					dto.setMessageDescription(outPut.get("MESSAGE2").toString());
 					dto.setAmlFlag(ConstantDocument.Yes);
-					//listAmlMessage.add(dto);
 					}
 				
-				if( outPut.get("MESSAGE3")!=null) {
+				if( outPut.get("MESSAGE3")!=null && outPut.get("MESSAGE3")!="") {
 					AmlCheckResponseDto dto = new AmlCheckResponseDto();
 					dto.setMessageCode("MESSAGE3");
 					dto.setMessageDescription(outPut.get("MESSAGE3").toString());
 					dto.setAmlFlag(ConstantDocument.Yes);
-					//listAmlMessage.add(dto);
 					}
-				if( outPut.get("MESSAGE4")!=null) {
+				if( outPut.get("MESSAGE4")!=null && outPut.get("MESSAGE4")!="") {
 					AmlCheckResponseDto dto = new AmlCheckResponseDto();
 					dto.setMessageCode("MESSAGE4");
 					dto.setMessageDescription(outPut.get("MESSAGE4").toString());
 					dto.setAmlFlag(ConstantDocument.Yes);
-					listAmlMessage.add(dto);
 					}
 				
 				if(outPut.get("MESSAGE3")!=null) {
 					
 				
-				if(outPut.get("RANGE1FROM")!=null) {
+				if(outPut.get("RANGE1FROM")!=null && !outPut.get("RANGE1FROM").equals("")) {
 					AmlCheckResponseDto dto = new AmlCheckResponseDto();
 					dto.setMessageCode("RANGE1FROM - RANGE1TO");
 					dto.setMessageDescription(outPut.get("RANGE1FROM").toString()+" - " + outPut.get("RANGE1TO")==null?"0":outPut.get("RANGE1TO").toString());
 					dto.setRangeSlab(outPut.get("RANGE1COUNT")==null?"0":outPut.get("RANGE1COUNT").toString());
 					dto.setAmlFlag(ConstantDocument.Yes);
-					listAmlMessage.add(dto);
+					
 				}
 					
-				if(outPut.get("RANGE2FROM")!=null) {
+				if(outPut.get("RANGE2FROM")!=null && !outPut.get("RANGE2FROM").equals("")) {
 					AmlCheckResponseDto dto = new AmlCheckResponseDto();
 					dto.setMessageCode("RANGE2FROM - RANGE2TO" );
 					dto.setMessageDescription(outPut.get("RANGE2FROM").toString()+" - " + outPut.get("RANGE2TO")==null?"0":outPut.get("RANGE2TO").toString());
 					dto.setRangeSlab(outPut.get("RANGE2COUNT")==null?"0":outPut.get("RANGE2COUNT").toString());
 					dto.setAmlFlag(ConstantDocument.Yes);
-					listAmlMessage.add(dto);
+				
 				}
 				
-				if(outPut.get("RANGE3FROM")!=null) {
+				if(outPut.get("RANGE3FROM")!=null && !outPut.get("RANGE3FROM").equals("")) {
 					AmlCheckResponseDto dto = new AmlCheckResponseDto();
 					dto.setMessageCode("RANGE3FROM - RANGE3TO");
 					dto.setMessageDescription(outPut.get("RANGE3FROM").toString()+" - "+ outPut.get("RANGE3TO")==null?"0":outPut.get("RANGE3TO").toString());
 					dto.setRangeSlab(outPut.get("RANGE3COUNT")==null?"0":outPut.get("RANGE3COUNT").toString());
 					dto.setAmlFlag(ConstantDocument.Yes);
-					//listAmlMessage.add(dto);
+					
 				}
 				
-				if(outPut.get("RANGE4FROM")!=null) {
+				if(outPut.get("RANGE4FROM")!=null && !outPut.get("RANGE4FROM").equals("")) {
 					AmlCheckResponseDto dto = new AmlCheckResponseDto();
 					dto.setMessageCode("RANGE4FROM - RANGE4TO");
 					dto.setMessageDescription(outPut.get("RANGE4FROM").toString()+" - "+ outPut.get("RANGE4TO")==null?"0":outPut.get("RANGE4TO").toString());
 					dto.setRangeSlab(outPut.get("RANGE4COUNT")==null?"0":outPut.get("RANGE4COUNT").toString());
 					dto.setAmlFlag(ConstantDocument.Yes);
-					//listAmlMessage.add(dto);
+					
 				}
-				if(outPut.get("RANGE5FROM")!=null) {
+				if(outPut.get("RANGE5FROM")!=null && !outPut.get("RANGE5FROM").equals("")) {
 					AmlCheckResponseDto dto = new AmlCheckResponseDto();
 					dto.setMessageCode("RANGE5FROM - RANGE5TO");
 					dto.setMessageDescription(outPut.get("RANGE5FROM").toString()+" - "+ outPut.get("RANGE5TO")==null?"0":outPut.get("RANGE5TO").toString());
 					dto.setRangeSlab(outPut.get("RANGE5COUNT")==null?"0":outPut.get("RANGE5COUNT").toString());
 					dto.setAmlFlag(ConstantDocument.Yes);
-					//listAmlMessage.add(dto);
+					
 				}
-				if(outPut.get("RANGE6FROM")!=null) {
+				if(outPut.get("RANGE6FROM")!=null && !outPut.get("RANGE6FROM").equals("")) {
 					AmlCheckResponseDto dto = new AmlCheckResponseDto();
 					dto.setMessageCode("RANGE6FROM - RANGE6TO");
 					dto.setMessageDescription(outPut.get("RANGE6FROM").toString()+" - "+ outPut.get("RANGE6TO")==null?"0":outPut.get("RANGE6TO").toString());
 					dto.setRangeSlab(outPut.get("RANGE6COUNT")==null?"0":outPut.get("RANGE6COUNT").toString());
 					dto.setAmlFlag(ConstantDocument.Yes);
-					//listAmlMessage.add(dto);
+					
 				}
 				
 			}
@@ -543,19 +574,22 @@ public class BranchRemittanceManager extends AbstractModel {
 			 throw new GlobalException(JaxError.INVALID_BENE_BANK, " Routing and beneficary bank cannot be the same for TT "+routingBankId +"\t serviceMasterId :"+serviceMasterId+"\t beneBankId :"+beneBankId);
 		 }
 		 
-		 BigDecimal wbLimit = routingPro.getWbLimit();
-		 List<CustomerIdProof> list = idProofDao.getCustomerImageValidation(customerId, ConstantDocument.BIZ_COMPONENT_ID_CIVIL_ID);
-		 
-		 if(list!=null && !list.isEmpty() && list.size()>1) {
-			 throw new GlobalException(JaxError.INVALID_CUSTOMER, " Customer has many ID Proofs-'-"+customerId);
-		 }
-		 
-		 if(list!=null && list.size()==1 && JaxUtil.isNullZeroBigDecimalCheck(wbLimit)) {
-			if(localNetAmount.compareTo(wbLimit)==1) {
-				 throw new GlobalException(JaxError.INVALID_BENE_BANK, " Non ID card holders cannot exceed amount-"+wbLimit);
-			}
-		 }
-		 
+		 if(customer.getCustomerTypeId().compareTo(new BigDecimal(91))==0){ //Checking for retails 
+			 List<CustomerIdProof> list = idProofDao.getCustomerImageValidation(customerId, ConstantDocument.BIZ_COMPONENT_ID_CIVIL_ID);
+			 
+			 BigDecimal wbLimit = routingPro.getWbLimit();
+			
+			 
+			 if(list!=null && !list.isEmpty() && list.size()>1) {
+				 throw new GlobalException(JaxError.INVALID_CUSTOMER, " Customer has many ID Proofs-'-"+customerId);
+			 }
+			 
+			 if(list!=null && list.size()==1 && JaxUtil.isNullZeroBigDecimalCheck(wbLimit) && (list.get(0).getIdentityTypeId().compareTo(ConstantDocument.BIZ_COMPONENT_ID_CIVIL_ID)==0?true:false)) {
+				if(localNetAmount.compareTo(wbLimit)==1) {
+					 throw new GlobalException(JaxError.INVALID_BENE_BANK, " Non ID card holders cannot exceed amount-"+wbLimit);
+				}
+			 }
+		}
 		 
 	 }
 	
@@ -731,7 +765,7 @@ public class BranchRemittanceManager extends AbstractModel {
 	  List<AdditionalBankRuleAmiec> amiecRuleMap = amiecBankRuleRepo.getPurposeOfTrnxByCountryId(cntMaster);
 	  
 	  if(amiecRuleMap != null && amiecRuleMap.size() != 0) {
-		 return convertPurposeOfTrnxDto(amiecRuleMap);
+		 return convertPurposeOfTrnxDto(amiecRuleMap);//Collections.sort(amiecRuleMap));
 		}else {
 			throw new GlobalException(JaxError.NO_RECORD_FOUND, "No records found");
 		}
@@ -744,7 +778,7 @@ public class BranchRemittanceManager extends AbstractModel {
 	  		AdditionalExchAmiecDto amiecDto = new AdditionalExchAmiecDto();
 	  		amiecDto.setResourceId(amiec.getAdditionalBankRuleDetailId());
 	  		amiecDto.setResourceCode(amiec.getAmiecCode());
-	  		amiecDto.setResourceName(amiec.getAmiecDescription());
+	  		amiecDto.setResourceName(amiec.getAmiecDescription().toUpperCase());
 	  		amiecDto.setFlexField(amiec.getFlexField());
 	  		amiecDto.setCountryId(amiec.getCountryId().getCountryId());
 	  		amiecDto.setAdditionalBankFieldId(amiec.getAdditionalBankFieldId().getAdditionalBankRuleId());

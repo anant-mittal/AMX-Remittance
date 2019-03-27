@@ -134,7 +134,7 @@
 		<!-- <module>server-stomp</module> -->
 
 		<module>sw-adapter</module>
-		<module>test-size</module>
+		<module>server-regex</module>
 		<!-- <module>server-kiosk</module> -->
 		<!-- <module>server-sample</module> -->
 	</modules>

@@ -257,6 +257,10 @@ public enum JaxError implements IExceptionEnum {
 	
 	// for validate Currency pair
 	INVALID_PAIR_ID,
+	ID_TYPE_LENGTH_NOT_DEFINED,
+	INVENTORY_ID_NOT_EXISTS,
+	AMOUNT_VALIDATION,
+	BENE_MAP_SEQ_MISSING,
 	
 	//for wrong fingerprint device
 	FINGERPRINT_EXPIRED;
