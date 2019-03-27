@@ -41,7 +41,7 @@ public class TrnxViewTask extends AbstractDBSyncTask {
 
 	long intervalDays = 10;
 
-	@SchedulerLock(lockMaxAge = AmxCurConstants.INTERVAL_MIN * 30, context = LockContext.BY_CLASS)
+	@SchedulerLock(lockMaxAge = AmxCurConstants.INTERVAL_MIN * 30, context = LockContext.BY_METHOD)
 	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_SEC * 15)
 	public void doTaskModeNight() {
 		if (TimeUtils.inHourSlot(4, 0)) {
@@ -49,7 +49,7 @@ public class TrnxViewTask extends AbstractDBSyncTask {
 		}
 	}
 
-	@SchedulerLock(lockMaxAge = AmxCurConstants.INTERVAL_MIN * 30, context = LockContext.BY_CLASS)
+	@SchedulerLock(lockMaxAge = AmxCurConstants.INTERVAL_MIN * 30, context = LockContext.BY_METHOD)
 	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_MIN * 10)
 	public void doTaskModeDay() {
 		if (!TimeUtils.inHourSlot(4, 0)) {
