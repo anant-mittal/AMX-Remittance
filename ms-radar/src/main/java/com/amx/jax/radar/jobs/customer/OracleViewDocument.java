@@ -27,6 +27,10 @@ public class OracleViewDocument extends AESDocument {
 	UserDeviceClient client;
 	BeneViewRecord bene;
 
+	public OracleViewDocument() {
+
+	}
+
 	public OracleViewDocument(CustomerDetailViewRecord customer) {
 		super(SnapIndexName.CUSTOMER);
 		this.customer = customer;

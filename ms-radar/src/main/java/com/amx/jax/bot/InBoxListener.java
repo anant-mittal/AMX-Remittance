@@ -7,11 +7,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.amx.jax.dbmodel.Customer;
-import com.amx.jax.grid.views.CustomerDetailViewRecord;
 import com.amx.jax.postman.client.WhatsAppClient;
 import com.amx.jax.postman.events.UserInboxEvent;
 import com.amx.jax.postman.model.WAMessage;
-import com.amx.jax.radar.service.CustomerDetailViewRecordService;
+import com.amx.jax.radar.jobs.customer.OracleViewDocument;
+import com.amx.jax.radar.service.SnapApiService;
 import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.tunnel.ITunnelSubscriber;
 import com.amx.jax.tunnel.TunnelEventMapping;
@@ -35,10 +35,10 @@ public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 	WhatsAppClient whatsAppClient;
 
 	@Autowired
-	private CustomerDetailViewRecordService customerDetailViewRecordService;
+	private CustomerRepository customerRepository;
 
 	@Autowired
-	CustomerRepository customerRepository;
+	SnapApiService snapApiService;
 
 	public static final String FOUND_MATCHED = "Thank you for verification. Your account is now linked to this whatsApp number.";
 	public static final String FOUND_MATCH_NOT = "Kindly visit branch to update your whatsapp communication number. "
@@ -96,10 +96,10 @@ public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 				}
 
 			} else {
-				Customer customer = customerRepository.getCustomerByWhatsApp(swissISDProtoString,
+				OracleViewDocument doc = snapApiService.getCustomerByWhatsApp(swissISDProtoString,
 						swissNumberProtoString);
-				if (!ArgUtil.isEmpty(customer)) {
-					if (AmxDBConstants.Yes.equalsIgnoreCase(customer.getWhatsAppVerified())) {
+				if (!ArgUtil.isEmpty(doc)) {
+					if (AmxDBConstants.Yes.equalsIgnoreCase(doc.getCustomer().getWhatsAppVerified())) {
 						replyMessage = NO_ACTION;
 					} else {
 						replyMessage = ANY_TEXT;
