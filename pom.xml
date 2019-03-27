@@ -135,8 +135,8 @@
 
 		<module>sw-adapter</module>
 		<module>server-regex</module>
+		<module>sw-adapter-omn</module>
 		<!-- <module>server-kiosk</module> -->
 		<!-- <module>server-sample</module> -->
 	</modules>
 </project>
-

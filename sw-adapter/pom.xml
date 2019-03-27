@@ -115,6 +115,7 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
+					<executable>true</executable>
 					<outputDirectory>${basedir}/dist-sw-adapter/</outputDirectory>
 					<finalName>${project.name}-${env}-${tnt}-${lane}</finalName>
 				</configuration>

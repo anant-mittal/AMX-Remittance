@@ -1,0 +1,73 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<EntityDescriptor xmlns="urn:oasis:names:tc:SAML:2.0:metadata" xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
+    entityID="https://saml-sdk-example.com">
+
+    <SPSSODescriptor
+        protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol"
+        AuthnRequestsSigned="true"
+        WantAssertionsSigned="false">
+
+        <KeyDescriptor use="signing">
+            <ds:KeyInfo>
+                <ds:X509Data>
+                    <ds:X509Certificate>MIIDLTCCAhWgAwIBAgIBAjANBgkqhkiG9w0BAQ0FADAzMRMwEQYKCZImiZPyLGQB
+                        GRYDY29tMRwwGgYDVQQDDBNTQU1MIFNESyBFeGFtcGxlIENBMCAXDTE3MDcwNDA5
+                        MjQzMFoYDzIwNjcwNjIyMDkyNDMwWjAwMRMwEQYKCZImiZPyLGQBGRYDY29tMRkw
+                        FwYDVQQDDBBTQU1MIFNESyBFeGFtcGxlMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8A
+                        MIIBCgKCAQEAwS9NtJj4d3sEd7N/BALBR0woB1y1AAgQrfxPZA/5SxKPy6CxCDLx
+                        DTiK85j5OZMwGN8v/hUlFj3h4qT1q59K/4VoZSEJiGhXBBTSvZUb3u5Qge5VRRy1
+                        ZlMn8DNIgIWTxgaYcN+XFsvMFu+rcoRwO4bffLsIMzC7viUxZIba7SacnZP4SoEv
+                        XM9CTNqrfhPvdYZdQlZP6hEri6hONlzCpAqs2K/AxoRWkIs+j6nfe2LYuDMWluK7
+                        UF4sYNnPNkn5M+7c1LGNBT51N5qf1QoCQpUwpFU2K2iH6iT/y40y6LNzbd5hnvXM
+                        W/rVpq3XXeOvRSGkc7bSPz+8xefOrZDwcQIDAQABo00wSzAJBgNVHRMEAjAAMB0G
+                        A1UdDgQWBBTvQ2ycfzhvSslO1Ne0WRvgLlvAhDAfBgNVHSMEGDAWgBRj4FMWZCc/
+                        SCit9h1vIncIGEg0DzANBgkqhkiG9w0BAQ0FAAOCAQEAjqBVcfLnHCmxPLzOo2NS
+                        J7R3+M81ucfTO8Z64f+bVmRH/lwq/KStoVwxPmP4h/uu9yXASX6l3mMS0xzN3iSb
+                        80a/sPiFeStGrCWY5jRNhe8+mVvb8rhu8Jvm95zQ35x4FyO6u0UxSQTwOoZHr7h8
+                        tn0/lztjQaD9Mnchorcn0rQiySrwKJ98XkCuvZALRzITQDfRBCY6Mgio9roLkyU5
+                        u4r4J5r1Zu2UuLT53epYH2nmUPhN/0dSwHsbLn2+E0XirmilZPfG6gh8PjM5L2+J
+                        sKKzz5B03XxqEKkBRlyADEMU1D3KDpViIjhBeLDGpjtucG1ifKYPSBUiNbqeSpiZ
+                        FA==
+                    </ds:X509Certificate>
+                </ds:X509Data>
+            </ds:KeyInfo>
+        </KeyDescriptor>
+        
+        <KeyDescriptor use="encryption">
+            <ds:KeyInfo>
+                <ds:X509Data>
+                    <ds:X509Certificate>MIIDazCCAlOgAwIBAgIBAzANBgkqhkiG9w0BAQsFADBFMRMwEQYKCZImiZPyLGQB
+                        GRYDY29tMRAwDgYDVQQKDAdHZW1hbHRvMRwwGgYDVQQDDBNTQU1MIFNESyBFeGFt
+                        cGxlIENBMCAXDTE4MDQwMzEzMDQwMloYDzIwNjgwMzIxMTMwNDAyWjBPMRMwEQYK
+                        CZImiZPyLGQBGRYDY29tMRAwDgYDVQQKDAdHZW1hbHRvMSYwJAYDVQQDDB1TQU1M
+                        IFNESyBFeGFtcGxlIC0gRU5DUllQVElPTjCCASIwDQYJKoZIhvcNAQEBBQADggEP
+                        ADCCAQoCggEBAK0Th+mrV7GLha9vFSpTVQY0yWXs9dQht10YijamHQSUBlXa9vxC
+                        xTAeV9L4NRB7N1Rapbkx/eDzZ+jMu0aL67gYUl2BeqVP5uPqwUWrnQsNcoKuDP2+
+                        FBXPPwo+sv0Bn8guZ2I/sUDV64o42Y/qGiUipgqcJX1TTehN4+EJk5an4CbVWMrn
+                        3hkXhei2QpSfLzByE6oQLlw0qzeudvIfglpyZy3Vx5JaRPOzXqN2VDNZ5bYM9tJq
+                        Gq2Tel4g1rfMqcgQqfWzZfqa0Ny7uHX38OYkwtJAsKR8iQeA0qR5goFWbVf0k2Au
+                        vgwd3tcJohMw/Ij/fyz0joq/eXfxOfO7UZUCAwEAAaNaMFgwCQYDVR0TBAIwADAd
+                        BgNVHQ4EFgQULDBjKgyzNFhiYWMPu9Oll06uAn0wHwYDVR0jBBgwFoAU2UUZgU4+
+                        Ly5gtKBAKC7ylDqJRO0wCwYDVR0PBAQDAgUgMA0GCSqGSIb3DQEBCwUAA4IBAQBJ
+                        8n52Z1uVKrXmYcNQQ6w2UA48o08rCrucZhRcY2xepxpxg9klAlRmGKGG9Rr4i5AU
+                        Wll44ZnWYBwRikcEzhw+JES6zBpTgIOD1BG8VQeSHy65oz7SxWre6NH80ixQvm8q
+                        g3lHMrRJeD18Ky5kYCs6LMRPPImC7cIj3ZdPMew+07ren91v0g4+W8h5TbYOhMT5
+                        N3mTqh7XA+huLKE95tfjvF1Tu4rsJXxucq2tV0gW4vX8DOIPdYKuVG+a/pA4alpD
+                        Ur2fcSRKtxCrstIG7cZmdHipGZsfo0oBUOpmzq1saxGLWYdpEUP9XcU/ZfFmA6L/
+                        l7kle5l+cm08/QL5Fkcm
+                    </ds:X509Certificate>
+                </ds:X509Data>
+            </ds:KeyInfo>
+        </KeyDescriptor>
+
+        <NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified</NameIDFormat>
+
+        <AssertionConsumerService
+            isDefault="true"
+            index="0"
+            Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+            Location="https://localhost:8443/oman-khatm-saml-sdk-example/saml/acs" />
+
+    </SPSSODescriptor>
+
+</EntityDescriptor>

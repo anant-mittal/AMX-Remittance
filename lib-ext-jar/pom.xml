@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
@@ -313,6 +314,39 @@
 							<version>1.0</version>
 							<packaging>jar</packaging>
 							<file>${basedir}/lib/kw-card/paci-card-library.jar</file>
+							<generatePom>true</generatePom>
+						</configuration>
+					</execution>
+
+
+					<!-- Oman Card Library -->
+					<execution>
+						<id>omn-card-oman-khatm-saml</id>
+						<phase>package</phase>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<groupId>com.gemalto.ics.dc.oman.idswitch.sdk.saml</groupId>
+							<artifactId>oman-khatm-saml-sdk</artifactId>
+							<version>1.00.005</version>
+							<packaging>jar</packaging>
+							<file>${basedir}/lib/omn-card/oman-khatm-saml-sdk-1.00.005.jar</file>
+							<generatePom>true</generatePom>
+						</configuration>
+					</execution>
+					<execution>
+						<id>omn-card-saml-sdk</id>
+						<phase>package</phase>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<groupId>com.gemalto.ics.rnd.sdk.saml</groupId>
+							<artifactId>saml-sdk</artifactId>
+							<version>3.2.0.4584</version>
+							<packaging>jar</packaging>
+							<file>${basedir}/lib/omn-card/saml-sdk-3.2.0.4584.jar</file>
 							<generatePom>true</generatePom>
 						</configuration>
 					</execution>
