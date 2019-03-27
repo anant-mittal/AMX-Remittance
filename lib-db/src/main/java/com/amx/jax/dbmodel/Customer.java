@@ -23,9 +23,8 @@ import org.hibernate.annotations.Proxy;
 
 import com.amx.jax.constants.CustomerRegistrationType;
 
-
 @Entity
-@Table(name = "FS_CUSTOMER" )
+@Table(name = "FS_CUSTOMER")
 @Proxy(lazy = false)
 public class Customer implements java.io.Serializable {
 
@@ -33,9 +32,8 @@ public class Customer implements java.io.Serializable {
 	private BigDecimal customerId;
 	private BigDecimal companyId;
 	private BigDecimal countryId;
-	
+
 	private BigDecimal languageId;
-	
 
 	private String shortName;
 	private String shortNameLocal;
@@ -85,11 +83,11 @@ public class Customer implements java.io.Serializable {
 	private String emosCustomer;
 	private Date auditStatementDate;
 	private BigDecimal auditGrossIncome;
-	//private Clob signatureSpecimenClob;
-	
+	// private Clob signatureSpecimenClob;
+
 	private String signatureSpecimenClob;
-	private String remarks; 
-	
+	private String remarks;
+
 	private ArticleDetails fsArticleDetails;
 	private String sundryDebtorReference;
 	private String deactivatedBy;
@@ -99,21 +97,13 @@ public class Customer implements java.io.Serializable {
 	private String isOnlineUser;
 	private BigDecimal customerTypeId;
 	private Date identityExpiredDate;
-	
-	
-	
 
 	/**
-	 * Added following field for CR.
-	 * DAILY_LIMIT 
-	 * WEEKLY_LIMIT 
-	 * MONTHLY_LIMIT 
-	 * QUARTERLY_LIMIT
-	 * HALF_YEARLY_LIMIT
-	 * ANNUAL_LIMIT
+	 * Added following field for CR. DAILY_LIMIT WEEKLY_LIMIT MONTHLY_LIMIT
+	 * QUARTERLY_LIMIT HALF_YEARLY_LIMIT ANNUAL_LIMIT
 	 * 
 	 **/
-	
+
 	private BigDecimal dailyLimit;
 	private BigDecimal weeklyLimit;
 	private BigDecimal quaterlyLimit;
@@ -121,13 +111,13 @@ public class Customer implements java.io.Serializable {
 	private BigDecimal halfYearly;
 	private BigDecimal annualLimit;
 	private String verificationTokenId;
-	
+
 	/* Loyalty Ponits added */
-	
+
 	private BigDecimal loyaltyPoints;
 	private BigDecimal customerReference;
 	private String smartCardIndicator;
-	
+
 	private Date introducedDate;
 	private Date lastTransactionDate;
 	private String pepsIndicator;
@@ -137,19 +127,27 @@ public class Customer implements java.io.Serializable {
 	private String identityInt;
 	private BigDecimal identityFor;
 	private BigDecimal identityTypeId;
-	
-	//WhatsApp and Mobile Number related fields are add
+
+	// WhatsApp and Mobile Number related fields are add
 	private String prefixCodeMobile;
 	private BigDecimal mobileOther;
 	private String prefixCodeMobileOther;
 	private String isMobileWhatsApp;
 	private String isMobileOtherWhatsApp;
-	
+
+	@Column(name = "WHATSAPP_NO")
+	private String whatsapp;
+
+	@Column(name = "WHATSAPP_PREFIX_CODE")
+	private String whatsappPrefix;
+
+	@Column(name = "WHATSAPP_VERIFIED")
+	private String whatsAppVerified;
+
 	private IncomeRangeMaster fsIncomeRangeMaster;
-	
+
 	/* Registration Type added */
 	private CustomerRegistrationType customerRegistrationType;
-	
 
 	public Customer() {
 	}
@@ -158,11 +156,9 @@ public class Customer implements java.io.Serializable {
 		this.customerId = customerId;
 	}
 
-	
-
 	@Id
-	@GeneratedValue(generator="fs_customer_seq",strategy=GenerationType.SEQUENCE)
-	@SequenceGenerator(name="fs_customer_seq" ,sequenceName="FS_CUSTOMER_SEQ",allocationSize=1)
+	@GeneratedValue(generator = "fs_customer_seq", strategy = GenerationType.SEQUENCE)
+	@SequenceGenerator(name = "fs_customer_seq", sequenceName = "FS_CUSTOMER_SEQ", allocationSize = 1)
 	@Column(name = "CUSTOMER_ID", unique = true, nullable = false, precision = 22, scale = 0)
 	public BigDecimal getCustomerId() {
 		return this.customerId;
@@ -172,8 +168,6 @@ public class Customer implements java.io.Serializable {
 		this.customerId = customerId;
 	}
 
-	
-	
 	@Column(name = "SHORT_NAME", length = 200)
 	public String getShortName() {
 		return this.shortName;
@@ -246,7 +240,7 @@ public class Customer implements java.io.Serializable {
 		this.amlStatusLastUpdated = amlStatusLastUpdated;
 	}
 
-@Column(name = "BRANCH_CODE", precision = 6, scale = 0)
+	@Column(name = "BRANCH_CODE", precision = 6, scale = 0)
 	public BigDecimal getBranchCode() {
 		return this.branchCode;
 	}
@@ -372,7 +366,6 @@ public class Customer implements java.io.Serializable {
 	public void setDateOfBirth(Date dateOfBirth) {
 		this.dateOfBirth = dateOfBirth;
 	}
-
 
 	@Column(name = "ALTER_EMAIL_ID", length = 200)
 	public String getAlterEmailId() {
@@ -527,8 +520,6 @@ public class Customer implements java.io.Serializable {
 		this.lastUpdated = lastUpdated;
 	}
 
-	
-	
 	@Column(name = "TOKEN_KEY", length = 50)
 	public String getTokenKey() {
 		return this.tokenKey;
@@ -537,7 +528,7 @@ public class Customer implements java.io.Serializable {
 	public void setTokenKey(String tokenKey) {
 		this.tokenKey = tokenKey;
 	}
-	
+
 	@Column(name = "CONTACT_PERSON", length = 50)
 	public String getContactPerson() {
 		return this.contactPerson;
@@ -546,7 +537,7 @@ public class Customer implements java.io.Serializable {
 	public void setContactPerson(String contactPerson) {
 		this.contactPerson = contactPerson;
 	}
-	
+
 	@Column(name = "CONTACT_NUMBER", precision = 22, scale = 0)
 	public BigDecimal getContactNumber() {
 		return this.contactNumber;
@@ -555,8 +546,7 @@ public class Customer implements java.io.Serializable {
 	public void setContactNumber(BigDecimal contactNumber) {
 		this.contactNumber = contactNumber;
 	}
-	
-	
+
 	@Column(name = "DAILY_TRANSACTION_LIMIT")
 	public BigDecimal getDailyLimit() {
 		return dailyLimit;
@@ -565,6 +555,7 @@ public class Customer implements java.io.Serializable {
 	public void setDailyLimit(BigDecimal dailyLimit) {
 		this.dailyLimit = dailyLimit;
 	}
+
 	@Column(name = "WEEKLY_TRANSACTION_LIMIT")
 	public BigDecimal getWeeklyLimit() {
 		return weeklyLimit;
@@ -573,13 +564,16 @@ public class Customer implements java.io.Serializable {
 	public void setWeeklyLimit(BigDecimal weeklyLimit) {
 		this.weeklyLimit = weeklyLimit;
 	}
+
 	@Column(name = "QUARTERLY_TRANSACTION_LIMIT")
 	public BigDecimal getQuaterlyLimit() {
 		return quaterlyLimit;
 	}
+
 	public void setQuaterlyLimit(BigDecimal quaterlyLimit) {
 		this.quaterlyLimit = quaterlyLimit;
 	}
+
 	@Column(name = "MONTHLY_TRANSACTION_LIMIT")
 	public BigDecimal getMontlyLimit() {
 		return montlyLimit;
@@ -588,6 +582,7 @@ public class Customer implements java.io.Serializable {
 	public void setMontlyLimit(BigDecimal montlyLimit) {
 		this.montlyLimit = montlyLimit;
 	}
+
 	@Column(name = "HALF_YEARLY_TRANSACTION_LIMIT")
 	public BigDecimal getHalfYearly() {
 		return halfYearly;
@@ -596,6 +591,7 @@ public class Customer implements java.io.Serializable {
 	public void setHalfYearly(BigDecimal halfYearly) {
 		this.halfYearly = halfYearly;
 	}
+
 	@Column(name = "ANNUAL_TRANSACTION_LIMIT")
 	public BigDecimal getAnnualLimit() {
 		return annualLimit;
@@ -604,7 +600,7 @@ public class Customer implements java.io.Serializable {
 	public void setAnnualLimit(BigDecimal annualLimit) {
 		this.annualLimit = annualLimit;
 	}
-	
+
 	@Column(name = "VERIFICATION_TOKEN")
 	public String getVerificationTokenId() {
 		return verificationTokenId;
@@ -614,7 +610,6 @@ public class Customer implements java.io.Serializable {
 		this.verificationTokenId = verificationTokenId;
 	}
 
-	
 	@Column(name = "LOYALTY_POINTS")
 	public BigDecimal getLoyaltyPoints() {
 		return loyaltyPoints;
@@ -624,8 +619,6 @@ public class Customer implements java.io.Serializable {
 		this.loyaltyPoints = loyaltyPoints;
 	}
 
-	
-
 	@Column(name = "SMART_CARD_INDICATOR")
 	public String getSmartCardIndicator() {
 		return smartCardIndicator;
@@ -634,7 +627,7 @@ public class Customer implements java.io.Serializable {
 	public void setSmartCardIndicator(String smartCardIndicator) {
 		this.smartCardIndicator = smartCardIndicator;
 	}
-	
+
 	@Column(name = "ISACTIVE")
 	public String getIsActive() {
 		return isActive;
@@ -652,7 +645,7 @@ public class Customer implements java.io.Serializable {
 	public void setIntroducedDate(Date introducedDate) {
 		this.introducedDate = introducedDate;
 	}
-	
+
 	@Column(name = "LAST_TRANSACTION_DATE")
 	public Date getLastTransactionDate() {
 		return lastTransactionDate;
@@ -706,7 +699,7 @@ public class Customer implements java.io.Serializable {
 	public void setSundryDebtorReference(String sundryDebtorReference) {
 		this.sundryDebtorReference = sundryDebtorReference;
 	}
-	
+
 	@Column(name = "AML_REMARKS")
 	public String getAmlRemarks() {
 		return amlRemarks;
@@ -715,7 +708,7 @@ public class Customer implements java.io.Serializable {
 	public void setAmlRemarks(String amlRemarks) {
 		this.amlRemarks = amlRemarks;
 	}
-	
+
 	@Column(name = "BCO_REMARKS")
 	public String getBcoRemarks() {
 		return bcoRemarks;
@@ -742,7 +735,6 @@ public class Customer implements java.io.Serializable {
 	public void setAuditStatementDate(Date auditStatementDate) {
 		this.auditStatementDate = auditStatementDate;
 	}
-	
 
 	@Column(name = "AUDIT_GROSS_INCOME")
 	public BigDecimal getAuditGrossIncome() {
@@ -761,8 +753,8 @@ public class Customer implements java.io.Serializable {
 	public void setSignatureSpecimenClob(String signatureSpecimenClob) {
 		this.signatureSpecimenClob = signatureSpecimenClob;
 	}
-	
-	@Column(name="REMARKS")
+
+	@Column(name = "REMARKS")
 	public String getRemarks() {
 		return remarks;
 	}
@@ -771,7 +763,7 @@ public class Customer implements java.io.Serializable {
 		this.remarks = remarks;
 	}
 
-	@Column(name="KIOSK_PIN")
+	@Column(name = "KIOSK_PIN")
 	public String getKioskPin() {
 		return kioskPin;
 	}
@@ -779,7 +771,8 @@ public class Customer implements java.io.Serializable {
 	public void setKioskPin(String kioskPin) {
 		this.kioskPin = kioskPin;
 	}
-	@Column(name="DELETED_USER")
+
+	@Column(name = "DELETED_USER")
 	public String getDeactivatedBy() {
 		return deactivatedBy;
 	}
@@ -787,7 +780,8 @@ public class Customer implements java.io.Serializable {
 	public void setDeactivatedBy(String deactivatedBy) {
 		this.deactivatedBy = deactivatedBy;
 	}
-	@Column(name="DELETED_DATE")
+
+	@Column(name = "DELETED_DATE")
 	public Date getDeactivatedDate() {
 		return deactivatedDate;
 	}
@@ -796,7 +790,7 @@ public class Customer implements java.io.Serializable {
 		this.deactivatedDate = deactivatedDate;
 	}
 
-	@Column(name="COMPANY_ID")
+	@Column(name = "COMPANY_ID")
 	public BigDecimal getCompanyId() {
 		return companyId;
 	}
@@ -804,7 +798,8 @@ public class Customer implements java.io.Serializable {
 	public void setCompanyId(BigDecimal companyId) {
 		this.companyId = companyId;
 	}
-	@Column(name="COUNTRY_ID")
+
+	@Column(name = "COUNTRY_ID")
 	public BigDecimal getCountryId() {
 		return countryId;
 	}
@@ -812,8 +807,8 @@ public class Customer implements java.io.Serializable {
 	public void setCountryId(BigDecimal countryId) {
 		this.countryId = countryId;
 	}
-    
-	@Column(name="CUSTOMER_REFERENCE")
+
+	@Column(name = "CUSTOMER_REFERENCE")
 	public BigDecimal getCustomerReference() {
 		return customerReference;
 	}
@@ -822,7 +817,7 @@ public class Customer implements java.io.Serializable {
 		this.customerReference = customerReference;
 	}
 
-	@Column(name="IS_ONLINE_USER")
+	@Column(name = "IS_ONLINE_USER")
 	public String getIsOnlineUser() {
 		return isOnlineUser;
 	}
@@ -831,7 +826,7 @@ public class Customer implements java.io.Serializable {
 		this.isOnlineUser = isOnlineUser;
 	}
 
-	@Column(name="IDENTITY_INT")
+	@Column(name = "IDENTITY_INT")
 	public String getIdentityInt() {
 		return identityInt;
 	}
@@ -840,7 +835,7 @@ public class Customer implements java.io.Serializable {
 		this.identityInt = identityInt;
 	}
 
-	@Column(name="LANGUAGE_ID")
+	@Column(name = "LANGUAGE_ID")
 	public BigDecimal getLanguageId() {
 		return languageId;
 	}
@@ -849,7 +844,7 @@ public class Customer implements java.io.Serializable {
 		this.languageId = languageId;
 	}
 
-	@Column(name="NATIONALITY")
+	@Column(name = "NATIONALITY")
 	public BigDecimal getNationalityId() {
 		return nationalityId;
 	}
@@ -859,7 +854,7 @@ public class Customer implements java.io.Serializable {
 	}
 
 	@Temporal(TemporalType.DATE)
-	@Column(name="IDENTITY_EXPIRY_DATE")
+	@Column(name = "IDENTITY_EXPIRY_DATE")
 	public Date getIdentityExpiredDate() {
 		return identityExpiredDate;
 	}
@@ -900,7 +895,7 @@ public class Customer implements java.io.Serializable {
 	public ArticleDetails getFsArticleDetails() {
 		return fsArticleDetails;
 	}
-	
+
 	public void setFsArticleDetails(ArticleDetails fsArticleDetails) {
 		this.fsArticleDetails = fsArticleDetails;
 	}
@@ -925,7 +920,6 @@ public class Customer implements java.io.Serializable {
 		this.customerRegistrationType = customerRegistrationType;
 	}
 
-	
 	@Column(name = "PREFIX_CODE_MOBILE")
 	public String getPrefixCodeMobile() {
 		return prefixCodeMobile;
@@ -970,10 +964,34 @@ public class Customer implements java.io.Serializable {
 	public void setIsMobileOtherWhatsApp(String isMobileOtherWhatsApp) {
 		this.isMobileOtherWhatsApp = isMobileOtherWhatsApp;
 	}
-	
+
 	@PrePersist
 	public void prePersist() {
 		this.lastUpdated = new Date();
-	}	
+	}
+
+	public String getWhatsAppVerified() {
+		return whatsAppVerified;
+	}
+
+	public void setWhatsAppVerified(String whatsAppVerified) {
+		this.whatsAppVerified = whatsAppVerified;
+	}
+
+	public String getWhatsappPrefix() {
+		return whatsappPrefix;
+	}
+
+	public void setWhatsappPrefix(String whatsappPrefix) {
+		this.whatsappPrefix = whatsappPrefix;
+	}
+
+	public String getWhatsapp() {
+		return whatsapp;
+	}
+
+	public void setWhatsapp(String whatsapp) {
+		this.whatsapp = whatsapp;
+	}
 
 }
