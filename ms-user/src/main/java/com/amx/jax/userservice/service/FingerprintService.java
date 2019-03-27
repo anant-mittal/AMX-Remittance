@@ -267,12 +267,13 @@ public class FingerprintService {
 		personinfo.setFirstName(customer.getFirstName());
 		personinfo.setMiddleName(customer.getMiddleName());
 		personinfo.setLastName(customer.getLastName());
+		logger.info("Checking wether delink has been called or not");
 		Email email = new Email();
 		email.addTo(customerOnlineRegistration.getEmail());
 		email.setITemplate(TemplatesMX.FINGERPRINT_DELINKED_SUCCESS);
 		email.setHtml(true);
 		email.getModel().put(RESP_DATA_KEY, personinfo);
-		logger.debug("Email to - " + customerOnlineRegistration.getEmail());
+		logger.info("Email to delink fingerprint- " + customerOnlineRegistration.getEmail());
 		sendEmail(email);
 		return boolRespModel;
 	}
@@ -291,14 +292,15 @@ public class FingerprintService {
 		personinfo.setFirstName(customer.getFirstName());
 		personinfo.setMiddleName(customer.getMiddleName());
 		personinfo.setLastName(customer.getLastName());
+		logger.info("checking wether reset has been called or not");
 		Email email = new Email();
 		email.addTo(customerOnlineRegistration.getEmail());
 		email.setITemplate(TemplatesMX.FINGERPRINT_DELINKED_ATTEMP_SUCCESS);
 		email.setHtml(true);
 		email.getModel().put(RESP_DATA_KEY, personinfo);
-		logger.debug("Email to - " + customerOnlineRegistration.getEmail());
+		logger.info("Email to reset fingerprint- " + customerOnlineRegistration.getEmail());
 		sendEmail(email);
 		return boolRespModel;
-		
+	
 	}
 }
