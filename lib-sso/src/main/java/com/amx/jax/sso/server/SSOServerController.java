@@ -231,7 +231,7 @@ public class SSOServerController {
 					init.setPartnerSAC(ssoUser.getPartnerSAC());
 				}
 				try {
-					//init.getUserClientDto().setTerminalId(new BigDecimal(1068));
+					// init.getUserClientDto().setTerminalId(new BigDecimal(1068));
 					UserAuthInitResponseDTO initResp = rbaacServiceClient.initAuthForUser(init).getResult();
 
 					model.put("mOtpPrefix", ssoUser.getSelfSAC());
@@ -310,9 +310,11 @@ public class SSOServerController {
 			CommonMediaType.APPLICATION_JSON_VALUE, CommonMediaType.APPLICATION_V0_JSON_VALUE })
 	@ResponseBody
 	public String getCardDetails() throws InterruptedException {
-		AmxApiResponse<CardData, Object> resp = AmxApiResponse.build(new CardData());
+		AmxApiResponse<CardData, Map<String, Object>> resp = AmxApiResponse.build(new CardData(),
+				new HashMap<String, Object>());
 		ssoUser.ssoTranxId();
 		String terminlId = ArgUtil.parseAsString(sSOTranx.get().getUserClient().getTerminalId());
+		resp.getMeta().put("tid", terminlId);
 		if (terminlId != null) {
 			CardData card = adapterServiceClient.pollCardDetailsByTerminal(terminlId).getResult();
 			if (card != null) {
