@@ -81,9 +81,15 @@ public class BranchRemittancePaymentDao {
 		customerBankRepository.save(customerBank);
 	}
 	
-	public List<String> fetchCustomerBankNames(BigDecimal customerId,BigDecimal bankId){
+	/*public List<String> fetchCustomerBankNames(BigDecimal customerId,BigDecimal bankId){
 		return localBankDetailsRepository.fetchCustomerBankNames(customerId,bankId);
 	}
+	*/
+	
+	public List<Object[]> fetchCustomerBankNames(BigDecimal customerId,BigDecimal bankId){
+	return localBankDetailsRepository.fetchCustomerBankNames(customerId,bankId);
+}
+
 	
 	public List<StaffAuthorizationView> fetchStaffDetailsForValidation(BigDecimal countryBranchCode){
 		return staffAuthorizationRepository.fetchStaffAuthorization();

@@ -17,6 +17,7 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dbmodel.BenificiaryListView;
@@ -26,14 +27,17 @@ import com.amx.jax.dbmodel.remittance.AdditionalBankDetailsViewx;
 import com.amx.jax.dbmodel.remittance.AdditionalBankRuleAmiec;
 import com.amx.jax.dbmodel.remittance.AdditionalBankRuleMap;
 import com.amx.jax.dbmodel.remittance.AdditionalInstructionData;
+import com.amx.jax.dbmodel.remittance.AmiecAndBankMapping;
 import com.amx.jax.dbmodel.remittance.Document;
 import com.amx.jax.dbmodel.remittance.FlexFiledView;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.model.response.remittance.FlexFieldDto;
 import com.amx.jax.repository.IAdditionalBankRuleAmiecRepository;
+import com.amx.jax.repository.IAmiecAndBankMappingRepository;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.services.BankService;
 
@@ -61,6 +65,9 @@ public class RemittanceApplicationAdditionalDataManager {
 	
 	@Autowired
 	IAdditionalBankRuleAmiecRepository amiecBankRuleRepo;
+	
+	@Autowired
+	IAmiecAndBankMappingRepository amiecAndBankMappingRepository;
 	
 	
 
@@ -166,10 +173,14 @@ public class RemittanceApplicationAdditionalDataManager {
 			remittanceTransactionRequestModel.setFlexFieldDtoMap(requestFlexFields);
 		}
 		AdditionalBankRuleAmiec amiecDetails = getBankRuleAmiecDescription(remittanceTransactionRequestModel.getPurposeOfTrnxId());
+		/** Almull and Amiec mapping table **/
+		AmiecAndBankMapping amicAndBankMapping  = getAmicAndBankMapping(remittanceApplication,amiecDetails);
 		
-		//EX_AMIEC_AND_BANK_MAPPING 
+		if(amicAndBankMapping==null) {
+			throw new GlobalException(JaxError.ADDTIONAL_FLEX_FIELD_REQUIRED, "Flexi filed  is not defined ");
+		}
 		
-		requestFlexFields.put("INDIC1",new FlexFieldDto(amiecDetails.getAdditionalBankFieldId().getAdditionalBankRuleId(), remittanceTransactionRequestModel.getPurposeOfTrnxId(), amiecDetails.getAmiecDescription()));
+		requestFlexFields.put("INDIC1",new FlexFieldDto(amiecDetails.getAdditionalBankFieldId().getAdditionalBankRuleId(), remittanceTransactionRequestModel.getPurposeOfTrnxId(), amicAndBankMapping.getAmiecDescription()));
 		
 		List<AdditionalInstructionData> lstAddInstrData = new ArrayList<AdditionalInstructionData>();
 		
@@ -181,7 +192,7 @@ public class RemittanceApplicationAdditionalDataManager {
 			BigDecimal deliveryModeId = remittanceTransactionRequestModel.getDeliveryModeId();
 			BigDecimal foreignCurrencyId = beneDetails.getCurrencyId();
 			if (v.getSrlId() != null) {
-				AdditionalInstructionData additionalInsDataTmp = createAdditionalIndicatorsData(remittanceApplication,applicationCountryId, k, amiecDetails.getAmiecCode(),amiecDetails.getAmiecDescription(), amiecDetails.getAdditionalBankFieldId().getAdditionalBankRuleId());	
+				AdditionalInstructionData additionalInsDataTmp = createAdditionalIndicatorsData(remittanceApplication,applicationCountryId, k, amicAndBankMapping.getAmiecCode(),amicAndBankMapping.getAmiecDescription(), amiecDetails.getAdditionalBankFieldId().getAdditionalBankRuleId());	
 				lstAddInstrData.add(additionalInsDataTmp);
 			} else {
 				AdditionalInstructionData additionalInsDataTmp = createAdditionalIndicatorsData(remittanceApplication,applicationCountryId, k, ConstantDocument.AMIEC_CODE, v.getAmieceDescription(),v.getAdditionalBankRuleFiledId());
@@ -199,6 +210,15 @@ public class RemittanceApplicationAdditionalDataManager {
 		AdditionalBankRuleAmiec amiec = amiecBankRuleRepo.findOne(purposeOfTrnxId);
 		return amiec;
 	}
+	
+	
+	
+	public AmiecAndBankMapping getAmicAndBankMapping(RemittanceApplication remittanceApplication,AdditionalBankRuleAmiec amiecDetails) {
+		
+		return amiecAndBankMappingRepository .findByCountryIdAndBankIdAndFlexFieldAndAmiecCodeAndIsActive(remittanceApplication.getFsCountryMasterByBankCountryId(),
+				remittanceApplication.getExBankMaster(),amiecDetails.getFlexField(),amiecDetails.getAmiecCode(),ConstantDocument.Yes);
+	}
+	
 	
 	
 	

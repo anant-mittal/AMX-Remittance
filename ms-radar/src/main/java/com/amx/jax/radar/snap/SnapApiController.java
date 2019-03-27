@@ -58,8 +58,10 @@ public class SnapApiController implements ISnapService {
 				.parseAsLong(resp.getAggregations().field("tranx").bucket("last_year").getDocCount(), 0L);
 		long tranxLastYearBranch = ArgUtil.parseAsLong(resp.getAggregations().field("tranx").bucket("last_year")
 				.field("channel").bucket("BRANCH").getDocCount(), 0L);
+		long tranxLastYearKiosk = ArgUtil.parseAsLong(resp.getAggregations().field("tranx").bucket("last_year")
+				.field("channel").bucket("KIOSK").getDocCount(), 0L);
 		summary.put("tranx_last_year", tranxLastYear);
-		summary.put("tranx_last_year_online", tranxLastYear - tranxLastYearBranch);
+		summary.put("tranx_last_year_online", tranxLastYear - tranxLastYearBranch - tranxLastYearKiosk);
 		return resp;
 	}
 

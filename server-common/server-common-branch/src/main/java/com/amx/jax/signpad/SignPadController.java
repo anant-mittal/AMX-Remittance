@@ -31,6 +31,7 @@ import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.File.Type;
 import com.amx.jax.rbaac.RbaacServiceClient;
 import com.amx.jax.rbaac.dto.DevicePairOtpResponse;
+import com.amx.jax.sso.SSOUser;
 import com.amx.jax.sso.server.ApiHeaderAnnotations.ApiDeviceHeaders;
 import com.amx.jax.sso.server.ApiHeaderAnnotations.ApiDeviceSessionHeaders;
 import com.amx.jax.swagger.IStatusCodeListPlugin.ApiStatusService;
@@ -59,6 +60,9 @@ public class SignPadController {
 
 	@Autowired
 	private TerminalBox terminalBox;
+
+	@Autowired(required = false)
+	private SSOUser sSOUser;
 
 	@ApiRequest(type = RequestType.POLL)
 	@ApiDeviceSessionHeaders
@@ -168,9 +172,17 @@ public class SignPadController {
 			produces = MediaType.IMAGE_PNG_VALUE)
 	public ResponseEntity<byte[]> getSignatureStateData(HttpServletResponse response)
 			throws ParseException, IOException {
-		DeviceData deviceData = deviceRequestValidator.getDeviceData();
 
-		SignPadData signPadData = signPadBox.getOrDefault(deviceData.getTerminalId());
+		String terminalId = null;
+
+		if (!ArgUtil.isEmpty(sSOUser) && sSOUser.isAuthDone() && !ArgUtil.isEmpty(sSOUser.getUserClient())) {
+			terminalId = ArgUtil.parseAsString(sSOUser.getUserClient().getTerminalId());
+		} else {
+			DeviceData deviceData = deviceRequestValidator.getDeviceData();
+			terminalId = deviceData.getTerminalId();
+		}
+
+		SignPadData signPadData = signPadBox.getOrDefault(terminalId);
 		if (ArgUtil.isEmpty(signPadData.getSignature())) {
 			return ResponseEntity.noContent().build();
 		}

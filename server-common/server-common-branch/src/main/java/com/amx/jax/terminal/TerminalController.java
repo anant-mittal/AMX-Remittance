@@ -19,13 +19,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.amx.jax.AppConfig;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
-import com.amx.jax.client.DeviceStateClient;
 import com.amx.jax.client.IDeviceStateService;
 import com.amx.jax.device.TerminalBox;
 import com.amx.jax.device.TerminalData;
 import com.amx.jax.model.request.device.SignaturePadCustomerRegStateMetaInfo;
 import com.amx.jax.model.request.device.SignaturePadFCPurchaseSaleInfo;
 import com.amx.jax.model.request.device.SignaturePadRemittanceInfo;
+import com.amx.jax.sso.SSOUser;
 import com.amx.jax.swagger.IStatusCodeListPlugin.ApiStatusService;
 import com.amx.jax.terminal.TerminalConstants.Path;
 import com.amx.utils.ArgUtil;
@@ -46,9 +46,6 @@ import io.swagger.annotations.ApiOperation;
 public class TerminalController {
 
 	@Autowired
-	private DeviceStateClient deviceClient;
-
-	@Autowired
 	private TerminalBox terminalBox;
 
 	@Autowired
@@ -57,12 +54,20 @@ public class TerminalController {
 	@Autowired
 	TerminalService terminalService;
 
-	@RequestMapping(value = { Path.TERMINAL_STATUS_PING }, method = { RequestMethod.GET })
-	public String getPing(@RequestParam String state, @RequestParam String terminalId,
-			@RequestParam(required = false) String status, @RequestParam(required = false) Long pageStamp,
-			@RequestParam(required = false) Long startStamp,
-			Model model,
-			HttpServletResponse response, HttpServletRequest request) throws MalformedURLException, URISyntaxException {
+	@Autowired(required = false)
+	private SSOUser sSOUser;
+
+	public static class PingStatus {
+		public String state;
+		public String status;
+		public Long pageStamp;
+		public Long startStamp;
+	}
+
+	private PingStatus getPingStatus(String terminalId,
+			String state, String status,
+			Long pageStamp, Long startStamp) {
+		PingStatus map = new PingStatus();
 
 		TerminalData terminalData = terminalBox.getOrDefault(terminalId);
 
@@ -87,12 +92,42 @@ public class TerminalController {
 			terminalBox.fastPut(terminalId, terminalData);
 		}
 
+		map.state = state;
+		map.status = status;
+		map.pageStamp = pageStamp;
+		map.startStamp = startStamp;
+
+		return map;
+	}
+
+	@ResponseBody
+	@RequestMapping(value = { Path.TERMINAL_STATUS_PING }, method = { RequestMethod.POST })
+	public AmxApiResponse<PingStatus, Object> postPing(@RequestParam String state,
+			@RequestParam(required = false) String status, @RequestParam(required = false) Long pageStamp,
+			@RequestParam(required = false) Long startStamp,
+			Model model,
+			HttpServletResponse response, HttpServletRequest request) {
+		PingStatus map = getPingStatus(ArgUtil.parseAsString(sSOUser.getUserClient().getTerminalId()), state, status,
+				pageStamp, startStamp);
+		return AmxApiResponse.build(map);
+	}
+
+	@RequestMapping(value = { Path.TERMINAL_STATUS_PING }, method = { RequestMethod.GET })
+	public String getPing(@RequestParam String state, @RequestParam String terminalId,
+			@RequestParam(required = false) String status, @RequestParam(required = false) Long pageStamp,
+			@RequestParam(required = false) Long startStamp,
+			Model model,
+			HttpServletResponse response, HttpServletRequest request) throws MalformedURLException, URISyntaxException {
+
+		PingStatus map = getPingStatus(ArgUtil.parseAsString(sSOUser.getUserClient().getTerminalId()), state, status,
+				pageStamp, startStamp);
+
 		model.addAttribute("url",
 				Urly.parse(HttpUtils.getServerName(request)).path(appConfig.getAppPrefix())
 						.path(Path.TERMINAL_STATUS_PING)
-						.queryParam("terminalId", terminalId).queryParam("state", state)
-						.queryParam("status", status).queryParam("pageStamp", pageStamp)
-						.queryParam("startStamp", startStamp)
+						.queryParam("terminalId", terminalId).queryParam("state", map.state)
+						.queryParam("status", map.status).queryParam("pageStamp", map.pageStamp)
+						.queryParam("startStamp", map.startStamp)
 						.getURL());
 		return "js/signpad";
 	}

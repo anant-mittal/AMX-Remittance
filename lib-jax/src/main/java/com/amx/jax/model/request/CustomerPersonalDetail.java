@@ -11,6 +11,7 @@ import org.springframework.format.annotation.NumberFormat;
 
 import com.amx.jax.AbstractModel;
 import com.amx.jax.constants.CustomerRegistrationType;
+import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.swagger.ApiMockModelProperty;
 
 /**
@@ -120,6 +121,7 @@ public class CustomerPersonalDetail extends AbstractModel {
 	BigDecimal customerId;
 	String customerSignature;
 	
+	private ResourceDTO customerCategory;
 	private String shortName;
 
 	public CustomerRegistrationType getRegistrationType() {
@@ -309,10 +311,18 @@ public class CustomerPersonalDetail extends AbstractModel {
 		this.customerSignature = customerSignature;
 	}
 
+	public ResourceDTO getCustomerCategory() {
+		return customerCategory;
+	}
+	
 	public String getShortName() {
 		return shortName;
 	}
 
+	public void setCustomerCategory(ResourceDTO customerCategory) {
+		this.customerCategory = customerCategory;
+	}
+	
 	public void setShortName(String shortName) {
 		this.shortName = shortName;
 	}

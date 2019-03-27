@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,22 +25,30 @@ import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxTransactionModel;
 import com.amx.jax.constants.CustomerRegistrationType;
 import com.amx.jax.dal.BizcomponentDao;
+import com.amx.jax.dao.BlackListDao;
 import com.amx.jax.dbmodel.BizComponentData;
 import com.amx.jax.dbmodel.ContactDetail;
 import com.amx.jax.dbmodel.CountryMaster;
 import com.amx.jax.dbmodel.Customer;
+import com.amx.jax.dbmodel.CustomerCategoryDiscountModel;
+import com.amx.jax.dbmodel.CustomerExtendedModel;
 import com.amx.jax.dbmodel.CustomerIdProof;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.DistrictMaster;
 import com.amx.jax.dbmodel.StateMaster;
+import com.amx.jax.dbmodel.remittance.IDNumberLengthCheckView;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.OtpData;
+import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.model.request.CustomerPersonalDetail;
 import com.amx.jax.model.request.HomeAddressDetails;
 import com.amx.jax.model.request.LocalAddressDetails;
 import com.amx.jax.model.response.customer.OffsiteCustomerDataDTO;
 import com.amx.jax.repository.CustomerEmployeeDetailsRepository;
+import com.amx.jax.repository.ICustomerCategoryDiscountRepo;
+import com.amx.jax.repository.ICustomerExtendedRepository;
+import com.amx.jax.repository.remittance.IIdNumberLengthCheckRepository;
 import com.amx.jax.trnx.CustomerRegistrationTrnxModel;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.repository.ContactDetailsRepository;
@@ -47,8 +56,10 @@ import com.amx.jax.userservice.repository.CustomerIdProofRepository;
 import com.amx.jax.userservice.repository.CustomerRepository;
 import com.amx.jax.userservice.service.ContactDetailService;
 import com.amx.jax.userservice.service.UserService;
+import com.amx.jax.userservice.service.UserValidationService;
 import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.JaxUtil;
+import com.amx.jax.util.validation.CustomerValidationService;
 import com.amx.utils.Constants;
 
 @Component
@@ -85,6 +96,28 @@ public class CustomerRegistrationManager extends TransactionModel<CustomerRegist
 	
 	@Autowired
 	CustomerEmployeeDetailsRepository customerEmployeeDetailsRepository;
+	
+	@Autowired
+	IIdNumberLengthCheckRepository idnumberLengthCheckRepos;
+	
+	@Autowired
+	CustomerValidationService customerValidationService;
+	
+	@Autowired
+	MetaData metaData;
+	
+	@Autowired
+	private BlackListDao blistDao;
+	
+	@Autowired
+	UserValidationService userValidationService;
+	
+	@Autowired
+	ICustomerExtendedRepository customerExtendedRepo;
+	
+	@Autowired
+	ICustomerCategoryDiscountRepo customerCategoryRepository;
+	
 	
 	
 	@Override
@@ -310,15 +343,55 @@ public class CustomerRegistrationManager extends TransactionModel<CustomerRegist
 	public OffsiteCustomerDataDTO getCustomerDeatils(String  identityInt,BigDecimal identityTypeId) {
 		OffsiteCustomerDataDTO offsiteCustomer = new OffsiteCustomerDataDTO();
 		CustomerPersonalDetail customerDetails = new CustomerPersonalDetail();
-		
 		LOGGER.debug("identityInt :"+identityInt+"\t identityTypeId :"+identityTypeId+"\t country id "+jaxMetaInfo.getCountryId());
+		
+	/*	if(!customerValidationService.validateIdentityInt(identityInt, metaData.getCountry().getISO2Code(), identityTypeId)) {
+			throw new GlobalException(JaxError.ID_TYPE_LENGTH_NOT_DEFINED,"The minimum length should be:"+minimumLength +" and maximum should be :"+maxLength);
+		}*/
+		
+		
+		IDNumberLengthCheckView idnumberLengthCheck=idnumberLengthCheckRepos.findByIDTypeId(identityTypeId);
+		if(idnumberLengthCheck!=null) {
+			BigDecimal maxLength= idnumberLengthCheck.getiDLength();
+			BigDecimal minimumLength=idnumberLengthCheck.getMinIDLength();
+			BigDecimal identityIntLength = identityInt==null?BigDecimal.ZERO:new BigDecimal(identityInt.length());
+			if(identityIntLength.compareTo(minimumLength)<0 || identityIntLength.compareTo(maxLength)>0) {
+				throw new GlobalException(JaxError.ID_TYPE_LENGTH_NOT_DEFINED,"The minimum length should be:"+minimumLength +" and maximum should be :"+maxLength);
+			}
+		}else {
+			throw new GlobalException(JaxError.ID_TYPE_LENGTH_NOT_DEFINED,"Id length setup is missing  in paramter :"+identityInt +" identityTypeId :"+identityTypeId);
+		}
+		
 		Customer customer = customerRepository.getCustomerDetails(identityInt, identityTypeId,jaxMetaInfo.getCountryId());
-	
 		if(customer!=null) {
 			
-			if(customer.getIsActive()!= null && !customer.getIsActive().equalsIgnoreCase(ConstantDocument.Yes)) {
-				throw new GlobalException(JaxError.CUSTOMER_INACTIVE,"Customer is inactive :"+identityInt +"\t identityTypeId :"+identityTypeId);
+			if(StringUtils.isBlank(customer.getIsActive()) && customer.getIsActive().equalsIgnoreCase(ConstantDocument.No)) {
+				throw new GlobalException(JaxError.CUSTOMER_INACTIVE,"Customer is partialy registed :"+identityInt +"\t identityTypeId :"+identityTypeId);
+			}else if(StringUtils.isBlank(customer.getIsActive()) && customer.getIsActive().equalsIgnoreCase(ConstantDocument.Deleted)) {
+				throw new GlobalException(JaxError.CUSTOMER_INACTIVE,"Customer is deactivated :"+identityInt +"\t identityTypeId :"+identityTypeId);
+			}else if(StringUtils.isBlank(customer.getIsActive()) && customer.getIsActive().equalsIgnoreCase(ConstantDocument.Black)) {
+				throw new GlobalException(JaxError.CUSTOMER_INACTIVE,"Customer is blacklisted :"+identityInt +"\t identityTypeId :"+identityTypeId);
 			}
+			if(customer.getIdentityExpiredDate()!=null && customer.getIdentityExpiredDate().compareTo(new Date()) < 0) {
+				throw new GlobalException(JaxError.ID_PROOF_EXPIRED, "Id proof has been expired.");
+			}
+			
+			if(customer.getSignatureSpecimenClob()==null){
+				throw new GlobalException(JaxError.CUSTOMER__SIGNATURE_UNAVAILABLE,"Customer signature not available.");
+			}
+			
+			boolean insuranceCheck = ("Y".equals(customer.getMedicalInsuranceInd())|| "N".equals(customer.getMedicalInsuranceInd()));
+			if (!insuranceCheck) {
+				throw new GlobalException(JaxError.INVALID_INSURANCE_INDICATOR, "INVALID MEDICAL INSURANCE INDICATOR");
+			}
+			
+			userValidationService.validateCustIdProofs(customer.getCustomerId());
+			userValidationService.validateOldEmosData(customer);
+			userValidationService.validateCustContact(customer);
+			userValidationService.validateBlackListedCustomerForLogin(customer);
+			//userValidationService.validateBlackListedCustomer(customer);
+			
+			
 			
 			offsiteCustomer.setIdentityInt(customer.getIdentityInt());
 			offsiteCustomer.setIdentityTypeId(customer.getIdentityTypeId());
@@ -343,6 +416,7 @@ public class CustomerRegistrationManager extends TransactionModel<CustomerRegist
 			customerDetails.setIsWatsApp(customer.getIsMobileWhatsApp());
 			customerDetails.setRegistrationType(customer.getCustomerRegistrationType());
 			customerDetails.setCustomerSignature(customer.getSignatureSpecimenClob());
+			customerDetails.setCustomerCategory(getCustomerCategory(customer.getCustomerId()));
 			
 			offsiteCustomer.setCustomerPersonalDetail(customerDetails);
 			
@@ -393,10 +467,25 @@ public class CustomerRegistrationManager extends TransactionModel<CustomerRegist
 				offsiteCustomer.setHomeAddressDestails(homeAddress);
 			}
 		}else {
-			throw new GlobalException(JaxError.NO_RECORD_FOUND,"Customer details not found :"+identityInt +"\t identityTypeId :"+identityTypeId);
+			throw new GlobalException(JaxError.NO_RECORD_FOUND,"The customer does not exist in the system :"+identityInt);
 		}
 		
 		return offsiteCustomer;
 	}
+	
+	
+private ResourceDTO getCustomerCategory(BigDecimal customerId) {
+	ResourceDTO dto = new ResourceDTO();
+	CustomerExtendedModel customerExtendedModel =  customerExtendedRepo.findByCustomerId(customerId);
+	if(customerExtendedModel != null) {
+		CustomerCategoryDiscountModel categorydiscountModel = customerCategoryRepository.findByIdAndIsActive(customerExtendedModel.getCustCatMasterId(),ConstantDocument.Yes);
+		
+		dto.setResourceId(categorydiscountModel.getId());
+		dto.setResourceName(categorydiscountModel.getCustomerCatagory());
+	}
+	return dto ; 
+}
+
+
 	
 }

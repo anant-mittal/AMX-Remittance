@@ -2,6 +2,7 @@ package com.amx.jax.branchremittance.manager;
 
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -17,14 +18,17 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.amxlib.model.CustomerModel;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.BranchRemittancePaymentDao;
+import com.amx.jax.dbmodel.BanksView;
 import com.amx.jax.dbmodel.CurrencyMasterModel;
 import com.amx.jax.dbmodel.CurrencyWiseDenomination;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.ParameterDetails;
 import com.amx.jax.dbmodel.remittance.CustomerBank;
 import com.amx.jax.dbmodel.remittance.LocalBankDetailsView;
+import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.ShoppingCartDetails;
 import com.amx.jax.dbmodel.remittance.StaffAuthorizationView;
 import com.amx.jax.error.JaxError;
@@ -43,6 +47,7 @@ import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
 import com.amx.jax.model.response.remittance.PaymentModeOfPaymentDto;
 import com.amx.jax.repository.IBankMasterFromViewDao;
 import com.amx.jax.repository.ICustomerRepository;
+import com.amx.jax.repository.RemittanceApplicationRepository;
 import com.amx.jax.service.CurrencyMasterService;
 import com.amx.jax.util.RoundUtil;
 
@@ -70,6 +75,9 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 	
 	@Autowired
 	ICustomerRepository customerRepos;
+	
+	@Autowired
+	RemittanceApplicationRepository appRepository;
 	
 	
 
@@ -101,25 +109,27 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 				totalCustomerLoyaltyPoits = customer.getLoyaltyPoints()==null?BigDecimal.ZERO:customer.getLoyaltyPoints();
 			}
 			
+			deActivateOnlineApplication();
+			
 			List<ShoppingCartDetails> lstCustomerShopping = branchRemittancePaymentDao.fetchCustomerShoppingCart(customerId);
 			if(lstCustomerShopping != null && lstCustomerShopping.size() != 0) {
 				for (ShoppingCartDetails customerApplDto : lstCustomerShopping) {
 					BigDecimal fcCurrencyId = customerApplDto.getForeignCurrency();
-					totalLocalAmount = totalLocalAmount.add(customerApplDto.getLocalTranxAmount());
-					totalNetAmount   =totalNetAmount.add(customerApplDto.getLocalNextTranxAmount());
-					totalTrnxFees    =totalTrnxFees.add(customerApplDto.getLocalCommisionAmount());
+					totalLocalAmount = totalLocalAmount.add(customerApplDto.getLocalTranxAmount()==null?BigDecimal.ZERO:customerApplDto.getLocalTranxAmount());
+					totalNetAmount   =totalNetAmount.add(customerApplDto.getLocalNextTranxAmount()==null?BigDecimal.ZERO:customerApplDto.getLocalNextTranxAmount());
+					totalTrnxFees    =totalTrnxFees.add(customerApplDto.getLocalCommisionAmount()==null?BigDecimal.ZERO:customerApplDto.getLocalCommisionAmount());
 					totalLyltyPointAmt =totalLyltyPointAmt.add(customerApplDto.getLoyaltsPointencahsed()==null?BigDecimal.ZERO:customerApplDto.getLoyaltsPointencahsed());
 					
-					if(customerApplDto.getLoyaltsPointIndicator()!=null && customerApplDto.getLoyaltsPointIndicator().equalsIgnoreCase(ConstantDocument.Yes)) {
-						totalCustomerLoyaltyPoits = totalCustomerLoyaltyPoits.subtract(new BigDecimal(1000));
+					if(customerApplDto.getLoyaltsPointIndicator()!=null && customerApplDto.getLoyaltsPointIndicator().equalsIgnoreCase(ConstantDocument.Yes) && totalCustomerLoyaltyPoits.compareTo(new BigDecimal(1000))>=0) {
+						totalCustomerLoyaltyPoits = totalCustomerLoyaltyPoits.subtract(customerApplDto.getLoyaltsPointencahsed()==null?BigDecimal.ZERO:customerApplDto.getLoyaltsPointencahsed());
 					}
 					
-					
 					cartList.setTotalLocalAmount(totalLocalAmount);
-					cartList.setTotalNetAmount(totalNetAmount.subtract(totalLyltyPointAmt));
+					cartList.setTotalNetAmount(totalNetAmount);//.subtract(totalLyltyPointAmt));
 					cartList.setTotalTrnxFees(totalTrnxFees);
 					cartList.setTotalLyltyPointAmt(totalLyltyPointAmt);
 					cartList.setTotalLoyaltyPointAvaliable(totalCustomerLoyaltyPoits);
+					cartList.setTotalNetCollectionAmount(totalNetAmount.subtract(totalLyltyPointAmt==null?BigDecimal.ZERO:totalLyltyPointAmt));
 					
 					if(fcCurrencyId == null || fcCurrencyId.compareTo(BigDecimal.ZERO) == 0){
 						throw new GlobalException(JaxError.NULL_CURRENCY_ID, "Null foreign currency id passed");
@@ -134,6 +144,8 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 						throw new GlobalException(JaxError.INVALID_CURRENCY_ID, "Invalid foreign currency id passed");
 					}
 				}
+			}else {
+				cartList.setTotalLoyaltyPointAvaliable(totalCustomerLoyaltyPoits);
 			}
 		}else {
 			throw new GlobalException(JaxError.INVALID_CURRENCY_ID, "Invalid local currency id passed");
@@ -205,7 +217,9 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 		shoppingCartDataTableBean.setRoutingBank(bankMaster.getBankListByBankId(shoppingCartDetails.getRoutingBankId()).get(0).getBankFullName());
 		shoppingCartDataTableBean.setBeneRelationseqId(shoppingCartDetails.getBeneRelationseqId());
 		shoppingCartDataTableBean.setSourceOfIncomeId(shoppingCartDetails.getSourceofincome()==null?BigDecimal.ZERO:new BigDecimal(shoppingCartDetails.getSourceofincome()));
+		shoppingCartDataTableBean.setDomXRate(RoundUtil.roundBigDecimal(BigDecimal.ONE.divide(shoppingCartDetails.getExchangeRateApplied(),10,RoundingMode.HALF_UP),breakup.getFcDecimalNumber().intValue()));
 		
+	
 		
 		
 		return shoppingCartDataTableBean;
@@ -281,9 +295,8 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 			if(lstCustLocalBanksDto != null && lstCustLocalBanksDto.size() != 0) {
 				for (LocalBankDetailsDto localBankDetailsDto : lstCustLocalBanksDto) {
 					CustomerBankDetailsDto customerBankDetailsDto = new CustomerBankDetailsDto();
+					customerBankDetailsDto = fetchCustomerNames(customerId, localBankDetailsDto.getChequeBankId());
 					customerBankDetailsDto.setLocalBankDetailsDto(localBankDetailsDto);
-					List<String> custBankName = fetchCustomerNames(customerId, localBankDetailsDto.getChequeBankId());
-					customerBankDetailsDto.setCustomerNames(custBankName);
 					lstCustBanksDto.add(customerBankDetailsDto);
 				}
 			}
@@ -311,11 +324,37 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 		return dto;
 	}
 
-	public List<String> fetchCustomerNames(BigDecimal customerId,BigDecimal bankId){
-		List<String> lstCustDetails = branchRemittancePaymentDao.fetchCustomerBankNames(customerId,bankId);
-		return lstCustDetails;
+	public CustomerBankDetailsDto fetchCustomerNames(BigDecimal customerId,BigDecimal bankId){
+		CustomerBankDetailsDto customerBankDetailsDto = new CustomerBankDetailsDto();
+	List<Object[]> custBankName = branchRemittancePaymentDao.fetchCustomerBankNames(customerId,bankId);
+	if (custBankName != null && custBankName.size() != 0) {
+		for (Object object : custBankName) {
+			Object[] custBankNameObject = (Object[]) object;
+			if(custBankNameObject[0]!=null) {
+				List<String> nameList = new ArrayList<>();
+				nameList.add(custBankNameObject[0].toString());
+				customerBankDetailsDto.setCustomerNames(nameList);
+			}
+			if(custBankNameObject[1]!=null) {
+				List<BigDecimal> relationList = new ArrayList<>();
+				relationList.add(new BigDecimal(custBankNameObject[1].toString()));
+				customerBankDetailsDto.setRelationId(relationList);
+			}
+			
+		}
 	}
+	
+	
+	//customerBankDetailsDto.setCustomerNames(new ArrayList(custBankName.get(0).));
+	//lstCustBanksDto.add(customerBankDetailsDto);
+	
+	
+	return customerBankDetailsDto;
+	//return lstCustDetails;
+}
 
+	
+	
 	/* 
 	 * @param   :fetch pos banks list
 	 * @return ResourceDTO
@@ -428,4 +467,28 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 		return validStatus;
 	}
 
+	
+
+	public Boolean deActivateOnlineApplication() {
+		try {
+			
+			List<RemittanceApplication> listOfApplication = appRepository.deActivateNotUsedApplication(new Customer(metaData.getCustomerId()));
+			if(!listOfApplication.isEmpty() && listOfApplication!=null) {
+				for(RemittanceApplication application : listOfApplication) {
+					if(application.getLoccod().compareTo(ConstantDocument.ONLINE_BRANCH_LOC_CODE)==0) {
+					RemittanceApplication remittanceApplication =  appRepository.findOne(application.getRemittanceApplicationId());
+					remittanceApplication.setIsactive("D");
+					remittanceApplication.setApplicaitonStatus(null);
+					appRepository.save(remittanceApplication);
+					}
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new GlobalException("deActivateApplication faliled for custoemr:"+metaData.getCustomerId());
+		}
+		return true;
+	}
+	
 }

@@ -1,6 +1,7 @@
 package com.amx.jax.model.request.remittance;
 
 import java.math.BigDecimal;
+
 import com.amx.jax.model.AbstractModel;
 import com.amx.jax.model.response.ExchangeRateBreakup;
 

@@ -719,8 +719,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 				auditService.log(auditEvent.result(Result.REJECTED).message(JaxError.NULL_CUSTOMER_ID));
 				throw new GlobalException(JaxError.NULL_CUSTOMER_ID, "Customer Id is not available");
 			}
-			Customer customer = customerRepository.getCustomerByCustomerIdAndIsActive(metaData.getCustomerId(),
-					Constants.NO);
+			Customer customer = customerRepository.findOne(metaData.getCustomerId());
 			if (customer == null) {
 				auditService.log(auditEvent.result(Result.REJECTED).message(JaxError.INVALID_CUSTOMER));
 				throw new GlobalException(JaxError.INVALID_CUSTOMER, "Customer is Invalid");
@@ -819,8 +818,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 			auditService.log(auditEvent.result(Result.REJECTED).message(JaxError.SIGNATURE_NOT_AVAILABLE));
 			throw new GlobalException(JaxError.SIGNATURE_NOT_AVAILABLE, "Signature not available");
 		}
-		Customer customer = customerRepository.getCustomerByCustomerIdAndIsActive(metaData.getCustomerId(),
-				Constants.NO);
+		Customer customer = customerRepository.findOne((metaData.getCustomerId()));
 		if (customer == null) {
 			auditService.log(auditEvent.result(Result.REJECTED).message(JaxError.INVALID_CUSTOMER));
 			throw new GlobalException(JaxError.INVALID_CUSTOMER, "Customer is Invalid");
@@ -970,6 +968,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		CustomerPersonalDetail customerDetails = new CustomerPersonalDetail();
 
 		if (customer != null) {
+			customerDetails.setCustomerId(customer.getCustomerId());
 			customerDetails.setCountryId(customer.getCountryId());
 			customerDetails.setNationalityId(customer.getNationalityId());
 			customerDetails.setIdentityInt(customer.getIdentityInt());

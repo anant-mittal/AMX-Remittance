@@ -65,6 +65,7 @@ public class BranchImpsRoutingManager {
 		BigDecimal routingBankIdImps = P_ROUTING_BANK_ID.getValue(impsOutputParams);
 		if (routingBankIdImps != null) {
 			LOGGER.debug("IMPS logic applicable for remittanceApplicationParams: {}", remittanceApplicationParams.toString());
+			remitApplParametersMap.putAll(impsOutputParams);
 			routingResponseDto.getRoutingBankDto().clear();
 			routingResponseDto.getRoutingBankBranchDto().clear();
 			routingResponseDto.getRemittanceModeList().clear();

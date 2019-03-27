@@ -19,7 +19,7 @@ public final class AmxConstants {
 	/**
 	 * Offline Otp tolerance in Seconds
 	 */
-	public static final long OFFLINE_OTP_TOLERANCE = 30;
+	public static final long OFFLINE_OTP_TOLERANCE = 60;
 
 	/**
 	 * SMS Otp TTL in Seconds
