@@ -7,5 +7,7 @@ public enum JaxApiFlow {
 	/**
 	 * partial reg
 	 */
-	SIGNUP_DEFAULT;
+	SIGNUP_DEFAULT,
+	OFFSITE_REGISTRATION
+	;
 }

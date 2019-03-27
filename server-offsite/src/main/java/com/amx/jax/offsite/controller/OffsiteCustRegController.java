@@ -116,7 +116,13 @@ public class OffsiteCustRegController {
 	@RequestMapping(value = "/customer_info/get", method = { RequestMethod.GET })
 	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerData(String identity,
 			BigDecimal identityType) {
-		return offsiteCustRegClient.getOffsiteCustomerData(identity, identityType);
+		AmxApiResponse<OffsiteCustomerDataDTO, Object> x = offsiteCustRegClient.getOffsiteCustomerData(identity,
+				identityType);
+		if (!ArgUtil.isEmpty(x.getResult())
+				&& !ArgUtil.isEmpty(x.getResult().getCustomerPersonalDetail())) {
+			customerSession.setCustomerId(x.getResult().getCustomerPersonalDetail().getCustomerId());
+		}
+		return x;
 	}
 
 	@RequestMapping(value = "/customer_info/save", method = { RequestMethod.POST })

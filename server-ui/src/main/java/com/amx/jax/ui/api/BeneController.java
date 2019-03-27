@@ -20,14 +20,16 @@ import com.amx.amxlib.model.BenePersonalDetailModel;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.response.JaxTransactionResponse;
 import com.amx.amxlib.model.trnx.BeneficiaryTrnxModel;
+import com.amx.jax.JaxAuthContext;
+import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
 import com.amx.jax.ui.model.AuthData;
 import com.amx.jax.ui.model.AuthDataInterface.AuthRequestOTP;
 import com.amx.jax.ui.model.AuthDataInterface.AuthResponseOTPprefix;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.response.ResponseWrapperM;
-import com.amx.jax.ui.response.WebResponseStatus;
 import com.amx.jax.ui.service.JaxService;
 import com.amx.jax.ui.session.Transactions;
+import com.amx.utils.ArgUtil;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -108,19 +110,19 @@ public class BeneController {
 			@RequestParam BeneStatus status) {
 		ResponseWrapperM<Object, AuthResponseOTPprefix> wrapper = new ResponseWrapperM<>();
 		// Disable Beneficiary
-		mOtp = (mOtp == null) ? mOtpHeader : mOtp;
-		eOtp = (eOtp == null) ? eOtpHeader : eOtp;
+		mOtp = JaxAuthContext.mOtp(ArgUtil.ifNotEmpty(mOtp, mOtpHeader));
+		eOtp = JaxAuthContext.mOtp(ArgUtil.ifNotEmpty(eOtp, eOtpHeader));
 
 		if (mOtp == null && eOtp == null) {
 			wrapper.setMeta(new AuthData());
 			CivilIdOtpModel model = jaxService.setDefaults().getBeneClient().sendOtp().getResult();
 			wrapper.getMeta().setmOtpPrefix(model.getmOtpPrefix());
 			wrapper.getMeta().seteOtpPrefix(model.geteOtpPrefix());
-			wrapper.setStatus(WebResponseStatus.DOTP_REQUIRED);
+			wrapper.setStatus(OWAStatusStatusCodes.DOTP_REQUIRED);
 		} else {
 			wrapper.setData(jaxService.setDefaults().getBeneClient()
 					.updateStatus(beneficaryMasterSeqId, remarks, status, mOtp, eOtp).getResult());
-			wrapper.setStatus(WebResponseStatus.VERIFY_SUCCESS);
+			wrapper.setStatus(OWAStatusStatusCodes.VERIFY_SUCCESS);
 		}
 
 		return wrapper;

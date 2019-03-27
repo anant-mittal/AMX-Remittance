@@ -8,7 +8,10 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import com.amx.jax.AppContextUtil;
+import com.amx.jax.dict.Tenant;
 import com.amx.jax.logger.LoggerService;
+import com.amx.utils.UniqueID;
 
 @Configuration
 @EnableScheduling
@@ -21,15 +24,43 @@ public class BrokerScheduler {
 	@Autowired
 	private BrokerService brokerService;
 
+	@Autowired
+	BrokerConfig brokerConfig;
+
 	@Scheduled(fixedDelay = BrokerConstants.PUSH_NOTIFICATION_FREQUENCY)
 	public void pushNewEventNotifications() {
-		brokerService.pushNewEventNotifications();
+		Tenant[] tenants = brokerConfig.getTenants();
+		for (Tenant tenant : tenants) {
+			try {
+				AppContextUtil.setTenant(tenant);
+				String sessionId = UniqueID.generateString();
+				AppContextUtil.setSessionId(sessionId);
+				AppContextUtil.getTraceId(true, true);
+				AppContextUtil.init();
+				brokerService.pushNewEventNotifications(tenant, sessionId);
+			} catch (Exception e) {
+				logger.error("Scheduler Fetch ERROR", e);
+			}
+		}
 	}
 
 	@Scheduled(
 			fixedDelay = BrokerConstants.DELETE_NOTIFICATION_FREQUENCY,
 			initialDelay = BrokerConstants.DELETE_NOTIFICATION_FREQUENCY)
 	public void cleanUpEventNotificationRecords() {
-		brokerService.cleanUpEventNotificationRecords();
+
+		Tenant[] tenants = brokerConfig.getTenants();
+		for (Tenant tenant : tenants) {
+			try {
+				AppContextUtil.setTenant(tenant);
+				String sessionId = UniqueID.generateString();
+				AppContextUtil.setSessionId(sessionId);
+				AppContextUtil.getTraceId(true, true);
+				AppContextUtil.init();
+				brokerService.cleanUpEventNotificationRecords(tenant, sessionId);
+			} catch (Exception e) {
+				logger.error("Scheduler Delete ERROR", e);
+			}
+		}
 	}
 }

@@ -8,13 +8,11 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.amx.jax.es.ESDocFormat;
 import com.amx.jax.grid.GridViewRecord;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-/*
- * Author Rahamathali Shaik
-*/
 @Entity
 @Table(name = "VW_CUSTOMER_KIBANA")
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -39,6 +37,7 @@ public class CustomerDetailViewRecord implements GridViewRecord {
 	@Column(name = "GENDER")
 	private String gender;
 
+	@ESDocFormat(ESDocFormat.Type.DATE)
 	@Column(name = "DATE_OF_BIRTH")
 	private Date dateOfBirth;
 
@@ -51,15 +50,46 @@ public class CustomerDetailViewRecord implements GridViewRecord {
 	@Column(name = "MOBILE")
 	private String mobile;
 
+	@Column(name = "MOBILE_VERIFIED")
+	private String mobileVerified;
+
+	@Column(name = "PREFIX_CODE_MOBILE")
+	private String mobilePrefix;
+
+	@Column(name = "OTHER_CONTACTNO")
+	private String mobileOther;
+
+	@Column(name = "PREFIX_CODE_MOBILE_OTH")
+	private String mobileOtherPrefix;
+
 	@Column(name = "EMAIL")
 	private String email;
 
+	@Column(name = "EMAIL_VERIFIED")
+	private String emailVerified;
+
+	@Column(name = "WHATSAPP_NO")
+	private String whatsapp;
+
+	@Column(name = "WHATSAPP_VERIFIED")
+	private String whatsAppVerified;
+
+	@Column(name = "WHATSAPP_PREFIX_CODE")
+	private String whatsappPrefix;
+
+	@ESDocFormat(ESDocFormat.Type.DATE)
 	@Column(name = "CREATION_DATE")
 	private Date creationDate;
 
+	@ESDocFormat(ESDocFormat.Type.DATE)
+	@Column(name = "ONLINE_CREATION_DATE")
+	private Date creationDateOnline;
+
+	@ESDocFormat(ESDocFormat.Type.DATE)
 	@Column(name = "LAST_UPDATED")
 	private Date updateDate;
 
+	@ESDocFormat(ESDocFormat.Type.DATE)
 	@Column(name = "LATEST_UPDATE_DATE")
 	private Date lastUpdateDate;
 
@@ -72,6 +102,7 @@ public class CustomerDetailViewRecord implements GridViewRecord {
 	@Column(name = "IS_ONLINE_USER")
 	private String isOnlineUser;
 
+	@ESDocFormat(ESDocFormat.Type.DATE)
 	@Column(name = "LAST_TRANSACTION_DATE")
 	private Date lastTransactionDate;
 
@@ -234,4 +265,75 @@ public class CustomerDetailViewRecord implements GridViewRecord {
 		this.typeId = typeId;
 	}
 
+	public String getWhatsapp() {
+		return whatsapp;
+	}
+
+	public void setWhatsapp(String whatsapp) {
+		this.whatsapp = whatsapp;
+	}
+
+	public Date getCreationDateOnline() {
+		return creationDateOnline;
+	}
+
+	public void setCreationDateOnline(Date creationDateOnline) {
+		this.creationDateOnline = creationDateOnline;
+	}
+
+	public String getMobilePrefix() {
+		return mobilePrefix;
+	}
+
+	public void setMobilePrefix(String mobilePrefix) {
+		this.mobilePrefix = mobilePrefix;
+	}
+
+	public String getMobileOther() {
+		return mobileOther;
+	}
+
+	public void setMobileOther(String mobileOther) {
+		this.mobileOther = mobileOther;
+	}
+
+	public String getMobileOtherPrefix() {
+		return mobileOtherPrefix;
+	}
+
+	public void setMobileOtherPrefix(String mobileOtherPrefix) {
+		this.mobileOtherPrefix = mobileOtherPrefix;
+	}
+
+	public String getWhatsappPrefix() {
+		return whatsappPrefix;
+	}
+
+	public void setWhatsappPrefix(String whatsappPrefix) {
+		this.whatsappPrefix = whatsappPrefix;
+	}
+
+	public String getMobileVerified() {
+		return mobileVerified;
+	}
+
+	public void setMobileVerified(String mobileVerified) {
+		this.mobileVerified = mobileVerified;
+	}
+
+	public String getEmailVerified() {
+		return emailVerified;
+	}
+
+	public void setEmailVerified(String emailVerified) {
+		this.emailVerified = emailVerified;
+	}
+
+	public String getWhatsAppVerified() {
+		return whatsAppVerified;
+	}
+
+	public void setWhatsAppVerified(String whatsAppVerified) {
+		this.whatsAppVerified = whatsAppVerified;
+	}
 }

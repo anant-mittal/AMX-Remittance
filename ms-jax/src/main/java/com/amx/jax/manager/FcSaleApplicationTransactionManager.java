@@ -372,8 +372,7 @@ public class FcSaleApplicationTransactionManager extends AbstractModel {
 				}
 			}
 			try {
-				receiptPaymentAppl
-						.setAccountMMYYYY(new SimpleDateFormat("dd/MM/yyyy").parse(DateUtil.getCurrentAccMMYear()));
+				receiptPaymentAppl.setAccountMMYYYY(new SimpleDateFormat("dd/MM/yyyy").parse(DateUtil.getCurrentAccMMYear()));
 			} catch (ParseException e) {
 				logger.error("Error in saving application", e);
 			}
@@ -825,6 +824,8 @@ public class FcSaleApplicationTransactionManager extends AbstractModel {
 				fianlDto.setForeignCurrencyCode(multiForeignQuotoName);
 				fianlDto.setOrderStatusCode(dto.getOrderStatusCode());
 				fianlDto.setInventoryId(collectionInventoryIdMap.get(dto.getCollectionDocumentNo()));
+				fianlDto.setOtpTokenPrefix(dto.getOtpTokenPrefix());
+				fianlDto.setOtpTokenCustomer(dto.getOtpTokenCustomer());
 				finalFxOrderListDto.add(fianlDto);
 			}
 
@@ -866,15 +867,24 @@ public class FcSaleApplicationTransactionManager extends AbstractModel {
 						.append(shippingAddressDto.getBuildingNo() == null ? ""
 								: "House no. " + shippingAddressDto.getBuildingNo() + concat)
 						.append(shippingAddressDto.getFlat() == null ? ""
-								: "Flat " + shippingAddressDto.getHouse() + concat);
+								: "Flat " + shippingAddressDto.getHouse());
 				if (shippingAddressDto.getLocalContactCity() != null) {
-					sb.append("City ").append(shippingAddressDto.getLocalContactCity() == null ? ""
-							: shippingAddressDto.getLocalContactCity()).append(concat);
+					sb.append(concat).append("City ").append(shippingAddressDto.getLocalContactCity() == null ? "": shippingAddressDto.getLocalContactCity());
 				}
-				sb.append(shippingAddressDto.getGovernoatesDto() == null ? "": shippingAddressDto.getGovernoatesDto().getResourceName() + concat);
-				sb.append(shippingAddressDto.getGovtAreaDesc() == null ? "": shippingAddressDto.getGovtAreaDesc() + concat);
-				sb.append(shippingAddressDto.getLocalContactDistrict() == null ? "": shippingAddressDto.getLocalContactDistrict() + concat);
-				sb.append(shippingAddressDto.getLocalContactState() == null ? "": shippingAddressDto.getLocalContactState());
+				if(shippingAddressDto.getGovernoatesDto()!=null && !shippingAddressDto.getGovernoatesDto().equals("")) {
+					sb.append(concat).append(shippingAddressDto.getGovernoatesDto().getResourceName());
+				}
+				if(shippingAddressDto.getGovtAreaDesc()!=null && !shippingAddressDto.getGovtAreaDesc().equals("")) {
+					sb.append(concat).append(shippingAddressDto.getGovtAreaDesc());
+				}
+				if(shippingAddressDto.getLocalContactDistrict()!=null && !shippingAddressDto.getLocalContactDistrict().equals("")) {
+					sb.append(concat).append(shippingAddressDto.getLocalContactDistrict());
+				}
+				
+				if(shippingAddressDto.getLocalContactState()!=null && !shippingAddressDto.getLocalContactState().equals("")) {
+					sb.append(concat).append(shippingAddressDto.getLocalContactState());
+				}
+				
 			}
 		}
 		if (sb != null) {

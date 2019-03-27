@@ -2,6 +2,7 @@ package com.amx.jax.services;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,6 +24,7 @@ import com.amx.amxlib.model.PersonInfo;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.JaxStompClient;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.constant.JaxDbConfig;
 import com.amx.jax.dao.FcSaleApplicationDao;
 import com.amx.jax.dbmodel.ShippingAddressDetail;
 import com.amx.jax.dbmodel.fx.FxDeliveryDetailsModel;
@@ -47,6 +49,7 @@ import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.CryptoUtil;
+import com.amx.utils.DateUtil;
 import com.amx.utils.Random;
 
 @Component
@@ -75,6 +78,8 @@ public class FcSaleDeliveryService {
 	FcSaleEventManager fcSaleEventManager;
 	@Autowired
 	FcSaleBranchOrderManager fcSaleBranchOrderManager;
+	@Autowired
+	JaxConfigService jaxConfigService; 
 
 
 	/**
@@ -120,6 +125,7 @@ public class FcSaleDeliveryService {
 		dto.setOrderStatus(statusMaster.getStatusDescription());
 		dto.setOrderStatusCode(statusMaster.getStatusCode());
 		dto.setDeliveryDetailSeqId(model.getDeleviryDelSeqId());
+		dto.setDeliveryTimeSlot(DateUtil.formatDateTime(new Date()));
 		return dto;
 	}
 
@@ -252,8 +258,11 @@ public class FcSaleDeliveryService {
 		String mOtp = Random.randomNumeric(6);
 		String mOtpPrefix = Random.randomAlpha(3);
 		String hashedmOtp = cryptoUtil.generateHash(deliveryDetailSeqId.toString(), mOtp);
+		//String hashedCustOtp = cryptoUtil.encryptAES(deliveryDetailSeqId.toString(), mOtp);
+		String hashedCustOtp = cryptoUtil.encryptCOTP(mOtp, deliveryDetailSeqId.toString());
 		fxDeliveryDetailsModel.setOtpToken(hashedmOtp);
 		fxDeliveryDetailsModel.setOtpTokenPrefix(mOtpPrefix);
+		fxDeliveryDetailsModel.setOtpTokenCustomer(hashedCustOtp);
 		fxDeliveryDetailsModel.setOtpValidated(ConstantDocument.No);
 		fcSaleApplicationDao.saveDeliveryDetail(fxDeliveryDetailsModel);
 
@@ -286,6 +295,14 @@ public class FcSaleDeliveryService {
 		if (!hashedmOtp.equals(dbHashedmOtpToken)) {
 			throw new GlobalException(JaxError.INVALID_OTP, "mOtp is not valid");
 		}
+		
+		// validating customerOtp
+		String hashedCustOtp = cryptoUtil.encryptCOTP(mOtp.toString(), deliveryDetailSeqId.toString());
+		String dbHashedcustOtpToken = fxDeliveryDetailsModel.getOtpTokenCustomer();
+		if (!hashedCustOtp.equals(dbHashedcustOtpToken)) {
+			throw new GlobalException(JaxError.INVALID_OTP, "Customer Otp is not valid");
+		}
+		
 		fxDeliveryDetailsModel.setOtpValidated(ConstantDocument.Yes);
 		fcSaleApplicationDao.saveDeliveryDetail(fxDeliveryDetailsModel);
 		return new BoolRespModel(true);
@@ -338,5 +355,18 @@ public class FcSaleDeliveryService {
 
 	private void logStatusChangeAuditEvent(BigDecimal deliveryDetailSeqId, String oldOrderStatus) {
 		fcSaleEventManager.logStatusChangeAuditEvent(deliveryDetailSeqId, oldOrderStatus);
+	}
+
+	public List<FxDeliveryDetailDto> listHistoricalOrders() {
+		if (metaData.getEmployeeId() == null) {
+			throw new GlobalException("Missing driver id");
+		}
+		List<FxDeliveryDetailDto> results = new ArrayList<>();
+		Integer noOfDays = jaxConfigService.getIntegerConfigValue(JaxDbConfig.FX_DELIVERY_HISTORICAL_LIST_RANGE_DAYS);
+		List<VwFxDeliveryDetailsModel> deliveryDetails = fcSaleApplicationDao.listHistoricalOrders(metaData.getEmployeeId(), noOfDays);
+		for (VwFxDeliveryDetailsModel model : deliveryDetails) {
+			results.add(createFxDeliveryDetailDto(model));
+		}
+		return results;
 	}
 }

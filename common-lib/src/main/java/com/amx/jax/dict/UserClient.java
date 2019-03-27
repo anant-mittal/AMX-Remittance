@@ -16,7 +16,7 @@ public class UserClient {
 	 *
 	 */
 	public enum Channel {
-		ONLINE, KIOSK, MOBILE, BRANCH, THIRD_PARTY;
+		ONLINE, KIOSK, MOBILE, BRANCH, THIRD_PARTY, SYSTEM, UNKNOWN;
 	}
 
 	/**
@@ -62,7 +62,7 @@ public class UserClient {
 	 *
 	 */
 	public enum DevicePlatform {
-		IOS, ANDROID, WINDOWS, MAC, LINUX, UNKNOWN
+		IOS, ANDROID, WINDOWS, MAC, LINUX, UNKNOWN;
 	}
 
 	/**
@@ -72,7 +72,20 @@ public class UserClient {
 	 *
 	 */
 	public enum AppType {
-		WEB, ANDROID, IOS, UNKNOWN;
+		WEB, IOS(Channel.MOBILE), ANDROID(Channel.MOBILE), UNKNOWN;
+		Channel channel;
+
+		AppType(Channel channel) {
+			this.channel = channel;
+		}
+
+		AppType() {
+			this(Channel.UNKNOWN);
+		}
+
+		public Channel getChannel() {
+			return channel;
+		}
 	}
 
 	public enum ClientType {
@@ -90,7 +103,7 @@ public class UserClient {
 		ONLINE_WEB(DeviceType.COMPUTER), ONLINE_AND(DeviceType.MOBILE), ONLINE_IOS(DeviceType.MOBILE),
 
 		// Unknown
-		UNKNOWN;
+		SYSTEM, UNKNOWN;
 
 		DeviceType deviceType;
 
@@ -185,6 +198,15 @@ public class UserClient {
 
 		public void setClientType(ClientType clientType) {
 			this.clientType = clientType;
+		}
+
+		public UserDeviceClient importFrom(UserDeviceClient userDevice) {
+			this.setDeviceType(userDevice.getDeviceType());
+			this.setAppType(userDevice.getAppType());
+			this.setIp(userDevice.getIp());
+			this.setFingerprint(userDevice.getFingerprint());
+			this.setClientType(userDevice.getClientType());
+			return this;
 		}
 	}
 

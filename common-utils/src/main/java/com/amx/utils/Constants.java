@@ -66,7 +66,9 @@ public class Constants {
 	public static final String CUST_ACTIVE_INDICATOR = "Y";
 
 	/** The Constant IDENTITY_TYPE_ID. */
-	public static final String IDENTITY_TYPE_ID = "198";
+	public static final String IDENTITY_TYPE_CIVIL_ID_STR = "198";
+	
+	public static final Long IDENTITY_TYPE_CIVIL_ID = Long.parseLong(IDENTITY_TYPE_CIVIL_ID_STR);
 
 	public static final String COMPNY_TYPE = "Corporate";
 
@@ -77,6 +79,8 @@ public class Constants {
 	public static final String NO = "N";
 	
 	public static final String YES = "Y";
+	
+	public static final String DELETED_SOFT = "D";
 	
 	/** The Constant CUST_DB_SCAN. */
 	public static final String CUST_DB_SCAN = "D";

@@ -4,6 +4,7 @@
 package com.amx.jax.rbaac.api;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -23,12 +24,14 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
+import com.amx.jax.dbmodel.Device;
 import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.rbaac.IRbaacService;
 import com.amx.jax.rbaac.dto.DeviceDto;
 import com.amx.jax.rbaac.dto.DevicePairOtpResponse;
 import com.amx.jax.rbaac.dto.request.DeviceRegistrationRequest;
 import com.amx.jax.rbaac.dto.request.EmployeeDetailsRequestDTO;
+import com.amx.jax.rbaac.dto.request.NotpDTO;
 import com.amx.jax.rbaac.dto.request.RoleRequestDTO;
 import com.amx.jax.rbaac.dto.request.UserAuthInitReqDTO;
 import com.amx.jax.rbaac.dto.request.UserAuthorisationReqDTO;
@@ -45,6 +48,7 @@ import com.amx.jax.rbaac.service.RespTestService;
 import com.amx.jax.rbaac.service.UserAccountService;
 import com.amx.jax.rbaac.service.UserAuthService;
 import com.amx.jax.rbaac.service.UserRoleService;
+
 
 /**
  * The Class RbaacServiceApiController.
@@ -82,8 +86,7 @@ public class RbaacServiceApiController implements IRbaacService {
 	/**
 	 * Init User Authentication.
 	 *
-	 * @param userAuthInitReqDTO
-	 *            the user auth init req DTO
+	 * @param userAuthInitReqDTO the user auth init req DTO
 	 * @return the amx api response
 	 */
 	@Override
@@ -95,9 +98,9 @@ public class RbaacServiceApiController implements IRbaacService {
 				+ userAuthInitReqDTO.getUserClientDto().getGlobalIpAddress() + " from device Id: "
 				+ userAuthInitReqDTO.getUserClientDto().getDeviceId() + " with TraceId: "
 				+ AppContextUtil.getTraceId());
-		
+
 		LOGGER.info("User Auth Init Request Dto : " + userAuthInitReqDTO.toString());
-		
+
 		UserAuthInitResponseDTO userAuthInitResponseDTO = userAuthService.verifyUserDetails(userAuthInitReqDTO);
 
 		return AmxApiResponse.build(userAuthInitResponseDTO);
@@ -274,6 +277,13 @@ public class RbaacServiceApiController implements IRbaacService {
 		return AmxApiResponse.build("Success");
 	}
 
+	@RequestMapping(value = ApiEndPoints.NOTP_VERIFY, method = RequestMethod.POST)
+	@Override
+	public AmxApiResponse<NotpDTO, Object> verifyOTP(@Valid @RequestBody NotpDTO reqDTO) {
+		reqDTO.setVerfied(userAuthService.validateOfflineOtp(reqDTO.getOtp(), reqDTO.getEmployeeId(), reqDTO.getSac()));
+		return AmxApiResponse.build(reqDTO);
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -380,7 +390,15 @@ public class RbaacServiceApiController implements IRbaacService {
 				countryBranchSystemInventoryId);
 		return AmxApiResponse.build(response);
 	}
-
+	
+	@Override
+	@RequestMapping(value = ApiEndPoints.DEVICE_GET_DEVICE_BY_DEVICE_REG_ID, method = RequestMethod.POST)
+	public AmxApiResponse<DeviceDto, Object> getDeviceByDeviceRegId(
+			@RequestParam(name = Params.DEVICE_REG_ID) BigDecimal deviceRegId) {
+		DeviceDto device = deviceService.getDeviceByDeviceRegId(deviceRegId);
+		return AmxApiResponse.build(device);
+	}
+	
 	@Override
 	@RequestMapping(value = ApiEndPoints.GET_ROLE_MAPPING_FOR_EMPLOYEE, method = RequestMethod.POST)
 	public AmxApiResponse<RoleMappingForEmployee, Object> getRoleMappingsForEmployee(
@@ -402,6 +420,13 @@ public class RbaacServiceApiController implements IRbaacService {
 			@RequestParam(name = Params.TERMINAL_ID) BigDecimal countryBranchSystemInventoryId) {
 		BoolRespModel response = userAccountService.createEmployeeSystemMapping(employeeId,
 				countryBranchSystemInventoryId);
+		return AmxApiResponse.build(response);
+	}
+
+	@Override
+	@RequestMapping(value = ApiEndPoints.DEVICE_DELETE, method = RequestMethod.POST)
+	public AmxApiResponse<BoolRespModel, Object> deleteDevice(Integer deviceRegId) {
+		BoolRespModel response = deviceService.deleteDevice(deviceRegId);
 		return AmxApiResponse.build(response);
 	}
 

@@ -124,13 +124,8 @@ public class RemittanceApplication implements Serializable {
 	private String wuIpAddress;
 	private String errorCategory;
 	
-	
 
-	
-	//private BigDecimal kioskDocumentNumber;
-	
-	//private Set<RemitApplAml> exRemitApplAmls = new HashSet<RemitApplAml>(0);
-	//private Set<AdditionalInstructionData> exAdditionalInstructionDatas = new HashSet<AdditionalInstructionData>(0);
+
 	private List<RemittanceAppBenificiary> exRemittanceAppBenificiary = new ArrayList<RemittanceAppBenificiary>(0);
 	
 	public RemittanceApplication() {
@@ -482,10 +477,10 @@ public class RemittanceApplication implements Serializable {
 	}
 
 	/*@OneToMany(fetch = FetchType.LAZY, mappedBy = "exRemittanceAppfromAml")
-	public Set<RemitApplAml> getExRemitApplAmls() {
+	public Set<RemitApplAmlModel> getExRemitApplAmls() {
 		return this.exRemitApplAmls;
 	}
-	public void setExRemitApplAmls(Set<RemitApplAml> exRemitApplAmls) {
+	public void setExRemitApplAmls(Set<RemitApplAmlModel> exRemitApplAmls) {
 		this.exRemitApplAmls = exRemitApplAmls;
 	}
 

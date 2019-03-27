@@ -21,7 +21,6 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.amx.jax.logger.LoggerService;
-import com.amx.utils.JsonUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 public class AESRepository {
@@ -34,7 +33,7 @@ public class AESRepository {
 	public Map<String, Object> insert(String index, String type, AESDocument rate) {
 
 		// vote.setId(UUID.randomUUID().toString());
-		Map<String, Object> dataMap = JsonUtil.toMap(rate);
+		Map<String, Object> dataMap = ESDocumentParser.toMap(rate);
 		IndexRequest indexRequest = new IndexRequest(index, type, rate.getId())
 				.source(dataMap);
 		try {
@@ -70,7 +69,7 @@ public class AESRepository {
 		Map<String, Object> error = new HashMap<>();
 		error.put("Error", "Unable to update vote");
 		try {
-			String voteJson = JsonUtil.getMapper().writeValueAsString(vote);
+			String voteJson = ESDocumentParser.toJson(vote);
 			updateRequest.upsert(voteJson, XContentType.JSON);
 			updateRequest.doc(voteJson, XContentType.JSON);
 			UpdateResponse updateResponse = restHighLevelClient.update(updateRequest);
@@ -100,6 +99,7 @@ public class AESRepository {
 			error.put("items", bulkResponse.getItems());
 		} catch (IOException e) {
 			error.put("Error", "Unable to update vote");
+			LOGGER.error("java.io.IOException:Unable to bulk update", e);
 		}
 		return error;
 	}
@@ -120,15 +120,22 @@ public class AESRepository {
 			return this.updateById(index, type, vote.getId(), vote);
 		}
 
+		public BulkRequestBuilder update(String index, AESDocument vote) {
+			return this.updateById(index, vote.getType(), vote.getId(), vote);
+		}
+
 		public BulkRequestBuilder updateById(String index, String type, String id, AESDocument vote) {
-			UpdateRequest updateRequest = new UpdateRequest(index, type, id);
-			try {
-				String voteJson = JsonUtil.getMapper().writeValueAsString(vote);
-				updateRequest.upsert(voteJson, XContentType.JSON);
-				updateRequest.doc(voteJson, XContentType.JSON);
-				this.request.add(updateRequest);
-			} catch (JsonProcessingException e) {
-				LOGGER.error("JsonProcessingException", e);
+			if (!vote.isEmpty()) {
+				UpdateRequest updateRequest = new UpdateRequest(index, type, id);
+				try {
+					updateRequest.index(index);
+					String voteJson = ESDocumentParser.toJson(vote);
+					updateRequest.upsert(voteJson, XContentType.JSON);
+					updateRequest.doc(voteJson, XContentType.JSON);
+					this.request.add(updateRequest);
+				} catch (JsonProcessingException e) {
+					LOGGER.error("JsonProcessingException", e);
+				}
 			}
 			return this;
 		}

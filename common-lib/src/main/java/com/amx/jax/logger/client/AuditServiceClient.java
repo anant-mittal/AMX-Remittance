@@ -111,9 +111,9 @@ public class AuditServiceClient implements AuditService {
 	public static void publishAbstractEvent(Map<String, Object> map) {
 		try {
 			AppContext appContext = AppContextUtil.getContext();
-			map.put("traceId", appContext.getTraceId());
-			map.put("tranxId", appContext.getTranxId());
-			map.put("tenant", appContext.getTenant());
+			map.put(AbstractEvent.PROP_TRC_ID, appContext.getTraceId());
+			map.put(AbstractEvent.PROP_TRX_ID, appContext.getTranxId());
+			map.put("tnt", appContext.getTenant());
 			ITUNNEL_SERVICE.audit(AUDIT_EVENT_TOPIC, map);
 		} catch (Exception e) {
 			LOGGER2.error("Exception while Publishing Event", e);
@@ -148,9 +148,10 @@ public class AuditServiceClient implements AuditService {
 		try {
 			captureDetails(event);
 			event.setClient(AppContextUtil.getUserClient());
+			event.setTranxId(AppContextUtil.getTranxId());
 			return logAbstractEvent(marker, event, capture);
 		} catch (Exception e) {
-			LOGGER2.error("Exception while logAuditEvent {}", JsonUtil.toJson(event), e);
+			LOGGER2.error("Exception while logAuditEvent {}", event.getErrorCode(), e);
 		}
 		return null;
 	}

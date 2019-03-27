@@ -19,6 +19,8 @@ import org.springframework.stereotype.Component;
 import com.amx.jax.model.response.fx.TimeSlotDto;
 
 
+
+
 /*
  * Auth: Rabil
  * Date: 25/11/2017
@@ -145,52 +147,7 @@ public class DateUtil {
 		}
 	}
 	
-	/**
-	 * @Auth :Rabil
-	 * @Date:  Time slot
-	 */
-	
-	/*public static List<String> getTimeSlotRange(String date,int startTime,int endTime,int timeIntVal,int noofDay){
-		logger.info("getTimeRange for Fx Order date :"+date+"\t startTime :"+startTime+"\t endTime:"+endTime+"\t timeIntVal :"+timeIntVal);
-		List<String> timeSlotList = new ArrayList<>();
-		Date d = new Date();
-		SimpleDateFormat dateStr = new SimpleDateFormat("dd/MM/yyyy");
-	    SimpleDateFormat sdf = new SimpleDateFormat("H");
-	    String todayDate = dateStr.format(d);
-	    int hour = Integer.parseInt(sdf.format(d));
-	    int j =0;
-	    String meridienAm=" am";
-	    String meridienPm=" pm";
-	    String defaultZero =":00";
-	   
-	    
-	    
-	    
-	    
-	    
-	    if(date !=null && !date.equalsIgnoreCase(todayDate)){
-	    	todayDate = date;
-	    	for (int i =startTime;i<endTime;  i = i+timeIntVal){
-				 j = i+timeIntVal;
-				 String str = "";
-				 str = String.valueOf(i)+defaultZero+(i<12?meridienAm:meridienPm)+ "-"+String.valueOf(j)+defaultZero+(j<12?meridienAm:meridienPm);
-				 timeSlotList.add(str);
-	    	}
-	    }else{
-	    	 if (hour>startTime){
-	    	    	startTime =hour; 
-	    	    }
-	    	for (int i =startTime;i<endTime;  i = i+timeIntVal){
-				 j = i+timeIntVal;
-				 String str = "";
-				 str = String.valueOf(i)+defaultZero+(i<12?meridienAm:meridienPm)+ "-"+String.valueOf(j)+defaultZero+(j<12?meridienAm:meridienPm);
-				 timeSlotList.add(str);
-			}
-	    }
-	    timeSlotList.add("delivery date :"+todayDate);
-		return timeSlotList;
-		}*/
-	
+
 	
 	public static List<TimeSlotDto> getTimeSlotRange(int startTime,int endTime,int timeIntVal,int noofDay){
 	logger.info("getTimeRange for Fx Order date :\t startTime :"+startTime+"\t endTime:"+endTime+"\t timeIntVal :"+timeIntVal+"\t noofDay :"+noofDay);
@@ -208,10 +165,9 @@ public class DateUtil {
     Date now = calendar.getTime();
     int startTimeNToday = startTime;
    
-    
     	for(int n=0;n<=noofDay;n++){
     		if(n==0){
-    			if (hour>startTime){
+    			if (hour>=startTime){
     		    	startTime =hour+timeIntVal; 
     		    }
     		}else{
@@ -241,6 +197,41 @@ public class DateUtil {
     return timeSlotDto;
 }
 	
-
+	public static  Date daysAddInCurrentDate(int noOfDays) {
+		GregorianCalendar calendar = new GregorianCalendar();
+		calendar.setTime(new Date());
+	    calendar.add(Calendar.DATE, noOfDays);
+	    return calendar.getTime();
+	}
 	
+	
+	 public static String getAccountingMonthYearNew(String transactionDate) {
+		   String accountingMonthYear=null;
+		try {
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+			
+			LocalDate date =LocalDate.parse(transactionDate, formatter);
+			   accountingMonthYear = null;
+			   int dd =0;
+			   int mm = 0;
+			   int yyyy = 0;
+			   String mmS ="0";
+			   if(date != null) {
+			    dd = date.getDayOfMonth();
+			    mm = date.getMonthValue();
+			    yyyy = date.getYear();
+			    
+			    if(mm<9) {
+			    	mmS +=mm;
+			    }else {
+			    	mmS =String.valueOf(mm);
+			    }
+			    accountingMonthYear ="01"+"/"+mmS+"/"+yyyy;
+			   }
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		   return accountingMonthYear;
+	   }
 }

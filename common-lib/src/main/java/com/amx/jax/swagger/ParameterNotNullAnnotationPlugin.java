@@ -22,6 +22,11 @@ import springfox.documentation.spi.schema.ModelPropertyBuilderPlugin;
 import springfox.documentation.spi.schema.contexts.ModelPropertyContext;
 import springfox.documentation.swagger.common.SwaggerPluginSupport;
 
+/**
+ * 
+ * @author lalittanwar
+ *
+ */
 @Component
 @Order(Ordered.LOWEST_PRECEDENCE)
 public class ParameterNotNullAnnotationPlugin implements ModelPropertyBuilderPlugin {
@@ -49,17 +54,17 @@ public class ParameterNotNullAnnotationPlugin implements ModelPropertyBuilderPlu
 					.example(annotation.transform(toExample()).orNull());
 		} else {
 			context.getBuilder()
-					//.allowableValues(annotation.transform(toAllowableValues()).orNull())
+					// .allowableValues(annotation.transform(toAllowableValues()).orNull())
 					.required(annotation.transform(toIsRequired()).or(true))
 					.isHidden(annotation.transform(toHidden()).or(false))
-					// .required(true)
-					//.readOnly(annotation.transform(toIsReadOnly()).or(false))
-					//.description(annotation.transform(toDescription()).orNull())
-					//.isHidden(annotation.transform(toHidden()).or(false))
-					//.type(annotation.transform(toType(context.getResolver())).orNull())
-					//.position(annotation.transform(toPosition()).or(0))
-					//.example(annotation.transform(toExample()).orNull())
-					;
+			// .required(true)
+			// .readOnly(annotation.transform(toIsReadOnly()).or(false))
+			// .description(annotation.transform(toDescription()).orNull())
+			// .isHidden(annotation.transform(toHidden()).or(false))
+			// .type(annotation.transform(toType(context.getResolver())).orNull())
+			// .position(annotation.transform(toPosition()).or(0))
+			// .example(annotation.transform(toExample()).orNull())
+			;
 		}
 	}
 

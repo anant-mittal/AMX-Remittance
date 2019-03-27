@@ -146,7 +146,7 @@ public class TunnelSubscriberFactory {
 	}
 
 	public <M> void addQueuedListener(String topicName, RedissonClient redisson, ITunnelSubscriber<M> listener,
-			boolean integrity, String listentName) {
+			boolean integrity, String listenrName) {
 		RTopic<TunnelMessage<M>> eventTopic = redisson.getTopic(TunnelEventXchange.SEND_LISTNER.getTopic(topicName));
 		eventTopic.addListener(new WrapperML<M>(listener, integrity) {
 			@Override
@@ -163,7 +163,7 @@ public class TunnelSubscriberFactory {
 			public boolean tryMessage(String channel, TunnelMessage<M> msg) {
 				RMapCache<String, String> map = redisson
 						.getMapCache(TunnelEventXchange.SEND_LISTNER.getStatusMap(topicName));
-				String integrityKey = appConfig.getAppEnv() + "#" + listentName + "#" + msg.getId();
+				String integrityKey = appConfig.getAppEnv() + "#" + listenrName + "#" + msg.getId();
 				String prevObject = map.put(integrityKey, STATUS_WORKING, TIME_TO_EXPIRE, UNIT_OF_TIME);
 				LOGGER.debug("tryMessage {} {}", integrityKey, prevObject);
 				if (prevObject == null) { // Hey I got it first

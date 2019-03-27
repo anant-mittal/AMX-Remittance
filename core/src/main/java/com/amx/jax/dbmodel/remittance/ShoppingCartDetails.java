@@ -12,10 +12,10 @@ import javax.persistence.Table;
 @Entity
 @Table(name="VW_APPLICATION_DETAILS")
 public class ShoppingCartDetails implements Serializable {
-	
-	
+
+
 	private static final long serialVersionUID = 2315791709068216697L;
-	
+
 	private BigDecimal remittanceAppBeneficiaryId; 
 	private BigDecimal applicationId;
 	private BigDecimal companyId;        
@@ -51,7 +51,7 @@ public class ShoppingCartDetails implements Serializable {
 	private String spldeal;
 	private String applicationTypeDesc;
 	private String customerSignature;
-	private Clob customerSignatureClob;
+	private String customerSignatureClob;
 	private String sourceofincome;
 	private String BeneCityName;
 	private String BeneStateName;
@@ -63,13 +63,15 @@ public class ShoppingCartDetails implements Serializable {
 	private BigDecimal loyaltsPointencahsed;
 	private String loyaltsPointIndicator;
 	private String foreignCurrencyDesc;
-	private String paymentId; 
+	private String paymentId;
+	private BigDecimal amtbCouponEncashed;
+	private BigDecimal routingBankId;
+	private BigDecimal beneRelationseqId;
 	
 	public ShoppingCartDetails() {
-		
+		super();
 	}
 
-	
 	@Id
 	@Column(name="APPLICATION_DETAILS_ID")
 	public BigDecimal getApplicationId() {
@@ -78,7 +80,6 @@ public class ShoppingCartDetails implements Serializable {
 	public void setApplicationId(BigDecimal applicationId) {
 		this.applicationId = applicationId;
 	}
-	
 
 	@Column(name="REMITTANCE_APP_BENIFICIARY_ID")
 	public BigDecimal getRemittanceAppBeneficiaryId() {
@@ -287,7 +288,7 @@ public class ShoppingCartDetails implements Serializable {
 	public void setApplicationType(String applicationType) {
 		this.applicationType = applicationType;
 	}
-	
+
 	@Column(name="CUSTOMER_ID")
 	public BigDecimal getCustomerId() {
 		return customerId;
@@ -304,8 +305,8 @@ public class ShoppingCartDetails implements Serializable {
 		this.exchangeRateApplied = exchangeRateApplied;
 	}
 
-	
-	
+
+
 	@Column(name="DOCUMENT_NO")
 	public BigDecimal getDocumentNo() {
 		return documentNo;
@@ -313,7 +314,7 @@ public class ShoppingCartDetails implements Serializable {
 	public void setDocumentNo(BigDecimal documentNo) {
 		this.documentNo = documentNo;
 	}
-	
+
 	@Column(name="FOREIGN_CURRENCY_ID")
 	public BigDecimal getForeignCurrency() {
 		return foreignCurrency;
@@ -321,7 +322,7 @@ public class ShoppingCartDetails implements Serializable {
 	public void setForeignCurrency(BigDecimal foreignCurrency) {
 		this.foreignCurrency = foreignCurrency;
 	}
-	
+
 	@Column(name="LOCAL_CURRENCY_ID")
 	public BigDecimal getLocalCurrency() {
 		return localCurrency;
@@ -329,7 +330,7 @@ public class ShoppingCartDetails implements Serializable {
 	public void setLocalCurrency(BigDecimal localCurrency) {
 		this.localCurrency = localCurrency;
 	}
-	
+
 	@Column(name="SPECIAL_DEAL")
 	public String getSpldeal() {
 		return spldeal;
@@ -337,7 +338,7 @@ public class ShoppingCartDetails implements Serializable {
 	public void setSpldeal(String spldeal) {
 		this.spldeal = spldeal;
 	}
-	
+
 	@Column(name="APPLICATION_TYPE_DESC")
 	public String getApplicationTypeDesc() {
 		return applicationTypeDesc;
@@ -395,10 +396,10 @@ public class ShoppingCartDetails implements Serializable {
 	}
 
 	@Column(name="SIGNATURE_SPECIMEN_CLOB")
-	public Clob getCustomerSignatureClob() {
+	public String getCustomerSignatureClob() {
 		return customerSignatureClob;
 	}
-	public void setCustomerSignatureClob(Clob customerSignatureClob) {
+	public void setCustomerSignatureClob(String customerSignatureClob) {
 		this.customerSignatureClob = customerSignatureClob;
 	}
 
@@ -425,7 +426,7 @@ public class ShoppingCartDetails implements Serializable {
 	public void setDeliveryDescription(String deliveryDescription) {
 		this.deliveryDescription = deliveryDescription;
 	}
-	
+
 	@Column(name="LOYALTY_POINTS_ENCASHED")
 	public BigDecimal getLoyaltsPointencahsed() {
 		return loyaltsPointencahsed;
@@ -433,7 +434,7 @@ public class ShoppingCartDetails implements Serializable {
 	public void setLoyaltsPointencahsed(BigDecimal loyaltsPointencahsed) {
 		this.loyaltsPointencahsed = loyaltsPointencahsed;
 	}
-	
+
 	@Column(name="LOYALTY_POINTS_IND")
 	public String getLoyaltsPointIndicator() {
 		return loyaltsPointIndicator;
@@ -450,16 +451,40 @@ public class ShoppingCartDetails implements Serializable {
 		this.foreignCurrencyDesc = foreignCurrencyDesc;
 	}
 
-	
-	 @Column(name="PAYMENT_ID")
+	@Column(name="PAYMENT_ID")
 	public String getPaymentId() {
 		return paymentId;
 	}
-
-
 	public void setPaymentId(String paymentId) {
 		this.paymentId = paymentId;
 	}
- 
 
+	@Column(name="AMTB_COUPON_ENCASHED")
+	public BigDecimal getAmtbCouponEncashed() {
+		return amtbCouponEncashed;
+	}
+	public void setAmtbCouponEncashed(BigDecimal amtbCouponEncashed) {
+		this.amtbCouponEncashed = amtbCouponEncashed;
+	}
+
+	@Column(name="BANK_ID")
+	public BigDecimal getRoutingBankId() {
+		return routingBankId;
+	}
+
+	public void setRoutingBankId(BigDecimal routingBankId) {
+		this.routingBankId = routingBankId;
+	}
+
+	@Column(name="BENEFICARY_RELATIONSHIP_SEQ_ID")
+	public BigDecimal getBeneRelationseqId() {
+		return beneRelationseqId;
+	}
+
+	public void setBeneRelationseqId(BigDecimal beneRelationseqId) {
+		this.beneRelationseqId = beneRelationseqId;
+	}
+
+	
+	
 }

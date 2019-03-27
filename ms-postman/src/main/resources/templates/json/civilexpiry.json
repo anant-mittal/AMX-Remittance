@@ -1,4 +1,4 @@
 {
-	"_subject": "Civil ID expiry alert",
-	"_message": "Your Civil ID is expiring as on [[${data.date}]]. After renewal, kindly update the new Civil ID card details at the branch. NOTE: You will not be able to do any online/mobile transactions, unless your new CIVIL ID is updated at the branch."
+	"_subject": "[[${_tu.prop('company.idtype')}]] expiry alert",
+	"_message": "Your [[${_tu.prop('company.idtype')}]] is expiring as on [[${data.date}]]. After renewal, kindly update the new [[${_tu.prop('company.idtype')}]] card details at the branch. NOTE: You will not be able to do any online/mobile transactions, unless your new [[${_tu.prop('company.idtype')}]] is updated at the branch."
 }

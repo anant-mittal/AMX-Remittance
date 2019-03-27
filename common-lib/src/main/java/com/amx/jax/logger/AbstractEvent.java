@@ -3,9 +3,16 @@ package com.amx.jax.logger;
 import java.io.Serializable;
 
 import com.amx.utils.EnumType;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public abstract class AbstractEvent implements Serializable {
 
+	public static final String PROP_TRC_ID = "trcId";
+	public static final String PROP_TRX_ID = "trxId";
+	public static final String PROP_CATG = "catg";
+	public static final String PROP_COMPONENT = "ms";
+	public static final String PROP_TIMSTAMP = "ts";
+	public static final String PROP_TYPE = "type";
 	private static final long serialVersionUID = -3042991299608634785L;
 
 	public enum EventMarker implements EnumType {
@@ -57,10 +64,23 @@ public abstract class AbstractEvent implements Serializable {
 		EventMarker marker();
 	}
 
+	@JsonProperty(PROP_COMPONENT)
 	protected String component;
+
+	@JsonProperty(PROP_CATG)
 	protected String category = getClass().getSimpleName();
+
+	@JsonProperty(PROP_TYPE)
 	protected EventType type;
+
+	@JsonProperty(PROP_TIMSTAMP)
 	protected long timestamp;
+
+	@JsonProperty(PROP_TRC_ID)
+	protected String traceId;
+
+	@JsonProperty(PROP_TRX_ID)
+	protected String tranxId;
 
 	public AbstractEvent() {
 		this.timestamp = System.currentTimeMillis();
@@ -104,4 +124,20 @@ public abstract class AbstractEvent implements Serializable {
 	}
 
 	abstract public void clean();
+
+	public String getTraceId() {
+		return traceId;
+	}
+
+	public void setTraceId(String traceId) {
+		this.traceId = traceId;
+	}
+
+	public String getTranxId() {
+		return tranxId;
+	}
+
+	public void setTranxId(String tranxId) {
+		this.tranxId = tranxId;
+	}
 }

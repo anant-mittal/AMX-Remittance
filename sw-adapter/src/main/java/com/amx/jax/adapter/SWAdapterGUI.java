@@ -15,6 +15,7 @@ import javax.swing.JPanel;
 
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.adapter.ACardReaderService.CardStatus;
 import com.amx.jax.adapter.ACardReaderService.DataStatus;
 import com.amx.jax.adapter.ACardReaderService.DeviceStatus;
@@ -48,10 +49,11 @@ public class SWAdapterGUI extends JFrame {
 	JLabel labelDescriptionDetail = new JLabel("....");
 	public static SWAdapterGUI CONTEXT = null;
 	public static String LOG = "";
+	public static String WIN_TITLE = "Al Mulla Exchange - BranchAdapter";
 
 	private void initUI() {
 
-		setTitle("Al Mulla Exchange - Branch Desktop Client");
+		setTitle(WIN_TITLE);
 		setSize(400, 400);
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -117,6 +119,8 @@ public class SWAdapterGUI extends JFrame {
 		constraints.anchor = GridBagConstraints.CENTER;
 		JButton refreshButton = new JButton("Refresh");
 		refreshButton.addActionListener((ActionEvent event) -> {
+			AppContextUtil.getTraceId();
+			AppContextUtil.init();
 			ACardReaderService.CONTEXT.reset();
 		});
 		newPanel.add(refreshButton, constraints);
@@ -222,6 +226,13 @@ public class SWAdapterGUI extends JFrame {
 		LOG = message;
 		labelDescription.setText(message);
 		labelDescriptionDetail.setText(detail);
+	}
+
+	public static void updateTitle(String title) {
+		WIN_TITLE = title;
+		if (CONTEXT != null) {
+			CONTEXT.setTitle(WIN_TITLE);
+		}
 	}
 
 }

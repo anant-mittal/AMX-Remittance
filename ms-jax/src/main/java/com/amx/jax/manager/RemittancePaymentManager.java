@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -22,6 +23,7 @@ import com.amx.amxlib.model.PersonInfo;
 import com.amx.amxlib.model.PromotionDto;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.async.ExecutorConfig;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.JaxEmployeeDao;
 import com.amx.jax.dao.RemittanceApplicationDao;
@@ -34,10 +36,12 @@ import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.dbmodel.remittance.ShoppingCartDetails;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.payg.PaymentResponseDto;
+import com.amx.jax.postman.model.Email;
 import com.amx.jax.repository.IPlaceOrderDao;
 import com.amx.jax.repository.IShoppingCartDetailsDao;
 import com.amx.jax.repository.RemittanceApplicationRepository;
 import com.amx.jax.service.FinancialService;
+import com.amx.jax.service.JaxEmailNotificationService;
 import com.amx.jax.services.AbstractService;
 import com.amx.jax.services.JaxNotificationService;
 import com.amx.jax.services.RemittanceApplicationService;
@@ -93,6 +97,8 @@ public class RemittancePaymentManager extends AbstractService{
     IPlaceOrderDao placeOrderdao;
 	@Autowired
 	RemittanceManager remittanceManager;
+	@Autowired
+	JaxEmailNotificationService jaxEmailNotificationService;
 	
 	public ApiResponse<PaymentResponseDto> paymentCapture(PaymentResponseDto paymentResponse) {
 		ApiResponse response = null;
@@ -167,17 +173,17 @@ public class RemittancePaymentManager extends AbstractService{
 								lstPayIdDetails.get(0).getDocumentNo(),
 								lstPayIdDetails.get(0).getDocumentFinancialyear());
 						TransactionHistroyDTO trxnDto = transactionHistroyService.getTransactionHistoryDto(
-								paymentResponse.getCustomerId(), remittanceTransaction.getDocumentFinancialyear(),
+								paymentResponse.getCustomerId(), remittanceTransaction.getDocumentFinanceYear(),
 								remittanceTransaction.getDocumentNo());
-						Customer customer = customerDao.getCustById(remittanceTransaction.getCustomerId());
+						Customer customer = customerDao.getCustById(remittanceTransaction.getCustomerId().getCustomerId());
 						setMetaInfo(trxnDto, paymentResponse);
 						// promotion check not for amg employee
 						if (!employeeDao.isAmgEmployee(customer.getIdentityInt())) {
 							promotionManager.promotionWinnerCheck(remittanceTransaction.getDocumentNo(),
-									remittanceTransaction.getDocumentFinancialyear());
+									remittanceTransaction.getDocumentFinanceYear());
 						}
 						PromotionDto promotDto = promotionManager.getPromotionDto(remittanceTransaction.getDocumentNo(),
-								remittanceTransaction.getDocumentFinancialyear());
+								remittanceTransaction.getDocumentFinanceYear());
 						PersonInfo personInfo = userService.getPersonInfo(customer.getCustomerId());
 						promotionManager.sendVoucherEmail(promotDto, personInfo);
 						reportManagerService.generatePersonalRemittanceReceiptReportDetails(trxnDto, Boolean.TRUE);
@@ -227,11 +233,25 @@ public class RemittancePaymentManager extends AbstractService{
 			
 			throw new GlobalException(JaxError.PG_ERROR,"Remittance error :"+errorMsg);
 		}
-		//remittanceManager.checkAndBlockSuspiciousTransaction(lstPayIdDetails);
 		response.getData().getValues().add(paymentResponse);
 	    response.getData().setType("pg_remit_response");
-		
+		checkAndSendAlertEmail(errorMsg, paymentResponse);
 		return response;
+	}
+
+	@Async(ExecutorConfig.DEFAULT)
+	private void checkAndSendAlertEmail(String errorMsg, PaymentResponseDto paymentResponse) {
+		String[] receiverList = jaxEmailNotificationService.getBeneCreationErrorEmailList();
+		if (StringUtils.isNotBlank(errorMsg) && receiverList != null && receiverList.length > 0) {
+			StringBuffer message = new StringBuffer();
+			message.append("errorMsg: ").append(errorMsg);
+			message.append("paymentResponse: ").append(paymentResponse);
+			Email email = new Email();
+			email.setSubject("Remittance creation failure");
+			email.addTo(receiverList);
+			email.setMessage(message.toString());
+			notificationService.sendEmail(email);
+		}
 	}
 
 	private void setMetaInfo(TransactionHistroyDTO transactionHistroyDTO, PaymentResponseDto paymentResponse) {

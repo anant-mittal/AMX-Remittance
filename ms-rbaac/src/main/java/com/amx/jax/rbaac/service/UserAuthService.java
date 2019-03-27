@@ -76,12 +76,9 @@ public class UserAuthService {
 	/**
 	 * Verify user details.
 	 * 
-	 * @param employeeNo
-	 *            the emp code
-	 * @param identity
-	 *            the identity
-	 * @param ipAddress
-	 *            the ip address
+	 * @param employeeNo the emp code
+	 * @param identity   the identity
+	 * @param ipAddress  the ip address
 	 * @return the user auth init response DTO
 	 * 
 	 * @flow: -> Get Employee ||->-> Multiple Employees -> Error ||->-> Employee Not
@@ -225,7 +222,7 @@ public class UserAuthService {
 						.secret(otpDevice.getClientSecreteKey()).message(selfOtpData.getmOtpPrefix());
 
 				userOtpManager.sendToSlack("Offline OTP for Emp: " + employeeNo, " Self ", selfOtpData.getmOtpPrefix(),
-						builder.toHMAC().toNumeric(AmxConstants.OTP_LENGTH).output());
+						builder.toHMAC().toComplex(AmxConstants.OTP_LENGTH).output());
 
 			}
 
@@ -243,7 +240,7 @@ public class UserAuthService {
 
 					userOtpManager.sendToSlack("Offline OTP for Emp: " + employeeNo, " Partner ",
 							userOtpData.getPartnerOtpData().getmOtpPrefix(),
-							builderP.toHMAC().toNumeric(AmxConstants.OTP_LENGTH).output());
+							builderP.toHMAC().toComplex(AmxConstants.OTP_LENGTH).output());
 
 				}
 
@@ -303,8 +300,7 @@ public class UserAuthService {
 
 			userOtpCache.remove(employeeNo);
 
-			throw new AuthServiceException(RbaacServiceError.OTP_TIMED_OUT,
-					"Invalid OTP: OTP is timedOut");
+			throw new AuthServiceException(RbaacServiceError.OTP_TIMED_OUT, "Invalid OTP: OTP is timedOut");
 		}
 
 		Employee employee = userOtpData.getEmployee();
@@ -344,7 +340,7 @@ public class UserAuthService {
 			/**
 			 * Check if Offline OTP is valid for Self
 			 */
-			isAuthorized = validateOfflineOtp(mOtp, employee.getEmployeeId(), userOtpData.getOtpData());
+			isAuthorized = validateOfflineOtp(mOtp, employee.getEmployeeId(), userOtpData.getOtpData().getmOtpPrefix());
 		}
 
 		/**
@@ -361,7 +357,7 @@ public class UserAuthService {
 				 * Validate Partner Offline OTP
 				 */
 				isAuthorized = validateOfflineOtp(reqDto.getPartnerMOtp(), userOtpData.getPartnerEmployeeId(),
-						userOtpData.getPartnerOtpData());
+						userOtpData.getPartnerOtpData().getmOtpPrefix());
 			}
 		}
 
@@ -419,7 +415,7 @@ public class UserAuthService {
 	 * @param initOtpData
 	 * @return
 	 */
-	private boolean validateOfflineOtp(String otp, BigDecimal employeeId, OtpData initOtpData) {
+	public boolean validateOfflineOtp(String otp, BigDecimal employeeId, String sac) {
 
 		Device otpDevice = deviceService.getDeviceByEmployeeAndDeviceType(ClientType.NOTP_APP, employeeId);
 
@@ -429,13 +425,14 @@ public class UserAuthService {
 
 		HashBuilder builder = new HashBuilder().currentTime(System.currentTimeMillis())
 				.interval(AmxConstants.OFFLINE_OTP_TTL).tolerance(AmxConstants.OFFLINE_OTP_TOLERANCE)
-				.secret(otpDevice.getClientSecreteKey()).message(initOtpData.getmOtpPrefix());
+				.secret(otpDevice.getClientSecreteKey()).message(sac);
 
-		if (!builder.validateNumHMAC(otp)) {
-			return Boolean.FALSE;
+		// Added Complex Password
+		if (builder.validateComplexHMAC(otp) || builder.validateNumHMAC(otp)) {
+			return Boolean.TRUE;
 		}
 
-		return Boolean.TRUE;
+		return Boolean.FALSE;
 
 	}
 
@@ -484,6 +481,17 @@ public class UserAuthService {
 			throw new AuthServiceException(RbaacServiceError.USER_ACCOUNT_LOCKED,
 					"User Account Locked : User Account Login is Suspended, from: " + validEmployee.getLockDate()
 							+ " for Login Type : " + userType);
+		}
+
+		/**
+		 * Check if Employee has a Phone Number.
+		 * 
+		 * Validity of phone number is not checked.
+		 */
+
+		if (StringUtils.isEmpty(validEmployee.getTelephoneNumber())) {
+			throw new AuthServiceException(RbaacServiceError.INVALID_PHONE_NUMBER,
+					"The mobile number is invalid for the user");
 		}
 
 		return validEmployee;

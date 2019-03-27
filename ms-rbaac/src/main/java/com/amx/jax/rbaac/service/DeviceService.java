@@ -2,6 +2,7 @@ package com.amx.jax.rbaac.service;
 
 import java.math.BigDecimal;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -20,6 +21,7 @@ import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.constant.DeviceState;
 import com.amx.jax.dbmodel.Device;
 import com.amx.jax.dict.UserClient.ClientType;
+import com.amx.jax.event.AmxTunnelEvents;
 import com.amx.jax.rbaac.constants.RbaacServiceConstants;
 import com.amx.jax.rbaac.dao.DeviceDao;
 import com.amx.jax.rbaac.dto.DeviceDto;
@@ -29,8 +31,13 @@ import com.amx.jax.rbaac.error.RbaacServiceError;
 import com.amx.jax.rbaac.exception.AuthServiceException;
 import com.amx.jax.rbaac.manager.DeviceManager;
 import com.amx.jax.rbaac.validation.DeviceValidation;
+import com.amx.jax.tunnel.ResourceUpdateEvent;
+import com.amx.jax.tunnel.TunnelService;
+import com.amx.jax.util.ParamValidator;
+import com.amx.utils.Constants;
 import com.amx.utils.CryptoUtil;
 import com.amx.utils.Random;
+import com.amx.utils.TimeUtils;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -44,6 +51,8 @@ public class DeviceService extends AbstractService {
 	DeviceValidation deviceValidation;
 	@Autowired
 	DeviceManager deviceManager;
+	@Autowired
+	TunnelService tunnelService;
 
 	public static final long DEVICE_SESSION_TIMEOUT = 8 * 60 * 60; // in seconds
 
@@ -58,16 +67,39 @@ public class DeviceService extends AbstractService {
 	public void activateDevice(Device device) {
 		device.setStatus("Y");
 		device.setState(DeviceState.REGISTERED);
-		List<Device> devices = deviceDao.findAllActiveDevices(device.getBranchSystemInventoryId(),
-				device.getDeviceType());
-		if (!CollectionUtils.isEmpty(devices)) {
-			for (Device d : devices) {
-				if (!d.equals(device)) {
-					d.setStatus("N");
+		List<Device> deactivatedDevices = new ArrayList<Device>();
+		if (device.getBranchSystemInventoryId() != null) {
+			List<Device> devices = deviceDao.findAllActiveDevices(device.getBranchSystemInventoryId(),
+					device.getDeviceType());
+			if (!CollectionUtils.isEmpty(devices)) {
+				for (Device d : devices) {
+					if (!d.equals(device)) {
+						d.setStatus("N");
+						deactivatedDevices.add(d);
+					}
 				}
+				deviceDao.saveDevices(devices);
 			}
-			deviceDao.saveDevices(devices);
 		}
+		if (device.getEmployeeId() != null) {
+			List<Device> devices = deviceDao.findAllActiveDevicesForEmployee(device.getEmployeeId(),
+					device.getDeviceType());
+			if (!CollectionUtils.isEmpty(devices)) {
+				for (Device d : devices) {
+					if (!d.equals(device)) {
+						d.setStatus("N");
+						deactivatedDevices.add(d);
+					}
+				}
+				deviceDao.saveDevices(devices);
+			}
+		}
+		// send device deactivated notification to other services
+		deactivatedDevices.forEach(i -> {
+			ResourceUpdateEvent event = new ResourceUpdateEvent();
+			event.setResourceId(i.getRegistrationId());
+			tunnelService.task(AmxTunnelEvents.UPDATE_DEVICE_STATUS.name(), event);
+		});
 		deviceDao.saveDevice(device);
 	}
 
@@ -80,7 +112,7 @@ public class DeviceService extends AbstractService {
 	public BoolRespModel deactivateDevice(Integer deviceRegId) {
 		logger.info("In deactivateDevice with deviceRegId: {}", deviceRegId);
 		Device device = deviceDao.findDevice(new BigDecimal(deviceRegId));
-		deviceValidation.validateDeviceForActivation(device);
+		deviceValidation.validateNullDevice(device);
 		deactivateDevice(device);
 		return new BoolRespModel(Boolean.TRUE);
 	}
@@ -88,6 +120,12 @@ public class DeviceService extends AbstractService {
 	public void deactivateDevice(Device device) {
 		device.setStatus("N");
 		device.setState(DeviceState.REGISTERED_NOT_ACTIVE);
+		deviceDao.saveDevice(device);
+	}
+	
+	public void deleteDevice(Device device) {
+		device.setStatus(Constants.DELETED_SOFT);
+		device.setState(DeviceState.DELETED);
 		deviceDao.saveDevice(device);
 	}
 
@@ -119,6 +157,7 @@ public class DeviceService extends AbstractService {
 		DeviceDto dto = new DeviceDto();
 		try {
 			BeanUtils.copyProperties(dto, newDevice);
+			dto.setTermialId(newDevice.getBranchSystemInventoryId());
 		} catch (Exception e) {
 		}
 		dto.setPairToken(devicePairToken);
@@ -128,13 +167,24 @@ public class DeviceService extends AbstractService {
 
 	public BoolRespModel activateDevice(Integer deviceRegId) {
 		logger.info("In activateDevice with deviceRegId: {}", deviceRegId);
+		deviceValidation.validateDeviceRegId(deviceRegId);
 		Device device = deviceDao.findDevice(new BigDecimal(deviceRegId));
-		deviceValidation.validateDeviceForActivation(device);
+		deviceValidation.validateNullDevice(device);
 		activateDevice(device);
+		return new BoolRespModel(Boolean.TRUE);
+	}
+	
+	public BoolRespModel deleteDevice(Integer deviceRegId) {
+		logger.info("In deleteDevice with deviceRegId: {}", deviceRegId);
+		deviceValidation.validateDeviceRegId(deviceRegId);
+		Device device = deviceDao.getDeviceByRegId(new BigDecimal(deviceRegId));
+		deviceValidation.validateNullDevice(device);
+		deleteDevice(device);
 		return new BoolRespModel(Boolean.TRUE);
 	}
 
 	public DevicePairOtpResponse sendOtpForPairing(Integer deviceRegId, String paireToken) {
+		deviceValidation.validateDeviceRegIdndPairtoken(deviceRegId,paireToken); 		
 		Device device = deviceDao.findDevice(new BigDecimal(deviceRegId));
 		validateDevicePairToken(new BigDecimal(deviceRegId), paireToken);
 		DevicePairOtpResponse response = deviceManager.generateOtp(device);
@@ -147,6 +197,7 @@ public class DeviceService extends AbstractService {
 		Device device = deviceDao.findDevice(new BigDecimal(countryBranchSystemInventoryId), deviceType);
 		deviceValidation.validateDevice(device);
 		deviceValidation.validateDeviceOtpToken(device, otp);
+		deviceValidation.validateOtpValidationTimeLimit(device.getRegistrationId());
 		// session pair success
 		device.setState(DeviceState.SESSION_PAIRED);
 		deviceDao.saveDevice(device);
@@ -169,10 +220,18 @@ public class DeviceService extends AbstractService {
 	}
 
 	public DevicePairOtpResponse validateDeviceSessionPairToken(BigDecimal deviceRegId, String deviceSessionToken) {
+		logger.debug("validateDeviceSessionPairToken method params: deviceRegId {}, deviceSessionToken {}", deviceRegId,
+				deviceSessionToken);
+		ParamValidator.validateNotNull(deviceRegId, "deviceRegId may not be null");
+		ParamValidator.validateNotEmpty(deviceSessionToken, "deviceSessionToken may not be empty");
 		Device device = deviceDao.findDevice(deviceRegId);
 		deviceValidation.validateDevice(device);
 		String sessionTokenGen = deviceManager.generateSessionPairToken(device);
-		if (!deviceSessionToken.equals(sessionTokenGen)) {
+		if (!deviceSessionToken.equals(device.getSessionToken()) ||
+				TimeUtils.isDead(device.getOtpTokenCreatedDate().getTime(),
+						deviceManager.getDeviceSessionTimeout() * 1000)
+		// || !deviceSessionToken.equals(sessionTokenGen)
+		) {
 			throw new AuthServiceException(RbaacServiceError.CLIENT_EXPIRED_SESSION_TOKEN, "Session token is expired");
 		}
 		deviceValidation.validateOtpValidationTimeLimit(deviceRegId);
@@ -183,7 +242,7 @@ public class DeviceService extends AbstractService {
 			BigDecimal countryBranchSystemInventoryId) {
 		List<Device> devices = deviceDao.findAllActiveDevices(countryBranchSystemInventoryId, deviceClientType);
 		if (CollectionUtils.isEmpty(devices)) {
-			throw new AuthServiceException(RbaacServiceError.CLIENT_NOT_FOUND, "No device found");
+			throw new AuthServiceException(RbaacServiceError.CLIENT_NOT_ACTIVE, "No device found");
 		}
 		return devices.get(0).getRegistrationId();
 	}
@@ -253,4 +312,31 @@ public class DeviceService extends AbstractService {
 		return null;
 	}
 
+	public Device findDevice(BigDecimal deviceRegId) {
+		return deviceDao.findDevice(deviceRegId);
+	}
+	
+	public DeviceDto getDeviceByDeviceRegId(BigDecimal deviceRegId) {
+		Device device = findDevice(deviceRegId);
+		if (!RbaacServiceConstants.YES.equalsIgnoreCase(device.getStatus())) {
+			throw new AuthServiceException(RbaacServiceError.CLIENT_NOT_ACTIVE,
+					"Inactive Device Client : Contact Support");
+		}
+		return convert(device);
+	}
+
+	public DeviceDto convert(Device device) {
+
+		DeviceDto deviceDtos = new DeviceDto();
+		deviceDtos.setDeviceId(device.getDeviceId());
+		deviceDtos.setRegistrationId(device.getRegistrationId());
+		deviceDtos.setDeviceType(device.getDeviceType().toString());
+		deviceDtos.setStatus(device.getStatus());
+		deviceDtos.setDeviceSecret(device.getOtpToken());
+		deviceDtos.setTermialId(device.getBranchSystemInventoryId());
+
+		return deviceDtos;
+	}
+	
+	
 }

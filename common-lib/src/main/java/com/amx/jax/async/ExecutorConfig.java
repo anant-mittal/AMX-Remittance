@@ -6,23 +6,24 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.annotation.AsyncConfigurerSupport;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
 @Configuration
 public class ExecutorConfig extends AsyncConfigurerSupport {
 
-	public static final String DEFAULT = "silverExecutor";
-	public static final String EXECUTER_BRONZE = "bronzeExecutor";
+	public static final String DEFAULT = "slvrExec";
+	public static final String EXECUTER_BRONZE = "brnzExe";
 
-	public static final String EXECUTER_WORKER = "workerExecutor";
-	public static final String EXECUTER_GOLD = "goldExecutor";
-	public static final String EXECUTER_PLATINUM = "platinumExecutor";
-	public static final String EXECUTER_DIAMOND = "diamondExecutor";
+	public static final String EXECUTER_WORKER = "wrkrExec";
+	public static final String EXECUTER_GOLD = "gldExec";
+	public static final String EXECUTER_PLATINUM = "pltnmExe";
+	public static final String EXECUTER_DIAMOND = "dmndExec";
 
 	@Override
 	@Bean
 	public Executor getAsyncExecutor() {
 		ContextAwarePoolExecutor executor = new ContextAwarePoolExecutor();
-		executor.setCorePoolSize(20);
+		executor.setCorePoolSize(5);
 		executor.setThreadNamePrefix(DEFAULT + "-");
 		executor.initialize();
 		return executor;
@@ -76,4 +77,5 @@ public class ExecutorConfig extends AsyncConfigurerSupport {
 		executor.initialize();
 		return executor;
 	}
+
 }

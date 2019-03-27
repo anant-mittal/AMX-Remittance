@@ -20,4 +20,7 @@ public interface VwFxDeliveryDetailsRepository extends CrudRepository<VwFxDelive
 	VwFxDeliveryDetailsModel findByDeleviryDelSeqIdAndDriverEmployeeId(BigDecimal deliveryDetailSeqId,
 			BigDecimal driverEmployeeId);
 
+	@Query(value = "select * from JAX_VW_FX_DELIVERY_DETAIL where  DRIVER_EMPLOYEE_ID=?1  and trunc(DELIVERY_DATE) <= trunc(sysdate) and  trunc(DELIVERY_DATE) >= trunc(sysdate-?2)", nativeQuery = true)
+	List<VwFxDeliveryDetailsModel> findHistoricalDriverOrders(BigDecimal driverEmployeeId, Integer days);
+
 }

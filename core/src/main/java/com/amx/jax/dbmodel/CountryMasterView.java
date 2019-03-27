@@ -8,6 +8,8 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.amx.jax.model.IResourceEntity;
 
 /**
@@ -174,7 +176,7 @@ public class CountryMasterView implements java.io.Serializable, IResourceEntity 
 
 	@Column(name = "COUNTRY_TEL_CODE")
 	public String getCountryTelCode() {
-		return countryTelCode;
+		return StringUtils.stripStart(countryTelCode, "0");
 	}
 
 	public void setCountryTelCode(String countryTelCode) {

@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.amx.jax.grid.GridConstants.FilterDataType;
 import com.amx.jax.grid.GridConstants.FilterOperater;
+import com.amx.utils.ArgUtil;
 
 /**
  * The Class SortBy.
@@ -14,12 +15,14 @@ import com.amx.jax.grid.GridConstants.FilterOperater;
 public class FilterBy {
 
 	public static class Condition {
+		private String column;
 		private String value;
 		private FilterOperater opertor;
 		private FilterDataType type;
 
-		public Condition(FilterOperater opertor, String value, FilterDataType type) {
+		public Condition(String column, FilterOperater opertor, String value, FilterDataType type) {
 			super();
+			this.column = column;
 			this.opertor = opertor;
 			this.value = value;
 			this.type = type;
@@ -47,6 +50,14 @@ public class FilterBy {
 
 		public void setType(FilterDataType type) {
 			this.type = type;
+		}
+
+		public String getColumn() {
+			return column;
+		}
+
+		public void setColumn(String column) {
+			this.column = column;
 		}
 	}
 
@@ -97,8 +108,11 @@ public class FilterBy {
 		mapOfLikeFilters.put(filterColumn, filterValue);
 	}
 
-	public void addWhereFilter(String filterColumn, Condition filterCondition) {
-		mapOfWhereFilters.put(filterColumn, filterCondition);
+	public void addWhereFilter(GridColumn colSpec) {
+		FilterOperater filterOperater = (FilterOperater) ArgUtil.parseAsEnum(colSpec.getOperator(),
+				FilterOperater.EQ);
+		mapOfWhereFilters.put(colSpec.getKey() + colSpec.getIndex(),
+				new Condition(colSpec.getKey(), filterOperater, colSpec.getValue(), colSpec.getDataType()));
 	}
 
 	/**

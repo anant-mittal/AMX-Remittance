@@ -9,12 +9,10 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.amx.jax.es.ESDocFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-/*
- * Author Rahamathali Shaik
-*/
 @Entity
 @Table(name = "VW_KIBANA_TRNX")
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -27,6 +25,7 @@ public class TranxViewRecord implements Serializable {
 	@Column(name = "APPL_ID")
 	private BigDecimal id;
 
+	@ESDocFormat(ESDocFormat.Type.DATE)
 	@Column(name = "LATEST_TIMESTAMP")
 	private Date lastUpdateDate;
 
@@ -36,16 +35,11 @@ public class TranxViewRecord implements Serializable {
 	@Column(name = "APPL_DOCNO")
 	private BigDecimal docNo;
 
+	@ESDocFormat(ESDocFormat.Type.DATE)
 	@Column(name = "APPL_DATE")
 	private Date creationDate;
 
 	// Bene
-	@Column(name = "BENE_COUNTRY_ID")
-	private BigDecimal beneCountryId;
-
-	@Column(name = "BENE_COUNTRY_CODE")
-	private String beneCountryCode;
-
 	@Column(name = "BENE_BANK_ID")
 	private BigDecimal beneBankId;
 
@@ -58,15 +52,31 @@ public class TranxViewRecord implements Serializable {
 	@Column(name = "BENE_BANKBRANCH_NAME")
 	private String beneBankBranchName;
 
-	// ATTR
-	@Column(name = "CHANNEL")
-	private String channel;
+	@Column(name = "BENE_COUNTRY_ID")
+	private BigDecimal beneCountryId;
 
+	@Column(name = "BENE_COUNTRY_CODE")
+	private String beneCountryCode;
+
+	// Branch
 	@Column(name = "COUNTRY_BRANCH_ID")
 	private BigDecimal countryBranchId;
 
 	@Column(name = "COUNTRY_BRANCH_NAME")
 	private String countryBranchName;
+
+	@Column(name = "BRANCH_AREA_ID")
+	private String branchAreaId;
+
+	@Column(name = "BRANCH_AREA_NAME")
+	private String branchAreaName;
+
+	// ATTR
+	@Column(name = "CHANNEL")
+	private String channel;
+
+	@Column(name = "USER_NAME")
+	private String branchUser;
 
 	@Column(name = "DELIVERY_MODE_ID")
 	private BigDecimal deliveryModeId;
@@ -86,6 +96,7 @@ public class TranxViewRecord implements Serializable {
 	@Column(name = "LOCAL_TRANX_AMOUNT")
 	private BigDecimal domTrnxAmount;
 
+	// Channe/Rounting/Service
 	@Column(name = "REMITTANCE_MODE_ID")
 	private BigDecimal modeId;
 
@@ -104,13 +115,21 @@ public class TranxViewRecord implements Serializable {
 	@Column(name = "ROUTING_COUNTRY_CODE")
 	private String routingCountryCode;
 
+	@Column(name = "PARTNER")
+	private String partner;
+
+	@Column(name = "SERVICE_TYPE")
+	private String serviceType;
+
 	// Tranx
 	@Column(name = "TRNX_ID")
 	private BigDecimal trnxId;
 
+	@ESDocFormat(ESDocFormat.Type.DATE)
 	@Column(name = "TRNX_DATETIME")
 	private Date trnxDate;
 
+	@ESDocFormat(ESDocFormat.Type.DATE)
 	@Column(name = "TRNX_PAID_DATETIME")
 	private Date trnxPaidDate;
 
@@ -127,6 +146,9 @@ public class TranxViewRecord implements Serializable {
 	private String trnxStatus;
 
 	// Revenue
+	@Column(name = "TRNX_ACCOUNT_MMYYYY")
+	private String trnxAccountMonth;
+
 	@Column(name = "EXCHANGE_GAIN")
 	private BigDecimal exchangeGain;
 
@@ -135,6 +157,9 @@ public class TranxViewRecord implements Serializable {
 
 	@Column(name = "COMM_RECV")
 	private BigDecimal commRecv;
+
+	@Column(name = "LOCAL_COMMISION_AMOUNT")
+	private BigDecimal localCommRecv;
 
 	// Customer
 	@Column(name = "IDENTITY_INT")
@@ -151,6 +176,16 @@ public class TranxViewRecord implements Serializable {
 
 	@Column(name = "NATIONALITY_CODE")
 	private String custmerNationCode;
+
+	// DeviceClient Info
+	@Column(name = "CLIENT_TYPE")
+	private String clientType;
+
+	@Column(name = "CLIENT_ID")
+	private String clientId;
+
+	@Column(name = "CLIENT_IP")
+	private String clientIp;
 
 	public BigDecimal getId() {
 		return id;
@@ -470,6 +505,94 @@ public class TranxViewRecord implements Serializable {
 
 	public void setCommRecv(BigDecimal commRecv) {
 		this.commRecv = commRecv;
+	}
+
+	public String getBranchUser() {
+		return branchUser;
+	}
+
+	public void setBranchUser(String branchUser) {
+		this.branchUser = branchUser;
+	}
+
+	public String getCountryBranchName() {
+		return countryBranchName;
+	}
+
+	public void setCountryBranchName(String countryBranchName) {
+		this.countryBranchName = countryBranchName;
+	}
+
+	public String getClientType() {
+		return clientType;
+	}
+
+	public void setClientType(String clientType) {
+		this.clientType = clientType;
+	}
+
+	public String getClientId() {
+		return clientId;
+	}
+
+	public void setClientId(String clientId) {
+		this.clientId = clientId;
+	}
+
+	public String getClientIp() {
+		return clientIp;
+	}
+
+	public void setClientIp(String clientIp) {
+		this.clientIp = clientIp;
+	}
+
+	public String getBranchAreaId() {
+		return branchAreaId;
+	}
+
+	public void setBranchAreaId(String branchAreaId) {
+		this.branchAreaId = branchAreaId;
+	}
+
+	public String getBranchAreaName() {
+		return branchAreaName;
+	}
+
+	public void setBranchAreaName(String branchAreaName) {
+		this.branchAreaName = branchAreaName;
+	}
+
+	public String getPartner() {
+		return partner;
+	}
+
+	public void setPartner(String partner) {
+		this.partner = partner;
+	}
+
+	public String getServiceType() {
+		return serviceType;
+	}
+
+	public void setServiceType(String serviceType) {
+		this.serviceType = serviceType;
+	}
+
+	public String getTrnxAccountMonth() {
+		return trnxAccountMonth;
+	}
+
+	public void setTrnxAccountMonth(String trnxAccountMonth) {
+		this.trnxAccountMonth = trnxAccountMonth;
+	}
+
+	public BigDecimal getLocalCommRecv() {
+		return localCommRecv;
+	}
+
+	public void setLocalCommRecv(BigDecimal localCommRecv) {
+		this.localCommRecv = localCommRecv;
 	}
 
 }

@@ -526,7 +526,7 @@ public final class ArgUtil {
 	public static Enum parseAsEnum(Object value, Enum defaultValue) {
 		String enumString = parseAsString(value);
 		if (enumString == null) {
-			return null;
+			return defaultValue;
 		}
 		String enumStringCaps = enumString.toUpperCase();
 		if (defaultValue instanceof EnumType) {
@@ -558,8 +558,9 @@ public final class ArgUtil {
 	}
 
 	public static Enum parseAsEnum(Object value, Type type) {
+		String enumString = null;
 		try {
-			String enumString = parseAsString(value);
+			enumString = parseAsString(value);
 			if (enumString == null) {
 				return null;
 			}
@@ -568,7 +569,7 @@ public final class ArgUtil {
 				return Enum.valueOf(clazz, enumString);
 			}
 		} catch (Exception e) {
-			LOGGER.error("Enum Cast Exception", e);
+			LOGGER.error("Enum Cast Exception for " + enumString, e);
 		}
 		return null;
 	}

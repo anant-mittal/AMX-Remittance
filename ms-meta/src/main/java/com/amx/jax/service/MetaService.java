@@ -27,7 +27,7 @@ import com.amx.amxlib.meta.model.ViewGovernateAreaDto;
 import com.amx.amxlib.meta.model.ViewGovernateDto;
 import com.amx.amxlib.model.OnlineConfigurationDto;
 import com.amx.jax.api.AmxApiResponse;
-import com.amx.jax.config.JaxProperties;
+import com.amx.jax.config.JaxTenantProperties;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.OnlineConfiguration;
 import com.amx.jax.dbmodel.ViewAreaModel;
@@ -103,7 +103,7 @@ public class MetaService extends AbstractService {
 	@Autowired
 	JaxUtil jaxUtil;
 	@Autowired
-	JaxProperties jaxProperties;
+	JaxTenantProperties jaxTenantProperties;
 
 	public AmxApiResponse<ViewCityDto, Object> getDistrictCity(BigDecimal districtId, BigDecimal languageId) {
 		List<ViewCity> cityList = cityDao.getCityByDistrictId(districtId, languageId);
@@ -217,25 +217,32 @@ public class MetaService extends AbstractService {
 
 	public AmxApiResponse<ServiceGroupMasterDescDto, Object> getServiceGroups() {
 		List<ServiceGroupMasterDescDto> outputDto = getServiceGroupDto();
+				
 		return AmxApiResponse.buildList(outputDto);
 	}
 
 	private List<ServiceGroupMasterDescDto> getServiceGroupDto() {
 		List<ServiceGroupMasterDesc> output = serviceGroupMasterDescRepository
 				.findActiveByLanguageId(metaData.getLanguageId());
+		
+		
 		final List<ServiceGroupMasterDescDto> outputDto = new ArrayList<>();
+	
 		output.forEach(i -> {
 			boolean isCash = i.getServiceGroupMasterId().getServiceGroupId().equals(BigDecimal.ONE);
-			if (isCash && jaxProperties.getCashDisable()) {
+			if (isCash && jaxTenantProperties.getCashDisable()) {
 				return;
 			}
-			ServiceGroupMasterDescDto dto = new ServiceGroupMasterDescDto();
+			ServiceGroupMasterDescDto dto = new ServiceGroupMasterDescDto();	
+			
 			dto.setServiceGroupMasterId(i.getServiceGroupMasterId().getServiceGroupId());
 			dto.setServiceGroupDesc(i.getServiceGroupDesc());
 			dto.setServiceGroupShortDesc(i.getServiceGroupShortDesc());
+			
 			outputDto.add(dto);
-
-		});
+		
+		}
+		        );
 		return outputDto;
 	}
 

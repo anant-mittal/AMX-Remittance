@@ -22,6 +22,7 @@ public class AppConstants extends Constants {
 	}
 
 	public static final String AUTH_KEY_XKEY = "x-app-auth-key";
+	public static final String AUTH_TOKEN_XKEY = "x-app-auth-token";
 	public static final String AUTH_CLIENT_KEY_XKEY = "x-client-auth-key";
 	public static final String SESSION_ID_XKEY = "x-session-id";
 	public static final String SESSION_UID_XKEY = "x-session-uid";
@@ -31,8 +32,8 @@ public class AppConstants extends Constants {
 	public static final String TRANX_ID_XKEY = "x-tranx-id";
 	public static final String USER_CLIENT_XKEY = "x-user-client";
 	public static final String USER_DEVICE_XKEY = "x-user-device";
-	public static final String REQUEST_PARAMS_XKEY = "x-request-params";
-	public static final String REQUESTD_PARAMS_XKEY = "x-requestd-params";
+	public static final String REQUEST_PARAMS_XKEY = "x-app-auth-params";
+	public static final String REQUESTD_PARAMS_XKEY = "x-app-authd-params";
 
 	public static final String EXCEPTION_HEADER_KEY = "x-exception";
 	public static final String ERROR_HEADER_KEY = "apiErrorJson";

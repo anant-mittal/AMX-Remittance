@@ -56,7 +56,6 @@ public class CustomerDao {
 	private CompanyService companyService;
 	
 
-	@Transactional
 	public Customer getCustomerByCivilId(String civilId) {
 		Customer cust = null;
 		BigDecimal countryId = meta.getCountryId();
@@ -71,20 +70,20 @@ public class CustomerDao {
 		return repo.findActiveCustomers(identityInt);
 	}
 	
-	@Transactional
 	public List<Customer> getCustomerByIdentityInt(String identityInt) {
 		return repo.getCustomerByIdentityInt(identityInt);
 	}
-
-	@Transactional
-	public CustomerOnlineRegistration getOnlineCustById(BigDecimal id) {
-		return onlineCustRepo.findOne(id);
+	
+	public Customer getActiveCustomerByIndentityIntAndType(String identityInt, BigDecimal identityType) {
+		return repo.getActiveCustomerByIndentityIntAndType(identityInt, identityType);
 	}
 
-	@Transactional
 	public Customer getCustById(BigDecimal id) {
 		return repo.findOne(id);
 	}
+	
+	
+	
 	
 	public List<PlaceOrderCustomer> getPersonInfoById(List<BigDecimal> customerIds) {
 		List<PlaceOrderCustomer> poCustomers = new ArrayList<>();
@@ -96,7 +95,6 @@ public class CustomerDao {
 		return poCustomers;
 	}
 
-	@Transactional
 	public CustomerOnlineRegistration getOnlineCustByCustomerId(BigDecimal customerId) {
 		CustomerOnlineRegistration onlineCust = null;
 		if (customerId != null) {
@@ -108,7 +106,6 @@ public class CustomerDao {
 		return onlineCust;
 	}
 
-	@Transactional
 	public CustomerOnlineRegistration getOnlineCustByUserId(String userName) {
 		BigDecimal countryId = meta.getCountryId();
 		CustomerOnlineRegistration customer = null;
@@ -217,6 +214,11 @@ public class CustomerDao {
 	public CustomerOnlineRegistration getOnlineCustomerByLoginIdOrUserName(String loginId) {
 		return onlineCustRepo.getOnlineCustomerByLoginIdOrUserName(loginId);
 	}
+	
+	public CustomerOnlineRegistration getCustomerIDByuserId(String loginId) {
+		return onlineCustRepo.getCustomerIDByuserId(loginId);
+	}
+	
 
 	public List<CustomerOnlineRegistration> getOnlineCustomerWithStatusByLoginIdOrUserName(String loginId) {
 		return onlineCustRepo.getOnlineCustomerWithStatusByLoginIdOrUserName(loginId);
@@ -277,6 +279,18 @@ public class CustomerDao {
 		Map<String, Object> output = applicationCoreProcedureDao.callProcedureCustReferenceNumber(
 				company.getCompanyCode(), ConstantDocument.DOCUMENT_CODE_CUSTOMER_SERIAL_NUMBER, docFinYear);
 		return (BigDecimal) output.get("P_DOCNO");
+	}
+
+	public List<Customer> getCustomerByIdentityInt(String identityInt, BigDecimal identityType) {
+		return repo.getCustomerByIdentityInt(identityInt, identityType);
+	}
+
+	public List<Customer> findActiveCustomers(String identityInt, BigDecimal identityType) {
+		return repo.findActiveCustomers(identityInt, identityType);
+	}
+	
+	public List<Customer> getActiveCustomerByIndentityIntAndTypeAndIsActive(String identityInt, BigDecimal identityType, List<String> status){
+		return repo.getCustomerByIndentityIntAndTypeAndIsactive(identityInt, identityType, status);
 	}
 	
 }

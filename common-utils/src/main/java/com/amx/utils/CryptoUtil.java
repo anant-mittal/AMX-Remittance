@@ -35,12 +35,10 @@ public final class CryptoUtil {
 
 	/**
 	 * 
-	 * @param interval
-	 *            : In Seconds
+	 * @param interval    : In Seconds
 	 * @param secretKey
 	 * @param message
-	 * @param currentTime
-	 *            : In MilliSeconds
+	 * @param currentTime : In MilliSeconds
 	 * @return
 	 */
 	public static String generateHMAC(long interval, String secretKey, String message, long currentTime) {
@@ -66,8 +64,7 @@ public final class CryptoUtil {
 
 	/**
 	 * 
-	 * @param interval
-	 *            in seconds
+	 * @param interval  in seconds
 	 * @param secretKey
 	 * @param message
 	 * @return
@@ -115,6 +112,24 @@ public final class CryptoUtil {
 		return false;
 	}
 
+	public static boolean validateComplexHMAC(long currentTime, long interval, long tolerance, String secretKey,
+			String message, String complexHash) {
+
+		LOGGER.debug("validateHMAC I:{} S:{} M:{} C:{} H:{} T:{}", interval, secretKey, message, currentTime,
+				complexHash, tolerance);
+
+		if (toComplex(complexHash.length(), generateHMAC(interval, secretKey, message)).equals(complexHash)) {
+			return true;
+		} else if (toComplex(complexHash.length(),
+				generateHMAC(interval, secretKey, message, currentTime - tolerance * 1000)).equals(complexHash)) {
+			return true;
+		} else if (toComplex(complexHash.length(),
+				generateHMAC(interval, secretKey, message, currentTime + tolerance * 1000)).equals(complexHash)) {
+			return true;
+		}
+		return false;
+	}
+
 	@Deprecated
 	public static boolean validateHMAC(long interval, String secretKey, String message, long currentTime, String hash) {
 		return validateHMAC(currentTime, interval, interval, secretKey, message, hash);
@@ -146,6 +161,34 @@ public final class CryptoUtil {
 		return ArgUtil.parseAsString(hashCode * passLenFill);
 	}
 
+	// private static final String COMPLEX_CHARS =
+	// "!@#$%^&*?0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	public static final String COMPLEX_CHARS = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+	private static final int COMPLEX_CHARS_LEN = COMPLEX_CHARS.length();
+
+	public static String toComplex(int length, String hash) {
+		char[] hashChars = hash.toCharArray();
+		int totalInt = 0;
+		for (int i = 0; i < hashChars.length; i++) {
+			int cint = hashChars[i];
+			totalInt = (cint * cint * i) + totalInt;
+		}
+		int vlength = length * 2;
+		long hashCode = Math.max(totalInt % Math.round(Math.pow(10, vlength)), 2);
+		int passLenDiff = (vlength - String.valueOf(hashCode).length());
+		long passLenFill = Math.max(Math.round(Math.pow(10, passLenDiff)) - 1, 1);
+		long next = hashCode * passLenFill;
+		StringBuilder complexHash = new StringBuilder();
+		while (next > 0) {
+			long thisIndex = next % 100;
+			next = (next - thisIndex) / 100;
+			thisIndex = thisIndex % COMPLEX_CHARS_LEN;
+			complexHash.append(COMPLEX_CHARS.charAt((int) thisIndex));
+		}
+		return complexHash.toString();
+	}
+
 	public static String toHex(int length, String hash) {
 		// length = length*2;
 		char[] hashChars = hash.toCharArray();
@@ -174,11 +217,9 @@ public final class CryptoUtil {
 	/**
 	 * Gets the m d5 hash.
 	 *
-	 * @param str
-	 *            the str
+	 * @param str the str
 	 * @return md5 hashed string
-	 * @throws NoSuchAlgorithmException
-	 *             the no such algorithm exception
+	 * @throws NoSuchAlgorithmException the no such algorithm exception
 	 */
 	public static String getMD5Hash(String str) throws NoSuchAlgorithmException {
 		return getMD5Hash(str.getBytes());
@@ -187,11 +228,9 @@ public final class CryptoUtil {
 	/**
 	 * Gets the m d5 hash.
 	 *
-	 * @param byteArray
-	 *            the byte array
+	 * @param byteArray the byte array
 	 * @return md5 hashed string
-	 * @throws NoSuchAlgorithmException
-	 *             the no such algorithm exception
+	 * @throws NoSuchAlgorithmException the no such algorithm exception
 	 */
 	public static String getMD5Hash(byte[] byteArray) throws NoSuchAlgorithmException {
 		return getHashedStrFor(byteArray, MD5);
@@ -200,11 +239,9 @@ public final class CryptoUtil {
 	/**
 	 * Gets the SH a1 hash.
 	 *
-	 * @param str
-	 *            the str
+	 * @param str the str
 	 * @return sha1 hashed string
-	 * @throws NoSuchAlgorithmException
-	 *             the no such algorithm exception
+	 * @throws NoSuchAlgorithmException the no such algorithm exception
 	 */
 	public static String getSHA1Hash(String str) throws NoSuchAlgorithmException {
 		return getSHA1Hash(str.getBytes());
@@ -213,11 +250,9 @@ public final class CryptoUtil {
 	/**
 	 * Gets the SH a1 hash.
 	 *
-	 * @param byteArray
-	 *            the byte array
+	 * @param byteArray the byte array
 	 * @return sha1 hashed string
-	 * @throws NoSuchAlgorithmException
-	 *             the no such algorithm exception
+	 * @throws NoSuchAlgorithmException the no such algorithm exception
 	 */
 	public static String getSHA1Hash(byte[] byteArray) throws NoSuchAlgorithmException {
 		return getHashedStrFor(byteArray, SHA1);
@@ -226,11 +261,9 @@ public final class CryptoUtil {
 	/**
 	 * Gets the SH a2 hash.
 	 *
-	 * @param str
-	 *            the str
+	 * @param str the str
 	 * @return sha2 hashed string
-	 * @throws NoSuchAlgorithmException
-	 *             the no such algorithm exception
+	 * @throws NoSuchAlgorithmException the no such algorithm exception
 	 */
 	public static String getSHA2Hash(String str) throws NoSuchAlgorithmException {
 		return getSHA2Hash(str.getBytes());
@@ -239,11 +272,9 @@ public final class CryptoUtil {
 	/**
 	 * Gets the SH a2 hash.
 	 *
-	 * @param byteArray
-	 *            the byte array
+	 * @param byteArray the byte array
 	 * @return sha2 hashed string
-	 * @throws NoSuchAlgorithmException
-	 *             the no such algorithm exception
+	 * @throws NoSuchAlgorithmException the no such algorithm exception
 	 */
 	public static String getSHA2Hash(byte[] byteArray) throws NoSuchAlgorithmException {
 		return getHashedStrFor(byteArray, SHA2);
@@ -252,13 +283,10 @@ public final class CryptoUtil {
 	/**
 	 * Gets the hashed str for.
 	 *
-	 * @param byteArray
-	 *            the byte array
-	 * @param algorithm
-	 *            the algorithm
+	 * @param byteArray the byte array
+	 * @param algorithm the algorithm
 	 * @return the hashed str for
-	 * @throws NoSuchAlgorithmException
-	 *             the no such algorithm exception
+	 * @throws NoSuchAlgorithmException the no such algorithm exception
 	 */
 	private static String getHashedStrFor(byte[] byteArray, String algorithm) throws NoSuchAlgorithmException {
 
@@ -372,6 +400,11 @@ public final class CryptoUtil {
 			return this;
 		}
 
+		public HashBuilder toComplex(int length) {
+			this.output = CryptoUtil.toComplex(length, this.hash);
+			return this;
+		}
+
 		public HashBuilder toHex(int length) {
 			this.output = CryptoUtil.toHex(length, this.hash);
 			return this;
@@ -398,6 +431,12 @@ public final class CryptoUtil {
 			return CryptoUtil.validateNumHMAC(this.currentTime, this.interval, this.tolerance, this.secret,
 					this.message, numHash);
 		}
+
+		public boolean validateComplexHMAC(String complexHash) {
+			return CryptoUtil.validateComplexHMAC(this.currentTime, this.interval, this.tolerance, this.secret,
+					this.message, complexHash);
+		}
+
 	}
 
 }

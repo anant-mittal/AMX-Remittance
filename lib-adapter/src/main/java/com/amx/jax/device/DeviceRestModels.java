@@ -2,6 +2,7 @@ package com.amx.jax.device;
 
 import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.swagger.ApiMockModelProperty;
+import com.amx.utils.CryptoUtil;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
@@ -34,6 +35,14 @@ public class DeviceRestModels {
 		long getOtpTtl();
 
 		void setOtpTtl(long otpValidity);
+
+		public long getRequestTtl();
+
+		public void setRequestTtl(long requestTtl);
+
+		public String getOtpChars();
+
+		public void setOtpChars(String otpChars);
 	}
 
 	@JsonDeserialize(as = DeviceRestModel.class)
@@ -100,6 +109,8 @@ public class DeviceRestModels {
 		String deviceSecret;
 
 		private long otpTtl;
+		private long requestTtl;
+		private String otpChars = CryptoUtil.COMPLEX_CHARS;
 
 		@Override
 		public String getDeivceTerminalId() {
@@ -199,6 +210,26 @@ public class DeviceRestModels {
 		@Override
 		public void setOtpTtl(long otpTtl) {
 			this.otpTtl = otpTtl;
+		}
+
+		@Override
+		public long getRequestTtl() {
+			return requestTtl;
+		}
+
+		@Override
+		public void setRequestTtl(long requestTtl) {
+			this.requestTtl = requestTtl;
+		}
+
+		@Override
+		public String getOtpChars() {
+			return otpChars;
+		}
+
+		@Override
+		public void setOtpChars(String otpChars) {
+			this.otpChars = otpChars;
 		}
 
 	}

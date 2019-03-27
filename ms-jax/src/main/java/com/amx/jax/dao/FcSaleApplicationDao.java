@@ -356,8 +356,15 @@ public class FcSaleApplicationDao {
 	public List<FxDeliveryRemark> listDeliveryRemark() {
 		return fxDeliveryRemarkRepository.findByIsActive(ConstantDocument.Yes);
 	}
-	
-	
+
+	/**
+	 * @param employeeId - driver employee id
+	 * @param noOfDays - day window to show order history
+	 * @return
+	 */
+	public List<VwFxDeliveryDetailsModel> listHistoricalOrders(BigDecimal driverEmployeeId, int noOfDays) {
+		return vwFxDeliveryDetailsRepository.findHistoricalDriverOrders(driverEmployeeId,  noOfDays);
+	}
 
 	
 }

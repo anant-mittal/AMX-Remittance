@@ -2,7 +2,6 @@ package com.amx.utils;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-
 //TODO: Auto-generated Javadoc
 /**
  * The Class UniqueID.
@@ -49,7 +48,8 @@ public final class UniqueID {
 	 * @param midfix the midfix
 	 * @return : Unique String ID
 	 */
-	public static String generateSystemString(String midfix) {
-		return PREF + "-" + midfix + "-" + Long.toString(generate(), 36);
+	public static String generateSystemString(String midfix, String prefix) {
+		return PREF + "-" + midfix + "-" + prefix + "-" + Long.toString(generate(), 36);
 	}
+
 }

@@ -7,10 +7,14 @@ import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.postman.model.SMS;
+import com.amx.jax.postman.model.WAMessage;
+import com.amx.jax.postman.model.Message.IChannel;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
  * The Class PMGaugeEvent.
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class PMGaugeEvent extends AuditEvent {
 
 	/** The Constant serialVersionUID. */
@@ -63,6 +67,8 @@ public class PMGaugeEvent extends AuditEvent {
 
 	/** The responseText. */
 	private String responseText;
+
+	private IChannel channel;
 
 	/**
 	 * Instantiates a new PM gauge event.
@@ -219,6 +225,13 @@ public class PMGaugeEvent extends AuditEvent {
 		return this;
 	}
 
+	public AuditEvent set(WAMessage msg) {
+		this.to = msg.getTo();
+		this.channel = msg.getChannel();
+		this.message = msg.getMessage();
+		return this;
+	}
+
 	public String getResponseText() {
 		return responseText;
 	}
@@ -242,4 +255,18 @@ public class PMGaugeEvent extends AuditEvent {
 	public void setAttmept(int attmept) {
 		this.attmept = attmept;
 	}
+
+	public IChannel getChannel() {
+		return channel;
+	}
+
+	public void setChannel(IChannel channel) {
+		this.channel = channel;
+	}
+
+	public PMGaugeEvent responseText(String responseText) {
+		this.responseText = responseText;
+		return this;
+	}
+
 }

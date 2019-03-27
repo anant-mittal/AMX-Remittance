@@ -1,0 +1,107 @@
+{
+  "aggs": {
+    "join_inteval": {
+      "date_range": {
+        "field": "customer.creationDate",
+        "ranges": [
+         {
+            "key": "last_week",
+            "from": "now-1w",
+            "to": null
+          },
+          {
+            "key": "last_day",
+            "from": "now-1d"
+          },
+          {
+            "key": "last_month",
+            "from": "now-1M"
+          },
+          {
+            "key": "last_year",
+            "from": "now-1y"
+          },
+          {
+            "key": "all_time",
+            "from": "now-25y"
+          }
+        ]
+      },
+      "aggs": {
+        "isOnlineUser": {
+          "terms": {
+            "field": "customer.isOnlineUser.keyword",
+            "size": 10,
+            "order": {
+              "_count": "desc"
+            },
+            "missing": "_"
+          }
+        }
+      }
+    },
+    "online_inteval": {
+      "date_range": {
+        "field": "customer.creationDateOnline",
+        "ranges": [
+         {
+            "key": "last_week",
+            "from": "now-1w",
+            "to": null
+          },
+          {
+            "key": "last_day",
+            "from": "now-1d"
+          },
+          {
+            "key": "last_month",
+            "from": "now-1M"
+          },
+          {
+            "key": "last_year",
+            "from": "now-1y"
+          },
+          {
+            "key": "all_time",
+            "from": "now-20y"
+          }
+        ]
+      }
+    }
+  },
+  "size": 0,
+  "_source": {
+    "excludes": []
+  },
+  "stored_fields": [
+    "*"
+  ],
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "match_all": {}
+        },
+        {
+          "range": {
+            "@timestamp": {
+              "gte": "[[${gte}]]",
+              "lte": "[[${lte}]]",
+              "format": "epoch_millis"
+            }
+          }
+        },
+        {
+          "match_phrase": {
+            "_type": {
+              "query": "customer"
+            }
+          }
+        }
+      ],
+      "filter": [],
+      "should": [],
+      "must_not": []
+    }
+  }
+}

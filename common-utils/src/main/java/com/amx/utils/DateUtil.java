@@ -29,6 +29,9 @@ public final class DateUtil {
 
 	/** The Constant DEFAULT_DATE_FORMAT. */
 	private static final String DEFAULT_DATE_FORMAT = "MM/dd/yyyy";
+	
+	/** The Constant DEFAULT_DATE_TIME_FORMAT. */
+	private static final String DEFAULT_DATE_TIME_FORMAT = "dd/MM/yyyy HH:mm";
 
 	/** The Constant DATE_FORMAT. */
 	private static final String DATE_FORMAT = "dd MMM yyyy";
@@ -56,6 +59,9 @@ public final class DateUtil {
 
 	/** The Constant COMMA. */
 	private static final String COMMA = ",";
+	
+	/** The Constant DEFAULT_DATE_FORMAT. */
+	public static final String DATE_FORMAT_DD_MM_YYYYY = "dd/MM/yyyy";
 
 	/**
 	 * Instantiates a new date util.
@@ -130,6 +136,15 @@ public final class DateUtil {
 	public static String formatDate(Date date) {
 		SimpleDateFormat format = new SimpleDateFormat(DEFAULT_DATE_FORMAT);
 		return format.format(date);
+	}
+	
+	/**
+	 * @param date
+	 * @return the string
+	 */
+	public static String formatDateTime(Date date) {
+		SimpleDateFormat sdf = new SimpleDateFormat(DEFAULT_DATE_TIME_FORMAT);
+		return sdf.format(date);
 	}
 
 	/**

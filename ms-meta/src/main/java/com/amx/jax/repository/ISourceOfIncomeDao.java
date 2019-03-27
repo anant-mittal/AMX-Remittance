@@ -11,7 +11,7 @@ import com.amx.jax.dbmodel.SourceOfIncomeView;
 
 public interface ISourceOfIncomeDao extends JpaRepository<SourceOfIncomeView, Serializable>{
 	
-	@Query("select si from SourceOfIncomeView si where si.languageId=?1")
+	@Query("select si from SourceOfIncomeView si where si.languageId=?1 order by si.description asc")
 	public List<SourceOfIncomeView> getSourceofIncome(BigDecimal languageId);
 
 }

@@ -3,23 +3,22 @@ package com.amx.amxlib.meta.model;
 import java.math.BigDecimal;
 import java.util.Comparator;
 
-import com.amx.amxlib.model.response.ExchangeRateBreakup;
 import com.amx.jax.model.AbstractModel;
+import com.amx.jax.model.IResourceEntity;
+import com.amx.jax.model.ResourceDTO;
+import com.amx.jax.model.response.ExchangeRateBreakup;
 
-public class BankMasterDTO extends AbstractModel implements Comparable<BankMasterDTO> {
+public class BankMasterDTO extends ResourceDTO implements Comparable<BankMasterDTO> {
 
 	private BigDecimal bankId;
 	private String bankCode;
 	private String bankFullName;
 	private String bankShortName;
 	private BigDecimal bankCountryId;
+	private boolean ibanRequired;
+	private Boolean isCashPayout;
 
 	private ExchangeRateBreakup exRateBreakup;
-
-	@Override
-	public String getModelType() {
-		return "bankmaster";
-	}
 
 	public BigDecimal getBankId() {
 		return bankId;
@@ -65,11 +64,8 @@ public class BankMasterDTO extends AbstractModel implements Comparable<BankMaste
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((bankCode == null) ? 0 : bankCode.hashCode());
-		result = prime * result + ((bankCountryId == null) ? 0 : bankCountryId.hashCode());
-		result = prime * result + ((bankFullName == null) ? 0 : bankFullName.hashCode());
 		result = prime * result + ((bankId == null) ? 0 : bankId.hashCode());
-		result = prime * result + ((bankShortName == null) ? 0 : bankShortName.hashCode());
+		result = prime * result + ((exRateBreakup == null) ? 0 : exRateBreakup.hashCode());
 		return result;
 	}
 
@@ -82,30 +78,15 @@ public class BankMasterDTO extends AbstractModel implements Comparable<BankMaste
 		if (getClass() != obj.getClass())
 			return false;
 		BankMasterDTO other = (BankMasterDTO) obj;
-		if (bankCode == null) {
-			if (other.bankCode != null)
-				return false;
-		} else if (!bankCode.equals(other.bankCode))
-			return false;
-		if (bankCountryId == null) {
-			if (other.bankCountryId != null)
-				return false;
-		} else if (!bankCountryId.equals(other.bankCountryId))
-			return false;
-		if (bankFullName == null) {
-			if (other.bankFullName != null)
-				return false;
-		} else if (!bankFullName.equals(other.bankFullName))
-			return false;
 		if (bankId == null) {
 			if (other.bankId != null)
 				return false;
 		} else if (!bankId.equals(other.bankId))
 			return false;
-		if (bankShortName == null) {
-			if (other.bankShortName != null)
+		if (exRateBreakup == null) {
+			if (other.exRateBreakup != null)
 				return false;
-		} else if (!bankShortName.equals(other.bankShortName))
+		} else if (!exRateBreakup.equals(other.exRateBreakup))
 			return false;
 		return true;
 	}
@@ -144,4 +125,32 @@ public class BankMasterDTO extends AbstractModel implements Comparable<BankMaste
 		}
 
 	}
+
+	public boolean getIbanRequired() {
+		return ibanRequired;
+	}
+
+	public void setIbanRequired(boolean ibanRequired) {
+		this.ibanRequired = ibanRequired;
+	}
+
+	public Boolean getIsCashPayout() {
+		return isCashPayout;
+	}
+
+	public void setIsCashPayout(Boolean isCashPayout) {
+		this.isCashPayout = isCashPayout;
+	}
+
+	@Override
+	public String getResourceCode() {
+		return this.bankCode;
+	}
+
+	@Override
+	public BigDecimal getResourceId() {
+		return this.bankId;
+	}
+	
+	
 }

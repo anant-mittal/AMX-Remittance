@@ -29,10 +29,11 @@
 			<version>3.5.6</version>
 		</dependency>
 
-	 <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-websocket</artifactId>
-        </dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-websocket</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>com.amx.jax</groupId>
@@ -61,6 +62,25 @@
 
 		<!-- <dependency> <groupId>fr.inria.gforge.spoon</groupId> <artifactId>spoon-core</artifactId> 
 			<version>6.2.0</version> </dependency> -->
+
+
+		<!-- SpringShedlock -->
+
+		<!-- <dependency> <groupId>net.javacrumbs.shedlock</groupId> <artifactId>shedlock-spring</artifactId> 
+			<version>2.1.0</version> </dependency> -->
+
+<!-- 		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+		</dependency>
+ -->
+<!-- 		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjrt</artifactId>
+			<optional>true</optional>
+		</dependency> -->
+
+		<!-- //SpringShedlock -->
 
 	</dependencies>
 

@@ -1,6 +1,7 @@
 package com.amx.jax.postman.service;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,6 +19,7 @@ import com.amx.jax.logger.LoggerService;
 import com.amx.jax.postman.PostManConfig;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.audit.PMGaugeEvent;
+import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.Notipy;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.rest.RestQuery;
@@ -103,9 +105,8 @@ public class SMService {
 	@Autowired
 	private ContactCleanerService contactService;
 
-	/** The template service. */
 	@Autowired
-	private TemplateService templateService;
+	private FileService fileService;
 
 	/** The message path. */
 	public static JsonPath messagePath = new JsonPath("sms/[0]/message");
@@ -138,7 +139,15 @@ public class SMService {
 			if (sms.getTemplate() != null) {
 				Context context = new Context(postManConfig.getLocal(sms));
 				context.setVariables(sms.getModel());
-				sms.setMessage(templateService.processHtml(sms.getITemplate(), context));
+				
+				File file = new File();
+				file.setTemplate(sms.getTemplate());
+				file.setModel(sms.getModel());
+				file.setLang(sms.getLang());
+				
+				sms.setMessage(fileService.create(file).getContent() 
+						//templateService.processHtml(sms.getITemplate(), context)
+						);
 			}
 
 			if (ArgUtil.isEmpty(to)) {
@@ -183,14 +192,16 @@ public class SMService {
 		if (!appConfig.isProdMode() && (phone != null && phone.length() == 10)) {
 
 			Map<String, Object> map = MapBuilder.map().put("sender", senderId).put("route", route).put("country", "91")
-					.put(messagePath, sms.toText()).put(toPath, phone).toMap();
+					.put(messagePath,
+							URLEncoder.encode(sms.toText(), "UTF-8"))
+					.put(toPath, phone.trim()).toMap();
 			return restService.ajax(remoteUrl).header("authkey", authKey).header("content-type", "application/json")
 					.post(JsonUtil.toJson(map)).asString();
 
 		} else if (phone != null) {
 
 			Map<String, String> params = new HashMap<String, String>();
-			params.put("mobile", phone);
+			params.put("mobile", phone.trim());
 			params.put("text", sms.toText());
 			params.put("username", username);
 			params.put("password", password);

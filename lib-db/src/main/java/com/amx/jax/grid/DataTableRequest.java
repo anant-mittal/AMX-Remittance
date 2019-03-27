@@ -169,7 +169,9 @@ public class DataTableRequest {
 			GridColumn colSpec = gridQuery.getColumns().get(i);
 			colSpec.setIndex(i);
 			if (i == sortableCol) {
-				colSpec.setSortDir(gridQuery.getSortOrder());
+				if (ArgUtil.isEmpty(colSpec.getSortDir())) {
+					colSpec.setSortDir(gridQuery.getSortOrder());
+				}
 				this.setOrder(colSpec);
 			}
 			if (!ArgUtil.isEmpty(colSpec.getSearch())) {
@@ -210,10 +212,7 @@ public class DataTableRequest {
 					}
 				}
 				if (!ArgUtil.isEmpty(colSpec.getValue())) {
-					FilterOperater filterOperater = (FilterOperater) ArgUtil.parseAsEnum(colSpec.getOperator(),
-							FilterOperater.EQ);
-					filterBy.addWhereFilter(colSpec.getKey(),
-							new Condition(filterOperater, colSpec.getValue(), colSpec.getDataType()));
+					filterBy.addWhereFilter(colSpec);
 				}
 			}
 		}

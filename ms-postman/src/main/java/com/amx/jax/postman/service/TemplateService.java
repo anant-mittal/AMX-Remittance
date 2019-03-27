@@ -17,6 +17,8 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring4.SpringTemplateEngine;
 
+import com.amx.jax.AppContextUtil;
+import com.amx.jax.dict.Tenant;
 import com.amx.jax.postman.PostManConfig;
 import com.amx.jax.postman.custom.HelloDialect;
 import com.amx.jax.postman.model.File;
@@ -74,8 +76,10 @@ public class TemplateService {
 	 * @param context  the context
 	 * @return the string
 	 */
-	public String processHtml(ITemplate template, Context context) {
-		String rawStr = templateEngine.process(template.getHtmlFile(), context);
+	public String processHtml(ITemplate template, Context context, Locale locale) {
+		String rawStr = templateEngine.process(
+				templateUtils.getTemplateFile(template.getHtmlFile(), AppContextUtil.getTenant(), locale),
+				context);
 
 		Pattern p = Pattern.compile("src=\"inline:(.*?)\"");
 		Matcher m = p.matcher(rawStr);
@@ -92,8 +96,9 @@ public class TemplateService {
 		return rawStr;
 	}
 
-	public String processJson(ITemplate template, Context context) {
-		return templateEngine.process(template.getJsonFile(), context);
+	public String processJson(ITemplate template, Context context, Locale locale) {
+		return templateEngine.process(
+				templateUtils.getTemplateFile(template.getJsonFile(), AppContextUtil.getTenant(), locale), context);
 	}
 
 	/**
@@ -123,7 +128,7 @@ public class TemplateService {
 			TemplateUtils.reverseFlag(true);
 		}
 
-		if(log.isDebugEnabled()){
+		if (log.isDebugEnabled()) {
 			log.debug("====" + locale.toString() + "======" + reverse + "   " + TemplateUtils.reverseFlag());
 		}
 
@@ -135,9 +140,9 @@ public class TemplateService {
 		if (file.getITemplate().isThymleaf()) {
 			String content;
 			if (file.getType() == File.Type.JSON) {
-				content = this.processJson(file.getITemplate(), context);
+				content = this.processJson(file.getITemplate(), context, locale);
 			} else {
-				content = this.processHtml(file.getITemplate(), context);
+				content = this.processHtml(file.getITemplate(), context, locale);
 			}
 			file.setContent(content);
 		}

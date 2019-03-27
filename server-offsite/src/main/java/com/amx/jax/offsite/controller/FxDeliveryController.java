@@ -97,4 +97,9 @@ public class FxDeliveryController {
 		return fxOrderDelivery.updateTransactionReceipt(fcSaleDeliveryMarkDeliveredRequest);
 	}
 
+	@RequestMapping(value = "/order/list/historical", method = { RequestMethod.GET })
+	public AmxApiResponse<FxDeliveryDetailDto, Object> listHistoricalOrders() {
+		return fxOrderDelivery.listHistoricalOrders();
+	}
+
 }

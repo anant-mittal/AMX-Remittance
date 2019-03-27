@@ -10,9 +10,12 @@ import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang.text.StrLookup;
 import org.apache.commons.lang.text.StrSubstitutor;
+import org.jasypt.util.text.BasicTextEncryptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.framework.AopProxyUtils;
@@ -33,6 +36,8 @@ public class TenantProperties {
 	private static final Logger LOGGER = LoggerFactory.getLogger(TenantProperties.class);
 	private static TenantProperties obj = new TenantProperties();
 	private static Environment ENV;
+	public static final Pattern ENCRYPTED_PROPERTIES = Pattern.compile("^ENC\\((.*)\\)$");
+	public static BasicTextEncryptor textEncryptor = new BasicTextEncryptor();
 
 	private Properties properties = null;
 
@@ -42,12 +47,31 @@ public class TenantProperties {
 	@Autowired
 	public TenantProperties(Environment env) {
 		if (ENV == null) {
-			ENV = env;
+			setEnviroment(env);
 		}
 	}
 
 	public static void setEnviroment(Environment env) {
 		ENV = env;
+		String privateKey = ENV.getProperty("jasypt.encryptor.password");
+		if (!ArgUtil.isEmpty(env) && !ArgUtil.isEmpty(privateKey)) {
+			textEncryptor.setPasswordCharArray(privateKey.toCharArray());
+		}
+	}
+
+	public static String decryptProp(Object propertyValue) {
+		// return ArgUtil.parseAsString(propertyValue);
+		String propertyValueStr = ArgUtil.parseAsString(propertyValue);
+		Matcher x = ENCRYPTED_PROPERTIES.matcher(propertyValueStr);
+		if (x.find()) {
+			try {
+				return textEncryptor.decrypt(x.group(1));
+			} catch (Exception e) {
+				return propertyValueStr;
+			}
+
+		}
+		return propertyValueStr;
 	}
 
 	public static Environment getEnviroment() {
@@ -154,7 +178,7 @@ public class TenantProperties {
 						field.setAccessible(true);
 
 						if ("java.lang.String".equals(typeName)) {
-							field.set(object, propertyValue);
+							field.set(object, decryptProp(propertyValue));
 						} else if ("int".equals(typeName) || "java.lang.Integer".equals(typeName)) {
 							field.set(object, ArgUtil.parseAsInteger(propertyValue));
 						} else if ("boolean".equals(typeName) || "java.lang.Boolean".equals(typeName)) {

@@ -16,6 +16,7 @@ import com.amx.jax.rbaac.dto.DeviceDto;
 import com.amx.jax.rbaac.dto.DevicePairOtpResponse;
 import com.amx.jax.rbaac.dto.request.DeviceRegistrationRequest;
 import com.amx.jax.rbaac.dto.request.EmployeeDetailsRequestDTO;
+import com.amx.jax.rbaac.dto.request.NotpDTO;
 import com.amx.jax.rbaac.dto.request.RoleRequestDTO;
 import com.amx.jax.rbaac.dto.request.UserAuthInitReqDTO;
 import com.amx.jax.rbaac.dto.request.UserAuthorisationReqDTO;
@@ -47,9 +48,8 @@ public class RbaacServiceControllerTest implements IRbaacService {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.amx.jax.rbaac.IRbaacService#initAuthForUser(com.amx.jax.rbaac.dto.request.
-	 * UserAuthInitReqDTO)
+	 * @see com.amx.jax.rbaac.IRbaacService#initAuthForUser(com.amx.jax.rbaac.dto.
+	 * request. UserAuthInitReqDTO)
 	 */
 	@Override
 	@ApiOperation("User Auth")
@@ -145,8 +145,8 @@ public class RbaacServiceControllerTest implements IRbaacService {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.amx.jax.rbaac.IRbaacService#updateEmployeeAccountDetails(com.amx.jax.rbaac
-	 * .dto.request.EmployeeDetailsRequestDTO)
+	 * com.amx.jax.rbaac.IRbaacService#updateEmployeeAccountDetails(com.amx.jax.
+	 * rbaac .dto.request.EmployeeDetailsRequestDTO)
 	 */
 	@Override
 	@ApiOperation("User Account Update / (In)Activate / (Un)Lock")
@@ -231,6 +231,23 @@ public class RbaacServiceControllerTest implements IRbaacService {
 	@Override
 	public AmxApiResponse<BoolRespModel, Object> createEmployeeSystemMapping(BigDecimal employeeId,
 			BigDecimal countryBranchSystemInventoryId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public AmxApiResponse<NotpDTO, Object> verifyOTP(NotpDTO notpDTO) {
+		return null;
+	}
+
+	@Override
+	public AmxApiResponse<DeviceDto, Object> getDeviceByDeviceRegId(BigDecimal deviceRegId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public AmxApiResponse<BoolRespModel, Object> deleteDevice(Integer deviceRegId) {
 		// TODO Auto-generated method stub
 		return null;
 	}
