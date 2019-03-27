@@ -434,7 +434,7 @@ public class BranchRemittanceApplManager {
 			BigDecimal loyalityPointsEncashed = BigDecimal.ZERO;
 			if(applRequestModel.isAvailLoyalityPoints() && JaxUtil.isNullZeroBigDecimalCheck(customer.getLoyaltyPoints()) && customer.getLoyaltyPoints().compareTo(new BigDecimal(1000))>=0) {
 				remittanceApplication.setLoyaltyPointInd(ConstantDocument.Yes);
-				loyalityPointsEncashed = getloyaltyAmountEncashed();
+				loyalityPointsEncashed = getloyaltyAmountEncashed(branchExchangeRate.getTxnFee());
 			}else {
 				remittanceApplication.setLoyaltyPointInd(ConstantDocument.No);
 			}
@@ -779,13 +779,17 @@ public class BranchRemittanceApplManager {
 		return accountNumber;
 	}
 	
-	
-	public BigDecimal getloyaltyAmountEncashed() {
+
+	public BigDecimal getloyaltyAmountEncashed(BigDecimal commission) {
 		BigDecimal discount = exchRateManager.corporateDiscount();
 		BigDecimal loyalityPoints = loyalityPointService.getVwLoyalityEncash().getLoyalityPoint();
 		BigDecimal loyalityPointsEncashed = loyalityPointService.getVwLoyalityEncash().getEquivalentAmount();
-		if(JaxUtil.isNullZeroBigDecimalCheck(loyalityPoints) && loyalityPointsEncashed.compareTo(discount)>0) {
-			loyalityPointsEncashed =loyalityPointsEncashed.subtract(discount);
+		if(JaxUtil.isNullZeroBigDecimalCheck(commission) && JaxUtil.isNullZeroBigDecimalCheck(loyalityPoints) && loyalityPointsEncashed.compareTo(discount)>0) {
+			if(commission.compareTo(loyalityPointsEncashed)>=0) {
+				loyalityPointsEncashed =loyalityPointsEncashed.subtract(BigDecimal.ZERO);
+			}else {
+				loyalityPointsEncashed =loyalityPointsEncashed.subtract(discount);
+			}
 		}
 		return loyalityPointsEncashed;
 	}

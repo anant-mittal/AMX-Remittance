@@ -100,7 +100,7 @@ public class BranchRemittanceExchangeRateManager {
 		BenificiaryListView beneficiaryView = beneValidationService.validateBeneficiary(request.getBeneficiaryRelationshipSeqIdBD());
 		Customer customer = userService.getCustById(metaData.getCustomerId());
  		ExchangeRateResponseModel exchangeRateResponseModel = jaxDynamicPriceService.getExchangeRatesWithDiscount(metaData.getDefaultCurrencyId(),
-				beneficiaryView.getCurrencyId(), request.getLocalAmountBD(), request.getForeignAmountBD(), beneficiaryView.getCountryId(),
+				beneficiaryView.getCurrencyId(), request.getLocalAmountBD(), request.getForeignAmountBD(), beneficiaryView.getBenificaryCountry(),
 				request.getCorrespondanceBankIdBD(), request.getServiceIndicatorIdBD());
 		if (exchangeRateResponseModel.getExRateBreakup() == null) {
 			throw new GlobalException(JaxError.EXCHANGE_RATE_NOT_FOUND, "No exchange data found");
