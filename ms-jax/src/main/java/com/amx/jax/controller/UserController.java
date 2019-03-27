@@ -82,7 +82,7 @@ public class UserController {
 			@RequestParam(value = UserApi.PASSWORD) String password) {
 		logger.debug(MessageFormat.format("IdentityInt value is {0} :", identityInt));
 		logger.debug(MessageFormat.format("IdentityType value is {0} :", identityType));
-		JaxContextUtil.setJaxEvent(JaxEvent.FINGERPRINT_LOGIN_INCORRECT_ATTEMPT);
+		
 		CustomerModel customerModel = fingerprintService.loginCustomerByFingerprint(identityInt, identityType, password,
 				metaData.getDeviceId());
 
