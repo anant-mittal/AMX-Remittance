@@ -196,8 +196,7 @@ public class BranchRemittanceSaveManager {
 	@Autowired
 	JaxNotificationService notificationService;
 
-	//@Autowired
-	//CustomerDao customerDao;
+
 	@Autowired
 	private CustomerDao customerDao;
 	
@@ -735,6 +734,7 @@ public class BranchRemittanceSaveManager {
 					remitTrnx.setUsdAmount(appl.getUsdAmt());
 					remitTrnx.setWesternUnionMtcno(appl.getWesternUnionMtcno());
 					remitTrnx.setWuIpAddress(metaData.getDeviceIp());
+					remitTrnx.setDiscountOnCommission(appl.getDiscountOnCommission());
 					
 					BigDecimal documentNo =generateDocumentNumber(appl.getFsCountryMasterByApplicationCountryId().getCountryId(),appl.getFsCompanyMaster().getCompanyId(),remitTrnx.getDocumentId().getDocumentCode(),remitTrnx.getDocumentFinanceYear(),remitTrnx.getBranchId().getBranchId());
 					

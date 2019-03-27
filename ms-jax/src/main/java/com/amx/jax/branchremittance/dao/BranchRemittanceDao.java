@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.transaction.Transactional;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -162,7 +163,11 @@ public class BranchRemittanceDao {
 			responseDto.setCollectionDocumentNo(collectModel.getDocumentNo());
 			responseDto.setCollectionDocumentFYear(collectModel.getDocumentFinanceYear());
 			responseDto.setCollectionDocumentCode(collectModel.getDocumentCode());
-
+			if(!StringUtils.isBlank(collectModel.getCashDeclarationIndicator()) && collectModel.getCashDeclarationIndicator().equalsIgnoreCase(ConstantDocument.Yes)) {
+				responseDto.setDeclarationReport(true);
+			}
+			
+			
 		}
 
 		if (collectDetailsModel != null && !collectDetailsModel.isEmpty() && JaxUtil.isNullZeroBigDecimalCheck(collectModel.getDocumentNo())) {

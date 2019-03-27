@@ -600,10 +600,7 @@ public class BranchRemittanceManager extends AbstractModel {
 			BigDecimal beneficaryBankId = beneficaryDetails.getBankId();
 			BigDecimal beneficaryBankBranchId = beneficaryDetails.getBranchId();
 			BigDecimal beneAccNumSeqId = beneficaryDetails.getBeneficiaryAccountSeqId();
-			/*BigDecimal routingCountry = (BigDecimal) branchRoutingDetails.get("P_ROUTING_COUNTRY_ID");
-			BigDecimal routingBank = (BigDecimal) branchRoutingDetails.get("P_ROUTING_BANK_ID");
-			BigDecimal routingBranch = (BigDecimal) branchRoutingDetails.get("P_ROUTING_BANK_BRANCH_ID");
-			BigDecimal serviceMasterId = (BigDecimal) branchRoutingDetails.get("P_SERVICE_MASTER_ID");*/
+		
 			
 			BigDecimal routingCountry = branchRoutingDto.getRoutingCountrydto().get(0).getResourceId();
 			BigDecimal routingBank = branchRoutingDto.getRoutingBankDto().get(0).getRoutingBankId();
@@ -613,8 +610,8 @@ public class BranchRemittanceManager extends AbstractModel {
 			
 			BigDecimal applicationCountryId = beneficaryDetails.getApplicationCountryId();
 			BigDecimal currencyId =beneficaryDetails.getCurrencyId();
-			BigDecimal remitMode = branchRoutingDto.getRemittanceModeList().get(0).getRemittanceModeId();//(BigDecimal) branchExchangeRate.get("P_REMITTANCE_MODE_ID");
-			BigDecimal deliveryMode = branchRoutingDto.getDeliveryModeList().get(0).getDeliveryModeId();//(BigDecimal) branchExchangeRate.get("P_DELIVERY_MODE_ID");
+			BigDecimal remitMode = branchRoutingDto.getRemittanceModeList().get(0).getRemittanceModeId();
+			BigDecimal deliveryMode = branchRoutingDto.getDeliveryModeList().get(0).getDeliveryModeId();
 			BigDecimal beneficaryRelationSeqId = beneficaryDetails.getBeneficiaryRelationShipSeqId();
 			
 			Map<String, Object> inputValues = new HashMap<>();

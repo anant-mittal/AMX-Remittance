@@ -235,11 +235,8 @@ public class RemittanceAdditionalFieldManager {
 			ApiResponse<JaxConditionalFieldDto> apiResponse = jaxFieldService.getJaxFieldsForEntity(new GetJaxFieldRequest(JaxFieldEntity.AML_AUTH));
 			allJaxConditionalFields = apiResponse.getResults();
 			List<JaxConditionalFieldDto> missingJaxConditionalFields = new ArrayList<>();
-			Map<String, Object> amlFields = model.getAmlFieldValidation();
 			CountryBranch countryBranch = bankMetaService.getCountryBranchById(metaData.getCountryBranchId()); 
 			List<StaffAuthorizationView> staffList =  staffAuthorizationRepository.findByLocCode(countryBranch.getBranchId());
-			
-			
 			for (JaxConditionalFieldDto jaxConditionalField : allJaxConditionalFields) {
 					if(JaxDynamicField.AML_MESSAGE.name().equalsIgnoreCase(jaxConditionalField.getField().getName())) {
 						jaxConditionalField.getField().setDefaultValue(amlList.get(0)==null?"":amlList.get(0) .getMessageDescription());
@@ -261,6 +258,10 @@ public class RemittanceAdditionalFieldManager {
 					
 					if(JaxDynamicField.AML_PASSWORD.name().equalsIgnoreCase(jaxConditionalField.getField().getName())) {
 						jaxConditionalField.getField().setDtoPath("staffPassword");
+					}
+					
+					if(JaxDynamicField.AML_REMARKS.name().equalsIgnoreCase(jaxConditionalField.getField().getName())) {
+						jaxConditionalField.getField().setDtoPath("amlRemarks");
 					}
 					
 					missingJaxConditionalFields.add(jaxConditionalField);
