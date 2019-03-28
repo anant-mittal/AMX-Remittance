@@ -15,6 +15,7 @@ import com.amx.amxlib.meta.model.BankMasterDTO;
 import com.amx.amxlib.model.response.ExchangeRateResponseModel;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.dict.UserClient.Channel;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.meta.MetaData;
@@ -111,7 +112,11 @@ public class JaxDynamicPriceService {
 			BigDecimal foreignAmount, BigDecimal beneBankCountryId, BigDecimal routingBankId) {
 		PricingRequestDTO pricingRequestDTO = new PricingRequestDTO();
 		pricingRequestDTO.setCustomerId(metaData.getCustomerId());
-		pricingRequestDTO.setChannel(AppContextUtil.getUserClient().getClientType().getChannel());
+		Channel channel = Channel.ONLINE;
+		if (AppContextUtil.getUserClient() != null && AppContextUtil.getUserClient().getClientType() != null) {
+			channel = AppContextUtil.getUserClient().getClientType().getChannel();
+		}
+		pricingRequestDTO.setChannel(channel);
 		pricingRequestDTO.setCountryBranchId(metaData.getCountryBranchId());
 		pricingRequestDTO.setForeignCurrencyId(toCurrency);
 		pricingRequestDTO.setLocalAmount(lcAmount);
