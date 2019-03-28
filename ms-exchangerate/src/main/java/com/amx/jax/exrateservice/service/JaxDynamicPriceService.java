@@ -112,7 +112,7 @@ public class JaxDynamicPriceService {
 			BigDecimal foreignAmount, BigDecimal beneBankCountryId, BigDecimal routingBankId) {
 		PricingRequestDTO pricingRequestDTO = new PricingRequestDTO();
 		pricingRequestDTO.setCustomerId(metaData.getCustomerId());
-		Channel channel = Channel.ONLINE;
+		Channel channel = Channel.valueOf(metaData.getChannel().toString());
 		if (AppContextUtil.getUserClient() != null && AppContextUtil.getUserClient().getClientType() != null) {
 			channel = AppContextUtil.getUserClient().getClientType().getChannel();
 		}
