@@ -46,6 +46,7 @@ public class MetaData implements IMetaData {
     private String deviceType;
     private String appType;
     private BigDecimal employeeId;
+	private BigDecimal terminalId;
     
     private Boolean annualIncomeForceUpdate;
 	public Boolean getAnnualIncomeForceUpdate() {
@@ -191,6 +192,12 @@ public class MetaData implements IMetaData {
 		this.employeeId = employeeId;
 	}
 
-	
+	public BigDecimal getTerminalId() {
+		return terminalId;
+	}
+
+	public void setTerminalId(BigDecimal terminalId) {
+		this.terminalId = terminalId;
+	}
 
 }

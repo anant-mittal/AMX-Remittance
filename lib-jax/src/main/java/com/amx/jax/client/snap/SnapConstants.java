@@ -23,6 +23,7 @@ public class SnapConstants {
 		CUSTOMERS_JOINED("customer-joined", SnapIndexName.CUSTOMER),
 		CUSTOMERS_PROFILE("customer-profile", SnapIndexName.CUSTOMER),
 		TRANX_DONE("tranx-done", SnapIndexName.TRANX),
+		TRANX_ANOMALY("tranx-anomaly", SnapIndexName.TRANX),
 		XRATE_SELL_TRANSFER("xrate-sell-transfer", SnapIndexName.XRATE),
 		;
 

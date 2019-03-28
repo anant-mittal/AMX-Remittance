@@ -47,10 +47,6 @@ public class CustomerInfoRequest {
 		this.customerEmploymentDetails = customerEmploymentDetails;
 	}
 
-	/*
-	 * public OtpData getOtpData() { return otpData; } public void
-	 * setOtpData(OtpData otpData) { this.otpData = otpData; }
-	 */
 	@Override
 	public String toString() {
 		return "CustomerInfoRequest [customerPersonalDetail=" + customerPersonalDetail + ", localAddressDetails="

@@ -267,7 +267,7 @@
                                         <h5>Dear <span  th:text="${data.firstName}"></span> <span  th:text="${data.lastName}"></span>,</h5><br/>
 										<p class="lead">Greetings from <span th:text="${_tu.prop('company.name')}" th:remove="tag"></span>!</p><br/>
 
-                                        <p class="lead">Fingerprint based login has been successfully de-linked from your<span th:text="${_tu.prop('company.name')}" th:remove="tag"></span> account. You can re-establish the fingerprint login from My Profile section of your mobile app.</p>
+                                        <p class="lead">Fingerprint based login has been successfully de-linked from your <span th:text="${_tu.prop('company.name')}" th:remove="tag"></span> account. You can re-establish the fingerprint login from My Profile section of your mobile app.</p>
 									
 								   		<p class="lead">Thank you for using <a th:href="@{'https://' +${_tu.prop('company.website.url')}}"><span th:text="${_tu.prop('company.website.url')}"></span></a>.</p>
 										

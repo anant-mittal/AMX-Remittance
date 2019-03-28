@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import com.amx.jax.client.snap.SnapConstants.SnapIndexName;
+import com.amx.jax.dict.UserClient.AppType;
+import com.amx.jax.dict.UserClient.Channel;
 import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.dict.UserClient.UserDeviceClient;
 import com.amx.jax.grid.views.BeneViewRecord;
@@ -24,6 +26,10 @@ public class OracleViewDocument extends AESDocument {
 	BranchUserViewRecord user;
 	UserDeviceClient client;
 	BeneViewRecord bene;
+
+	public OracleViewDocument() {
+
+	}
 
 	public OracleViewDocument(CustomerDetailViewRecord customer) {
 		super(SnapIndexName.CUSTOMER);
@@ -131,6 +137,23 @@ public class OracleViewDocument extends AESDocument {
 		if (!ArgUtil.isEmpty(clientType)) {
 			this.client.setClientType((ClientType) clientType);
 			this.trnx.setClientType(null);
+		}
+
+		Object channel = ArgUtil.parseAsEnum(this.trnx.getChannel(), Channel.UNKNOWN);
+		if (!ArgUtil.isEmpty(channel)) {
+			this.client.setChannel((Channel) channel);
+		}
+
+		Object appType = ArgUtil.parseAsEnum(this.trnx.getChannel(), AppType.UNKNOWN);
+		if (!ArgUtil.isEmpty(appType)) {
+			this.client.setAppType((AppType) appType);
+			if (AppType.ANDROID == this.client.getAppType() || AppType.IOS == this.client.getAppType()) {
+				this.client.setChannel(Channel.MOBILE);
+			}
+		}
+
+		if (!Channel.UNKNOWN.equals(this.client.getChannel())) {
+			this.trnx.setChannel(null);
 		}
 
 	}

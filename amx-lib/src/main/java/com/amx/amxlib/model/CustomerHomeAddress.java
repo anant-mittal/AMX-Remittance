@@ -24,9 +24,7 @@ public class CustomerHomeAddress implements Serializable {
 	@NotNull(message="District Id may not be null")
 	private BigDecimal districtId;
 
-	@NotNull(message="Mobile may not be null")
 	@Pattern(regexp = "^[1-9]\\d*$",message="Invalid Mobile No")
-	@Size(min = 1)	
 	private String mobile;
 
 	/** country telephone prefix */

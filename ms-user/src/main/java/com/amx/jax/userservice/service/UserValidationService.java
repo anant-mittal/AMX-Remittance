@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.security.NoSuchAlgorithmException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -28,10 +29,12 @@ import com.amx.amxlib.exception.jax.InvalidOtpException;
 import com.amx.amxlib.exception.jax.UserNotFoundException;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
+import com.amx.amxlib.model.JaxConditionalFieldDto;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.jax.JaxAuthCache;
 import com.amx.jax.JaxAuthCache.JaxAuthMeta;
 import com.amx.jax.JaxAuthContext;
+import com.amx.jax.JaxAuthCache.JaxAuthMeta;
 import com.amx.jax.amxlib.config.OtpSettings;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.CustomerVerificationType;
@@ -47,12 +50,14 @@ import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.CustomerVerification;
 import com.amx.jax.dbmodel.DmsDocumentModel;
 import com.amx.jax.dbmodel.ViewOnlineCustomerCheck;
+import com.amx.jax.dbmodel.remittance.BlackListDetailModel;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.exception.ExceptionMessageKey;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.auth.CustomerRequestAuthMeta;
 import com.amx.jax.model.auth.QuestModelDTO;
 import com.amx.jax.repository.IContactDetailDao;
+import com.amx.jax.repository.remittance.IBlackListDetailRepository;
 import com.amx.jax.scope.TenantContext;
 import com.amx.jax.userservice.constant.CustomerDataVerificationQuestion;
 import com.amx.jax.userservice.dao.CusmosDao;
@@ -136,6 +141,9 @@ public class UserValidationService {
 
 	@Autowired
 	IContactDetailDao contactDetailDao;
+	
+	@Autowired
+	IBlackListDetailRepository blackListDtRepo;
 
 	private DateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
@@ -191,7 +199,7 @@ public class UserValidationService {
 	}
 
 	// Validate IdentityInt
-	protected void validateIdentityInt(String civilId, BigDecimal identityType) {
+	public void validateIdentityInt(String civilId, BigDecimal identityType) {
 		boolean isValid = custValidation.validateIdentityInt(civilId, meta.getCountry().getISO2Code(), identityType);
 		if (!isValid) {
 			throw new InvalidCivilIdException("Id " + civilId + " is not valid!");
@@ -216,7 +224,6 @@ public class UserValidationService {
 		String dbPassword = customer.getDevicePassword();
 		String passwordHashed = null;
 		try {
-			logger.debug("hashed psw not generated");
 			passwordHashed = com.amx.utils.CryptoUtil.getSHA2Hash(password);
 		} catch (NoSuchAlgorithmException e) {
 			logger.error("Exception thrown for incorrect algorithm ", e);
@@ -226,7 +233,6 @@ public class UserValidationService {
 			Integer attemptsLeft = incrementLockCount(customer);
 			String errorExpression = JaxError.WRONG_PASSWORD.toString();
 			if (attemptsLeft > 0) {
-				logger.debug("attempts are still left");
 				errorExpression = jaxUtil.buildErrorExpression(JaxError.WRONG_PASSWORDS_ATTEMPTS.toString(),
 						attemptsLeft);
 			}
@@ -234,7 +240,7 @@ public class UserValidationService {
 		}
 	}
 
-	protected void validateCustIdProofs(BigDecimal custId) {
+	public void validateCustIdProofs(BigDecimal custId) {
 		if (tenantContext.get() != null) {
 			tenantContext.get().validateCustIdProofs(custId);
 			return;
@@ -248,7 +254,7 @@ public class UserValidationService {
 		}
 	}
 
-	private void validateIdProof(CustomerIdProof idProof) {
+	public void validateIdProof(CustomerIdProof idProof) {
 
 		String scanSystem = idProof.getScanSystem();
 		if (idProof.getIdentityExpiryDate() != null && idProof.getIdentityExpiryDate().compareTo(new Date()) < 0) {
@@ -283,7 +289,7 @@ public class UserValidationService {
 		}
 	}
 
-	protected void validateCustomerData(CustomerOnlineRegistration onlineCust, Customer customer) {
+	public void validateCustomerData(CustomerOnlineRegistration onlineCust, Customer customer) {
 
 		if (customer.getCustomerReference() == null) {
 			throw new GlobalException(JaxError.INVALID_CUSTOMER_REFERENCE, "Invalid Customer Reference");
@@ -309,7 +315,7 @@ public class UserValidationService {
 
 	}
 
-	private void validateOldEmosData(Customer customer) {
+	public void validateOldEmosData(Customer customer) {
 		if (customer.getCustomerReference() == null) {
 			throw new GlobalException(JaxError.OLD_EMOS_USER_NOT_FOUND, "Old customer records not found in EMOS");
 		}
@@ -323,7 +329,7 @@ public class UserValidationService {
 		}
 	}
 
-	private void validateCustContact(Customer customer) {
+	public void validateCustContact(Customer customer) {
 
 		List<ContactDetail> contactDetails = contactDetailService.getContactDetail(customer.getCustomerId());
 		if (CollectionUtils.isEmpty(contactDetails)) {
@@ -460,11 +466,11 @@ public class UserValidationService {
 		onlineCustomer.setLockCnt(new BigDecimal(lockCnt));
 		custDao.saveOnlineCustomer(onlineCustomer);
 		if (lockCnt >= MAX_OTP_ATTEMPTS) {
-			logger.debug("lock count has exceeded");
+			logger.info("lock count has exceeded");
 			String errorExpression = JaxError.USER_LOGIN_ATTEMPT_EXCEEDED.toString();
-			logger.debug("throw exception that user login attempt has exceeded");
+			logger.info("throw exception that user login attempt has exceeded");
 			errorExpression = jaxUtil.buildErrorExpression(JaxError.USER_LOGIN_ATTEMPT_EXCEEDED.toString(), lockCnt);
-			logger.debug("error expression has been calculated");
+			logger.info("error expression has been calculated");
 			throw new GlobalException(errorExpression, "Customer is locked. No of attempts:- " + lockCnt);
 		}
 		return MAX_OTP_ATTEMPTS - lockCnt;
@@ -503,7 +509,7 @@ public class UserValidationService {
 		return onlineCustomer;
 	}
 	
-	protected CustomerOnlineRegistration validateOnlineCustomerByIdentityId(BigDecimal customerId) {
+	public CustomerOnlineRegistration validateOnlineCustomerByIdentityId(BigDecimal customerId) {
 		Customer customer = custDao.getCustById(customerId);
 		if (customer == null) {
 			throw new GlobalException(JaxError.CUSTOMER_NOT_FOUND.getStatusKey(), "Online Customer id not found");
@@ -689,26 +695,34 @@ public class UserValidationService {
 		}
 		onlineCustomer.setTokenSentCount(BigDecimal.ZERO);
 	}
+	
+	public List<Customer> validateNonActiveOrNonRegisteredCustomerStatus(String identityInt, JaxApiFlow apiFlow) {
+		return validateNonActiveOrNonRegisteredCustomerStatus(identityInt, null, apiFlow);
+	}
 
 	/**
 	 * validates inactive or not registered customers status
-	 * 
-	 * @return
+	 * @return 
 	 */
 	@SuppressWarnings("unused")
-	public List<Customer> validateNonActiveOrNonRegisteredCustomerStatus(String identityInt, JaxApiFlow apiFlow) {
+	public List<Customer> validateNonActiveOrNonRegisteredCustomerStatus(String identityInt, BigDecimal identityType,
+			JaxApiFlow apiFlow) {
 		List<Customer> customers = null;
-
-		customers = custDao.getCustomerByIdentityInt(identityInt);
+		if (identityType != null) {
+			customers = custDao.getCustomerByIdentityInt(identityInt, identityType);
+		} else {
+			customers = custDao.getCustomerByIdentityInt(identityInt);
+		}
 		if (CollectionUtils.isEmpty(customers) && apiFlow == JaxApiFlow.SIGNUP_DEFAULT) {
 			return customers;
 		}
-		if (CollectionUtils.isEmpty(customers) && apiFlow != JaxApiFlow.SIGNUP_DEFAULT) {
+		if (CollectionUtils.isEmpty(customers) && apiFlow != JaxApiFlow.SIGNUP_DEFAULT
+				&& apiFlow != JaxApiFlow.OFFSITE_REGISTRATION) {
 			throw new GlobalException(JaxError.CUSTOMER_NOT_REGISTERED_BRANCH, "Customer not registered in branch ");
 		}
 		// duplicate records check
 		if (customers != null && customers.size() > 1) {
-			customers = custDao.findActiveCustomers(identityInt);
+			customers = custDao.findActiveCustomers(identityInt, identityType);
 			boolean isSingleRecord = (customers != null && customers.size() == 1);
 			if (!isSingleRecord) {
 				throw new GlobalException(JaxError.DUPLICATE_CUSTOMER_NOT_ACTIVE_BRANCH,
@@ -723,10 +737,17 @@ public class UserValidationService {
 		case SIGNUP_DEFAULT:
 			validateCustomerForSignUpDefault(customers.get(0));
 			break;
+		case OFFSITE_REGISTRATION:
+			validateCustomerForOffisteReg(customers);
+			break;
 		default:
 			validateCustomerDefault(customers.get(0));
 		}
 		return customers;
+	}
+
+	private void validateCustomerForOffisteReg(List<Customer> customer) {
+		
 	}
 
 	private void validateCustomerDefault(Customer customer) {
@@ -898,5 +919,19 @@ public class UserValidationService {
 
 	}
 	
+	public void validateFingerprintDeviceId(CustomerOnlineRegistration customer, String fingerprintDeviceId) {
+		String dbFingerprintDeviceId = customer.getFingerprintDeviceId();
+		if (!fingerprintDeviceId.equals(dbFingerprintDeviceId) || fingerprintDeviceId == null) {
+			throw new GlobalException(JaxError.FINGERPRINT_EXPIRED, "Fingerprint expired");
+		}
+	}
+public void validateBlackListedCustomer(Customer customer) {
+		
+		String idType ="C"; 
+		List<BlackListDetailModel> blist = blackListDtRepo.findByIdNumberAndIdType(customer.getIdentityInt(),idType);
+		if (blist != null && !blist.isEmpty()) {
+			throw new GlobalException(JaxError.BLACK_LISTED_EXISTING_CIVIL_ID.getStatusKey(),"Your account is locked as we have found that your name has been black-listed by CBK.");
+		}
+	}
 
 }

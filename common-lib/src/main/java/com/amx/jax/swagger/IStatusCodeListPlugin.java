@@ -22,6 +22,13 @@ import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spi.service.OperationBuilderPlugin;
 import springfox.documentation.spi.service.contexts.OperationContext;
 
+/**
+ * 
+ * @author lalittanwar
+ *
+ * @param <S>
+ * @param <A>
+ */
 public abstract class IStatusCodeListPlugin<S extends IExceptionEnum, A extends Annotation>
 		implements OperationBuilderPlugin {
 

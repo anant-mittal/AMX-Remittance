@@ -10,6 +10,11 @@ import com.amx.jax.swagger.MockParamBuilder.MockParamType;
 import io.swagger.annotations.Example;
 import io.swagger.annotations.ExampleProperty;
 
+/**
+ * 
+ * @author lalittanwar
+ *
+ */
 @Target({ ElementType.METHOD, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ApiMockParam {

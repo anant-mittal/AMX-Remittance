@@ -14,6 +14,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
@@ -51,7 +52,6 @@ public class RemittanceTransaction implements Serializable {
 	private Customer customerId;
 	private BigDecimal customerRef;
 	private CountryMaster bankCountryId;
-	//private CountryMaster corespondingCountryId;
 	private BankMasterModel bankId;
 	private BankBranch bankBranchId;
 	private String debitAccountNo;
@@ -753,6 +753,7 @@ public class RemittanceTransaction implements Serializable {
 		this.highValueAuthDate = highValueAuthDate;
 	}
 
+	@Lob
 	@Column(name = "SIGNATURE_SPECIMEN")
 	public String getCustomerSignature() {
 		return customerSignature;
@@ -784,6 +785,8 @@ public class RemittanceTransaction implements Serializable {
 	public void setInstruction(String instruction) {
 		this.instruction = instruction;
 	}
+
+	
 
 	@Column(name="SIGNATURE_SPECIMEN_CLOB")
 	public Clob getCustomerSignatureClob() {

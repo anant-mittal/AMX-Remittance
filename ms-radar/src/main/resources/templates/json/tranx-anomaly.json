@@ -1,0 +1,85 @@
+{
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "range": {
+            "@timestamp": {
+              "gte": "[[${gte}]]",
+              "lte": "[[${lte}]]",
+              "format": "epoch_millis"
+            }
+          }
+        },
+        {
+          "match_phrase": {
+            "_type": {
+              "query": "trnx"
+            }
+          }
+        }
+      ]
+    }
+  },
+   "size": 0,
+   "aggs": {
+      "identity": {
+         "terms": {
+            "field": "customer.identity.keyword",
+            "size": 1
+         },
+         "aggs": {
+            "queries": {
+               "terms": {
+                  "field": "trnx.id",
+                  "size": 500
+               },
+               "aggs": {
+                  "series": {
+                     "date_histogram": {
+                        "field": "@timestamp",
+                        "interval": "hour"
+                     },
+                     "aggs": {
+                        "abg": {
+                           "avg": {
+                              "field": "trnx.domTrnxAmount"
+                           }
+                        },
+                        "movavg": {
+                           "moving_avg": {
+                              "buckets_path": "abg",
+                              "window": 24,
+                              "model": "simple"
+                           }
+                        },
+                        "surprise": {
+                           "bucket_script": {
+                              "buckets_path": {
+                                 "abg": "abg",
+                                 "movavg": "movavg"
+                              },
+                              "script": "(params.abg - params.movavg).abs()"
+                           }
+                        }
+                     }
+                  },
+                  "largest_surprise": {
+                     "max_bucket": {
+                        "buckets_path": "series.surprise"
+                     }
+                  }
+               }
+            },
+            "ninetieth_surprise": {
+               "percentiles_bucket": {
+                  "buckets_path": "queries>largest_surprise",
+                  "percents": [
+                     90.0
+                  ]
+               }
+            }
+         }
+      }
+   }
+}

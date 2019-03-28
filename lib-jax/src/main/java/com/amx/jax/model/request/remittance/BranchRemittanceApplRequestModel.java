@@ -1,18 +1,11 @@
 package com.amx.jax.model.request.remittance;
 
 import java.math.BigDecimal;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
 
 import com.amx.jax.model.response.ExchangeRateBreakup;
 import com.amx.jax.model.response.remittance.BranchExchangeRateBreakup;
-import com.amx.jax.model.response.remittance.FlexFieldDto;
-import com.amx.utils.JsonUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 
@@ -30,10 +23,20 @@ public class BranchRemittanceApplRequestModel extends RemittanceAdditionalBeneFi
 
 	private BigDecimal deliveryModeId;
 
+	public BranchRemittanceApplRequestModel() {
+		super();
+	}
 	
-	
-	
-	
+	public BranchRemittanceApplRequestModel(IRemittanceApplicationParams getExchangeRateRequest) {
+		this.beneId = getExchangeRateRequest.getBeneficiaryRelationshipSeqIdBD();
+		this.routingBankId = getExchangeRateRequest.getCorrespondanceBankIdBD();
+		this.deliveryModeId = getExchangeRateRequest.getDeliveryModeIdBD();
+		this.foreignAmount = getExchangeRateRequest.getForeignAmountBD();
+		this.localAmount = getExchangeRateRequest.getLocalAmountBD();
+		this.remittanceModeId = getExchangeRateRequest.getRemitModeIdBD();
+		this.serviceMasterId = getExchangeRateRequest.getServiceIndicatorIdBD();
+	}
+
 	public BigDecimal getSourceOfFund() {
 		return sourceOfFund;
 	}

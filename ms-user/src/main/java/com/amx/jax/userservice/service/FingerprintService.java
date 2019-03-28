@@ -32,11 +32,13 @@ import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.LoginLogoutHistory;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.response.customer.CustomerFlags;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.repository.CountryRepository;
+import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.IContactDetailDao;
 import com.amx.jax.repository.ICustomerRepository;
@@ -48,7 +50,7 @@ import com.amx.jax.scope.TenantContext;
 import com.amx.jax.services.JaxNotificationService;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.dao.CustomerIdProofDao;
-import com.amx.jax.userservice.repository.CustomerRepository;
+import com.amx.jax.userservice.manager.CustomerFlagManager;
 import com.amx.jax.userservice.repository.LoginLogoutHistoryRepository;
 import com.amx.jax.userservice.service.CustomerValidationContext.CustomerValidation;
 import com.amx.jax.util.CryptoUtil;
@@ -124,6 +126,8 @@ public class FingerprintService {
 	@Autowired
 	private PostManService postManService;
 	
+	
+	
 	protected LoginLogoutHistory getLoginLogoutHistoryByUserName(String userName) {
 
 		Sort sort = new Sort(Direction.DESC, "loginLogoutId");
@@ -177,6 +181,10 @@ public class FingerprintService {
 	public UserFingerprintResponseModel linkDeviceId(BigDecimal customerId) {
 		CustomerOnlineRegistration customerOnlineRegistration = userValidationService
 				.validateOnlineCustomerByIdentityId(customerId);
+		if(metaData.getDeviceId()==null) {
+			logger.error("device id null exception");
+			throw new GlobalException("Device id cannot be null");
+		}
 		String password = Random.randomPassword(6);
 		String hashPassword = userService.generateFingerPrintPassword(password);
 		UserFingerprintResponseModel userFingerprintResponsemodel = new UserFingerprintResponseModel();
@@ -190,22 +198,28 @@ public class FingerprintService {
 		personinfo.setFirstName(customer.getFirstName());
 		personinfo.setMiddleName(customer.getMiddleName());
 		personinfo.setLastName(customer.getLastName());
+		logger.info("Email to - " + customerOnlineRegistration.getEmail());
 		Email email = new Email();
-		
+		logger.info("setting to");
 		email.addTo(customerOnlineRegistration.getEmail());
+		logger.info("setting template");
 		email.setITemplate(TemplatesMX.FINGERPRINT_LINKED_SUCCESS);
+		logger.info("setting html");
 		email.setHtml(true);
+		logger.info("setting data");
 		email.getModel().put(RESP_DATA_KEY, personinfo);
 
-		logger.debug("Email to - " + customerOnlineRegistration.getEmail());
+		logger.info("Email to - " + customerOnlineRegistration.getEmail());
 		sendEmail(email);
 		return userFingerprintResponsemodel;
 	}
 	@Async(ExecutorConfig.DEFAULT)
 	public void sendEmail(Email email) {
 		try {
+			logger.info("email sent");
 			postManService.sendEmailAsync(email);
 		} catch (PostManException e) {
+			logger.info("email exception");
 			logger.error("error in link fingerprint", e);
 		}
 	}
@@ -224,12 +238,18 @@ public class FingerprintService {
 
 	}
 
-	public CustomerModel loginCustomerByFingerprint(String civilId, String identityTypeStr, String password) {
+	public CustomerModel loginCustomerByFingerprint(String civilId, String identityTypeStr, String password, String fingerprintDeviceId) {
 		userValidationService.validateIdentityInt(civilId, identityTypeStr);
+		if(metaData.getDeviceId()==null) {
+			logger.error("device id null exception");
+			throw new GlobalException("Device id cannot be null");
+		}
 		BigDecimal identityType = new BigDecimal(identityTypeStr);
-
 		CustomerOnlineRegistration customerOnlineRegistration = userValidationService
 				.validateOnlineCustomerByIdentityId(civilId, identityType);
+		logger.info("Customer id is "+metaData.getCustomerId());
+		userValidationService.validateCustomerLockCount(customerOnlineRegistration);
+		userValidationService.validateFingerprintDeviceId(customerOnlineRegistration,fingerprintDeviceId);
 		userValidationService.validateDevicePassword(customerOnlineRegistration, password);
 		CustomerModel customerModel = convert(customerOnlineRegistration);
 		return customerModel;
@@ -247,13 +267,40 @@ public class FingerprintService {
 		personinfo.setFirstName(customer.getFirstName());
 		personinfo.setMiddleName(customer.getMiddleName());
 		personinfo.setLastName(customer.getLastName());
+		logger.info("Checking wether delink has been called or not");
 		Email email = new Email();
 		email.addTo(customerOnlineRegistration.getEmail());
 		email.setITemplate(TemplatesMX.FINGERPRINT_DELINKED_SUCCESS);
 		email.setHtml(true);
 		email.getModel().put(RESP_DATA_KEY, personinfo);
-		logger.debug("Email to - " + customerOnlineRegistration.getEmail());
+		logger.info("Email to delink fingerprint- " + customerOnlineRegistration.getEmail());
 		sendEmail(email);
 		return boolRespModel;
+	}
+	public BoolRespModel resetFingerprint(String identity, String identityTypeStr) {
+		userValidationService.validateIdentityInt(identity, identityTypeStr);
+		BigDecimal identityType = new BigDecimal(identityTypeStr);
+		CustomerOnlineRegistration customerOnlineRegistration = userValidationService
+				.validateOnlineCustomerByIdentityId(identity, identityType);
+		customerOnlineRegistration.setFingerprintDeviceId(null);
+		customerOnlineRegistration.setDevicePassword(null);
+		custDao.saveOnlineCustomer(customerOnlineRegistration);
+		BoolRespModel boolRespModel = new BoolRespModel();
+		boolRespModel.setSuccess(Boolean.TRUE);
+		Customer customer = custDao.getActiveCustomerByIndentityIntAndType(identity,identityType);
+		PersonInfo personinfo = new PersonInfo();
+		personinfo.setFirstName(customer.getFirstName());
+		personinfo.setMiddleName(customer.getMiddleName());
+		personinfo.setLastName(customer.getLastName());
+		logger.info("checking wether reset has been called or not");
+		Email email = new Email();
+		email.addTo(customerOnlineRegistration.getEmail());
+		email.setITemplate(TemplatesMX.FINGERPRINT_DELINKED_ATTEMP_SUCCESS);
+		email.setHtml(true);
+		email.getModel().put(RESP_DATA_KEY, personinfo);
+		logger.info("Email to reset fingerprint- " + customerOnlineRegistration.getEmail());
+		sendEmail(email);
+		return boolRespModel;
+	
 	}
 }

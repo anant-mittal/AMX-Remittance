@@ -29,7 +29,7 @@ public class PricerServiceException extends AmxApiException {
 	}
 
 	public PricerServiceException(PricerServiceError error, String errorMessage) {
-		super(errorMessage, error.getStatusKey());
+		super(error.getStatusKey(), errorMessage);
 	}
 
 	

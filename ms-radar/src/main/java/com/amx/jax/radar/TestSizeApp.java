@@ -11,12 +11,14 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.scope.ThreadScoped;
 
 @SpringBootApplication
 @ComponentScan(value = "com.amx.jax")
+@EnableTransactionManagement
 @EnableAutoConfiguration(exclude = {
 		JmxAutoConfiguration.class, WebSocketAutoConfiguration.class, SitePreferenceAutoConfiguration.class,
 		SpringApplicationAdminJmxAutoConfiguration.class, ValidationAutoConfiguration.class

@@ -4,8 +4,8 @@ import java.math.BigDecimal;
 
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
-import com.amx.jax.error.JaxError;
 import com.amx.jax.error.ApiJaxStatusBuilder.ApiJaxStatus;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.model.request.fx.ForexOutLookRequest;
 import com.amx.jax.model.response.fx.CurrencyPairDTO;
 import com.amx.jax.model.response.fx.ForexOutLookResponseDTO;

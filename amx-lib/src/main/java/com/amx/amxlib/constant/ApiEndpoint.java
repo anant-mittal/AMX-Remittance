@@ -145,27 +145,31 @@ public class ApiEndpoint {
 	}
 
 	public static final String LINK_DEVICEID = "/link-deviceid/";
-	
-	//public static final String LINK_DEVICE_LOGGEDIN_CUSTOMER = "/link-device-loggedin-customer/";
-	
-	//public static final String LOGIN_CUSTOMER_BY_FINGERPRINT = "/login-customer-by-fingerprint/";
-	
-	public final class UserApi
-	{
+
+	// public static final String LINK_DEVICE_LOGGEDIN_CUSTOMER =
+	// "/link-device-loggedin-customer/";
+
+	// public static final String LOGIN_CUSTOMER_BY_FINGERPRINT =
+	// "/login-customer-by-fingerprint/";
+
+	public final class UserApi {
 		public static final String PREFIX = USER_API_ENDPOINT;
-		
-		//Params
+
+		// Params
 		public static final String IDENTITYINT = "identityInt";
-		
+
 		public static final String PASSWORD = "password";
-		
-		//Paths
-		public static final String LINK_DEVICE_LOGGEDIN_USER= "/link-device-loggedin-user/";
-		
+
+		public static final String FINGERPRINTDEVICEID = "fingerprintDeviceId";
+
+		// Paths
+		public static final String LINK_DEVICE_LOGGEDIN_USER = "/link-device-loggedin-user/";
+
 		public static final String LOGIN_CUSTOMER_BY_FINGERPRINT = "/login-customer-by-fingerprint/";
-		
+
 		public static final String DELINK_FINGERPRINT = "/delink-fingerprint";
-		
+		public static final String RESET_FINGERPRINT = "/reset-fingerprint";
+
 	}
 
 }

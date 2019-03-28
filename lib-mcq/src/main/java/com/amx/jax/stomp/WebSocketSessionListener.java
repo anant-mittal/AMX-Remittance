@@ -43,9 +43,9 @@ public class WebSocketSessionListener {
 	public void webSockectDisconnect(SessionDisconnectEvent sde) {
 		StompHeaderAccessor sha = StompHeaderAccessor.wrap(sde.getMessage());
 		if (!ArgUtil.isEmpty(sha.getSessionAttributes())) {
-			String sessionId = ArgUtil.parseAsString(sha.getSessionAttributes().get(AppConstants.SESSION_ID_XKEY));
-			logger.info("WS_DESTROYED http:{}, ws:{}", sha.getSessionId(), sessionId);
-			stompTunnelSessionManager.removeSessionUId(sessionId, sha.getSessionId());
+			String httpSessionId = ArgUtil.parseAsString(sha.getSessionAttributes().get(AppConstants.SESSION_ID_XKEY));
+			logger.info("WS_DESTROYED http:{}, ws:{}", sha.getSessionId(), httpSessionId);
+			stompTunnelSessionManager.delinkWs2Http(httpSessionId, sha.getSessionId());
 		}
 	}
 

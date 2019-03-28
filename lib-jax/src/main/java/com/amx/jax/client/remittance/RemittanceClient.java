@@ -23,9 +23,9 @@ import com.amx.jax.model.response.fx.UserStockDto;
 import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
-import com.amx.jax.model.response.remittance.CustomerShoppingCartDto;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
 import com.amx.jax.model.response.remittance.PaymentModeOfPaymentDto;
+import com.amx.jax.model.response.remittance.RemittanceDeclarationReportDto;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.model.response.remittance.RoutingResponseDto;
 import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeRateResponse;
@@ -137,13 +137,13 @@ public class RemittanceClient  implements IRemittanceService{
 	 * 
 	 */
 	@Override
-	public AmxApiResponse<String, Object> fetchCustomerBankNames(BigDecimal bankId) {
+	public AmxApiResponse<CustomerBankDetailsDto, Object> fetchCustomerBankNames(BigDecimal bankId) {
 		try {
 			LOGGER.debug("in fetchCustomerBankNames :"+bankId);
 			return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_BANK_CUSTOMER_NAMES).meta(new JaxMetaInfo())
 					.queryParam(Params.BANK_ID, bankId)
 					.get()
-					.as(new ParameterizedTypeReference<AmxApiResponse<String, Object>>() {
+					.as(new ParameterizedTypeReference<AmxApiResponse<CustomerBankDetailsDto, Object>>() {
 					});
 		} catch (Exception e) {
 			LOGGER.error("exception in fetchCustomerBankNames : ", e);
@@ -227,7 +227,7 @@ public class RemittanceClient  implements IRemittanceService{
 			return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_VALIDATE_STAFF_CREDENTIALS).meta(new JaxMetaInfo())
 					.queryParam(Params.STAFF_USERNAME, staffUserName).meta(new JaxMetaInfo())
 					.queryParam(Params.STAFF_PASSWORD, staffPassword)
-					.get()
+					.post()
 					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
 					});
 		} catch (Exception e) {
@@ -329,6 +329,73 @@ public class RemittanceClient  implements IRemittanceService{
 		}
 		
 	}
+
+
+
+
+
+	@Override
+	public AmxApiResponse<BranchRemittanceApplResponseDto, Object> deleteFromShoppingCart(BigDecimal remittanceApplicationId) {
+		try {
+			LOGGER.debug("in deleteFromShoppingCart :"+remittanceApplicationId );
+			return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_DELETE_APPLICATION).meta(new JaxMetaInfo())
+					.queryParam(Params.APPLICATION_ID, remittanceApplicationId).meta(new JaxMetaInfo())
+					.post()
+					.as(new ParameterizedTypeReference<AmxApiResponse<BranchRemittanceApplResponseDto, Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in deleteFromShoppingCart : ", e);
+			return JaxSystemError.evaluate(e);
+		} // end of try-cat
+		
+	}
+
+
+
+
+
+	@Override
+	public AmxApiResponse<RemittanceDeclarationReportDto, Object> fetchCustomerDeclarationReport(BigDecimal collectionDocNo, BigDecimal collectionDocYear,
+			BigDecimal collectionDocCode) {
+		try {
+			LOGGER.debug("in fetchCustomerDeclarationReport :"+collectionDocNo );
+			return restService.ajax(appConfig.getJaxURL() + Path.BR_DECLARATION_REPORT).meta(new JaxMetaInfo())
+					.queryParam(Params.COLLECTION_DOC_NO, collectionDocNo).meta(new JaxMetaInfo())
+					.queryParam(Params.COLLECTION_DOC_FY, collectionDocYear)
+					.queryParam(Params.COLLECTION_DOC_CODE, collectionDocCode)
+					.post()
+					.as(new ParameterizedTypeReference<AmxApiResponse<RemittanceDeclarationReportDto, Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in deleteFromShoppingCart : ", e);
+			return JaxSystemError.evaluate(e);
+		} // end of try-cat
+	}
+
+
+
+
+
+	@Override
+	public AmxApiResponse<BoolRespModel, Object> sendReceiptOnEmail(BigDecimal collectionDocNo, BigDecimal collectionDocYear, BigDecimal collectionDocCode) {
+		try {
+			LOGGER.debug("in fetchCustomerDeclarationReport :"+collectionDocNo );
+			return restService.ajax(appConfig.getJaxURL() + Path.BR_RECEIPT_ON_EMAIL).meta(new JaxMetaInfo())
+					.queryParam(Params.COLLECTION_DOC_NO, collectionDocNo).meta(new JaxMetaInfo())
+					.queryParam(Params.COLLECTION_DOC_FY, collectionDocYear)
+					.queryParam(Params.COLLECTION_DOC_CODE, collectionDocCode)
+					.post()
+					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in deleteFromShoppingCart : ", e);
+			return JaxSystemError.evaluate(e);
+		} // end of try-cat
+	}
+
+
+
+
 
 }
 

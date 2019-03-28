@@ -16,7 +16,7 @@ public class UserClient {
 	 *
 	 */
 	public enum Channel {
-		ONLINE, KIOSK, MOBILE, BRANCH, THIRD_PARTY, SYSTEM;
+		ONLINE, KIOSK, MOBILE, BRANCH, THIRD_PARTY, SYSTEM, UNKNOWN;
 	}
 
 	/**
@@ -62,7 +62,7 @@ public class UserClient {
 	 *
 	 */
 	public enum DevicePlatform {
-		IOS, ANDROID, WINDOWS, MAC, LINUX, UNKNOWN
+		IOS, ANDROID, WINDOWS, MAC, LINUX, UNKNOWN;
 	}
 
 	/**
@@ -72,7 +72,20 @@ public class UserClient {
 	 *
 	 */
 	public enum AppType {
-		WEB, ANDROID, IOS, UNKNOWN;
+		WEB, IOS(Channel.MOBILE), ANDROID(Channel.MOBILE), UNKNOWN;
+		Channel channel;
+
+		AppType(Channel channel) {
+			this.channel = channel;
+		}
+
+		AppType() {
+			this(Channel.UNKNOWN);
+		}
+
+		public Channel getChannel() {
+			return channel;
+		}
 	}
 
 	public enum ClientType {

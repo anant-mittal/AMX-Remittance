@@ -1,0 +1,52 @@
+package com.amx.jax.proto.tpc.models;
+
+import java.math.BigDecimal;
+
+import com.amx.jax.proto.tpc.api.TPCApiConstants;
+import com.amx.jax.swagger.ApiMockModelProperty;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+public class CustomerAuth {
+
+	public static class CustomerAuthRequest {
+
+		@Deprecated
+		@ApiMockModelProperty(
+				value = "Redirect URL after customer auth is completed. Client is supposed to implement this api URL",
+				example = "https://clientsite.com/amx/callback",
+				required = true)
+		private String callbackUrl;
+
+		@ApiMockModelProperty(
+				value = "Gloabl IP of System/Device being used by Customer",
+				example = "10.32.45.56",
+				required = true)
+		public String customerDeviceIp;
+
+		@ApiMockModelProperty(
+				value = "CPR id of customer",
+				example = "123488122112",
+				required = true)
+		public String identity;
+
+		@ApiMockModelProperty(
+				value = "Mobile number of customer",
+				example = "+965 881221212",
+				required = true)
+		public String mobile;
+	}
+
+	public static class CustomerAuthResponse {
+		@ApiMockModelProperty(
+				value = "Client is supposed to save this id for customer session.",
+				example = "xwe2323w82323")
+		@JsonProperty(TPCApiConstants.Keys.CUSTOMER_SESSION_TOKEN_XKEY)
+		public BigDecimal customerToken;
+
+		@Deprecated
+		@ApiMockModelProperty(
+				value = "Client is supposed redirect cusotmer to this URL, where custoemr auth will take place",
+				example = "https://appd-bhr.modernexchange.com/tpc/auth/customer")
+		private String redirectUrl;
+	}
+}

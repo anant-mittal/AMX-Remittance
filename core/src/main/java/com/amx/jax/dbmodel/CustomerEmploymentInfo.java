@@ -57,6 +57,10 @@ public class CustomerEmploymentInfo implements java.io.Serializable {
     private Date creationDate;
     private Date lastUpdated;
     private String isActive;
+  
+    private BigDecimal corporateMasterId;
+
+    public CustomerEmploymentInfo() {
     private BigDecimal docBlobId;
     private String fileName;
     
@@ -81,8 +85,6 @@ public class CustomerEmploymentInfo implements java.io.Serializable {
     public CustomerEmploymentInfo(BigDecimal custEmpInfoId) {
         this.custEmpInfoId = custEmpInfoId;
     }
-
- 
     @Id
     /*
      * @TableGenerator(name="custempinfoid",table="fs_custempinfoidpk",pkColumnName=
@@ -298,5 +300,16 @@ public class CustomerEmploymentInfo implements java.io.Serializable {
     public void setIsActive(String isActive) {
         this.isActive = isActive;
     }
+
+
+    @Column(name="CORPORATE_MASTER_ID")
+	public BigDecimal getCorporateMasterId() {
+		return corporateMasterId;
+	}
+
+
+	public void setCorporateMasterId(BigDecimal corporateMasterId) {
+		this.corporateMasterId = corporateMasterId;
+	}
 
 }

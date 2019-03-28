@@ -42,6 +42,10 @@ public class BranchMetaOutFilter implements IMetaRequestOutFilter<JaxMetaInfo> {
 			requestMeta.setCountryId(ssoUser.getUserDetails().getCountryId());
 		}
 
+		if (!ArgUtil.isEmpty(ssoUser.getUserClient())) {
+			requestMeta.setTerminalId(ssoUser.getUserClient().getTerminalId());
+		}
+
 		if (!ArgUtil.isEmpty(branchSession.getCustomerId())) {
 			requestMeta.setCustomerId(branchSession.getCustomerId());
 		}
