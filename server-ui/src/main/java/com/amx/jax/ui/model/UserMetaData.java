@@ -5,13 +5,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.amx.amxlib.meta.model.JaxMetaParameter;
-import com.amx.amxlib.model.PersonInfo;
 import com.amx.jax.dict.Language;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.model.AbstractModel;
 import com.amx.jax.model.AuthState;
 import com.amx.jax.model.UserDevice;
 import com.amx.jax.model.response.CurrencyMasterDTO;
+import com.amx.jax.model.response.customer.PersonInfo;
 import com.amx.jax.ui.UIConstants.Features;
 import com.amx.jax.ui.service.GeoHotPoints;
 

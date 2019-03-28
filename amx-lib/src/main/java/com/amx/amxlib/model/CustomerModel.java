@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.amx.jax.model.AbstractModel;
 import com.amx.jax.model.response.customer.CustomerFlags;
+import com.amx.jax.model.response.customer.PersonInfo;
 import com.amx.libjax.model.CustomerModelInterface.ICustomerModel;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 

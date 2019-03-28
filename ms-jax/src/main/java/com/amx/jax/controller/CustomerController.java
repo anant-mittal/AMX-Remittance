@@ -21,17 +21,23 @@ import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
+import com.amx.jax.client.IDeviceStateService.Params;
+import com.amx.jax.client.IDeviceStateService.Path;
+import com.amx.jax.controller.customer.ICustomerService;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.auth.QuestModelDTO;
+import com.amx.jax.model.response.customer.CustomerModelResponse;
 import com.amx.jax.services.CustomerDataVerificationService;
+import com.amx.jax.userservice.service.CustomerModelService;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.userservice.service.UserValidationService;
 import com.amx.jax.util.ConverterUtil;
+import com.amx.utils.Constants;
 
 @RestController
 @RequestMapping(CUSTOMER_ENDPOINT)
 @SuppressWarnings("rawtypes")
-public class CustomerController {
+public class CustomerController implements ICustomerService {
 
 	@Autowired
 	private ConverterUtil converterUtil;
@@ -47,6 +53,8 @@ public class CustomerController {
 
 	@Autowired
 	MetaData metaData;
+	@Autowired
+	CustomerModelService customerModelService;
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -215,5 +223,13 @@ public class CustomerController {
 		userValidationService.validateEmailMobileUpdateFlow(customerModel, channel);
 		ApiResponse response = userService.saveCustomer(customerModel);
 		return response;
+	}
+	
+	@RequestMapping(value = Path.CUSTOMER_MODEL_RESPONSE_GET, method = RequestMethod.GET)
+	@Override
+	public AmxApiResponse<CustomerModelResponse, Object> getCustomerModelResponse(
+			@RequestParam(name = Params.IDENTITY_INT, required = false) String identityInt) {
+		CustomerModelResponse response = customerModelService.getCustomerModelResponse(identityInt);
+		return AmxApiResponse.build(response);
 	}
 }
