@@ -91,6 +91,17 @@ public class SSOAppController {
 		return JsonUtil.toJson(result);
 	}
 
+	/**
+	 * 
+	 * 
+	 * 
+	 * @param targetUrl
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws MalformedURLException
+	 * @throws URISyntaxException
+	 */
 	@ApiSSOStatus({ SSOServerCodes.AUTH_REQUIRED, SSOServerCodes.AUTH_DONE })
 	@ResponseBody
 	@RequestMapping(value = SSOConstants.APP_LOGIN_URL_SESSION, method = { RequestMethod.POST }, produces = {

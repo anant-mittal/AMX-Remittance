@@ -58,7 +58,7 @@ public class SWAdapterController {
 				rid = ArgUtil.parseAsString(x.getMeta());
 				aCardReaderService.sync();
 			} catch (Exception e) {
-
+				SWAdapterGUI.CONTEXT.logWindow("Error while pairTerminal - " + e.getMessage());
 			}
 		}
 		return "var _tid_ = '" + tid + "', _rid_ = '" + rid + "', _excep_='" + excep + "';";
