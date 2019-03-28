@@ -20,6 +20,7 @@ import org.springframework.web.context.WebApplicationContext;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.BranchRemittancePaymentDao;
+import com.amx.jax.dbmodel.BanksView;
 import com.amx.jax.dbmodel.CurrencyMasterModel;
 import com.amx.jax.dbmodel.CurrencyWiseDenomination;
 import com.amx.jax.dbmodel.Customer;
@@ -212,8 +213,10 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 		} else {
 			shoppingCartDataTableBean.setSpldealStatus(ConstantDocument.No);
 		}
-		if(bankMaster.getBankListByBankId(shoppingCartDetails.getRoutingBankId())!= null) {
-			shoppingCartDataTableBean.setRoutingBank(bankMaster.getBankListByBankId(shoppingCartDetails.getRoutingBankId()).get(0).getBankFullName());
+		
+		List<BanksView> bankView =bankMaster.getBankListByBankId(shoppingCartDetails.getRoutingBankId());
+		if(bankView != null && !bankView.isEmpty()) {
+			shoppingCartDataTableBean.setRoutingBank(bankView.get(0)==null?"":bankView.get(0).getBankFullName());
 		}
 		shoppingCartDataTableBean.setBeneRelationseqId(shoppingCartDetails.getBeneRelationseqId());
 		shoppingCartDataTableBean.setSourceOfIncomeId(shoppingCartDetails.getSourceofincome()==null?BigDecimal.ZERO:new BigDecimal(shoppingCartDetails.getSourceofincome()));
