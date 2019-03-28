@@ -681,12 +681,13 @@ public class UserClient extends AbstractJaxServiceClient {
 			return JaxSystemError.evaluate(ae);
 		}
 	}
-	
+
 	public BoolRespModel delinkFingerprint() {
 		try {
 
 			return restService.ajax(appConfig.getJaxURL())
-					.path(UserApi.PREFIX + UserApi.DELINK_FINGERPRINT).meta(new JaxMetaInfo()).post()
+					.path(UserApi.PREFIX + UserApi.DELINK_FINGERPRINT).meta(new JaxMetaInfo())
+					.post()
 					.as(new ParameterizedTypeReference<BoolRespModel>() {
 					});
 		} catch (Exception ae) {
@@ -695,5 +696,21 @@ public class UserClient extends AbstractJaxServiceClient {
 			return JaxSystemError.evaluate(ae);
 		}
 	}
-	
+
+	public BoolRespModel resetFingerprint(String identity) {
+		try {
+
+			return restService.ajax(appConfig.getJaxURL())
+					.path(UserApi.PREFIX + UserApi.RESET_FINGERPRINT).meta(new JaxMetaInfo())
+					.queryParam(UserApi.IDENTITYINT, identity)
+					.post()
+					.as(new ParameterizedTypeReference<BoolRespModel>() {
+					});
+		} catch (Exception ae) {
+
+			LOGGER.error("exception in reset fingerprint : ", ae);
+			return JaxSystemError.evaluate(ae);
+		}
+	}
+
 }

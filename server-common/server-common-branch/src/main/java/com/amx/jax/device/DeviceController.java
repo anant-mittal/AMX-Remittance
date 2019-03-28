@@ -37,6 +37,7 @@ import com.amx.jax.sso.SSOTranx;
 import com.amx.jax.sso.server.ApiHeaderAnnotations.ApiDeviceHeaders;
 import com.amx.jax.swagger.IStatusCodeListPlugin.ApiStatusService;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.CryptoUtil;
 
 import io.swagger.annotations.Api;
 
@@ -101,6 +102,7 @@ public class DeviceController {
 			creds.setDeviceRegId(ArgUtil.parseAsString(deviceDto.getRegistrationId()));
 			creds.setOtpTtl(AmxConstants.OFFLINE_OTP_TTL);
 			creds.setRequestTtl(DeviceConstants.Config.REQUEST_TOKEN_VALIDITY);
+			creds.setOtpChars(CryptoUtil.COMPLEX_CHARS);
 			creds.setDeviceSecret(deviceDto.getDeviceSecret());
 			// Audit
 			auditEvent.terminalId(deviceDto.getTermialId())
@@ -150,7 +152,9 @@ public class DeviceController {
 				.getResult();
 		SessionPairingCreds creds = deviceRequestValidator.createSession(resp.getSessionPairToken(), resp.getOtp(),
 				resp.getTermialId(), resp.getEmpId());
-		creds.setOtpTtl(AmxConstants.OTP_TTL);
+		creds.setOtpTtl(AmxConstants.OFFLINE_OTP_TTL);
+		creds.setRequestTtl(DeviceConstants.Config.REQUEST_TOKEN_VALIDITY);
+		creds.setOtpChars(CryptoUtil.COMPLEX_CHARS);
 		String meta = ArgUtil.isEmpty(resp.getEmpId()) ? resp.getTermialId() : resp.getEmpId();
 
 		AppContextUtil.getUserClient().setClientType(resp.getDeviceType());
@@ -188,7 +192,7 @@ public class DeviceController {
 
 		String terminalId = deviceData.getTerminalId();
 		sSOTranx.get().setBranchAdapterId(deviceRequestValidator.getDeviceRegId());
-		sSOTranx.get().getUserClient().setTerminalId(ArgUtil.parseAsBigDecimal(terminalId));
+		sSOTranx.get().setTerminalId(ArgUtil.parseAsBigDecimal(terminalId));
 		// sSOTranx.get().getUserClient().setDeviceRegId(deviceRequestValidator.getDeviceRegId());
 		// sSOTranx.get().getUserClient().setGlobalIpAddress(deviceData.getGlobalIp());
 		// sSOTranx.get().getUserClient().setLocalIpAddress(deviceData.getLocalIp());
@@ -197,7 +201,7 @@ public class DeviceController {
 		// Audit
 		AppContextUtil.getUserClient().setClientType(ClientType.BRANCH_ADAPTER);
 		auditService.log(new SSOAuditEvent(SSOAuditEvent.Type.SESSION_TERMINAL_MAP)
-				.terminalId(sSOTranx.get().getUserClient().getTerminalId())
+				.terminalId(sSOTranx.get().getTerminalId())
 				.deviceRegId(sSOTranx.get().getBranchAdapterId()));
 
 		return AmxApiResponse.build(terminalId, deviceRequestValidator.getDeviceRegId());

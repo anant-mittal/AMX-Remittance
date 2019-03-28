@@ -11,10 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.amx.jax.client.snap.SnapConstants.SnapQueryTemplate;
 import com.amx.jax.client.snap.SnapModels.MapModel;
 import com.amx.jax.client.snap.SnapModels.SnapModelWrapper;
+import com.amx.jax.grid.views.CustomerDetailViewRecord;
 import com.amx.jax.postman.client.WhatsAppClient;
 import com.amx.jax.postman.events.UserInboxEvent;
 import com.amx.jax.postman.model.WAMessage;
-import com.amx.jax.radar.snap.SnapQueryService;
+import com.amx.jax.radar.service.CustomerDetailViewRecordService;
 import com.amx.jax.tunnel.ITunnelSubscriber;
 import com.amx.jax.tunnel.TunnelEventMapping;
 import com.amx.jax.tunnel.TunnelEventXchange;
@@ -36,7 +37,7 @@ public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 	WhatsAppClient whatsAppClient;
 
 	@Autowired
-	private SnapQueryService snapQueryService;
+	private CustomerDetailViewRecordService sustomerDetailViewRecordService;
 
 	public static final String FOUND_MATCHED = "Thank you for verification. Your account is now linked to this whatsApp number.";
 	public static final String FOUND_MATCH_NOT = "Kindly visit branch to update your whatsapp communication number. "
@@ -46,59 +47,67 @@ public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 			+ " You can also register online on https://www.almullaexchange.com";
 	public static final String ANY_TEXT = "We cannot find any account linked with this WhatsApp number."
 			+ " Please send Civili Id to link your account. Eg : LINK 123456789987";
+	public static final String NO_ACTION = "Visit https://www.almullaexchange.com or download our app to view your transactions.";
 
 	@Override
 	public void onMessage(String channel, UserInboxEvent event) {
+		this.onMessageReply(event);
+	}
+
+	public WAMessage onMessageReply(UserInboxEvent event) {
+		WAMessage reply = null;
+		try {
+			reply = this.onMessageResponse(event);
+			if (!ArgUtil.isEmpty(reply.getMessage())) {
+				whatsAppClient.send(reply);
+			}
+		} catch (NumberParseException e) {
+			LOGGER.error("BOT EXCEPTION", e);
+		}
+		return reply;
+	}
+
+	public WAMessage onMessageResponse(UserInboxEvent event) throws NumberParseException {
 		if (!ArgUtil.isEmpty(event.getWaChannel())) {
-			try {
-				PhoneNumber swissNumberProto = phoneUtil.parse("+" + event.getFrom(), "IN");
-				LOGGER.info("Recieved {} {} ", swissNumberProto.getNationalNumber(), event.getMessage());
-				String replyMessage = "";
+			PhoneNumber swissNumberProto = phoneUtil.parse("+" + event.getFrom(), "IN");
+			LOGGER.info("Recieved {} {} ", swissNumberProto.getNationalNumber(), event.getMessage());
+			String replyMessage = "";
+			String swissNumberProtoString = ArgUtil.parseAsString(swissNumberProto.getNationalNumber());
 
-				StringMatcher matcher = new StringMatcher(event.getMessage().toUpperCase());
+			StringMatcher matcher = new StringMatcher(event.getMessage().toUpperCase());
 
-				if (matcher.match(LINK_CIVIL_ID) && matcher.find()) {
-					String civilId = matcher.group(1);
-					Map<String, Object> query = new HashMap<String, Object>();
-					query.put("gte", "now-20y");
-					query.put("lte", "now");
-					query.put("searchKey", "customer.identity");
-					query.put("searchValue", civilId);
-					SnapModelWrapper x = snapQueryService.execute(SnapQueryTemplate.CUSTOMERS_PROFILE, query);
+			if (matcher.match(LINK_CIVIL_ID) && matcher.find()) {
+				String civilId = matcher.group(1);
 
-					if (x.getHits().getTotal() > 0) {
-						// MapModel customer =
-						// x.getHits().getHits().get(0).getSource().getMap("customer");
-						replyMessage = FOUND_MATCHED;
-					} else {
-						replyMessage = FOUND_NOT;
-					}
-				} else {
+				CustomerDetailViewRecord c = sustomerDetailViewRecordService.getByIndentity(civilId);
 
-					Map<String, Object> query = new HashMap<String, Object>();
-					query.put("gte", "now-20y");
-					query.put("lte", "now");
-					query.put("searchKey", "customer.mobile");
-					query.put("searchValue", swissNumberProto.getNationalNumber());
+				if (ArgUtil.isEmpty(c)) { // Customer no Found
+					replyMessage = FOUND_NOT;
+				} else if (!swissNumberProtoString.equalsIgnoreCase(c.getWhatsapp())) { // Customer number does not
+																						// match
+					replyMessage = FOUND_MATCH_NOT;
+				} else if ("Y".equalsIgnoreCase(c.getWhatsAppVerified())) { // Already Verified so no action
+					replyMessage = NO_ACTION;
+				} else { // Found and matched
+					replyMessage = FOUND_MATCHED;
+				}
 
-					SnapModelWrapper x = snapQueryService.execute(SnapQueryTemplate.CUSTOMERS_PROFILE, query);
-
-					if (x.getHits().getTotal() > 0) {
-						MapModel customer = x.getHits().getHits().get(0).getSource().getMap("customer");
-						replyMessage = String.format(
-								"Hello %s, You account is linked with this whatsapp account, thanx.",
-								customer.getString("name"));
+			} else {
+				CustomerDetailViewRecord c = sustomerDetailViewRecordService
+						.getByWhatsApp(swissNumberProtoString);
+				if (!ArgUtil.isEmpty(c)) {
+					if ("Y".equalsIgnoreCase(c.getWhatsAppVerified())) {
+						replyMessage = NO_ACTION;
 					} else {
 						replyMessage = ANY_TEXT;
 					}
+				} else {
+					replyMessage = ANY_TEXT;
 				}
-
-				WAMessage reply = event.replyWAMessage(replyMessage);
-				whatsAppClient.send(reply);
-			} catch (NumberParseException e) {
-				LOGGER.error("BOT EXCEPTION", e);
 			}
-
+			return event.replyWAMessage(replyMessage);
+		} else {
+			return event.replyWAMessage(null);
 		}
 	}
 

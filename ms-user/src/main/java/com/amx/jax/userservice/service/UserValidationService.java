@@ -507,7 +507,7 @@ public class UserValidationService {
 		return onlineCustomer;
 	}
 	
-	protected CustomerOnlineRegistration validateOnlineCustomerByIdentityId(BigDecimal customerId) {
+	public CustomerOnlineRegistration validateOnlineCustomerByIdentityId(BigDecimal customerId) {
 		Customer customer = custDao.getCustById(customerId);
 		if (customer == null) {
 			throw new GlobalException(JaxError.CUSTOMER_NOT_FOUND.getStatusKey(), "Online Customer id not found");
@@ -695,8 +695,7 @@ public class UserValidationService {
 	}
 	
 	public List<Customer> validateNonActiveOrNonRegisteredCustomerStatus(String identityInt, JaxApiFlow apiFlow) {
-		return validateNonActiveOrNonRegisteredCustomerStatus(identityInt, ConstantDocument.BIZ_COMPONENT_ID_CIVIL_ID,
-				apiFlow);
+		return validateNonActiveOrNonRegisteredCustomerStatus(identityInt, null, apiFlow);
 	}
 
 	/**
@@ -707,8 +706,11 @@ public class UserValidationService {
 	public List<Customer> validateNonActiveOrNonRegisteredCustomerStatus(String identityInt, BigDecimal identityType,
 			JaxApiFlow apiFlow) {
 		List<Customer> customers = null;
-
-		customers = custDao.getCustomerByIdentityInt(identityInt, identityType);
+		if (identityType != null) {
+			customers = custDao.getCustomerByIdentityInt(identityInt, identityType);
+		} else {
+			customers = custDao.getCustomerByIdentityInt(identityInt);
+		}
 		if (CollectionUtils.isEmpty(customers) && apiFlow == JaxApiFlow.SIGNUP_DEFAULT) {
 			return customers;
 		}
@@ -734,7 +736,7 @@ public class UserValidationService {
 			validateCustomerForSignUpDefault(customers.get(0));
 			break;
 		case OFFSITE_REGISTRATION:
-			validateCustomerForOffisteReg(customers.get(0));
+			validateCustomerForOffisteReg(customers);
 			break;
 		default:
 			validateCustomerDefault(customers.get(0));
@@ -742,7 +744,7 @@ public class UserValidationService {
 		return customers;
 	}
 
-	private void validateCustomerForOffisteReg(Customer customer) {
+	private void validateCustomerForOffisteReg(List<Customer> customer) {
 		
 	}
 
@@ -909,5 +911,11 @@ public class UserValidationService {
 
 	}
 	
+	public void validateFingerprintDeviceId(CustomerOnlineRegistration customer, String fingerprintDeviceId) {
+		String dbFingerprintDeviceId = customer.getFingerprintDeviceId();
+		if (!fingerprintDeviceId.equals(dbFingerprintDeviceId) || fingerprintDeviceId == null) {
+			throw new GlobalException(JaxError.FINGERPRINT_EXPIRED, "Fingerprint expired");
+		}
+	}
 
 }

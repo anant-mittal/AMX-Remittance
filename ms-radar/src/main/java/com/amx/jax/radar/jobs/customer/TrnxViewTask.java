@@ -52,9 +52,9 @@ public class TrnxViewTask extends AbstractDBSyncTask {
 	@SchedulerLock(lockMaxAge = AmxCurConstants.INTERVAL_MIN * 30, context = LockContext.BY_CLASS)
 	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_MIN * 10)
 	public void doTaskModeDay() {
-		if (!TimeUtils.inHourSlot(4, 0)) {
+		//if (!TimeUtils.inHourSlot(4, 0)) {
 			this.doTask();
-		}
+		//}
 	}
 
 	@Override

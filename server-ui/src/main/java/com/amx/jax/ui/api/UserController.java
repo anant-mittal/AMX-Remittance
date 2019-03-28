@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,7 @@ import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.ui.WebAppConfig;
 import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
 import com.amx.jax.ui.model.AuthData;
+import com.amx.jax.ui.model.AuthDataInterface.AuthRequestFingerprint;
 import com.amx.jax.ui.model.AuthDataInterface.AuthResponse;
 import com.amx.jax.ui.model.AuthDataInterface.AuthResponseOTPprefix;
 import com.amx.jax.ui.model.AuthDataInterface.UserUpdateRequest;
@@ -467,8 +469,13 @@ public class UserController {
 		return ResponseWrapper.build(jaxService.getUserclient().linkDeviceIdLoggedinUser());
 	}
 
-	@RequestMapping(value = "/api/user/device/delink", method = { RequestMethod.POST })
+	@RequestMapping(value = { "/api/user/device/delink" }, method = { RequestMethod.POST })
 	public AmxApiResponse<BoolRespModel, Object> delinkDevice() {
 		return ResponseWrapper.build(jaxService.getUserclient().delinkFingerprint());
+	}
+
+	@RequestMapping(value = { "/pub/user/device/reset" }, method = { RequestMethod.POST })
+	public AmxApiResponse<BoolRespModel, Object> resetDevice(@Valid @RequestBody AuthRequestFingerprint authData) {
+		return ResponseWrapper.build(jaxService.getUserclient().resetFingerprint(authData.getLockId()));
 	}
 }
