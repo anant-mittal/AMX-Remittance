@@ -40,6 +40,7 @@ public class AppConfig {
 	public static final String APP_GROUP = "${app.group}";
 	public static final String APP_NAME = "${app.name}";
 	public static final String APP_ID = "${app.id}";
+	public static final String APP_VERSION = "${app.version}";
 
 	public static final String APP_PROD = "${app.prod}";
 	public static final String APP_SWAGGER = "${app.swagger}";
@@ -95,6 +96,10 @@ public class AppConfig {
 	@AppParamKey(AppParam.APP_ID)
 	private String appId;
 
+	@Value(APP_VERSION)
+	@AppParamKey(AppParam.APP_VERSION)
+	private String appVersion;
+	
 	@Value(APP_CLASS)
 	@AppParamKey(AppParam.APP_CLASS)
 	private String appClass;
@@ -409,6 +414,14 @@ public class AppConfig {
 
 	public String getAppAuthToken() {
 		return appAuthToken;
+	}
+
+	public String getAppVersion() {
+		return appVersion;
+	}
+
+	public void setAppVersion(String appVersion) {
+		this.appVersion = appVersion;
 	}
 
 }
