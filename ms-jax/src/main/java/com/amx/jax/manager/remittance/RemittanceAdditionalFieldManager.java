@@ -179,6 +179,9 @@ public class RemittanceAdditionalFieldManager {
 		if (!ConstantDocument.Yes.equalsIgnoreCase(ibanFlag)) {
 			return false;
 		}
+		if(beneficiaryService.isCashBene(beneficiaryDetail)) {
+			return false;
+		}
 		BeneficaryAccount beneficaryAccount = beneficiaryService.getBeneAccountByAccountSeqId(beneficiaryDetail.getBeneficiaryAccountSeqId());
 		if (StringUtils.isBlank(beneficaryAccount.getIbanNumber())) {
 			return true;
