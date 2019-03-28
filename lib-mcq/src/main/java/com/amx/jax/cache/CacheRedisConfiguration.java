@@ -47,6 +47,8 @@ public class CacheRedisConfiguration
 	@Value("${spring.redis.port}")
 	private String port;
 
+	public static final String CODEC_VERSION = "0";
+
 	@Bean(destroyMethod = "shutdown")
 	public RedissonClient redisson() throws IOException {
 		// Config config = new Config();
@@ -77,7 +79,7 @@ public class CacheRedisConfiguration
 			singleServerConfig.setIdleConnectionTimeout(2 * 60 * 1000);
 		}
 		// Commenting this as we dont want to use session sharing across applications
-		config.setCodec(new org.redisson.codec.FstCodec());
+		// config.setCodec(new org.redisson.codec.FstCodec());
 		return Redisson.create(config);
 	}
 
