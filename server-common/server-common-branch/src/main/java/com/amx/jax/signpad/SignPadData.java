@@ -5,7 +5,9 @@ import java.io.Serializable;
 import com.amx.jax.api.FileSubmitRequestModel;
 import com.amx.jax.constant.DeviceState;
 import com.amx.jax.model.response.DeviceStatusInfoDto;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class SignPadData implements Serializable {
 	private static final long serialVersionUID = -6489044552822849830L;
 	FileSubmitRequestModel signature;
