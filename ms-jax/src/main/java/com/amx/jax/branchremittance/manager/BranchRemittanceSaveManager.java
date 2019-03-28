@@ -316,16 +316,16 @@ public class BranchRemittanceSaveManager {
 				collection.setFsCustomer(appl.getFsCustomer());
 				collection.setCollectDate(new Date());
 				collection.setExCurrencyMaster(appl.getExCurrencyMasterByLocalTranxCurrencyId());
-				collection.setPaidAmount(remittanceRequestModel.getPaidAmount());
+				collection.setPaidAmount(remittanceRequestModel.getPaidAmount().add(remittanceRequestModel.getTotalLoyaltyAmount()==null?BigDecimal.ZERO:remittanceRequestModel.getTotalLoyaltyAmount()));
 				collection.setNetAmount(remittanceRequestModel.getTotalTrnxAmount());
-				collection.setRefoundAmount(remittanceRequestModel.getPaidAmount().subtract(remittanceRequestModel.getTotalTrnxAmount()));
+				collection.setRefoundAmount(collection.getPaidAmount().subtract(remittanceRequestModel.getTotalTrnxAmount()));
 				collection.setAccountMMYYYY(appl.getAccountMmyyyy());
 				collection.setCompanyCode(appl.getCompanyCode());
 				collection.setLocCode(appl.getLoccod());
 				collection.setDocumentFinanceYear(appl.getDocumentFinancialyear());
 				collection.setDocumentId(documentDao.getDocumnetByCode(ConstantDocument.DOCUMENT_CODE_FOR_COLLECT_TRANSACTION).get(0).getDocumentID());
 				collection.setDocumentCode(ConstantDocument.DOCUMENT_CODE_FOR_COLLECT_TRANSACTION);
-				 BigDecimal documentNo =generateDocumentNumber(appl.getFsCountryMasterByApplicationCountryId().getCountryId(),appl.getFsCompanyMaster().getCompanyId(),collection.getDocumentId(),collection.getDocumentFinanceYear(),appl.getExCountryBranch().getBranchId());
+				 BigDecimal documentNo =generateDocumentNumber(appl.getFsCountryMasterByApplicationCountryId().getCountryId(),appl.getFsCompanyMaster().getCompanyId(),collection.getDocumentId(),collection.getDocumentFinanceYear(),appl.getExCountryBranch().getBranchId(),ConstantDocument.A);
 				
 				if(documentNo!=null && documentNo.compareTo(BigDecimal.ZERO)!=0){
 			    	collection.setDocumentNo(documentNo);
@@ -488,7 +488,7 @@ public class BranchRemittanceSaveManager {
 					collectDetails.setVoucherYear(collect.getDocumentFinanceYear());
 					
 					BigDecimal documentNo = generateDocumentNumber(collect.getApplicationCountryId(),
-							collect.getFsCompanyMaster().getCompanyId(),ConstantDocument.VOUCHER_DOCUMENT_CODE,collect.getDocumentFinanceYear(),collect.getLocCode());
+							collect.getFsCompanyMaster().getCompanyId(),ConstantDocument.VOUCHER_DOCUMENT_CODE,collect.getDocumentFinanceYear(),collect.getLocCode(),ConstantDocument.Update);
 					
 					if(documentNo!=null && documentNo.compareTo(BigDecimal.ZERO)!=0){
 						collectDetails.setVoucherNo(documentNo);
@@ -736,7 +736,7 @@ public class BranchRemittanceSaveManager {
 					remitTrnx.setWuIpAddress(metaData.getDeviceIp());
 					remitTrnx.setDiscountOnCommission(appl.getDiscountOnCommission());
 					
-					BigDecimal documentNo =generateDocumentNumber(appl.getFsCountryMasterByApplicationCountryId().getCountryId(),appl.getFsCompanyMaster().getCompanyId(),remitTrnx.getDocumentId().getDocumentCode(),remitTrnx.getDocumentFinanceYear(),remitTrnx.getBranchId().getBranchId());
+					BigDecimal documentNo =generateDocumentNumber(appl.getFsCountryMasterByApplicationCountryId().getCountryId(),appl.getFsCompanyMaster().getCompanyId(),remitTrnx.getDocumentId().getDocumentCode(),remitTrnx.getDocumentFinanceYear(),remitTrnx.getBranchId().getBranchId(),ConstantDocument.A);
 					
 					if(documentNo!=null && documentNo.compareTo(BigDecimal.ZERO)!=0){
 						remitTrnx.setDocumentNo(documentNo);
@@ -930,7 +930,7 @@ public List<LoyaltyPointsModel> saveLoyaltyPoints(RemittanceTransaction applDto)
 					lpoints.setCustomerReference(applDto.getCustomerRef());
 					lpoints.setCompCode(applDto.getCompanyCode());
 					lpoints.setTransDate(new Date());
-					lpoints.setLoyaltyPoints(new BigDecimal(-1000));
+					lpoints.setLoyaltyPoints(applDto.getLoyaltyPointsEncashed());
 					lpoints.setDocfyr(applDto.getDocumentFinanceYear());
 					lpoints.setTrnRefNo(applDto.getDocumentNo());
 					lpoints.setType(ConstantDocument.CLAIM);
@@ -1065,8 +1065,8 @@ public String checkBlackListIndicator(BigDecimal customerId,BigDecimal  applId) 
 		return localBank;
 	}
 	
-public BigDecimal generateDocumentNumber(BigDecimal appCountryId,BigDecimal companyId,BigDecimal documentId,BigDecimal finYear,BigDecimal branchId) {
-	Map<String, Object> output = applicationProcedureDao.getDocumentSeriality(appCountryId, companyId, documentId,finYear, ConstantDocument.A, branchId);
+public BigDecimal generateDocumentNumber(BigDecimal appCountryId,BigDecimal companyId,BigDecimal documentId,BigDecimal finYear,BigDecimal branchId,String process) {
+	Map<String, Object> output = applicationProcedureDao.getDocumentSeriality(appCountryId, companyId, documentId,finYear, process, branchId);
 	return (BigDecimal) output.get("P_DOC_NO");
 	}
 
