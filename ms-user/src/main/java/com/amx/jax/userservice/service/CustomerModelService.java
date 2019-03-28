@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.jax.constant.ConstantDocument;
-import com.amx.jax.constant.JaxApiFlow;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.model.response.customer.CustomerFlags;
 import com.amx.jax.model.response.customer.CustomerModelResponse;
@@ -30,9 +29,8 @@ public class CustomerModelService {
 
 	public CustomerModelResponse getCustomerModelResponse(String identityInt) {
 		userValidationService.validateIdentityInt(identityInt, ConstantDocument.BIZ_COMPONENT_ID_CIVIL_ID);
-		List<Customer> customers = userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(identityInt,
-				JaxApiFlow.SIGNUP_ONLINE);
-		Customer customer = customers.get(0);
+		List<Customer> customers = userService.getCustomerByIdentityInt(identityInt);
+		Customer customer = userValidationService.validateCustomerForDuplicateRecords(customers);
 		BigDecimal customerId = customer.getCustomerId();
 		PersonInfo personInfo = userService.getPersonInfo(customerId);
 		CustomerFlags customerFlags = customerFlagManager.getCustomerFlags(customerId);

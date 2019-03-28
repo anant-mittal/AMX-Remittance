@@ -10,6 +10,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -1186,5 +1187,11 @@ public class UserService extends AbstractUserService {
 		if (!CollectionUtils.isEmpty(activeIdProofs)) {
 			customerIdProofDao.save(activeIdProofs);
 		}
+	}
+
+	public List<Customer> getCustomerByIdentityInt(String identityInt) {
+		String[] isActiveFlags = new String[] { ConstantDocument.Yes, ConstantDocument.No };
+		List<Customer> customers = repo.getCustomerByIdentityIntAndIsActive(identityInt, Arrays.asList(isActiveFlags));
+		return customers;
 	}
 }
