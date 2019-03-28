@@ -18,6 +18,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.constant.ApplicationProcedureParam;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
@@ -54,7 +55,7 @@ public class RoutingProcedureDao {
 
 		List<Object> inputList = new ArrayList<>();
 		inputList.add(inputValues.get("P_APPLICATION_COUNTRY_ID"));
-		inputList.add(inputValues.get("P_BENEFICIARY_COUNTRY_ID"));
+		inputList.add(ApplicationProcedureParam.P_BENEFICIARY_COUNTRY_ID.getValue(inputValues));
 		inputList.add(inputValues.get("P_CURRENCY_ID"));
 		inputList.add(inputValues.get("P_SERVICE_MASTER_ID"));
 		inputList.add(inputValues.get("P_ROUTING_COUNTRY_ID"));
@@ -80,7 +81,7 @@ public class RoutingProcedureDao {
 
 		List<Object> inputList = new ArrayList<>();
 		inputList.add(inputValues.get("P_APPLICATION_COUNTRY_ID"));
-		inputList.add(inputValues.get("P_BENEFICIARY_COUNTRY_ID"));
+		inputList.add(ApplicationProcedureParam.P_BENEFICIARY_COUNTRY_ID.getValue(inputValues));
 		inputList.add(inputValues.get("P_CURRENCY_ID"));
 		inputList.add(inputValues.get("P_SERVICE_MASTER_ID"));
 		inputList.add(inputValues.get("P_ROUTING_COUNTRY_ID"));
@@ -108,13 +109,13 @@ public class RoutingProcedureDao {
 
 		List<Object> inputList = new ArrayList<>();
 		inputList.add(inputValues.get("P_APPLICATION_COUNTRY_ID"));
-		inputList.add(inputValues.get("P_BENEFICIARY_BANK_ID"));
-		inputList.add(inputValues.get("P_BENEFICIARY_BRANCH_ID"));
-		inputList.add(inputValues.get("P_BENEFICIARY_COUNTRY_ID"));
+		inputList.add(ApplicationProcedureParam.P_BENEFICIARY_BANK_ID.getValue(inputValues));
+		inputList.add(ApplicationProcedureParam.P_BENEFICIARY_BRANCH_ID.getValue(inputValues));
+		inputList.add(ApplicationProcedureParam.P_BENEFICIARY_COUNTRY_ID.getValue(inputValues));
 		inputList.add(inputValues.get("P_CURRENCY_ID"));
 		inputList.add(inputValues.get("P_SERVICE_MASTER_ID"));
 		inputList.add(inputValues.get("P_SERVICE_MASTER_ID"));
-		inputList.add(inputValues.get("P_BENEFICIARY_BANK_ID"));
+		inputList.add(ApplicationProcedureParam.P_BENEFICIARY_BANK_ID.getValue(inputValues));
 		inputList.add(inputValues.get("P_ROUTING_COUNTRY_ID"));
 		inputList.add(inputValues.get("P_ROUTING_BANK_ID"));
 		inputList.add(inputValues.get("P_ROUTING_BANK_BRANCH_ID"));
@@ -141,13 +142,13 @@ public class RoutingProcedureDao {
 
 		List<Object> inputList = new ArrayList<>();
 		inputList.add(inputValues.get("P_APPLICATION_COUNTRY_ID"));
-		inputList.add(inputValues.get("P_BENEFICIARY_BANK_ID"));
-		inputList.add(inputValues.get("P_BENEFICIARY_BRANCH_ID"));
-		inputList.add(inputValues.get("P_BENEFICIARY_COUNTRY_ID"));
+		inputList.add(ApplicationProcedureParam.P_BENEFICIARY_BANK_ID.getValue(inputValues));
+		inputList.add(ApplicationProcedureParam.P_BENEFICIARY_BRANCH_ID.getValue(inputValues));
+		inputList.add(ApplicationProcedureParam.P_BENEFICIARY_COUNTRY_ID.getValue(inputValues));
 		inputList.add(inputValues.get("P_CURRENCY_ID"));
 		inputList.add(inputValues.get("P_SERVICE_MASTER_ID"));
 		inputList.add(inputValues.get("P_SERVICE_MASTER_ID"));
-		inputList.add(inputValues.get("P_BENEFICIARY_BANK_ID"));
+		inputList.add(ApplicationProcedureParam.P_BENEFICIARY_BANK_ID.getValue(inputValues));
 		inputList.add(inputValues.get("P_ROUTING_COUNTRY_ID"));
 		inputList.add(inputValues.get("P_ROUTING_BANK_ID"));
 		inputList.add(inputValues.get("P_ROUTING_BANK_BRANCH_ID"));

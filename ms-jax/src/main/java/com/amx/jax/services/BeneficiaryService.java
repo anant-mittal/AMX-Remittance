@@ -1067,12 +1067,7 @@ public class BeneficiaryService extends AbstractService {
 		return beneficaryMasterRepository.findOne(beneficaryMasterSeqId);
 	}	
 
-	/**
-	 * whether bene is suspicous based on past transactions
-	 * 
-	 * @param beneRelationshipId
-	 */
-	public void isSuspiciousBeneficiary(BigDecimal beneRelationshipId) {
-
+	public boolean isCashBene(BenificiaryListView benificiaryListView) {
+		return BigDecimal.ONE.equals(benificiaryListView.getServiceGroupId());
 	}
 }

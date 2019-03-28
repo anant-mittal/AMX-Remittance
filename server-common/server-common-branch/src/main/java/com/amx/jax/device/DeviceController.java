@@ -192,7 +192,7 @@ public class DeviceController {
 
 		String terminalId = deviceData.getTerminalId();
 		sSOTranx.get().setBranchAdapterId(deviceRequestValidator.getDeviceRegId());
-		sSOTranx.get().getUserClient().setTerminalId(ArgUtil.parseAsBigDecimal(terminalId));
+		sSOTranx.get().setTerminalId(ArgUtil.parseAsBigDecimal(terminalId));
 		// sSOTranx.get().getUserClient().setDeviceRegId(deviceRequestValidator.getDeviceRegId());
 		// sSOTranx.get().getUserClient().setGlobalIpAddress(deviceData.getGlobalIp());
 		// sSOTranx.get().getUserClient().setLocalIpAddress(deviceData.getLocalIp());
@@ -201,7 +201,7 @@ public class DeviceController {
 		// Audit
 		AppContextUtil.getUserClient().setClientType(ClientType.BRANCH_ADAPTER);
 		auditService.log(new SSOAuditEvent(SSOAuditEvent.Type.SESSION_TERMINAL_MAP)
-				.terminalId(sSOTranx.get().getUserClient().getTerminalId())
+				.terminalId(sSOTranx.get().getTerminalId())
 				.deviceRegId(sSOTranx.get().getBranchAdapterId()));
 
 		return AmxApiResponse.build(terminalId, deviceRequestValidator.getDeviceRegId());

@@ -12,9 +12,10 @@ import org.springframework.stereotype.Service;
 
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.BankMasterDTO;
-import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ExchangeRateResponseModel;
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.dict.UserClient.Channel;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.meta.MetaData;
@@ -47,6 +48,7 @@ public class JaxDynamicPriceService {
 				countryId, routingBankId);
 		AmxApiResponse<PricingResponseDTO, Object> apiResponse = null;
 		try {
+			LOGGER.debug("userDeviceClient : {}", JsonUtil.toJson(AppContextUtil.getUserClient()));
 			LOGGER.debug("Pricing request json : {}", JsonUtil.toJson(pricingRequestDTO));
 			apiResponse = pricerServiceClient.fetchPriceForCustomer(pricingRequestDTO);
 		} catch (Exception e) {
@@ -110,7 +112,11 @@ public class JaxDynamicPriceService {
 			BigDecimal foreignAmount, BigDecimal beneBankCountryId, BigDecimal routingBankId) {
 		PricingRequestDTO pricingRequestDTO = new PricingRequestDTO();
 		pricingRequestDTO.setCustomerId(metaData.getCustomerId());
-		pricingRequestDTO.setChannel(metaData.getChannel().getClientChannel());
+		Channel channel = Channel.valueOf(metaData.getChannel().toString());
+		if (AppContextUtil.getUserClient() != null && AppContextUtil.getUserClient().getClientType() != null) {
+			channel = AppContextUtil.getUserClient().getClientType().getChannel();
+		}
+		pricingRequestDTO.setChannel(channel);
 		pricingRequestDTO.setCountryBranchId(metaData.getCountryBranchId());
 		pricingRequestDTO.setForeignCurrencyId(toCurrency);
 		pricingRequestDTO.setLocalAmount(lcAmount);

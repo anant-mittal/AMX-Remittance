@@ -123,6 +123,10 @@ public class RemittanceApplication implements Serializable {
 	private String errorMessage;
 	private String wuIpAddress;
 	private String errorCategory;
+	private BigDecimal discountOnCommission;
+	
+	
+	
 	
 
 
@@ -823,6 +827,15 @@ public class RemittanceApplication implements Serializable {
 
 	public void setErrorCategory(String errorCategory) {
 		this.errorCategory = errorCategory;
+	}
+
+	@Column(name="DISCOUNT_ON_COMM")
+	public BigDecimal getDiscountOnCommission() {
+		return discountOnCommission;
+	}
+
+	public void setDiscountOnCommission(BigDecimal discountOnCommission) {
+		this.discountOnCommission = discountOnCommission;
 	}
 
 	

@@ -14,6 +14,7 @@ public class BranchRemittanceRequestModel {
 	List<UserStockDto> currencyRefundDenomination = new ArrayList<>();
 	BigDecimal paidAmount = BigDecimal.ZERO;
 	BigDecimal totalTrnxAmount = BigDecimal.ZERO;
+	BigDecimal totalLoyaltyAmount = BigDecimal.ZERO;
 	
 	
 	
@@ -46,6 +47,12 @@ public class BranchRemittanceRequestModel {
 		}
 		public void setTotalTrnxAmount(BigDecimal totalTrnxAmount) {
 			this.totalTrnxAmount = totalTrnxAmount;
+		}
+		public BigDecimal getTotalLoyaltyAmount() {
+			return totalLoyaltyAmount;
+		}
+		public void setTotalLoyaltyAmount(BigDecimal totalLoyaltyAmount) {
+			this.totalLoyaltyAmount = totalLoyaltyAmount;
 		}
 	
 		

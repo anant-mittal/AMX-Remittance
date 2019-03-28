@@ -27,6 +27,7 @@ import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.JaxConditionalFieldDto;
 import com.amx.amxlib.model.response.ExchangeRateResponseModel;
 import com.amx.amxlib.util.JaxValidationUtil;
+import com.amx.jax.config.JaxTenantProperties;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.Customer;
@@ -34,6 +35,7 @@ import com.amx.jax.dbmodel.CustomerEmploymentInfo;
 import com.amx.jax.dbmodel.remittance.CorporateMasterModel;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.exrateservice.service.JaxDynamicPriceService;
+import com.amx.jax.exrateservice.service.NewExchangeRateService;
 import com.amx.jax.manager.RemittanceTransactionManager;
 import com.amx.jax.manager.remittance.RemittanceAdditionalFieldManager;
 import com.amx.jax.manager.remittance.RemittanceApplicationParamManager;
@@ -42,6 +44,7 @@ import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.request.remittance.IRemittanceApplicationParams;
 import com.amx.jax.model.response.remittance.BranchExchangeRateBreakup;
 import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeRateResponse;
+import com.amx.jax.remittance.manager.RemittanceParameterMapManager;
 import com.amx.jax.repository.ICustomerEmploymentInfoRepository;
 import com.amx.jax.repository.remittance.ICorporateMasterRepository;
 import com.amx.jax.services.BeneficiaryService;
@@ -76,12 +79,16 @@ public class BranchRemittanceExchangeRateManager {
 	RemittanceAdditionalFieldManager remittanceAdditionalFieldManager;
 	@Autowired
 	RemittanceTransactionRequestValidator remittanceTransactionRequestValidator;
-	
 	@Autowired
 	ICorporateMasterRepository corporateMasterRepository;
-	
 	@Autowired
 	ICustomerEmploymentInfoRepository customerEmployeRepository;
+	@Autowired
+	JaxTenantProperties jaxTenantProperties;
+	@Autowired
+	RemittanceParameterMapManager remittanceParameterMapManager;
+	@Autowired
+	NewExchangeRateService newExchangeRateService;
 
 	public void validateGetExchangRateRequest(IRemittanceApplicationParams request) {
 
@@ -99,9 +106,17 @@ public class BranchRemittanceExchangeRateManager {
 	public BranchRemittanceGetExchangeRateResponse getExchangeRateResponse(IRemittanceApplicationParams request) {
 		BenificiaryListView beneficiaryView = beneValidationService.validateBeneficiary(request.getBeneficiaryRelationshipSeqIdBD());
 		Customer customer = userService.getCustById(metaData.getCustomerId());
- 		ExchangeRateResponseModel exchangeRateResponseModel = jaxDynamicPriceService.getExchangeRatesWithDiscount(metaData.getDefaultCurrencyId(),
-				beneficiaryView.getCurrencyId(), request.getLocalAmountBD(), request.getForeignAmountBD(), beneficiaryView.getCountryId(),
-				request.getCorrespondanceBankIdBD(), request.getServiceIndicatorIdBD());
+		ExchangeRateResponseModel exchangeRateResponseModel = null;
+		if (!beneficiaryService.isCashBene(beneficiaryView)) {
+			exchangeRateResponseModel = jaxDynamicPriceService.getExchangeRatesWithDiscount(
+					metaData.getDefaultCurrencyId(), beneficiaryView.getCurrencyId(), request.getLocalAmountBD(),
+					request.getForeignAmountBD(), beneficiaryView.getBenificaryCountry(),
+					request.getCorrespondanceBankIdBD(), request.getServiceIndicatorIdBD());
+		} else {
+			exchangeRateResponseModel = newExchangeRateService.getExchangeRateResponseUsingBestRate(
+					beneficiaryView.getCurrencyId(), request.getLocalAmountBD(), request.getForeignAmountBD(),
+					request.getCorrespondanceBankIdBD());
+		}
 		if (exchangeRateResponseModel.getExRateBreakup() == null) {
 			throw new GlobalException(JaxError.EXCHANGE_RATE_NOT_FOUND, "No exchange data found");
 		}

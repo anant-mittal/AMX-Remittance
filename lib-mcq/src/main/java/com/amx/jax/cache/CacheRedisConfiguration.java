@@ -47,6 +47,8 @@ public class CacheRedisConfiguration
 	@Value("${spring.redis.port}")
 	private String port;
 
+	public static final String CODEC_VERSION = "1";
+
 	@Bean(destroyMethod = "shutdown")
 	public RedissonClient redisson() throws IOException {
 		// Config config = new Config();

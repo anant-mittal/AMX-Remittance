@@ -80,7 +80,7 @@ public class SSOAppController {
 		SSOModel sSOModel = sSOTranx.get();
 		sSOModel.setAppUrl(returnUrl);
 		sSOModel.setAppToken(sotp);
-		sSOModel.getUserClient().setClientType(ClientType.BRANCH_WEB_OLD);
+		sSOModel.setClientType(ClientType.BRANCH_WEB_OLD);
 		sSOTranx.save(sSOModel);
 
 		URLBuilder builder = new URLBuilder(HttpUtils.getServerName(request));
@@ -91,6 +91,17 @@ public class SSOAppController {
 		return JsonUtil.toJson(result);
 	}
 
+	/**
+	 * 
+	 * 
+	 * 
+	 * @param targetUrl
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws MalformedURLException
+	 * @throws URISyntaxException
+	 */
 	@ApiSSOStatus({ SSOServerCodes.AUTH_REQUIRED, SSOServerCodes.AUTH_DONE })
 	@ResponseBody
 	@RequestMapping(value = SSOConstants.APP_LOGIN_URL_SESSION, method = { RequestMethod.POST }, produces = {
@@ -107,6 +118,17 @@ public class SSOAppController {
 		return JsonUtil.toJson(result);
 	}
 
+	/**
+	 * 
+	 * Return USER Details after successful login
+	 * 
+	 * @param sotp
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws MalformedURLException
+	 * @throws URISyntaxException
+	 */
 	@ApiSSOStatus({ SSOServerCodes.AUTH_REQUIRED, SSOServerCodes.AUTH_DONE })
 	@ResponseBody
 	@RequestMapping(value = SSOConstants.APP_LOGIN_URL_VERYFY, method = { RequestMethod.GET }, produces = {
@@ -121,6 +143,19 @@ public class SSOAppController {
 		return JsonUtil.toJson(AmxApiResponse.build());
 	}
 
+	/**
+	 * HTML URL to check Login
+	 * 
+	 * @param step
+	 * @param sotp
+	 * @param isReturn
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws MalformedURLException
+	 * @throws URISyntaxException
+	 */
 	@ApiSSOStatus({ SSOServerCodes.AUTH_REQUIRED, SSOServerCodes.AUTH_DONE })
 	@RequestMapping(value = SSOConstants.APP_LOGIN_URL_HTML, method = { RequestMethod.GET })
 	public String loginJPage(
@@ -152,7 +187,7 @@ public class SSOAppController {
 			SSOModel sSOModel = sSOTranx.get();
 			sSOModel.setAppUrl(request.getRequestURL().toString());
 			sSOModel.setAppToken(Random.randomAlphaNumeric(6));
-			sSOModel.getUserClient().setClientType(ClientType.BRANCH_WEB);
+			sSOModel.setClientType(ClientType.BRANCH_WEB);
 			sSOTranx.save(sSOModel);
 
 			URLBuilder builder = new URLBuilder(appConfig.getSsoURL());
@@ -163,6 +198,20 @@ public class SSOAppController {
 		return SSOConstants.REDIRECT + (isReturn ? sSOTranx.get().getReturnUrl() : SSOConstants.APP_LOGGEDIN_URL);
 	}
 
+	/**
+	 * 
+	 * JSON URL to check Login
+	 * 
+	 * @param step
+	 * @param sotp
+	 * @param isReturn
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws MalformedURLException
+	 * @throws URISyntaxException
+	 */
 	@ApiSSOStatus({ SSOServerCodes.AUTH_REQUIRED, SSOServerCodes.AUTH_DONE })
 	@ResponseBody
 	@RequestMapping(value = SSOConstants.APP_LOGIN_URL_JSON, method = { RequestMethod.GET }, produces = {
@@ -182,12 +231,12 @@ public class SSOAppController {
 
 		AmxApiResponse<Object, Object> resp = AmxApiResponse.build();
 		resp.setRedirectUrl((appConfig.getAppPrefix() + redirectUrl.replace(SSOConstants.REDIRECT, "")));
-		//if (isReturn || !ssoUser.isAuthDone()) {
-			// Redirect only if user is not logged, otherwise redirection should be based on
-			// argument passed by user
-			response.setHeader("Location", resp.getRedirectUrl());
-			response.setStatus(302);
-		//}
+		// if (isReturn || !ssoUser.isAuthDone()) {
+		// Redirect only if user is not logged, otherwise redirection should be based on
+		// argument passed by user
+		response.setHeader("Location", resp.getRedirectUrl());
+		response.setStatus(302);
+		// }
 		return JsonUtil.toJson(resp);
 	}
 
@@ -208,6 +257,18 @@ public class SSOAppController {
 		return JsonUtil.toJson(AmxApiResponse.build(ssoUser.getUserDetails()));
 	}
 
+	/**
+	 * 
+	 * Logout SSO User
+	 * 
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param redirect
+	 * @return
+	 * @throws MalformedURLException
+	 * @throws URISyntaxException
+	 */
 	@ResponseBody
 	@RequestMapping(value = SSOConstants.APP_LOGOUT_URL, method = { RequestMethod.GET },
 			produces = { CommonMediaType.APPLICATION_JSON_VALUE, CommonMediaType.APPLICATION_V0_JSON_VALUE })
