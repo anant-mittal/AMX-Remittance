@@ -1,9 +1,22 @@
 package com.amx.jax.model.response.customer;
 
+import java.math.BigDecimal;
+
 public class CustomerModelResponse {
 
+	BigDecimal customerId;
 	PersonInfo personInfo;
 	CustomerFlags customerFlags;
+
+	public CustomerModelResponse() {
+		super();
+	}
+
+	public CustomerModelResponse(PersonInfo personInfo, CustomerFlags customerFlags) {
+		super();
+		this.personInfo = personInfo;
+		this.customerFlags = customerFlags;
+	}
 
 	public PersonInfo getPersonInfo() {
 		return personInfo;
@@ -19,5 +32,13 @@ public class CustomerModelResponse {
 
 	public void setCustomerFlags(CustomerFlags customerFlags) {
 		this.customerFlags = customerFlags;
+	}
+
+	public BigDecimal getCustomerId() {
+		return customerId;
+	}
+
+	public void setCustomerId(BigDecimal customerId) {
+		this.customerId = customerId;
 	}
 }
