@@ -216,7 +216,7 @@ public class SSOServerController {
 					auditEvent.deviceRegId(deviceRegId);
 				}
 
-				ssoUser.setUserClient(ssomodel.getUserClient());
+				ssoUser.setUserClient(userClientDto);
 				UserAuthInitReqDTO init = new UserAuthInitReqDTO();
 				init.setEmployeeNo(formdata.getEcnumber());
 				init.setIdentity(formdata.getIdentity());
