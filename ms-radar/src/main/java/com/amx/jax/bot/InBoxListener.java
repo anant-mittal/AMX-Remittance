@@ -11,7 +11,7 @@ import com.amx.jax.postman.client.WhatsAppClient;
 import com.amx.jax.postman.events.UserInboxEvent;
 import com.amx.jax.postman.model.WAMessage;
 import com.amx.jax.radar.jobs.customer.OracleViewDocument;
-import com.amx.jax.radar.service.SnapApiService;
+import com.amx.jax.radar.service.SnapDocumentRepository;
 import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.tunnel.ITunnelSubscriber;
 import com.amx.jax.tunnel.TunnelEventMapping;
@@ -38,7 +38,7 @@ public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 	private CustomerRepository customerRepository;
 
 	@Autowired
-	SnapApiService snapApiService;
+	SnapDocumentRepository snapApiService;
 
 	public static final String FOUND_MATCHED = "Thank you for verification. Your account is now linked to this whatsApp number.";
 	public static final String FOUND_MATCH_NOT = "Kindly visit branch to update your whatsapp communication number. "

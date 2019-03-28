@@ -1,5 +1,5 @@
 package com.amx.jax.dict;
 
-public enum ContactChannel {
+public enum ContactType {
 	SMS, EMAIL, WHATSAPP
 }
