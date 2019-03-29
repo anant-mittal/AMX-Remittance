@@ -179,6 +179,14 @@ public class NewExchangeRateService extends ExchangeRateService {
 			return createBreakUp(pips.get(0).getDerivedSellRate(), lcAmount);
 		}
 	}
+	
+	public ExchangeRateResponseModel getExchangeRateResponseUsingBestRate(BigDecimal toCurrency, BigDecimal lcAmount,
+			BigDecimal fcAmount, BigDecimal bankId) {
+		ExchangeRateResponseModel response = new ExchangeRateResponseModel();
+		ExchangeRateBreakup exRateBreakup = getExchangeRateBreakUpUsingBestRate(toCurrency, lcAmount, fcAmount, bankId);
+		response.setExRateBreakup(exRateBreakup);
+		return response;
+	}
 
 	/**
 	 * fetch exchange rates from dynamic pricing api
