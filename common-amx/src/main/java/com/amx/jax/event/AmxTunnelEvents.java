@@ -16,6 +16,8 @@ public enum AmxTunnelEvents implements ITunnelEventsDict {
 		public static final String PING_SHOUT = "PING_SHOUT";
 		public static final String PING_TASK = "PING_TASK";
 		public static final String TRNX_BENE_CREDIT = "TRNX_BENE_CREDIT";
+		public static final String TRNX_BENE_CREDIT_DELAY = "TRNX_BENE_CREDIT_DELAY";
+
 	}
 
 	@Override
