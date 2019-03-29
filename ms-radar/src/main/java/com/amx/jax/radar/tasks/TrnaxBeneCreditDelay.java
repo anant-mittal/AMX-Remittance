@@ -43,8 +43,8 @@ public class TrnaxBeneCreditDelay implements ITunnelSubscriber<DBEvent> {
 		BigDecimal custId = ArgUtil.parseAsBigDecimal(event.getData().get(CUST_ID));
 
 		if (!ArgUtil.isEmpty(emailId)) {
-			Email email = new Email();
-			postManClient.sendEmailAsync(email);
+//			Email email = new Email();
+//			postManClient.sendEmailAsync(email);
 		}
 
 		if (!ArgUtil.isEmpty(smsNo)) {
