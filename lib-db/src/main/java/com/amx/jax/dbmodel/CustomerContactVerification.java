@@ -13,6 +13,9 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Proxy;
 
+import com.amx.jax.dict.ContactType;
+import com.amx.jax.util.AmxDBConstants.Status;
+
 @Entity
 @Table(name = "EX_CONTACT_VERIFICATION")
 @Proxy(lazy = false)
@@ -53,15 +56,26 @@ public class CustomerContactVerification implements java.io.Serializable {
 		this.appCountryId = appCountryId;
 	}
 
-	String contactType;
+	ContactType contactType;
 
 	@Column(name = "CONTACT_TYPE", length = 20)
-	public String getContatcType() {
+	public ContactType getContatcType() {
 		return this.contactType;
 	}
 
-	public void setContatcType(String contactType) {
+	public void setContatcType(ContactType contactType) {
 		this.contactType = contactType;
+	}
+
+	String contactValue;
+
+	@Column(name = "CONTACT_VALUE", length = 50)
+	public ContactType getContatcValue() {
+		return this.contactType;
+	}
+
+	public void setContatcValue(String contactValue) {
+		this.contactValue = contactValue;
 	}
 
 	@Column(name = "VERIFICATION_CODE", length = 20)
@@ -86,15 +100,15 @@ public class CustomerContactVerification implements java.io.Serializable {
 		this.customerId = customerId;
 	}
 
-	String activated;
+	Status isActive;
 
 	@Column(name = "ISACTIVE", length = 1)
-	public String getActivated() {
-		return this.activated;
+	public Status getIsAcitve() {
+		return this.isActive;
 	}
 
-	public void setActivated(String activated) {
-		this.activated = activated;
+	public void setIsAcitve(Status isActive) {
+		this.isActive = isActive;
 	}
 
 	Date createdDate;
