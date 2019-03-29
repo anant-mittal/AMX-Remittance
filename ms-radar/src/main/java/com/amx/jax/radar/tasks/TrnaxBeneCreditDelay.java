@@ -34,12 +34,14 @@ public class TrnaxBeneCreditDelay implements ITunnelSubscriber<DBEvent> {
 	private static final String EMAIL = "EMAIL";
 	private static final String MOBILE = "MOBILE";
 	private static final String CUST_ID = "CUST_ID";
+	private static final String TRNDATE = "TRNDATE";
 
 	@Override
 	public void onMessage(String channel, DBEvent event) {
 		LOGGER.info("======onMessage1==={} ====  {}", channel, JsonUtil.toJson(event));
 		String emailId = ArgUtil.parseAsString(event.getData().get(EMAIL));
 		String smsNo = ArgUtil.parseAsString(event.getData().get(MOBILE));
+		String creditDate = ArgUtil.parseAsString(event.getData().get(TRNDATE));
 		BigDecimal custId = ArgUtil.parseAsBigDecimal(event.getData().get(CUST_ID));
 
 		if (!ArgUtil.isEmpty(emailId)) {
@@ -50,13 +52,17 @@ public class TrnaxBeneCreditDelay implements ITunnelSubscriber<DBEvent> {
 		if (!ArgUtil.isEmpty(smsNo)) {
 			SMS sms = new SMS();
 			sms.addTo(smsNo);
-			sms.setMessage("There is little delay in transaction, kindly wait till monday");
+			sms.setMessage(
+					"Thank You for your Remittance Transaction. Your Beneficiary account shall be credited on " +
+							creditDate + ".");
 			postManClient.sendSMSAsync(sms);
 		}
 
 		if (!ArgUtil.isEmpty(custId)) {
 			PushMessage pushMessage = new PushMessage();
-			pushMessage.setMessage("There is little delay in transaction, kindly wait till monday");
+			pushMessage.setMessage(
+					"Thank You for your Remittance Transaction. Your Beneficiary account shall be credited on" +
+							creditDate + ".");
 			pushMessage.addToUser(custId);
 			pushNotifyClient.send(pushMessage);
 		}
