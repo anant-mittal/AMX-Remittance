@@ -113,7 +113,6 @@ import com.amx.jax.userservice.manager.CustomerRegistrationManager;
 import com.amx.jax.userservice.manager.CustomerRegistrationOtpManager;
 import com.amx.jax.userservice.repository.ContactDetailsRepository;
 import com.amx.jax.userservice.repository.CustomerIdProofRepository;
-import com.amx.jax.userservice.repository.CustomerRepository;
 import com.amx.jax.userservice.service.ContactDetailService;
 import com.amx.jax.userservice.service.CustomerValidationContext.CustomerValidation;
 import com.amx.jax.userservice.service.UserService;

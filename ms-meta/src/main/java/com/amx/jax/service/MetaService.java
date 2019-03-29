@@ -91,7 +91,7 @@ public class MetaService extends AbstractService {
 
 	@Autowired
 	IGovernateAreaDao govermentAreaDao;
-	
+
 	@Autowired
 	DeclarationDao declarationDao;
 
@@ -111,8 +111,6 @@ public class MetaService extends AbstractService {
 	JaxUtil jaxUtil;
 	@Autowired
 	JaxTenantProperties jaxTenantProperties;
-	
-	
 
 	public AmxApiResponse<ViewCityDto, Object> getDistrictCity(BigDecimal districtId, BigDecimal languageId) {
 		List<ViewCity> cityList = cityDao.getCityByDistrictId(districtId, languageId);
@@ -164,8 +162,7 @@ public class MetaService extends AbstractService {
 		return AmxApiResponse.buildList(convertGovtAreaDto(goveAreaList));
 
 	}
-	
-	
+
 	public AmxApiResponse<DeclarationDTO, Object> getDeclaration(BigDecimal languageId) {
 		List<DeclarationModel> declarationList = declarationDao.getDeclarsList(languageId);
 		if (declarationList.isEmpty()) {
@@ -174,9 +171,7 @@ public class MetaService extends AbstractService {
 		return AmxApiResponse.buildList(convertDeclarationDTO(declarationList));
 
 	}
-	
-	
-	
+
 	public List<DeclarationDTO> convertDeclarationDTO(List<DeclarationModel> declarationList) {
 
 		List<DeclarationDTO> output = new ArrayList<>();
@@ -190,11 +185,6 @@ public class MetaService extends AbstractService {
 		}
 		return output;
 	}
-	
-	
-	
-	
-	
 
 	public List<ViewGovernateAreaDto> convertGovtAreaDto(List<VwGovernateAreaModel> goveAreaList) {
 		List<ViewGovernateAreaDto> output = new ArrayList<>();
@@ -257,32 +247,30 @@ public class MetaService extends AbstractService {
 
 	public AmxApiResponse<ServiceGroupMasterDescDto, Object> getServiceGroups() {
 		List<ServiceGroupMasterDescDto> outputDto = getServiceGroupDto();
-				
+
 		return AmxApiResponse.buildList(outputDto);
 	}
 
 	private List<ServiceGroupMasterDescDto> getServiceGroupDto() {
 		List<ServiceGroupMasterDesc> output = serviceGroupMasterDescRepository
 				.findActiveByLanguageId(metaData.getLanguageId());
-		
-		
+
 		final List<ServiceGroupMasterDescDto> outputDto = new ArrayList<>();
-	
+
 		output.forEach(i -> {
 			boolean isCash = i.getServiceGroupMasterId().getServiceGroupId().equals(BigDecimal.ONE);
 			if (isCash && jaxTenantProperties.getCashDisable()) {
 				return;
 			}
-			ServiceGroupMasterDescDto dto = new ServiceGroupMasterDescDto();	
-			
+			ServiceGroupMasterDescDto dto = new ServiceGroupMasterDescDto();
+
 			dto.setServiceGroupMasterId(i.getServiceGroupMasterId().getServiceGroupId());
 			dto.setServiceGroupDesc(i.getServiceGroupDesc());
 			dto.setServiceGroupShortDesc(i.getServiceGroupShortDesc());
-			
+
 			outputDto.add(dto);
-		
-		}
-		        );
+
+		});
 		return outputDto;
 	}
 
@@ -323,9 +311,6 @@ public class MetaService extends AbstractService {
 				.collect(Collectors.toMap(ServiceGroupMasterDescDto::getServiceGroupMasterId, x -> x));
 		return outputDtoMap;
 	}
-	
- 
-	
 
 	public ViewDistrict getDistrictMasterById(BigDecimal id) {
 		return districtDao.findOne(id);

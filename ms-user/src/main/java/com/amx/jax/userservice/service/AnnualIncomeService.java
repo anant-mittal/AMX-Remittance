@@ -38,10 +38,10 @@ import com.amx.jax.dbmodel.DocBlobUpload;
 import com.amx.jax.dbmodel.IncomeModel;
 import com.amx.jax.dbmodel.LanguageType;
 import com.amx.jax.dbmodel.UserFinancialYear;
-import com.amx.jax.error.JaxError;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.CountryRepository;
+import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.repository.DOCBLOBRepository;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.IContactDetailDao;
@@ -57,7 +57,6 @@ import com.amx.jax.services.JaxNotificationService;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.dao.CustomerIdProofDao;
 import com.amx.jax.userservice.dao.IncomeDao;
-import com.amx.jax.userservice.repository.CustomerRepository;
 import com.amx.jax.userservice.service.CustomerValidationContext.CustomerValidation;
 
 @Service

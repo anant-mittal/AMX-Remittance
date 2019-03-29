@@ -4,6 +4,7 @@ public class CustomerFlags {
 
 	public String idProofStatus;
 	public Boolean fingerprintlinked;
+	public Boolean annualIncomeExpired;
 
 	public Boolean getFingerprintlinked() {
 		return fingerprintlinked;
@@ -20,6 +21,13 @@ public class CustomerFlags {
 	public void setIdProofStatus(String idProofStatus) {
 		this.idProofStatus = idProofStatus;
 	}
-	
+
+	public Boolean getAnnualIncomeExpired() {
+		return annualIncomeExpired;
+	}
+
+	public void setAnnualIncomeExpired(Boolean annualIncomeExpired) {
+		this.annualIncomeExpired = annualIncomeExpired;
+	}
 
 }
