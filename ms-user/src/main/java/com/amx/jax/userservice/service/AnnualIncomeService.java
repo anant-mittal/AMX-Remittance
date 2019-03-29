@@ -182,7 +182,7 @@ public class AnnualIncomeService {
 		}
 
 		List<Map<String, Object>> designationList = articleDao
-				.getArticleDescriptionByArticleDetailId(incomeDto.getArticleDetailId());
+				.getArticleDescriptionByArticleDetailId(incomeDto.getArticleDetailId(), metaData.getLanguageId(), metaData.getCustomerId());
 		if (designationList.isEmpty()) {
 			throw new GlobalException("Invalid designation id entered");
 		}
@@ -337,7 +337,17 @@ public class AnnualIncomeService {
 	
 	public AmxApiResponse<IncomeDto, Object> getAnnualIncomeDetails(){
 		Customer customer = custDao.getCustById(metaData.getCustomerId());
+		if(customer.getAnnualIncomeFrom() == null || customer.getAnnualIncomeTo() == null) {
+			throw new GlobalException("Please set Annual Income range");
+		}
+		if(customer.getFsArticleDetails().getArticleDetailId() == null) {
+			throw new GlobalException("Please set your designation");
+		}
+		
 		CustomerEmploymentInfo customerEmploymentInfo = incomeDao.getCustById(metaData.getCustomerId());
+		if(customerEmploymentInfo.getEmployerName() == null) {
+			throw new GlobalException("Please set your company name");
+		}
 		IncomeDto incomeDto = new IncomeDto();
 		incomeDto.setIncomeRangeFrom(customer.getAnnualIncomeFrom());
 		incomeDto.setIncomeRangeTo(customer.getAnnualIncomeTo());

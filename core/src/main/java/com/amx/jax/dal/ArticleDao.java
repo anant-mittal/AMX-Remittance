@@ -123,12 +123,12 @@ public class ArticleDao {
 		return articleDetailDesc;
 	}
 	
-	public List<Map<String, Object>> getArticleDescriptionByArticleDetailId(BigDecimal articleDetailId ){
+	public List<Map<String, Object>> getArticleDescriptionByArticleDetailId(BigDecimal articleDetailId , BigDecimal languageId , BigDecimal customerId){
 			String sql = "SELECT D.ARTICLE_DETAIL_DESC FROM FS_ARTICLE_DETAILS C,FS_ARTICLE_DETAILS_DESC D"+
-						" WHERE C.ARTICLE_DETAIL_ID = D.ARTICLE_DETAILS_ID AND D.ARTICLE_DETAILS_ID = ? AND D.LANGUAGE_ID = ? AND C.ISACTIVE = 'Y'";
+						" WHERE C.ARTICLE_DETAIL_ID = D.ARTICLE_DETAILS_ID AND D.ARTICLE_DETAILS_ID = ? AND D.LANGUAGE_ID = ? AND C.ARTICLE_ID = (SELECT B.ARTICLE_ID FROM FS_ARTICLE_DETAILS B WHERE B.ARTICLE_DETAIL_ID = (SELECT A.ARTICLE_DETAIL_ID FROM FS_CUSTOMER A WHERE A.CUSTOMER_ID = ?)) AND C.ISACTIVE = 'Y'";
 			
 			List<Map<String, Object>> articleDetailDesc = jdbcTemplate.queryForList(sql,
-					new Object[] { articleDetailId, metaData.getLanguageId() });
+					new Object[] { articleDetailId, metaData.getLanguageId(), metaData.getCustomerId() });
 			
 			return articleDetailDesc;
 	}
