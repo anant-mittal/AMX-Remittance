@@ -258,30 +258,10 @@ public class RemitBranchController {
 	}
 
 	@RequestMapping(value = "/api/remitt/tranx/email", method = { RequestMethod.GET })
-	public AmxApiResponse<BoolRespModel, Object> sendEmail(
-			@RequestParam(required = false) BigDecimal collectionDocumentNo,
-			@RequestParam(required = false) BigDecimal documentNumber,
-			@RequestParam(required = false) BigDecimal documentFinanceYear,
+	public AmxApiResponse<BoolRespModel, Object> sendEmail(@RequestParam(required = false) BigDecimal collectionDocumentNo,
 			@RequestParam(required = false) BigDecimal collectionDocumentFinYear,
-			@RequestParam(required = false) BigDecimal collectionDocumentCode,
-			@RequestParam(required = false) BigDecimal customerReference, @RequestParam("ext") File.Type ext,
-			@RequestParam(required = false) Boolean duplicate) throws PostManException, IOException {
-
-		TransactionHistroyDTO tranxDTO = new TransactionHistroyDTO();
-		tranxDTO.setCollectionDocumentNo(collectionDocumentNo);
-		tranxDTO.setDocumentNumber(documentNumber);
-		tranxDTO.setDocumentFinanceYear(documentFinanceYear);
-		tranxDTO.setCollectionDocumentFinYear(collectionDocumentFinYear);
-		tranxDTO.setCollectionDocumentCode(collectionDocumentCode);
-		tranxDTO.setCustomerReference(customerReference);
-
-		RemittanceReceiptSubreport rspt = remitClient
-				.report(tranxDTO, !duplicate.booleanValue(), branchMetaOutFilter.exportMeta()).getResult();
-		AmxApiResponse<RemittanceReceiptSubreport, Object> wrapper = AmxApiResponse.buildData(rspt);
-
-		AmxApiResponse<BoolRespModel, Object> resp = new AmxApiResponse<BoolRespModel, Object>();
-		return resp;
-
+			@RequestParam(required = false) BigDecimal collectionDocumentCode) {
+		return branchRemittanceClient.sendReceiptOnEmail(collectionDocumentNo, collectionDocumentFinYear, collectionDocumentCode);
 	}
 
 	@RequestMapping(value = "/api/remitt/appl/delete", method = { RequestMethod.POST })
