@@ -74,7 +74,7 @@ public class BranchUserManager  extends AbstractModel {
 		transactionDate = DateUtil.todaysDateWithDDMMYY(transactionDate==null?new Date():DateUtil.convertStringToDate(transactionDate),"0");
 		String accMonthYear =DateUtil.getAccountingMonthYearNew(transactionDate);
 		BigDecimal employeeId =metaData.getEmployeeId();
-		BigDecimal countryBranchId =new BigDecimal(56); //metaData.getCountryBranchId();
+		BigDecimal countryBranchId =metaData.getCountryBranchId();
 		logger.debug("accMonthYear :"+accMonthYear+"\t employeeId :"+employeeId+"\t countryBranchId :"+countryBranchId);
 		List<BranchDayTransactionView> totalTrnx =branchTrnxRepository.getTotalTrnxCount(accMonthYear, countryBranchId, employeeId, transactionDate);
 		UserwiseTransactionDto dto = getTotalTrnxCount(totalTrnx);
