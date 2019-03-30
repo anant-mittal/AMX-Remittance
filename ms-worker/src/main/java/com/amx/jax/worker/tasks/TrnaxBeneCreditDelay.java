@@ -62,6 +62,7 @@ public class TrnaxBeneCreditDelay implements ITunnelSubscriber<DBEvent> {
 
 		if (!ArgUtil.isEmpty(custId)) {
 			PushMessage pushMessage = new PushMessage();
+			pushMessage.setSubject("Remittance Transaction Update");
 			pushMessage.setMessage(
 					"Thank You for your Remittance Transaction. Your Beneficiary account shall be credited on " +
 							expCreditdt + ".");
