@@ -138,6 +138,8 @@ public class SignPadController {
 			defaultRespo.setResult(signPadData.getStateData());
 
 		}
+		
+		//System.out.println("TerminalStatus"+terminalData.getStatus());
 
 		if (isSuccessTimeout
 				&& !ArgUtil.isEmpty(signPadData.getStateData())
@@ -146,6 +148,7 @@ public class SignPadController {
 					deviceRequestValidator.getDeviceRegToken(),
 					deviceRequestValidator.getDeviceSessionToken());
 			signPadData.setStateData(new DeviceStatusInfoDto());
+			signPadBox.fastPut(deviceData.getTerminalId(), signPadData);
 		}
 
 		return defaultRespo;

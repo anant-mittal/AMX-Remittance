@@ -80,6 +80,12 @@ public class TerminalController {
 		if (ArgUtil.isEmpty(pageStamp)) {
 			pageStamp = System.currentTimeMillis();
 		}
+		
+		if ("START".equalsIgnoreCase(status)) {
+			//System.out.println("status"+status);
+			//startStamp = System.currentTimeMillis();
+		}
+		
 		if (pageStamp >= terminalData.getPagestamp()) {
 			startStamp = ArgUtil.ifNotEmpty(startStamp, terminalData.getStartStamp());
 			if (!ArgUtil.areEqual(terminalData.getStatus(), status)
