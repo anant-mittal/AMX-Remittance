@@ -597,7 +597,8 @@ public class RemittanceTransactionManager {
 			exchangeRateBreakup = newExchangeRateService.getExchangeRateBreakUpUsingBestRate(fCurrencyId, lcAmount,
 					fcAmount, routingBankId);
 		} else {
-			exchangeRateBreakup = createExchangeRateBreakUp(exchangeRates, model, responseModel);
+			exchangeRateBreakup = newExchangeRateService.createExchangeRateBreakUp(exchangeRates, model.getLocalAmount(),
+					model.getForeignAmount());
 		}
 
 		setNetAmountAndLoyalityState(exchangeRateBreakup, model, responseModel, comission);
@@ -630,50 +631,6 @@ public class RemittanceTransactionManager {
 		}
 	}
 
-	private ExchangeRateBreakup createExchangeRateBreakUp(List<ExchangeRateApprovalDetModel> exchangeRates,
-			RemittanceTransactionRequestModel model, RemittanceTransactionResponsetModel responseModel) {
-		BigDecimal fcAmount = model.getForeignAmount();
-		BigDecimal lcAmount = model.getLocalAmount();
-		ExchangeRateBreakup breakup = new ExchangeRateBreakup();
-		ExchangeRateApprovalDetModel exchangeRate = exchangeRates.get(0);
-		BigDecimal inverseExchangeRate = exchangeRate.getSellRateMax();
-		breakup.setInverseRate(inverseExchangeRate);
-
-		breakup.setRate(new BigDecimal(1).divide(inverseExchangeRate, 10, RoundingMode.HALF_UP));
-
-		if (fcAmount != null && fcAmount.compareTo(BigDecimal.ZERO) > 0) {
-			breakup.setConvertedLCAmount(breakup.getInverseRate().multiply(fcAmount));
-			breakup.setConvertedFCAmount(fcAmount);
-		}
-		if (lcAmount != null && lcAmount.compareTo(BigDecimal.ZERO) > 0) {
-			breakup.setConvertedFCAmount(breakup.getRate().multiply(lcAmount));
-			breakup.setConvertedLCAmount(lcAmount);
-		}
-		List<PipsMaster> pips = null;
-
-		if (fcAmount != null && fcAmount.compareTo(BigDecimal.ZERO) > 0) {
-			pips = pipsDao.getPipsMasterForBranch(exchangeRate, fcAmount);
-		} else {
-			pips = pipsDao.getPipsMasterForBranch(exchangeRate, breakup.getConvertedFCAmount());
-		}
-		// apply discounts
-		if (pips != null && !pips.isEmpty()) {
-			PipsMaster pip = pips.get(0);
-			inverseExchangeRate = inverseExchangeRate.subtract(pip.getPipsNo());
-			breakup.setInverseRate(inverseExchangeRate);
-			breakup.setRate(new BigDecimal(1).divide(inverseExchangeRate, 10, RoundingMode.HALF_UP));
-		}
-
-		if (fcAmount != null && fcAmount.compareTo(BigDecimal.ZERO) > 0) {
-			breakup.setConvertedLCAmount(breakup.getInverseRate().multiply(fcAmount));
-			breakup.setConvertedFCAmount(fcAmount);
-		}
-		if (lcAmount != null && lcAmount.compareTo(BigDecimal.ZERO) > 0) {
-			breakup.setConvertedFCAmount(breakup.getRate().multiply(lcAmount));
-			breakup.setConvertedLCAmount(lcAmount);
-		}
-		return breakup;
-	}
 
 	public BankCharges getApplicableCharge(List<BankCharges> charges) {
 

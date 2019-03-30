@@ -113,9 +113,10 @@ public class BranchRemittanceExchangeRateManager {
 					request.getForeignAmountBD(), beneficiaryView.getBenificaryCountry(),
 					request.getCorrespondanceBankIdBD(), request.getServiceIndicatorIdBD());
 		} else {
-			exchangeRateResponseModel = newExchangeRateService.getExchangeRateResponseUsingBestRate(
+			exchangeRateResponseModel = newExchangeRateService.getExchangeRateResponseFromAprDet(
 					beneficiaryView.getCurrencyId(), request.getLocalAmountBD(), request.getForeignAmountBD(),
-					request.getCorrespondanceBankIdBD());
+					request.getCorrespondanceBankIdBD(), beneficiaryView.getBenificaryCountry(),
+					beneficiaryView.getApplicationCountryId(), request.getServiceIndicatorIdBD());
 		}
 		if (exchangeRateResponseModel.getExRateBreakup() == null) {
 			throw new GlobalException(JaxError.EXCHANGE_RATE_NOT_FOUND, "No exchange data found");

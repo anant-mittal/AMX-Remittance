@@ -17,4 +17,8 @@ public class CusmosDao {
 	public CusmasModel getOldCusMasDetails(BigDecimal customerRefernce) {
 		return repo.findOne(customerRefernce);
 	}
+
+	public void save(CusmasModel cusmasModel) {
+		repo.save(cusmasModel);
+	}
 }
