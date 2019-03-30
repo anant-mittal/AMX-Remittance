@@ -271,11 +271,16 @@ public class BranchRemittanceApplManager {
 		RemittanceApplication remittanceApplication = new RemittanceApplication();
 		try {
 			
+			String signature =null;
 			BranchRemittanceApplRequestModel applRequestModel = (BranchRemittanceApplRequestModel)hashMap.get("APPL_REQ_MODEL");
-			//String signature =applRequestModel.getSignature();// for testing purpose
 			
-			String signature =getCustomerSignature();
-
+			if(!StringUtils.isBlank(applRequestModel.getSignature())) {
+				signature =applRequestModel.getSignature();
+			}else {
+				signature =getCustomerSignature();
+			}
+			
+			
 			if(!StringUtils.isBlank(signature)) {
 				try {
 				remittanceApplication.setCustomerSignatureClob(stringToClob(signature));
