@@ -76,6 +76,7 @@ public class SignPadController {
 		SignPadData signPadData = signPadBox.getOrDefault(deviceData.getTerminalId());
 
 		boolean isTerminalUpdated = signPadData.getUpdatestamp() < terminalData.getUpdatestamp();
+		boolean isSignPadDataStaled = signPadData.getChangeStamp() < terminalData.getStartStamp();
 
 		if (ArgUtil.isEmpty(signPadData)
 				|| ArgUtil.isEmpty(signPadData.getDeviceState())
@@ -138,10 +139,10 @@ public class SignPadController {
 			defaultRespo.setResult(signPadData.getStateData());
 
 		}
-		
-		//System.out.println("TerminalStatus"+terminalData.getStatus());
 
-		if (isSuccessTimeout
+		// System.out.println("TerminalStatus"+terminalData.getStatus());
+
+		if ((isSuccessTimeout || isSignPadDataStaled)
 				&& !ArgUtil.isEmpty(signPadData.getStateData())
 				&& !ArgUtil.isEmpty(signPadData.getStateData().getStateDataType())) {
 			deviceStateClient.clearDeviceState(ArgUtil.parseAsInteger(deviceRequestValidator.getDeviceRegId()),
