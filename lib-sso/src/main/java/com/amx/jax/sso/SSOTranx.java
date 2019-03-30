@@ -5,15 +5,14 @@ import java.math.BigDecimal;
 
 import org.springframework.stereotype.Component;
 
-import com.amx.jax.def.ATxCacheBox;
-import com.amx.jax.def.ICacheBox;
+import com.amx.jax.cache.TxCacheBox;
 import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.rbaac.dto.UserClientDto;
 import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
 import com.amx.jax.sso.SSOTranx.SSOModel;
 
 @Component
-public class SSOTranx extends ATxCacheBox<SSOModel> {
+public class SSOTranx extends TxCacheBox<SSOModel> {
 
 	public static class SSOModel implements Serializable {
 		private static final long serialVersionUID = -2178734153442648084L;
@@ -138,9 +137,10 @@ public class SSOTranx extends ATxCacheBox<SSOModel> {
 	}
 
 	@Override
-	public ICacheBox<SSOModel> getCacheBox() {
-		// TODO Auto-generated method stub
-		return null;
+	public SSOModel getDefault() {
+		SSOModel sSOModel = new SSOModel();
+		sSOModel.setUserClient(new UserClientDto());
+		return sSOModel;
 	}
 
 }
