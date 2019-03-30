@@ -938,6 +938,7 @@ public List<LoyaltyPointsModel> saveLoyaltyPoints(RemittanceTransaction applDto)
 					lpoints.setProcessDate(new Date());
 					lpoints.setDocCode(applDto.getDocumentCode());
 					lpoints.setProcessDate(DateUtil.daysAddInCurrentDate(365));
+					lpoints.setExpiryDate(DateUtil.daysAddInCurrentDate(365));
 					loyaltyPoints.add(lpoints);
 				}
 			//}
