@@ -122,6 +122,7 @@ import com.amx.jax.util.DateUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.validation.CountryMetaValidation;
 import com.amx.utils.Constants;
+import com.amx.utils.JsonUtil;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -490,7 +491,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 	@Override
 	@Transactional
 	public AmxApiResponse<CustomerInfo, Object> saveCustomerInfo(CustomerInfoRequest model) {
-		LOGGER.debug("in saveCustomerInfo with request model: {}", model);
+		LOGGER.debug("in saveCustomerInfo with request model: {}", JsonUtil.toJson(model));
 		CustomerPersonalDetail customerDetails = new CustomerPersonalDetail();
 		jaxUtil.convert(model.getCustomerPersonalDetail(), customerDetails);
 		Customer customer = commitCustomer(customerDetails, model.getCustomerEmploymentDetails());
@@ -646,7 +647,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		}
 		countryMetaValidation.validateMobileNumber(customerDetails.getCountryId(), customerDetails.getMobile());
 		countryMetaValidation.validateMobileNumberLength(customerDetails.getCountryId(), customerDetails.getMobile());
-		jaxUtil.convert(customerDetails, customer);
+		jaxUtil.convertNotNull(customerDetails, customer);
 		if(customer.getCustomerReference() == null) {
 			BigDecimal customerReference = customerDao.generateCustomerReference();
 			customer.setCustomerReference(customerReference);
