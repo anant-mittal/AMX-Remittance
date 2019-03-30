@@ -43,6 +43,16 @@ public class CustomerModel extends AbstractModel implements ICustomerModel {
 
 	private boolean isRegistrationFlow;
 	
+	private CustomerFlags customerFlags;
+	
+	public CustomerFlags getCustomerFlags() {
+		return customerFlags;
+	}
+
+	public void setCustomerFlags(CustomerFlags customerFlags) {
+		this.customerFlags = customerFlags;
+	}
+
 	public boolean isRegistrationFlow() {
 		return isRegistrationFlow;
 	}

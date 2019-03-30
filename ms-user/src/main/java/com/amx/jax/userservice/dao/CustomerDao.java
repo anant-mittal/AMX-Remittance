@@ -17,6 +17,7 @@ import com.amx.amxlib.model.placeorder.PlaceOrderCustomer;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dal.ApplicationCoreProcedureDao;
 import com.amx.jax.dbmodel.Customer;
+import com.amx.jax.dbmodel.CustomerIdProof;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.UserVerificationCheckListModel;
 import com.amx.jax.dbmodel.ViewCompanyDetails;
