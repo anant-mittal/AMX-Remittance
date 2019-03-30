@@ -270,7 +270,7 @@ public class UserService extends AbstractUserService {
 
 		if (annualIncomeUpdateDate == null) {
 			customerModel.getFlags().setAnnualIncomeExpired(Boolean.TRUE);
-			logger.debug("Flag value is " + customerModel.getFlags().getAnnualIncomeExpired());
+			logger.info("Flag value is " + customerModel.getFlags().getAnnualIncomeExpired());
 			return customerModel;
 		}
 		Date currentDate = new Date();
@@ -279,8 +279,10 @@ public class UserService extends AbstractUserService {
 
 		if (millisec >= milliSecInYear) {
 			customerModel.getFlags().setAnnualIncomeExpired(Boolean.TRUE);
+			logger.info("Flag value isss " + customerModel.getFlags().getAnnualIncomeExpired());
 		} else {
 			customerModel.getFlags().setAnnualIncomeExpired(Boolean.FALSE);
+			logger.info("Flag value isssss " + customerModel.getFlags().getAnnualIncomeExpired());
 		}
 
 		return customerModel;
