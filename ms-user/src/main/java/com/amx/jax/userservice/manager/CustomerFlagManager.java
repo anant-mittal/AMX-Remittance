@@ -25,9 +25,9 @@ public class CustomerFlagManager {
 	private CustomerDao custDao;
 
 	public CustomerFlags getCustomerFlags(BigDecimal customerId) {
-		CustomerModel customerModel = new CustomerModel();
+		
 		CustomerFlags customerFlags = new CustomerFlags();
-		customerModel.setCustomerFlags(customerFlags);
+		
 		try {
 			userValidationService.validateCustIdProofs(customerId);
 		} catch (GlobalException ex) {

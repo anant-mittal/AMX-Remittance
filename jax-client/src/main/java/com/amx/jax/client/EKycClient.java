@@ -24,7 +24,7 @@ public class EKycClient extends AbstractJaxServiceClient {
 			try {
 
 				return restService.ajax(appConfig.getJaxURL())
-						.path(EKyc.PREFIX + EKyc.EKYC_CUSTOMER).meta(new JaxMetaInfo())
+						.path(EKyc.PREFIX + EKyc.EKYC_SAVE_CUSTOMER).meta(new JaxMetaInfo())
 						.queryParam(EKyc.IMAGE, image).queryParam(EKyc.EXPIRYDATE, expiryDate)
 						.post()
 						.as(new ParameterizedTypeReference<BoolRespModel>() {
