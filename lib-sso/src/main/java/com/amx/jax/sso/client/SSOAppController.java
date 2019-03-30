@@ -81,7 +81,7 @@ public class SSOAppController {
 		sSOModel.setAppUrl(returnUrl);
 		sSOModel.setAppToken(sotp);
 		sSOModel.setClientType(ClientType.BRANCH_WEB_OLD);
-		sSOTranx.save(sSOModel);
+		sSOTranx.put(sSOModel);
 
 		URLBuilder builder = new URLBuilder(HttpUtils.getServerName(request));
 		builder.path(appConfig.getAppPrefix() + SSOConstants.SSO_LOGIN_URL_REQUIRED)
@@ -188,7 +188,7 @@ public class SSOAppController {
 			sSOModel.setAppUrl(request.getRequestURL().toString());
 			sSOModel.setAppToken(Random.randomAlphaNumeric(6));
 			sSOModel.setClientType(ClientType.BRANCH_WEB);
-			sSOTranx.save(sSOModel);
+			sSOTranx.put(sSOModel);
 
 			URLBuilder builder = new URLBuilder(appConfig.getSsoURL());
 			builder.path(SSOConstants.SSO_LOGIN_URL_REQUIRED)
@@ -278,7 +278,7 @@ public class SSOAppController {
 			HttpServletResponse response,
 			@RequestParam(required = false) Boolean redirect) throws MalformedURLException, URISyntaxException {
 		redirect = ArgUtil.parseAsBoolean(redirect, true);
-		sSOTranx.clear(ssoUser.ssoTranxId());
+		sSOTranx.remove(ssoUser.ssoTranxId());
 		SecurityContextHolder.getContext().setAuthentication(null);
 		ssoUser.setAuthDone(false);
 		AmxApiResponse<Object, Model> result = AmxApiResponse.buildMeta(model);

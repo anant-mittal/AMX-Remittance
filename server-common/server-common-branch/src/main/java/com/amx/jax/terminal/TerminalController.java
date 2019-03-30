@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.amx.jax.AppConfig;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
+import com.amx.jax.branch.common.OffsiteStatus.OffsiteServerCodes;
+import com.amx.jax.branch.common.OffsiteStatus.OffsiteServerError;
 import com.amx.jax.client.IDeviceStateService;
 import com.amx.jax.device.TerminalBox;
 import com.amx.jax.device.TerminalData;
@@ -68,6 +70,10 @@ public class TerminalController {
 			String state, String status,
 			Long pageStamp, Long startStamp) {
 		PingStatus map = new PingStatus();
+
+		if (ArgUtil.isEmpty(terminalId)) {
+			throw new OffsiteServerError(OffsiteServerCodes.TERMINAL_UNKNOWN);
+		}
 
 		TerminalData terminalData = terminalBox.getOrDefault(terminalId);
 
@@ -119,7 +125,11 @@ public class TerminalController {
 			Model model,
 			HttpServletResponse response, HttpServletRequest request) throws MalformedURLException, URISyntaxException {
 
-		PingStatus map = getPingStatus(ArgUtil.parseAsString(sSOUser.getUserClient().getTerminalId()), state, status,
+		if (ArgUtil.isEmpty(terminalId) && !ArgUtil.isEmpty(sSOUser.getUserClient())) {
+			terminalId = ArgUtil.parseAsString(terminalId);
+		}
+
+		PingStatus map = getPingStatus(terminalId, state, status,
 				pageStamp, startStamp);
 
 		model.addAttribute("url",
