@@ -47,6 +47,14 @@ public abstract class ATxCacheBox<T> {
 		return key;
 	}
 
+	private T getByTxId(String txId) {
+		T x = this.getCacheBox().get(getCacheKey(txId));
+		if (ArgUtil.isEmpty(x)) {
+			return getDefault();
+		}
+		return x;
+	};
+
 	public static class Tx<T> {
 		T model;
 		String txId;
@@ -70,7 +78,7 @@ public abstract class ATxCacheBox<T> {
 	}
 
 	public Tx<T> getX(String txId) {
-		T model = this.getCacheBox().get(getCacheKey(txId));
+		T model = this.getByTxId(txId);
 		return new Tx<T>(txId, model);
 	}
 
@@ -94,7 +102,7 @@ public abstract class ATxCacheBox<T> {
 	 *         this map contains no mapping for the key
 	 */
 	public T get() {
-		return this.getCacheBox().get(getCacheKey(getTranxId()));
+		return this.getByTxId(getTranxId());
 	};
 
 	/**
@@ -260,4 +268,8 @@ public abstract class ATxCacheBox<T> {
 	public T getOrDefault(T defaultValue) {
 		return this.getCacheBox().getOrDefault(getCacheKey(getTranxId()), defaultValue);
 	};
+
+	public T getDefault() {
+		return null;
+	}
 }
