@@ -37,7 +37,7 @@ public class TrnxViewTask extends AbstractDBSyncTask {
 
 	private static final Logger LOGGER = LoggerService.getLogger(TrnxViewTask.class);
 	private static final String TIME_TRACK_KEY = "lastUpdateDate";
-	private static final int PAGE_SIZE = 10000;
+	private static final int PAGE_SIZE = 5000;
 
 	long intervalDays = 20;
 
