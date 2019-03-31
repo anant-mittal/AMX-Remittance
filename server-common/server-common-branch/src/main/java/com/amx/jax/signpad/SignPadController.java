@@ -21,11 +21,10 @@ import com.amx.jax.client.IDeviceStateService;
 import com.amx.jax.constant.DeviceState;
 import com.amx.jax.device.DeviceData;
 import com.amx.jax.device.DeviceRequest;
-import com.amx.jax.device.TerminalBox;
-import com.amx.jax.device.TerminalData;
 import com.amx.jax.http.ApiRequest;
 import com.amx.jax.http.RequestType;
 import com.amx.jax.model.response.DeviceStatusInfoDto;
+import com.amx.jax.terminal.TerminalBox;
 import com.amx.jax.terminal.TerminalConstants.Path;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.File.Type;
@@ -165,7 +164,6 @@ public class SignPadController {
 		SignPadData signPadData = signPadBox.getOrDefault(deviceData.getTerminalId());
 		signPadData.setSignature(file);
 		signPadBox.fastPut(deviceData.getTerminalId(), signPadData);
-
 		return deviceStateClient.updateSignatureStateData(
 				ArgUtil.parseAsInteger(deviceRequestValidator.getDeviceRegId()),
 				file.getData());
