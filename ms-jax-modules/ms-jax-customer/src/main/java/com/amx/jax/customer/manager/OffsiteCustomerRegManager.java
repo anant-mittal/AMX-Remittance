@@ -85,8 +85,7 @@ public class OffsiteCustomerRegManager {
 		userService.deActivateCustomerIdProof(customer.getCustomerId());
 		customer.setIdentityExpiredDate(model.getIdentityExpiredDate());
 		customerDao.saveCustomer(customer);
-		CusmasModel emosCustomer = cusmosDao.getOldCusMasDetails(customer.getCustomerReference());
-		cusmosDao.save(emosCustomer);
+		customerDao.callProcedurePopulateCusmas(customer.getCustomerId());
 		commitOnlineCustomerIdProof(customer);
 	}
 
