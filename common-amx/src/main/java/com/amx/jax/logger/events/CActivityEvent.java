@@ -22,7 +22,7 @@ public class CActivityEvent extends AuditEvent {
 
 		APPLICATION_CREATED, APPLICATION_UPDATE,
 
-		FC_UPDATE,
+		FC_UPDATE,TRANSACTION_CREATED
 //
 		;
 
