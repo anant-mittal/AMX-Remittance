@@ -85,8 +85,8 @@ public class OffsiteCustomerRegManager {
 		userService.deActivateCustomerIdProof(customer.getCustomerId());
 		customer.setIdentityExpiredDate(model.getIdentityExpiredDate());
 		customerDao.saveCustomer(customer);
-		customerDao.callProcedurePopulateCusmas(customer.getCustomerId());
 		commitOnlineCustomerIdProof(customer);
+		customerDao.callProcedurePopulateCusmas(customer.getCustomerId());
 	}
 
 	public void commitOnlineCustomerIdProof(Customer customer) {
