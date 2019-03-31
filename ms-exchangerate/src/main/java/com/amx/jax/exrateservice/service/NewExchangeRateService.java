@@ -84,10 +84,18 @@ public class NewExchangeRateService extends ExchangeRateService {
 		sortRates(response);
 		addCashPayoutText(response);
 		checkExchangeRateResponse(response);
-		
+		applyRoundingLogic(response);
 		return response;
 	}
 
+		private void applyRoundingLogic(ApiResponse<ExchangeRateResponseModel> response) {
+		
+		List<BankMasterDTO> exchangeRates = response.getResult().getBankWiseRates();
+		exchangeRates.forEach(i -> {
+			i.getExRateBreakup().setInverseRate(RoundUtil.roundBigDecimal(i.getExRateBreakup().getInverseRate(), 6));	
+		});
+	}
+	
 	private void checkExchangeRateResponse(ApiResponse<ExchangeRateResponseModel> response) {
 		ExchangeRateResponseModel exchangeRateResponseModel = response.getResult();
 		List<BankMasterDTO> exRates = exchangeRateResponseModel.getBankWiseRates();
