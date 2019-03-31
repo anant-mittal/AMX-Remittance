@@ -231,7 +231,7 @@ public class BranchRemittanceApplManager {
 		 branchRemitManager.validateAdditionalCheck(branchRoutingDto,customer,beneficaryDetails,exchangeRateResposne.getExRateBreakup().getNetAmount());
 		 
 		 if(!JaxUtil.isNullZeroBigDecimalCheck(requestApplModel.getRoutingBankId())) {
-			 requestApplModel.setRoutingBankId(branchRoutingDto.getRoutingBankDto().get(0).getRoutingBankId());
+			 requestApplModel.setRoutingBankId(requestApplModel.getRoutingBankId());
 		 }
 		 
 		/** bene additional check **/
@@ -308,7 +308,7 @@ public class BranchRemittanceApplManager {
 			
 			BigDecimal routingCountryId = branchRoutingDto.getRoutingCountrydto().get(0).getResourceId();
 			Customer customer = (Customer) hashMap.get("CUSTOMER");
-			BigDecimal routingBankId = branchRoutingDto.getRoutingBankDto().get(0).getRoutingBankId();
+			BigDecimal routingBankId = applRequestModel.getRoutingBankId();
 			BigDecimal routingBankBranchId = (BigDecimal) branchRoutingDto.getRoutingBankBranchDto().get(0).getBankBranchId();
 			BigDecimal foreignCurrencyId = beneDetails.getCurrencyId();
 			BigDecimal deliveryId =branchRoutingDto.getDeliveryModeList().get(0).getDeliveryModeId(); 
