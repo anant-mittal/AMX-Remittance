@@ -23,6 +23,7 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.exception.AdditionalFlexRequiredException;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.JaxConditionalFieldDto;
 import com.amx.amxlib.model.response.ExchangeRateResponseModel;
@@ -181,7 +182,7 @@ public class BranchRemittanceExchangeRateManager {
 		}
 		try {
 			remittanceTransactionRequestValidator.validateFlexFields(branchRemittanceApplRequestModel, remitApplParametersMap);
-		} catch (GlobalException ex) {
+		} catch (GlobalException | AdditionalFlexRequiredException ex) {
 			if (ex.getMeta() != null) {
 				flexFields.addAll((Collection<? extends JaxConditionalFieldDto>) ex.getMeta());
 			}
