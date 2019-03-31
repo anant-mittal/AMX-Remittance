@@ -588,11 +588,11 @@ public class RemittanceTransactionManager {
 		ExchangeRateBreakup exchangeRateBreakup;
 		BigDecimal routingBankId = (BigDecimal) remitApplParametersMap.get("P_ROUTING_BANK_ID");
 		BigDecimal fCurrencyId = (BigDecimal) remitApplParametersMap.get("P_FOREIGN_CURRENCY_ID");
-		BigDecimal routingCountryId = (BigDecimal) remitApplParametersMap.get("P_ROUTING_COUNTRY_ID");
+		BigDecimal beneCountryId = (BigDecimal) remitApplParametersMap.get("P_BENEFICIARY_COUNTRY_ID");
 
 		if (jaxTenantProperties.getIsDynamicPricingEnabled() && !remittanceParameterMapManager.isCashChannel()) {
 			exchangeRateBreakup = newExchangeRateService.getExchangeRateBreakUpUsingDynamicPricing(fCurrencyId,
-					lcAmount, fcAmount, routingCountryId, routingBankId);
+					lcAmount, fcAmount, beneCountryId, routingBankId);
 		} else if (jaxTenantProperties.getExrateBestRateLogicEnable()) {
 			exchangeRateBreakup = newExchangeRateService.getExchangeRateBreakUpUsingBestRate(fCurrencyId, lcAmount,
 					fcAmount, routingBankId);

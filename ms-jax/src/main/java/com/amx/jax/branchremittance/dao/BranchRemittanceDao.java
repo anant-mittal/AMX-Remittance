@@ -50,6 +50,7 @@ import com.amx.jax.repository.RemittanceApplicationRepository;
 import com.amx.jax.repository.remittance.ILoyaltyPointRepository;
 import com.amx.jax.util.JaxUtil;
 
+
 @Component
 //@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class BranchRemittanceDao {
@@ -214,6 +215,7 @@ public class BranchRemittanceDao {
 		}
 			
 			if(loyaltyPoitns!=null && !loyaltyPoitns.isEmpty()) {
+				
 				loyalPointsRepository.save(loyaltyPoitns);
 			}
 			
@@ -286,7 +288,7 @@ public class BranchRemittanceDao {
 			for(RemittanceTransaction remitTrnx :remitTrnxList) {
 			RemittanceApplication appl = appRepo.getApplicationDetailsForUpdate(remitTrnx.getCustomerId(), remitTrnx.getApplicationDocumentNo(), remitTrnx.getApplicationFinanceYear());
 			if(JaxUtil.isNullZeroBigDecimalCheck(appl.getRemittanceApplicationId())) {
-			String sql ="UPDATE EX_APPL_TRNX set APPLICATION_STATUS='T' , TRANSACTION_FINANCE_YEAR ="+remitTrnx.getDocumentFinanceYr()+" ,TRANSACTION_DOCUMENT_NO="+remitTrnx.getDocumentNo()+" ,BLACK_LIST_INDICATOR ='"+remitTrnx.getBlackListIndicator()+"' where REMITTANCE_APPLICATION_ID ="+appl.getRemittanceApplicationId();
+			String sql ="UPDATE EX_APPL_TRNX set APPLICATION_STATUS='T' ,TRANSACTION_FINANCE_YEAR ="+remitTrnx.getDocumentFinanceYear()+", TRANSACTION_FINANCE_YEAR_ID ="+remitTrnx.getDocumentFinanceYr()+" ,TRANSACTION_DOCUMENT_NO="+remitTrnx.getDocumentNo()+" ,BLACK_LIST_INDICATOR ='"+remitTrnx.getBlackListIndicator()+"' where REMITTANCE_APPLICATION_ID ="+appl.getRemittanceApplicationId();
 			System.out.println("sql :"+sql);
 			jdbcTemplate.update(sql);
 			}

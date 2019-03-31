@@ -36,6 +36,7 @@ import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.model.response.remittance.RoutingResponseDto;
 import com.amx.jax.services.AbstractService;
 import com.amx.jax.validation.FxOrderValidation;
+import com.amx.utils.JsonUtil;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -74,6 +75,7 @@ public class BranchRemittanceService extends AbstractService{
 
 	
 	public AmxApiResponse<BranchRemittanceApplResponseDto, Object> saveBranchRemittanceApplication(BranchRemittanceApplRequestModel requestApplModel){
+		logger.info("saveBranchRemittanceApplication : " + JsonUtil.toJson(requestApplModel));
 		BranchRemittanceApplResponseDto applResponseDto = branchRemitApplManager.saveBranchRemittanceApplication(requestApplModel);
 		return AmxApiResponse.build(applResponseDto);
 	}
@@ -177,6 +179,7 @@ public class BranchRemittanceService extends AbstractService{
 	}
 	
 	public AmxApiResponse<RemittanceResponseDto, Object> saveRemittanceTransaction(BranchRemittanceRequestModel remittanceRequestModel){
+		 logger.info("saveBranchRemittanceApplication : " + JsonUtil.toJson(remittanceRequestModel));
 		 RemittanceResponseDto dto = branchRemittanceSaveManager.saveRemittanceTrnx(remittanceRequestModel);
 		 return AmxApiResponse.build(dto);
 	 }
