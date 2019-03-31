@@ -269,10 +269,6 @@ public class BranchRemittanceManager extends AbstractModel {
 		if(bankMaster!=null) {
 			iBanFlag = bankMaster.getIbanFlag();
 		}
-		if (ConstantDocument.Yes.equalsIgnoreCase(iBanFlag) && StringUtils.isBlank(beneficaryDetails.getIbanNumber())) {
-			throw new GlobalException(JaxError.BANK_IBAN_EMPTY," IBAN account number shoulnot be blank for Banking channel .Please contact branch for update");
-		}
-		
 		
 		if(!JaxUtil.isNullZeroBigDecimalCheck(beneficaryDetails.getMapSequenceId())) {
 			throw new GlobalException(JaxError.BENE_MAP_SEQ_MISSING,"Beneficairy map seq is missing , please update beneficiray");
@@ -784,22 +780,6 @@ public class BranchRemittanceManager extends AbstractModel {
 	  
 		return dto;
 	}
-
-  
-  public BranchExchangeRateBreakup getExchangeRate(BranchRemittanceApplRequestModel requestApplModel) {
-	  BranchExchangeRateBreakup rate = new BranchExchangeRateBreakup();
-	  RoutingResponseDto routingDto =  branchRoutingManager.getRoutingSetup(requestApplModel);
-	  Map<String ,Object> output = getExchangeRateForBranch(requestApplModel,routingDto);
-	  
-	  rate.setConvertedFCAmount(output.get("P_LOCAL_NET_SENT")==null?BigDecimal.ZERO:(BigDecimal)output.get("P_LOCAL_NET_SENT"));
-	  rate.setConvertedLCAmount(output.get("P_LOCAL_GROSS_AMOUNT")==null?BigDecimal.ZERO:(BigDecimal)output.get("P_LOCAL_GROSS_AMOUNT"));
-	  rate.setConvertedLCAmount(output.get("P_LOCAL_NET_PAYABLE")==null?BigDecimal.ZERO:(BigDecimal)output.get("P_LOCAL_NET_PAYABLE"));
-	  rate.setInverseRate(output.get("P_EXCHANGE_RATE_APPLIED")==null?BigDecimal.ZERO:(BigDecimal)output.get("P_EXCHANGE_RATE_APPLIED"));
-	  rate.setNetAmountWithoutLoyality(rate.getConvertedLCAmount().subtract((BigDecimal)output.get("P_LOYALTY_AMOUNT")));
-	  rate.setDeliveryCharges(output.get("P_LOCAL_COMMISION_AMOUNT")==null?BigDecimal.ZERO:(BigDecimal)output.get("P_LOCAL_COMMISION_AMOUNT"));
-	  
-	 return rate;
-  }
   
 }	
 
