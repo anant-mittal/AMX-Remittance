@@ -708,6 +708,13 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		return bizcomponentDao.getBizComponentDataDescByComponmentId(titleLocal).getDataDesc();
 	}
 
+	public AmxApiResponse<String, Object> saveCustomeKycDocumentAndPopulateCusmas(ImageSubmissionRequest model) throws ParseException {
+		AmxApiResponse<String, Object> result = saveCustomeKycDocument(model);
+		if (metaData.getCustomerId() != null) {
+			customerDao.callProcedurePopulateCusmas(metaData.getCustomerId());
+		}
+		return result;
+	}
 
 	@Override
 	@Transactional
@@ -741,7 +748,6 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 				documentDetails = getDocumentUploadDetails(image, mappingData);
 				docblobRepository.save(documentDetails);
 			}
-			
 		} else {
 			auditService.log(auditEvent.result(Result.FAIL).message(JaxError.IMAGE_NOT_AVAILABLE));
 			throw new GlobalException(JaxError.IMAGE_NOT_AVAILABLE, "Image data is not available");
