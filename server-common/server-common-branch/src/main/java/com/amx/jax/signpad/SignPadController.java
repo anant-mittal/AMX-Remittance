@@ -147,6 +147,7 @@ public class SignPadController {
 			deviceStateClient.clearDeviceState(ArgUtil.parseAsInteger(deviceRequestValidator.getDeviceRegId()),
 					deviceRequestValidator.getDeviceRegToken(),
 					deviceRequestValidator.getDeviceSessionToken());
+			signPadData.setSignature(null);
 			signPadData.setStateData(new DeviceStatusInfoDto());
 			signPadBox.fastPut(deviceData.getTerminalId(), signPadData);
 		}
