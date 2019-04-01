@@ -158,24 +158,30 @@ public class AnnualIncomeService {
 
 	public AmxApiResponse<IncomeDto, Object> saveAnnualIncome(IncomeDto incomeDto) throws ParseException {
 		Customer customer = custDao.getCustById(metaData.getCustomerId());
-
+		logger.info("fetch customer by customer id "+customer);
 		if (incomeDto.getIncomeRangeFrom() == null || incomeDto.getIncomeRangeTo() == null) {
 			throw new GlobalException("Income range cannot be null");
 		}
 
 		IncomeModel incomeModel = incomeDao.getAnnualIncomeRangeId(incomeDto.getIncomeRangeFrom(),
 				incomeDto.getIncomeRangeTo());
+		logger.info("fetch incomeModel by id "+incomeModel);
+		
 		if (incomeModel== null) {
 			throw new GlobalException("Invalid income range entered.Please enter a valid income range");
 		}
 
 		customer.setAnnualIncomeFrom(incomeDto.getIncomeRangeFrom());
+		logger.info("set annual income from by id "+customer);
 
 		customer.setAnnualIncomeTo(incomeDto.getIncomeRangeTo());
+		logger.info("set annual income to by id "+customer);
 
 		customer.setAnnualIncomeUpdatedBy(metaData.getCustomerId().toString());
+		logger.info("set annual income updated by "+customer);
 
 		customer.setAnnualIncomeUpdatedDate(new Date());
+		logger.info("set annual income updated date "+customer);
 
 		if (incomeDto.getArticleDetailId() == null) {
 			throw new GlobalException("Article detail id can not be null");
@@ -183,13 +189,16 @@ public class AnnualIncomeService {
 
 		List<Map<String, Object>> designationList = articleDao
 				.getArticleDescriptionByArticleDetailId(incomeDto.getArticleDetailId(), metaData.getLanguageId(), metaData.getCustomerId());
+		logger.info("set designation list  "+designationList);
+		
 		if (designationList.isEmpty()) {
 			throw new GlobalException("Invalid designation id entered");
 		}
 
 		customer.setFsArticleDetails(articleDao.getArticleDetailsByArticleDetailId(incomeDto.getArticleDetailId()));
-		logger.debug("set designation id : ");
+		logger.info("set designation id : ");
 		CustomerEmploymentInfo customerEmploymentInfo = incomeDao.getCustById(metaData.getCustomerId());
+		logger.info("set customerEmpInfo : " +customerEmploymentInfo);
 		if (customerEmploymentInfo == null) {
 			customerEmploymentInfo = createCustomerEmploymentInfo(incomeDto);
 		}
