@@ -11,6 +11,9 @@ import javax.persistence.Table;
 import org.apache.commons.lang.StringUtils;
 
 import com.amx.jax.model.IResourceEntity;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
  * 
@@ -40,6 +43,7 @@ public class CountryMasterView implements java.io.Serializable, IResourceEntity 
 	private String countryAlpha3Code;
 	private String countryCode;
 	private String countryISOCode;
+	@JsonSerialize(using = CountryTelCodeSerializer.class)
 	private String countryTelCode;
 	private String createdBy;
 	private Date createdDate;
