@@ -245,8 +245,11 @@ public class AnnualIncomeService {
 			customerEmploymentInfo.setFileName(incomeDto.getFileName());
 			logger.info("file is set 1");
 		} else if (incomeDto.getImage() == null && incomeDto.getFileName() == null) {
+			logger.info("income and filename is set");
 			customerEmploymentInfo.setDocBlobId(null);
+			logger.info("blob id is set");
 			customerEmploymentInfo.setFileName(null);
+			logger.info("filename is set");
 		} else if (incomeDto.getFileName() != null && incomeDto.getImage() == null) {
 			logger.info("Editing card details after initial upload");
 		}
