@@ -15,6 +15,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.amx.amxlib.constant.ApiEndpoint;
 import com.amx.amxlib.constant.ApiEndpoint.MetaApi;
 import com.amx.amxlib.constant.ApiEndpoint.UserApi;
 import com.amx.amxlib.exception.AbstractJaxException;
@@ -35,6 +36,7 @@ import com.amx.amxlib.model.UserFingerprintResponseModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.amxlib.service.ICustomerService;
+import com.amx.amxlib.service.ICustomerService.Path;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.configs.JaxMetaInfo;
@@ -717,8 +719,19 @@ public class UserClient extends AbstractJaxServiceClient implements ICustomerSer
 
 	@Override
 	public AmxApiResponse<CustomerModelResponse, Object> getCustomerModelResponse(String identityInt) {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+
+			return restService.ajax(appConfig.getJaxURL())
+					.path(ApiEndpoint.CUSTOMER_ENDPOINT+Path.CUSTOMER_MODEL_RESPONSE_GET).meta(new JaxMetaInfo())
+					.queryParam(Params.IDENTITY_INT, identityInt)
+					.get()
+					.as(new ParameterizedTypeReference<AmxApiResponse<CustomerModelResponse, Object>>() {
+					});
+		} catch (Exception ae) {
+
+			LOGGER.error("exception in get customer response : ", ae);
+			return JaxSystemError.evaluate(ae);
+		}
 	}
 
 }
