@@ -24,9 +24,11 @@ import com.amx.amxlib.model.response.ExchangeRateResponseModel;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.config.JaxProperties;
 import com.amx.jax.config.JaxTenantProperties;
+import com.amx.jax.constants.JaxChannel;
 import com.amx.jax.dbmodel.ExchangeRateApprovalDetModel;
 import com.amx.jax.dbmodel.PipsMaster;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.meta.MetaData;
 import com.amx.jax.pricer.PricerServiceClient;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.model.response.ExchangeRateBreakup;
@@ -49,6 +51,8 @@ public class NewExchangeRateService extends ExchangeRateService {
 	RemittanceParameterMapManager remittanceParameterMapManager;
 	@Autowired
 	RoutingDetailService routingDetailService;
+	@Autowired
+	MetaData metaData;
 
 	/*
 	 * (non-Javadoc)
@@ -68,8 +72,11 @@ public class NewExchangeRateService extends ExchangeRateService {
 						null, beneBankCountryId, routingBankId, null);
 			} catch (Exception e) {
 			}
-			List<BankMasterDTO> cashChannelRates = getCashRateFromBestRateLogic(fromCurrency, toCurrency, lcAmount,
-					routingBankId, beneBankCountryId);
+			List<BankMasterDTO> cashChannelRates = null;
+			if (JaxChannel.ONLINE.equals(metaData.getChannel())) {
+				cashChannelRates = getCashRateFromBestRateLogic(fromCurrency, toCurrency, lcAmount, routingBankId,
+						beneBankCountryId);
+			}
 			List<BankMasterDTO> bankChannelRates = outputModel.getBankWiseRates();
 			outputModel.setBankWiseRates(
 					NewExchangeRateService.mergeExchangeRateResponse(bankChannelRates, cashChannelRates));
