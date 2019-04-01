@@ -25,6 +25,7 @@ import com.amx.jax.http.ApiRequest;
 import com.amx.jax.http.RequestType;
 import com.amx.jax.model.response.DeviceStatusInfoDto;
 import com.amx.jax.terminal.TerminalBox;
+import com.amx.jax.terminal.TerminalService;
 import com.amx.jax.terminal.TerminalConstants.Path;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.File.Type;
@@ -59,6 +60,9 @@ public class SignPadController {
 
 	@Autowired
 	private TerminalBox terminalBox;
+
+	@Autowired
+	TerminalService terminalService;
 
 	@Autowired(required = false)
 	private SSOUser sSOUser;
@@ -149,6 +153,9 @@ public class SignPadController {
 					deviceRequestValidator.getDeviceSessionToken());
 			signPadData.setSignature(null);
 			signPadData.setStateData(new DeviceStatusInfoDto());
+			signPadBox.fastPut(deviceData.getTerminalId(), signPadData);
+		} else if (isSignPadDataStaled && !ArgUtil.isEmpty(signPadData.getStateData())) {
+			signPadData.setSignature(null);
 			signPadBox.fastPut(deviceData.getTerminalId(), signPadData);
 		}
 

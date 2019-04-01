@@ -12,6 +12,7 @@ import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.model.request.device.SignaturePadCustomerRegStateMetaInfo;
 import com.amx.jax.model.request.device.SignaturePadFCPurchaseSaleInfo;
 import com.amx.jax.model.request.device.SignaturePadRemittanceInfo;
+import com.amx.jax.model.response.DeviceStatusInfoDto;
 import com.amx.jax.signpad.SignPadBox;
 import com.amx.jax.signpad.SignPadData;
 import com.amx.utils.ArgUtil;
