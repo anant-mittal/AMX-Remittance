@@ -14,7 +14,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "JAX_PR_TIMEZONE_MASTER")
-public class TimezoneMasterModel implements Serializable, Comparable<TimezoneMasterModel> {
+public class TimezoneMasterModel implements Serializable {
 
 	/**
 	 * 
@@ -154,12 +154,6 @@ public class TimezoneMasterModel implements Serializable, Comparable<TimezoneMas
 
 	public void setModifiedDate(Date modifiedDate) {
 		this.modifiedDate = modifiedDate;
-	}
-
-	@Override
-	public int compareTo(TimezoneMasterModel o) {
-		// TODO Auto-generated method stub
-		return 0;
 	}
 
 }
