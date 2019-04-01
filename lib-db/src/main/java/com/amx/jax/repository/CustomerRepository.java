@@ -72,4 +72,8 @@ public interface CustomerRepository extends CrudRepository<Customer, BigDecimal>
 	@Query("select c from Customer c where identityInt=?1 and identityTypeId = ?2 and isActive in ?3 order by lastUpdated desc")
 	public List<Customer> getCustomerByIndentityIntAndTypeAndIsactive(String identityInt, BigDecimal identityTypeId,
 			List<String> status);
+	
+	@Query("select c from Customer c where identityInt =?1 and isActive in ?2 order by lastUpdated desc")
+	public List<Customer> getCustomerByIdentityIntAndIsActive(String identityInt, List<String> isActive);
+
 }

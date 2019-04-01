@@ -10,6 +10,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
@@ -922,13 +923,27 @@ public class UserValidationService {
 			throw new GlobalException(JaxError.FINGERPRINT_EXPIRED, "Fingerprint expired");
 		}
 	}
-public void validateBlackListedCustomer(Customer customer) {
+	
+	public void validateBlackListedCustomer(Customer customer) {
 		
 		String idType ="C"; 
 		List<BlackListDetailModel> blist = blackListDtRepo.findByIdNumberAndIdType(customer.getIdentityInt(),idType);
 		if (blist != null && !blist.isEmpty()) {
 			throw new GlobalException(JaxError.BLACK_LISTED_EXISTING_CIVIL_ID.getStatusKey(),"Your account is locked as we have found that your name has been black-listed by CBK.");
 		}
+	}
+	
+	public Customer validateCustomerForDuplicateRecords(List<Customer> customers) {
+		List<Customer> activeCustomers = customers.stream().filter(i -> ConstantDocument.Yes.equals(i.getIsActive()))
+				.collect(Collectors.toList());
+		if (activeCustomers.size() > 1) {
+			throw new GlobalException(JaxError.DUPLICATE_CUSTOMER_NOT_ACTIVE_BRANCH,
+					"Customer not active in branch, please visit branch");
+		}
+		if (activeCustomers.size() == 1) {
+			return activeCustomers.get(0);
+		}
+		return customers.get(0);
 	}
 
 }

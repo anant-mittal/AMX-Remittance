@@ -12,6 +12,7 @@ import com.amx.jax.model.AbstractModel;
 import com.amx.jax.model.AuthState;
 import com.amx.jax.model.UserDevice;
 import com.amx.jax.model.response.CurrencyMasterDTO;
+import com.amx.jax.model.response.customer.PersonInfo;
 import com.amx.jax.model.response.customer.CustomerFlags;
 import com.amx.jax.ui.UIConstants.Features;
 import com.amx.jax.ui.service.GeoHotPoints;

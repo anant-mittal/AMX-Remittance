@@ -32,6 +32,8 @@ import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.LoginLogoutHistory;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.response.customer.CustomerFlags;
+import com.amx.jax.model.response.customer.PersonInfo;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Email;

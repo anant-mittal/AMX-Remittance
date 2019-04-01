@@ -25,18 +25,24 @@ import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
+import com.amx.jax.client.IDeviceStateService.Params;
+import com.amx.jax.client.IDeviceStateService.Path;
+import com.amx.jax.controller.customer.ICustomerService;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.auth.QuestModelDTO;
+import com.amx.jax.model.response.customer.CustomerModelResponse;
 import com.amx.jax.services.CustomerDataVerificationService;
+import com.amx.jax.userservice.service.CustomerModelService;
 import com.amx.jax.userservice.service.AnnualIncomeService;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.userservice.service.UserValidationService;
 import com.amx.jax.util.ConverterUtil;
+import com.amx.utils.Constants;
 
 @RestController
 @RequestMapping(CUSTOMER_ENDPOINT)
 @SuppressWarnings("rawtypes")
-public class CustomerController {
+public class CustomerController implements ICustomerService {
 
 	@Autowired
 	private ConverterUtil converterUtil;
@@ -53,6 +59,8 @@ public class CustomerController {
 	@Autowired
 	MetaData metaData;
 	
+	@Autowired
+	CustomerModelService customerModelService;
 	@Autowired
 	AnnualIncomeService annualIncomeService;
 
@@ -225,9 +233,12 @@ public class CustomerController {
 		return response;
 	}
 	
-	@RequestMapping(value =  CustomerApi.GET_ANNUAL_INCOME_RANGE , method = RequestMethod.POST)
-	public AmxApiResponse<AnnualIncomeRangeDTO, Object> getAnnuaIncome(){
-		return annualIncomeService.getAnnualIncome(metaData.getCustomerId());
+	@RequestMapping(value = Path.CUSTOMER_MODEL_RESPONSE_GET, method = RequestMethod.GET)
+	@Override
+	public AmxApiResponse<CustomerModelResponse, Object> getCustomerModelResponse(
+			@RequestParam(name = Params.IDENTITY_INT, required = false) String identityInt) {
+		CustomerModelResponse response = customerModelService.getCustomerModelResponse(identityInt);
+		return AmxApiResponse.build(response);
 	}
 
 	@RequestMapping(value = CustomerApi.SAVE_ANNUAL_INCOME, method = RequestMethod.POST)
@@ -240,5 +251,8 @@ public class CustomerController {
 		return annualIncomeService.getAnnualIncomeDetails();
 	}
 	
-	
+	@RequestMapping(value =  CustomerApi.GET_ANNUAL_INCOME_RANGE , method = RequestMethod.POST)
+	public AmxApiResponse<AnnualIncomeRangeDTO, Object> getAnnuaIncome(){
+		return annualIncomeService.getAnnualIncome(metaData.getCustomerId());
+	}
 }
