@@ -152,6 +152,10 @@ public class BranchRemittanceDao {
 		LoyaltyClaimRequest lylClaim = (LoyaltyClaimRequest) mapAllDetailRemitSave.get("LYL_CLAIM");
 		List<LoyaltyPointsModel> loyaltyPoitns = (List<LoyaltyPointsModel> )mapAllDetailRemitSave.get("LOYALTY_POINTS");
 		
+		
+		
+		
+		
 
 		if (collectModel != null) {
 			BigDecimal documentNo =generateDocumentNumber(collectModel.getApplicationCountryId(),collectModel.getFsCompanyMaster().getCompanyId(),collectModel.getDocumentId(),collectModel.getDocumentFinanceYear(),collectModel.getExBankBranch().getBranchId());
@@ -169,6 +173,8 @@ public class BranchRemittanceDao {
 			}
 			
 			
+		}else {
+			throw new GlobalException(JaxError.INVALID_COLLECTION_DOCUMENT_NO, "Collection details not found.");
 		}
 
 		if (collectDetailsModel != null && !collectDetailsModel.isEmpty() && JaxUtil.isNullZeroBigDecimalCheck(collectModel.getDocumentNo())) {
@@ -201,9 +207,11 @@ public class BranchRemittanceDao {
 				}
 				
 				if (addlTrnxList != null && !addlTrnxList.isEmpty()) {
-					RemittanceAdditionalInstructionData remitAdd = addlTrnxList.get(i);
-					remitAdd.setDocumentNo(documentNo);
-					remitAddRepository.save(remitAdd);
+					for(RemittanceAdditionalInstructionData remitAdd:addlTrnxList) {
+						//RemittanceAdditionalInstructionData remitAdd = addlTrnxList.get(i);
+						remitAdd.setDocumentNo(documentNo);
+						remitAddRepository.save(remitAdd);
+					}
 				}
 
 				if (amlTrnxList != null && !amlTrnxList.isEmpty()) {
