@@ -14,6 +14,7 @@ import java.util.Map;
 
 import javax.sql.rowset.serial.SerialException;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,6 +59,7 @@ import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.dao.CustomerIdProofDao;
 import com.amx.jax.userservice.dao.IncomeDao;
 import com.amx.jax.userservice.service.CustomerValidationContext.CustomerValidation;
+import com.amx.utils.Constants;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -209,25 +211,25 @@ public class AnnualIncomeService {
 		customerEmploymentInfo.setEmployerName(incomeDto.getCompanyName());
 		logger.info("employee name is set:" + customerEmploymentInfo.getEmployerName());
 
-		if (incomeDto.getImage() != null && incomeDto.getFileName() != null) {
+		if (!StringUtils.isEmpty(incomeDto.getImage())&& !StringUtils.isEmpty(incomeDto.getFileName())) {
 			logger.info("image is set 1");
 			DmsApplMapping mappingData = new DmsApplMapping();
 
 			mappingData = getDmsApplMappingData(customer);
-			logger.info("hi");
+			
 			idmsAppMappingRepository.save(mappingData);
-			logger.info("hello");
+			
 			DocBlobUpload documentDetails = new DocBlobUpload();
-			if (incomeDto.getImage().length() > 1048576) {
+			if (incomeDto.getImage().length() > Constants.IMAGE_SIZE) {
 				throw new GlobalException("Image size should be less than 1MB");
 			}
 
 			documentDetails = getDocumentUploadDetails(incomeDto.getImage(), mappingData);
-			logger.info("hello hi");
+			
 			docblobRepository.save(documentDetails);
-			logger.info("hi hello");
+			
 			customerEmploymentInfo.setDocBlobId(mappingData.getDocBlobId());
-			logger.info("image is set 2");
+			
 
 			if (getFileExtension(incomeDto.getFileName()) == "") {
 				throw new GlobalException("Filename cannot be entered without extension");
@@ -244,13 +246,13 @@ public class AnnualIncomeService {
 
 			customerEmploymentInfo.setFileName(incomeDto.getFileName());
 			logger.info("file is set 1");
-		} else if (incomeDto.getImage() == null && incomeDto.getFileName() == null) {
+		} else if (StringUtils.isEmpty(incomeDto.getImage()) && StringUtils.isEmpty(incomeDto.getFileName())) {
 			logger.info("income and filename is set");
 			customerEmploymentInfo.setDocBlobId(null);
 			logger.info("blob id is set");
 			customerEmploymentInfo.setFileName(null);
 			logger.info("filename is set");
-		} else if (incomeDto.getFileName() != null && incomeDto.getImage() == null) {
+		} else if (!StringUtils.isEmpty(incomeDto.getFileName()) && StringUtils.isEmpty(incomeDto.getImage())) {
 			logger.info("Editing card details after initial upload");
 		}
 		

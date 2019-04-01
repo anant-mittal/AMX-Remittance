@@ -94,5 +94,9 @@ public class Constants {
 		public static final String FALSE = "FALSE";
 		public static final String TRUE = "TRUE";
 	}
+	
+	// Image size 1MB in bits constant field for annual income
+	
+	public static final Integer IMAGE_SIZE = 1048576; 
 
 }
