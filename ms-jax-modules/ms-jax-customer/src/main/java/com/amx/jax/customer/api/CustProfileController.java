@@ -20,7 +20,9 @@ import com.amx.jax.model.customer.CustomerContactVerificationDto;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.SMS;
+import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.repository.CustomerRepository;
+import com.mysema.query.types.Template;
 
 @RestController
 public class CustProfileController implements ICustomerProfileService {
@@ -37,7 +39,7 @@ public class CustProfileController implements ICustomerProfileService {
 	private PostManService postManService;
 
 	@Override
-	@RequestMapping(value = ApiEndPoints.CONTACT_LINK_CREATE, method = RequestMethod.POST)
+	@RequestMapping(value = ApiPath.CONTACT_LINK_CREATE, method = RequestMethod.POST)
 	public AmxApiResponse<CustomerContactVerificationDto, Object> createVerificationLink(
 			@RequestParam(value = ApiParams.CUSTOMER_ID) BigDecimal customerId,
 			@RequestParam(value = ApiParams.CONTACT_TYPE) ContactType contactType) {
@@ -48,13 +50,16 @@ public class CustProfileController implements ICustomerProfileService {
 		if (ContactType.EMAIL.equals(contactType)) {
 			Email email = new Email();
 			email.addTo(c.getEmail());
-			email.setSubject("Email Verification Code " + x.getVerificationCode());
-			email.setMessage("EMail has been updated " + x.getVerificationCode());
+			email.setITemplate(TemplatesMX.CONTACT_VERIFICATION_EMAIL);
+			email.getModel().put("customer", c);
+			email.getModel().put("link", x);
 			postManService.sendEmailAsync(email);
 		} else if (ContactType.SMS.equals(contactType)) {
 			SMS sms = new SMS();
 			sms.addTo(c.getMobile());
-			sms.setMessage("MOBILE Code " + x.getVerificationCode());
+			sms.setITemplate(TemplatesMX.CONTACT_VERIFICATION_SMS);
+			sms.getModel().put("customer", c);
+			sms.getModel().put("link", x);
 			postManService.sendSMSAsync(sms);
 		} else if (ContactType.WHATSAPP.equals(contactType)) {
 
@@ -64,7 +69,7 @@ public class CustProfileController implements ICustomerProfileService {
 	}
 
 	@Override
-	@RequestMapping(value = ApiEndPoints.CONTACT_LINK_VALIDATE, method = RequestMethod.POST)
+	@RequestMapping(value = ApiPath.CONTACT_LINK_VALIDATE, method = RequestMethod.POST)
 	public AmxApiResponse<CustomerContactVerificationDto, Object> validateVerificationLink(
 			@RequestParam(value = ApiParams.LINK_ID) BigDecimal id) {
 		CustomerContactVerification x = customerContactVerificationManager.getCustomerContactVerification(id);
@@ -73,7 +78,7 @@ public class CustProfileController implements ICustomerProfileService {
 	}
 
 	@Override
-	@RequestMapping(value = ApiEndPoints.CONTACT_LINK_VERIFY_BY_CODE, method = RequestMethod.POST)
+	@RequestMapping(value = ApiPath.CONTACT_LINK_VERIFY_BY_CODE, method = RequestMethod.POST)
 	public AmxApiResponse<CustomerContactVerificationDto, Object> verifyLinkByCode(
 			@RequestParam(value = ApiParams.IDENTITY) String identity,
 			@RequestParam(value = ApiParams.LINK_ID) BigDecimal linkId,
@@ -83,7 +88,7 @@ public class CustProfileController implements ICustomerProfileService {
 	}
 
 	@Override
-	@RequestMapping(value = ApiEndPoints.CONTACT_LINK_VERIFY_BY_CONTACT, method = RequestMethod.POST)
+	@RequestMapping(value = ApiPath.CONTACT_LINK_VERIFY_BY_CONTACT, method = RequestMethod.POST)
 	public AmxApiResponse<CustomerContactVerificationDto, Object> verifyLinkByContact(
 			@RequestParam(value = ApiParams.IDENTITY) String identity,
 			@RequestParam(value = ApiParams.CONTACT_TYPE) ContactType type,

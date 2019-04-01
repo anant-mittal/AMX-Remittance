@@ -10,7 +10,7 @@ import com.amx.jax.model.customer.CustomerContactVerificationDto;
 
 public interface ICustomerProfileService {
 
-	public static class ApiEndPoints {
+	public static class ApiPath {
 		public static final String PREFIX = "/customer-profile";
 		public static final String CONTACT_LINK_CREATE = PREFIX + "/contact-link-create";
 		public static final String CONTACT_LINK_VALIDATE = PREFIX + "/contact-link-validate";
