@@ -53,7 +53,7 @@ public class CustProfileController implements ICustomerProfileService {
 			postManService.sendEmailAsync(email);
 		} else if (ContactType.SMS.equals(contactType)) {
 			SMS sms = new SMS();
-			sms.addTo(c.getPrefixCodeMobile() + c.getMobile());
+			sms.addTo(c.getMobile());
 			sms.setMessage("MOBILE Code " + x.getVerificationCode());
 			postManService.sendSMSAsync(sms);
 		} else if (ContactType.WHATSAPP.equals(contactType)) {
@@ -77,7 +77,7 @@ public class CustProfileController implements ICustomerProfileService {
 	public AmxApiResponse<CustomerContactVerificationDto, Object> verifyLinkByCode(
 			@RequestParam(value = ApiParams.IDENTITY) String identity,
 			@RequestParam(value = ApiParams.LINK_ID) BigDecimal linkId,
-			@RequestParam(value = ApiParams.VERIFICATION_CODE) BigDecimal code) {
+			@RequestParam(value = ApiParams.VERIFICATION_CODE) String code) {
 		CustomerContactVerification x = customerContactVerificationManager.verifyByCode(identity, linkId, code);
 		return AmxApiResponse.build(customerContactVerificationManager.convertToDto(x));
 	}

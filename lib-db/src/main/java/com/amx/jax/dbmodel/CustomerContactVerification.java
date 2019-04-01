@@ -5,6 +5,8 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -59,22 +61,23 @@ public class CustomerContactVerification implements java.io.Serializable {
 	ContactType contactType;
 
 	@Column(name = "CONTACT_TYPE", length = 20)
-	public ContactType getContatcType() {
+	@Enumerated(value = EnumType.STRING)
+	public ContactType getContactType() {
 		return this.contactType;
 	}
 
-	public void setContatcType(ContactType contactType) {
+	public void setContactType(ContactType contactType) {
 		this.contactType = contactType;
 	}
 
 	String contactValue;
 
 	@Column(name = "CONTACT_VALUE", length = 50)
-	public String getContatcValue() {
+	public String getContactValue() {
 		return this.contactValue;
 	}
 
-	public void setContatcValue(String contactValue) {
+	public void setContactValue(String contactValue) {
 		this.contactValue = contactValue;
 	}
 
@@ -103,11 +106,12 @@ public class CustomerContactVerification implements java.io.Serializable {
 	Status isActive;
 
 	@Column(name = "ISACTIVE", length = 1)
-	public Status getIsAcitve() {
+	@Enumerated(value = EnumType.STRING)
+	public Status getIsActive() {
 		return this.isActive;
 	}
 
-	public void setIsAcitve(Status isActive) {
+	public void setIsActive(Status isActive) {
 		this.isActive = isActive;
 	}
 

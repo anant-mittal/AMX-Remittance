@@ -36,7 +36,7 @@ public interface ICustomerProfileService {
 
 	@ApiJaxStatus({ JaxError.ENTITY_INVALID, JaxError.ENTITY_EXPIRED })
 	AmxApiResponse<CustomerContactVerificationDto, Object> verifyLinkByCode(String identity, BigDecimal linkId,
-			BigDecimal code);
+			String code);
 
 	@ApiJaxStatus({ JaxError.ENTITY_INVALID, JaxError.ENTITY_EXPIRED })
 	AmxApiResponse<CustomerContactVerificationDto, Object> verifyLinkByContact(String identity, ContactType type,

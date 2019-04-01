@@ -50,17 +50,18 @@ public class CustomerContactVerificationManager {
 
 		CustomerContactVerification link = new CustomerContactVerification();
 		link.setCustomerId(c.getCustomerId());
-		link.setContatcType(contactType);
+		link.setContactType(contactType);
 		link.setVerificationCode(Random.randomAlphaNumeric(8));
 		link.setCreatedDate(new Date());
 		link.setAppCountryId(metaData.getCountryId());
+		link.setIsActive(Status.Y);
 
 		if (ContactType.EMAIL.equals(contactType)) {
-			link.setContatcValue(c.getEmail());
+			link.setContactValue(c.getEmail());
 		} else if (ContactType.SMS.equals(contactType)) {
-			link.setContatcValue(c.getPrefixCodeMobile() + c.getMobile());
+			link.setContactValue(c.getPrefixCodeMobile() + c.getMobile());
 		} else if (ContactType.WHATSAPP.equals(contactType)) {
-			link.setContatcValue(c.getWhatsappPrefix() + c.getWhatsapp());
+			link.setContactValue(c.getWhatsappPrefix() + c.getWhatsapp());
 		}
 
 		return customerContactVerificationRepository.save(link);
@@ -74,8 +75,8 @@ public class CustomerContactVerificationManager {
 	 * @return
 	 */
 	public CustomerContactVerification validate(CustomerContactVerification link) {
-		if (AmxDBConstants.Status.D.equals(link.getIsAcitve()) || AmxDBConstants.Status.N.equals(link.getIsAcitve())) {
-			throw new GlobalException(JaxError.ENTITY_INVALID, "Verification link is Invalid : " + link.getIsAcitve());
+		if (AmxDBConstants.Status.D.equals(link.getIsActive()) || AmxDBConstants.Status.N.equals(link.getIsActive())) {
+			throw new GlobalException(JaxError.ENTITY_INVALID, "Verification link is Invalid : " + link.getIsActive());
 		} else if (TimeUtils.isExpired(link.getCreatedDate(), Constants.TimeInterval.DAY)) {
 			throw new GlobalException(JaxError.ENTITY_EXPIRED,
 					"Verification link is expired, Created on " + link.getCreatedDate());
@@ -91,41 +92,41 @@ public class CustomerContactVerificationManager {
 			throw new GlobalException(JaxError.INVALID_CIVIL_ID,
 					"Invalid civil id, does not match with Verification link");
 		}
-		if (ContactType.EMAIL.equals(link.getContatcType())) {
-			if (!link.getContatcValue().equals(c.getEmail())) {
+		if (ContactType.EMAIL.equals(link.getContactType())) {
+			if (!link.getContactValue().equals(c.getEmail())) {
 				throw new GlobalException(JaxError.ENTITY_INVALID,
 						"EmailId in customer records does not match with verification link");
 			}
 			c.setEmailVerified(Status.Y);
 
-		} else if (ContactType.SMS.equals(link.getContatcType())) {
+		} else if (ContactType.SMS.equals(link.getContactType())) {
 			String mobile = c.getPrefixCodeMobile() + c.getMobile();
-			if (!link.getContatcValue().equals(mobile)) {
+			if (!link.getContactValue().equals(mobile)) {
 				throw new GlobalException(JaxError.ENTITY_INVALID,
 						"MOBILE No in customer records does not match with verification link");
 			}
 			c.setMobileVerified(Status.Y);
-		} else if (ContactType.WHATSAPP.equals(link.getContatcType())) {
+		} else if (ContactType.WHATSAPP.equals(link.getContactType())) {
 			String whatsAppNo = c.getWhatsappPrefix() + c.getWhatsapp();
-			if (!link.getContatcValue().equals(whatsAppNo)) {
+			if (!link.getContactValue().equals(whatsAppNo)) {
 				throw new GlobalException(JaxError.ENTITY_INVALID,
 						"WhatsApp No in customer records does not match with verification link");
 			}
 			c.setWhatsAppVerified(Status.Y);
 		} else {
 			throw new GlobalException(JaxError.ENTITY_INVALID,
-					"Verification linkType is Invalid : " + link.getContatcType());
+					"Verification linkType is Invalid : " + link.getContactType());
 		}
 
 		customerRepository.save(c);
 
-		link.setIsAcitve(Status.D);
+		link.setIsActive(Status.D);
 		customerContactVerificationRepository.save(link);
 
 		return link;
 	}
 
-	public CustomerContactVerification verifyByCode(String identity, BigDecimal linkId, BigDecimal code) {
+	public CustomerContactVerification verifyByCode(String identity, BigDecimal linkId, String code) {
 		CustomerContactVerification link = getCustomerContactVerification(linkId);
 
 		if (!ArgUtil.isEmpty(code) || !code.equals(link.getVerificationCode())) {
@@ -144,7 +145,7 @@ public class CustomerContactVerificationManager {
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.DATE, -1);
 
-		java.sql.Date oneDay = new java.sql.Date(cal.getTimeInMillis());
+		java.util.Date oneDay = new java.util.Date(cal.getTimeInMillis());
 
 		List<CustomerContactVerification> links = customerContactVerificationRepository.getByContact(c.getCustomerId(),
 				type,
