@@ -15,7 +15,11 @@ import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
+<<<<<<< HEAD
 import com.amx.amxlib.constant.ApiEndpoint.CustomerApi;
+=======
+import com.amx.amxlib.constant.ApiEndpoint;
+>>>>>>> origin/fs_new_login
 import com.amx.amxlib.constant.ApiEndpoint.MetaApi;
 import com.amx.amxlib.constant.ApiEndpoint.UserApi;
 import com.amx.amxlib.exception.AbstractJaxException;
@@ -45,10 +49,11 @@ import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.model.UserDevice;
 import com.amx.jax.model.auth.QuestModelDTO;
+import com.amx.jax.model.response.customer.CustomerModelResponse;
 import com.amx.jax.rest.RestService;
 
 @Component
-public class UserClient extends AbstractJaxServiceClient {
+public class UserClient extends AbstractJaxServiceClient implements ICustomerService {
 
 	private static final Logger LOGGER = Logger.getLogger(UserClient.class);
 
@@ -759,5 +764,22 @@ public BoolRespModel resetFingerprint(String identity) {
 			return JaxSystemError.evaluate(ae);
 		}
 	}
-	
+
+	@Override
+	public AmxApiResponse<CustomerModelResponse, Object> getCustomerModelResponse(String identityInt) {
+		try {
+
+			return restService.ajax(appConfig.getJaxURL())
+					.path(ApiEndpoint.CUSTOMER_ENDPOINT+Path.CUSTOMER_MODEL_RESPONSE_GET).meta(new JaxMetaInfo())
+					.queryParam(Params.IDENTITY_INT, identityInt)
+					.get()
+					.as(new ParameterizedTypeReference<AmxApiResponse<CustomerModelResponse, Object>>() {
+					});
+		} catch (Exception ae) {
+
+			LOGGER.error("exception in get customer response : ", ae);
+			return JaxSystemError.evaluate(ae);
+		}
+	}
+
 }
