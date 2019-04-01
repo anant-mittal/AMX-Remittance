@@ -1,4 +1,4 @@
-package com.amx.jax.controller.customer;
+package com.amx.amxlib.service;
 
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.model.response.customer.CustomerModelResponse;

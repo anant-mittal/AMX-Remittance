@@ -34,15 +34,17 @@ import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.UserFingerprintResponseModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
+import com.amx.amxlib.service.ICustomerService;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.model.UserDevice;
 import com.amx.jax.model.auth.QuestModelDTO;
+import com.amx.jax.model.response.customer.CustomerModelResponse;
 import com.amx.jax.rest.RestService;
 
 @Component
-public class UserClient extends AbstractJaxServiceClient {
+public class UserClient extends AbstractJaxServiceClient implements ICustomerService {
 
 	private static final Logger LOGGER = Logger.getLogger(UserClient.class);
 
@@ -711,6 +713,12 @@ public class UserClient extends AbstractJaxServiceClient {
 			LOGGER.error("exception in reset fingerprint : ", ae);
 			return JaxSystemError.evaluate(ae);
 		}
+	}
+
+	@Override
+	public AmxApiResponse<CustomerModelResponse, Object> getCustomerModelResponse(String identityInt) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
