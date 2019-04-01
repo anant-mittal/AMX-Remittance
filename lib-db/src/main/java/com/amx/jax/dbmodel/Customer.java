@@ -22,6 +22,7 @@ import javax.persistence.TemporalType;
 import org.hibernate.annotations.Proxy;
 
 import com.amx.jax.constants.CustomerRegistrationType;
+import com.amx.jax.util.AmxDBConstants.Status;
 
 @Entity
 @Table(name = "FS_CUSTOMER")
@@ -983,15 +984,39 @@ public class Customer implements java.io.Serializable {
 		this.whatsappPrefix = whatsappPrefix;
 	}
 
-	private String whatsAppVerified;
+	private Status whatsAppVerified;
 
 	@Column(name = "WHATSAPP_VERIFIED")
-	public String getWhatsAppVerified() {
+	@Enumerated(value = EnumType.STRING)
+	public Status getWhatsAppVerified() {
 		return whatsAppVerified;
 	}
 
-	public void setWhatsAppVerified(String whatsAppVerified) {
+	public void setWhatsAppVerified(Status whatsAppVerified) {
 		this.whatsAppVerified = whatsAppVerified;
 	}
 
+	private Status emailVerified;
+
+	@Column(name = "EMAIL_VERIFIED")
+	@Enumerated(value = EnumType.STRING)
+	public Status getEmailVerified() {
+		return emailVerified;
+	}
+
+	public void setEmailVerified(Status emailVerified) {
+		this.emailVerified = emailVerified;
+	}
+
+	private Status mobileVerified;
+
+	@Column(name = "MOBILE_VERIFIED")
+	@Enumerated(value = EnumType.STRING)
+	public Status getMobileVerified() {
+		return mobileVerified;
+	}
+
+	public void setMobileVerified(Status mobileVerified) {
+		this.mobileVerified = mobileVerified;
+	}
 }

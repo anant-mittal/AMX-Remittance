@@ -67,7 +67,7 @@ public class Constants {
 
 	/** The Constant IDENTITY_TYPE_ID. */
 	public static final String IDENTITY_TYPE_CIVIL_ID_STR = "198";
-	
+
 	public static final Long IDENTITY_TYPE_CIVIL_ID = Long.parseLong(IDENTITY_TYPE_CIVIL_ID_STR);
 
 	public static final String COMPNY_TYPE = "Corporate";
@@ -77,11 +77,11 @@ public class Constants {
 	public static final String COMPONENT_NAME = "Identity Type";
 
 	public static final String NO = "N";
-	
+
 	public static final String YES = "Y";
-	
+
 	public static final String DELETED_SOFT = "D";
-	
+
 	/** The Constant CUST_DB_SCAN. */
 	public static final String CUST_DB_SCAN = "D";
 
@@ -93,6 +93,16 @@ public class Constants {
 		public static final String NO = "NO";
 		public static final String FALSE = "FALSE";
 		public static final String TRUE = "TRUE";
+	}
+
+	public static class TimeInterval {
+		public static final int SEC = 1000;
+		public static final int MIN = 60 * SEC;
+		public static final int MIN_30 = 30 * MIN;
+		public static final int MIN_10 = 10 * MIN;
+		public static final long HRS = 60 * MIN;
+		public static final long HRS_12 = 12 * HRS;
+		public static final long DAY = 24 * HRS;
 	}
 
 }

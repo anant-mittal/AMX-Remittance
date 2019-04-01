@@ -70,8 +70,8 @@ public class CustomerContactVerification implements java.io.Serializable {
 	String contactValue;
 
 	@Column(name = "CONTACT_VALUE", length = 50)
-	public ContactType getContatcValue() {
-		return this.contactType;
+	public String getContatcValue() {
+		return this.contactValue;
 	}
 
 	public void setContatcValue(String contactValue) {

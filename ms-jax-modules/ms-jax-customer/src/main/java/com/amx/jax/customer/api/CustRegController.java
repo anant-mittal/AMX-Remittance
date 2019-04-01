@@ -60,9 +60,6 @@ public class CustRegController implements ICustRegService {
 	ViewStateService stateService;
 
 	@Autowired
-	private CustomerRegistrationService customerRegistrationService;
-
-	@Autowired
 	ViewDistrictService districtService;
 
 	@Autowired
@@ -75,7 +72,8 @@ public class CustRegController implements ICustRegService {
 
 	@Override
 	@RequestMapping(value = CustRegApiEndPoints.GET_CUSTOMER_OTP, method = RequestMethod.POST)
-	public AmxApiResponse<SendOtpModel, Object> sendOtp(@RequestBody @Valid CustomerPersonalDetail customerPersonalDetail) {
+	public AmxApiResponse<SendOtpModel, Object> sendOtp(
+			@RequestBody @Valid CustomerPersonalDetail customerPersonalDetail) {
 		return offsiteCustRegService.sendOtp(customerPersonalDetail);
 
 	}
@@ -136,31 +134,32 @@ public class CustRegController implements ICustRegService {
 	@RequestMapping(value = CustRegApiEndPoints.SCAN_CARD, method = RequestMethod.POST)
 	public AmxApiResponse<CardDetail, Object> cardScan(CardDetail cardDetail) {
 		return offsiteCustRegService.cardScan(cardDetail);
-	}	
-	
+	}
+
 	@RequestMapping(value = CustRegApiEndPoints.SAVE_OFFSITE_LOGIN, method = RequestMethod.POST)
-	public AmxApiResponse<CustomerCredential, Object> saveLoginDetailOffsite(@RequestBody CustomerCredential customerCredential) {
+	public AmxApiResponse<CustomerCredential, Object> saveLoginDetailOffsite(
+			@RequestBody CustomerCredential customerCredential) {
 		return offsiteCustRegService.saveLoginDetailOffsite(customerCredential);
 	}
-	
+
 	@RequestMapping(value = CustRegApiEndPoints.GET_OFFSITE_CUSTOMER_DATA, method = RequestMethod.GET)
-	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerData(@RequestParam(value = "identityInt", required = true) String identityInt,
+	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerData(
+			@RequestParam(value = "identityInt", required = true) String identityInt,
 			@RequestParam(value = "identityType", required = true) BigDecimal identityType) {
 		return offsiteCustRegService.getOffsiteCustomerData(identityInt, identityType);
 	}
-	
+
 	@RequestMapping(value = CustRegApiEndPoints.GET_CUSTOMER_DEATILS, method = RequestMethod.GET)
-	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerDetails(@RequestParam(value = "identityInt", required = true) String identityInt,
+	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerDetails(
+			@RequestParam(value = "identityInt", required = true) String identityInt,
 			@RequestParam(value = "identityType", required = true) BigDecimal identityType) {
 		return offsiteCustRegService.getOffsiteCustomerDetails(identityInt, identityType);
 	}
-	
+
 	@RequestMapping(value = CustRegApiEndPoints.GET_OFFSITE_CUSTOMER_DATA_V1, method = RequestMethod.GET)
 	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerDataV1(
 			@RequestBody @Valid GetOffsiteCustomerDetailRequest request) {
 		return offsiteCustRegService.getOffsiteCustomerData(request);
 	}
-	
-	
-	
+
 }
