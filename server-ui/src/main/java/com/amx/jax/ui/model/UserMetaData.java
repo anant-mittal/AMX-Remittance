@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.amx.amxlib.meta.model.JaxMetaParameter;
-import com.amx.amxlib.model.PersonInfo;
+
 import com.amx.jax.dict.Language;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.model.AbstractModel;
