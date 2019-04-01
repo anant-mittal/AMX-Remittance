@@ -11,12 +11,15 @@ import java.util.Map;
 
 import com.amx.jax.pricer.dbmodel.HolidayListMasterModel;
 import com.amx.jax.pricer.dbmodel.OnlineMarginMarkup;
+import com.amx.jax.pricer.dbmodel.TimezoneMasterModel;
 import com.amx.jax.pricer.dbmodel.ViewExGLCBAL;
 import com.amx.jax.pricer.dto.BankDetailsDTO;
 import com.amx.jax.pricer.dto.ExchangeRateDetails;
 import com.amx.utils.DateUtil;
 
 public class ComputeRequestTransientDataCache {
+
+	private final long trnxBeginTime = System.currentTimeMillis();
 
 	private List<ExchangeRateDetails> sellRateDetails = new ArrayList<>();
 
@@ -29,10 +32,16 @@ public class ComputeRequestTransientDataCache {
 	private List<TransientRoutingComputeDetails> routingMatrixData;
 
 	private Map<BigDecimal, Map<String, HolidayListMasterModel>> countryHolidays = new HashMap<BigDecimal, Map<String, HolidayListMasterModel>>();
-	
+
 	private OnlineMarginMarkup margin = null;
 
+	private final Map<BigDecimal, TimezoneMasterModel> countryTimezones = new HashMap<BigDecimal, TimezoneMasterModel>();
+
 	private Map<String, Object> info = new HashMap<String, Object>();
+
+	public long getTrnxBeginTime() {
+		return trnxBeginTime;
+	}
 
 	public Map<BigDecimal, List<ViewExGLCBAL>> getBankGlcBalMap() {
 		return bankGlcBalMap;
@@ -162,15 +171,14 @@ public class ComputeRequestTransientDataCache {
 			BigDecimal sumRateFcCurBal = new BigDecimal(0);
 			BigDecimal avgRate = new BigDecimal(0);
 
-			/** hot fix  13/03/2019 **/
-			if(glcBalList !=null && !glcBalList.isEmpty()) {
-				if(glcBalList.size()>1) {
+			/** hot fix 13/03/2019 **/
+			if (glcBalList != null && !glcBalList.isEmpty()) {
+				if (glcBalList.size() > 1) {
 					for (ViewExGLCBAL glcbal : glcBalList) {
 						sumRateCurBal = sumRateCurBal
 								.add(null == glcbal.getRateCurBal() ? new BigDecimal(0) : glcbal.getRateCurBal());
 						sumRateFcCurBal = sumRateFcCurBal
 								.add(null == glcbal.getRateFcCurBal() ? new BigDecimal(0) : glcbal.getRateFcCurBal());
-
 
 					}
 
@@ -178,7 +186,7 @@ public class ComputeRequestTransientDataCache {
 						avgRate = sumRateCurBal.divide(sumRateFcCurBal, 10, RoundingMode.HALF_UP);
 					}
 
-				}else {
+				} else {
 					for (ViewExGLCBAL glcbal : glcBalList) {
 						avgRate = glcbal.getRateAvgRate();
 					}
@@ -186,20 +194,18 @@ public class ComputeRequestTransientDataCache {
 
 			}
 
-			/** original  code **/ 
-			/*for (ViewExGLCBAL glcbal : glcBalList) {
-				sumRateCurBal = sumRateCurBal
-						.add(null == glcbal.getRateCurBal() ? new BigDecimal(0) : glcbal.getRateCurBal());
-				sumRateFcCurBal = sumRateFcCurBal
-						.add(null == glcbal.getRateFcCurBal() ? new BigDecimal(0) : glcbal.getRateFcCurBal());
-			}
-
-			
-			if (sumRateCurBal.doubleValue() != 0 || sumRateFcCurBal.doubleValue() != 0) {
-				avgRate = sumRateCurBal.divide(sumRateFcCurBal, 10, RoundingMode.HALF_UP);
-			}
+			/** original code **/
+			/*
+			 * for (ViewExGLCBAL glcbal : glcBalList) { sumRateCurBal = sumRateCurBal
+			 * .add(null == glcbal.getRateCurBal() ? new BigDecimal(0) :
+			 * glcbal.getRateCurBal()); sumRateFcCurBal = sumRateFcCurBal .add(null ==
+			 * glcbal.getRateFcCurBal() ? new BigDecimal(0) : glcbal.getRateFcCurBal()); }
+			 * 
+			 * 
+			 * if (sumRateCurBal.doubleValue() != 0 || sumRateFcCurBal.doubleValue() != 0) {
+			 * avgRate = sumRateCurBal.divide(sumRateFcCurBal, 10, RoundingMode.HALF_UP); }
 			 */
-			
+
 			this.bankGLCBALAvgRateMap.put(bankId, avgRate);
 
 			return avgRate;
@@ -208,6 +214,14 @@ public class ComputeRequestTransientDataCache {
 			return this.bankGLCBALAvgRateMap.get(bankId);
 		}
 
+	}
+
+	public void setTimezoneForCountry(BigDecimal countryId, TimezoneMasterModel tz) {
+		this.countryTimezones.put(countryId, tz);
+	}
+
+	public TimezoneMasterModel getTimezoneForCountry(BigDecimal countryId) {
+		return this.countryTimezones.get(countryId);
 	}
 
 }

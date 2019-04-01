@@ -281,6 +281,8 @@ public class RemitPriceManager {
 		 */
 		computeRequestTransientDataCache.setMargin(margin);
 
+		// Get Distinct Bank Rates from APRDET - for a given Currency, destination
+		// country, routing banks and service Indicator Ids.
 		List<ExchangeRateAPRDET> exchangeRates = exchangeRateDao.getUniqueSellRatesForRoutingBanks(currencyId,
 				foreignCountryId, applicationCountryId, routingBankIds, ValidServiceIndicatorIds);
 
@@ -325,7 +327,6 @@ public class RemitPriceManager {
 
 			}
 		}
-
 
 		return bankExchangeRateMap;
 	}
@@ -383,8 +384,8 @@ public class RemitPriceManager {
 
 	}
 
-	private List<BigDecimal> getValidRoutingBankIds(BigDecimal fCountryId, BigDecimal fCurrencyId, PRICE_BY pricingLevel,
-			List<BigDecimal> routingBanks) {
+	private List<BigDecimal> getValidRoutingBankIds(BigDecimal fCountryId, BigDecimal fCurrencyId,
+			PRICE_BY pricingLevel, List<BigDecimal> routingBanks) {
 
 		/**
 		 * Old Code for fetching the Routing Bank Ids from VW_EX_TRATE

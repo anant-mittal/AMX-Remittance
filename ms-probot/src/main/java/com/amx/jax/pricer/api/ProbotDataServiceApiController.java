@@ -68,8 +68,6 @@ public class ProbotDataServiceApiController implements ProbotDataService{
 			@RequestParam(required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") Date toDate) {
 
 		LOGGER.info("Received Holiday List Request " + " with TraceId: " + AppContextUtil.getTraceId());
-		
-		System.out.println(" === Controller Called === ");
 
 		List<HolidayResponseDTO> holidayResponseDTO = holidayService.getHolidayList(countryId, fromDate, toDate);
 

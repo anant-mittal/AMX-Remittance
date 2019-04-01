@@ -108,4 +108,25 @@ public class EstimatedDeliveryDetails {
 		this.processTimeTotalInSeconds += seconds;
 	}
 
+	public void setProcessTimeTotalInSeconds(long processTimeTotalInSeconds) {
+		this.processTimeTotalInSeconds = processTimeTotalInSeconds;
+	}
+
+	public void setProcessTimeOperationalInSeconds(long processTimeOperationalInSeconds) {
+		this.processTimeOperationalInSeconds = processTimeOperationalInSeconds;
+	}
+
+	public void setProcessTimeAbsoluteInSeconds(long processTimeAbsoluteInSeconds) {
+		this.processTimeAbsoluteInSeconds = processTimeAbsoluteInSeconds;
+	}
+
+	public void setNonWorkingDelayInDays(long nonWorkingDelayInDays) {
+		this.nonWorkingDelayInDays = nonWorkingDelayInDays;
+	}
+
+	public void setHolidayDelayInDays(long holidayDelayInDays) {
+		this.holidayDelayInDays = holidayDelayInDays;
+	}
+	
+
 }

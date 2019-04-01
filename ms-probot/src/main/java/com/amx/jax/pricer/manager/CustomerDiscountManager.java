@@ -140,7 +140,7 @@ public class CustomerDiscountManager {
 
 				// Old Logic
 				// ViewExGLCBAL viewExGLCBAL =
-				// computeRequestTransientDataCache.getBankGlcBalMap().get(bankExRateDetail.getBankId());
+				// transientDataCache.getBankGlcBalMap().get(bankExRateDetail.getBankId());
 
 				// adjustedBaseSellRate = viewExGLCBAL.getRateAvgRate().add(margin);
 

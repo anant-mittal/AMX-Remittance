@@ -147,22 +147,9 @@ public class PricingService {
 
 		List<ViewExRoutingMatrix> routingMatrix = remitRoutingManager.getRoutingMatrixForRemittance(dprRequestDto);
 
-		for (ViewExRoutingMatrix oneMatrix : routingMatrix) {
-
-			remitRoutingManager.getEstimatedBlockDelivery(System.currentTimeMillis(), "Asia/Kolkata",
-					oneMatrix.getWeekFrom(), oneMatrix.getWeekTo(), oneMatrix.getWeekHoursFrom(),
-					oneMatrix.getWeekHoursTo(), oneMatrix.getWeekendFrom(), oneMatrix.getWeekendTo(),
-					oneMatrix.getWeekendHoursFrom(), oneMatrix.getWeekendHoursTo(), oneMatrix.getDelievryMinutes(),
-					Boolean.FALSE, oneMatrix.getRoutingCountryId());
-
-		}
 		/*
-		 * ******** TimeZones ********** Asia/Kolkata Asia/Kuwait Asia/Karachi
-		 * America/New_York Asia/Singapore Australia/Sydney America/Los_Angeles
+		 * for (ViewExRoutingMatrix oneMatrix : routingMatrix) {
 		 * 
-		 */
-
-		/*
 		 * remitRoutingManager.getEstimatedBlockDelivery(System.currentTimeMillis(),
 		 * "Asia/Kolkata", oneMatrix.getWeekFrom(), oneMatrix.getWeekTo(),
 		 * oneMatrix.getWeekHoursFrom(), oneMatrix.getWeekHoursTo(),
@@ -171,22 +158,12 @@ public class PricingService {
 		 * oneMatrix.getDelievryMinutes(), Boolean.FALSE,
 		 * oneMatrix.getRoutingCountryId());
 		 * 
+		 * }
+		 */
+		/*
+		 * ******** TimeZones ********** Asia/Kolkata Asia/Kuwait Asia/Karachi
+		 * America/New_York Asia/Singapore Australia/Sydney America/Los_Angeles
 		 * 
-		 * remitRoutingManager.getEstimatedBlockDelivery(System.currentTimeMillis(),
-		 * "Asia/Kuwait", oneMatrix.getWeekFrom(), oneMatrix.getWeekTo(),
-		 * oneMatrix.getWeekHoursFrom(), oneMatrix.getWeekHoursTo(),
-		 * oneMatrix.getWeekendFrom(), oneMatrix.getWeekendTo(),
-		 * oneMatrix.getWeekendHoursFrom(), oneMatrix.getWeekendHoursTo(),
-		 * oneMatrix.getDelievryMinutes(), Boolean.FALSE,
-		 * oneMatrix.getRoutingCountryId());
-		 * 
-		 * remitRoutingManager.getEstimatedBlockDelivery(System.currentTimeMillis(),
-		 * "America/New_York", oneMatrix.getWeekFrom(), oneMatrix.getWeekTo(),
-		 * oneMatrix.getWeekHoursFrom(), oneMatrix.getWeekHoursTo(),
-		 * oneMatrix.getWeekendFrom(), oneMatrix.getWeekendTo(),
-		 * oneMatrix.getWeekendHoursFrom(), oneMatrix.getWeekendHoursTo(),
-		 * oneMatrix.getDelievryMinutes(), Boolean.FALSE,
-		 * oneMatrix.getRoutingCountryId());
 		 */
 
 		List<BigDecimal> routingBankIds = routingMatrix.stream().map(rm -> rm.getRoutingBankId()).distinct()
@@ -205,6 +182,8 @@ public class PricingService {
 		pricingResponseDTO.setSellRateDetails(computeRequestTransientDataCache.getSellRateDetails());
 
 		Collections.sort(pricingResponseDTO.getSellRateDetails(), Collections.reverseOrder());
+
+		remitRoutingManager.computeTrnxRoutesAndDelivery(dprRequestDto);
 
 		return pricingResponseDTO;
 

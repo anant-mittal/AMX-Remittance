@@ -13,5 +13,9 @@ public interface HolidayListRepository extends CrudRepository<HolidayListMasterM
 
 	@Query("select c from HolidayListMasterModel c where c.countryId=?1 and c.eventDate between ?2 and ?3")
 	public List<HolidayListMasterModel> getHolidayList(BigDecimal countryId, Date fromDate, Date toDate);
-
+	
+	
+	/**@Query("select c from HolidayListMasterModel c where c.countryId=?1 and c.eventDate >= ?2 and c.eventDate <= ?3")
+	public List<HolidayListMasterModel> getHolidayList(BigDecimal countryId, Date fromDate, Date toDate);
+	**/
 }

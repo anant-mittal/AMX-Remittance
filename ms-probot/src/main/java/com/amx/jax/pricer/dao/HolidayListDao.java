@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import com.amx.jax.pricer.dbmodel.HolidayListMasterModel;
 import com.amx.jax.pricer.repository.HolidayListRepository;
+import com.amx.utils.DateUtil;
 
 @Component
 public class HolidayListDao {
@@ -17,7 +18,10 @@ public class HolidayListDao {
 	HolidayListRepository holidayListRepository;
 
 	public List<HolidayListMasterModel> getHolidayListForDateRange(BigDecimal countryId, Date fromDate, Date toDate) {
-		List<HolidayListMasterModel> holidayList = holidayListRepository.getHolidayList(countryId, fromDate, toDate);
+		
+		Date startOfFromDate = DateUtil.removeTime(fromDate);
+		
+		List<HolidayListMasterModel> holidayList = holidayListRepository.getHolidayList(countryId, startOfFromDate, toDate);
 		return holidayList;
 	}
 

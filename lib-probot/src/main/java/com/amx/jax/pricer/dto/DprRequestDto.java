@@ -5,9 +5,10 @@ import java.math.BigDecimal;
 
 import javax.validation.constraints.NotNull;
 
+import com.amx.jax.io.JSONable;
 import com.amx.jax.pricer.var.PricerServiceConstants.SERVICE_GROUP;
 
-public class DprRequestDto extends PricingRequestDTO  implements Serializable {
+public class DprRequestDto extends PricingRequestDTO  implements Serializable, JSONable {
 
 	/**
 	 * 

@@ -10,6 +10,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +19,10 @@ import org.springframework.stereotype.Component;
 import com.amx.jax.cache.ComputeRequestTransientDataCache;
 import com.amx.jax.cache.TransientRoutingComputeDetails;
 import com.amx.jax.cache.WorkingHoursData;
+import com.amx.jax.pricer.dao.TimezoneDao;
 import com.amx.jax.pricer.dao.ViewExRoutingMatrixDao;
 import com.amx.jax.pricer.dbmodel.HolidayListMasterModel;
+import com.amx.jax.pricer.dbmodel.TimezoneMasterModel;
 import com.amx.jax.pricer.dbmodel.ViewExRoutingMatrix;
 import com.amx.jax.pricer.dto.DprRequestDto;
 import com.amx.jax.pricer.dto.EstimatedDeliveryDetails;
@@ -42,21 +45,221 @@ public class RemitRoutingManager {
 	@Autowired
 	HolidayListManager holidayListManager;
 
+	@Autowired
+	TimezoneDao tzDao;
+
 	@Resource
-	ComputeRequestTransientDataCache computeRequestTransientDataCache;
+	ComputeRequestTransientDataCache transientDataCache;
+
+	public void computeTrnxRoutesAndDelivery(DprRequestDto dprRequestDto) {
+
+		List<TransientRoutingComputeDetails> routingDetailsList = transientDataCache.getRoutingMatrix();
+
+		// Get Routing Matrix Data if not already computed.
+		if (null == routingDetailsList || routingDetailsList.isEmpty()) {
+			this.getRoutingMatrixForRemittance(dprRequestDto);
+			routingDetailsList = transientDataCache.getRoutingMatrix();
+		}
+
+		// 1. Process Delivery for Correspondent or Routing Banks for all the Available
+		// Routes - as provided by the Routing View Matrix
+
+		// 2. Process Block Delivery for Processing / Intermediary Bank - If Applicable
+
+		// 3. Process Block Delivery for Bene Bank
+
+		for (TransientRoutingComputeDetails routingDetails : routingDetailsList) {
+
+			ViewExRoutingMatrix oneMatrix = routingDetails.getViewExRoutingMatrix();
+
+			if (oneMatrix == null) {
+				throw new PricerServiceException(PricerServiceError.NULL_ROUTING_MATRIX,
+						"Null Routing Matrix Received for a Routing Bank " + dprRequestDto.toJSON());
+			}
+
+			BigDecimal routingCountryId = oneMatrix.getRoutingCountryId();
+
+			String timezone = getTimezoneForCountry(routingCountryId);
+
+			if (StringUtils.isEmpty(timezone)) {
+				throw new PricerServiceException(PricerServiceError.MISSING_TIMEZONE,
+						"Timezone is Missing for Correspondent bank Country Id: " + routingCountryId
+								+ dprRequestDto.toJSON());
+			}
+
+			EstimatedDeliveryDetails estmdCBDeliveryDetails = this.getEstimatedBlockDelivery(
+					transientDataCache.getTrnxBeginTime(), timezone, oneMatrix.getWeekFrom(), oneMatrix.getWeekTo(),
+					oneMatrix.getWeekHoursFrom(), oneMatrix.getWeekHoursTo(), oneMatrix.getWeekendFrom(),
+					oneMatrix.getWeekendTo(), oneMatrix.getWeekendHoursFrom(), oneMatrix.getWeekendHoursTo(),
+					oneMatrix.getDelievryMinutes(), Boolean.FALSE, routingCountryId);
+
+			routingDetails.setRoutingBankDeliveryDetails(estmdCBDeliveryDetails);
+
+			// Processing or Intermediary Country - Delivery Processing Block
+			// Process only if the relevant countryId is present.
+
+			BigDecimal processingCountryId = oneMatrix.getProcessingCountryId();
+			EstimatedDeliveryDetails estmdProcessingDeliveryDetails = null;
+			boolean isProcessingLag = false;
+
+			if (processingCountryId != null && processingCountryId.longValue() != routingCountryId.longValue()) {
+
+				isProcessingLag = true;
+
+				/**
+				 * Only Holiday's Lag to be considered here. The work time and non-operational
+				 * lag is already compensated and taken care at the correspondent bank work hrs
+				 * definition.
+				 */
+
+				/**
+				 * Start Time for Processing / Intermediary Bank Phase is - completion TT of the
+				 * preceding Correspondent Bank Phase.
+				 */
+				long processingStartTT = estmdCBDeliveryDetails.getCompletionTT();
+
+				String pTimezone = getTimezoneForCountry(processingCountryId);
+
+				if (StringUtils.isEmpty(pTimezone)) {
+					throw new PricerServiceException(PricerServiceError.MISSING_TIMEZONE,
+							"Timezone is Missing for Processing Country Id: " + processingCountryId
+									+ dprRequestDto.toJSON());
+				}
+
+				estmdProcessingDeliveryDetails = this.getEstimatedBlockDelivery(processingStartTT, pTimezone,
+						new BigDecimal(1), new BigDecimal(7), new BigDecimal(0), new BigDecimal(24), new BigDecimal(0),
+						new BigDecimal(0), new BigDecimal(0), new BigDecimal(0), new BigDecimal(0), Boolean.FALSE,
+						processingCountryId);
+
+				routingDetails.setProcessingDeliveryDetails(estmdProcessingDeliveryDetails);
+
+			} // Processing country block
+
+			/**
+			 * Bene Country Delivery Processing Block
+			 * 
+			 * Bene Delivery Lag Conditions: <br/>
+			 * 1. If Processing / Intermediary Country Is Present <br/>
+			 * 1.1 Processing Country <IS NOT> Bene Country : LAG is APPLICABLE <br/>
+			 * 
+			 * 2. If Processing / Intermediary Country Is Absent <br/>
+			 * 2.1 If Routing Country <IS NOT> Bene Country : LAG is APPLICABLE <br/>
+			 * 2.2 If Routing Country <IS SAME AS> Bene Country: LAG is NOT APPLICABLE <br/>
+			 * 
+			 */
+
+			BigDecimal beneCountryId = oneMatrix.getBeneCountryId();
+			EstimatedDeliveryDetails estmdBeneDeliveryDetails = null;
+			long beneStartTT;
+
+			boolean processLagForBene = false;
+
+			if (null != estmdProcessingDeliveryDetails) {
+
+				processLagForBene = processingCountryId.longValue() != beneCountryId.longValue() ? true : false;
+				beneStartTT = estmdProcessingDeliveryDetails.getCompletionTT();
+
+			} else {
+
+				processLagForBene = routingCountryId.longValue() != beneCountryId.longValue() ? true : false;
+				beneStartTT = estmdCBDeliveryDetails.getCompletionTT();
+			}
+
+			// Process For Bene
+
+			if (processLagForBene) {
+
+				String beneTimezone = getTimezoneForCountry(beneCountryId);
+
+				if (StringUtils.isEmpty(beneTimezone)) {
+					throw new PricerServiceException(PricerServiceError.MISSING_TIMEZONE,
+							"Timezone is Missing for Beneficiary Country Id: " + processingCountryId
+									+ dprRequestDto.toJSON());
+				}
+
+				estmdBeneDeliveryDetails = this.getEstimatedBlockDelivery(beneStartTT, beneTimezone, new BigDecimal(1),
+						new BigDecimal(7), new BigDecimal(0), new BigDecimal(24), new BigDecimal(0), new BigDecimal(0),
+						new BigDecimal(0), new BigDecimal(0), new BigDecimal(0), Boolean.FALSE, beneCountryId);
+
+				routingDetails.setBeneBankDeliveryDetails(estmdBeneDeliveryDetails);
+
+			} // BeneBlock
+
+			/**
+			 * Compute Final Delivery For the Complete Transaction
+			 */
+
+			EstimatedDeliveryDetails finalDeliveryDetails = new EstimatedDeliveryDetails();
+
+			long processTimeAbs = estmdCBDeliveryDetails.getProcessTimeAbsoluteInSeconds();
+			long processTimeOps = estmdCBDeliveryDetails.getProcessTimeOperationalInSeconds();
+			long processTimeTotal = estmdCBDeliveryDetails.getProcessTimeTotalInSeconds();
+
+			long nonWorkingDelayInDays = estmdCBDeliveryDetails.getNonWorkingDelayInDays();
+			long holidayDelay = estmdCBDeliveryDetails.getHolidayDelayInDays();
+
+			long finalCompletionTT = estmdCBDeliveryDetails.getCompletionTT();
+
+			ZonedDateTime startDateForeign = estmdCBDeliveryDetails.getStartDateForeign();
+			ZonedDateTime completionDateForeign = estmdCBDeliveryDetails.getCompletionDateForeign();
+
+			boolean crossedMaxDeliveryDays = estmdCBDeliveryDetails.isCrossedMaxDeliveryDays();
+
+			if (isProcessingLag && null != estmdProcessingDeliveryDetails) {
+				processTimeAbs += estmdProcessingDeliveryDetails.getProcessTimeAbsoluteInSeconds();
+				processTimeOps += estmdProcessingDeliveryDetails.getProcessTimeOperationalInSeconds();
+				processTimeTotal += estmdProcessingDeliveryDetails.getProcessTimeTotalInSeconds();
+
+				nonWorkingDelayInDays += estmdProcessingDeliveryDetails.getNonWorkingDelayInDays();
+				holidayDelay += estmdProcessingDeliveryDetails.getHolidayDelayInDays();
+
+				// Override the completion Time. This is an absolute figure.
+				// Last One to win.
+				finalCompletionTT = estmdProcessingDeliveryDetails.getCompletionTT();
+
+				completionDateForeign = estmdProcessingDeliveryDetails.getCompletionDateForeign();
+			}
+
+			if (processLagForBene && null != estmdBeneDeliveryDetails) {
+				processTimeAbs += estmdBeneDeliveryDetails.getProcessTimeAbsoluteInSeconds();
+				processTimeOps += estmdBeneDeliveryDetails.getProcessTimeOperationalInSeconds();
+				processTimeTotal += estmdBeneDeliveryDetails.getProcessTimeTotalInSeconds();
+
+				nonWorkingDelayInDays += estmdBeneDeliveryDetails.getNonWorkingDelayInDays();
+				holidayDelay += estmdBeneDeliveryDetails.getHolidayDelayInDays();
+
+				// Override the completion Time. This is an absolute figure.
+				// Last One to win.
+				finalCompletionTT = estmdBeneDeliveryDetails.getCompletionTT();
+				completionDateForeign = estmdBeneDeliveryDetails.getCompletionDateForeign();
+			}
+
+			finalDeliveryDetails.setProcessTimeAbsoluteInSeconds(processTimeAbs);
+			finalDeliveryDetails.setProcessTimeOperationalInSeconds(processTimeOps);
+			finalDeliveryDetails.setProcessTimeTotalInSeconds(processTimeTotal);
+
+			finalDeliveryDetails.setNonWorkingDelayInDays(nonWorkingDelayInDays);
+			finalDeliveryDetails.setHolidayDelayInDays(holidayDelay);
+
+			finalDeliveryDetails.setCompletionTT(finalCompletionTT);
+
+			finalDeliveryDetails.setStartDateForeign(startDateForeign);
+			finalDeliveryDetails.setCompletionDateForeign(completionDateForeign);
+
+			finalDeliveryDetails.setCrossedMaxDeliveryDays(crossedMaxDeliveryDays);
+
+			System.out.println(" Grand Final Delivery Details ===>  " + JsonUtil.toJson(finalDeliveryDetails));
+
+		} // OneMatrix Block
+
+	}
 
 	public List<ViewExRoutingMatrix> getRoutingMatrixForRemittance(DprRequestDto dprRequestDto) {
-
-		// StopWatch watch = new StopWatch();
-		// watch.start();
 
 		List<ViewExRoutingMatrix> routingMatrix = viewExRoutingMatrixDao.getRoutingMatrix(
 				dprRequestDto.getLocalCountryId(), dprRequestDto.getForeignCountryId(),
 				dprRequestDto.getBeneficiaryBankId(), dprRequestDto.getBeneficiaryBranchId(),
 				dprRequestDto.getForeignCurrencyId(), dprRequestDto.getServiceGroup().getGroupCode());
-
-		// watch.stop();
-		// System.out.println(" Time taken ==> " + (watch.getLastTaskTimeMillis() ));
 
 		System.out.println(" Routing matrix ==>  " + JsonUtil.toJson(routingMatrix));
 
@@ -77,7 +280,7 @@ public class RemitRoutingManager {
 			routingComputationObjects.add(obj);
 		}
 
-		computeRequestTransientDataCache.setRoutingMatrix(routingComputationObjects);
+		transientDataCache.setRoutingMatrix(routingComputationObjects);
 
 		return routingMatrix;
 
@@ -97,11 +300,12 @@ public class RemitRoutingManager {
 		// Compute the Correct Zone Date and Time of Block Delivery BEGIN
 		ZonedDateTime beginZonedDT = ZonedDateTime.ofInstant(epochInstant, zoneId);
 
-		if (!noHolidayLag && !computeRequestTransientDataCache.isHolidayListSetForCountry(countryId)) {
+		if (!noHolidayLag && !transientDataCache.isHolidayListSetForCountry(countryId)) {
 			List<HolidayListMasterModel> sortedHolidays = holidayListManager.getHoidaysForCountryAndDateRange(countryId,
-					Date.from(beginZonedDT.toInstant()), Date.from(beginZonedDT.plusDays(MAX_DELIVERY_ATTEMPT_DAYS).toInstant()));
+					Date.from(beginZonedDT.toInstant()),
+					Date.from(beginZonedDT.plusDays(MAX_DELIVERY_ATTEMPT_DAYS).toInstant()));
 
-			computeRequestTransientDataCache.setHolidaysForCountry(countryId, sortedHolidays);
+			transientDataCache.setHolidaysForCountry(countryId, sortedHolidays);
 
 		}
 
@@ -128,7 +332,24 @@ public class RemitRoutingManager {
 
 		System.out.println(" Estimated Delivery Details ===> " + JsonUtil.toJson(goodBusinessDeliveryDT));
 
-		return null;
+		return goodBusinessDeliveryDT;
+	}
+
+	private String getTimezoneForCountry(BigDecimal countryId) {
+
+		TimezoneMasterModel tzMasterModel = transientDataCache.getTimezoneForCountry(countryId);
+
+		if (null == tzMasterModel) {
+			tzMasterModel = tzDao.findByCountryId(countryId);
+
+			if (null == tzMasterModel) {
+				return null;
+			}
+
+			transientDataCache.setTimezoneForCountry(tzMasterModel.getCountryId(), tzMasterModel);
+		}
+
+		return tzMasterModel.getTimezone();
 	}
 
 	private WorkingHoursData computeWorkMatrix(BigDecimal weekFrom, BigDecimal weekTo, BigDecimal weekHrsFrom,
@@ -189,8 +410,7 @@ public class RemitRoutingManager {
 			// Default Working Status
 			boolean isWorking = true;
 
-			if (noHolidayLag || !(isHoliday = computeRequestTransientDataCache.isHolidayOn(countryId,
-					estimatedGoodBusinessDay))) {
+			if (noHolidayLag || !(isHoliday = transientDataCache.isHolidayOn(countryId, estimatedGoodBusinessDay))) {
 
 				int dayOfWeek = estimatedGoodBusinessDay.getDayOfWeek().getValue();
 				int hourOfDay = estimatedGoodBusinessDay.getHour();

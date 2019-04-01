@@ -81,6 +81,9 @@ public class ViewExRoutingMatrix implements Serializable {
 	@Column(name = "DELIVERY_DESCRIPTION")
 	private String deliveryDescription;
 
+	@Column(name = "PROCESSING_COUNTRY_ID")
+	private BigDecimal ProcessingCountryId;
+
 	@Column(name = "WEEK_FROM")
 	private BigDecimal weekFrom;
 
@@ -304,6 +307,14 @@ public class ViewExRoutingMatrix implements Serializable {
 
 	public void setDeliveryDescription(String deliveryDescription) {
 		this.deliveryDescription = deliveryDescription;
+	}
+
+	public BigDecimal getProcessingCountryId() {
+		return ProcessingCountryId;
+	}
+
+	public void setProcessingCountryId(BigDecimal processingCountryId) {
+		ProcessingCountryId = processingCountryId;
 	}
 
 	public BigDecimal getWeekFrom() {
