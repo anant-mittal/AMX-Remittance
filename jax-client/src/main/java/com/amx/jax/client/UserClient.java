@@ -15,11 +15,9 @@ import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
-<<<<<<< HEAD
-import com.amx.amxlib.constant.ApiEndpoint.CustomerApi;
-=======
+
 import com.amx.amxlib.constant.ApiEndpoint;
->>>>>>> origin/fs_new_login
+import com.amx.amxlib.constant.ApiEndpoint.CustomerApi;
 import com.amx.amxlib.constant.ApiEndpoint.MetaApi;
 import com.amx.amxlib.constant.ApiEndpoint.UserApi;
 import com.amx.amxlib.exception.AbstractJaxException;
@@ -44,6 +42,7 @@ import com.amx.amxlib.model.UserFingerprintResponseModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.amxlib.model.response.JaxTransactionResponse;
+import com.amx.amxlib.service.ICustomerService;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.configs.JaxMetaInfo;
