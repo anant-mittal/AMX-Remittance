@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.amx.jax.cache.ComputeRequestTransientDataCache;
+import com.amx.jax.cache.ExchRateAndRoutingTransientDataCache;
 import com.amx.jax.cache.TransientRoutingComputeDetails;
 import com.amx.jax.cache.WorkingHoursData;
 import com.amx.jax.pricer.dao.TimezoneDao;
@@ -24,7 +24,7 @@ import com.amx.jax.pricer.dao.ViewExRoutingMatrixDao;
 import com.amx.jax.pricer.dbmodel.HolidayListMasterModel;
 import com.amx.jax.pricer.dbmodel.TimezoneMasterModel;
 import com.amx.jax.pricer.dbmodel.ViewExRoutingMatrix;
-import com.amx.jax.pricer.dto.DprRequestDto;
+import com.amx.jax.pricer.dto.ExchangeRateAndRoutingRequest;
 import com.amx.jax.pricer.dto.EstimatedDeliveryDetails;
 import com.amx.jax.pricer.exception.PricerServiceError;
 import com.amx.jax.pricer.exception.PricerServiceException;
@@ -49,15 +49,22 @@ public class RemitRoutingManager {
 	TimezoneDao tzDao;
 
 	@Resource
-	ComputeRequestTransientDataCache transientDataCache;
+	ExchRateAndRoutingTransientDataCache transientDataCache;
 
-	public void computeTrnxRoutesAndDelivery(DprRequestDto dprRequestDto) {
+	/**
+	 * Computes the Transaction Routes and Delivery Details and saves the data with
+	 * the request cache : ExchRateAndRoutingTransientDataCache
+	 * 
+	 * 
+	 * @param exchangeRateAndRoutingRequest
+	 */
+	public void computeTrnxRoutesAndDelivery(ExchangeRateAndRoutingRequest exchangeRateAndRoutingRequest) {
 
 		List<TransientRoutingComputeDetails> routingDetailsList = transientDataCache.getRoutingMatrix();
 
 		// Get Routing Matrix Data if not already computed.
 		if (null == routingDetailsList || routingDetailsList.isEmpty()) {
-			this.getRoutingMatrixForRemittance(dprRequestDto);
+			this.getRoutingMatrixForRemittance(exchangeRateAndRoutingRequest);
 			routingDetailsList = transientDataCache.getRoutingMatrix();
 		}
 
@@ -74,7 +81,7 @@ public class RemitRoutingManager {
 
 			if (oneMatrix == null) {
 				throw new PricerServiceException(PricerServiceError.NULL_ROUTING_MATRIX,
-						"Null Routing Matrix Received for a Routing Bank " + dprRequestDto.toJSON());
+						"Null Routing Matrix Received for a Routing Bank " + exchangeRateAndRoutingRequest.toJSON());
 			}
 
 			BigDecimal routingCountryId = oneMatrix.getRoutingCountryId();
@@ -84,7 +91,7 @@ public class RemitRoutingManager {
 			if (StringUtils.isEmpty(timezone)) {
 				throw new PricerServiceException(PricerServiceError.MISSING_TIMEZONE,
 						"Timezone is Missing for Correspondent bank Country Id: " + routingCountryId
-								+ dprRequestDto.toJSON());
+								+ exchangeRateAndRoutingRequest.toJSON());
 			}
 
 			EstimatedDeliveryDetails estmdCBDeliveryDetails = this.getEstimatedBlockDelivery(
@@ -123,7 +130,7 @@ public class RemitRoutingManager {
 				if (StringUtils.isEmpty(pTimezone)) {
 					throw new PricerServiceException(PricerServiceError.MISSING_TIMEZONE,
 							"Timezone is Missing for Processing Country Id: " + processingCountryId
-									+ dprRequestDto.toJSON());
+									+ exchangeRateAndRoutingRequest.toJSON());
 				}
 
 				estmdProcessingDeliveryDetails = this.getEstimatedBlockDelivery(processingStartTT, pTimezone,
@@ -174,7 +181,7 @@ public class RemitRoutingManager {
 				if (StringUtils.isEmpty(beneTimezone)) {
 					throw new PricerServiceException(PricerServiceError.MISSING_TIMEZONE,
 							"Timezone is Missing for Beneficiary Country Id: " + processingCountryId
-									+ dprRequestDto.toJSON());
+									+ exchangeRateAndRoutingRequest.toJSON());
 				}
 
 				estmdBeneDeliveryDetails = this.getEstimatedBlockDelivery(beneStartTT, beneTimezone, new BigDecimal(1),
@@ -248,18 +255,20 @@ public class RemitRoutingManager {
 
 			finalDeliveryDetails.setCrossedMaxDeliveryDays(crossedMaxDeliveryDays);
 
+			routingDetails.setFinalDeliveryDetails(finalDeliveryDetails);
+
 			System.out.println(" Grand Final Delivery Details ===>  " + JsonUtil.toJson(finalDeliveryDetails));
 
 		} // OneMatrix Block
 
 	}
 
-	public List<ViewExRoutingMatrix> getRoutingMatrixForRemittance(DprRequestDto dprRequestDto) {
+	public List<ViewExRoutingMatrix> getRoutingMatrixForRemittance(ExchangeRateAndRoutingRequest exchangeRateAndRoutingRequest) {
 
 		List<ViewExRoutingMatrix> routingMatrix = viewExRoutingMatrixDao.getRoutingMatrix(
-				dprRequestDto.getLocalCountryId(), dprRequestDto.getForeignCountryId(),
-				dprRequestDto.getBeneficiaryBankId(), dprRequestDto.getBeneficiaryBranchId(),
-				dprRequestDto.getForeignCurrencyId(), dprRequestDto.getServiceGroup().getGroupCode());
+				exchangeRateAndRoutingRequest.getLocalCountryId(), exchangeRateAndRoutingRequest.getForeignCountryId(),
+				exchangeRateAndRoutingRequest.getBeneficiaryBankId(), exchangeRateAndRoutingRequest.getBeneficiaryBranchId(),
+				exchangeRateAndRoutingRequest.getForeignCurrencyId(), exchangeRateAndRoutingRequest.getServiceGroup().getGroupCode());
 
 		System.out.println(" Routing matrix ==>  " + JsonUtil.toJson(routingMatrix));
 
@@ -269,7 +278,7 @@ public class RemitRoutingManager {
 
 			throw new PricerServiceException(PricerServiceError.INVALID_ROUTING_BANK_IDS,
 					"Invalid Routing Bank Ids : None Found matching with the Requested Ids: "
-							+ dprRequestDto.getRoutingBankIds());
+							+ exchangeRateAndRoutingRequest.getRoutingBankIds());
 		}
 
 		List<TransientRoutingComputeDetails> routingComputationObjects = new ArrayList<TransientRoutingComputeDetails>();

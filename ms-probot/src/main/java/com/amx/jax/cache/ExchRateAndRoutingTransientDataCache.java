@@ -17,7 +17,18 @@ import com.amx.jax.pricer.dto.BankDetailsDTO;
 import com.amx.jax.pricer.dto.ExchangeRateDetails;
 import com.amx.utils.DateUtil;
 
-public class ComputeRequestTransientDataCache {
+/**
+ * This is a transient data cache for the Exchange Rate and Routing Requests.
+ * This is injected as a bean to every Exchange Rate and Routing Request for
+ * Data computation and caching - for the purpose of avoiding multiple and/or
+ * repeated data computations and fetching from the db.
+ * 
+ * The cache is to be shared by the multiple data and compute managers.
+ * 
+ * @author abhijeet
+ *
+ */
+public class ExchRateAndRoutingTransientDataCache {
 
 	private final long trnxBeginTime = System.currentTimeMillis();
 

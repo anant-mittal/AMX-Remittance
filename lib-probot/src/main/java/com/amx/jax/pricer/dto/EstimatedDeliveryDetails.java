@@ -1,10 +1,16 @@
 package com.amx.jax.pricer.dto;
 
+import java.io.Serializable;
 import java.time.ZonedDateTime;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-public class EstimatedDeliveryDetails {
+public class EstimatedDeliveryDetails implements Serializable, Comparable<EstimatedDeliveryDetails> {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1512835971575740752L;
 
 	private long processTimeTotalInSeconds = 0;
 
@@ -127,6 +133,12 @@ public class EstimatedDeliveryDetails {
 	public void setHolidayDelayInDays(long holidayDelayInDays) {
 		this.holidayDelayInDays = holidayDelayInDays;
 	}
-	
+
+	@Override
+	public int compareTo(EstimatedDeliveryDetails that) {
+
+		return (this.completionTT < that.completionTT ? -1 : (this.completionTT == that.completionTT ? 0 : 1));
+
+	}
 
 }
