@@ -251,6 +251,7 @@ public class BranchRemittanceSaveManager {
 					
 			collectedAmountValidation(collectionModel,collectionDetails,currencyAdjustList);
 			HashMap<String, Object> mapAllDetailRemitSave = new HashMap<String, Object>();
+			
 			mapAllDetailRemitSave.put("EX_COLLECT",collectionModel);
 			mapAllDetailRemitSave.put("EX_COLLECT_DET",collectionDetails);
 			mapAllDetailRemitSave.put("LYL_CLAIM",loyaltyClaim);
@@ -820,9 +821,10 @@ public   List<RemittanceBenificiary>  saveBeneTrnx(RemittanceApplication applica
 public   List<RemittanceAdditionalInstructionData>   saveRemitnaceinstructionData(RemittanceApplication applicationNo,RemittanceTransaction remitTrnx){
 	
 	 if(applicationNo!=null) {
-			AdditionalInstructionData applInstrucData = addInstrDataRepository.findByExRemittanceApplication(applicationNo);
+			List<AdditionalInstructionData> applInstrucDataList = addInstrDataRepository.findByExRemittanceApplication(applicationNo);
 		
-			if(applInstrucData!=null) {
+			if(applInstrucDataList!=null && !applInstrucDataList.isEmpty()) {
+			for (AdditionalInstructionData applInstrucData :applInstrucDataList) {
 			RemittanceAdditionalInstructionData remitAddData = new RemittanceAdditionalInstructionData();
 			remitAddData.setAdditionalBankFieldsId(applInstrucData.getAdditionalBankFieldsId());
 			remitAddData.setAmiecCode(applInstrucData.getAmiecCode());
@@ -840,9 +842,8 @@ public   List<RemittanceAdditionalInstructionData>   saveRemitnaceinstructionDat
 			remitAddData.setCompanyCode(applInstrucData.getFsCompanyMaster().getCompanyCode());
 			remitAddData.setDocumentFinanceYear(remitTrnx.getDocumentFinanceYear());
 			remitAddData.setIsactive(ConstantDocument.Yes);
-			
-		
 			addInstList.add(remitAddData);
+			}
 			
 		}else {
 			throw new GlobalException(JaxError.NO_RECORD_FOUND,"Record found in appl additional instruction  :"+remitTrnx.getApplicationDocumentNo());

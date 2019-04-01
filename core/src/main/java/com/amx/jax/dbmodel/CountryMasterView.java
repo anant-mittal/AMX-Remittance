@@ -176,7 +176,8 @@ public class CountryMasterView implements java.io.Serializable, IResourceEntity 
 
 	@Column(name = "COUNTRY_TEL_CODE")
 	public String getCountryTelCode() {
-		return StringUtils.stripStart(countryTelCode, "0");
+		//return StringUtils.stripStart(countryTelCode, "0");
+		return countryTelCode;
 	}
 
 	public void setCountryTelCode(String countryTelCode) {
