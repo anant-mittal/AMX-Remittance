@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -21,15 +22,18 @@ import org.thymeleaf.context.Context;
 import org.thymeleaf.spring4.SpringTemplateEngine;
 
 import com.amx.jax.AppConstants;
+import com.amx.jax.client.CustomerProfileClient;
 import com.amx.jax.dict.AmxEnums.Products;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.dict.Language;
 import com.amx.jax.error.ApiJaxStatusBuilder.ApiJaxStatus;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.exception.AmxApiException;
 import com.amx.jax.http.ApiRequest;
 import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.http.RequestType;
 import com.amx.jax.logger.LoggerService;
+import com.amx.jax.model.customer.CustomerContactVerificationDto;
 import com.amx.jax.rest.RestService;
 import com.amx.jax.ui.UIConstants;
 import com.amx.jax.ui.WebAppConfig;
@@ -66,6 +70,9 @@ public class HomeController {
 	/** The jax service. */
 	@Autowired
 	private JaxService jaxService;
+
+	@Autowired
+	private CustomerProfileClient customerProfileClient;
 
 	/** The session service. */
 	@Autowired
@@ -216,7 +223,22 @@ public class HomeController {
 	@RequestMapping(value = { "/pub/verify/{contactType}/{verId}/{verCode}" },
 			method = { RequestMethod.GET, RequestMethod.POST })
 	public String verification(Model model,
-			@RequestParam ContactType contactType, @RequestParam BigDecimal verId, @RequestParam String verCode) {
+			@PathVariable ContactType contactType, @PathVariable BigDecimal verId, @PathVariable String verCode,
+			@RequestParam(required = false) String identity) {
+		String errorCode = null;
+		String errorMessage = null;
+		try {
+			if (identity == null) {
+				customerProfileClient.validateVerificationLink(verId).getResult();
+			} else {
+				customerProfileClient.verifyLinkByCode(identity, verId, verCode);
+			}
+		} catch (AmxApiException e) {
+			errorCode = e.getStatusKey();
+			errorMessage = e.getMessage();
+		}
+		model.addAttribute("errorCode", errorCode);
+		model.addAttribute("errorMessage", errorMessage);
 		model.addAttribute("contactType", contactType);
 		model.addAttribute("verId", verId);
 		model.addAttribute("verCode", verCode);

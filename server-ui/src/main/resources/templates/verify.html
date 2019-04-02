@@ -8,31 +8,24 @@
 	content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 <title>Terms and Condition</title>
 <style type="text/css">
-	body,html{
-		font-family:arial;
-		font-size:14px;
-		color:#000;
-		margin:0;
-		padding:0;
-	}
-	ol li {
-    		padding-bottom: 16px;
-    		line-height: 18px;
-	}
-	ol li:nth-last-child(1) {
-		list-style: none;
-	    margin-left: -15px;
-	    color: #33bb55;
-	}
+body, html {
+	font-family: arial;
+	font-size: 14px;
+	color: #000;
+	margin: 0;
+	padding: 0;
+}
 </style>
 </head>
 <body>
 	<div id="app">
-		<ol>
-			<li class="page-break" th:each="term : ${terms}">
-				<span th:text="${term.description}"></span>
-			</li>
-		</ol>
+		<span th:text="${errorCode}"></span> | <span th:text="${errorMessage}"></span>
+		| <span th:text="${contactType}"></span> | <span th:text="${verId}"></span>
+		| <span th:text="${verCode}"></span> |
+		<form action="" method="post">
+			Enter Civil ID <input name="identity" value="" />
+			<button type="submit">Verify</button>
+		</form>
 	</div>
 </body>
 </html>
