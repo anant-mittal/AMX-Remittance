@@ -441,7 +441,7 @@ public class UserClientTest extends AbstractTestClient {
 		jaxMetaInfo.setEmployeeId(new BigDecimal(265));
 		AmxApiResponse<CustomerModelResponse, Object> response = null;
 
-		response = client.getCustomerModelResponse("284052306594");
+		response = client.getCustomerModelResponse("281050207628");
 		LOGGER.debug("response result is "+response.getResults());
 		assertNotNull("Response is null", response);
 		assertNotNull(response);
