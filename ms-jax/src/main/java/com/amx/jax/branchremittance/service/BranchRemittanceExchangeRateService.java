@@ -50,10 +50,11 @@ public class BranchRemittanceExchangeRateService {
 		RoutingResponseDto routingResponseDto = new RoutingResponseDto();
 		boolean isImpsApplicable = branchImpsRoutingManager.checkAndApplyImpsRouting(routingResponseDto, request);
 		if (!isImpsApplicable) {
-			//BranchRemittanceApplRequestModel requestApplModel = BranchRemittanceApplRequestModel.getInstance(request);
 			BranchRemittanceApplRequestModel requestApplModel = new BranchRemittanceApplRequestModel();
 			requestApplModel.setBeneId(request.getBeneficiaryRelationshipSeqIdBD());
-			//requestApplModel.setRoutingCountryId(ApplicationProcedureParam.P_ROUTING_COUNTRY_ID.getValue(remitApplParametersMap));
+			requestApplModel.setServiceMasterId(request.getServiceIndicatorIdBD());
+			requestApplModel.setRemittanceModeId(request.getRemitModeIdBD());
+			requestApplModel.setBeneId(request.getBeneficiaryRelationshipSeqIdBD());
 			routingResponseDto = branchRoutingManager.getRoutingSetup(requestApplModel);
 		}
 		result.setRoutingResponseDto(routingResponseDto);

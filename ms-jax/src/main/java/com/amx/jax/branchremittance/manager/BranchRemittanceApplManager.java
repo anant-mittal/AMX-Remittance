@@ -287,7 +287,7 @@ public class BranchRemittanceApplManager {
 			}
 			
 			
-			if(!StringUtils.isBlank(signature)) {
+			if(!StringUtils.isBlank(signature) && !signature.equals("")) {
 				try {
 				remittanceApplication.setCustomerSignatureClob(stringToClob(signature));
 				}catch(Exception e) {
