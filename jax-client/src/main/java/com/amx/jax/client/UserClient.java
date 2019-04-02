@@ -15,7 +15,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
-
 import com.amx.amxlib.constant.ApiEndpoint;
 import com.amx.amxlib.constant.ApiEndpoint.CustomerApi;
 import com.amx.amxlib.constant.ApiEndpoint.MetaApi;
@@ -607,7 +606,7 @@ public class UserClient extends AbstractJaxServiceClient implements ICustomerSer
 			throw new JaxSystemError();
 		} // end of try-catch
 	} // end of customerLoggedIn
-	
+
 	public ApiResponse<CustomerModel> saveEmailNew(String email) {
 		try {
 			CustomerModel custModel = new CustomerModel();
@@ -627,7 +626,7 @@ public class UserClient extends AbstractJaxServiceClient implements ICustomerSer
 		} // end of try-catch
 
 	}
-	
+
 	public ApiResponse<CustomerModel> saveMobileNew(String mobile) {
 		try {
 			CustomerModel custModel = new CustomerModel();
@@ -707,7 +706,6 @@ public class UserClient extends AbstractJaxServiceClient implements ICustomerSer
 		}
 	}
 
-
 	public AmxApiResponse<AnnualIncomeRangeDTO, Object> getIncome() {
 		try {
 
@@ -748,7 +746,7 @@ public class UserClient extends AbstractJaxServiceClient implements ICustomerSer
 		}
 	}
 
-public BoolRespModel resetFingerprint(String identity) {
+	public BoolRespModel resetFingerprint(String identity) {
 		try {
 
 			return restService.ajax(appConfig.getJaxURL())
@@ -769,7 +767,7 @@ public BoolRespModel resetFingerprint(String identity) {
 		try {
 
 			return restService.ajax(appConfig.getJaxURL())
-					.path(ApiEndpoint.CUSTOMER_ENDPOINT+Path.CUSTOMER_MODEL_RESPONSE_GET).meta(new JaxMetaInfo())
+					.path(ApiEndpoint.CUSTOMER_ENDPOINT + Path.CUSTOMER_MODEL_RESPONSE_GET).meta(new JaxMetaInfo())
 					.queryParam(Params.IDENTITY_INT, identityInt)
 					.get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<CustomerModelResponse, Object>>() {

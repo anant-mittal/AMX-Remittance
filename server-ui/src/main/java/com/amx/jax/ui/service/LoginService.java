@@ -13,12 +13,14 @@ import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
+import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.model.AuthState;
 import com.amx.jax.model.AuthState.AuthStep;
 import com.amx.jax.model.auth.QuestModelDTO;
+import com.amx.jax.model.response.customer.CustomerModelResponse;
 import com.amx.jax.ui.audit.CAuthEvent;
 import com.amx.jax.ui.config.HttpUnauthorizedException;
 import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
@@ -197,10 +199,15 @@ public class LoginService {
 
 		if (sessionService.getGuestSession().getState().isFlow(AuthState.AuthFlow.LOGIN)) {
 			jaxService.setDefaults().getUserclient().customerLoggedIn(sessionService.getAppDevice().getUserDevice());
-
 			wrapper.setRedirectUrl(sessionService.getGuestSession().getReturnUrl());
 			sessionService.getGuestSession().setReturnUrl(null);
 		}
+
+		AmxApiResponse<CustomerModelResponse, Object> x = jaxService.setDefaults().getUserclient()
+				.getCustomerModelResponse(customerModel.getIdentityId());
+
+		sessionService.getUserSession().getCustomerModel().setFlags(x.getResult().getCustomerFlags());
+		sessionService.getUserSession().getCustomerModel().setPersoninfo(x.getResult().getPersonInfo());
 
 		wrapper.setMessage(OWAStatusStatusCodes.AUTH_DONE, ResponseMessage.AUTH_SUCCESS);
 		sessionService.getGuestSession().endStep(secques);
