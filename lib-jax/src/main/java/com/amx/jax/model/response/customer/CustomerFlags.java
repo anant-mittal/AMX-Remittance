@@ -4,16 +4,20 @@ public class CustomerFlags {
 
 	Boolean fingerprintlinked;
 
+	/* eKYC */
 	String idProofStatus;
-	Boolean idProofExpired;
-	Boolean idProofUnavailable;
-	Boolean idProofPendingVerification;
+	Boolean idProofRequired;
+	Boolean idProofVerificationPending;
+	/* eKYC */
 
+	/* new login */
 	Boolean whatsAppVerified;
 	Boolean emailVerified;
 	Boolean mobileVerified;
 
-	Boolean securityQuestionSet;
+	Boolean securityQuestionRequired;
+	Boolean securityAnswerRequired;
+	/* new login */
 
 	public Boolean getFingerprintlinked() {
 		return fingerprintlinked;
@@ -29,30 +33,6 @@ public class CustomerFlags {
 
 	public void setIdProofStatus(String idProofStatus) {
 		this.idProofStatus = idProofStatus;
-	}
-
-	public Boolean getIdProofExpired() {
-		return idProofExpired;
-	}
-
-	public void setIdProofExpired(Boolean idProofExpired) {
-		this.idProofExpired = idProofExpired;
-	}
-
-	public Boolean getIdProofUnavailable() {
-		return idProofUnavailable;
-	}
-
-	public void setIdProofUnavailable(Boolean idProofUnavailable) {
-		this.idProofUnavailable = idProofUnavailable;
-	}
-
-	public Boolean getIdProofPendingVerification() {
-		return idProofPendingVerification;
-	}
-
-	public void setIdProofPendingVerification(Boolean idProofPendingVerification) {
-		this.idProofPendingVerification = idProofPendingVerification;
 	}
 
 	public Boolean getWhatsAppVerified() {
@@ -79,12 +59,36 @@ public class CustomerFlags {
 		this.mobileVerified = mobileVerified;
 	}
 
-	public Boolean getSecurityQuestionSet() {
-		return securityQuestionSet;
+	public Boolean getIdProofRequired() {
+		return idProofRequired;
 	}
 
-	public void setSecurityQuestionSet(Boolean securityQuestionSet) {
-		this.securityQuestionSet = securityQuestionSet;
+	public void setIdProofRequired(Boolean idProofRequired) {
+		this.idProofRequired = idProofRequired;
+	}
+
+	public Boolean getIdProofVerificationPending() {
+		return idProofVerificationPending;
+	}
+
+	public void setIdProofVerificationPending(Boolean idProofVerificationPending) {
+		this.idProofVerificationPending = idProofVerificationPending;
+	}
+
+	public Boolean getSecurityQuestionRequired() {
+		return securityQuestionRequired;
+	}
+
+	public void setSecurityQuestionRequired(Boolean securityQuestionRequired) {
+		this.securityQuestionRequired = securityQuestionRequired;
+	}
+
+	public Boolean getSecurityAnswerRequired() {
+		return securityAnswerRequired;
+	}
+
+	public void setSecurityAnswerRequired(Boolean securityAnswerRequired) {
+		this.securityAnswerRequired = securityAnswerRequired;
 	}
 
 }
