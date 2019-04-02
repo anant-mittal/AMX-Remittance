@@ -37,10 +37,12 @@ import com.amx.jax.dbmodel.CustomerEmploymentInfo;
 import com.amx.jax.dbmodel.DmsApplMapping;
 import com.amx.jax.dbmodel.DocBlobUpload;
 import com.amx.jax.dbmodel.IncomeModel;
+import com.amx.jax.dbmodel.IncomeRangeMaster;
 import com.amx.jax.dbmodel.LanguageType;
 import com.amx.jax.dbmodel.UserFinancialYear;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.response.customer.CustomerFlags;
 import com.amx.jax.repository.CountryRepository;
 import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.repository.DOCBLOBRepository;
@@ -349,28 +351,37 @@ public class AnnualIncomeService {
 
 	
 	
-	public AmxApiResponse<IncomeDto, Object> getAnnualIncomeDetails(){
-		Customer customer = custDao.getCustById(metaData.getCustomerId());
-		if(customer.getAnnualIncomeFrom() == null || customer.getAnnualIncomeTo() == null) {
-			throw new GlobalException("Please set Annual Income range");
-		}
-		if(customer.getFsArticleDetails().getArticleDetailId() == null) {
-			throw new GlobalException("Please set your designation");
-		}
-		
-		CustomerEmploymentInfo customerEmploymentInfo = incomeDao.getCustById(metaData.getCustomerId());
-		if(customerEmploymentInfo.getEmployerName() == null) {
-			throw new GlobalException("Please set your company name");
-		}
+	public AmxApiResponse<IncomeDto, Object> getAnnualIncomeDetails() {
 		IncomeDto incomeDto = new IncomeDto();
-		incomeDto.setIncomeRangeFrom(customer.getAnnualIncomeFrom());
-		incomeDto.setIncomeRangeTo(customer.getAnnualIncomeTo());
-		
-		incomeDto.setArticleDetailId(customer.getFsArticleDetails().getArticleDetailId());
-		incomeDto.setCompanyName(customerEmploymentInfo.getEmployerName());
-		incomeDto.setFileName(customerEmploymentInfo.getFileName());
+		Customer customer = custDao.getCustById(metaData.getCustomerId());
+		CustomerEmploymentInfo customerEmploymentInfo = incomeDao.getCustById(metaData.getCustomerId());
+
+		if (customerEmploymentInfo.getEmployerName()==null) {
+			IncomeRangeMaster articleDetails = customer.getFsIncomeRangeMaster();
+			incomeDto.setIncomeRangeFrom(articleDetails.getIncomeRangeFrom());
+			incomeDto.setIncomeRangeTo(articleDetails.getIncomeRangeTo());
+		} else {
+
+			if (customer.getAnnualIncomeFrom() == null || customer.getAnnualIncomeTo() == null) {
+				throw new GlobalException("Please set Annual Income range");
+			}
+			if (customer.getFsArticleDetails().getArticleDetailId() == null) {
+				throw new GlobalException("Please set your designation");
+			}
+
+			if (customerEmploymentInfo.getEmployerName() == null) {
+				throw new GlobalException("Please set your company name");
+			}
+			incomeDto.setIncomeRangeFrom(customer.getAnnualIncomeFrom());
+			incomeDto.setIncomeRangeTo(customer.getAnnualIncomeTo());
+
+			incomeDto.setArticleDetailId(customer.getFsArticleDetails().getArticleDetailId());
+			incomeDto.setCompanyName(customerEmploymentInfo.getEmployerName());
+			incomeDto.setFileName(customerEmploymentInfo.getFileName());
+		}
+
 		return AmxApiResponse.build(incomeDto);
-	
+
 	}
 
 	
