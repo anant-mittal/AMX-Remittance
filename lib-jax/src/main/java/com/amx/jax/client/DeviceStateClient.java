@@ -49,7 +49,6 @@ public class DeviceStateClient implements IDeviceStateService {
 		}
 	}
 
-
 	@Override
 	public AmxApiResponse<BoolRespModel, Object> updateRemittanceState(
 			ClientType deviceType,
@@ -118,6 +117,25 @@ public class DeviceStateClient implements IDeviceStateService {
 		try {
 			LOGGER.debug("in updateCustomerRegStateData");
 			String url = appConfig.getJaxURL() + Path.DEVICE_STATE_CUSTOMER_REG_UPDATE;
+			return restService.ajax(url).meta(new JaxMetaInfo())
+					.queryParam(Params.TERMINAL_ID, countryBranchSystemInventoryId)
+					.queryParam(Params.DEVICE_TYPE, deviceType).queryParam(Params.EMPLOYEE_ID, employeeId)
+					.post(metaInfo)
+					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in updateCustomerRegStateData : ", e);
+			return JaxSystemError.evaluate(e);
+		}
+	}
+
+	@Override
+	public AmxApiResponse<BoolRespModel, Object> updateCustomerProfileStateData(ClientType deviceType,
+			Integer countryBranchSystemInventoryId, SignaturePadCustomerRegStateMetaInfo metaInfo,
+			BigDecimal employeeId) {
+		try {
+			LOGGER.debug("in updateCustomerProfileStateData");
+			String url = appConfig.getJaxURL() + Path.DEVICE_STATE_CUSTOMER_PROFILE_UPDATE;
 			return restService.ajax(url).meta(new JaxMetaInfo())
 					.queryParam(Params.TERMINAL_ID, countryBranchSystemInventoryId)
 					.queryParam(Params.DEVICE_TYPE, deviceType).queryParam(Params.EMPLOYEE_ID, employeeId)

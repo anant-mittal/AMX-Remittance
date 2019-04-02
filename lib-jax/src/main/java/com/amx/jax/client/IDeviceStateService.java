@@ -24,6 +24,7 @@ public interface IDeviceStateService extends IJaxService {
 
 		public static final String DEVICE_STATE_REMITTANCE_UPDATE = PREFIX + "/updatestateremittance";
 		public static final String DEVICE_STATE_CUSTOMER_REG_UPDATE = PREFIX + "/updatestatecustreg";
+		public static final String DEVICE_STATE_CUSTOMER_PROFILE_UPDATE = PREFIX + "/updatestatecustprofile";
 		public static final String DEVICE_FC_SALE_UPDATE = PREFIX + "/fcsale";
 		public static final String DEVICE_FC_PURCHASE_UPDATE = PREFIX + "/fcpurchase";
 		public static final String DEVICE_STATE_CLEAR = PREFIX + "/clearstate";
@@ -64,6 +65,11 @@ public interface IDeviceStateService extends IJaxService {
 
 	@ApiJaxStatus({ JaxError.CLIENT_NOT_LOGGGED_IN, JaxError.CLIENT_NOT_FOUND, JaxError.CLIENT_NOT_ACTIVE })
 	AmxApiResponse<BoolRespModel, Object> updateCustomerRegStateData(ClientType deviceType,
+			Integer countryBranchSystemInventoryId, SignaturePadCustomerRegStateMetaInfo metaInfo,
+			BigDecimal employeeId);
+
+	@ApiJaxStatus({ JaxError.CLIENT_NOT_LOGGGED_IN, JaxError.CLIENT_NOT_FOUND, JaxError.CLIENT_NOT_ACTIVE })
+	AmxApiResponse<BoolRespModel, Object> updateCustomerProfileStateData(ClientType deviceType,
 			Integer countryBranchSystemInventoryId, SignaturePadCustomerRegStateMetaInfo metaInfo,
 			BigDecimal employeeId);
 

@@ -25,7 +25,6 @@ import com.amx.jax.client.IDeviceStateService;
 import com.amx.jax.model.request.device.SignaturePadCustomerRegStateMetaInfo;
 import com.amx.jax.model.request.device.SignaturePadFCPurchaseSaleInfo;
 import com.amx.jax.model.request.device.SignaturePadRemittanceInfo;
-import com.amx.jax.signpad.SignPadBox;
 import com.amx.jax.signpad.TerminalData;
 import com.amx.jax.sso.SSOUser;
 import com.amx.jax.swagger.IStatusCodeListPlugin.ApiStatusService;
@@ -183,6 +182,15 @@ public class TerminalController {
 			@RequestParam Integer terminalId, @RequestParam BigDecimal employeeId,
 			@RequestBody SignaturePadCustomerRegStateMetaInfo signaturePadRemittanceInfo) {
 		return terminalService.updateCustomerRegStateData(terminalId, employeeId, signaturePadRemittanceInfo);
+	}
+
+	@ResponseBody
+	@ApiOperation("To update the status of Customer Profile update")
+	@RequestMapping(value = { Path.TERMINAL_STATUS_CUST_PROFILE }, method = { RequestMethod.POST })
+	public AmxApiResponse<BoolRespModel, Object> updateCustomerProfileStateData(
+			@RequestParam Integer terminalId, @RequestParam BigDecimal employeeId,
+			@RequestBody SignaturePadCustomerRegStateMetaInfo signaturePadRemittanceInfo) {
+		return terminalService.updateCustomerProfileStateData(terminalId, employeeId, signaturePadRemittanceInfo);
 	}
 
 }
