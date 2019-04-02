@@ -80,6 +80,8 @@ public class RemitPriceManager {
 	static {
 		ValidServiceIndicatorIds.add(new BigDecimal(101));
 		ValidServiceIndicatorIds.add(new BigDecimal(102));
+		
+		//ValidServiceIndicatorIds.add(new BigDecimal(103));
 	}
 
 	/**

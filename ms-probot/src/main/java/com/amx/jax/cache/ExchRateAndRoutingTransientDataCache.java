@@ -86,11 +86,11 @@ public class ExchRateAndRoutingTransientDataCache {
 		this.bankDetails = bankDetails;
 	}
 
-	public List<TransientRoutingComputeDetails> getRoutingMatrix() {
+	public List<TransientRoutingComputeDetails> getRoutingMatrixData() {
 		return routingMatrixData;
 	}
 
-	public void setRoutingMatrix(List<TransientRoutingComputeDetails> routingMatrix) {
+	public void setRoutingMatrixData(List<TransientRoutingComputeDetails> routingMatrix) {
 		this.routingMatrixData = routingMatrix;
 	}
 
@@ -100,14 +100,6 @@ public class ExchRateAndRoutingTransientDataCache {
 
 	public void setInfo(Map<String, Object> info) {
 		this.info = info;
-	}
-
-	public List<TransientRoutingComputeDetails> getRoutingMatrixData() {
-		return routingMatrixData;
-	}
-
-	public void setRoutingMatrixData(List<TransientRoutingComputeDetails> routingMatrixData) {
-		this.routingMatrixData = routingMatrixData;
 	}
 
 	public boolean isHolidayListSetForCountry(BigDecimal countryId) {

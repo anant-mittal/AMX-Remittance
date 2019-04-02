@@ -3,6 +3,7 @@
  */
 package com.amx.jax.pricer.service;
 
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,19 +12,23 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.amx.jax.cache.ExchRateAndRoutingTransientDataCache;
+import com.amx.jax.cache.TransientRoutingComputeDetails;
 import com.amx.jax.pricer.dao.CustomerDao;
 import com.amx.jax.pricer.dbmodel.Customer;
 import com.amx.jax.pricer.dbmodel.ViewExRoutingMatrix;
 import com.amx.jax.pricer.dto.ExchangeRateAndRoutingRequest;
+import com.amx.jax.pricer.dto.ExchangeRateAndRoutingResponse;
 import com.amx.jax.pricer.dto.ExchangeRateDetails;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.dto.PricingResponseDTO;
+import com.amx.jax.pricer.dto.TrnxRoutingDetails;
 import com.amx.jax.pricer.exception.PricerServiceError;
 import com.amx.jax.pricer.exception.PricerServiceException;
 import com.amx.jax.pricer.manager.CustomerDiscountManager;
@@ -143,9 +148,25 @@ public class ExchangePricingAndRoutingService {
 
 	}
 
-	public PricingResponseDTO fetchRemitRoutesAndPrices(ExchangeRateAndRoutingRequest exchangeRateAndRoutingRequest) {
+	public ExchangeRateAndRoutingResponse fetchRemitRoutesAndPrices(
+			ExchangeRateAndRoutingRequest exchangeRateAndRoutingRequest) {
 
-		List<ViewExRoutingMatrix> routingMatrix = remitRoutingManager.getRoutingMatrixForRemittance(exchangeRateAndRoutingRequest);
+
+		validatePricingRequest(exchangeRateAndRoutingRequest, Boolean.TRUE);
+
+		Customer customer = customerDao.getCustById(exchangeRateAndRoutingRequest.getCustomerId());
+
+		if (null == customer) {
+
+			LOGGER.info("Invalid Customer Id : " + exchangeRateAndRoutingRequest.getCustomerId());
+
+			throw new PricerServiceException(PricerServiceError.INVALID_CUSTOMER,
+					"Invalid Customer : None Found : " + exchangeRateAndRoutingRequest.getCustomerId());
+
+		}
+
+		List<ViewExRoutingMatrix> routingMatrix = remitRoutingManager
+				.getRoutingMatrixForRemittance(exchangeRateAndRoutingRequest);
 
 		List<BigDecimal> routingBankIds = routingMatrix.stream().map(rm -> rm.getRoutingBankId()).distinct()
 				.collect(Collectors.toList());
@@ -156,19 +177,52 @@ public class ExchangePricingAndRoutingService {
 
 		remitPriceManager.computeBaseSellRatesPrices(exchangeRateAndRoutingRequest);
 
-		PricingResponseDTO pricingResponseDTO = new PricingResponseDTO();
-
-		pricingResponseDTO.setBankDetails(exchRateAndRoutingTransientDataCache.getBankDetails());
-
-		pricingResponseDTO.setSellRateDetails(exchRateAndRoutingTransientDataCache.getSellRateDetails());
-
-		Collections.sort(pricingResponseDTO.getSellRateDetails(), Collections.reverseOrder());
+		customerDiscountManager.getDiscountedRates(exchangeRateAndRoutingRequest, customer, CUSTOMER_CATEGORY.BRONZE);
 
 		remitRoutingManager.computeTrnxRoutesAndDelivery(exchangeRateAndRoutingRequest);
 
-		
-		
-		return pricingResponseDTO;
+		ExchangeRateAndRoutingResponse resp = new ExchangeRateAndRoutingResponse();
+
+		/**
+		 * Fill In the Rate Details
+		 */
+		resp.setTrnxBeginTimeEpoch(exchRateAndRoutingTransientDataCache.getTrnxBeginTime());
+		resp.setBankDetails(exchRateAndRoutingTransientDataCache.getBankDetails());
+		resp.setSellRateDetails(exchRateAndRoutingTransientDataCache.getSellRateDetails());
+
+		Collections.sort(resp.getSellRateDetails(), Collections.reverseOrder());
+
+		/**
+		 * Fill In Routing Details
+		 */
+
+		List<TransientRoutingComputeDetails> routingMatrixData = exchRateAndRoutingTransientDataCache
+				.getRoutingMatrixData();
+
+		List<TrnxRoutingDetails> trnxRoutingPaths = new ArrayList<TrnxRoutingDetails>();
+
+		for (TransientRoutingComputeDetails routeDetails : routingMatrixData) {
+
+			TrnxRoutingDetails responseRouteDetails = new TrnxRoutingDetails();
+
+			try {
+				BeanUtils.copyProperties(responseRouteDetails, routeDetails.getViewExRoutingMatrix());
+			} catch (IllegalAccessException | InvocationTargetException e) {
+				// Ignore
+				e.printStackTrace();
+			}
+
+			responseRouteDetails.setEstimatedDeliveryDetails(routeDetails.getFinalDeliveryDetails());
+			trnxRoutingPaths.add(responseRouteDetails);
+		}
+
+		Collections.sort(trnxRoutingPaths, Collections.reverseOrder());
+
+		resp.setTrnxRoutingPaths(trnxRoutingPaths);
+
+		// resp.setInfo(exchRateAndRoutingTransientDataCache.getInfo());
+
+		return resp;
 
 	}
 

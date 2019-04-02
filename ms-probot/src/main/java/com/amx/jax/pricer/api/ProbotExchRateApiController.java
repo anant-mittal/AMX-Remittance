@@ -22,10 +22,11 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.cache.ExchRateAndRoutingTransientDataCache;
 import com.amx.jax.pricer.ProbotExchangeRateService;
 import com.amx.jax.pricer.dto.ExchangeRateAndRoutingRequest;
+import com.amx.jax.pricer.dto.ExchangeRateAndRoutingResponse;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.dto.PricingResponseDTO;
-import com.amx.jax.pricer.service.HolidayListService;
 import com.amx.jax.pricer.service.ExchangePricingAndRoutingService;
+import com.amx.jax.pricer.service.HolidayListService;
 
 @RestController
 public class ProbotExchRateApiController implements ProbotExchangeRateService {
@@ -54,7 +55,8 @@ public class ProbotExchRateApiController implements ProbotExchangeRateService {
 		LOGGER.info("Received Pricing Request from customer Id : " + pricingRequestDTO.getCustomerId()
 				+ " with TraceId: " + AppContextUtil.getTraceId());
 
-		PricingResponseDTO pricingResponseDTO = exchangePricingAndRoutingService.fetchRemitPricesForCustomer(pricingRequestDTO);
+		PricingResponseDTO pricingResponseDTO = exchangePricingAndRoutingService
+				.fetchRemitPricesForCustomer(pricingRequestDTO);
 
 		if (null == pricingResponseDTO.getInfo()) {
 			pricingResponseDTO.setInfo(new HashMap<>());
@@ -71,13 +73,13 @@ public class ProbotExchRateApiController implements ProbotExchangeRateService {
 
 		LOGGER.info("Received Base Rate Request " + " with TraceId: " + AppContextUtil.getTraceId());
 
-		PricingResponseDTO pricingResponseDTO = exchangePricingAndRoutingService.fetchBaseRemitPrices(pricingRequestDTO);
+		PricingResponseDTO pricingResponseDTO = exchangePricingAndRoutingService
+				.fetchBaseRemitPrices(pricingRequestDTO);
 
 		return AmxApiResponse.build(pricingResponseDTO);
 
 	}
-	
-	
+
 	@Override
 	@RequestMapping(value = ApiEndPoints.FETCH_DISCOUNTED_RATES, method = RequestMethod.POST)
 	public AmxApiResponse<PricingResponseDTO, Object> fetchDiscountedRates(
@@ -94,15 +96,16 @@ public class ProbotExchRateApiController implements ProbotExchangeRateService {
 
 	@Override
 	@RequestMapping(value = ApiEndPoints.FETCH_REMIT_ROUTES_PRICES, method = RequestMethod.POST)
-	public AmxApiResponse<PricingResponseDTO, Object> fetchRemitRoutesAndPrices(
+	public AmxApiResponse<ExchangeRateAndRoutingResponse, Object> fetchRemitRoutesAndPrices(
 			@RequestBody @Valid ExchangeRateAndRoutingRequest dprRequestDTO) {
 
 		LOGGER.info("Received Fetch Remit Routes and Prices Request for Customer and beneficiary" + " with TraceId: "
 				+ AppContextUtil.getTraceId());
 
-		PricingResponseDTO pricingResponseDTO = exchangePricingAndRoutingService.fetchRemitRoutesAndPrices(dprRequestDTO);
+		ExchangeRateAndRoutingResponse exchangeRateAndRoutingResponse = exchangePricingAndRoutingService
+				.fetchRemitRoutesAndPrices(dprRequestDTO);
 
-		return AmxApiResponse.build(pricingResponseDTO);
+		return AmxApiResponse.build(exchangeRateAndRoutingResponse);
 
 	}
 

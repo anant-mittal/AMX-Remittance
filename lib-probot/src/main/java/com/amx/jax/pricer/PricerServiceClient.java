@@ -17,6 +17,7 @@ import com.amx.jax.logger.LoggerService;
 import com.amx.jax.pricer.dto.DiscountDetailsReqRespDTO;
 import com.amx.jax.pricer.dto.DiscountMgmtReqDTO;
 import com.amx.jax.pricer.dto.ExchangeRateAndRoutingRequest;
+import com.amx.jax.pricer.dto.ExchangeRateAndRoutingResponse;
 import com.amx.jax.pricer.dto.HolidayResponseDTO;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.dto.PricingResponseDTO;
@@ -99,13 +100,15 @@ public class PricerServiceClient implements ProbotExchangeRateService, ProbotDat
 	}
 
 	@Override
-	public AmxApiResponse<PricingResponseDTO, Object> fetchRemitRoutesAndPrices(ExchangeRateAndRoutingRequest dprRequestDTO) {
+	public AmxApiResponse<ExchangeRateAndRoutingResponse, Object> fetchRemitRoutesAndPrices(
+			ExchangeRateAndRoutingRequest dprRequestDTO) {
 
 		LOGGER.info("Get Remit Routes for Rate/Price Request Called for : transaction Id: {}, with TraceId: {}",
 				AppContextUtil.getTranxId(), AppContextUtil.getTraceId());
 
 		return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.FETCH_REMIT_ROUTES_PRICES)
-				.post(dprRequestDTO).as(new ParameterizedTypeReference<AmxApiResponse<PricingResponseDTO, Object>>() {
+				.post(dprRequestDTO)
+				.as(new ParameterizedTypeReference<AmxApiResponse<ExchangeRateAndRoutingResponse, Object>>() {
 				});
 	}
 

@@ -60,12 +60,12 @@ public class RemitRoutingManager {
 	 */
 	public void computeTrnxRoutesAndDelivery(ExchangeRateAndRoutingRequest exchangeRateAndRoutingRequest) {
 
-		List<TransientRoutingComputeDetails> routingDetailsList = transientDataCache.getRoutingMatrix();
+		List<TransientRoutingComputeDetails> routingDetailsList = transientDataCache.getRoutingMatrixData();
 
 		// Get Routing Matrix Data if not already computed.
 		if (null == routingDetailsList || routingDetailsList.isEmpty()) {
 			this.getRoutingMatrixForRemittance(exchangeRateAndRoutingRequest);
-			routingDetailsList = transientDataCache.getRoutingMatrix();
+			routingDetailsList = transientDataCache.getRoutingMatrixData();
 		}
 
 		// 1. Process Delivery for Correspondent or Routing Banks for all the Available
@@ -94,11 +94,19 @@ public class RemitRoutingManager {
 								+ exchangeRateAndRoutingRequest.toJSON());
 			}
 
+			boolean noHolidayLag = Boolean.FALSE;
+
+			long remitModeId = oneMatrix.getRemittanceModeId().longValue();
+
+			if (remitModeId == 3 || remitModeId == 33) {
+				noHolidayLag = true;
+			}
+
 			EstimatedDeliveryDetails estmdCBDeliveryDetails = this.getEstimatedBlockDelivery(
 					transientDataCache.getTrnxBeginTime(), timezone, oneMatrix.getWeekFrom(), oneMatrix.getWeekTo(),
 					oneMatrix.getWeekHoursFrom(), oneMatrix.getWeekHoursTo(), oneMatrix.getWeekendFrom(),
 					oneMatrix.getWeekendTo(), oneMatrix.getWeekendHoursFrom(), oneMatrix.getWeekendHoursTo(),
-					oneMatrix.getDelievryMinutes(), Boolean.FALSE, routingCountryId);
+					oneMatrix.getDelievryMinutes(), noHolidayLag, routingCountryId);
 
 			routingDetails.setRoutingBankDeliveryDetails(estmdCBDeliveryDetails);
 
@@ -263,12 +271,15 @@ public class RemitRoutingManager {
 
 	}
 
-	public List<ViewExRoutingMatrix> getRoutingMatrixForRemittance(ExchangeRateAndRoutingRequest exchangeRateAndRoutingRequest) {
+	public List<ViewExRoutingMatrix> getRoutingMatrixForRemittance(
+			ExchangeRateAndRoutingRequest exchangeRateAndRoutingRequest) {
 
 		List<ViewExRoutingMatrix> routingMatrix = viewExRoutingMatrixDao.getRoutingMatrix(
 				exchangeRateAndRoutingRequest.getLocalCountryId(), exchangeRateAndRoutingRequest.getForeignCountryId(),
-				exchangeRateAndRoutingRequest.getBeneficiaryBankId(), exchangeRateAndRoutingRequest.getBeneficiaryBranchId(),
-				exchangeRateAndRoutingRequest.getForeignCurrencyId(), exchangeRateAndRoutingRequest.getServiceGroup().getGroupCode());
+				exchangeRateAndRoutingRequest.getBeneficiaryBankId(),
+				exchangeRateAndRoutingRequest.getBeneficiaryBranchId(),
+				exchangeRateAndRoutingRequest.getForeignCurrencyId(),
+				exchangeRateAndRoutingRequest.getServiceGroup().getGroupCode());
 
 		System.out.println(" Routing matrix ==>  " + JsonUtil.toJson(routingMatrix));
 
@@ -289,7 +300,7 @@ public class RemitRoutingManager {
 			routingComputationObjects.add(obj);
 		}
 
-		transientDataCache.setRoutingMatrix(routingComputationObjects);
+		transientDataCache.setRoutingMatrixData(routingComputationObjects);
 
 		return routingMatrix;
 
