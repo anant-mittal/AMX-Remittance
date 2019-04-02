@@ -14,6 +14,7 @@ public class SignPadData implements Serializable {
 	DeviceStatusInfoDto stateData;
 	DeviceState deviceState;
 	long updatestamp;
+	long changeStamp;
 
 	public long getUpdatestamp() {
 		return updatestamp;
@@ -29,6 +30,7 @@ public class SignPadData implements Serializable {
 
 	public void setDeviceState(DeviceState deviceState) {
 		this.deviceState = deviceState;
+		this.changeStamp = System.currentTimeMillis();
 	}
 
 	public DeviceStatusInfoDto getStateData() {
@@ -37,6 +39,7 @@ public class SignPadData implements Serializable {
 
 	public void setStateData(DeviceStatusInfoDto stateData) {
 		this.stateData = stateData;
+		this.changeStamp = System.currentTimeMillis();
 	}
 
 	public FileSubmitRequestModel getSignature() {
@@ -45,5 +48,19 @@ public class SignPadData implements Serializable {
 
 	public void setSignature(FileSubmitRequestModel signature) {
 		this.signature = signature;
+		this.changeStamp = System.currentTimeMillis();
+	}
+
+	/**
+	 * Timestamp represents when last change was made to any data in SignPad
+	 * 
+	 * @return
+	 */
+	public long getChangeStamp() {
+		return changeStamp;
+	}
+
+	public void setChangeStamp(long changeStamp) {
+		this.changeStamp = changeStamp;
 	}
 }

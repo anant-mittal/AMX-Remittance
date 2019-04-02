@@ -23,6 +23,7 @@ import com.amx.jax.adapter.ACardReaderService.CardStatus;
 import com.amx.jax.adapter.ACardReaderService.DataStatus;
 import com.amx.jax.adapter.ACardReaderService.DeviceStatus;
 import com.amx.utils.Constants;
+import com.amx.utils.StringUtils;
 
 @Component
 public class SWAdapterGUI extends JFrame {
@@ -157,7 +158,8 @@ public class SWAdapterGUI extends JFrame {
 		statusData.setBackground(Color.LIGHT_GRAY);
 		statusData.setFont(font);
 
-		//newPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Card Reader Status"));
+		// newPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
+		// "Card Reader Status"));
 
 		textArea = new JTextArea();
 		textArea.setFont(new Font("monospaced", Font.PLAIN, 8));
@@ -247,15 +249,15 @@ public class SWAdapterGUI extends JFrame {
 	public void log(String message) {
 		LOG = message;
 		logWindow(message);
-		labelDescription.setText(message.substring(0, 42));
+		labelDescription.setText(StringUtils.substring(message, 42));
 		labelDescriptionDetail.setText("");
 	}
 
 	public void log(String message, String detail) {
 		LOG = message;
 		logWindow(message + " - " + detail);
-		labelDescription.setText(message.substring(0, 60));
-		labelDescriptionDetail.setText(detail.substring(0, 100));
+		labelDescription.setText(StringUtils.substring(message, 60));
+		labelDescriptionDetail.setText(StringUtils.substring(detail, 100));
 	}
 
 	public static void updateTitle(String title) {

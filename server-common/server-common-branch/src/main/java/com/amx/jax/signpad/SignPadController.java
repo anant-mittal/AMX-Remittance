@@ -21,11 +21,11 @@ import com.amx.jax.client.IDeviceStateService;
 import com.amx.jax.constant.DeviceState;
 import com.amx.jax.device.DeviceData;
 import com.amx.jax.device.DeviceRequest;
-import com.amx.jax.device.TerminalBox;
-import com.amx.jax.device.TerminalData;
 import com.amx.jax.http.ApiRequest;
 import com.amx.jax.http.RequestType;
 import com.amx.jax.model.response.DeviceStatusInfoDto;
+import com.amx.jax.terminal.TerminalBox;
+import com.amx.jax.terminal.TerminalService;
 import com.amx.jax.terminal.TerminalConstants.Path;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.File.Type;
@@ -61,6 +61,9 @@ public class SignPadController {
 	@Autowired
 	private TerminalBox terminalBox;
 
+	@Autowired
+	TerminalService terminalService;
+
 	@Autowired(required = false)
 	private SSOUser sSOUser;
 
@@ -76,6 +79,7 @@ public class SignPadController {
 		SignPadData signPadData = signPadBox.getOrDefault(deviceData.getTerminalId());
 
 		boolean isTerminalUpdated = signPadData.getUpdatestamp() < terminalData.getUpdatestamp();
+		boolean isSignPadDataStaled = signPadData.getChangeStamp() < terminalData.getStartStamp();
 
 		if (ArgUtil.isEmpty(signPadData)
 				|| ArgUtil.isEmpty(signPadData.getDeviceState())
@@ -138,16 +142,20 @@ public class SignPadController {
 			defaultRespo.setResult(signPadData.getStateData());
 
 		}
-		
-		//System.out.println("TerminalStatus"+terminalData.getStatus());
 
-		if (isSuccessTimeout
+		// System.out.println("TerminalStatus"+terminalData.getStatus());
+
+		if ((isSuccessTimeout || isSignPadDataStaled)
 				&& !ArgUtil.isEmpty(signPadData.getStateData())
 				&& !ArgUtil.isEmpty(signPadData.getStateData().getStateDataType())) {
 			deviceStateClient.clearDeviceState(ArgUtil.parseAsInteger(deviceRequestValidator.getDeviceRegId()),
 					deviceRequestValidator.getDeviceRegToken(),
 					deviceRequestValidator.getDeviceSessionToken());
+			signPadData.setSignature(null);
 			signPadData.setStateData(new DeviceStatusInfoDto());
+			signPadBox.fastPut(deviceData.getTerminalId(), signPadData);
+		} else if (isSignPadDataStaled && !ArgUtil.isEmpty(signPadData.getStateData())) {
+			signPadData.setSignature(null);
 			signPadBox.fastPut(deviceData.getTerminalId(), signPadData);
 		}
 
@@ -164,7 +172,6 @@ public class SignPadController {
 		SignPadData signPadData = signPadBox.getOrDefault(deviceData.getTerminalId());
 		signPadData.setSignature(file);
 		signPadBox.fastPut(deviceData.getTerminalId(), signPadData);
-
 		return deviceStateClient.updateSignatureStateData(
 				ArgUtil.parseAsInteger(deviceRequestValidator.getDeviceRegId()),
 				file.getData());
