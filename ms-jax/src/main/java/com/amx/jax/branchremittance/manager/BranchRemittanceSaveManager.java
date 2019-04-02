@@ -2,7 +2,6 @@ package com.amx.jax.branchremittance.manager;
 
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.sql.Clob;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -21,8 +20,6 @@ import org.springframework.stereotype.Component;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
-import com.amx.amxlib.model.PersonInfo;
-import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.branchremittance.dao.BranchRemittanceDao;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constants.JaxTransactionStatus;
@@ -83,7 +80,6 @@ import com.amx.jax.repository.IDocumentDao;
 import com.amx.jax.repository.IPaymentModeDescRespo;
 import com.amx.jax.repository.IPlaceOrderDao;
 import com.amx.jax.repository.IRemitApplAmlRepository;
-import com.amx.jax.repository.IRemittanceAmlRepository;
 import com.amx.jax.repository.IRemittanceTransactionRepository;
 import com.amx.jax.repository.IShoppingCartDetailsRepository;
 import com.amx.jax.repository.PaymentModeRepository;
@@ -97,7 +93,6 @@ import com.amx.jax.services.JaxNotificationService;
 import com.amx.jax.services.RemittanceApplicationService;
 import com.amx.jax.services.ReportManagerService;
 import com.amx.jax.services.TransactionHistroyService;
-import com.amx.jax.userservice.dao.CusmosDao;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.DateUtil;
@@ -852,15 +847,13 @@ public   List<RemittanceAdditionalInstructionData>   saveRemitnaceinstructionDat
 		
 			addInstList.add(remitAddData);
 			
-		}else {
+		}
+			}else {
 			throw new GlobalException(JaxError.NO_RECORD_FOUND,"Record found in appl additional instruction  :"+remitTrnx.getApplicationDocumentNo());
 		}
-	 }else {
-			throw new GlobalException(JaxError.NO_RECORD_FOUND,"Record found in appl additional instruction  :"+remitTrnx.getApplicationDocumentNo());
-		}
-	 
+	  
+	 }
 	 return addInstList;
-	
 }
 
 
@@ -1175,41 +1168,42 @@ public BigDecimal generateDocumentNumber(BigDecimal appCountryId,BigDecimal comp
  } 
  
  
- public Boolean sendReceiptOnEmail(BigDecimal collectionDocNo,BigDecimal collectionDocYear ,BigDecimal collectionDocCode){
-	 Boolean validStatus = Boolean.FALSE;
-	 PaymentResponseDto paymentResponse =new PaymentResponseDto();
-	 try {
-	 TransactionHistroyDTO trxnDto = new TransactionHistroyDTO();
-		Customer customer = customerDao.getCustById(metaData.getCustomerId());
-		paymentResponse.setCollectionDocumentCode(collectionDocCode);
-		paymentResponse.setCollectionDocumentNumber(collectionDocNo);
-		paymentResponse.setCollectionFinanceYear(collectionDocYear);
-		
-		trxnDto.setCollectionDocumentCode(collectionDocCode);
-		trxnDto.setCollectionDocumentFinYear(collectionDocYear);
-		trxnDto.setCollectionDocumentNo(collectionDocNo);
-		trxnDto.setCustomerId(customer.getCustomerId());
-		trxnDto.setCompanyId(metaData.getCompanyId());
-		trxnDto.setLanguageId(metaData.getLanguageId());
-		trxnDto.setApplicationCountryId(metaData.getCountryId());
-		trxnDto.setCustomerReference(customer.getCustomerReference());
-		reportManagerService.generatePersonalRemittanceReceiptReportDetails(trxnDto, Boolean.TRUE);
-		List<RemittanceReceiptSubreport> rrsrl = reportManagerService.getRemittanceReceiptSubreportList();
-		PersonInfo personinfo = new PersonInfo();
+	public Boolean sendReceiptOnEmail(BigDecimal collectionDocNo, BigDecimal collectionDocYear,
+			BigDecimal collectionDocCode) {
+		Boolean validStatus = Boolean.FALSE;
+		PaymentResponseDto paymentResponse = new PaymentResponseDto();
 		try {
-			BeanUtils.copyProperties(personinfo, customer);
+			TransactionHistroyDTO trxnDto = new TransactionHistroyDTO();
+			Customer customer = customerDao.getCustById(metaData.getCustomerId());
+			paymentResponse.setCollectionDocumentCode(collectionDocCode);
+			paymentResponse.setCollectionDocumentNumber(collectionDocNo);
+			paymentResponse.setCollectionFinanceYear(collectionDocYear);
+
+			trxnDto.setCollectionDocumentCode(collectionDocCode);
+			trxnDto.setCollectionDocumentFinYear(collectionDocYear);
+			trxnDto.setCollectionDocumentNo(collectionDocNo);
+			trxnDto.setCustomerId(customer.getCustomerId());
+			trxnDto.setCompanyId(metaData.getCompanyId());
+			trxnDto.setLanguageId(metaData.getLanguageId());
+			trxnDto.setApplicationCountryId(metaData.getCountryId());
+			trxnDto.setCustomerReference(customer.getCustomerReference());
+			reportManagerService.generatePersonalRemittanceReceiptReportDetails(trxnDto, Boolean.TRUE);
+			List<RemittanceReceiptSubreport> rrsrl = reportManagerService.getRemittanceReceiptSubreportList();
+			PersonInfo personinfo = new PersonInfo();
+			try {
+				BeanUtils.copyProperties(personinfo, customer);
+			} catch (Exception e) {
+			}
+
+			if (personinfo != null && rrsrl != null && !StringUtils.isBlank(personinfo.getEmail())) {
+				notificationService.sendTransactionNotification(rrsrl.get(0), personinfo);
+				validStatus = Boolean.TRUE;
+			}
 		} catch (Exception e) {
+			validStatus = Boolean.FALSE;
+			throw new GlobalException(JaxError.UNKNOWN_JAX_ERROR, e.getMessage());
 		}
-		
-		if(personinfo!=null && rrsrl != null && !StringUtils.isBlank(personinfo.getEmail())) {
-			notificationService.sendTransactionNotification(rrsrl.get(0), personinfo);
-			validStatus = Boolean.TRUE;
-		}
-	 }catch(Exception e) {
-		  validStatus = Boolean.FALSE;
-		  throw new  GlobalException(JaxError.UNKNOWN_JAX_ERROR,e.getMessage());
-	 }
-	    return validStatus;
- }
+		return validStatus;
+	}
  
  }
