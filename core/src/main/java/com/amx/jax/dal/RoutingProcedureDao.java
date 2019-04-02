@@ -460,10 +460,87 @@ public class RoutingProcedureDao {
 				if(!JaxUtil.isNullZeroBigDecimalCheck(ecmCode)) {
 					throw new GlobalException(JaxError.INVALID_CLAIM_CODE,"The claim code you have entered is not available in our records.");
 				}
-				
 			 return ecmCode;
 		 }
 		 
 		 
+		 public Map<String, Object> limitCheck(Map<String, Object> inputValues) {
+			 LOGGER.info("Cash Limit check:  " );
+				/**   INTO   W_CB_LIMIT, W_PASSPORT_LIMIT,W_GCC_CARD_LIMIT **/
+				String sql ="SELECT A.NUMERIC_FIELD1 W_CB_LIMIT, A.NUMERIC_FIELD2 W_PASSPORT_LIMIT ,A.NUMERIC_FIELD3 W_GCC_CARD_LIMIT"+
+			            " FROM   EX_PARAMETER_DETAILS  A, EX_APPLICATION_SETUP B "+
+			            " WHERE  A.RECORD_ID = 'CLMT' "+
+			            " AND    NVL(A.ISACTIVE,' ')  =   'Y' ";
+				List<BigDecimal> inputList = new ArrayList<>();
+				Map<String, Object> output = new HashMap<>();
+				try {
+					LOGGER.info("SQL  cashLimitCheck  : " +sql+"\n inputList.toArray() :"+inputList.toArray());
+					Map<String, Object> outputMap = jdbcTemplate.queryForMap(sql, inputList.toArray());
+					output.put("W_CB_LIMIT", outputMap.get("W_CB_LIMIT"));
+					output.put("W_PASSPORT_LIMIT", outputMap.get("W_PASSPORT_LIMIT"));
+					output.put("W_GCC_CARD_LIMIT", outputMap.get("W_GCC_CARD_LIMIT"));
+				} catch (Exception e) {
+					LOGGER.info("error in Please check bank service rule : " +e);
+				}
+				return output;
+		 }
 		 
+	public Map<String, Object> todayRemitAmount(Map<String, Object> inputValues) {
+		
+		BigDecimal customerId = inputValues.get("P_CUSTOMER_ID")==null?BigDecimal.ZERO:(BigDecimal)inputValues.get("P_CUSTOMER_ID");
+		String actMyear = inputValues.get("P_ACMMYY")==null?"":(String)inputValues.get("P_ACMMYY");
+		 Map<String, Object> output = new HashMap<>(); 
+		
+		if(JaxUtil.isNullZeroBigDecimalCheck(customerId)) {
+			 String sql =" select sum(c.COLLAMT) today_remit_amt "+
+					 	" from ex_remit_trnx a ,EX_COLLECT_DETAIL c "+
+					 	" where  a.customer_id =c.CUSTOMER_ID "+
+					 	" and a.COLLECTION_DOC_CODE = c.DOCUMENT_CODE "+
+					 	" and a.COLLECTION_DOCUMENT_NO =c.DOCUMENT_NO "+
+					 	" and c.COLLECTION_MODE ='C' "+
+					 	" and trunc(c.CREATED_DATE)=trunc(sysdate) "+
+					 	" and a.customer_id ="+customerId;
+			 List<BigDecimal> inputList = new ArrayList<>();
+			
+			 try {
+					LOGGER.info("SQL  cashLimitCheck  : " +sql+"\n inputList.toArray() :"+inputList.toArray());
+					Map<String, Object> outputMap = jdbcTemplate.queryForMap(sql, inputList.toArray());
+					output.put("REMIT_AMT", outputMap.get("today_remit_amt"));
+				} catch (Exception e) {
+					LOGGER.info("error in Please check bank service rule : " +e);
+				}
+			}
+				return output;
+		 
+		 }
+	
+	public Map<String, Object> todayReceiptAmount(Map<String, Object> inputValues) {
+		
+		BigDecimal customerId = inputValues.get("P_CUSTOMER_ID")==null?BigDecimal.ZERO:(BigDecimal)inputValues.get("P_CUSTOMER_ID");
+		String actMyear = inputValues.get("P_ACMMYY")==null?"":(String)inputValues.get("P_ACMMYY");
+		 Map<String, Object> output = new HashMap<>(); 
+		
+		if(JaxUtil.isNullZeroBigDecimalCheck(customerId)) {
+			 String sql ="  select sum(c.COLLAMT) today_remit_amt "+
+					 " from EX_RECEIPT_PAYMENT p ,EX_COLLECT_DETAIL c "+
+				  " where  p.customer_id =c.CUSTOMER_ID "+
+				  " and p.COLLECTION_DOC_CODE = c.DOCUMENT_CODE "+
+				  " and p.COLLECTION_DOCUMENT_NO =c.DOCUMENT_NO "+
+				  " and c.COLLECTION_MODE ='C' "+
+				  " and trunc(c.CREATED_DATE)=trunc(sysdate) "+
+				  " and p.DOCUMENT_CODE =74 "+
+				  " and p.customer_id ="+customerId; 
+			 List<BigDecimal> inputList = new ArrayList<>();
+			
+			 try {
+					LOGGER.info("SQL  receipt Pay  : " +sql+"\n inputList.toArray() :"+inputList.toArray());
+					Map<String, Object> outputMap = jdbcTemplate.queryForMap(sql, inputList.toArray());
+					output.put("REMIT_AMT", outputMap.get("today_remit_amt"));
+				} catch (Exception e) {
+					LOGGER.info("error in Please check bank service rule : " +e);
+				}
+			}
+				return output;
+		 
+		 }
 }

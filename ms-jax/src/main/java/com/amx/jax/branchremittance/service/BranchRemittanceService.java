@@ -30,6 +30,7 @@ import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
+import com.amx.jax.model.response.remittance.PaymentModeDto;
 import com.amx.jax.model.response.remittance.PaymentModeOfPaymentDto;
 import com.amx.jax.model.response.remittance.RemittanceDeclarationReportDto;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
@@ -90,11 +91,11 @@ public class BranchRemittanceService extends AbstractService{
 		return AmxApiResponse.build(custShpCart);
 	}
 	
-	public AmxApiResponse<PaymentModeOfPaymentDto, Object> fetchModeOfPayment(){
+	public AmxApiResponse<PaymentModeDto, Object> fetchModeOfPayment(){
 		validation.validateHeaderInfo();
 		BigDecimal languageId = metaData.getLanguageId();
-		List<PaymentModeOfPaymentDto> lstPaymentMode = branchRemittancePaymentManager.fetchModeOfPayment(languageId);
-		return AmxApiResponse.buildList(lstPaymentMode);
+		PaymentModeDto  lstPaymentMode= branchRemittancePaymentManager.fetchModeOfPayment(languageId);
+		return AmxApiResponse.build(lstPaymentMode);
 	}
 	
 	public AmxApiResponse<LocalBankDetailsDto, Object> fetchLocalBanks(){
