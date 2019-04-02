@@ -1,6 +1,7 @@
 
 package com.amx.jax.ui.api;
 
+import java.math.BigDecimal;
 import java.util.Locale;
 import java.util.Map;
 
@@ -21,6 +22,7 @@ import org.thymeleaf.spring4.SpringTemplateEngine;
 
 import com.amx.jax.AppConstants;
 import com.amx.jax.dict.AmxEnums.Products;
+import com.amx.jax.dict.ContactType;
 import com.amx.jax.dict.Language;
 import com.amx.jax.error.ApiJaxStatusBuilder.ApiJaxStatus;
 import com.amx.jax.error.JaxError;
@@ -211,11 +213,13 @@ public class HomeController {
 		return templateEngine.process("json/apple-app-site-association", context);
 	}
 
-	@RequestMapping(value = { "/pub/verify/{vercode}" }, method = { RequestMethod.GET, RequestMethod.POST })
-	public String verification(Model model, @RequestParam String verid, @RequestParam String vercode) {
-
-		
-		
-		return "verify-expired";
+	@RequestMapping(value = { "/pub/verify/{contactType}/{verId}/{verCode}" },
+			method = { RequestMethod.GET, RequestMethod.POST })
+	public String verification(Model model,
+			@RequestParam ContactType contactType, @RequestParam BigDecimal verId, @RequestParam String verCode) {
+		model.addAttribute("contactType", contactType);
+		model.addAttribute("verId", verId);
+		model.addAttribute("verCode", verCode);
+		return "verify";
 	}
 }
