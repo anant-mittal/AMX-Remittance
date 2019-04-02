@@ -33,7 +33,6 @@ import com.amx.jax.http.ApiRequest;
 import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.http.RequestType;
 import com.amx.jax.logger.LoggerService;
-import com.amx.jax.model.customer.CustomerContactVerificationDto;
 import com.amx.jax.rest.RestService;
 import com.amx.jax.ui.UIConstants;
 import com.amx.jax.ui.WebAppConfig;
