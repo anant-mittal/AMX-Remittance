@@ -19,9 +19,9 @@ body, html {
 </head>
 <body>
 	<div id="app">
-		<span th:text="${errorCode}"></span> | 
-		<span th:text="${term.description}"></span> |
-		<span th:text="${term.description}"></span> |
+		<span th:text="${errorCode}"></span> | <span th:text="${errorMessage}"></span>
+		| <span th:text="${contactType}"></span> | <span th:text="${verId}"></span>
+		| <span th:text="${verCode}"></span> |
 		<form action="" method="post">
 			Enter Civil ID <input name="identity" value="" />
 			<button type="submit">Verify</button>
