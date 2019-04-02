@@ -59,6 +59,7 @@ import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.DistrictMaster;
 import com.amx.jax.dbmodel.DmsApplMapping;
 import com.amx.jax.dbmodel.DocBlobUpload;
+import com.amx.jax.dbmodel.Employee;
 import com.amx.jax.dbmodel.EmployeeDetails;
 import com.amx.jax.dbmodel.EmploymentTypeMasterView;
 import com.amx.jax.dbmodel.FieldList;
@@ -95,6 +96,7 @@ import com.amx.jax.repository.CountryMasterRepository;
 import com.amx.jax.repository.CustomerEmployeeDetailsRepository;
 import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.repository.DOCBLOBRepository;
+import com.amx.jax.repository.EmployeeRespository;
 import com.amx.jax.repository.EmploymentTypeRepository;
 import com.amx.jax.repository.IApplicationCountryRepository;
 import com.amx.jax.repository.IDMSAppMappingRepository;
@@ -241,6 +243,9 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 	OffsiteCustomerRegValidator offsiteCustomerRegValidator;
 	@Autowired
 	OffsiteCustomerRegManager offsiteCustomerRegManager;
+	
+	@Autowired
+	EmployeeRespository employeeRespository;
 
 	public AmxApiResponse<ComponentDataDto, Object> getIdTypes() {
 		List<Map<String, Object>> tempList = bizcomponentDao
@@ -617,6 +622,10 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 			CustomerEmploymentDetails customerEmploymentDetails) {
 		Customer customer = offsiteCustomerRegManager.getCustomerForRegistration(customerDetails.getIdentityInt(),
 				customerDetails.getIdentityTypeId());
+		
+		BigDecimal employeeId = metaData.getEmployeeId();
+		Employee employeeDetails = employeeRespository.findEmployeeById(employeeId);
+		
 		if (customer == null) {
 			LOGGER.info("creating new customer for offiste registration. idint {} idtype {}",
 					customerDetails.getIdentityInt(), customerDetails.getIdentityTypeId());
@@ -656,7 +665,8 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		PrefixEnum prefixEnum = PrefixEnum.getPrefixEnum(customerDetails.getTitle());
 		customer.setIsActive(ConstantDocument.No);
 		customer.setCountryId(customerDetails.getCountryId());
-		customer.setCreatedBy(metaData.getAppType() != null ? metaData.getAppType() : customerDetails.getIdentityInt());
+		//customer.setCreatedBy(metaData.getAppType() != null ? metaData.getAppType() : customerDetails.getIdentityInt());
+		customer.setCreatedBy(employeeDetails.getUserName() != null ? employeeDetails.getUserName() : customerDetails.getIdentityInt());
 		customer.setCreationDate(new Date());
 		customer.setIsOnlineUser(ConstantDocument.Yes);
 		customer.setGender(prefixEnum.getGender());

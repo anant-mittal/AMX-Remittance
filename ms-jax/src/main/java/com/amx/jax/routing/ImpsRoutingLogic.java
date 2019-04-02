@@ -94,6 +94,7 @@ public class ImpsRoutingLogic implements IRoutingLogic {
 					}
 					if (result) {
 						output.put("P_SERVICE_MASTER_ID", inputTemp.get("P_SERVICE_MASTER_ID"));
+						output.put("P_ROUTING_COUNTRY_ID", impsMasters.get(0).getFsCountryMaster().getCountryId());
 					}
 				}
 			}
