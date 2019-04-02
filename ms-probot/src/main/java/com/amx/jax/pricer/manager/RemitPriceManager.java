@@ -195,12 +195,12 @@ public class RemitPriceManager {
 
 				bankExchangeRates = exchangeRateDao.getBranchExchangeRatesForRoutingBanksAndServiceIds(
 						requestDto.getForeignCurrencyId(), requestDto.getCountryBranchId(),
-						requestDto.getForeignCountryId(), requestDto.getLocalCountryId(), validBankIds, serviceIdsList);
+						 requestDto.getLocalCountryId(), validBankIds, serviceIdsList);
 			} else {
 
 				bankExchangeRates = exchangeRateDao.getBranchExchangeRatesForRoutingBanks(
 						requestDto.getForeignCurrencyId(), requestDto.getCountryBranchId(),
-						requestDto.getForeignCountryId(), requestDto.getLocalCountryId(), validBankIds);
+						requestDto.getLocalCountryId(), validBankIds);
 
 			}
 
