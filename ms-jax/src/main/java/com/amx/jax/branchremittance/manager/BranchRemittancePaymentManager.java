@@ -3,9 +3,12 @@ package com.amx.jax.branchremittance.manager;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.beanutils.BeanUtils;
@@ -19,7 +22,9 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.dal.RoutingProcedureDao;
 import com.amx.jax.dao.BranchRemittancePaymentDao;
+import com.amx.jax.dbmodel.BanksView;
 import com.amx.jax.dbmodel.CurrencyMasterModel;
 import com.amx.jax.dbmodel.CurrencyWiseDenomination;
 import com.amx.jax.dbmodel.Customer;
@@ -39,14 +44,17 @@ import com.amx.jax.model.response.fx.FxEmployeeDetailsDto;
 import com.amx.jax.model.response.fx.FxExchangeRateBreakup;
 import com.amx.jax.model.response.fx.UserStockDto;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
+import com.amx.jax.model.response.remittance.ConfigDto;
 import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
 import com.amx.jax.model.response.remittance.CustomerShoppingCartDto;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
+import com.amx.jax.model.response.remittance.PaymentModeDto;
 import com.amx.jax.model.response.remittance.PaymentModeOfPaymentDto;
 import com.amx.jax.repository.IBankMasterFromViewDao;
 import com.amx.jax.repository.ICustomerRepository;
 import com.amx.jax.repository.RemittanceApplicationRepository;
 import com.amx.jax.service.CurrencyMasterService;
+import com.amx.jax.util.DateUtil;
 import com.amx.jax.util.RoundUtil;
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -76,6 +84,9 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 	
 	@Autowired
 	RemittanceApplicationRepository appRepository;
+	
+	@Autowired
+	RoutingProcedureDao routingProDao;
 	
 	
 
@@ -212,7 +223,11 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 		} else {
 			shoppingCartDataTableBean.setSpldealStatus(ConstantDocument.No);
 		}
-		shoppingCartDataTableBean.setRoutingBank(bankMaster.getBankListByBankId(shoppingCartDetails.getRoutingBankId()).get(0).getBankFullName());
+		
+		List<BanksView> bankView =bankMaster.getBankListByBankId(shoppingCartDetails.getRoutingBankId());
+		if(bankView != null && !bankView.isEmpty()) {
+			shoppingCartDataTableBean.setRoutingBank(bankView.get(0)==null?"":bankView.get(0).getBankFullName());
+		}
 		shoppingCartDataTableBean.setBeneRelationseqId(shoppingCartDetails.getBeneRelationseqId());
 		shoppingCartDataTableBean.setSourceOfIncomeId(shoppingCartDetails.getSourceofincome()==null?BigDecimal.ZERO:new BigDecimal(shoppingCartDetails.getSourceofincome()));
 		shoppingCartDataTableBean.setDomXRate(RoundUtil.roundBigDecimal(BigDecimal.ONE.divide(shoppingCartDetails.getExchangeRateApplied(),10,RoundingMode.HALF_UP),breakup.getFcDecimalNumber().intValue()));
@@ -227,14 +242,17 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 	 * @param   :fetch mode of payment
 	 * @return PaymentModeOfPaymentDto
 	 */
-	public List<PaymentModeOfPaymentDto> fetchModeOfPayment(BigDecimal languageId){
+	public PaymentModeDto fetchModeOfPayment(BigDecimal languageId){
+		PaymentModeDto dto = new PaymentModeDto();
 		List<PaymentModeOfPaymentDto> lstModeofPayment = new ArrayList<>();
 		List<Object[]> lstPayment = branchRemittancePaymentDao.fetchModeOfPayment(languageId);
+		ConfigDto config= getLimitCheck(metaData.getCustomerId());
 		if (lstPayment != null && lstPayment.size() != 0) {
 			for (Object object : lstPayment) {
 				Object[] paymentModes = (Object[]) object;
 				if (paymentModes.length >= 6) {
 					PaymentModeOfPaymentDto lstModePayment = new PaymentModeOfPaymentDto();
+					
 					if(paymentModes[0] != null) {
 						lstModePayment.setResourceId(new BigDecimal(paymentModes[0].toString()));
 					}
@@ -253,14 +271,17 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 					if(paymentModes[5] != null) {
 						lstModePayment.setIsActive(paymentModes[5].toString());
 					}
+					
 					lstModeofPayment.add(lstModePayment);
 				}
+				
 			}
+			dto.setPaymentModeDtoList(lstModeofPayment);
+			dto.setConfigDto(config);
 		}else {
 			throw new GlobalException(JaxError.NO_RECORD_FOUND, "No records found for mode of payments");
 		}
-
-		return lstModeofPayment;
+		return dto;
 	}
 
 	/* 
@@ -484,4 +505,31 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 		return true;
 	}
 	
+	
+	public ConfigDto getLimitCheck(BigDecimal customerId) {
+		ConfigDto config = new ConfigDto();
+	
+		String accMonthYear =DateUtil.getCurrentAccMMYear();
+		Map<String, Object> inputValues = new HashMap<>();
+		inputValues.put("P_CUSTOMER_ID", metaData.getCustomerId());
+		inputValues.put("P_ACMMYY", accMonthYear);
+		Map<String,Object> map =routingProDao.limitCheck(inputValues);
+		Map<String,Object> mapRemit=routingProDao.todayRemitAmount(inputValues);
+		Map<String,Object> mapReceipt=routingProDao.todayReceiptAmount(inputValues);
+		BigDecimal todayTrnxLimit = BigDecimal.ZERO;
+		if(map!=null) {
+			config.setCashLimit(map.get("W_CB_LIMIT")==null?BigDecimal.ZERO:(BigDecimal)map.get("W_CB_LIMIT"));
+			config.setGccLimit(map.get("W_GCC_CARD_LIMIT")==null?BigDecimal.ZERO:(BigDecimal)map.get("W_GCC_CARD_LIMIT"));
+			config.setPassportLimit(map.get("W_PASSPORT_LIMIT")==null?BigDecimal.ZERO:(BigDecimal)map.get("W_PASSPORT_LIMIT"));
+		}
+		if(mapRemit!=null){
+			todayTrnxLimit = mapRemit.get("REMIT_AMT")==null?BigDecimal.ZERO:(BigDecimal)mapRemit.get("REMIT_AMT");
+		}
+		if(mapReceipt!=null){
+			todayTrnxLimit = todayTrnxLimit.add(mapReceipt.get("REMIT_AMT")==null?BigDecimal.ZERO:(BigDecimal)mapReceipt.get("REMIT_AMT"));
+		}
+		config.setTodayTrnxAmount(todayTrnxLimit);
+		return config;
+		
+	}
 }

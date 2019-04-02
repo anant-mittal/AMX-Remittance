@@ -24,6 +24,7 @@ import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
+import com.amx.jax.model.response.remittance.PaymentModeDto;
 import com.amx.jax.model.response.remittance.PaymentModeOfPaymentDto;
 import com.amx.jax.model.response.remittance.RemittanceDeclarationReportDto;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
@@ -86,11 +87,11 @@ public class RemittanceClient  implements IRemittanceService{
 	 * 
 	 */
 	@Override
-	public AmxApiResponse<PaymentModeOfPaymentDto, Object> fetchModeOfPayment() {
+	public AmxApiResponse<PaymentModeDto, Object> fetchModeOfPayment() {
 		try {
 			LOGGER.debug("in fetchModeOfPayment :");
 			return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_MODE_OF_PAYMENT).meta(new JaxMetaInfo()).get()
-					.as(new ParameterizedTypeReference<AmxApiResponse<PaymentModeOfPaymentDto, Object>>() {
+					.as(new ParameterizedTypeReference<AmxApiResponse<PaymentModeDto, Object>>() {
 					});
 		} catch (Exception e) {
 			LOGGER.error("exception in fetchModeOfPayment : ", e);

@@ -160,7 +160,7 @@ public class SSOServerController {
 
 		Map<String, Object> model = getModelMap();
 		if (sSOTranx.get() == null) {
-			sSOTranx.init();
+			sSOTranx.put(new SSOModel());
 		}
 		AmxApiResponse<Object, Map<String, Object>> result = AmxApiResponse.buildMeta(model);
 		result.setStatusEnum(SSOServerCodes.AUTH_REQUIRED);

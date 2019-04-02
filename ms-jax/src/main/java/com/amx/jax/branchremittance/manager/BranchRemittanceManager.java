@@ -269,10 +269,6 @@ public class BranchRemittanceManager extends AbstractModel {
 		if(bankMaster!=null) {
 			iBanFlag = bankMaster.getIbanFlag();
 		}
-		if (ConstantDocument.Yes.equalsIgnoreCase(iBanFlag) && StringUtils.isBlank(beneficaryDetails.getIbanNumber())) {
-			throw new GlobalException(JaxError.BANK_IBAN_EMPTY," IBAN account number shoulnot be blank for Banking channel .Please contact branch for update");
-		}
-		
 		
 		if(!JaxUtil.isNullZeroBigDecimalCheck(beneficaryDetails.getMapSequenceId())) {
 			throw new GlobalException(JaxError.BENE_MAP_SEQ_MISSING,"Beneficairy map seq is missing , please update beneficiray");
@@ -532,19 +528,13 @@ public class BranchRemittanceManager extends AbstractModel {
 	
 	
 	
-	 public void validateAdditionalCheck(RoutingResponseDto branchRoutingDto,Customer customer,BenificiaryListView beneficaryDetails,BigDecimal localNetAmount){
+	 public void validateAdditionalCheck(RoutingResponseDto branchRoutingDto,Customer customer,BenificiaryListView beneficaryDetails,BigDecimal localNetAmount,BranchRemittanceApplRequestModel requestApplModel){
 		 // EX_APPL_ADDL_CHECKS
 		 BigDecimal customerId = BigDecimal.ZERO;
 		 String allowNoBank = null;
 		 
-	/*	 BigDecimal  routingBankId   = branchRoutingDetails.get("P_ROUTING_BANK_ID")==null?BigDecimal.ZERO:(BigDecimal)branchRoutingDetails.get("P_ROUTING_BANK_ID");
-		 BigDecimal  serviceMasterId = branchRoutingDetails.get("P_SERVICE_MASTER_ID")==null?BigDecimal.ZERO:(BigDecimal)branchRoutingDetails.get("P_SERVICE_MASTER_ID");
-		 BigDecimal  beneBankId   = beneficaryDetails.getBankId()==null?BigDecimal.ZERO:beneficaryDetails.getBankId();*/
-		 
-		 
-		 
-		 BigDecimal  routingBankId   = branchRoutingDto.getRoutingBankDto().get(0).getRoutingBankId();
-		 BigDecimal  serviceMasterId = branchRoutingDto.getServiceList().get(0).getServiceMasterId();
+		 BigDecimal  routingBankId   = requestApplModel.getRoutingBankId();
+		 BigDecimal  serviceMasterId =requestApplModel.getServiceMasterId();
 		 BigDecimal  beneBankId   = beneficaryDetails.getBankId()==null?BigDecimal.ZERO:beneficaryDetails.getBankId();
 		 
 		 if(customer!=null) {
@@ -594,7 +584,7 @@ public class BranchRemittanceManager extends AbstractModel {
 	 }
 	
 	
-	 public Map<String, Object> validateAdditionalBeneDetails(RoutingResponseDto branchRoutingDto,BranchRemittanceGetExchangeRateResponse exchangeRateResposne ,BenificiaryListView beneficaryDetails) {
+	 public Map<String, Object> validateAdditionalBeneDetails(RoutingResponseDto branchRoutingDto,BranchRemittanceGetExchangeRateResponse exchangeRateResposne ,BenificiaryListView beneficaryDetails,BranchRemittanceApplRequestModel requestApplModel) {
 		 
 		    BigDecimal beneficaryMasterId = beneficaryDetails.getBeneficaryMasterSeqId();
 			BigDecimal beneficaryBankId = beneficaryDetails.getBankId();
@@ -602,16 +592,16 @@ public class BranchRemittanceManager extends AbstractModel {
 			BigDecimal beneAccNumSeqId = beneficaryDetails.getBeneficiaryAccountSeqId();
 		
 			
-			BigDecimal routingCountry = branchRoutingDto.getRoutingCountrydto().get(0).getResourceId();
-			BigDecimal routingBank = branchRoutingDto.getRoutingBankDto().get(0).getRoutingBankId();
+			BigDecimal routingCountry =requestApplModel.getRoutingCountryId();
+			BigDecimal routingBank = requestApplModel.getRoutingBankId();
 			BigDecimal routingBranch = branchRoutingDto.getRoutingBankBranchDto().get(0).getBankBranchId();
-			BigDecimal serviceMasterId = branchRoutingDto.getServiceList().get(0).getServiceMasterId();
+			BigDecimal serviceMasterId = requestApplModel.getServiceMasterId();
 			
 			
 			BigDecimal applicationCountryId = beneficaryDetails.getApplicationCountryId();
 			BigDecimal currencyId =beneficaryDetails.getCurrencyId();
-			BigDecimal remitMode = branchRoutingDto.getRemittanceModeList().get(0).getRemittanceModeId();
-			BigDecimal deliveryMode = branchRoutingDto.getDeliveryModeList().get(0).getDeliveryModeId();
+			BigDecimal remitMode = requestApplModel.getRemittanceModeId();
+			BigDecimal deliveryMode = requestApplModel.getDeliveryModeId();
 			BigDecimal beneficaryRelationSeqId = beneficaryDetails.getBeneficiaryRelationShipSeqId();
 			
 			Map<String, Object> inputValues = new HashMap<>();
@@ -642,8 +632,7 @@ public class BranchRemittanceManager extends AbstractModel {
 	 public void validateAdditionalErrorMessages(Map<String ,Object> hashMap) {
 		 	BranchRemittanceApplRequestModel applRequestModel = (BranchRemittanceApplRequestModel)hashMap.get("APPL_REQ_MODEL");
 			
-			//Map<String, Object> branchExchangeRate =(HashMap)hashMap.get("EXCH_RATE_MAP");
-		 	//BranchRemittanceGetExchangeRateResponse branchExchangeRate =(BranchRemittanceGetExchangeRateResponse)hashMap.get("EXCH_RATE_MAP");
+			
 			BenificiaryListView beneDetails  =(BenificiaryListView) hashMap.get("BENEFICIARY_DETAILS");
 			RoutingResponseDto branchRoutingDto = (RoutingResponseDto)hashMap.get("ROUTING_DETAILS_DTO");
 			RemittanceTransactionRequestModel requestModel = new RemittanceTransactionRequestModel();
@@ -784,22 +773,6 @@ public class BranchRemittanceManager extends AbstractModel {
 	  
 		return dto;
 	}
-
-  
-  public BranchExchangeRateBreakup getExchangeRate(BranchRemittanceApplRequestModel requestApplModel) {
-	  BranchExchangeRateBreakup rate = new BranchExchangeRateBreakup();
-	  RoutingResponseDto routingDto =  branchRoutingManager.getRoutingSetup(requestApplModel);
-	  Map<String ,Object> output = getExchangeRateForBranch(requestApplModel,routingDto);
-	  
-	  rate.setConvertedFCAmount(output.get("P_LOCAL_NET_SENT")==null?BigDecimal.ZERO:(BigDecimal)output.get("P_LOCAL_NET_SENT"));
-	  rate.setConvertedLCAmount(output.get("P_LOCAL_GROSS_AMOUNT")==null?BigDecimal.ZERO:(BigDecimal)output.get("P_LOCAL_GROSS_AMOUNT"));
-	  rate.setConvertedLCAmount(output.get("P_LOCAL_NET_PAYABLE")==null?BigDecimal.ZERO:(BigDecimal)output.get("P_LOCAL_NET_PAYABLE"));
-	  rate.setInverseRate(output.get("P_EXCHANGE_RATE_APPLIED")==null?BigDecimal.ZERO:(BigDecimal)output.get("P_EXCHANGE_RATE_APPLIED"));
-	  rate.setNetAmountWithoutLoyality(rate.getConvertedLCAmount().subtract((BigDecimal)output.get("P_LOYALTY_AMOUNT")));
-	  rate.setDeliveryCharges(output.get("P_LOCAL_COMMISION_AMOUNT")==null?BigDecimal.ZERO:(BigDecimal)output.get("P_LOCAL_COMMISION_AMOUNT"));
-	  
-	 return rate;
-  }
   
 }	
 

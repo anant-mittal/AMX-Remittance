@@ -23,6 +23,7 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.exception.AdditionalFlexRequiredException;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.JaxConditionalFieldDto;
 import com.amx.amxlib.model.response.ExchangeRateResponseModel;
@@ -31,6 +32,7 @@ import com.amx.jax.config.JaxTenantProperties;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.Customer;
+import com.amx.jax.dbmodel.CustomerCoreDetailsView;
 import com.amx.jax.dbmodel.CustomerEmploymentInfo;
 import com.amx.jax.dbmodel.remittance.CorporateMasterModel;
 import com.amx.jax.error.JaxError;
@@ -45,6 +47,7 @@ import com.amx.jax.model.request.remittance.IRemittanceApplicationParams;
 import com.amx.jax.model.response.remittance.BranchExchangeRateBreakup;
 import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeRateResponse;
 import com.amx.jax.remittance.manager.RemittanceParameterMapManager;
+import com.amx.jax.repository.CustomerCoreDetailsRepository;
 import com.amx.jax.repository.ICustomerEmploymentInfoRepository;
 import com.amx.jax.repository.remittance.ICorporateMasterRepository;
 import com.amx.jax.services.BeneficiaryService;
@@ -89,6 +92,9 @@ public class BranchRemittanceExchangeRateManager {
 	RemittanceParameterMapManager remittanceParameterMapManager;
 	@Autowired
 	NewExchangeRateService newExchangeRateService;
+	
+	@Autowired
+	CustomerCoreDetailsRepository customerCoreDetailsRepositroy;
 
 	public void validateGetExchangRateRequest(IRemittanceApplicationParams request) {
 
@@ -113,9 +119,10 @@ public class BranchRemittanceExchangeRateManager {
 					request.getForeignAmountBD(), beneficiaryView.getBenificaryCountry(),
 					request.getCorrespondanceBankIdBD(), request.getServiceIndicatorIdBD());
 		} else {
-			exchangeRateResponseModel = newExchangeRateService.getExchangeRateResponseUsingBestRate(
+			exchangeRateResponseModel = newExchangeRateService.getExchangeRateResponseFromAprDet(
 					beneficiaryView.getCurrencyId(), request.getLocalAmountBD(), request.getForeignAmountBD(),
-					request.getCorrespondanceBankIdBD());
+					request.getCorrespondanceBankIdBD(), beneficiaryView.getBenificaryCountry(),
+					beneficiaryView.getApplicationCountryId(), request.getServiceIndicatorIdBD());
 		}
 		if (exchangeRateResponseModel.getExRateBreakup() == null) {
 			throw new GlobalException(JaxError.EXCHANGE_RATE_NOT_FOUND, "No exchange data found");
@@ -180,7 +187,7 @@ public class BranchRemittanceExchangeRateManager {
 		}
 		try {
 			remittanceTransactionRequestValidator.validateFlexFields(branchRemittanceApplRequestModel, remitApplParametersMap);
-		} catch (GlobalException ex) {
+		} catch (GlobalException | AdditionalFlexRequiredException ex) {
 			if (ex.getMeta() != null) {
 				flexFields.addAll((Collection<? extends JaxConditionalFieldDto>) ex.getMeta());
 			}
@@ -200,23 +207,10 @@ public class BranchRemittanceExchangeRateManager {
 		customer.setCustomerId(metaData.getCustomerId());
 		List<CorporateMasterModel> coporatList = null;
 		List<CustomerEmploymentInfo> empInfo = customerEmployeRepository.findByFsCustomerAndIsActive(customer, ConstantDocument.Yes);
-		if(empInfo!=null && !empInfo.isEmpty() && empInfo.size()>1) {
-			throw new GlobalException(JaxError.EXCHANGE_RATE_NOT_FOUND, "More than one record found for corporate employee discount on commission "+metaData.getCustomerId());
+		CustomerCoreDetailsView customercoreView=customerCoreDetailsRepositroy.findByCustomerID(metaData.getCustomerId());
+		if(customercoreView!=null) {
+			corpDiscount = customercoreView.getCorporateDiscountAmount()==null?BigDecimal.ZERO:customercoreView.getCorporateDiscountAmount();
 		}
-		
-		if(empInfo!=null && !empInfo.isEmpty() && empInfo.size()==1 ) {
-			coporatList = corporateMasterRepository.findByCorporateMasterIdAndIsActive(empInfo.get(0).getCorporateMasterId(), ConstantDocument.Yes);
-		}
-		
-		if(coporatList !=null && !coporatList.isEmpty() && coporatList.size()>1) {
-			throw new GlobalException(JaxError.EXCHANGE_RATE_NOT_FOUND, "TOO MANY CORPORATE EMPLOYEE DISCOUNT ON COMMISSION DEFINED FOR COMPANY ID "+empInfo.get(0).getCorporateMasterId());
-		}
-		if(coporatList!=null && coporatList.size()==1) {
-			corpDiscount = coporatList.get(0).getDiscountOnCommission();
-		}
-		
-		
-		
 		return corpDiscount;
 	}
 }

@@ -64,6 +64,11 @@ public class SnapModels {
 		public Object toObject() {
 			return this.map;
 		}
+
+		public <T> T as(Class<T> clazz) {
+			return JsonUtil.getMapper().convertValue(this.map, clazz);
+		}
+
 	}
 
 	@JsonIgnoreProperties(ignoreUnknown = true)

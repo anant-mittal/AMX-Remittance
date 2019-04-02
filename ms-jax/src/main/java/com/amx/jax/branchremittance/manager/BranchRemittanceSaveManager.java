@@ -21,9 +21,11 @@ import org.springframework.stereotype.Component;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
+import com.amx.amxlib.model.PersonInfo;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.branchremittance.dao.BranchRemittanceDao;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.constants.JaxTransactionStatus;
 import com.amx.jax.dal.RoutingProcedureDao;
 import com.amx.jax.dao.ApplicationProcedureDao;
 import com.amx.jax.dao.JaxEmployeeDao;
@@ -57,6 +59,10 @@ import com.amx.jax.dbmodel.remittance.RemittanceBenificiary;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.dbmodel.remittance.ShoppingCartDetails;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.logger.AuditEvent.Result;
+import com.amx.jax.logger.AuditService;
+import com.amx.jax.logger.events.CActivityEvent;
+import com.amx.jax.logger.events.CActivityEvent.Type;
 import com.amx.jax.manager.PromotionManager;
 import com.amx.jax.manager.RemittanceManager;
 import com.amx.jax.meta.MetaData;
@@ -206,6 +212,8 @@ public class BranchRemittanceSaveManager {
 	List<RemittanceAdditionalInstructionData> addInstList = new ArrayList<>();
 	List<LoyaltyPointsModel> loyaltyPoints 	 = new ArrayList<>();
 	
+	@Autowired
+    AuditService auditService;
 	
 	/**
 	 * 
@@ -260,8 +268,8 @@ public class BranchRemittanceSaveManager {
 			mapAllDetailRemitSave.put("EX_REMIT_AML", amlList);
 			mapAllDetailRemitSave.put("LOYALTY_POINTS", loyaltyPoints);
 			responseDto = brRemittanceDao.saveRemittanceTransaction(mapAllDetailRemitSave);
-			
-		}catch (GlobalException e) {
+			auditService.log(new CActivityEvent(Type.TRANSACTION_CREATED,String.format("{}/{}", responseDto.getCollectionDocumentFYear(),responseDto.getCollectionDocumentNo())).field("STATUS").to(JaxTransactionStatus.PAYMENT_SUCCESS_APPLICATION_SUCCESS).result(Result.DONE));
+	}catch (GlobalException e) {
 			logger.error("routing  procedure", e.getErrorMessage() + "" + e.getErrorKey());
 			throw new GlobalException(e.getErrorKey(), e.getErrorMessage());
 		}finally {
@@ -819,9 +827,10 @@ public   List<RemittanceBenificiary>  saveBeneTrnx(RemittanceApplication applica
 public   List<RemittanceAdditionalInstructionData>   saveRemitnaceinstructionData(RemittanceApplication applicationNo,RemittanceTransaction remitTrnx){
 	
 	 if(applicationNo!=null) {
-			AdditionalInstructionData applInstrucData = addInstrDataRepository.findByExRemittanceApplication(applicationNo);
+			List<AdditionalInstructionData> applInstrucDataList = addInstrDataRepository.findByExRemittanceApplication(applicationNo);
 		
-			if(applInstrucData!=null) {
+			if(applInstrucDataList!=null && !applInstrucDataList.isEmpty()) {
+			for (AdditionalInstructionData applInstrucData :applInstrucDataList) {
 			RemittanceAdditionalInstructionData remitAddData = new RemittanceAdditionalInstructionData();
 			remitAddData.setAdditionalBankFieldsId(applInstrucData.getAdditionalBankFieldsId());
 			remitAddData.setAmiecCode(applInstrucData.getAmiecCode());
@@ -899,9 +908,9 @@ private LoyaltyClaimRequest saveLoyalTyClaimRequest(List<CollectDetailModel> col
 			if(collectDetail.getCollectionMode().equalsIgnoreCase(ConstantDocument.VOCHERCODE)) {
 				Lclaim.setClaimDate(new Date());
 				if(collectDetail.getCollAmt().compareTo(BigDecimal.ONE)>0) {
-					Lclaim.setClaimPoints(collectDetail.getCollAmt());
+					Lclaim.setClaimPoints(collectDetail.getCollAmt()==null?BigDecimal.ZERO:collectDetail.getCollAmt().multiply(new BigDecimal(1000)));
 				}else {
-					Lclaim.setClaimPoints(collectDetail.getCollAmt());
+					Lclaim.setClaimPoints(collectDetail.getCollAmt()==null?BigDecimal.ZERO:collectDetail.getCollAmt().multiply(new BigDecimal(1000)));
 				}
 				Lclaim.setEcLocCode(collectDetail.getLocCode());
 				Lclaim.setDocfyr(collectDetail.getDocumentFinanceYear());
@@ -930,7 +939,7 @@ public List<LoyaltyPointsModel> saveLoyaltyPoints(RemittanceTransaction applDto)
 					lpoints.setCustomerReference(applDto.getCustomerRef());
 					lpoints.setCompCode(applDto.getCompanyCode());
 					lpoints.setTransDate(new Date());
-					lpoints.setLoyaltyPoints(applDto.getLoyaltyPointsEncashed());
+					lpoints.setLoyaltyPoints(applDto.getLoyaltyPointsEncashed()==null?BigDecimal.ZERO:applDto.getLoyaltyPointsEncashed().multiply(new BigDecimal(-1000)));
 					lpoints.setDocfyr(applDto.getDocumentFinanceYear());
 					lpoints.setTrnRefNo(applDto.getDocumentNo());
 					lpoints.setType(ConstantDocument.CLAIM);
@@ -938,6 +947,9 @@ public List<LoyaltyPointsModel> saveLoyaltyPoints(RemittanceTransaction applDto)
 					lpoints.setProcessDate(new Date());
 					lpoints.setDocCode(applDto.getDocumentCode());
 					lpoints.setProcessDate(DateUtil.daysAddInCurrentDate(365));
+					lpoints.setExpiryDate(DateUtil.daysAddInCurrentDate(365));
+					lpoints.setConsumedLp(applDto.getLoyaltyPointsEncashed()==null?BigDecimal.ZERO:applDto.getLoyaltyPointsEncashed().multiply(new BigDecimal(-1000)));
+					lpoints.setAvaliableLp(BigDecimal.ZERO);
 					loyaltyPoints.add(lpoints);
 				}
 			//}

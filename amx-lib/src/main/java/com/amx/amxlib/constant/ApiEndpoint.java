@@ -1,5 +1,7 @@
 package com.amx.amxlib.constant;
 
+import java.util.Date;
+
 public class ApiEndpoint {
 
 	private ApiEndpoint() {
@@ -9,6 +11,8 @@ public class ApiEndpoint {
 	public static final String USER_API_ENDPOINT = "/user";
 
 	public static final String CUSTOMER_ENDPOINT = "/customer";
+	
+	public static final String EKYC_ENDPOINT = "/eKyc";
 
 	public static final String CUSTOMER_REG_ENDPOINT = "/customer-reg";
 
@@ -161,6 +165,8 @@ public class ApiEndpoint {
 		public static final String PASSWORD = "password";
 
 		public static final String FINGERPRINTDEVICEID = "fingerprintDeviceId";
+		
+	
 
 		// Paths
 		public static final String LINK_DEVICE_LOGGEDIN_USER = "/link-device-loggedin-user/";
@@ -170,6 +176,21 @@ public class ApiEndpoint {
 		public static final String DELINK_FINGERPRINT = "/delink-fingerprint";
 		public static final String RESET_FINGERPRINT = "/reset-fingerprint";
 
+	}
+	
+	public final class EKyc{
+		
+		
+		public static final String PREFIX = EKYC_ENDPOINT;
+		
+		// Params
+		public static final String IMAGE = "image";
+		
+		public static final String EXPIRYDATE = "expiryDate";
+		
+		// Paths
+		public static final String EKYC_SAVE_CUSTOMER = "/ekyc-save-customer/";
+		public static final String EKYC_GET_DETAILS = "/ekyc-get-details/";
 	}
 
 }

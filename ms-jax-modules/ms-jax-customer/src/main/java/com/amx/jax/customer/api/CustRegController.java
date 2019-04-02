@@ -126,7 +126,7 @@ public class CustRegController implements ICustRegService {
 	@RequestMapping(value = CustRegApiEndPoints.SAVE_KYC_DOC, method = RequestMethod.POST)
 	public AmxApiResponse<String, Object> saveCustomeKycDocument(@RequestBody ImageSubmissionRequest model)
 			throws ParseException {
-		return offsiteCustRegService.saveCustomeKycDocument(model);
+		return offsiteCustRegService.saveCustomeKycDocumentAndPopulateCusmas(model);
 	}
 
 	@RequestMapping(value = CustRegApiEndPoints.SAVE_SIGNATURE, method = RequestMethod.POST)

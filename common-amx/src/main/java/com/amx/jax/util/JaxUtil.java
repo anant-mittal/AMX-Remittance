@@ -10,6 +10,7 @@ import java.util.Random;
 import java.util.Set;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.beanutils.BeanUtilsBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -24,6 +25,8 @@ public class JaxUtil {
 
 	/** The logger. */
 	Logger logger = LoggerFactory.getLogger(getClass());
+	BeanUtilsBean notNullBeanUtilsBean = new NullAwareBeanUtilsBean();
+
 
 	/**
 	 * Use {@link com.amx.utils.Random#randomNumeric(int)}
@@ -222,7 +225,7 @@ public class JaxUtil {
 	 */
 	public <T, E> void convertNotNull(T fromObject, E toObject) {
 		try {
-			NullAwareBeanUtilsBean.getInstance().copyProperties(toObject, fromObject);
+			notNullBeanUtilsBean.copyProperties(toObject, fromObject);
 		} catch (Exception e) {
 			logger.error("error in convert", e);
 		}

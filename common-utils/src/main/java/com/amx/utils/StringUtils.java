@@ -80,4 +80,14 @@ public final class StringUtils {
 		}
 
 	}
+
+	public static String substring(String str, int length) {
+		if (str == null || str.length() <= 0) {
+			return Constants.BLANK;
+		} else if (str.length() <= length) {
+			return str;
+		} else {
+			return str.substring(0, length);
+		}
+	}
 }

@@ -211,8 +211,11 @@ public class HomeController {
 		return templateEngine.process("json/apple-app-site-association", context);
 	}
 
-	@RequestMapping(value = { "/pub/verification" }, method = { RequestMethod.GET })
-	public String verification(Model model, @RequestParam String id, @RequestParam String key) {
-		return "terms";
+	@RequestMapping(value = { "/pub/verify/{vercode}" }, method = { RequestMethod.GET, RequestMethod.POST })
+	public String verification(Model model, @RequestParam String verid, @RequestParam String vercode) {
+
+		
+		
+		return "verify-expired";
 	}
 }

@@ -151,7 +151,7 @@ public class CustomerValidationService {
 		}
 		
 		if (util.isKuwait(countryCode)) {
-			if (civilId.length() != 12) {
+			if (civilId.length() != 15) {
 				return false;
 			}
 		}

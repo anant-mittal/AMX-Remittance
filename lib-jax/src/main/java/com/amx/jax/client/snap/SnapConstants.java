@@ -10,6 +10,7 @@ public class SnapConstants {
 		public static final String TRANX = "trnx";
 		public static final String CUSTOMER = "customer";
 		public static final String XRATE = "xrate";
+		public static final String VERIFY = "verifiy";
 		public static final String ALL = "*";
 
 	}
@@ -19,6 +20,7 @@ public class SnapConstants {
 	}
 
 	public static enum SnapQueryTemplate {
+		FIND_DOC_BY_ID("find-doc-by-id", SnapIndexName.ALL),
 		CUSTOMER_LIMIT("customer-limit", SnapIndexName.ALL),
 		CUSTOMERS_JOINED("customer-joined", SnapIndexName.CUSTOMER),
 		CUSTOMERS_PROFILE("customer-profile", SnapIndexName.CUSTOMER),

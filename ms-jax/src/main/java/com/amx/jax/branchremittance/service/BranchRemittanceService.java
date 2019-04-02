@@ -30,12 +30,14 @@ import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
+import com.amx.jax.model.response.remittance.PaymentModeDto;
 import com.amx.jax.model.response.remittance.PaymentModeOfPaymentDto;
 import com.amx.jax.model.response.remittance.RemittanceDeclarationReportDto;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.model.response.remittance.RoutingResponseDto;
 import com.amx.jax.services.AbstractService;
 import com.amx.jax.validation.FxOrderValidation;
+import com.amx.utils.JsonUtil;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -74,6 +76,7 @@ public class BranchRemittanceService extends AbstractService{
 
 	
 	public AmxApiResponse<BranchRemittanceApplResponseDto, Object> saveBranchRemittanceApplication(BranchRemittanceApplRequestModel requestApplModel){
+		logger.info("saveBranchRemittanceApplication : " + JsonUtil.toJson(requestApplModel));
 		BranchRemittanceApplResponseDto applResponseDto = branchRemitApplManager.saveBranchRemittanceApplication(requestApplModel);
 		return AmxApiResponse.build(applResponseDto);
 	}
@@ -88,11 +91,11 @@ public class BranchRemittanceService extends AbstractService{
 		return AmxApiResponse.build(custShpCart);
 	}
 	
-	public AmxApiResponse<PaymentModeOfPaymentDto, Object> fetchModeOfPayment(){
+	public AmxApiResponse<PaymentModeDto, Object> fetchModeOfPayment(){
 		validation.validateHeaderInfo();
 		BigDecimal languageId = metaData.getLanguageId();
-		List<PaymentModeOfPaymentDto> lstPaymentMode = branchRemittancePaymentManager.fetchModeOfPayment(languageId);
-		return AmxApiResponse.buildList(lstPaymentMode);
+		PaymentModeDto  lstPaymentMode= branchRemittancePaymentManager.fetchModeOfPayment(languageId);
+		return AmxApiResponse.build(lstPaymentMode);
 	}
 	
 	public AmxApiResponse<LocalBankDetailsDto, Object> fetchLocalBanks(){
@@ -177,6 +180,7 @@ public class BranchRemittanceService extends AbstractService{
 	}
 	
 	public AmxApiResponse<RemittanceResponseDto, Object> saveRemittanceTransaction(BranchRemittanceRequestModel remittanceRequestModel){
+		 logger.info("saveBranchRemittanceApplication : " + JsonUtil.toJson(remittanceRequestModel));
 		 RemittanceResponseDto dto = branchRemittanceSaveManager.saveRemittanceTrnx(remittanceRequestModel);
 		 return AmxApiResponse.build(dto);
 	 }

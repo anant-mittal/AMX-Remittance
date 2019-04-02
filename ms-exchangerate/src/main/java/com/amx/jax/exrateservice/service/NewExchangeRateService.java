@@ -24,8 +24,11 @@ import com.amx.amxlib.model.response.ExchangeRateResponseModel;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.config.JaxProperties;
 import com.amx.jax.config.JaxTenantProperties;
+import com.amx.jax.constants.JaxChannel;
+import com.amx.jax.dbmodel.ExchangeRateApprovalDetModel;
 import com.amx.jax.dbmodel.PipsMaster;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.meta.MetaData;
 import com.amx.jax.pricer.PricerServiceClient;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.model.response.ExchangeRateBreakup;
@@ -48,6 +51,8 @@ public class NewExchangeRateService extends ExchangeRateService {
 	RemittanceParameterMapManager remittanceParameterMapManager;
 	@Autowired
 	RoutingDetailService routingDetailService;
+	@Autowired
+	MetaData metaData;
 
 	/*
 	 * (non-Javadoc)
@@ -67,8 +72,11 @@ public class NewExchangeRateService extends ExchangeRateService {
 						null, beneBankCountryId, routingBankId, null);
 			} catch (Exception e) {
 			}
-			List<BankMasterDTO> cashChannelRates = getCashRateFromBestRateLogic(fromCurrency, toCurrency, lcAmount,
-					routingBankId, beneBankCountryId);
+			List<BankMasterDTO> cashChannelRates = null;
+			if (JaxChannel.ONLINE.equals(metaData.getChannel())) {
+				cashChannelRates = getCashRateFromBestRateLogic(fromCurrency, toCurrency, lcAmount, routingBankId,
+						beneBankCountryId);
+			}
 			List<BankMasterDTO> bankChannelRates = outputModel.getBankWiseRates();
 			outputModel.setBankWiseRates(
 					NewExchangeRateService.mergeExchangeRateResponse(bankChannelRates, cashChannelRates));
@@ -83,10 +91,18 @@ public class NewExchangeRateService extends ExchangeRateService {
 		sortRates(response);
 		addCashPayoutText(response);
 		checkExchangeRateResponse(response);
-		
+		applyRoundingLogic(response);
 		return response;
 	}
 
+		private void applyRoundingLogic(ApiResponse<ExchangeRateResponseModel> response) {
+		
+		List<BankMasterDTO> exchangeRates = response.getResult().getBankWiseRates();
+		exchangeRates.forEach(i -> {
+			i.getExRateBreakup().setInverseRate(RoundUtil.roundBigDecimal(i.getExRateBreakup().getInverseRate(), 6));	
+		});
+	}
+	
 	private void checkExchangeRateResponse(ApiResponse<ExchangeRateResponseModel> response) {
 		ExchangeRateResponseModel exchangeRateResponseModel = response.getResult();
 		List<BankMasterDTO> exRates = exchangeRateResponseModel.getBankWiseRates();
@@ -304,4 +320,57 @@ public class NewExchangeRateService extends ExchangeRateService {
 		}
 		return new ArrayList<>(bankMasterDtoSet);
 	}
+
+	public ExchangeRateResponseModel getExchangeRateResponseFromAprDet(BigDecimal currencyId, BigDecimal localAmount,
+			BigDecimal foreignAmount, BigDecimal routingBankId, BigDecimal rountingCountryId,
+			BigDecimal applicationCountryId, BigDecimal serviceMasterId) {
+		List<ExchangeRateApprovalDetModel> exchangeRates = exchangeRateDao.getExchangeRatesForRoutingBank(currencyId,
+				meta.getCountryBranchId(), rountingCountryId, applicationCountryId, routingBankId, serviceMasterId);
+		ExchangeRateBreakup exchangeRateBreakup = createExchangeRateBreakUp(exchangeRates, localAmount, foreignAmount);
+		return new ExchangeRateResponseModel(exchangeRateBreakup);
+	}
+
+	public ExchangeRateBreakup createExchangeRateBreakUp(List<ExchangeRateApprovalDetModel> exchangeRates,
+			BigDecimal lcAmount, BigDecimal fcAmount) {
+		ExchangeRateBreakup breakup = new ExchangeRateBreakup();
+		ExchangeRateApprovalDetModel exchangeRate = exchangeRates.get(0);
+		BigDecimal inverseExchangeRate = exchangeRate.getSellRateMax();
+		breakup.setInverseRate(inverseExchangeRate);
+
+		breakup.setRate(new BigDecimal(1).divide(inverseExchangeRate, 10, RoundingMode.HALF_UP));
+
+		if (fcAmount != null && fcAmount.compareTo(BigDecimal.ZERO) > 0) {
+			breakup.setConvertedLCAmount(breakup.getInverseRate().multiply(fcAmount));
+			breakup.setConvertedFCAmount(fcAmount);
+		}
+		if (lcAmount != null && lcAmount.compareTo(BigDecimal.ZERO) > 0) {
+			breakup.setConvertedFCAmount(breakup.getRate().multiply(lcAmount));
+			breakup.setConvertedLCAmount(lcAmount);
+		}
+		List<PipsMaster> pips = null;
+
+		if (fcAmount != null && fcAmount.compareTo(BigDecimal.ZERO) > 0) {
+			pips = pipsDao.getPipsMasterForBranch(exchangeRate, fcAmount);
+		} else {
+			pips = pipsDao.getPipsMasterForBranch(exchangeRate, breakup.getConvertedFCAmount());
+		}
+		// apply discounts
+		if (pips != null && !pips.isEmpty()) {
+			PipsMaster pip = pips.get(0);
+			inverseExchangeRate = inverseExchangeRate.subtract(pip.getPipsNo());
+			breakup.setInverseRate(inverseExchangeRate);
+			breakup.setRate(new BigDecimal(1).divide(inverseExchangeRate, 10, RoundingMode.HALF_UP));
+		}
+
+		if (fcAmount != null && fcAmount.compareTo(BigDecimal.ZERO) > 0) {
+			breakup.setConvertedLCAmount(breakup.getInverseRate().multiply(fcAmount));
+			breakup.setConvertedFCAmount(fcAmount);
+		}
+		if (lcAmount != null && lcAmount.compareTo(BigDecimal.ZERO) > 0) {
+			breakup.setConvertedFCAmount(breakup.getRate().multiply(lcAmount));
+			breakup.setConvertedLCAmount(lcAmount);
+		}
+		return breakup;
+	}
+	
 }

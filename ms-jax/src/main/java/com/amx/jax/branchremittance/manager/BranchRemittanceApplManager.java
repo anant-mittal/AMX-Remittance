@@ -28,6 +28,7 @@ import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.branchremittance.dao.BranchRemittanceDao;
 import com.amx.jax.branchremittance.service.BranchRemittanceExchangeRateService;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.constants.JaxTransactionStatus;
 import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dbmodel.ApplicationSetup;
 import com.amx.jax.dbmodel.BankMasterModel;
@@ -53,6 +54,10 @@ import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.RemittanceModeMaster;
 import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.logger.AuditService;
+import com.amx.jax.logger.AuditEvent.Result;
+import com.amx.jax.logger.events.CActivityEvent;
+import com.amx.jax.logger.events.CActivityEvent.Type;
 import com.amx.jax.manager.RemittanceApplicationAdditionalDataManager;
 import com.amx.jax.manager.RemittanceApplicationManager;
 import com.amx.jax.manager.remittance.RemittanceAdditionalFieldManager;
@@ -127,8 +132,6 @@ public class BranchRemittanceApplManager {
 	@Autowired
 	BeneficiaryService beneficiaryService;
 	
-	//@Autowired
-	//RemittanceTransactionManager remittanceTxnManger;
 	
 	@Autowired
 	private CustomerDao custDao;
@@ -170,8 +173,7 @@ public class BranchRemittanceApplManager {
 	@Autowired
 	DeviceStateRepository deviceStateRepository;
 	
-	@Autowired
-	private BranchSystemDetailRepository branchSystemDetailRepository;
+
 	
 	@Autowired
 	IDeviceRepository deviceRepository;
@@ -181,6 +183,9 @@ public class BranchRemittanceApplManager {
 	
 	@Autowired
 	BranchRemittanceExchangeRateManager exchRateManager;
+	
+    @Autowired
+	AuditService auditService;
 
 
 	
@@ -223,14 +228,14 @@ public class BranchRemittanceApplManager {
 		 logger.info("amlList :"+amlList.toString());
 		 /* additional check **/
 		
-		 branchRemitManager.validateAdditionalCheck(branchRoutingDto,customer,beneficaryDetails,exchangeRateResposne.getExRateBreakup().getNetAmount());
+		 branchRemitManager.validateAdditionalCheck(branchRoutingDto,customer,beneficaryDetails,exchangeRateResposne.getExRateBreakup().getNetAmount(),requestApplModel);
 		 
 		 if(!JaxUtil.isNullZeroBigDecimalCheck(requestApplModel.getRoutingBankId())) {
-			 requestApplModel.setRoutingBankId(branchRoutingDto.getRoutingBankDto().get(0).getRoutingBankId());
+			 requestApplModel.setRoutingBankId(requestApplModel.getRoutingBankId());
 		 }
 		 
 		/** bene additional check **/
-		 Map<String, Object> addBeneDetails =branchRemitManager.validateAdditionalBeneDetails(branchRoutingDto,exchangeRateResposne,beneficaryDetails);
+		 Map<String, Object> addBeneDetails =branchRemitManager.validateAdditionalBeneDetails(branchRoutingDto,exchangeRateResposne,beneficaryDetails,requestApplModel);
 		 
 		 
 		hashMap.put("ROUTING_DETAILS_DTO", branchRoutingDto);
@@ -259,9 +264,10 @@ public class BranchRemittanceApplManager {
 		mapAllDetailApplSave.put("EX_APPL_BENE", remittanceAppBeneficairy);
 		mapAllDetailApplSave.put("EX_APPL_ADDL", additioalInstructionData);
 		mapAllDetailApplSave.put("EX_APPL_AML", amlData);
-		brRemittanceDao.saveAllApplications(mapAllDetailApplSave);
-		BranchRemittanceApplResponseDto applResponseDto = branchRemittancePaymentManager.fetchCustomerShoppingCart(customer.getCustomerId(),metaData.getDefaultCurrencyId());
 		
+		brRemittanceDao.saveAllApplications(mapAllDetailApplSave);
+		auditService.log(new CActivityEvent(Type.APPLICATION_CREATED,String.format("{}/{}", remittanceApplication.getDocumentFinancialyear(),remittanceApplication.getDocumentNo(),remittanceApplication.getFsCustomer().getCustomerId())).field("STATUS").to(JaxTransactionStatus.APPLICATION_CREATED).result(Result.DONE));
+		BranchRemittanceApplResponseDto applResponseDto = branchRemittancePaymentManager.fetchCustomerShoppingCart(customer.getCustomerId(),metaData.getDefaultCurrencyId());
 		return applResponseDto;
 	}
 
@@ -271,11 +277,16 @@ public class BranchRemittanceApplManager {
 		RemittanceApplication remittanceApplication = new RemittanceApplication();
 		try {
 			
+			String signature =null;
 			BranchRemittanceApplRequestModel applRequestModel = (BranchRemittanceApplRequestModel)hashMap.get("APPL_REQ_MODEL");
-			//String signature =applRequestModel.getSignature();// for testing purpose
 			
-			String signature =getCustomerSignature();
-
+			if(!StringUtils.isBlank(applRequestModel.getSignature())) {
+				signature =applRequestModel.getSignature();
+			}else {
+				signature =getCustomerSignature();
+			}
+			
+			
 			if(!StringUtils.isBlank(signature)) {
 				try {
 				remittanceApplication.setCustomerSignatureClob(stringToClob(signature));
@@ -297,7 +308,7 @@ public class BranchRemittanceApplManager {
 			
 			BigDecimal routingCountryId = branchRoutingDto.getRoutingCountrydto().get(0).getResourceId();
 			Customer customer = (Customer) hashMap.get("CUSTOMER");
-			BigDecimal routingBankId = branchRoutingDto.getRoutingBankDto().get(0).getRoutingBankId();
+			BigDecimal routingBankId = applRequestModel.getRoutingBankId();
 			BigDecimal routingBankBranchId = (BigDecimal) branchRoutingDto.getRoutingBankBranchDto().get(0).getBankBranchId();
 			BigDecimal foreignCurrencyId = beneDetails.getCurrencyId();
 			BigDecimal deliveryId =branchRoutingDto.getDeliveryModeList().get(0).getDeliveryModeId(); 
