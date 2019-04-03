@@ -83,8 +83,9 @@ public class OffsiteCustomerRegManager {
 	 */
 	public void createIdProofForExpiredCivilId(ImageSubmissionRequest model, Customer customer) {
 		userService.deActivateCustomerIdProof(customer.getCustomerId());
-		customer.setIdentityExpiredDate(model.getIdentityExpiredDate());
-		customerDao.saveCustomer(customer);
+		userService.deactiveteCustomerIdProofPendingCompliance(customer.getCustomerId());
+		//customer.setIdentityExpiredDate(model.getIdentityExpiredDate());
+		//customerDao.saveCustomer(customer);
 		commitOnlineCustomerIdProof(customer);
 	}
 
@@ -109,7 +110,8 @@ public class OffsiteCustomerRegManager {
 						.getFsBizComponentData().getComponentDataId());
 		custProof.setFsBizComponentDataByCustomerTypeId(customerType);
 		custProof.setIdentityInt(customer.getIdentityInt());
-		custProof.setIdentityStatus(Constants.CUST_ACTIVE_INDICATOR);
+		//custProof.setIdentityStatus(Constants.CUST_ACTIVE_INDICATOR);
+		custProof.setIdentityStatus(Constants.CUST_COMPLIANCE_CHECK_INDICATOR);
 		custProof.setCreatedBy(customer.getIdentityInt());
 		custProof.setCreationDate(new Date());
 		custProof.setIdentityTypeId(customer.getIdentityTypeId());

@@ -46,4 +46,9 @@ public class CustomerIdProofDao {
 	public void save(List<CustomerIdProof> customerIdProof) {
 		customerIdProofRepository.save(customerIdProof);
 	}
+	
+	public List<CustomerIdProof> getCompliancePendingCustomerIdProof(BigDecimal customerId, BigDecimal identityTypeId){
+		List<CustomerIdProof> idProofList = customerIdProofRepository.getCompliancePendingCustomerIdProof(customerId, identityTypeId);
+		return idProofList;
+	}
 }
