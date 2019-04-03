@@ -22,6 +22,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -1170,7 +1171,7 @@ public class UserService extends AbstractUserService {
 	 */
 	public void deActivateCustomerIdProof(BigDecimal customerId) {
 		Customer customer = repo.findOne(customerId);
-		List<CustomerIdProof> activeIdProofs = customerIdProofDao.getActiveCustomeridProofForIdType(customerId,
+		List<CustomerIdProof> activeIdProofs = customerIdProofDao.getActiveCustomerIdProof(customerId,
 				customer.getIdentityTypeId());
 		for (CustomerIdProof customerIdProof : activeIdProofs) {
 			customerIdProof.setIdentityStatus(ConstantDocument.Deleted);

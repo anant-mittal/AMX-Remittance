@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.jax.constant.ConstantDocument;
@@ -84,12 +85,11 @@ public class OffsiteCustomerRegManager {
 	public void createIdProofForExpiredCivilId(ImageSubmissionRequest model, Customer customer) {
 		userService.deActivateCustomerIdProof(customer.getCustomerId());
 		userService.deactiveteCustomerIdProofPendingCompliance(customer.getCustomerId());
-		//customer.setIdentityExpiredDate(model.getIdentityExpiredDate());
 		//customerDao.saveCustomer(customer);
-		commitOnlineCustomerIdProof(customer);
+		commitOnlineCustomerIdProof(customer, model);
 	}
 
-	public void commitOnlineCustomerIdProof(Customer customer) {
+	public void commitOnlineCustomerIdProof(Customer customer, ImageSubmissionRequest model) {
 
 		CustomerIdProof custProof = null;
 		List<CustomerIdProof> customerIdProofs = customerIdProofRepository
@@ -115,12 +115,17 @@ public class OffsiteCustomerRegManager {
 		custProof.setCreatedBy(customer.getIdentityInt());
 		custProof.setCreationDate(new Date());
 		custProof.setIdentityTypeId(customer.getIdentityTypeId());
-
-		if (customer.getIdentityExpiredDate() != null) {
+		if (model != null && model.getIdentityExpiredDate() != null) {
+			custProof.setIdentityExpiryDate(model.getIdentityExpiredDate());
+		} else if (customer.getIdentityExpiredDate() != null) {
 			custProof.setIdentityExpiryDate(customer.getIdentityExpiredDate());
 		}
 		custProof.setIdentityFor(ConstantDocument.IDENTITY_FOR_ID_PROOF);
 		custProof.setScanSystem(Constants.CUST_DB_SCAN);
 		customerIdProofRepository.save(custProof);
+	}
+
+	public void commitOnlineCustomerIdProof(Customer customer) {
+		commitOnlineCustomerIdProof(customer, null);
 	}
 }
