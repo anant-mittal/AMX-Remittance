@@ -26,7 +26,7 @@ import com.amx.jax.rest.RestService;
 @Component
 public class CustomerProfileClient implements ICustomerProfileService {
 
-	private static final Logger LOGGER = LoggerService.getLogger(DeviceStateClient.class);
+	private static final Logger LOGGER = LoggerService.getLogger(CustomerProfileClient.class);
 
 	@Autowired
 	RestService restService;

@@ -12,17 +12,18 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.jax.ICustomerProfileService;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.customer.manager.CustomerContactVerificationManager;
+import com.amx.jax.db.utils.EntityDtoUtil;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerContactVerification;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.model.customer.CustomerContactVerificationDto;
+import com.amx.jax.model.response.customer.CustomerDto;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.repository.CustomerRepository;
-import com.mysema.query.types.Template;
 
 @RestController
 public class CustProfileController implements ICustomerProfileService {
@@ -51,14 +52,15 @@ public class CustProfileController implements ICustomerProfileService {
 			Email email = new Email();
 			email.addTo(c.getEmail());
 			email.setITemplate(TemplatesMX.CONTACT_VERIFICATION_EMAIL);
-			email.getModel().put("customer", c);
+			email.getModel().put("customer", EntityDtoUtil.entityToDto(c, new CustomerDto()));
 			email.getModel().put("link", x);
 			postManService.sendEmailAsync(email);
 		} else if (ContactType.SMS.equals(contactType)) {
 			SMS sms = new SMS();
 			sms.addTo(c.getMobile());
 			sms.setITemplate(TemplatesMX.CONTACT_VERIFICATION_SMS);
-			sms.getModel().put("customer", c);
+
+			sms.getModel().put("customer", EntityDtoUtil.entityToDto(c, new CustomerDto()));
 			sms.getModel().put("link", x);
 			postManService.sendSMSAsync(sms);
 		} else if (ContactType.WHATSAPP.equals(contactType)) {

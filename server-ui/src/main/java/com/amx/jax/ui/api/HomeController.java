@@ -233,7 +233,7 @@ public class HomeController {
 				customerProfileClient.verifyLinkByCode(identity, verId, verCode);
 			}
 		} catch (AmxApiException e) {
-			errorCode = e.getStatusKey();
+			errorCode = e.getErrorKey();
 			errorMessage = e.getMessage();
 		}
 		model.addAttribute("errorCode", errorCode);
