@@ -283,7 +283,6 @@ public class BranchRoutingManager {
 		if (listofService != null && !listofService.isEmpty()) {
 			listOfService = convertRoutingDetails(listofService);
 			routingResponseDto.setServiceList(listOfService);
-
 			inputValues.put("P_SERVICE_MASTER_ID", listOfService.get(0).getServiceMasterId());
 			getRoutingCountryList(inputValues);
 		} else {
@@ -510,7 +509,15 @@ public RoutingResponseDto getRoutingDetailsByServiceId(BigDecimal beneRelaId, Bi
 	/*listOfService.add(getServiceDto(serviceMasterId));
 	routingResponseDto.setServiceList(listOfService);
 	*/
-	getServiceListList(inputValues);
+	//getServiceListList(inputValues);
+	
+	
+	List<Map<String, Object>> listofService = routingPro.getServiceList(inputValues);
+
+	if (listofService != null && !listofService.isEmpty()) {
+		listOfService = convertRoutingDetails(listofService);
+		routingResponseDto.setServiceList(listOfService);
+	}
 	inputValues.put("P_SERVICE_MASTER_ID", serviceMasterId);
 	getRoutingCountryList(inputValues);
 	return routingResponseDto;
