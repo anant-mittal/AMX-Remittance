@@ -191,6 +191,7 @@ public class BranchRoutingManager {
 			String serviceGroupCode = inputValues.get("P_SERVICE_GROUP_CODE").toString();
 			
 			
+			
 
 			logger.debug("output :" + inputValues.toString());
 			if (serviceGroupCode.equalsIgnoreCase(ConstantDocument.SERVICE_GROUP_CODE_CASH)) {
@@ -384,7 +385,7 @@ public class BranchRoutingManager {
 		return serDto;
 	}
 
-	private List<ResourceDTO> convertRoutingCountry(List<Map<String, Object>> listofService) {
+	public List<ResourceDTO> convertRoutingCountry(List<Map<String, Object>> listofService) {
 		List<ResourceDTO> dtoList = new ArrayList<ResourceDTO>();
 		listofService.forEach(serviceDto -> dtoList.add(convertToRoutingCountry(serviceDto)));
 		return dtoList;
@@ -473,13 +474,10 @@ public class BranchRoutingManager {
 		BenificiaryListView beneficaryDetails = beneficiaryRepository.findBybeneficiaryRelationShipSeqId(beneRelaId);
 		if (beneficaryDetails == null) {
 			throw new GlobalException(JaxError.BENEFICIARY_LIST_NOT_FOUND, "Beneficairy not found " + beneRelaId);
-
 		}
 		
 		branceRemittanceManager.beneAddCheck(beneficaryDetails);
-		
 		Map<String, Object> inputValues = new HashMap<>();
-
 		inputValues.put("P_USER_TYPE", ConstantDocument.BRANCH);
 		inputValues.put("P_APPLICATION_COUNTRY_ID", beneficaryDetails.getApplicationCountryId());
 		inputValues.put("P_BENEFICIARY_COUNTRY_ID", beneficaryDetails.getBenificaryCountry()); //P_BENEFICIARY_COUNTRY_ID
