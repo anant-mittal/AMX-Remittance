@@ -46,9 +46,9 @@ import com.amx.jax.repository.IDocumentDao;
 import com.amx.jax.service.BankMetaService;
 import com.amx.jax.service.CompanyService;
 import com.amx.jax.service.FinancialService;
-import com.amx.jax.service.LoyalityPointService;
 import com.amx.jax.services.BankService;
 import com.amx.jax.services.BeneficiaryService;
+import com.amx.jax.services.LoyalityPointService;
 import com.amx.jax.util.DateUtil;
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -299,12 +299,13 @@ public class RemittanceApplicationManager {
 
 		BigDecimal loyalityPointsEncashed = BigDecimal.ZERO;
 		if (loyalityPointsAvailed(requestModel, validationResults)) {
-			loyalityPointsEncashed = loyalityPointService.getVwLoyalityEncash().getEquivalentAmount();
+			loyalityPointsEncashed = validationResults.getLoyalityAmountAvailableForTxn();
 		}
 		remittanceApplication.setForeignTranxAmount(breakup.getConvertedFCAmount());
 		remittanceApplication.setLocalTranxAmount(breakup.getConvertedLCAmount());
 		remittanceApplication.setExchangeRateApplied(breakup.getInverseRate());
 		remittanceApplication.setLocalCommisionAmount(validationResults.getTxnFee());
+		remittanceApplication.setDiscountOnCommission(validationResults.getDiscountOnComission());
 		remittanceApplication.setLocalChargeAmount(BigDecimal.ZERO);
 		remittanceApplication.setLocalDeliveryAmount(BigDecimal.ZERO);
 		remittanceApplication.setLocalNetTranxAmount(breakup.getNetAmountWithoutLoyality());

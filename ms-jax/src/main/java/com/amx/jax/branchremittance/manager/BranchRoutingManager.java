@@ -491,7 +491,7 @@ public class BranchRoutingManager {
 		return inputValues;
 	}
 
-	public RoutingResponseDto getRoutingDetailsByServiceId(BigDecimal beneRelaId, BigDecimal serviceMasterId) {
+/*	public RoutingResponseDto getRoutingDetailsByServiceId(BigDecimal beneRelaId, BigDecimal serviceMasterId) {
 		Map<String, Object> inputValues = getBeneMapSet(beneRelaId);
 		inputValues.put("P_SERVICE_MASTER_ID", serviceMasterId);
 		List<RoutingServiceDto> listOfService = new ArrayList<>();
@@ -499,8 +499,22 @@ public class BranchRoutingManager {
 		routingResponseDto.setServiceList(listOfService);
 		getRoutingCountryList(inputValues);
 		return routingResponseDto;
-	}
+	}*/
 
+	
+public RoutingResponseDto getRoutingDetailsByServiceId(BigDecimal beneRelaId, BigDecimal serviceMasterId) {
+	Map<String, Object> inputValues = getBeneMapSet(beneRelaId);
+	
+	List<RoutingServiceDto> listOfService = new ArrayList<>();
+	/*listOfService.add(getServiceDto(serviceMasterId));
+	routingResponseDto.setServiceList(listOfService);
+	*/
+	getServiceListList(inputValues);
+	inputValues.put("P_SERVICE_MASTER_ID", serviceMasterId);
+	getRoutingCountryList(inputValues);
+	return routingResponseDto;
+}
+	
 	public RoutingResponseDto getRemittanceDetailsByServiceIdAndBankId(BigDecimal beneRelaId, BigDecimal serviceMasterId,
 			BigDecimal routingCountryId,BigDecimal routingBankId,BigDecimal remittanceModeId) {
 		Map<String, Object> inputValues = getBeneMapSet(beneRelaId);
