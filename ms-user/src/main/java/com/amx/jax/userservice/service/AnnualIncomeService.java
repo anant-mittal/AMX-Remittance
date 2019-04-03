@@ -161,6 +161,7 @@ public class AnnualIncomeService {
 	}
 
 	public AmxApiResponse<IncomeDto, Object> saveAnnualIncome(IncomeDto incomeDto) throws ParseException {
+		logger.info("Income Dto value is "+incomeDto.getArticleDetailId());
 		Customer customer = custDao.getCustById(metaData.getCustomerId());
 		logger.info("fetch customer by customer id "+customer);
 		if (incomeDto.getIncomeRangeFrom() == null || incomeDto.getIncomeRangeTo() == null) {
@@ -190,7 +191,7 @@ public class AnnualIncomeService {
 		if (incomeDto.getArticleDetailId() == null) {
 			throw new GlobalException("Article detail id can not be null");
 		}
-
+		logger.info("ArtDetaId is "+incomeDto.getArticleDetailId());
 		List<Map<String, Object>> designationList = articleDao
 				.getArticleDescriptionByArticleDetailId(incomeDto.getArticleDetailId(), metaData.getLanguageId(), metaData.getCustomerId());
 		logger.info("set designation list  "+designationList);
@@ -379,7 +380,7 @@ public class AnnualIncomeService {
 			incomeDto.setCompanyName(customerEmploymentInfo.getEmployerName());
 			incomeDto.setFileName(customerEmploymentInfo.getFileName());
 		}
-
+		logger.info("Article detailed id returned is "+incomeDto.getArticleDetailId());
 		return AmxApiResponse.build(incomeDto);
 
 	}
