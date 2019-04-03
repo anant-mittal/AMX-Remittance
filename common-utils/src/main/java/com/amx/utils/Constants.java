@@ -64,6 +64,9 @@ public class Constants {
 
 	/** The Constant CUST_ACTIVE_INDICATOR. */
 	public static final String CUST_ACTIVE_INDICATOR = "Y";
+	
+	/** The Constant CUST_COMPLIANCE_CHECK_INDICATOR. */
+	public static final String CUST_COMPLIANCE_CHECK_INDICATOR = "C";
 
 	/** The Constant IDENTITY_TYPE_ID. */
 	public static final String IDENTITY_TYPE_CIVIL_ID_STR = "198";

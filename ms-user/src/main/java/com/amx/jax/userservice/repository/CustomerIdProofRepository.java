@@ -25,4 +25,8 @@ public interface CustomerIdProofRepository extends JpaRepository<CustomerIdProof
 
 	@Query(value = "select * from FS_CUSTOMER_ID_PROOF where CUSTOMER_ID=?1 and IDENTITY_TYPE_ID =?2", nativeQuery = true)
 	public List<CustomerIdProof> getCustomeridProofForIdType(BigDecimal customerId, BigDecimal identityTypeId);
+	
+	@Query(value = "select * from FS_CUSTOMER_ID_PROOF where CUSTOMER_ID=?1 and IDENTITY_TYPE_ID =?2 "
+			+ " and NVL(ISACTIVE,'') ='C'", nativeQuery = true)
+	public List<CustomerIdProof> getCompliancePendingCustomerIdProof(BigDecimal customerId, BigDecimal identityTypeId);
 }

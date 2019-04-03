@@ -720,9 +720,9 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 
 	public AmxApiResponse<String, Object> saveCustomeKycDocumentAndPopulateCusmas(ImageSubmissionRequest model) throws ParseException {
 		AmxApiResponse<String, Object> result = saveCustomeKycDocument(model);
-		if (metaData.getCustomerId() != null) {
+		/*if (metaData.getCustomerId() != null) {
 			customerDao.callProcedurePopulateCusmas(metaData.getCustomerId());
-		}
+		}*/
 		return result;
 	}
 
