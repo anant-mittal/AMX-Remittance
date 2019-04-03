@@ -20,8 +20,11 @@ import com.amx.jax.dbmodel.BizComponentData;
 import com.amx.jax.dbmodel.CusmasModel;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerIdProof;
+import com.amx.jax.dbmodel.Employee;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.ImageSubmissionRequest;
+import com.amx.jax.repository.EmployeeRespository;
+import com.amx.jax.services.JaxDBService;
 import com.amx.jax.userservice.dao.CusmosDao;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.repository.CustomerIdProofRepository;
@@ -46,6 +49,8 @@ public class OffsiteCustomerRegManager {
 	CustomerIdProofRepository customerIdProofRepository;
 	@Autowired
 	UserService userService;
+	@Autowired
+	JaxDBService jaxDBService;
 
 	/**
 	 * Returns the customer for offiste registration. Only inactive /not registered/
@@ -94,11 +99,14 @@ public class OffsiteCustomerRegManager {
 		CustomerIdProof custProof = null;
 		List<CustomerIdProof> customerIdProofs = customerIdProofRepository
 				.getCustomerIdProofByCustomerId(customer.getCustomerId());
+		
 		if (!customerIdProofs.isEmpty()) {
 			custProof = customerIdProofs.get(0);
+			custProof.setUpdatedBy(jaxDBService.getCreatedOrUpdatedBy());
 		}
 		if (custProof == null) {
 			custProof = new CustomerIdProof();
+			custProof.setCreatedBy(jaxDBService.getCreatedOrUpdatedBy());
 		}
 		Customer customerData = new Customer();
 		customerData.setCustomerId(customer.getCustomerId());
@@ -112,7 +120,6 @@ public class OffsiteCustomerRegManager {
 		custProof.setIdentityInt(customer.getIdentityInt());
 		//custProof.setIdentityStatus(Constants.CUST_ACTIVE_INDICATOR);
 		custProof.setIdentityStatus(Constants.CUST_COMPLIANCE_CHECK_INDICATOR);
-		custProof.setCreatedBy(customer.getIdentityInt());
 		custProof.setCreationDate(new Date());
 		custProof.setIdentityTypeId(customer.getIdentityTypeId());
 		if (model != null && model.getIdentityExpiredDate() != null) {
