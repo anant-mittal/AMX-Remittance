@@ -18,6 +18,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.constant.ApplicationProcedureParam;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
@@ -54,14 +55,14 @@ public class RoutingProcedureDao {
 
 		List<Object> inputList = new ArrayList<>();
 		inputList.add(inputValues.get("P_APPLICATION_COUNTRY_ID"));
-		inputList.add(inputValues.get("P_BENEFICIARY_COUNTRY_ID"));
+		inputList.add(ApplicationProcedureParam.P_BENEFICIARY_COUNTRY_ID.getValue(inputValues));
 		inputList.add(inputValues.get("P_CURRENCY_ID"));
 		inputList.add(inputValues.get("P_SERVICE_MASTER_ID"));
 		inputList.add(inputValues.get("P_ROUTING_COUNTRY_ID"));
 		inputList.add(inputValues.get("P_ROUTING_BANK_ID"));
 		inputList.add(ConstantDocument.Yes);
 		List<Map<String, Object>> outputList = jdbcTemplate.queryForList(sql, inputList.toArray());
-		LOGGER.info("in getRoutingBankBranchIdFromDb,output values: {}", outputList);
+		LOGGER.debug("in getRoutingBankBranchIdFromDb,output values: {}", outputList);
 		Iterator<Map<String, Object>> itr = outputList.iterator();
 		BigDecimal branchid = null;
 		while (itr.hasNext()) {
@@ -80,14 +81,14 @@ public class RoutingProcedureDao {
 
 		List<Object> inputList = new ArrayList<>();
 		inputList.add(inputValues.get("P_APPLICATION_COUNTRY_ID"));
-		inputList.add(inputValues.get("P_BENEFICIARY_COUNTRY_ID"));
+		inputList.add(ApplicationProcedureParam.P_BENEFICIARY_COUNTRY_ID.getValue(inputValues));
 		inputList.add(inputValues.get("P_CURRENCY_ID"));
 		inputList.add(inputValues.get("P_SERVICE_MASTER_ID"));
 		inputList.add(inputValues.get("P_ROUTING_COUNTRY_ID"));
 		inputList.add(inputValues.get("P_ROUTING_BANK_ID"));
 		inputList.add(ConstantDocument.Yes);
 		List<Map<String, Object>> outputList = jdbcTemplate.queryForList(sql, inputList.toArray());
-		LOGGER.info("in getBranchApplicability,output values: {}", outputList);
+		LOGGER.debug("in getBranchApplicability,output values: {}", outputList);
 		Iterator<Map<String, Object>> itr = outputList.iterator();
 		String branchApplicability = null;
 		while (itr.hasNext()) {
@@ -108,18 +109,18 @@ public class RoutingProcedureDao {
 
 		List<Object> inputList = new ArrayList<>();
 		inputList.add(inputValues.get("P_APPLICATION_COUNTRY_ID"));
-		inputList.add(inputValues.get("P_BENEFICIARY_BANK_ID"));
-		inputList.add(inputValues.get("P_BENEFICIARY_BRANCH_ID"));
-		inputList.add(inputValues.get("P_BENEFICIARY_COUNTRY_ID"));
+		inputList.add(ApplicationProcedureParam.P_BENEFICIARY_BANK_ID.getValue(inputValues));
+		inputList.add(ApplicationProcedureParam.P_BENEFICIARY_BRANCH_ID.getValue(inputValues));
+		inputList.add(ApplicationProcedureParam.P_BENEFICIARY_COUNTRY_ID.getValue(inputValues));
 		inputList.add(inputValues.get("P_CURRENCY_ID"));
 		inputList.add(inputValues.get("P_SERVICE_MASTER_ID"));
 		inputList.add(inputValues.get("P_SERVICE_MASTER_ID"));
-		inputList.add(inputValues.get("P_BENEFICIARY_BANK_ID"));
+		inputList.add(ApplicationProcedureParam.P_BENEFICIARY_BANK_ID.getValue(inputValues));
 		inputList.add(inputValues.get("P_ROUTING_COUNTRY_ID"));
 		inputList.add(inputValues.get("P_ROUTING_BANK_ID"));
 		inputList.add(inputValues.get("P_ROUTING_BANK_BRANCH_ID"));
 		List<Map<String, Object>> outputList = jdbcTemplate.queryForList(sql, inputList.toArray());
-		LOGGER.info("in getRemittanceModeIdForCash,output values: {}", outputList);
+		LOGGER.debug("in getRemittanceModeIdForCash,output values: {}", outputList);
 		Iterator<Map<String, Object>> itr = outputList.iterator();
 		BigDecimal remittanceModeId = null;
 		while (itr.hasNext()) {
@@ -141,20 +142,20 @@ public class RoutingProcedureDao {
 
 		List<Object> inputList = new ArrayList<>();
 		inputList.add(inputValues.get("P_APPLICATION_COUNTRY_ID"));
-		inputList.add(inputValues.get("P_BENEFICIARY_BANK_ID"));
-		inputList.add(inputValues.get("P_BENEFICIARY_BRANCH_ID"));
-		inputList.add(inputValues.get("P_BENEFICIARY_COUNTRY_ID"));
+		inputList.add(ApplicationProcedureParam.P_BENEFICIARY_BANK_ID.getValue(inputValues));
+		inputList.add(ApplicationProcedureParam.P_BENEFICIARY_BRANCH_ID.getValue(inputValues));
+		inputList.add(ApplicationProcedureParam.P_BENEFICIARY_COUNTRY_ID.getValue(inputValues));
 		inputList.add(inputValues.get("P_CURRENCY_ID"));
 		inputList.add(inputValues.get("P_SERVICE_MASTER_ID"));
 		inputList.add(inputValues.get("P_SERVICE_MASTER_ID"));
-		inputList.add(inputValues.get("P_BENEFICIARY_BANK_ID"));
+		inputList.add(ApplicationProcedureParam.P_BENEFICIARY_BANK_ID.getValue(inputValues));
 		inputList.add(inputValues.get("P_ROUTING_COUNTRY_ID"));
 		inputList.add(inputValues.get("P_ROUTING_BANK_ID"));
 		inputList.add(inputValues.get("P_ROUTING_BANK_BRANCH_ID"));
 		inputList.add(inputValues.get("P_REMITTANCE_MODE_ID"));
 
 		List<Map<String, Object>> outputList = jdbcTemplate.queryForList(sql, inputList.toArray());
-		LOGGER.info("in getDeliveryModeIdForCash,output values: {}", outputList);
+		LOGGER.debug("in getDeliveryModeIdForCash,output values: {}", outputList);
 		Iterator<Map<String, Object>> itr = outputList.iterator();
 		BigDecimal deliveryModeId = null;
 		while (itr.hasNext()) {
@@ -188,7 +189,7 @@ public class RoutingProcedureDao {
 			inputList.add(inputValues.get("P_SERVICE_GROUP_CODE")==null?"":inputValues.get("P_SERVICE_GROUP_CODE").toString());
 			inputList.add(inputValues.get("P_APPLICATION_COUNTRY_ID")==null?BigDecimal.ZERO:(BigDecimal)inputValues.get("P_APPLICATION_COUNTRY_ID"));
 			List<Map<String, Object>> outputList = jdbcTemplate.queryForList(sql, inputList.toArray());
-			LOGGER.info("in getDeliveryModeIdForCash,output values: {}", outputList);
+			LOGGER.debug("in getDeliveryModeIdForCash,output values: {}", outputList);
 			
 		    return outputList;
 		
@@ -206,7 +207,7 @@ public class RoutingProcedureDao {
 		try {
 			list = jdbcTemplate.queryForList(sql, BigDecimal.class);
 		} catch (Exception e) {
-			LOGGER.info("error in getDistinctCurrencyList : ", e);
+			LOGGER.debug("error in getDistinctCurrencyList : ", e);
 		}
 		if(list!= null && !list.isEmpty()) {
 			wbLimit = list.get(0);
@@ -231,7 +232,7 @@ public class RoutingProcedureDao {
 				+ " AND    F.SERVICE_MASTER_ID  = ? "
 				+ " AND    F.ROUTING_BANK_ID   =  DECODE( ?,101,?,F.ROUTING_BANK_ID))";
 		
-		LOGGER.info("in getRoutingCountryId,input values: {}", sql);	
+		LOGGER.debug("in getRoutingCountryId,input values: {}", sql);	
 		
 		List<Object> inputList = new ArrayList<>();
 		inputList.add(inputValues.get("P_APPLICATION_COUNTRY_ID"));
@@ -263,7 +264,7 @@ public class RoutingProcedureDao {
 				+ " AND    F.ROUTING_BANK_ID   =  DECODE( ?,101,?,F.ROUTING_BANK_ID)"
 				+ " AND    F.ROUTING_COUNTRY_ID =?)";
 		
-		LOGGER.info("in getRoutingCountryBank,input values: {}", sql);	
+		LOGGER.debug("in getRoutingCountryBank,input values: {}", sql);	
 		
 		List<Object> inputList = new ArrayList<>();
 		inputList.add(inputValues.get("P_APPLICATION_COUNTRY_ID"));
@@ -298,7 +299,7 @@ public class RoutingProcedureDao {
 					+ " AND    F.ROUTING_COUNTRY_ID =?"
 					+ " AND F.ROUTING_BANK_ID =? ORDER BY F.REMITTANCE_MODE_ID)";
 			
-			LOGGER.info("in getRoutingCountryBank,input values: {}", sql);	
+			LOGGER.debug("in getRoutingCountryBank,input values: {}", sql);	
 			
 			List<Object> inputList = new ArrayList<>();
 			inputList.add(inputValues.get("P_APPLICATION_COUNTRY_ID"));
@@ -335,7 +336,7 @@ public class RoutingProcedureDao {
 							+ " AND    F.ROUTING_BANK_ID =?"
 							+ " AND    F.REMITTANCE_MODE_ID =? ORDER BY F.DELIVERY_MODE_ID)";
 					
-					LOGGER.info("in getRoutingCountryBank,input values: {}", sql);	
+					LOGGER.debug("in getRoutingCountryBank,input values: {}", sql);	
 					
 					List<Object> inputList = new ArrayList<>();
 					inputList.add(inputValues.get("P_APPLICATION_COUNTRY_ID"));
@@ -374,7 +375,7 @@ public class RoutingProcedureDao {
 							+ " AND    F.REMITTANCE_MODE_ID =?"
 							+ "	AND    F.DELIVERY_MODE_ID =?)";
 					
-					LOGGER.info("in getRoutingCountryBank,input values: {}", sql);	
+					LOGGER.debug("in getRoutingCountryBank,input values: {}", sql);	
 					
 					List<Object> inputList = new ArrayList<>();
 					inputList.add(inputValues.get("P_APPLICATION_COUNTRY_ID"));
@@ -425,12 +426,12 @@ public class RoutingProcedureDao {
 				
 				Map<String, Object> output = new HashMap<>();
 				try {
-					LOGGER.info("SQL  Please check bank service rule outrput : " +sql+"\n inputList.toArray() :"+inputList.toArray());
+					LOGGER.debug("SQL  Please check bank service rule outrput : " +sql+"\n inputList.toArray() :"+inputList.toArray());
 					Map<String, Object> outputMap = jdbcTemplate.queryForMap(sql, inputList.toArray());
 					output.put("P_TRANSFER_MODE", outputMap.get("TRANSFER_MODE"));
 					output.put("P_TRANSFER_MODE_ID", outputMap.get("TRANSFER_MODE_ID"));
 				} catch (Exception e) {
-					LOGGER.info("error in Please check bank service rule : " +e);
+					LOGGER.debug("error in Please check bank service rule : " +e);
 				}
 				return output;
 
@@ -459,10 +460,121 @@ public class RoutingProcedureDao {
 				if(!JaxUtil.isNullZeroBigDecimalCheck(ecmCode)) {
 					throw new GlobalException(JaxError.INVALID_CLAIM_CODE,"The claim code you have entered is not available in our records.");
 				}
-				
 			 return ecmCode;
 		 }
 		 
 		 
+		 public Map<String, Object> limitCheck(Map<String, Object> inputValues) {
+			 LOGGER.info("Cash Limit check:  " );
+				/**   INTO   W_CB_LIMIT, W_PASSPORT_LIMIT,W_GCC_CARD_LIMIT **/
+				String sql ="SELECT A.NUMERIC_FIELD1 W_CB_LIMIT, A.NUMERIC_FIELD2 W_PASSPORT_LIMIT ,A.NUMERIC_FIELD3 W_GCC_CARD_LIMIT"+
+			            " FROM   EX_PARAMETER_DETAILS  A, EX_APPLICATION_SETUP B "+
+			            " WHERE  A.RECORD_ID = 'CLMT' "+
+			            " AND    NVL(A.ISACTIVE,' ')  =   'Y' ";
+				List<BigDecimal> inputList = new ArrayList<>();
+				Map<String, Object> output = new HashMap<>();
+				try {
+					LOGGER.debug("SQL  cashLimitCheck  : " +sql+"\n inputList.toArray() :"+inputList.toArray());
+					Map<String, Object> outputMap = jdbcTemplate.queryForMap(sql, inputList.toArray());
+					output.put("W_CB_LIMIT", outputMap.get("W_CB_LIMIT"));
+					output.put("W_PASSPORT_LIMIT", outputMap.get("W_PASSPORT_LIMIT"));
+					output.put("W_GCC_CARD_LIMIT", outputMap.get("W_GCC_CARD_LIMIT"));
+				} catch (Exception e) {
+					LOGGER.debug("error in Please check bank service rule : " +e);
+				}
+				return output;
+		 }
 		 
+	public Map<String, Object> todayRemitAmount(Map<String, Object> inputValues) {
+		
+		BigDecimal customerId = inputValues.get("P_CUSTOMER_ID")==null?BigDecimal.ZERO:(BigDecimal)inputValues.get("P_CUSTOMER_ID");
+		String actMyear = inputValues.get("P_ACMMYY")==null?"":(String)inputValues.get("P_ACMMYY");
+		 Map<String, Object> output = new HashMap<>(); 
+		
+		if(JaxUtil.isNullZeroBigDecimalCheck(customerId)) {
+			 String sql =" select sum(c.COLLAMT) today_remit_amt "+
+					 	" from ex_remit_trnx a ,EX_COLLECT_DETAIL c "+
+					 	" where  a.customer_id =c.CUSTOMER_ID "+
+					 	" and a.COLLECTION_DOC_CODE = c.DOCUMENT_CODE "+
+					 	" and a.COLLECTION_DOCUMENT_NO =c.DOCUMENT_NO "+
+					 	" and c.COLLECTION_MODE ='C' "+
+					 	" and trunc(c.CREATED_DATE)=trunc(sysdate) "+
+					 	" and NVL(TRANSACTION_STATUS,' ')<>'C' "+
+					 	" and a.customer_id ="+customerId;
+			 List<BigDecimal> inputList = new ArrayList<>();
+			
+			 try {
+					LOGGER.debug("SQL  cashLimitCheck todayRemitAmount : " +sql);
+					Map<String, Object> outputMap = jdbcTemplate.queryForMap(sql, inputList.toArray());
+					output.put("REMIT_AMT", outputMap.get("today_remit_amt"));
+				} catch (Exception e) {
+					LOGGER.info("error in Please check bank service rule : " +e);
+				}
+			}
+				return output;
+		 
+		 }
+	/** fc sale **/
+	public Map<String, Object> todayReceiptAmount(Map<String, Object> inputValues) {
+		
+		BigDecimal customerId = inputValues.get("P_CUSTOMER_ID")==null?BigDecimal.ZERO:(BigDecimal)inputValues.get("P_CUSTOMER_ID");
+		String actMyear = inputValues.get("P_ACMMYY")==null?"":(String)inputValues.get("P_ACMMYY");
+		 Map<String, Object> output = new HashMap<>(); 
+		
+		if(JaxUtil.isNullZeroBigDecimalCheck(customerId)) {
+			 String sql ="  select sum(c.COLLAMT) today_remit_amt "+
+					 " from EX_RECEIPT_PAYMENT p ,EX_COLLECT_DETAIL c "+
+				  " where  p.customer_id =c.CUSTOMER_ID "+
+				  " and p.COLLECTION_DOC_CODE = c.DOCUMENT_CODE "+
+				  " and p.COLLECTION_DOCUMENT_NO =c.DOCUMENT_NO "+
+				  " and c.COLLECTION_MODE ='C' "+
+				  " and trunc(c.CREATED_DATE)=trunc(sysdate) "+
+				  " and p.DOCUMENT_CODE =74 "+
+				  " and p.customer_id ="+customerId; 
+			 List<BigDecimal> inputList = new ArrayList<>();
+			
+			 try {
+					LOGGER.debug("SQL  receipt Pay  : " +sql);
+					Map<String, Object> outputMap = jdbcTemplate.queryForMap(sql, inputList.toArray());
+					output.put("REMIT_AMT", outputMap.get("today_remit_amt"));
+				} catch (Exception e) {
+					LOGGER.info("error in Please check bank service rule : " +e);
+				}
+			}
+				return output;
+		 
+		 }
+
+	public Map<String, Object> todayMisReceAmount(Map<String, Object> inputValues) {
+		
+		BigDecimal customerId = inputValues.get("P_CUSTOMER_ID")==null?BigDecimal.ZERO:(BigDecimal)inputValues.get("P_CUSTOMER_ID");
+		String actMyear = inputValues.get("P_ACMMYY")==null?"":(String)inputValues.get("P_ACMMYY");
+		 Map<String, Object> output = new HashMap<>(); 
+		
+		if(JaxUtil.isNullZeroBigDecimalCheck(customerId)) {
+			
+			 String sql ="select sum(c.COLLAMT) today_remit_amt  "+
+		     " from EX_RECEIPT_PAYMENT p  ,EX_COLLECT_DETAIL c   "+
+		     " where p.customer_id =c.CUSTOMER_ID   "+
+		     " and p.COMPANY_ID=c.COMPANY_ID "+
+		     " and p.DOCUMENT_CODE = c.DOCUMENT_CODE "+
+		     " and trunc(p.CREATED_DATE)=trunc(sysdate)  "+ 
+		     " and p.DOCUMENT_CODE =2  "+
+		     " and p.customer_id ="+customerId;
+			  
+			 List<BigDecimal> inputList = new ArrayList<>();
+			
+			 try {
+					LOGGER.debug("SQL  todayMisReceAmount Pay  : " +sql);
+					Map<String, Object> outputMap = jdbcTemplate.queryForMap(sql, inputList.toArray());
+					output.put("REMIT_AMT", outputMap.get("today_remit_amt"));
+				} catch (Exception e) {
+					LOGGER.info("error in Please check bank service rule : " +e);
+				}
+			}
+				return output;
+		 
+		 }
+    
+	
 }

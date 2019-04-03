@@ -723,7 +723,11 @@ public class UserValidationService {
 		}
 		// duplicate records check
 		if (customers != null && customers.size() > 1) {
-			customers = custDao.findActiveCustomers(identityInt, identityType);
+			if (identityType != null) {
+				customers = custDao.findActiveCustomers(identityInt, identityType);
+			} else {
+				customers = custDao.findActiveCustomers(identityInt);
+			}
 			boolean isSingleRecord = (customers != null && customers.size() == 1);
 			if (!isSingleRecord) {
 				throw new GlobalException(JaxError.DUPLICATE_CUSTOMER_NOT_ACTIVE_BRANCH,

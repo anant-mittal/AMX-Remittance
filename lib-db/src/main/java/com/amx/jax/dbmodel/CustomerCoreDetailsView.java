@@ -120,6 +120,10 @@ public class CustomerCoreDetailsView implements Serializable{
 	private String customerCategory;
 	
 	
+	@Column(name="CORPORATE_DISCOUNT_AMOUNT")
+	private BigDecimal corporateDiscountAmount;
+	
+	
 	
 	public BigDecimal getCustomerID() {
 		return customerID;
@@ -330,6 +334,12 @@ public class CustomerCoreDetailsView implements Serializable{
 	}
 	public void setCustomerCategory(String customerCategory) {
 		this.customerCategory = customerCategory;
+	}
+	public BigDecimal getCorporateDiscountAmount() {
+		return corporateDiscountAmount;
+	}
+	public void setCorporateDiscountAmount(BigDecimal corporateDiscountAmount) {
+		this.corporateDiscountAmount = corporateDiscountAmount;
 	}
 	
 	

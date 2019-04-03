@@ -1,7 +1,6 @@
 package com.amx.jax.sso.server;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -42,6 +41,7 @@ import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.rbaac.RbaacServiceClient;
 import com.amx.jax.rbaac.constants.RbaacServiceConstants.LOGIN_TYPE;
+import com.amx.jax.rbaac.dto.UserClientDto;
 import com.amx.jax.rbaac.dto.request.UserAuthInitReqDTO;
 import com.amx.jax.rbaac.dto.request.UserAuthorisationReqDTO;
 import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
@@ -160,7 +160,7 @@ public class SSOServerController {
 
 		Map<String, Object> model = getModelMap();
 		if (sSOTranx.get() == null) {
-			sSOTranx.init();
+			sSOTranx.put(new SSOModel());
 		}
 		AmxApiResponse<Object, Map<String, Object>> result = AmxApiResponse.buildMeta(model);
 		result.setStatusEnum(SSOServerCodes.AUTH_REQUIRED);
@@ -180,49 +180,48 @@ public class SSOServerController {
 				ssoUser.generateSAC();
 
 				SSOModel ssomodel = sSOTranx.get();
-				ssomodel.getUserClient().setDeviceType(userDeviceClient.getDeviceType());
-				ssomodel.getUserClient().setClientType(clientType);
-				ssomodel.getUserClient().setGlobalIpAddress(userDeviceClient.getIp());
+				UserClientDto userClientDto = new UserClientDto();
+				userClientDto.setDeviceType(userDeviceClient.getDeviceType());
+				userClientDto.setClientType(clientType);
+				userClientDto.setGlobalIpAddress(userDeviceClient.getIp());
+				userClientDto.setTerminalId(ssomodel.getTerminalId());
 
 				if (appConfig.isSwaggerEnabled() && !ArgUtil.isEmpty(deviceType)) {
-					ssomodel.getUserClient().setDeviceType(deviceType);
+					userClientDto.setDeviceType(deviceType);
 				}
 
 				if (!ArgUtil.isEmpty(sSOTranx.get().getBranchAdapterId())) {
 					// Terminal Login
 					DeviceData branchDeviceData = deviceBox.get(sSOTranx.get().getBranchAdapterId());
-					ssomodel.getUserClient().setLocalIpAddress(branchDeviceData.getLocalIp());
-					ssomodel.getUserClient().setTerminalId(ArgUtil.parseAsBigDecimal(branchDeviceData.getTerminalId()));
+					userClientDto.setLocalIpAddress(branchDeviceData.getLocalIp());
+					userClientDto.setTerminalId(ArgUtil.parseAsBigDecimal(branchDeviceData.getTerminalId()));
 					LOGGER.info("Gloabal IPs THIS: {} ADAPTER: {}", userDeviceClient.getIp(),
 							branchDeviceData.getGlobalIp());
 
 					// Audit
-					auditEvent.terminalId(sSOTranx.get().getUserClient().getTerminalId())
+					auditEvent.terminalId(userClientDto.getTerminalId())
 							// .clientType(ClientType.BRANCH_ADAPTER)
 							.deviceRegId(sSOTranx.get().getBranchAdapterId());
 				} else {
 					// Device LOGIN
 					String deviceRegId = commonHttpRequest.get(DeviceConstants.Keys.CLIENT_REG_KEY_XKEY);
-					ssomodel.getUserClient().setLocalIpAddress(userDeviceClient.getIp());
-					ssomodel.getUserClient().setDeviceId(userDeviceClient.getFingerprint());
-					ssomodel.getUserClient()
-							.setDeviceRegId(ArgUtil.parseAsBigDecimal(deviceRegId));
-					ssomodel.getUserClient()
-							.setDeviceRegToken(
-									commonHttpRequest.get(DeviceConstants.Keys.CLIENT_REG_TOKEN_XKEY));
-					ssomodel.getUserClient()
-							.setDeviceSessionToken(
-									commonHttpRequest.get(DeviceConstants.Keys.CLIENT_SESSION_TOKEN_XKEY));
+					userClientDto.setLocalIpAddress(userDeviceClient.getIp());
+					userClientDto.setDeviceId(userDeviceClient.getFingerprint());
+					userClientDto.setDeviceRegId(ArgUtil.parseAsBigDecimal(deviceRegId));
+					userClientDto.setDeviceRegToken(
+							commonHttpRequest.get(DeviceConstants.Keys.CLIENT_REG_TOKEN_XKEY));
+					userClientDto.setDeviceSessionToken(
+							commonHttpRequest.get(DeviceConstants.Keys.CLIENT_SESSION_TOKEN_XKEY));
 					// Audit
 					auditEvent.deviceRegId(deviceRegId);
 				}
 
-				ssoUser.setUserClient(ssomodel.getUserClient());
+				ssoUser.setUserClient(userClientDto);
 				UserAuthInitReqDTO init = new UserAuthInitReqDTO();
 				init.setEmployeeNo(formdata.getEcnumber());
 				init.setIdentity(formdata.getIdentity());
 
-				init.setUserClientDto(ssomodel.getUserClient());
+				init.setUserClientDto(userClientDto);
 
 				init.setLoginType(loginType);
 				init.setSelfSAC(ssoUser.getSelfSAC());
@@ -232,7 +231,7 @@ public class SSOServerController {
 					init.setPartnerSAC(ssoUser.getPartnerSAC());
 				}
 				try {
-					//init.getUserClientDto().setTerminalId(new BigDecimal(1068));
+					// init.getUserClientDto().setTerminalId(new BigDecimal(1068));
 					UserAuthInitResponseDTO initResp = rbaacServiceClient.initAuthForUser(init).getResult();
 
 					model.put("mOtpPrefix", ssoUser.getSelfSAC());
@@ -256,7 +255,7 @@ public class SSOServerController {
 				SSOAuditEvent auditEvent = new SSOAuditEvent(SSOAuditEvent.Type.LOGIN_OTP, Result.FAIL)
 						.clientType(clientType);
 				try {
-					String terminalId = ArgUtil.parseAsString(sSOTranx.get().getUserClient().getTerminalId());
+					String terminalId = ArgUtil.parseAsString(sSOTranx.get().getTerminalId());
 
 					UserAuthorisationReqDTO auth = new UserAuthorisationReqDTO();
 					auth.setEmployeeNo(formdata.getEcnumber());
@@ -311,9 +310,11 @@ public class SSOServerController {
 			CommonMediaType.APPLICATION_JSON_VALUE, CommonMediaType.APPLICATION_V0_JSON_VALUE })
 	@ResponseBody
 	public String getCardDetails() throws InterruptedException {
-		AmxApiResponse<CardData, Object> resp = AmxApiResponse.build(new CardData());
+		AmxApiResponse<CardData, Map<String, Object>> resp = AmxApiResponse.build(new CardData(),
+				new HashMap<String, Object>());
 		ssoUser.ssoTranxId();
-		String terminlId = ArgUtil.parseAsString(sSOTranx.get().getUserClient().getTerminalId());
+		String terminlId = ArgUtil.parseAsString(sSOTranx.get().getTerminalId());
+		resp.getMeta().put("tid", terminlId);
 		if (terminlId != null) {
 			CardData card = adapterServiceClient.pollCardDetailsByTerminal(terminlId).getResult();
 			if (card != null) {

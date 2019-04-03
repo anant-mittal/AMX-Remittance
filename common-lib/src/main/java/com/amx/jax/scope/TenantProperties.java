@@ -101,6 +101,19 @@ public class TenantProperties {
 				LOGGER.info("Loaded Properties from classpath: {}", ufile.getPath());
 			}
 
+		} catch (IllegalArgumentException | IOException e) {
+			LOGGER.error("Fail:inSideInputStream:getResource", e);
+		} finally {
+			try {
+				if (inSideInputStream != null) {
+					inSideInputStream.close();
+				}
+			} catch (IOException e) {
+				LOGGER.debug("Silent_Fail_of_File_Closing_InSideInputStream");
+			}
+		}
+
+		try {
 			outSideInputStream = FileUtil.getExternalResourceAsStream(propertyFile, object.getClass());
 			if (outSideInputStream != null) {
 				// tenantProperties.load(outSideInputStream);
@@ -109,17 +122,14 @@ public class TenantProperties {
 			}
 
 		} catch (IllegalArgumentException | IOException e) {
-			LOGGER.error("readPropertyFileException", e);
+			LOGGER.error("Fail:outSideInputStream:getExternalResourceAsStream", e);
 		} finally {
 			try {
 				if (outSideInputStream != null) {
 					outSideInputStream.close();
 				}
-				if (inSideInputStream != null) {
-					inSideInputStream.close();
-				}
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+				LOGGER.debug("Silent_Fail_of_File_Closing_OutSideInputStream");
 			}
 		}
 		return tenantProperties;
@@ -163,6 +173,7 @@ public class TenantProperties {
 
 	public static Object assignValues(String tenant, Object object) {
 		Properties tenantProperties = getProperties(tenant, object);
+		String currentPropertyName = null;
 		try {
 			Class<?> clazz = AopProxyUtils.ultimateTargetClass(object);
 
@@ -170,6 +181,7 @@ public class TenantProperties {
 				if (field.isAnnotationPresent(TenantValue.class)) {
 					TenantValue annotation = field.getAnnotation(TenantValue.class);
 					String propertyName = annotation.value().replace("${", "").replace("}", "");
+					currentPropertyName = propertyName;
 					Object propertyValue = tenantProperties.getProperty(propertyName);
 					if (propertyValue != null) {
 						// ArgUtil.parseAsT(propertyValue, defaultValue, required)
@@ -206,7 +218,8 @@ public class TenantProperties {
 							try {
 								field.set(object, ArgUtil.parseAsObject((Class<?>) type, propertyValue, true));
 							} catch (IllegalArgumentException e) {
-								LOGGER.warn("********** Property Type Undefined *****  {} {}", typeName, propertyValue);
+								LOGGER.warn("********** Property Type Undefined *****  {} {} = {}", typeName,
+										propertyName, propertyValue);
 							}
 						}
 					}
@@ -214,7 +227,7 @@ public class TenantProperties {
 			}
 		} catch (IllegalArgumentException | IllegalAccessException | ClassCastException | ClassNotFoundException
 				| NoSuchMethodException | SecurityException | InstantiationException | InvocationTargetException e) {
-			LOGGER.error("readPropertyException", e);
+			LOGGER.error("readPropertyException {}", currentPropertyName, e);
 		}
 		return object;
 	}

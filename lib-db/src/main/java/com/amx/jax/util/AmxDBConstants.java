@@ -10,6 +10,11 @@ public class AmxDBConstants {
 	public static final String Deleted = "D";
 	public static final String Update = "U";
 	public static final String Black = "B";
+
+	public static enum Status {
+		Y, N, D, U, B
+	}
+
 	// document id
 	public static final BigDecimal APPLICATION_DOCUMENT_ID = new BigDecimal(1);
 	public static final BigDecimal COLLECTION_DOCUMENT_ID = new BigDecimal(2);

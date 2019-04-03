@@ -46,7 +46,6 @@ public class CustomerModel extends AbstractModel implements ICustomerModel {
 	
 	private CustomerFlags customerFlags;
 	
-
 	public CustomerFlags getCustomerFlags() {
 		return customerFlags;
 	}

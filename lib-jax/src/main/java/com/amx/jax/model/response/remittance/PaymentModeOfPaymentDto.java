@@ -12,6 +12,7 @@ public class PaymentModeOfPaymentDto extends ResourceDTO {
 	private BigDecimal paymentModeDescId;
 	private BigDecimal languageId;
 	private String isActive;
+	private ConfigDto config;
 
 	public BigDecimal getPaymentModeDescId() {
 		return paymentModeDescId;
@@ -35,6 +36,14 @@ public class PaymentModeOfPaymentDto extends ResourceDTO {
 
 	public void setIsActive(String isActive) {
 		this.isActive = isActive;
+	}
+
+	public ConfigDto getConfig() {
+		return config;
+	}
+
+	public void setConfig(ConfigDto config) {
+		this.config = config;
 	}
 
 }

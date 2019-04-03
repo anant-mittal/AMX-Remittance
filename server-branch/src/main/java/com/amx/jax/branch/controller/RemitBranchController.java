@@ -5,6 +5,15 @@ import java.math.BigDecimal;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.amxlib.meta.model.RemittancePageDto;
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
@@ -31,7 +40,7 @@ import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
-import com.amx.jax.model.response.remittance.PaymentModeOfPaymentDto;
+import com.amx.jax.model.response.remittance.PaymentModeDto;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.model.response.remittance.RoutingResponseDto;
 import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeRateResponse;
@@ -46,16 +55,6 @@ import com.amx.jax.terminal.TerminalService;
 import com.amx.jax.utils.PostManUtil;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -150,7 +149,7 @@ public class RemitBranchController {
 	/// Fetch
 
 	@RequestMapping(value = "/api/remitt/payment_mode/list", method = { RequestMethod.GET })
-	public AmxApiResponse<PaymentModeOfPaymentDto, Object> fetchModeOfPayment() {
+	public AmxApiResponse<PaymentModeDto, Object> fetchModeOfPayment() {
 		return branchRemittanceClient.fetchModeOfPayment();
 	}
 
@@ -260,28 +259,10 @@ public class RemitBranchController {
 	@RequestMapping(value = "/api/remitt/tranx/email", method = { RequestMethod.GET })
 	public AmxApiResponse<BoolRespModel, Object> sendEmail(
 			@RequestParam(required = false) BigDecimal collectionDocumentNo,
-			@RequestParam(required = false) BigDecimal documentNumber,
-			@RequestParam(required = false) BigDecimal documentFinanceYear,
 			@RequestParam(required = false) BigDecimal collectionDocumentFinYear,
-			@RequestParam(required = false) BigDecimal collectionDocumentCode,
-			@RequestParam(required = false) BigDecimal customerReference, @RequestParam("ext") File.Type ext,
-			@RequestParam(required = false) Boolean duplicate) throws PostManException, IOException {
-
-		TransactionHistroyDTO tranxDTO = new TransactionHistroyDTO();
-		tranxDTO.setCollectionDocumentNo(collectionDocumentNo);
-		tranxDTO.setDocumentNumber(documentNumber);
-		tranxDTO.setDocumentFinanceYear(documentFinanceYear);
-		tranxDTO.setCollectionDocumentFinYear(collectionDocumentFinYear);
-		tranxDTO.setCollectionDocumentCode(collectionDocumentCode);
-		tranxDTO.setCustomerReference(customerReference);
-
-		RemittanceReceiptSubreport rspt = remitClient
-				.report(tranxDTO, !duplicate.booleanValue(), branchMetaOutFilter.exportMeta()).getResult();
-		AmxApiResponse<RemittanceReceiptSubreport, Object> wrapper = AmxApiResponse.buildData(rspt);
-
-		AmxApiResponse<BoolRespModel, Object> resp = new AmxApiResponse<BoolRespModel, Object>();
-		return resp;
-
+			@RequestParam(required = false) BigDecimal collectionDocumentCode) {
+		return branchRemittanceClient.sendReceiptOnEmail(collectionDocumentNo, collectionDocumentFinYear,
+				collectionDocumentCode);
 	}
 
 	@RequestMapping(value = "/api/remitt/appl/delete", method = { RequestMethod.POST })

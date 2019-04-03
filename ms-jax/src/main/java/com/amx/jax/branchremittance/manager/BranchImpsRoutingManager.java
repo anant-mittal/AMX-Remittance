@@ -5,6 +5,8 @@ import static com.amx.amxlib.constant.ApplicationProcedureParam.P_REMITTANCE_MOD
 import static com.amx.amxlib.constant.ApplicationProcedureParam.P_ROUTING_BANK_BRANCH_ID;
 import static com.amx.amxlib.constant.ApplicationProcedureParam.P_ROUTING_BANK_ID;
 import static com.amx.amxlib.constant.ApplicationProcedureParam.P_SERVICE_MASTER_ID;
+import static com.amx.amxlib.constant.ApplicationProcedureParam.P_ROUTING_COUNTRY_ID;
+
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -22,6 +24,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.jax.branchremittance.service.BranchRemittanceExchangeRateService;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.model.request.remittance.IRemittanceApplicationParams;
 import com.amx.jax.model.response.remittance.DeliveryModeDto;
 import com.amx.jax.model.response.remittance.RemittanceModeDto;
@@ -75,16 +78,20 @@ public class BranchImpsRoutingManager {
 			BigDecimal remittanceModeId = P_REMITTANCE_MODE_ID.getValue(impsOutputParams);
 			BigDecimal deliveryModeId = P_DELIVERY_MODE_ID.getValue(impsOutputParams);
 			BigDecimal serviceId = P_SERVICE_MASTER_ID.getValue(impsOutputParams);
+			BigDecimal routingCountryId = P_ROUTING_COUNTRY_ID.getValue(impsOutputParams);
 			RoutingBankDto routingBankDto = branchRoutingManager.getRoutingBankDto(routingBankIdImps);
 			RoutingBranchDto routingBankBranchIdDto = branchRoutingManager.getRoutingBranchDto(routingBankBranchIdImps);
 			RemittanceModeDto remittanceModeIdDto = branchRoutingManager.getRemittanceModeDto(remittanceModeId, metaData.getLanguageId());
 			DeliveryModeDto deliveryModeIdDto = branchRoutingManager.getDeliveryModeDto(deliveryModeId, metaData.getLanguageId());
 			RoutingServiceDto serviceDto = branchRoutingManager.getServiceDto(serviceId);
+			ResourceDTO  routingCountryDTO = branchRoutingManager.getRoutingCountryDto(routingCountryId);			
+			
 			routingResponseDto.getRoutingBankDto().add(routingBankDto);
 			routingResponseDto.getRoutingBankBranchDto().add(routingBankBranchIdDto);
 			routingResponseDto.getRemittanceModeList().add(remittanceModeIdDto);
 			routingResponseDto.getDeliveryModeList().add(deliveryModeIdDto);
 			routingResponseDto.getServiceList().add(serviceDto);
+			routingResponseDto.getRoutingCountrydto().add(routingCountryDTO);
 			impsApplicable = true;
 		}
 		return impsApplicable;

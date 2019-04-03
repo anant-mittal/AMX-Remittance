@@ -18,7 +18,7 @@ import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
-import com.amx.jax.model.response.remittance.PaymentModeOfPaymentDto;
+import com.amx.jax.model.response.remittance.PaymentModeDto;
 import com.amx.jax.model.response.remittance.RemittanceDeclarationReportDto;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.model.response.remittance.RoutingResponseDto;
@@ -79,7 +79,7 @@ public interface IRemittanceService extends  IJaxService {
 	AmxApiResponse<BranchRemittanceApplResponseDto, Object> fetchCustomerShoppingCart();
 
 	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND})
-	AmxApiResponse<PaymentModeOfPaymentDto, Object> fetchModeOfPayment();
+	AmxApiResponse<PaymentModeDto, Object> fetchModeOfPayment();
 
 	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND})
 	AmxApiResponse<LocalBankDetailsDto, Object> fetchLocalBanks();

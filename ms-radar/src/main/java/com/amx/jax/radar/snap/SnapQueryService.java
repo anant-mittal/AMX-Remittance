@@ -14,6 +14,9 @@ import org.thymeleaf.spring4.SpringTemplateEngine;
 import com.amx.jax.client.snap.SnapConstants.SnapQueryTemplate;
 import com.amx.jax.client.snap.SnapModels.SnapModelWrapper;
 import com.amx.jax.client.snap.SnapQueryException;
+import com.amx.jax.radar.AESDocument;
+import com.amx.jax.radar.AESRepository.BulkRequestBuilder;
+import com.amx.jax.radar.ESRepository;
 import com.amx.jax.radar.EsConfig;
 import com.amx.jax.rest.RestService;
 import com.amx.utils.JsonUtil;
@@ -35,6 +38,9 @@ public class SnapQueryService {
 
 	@Autowired
 	EsConfig ssConfig;
+
+	@Autowired
+	public ESRepository esRepository;
 
 	public String processJson(SnapQueryTemplate template, Context context) {
 		return templateEngine.process("json/" + template.getFile(), context);
@@ -61,7 +67,7 @@ public class SnapQueryService {
 				.post(query)
 				.asMap();
 		// x.put("aggs", query.get("aggs"));
-		//System.out.println(JsonUtil.toJson(query));
+		// System.out.println(JsonUtil.toJson(query));
 		return new SnapModelWrapper(x);
 	}
 
@@ -69,15 +75,32 @@ public class SnapQueryService {
 		return executeQuery(query, "oracle-v3-*-v4");
 	}
 
-	public SnapModelWrapper execute(SnapQueryTemplate template, Map<String, Object> params) {
+	public SnapModelWrapper execute(SnapQueryTemplate template, String index, Map<String, Object> params) {
 		Map<String, Object> query = null;
 		try {
 			query = getQuery(template, params);
 		} catch (IOException e) {
 			throw new SnapQueryException(SnapQueryException.SnapServiceCodes.INVALID_QUERY);
 		}
-		return executeQuery(query, template.getIndex());
-
+		return executeQuery(query, index);
 	}
 
+	public SnapModelWrapper execute(SnapQueryTemplate template, Map<String, Object> params) {
+		return this.execute(template, template.getIndex(), params);
+	}
+
+	public static class BulkRequestSnapBuilder extends BulkRequestBuilder {
+		@Override
+		public BulkRequestBuilder updateById(String index, String type, String id, AESDocument vote) {
+			return super.updateById(EsConfig.indexName(index), type, id, vote);
+		}
+	}
+
+	public Map<String, Object> save(BulkRequestSnapBuilder builder) {
+		return esRepository.bulk(builder.build());
+	}
+
+	public Map<String, Object> save(String index, AESDocument vote) {
+		return esRepository.update(EsConfig.indexName(index), vote.getType(), vote);
+	}
 }

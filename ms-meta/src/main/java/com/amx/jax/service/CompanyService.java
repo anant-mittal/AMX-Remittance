@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
@@ -51,6 +52,7 @@ public class CompanyService extends AbstractService {
 	/**
 	 * returns the company details based on meta info
 	 */
+	@Transactional(readOnly = true)
 	public ViewCompanyDetails getCompanyDetail() {
 		List<ViewCompanyDetails> companyDetails = companyDao.getCompanyDetailsByCompanyId(metaData.getLanguageId(),
 				metaData.getCompanyId());

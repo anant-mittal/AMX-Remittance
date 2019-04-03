@@ -84,7 +84,8 @@ public class BrokerService {
 				event.setEventCode(current_event_record.getEvent_code());
 				event.setPriority(current_event_record.getEvent_priority());
 				event.setData(event_data_map);
-				event.setDescription(current_event_record.getEvent_desc());
+				// event.setDescription(current_event_record.getEvent_desc());
+				event.setText(current_event_record.getEvent_desc());
 
 				logger.debug("------------------ Event Data to push to Message Queue --------------------");
 				logger.debug(event.toString());

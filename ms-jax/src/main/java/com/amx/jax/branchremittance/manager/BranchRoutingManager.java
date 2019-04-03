@@ -618,4 +618,15 @@ public class BranchRoutingManager {
 		return service;
 	}
 	
+	public ResourceDTO getRoutingCountryDto(BigDecimal routingCountryId) {
+		List<CountryMasterView> countryMasterView = countryRepository
+				.findByLanguageIdAndCountryId(metaData.getLanguageId(), routingCountryId);
+		ResourceDTO service = new ResourceDTO();
+		service.setResourceId(countryMasterView.get(0).getCountryId());
+		service.setResourceCode(countryMasterView.get(0).getCountryCode());
+		service.setResourceName(countryMasterView.get(0).getCountryName());
+		return service;
+
+	}
+	
 }

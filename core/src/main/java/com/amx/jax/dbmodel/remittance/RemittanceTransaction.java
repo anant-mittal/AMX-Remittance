@@ -125,6 +125,7 @@ public class RemittanceTransaction implements Serializable {
 	private BigDecimal srvProviderSettleRate;
 	private String agentCode;
 	private String modeOfTransfer;
+	private BigDecimal discountOnCommission;
 	
 	
 	private List<RemittanceAdditionalInstructionData> exAdditionalInstructionDatas = new ArrayList<RemittanceAdditionalInstructionData>(0);
@@ -996,6 +997,15 @@ public class RemittanceTransaction implements Serializable {
 	public void setExRemittanceBenificiary(List<RemittanceBenificiary> exRemittanceBenificiary) {
 		this.exRemittanceBenificiary = exRemittanceBenificiary;
 	}
+	@Column(name="DISCOUNT_ON_COMM")
+	public BigDecimal getDiscountOnCommission() {
+		return discountOnCommission;
+	}
+
+	public void setDiscountOnCommission(BigDecimal discountOnCommission) {
+		this.discountOnCommission = discountOnCommission;
+	}
+
 	
 }
  

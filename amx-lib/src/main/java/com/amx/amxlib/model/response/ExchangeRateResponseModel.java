@@ -17,6 +17,16 @@ public class ExchangeRateResponseModel extends AbstractModel {
 
 	List<BankMasterDTO> bankWiseRates;
 
+	public ExchangeRateResponseModel(ExchangeRateBreakup exRateBreakup) {
+		super();
+		this.exRateBreakup = exRateBreakup;
+	}
+
+	public ExchangeRateResponseModel() {
+		super();
+	}
+
+
 	@Override
 	public String getModelType() {
 		return "ex_rate";

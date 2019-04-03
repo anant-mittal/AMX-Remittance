@@ -1,8 +1,9 @@
-package com.amx.jax.device;
+package com.amx.jax.terminal;
 
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.cache.CacheBox;
+import com.amx.jax.signpad.TerminalData;
 import com.amx.utils.ArgUtil;
 
 @Component

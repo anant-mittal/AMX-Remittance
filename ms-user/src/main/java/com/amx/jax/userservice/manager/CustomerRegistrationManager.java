@@ -362,7 +362,7 @@ public class CustomerRegistrationManager extends TransactionModel<CustomerRegist
 			throw new GlobalException(JaxError.ID_TYPE_LENGTH_NOT_DEFINED,"Id length setup is missing  in paramter :"+identityInt +" identityTypeId :"+identityTypeId);
 		}
 		
-		Customer customer = customerRepository.getCustomerDetails(identityInt, identityTypeId,jaxMetaInfo.getCountryId());
+		Customer customer = customerRepository.getCustomerDetails(identityInt,jaxMetaInfo.getCountryId());
 		if(customer!=null) {
 			
 			if(StringUtils.isBlank(customer.getIsActive()) && customer.getIsActive().equalsIgnoreCase(ConstantDocument.No)) {

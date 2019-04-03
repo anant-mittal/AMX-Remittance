@@ -11,6 +11,7 @@ import com.amx.jax.dict.UserClient.UserDeviceClient;
 import com.amx.jax.grid.views.BeneViewRecord;
 import com.amx.jax.grid.views.BranchUserViewRecord;
 import com.amx.jax.grid.views.BranchViewRecord;
+import com.amx.jax.grid.views.ContactVerificationRecord;
 import com.amx.jax.grid.views.CustomerDetailViewRecord;
 import com.amx.jax.grid.views.TranxViewRecord;
 import com.amx.jax.radar.AESDocument;
@@ -26,6 +27,8 @@ public class OracleViewDocument extends AESDocument {
 	BranchUserViewRecord user;
 	UserDeviceClient client;
 	BeneViewRecord bene;
+
+	ContactVerificationRecord verifylink;
 
 	public OracleViewDocument() {
 
@@ -56,7 +59,11 @@ public class OracleViewDocument extends AESDocument {
 				&& xrate.getrRate().compareTo(BigDecimal.ZERO) > 0)) {
 			this.empty = true;
 		}
+	}
 
+	public OracleViewDocument(ContactVerificationRecord contactVerificationRecord) {
+		super(SnapIndexName.VERIFY);
+		this.verifylink = contactVerificationRecord;
 	}
 
 	public CustomerDetailViewRecord getCustomer() {
@@ -213,5 +220,13 @@ public class OracleViewDocument extends AESDocument {
 
 	public void setBene(BeneViewRecord bene) {
 		this.bene = bene;
+	}
+
+	public ContactVerificationRecord getVerifylink() {
+		return verifylink;
+	}
+
+	public void setVerifylink(ContactVerificationRecord verifylink) {
+		this.verifylink = verifylink;
 	}
 }

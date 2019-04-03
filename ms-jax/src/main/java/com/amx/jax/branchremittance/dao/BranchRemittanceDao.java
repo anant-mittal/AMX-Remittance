@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.transaction.Transactional;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +49,7 @@ import com.amx.jax.repository.RemittanceApplicationBeneRepository;
 import com.amx.jax.repository.RemittanceApplicationRepository;
 import com.amx.jax.repository.remittance.ILoyaltyPointRepository;
 import com.amx.jax.util.JaxUtil;
+
 
 @Component
 //@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -150,6 +152,10 @@ public class BranchRemittanceDao {
 		LoyaltyClaimRequest lylClaim = (LoyaltyClaimRequest) mapAllDetailRemitSave.get("LYL_CLAIM");
 		List<LoyaltyPointsModel> loyaltyPoitns = (List<LoyaltyPointsModel> )mapAllDetailRemitSave.get("LOYALTY_POINTS");
 		
+		
+		
+		
+		
 
 		if (collectModel != null) {
 			BigDecimal documentNo =generateDocumentNumber(collectModel.getApplicationCountryId(),collectModel.getFsCompanyMaster().getCompanyId(),collectModel.getDocumentId(),collectModel.getDocumentFinanceYear(),collectModel.getExBankBranch().getBranchId());
@@ -162,7 +168,13 @@ public class BranchRemittanceDao {
 			responseDto.setCollectionDocumentNo(collectModel.getDocumentNo());
 			responseDto.setCollectionDocumentFYear(collectModel.getDocumentFinanceYear());
 			responseDto.setCollectionDocumentCode(collectModel.getDocumentCode());
-
+			if(!StringUtils.isBlank(collectModel.getCashDeclarationIndicator()) && collectModel.getCashDeclarationIndicator().equalsIgnoreCase(ConstantDocument.Yes)) {
+				responseDto.setDeclarationReport(true);
+			}
+			
+			
+		}else {
+			throw new GlobalException(JaxError.INVALID_COLLECTION_DOCUMENT_NO, "Collection details not found.");
 		}
 
 		if (collectDetailsModel != null && !collectDetailsModel.isEmpty() && JaxUtil.isNullZeroBigDecimalCheck(collectModel.getDocumentNo())) {
@@ -195,9 +207,11 @@ public class BranchRemittanceDao {
 				}
 				
 				if (addlTrnxList != null && !addlTrnxList.isEmpty()) {
-					RemittanceAdditionalInstructionData remitAdd = addlTrnxList.get(i);
-					remitAdd.setDocumentNo(documentNo);
-					remitAddRepository.save(remitAdd);
+					for(RemittanceAdditionalInstructionData remitAdd:addlTrnxList) {
+						//RemittanceAdditionalInstructionData remitAdd = addlTrnxList.get(i);
+						remitAdd.setDocumentNo(documentNo);
+						remitAddRepository.save(remitAdd);
+					}
 				}
 
 				if (amlTrnxList != null && !amlTrnxList.isEmpty()) {
@@ -209,6 +223,7 @@ public class BranchRemittanceDao {
 		}
 			
 			if(loyaltyPoitns!=null && !loyaltyPoitns.isEmpty()) {
+				
 				loyalPointsRepository.save(loyaltyPoitns);
 			}
 			
@@ -281,7 +296,7 @@ public class BranchRemittanceDao {
 			for(RemittanceTransaction remitTrnx :remitTrnxList) {
 			RemittanceApplication appl = appRepo.getApplicationDetailsForUpdate(remitTrnx.getCustomerId(), remitTrnx.getApplicationDocumentNo(), remitTrnx.getApplicationFinanceYear());
 			if(JaxUtil.isNullZeroBigDecimalCheck(appl.getRemittanceApplicationId())) {
-			String sql ="UPDATE EX_APPL_TRNX set APPLICATION_STATUS='T' , TRANSACTION_FINANCE_YEAR ="+remitTrnx.getDocumentFinanceYr()+" ,TRANSACTION_DOCUMENT_NO="+remitTrnx.getDocumentNo()+" ,BLACK_LIST_INDICATOR ='"+remitTrnx.getBlackListIndicator()+"' where REMITTANCE_APPLICATION_ID ="+appl.getRemittanceApplicationId();
+			String sql ="UPDATE EX_APPL_TRNX set APPLICATION_STATUS='T' ,TRANSACTION_FINANCE_YEAR ="+remitTrnx.getDocumentFinanceYear()+", TRANSACTION_FINANCE_YEAR_ID ="+remitTrnx.getDocumentFinanceYr()+" ,TRANSACTION_DOCUMENT_NO="+remitTrnx.getDocumentNo()+" ,BLACK_LIST_INDICATOR ='"+remitTrnx.getBlackListIndicator()+"' where REMITTANCE_APPLICATION_ID ="+appl.getRemittanceApplicationId();
 			System.out.println("sql :"+sql);
 			jdbcTemplate.update(sql);
 			}

@@ -19,12 +19,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.amx.jax.AppConfig;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
+import com.amx.jax.branch.common.OffsiteStatus.OffsiteServerCodes;
+import com.amx.jax.branch.common.OffsiteStatus.OffsiteServerError;
 import com.amx.jax.client.IDeviceStateService;
-import com.amx.jax.device.TerminalBox;
-import com.amx.jax.device.TerminalData;
 import com.amx.jax.model.request.device.SignaturePadCustomerRegStateMetaInfo;
 import com.amx.jax.model.request.device.SignaturePadFCPurchaseSaleInfo;
 import com.amx.jax.model.request.device.SignaturePadRemittanceInfo;
+import com.amx.jax.signpad.SignPadBox;
+import com.amx.jax.signpad.TerminalData;
 import com.amx.jax.sso.SSOUser;
 import com.amx.jax.swagger.IStatusCodeListPlugin.ApiStatusService;
 import com.amx.jax.terminal.TerminalConstants.Path;
@@ -69,11 +71,21 @@ public class TerminalController {
 			Long pageStamp, Long startStamp) {
 		PingStatus map = new PingStatus();
 
+		if (ArgUtil.isEmpty(terminalId)) {
+			throw new OffsiteServerError(OffsiteServerCodes.TERMINAL_UNKNOWN);
+		}
+
 		TerminalData terminalData = terminalBox.getOrDefault(terminalId);
 
 		if (ArgUtil.isEmpty(pageStamp)) {
 			pageStamp = System.currentTimeMillis();
 		}
+
+		if ("START".equalsIgnoreCase(status)) {
+			// System.out.println("status"+status);
+			// startStamp = System.currentTimeMillis();
+		}
+
 		if (pageStamp >= terminalData.getPagestamp()) {
 			startStamp = ArgUtil.ifNotEmpty(startStamp, terminalData.getStartStamp());
 			if (!ArgUtil.areEqual(terminalData.getStatus(), status)
@@ -119,7 +131,11 @@ public class TerminalController {
 			Model model,
 			HttpServletResponse response, HttpServletRequest request) throws MalformedURLException, URISyntaxException {
 
-		PingStatus map = getPingStatus(ArgUtil.parseAsString(sSOUser.getUserClient().getTerminalId()), state, status,
+		if (ArgUtil.isEmpty(terminalId) && !ArgUtil.isEmpty(sSOUser.getUserClient())) {
+			terminalId = ArgUtil.parseAsString(terminalId);
+		}
+
+		PingStatus map = getPingStatus(terminalId, state, status,
 				pageStamp, startStamp);
 
 		model.addAttribute("url",

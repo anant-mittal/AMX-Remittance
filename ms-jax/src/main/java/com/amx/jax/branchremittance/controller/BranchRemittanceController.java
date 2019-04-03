@@ -34,6 +34,7 @@ import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
+import com.amx.jax.model.response.remittance.PaymentModeDto;
 import com.amx.jax.model.response.remittance.PaymentModeOfPaymentDto;
 import com.amx.jax.model.response.remittance.RemittanceDeclarationReportDto;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
@@ -76,7 +77,7 @@ public class BranchRemittanceController implements IRemittanceService {
 	 */
 	@RequestMapping(value = Path.BR_REMITTANCE_MODE_OF_PAYMENT, method = RequestMethod.GET)
 	@Override
-	public AmxApiResponse<PaymentModeOfPaymentDto, Object> fetchModeOfPayment() {
+	public AmxApiResponse<PaymentModeDto, Object> fetchModeOfPayment() {
 		logger.debug("fetchModeOfPayment");
 		return branchRemitService.fetchModeOfPayment();
 	}
