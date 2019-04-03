@@ -227,6 +227,7 @@ public class BranchRoutingManager {
 						routingResponseDto.setRoutingCountrydto(routCount);
 						inputValues.put("P_ROUTING_COUNTRY_ID",countryMasterView.get(0).getCountryId());
 						if (routingBankId.compareTo(BigDecimal.ZERO) > 0) {
+							inputValues.put("P_ROUTING_BANK_ID",routingBankId);
 							List<RoutingBankDto> lisOfRoutingBank = new ArrayList<>();
 							lisOfRoutingBank.add(getRoutingBankDto(routingBankId));
 							routingResponseDto.setRoutingBankDto(lisOfRoutingBank);
@@ -234,7 +235,7 @@ public class BranchRoutingManager {
 								List<RemittanceModeDto> remitModeDtoLst = new ArrayList<>();
 								remitModeDtoLst.add(getRemittanceModeDto(remittanceId, languageId));
 								routingResponseDto.setRemittanceModeList(remitModeDtoLst);
-
+								inputValues.put("P_REMITTANCE_MODE_ID",remittanceId);
 								if (deliveryId.compareTo(BigDecimal.ZERO) > 0) {
 									List<DeliveryModeDto> delvModeListDto = new ArrayList<>();
 									delvModeListDto.add(getDeliveryModeDto(deliveryId, languageId));
