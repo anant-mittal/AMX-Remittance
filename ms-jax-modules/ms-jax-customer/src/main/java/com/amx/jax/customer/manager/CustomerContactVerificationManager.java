@@ -75,7 +75,8 @@ public class CustomerContactVerificationManager {
 	 * @return
 	 */
 	public CustomerContactVerification validate(CustomerContactVerification link) {
-		if (AmxDBConstants.Status.D.equals(link.getIsActive()) || AmxDBConstants.Status.N.equals(link.getIsActive())) {
+		if (ArgUtil.isEmpty(link) || AmxDBConstants.Status.D.equals(link.getIsActive())
+				|| AmxDBConstants.Status.N.equals(link.getIsActive())) {
 			throw new GlobalException(JaxError.ENTITY_INVALID, "Verification link is Invalid : " + link.getIsActive());
 		} else if (TimeUtils.isExpired(link.getCreatedDate(), Constants.TimeInterval.DAY)) {
 			throw new GlobalException(JaxError.ENTITY_EXPIRED,
