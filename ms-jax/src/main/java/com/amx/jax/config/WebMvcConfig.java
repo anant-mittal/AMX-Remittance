@@ -13,6 +13,7 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
+import com.amx.jax.interceptor.InformationCustomerInterceptor;
 import com.amx.jax.interceptor.TenantInterceptor;
 
 @Configuration
@@ -22,9 +23,14 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 	@Autowired
 	private TenantInterceptor tenantInterceptor;
 
+	@Autowired
+	private InformationCustomerInterceptor informationCustomerInterceptor;
+
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
 		registry.addInterceptor(tenantInterceptor);
+		//registry.addInterceptor(informationCustomerInterceptor);
+		
 	}
 
 	@Bean(autowire = Autowire.BY_NAME)
