@@ -51,6 +51,18 @@ public class RemitRoutingManager {
 	@Resource
 	ExchRateAndRoutingTransientDataCache transientDataCache;
 
+	public boolean validateViewRoutingMatrixData(ViewExRoutingMatrix routingMatrix,
+			ExchangeRateAndRoutingRequest routingRequest) {
+
+		if (routingMatrix == null) {
+			throw new PricerServiceException(PricerServiceError.NULL_ROUTING_MATRIX,
+					"Null Routing Matrix Received for request Params: " + routingRequest.toJSON());
+		}
+
+		return true;
+
+	}
+
 	/**
 	 * Computes the Transaction Routes and Delivery Details and saves the data with
 	 * the request cache : ExchRateAndRoutingTransientDataCache
@@ -265,7 +277,7 @@ public class RemitRoutingManager {
 
 			routingDetails.setFinalDeliveryDetails(finalDeliveryDetails);
 
-			System.out.println(" Grand Final Delivery Details ===>  " + JsonUtil.toJson(finalDeliveryDetails));
+			System.out.println(" Final Delivery Details ===>  " + JsonUtil.toJson(finalDeliveryDetails));
 
 		} // OneMatrix Block
 
