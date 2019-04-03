@@ -33,7 +33,7 @@ public class CustomerModelService {
 		Customer customer = userValidationService.validateCustomerForDuplicateRecords(customers);
 		BigDecimal customerId = customer.getCustomerId();
 		PersonInfo personInfo = userService.getPersonInfo(customerId);
-		CustomerFlags customerFlags = customerFlagManager.getCustomerFlags(customerId);
+ 		CustomerFlags customerFlags = customerFlagManager.getCustomerFlags(customerId);
 		CustomerModelResponse response = new CustomerModelResponse(personInfo, customerFlags);
 		response.setCustomerId(customer.getCustomerId());
 		return response;
