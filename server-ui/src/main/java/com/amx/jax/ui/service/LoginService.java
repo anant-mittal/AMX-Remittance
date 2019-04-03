@@ -1,5 +1,6 @@
 package com.amx.jax.ui.service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -203,16 +204,18 @@ public class LoginService {
 			sessionService.getGuestSession().setReturnUrl(null);
 		}
 
-		AmxApiResponse<CustomerModelResponse, Object> x = jaxService.setDefaults().getUserclient()
-				.getCustomerModelResponse(customerModel.getIdentityId());
-
-		sessionService.getUserSession().getCustomerModel().setFlags(x.getResult().getCustomerFlags());
-		sessionService.getUserSession().getCustomerModel().setPersoninfo(x.getResult().getPersonInfo());
-
 		wrapper.setMessage(OWAStatusStatusCodes.AUTH_DONE, ResponseMessage.AUTH_SUCCESS);
 		sessionService.getGuestSession().endStep(secques);
 		wrapper.getData().setState(sessionService.getGuestSession().getState());
 		return wrapper;
+	}
+
+	public void updateCustoemrModel() {
+		String identity = sessionService.getUserSession().getCustomerModel().getIdentityId();
+		AmxApiResponse<CustomerModelResponse, Object> x = jaxService.setDefaults().getUserclient()
+				.getCustomerModelResponse(identity);
+		sessionService.getUserSession().getCustomerModel().setFlags(x.getResult().getCustomerFlags());
+		sessionService.getUserSession().getCustomerModel().setPersoninfo(x.getResult().getPersonInfo());
 	}
 
 	/**
