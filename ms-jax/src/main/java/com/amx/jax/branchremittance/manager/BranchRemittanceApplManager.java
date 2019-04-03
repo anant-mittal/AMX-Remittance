@@ -60,6 +60,7 @@ import com.amx.jax.logger.events.CActivityEvent;
 import com.amx.jax.logger.events.CActivityEvent.Type;
 import com.amx.jax.manager.RemittanceApplicationAdditionalDataManager;
 import com.amx.jax.manager.RemittanceApplicationManager;
+import com.amx.jax.manager.remittance.CorporateDiscountManager;
 import com.amx.jax.manager.remittance.RemittanceAdditionalFieldManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
@@ -82,9 +83,9 @@ import com.amx.jax.repository.fx.EmployeeDetailsRepository;
 import com.amx.jax.service.BankMetaService;
 import com.amx.jax.service.CompanyService;
 import com.amx.jax.service.FinancialService;
-import com.amx.jax.service.LoyalityPointService;
 import com.amx.jax.services.BankService;
 import com.amx.jax.services.BeneficiaryService;
+import com.amx.jax.services.LoyalityPointService;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.util.DateUtil;
 import com.amx.jax.util.JaxUtil;
@@ -173,16 +174,14 @@ public class BranchRemittanceApplManager {
 	@Autowired
 	DeviceStateRepository deviceStateRepository;
 	
-
+	@Autowired
+	CorporateDiscountManager corporateDiscountManager;
 	
 	@Autowired
 	IDeviceRepository deviceRepository;
 	
 	@Autowired
 	RemittanceApplicationRepository appRepository;
-	
-	@Autowired
-	BranchRemittanceExchangeRateManager exchRateManager;
 	
     @Autowired
 	AuditService auditService;
@@ -440,7 +439,7 @@ public class BranchRemittanceApplManager {
 			remittanceApplication.setLocalCommisionAmount(branchExchangeRate.getTxnFee());
 			remittanceApplication.setLocalChargeAmount(BigDecimal.ZERO);
 			remittanceApplication.setLocalDeliveryAmount(BigDecimal.ZERO);
-			remittanceApplication.setLoyaltyPointsEncashed(BigDecimal.ZERO); 
+			remittanceApplication.setLoyaltyPointsEncashed(BigDecimal.ZERO);
 			
 			BigDecimal loyalityPointsEncashed = BigDecimal.ZERO;
 			if(applRequestModel.isAvailLoyalityPoints() && JaxUtil.isNullZeroBigDecimalCheck(customer.getLoyaltyPoints()) && customer.getLoyaltyPoints().compareTo(new BigDecimal(1000))>=0) {
@@ -478,7 +477,7 @@ public class BranchRemittanceApplManager {
 			
 			remittanceApplication.setWuIpAddress(metaData.getDeviceIp());
 			remittanceApplication.setInstruction("URGENT");
-			remittanceApplication.setDiscountOnCommission(exchRateManager.corporateDiscount());
+			remittanceApplication.setDiscountOnCommission(corporateDiscountManager.corporateDiscount());
 			
 			return remittanceApplication;
 			
@@ -792,7 +791,7 @@ public class BranchRemittanceApplManager {
 	
 
 	public BigDecimal getloyaltyAmountEncashed(BigDecimal commission) {
-		BigDecimal discount = exchRateManager.corporateDiscount();
+		BigDecimal discount = corporateDiscountManager.corporateDiscount();
 		BigDecimal loyalityPoints = loyalityPointService.getVwLoyalityEncash().getLoyalityPoint();
 		BigDecimal loyalityPointsEncashed = loyalityPointService.getVwLoyalityEncash().getEquivalentAmount();
 		if(JaxUtil.isNullZeroBigDecimalCheck(commission) && JaxUtil.isNullZeroBigDecimalCheck(loyalityPoints) && loyalityPointsEncashed.compareTo(discount)>0) {
