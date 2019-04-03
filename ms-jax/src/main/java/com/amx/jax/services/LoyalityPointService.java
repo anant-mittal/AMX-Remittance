@@ -1,4 +1,4 @@
-package com.amx.jax.service;
+package com.amx.jax.services;
 
 import java.math.BigDecimal;
 
@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.jax.dbmodel.remittance.VwLoyalityEncash;
+import com.amx.jax.manager.remittance.CorporateDiscountManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.VwLoyalityEncashRepository;
 import com.amx.jax.util.JaxUtil;
@@ -22,6 +23,8 @@ public class LoyalityPointService {
 	VwLoyalityEncashRepository repo;
 	@Autowired
 	MetaData meta;
+	@Autowired
+	CorporateDiscountManager corporateDiscountManager;
 
 	public VwLoyalityEncash getVwLoyalityEncash() {
 		Iterable<VwLoyalityEncash> loyalityPointMaster = repo.findAll();
@@ -33,9 +36,16 @@ public class LoyalityPointService {
 		return repo.getTodaysLoyalityPointsEncashed(meta.getCustomerId());
 	}
 
-	public BigDecimal getloyaltyAmountEncashed(BigDecimal commission, BigDecimal corporateDiscount) {
+	/**
+	 * added by Rabil for loyality points
+	 * 
+	 * @param commission
+	 * @return
+	 */
+	public BigDecimal getloyaltyAmountEncashed(BigDecimal commission) {
 		BigDecimal loyalityPoints = getVwLoyalityEncash().getLoyalityPoint();
 		BigDecimal loyalityPointsEncashed = getVwLoyalityEncash().getEquivalentAmount();
+		BigDecimal corporateDiscount = corporateDiscountManager.corporateDiscount();
 		if (JaxUtil.isNullZeroBigDecimalCheck(commission) && JaxUtil.isNullZeroBigDecimalCheck(loyalityPoints)
 				&& loyalityPointsEncashed.compareTo(corporateDiscount) > 0) {
 			if (commission.compareTo(loyalityPointsEncashed) >= 0) {
@@ -46,6 +56,5 @@ public class LoyalityPointService {
 		}
 
 		return loyalityPointsEncashed;
-
 	}
 }

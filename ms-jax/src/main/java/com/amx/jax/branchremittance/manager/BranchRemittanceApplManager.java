@@ -83,9 +83,9 @@ import com.amx.jax.repository.fx.EmployeeDetailsRepository;
 import com.amx.jax.service.BankMetaService;
 import com.amx.jax.service.CompanyService;
 import com.amx.jax.service.FinancialService;
-import com.amx.jax.service.LoyalityPointService;
 import com.amx.jax.services.BankService;
 import com.amx.jax.services.BeneficiaryService;
+import com.amx.jax.services.LoyalityPointService;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.util.DateUtil;
 import com.amx.jax.util.JaxUtil;
@@ -439,7 +439,7 @@ public class BranchRemittanceApplManager {
 			remittanceApplication.setLocalCommisionAmount(branchExchangeRate.getTxnFee());
 			remittanceApplication.setLocalChargeAmount(BigDecimal.ZERO);
 			remittanceApplication.setLocalDeliveryAmount(BigDecimal.ZERO);
-			remittanceApplication.setLoyaltyPointsEncashed(BigDecimal.ZERO); 
+			remittanceApplication.setLoyaltyPointsEncashed(BigDecimal.ZERO);
 			
 			BigDecimal loyalityPointsEncashed = BigDecimal.ZERO;
 			if(applRequestModel.isAvailLoyalityPoints() && JaxUtil.isNullZeroBigDecimalCheck(customer.getLoyaltyPoints()) && customer.getLoyaltyPoints().compareTo(new BigDecimal(1000))>=0) {

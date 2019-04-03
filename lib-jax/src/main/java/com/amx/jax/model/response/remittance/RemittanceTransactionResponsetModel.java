@@ -21,6 +21,8 @@ public class RemittanceTransactionResponsetModel extends AbstractModel {
 	private ExchangeRateBreakup exRateBreakup;
 	private Boolean canRedeemLoyalityPoints;
 	private LoyalityPointState loyalityPointState;
+	private BigDecimal loyalityAmountAvailableForTxn;
+	private BigDecimal discountOnComission;
 
 	/*
 	 * (non-Javadoc)
@@ -78,6 +80,22 @@ public class RemittanceTransactionResponsetModel extends AbstractModel {
 
 	public void setLoyalityPointState(LoyalityPointState loyalityPointState) {
 		this.loyalityPointState = loyalityPointState;
+	}
+
+	public BigDecimal getLoyalityAmountAvailableForTxn() {
+		return loyalityAmountAvailableForTxn;
+	}
+
+	public void setLoyalityAmountAvailableForTxn(BigDecimal loyalityAmountAvailableForTxn) {
+		this.loyalityAmountAvailableForTxn = loyalityAmountAvailableForTxn;
+	}
+
+	public BigDecimal getDiscountOnComission() {
+		return discountOnComission;
+	}
+
+	public void setDiscountOnComission(BigDecimal discountOnComission) {
+		this.discountOnComission = discountOnComission;
 	}
 
 }
