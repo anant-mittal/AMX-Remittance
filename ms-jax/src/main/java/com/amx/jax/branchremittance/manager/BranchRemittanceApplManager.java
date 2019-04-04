@@ -211,6 +211,11 @@ public class BranchRemittanceApplManager {
 		 //Map<String, Object> branchRoutingDetails =branchRemitManager.getRoutingSetupDeatils(beneficaryDetails);
 		 RoutingResponseDto branchRoutingDto= branchRoutingManager.getRoutingSetup(requestApplModel);
 		 
+		 
+		 if(JaxUtil.isNullZeroBigDecimalCheck(requestApplModel.getRoutingBankId())) {
+			 requestApplModel.setRoutingBankId(requestApplModel.getRoutingBankId());
+		 }
+		 
 		 //Priccing API
 		 BranchRemittanceGetExchangeRateResponse exchangeRateResposne = branchExchRateService.getExchaneRate(requestApplModel).getResult();
 		 
@@ -229,9 +234,7 @@ public class BranchRemittanceApplManager {
 		
 		 branchRemitManager.validateAdditionalCheck(branchRoutingDto,customer,beneficaryDetails,exchangeRateResposne.getExRateBreakup().getNetAmount(),requestApplModel);
 		 
-		 if(!JaxUtil.isNullZeroBigDecimalCheck(requestApplModel.getRoutingBankId())) {
-			 requestApplModel.setRoutingBankId(requestApplModel.getRoutingBankId());
-		 }
+		
 		 
 		/** bene additional check **/
 		 Map<String, Object> addBeneDetails =branchRemitManager.validateAdditionalBeneDetails(branchRoutingDto,exchangeRateResposne,beneficaryDetails,requestApplModel);
@@ -286,7 +289,7 @@ public class BranchRemittanceApplManager {
 			}
 			
 			
-			if(!StringUtils.isBlank(signature) && !signature.equals("")) {
+			if(!StringUtils.isBlank(signature)) {
 				try {
 				remittanceApplication.setCustomerSignatureClob(stringToClob(signature));
 				}catch(Exception e) {
