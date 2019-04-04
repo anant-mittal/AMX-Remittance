@@ -121,6 +121,7 @@ public abstract class ACardReaderService {
 				adapterServiceClient.setOffSiteUrl(serverUrl);
 				String winTitle = tntProp.getProperty("adapter.title");
 				SWAdapterGUI.updateTitle(String.format("%s - %s", winTitle, version));
+				SWAdapterGUI.updateAbout(String.format("%s \nVersion :  %s", winTitle, version));
 			}
 		}
 		return serverUrl;

@@ -15,7 +15,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
-import javax.swing.text.BadLocationException;
 
 import org.springframework.stereotype.Component;
 
@@ -59,6 +58,9 @@ public class SWAdapterGUI extends JFrame {
 	private JTextArea textArea = null;
 
 	private JScrollPane pane = null;
+
+	private JScrollPane about = null;
+	JTextArea aboutTextArea = null;
 
 	private void initUI() {
 
@@ -167,8 +169,15 @@ public class SWAdapterGUI extends JFrame {
 		textArea.setEditable(false);
 		pane = new JScrollPane(textArea);
 
+		aboutTextArea = new JTextArea();
+		aboutTextArea.setFont(new Font("monospaced", Font.PLAIN, 8));
+		aboutTextArea.setEditable(false);
+
+		about = new JScrollPane(aboutTextArea);
+
 		tabs.addTab("Adapter", newPanel);
 		tabs.addTab("Logs", pane);
+		tabs.addTab("About", about);
 		add(tabs);
 
 	}
@@ -280,6 +289,16 @@ public class SWAdapterGUI extends JFrame {
 		if (CONTEXT != null) {
 			CONTEXT.setTitle(WIN_TITLE);
 		}
+	}
+
+	public static void updateAbout(String text) {
+		if (CONTEXT != null) {
+			CONTEXT.getAboutTextArea().setText(text);
+		}
+	}
+
+	public JTextArea getAboutTextArea() {
+		return aboutTextArea;
 	}
 
 }
