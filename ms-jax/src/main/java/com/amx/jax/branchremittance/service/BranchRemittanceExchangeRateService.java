@@ -3,6 +3,7 @@
  */
 package com.amx.jax.branchremittance.service;
 
+import java.math.BigDecimal;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -55,6 +56,8 @@ public class BranchRemittanceExchangeRateService {
 			requestApplModel.setServiceMasterId(request.getServiceIndicatorIdBD());
 			requestApplModel.setRemittanceModeId(request.getRemitModeIdBD());
 			requestApplModel.setBeneId(request.getBeneficiaryRelationshipSeqIdBD());
+			requestApplModel.setRoutingCountryId((BigDecimal)remitApplParametersMap.get("P_ROUTING_COUNTRY_ID"));
+			requestApplModel.setRoutingBankId(request.getCorrespondanceBankIdBD());
 			routingResponseDto = branchRoutingManager.getRoutingSetup(requestApplModel);
 		}
 		result.setRoutingResponseDto(routingResponseDto);
