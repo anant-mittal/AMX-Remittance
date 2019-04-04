@@ -168,14 +168,10 @@ public class ApiEndpoint {
 		
 		public static final String PREFIX = EKYC_ENDPOINT;
 		
-		// Params
-		public static final String IMAGE = "image";
-		
-		public static final String EXPIRYDATE = "expiryDate";
-		
+
 		// Paths
 		public static final String EKYC_SAVE_CUSTOMER = "/ekyc-save-customer/";
-		public static final String EKYC_GET_DETAILS = "/ekyc-get-details/";
+		
 	}
 
 }

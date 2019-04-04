@@ -4,6 +4,10 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
@@ -20,6 +24,7 @@ import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.constants.JaxChannel;
 import com.amx.jax.dict.Tenant;
+import com.amx.jax.model.request.ImageSubmissionRequest;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -33,7 +38,7 @@ public class EKycClientTest extends AbstractTestClient{
 	EKycClient client;
 	
 	@Test
-	public void resetFingerprint() throws IOException, ResourceNotFoundException,
+	public void eKycSaveDetails() throws IOException, ResourceNotFoundException,
 	InvalidInputException, RemittanceTransactionValidationException, LimitExeededException {
 		jaxMetaInfo.setDeviceId("301019967");
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
@@ -45,8 +50,15 @@ public class EKycClientTest extends AbstractTestClient{
 		jaxMetaInfo.setLanguageId(new BigDecimal(1));
 		jaxMetaInfo.setEmployeeId(new BigDecimal(265));
 		BoolRespModel response = null;
-
-		response = client.eKycsaveDetails("abcde", "31/03/2019");
+		ImageSubmissionRequest imageSubmissionRequest = new ImageSubmissionRequest();
+		ArrayList<String> imageList=new ArrayList<String>();
+		imageList.add("abcde");
+		imageSubmissionRequest.setImage(imageList);
+		Date date = new Date();
+		imageSubmissionRequest.setIdentityExpiredDate(date);
+		imageSubmissionRequest.setPoliticallyExposed("Y");
+		response = client.eKycsaveDetails(imageSubmissionRequest);
+		LOGGER.debug("Response is "+response);
 		assertNotNull("Response is null", response);
 		assertNotNull(response);
 	}
