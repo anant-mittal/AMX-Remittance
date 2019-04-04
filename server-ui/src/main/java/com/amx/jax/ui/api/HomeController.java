@@ -29,11 +29,13 @@ import com.amx.jax.dict.Language;
 import com.amx.jax.error.ApiJaxStatusBuilder.ApiJaxStatus;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.exception.AmxApiException;
+import com.amx.jax.exception.ApiHttpExceptions.ApiStatusCodes;
 import com.amx.jax.http.ApiRequest;
 import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.http.RequestType;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.rest.RestService;
+import com.amx.jax.swagger.ApiStatusBuilder.ApiStatus;
 import com.amx.jax.ui.UIConstants;
 import com.amx.jax.ui.WebAppConfig;
 import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
@@ -219,15 +221,21 @@ public class HomeController {
 		return templateEngine.process("json/apple-app-site-association", context);
 	}
 
+	@ApiJaxStatus({ JaxError.CUSTOMER_NOT_FOUND, JaxError.INVALID_OTP, JaxError.ENTITY_INVALID,
+			JaxError.ENTITY_EXPIRED })
+	@ApiStatus({ ApiStatusCodes.PARAM_MISSING })
 	@RequestMapping(value = { "/pub/verify/{contactType}/{verId}/{verCode}" },
 			method = { RequestMethod.GET, RequestMethod.POST })
 	public String verification(Model model,
 			@PathVariable ContactType contactType, @PathVariable BigDecimal verId, @PathVariable String verCode,
-			@RequestParam(required = false) String identity) {
+			@RequestParam(required = false) String identity, @RequestParam(required = false) String resend,
+			@RequestParam(required = false) String customerId) {
 		String errorCode = null;
 		String errorMessage = null;
 		try {
-			if (identity == null) {
+			if (!ArgUtil.isEmpty(resend)) {
+				customerProfileClient.createVerificationLink(null, contactType, identity);
+			} else if (identity == null) {
 				customerProfileClient.validateVerificationLink(verId).getResult();
 			} else {
 				customerProfileClient.verifyLinkByCode(identity, verId, verCode);
@@ -236,6 +244,7 @@ public class HomeController {
 			errorCode = e.getErrorKey();
 			errorMessage = e.getMessage();
 		}
+		model.addAttribute("resend", resend);
 		model.addAttribute("errorCode", errorCode);
 		model.addAttribute("errorMessage", errorMessage);
 		model.addAttribute("contactType", contactType);

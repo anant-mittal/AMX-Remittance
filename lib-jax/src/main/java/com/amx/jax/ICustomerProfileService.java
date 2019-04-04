@@ -5,8 +5,10 @@ import java.math.BigDecimal;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.error.ApiJaxStatusBuilder.ApiJaxStatus;
+import com.amx.jax.exception.ApiHttpExceptions.ApiStatusCodes;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.model.customer.CustomerContactVerificationDto;
+import com.amx.jax.swagger.ApiStatusBuilder.ApiStatus;
 
 public interface ICustomerProfileService {
 
@@ -28,17 +30,18 @@ public interface ICustomerProfileService {
 	}
 
 	@ApiJaxStatus({ JaxError.CUSTOMER_NOT_FOUND })
+	@ApiStatus({ ApiStatusCodes.PARAM_MISSING })
 	AmxApiResponse<CustomerContactVerificationDto, Object> createVerificationLink(BigDecimal customerId,
-			ContactType type);
+			ContactType type, String identity);
 
 	@ApiJaxStatus({ JaxError.ENTITY_INVALID, JaxError.ENTITY_EXPIRED })
 	AmxApiResponse<CustomerContactVerificationDto, Object> validateVerificationLink(BigDecimal linkId);
 
-	@ApiJaxStatus({ JaxError.ENTITY_INVALID, JaxError.ENTITY_EXPIRED })
+	@ApiJaxStatus({ JaxError.ENTITY_INVALID, JaxError.ENTITY_EXPIRED, JaxError.INVALID_CIVIL_ID })
 	AmxApiResponse<CustomerContactVerificationDto, Object> verifyLinkByCode(String identity, BigDecimal linkId,
 			String code);
 
-	@ApiJaxStatus({ JaxError.ENTITY_INVALID, JaxError.ENTITY_EXPIRED })
+	@ApiJaxStatus({ JaxError.ENTITY_INVALID, JaxError.ENTITY_EXPIRED, JaxError.INVALID_CIVIL_ID })
 	AmxApiResponse<CustomerContactVerificationDto, Object> verifyLinkByContact(String identity, ContactType type,
 			String contact);
 

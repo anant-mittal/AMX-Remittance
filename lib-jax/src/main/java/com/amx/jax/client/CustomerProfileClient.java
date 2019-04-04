@@ -36,13 +36,14 @@ public class CustomerProfileClient implements ICustomerProfileService {
 
 	@Override
 	public AmxApiResponse<CustomerContactVerificationDto, Object> createVerificationLink(BigDecimal customerId,
-			ContactType type) {
+			ContactType type, String identity) {
 		try {
 			LOGGER.debug("in createVerificationLink : {} {} ", customerId, type);
 			String url = appConfig.getJaxURL() + ApiPath.CONTACT_LINK_CREATE;
 			return restService.ajax(url).meta(new JaxMetaInfo())
 					.field(ApiParams.CUSTOMER_ID, customerId)
 					.field(ApiParams.CONTACT_TYPE, type)
+					.field(ApiParams.IDENTITY, identity)
 					.postForm()
 					.as(new ParameterizedTypeReference<AmxApiResponse<CustomerContactVerificationDto, Object>>() {
 					});

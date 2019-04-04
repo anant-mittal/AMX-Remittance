@@ -16,6 +16,8 @@ import com.amx.jax.db.utils.EntityDtoUtil;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerContactVerification;
 import com.amx.jax.dict.ContactType;
+import com.amx.jax.exception.ApiHttpExceptions.ApiHttpArgException;
+import com.amx.jax.exception.ApiHttpExceptions.ApiStatusCodes;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.model.customer.CustomerContactVerificationDto;
 import com.amx.jax.model.response.customer.CustomerDto;
@@ -24,6 +26,7 @@ import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.repository.CustomerRepository;
+import com.amx.utils.ArgUtil;
 
 @RestController
 public class CustProfileController implements ICustomerProfileService {
@@ -42,10 +45,19 @@ public class CustProfileController implements ICustomerProfileService {
 	@Override
 	@RequestMapping(value = ApiPath.CONTACT_LINK_CREATE, method = RequestMethod.POST)
 	public AmxApiResponse<CustomerContactVerificationDto, Object> createVerificationLink(
-			@RequestParam(value = ApiParams.CUSTOMER_ID) BigDecimal customerId,
-			@RequestParam(value = ApiParams.CONTACT_TYPE) ContactType contactType) {
+			@RequestParam(value = ApiParams.CUSTOMER_ID, required = false) BigDecimal customerId,
+			@RequestParam(value = ApiParams.CONTACT_TYPE) ContactType contactType,
+			@RequestParam(value = ApiParams.IDENTITY, required = false) String identity) {
 
-		Customer c = customerRepository.findOne(customerId);
+		Customer c;
+		if (!ArgUtil.isEmpty(identity)) {
+			c = customerRepository.getCustomerOneByIdentityInt(identity);
+		} else if (!ArgUtil.isEmpty(customerId)) {
+			c = customerRepository.findOne(customerId);
+		} else {
+			throw new ApiHttpArgException(ApiStatusCodes.PARAM_MISSING, "Either CivilId or Customer Id is required");
+		}
+
 		CustomerContactVerification x = customerContactVerificationManager.create(c, contactType);
 
 		if (ContactType.EMAIL.equals(contactType)) {
