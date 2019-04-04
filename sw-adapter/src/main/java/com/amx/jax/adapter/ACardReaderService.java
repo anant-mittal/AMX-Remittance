@@ -34,6 +34,7 @@ import com.amx.jax.logger.LoggerService;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.jax.scope.TenantProperties;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.JsonUtil;
 import com.amx.utils.NetworkAdapter;
 import com.amx.utils.NetworkAdapter.NetAddress;
 import com.amx.utils.TimeUtils;
@@ -343,6 +344,7 @@ public abstract class ACardReaderService {
 				LOGGER.debug("ACardReaderService:readTask:TIME");
 				lastreadtime = reader.getCardActiveTime();
 				status(DataStatus.SYNCING);
+				// System.out.println(JsonUtil.toJson(reader));
 				adapterServiceClient.saveCardDetailsByTerminal(terminalId, reader, address, devicePairingCreds,
 						sessionPairingCreds);
 				status(DataStatus.SYNCED);
@@ -424,7 +426,8 @@ public abstract class ACardReaderService {
 	public void push(CardData cardData) {
 		if (cardData != null && cardData.getTimestamp() >= READER.getCardActiveTime()) {
 			LOGGER.debug("ACardReaderService:push");
-			READER.setData(cardData.isValid() ? cardData : null);
+			// READER.setData(cardData.isValid() ? cardData : null);
+			READER.setData(cardData);
 			READER.setCardActiveTime(cardData.getTimestamp());
 			READER.setDeviceActiveTime(Math.max(READER.getDeviceActiveTime(), cardData.getTimestamp()));
 			status(getDataStatus(cardData));
