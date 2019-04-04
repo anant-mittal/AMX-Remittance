@@ -207,7 +207,10 @@ public class AnnualIncomeService {
 		if (customerEmploymentInfo == null) {
 			customerEmploymentInfo = createCustomerEmploymentInfo(incomeDto);
 		}
-
+		else {
+			customerEmploymentInfo.setUpdatedBy(metaData.getCustomerId().toString());
+			customerEmploymentInfo.setLastUpdated(new Date());
+		}
 		if (incomeDto.getCompanyName() == null || incomeDto.getCompanyName() == "") {
 			throw new GlobalException("Company name cannot be null or empty");
 		}
@@ -265,8 +268,7 @@ public class AnnualIncomeService {
 
 		logger.info("details are set");
 		custDao.saveCustomer(customer);
-		customerEmploymentInfo.setUpdatedBy(metaData.getCustomerId().toString());
-		customerEmploymentInfo.setLastUpdated(new Date());
+		
 		
 		incomeDao.saveCustomerEmploymentInfo(customerEmploymentInfo);
 		
@@ -285,6 +287,8 @@ public class AnnualIncomeService {
 		custEmploymentInfo.setFsLanguageType(new LanguageType(metaData.getLanguageId()));
 		custEmploymentInfo.setIsActive("Y");
 		custEmploymentInfo.setFsCustomer(new Customer(metaData.getCustomerId()));
+		custEmploymentInfo.setCreatedBy(metaData.getCustomerId().toString());
+		custEmploymentInfo.setCreationDate(new Date());
 		return custEmploymentInfo;
 	}
 
