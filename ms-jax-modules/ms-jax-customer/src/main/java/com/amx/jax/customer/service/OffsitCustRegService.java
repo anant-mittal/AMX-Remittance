@@ -109,6 +109,7 @@ import com.amx.jax.services.AbstractService;
 import com.amx.jax.services.JaxNotificationService;
 import com.amx.jax.trnx.CustomerRegistrationTrnxModel;
 import com.amx.jax.userservice.dao.CustomerDao;
+import com.amx.jax.userservice.manager.CustomerIdProofManager;
 import com.amx.jax.userservice.manager.CustomerRegistrationManager;
 import com.amx.jax.userservice.manager.CustomerRegistrationOtpManager;
 import com.amx.jax.userservice.repository.ContactDetailsRepository;
@@ -243,6 +244,8 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 	OffsiteCustomerRegValidator offsiteCustomerRegValidator;
 	@Autowired
 	OffsiteCustomerRegManager offsiteCustomerRegManager;
+	@Autowired
+	CustomerIdProofManager customerIdProofManager;
 	
 	@Autowired
 	EmployeeRespository employeeRespository;
@@ -502,7 +505,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		Customer customer = commitCustomer(customerDetails, model.getCustomerEmploymentDetails());
 		commitCustomerLocalContact(model.getLocalAddressDetails(), customer, customerDetails);
 		commitCustomerHomeContact(model.getHomeAddressDestails(), customer, customerDetails);
-		offsiteCustomerRegManager.commitOnlineCustomerIdProof(customer);
+		customerIdProofManager.commitOnlineCustomerIdProof(customer);
 		commitEmploymentDetails(model.getCustomerEmploymentDetails(), customer, model.getLocalAddressDetails());
 		auditService.log(new CActivityEvent(CActivityEvent.Type.PROFILE_UPDATE).result(Result.DONE));
 		CustomerInfo info = new CustomerInfo();
@@ -748,7 +751,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 				throw new GlobalException(JaxError.IMAGE_NOT_AVAILABLE, "Image is not available");
 			}
 			if (model.getIdentityExpiredDate() != null) {
-				offsiteCustomerRegManager.createIdProofForExpiredCivilId(model, customer);
+				customerIdProofManager.createIdProofForExpiredCivilId(model, customer);
 			}
 			for (String image : model.getImage()) {
 				DmsApplMapping mappingData = new DmsApplMapping();
