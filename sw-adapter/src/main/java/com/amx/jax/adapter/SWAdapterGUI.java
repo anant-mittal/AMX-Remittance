@@ -253,7 +253,7 @@ public class SWAdapterGUI extends JFrame {
 				}
 				textArea.append(new Date().toString() + " : " + message + "\n");
 				logCount++;
-			} catch (BadLocationException e) {
+			} catch (Exception e) {
 				textArea.append(logCount + " : " + message + " | " + e.getMessage() + "\n");
 				logCount++;
 			}
