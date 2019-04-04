@@ -23,6 +23,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -37,6 +38,7 @@ import com.amx.amxlib.meta.model.CustomerDto;
 import com.amx.amxlib.model.AbstractUserModel;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
+import com.amx.amxlib.model.PersonInfo;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.UserFingerprintResponseModel;
 import com.amx.amxlib.model.UserModel;
@@ -1171,7 +1173,7 @@ public class UserService extends AbstractUserService {
 	 */
 	public void deActivateCustomerIdProof(BigDecimal customerId) {
 		Customer customer = repo.findOne(customerId);
-		List<CustomerIdProof> activeIdProofs = customerIdProofDao.getActiveCustomeridProofForIdType(customerId,
+		List<CustomerIdProof> activeIdProofs = customerIdProofDao.getActiveCustomerIdProof(customerId,
 				customer.getIdentityTypeId());
 		for (CustomerIdProof customerIdProof : activeIdProofs) {
 			customerIdProof.setIdentityStatus(ConstantDocument.Deleted);
@@ -1180,10 +1182,22 @@ public class UserService extends AbstractUserService {
 			customerIdProofDao.save(activeIdProofs);
 		}
 	}
+	
+	public void deactiveteCustomerIdProofPendingCompliance(BigDecimal customerId) {
+		Customer customer = repo.findOne(customerId);
+		List<CustomerIdProof> deActiveIdProofs = customerIdProofDao.getCompliancePendingCustomerIdProof(customerId,
+				customer.getIdentityTypeId());
+		for (CustomerIdProof customerIdProof : deActiveIdProofs) {
+			customerIdProof.setIdentityStatus(ConstantDocument.Deleted);
+		}
+		if (!CollectionUtils.isEmpty(deActiveIdProofs)) {
+			customerIdProofDao.save(deActiveIdProofs);
+		}
 
 	public List<Customer> getCustomerByIdentityInt(String identityInt) {
 		String[] isActiveFlags = new String[] { ConstantDocument.Yes, ConstantDocument.No };
 		List<Customer> customers = repo.getCustomerByIdentityIntAndIsActive(identityInt, Arrays.asList(isActiveFlags));
 		return customers;
 	}
+	 
 }

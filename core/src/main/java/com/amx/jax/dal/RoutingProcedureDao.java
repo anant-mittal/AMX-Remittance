@@ -348,7 +348,7 @@ public class RoutingProcedureDao {
 					inputList.add(inputValues.get("P_SERVICE_MASTER_ID"));
 					inputList.add(inputValues.get("P_BENEFICIARY_BANK_ID"));
 					inputList.add(inputValues.get("P_ROUTING_COUNTRY_ID"));
-					inputList.add(inputValues.get("P_ROUTING_BANK_ID"));
+					inputList.add(inputValues.get("P_ROUTING_BANK_ID")); 
 					inputList.add(inputValues.get("P_REMITTANCE_MODE_ID"));
 					List<Map<String, Object>> outputList = jdbcTemplate.queryForList(sql, inputList.toArray());
 					return outputList;

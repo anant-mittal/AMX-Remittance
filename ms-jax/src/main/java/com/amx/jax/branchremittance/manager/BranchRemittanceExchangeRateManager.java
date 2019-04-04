@@ -39,6 +39,7 @@ import com.amx.jax.error.JaxError;
 import com.amx.jax.exrateservice.service.JaxDynamicPriceService;
 import com.amx.jax.exrateservice.service.NewExchangeRateService;
 import com.amx.jax.manager.RemittanceTransactionManager;
+import com.amx.jax.manager.remittance.CorporateDiscountManager;
 import com.amx.jax.manager.remittance.RemittanceAdditionalFieldManager;
 import com.amx.jax.manager.remittance.RemittanceApplicationParamManager;
 import com.amx.jax.meta.MetaData;
@@ -84,17 +85,15 @@ public class BranchRemittanceExchangeRateManager {
 	RemittanceTransactionRequestValidator remittanceTransactionRequestValidator;
 	@Autowired
 	ICorporateMasterRepository corporateMasterRepository;
-	@Autowired
-	ICustomerEmploymentInfoRepository customerEmployeRepository;
+	
 	@Autowired
 	JaxTenantProperties jaxTenantProperties;
 	@Autowired
 	RemittanceParameterMapManager remittanceParameterMapManager;
 	@Autowired
 	NewExchangeRateService newExchangeRateService;
-	
 	@Autowired
-	CustomerCoreDetailsRepository customerCoreDetailsRepositroy;
+	CorporateDiscountManager corporateDiscountManager;
 
 	public void validateGetExchangRateRequest(IRemittanceApplicationParams request) {
 
@@ -167,7 +166,7 @@ public class BranchRemittanceExchangeRateManager {
 			commission = newCommission;
 		}
 		
-		BigDecimal corpDiscount = corporateDiscount();
+		BigDecimal corpDiscount = corporateDiscountManager.corporateDiscount();
 		if(JaxUtil.isNullZeroBigDecimalCheck(commission) && commission.compareTo(corpDiscount)>=0) {
 			commission =commission.subtract(corpDiscount);
 		}
@@ -200,17 +199,4 @@ public class BranchRemittanceExchangeRateManager {
 		return flexFields;
 	}
 	
-	/** Added by Rabil for corporate employee discount **/
-	public BigDecimal corporateDiscount() {
-		BigDecimal corpDiscount = BigDecimal.ZERO;
-		Customer customer = new Customer();
-		customer.setCustomerId(metaData.getCustomerId());
-		List<CorporateMasterModel> coporatList = null;
-		List<CustomerEmploymentInfo> empInfo = customerEmployeRepository.findByFsCustomerAndIsActive(customer, ConstantDocument.Yes);
-		CustomerCoreDetailsView customercoreView=customerCoreDetailsRepositroy.findByCustomerID(metaData.getCustomerId());
-		if(customercoreView!=null) {
-			corpDiscount = customercoreView.getCorporateDiscountAmount()==null?BigDecimal.ZERO:customercoreView.getCorporateDiscountAmount();
-		}
-		return corpDiscount;
-	}
 }

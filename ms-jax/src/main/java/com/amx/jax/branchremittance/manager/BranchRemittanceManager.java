@@ -739,16 +739,44 @@ public class BranchRemittanceManager extends AbstractModel {
   
   public List<AdditionalExchAmiecDto> getPurposeOfTrnx(BigDecimal beneRelId){
 	  BenificiaryListView beneficaryDetails =beneficiaryRepository.findBybeneficiaryRelationShipSeqId(beneRelId);
-		
+	  List<AdditionalBankRuleAmiec> amiecRuleMap  = null;
+	  CountryMaster cntMaster = new CountryMaster();
 		if(beneficaryDetails==null) {
 			throw new GlobalException(JaxError.BENEFICIARY_LIST_NOT_FOUND,"Beneficairy not found "+beneRelId);
 			
 		}	
-		
-		List<AdditionalExchAmiecDto> purposeofTrnx = new ArrayList<>();	
-	  CountryMaster cntMaster = new CountryMaster();
-	  cntMaster.setCountryId(beneficaryDetails.getBenificaryCountry());
-	  List<AdditionalBankRuleAmiec> amiecRuleMap = amiecBankRuleRepo.getPurposeOfTrnxByCountryId(cntMaster);
+	List<AdditionalExchAmiecDto> purposeofTrnx = new ArrayList<>();
+	
+	
+	RoutingResponseDto routingResponseDto = branchRoutingManager.getRoutingSetupDeatils(beneRelId);
+	
+	if(routingResponseDto!=null) {
+		List<ResourceDTO> routingCountry = routingResponseDto.getRoutingCountrydto();
+		cntMaster.setCountryId(routingCountry.get(0).getResourceId());
+	}
+	
+	
+	/*
+	Map<String, Object> inputValues = branchRoutingManager.getBeneMapSet(beneRelId);
+	CountryMaster cntMaster = new CountryMaster();
+	List<Map<String, Object>> listofService = routingPro.getServiceList(inputValues);
+	
+	if()
+	
+	List<Map<String, Object>> listofRoutingCnty = routingPro.getRoutingCountryId(inputValues);
+	
+	
+	if (listofRoutingCnty != null && !listofRoutingCnty.isEmpty()) {
+		 List<ResourceDTO> listOfRouCountry = branchRoutingManager.convertRoutingCountry(listofRoutingCnty);
+		 cntMaster.setCountryId(listOfRouCountry.get(0).getResourceId());
+	}
+	*/
+	
+	//cntMaster.setCountryId(beneficaryDetails.getBenificaryCountry());
+	  
+	if(cntMaster!=null && JaxUtil.isNullZeroBigDecimalCheck(cntMaster.getCountryId())) { 
+		amiecRuleMap = amiecBankRuleRepo.getPurposeOfTrnxByCountryId(cntMaster);
+	}
 	  
 	  if(amiecRuleMap != null && amiecRuleMap.size() != 0) {
 		 return convertPurposeOfTrnxDto(amiecRuleMap);//Collections.sort(amiecRuleMap));

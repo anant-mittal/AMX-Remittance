@@ -10,7 +10,6 @@ import static com.amx.jax.error.JaxError.TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED_NE
 import static com.amx.jax.error.JaxError.TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED_PER_BENE;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -60,7 +59,6 @@ import com.amx.jax.dbmodel.BlackListModel;
 import com.amx.jax.dbmodel.CurrencyMasterModel;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.ExchangeRateApprovalDetModel;
-import com.amx.jax.dbmodel.PipsMaster;
 import com.amx.jax.dbmodel.TransactionLimitCheckView;
 import com.amx.jax.dbmodel.remittance.AdditionalInstructionData;
 import com.amx.jax.dbmodel.remittance.RemittanceAppBenificiary;
@@ -71,11 +69,11 @@ import com.amx.jax.error.JaxError;
 import com.amx.jax.exrateservice.dao.ExchangeRateDao;
 import com.amx.jax.exrateservice.dao.PipsMasterDao;
 import com.amx.jax.exrateservice.service.NewExchangeRateService;
-import com.amx.jax.logger.AuditEvent;
 import com.amx.jax.logger.AuditEvent.Result;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.events.CActivityEvent;
 import com.amx.jax.logger.events.CActivityEvent.Type;
+import com.amx.jax.manager.remittance.CorporateDiscountManager;
 import com.amx.jax.manager.remittance.RemittanceAdditionalFieldManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.remittance.AbstractRemittanceApplicationRequestModel;
@@ -88,10 +86,10 @@ import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.VTransferRepository;
 import com.amx.jax.service.CountryService;
 import com.amx.jax.service.CurrencyMasterService;
-import com.amx.jax.service.LoyalityPointService;
 import com.amx.jax.service.ParameterService;
 import com.amx.jax.services.BeneficiaryCheckService;
 import com.amx.jax.services.JaxConfigService;
+import com.amx.jax.services.LoyalityPointService;
 import com.amx.jax.services.RemittanceApplicationService;
 import com.amx.jax.services.RoutingService;
 import com.amx.jax.services.TransactionHistroyService;
@@ -203,6 +201,8 @@ public class RemittanceTransactionManager {
 	JaxConfigService jaxConfigService;
 	@Autowired
 	RemittanceParameterMapManager remittanceParameterMapManager;
+	@Autowired
+	CorporateDiscountManager corporateDiscountManager;
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -272,6 +272,7 @@ public class RemittanceTransactionManager {
 		if (newCommission != null) {
 			commission = newCommission;
 		}
+		commission = commission.subtract(corporateDiscountManager.corporateDiscount());
 		ExchangeRateBreakup breakup = getExchangeRateBreakup(exchangeRates, model, responseModel, commission);
 		remitApplParametersMap.put("P_CALCULATED_FC_AMOUNT", breakup.getConvertedFCAmount());
 		remitApplParametersMap.put("P_CALCULATED_LC_AMOUNT", breakup.getConvertedLCAmount());
@@ -610,8 +611,8 @@ public class RemittanceTransactionManager {
 			RemittanceTransactionResponsetModel responseModel, BigDecimal comission) {
 		BigDecimal netAmount = exchangeRateBreakup.getConvertedLCAmount().add(comission);
 		exchangeRateBreakup.setNetAmountWithoutLoyality(netAmount);
-
-		//if (comission == null || comission.intValue() == 0) {
+		responseModel.setLoyalityAmountAvailableForTxn(loyalityPointService.getloyaltyAmountEncashed(comission));
+		responseModel.setDiscountOnComission(corporateDiscountManager.corporateDiscount());
 		if(!JaxUtil.isNullZeroBigDecimalCheck(comission)) {
 			responseModel.setCanRedeemLoyalityPoints(false);
 			responseModel.setLoyalityPointState(LoyalityPointState.CAN_NOT_AVAIL);
