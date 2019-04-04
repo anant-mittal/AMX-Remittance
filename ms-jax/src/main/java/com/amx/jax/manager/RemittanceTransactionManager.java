@@ -395,11 +395,11 @@ public class RemittanceTransactionManager {
 			rounder = rounder.setScale(3, RoundingMode.HALF_EVEN);
 
 			BigDecimal decimalAmt = exchangeRateBreakup.getConvertedLCAmount().remainder(new BigDecimal(1))
-					.round(context);
+					.round(context).setScale(3, RoundingMode.HALF_EVEN);
+
+			BigDecimal diffVal = decimalAmt.remainder(rounder).round(context);
 
 			if (decimalAmt.doubleValue() > 0) {
-
-				BigDecimal diffVal = decimalAmt.remainder(rounder).round(context);
 
 				BigDecimal bumpLcVal = new BigDecimal(0);
 				new BigDecimal(0);
