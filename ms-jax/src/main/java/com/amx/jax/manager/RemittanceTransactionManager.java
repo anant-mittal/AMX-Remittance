@@ -380,7 +380,7 @@ public class RemittanceTransactionManager {
 		boolean applyRound = false;
 
 		if (Channel.BRANCH.equals(channel)) {
-			AuthenticationView authView = authViewRepo.getOne(8);
+			AuthenticationView authView = authViewRepo.getOne(new BigDecimal(8));
 			rounder = authView.getAuthLimit();
 			applyRound = true;
 		} else if (Channel.KIOSK.equals(channel)) {

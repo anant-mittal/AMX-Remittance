@@ -138,8 +138,11 @@ public class BranchRemittanceExchangeRateManager {
 		remittanceTransactionManager.setLoyalityPointFlags(customer, result);
 		remittanceTransactionManager.setLoyalityPointIndicaters(result);
 		BranchRemittanceApplRequestModel remittanceApplRequestModel = buildRemittanceTransactionModel(request);
+		remittanceTransactionManager.applyChannelAmountRouding(branchExchangeRate,
+				metaData.getChannel().getClientChannel(), true);
 		remittanceTransactionManager.setNetAmountAndLoyalityState(branchExchangeRate, remittanceApplRequestModel, result, commission);
 		remittanceTransactionManager.applyCurrencyRoudingLogic(branchExchangeRate);
+		
 		return result;
 	}
 
