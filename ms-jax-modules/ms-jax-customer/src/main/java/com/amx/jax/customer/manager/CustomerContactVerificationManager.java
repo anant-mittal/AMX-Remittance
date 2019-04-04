@@ -91,7 +91,7 @@ public class CustomerContactVerificationManager {
 
 		link = validate(link);
 
-		if (!ArgUtil.isEmpty(identity) || !identity.equals(c.getIdentityInt())) {
+		if (ArgUtil.isEmpty(identity) || !identity.equals(c.getIdentityInt())) {
 			throw new GlobalException(JaxError.INVALID_CIVIL_ID,
 					"Invalid civil id, does not match with Verification link");
 		}
@@ -132,7 +132,7 @@ public class CustomerContactVerificationManager {
 	public CustomerContactVerification verifyByCode(String identity, BigDecimal linkId, String code) {
 		CustomerContactVerification link = getCustomerContactVerification(linkId);
 
-		if (!ArgUtil.isEmpty(code) || !code.equals(link.getVerificationCode())) {
+		if (ArgUtil.isEmpty(code) || !code.equals(link.getVerificationCode())) {
 			throw new GlobalException(JaxError.INVALID_OTP,
 					"Verification is Invalid, cannot complete.");
 		}
