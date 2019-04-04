@@ -365,7 +365,7 @@ public class AnnualIncomeService {
 		Customer customer = custDao.getCustById(metaData.getCustomerId());
 		CustomerEmploymentInfo customerEmploymentInfo = incomeDao.getCustById(metaData.getCustomerId());
 
-		if (customerEmploymentInfo.getEmployerName()==null) {
+		if (customer.getAnnualIncomeFrom()== null || customer.getAnnualIncomeTo()== null) {
 			IncomeRangeMaster articleDetails = customer.getFsIncomeRangeMaster();
 			incomeDto.setIncomeRangeFrom(articleDetails.getIncomeRangeFrom());
 			incomeDto.setIncomeRangeTo(articleDetails.getIncomeRangeTo());
