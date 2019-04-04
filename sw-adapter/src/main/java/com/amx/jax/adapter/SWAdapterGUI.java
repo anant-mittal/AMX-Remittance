@@ -6,8 +6,8 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
+import java.util.Date;
 
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -15,6 +15,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
+import javax.swing.text.BadLocationException;
 
 import org.springframework.stereotype.Component;
 
@@ -163,6 +164,7 @@ public class SWAdapterGUI extends JFrame {
 
 		textArea = new JTextArea();
 		textArea.setFont(new Font("monospaced", Font.PLAIN, 8));
+		textArea.setEditable(false);
 		pane = new JScrollPane(textArea);
 
 		tabs.addTab("Adapter", newPanel);
@@ -235,15 +237,28 @@ public class SWAdapterGUI extends JFrame {
 	}
 
 	private int logCount = 0;
+	private static int MAX_LOG_COUNT = 2000;
 
 	public void logWindow(String message) {
-		if (logCount > 3000) {
-			textArea.remove(0);
-		}
 		if (textArea != null) {
-			textArea.append(message + "\n");
-			logCount++;
+			try {
+				if (logCount >= MAX_LOG_COUNT) {
+					logCount = MAX_LOG_COUNT;
+					int end;
+
+					end = textArea.getLineEndOffset(0);
+
+					textArea.replaceRange("", 0, end);
+					// textArea.remove(logCount - MAX_LOG_COUNT);
+				}
+				textArea.append(new Date().toString() + " : " + message + "\n");
+				logCount++;
+			} catch (BadLocationException e) {
+				textArea.append(logCount + " : " + message + " | " + e.getMessage() + "\n");
+				logCount++;
+			}
 		}
+
 	}
 
 	public void log(String message) {
