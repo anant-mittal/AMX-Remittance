@@ -277,24 +277,27 @@ public class BranchRemittanceManager extends AbstractModel {
 		
 	}
 	
-	public void bannedBankCheck(BenificiaryListView beneficaryDetails) {
+	public String bannedBankCheck(BenificiaryListView beneficaryDetails) {
 		Map<String, Object> inputValues = new HashMap<>();
+		String alertMessage =null;
 		inputValues.put("P_APPLICATION_COUNTRY_ID", beneficaryDetails.getApplicationCountryId());
 		inputValues.put("P_BENEFICIARY_BANK_ID", beneficaryDetails.getBankId());
 		inputValues.put("P_BENEFICIARY_MASTER_ID", beneficaryDetails.getBeneficaryMasterSeqId());
 		Map<String, Object> output = applProcedureDao.getBannedBankCheckProcedure(inputValues);
 		if(output!=null) {
 			String errorMessage = (String)output.get("P_ERROR_MESSAGE");
-			String alertMessage = (String)output.get("P_ALERT_MESSAGE");
+			 alertMessage = (String)output.get("P_ALERT_MESSAGE");
 			
 			if (errorMessage != null) {
 				throw new GlobalException(JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL, errorMessage);
 			}
-			if (alertMessage != null) {
-				throw new GlobalException(JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL, alertMessage);
-			}
+			/*if (alertMessage != null) {
+				//throw new GlobalException(JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL, alertMessage);
+				return alertMessage;
+			}*/
+			
 		}
-		
+		return alertMessage;
 	}
 	
 

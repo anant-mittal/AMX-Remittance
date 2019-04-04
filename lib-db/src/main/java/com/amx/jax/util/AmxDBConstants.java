@@ -145,4 +145,7 @@ public class AmxDBConstants {
 	public static final String A = "A";
 	public static final String CLAIM = "CLAIM";
 	public static final String VOUCHER = "V";
+	public static final String IMPS_CODE = "13";
+	public static final String IND_COUNTRY_CODE = "004";
+	
 }
