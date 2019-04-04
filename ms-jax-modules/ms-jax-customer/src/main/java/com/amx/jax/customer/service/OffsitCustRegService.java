@@ -752,7 +752,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 			}
 			for (String image : model.getImage()) {
 				DmsApplMapping mappingData = new DmsApplMapping();
-				mappingData = getDmsApplMappingData(customer);
+				mappingData = getDmsApplMappingData(customer, model);
 				idmsAppMappingRepository.save(mappingData);
 				DocBlobUpload documentDetails = new DocBlobUpload();
 				documentDetails = getDocumentUploadDetails(image, mappingData);
@@ -793,7 +793,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		// return null;
 	}
 
-	private DmsApplMapping getDmsApplMappingData(Customer model) throws ParseException {
+	private DmsApplMapping getDmsApplMappingData(Customer model, ImageSubmissionRequest imageSubmissionRequest) throws ParseException {
 		DmsApplMapping mappingData = new DmsApplMapping();
 		BigDecimal financialYear = getDealYearbyDate();
 		BigDecimal applCountryId = metaData.getCountryId();
@@ -803,7 +803,11 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		mappingData.setDocBlobId(docBlobId); // need to change value
 		mappingData.setDocFormat("JPG");
 		mappingData.setFinancialYear(financialYear);
-		mappingData.setIdentityExpiryDate(model.getIdentityExpiredDate());
+		if (imageSubmissionRequest != null && imageSubmissionRequest.getIdentityExpiredDate() != null) {
+			mappingData.setIdentityExpiryDate(imageSubmissionRequest.getIdentityExpiredDate());
+		} else {
+			mappingData.setIdentityExpiryDate(model.getIdentityExpiredDate());
+		}
 		mappingData.setIdentityInt(model.getIdentityInt());
 		mappingData.setIdentityIntId(model.getIdentityTypeId());
 		mappingData.setCreatedBy(metaData.getEmployeeId().toString());
