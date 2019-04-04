@@ -26,6 +26,7 @@ import com.amx.jax.model.request.device.SignaturePadFCPurchaseSaleInfo;
 import com.amx.jax.model.request.device.SignaturePadRemittanceInfo;
 import com.amx.jax.model.response.DeviceStatusInfoDto;
 import com.amx.jax.model.response.IDeviceStateData;
+import com.amx.jax.model.response.customer.CustomerIdProofDto;
 import com.amx.jax.rbaac.RbaacServiceClient;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.validation.DeviceStateDetailsValidation;
@@ -113,13 +114,17 @@ public class DeviceStateService extends AbstractService {
 	}
 
 	public SignaturePadCustomerRegStateInfo getCustomerRegData(Integer customerId) {
-
 		SignaturePadCustomerRegStateInfo info = new SignaturePadCustomerRegStateInfo();
 		BigDecimal customerIdBd = new BigDecimal(customerId);
 		info.setCustomerContactDto(customerService.getCustomerContactDto(customerIdBd));
 		info.setCustomerDto(customerService.getCustomerDto(customerIdBd));
-		info.setCustomerIdProofDto(
-				customerService.getCustomerIdProofDto(customerIdBd, ConstantDocument.BIZ_COMPONENT_ID_CIVIL_ID));
+		CustomerIdProofDto customerIdProofDto = customerService.getCustomerIdProofDto(customerIdBd,
+				ConstantDocument.BIZ_COMPONENT_ID_CIVIL_ID);
+		if (customerIdProofDto == null) {
+			customerIdProofDto = customerService.getCustomerIdProofDto(customerIdBd,
+					ConstantDocument.BIZ_COMPONENT_ID_NEW_CIVIL_ID);
+		}
+		info.setCustomerIdProofDto(customerIdProofDto);
 		info.setCustomerIncomeRangeDto(customerService.getCustomerIncomeRangeDto(customerIdBd));
 		return info;
 	}
