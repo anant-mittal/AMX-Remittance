@@ -265,7 +265,11 @@ public class AnnualIncomeService {
 
 		logger.info("details are set");
 		custDao.saveCustomer(customer);
+		customerEmploymentInfo.setUpdatedBy(metaData.getCustomerId().toString());
+		customerEmploymentInfo.setLastUpdated(new Date());
+		
 		incomeDao.saveCustomerEmploymentInfo(customerEmploymentInfo);
+		
 		return AmxApiResponse.build(incomeDto);
 
 	}

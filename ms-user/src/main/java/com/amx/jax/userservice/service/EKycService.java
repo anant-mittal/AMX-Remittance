@@ -31,6 +31,7 @@ import com.amx.jax.dbmodel.DmsApplMapping;
 import com.amx.jax.dbmodel.DocBlobUpload;
 import com.amx.jax.dbmodel.UserFinancialYear;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.request.OffsiteCustomerRegistrationRequest;
 import com.amx.jax.repository.DOCBLOBRepository;
 import com.amx.jax.repository.IDMSAppMappingRepository;
 import com.amx.jax.repository.IUserFinancialYearRepo;
@@ -73,6 +74,7 @@ public class EKycService {
 		}
 		
 		Customer customer = custDao.getCustById(metaData.getCustomerId());
+		//OffsiteCustomerRegManager offsiteCustomerRegManager = new OffsiteCustomerRegManager();
 		List<CustomerIdProof> customerIdProofList = customerIdProofDao.getCustomerIdProofs(metaData.getCustomerId());
 		CustomerIdProof customerIdProof=customerIdProofList.get(0);
 		
