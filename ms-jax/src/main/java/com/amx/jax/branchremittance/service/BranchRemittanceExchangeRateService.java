@@ -68,11 +68,7 @@ public class BranchRemittanceExchangeRateService {
 	@Autowired
 	CountryRepository countryRepository;
 	
-	@Autowired
-	private ExchangeRateProcedureDao exchangeRateProcedureDao;
 
-	@Autowired
-	private BizcomponentDao bizcomponentDao;
 
 	public AmxApiResponse<BranchRemittanceGetExchangeRateResponse, Object> getExchaneRate(IRemittanceApplicationParams request) {
 		branchRemittanceExchangeRateManager.validateGetExchangRateRequest(request);
@@ -90,7 +86,6 @@ public class BranchRemittanceExchangeRateService {
 				String countryCode = countryMasterView.get(0)==null?"": countryMasterView.get(0).getCountryCode();
 				if(!StringUtils.isBlank(countryCode) &&  countryCode.equalsIgnoreCase(ConstantDocument.IND_COUNTRY_CODE)) {
 					requestApplModel.setServiceMasterId(BigDecimal.ZERO);
-					
 				}
 			}
 			
