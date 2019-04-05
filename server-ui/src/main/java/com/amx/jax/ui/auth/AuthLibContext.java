@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.amx.jax.model.AuthState;
 import com.amx.jax.model.response.customer.CustomerFlags;
 import com.amx.jax.scope.TenantContext;
+import com.amx.jax.ui.UIConstants.Features;
 import com.amx.jax.ui.auth.AuthLibContext.AuthLib;
 
 /**
@@ -39,9 +40,9 @@ public class AuthLibContext extends TenantContext<AuthLib> {
 		 */
 		public AuthState.AuthStep getNextAuthStep(AuthState authState);
 
-		public CustomerFlags checkUserMeta(CustomerFlags customerFlags);
+		public CustomerFlags checkUserMeta(AuthState authState, CustomerFlags customerFlags);
 
-		public CustomerFlags checkModule(CustomerFlags customerFlags);
+		public CustomerFlags checkModule(AuthState authState, CustomerFlags customerFlags, Features feature);
 
 	}
 

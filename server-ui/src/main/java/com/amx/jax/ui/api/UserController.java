@@ -9,6 +9,7 @@ import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,6 +36,7 @@ import com.amx.jax.logger.LoggerService;
 import com.amx.jax.model.response.customer.CustomerFlags;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.client.PushNotifyClient;
+import com.amx.jax.ui.UIConstants.Features;
 import com.amx.jax.ui.WebAppConfig;
 import com.amx.jax.ui.auth.AuthLibContext;
 import com.amx.jax.ui.config.OWAStatus.ApiOWAStatus;
@@ -151,11 +153,12 @@ public class UserController {
 			wrapper.getData().setInfo(sessionService.getUserSession().getCustomerModel().getPersoninfo());
 
 			if (!ArgUtil.isEmpty(refresh) && refresh) {
-
+				loginService.updateCustoemrModel();
 			}
 
 			CustomerFlags customerFlags = authLibContext.get()
-					.checkUserMeta(sessionService.getUserSession().getCustomerModel().getFlags());
+					.checkUserMeta(sessionService.getGuestSession().getState(),
+							sessionService.getUserSession().getCustomerModel().getFlags());
 			wrapper.getData().setFlags(customerFlags);
 
 			if (customerFlags.getAnnualIncomeExpired()) {
@@ -229,6 +232,11 @@ public class UserController {
 	@RequestMapping(value = "/api/user/notify/unregister", method = { RequestMethod.POST })
 	public ResponseWrapper<Object> unregisterNotify(@RequestParam String token) {
 		return new ResponseWrapper<Object>();
+	}
+
+	@RequestMapping(value = "/api/user/perms/{feature}", method = { RequestMethod.GET })
+	public ResponseWrapper<CustomerDto> perms(@PathVariable Features feature) {
+		return userService.getProfileDetails();
 	}
 
 	/**

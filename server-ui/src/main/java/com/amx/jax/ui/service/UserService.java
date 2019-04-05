@@ -13,7 +13,10 @@ import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.BoolRespModel;
+import com.amx.jax.model.response.customer.CustomerFlags;
 import com.amx.jax.postman.model.PushMessage;
+import com.amx.jax.ui.UIConstants.Features;
+import com.amx.jax.ui.auth.AuthLibContext;
 import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
 import com.amx.jax.ui.model.AuthDataInterface.UserUpdateResponse;
 import com.amx.jax.ui.model.UserBean;
@@ -51,6 +54,9 @@ public class UserService {
 	/** The jax service. */
 	@Autowired
 	private JaxService jaxService;
+
+	@Autowired
+	AuthLibContext authLibContext;
 
 	/**
 	 * Gets the notify topics.

@@ -88,7 +88,6 @@ public enum JaxError implements IExceptionEnum {
 	NO_RECORD_FOUND,
 	INCORRECT_LENGTH,
 	ALREADY_EXIST,
-	JAX_SYSTEM_ERROR,
 	USER_DATA_VERIFICATION_PENDING,
 	USER_DATA_VERIFICATION_PENDING_REG,
 	BANK_BRANCH_NOT_FOUND,
@@ -279,6 +278,7 @@ public enum JaxError implements IExceptionEnum {
 	
 	// Default for code symettry
 	JAX_SYSTEM_ERROR;
+	
 	@Deprecated
 	public String getCode() {
 		return this.toString();

@@ -1,16 +1,17 @@
 package com.amx.jax.ui.auth;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.model.AuthState;
-import com.amx.jax.model.AuthState.AuthStep;
 import com.amx.jax.model.response.customer.CustomerFlags;
 import com.amx.jax.scope.TenantSpecific;
+import com.amx.jax.ui.UIConstants.Features;
 import com.amx.jax.ui.auth.AuthLibContext.AuthLib;
-import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
+import com.amx.jax.ui.session.UserSession;
 
 /**
  * The Class AuthLibKWT.
@@ -159,18 +160,21 @@ public class AuthLibKWT implements AuthLib {
 	}
 
 	@Override
-	public CustomerFlags checkUserMeta(CustomerFlags customerFlags) {
-
-		if (customerFlags.getAnnualIncomeExpired()) {
-			throw new GlobalException(JaxError.INCOME_UPDATE_REQUIRED, "Kindly update Annual Income");
-		}
-
+	public CustomerFlags checkUserMeta(AuthState authState, CustomerFlags customerFlags) {
+		AuthPermUtil.checkAnnualIncomeExpiry(authState, customerFlags);
 		return customerFlags;
 	}
 
 	@Override
-	public CustomerFlags checkModule(CustomerFlags customerFlags) {
-		// TODO Auto-generated method stub
+	public CustomerFlags checkModule(AuthState authState, CustomerFlags customerFlags, Features feature) {
+
+		switch (feature) {
+		case REMIT:
+			AuthPermUtil.checkSQASetup(authState, customerFlags);
+			AuthPermUtil.checkSQA(authState, customerFlags);
+
+		}
+
 		return null;
 	}
 

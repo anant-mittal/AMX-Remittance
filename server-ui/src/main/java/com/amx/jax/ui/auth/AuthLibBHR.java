@@ -8,6 +8,7 @@ import com.amx.jax.error.JaxError;
 import com.amx.jax.model.AuthState;
 import com.amx.jax.model.response.customer.CustomerFlags;
 import com.amx.jax.scope.TenantSpecific;
+import com.amx.jax.ui.UIConstants.Features;
 import com.amx.jax.ui.auth.AuthLibContext.AuthLib;
 
 /**
@@ -157,17 +158,13 @@ public class AuthLibBHR implements AuthLib {
 	}
 
 	@Override
-	public CustomerFlags checkUserMeta(CustomerFlags customerFlags) {
-
-		if (customerFlags.getIdProofRequired()) {
-			throw new GlobalException(JaxError.EKYC_REQUIRED, "You KYC has expired, kindly Upload again");
-		}
-
+	public CustomerFlags checkUserMeta(AuthState authState, CustomerFlags customerFlags) {
+		AuthPermUtil.checkIdProofExpiryRequired(authState, customerFlags);
 		return customerFlags;
 	}
 
 	@Override
-	public CustomerFlags checkModule(CustomerFlags customerFlags) {
+	public CustomerFlags checkModule(AuthState authState, CustomerFlags customerFlags, Features feature) {
 		// TODO Auto-generated method stub
 		return null;
 	}
