@@ -13,6 +13,7 @@ import org.springframework.web.context.WebApplicationContext;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
+import com.amx.jax.error.JaxCustomerError;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.model.response.customer.CustomerFlags;
 import com.amx.jax.userservice.dao.CustomerDao;
@@ -39,23 +40,22 @@ public class CustomerFlagManager {
 			customerFlags.setIdProofStatus(ex.getErrorKey());
 		}
 
-		CustomerOnlineRegistration customerOnlineRegistration = userValidationService
-				.validateOnlineCustomerByIdentityId(customerId);
-		if(customerOnlineRegistration == null) {
-			throw new GlobalException(JaxError.CUSTOMER_NOT_FOUND.getStatusKey(), "Online Customer id not found");
-		}
-		if(customerOnlineRegistration.getDeviceId()== null || customerOnlineRegistration.getDevicePassword()==null) {
+		CustomerOnlineRegistration customerOnlineRegistration = custDao.getOnlineCustByCustomerId(customerId);
+		if (customerOnlineRegistration != null && customerOnlineRegistration.getDeviceId() != null
+				&& customerOnlineRegistration.getDevicePassword() != null) {
+			customerFlags.setFingerprintlinked(Boolean.TRUE);
+		} else {
 			customerFlags.setFingerprintlinked(Boolean.FALSE);
 		}
-		else {	
-			customerFlags.setFingerprintlinked(Boolean.TRUE);
-		}
+			
+		customerFlags.setFingerprintlinked(Boolean.TRUE);
+		
 		Customer customer = custDao.getCustById(customerOnlineRegistration.getCustomerId());
 		Date annualIncomeUpdateDate = customer.getAnnualIncomeUpdatedDate();
 		if (annualIncomeUpdateDate == null) {
 			customerFlags.setAnnualIncomeExpired(Boolean.TRUE);
 			logger.debug("Flag value is " + customerFlags.getAnnualIncomeExpired());
-			return customerFlags;
+			
 		}
 		else {
 			Date currentDate = new Date();
@@ -71,5 +71,15 @@ public class CustomerFlagManager {
 			}
 		}
 		return customerFlags;
+	}
+	
+	public void validateInformationOnlyCustomer(BigDecimal customerId) {
+		CustomerFlags customerFlags = getCustomerFlags(customerId);
+		if (!Boolean.TRUE.equals(customerFlags.getSecurityQuestionRequired())) {
+			throw new GlobalException(JaxCustomerError.SECURITY_QUESTION_REQUIRED, "Security question required");
+		}
+		if (!Boolean.TRUE.equals(customerFlags.getSecurityAnswerRequired())) {
+			throw new GlobalException(JaxCustomerError.SECURITY_ANSWER_REQUIRED, "Security answer required");
+		}
 	}
 }
