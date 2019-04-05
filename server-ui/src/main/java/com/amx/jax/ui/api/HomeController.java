@@ -228,7 +228,7 @@ public class HomeController {
 			method = { RequestMethod.GET, RequestMethod.POST })
 	public String verification(Model model,
 			@PathVariable ContactType contactType, @PathVariable BigDecimal verId, @PathVariable String verCode,
-			@RequestParam(required = false) String identity, @RequestParam(required = false) String resend,
+			@RequestParam(required = false) String identity, @RequestParam(required = false) String resend, @RequestParam(required = false) String submit,
 			@RequestParam(required = false) String customerId) {
 		String errorCode = null;
 		String errorMessage = null;
@@ -245,6 +245,7 @@ public class HomeController {
 			errorMessage = e.getMessage();
 		}
 		model.addAttribute("resend", resend);
+		model.addAttribute("submit", submit);
 		model.addAttribute("errorCode", errorCode);
 		model.addAttribute("errorMessage", errorMessage);
 		model.addAttribute("contactType", contactType);
