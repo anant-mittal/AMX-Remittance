@@ -18,6 +18,7 @@ import com.amx.amxlib.meta.model.BankBranchDto;
 import com.amx.amxlib.meta.model.BankMasterDTO;
 import com.amx.amxlib.meta.model.BranchDetailDTO;
 import com.amx.amxlib.meta.model.CountryMasterDTO;
+import com.amx.amxlib.meta.model.DeclarationDTO;
 import com.amx.amxlib.meta.model.JaxMetaParameter;
 import com.amx.amxlib.meta.model.PrefixDTO;
 import com.amx.amxlib.meta.model.ServiceGroupMasterDescDto;
@@ -201,7 +202,7 @@ public class MetaClientTest extends AbstractTestClient {
 		assertNotNull(response.getResults());
 	}
 
-	@Test
+	//@Test
 	public void testGetAllBranchDetail() {
 		//setDefaults();
 		setBahrainDefaults();
@@ -211,7 +212,7 @@ public class MetaClientTest extends AbstractTestClient {
 		assertNotNull(response.getResults());
 	}
 
-	@Test
+	//@Test
 	public void testlistBranchSystemInventory() {
 		setDefaults();
 		AmxApiResponse<BranchSystemDetailDto, Object> response = null;
@@ -229,4 +230,13 @@ public class MetaClientTest extends AbstractTestClient {
 		assertNotNull(response.getResult());
 		// assertNotNull(response.getResult().getCurrencyName());
 	}
+	@Test
+	public void testgetDeclaration() {
+		setDefaults();
+		AmxApiResponse<DeclarationDTO, Object> response = null;
+		response = metaclient.getDeclaration();
+		assertNotNull("Response is null", response);
+		assertNotNull(response.getResult());
+	}
+	
 }

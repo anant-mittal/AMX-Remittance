@@ -3,6 +3,7 @@ package com.amx.jax.controller;
 import static com.amx.amxlib.constant.ApiEndpoint.CUSTOMER_ENDPOINT;
 import static com.amx.amxlib.constant.ApiEndpoint.UPDATE_CUSTOMER_PASSWORD_ENDPOINT;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +17,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.amxlib.constant.ApiEndpoint.CustomerApi;
 import com.amx.amxlib.constant.CommunicationChannel;
+import com.amx.amxlib.meta.model.AnnualIncomeRangeDTO;
+import com.amx.amxlib.meta.model.IncomeDto;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.service.ICustomerService;
@@ -29,6 +33,7 @@ import com.amx.jax.model.auth.QuestModelDTO;
 import com.amx.jax.model.response.customer.CustomerModelResponse;
 import com.amx.jax.services.CustomerDataVerificationService;
 import com.amx.jax.userservice.service.CustomerModelService;
+import com.amx.jax.userservice.service.AnnualIncomeService;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.userservice.service.UserValidationService;
 import com.amx.jax.util.ConverterUtil;
@@ -53,8 +58,11 @@ public class CustomerController implements ICustomerService {
 
 	@Autowired
 	MetaData metaData;
+	
 	@Autowired
 	CustomerModelService customerModelService;
+	@Autowired
+	AnnualIncomeService annualIncomeService;
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -231,5 +239,20 @@ public class CustomerController implements ICustomerService {
 			@RequestParam(name = Params.IDENTITY_INT, required = false) String identityInt) {
 		CustomerModelResponse response = customerModelService.getCustomerModelResponse(identityInt);
 		return AmxApiResponse.build(response);
+	}
+
+	@RequestMapping(value = CustomerApi.SAVE_ANNUAL_INCOME, method = RequestMethod.POST)
+	public AmxApiResponse<IncomeDto, Object> saveAnnualIncome(@RequestBody IncomeDto incomeDto) throws ParseException {
+		return annualIncomeService.saveAnnualIncome(incomeDto);
+	}
+	
+	@RequestMapping(value = CustomerApi.GET_ANNUAL_INCOME_DETAILS , method = RequestMethod.POST)
+	public AmxApiResponse<IncomeDto, Object> getAnnualIncomeDetails(){
+		return annualIncomeService.getAnnualIncomeDetails();
+	}
+	
+	@RequestMapping(value =  CustomerApi.GET_ANNUAL_INCOME_RANGE , method = RequestMethod.POST)
+	public AmxApiResponse<AnnualIncomeRangeDTO, Object> getAnnuaIncome(){
+		return annualIncomeService.getAnnualIncome(metaData.getCustomerId());
 	}
 }

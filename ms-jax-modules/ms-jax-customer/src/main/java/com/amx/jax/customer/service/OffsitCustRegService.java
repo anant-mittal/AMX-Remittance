@@ -16,6 +16,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.sql.rowset.serial.SerialException;
+
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
@@ -73,6 +74,7 @@ import com.amx.jax.logger.events.CActivityEvent;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.CardDetail;
 import com.amx.jax.model.OtpData;
+import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.model.dto.SendOtpModel;
 import com.amx.jax.model.request.CustomerEmploymentDetails;
 import com.amx.jax.model.request.CustomerInfoRequest;
@@ -376,18 +378,59 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		designationList.forEach(i -> {
 			output.add(convertDesignation(i));
 		});
+		LOGGER.debug("List Output is :", output);
 		return output;
 	}
 
-	private ArticleDetailsDescDto convertDesignation(Map<String, Object> i) {
+	private ArticleDetailsDescDto convertDesignation(Map<String, Object> designationMap) {
 		ArticleDetailsDescDto dto = new ArticleDetailsDescDto();
-		dto.setArticleDetailsDesc(
-				i.get("ARTICLE_DETAIL_DESC") != null ? i.get("ARTICLE_DETAIL_DESC").toString() : null);
-		dto.setArticleDetailsDescId(new BigDecimal(
-				i.get("ARTICLE_DETAILS_DESC_ID") != null ? i.get("ARTICLE_DETAILS_DESC_ID").toString() : null));
-		dto.setArticleDetailsId(
-				new BigDecimal(i.get("ARTICLE_DETAILS_ID") != null ? i.get("ARTICLE_DETAILS_ID").toString() : null));
-		dto.setLanguageId(new BigDecimal(i.get("LANGUAGE_ID") != null ? i.get("LANGUAGE_ID").toString() : null));
+		LOGGER.debug("Dto is declared and  is empty");
+		dto.setResourceName(
+				designationMap.get("ARTICLE_DETAIL_DESC") != null ? designationMap.get("ARTICLE_DETAIL_DESC").toString()
+						: null);
+		LOGGER.debug("Dto DescId is set");
+		dto.setResourceId(designationMap.get("ARTICLE_DETAIL_ID") != null
+				? new BigDecimal(designationMap.get("ARTICLE_DETAIL_ID").toString())
+				: null);
+		LOGGER.debug("Dto ArticleDetailId is set");
+		return dto;
+	}
+
+	public AmxApiResponse<ResourceDTO, Object> getDesignationList() {
+
+		List<Map<String, Object>> designationList = articleDao.getDesignationsByCustomer(metaData.getLanguageId(),
+				metaData.getCustomerId());
+		LOGGER.debug("The list is returned from dao");
+		if (designationList == null || designationList.isEmpty()) {
+			throw new GlobalException(JaxError.EMPTY_DESIGNATION_LIST, "Designation List Is Empty ");
+		}
+		LOGGER.debug("The list is not empty");
+		List<ResourceDTO> designationDataList = convertDesignationIncome(designationList);
+		LOGGER.debug("The list is ", designationDataList);
+		return AmxApiResponse.buildList(designationDataList);
+	}
+	
+
+	private List<ResourceDTO> convertDesignationIncome(List<Map<String, Object>> designationList) {
+		List<ResourceDTO> output = new ArrayList<>();
+		designationList.forEach(i -> {
+			output.add(convertDesignationIncome(i));
+		});
+		LOGGER.debug("List Output is :", output);
+		return output;
+	}
+
+	private ResourceDTO convertDesignationIncome(Map<String, Object> designationMap) {
+		ResourceDTO dto = new ResourceDTO();
+		LOGGER.debug("Dto is declared and  is empty");
+		dto.setResourceName(
+				designationMap.get("ARTICLE_DETAIL_DESC") != null ? designationMap.get("ARTICLE_DETAIL_DESC").toString()
+						: null);
+		LOGGER.debug("Dto DescId is set");
+		dto.setResourceId(designationMap.get("ARTICLE_DETAIL_ID") != null
+				? new BigDecimal(designationMap.get("ARTICLE_DETAIL_ID").toString())
+				: null);
+		LOGGER.debug("Dto ArticleDetailId is set");
 		return dto;
 	}
 
@@ -727,6 +770,40 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 			customerDao.callProcedurePopulateCusmas(metaData.getCustomerId());
 		}*/
 		return result;
+	}
+
+	private void commitOnlineCustomerIdProof(CustomerInfoRequest model, Customer customer) {
+
+		CustomerIdProof custProof = null;
+		List<CustomerIdProof> customerIdProofs = customerIdProofRepository
+				.getCustomerIdProofByCustomerId(customer.getCustomerId());
+		if (!customerIdProofs.isEmpty()) {
+			custProof = customerIdProofs.get(0);
+		}
+		if (custProof == null) {
+			custProof = new CustomerIdProof();
+		}
+		Customer customerData = new Customer();
+		customerData.setCustomerId(customer.getCustomerId());
+		custProof.setFsCustomer(customerData);
+		custProof.setLanguageId(metaData.getLanguageId());
+		BizComponentData customerType = new BizComponentData();
+		customerType.setComponentDataId(
+				bizcomponentDao.getComponentId(Constants.CUSTOMERTYPE_INDU, metaData.getLanguageId())
+						.getFsBizComponentData().getComponentDataId());
+		custProof.setFsBizComponentDataByCustomerTypeId(customerType);
+		custProof.setIdentityInt(customer.getIdentityInt());
+		custProof.setIdentityStatus(Constants.CUST_ACTIVE_INDICATOR);
+		custProof.setCreatedBy(customer.getIdentityInt());
+		custProof.setCreationDate(new Date());
+		custProof.setIdentityTypeId(customer.getIdentityTypeId());
+
+		if (customer.getIdentityExpiredDate() != null) {
+			custProof.setIdentityExpiryDate(customer.getIdentityExpiredDate());
+		}
+		custProof.setIdentityFor(ConstantDocument.IDENTITY_FOR_ID_PROOF);
+		custProof.setScanSystem(Constants.CUST_DB_SCAN);
+		customerIdProofRepository.save(custProof);
 	}
 
 	@Override

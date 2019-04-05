@@ -134,6 +134,47 @@ public class Customer implements java.io.Serializable {
 	private String prefixCodeMobileOther;
 	private String isMobileWhatsApp;
 	private String isMobileOtherWhatsApp;
+	
+	
+	//income related fields are added
+	
+	private BigDecimal annualIncomeFrom;
+	private BigDecimal annualIncomeTo;
+	private String annualIncomeUpdatedBy;
+	private Date annualIncomeUpdatedDate;
+	
+	
+	public BigDecimal getAnnualIncomeFrom() {
+		return annualIncomeFrom;
+	}
+
+	public void setAnnualIncomeFrom(BigDecimal annualIncomeFrom) {
+		this.annualIncomeFrom = annualIncomeFrom;
+	}
+
+	public BigDecimal getAnnualIncomeTo() {
+		return annualIncomeTo;
+	}
+
+	public void setAnnualIncomeTo(BigDecimal annualIncomeTo) {
+		this.annualIncomeTo = annualIncomeTo;
+	}
+
+	public String getAnnualIncomeUpdatedBy() {
+		return annualIncomeUpdatedBy;
+	}
+
+	public void setAnnualIncomeUpdatedBy(String annualIncomeUpdatedBy) {
+		this.annualIncomeUpdatedBy = annualIncomeUpdatedBy;
+	}
+
+	public Date getAnnualIncomeUpdatedDate() {
+		return annualIncomeUpdatedDate;
+	}
+
+	public void setAnnualIncomeUpdatedDate(Date annualIncomeUpdatedDate) {
+		this.annualIncomeUpdatedDate = annualIncomeUpdatedDate;
+	}
 
 	private IncomeRangeMaster fsIncomeRangeMaster;
 

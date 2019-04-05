@@ -3,6 +3,7 @@ package com.amx.jax.ui.response;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.exception.AmxApiException;
+import com.amx.jax.exception.IExceptionEnum;
 import com.amx.jax.ui.UIConstants;
 import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
 import com.amx.utils.ArgUtil;
@@ -120,6 +121,11 @@ public class ResponseWrapperM<T, M> extends AmxApiResponse<T, M> {
 	public void setStatus(OWAStatusStatusCodes status) {
 		this.statusKey = status.name();
 		this.status = status.getCode();
+	}
+
+	public void setStatus(IExceptionEnum status) {
+		this.statusKey = status.getStatusKey();
+		this.status = ArgUtil.parseAsString(status.getStatusCode());
 	}
 
 	public void setStatusKey(OWAStatusStatusCodes error) {

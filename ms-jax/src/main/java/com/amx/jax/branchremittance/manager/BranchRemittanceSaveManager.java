@@ -258,6 +258,7 @@ public class BranchRemittanceSaveManager {
 					
 			collectedAmountValidation(collectionModel,collectionDetails,currencyAdjustList);
 			HashMap<String, Object> mapAllDetailRemitSave = new HashMap<String, Object>();
+			
 			mapAllDetailRemitSave.put("EX_COLLECT",collectionModel);
 			mapAllDetailRemitSave.put("EX_COLLECT_DET",collectionDetails);
 			mapAllDetailRemitSave.put("LYL_CLAIM",loyaltyClaim);

@@ -15,7 +15,9 @@ import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
+
 import com.amx.amxlib.constant.ApiEndpoint;
+import com.amx.amxlib.constant.ApiEndpoint.CustomerApi;
 import com.amx.amxlib.constant.ApiEndpoint.MetaApi;
 import com.amx.amxlib.constant.ApiEndpoint.UserApi;
 import com.amx.amxlib.exception.AbstractJaxException;
@@ -26,17 +28,21 @@ import com.amx.amxlib.exception.InvalidInputException;
 import com.amx.amxlib.exception.JaxSystemError;
 import com.amx.amxlib.exception.LimitExeededException;
 import com.amx.amxlib.exception.UnknownJaxError;
+import com.amx.amxlib.meta.model.AnnualIncomeRangeDTO;
 import com.amx.amxlib.meta.model.CustomerDto;
+import com.amx.amxlib.meta.model.DeclarationDTO;
+import com.amx.amxlib.meta.model.IncomeDto;
 import com.amx.amxlib.meta.model.ViewGovernateAreaDto;
 import com.amx.amxlib.model.AbstractUserModel;
+import com.amx.amxlib.model.BeneAccountModel;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.UserFingerprintResponseModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
+import com.amx.amxlib.model.response.JaxTransactionResponse;
 import com.amx.amxlib.service.ICustomerService;
-import com.amx.amxlib.service.ICustomerService.Path;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.configs.JaxMetaInfo;
@@ -601,7 +607,7 @@ public class UserClient extends AbstractJaxServiceClient implements ICustomerSer
 			throw new JaxSystemError();
 		} // end of try-catch
 	} // end of customerLoggedIn
-
+	
 	public ApiResponse<CustomerModel> saveEmailNew(String email) {
 		try {
 			CustomerModel custModel = new CustomerModel();
@@ -621,7 +627,7 @@ public class UserClient extends AbstractJaxServiceClient implements ICustomerSer
 		} // end of try-catch
 
 	}
-
+	
 	public ApiResponse<CustomerModel> saveMobileNew(String mobile) {
 		try {
 			CustomerModel custModel = new CustomerModel();
@@ -701,7 +707,48 @@ public class UserClient extends AbstractJaxServiceClient implements ICustomerSer
 		}
 	}
 
-	public BoolRespModel resetFingerprint(String identity) {
+
+	public AmxApiResponse<AnnualIncomeRangeDTO, Object> getIncome() {
+		try {
+
+			return restService.ajax(appConfig.getJaxURL())
+					.path(CustomerApi.PREFIX + CustomerApi.GET_ANNUAL_INCOME_RANGE)
+					.meta(new JaxMetaInfo()).post()
+					.as(new ParameterizedTypeReference<AmxApiResponse<AnnualIncomeRangeDTO, Object>>() {
+					});
+		} catch (Exception ae) {
+			LOGGER.error("exception in Annual Income : ", ae);
+			return JaxSystemError.evaluate(ae);
+		}
+	}
+
+	public AmxApiResponse<IncomeDto, Object> saveAnnualIncome(IncomeDto incomeDto) {
+		try {
+			String url = this.getBaseUrl() + CustomerApi.PREFIX + CustomerApi.SAVE_ANNUAL_INCOME;
+			return restService.ajax(url).meta(new JaxMetaInfo()).post(incomeDto)
+					.as(new ParameterizedTypeReference<AmxApiResponse<IncomeDto, Object>>() {
+					});
+		} catch (Exception ae) {
+			LOGGER.error("exception in saveAnnualIncome: ", ae);
+			return JaxSystemError.evaluate(ae);
+		} // end of try-catch
+
+	}
+
+	public AmxApiResponse<IncomeDto, Object> getAnnualIncomeDetais() {
+		try {
+			return restService.ajax(appConfig.getJaxURL())
+					.path(CustomerApi.PREFIX + CustomerApi.GET_ANNUAL_INCOME_DETAILS)
+					.meta(new JaxMetaInfo()).post()
+					.as(new ParameterizedTypeReference<AmxApiResponse<IncomeDto, Object>>() {
+					});
+		} catch (Exception ae) {
+			LOGGER.error("exception in Annual Income details : ", ae);
+			return JaxSystemError.evaluate(ae);
+		}
+	}
+
+public BoolRespModel resetFingerprint(String identity) {
 		try {
 
 			return restService.ajax(appConfig.getJaxURL())

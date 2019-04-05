@@ -19,6 +19,8 @@ public class CustomerFlags {
 	Boolean securityAnswerRequired;
 	/* new login */
 
+	public Boolean annualIncomeExpired;
+
 	public Boolean getFingerprintlinked() {
 		return fingerprintlinked;
 	}
@@ -91,4 +93,11 @@ public class CustomerFlags {
 		this.securityAnswerRequired = securityAnswerRequired;
 	}
 
+	public Boolean getAnnualIncomeExpired() {
+		return annualIncomeExpired;
+	}
+
+	public void setAnnualIncomeExpired(Boolean annualIncomeExpired) {
+		this.annualIncomeExpired = annualIncomeExpired;
+	}
 }

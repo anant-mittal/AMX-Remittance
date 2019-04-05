@@ -1,4 +1,3 @@
-
 package com.amx.jax.ui.api;
 
 import java.math.BigDecimal;
@@ -18,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.meta.model.CustomerDto;
+import com.amx.amxlib.meta.model.IncomeDto;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.CustomerNotificationDTO;
@@ -32,9 +32,11 @@ import com.amx.jax.dict.UserClient.AppType;
 import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.logger.AuditActor;
 import com.amx.jax.logger.LoggerService;
+import com.amx.jax.model.response.customer.CustomerFlags;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.ui.WebAppConfig;
+import com.amx.jax.ui.config.OWAStatus.ApiOWAStatus;
 import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
 import com.amx.jax.ui.model.AuthData;
 import com.amx.jax.ui.model.AuthDataInterface.AuthRequestFingerprint;
@@ -113,6 +115,7 @@ public class UserController {
 	 * @param appVersion the app version
 	 * @return the meta
 	 */
+	@ApiOWAStatus(OWAStatusStatusCodes.INCOME_UPDATE_REQUIRED)
 	@RequestMapping(value = "/pub/user/meta", method = { RequestMethod.POST, RequestMethod.GET })
 	public ResponseWrapper<UserMetaData> getMeta(@RequestParam(required = false) AppType appType,
 			@RequestParam(required = false) String appVersion) {
@@ -141,6 +144,14 @@ public class UserController {
 			wrapper.getData().setActive(true);
 			wrapper.getData().setCustomerId(sessionService.getUserSession().getCustomerModel().getCustomerId());
 			wrapper.getData().setInfo(sessionService.getUserSession().getCustomerModel().getPersoninfo());
+
+			CustomerFlags customerFlags = sessionService.getUserSession().getCustomerModel().getFlags();
+			wrapper.getData().setFlags(customerFlags);
+
+			if (customerFlags.getAnnualIncomeExpired()) {
+				wrapper.setStatus(OWAStatusStatusCodes.INCOME_UPDATE_REQUIRED);
+			}
+
 			wrapper.getData().setDomCurrency(tenantContext.getDomCurrency());
 			wrapper.getData().setConfig(jaxService.setDefaults().getMetaClient().getJaxMetaParameter().getResult());
 			wrapper.getData().getSubscriptions().addAll(userService.getNotifyTopics("/topics/"));
@@ -462,6 +473,17 @@ public class UserController {
 		} else {
 			return loginService.verifyResetPassword(null, mOtp, null);
 		}
+	}
+
+	@RequestMapping(value = "/api/user/income", method = { RequestMethod.POST })
+	public ResponseWrapper<IncomeDto> saveAnnualIncome(
+			@RequestBody IncomeDto incomeDto) {
+		return ResponseWrapper.build(jaxService.setDefaults().getUserclient().saveAnnualIncome(incomeDto));
+	}
+
+	@RequestMapping(value = "/api/user/income", method = { RequestMethod.GET })
+	public ResponseWrapper<IncomeDto> getAnnualIncomeDetais() {
+		return ResponseWrapper.build(jaxService.setDefaults().getUserclient().getAnnualIncomeDetais());
 	}
 
 	@RequestMapping(value = "/api/user/device/link", method = { RequestMethod.POST })

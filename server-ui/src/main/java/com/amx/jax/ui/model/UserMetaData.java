@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.amx.amxlib.meta.model.JaxMetaParameter;
+
 import com.amx.jax.dict.Language;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.model.AbstractModel;
@@ -12,6 +13,7 @@ import com.amx.jax.model.AuthState;
 import com.amx.jax.model.UserDevice;
 import com.amx.jax.model.response.CurrencyMasterDTO;
 import com.amx.jax.model.response.customer.PersonInfo;
+import com.amx.jax.model.response.customer.CustomerFlags;
 import com.amx.jax.ui.UIConstants.Features;
 import com.amx.jax.ui.service.GeoHotPoints;
 
@@ -58,6 +60,8 @@ public class UserMetaData extends AbstractModel {
 
 	String returnUrl = null;
 
+	private CustomerFlags flags;
+
 	/** The hot points. */
 	GeoHotPoints[] hotPoints = GeoHotPoints.values();
 
@@ -73,8 +77,7 @@ public class UserMetaData extends AbstractModel {
 	/**
 	 * Sets the config.
 	 *
-	 * @param config
-	 *            the new config
+	 * @param config the new config
 	 */
 	public void setConfig(JaxMetaParameter config) {
 		this.config = config;
@@ -92,8 +95,7 @@ public class UserMetaData extends AbstractModel {
 	/**
 	 * Sets the tenant.
 	 *
-	 * @param tenant
-	 *            the new tenant
+	 * @param tenant the new tenant
 	 */
 	public void setTenant(Tenant tenant) {
 		this.tenant = tenant;
@@ -111,8 +113,7 @@ public class UserMetaData extends AbstractModel {
 	/**
 	 * Sets the state.
 	 *
-	 * @param state
-	 *            the new state
+	 * @param state the new state
 	 */
 	public void setState(AuthState state) {
 		this.state = state;
@@ -130,8 +131,7 @@ public class UserMetaData extends AbstractModel {
 	/**
 	 * Sets the device.
 	 *
-	 * @param device
-	 *            the new device
+	 * @param device the new device
 	 */
 	public void setDevice(UserDevice device) {
 		this.device = device;
@@ -149,8 +149,7 @@ public class UserMetaData extends AbstractModel {
 	/**
 	 * Sets the dom currency.
 	 *
-	 * @param domCurrency
-	 *            the new dom currency
+	 * @param domCurrency the new dom currency
 	 */
 	public void setDomCurrency(CurrencyMasterDTO domCurrency) {
 		this.domCurrency = domCurrency;
@@ -168,8 +167,7 @@ public class UserMetaData extends AbstractModel {
 	/**
 	 * Sets the valid session.
 	 *
-	 * @param validSession
-	 *            the new valid session
+	 * @param validSession the new valid session
 	 */
 	public void setValidSession(Boolean validSession) {
 		this.validSession = validSession;
@@ -187,8 +185,7 @@ public class UserMetaData extends AbstractModel {
 	/**
 	 * Sets the active.
 	 *
-	 * @param active
-	 *            the new active
+	 * @param active the new active
 	 */
 	public void setActive(Boolean active) {
 		this.active = active;
@@ -197,8 +194,7 @@ public class UserMetaData extends AbstractModel {
 	/**
 	 * Sets the info.
 	 *
-	 * @param personinfo
-	 *            the new info
+	 * @param personinfo the new info
 	 */
 	public void setInfo(PersonInfo personinfo) {
 		this.info = personinfo;
@@ -225,8 +221,7 @@ public class UserMetaData extends AbstractModel {
 	/**
 	 * Sets the lang.
 	 *
-	 * @param lang
-	 *            the new lang
+	 * @param lang the new lang
 	 */
 	public void setLang(Language lang) {
 		this.lang = lang;
@@ -244,8 +239,7 @@ public class UserMetaData extends AbstractModel {
 	/**
 	 * Sets the cdn url.
 	 *
-	 * @param cdnUrl
-	 *            the new cdn url
+	 * @param cdnUrl the new cdn url
 	 */
 	public void setCdnUrl(String cdnUrl) {
 		this.cdnUrl = cdnUrl;
@@ -263,8 +257,7 @@ public class UserMetaData extends AbstractModel {
 	/**
 	 * Sets the features.
 	 * 
-	 * @param features
-	 *            the new features
+	 * @param features the new features
 	 */
 	public void setFeatures(Features[] features) {
 		this.features = features;
@@ -282,8 +275,7 @@ public class UserMetaData extends AbstractModel {
 	/**
 	 * Sets the subscriptions.
 	 *
-	 * @param subscriptions
-	 *            the new subscriptions
+	 * @param subscriptions the new subscriptions
 	 */
 	public void setSubscriptions(List<String> subscriptions) {
 		this.subscriptions = subscriptions;
@@ -301,8 +293,7 @@ public class UserMetaData extends AbstractModel {
 	/**
 	 * Sets the tenant code.
 	 *
-	 * @param tenantCode
-	 *            the new tenant code
+	 * @param tenantCode the new tenant code
 	 */
 	public void setTenantCode(String tenantCode) {
 		this.tenantCode = tenantCode;
@@ -320,8 +311,7 @@ public class UserMetaData extends AbstractModel {
 	/**
 	 * Sets the hot points.
 	 *
-	 * @param hotPoints
-	 *            the new hot points
+	 * @param hotPoints the new hot points
 	 */
 	public void setHotPoints(GeoHotPoints[] hotPoints) {
 		this.hotPoints = hotPoints;
@@ -339,8 +329,7 @@ public class UserMetaData extends AbstractModel {
 	/**
 	 * Sets the notify range long.
 	 *
-	 * @param notifyRangeLong
-	 *            the new notify range long
+	 * @param notifyRangeLong the new notify range long
 	 */
 	public void setNotifyRangeLong(String notifyRangeLong) {
 		this.notifyRangeLong = notifyRangeLong;
@@ -358,8 +347,7 @@ public class UserMetaData extends AbstractModel {
 	/**
 	 * Sets the notify range short.
 	 *
-	 * @param notifyRangeShort
-	 *            the new notify range short
+	 * @param notifyRangeShort the new notify range short
 	 */
 	public void setNotifyRangeShort(String notifyRangeShort) {
 		this.notifyRangeShort = notifyRangeShort;
@@ -377,8 +365,7 @@ public class UserMetaData extends AbstractModel {
 	/**
 	 * Sets the return url.
 	 *
-	 * @param returnUrl
-	 *            the new return url
+	 * @param returnUrl the new return url
 	 */
 	public void setReturnUrl(String returnUrl) {
 		this.returnUrl = returnUrl;
@@ -396,8 +383,7 @@ public class UserMetaData extends AbstractModel {
 	/**
 	 * Sets the customer id.
 	 *
-	 * @param customerId
-	 *            the new customer id
+	 * @param customerId the new customer id
 	 */
 	public void setCustomerId(BigDecimal customerId) {
 		this.customerId = customerId;
@@ -415,11 +401,18 @@ public class UserMetaData extends AbstractModel {
 	/**
 	 * Sets the notification gap.
 	 *
-	 * @param notificationGap
-	 *            the new notification gap
+	 * @param notificationGap the new notification gap
 	 */
 	public void setNotificationGap(String notificationGap) {
 		this.notificationGap = notificationGap;
+	}
+
+	public CustomerFlags getFlags() {
+		return flags;
+	}
+
+	public void setFlags(CustomerFlags flags) {
+		this.flags = flags;
 	}
 
 }

@@ -18,6 +18,7 @@ import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.exception.JaxSystemError;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.model.CardDetail;
+import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.model.dto.SendOtpModel;
 import com.amx.jax.model.request.CustomerInfoRequest;
 import com.amx.jax.model.request.CustomerPersonalDetail;
@@ -261,6 +262,20 @@ public class OffsiteCustRegClient implements ICustRegService {
 			LOGGER.error("exception in saveLoginDetailOffsite : ", e);
 			return JaxSystemError.evaluate(e);
 		} // end of try-catch}
+	}
+	
+	
+	@Override
+	public AmxApiResponse<ResourceDTO, Object> getDesignationList() {
+		try {
+			return restService.ajax(appConfig.getJaxURL()).meta(new JaxMetaInfo())
+					.path(CustRegApiEndPoints.DESIGNATION_LIST).get()
+					.as(new ParameterizedTypeReference<AmxApiResponse<ResourceDTO, Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in getDesignationListResponse : ", e);
+			return JaxSystemError.evaluate(e);
+		} // end of try-catch
 	}
 
 	@Override
