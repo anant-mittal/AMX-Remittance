@@ -204,6 +204,8 @@ public class LoginService {
 			sessionService.getGuestSession().setReturnUrl(null);
 		}
 
+		updateCustoemrModel();
+
 		wrapper.setMessage(OWAStatusStatusCodes.AUTH_DONE, ResponseMessage.AUTH_SUCCESS);
 		sessionService.getGuestSession().endStep(secques);
 		wrapper.getData().setState(sessionService.getGuestSession().getState());
