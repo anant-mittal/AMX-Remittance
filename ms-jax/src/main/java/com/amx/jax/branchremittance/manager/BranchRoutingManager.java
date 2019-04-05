@@ -8,6 +8,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -349,8 +350,7 @@ public class BranchRoutingManager {
 			inputValues.put("P_DELIVERY_MODE_ID", listOfDelv.get(0).getDeliveryModeId());
 			getRoutingBankBranchList(inputValues);
 		} else {
-			throw new GlobalException(JaxError.DELIVERY_MODE_NOT_FOUND,
-					"Delivery mode not found " + inputValues.toString());
+			throw new GlobalException(JaxError.DELIVERY_MODE_NOT_FOUND,"Delivery mode not found " + inputValues.toString());
 		}
 
 	}
@@ -575,6 +575,8 @@ public RoutingResponseDto getRoutingDetailsByServiceId(BigDecimal beneRelaId, Bi
 		BigDecimal routingCountryId = requestApplModel.getRoutingCountryId();
 		BigDecimal routingBankId = requestApplModel.getRoutingBankId();
 		BigDecimal remittanceModeId = requestApplModel.getRemittanceModeId();
+		
+		
 		
 		if(JaxUtil.isNullZeroBigDecimalCheck(requestApplModel.getBeneId())
 				&& JaxUtil.isNullZeroBigDecimalCheck(requestApplModel.getServiceMasterId())
