@@ -221,8 +221,8 @@ public class RoutingProcedureDao {
 	public List<Map<String, Object>> getRoutingCountryId(Map<String, Object> inputValues) {
 		LOGGER.info("in getRoutingBankBranchIdFromDb,input values: {}", inputValues);
 		
-		String sql = "SELECT ROUTING_COUNTRY_ID ,COUNTRY_NAME "
-				+ "FROM ( " + " SELECT DISTINCT F.ROUTING_COUNTRY_ID,F.COUNTRY_NAME   "
+		String sql = "SELECT ROUTING_COUNTRY_ID ,COUNTRY_NAME,COUNTRY_CODE "
+				+ "FROM ( " + " SELECT DISTINCT F.ROUTING_COUNTRY_ID,F.COUNTRY_NAME ,F.COUNTRY_CODE  "
 				+ " FROM   V_EX_ROUTING_DETAILS F " + " "
 				+ " WHERE  F.APPLICATION_COUNTRY_ID= ?" 
 				+ " AND    F.BENE_BANK_ID =  ? "

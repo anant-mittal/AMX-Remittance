@@ -8,7 +8,6 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +40,6 @@ import com.amx.jax.model.response.remittance.RoutingBankDto;
 import com.amx.jax.model.response.remittance.RoutingBranchDto;
 import com.amx.jax.model.response.remittance.RoutingResponseDto;
 import com.amx.jax.model.response.remittance.RoutingServiceDto;
-import com.amx.jax.repository.BankMasterRepository;
 import com.amx.jax.repository.CountryRepository;
 import com.amx.jax.repository.IAccountTypeFromViewDao;
 import com.amx.jax.repository.IBankBranchView;
@@ -224,6 +222,7 @@ public class BranchRoutingManager {
 						ResourceDTO rout = new ResourceDTO();
 						rout.setResourceId(countryMasterView.get(0).getCountryId());
 						rout.setResourceName(countryMasterView.get(0).getCountryName());
+						rout.setResourceCode(countryMasterView.get(0).getCountryCode());
 						routCount.add(rout);
 						routingResponseDto.setRoutingCountrydto(routCount);
 						inputValues.put("P_ROUTING_COUNTRY_ID",countryMasterView.get(0).getCountryId());
@@ -394,9 +393,9 @@ public class BranchRoutingManager {
 
 	private ResourceDTO convertToRoutingCountry(Map<String, Object> i) {
 		ResourceDTO serDto = new ResourceDTO();
-		serDto.setResourceId(
-				i.get("ROUTING_COUNTRY_ID") != null ? (BigDecimal) i.get("ROUTING_COUNTRY_ID") : BigDecimal.ZERO);
+		serDto.setResourceId(i.get("ROUTING_COUNTRY_ID") != null ? (BigDecimal) i.get("ROUTING_COUNTRY_ID") : BigDecimal.ZERO);
 		serDto.setResourceName(i.get("COUNTRY_NAME") != null ? i.get("COUNTRY_NAME").toString() : null);
+		serDto.setResourceCode(i.get("COUNTRY_CODE") != null ? i.get("COUNTRY_CODE").toString() : null);
 		return serDto;
 	}
 
