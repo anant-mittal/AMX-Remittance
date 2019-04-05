@@ -21,7 +21,6 @@ import com.amx.jax.dict.Project;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.filter.AppClientErrorHanlder;
 import com.amx.jax.filter.AppClientInterceptor;
-import com.amx.jax.scope.TenantContext;
 import com.amx.jax.scope.TenantProperties;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil.JsonUtilConfigurable;
@@ -100,7 +99,7 @@ public class AppConfig {
 	@Value(APP_VERSION)
 	@AppParamKey(AppParam.APP_VERSION)
 	private String appVersion;
-	
+
 	@Value(APP_CLASS)
 	@AppParamKey(AppParam.APP_CLASS)
 	private String appClass;
