@@ -168,12 +168,14 @@ public class DataTableRequest {
 		for (int i = 0; i < maxParamsToCheck; i++) {
 			GridColumn colSpec = gridQuery.getColumns().get(i);
 			colSpec.setIndex(i);
-			if (i == sortableCol) {
+
+			if (i == sortableCol && !ArgUtil.isEmpty(gridQuery.getSortOrder())) {
 				if (ArgUtil.isEmpty(colSpec.getSortDir())) {
 					colSpec.setSortDir(gridQuery.getSortOrder());
 				}
 				this.setOrder(colSpec);
 			}
+
 			if (!ArgUtil.isEmpty(colSpec.getSearch())) {
 				this.setGlobalSearch(false);
 			}
@@ -184,40 +186,46 @@ public class DataTableRequest {
 		}
 	}
 
+	PaginationCriteria pagination;
+
 	/**
 	 * Gets the pagination request.
 	 *
 	 * @return the pagination request
 	 */
 	public PaginationCriteria getPaginationRequest() {
+		if (pagination == null) {
+			pagination = new PaginationCriteria();
+			pagination.setPageNumber(this.getStart());
+			pagination.setPageSize(this.getLength());
 
-		PaginationCriteria pagination = new PaginationCriteria();
-		pagination.setPageNumber(this.getStart());
-		pagination.setPageSize(this.getLength());
+			SortBy sortBy = new SortBy();
+			if (!ArgUtil.isEmpty(this.getOrder())) {
+				sortBy.addSort(this.getOrder().getKey(), this.getOrder().getSortDir());
+			}
 
-		SortBy sortBy = null;
-		if (!ArgUtil.isEmpty(this.getOrder())) {
-			sortBy = new SortBy();
-			sortBy.addSort(this.getOrder().getKey(), this.getOrder().getSortDir());
-		}
+			FilterBy filterBy = new FilterBy();
+			filterBy.setGlobalSearch(this.isGlobalSearch());
+			if (!ArgUtil.isEmpty(this.getColumns())) {
+				for (GridColumn colSpec : this.getColumns()) {
+					if (colSpec.isSearchable() || !ArgUtil.isEmpty(colSpec.getSearch())) {
+						if (!ArgUtil.isEmpty(this.getSearch()) || !ArgUtil.isEmpty(colSpec.getSearch())) {
+							filterBy.addSearchFilter(colSpec.getKey(),
+									(this.isGlobalSearch()) ? this.getSearch() : colSpec.getSearch());
+						}
+					}
+					if (!ArgUtil.isEmpty(colSpec.getValue())) {
+						filterBy.addWhereFilter(colSpec);
+					}
 
-		FilterBy filterBy = new FilterBy();
-		filterBy.setGlobalSearch(this.isGlobalSearch());
-		if (!ArgUtil.isEmpty(this.getColumns())) {
-			for (GridColumn colSpec : this.getColumns()) {
-				if (colSpec.isSearchable() || !ArgUtil.isEmpty(colSpec.getSearch())) {
-					if (!ArgUtil.isEmpty(this.getSearch()) || !ArgUtil.isEmpty(colSpec.getSearch())) {
-						filterBy.addSearchFilter(colSpec.getKey(),
-								(this.isGlobalSearch()) ? this.getSearch() : colSpec.getSearch());
+					if (!ArgUtil.isEmpty(colSpec.getSortDir())) {
+						sortBy.addSort(colSpec.getKey(), colSpec.getSortDir());
 					}
 				}
-				if (!ArgUtil.isEmpty(colSpec.getValue())) {
-					filterBy.addWhereFilter(colSpec);
-				}
 			}
+			pagination.setSortBy(sortBy);
+			pagination.setFilterBy(filterBy);
 		}
-		pagination.setSortBy(sortBy);
-		pagination.setFilterBy(filterBy);
 
 		return pagination;
 	}

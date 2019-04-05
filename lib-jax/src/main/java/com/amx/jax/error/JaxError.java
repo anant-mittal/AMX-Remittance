@@ -218,11 +218,11 @@ public enum JaxError implements IExceptionEnum {
 	INACTIVE_EMPLOYEE,
 	EMPTY_STOCK_EMPLOYEE,
 	INVENTORY_ID_EXISTS,
-	ONLINE_REG_NOT_ALLOWED_ARTICLE_20, CIVIL_ID_EXPIRED,
+	ONLINE_REG_NOT_ALLOWED_ARTICLE_20, CIVIL_ID_EXPIRED, 
 	BENE_COUNTRY_RISK,
 	INVALID_MOBILE_PREFIX,
 	// to log out customer
-	UNAUTHORIZED,
+	UNAUTHORIZED, 
 	TRNX_NOT_ALLOWED_ON_YOUR_OWN_LOGIN,
 	BENE_ACCOUNT_EXCEPTION,
 	BENE_ACCOUNT_TYPE_MISMATCH,
@@ -253,7 +253,7 @@ public enum JaxError implements IExceptionEnum {
 	INVALID_CLAIM_CODE,
 	AMOUNT_MISMATCH,
 	SIGNATURE_NOT_FOUND,
-
+	
 	// for validate Currency pair
 	INVALID_PAIR_ID,
 	ID_TYPE_LENGTH_NOT_DEFINED,
@@ -268,10 +268,17 @@ public enum JaxError implements IExceptionEnum {
 	SQA_SETUP_REQUIRED,
 	SQA_REQUIRED,
 	INCOME_UPDATE_REQUIRED,
+	
+	//for wrong fingerprint device
+	FINGERPRINT_EXPIRED,
 
-	// for wrong fingerprint device
-	FINGERPRINT_EXPIRED;
-
+	// Generic Record EXceptions
+	ENTITY_EXPIRED,
+	ENTITY_INVALID,
+	
+	
+	// Default for code symettry
+	JAX_SYSTEM_ERROR;
 	@Deprecated
 	public String getCode() {
 		return this.toString();

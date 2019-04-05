@@ -76,7 +76,8 @@ public class CustRegController implements ICustRegService {
 
 	@Override
 	@RequestMapping(value = CustRegApiEndPoints.GET_CUSTOMER_OTP, method = RequestMethod.POST)
-	public AmxApiResponse<SendOtpModel, Object> sendOtp(@RequestBody @Valid CustomerPersonalDetail customerPersonalDetail) {
+	public AmxApiResponse<SendOtpModel, Object> sendOtp(
+			@RequestBody @Valid CustomerPersonalDetail customerPersonalDetail) {
 		return offsiteCustRegService.sendOtp(customerPersonalDetail);
 
 	}
@@ -140,12 +141,14 @@ public class CustRegController implements ICustRegService {
 	}	
 	
 	@RequestMapping(value = CustRegApiEndPoints.SAVE_OFFSITE_LOGIN, method = RequestMethod.POST)
-	public AmxApiResponse<CustomerCredential, Object> saveLoginDetailOffsite(@RequestBody CustomerCredential customerCredential) {
+	public AmxApiResponse<CustomerCredential, Object> saveLoginDetailOffsite(
+			@RequestBody CustomerCredential customerCredential) {
 		return offsiteCustRegService.saveLoginDetailOffsite(customerCredential);
 	}
 	
 	@RequestMapping(value = CustRegApiEndPoints.GET_OFFSITE_CUSTOMER_DATA, method = RequestMethod.GET)
-	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerData(@RequestParam(value = "identityInt", required = true) String identityInt,
+	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerData(
+			@RequestParam(value = "identityInt", required = true) String identityInt,
 			@RequestParam(value = "identityType", required = true) BigDecimal identityType) {
 		return offsiteCustRegService.getOffsiteCustomerData(identityInt, identityType);
 	}
@@ -157,7 +160,8 @@ public class CustRegController implements ICustRegService {
 	}
 	
 	@RequestMapping(value = CustRegApiEndPoints.GET_CUSTOMER_DEATILS, method = RequestMethod.GET)
-	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerDetails(@RequestParam(value = "identityInt", required = true) String identityInt,
+	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerDetails(
+			@RequestParam(value = "identityInt", required = true) String identityInt,
 			@RequestParam(value = "identityType", required = true) BigDecimal identityType) {
 		return offsiteCustRegService.getOffsiteCustomerDetails(identityInt, identityType);
 	}

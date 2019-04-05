@@ -488,7 +488,11 @@ public class UserController {
 	@RequestMapping(value = "/api/user/income", method = { RequestMethod.POST })
 	public ResponseWrapper<IncomeDto> saveAnnualIncome(
 			@RequestBody IncomeDto incomeDto) {
-		return ResponseWrapper.build(jaxService.setDefaults().getUserclient().saveAnnualIncome(incomeDto));
+		try {
+			return ResponseWrapper.build(jaxService.setDefaults().getUserclient().saveAnnualIncome(incomeDto));
+		} finally {
+			loginService.updateCustoemrModel();
+		}
 	}
 
 	@RequestMapping(value = "/api/user/income", method = { RequestMethod.GET })

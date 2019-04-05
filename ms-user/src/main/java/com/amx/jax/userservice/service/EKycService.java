@@ -6,8 +6,10 @@ import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import javax.sql.rowset.serial.SerialException;
 
@@ -24,11 +26,13 @@ import com.amx.amxlib.model.EKycModel;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.dal.ImageCheckDao;
 import com.amx.jax.dbmodel.Customer;
+import com.amx.jax.dbmodel.CustomerIdProof;
 import com.amx.jax.dbmodel.DmsApplMapping;
 import com.amx.jax.dbmodel.DocBlobUpload;
 import com.amx.jax.dbmodel.UserFinancialYear;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.ImageSubmissionRequest;
+import com.amx.jax.model.request.OffsiteCustomerRegistrationRequest;
 import com.amx.jax.repository.DOCBLOBRepository;
 import com.amx.jax.repository.IDMSAppMappingRepository;
 import com.amx.jax.repository.IUserFinancialYearRepo;
@@ -60,7 +64,7 @@ public class EKycService {
 	
 	@Autowired
 	private CustomerIdProofDao customerIdProofDao;
-	
+
 	@Autowired
 	CustomerIdProofManager customerIdProofManager;
 
@@ -73,29 +77,30 @@ public class EKycService {
 		if (org.apache.commons.lang.StringUtils.isEmpty(imageSubmissionRequest.getIdentityExpiredDate().toString())) {
 			throw new GlobalException("Expiry date cannot be null");
 		}
-
+		
 		Customer customer = custDao.getCustById(metaData.getCustomerId());
 
 		customerIdProofManager.createIdProofForExpiredCivilId(imageSubmissionRequest, customer);
-
+		
 		DmsApplMapping mappingData = new DmsApplMapping();
 		mappingData = getDmsApplMappingData(customer);
 		idmsAppMappingRepository.save(mappingData);
 		DocBlobUpload documentDetails = new DocBlobUpload();
 		documentDetails = getDocumentUploadDetails(imageSubmissionRequest.getImage().get(0), mappingData);
 		docblobRepository.save(documentDetails);
-
+		
 		BoolRespModel boolRespModel = new BoolRespModel();
 		boolRespModel.setSuccess(Boolean.TRUE);
 		return boolRespModel;
 	}
-
+	
 	private DocBlobUpload getDocumentUploadDetails(String image, DmsApplMapping mappingData) {
 		DocBlobUpload documentDetails = new DocBlobUpload();
 		documentDetails.setCntryCd(mappingData.getApplicationCountryId());
 		documentDetails.setDocBlobID(mappingData.getDocBlobId());
 		documentDetails.setDocFinYear(mappingData.getFinancialYear());
 		documentDetails.setSeqNo(new BigDecimal(1));
+		
 
 		try {
 			Blob documentContent = new javax.sql.rowset.serial.SerialBlob(decodeImage(image));
@@ -113,7 +118,7 @@ public class EKycService {
 
 	public static byte[] decodeImage(String imageDataString) {
 		return Base64.decodeBase64(imageDataString);
-
+		
 	}
 
 	private DmsApplMapping getDmsApplMappingData(Customer model) throws ParseException {
@@ -129,17 +134,17 @@ public class EKycService {
 		mappingData.setIdentityExpiryDate(model.getIdentityExpiredDate());
 		mappingData.setIdentityInt(model.getIdentityInt());
 		mappingData.setIdentityIntId(model.getIdentityTypeId());
-		if (metaData.getEmployeeId() == null) {
+		if(metaData.getEmployeeId()==null) {
 			mappingData.setCreatedBy("WEB");
 			logger.info("created by is set");
 		} else {
-			mappingData.setCreatedBy(metaData.getEmployeeId().toString());
+		mappingData.setCreatedBy(metaData.getEmployeeId().toString());
 		}
 
 		mappingData.setCreatedOn(new Date());
 		return mappingData;
 	}
-
+	
 	public BigDecimal getDealYearbyDate() throws ParseException {
 		DateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
 		Date today = Calendar.getInstance().getTime();
@@ -148,11 +153,11 @@ public class EKycService {
 		BigDecimal financialYear = list.getFinancialYear();
 		return financialYear;
 	}
-
+	
 	public EKycModel eKycgetDetails() {
 		EKycModel eKycModel = new EKycModel();
 		return eKycModel;
-
+		
 	}
 
 }
