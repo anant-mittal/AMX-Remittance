@@ -13,7 +13,6 @@ import org.springframework.web.context.WebApplicationContext;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
-import com.amx.jax.error.JaxCustomerError;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.model.response.customer.CustomerFlags;
 import com.amx.jax.userservice.dao.CustomerDao;
@@ -29,11 +28,10 @@ public class CustomerFlagManager {
 	@Autowired
 	private CustomerDao custDao;
 
-
 	public CustomerFlags getCustomerFlags(BigDecimal customerId) {
-		
+
 		CustomerFlags customerFlags = new CustomerFlags();
-		
+
 		try {
 			userValidationService.validateCustIdProofs(customerId);
 		} catch (GlobalException ex) {
@@ -47,17 +45,16 @@ public class CustomerFlagManager {
 		} else {
 			customerFlags.setFingerprintlinked(Boolean.FALSE);
 		}
-			
+
 		customerFlags.setFingerprintlinked(Boolean.TRUE);
-		
+
 		Customer customer = custDao.getCustById(customerOnlineRegistration.getCustomerId());
 		Date annualIncomeUpdateDate = customer.getAnnualIncomeUpdatedDate();
 		if (annualIncomeUpdateDate == null) {
 			customerFlags.setAnnualIncomeExpired(Boolean.TRUE);
 			logger.debug("Flag value is " + customerFlags.getAnnualIncomeExpired());
-			
-		}
-		else {
+
+		} else {
 			Date currentDate = new Date();
 			long millisec = currentDate.getTime() - annualIncomeUpdateDate.getTime();
 			long milliSecInYear = 31540000000L;
@@ -65,21 +62,21 @@ public class CustomerFlagManager {
 			if (millisec >= milliSecInYear) {
 				customerFlags.setAnnualIncomeExpired(Boolean.TRUE);
 				logger.debug("Flag value isss " + customerFlags.getAnnualIncomeExpired());
-		} else {
+			} else {
 				customerFlags.setAnnualIncomeExpired(Boolean.FALSE);
 				logger.debug("Flag value isssss " + customerFlags.getAnnualIncomeExpired());
 			}
 		}
 		return customerFlags;
 	}
-	
+
 	public void validateInformationOnlyCustomer(BigDecimal customerId) {
 		CustomerFlags customerFlags = getCustomerFlags(customerId);
 		if (!Boolean.TRUE.equals(customerFlags.getSecurityQuestionRequired())) {
-			throw new GlobalException(JaxCustomerError.SECURITY_QUESTION_REQUIRED, "Security question required");
+			throw new GlobalException(JaxError.SQA_SETUP_REQUIRED, "Security question required");
 		}
 		if (!Boolean.TRUE.equals(customerFlags.getSecurityAnswerRequired())) {
-			throw new GlobalException(JaxCustomerError.SECURITY_ANSWER_REQUIRED, "Security answer required");
+			throw new GlobalException(JaxError.SQA_REQUIRED, "Security answer required");
 		}
 	}
 }

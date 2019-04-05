@@ -32,13 +32,13 @@ public class AuthPermUtil {
 	}
 
 	public static void checkSQA(AuthState authState, CustomerFlags customerFlags) {
-		if (customerFlags.getAnnualIncomeExpired()) {
+		if (authState.isValidSecQues()) {
 			throw new GlobalException(JaxError.SQA_REQUIRED, "Sec QA setup is required");
 		}
 	}
 
 	public static void checkSQASetup(AuthState authState, CustomerFlags customerFlags) {
-		if (customerFlags.getAnnualIncomeExpired()) {
+		if (customerFlags.getSecurityQuestionRequired()) {
 			throw new GlobalException(JaxError.SQA_SETUP_REQUIRED, "Sec QA setup is required");
 		}
 	}

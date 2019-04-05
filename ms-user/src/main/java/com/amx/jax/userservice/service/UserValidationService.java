@@ -139,7 +139,7 @@ public class UserValidationService {
 
 	@Autowired
 	IContactDetailDao contactDetailDao;
-	
+
 	@Autowired
 	IBlackListDetailRepository blackListDtRepo;
 
@@ -217,7 +217,7 @@ public class UserValidationService {
 			throw new GlobalException(errorExpression, "Incorrect/wrong password");
 		}
 	}
-	
+
 	protected void validateDevicePassword(CustomerOnlineRegistration customer, String password) {
 		String dbPassword = customer.getDevicePassword();
 		String passwordHashed = null;
@@ -495,36 +495,33 @@ public class UserValidationService {
 	protected CustomerOnlineRegistration validateOnlineCustomerByIdentityId(String identityInt,
 			BigDecimal identityType) {
 		Customer customer = custDao.getActiveCustomerByIndentityIntAndType(identityInt, identityType);
-		
+
 		if (customer == null) {
 			throw new GlobalException(JaxError.CUSTOMER_NOT_FOUND.getStatusKey(), "Online Customer id not found");
 		}
-		
+
 		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(customer.getCustomerId());
 		if (onlineCustomer == null) {
 			throw new GlobalException(JaxError.CUSTOMER_NOT_FOUND.getStatusKey(), "Online Customer id not found");
 		}
 		return onlineCustomer;
 	}
-	
+
 	public CustomerOnlineRegistration validateOnlineCustomerByIdentityId(BigDecimal customerId) {
 		Customer customer = custDao.getCustById(customerId);
 		if (customer == null) {
 			throw new GlobalException(JaxError.CUSTOMER_NOT_FOUND.getStatusKey(), "Online Customer id not found");
 		}
-		if(!customer.getIdentityTypeId().toString().equals(Constants.IDENTITY_TYPE_CIVIL_ID_STR)) {
+		if (!customer.getIdentityTypeId().toString().equals(Constants.IDENTITY_TYPE_CIVIL_ID_STR)) {
 			throw new GlobalException("Invalid Identity Type for fingerprint establish");
 		}
-			
-			
+
 		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(customer.getCustomerId());
 		if (onlineCustomer == null) {
 			throw new GlobalException(JaxError.CUSTOMER_NOT_FOUND.getStatusKey(), "Online Customer id not found");
 		}
 		return onlineCustomer;
 	}
-	
-	
 
 	public void validateOtpFlow(CustomerModel model) {
 		if (model.isRegistrationFlow()) {
@@ -693,14 +690,15 @@ public class UserValidationService {
 		}
 		onlineCustomer.setTokenSentCount(BigDecimal.ZERO);
 	}
-	
+
 	public List<Customer> validateNonActiveOrNonRegisteredCustomerStatus(String identityInt, JaxApiFlow apiFlow) {
 		return validateNonActiveOrNonRegisteredCustomerStatus(identityInt, null, apiFlow);
 	}
 
 	/**
 	 * validates inactive or not registered customers status
-	 * @return 
+	 * 
+	 * @return
 	 */
 	@SuppressWarnings("unused")
 	public List<Customer> validateNonActiveOrNonRegisteredCustomerStatus(String identityInt, BigDecimal identityType,
@@ -749,7 +747,7 @@ public class UserValidationService {
 	}
 
 	private void validateCustomerForOffisteReg(List<Customer> customer) {
-		
+
 	}
 
 	private void validateCustomerDefault(Customer customer) {
@@ -913,30 +911,30 @@ public class UserValidationService {
 
 		}
 	}
-	
-	
+
 	public void validateIdentityInt(String identityInt, String identityType) {
 		BigDecimal identyType = new BigDecimal(identityType);
 		tenantContext.get().validateIdentityInt(identityInt, identyType);
 
 	}
-	
+
 	public void validateFingerprintDeviceId(CustomerOnlineRegistration customer, String fingerprintDeviceId) {
 		String dbFingerprintDeviceId = customer.getFingerprintDeviceId();
 		if (!fingerprintDeviceId.equals(dbFingerprintDeviceId) || fingerprintDeviceId == null) {
 			throw new GlobalException(JaxError.FINGERPRINT_EXPIRED, "Fingerprint expired");
 		}
 	}
-	
+
 	public void validateBlackListedCustomer(Customer customer) {
-		
-		String idType ="C"; 
-		List<BlackListDetailModel> blist = blackListDtRepo.findByIdNumberAndIdType(customer.getIdentityInt(),idType);
+
+		String idType = "C";
+		List<BlackListDetailModel> blist = blackListDtRepo.findByIdNumberAndIdType(customer.getIdentityInt(), idType);
 		if (blist != null && !blist.isEmpty()) {
-			throw new GlobalException(JaxError.BLACK_LISTED_EXISTING_CIVIL_ID.getStatusKey(),"Your account is locked as we have found that your name has been black-listed by CBK.");
+			throw new GlobalException(JaxError.BLACK_LISTED_EXISTING_CIVIL_ID.getStatusKey(),
+					"Your account is locked as we have found that your name has been black-listed by CBK.");
 		}
 	}
-	
+
 	public Customer validateCustomerForDuplicateRecords(List<Customer> customers) {
 		List<Customer> activeCustomers = customers.stream().filter(i -> ConstantDocument.Yes.equals(i.getIsActive()))
 				.collect(Collectors.toList());

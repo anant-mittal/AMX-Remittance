@@ -165,8 +165,19 @@ public class AuthLibBHR implements AuthLib {
 
 	@Override
 	public CustomerFlags checkModule(AuthState authState, CustomerFlags customerFlags, Features feature) {
-		// TODO Auto-generated method stub
-		return null;
+		switch (feature) {
+		case REMIT:
+		case BENE_UPDATE:
+		case FXORDER:
+			AuthPermUtil.checkIdProofExpiry(authState, customerFlags);
+			AuthPermUtil.checkSQASetup(authState, customerFlags);
+			AuthPermUtil.checkSQA(authState, customerFlags);
+			break;
+		default:
+			break;
+		}
+
+		return customerFlags;
 	}
 
 }

@@ -1,17 +1,13 @@
 package com.amx.jax.ui.auth;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.dict.Tenant;
-import com.amx.jax.error.JaxError;
 import com.amx.jax.model.AuthState;
 import com.amx.jax.model.response.customer.CustomerFlags;
 import com.amx.jax.scope.TenantSpecific;
 import com.amx.jax.ui.UIConstants.Features;
 import com.amx.jax.ui.auth.AuthLibContext.AuthLib;
-import com.amx.jax.ui.session.UserSession;
 
 /**
  * The Class AuthLibKWT.
@@ -167,15 +163,19 @@ public class AuthLibKWT implements AuthLib {
 
 	@Override
 	public CustomerFlags checkModule(AuthState authState, CustomerFlags customerFlags, Features feature) {
-
 		switch (feature) {
 		case REMIT:
+		case BENE_UPDATE:
+		case FXORDER:
+			AuthPermUtil.checkIdProofExpiry(authState, customerFlags);
 			AuthPermUtil.checkSQASetup(authState, customerFlags);
 			AuthPermUtil.checkSQA(authState, customerFlags);
-
+			break;
+		default:
+			break;
 		}
 
-		return null;
+		return customerFlags;
 	}
 
 }

@@ -114,6 +114,13 @@ public class UserController {
 	@Autowired
 	AuthLibContext authLibContext;
 
+	@ApiOWAStatus(OWAStatusStatusCodes.INCOME_UPDATE_REQUIRED)
+	@RequestMapping(value = "/pub/user/meta", method = { RequestMethod.POST, RequestMethod.GET })
+	public ResponseWrapper<UserMetaData> getMeta(@RequestParam(required = false) AppType appType,
+			@RequestParam(required = false) String appVersion) {
+		return this.getMetaV2(appType, appVersion, false, false);
+	}
+
 	/**
 	 * Gets the meta.
 	 *
@@ -122,10 +129,11 @@ public class UserController {
 	 * @return the meta
 	 */
 	@ApiOWAStatus(OWAStatusStatusCodes.INCOME_UPDATE_REQUIRED)
-	@RequestMapping(value = "/pub/user/meta", method = { RequestMethod.POST, RequestMethod.GET })
-	public ResponseWrapper<UserMetaData> getMeta(@RequestParam(required = false) AppType appType,
+	@RequestMapping(value = "/pub/v2/user/meta", method = { RequestMethod.POST, RequestMethod.GET })
+	public ResponseWrapper<UserMetaData> getMetaV2(@RequestParam(required = false) AppType appType,
 			@RequestParam(required = false) String appVersion,
-			@RequestParam(required = false, defaultValue = "false") boolean refresh) {
+			@RequestParam(required = false, defaultValue = "false") boolean refresh,
+			@RequestParam(required = false, defaultValue = "false") boolean validate) {
 		ResponseWrapper<UserMetaData> wrapper = new ResponseWrapper<UserMetaData>(new UserMetaData());
 
 		sessionService.getAppDevice().resolve();
@@ -152,15 +160,17 @@ public class UserController {
 			wrapper.getData().setCustomerId(sessionService.getUserSession().getCustomerModel().getCustomerId());
 			wrapper.getData().setInfo(sessionService.getUserSession().getCustomerModel().getPersoninfo());
 
-			if (!ArgUtil.isEmpty(refresh) && refresh) {
+			if (refresh) {
 				loginService.updateCustoemrModel();
 			}
+			CustomerFlags customerFlags = sessionService.getUserSession().getCustomerModel().getFlags();
 
-			CustomerFlags customerFlags = authLibContext.get()
-					.checkUserMeta(sessionService.getGuestSession().getState(),
-							sessionService.getUserSession().getCustomerModel().getFlags());
+			if (validate) {
+				customerFlags = authLibContext.get()
+						.checkUserMeta(sessionService.getGuestSession().getState(), customerFlags);
+			}
+
 			wrapper.getData().setFlags(customerFlags);
-
 			if (customerFlags.getAnnualIncomeExpired()) {
 				wrapper.setStatus(OWAStatusStatusCodes.INCOME_UPDATE_REQUIRED);
 			}
@@ -235,8 +245,10 @@ public class UserController {
 	}
 
 	@RequestMapping(value = "/api/user/perms/{feature}", method = { RequestMethod.GET })
-	public ResponseWrapper<CustomerDto> perms(@PathVariable Features feature) {
-		return userService.getProfileDetails();
+	public AmxApiResponse<CustomerFlags, Object> perms(@PathVariable Features feature) {
+		return ResponseWrapper.buildData(authLibContext.get()
+				.checkModule(sessionService.getGuestSession().getState(),
+						sessionService.getUserSession().getCustomerModel().getFlags(), feature));
 	}
 
 	/**
