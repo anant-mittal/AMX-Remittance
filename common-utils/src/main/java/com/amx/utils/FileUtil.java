@@ -237,7 +237,12 @@ public final class FileUtil {
 
 		// Search working folder
 		propertiesPath = System.getProperty("user.dir");
-		u = clazz.getClassLoader().getResource(propertiesPath + "/" + filePath);
+		try {
+			u = clazz.getClassLoader().getResource(propertiesPath + "/" + filePath);
+		} catch (Exception e) {
+			LOG.error("clazz.getClassLoader().getResource({}) : {}", propertiesPath + "/" + filePath, e.getMessage());
+		}
+
 		if (u != null) {
 			return u;
 		}
