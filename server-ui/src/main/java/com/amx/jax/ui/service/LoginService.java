@@ -155,6 +155,8 @@ public class LoginService {
 				throw new JaxSystemError();
 			}
 
+			sessionService.getGuestSession().getState().setValidSecQues(true);
+
 			loginSuccess(wrapper, AuthStep.SECQUES, customerModel);
 
 		} catch (GlobalException e) {
