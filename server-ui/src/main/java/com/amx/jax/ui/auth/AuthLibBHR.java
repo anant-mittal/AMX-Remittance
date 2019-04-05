@@ -13,8 +13,8 @@ import com.amx.jax.ui.auth.AuthLibContext.AuthLib;
  * The Class AuthLibKWT.
  */
 @Component
-@TenantSpecific({ Tenant.KWT })
-public class AuthLibKWT implements AuthLib {
+@TenantSpecific({ Tenant.BHR, Tenant.OMN })
+public class AuthLibBHR implements AuthLib {
 
 	/*
 	 * (non-Javadoc)
@@ -157,7 +157,7 @@ public class AuthLibKWT implements AuthLib {
 
 	@Override
 	public AuthStep check(CustomerFlags customerFlags) {
-
+		// TODO Auto-generated method stub
 		return null;
 	}
 
