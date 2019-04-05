@@ -2,9 +2,10 @@ package com.amx.jax.ui.auth;
 
 import org.springframework.stereotype.Component;
 
+import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.dict.Tenant;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.model.AuthState;
-import com.amx.jax.model.AuthState.AuthStep;
 import com.amx.jax.model.response.customer.CustomerFlags;
 import com.amx.jax.scope.TenantSpecific;
 import com.amx.jax.ui.auth.AuthLibContext.AuthLib;
@@ -156,7 +157,17 @@ public class AuthLibBHR implements AuthLib {
 	}
 
 	@Override
-	public AuthStep check(CustomerFlags customerFlags) {
+	public CustomerFlags checkUserMeta(CustomerFlags customerFlags) {
+
+		if (customerFlags.getIdProofRequired()) {
+			throw new GlobalException(JaxError.EKYC_REQUIRED, "You KYC has expired, kindly Upload again");
+		}
+
+		return customerFlags;
+	}
+
+	@Override
+	public CustomerFlags checkModule(CustomerFlags customerFlags) {
 		// TODO Auto-generated method stub
 		return null;
 	}

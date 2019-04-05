@@ -850,7 +850,7 @@ public class UserValidationService {
 		}
 
 		if (isSecurityAnsRequired(jaxAuthMeta)) {
-			ex = new GlobalException(JaxError.SEC_ANS_REQUIRED.getStatusKey(), "Security Answer required");
+			ex = new GlobalException(JaxError.SQA_REQUIRED.getStatusKey(), "Security Answer required");
 			QuestModelDTO secQuestion = securityQuestionsManager.getDataVerificationRandomQuestions(1).get(0);
 			ex.setMeta(new CustomerRequestAuthMeta(secQuestion));
 			jaxAuthMeta.setQuestId(secQuestion.getQuestId());

@@ -39,7 +39,9 @@ public class AuthLibContext extends TenantContext<AuthLib> {
 		 */
 		public AuthState.AuthStep getNextAuthStep(AuthState authState);
 
-		public AuthState.AuthStep check(CustomerFlags customerFlags);
+		public CustomerFlags checkUserMeta(CustomerFlags customerFlags);
+
+		public CustomerFlags checkModule(CustomerFlags customerFlags);
 
 	}
 

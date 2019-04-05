@@ -36,6 +36,7 @@ import com.amx.jax.model.response.customer.CustomerFlags;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.ui.WebAppConfig;
+import com.amx.jax.ui.auth.AuthLibContext;
 import com.amx.jax.ui.config.OWAStatus.ApiOWAStatus;
 import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
 import com.amx.jax.ui.model.AuthData;
@@ -108,6 +109,9 @@ public class UserController {
 	@Autowired
 	private HotPointService hotPointService;
 
+	@Autowired
+	AuthLibContext authLibContext;
+
 	/**
 	 * Gets the meta.
 	 *
@@ -118,7 +122,8 @@ public class UserController {
 	@ApiOWAStatus(OWAStatusStatusCodes.INCOME_UPDATE_REQUIRED)
 	@RequestMapping(value = "/pub/user/meta", method = { RequestMethod.POST, RequestMethod.GET })
 	public ResponseWrapper<UserMetaData> getMeta(@RequestParam(required = false) AppType appType,
-			@RequestParam(required = false) String appVersion) {
+			@RequestParam(required = false) String appVersion,
+			@RequestParam(required = false, defaultValue = "false") boolean refresh) {
 		ResponseWrapper<UserMetaData> wrapper = new ResponseWrapper<UserMetaData>(new UserMetaData());
 
 		sessionService.getAppDevice().resolve();
@@ -145,7 +150,12 @@ public class UserController {
 			wrapper.getData().setCustomerId(sessionService.getUserSession().getCustomerModel().getCustomerId());
 			wrapper.getData().setInfo(sessionService.getUserSession().getCustomerModel().getPersoninfo());
 
-			CustomerFlags customerFlags = sessionService.getUserSession().getCustomerModel().getFlags();
+			if (!ArgUtil.isEmpty(refresh) && refresh) {
+
+			}
+
+			CustomerFlags customerFlags = authLibContext.get()
+					.checkUserMeta(sessionService.getUserSession().getCustomerModel().getFlags());
 			wrapper.getData().setFlags(customerFlags);
 
 			if (customerFlags.getAnnualIncomeExpired()) {
