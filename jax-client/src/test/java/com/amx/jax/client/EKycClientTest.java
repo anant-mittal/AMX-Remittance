@@ -29,7 +29,7 @@ import com.amx.jax.model.request.ImageSubmissionRequest;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class EKycClientTest extends AbstractTestClient{
-	private static final Logger LOGGER = Logger.getLogger(EKycClient.class);
+	private static final Logger LOGGER = Logger.getLogger(EKycClientTest.class);
 
 	@Autowired
 	private JaxMetaInfo jaxMetaInfo;

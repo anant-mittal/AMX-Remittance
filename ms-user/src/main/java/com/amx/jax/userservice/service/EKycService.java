@@ -67,36 +67,35 @@ public class EKycService {
 	Logger logger = Logger.getLogger(EKycService.class);
 	
 	public BoolRespModel eKycsaveCustomer(ImageSubmissionRequest imageSubmissionRequest) throws ParseException {
-		if(org.apache.commons.lang.StringUtils.isEmpty(imageSubmissionRequest.getImage().get(0))) {
+		if (org.apache.commons.lang.StringUtils.isEmpty(imageSubmissionRequest.getImage().get(0))) {
 			throw new GlobalException("Kyc document image cannot be null");
 		}
-		if(org.apache.commons.lang.StringUtils.isEmpty(imageSubmissionRequest.getIdentityExpiredDate().toString())) {
+		if (org.apache.commons.lang.StringUtils.isEmpty(imageSubmissionRequest.getIdentityExpiredDate().toString())) {
 			throw new GlobalException("Expiry date cannot be null");
 		}
-		
+
 		Customer customer = custDao.getCustById(metaData.getCustomerId());
-		
+
 		customerIdProofManager.createIdProofForExpiredCivilId(imageSubmissionRequest, customer);
-		
+
 		DmsApplMapping mappingData = new DmsApplMapping();
 		mappingData = getDmsApplMappingData(customer);
 		idmsAppMappingRepository.save(mappingData);
 		DocBlobUpload documentDetails = new DocBlobUpload();
 		documentDetails = getDocumentUploadDetails(imageSubmissionRequest.getImage().get(0), mappingData);
 		docblobRepository.save(documentDetails);
-		
+
 		BoolRespModel boolRespModel = new BoolRespModel();
 		boolRespModel.setSuccess(Boolean.TRUE);
 		return boolRespModel;
 	}
-	
+
 	private DocBlobUpload getDocumentUploadDetails(String image, DmsApplMapping mappingData) {
 		DocBlobUpload documentDetails = new DocBlobUpload();
 		documentDetails.setCntryCd(mappingData.getApplicationCountryId());
 		documentDetails.setDocBlobID(mappingData.getDocBlobId());
 		documentDetails.setDocFinYear(mappingData.getFinancialYear());
 		documentDetails.setSeqNo(new BigDecimal(1));
-		
 
 		try {
 			Blob documentContent = new javax.sql.rowset.serial.SerialBlob(decodeImage(image));
@@ -114,7 +113,7 @@ public class EKycService {
 
 	public static byte[] decodeImage(String imageDataString) {
 		return Base64.decodeBase64(imageDataString);
-		
+
 	}
 
 	private DmsApplMapping getDmsApplMappingData(Customer model) throws ParseException {
@@ -130,18 +129,17 @@ public class EKycService {
 		mappingData.setIdentityExpiryDate(model.getIdentityExpiredDate());
 		mappingData.setIdentityInt(model.getIdentityInt());
 		mappingData.setIdentityIntId(model.getIdentityTypeId());
-		if(metaData.getEmployeeId()==null) {
+		if (metaData.getEmployeeId() == null) {
 			mappingData.setCreatedBy("WEB");
 			logger.info("created by is set");
-		}	
-		else {
-		mappingData.setCreatedBy(metaData.getEmployeeId().toString());
+		} else {
+			mappingData.setCreatedBy(metaData.getEmployeeId().toString());
 		}
 
 		mappingData.setCreatedOn(new Date());
 		return mappingData;
 	}
-	
+
 	public BigDecimal getDealYearbyDate() throws ParseException {
 		DateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
 		Date today = Calendar.getInstance().getTime();
@@ -150,11 +148,11 @@ public class EKycService {
 		BigDecimal financialYear = list.getFinancialYear();
 		return financialYear;
 	}
-	
+
 	public EKycModel eKycgetDetails() {
 		EKycModel eKycModel = new EKycModel();
 		return eKycModel;
-		
+
 	}
 
 }
