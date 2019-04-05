@@ -1,5 +1,8 @@
 package com.amx.jax.model.response.customer;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CustomerFlags {
 
 	Boolean fingerprintlinked;

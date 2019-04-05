@@ -123,7 +123,7 @@ public class ResponseWrapperM<T, M> extends AmxApiResponse<T, M> {
 		this.status = status.getCode();
 	}
 
-	public void setStatus(IExceptionEnum status) {
+	public void setStatusEnum(IExceptionEnum status) {
 		this.statusKey = status.getStatusKey();
 		this.status = ArgUtil.parseAsString(status.getStatusCode());
 	}
