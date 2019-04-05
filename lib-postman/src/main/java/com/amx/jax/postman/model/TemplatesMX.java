@@ -11,8 +11,8 @@ public enum TemplatesMX implements ITemplate {
 	RESET_OTP_SMS("reset-otp-sms", Channel.NOTIPY),
 
 	// Contact Verification
-	CONTACT_VERIFICATION_SMS("contact-verifiy-sms.html", Channel.NOTIPY),
-	CONTACT_VERIFICATION_EMAIL("contact-verifiy-email.html", Channel.NOTIPY),
+	CONTACT_VERIFICATION_SMS("contact-verifiy-sms", Channel.NOTIPY),
+	CONTACT_VERIFICATION_EMAIL("contact-verifiy-email", Channel.NOTIPY),
 
 	SERVER_UP("health-server-up"),
 

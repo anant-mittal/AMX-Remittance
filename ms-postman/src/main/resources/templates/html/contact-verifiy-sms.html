@@ -1,1 +1,1 @@
-<html th:inline="text" th:remove="tag">This LINK is [[${link.id}]]-[[${link.verificationCode}]] , is to be shared with the delivery agent, to confirm your identity, as the originator of the Foreign Exchange Order.  </html>
+<html th:inline="text" th:remove="tag">Please open [[${_tu.prop('company.app.tinyurl')}]]/pvm/[[${link.id}]]/[[${link.verificationCode}]] to verify your [[${_tu.prop('company.name')}]] registered phone number.</html>

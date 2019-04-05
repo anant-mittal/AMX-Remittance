@@ -4,7 +4,7 @@
 <head>
 <meta name="viewport" content="width=device-width" />
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<title>Alerts e.g. approaching your limit</title>
+<title><span th:text="${_tu.prop('company.name')} + '  Account - Verify Email ID'" th:remove="tag"></span></title>
 <style>
 * {	
 	margin: 0;
@@ -90,7 +90,7 @@ h1, h2, h3 {
 	font-family: "Helvetica Neue", Helvetica, Arial, "Lucida Grande",
 		sans-serif;
 	color: #000;
-	margin: 40px 0 0;
+	margin: 0;
 	line-height: 1.2em;
 	font-weight: 400;
 }
@@ -139,7 +139,7 @@ a {
 	color: #FFF;
 	background-color: #348eda;
 	border: solid #348eda;
-	border-width: 10px 20px;
+	border-width: 5px 10px;
 	line-height: 2em;
 	/* 2em * 14px = 28px, use px to get airier line-height also in Thunderbird, and Yahoo!, Outlook.com, AOL webmail clients */
 	/*line-height: 28px;*/
@@ -149,6 +149,7 @@ a {
 	display: inline-block;
 	border-radius: 5px;
 	text-transform: capitalize;
+	font-size: 18px;
 }
 
 .last {
@@ -263,7 +264,55 @@ a {
 <body itemtype="http://schema.org/EmailMessage">
 
 
-	This Link is [[${link.id}]]-[[${link.verificationCode}]]
+	<table class="body-wrap">
+		<tr>
+			<td></td>
+			<td class="container" width="600">
+				<div class="content">
+					<table class="main" width="100%" cellpadding="0" cellspacing="0">
+						<tr>
+							<td class="alert alert-warning" align="center" bgcolor="#000000"><img th:attr="src=${'cid:' + _tu.prop('company.logo.path')}" />
+							</td>
+						</tr>
+						<tr>
+							<td class="content-wrap">
+								<table width="100%" cellpadding="0" cellspacing="0">
+									<tr>
+										<td class="content-block"><strong>Dear <span  th:text="${customer.firstName}"></span>   <span  th:text="${customer.middleName}"></span>   <span  th:text="${customer.lastName}"></span>,</strong>
+										</td>
+									</tr>
+									<tr>
+										<td class="content-block">Thank you for updating the email ID registered with us.</td>
+									</tr>
+									<tr>
+										<td align="content-block">Please click the Verify your email button below to confirm that you want to use the email ID, [[${customer.email}]] for all communication from [[${_tu.prop('company.name')}]].</td>
+									</tr>
+									<tr>
+										<td class="content-block" align="center" style="padding:20px">
+											<a th:href="${_tu.prop('company.app.tinyurl')+ '/pve/' + link.id +'/'+link.verificationCode}" style="width:200px" class="btn-primary" target="_blank">Verify your mail</a>
+										</td>
+									</tr>
+								
+								
+									<tr>
+										<td class="content-block">Thanks and Regards,<br/>
+											<strong><span th:text="${_tu.prop('company.fullname')}" th:remove="tag"></span>,</strong><br/>
+											<span th:text="${_tu.prop('company.country')}" th:remove="tag"></span><br/>
+											<span th:text="${_tu.prop('support.contact.from')}" th:remove="tag"></span><br/>
+											</td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+					</table>
+					<div class="footer">
+					</div>
+				</div>
+			</td>
+			<td></td>
+		</tr>
+	</table>
+
 
 </body>
 </html>
