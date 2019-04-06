@@ -398,30 +398,28 @@ public class RemittanceTransactionManager {
 					.round(context).setScale(3, RoundingMode.HALF_EVEN);
 
 			BigDecimal diffVal = decimalAmt.remainder(rounder).round(context);
+			BigDecimal diffValActual = decimalAmt.remainder(rounder);
 
-			if (decimalAmt.doubleValue() > 0) {
+			if (diffVal.doubleValue() > 0) {
 
 				BigDecimal bumpLcVal = new BigDecimal(0);
-				new BigDecimal(0);
+				BigDecimal bumpLcValActual = new BigDecimal(0);
 
 				if (isRoundUp) {
 
 					bumpLcVal = rounder.subtract(diffVal, context);
+					bumpLcValActual = rounder.subtract(diffValActual);
 
 				} else {
 
 					bumpLcVal = diffVal.negate();
+					bumpLcValActual = diffValActual.negate();
 				}
 
 				BigDecimal newDecimalAmt = decimalAmt.add(bumpLcVal);
 
-				// Fallback : Get Final Sanitization
-				/*
-				 * if(newDecimalAmt.remainder(rounder).doubleValue() > 0) { newD Skipping For
-				 * Now }
-				 */
-
-				BigDecimal bumpedFcAmt = bumpLcVal.multiply(exchangeRateBreakup.getRate(), context);
+				BigDecimal bumpedFcAmt = bumpLcValActual.multiply(exchangeRateBreakup.getRate()).setScale(10,
+						RoundingMode.HALF_EVEN);
 
 				BigDecimal newLcAmount = new BigDecimal(exchangeRateBreakup.getConvertedLCAmount().longValue())
 						.add(newDecimalAmt);
