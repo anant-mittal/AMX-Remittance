@@ -397,22 +397,23 @@ public class RemittanceTransactionManager {
 			BigDecimal decimalAmt = exchangeRateBreakup.getConvertedLCAmount().remainder(new BigDecimal(1))
 					.round(context).setScale(3, RoundingMode.HALF_EVEN);
 
-			BigDecimal diffVal = decimalAmt.remainder(rounder).round(context);
 			BigDecimal diffValActual = decimalAmt.remainder(rounder);
 
-			if (diffVal.doubleValue() > 0) {
+			if (diffValActual.doubleValue() > 0) {
+
+				BigDecimal diffValRound = diffValActual.round(context);
 
 				BigDecimal bumpLcVal = new BigDecimal(0);
 				BigDecimal bumpLcValActual = new BigDecimal(0);
 
 				if (isRoundUp) {
 
-					bumpLcVal = rounder.subtract(diffVal, context);
+					bumpLcVal = rounder.subtract(diffValRound, context);
 					bumpLcValActual = rounder.subtract(diffValActual);
 
 				} else {
 
-					bumpLcVal = diffVal.negate();
+					bumpLcVal = diffValRound.negate();
 					bumpLcValActual = diffValActual.negate();
 				}
 
