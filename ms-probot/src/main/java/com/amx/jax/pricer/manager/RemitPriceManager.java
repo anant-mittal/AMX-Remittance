@@ -2,6 +2,7 @@ package com.amx.jax.pricer.manager;
 
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.cache.ExchRateAndRoutingTransientDataCache;
+import com.amx.jax.dict.UserClient;
 import com.amx.jax.dict.UserClient.Channel;
 import com.amx.jax.pricer.dao.CountryBranchDao;
 import com.amx.jax.pricer.dao.ExchangeRateDao;
@@ -42,6 +44,7 @@ import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.exception.PricerServiceError;
 import com.amx.jax.pricer.exception.PricerServiceException;
 import com.amx.jax.pricer.var.PricerServiceConstants.PRICE_BY;
+import com.amx.utils.JsonUtil;
 
 @Component
 public class RemitPriceManager {
@@ -80,8 +83,8 @@ public class RemitPriceManager {
 	static {
 		ValidServiceIndicatorIds.add(new BigDecimal(101));
 		ValidServiceIndicatorIds.add(new BigDecimal(102));
-		
-		//ValidServiceIndicatorIds.add(new BigDecimal(103));
+
+		// ValidServiceIndicatorIds.add(new BigDecimal(103));
 	}
 
 	/**
@@ -195,7 +198,7 @@ public class RemitPriceManager {
 
 				bankExchangeRates = exchangeRateDao.getBranchExchangeRatesForRoutingBanksAndServiceIds(
 						requestDto.getForeignCurrencyId(), requestDto.getCountryBranchId(),
-						 requestDto.getLocalCountryId(), validBankIds, serviceIdsList);
+						requestDto.getLocalCountryId(), validBankIds, serviceIdsList);
 			} else {
 
 				bankExchangeRates = exchangeRateDao.getBranchExchangeRatesForRoutingBanks(
@@ -561,6 +564,81 @@ public class RemitPriceManager {
 		} else {
 			return createBreakUpForLcCur(pips.get(0).getDerivedSellRate(), lcAmount);
 		}
+	}
+
+	public static ExchangeRateBreakup applyChannelAmountRouding(ExchangeRateBreakup exchangeRateBreakup,
+			UserClient.Channel channel, boolean isRoundUp) {
+
+		if (channel == null || exchangeRateBreakup == null || exchangeRateBreakup.getConvertedLCAmount() == null) {
+
+			return exchangeRateBreakup;
+		}
+
+		BigDecimal rounder = null;
+		boolean applyRound = false;
+
+		if (Channel.BRANCH.equals(channel)) {
+			// AuthenticationView authView = authViewRepo.getOne(8);
+			rounder = new BigDecimal(0.050);
+			applyRound = true;
+		} else if (Channel.KIOSK.equals(channel)) {
+			rounder = new BigDecimal(0.250);
+			applyRound = true;
+		}
+
+		if (rounder != null && applyRound) {
+
+			MathContext context = new MathContext(3, RoundingMode.HALF_EVEN);
+
+			rounder = rounder.setScale(3, RoundingMode.HALF_EVEN);
+
+			BigDecimal decimalAmt = exchangeRateBreakup.getConvertedLCAmount().remainder(new BigDecimal(1))
+					.round(context).setScale(3, RoundingMode.HALF_EVEN);
+
+			BigDecimal diffVal = decimalAmt.remainder(rounder).round(context);
+			BigDecimal diffValActual = decimalAmt.remainder(rounder);
+
+			if (diffVal.doubleValue() > 0) {
+
+				BigDecimal bumpLcVal = new BigDecimal(0);
+				BigDecimal bumpLcValActual = new BigDecimal(0);
+
+				if (isRoundUp) {
+
+					bumpLcVal = rounder.subtract(diffVal, context);
+					bumpLcValActual = rounder.subtract(diffValActual);
+
+				} else {
+
+					bumpLcVal = diffVal.negate();
+					bumpLcValActual = diffValActual.negate();
+				}
+
+				BigDecimal newDecimalAmt = decimalAmt.add(bumpLcVal);
+
+				// Fallback : Get Final Sanitization
+				/*
+				 * if(newDecimalAmt.remainder(rounder).doubleValue() > 0) { newD Skipping For
+				 * Now }
+				 */
+
+				BigDecimal bumpedFcAmt = bumpLcValActual.multiply(exchangeRateBreakup.getRate()).setScale(10,
+						RoundingMode.HALF_DOWN);
+
+				BigDecimal newLcAmount = new BigDecimal(exchangeRateBreakup.getConvertedLCAmount().longValue())
+						.add(newDecimalAmt);
+
+				BigDecimal newFcAmount = exchangeRateBreakup.getConvertedFCAmount().add(bumpedFcAmt);
+
+				exchangeRateBreakup.setConvertedLCAmount(newLcAmount);
+				exchangeRateBreakup.setConvertedFCAmount(newFcAmount);
+
+			}
+		}
+
+		// Default Case - Unmodified
+		return exchangeRateBreakup;
+
 	}
 
 }
