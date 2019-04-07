@@ -5,6 +5,8 @@ import static com.amx.amxlib.constant.ApplicationProcedureParam.P_REMITTANCE_MOD
 import static com.amx.amxlib.constant.ApplicationProcedureParam.P_ROUTING_BANK_BRANCH_ID;
 import static com.amx.amxlib.constant.ApplicationProcedureParam.P_ROUTING_BANK_ID;
 import static com.amx.amxlib.constant.ApplicationProcedureParam.P_SERVICE_MASTER_ID;
+import static com.amx.jax.error.JaxError.COMISSION_NOT_DEFINED_FOR_ROUTING_BANK;
+import static com.amx.jax.error.JaxError.TOO_MANY_COMISSION_NOT_DEFINED_FOR_ROUTING_BANK;
 import static com.amx.amxlib.constant.ApplicationProcedureParam.P_ROUTING_COUNTRY_ID;
 
 
@@ -22,7 +24,10 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.branchremittance.service.BranchRemittanceExchangeRateService;
+import com.amx.jax.dal.BizcomponentDao;
+import com.amx.jax.dal.ExchangeRateProcedureDao;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.model.request.remittance.IRemittanceApplicationParams;
@@ -32,6 +37,7 @@ import com.amx.jax.model.response.remittance.RoutingBankDto;
 import com.amx.jax.model.response.remittance.RoutingBranchDto;
 import com.amx.jax.model.response.remittance.RoutingResponseDto;
 import com.amx.jax.model.response.remittance.RoutingServiceDto;
+import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeRateResponse;
 import com.amx.jax.routing.ImpsRoutingLogic;
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -50,6 +56,12 @@ public class BranchImpsRoutingManager {
 	BranchRoutingManager branchRoutingManager;
 	@Autowired
 	MetaData metaData;
+	
+	@Autowired
+	private ExchangeRateProcedureDao exchangeRateProcedureDao;
+
+	@Autowired
+	private BizcomponentDao bizcomponentDao;
 
 	/**
 	 * modifies routingResponseDto passed in method argument if IMPS routing is
@@ -96,4 +108,38 @@ public class BranchImpsRoutingManager {
 		}
 		return impsApplicable;
 	}
+	
+	
+public Map<String, Object> recalculateDeliveryAndRemittanceModeId(BranchRemittanceGetExchangeRateResponse result,RoutingResponseDto branchRoutingDto) {
+		
+		Map<String, Object> outputMap  = null;
+		if (result.getExRateBreakup()!= null && result.getExRateBreakup().getConvertedFCAmount()!=null) {
+			
+			BigDecimal custtype = bizcomponentDao.findCustomerTypeId("I");
+			remitApplParametersMap.put("P_CUSTYPE_ID", custtype);
+			remitApplParametersMap.put("P_ROUTING_BANK_BRANCH_ID", branchRoutingDto.getRoutingBankBranchDto().get(0).getBankBranchId());
+			remitApplParametersMap.put("P_SERVICE_MASTER_ID", branchRoutingDto.getServiceList().get(0).getServiceMasterId());
+			
+			 outputMap = exchangeRateProcedureDao.findRemittanceAndDevlieryModeId(remitApplParametersMap);
+			if (outputMap.size() == 0) {
+				remitApplParametersMap.put("P_CUSTYPE_ID", new BigDecimal(777));
+				outputMap = exchangeRateProcedureDao.findRemittanceAndDevlieryModeId(remitApplParametersMap);
+			}
+			if (outputMap.size() > 2) {
+				throw new GlobalException(
+						TOO_MANY_COMISSION_NOT_DEFINED_FOR_ROUTING_BANK,
+						"TOO MANY COMMISSION DEFINED for rounting bankid: "
+								+ remitApplParametersMap.get("P_ROUTING_BANK_ID"));
+			}
+
+			if (outputMap.get("P_DELIVERY_MODE_ID") == null) {
+				throw new GlobalException(COMISSION_NOT_DEFINED_FOR_ROUTING_BANK,
+						"COMMISSION NOT DEFINED BankId: " + remitApplParametersMap.get("P_ROUTING_BANK_ID"));
+			}
+			remitApplParametersMap.putAll(outputMap);
+		}
+		return outputMap;
+	}
+
+	
 }

@@ -80,7 +80,6 @@ public class BranchRemittanceService extends AbstractService{
 		BranchRemittanceApplResponseDto applResponseDto = branchRemitApplManager.saveBranchRemittanceApplication(requestApplModel);
 		AmxApiResponse resopnse = AmxApiResponse.build(applResponseDto);
 		resopnse.setWarningKey(applResponseDto.getWarnigMsg());
-		//return AmxApiResponse.build(applResponseDto);
 		return resopnse;
 	}
 	
@@ -167,7 +166,9 @@ public class BranchRemittanceService extends AbstractService{
 	
 	public AmxApiResponse<RoutingResponseDto,Object> getRoutingDetails(BigDecimal beneRelaId) {
 		RoutingResponseDto respondeDto = branchRoutingManager.getRoutingSetupDeatils(beneRelaId);
-		return AmxApiResponse.build(respondeDto);
+		AmxApiResponse resopnse = AmxApiResponse.build(respondeDto);
+		resopnse.setWarningKey(respondeDto.getWarnigMsg());
+		return resopnse;
 	}
 	
 	
