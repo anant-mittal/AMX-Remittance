@@ -48,6 +48,10 @@ import com.amx.jax.pricer.var.PricerServiceConstants.PRICE_BY;
 @Component
 public class RemitPriceManager {
 
+	private static int DEF_DECIMAL_SCALE = 8;
+
+	private static MathContext DEF_CONTEXT = new MathContext(DEF_DECIMAL_SCALE, RoundingMode.HALF_EVEN);
+
 	/** The Constant LOGGER. */
 	private static final Logger LOGGER = LoggerFactory.getLogger(RemitPriceManager.class);
 
@@ -442,10 +446,10 @@ public class RemitPriceManager {
 		ExchangeRateBreakup breakup = null;
 		if (exrate != null) {
 			breakup = new ExchangeRateBreakup();
-			breakup.setInverseRate(exrate);
-			breakup.setRate(new BigDecimal(1).divide(exrate, 10, RoundingMode.HALF_UP));
-			breakup.setConvertedFCAmount(breakup.getRate().multiply(lcAmount));
-			breakup.setConvertedLCAmount(lcAmount);
+			breakup.setInverseRate(exrate.round(DEF_CONTEXT));
+			breakup.setRate(new BigDecimal(1).divide(exrate, DEF_DECIMAL_SCALE, RoundingMode.HALF_UP));
+			breakup.setConvertedFCAmount(breakup.getRate().multiply(lcAmount).round(DEF_CONTEXT));
+			breakup.setConvertedLCAmount(lcAmount.round(DEF_CONTEXT));
 		}
 		return breakup;
 	}
@@ -454,10 +458,10 @@ public class RemitPriceManager {
 		ExchangeRateBreakup breakup = null;
 		if (exrate != null) {
 			breakup = new ExchangeRateBreakup();
-			breakup.setConvertedLCAmount(fcAmount.multiply(exrate));
-			breakup.setConvertedFCAmount(fcAmount);
-			breakup.setInverseRate(exrate);
-			breakup.setRate(new BigDecimal(1).divide(exrate, 10, RoundingMode.HALF_UP));
+			breakup.setConvertedLCAmount(fcAmount.multiply(exrate).round(DEF_CONTEXT));
+			breakup.setConvertedFCAmount(fcAmount.round(DEF_CONTEXT));
+			breakup.setInverseRate(exrate.round(DEF_CONTEXT));
+			breakup.setRate(new BigDecimal(1).divide(exrate, DEF_DECIMAL_SCALE, RoundingMode.HALF_UP));
 		}
 		return breakup;
 	}
@@ -614,7 +618,7 @@ public class RemitPriceManager {
 						.add(newDecimalAmt);
 
 				BigDecimal bumpedFcAmt = (newLcAmount.subtract(oldLcAmount)).multiply(exchangeRateBreakup.getRate())
-						.setScale(10, RoundingMode.HALF_EVEN);
+						.setScale(DEF_DECIMAL_SCALE, RoundingMode.HALF_EVEN);
 
 				BigDecimal newFcAmount = exchangeRateBreakup.getConvertedFCAmount().add(bumpedFcAmt);
 
