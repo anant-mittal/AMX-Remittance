@@ -82,5 +82,5 @@ public interface ITransactionHistroyDAO extends JpaRepository<CustomerRemittance
 	
 	
 	@Query("select th from  CustomerRemittanceTransactionView th  where th.createdBy=:username and th.documentDate=(select max(f.documentDate) from CustomerRemittanceTransactionView f where f.createdBy=:username)")
-	public CustomerRemittanceTransactionView getLastTrnxAmountFortheCustomer(@Param("username") String username);
+	public List<CustomerRemittanceTransactionView> getLastTrnxAmountFortheCustomer(@Param("username") String username);
 }

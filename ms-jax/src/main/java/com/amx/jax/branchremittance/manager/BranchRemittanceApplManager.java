@@ -221,7 +221,7 @@ public class BranchRemittanceApplManager {
 		 /*checking bene additional info missing detail check**/
 		 branchRemitManager.beneAddCheck(beneficaryDetails);
 		 /*checking banned bank details **/
-		 String warningMsg = branchRemitManager.bannedBankCheck(beneficaryDetails);
+		 String warningMsg = branchRemitManager.bannedBankCheck(requestApplModel.getBeneId());
 		 /* validate blck list bene **/
 		 branchRemitManager.validateBlackListedBene(beneficaryDetails);
 		 /* get Routing setup details **/
@@ -256,7 +256,7 @@ public class BranchRemittanceApplManager {
 		/** bene additional check **/
 		 Map<String, Object> addBeneDetails =branchRemitManager.validateAdditionalBeneDetails(branchRoutingDto,exchangeRateResposne,beneficaryDetails,requestApplModel);
 		 
-		 if(branchRoutingDto != null && branchRoutingDto.getRoutingCountrydto()!=null  && !branchRoutingDto.getRoutingCountrydto().isEmpty() ) {
+		/* if(branchRoutingDto != null && branchRoutingDto.getRoutingCountrydto()!=null  && !branchRoutingDto.getRoutingCountrydto().isEmpty() ) {
 			 String countryCode = branchRoutingDto.getRoutingCountrydto().get(0).getResourceCode()==null?"":branchRoutingDto.getRoutingCountrydto().get(0).getResourceCode(); 
 			 if(!StringUtils.isBlank(countryCode) && countryCode.equals(ConstantDocument.IND_COUNTRY_CODE) && requestApplModel.getServiceMasterId().compareTo(ConstantDocument.SERVICE_MASTER_ID_TT)==0) {
 			 if(branchRoutingDto.getRemittanceModeList()!=null && branchRoutingDto.getRemittanceModeList().get(0).getRemittancCode().compareTo(ConstantDocument.IMPS_CODE)!=0) {
@@ -276,8 +276,7 @@ public class BranchRemittanceApplManager {
 			 }
 			 
 		 }
-		 
-		 
+		 */
 		 
 		hashMap.put("ROUTING_DETAILS_DTO", branchRoutingDto);
 		hashMap.put("EXCH_RATE_MAP", exchangeRateResposne);
@@ -358,7 +357,7 @@ public class BranchRemittanceApplManager {
 			BigDecimal selectedCurrencyId = branchRemitManager.getSelectedCurrency(foreignCurrencyId, applRequestModel);
 			
 			Document document = documentDao.getDocumnetByCode(ConstantDocument.DOCUMENT_CODE_FOR_REMITTANCE_APPLICATION).get(0);
-			//BigDecimal selectedCurrency = getSelectedCurrency(foreignCurrencyId, requestModel);
+		
 			remittanceApplication.setExDocument(document);
 			remittanceApplication.setDocumentCode(document.getDocumentCode());
 			CountryMaster appCountryId = new CountryMaster();
@@ -572,7 +571,7 @@ public class BranchRemittanceApplManager {
 		}
 		
 		remittanceAppBenificary.setBeneficiaryBank(beneficiaryDT.getBankName());
-		remittanceAppBenificary.setBeneficiaryBranch(beneficiaryDT.getBankBranchName());
+		remittanceAppBenificary.setBeneficiaryBranch(beneAddDeatisl.get("P_BENE_BRANCH_NAME")==null?beneficiaryDT.getBankBranchName():(String) beneAddDeatisl.get("P_BENE_BRANCH_NAME"));
 		
 
 		remittanceAppBenificary.setBeneficiaryName(beneAddDeatisl.get("P_BENEFICIARY_NAME")==null? beneficiaryDT.getBenificaryName():(String) beneAddDeatisl.get("P_BENEFICIARY_NAME"));
@@ -581,6 +580,11 @@ public class BranchRemittanceApplManager {
 		remittanceAppBenificary.setBeneficiaryThirdName(beneAddDeatisl.get("P_BENEFICIARY_THIRD_NAME")==null?beneficiaryDT.getThirdName():(String) beneAddDeatisl.get("P_BENEFICIARY_THIRD_NAME"));
 		remittanceAppBenificary.setBeneficiaryFourthName(beneAddDeatisl.get("P_BENEFICIARY_FOURTH_NAME")==null?beneficiaryDT.getFourthName():(String) beneAddDeatisl.get("P_BENEFICIARY_FOURTH_NAME"));
 		remittanceAppBenificary.setBeneficiaryFifthName(beneAddDeatisl.get("P_BENEFICIARY_FIFTH_NAME")==null?beneficiaryDT.getFiftheName():(String) beneAddDeatisl.get("P_BENEFICIARY_FIFTH_NAME"));
+		
+		remittanceAppBenificary.setBeneficiaryBranchStateId(beneAddDeatisl.get("P_BENE_STATE_ID")==null?beneficiaryDT.getStateId():(BigDecimal)beneAddDeatisl.get("P_BENE_STATE_ID"));
+		remittanceAppBenificary.setBeneficiaryBranchDistrictId(beneAddDeatisl.get("P_BENE_DISTRICT_ID")==null?beneficiaryDT.getDistrictId():(BigDecimal)beneAddDeatisl.get("P_BENE_DISTRICT_ID"));
+		remittanceAppBenificary.setBeneficiaryBranchCityId(beneAddDeatisl.get("P_BENE_CITY_ID")==null?beneficiaryDT.getCityId():(BigDecimal)beneAddDeatisl.get("P_BENE_CITY_ID"));
+		
 		
 		
 		if(beneficiaryDT.getSwiftBic()!=null) {
@@ -593,9 +597,7 @@ public class BranchRemittanceApplManager {
 		remittanceAppBenificary.setCreatedBy(remittanceApplication.getCreatedBy());
 		remittanceAppBenificary.setCreatedDate(new Date());
 		remittanceAppBenificary.setIsactive(ConstantDocument.Yes);
-		remittanceAppBenificary.setBeneficiaryBranchStateId(beneficiaryDT.getStateId());
-		remittanceAppBenificary.setBeneficiaryBranchDistrictId(beneficiaryDT.getDistrictId());
-		remittanceAppBenificary.setBeneficiaryBranchCityId(beneficiaryDT.getCityId());
+		
 		
 		remittanceAppBenificary.setBeneficiaryBankCountryId(beneficiaryDT.getBenificaryCountry());
 		remittanceAppBenificary.setBeneficiaryBankId(beneficiaryDT.getBankId());
@@ -685,7 +687,6 @@ public class BranchRemittanceApplManager {
 					remitApplAml.setBlackListReason(amlDto.getMessageDescription());
 					remitApplAml.setBlackListRemarks(requestApplModel.getAmlRemarks());
 					remitApplAmlList.add(remitApplAml);
-					
 				}
 				
 			} catch (Exception e) {

@@ -277,7 +277,9 @@ public class BranchRemittanceManager extends AbstractModel {
 		
 	}
 	
-	public String bannedBankCheck(BenificiaryListView beneficaryDetails) {
+	public String bannedBankCheck(BigDecimal beneRelationId) {
+		
+		BenificiaryListView beneficaryDetails =beneficiaryRepository.findBybeneficiaryRelationShipSeqId(beneRelationId);
 		Map<String, Object> inputValues = new HashMap<>();
 		String alertMessage =null;
 		inputValues.put("P_APPLICATION_COUNTRY_ID", beneficaryDetails.getApplicationCountryId());
@@ -291,11 +293,6 @@ public class BranchRemittanceManager extends AbstractModel {
 			if (errorMessage != null) {
 				throw new GlobalException(JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL, errorMessage);
 			}
-			/*if (alertMessage != null) {
-				//throw new GlobalException(JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL, alertMessage);
-				return alertMessage;
-			}*/
-			
 		}
 		return alertMessage;
 	}
