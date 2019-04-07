@@ -44,7 +44,6 @@ import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.exception.PricerServiceError;
 import com.amx.jax.pricer.exception.PricerServiceException;
 import com.amx.jax.pricer.var.PricerServiceConstants.PRICE_BY;
-import com.amx.utils.JsonUtil;
 
 @Component
 public class RemitPriceManager {
@@ -595,38 +594,27 @@ public class RemitPriceManager {
 			BigDecimal decimalAmt = exchangeRateBreakup.getConvertedLCAmount().remainder(new BigDecimal(1))
 					.round(context).setScale(3, RoundingMode.HALF_EVEN);
 
-			BigDecimal diffVal = decimalAmt.remainder(rounder).round(context);
-			BigDecimal diffValActual = decimalAmt.remainder(rounder);
+			BigDecimal diffVal = decimalAmt.remainder(rounder);
 
 			if (diffVal.doubleValue() > 0) {
 
 				BigDecimal bumpLcVal = new BigDecimal(0);
-				BigDecimal bumpLcValActual = new BigDecimal(0);
 
 				if (isRoundUp) {
-
-					bumpLcVal = rounder.subtract(diffVal, context);
-					bumpLcValActual = rounder.subtract(diffValActual);
-
+					bumpLcVal = rounder.subtract(diffVal);
 				} else {
-
 					bumpLcVal = diffVal.negate();
-					bumpLcValActual = diffValActual.negate();
 				}
 
 				BigDecimal newDecimalAmt = decimalAmt.add(bumpLcVal);
 
-				// Fallback : Get Final Sanitization
-				/*
-				 * if(newDecimalAmt.remainder(rounder).doubleValue() > 0) { newD Skipping For
-				 * Now }
-				 */
-
-				BigDecimal bumpedFcAmt = bumpLcValActual.multiply(exchangeRateBreakup.getRate()).setScale(10,
-						RoundingMode.HALF_DOWN);
+				BigDecimal oldLcAmount = exchangeRateBreakup.getConvertedLCAmount();
 
 				BigDecimal newLcAmount = new BigDecimal(exchangeRateBreakup.getConvertedLCAmount().longValue())
 						.add(newDecimalAmt);
+
+				BigDecimal bumpedFcAmt = (newLcAmount.subtract(oldLcAmount)).multiply(exchangeRateBreakup.getRate())
+						.setScale(10, RoundingMode.HALF_EVEN);
 
 				BigDecimal newFcAmount = exchangeRateBreakup.getConvertedFCAmount().add(bumpedFcAmt);
 
