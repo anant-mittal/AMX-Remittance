@@ -397,35 +397,29 @@ public class RemittanceTransactionManager {
 			BigDecimal decimalAmt = exchangeRateBreakup.getConvertedLCAmount().remainder(new BigDecimal(1))
 					.round(context).setScale(3, RoundingMode.HALF_EVEN);
 
-			BigDecimal diffValActual = decimalAmt.remainder(rounder);
+			BigDecimal diffVal = decimalAmt.remainder(rounder);
 
-			if (diffValActual.doubleValue() > 0) {
+			if (diffVal.doubleValue() > 0) {
 
-				BigDecimal diffValRound = diffValActual.round(context);
-
-				BigDecimal bumpLcVal = new BigDecimal(0);
-				BigDecimal bumpLcValActual = new BigDecimal(0);
+				BigDecimal bumpLcVal;
 
 				if (isRoundUp) {
-
-					bumpLcVal = rounder.subtract(diffValRound, context);
-					bumpLcValActual = rounder.subtract(diffValActual);
-
+					bumpLcVal = rounder.subtract(diffVal);
 				} else {
-
-					bumpLcVal = diffValRound.negate();
-					bumpLcValActual = diffValActual.negate();
+					bumpLcVal = diffVal.negate();
 				}
 
 				BigDecimal newDecimalAmt = decimalAmt.add(bumpLcVal);
 
-				BigDecimal bumpedFcAmt = bumpLcValActual.multiply(exchangeRateBreakup.getRate()).setScale(10,
-						RoundingMode.HALF_EVEN);
+				BigDecimal oldLcAmount = exchangeRateBreakup.getConvertedLCAmount();
 
 				BigDecimal newLcAmount = new BigDecimal(exchangeRateBreakup.getConvertedLCAmount().longValue())
 						.add(newDecimalAmt);
 
-				BigDecimal newFcAmount = exchangeRateBreakup.getConvertedFCAmount().add(bumpedFcAmt);
+				BigDecimal bumpedFcVal = (newLcAmount.subtract(oldLcAmount)).multiply(exchangeRateBreakup.getRate())
+						.setScale(10, RoundingMode.HALF_EVEN);
+
+				BigDecimal newFcAmount = exchangeRateBreakup.getConvertedFCAmount().add(bumpedFcVal);
 
 				exchangeRateBreakup.setConvertedLCAmount(newLcAmount);
 				exchangeRateBreakup.setConvertedFCAmount(newFcAmount);
