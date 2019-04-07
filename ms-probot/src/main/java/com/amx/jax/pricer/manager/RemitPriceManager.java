@@ -44,6 +44,7 @@ import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.exception.PricerServiceError;
 import com.amx.jax.pricer.exception.PricerServiceException;
 import com.amx.jax.pricer.var.PricerServiceConstants.PRICE_BY;
+import com.amx.jax.pricer.var.PricerServiceConstants.SERVICE_GROUP;
 
 @Component
 public class RemitPriceManager {
@@ -79,15 +80,17 @@ public class RemitPriceManager {
 	@Resource
 	ExchRateAndRoutingTransientDataCache exchRateAndRoutingTransientDataCache;
 
-	private static List<BigDecimal> ValidServiceIndicatorIds = new ArrayList<BigDecimal>();
+	private static List<BigDecimal> ValidBankServiceIndicatorIds = new ArrayList<BigDecimal>();
+
+	private static List<BigDecimal> ValidCashServiceIndicatorIds = new ArrayList<BigDecimal>();
 
 	private static BigDecimal OnlineCountryBranchId;
 
 	static {
-		ValidServiceIndicatorIds.add(new BigDecimal(101));
-		ValidServiceIndicatorIds.add(new BigDecimal(102));
+		ValidBankServiceIndicatorIds.add(new BigDecimal(101));
+		ValidBankServiceIndicatorIds.add(new BigDecimal(102));
 
-		// ValidServiceIndicatorIds.add(new BigDecimal(103));
+		ValidCashServiceIndicatorIds.add(new BigDecimal(103));
 	}
 
 	/**
@@ -291,8 +294,19 @@ public class RemitPriceManager {
 
 		// Get Distinct Bank Rates from APRDET - for a given Currency, destination
 		// country, routing banks and service Indicator Ids.
-		List<ExchangeRateAPRDET> exchangeRates = exchangeRateDao.getUniqueSellRatesForRoutingBanks(currencyId,
-				foreignCountryId, applicationCountryId, routingBankIds, ValidServiceIndicatorIds);
+		
+		List<ExchangeRateAPRDET> exchangeRates;
+		
+		if(SERVICE_GROUP.CASH.equals(exchRateAndRoutingTransientDataCache.getServiceGroup())) {
+			exchangeRates = exchangeRateDao.getUniqueSellRatesForRoutingBanks(currencyId,
+					foreignCountryId, applicationCountryId, routingBankIds, ValidCashServiceIndicatorIds);
+		}else {
+			// Default Is Bank 
+			exchangeRates = exchangeRateDao.getUniqueSellRatesForRoutingBanks(currencyId,
+					foreignCountryId, applicationCountryId, routingBankIds, ValidBankServiceIndicatorIds);
+		}
+		
+		
 
 		Map<BigDecimal, ExchangeRateAPRDET> bankExchangeRateMap = new HashMap<BigDecimal, ExchangeRateAPRDET>();
 

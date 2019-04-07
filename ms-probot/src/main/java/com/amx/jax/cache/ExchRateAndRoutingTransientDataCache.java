@@ -15,6 +15,7 @@ import com.amx.jax.pricer.dbmodel.TimezoneMasterModel;
 import com.amx.jax.pricer.dbmodel.ViewExGLCBAL;
 import com.amx.jax.pricer.dto.BankDetailsDTO;
 import com.amx.jax.pricer.dto.ExchangeRateDetails;
+import com.amx.jax.pricer.var.PricerServiceConstants.SERVICE_GROUP;
 import com.amx.utils.DateUtil;
 
 /**
@@ -31,6 +32,8 @@ import com.amx.utils.DateUtil;
 public class ExchRateAndRoutingTransientDataCache {
 
 	private final long trnxBeginTime = System.currentTimeMillis();
+
+	private SERVICE_GROUP serviceGroup = SERVICE_GROUP.BANK;
 
 	private List<ExchangeRateDetails> sellRateDetails = new ArrayList<>();
 
@@ -53,6 +56,17 @@ public class ExchRateAndRoutingTransientDataCache {
 	public long getTrnxBeginTime() {
 		return trnxBeginTime;
 	}
+
+	public SERVICE_GROUP getServiceGroup() {
+		return serviceGroup;
+	}
+
+	public void setServiceGroup(SERVICE_GROUP serviceGroup) {
+		this.serviceGroup = serviceGroup;
+	}
+
+
+
 
 	public Map<BigDecimal, List<ViewExGLCBAL>> getBankGlcBalMap() {
 		return bankGlcBalMap;

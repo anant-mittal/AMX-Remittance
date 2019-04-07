@@ -151,8 +151,9 @@ public class ExchangePricingAndRoutingService {
 	public ExchangeRateAndRoutingResponse fetchRemitRoutesAndPrices(
 			ExchangeRateAndRoutingRequest exchangeRateAndRoutingRequest) {
 
-
 		validatePricingRequest(exchangeRateAndRoutingRequest, Boolean.TRUE);
+
+		exchRateAndRoutingTransientDataCache.setServiceGroup(exchangeRateAndRoutingRequest.getServiceGroup());
 
 		Customer customer = customerDao.getCustById(exchangeRateAndRoutingRequest.getCustomerId());
 
