@@ -76,12 +76,12 @@ public class BranchRemittanceExchangeRateService {
 			requestApplModel.setRoutingCountryId((BigDecimal)remitApplParametersMap.get("P_ROUTING_COUNTRY_ID"));
 			List<CountryMasterView> countryMasterView = countryRepository.findByLanguageIdAndCountryId(metaData.getLanguageId(), requestApplModel.getRoutingCountryId());
 			requestApplModel.setServiceMasterId(request.getServiceIndicatorIdBD());
-			/*if(countryMasterView!=null && !countryMasterView.isEmpty()) {
+			if(countryMasterView!=null && !countryMasterView.isEmpty()) {
 				String countryCode = countryMasterView.get(0)==null?"": countryMasterView.get(0).getCountryCode();
 				if(!StringUtils.isBlank(countryCode) &&  countryCode.equalsIgnoreCase(ConstantDocument.IND_COUNTRY_CODE)) {
 					requestApplModel.setServiceMasterId(BigDecimal.ZERO);
 				}
-			}*/
+			}
 			requestApplModel.setBeneId(request.getBeneficiaryRelationshipSeqIdBD());
 			requestApplModel.setRoutingBankId(request.getCorrespondanceBankIdBD());
 			routingResponseDto = branchRoutingManager.getRoutingSetup(requestApplModel);
@@ -90,7 +90,12 @@ public class BranchRemittanceExchangeRateService {
 			
 			 if(routingResponseDto != null && routingResponseDto.getRoutingCountrydto()!=null  && !routingResponseDto.getRoutingCountrydto().isEmpty() ) {
 				 String countryCode = routingResponseDto.getRoutingCountrydto().get(0).getResourceCode()==null?"":routingResponseDto.getRoutingCountrydto().get(0).getResourceCode(); 
-				 if(!StringUtils.isBlank(countryCode) && countryCode.equals(ConstantDocument.IND_COUNTRY_CODE) && requestApplModel.getServiceMasterId().compareTo(ConstantDocument.SERVICE_MASTER_ID_TT)==0) {
+				 BigDecimal serviceMasterId = requestApplModel.getServiceMasterId();
+				 if(!JaxUtil.isNullZeroBigDecimalCheck(serviceMasterId)) {
+					 serviceMasterId =routingResponseDto.getServiceList().get(0)==null?BigDecimal.ZERO:routingResponseDto.getServiceList().get(0).getServiceMasterId();
+				 }
+				 
+				 if(!StringUtils.isBlank(countryCode) && countryCode.equals(ConstantDocument.IND_COUNTRY_CODE) && serviceMasterId.compareTo(ConstantDocument.SERVICE_MASTER_ID_TT)==0) {
 				 if(routingResponseDto.getRemittanceModeList()!=null && routingResponseDto.getRemittanceModeList().get(0).getRemittancCode().compareTo(ConstantDocument.IMPS_CODE)!=0) {
 					 Map<String, Object> outPut = branchImpsRoutingManager.recalculateDeliveryAndRemittanceModeId(result,routingResponseDto);
 					 BigDecimal newRemitMode = outPut.get("P_REMITTANCE_MODE_ID")==null?requestApplModel.getRemittanceModeId():(BigDecimal)outPut.get("P_REMITTANCE_MODE_ID");
