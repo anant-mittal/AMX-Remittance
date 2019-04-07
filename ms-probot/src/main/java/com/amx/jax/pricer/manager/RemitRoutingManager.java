@@ -6,7 +6,9 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -19,13 +21,15 @@ import org.springframework.stereotype.Component;
 import com.amx.jax.cache.ExchRateAndRoutingTransientDataCache;
 import com.amx.jax.cache.TransientRoutingComputeDetails;
 import com.amx.jax.cache.WorkingHoursData;
+import com.amx.jax.dict.UserClient.Channel;
 import com.amx.jax.pricer.dao.TimezoneDao;
 import com.amx.jax.pricer.dao.ViewExRoutingMatrixDao;
 import com.amx.jax.pricer.dbmodel.HolidayListMasterModel;
 import com.amx.jax.pricer.dbmodel.TimezoneMasterModel;
 import com.amx.jax.pricer.dbmodel.ViewExRoutingMatrix;
-import com.amx.jax.pricer.dto.ExchangeRateAndRoutingRequest;
 import com.amx.jax.pricer.dto.EstimatedDeliveryDetails;
+import com.amx.jax.pricer.dto.ExchangeRateAndRoutingRequest;
+import com.amx.jax.pricer.dto.ExchangeRateDetails;
 import com.amx.jax.pricer.exception.PricerServiceError;
 import com.amx.jax.pricer.exception.PricerServiceException;
 import com.amx.utils.DateUtil;
@@ -60,6 +64,93 @@ public class RemitRoutingManager {
 		}
 
 		return true;
+
+	}
+
+	public List<ViewExRoutingMatrix> getRoutingMatrixForRemittance(
+			ExchangeRateAndRoutingRequest exchangeRateAndRoutingRequest) {
+
+		List<ViewExRoutingMatrix> routingMatrix = viewExRoutingMatrixDao.getRoutingMatrix(
+				exchangeRateAndRoutingRequest.getLocalCountryId(), exchangeRateAndRoutingRequest.getForeignCountryId(),
+				exchangeRateAndRoutingRequest.getBeneficiaryBankId(),
+				exchangeRateAndRoutingRequest.getBeneficiaryBranchId(),
+				exchangeRateAndRoutingRequest.getForeignCurrencyId(),
+				exchangeRateAndRoutingRequest.getServiceGroup().getGroupCode());
+
+		System.out.println(" Routing matrix ==>  " + JsonUtil.toJson(routingMatrix));
+
+		if (null == routingMatrix || routingMatrix.isEmpty()) {
+
+			LOGGER.info("Routing Matrix is Data is Empty or Null for the Pricing/Routing Request");
+
+			throw new PricerServiceException(PricerServiceError.INVALID_ROUTING_BANK_IDS,
+					"Invalid Routing Bank Ids : None Found matching with the Requested Ids: "
+							+ exchangeRateAndRoutingRequest.getRoutingBankIds());
+		}
+
+		List<TransientRoutingComputeDetails> routingComputationObjects = new ArrayList<TransientRoutingComputeDetails>();
+
+		for (ViewExRoutingMatrix viewExRoutingMatrix : routingMatrix) {
+			TransientRoutingComputeDetails obj = new TransientRoutingComputeDetails();
+			obj.setViewExRoutingMatrix(viewExRoutingMatrix);
+			routingComputationObjects.add(obj);
+		}
+
+		transientDataCache.setRoutingMatrixData(routingComputationObjects);
+
+		return routingMatrix;
+
+	}
+
+	public void setExchangeRatesForTransactionRoutes(Channel channel) {
+
+		List<TransientRoutingComputeDetails> routeComputeDetailList = transientDataCache.getRoutingMatrixData();
+		List<ExchangeRateDetails> rateList = transientDataCache.getSellRateDetails();
+
+		if (null == routeComputeDetailList || routeComputeDetailList.isEmpty() || null == rateList
+				|| rateList.isEmpty()) {
+			return;
+		}
+
+		boolean isOnlyBankRate = false;
+
+		if (Channel.ONLINE.equals(channel) || Channel.MOBILE.equals(channel)) {
+			isOnlyBankRate = true;
+		}
+
+		String idSeparator = "#";
+		Map<String, ExchangeRateDetails> bankRateMap = new HashMap<String, ExchangeRateDetails>();
+
+		for (ExchangeRateDetails exchRate : rateList) {
+
+			String combinedId;
+
+			if (isOnlyBankRate) {
+				combinedId = "" + exchRate.getBankId().longValue();
+			} else {
+				combinedId = exchRate.getBankId().longValue() + idSeparator
+						+ exchRate.getServiceIndicatorId().longValue();
+			}
+
+			bankRateMap.put(combinedId, exchRate);
+
+		}
+
+		for (TransientRoutingComputeDetails routeComputeDetails : routeComputeDetailList) {
+
+			ViewExRoutingMatrix view = routeComputeDetails.getViewExRoutingMatrix();
+
+			String combinedId;
+
+			if (isOnlyBankRate) {
+				combinedId = "" + view.getRoutingBankId().longValue();
+			} else {
+				combinedId = view.getRoutingBankId().longValue() + idSeparator + view.getServiceMasterId().longValue();
+			}
+
+			routeComputeDetails.setExchangeRateDetails(bankRateMap.get(combinedId));
+
+		}
 
 	}
 
@@ -280,41 +371,6 @@ public class RemitRoutingManager {
 			System.out.println(" Final Delivery Details ===>  " + JsonUtil.toJson(finalDeliveryDetails));
 
 		} // OneMatrix Block
-
-	}
-
-	public List<ViewExRoutingMatrix> getRoutingMatrixForRemittance(
-			ExchangeRateAndRoutingRequest exchangeRateAndRoutingRequest) {
-
-		List<ViewExRoutingMatrix> routingMatrix = viewExRoutingMatrixDao.getRoutingMatrix(
-				exchangeRateAndRoutingRequest.getLocalCountryId(), exchangeRateAndRoutingRequest.getForeignCountryId(),
-				exchangeRateAndRoutingRequest.getBeneficiaryBankId(),
-				exchangeRateAndRoutingRequest.getBeneficiaryBranchId(),
-				exchangeRateAndRoutingRequest.getForeignCurrencyId(),
-				exchangeRateAndRoutingRequest.getServiceGroup().getGroupCode());
-
-		System.out.println(" Routing matrix ==>  " + JsonUtil.toJson(routingMatrix));
-
-		if (null == routingMatrix || routingMatrix.isEmpty()) {
-
-			LOGGER.info("Routing Matrix is Data is Empty or Null for the Pricing/Routing Request");
-
-			throw new PricerServiceException(PricerServiceError.INVALID_ROUTING_BANK_IDS,
-					"Invalid Routing Bank Ids : None Found matching with the Requested Ids: "
-							+ exchangeRateAndRoutingRequest.getRoutingBankIds());
-		}
-
-		List<TransientRoutingComputeDetails> routingComputationObjects = new ArrayList<TransientRoutingComputeDetails>();
-
-		for (ViewExRoutingMatrix viewExRoutingMatrix : routingMatrix) {
-			TransientRoutingComputeDetails obj = new TransientRoutingComputeDetails();
-			obj.setViewExRoutingMatrix(viewExRoutingMatrix);
-			routingComputationObjects.add(obj);
-		}
-
-		transientDataCache.setRoutingMatrixData(routingComputationObjects);
-
-		return routingMatrix;
 
 	}
 

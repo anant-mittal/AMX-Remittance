@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import com.amx.jax.pricer.dbmodel.ViewExRoutingMatrix;
 import com.amx.jax.pricer.dto.EstimatedDeliveryDetails;
+import com.amx.jax.pricer.dto.ExchangeRateDetails;
 
 public class TransientRoutingComputeDetails implements Serializable, Comparable<TransientRoutingComputeDetails> {
 
@@ -21,6 +22,8 @@ public class TransientRoutingComputeDetails implements Serializable, Comparable<
 	private EstimatedDeliveryDetails beneBankDeliveryDetails;
 
 	private EstimatedDeliveryDetails finalDeliveryDetails;
+
+	private ExchangeRateDetails exchangeRateDetails;
 
 	public ViewExRoutingMatrix getViewExRoutingMatrix() {
 		return viewExRoutingMatrix;
@@ -60,6 +63,14 @@ public class TransientRoutingComputeDetails implements Serializable, Comparable<
 
 	public void setFinalDeliveryDetails(EstimatedDeliveryDetails finalDeliveryDetails) {
 		this.finalDeliveryDetails = finalDeliveryDetails;
+	}
+
+	public ExchangeRateDetails getExchangeRateDetails() {
+		return exchangeRateDetails;
+	}
+
+	public void setExchangeRateDetails(ExchangeRateDetails exchangeRateDetails) {
+		this.exchangeRateDetails = exchangeRateDetails;
 	}
 
 	@Override

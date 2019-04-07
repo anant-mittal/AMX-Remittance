@@ -180,6 +180,8 @@ public class ExchangePricingAndRoutingService {
 
 		customerDiscountManager.getDiscountedRates(exchangeRateAndRoutingRequest, customer, CUSTOMER_CATEGORY.BRONZE);
 
+		remitRoutingManager.setExchangeRatesForTransactionRoutes(exchangeRateAndRoutingRequest.getChannel());
+
 		remitRoutingManager.computeTrnxRoutesAndDelivery(exchangeRateAndRoutingRequest);
 
 		ExchangeRateAndRoutingResponse resp = new ExchangeRateAndRoutingResponse();
