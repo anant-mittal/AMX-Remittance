@@ -109,7 +109,7 @@ public class BranchUserManager  extends AbstractModel {
 		BigDecimal lastTrnx = new BigDecimal(0);
 		String currencyQuoteName ="";
 		EmployeeDetailsView empDetails = null;
-		CustomerRemittanceTransactionView lastTrnxDetails  = null;
+		List<CustomerRemittanceTransactionView> lastTrnxDetailsList  = null;
 		
 		
 		UserwiseTransactionDto dto = new UserwiseTransactionDto();
@@ -154,11 +154,13 @@ public class BranchUserManager  extends AbstractModel {
 		}
 		
 		if(empDetails!=null) {
-			 lastTrnxDetails = transactionHistroyDao.getLastTrnxAmountFortheCustomer(empDetails.getUserName());
+			lastTrnxDetailsList = transactionHistroyDao.getLastTrnxAmountFortheCustomer(empDetails.getUserName());
 		}
 		 
-		if(lastTrnxDetails!=null) {
-			lastTrnx = lastTrnxDetails.getLocalTrnxAmount();
+		if(lastTrnxDetailsList!=null && !lastTrnxDetailsList.isEmpty()) {
+			for(CustomerRemittanceTransactionView lastTrn :lastTrnxDetailsList) {
+				lastTrnx =lastTrnx.add(lastTrn.getLocalTrnxAmount()==null?BigDecimal.ZERO:lastTrn.getLocalTrnxAmount());
+			}
 			dto.setLastTrnx(currencyQuoteName+" "+lastTrnx);
 		}else {
 			dto.setLastTrnx(currencyQuoteName+" "+lastTrnx);

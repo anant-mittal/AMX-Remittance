@@ -181,7 +181,12 @@ public class BranchRoutingManager {
 
 		try {
 			BigDecimal languageId = metaData.getLanguageId();
-
+			/*checkingStaffIdNumberWithCustomer **/
+			branceRemittanceManager.checkingStaffIdNumberWithCustomer();
+			/*checking banned bank details **/
+			 String warningMsg = branceRemittanceManager.bannedBankCheck(beneRelaId);
+			 routingResponseDto.setWarnigMsg(warningMsg);
+			
 			if (!JaxUtil.isNullZeroBigDecimalCheck(languageId)) {
 				languageId = new BigDecimal(1);
 			}
@@ -532,6 +537,7 @@ public RoutingResponseDto getRoutingDetailsByServiceId(BigDecimal beneRelaId, Bi
 			ResourceDTO rout = new ResourceDTO();
 			rout.setResourceId(countryMasterView.get(0).getCountryId());
 			rout.setResourceName(countryMasterView.get(0).getCountryName());
+			rout.setResourceCode(countryMasterView.get(0).getCountryCode());
 			routCount.add(rout);
 			routingResponseDto.setRoutingCountrydto(routCount);
 			if(JaxUtil.isNullZeroBigDecimalCheck(routingBankId)) {
