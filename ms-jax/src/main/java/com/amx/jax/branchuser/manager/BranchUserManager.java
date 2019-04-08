@@ -71,7 +71,7 @@ public class BranchUserManager  extends AbstractModel {
 	ICustomerRepository customerDao;
 	
 	public UserwiseTransactionDto getTotalTrnxUserWise(String transactionDate){
-		validateHeaderInfo.validateHeaderInfo();
+		//validateHeaderInfo.validateHeaderInfo();
 		transactionDate = DateUtil.todaysDateWithDDMMYY(transactionDate==null?new Date():DateUtil.convertStringToDate(transactionDate),"0");
 		String accMonthYear =DateUtil.getAccountingMonthYearNew(transactionDate);
 		BigDecimal employeeId =metaData.getEmployeeId();
@@ -80,7 +80,7 @@ public class BranchUserManager  extends AbstractModel {
 		
 		EmployeeDetailsView empDetails = employeeDetailsRepository.findByEmployeeId(metaData.getEmployeeId());
 		if(empDetails==null) {
-			throw new GlobalException(JaxError.NULL_EMPLOYEE_ID,"Employee detais not found"+metaData.getEmployeeId());
+			throw new GlobalException(JaxError.NULL_EMPLOYEE_ID,"Employee detais not found "+metaData.getEmployeeId());
 		}else if(empDetails!=null && !empDetails.getIsActive().equalsIgnoreCase(ConstantDocument.Yes)) {
 			throw new GlobalException(JaxError.INACTIVE_EMPLOYEE,"Employee is not active "+metaData.getEmployeeId());
 		}else if(empDetails!=null && StringUtils.isBlank(empDetails.getUserName())) {
