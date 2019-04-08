@@ -39,7 +39,7 @@ public class DeviceStateInfoDao {
 	}
 
 
-	public DeviceStateInfo getWithSaveDeviceStateInfo(BigDecimal registrationId) {
+	public DeviceStateInfo getOrCreateDeviceStateInfo(BigDecimal registrationId) {
 		DeviceStateInfo deviceStateInfo = deviceStateRepository.findOne(registrationId);
 		if (deviceStateInfo == null) {
 			logger.debug("init device state info D id {} ", registrationId);
