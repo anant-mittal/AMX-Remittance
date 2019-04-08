@@ -1,6 +1,7 @@
 package com.amx.jax.client;
 
 import static com.amx.amxlib.constant.ApiEndpoint.CUSTOMER_ENDPOINT;
+import static com.amx.amxlib.constant.ApiEndpoint.CUSTOMER_REG_ENDPOINT;
 import static com.amx.amxlib.constant.ApiEndpoint.UPDATE_CUSTOMER_PASSWORD_ENDPOINT;
 import static com.amx.amxlib.constant.ApiEndpoint.USER_API_ENDPOINT;
 
@@ -778,5 +779,16 @@ public class UserClient extends AbstractJaxServiceClient implements ICustomerSer
 			return JaxSystemError.evaluate(ae);
 		}
 	}
-
+	@Override
+	public AmxApiResponse<BoolRespModel,Object> saveCustomerSecQuestions(List<SecurityQuestionModel> securityQuestion) {
+		try {
+			return restService.ajax(appConfig.getJaxURL()).meta(new JaxMetaInfo())
+					.path(CustomerApi.PREFIX + CustomerApi.SAVE_SECURITY_QUESTIONS).post(securityQuestion)
+					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel,Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in saveSecurityQuestions : ", e);
+			return JaxSystemError.evaluate(e);
+		}
+	}
 }

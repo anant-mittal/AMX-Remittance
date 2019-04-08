@@ -1,6 +1,10 @@
 package com.amx.amxlib.service;
 
+import java.util.List;
+
+import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.model.response.customer.CustomerModelResponse;
 
 public interface ICustomerService {
@@ -18,5 +22,7 @@ public interface ICustomerService {
 	}
 
 	AmxApiResponse<CustomerModelResponse, Object> getCustomerModelResponse(String identityInt);
+
+	AmxApiResponse<BoolRespModel, Object> saveCustomerSecQuestions(List<SecurityQuestionModel> securityQuestion);
 
 }

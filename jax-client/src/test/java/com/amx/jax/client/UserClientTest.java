@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -125,7 +126,7 @@ public class UserClientTest extends AbstractTestClient {
 		assertNotNull(response.getResult());
 	}
 
-	 @Test
+	 //@Test
 	public void testLoginSuccess() throws IOException, ResourceNotFoundException, InvalidInputException,
 			RemittanceTransactionValidationException, LimitExeededException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
@@ -427,7 +428,7 @@ public class UserClientTest extends AbstractTestClient {
 		assertNotNull(response);
 	}
 	
-	@Test
+	//@Test
 	public void getCustomerModelResponse() throws IOException, ResourceNotFoundException,
 	InvalidInputException, RemittanceTransactionValidationException, LimitExeededException {
 		jaxMetaInfo.setDeviceId("301019967");
@@ -447,4 +448,34 @@ public class UserClientTest extends AbstractTestClient {
 		assertNotNull(response);
 	}
 	
+	@SuppressWarnings("null")
+	@Test
+	public void saveCustomerSecQuestions() throws IOException, ResourceNotFoundException,
+	InvalidInputException, RemittanceTransactionValidationException, LimitExeededException {
+		jaxMetaInfo.setDeviceId("301019967");
+		jaxMetaInfo.setCountryId(new BigDecimal(91));
+		jaxMetaInfo.setCompanyId(new BigDecimal(1));
+		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
+		jaxMetaInfo.setCustomerId(new BigDecimal(573));
+		jaxMetaInfo.setChannel(JaxChannel.ONLINE);
+		jaxMetaInfo.setTenant(Tenant.KWT);
+		jaxMetaInfo.setLanguageId(new BigDecimal(1));
+		jaxMetaInfo.setEmployeeId(new BigDecimal(265));
+		AmxApiResponse<BoolRespModel, Object> response = null;
+		List<SecurityQuestionModel> securityquestion = new ArrayList<SecurityQuestionModel>();
+		int i;
+		for(i=0;i<5;i++) {
+			SecurityQuestionModel securityQuestionModel = new SecurityQuestionModel();
+			securityQuestionModel.setQuestionSrNo(new BigDecimal(i+1));
+			securityQuestionModel.setAnswerKey(null);
+			securityQuestionModel.setAnswer("Hello Anant");
+			securityquestion.add(securityQuestionModel);
+		}
+		
+		
+		response = client.saveCustomerSecQuestions(securityquestion);
+		LOGGER.debug("response result is "+response.getResults());
+		assertNotNull("Response is null", response);
+		assertNotNull(response);
+	}
 }

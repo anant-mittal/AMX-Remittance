@@ -22,12 +22,14 @@ import com.amx.amxlib.constant.CommunicationChannel;
 import com.amx.amxlib.meta.model.AnnualIncomeRangeDTO;
 import com.amx.amxlib.meta.model.IncomeDto;
 import com.amx.amxlib.model.CustomerModel;
+import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.service.ICustomerService;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.IDeviceStateService.Params;
 import com.amx.jax.client.IDeviceStateService.Path;
+import com.amx.jax.customer.service.CustomerService;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.auth.QuestModelDTO;
 import com.amx.jax.model.response.customer.CustomerModelResponse;
@@ -63,6 +65,9 @@ public class CustomerController implements ICustomerService {
 	CustomerModelService customerModelService;
 	@Autowired
 	AnnualIncomeService annualIncomeService;
+	
+	@Autowired
+	CustomerService customerService;
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -254,5 +259,12 @@ public class CustomerController implements ICustomerService {
 	@RequestMapping(value =  CustomerApi.GET_ANNUAL_INCOME_RANGE , method = RequestMethod.POST)
 	public AmxApiResponse<AnnualIncomeRangeDTO, Object> getAnnuaIncome(){
 		return annualIncomeService.getAnnualIncome(metaData.getCustomerId());
+	}
+	
+	@RequestMapping(value = CustomerApi.SAVE_SECURITY_QUESTIONS, method = RequestMethod.POST)
+	public AmxApiResponse<BoolRespModel, Object> saveCustomerSecQuestions(@RequestBody List<SecurityQuestionModel> securityquestions) {
+		logger.info("in securityquestions: ");
+		AmxApiResponse<BoolRespModel, Object> response = customerService.saveCustomerSecQuestions(securityquestions);
+		return response;
 	}
 }

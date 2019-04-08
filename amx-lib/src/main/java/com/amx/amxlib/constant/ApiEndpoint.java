@@ -1,6 +1,9 @@
 package com.amx.amxlib.constant;
 
 import java.util.Date;
+import java.util.List;
+
+import com.amx.amxlib.model.SecurityQuestionModel;
 
 public class ApiEndpoint {
 
@@ -143,9 +146,10 @@ public class ApiEndpoint {
 		public static final String GET_ANNUAL_INCOME_RANGE = "/getAnnualIncome/";
 		public static final String SAVE_ANNUAL_INCOME = "/saveAnnualIncome/";
 		public static final String GET_ANNUAL_INCOME_DETAILS = "/getAnnualIncomeDetails/";
-		
+		public static final String SAVE_SECURITY_QUESTIONS = "/save-security-questions/";
 		//params
 		public static final String PARAM_INCOMEDTO = "incomeDto";
+		
 	}
 
 	public static final String LINK_DEVICEID = "/link-deviceid/";

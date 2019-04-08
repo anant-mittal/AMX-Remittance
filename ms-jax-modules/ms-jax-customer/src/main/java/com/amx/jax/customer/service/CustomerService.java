@@ -10,8 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.api.BoolRespModel;
+import com.amx.jax.userservice.manager.OnlineCustomerManager;
 import com.amx.jax.dal.ArticleDao;
 import com.amx.jax.dal.BizcomponentDao;
 import com.amx.jax.dbmodel.ContactDetail;
@@ -48,6 +52,8 @@ public class CustomerService extends AbstractService {
 	CountryService countryService;
 	@Autowired
 	MetaData metaData;
+	@Autowired
+	OnlineCustomerManager onlineCustomerManager;
 	
 	static final Logger LOGGER = LoggerFactory.getLogger(CustomerService.class);
 
@@ -162,5 +168,12 @@ public class CustomerService extends AbstractService {
 			}
 		}
 		return titleDescription;
+	}
+	
+	public AmxApiResponse<BoolRespModel, Object> saveCustomerSecQuestions(List<SecurityQuestionModel> securityQuestions) {
+		onlineCustomerManager.saveCustomerSecQuestions(securityQuestions);
+		BoolRespModel boolRespModel = new BoolRespModel();
+		boolRespModel.setSuccess(Boolean.TRUE);
+		return AmxApiResponse.build(boolRespModel);
 	}
 }
