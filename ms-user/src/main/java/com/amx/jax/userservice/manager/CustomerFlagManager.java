@@ -15,8 +15,10 @@ import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.model.response.customer.CustomerFlags;
+import com.amx.jax.postman.model.Message.Status;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.service.UserValidationService;
+import com.amx.jax.util.AmxDBConstants;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -39,34 +41,26 @@ public class CustomerFlagManager {
 		}
 
 		CustomerOnlineRegistration customerOnlineRegistration = custDao.getOnlineCustByCustomerId(customerId);
-		if (customerOnlineRegistration != null && customerOnlineRegistration.getDeviceId() != null
-				&& customerOnlineRegistration.getDevicePassword() != null) {
-			customerFlags.setFingerprintlinked(Boolean.TRUE);
-		} else {
-			customerFlags.setFingerprintlinked(Boolean.FALSE);
-		}
-
-		customerFlags.setFingerprintlinked(Boolean.TRUE);
+		customerFlags.setFingerprintlinked(isFingerprintLinked(customerOnlineRegistration));
 
 		Customer customer = custDao.getCustById(customerOnlineRegistration.getCustomerId());
-		Date annualIncomeUpdateDate = customer.getAnnualIncomeUpdatedDate();
-		if (annualIncomeUpdateDate == null) {
-			customerFlags.setAnnualIncomeExpired(Boolean.TRUE);
-			logger.debug("Flag value is " + customerFlags.getAnnualIncomeExpired());
-
+		customerFlags.setAnnualIncomeExpired(isAnnualIncomeExpired(customer));
+		if (AmxDBConstants.Status.Y.equals(customer.getMobileVerified())) {
+			customerFlags.setMobileVerified(Boolean.TRUE);
 		} else {
-			Date currentDate = new Date();
-			long millisec = currentDate.getTime() - annualIncomeUpdateDate.getTime();
-			long milliSecInYear = 31540000000L;
-
-			if (millisec >= milliSecInYear) {
-				customerFlags.setAnnualIncomeExpired(Boolean.TRUE);
-				logger.debug("Flag value isss " + customerFlags.getAnnualIncomeExpired());
-			} else {
-				customerFlags.setAnnualIncomeExpired(Boolean.FALSE);
-				logger.debug("Flag value isssss " + customerFlags.getAnnualIncomeExpired());
-			}
+			customerFlags.setMobileVerified(Boolean.FALSE);
 		}
+		if (AmxDBConstants.Status.Y.equals(customer.getWhatsAppVerified())) {
+			customerFlags.setWhatsAppVerified(Boolean.TRUE);
+		} else {
+			customerFlags.setWhatsAppVerified(Boolean.FALSE);
+		}
+		if (AmxDBConstants.Status.Y.equals(customer.getEmailVerified())) {
+			customerFlags.setEmailVerified(Boolean.TRUE);
+		} else {
+			customerFlags.setEmailVerified(Boolean.FALSE);
+		}
+
 		return customerFlags;
 	}
 
@@ -77,6 +71,33 @@ public class CustomerFlagManager {
 		}
 		if (!Boolean.TRUE.equals(customerFlags.getSecurityAnswerRequired())) {
 			throw new GlobalException(JaxError.SQA_REQUIRED, "Security answer required");
+		}
+	}
+	
+	public static Boolean isFingerprintLinked(CustomerOnlineRegistration customerOnlineRegistration) {
+		if (customerOnlineRegistration != null && customerOnlineRegistration.getDeviceId() != null
+				&& customerOnlineRegistration.getDevicePassword() != null) {
+			return true;
+		} else {
+			return false;
+		}
+
+	}
+	
+	public static Boolean isAnnualIncomeExpired(Customer customer) {
+		Date annualIncomeUpdateDate = customer.getAnnualIncomeUpdatedDate();
+		if (annualIncomeUpdateDate == null) {
+			return true;
+		} else {
+			Date currentDate = new Date();
+			long millisec = currentDate.getTime() - annualIncomeUpdateDate.getTime();
+			long milliSecInYear = 31540000000L;
+
+			if (millisec >= milliSecInYear) {
+				return true;
+			} else {
+				return false;
+			}
 		}
 	}
 }

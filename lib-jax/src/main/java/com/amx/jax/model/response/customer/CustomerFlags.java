@@ -1,5 +1,6 @@
 package com.amx.jax.model.response.customer;
 
+import com.amx.jax.util.AmxDBConstants.Status;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -44,16 +45,16 @@ public class CustomerFlags {
 		return whatsAppVerified;
 	}
 
-	public void setWhatsAppVerified(Boolean whatsAppVerified) {
-		this.whatsAppVerified = whatsAppVerified;
+	public void setWhatsAppVerified(Boolean status) {
+		this.whatsAppVerified = status;
 	}
 
 	public Boolean getEmailVerified() {
 		return emailVerified;
 	}
 
-	public void setEmailVerified(Boolean emailVerified) {
-		this.emailVerified = emailVerified;
+	public void setEmailVerified(Boolean status) {
+		this.emailVerified = status;
 	}
 
 	public Boolean getMobileVerified() {
