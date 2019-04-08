@@ -67,7 +67,7 @@ public class DeviceStateService extends AbstractService {
 		if (registrationId == null) {
 			throw new GlobalException("Device registration id can not be blank");
 		}
-		DeviceStateInfo deviceStateInfo = deviceDao.getDeviceStateInfo(new BigDecimal(registrationId));
+		DeviceStateInfo deviceStateInfo = deviceDao.getWithSaveDeviceStateInfo(new BigDecimal(registrationId));
 		DeviceStatusInfoDto dto = new DeviceStatusInfoDto();
 		dto.setStateDataType(deviceStateInfo.getStateDataType());
 		if (deviceStateInfo.getStateDataType() != null) {
