@@ -79,7 +79,6 @@ public class BranchRemittanceService extends AbstractService{
 		logger.info("saveBranchRemittanceApplication : " + JsonUtil.toJson(requestApplModel));
 		BranchRemittanceApplResponseDto applResponseDto = branchRemitApplManager.saveBranchRemittanceApplication(requestApplModel);
 		AmxApiResponse resopnse = AmxApiResponse.build(applResponseDto);
-		resopnse.setWarningKey(applResponseDto.getWarnigMsg());
 		return resopnse;
 	}
 	
