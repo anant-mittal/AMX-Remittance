@@ -476,6 +476,7 @@ public class UserService extends AbstractUserService {
 		generateToken(civilId, model, channels);
 		onlineCust.setEmailToken(model.getHashedeOtp());
 		onlineCust.setSmsToken(model.getHashedmOtp());
+		onlineCust.setWhatsAppToken(model.getwHashedOtp());
 		onlineCust.setTokenDate(new Date());
 		BigDecimal tokenSentCount = (onlineCust.getTokenSentCount() == null) ? BigDecimal.ZERO
 				: onlineCust.getTokenSentCount().add(new BigDecimal(1));
@@ -512,13 +513,26 @@ public class UserService extends AbstractUserService {
 			personinfo.setMobile(customerModel.getMobile());
 		}
 
-		jaxNotificationService.sendOtpSms(personinfo, model);
-
-		if (channels != null && (channels.contains(CommunicationChannel.EMAIL)
-				|| channels.contains(CommunicationChannel.EMAIL_AS_MOBILE))) {
-			jaxNotificationService.sendOtpEmail(personinfo, model);
-		}
+		sendOtpFromPostMan(personinfo, model, channels);
+		
 		return response;
+	}
+
+	private void sendOtpFromPostMan(PersonInfo personinfo, CivilIdOtpModel model, List<CommunicationChannel> channels) {
+		if (org.apache.commons.collections.CollectionUtils.isEmpty(channels)) {
+			jaxNotificationService.sendOtpSms(personinfo, model);
+		} else {
+			if (channels.contains(CommunicationChannel.EMAIL)
+					|| channels.contains(CommunicationChannel.EMAIL_AS_MOBILE)) {
+				jaxNotificationService.sendOtpEmail(personinfo, model);
+			}
+			if (channels.contains(CommunicationChannel.MOBILE)) {
+				jaxNotificationService.sendOtpSms(personinfo, model);
+			}
+			if (channels.contains(CommunicationChannel.WHATSAPP)) {
+				jaxNotificationService.sendOtpWhatsApp(personinfo, model);
+			}
+		}
 	}
 
 	public void generateToken(String userId, CivilIdOtpModel model, List<CommunicationChannel> channels) {
@@ -535,6 +549,12 @@ public class UserService extends AbstractUserService {
 			model.seteOtpPrefix(Random.randomAlpha(3));
 			logger.info("Generated otp for civilid email- " + userId + " is " + randeOtp);
 		}
+		if (channels != null && channels.contains(CommunicationChannel.WHATSAPP)) {
+			String randwOtp = Random.randomNumeric(6);
+			String hashedwOtp = cryptoUtil.getHash(userId, randwOtp);
+			model.setwHashedOtp(hashedwOtp);
+			model.seteOtpPrefix(Random.randomAlpha(3));
+		}
 
 		// set e-otp same as m-otp
 		if (channels != null && channels.contains(CommunicationChannel.EMAIL_AS_MOBILE)) {
@@ -543,13 +563,6 @@ public class UserService extends AbstractUserService {
 			model.seteOtpPrefix(model.getmOtpPrefix());
 			logger.info("Generated otp for civilid email- " + userId + " is " + randmOtp);
 		}
-
-		/*
-		 * JaxAuthMeta jaxAuthMeta =
-		 * jaxAuthCache.getOrDefault(metaData.getCustomerId().toString(), new
-		 * JaxAuthMeta()); jaxAuthMeta.seteOtp(randeOtp); jaxAuthMeta.setmOtp(randmOtp);
-		 * jaxAuthCache.fastPut(metaData.getCustomerId().toString(), jaxAuthMeta);
-		 */
 
 		logger.info("Generated otp for civilid mobile- " + userId + " is " + randmOtp);
 	}
@@ -595,7 +608,7 @@ public class UserService extends AbstractUserService {
 		if (StringUtils.isNotBlank(eOtp)) {
 			eOtpHash = cryptoUtil.getHash(civilId, eOtp);
 		}
-		if (!mOtpHash.equals(mtokenHash)) {
+		if (mOtpHash != null && !mOtpHash.equals(mtokenHash)) {
 			userValidationService.incrementLockCount(onlineCust);
 			throw new InvalidOtpException("Sms Otp is incorrect for civil-id: " + civilId);
 		}
@@ -1226,6 +1239,21 @@ public class UserService extends AbstractUserService {
 		String[] isActiveFlags = new String[] { ConstantDocument.Yes, ConstantDocument.No };
 		List<Customer> customers = repo.getCustomerByIdentityIntAndIsActive(identityInt, Arrays.asList(isActiveFlags));
 		return customers;
+	}
+
+	public void validateWOtp(String civilId, String wOtp) {
+
+		Customer customer = custDao.getCustomerByCivilId(civilId);
+		if (customer == null) {
+			throw new InvalidCivilIdException("Civil Id " + civilId + " not registered.");
+		}
+		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(customer.getCustomerId());
+		String wDBToken = onlineCustomer.getWhatsAppToken();
+		String wOtpHash = cryptoUtil.getHash(civilId, wOtp);
+
+		if (wOtpHash != null && !wOtpHash.equals(wDBToken)) {
+			throw new InvalidOtpException("whatsapp Otp is incorrect for civil-id: " + civilId);
+		}
 	}
 	 
 }

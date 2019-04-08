@@ -62,7 +62,7 @@ public class RegistrationService {
 
 		ResponseWrapper<AuthData> wrapper = new ResponseWrapper<AuthData>(new AuthData());
 
-		CivilIdOtpModel model = jaxClient.setDefaults().getUserclient().initRegistration(identity).getResult();
+		CivilIdOtpModel model = jaxClient.setDefaults().getUserclient().initRegistration(identity, null).getResult();
 		// Check if response was successful
 		if (model.getIsActiveCustomer()) {
 			wrapper.setMessage(OWAStatusStatusCodes.ALREADY_ACTIVE, ResponseMessage.USER_ALREADY_ACTIVE);

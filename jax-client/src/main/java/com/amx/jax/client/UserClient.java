@@ -20,6 +20,7 @@ import com.amx.amxlib.constant.ApiEndpoint;
 import com.amx.amxlib.constant.ApiEndpoint.CustomerApi;
 import com.amx.amxlib.constant.ApiEndpoint.MetaApi;
 import com.amx.amxlib.constant.ApiEndpoint.UserApi;
+import com.amx.amxlib.constant.CommunicationChannel;
 import com.amx.amxlib.exception.AbstractJaxException;
 import com.amx.amxlib.exception.AlreadyExistsException;
 import com.amx.amxlib.exception.CustomerValidationException;
@@ -73,6 +74,28 @@ public class UserClient extends AbstractJaxServiceClient implements ICustomerSer
 			String validateOtpUrl = this.getBaseUrl() + CUSTOMER_ENDPOINT + "/" + identityId + "/validate-otp/";
 			UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(validateOtpUrl).queryParam("mOtp", mOtp)
 					.queryParam("eOtp", eOtp);
+			return restService.ajax(builder.build().encode().toUri()).get(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
+					});
+		} catch (AbstractJaxException ae) {
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in validateOtp : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
+	}
+	
+	public ApiResponse<CustomerModel> validateOtp(String identityId, String mOtp, String eOtp, String wOtp)
+			throws IncorrectInputException, CustomerValidationException, LimitExeededException, UnknownJaxError {
+		try {
+			if (StringUtils.isBlank(identityId) || "null".equalsIgnoreCase(identityId)) {
+				return validateOtp(mOtp, eOtp);
+			}
+			LOGGER.info("calling validateOtp api: ");
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
+			String validateOtpUrl = this.getBaseUrl() + CUSTOMER_ENDPOINT + "/" + identityId + "/validate-otp/";
+			UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(validateOtpUrl).queryParam("mOtp", mOtp)
+					.queryParam("eOtp", eOtp).queryParam("wOtp", wOtp);
 			return restService.ajax(builder.build().encode().toUri()).get(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
 					});
@@ -533,7 +556,7 @@ public class UserClient extends AbstractJaxServiceClient implements ICustomerSer
 
 	}
 
-	public ApiResponse<CivilIdOtpModel> initRegistration(String identityId)
+	public ApiResponse<CivilIdOtpModel> initRegistration(String identityId, CommunicationChannel otpCommunicationChannel)
 			throws InvalidInputException, CustomerValidationException, LimitExeededException {
 		try {
 			Boolean initRegistration = new Boolean(true);
@@ -542,6 +565,7 @@ public class UserClient extends AbstractJaxServiceClient implements ICustomerSer
 					+ "/send-otp/";
 			LOGGER.info("calling sendOtpForCivilId api: " + sendOtpUrl);
 			return restService.ajax(sendOtpUrl).get(requestEntity)
+					.queryParam("otpCommunicationChannel", otpCommunicationChannel)
 					.as(new ParameterizedTypeReference<ApiResponse<CivilIdOtpModel>>() {
 					});
 		} catch (AbstractJaxException ae) {

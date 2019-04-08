@@ -15,7 +15,6 @@ import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.model.response.customer.CustomerFlags;
-import com.amx.jax.postman.model.Message.Status;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.service.UserValidationService;
 import com.amx.jax.util.AmxDBConstants;

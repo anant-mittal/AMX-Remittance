@@ -242,7 +242,7 @@ public class UserClientTest extends AbstractTestClient {
 		jaxMetaInfo.setCustomerId(null);
 		jaxMetaInfo.setTenant(Tenant.KWT2);
 		ApiResponse<CivilIdOtpModel> response = null;
-		response = client.initRegistration("123");
+		response = client.initRegistration("123", null);
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());
 	}

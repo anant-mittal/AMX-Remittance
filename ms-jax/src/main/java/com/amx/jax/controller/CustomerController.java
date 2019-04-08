@@ -5,6 +5,7 @@ import static com.amx.amxlib.constant.ApiEndpoint.UPDATE_CUSTOMER_PASSWORD_ENDPO
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -117,8 +118,12 @@ public class CustomerController implements ICustomerService {
 
 	@RequestMapping(value = "/{civil-id}/validate-otp/", method = RequestMethod.GET)
 	public ApiResponse validateOtp(@PathVariable("civil-id") String civilId, @RequestParam("mOtp") String mOtp,
-			@RequestParam(name = "eOtp", required = false) String eOtp) {
+			@RequestParam(name = "eOtp", required = false) String eOtp,
+			@RequestParam(name = "wOtp", required = false) String wOtp) {
 		logger.info("validateOtp Request : civilId - " + civilId + " mOtp: " + mOtp + " eOtp: " + eOtp);
+		if (wOtp != null) {
+			userService.validateWOtp(civilId, wOtp);
+		}
 		ApiResponse response = userService.validateOtp(civilId, mOtp, eOtp);
 		return response;
 	}
@@ -205,9 +210,14 @@ public class CustomerController implements ICustomerService {
 
 	@RequestMapping(value = "/{civil-id}/{init-registration}/send-otp/", method = RequestMethod.GET)
 	public ApiResponse initRegistrationSendOtp(@PathVariable("civil-id") String civilId,
-			@PathVariable("init-registration") Boolean init) {
+			@PathVariable("init-registration") Boolean init,
+			@RequestParam(required = false) CommunicationChannel otpCommunicationChannel) {
 		logger.info("initRegistrationSendOtp Request:civilId" + civilId);
-		ApiResponse response = userService.sendOtpForCivilId(civilId, null, null, init);
+		List<CommunicationChannel> communicationChannels = new ArrayList<>();
+		if (otpCommunicationChannel != null) {
+			communicationChannels.add(otpCommunicationChannel);
+		}
+		ApiResponse response = userService.sendOtpForCivilId(civilId, communicationChannels, null, init);
 		return response;
 	}
 

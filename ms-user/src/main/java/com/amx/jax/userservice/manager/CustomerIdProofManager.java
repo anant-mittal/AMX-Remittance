@@ -1,14 +1,17 @@
 package com.amx.jax.userservice.manager;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.jax.AmxConstants;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dal.BizcomponentDao;
 import com.amx.jax.dbmodel.BizComponentData;
@@ -16,11 +19,13 @@ import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerIdProof;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.ImageSubmissionRequest;
+import com.amx.jax.model.response.customer.CustomerFlags;
 import com.amx.jax.services.JaxDBService;
 import com.amx.jax.userservice.dao.CusmosDao;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.repository.CustomerIdProofRepository;
 import com.amx.jax.userservice.service.UserService;
+import com.amx.jax.util.AmxDBConstants;
 import com.amx.utils.Constants;
 
 @Service
@@ -95,5 +100,18 @@ public class CustomerIdProofManager {
 
 	public void commitOnlineCustomerIdProof(Customer customer) {
 		commitOnlineCustomerIdProof(customer, null);
+	}
+	
+	public void setIdProofFlags(BigDecimal customerId, CustomerFlags customerFlags) {
+		String[] statusIn = { AmxDBConstants.Yes, AmxDBConstants.Compliance };
+		List<CustomerIdProof> customerIdProofs = customerIdProofRepository.getCustomerIdProofs(customerId, statusIn);
+		if (CollectionUtils.isEmpty(customerIdProofs)) {
+			customerFlags.setIdProofRequired(true);
+			return;
+		}
+		String identityStatus = customerIdProofs.get(0).getIdentityStatus();
+		if (identityStatus.equals(AmxDBConstants.Compliance)) {
+			customerFlags.setIdProofVerificationPending(true);
+		}
 	}
 }
