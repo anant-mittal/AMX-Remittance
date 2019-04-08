@@ -38,4 +38,14 @@ public class DeviceStateInfoDao {
 		return deviceStateInfo;
 	}
 
+
+	public DeviceStateInfo getOrCreateDeviceStateInfo(BigDecimal registrationId) {
+		DeviceStateInfo deviceStateInfo = deviceStateRepository.findOne(registrationId);
+		if (deviceStateInfo == null) {
+			logger.debug("init device state info D id {} ", registrationId);
+			deviceStateInfo = new DeviceStateInfo(registrationId);
+			saveDeviceInfo(deviceStateInfo);
+		}
+		return deviceStateInfo;
+	}
 }

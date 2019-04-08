@@ -283,7 +283,9 @@ public class RemittanceTransactionManager {
 		if (newCommission != null) {
 			commission = newCommission;
 		}
-		commission = commission.subtract(corporateDiscountManager.corporateDiscount());
+		if (commission.longValue() > 0) {
+			commission = commission.subtract(corporateDiscountManager.corporateDiscount());
+		}
 		ExchangeRateBreakup breakup = getExchangeRateBreakup(exchangeRates, model, responseModel, commission);
 		remitApplParametersMap.put("P_CALCULATED_FC_AMOUNT", breakup.getConvertedFCAmount());
 		remitApplParametersMap.put("P_CALCULATED_LC_AMOUNT", breakup.getConvertedLCAmount());
