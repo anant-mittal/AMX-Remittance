@@ -1,7 +1,6 @@
 package com.amx.jax.branchremittance.manager;
 
 import static com.amx.jax.error.JaxError.COMISSION_NOT_DEFINED_FOR_ROUTING_BANK;
-import static com.amx.jax.error.JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL;
 import static com.amx.jax.error.JaxError.TOO_MANY_COMISSION_NOT_DEFINED_FOR_ROUTING_BANK;
 
 import java.math.BigDecimal;
@@ -46,7 +45,6 @@ import com.amx.jax.dbmodel.CurrencyMasterModel;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.Device;
 import com.amx.jax.dbmodel.DeviceStateInfo;
-import com.amx.jax.dbmodel.ExchangeRateApprovalDetModel;
 import com.amx.jax.dbmodel.UserFinancialYear;
 import com.amx.jax.dbmodel.ViewCompanyDetails;
 import com.amx.jax.dbmodel.fx.EmployeeDetailsView;
@@ -61,8 +59,8 @@ import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.RemittanceModeMaster;
 import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.error.JaxError;
-import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.AuditEvent.Result;
+import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.events.CActivityEvent;
 import com.amx.jax.logger.events.CActivityEvent.Type;
 import com.amx.jax.manager.RemittanceApplicationAdditionalDataManager;
@@ -79,7 +77,6 @@ import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
 import com.amx.jax.model.response.remittance.RoutingResponseDto;
 import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeRateResponse;
-import com.amx.jax.repository.BranchSystemDetailRepository;
 import com.amx.jax.repository.DeviceStateRepository;
 import com.amx.jax.repository.IApplicationCountryRepository;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
@@ -221,7 +218,7 @@ public class BranchRemittanceApplManager {
 		 /*checking bene additional info missing detail check**/
 		 branchRemitManager.beneAddCheck(beneficaryDetails);
 		 /*checking banned bank details **/
-		 String warningMsg = branchRemitManager.bannedBankCheck(requestApplModel.getBeneId());
+		// String warningMsg = branchRemitManager.bannedBankCheck(requestApplModel.getBeneId());
 		 /* validate blck list bene **/
 		 branchRemitManager.validateBlackListedBene(beneficaryDetails);
 		 /* get Routing setup details **/
@@ -307,7 +304,7 @@ public class BranchRemittanceApplManager {
 		brRemittanceDao.saveAllApplications(mapAllDetailApplSave);
 		auditService.log(new CActivityEvent(Type.APPLICATION_CREATED,String.format("{}/{}", remittanceApplication.getDocumentFinancialyear(),remittanceApplication.getDocumentNo(),remittanceApplication.getFsCustomer().getCustomerId())).field("STATUS").to(JaxTransactionStatus.APPLICATION_CREATED).result(Result.DONE));
 		BranchRemittanceApplResponseDto applResponseDto = branchRemittancePaymentManager.fetchCustomerShoppingCart(customer.getCustomerId(),metaData.getDefaultCurrencyId());
-		applResponseDto.setWarnigMsg(warningMsg);
+		//applResponseDto.setWarnigMsg(warningMsg);
 		return applResponseDto;
 	}
 
