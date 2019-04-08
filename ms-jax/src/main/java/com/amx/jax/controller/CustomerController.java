@@ -251,8 +251,15 @@ public class CustomerController implements ICustomerService {
 	@RequestMapping(value = Path.CUSTOMER_MODEL_RESPONSE_GET, method = RequestMethod.GET)
 	@Override
 	public AmxApiResponse<CustomerModelResponse, Object> getCustomerModelResponse(
-			@RequestParam(name = Params.IDENTITY_INT, required = false) String identityInt) {
+			@RequestParam(name = Params.IDENTITY_INT) String identityInt) {
 		CustomerModelResponse response = customerModelService.getCustomerModelResponse(identityInt);
+		return AmxApiResponse.build(response);
+	}
+	
+	@RequestMapping(value = Path.CUSTOMER_MODEL_RESPONSE_GET, method = RequestMethod.GET)
+	@Override
+	public AmxApiResponse<CustomerModelResponse, Object> getCustomerModelResponse() {
+		CustomerModelResponse response = customerModelService.getCustomerModelResponse();
 		return AmxApiResponse.build(response);
 	}
 

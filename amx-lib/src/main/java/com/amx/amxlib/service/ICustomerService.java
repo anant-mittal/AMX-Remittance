@@ -25,4 +25,6 @@ public interface ICustomerService {
 
 	AmxApiResponse<BoolRespModel, Object> saveCustomerSecQuestions(List<SecurityQuestionModel> securityQuestion);
 
+	AmxApiResponse<CustomerModelResponse, Object> getCustomerModelResponse();
+
 }

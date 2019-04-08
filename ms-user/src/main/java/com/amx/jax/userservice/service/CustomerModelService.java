@@ -9,8 +9,10 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.Customer;
+import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.response.customer.CustomerFlags;
 import com.amx.jax.model.response.customer.CustomerModelResponse;
 import com.amx.jax.model.response.customer.PersonInfo;
@@ -26,6 +28,8 @@ public class CustomerModelService {
 	UserService userService;
 	@Autowired
 	CustomerFlagManager customerFlagManager;
+	@Autowired
+	MetaData metaData;
 
 	public CustomerModelResponse getCustomerModelResponse(String identityInt) {
 		userValidationService.validateIdentityInt(identityInt, ConstantDocument.BIZ_COMPONENT_ID_CIVIL_ID);
@@ -33,9 +37,21 @@ public class CustomerModelService {
 		Customer customer = userValidationService.validateCustomerForDuplicateRecords(customers);
 		BigDecimal customerId = customer.getCustomerId();
 		PersonInfo personInfo = userService.getPersonInfo(customerId);
- 		CustomerFlags customerFlags = customerFlagManager.getCustomerFlags(customerId);
+		CustomerFlags customerFlags = customerFlagManager.getCustomerFlags(customerId);
 		CustomerModelResponse response = new CustomerModelResponse(personInfo, customerFlags);
 		response.setCustomerId(customer.getCustomerId());
+		return response;
+	}
+
+	public CustomerModelResponse getCustomerModelResponse() {
+		if (metaData.getCustomerId() == null) {
+			throw new GlobalException("Null customer id in header");
+		}
+		BigDecimal customerId = metaData.getCustomerId();
+		PersonInfo personInfo = userService.getPersonInfo(customerId);
+		CustomerFlags customerFlags = customerFlagManager.getCustomerFlags(customerId);
+		CustomerModelResponse response = new CustomerModelResponse(personInfo, customerFlags);
+		response.setCustomerId(customerId);
 		return response;
 	}
 

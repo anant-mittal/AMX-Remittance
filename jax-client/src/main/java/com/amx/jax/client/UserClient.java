@@ -1,7 +1,6 @@
 package com.amx.jax.client;
 
 import static com.amx.amxlib.constant.ApiEndpoint.CUSTOMER_ENDPOINT;
-import static com.amx.amxlib.constant.ApiEndpoint.CUSTOMER_REG_ENDPOINT;
 import static com.amx.amxlib.constant.ApiEndpoint.UPDATE_CUSTOMER_PASSWORD_ENDPOINT;
 import static com.amx.amxlib.constant.ApiEndpoint.USER_API_ENDPOINT;
 
@@ -18,7 +17,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.amx.amxlib.constant.ApiEndpoint;
 import com.amx.amxlib.constant.ApiEndpoint.CustomerApi;
-import com.amx.amxlib.constant.ApiEndpoint.MetaApi;
 import com.amx.amxlib.constant.ApiEndpoint.UserApi;
 import com.amx.amxlib.constant.CommunicationChannel;
 import com.amx.amxlib.exception.AbstractJaxException;
@@ -31,18 +29,14 @@ import com.amx.amxlib.exception.LimitExeededException;
 import com.amx.amxlib.exception.UnknownJaxError;
 import com.amx.amxlib.meta.model.AnnualIncomeRangeDTO;
 import com.amx.amxlib.meta.model.CustomerDto;
-import com.amx.amxlib.meta.model.DeclarationDTO;
 import com.amx.amxlib.meta.model.IncomeDto;
-import com.amx.amxlib.meta.model.ViewGovernateAreaDto;
 import com.amx.amxlib.model.AbstractUserModel;
-import com.amx.amxlib.model.BeneAccountModel;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.UserFingerprintResponseModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
-import com.amx.amxlib.model.response.JaxTransactionResponse;
 import com.amx.amxlib.service.ICustomerService;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
@@ -813,6 +807,21 @@ public class UserClient extends AbstractJaxServiceClient implements ICustomerSer
 		} catch (Exception e) {
 			LOGGER.error("exception in saveSecurityQuestions : ", e);
 			return JaxSystemError.evaluate(e);
+		}
+	}
+
+	@Override
+	public AmxApiResponse<CustomerModelResponse, Object> getCustomerModelResponse() {
+		try {
+
+			return restService.ajax(appConfig.getJaxURL())
+					.path(ApiEndpoint.CUSTOMER_ENDPOINT + Path.CUSTOMER_MODEL_RESPONSE_GET).meta(new JaxMetaInfo())
+					.get().as(new ParameterizedTypeReference<AmxApiResponse<CustomerModelResponse, Object>>() {
+					});
+		} catch (Exception ae) {
+
+			LOGGER.error("exception in get customer response : ", ae);
+			return JaxSystemError.evaluate(ae);
 		}
 	}
 }
