@@ -71,19 +71,43 @@ public class CustomerModelService {
 		response.setCustomerFlags(customerModelResponse.getCustomerFlags());
 		List<CustomerCommunicationChannel> customerCommunicationChannels = new ArrayList<>();
 		if (customerFlags.getEmailVerified()) {
-			String maskedEmail = MaskUtil.maskEmail(personInfo.getEmail(), 4, "*");
-			customerCommunicationChannels
-					.add(new CustomerCommunicationChannel(CommunicationChannel.EMAIL, maskedEmail));
+			String emailId = personInfo.getEmail();
+			String email = emailId.split("@")[0];
+			if (email.length() <= 4) {
+				String maskedEmail = MaskUtil.maskEmail(personInfo.getEmail(), 0, "*");
+				customerCommunicationChannels
+						.add(new CustomerCommunicationChannel(CommunicationChannel.EMAIL, maskedEmail));
+			} else {
+				String maskedEmail = MaskUtil.maskEmail(personInfo.getEmail(), 4, "*");
+				customerCommunicationChannels
+						.add(new CustomerCommunicationChannel(CommunicationChannel.EMAIL, maskedEmail));
+			}
+
 		}
 		if (customerFlags.getMobileVerified()) {
-			String maskedMobile = MaskUtil.leftMask(personInfo.getMobile(), 4, "*");
-			customerCommunicationChannels
-					.add(new CustomerCommunicationChannel(CommunicationChannel.MOBILE, maskedMobile));
+			String mobileNo = personInfo.getMobile();
+			if (mobileNo.length() <= 4) {
+				String maskedMobile = MaskUtil.leftMask(personInfo.getMobile(), 0, "*");
+				customerCommunicationChannels
+						.add(new CustomerCommunicationChannel(CommunicationChannel.MOBILE, maskedMobile));
+			} else {
+				String maskedMobile = MaskUtil.leftMask(personInfo.getMobile(), 4, "*");
+				customerCommunicationChannels
+						.add(new CustomerCommunicationChannel(CommunicationChannel.MOBILE, maskedMobile));
+			}
 		}
 		if (customerFlags.getWhatsAppVerified()) {
-			String maskedMobile = MaskUtil.leftMask(personInfo.getWhatsAppNumber(), 4, "*");
-			customerCommunicationChannels
-					.add(new CustomerCommunicationChannel(CommunicationChannel.WHATSAPP, maskedMobile));
+			String whatsappNo = personInfo.getWhatsAppNumber();
+			if (whatsappNo.length() <= 4) {
+				String maskedMobile = MaskUtil.leftMask(personInfo.getWhatsAppNumber(), 0, "*");
+				customerCommunicationChannels
+						.add(new CustomerCommunicationChannel(CommunicationChannel.WHATSAPP, maskedMobile));
+			} else {
+				String maskedMobile = MaskUtil.leftMask(personInfo.getWhatsAppNumber(), 4, "*");
+				customerCommunicationChannels
+						.add(new CustomerCommunicationChannel(CommunicationChannel.WHATSAPP, maskedMobile));
+			}
+
 		}
 		response.setCustomerCommunicationChannel(customerCommunicationChannels);
 		return response;
