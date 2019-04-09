@@ -22,12 +22,14 @@ import com.amx.jax.util.AmxDBConstants;
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class CustomerFlagManager {
-	Logger logger = Logger.getLogger(CustomerFlags.class);
-	@Autowired
-	UserValidationService userValidationService;
+	private static final Logger logger = Logger.getLogger(CustomerFlags.class);
 
 	@Autowired
-	private CustomerDao custDao;
+	UserValidationService userValidationService;
+	@Autowired
+	CustomerIdProofManager customerIdProofManager;
+	@Autowired
+	CustomerDao custDao;
 
 	public CustomerFlags getCustomerFlags(BigDecimal customerId) {
 
@@ -38,12 +40,19 @@ public class CustomerFlagManager {
 		} catch (GlobalException ex) {
 			customerFlags.setIdProofStatus(ex.getErrorKey());
 		}
+		customerIdProofManager.setIdProofFlags(customerId, customerFlags);
 
 		CustomerOnlineRegistration customerOnlineRegistration = custDao.getOnlineCustByCustomerId(customerId);
 		customerFlags.setFingerprintlinked(isFingerprintLinked(customerOnlineRegistration));
 
 		Customer customer = custDao.getCustById(customerOnlineRegistration.getCustomerId());
 		customerFlags.setAnnualIncomeExpired(isAnnualIncomeExpired(customer));
+		setCustomerCommunicationChannelFlags(customer, customerFlags);
+
+		return customerFlags;
+	}
+
+	private void setCustomerCommunicationChannelFlags(Customer customer, CustomerFlags customerFlags) {
 		if (AmxDBConstants.Status.Y.equals(customer.getMobileVerified())) {
 			customerFlags.setMobileVerified(Boolean.TRUE);
 		} else {
@@ -59,8 +68,6 @@ public class CustomerFlagManager {
 		} else {
 			customerFlags.setEmailVerified(Boolean.FALSE);
 		}
-
-		return customerFlags;
 	}
 
 	public void validateInformationOnlyCustomer(BigDecimal customerId) {
@@ -68,11 +75,8 @@ public class CustomerFlagManager {
 		if (!Boolean.TRUE.equals(customerFlags.getSecurityQuestionRequired())) {
 			throw new GlobalException(JaxError.SQA_SETUP_REQUIRED, "Security question required");
 		}
-		if (!Boolean.TRUE.equals(customerFlags.getSecurityAnswerRequired())) {
-			throw new GlobalException(JaxError.SQA_REQUIRED, "Security answer required");
-		}
 	}
-	
+
 	public static Boolean isFingerprintLinked(CustomerOnlineRegistration customerOnlineRegistration) {
 		if (customerOnlineRegistration != null && customerOnlineRegistration.getDeviceId() != null
 				&& customerOnlineRegistration.getDevicePassword() != null) {
@@ -82,7 +86,7 @@ public class CustomerFlagManager {
 		}
 
 	}
-	
+
 	public static Boolean isAnnualIncomeExpired(Customer customer) {
 		Date annualIncomeUpdateDate = customer.getAnnualIncomeUpdatedDate();
 		if (annualIncomeUpdateDate == null) {

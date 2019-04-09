@@ -1,6 +1,5 @@
 package com.amx.jax.model.response.customer;
 
-import com.amx.jax.util.AmxDBConstants.Status;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -20,7 +19,6 @@ public class CustomerFlags {
 	Boolean mobileVerified;
 
 	Boolean securityQuestionRequired;
-	Boolean securityAnswerRequired;
 	/* new login */
 
 	public Boolean annualIncomeExpired;
@@ -87,14 +85,6 @@ public class CustomerFlags {
 
 	public void setSecurityQuestionRequired(Boolean securityQuestionRequired) {
 		this.securityQuestionRequired = securityQuestionRequired;
-	}
-
-	public Boolean getSecurityAnswerRequired() {
-		return securityAnswerRequired;
-	}
-
-	public void setSecurityAnswerRequired(Boolean securityAnswerRequired) {
-		this.securityAnswerRequired = securityAnswerRequired;
 	}
 
 	public Boolean getAnnualIncomeExpired() {
