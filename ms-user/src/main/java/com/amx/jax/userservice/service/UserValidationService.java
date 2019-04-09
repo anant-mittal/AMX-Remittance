@@ -241,9 +241,11 @@ public class UserValidationService {
 
 	public void validateCustIdProofs(BigDecimal custId) {
 		if(tenantContext.get().equals(Tenant.BHR)) {
+			logger.info("Tenent is bahrain" +tenantContext.get());
 			return;
 		}
 		if (tenantContext.get() != null) {
+			logger.info("Tenent is not bahrain"+tenantContext.get());
 			tenantContext.get().validateCustIdProofs(custId);
 			return;
 		}
