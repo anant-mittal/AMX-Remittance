@@ -29,6 +29,7 @@ import com.amx.amxlib.exception.jax.UserNotFoundException;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.JaxAuthCache;
 import com.amx.jax.JaxAuthCache.JaxAuthMeta;
 import com.amx.jax.JaxAuthContext;
@@ -58,6 +59,7 @@ import com.amx.jax.model.auth.QuestModelDTO;
 import com.amx.jax.repository.IContactDetailDao;
 import com.amx.jax.repository.remittance.IBlackListDetailRepository;
 import com.amx.jax.scope.TenantContext;
+import com.amx.jax.scope.TenantContextHolder;
 import com.amx.jax.userservice.constant.CustomerDataVerificationQuestion;
 import com.amx.jax.userservice.dao.CusmosDao;
 import com.amx.jax.userservice.dao.CustomerDao;
@@ -240,7 +242,7 @@ public class UserValidationService {
 	}
 
 	public void validateCustIdProofs(BigDecimal custId) {
-		if(tenantContext.get().equals(Tenant.BHR)) {
+		if(TenantContextHolder.currentSite().equals(Tenant.BHR)) {
 			logger.info("Tenent is bahrain" +tenantContext.get());
 			return;
 		}
