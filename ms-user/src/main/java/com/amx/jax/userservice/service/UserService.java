@@ -23,6 +23,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -37,6 +38,7 @@ import com.amx.amxlib.meta.model.CustomerDto;
 import com.amx.amxlib.model.AbstractUserModel;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
+import com.amx.amxlib.model.PersonInfo;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.UserFingerprintResponseModel;
 import com.amx.amxlib.model.UserModel;
@@ -195,14 +197,15 @@ public class UserService extends AbstractUserService {
 
 	@Autowired
 	JaxAuthCache jaxAuthCache;
-
+	
 	@Autowired
 	UserService userService;
-
+	
 	@Autowired
 	PostManService postManService;
 	@Autowired
 	CustomerFlagManager customerFlagManager;
+	
 
 	@Override
 	public ApiResponse registerUser(AbstractUserModel userModel) {
@@ -419,7 +422,7 @@ public class UserService extends AbstractUserService {
 	public ApiResponse sendOtpForCivilId(String civilId, List<CommunicationChannel> channels,
 			CustomerModel customerModel, Boolean initRegistration) {
 		if (StringUtils.isNotBlank(civilId)) {
-			if (tenantContext.getKey().equals("OMN")) {
+			if(tenantContext.getKey().equals("OMN")) {
 				tenantContext.get().validateCivilId(civilId);
 			}
 		}
@@ -442,13 +445,13 @@ public class UserService extends AbstractUserService {
 		}
 		logger.info("customerId is --> " + customerId);
 		userValidationService.validateCustomerVerification(customerId);
-		// userValidationService.validateCivilId(civilId);
-
-		// --- Validate IdentityInt
+		//userValidationService.validateCivilId(civilId);
+		
+		// --- Validate IdentityInt 
 		Customer customerType = custDao.getCustomerByCivilId(civilId);
 		if (null != customerType) {
 			BigDecimal indentityType = customerType.getIdentityTypeId();
-			userValidationService.validateIdentityInt(civilId, indentityType);
+		userValidationService.validateIdentityInt(civilId, indentityType);
 		}
 
 		CivilIdOtpModel model = new CivilIdOtpModel();
@@ -544,12 +547,10 @@ public class UserService extends AbstractUserService {
 			logger.info("Generated otp for civilid email- " + userId + " is " + randmOtp);
 		}
 
-		/*
-		 * JaxAuthMeta jaxAuthMeta =
-		 * jaxAuthCache.getOrDefault(metaData.getCustomerId().toString(), new
-		 * JaxAuthMeta()); jaxAuthMeta.seteOtp(randeOtp); jaxAuthMeta.setmOtp(randmOtp);
-		 * jaxAuthCache.fastPut(metaData.getCustomerId().toString(), jaxAuthMeta);
-		 */
+		/*JaxAuthMeta jaxAuthMeta = jaxAuthCache.getOrDefault(metaData.getCustomerId().toString(), new JaxAuthMeta());
+		jaxAuthMeta.seteOtp(randeOtp);
+		jaxAuthMeta.setmOtp(randmOtp);
+		jaxAuthCache.fastPut(metaData.getCustomerId().toString(), jaxAuthMeta);*/
 
 		logger.info("Generated otp for civilid mobile- " + userId + " is " + randmOtp);
 	}
@@ -616,9 +617,9 @@ public class UserService extends AbstractUserService {
 	}
 
 	public ApiResponse loginUser(String userId, String password) {
-		if (tenantContext.getKey().equals("OMN")) {
+		if(tenantContext.getKey().equals("OMN")) {
 			tenantContext.get().validateCivilId(userId);
-		}
+		}	
 		List<Customer> validCustomer = userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(userId,
 				JaxApiFlow.LOGIN);
 		CustomerOnlineRegistration onlineCustomer = custDao
@@ -641,7 +642,6 @@ public class UserService extends AbstractUserService {
 		userValidationService.validateBlackListedCustomerForLogin(customer);
 		ApiResponse response = getBlackApiResponse();
 		CustomerModel customerModel = convert(onlineCustomer);
-
 		// afterLoginSteps(onlineCustomer);
 		response.getData().getValues().add(customerModel);
 		response.getData().setType(customerModel.getModelType());
@@ -743,13 +743,13 @@ public class UserService extends AbstractUserService {
 		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(custId);
 		onlineCustomer.setPassword(cryptoUtil.getHash(onlineCustomer.getUserName(), model.getPassword()));
 		custDao.saveOnlineCustomer(onlineCustomer);
-
+		
 		CustomerModel outputModel = convert(onlineCustomer);
 		if (outputModel.getEmail() != null) {
 			jaxNotificationService.sendProfileChangeNotificationEmail(model, outputModel.getPersoninfo());
 			logger.info("The update password mail notification success");
 		}
-
+		
 		BoolRespModel responseModel = new BoolRespModel(true);
 		auditService.log(auditEvent.result(Result.DONE));
 		return AmxApiResponse.build(responseModel);
@@ -789,7 +789,7 @@ public class UserService extends AbstractUserService {
 		}
 		return output;
 	}
-
+	
 	public LoginLogoutHistory getLastLogoutHistoryByUserName(String userName) {
 
 		Sort sort = new Sort(Direction.DESC, "logoutTime");
@@ -1074,15 +1074,15 @@ public class UserService extends AbstractUserService {
 	public Customer getCustById(BigDecimal id) {
 		return repo.findOne(id);
 	}
-
+	
 	public Customer getCustomerDetails(String loginId) {
 		return repo.getCustomerDetails(loginId);
 	}
-
+	
 	public Customer getCustomerDetailsByCustomerId(BigDecimal custId) {
 		return repo.getCustomerDetailsByCustomerId(custId);
 	}
-
+	
 	@Transactional
 	public void deActivateFsCustomer(BigDecimal customerId) {
 		Customer customer = repo.findOne(customerId);
@@ -1097,12 +1097,14 @@ public class UserService extends AbstractUserService {
 		}
 		repo.save(customer);
 	}
-
+	
+	
+	
 	public UserFingerprintResponseModel linkDeviceId(BigDecimal customerId) {
 
 		CustomerOnlineRegistration customerOnlineRegistration = userValidationService
 				.validateOnlineCustomerByIdentityId(customerId);
-
+		
 		String password = Random.randomPassword(6);
 		String hashPassword = userService.generateFingerPrintPassword(password);
 		UserFingerprintResponseModel userFingerprintResponsemodel = new UserFingerprintResponseModel();
@@ -1110,14 +1112,14 @@ public class UserService extends AbstractUserService {
 		customerOnlineRegistration.setFingerprintDeviceId(metaData.getDeviceId());
 		customerOnlineRegistration.setDevicePassword(hashPassword);
 		custDao.saveOnlineCustomer(customerOnlineRegistration);
-
+		
 		Customer customer = custDao.getCustById(customerOnlineRegistration.getCustomerId());
 		PersonInfo personinfo = new PersonInfo();
 		personinfo.setFirstName(customer.getFirstName());
 		personinfo.setMiddleName(customer.getMiddleName());
 		personinfo.setLastName(customer.getLastName());
 		Email email = new Email();
-
+		
 		email.addTo(customerOnlineRegistration.getEmail());
 		email.setITemplate(TemplatesMX.FINGERPRINT_LINKED_SUCCESS);
 		email.setHtml(true);
@@ -1127,7 +1129,6 @@ public class UserService extends AbstractUserService {
 		sendEmail(email);
 		return userFingerprintResponsemodel;
 	}
-
 	@Async(ExecutorConfig.DEFAULT)
 	public void sendEmail(Email email) {
 		try {
@@ -1138,7 +1139,7 @@ public class UserService extends AbstractUserService {
 	}
 
 	public String generateFingerPrintPassword(String password) {
-
+		
 		logger.debug("The password is " + password);
 		String hashpassword = null;
 		try {
@@ -1184,7 +1185,7 @@ public class UserService extends AbstractUserService {
 		sendEmail(email);
 		return boolRespModel;
 	}
-
+	
 	public CustomerFlags getCustomerFlags(BigDecimal customerId) {
 		CustomerFlags customerFlags = null;
 		if (customerId != null) {
@@ -1195,12 +1196,11 @@ public class UserService extends AbstractUserService {
 
 	/**
 	 * deactivates id proof of customer
-	 * 
 	 * @param customerId
 	 */
 	public void deActivateCustomerIdProof(BigDecimal customerId) {
 		Customer customer = repo.findOne(customerId);
-		List<CustomerIdProof> activeIdProofs = customerIdProofDao.getActiveCustomeridProofForIdType(customerId,
+		List<CustomerIdProof> activeIdProofs = customerIdProofDao.getActiveCustomerIdProof(customerId,
 				customer.getIdentityTypeId());
 		for (CustomerIdProof customerIdProof : activeIdProofs) {
 			customerIdProof.setIdentityStatus(ConstantDocument.Deleted);
@@ -1209,10 +1209,22 @@ public class UserService extends AbstractUserService {
 			customerIdProofDao.save(activeIdProofs);
 		}
 	}
+	
+	public void deactiveteCustomerIdProofPendingCompliance(BigDecimal customerId) {
+		Customer customer = repo.findOne(customerId);
+		List<CustomerIdProof> deActiveIdProofs = customerIdProofDao.getCompliancePendingCustomerIdProof(customerId,
+				customer.getIdentityTypeId());
+		for (CustomerIdProof customerIdProof : deActiveIdProofs) {
+			customerIdProof.setIdentityStatus(ConstantDocument.Deleted);
+		}
+		if (!CollectionUtils.isEmpty(deActiveIdProofs)) {
+			customerIdProofDao.save(deActiveIdProofs);
+		}
 
 	public List<Customer> getCustomerByIdentityInt(String identityInt) {
 		String[] isActiveFlags = new String[] { ConstantDocument.Yes, ConstantDocument.No };
 		List<Customer> customers = repo.getCustomerByIdentityIntAndIsActive(identityInt, Arrays.asList(isActiveFlags));
 		return customers;
 	}
+	 
 }

@@ -1,5 +1,8 @@
 package com.amx.jax.branchremittance.manager;
 
+import static com.amx.jax.error.JaxError.COMISSION_NOT_DEFINED_FOR_ROUTING_BANK;
+import static com.amx.jax.error.JaxError.TOO_MANY_COMISSION_NOT_DEFINED_FOR_ROUTING_BANK;
+
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -29,6 +32,8 @@ import com.amx.jax.branchremittance.dao.BranchRemittanceDao;
 import com.amx.jax.branchremittance.service.BranchRemittanceExchangeRateService;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constants.JaxTransactionStatus;
+import com.amx.jax.dal.BizcomponentDao;
+import com.amx.jax.dal.ExchangeRateProcedureDao;
 import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dbmodel.ApplicationSetup;
 import com.amx.jax.dbmodel.BankMasterModel;
@@ -54,12 +59,14 @@ import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.RemittanceModeMaster;
 import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.error.JaxError;
-import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.AuditEvent.Result;
+import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.events.CActivityEvent;
 import com.amx.jax.logger.events.CActivityEvent.Type;
 import com.amx.jax.manager.RemittanceApplicationAdditionalDataManager;
 import com.amx.jax.manager.RemittanceApplicationManager;
+import com.amx.jax.manager.RemittanceTransactionManager;
+import com.amx.jax.manager.remittance.CorporateDiscountManager;
 import com.amx.jax.manager.remittance.RemittanceAdditionalFieldManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
@@ -70,7 +77,6 @@ import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
 import com.amx.jax.model.response.remittance.RoutingResponseDto;
 import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeRateResponse;
-import com.amx.jax.repository.BranchSystemDetailRepository;
 import com.amx.jax.repository.DeviceStateRepository;
 import com.amx.jax.repository.IApplicationCountryRepository;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
@@ -82,9 +88,9 @@ import com.amx.jax.repository.fx.EmployeeDetailsRepository;
 import com.amx.jax.service.BankMetaService;
 import com.amx.jax.service.CompanyService;
 import com.amx.jax.service.FinancialService;
-import com.amx.jax.service.LoyalityPointService;
 import com.amx.jax.services.BankService;
 import com.amx.jax.services.BeneficiaryService;
+import com.amx.jax.services.LoyalityPointService;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.util.DateUtil;
 import com.amx.jax.util.JaxUtil;
@@ -173,7 +179,8 @@ public class BranchRemittanceApplManager {
 	@Autowired
 	DeviceStateRepository deviceStateRepository;
 	
-
+	@Autowired
+	CorporateDiscountManager corporateDiscountManager;
 	
 	@Autowired
 	IDeviceRepository deviceRepository;
@@ -181,12 +188,18 @@ public class BranchRemittanceApplManager {
 	@Autowired
 	RemittanceApplicationRepository appRepository;
 	
-	@Autowired
-	BranchRemittanceExchangeRateManager exchRateManager;
-	
     @Autowired
 	AuditService auditService;
 
+    
+    @Autowired
+    RemittanceTransactionManager remitTrnxManager;
+    
+	@Autowired
+	private ExchangeRateProcedureDao exchangeRateProcedureDao;
+
+	@Autowired
+	private BizcomponentDao bizcomponentDao;
 
 	
 	public BranchRemittanceApplResponseDto saveBranchRemittanceApplication(BranchRemittanceApplRequestModel requestApplModel) {
@@ -205,38 +218,62 @@ public class BranchRemittanceApplManager {
 		 /*checking bene additional info missing detail check**/
 		 branchRemitManager.beneAddCheck(beneficaryDetails);
 		 /*checking banned bank details **/
-		 branchRemitManager.bannedBankCheck(beneficaryDetails);
+		// String warningMsg = branchRemitManager.bannedBankCheck(requestApplModel.getBeneId());
 		 /* validate blck list bene **/
 		 branchRemitManager.validateBlackListedBene(beneficaryDetails);
 		 /* get Routing setup details **/
 		 //Map<String, Object> branchRoutingDetails =branchRemitManager.getRoutingSetupDeatils(beneficaryDetails);
-		 RoutingResponseDto branchRoutingDto= branchRoutingManager.getRoutingSetup(requestApplModel);
+		// RoutingResponseDto branchRoutingDto= branchRoutingManager.getRoutingSetup(requestApplModel);
+		 
+		 
+		 if(JaxUtil.isNullZeroBigDecimalCheck(requestApplModel.getRoutingBankId())) {
+			 requestApplModel.setRoutingBankId(requestApplModel.getRoutingBankId());
+		 }
 		 
 		 //Priccing API
 		 BranchRemittanceGetExchangeRateResponse exchangeRateResposne = branchExchRateService.getExchaneRate(requestApplModel).getResult();
+		 RoutingResponseDto branchRoutingDto = exchangeRateResposne.getRoutingResponseDto();
 		 
 		 remittanceTransactionRequestValidator.validateExchangeRate(requestApplModel, exchangeRateResposne);
 		 remittanceTransactionRequestValidator.validateFlexFields(requestApplModel, remitApplParametersMap);
 		 remittanceAdditionalFieldManager.validateAdditionalFields(requestApplModel, remitApplParametersMap);
 		 remittanceAdditionalFieldManager.processAdditionalFields(requestApplModel); 
 
-		 
-		 logger.debug("branchExchangeRate :"+exchangeRateResposne);
+	    logger.debug("branchExchangeRate :"+exchangeRateResposne);
 		 /* get aml cehck   details **/
 		 List<AmlCheckResponseDto> amlList= branchRemitManager.amlTranxAmountCheckForRemittance(requestApplModel.getBeneId(),exchangeRateResposne.getExRateBreakup().getConvertedLCAmount());
 		 
 		 logger.info("amlList :"+amlList.toString());
-		 /* additional check **/
+		 /* additional check **/ 
 		
 		 branchRemitManager.validateAdditionalCheck(branchRoutingDto,customer,beneficaryDetails,exchangeRateResposne.getExRateBreakup().getNetAmount(),requestApplModel);
 		 
-		 if(!JaxUtil.isNullZeroBigDecimalCheck(requestApplModel.getRoutingBankId())) {
-			 requestApplModel.setRoutingBankId(requestApplModel.getRoutingBankId());
-		 }
+		
 		 
 		/** bene additional check **/
 		 Map<String, Object> addBeneDetails =branchRemitManager.validateAdditionalBeneDetails(branchRoutingDto,exchangeRateResposne,beneficaryDetails,requestApplModel);
 		 
+		/* if(branchRoutingDto != null && branchRoutingDto.getRoutingCountrydto()!=null  && !branchRoutingDto.getRoutingCountrydto().isEmpty() ) {
+			 String countryCode = branchRoutingDto.getRoutingCountrydto().get(0).getResourceCode()==null?"":branchRoutingDto.getRoutingCountrydto().get(0).getResourceCode(); 
+			 if(!StringUtils.isBlank(countryCode) && countryCode.equals(ConstantDocument.IND_COUNTRY_CODE) && requestApplModel.getServiceMasterId().compareTo(ConstantDocument.SERVICE_MASTER_ID_TT)==0) {
+			 if(branchRoutingDto.getRemittanceModeList()!=null && branchRoutingDto.getRemittanceModeList().get(0).getRemittancCode().compareTo(ConstantDocument.IMPS_CODE)!=0) {
+				 Map<String, Object> outPut = recalculateDeliveryAndRemittanceModeId(exchangeRateResposne,branchRoutingDto);
+				 BigDecimal newRemitMode = outPut.get("P_REMITTANCE_MODE_ID")==null?requestApplModel.getRemittanceModeId():(BigDecimal)outPut.get("P_REMITTANCE_MODE_ID");
+				 BigDecimal newDeliveryMode = outPut.get("P_DELIVERY_MODE_ID")==null?requestApplModel.getDeliveryModeId():(BigDecimal)outPut.get("P_DELIVERY_MODE_ID");
+			 
+				 logger.info("newRemitMode :"+newRemitMode+"\t Old :"+requestApplModel.getRemittanceModeId());
+				 logger.info("newDeliveryMode :"+newDeliveryMode+"\t Old :"+requestApplModel.getDeliveryModeId());
+				 if(JaxUtil.isNullZeroBigDecimalCheck(newRemitMode)) {
+					 requestApplModel.setRemittanceModeId(newRemitMode);
+				 }
+				 if(JaxUtil.isNullZeroBigDecimalCheck(newDeliveryMode)) {
+					 requestApplModel.setDeliveryModeId(newDeliveryMode);
+				 }
+			  }
+			 }
+			 
+		 }
+		 */
 		 
 		hashMap.put("ROUTING_DETAILS_DTO", branchRoutingDto);
 		hashMap.put("EXCH_RATE_MAP", exchangeRateResposne);
@@ -245,7 +282,6 @@ public class BranchRemittanceApplManager {
 		hashMap.put("ADD_BENE_DETAILS", addBeneDetails);
 		hashMap.put("CUSTOMER", customer);
 		hashMap.put("AML_CHECK", amlList);
-
 		branchRemitManager.validateAdditionalErrorMessages(hashMap);
 		
 		
@@ -268,6 +304,7 @@ public class BranchRemittanceApplManager {
 		brRemittanceDao.saveAllApplications(mapAllDetailApplSave);
 		auditService.log(new CActivityEvent(Type.APPLICATION_CREATED,String.format("{}/{}", remittanceApplication.getDocumentFinancialyear(),remittanceApplication.getDocumentNo(),remittanceApplication.getFsCustomer().getCustomerId())).field("STATUS").to(JaxTransactionStatus.APPLICATION_CREATED).result(Result.DONE));
 		BranchRemittanceApplResponseDto applResponseDto = branchRemittancePaymentManager.fetchCustomerShoppingCart(customer.getCustomerId(),metaData.getDefaultCurrencyId());
+		//applResponseDto.setWarnigMsg(warningMsg);
 		return applResponseDto;
 	}
 
@@ -304,7 +341,7 @@ public class BranchRemittanceApplManager {
 			
 			BranchExchangeRateBreakup rateBreakUp = applRequestModel.getBranchExRateBreakup();
 			
-			
+			remitTrnxManager.reCalculateComission();
 			
 			BigDecimal routingCountryId = branchRoutingDto.getRoutingCountrydto().get(0).getResourceId();
 			Customer customer = (Customer) hashMap.get("CUSTOMER");
@@ -317,7 +354,7 @@ public class BranchRemittanceApplManager {
 			BigDecimal selectedCurrencyId = branchRemitManager.getSelectedCurrency(foreignCurrencyId, applRequestModel);
 			
 			Document document = documentDao.getDocumnetByCode(ConstantDocument.DOCUMENT_CODE_FOR_REMITTANCE_APPLICATION).get(0);
-			//BigDecimal selectedCurrency = getSelectedCurrency(foreignCurrencyId, requestModel);
+		
 			remittanceApplication.setExDocument(document);
 			remittanceApplication.setDocumentCode(document.getDocumentCode());
 			CountryMaster appCountryId = new CountryMaster();
@@ -440,7 +477,7 @@ public class BranchRemittanceApplManager {
 			remittanceApplication.setLocalCommisionAmount(branchExchangeRate.getTxnFee());
 			remittanceApplication.setLocalChargeAmount(BigDecimal.ZERO);
 			remittanceApplication.setLocalDeliveryAmount(BigDecimal.ZERO);
-			remittanceApplication.setLoyaltyPointsEncashed(BigDecimal.ZERO); 
+			remittanceApplication.setLoyaltyPointsEncashed(BigDecimal.ZERO);
 			
 			BigDecimal loyalityPointsEncashed = BigDecimal.ZERO;
 			if(applRequestModel.isAvailLoyalityPoints() && JaxUtil.isNullZeroBigDecimalCheck(customer.getLoyaltyPoints()) && customer.getLoyaltyPoints().compareTo(new BigDecimal(1000))>=0) {
@@ -478,7 +515,7 @@ public class BranchRemittanceApplManager {
 			
 			remittanceApplication.setWuIpAddress(metaData.getDeviceIp());
 			remittanceApplication.setInstruction("URGENT");
-			remittanceApplication.setDiscountOnCommission(exchRateManager.corporateDiscount());
+			remittanceApplication.setDiscountOnCommission(corporateDiscountManager.corporateDiscount());
 			
 			return remittanceApplication;
 			
@@ -531,7 +568,7 @@ public class BranchRemittanceApplManager {
 		}
 		
 		remittanceAppBenificary.setBeneficiaryBank(beneficiaryDT.getBankName());
-		remittanceAppBenificary.setBeneficiaryBranch(beneficiaryDT.getBankBranchName());
+		remittanceAppBenificary.setBeneficiaryBranch(beneAddDeatisl.get("P_BENE_BRANCH_NAME")==null?beneficiaryDT.getBankBranchName():(String) beneAddDeatisl.get("P_BENE_BRANCH_NAME"));
 		
 
 		remittanceAppBenificary.setBeneficiaryName(beneAddDeatisl.get("P_BENEFICIARY_NAME")==null? beneficiaryDT.getBenificaryName():(String) beneAddDeatisl.get("P_BENEFICIARY_NAME"));
@@ -540,6 +577,11 @@ public class BranchRemittanceApplManager {
 		remittanceAppBenificary.setBeneficiaryThirdName(beneAddDeatisl.get("P_BENEFICIARY_THIRD_NAME")==null?beneficiaryDT.getThirdName():(String) beneAddDeatisl.get("P_BENEFICIARY_THIRD_NAME"));
 		remittanceAppBenificary.setBeneficiaryFourthName(beneAddDeatisl.get("P_BENEFICIARY_FOURTH_NAME")==null?beneficiaryDT.getFourthName():(String) beneAddDeatisl.get("P_BENEFICIARY_FOURTH_NAME"));
 		remittanceAppBenificary.setBeneficiaryFifthName(beneAddDeatisl.get("P_BENEFICIARY_FIFTH_NAME")==null?beneficiaryDT.getFiftheName():(String) beneAddDeatisl.get("P_BENEFICIARY_FIFTH_NAME"));
+		
+		remittanceAppBenificary.setBeneficiaryBranchStateId(beneAddDeatisl.get("P_BENE_STATE_ID")==null?beneficiaryDT.getStateId():(BigDecimal)beneAddDeatisl.get("P_BENE_STATE_ID"));
+		remittanceAppBenificary.setBeneficiaryBranchDistrictId(beneAddDeatisl.get("P_BENE_DISTRICT_ID")==null?beneficiaryDT.getDistrictId():(BigDecimal)beneAddDeatisl.get("P_BENE_DISTRICT_ID"));
+		remittanceAppBenificary.setBeneficiaryBranchCityId(beneAddDeatisl.get("P_BENE_CITY_ID")==null?beneficiaryDT.getCityId():(BigDecimal)beneAddDeatisl.get("P_BENE_CITY_ID"));
+		
 		
 		
 		if(beneficiaryDT.getSwiftBic()!=null) {
@@ -552,9 +594,7 @@ public class BranchRemittanceApplManager {
 		remittanceAppBenificary.setCreatedBy(remittanceApplication.getCreatedBy());
 		remittanceAppBenificary.setCreatedDate(new Date());
 		remittanceAppBenificary.setIsactive(ConstantDocument.Yes);
-		remittanceAppBenificary.setBeneficiaryBranchStateId(beneficiaryDT.getStateId());
-		remittanceAppBenificary.setBeneficiaryBranchDistrictId(beneficiaryDT.getDistrictId());
-		remittanceAppBenificary.setBeneficiaryBranchCityId(beneficiaryDT.getCityId());
+		
 		
 		remittanceAppBenificary.setBeneficiaryBankCountryId(beneficiaryDT.getBenificaryCountry());
 		remittanceAppBenificary.setBeneficiaryBankId(beneficiaryDT.getBankId());
@@ -643,10 +683,7 @@ public class BranchRemittanceApplManager {
 					remitApplAml.setAuthType(null);
 					remitApplAml.setBlackListReason(amlDto.getMessageDescription());
 					remitApplAml.setBlackListRemarks(requestApplModel.getAmlRemarks());
-					
-					
 					remitApplAmlList.add(remitApplAml);
-					
 				}
 				
 			} catch (Exception e) {
@@ -792,7 +829,7 @@ public class BranchRemittanceApplManager {
 	
 
 	public BigDecimal getloyaltyAmountEncashed(BigDecimal commission) {
-		BigDecimal discount = exchRateManager.corporateDiscount();
+		BigDecimal discount = corporateDiscountManager.corporateDiscount();
 		BigDecimal loyalityPoints = loyalityPointService.getVwLoyalityEncash().getLoyalityPoint();
 		BigDecimal loyalityPointsEncashed = loyalityPointService.getVwLoyalityEncash().getEquivalentAmount();
 		if(JaxUtil.isNullZeroBigDecimalCheck(commission) && JaxUtil.isNullZeroBigDecimalCheck(loyalityPoints) && loyalityPointsEncashed.compareTo(discount)>0) {
@@ -805,5 +842,36 @@ public class BranchRemittanceApplManager {
 		return loyalityPointsEncashed;
 	}
 	
+	private Map<String, Object> recalculateDeliveryAndRemittanceModeId(BranchRemittanceGetExchangeRateResponse result,RoutingResponseDto branchRoutingDto) {
+		
+		Map<String, Object> outputMap  = null;
+		if (result.getExRateBreakup()!= null && result.getExRateBreakup().getConvertedFCAmount()!=null) {
+			
+			BigDecimal custtype = bizcomponentDao.findCustomerTypeId("I");
+			remitApplParametersMap.put("P_CUSTYPE_ID", custtype);
+			remitApplParametersMap.put("P_ROUTING_BANK_BRANCH_ID", branchRoutingDto.getRoutingBankBranchDto().get(0).getBankBranchId());
+			remitApplParametersMap.put("P_SERVICE_MASTER_ID", branchRoutingDto.getServiceList().get(0).getServiceMasterId());
+			
+			 outputMap = exchangeRateProcedureDao.findRemittanceAndDevlieryModeId(remitApplParametersMap);
+			if (outputMap.size() == 0) {
+				remitApplParametersMap.put("P_CUSTYPE_ID", new BigDecimal(777));
+				outputMap = exchangeRateProcedureDao.findRemittanceAndDevlieryModeId(remitApplParametersMap);
+			}
+			if (outputMap.size() > 2) {
+				throw new GlobalException(
+						TOO_MANY_COMISSION_NOT_DEFINED_FOR_ROUTING_BANK,
+						"TOO MANY COMMISSION DEFINED for rounting bankid: "
+								+ remitApplParametersMap.get("P_ROUTING_BANK_ID"));
+			}
+
+			if (outputMap.get("P_DELIVERY_MODE_ID") == null) {
+				throw new GlobalException(COMISSION_NOT_DEFINED_FOR_ROUTING_BANK,
+						"COMMISSION NOT DEFINED BankId: " + remitApplParametersMap.get("P_ROUTING_BANK_ID"));
+			}
+			remitApplParametersMap.putAll(outputMap);
+		}
+		return outputMap;
+	}
+
 	
 }

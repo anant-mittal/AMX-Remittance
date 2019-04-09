@@ -65,7 +65,7 @@ public class UserValidationKwt implements CustomerValidation {
 		if (idProof.getIdentityExpiryDate() != null && idProof.getIdentityExpiryDate().compareTo(new Date()) < 0) {
 			throw new GlobalException(JaxError.ID_PROOF_EXPIRED, "Identity proof are expired");
 		}
-		if ("A".equals(scanSystem)) {
+		if ("A".equals(scanSystem) || "E".equals(scanSystem)) {
 			List<CustomerIdProof> validIds = idproofDao
 					.getCustomerImageValidation(idProof.getFsCustomer().getCustomerId(), idProof.getIdentityTypeId());
 			if (validIds == null || validIds.isEmpty()) {

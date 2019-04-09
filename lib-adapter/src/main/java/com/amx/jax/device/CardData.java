@@ -2,10 +2,15 @@ package com.amx.jax.device;
 
 import java.io.Serializable;
 
+import com.amx.utils.ArgUtil;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CardData implements Serializable {
 
 	private static final long serialVersionUID = -3850651340742417281L;
 	long timestamp;
+
 	public long getTimestamp() {
 		return timestamp;
 	}
@@ -15,6 +20,7 @@ public class CardData implements Serializable {
 	}
 
 	boolean valid;
+	boolean expired;
 	boolean genuine;
 	private String title;
 	private String name1;
@@ -71,6 +77,10 @@ public class CardData implements Serializable {
 
 	public boolean isGenuine() {
 		return genuine;
+	}
+
+	public boolean isEmpty() {
+		return ArgUtil.isEmpty(identity);
 	}
 
 	public void setGenuine(boolean genuine) {
@@ -416,5 +426,13 @@ public class CardData implements Serializable {
 
 	public String getFullName() {
 		return fullName;
+	}
+
+	public boolean isExpired() {
+		return expired;
+	}
+
+	public void setExpired(boolean expired) {
+		this.expired = expired;
 	}
 }

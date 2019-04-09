@@ -513,9 +513,14 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 		Map<String, Object> inputValues = new HashMap<>();
 		inputValues.put("P_CUSTOMER_ID", metaData.getCustomerId());
 		inputValues.put("P_ACMMYY", accMonthYear);
+		Customer customer = customerRepos.getCustomerByCountryAndCompAndCustoemrId(metaData.getCountryId(),metaData.getCompanyId(),metaData.getCustomerId());
+		BigDecimal idType =customer.getIdentityTypeId()==null?BigDecimal.ZERO:customer.getIdentityTypeId();
+		inputValues.put("ID_TYPE", idType);
+		
 		Map<String,Object> map =routingProDao.limitCheck(inputValues);
 		Map<String,Object> mapRemit=routingProDao.todayRemitAmount(inputValues);
 		Map<String,Object> mapReceipt=routingProDao.todayReceiptAmount(inputValues);
+		Map<String,Object> mapMisAmount=routingProDao.todayMisReceAmount(inputValues);
 		BigDecimal todayTrnxLimit = BigDecimal.ZERO;
 		if(map!=null) {
 			config.setCashLimit(map.get("W_CB_LIMIT")==null?BigDecimal.ZERO:(BigDecimal)map.get("W_CB_LIMIT"));
@@ -528,6 +533,11 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 		if(mapReceipt!=null){
 			todayTrnxLimit = todayTrnxLimit.add(mapReceipt.get("REMIT_AMT")==null?BigDecimal.ZERO:(BigDecimal)mapReceipt.get("REMIT_AMT"));
 		}
+		
+		if(mapMisAmount!=null){
+			todayTrnxLimit = todayTrnxLimit.add(mapMisAmount.get("REMIT_AMT")==null?BigDecimal.ZERO:(BigDecimal)mapMisAmount.get("REMIT_AMT"));
+		}
+		
 		config.setTodayTrnxAmount(todayTrnxLimit);
 		return config;
 		

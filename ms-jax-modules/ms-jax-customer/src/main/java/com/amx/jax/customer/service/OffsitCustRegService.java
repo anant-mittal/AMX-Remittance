@@ -16,7 +16,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.sql.rowset.serial.SerialException;
-
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
@@ -32,6 +31,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.constant.PrefixEnum;
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.amxlib.model.PersonInfo;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.CustomerCredential;
@@ -59,6 +59,7 @@ import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.DistrictMaster;
 import com.amx.jax.dbmodel.DmsApplMapping;
 import com.amx.jax.dbmodel.DocBlobUpload;
+import com.amx.jax.dbmodel.Employee;
 import com.amx.jax.dbmodel.EmployeeDetails;
 import com.amx.jax.dbmodel.EmploymentTypeMasterView;
 import com.amx.jax.dbmodel.FieldList;
@@ -97,6 +98,7 @@ import com.amx.jax.repository.CountryMasterRepository;
 import com.amx.jax.repository.CustomerEmployeeDetailsRepository;
 import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.repository.DOCBLOBRepository;
+import com.amx.jax.repository.EmployeeRespository;
 import com.amx.jax.repository.EmploymentTypeRepository;
 import com.amx.jax.repository.IApplicationCountryRepository;
 import com.amx.jax.repository.IDMSAppMappingRepository;
@@ -243,6 +245,9 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 	OffsiteCustomerRegValidator offsiteCustomerRegValidator;
 	@Autowired
 	OffsiteCustomerRegManager offsiteCustomerRegManager;
+	
+	@Autowired
+	EmployeeRespository employeeRespository;
 
 	public AmxApiResponse<ComponentDataDto, Object> getIdTypes() {
 		List<Map<String, Object>> tempList = bizcomponentDao
@@ -660,6 +665,10 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 			CustomerEmploymentDetails customerEmploymentDetails) {
 		Customer customer = offsiteCustomerRegManager.getCustomerForRegistration(customerDetails.getIdentityInt(),
 				customerDetails.getIdentityTypeId());
+		
+		BigDecimal employeeId = metaData.getEmployeeId();
+		Employee employeeDetails = employeeRespository.findEmployeeById(employeeId);
+		
 		if (customer == null) {
 			LOGGER.info("creating new customer for offiste registration. idint {} idtype {}",
 					customerDetails.getIdentityInt(), customerDetails.getIdentityTypeId());
@@ -699,7 +708,8 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		PrefixEnum prefixEnum = PrefixEnum.getPrefixEnum(customerDetails.getTitle());
 		customer.setIsActive(ConstantDocument.No);
 		customer.setCountryId(customerDetails.getCountryId());
-		customer.setCreatedBy(metaData.getAppType() != null ? metaData.getAppType() : customerDetails.getIdentityInt());
+		//customer.setCreatedBy(metaData.getAppType() != null ? metaData.getAppType() : customerDetails.getIdentityInt());
+		customer.setCreatedBy(employeeDetails.getUserName() != null ? employeeDetails.getUserName() : customerDetails.getIdentityInt());
 		customer.setCreationDate(new Date());
 		customer.setIsOnlineUser(ConstantDocument.Yes);
 		customer.setGender(prefixEnum.getGender());
@@ -753,9 +763,9 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 
 	public AmxApiResponse<String, Object> saveCustomeKycDocumentAndPopulateCusmas(ImageSubmissionRequest model) throws ParseException {
 		AmxApiResponse<String, Object> result = saveCustomeKycDocument(model);
-		if (metaData.getCustomerId() != null) {
+		/*if (metaData.getCustomerId() != null) {
 			customerDao.callProcedurePopulateCusmas(metaData.getCustomerId());
-		}
+		}*/
 		return result;
 	}
 
@@ -819,7 +829,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 			}
 			for (String image : model.getImage()) {
 				DmsApplMapping mappingData = new DmsApplMapping();
-				mappingData = getDmsApplMappingData(customer);
+				mappingData = getDmsApplMappingData(customer, model);
 				idmsAppMappingRepository.save(mappingData);
 				DocBlobUpload documentDetails = new DocBlobUpload();
 				documentDetails = getDocumentUploadDetails(image, mappingData);
@@ -860,7 +870,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		// return null;
 	}
 
-	private DmsApplMapping getDmsApplMappingData(Customer model) throws ParseException {
+	private DmsApplMapping getDmsApplMappingData(Customer model, ImageSubmissionRequest imageSubmissionRequest) throws ParseException {
 		DmsApplMapping mappingData = new DmsApplMapping();
 		BigDecimal financialYear = getDealYearbyDate();
 		BigDecimal applCountryId = metaData.getCountryId();
@@ -870,7 +880,11 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		mappingData.setDocBlobId(docBlobId); // need to change value
 		mappingData.setDocFormat("JPG");
 		mappingData.setFinancialYear(financialYear);
-		mappingData.setIdentityExpiryDate(model.getIdentityExpiredDate());
+		if (imageSubmissionRequest != null && imageSubmissionRequest.getIdentityExpiredDate() != null) {
+			mappingData.setIdentityExpiryDate(imageSubmissionRequest.getIdentityExpiredDate());
+		} else {
+			mappingData.setIdentityExpiryDate(model.getIdentityExpiredDate());
+		}
 		mappingData.setIdentityInt(model.getIdentityInt());
 		mappingData.setIdentityIntId(model.getIdentityTypeId());
 		mappingData.setCreatedBy(metaData.getEmployeeId().toString());
