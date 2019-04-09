@@ -40,6 +40,9 @@ public class RemitRoutingManager {
 
 	private static final int MAX_DELIVERY_ATTEMPT_DAYS = 60;
 
+	private final int defStartTime = 8;
+	private final int defStopTime = 18;
+
 	/** The Constant LOGGER. */
 	private static final Logger LOGGER = LoggerFactory.getLogger(RemitRoutingManager.class);
 
@@ -77,7 +80,7 @@ public class RemitRoutingManager {
 				exchangeRateAndRoutingRequest.getForeignCurrencyId(),
 				exchangeRateAndRoutingRequest.getServiceGroup().getGroupCode());
 
-		System.out.println(" Routing matrix ==>  " + JsonUtil.toJson(routingMatrix));
+		// System.out.println(" Routing matrix ==> " + JsonUtil.toJson(routingMatrix));
 
 		if (null == routingMatrix || routingMatrix.isEmpty()) {
 
@@ -245,9 +248,9 @@ public class RemitRoutingManager {
 				}
 
 				estmdProcessingDeliveryDetails = this.getEstimatedBlockDelivery(processingStartTT, pTimezone,
-						new BigDecimal(1), new BigDecimal(7), new BigDecimal(0), new BigDecimal(24), new BigDecimal(0),
-						new BigDecimal(0), new BigDecimal(0), new BigDecimal(0), new BigDecimal(0), Boolean.FALSE,
-						processingCountryId);
+						new BigDecimal(1), new BigDecimal(7), new BigDecimal(defStartTime), new BigDecimal(defStopTime),
+						new BigDecimal(0), new BigDecimal(0), new BigDecimal(0), new BigDecimal(0), new BigDecimal(0),
+						Boolean.FALSE, processingCountryId);
 
 				routingDetails.setProcessingDeliveryDetails(estmdProcessingDeliveryDetails);
 
@@ -296,8 +299,9 @@ public class RemitRoutingManager {
 				}
 
 				estmdBeneDeliveryDetails = this.getEstimatedBlockDelivery(beneStartTT, beneTimezone, new BigDecimal(1),
-						new BigDecimal(7), new BigDecimal(0), new BigDecimal(24), new BigDecimal(0), new BigDecimal(0),
-						new BigDecimal(0), new BigDecimal(0), new BigDecimal(0), Boolean.FALSE, beneCountryId);
+						new BigDecimal(7), new BigDecimal(defStartTime), new BigDecimal(defStopTime), new BigDecimal(0),
+						new BigDecimal(0), new BigDecimal(0), new BigDecimal(0), new BigDecimal(0), Boolean.FALSE,
+						beneCountryId);
 
 				routingDetails.setBeneBankDeliveryDetails(estmdBeneDeliveryDetails);
 
