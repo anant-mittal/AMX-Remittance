@@ -17,4 +17,20 @@ public class CustomerCommunicationChannel {
 		super();
 	}
 
+	public CommunicationChannel getChannel() {
+		return channel;
+	}
+
+	public void setChannel(CommunicationChannel channel) {
+		this.channel = channel;
+	}
+
+	public String getMaskedValue() {
+		return maskedValue;
+	}
+
+	public void setMaskedValue(String maskedValue) {
+		this.maskedValue = maskedValue;
+	}
+
 }
