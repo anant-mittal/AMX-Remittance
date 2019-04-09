@@ -12,6 +12,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.constant.JaxApiFlow;
 import com.amx.jax.constants.CommunicationChannel;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.meta.MetaData;
@@ -22,6 +23,7 @@ import com.amx.jax.model.response.customer.CustomerModelSignupResponse;
 import com.amx.jax.model.response.customer.PersonInfo;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.manager.CustomerFlagManager;
+import com.amx.jax.userservice.manager.OnlineCustomerManager;
 import com.amx.utils.MaskUtil;
 
 @Service
@@ -38,6 +40,8 @@ public class CustomerModelService {
 	CustomerFlagManager customerFlagManager;
 	@Autowired
 	MetaData metaData;
+	@Autowired
+	OnlineCustomerManager onlineCustomerManager;
 
 	public CustomerModelResponse getCustomerModelResponse(String identityInt) {
 		userValidationService.validateIdentityInt(identityInt, ConstantDocument.BIZ_COMPONENT_ID_CIVIL_ID);
@@ -64,6 +68,7 @@ public class CustomerModelService {
 	}
 
 	public CustomerModelSignupResponse getCustomerModelSignupResponse(String identityInt) {
+		onlineCustomerManager.doSignUpValidations(identityInt);
 		CustomerModelResponse customerModelResponse = getCustomerModelResponse(identityInt);
 		PersonInfo personInfo = customerModelResponse.getPersonInfo();
 		CustomerFlags customerFlags = customerModelResponse.getCustomerFlags();

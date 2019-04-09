@@ -5,14 +5,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.model.SecurityQuestionModel;
+import com.amx.jax.constant.JaxApiFlow;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.manager.CustomerRegistrationManager;
 import com.amx.jax.userservice.service.UserService;
+import com.amx.jax.userservice.service.UserValidationService;
+
 @Component
 public class OnlineCustomerManager {
+	
 	@Autowired
 	CustomerRegistrationManager customerRegistrationManager;
 	@Autowired
@@ -21,6 +25,8 @@ public class OnlineCustomerManager {
 	MetaData metaData;
 	@Autowired
 	UserService userService;
+	@Autowired
+	UserValidationService userValidationService;
 	
 	
 	public void saveCustomerSecQuestions(List<SecurityQuestionModel> securityQuestions) {
@@ -29,5 +35,9 @@ public class OnlineCustomerManager {
 		userService.simplifyAnswers(securityQuestions);
 		custDao.setSecurityQuestions(securityQuestions, customerOnlineRegistration);
 		custDao.saveOnlineCustomer(customerOnlineRegistration);
+	}
+	
+	public void doSignUpValidations(String identityInt) {
+		userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(identityInt, JaxApiFlow.SIGNUP_ONLINE);
 	}
 }
