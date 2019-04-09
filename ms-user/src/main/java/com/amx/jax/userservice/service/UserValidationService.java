@@ -49,6 +49,7 @@ import com.amx.jax.dbmodel.CustomerVerification;
 import com.amx.jax.dbmodel.DmsDocumentModel;
 import com.amx.jax.dbmodel.ViewOnlineCustomerCheck;
 import com.amx.jax.dbmodel.remittance.BlackListDetailModel;
+import com.amx.jax.dict.Tenant;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.exception.ExceptionMessageKey;
 import com.amx.jax.meta.MetaData;
@@ -239,6 +240,9 @@ public class UserValidationService {
 	}
 
 	public void validateCustIdProofs(BigDecimal custId) {
+		if(tenantContext.get().equals(Tenant.BHR)) {
+			return;
+		}
 		if (tenantContext.get() != null) {
 			tenantContext.get().validateCustIdProofs(custId);
 			return;
