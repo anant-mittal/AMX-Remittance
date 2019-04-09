@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.constant.ApiEndpoint.CustomerApi;
-import com.amx.amxlib.constant.CommunicationChannel;
 import com.amx.amxlib.meta.model.AnnualIncomeRangeDTO;
 import com.amx.amxlib.meta.model.IncomeDto;
 import com.amx.amxlib.model.CustomerModel;
@@ -30,6 +29,7 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.IDeviceStateService.Params;
 import com.amx.jax.client.IDeviceStateService.Path;
+import com.amx.jax.constants.CommunicationChannel;
 import com.amx.jax.customer.service.CustomerService;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.auth.QuestModelDTO;

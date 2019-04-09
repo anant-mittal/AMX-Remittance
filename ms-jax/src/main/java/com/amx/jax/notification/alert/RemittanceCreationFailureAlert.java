@@ -10,9 +10,9 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.amx.amxlib.constant.CommunicationChannel;
 import com.amx.amxlib.exception.AbstractJaxException;
 import com.amx.amxlib.model.notification.RemittanceTransactionFailureAlertModel;
+import com.amx.jax.constants.CommunicationChannel;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.ExEmailNotification;

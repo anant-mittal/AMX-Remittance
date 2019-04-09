@@ -28,7 +28,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.constant.BeneficiaryConstant.BeneStatus;
-import com.amx.amxlib.constant.CommunicationChannel;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.BeneCountryDTO;
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
@@ -47,6 +46,7 @@ import com.amx.jax.amxlib.model.RoutingBankMasterParam;
 import com.amx.jax.config.JaxTenantProperties;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxDbConfig;
+import com.amx.jax.constants.CommunicationChannel;
 import com.amx.jax.dal.RoutingDao;
 import com.amx.jax.dao.BeneficiaryDao;
 import com.amx.jax.dbmodel.AgentBranchModel;

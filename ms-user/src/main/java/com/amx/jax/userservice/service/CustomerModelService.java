@@ -1,6 +1,7 @@
 package com.amx.jax.userservice.service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,14 +12,17 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.constants.CommunicationChannel;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.response.customer.CustomerCommunicationChannel;
 import com.amx.jax.model.response.customer.CustomerFlags;
 import com.amx.jax.model.response.customer.CustomerModelResponse;
 import com.amx.jax.model.response.customer.CustomerModelSignupResponse;
 import com.amx.jax.model.response.customer.PersonInfo;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.manager.CustomerFlagManager;
+import com.amx.utils.MaskUtil;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -58,12 +62,30 @@ public class CustomerModelService {
 		response.setCustomerId(customerId);
 		return response;
 	}
-	
+
 	public CustomerModelSignupResponse getCustomerModelSignupResponse(String identityInt) {
 		CustomerModelResponse customerModelResponse = getCustomerModelResponse(identityInt);
 		PersonInfo personInfo = customerModelResponse.getPersonInfo();
-		CustomerModelSignupResponse response = new CustomerModelSignupResponse(personInfo.getMobile(),
-				personInfo.getEmail(), null, customerModelResponse.getCustomerFlags());
+		CustomerFlags customerFlags = customerModelResponse.getCustomerFlags();
+		CustomerModelSignupResponse response = new CustomerModelSignupResponse();
+		response.setCustomerFlags(customerModelResponse.getCustomerFlags());
+		List<CustomerCommunicationChannel> customerCommunicationChannels = new ArrayList<>();
+		if (customerFlags.getEmailVerified()) {
+			String maskedEmail = MaskUtil.maskEmail(personInfo.getEmail(), 4, "*");
+			customerCommunicationChannels
+					.add(new CustomerCommunicationChannel(CommunicationChannel.EMAIL, maskedEmail));
+		}
+		if (customerFlags.getMobileVerified()) {
+			String maskedMobile = MaskUtil.leftMask(personInfo.getMobile(), 4, "*");
+			customerCommunicationChannels
+					.add(new CustomerCommunicationChannel(CommunicationChannel.MOBILE, maskedMobile));
+		}
+		if (customerFlags.getWhatsAppVerified()) {
+			String maskedMobile = MaskUtil.leftMask(personInfo.getWhatsAppNumber(), 4, "*");
+			customerCommunicationChannels
+					.add(new CustomerCommunicationChannel(CommunicationChannel.WHATSAPP, maskedMobile));
+		}
+		response.setCustomerCommunicationChannel(customerCommunicationChannels);
 		return response;
 	}
 

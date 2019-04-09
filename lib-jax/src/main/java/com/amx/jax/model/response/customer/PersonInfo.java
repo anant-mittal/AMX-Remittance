@@ -25,7 +25,7 @@ public class PersonInfo extends AbstractModel implements Cloneable {
 	private BigDecimal nationalityId;
 	private Timestamp lastLoginTime;
 	private String identityInt;
-
+	private String whatsAppNumber;
 	
 	
 	/**
@@ -181,5 +181,13 @@ public class PersonInfo extends AbstractModel implements Cloneable {
     public Object clone() throws CloneNotSupportedException {
         return super.clone();
     }
+
+	public String getWhatsAppNumber() {
+		return whatsAppNumber;
+	}
+
+	public void setWhatsAppNumber(String whatsAppNumber) {
+		this.whatsAppNumber = whatsAppNumber;
+	}
 
 }

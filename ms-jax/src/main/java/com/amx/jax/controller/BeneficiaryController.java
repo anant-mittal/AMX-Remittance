@@ -25,12 +25,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.constant.BeneficiaryConstant.BeneStatus;
-import com.amx.amxlib.constant.CommunicationChannel;
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.amxlib.model.BeneAccountModel;
 import com.amx.amxlib.model.BenePersonalDetailModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.amxlib.model.RoutingBankMasterParam;
+import com.amx.jax.constants.CommunicationChannel;
 import com.amx.jax.constants.JaxChannel;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.service.AccountTypeService;

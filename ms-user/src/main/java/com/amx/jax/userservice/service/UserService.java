@@ -26,7 +26,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.amx.amxlib.constant.CommunicationChannel;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.exception.jax.InvalidCivilIdException;
 import com.amx.amxlib.exception.jax.InvalidJsonInputException;
@@ -51,6 +50,7 @@ import com.amx.jax.async.ExecutorConfig;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.CustomerVerificationType;
 import com.amx.jax.constant.JaxApiFlow;
+import com.amx.jax.constants.CommunicationChannel;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.ContactDetail;
 import com.amx.jax.dbmodel.CountryMasterView;
