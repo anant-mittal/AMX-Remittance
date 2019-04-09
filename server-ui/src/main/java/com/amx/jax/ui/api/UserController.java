@@ -6,17 +6,6 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
-import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.amx.amxlib.meta.model.CustomerDto;
 import com.amx.amxlib.meta.model.IncomeDto;
 import com.amx.amxlib.model.CivilIdOtpModel;
@@ -34,6 +23,7 @@ import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.logger.AuditActor;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.model.response.customer.CustomerFlags;
+import com.amx.jax.model.response.customer.CustomerModelResponse;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.ui.UIConstants.Features;
@@ -58,6 +48,17 @@ import com.amx.jax.ui.service.SessionService;
 import com.amx.jax.ui.service.TenantService;
 import com.amx.jax.ui.service.UserService;
 import com.amx.utils.ArgUtil;
+
+import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -533,5 +534,10 @@ public class UserController {
 	@RequestMapping(value = { "/pub/user/device/reset" }, method = { RequestMethod.POST })
 	public AmxApiResponse<BoolRespModel, Object> resetDevice(@Valid @RequestBody AuthRequestFingerprint authData) {
 		return ResponseWrapper.build(jaxService.getUserclient().resetFingerprint(authData.getLockId()));
+	}
+
+	@RequestMapping(value = { "/pub/user/otpflags" }, method = { RequestMethod.GET }) // TODO: this API returns customer data also. we only want customer flags
+	public AmxApiResponse<CustomerModelResponse, Object> getOtpFlags(@RequestParam String identity) {
+		return ResponseWrapper.build(jaxService.setDefaults().getUserclient().getCustomerModelResponse(identity));
 	}
 }
