@@ -63,9 +63,9 @@ public interface PipsMasterRepository extends CrudRepository<PipsMaster, BigDeci
 	public List<PipsMaster> getPipsForFcCurAndBank(BigDecimal toCurrency, BigDecimal countryBranchId,
 			BigDecimal countryId, List<BigDecimal> validBankIds);
 
-	@Query(value = "select * from EX_PIPS_MASTER where COUNTRY_ID=?1 and CURRENCY_ID=?2 and "
+	@Query(value = "select * from EX_PIPS_MASTER where COUNTRY_ID=?1 and CURRENCY_ID=?2 and COUNTRY_BRANCH_ID=?3 and "
 			+ " ISACTIVE='Y' order by BANK_ID", nativeQuery = true)
-	public List<PipsMaster> getPipsMasterForAmountSlab(BigDecimal countryId, BigDecimal currencyId);
+	public List<PipsMaster> getPipsMasterForAmountSlab(BigDecimal countryId, BigDecimal currencyId, BigDecimal onlineCountryBranchId);
 
 	public PipsMaster findByPipsMasterId(BigDecimal pipsMasterId);
 	

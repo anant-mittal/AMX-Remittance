@@ -49,6 +49,8 @@ public class OWAStatus extends IStatusCodeListPlugin<OWAStatusStatusCodes, ApiOW
 		/** The verify failed. */
 		VERIFY_FAILED("401"),
 
+		MISSING_CREDENTIALS("401"),
+
 		/** The user update init. */
 		// User Updates
 		USER_UPDATE_INIT("200"),

@@ -4,11 +4,14 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import com.amx.jax.client.snap.SnapConstants.SnapIndexName;
+import com.amx.jax.dict.UserClient.AppType;
+import com.amx.jax.dict.UserClient.Channel;
 import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.dict.UserClient.UserDeviceClient;
 import com.amx.jax.grid.views.BeneViewRecord;
 import com.amx.jax.grid.views.BranchUserViewRecord;
 import com.amx.jax.grid.views.BranchViewRecord;
+import com.amx.jax.grid.views.ContactVerificationRecord;
 import com.amx.jax.grid.views.CustomerDetailViewRecord;
 import com.amx.jax.grid.views.TranxViewRecord;
 import com.amx.jax.radar.AESDocument;
@@ -24,6 +27,12 @@ public class OracleViewDocument extends AESDocument {
 	BranchUserViewRecord user;
 	UserDeviceClient client;
 	BeneViewRecord bene;
+
+	ContactVerificationRecord verifylink;
+
+	public OracleViewDocument() {
+
+	}
 
 	public OracleViewDocument(CustomerDetailViewRecord customer) {
 		super(SnapIndexName.CUSTOMER);
@@ -50,7 +59,11 @@ public class OracleViewDocument extends AESDocument {
 				&& xrate.getrRate().compareTo(BigDecimal.ZERO) > 0)) {
 			this.empty = true;
 		}
+	}
 
+	public OracleViewDocument(ContactVerificationRecord contactVerificationRecord) {
+		super(SnapIndexName.VERIFY);
+		this.verifylink = contactVerificationRecord;
 	}
 
 	public CustomerDetailViewRecord getCustomer() {
@@ -133,6 +146,23 @@ public class OracleViewDocument extends AESDocument {
 			this.trnx.setClientType(null);
 		}
 
+		Object channel = ArgUtil.parseAsEnum(this.trnx.getChannel(), Channel.UNKNOWN);
+		if (!ArgUtil.isEmpty(channel)) {
+			this.client.setChannel((Channel) channel);
+		}
+
+		Object appType = ArgUtil.parseAsEnum(this.trnx.getChannel(), AppType.UNKNOWN);
+		if (!ArgUtil.isEmpty(appType)) {
+			this.client.setAppType((AppType) appType);
+			if (AppType.ANDROID == this.client.getAppType() || AppType.IOS == this.client.getAppType()) {
+				this.client.setChannel(Channel.MOBILE);
+			}
+		}
+
+		if (!Channel.UNKNOWN.equals(this.client.getChannel())) {
+			this.trnx.setChannel(null);
+		}
+
 	}
 
 	public AmxCurRate getXrate() {
@@ -190,5 +220,13 @@ public class OracleViewDocument extends AESDocument {
 
 	public void setBene(BeneViewRecord bene) {
 		this.bene = bene;
+	}
+
+	public ContactVerificationRecord getVerifylink() {
+		return verifylink;
+	}
+
+	public void setVerifylink(ContactVerificationRecord verifylink) {
+		this.verifylink = verifylink;
 	}
 }

@@ -87,9 +87,32 @@ public class ExchangePricingAndRoutingService {
 
 		pricingResponseDTO.setSellRateDetails(exchRateAndRoutingTransientDataCache.getSellRateDetails());
 
+		// TODO: Dirty Code -- Do via Transient Data cache.
+		pricingResponseDTO.setCustomerCategory(CUSTOMER_CATEGORY.valueOf(customer.getRemarks()));
+
 		Collections.sort(pricingResponseDTO.getSellRateDetails(), Collections.reverseOrder());
 
 		pricingResponseDTO.setInfo(exchRateAndRoutingTransientDataCache.getInfo());
+
+		/*
+		 * LOGGER.info("=========== Start Probot LOG Trace for Customer Id : " +
+		 * pricingRequestDTO.getCustomerId() + "===========");
+		 * 
+		 * LOGGER.info( "Base And Discounted Price Computed : " +
+		 * JsonUtil.toJson(pricingRateDetailsDTO.getSellRateDetails()));
+		 * 
+		 * LOGGER.info("GLCBAL Rate Details : " +
+		 * JsonUtil.toJson(pricingRateDetailsDTO.getBankGlcBalMap()));
+		 * 
+		 * LOGGER.info("GLCBAL Average Rate Computation Details : " +
+		 * JsonUtil.toJson(pricingRateDetailsDTO.getBankGlcBalMap()));
+		 * 
+		 * LOGGER.info("Margin Markup Details : " +
+		 * JsonUtil.toJson(pricingRateDetailsDTO.getMargin()));
+		 * 
+		 * LOGGER.info("=========== End Probot LOG Trace for Customer Id : " +
+		 * pricingRequestDTO.getCustomerId() + "===========\n");
+		 */
 
 		return pricingResponseDTO;
 	}

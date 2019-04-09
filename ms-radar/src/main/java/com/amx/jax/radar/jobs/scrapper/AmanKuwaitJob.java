@@ -15,8 +15,8 @@ import com.amx.jax.client.snap.ISnapService.RateSource;
 import com.amx.jax.client.snap.ISnapService.RateType;
 import com.amx.jax.dict.Currency;
 import com.amx.jax.logger.LoggerService;
-import com.amx.jax.mcq.Candidate;
-import com.amx.jax.mcq.MCQLocker;
+import com.amx.jax.mcq.shedlock.SchedulerLock;
+import com.amx.jax.mcq.shedlock.SchedulerLock.LockContext;
 import com.amx.jax.radar.AESRepository.BulkRequestBuilder;
 import com.amx.jax.radar.ARadarTask;
 import com.amx.jax.radar.ESRepository;
@@ -26,6 +26,7 @@ import com.amx.jax.radar.jobs.customer.OracleViewDocument;
 import com.amx.jax.rates.AmxCurConstants;
 import com.amx.jax.rates.AmxCurRate;
 import com.amx.jax.rest.RestService;
+import com.amx.utils.JsonUtil;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
 @Configuration
@@ -49,18 +50,10 @@ public class AmanKuwaitJob extends ARadarTask {
 
 	private XmlMapper xmlMapper = new XmlMapper();
 
-	private Candidate LOCK = new Candidate().fixedDelay(AmxCurConstants.INTERVAL_MIN_30)
-			.maxAge(AmxCurConstants.INTERVAL_HRS).queue(AmanKuwaitJob.class);
-
-	@Autowired
-	private MCQLocker mcq;
-
+	@SchedulerLock(lockMaxAge = AmxCurConstants.INTERVAL_HRS, context = LockContext.BY_CLASS)
 	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_MIN_30)
 	public void lockedTask() {
-		// if (mcq.lead(LOCK)) {
 		doTask();
-		mcq.resign(LOCK);
-		// }
 	}
 
 	public void doTask() {
@@ -70,7 +63,7 @@ public class AmanKuwaitJob extends ARadarTask {
 				.get().asString();
 		// xmlMapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
 		try {
-			AmanKuwaitModels.Rates rates2 = xmlMapper.readValue(response, AmanKuwaitModels.Rates.class);
+			AmanKuwaitModels.Rates rates2 = JsonUtil.getMapper().readValue(response, AmanKuwaitModels.RatesJson.class);
 			BulkRequestBuilder builder = new BulkRequestBuilder();
 			for (AmanKuwaitModels.CurRates rates : rates2.getCurRates()) {
 				AmxCurRate trnsfrRate = new AmxCurRate();

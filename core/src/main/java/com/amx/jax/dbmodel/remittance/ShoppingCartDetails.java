@@ -51,7 +51,7 @@ public class ShoppingCartDetails implements Serializable {
 	private String spldeal;
 	private String applicationTypeDesc;
 	private String customerSignature;
-	private Clob customerSignatureClob;
+	private String customerSignatureClob;
 	private String sourceofincome;
 	private String BeneCityName;
 	private String BeneStateName;
@@ -67,7 +67,7 @@ public class ShoppingCartDetails implements Serializable {
 	private BigDecimal amtbCouponEncashed;
 	private BigDecimal routingBankId;
 	private BigDecimal beneRelationseqId;
-
+	
 	public ShoppingCartDetails() {
 		super();
 	}
@@ -396,10 +396,10 @@ public class ShoppingCartDetails implements Serializable {
 	}
 
 	@Column(name="SIGNATURE_SPECIMEN_CLOB")
-	public Clob getCustomerSignatureClob() {
+	public String getCustomerSignatureClob() {
 		return customerSignatureClob;
 	}
-	public void setCustomerSignatureClob(Clob customerSignatureClob) {
+	public void setCustomerSignatureClob(String customerSignatureClob) {
 		this.customerSignatureClob = customerSignatureClob;
 	}
 
@@ -484,5 +484,7 @@ public class ShoppingCartDetails implements Serializable {
 	public void setBeneRelationseqId(BigDecimal beneRelationseqId) {
 		this.beneRelationseqId = beneRelationseqId;
 	}
+
+	
 	
 }

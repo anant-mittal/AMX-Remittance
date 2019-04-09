@@ -8,10 +8,12 @@ import org.springframework.stereotype.Service;
 
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.pricer.dao.ChannelDiscountDao;
+import com.amx.jax.pricer.dao.CountryBranchDao;
 import com.amx.jax.pricer.dao.CustCatDiscountDao;
 import com.amx.jax.pricer.dao.PipsMasterDao;
 import com.amx.jax.pricer.dao.RoutingDao;
 import com.amx.jax.pricer.dbmodel.ChannelDiscount;
+import com.amx.jax.pricer.dbmodel.CountryBranch;
 import com.amx.jax.pricer.dbmodel.CustomerCategoryDiscount;
 import com.amx.jax.pricer.dbmodel.PipsMaster;
 import com.amx.jax.pricer.dbmodel.RoutingHeader;
@@ -43,6 +45,11 @@ public class ExchangeDataService {
 
 	@Autowired
 	DiscountManager discountManager;
+	
+	@Autowired
+	CountryBranchDao countryBranchDao;
+	
+	private static BigDecimal OnlineCountryBranchId;
 
 	public DiscountDetailsReqRespDTO getDiscountManagementData(DiscountMgmtReqDTO discountMgmtReqDTO) {
 
@@ -62,8 +69,11 @@ public class ExchangeDataService {
 
 		if (discountMgmtReqDTO.getDiscountType().contains(DISCOUNT_TYPE.AMOUNT_SLAB)) {
 			if (null != discountMgmtReqDTO.getCountryId() && null != discountMgmtReqDTO.getCurrencyId()) {
+				CountryBranch cb = countryBranchDao.getOnlineCountryBranch();
+				OnlineCountryBranchId = cb.getCountryBranchId();
+				
 				List<PipsMaster> pipsMasterData = pipsMasterDao.getAmountSlab(discountMgmtReqDTO.getCountryId(),
-						discountMgmtReqDTO.getCurrencyId());
+						discountMgmtReqDTO.getCurrencyId(), OnlineCountryBranchId);
 				List<AmountSlabDetails> amountSlabData = discountManager.convertAmountSlabData(pipsMasterData);
 				discountMgmtRespDTO.setAmountSlabDetails(amountSlabData);
 			}

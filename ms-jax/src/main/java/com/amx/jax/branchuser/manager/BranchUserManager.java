@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,13 +71,24 @@ public class BranchUserManager  extends AbstractModel {
 	ICustomerRepository customerDao;
 	
 	public UserwiseTransactionDto getTotalTrnxUserWise(String transactionDate){
-		validateHeaderInfo.validateHeaderInfo();
+		//validateHeaderInfo.validateHeaderInfo();
 		transactionDate = DateUtil.todaysDateWithDDMMYY(transactionDate==null?new Date():DateUtil.convertStringToDate(transactionDate),"0");
 		String accMonthYear =DateUtil.getAccountingMonthYearNew(transactionDate);
 		BigDecimal employeeId =metaData.getEmployeeId();
-		BigDecimal countryBranchId =new BigDecimal(56); //metaData.getCountryBranchId();
+		BigDecimal countryBranchId =metaData.getCountryBranchId();
 		logger.debug("accMonthYear :"+accMonthYear+"\t employeeId :"+employeeId+"\t countryBranchId :"+countryBranchId);
-		List<BranchDayTransactionView> totalTrnx =branchTrnxRepository.getTotalTrnxCount(accMonthYear, countryBranchId, employeeId, transactionDate);
+		
+		EmployeeDetailsView empDetails = employeeDetailsRepository.findByEmployeeId(metaData.getEmployeeId());
+		if(empDetails==null) {
+			throw new GlobalException(JaxError.NULL_EMPLOYEE_ID,"Employee detais not found "+metaData.getEmployeeId());
+		}else if(empDetails!=null && !empDetails.getIsActive().equalsIgnoreCase(ConstantDocument.Yes)) {
+			throw new GlobalException(JaxError.INACTIVE_EMPLOYEE,"Employee is not active "+metaData.getEmployeeId());
+		}else if(empDetails!=null && StringUtils.isBlank(empDetails.getUserName())) {
+			throw new GlobalException(JaxError.NULL_EMPLOYEE_ID,"User name should not be  blank "+metaData.getEmployeeId());
+		}
+		
+		
+		List<BranchDayTransactionView> totalTrnx =branchTrnxRepository.getTotalTrnxCount(accMonthYear, empDetails.getCountryBranchId(), employeeId, transactionDate);
 		UserwiseTransactionDto dto = getTotalTrnxCount(totalTrnx);
 		return dto;
 	}
@@ -97,7 +109,7 @@ public class BranchUserManager  extends AbstractModel {
 		BigDecimal lastTrnx = new BigDecimal(0);
 		String currencyQuoteName ="";
 		EmployeeDetailsView empDetails = null;
-		CustomerRemittanceTransactionView lastTrnxDetails  = null;
+		List<CustomerRemittanceTransactionView> lastTrnxDetailsList  = null;
 		
 		
 		UserwiseTransactionDto dto = new UserwiseTransactionDto();
@@ -142,11 +154,13 @@ public class BranchUserManager  extends AbstractModel {
 		}
 		
 		if(empDetails!=null) {
-			 lastTrnxDetails = transactionHistroyDao.getLastTrnxAmountFortheCustomer(empDetails.getUserName());
+			lastTrnxDetailsList = transactionHistroyDao.getLastTrnxAmountFortheCustomer(empDetails.getUserName());
 		}
 		 
-		if(lastTrnxDetails!=null) {
-			lastTrnx = lastTrnxDetails.getLocalTrnxAmount();
+		if(lastTrnxDetailsList!=null && !lastTrnxDetailsList.isEmpty()) {
+			for(CustomerRemittanceTransactionView lastTrn :lastTrnxDetailsList) {
+				lastTrnx =lastTrnx.add(lastTrn.getLocalTrnxAmount()==null?BigDecimal.ZERO:lastTrn.getLocalTrnxAmount());
+			}
 			dto.setLastTrnx(currencyQuoteName+" "+lastTrnx);
 		}else {
 			dto.setLastTrnx(currencyQuoteName+" "+lastTrnx);

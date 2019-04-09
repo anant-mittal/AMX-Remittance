@@ -10,6 +10,7 @@ import com.amx.jax.json.JsonSerializerType;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonPath;
 import com.amx.utils.JsonUtil;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 public class SnapModels {
@@ -22,6 +23,8 @@ public class SnapModels {
 	private static final JsonPath HITS = new JsonPath(HITS_KEY);
 	private static final String SOURCE_KEY = "_source";
 	private static final JsonPath SOURCE = new JsonPath(SOURCE_KEY);
+	private static final String SUMMARY_KEY = "summary";
+	private static final JsonPath SUMMARY = new JsonPath(SUMMARY_KEY);
 
 	@JsonIgnoreProperties(ignoreUnknown = true)
 	public static class MapModel implements JsonSerializerType<Object> {
@@ -61,6 +64,11 @@ public class SnapModels {
 		public Object toObject() {
 			return this.map;
 		}
+
+		public <T> T as(Class<T> clazz) {
+			return JsonUtil.getMapper().convertValue(this.map, clazz);
+		}
+
 	}
 
 	@JsonIgnoreProperties(ignoreUnknown = true)
@@ -87,7 +95,7 @@ public class SnapModels {
 		}
 
 		public Hits getHits() {
-			Object hitsObject = map.get("hits");
+			Object hitsObject = map.get(HITS_KEY);
 			if (hitsObject instanceof Hits) {
 				return (Hits) hitsObject;
 			} else {
@@ -98,6 +106,15 @@ public class SnapModels {
 			}
 		}
 
+		Map<String, Object> summaryMap;
+
+		public Map<String, Object> getSummary() {
+			if (summaryMap == null) {
+				summaryMap = SUMMARY.load(map, new HashMap<String, Object>());
+				map.put(SUMMARY_KEY, summaryMap);
+			}
+			return summaryMap;
+		}
 	}
 
 	@JsonIgnoreProperties(ignoreUnknown = true)
@@ -133,7 +150,7 @@ public class SnapModels {
 		}
 
 		public Source getSource() {
-			Object sourceObject = map.get("hits");
+			Object sourceObject = map.get(SOURCE_KEY);
 			if (sourceObject instanceof Source) {
 				return (Source) sourceObject;
 			} else {
@@ -142,6 +159,11 @@ public class SnapModels {
 				map.put(SOURCE_KEY, source);
 				return source;
 			}
+		}
+
+		public <T> T getSource(Class<T> clazz) {
+			Source source = this.getSource();
+			return JsonUtil.getMapper().convertValue(source.toObject(), clazz);
 		}
 
 		public String getId() {
@@ -175,6 +197,9 @@ public class SnapModels {
 
 		List<Aggregations> buckets;
 
+		@JsonIgnore
+		Map<String, Integer> keyIndex;
+
 		public AggregationField(Map<String, Object> map) {
 			super(map);
 		}
@@ -184,7 +209,8 @@ public class SnapModels {
 				this.buckets = new ArrayList<SnapModels.Aggregations>();
 				List<Map<String, Object>> tempbuckets = BUCKETS_LIST.loadList(map, new HashMap<String, Object>());
 				for (Map<String, Object> aggregationMap : tempbuckets) {
-					this.buckets.add(new Aggregations(aggregationMap));
+					Aggregations aggr = new Aggregations(aggregationMap);
+					this.buckets.add(aggr);
 				}
 			}
 			return buckets;
@@ -193,6 +219,22 @@ public class SnapModels {
 		public void setBuckets(List<Aggregations> buckets) {
 			this.buckets = buckets;
 		}
+
+		public Aggregations bucket(String key) {
+			if (this.keyIndex == null) {
+				int index = 0;
+				this.keyIndex = new HashMap<String, Integer>();
+				for (Aggregations aggregations : this.getBuckets()) {
+					this.keyIndex.put(aggregations.getKey(), index++);
+				}
+			}
+			Integer bucketIndex = this.keyIndex.get(key);
+			if (bucketIndex == null) {
+				return new Aggregations(new HashMap<String, Object>());
+			}
+			return this.getBuckets().get(bucketIndex);
+		}
+
 	}
 
 	@JsonIgnoreProperties(ignoreUnknown = true)

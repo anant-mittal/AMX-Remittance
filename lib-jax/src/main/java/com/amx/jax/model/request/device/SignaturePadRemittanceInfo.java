@@ -14,7 +14,6 @@ public class SignaturePadRemittanceInfo implements IDeviceStateData {
 	String bankName;
 	@NotNull
 	String branchName;
-	@NotNull
 	@Pattern(regexp = "^[A-Za-z0-9]+$", message = "Invalid account Number, only alphanumeric allowed")
 	String accountNo;
 	@NotNull

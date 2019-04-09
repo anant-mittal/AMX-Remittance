@@ -7,9 +7,7 @@ import java.math.BigDecimal;
 import java.sql.Clob;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -125,6 +123,10 @@ public class RemittanceApplication implements Serializable {
 	private String errorMessage;
 	private String wuIpAddress;
 	private String errorCategory;
+	private BigDecimal discountOnCommission;
+	
+	
+	
 	
 
 
@@ -825,6 +827,15 @@ public class RemittanceApplication implements Serializable {
 
 	public void setErrorCategory(String errorCategory) {
 		this.errorCategory = errorCategory;
+	}
+
+	@Column(name="DISCOUNT_ON_COMM")
+	public BigDecimal getDiscountOnCommission() {
+		return discountOnCommission;
+	}
+
+	public void setDiscountOnCommission(BigDecimal discountOnCommission) {
+		this.discountOnCommission = discountOnCommission;
 	}
 
 	

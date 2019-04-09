@@ -53,6 +53,7 @@ public class AdditionalInstructionData implements Serializable {
 	private Date approvedDate;
 	private String approvedBy;
 	private String amiecCode;
+	
 
 	public AdditionalInstructionData() {
 	}

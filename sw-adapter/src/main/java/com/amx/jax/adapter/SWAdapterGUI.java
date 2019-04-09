@@ -12,6 +12,9 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextArea;
 
 import org.springframework.stereotype.Component;
 
@@ -20,6 +23,7 @@ import com.amx.jax.adapter.ACardReaderService.CardStatus;
 import com.amx.jax.adapter.ACardReaderService.DataStatus;
 import com.amx.jax.adapter.ACardReaderService.DeviceStatus;
 import com.amx.utils.Constants;
+import com.amx.utils.StringUtils;
 
 @Component
 public class SWAdapterGUI extends JFrame {
@@ -51,12 +55,18 @@ public class SWAdapterGUI extends JFrame {
 	public static String LOG = "";
 	public static String WIN_TITLE = "Al Mulla Exchange - BranchAdapter";
 
+	private JTextArea textArea = null;
+
+	private JScrollPane pane = null;
+
 	private void initUI() {
 
 		setTitle(WIN_TITLE);
 		setSize(400, 400);
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
+
+		JTabbedPane tabs = new JTabbedPane();
 
 		// create a new panel with GridBagLayout manager
 		JPanel newPanel = new JPanel();
@@ -148,8 +158,16 @@ public class SWAdapterGUI extends JFrame {
 		statusData.setBackground(Color.LIGHT_GRAY);
 		statusData.setFont(font);
 
-		newPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Card Reader Status"));
-		add(newPanel);
+		// newPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
+		// "Card Reader Status"));
+
+		textArea = new JTextArea();
+		textArea.setFont(new Font("monospaced", Font.PLAIN, 8));
+		pane = new JScrollPane(textArea);
+
+		tabs.addTab("Adapter", newPanel);
+		tabs.addTab("Logs", pane);
+		add(tabs);
 
 	}
 
@@ -216,16 +234,30 @@ public class SWAdapterGUI extends JFrame {
 		statusReader.setText(String.format(STAT_FORMAT_READER, name));
 	}
 
+	private int logCount = 0;
+
+	public void logWindow(String message) {
+		if (logCount > 3000) {
+			textArea.remove(0);
+		}
+		if (textArea != null) {
+			textArea.append(message + "\n");
+			logCount++;
+		}
+	}
+
 	public void log(String message) {
 		LOG = message;
-		labelDescription.setText(message);
+		logWindow(message);
+		labelDescription.setText(StringUtils.substring(message, 42));
 		labelDescriptionDetail.setText("");
 	}
 
 	public void log(String message, String detail) {
 		LOG = message;
-		labelDescription.setText(message);
-		labelDescriptionDetail.setText(detail);
+		logWindow(message + " - " + detail);
+		labelDescription.setText(StringUtils.substring(message, 60));
+		labelDescriptionDetail.setText(StringUtils.substring(detail, 100));
 	}
 
 	public static void updateTitle(String title) {

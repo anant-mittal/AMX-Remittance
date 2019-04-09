@@ -18,9 +18,11 @@ import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.UserFingerprintResponseModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.constant.JaxEvent;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.userservice.service.FingerprintService;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.userservice.service.UserValidationService;
 import com.amx.jax.util.JaxContextUtil;
@@ -33,6 +35,9 @@ public class UserController {
 
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+	private FingerprintService fingerprintService;
 	
 	
 	@Autowired
@@ -67,19 +72,32 @@ public class UserController {
 	@RequestMapping(value = UserApi.LINK_DEVICE_LOGGEDIN_USER, method = RequestMethod.POST)
 	public AmxApiResponse<UserFingerprintResponseModel, Object> linkDeviceId() {
 		logger.debug("metaData.getCustomerId() : {}", metaData.getCustomerId());
-		UserFingerprintResponseModel userFingerprintResponseModel = userService.linkDeviceId(metaData.getCustomerId());
+		UserFingerprintResponseModel userFingerprintResponseModel = fingerprintService.linkDeviceId(metaData.getCustomerId());
 		return AmxApiResponse.build(userFingerprintResponseModel);
 	}
 
 	@RequestMapping(value = UserApi.LOGIN_CUSTOMER_BY_FINGERPRINT, method = RequestMethod.POST)
-	public AmxApiResponse<CustomerModel, Object> loginCustomerByFingerprint(@RequestParam String identityInt,
-			@RequestParam(defaultValue = Constants.IDENTITY_TYPE_CIVIL_ID_STR) String identityType, @RequestParam String password) {
+	public AmxApiResponse<CustomerModel, Object> loginCustomerByFingerprint(@RequestParam(value = UserApi.IDENTITYINT) String identityInt,
+			@RequestParam(defaultValue = Constants.IDENTITY_TYPE_CIVIL_ID_STR) String identityType,
+			@RequestParam(value = UserApi.PASSWORD) String password) {
 		logger.debug(MessageFormat.format("IdentityInt value is {0} :", identityInt));
 		logger.debug(MessageFormat.format("IdentityType value is {0} :", identityType));
-		JaxContextUtil.setJaxEvent(JaxEvent.FINGERPRINT_LOGIN_INCORRECT_ATTEMPT);
-		CustomerModel customerModel = userService.loginCustomerByFingerprint(identityInt, identityType, password);
 		
+		CustomerModel customerModel = fingerprintService.loginCustomerByFingerprint(identityInt, identityType, password,
+				metaData.getDeviceId());
+
 		return AmxApiResponse.build(customerModel);
+	}
+	
+	@RequestMapping(value = UserApi.DELINK_FINGERPRINT, method = RequestMethod.POST)
+	public  BoolRespModel delinkFingerprint() {
+		return fingerprintService.delinkFingerprint();
+	}
+	
+	@RequestMapping(value = UserApi.RESET_FINGERPRINT, method = RequestMethod.POST)
+	public BoolRespModel resetFingerprint(@RequestParam(value = UserApi.IDENTITYINT) String identity,
+			@RequestParam(defaultValue = Constants.IDENTITY_TYPE_CIVIL_ID_STR) String identityType) {
+		return fingerprintService.resetFingerprint(identity, identityType);
 	}
 
 }

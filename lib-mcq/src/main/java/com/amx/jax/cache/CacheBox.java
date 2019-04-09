@@ -38,9 +38,9 @@ public class CacheBox<T> implements ICacheBox<T> {
 			if (locker == null) {
 				locker = new BlockingHashMap<String, T>();
 			}
-			String localCacheName = String.format("%s-%s",
+			String localCacheName = String.format("%s-%s.%s",
 					(ArgUtil.isEmpty(getCahceName()) ? getClazzName() : getCahceName()),
-					version());
+					CacheRedisConfiguration.CODEC_VERSION, version());
 			if (cache == null) {
 				cache = redisson.getLocalCachedMap(localCacheName,
 						localCacheOptions);

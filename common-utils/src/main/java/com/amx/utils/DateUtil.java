@@ -62,6 +62,9 @@ public final class DateUtil {
 
 	/** The Constant COMMA. */
 	private static final String COMMA = ",";
+	
+	/** The Constant DEFAULT_DATE_FORMAT. */
+	public static final String DATE_FORMAT_DD_MM_YYYYY = "dd/MM/yyyy";
 
 	/**
 	 * Instantiates a new date util.

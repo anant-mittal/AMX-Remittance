@@ -18,6 +18,7 @@ import com.amx.jax.branchremittance.manager.BranchRemittanceManager;
 import com.amx.jax.branchremittance.manager.BranchRemittancePaymentManager;
 import com.amx.jax.branchremittance.manager.BranchRemittanceSaveManager;
 import com.amx.jax.branchremittance.manager.BranchRoutingManager;
+import com.amx.jax.branchremittance.manager.ReportManager;
 import com.amx.jax.manager.FcSaleBranchOrderManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.ResourceDTO;
@@ -29,11 +30,14 @@ import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
+import com.amx.jax.model.response.remittance.PaymentModeDto;
 import com.amx.jax.model.response.remittance.PaymentModeOfPaymentDto;
+import com.amx.jax.model.response.remittance.RemittanceDeclarationReportDto;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.model.response.remittance.RoutingResponseDto;
 import com.amx.jax.services.AbstractService;
 import com.amx.jax.validation.FxOrderValidation;
+import com.amx.utils.JsonUtil;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -65,11 +69,17 @@ public class BranchRemittanceService extends AbstractService{
 	
 	@Autowired
 	BranchRemittanceSaveManager branchRemittanceSaveManager;
+	
+	@Autowired
+	ReportManager reportManager;
+	
 
 	
 	public AmxApiResponse<BranchRemittanceApplResponseDto, Object> saveBranchRemittanceApplication(BranchRemittanceApplRequestModel requestApplModel){
+		logger.info("saveBranchRemittanceApplication : " + JsonUtil.toJson(requestApplModel));
 		BranchRemittanceApplResponseDto applResponseDto = branchRemitApplManager.saveBranchRemittanceApplication(requestApplModel);
-		return AmxApiResponse.build(applResponseDto);
+		AmxApiResponse resopnse = AmxApiResponse.build(applResponseDto);
+		return resopnse;
 	}
 	
 	
@@ -82,11 +92,11 @@ public class BranchRemittanceService extends AbstractService{
 		return AmxApiResponse.build(custShpCart);
 	}
 	
-	public AmxApiResponse<PaymentModeOfPaymentDto, Object> fetchModeOfPayment(){
+	public AmxApiResponse<PaymentModeDto, Object> fetchModeOfPayment(){
 		validation.validateHeaderInfo();
 		BigDecimal languageId = metaData.getLanguageId();
-		List<PaymentModeOfPaymentDto> lstPaymentMode = branchRemittancePaymentManager.fetchModeOfPayment(languageId);
-		return AmxApiResponse.buildList(lstPaymentMode);
+		PaymentModeDto  lstPaymentMode= branchRemittancePaymentManager.fetchModeOfPayment(languageId);
+		return AmxApiResponse.build(lstPaymentMode);
 	}
 	
 	public AmxApiResponse<LocalBankDetailsDto, Object> fetchLocalBanks(){
@@ -104,12 +114,14 @@ public class BranchRemittanceService extends AbstractService{
 		return AmxApiResponse.buildList(lstLocalBanks);
 	}
 	
-	public AmxApiResponse<String, Object> fetchCustomerBankNames(BigDecimal bankId){
-		validation.validateHeaderInfo();
-		BigDecimal customerId = metaData.getCustomerId();
-		List<String> lstCustomerNames = branchRemittancePaymentManager.fetchCustomerNames(customerId,bankId);
-		return AmxApiResponse.buildList(lstCustomerNames);
-	}
+
+	
+	public AmxApiResponse<CustomerBankDetailsDto, Object> fetchCustomerBankNames(BigDecimal bankId){
+	validation.validateHeaderInfo();
+	BigDecimal customerId = metaData.getCustomerId();
+	CustomerBankDetailsDto customerBankDetailDto = branchRemittancePaymentManager.fetchCustomerNames(customerId,bankId);
+	return AmxApiResponse.build(customerBankDetailDto);
+}
 	
 	public AmxApiResponse<ResourceDTO, Object> fetchPosBanks(){
 		List<ResourceDTO> lstPosBanks = branchRemittancePaymentManager.fetchPosBanks();
@@ -153,7 +165,9 @@ public class BranchRemittanceService extends AbstractService{
 	
 	public AmxApiResponse<RoutingResponseDto,Object> getRoutingDetails(BigDecimal beneRelaId) {
 		RoutingResponseDto respondeDto = branchRoutingManager.getRoutingSetupDeatils(beneRelaId);
-		return AmxApiResponse.build(respondeDto);
+		AmxApiResponse resopnse = AmxApiResponse.build(respondeDto);
+		resopnse.setWarningKey(respondeDto.getWarnigMsg());
+		return resopnse;
 	}
 	
 	
@@ -169,8 +183,28 @@ public class BranchRemittanceService extends AbstractService{
 	}
 	
 	public AmxApiResponse<RemittanceResponseDto, Object> saveRemittanceTransaction(BranchRemittanceRequestModel remittanceRequestModel){
-		 RemittanceResponseDto dto = branchRemittanceSaveManager.saveRemittance(remittanceRequestModel);
+		 logger.info("saveBranchRemittanceApplication : " + JsonUtil.toJson(remittanceRequestModel));
+		 RemittanceResponseDto dto = branchRemittanceSaveManager.saveRemittanceTrnx(remittanceRequestModel);
 		 return AmxApiResponse.build(dto);
 	 }
 	
+
+	public AmxApiResponse<BranchRemittanceApplResponseDto, Object> deleteFromShoppingCart(BigDecimal remittanceApplicationId){
+		BranchRemittanceApplResponseDto applResponseDto = branchRemitApplManager.deleteFromShoppingCart(remittanceApplicationId);
+		return AmxApiResponse.build(applResponseDto);
+	}
+	
+	
+	public AmxApiResponse<RemittanceDeclarationReportDto,Object> fetchCustomerDeclarationReport(BigDecimal collectionDocNo, BigDecimal collectionDocYear,BigDecimal collectionDocCode){
+		RemittanceDeclarationReportDto applResponseDto = reportManager.fetchCustomerDeclarationReport(collectionDocNo,collectionDocYear,collectionDocCode);
+		return AmxApiResponse.build(applResponseDto);
+	}
+
+	public BoolRespModel sendReceiptOnEmail(BigDecimal collectionDocNo,BigDecimal collectionDocYear ,BigDecimal collectionDocCode){
+		Boolean result = branchRemittanceSaveManager.sendReceiptOnEmail(collectionDocNo,collectionDocYear,collectionDocCode);
+		return new BoolRespModel(result);
+	}
+	
+	
+
 }

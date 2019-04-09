@@ -20,6 +20,7 @@ public class OffsiteCustomerDataDTO {
 	HomeAddressDetails homeAddressDestails;
 
 	CustomerEmploymentDetails customerEmploymentDetails;
+	CustomerFlags customerFlags;
 
 	public String getIdentityInt() {
 		return identityInt;
@@ -67,6 +68,14 @@ public class OffsiteCustomerDataDTO {
 
 	public void setCustomerEmploymentDetails(CustomerEmploymentDetails customerEmploymentDetails) {
 		this.customerEmploymentDetails = customerEmploymentDetails;
+	}
+
+	public CustomerFlags getCustomerFlags() {
+		return customerFlags;
+	}
+
+	public void setCustomerFlags(CustomerFlags customerFlags) {
+		this.customerFlags = customerFlags;
 	}
 	
 }

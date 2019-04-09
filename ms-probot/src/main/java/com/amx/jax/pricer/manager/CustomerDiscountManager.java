@@ -25,6 +25,7 @@ import com.amx.jax.pricer.dbmodel.Customer;
 import com.amx.jax.pricer.dbmodel.CustomerCategoryDiscount;
 import com.amx.jax.pricer.dbmodel.CustomerExtended;
 import com.amx.jax.pricer.dbmodel.PipsMaster;
+import com.amx.jax.pricer.dto.ExchangeDiscountInfo;
 import com.amx.jax.pricer.dto.ExchangeRateDetails;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.var.PricerServiceConstants.CUSTOMER_CATEGORY;
@@ -59,8 +60,16 @@ public class CustomerDiscountManager {
 		ChannelDiscount channelDiscount = channelDiscountDao.getDiscountByChannel(pricingRequestDTO.getChannel());
 		BigDecimal channelDiscountPips = (null != channelDiscount ? channelDiscount.getDiscountPips() : BIGD_ZERO);
 
+		// Channel Info
+		ExchangeDiscountInfo channelInfo = new ExchangeDiscountInfo();
+		channelInfo.setDiscountType(DISCOUNT_TYPE.CHANNEL);
+		channelInfo.setDiscountTypeValue(pricingRequestDTO.getChannel().name());
+		channelInfo.setDiscountPipsValue(channelDiscountPips);
+
 		// Compute Customer category Discount
 		BigDecimal ccDiscountPips;
+		ExchangeDiscountInfo custCategoryInfo = new ExchangeDiscountInfo();
+
 		if (customer != null) {
 			CustomerExtended customerExtended = customerExtendedDao
 					.getCustomerExtendedByCustomerId(customer.getCustomerId());
@@ -68,10 +77,24 @@ public class CustomerDiscountManager {
 			CustomerCategoryDiscount ccDiscount = customerExtended.getCustomerCategoryDiscount();
 
 			ccDiscountPips = (null != ccDiscount ? ccDiscount.getDiscountPips() : BIGD_ZERO);
+
+			// Customer Category Info
+			custCategoryInfo.setDiscountType(DISCOUNT_TYPE.CUSTOMER_CATEGORY);
+			custCategoryInfo.setDiscountTypeValue(ccDiscount.getCustomerCategory());
+			custCategoryInfo.setDiscountPipsValue(ccDiscountPips);
+
+			// TODO: Dirty Code --- REMOVE ---
+			customer.setRemarks(ccDiscount.getCustomerCategory());
+
 		} else {
 			CustomerCategoryDiscount ccDiscount = custCatDiscountDao
 					.getDiscountByCustomerCategory(customerCategory.name());
 			ccDiscountPips = (null != ccDiscount ? ccDiscount.getDiscountPips() : BIGD_ZERO);
+
+			custCategoryInfo.setDiscountType(DISCOUNT_TYPE.CUSTOMER_CATEGORY);
+			custCategoryInfo.setDiscountTypeValue(ccDiscount.getCustomerCategory());
+			custCategoryInfo.setDiscountPipsValue(ccDiscountPips);
+
 		}
 
 		List<BigDecimal> validBankIds = new ArrayList<BigDecimal>(exchRateAndRoutingTransientDataCache.getBankDetails().keySet());
@@ -112,6 +135,7 @@ public class CustomerDiscountManager {
 		for (ExchangeRateDetails bankExRateDetail : exchRateAndRoutingTransientDataCache.getSellRateDetails()) {
 
 			BigDecimal amountSlabPips = BIGD_ZERO;
+			ExchangeDiscountInfo amountSlabPipsInfo = new ExchangeDiscountInfo();
 
 			if (bankAmountSlabDiscounts.containsKey(bankExRateDetail.getBankId().longValue())) {
 				TreeMap<BigDecimal, PipsMaster> pipsMap = bankAmountSlabDiscounts
@@ -120,6 +144,12 @@ public class CustomerDiscountManager {
 
 					if (bankExRateDetail.getSellRateBase().getConvertedFCAmount().compareTo(entry.getKey()) <= 0) {
 						amountSlabPips = entry.getValue().getPipsNo();
+
+						amountSlabPipsInfo.setDiscountType(DISCOUNT_TYPE.AMOUNT_SLAB);
+						amountSlabPipsInfo.setDiscountTypeValue(entry.getValue().getFromAmount().longValue() + "-"
+								+ entry.getValue().getToAmount().longValue());
+						amountSlabPipsInfo.setDiscountPipsValue(amountSlabPips);
+
 						break;
 					} // if
 
@@ -130,6 +160,8 @@ public class CustomerDiscountManager {
 
 			BigDecimal discountedSellRate = bankExRateDetail.getSellRateBase().getInverseRate()
 					.subtract(totalDiscountPips);
+
+			bankExRateDetail.setDiscountAvailed(true);
 
 			/**
 			 * Compute Base Sell rate : Cost + Margin
@@ -152,14 +184,14 @@ public class CustomerDiscountManager {
 
 			if (discountedSellRate.compareTo(adjustedBaseSellRate) < 0) {
 				discountedSellRate = adjustedBaseSellRate;
+				bankExRateDetail.setDiscountAvailed(false);
 			}
 
-			bankExRateDetail.setDiscountPipsDetails(new HashMap<DISCOUNT_TYPE, String>());
+			bankExRateDetail.setCustomerDiscountDetails(new HashMap<DISCOUNT_TYPE, ExchangeDiscountInfo>());
 
-			bankExRateDetail.getDiscountPipsDetails().put(DISCOUNT_TYPE.CHANNEL, channelDiscountPips.toPlainString());
-			bankExRateDetail.getDiscountPipsDetails().put(DISCOUNT_TYPE.CUSTOMER_CATEGORY,
-					ccDiscountPips.toPlainString());
-			bankExRateDetail.getDiscountPipsDetails().put(DISCOUNT_TYPE.AMOUNT_SLAB, amountSlabPips.toPlainString());
+			bankExRateDetail.getCustomerDiscountDetails().put(DISCOUNT_TYPE.CHANNEL, channelInfo);
+			bankExRateDetail.getCustomerDiscountDetails().put(DISCOUNT_TYPE.CUSTOMER_CATEGORY, custCategoryInfo);
+			bankExRateDetail.getCustomerDiscountDetails().put(DISCOUNT_TYPE.AMOUNT_SLAB, amountSlabPipsInfo);
 
 			if (pricingRequestDTO.getLocalAmount() != null) {
 

@@ -37,11 +37,11 @@ public class TrnxViewTask extends AbstractDBSyncTask {
 
 	private static final Logger LOGGER = LoggerService.getLogger(TrnxViewTask.class);
 	private static final String TIME_TRACK_KEY = "lastUpdateDate";
-	private static final int PAGE_SIZE = 1000;
+	private static final int PAGE_SIZE = 5000;
 
-	long intervalDays = 10;
+	long intervalDays = 20;
 
-	@SchedulerLock(lockMaxAge = AmxCurConstants.INTERVAL_MIN * 30, context = LockContext.BY_CLASS)
+	@SchedulerLock(lockMaxAge = AmxCurConstants.INTERVAL_MIN * 30, context = LockContext.BY_METHOD)
 	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_SEC * 15)
 	public void doTaskModeNight() {
 		if (TimeUtils.inHourSlot(4, 0)) {
@@ -49,7 +49,7 @@ public class TrnxViewTask extends AbstractDBSyncTask {
 		}
 	}
 
-	@SchedulerLock(lockMaxAge = AmxCurConstants.INTERVAL_MIN * 30, context = LockContext.BY_CLASS)
+	@SchedulerLock(lockMaxAge = AmxCurConstants.INTERVAL_MIN * 30, context = LockContext.BY_METHOD)
 	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_MIN * 10)
 	public void doTaskModeDay() {
 		if (!TimeUtils.inHourSlot(4, 0)) {

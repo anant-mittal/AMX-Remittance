@@ -24,6 +24,8 @@ import com.amx.jax.dict.UserClient.Channel;
 import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.dict.UserClient.UserDeviceClient;
 import com.amx.jax.http.CommonHttpRequest;
+import com.amx.jax.logger.AuditActor;
+import com.amx.jax.logger.AuditDetailProvider;
 import com.amx.jax.model.UserDevice;
 import com.amx.jax.rest.AppRequestContextInFilter;
 import com.amx.jax.rest.IMetaRequestOutFilter;
@@ -35,7 +37,7 @@ import com.amx.utils.ContextUtil;
  * The Class JaxService.
  */
 @Component
-public class JaxService implements IMetaRequestOutFilter<JaxMetaInfo>, AppRequestContextInFilter {
+public class JaxService implements IMetaRequestOutFilter<JaxMetaInfo>, AppRequestContextInFilter, AuditDetailProvider {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 
@@ -236,6 +238,12 @@ public class JaxService implements IMetaRequestOutFilter<JaxMetaInfo>, AppReques
 		} else {
 			userClient.setClientType(ClientType.UNKNOWN);
 		}
+	}
+
+	@Override
+	public AuditActor getActor() {
+		return new AuditActor(sessionService.getUserSession().isValid() ? AuditActor.ActorType.CUSTOMER
+				: AuditActor.ActorType.GUEST, sessionService.getUserSession().getUserid());
 	}
 
 }

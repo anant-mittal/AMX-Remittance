@@ -1,12 +1,9 @@
 package com.amx.jax.userservice.service;
 
-import static com.amx.amxlib.constant.NotificationConstants.REG_SUC;
 import static com.amx.amxlib.constant.NotificationConstants.RESP_DATA_KEY;
 
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -25,6 +22,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -48,12 +46,9 @@ import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.JaxAuthCache;
-import com.amx.jax.JaxAuthCache.JaxAuthMeta;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.async.ExecutorConfig;
-import com.amx.jax.auditlog.CustomerAuditEvent;
-import com.amx.jax.auditlog.JaxUserAuditEvent;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.CustomerVerificationType;
 import com.amx.jax.constant.JaxApiFlow;
@@ -71,18 +66,19 @@ import com.amx.jax.dbmodel.ViewCity;
 import com.amx.jax.dbmodel.ViewDistrict;
 import com.amx.jax.dbmodel.ViewState;
 import com.amx.jax.error.JaxError;
-import com.amx.jax.logger.AuditEvent;
 import com.amx.jax.logger.AuditEvent.Result;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.events.CActivityEvent;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.AbstractModel;
 import com.amx.jax.model.auth.QuestModelDTO;
+import com.amx.jax.model.response.customer.CustomerFlags;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.repository.CountryRepository;
+import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.IContactDetailDao;
 import com.amx.jax.repository.ICustomerRepository;
@@ -95,17 +91,14 @@ import com.amx.jax.services.JaxNotificationService;
 import com.amx.jax.userservice.dao.AbstractUserDao;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.dao.CustomerIdProofDao;
+import com.amx.jax.userservice.manager.CustomerFlagManager;
 import com.amx.jax.userservice.manager.SecurityQuestionsManager;
-import com.amx.jax.userservice.repository.CustomerRepository;
 import com.amx.jax.userservice.repository.LoginLogoutHistoryRepository;
 import com.amx.jax.userservice.service.CustomerValidationContext.CustomerValidation;
 import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.StringUtil;
 import com.amx.utils.Random;
-
-
-import net.bytebuddy.utility.privilege.GetSystemPropertyAction;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -207,7 +200,9 @@ public class UserService extends AbstractUserService {
 	UserService userService;
 	
 	@Autowired
-	private PostManService postManService;
+	PostManService postManService;
+	@Autowired
+	CustomerFlagManager customerFlagManager;
 	
 
 	@Override
@@ -648,18 +643,10 @@ public class UserService extends AbstractUserService {
 	public ApiResponse generateRandomQuestions(Integer size, Integer customerId) {
 		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(new BigDecimal(customerId));
 		ApiResponse response = getBlackApiResponse();
-		try {
-			List<QuestModelDTO> result = secQmanager.generateRandomQuestions(onlineCustomer, size, customerId);
-			response.getData().getValues().addAll(result);
-		} catch (GlobalException e) {
-			auditService.log(createUserServiceEvent(new BigDecimal(customerId),
-					JaxUserAuditEvent.Type.SEC_QUE_GENERATE_EXCEPTION));
-			throw e;
-		}
+		List<QuestModelDTO> result = secQmanager.generateRandomQuestions(onlineCustomer, size, customerId);
+		response.getData().getValues().addAll(result);
 		response.getData().setType("quest");
 		response.setResponseStatus(ResponseStatus.OK);
-		auditService.log(
-				createUserServiceEvent(new BigDecimal(customerId), JaxUserAuditEvent.Type.SEC_QUE_GENERATE_SUCCESS));
 		return response;
 	}
 
@@ -1055,11 +1042,6 @@ public class UserService extends AbstractUserService {
 		}
 	}
 
-	private AuditEvent createUserServiceEvent(BigDecimal customerId, JaxUserAuditEvent.Type type) {
-		AuditEvent beneAuditEvent = new CustomerAuditEvent(type, customerId);
-		return beneAuditEvent;
-	}
-
 	public Customer getCustById(BigDecimal id) {
 		return repo.findOne(id);
 	}
@@ -1151,4 +1133,64 @@ public class UserService extends AbstractUserService {
 		CustomerModel customerModel = convert(customerOnlineRegistration);
 		return customerModel;
 	}
+
+	public BoolRespModel delinkFingerprint() {
+		CustomerOnlineRegistration customerOnlineRegistration = custDao
+				.getOnlineCustByCustomerId(metaData.getCustomerId());
+		customerOnlineRegistration.setFingerprintDeviceId("");
+		customerOnlineRegistration.setDevicePassword("");
+		custDao.saveOnlineCustomer(customerOnlineRegistration);
+		BoolRespModel boolRespModel = new BoolRespModel();
+		boolRespModel.setSuccess(Boolean.TRUE);
+		Customer customer = custDao.getCustById(customerOnlineRegistration.getCustomerId());
+		PersonInfo personinfo = new PersonInfo();
+		personinfo.setFirstName(customer.getFirstName());
+		personinfo.setMiddleName(customer.getMiddleName());
+		personinfo.setLastName(customer.getLastName());
+		Email email = new Email();
+		email.addTo(customerOnlineRegistration.getEmail());
+		email.setITemplate(TemplatesMX.FINGERPRINT_DELINKED_SUCCESS);
+		email.setHtml(true);
+		email.getModel().put(RESP_DATA_KEY, personinfo);
+		logger.debug("Email to - " + customerOnlineRegistration.getEmail());
+		sendEmail(email);
+		return boolRespModel;
+	}
+	
+	public CustomerFlags getCustomerFlags(BigDecimal customerId) {
+		CustomerFlags customerFlags = null;
+		if (customerId != null) {
+			customerFlags = customerFlagManager.getCustomerFlags(customerId);
+		}
+		return customerFlags;
+	}
+
+	/**
+	 * deactivates id proof of customer
+	 * @param customerId
+	 */
+	public void deActivateCustomerIdProof(BigDecimal customerId) {
+		Customer customer = repo.findOne(customerId);
+		List<CustomerIdProof> activeIdProofs = customerIdProofDao.getActiveCustomerIdProof(customerId,
+				customer.getIdentityTypeId());
+		for (CustomerIdProof customerIdProof : activeIdProofs) {
+			customerIdProof.setIdentityStatus(ConstantDocument.Deleted);
+		}
+		if (!CollectionUtils.isEmpty(activeIdProofs)) {
+			customerIdProofDao.save(activeIdProofs);
+		}
+	}
+	
+	public void deactiveteCustomerIdProofPendingCompliance(BigDecimal customerId) {
+		Customer customer = repo.findOne(customerId);
+		List<CustomerIdProof> deActiveIdProofs = customerIdProofDao.getCompliancePendingCustomerIdProof(customerId,
+				customer.getIdentityTypeId());
+		for (CustomerIdProof customerIdProof : deActiveIdProofs) {
+			customerIdProof.setIdentityStatus(ConstantDocument.Deleted);
+		}
+		if (!CollectionUtils.isEmpty(deActiveIdProofs)) {
+			customerIdProofDao.save(deActiveIdProofs);
+		}
+	}
+	 
 }

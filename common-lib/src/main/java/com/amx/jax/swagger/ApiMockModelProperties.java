@@ -21,6 +21,11 @@ import springfox.documentation.service.AllowableListValues;
 import springfox.documentation.service.AllowableRangeValues;
 import springfox.documentation.service.AllowableValues;
 
+/**
+ * 
+ * @author lalittanwar
+ *
+ */
 public class ApiMockModelProperties {
 	private ApiMockModelProperties() {
 		throw new UnsupportedOperationException();

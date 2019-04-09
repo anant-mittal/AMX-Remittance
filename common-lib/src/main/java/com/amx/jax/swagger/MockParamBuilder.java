@@ -2,6 +2,11 @@ package com.amx.jax.swagger;
 
 import java.util.List;
 
+/**
+ * 
+ * @author lalittanwar
+ *
+ */
 public class MockParamBuilder {
 
 	public static final String HEADER_VALUE = "header";

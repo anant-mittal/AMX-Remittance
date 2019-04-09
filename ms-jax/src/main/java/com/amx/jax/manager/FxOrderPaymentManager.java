@@ -51,6 +51,7 @@ import com.amx.jax.model.response.fx.ShoppingCartDetailsDto;
 import com.amx.jax.payg.PayGModel;
 import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.repository.CountryBranchRepository;
+import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.repository.IDocumentDao;
 import com.amx.jax.repository.PaymentModeRepository;
 import com.amx.jax.repository.ReceiptPaymentAppRepository;
@@ -58,7 +59,6 @@ import com.amx.jax.repository.fx.FxDeliveryDetailsRepository;
 import com.amx.jax.service.CompanyService;
 import com.amx.jax.service.FinancialService;
 import com.amx.jax.userservice.dao.CustomerDao;
-import com.amx.jax.userservice.repository.CustomerRepository;
 import com.amx.jax.util.JaxUtil;
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)

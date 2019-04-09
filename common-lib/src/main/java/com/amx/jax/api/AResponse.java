@@ -20,6 +20,7 @@ public abstract class AResponse<M> implements ApiMetaResponse<M> {
 	protected String error; // Bad Request
 	protected String exception; // org.springframework.http.converter.HttpMessageNotReadableException
 	protected String message;// JSON parse error
+	protected String warningKey;
 
 	@ApiMockModelProperty(example = "/postman/email/send")
 	protected String path;
@@ -201,6 +202,15 @@ public abstract class AResponse<M> implements ApiMetaResponse<M> {
 	@Override
 	public void setMessage(String message) {
 		this.message = message;
+	}
+
+
+	public String getWarningKey() {
+		return this.warningKey;
+	}
+
+	public void setWarningKey(String warningKey) {
+		this.warningKey = warningKey;
 	}
 
 	/**

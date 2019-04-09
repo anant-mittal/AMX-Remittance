@@ -427,11 +427,12 @@ public class UserAuthService {
 				.interval(AmxConstants.OFFLINE_OTP_TTL).tolerance(AmxConstants.OFFLINE_OTP_TOLERANCE)
 				.secret(otpDevice.getClientSecreteKey()).message(sac);
 
-		if (!builder.validateComplexHMAC(otp)) {
-			return Boolean.FALSE;
+		// Added Complex Password
+		if (builder.validateComplexHMAC(otp) || builder.validateNumHMAC(otp)) {
+			return Boolean.TRUE;
 		}
 
-		return Boolean.TRUE;
+		return Boolean.FALSE;
 
 	}
 

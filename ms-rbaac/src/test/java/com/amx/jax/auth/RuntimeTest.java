@@ -2,26 +2,20 @@ package com.amx.jax.auth;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.security.NoSuchAlgorithmException;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.NavigableMap;
-import java.util.TreeMap;
-import java.util.concurrent.TimeUnit;
+import java.util.TreeSet;
 
 import com.amx.utils.CryptoUtil;
-import com.amx.utils.DateUtil;
 import com.amx.utils.JsonUtil;
-import com.amx.utils.RoundUtil;
 
 public final class RuntimeTest {
 
@@ -40,104 +34,40 @@ public final class RuntimeTest {
 
 	public static void main(String[] args) throws NoSuchAlgorithmException {
 
-		System.out.println(" Date Now  ==>  "
-				+ DateUtil.formatDate(DateUtil.getCurrentDateWithTime("Indian/Mauritius"), "us", "24_hr"));
-
-		/*
-		 * ******** TimeZones ********** Asia/Kolkata Asia/Kuwait Asia/Karachi
-		 * America/New_York Asia/Singapore Australia/Sydney America/Los_Angeles
-		 */
-		ZoneId zoneId = ZoneId.of("America/Los_Angeles");
-
-		ZonedDateTime zdt = ZonedDateTime.ofInstant(Instant.now(), zoneId);
-
-		System.out.println(" Hour ==>   " + zdt.getHour());
-
-		System.out.println(" Minutes ==>   " + zdt.getMinute());
-
-		System.out.println(" Hour Minutes ==>   " + (zdt.getHour() * 100 + zdt.getMinute()));
-
-		Date date1 = DateUtil.getCurrentDateAtTime(5, 90, 0, 0);
-
-		Date date2 = DateUtil.getCurrentDateAtTime(23, 30, 0, 0);
-
-		long diffInMillies = date2.getTime() - date1.getTime();
-
-		long diffHr = TimeUnit.HOURS.convert(diffInMillies, TimeUnit.MILLISECONDS);
-		long diffMin = TimeUnit.MINUTES.convert(diffInMillies, TimeUnit.MILLISECONDS);
-
-		System.out.println(" Hours difference ==>  " + diffHr);
-		System.out.println(" Minutes difference ==>  " + (diffMin - (diffHr * 60)));
-
-		System.out.println(
-				"Zoned Date String ==>  " + zdt.toString() + " Formatted Date String ==>  " + DateUtil.formatDateTime(zdt));
-		
-		System.out.println(
-				"Zoned Date String+2 Months ==>  " + zdt.plusMonths(2) + " Formatted Date String ==>  " + DateUtil.formatDateTime(zdt));
-
-		System.out.println(
-				"Date String ==>  " + date2.toString() + " Formatted Date String ==>  " + DateUtil.formatDate(date2));
-
-		BigDecimal bd = new BigDecimal("0.00000000093933");
-
-		// BigDecimal bd = new BigDecimal("9.3933000000E-10");
-
-		System.out.println(
-				"\n\n Big Decimal ==>" + bd.toPlainString() + " : " + RoundUtil.round(bd.doubleValue(), 20) + "\n\n");
-
-		zdt = DateUtil.getNextZonedDay(zdt);
-		
-		System.out.println(" Zone Date 1 ==> " + zdt);
-
-		System.out.println(" Zone Date + 0.25Hrs ==> " + zdt.plusMinutes((long) (0.25 * 60) % 60));
-		
-		System.out.println(" Zone Date + 1.25Hrs ==> " + zdt.plusMinutes((long) (1.25 * 60) % 60));
-		
-		System.out.println(" Zone Date + 1.30Hrs ==> " + zdt.plusMinutes((long) (1.30 * 60) % 60));
-		
-		System.out.println(" Zone Date + 1.50Hrs ==> " + zdt.plusMinutes((long) (1.50 * 60) % 60));
-		
-		
-		System.out.println("\n\n HourMin ==>" + DateUtil.getHrMinIntVal(23, 100));
-		
-		Date dt = new Date(1552055789000l);
-		
-		System.out.println("\n\n Date d ==>" + dt);
-		
-		
-		// ZoneId zoneId = ZoneId.of("Indian/Mauritius");
-
-		// System.out.println(" Zone Id ==>" + zoneId.getId() +" : " +
-		// zoneId.getAvailableZoneIds());
-
-		System.out.println(" Hour ==>" + Calendar.getInstance().get(Calendar.HOUR_OF_DAY));
-
-		System.out.println(" Hour ==>" + Calendar.getInstance().get(Calendar.MINUTE));
-
-		NavigableMap<Integer, String> map = new TreeMap<Integer, String>();
-
-		map.put(12, "a");
-		map.put(11, "b");
-		map.put(10, "c");
-		map.put(9, "d");
-		map.put(8, "e");
-		map.put(7, "a");
-		map.put(6, "a");
-		map.put(5, "a");
-		map.put(4, "a");
-		map.put(3, "a");
-		map.put(2, "a");
-		map.put(1, "a");
-
-		Map<Integer, String> subMap = map.subMap(3, true, 10, true);
-
-		System.out.println(" Sub Map ==> " + JsonUtil.toJson(subMap));
-
-		if (true)
-			return;
-
 		System.out.println(" ======== String Test ======= " + "Y".equalsIgnoreCase(null));
 
+		BigDecimal b = new BigDecimal(1235454.453888888);
+		BigDecimal dec = b.remainder(new BigDecimal(1)).round(new MathContext(3, RoundingMode.HALF_EVEN));
+
+		BigDecimal rounder = new BigDecimal(0.0503444).setScale(3, RoundingMode.HALF_EVEN);
+
+		System.out.println("Rounder ==> " + rounder);
+
+		System.out.println(" Decimal ==> " + dec);
+
+		BigDecimal diffVal = dec.remainder(rounder).round(new MathContext(3, RoundingMode.HALF_EVEN));
+
+		System.out.println(" Diff Val ==> " + diffVal.negate());
+		
+		BigDecimal bumpUpVal = rounder.subtract(diffVal);
+
+		System.out.println(" Bump Up Val ==> " + bumpUpVal);
+
+		System.out.println("Round Down ==>" + dec.subtract(diffVal));
+
+		System.out.println(" Int Val ==>  " + b.longValue());
+		
+
+		System.out.println("New Amt Down ==> " + new BigDecimal(b.longValue()).add(dec.add(diffVal.negate())));
+		
+		System.out.println(" double ==> " + dec.add(diffVal.negate()).remainder(rounder).doubleValue());
+		
+		System.out.println("New Amt Up ==> " + new BigDecimal(b.longValue()).add(dec.add(bumpUpVal)));
+
+		System.out.println(" double 2 ==> " + dec.add(bumpUpVal).remainder(rounder).doubleValue());
+		
+		
+		
 		Map<String, Object> innerJsonMap = new HashMap<String, Object>();
 
 		innerJsonMap.put("1", "value1");
@@ -156,7 +86,7 @@ public final class RuntimeTest {
 		outMap.put("map4", innerJsonMap);
 		outMap.put("map5", innerJsonMap);
 
-		System.out.println(" JSON ==> " + JsonUtil.toJson(outMap));
+		System.out.println("\n\n JSON ==> " + JsonUtil.toJson(outMap));
 
 		Map<String, Map<String, Object>> revJsonMap = (Map<String, Map<String, Object>>) JsonUtil
 				.fromJson(JsonUtil.toJson(outMap), Map.class);

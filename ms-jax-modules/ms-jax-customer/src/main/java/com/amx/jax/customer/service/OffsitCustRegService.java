@@ -16,8 +16,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.sql.rowset.serial.SerialException;
-import javax.transaction.Transactional;
-
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
@@ -26,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.web.context.WebApplicationContext;
@@ -41,6 +40,8 @@ import com.amx.jax.amxlib.config.OtpSettings;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constants.CustomerRegistrationType;
+import com.amx.jax.customer.manager.OffsiteCustomerRegManager;
+import com.amx.jax.customer.manager.OffsiteCustomerRegValidator;
 import com.amx.jax.dal.ArticleDao;
 import com.amx.jax.dal.BizcomponentDao;
 import com.amx.jax.dal.FieldListDao;
@@ -58,6 +59,7 @@ import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.DistrictMaster;
 import com.amx.jax.dbmodel.DmsApplMapping;
 import com.amx.jax.dbmodel.DocBlobUpload;
+import com.amx.jax.dbmodel.Employee;
 import com.amx.jax.dbmodel.EmployeeDetails;
 import com.amx.jax.dbmodel.EmploymentTypeMasterView;
 import com.amx.jax.dbmodel.FieldList;
@@ -82,6 +84,7 @@ import com.amx.jax.model.request.HomeAddressDetails;
 import com.amx.jax.model.request.ImageSubmissionRequest;
 import com.amx.jax.model.request.LocalAddressDetails;
 import com.amx.jax.model.request.OffsiteCustomerRegistrationRequest;
+import com.amx.jax.model.request.customer.GetOffsiteCustomerDetailRequest;
 import com.amx.jax.model.response.ArticleDetailsDescDto;
 import com.amx.jax.model.response.ArticleMasterDescDto;
 import com.amx.jax.model.response.ComponentDataDto;
@@ -91,7 +94,9 @@ import com.amx.jax.model.response.IncomeRangeDto;
 import com.amx.jax.model.response.customer.OffsiteCustomerDataDTO;
 import com.amx.jax.repository.CountryMasterRepository;
 import com.amx.jax.repository.CustomerEmployeeDetailsRepository;
+import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.repository.DOCBLOBRepository;
+import com.amx.jax.repository.EmployeeRespository;
 import com.amx.jax.repository.EmploymentTypeRepository;
 import com.amx.jax.repository.IApplicationCountryRepository;
 import com.amx.jax.repository.IDMSAppMappingRepository;
@@ -108,7 +113,6 @@ import com.amx.jax.userservice.manager.CustomerRegistrationManager;
 import com.amx.jax.userservice.manager.CustomerRegistrationOtpManager;
 import com.amx.jax.userservice.repository.ContactDetailsRepository;
 import com.amx.jax.userservice.repository.CustomerIdProofRepository;
-import com.amx.jax.userservice.repository.CustomerRepository;
 import com.amx.jax.userservice.service.ContactDetailService;
 import com.amx.jax.userservice.service.CustomerValidationContext.CustomerValidation;
 import com.amx.jax.userservice.service.UserService;
@@ -120,6 +124,7 @@ import com.amx.jax.util.DateUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.validation.CountryMetaValidation;
 import com.amx.utils.Constants;
+import com.amx.utils.JsonUtil;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -177,9 +182,9 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 
 	@Autowired
 	private ContactDetailsRepository contactDetailsRepository;
-	
+
 	@Autowired
-	ContactDetailService contactDetailService; 
+	ContactDetailService contactDetailService;
 
 	@Autowired
 	CountryMasterRepository countryMasterRepository;
@@ -216,25 +221,32 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 
 	@Autowired
 	CustomerRegistrationOtpManager customerRegistrationOtpManager;
-	
+
 	@Autowired
 	CustomerCredentialValidator customerCredentialValidator;
-	
+
 	@Autowired
 	CustomerService customerService;
-	
+
 	@Autowired
 	IApplicationCountryRepository applicationSetup;
-	
+
 	@Autowired
 	JaxNotificationService jaxNotificationService;
-	
+
 	@Autowired
 	UserService userService;
-	
+
 	@Autowired
 	private CryptoUtil cryptoUtil;
+	@Autowired
+	OffsiteCustomerRegValidator offsiteCustomerRegValidator;
+	@Autowired
+	OffsiteCustomerRegManager offsiteCustomerRegManager;
 	
+	@Autowired
+	EmployeeRespository employeeRespository;
+
 	public AmxApiResponse<ComponentDataDto, Object> getIdTypes() {
 		List<Map<String, Object>> tempList = bizcomponentDao
 				.getAllComponentComboDataForCustomer(metaData.getLanguageId());
@@ -273,20 +285,20 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 						JaxError.VALIDATE_OTP_LIMIT_EXCEEDED,
 						"Sorry, you cannot proceed to register. Please try to register after 12 midnight");
 			}
-			
+
 			// actual validation logic
 			if (!otpData.getmOtp().equals(offsiteCustRegModel.getmOtp())) {
 				otpMisMatch = true;
 				otpMismatch(otpData);
 			}
-			
+
 			if (!StringUtils.isBlank(offsiteCustRegModel.geteOtp())) {
 				if (!otpData.geteOtp().equals(offsiteCustRegModel.geteOtp())) {
 					otpMisMatch = true;
 					otpMismatch(otpData);
 				}
 			}
-				
+
 			otpData.setOtpValidated(true);
 			otpData.resetCounts();
 		} finally {
@@ -484,13 +496,13 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 	@Override
 	@Transactional
 	public AmxApiResponse<CustomerInfo, Object> saveCustomerInfo(CustomerInfoRequest model) {
-		// revalidateOtp(model.getOtpData());
+		LOGGER.debug("in saveCustomerInfo with request model: {}", JsonUtil.toJson(model));
 		CustomerPersonalDetail customerDetails = new CustomerPersonalDetail();
 		jaxUtil.convert(model.getCustomerPersonalDetail(), customerDetails);
 		Customer customer = commitCustomer(customerDetails, model.getCustomerEmploymentDetails());
 		commitCustomerLocalContact(model.getLocalAddressDetails(), customer, customerDetails);
 		commitCustomerHomeContact(model.getHomeAddressDestails(), customer, customerDetails);
-		commitOnlineCustomerIdProof(model, customer);
+		offsiteCustomerRegManager.commitOnlineCustomerIdProof(customer);
 		commitEmploymentDetails(model.getCustomerEmploymentDetails(), customer, model.getLocalAddressDetails());
 		auditService.log(new CActivityEvent(CActivityEvent.Type.PROFILE_UPDATE).result(Result.DONE));
 		CustomerInfo info = new CustomerInfo();
@@ -501,28 +513,28 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 	private void commitEmploymentDetails(CustomerEmploymentDetails customerEmploymentDetails, Customer customer,
 			LocalAddressDetails localAddressDetails) {
 		if (customerEmploymentDetails != null) {
-			
+
 			EmployeeDetails employeeModel = customerEmployeeDetailsRepository.getCustomerEmploymentData(customer);
-			if(employeeModel == null) {
+			if (employeeModel == null) {
 				employeeModel = new EmployeeDetails();
 			}
-			
+
 			employeeModel.setFsBizComponentDataByEmploymentTypeId(bizcomponentDao
 					.getBizComponentDataByComponmentDataId(customerEmploymentDetails.getEmploymentTypeId()));
-			
-			if(customerEmploymentDetails.getEmploymentTypeId().compareTo(new BigDecimal(222)) != 0) {
+
+			if (customerEmploymentDetails.getEmploymentTypeId().compareTo(new BigDecimal(222)) != 0) {
 				employeeModel.setFsBizComponentDataByOccupationId(
 						bizcomponentDao
 								.getBizComponentDataByComponmentDataId(customerEmploymentDetails.getProfessionId()));
 				employeeModel.setEmployerName(customerEmploymentDetails.getEmployer());
-				
+
 			}
-			
+
 			employeeModel.setFsCountryMaster(
 					countryMasterRepository.getCountryMasterByCountryId(customerEmploymentDetails.getCountryId()));
 			employeeModel.setFsStateMaster(localAddressDetails.getStateId());
 			employeeModel.setFsDistrictMaster(localAddressDetails.getDistrictId());
-			
+
 			employeeModel.setIsActive(ConstantDocument.Yes);
 			employeeModel.setCreatedBy(metaData.getEmployeeId().toString());
 			employeeModel.setCreationDate(new Date());
@@ -536,11 +548,11 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 			com.amx.jax.model.request.CustomerPersonalDetail customerDetails) {
 		if (localAddressDetails != null) {
 			ContactDetail contactDetail = contactDetailService.getContactsForLocal(customer);
-			
-			if(contactDetail == null) {
+
+			if (contactDetail == null) {
 				contactDetail = new ContactDetail();
 			}
-			
+
 			contactDetail.setFsCountryMaster(new CountryMaster(localAddressDetails.getCountryId()));
 			contactDetail.setFsDistrictMaster(new DistrictMaster(localAddressDetails.getDistrictId()));
 			contactDetail.setFsStateMaster(new StateMaster(localAddressDetails.getStateId()));
@@ -554,11 +566,11 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 			contactDetail.setLanguageId(customer.getLanguageId());
 			contactDetail.setCreatedBy(metaData.getEmployeeId().toString());
 			contactDetail.setCreationDate(customer.getCreationDate());
-			
+
 			contactDetail.setMobile(customerDetails.getMobile());
 			contactDetail.setTelephoneCode(customerDetails.getTelPrefix());
 			contactDetail.setIsWatsApp(customerDetails.getIsWatsApp());
-			
+
 			BizComponentData fsBizComponentDataByContactTypeId = new BizComponentData();
 			// local type contact
 			fsBizComponentDataByContactTypeId.setComponentDataId(new BigDecimal(49));
@@ -571,11 +583,11 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 			com.amx.jax.model.request.CustomerPersonalDetail customerDetails) {
 		if (homeAddressDestails != null) {
 			ContactDetail contactDetail = contactDetailService.getContactsForHome(customer);
-			
-			if(contactDetail == null) {
+
+			if (contactDetail == null) {
 				contactDetail = new ContactDetail();
 			}
-			
+
 			contactDetail.setFsCountryMaster(new CountryMaster(homeAddressDestails.getCountryId()));
 			contactDetail.setFsDistrictMaster(new DistrictMaster(homeAddressDestails.getDistrictId()));
 			contactDetail.setFsStateMaster(new StateMaster(homeAddressDestails.getStateId()));
@@ -591,7 +603,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 			contactDetail.setLanguageId(customer.getLanguageId());
 			contactDetail.setCreatedBy(metaData.getEmployeeId().toString());
 			contactDetail.setCreationDate(customer.getCreationDate());
-						
+
 			BizComponentData fsBizComponentDataByContactTypeId = new BizComponentData();
 			// home type contact
 			fsBizComponentDataByContactTypeId.setComponentDataId(new BigDecimal(50));
@@ -600,31 +612,43 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		}
 	}
 
+	/*
+	 * private void revalidateOtp(OtpData otpData) { if (!otpData.isOtpValidated())
+	 * { throw new GlobalException("otp is not validated",
+	 * JaxError.OTP_NOT_VALIDATED); } }
+	 */
 
 	private Customer commitCustomer(com.amx.jax.model.request.CustomerPersonalDetail customerDetails,
 			CustomerEmploymentDetails customerEmploymentDetails) {
-		Customer customer = new Customer();
-		customer = customerRepository.getCustomerByCivilIdAndIsActive(customerDetails.getIdentityInt(),
-				customerDetails.getCountryId(), customerDetails.getIdentityTypeId());
-		if(customer == null) {
-			customer = new Customer();
-		}
+		Customer customer = offsiteCustomerRegManager.getCustomerForRegistration(customerDetails.getIdentityInt(),
+				customerDetails.getIdentityTypeId());
 		
+		BigDecimal employeeId = metaData.getEmployeeId();
+		Employee employeeDetails = employeeRespository.findEmployeeById(employeeId);
+		
+		if (customer == null) {
+			LOGGER.info("creating new customer for offiste registration. idint {} idtype {}",
+					customerDetails.getIdentityInt(), customerDetails.getIdentityTypeId());
+			customer = new Customer();
+		} else {
+			LOGGER.info("editing existing customer for offiste registration. idint {} idtype {}",
+					customerDetails.getIdentityInt(), customerDetails.getIdentityTypeId());
+		}
+
 		if (customerDetails.getIdentityTypeId().equals(new BigDecimal(198))) {
 			tenantContext.get().validateCivilId(customerDetails.getIdentityInt());
 		}
-		
-		
-		if(customer.getEmail() != null) {
-			if(!customer.getEmail().equals(customerDetails.getEmail())) {
+
+		if (customer.getEmail() != null) {
+			if (!customer.getEmail().equals(customerDetails.getEmail())) {
 				tenantContext.get().validateEmailId(customerDetails.getEmail());
 			}
 		} else {
 			tenantContext.get().validateEmailId(customerDetails.getEmail());
 		}
-		
-		if(customer.getMobile() != null) {
-			if(!customer.getMobile().equals(customerDetails.getMobile())) {
+
+		if (customer.getMobile() != null) {
+			if (!customer.getMobile().equals(customerDetails.getMobile())) {
 				tenantContext.get().validateDuplicateMobile(customerDetails.getMobile());
 			}
 		} else {
@@ -632,13 +656,17 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		}
 		countryMetaValidation.validateMobileNumber(customerDetails.getCountryId(), customerDetails.getMobile());
 		countryMetaValidation.validateMobileNumberLength(customerDetails.getCountryId(), customerDetails.getMobile());
-		jaxUtil.convert(customerDetails, customer);
-		BigDecimal customerReference = customerDao.generateCustomerReference();
+		jaxUtil.convertNotNull(customerDetails, customer);
+		if(customer.getCustomerReference() == null) {
+			BigDecimal customerReference = customerDao.generateCustomerReference();
+			customer.setCustomerReference(customerReference);
+			LOGGER.info("generated customer ref: {}", customerReference);
+		}
 		PrefixEnum prefixEnum = PrefixEnum.getPrefixEnum(customerDetails.getTitle());
-		customer.setCustomerReference(customerReference);
 		customer.setIsActive(ConstantDocument.No);
 		customer.setCountryId(customerDetails.getCountryId());
-		customer.setCreatedBy(metaData.getAppType() != null ? metaData.getAppType() : customerDetails.getIdentityInt());
+		//customer.setCreatedBy(metaData.getAppType() != null ? metaData.getAppType() : customerDetails.getIdentityInt());
+		customer.setCreatedBy(employeeDetails.getUserName() != null ? employeeDetails.getUserName() : customerDetails.getIdentityInt());
 		customer.setCreationDate(new Date());
 		customer.setIsOnlineUser(ConstantDocument.Yes);
 		customer.setGender(prefixEnum.getGender());
@@ -650,15 +678,15 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		customer.setLanguageId(metaData.getLanguageId());
 		customer.setBranchCode(metaData.getCountryBranchId());
 		customer.setNationalityId(customerDetails.getNationalityId());
-		
+
 		customer.setPrefixCodeMobile(customerDetails.getTelPrefix());
 		customer.setMobile(customerDetails.getMobile());
 		customer.setMobileOther(customerDetails.getWatsAppMobileNo());
 		customer.setPrefixCodeMobileOther(customerDetails.getWatsAppTelePrefix());
 		customer.setIsMobileWhatsApp(customerDetails.getIsWatsApp());
-		if(null != customerDetails.getWatsAppMobileNo()) {
+		if (null != customerDetails.getWatsAppMobileNo()) {
 			customer.setIsMobileOtherWhatsApp(ConstantDocument.Yes);
-		}	
+		}
 		customer.setIdentityFor(ConstantDocument.IDENTITY_FOR_ID_PROOF);
 		customer.setIdentityTypeId(customerDetails.getIdentityTypeId());
 		customer.setFirstNameLocal(customerDetails.getFirstNameLocal());
@@ -671,7 +699,8 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 			customer.setIdentityExpiredDate(customerDetails.getExpiryDate());
 		}
 		customer.setIdentityInt(customerDetails.getIdentityInt());
-		
+		customer.setShortName(customerDetails.getFirstName()+customerDetails.getLastName());
+
 		customer.setCustomerRegistrationType(CustomerRegistrationType.OFF_CUSTOMER);
 		if (customerEmploymentDetails != null) {
 			customer.setFsArticleDetails(
@@ -680,7 +709,6 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 					articleDao.getIncomeRangeMasterByIncomeRangeId(customerEmploymentDetails.getIncomeRangeId()));
 		}
 		userValidationService.validateBlackListedCustomerForLogin(customer);
-		LOGGER.info("generated customer ref: {}", customerReference);
 		LOGGER.info("Createing new customer record, civil id- {}", customerDetails.getIdentityInt());
 		customerRepository.save(customer);
 		return customer;
@@ -690,41 +718,16 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		return bizcomponentDao.getBizComponentDataDescByComponmentId(titleLocal).getDataDesc();
 	}
 
-	private void commitOnlineCustomerIdProof(CustomerInfoRequest model, Customer customer) {
-		
-		CustomerIdProof custProof = null;
-		List<CustomerIdProof> customerIdProofs = customerIdProofRepository
-				.getCustomerIdProofByCustomerId(customer.getCustomerId());
-		if(!customerIdProofs.isEmpty()) {
-			custProof = customerIdProofs.get(0);
-		}
-		if(custProof == null) {
-			custProof = new CustomerIdProof();
-		}
-		Customer customerData = new Customer();
-		customerData.setCustomerId(customer.getCustomerId());
-		custProof.setFsCustomer(customerData);
-		custProof.setLanguageId(metaData.getLanguageId());
-		BizComponentData customerType = new BizComponentData();
-		customerType.setComponentDataId(
-				bizcomponentDao.getComponentId(Constants.CUSTOMERTYPE_INDU, metaData.getLanguageId())
-						.getFsBizComponentData().getComponentDataId());
-		custProof.setFsBizComponentDataByCustomerTypeId(customerType);
-		custProof.setIdentityInt(customer.getIdentityInt());
-		custProof.setIdentityStatus(Constants.CUST_ACTIVE_INDICATOR);
-		custProof.setCreatedBy(customer.getIdentityInt());
-		custProof.setCreationDate(new Date());
-		custProof.setIdentityTypeId(customer.getIdentityTypeId());
-		
-		if(customer.getIdentityExpiredDate() != null) {
-			custProof.setIdentityExpiryDate(customer.getIdentityExpiredDate());
-		}
-		custProof.setIdentityFor(ConstantDocument.IDENTITY_FOR_ID_PROOF);
-		custProof.setScanSystem(Constants.CUST_DB_SCAN);
-		customerIdProofRepository.save(custProof);
+	public AmxApiResponse<String, Object> saveCustomeKycDocumentAndPopulateCusmas(ImageSubmissionRequest model) throws ParseException {
+		AmxApiResponse<String, Object> result = saveCustomeKycDocument(model);
+		/*if (metaData.getCustomerId() != null) {
+			customerDao.callProcedurePopulateCusmas(metaData.getCustomerId());
+		}*/
+		return result;
 	}
 
 	@Override
+	@Transactional
 	public AmxApiResponse<String, Object> saveCustomeKycDocument(ImageSubmissionRequest model) throws ParseException {
 
 		CActivityEvent auditEvent = new CActivityEvent(CActivityEvent.Type.PROFILE_UPDATE)
@@ -735,8 +738,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 				auditService.log(auditEvent.result(Result.REJECTED).message(JaxError.NULL_CUSTOMER_ID));
 				throw new GlobalException(JaxError.NULL_CUSTOMER_ID, "Customer Id is not available");
 			}
-			Customer customer = customerRepository.getCustomerByCustomerIdAndIsActive(metaData.getCustomerId(),
-					Constants.NO);
+			Customer customer = customerRepository.findOne(metaData.getCustomerId());
 			if (customer == null) {
 				auditService.log(auditEvent.result(Result.REJECTED).message(JaxError.INVALID_CUSTOMER));
 				throw new GlobalException(JaxError.INVALID_CUSTOMER, "Customer is Invalid");
@@ -745,10 +747,12 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 				auditService.log(auditEvent.result(Result.REJECTED).message(JaxError.IMAGE_NOT_AVAILABLE));
 				throw new GlobalException(JaxError.IMAGE_NOT_AVAILABLE, "Image is not available");
 			}
-
+			if (model.getIdentityExpiredDate() != null) {
+				offsiteCustomerRegManager.createIdProofForExpiredCivilId(model, customer);
+			}
 			for (String image : model.getImage()) {
 				DmsApplMapping mappingData = new DmsApplMapping();
-				mappingData = getDmsApplMappingData(customer);
+				mappingData = getDmsApplMappingData(customer, model);
 				idmsAppMappingRepository.save(mappingData);
 				DocBlobUpload documentDetails = new DocBlobUpload();
 				documentDetails = getDocumentUploadDetails(image, mappingData);
@@ -768,8 +772,8 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		documentDetails.setDocBlobID(mappingData.getDocBlobId());
 		documentDetails.setDocFinYear(mappingData.getFinancialYear());
 		documentDetails.setSeqNo(new BigDecimal(1));
-		//documentDetails.setDocContent(image.getBytes());
-		
+		// documentDetails.setDocContent(image.getBytes());
+
 		try {
 			Blob documentContent = new javax.sql.rowset.serial.SerialBlob(decodeImage(image));
 			documentDetails.setDocContent(documentContent);
@@ -777,19 +781,19 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 			e.printStackTrace();
 		} catch (SQLException e) {
 			e.printStackTrace();
-		}	
-		
+		}
+
 		documentDetails.setCreatedOn(new Date());
 		documentDetails.setCreatedBy(metaData.getCustomerId().toString());
 		return documentDetails;
 	}
-	
+
 	public static byte[] decodeImage(String imageDataString) {
-        return Base64.decodeBase64(imageDataString);
-        //return null;
+		return Base64.decodeBase64(imageDataString);
+		// return null;
 	}
 
-	private DmsApplMapping getDmsApplMappingData(Customer model) throws ParseException {
+	private DmsApplMapping getDmsApplMappingData(Customer model, ImageSubmissionRequest imageSubmissionRequest) throws ParseException {
 		DmsApplMapping mappingData = new DmsApplMapping();
 		BigDecimal financialYear = getDealYearbyDate();
 		BigDecimal applCountryId = metaData.getCountryId();
@@ -799,7 +803,11 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		mappingData.setDocBlobId(docBlobId); // need to change value
 		mappingData.setDocFormat("JPG");
 		mappingData.setFinancialYear(financialYear);
-		mappingData.setIdentityExpiryDate(model.getIdentityExpiredDate());
+		if (imageSubmissionRequest != null && imageSubmissionRequest.getIdentityExpiredDate() != null) {
+			mappingData.setIdentityExpiryDate(imageSubmissionRequest.getIdentityExpiredDate());
+		} else {
+			mappingData.setIdentityExpiryDate(model.getIdentityExpiredDate());
+		}
 		mappingData.setIdentityInt(model.getIdentityInt());
 		mappingData.setIdentityIntId(model.getIdentityTypeId());
 		mappingData.setCreatedBy(metaData.getEmployeeId().toString());
@@ -832,8 +840,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 			auditService.log(auditEvent.result(Result.REJECTED).message(JaxError.SIGNATURE_NOT_AVAILABLE));
 			throw new GlobalException(JaxError.SIGNATURE_NOT_AVAILABLE, "Signature not available");
 		}
-		Customer customer = customerRepository.getCustomerByCustomerIdAndIsActive(metaData.getCustomerId(),
-				Constants.NO);
+		Customer customer = customerRepository.findOne((metaData.getCustomerId()));
 		if (customer == null) {
 			auditService.log(auditEvent.result(Result.REJECTED).message(JaxError.INVALID_CUSTOMER));
 			throw new GlobalException(JaxError.INVALID_CUSTOMER, "Customer is Invalid");
@@ -847,6 +854,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 
 	@Override
 	public AmxApiResponse<SendOtpModel, Object> sendOtp(CustomerPersonalDetail customerPersonalDetail) {
+		LOGGER.debug("in sendOtp customerPersonalDetail:{} ",customerPersonalDetail);
 		BeanPropertyBindingResult errors = new BeanPropertyBindingResult(customerPersonalDetail,
 				"customerPersonalDetail");
 		customerRegistrationManager.setIdentityInt(customerPersonalDetail.getIdentityInt());
@@ -864,39 +872,39 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		if (customerPersonalDetail.getIdentityTypeId().equals(new BigDecimal(198))) {
 			tenantContext.get().validateCivilId(customerPersonalDetail.getIdentityInt());
 		}
-		
+
 		Customer customer = null;
 		List<Customer> customerList = customerDao.getCustomerByIdentityInt(customerPersonalDetail.getIdentityInt());
-		if(!customerList.isEmpty()) {
+		if (!customerList.isEmpty()) {
 			customer = customerList.get(0);
 		}
-		
-		if(null != customer) {
+
+		if (null != customer) {
 			if (ConstantDocument.Yes.equals(customer.getIsActive())) {
 				throw new GlobalException(JaxError.CUSTOMER_ACTIVE_BRANCH, "Customer active in branch");
 			}
 		}
-		
-		if(null != customer) {
-			if(customer.getEmail() != null) {
-				if(!customer.getEmail().equals(customerPersonalDetail.getEmail())) {
+
+		if (null != customer) {
+			if (customer.getEmail() != null) {
+				if (!customer.getEmail().equals(customerPersonalDetail.getEmail())) {
 					tenantContext.get().validateEmailId(customerPersonalDetail.getEmail());
 				}
 			}
 		} else {
 			tenantContext.get().validateEmailId(customerPersonalDetail.getEmail());
 		}
-		
-		if(null != customer) {
-			if(customer.getMobile() != null) {
-				if(!customer.getMobile().equals(customerPersonalDetail.getMobile())) {
+
+		if (null != customer) {
+			if (customer.getMobile() != null) {
+				if (!customer.getMobile().equals(customerPersonalDetail.getMobile())) {
 					tenantContext.get().validateDuplicateMobile(customerPersonalDetail.getMobile());
 				}
 			}
 		} else {
 			tenantContext.get().validateDuplicateMobile(customerPersonalDetail.getMobile());
 		}
-		
+
 		countryMetaValidation.validateMobileNumber(customerPersonalDetail.getCountryId(),
 				customerPersonalDetail.getMobile());
 		countryMetaValidation.validateMobileNumberLength(customerPersonalDetail.getCountryId(),
@@ -922,7 +930,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 			throw new GlobalException(JaxError.BLACK_LISTED_CUSTOMER.getStatusKey(), "Customer is black listed");
 		}
 	}
-	
+
 	private void validateOtpSendCount(OtpData otpData) {
 		if (otpData.getSendOtpAttempts() >= otpSettings.getMaxSendOtpAttempts()) {
 			throw new GlobalException(JaxError.VALIDATE_OTP_LIMIT_EXCEEDED,
@@ -934,16 +942,16 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 	public AmxApiResponse<CardDetail, Object> cardScan(CardDetail cardDetail) {
 		return AmxApiResponse.build(cardDetail);
 	}
- 
+
 	public AmxApiResponse<CustomerCredential, Object> saveLoginDetailOffsite(CustomerCredential customerCredential) {
 		customerRegistrationManager.saveLoginDetail(customerCredential);
-		customerCredentialValidator.validate(customerRegistrationManager.get(),  null);
-		
+		customerCredentialValidator.validate(customerRegistrationManager.get(), null);
+
 		CustomerRegistrationTrnxModel model = customerRegistrationManager.get();
 		Customer customer = customerDao.getCustomerByIdentityInt(model.getCustomerPersonalDetail().getIdentityInt())
 				.get(0);
-		commitOnlineCustomer(model, customer);		
-		
+		commitOnlineCustomer(model, customer);
+
 		Customer customerDetails = customerService.getCustomerDetails(customerCredential.getLoginId());
 		ApplicationSetup applicationSetupData = applicationSetup.getApplicationSetupDetails();
 		PersonInfo personinfo = new PersonInfo();
@@ -954,7 +962,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		jaxNotificationService.sendPartialRegistraionMail(personinfo, applicationSetupData);
 		return AmxApiResponse.build(customerCredential);
 	}
-	
+
 	private void commitOnlineCustomer(CustomerRegistrationTrnxModel model, Customer customer) {
 		CustomerOnlineRegistration customerOnlineRegistration = new CustomerOnlineRegistration(customer);
 		String userName = customerOnlineRegistration.getUserName();
@@ -972,15 +980,17 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 
 	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerData(String identityInt,
 			BigDecimal identityTypeId) {
+		LOGGER.debug("in getOffsiteCustomerData: identityInt {}, identityTypeId {}", identityInt, identityTypeId);
+		Customer customer = offsiteCustomerRegManager.getCustomerForRegistration(identityInt, identityTypeId);
+		offsiteCustomerRegValidator.validateGetOffsiteCustomerDetailRequest(new GetOffsiteCustomerDetailRequest(identityInt, identityTypeId));
 		
 		OffsiteCustomerDataDTO offsiteCustomer = new OffsiteCustomerDataDTO();
 		offsiteCustomer.setIdentityInt(identityInt);
 		offsiteCustomer.setIdentityTypeId(identityTypeId);
-		
-		//--- Customer Personal Data
 		CustomerPersonalDetail customerDetails = new CustomerPersonalDetail();
-		Customer customer = customerRepository.getCustomerData(identityInt, identityTypeId);
-		if(customer != null) {
+
+		if (customer != null) {
+			customerDetails.setCustomerId(customer.getCustomerId());
 			customerDetails.setCountryId(customer.getCountryId());
 			customerDetails.setNationalityId(customer.getNationalityId());
 			customerDetails.setIdentityInt(customer.getIdentityInt());
@@ -1000,59 +1010,59 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 			customerDetails.setWatsAppTelePrefix(customer.getPrefixCodeMobileOther());
 			customerDetails.setIsWatsApp(customer.getIsMobileWhatsApp());
 			customerDetails.setRegistrationType(customer.getCustomerRegistrationType());
-			
+
 			offsiteCustomer.setCustomerPersonalDetail(customerDetails);
-			
-			//--- Local Address Data	
+
+			// --- Local Address Data
 			LocalAddressDetails localAddress = new LocalAddressDetails();
 			ContactDetail localData = contactDetailService.getContactsForLocal(customer);
-			if(localData != null) {
+			if (localData != null) {
 				localAddress.setContactTypeId(localData.getFsBizComponentDataByContactTypeId().getComponentDataId());
 				localAddress.setBlock(localData.getBlock());
 				localAddress.setStreet(localData.getStreet());
 				localAddress.setHouse(localData.getBuildingNo());
 				localAddress.setFlat(localData.getFlat());
-				if(null != localData.getFsCountryMaster()) {
+				if (null != localData.getFsCountryMaster()) {
 					localAddress.setCountryId(localData.getFsCountryMaster().getCountryId());
 				}
-				if(null != localData.getFsStateMaster()) {
+				if (null != localData.getFsStateMaster()) {
 					localAddress.setStateId(localData.getFsStateMaster().getStateId());
 				}
-				if(null != localData.getFsDistrictMaster()) {
+				if (null != localData.getFsDistrictMaster()) {
 					localAddress.setDistrictId(localData.getFsDistrictMaster().getDistrictId());
 				}
-				if(null != localData.getFsCityMaster()) {
+				if (null != localData.getFsCityMaster()) {
 					localAddress.setCityId(localData.getFsCityMaster().getCityId());
 				}
 				offsiteCustomer.setLocalAddressDetails(localAddress);
 			}
-			//--- Home Address Data
+			// --- Home Address Data
 			HomeAddressDetails homeAddress = new HomeAddressDetails();
 			ContactDetail homeData = contactDetailService.getContactsForHome(customer);
-			if(homeData != null) {
+			if (homeData != null) {
 				homeAddress.setContactTypeId(homeData.getFsBizComponentDataByContactTypeId().getComponentDataId());
 				homeAddress.setBlock(homeData.getBlock());
 				homeAddress.setStreet(homeData.getStreet());
 				homeAddress.setHouse(homeData.getBuildingNo());
 				homeAddress.setFlat(homeData.getFlat());
-				if(null != homeData.getFsCountryMaster()) {
+				if (null != homeData.getFsCountryMaster()) {
 					homeAddress.setCountryId(homeData.getFsCountryMaster().getCountryId());
 				}
-				if(null != homeData.getFsStateMaster()) {
+				if (null != homeData.getFsStateMaster()) {
 					homeAddress.setStateId(homeData.getFsStateMaster().getStateId());
-				}	
-				if(null != homeData.getFsDistrictMaster()) {
+				}
+				if (null != homeData.getFsDistrictMaster()) {
 					homeAddress.setDistrictId(homeData.getFsDistrictMaster().getDistrictId());
-				}	
-				if(null != homeData.getFsCityMaster()) {
-					homeAddress.setCityId(homeData.getFsCityMaster().getCityId());		
+				}
+				if (null != homeData.getFsCityMaster()) {
+					homeAddress.setCityId(homeData.getFsCityMaster().getCityId());
 				}
 				offsiteCustomer.setHomeAddressDestails(homeAddress);
 			}
-			//--- Customer Employment Data
+			// --- Customer Employment Data
 			CustomerEmploymentDetails employmentDetails = new CustomerEmploymentDetails();
 			EmployeeDetails employmentData = customerEmployeeDetailsRepository.getCustomerEmploymentData(customer);
-			if(employmentData != null) {
+			if (employmentData != null) {
 				employmentDetails.setEmployer(employmentData.getEmployerName());
 				employmentDetails.setEmploymentTypeId(
 						employmentData.getFsBizComponentDataByEmploymentTypeId().getComponentDataId());
@@ -1064,13 +1074,14 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 				employmentDetails.setArticleDetailsId(customer.getFsArticleDetails().getArticleDetailId());
 				employmentDetails.setArticleId(customer.getFsArticleDetails().getFsArticleMaster().getArticleId());
 				employmentDetails.setIncomeRangeId(customer.getFsIncomeRangeMaster().getIncomeRangeId());
-				
+
 				offsiteCustomer.setCustomerEmploymentDetails(employmentDetails);
-			}	
+			}
 		} else {
 			throw new GlobalException(ResponseStatus.NOT_FOUND.toString());
 		}
-		return AmxApiResponse.build(offsiteCustomer); 
+		offsiteCustomer.setCustomerFlags(userService.getCustomerFlags(customer.getCustomerId()));
+		return AmxApiResponse.build(offsiteCustomer);
 	}
 	
 	/**
@@ -1081,8 +1092,15 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 	
 	@Override
 	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerDetails(String identityInt,BigDecimal identityTypeId) {
+		LOGGER.debug("in getOffsiteCustomerData: identityInt {}, identityTypeId {}", identityInt, identityTypeId);
 		OffsiteCustomerDataDTO offsiteCustomer =customerRegistrationManager.getCustomerDeatils(identityInt, identityTypeId);
 		return AmxApiResponse.build(offsiteCustomer); 
+	}
+
+	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerData(
+			GetOffsiteCustomerDetailRequest request) {
+		offsiteCustomerRegValidator.validateGetOffsiteCustomerDetailRequest(request);
+		return getOffsiteCustomerData(request.getIdentityInt(), request.getIdentityType());
 	}
 	
 	

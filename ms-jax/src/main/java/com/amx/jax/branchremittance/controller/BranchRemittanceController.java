@@ -34,7 +34,9 @@ import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
+import com.amx.jax.model.response.remittance.PaymentModeDto;
 import com.amx.jax.model.response.remittance.PaymentModeOfPaymentDto;
+import com.amx.jax.model.response.remittance.RemittanceDeclarationReportDto;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.model.response.remittance.RoutingResponseDto;
 import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeRateResponse;
@@ -75,7 +77,7 @@ public class BranchRemittanceController implements IRemittanceService {
 	 */
 	@RequestMapping(value = Path.BR_REMITTANCE_MODE_OF_PAYMENT, method = RequestMethod.GET)
 	@Override
-	public AmxApiResponse<PaymentModeOfPaymentDto, Object> fetchModeOfPayment() {
+	public AmxApiResponse<PaymentModeDto, Object> fetchModeOfPayment() {
 		logger.debug("fetchModeOfPayment");
 		return branchRemitService.fetchModeOfPayment();
 	}
@@ -108,7 +110,7 @@ public class BranchRemittanceController implements IRemittanceService {
 	 */
 	@RequestMapping(value = Path.BR_REMITTANCE_BANK_CUSTOMER_NAMES, method = RequestMethod.GET)
 	@Override
-	public AmxApiResponse<String, Object> fetchCustomerBankNames(
+	public AmxApiResponse<CustomerBankDetailsDto, Object> fetchCustomerBankNames(
 			@RequestParam(value = "bankId", required = true) BigDecimal bankId) {
 		logger.info("fetchCustomerBankNames");
 		return branchRemitService.fetchCustomerBankNames(bankId);
@@ -212,4 +214,29 @@ public class BranchRemittanceController implements IRemittanceService {
 		logger.debug("saveRemittanceTransaction : " + remittanceRequestModel);
 		return branchRemitService.saveRemittanceTransaction(remittanceRequestModel);
 	}
+	
+	
+	@RequestMapping(value = Path.BR_REMITTANCE_DELETE_APPLICATION, method = RequestMethod.POST)
+	@Override
+	public AmxApiResponse<BranchRemittanceApplResponseDto, Object> deleteFromShoppingCart(@RequestParam(value = Params.APPLICATION_ID, required = true) BigDecimal remittanceApplicationId){
+		logger.debug("deleteFromShoppingCart");
+		return branchRemitService.deleteFromShoppingCart(remittanceApplicationId);
+	}
+
+	@RequestMapping(value = Path.BR_DECLARATION_REPORT, method = RequestMethod.POST)
+	@Override
+	public AmxApiResponse<RemittanceDeclarationReportDto, Object> fetchCustomerDeclarationReport(BigDecimal collectionDocNo, BigDecimal collectionDocYear,BigDecimal collectionDocCode) {
+		return branchRemitService.fetchCustomerDeclarationReport(collectionDocNo,collectionDocYear,collectionDocCode);
+	}
+
+	@RequestMapping(value=Path.BR_RECEIPT_ON_EMAIL,method=RequestMethod.POST)
+	@Override
+	public AmxApiResponse<BoolRespModel, Object> sendReceiptOnEmail(BigDecimal collectionDocNo, BigDecimal collectionDocYear, BigDecimal collectionDocCode) {
+		BoolRespModel result =  branchRemitService.sendReceiptOnEmail(collectionDocNo,collectionDocYear,collectionDocCode);
+		return AmxApiResponse.build(result);
+	}
+
+
+
+	
 }

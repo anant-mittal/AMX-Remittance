@@ -28,6 +28,7 @@ import com.amx.jax.model.request.DynamicFieldRequest;
 import com.amx.jax.model.request.EmploymentDetailsRequest;
 import com.amx.jax.model.request.ImageSubmissionRequest;
 import com.amx.jax.model.request.OffsiteCustomerRegistrationRequest;
+import com.amx.jax.model.request.customer.GetOffsiteCustomerDetailRequest;
 import com.amx.jax.model.response.ArticleDetailsDescDto;
 import com.amx.jax.model.response.ArticleMasterDescDto;
 import com.amx.jax.model.response.ComponentDataDto;
@@ -124,7 +125,7 @@ public class CustRegController implements ICustRegService {
 	@RequestMapping(value = CustRegApiEndPoints.SAVE_KYC_DOC, method = RequestMethod.POST)
 	public AmxApiResponse<String, Object> saveCustomeKycDocument(@RequestBody ImageSubmissionRequest model)
 			throws ParseException {
-		return offsiteCustRegService.saveCustomeKycDocument(model);
+		return offsiteCustRegService.saveCustomeKycDocumentAndPopulateCusmas(model);
 	}
 
 	@RequestMapping(value = CustRegApiEndPoints.SAVE_SIGNATURE, method = RequestMethod.POST)
@@ -152,6 +153,12 @@ public class CustRegController implements ICustRegService {
 	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerDetails(@RequestParam(value = "identityInt", required = true) String identityInt,
 			@RequestParam(value = "identityType", required = true) BigDecimal identityType) {
 		return offsiteCustRegService.getOffsiteCustomerDetails(identityInt, identityType);
+	}
+	
+	@RequestMapping(value = CustRegApiEndPoints.GET_OFFSITE_CUSTOMER_DATA_V1, method = RequestMethod.GET)
+	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerDataV1(
+			@RequestBody @Valid GetOffsiteCustomerDetailRequest request) {
+		return offsiteCustRegService.getOffsiteCustomerData(request);
 	}
 	
 	

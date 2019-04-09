@@ -4,8 +4,11 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import com.amx.jax.model.AbstractModel;
+import com.amx.jax.model.response.customer.CustomerFlags;
 import com.amx.libjax.model.CustomerModelInterface.ICustomerModel;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CustomerModel extends AbstractModel implements ICustomerModel {
 
 	private static final long serialVersionUID = -8190742045911263443L;
@@ -39,6 +42,16 @@ public class CustomerModel extends AbstractModel implements ICustomerModel {
 	private List<SecurityQuestionModel> verificationAnswers;
 
 	private boolean isRegistrationFlow;
+	
+	private CustomerFlags customerFlags;
+	
+	public CustomerFlags getCustomerFlags() {
+		return customerFlags;
+	}
+
+	public void setCustomerFlags(CustomerFlags customerFlags) {
+		this.customerFlags = customerFlags;
+	}
 
 	public boolean isRegistrationFlow() {
 		return isRegistrationFlow;

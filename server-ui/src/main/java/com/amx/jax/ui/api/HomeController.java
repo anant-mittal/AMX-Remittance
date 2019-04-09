@@ -24,7 +24,9 @@ import com.amx.jax.dict.AmxEnums.Products;
 import com.amx.jax.dict.Language;
 import com.amx.jax.error.ApiJaxStatusBuilder.ApiJaxStatus;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.http.ApiRequest;
 import com.amx.jax.http.CommonHttpRequest;
+import com.amx.jax.http.RequestType;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.rest.RestService;
 import com.amx.jax.ui.UIConstants;
@@ -198,6 +200,7 @@ public class HomeController {
 	@Autowired
 	private SpringTemplateEngine templateEngine;
 
+	@ApiRequest(type = RequestType.NO_TRACK_PING)
 	@RequestMapping(value = { "/apple-app-site-association", "/.well-known/apple-app-site-association" }, method = {
 			RequestMethod.GET }, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
@@ -208,8 +211,11 @@ public class HomeController {
 		return templateEngine.process("json/apple-app-site-association", context);
 	}
 
-	@RequestMapping(value = { "/pub/verification" }, method = { RequestMethod.GET })
-	public String verification(Model model, @RequestParam String id, @RequestParam String key) {
-		return "terms";
+	@RequestMapping(value = { "/pub/verify/{vercode}" }, method = { RequestMethod.GET, RequestMethod.POST })
+	public String verification(Model model, @RequestParam String verid, @RequestParam String vercode) {
+
+		
+		
+		return "verify-expired";
 	}
 }
