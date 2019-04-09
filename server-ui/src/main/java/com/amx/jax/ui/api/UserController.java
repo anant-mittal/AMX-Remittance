@@ -23,7 +23,7 @@ import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.logger.AuditActor;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.model.response.customer.CustomerFlags;
-import com.amx.jax.model.response.customer.CustomerModelResponse;
+import com.amx.jax.model.response.customer.CustomerModelSignupResponse;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.ui.UIConstants.Features;
@@ -536,8 +536,9 @@ public class UserController {
 		return ResponseWrapper.build(jaxService.getUserclient().resetFingerprint(authData.getLockId()));
 	}
 
-	@RequestMapping(value = { "/pub/user/otpflags" }, method = { RequestMethod.GET }) // TODO: this API returns customer data also. we only want customer flags
-	public AmxApiResponse<CustomerModelResponse, Object> getOtpFlags(@RequestParam String identity) {
-		return ResponseWrapper.build(jaxService.setDefaults().getUserclient().getCustomerModelResponse(identity));
+	@RequestMapping(value = { "/pub/user/otpflags" }, method = { RequestMethod.GET })
+	public AmxApiResponse<CustomerModelSignupResponse, Object> getOtpFlags(@RequestParam String identity) {
+		return ResponseWrapper.build(jaxService.setDefaults().getUserclient().getCustomerModelSignupResponse(identity));
 	}
+
 }
