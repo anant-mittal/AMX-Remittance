@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -22,7 +23,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -37,7 +37,6 @@ import com.amx.amxlib.meta.model.CustomerDto;
 import com.amx.amxlib.model.AbstractUserModel;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
-import com.amx.amxlib.model.PersonInfo;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.UserFingerprintResponseModel;
 import com.amx.amxlib.model.UserModel;
@@ -73,6 +72,7 @@ import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.AbstractModel;
 import com.amx.jax.model.auth.QuestModelDTO;
 import com.amx.jax.model.response.customer.CustomerFlags;
+import com.amx.jax.model.response.customer.PersonInfo;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Email;
@@ -248,6 +248,7 @@ public class UserService extends AbstractUserService {
 		try {
 			PersonInfo personinfo = new PersonInfo();
 			Customer customer = custDao.getCustById(cust.getCustomerId());
+			model = populateFlags(model, customer);
 			model.setEmail(customer.getEmail());
 			LoginLogoutHistory history = this.getLoginLogoutHistoryByUserName(cust.getUserName());
 			if (history != null) {
@@ -261,6 +262,32 @@ public class UserService extends AbstractUserService {
 			logger.error("Exception while populating PersonInfo : ", e);
 		}
 		return model;
+	}
+
+	public CustomerModel populateFlags(CustomerModel customerModel, Customer customer) {
+		Date annualIncomeUpdateDate = customer.getAnnualIncomeUpdatedDate();
+
+		CustomerFlags flags = new CustomerFlags();
+		customerModel.setFlags(flags);
+
+		if (annualIncomeUpdateDate == null) {
+			customerModel.getFlags().setAnnualIncomeExpired(Boolean.TRUE);
+			logger.info("Flag value is " + customerModel.getFlags().getAnnualIncomeExpired());
+			return customerModel;
+		}
+		Date currentDate = new Date();
+		long millisec = currentDate.getTime() - annualIncomeUpdateDate.getTime();
+		long milliSecInYear = 31540000000L;
+
+		if (millisec >= milliSecInYear) {
+			customerModel.getFlags().setAnnualIncomeExpired(Boolean.TRUE);
+			logger.info("Flag value isss " + customerModel.getFlags().getAnnualIncomeExpired());
+		} else {
+			customerModel.getFlags().setAnnualIncomeExpired(Boolean.FALSE);
+			logger.info("Flag value isssss " + customerModel.getFlags().getAnnualIncomeExpired());
+		}
+
+		return customerModel;
 	}
 
 	public ApiResponse saveCustomer(CustomerModel model) {
@@ -1191,6 +1218,12 @@ public class UserService extends AbstractUserService {
 		if (!CollectionUtils.isEmpty(deActiveIdProofs)) {
 			customerIdProofDao.save(deActiveIdProofs);
 		}
+	}
+	
+	public List<Customer> getCustomerByIdentityInt(String identityInt) {
+		String[] isActiveFlags = new String[] { ConstantDocument.Yes, ConstantDocument.No };
+		List<Customer> customers = repo.getCustomerByIdentityIntAndIsActive(identityInt, Arrays.asList(isActiveFlags));
+		return customers;
 	}
 	 
 }

@@ -20,7 +20,6 @@ import org.springframework.stereotype.Component;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
-import com.amx.amxlib.model.PersonInfo;
 import com.amx.jax.branchremittance.dao.BranchRemittanceDao;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constants.JaxTransactionStatus;
@@ -66,6 +65,7 @@ import com.amx.jax.manager.RemittanceManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.remittance.BranchApplicationDto;
 import com.amx.jax.model.request.remittance.BranchRemittanceRequestModel;
+import com.amx.jax.model.response.customer.PersonInfo;
 import com.amx.jax.model.response.fx.UserStockDto;
 import com.amx.jax.model.response.remittance.RemittanceCollectionDto;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
@@ -86,6 +86,7 @@ import com.amx.jax.repository.PaymentModeRepository;
 import com.amx.jax.repository.RemittanceApplicationBeneRepository;
 import com.amx.jax.repository.RemittanceApplicationRepository;
 import com.amx.jax.repository.remittance.LocalBankDetailsRepository;
+import com.amx.jax.service.CompanyService;
 import com.amx.jax.service.FinancialService;
 import com.amx.jax.service.JaxEmailNotificationService;
 import com.amx.jax.services.JaxNotificationService;
@@ -109,7 +110,8 @@ public class BranchRemittanceSaveManager {
 	@Autowired
 	RemittanceApplicationRepository remittanceApplicationRepository;
 
-
+	@Autowired
+	CompanyService companyService;
 	
 	@Autowired
 	BranchRemittanceApplManager branchRemittanceApplManager;
@@ -251,7 +253,6 @@ public class BranchRemittanceSaveManager {
 					
 			collectedAmountValidation(collectionModel,collectionDetails,currencyAdjustList);
 			HashMap<String, Object> mapAllDetailRemitSave = new HashMap<String, Object>();
-			
 			mapAllDetailRemitSave.put("EX_COLLECT",collectionModel);
 			mapAllDetailRemitSave.put("EX_COLLECT_DET",collectionDetails);
 			mapAllDetailRemitSave.put("LYL_CLAIM",loyaltyClaim);
@@ -842,18 +843,17 @@ public   List<RemittanceAdditionalInstructionData>   saveRemitnaceinstructionDat
 			remitAddData.setCompanyCode(applInstrucData.getFsCompanyMaster().getCompanyCode());
 			remitAddData.setDocumentFinanceYear(remitTrnx.getDocumentFinanceYear());
 			remitAddData.setIsactive(ConstantDocument.Yes);
-			addInstList.add(remitAddData);
-			}
 			
-		}else {
+		
+			addInstList.add(remitAddData);
+			
+		}
+			}else {
 			throw new GlobalException(JaxError.NO_RECORD_FOUND,"Record found in appl additional instruction  :"+remitTrnx.getApplicationDocumentNo());
 		}
-	 }else {
-			throw new GlobalException(JaxError.NO_RECORD_FOUND,"Record found in appl additional instruction  :"+remitTrnx.getApplicationDocumentNo());
-		}
-	 
+	  
+	 }
 	 return addInstList;
-	
 }
 
 
@@ -1168,41 +1168,42 @@ public BigDecimal generateDocumentNumber(BigDecimal appCountryId,BigDecimal comp
  } 
  
  
- public Boolean sendReceiptOnEmail(BigDecimal collectionDocNo,BigDecimal collectionDocYear ,BigDecimal collectionDocCode){
-	 Boolean validStatus = Boolean.FALSE;
-	 PaymentResponseDto paymentResponse =new PaymentResponseDto();
-	 try {
-	 TransactionHistroyDTO trxnDto = new TransactionHistroyDTO();
-		Customer customer = customerDao.getCustById(metaData.getCustomerId());
-		paymentResponse.setCollectionDocumentCode(collectionDocCode);
-		paymentResponse.setCollectionDocumentNumber(collectionDocNo);
-		paymentResponse.setCollectionFinanceYear(collectionDocYear);
-		
-		trxnDto.setCollectionDocumentCode(collectionDocCode);
-		trxnDto.setCollectionDocumentFinYear(collectionDocYear);
-		trxnDto.setCollectionDocumentNo(collectionDocNo);
-		trxnDto.setCustomerId(customer.getCustomerId());
-		trxnDto.setCompanyId(metaData.getCompanyId());
-		trxnDto.setLanguageId(metaData.getLanguageId());
-		trxnDto.setApplicationCountryId(metaData.getCountryId());
-		trxnDto.setCustomerReference(customer.getCustomerReference());
-		reportManagerService.generatePersonalRemittanceReceiptReportDetails(trxnDto, Boolean.TRUE);
-		List<RemittanceReceiptSubreport> rrsrl = reportManagerService.getRemittanceReceiptSubreportList();
-		PersonInfo personinfo = new PersonInfo();
+	public Boolean sendReceiptOnEmail(BigDecimal collectionDocNo, BigDecimal collectionDocYear,
+			BigDecimal collectionDocCode) {
+		Boolean validStatus = Boolean.FALSE;
+		PaymentResponseDto paymentResponse = new PaymentResponseDto();
 		try {
-			BeanUtils.copyProperties(personinfo, customer);
+			TransactionHistroyDTO trxnDto = new TransactionHistroyDTO();
+			Customer customer = customerDao.getCustById(metaData.getCustomerId());
+			paymentResponse.setCollectionDocumentCode(collectionDocCode);
+			paymentResponse.setCollectionDocumentNumber(collectionDocNo);
+			paymentResponse.setCollectionFinanceYear(collectionDocYear);
+
+			trxnDto.setCollectionDocumentCode(collectionDocCode);
+			trxnDto.setCollectionDocumentFinYear(collectionDocYear);
+			trxnDto.setCollectionDocumentNo(collectionDocNo);
+			trxnDto.setCustomerId(customer.getCustomerId());
+			trxnDto.setCompanyId(metaData.getCompanyId());
+			trxnDto.setLanguageId(metaData.getLanguageId());
+			trxnDto.setApplicationCountryId(metaData.getCountryId());
+			trxnDto.setCustomerReference(customer.getCustomerReference());
+			reportManagerService.generatePersonalRemittanceReceiptReportDetails(trxnDto, Boolean.TRUE);
+			List<RemittanceReceiptSubreport> rrsrl = reportManagerService.getRemittanceReceiptSubreportList();
+			PersonInfo personinfo = new PersonInfo();
+			try {
+				BeanUtils.copyProperties(personinfo, customer);
+			} catch (Exception e) {
+			}
+
+			if (personinfo != null && rrsrl != null && !StringUtils.isBlank(personinfo.getEmail())) {
+				notificationService.sendTransactionNotification(rrsrl.get(0), personinfo);
+				validStatus = Boolean.TRUE;
+			}
 		} catch (Exception e) {
+			validStatus = Boolean.FALSE;
+			throw new GlobalException(JaxError.UNKNOWN_JAX_ERROR, e.getMessage());
 		}
-		
-		if(personinfo!=null && rrsrl != null && !StringUtils.isBlank(personinfo.getEmail())) {
-			notificationService.sendTransactionNotification(rrsrl.get(0), personinfo);
-			validStatus = Boolean.TRUE;
-		}
-	 }catch(Exception e) {
-		  validStatus = Boolean.FALSE;
-		  throw new  GlobalException(JaxError.UNKNOWN_JAX_ERROR,e.getMessage());
-	 }
-	    return validStatus;
- }
+		return validStatus;
+	}
  
  }

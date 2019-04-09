@@ -1,7 +1,5 @@
 package com.amx.jax.bot;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
@@ -89,10 +87,10 @@ public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 					replyMessage = FOUND_NOT;
 				} else if (!swissNumberProtoString.equalsIgnoreCase(customer.getWhatsapp())) { // Customer number does
 					replyMessage = FOUND_MATCH_NOT;
-				} else if (AmxDBConstants.Yes.equalsIgnoreCase(customer.getWhatsAppVerified())) { // Already Verified so
+				} else if (AmxDBConstants.Status.Y.equals(customer.getWhatsAppVerified())) { // Already Verified so
 					replyMessage = NO_ACTION;
 				} else { // Found and matched
-					customer.setWhatsAppVerified(AmxDBConstants.Yes);
+					customer.setWhatsAppVerified(AmxDBConstants.Status.Y);
 					customerRepository.save(customer);
 					replyMessage = FOUND_MATCHED;
 				}

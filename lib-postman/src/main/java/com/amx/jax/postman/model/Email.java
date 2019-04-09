@@ -41,6 +41,7 @@ public class Email extends Message implements Cloneable {
 		this.to = new ArrayList<String>();
 		this.cc = new ArrayList<String>();
 		this.files = new ArrayList<File>();
+		this.isHtml = true;
 	}
 
 	public Email(String from, String toList, String subject) {

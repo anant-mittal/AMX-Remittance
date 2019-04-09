@@ -20,7 +20,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.constant.NotificationConstants;
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.model.PersonInfo;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.JaxStompClient;
 import com.amx.jax.constant.ConstantDocument;
@@ -41,6 +40,7 @@ import com.amx.jax.model.request.fx.FcSaleDeliveryDetailUpdateReceiptRequest;
 import com.amx.jax.model.request.fx.FcSaleDeliveryMarkDeliveredRequest;
 import com.amx.jax.model.request.fx.FcSaleDeliveryMarkNotDeliveredRequest;
 import com.amx.jax.model.response.OtpPrefixDto;
+import com.amx.jax.model.response.customer.PersonInfo;
 import com.amx.jax.model.response.fx.FxDeliveryDetailDto;
 import com.amx.jax.model.response.fx.FxDeliveryDetailNotificationDto;
 import com.amx.jax.model.response.fx.ShippingAddressDto;

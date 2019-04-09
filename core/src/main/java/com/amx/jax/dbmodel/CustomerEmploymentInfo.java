@@ -34,261 +34,281 @@ import javax.persistence.Table;
 @Table(name = "FS_CUSTOMER_EMPLOYMENT_INFO")
 public class CustomerEmploymentInfo implements java.io.Serializable {
 
-    private static final long serialVersionUID = 1L;
-    private BigDecimal custEmpInfoId;
-    private Customer fsCustomer;
-    private CountryMaster fsCountryMaster;
-    private CompanyMaster fsCompanyMaster;
-    private LanguageType fsLanguageType;
-    private BizComponentData fsBizComponentDataByEmploymentTypeId;
-    private BizComponentData fsBizComponentDataByOccupationId;
-    private String employerName;
-    private String department;
-    private DistrictMaster fsDistrictMaster;
-    private StateMaster fsStateMaster;
-    private CityMaster fsCityMaster;
-    private String area;
-    private String block;
-    private String street;
-    private String postal;
-    private String officeTelephone;
-    private String createdBy;
-    private String updatedBy;
-    private Date creationDate;
-    private Date lastUpdated;
-    private String isActive;
-  
-    private BigDecimal corporateMasterId;
+	private static final long serialVersionUID = 1L;
+	private BigDecimal custEmpInfoId;
+	private Customer fsCustomer;
+	private CountryMaster fsCountryMaster;
+	private CompanyMaster fsCompanyMaster;
+	private LanguageType fsLanguageType;
+	private BizComponentData fsBizComponentDataByEmploymentTypeId;
+	private BizComponentData fsBizComponentDataByOccupationId;
+	private String employerName;
+	private String department;
+	private DistrictMaster fsDistrictMaster;
+	private StateMaster fsStateMaster;
+	private CityMaster fsCityMaster;
+	private String area;
+	private String block;
+	private String street;
+	private String postal;
+	private String officeTelephone;
+	private String createdBy;
+	private String updatedBy;
+	private Date creationDate;
+	private Date lastUpdated;
+	private String isActive;
 
-    public CustomerEmploymentInfo() {
-    	
-    }
-    
-    public CustomerEmploymentInfo(BigDecimal custEmpInfoId) {
-        this.custEmpInfoId = custEmpInfoId;
-    }
-    @Id
-    /*
-     * @TableGenerator(name="custempinfoid",table="fs_custempinfoidpk",pkColumnName=
-     * "custempinfoidkey",pkColumnValue="custempinfoidvalue",allocationSize=1)
-     * 
-     * @GeneratedValue(strategy=GenerationType.TABLE,generator="custempinfoid")
-     */
-    @GeneratedValue(generator = "fs_customer_emp_info_seq", strategy = GenerationType.SEQUENCE)
-    @SequenceGenerator(name = "fs_customer_emp_info_seq", sequenceName = "FS_CUSTOMER_EMP_INFO_SEQ", allocationSize = 1)
-    @Column(name = "CUST_EMP_INFO_ID", unique = true, nullable = false, precision = 22, scale = 0)
-    public BigDecimal getCustEmpInfoId() {
-        return this.custEmpInfoId;
-    }
+	private BigDecimal corporateMasterId;
 
-    public void setCustEmpInfoId(BigDecimal custEmpInfoId) {
-        this.custEmpInfoId = custEmpInfoId;
-    }
+	private BigDecimal docBlobId;
+	private String fileName;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "CUSTOMER_ID")
-    public Customer getFsCustomer() {
-        return this.fsCustomer;
-    }
+	@Column(name = "DOC_BLOB_ID")
+	public BigDecimal getDocBlobId() {
+		return docBlobId;
+	}
 
-    public void setFsCustomer(Customer fsCustomer) {
-        this.fsCustomer = fsCustomer;
-    }
+	public void setDocBlobId(BigDecimal docBlobId) {
+		this.docBlobId = docBlobId;
+	}
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "LANGUAGE_ID")
-    public LanguageType getFsLanguageType() {
-        return this.fsLanguageType;
-    }
+	@Column(name = "UPLOADED_FILENAME")
+	public String getFileName() {
+		return fileName;
+	}
 
-    public void setFsLanguageType(LanguageType fsLanguageType) {
-        this.fsLanguageType = fsLanguageType;
-    }
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "EMPLOYMENT_TYPE_ID")
-    public BizComponentData getFsBizComponentDataByEmploymentTypeId() {
-        return fsBizComponentDataByEmploymentTypeId;
-    }
+	public CustomerEmploymentInfo() {
 
-    public void setFsBizComponentDataByEmploymentTypeId(BizComponentData fsBizComponentDataByEmploymentTypeId) {
-        this.fsBizComponentDataByEmploymentTypeId = fsBizComponentDataByEmploymentTypeId;
-    }
+	}
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "OCCUPATION_ID")
-    public BizComponentData getFsBizComponentDataByOccupationId() {
-        return fsBizComponentDataByOccupationId;
-    }
+	public CustomerEmploymentInfo(BigDecimal custEmpInfoId) {
+		this.custEmpInfoId = custEmpInfoId;
+	}
 
-    public void setFsBizComponentDataByOccupationId(BizComponentData fsBizComponentDataByOccupationId) {
-        this.fsBizComponentDataByOccupationId = fsBizComponentDataByOccupationId;
-    }
+	@Id
+	/*
+	 * @TableGenerator(name="custempinfoid",table="fs_custempinfoidpk",pkColumnName=
+	 * "custempinfoidkey",pkColumnValue="custempinfoidvalue",allocationSize=1)
+	 * 
+	 * @GeneratedValue(strategy=GenerationType.TABLE,generator="custempinfoid")
+	 */
+	@GeneratedValue(generator = "fs_customer_emp_info_seq", strategy = GenerationType.SEQUENCE)
+	@SequenceGenerator(name = "fs_customer_emp_info_seq", sequenceName = "FS_CUSTOMER_EMP_INFO_SEQ", allocationSize = 1)
+	@Column(name = "CUST_EMP_INFO_ID", unique = true, nullable = false, precision = 22, scale = 0)
+	public BigDecimal getCustEmpInfoId() {
+		return this.custEmpInfoId;
+	}
 
-    @Column(name = "EMPLOYER_NAME", length = 200)
-    public String getEmployerName() {
-        return this.employerName;
-    }
+	public void setCustEmpInfoId(BigDecimal custEmpInfoId) {
+		this.custEmpInfoId = custEmpInfoId;
+	}
 
-    public void setEmployerName(String employerName) {
-        this.employerName = employerName;
-    }
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "CUSTOMER_ID")
+	public Customer getFsCustomer() {
+		return this.fsCustomer;
+	}
 
-    @Column(name = "DEPARTMENT", length = 200)
-    public String getDepartment() {
-        return this.department;
-    }
+	public void setFsCustomer(Customer fsCustomer) {
+		this.fsCustomer = fsCustomer;
+	}
 
-    public void setDepartment(String department) {
-        this.department = department;
-    }
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "LANGUAGE_ID")
+	public LanguageType getFsLanguageType() {
+		return this.fsLanguageType;
+	}
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "DISTRICT_ID")
-    public DistrictMaster getFsDistrictMaster() {
-        return this.fsDistrictMaster;
-    }
+	public void setFsLanguageType(LanguageType fsLanguageType) {
+		this.fsLanguageType = fsLanguageType;
+	}
 
-    public void setFsDistrictMaster(DistrictMaster fsDistrictMaster) {
-        this.fsDistrictMaster = fsDistrictMaster;
-    }
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "EMPLOYMENT_TYPE_ID")
+	public BizComponentData getFsBizComponentDataByEmploymentTypeId() {
+		return fsBizComponentDataByEmploymentTypeId;
+	}
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "STATE_ID")
-    public StateMaster getFsStateMaster() {
-        return this.fsStateMaster;
-    }
+	public void setFsBizComponentDataByEmploymentTypeId(BizComponentData fsBizComponentDataByEmploymentTypeId) {
+		this.fsBizComponentDataByEmploymentTypeId = fsBizComponentDataByEmploymentTypeId;
+	}
 
-    public void setFsStateMaster(StateMaster fsStateMaster) {
-        this.fsStateMaster = fsStateMaster;
-    }
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "OCCUPATION_ID")
+	public BizComponentData getFsBizComponentDataByOccupationId() {
+		return fsBizComponentDataByOccupationId;
+	}
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "CITY_ID")
-    public CityMaster getFsCityMaster() {
-        return this.fsCityMaster;
-    }
+	public void setFsBizComponentDataByOccupationId(BizComponentData fsBizComponentDataByOccupationId) {
+		this.fsBizComponentDataByOccupationId = fsBizComponentDataByOccupationId;
+	}
 
-    public void setFsCityMaster(CityMaster fsCityMaster) {
-        this.fsCityMaster = fsCityMaster;
-    }
+	@Column(name = "EMPLOYER_NAME", length = 200)
+	public String getEmployerName() {
+		return this.employerName;
+	}
 
-    @Column(name = "AREA", length = 100)
-    public String getArea() {
-        return this.area;
-    }
+	public void setEmployerName(String employerName) {
+		this.employerName = employerName;
+	}
 
-    public void setArea(String area) {
-        this.area = area;
-    }
+	@Column(name = "DEPARTMENT", length = 200)
+	public String getDepartment() {
+		return this.department;
+	}
 
-    @Column(name = "BLOCK", length = 100)
-    public String getBlock() {
-        return this.block;
-    }
+	public void setDepartment(String department) {
+		this.department = department;
+	}
 
-    public void setBlock(String block) {
-        this.block = block;
-    }
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "DISTRICT_ID")
+	public DistrictMaster getFsDistrictMaster() {
+		return this.fsDistrictMaster;
+	}
 
-    @Column(name = "STREET", length = 100)
-    public String getStreet() {
-        return this.street;
-    }
+	public void setFsDistrictMaster(DistrictMaster fsDistrictMaster) {
+		this.fsDistrictMaster = fsDistrictMaster;
+	}
 
-    public void setStreet(String street) {
-        this.street = street;
-    }
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "STATE_ID")
+	public StateMaster getFsStateMaster() {
+		return this.fsStateMaster;
+	}
 
-    @Column(name = "POSTAL", length = 100)
-    public String getPostal() {
-        return this.postal;
-    }
+	public void setFsStateMaster(StateMaster fsStateMaster) {
+		this.fsStateMaster = fsStateMaster;
+	}
 
-    public void setPostal(String postal) {
-        this.postal = postal;
-    }
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "CITY_ID")
+	public CityMaster getFsCityMaster() {
+		return this.fsCityMaster;
+	}
 
-    @Column(name = "OFFICE_TELEPHONE", length = 20)
-    public String getOfficeTelephone() {
-        return this.officeTelephone;
-    }
+	public void setFsCityMaster(CityMaster fsCityMaster) {
+		this.fsCityMaster = fsCityMaster;
+	}
 
-    public void setOfficeTelephone(String officeTelephone) {
-        this.officeTelephone = officeTelephone;
-    }
+	@Column(name = "AREA", length = 100)
+	public String getArea() {
+		return this.area;
+	}
 
-    @Column(name = "CREATED_BY", length = 200)
-    public String getCreatedBy() {
-        return this.createdBy;
-    }
+	public void setArea(String area) {
+		this.area = area;
+	}
 
-    public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
-    }
+	@Column(name = "BLOCK", length = 100)
+	public String getBlock() {
+		return this.block;
+	}
 
-    @Column(name = "UPDATED_BY", length = 200)
-    public String getUpdatedBy() {
-        return this.updatedBy;
-    }
+	public void setBlock(String block) {
+		this.block = block;
+	}
 
-    public void setUpdatedBy(String updatedBy) {
-        this.updatedBy = updatedBy;
-    }
+	@Column(name = "STREET", length = 100)
+	public String getStreet() {
+		return this.street;
+	}
 
-    @Column(name = "CREATION_DATE")
-    public Date getCreationDate() {
-        return this.creationDate;
-    }
+	public void setStreet(String street) {
+		this.street = street;
+	}
 
-    public void setCreationDate(Date creationDate) {
-        this.creationDate = creationDate;
-    }
+	@Column(name = "POSTAL", length = 100)
+	public String getPostal() {
+		return this.postal;
+	}
 
-    @Column(name = "LAST_UPDATED")
-    public Date getLastUpdated() {
-        return this.lastUpdated;
-    }
+	public void setPostal(String postal) {
+		this.postal = postal;
+	}
 
-    public void setLastUpdated(Date lastUpdated) {
-        this.lastUpdated = lastUpdated;
-    }
+	@Column(name = "OFFICE_TELEPHONE", length = 20)
+	public String getOfficeTelephone() {
+		return this.officeTelephone;
+	}
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "COUNTRY_ID")
-    public CountryMaster getFsCountryMaster() {
-        return fsCountryMaster;
-    }
+	public void setOfficeTelephone(String officeTelephone) {
+		this.officeTelephone = officeTelephone;
+	}
 
-    public void setFsCountryMaster(CountryMaster fsCountryMaster) {
-        this.fsCountryMaster = fsCountryMaster;
-    }
+	@Column(name = "CREATED_BY", length = 200)
+	public String getCreatedBy() {
+		return this.createdBy;
+	}
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "COMPANY_ID")
-    public CompanyMaster getFsCompanyMaster() {
-        return fsCompanyMaster;
-    }
+	public void setCreatedBy(String createdBy) {
+		this.createdBy = createdBy;
+	}
 
-    public void setFsCompanyMaster(CompanyMaster fsCompanyMaster) {
-        this.fsCompanyMaster = fsCompanyMaster;
-    }
+	@Column(name = "UPDATED_BY", length = 200)
+	public String getUpdatedBy() {
+		return this.updatedBy;
+	}
 
-    @Column(name = "ISACTIVE")
-    public String getIsActive() {
-        return isActive;
-    }
+	public void setUpdatedBy(String updatedBy) {
+		this.updatedBy = updatedBy;
+	}
 
-    public void setIsActive(String isActive) {
-        this.isActive = isActive;
-    }
+	@Column(name = "CREATION_DATE")
+	public Date getCreationDate() {
+		return this.creationDate;
+	}
 
+	public void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
+	}
 
-    @Column(name="CORPORATE_MASTER_ID")
+	@Column(name = "LAST_UPDATED")
+	public Date getLastUpdated() {
+		return this.lastUpdated;
+	}
+
+	public void setLastUpdated(Date lastUpdated) {
+		this.lastUpdated = lastUpdated;
+	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "COUNTRY_ID")
+	public CountryMaster getFsCountryMaster() {
+		return fsCountryMaster;
+	}
+
+	public void setFsCountryMaster(CountryMaster fsCountryMaster) {
+		this.fsCountryMaster = fsCountryMaster;
+	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "COMPANY_ID")
+	public CompanyMaster getFsCompanyMaster() {
+		return fsCompanyMaster;
+	}
+
+	public void setFsCompanyMaster(CompanyMaster fsCompanyMaster) {
+		this.fsCompanyMaster = fsCompanyMaster;
+	}
+
+	@Column(name = "ISACTIVE")
+	public String getIsActive() {
+		return isActive;
+	}
+
+	public void setIsActive(String isActive) {
+		this.isActive = isActive;
+	}
+
+	@Column(name = "CORPORATE_MASTER_ID")
 	public BigDecimal getCorporateMasterId() {
 		return corporateMasterId;
 	}
-
 
 	public void setCorporateMasterId(BigDecimal corporateMasterId) {
 		this.corporateMasterId = corporateMasterId;

@@ -36,6 +36,8 @@ public class TenantProperties {
 	private static final Logger LOGGER = LoggerFactory.getLogger(TenantProperties.class);
 	private static TenantProperties obj = new TenantProperties();
 	private static Environment ENV;
+	private static Properties APP_ENV;
+	private static String APP_ENV_VALUE;
 	public static final Pattern ENCRYPTED_PROPERTIES = Pattern.compile("^ENC\\((.*)\\)$");
 	public static BasicTextEncryptor textEncryptor = new BasicTextEncryptor();
 
@@ -78,14 +80,63 @@ public class TenantProperties {
 		return ENV;
 	}
 
-	public Properties getProperties() {
-		if (properties == null) {
-			properties = getProperties(TenantContextHolder.currentSite().toString().toLowerCase(), obj);
+	public static String getEnvProperties(String key) {
+		String value = null;
+		if (getEnviroment() != null) {
+			value = getEnviroment().getProperty(key);
 		}
-		return properties;
+		if (ArgUtil.isEmpty(value)) {
+			value = System.getProperty(key);
+		}
+		return value;
 	}
 
-	public static Properties getProperties(String tenant, Object object) {
+	public static String getAppEnvProperties(String key) {
+		String value = getEnvProperties(key);
+		if (ArgUtil.isEmpty(value) && !ArgUtil.isEmpty(APP_ENV)) {
+			if (ArgUtil.isEmpty(APP_ENV_VALUE)) {
+				APP_ENV_VALUE = getEnvProperties("app.env").toLowerCase();
+			}
+			value = APP_ENV.getProperty(key.replace("@env", APP_ENV_VALUE));
+			if (ArgUtil.isEmpty(value)) {
+				value = APP_ENV.getProperty(key.replace("@env", "default"));
+			}
+		}
+		return value;
+	}
+
+	@SuppressWarnings("serial")
+	public static Map<String, String> loadPropertiesMap(InputStream s) throws IOException {
+		final Map<String, String> ordered = new LinkedHashMap<String, String>();
+		// Hack to use properties class to parse but our map for preserved order
+		Properties bp = new Properties() {
+			@Override
+			public synchronized Object put(Object key, Object value) {
+				ordered.put((String) key, (String) value);
+				return super.put(key, value);
+			}
+		};
+		bp.load(s);
+		final Map<String, String> resolved = new LinkedHashMap<String, String>(ordered.size());
+		StrSubstitutor sub = new StrSubstitutor(new StrLookup() {
+			@Override
+			public String lookup(String key) {
+				String value = resolved.get(key);
+
+				if (ArgUtil.isEmpty(value)) {
+					value = getAppEnvProperties(key);
+				}
+				return value;
+			}
+		});
+		for (String k : ordered.keySet()) {
+			String value = sub.replace(ordered.get(k));
+			resolved.put(k, value);
+		}
+		return resolved;
+	}
+
+	private static Properties getPropertiesInternal(String tenant, Object object) {
 		Properties tenantProperties = new Properties();
 		String propertyFile = "application." + tenant + ".properties";
 		InputStream inSideInputStream = null;
@@ -135,40 +186,18 @@ public class TenantProperties {
 		return tenantProperties;
 	}
 
-	@SuppressWarnings("serial")
-	public static Map<String, String> loadPropertiesMap(InputStream s) throws IOException {
-		final Map<String, String> ordered = new LinkedHashMap<String, String>();
-		// Hack to use properties class to parse but our map for preserved order
-		Properties bp = new Properties() {
-			@Override
-			public synchronized Object put(Object key, Object value) {
-				ordered.put((String) key, (String) value);
-				return super.put(key, value);
-			}
-		};
-		bp.load(s);
-		final Map<String, String> resolved = new LinkedHashMap<String, String>(ordered.size());
-		StrSubstitutor sub = new StrSubstitutor(new StrLookup() {
-			@Override
-			public String lookup(String key) {
-				String value = resolved.get(key);
-
-				if (ArgUtil.isEmpty(value)) {
-					if (getEnviroment() != null) {
-						value = getEnviroment().getProperty(key);
-					}
-					if (ArgUtil.isEmpty(value)) {
-						value = System.getProperty(key);
-					}
-				}
-				return value;
-			}
-		});
-		for (String k : ordered.keySet()) {
-			String value = sub.replace(ordered.get(k));
-			resolved.put(k, value);
+	public static Properties getProperties(String tenant, Object object) {
+		if (APP_ENV == null) {
+			APP_ENV = getPropertiesInternal("env", obj);
 		}
-		return resolved;
+		return getPropertiesInternal(tenant, object);
+	}
+
+	public Properties getProperties() {
+		if (properties == null) {
+			properties = getProperties(TenantContextHolder.currentSite().toString().toLowerCase(), obj);
+		}
+		return properties;
 	}
 
 	public static Object assignValues(String tenant, Object object) {

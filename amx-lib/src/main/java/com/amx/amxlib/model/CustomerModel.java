@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.amx.jax.model.AbstractModel;
 import com.amx.jax.model.response.customer.CustomerFlags;
+import com.amx.jax.model.response.customer.PersonInfo;
 import com.amx.libjax.model.CustomerModelInterface.ICustomerModel;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -42,16 +43,8 @@ public class CustomerModel extends AbstractModel implements ICustomerModel {
 	private List<SecurityQuestionModel> verificationAnswers;
 
 	private boolean isRegistrationFlow;
-	
-	private CustomerFlags customerFlags;
-	
-	public CustomerFlags getCustomerFlags() {
-		return customerFlags;
-	}
 
-	public void setCustomerFlags(CustomerFlags customerFlags) {
-		this.customerFlags = customerFlags;
-	}
+	private CustomerFlags flags;
 
 	public boolean isRegistrationFlow() {
 		return isRegistrationFlow;
@@ -194,6 +187,14 @@ public class CustomerModel extends AbstractModel implements ICustomerModel {
 
 	public void setVerificationAnswers(List<SecurityQuestionModel> verificationAnswers) {
 		this.verificationAnswers = verificationAnswers;
+	}
+
+	public CustomerFlags getFlags() {
+		return flags;
+	}
+
+	public void setFlags(CustomerFlags flags) {
+		this.flags = flags;
 	}
 
 }
