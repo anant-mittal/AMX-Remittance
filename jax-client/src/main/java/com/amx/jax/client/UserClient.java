@@ -44,6 +44,7 @@ import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.model.UserDevice;
 import com.amx.jax.model.auth.QuestModelDTO;
 import com.amx.jax.model.response.customer.CustomerModelResponse;
+import com.amx.jax.model.response.customer.CustomerModelSignupResponse;
 import com.amx.jax.rest.RestService;
 
 @Component
@@ -786,7 +787,7 @@ public class UserClient extends AbstractJaxServiceClient implements ICustomerSer
 		try {
 
 			return restService.ajax(appConfig.getJaxURL())
-					.path(ApiEndpoint.CUSTOMER_ENDPOINT + Path.CUSTOMER_MODEL_RESPONSE_GET).meta(new JaxMetaInfo())
+					.path(ApiEndpoint.CUSTOMER_ENDPOINT + Path.CUSTOMER_MODEL_RESPONSE_BY_IDENTITYINT).meta(new JaxMetaInfo())
 					.queryParam(Params.IDENTITY_INT, identityInt)
 					.get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<CustomerModelResponse, Object>>() {
@@ -821,6 +822,23 @@ public class UserClient extends AbstractJaxServiceClient implements ICustomerSer
 		} catch (Exception ae) {
 
 			LOGGER.error("exception in get customer response : ", ae);
+			return JaxSystemError.evaluate(ae);
+		}
+	}
+
+	@Override
+	public AmxApiResponse<CustomerModelSignupResponse, Object> getCustomerModelSignupResponse(String identityInt) {
+		try {
+
+			return restService.ajax(appConfig.getJaxURL())
+					.path(ApiEndpoint.CUSTOMER_ENDPOINT + Path.CUSTOMER_MODEL_SIGNUP_RESPONSE_GET).meta(new JaxMetaInfo())
+					.queryParam(Params.IDENTITY_INT, identityInt)
+					.get()
+					.as(new ParameterizedTypeReference<AmxApiResponse<CustomerModelSignupResponse, Object>>() {
+					});
+		} catch (Exception ae) {
+
+			LOGGER.error("exception in get customer signup response : ", ae);
 			return JaxSystemError.evaluate(ae);
 		}
 	}

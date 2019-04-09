@@ -40,6 +40,7 @@ import com.amx.jax.dict.Tenant;
 import com.amx.jax.model.UserDevice;
 import com.amx.jax.model.auth.QuestModelDTO;
 import com.amx.jax.model.response.customer.CustomerModelResponse;
+import com.amx.jax.model.response.customer.CustomerModelSignupResponse;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -449,7 +450,7 @@ public class UserClientTest extends AbstractTestClient {
 	}
 	
 	@SuppressWarnings("null")
-	@Test
+	//@Test
 	public void saveCustomerSecQuestions() throws IOException, ResourceNotFoundException,
 	InvalidInputException, RemittanceTransactionValidationException, LimitExeededException {
 		jaxMetaInfo.setDeviceId("301019967");
@@ -474,6 +475,26 @@ public class UserClientTest extends AbstractTestClient {
 		
 		
 		response = client.saveCustomerSecQuestions(securityquestion);
+		LOGGER.debug("response result is "+response.getResults());
+		assertNotNull("Response is null", response);
+		assertNotNull(response);
+	}
+	
+	@Test
+	public void getCustomerModelSignupResponse() throws IOException, ResourceNotFoundException,
+	InvalidInputException, RemittanceTransactionValidationException, LimitExeededException {
+		jaxMetaInfo.setDeviceId("301019967");
+		jaxMetaInfo.setCountryId(new BigDecimal(91));
+		jaxMetaInfo.setCompanyId(new BigDecimal(1));
+		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
+		jaxMetaInfo.setCustomerId(new BigDecimal(573));
+		jaxMetaInfo.setChannel(JaxChannel.ONLINE);
+		jaxMetaInfo.setTenant(Tenant.KWT);
+		jaxMetaInfo.setLanguageId(new BigDecimal(1));
+		jaxMetaInfo.setEmployeeId(new BigDecimal(265));
+		AmxApiResponse<CustomerModelSignupResponse, Object> response = null;
+		
+		response = client.getCustomerModelSignupResponse("285061506787");
 		LOGGER.debug("response result is "+response.getResults());
 		assertNotNull("Response is null", response);
 		assertNotNull(response);

@@ -34,6 +34,7 @@ import com.amx.jax.customer.service.CustomerService;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.auth.QuestModelDTO;
 import com.amx.jax.model.response.customer.CustomerModelResponse;
+import com.amx.jax.model.response.customer.CustomerModelSignupResponse;
 import com.amx.jax.services.CustomerDataVerificationService;
 import com.amx.jax.userservice.service.CustomerModelService;
 import com.amx.jax.userservice.service.AnnualIncomeService;
@@ -248,7 +249,7 @@ public class CustomerController implements ICustomerService {
 		return response;
 	}
 	
-	@RequestMapping(value = Path.CUSTOMER_MODEL_RESPONSE_GET, method = RequestMethod.GET)
+	@RequestMapping(value = Path.CUSTOMER_MODEL_RESPONSE_BY_IDENTITYINT, method = RequestMethod.GET)
 	@Override
 	public AmxApiResponse<CustomerModelResponse, Object> getCustomerModelResponse(
 			@RequestParam(name = Params.IDENTITY_INT) String identityInt) {
@@ -283,5 +284,14 @@ public class CustomerController implements ICustomerService {
 		logger.info("in securityquestions: ");
 		AmxApiResponse<BoolRespModel, Object> response = customerService.saveCustomerSecQuestions(securityquestions);
 		return response;
+	}
+	
+	@RequestMapping(value = Path.CUSTOMER_MODEL_SIGNUP_RESPONSE_GET, method = RequestMethod.GET)
+	@Override
+	public AmxApiResponse<CustomerModelSignupResponse, Object> getCustomerModelSignupResponse(
+			@RequestParam(name = Params.IDENTITY_INT) String identityInt) {
+		CustomerModelSignupResponse response = customerModelService.getCustomerModelSignupResponse(identityInt);
+		return AmxApiResponse.build(response);
+
 	}
 }

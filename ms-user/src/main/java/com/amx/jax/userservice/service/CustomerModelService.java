@@ -15,7 +15,9 @@ import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.response.customer.CustomerFlags;
 import com.amx.jax.model.response.customer.CustomerModelResponse;
+import com.amx.jax.model.response.customer.CustomerModelSignupResponse;
 import com.amx.jax.model.response.customer.PersonInfo;
+import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.manager.CustomerFlagManager;
 
 @Service
@@ -26,6 +28,8 @@ public class CustomerModelService {
 	UserValidationService userValidationService;
 	@Autowired
 	UserService userService;
+	@Autowired
+	CustomerDao custDao;
 	@Autowired
 	CustomerFlagManager customerFlagManager;
 	@Autowired
@@ -52,6 +56,14 @@ public class CustomerModelService {
 		CustomerFlags customerFlags = customerFlagManager.getCustomerFlags(customerId);
 		CustomerModelResponse response = new CustomerModelResponse(personInfo, customerFlags);
 		response.setCustomerId(customerId);
+		return response;
+	}
+	
+	public CustomerModelSignupResponse getCustomerModelSignupResponse(String identityInt) {
+		CustomerModelResponse customerModelResponse = getCustomerModelResponse(identityInt);
+		PersonInfo personInfo = customerModelResponse.getPersonInfo();
+		CustomerModelSignupResponse response = new CustomerModelSignupResponse(personInfo.getMobile(),
+				personInfo.getEmail(), null, customerModelResponse.getCustomerFlags());
 		return response;
 	}
 
