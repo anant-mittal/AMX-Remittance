@@ -2,16 +2,9 @@ package com.amx.jax.ui.api;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.amx.amxlib.model.CustomerHomeAddress;
 import com.amx.jax.CustomerCredential;
+import com.amx.jax.constants.CommunicationChannel;
 import com.amx.jax.model.request.CustomerPersonalDetail;
 import com.amx.jax.ui.model.AuthData;
 import com.amx.jax.ui.model.UserUpdateData;
@@ -20,6 +13,14 @@ import com.amx.jax.ui.service.PartialRegService;
 import com.amx.jax.ui.service.RegistrationService;
 import com.amx.jax.ui.session.Transactions;
 import com.amx.libjax.model.CustomerModelInterface.ICustomerModel;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -50,8 +51,8 @@ public class RegisterController {
 	 */
 	@ApiOperation(value = "Verify KYC and sneds OTP to registered Mobile")
 	@RequestMapping(value = "/pub/register/verifyid", method = { RequestMethod.POST })
-	public ResponseWrapper<AuthData> verifyID(@RequestParam String civilid) {
-		return registrationService.validateCustomer(civilid);
+	public ResponseWrapper<AuthData> verifyID(@RequestParam String civilid, @RequestParam (required = false) CommunicationChannel communicationChannel) {
+		return registrationService.validateCustomerInit(civilid, communicationChannel);
 	}
 
 	/**

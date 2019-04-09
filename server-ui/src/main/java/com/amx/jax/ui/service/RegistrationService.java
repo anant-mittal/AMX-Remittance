@@ -3,14 +3,11 @@ package com.amx.jax.ui.service;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.jax.constants.CommunicationChannel;
 import com.amx.jax.model.AuthState;
 import com.amx.jax.model.AuthState.AuthStep;
 import com.amx.jax.model.auth.QuestModelDTO;
@@ -20,6 +17,10 @@ import com.amx.jax.ui.model.UserUpdateData;
 import com.amx.jax.ui.response.ResponseMessage;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.session.UserSession;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  * The Class RegistrationService.
@@ -79,6 +80,37 @@ public class RegistrationService {
 		return wrapper;
 	}
 
+
+	public ResponseWrapper<AuthData> validateCustomerInit(String identity, CommunicationChannel communicationChannel) {
+
+		/**
+		 * Clearing old session before proceeding
+		 */
+		sessionService.clear();
+		sessionService.invalidate();
+
+		sessionService.getGuestSession().setIdentity(identity);
+		sessionService.getGuestSession().initFlow(AuthState.AuthFlow.ACTIVATION);
+
+		ResponseWrapper<AuthData> wrapper = new ResponseWrapper<AuthData>(new AuthData());
+
+		CivilIdOtpModel model = jaxClient.setDefaults().getUserclient().initRegistration(identity, communicationChannel).getResult();
+		// Check if response was successful
+		if (model.getIsActiveCustomer()) {
+			wrapper.setMessage(OWAStatusStatusCodes.ALREADY_ACTIVE, ResponseMessage.USER_ALREADY_ACTIVE);
+		} else {
+			sessionService.getGuestSession().getState().setValidId(true);
+
+			wrapper.getData().setmOtpPrefix((model.getmOtpPrefix()));
+			wrapper.getData().seteOtpPrefix((model.geteOtpPrefix()));
+			wrapper.setMessage(OWAStatusStatusCodes.OTP_SENT);
+
+			sessionService.getGuestSession().endStep(AuthStep.IDVALID);
+			wrapper.getData().setState(sessionService.getGuestSession().getState());
+		}
+		return wrapper;
+	}
+
 	/**
 	 * Login with otp.
 	 *
@@ -112,7 +144,7 @@ public class RegistrationService {
 	 */
 	public ResponseWrapper<AuthData> validateCustomer(String idnetity, String mOtp) {
 		if (mOtp == null) {
-			return validateCustomer(idnetity);
+			return validateCustomer(idnetity, null);
 		}
 		sessionService.getGuestSession().initStep(AuthStep.MOTPVFY);
 		ResponseWrapper<AuthData> wrapper = new ResponseWrapper<AuthData>(new AuthData());
