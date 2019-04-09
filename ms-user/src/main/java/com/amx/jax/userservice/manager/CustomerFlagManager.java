@@ -22,6 +22,7 @@ import com.amx.jax.util.AmxDBConstants;
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class CustomerFlagManager {
+
 	private static final Logger logger = Logger.getLogger(CustomerFlags.class);
 
 	@Autowired
@@ -34,6 +35,7 @@ public class CustomerFlagManager {
 	public CustomerFlags getCustomerFlags(BigDecimal customerId) {
 
 		CustomerFlags customerFlags = new CustomerFlags();
+		Customer customer = custDao.getCustById(customerId);
 
 		try {
 			userValidationService.validateCustIdProofs(customerId);
@@ -44,12 +46,34 @@ public class CustomerFlagManager {
 
 		CustomerOnlineRegistration customerOnlineRegistration = custDao.getOnlineCustByCustomerId(customerId);
 		customerFlags.setFingerprintlinked(isFingerprintLinked(customerOnlineRegistration));
+		customerFlags.setSecurityQuestionRequired(isSecurityQuestionRequired(customerOnlineRegistration));
 
-		Customer customer = custDao.getCustById(customerOnlineRegistration.getCustomerId());
 		customerFlags.setAnnualIncomeExpired(isAnnualIncomeExpired(customer));
 		setCustomerCommunicationChannelFlags(customer, customerFlags);
 
 		return customerFlags;
+	}
+
+	private static boolean isSecurityQuestionRequired(CustomerOnlineRegistration customerOnlineRegistration) {
+		if (customerOnlineRegistration == null) {
+			return true;
+		}
+		if (customerOnlineRegistration.getSecurityQuestion1() == null) {
+			return true;
+		}
+		if (customerOnlineRegistration.getSecurityQuestion2() == null) {
+			return true;
+		}
+		if (customerOnlineRegistration.getSecurityQuestion3() == null) {
+			return true;
+		}
+		if (customerOnlineRegistration.getSecurityQuestion4() == null) {
+			return true;
+		}
+		if (customerOnlineRegistration.getSecurityQuestion5() == null) {
+			return true;
+		}
+		return false;
 	}
 
 	private void setCustomerCommunicationChannelFlags(Customer customer, CustomerFlags customerFlags) {
