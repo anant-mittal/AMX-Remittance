@@ -540,28 +540,35 @@ public class UserService extends AbstractUserService {
 		String hashedmOtp = cryptoUtil.getHash(userId, randmOtp);
 		String randeOtp = util.createRandomPassword(6);
 		String hashedeOtp = cryptoUtil.getHash(userId, randeOtp);
-		model.setHashedmOtp(hashedmOtp);
-		model.setmOtp(randmOtp);
-		model.setmOtpPrefix(Random.randomAlpha(3));
-		if (channels != null && channels.contains(CommunicationChannel.EMAIL)) {
-			model.setHashedeOtp(hashedeOtp);
-			model.seteOtp(randeOtp);
-			model.seteOtpPrefix(Random.randomAlpha(3));
-			logger.info("Generated otp for civilid email- " + userId + " is " + randeOtp);
-		}
-		if (channels != null && channels.contains(CommunicationChannel.WHATSAPP)) {
-			String randwOtp = Random.randomNumeric(6);
-			String hashedwOtp = cryptoUtil.getHash(userId, randwOtp);
-			model.setwHashedOtp(hashedwOtp);
-			model.seteOtpPrefix(Random.randomAlpha(3));
-		}
+		if (org.apache.commons.collections.CollectionUtils.isEmpty(channels)) {
+			model.setHashedmOtp(hashedmOtp);
+			model.setmOtp(randmOtp);
+			model.setmOtpPrefix(Random.randomAlpha(3));
+		} else {
+			if (channels.contains(CommunicationChannel.MOBILE)) {
+				model.setHashedmOtp(hashedmOtp);
+				model.setmOtp(randmOtp);
+				model.setmOtpPrefix(Random.randomAlpha(3));
+			}
+			if (channels.contains(CommunicationChannel.EMAIL)) {
+				model.setHashedeOtp(hashedeOtp);
+				model.seteOtp(randeOtp);
+				model.seteOtpPrefix(Random.randomAlpha(3));
+			}
+			if (channels.contains(CommunicationChannel.WHATSAPP)) {
+				String randwOtp = Random.randomNumeric(6);
+				String hashedwOtp = cryptoUtil.getHash(userId, randwOtp);
+				model.setwHashedOtp(hashedwOtp);
+				model.setwOtpPrefix(Random.randomAlpha(3));
+			}
 
-		// set e-otp same as m-otp
-		if (channels != null && channels.contains(CommunicationChannel.EMAIL_AS_MOBILE)) {
-			model.setHashedeOtp(hashedmOtp);
-			model.seteOtp(randmOtp);
-			model.seteOtpPrefix(model.getmOtpPrefix());
-			logger.info("Generated otp for civilid email- " + userId + " is " + randmOtp);
+			// set e-otp same as m-otp
+			if (channels.contains(CommunicationChannel.EMAIL_AS_MOBILE)) {
+				model.setHashedeOtp(hashedmOtp);
+				model.seteOtp(randmOtp);
+				model.seteOtpPrefix(model.getmOtpPrefix());
+				logger.info("Generated otp for civilid email- " + userId + " is " + randmOtp);
+			}
 		}
 
 		logger.info("Generated otp for civilid mobile- " + userId + " is " + randmOtp);
