@@ -29,12 +29,11 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
 		registry.addInterceptor(tenantInterceptor);
-		//registry.addInterceptor(informationCustomerInterceptor);
+		registry.addInterceptor(informationCustomerInterceptor);
 		
 	}
 
 	@Bean(autowire = Autowire.BY_NAME)
-	// @Qualifier("remitApplParametersMap")
 	@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 	public Map<String, Object> remitApplParametersMap() {
 		return new HashMap<String, Object>();

@@ -96,7 +96,7 @@ public class CustomerFlagManager {
 
 	public void validateInformationOnlyCustomer(BigDecimal customerId) {
 		CustomerFlags customerFlags = getCustomerFlags(customerId);
-		if (!Boolean.TRUE.equals(customerFlags.getSecurityQuestionRequired())) {
+		if (Boolean.TRUE.equals(customerFlags.getSecurityQuestionRequired())) {
 			throw new GlobalException(JaxError.SQA_SETUP_REQUIRED, "Security question required");
 		}
 	}
