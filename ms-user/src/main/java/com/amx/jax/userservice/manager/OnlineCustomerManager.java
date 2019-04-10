@@ -48,9 +48,5 @@ public class OnlineCustomerManager {
 		CustomerOnlineRegistration onlineCustReg = custDao.getOnlineCustByCustomerId(customer.getCustomerId());
 		userValidationService.validateBlackListedCustomerForLogin(customer);
 		userValidationService.validateCustomerVerification(customer.getCustomerId());
-		if (onlineCustReg != null) {
-			userValidationService.validateCustomerLockCount(onlineCustReg);
-			userValidationService.validateTokenDate(onlineCustReg);
-		}
 	}
 }
