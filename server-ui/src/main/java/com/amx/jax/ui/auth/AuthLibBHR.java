@@ -45,7 +45,8 @@ public class AuthLibBHR implements AuthLib {
 		case DEVICEPASS:
 			return AuthState.AuthStep.COMPLETED;
 		case USERPASS:
-			return AuthState.AuthStep.SECQUES;
+			return AuthState.AuthStep.COMPLETED;
+			// return AuthState.AuthStep.SECQUES;
 		case SECQUES:
 			return AuthState.AuthStep.COMPLETED;
 		default:
@@ -139,11 +140,12 @@ public class AuthLibBHR implements AuthLib {
 		case IDVALID:
 			return AuthState.AuthStep.MOTPVFY;
 		case MOTPVFY:
-			if (authState.isPresentEmail()) {
-				return AuthState.AuthStep.SECQ_SET;
-			} else {
-				return AuthState.AuthStep.DATA_VERIFY;
-			}
+			return AuthState.AuthStep.CREDS_SET;
+			// if (authState.isPresentEmail()) {
+			// 	return AuthState.AuthStep.SECQ_SET;
+			// } else {
+			// 	return AuthState.AuthStep.DATA_VERIFY;
+			// }
 		case DATA_VERIFY:
 			return AuthState.AuthStep.SECQ_SET;
 		case SECQ_SET:
