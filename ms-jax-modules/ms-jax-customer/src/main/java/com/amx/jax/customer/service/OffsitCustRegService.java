@@ -360,6 +360,9 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 
 	public AmxApiResponse<ArticleDetailsDescDto, Object> getDesignationListResponse(EmploymentDetailsRequest model) {
 		BigDecimal articleId = model.getArticleId();
+		LOGGER.debug("aricle id is "+model.getArticleId());
+		LOGGER.debug("Aricle details id is "+model.getArticleDetailsId());
+		LOGGER.debug("Country id is "+model.getCountryId());
 		List<Map<String, Object>> designationList = articleDao.getDesignationData(articleId, metaData.getLanguageId());
 		if (designationList == null || designationList.isEmpty()) {
 			throw new GlobalException(JaxError.EMPTY_DESIGNATION_LIST, "Designation List Is Empty ");
