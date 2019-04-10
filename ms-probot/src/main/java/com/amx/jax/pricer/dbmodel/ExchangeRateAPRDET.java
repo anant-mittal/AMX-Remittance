@@ -17,6 +17,8 @@ public class ExchangeRateAPRDET implements Serializable {
 	private BigDecimal sellRateMax;
 	private BigDecimal serviceId;
 	private BankMasterModel bankMaster;
+	
+	private boolean isGLCRate = false;
 
 	public ExchangeRateAPRDET() {
 		super();
@@ -70,6 +72,14 @@ public class ExchangeRateAPRDET implements Serializable {
 
 	public void setBankMaster(BankMasterModel bankMaster) {
 		this.bankMaster = bankMaster;
+	}
+
+	public boolean isGLCRate() {
+		return isGLCRate;
+	}
+
+	public void setGLCRate(boolean isGLCRate) {
+		this.isGLCRate = isGLCRate;
 	}
 
 	@Override

@@ -151,6 +151,11 @@ public class CustomerDiscountManager {
 
 				} // for
 			}
+			
+			
+			/**
+			 * if(online )
+			 */
 
 			BigDecimal totalDiscountPips = amountSlabPips.add(channelDiscountPips).add(ccDiscountPips);
 
@@ -165,21 +170,26 @@ public class CustomerDiscountManager {
 
 			if (pricingRateDetailsDTO.getAvgRateGLCForBank(bankExRateDetail.getBankId()) != null) {
 
-				// Old Logic
-				// ViewExGLCBAL viewExGLCBAL =
-				// pricingRateDetailsDTO.getBankGlcBalMap().get(bankExRateDetail.getBankId());
-
-				// adjustedBaseSellRate = viewExGLCBAL.getRateAvgRate().add(margin);
-
 				// New Logic
 				adjustedBaseSellRate = pricingRateDetailsDTO.getAvgRateGLCForBank(bankExRateDetail.getBankId()).add(margin);
 
 			}
 
-			if (discountedSellRate.compareTo(adjustedBaseSellRate) < 0) {
-				discountedSellRate = adjustedBaseSellRate;
-				bankExRateDetail.setDiscountAvailed(false);
+			
+			if(Channel.BRANCH.equals(pricingRequestDTO.getChannel()) || Channel.KIOSK.equals(pricingRequestDTO.getChannel())) {
+				
+			}else {
+				
+				
+				if (discountedSellRate.compareTo(adjustedBaseSellRate) < 0) {
+					discountedSellRate = adjustedBaseSellRate;
+					bankExRateDetail.setDiscountAvailed(false);
+				}
+				
 			}
+			
+			
+			
 
 			bankExRateDetail.setCustomerDiscountDetails(new HashMap<DISCOUNT_TYPE, ExchangeDiscountInfo>());
 

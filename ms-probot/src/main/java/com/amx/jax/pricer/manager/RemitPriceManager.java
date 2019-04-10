@@ -193,7 +193,7 @@ public class RemitPriceManager {
 
 				bankExchangeRates = exchangeRateDao.getBranchExchangeRatesForRoutingBanksAndServiceIds(
 						requestDto.getForeignCurrencyId(), requestDto.getCountryBranchId(),
-						 requestDto.getLocalCountryId(), validBankIds, serviceIdsList);
+						requestDto.getLocalCountryId(), validBankIds, serviceIdsList);
 			} else {
 
 				bankExchangeRates = exchangeRateDao.getBranchExchangeRatesForRoutingBanks(
@@ -307,6 +307,9 @@ public class RemitPriceManager {
 					// Higher than GLCBAL Rate
 					if (ratePrev.getSellRateMax().compareTo(rate.getSellRateMax()) > 0
 							&& rate.getSellRateMax().compareTo(adjustedSellRate) > 0) {
+
+						// Set to Amx Branch Rate
+						rate.setGLCRate(false);
 						bankExchangeRateMap.put(rate.getBankMaster().getBankId(), rate);
 					}
 
@@ -316,6 +319,8 @@ public class RemitPriceManager {
 
 						rate.setSellRateMin(adjustedSellRate);
 						rate.setSellRateMax(adjustedSellRate);
+
+						rate.setGLCRate(true);
 					}
 
 					bankExchangeRateMap.put(rate.getBankMaster().getBankId(), rate);
