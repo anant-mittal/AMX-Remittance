@@ -42,6 +42,15 @@ public class OnlineCustomerManager {
 	}
 	
 	public void doSignUpValidations(String identityInt) {
-		userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(identityInt, JaxApiFlow.SIGNUP_ONLINE);
+		List<Customer> customers = userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(identityInt,
+				JaxApiFlow.SIGNUP_ONLINE);
+		Customer customer = customers.get(0);
+		CustomerOnlineRegistration onlineCustReg = custDao.getOnlineCustByCustomerId(customer.getCustomerId());
+		userValidationService.validateBlackListedCustomerForLogin(customer);
+		userValidationService.validateCustomerVerification(customer.getCustomerId());
+		if (onlineCustReg != null) {
+			userValidationService.validateCustomerLockCount(onlineCustReg);
+			userValidationService.validateTokenDate(onlineCustReg);
+		}
 	}
 }
