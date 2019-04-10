@@ -123,7 +123,7 @@ public class RemitPriceManager {
 
 			Map<BigDecimal, ExchangeRateAPRDET> exchangeRateMap = computeBestRateForOnline(
 					requestDto.getForeignCurrencyId(), requestDto.getForeignCountryId(), requestDto.getLocalCountryId(),
-					validBankIds);
+					validBankIds, requestDto.getChannel());
 
 			if (exchangeRateMap == null || exchangeRateMap.isEmpty()) {
 				throw new PricerServiceException(PricerServiceError.MISSING_VALID_EXCHANGE_RATES,
@@ -195,7 +195,7 @@ public class RemitPriceManager {
 			 * Get margin for the Rate
 			 */
 			OnlineMarginMarkup margin = getOnlineMarginMarkup(requestDto.getLocalCountryId(),
-					requestDto.getForeignCountryId(), requestDto.getForeignCurrencyId());
+					requestDto.getForeignCountryId(), requestDto.getForeignCurrencyId(), requestDto.getChannel());
 
 			pricingRateDetailsDTO.setMargin(margin);
 
@@ -273,7 +273,8 @@ public class RemitPriceManager {
 	}
 
 	private Map<BigDecimal, ExchangeRateAPRDET> computeBestRateForOnline(BigDecimal currencyId,
-			BigDecimal foreignCountryId, BigDecimal applicationCountryId, List<BigDecimal> routingBankIds) {
+			BigDecimal foreignCountryId, BigDecimal applicationCountryId, List<BigDecimal> routingBankIds,
+			Channel channel) {
 
 		/**
 		 * Get All Cost rates from GLCBAL
@@ -283,7 +284,6 @@ public class RemitPriceManager {
 		if (bankGlcBalMap == null || bankGlcBalMap.isEmpty()) {
 			throw new PricerServiceException(PricerServiceError.MISSING_GLCBAL_ENTRIES,
 					"GLCBAL Inventory is Missing for Given Input : ");
-
 		}
 
 		/**
@@ -294,7 +294,7 @@ public class RemitPriceManager {
 		/**
 		 * Get margin for the Rate
 		 */
-		OnlineMarginMarkup margin = getOnlineMarginMarkup(applicationCountryId, foreignCountryId, currencyId);
+		OnlineMarginMarkup margin = getOnlineMarginMarkup(applicationCountryId, foreignCountryId, currencyId, channel);
 
 		/**
 		 * For Further computations
@@ -376,12 +376,19 @@ public class RemitPriceManager {
 	}
 
 	private OnlineMarginMarkup getOnlineMarginMarkup(BigDecimal applicationCountryId, BigDecimal foreignCountryId,
-			BigDecimal currencyId) {
+			BigDecimal currencyId, Channel channel) {
 		/**
 		 * Get margin for the Rate
+		 * 
+		 * 1. Margin Markup is only Applicable for Online and mobile world. 2. For
+		 * Branches it is ZERO 3. For Kiosk it is ZERO
 		 */
-		OnlineMarginMarkup margin = marginMarkupDao.getMarkupForCountryAndCurrency(applicationCountryId,
-				foreignCountryId, currencyId);
+
+		OnlineMarginMarkup margin = null;
+
+		if (Channel.ONLINE.equals(channel) || Channel.MOBILE.equals(channel)) {
+			margin = marginMarkupDao.getMarkupForCountryAndCurrency(applicationCountryId, foreignCountryId, currencyId);
+		}
 
 		if (null == margin) {
 			margin = new OnlineMarginMarkup();
