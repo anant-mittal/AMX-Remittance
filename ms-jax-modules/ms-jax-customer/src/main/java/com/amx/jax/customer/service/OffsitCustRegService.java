@@ -16,7 +16,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.sql.rowset.serial.SerialException;
-
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
@@ -32,6 +31,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.constant.PrefixEnum;
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.amxlib.model.PersonInfo;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.CustomerCredential;
@@ -362,6 +362,9 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 
 	public AmxApiResponse<ArticleDetailsDescDto, Object> getDesignationListResponse(EmploymentDetailsRequest model) {
 		BigDecimal articleId = model.getArticleId();
+		LOGGER.debug("aricle id is "+model.getArticleId());
+		LOGGER.debug("Aricle details id is "+model.getArticleDetailsId());
+		LOGGER.debug("Country id is "+model.getCountryId());
 		List<Map<String, Object>> designationList = articleDao.getDesignationData(articleId, metaData.getLanguageId());
 		if (designationList == null || designationList.isEmpty()) {
 			throw new GlobalException(JaxError.EMPTY_DESIGNATION_LIST, "Designation List Is Empty ");
