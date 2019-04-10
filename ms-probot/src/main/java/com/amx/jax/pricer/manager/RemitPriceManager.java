@@ -144,6 +144,7 @@ public class RemitPriceManager {
 				ExchangeRateDetails exRateDetails = new ExchangeRateDetails();
 				exRateDetails.setBankId(bankDetailsDto.getBankId());
 				exRateDetails.setServiceIndicatorId(exchangeRate.getServiceId());
+				exRateDetails.setCostRateLimitReached(exchangeRate.isGLCRate());
 
 				if (requestDto.getLocalAmount() != null) {
 
@@ -183,6 +184,23 @@ public class RemitPriceManager {
 						"Invalid Routing Bank Ids : None Found : " + requestDto.getRoutingBankIds());
 			}
 
+			/************* Set All the Base Rates And Margin ***********/
+
+			/**
+			 * For Further computations
+			 */
+			pricingRateDetailsDTO.setBankGlcBalMap(getGLCBALRates(requestDto.getForeignCurrencyId(), validBankIds));
+
+			/**
+			 * Get margin for the Rate
+			 */
+			OnlineMarginMarkup margin = getOnlineMarginMarkup(requestDto.getLocalCountryId(),
+					requestDto.getForeignCountryId(), requestDto.getForeignCurrencyId());
+
+			pricingRateDetailsDTO.setMargin(margin);
+
+			/************* Process Bank Exchange Rates ***********/
+
 			List<ExchangeRateApprovalDetModel> bankExchangeRates;
 
 			// Filter Bank Exchange rates for Required Service Indicator Ids
@@ -209,6 +227,16 @@ public class RemitPriceManager {
 
 			for (ExchangeRateApprovalDetModel exchangeRate : bankExchangeRates) {
 
+				BigDecimal avgBankGLCBALRate = pricingRateDetailsDTO
+						.getAvgRateGLCForBank(exchangeRate.getBankMaster().getBankId());
+
+				// Update GLCBAL Rate to Markup Adjusted Rates
+				BigDecimal adjustedSellRate = new BigDecimal(0);
+
+				if (avgBankGLCBALRate != null) {
+					adjustedSellRate = avgBankGLCBALRate.add(margin.getMarginMarkup());
+				}
+
 				BankDetailsDTO bankDetailsDTO;
 
 				if (bankIdDetailsMap.containsKey(exchangeRate.getBankMaster().getBankId())) {
@@ -232,20 +260,13 @@ public class RemitPriceManager {
 							createBreakUpForFcCur(exchangeRate.getSellRateMin(), requestDto.getForeignAmount()));
 				}
 
+				if (exRateDetails.getSellRateBase().getInverseRate().compareTo(adjustedSellRate) <= 0) {
+					exRateDetails.setCostRateLimitReached(true);
+				}
+
 				bankWiseRates.add(exRateDetails);
 
 			} // for
-
-			/**
-			 * For Further computations
-			 */
-			pricingRateDetailsDTO.setBankGlcBalMap(getGLCBALRates(requestDto.getForeignCurrencyId(), validBankIds));
-
-			/**
-			 * Get margin for the Rate
-			 */
-			pricingRateDetailsDTO.setMargin(getOnlineMarginMarkup(requestDto.getLocalCountryId(),
-					requestDto.getForeignCountryId(), requestDto.getForeignCurrencyId()));
 
 		} // else
 
@@ -296,7 +317,10 @@ public class RemitPriceManager {
 			if (null != avgBankGLCBALRate) {
 
 				// Update GLCBAL Rate to Markup Adjusted Rates
-				BigDecimal adjustedSellRate = avgBankGLCBALRate.add(margin.getMarginMarkup());
+				BigDecimal adjustedSellRate = new BigDecimal(0);
+				if (null != avgBankGLCBALRate) {
+					adjustedSellRate = avgBankGLCBALRate.add(margin.getMarginMarkup());
+				}
 
 				if (bankExchangeRateMap.containsKey(bankId)) {
 
@@ -315,7 +339,7 @@ public class RemitPriceManager {
 
 				} else {
 
-					if (rate.getSellRateMax().compareTo(adjustedSellRate) < 0) {
+					if (rate.getSellRateMax().compareTo(adjustedSellRate) <= 0) {
 
 						rate.setSellRateMin(adjustedSellRate);
 						rate.setSellRateMax(adjustedSellRate);
