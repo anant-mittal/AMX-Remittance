@@ -300,7 +300,7 @@ public class NewExchangeRateService extends ExchangeRateService {
 		ApiResponse<ExchangeRateResponseModel> exchangeRateResponse = getExchangeRateFromBestRateLogic(fromCurrency,
 				toCurrency, lcAmount, routingBankId, beneBankCountryId);
 		List<BankMasterDTO> allExchangeRates = exchangeRateResponse.getResult().getBankWiseRates();
-		List<BigDecimal> cashRoutingBanks = routingDetailService.getCashRoutingBanks(toCurrency);
+		List<BigDecimal> cashRoutingBanks = routingDetailService.getCashRoutingBanks(toCurrency, beneBankCountryId);
 		List<BankMasterDTO> allCashRates = allExchangeRates.stream().filter(i -> {
 			return cashRoutingBanks.contains(i.getBankId());
 		}).map(i -> {
