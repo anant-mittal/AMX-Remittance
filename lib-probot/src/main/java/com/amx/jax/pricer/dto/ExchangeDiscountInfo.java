@@ -12,6 +12,7 @@ public class ExchangeDiscountInfo implements Serializable, Cloneable {
 	 */
 	private static final long serialVersionUID = -549548404004608601L;
 
+	private BigDecimal id;
 	private DISCOUNT_TYPE discountType;
 	private String discountTypeValue;
 	private BigDecimal discountPipsValue;
@@ -38,6 +39,14 @@ public class ExchangeDiscountInfo implements Serializable, Cloneable {
 
 	public void setDiscountPipsValue(BigDecimal discountPipsValue) {
 		this.discountPipsValue = discountPipsValue;
+	}
+
+	public BigDecimal getId() {
+		return id;
+	}
+
+	public void setId(BigDecimal id) {
+		this.id = id;
 	}
 
 	@Override

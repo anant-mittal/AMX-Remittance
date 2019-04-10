@@ -53,8 +53,7 @@ public class CustomerDiscountManager {
 
 	private static BigDecimal BIGD_ZERO = new BigDecimal(0);
 
-	public void getDiscountedRates(PricingRequestDTO pricingRequestDTO, Customer customer,
-			CUSTOMER_CATEGORY customerCategory) {
+	public void getDiscountedRates(PricingRequestDTO pricingRequestDTO, Customer customer, CUSTOMER_CATEGORY customerCategory) {
 
 		// Compute Channel Discount
 		ChannelDiscount channelDiscount = channelDiscountDao.getDiscountByChannel(pricingRequestDTO.getChannel());
@@ -62,6 +61,7 @@ public class CustomerDiscountManager {
 
 		// Channel Info
 		ExchangeDiscountInfo channelInfo = new ExchangeDiscountInfo();
+		channelInfo.setId(channelDiscount.getId());
 		channelInfo.setDiscountType(DISCOUNT_TYPE.CHANNEL);
 		channelInfo.setDiscountTypeValue(pricingRequestDTO.getChannel().name());
 		channelInfo.setDiscountPipsValue(channelDiscountPips);
@@ -71,14 +71,14 @@ public class CustomerDiscountManager {
 		ExchangeDiscountInfo custCategoryInfo = new ExchangeDiscountInfo();
 
 		if (customer != null) {
-			CustomerExtended customerExtended = customerExtendedDao
-					.getCustomerExtendedByCustomerId(customer.getCustomerId());
+			CustomerExtended customerExtended = customerExtendedDao.getCustomerExtendedByCustomerId(customer.getCustomerId());
 
 			CustomerCategoryDiscount ccDiscount = customerExtended.getCustomerCategoryDiscount();
 
 			ccDiscountPips = (null != ccDiscount ? ccDiscount.getDiscountPips() : BIGD_ZERO);
 
 			// Customer Category Info
+			custCategoryInfo.setId(ccDiscount.getId());
 			custCategoryInfo.setDiscountType(DISCOUNT_TYPE.CUSTOMER_CATEGORY);
 			custCategoryInfo.setDiscountTypeValue(ccDiscount.getCustomerCategory());
 			custCategoryInfo.setDiscountPipsValue(ccDiscountPips);
@@ -87,10 +87,10 @@ public class CustomerDiscountManager {
 			customer.setRemarks(ccDiscount.getCustomerCategory());
 
 		} else {
-			CustomerCategoryDiscount ccDiscount = custCatDiscountDao
-					.getDiscountByCustomerCategory(customerCategory.name());
+			CustomerCategoryDiscount ccDiscount = custCatDiscountDao.getDiscountByCustomerCategory(customerCategory.name());
 			ccDiscountPips = (null != ccDiscount ? ccDiscount.getDiscountPips() : BIGD_ZERO);
 
+			custCategoryInfo.setId(ccDiscount.getId());
 			custCategoryInfo.setDiscountType(DISCOUNT_TYPE.CUSTOMER_CATEGORY);
 			custCategoryInfo.setDiscountTypeValue(ccDiscount.getCustomerCategory());
 			custCategoryInfo.setDiscountPipsValue(ccDiscountPips);
@@ -99,8 +99,8 @@ public class CustomerDiscountManager {
 
 		List<BigDecimal> validBankIds = new ArrayList<BigDecimal>(pricingRateDetailsDTO.getBankDetails().keySet());
 
-		List<PipsMaster> pipsList = pipsMasterDao.getPipsForFcCurAndBank(pricingRequestDTO.getForeignCurrencyId(),
-				PIPS_BANK_ID, pricingRequestDTO.getForeignCountryId(), validBankIds);
+		List<PipsMaster> pipsList = pipsMasterDao.getPipsForFcCurAndBank(pricingRequestDTO.getForeignCurrencyId(), PIPS_BANK_ID, pricingRequestDTO.getForeignCountryId(),
+				validBankIds);
 
 		Map<Long, TreeMap<BigDecimal, PipsMaster>> bankAmountSlabDiscounts = new HashMap<Long, TreeMap<BigDecimal, PipsMaster>>();
 
@@ -108,8 +108,7 @@ public class CustomerDiscountManager {
 			for (PipsMaster pipsMaster : pipsList) {
 				if (bankAmountSlabDiscounts.containsKey(pipsMaster.getBankMaster().getBankId().longValue())) {
 
-					bankAmountSlabDiscounts.get(pipsMaster.getBankMaster().getBankId().longValue())
-							.put(pipsMaster.getToAmount(), pipsMaster);
+					bankAmountSlabDiscounts.get(pipsMaster.getBankMaster().getBankId().longValue()).put(pipsMaster.getToAmount(), pipsMaster);
 
 				} else {
 
@@ -128,9 +127,7 @@ public class CustomerDiscountManager {
 		// List<BankRateDetailsDTO> discountedRatesNPrices = new
 		// ArrayList<BankRateDetailsDTO>();
 
-		BigDecimal margin = pricingRateDetailsDTO.getMargin() != null
-				? pricingRateDetailsDTO.getMargin().getMarginMarkup()
-				: BIGD_ZERO;
+		BigDecimal margin = pricingRateDetailsDTO.getMargin() != null ? pricingRateDetailsDTO.getMargin().getMarginMarkup() : BIGD_ZERO;
 
 		for (ExchangeRateDetails bankExRateDetail : pricingRateDetailsDTO.getSellRateDetails()) {
 
@@ -138,16 +135,15 @@ public class CustomerDiscountManager {
 			ExchangeDiscountInfo amountSlabPipsInfo = new ExchangeDiscountInfo();
 
 			if (bankAmountSlabDiscounts.containsKey(bankExRateDetail.getBankId().longValue())) {
-				TreeMap<BigDecimal, PipsMaster> pipsMap = bankAmountSlabDiscounts
-						.get(bankExRateDetail.getBankId().longValue());
+				TreeMap<BigDecimal, PipsMaster> pipsMap = bankAmountSlabDiscounts.get(bankExRateDetail.getBankId().longValue());
 				for (Entry<BigDecimal, PipsMaster> entry : pipsMap.entrySet()) {
 
 					if (bankExRateDetail.getSellRateBase().getConvertedFCAmount().compareTo(entry.getKey()) <= 0) {
 						amountSlabPips = entry.getValue().getPipsNo();
 
+						amountSlabPipsInfo.setId(entry.getValue().getPipsMasterId());
 						amountSlabPipsInfo.setDiscountType(DISCOUNT_TYPE.AMOUNT_SLAB);
-						amountSlabPipsInfo.setDiscountTypeValue(entry.getValue().getFromAmount().longValue() + "-"
-								+ entry.getValue().getToAmount().longValue());
+						amountSlabPipsInfo.setDiscountTypeValue(entry.getValue().getFromAmount().longValue() + "-" + entry.getValue().getToAmount().longValue());
 						amountSlabPipsInfo.setDiscountPipsValue(amountSlabPips);
 
 						break;
@@ -158,8 +154,7 @@ public class CustomerDiscountManager {
 
 			BigDecimal totalDiscountPips = amountSlabPips.add(channelDiscountPips).add(ccDiscountPips);
 
-			BigDecimal discountedSellRate = bankExRateDetail.getSellRateBase().getInverseRate()
-					.subtract(totalDiscountPips);
+			BigDecimal discountedSellRate = bankExRateDetail.getSellRateBase().getInverseRate().subtract(totalDiscountPips);
 
 			bankExRateDetail.setDiscountAvailed(true);
 
@@ -177,8 +172,7 @@ public class CustomerDiscountManager {
 				// adjustedBaseSellRate = viewExGLCBAL.getRateAvgRate().add(margin);
 
 				// New Logic
-				adjustedBaseSellRate = pricingRateDetailsDTO.getAvgRateGLCForBank(bankExRateDetail.getBankId())
-						.add(margin);
+				adjustedBaseSellRate = pricingRateDetailsDTO.getAvgRateGLCForBank(bankExRateDetail.getBankId()).add(margin);
 
 			}
 
@@ -196,14 +190,12 @@ public class CustomerDiscountManager {
 			if (pricingRequestDTO.getLocalAmount() != null) {
 
 				// Get Bank Wise Rates for Local Currency
-				bankExRateDetail.setSellRateNet(RemitPriceManager.createBreakUpForLcCur(discountedSellRate,
-						pricingRequestDTO.getLocalAmount()));
+				bankExRateDetail.setSellRateNet(RemitPriceManager.createBreakUpForLcCur(discountedSellRate, pricingRequestDTO.getLocalAmount()));
 
 			} else {
 
 				// Get Bank wise Rates for Foreign Currency
-				bankExRateDetail.setSellRateNet(RemitPriceManager.createBreakUpForFcCur(discountedSellRate,
-						pricingRequestDTO.getForeignAmount()));
+				bankExRateDetail.setSellRateNet(RemitPriceManager.createBreakUpForFcCur(discountedSellRate, pricingRequestDTO.getForeignAmount()));
 
 			}
 
