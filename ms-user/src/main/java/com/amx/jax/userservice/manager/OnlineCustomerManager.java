@@ -4,6 +4,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.jax.constant.JaxApiFlow;
 import com.amx.jax.dbmodel.Customer;
@@ -30,8 +31,11 @@ public class OnlineCustomerManager {
 	
 	
 	public void saveCustomerSecQuestions(List<SecurityQuestionModel> securityQuestions) {
-		Customer customer = custDao.getCustById(metaData.getCustomerId());
-		CustomerOnlineRegistration customerOnlineRegistration = new CustomerOnlineRegistration(customer);
+		
+		CustomerOnlineRegistration customerOnlineRegistration = custDao.getOnlineCustByCustomerId(metaData.getCustomerId());
+		if(customerOnlineRegistration == null) {
+			throw new GlobalException("Online customer not found");
+		}
 		userService.simplifyAnswers(securityQuestions);
 		custDao.setSecurityQuestions(securityQuestions, customerOnlineRegistration);
 		custDao.saveOnlineCustomer(customerOnlineRegistration);
