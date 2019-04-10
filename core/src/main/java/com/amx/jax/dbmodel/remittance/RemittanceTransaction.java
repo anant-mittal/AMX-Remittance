@@ -133,6 +133,17 @@ public class RemittanceTransaction implements Serializable {
 	private List<RemittanceBenificiary> exRemittanceBenificiary = new ArrayList<RemittanceBenificiary>(0);
 
 	
+	/** added by rabil on 10 apr 2019 for customer category dis analysis**/
+	private String isDiscountAvailed;
+	private BigDecimal cusCatDiscountId;
+	private BigDecimal cusCatDiscount;
+	private BigDecimal channelDiscountId;
+	private BigDecimal channelDiscount;
+	private BigDecimal pipsFromAmt;
+	private BigDecimal pipsToAmt;
+	private BigDecimal pipsDiscount;	
+	private String  reachedCostRateLimit;
+	
 	public RemittanceTransaction() {
 	}
 		
@@ -1006,6 +1017,88 @@ public class RemittanceTransaction implements Serializable {
 		this.discountOnCommission = discountOnCommission;
 	}
 
+
+	@Column(name="IS_DISCOUNT_AVAILED")
+	public String getIsDiscountAvailed() {
+		return isDiscountAvailed;
+	}
+
+	public void setIsDiscountAvailed(String isDiscountAvailed) {
+		this.isDiscountAvailed = isDiscountAvailed;
+	}
+
+	@Column(name="CUSTCAT_DISCOUNT_ID")
+	public BigDecimal getCusCatDiscountId() {
+		return cusCatDiscountId;
+	}
+
+	public void setCusCatDiscountId(BigDecimal cusCatDiscountId) {
+		this.cusCatDiscountId = cusCatDiscountId;
+	}
+
+	@Column(name="CUSTCAT_DISCOUNT")
+	public BigDecimal getCusCatDiscount() {
+		return cusCatDiscount;
+	}
+
+	public void setCusCatDiscount(BigDecimal cusCatDiscount) {
+		this.cusCatDiscount = cusCatDiscount;
+	}
+
+	@Column(name="CHANNEL_DISCOUNT_ID")
+	public BigDecimal getChannelDiscountId() {
+		return channelDiscountId;
+	}
+
+	public void setChannelDiscountId(BigDecimal channelDiscountId) {
+		this.channelDiscountId = channelDiscountId;
+	}
+
+	@Column(name="CHANNEL_DISCOUNT")
+	public BigDecimal getChannelDiscount() {
+		return channelDiscount;
+	}
+
+	public void setChannelDiscount(BigDecimal channelDiscount) {
+		this.channelDiscount = channelDiscount;
+	}
+
+	@Column(name="PIPS_FROMAMT")
+	public BigDecimal getPipsFromAmt() {
+		return pipsFromAmt;
+	}
+
+	public void setPipsFromAmt(BigDecimal pipsFromAmt) {
+		this.pipsFromAmt = pipsFromAmt;
+	}
+
+	@Column(name="PIPS_TOAMT")
+	public BigDecimal getPipsToAmt() {
+		return pipsToAmt;
+	}
+
+	public void setPipsToAmt(BigDecimal pipsToAmt) {
+		this.pipsToAmt = pipsToAmt;
+	}
+
+	@Column(name="PIPS_DISCOUNT")
+	public BigDecimal getPipsDiscount() {
+		return pipsDiscount;
+	}
+
+	public void setPipsDiscount(BigDecimal pipsDiscount) {
+		this.pipsDiscount = pipsDiscount;
+	}
 	
+	@Column(name="REACHED_COST_RATE_LIMIT")
+	public String getReachedCostRateLimit() {
+		return reachedCostRateLimit;
+	}
+
+	public void setReachedCostRateLimit(String reachedCostRateLimit) {
+		this.reachedCostRateLimit = reachedCostRateLimit;
+	}
+
+
 }
  
