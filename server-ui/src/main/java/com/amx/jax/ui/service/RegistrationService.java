@@ -172,6 +172,49 @@ public class RegistrationService {
 		return wrapper;
 	}
 
+
+	/**
+	 * Validate customer.
+	 *
+	 * @param idnetity
+	 *            the idnetity
+	 * @param otp
+	 *            the otp: can be mobile/email/whatsapp
+	 * @return the response wrapper
+	 */
+	public ResponseWrapper<AuthData> validateCustomer(String idnetity, String otp, CommunicationChannel communicationChannel) {
+		if (otp == null) {
+			return validateCustomer(idnetity, null);
+		}
+		sessionService.getGuestSession().initStep(AuthStep.MOTPVFY);
+		ResponseWrapper<AuthData> wrapper = new ResponseWrapper<AuthData>(new AuthData());
+		String mOtp = communicationChannel == CommunicationChannel.MOBILE ? otp : null;
+		String eOtp = communicationChannel == CommunicationChannel.EMAIL ? otp : null;
+		String wOtp = communicationChannel == CommunicationChannel.WHATSAPP ? otp : null;
+		ApiResponse<CustomerModel> response = jaxClient.setDefaults().getUserclient().validateOtp(idnetity, mOtp, eOtp, wOtp);
+
+		CustomerModel model = response.getResult();
+
+		sessionService.getGuestSession().setCustomerModel(model);
+		sessionService.authorize(model, false); // TODO:- validate this
+		sessionService.getGuestSession().getState().setValidMotp(true);
+
+		if (model.getEmail() != null) {
+			sessionService.getGuestSession().getState().setPresentEmail(true);
+		} else {
+			ApiResponse<QuestModelDTO> response2 = jaxClient.setDefaults().getUserclient()
+					.getDataVerificationQuestions();
+			QuestModelDTO ques = response2.getResult();
+			wrapper.getData().setQues(ques);
+		}
+
+		wrapper.setMessage(OWAStatusStatusCodes.VERIFY_SUCCESS, ResponseMessage.AUTH_SUCCESS);
+		sessionService.getGuestSession().endStep(AuthStep.MOTPVFY);
+		wrapper.getData().setState(sessionService.getGuestSession().getState());
+
+		return wrapper;
+	}
+
 	/**
 	 * Validate customer.
 	 *
