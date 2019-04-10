@@ -142,8 +142,12 @@ public class UserAuthService {
 
 		OtpData selfOtpData = userOtpManager.generateOtpTokens(selfOtpSecret, userAuthInitReqDTO.getSelfSAC());
 
-		userOtpManager.sendOtpSms(selfEmployee, selfOtpData, "Self OTP Details");
+		if (!("Y").equalsIgnoreCase(selfEmployee.getOtpNotifySms())) {
 
+			userOtpManager.sendOtpSms(selfEmployee, selfOtpData, "Self OTP Details");
+
+		}
+		
 		String transactionId = AppContextUtil.getTranxId();
 
 		UserOtpData userOtpData = new UserOtpData();
@@ -182,9 +186,12 @@ public class UserAuthService {
 			 * if (!ArgUtil.isEmpty(partnerOTPDevice)) { partnerOTPDeviceSecret =
 			 * partnerOTPDevice.getClientSecreteKey(); }
 			 */
+			
 			OtpData partnerOtpData = userOtpManager.generateOtpTokens(partnerOTPSecret,
 					userAuthInitReqDTO.getPartnerSAC());
-			userOtpManager.sendOtpSms(partnerEmployee, partnerOtpData, "Partner OTP Details");
+			if (!("Y").equalsIgnoreCase(partnerEmployee.getOtpNotifySms())) {
+				userOtpManager.sendOtpSms(partnerEmployee, partnerOtpData, "Partner OTP Details");
+			}
 			userOtpData.setPartnerOtpData(partnerOtpData);
 		}
 
