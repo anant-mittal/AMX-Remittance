@@ -106,7 +106,8 @@ public class LoginService {
 		sessionService.getGuestSession().setCustomerModel(customerModel);
 		wrapper.setData(getRandomSecurityQuestion(customerModel));
 		wrapper.setMessage(OWAStatusStatusCodes.AUTH_OK, "Password is Correct");
-		sessionService.getGuestSession().endStep(AuthStep.USERPASS);
+		// sessionService.getGuestSession().endStep(AuthStep.USERPASS);
+		loginSuccess(wrapper, AuthStep.USERPASS, customerModel);
 		wrapper.getData().setState(sessionService.getGuestSession().getState());
 		return wrapper;
 	}
