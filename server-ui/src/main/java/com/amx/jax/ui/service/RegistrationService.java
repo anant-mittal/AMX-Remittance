@@ -100,9 +100,22 @@ public class RegistrationService {
 			wrapper.setMessage(OWAStatusStatusCodes.ALREADY_ACTIVE, ResponseMessage.USER_ALREADY_ACTIVE);
 		} else {
 			sessionService.getGuestSession().getState().setValidId(true);
-
-			wrapper.getData().setmOtpPrefix((model.getmOtpPrefix()));
-			wrapper.getData().seteOtpPrefix((model.geteOtpPrefix()));
+			switch (communicationChannel) {
+				case MOBILE:
+					wrapper.getData().setOtpPrefix((model.getmOtpPrefix()));
+					break;
+				case EMAIL:
+					wrapper.getData().setOtpPrefix((model.geteOtpPrefix()));
+					break;
+				case WHATSAPP:
+					wrapper.getData().setOtpPrefix((model.getwOtpPrefix()));
+					break;
+				default:
+					wrapper.getData().setOtpPrefix((model.getmOtpPrefix()));
+					break;
+			}
+			// wrapper.getData().setmOtpPrefix((model.getmOtpPrefix()));
+			// wrapper.getData().seteOtpPrefix((model.geteOtpPrefix()));
 			wrapper.setMessage(OWAStatusStatusCodes.OTP_SENT);
 
 			sessionService.getGuestSession().endStep(AuthStep.IDVALID);

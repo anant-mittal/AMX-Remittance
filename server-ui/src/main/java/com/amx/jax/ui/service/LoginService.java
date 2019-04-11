@@ -106,7 +106,25 @@ public class LoginService {
 		sessionService.getGuestSession().setCustomerModel(customerModel);
 		wrapper.setData(getRandomSecurityQuestion(customerModel));
 		wrapper.setMessage(OWAStatusStatusCodes.AUTH_OK, "Password is Correct");
-		// sessionService.getGuestSession().endStep(AuthStep.USERPASS);
+		sessionService.getGuestSession().endStep(AuthStep.USERPASS);
+		wrapper.getData().setState(sessionService.getGuestSession().getState());
+		return wrapper;
+	}
+
+	public ResponseWrapper<AuthResponse> loginUserPass(String identity, String password) {
+		ResponseWrapper<AuthResponse> wrapper = new ResponseWrapper<AuthResponse>(null);
+		sessionService.clear();
+		sessionService.getGuestSession().initFlow(AuthState.AuthFlow.LOGIN);
+		CustomerModel customerModel;
+		sessionService.getGuestSession().setIdentity(identity);
+		customerModel = jaxService.setDefaults().getUserclient().login(identity, password).getResult();
+		if (customerModel == null) {
+			throw new JaxSystemError();
+		}
+		sessionService.getGuestSession().setCustomerModel(customerModel);
+		AuthData loginData = new AuthData();
+		wrapper.setData(loginData);
+		wrapper.setMessage(OWAStatusStatusCodes.AUTH_OK, "Password is Correct");
 		loginSuccess(wrapper, AuthStep.USERPASS, customerModel);
 		wrapper.getData().setState(sessionService.getGuestSession().getState());
 		return wrapper;
