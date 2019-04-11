@@ -13,8 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import com.aciworldwide.commerce.gateway.plugins.e24PaymentPipe;
+import com.amx.jax.dict.PayGCodes;
 import com.amx.jax.dict.PayGServiceCode;
-import com.amx.jax.payg.PayGCodes;
 import com.amx.jax.payg.PayGParams;
 import com.amx.jax.payg.codes.KnetCodes;
 import com.amx.jax.payment.PaymentConstant;

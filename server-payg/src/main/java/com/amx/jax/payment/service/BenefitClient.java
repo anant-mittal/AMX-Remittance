@@ -10,9 +10,9 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
+import com.amx.jax.dict.PayGCodes;
 import com.amx.jax.dict.PayGServiceCode;
 import com.amx.jax.dict.ResponseCode;
-import com.amx.jax.payg.PayGCodes;
 import com.amx.jax.payg.PayGParams;
 import com.amx.jax.payg.codes.BenefitCodes;
 import com.amx.jax.payment.PaymentConstant;
