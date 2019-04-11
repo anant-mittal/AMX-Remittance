@@ -142,7 +142,7 @@ public class UserAuthService {
 
 		OtpData selfOtpData = userOtpManager.generateOtpTokens(selfOtpSecret, userAuthInitReqDTO.getSelfSAC());
 
-		if (!("Y").equalsIgnoreCase(selfEmployee.getOtpNotifySms())) {
+		if (("Y").equalsIgnoreCase(selfEmployee.getOtpNotifySms())) {
 
 			userOtpManager.sendOtpSms(selfEmployee, selfOtpData, "Self OTP Details");
 
@@ -189,7 +189,7 @@ public class UserAuthService {
 			
 			OtpData partnerOtpData = userOtpManager.generateOtpTokens(partnerOTPSecret,
 					userAuthInitReqDTO.getPartnerSAC());
-			if (!("Y").equalsIgnoreCase(partnerEmployee.getOtpNotifySms())) {
+			if (("Y").equalsIgnoreCase(partnerEmployee.getOtpNotifySms())) {
 				userOtpManager.sendOtpSms(partnerEmployee, partnerOtpData, "Partner OTP Details");
 			}
 			userOtpData.setPartnerOtpData(partnerOtpData);
