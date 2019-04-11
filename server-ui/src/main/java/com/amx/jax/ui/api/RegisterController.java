@@ -65,7 +65,7 @@ public class RegisterController {
 	@ApiOperation(value = "Customer Activation", notes = "${RegisterController.verifyCustomer}")
 	@RequestMapping(value = "/pub/register/verifycustomer", method = { RequestMethod.POST })
 	public ResponseWrapper<AuthData> verifyCustomer(@RequestBody AuthData authData) {
-		return registrationService.validateCustomer(authData.getIdentity(), authData.getOtp(), authData.getAnswer());
+		return registrationService.validateCustomer(authData.getIdentity(), authData.getmOtp(), authData.getAnswer());
 	}
 
 
