@@ -273,6 +273,7 @@ public enum JaxError implements IExceptionEnum {
 	// Generic Record EXceptions
 	ENTITY_EXPIRED,
 	ENTITY_INVALID,
+	USER_ALREADY_ACTIVE,
 
 	// Default for code symettry
 	JAX_SYSTEM_ERROR;
