@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -122,7 +123,7 @@ public class CustomerController implements ICustomerService {
 			@RequestParam(name = "eOtp", required = false) String eOtp,
 			@RequestParam(name = "wOtp", required = false) String wOtp) {
 		logger.info("validateOtp Request : civilId - " + civilId + " mOtp: " + mOtp + " eOtp: " + eOtp);
-		if (wOtp != null) {
+		if (StringUtils.isNotBlank(wOtp)) {
 			userService.validateWOtp(civilId, wOtp);
 		}
 		ApiResponse response = userService.validateOtp(civilId, mOtp, eOtp);
