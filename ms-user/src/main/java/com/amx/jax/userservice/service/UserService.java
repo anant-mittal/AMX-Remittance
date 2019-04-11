@@ -603,7 +603,7 @@ public class UserService extends AbstractUserService {
 		if (onlineCust == null) {
 			throw new InvalidCivilIdException("Civil Id " + civilId + " not registered.");
 		}
-		if (StringUtils.isEmpty(mOtp)) {
+		if (StringUtils.isEmpty(mOtp) && StringUtils.isEmpty(eOtp)) {
 			throw new InvalidJsonInputException("Otp is empty for civil-id: " + civilId);
 		}
 		userValidationService.validateCustomerLockCount(onlineCust);
@@ -615,11 +615,11 @@ public class UserService extends AbstractUserService {
 		if (StringUtils.isNotBlank(eOtp)) {
 			eOtpHash = cryptoUtil.getHash(civilId, eOtp);
 		}
-		if (mOtpHash != null && !mOtpHash.equals(mtokenHash)) {
+		if (mOtpHash != null && mtokenHash != null && !mOtpHash.equals(mtokenHash)) {
 			userValidationService.incrementLockCount(onlineCust);
 			throw new InvalidOtpException("Sms Otp is incorrect for civil-id: " + civilId);
 		}
-		if (eOtpHash != null && !eOtpHash.equals(etokenHash)) {
+		if (eOtpHash != null && etokenHash != null && !eOtpHash.equals(etokenHash)) {
 			userValidationService.incrementLockCount(onlineCust);
 			throw new InvalidOtpException("Email Otp is incorrect for civil-id: " + civilId);
 		}
