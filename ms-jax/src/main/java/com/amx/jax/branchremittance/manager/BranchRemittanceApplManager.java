@@ -283,7 +283,6 @@ public class BranchRemittanceApplManager {
 		brRemittanceDao.saveAllApplications(mapAllDetailApplSave);
 		auditService.log(new CActivityEvent(Type.APPLICATION_CREATED,String.format("{}/{}", remittanceApplication.getDocumentFinancialyear(),remittanceApplication.getDocumentNo(),remittanceApplication.getFsCustomer().getCustomerId())).field("STATUS").to(JaxTransactionStatus.APPLICATION_CREATED).result(Result.DONE));
 		BranchRemittanceApplResponseDto applResponseDto = branchRemittancePaymentManager.fetchCustomerShoppingCart(customer.getCustomerId(),metaData.getDefaultCurrencyId());
-		//applResponseDto.setWarnigMsg(warningMsg);
 		return applResponseDto;
 	}
 
@@ -484,7 +483,9 @@ public class BranchRemittanceApplManager {
 			remittanceApplication.setApplInd(ConstantDocument.COUNTER);
 			remittanceApplication.setWuIpAddress(metaData.getDeviceIp());
 			remittanceApplication.setInstruction("URGENT");
-			remittanceApplication.setDiscountOnCommission(corporateDiscountManager.corporateDiscount());
+			if(JaxUtil.isNullZeroBigDecimalCheck(remittanceApplication.getLocalCommisionAmount())) {
+				remittanceApplication.setDiscountOnCommission(corporateDiscountManager.corporateDiscount());
+			}
 			
 			if(branchExchangeRate.getDiscountAvailed()!=null) {
 				remittanceApplication.setIsDiscountAvailed(branchExchangeRate.getDiscountAvailed()==false?"N":"Y");
