@@ -247,8 +247,12 @@ public class FingerprintService {
 		BigDecimal identityType = new BigDecimal(identityTypeStr);
 		CustomerOnlineRegistration customerOnlineRegistration = userValidationService
 				.validateOnlineCustomerByIdentityId(civilId, identityType);
+		Customer customer = custDao.getCustById(customerOnlineRegistration.getCustomerId());
 		logger.info("Customer id is "+metaData.getCustomerId());
 		userValidationService.validateCustomerLockCount(customerOnlineRegistration);
+		userValidationService.validateCustIdProofs(customerOnlineRegistration.getCustomerId());
+		userValidationService.validateCustomerData(customerOnlineRegistration, customer);
+		userValidationService.validateBlackListedCustomerForLogin(customer);
 		userValidationService.validateFingerprintDeviceId(customerOnlineRegistration,fingerprintDeviceId);
 		userValidationService.validateDevicePassword(customerOnlineRegistration, password);
 		CustomerModel customerModel = convert(customerOnlineRegistration);

@@ -1,5 +1,6 @@
 package com.amx.utils;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -111,5 +112,6 @@ public class Constants {
 		public static final long HRS_12 = 12 * HRS;
 		public static final long DAY = 24 * HRS;
 	}
-
+	
+	public static final Long ANNUALINCOME_VERIFIED_LIMIT = 25000L;
 }

@@ -11,13 +11,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.model.CustomerModel;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.model.response.customer.CustomerFlags;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.service.UserValidationService;
+import com.amx.utils.Constants;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -54,7 +54,7 @@ public class CustomerFlagManager {
 		if (annualIncomeUpdateDate == null) {
 			customerFlags.setAnnualIncomeExpired(Boolean.TRUE);
 			logger.debug("Flag value is " + customerFlags.getAnnualIncomeExpired());
-			return customerFlags;
+			
 		}
 		else {
 			Date currentDate = new Date();
@@ -69,6 +69,11 @@ public class CustomerFlagManager {
 				logger.debug("Flag value isssss " + customerFlags.getAnnualIncomeExpired());
 			}
 		}
+		
+		
+		
 		return customerFlags;
 	}
+	
+	
 }
