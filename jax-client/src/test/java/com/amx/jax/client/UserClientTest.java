@@ -480,14 +480,14 @@ public class UserClientTest extends AbstractTestClient {
 		assertNotNull(response);
 	}
 	
-	@Test
+	//@Test
 	public void getCustomerModelSignupResponse() throws IOException, ResourceNotFoundException,
 	InvalidInputException, RemittanceTransactionValidationException, LimitExeededException {
 		jaxMetaInfo.setDeviceId("301019967");
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
 		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
-		jaxMetaInfo.setCustomerId(new BigDecimal(573));
+		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
 		jaxMetaInfo.setChannel(JaxChannel.ONLINE);
 		jaxMetaInfo.setTenant(Tenant.KWT);
 		jaxMetaInfo.setLanguageId(new BigDecimal(1));
@@ -495,6 +495,26 @@ public class UserClientTest extends AbstractTestClient {
 		AmxApiResponse<CustomerModelSignupResponse, Object> response = null;
 		
 		response = client.getCustomerModelSignupResponse("285061506787");
+		LOGGER.debug("response result is "+response.getResults());
+		assertNotNull("Response is null", response);
+		assertNotNull(response);
+	}
+	
+
+	@Test
+	public void validateOtpTest() {
+		jaxMetaInfo.setDeviceId("301019967");
+		jaxMetaInfo.setCountryId(new BigDecimal(91));
+		jaxMetaInfo.setCompanyId(new BigDecimal(1));
+		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
+		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
+		jaxMetaInfo.setChannel(JaxChannel.ONLINE);
+		jaxMetaInfo.setTenant(Tenant.KWT);
+		jaxMetaInfo.setLanguageId(new BigDecimal(1));
+		jaxMetaInfo.setEmployeeId(new BigDecimal(265));
+		ApiResponse<CustomerModel> response = null;
+		
+		response = client.validateOtp("284052306594", "415752", null, null);
 		LOGGER.debug("response result is "+response.getResults());
 		assertNotNull("Response is null", response);
 		assertNotNull(response);
