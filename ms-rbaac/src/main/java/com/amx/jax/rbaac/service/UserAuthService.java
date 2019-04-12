@@ -227,10 +227,13 @@ public class UserAuthService {
 				HashBuilder builder = new HashBuilder().currentTime(System.currentTimeMillis())
 						.interval(AmxConstants.OFFLINE_OTP_TTL).tolerance(AmxConstants.OFFLINE_OTP_TOLERANCE)
 						.secret(otpDevice.getClientSecreteKey()).message(selfOtpData.getmOtpPrefix());
+				
+				if (("Y").equalsIgnoreCase(selfEmployee.getOtpNotifyApp())) {
 
+			
 				userOtpManager.sendToSlack("Offline OTP for Emp: " + employeeNo, " Self ", selfOtpData.getmOtpPrefix(),
 						builder.toHMAC().toComplex(AmxConstants.OTP_LENGTH).output());
-
+				}
 			}
 
 			if (isAssisted) {
@@ -244,11 +247,14 @@ public class UserAuthService {
 							.interval(AmxConstants.OFFLINE_OTP_TTL).tolerance(AmxConstants.OFFLINE_OTP_TOLERANCE)
 							.secret(partnerOtpDevice.getClientSecreteKey())
 							.message(userOtpData.getPartnerOtpData().getmOtpPrefix());
+					
+					if (("Y").equalsIgnoreCase(selfEmployee.getOtpNotifyApp())) {
 
 					userOtpManager.sendToSlack("Offline OTP for Emp: " + employeeNo, " Partner ",
 							userOtpData.getPartnerOtpData().getmOtpPrefix(),
 							builderP.toHMAC().toComplex(AmxConstants.OTP_LENGTH).output());
 
+				}
 				}
 
 			}
