@@ -16,6 +16,7 @@ public class CustomerFlags {
 	Boolean securityQuestionSet;
 
 	public Boolean annualIncomeExpired;
+	
 
 	public Boolean getFingerprintlinked() {
 		return fingerprintlinked;

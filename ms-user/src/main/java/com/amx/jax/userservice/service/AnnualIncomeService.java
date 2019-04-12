@@ -202,6 +202,11 @@ public class AnnualIncomeService {
 
 		customer.setFsArticleDetails(articleDao.getArticleDetailsByArticleDetailId(incomeDto.getArticleDetailId()));
 		logger.info("set designation id : ");
+		if(incomeDto.getIncomeRangeFrom().longValue()>=Constants.ANNUALINCOME_VERIFIED_LIMIT) {
+			customer.setIsBusinessCardVerified("N");
+		}
+		
+		
 		CustomerEmploymentInfo customerEmploymentInfo = incomeDao.getCustById(metaData.getCustomerId());
 		logger.info("set customerEmpInfo : " +customerEmploymentInfo);
 		if (customerEmploymentInfo == null) {
