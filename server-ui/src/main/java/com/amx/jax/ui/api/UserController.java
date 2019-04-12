@@ -459,6 +459,18 @@ public class UserController {
 		return wrapper;
 	}
 
+		/**
+	 * Reg sec ques.
+	 *
+	 * @param userUpdateData the user update data
+	 * @return the response wrapper
+	 */
+	@RequestMapping(value = "/api/user/secques/v2", method = { RequestMethod.POST })
+	public AmxApiResponse<BoolRespModel,Object> regSecQuesV2(
+			@RequestBody UserUpdateRequest userUpdateData) {
+		return jaxService.getUserclient().saveCustomerSecQuestions(userUpdateData.getSecQuesAns());
+	}
+
 	/**
 	 * Update phising.
 	 *
