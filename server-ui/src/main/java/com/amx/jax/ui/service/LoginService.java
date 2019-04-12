@@ -64,7 +64,7 @@ public class LoginService {
 	 * @param customerModel the customer model
 	 * @return the random security question
 	 */
-	private AuthData getRandomSecurityQuestion(CustomerModel customerModel) {
+	public AuthData getRandomSecurityQuestion(CustomerModel customerModel) {
 		AuthData loginData = new AuthData();
 		ListManager<SecurityQuestionModel> listmgr = new ListManager<SecurityQuestionModel>(
 				customerModel.getSecurityquestions());
