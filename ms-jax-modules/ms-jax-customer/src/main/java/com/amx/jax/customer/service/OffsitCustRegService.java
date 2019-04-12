@@ -389,9 +389,11 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 				designationMap.get("ARTICLE_DETAIL_DESC") != null ? designationMap.get("ARTICLE_DETAIL_DESC").toString()
 						: null);
 		LOGGER.debug("Dto DescId is set");
-		dto.setResourceId(designationMap.get("ARTICLE_DETAIL_ID") != null
-				? new BigDecimal(designationMap.get("ARTICLE_DETAIL_ID").toString())
+		dto.setResourceId(designationMap.get("ARTICLE_DETAILS_ID") != null
+				? new BigDecimal(designationMap.get("ARTICLE_DETAILS_ID").toString())
 				: null);
+		dto.setArticleDetailsDesc(dto.getResourceName());
+		dto.setArticleDetailsId(dto.getResourceId());
 		LOGGER.debug("Dto ArticleDetailId is set");
 		return dto;
 	}
