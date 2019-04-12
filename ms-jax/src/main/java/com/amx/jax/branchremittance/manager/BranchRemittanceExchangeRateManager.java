@@ -100,8 +100,7 @@ public class BranchRemittanceExchangeRateManager {
 		if (request.getForeignAmountBD() == null && request.getLocalAmountBD() == null) {
 			throw new GlobalException(JaxError.INVALID_AMOUNT, "Either local or foreign amount must be present");
 		}
- 		JaxValidationUtil.validatePositiveNumber(request.getForeignAmountBD(), "Foreign Amount should be positive",
-				JaxError.INVALID_AMOUNT);
+ 		JaxValidationUtil.validatePositiveNumber(request.getForeignAmountBD(), "Foreign Amount should be positive",JaxError.INVALID_AMOUNT);
 		JaxValidationUtil.validatePositiveNumber(request.getLocalAmountBD(), "Local Amount should be positive", JaxError.INVALID_AMOUNT);
 		JaxValidationUtil.validatePositiveNumber(request.getCorrespondanceBankIdBD(), "corespondance bank must be positive number");
 		JaxValidationUtil.validatePositiveNumber(request.getBeneficiaryRelationshipSeqIdBD(), "bene seq id bank must be positive number");
@@ -126,11 +125,13 @@ public class BranchRemittanceExchangeRateManager {
 		if (exchangeRateResponseModel.getExRateBreakup() == null) {
 			throw new GlobalException(JaxError.EXCHANGE_RATE_NOT_FOUND, "No exchange data found");
 		}
-		remittanceApplicationParamManager.populateRemittanceApplicationParamMap(request, beneficiaryView,
-				exchangeRateResponseModel.getExRateBreakup());
+		remittanceApplicationParamManager.populateRemittanceApplicationParamMap(request, beneficiaryView,exchangeRateResponseModel.getExRateBreakup());
 		BranchRemittanceGetExchangeRateResponse result = new BranchRemittanceGetExchangeRateResponse();
 		BranchExchangeRateBreakup branchExchangeRate = new BranchExchangeRateBreakup(exchangeRateResponseModel.getExRateBreakup());
 		result.setExRateBreakup(branchExchangeRate);
+		result.setCustomerDiscountDetails(exchangeRateResponseModel.getCustomerDiscountDetails());
+		result.setDiscountAvailed(exchangeRateResponseModel.getDiscountAvailed());
+		result.setCostRateLimitReached(exchangeRateResponseModel.getCostRateLimitReached());
 		// trnx fee
 		BigDecimal commission = getComission();
 		result.setTxnFee(commission);
@@ -138,8 +139,7 @@ public class BranchRemittanceExchangeRateManager {
 		remittanceTransactionManager.setLoyalityPointFlags(customer, result);
 		remittanceTransactionManager.setLoyalityPointIndicaters(result);
 		BranchRemittanceApplRequestModel remittanceApplRequestModel = buildRemittanceTransactionModel(request);
-		remittanceTransactionManager.applyChannelAmountRouding(branchExchangeRate,
-				metaData.getChannel().getClientChannel(), true);
+		remittanceTransactionManager.applyChannelAmountRouding(branchExchangeRate,metaData.getChannel().getClientChannel(), true);
 		remittanceTransactionManager.setNetAmountAndLoyalityState(branchExchangeRate, remittanceApplRequestModel, result, commission);
 		remittanceTransactionManager.applyCurrencyRoudingLogic(branchExchangeRate);
 		
@@ -201,5 +201,8 @@ public class BranchRemittanceExchangeRateManager {
 		}
 		return flexFields;
 	}
+	
+	
+	
 	
 }

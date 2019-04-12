@@ -737,6 +737,17 @@ public class BranchRemittanceSaveManager {
 					remitTrnx.setWesternUnionMtcno(appl.getWesternUnionMtcno());
 					remitTrnx.setWuIpAddress(metaData.getDeviceIp());
 					remitTrnx.setDiscountOnCommission(appl.getDiscountOnCommission());
+					remitTrnx.setChannelDiscount(appl.getChannelDiscount());
+					remitTrnx.setChannelDiscountId(appl.getChannelDiscountId());
+					remitTrnx.setCusCatDiscountId(appl.getCusCatDiscountId());
+					remitTrnx.setCusCatDiscount(appl.getCusCatDiscount());
+					remitTrnx.setChannelDiscountId(appl.getChannelDiscountId());
+					remitTrnx.setPipsDiscount(appl.getPipsDiscount());
+					remitTrnx.setPipsFromAmt(appl.getPipsFromAmt());
+					remitTrnx.setPipsToAmt(appl.getPipsToAmt());
+					remitTrnx.setIsDiscountAvailed(appl.getIsDiscountAvailed());
+					remitTrnx.setReachedCostRateLimit(appl.getReachedCostRateLimit());
+					
 					
 					BigDecimal documentNo =generateDocumentNumber(appl.getFsCountryMasterByApplicationCountryId().getCountryId(),appl.getFsCompanyMaster().getCompanyId(),remitTrnx.getDocumentId().getDocumentCode(),remitTrnx.getDocumentFinanceYear(),remitTrnx.getBranchId().getBranchId(),ConstantDocument.A);
 					

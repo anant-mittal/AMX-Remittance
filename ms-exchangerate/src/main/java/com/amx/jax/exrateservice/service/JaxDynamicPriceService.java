@@ -3,7 +3,9 @@ package com.amx.jax.exrateservice.service;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
@@ -20,9 +22,13 @@ import com.amx.jax.error.JaxError;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.pricer.PricerServiceClient;
+import com.amx.jax.pricer.dto.CustomerCategoryDetails;
+import com.amx.jax.pricer.dto.ExchangeDiscountInfo;
 import com.amx.jax.pricer.dto.ExchangeRateDetails;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.dto.PricingResponseDTO;
+import com.amx.jax.pricer.var.PricerServiceConstants.CUSTOMER_CATEGORY;
+import com.amx.jax.pricer.var.PricerServiceConstants.DISCOUNT_TYPE;
 import com.amx.jax.pricer.var.PricerServiceConstants.PRICE_BY;
 import com.amx.jax.service.BankMetaService;
 import com.amx.utils.JsonUtil;
@@ -55,8 +61,7 @@ public class JaxDynamicPriceService {
 			LOGGER.debug("No exchange data found from pricer, error is: ", e);
 			throw new GlobalException(JaxError.EXCHANGE_RATE_NOT_FOUND, "No exchange data found" + e.getMessage());
 		}
-		ExchangeRateResponseModel exchangeRateResponseModel = createExchangeRateResponseModel(apiResponse, lcAmount,
-				foreignAmount, serviceIndicatorId);
+		ExchangeRateResponseModel exchangeRateResponseModel = createExchangeRateResponseModel(apiResponse, lcAmount,foreignAmount, serviceIndicatorId);
 		return exchangeRateResponseModel;
 	}
 
@@ -77,11 +82,13 @@ public class JaxDynamicPriceService {
 		return exchangeRateResponseModel;
 	}
 
-	private ExchangeRateResponseModel createExchangeRateResponseModel(
-			AmxApiResponse<PricingResponseDTO, Object> apiResponse, BigDecimal lcAmount, BigDecimal foreignAmount,
-			BigDecimal serviceIndicatorId) {
+	private ExchangeRateResponseModel createExchangeRateResponseModel(AmxApiResponse<PricingResponseDTO, Object> apiResponse, BigDecimal lcAmount, BigDecimal foreignAmount,BigDecimal serviceIndicatorId) {
 		ExchangeRateResponseModel exchangeRateResponseModel = new ExchangeRateResponseModel();
 		List<BankMasterDTO> bankWiseRates = new ArrayList<>();
+		Map<DISCOUNT_TYPE, ExchangeDiscountInfo> customerDiscountDetails = new HashMap<>();
+		Boolean discountAvailed=false;
+		Boolean costRateLimitReached=false;
+		
 		exchangeRateResponseModel.setBankWiseRates(bankWiseRates);
 		if (apiResponse != null) {
 			List<ExchangeRateDetails> sellRateDetails = apiResponse.getResult().getSellRateDetails();
@@ -89,21 +96,28 @@ public class JaxDynamicPriceService {
 				if (serviceIndicatorId != null && !serviceIndicatorId.equals(sellRateDetail.getServiceIndicatorId())) {
 					continue;
 				}
-				BankMasterDTO dto = bankMetaService
-						.convert(bankMetaService.getBankMasterbyId(sellRateDetail.getBankId()));
+				BankMasterDTO dto = bankMetaService.convert(bankMetaService.getBankMasterbyId(sellRateDetail.getBankId()));
 				if (foreignAmount != null) {
-					dto.setExRateBreakup(exchangeRateService.createBreakUpFromForeignCurrency(
-							sellRateDetail.getSellRateNet().getInverseRate(), foreignAmount));
+					dto.setExRateBreakup(exchangeRateService.createBreakUpFromForeignCurrency(sellRateDetail.getSellRateNet().getInverseRate(), foreignAmount));
+					
 				} else {
-					dto.setExRateBreakup(exchangeRateService
-							.createBreakUp(sellRateDetail.getSellRateNet().getInverseRate(), lcAmount));
+					dto.setExRateBreakup(exchangeRateService.createBreakUp(sellRateDetail.getSellRateNet().getInverseRate(), lcAmount));
 				}
 				bankWiseRates.add(dto);
+				customerDiscountDetails =sellRateDetail.getCustomerDiscountDetails();
+				discountAvailed=sellRateDetail.isDiscountAvailed();
+				costRateLimitReached = sellRateDetail.isCostRateLimitReached();
 			}
 			exchangeRateResponseModel.setBankWiseRates(bankWiseRates);
 			if (CollectionUtils.isNotEmpty(bankWiseRates)) {
 				exchangeRateResponseModel.setExRateBreakup(bankWiseRates.get(0).getExRateBreakup());
+				exchangeRateResponseModel.setCustomerDiscountDetails(customerDiscountDetails);
+				exchangeRateResponseModel.setDiscountAvailed(discountAvailed);
+				exchangeRateResponseModel.setCostRateLimitReached(costRateLimitReached);
 			}
+			
+			
+			
 		}
 		return exchangeRateResponseModel;
 	}
