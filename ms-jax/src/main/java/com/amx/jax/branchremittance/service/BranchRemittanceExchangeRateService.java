@@ -75,6 +75,7 @@ public class BranchRemittanceExchangeRateService {
 			requestApplModel.setRemittanceModeId(request.getRemitModeIdBD());
 			requestApplModel.setRoutingCountryId((BigDecimal)remitApplParametersMap.get("P_ROUTING_COUNTRY_ID"));
 			List<CountryMasterView> countryMasterView = countryRepository.findByLanguageIdAndCountryId(metaData.getLanguageId(), requestApplModel.getRoutingCountryId());
+			
 			requestApplModel.setServiceMasterId(request.getServiceIndicatorIdBD());
 			if(countryMasterView!=null && !countryMasterView.isEmpty()) {
 				String countryCode = countryMasterView.get(0)==null?"": countryMasterView.get(0).getCountryCode();
@@ -124,4 +125,5 @@ public class BranchRemittanceExchangeRateService {
 		return AmxApiResponse.build(result, flexFields);
 	}
 
+	
 }

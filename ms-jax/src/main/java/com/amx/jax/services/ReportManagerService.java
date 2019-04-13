@@ -346,6 +346,8 @@ public class ReportManagerService extends AbstractService{
 					obj.setTotalAmount(currencyQuoteName+"     "+netAmount.toString()); 
 				}
 
+				getSpecialRateData(view, obj, currencyQuoteName, decimalPerCurrency);
+				
 				obj.setFutherInstructions(view.getInstructions());
 				obj.setSourceOfIncome(view.getSourceOfIncomeDesc());
 				obj.setIntermediataryBank(view.getBenefeciaryInterBank1());
@@ -508,6 +510,55 @@ public class ReportManagerService extends AbstractService{
 	
 	}
 		
+	// ----------------- SPECIAL RATE RECEIPT DATA -------------------
+	private void getSpecialRateData(RemittanceTransactionView view, RemittanceReportBean obj, String currencyQuoteName,
+			int decimalPerCurrency) {
+		// Special Exchange Rate
+		if (view.getCurrencyQuoteName() != null && currencyQuoteName != null && view.getExchangeRateApplied() != null) {
+			obj.setSpecialExchangeRate(view.getCurrencyQuoteName() + " / " + currencyQuoteName + "     "
+					+ view.getExchangeRateApplied().toString());
+		}
+
+		// Equivalent kwd Amount
+		if (view.getLocalTransactionAmount() != null && view.getLocalTransactionCurrencyId() != null) {
+			BigDecimal transationAmount = RoundUtil.roundBigDecimal((view.getLocalTransactionAmount()),
+					decimalPerCurrency);
+			obj.setSpecialKwdAmount(currencyQuoteName + "     " + transationAmount.toString());
+		}
+
+		// Branch Exchange Rate and kwd Amount
+		if (null != view.getIsDiscAvail() && view.getIsDiscAvail().equals("Y")) {
+			if (view.getCurrencyQuoteName() != null && currencyQuoteName != null
+					&& view.getOriginalExchangeRate() != null) {
+				if (view.getOriginalExchangeRate().compareTo(view.getExchangeRateApplied()) == 1) {
+					obj.setBranchExchangeRate(view.getCurrencyQuoteName() + " / " + currencyQuoteName + "     "
+							+ view.getExchangeRateApplied().toString());
+				} else {
+					obj.setBranchExchangeRate(view.getCurrencyQuoteName() + " / " + currencyQuoteName + "     "
+							+ view.getOriginalExchangeRate().toString());
+				}
+
+			}
+			if (view.getOriginalExchangeRate() != null && view.getForeignTransactionAmount() != null
+					&& view.getLocalTransactionCurrencyId() != null) {
+				BigDecimal calKwtAmt = view.getOriginalExchangeRate().multiply(view.getForeignTransactionAmount());
+				BigDecimal transationAmount = RoundUtil.roundBigDecimal((calKwtAmt), decimalPerCurrency);
+				obj.setKwdAmount(currencyQuoteName + "     " + transationAmount.toString());
+			}
+		} else {
+			if (view.getCurrencyQuoteName() != null && currencyQuoteName != null
+					&& view.getExchangeRateApplied() != null) {
+				obj.setBranchExchangeRate(view.getCurrencyQuoteName() + " / " + currencyQuoteName + "     "
+						+ view.getExchangeRateApplied().toString());
+			}
+			if (view.getLocalTransactionAmount() != null && view.getLocalTransactionCurrencyId() != null) {
+				BigDecimal transationAmount = RoundUtil.roundBigDecimal((view.getLocalTransactionAmount()),
+						decimalPerCurrency);
+				obj.setKwdAmount(currencyQuoteName + "     " + transationAmount.toString());
+			}
+		}
+	}
+
 public List<RemittanceReportBean> calculateCollectionMode(RemittanceTransactionView viewCollectionObj){	
 			List<RemittanceReportBean> collectionDetailList = new ArrayList<RemittanceReportBean>();
 			List<CollectionPaymentDetailsViewModel> collectionPaymentDetailList= collectionPaymentDetailsViewDao.getCollectedPaymentDetails(viewCollectionObj.getCompanyId(),viewCollectionObj.getCollectionDocumentNo(),viewCollectionObj.getCollectionDocFinanceYear(),viewCollectionObj.getCollectionDocCode());

@@ -6,8 +6,8 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
+import java.util.Date;
 
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -58,6 +58,9 @@ public class SWAdapterGUI extends JFrame {
 	private JTextArea textArea = null;
 
 	private JScrollPane pane = null;
+
+	private JScrollPane about = null;
+	JTextArea aboutTextArea = null;
 
 	private void initUI() {
 
@@ -163,10 +166,18 @@ public class SWAdapterGUI extends JFrame {
 
 		textArea = new JTextArea();
 		textArea.setFont(new Font("monospaced", Font.PLAIN, 8));
+		textArea.setEditable(false);
 		pane = new JScrollPane(textArea);
+
+		aboutTextArea = new JTextArea();
+		aboutTextArea.setFont(new Font("monospaced", Font.PLAIN, 8));
+		aboutTextArea.setEditable(false);
+
+		about = new JScrollPane(aboutTextArea);
 
 		tabs.addTab("Adapter", newPanel);
 		tabs.addTab("Logs", pane);
+		tabs.addTab("About", about);
 		add(tabs);
 
 	}
@@ -235,15 +246,28 @@ public class SWAdapterGUI extends JFrame {
 	}
 
 	private int logCount = 0;
+	private static int MAX_LOG_COUNT = 2000;
 
 	public void logWindow(String message) {
-		if (logCount > 3000) {
-			textArea.remove(0);
-		}
 		if (textArea != null) {
-			textArea.append(message + "\n");
-			logCount++;
+			try {
+				if (logCount >= MAX_LOG_COUNT) {
+					logCount = MAX_LOG_COUNT;
+					int end;
+
+					end = textArea.getLineEndOffset(0);
+
+					textArea.replaceRange("", 0, end);
+					// textArea.remove(logCount - MAX_LOG_COUNT);
+				}
+				textArea.append(new Date().toString() + " : " + message + "\n");
+				logCount++;
+			} catch (Exception e) {
+				textArea.append(logCount + " : " + message + " | " + e.getMessage() + "\n");
+				logCount++;
+			}
 		}
+
 	}
 
 	public void log(String message) {
@@ -265,6 +289,16 @@ public class SWAdapterGUI extends JFrame {
 		if (CONTEXT != null) {
 			CONTEXT.setTitle(WIN_TITLE);
 		}
+	}
+
+	public static void updateAbout(String text) {
+		if (CONTEXT != null) {
+			CONTEXT.getAboutTextArea().setText(text);
+		}
+	}
+
+	public JTextArea getAboutTextArea() {
+		return aboutTextArea;
 	}
 
 }

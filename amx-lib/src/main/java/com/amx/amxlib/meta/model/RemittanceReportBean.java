@@ -102,6 +102,11 @@ public class RemittanceReportBean {
 	private String amountPayable;
 	private PromotionDto promotionDto;
 	
+	//Receipt new fields
+	private String branchExchangeRate;
+	private String kwdAmount;
+	private String specialExchangeRate;
+	private String specialKwdAmount;
 	
 	public Boolean getDrawLine() {
 		return drawLine;
@@ -746,6 +751,38 @@ public class RemittanceReportBean {
 	public PromotionDto getPromotionDto() {
 		return promotionDto;
 	}
+
+	public String getBranchExchangeRate() {
+		return branchExchangeRate;
+	}
+
+	public void setBranchExchangeRate(String branchExchangeRate) {
+		this.branchExchangeRate = branchExchangeRate;
+	}
+
+	public String getKwdAmount() {
+		return kwdAmount;
+	}
+
+	public void setKwdAmount(String kwdAmount) {
+		this.kwdAmount = kwdAmount;
+	}
+
+	public String getSpecialExchangeRate() {
+		return specialExchangeRate;
+	}
+
+	public void setSpecialExchangeRate(String specialExchangeRate) {
+		this.specialExchangeRate = specialExchangeRate;
+	}
+
+	public String getSpecialKwdAmount() {
+		return specialKwdAmount;
+	}
+
+	public void setSpecialKwdAmount(String specialKwdAmount) {
+		this.specialKwdAmount = specialKwdAmount;
+	}	
 
 }
 

@@ -140,8 +140,10 @@ public class KWTCardReaderListner implements PaciEventHandler {
 
 				try {
 					data.setValid(KWTCardReaderService.API.ValidateCardCertificate(readerIndex, false, true, true));
+					data.setExpired(!data.isValid());
 				} catch (Exception exp) {
 					data.setValid(false);
+					data.setExpired(true);
 					KWTCardReaderService.CONTEXT.status(CardStatus.CARD_EXPIRED);
 				}
 				KWTCardReaderService.CONTEXT.push(data);
