@@ -62,6 +62,7 @@ public class CustomerDiscountManager {
 
 		// Channel Info
 		ExchangeDiscountInfo channelInfo = new ExchangeDiscountInfo();
+		channelInfo.setId(channelDiscount.getId());
 		channelInfo.setDiscountType(DISCOUNT_TYPE.CHANNEL);
 		channelInfo.setDiscountTypeValue(pricingRequestDTO.getChannel().name());
 		channelInfo.setDiscountPipsValue(channelDiscountPips);
@@ -79,6 +80,7 @@ public class CustomerDiscountManager {
 			ccDiscountPips = (null != ccDiscount ? ccDiscount.getDiscountPips() : BIGD_ZERO);
 
 			// Customer Category Info
+			custCategoryInfo.setId(ccDiscount.getId());
 			custCategoryInfo.setDiscountType(DISCOUNT_TYPE.CUSTOMER_CATEGORY);
 			custCategoryInfo.setDiscountTypeValue(ccDiscount.getCustomerCategory());
 			custCategoryInfo.setDiscountPipsValue(ccDiscountPips);
@@ -91,13 +93,15 @@ public class CustomerDiscountManager {
 					.getDiscountByCustomerCategory(customerCategory.name());
 			ccDiscountPips = (null != ccDiscount ? ccDiscount.getDiscountPips() : BIGD_ZERO);
 
+			custCategoryInfo.setId(ccDiscount.getId());
 			custCategoryInfo.setDiscountType(DISCOUNT_TYPE.CUSTOMER_CATEGORY);
 			custCategoryInfo.setDiscountTypeValue(ccDiscount.getCustomerCategory());
 			custCategoryInfo.setDiscountPipsValue(ccDiscountPips);
 
 		}
 
-		List<BigDecimal> validBankIds = new ArrayList<BigDecimal>(exchRateAndRoutingTransientDataCache.getBankDetails().keySet());
+		List<BigDecimal> validBankIds = new ArrayList<BigDecimal>(
+				exchRateAndRoutingTransientDataCache.getBankDetails().keySet());
 
 		List<PipsMaster> pipsList = pipsMasterDao.getPipsForFcCurAndBank(pricingRequestDTO.getForeignCurrencyId(),
 				PIPS_BANK_ID, pricingRequestDTO.getForeignCountryId(), validBankIds);
@@ -145,6 +149,7 @@ public class CustomerDiscountManager {
 					if (bankExRateDetail.getSellRateBase().getConvertedFCAmount().compareTo(entry.getKey()) <= 0) {
 						amountSlabPips = entry.getValue().getPipsNo();
 
+						amountSlabPipsInfo.setId(entry.getValue().getPipsMasterId());
 						amountSlabPipsInfo.setDiscountType(DISCOUNT_TYPE.AMOUNT_SLAB);
 						amountSlabPipsInfo.setDiscountTypeValue(entry.getValue().getFromAmount().longValue() + "-"
 								+ entry.getValue().getToAmount().longValue());
@@ -156,35 +161,44 @@ public class CustomerDiscountManager {
 				} // for
 			}
 
-			BigDecimal totalDiscountPips = amountSlabPips.add(channelDiscountPips).add(ccDiscountPips);
+			BigDecimal discountedSellRate;
 
-			BigDecimal discountedSellRate = bankExRateDetail.getSellRateBase().getInverseRate()
-					.subtract(totalDiscountPips);
-
-			bankExRateDetail.setDiscountAvailed(true);
-
-			/**
-			 * Compute Base Sell rate : Cost + Margin
-			 */
-			BigDecimal adjustedBaseSellRate = BIGD_ZERO;
-
-			if (exchRateAndRoutingTransientDataCache.getAvgRateGLCForBank(bankExRateDetail.getBankId()) != null) {
-
-				// Old Logic
-				// ViewExGLCBAL viewExGLCBAL =
-				// transientDataCache.getBankGlcBalMap().get(bankExRateDetail.getBankId());
-
-				// adjustedBaseSellRate = viewExGLCBAL.getRateAvgRate().add(margin);
-
-				// New Logic
-				adjustedBaseSellRate = exchRateAndRoutingTransientDataCache.getAvgRateGLCForBank(bankExRateDetail.getBankId())
-						.add(margin);
-
-			}
-
-			if (discountedSellRate.compareTo(adjustedBaseSellRate) < 0) {
-				discountedSellRate = adjustedBaseSellRate;
+			if (bankExRateDetail.isCostRateLimitReached()) {
+				// No further Discounts If the Cost+Margin Limit is Reached at Base Sell Rate
+				// Level.
+				discountedSellRate = bankExRateDetail.getSellRateBase().getInverseRate();
 				bankExRateDetail.setDiscountAvailed(false);
+
+			} else {
+
+				BigDecimal totalDiscountPips = amountSlabPips.add(channelDiscountPips).add(ccDiscountPips);
+
+				discountedSellRate = bankExRateDetail.getSellRateBase().getInverseRate().subtract(totalDiscountPips);
+
+				bankExRateDetail.setDiscountAvailed(true);
+
+				/**
+				 * Compute Base Sell rate : Cost + Margin
+				 */
+				BigDecimal adjustedBaseSellRate = BIGD_ZERO;
+
+				if (exchRateAndRoutingTransientDataCache.getAvgRateGLCForBank(bankExRateDetail.getBankId()) != null) {
+
+					// New Logic
+					adjustedBaseSellRate = exchRateAndRoutingTransientDataCache
+							.getAvgRateGLCForBank(bankExRateDetail.getBankId()).add(margin);
+
+				}
+
+				if (discountedSellRate.compareTo(adjustedBaseSellRate) <= 0) {
+
+					discountedSellRate = adjustedBaseSellRate;
+
+					bankExRateDetail.setDiscountAvailed(true);
+					bankExRateDetail.setCostRateLimitReached(true);
+
+				}
+
 			}
 
 			bankExRateDetail.setCustomerDiscountDetails(new HashMap<DISCOUNT_TYPE, ExchangeDiscountInfo>());

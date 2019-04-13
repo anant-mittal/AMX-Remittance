@@ -691,10 +691,10 @@ public class RemittanceTransactionManager {
 		BigDecimal netAmount = exchangeRateBreakup.getConvertedLCAmount().add(comission);
 		exchangeRateBreakup.setNetAmountWithoutLoyality(netAmount);
 		responseModel.setLoyalityAmountAvailableForTxn(loyalityPointService.getloyaltyAmountEncashed(comission));
-		responseModel.setDiscountOnComission(corporateDiscountManager.corporateDiscount());
 		if (!JaxUtil.isNullZeroBigDecimalCheck(comission)) {
 			responseModel.setCanRedeemLoyalityPoints(false);
 			responseModel.setLoyalityPointState(LoyalityPointState.CAN_NOT_AVAIL);
+			responseModel.setDiscountOnComission(corporateDiscountManager.corporateDiscount());
 		}
 		if (remitAppManager.loyalityPointsAvailed(model, responseModel)) {
 			/** old logic **/

@@ -25,7 +25,9 @@ public class ExchangeRateDetails implements Serializable, Cloneable, Comparable<
 
 	private Map<DISCOUNT_TYPE, ExchangeDiscountInfo> customerDiscountDetails;
 
-	private boolean isDiscountAvailed;
+	private boolean isDiscountAvailed = false;
+
+	private boolean isCostRateLimitReached = false;
 
 	public BigDecimal getBankId() {
 		return bankId;
@@ -75,6 +77,14 @@ public class ExchangeRateDetails implements Serializable, Cloneable, Comparable<
 		this.isDiscountAvailed = isDiscountAvailed;
 	}
 
+	public boolean isCostRateLimitReached() {
+		return isCostRateLimitReached;
+	}
+
+	public void setCostRateLimitReached(boolean isCostRateLimitReached) {
+		this.isCostRateLimitReached = isCostRateLimitReached;
+	}
+
 	@Override
 	public int compareTo(ExchangeRateDetails o) {
 
@@ -115,6 +125,8 @@ public class ExchangeRateDetails implements Serializable, Cloneable, Comparable<
 			cloned.serviceIndicatorId = this.serviceIndicatorId;
 			cloned.sellRateBase = this.sellRateBase.clone();
 			cloned.sellRateNet = this.sellRateNet.clone();
+			cloned.isDiscountAvailed = this.isDiscountAvailed;
+			cloned.isCostRateLimitReached = this.isCostRateLimitReached;
 
 			// cloned.customerDiscountDetails =
 			// this.customerDiscountDetails.entrySet().stream()
