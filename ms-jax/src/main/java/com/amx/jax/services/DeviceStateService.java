@@ -148,6 +148,8 @@ public class DeviceStateService extends AbstractService {
 
 	public BoolRespModel updateSignatureStateData(Integer deviceRegId, String imageUrlStr) {
 		//
+		if(!(deviceRegId==null))
+		{
 		validateDeviceRegId(deviceRegId);
 		devicestateValidation.validateDeviceRegIdndImageURL(deviceRegId, imageUrlStr);
 		DeviceStateInfo deviceStateInfo = deviceDao.getDeviceStateInfo(new BigDecimal(deviceRegId));
@@ -155,6 +157,9 @@ public class DeviceStateService extends AbstractService {
 		deviceDao.saveDeviceInfo(deviceStateInfo);
 
 		return new BoolRespModel(Boolean.TRUE);
+		}else
+			throw new GlobalException("Device Registartion Id is Required");
+			
 	}
 
 	public void validateDeviceRegId(Integer deviceRegId) {
