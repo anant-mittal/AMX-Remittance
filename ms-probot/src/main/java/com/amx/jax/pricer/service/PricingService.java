@@ -26,7 +26,6 @@ import com.amx.jax.pricer.manager.RemitPriceManager;
 import com.amx.jax.pricer.util.PricingRateDetailsDTO;
 import com.amx.jax.pricer.var.PricerServiceConstants.CUSTOMER_CATEGORY;
 import com.amx.jax.pricer.var.PricerServiceConstants.PRICE_BY;
-import com.amx.utils.JsonUtil;
 
 /**
  * @author abhijeet
