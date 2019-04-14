@@ -98,7 +98,6 @@ public class EstimatedDeliveryDetails implements Serializable, Comparable<Estima
 		this.startTT = startTT;
 	}
 
-
 	public boolean isCrossedMaxDeliveryDays() {
 		return crossedMaxDeliveryDays;
 	}
@@ -148,15 +147,10 @@ public class EstimatedDeliveryDetails implements Serializable, Comparable<Estima
 	public void setHolidayDelayInDays(long holidayDelayInDays) {
 		this.holidayDelayInDays = holidayDelayInDays;
 	}
-	
-	
-	
 
 	@Override
 	public int compareTo(EstimatedDeliveryDetails that) {
-
 		return (this.completionTT < that.completionTT ? -1 : (this.completionTT == that.completionTT ? 0 : 1));
-
 	}
 
 }

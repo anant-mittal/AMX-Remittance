@@ -62,7 +62,7 @@ public final class DateUtil {
 
 	/** The Constant COMMA. */
 	private static final String COMMA = ",";
-	
+
 	/** The Constant DEFAULT_DATE_FORMAT. */
 	public static final String DATE_FORMAT_DD_MM_YYYYY = "dd/MM/yyyy";
 
@@ -169,6 +169,24 @@ public final class DateUtil {
 	public static String formatDateTime(ZonedDateTime date) {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DEFAULT_DATE_FORMAT);
 		return date.format(formatter);
+	}
+
+	/**
+	 * Format date time.
+	 *
+	 * @param epoch the epoch
+	 * @param timezone the timezone
+	 * @return the string
+	 */
+	public static String formatDateTime(long epoch, String timezone) {
+
+		Date date = new Date(epoch);
+
+		DateFormat df = new SimpleDateFormat(DEFAULT_DATE_FORMAT);
+		df.setTimeZone(TimeZone.getTimeZone(timezone));
+
+		return df.format(date);
+
 	}
 
 	/**

@@ -166,6 +166,8 @@ public class RemitRoutingManager {
 	 */
 	public void computeTrnxRoutesAndDelivery(ExchangeRateAndRoutingRequest exchangeRateAndRoutingRequest) {
 
+		getTimezoneForCountry(exchangeRateAndRoutingRequest.getLocalCountryId());
+
 		List<TransientRoutingComputeDetails> routingDetailsList = transientDataCache.getRoutingMatrixData();
 
 		// Get Routing Matrix Data if not already computed.
