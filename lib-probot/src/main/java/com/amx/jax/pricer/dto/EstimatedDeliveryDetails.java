@@ -3,7 +3,7 @@ package com.amx.jax.pricer.dto;
 import java.io.Serializable;
 import java.time.ZonedDateTime;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class EstimatedDeliveryDetails implements Serializable, Comparable<EstimatedDeliveryDetails> {
 
@@ -24,10 +24,16 @@ public class EstimatedDeliveryDetails implements Serializable, Comparable<Estima
 
 	private long completionTT = 0;
 
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
+	private long startTT = 0;
+
+	// @JsonFormat(shape = JsonFormat.Shape.STRING, pattern =
+	// "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
+	@JsonIgnore
 	private ZonedDateTime startDateForeign;
 
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
+	// @JsonFormat(shape = JsonFormat.Shape.STRING, pattern =
+	// "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
+	@JsonIgnore
 	private ZonedDateTime completionDateForeign;
 
 	private boolean crossedMaxDeliveryDays = false;
@@ -84,6 +90,15 @@ public class EstimatedDeliveryDetails implements Serializable, Comparable<Estima
 		this.completionDateForeign = completionDateForeign;
 	}
 
+	public long getStartTT() {
+		return startTT;
+	}
+
+	public void setStartTT(long startTT) {
+		this.startTT = startTT;
+	}
+
+
 	public boolean isCrossedMaxDeliveryDays() {
 		return crossedMaxDeliveryDays;
 	}
@@ -133,6 +148,9 @@ public class EstimatedDeliveryDetails implements Serializable, Comparable<Estima
 	public void setHolidayDelayInDays(long holidayDelayInDays) {
 		this.holidayDelayInDays = holidayDelayInDays;
 	}
+	
+	
+	
 
 	@Override
 	public int compareTo(EstimatedDeliveryDetails that) {

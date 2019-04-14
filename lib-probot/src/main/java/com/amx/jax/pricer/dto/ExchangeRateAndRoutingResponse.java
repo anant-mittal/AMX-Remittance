@@ -19,11 +19,17 @@ public class ExchangeRateAndRoutingResponse implements Serializable, JSONable {
 
 	private CUSTOMER_CATEGORY customerCategory;
 
-	private List<ExchangeRateDetails> sellRateDetails;
+	private Map<BigDecimal, Map<BigDecimal, ExchangeRateDetails>> bankServiceModeSellRates;
 
 	private Map<BigDecimal, BankDetailsDTO> bankDetails;
 
-	private List<TrnxRoutingDetails> trnxRoutingPaths;
+	private Map<String, TrnxRoutingDetails> trnxRoutingPaths;
+
+	private List<String> bestExchangeRatePaths;
+
+	private String localTimezone;
+
+	private String foreignTimezone;
 
 	public long getTrnxBeginTimeEpoch() {
 		return trnxBeginTimeEpoch;
@@ -41,14 +47,6 @@ public class ExchangeRateAndRoutingResponse implements Serializable, JSONable {
 		this.customerCategory = customerCategory;
 	}
 
-	public List<ExchangeRateDetails> getSellRateDetails() {
-		return sellRateDetails;
-	}
-
-	public void setSellRateDetails(List<ExchangeRateDetails> sellRateDetails) {
-		this.sellRateDetails = sellRateDetails;
-	}
-
 	public Map<BigDecimal, BankDetailsDTO> getBankDetails() {
 		return bankDetails;
 	}
@@ -57,12 +55,45 @@ public class ExchangeRateAndRoutingResponse implements Serializable, JSONable {
 		this.bankDetails = bankDetails;
 	}
 
-	public List<TrnxRoutingDetails> getTrnxRoutingPaths() {
+	public List<String> getBestExchangeRatePaths() {
+		return bestExchangeRatePaths;
+	}
+
+	public void setBestExchangeRatePaths(List<String> bestExchangeRatePaths) {
+		this.bestExchangeRatePaths = bestExchangeRatePaths;
+	}
+
+	public Map<BigDecimal, Map<BigDecimal, ExchangeRateDetails>> getBankServiceModeSellRates() {
+		return bankServiceModeSellRates;
+	}
+
+	public void setBankServiceModeSellRates(
+			Map<BigDecimal, Map<BigDecimal, ExchangeRateDetails>> bankServiceModeSellRates) {
+		this.bankServiceModeSellRates = bankServiceModeSellRates;
+	}
+
+	public Map<String, TrnxRoutingDetails> getTrnxRoutingPaths() {
 		return trnxRoutingPaths;
 	}
 
-	public void setTrnxRoutingPaths(List<TrnxRoutingDetails> trnxRoutingPaths) {
+	public void setTrnxRoutingPaths(Map<String, TrnxRoutingDetails> trnxRoutingPaths) {
 		this.trnxRoutingPaths = trnxRoutingPaths;
+	}
+
+	public String getLocalTimezone() {
+		return localTimezone;
+	}
+
+	public void setLocalTimezone(String localTimezone) {
+		this.localTimezone = localTimezone;
+	}
+
+	public String getForeignTimezone() {
+		return foreignTimezone;
+	}
+
+	public void setForeignTimezone(String foreignTimezone) {
+		this.foreignTimezone = foreignTimezone;
 	}
 
 }

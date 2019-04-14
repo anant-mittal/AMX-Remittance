@@ -65,9 +65,6 @@ public class ExchRateAndRoutingTransientDataCache {
 		this.serviceGroup = serviceGroup;
 	}
 
-
-
-
 	public Map<BigDecimal, List<ViewExGLCBAL>> getBankGlcBalMap() {
 		return bankGlcBalMap;
 	}

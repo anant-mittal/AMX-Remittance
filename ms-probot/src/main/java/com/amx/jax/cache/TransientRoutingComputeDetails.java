@@ -75,7 +75,29 @@ public class TransientRoutingComputeDetails implements Serializable, Comparable<
 
 	@Override
 	public int compareTo(TransientRoutingComputeDetails that) {
+		int rateComparator = this.compareRateTo(that);
 
+		if (rateComparator == 0) {
+			rateComparator = this.compareDeliveryTimeTo(that);
+		}
+
+		return rateComparator;
+	}
+
+	public int compareRateTo(TransientRoutingComputeDetails that) {
+		if (this.exchangeRateDetails == null)
+			if (that == null || that.exchangeRateDetails == null)
+				return 0;
+			else
+				return -1;
+		else if (that.exchangeRateDetails == null)
+			return 1;
+		else
+			return this.exchangeRateDetails.compareTo(that.exchangeRateDetails);
+
+	}
+
+	public int compareDeliveryTimeTo(TransientRoutingComputeDetails that) {
 		if (this.finalDeliveryDetails == null)
 			if (that == null || that.finalDeliveryDetails == null)
 				return 0; // equal
@@ -85,7 +107,6 @@ public class TransientRoutingComputeDetails implements Serializable, Comparable<
 			return 1; // all other strings are after null
 		else
 			return this.finalDeliveryDetails.compareTo(that.finalDeliveryDetails);
-
 	}
 
 }

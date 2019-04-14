@@ -7,7 +7,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
@@ -20,9 +22,12 @@ import org.springframework.stereotype.Service;
 
 import com.amx.jax.cache.ExchRateAndRoutingTransientDataCache;
 import com.amx.jax.cache.TransientRoutingComputeDetails;
+import com.amx.jax.dict.UserClient.Channel;
 import com.amx.jax.pricer.dao.CustomerDao;
 import com.amx.jax.pricer.dbmodel.Customer;
+import com.amx.jax.pricer.dbmodel.TimezoneMasterModel;
 import com.amx.jax.pricer.dbmodel.ViewExRoutingMatrix;
+import com.amx.jax.pricer.dto.EstimatedDeliveryDetails;
 import com.amx.jax.pricer.dto.ExchangeRateAndRoutingRequest;
 import com.amx.jax.pricer.dto.ExchangeRateAndRoutingResponse;
 import com.amx.jax.pricer.dto.ExchangeRateDetails;
@@ -62,6 +67,8 @@ public class ExchangePricingAndRoutingService {
 	@Resource
 	ExchRateAndRoutingTransientDataCache exchRateAndRoutingTransientDataCache;
 
+	private BigDecimal BIGD_ZERO = new BigDecimal(0);
+
 	public PricingResponseDTO fetchRemitPricesForCustomer(PricingRequestDTO pricingRequestDTO) {
 
 		validatePricingRequest(pricingRequestDTO, Boolean.TRUE);
@@ -93,26 +100,6 @@ public class ExchangePricingAndRoutingService {
 		Collections.sort(pricingResponseDTO.getSellRateDetails(), Collections.reverseOrder());
 
 		pricingResponseDTO.setInfo(exchRateAndRoutingTransientDataCache.getInfo());
-
-		/*
-		 * LOGGER.info("=========== Start Probot LOG Trace for Customer Id : " +
-		 * pricingRequestDTO.getCustomerId() + "===========");
-		 * 
-		 * LOGGER.info( "Base And Discounted Price Computed : " +
-		 * JsonUtil.toJson(pricingRateDetailsDTO.getSellRateDetails()));
-		 * 
-		 * LOGGER.info("GLCBAL Rate Details : " +
-		 * JsonUtil.toJson(pricingRateDetailsDTO.getBankGlcBalMap()));
-		 * 
-		 * LOGGER.info("GLCBAL Average Rate Computation Details : " +
-		 * JsonUtil.toJson(pricingRateDetailsDTO.getBankGlcBalMap()));
-		 * 
-		 * LOGGER.info("Margin Markup Details : " +
-		 * JsonUtil.toJson(pricingRateDetailsDTO.getMargin()));
-		 * 
-		 * LOGGER.info("=========== End Probot LOG Trace for Customer Id : " +
-		 * pricingRequestDTO.getCustomerId() + "===========\n");
-		 */
 
 		return pricingResponseDTO;
 	}
@@ -210,43 +197,109 @@ public class ExchangePricingAndRoutingService {
 		ExchangeRateAndRoutingResponse resp = new ExchangeRateAndRoutingResponse();
 
 		/**
-		 * Fill In the Rate Details
+		 * Fill In the Bank Details
 		 */
 		resp.setTrnxBeginTimeEpoch(exchRateAndRoutingTransientDataCache.getTrnxBeginTime());
 		resp.setBankDetails(exchRateAndRoutingTransientDataCache.getBankDetails());
-		resp.setSellRateDetails(exchRateAndRoutingTransientDataCache.getSellRateDetails());
 
-		Collections.sort(resp.getSellRateDetails(), Collections.reverseOrder());
+		TimezoneMasterModel localTz = exchRateAndRoutingTransientDataCache
+				.getTimezoneForCountry(exchangeRateAndRoutingRequest.getLocalCountryId());
+
+		if (localTz != null) {
+			resp.setLocalTimezone(localTz.getTimezone());
+		} else {
+			resp.setLocalTimezone(null);
+		}
+
+		TimezoneMasterModel foreignTz = exchRateAndRoutingTransientDataCache
+				.getTimezoneForCountry(exchangeRateAndRoutingRequest.getForeignCountryId());
+
+		if (foreignTz != null) {
+			resp.setForeignTimezone(foreignTz.getTimezone());
+		} else {
+			resp.setForeignTimezone(null);
+		}
 
 		/**
 		 * Fill In Routing Details
 		 */
-
 		List<TransientRoutingComputeDetails> routingMatrixData = exchRateAndRoutingTransientDataCache
 				.getRoutingMatrixData();
 
-		List<TrnxRoutingDetails> trnxRoutingPaths = new ArrayList<TrnxRoutingDetails>();
+		Collections.sort(routingMatrixData, Collections.reverseOrder());
+
+		Map<String, TrnxRoutingDetails> trnxRoutingPaths = new HashMap<String, TrnxRoutingDetails>();
+
+		List<String> bestExchangeRatePaths = new ArrayList<String>();
+
+		Channel channel = exchangeRateAndRoutingRequest.getChannel();
+		boolean skipServiceMode = false;
+		if (Channel.ONLINE.equals(channel) || Channel.MOBILE.equals(channel)) {
+			skipServiceMode = true;
+		}
+
+		/**
+		 * Fill In the Rate Details
+		 */
+		Map<BigDecimal, Map<BigDecimal, ExchangeRateDetails>> bankServiceModeSellRates = new HashMap<BigDecimal, Map<BigDecimal, ExchangeRateDetails>>();
 
 		for (TransientRoutingComputeDetails routeDetails : routingMatrixData) {
 
-			TrnxRoutingDetails responseRouteDetails = new TrnxRoutingDetails();
+			TrnxRoutingDetails trnxRoutingPath = new TrnxRoutingDetails();
 
 			try {
-				BeanUtils.copyProperties(responseRouteDetails, routeDetails.getViewExRoutingMatrix());
+				BeanUtils.copyProperties(trnxRoutingPath, routeDetails.getViewExRoutingMatrix());
 			} catch (IllegalAccessException | InvocationTargetException e) {
 				// Ignore
 				e.printStackTrace();
 			}
 
-			responseRouteDetails.setEstimatedDeliveryDetails(routeDetails.getFinalDeliveryDetails());
-			trnxRoutingPaths.add(responseRouteDetails);
+			EstimatedDeliveryDetails finalDelivery = routeDetails.getFinalDeliveryDetails();
+			finalDelivery.setStartTT(finalDelivery.getStartDateForeign().toInstant().toEpochMilli());
+
+			trnxRoutingPath.setEstimatedDeliveryDetails(finalDelivery);
+
+			//// @formatter:off
+			
+			String pathKey = trnxRoutingPath.getRoutingCountryId()
+							+ "-" + trnxRoutingPath.getRoutingBankId() 
+							+ "-" + trnxRoutingPath.getServiceMasterId()
+							+ "-" + trnxRoutingPath.getDeliveryModeId()
+							+ "-" + trnxRoutingPath.getRemittanceModeId()
+							+ "-" + trnxRoutingPath.getBankBranchId();						
+
+			//// @formatter:on
+
+			bestExchangeRatePaths.add(pathKey);
+			trnxRoutingPaths.put(pathKey, trnxRoutingPath);
+
+			ExchangeRateDetails exchangeRate = routeDetails.getExchangeRateDetails();
+
+			if (!bankServiceModeSellRates.containsKey(exchangeRate.getBankId())) {
+				bankServiceModeSellRates.put(exchangeRate.getBankId(), new HashMap<BigDecimal, ExchangeRateDetails>());
+			}
+
+			if (skipServiceMode) {
+				if (!bankServiceModeSellRates.get(exchangeRate.getBankId()).containsKey(BIGD_ZERO)) {
+					bankServiceModeSellRates.get(exchangeRate.getBankId()).put(BIGD_ZERO, exchangeRate);
+				}
+			} else {
+				bankServiceModeSellRates.get(exchangeRate.getBankId()).put(exchangeRate.getServiceIndicatorId(),
+						exchangeRate);
+			}
+
 		}
 
-		Collections.sort(trnxRoutingPaths, Collections.reverseOrder());
-
 		resp.setTrnxRoutingPaths(trnxRoutingPaths);
+		resp.setBestExchangeRatePaths(bestExchangeRatePaths);
+
+		resp.setBankServiceModeSellRates(bankServiceModeSellRates);
 
 		// resp.setInfo(exchRateAndRoutingTransientDataCache.getInfo());
+
+		// resp.setSellRateDetails(exchRateAndRoutingTransientDataCache.getSellRateDetails());
+
+		// Collections.sort(resp.getSellRateDetails(), Collections.reverseOrder());
 
 		return resp;
 
