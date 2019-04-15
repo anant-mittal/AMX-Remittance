@@ -267,6 +267,7 @@ public enum JaxError implements IExceptionEnum {
 	// Generic Record EXceptions
 	ENTITY_EXPIRED,
 	ENTITY_INVALID,
+	MISSING_CONTACT,
 	
 	
 	// Default for code symettry
