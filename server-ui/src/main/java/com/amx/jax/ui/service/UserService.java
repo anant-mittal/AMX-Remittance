@@ -162,7 +162,7 @@ public class UserService {
 	public AmxApiResponse<BoolRespModel, Object> updateSecQues(List<SecurityQuestionModel> securityquestions) {
 		AmxApiResponse<BoolRespModel, Object> x = jaxService.getUserclient()
 				.saveCustomerSecQuestions(securityquestions);
-		sessionService.getUserSession().getCustomerModel().getFlags();
+		sessionService.getGuestSession().getState().setValidSecQues(true);
 		updateCustoemrModel();
 		return x;
 	}
