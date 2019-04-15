@@ -533,18 +533,24 @@ public class ReportManagerService extends AbstractService{
 				if (view.getOriginalExchangeRate().compareTo(view.getExchangeRateApplied()) != 1) {
 					obj.setBranchExchangeRate(view.getCurrencyQuoteName() + " / " + currencyQuoteName + "     "
 							+ view.getExchangeRateApplied().toString());
+					if (view.getLocalTransactionAmount() != null && view.getLocalTransactionCurrencyId() != null) {
+						BigDecimal transationAmount = RoundUtil.roundBigDecimal((view.getLocalTransactionAmount()),
+								decimalPerCurrency);
+						obj.setKwdAmount(currencyQuoteName + "     " + transationAmount.toString());
+					}
 				} else {
 					obj.setBranchExchangeRate(view.getCurrencyQuoteName() + " / " + currencyQuoteName + "     "
 							+ view.getOriginalExchangeRate().toString());
+					if (view.getOriginalExchangeRate() != null && view.getForeignTransactionAmount() != null
+							&& view.getLocalTransactionCurrencyId() != null) {
+						BigDecimal calKwtAmt = view.getOriginalExchangeRate().multiply(view.getForeignTransactionAmount());
+						BigDecimal transationAmount = RoundUtil.roundBigDecimal((calKwtAmt), decimalPerCurrency);
+						obj.setKwdAmount(currencyQuoteName + "     " + transationAmount.toString());
+					}
 				}
 
 			}
-			if (view.getOriginalExchangeRate() != null && view.getForeignTransactionAmount() != null
-					&& view.getLocalTransactionCurrencyId() != null) {
-				BigDecimal calKwtAmt = view.getOriginalExchangeRate().multiply(view.getForeignTransactionAmount());
-				BigDecimal transationAmount = RoundUtil.roundBigDecimal((calKwtAmt), decimalPerCurrency);
-				obj.setKwdAmount(currencyQuoteName + "     " + transationAmount.toString());
-			}
+			
 		} else {
 			if (view.getCurrencyQuoteName() != null && currencyQuoteName != null
 					&& view.getExchangeRateApplied() != null) {
