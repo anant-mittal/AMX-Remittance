@@ -12,8 +12,10 @@ import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.jax.AppContextUtil;
+import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.model.response.customer.CustomerFlags;
+import com.amx.jax.model.response.customer.CustomerModelResponse;
 import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.ui.UIConstants.Features;
 import com.amx.jax.ui.auth.AuthLibContext;
@@ -87,6 +89,14 @@ public class UserService {
 				jaxService.setDefaults().getUserclient().getMyProfileInfo().getResult());
 	}
 
+	public void updateCustoemrModel() {
+		String identity = sessionService.getUserSession().getCustomerModel().getIdentityId();
+		AmxApiResponse<CustomerModelResponse, Object> x = jaxService.setDefaults().getUserclient()
+				.getCustomerModelResponse(identity);
+		sessionService.getUserSession().getCustomerModel().setFlags(x.getResult().getCustomerFlags());
+		sessionService.getUserSession().getCustomerModel().setPersoninfo(x.getResult().getPersonInfo());
+	}
+
 	/**
 	 * Update email.
 	 *
@@ -149,6 +159,14 @@ public class UserService {
 		jaxService.setDefaults().getUserclient().saveSecurityQuestions(securityquestions, mOtp, eOtp).getResult();
 		wrapper.setMessage(OWAStatusStatusCodes.USER_UPDATE_SUCCESS, "Question Answer Saved Scfuly");
 		return wrapper;
+	}
+
+	public AmxApiResponse<BoolRespModel, Object> updateSecQues(List<SecurityQuestionModel> securityquestions) {
+		AmxApiResponse<BoolRespModel, Object> x = jaxService.getUserclient()
+				.saveCustomerSecQuestions(securityquestions);
+		sessionService.getUserSession().getCustomerModel().getFlags();
+		updateCustoemrModel();
+		return x;
 	}
 
 	/**

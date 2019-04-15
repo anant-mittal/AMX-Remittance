@@ -58,6 +58,9 @@ public class LoginService {
 	@Autowired
 	private AuditService auditService;
 
+	@Autowired
+	private UserService userService;
+
 	/**
 	 * Gets the random security question.
 	 *
@@ -88,11 +91,14 @@ public class LoginService {
 
 	/**
 	 * Login.
+	 * 
+	 * @deprecated use {@link #loginUserPass(String, String)}
 	 *
 	 * @param identity the identity
 	 * @param password the password
 	 * @return the response wrapper
 	 */
+	@Deprecated
 	public ResponseWrapper<AuthResponse> login(String identity, String password) {
 		ResponseWrapper<AuthResponse> wrapper = new ResponseWrapper<AuthResponse>(null);
 		sessionService.clear();
@@ -224,20 +230,12 @@ public class LoginService {
 			sessionService.getGuestSession().setReturnUrl(null);
 		}
 
-		updateCustoemrModel();
+		userService.updateCustoemrModel();
 
 		wrapper.setMessage(OWAStatusStatusCodes.AUTH_DONE, ResponseMessage.AUTH_SUCCESS);
 		sessionService.getGuestSession().endStep(secques);
 		wrapper.getData().setState(sessionService.getGuestSession().getState());
 		return wrapper;
-	}
-
-	public void updateCustoemrModel() {
-		String identity = sessionService.getUserSession().getCustomerModel().getIdentityId();
-		AmxApiResponse<CustomerModelResponse, Object> x = jaxService.setDefaults().getUserclient()
-				.getCustomerModelResponse(identity);
-		sessionService.getUserSession().getCustomerModel().setFlags(x.getResult().getCustomerFlags());
-		sessionService.getUserSession().getCustomerModel().setPersoninfo(x.getResult().getPersonInfo());
 	}
 
 	/**

@@ -162,7 +162,7 @@ public class UserController {
 			wrapper.getData().setInfo(sessionService.getUserSession().getCustomerModel().getPersoninfo());
 
 			if (refresh) {
-				loginService.updateCustoemrModel();
+				userService.updateCustoemrModel();
 			}
 			CustomerFlags customerFlags = sessionService.getUserSession().getCustomerModel().getFlags();
 
@@ -459,16 +459,16 @@ public class UserController {
 		return wrapper;
 	}
 
-		/**
+	/**
 	 * Reg sec ques.
 	 *
 	 * @param userUpdateData the user update data
 	 * @return the response wrapper
 	 */
 	@RequestMapping(value = "/api/user/secques/v2", method = { RequestMethod.POST })
-	public AmxApiResponse<BoolRespModel,Object> regSecQuesV2(
+	public AmxApiResponse<BoolRespModel, Object> regSecQuesV2(
 			@RequestBody UserUpdateRequest userUpdateData) {
-		return jaxService.getUserclient().saveCustomerSecQuestions(userUpdateData.getSecQuesAns());
+		return userService.updateSecQues(userUpdateData.getSecQuesAns());
 	}
 
 	/**
@@ -524,7 +524,7 @@ public class UserController {
 		try {
 			return ResponseWrapper.build(jaxService.setDefaults().getUserclient().saveAnnualIncome(incomeDto));
 		} finally {
-			loginService.updateCustoemrModel();
+			userService.updateCustoemrModel();
 		}
 	}
 

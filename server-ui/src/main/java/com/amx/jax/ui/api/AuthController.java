@@ -47,6 +47,7 @@ public class AuthController {
 	 * @param authData the auth data
 	 * @return the response wrapper
 	 */
+	@Deprecated
 	@ApiOWAStatus({ OWAStatusStatusCodes.DEVICE_LOCKED, OWAStatusStatusCodes.AUTH_DONE,
 			OWAStatusStatusCodes.AUTH_FAILED, OWAStatusStatusCodes.AUTH_OK })
 	@RequestMapping(value = "/pub/auth/login", method = { RequestMethod.POST })
