@@ -45,7 +45,8 @@
                     </datasetRun>
                     <c:listContents height="822">
 
-                        
+                       
+
                         <!--##################Sender Details START####################-->
                         <frame>
                             <reportElement x="5" y="80" width="585" height="15"/>
@@ -876,7 +877,7 @@
                         </frame>
                         <!--##################Currency &amp; Amount END####################-->
 
-                        <!--##################Exchange Rate START####################-->
+                        <!--##################Branch Exchange Rate START####################-->
                         <frame>
                             <reportElement x="5" y="380" width="585" height="15"/>
                             <staticText>
@@ -891,7 +892,7 @@
                                     <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
-                                <text><![CDATA[Exchange Rate]]></text>
+                                <text><![CDATA[Branch Exchange Rate]]></text>
                             </staticText>
 
                             <textField isStretchWithOverflow="true">
@@ -921,7 +922,7 @@
                             </textField>
 
                         </frame>
-                        <!--##################Exchange Rate END####################-->
+                        <!--################## Branch Exchange Rate END####################-->
 
                         <!--##################Amount START####################-->
                         <frame>
@@ -1738,6 +1739,7 @@
                     </frame>
                     <!--##################Payment Mode END####################-->
  					
+					
                     <!--##################FOOTER START####################-->
                     <!--##################FOOTER END####################-->
                     </c:listContents>
