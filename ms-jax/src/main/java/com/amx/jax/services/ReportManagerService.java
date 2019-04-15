@@ -530,7 +530,7 @@ public class ReportManagerService extends AbstractService{
 		if (null != view.getIsDiscAvail() && view.getIsDiscAvail().equals("Y")) {
 			if (view.getCurrencyQuoteName() != null && currencyQuoteName != null
 					&& view.getOriginalExchangeRate() != null) {
-				if (view.getOriginalExchangeRate().compareTo(view.getExchangeRateApplied()) == 1) {
+				if (view.getOriginalExchangeRate().compareTo(view.getExchangeRateApplied()) != 1) {
 					obj.setBranchExchangeRate(view.getCurrencyQuoteName() + " / " + currencyQuoteName + "     "
 							+ view.getExchangeRateApplied().toString());
 				} else {
