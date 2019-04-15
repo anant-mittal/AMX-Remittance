@@ -18,7 +18,7 @@ public class CustomerFlags {
 	Boolean emailVerified;
 	Boolean mobileVerified;
 
-	Boolean securityQuestionRequired;
+	Boolean securityQuestionDone;
 	/* new login */
 
 	public Boolean annualIncomeExpired;
@@ -79,12 +79,12 @@ public class CustomerFlags {
 		this.idProofVerificationPending = idProofVerificationPending;
 	}
 
-	public Boolean getSecurityQuestionRequired() {
-		return securityQuestionRequired;
+	public Boolean getSecurityQuestionDone() {
+		return securityQuestionDone;
 	}
 
-	public void setSecurityQuestionRequired(Boolean securityQuestionRequired) {
-		this.securityQuestionRequired = securityQuestionRequired;
+	public void setSecurityQuestionDone(Boolean securityQuestionDone) {
+		this.securityQuestionDone = securityQuestionDone;
 	}
 
 	public Boolean getAnnualIncomeExpired() {

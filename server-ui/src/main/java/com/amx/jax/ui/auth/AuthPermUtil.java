@@ -41,7 +41,7 @@ public class AuthPermUtil {
 	}
 
 	public static void checkSQASetup(AuthState authState, CustomerFlags customerFlags) {
-		if (ArgUtil.nullAsFalse(customerFlags.getSecurityQuestionRequired())) {
+		if (!ArgUtil.nullAsFalse(customerFlags.getSecurityQuestionDone())) {
 			throw new GlobalException(JaxError.SQA_SETUP_REQUIRED, "Sec QA setup is required");
 		}
 	}

@@ -42,11 +42,11 @@ public class CustomerFlagManager {
 		} catch (GlobalException ex) {
 			customerFlags.setIdProofStatus(ex.getErrorKey());
 		}
-		//customerIdProofManager.setIdProofFlags(customerId, customerFlags);
+		// customerIdProofManager.setIdProofFlags(customerId, customerFlags);
 
 		CustomerOnlineRegistration customerOnlineRegistration = custDao.getOnlineCustByCustomerId(customerId);
 		customerFlags.setFingerprintlinked(isFingerprintLinked(customerOnlineRegistration));
-		customerFlags.setSecurityQuestionRequired(isSecurityQuestionRequired(customerOnlineRegistration));
+		customerFlags.setSecurityQuestionDone(!isSecurityQuestionRequired(customerOnlineRegistration));
 
 		customerFlags.setAnnualIncomeExpired(isAnnualIncomeExpired(customer));
 		setCustomerCommunicationChannelFlags(customer, customerFlags);
@@ -96,7 +96,7 @@ public class CustomerFlagManager {
 
 	public void validateInformationOnlyCustomer(BigDecimal customerId) {
 		CustomerFlags customerFlags = getCustomerFlags(customerId);
-		if (Boolean.TRUE.equals(customerFlags.getSecurityQuestionRequired())) {
+		if (Boolean.TRUE.equals(customerFlags.getSecurityQuestionDone())) {
 			throw new GlobalException(JaxError.SQA_SETUP_REQUIRED, "Security question required");
 		}
 	}
