@@ -15,6 +15,8 @@ public enum TemplatesMX implements ITemplate {
 	REMIT_RECEIPT("TransactionReceipt"), REMIT_RECEIPT2("TransactionReceipt2"),
 	REMIT_RECEIPT_JASPER("TransactionReceipt_jasper", PDFConverter.JASPER, "TransactionReceipt.json"),
 	REMIT_RECEIPT_COPY_JASPER("TransactionReceiptCopy_jasper", PDFConverter.JASPER, "TransactionReceipt.json"),
+	REMIT_RECEIPT_JASPER_NO_HEADER("TransactionReceiptNoHeader_jasper", PDFConverter.JASPER, "TransactionReceipt.json"),
+
 
 	REMIT_RECEIPT_COPY("TransactionReceiptCopy"), REMIT_STATMENT("TransactionList"),
 	REMIT_STATMENT_EMAIL("RemittanceStatmentEmail"),
