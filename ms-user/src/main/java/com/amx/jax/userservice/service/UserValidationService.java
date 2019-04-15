@@ -4,13 +4,13 @@ import java.math.BigDecimal;
 import java.security.NoSuchAlgorithmException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
@@ -29,12 +29,10 @@ import com.amx.amxlib.exception.jax.InvalidOtpException;
 import com.amx.amxlib.exception.jax.UserNotFoundException;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
-import com.amx.amxlib.model.JaxConditionalFieldDto;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.jax.JaxAuthCache;
 import com.amx.jax.JaxAuthCache.JaxAuthMeta;
 import com.amx.jax.JaxAuthContext;
-import com.amx.jax.JaxAuthCache.JaxAuthMeta;
 import com.amx.jax.amxlib.config.OtpSettings;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.CustomerVerificationType;
@@ -929,13 +927,27 @@ public class UserValidationService {
 			throw new GlobalException(JaxError.FINGERPRINT_EXPIRED, "Fingerprint expired");
 		}
 	}
-public void validateBlackListedCustomer(Customer customer) {
+	
+	public void validateBlackListedCustomer(Customer customer) {
 		
 		String idType ="C"; 
 		List<BlackListDetailModel> blist = blackListDtRepo.findByIdNumberAndIdType(customer.getIdentityInt(),idType);
 		if (blist != null && !blist.isEmpty()) {
 			throw new GlobalException(JaxError.BLACK_LISTED_EXISTING_CIVIL_ID.getStatusKey(),"Your account is locked as we have found that your name has been black-listed by CBK.");
 		}
+	}
+	
+	public Customer validateCustomerForDuplicateRecords(List<Customer> customers) {
+		List<Customer> activeCustomers = customers.stream().filter(i -> ConstantDocument.Yes.equals(i.getIsActive()))
+				.collect(Collectors.toList());
+		if (activeCustomers.size() > 1) {
+			throw new GlobalException(JaxError.DUPLICATE_CUSTOMER_NOT_ACTIVE_BRANCH,
+					"Customer not active in branch, please visit branch");
+		}
+		if (activeCustomers.size() == 1) {
+			return activeCustomers.get(0);
+		}
+		return customers.get(0);
 	}
 
 }

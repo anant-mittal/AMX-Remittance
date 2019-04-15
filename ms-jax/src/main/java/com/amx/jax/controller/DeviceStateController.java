@@ -92,6 +92,18 @@ public class DeviceStateController implements IDeviceStateService {
 		return AmxApiResponse.build(otpResponse);
 	}
 
+	@RequestMapping(value = Path.DEVICE_STATE_CUSTOMER_PROFILE_UPDATE, method = RequestMethod.POST)
+	@Override
+	public AmxApiResponse<BoolRespModel, Object> updateCustomerProfileStateData(
+			@RequestParam(name = Params.DEVICE_TYPE) ClientType deviceType,
+			@RequestParam(name = Params.TERMINAL_ID) Integer countryBranchSystemInventoryId,
+			@Valid @RequestBody SignaturePadCustomerRegStateMetaInfo metaInfo,
+			@RequestParam(name = Params.EMPLOYEE_ID) BigDecimal employeeId) {
+		BoolRespModel otpResponse = deviceService.updateDeviceStateData(deviceType, countryBranchSystemInventoryId,
+				metaInfo, DeviceStateDataType.CUSTOMER_PROFILE, employeeId);
+		return AmxApiResponse.build(otpResponse);
+	}
+
 	@RequestMapping(value = Path.DEVICE_STATE_SIGNATURE_UPDATE, method = RequestMethod.POST)
 	@Override
 	public AmxApiResponse<BoolRespModel, Object> updateSignatureStateData(
@@ -109,4 +121,5 @@ public class DeviceStateController implements IDeviceStateService {
 		BoolRespModel response = deviceService.clearDeviceState(deviceRegId, paireToken, sessionToken);
 		return AmxApiResponse.build(response);
 	}
+
 }

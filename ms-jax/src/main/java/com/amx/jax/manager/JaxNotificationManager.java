@@ -10,10 +10,10 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.meta.model.BankBranchDto;
 import com.amx.amxlib.model.BranchSearchNotificationModel;
-import com.amx.amxlib.model.PersonInfo;
 import com.amx.amxlib.model.request.GetBankBranchRequest;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.response.customer.PersonInfo;
 import com.amx.jax.services.BankService;
 import com.amx.jax.services.JaxNotificationService;
 import com.amx.jax.userservice.service.UserService;

@@ -22,6 +22,7 @@ import javax.persistence.TemporalType;
 import org.hibernate.annotations.Proxy;
 
 import com.amx.jax.constants.CustomerRegistrationType;
+import com.amx.jax.util.AmxDBConstants.Status;
 
 @Entity
 @Table(name = "FS_CUSTOMER")
@@ -134,6 +135,55 @@ public class Customer implements java.io.Serializable {
 	private String prefixCodeMobileOther;
 	private String isMobileWhatsApp;
 	private String isMobileOtherWhatsApp;
+	
+	
+	//income related fields are added
+	
+	private BigDecimal annualIncomeFrom;
+	private BigDecimal annualIncomeTo;
+	private String annualIncomeUpdatedBy;
+	private Date annualIncomeUpdatedDate;
+	private String isBusinessCardVerified;
+	
+	public String getIsBusinessCardVerified() {
+		return isBusinessCardVerified;
+	}
+
+	public void setIsBusinessCardVerified(String isBusinessCardVerified) {
+		this.isBusinessCardVerified = isBusinessCardVerified;
+	}
+
+	public BigDecimal getAnnualIncomeFrom() {
+		return annualIncomeFrom;
+	}
+
+	public void setAnnualIncomeFrom(BigDecimal annualIncomeFrom) {
+		this.annualIncomeFrom = annualIncomeFrom;
+	}
+
+	public BigDecimal getAnnualIncomeTo() {
+		return annualIncomeTo;
+	}
+
+	public void setAnnualIncomeTo(BigDecimal annualIncomeTo) {
+		this.annualIncomeTo = annualIncomeTo;
+	}
+
+	public String getAnnualIncomeUpdatedBy() {
+		return annualIncomeUpdatedBy;
+	}
+
+	public void setAnnualIncomeUpdatedBy(String annualIncomeUpdatedBy) {
+		this.annualIncomeUpdatedBy = annualIncomeUpdatedBy;
+	}
+
+	public Date getAnnualIncomeUpdatedDate() {
+		return annualIncomeUpdatedDate;
+	}
+
+	public void setAnnualIncomeUpdatedDate(Date annualIncomeUpdatedDate) {
+		this.annualIncomeUpdatedDate = annualIncomeUpdatedDate;
+	}
 
 	private IncomeRangeMaster fsIncomeRangeMaster;
 
@@ -983,15 +1033,39 @@ public class Customer implements java.io.Serializable {
 		this.whatsappPrefix = whatsappPrefix;
 	}
 
-	private String whatsAppVerified;
+	private Status whatsAppVerified;
 
 	@Column(name = "WHATSAPP_VERIFIED")
-	public String getWhatsAppVerified() {
+	@Enumerated(value = EnumType.STRING)
+	public Status getWhatsAppVerified() {
 		return whatsAppVerified;
 	}
 
-	public void setWhatsAppVerified(String whatsAppVerified) {
+	public void setWhatsAppVerified(Status whatsAppVerified) {
 		this.whatsAppVerified = whatsAppVerified;
 	}
 
+	private Status emailVerified;
+
+	@Column(name = "EMAIL_VERIFIED")
+	@Enumerated(value = EnumType.STRING)
+	public Status getEmailVerified() {
+		return emailVerified;
+	}
+
+	public void setEmailVerified(Status emailVerified) {
+		this.emailVerified = emailVerified;
+	}
+
+	private Status mobileVerified;
+
+	@Column(name = "MOBILE_VERIFIED")
+	@Enumerated(value = EnumType.STRING)
+	public Status getMobileVerified() {
+		return mobileVerified;
+	}
+
+	public void setMobileVerified(Status mobileVerified) {
+		this.mobileVerified = mobileVerified;
+	}
 }

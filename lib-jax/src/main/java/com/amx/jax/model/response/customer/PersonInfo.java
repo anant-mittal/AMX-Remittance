@@ -1,4 +1,4 @@
-package com.amx.amxlib.model;
+package com.amx.jax.model.response.customer;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;

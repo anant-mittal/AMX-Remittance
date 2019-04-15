@@ -172,6 +172,7 @@ public class SignPadController {
 		SignPadData signPadData = signPadBox.getOrDefault(deviceData.getTerminalId());
 		signPadData.setSignature(file);
 		signPadBox.fastPut(deviceData.getTerminalId(), signPadData);
+
 		return deviceStateClient.updateSignatureStateData(
 				ArgUtil.parseAsInteger(deviceRequestValidator.getDeviceRegId()),
 				file.getData());

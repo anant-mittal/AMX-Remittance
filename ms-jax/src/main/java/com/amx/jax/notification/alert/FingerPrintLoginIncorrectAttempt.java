@@ -14,11 +14,11 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.constant.CommunicationChannel;
 import com.amx.amxlib.exception.AbstractJaxException;
-import com.amx.amxlib.model.PersonInfo;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.response.customer.PersonInfo;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Email;

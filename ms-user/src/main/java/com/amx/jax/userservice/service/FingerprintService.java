@@ -20,7 +20,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.CustomerModel;
-import com.amx.amxlib.model.PersonInfo;
+
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.UserFingerprintResponseModel;
 import com.amx.jax.JaxAuthCache;
@@ -33,6 +33,7 @@ import com.amx.jax.dbmodel.LoginLogoutHistory;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.response.customer.CustomerFlags;
+import com.amx.jax.model.response.customer.PersonInfo;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Email;
@@ -50,7 +51,6 @@ import com.amx.jax.scope.TenantContext;
 import com.amx.jax.services.JaxNotificationService;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.dao.CustomerIdProofDao;
-import com.amx.jax.userservice.manager.CustomerFlagManager;
 import com.amx.jax.userservice.repository.LoginLogoutHistoryRepository;
 import com.amx.jax.userservice.service.CustomerValidationContext.CustomerValidation;
 import com.amx.jax.util.CryptoUtil;
@@ -247,8 +247,12 @@ public class FingerprintService {
 		BigDecimal identityType = new BigDecimal(identityTypeStr);
 		CustomerOnlineRegistration customerOnlineRegistration = userValidationService
 				.validateOnlineCustomerByIdentityId(civilId, identityType);
+		Customer customer = custDao.getCustById(customerOnlineRegistration.getCustomerId());
 		logger.info("Customer id is "+metaData.getCustomerId());
 		userValidationService.validateCustomerLockCount(customerOnlineRegistration);
+		userValidationService.validateCustIdProofs(customerOnlineRegistration.getCustomerId());
+		userValidationService.validateCustomerData(customerOnlineRegistration, customer);
+		userValidationService.validateBlackListedCustomerForLogin(customer);
 		userValidationService.validateFingerprintDeviceId(customerOnlineRegistration,fingerprintDeviceId);
 		userValidationService.validateDevicePassword(customerOnlineRegistration, password);
 		CustomerModel customerModel = convert(customerOnlineRegistration);
