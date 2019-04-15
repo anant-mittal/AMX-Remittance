@@ -1,5 +1,8 @@
 package com.amx.jax.ui.auth;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.model.AuthState;
 import com.amx.jax.model.response.customer.CustomerFlags;
@@ -9,9 +12,6 @@ import com.amx.jax.ui.auth.AuthLibContext.AuthLib;
 import com.amx.jax.ui.model.AuthData;
 import com.amx.jax.ui.service.LoginService;
 import com.amx.jax.ui.service.SessionService;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 /**
  * The Class AuthLibKWT.
