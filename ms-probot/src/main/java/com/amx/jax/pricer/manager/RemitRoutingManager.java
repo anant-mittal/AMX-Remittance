@@ -380,7 +380,13 @@ public class RemitRoutingManager {
 
 	}
 
-	public EstimatedDeliveryDetails getEstimatedBlockDelivery(long startTT, String timezone, BigDecimal weekFrom,
+	public void filterTransactionRoutes() {
+
+		List<TransientRoutingComputeDetails> routingMatrixData = transientDataCache.getRoutingMatrixData();
+
+	}
+
+	private EstimatedDeliveryDetails getEstimatedBlockDelivery(long startTT, String timezone, BigDecimal weekFrom,
 			BigDecimal weekTo, BigDecimal weekHrsFrom, BigDecimal weekHrsTo, BigDecimal weekEndFrom,
 			BigDecimal weekEndTo, BigDecimal weekEndHrsFrom, BigDecimal weekEndHrsTo, BigDecimal processTimeInHrs,
 			boolean noHolidayLag, BigDecimal countryId) {
