@@ -26,7 +26,6 @@ public class AuthLibBHR implements AuthLib {
 	@Autowired
 	private LoginService loginService;
 
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -55,7 +54,7 @@ public class AuthLibBHR implements AuthLib {
 			return AuthState.AuthStep.COMPLETED;
 		case USERPASS:
 			return AuthState.AuthStep.COMPLETED;
-			// return AuthState.AuthStep.SECQUES;
+		// return AuthState.AuthStep.SECQUES;
 		case SECQUES:
 			return AuthState.AuthStep.COMPLETED;
 		default:
@@ -150,11 +149,11 @@ public class AuthLibBHR implements AuthLib {
 			return AuthState.AuthStep.MOTPVFY;
 		case MOTPVFY:
 			return AuthState.AuthStep.CREDS_SET;
-			// if (authState.isPresentEmail()) {
-			// 	return AuthState.AuthStep.SECQ_SET;
-			// } else {
-			// 	return AuthState.AuthStep.DATA_VERIFY;
-			// }
+		// if (authState.isPresentEmail()) {
+		// return AuthState.AuthStep.SECQ_SET;
+		// } else {
+		// return AuthState.AuthStep.DATA_VERIFY;
+		// }
 		case DATA_VERIFY:
 			return AuthState.AuthStep.SECQ_SET;
 		case SECQ_SET:
@@ -182,8 +181,12 @@ public class AuthLibBHR implements AuthLib {
 		case FXORDER:
 			AuthPermUtil.checkIdProofExpiry(authState, customerFlags);
 			AuthPermUtil.checkSQASetup(authState, customerFlags);
-			AuthData authData = loginService.getRandomSecurityQuestion(sessionService.getUserSession().getCustomerModel());
+			AuthData authData = loginService
+					.getRandomSecurityQuestion(sessionService.getUserSession().getCustomerModel());
 			AuthPermUtil.checkSQA(authState, customerFlags, authData);
+			break;
+		case SQA_UPDATE:
+			AuthPermUtil.checkSQASetup(authState, customerFlags);
 			break;
 		default:
 			break;
