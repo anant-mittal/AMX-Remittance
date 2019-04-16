@@ -124,7 +124,7 @@ public class AuthLibKWT implements AuthLib {
 		case SAVE_HOME:
 			return AuthState.AuthStep.SECQ_SET;
 		case SECQ_SET:
-			return AuthState.AuthStep.CAPTION_SET;
+			return AuthState.AuthStep.CREDS_SET;
 		case CAPTION_SET:
 			return AuthState.AuthStep.CREDS_SET;
 		case CREDS_SET:
@@ -149,11 +149,6 @@ public class AuthLibKWT implements AuthLib {
 			return AuthState.AuthStep.MOTPVFY;
 		case MOTPVFY:
 			return AuthState.AuthStep.CREDS_SET;
-		// if (authState.isPresentEmail()) {
-		// return AuthState.AuthStep.SECQ_SET;
-		// } else {
-		// return AuthState.AuthStep.DATA_VERIFY;
-		// }
 		case DATA_VERIFY:
 			return AuthState.AuthStep.SECQ_SET;
 		case SECQ_SET:
