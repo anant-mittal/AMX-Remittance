@@ -43,6 +43,8 @@ public class JaxAuthCache extends CacheBox<JaxAuthMeta> {
 		String mOtp;
 		@ApiMockModelProperty(example = "234567")
 		String eOtp;
+		@ApiMockModelProperty(example = "123456")
+		String wOtp;
 		@ApiMockModelProperty(example = "Q1")
 		BigDecimal questId;
 		@ApiMockModelProperty(example = "black")
@@ -92,6 +94,14 @@ public class JaxAuthCache extends CacheBox<JaxAuthMeta> {
 
 		public void setOtp(String otp) {
 			this.otp = otp;
+		}
+
+		public String getwOtp() {
+			return wOtp;
+		}
+
+		public void setwOtp(String wOtp) {
+			this.wOtp = wOtp;
 		}
 	}
 

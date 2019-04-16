@@ -10,10 +10,12 @@ import com.amx.jax.model.AuthState;
 import com.amx.jax.model.auth.QuestModelDTO;
 import com.amx.jax.ui.model.AuthDataInterface.AuthRequest;
 import com.amx.jax.ui.model.AuthDataInterface.AuthResponse;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
  * The Class AuthData.
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class AuthData extends AbstractModel implements AuthResponse, AuthRequest {
 
 	/** The Constant serialVersionUID. */

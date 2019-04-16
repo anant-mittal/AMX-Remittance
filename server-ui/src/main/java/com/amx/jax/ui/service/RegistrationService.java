@@ -11,6 +11,7 @@ import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.jax.JaxAuthCache.JaxAuthMeta;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.model.AuthState;
 import com.amx.jax.model.AuthState.AuthStep;
@@ -116,6 +117,7 @@ public class RegistrationService {
 			wrapper.getData().setmOtpPrefix((model.getmOtpPrefix()));
 			wrapper.getData().seteOtpPrefix((model.geteOtpPrefix()));
 			wrapper.getData().setwOtpPrefix((model.getwOtpPrefix()));
+
 			wrapper.setMessage(OWAStatusStatusCodes.OTP_SENT);
 
 			sessionService.getGuestSession().endStep(AuthStep.IDVALID);

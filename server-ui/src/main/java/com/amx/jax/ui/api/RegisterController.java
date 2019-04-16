@@ -74,7 +74,8 @@ public class RegisterController {
 		if (ArgUtil.isEmpty(contactType)) {
 			AmxApiError amxApiError = new AmxApiError(OWAStatusStatusCodes.CONTACT_TYPE_REQUIRED);
 			amxApiError.setMeta(
-					jaxService.setDefaults().getUserclient().getCustomerModelSignupResponse(identity).getResult());
+					jaxService.setDefaults().getUserclient().getCustomerModelSignupResponse(identity).getResult()
+							.getCustomerCommunicationChannel());
 			throw new UIServerError(amxApiError);
 		} else if (ArgUtil.isEmpty(otp)) {
 			AuthData x = registrationService.validateCustomerInit(identity, contactType).getData();
@@ -105,12 +106,11 @@ public class RegisterController {
 	 * @param authData the auth data
 	 * @return the response wrapper
 	 */
-	@Deprecated
 	@ApiOperation(value = "Customer Activation", notes = "${RegisterController.verifyCustomer}")
 	@RequestMapping(value = "/pub/register/verifycustomer/v2", method = { RequestMethod.POST })
-	public ResponseWrapper<AuthData> verifyCustomer(@RequestParam String identity, @RequestParam String otp,
-			@RequestParam ContactType communicationChannel) {
-		return registrationService.validateCustomer(identity, otp, communicationChannel);
+	public ResponseWrapper<AuthData> verifyCustomerV2(@RequestBody AuthData authData) {
+		return registrationService.validateCustomer(authData.getIdentity(), authData.getOtp(),
+				authData.getContactType());
 	}
 
 	/**

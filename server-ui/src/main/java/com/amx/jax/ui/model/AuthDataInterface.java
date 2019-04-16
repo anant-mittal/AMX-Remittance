@@ -7,6 +7,7 @@ import com.amx.jax.dict.ContactType;
 import com.amx.jax.model.AuthState;
 import com.amx.jax.model.auth.QuestModelDTO;
 import com.amx.jax.swagger.ApiMockModelProperty;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 /**
@@ -81,6 +82,7 @@ public final class AuthDataInterface {
 	 * The Interface AuthRequestOTP.
 	 */
 	@JsonDeserialize(as = AuthData.class)
+	@JsonIgnoreProperties(ignoreUnknown = true)
 	public interface AuthRequestOTP {
 
 		ContactType getContactType();
@@ -161,6 +163,7 @@ public final class AuthDataInterface {
 	}
 
 	@JsonDeserialize(as = AuthData.class)
+	@JsonIgnoreProperties(ignoreUnknown = true)
 	public interface AuthRequestFingerprint {
 
 		public void setDeviceToken(String deviceToken);
@@ -177,6 +180,7 @@ public final class AuthDataInterface {
 	 * The Interface AuthRequest.
 	 */
 	@JsonDeserialize(as = AuthData.class)
+	@JsonIgnoreProperties(ignoreUnknown = true)
 	public interface AuthRequest extends AuthRequestIdentity, AuthRequestPassword, AuthRequestSecAns, AuthRequestOTP,
 			AuthRequestFingerprint {
 
@@ -239,6 +243,7 @@ public final class AuthDataInterface {
 	 * The Interface UserUpdateRequest.
 	 */
 	@JsonDeserialize(as = UserUpdateData.class)
+	@JsonIgnoreProperties(ignoreUnknown = true)
 	public interface UserUpdateRequest extends AuthRequestPassword, AuthRequestOTP {
 
 		/**
