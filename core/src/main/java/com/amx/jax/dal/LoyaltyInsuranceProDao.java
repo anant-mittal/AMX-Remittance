@@ -49,7 +49,7 @@ public class LoyaltyInsuranceProDao {
 			@Override
 			public CallableStatement createCallableStatement(Connection con) throws SQLException {
 
-				String proc = " { call EX_P_REMIT_RECEIPT_REPORT (?, ?, ?, ?, ?, ?, ?, ?) } ";
+				String proc = " { call JAX_EX_P_REMIT_RECEIPT_REPORT (?, ?, ?, ?, ?, ?, ?, ?) } ";
 				CallableStatement cs = con.prepareCall(proc);
 				cs.setBigDecimal(1, customerReference);
 				cs.setDate(2, DateUtil.convretStringToSqlDate(documentDate));

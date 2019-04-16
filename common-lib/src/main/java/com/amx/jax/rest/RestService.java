@@ -409,13 +409,15 @@ public class RestService {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void importMetaFromStatic(HttpServletRequest req) {
+	public void importMetaFromStatic(HttpServletRequest req) throws InstantiationException, IllegalAccessException {
 		this.getInFilters();
 		if (inFilter != null) {
 			String metaValueString = req.getHeader(AppConstants.META_XKEY);
 			RequestMetaInfo x = inFilter.export(metaValueString);
 			if (x != null) {
 				inFilter.importMeta(x, req);
+			} else {
+				inFilter.importMeta((RequestMetaInfo) inFilter.getMetaClass().newInstance(), req);
 			}
 		}
 

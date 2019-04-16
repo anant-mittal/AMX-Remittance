@@ -45,52 +45,7 @@
                     </datasetRun>
                     <c:listContents height="822">
 
-                        <!--##################HEADER START####################-->
-                        <frame>
-                            <reportElement x="0" y="0" width="595" height="80"
-                                           forecolor="blue"/>
-                            <rectangle>
-                                <reportElement x="0" y="0" width="595" height="80" backcolor="#000000"/>
-                            </rectangle>
-                            <image evaluationTime="Now" hyperlinkType="None" hyperlinkTarget="Self">
-                                <reportElement
-                                        x="220"
-                                        y="5"
-                                        width="150"
-                                        height="60"
-                                        key="image-1"
-                                        stretchType="NoStretch"/>
-                                <graphicElement/>
-                                <imageExpression class="java.lang.String">
-                                    <![CDATA[$P{TU}.prop("company.logo.path")]]>
-                                </imageExpression>
-                            </image>
-                            <textField isStretchWithOverflow="true">
-                                <reportElement x="5" y="70" width="290" height="20"
-                                               forecolor="#FFFFFF"
-                                               isPrintWhenDetailOverflows="true"/>
-                                <textElement>
-                                    <font fontName="Arial" size="8" isItalic="true"
-                                          pdfFontName="fonts/all/arialbd.ttf"/>
-                                </textElement>
-                                <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$F{tranx}.get("engCompanyInfo", "--")]]>
-                                </textFieldExpression>
-                            </textField>
-                            <textField isStretchWithOverflow="true">
-                                <reportElement x="300" y="70" width="290" height="20"
-                                               forecolor="#FFFFFF"
-                                               isPrintWhenDetailOverflows="true"/>
-                                <textElement textAlignment="Right">
-                                    <font fontName="Arial" size="8" isItalic="true"
-                                          pdfFontName="fonts/all/arialbd.ttf"/>
-                                </textElement>
-                                <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$F{tranx}.get("arabicCompanyInfo","--")]]>
-                                </textFieldExpression>
-                            </textField>
-                        </frame>
-                        <!--##################HEADER END####################-->
+                       
 
                         <!--##################Sender Details START####################-->
                         <frame>
@@ -1784,27 +1739,7 @@
                     </frame>
                     <!--##################Payment Mode END####################-->
  					
-					 <!--##################FOOTER START####################-->
-                    <frame>
-                        <reportElement x="0" y="711" width="595" height="70"
-                                       forecolor="blue"/>
-
-                        <image evaluationTime="Now" hyperlinkType="None" hyperlinkTarget="Self" isLazy="true" onErrorType="Blank">
-                            <reportElement
-                                    x="0"
-                                    y="0"
-                                    width="595"
-                                    height="90"
-                                    key="image-1"
-                                    stretchType="NoStretch" />
-                            <graphicElement/>
-                            <imageExpression class="java.lang.String">
-                                <![CDATA[$P{TU}.prop("company.promotion.img")]]>
-                            </imageExpression>
-                        </image>
-                    </frame>
-                    <!--##################FOOTER END####################-->
-
+					
                     <!--##################FOOTER START####################-->
                     <!--##################FOOTER END####################-->
                     </c:listContents>
