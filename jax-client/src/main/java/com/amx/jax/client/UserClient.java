@@ -40,7 +40,7 @@ import com.amx.amxlib.service.ICustomerService;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.configs.JaxMetaInfo;
-import com.amx.jax.constants.CommunicationChannel;
+import com.amx.jax.dict.ContactType;
 import com.amx.jax.model.UserDevice;
 import com.amx.jax.model.auth.QuestModelDTO;
 import com.amx.jax.model.response.customer.CustomerModelResponse;
@@ -79,7 +79,7 @@ public class UserClient extends AbstractJaxServiceClient implements ICustomerSer
 			throw new JaxSystemError();
 		} // end of try-catch
 	}
-	
+
 	public ApiResponse<CustomerModel> validateOtp(String identityId, String mOtp, String eOtp, String wOtp)
 			throws IncorrectInputException, CustomerValidationException, LimitExeededException, UnknownJaxError {
 		try {
@@ -551,7 +551,7 @@ public class UserClient extends AbstractJaxServiceClient implements ICustomerSer
 
 	}
 
-	public ApiResponse<CivilIdOtpModel> initRegistration(String identityId, CommunicationChannel otpCommunicationChannel)
+	public ApiResponse<CivilIdOtpModel> initRegistration(String identityId, ContactType contactType)
 			throws InvalidInputException, CustomerValidationException, LimitExeededException {
 		try {
 			Boolean initRegistration = new Boolean(true);
@@ -560,7 +560,7 @@ public class UserClient extends AbstractJaxServiceClient implements ICustomerSer
 					+ "/send-otp/";
 			LOGGER.info("calling sendOtpForCivilId api: " + sendOtpUrl);
 			return restService.ajax(sendOtpUrl).get(requestEntity)
-					.queryParam("otpCommunicationChannel", otpCommunicationChannel)
+					.queryParam("contactType", contactType)
 					.as(new ParameterizedTypeReference<ApiResponse<CivilIdOtpModel>>() {
 					});
 		} catch (AbstractJaxException ae) {
@@ -787,7 +787,8 @@ public class UserClient extends AbstractJaxServiceClient implements ICustomerSer
 		try {
 
 			return restService.ajax(appConfig.getJaxURL())
-					.path(ApiEndpoint.CUSTOMER_ENDPOINT + Path.CUSTOMER_MODEL_RESPONSE_BY_IDENTITYINT).meta(new JaxMetaInfo())
+					.path(ApiEndpoint.CUSTOMER_ENDPOINT + Path.CUSTOMER_MODEL_RESPONSE_BY_IDENTITYINT)
+					.meta(new JaxMetaInfo())
 					.queryParam(Params.IDENTITY_INT, identityInt)
 					.get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<CustomerModelResponse, Object>>() {
@@ -798,12 +799,14 @@ public class UserClient extends AbstractJaxServiceClient implements ICustomerSer
 			return JaxSystemError.evaluate(ae);
 		}
 	}
+
 	@Override
-	public AmxApiResponse<BoolRespModel,Object> saveCustomerSecQuestions(List<SecurityQuestionModel> securityQuestion) {
+	public AmxApiResponse<BoolRespModel, Object> saveCustomerSecQuestions(
+			List<SecurityQuestionModel> securityQuestion) {
 		try {
 			return restService.ajax(appConfig.getJaxURL()).meta(new JaxMetaInfo())
 					.path(CustomerApi.PREFIX + CustomerApi.SAVE_SECURITY_QUESTIONS).post(securityQuestion)
-					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel,Object>>() {
+					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
 					});
 		} catch (Exception e) {
 			LOGGER.error("exception in saveSecurityQuestions : ", e);
@@ -831,7 +834,8 @@ public class UserClient extends AbstractJaxServiceClient implements ICustomerSer
 		try {
 
 			return restService.ajax(appConfig.getJaxURL())
-					.path(ApiEndpoint.CUSTOMER_ENDPOINT + Path.CUSTOMER_MODEL_SIGNUP_RESPONSE_GET).meta(new JaxMetaInfo())
+					.path(ApiEndpoint.CUSTOMER_ENDPOINT + Path.CUSTOMER_MODEL_SIGNUP_RESPONSE_GET)
+					.meta(new JaxMetaInfo())
 					.queryParam(Params.IDENTITY_INT, identityInt)
 					.get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<CustomerModelSignupResponse, Object>>() {

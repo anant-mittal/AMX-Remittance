@@ -14,7 +14,6 @@ import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.userservice.dao.CustomerDao;
-import com.amx.jax.userservice.manager.CustomerRegistrationManager;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.userservice.service.UserValidationService;
 

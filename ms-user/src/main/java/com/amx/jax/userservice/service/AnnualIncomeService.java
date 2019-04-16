@@ -42,7 +42,6 @@ import com.amx.jax.dbmodel.LanguageType;
 import com.amx.jax.dbmodel.UserFinancialYear;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.meta.MetaData;
-import com.amx.jax.model.response.customer.CustomerFlags;
 import com.amx.jax.repository.CountryRepository;
 import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.repository.DOCBLOBRepository;

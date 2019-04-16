@@ -4,6 +4,7 @@ import javax.validation.constraints.Pattern;
 
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.jax.AppConstants;
+import com.amx.jax.dict.ContactType;
 import com.amx.jax.model.AbstractModel;
 import com.amx.jax.model.AuthState;
 import com.amx.jax.model.auth.QuestModelDTO;
@@ -25,14 +26,14 @@ public class AuthData extends AbstractModel implements AuthResponse, AuthRequest
 	@Pattern(regexp = AppConstants.Validator.IDENTITY)
 	private String identity = null;
 
-	private String identityLock = null;
-
 	/** The password. */
 	private String password = null;
 
 	private String deviceToken = null;
 
 	private String lockId = null;
+
+	private ContactType contactType;
 
 	/*
 	 * (non-Javadoc)
@@ -91,6 +92,8 @@ public class AuthData extends AbstractModel implements AuthResponse, AuthRequest
 
 	/** The e otp prefix. */
 	private String eOtpPrefix = null;
+
+	private String wOtpPrefix = null;
 
 	/** The otp. */
 	@Pattern(regexp = AppConstants.Validator.OTP)
@@ -401,6 +404,26 @@ public class AuthData extends AbstractModel implements AuthResponse, AuthRequest
 	@Override
 	public void setLockId(String lockId) {
 		this.lockId = lockId;
+	}
+
+	@Override
+	public ContactType getContactType() {
+		return this.contactType;
+	}
+
+	@Override
+	public void setContactType(ContactType contactType) {
+		this.contactType = contactType;
+	}
+
+	@Override
+	public String getwOtpPrefix() {
+		return wOtpPrefix;
+	}
+
+	@Override
+	public void setwOtpPrefix(String wOtpPrefix) {
+		this.wOtpPrefix = wOtpPrefix;
 	}
 
 }

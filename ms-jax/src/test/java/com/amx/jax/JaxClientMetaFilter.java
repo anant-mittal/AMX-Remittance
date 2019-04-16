@@ -2,7 +2,6 @@ package com.amx.jax;
 
 import java.math.BigDecimal;
 
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.client.configs.JaxMetaInfo;

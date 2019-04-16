@@ -11,7 +11,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.amx.jax.constants.CommunicationChannel;
+import com.amx.jax.dict.ContactType;
 
 @RunWith(SpringRunner.class)
 public class DateUtilTest {
@@ -32,8 +32,8 @@ public class DateUtilTest {
 	
 	@Test
 	public void testArrayUtils() {
-		CommunicationChannel c = null;
-		List<CommunicationChannel> channel = Arrays.asList(c);
+		ContactType c = null;
+		List<ContactType> channel = Arrays.asList(c);
 		assertNotNull(channel);
 	}
 }

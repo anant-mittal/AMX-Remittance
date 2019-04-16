@@ -6,10 +6,8 @@ import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 
 import javax.sql.rowset.serial.SerialException;
 
@@ -26,13 +24,11 @@ import com.amx.amxlib.model.EKycModel;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.dal.ImageCheckDao;
 import com.amx.jax.dbmodel.Customer;
-import com.amx.jax.dbmodel.CustomerIdProof;
 import com.amx.jax.dbmodel.DmsApplMapping;
 import com.amx.jax.dbmodel.DocBlobUpload;
 import com.amx.jax.dbmodel.UserFinancialYear;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.ImageSubmissionRequest;
-import com.amx.jax.model.request.OffsiteCustomerRegistrationRequest;
 import com.amx.jax.repository.DOCBLOBRepository;
 import com.amx.jax.repository.IDMSAppMappingRepository;
 import com.amx.jax.repository.IUserFinancialYearRepo;

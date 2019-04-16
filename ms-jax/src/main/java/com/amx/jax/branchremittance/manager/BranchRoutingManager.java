@@ -40,7 +40,6 @@ import com.amx.jax.model.response.remittance.RoutingBankDto;
 import com.amx.jax.model.response.remittance.RoutingBranchDto;
 import com.amx.jax.model.response.remittance.RoutingResponseDto;
 import com.amx.jax.model.response.remittance.RoutingServiceDto;
-import com.amx.jax.repository.BankMasterRepository;
 import com.amx.jax.repository.CountryRepository;
 import com.amx.jax.repository.IAccountTypeFromViewDao;
 import com.amx.jax.repository.IBankBranchView;

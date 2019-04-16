@@ -29,7 +29,6 @@ import com.amx.amxlib.exception.jax.UserNotFoundException;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
-import com.amx.jax.AppContextUtil;
 import com.amx.jax.JaxAuthCache;
 import com.amx.jax.JaxAuthCache.JaxAuthMeta;
 import com.amx.jax.JaxAuthContext;
@@ -37,7 +36,6 @@ import com.amx.jax.amxlib.config.OtpSettings;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.CustomerVerificationType;
 import com.amx.jax.constant.JaxApiFlow;
-import com.amx.jax.constants.CommunicationChannel;
 import com.amx.jax.dal.ImageCheckDao;
 import com.amx.jax.dao.BlackListDao;
 import com.amx.jax.dbmodel.BlackListModel;
@@ -50,7 +48,7 @@ import com.amx.jax.dbmodel.CustomerVerification;
 import com.amx.jax.dbmodel.DmsDocumentModel;
 import com.amx.jax.dbmodel.ViewOnlineCustomerCheck;
 import com.amx.jax.dbmodel.remittance.BlackListDetailModel;
-import com.amx.jax.dict.Tenant;
+import com.amx.jax.dict.ContactType;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.exception.ExceptionMessageKey;
 import com.amx.jax.meta.MetaData;
@@ -59,7 +57,6 @@ import com.amx.jax.model.auth.QuestModelDTO;
 import com.amx.jax.repository.IContactDetailDao;
 import com.amx.jax.repository.remittance.IBlackListDetailRepository;
 import com.amx.jax.scope.TenantContext;
-import com.amx.jax.scope.TenantContextHolder;
 import com.amx.jax.userservice.constant.CustomerDataVerificationQuestion;
 import com.amx.jax.userservice.dao.CusmosDao;
 import com.amx.jax.userservice.dao.CustomerDao;
@@ -825,7 +822,7 @@ public class UserValidationService {
 		}
 	}
 
-	public void validateEmailMobileUpdateFlow(CustomerModel customerModel, List<CommunicationChannel> channels) {
+	public void validateEmailMobileUpdateFlow(CustomerModel customerModel, List<ContactType> channels) {
 		GlobalException ex = null;
 		JaxAuthMeta jaxAuthMeta = jaxAuthCache.getOrDefault(metaData.getCustomerId().toString(), new JaxAuthMeta());
 

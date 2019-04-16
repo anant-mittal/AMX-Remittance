@@ -12,9 +12,8 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.constant.ConstantDocument;
-import com.amx.jax.constant.JaxApiFlow;
-import com.amx.jax.constants.CommunicationChannel;
 import com.amx.jax.dbmodel.Customer;
+import com.amx.jax.dict.ContactType;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.response.customer.CustomerCommunicationChannel;
 import com.amx.jax.model.response.customer.CustomerFlags;
@@ -85,7 +84,7 @@ public class CustomerModelService {
 			}
 			String maskedEmail = MaskUtil.maskEmail(personInfo.getEmail(), maskLength, "*");
 			customerCommunicationChannels
-					.add(new CustomerCommunicationChannel(CommunicationChannel.EMAIL, maskedEmail));
+					.add(new CustomerCommunicationChannel(ContactType.EMAIL, maskedEmail));
 
 		}
 		if (customerFlags.getMobileVerified()) {
@@ -96,7 +95,7 @@ public class CustomerModelService {
 			}
 			String maskedMobile = MaskUtil.leftMask(personInfo.getMobile(), maskLength, "*");
 			customerCommunicationChannels
-					.add(new CustomerCommunicationChannel(CommunicationChannel.MOBILE, maskedMobile));
+					.add(new CustomerCommunicationChannel(ContactType.SMS, maskedMobile));
 
 		}
 		if (customerFlags.getWhatsAppVerified()) {
@@ -107,7 +106,7 @@ public class CustomerModelService {
 			}
 			String maskedMobile = MaskUtil.leftMask(personInfo.getWhatsAppNumber(), maskLength, "*");
 			customerCommunicationChannels
-					.add(new CustomerCommunicationChannel(CommunicationChannel.WHATSAPP, maskedMobile));
+					.add(new CustomerCommunicationChannel(ContactType.WHATSAPP, maskedMobile));
 
 		}
 		response.setCustomerCommunicationChannel(customerCommunicationChannels);

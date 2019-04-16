@@ -50,7 +50,6 @@ import com.amx.jax.async.ExecutorConfig;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.CustomerVerificationType;
 import com.amx.jax.constant.JaxApiFlow;
-import com.amx.jax.constants.CommunicationChannel;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.ContactDetail;
 import com.amx.jax.dbmodel.CountryMasterView;
@@ -64,6 +63,7 @@ import com.amx.jax.dbmodel.LoginLogoutHistory;
 import com.amx.jax.dbmodel.ViewCity;
 import com.amx.jax.dbmodel.ViewDistrict;
 import com.amx.jax.dbmodel.ViewState;
+import com.amx.jax.dict.ContactType;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.logger.AuditEvent.Result;
 import com.amx.jax.logger.AuditService;
@@ -416,7 +416,7 @@ public class UserService extends AbstractUserService {
 		return sendOtpForCivilId(civilId, null, null, null);
 	}
 
-	public ApiResponse sendOtpForCivilId(String civilId, List<CommunicationChannel> channels,
+	public ApiResponse sendOtpForCivilId(String civilId, List<ContactType> channels,
 			CustomerModel customerModel, Boolean initRegistration) {
 		if (StringUtils.isNotBlank(civilId)) {
 			if (tenantContext.getKey().equals("OMN")) {
@@ -514,28 +514,28 @@ public class UserService extends AbstractUserService {
 		}
 
 		sendOtpFromPostMan(personinfo, model, channels);
-		
+
 		return response;
 	}
 
-	private void sendOtpFromPostMan(PersonInfo personinfo, CivilIdOtpModel model, List<CommunicationChannel> channels) {
+	private void sendOtpFromPostMan(PersonInfo personinfo, CivilIdOtpModel model, List<ContactType> channels) {
 		if (org.apache.commons.collections.CollectionUtils.isEmpty(channels)) {
 			jaxNotificationService.sendOtpSms(personinfo, model);
 		} else {
-			if (channels.contains(CommunicationChannel.EMAIL)
-					|| channels.contains(CommunicationChannel.EMAIL_AS_MOBILE)) {
+			if (channels.contains(ContactType.EMAIL)
+					|| channels.contains(ContactType.SMS_EMAIL)) {
 				jaxNotificationService.sendOtpEmail(personinfo, model);
 			}
-			if (channels.contains(CommunicationChannel.MOBILE)) {
+			if (channels.contains(ContactType.SMS)) {
 				jaxNotificationService.sendOtpSms(personinfo, model);
 			}
-			if (channels.contains(CommunicationChannel.WHATSAPP)) {
+			if (channels.contains(ContactType.WHATSAPP)) {
 				jaxNotificationService.sendOtpWhatsApp(personinfo, model);
 			}
 		}
 	}
 
-	public void generateToken(String userId, CivilIdOtpModel model, List<CommunicationChannel> channels) {
+	public void generateToken(String userId, CivilIdOtpModel model, List<ContactType> channels) {
 		String randmOtp = util.createRandomPassword(6);
 		String hashedmOtp = cryptoUtil.getHash(userId, randmOtp);
 		String randeOtp = util.createRandomPassword(6);
@@ -545,17 +545,17 @@ public class UserService extends AbstractUserService {
 			model.setmOtp(randmOtp);
 			model.setmOtpPrefix(Random.randomAlpha(3));
 		} else {
-			if (channels.contains(CommunicationChannel.MOBILE)) {
+			if (channels.contains(ContactType.SMS)) {
 				model.setHashedmOtp(hashedmOtp);
 				model.setmOtp(randmOtp);
 				model.setmOtpPrefix(Random.randomAlpha(3));
 			}
-			if (channels.contains(CommunicationChannel.EMAIL)) {
+			if (channels.contains(ContactType.EMAIL)) {
 				model.setHashedeOtp(hashedeOtp);
 				model.seteOtp(randeOtp);
 				model.seteOtpPrefix(Random.randomAlpha(3));
 			}
-			if (channels.contains(CommunicationChannel.WHATSAPP)) {
+			if (channels.contains(ContactType.WHATSAPP)) {
 				String randwOtp = Random.randomNumeric(6);
 				String hashedwOtp = cryptoUtil.getHash(userId, randwOtp);
 				model.setwHashedOtp(hashedwOtp);
@@ -563,7 +563,7 @@ public class UserService extends AbstractUserService {
 			}
 
 			// set e-otp same as m-otp
-			if (channels.contains(CommunicationChannel.EMAIL_AS_MOBILE)) {
+			if (channels.contains(ContactType.SMS_EMAIL)) {
 				model.setHashedeOtp(hashedmOtp);
 				model.seteOtp(randmOtp);
 				model.seteOtpPrefix(model.getmOtpPrefix());
@@ -1230,7 +1230,7 @@ public class UserService extends AbstractUserService {
 			customerIdProofDao.save(activeIdProofs);
 		}
 	}
-	
+
 	public void deactiveteCustomerIdProofPendingCompliance(BigDecimal customerId) {
 		Customer customer = repo.findOne(customerId);
 		List<CustomerIdProof> deActiveIdProofs = customerIdProofDao.getCompliancePendingCustomerIdProof(customerId,
@@ -1242,7 +1242,7 @@ public class UserService extends AbstractUserService {
 			customerIdProofDao.save(deActiveIdProofs);
 		}
 	}
-	
+
 	public List<Customer> getCustomerByIdentityInt(String identityInt) {
 		String[] isActiveFlags = new String[] { ConstantDocument.Yes, ConstantDocument.No };
 		List<Customer> customers = repo.getCustomerByIdentityIntAndIsActive(identityInt, Arrays.asList(isActiveFlags));
@@ -1263,5 +1263,5 @@ public class UserService extends AbstractUserService {
 			throw new InvalidOtpException("whatsapp Otp is incorrect for civil-id: " + civilId);
 		}
 	}
-	 
+
 }

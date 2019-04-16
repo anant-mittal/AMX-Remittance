@@ -12,15 +12,22 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.model.CustomerHomeAddress;
 import com.amx.jax.CustomerCredential;
-import com.amx.jax.constants.CommunicationChannel;
+import com.amx.jax.JaxAuthContext;
+import com.amx.jax.dict.ContactType;
+import com.amx.jax.exception.AmxApiError;
 import com.amx.jax.model.request.CustomerPersonalDetail;
+import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
+import com.amx.jax.ui.config.UIServerError;
 import com.amx.jax.ui.model.AuthData;
+import com.amx.jax.ui.model.AuthDataInterface.AuthRequest;
 import com.amx.jax.ui.model.UserUpdateData;
 import com.amx.jax.ui.response.ResponseWrapper;
+import com.amx.jax.ui.service.JaxService;
 import com.amx.jax.ui.service.PartialRegService;
 import com.amx.jax.ui.service.RegistrationService;
 import com.amx.jax.ui.session.Transactions;
 import com.amx.libjax.model.CustomerModelInterface.ICustomerModel;
+import com.amx.utils.ArgUtil;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -42,6 +49,9 @@ public class RegisterController {
 	@Autowired
 	Transactions transactions;
 
+	@Autowired
+	private JaxService jaxService;
+
 	/**
 	 * Verify ID.
 	 *
@@ -57,9 +67,23 @@ public class RegisterController {
 
 	@ApiOperation(value = "Verify KYC and sneds OTP to registered Mobile")
 	@RequestMapping(value = "/pub/register/verifyid/v2", method = { RequestMethod.POST })
-	public ResponseWrapper<AuthData> verifyID(@RequestParam String civilid,
-			@RequestParam CommunicationChannel communicationChannel) {
-		return registrationService.validateCustomerInit(civilid, communicationChannel);
+	public ResponseWrapper<AuthData> verifyID(@RequestParam String identity,
+			@RequestParam(required = false) ContactType contactType) {
+		String otp = JaxAuthContext.getOtp();
+
+		if (ArgUtil.isEmpty(contactType)) {
+			AmxApiError amxApiError = new AmxApiError(OWAStatusStatusCodes.CONTACT_TYPE_REQUIRED);
+			amxApiError.setMeta(
+					jaxService.setDefaults().getUserclient().getCustomerModelSignupResponse(identity).getResult());
+			throw new UIServerError(amxApiError);
+		} else if (ArgUtil.isEmpty(otp)) {
+			AuthData x = registrationService.validateCustomerInit(identity, contactType).getData();
+			AmxApiError amxApiError = new AmxApiError(OWAStatusStatusCodes.OTP_REQUIRED);
+			amxApiError.setMeta(x);
+			throw new UIServerError(amxApiError);
+		} else {
+			return registrationService.validateCustomer(identity, otp, contactType);
+		}
 	}
 
 	/**
@@ -68,6 +92,7 @@ public class RegisterController {
 	 * @param authData the auth data
 	 * @return the response wrapper
 	 */
+	@Deprecated
 	@ApiOperation(value = "Customer Activation", notes = "${RegisterController.verifyCustomer}")
 	@RequestMapping(value = "/pub/register/verifycustomer", method = { RequestMethod.POST })
 	public ResponseWrapper<AuthData> verifyCustomer(@RequestBody AuthData authData) {
@@ -80,10 +105,11 @@ public class RegisterController {
 	 * @param authData the auth data
 	 * @return the response wrapper
 	 */
+	@Deprecated
 	@ApiOperation(value = "Customer Activation", notes = "${RegisterController.verifyCustomer}")
 	@RequestMapping(value = "/pub/register/verifycustomer/v2", method = { RequestMethod.POST })
 	public ResponseWrapper<AuthData> verifyCustomer(@RequestParam String identity, @RequestParam String otp,
-			@RequestParam CommunicationChannel communicationChannel) {
+			@RequestParam ContactType communicationChannel) {
 		return registrationService.validateCustomer(identity, otp, communicationChannel);
 	}
 

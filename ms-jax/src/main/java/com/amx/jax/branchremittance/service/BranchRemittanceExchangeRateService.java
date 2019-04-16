@@ -16,7 +16,6 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.amx.amxlib.constant.ApplicationProcedureParam;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.branchremittance.manager.BranchImpsRoutingManager;
 import com.amx.jax.branchremittance.manager.BranchRemittanceExchangeRateManager;

@@ -3,7 +3,7 @@ package com.amx.jax.notification.alert;
 import java.util.List;
 
 import com.amx.amxlib.exception.AbstractJaxException;
-import com.amx.jax.constants.CommunicationChannel;
+import com.amx.jax.dict.ContactType;
 
 /**
  * @author Prashant
@@ -26,13 +26,13 @@ public interface IAlert {
 	 * @return list of contacts to whom email/sms need to send
 	 * 
 	 */
-	List<String> getAlertContacts(CommunicationChannel notificationType);
+	List<String> getAlertContacts(ContactType notificationType);
 
 	/**
 	 * @return list of communucation channel like emai , sms
 	 * 
 	 */
-	List<CommunicationChannel> getCommucationChannels();
+	List<ContactType> getCommucationChannels();
 
 	/**
 	 * @return whether this alert is enabled or not

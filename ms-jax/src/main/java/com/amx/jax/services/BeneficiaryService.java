@@ -46,7 +46,6 @@ import com.amx.jax.amxlib.model.RoutingBankMasterParam;
 import com.amx.jax.config.JaxTenantProperties;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxDbConfig;
-import com.amx.jax.constants.CommunicationChannel;
 import com.amx.jax.dal.RoutingDao;
 import com.amx.jax.dao.BeneficiaryDao;
 import com.amx.jax.dbmodel.AgentBranchModel;
@@ -65,6 +64,7 @@ import com.amx.jax.dbmodel.bene.BeneficaryContact;
 import com.amx.jax.dbmodel.bene.BeneficaryMaster;
 import com.amx.jax.dbmodel.bene.BeneficaryRelationship;
 import com.amx.jax.dbmodel.bene.RelationsDescription;
+import com.amx.jax.dict.ContactType;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.logger.AuditEvent.Result;
 import com.amx.jax.logger.AuditService;
@@ -615,7 +615,7 @@ public class BeneficiaryService extends AbstractService {
 	 * @return apiresponse
 	 * 
 	 */
-	public ApiResponse sendOtp(List<CommunicationChannel> channels) {
+	public ApiResponse sendOtp(List<ContactType> channels) {
 
 		Customer customer = null;
 		String civilId = null;
@@ -680,7 +680,7 @@ public class BeneficiaryService extends AbstractService {
 
 		jaxNotificationService.sendOtpSms(personinfo, model);
 
-		if (channels != null && channels.contains(CommunicationChannel.EMAIL)) {
+		if (channels != null && channels.contains(ContactType.EMAIL)) {
 			jaxNotificationService.sendOtpEmail(personinfo, model);
 		}
 		return response;

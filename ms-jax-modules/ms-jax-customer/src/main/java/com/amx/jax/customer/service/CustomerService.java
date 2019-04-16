@@ -15,7 +15,6 @@ import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
-import com.amx.jax.userservice.manager.OnlineCustomerManager;
 import com.amx.jax.dal.ArticleDao;
 import com.amx.jax.dal.BizcomponentDao;
 import com.amx.jax.dbmodel.ContactDetail;
@@ -31,6 +30,7 @@ import com.amx.jax.repository.ICustomerRepository;
 import com.amx.jax.service.CountryService;
 import com.amx.jax.services.AbstractService;
 import com.amx.jax.userservice.dao.CustomerIdProofDao;
+import com.amx.jax.userservice.manager.OnlineCustomerManager;
 import com.amx.jax.userservice.service.UserService;
 
 @Service

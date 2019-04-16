@@ -12,11 +12,11 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.AbstractJaxException;
 import com.amx.amxlib.model.notification.RemittanceTransactionFailureAlertModel;
-import com.amx.jax.constants.CommunicationChannel;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.ExEmailNotification;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
+import com.amx.jax.dict.ContactType;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
@@ -50,7 +50,7 @@ public class RemittanceCreationFailureAlert implements IAlert {
 	TenantService tenantService;
 	
 	@Override
-	public List<String> getAlertContacts(CommunicationChannel notificationType) {
+	public List<String> getAlertContacts(ContactType notificationType) {
 		// TODO fetch alert contacts
 		return null;
 	}
@@ -107,9 +107,9 @@ public class RemittanceCreationFailureAlert implements IAlert {
 	}
 
 	@Override
-	public List<CommunicationChannel> getCommucationChannels() {
-		List<CommunicationChannel> channels = new ArrayList<>();
-		channels.add(CommunicationChannel.EMAIL);
+	public List<ContactType> getCommucationChannels() {
+		List<ContactType> channels = new ArrayList<>();
+		channels.add(ContactType.EMAIL);
 		return channels;
 	}
 	

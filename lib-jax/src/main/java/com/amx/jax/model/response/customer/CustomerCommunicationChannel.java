@@ -1,15 +1,15 @@
 package com.amx.jax.model.response.customer;
 
-import com.amx.jax.constants.CommunicationChannel;
+import com.amx.jax.dict.ContactType;
 
 public class CustomerCommunicationChannel {
 
-	CommunicationChannel channel;
+	ContactType contactType;
 	String maskedValue;
 
-	public CustomerCommunicationChannel(CommunicationChannel channel, String maskedValue) {
+	public CustomerCommunicationChannel(ContactType contactType, String maskedValue) {
 		super();
-		this.channel = channel;
+		this.contactType = contactType;
 		this.maskedValue = maskedValue;
 	}
 
@@ -17,12 +17,12 @@ public class CustomerCommunicationChannel {
 		super();
 	}
 
-	public CommunicationChannel getChannel() {
-		return channel;
+	public ContactType getContactType() {
+		return contactType;
 	}
 
-	public void setChannel(CommunicationChannel channel) {
-		this.channel = channel;
+	public void setContactType(ContactType contactType) {
+		this.contactType = contactType;
 	}
 
 	public String getMaskedValue() {

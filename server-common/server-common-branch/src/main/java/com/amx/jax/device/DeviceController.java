@@ -183,7 +183,6 @@ public class DeviceController {
 		auditService.log(new SSOAuditEvent(SSOAuditEvent.Type.DEVICE_SESSION_PAIR)
 				.terminalId(resp.getResult().getTermialId())
 				.deviceRegId(resp.getResult().getDeviceRegId()));
-
 		return resp;
 	}
 

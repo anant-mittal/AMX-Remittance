@@ -5,7 +5,6 @@ import static com.amx.amxlib.constant.ApiEndpoint.UPDATE_CUSTOMER_PASSWORD_ENDPO
 
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -28,21 +27,18 @@ import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.service.ICustomerService;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
-import com.amx.jax.client.IDeviceStateService.Params;
-import com.amx.jax.client.IDeviceStateService.Path;
-import com.amx.jax.constants.CommunicationChannel;
 import com.amx.jax.customer.service.CustomerService;
+import com.amx.jax.dict.ContactType;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.auth.QuestModelDTO;
 import com.amx.jax.model.response.customer.CustomerModelResponse;
 import com.amx.jax.model.response.customer.CustomerModelSignupResponse;
 import com.amx.jax.services.CustomerDataVerificationService;
-import com.amx.jax.userservice.service.CustomerModelService;
 import com.amx.jax.userservice.service.AnnualIncomeService;
+import com.amx.jax.userservice.service.CustomerModelService;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.userservice.service.UserValidationService;
 import com.amx.jax.util.ConverterUtil;
-import com.amx.utils.Constants;
 
 @RestController
 @RequestMapping(CUSTOMER_ENDPOINT)
@@ -63,12 +59,12 @@ public class CustomerController implements ICustomerService {
 
 	@Autowired
 	MetaData metaData;
-	
+
 	@Autowired
 	CustomerModelService customerModelService;
 	@Autowired
 	AnnualIncomeService annualIncomeService;
-	
+
 	@Autowired
 	CustomerService customerService;
 
@@ -105,8 +101,8 @@ public class CustomerController implements ICustomerService {
 	@RequestMapping(value = "/{civil-id}/send-reset-otp/", method = RequestMethod.GET)
 	public ApiResponse sendResetCredentialsOtp(@PathVariable("civil-id") String civilId) {
 		logger.info("Send OTP Request : civilId - " + civilId);
-		List<CommunicationChannel> channel = new ArrayList<>();
-		channel.add(CommunicationChannel.EMAIL_AS_MOBILE);
+		List<ContactType> channel = new ArrayList<>();
+		channel.add(ContactType.SMS_EMAIL);
 		ApiResponse response = userService.sendOtpForCivilId(civilId, channel, null, null);
 		return response;
 	}
@@ -183,9 +179,9 @@ public class CustomerController implements ICustomerService {
 	@RequestMapping(value = "/send-otp/", method = RequestMethod.POST)
 	public ApiResponse sendResetEmailCredentialsOtp(@RequestBody CustomerModel custModel) {
 		logger.info("send Request:civilId" + custModel.toString());
-		List<CommunicationChannel> channel = new ArrayList<>();
-		channel.add(CommunicationChannel.EMAIL);
-		channel.add(CommunicationChannel.MOBILE);
+		List<ContactType> channel = new ArrayList<>();
+		channel.add(ContactType.EMAIL);
+		channel.add(ContactType.SMS);
 
 		if (custModel.getMobile() != null) {
 			logger.info("Validating mobile for client id : " + custModel.getCustomerId());
@@ -213,13 +209,13 @@ public class CustomerController implements ICustomerService {
 	@RequestMapping(value = "/{civil-id}/{init-registration}/send-otp/", method = RequestMethod.GET)
 	public ApiResponse initRegistrationSendOtp(@PathVariable("civil-id") String civilId,
 			@PathVariable("init-registration") Boolean init,
-			@RequestParam(required = false) CommunicationChannel otpCommunicationChannel) {
+			@RequestParam(required = false) ContactType contactType) {
 		logger.info("initRegistrationSendOtp Request:civilId" + civilId);
-		List<CommunicationChannel> communicationChannels = new ArrayList<>();
-		if (otpCommunicationChannel != null) {
-			communicationChannels.add(otpCommunicationChannel);
+		List<ContactType> contactTypes = new ArrayList<ContactType>();
+		if (contactType != null) {
+			contactTypes.add(contactType);
 		}
-		ApiResponse response = userService.sendOtpForCivilId(civilId, communicationChannels, null, init);
+		ApiResponse response = userService.sendOtpForCivilId(civilId, contactTypes, null, init);
 		return response;
 	}
 
@@ -227,7 +223,7 @@ public class CustomerController implements ICustomerService {
 	public ApiResponse getCustomerDataValidationQeustions(@RequestParam Integer size) {
 		logger.info("getCustomerDataValidationQeustions Request:");
 		ApiResponse<QuestModelDTO> response = userService.getDataVerificationRandomQuestions(size);
-		//customerDataVerificationService.setAdditionalData(response.getResults());
+		// customerDataVerificationService.setAdditionalData(response.getResults());
 		return response;
 	}
 
@@ -242,14 +238,14 @@ public class CustomerController implements ICustomerService {
 	@RequestMapping(value = "/saveEmailOrMobile", method = RequestMethod.POST)
 	public ApiResponse saveMobile(@RequestBody CustomerModel customerModel) {
 		logger.info("New API for Save updated Email or Mobile Request : " + customerModel.toString());
-		List<CommunicationChannel> channel = new ArrayList<>();
-		channel.add(CommunicationChannel.MOBILE);
-		channel.add(CommunicationChannel.EMAIL);
+		List<ContactType> channel = new ArrayList<>();
+		channel.add(ContactType.SMS);
+		channel.add(ContactType.EMAIL);
 		userValidationService.validateEmailMobileUpdateFlow(customerModel, channel);
 		ApiResponse response = userService.saveCustomer(customerModel);
 		return response;
 	}
-	
+
 	@RequestMapping(value = Path.CUSTOMER_MODEL_RESPONSE_BY_IDENTITYINT, method = RequestMethod.GET)
 	@Override
 	public AmxApiResponse<CustomerModelResponse, Object> getCustomerModelResponse(
@@ -257,7 +253,7 @@ public class CustomerController implements ICustomerService {
 		CustomerModelResponse response = customerModelService.getCustomerModelResponse(identityInt);
 		return AmxApiResponse.build(response);
 	}
-	
+
 	@RequestMapping(value = Path.CUSTOMER_MODEL_RESPONSE_GET, method = RequestMethod.GET)
 	@Override
 	public AmxApiResponse<CustomerModelResponse, Object> getCustomerModelResponse() {
@@ -269,24 +265,25 @@ public class CustomerController implements ICustomerService {
 	public AmxApiResponse<IncomeDto, Object> saveAnnualIncome(@RequestBody IncomeDto incomeDto) throws ParseException {
 		return annualIncomeService.saveAnnualIncome(incomeDto);
 	}
-	
-	@RequestMapping(value = CustomerApi.GET_ANNUAL_INCOME_DETAILS , method = RequestMethod.POST)
-	public AmxApiResponse<IncomeDto, Object> getAnnualIncomeDetails(){
+
+	@RequestMapping(value = CustomerApi.GET_ANNUAL_INCOME_DETAILS, method = RequestMethod.POST)
+	public AmxApiResponse<IncomeDto, Object> getAnnualIncomeDetails() {
 		return annualIncomeService.getAnnualIncomeDetails();
 	}
-	
-	@RequestMapping(value =  CustomerApi.GET_ANNUAL_INCOME_RANGE , method = RequestMethod.POST)
-	public AmxApiResponse<AnnualIncomeRangeDTO, Object> getAnnuaIncome(){
+
+	@RequestMapping(value = CustomerApi.GET_ANNUAL_INCOME_RANGE, method = RequestMethod.POST)
+	public AmxApiResponse<AnnualIncomeRangeDTO, Object> getAnnuaIncome() {
 		return annualIncomeService.getAnnualIncome(metaData.getCustomerId());
 	}
-	
+
 	@RequestMapping(value = CustomerApi.SAVE_SECURITY_QUESTIONS, method = RequestMethod.POST)
-	public AmxApiResponse<BoolRespModel, Object> saveCustomerSecQuestions(@RequestBody List<SecurityQuestionModel> securityquestions) {
+	public AmxApiResponse<BoolRespModel, Object> saveCustomerSecQuestions(
+			@RequestBody List<SecurityQuestionModel> securityquestions) {
 		logger.info("in securityquestions: ");
 		AmxApiResponse<BoolRespModel, Object> response = customerService.saveCustomerSecQuestions(securityquestions);
 		return response;
 	}
-	
+
 	@RequestMapping(value = Path.CUSTOMER_MODEL_SIGNUP_RESPONSE_GET, method = RequestMethod.GET)
 	@Override
 	public AmxApiResponse<CustomerModelSignupResponse, Object> getCustomerModelSignupResponse(

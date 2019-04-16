@@ -3,6 +3,7 @@ package com.amx.jax.ui.model;
 import java.util.List;
 
 import com.amx.amxlib.model.SecurityQuestionModel;
+import com.amx.jax.dict.ContactType;
 import com.amx.jax.model.AuthState;
 import com.amx.jax.model.auth.QuestModelDTO;
 import com.amx.jax.swagger.ApiMockModelProperty;
@@ -82,6 +83,10 @@ public final class AuthDataInterface {
 	@JsonDeserialize(as = AuthData.class)
 	public interface AuthRequestOTP {
 
+		ContactType getContactType();
+
+		void setContactType(ContactType contactType);
+
 		/**
 		 * Gets the m otp.
 		 *
@@ -149,6 +154,10 @@ public final class AuthDataInterface {
 		 * @param geteOtpPrefix the new e otp prefix
 		 */
 		public void seteOtpPrefix(String geteOtpPrefix);
+
+		String getwOtpPrefix();
+
+		void setwOtpPrefix(String wOtpPrefix);
 	}
 
 	@JsonDeserialize(as = AuthData.class)

@@ -2,7 +2,6 @@ package com.amx.jax.notification.alert;
 
 import static com.amx.amxlib.constant.NotificationConstants.RESP_DATA_KEY;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -13,9 +12,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.AbstractJaxException;
-import com.amx.jax.constants.CommunicationChannel;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
+import com.amx.jax.dict.ContactType;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.response.customer.PersonInfo;
@@ -74,13 +73,13 @@ public class FingerPrintLoginIncorrectAttempt implements IAlert {
 	}
 
 	@Override
-	public List<String> getAlertContacts(CommunicationChannel notificationType) {
+	public List<String> getAlertContacts(ContactType notificationType) {
 		
 		return null;
 	}
 
 	@Override
-	public List<CommunicationChannel> getCommucationChannels() {
+	public List<ContactType> getCommucationChannels() {
 		
 		return null;
 	}

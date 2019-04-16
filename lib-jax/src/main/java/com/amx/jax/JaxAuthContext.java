@@ -4,6 +4,10 @@ import com.amx.utils.ArgUtil;
 
 public class JaxAuthContext {
 
+	public static String getOtp() {
+		return ArgUtil.parseAsString(AppContextUtil.getParams().get("otp"));
+	}
+
 	public static String getMotp() {
 		return ArgUtil.parseAsString(AppContextUtil.getParams().get("mOtp"));
 	}
@@ -14,6 +18,14 @@ public class JaxAuthContext {
 
 	public static String getSecAns() {
 		return ArgUtil.parseAsString(AppContextUtil.getParams().get("secAns"));
+	}
+
+	public static String otp(String otp) {
+		if (ArgUtil.isEmpty(otp)) {
+			return getOtp();
+		}
+		AppContextUtil.getParams().put("otp", otp);
+		return otp;
 	}
 
 	public static String mOtp(String mOtp) {

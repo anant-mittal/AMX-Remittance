@@ -41,7 +41,6 @@ import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
 import com.amx.jax.config.JaxTenantProperties;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxDbConfig;
-import com.amx.jax.constants.CommunicationChannel;
 import com.amx.jax.constants.JaxChannel;
 import com.amx.jax.constants.JaxTransactionStatus;
 import com.amx.jax.dal.BizcomponentDao;
@@ -65,6 +64,7 @@ import com.amx.jax.dbmodel.remittance.RemittanceAppBenificiary;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.dbmodel.remittance.ViewTransfer;
+import com.amx.jax.dict.ContactType;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.exrateservice.dao.ExchangeRateDao;
 import com.amx.jax.exrateservice.dao.PipsMasterDao;
@@ -221,7 +221,9 @@ public class RemittanceTransactionManager {
 		remitApplParametersMap.put("P_BENEFICIARY_MASTER_ID", beneficiary.getBeneficaryMasterSeqId());
 		addBeneficiaryParameters(beneficiary);
 		validateBlackListedBene(beneficiary);
-		//validateRiskyBene(beneficiary, customer);  //it is not required at the time of trnx ,the procedure will take care for existing bene with different nationality
+		// validateRiskyBene(beneficiary, customer); //it is not required at the time of
+		// trnx ,the procedure will take care for existing bene with different
+		// nationality
 		validatedObjects.put("BENEFICIARY", beneficiary);
 		HashMap<String, Object> beneBankDetails = getBeneBankDetails(beneficiary);
 		remitApplParametersMap.putAll(beneBankDetails);
@@ -254,8 +256,7 @@ public class RemittanceTransactionManager {
 		BigDecimal deliveryMode = new BigDecimal(remitApplParametersMap.get("P_DELIVERY_MODE_ID").toString());
 		BigDecimal currencyId = beneficiary.getCurrencyId();
 		BigDecimal applicationCountryId = meta.getCountryId();
-		
-		
+
 		logger.info("currencyId :" + currencyId + "\t rountingCountryId :" + rountingCountryId + "\t routingBankId :"
 				+ routingBankId + "\t serviceMasterId :" + serviceMasterId);
 		List<ExchangeRateApprovalDetModel> exchangeRates = exchangeRateDao.getExchangeRatesForRoutingBank(currencyId,
@@ -268,7 +269,8 @@ public class RemittanceTransactionManager {
 		validateNumberOfTransactionLimits();
 		validateBeneficiaryTransactionLimit(beneficiary);
 		setLoyalityPointIndicaters(responseModel);
-		BigDecimal commission = getCommissionAmount(routingBankId, rountingCountryId, currencyId, remittanceMode, deliveryMode);
+		BigDecimal commission = getCommissionAmount(routingBankId, rountingCountryId, currencyId, remittanceMode,
+				deliveryMode);
 		if (newCommission != null) {
 			commission = newCommission;
 		}
@@ -282,8 +284,7 @@ public class RemittanceTransactionManager {
 		}
 
 		logger.info("rountingCountryId: " + rountingCountryId + " serviceMasterId: " + serviceMasterId);
-	
-		
+
 		applyRoudingLogic(breakup);
 		breakup = getExchangeRateBreakup(exchangeRates, model, responseModel, commission);
 		validateTransactionAmount(breakup, newCommission, currencyId);
@@ -297,9 +298,11 @@ public class RemittanceTransactionManager {
 		return responseModel;
 
 	}
-	
-	public BigDecimal getCommissionAmount(BigDecimal routingBankId, BigDecimal rountingCountryId, BigDecimal currencyId,BigDecimal remittanceMode, BigDecimal deliveryMode) {
-		List<BankServiceRule> rules = bankServiceRuleDao.getBankServiceRule(routingBankId, rountingCountryId, currencyId, remittanceMode,deliveryMode);
+
+	public BigDecimal getCommissionAmount(BigDecimal routingBankId, BigDecimal rountingCountryId, BigDecimal currencyId,
+			BigDecimal remittanceMode, BigDecimal deliveryMode) {
+		List<BankServiceRule> rules = bankServiceRuleDao.getBankServiceRule(routingBankId, rountingCountryId,
+				currencyId, remittanceMode, deliveryMode);
 		BankServiceRule appliedRule = rules.get(0);
 		List<BankCharges> charges = appliedRule.getBankCharges();
 		BankCharges bankCharge = getApplicableCharge(charges);
@@ -386,9 +389,9 @@ public class RemittanceTransactionManager {
 	}
 
 	private void recalculateDeliveryAndRemittanceModeId() {
-		
+
 		if (remitApplParametersMap.get("P_CALCULATED_FC_AMOUNT") != null) {
-			
+
 			BigDecimal custtype = bizcomponentDao.findCustomerTypeId("I");
 			remitApplParametersMap.put("P_CUSTYPE_ID", custtype);
 			Map<String, Object> outputMap = exchangeRateProcedureDao
@@ -508,7 +511,8 @@ public class RemittanceTransactionManager {
 
 	}
 
-	private void validateTransactionAmount(ExchangeRateBreakup breakup, BigDecimal newCommission, BigDecimal currencyId ) {
+	private void validateTransactionAmount(ExchangeRateBreakup breakup, BigDecimal newCommission,
+			BigDecimal currencyId) {
 		if (!isSaveRemittanceFlow) {
 			return;
 		}
@@ -598,7 +602,8 @@ public class RemittanceTransactionManager {
 			exchangeRateBreakup = newExchangeRateService.getExchangeRateBreakUpUsingBestRate(fCurrencyId, lcAmount,
 					fcAmount, routingBankId);
 		} else {
-			exchangeRateBreakup = newExchangeRateService.createExchangeRateBreakUp(exchangeRates, model.getLocalAmount(),
+			exchangeRateBreakup = newExchangeRateService.createExchangeRateBreakUp(exchangeRates,
+					model.getLocalAmount(),
 					model.getForeignAmount());
 		}
 
@@ -607,31 +612,32 @@ public class RemittanceTransactionManager {
 
 	}
 
-	public void setNetAmountAndLoyalityState(ExchangeRateBreakup exchangeRateBreakup, AbstractRemittanceApplicationRequestModel model,
+	public void setNetAmountAndLoyalityState(ExchangeRateBreakup exchangeRateBreakup,
+			AbstractRemittanceApplicationRequestModel model,
 			RemittanceTransactionResponsetModel responseModel, BigDecimal comission) {
 		BigDecimal netAmount = exchangeRateBreakup.getConvertedLCAmount().add(comission);
 		exchangeRateBreakup.setNetAmountWithoutLoyality(netAmount);
 		responseModel.setLoyalityAmountAvailableForTxn(loyalityPointService.getloyaltyAmountEncashed(comission));
 		responseModel.setDiscountOnComission(corporateDiscountManager.corporateDiscount());
-		if(!JaxUtil.isNullZeroBigDecimalCheck(comission)) {
+		if (!JaxUtil.isNullZeroBigDecimalCheck(comission)) {
 			responseModel.setCanRedeemLoyalityPoints(false);
 			responseModel.setLoyalityPointState(LoyalityPointState.CAN_NOT_AVAIL);
 		}
 		if (remitAppManager.loyalityPointsAvailed(model, responseModel)) {
-			/** old  logic  **/ 
-			 //exchangeRateBreakup.setNetAmount(netAmount.subtract(loyalityPointService.getVwLoyalityEncash().getEquivalentAmount()));
-			 /** Modified by Rabil for corporate employee discount on 24 Mar 2018  **/
+			/** old logic **/
+			// exchangeRateBreakup.setNetAmount(netAmount.subtract(loyalityPointService.getVwLoyalityEncash().getEquivalentAmount()));
+			/** Modified by Rabil for corporate employee discount on 24 Mar 2018 **/
 			BigDecimal loyaltyAmount = loyalityPointService.getVwLoyalityEncash().getEquivalentAmount();
-			if(JaxUtil.isNullZeroBigDecimalCheck(comission) && comission.compareTo(loyaltyAmount)>0) {
-				exchangeRateBreakup.setNetAmount(netAmount.subtract(loyalityPointService.getVwLoyalityEncash().getEquivalentAmount()));
-			}else {
+			if (JaxUtil.isNullZeroBigDecimalCheck(comission) && comission.compareTo(loyaltyAmount) > 0) {
+				exchangeRateBreakup.setNetAmount(
+						netAmount.subtract(loyalityPointService.getVwLoyalityEncash().getEquivalentAmount()));
+			} else {
 				exchangeRateBreakup.setNetAmount(netAmount.subtract(comission));
 			}
 		} else {
 			exchangeRateBreakup.setNetAmount(netAmount);
 		}
 	}
-
 
 	public BankCharges getApplicableCharge(List<BankCharges> charges) {
 
@@ -746,10 +752,11 @@ public class RemittanceTransactionManager {
 			additionalInstrumentData = remittanceAppAddlDataManager.createAdditionalInstnData(remittanceApplication,
 					model);
 		} else {
-			additionalInstrumentData = oldRemittanceApplicationAdditionalDataManager.createAdditionalInstnData(remittanceApplication);
+			additionalInstrumentData = oldRemittanceApplicationAdditionalDataManager
+					.createAdditionalInstnData(remittanceApplication);
 		}
 		remitAppDao.saveAllApplicationData(remittanceApplication, remittanceAppBeneficairy, additionalInstrumentData);
-		remitAppDao.updatePlaceOrder(model,remittanceApplication);
+		remitAppDao.updatePlaceOrder(model, remittanceApplication);
 		remiteAppModel.setRemittanceAppId(remittanceApplication.getRemittanceApplicationId());
 		remiteAppModel.setNetPayableAmount(netAmountPayable);
 		remiteAppModel.setDocumentIdForPayment(remittanceApplication.getPaymentId());
@@ -793,16 +800,17 @@ public class RemittanceTransactionManager {
 				throw new GlobalException(
 						"The selected beneficiary is deactivated. Please activate the beneficiary to proceed with the transaction.");
 			}
-						
+
 			// Beneficiary not allow to remit if any data missing
-			BeneficiaryListDTO beneDtoCheck = beneCheckService.beneCheck(transactionHistroyService.convertBeneModelToDto(beneficiary));
-			
-			if(CollectionUtils.isNotEmpty(beneDtoCheck.getBeneficiaryErrorStatus() )) {
+			BeneficiaryListDTO beneDtoCheck = beneCheckService
+					.beneCheck(transactionHistroyService.convertBeneModelToDto(beneficiary));
+
+			if (CollectionUtils.isNotEmpty(beneDtoCheck.getBeneficiaryErrorStatus())) {
 				throw new GlobalException(beneDtoCheck.getBeneficiaryErrorStatus().get(0).getErrorDesc());
 			}
 		}
 	}
-	
+
 	private void validateAdditionalCheck() {
 		applicationProcedureDao.getAdditionalCheckProcedure(remitApplParametersMap);
 	}
@@ -903,9 +911,9 @@ public class RemittanceTransactionManager {
 
 				(ANDROID.equals(meta.getAppType()) && localAmount.compareTo(androidLimit) >= 0)) {
 
-			List<CommunicationChannel> channel = new ArrayList<>();
-			channel.add(CommunicationChannel.EMAIL_AS_MOBILE);
-			channel.add(CommunicationChannel.MOBILE);
+			List<ContactType> channel = new ArrayList<>();
+			channel.add(ContactType.SMS_EMAIL);
+			channel.add(ContactType.SMS);
 			otpMmodel = (CivilIdOtpModel) userService.sendOtpForCivilId(null, channel, null, null).getData().getValues()
 					.get(0);
 		}

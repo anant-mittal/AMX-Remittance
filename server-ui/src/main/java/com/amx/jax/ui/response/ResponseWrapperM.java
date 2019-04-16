@@ -201,6 +201,7 @@ public class ResponseWrapperM<T, M> extends AmxApiResponse<T, M> {
 		this.setMessage(status, jaxExcep.getErrorKey(), jaxExcep.getErrorMessage());
 		if (!ArgUtil.isEmpty(jaxExcep.getError())) {
 			this.statusKey = jaxExcep.getError().getStatusKey();
+			this.status = ArgUtil.parseAsString(jaxExcep.getError().getStatusCode());
 		}
 		this.updateMeta((M) jaxExcep.getMeta());
 	}

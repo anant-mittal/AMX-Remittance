@@ -4,9 +4,8 @@ import static com.amx.amxlib.constant.ApplicationProcedureParam.P_DELIVERY_MODE_
 import static com.amx.amxlib.constant.ApplicationProcedureParam.P_REMITTANCE_MODE_ID;
 import static com.amx.amxlib.constant.ApplicationProcedureParam.P_ROUTING_BANK_BRANCH_ID;
 import static com.amx.amxlib.constant.ApplicationProcedureParam.P_ROUTING_BANK_ID;
-import static com.amx.amxlib.constant.ApplicationProcedureParam.P_SERVICE_MASTER_ID;
 import static com.amx.amxlib.constant.ApplicationProcedureParam.P_ROUTING_COUNTRY_ID;
-
+import static com.amx.amxlib.constant.ApplicationProcedureParam.P_SERVICE_MASTER_ID;
 
 import java.math.BigDecimal;
 import java.util.HashMap;

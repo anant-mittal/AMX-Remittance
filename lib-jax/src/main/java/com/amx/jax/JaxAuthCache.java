@@ -17,24 +17,27 @@ public class JaxAuthCache extends CacheBox<JaxAuthMeta> {
 	@JsonIgnoreProperties(ignoreUnknown = true)
 	public static class JaxAuthMeta implements Serializable {
 
+		private static final long serialVersionUID = 4710795819445446940L;
+
 		public JaxAuthMeta(String mOtp, String eOtp, String secAns) {
 			super();
 			this.mOtp = mOtp;
 			this.eOtp = eOtp;
 			this.secAns = secAns;
 		}
-		
+
 		public JaxAuthMeta(String mOtp, String eOtp) {
 			super();
 			this.mOtp = mOtp;
 			this.eOtp = eOtp;
 		}
 
-				
 		public JaxAuthMeta() {
 			// TODO Auto-generated constructor stub
 		}
 
+		@ApiMockModelProperty(example = "123456")
+		String otp;
 
 		@ApiMockModelProperty(example = "123456")
 		String mOtp;
@@ -44,8 +47,6 @@ public class JaxAuthCache extends CacheBox<JaxAuthMeta> {
 		BigDecimal questId;
 		@ApiMockModelProperty(example = "black")
 		String secAns;
-		
-		
 
 		/**
 		 * @return the questId
@@ -83,6 +84,14 @@ public class JaxAuthCache extends CacheBox<JaxAuthMeta> {
 
 		public void seteOtp(String eOtp) {
 			this.eOtp = eOtp;
+		}
+
+		public String getOtp() {
+			return otp;
+		}
+
+		public void setOtp(String otp) {
+			this.otp = otp;
 		}
 	}
 
