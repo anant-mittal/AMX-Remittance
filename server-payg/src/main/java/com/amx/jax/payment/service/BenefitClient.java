@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import com.amx.jax.dict.PayGCodes;
 import com.amx.jax.dict.PayGServiceCode;
 import com.amx.jax.dict.ResponseCode;
+import com.amx.jax.dict.ResponseCodeBHR;
 import com.amx.jax.payg.PayGParams;
 import com.amx.jax.payg.codes.BenefitCodes;
 import com.amx.jax.payment.PaymentConstant;
@@ -70,7 +71,7 @@ public class BenefitClient implements PayGClient {
 
 	@Autowired
 	PayGSession payGSession;
-
+	
 	@Override
 	public PayGServiceCode getClientCode() {
 		return PayGServiceCode.BENEFIT;
@@ -184,25 +185,28 @@ public class BenefitClient implements PayGClient {
 			gatewayResponse.setTrackId(params.getTrackId());
 		}
 
-		BenefitCodes statusCode;
+		//BenefitCodes statusCode;
 
 		if ("CAPTURED".equalsIgnoreCase(resultCode)) {
-			statusCode = (BenefitCodes) PayGCodes.getPayGCode(resultCode, BenefitCodes.UNKNOWN);
-			gatewayResponse.setErrorCategory(statusCode.getCategory());
+			/*statusCode = (BenefitCodes) PayGCodes.getPayGCode(resultCode, BenefitCodes.UNKNOWN);
+			gatewayResponse.setErrorCategory(statusCode.getCategory());*/
+			gatewayResponse.setErrorCategory(ResponseCodeBHR.getCodeCategoryByResponseCode(gatewayResponse.getError()));
 		} else if (resultResponse == null) {
-			statusCode = (BenefitCodes) PayGCodes.getPayGCode(responseCode, BenefitCodes.UNKNOWN);
-			gatewayResponse.setErrorCategory(statusCode.getCategory());
+			/*statusCode = (BenefitCodes) PayGCodes.getPayGCode(responseCode, BenefitCodes.UNKNOWN);
+			gatewayResponse.setErrorCategory(statusCode.getCategory());*/
+			gatewayResponse.setErrorCategory(ResponseCodeBHR.getCodeCategoryByResponseCode(gatewayResponse.getError()));
 			gatewayResponse.setError(responseCode);
 		} else {
 			LOGGER.info("resultResponse ---> " + resultResponse);
-			statusCode = (BenefitCodes) PayGCodes.getPayGCode(resultResponse, BenefitCodes.UNKNOWN);
-			gatewayResponse.setErrorCategory(statusCode.getCategory());
+			/*statusCode = (BenefitCodes) PayGCodes.getPayGCode(resultResponse, BenefitCodes.UNKNOWN);
+			gatewayResponse.setErrorCategory(statusCode.getCategory());*/
+			gatewayResponse.setErrorCategory(ResponseCodeBHR.getCodeCategoryByResponseCode(gatewayResponse.getError()));
 			LOGGER.info("Result from response Values ---> " + gatewayResponse.getErrorCategory());
 			gatewayResponse.setError(resultResponse);
 		}
 		
 		//-- get errorText by error
-		if(gatewayResponse.getError() != null && gatewayResponse.getErrorText() == null) {
+		/*if(gatewayResponse.getError() != null && gatewayResponse.getErrorText() == null) {
 			ResponseCode errorMessage = ResponseCode.getRespCodebyCode(gatewayResponse.getError());
 			if(errorMessage != null) {
 				gatewayResponse.setErrorText(errorMessage.getResponseDesc());
@@ -211,7 +215,7 @@ public class BenefitClient implements PayGClient {
 			else {
 				gatewayResponse.setErrorText("Payment Failed");
 			}
-		}
+		}*/
 
 		LOGGER.info("Params Captured From BENEFIT : " + JsonUtil.toJson(gatewayResponse));
 

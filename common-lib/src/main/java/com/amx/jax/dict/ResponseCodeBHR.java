@@ -6,45 +6,43 @@ import java.util.Map;
 import com.amx.jax.dict.PayGCodes.CodeCategory;
 import com.google.common.collect.Maps;
 
-public enum ResponseCodeBHR implements IResponseCode<ResponseCodeBHR> {
+public enum ResponseCodeBHR  {
 
-	// BANK of BENEFIT
+	// @formatter:off
 
-	// // @formatter:off
-
-	CUSTOMER_CARD_EXPIRED("54","The customer card is expired", "100002", CodeCategory.TXN_SUCCESS),
-	EXCEEDS_WITHDRAW_LIMIT("61","The card exceeds withdrawal amount limit", "100006", CodeCategory.TXN_SUCCESS),
-	INSUFFICIENT_FUNDS("51","Insufficient funds", "100008", CodeCategory.TXN_SUCCESS),
+	CUSTOMER_CARD_EXPIRED("54","The customer card is expired", "100002", CodeCategory.TXN_CARD_VLDT),
+	CARD_EXPIRED("33","The customer card is expired", "AMX-000001", CodeCategory.TXN_CARD_VLDT),
 	
 	ISSUE_IN_CARD("05","The customer should contact the bank to resolve the Card issue", "100004", CodeCategory.TXN_CARD),
 	INVALID_CARD_NUMBER_02("PY20006","Invalid Brand", "100007", CodeCategory.TXN_CARD),
+	RESTRICTED_CARD("36","Restricted card", "100033", CodeCategory.TXN_CARD),
+	INVALID_CARD_NUMBER("14","Invalid card number", "100015", CodeCategory.TXN_CARD),
 	
-	CARD_EXPIRED("33","The customer card is expired", "AMX-000001", CodeCategory.TXN_CARD_VLDT),
+	PIN_EXCEED("38","Allowable PIN tries exceeded", "100031", CodeCategory.TXN_OTP_LIM),
+	PIN_NUMBER_EXCEED("75","Allowable number PIN tries exceeded", "100034", CodeCategory.TXN_OTP_LIM),
 	
-    INCORRECT_PIN_NUMBER("55","Incorrect pin number", "100005", CodeCategory.TXN_AUTH_PIN),
+	EXCEEDS_WITHDRAW_LIMIT("61","The card exceeds withdrawal amount limit", "100006", CodeCategory.TXN_LIMIT),
+	
+	INSUFFICIENT_FUNDS("51","Insufficient funds", "100008", CodeCategory.TXN_LIMIT_FUNDS),
+	
+	INCORRECT_PIN_NUMBER("55","Incorrect pin number", "100005", CodeCategory.TXN_AUTH_PIN),
     
 	BANK_DISCON("91","The bank is disconnected at the moment", "100003", CodeCategory.TXN_BANK),
 	
 	DENIED_BY_RISK("71","Risk denied the transaction","100147", CodeCategory.TXN_DN_RISK),
-	HOST_TIMEOUT("8","The authorization system did not respond within the timeout limit.", "100256", CodeCategory.TXN_SESSION);
+	
+	HOST_TIMEOUT("8","The authorization system did not respond within the timeout limit.", "100256", CodeCategory.CONN_FAILURE),
+	
+	REFER_ISSUE("78","Refer to Issuer", "100248", CodeCategory.MRCH_ERR),
+	
+	INELIGIBLE_ACCOUNT("76","Ineligible account", "100211", CodeCategory.PAYMENT_ERR),
+	
+	RESTRICT_CARD("62","Restricted card", "100035", CodeCategory.TXN_AUTH),
+	
+	EXCEEDS_WITHDRAW_FREQUENCY_LIMIT("65","Exceeds withdrawal frequency limit", "100102", CodeCategory.TXN_DATA);
 
 	// @formatter:on
-
-	// -- Not yet defined in Excel Sheet
-	/*
-	 * INVALID_CARD_NUMBER("14","Invalid card number", "", CodeCategory.TXN_CARD),
-	 * RESTRICTED_CARD("36","Restricted card", "", CodeCategory.TXN_SUCCESS),
-	 * PIN_EXCEED("38","Allowable PIN tries exceeded", "",
-	 * CodeCategory.TXN_SUCCESS), RESTRICT_CARD("62","Restricted card", "",
-	 * CodeCategory.TXN_SUCCESS),
-	 * EXCEEDS_WITHDRAW_FREQUENCY_LIMIT("65","Exceeds withdrawal frequency limit",
-	 * "", CodeCategory.TXN_SUCCESS),
-	 * PIN_NUMBER_EXCEED("75","Allowable number PIN tries exceeded", "",
-	 * CodeCategory.TXN_SUCCESS), INELIGIBLE_ACCOUNT("76","Ineligible account", "",
-	 * CodeCategory.TXN_SUCCESS), REFER_ISSUE("78","Refer to Issuer", "",
-	 * CodeCategory.TXN_SUCCESS),
-	 */
-
+	
 	private String responseCode;
 	private String responseDesc;
 	private String almullaErrorCode;
@@ -89,8 +87,8 @@ public enum ResponseCodeBHR implements IResponseCode<ResponseCodeBHR> {
 		this.category = category;
 	}
 
-	@Override
-	public CodeCategory getCodeCategoryByResponseCode(String responseCode) {
+	
+	public static CodeCategory getCodeCategoryByResponseCode(String responseCode) {
 
 		ResponseCodeBHR respCode = getResponseCodeEnumByCode(responseCode);
 
@@ -101,8 +99,7 @@ public enum ResponseCodeBHR implements IResponseCode<ResponseCodeBHR> {
 		return respCode.getCategory();
 	}
 
-	@Override
-	public ResponseCodeBHR getResponseCodeEnumByCode(String responseCode) {
+	public static ResponseCodeBHR getResponseCodeEnumByCode(String responseCode) {
 		return LOOKUP.get(responseCode);
 	}
 }

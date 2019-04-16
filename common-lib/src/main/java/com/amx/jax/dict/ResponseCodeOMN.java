@@ -1,9 +1,12 @@
 package com.amx.jax.dict;
 
-import com.amx.jax.dict.PayGCodes.CodeCategory;
-import com.amx.jax.dict.PayGCodes.IPayGCode;
+import java.util.Arrays;
+import java.util.Map;
 
-public enum ResponseCodeOMN implements IPayGCode {
+import com.amx.jax.dict.PayGCodes.CodeCategory;
+import com.google.common.collect.Maps;
+
+public enum ResponseCodeOMN implements IResponseCode<ResponseCodeOMN> {
     //-- CONN_FAILURE
 	HOST_TIMEOUT("IPAY0100158","Host SWITCH timeout", "100180", CodeCategory.CONN_FAILURE),
 	EXT_MSG_SYS_ERR("IPAY0100159","External message system error","100181",CodeCategory.CONN_FAILURE),
@@ -26,6 +29,15 @@ public enum ResponseCodeOMN implements IPayGCode {
     PROBLEM_OCCUR_PURCH_REQ("IPAY0100241","Problem occurred while formatting purchase request in ISO Message Formatter", "100177", CodeCategory.FORMT_ERR),    
     PROBLEM_OCCUR_ISO_MSG("IPAY0100245","Problem occurred while sending/receiving ISO message", "100178", CodeCategory.FORMT_ERR),
     ISO_MSG_NULL("IPAY0100144","ISO MSG is null. See log for more details!", "100179", CodeCategory.FORMT_ERR),
+    PROBLEM_OCCURRED_DEFAULT_MSG("IPAY0100145","Problem occurred while loading default messages in ISO Formatter", "100270", CodeCategory.FORMT_ERR),
+    PROBLEM_OCCURRED_FORMT_PURCH_RQT("IPAY0100147","Problem occurred while formatting purchase request in B24 ISO Message Formatter", "100271", CodeCategory.FORMT_ERR), 
+    PROBLEM_OCCURRED_FORMT_RVRS_RQT("IPAY0100150","Problem occurred while formatting Reverse purchase request in B24 ISO Message Formatter", "100272", CodeCategory.FORMT_ERR),
+    PROBLEM_OCCUR_FORMT_REFUND("IPAY0100151","Problem occurred while formatting Refund request in B24 ISO Message Formatter", "100273" , CodeCategory.FORMT_ERR),
+    PROBLEM_OCCURRED_FORMT_AUTH_RQT("IPAY0100152","Problem occurred while formatting authorization request in B24 ISO Message Formatter", "100274", CodeCategory.FORMT_ERR),
+    PROBLEM_OCCURRED_FORMT_CAP_RQT("IPAY0100153","Problem occurred while formatting Capture request in B24 ISO Message Formatter", "100275", CodeCategory.FORMT_ERR),
+    PROBLEM_OCCUR_REVRS_MSG_FORMT("IPAY0100154","Problem occurred while formatting Reverse Refund request in B24 ISO Message Formatter", "100276", CodeCategory.FORMT_ERR),
+    PROBLEM_OCCURRED_FORMT_RVRS_AUTH_RQT("IPAY0100155","Problem occurred while formatting reverse authorization request in B24 ISO Message Formatter", "100277", CodeCategory.FORMT_ERR), 
+    PROBLEM_OCCURRED_FORMT_RVRS_CAP_RQT("IPAY0100156","Problem occurred while formatting Reverse Capture request in B24 ISO Message Formatter", "100278", CodeCategory.FORMT_ERR),
     
     //-- INST_ISSUES
     INST_NOT_ENABLED("IPAY0100009","Institution not enabled", "100190", CodeCategory.INST_ISSUES),
@@ -48,6 +60,7 @@ public enum ResponseCodeOMN implements IPayGCode {
     PROBLEM_OCCUR_MRCHT_DETAILS("IPAY0200003","Problem occurred while getting merchant details", "100252", CodeCategory.MRCH_ERR),
     PROBLEM_OCCUR_MERCH_RESPONSE("IPAY0200014","Problem occurred during merchant response", "100253", CodeCategory.MRCH_ERR),
     ERR_OCCUR_MRCH_ID("IPAY0200037","Error occurred while getting Merchant ID", "100254", CodeCategory.MRCH_ERR),
+    MRCHT_NOT_ENABLED_ENCYPT_PROC("IPAY0100011","Merchant has not enabled for encryption process", "100345", CodeCategory.MRCH_ERR),
     
     //PAYMENT_ERR	
     PROBLEM_OCCUR_PROCESS_DRT_DEBIT("IPAY0100053","Problem occurred while processing direct debit", "100194", CodeCategory.PAYMENT_ERR),  
@@ -226,6 +239,7 @@ public enum ResponseCodeOMN implements IPayGCode {
 	TRANX_DN_INVALID_POSTCODE("IPAY0100123","Transaction denied due to invalid postal code", "100108", CodeCategory.TXN_DATA),
 	TRANX_DN_CURRENCY_MISMATCH("IPAY0100132","Transaction denied due to Currency Code mismatch", "100109", CodeCategory.TXN_DATA),
     TRANX_DN_INS_ID_MISMATCH("IPAY0100128","Transaction denied due to Institution ID mismatch", "100110", CodeCategory.TXN_DATA),
+    PROBLEM_OCCUR_TRANX_LOG_DETAILS("IPAY0200026","Problem occurred while getting transaction log details", "100311", CodeCategory.TXN_DATA),
     
     //TXN_DN_RISK
     TRANX_DN_RISK_MIN_TRANX("IPAY0100194","Transaction denied due to Risk : Minimum Transaction Amount processing", "100125", CodeCategory.TXN_DN_RISK),
@@ -303,29 +317,24 @@ public enum ResponseCodeOMN implements IPayGCode {
     MISSING_ERROR_URL("IPAY0100001","Missing error URL", "100046", CodeCategory.TXN_URL),
     INVLD_ERR_URL("IPAY0100002","Invalid error URL","100047", CodeCategory.TXN_URL),
     MISSING_RES_URL("IPAY0100003","Missing response URL", "100048", CodeCategory.TXN_URL), 
-    INVLD_RES_URL("IPAY0100004","Invalid response URL", "100049", CodeCategory.TXN_URL),
+    INVLD_RES_URL("IPAY0100004","Invalid response URL", "100049", CodeCategory.TXN_URL);
     
     //OTHERS
     //VALIDATE_ORG_TRANX("IPAY0100142","Problem occurred while validating original transaction"),
 	//TRANX_DENIED_INVALID_UDF3("IPAY0100066","Transaction denied due to invalid UDF3"),
-	PROBLEM_OCCURRED_DEFAULT_MSG("IPAY0100145","Problem occurred while loading default messages in ISO Formatter"), 
-    PROBLEM_OCCURRED_FORMT_PURCH_RQT("IPAY0100147","Problem occurred while formatting purchase request in B24 ISO Message Formatter"), 
-    PROBLEM_OCCURRED_FORMT_RVRS_RQT("IPAY0100150","Problem occurred while formatting Reverse purchase request in B24 ISO Message Formatter"), 
-    PROBLEM_OCCURRED_FORMT_AUTH_RQT("IPAY0100152","Problem occurred while formatting authorization request in B24 ISO Message Formatter"),
-    PROBLEM_OCCURRED_FORMT_CAP_RQT("IPAY0100153","Problem occurred while formatting Capture request in B24 ISO Message Formatter"), 
-    PROBLEM_OCCURRED_FORMT_RVRS_AUTH_RQT("IPAY0100155","Problem occurred while formatting reverse authorization request in B24 ISO Message Formatter"), 
-    PROBLEM_OCCURRED_FORMT_RVRS_CAP_RQT("IPAY0100156","Problem occurred while formatting Reverse Capture request in B24 ISO Message Formatter"), 
+	 
+     
     //UNABLE_TO_TRANX("IPAY0100160","Unable to process the transaction"), 
     //CARD_HOLDER_NOT_PRESENT("IPAY0100081","Card holder name is not present"),
-    PROBLEM_OCCUR_TRANX_LOG_DETAILS("IPAY0200026","Problem occurred while getting transaction log details"),
-    PROBLEM_OCCUR_FORMT_REFUND("IPAY0100151","Problem occurred while formatting Refund request in B24 ISO Message Formatter"), 
-    PROBLEM_OCCUR_REVRS_MSG_FORMT("IPAY0100154","Problem occurred while formatting Reverse Refund request in B24 ISO Message Formatter"),
-    MRCHT_NOT_ENABLED_ENCYPT_PROC("IPAY0100011","Merchant has not enabled for encryption process"); 
+     
     
 	private String responseCode;
 	private String responseDesc;
 	private String almullaErrorCode;
 	CodeCategory category;
+	
+	private static final Map<String, ResponseCodeOMN> LOOKUP = Maps.uniqueIndex(Arrays.asList(ResponseCodeOMN.values()),
+			ResponseCodeOMN::getResponseCode);
 	
 	ResponseCodeOMN(String responseCode, String responseDesc, String almullaErrorCode, CodeCategory category) {
 		this.responseCode = responseCode;
@@ -355,16 +364,27 @@ public enum ResponseCodeOMN implements IPayGCode {
 		return almullaErrorCode;
 	}
 
+	public CodeCategory getCategory() {
+		return category;
+	}
+
+	public void setCategory(CodeCategory category) {
+		this.category = category;
+	}
+	
 	@Override
-	public String getDescription() {
-		// TODO Auto-generated method stub
-		return null;
+	public CodeCategory getCodeCategoryByResponseCode(String responseCode) {
+		ResponseCodeOMN respCode = getResponseCodeEnumByCode(responseCode);
+		if (null == respCode) {
+			return null;
+		}
+
+		return respCode.getCategory();
 	}
 
 	@Override
-	public CodeCategory getCategory() {
-		// TODO Auto-generated method stub
-		return null;
+	public ResponseCodeOMN getResponseCodeEnumByCode(String responseCode) {
+		return LOOKUP.get(responseCode);
 	}
 	
 
