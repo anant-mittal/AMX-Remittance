@@ -10,6 +10,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
@@ -47,12 +48,14 @@ import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.CustomerVerification;
 import com.amx.jax.dbmodel.DmsDocumentModel;
 import com.amx.jax.dbmodel.ViewOnlineCustomerCheck;
+import com.amx.jax.dbmodel.remittance.BlackListDetailModel;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.exception.ExceptionMessageKey;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.auth.CustomerRequestAuthMeta;
 import com.amx.jax.model.auth.QuestModelDTO;
 import com.amx.jax.repository.IContactDetailDao;
+import com.amx.jax.repository.remittance.IBlackListDetailRepository;
 import com.amx.jax.scope.TenantContext;
 import com.amx.jax.userservice.constant.CustomerDataVerificationQuestion;
 import com.amx.jax.userservice.dao.CusmosDao;
@@ -136,6 +139,9 @@ public class UserValidationService {
 
 	@Autowired
 	IContactDetailDao contactDetailDao;
+	
+	@Autowired
+	IBlackListDetailRepository blackListDtRepo;
 
 	private DateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
@@ -232,7 +238,7 @@ public class UserValidationService {
 		}
 	}
 
-	protected void validateCustIdProofs(BigDecimal custId) {
+	public void validateCustIdProofs(BigDecimal custId) {
 		if (tenantContext.get() != null) {
 			tenantContext.get().validateCustIdProofs(custId);
 			return;
@@ -246,13 +252,13 @@ public class UserValidationService {
 		}
 	}
 
-	private void validateIdProof(CustomerIdProof idProof) {
+	public void validateIdProof(CustomerIdProof idProof) {
 
 		String scanSystem = idProof.getScanSystem();
 		if (idProof.getIdentityExpiryDate() != null && idProof.getIdentityExpiryDate().compareTo(new Date()) < 0) {
 			throw new GlobalException(JaxError.ID_PROOF_EXPIRED, "Identity proof are expired");
 		}
-		if ("A".equals(scanSystem)) {
+		if ("A".equals(scanSystem) || "E".equals(scanSystem)) {
 			List<CustomerIdProof> validIds = idproofDao
 					.getCustomerImageValidation(idProof.getFsCustomer().getCustomerId(), idProof.getIdentityTypeId());
 			if (validIds == null || validIds.isEmpty()) {
@@ -281,7 +287,7 @@ public class UserValidationService {
 		}
 	}
 
-	protected void validateCustomerData(CustomerOnlineRegistration onlineCust, Customer customer) {
+	public void validateCustomerData(CustomerOnlineRegistration onlineCust, Customer customer) {
 
 		if (customer.getCustomerReference() == null) {
 			throw new GlobalException(JaxError.INVALID_CUSTOMER_REFERENCE, "Invalid Customer Reference");
@@ -307,7 +313,7 @@ public class UserValidationService {
 
 	}
 
-	private void validateOldEmosData(Customer customer) {
+	public void validateOldEmosData(Customer customer) {
 		if (customer.getCustomerReference() == null) {
 			throw new GlobalException(JaxError.OLD_EMOS_USER_NOT_FOUND, "Old customer records not found in EMOS");
 		}
@@ -321,7 +327,7 @@ public class UserValidationService {
 		}
 	}
 
-	private void validateCustContact(Customer customer) {
+	public void validateCustContact(Customer customer) {
 
 		List<ContactDetail> contactDetails = contactDetailService.getContactDetail(customer.getCustomerId());
 		if (CollectionUtils.isEmpty(contactDetails)) {
@@ -458,8 +464,11 @@ public class UserValidationService {
 		onlineCustomer.setLockCnt(new BigDecimal(lockCnt));
 		custDao.saveOnlineCustomer(onlineCustomer);
 		if (lockCnt >= MAX_OTP_ATTEMPTS) {
+			logger.info("lock count has exceeded");
 			String errorExpression = JaxError.USER_LOGIN_ATTEMPT_EXCEEDED.toString();
+			logger.info("throw exception that user login attempt has exceeded");
 			errorExpression = jaxUtil.buildErrorExpression(JaxError.USER_LOGIN_ATTEMPT_EXCEEDED.toString(), lockCnt);
+			logger.info("error expression has been calculated");
 			throw new GlobalException(errorExpression, "Customer is locked. No of attempts:- " + lockCnt);
 		}
 		return MAX_OTP_ATTEMPTS - lockCnt;
@@ -498,11 +507,16 @@ public class UserValidationService {
 		return onlineCustomer;
 	}
 	
-	protected CustomerOnlineRegistration validateOnlineCustomerByIdentityId(BigDecimal customerId) {
+	public CustomerOnlineRegistration validateOnlineCustomerByIdentityId(BigDecimal customerId) {
 		Customer customer = custDao.getCustById(customerId);
 		if (customer == null) {
 			throw new GlobalException(JaxError.CUSTOMER_NOT_FOUND.getStatusKey(), "Online Customer id not found");
 		}
+		if(!customer.getIdentityTypeId().toString().equals(Constants.IDENTITY_TYPE_CIVIL_ID_STR)) {
+			throw new GlobalException("Invalid Identity Type for fingerprint establish");
+		}
+			
+			
 		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(customer.getCustomerId());
 		if (onlineCustomer == null) {
 			throw new GlobalException(JaxError.CUSTOMER_NOT_FOUND.getStatusKey(), "Online Customer id not found");
@@ -679,26 +693,38 @@ public class UserValidationService {
 		}
 		onlineCustomer.setTokenSentCount(BigDecimal.ZERO);
 	}
+	
+	public List<Customer> validateNonActiveOrNonRegisteredCustomerStatus(String identityInt, JaxApiFlow apiFlow) {
+		return validateNonActiveOrNonRegisteredCustomerStatus(identityInt, null, apiFlow);
+	}
 
 	/**
 	 * validates inactive or not registered customers status
-	 * 
-	 * @return
+	 * @return 
 	 */
 	@SuppressWarnings("unused")
-	public List<Customer> validateNonActiveOrNonRegisteredCustomerStatus(String identityInt, JaxApiFlow apiFlow) {
+	public List<Customer> validateNonActiveOrNonRegisteredCustomerStatus(String identityInt, BigDecimal identityType,
+			JaxApiFlow apiFlow) {
 		List<Customer> customers = null;
-
-		customers = custDao.getCustomerByIdentityInt(identityInt);
+		if (identityType != null) {
+			customers = custDao.getCustomerByIdentityInt(identityInt, identityType);
+		} else {
+			customers = custDao.getCustomerByIdentityInt(identityInt);
+		}
 		if (CollectionUtils.isEmpty(customers) && apiFlow == JaxApiFlow.SIGNUP_DEFAULT) {
 			return customers;
 		}
-		if (CollectionUtils.isEmpty(customers) && apiFlow != JaxApiFlow.SIGNUP_DEFAULT) {
+		if (CollectionUtils.isEmpty(customers) && apiFlow != JaxApiFlow.SIGNUP_DEFAULT
+				&& apiFlow != JaxApiFlow.OFFSITE_REGISTRATION) {
 			throw new GlobalException(JaxError.CUSTOMER_NOT_REGISTERED_BRANCH, "Customer not registered in branch ");
 		}
 		// duplicate records check
 		if (customers != null && customers.size() > 1) {
-			customers = custDao.findActiveCustomers(identityInt);
+			if (identityType != null) {
+				customers = custDao.findActiveCustomers(identityInt, identityType);
+			} else {
+				customers = custDao.findActiveCustomers(identityInt);
+			}
 			boolean isSingleRecord = (customers != null && customers.size() == 1);
 			if (!isSingleRecord) {
 				throw new GlobalException(JaxError.DUPLICATE_CUSTOMER_NOT_ACTIVE_BRANCH,
@@ -713,10 +739,17 @@ public class UserValidationService {
 		case SIGNUP_DEFAULT:
 			validateCustomerForSignUpDefault(customers.get(0));
 			break;
+		case OFFSITE_REGISTRATION:
+			validateCustomerForOffisteReg(customers);
+			break;
 		default:
 			validateCustomerDefault(customers.get(0));
 		}
 		return customers;
+	}
+
+	private void validateCustomerForOffisteReg(List<Customer> customer) {
+		
 	}
 
 	private void validateCustomerDefault(Customer customer) {
@@ -888,4 +921,33 @@ public class UserValidationService {
 
 	}
 	
+	public void validateFingerprintDeviceId(CustomerOnlineRegistration customer, String fingerprintDeviceId) {
+		String dbFingerprintDeviceId = customer.getFingerprintDeviceId();
+		if (!fingerprintDeviceId.equals(dbFingerprintDeviceId) || fingerprintDeviceId == null) {
+			throw new GlobalException(JaxError.FINGERPRINT_EXPIRED, "Fingerprint expired");
+		}
+	}
+	
+	public void validateBlackListedCustomer(Customer customer) {
+		
+		String idType ="C"; 
+		List<BlackListDetailModel> blist = blackListDtRepo.findByIdNumberAndIdType(customer.getIdentityInt(),idType);
+		if (blist != null && !blist.isEmpty()) {
+			throw new GlobalException(JaxError.BLACK_LISTED_EXISTING_CIVIL_ID.getStatusKey(),"Your account is locked as we have found that your name has been black-listed by CBK.");
+		}
+	}
+	
+	public Customer validateCustomerForDuplicateRecords(List<Customer> customers) {
+		List<Customer> activeCustomers = customers.stream().filter(i -> ConstantDocument.Yes.equals(i.getIsActive()))
+				.collect(Collectors.toList());
+		if (activeCustomers.size() > 1) {
+			throw new GlobalException(JaxError.DUPLICATE_CUSTOMER_NOT_ACTIVE_BRANCH,
+					"Customer not active in branch, please visit branch");
+		}
+		if (activeCustomers.size() == 1) {
+			return activeCustomers.get(0);
+		}
+		return customers.get(0);
+	}
+
 }

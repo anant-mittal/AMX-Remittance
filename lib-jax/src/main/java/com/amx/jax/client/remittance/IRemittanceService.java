@@ -17,9 +17,9 @@ import com.amx.jax.model.response.fx.UserStockDto;
 import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
-import com.amx.jax.model.response.remittance.CustomerShoppingCartDto;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
-import com.amx.jax.model.response.remittance.PaymentModeOfPaymentDto;
+import com.amx.jax.model.response.remittance.PaymentModeDto;
+import com.amx.jax.model.response.remittance.RemittanceDeclarationReportDto;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.model.response.remittance.RoutingResponseDto;
 import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeRateResponse;
@@ -46,6 +46,10 @@ public interface IRemittanceService extends  IJaxService {
 		public static final String BR_REMITTANCE_PURPOSE_OF_TRNX = PREFIX + "/get-purpose-of-trnx/";
 		public static final String BR_REMITTANCE_GET_EXCHANGE_RATE = PREFIX + "/get-exchrate/";
 		public static final String BR_REMITTANCE_SAVE_TRANSACTION = PREFIX + "/save-remittance-transaction/";
+		public static final String BR_REMITTANCE_DELETE_APPLICATION = PREFIX + "/delete-application/";
+		public static final String BR_DECLARATION_REPORT			=PREFIX + "/get-declartion-report/";
+		public static final String BR_RECEIPT_ON_EMAIL				=PREFIX + "/send-receipt-on-email/";
+		
 	}
 
 	public static class Params {
@@ -55,6 +59,10 @@ public interface IRemittanceService extends  IJaxService {
 		public static final String STAFF_PASSWORD = "staffPassword";
 		public static final String BENE_RELATION_SHIP_ID = "beneRelationshipId";
 		public static final String SERVICE_MASTER_ID = "serviceMasterId";
+		public static final String APPLICATION_ID = "remittanceApplicationId";
+		public static final String COLLECTION_DOC_NO = "collectionDocNo";
+		public static final String COLLECTION_DOC_FY = "collectionDocYear";
+		public static final String COLLECTION_DOC_CODE = "collectionDocCode";
 	}
 	
 	
@@ -71,7 +79,7 @@ public interface IRemittanceService extends  IJaxService {
 	AmxApiResponse<BranchRemittanceApplResponseDto, Object> fetchCustomerShoppingCart();
 
 	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND})
-	AmxApiResponse<PaymentModeOfPaymentDto, Object> fetchModeOfPayment();
+	AmxApiResponse<PaymentModeDto, Object> fetchModeOfPayment();
 
 	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND})
 	AmxApiResponse<LocalBankDetailsDto, Object> fetchLocalBanks();
@@ -80,7 +88,7 @@ public interface IRemittanceService extends  IJaxService {
 	AmxApiResponse<CustomerBankDetailsDto, Object> fetchCustomerLocalBanks();
 	
 	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND})
-	AmxApiResponse<String, Object> fetchCustomerBankNames(BigDecimal bankId);
+	AmxApiResponse<CustomerBankDetailsDto, Object> fetchCustomerBankNames(BigDecimal bankId);
 
 	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND})
 	AmxApiResponse<ResourceDTO, Object> fetchPosBanks();
@@ -112,6 +120,14 @@ public interface IRemittanceService extends  IJaxService {
 	
 	@ApiJaxStatus({ JaxError.INVALID_AMOUNT , JaxError.EXCHANGE_RATE_NOT_FOUND, JaxError.DATA_NOT_FOUND,JaxError.INVALID_COLLECTION_DOCUMENT_NO,JaxError.INVALID_REMITTANCE_DOCUMENT_NO})
 	AmxApiResponse<RemittanceResponseDto, Object> saveRemittanceTransaction(BranchRemittanceRequestModel remittanceRequestModel);
+	AmxApiResponse<BranchRemittanceApplResponseDto, Object> deleteFromShoppingCart(BigDecimal remittanceApplicationId);
+	
+	
+	@ApiJaxStatus({JaxError.INVALID_COLLECTION_DOCUMENT_NO, JaxError.DATA_NOT_FOUND})
+	AmxApiResponse<RemittanceDeclarationReportDto,Object> fetchCustomerDeclarationReport(BigDecimal collectionDocNo,BigDecimal collectionDocYear ,BigDecimal collectionDocCode);
+	
+	
+	AmxApiResponse<BoolRespModel, Object> sendReceiptOnEmail(BigDecimal collectionDocNo,BigDecimal collectionDocYear ,BigDecimal collectionDocCode);
 
 }
 

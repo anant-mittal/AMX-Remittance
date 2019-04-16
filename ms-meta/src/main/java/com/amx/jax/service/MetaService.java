@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.exception.jax.InvalidCivilIdException;
+import com.amx.amxlib.meta.model.DeclarationDTO;
 import com.amx.amxlib.meta.model.ServiceGroupMasterDescDto;
 import com.amx.amxlib.meta.model.ViewAreaDto;
 import com.amx.amxlib.meta.model.ViewCityDto;
@@ -32,6 +33,7 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.config.JaxTenantProperties;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.CountryBranch;
+import com.amx.jax.dbmodel.DeclarationModel;
 import com.amx.jax.dbmodel.OnlineConfiguration;
 import com.amx.jax.dbmodel.ViewAreaModel;
 import com.amx.jax.dbmodel.ViewCity;
@@ -49,6 +51,7 @@ import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.fx.FcDeliveryBranchOrderSearchRequest;
 import com.amx.jax.repository.CountryBranchRepository;
 import com.amx.jax.repository.CountryRepository;
+import com.amx.jax.repository.DeclarationDao;
 import com.amx.jax.repository.IContactDetailDao;
 import com.amx.jax.repository.ICustomerRepository;
 import com.amx.jax.repository.IGovernateAreaDao;
@@ -98,6 +101,9 @@ public class MetaService extends AbstractService {
 
 	@Autowired
 	IGovernateAreaDao govermentAreaDao;
+
+	@Autowired
+	DeclarationDao declarationDao;
 
 	@Autowired
 	OnlineConfigurationRepository onlineConfigurationRepository;
@@ -198,6 +204,29 @@ public class MetaService extends AbstractService {
 
 	}
 
+	public AmxApiResponse<DeclarationDTO, Object> getDeclaration(BigDecimal languageId) {
+		List<DeclarationModel> declarationList = declarationDao.getDeclarsList(languageId);
+		if (declarationList.isEmpty()) {
+			throw new GlobalException("declaration list is not available");
+		}
+		return AmxApiResponse.buildList(convertDeclarationDTO(declarationList));
+
+	}
+
+	public List<DeclarationDTO> convertDeclarationDTO(List<DeclarationModel> declarationList) {
+
+		List<DeclarationDTO> output = new ArrayList<>();
+		for (DeclarationModel model : declarationList) {
+			DeclarationDTO dto = new DeclarationDTO();
+			dto.setDescription(model.getDescription());
+			dto.setText_id(model.getTextId());
+			dto.setText_remark(model.getTextRemark());
+			dto.setText_type(model.getTextType());
+			output.add(dto);
+		}
+		return output;
+	}
+
 	public List<ViewGovernateAreaDto> convertGovtAreaDto(List<VwGovernateAreaModel> goveAreaList) {
 		List<ViewGovernateAreaDto> output = new ArrayList<>();
 		for (VwGovernateAreaModel model : goveAreaList) {
@@ -259,32 +288,30 @@ public class MetaService extends AbstractService {
 
 	public AmxApiResponse<ServiceGroupMasterDescDto, Object> getServiceGroups() {
 		List<ServiceGroupMasterDescDto> outputDto = getServiceGroupDto();
-				
+
 		return AmxApiResponse.buildList(outputDto);
 	}
 
 	private List<ServiceGroupMasterDescDto> getServiceGroupDto() {
 		List<ServiceGroupMasterDesc> output = serviceGroupMasterDescRepository
 				.findActiveByLanguageId(metaData.getLanguageId());
-		
-		
+
 		final List<ServiceGroupMasterDescDto> outputDto = new ArrayList<>();
-	
+
 		output.forEach(i -> {
 			boolean isCash = i.getServiceGroupMasterId().getServiceGroupId().equals(BigDecimal.ONE);
 			if (isCash && jaxTenantProperties.getCashDisable()) {
 				return;
 			}
-			ServiceGroupMasterDescDto dto = new ServiceGroupMasterDescDto();	
-			
+			ServiceGroupMasterDescDto dto = new ServiceGroupMasterDescDto();
+
 			dto.setServiceGroupMasterId(i.getServiceGroupMasterId().getServiceGroupId());
 			dto.setServiceGroupDesc(i.getServiceGroupDesc());
 			dto.setServiceGroupShortDesc(i.getServiceGroupShortDesc());
-			
+
 			outputDto.add(dto);
-		
-		}
-		        );
+
+		});
 		return outputDto;
 	}
 

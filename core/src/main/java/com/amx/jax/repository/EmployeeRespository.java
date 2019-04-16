@@ -20,5 +20,8 @@ public interface EmployeeRespository extends CrudRepository<Employee, String>{
 	public List<Employee> fetchEmpDriverDetails(String userType,String isActive);
 	
 	public List<Employee> findByEmployeeId(BigDecimal employeeId);
+	
+	@Query(value = "SELECT * FROM FS_EMPLOYEE WHERE EMPLOYEE_ID = ?1", nativeQuery = true)
+	public Employee findEmployeeById(BigDecimal employeeId);
 
 }

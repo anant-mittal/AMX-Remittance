@@ -103,15 +103,15 @@ public class FcSaleBranchDao {
 	}
 	
 	public List<UserStockView> fetchUserStockCurrencyCurrentDate(BigDecimal countryId,String userName,BigDecimal countryBranchId,BigDecimal foreignCurrencyId){
-		return userStockRepository.fetchUserStockByCurrencyDate(countryId, userName, countryBranchId, foreignCurrencyId);
+		return userStockRepository.fetchUserStockByCurrencyDate(userName, countryBranchId, foreignCurrencyId);
 	}
 	
 	public List<Object[]> fetchUserStockCurrentDateSum(BigDecimal countryId,String userName,BigDecimal countryBranchId){
-		return userStockRepository.fetchUserStockByDateSum(countryId, userName, countryBranchId);
+		return userStockRepository.fetchUserStockByDateSum(userName, countryBranchId);
 	}
 	
 	public List<UserStockView> fetchUserStockCurrentDate(BigDecimal countryId,String userName,BigDecimal countryBranchId){
-		return userStockRepository.fetchUserStockByDate(countryId, userName, countryBranchId);
+		return userStockRepository.fetchUserStockByDate(userName, countryBranchId);
 	}
 	
 	public List<Employee> fetchEmpDriverDetails(String userType,String isActive){

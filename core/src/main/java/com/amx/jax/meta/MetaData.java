@@ -33,19 +33,29 @@ public class MetaData implements IMetaData {
 	private BigDecimal defaultCurrencyId;
 
 	private JaxChannel channel;
-
+	
 	private BigDecimal customerId;
-
+	
 	private BigDecimal countryBranchId;
-
+	
 	private Tenant tenant = Tenant.DEFAULT;
-
+	
 	private String deviceIp;
 	private String deviceId;
-	private String referrer;
-	private String deviceType;
-	private String appType;
-	private BigDecimal employeeId;
+    private String referrer;
+    private String deviceType;
+    private String appType;
+    private BigDecimal employeeId;
+	private BigDecimal terminalId;
+    
+    private Boolean annualIncomeForceUpdate;
+	public Boolean getAnnualIncomeForceUpdate() {
+		return annualIncomeForceUpdate;
+	}
+
+	public void setAnnualIncomeForceUpdate(Boolean annualIncomeForceUpdate) {
+		this.annualIncomeForceUpdate = annualIncomeForceUpdate;
+	}
 
 	/**
 	 * This returns service factory object depending on site country
@@ -148,6 +158,8 @@ public class MetaData implements IMetaData {
 		this.deviceId = deviceId;
 	}
 
+	
+
 	public String getReferrer() {
 		return referrer;
 	}
@@ -178,6 +190,14 @@ public class MetaData implements IMetaData {
 
 	public void setEmployeeId(BigDecimal employeeId) {
 		this.employeeId = employeeId;
+	}
+
+	public BigDecimal getTerminalId() {
+		return terminalId;
+	}
+
+	public void setTerminalId(BigDecimal terminalId) {
+		this.terminalId = terminalId;
 	}
 
 }

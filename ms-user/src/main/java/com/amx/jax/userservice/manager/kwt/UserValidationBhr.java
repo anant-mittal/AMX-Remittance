@@ -15,9 +15,9 @@ import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerIdProof;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.scope.TenantSpecific;
 import com.amx.jax.userservice.dao.CustomerIdProofDao;
-import com.amx.jax.userservice.repository.CustomerRepository;
 import com.amx.jax.userservice.service.CustomerValidationContext.CustomerValidation;
 import com.amx.utils.Constants;
 

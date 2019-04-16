@@ -8,6 +8,8 @@ import org.jasypt.util.text.BasicTextEncryptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -18,11 +20,13 @@ import com.amx.jax.AppConfig;
 import com.amx.jax.AppParam;
 import com.amx.jax.AppTenantConfig;
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.exception.AmxApiError;
 import com.amx.jax.http.ApiRequest;
 import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.http.RequestType;
 import com.amx.jax.model.UserDevice;
 import com.amx.jax.scope.TenantContextHolder;
+import com.amx.jax.scope.TenantProperties;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.CryptoUtil.HashBuilder;
 import com.amx.utils.JsonUtil;
@@ -55,14 +59,34 @@ public class AppParamController {
 		return AppParam.values();
 	}
 
+	@Autowired
+	TenantProperties tenantProperties;
+
+	/** The env. */
+	@Autowired
+	private Environment env;
+
+	public String prop(String key) {
+		String value = tenantProperties.getProperties().getProperty(key);
+		if (ArgUtil.isEmpty(value)) {
+			value = env.getProperty(key);
+		}
+		return ArgUtil.parseAsString(value);
+	}
+
 	@RequestMapping(value = "/pub/amx/device", method = RequestMethod.GET)
-	public AmxApiResponse<UserDevice, Map<String, Object>> userDevice() {
+	public AmxApiResponse<UserDevice, Map<String, Object>> userDevice(@RequestParam(required = false) String key) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("getAppSpecifcDecryptedProp", appConfig.getAppSpecifcDecryptedProp());
 		map.put("getTenantSpecifcDecryptedProp2", appTenantConfig.getTenantSpecifcDecryptedProp2());
 		map.put("getTenantSpecifcDecryptedProp", appTenantConfig.getTenantSpecifcDecryptedProp());
 		map.put("defaultTenant", appConfig.getDefaultTenant());
 		map.put(TenantContextHolder.TENANT, TenantContextHolder.currentSite(false));
+
+		if (!ArgUtil.isEmpty(key)) {
+			map.put(key, prop(key));
+		}
+
 		AmxApiResponse<UserDevice, Map<String, Object>> resp = new AmxApiResponse<UserDevice, Map<String, Object>>();
 		resp.setMeta(map);
 		resp.setData(commonHttpRequest.getUserDevice());
@@ -123,4 +147,10 @@ public class AppParamController {
 		return Base64.getEncoder().encodeToString(callbackUrl.getBytes());
 	}
 
+	@RequestMapping(value = "/pub/error/{exception}/{statusKey}", method = RequestMethod.GET)
+	public AmxApiError jsonEncodeB64(@RequestParam String status, @RequestParam String exception) {
+		AmxApiError error = new AmxApiError(status, status);
+		error.setException(exception);
+		return error;
+	}
 }

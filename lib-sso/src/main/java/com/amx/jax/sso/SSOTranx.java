@@ -1,16 +1,18 @@
 package com.amx.jax.sso;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 import org.springframework.stereotype.Component;
 
-import com.amx.jax.cache.TransactionModel;
+import com.amx.jax.cache.TxCacheBox;
+import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.rbaac.dto.UserClientDto;
 import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
 import com.amx.jax.sso.SSOTranx.SSOModel;
 
 @Component
-public class SSOTranx extends TransactionModel<SSOModel> {
+public class SSOTranx extends TxCacheBox<SSOModel> {
 
 	public static class SSOModel implements Serializable {
 		private static final long serialVersionUID = -2178734153442648084L;
@@ -20,10 +22,21 @@ public class SSOTranx extends TransactionModel<SSOModel> {
 
 		private String appToken = null;
 		private String motp = null;
+		/**
+		 * @deprecated - use direct values
+		 */
+		@Deprecated
 		private UserClientDto userClient;
 		private String branchAdapterId = null;
 
+		private ClientType clientType;
+		private BigDecimal terminalId;
+
 		private EmployeeDetailsDTO userDetails = null;
+
+		public SSOModel() {
+			this.userClient = new UserClientDto();
+		}
 
 		public String getReturnUrl() {
 			return returnUrl;
@@ -65,10 +78,12 @@ public class SSOTranx extends TransactionModel<SSOModel> {
 			this.userDetails = userDetails;
 		}
 
+		@Deprecated
 		public UserClientDto getUserClient() {
 			return userClient;
 		}
 
+		@Deprecated
 		public void setUserClient(UserClientDto userClient) {
 			this.userClient = userClient;
 		}
@@ -81,31 +96,35 @@ public class SSOTranx extends TransactionModel<SSOModel> {
 			this.branchAdapterId = branchAdapterId;
 		}
 
-	}
+		public ClientType getClientType() {
+			return clientType;
+		}
 
-	@Override
-	public SSOModel init() {
-		return this.save(getDefault());
-	}
+		public void setClientType(ClientType clientType) {
+			this.clientType = clientType;
+		}
 
-	@Override
-	public SSOModel getDefault() {
-		SSOModel sSOModel = new SSOModel();
-		sSOModel.setUserClient(new UserClientDto());
-		return sSOModel;
+		public BigDecimal getTerminalId() {
+			return this.terminalId;
+		}
+
+		public void setTerminalId(BigDecimal terminalId) {
+			this.terminalId = terminalId;
+		}
+
 	}
 
 	public SSOModel setReturnUrl(String returnUrl) {
 		SSOModel msg = this.get();
 		msg.setReturnUrl(returnUrl);
-		this.save(msg);
+		this.put(msg);
 		return msg;
 	}
 
 	public SSOModel setUserDetails(EmployeeDetailsDTO userDetail) {
 		SSOModel msg = this.get();
 		msg.setUserDetails(userDetail);
-		this.save(msg);
+		this.put(msg);
 		return msg;
 	}
 
@@ -113,8 +132,15 @@ public class SSOTranx extends TransactionModel<SSOModel> {
 	public SSOModel setMOtp(String motp) {
 		SSOModel msg = this.get();
 		msg.setMotp(motp);
-		this.save(msg);
+		this.put(msg);
 		return msg;
+	}
+
+	@Override
+	public SSOModel getDefault() {
+		SSOModel sSOModel = new SSOModel();
+		sSOModel.setUserClient(new UserClientDto());
+		return sSOModel;
 	}
 
 }

@@ -29,26 +29,25 @@ public interface ExchangeRateApprovalDetRepository extends CrudRepository<Exchan
 	List<ExchangeRateApprovalDetModel> getExchangeRatesPlaceorder(BigDecimal currency, BigDecimal bankId);
 
 	@Query("select rate from ExchangeRateApprovalDetModel rate where rate.currencyId=?1 and rate.countryBranchId=?2 "
-			+ "and rate.countryId=?3 and rate.applicationCountryId=?4 and rate.bankMaster.bankId in (?5)")
+			+ "and rate.applicationCountryId=?3 and rate.bankMaster.bankId in (?4)")
 	List<ExchangeRateApprovalDetModel> getBranchExchangeRatesForRoutingBanks(BigDecimal currencyId,
-			BigDecimal countryBranchId, BigDecimal countryId, BigDecimal applicationCountryId,
-			List<BigDecimal> routingBankIds);
-	
+			BigDecimal countryBranchId, BigDecimal applicationCountryId, List<BigDecimal> routingBankIds);
+
 	@Query("select rate from ExchangeRateApprovalDetModel rate where rate.currencyId=?1 and rate.countryBranchId=?2 "
-			+ "and rate.countryId=?3 and rate.applicationCountryId=?4 and rate.bankMaster.bankId in (?5) and rate.serviceId in (?6)")
+			+ " and rate.applicationCountryId=?3 and rate.bankMaster.bankId in (?4) and rate.serviceId in (?5)")
 	List<ExchangeRateApprovalDetModel> getBranchExchangeRatesForRoutingBankAndServiceIds(BigDecimal currencyId,
-			BigDecimal countryBranchId, BigDecimal countryId, BigDecimal applicationCountryId,
-			List<BigDecimal> routingBankIds, List<BigDecimal> serviceIds);
+			BigDecimal countryBranchId, BigDecimal applicationCountryId, List<BigDecimal> routingBankIds,
+			List<BigDecimal> serviceIds);
 
 	@Query("select rate from ExchangeRateApprovalDetModel rate where rate.currencyId=?1 "
 			+ "and rate.countryId=?2 and rate.applicationCountryId=?3 and rate.bankMaster.bankId in (?4)")
-	List<ExchangeRateApprovalDetModel> getExchangeRatesForRoutingBanks(BigDecimal currencyId, BigDecimal countryId,
+	List<ExchangeRateApprovalDetModel> getExchangeRatesForRoutingBanks(BigDecimal currencyId,
 			BigDecimal applicationCountryId, List<BigDecimal> routingBankIds);
 
 	@Query("select distinct rate.sellRateMin from ExchangeRateApprovalDetModel rate where rate.currencyId=?1 "
-			+ "and rate.countryId=?2 and rate.applicationCountryId=?3 and rate.bankMaster.bankId=?4")
-	List<BigDecimal> getUniqueSellRatesMinForRoutingBank(BigDecimal currencyId, BigDecimal countryId,
-			BigDecimal applicationCountryId, BigDecimal routingBankId);
+			+ " and rate.applicationCountryId=?2 and rate.bankMaster.bankId=?3")
+	List<BigDecimal> getUniqueSellRatesMinForRoutingBank(BigDecimal currencyId, BigDecimal applicationCountryId,
+			BigDecimal routingBankId);
 
 	////@formatter:off
 

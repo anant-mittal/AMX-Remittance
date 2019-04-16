@@ -168,6 +168,11 @@ public class BranchRoutingManager {
 
 	@Autowired
 	IViewRemittanceMode remittanceModeRepository;
+	
+	
+	@Autowired
+	BranchRemittanceManager branceRemittanceManager;
+	
 
 	RoutingResponseDto routingResponseDto = new RoutingResponseDto();
 
@@ -176,13 +181,21 @@ public class BranchRoutingManager {
 
 		try {
 			BigDecimal languageId = metaData.getLanguageId();
-
+			/*checkingStaffIdNumberWithCustomer **/
+			branceRemittanceManager.checkingStaffIdNumberWithCustomer();
+			/*checking banned bank details **/
+			 String warningMsg = branceRemittanceManager.bannedBankCheck(beneRelaId);
+			 routingResponseDto.setWarnigMsg(warningMsg);
+			
 			if (!JaxUtil.isNullZeroBigDecimalCheck(languageId)) {
 				languageId = new BigDecimal(1);
 			}
 
 			Map<String, Object> inputValues = getBeneMapSet(beneRelaId);
 			String serviceGroupCode = inputValues.get("P_SERVICE_GROUP_CODE").toString();
+			
+			
+			
 
 			logger.debug("output :" + inputValues.toString());
 			if (serviceGroupCode.equalsIgnoreCase(ConstantDocument.SERVICE_GROUP_CODE_CASH)) {
@@ -202,7 +215,8 @@ public class BranchRoutingManager {
 				BigDecimal remittanceId = (BigDecimal) outPut.get("P_REMITTANCE_MODE_ID");
 				BigDecimal deliveryId = (BigDecimal) outPut.get("P_DELIVERY_MODE_ID");
 				BigDecimal routingcountryId = (BigDecimal) outPut.get("P_ROUTING_COUNTRY_ID");
-
+				inputValues.put("P_SERVICE_MASTER_ID",serviceMasterId);
+				
 				if (serviceMasterId.compareTo(BigDecimal.ZERO) != 0) {
 					List<RoutingServiceDto> listOfService = new ArrayList<>();
 					listOfService.add(getServiceDto(serviceMasterId));
@@ -213,10 +227,12 @@ public class BranchRoutingManager {
 						ResourceDTO rout = new ResourceDTO();
 						rout.setResourceId(countryMasterView.get(0).getCountryId());
 						rout.setResourceName(countryMasterView.get(0).getCountryName());
+						rout.setResourceCode(countryMasterView.get(0).getCountryCode());
 						routCount.add(rout);
 						routingResponseDto.setRoutingCountrydto(routCount);
-
+						inputValues.put("P_ROUTING_COUNTRY_ID",countryMasterView.get(0).getCountryId());
 						if (routingBankId.compareTo(BigDecimal.ZERO) > 0) {
+							inputValues.put("P_ROUTING_BANK_ID",routingBankId);
 							List<RoutingBankDto> lisOfRoutingBank = new ArrayList<>();
 							lisOfRoutingBank.add(getRoutingBankDto(routingBankId));
 							routingResponseDto.setRoutingBankDto(lisOfRoutingBank);
@@ -224,7 +240,7 @@ public class BranchRoutingManager {
 								List<RemittanceModeDto> remitModeDtoLst = new ArrayList<>();
 								remitModeDtoLst.add(getRemittanceModeDto(remittanceId, languageId));
 								routingResponseDto.setRemittanceModeList(remitModeDtoLst);
-
+								inputValues.put("P_REMITTANCE_MODE_ID",remittanceId);
 								if (deliveryId.compareTo(BigDecimal.ZERO) > 0) {
 									List<DeliveryModeDto> delvModeListDto = new ArrayList<>();
 									delvModeListDto.add(getDeliveryModeDto(deliveryId, languageId));
@@ -272,7 +288,6 @@ public class BranchRoutingManager {
 		if (listofService != null && !listofService.isEmpty()) {
 			listOfService = convertRoutingDetails(listofService);
 			routingResponseDto.setServiceList(listOfService);
-
 			inputValues.put("P_SERVICE_MASTER_ID", listOfService.get(0).getServiceMasterId());
 			getRoutingCountryList(inputValues);
 		} else {
@@ -339,8 +354,7 @@ public class BranchRoutingManager {
 			inputValues.put("P_DELIVERY_MODE_ID", listOfDelv.get(0).getDeliveryModeId());
 			getRoutingBankBranchList(inputValues);
 		} else {
-			throw new GlobalException(JaxError.DELIVERY_MODE_NOT_FOUND,
-					"Delivery mode not found " + inputValues.toString());
+			throw new GlobalException(JaxError.DELIVERY_MODE_NOT_FOUND,"Delivery mode not found " + inputValues.toString());
 		}
 
 	}
@@ -375,7 +389,7 @@ public class BranchRoutingManager {
 		return serDto;
 	}
 
-	private List<ResourceDTO> convertRoutingCountry(List<Map<String, Object>> listofService) {
+	public List<ResourceDTO> convertRoutingCountry(List<Map<String, Object>> listofService) {
 		List<ResourceDTO> dtoList = new ArrayList<ResourceDTO>();
 		listofService.forEach(serviceDto -> dtoList.add(convertToRoutingCountry(serviceDto)));
 		return dtoList;
@@ -384,9 +398,9 @@ public class BranchRoutingManager {
 
 	private ResourceDTO convertToRoutingCountry(Map<String, Object> i) {
 		ResourceDTO serDto = new ResourceDTO();
-		serDto.setResourceId(
-				i.get("ROUTING_COUNTRY_ID") != null ? (BigDecimal) i.get("ROUTING_COUNTRY_ID") : BigDecimal.ZERO);
+		serDto.setResourceId(i.get("ROUTING_COUNTRY_ID") != null ? (BigDecimal) i.get("ROUTING_COUNTRY_ID") : BigDecimal.ZERO);
 		serDto.setResourceName(i.get("COUNTRY_NAME") != null ? i.get("COUNTRY_NAME").toString() : null);
+		serDto.setResourceCode(i.get("COUNTRY_CODE") != null ? i.get("COUNTRY_CODE").toString() : null);
 		return serDto;
 	}
 
@@ -462,18 +476,17 @@ public class BranchRoutingManager {
 
 	public Map<String, Object> getBeneMapSet(BigDecimal beneRelaId) {
 		BenificiaryListView beneficaryDetails = beneficiaryRepository.findBybeneficiaryRelationShipSeqId(beneRelaId);
-
 		if (beneficaryDetails == null) {
 			throw new GlobalException(JaxError.BENEFICIARY_LIST_NOT_FOUND, "Beneficairy not found " + beneRelaId);
-
 		}
+		
+		branceRemittanceManager.beneAddCheck(beneficaryDetails);
 		Map<String, Object> inputValues = new HashMap<>();
-
 		inputValues.put("P_USER_TYPE", ConstantDocument.BRANCH);
 		inputValues.put("P_APPLICATION_COUNTRY_ID", beneficaryDetails.getApplicationCountryId());
-		inputValues.put("P_BENE_COUNTRY_ID", beneficaryDetails.getBenificaryCountry());
-		inputValues.put("P_BENE_BANK_ID", beneficaryDetails.getBankId());
-		inputValues.put("P_BENE_BANK_BRANCH_ID", beneficaryDetails.getBranchId());
+		inputValues.put("P_BENEFICIARY_COUNTRY_ID", beneficaryDetails.getBenificaryCountry()); //P_BENEFICIARY_COUNTRY_ID
+		inputValues.put("P_BENEFICIARY_BANK_ID", beneficaryDetails.getBankId());
+		inputValues.put("P_BENEFICIARY_BRANCH_ID", beneficaryDetails.getBranchId());
 		inputValues.put("P_SERVICE_GROUP_CODE", beneficaryDetails.getServiceGroupCode());
 		inputValues.put("P_CURRENCY_ID", beneficaryDetails.getCurrencyId());
 		inputValues.put("P_SERVICE_GROUP_CODE", beneficaryDetails.getServiceGroupCode());
@@ -482,7 +495,7 @@ public class BranchRoutingManager {
 		return inputValues;
 	}
 
-	public RoutingResponseDto getRoutingDetailsByServiceId(BigDecimal beneRelaId, BigDecimal serviceMasterId) {
+/*	public RoutingResponseDto getRoutingDetailsByServiceId(BigDecimal beneRelaId, BigDecimal serviceMasterId) {
 		Map<String, Object> inputValues = getBeneMapSet(beneRelaId);
 		inputValues.put("P_SERVICE_MASTER_ID", serviceMasterId);
 		List<RoutingServiceDto> listOfService = new ArrayList<>();
@@ -490,29 +503,52 @@ public class BranchRoutingManager {
 		routingResponseDto.setServiceList(listOfService);
 		getRoutingCountryList(inputValues);
 		return routingResponseDto;
-	}
+	}*/
 
+	
+public RoutingResponseDto getRoutingDetailsByServiceId(BigDecimal beneRelaId, BigDecimal serviceMasterId) {
+	Map<String, Object> inputValues = getBeneMapSet(beneRelaId);
+	List<RoutingServiceDto> listOfService = new ArrayList<>();
+	List<Map<String, Object>> listofService = routingPro.getServiceList(inputValues);
+	if (listofService != null && !listofService.isEmpty()) {
+		listOfService = convertRoutingDetails(listofService);
+		routingResponseDto.setServiceList(listOfService);
+	}
+	inputValues.put("P_SERVICE_MASTER_ID", serviceMasterId);
+	getRoutingCountryList(inputValues);
+	return routingResponseDto;
+}
+	
 	public RoutingResponseDto getRemittanceDetailsByServiceIdAndBankId(BigDecimal beneRelaId, BigDecimal serviceMasterId,
 			BigDecimal routingCountryId,BigDecimal routingBankId,BigDecimal remittanceModeId) {
 		Map<String, Object> inputValues = getBeneMapSet(beneRelaId);
+		List<RoutingServiceDto> listOfService = new ArrayList<>();
+		List<Map<String, Object>> listofService = routingPro.getServiceList(inputValues);
+		if (listofService != null && !listofService.isEmpty()) {
+			listOfService = convertRoutingDetails(listofService);
+			routingResponseDto.setServiceList(listOfService);
+		}
 		inputValues.put("P_SERVICE_MASTER_ID", serviceMasterId);
 		inputValues.put("P_ROUTING_COUNTRY_ID", routingCountryId);
 		inputValues.put("P_ROUTING_BANK_ID", routingBankId);
-		List<RoutingServiceDto> listOfService = new ArrayList<>();
-		listOfService.add(getServiceDto(serviceMasterId));
-		routingResponseDto.setServiceList(listOfService);
 		if(JaxUtil.isNullZeroBigDecimalCheck(routingCountryId)) {
 			List<CountryMasterView> countryMasterView = countryRepository.findByLanguageIdAndCountryId(metaData.getLanguageId(), routingCountryId);
 			List<ResourceDTO> routCount = new ArrayList<ResourceDTO>();
 			ResourceDTO rout = new ResourceDTO();
 			rout.setResourceId(countryMasterView.get(0).getCountryId());
 			rout.setResourceName(countryMasterView.get(0).getCountryName());
+			rout.setResourceCode(countryMasterView.get(0).getCountryCode());
 			routCount.add(rout);
 			routingResponseDto.setRoutingCountrydto(routCount);
 			if(JaxUtil.isNullZeroBigDecimalCheck(routingBankId)) {
 				List<RoutingBankDto> lisOfRoutingBank = new ArrayList<>();
-				lisOfRoutingBank.add(getRoutingBankDto(routingBankId));
-				routingResponseDto.setRoutingBankDto(lisOfRoutingBank);
+				List<Map<String, Object>> listofRoutingMAp = routingPro.getRoutingCountryBank(inputValues);
+				if (listofRoutingMAp != null && !listofRoutingMAp.isEmpty()) {
+					lisOfRoutingBank = convertRoutingBank(listofRoutingMAp);
+					routingResponseDto.setRoutingBankDto(lisOfRoutingBank);
+				}
+				//lisOfRoutingBank.add(getRoutingBankDto(routingBankId));
+				//routingResponseDto.setRoutingBankDto(lisOfRoutingBank);
 				if(JaxUtil.isNullZeroBigDecimalCheck(remittanceModeId)) {
 					List<RemittanceModeDto> remitModeDtoLst = new ArrayList<>();
 					RemittanceModeDto remitModeDto = new RemittanceModeDto();
@@ -544,6 +580,8 @@ public class BranchRoutingManager {
 		BigDecimal routingCountryId = requestApplModel.getRoutingCountryId();
 		BigDecimal routingBankId = requestApplModel.getRoutingBankId();
 		BigDecimal remittanceModeId = requestApplModel.getRemittanceModeId();
+		
+		
 		
 		if(JaxUtil.isNullZeroBigDecimalCheck(requestApplModel.getBeneId())
 				&& JaxUtil.isNullZeroBigDecimalCheck(requestApplModel.getServiceMasterId())
@@ -605,6 +643,17 @@ public class BranchRoutingManager {
 		service.setServiceGroupCode(view.get(0).getServiceGroupCode());
 		service.setServiceDescription(view.get(0).getServiceDescription());
 		return service;
+	}
+	
+	public ResourceDTO getRoutingCountryDto(BigDecimal routingCountryId) {
+		List<CountryMasterView> countryMasterView = countryRepository
+				.findByLanguageIdAndCountryId(metaData.getLanguageId(), routingCountryId);
+		ResourceDTO service = new ResourceDTO();
+		service.setResourceId(countryMasterView.get(0).getCountryId());
+		service.setResourceCode(countryMasterView.get(0).getCountryCode());
+		service.setResourceName(countryMasterView.get(0).getCountryName());
+		return service;
+
 	}
 	
 }

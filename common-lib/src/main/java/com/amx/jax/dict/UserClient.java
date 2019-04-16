@@ -16,7 +16,7 @@ public class UserClient {
 	 *
 	 */
 	public enum Channel {
-		ONLINE, KIOSK, MOBILE, BRANCH, THIRD_PARTY, SYSTEM;
+		ONLINE, KIOSK, MOBILE, BRANCH, THIRD_PARTY, SYSTEM, UNKNOWN;
 	}
 
 	/**
@@ -62,7 +62,7 @@ public class UserClient {
 	 *
 	 */
 	public enum DevicePlatform {
-		IOS, ANDROID, WINDOWS, MAC, LINUX, UNKNOWN
+		IOS, ANDROID, WINDOWS, MAC, LINUX, UNKNOWN;
 	}
 
 	/**
@@ -72,30 +72,52 @@ public class UserClient {
 	 *
 	 */
 	public enum AppType {
-		WEB, ANDROID, IOS, UNKNOWN;
+		WEB, IOS(Channel.MOBILE), ANDROID(Channel.MOBILE), UNKNOWN;
+		Channel channel;
+
+		AppType(Channel channel) {
+			this.channel = channel;
+		}
+
+		AppType() {
+			this(Channel.UNKNOWN);
+		}
+
+		public Channel getChannel() {
+			return channel;
+		}
 	}
 
 	public enum ClientType {
 		// Auth Apps
-		NOTP_APP(DeviceType.MOBILE),
+		NOTP_APP(DeviceType.MOBILE, Channel.MOBILE),
 
 		// branch cleints
-		BRANCH_WEB_OLD(DeviceType.COMPUTER), BRANCH_WEB(DeviceType.COMPUTER), SIGNATURE_PAD(DeviceType.TABLET),
-		BRANCH_ADAPTER(DeviceType.COMPUTER),
+		BRANCH_WEB_OLD(DeviceType.COMPUTER, Channel.BRANCH), BRANCH_WEB(DeviceType.COMPUTER, Channel.BRANCH), SIGNATURE_PAD(DeviceType.TABLET,
+				Channel.BRANCH),
+		BRANCH_ADAPTER(DeviceType.COMPUTER,Channel.BRANCH),
 
 		// Other Channels
-		OFFSITE_PAD(DeviceType.TABLET), KIOSK(DeviceType.COMPUTER), DELIVERY_APP(DeviceType.MOBILE),
+		OFFSITE_PAD(DeviceType.TABLET, Channel.BRANCH), KIOSK(DeviceType.COMPUTER, Channel.KIOSK), DELIVERY_APP(DeviceType.MOBILE,
+				Channel.BRANCH),
 
 		// Customer Facing interfaces
-		ONLINE_WEB(DeviceType.COMPUTER), ONLINE_AND(DeviceType.MOBILE), ONLINE_IOS(DeviceType.MOBILE),
+		ONLINE_WEB(DeviceType.COMPUTER, Channel.ONLINE), ONLINE_AND(DeviceType.MOBILE, Channel.MOBILE), ONLINE_IOS(DeviceType.MOBILE,Channel.MOBILE),
 
 		// Unknown
 		SYSTEM, UNKNOWN;
 
 		DeviceType deviceType;
+		
+		Channel channel = Channel.ONLINE;
 
 		ClientType(DeviceType deviceType) {
 			this.deviceType = deviceType;
+		}
+		
+		ClientType(DeviceType deviceType, Channel channel) {
+			this.deviceType = deviceType;
+			this.channel = channel;
 		}
 
 		ClientType() {
@@ -114,6 +136,15 @@ public class UserClient {
 		public void setDeviceType(DeviceType deviceType) {
 			this.deviceType = deviceType;
 		}
+
+		public Channel getChannel() {
+			return channel;
+		}
+
+		public void setChannel(Channel channel) {
+			this.channel = channel;
+		}
+		
 	}
 
 	@JsonInclude(Include.NON_NULL)

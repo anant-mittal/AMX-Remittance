@@ -22,9 +22,9 @@ public class CActivityEvent extends AuditEvent {
 
 		APPLICATION_CREATED, APPLICATION_UPDATE,
 
-		FC_UPDATE,
-
-		GEO_LOCATION;
+		FC_UPDATE,TRANSACTION_CREATED
+//
+		;
 
 		@Override
 		public EventMarker marker() {

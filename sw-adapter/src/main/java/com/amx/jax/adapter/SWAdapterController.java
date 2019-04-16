@@ -22,7 +22,7 @@ public class SWAdapterController {
 	public static final String PARAM_URL = PUB_AMX_PREFIX + "/params";
 
 	@Autowired
-	ACardReaderService kwtCardReaderService;
+	ACardReaderService aCardReaderService;
 
 	@Autowired
 	DeviceConnectorClient adapterServiceClient;
@@ -31,9 +31,15 @@ public class SWAdapterController {
 	private ApplicationContext applicationContext;
 
 	@ResponseBody
-	@RequestMapping(value = "/pub/card/kwt/read", method = RequestMethod.GET)
+	@RequestMapping(value = "/pub/card/read", method = RequestMethod.GET)
 	public CardReader readCard() throws InterruptedException {
-		return kwtCardReaderService.read();
+		return aCardReaderService.read();
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/pub/card/sync", method = RequestMethod.GET)
+	public CardReader syncCard() throws InterruptedException {
+		return aCardReaderService.sync();
 	}
 
 	@ResponseBody
@@ -42,16 +48,17 @@ public class SWAdapterController {
 		String tid = "";
 		String rid = "";
 		String excep = "";
-		if (!ArgUtil.isEmpty(kwtCardReaderService.getDevicePairingCreds())
-				&& !ArgUtil.isEmpty(kwtCardReaderService.getSessionPairingCreds())) {
+		if (!ArgUtil.isEmpty(aCardReaderService.getDevicePairingCreds())
+				&& !ArgUtil.isEmpty(aCardReaderService.getSessionPairingCreds())) {
 			try {
-				AmxApiResponse<Object, Object> x = adapterServiceClient.pairTerminal(kwtCardReaderService.getAddress(),
-						kwtCardReaderService.getDevicePairingCreds(), kwtCardReaderService.getSessionPairingCreds(),
+				AmxApiResponse<Object, Object> x = adapterServiceClient.pairTerminal(aCardReaderService.getAddress(),
+						aCardReaderService.getDevicePairingCreds(), aCardReaderService.getSessionPairingCreds(),
 						tranx);
 				tid = ArgUtil.parseAsString(x.getResult());
 				rid = ArgUtil.parseAsString(x.getMeta());
+				aCardReaderService.sync();
 			} catch (Exception e) {
-
+				SWAdapterGUI.CONTEXT.logWindow("Error while pairTerminal - " + e.getMessage());
 			}
 		}
 		return "var _tid_ = '" + tid + "', _rid_ = '" + rid + "', _excep_='" + excep + "';";
@@ -69,31 +76,34 @@ public class SWAdapterController {
 			@RequestParam(required = false) String reset)
 			throws Exception {
 		if (!ArgUtil.isEmpty(terminalId)) {
-			kwtCardReaderService.setTerminalId(terminalId);
+			aCardReaderService.setTerminalId(terminalId);
 		}
 		if (!ArgUtil.isEmpty(reset)) {
-			kwtCardReaderService.resetTerminalPairing();
+			aCardReaderService.resetTerminalPairing();
 		}
 
 		String body = "";
-		if (!ArgUtil.isEmpty(kwtCardReaderService.getDevicePairingCreds())) {
+		if (!ArgUtil.isEmpty(aCardReaderService.getDevicePairingCreds())) {
 			body = FileUtil.read(applicationContext.getResource("classpath:templates/regid.html").getURL());
-		} else if (ArgUtil.isEmpty(kwtCardReaderService.getTerminalId())) {
+		} else if (ArgUtil.isEmpty(aCardReaderService.getTerminalId())) {
 			body = FileUtil.read(applicationContext.getResource("classpath:templates/terminal.html").getURL());
 		} else {
 			body = FileUtil.read(applicationContext.getResource("classpath:templates/index.html").getURL());
 		}
-		return body.replace("${REG_ID}", ArgUtil.isEmpty(kwtCardReaderService.getDevicePairingCreds())
+		return body.replace("${REG_ID}", ArgUtil.isEmpty(aCardReaderService.getDevicePairingCreds())
 				? Constants.BLANK
-				: kwtCardReaderService.getDevicePairingCreds().getDeviceRegId())
-				.replace("${HOST_NAME}", kwtCardReaderService.getAddress().getHostName())
-				.replace("${USER_NAME}", kwtCardReaderService.getAddress().getUserName())
-				.replace("${LOCAL_IP}", kwtCardReaderService.getAddress().getLocalIp())
-				.replace("${TERMINAL_IP}", ArgUtil.parseAsString(kwtCardReaderService.getTerminalId(), Constants.BLANK))
-				.replace("${DEVICE_STATUS}", String.format("%s", kwtCardReaderService.getDeviceStatus()))
-				.replace("${CARD_STATUS}", String.format("%s", kwtCardReaderService.getCardStatusValue()))
-				.replace("${DATA_STATUS}", String.format("%s", kwtCardReaderService.getDataStatusValue()))
-				.replace("${LOG}", String.format("%s", SWAdapterGUI.CONTEXT.LOG));
+				: aCardReaderService.getDevicePairingCreds().getDeviceRegId())
+				.replace("${WIN_TITLE}", SWAdapterGUI.WIN_TITLE)
+				.replace("${HOST_NAME}", aCardReaderService.getAddress().getHostName())
+				.replace("${USER_NAME}", aCardReaderService.getAddress().getUserName())
+				.replace("${LOCAL_IP}", aCardReaderService.getAddress().getLocalIp())
+				.replace("${TERMINAL_IP}", ArgUtil.parseAsString(aCardReaderService.getTerminalId(), Constants.BLANK))
+				.replace("${DEVICE_STATUS}", String.format("%s", aCardReaderService.getDeviceStatus()))
+				.replace("${CARD_STATUS}", String.format("%s", aCardReaderService.getCardStatusValue()))
+				.replace("${DATA_STATUS}", String.format("%s", aCardReaderService.getDataStatusValue()))
+				.replace("${SERVER_URL}", String.format("%s", aCardReaderService.getServerUrl()))
+				.replace("${ADAPTER_VERSION}", String.format("%s", aCardReaderService.getVersion()))
+				.replace("${LOG}", String.format("%s", SWAdapterGUI.LOG));
 	}
 
 }

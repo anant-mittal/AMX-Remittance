@@ -1818,22 +1818,22 @@
                         <!--##################FOOTER START####################-->
 						<frame>
                         <reportElement x="0" y="726" width="595" height="70"
-                                           forecolor="blue"/>
+                                       forecolor="blue"/>
 
-                            <image evaluationTime="Now" hyperlinkType="None" hyperlinkTarget="Self">
-                                <reportElement
-                                        x="0"
-                                        y="0"
+                        <image evaluationTime="Now" hyperlinkType="None" hyperlinkTarget="Self" isLazy="true" onErrorType="Blank">
+                            <reportElement
+                                    x="0"
+                                    y="0"
                                     width="595"
                                     height="90"
-                                        key="image-1"
-                                        stretchType="NoStretch"/>
-                                <graphicElement/>
-                                <imageExpression class="java.lang.String">
+                                    key="image-1"
+                                    stretchType="NoStretch" />
+                            <graphicElement/>
+                            <imageExpression class="java.lang.String">
                                 <![CDATA[$P{TU}.prop("company.promotion.img")]]>
-                                </imageExpression>
-                            </image>
-                        </frame>
+                            </imageExpression>
+                        </image>
+                    </frame>
                         <!--##################FOOTER END####################-->
                     </c:listContents>
                 </c:list>

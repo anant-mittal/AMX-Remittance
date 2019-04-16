@@ -21,6 +21,7 @@ public abstract class AbstractTestClient {
 
 	@Autowired
 	protected JaxMetaInfo jaxMetaInfo;
+	
 
 	protected void setDefaults() {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
@@ -31,6 +32,9 @@ public abstract class AbstractTestClient {
 		jaxMetaInfo.setTenant(Tenant.KWT);
 		TenantContextHolder.setCurrent(Tenant.KWT);
 		jaxMetaInfo.setReferrer("DEV-TESTING");
+		jaxMetaInfo.setEmployeeId(new BigDecimal(536));
+		
+		
 	}
 	
 	protected void setBahrainDefaults() {

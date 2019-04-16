@@ -59,7 +59,7 @@ public class CardController {
 				cardData);
 
 		// Audit
-		if (!ArgUtil.isEmpty(reader.getData())) {
+		if (reader.hasCard()) {
 			auditService.log(new SSOAuditEvent(SSOAuditEvent.Type.CARD_SCANNED)
 					.terminalId(deviceData.getTerminalId())
 					.clientType(ClientType.BRANCH_ADAPTER)

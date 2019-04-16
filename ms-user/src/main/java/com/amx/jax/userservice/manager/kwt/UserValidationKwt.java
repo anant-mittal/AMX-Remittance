@@ -22,10 +22,10 @@ import com.amx.jax.dbmodel.CustomerIdProof;
 import com.amx.jax.dbmodel.DmsDocumentModel;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.scope.TenantSpecific;
 import com.amx.jax.userservice.dao.CustomerIdProofDao;
 import com.amx.jax.userservice.dao.DmsDocumentDao;
-import com.amx.jax.userservice.repository.CustomerRepository;
 import com.amx.jax.userservice.service.UserValidationService;
 import com.amx.jax.userservice.service.CustomerValidationContext.CustomerValidation;
 import com.amx.utils.Constants;
@@ -65,7 +65,7 @@ public class UserValidationKwt implements CustomerValidation {
 		if (idProof.getIdentityExpiryDate() != null && idProof.getIdentityExpiryDate().compareTo(new Date()) < 0) {
 			throw new GlobalException(JaxError.ID_PROOF_EXPIRED, "Identity proof are expired");
 		}
-		if ("A".equals(scanSystem)) {
+		if ("A".equals(scanSystem) || "E".equals(scanSystem)) {
 			List<CustomerIdProof> validIds = idproofDao
 					.getCustomerImageValidation(idProof.getFsCustomer().getCustomerId(), idProof.getIdentityTypeId());
 			if (validIds == null || validIds.isEmpty()) {

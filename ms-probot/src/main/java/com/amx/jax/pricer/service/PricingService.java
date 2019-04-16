@@ -26,6 +26,7 @@ import com.amx.jax.pricer.manager.RemitPriceManager;
 import com.amx.jax.pricer.util.PricingRateDetailsDTO;
 import com.amx.jax.pricer.var.PricerServiceConstants.CUSTOMER_CATEGORY;
 import com.amx.jax.pricer.var.PricerServiceConstants.PRICE_BY;
+import com.amx.utils.JsonUtil;
 
 /**
  * @author abhijeet
@@ -74,26 +75,32 @@ public class PricingService {
 
 		pricingResponseDTO.setSellRateDetails(pricingRateDetailsDTO.getSellRateDetails());
 
+		// TODO: Dirty Code -- Do via Transient Data cache.
+		pricingResponseDTO.setCustomerCategory(CUSTOMER_CATEGORY.valueOf(customer.getRemarks()));
+
 		Collections.sort(pricingResponseDTO.getSellRateDetails(), Collections.reverseOrder());
 
 		pricingResponseDTO.setInfo(pricingRateDetailsDTO.getInfo());
 
 		/*
-		 * Map<String, BankRateDetailsDTO> baseRateBankDetails = new HashMap<String,
-		 * BankRateDetailsDTO>();
+		 * LOGGER.info("=========== Start Probot LOG Trace for Customer Id : " +
+		 * pricingRequestDTO.getCustomerId() + "===========");
 		 * 
-		 * pricingResponseDTO.setBankDetails(new HashMap<BigDecimal, BankDetailsDTO>());
+		 * LOGGER.info( "Base And Discounted Price Computed : " +
+		 * JsonUtil.toJson(pricingRateDetailsDTO.getSellRateDetails()));
 		 * 
-		 * for (BankRateDetailsDTO baseBankRate : bankRateDetailsDTOs) {
+		 * LOGGER.info("GLCBAL Rate Details : " +
+		 * JsonUtil.toJson(pricingRateDetailsDTO.getBankGlcBalMap()));
 		 * 
-		 * String key = baseBankRate.getBankId().longValue() + "" +
-		 * baseBankRate.getServiceIndicatorId() == null ? "" :
-		 * baseBankRate.getServiceIndicatorId().longValue() + "";
+		 * LOGGER.info("GLCBAL Average Rate Computation Details : " +
+		 * JsonUtil.toJson(pricingRateDetailsDTO.getBankGlcBalMap()));
 		 * 
-		 * baseRateBankDetails.put(key, baseBankRate); }
+		 * LOGGER.info("Margin Markup Details : " +
+		 * JsonUtil.toJson(pricingRateDetailsDTO.getMargin()));
+		 * 
+		 * LOGGER.info("=========== End Probot LOG Trace for Customer Id : " +
+		 * pricingRequestDTO.getCustomerId() + "===========\n");
 		 */
-
-		// pricingResponseDTO.set
 
 		return pricingResponseDTO;
 	}

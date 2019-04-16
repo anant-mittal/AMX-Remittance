@@ -59,11 +59,6 @@ public class WebAuthFilter implements Filter {
 				sessionService.getUserSession().setReferrer(referrer);
 			}
 
-			if (!AppContextUtil.getRequestType().isTrack()) {
-				AppContextUtil.setActorId(
-						new AuditActor(sessionService.getUserSession().isValid() ? AuditActor.ActorType.CUSTOMER
-							: AuditActor.ActorType.GUEST, sessionService.getUserSession().getUserid()));
-			}
 			chain.doFilter(req, resp);
 		}
 

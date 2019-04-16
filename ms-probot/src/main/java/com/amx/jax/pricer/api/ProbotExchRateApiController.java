@@ -40,6 +40,7 @@ public class ProbotExchRateApiController implements ProbotExchangeRateService {
 	@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 	public PricingRateDetailsDTO PricingRateDetailsDTO() {
 		PricingRateDetailsDTO pricingRateDetailsDTO = new PricingRateDetailsDTO();
+		
 		return pricingRateDetailsDTO;
 	}
 

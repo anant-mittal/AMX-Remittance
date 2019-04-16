@@ -356,4 +356,12 @@ public class RbaacServiceClient implements IRbaacService {
 				});
 	}
 
+	@Override
+	public AmxApiResponse<BoolRespModel, Object> deleteDevice(Integer deviceRegId) {
+		LOGGER.debug("in deleteDevice");
+		String url = appConfig.getAuthURL() + ApiEndPoints.DEVICE_DELETE;
+		return restService.ajax(url).field(Params.DEVICE_REG_ID, deviceRegId).postForm()
+				.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
+				});
+	}
 }

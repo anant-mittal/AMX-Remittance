@@ -8,6 +8,7 @@ public class TerminalConstants {
 		 */
 		public static final String TERMINAL_STATUS_PING = "/pub/terminal/status.ping";
 		public static final String TERMINAL_STATUS_CUST_REG = "/pub/signpad/status/custreg";
+		public static final String TERMINAL_STATUS_CUST_PROFILE = "/pub/signpad/status/custupdate";
 		public static final String TERMINAL_STATUS_FCSALE = "/pub/signpad/status/fcsale";
 		public static final String TERMINAL_STATUS_FCPURCHASE = "/pub/signpad/status/fcpurchase";
 		public static final String TERMINAL_STATUS_REMIT = "/pub/signpad/status/remit";

@@ -129,13 +129,13 @@ public class FcSaleBranchService extends AbstractService{
 
 	public List<FcSaleOrderManagementDTO> convertFcSaleOrderManagementDTO(List<OrderManagementView> orderManagementView,BigDecimal applicationCountryId,BigDecimal employeeId,Boolean areaCodeCheck,BigDecimal branchId){
 		List<FcSaleOrderManagementDTO> lstFcSaleOrder = new ArrayList<>();
-		List<BigDecimal> duplicate = new ArrayList<>();
+		List<String> duplicate = new ArrayList<>();
 		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 		try {
 			if(orderManagementView != null && orderManagementView.size() != 0) {
 				for (OrderManagementView orderManagement : orderManagementView) {
-					if(!duplicate.contains(orderManagement.getCollectionDocumentNo())) {
-						duplicate.add(orderManagement.getCollectionDocumentNo());
+					if(!duplicate.contains(orderManagement.getCollectionDocFinanceYear()+""+orderManagement.getCollectionDocumentNo())) {
+						duplicate.add(orderManagement.getCollectionDocFinanceYear()+""+orderManagement.getCollectionDocumentNo());
 						FcSaleOrderManagementDTO fcSaleOrder = new FcSaleOrderManagementDTO();
 						fcSaleOrder.setApplicationCountryId(orderManagement.getApplicationCountryId());
 						fcSaleOrder.setCollectionDocFinanceYear(orderManagement.getCollectionDocFinanceYear());
@@ -159,7 +159,7 @@ public class FcSaleBranchService extends AbstractService{
 						List<FcSaleCurrencyAmountModel> lstCurrencyAmt = new ArrayList<>();
 						String mutipleInventoryId = null;
 						for (OrderManagementView fcSaleOrderManagement : orderManagementView) {
-							if(fcSaleOrderManagement.getCollectionDocumentNo().compareTo(orderManagement.getCollectionDocumentNo()) == 0) {
+							if(fcSaleOrderManagement.getCollectionDocFinanceYear().compareTo(orderManagement.getCollectionDocFinanceYear()) == 0 && fcSaleOrderManagement.getCollectionDocumentNo().compareTo(orderManagement.getCollectionDocumentNo()) == 0) {
 
 								FcSaleCurrencyAmountModel fcSaleCurrencyAmountModel = new FcSaleCurrencyAmountModel();
 								fcSaleCurrencyAmountModel.setAmount(fcSaleOrderManagement.getForeignTrnxAmount());

@@ -1,10 +1,10 @@
-
 package com.amx.jax.ui.api;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.meta.model.CustomerDto;
+import com.amx.amxlib.meta.model.IncomeDto;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.CustomerNotificationDTO;
@@ -24,16 +25,21 @@ import com.amx.amxlib.model.UserFingerprintResponseModel;
 import com.amx.jax.AppConfig;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.JaxAuthContext;
+import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.JaxPushNotificationClient;
 import com.amx.jax.dict.UserClient.AppType;
 import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.logger.AuditActor;
 import com.amx.jax.logger.LoggerService;
+import com.amx.jax.model.response.customer.CustomerFlags;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.ui.WebAppConfig;
+import com.amx.jax.ui.config.OWAStatus.ApiOWAStatus;
 import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
 import com.amx.jax.ui.model.AuthData;
+import com.amx.jax.ui.model.AuthDataInterface.AuthRequestFingerprint;
 import com.amx.jax.ui.model.AuthDataInterface.AuthResponse;
 import com.amx.jax.ui.model.AuthDataInterface.AuthResponseOTPprefix;
 import com.amx.jax.ui.model.AuthDataInterface.UserUpdateRequest;
@@ -109,6 +115,7 @@ public class UserController {
 	 * @param appVersion the app version
 	 * @return the meta
 	 */
+	@ApiOWAStatus(OWAStatusStatusCodes.INCOME_UPDATE_REQUIRED)
 	@RequestMapping(value = "/pub/user/meta", method = { RequestMethod.POST, RequestMethod.GET })
 	public ResponseWrapper<UserMetaData> getMeta(@RequestParam(required = false) AppType appType,
 			@RequestParam(required = false) String appVersion) {
@@ -137,6 +144,14 @@ public class UserController {
 			wrapper.getData().setActive(true);
 			wrapper.getData().setCustomerId(sessionService.getUserSession().getCustomerModel().getCustomerId());
 			wrapper.getData().setInfo(sessionService.getUserSession().getCustomerModel().getPersoninfo());
+
+			CustomerFlags customerFlags = sessionService.getUserSession().getCustomerModel().getFlags();
+			wrapper.getData().setFlags(customerFlags);
+
+			if (customerFlags.getAnnualIncomeExpired()) {
+				wrapper.setStatus(OWAStatusStatusCodes.INCOME_UPDATE_REQUIRED);
+			}
+
 			wrapper.getData().setDomCurrency(tenantContext.getDomCurrency());
 			wrapper.getData().setConfig(jaxService.setDefaults().getMetaClient().getJaxMetaParameter().getResult());
 			wrapper.getData().getSubscriptions().addAll(userService.getNotifyTopics("/topics/"));
@@ -460,8 +475,33 @@ public class UserController {
 		}
 	}
 
+	@RequestMapping(value = "/api/user/income", method = { RequestMethod.POST })
+	public ResponseWrapper<IncomeDto> saveAnnualIncome(
+			@RequestBody IncomeDto incomeDto) {
+		try {
+			return ResponseWrapper.build(jaxService.setDefaults().getUserclient().saveAnnualIncome(incomeDto));
+		} finally {
+			loginService.updateCustoemrModel();
+		}
+	}
+
+	@RequestMapping(value = "/api/user/income", method = { RequestMethod.GET })
+	public ResponseWrapper<IncomeDto> getAnnualIncomeDetais() {
+		return ResponseWrapper.build(jaxService.setDefaults().getUserclient().getAnnualIncomeDetais());
+	}
+
 	@RequestMapping(value = "/api/user/device/link", method = { RequestMethod.POST })
 	public ResponseWrapper<UserFingerprintResponseModel> linkDevice() {
 		return ResponseWrapper.build(jaxService.getUserclient().linkDeviceIdLoggedinUser());
+	}
+
+	@RequestMapping(value = { "/api/user/device/delink" }, method = { RequestMethod.POST })
+	public AmxApiResponse<BoolRespModel, Object> delinkDevice() {
+		return ResponseWrapper.build(jaxService.getUserclient().delinkFingerprint());
+	}
+
+	@RequestMapping(value = { "/pub/user/device/reset" }, method = { RequestMethod.POST })
+	public AmxApiResponse<BoolRespModel, Object> resetDevice(@Valid @RequestBody AuthRequestFingerprint authData) {
+		return ResponseWrapper.build(jaxService.getUserclient().resetFingerprint(authData.getLockId()));
 	}
 }

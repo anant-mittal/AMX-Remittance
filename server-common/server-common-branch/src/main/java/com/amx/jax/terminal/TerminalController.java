@@ -19,13 +19,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.amx.jax.AppConfig;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
-import com.amx.jax.client.DeviceStateClient;
+import com.amx.jax.branch.common.OffsiteStatus.OffsiteServerCodes;
+import com.amx.jax.branch.common.OffsiteStatus.OffsiteServerError;
 import com.amx.jax.client.IDeviceStateService;
-import com.amx.jax.device.TerminalBox;
-import com.amx.jax.device.TerminalData;
 import com.amx.jax.model.request.device.SignaturePadCustomerRegStateMetaInfo;
 import com.amx.jax.model.request.device.SignaturePadFCPurchaseSaleInfo;
 import com.amx.jax.model.request.device.SignaturePadRemittanceInfo;
+import com.amx.jax.signpad.TerminalData;
+import com.amx.jax.sso.SSOUser;
 import com.amx.jax.swagger.IStatusCodeListPlugin.ApiStatusService;
 import com.amx.jax.terminal.TerminalConstants.Path;
 import com.amx.utils.ArgUtil;
@@ -46,9 +47,6 @@ import io.swagger.annotations.ApiOperation;
 public class TerminalController {
 
 	@Autowired
-	private DeviceStateClient deviceClient;
-
-	@Autowired
 	private TerminalBox terminalBox;
 
 	@Autowired
@@ -57,18 +55,36 @@ public class TerminalController {
 	@Autowired
 	TerminalService terminalService;
 
-	@RequestMapping(value = { Path.TERMINAL_STATUS_PING }, method = { RequestMethod.GET })
-	public String getPing(@RequestParam String state, @RequestParam String terminalId,
-			@RequestParam(required = false) String status, @RequestParam(required = false) Long pageStamp,
-			@RequestParam(required = false) Long startStamp,
-			Model model,
-			HttpServletResponse response, HttpServletRequest request) throws MalformedURLException, URISyntaxException {
+	@Autowired(required = false)
+	private SSOUser sSOUser;
+
+	public static class PingStatus {
+		public String state;
+		public String status;
+		public Long pageStamp;
+		public Long startStamp;
+	}
+
+	private PingStatus getPingStatus(String terminalId,
+			String state, String status,
+			Long pageStamp, Long startStamp) {
+		PingStatus map = new PingStatus();
+
+		if (ArgUtil.isEmpty(terminalId)) {
+			throw new OffsiteServerError(OffsiteServerCodes.TERMINAL_UNKNOWN);
+		}
 
 		TerminalData terminalData = terminalBox.getOrDefault(terminalId);
 
 		if (ArgUtil.isEmpty(pageStamp)) {
 			pageStamp = System.currentTimeMillis();
 		}
+
+		if ("START".equalsIgnoreCase(status)) {
+			// System.out.println("status"+status);
+			// startStamp = System.currentTimeMillis();
+		}
+
 		if (pageStamp >= terminalData.getPagestamp()) {
 			startStamp = ArgUtil.ifNotEmpty(startStamp, terminalData.getStartStamp());
 			if (!ArgUtil.areEqual(terminalData.getStatus(), status)
@@ -87,12 +103,46 @@ public class TerminalController {
 			terminalBox.fastPut(terminalId, terminalData);
 		}
 
+		map.state = state;
+		map.status = status;
+		map.pageStamp = pageStamp;
+		map.startStamp = startStamp;
+
+		return map;
+	}
+
+	@ResponseBody
+	@RequestMapping(value = { Path.TERMINAL_STATUS_PING }, method = { RequestMethod.POST })
+	public AmxApiResponse<PingStatus, Object> postPing(@RequestParam String state,
+			@RequestParam(required = false) String status, @RequestParam(required = false) Long pageStamp,
+			@RequestParam(required = false) Long startStamp,
+			Model model,
+			HttpServletResponse response, HttpServletRequest request) {
+		PingStatus map = getPingStatus(ArgUtil.parseAsString(sSOUser.getUserClient().getTerminalId()), state, status,
+				pageStamp, startStamp);
+		return AmxApiResponse.build(map);
+	}
+
+	@RequestMapping(value = { Path.TERMINAL_STATUS_PING }, method = { RequestMethod.GET })
+	public String getPing(@RequestParam String state, @RequestParam String terminalId,
+			@RequestParam(required = false) String status, @RequestParam(required = false) Long pageStamp,
+			@RequestParam(required = false) Long startStamp,
+			Model model,
+			HttpServletResponse response, HttpServletRequest request) throws MalformedURLException, URISyntaxException {
+
+		if (ArgUtil.isEmpty(terminalId) && !ArgUtil.isEmpty(sSOUser.getUserClient())) {
+			terminalId = ArgUtil.parseAsString(terminalId);
+		}
+
+		PingStatus map = getPingStatus(terminalId, state, status,
+				pageStamp, startStamp);
+
 		model.addAttribute("url",
 				Urly.parse(HttpUtils.getServerName(request)).path(appConfig.getAppPrefix())
 						.path(Path.TERMINAL_STATUS_PING)
-						.queryParam("terminalId", terminalId).queryParam("state", state)
-						.queryParam("status", status).queryParam("pageStamp", pageStamp)
-						.queryParam("startStamp", startStamp)
+						.queryParam("terminalId", terminalId).queryParam("state", map.state)
+						.queryParam("status", map.status).queryParam("pageStamp", map.pageStamp)
+						.queryParam("startStamp", map.startStamp)
 						.getURL());
 		return "js/signpad";
 	}
@@ -132,6 +182,15 @@ public class TerminalController {
 			@RequestParam Integer terminalId, @RequestParam BigDecimal employeeId,
 			@RequestBody SignaturePadCustomerRegStateMetaInfo signaturePadRemittanceInfo) {
 		return terminalService.updateCustomerRegStateData(terminalId, employeeId, signaturePadRemittanceInfo);
+	}
+
+	@ResponseBody
+	@ApiOperation("To update the status of Customer Profile update")
+	@RequestMapping(value = { Path.TERMINAL_STATUS_CUST_PROFILE }, method = { RequestMethod.POST })
+	public AmxApiResponse<BoolRespModel, Object> updateCustomerProfileStateData(
+			@RequestParam Integer terminalId, @RequestParam BigDecimal employeeId,
+			@RequestBody SignaturePadCustomerRegStateMetaInfo signaturePadRemittanceInfo) {
+		return terminalService.updateCustomerProfileStateData(terminalId, employeeId, signaturePadRemittanceInfo);
 	}
 
 }

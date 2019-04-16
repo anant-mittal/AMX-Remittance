@@ -82,6 +82,7 @@ public interface IRbaacService {
 		public static final String DEVICE_GET_DEVICE_REG_ID = DEVICE_PREFIX + "/get-deviceregid";
 		public static final String DEVICE_GET_DEVICE_BY_DEVICE_REG_ID = DEVICE_PREFIX + "/get-device";
 		public static final String NOTP_VERIFY = DEVICE_PREFIX + "/notp/verify";
+		public static final String DEVICE_DELETE = DEVICE_PREFIX + "/delete";
 
 		/** The Constant GET_ROLE_MAPPING_FOR_EMPLOYEE. */
 		public static final String GET_ROLE_MAPPING_FOR_EMPLOYEE = SERVICE_PREFIX + API_VERSION_V1
@@ -291,5 +292,7 @@ public interface IRbaacService {
 	public AmxApiResponse<NotpDTO, Object> verifyOTP(NotpDTO notpDTO);
 
 	public AmxApiResponse<DeviceDto, Object> getDeviceByDeviceRegId(BigDecimal deviceRegId);
+
+	AmxApiResponse<BoolRespModel, Object> deleteDevice(Integer deviceRegId);
 
 }

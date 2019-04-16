@@ -1,14 +1,6 @@
 package com.amx.jax.manager.remittance;
 
-import static com.amx.amxlib.constant.ApplicationProcedureParam.P_APPLICATION_COUNTRY_ID;
-import static com.amx.amxlib.constant.ApplicationProcedureParam.P_CALCULATED_FC_AMOUNT;
-import static com.amx.amxlib.constant.ApplicationProcedureParam.P_DELIVERY_MODE_ID;
-import static com.amx.amxlib.constant.ApplicationProcedureParam.P_FC_AMOUNT;
-import static com.amx.amxlib.constant.ApplicationProcedureParam.P_FOREIGN_CURRENCY_ID;
-import static com.amx.amxlib.constant.ApplicationProcedureParam.P_LC_AMOUNT;
-import static com.amx.amxlib.constant.ApplicationProcedureParam.P_REMITTANCE_MODE_ID;
-import static com.amx.amxlib.constant.ApplicationProcedureParam.P_ROUTING_BANK_ID;
-import static com.amx.amxlib.constant.ApplicationProcedureParam.P_ROUTING_COUNTRY_ID;
+import static com.amx.amxlib.constant.ApplicationProcedureParam.*;
 
 import java.util.Map;
 
@@ -53,5 +45,9 @@ public class RemittanceApplicationParamManager {
 		if (remittanceApplicationParams.getForeignAmountBD() != null) {
 			P_FC_AMOUNT.putValue(remitApplParametersMap, remittanceApplicationParams.getForeignAmountBD());
 		}
+		P_BENEFICIARY_BANK_ID.putValue(remitApplParametersMap, beneficiaryView.getBankId());
+		P_BENEFICIARY_COUNTRY_ID.putValue(remitApplParametersMap, beneficiaryView.getCountryId());
+		P_BENEFICIARY_ACCOUNT_NO.putValue(remitApplParametersMap, beneficiaryView.getBankAccountNumber());
+		P_BENEFICIARY_BRANCH_ID.putValue(remitApplParametersMap, beneficiaryView.getBranchId());
 	}
 }

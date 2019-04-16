@@ -96,7 +96,14 @@ public class LoyaltyPointsModel implements Serializable{
 	
 	@Column(name="EXPIRY_DT")
 	private Date expiryDate;
-
+	
+	
+	@Column(name="CONSUMED_LP")
+	private BigDecimal consumedLp;
+	
+	@Column(name="AVAILABLE_LP")
+	private BigDecimal avaliableLp;
+	
 
 	public BigDecimal getId() {
 		return id;
@@ -300,6 +307,26 @@ public class LoyaltyPointsModel implements Serializable{
 
 	public static long getSerialversionuid() {
 		return serialVersionUID;
+	}
+
+
+	public BigDecimal getAvaliableLp() {
+		return avaliableLp;
+	}
+
+
+	public void setAvaliableLp(BigDecimal avaliableLp) {
+		this.avaliableLp = avaliableLp;
+	}
+
+
+	public BigDecimal getConsumedLp() {
+		return consumedLp;
+	}
+
+
+	public void setConsumedLp(BigDecimal consumedLp) {
+		this.consumedLp = consumedLp;
 	}
 	
 	

@@ -46,31 +46,30 @@ public class ExchangeRateDao {
 	}
 
 	public List<ExchangeRateApprovalDetModel> getBranchExchangeRatesForRoutingBanks(BigDecimal currencyId,
-			BigDecimal countryBranchId, BigDecimal countryId, BigDecimal applicationCountryId,
-			List<BigDecimal> routingBankIds) {
+			BigDecimal countryBranchId, BigDecimal applicationCountryId, List<BigDecimal> routingBankIds) {
 
-		return repo.getBranchExchangeRatesForRoutingBanks(currencyId, countryBranchId, countryId, applicationCountryId,
+		return repo.getBranchExchangeRatesForRoutingBanks(currencyId, countryBranchId, applicationCountryId,
 				routingBankIds);
 	}
-	
-	public List<ExchangeRateApprovalDetModel> getBranchExchangeRatesForRoutingBanksAndServiceIds(BigDecimal currencyId,
-			BigDecimal countryBranchId, BigDecimal countryId, BigDecimal applicationCountryId,
-			List<BigDecimal> routingBankIds, List<BigDecimal> serviceIds) {
 
-		return repo.getBranchExchangeRatesForRoutingBankAndServiceIds(currencyId, countryBranchId, countryId,
-				applicationCountryId, routingBankIds, serviceIds);
+	public List<ExchangeRateApprovalDetModel> getBranchExchangeRatesForRoutingBanksAndServiceIds(BigDecimal currencyId,
+			BigDecimal countryBranchId, BigDecimal applicationCountryId, List<BigDecimal> routingBankIds,
+			List<BigDecimal> serviceIds) {
+
+		return repo.getBranchExchangeRatesForRoutingBankAndServiceIds(currencyId, countryBranchId, applicationCountryId,
+				routingBankIds, serviceIds);
 	}
 
 	public List<ExchangeRateApprovalDetModel> getExchangeRatesForRoutingBanks(BigDecimal currencyId,
 			BigDecimal countryId, BigDecimal applicationCountryId, List<BigDecimal> routingBankIds) {
 
-		return repo.getExchangeRatesForRoutingBanks(currencyId, countryId, applicationCountryId, routingBankIds);
+		return repo.getExchangeRatesForRoutingBanks(currencyId, applicationCountryId, routingBankIds);
 	}
 
 	public List<BigDecimal> getSellRateMinForRoutingBanks(BigDecimal currencyId, BigDecimal countryId,
 			BigDecimal applicationCountryId, BigDecimal routingBankId) {
 
-		return repo.getUniqueSellRatesMinForRoutingBank(currencyId, countryId, applicationCountryId, routingBankId);
+		return repo.getUniqueSellRatesMinForRoutingBank(currencyId, applicationCountryId, routingBankId);
 	}
 
 	public List<ExchangeRateAPRDET> getUniqueSellRatesForRoutingBanks(BigDecimal currencyId, BigDecimal countryId,
@@ -78,6 +77,5 @@ public class ExchangeRateDao {
 
 		return repo.getSellRatesForRoutingBanks(currencyId, applicationCountryId, routingBankIds, serviceIds);
 	}
-	
 
 }

@@ -16,7 +16,7 @@ public class DeviceConnecter implements IDeviceConnecter {
 
 	@Override
 	public void saveCardDetailsByTerminal(String terminalId, CardData data) {
-		if (ArgUtil.isEmpty(data)) {
+		if (ArgUtil.isEmpty(data) || data.isEmpty()) {
 			cardBox.fastRemove(terminalId);
 		} else {
 			cardBox.put(terminalId, data);

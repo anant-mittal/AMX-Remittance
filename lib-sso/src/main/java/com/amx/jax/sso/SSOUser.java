@@ -11,10 +11,8 @@ import org.springframework.stereotype.Component;
 
 import com.amx.jax.AppConfig;
 import com.amx.jax.AppContextUtil;
-import com.amx.jax.dict.UserClient.ClientType;
-import com.amx.jax.dict.UserClient.UserDeviceClient;
 import com.amx.jax.http.CommonHttpRequest;
-import com.amx.jax.model.UserDevice;
+import com.amx.jax.rbaac.dto.UserClientDto;
 import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Random;
@@ -41,11 +39,21 @@ public class SSOUser implements Serializable {
 	private Long loginTime;
 	private EmployeeDetailsDTO userDetails = null;
 
+	private UserClientDto userClient;
+
 	public String getUserId() {
 		if (userDetails == null) {
 			return null;
 		}
 		return ArgUtil.parseAsString(userDetails.getEmployeeId());
+	}
+
+	public UserClientDto getUserClient() {
+		return userClient;
+	}
+
+	public void setUserClient(UserClientDto userClient) {
+		this.userClient = userClient;
 	}
 
 	private String selfSAC;

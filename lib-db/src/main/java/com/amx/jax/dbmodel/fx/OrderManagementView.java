@@ -14,6 +14,9 @@ public class OrderManagementView {
 	
 	
 	@Id
+	@Column(name = "RECEIPT_PAYMENT_ID")
+	BigDecimal receiptPaymentId;
+	
 	@Column(name = "DOCUMENT_NO")
 	BigDecimal DocumentNo;
 	
@@ -70,9 +73,6 @@ public class OrderManagementView {
 	
 	@Column(name = "DELIVERY_DET_SEQ_ID")
 	BigDecimal deliveryDetailsId;
-	
-	@Column(name = "RECEIPT_PAYMENT_ID")
-	BigDecimal receiptPaymentId;
 	
 	@Column(name = "LOCAL_NET_AMOUNT")
 	BigDecimal localNetAmount;

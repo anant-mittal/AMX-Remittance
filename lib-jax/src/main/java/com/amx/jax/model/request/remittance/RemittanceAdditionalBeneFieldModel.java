@@ -2,12 +2,11 @@ package com.amx.jax.model.request.remittance;
 
 import java.math.BigDecimal;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.amx.jax.model.AbstractModel;
 import com.amx.jax.model.response.remittance.FlexFieldDto;
 import com.amx.utils.JsonUtil;
 
@@ -20,7 +19,10 @@ public abstract class RemittanceAdditionalBeneFieldModel extends AbstractRemitta
 	private Map<String, FlexFieldDto> flexFieldDtoMap;
 	private Map<String, Object> additionalFields;
 	private BigDecimal purposeOfTrnxId;
-
+	
+	private String staffUserName;
+	private String amlRemarks;
+	
 	public Map<String, Object> getAdditionalFields() {
 		return additionalFields;
 	}
@@ -77,8 +79,7 @@ public abstract class RemittanceAdditionalBeneFieldModel extends AbstractRemitta
 				}
 				return flexFieldDto;
 			};
-			this.flexFieldDtoMap = flexFieldMap.entrySet().stream()
-					.collect(Collectors.toMap(Map.Entry::getKey, valueMapper));
+			this.flexFieldDtoMap = flexFieldMap.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, valueMapper));
 		}
 	}
 	
@@ -93,8 +94,7 @@ public abstract class RemittanceAdditionalBeneFieldModel extends AbstractRemitta
 	private Map<String, String> createFlexFieldMap(Map<String, Object> flexFields2) {
 
 		Set<Entry<String, Object>> es = flexFields2.entrySet();
-		Map<String, String> output = es.stream()
-				.collect(Collectors.toMap(x -> x.getKey(), x -> JsonUtil.toJson(x.getValue())));
+		Map<String, String> output = es.stream().collect(Collectors.toMap(x -> x.getKey(), x -> JsonUtil.toJson(x.getValue())));
 		return output;
 	}
 	
@@ -104,4 +104,24 @@ public abstract class RemittanceAdditionalBeneFieldModel extends AbstractRemitta
 	public void setPurposeOfTrnxId(BigDecimal purposeOfTrnxId) {
 		this.purposeOfTrnxId = purposeOfTrnxId;
 	}
+
+
+	public String getStaffUserName() {
+		return staffUserName;
+	}
+
+	public void setStaffUserName(String staffUserName) {
+		this.staffUserName = staffUserName;
+	}
+
+	public String getAmlRemarks() {
+		return amlRemarks;
+	}
+
+	public void setAmlRemarks(String amlRemarks) {
+		this.amlRemarks = amlRemarks;
+	}
+
+	
+	
 }

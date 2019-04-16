@@ -42,8 +42,7 @@ public class JaxField implements Serializable {
 	BigDecimal maxLength;
 
 	@ManyToMany(cascade = { CascadeType.ALL })
-	@JoinTable(name = "JAX_FIELD_REGEX_MAPPING", joinColumns = {
-			@JoinColumn(name = "FIELD_NAME") }, inverseJoinColumns = { @JoinColumn(name = "REGEX_KEY") })
+	@JoinTable(name = "JAX_FIELD_REGEX_MAPPING", joinColumns = {@JoinColumn(name = "FIELD_NAME") }, inverseJoinColumns = { @JoinColumn(name = "REGEX_KEY") })
 	List<ValidationRegex> validationRegex;
 	
 	@Column(name = "LABEL")

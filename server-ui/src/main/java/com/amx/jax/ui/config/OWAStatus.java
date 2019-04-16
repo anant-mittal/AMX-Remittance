@@ -49,6 +49,8 @@ public class OWAStatus extends IStatusCodeListPlugin<OWAStatusStatusCodes, ApiOW
 		/** The verify failed. */
 		VERIFY_FAILED("401"),
 
+		MISSING_CREDENTIALS("401"),
+
 		/** The user update init. */
 		// User Updates
 		USER_UPDATE_INIT("200"),
@@ -78,6 +80,8 @@ public class OWAStatus extends IStatusCodeListPlugin<OWAStatusStatusCodes, ApiOW
 		DOTP_REQUIRED("300"),
 		MOTP_REQUIRED("300"),
 		OTP_REQUIRED("300"),
+
+		INCOME_UPDATE_REQUIRED("200"),
 
 		/** The unknown jax error. */
 		UNKNOWN_JAX_ERROR("500"),
@@ -116,6 +120,10 @@ public class OWAStatus extends IStatusCodeListPlugin<OWAStatusStatusCodes, ApiOW
 		 */
 		OWAStatusStatusCodes(String code) {
 			this.code = code;
+		}
+
+		OWAStatusStatusCodes() {
+			this.code = "300";
 		}
 
 		@Override

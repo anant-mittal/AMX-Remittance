@@ -3,7 +3,8 @@ package com.amx.jax.event;
 import com.amx.jax.tunnel.ITunnelEventsDict;
 
 public enum AmxTunnelEvents implements ITunnelEventsDict {
-	CIVIL_ID_EXPIRY, CUSTOMER_BIRTHDATE_GREETING, XRATE_BEST_RATE_CHANGE, TRNX_BENE_CREDIT,
+	CIVIL_ID_EXPIRY, CUSTOMER_BIRTHDATE_GREETING, XRATE_BEST_RATE_CHANGE, TRNX_BENE_CREDIT, TRNX_BENE_CREDIT_DELAY,
+	UPDATE_DEVICE_STATUS,
 	// tests events
 	TEST_EVENT, PING_SEND, PING_SHOUT, PING_TASK;
 
@@ -16,8 +17,11 @@ public enum AmxTunnelEvents implements ITunnelEventsDict {
 		public static final String PING_SHOUT = "PING_SHOUT";
 		public static final String PING_TASK = "PING_TASK";
 		public static final String TRNX_BENE_CREDIT = "TRNX_BENE_CREDIT";
+		public static final String TRNX_BENE_CREDIT_DELAY = "TRNX_BENE_CREDIT_DELAY";
 		public static final String DATAUPD_CUSTOMER = "DATAUPD_CUSTOMER";
 		public static final String DATAUPD_TRNX = "DATAUPD_TRNX";
+		public static final String UPDATE_DEVICE_STATUS = "UPDATE_DEVICE_STATUS";
+
 	}
 
 	@Override

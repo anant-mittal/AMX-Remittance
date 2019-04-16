@@ -16,12 +16,19 @@ public class WebAppConfig {
 	@Value("${oldbranch.url}")
 	private String oldBranchUrl;
 	
+	@Value("${wuLogin.url}")
+	private String wuLoginUrl;
+
 	/** The app title. */
 	@TenantValue("${application.title}")
 	private String appTitle;
 	
 	public String getOldBranchUrl() {
 		return oldBranchUrl;
+	}
+
+	public String getWuLoginUrl() {
+		return wuLoginUrl;
 	}
 	
 	public String getCleanCDNUrl() {

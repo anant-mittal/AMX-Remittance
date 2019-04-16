@@ -2,8 +2,9 @@ package com.amx.jax.pricer.dto;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Map.Entry;
 
 import javax.validation.constraints.NotNull;
 
@@ -22,7 +23,11 @@ public class ExchangeRateDetails implements Serializable, Cloneable, Comparable<
 
 	private ExchangeRateBreakup sellRateBase;
 
-	private Map<DISCOUNT_TYPE, String> discountPipsDetails;
+	private Map<DISCOUNT_TYPE, ExchangeDiscountInfo> customerDiscountDetails;
+
+	private boolean isDiscountAvailed = false;
+
+	private boolean isCostRateLimitReached = false;
 
 	public BigDecimal getBankId() {
 		return bankId;
@@ -56,12 +61,28 @@ public class ExchangeRateDetails implements Serializable, Cloneable, Comparable<
 		this.sellRateBase = sellRateBase;
 	}
 
-	public Map<DISCOUNT_TYPE, String> getDiscountPipsDetails() {
-		return discountPipsDetails;
+	public Map<DISCOUNT_TYPE, ExchangeDiscountInfo> getCustomerDiscountDetails() {
+		return customerDiscountDetails;
 	}
 
-	public void setDiscountPipsDetails(Map<DISCOUNT_TYPE, String> discountPipsDetails) {
-		this.discountPipsDetails = discountPipsDetails;
+	public void setCustomerDiscountDetails(Map<DISCOUNT_TYPE, ExchangeDiscountInfo> discountPipsDetails) {
+		this.customerDiscountDetails = discountPipsDetails;
+	}
+
+	public boolean isDiscountAvailed() {
+		return isDiscountAvailed;
+	}
+
+	public void setDiscountAvailed(boolean isDiscountAvailed) {
+		this.isDiscountAvailed = isDiscountAvailed;
+	}
+
+	public boolean isCostRateLimitReached() {
+		return isCostRateLimitReached;
+	}
+
+	public void setCostRateLimitReached(boolean isCostRateLimitReached) {
+		this.isCostRateLimitReached = isCostRateLimitReached;
 	}
 
 	@Override
@@ -82,8 +103,18 @@ public class ExchangeRateDetails implements Serializable, Cloneable, Comparable<
 		try {
 
 			ExchangeRateDetails cloned = (ExchangeRateDetails) super.clone();
-			cloned.discountPipsDetails = this.discountPipsDetails.entrySet().stream()
-					.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+			// cloned.customerDiscountDetails =
+			// this.customerDiscountDetails.entrySet().stream()
+			// .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+			if (this.customerDiscountDetails != null) {
+				cloned.customerDiscountDetails = new HashMap<DISCOUNT_TYPE, ExchangeDiscountInfo>();
+
+				for (Entry<DISCOUNT_TYPE, ExchangeDiscountInfo> entry : this.customerDiscountDetails.entrySet()) {
+					cloned.customerDiscountDetails.put(entry.getKey(), entry.getValue().clone());
+				}
+			}
 
 			return cloned;
 
@@ -94,9 +125,20 @@ public class ExchangeRateDetails implements Serializable, Cloneable, Comparable<
 			cloned.serviceIndicatorId = this.serviceIndicatorId;
 			cloned.sellRateBase = this.sellRateBase.clone();
 			cloned.sellRateNet = this.sellRateNet.clone();
+			cloned.isDiscountAvailed = this.isDiscountAvailed;
+			cloned.isCostRateLimitReached = this.isCostRateLimitReached;
 
-			cloned.discountPipsDetails = this.discountPipsDetails.entrySet().stream()
-					.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+			// cloned.customerDiscountDetails =
+			// this.customerDiscountDetails.entrySet().stream()
+			// .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+			if (this.customerDiscountDetails != null) {
+				cloned.customerDiscountDetails = new HashMap<DISCOUNT_TYPE, ExchangeDiscountInfo>();
+
+				for (Entry<DISCOUNT_TYPE, ExchangeDiscountInfo> entry : this.customerDiscountDetails.entrySet()) {
+					cloned.customerDiscountDetails.put(entry.getKey(), entry.getValue().clone());
+				}
+			}
 
 			return cloned;
 

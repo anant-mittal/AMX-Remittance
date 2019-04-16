@@ -17,6 +17,7 @@ import com.amx.amxlib.meta.model.ApplicationSetupDTO;
 import com.amx.amxlib.meta.model.AuthenticationLimitCheckDTO;
 import com.amx.amxlib.meta.model.BankBranchDto;
 import com.amx.amxlib.meta.model.BankMasterDTO;
+import com.amx.amxlib.meta.model.DeclarationDTO;
 import com.amx.amxlib.meta.model.JaxMetaParameter;
 import com.amx.amxlib.meta.model.MultiCountryDTO;
 import com.amx.amxlib.meta.model.ServiceGroupMasterDescDto;
@@ -458,4 +459,8 @@ public class MetaController {
 	
 	
 	
+	@RequestMapping(value = MetaApi.API_DECLARATION, method = RequestMethod.POST)
+	public AmxApiResponse<DeclarationDTO, Object> getDeclaration() {
+		return metaService.getDeclaration(metaData.getLanguageId());
+	}
 }

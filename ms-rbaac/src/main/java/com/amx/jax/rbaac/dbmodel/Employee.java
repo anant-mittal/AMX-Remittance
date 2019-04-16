@@ -49,6 +49,11 @@ public class Employee implements java.io.Serializable {
 
 	private BigDecimal lockCount;
 	private Date lockDate;
+	
+	//OTP RELATED 
+	private String otpNotifySms;
+	private String otpNotifyApp;
+	private String otpNotifyWhatsapp;
 
 	// TODO: Add Unlock Info
 
@@ -318,5 +323,33 @@ public class Employee implements java.io.Serializable {
 	public void setLastLogin(Date lastLogin) {
 		this.lastLogin = lastLogin;
 	}
+	@Column(name = "OTP_NOTIFY_SMS")
+	public String getOtpNotifySms() {
+		return otpNotifySms;
+	}
+
+	public void setOtpNotifySms(String otpNotifySms) {
+		this.otpNotifySms = otpNotifySms;
+	}
+
+	@Column(name = "OTP_NOTIFY_APP")
+	public String getOtpNotifyApp() {
+		return otpNotifyApp;
+	}
+
+	public void setOtpNotifyApp(String otpNotifyApp) {
+		this.otpNotifyApp = otpNotifyApp;
+	}
+
+	@Column(name = "OTP_NOTIFY_WHATSAPP")
+	public String getOtpNotifyWhatsapp() {
+		return otpNotifyWhatsapp;
+	}
+
+	public void setOtpNotifyWhatsapp(String otpNotifyWhatsapp) {
+		this.otpNotifyWhatsapp = otpNotifyWhatsapp;
+	}
+	
+	
 
 }

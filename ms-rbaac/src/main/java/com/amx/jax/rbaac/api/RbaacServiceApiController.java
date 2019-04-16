@@ -422,6 +422,12 @@ public class RbaacServiceApiController implements IRbaacService {
 				countryBranchSystemInventoryId);
 		return AmxApiResponse.build(response);
 	}
-	
+
+	@Override
+	@RequestMapping(value = ApiEndPoints.DEVICE_DELETE, method = RequestMethod.POST)
+	public AmxApiResponse<BoolRespModel, Object> deleteDevice(Integer deviceRegId) {
+		BoolRespModel response = deviceService.deleteDevice(deviceRegId);
+		return AmxApiResponse.build(response);
+	}
 
 }

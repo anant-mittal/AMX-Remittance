@@ -1,5 +1,9 @@
 package com.amx.jax.device;
 
+import com.amx.utils.ArgUtil;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CardReader {
 
 	private CardData data = null;
@@ -7,6 +11,10 @@ public class CardReader {
 	String reader;
 	long deviceActiveTime;
 	long cardActiveTime;
+
+	public boolean hasCard() {
+		return !ArgUtil.isEmpty(data) && !data.isEmpty();
+	}
 
 	public CardReader() {
 		this.cardActiveTime = System.currentTimeMillis();
