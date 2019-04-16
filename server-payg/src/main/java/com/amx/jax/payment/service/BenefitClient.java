@@ -190,17 +190,17 @@ public class BenefitClient implements PayGClient {
 		if ("CAPTURED".equalsIgnoreCase(resultCode)) {
 			/*statusCode = (BenefitCodes) PayGCodes.getPayGCode(resultCode, BenefitCodes.UNKNOWN);
 			gatewayResponse.setErrorCategory(statusCode.getCategory());*/
-			gatewayResponse.setErrorCategory(ResponseCodeBHR.getCodeCategoryByResponseCode(gatewayResponse.getError().toString()));
+			gatewayResponse.setErrorCategory(ResponseCodeBHR.getCodeCategoryByResponseCode(resultResponse));
 		} else if (resultResponse == null) {
 			/*statusCode = (BenefitCodes) PayGCodes.getPayGCode(responseCode, BenefitCodes.UNKNOWN);
 			gatewayResponse.setErrorCategory(statusCode.getCategory());*/
-			gatewayResponse.setErrorCategory(ResponseCodeBHR.getCodeCategoryByResponseCode(gatewayResponse.getError().toString()));
+			gatewayResponse.setErrorCategory(ResponseCodeBHR.getCodeCategoryByResponseCode(resultResponse));
 			gatewayResponse.setError(responseCode);
 		} else {
 			LOGGER.info("resultResponse ---> " + resultResponse);
 			/*statusCode = (BenefitCodes) PayGCodes.getPayGCode(resultResponse, BenefitCodes.UNKNOWN);
 			gatewayResponse.setErrorCategory(statusCode.getCategory());*/
-			gatewayResponse.setErrorCategory(ResponseCodeBHR.getCodeCategoryByResponseCode(gatewayResponse.getError().toString()));
+			gatewayResponse.setErrorCategory(ResponseCodeBHR.getCodeCategoryByResponseCode(resultResponse));
 			LOGGER.info("Result from response Values ---> " + gatewayResponse.getErrorCategory());
 			gatewayResponse.setError(resultResponse);
 		}
