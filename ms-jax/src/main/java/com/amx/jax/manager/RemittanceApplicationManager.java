@@ -219,7 +219,15 @@ public class RemittanceApplicationManager {
 		validateBannedBank();
 		validateDailyBeneficiaryTransactionLimit(beneDetails);
 		remittanceApplication.setInstruction("URGENT");
+		setCustomerDiscountColumns(remittanceApplication, validationResults);
 		return remittanceApplication;
+	}
+
+	private void setCustomerDiscountColumns(RemittanceApplication remittanceApplication,
+			RemittanceTransactionResponsetModel validationResults) {
+		remittanceApplication
+				.setIsDiscountAvailed(Boolean.TRUE.equals(validationResults.getDiscountAvailed()) ? ConstantDocument.Yes
+						: ConstantDocument.No);
 	}
 
 	private BigDecimal getSelectedCurrency(BigDecimal foreignCurrencyId,
