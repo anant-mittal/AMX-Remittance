@@ -1047,6 +1047,7 @@ public class UserService extends AbstractUserService {
 			BeanUtils.copyProperties(personInfo, customer);
 			personInfo.setEmail(customer.getEmail());
 			personInfo.setMobile(customer.getMobile());
+			personInfo.setWhatsAppNumber(customer.getWhatsapp());
 		} catch (Exception e) {
 		}
 		return personInfo;
