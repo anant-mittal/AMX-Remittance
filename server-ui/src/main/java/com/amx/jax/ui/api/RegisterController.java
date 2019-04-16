@@ -45,21 +45,27 @@ public class RegisterController {
 	/**
 	 * Verify ID.
 	 *
-	 * @param civilid
-	 *            the civilid
+	 * @param civilid the civilid
 	 * @return the response wrapper
 	 */
+	@Deprecated
 	@ApiOperation(value = "Verify KYC and sneds OTP to registered Mobile")
 	@RequestMapping(value = "/pub/register/verifyid", method = { RequestMethod.POST })
-	public ResponseWrapper<AuthData> verifyID(@RequestParam String civilid, @RequestParam (required = false) CommunicationChannel communicationChannel) {
+	public ResponseWrapper<AuthData> verifyID(@RequestParam String civilid) {
+		return registrationService.validateCustomer(civilid);
+	}
+
+	@ApiOperation(value = "Verify KYC and sneds OTP to registered Mobile")
+	@RequestMapping(value = "/pub/register/verifyid/v2", method = { RequestMethod.POST })
+	public ResponseWrapper<AuthData> verifyID(@RequestParam String civilid,
+			@RequestParam CommunicationChannel communicationChannel) {
 		return registrationService.validateCustomerInit(civilid, communicationChannel);
 	}
 
 	/**
 	 * Verify customer.
 	 *
-	 * @param authData
-	 *            the auth data
+	 * @param authData the auth data
 	 * @return the response wrapper
 	 */
 	@ApiOperation(value = "Customer Activation", notes = "${RegisterController.verifyCustomer}")
@@ -68,27 +74,24 @@ public class RegisterController {
 		return registrationService.validateCustomer(authData.getIdentity(), authData.getmOtp(), authData.getAnswer());
 	}
 
-
 	/**
 	 * Verify customer.
 	 *
-	 * @param authData
-	 *            the auth data
+	 * @param authData the auth data
 	 * @return the response wrapper
 	 */
 	@ApiOperation(value = "Customer Activation", notes = "${RegisterController.verifyCustomer}")
 	@RequestMapping(value = "/pub/register/verifycustomer/v2", method = { RequestMethod.POST })
-	public ResponseWrapper<AuthData> verifyCustomer(@RequestParam String identity, @RequestParam String otp, @RequestParam CommunicationChannel communicationChannel) {
+	public ResponseWrapper<AuthData> verifyCustomer(@RequestParam String identity, @RequestParam String otp,
+			@RequestParam CommunicationChannel communicationChannel) {
 		return registrationService.validateCustomer(identity, otp, communicationChannel);
 	}
 
 	/**
 	 * Verifies OTP for civilID.
 	 *
-	 * @param civilid
-	 *            the civilid
-	 * @param mOtp
-	 *            the m otp
+	 * @param civilid the civilid
+	 * @param mOtp    the m otp
 	 * @return the response wrapper
 	 */
 	@Deprecated
@@ -100,8 +103,7 @@ public class RegisterController {
 	/**
 	 * Gets the sec ques.
 	 *
-	 * @param request
-	 *            the request
+	 * @param request the request
 	 * @return the sec ques
 	 */
 	@RequestMapping(value = "/pub/register/secques", method = { RequestMethod.GET })
@@ -112,8 +114,7 @@ public class RegisterController {
 	/**
 	 * Reg sec ques.
 	 *
-	 * @param userUpdateData
-	 *            the user update data
+	 * @param userUpdateData the user update data
 	 * @return the response wrapper
 	 */
 	@RequestMapping(value = "/pub/register/secques", method = { RequestMethod.POST, })
@@ -125,14 +126,10 @@ public class RegisterController {
 	/**
 	 * Reg phising.
 	 *
-	 * @param imageUrl
-	 *            the image url
-	 * @param caption
-	 *            the caption
-	 * @param mOtp
-	 *            the m otp
-	 * @param eOtp
-	 *            the e otp
+	 * @param imageUrl the image url
+	 * @param caption  the caption
+	 * @param mOtp     the m otp
+	 * @param eOtp     the e otp
 	 * @return the response wrapper
 	 */
 	@RequestMapping(value = "/pub/register/phising", method = { RequestMethod.POST })
@@ -144,16 +141,11 @@ public class RegisterController {
 	/**
 	 * Reg login id and password.
 	 *
-	 * @param loginId
-	 *            the login id
-	 * @param password
-	 *            the password
-	 * @param mOtp
-	 *            the m otp
-	 * @param eOtp
-	 *            the e otp
-	 * @param email
-	 *            the email
+	 * @param loginId  the login id
+	 * @param password the password
+	 * @param mOtp     the m otp
+	 * @param eOtp     the e otp
+	 * @param email    the email
 	 * @return the response wrapper
 	 */
 	@RequestMapping(value = "/pub/register/creds", method = {
@@ -168,8 +160,7 @@ public class RegisterController {
 	/**
 	 * Reg login id and password JSON.
 	 *
-	 * @param customerCredential
-	 *            the customer credential
+	 * @param customerCredential the customer credential
 	 * @return the response wrapper
 	 */
 	@RequestMapping(value = "/pub/register/creds/**", method = { RequestMethod.POST, })
@@ -185,8 +176,7 @@ public class RegisterController {
 	/**
 	 * Partial reg.
 	 *
-	 * @param personalDetail
-	 *            the personal detail
+	 * @param personalDetail the personal detail
 	 * @return the response wrapper
 	 */
 	@RequestMapping(value = "/pub/register/new/init", method = { RequestMethod.POST })
@@ -197,10 +187,8 @@ public class RegisterController {
 	/**
 	 * Partial reg.
 	 *
-	 * @param mOtp
-	 *            the m otp
-	 * @param eOtp
-	 *            the e otp
+	 * @param mOtp the m otp
+	 * @param eOtp the e otp
 	 * @return the response wrapper
 	 */
 	@RequestMapping(value = "/pub/register/new/verify", method = { RequestMethod.POST })
@@ -212,8 +200,7 @@ public class RegisterController {
 	/**
 	 * Save home address.
 	 *
-	 * @param customerHomeAddress
-	 *            the customer home address
+	 * @param customerHomeAddress the customer home address
 	 * @return the response wrapper
 	 */
 	@RequestMapping(value = "/pub/register/new/address", method = { RequestMethod.POST })
@@ -225,8 +212,7 @@ public class RegisterController {
 	/**
 	 * Reg new sec ques.
 	 *
-	 * @param userUpdateData
-	 *            the user update data
+	 * @param userUpdateData the user update data
 	 * @return the response wrapper
 	 */
 	@RequestMapping(value = "/pub/register/new/secques", method = { RequestMethod.POST })
@@ -238,10 +224,8 @@ public class RegisterController {
 	/**
 	 * Reg new phising.
 	 *
-	 * @param imageUrl
-	 *            the image url
-	 * @param caption
-	 *            the caption
+	 * @param imageUrl the image url
+	 * @param caption  the caption
 	 * @return the response wrapper
 	 */
 	@RequestMapping(value = "/pub/register/new/phising", method = { RequestMethod.POST })
@@ -253,8 +237,7 @@ public class RegisterController {
 	/**
 	 * Reg new login id and password.
 	 *
-	 * @param customerCredential
-	 *            the customer credential
+	 * @param customerCredential the customer credential
 	 * @return the response wrapper
 	 */
 	@RequestMapping(value = "/pub/register/new/creds", method = { RequestMethod.POST })
