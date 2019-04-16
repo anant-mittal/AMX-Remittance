@@ -41,6 +41,8 @@ import com.amx.jax.model.request.remittance.AbstractRemittanceApplicationRequest
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.model.response.ExchangeRateBreakup;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
+import com.amx.jax.pricer.dto.ExchangeDiscountInfo;
+import com.amx.jax.pricer.var.PricerServiceConstants.DISCOUNT_TYPE;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.IDocumentDao;
 import com.amx.jax.service.BankMetaService;
@@ -223,11 +225,27 @@ public class RemittanceApplicationManager {
 		return remittanceApplication;
 	}
 
-	private void setCustomerDiscountColumns(RemittanceApplication remittanceApplication,
-			RemittanceTransactionResponsetModel validationResults) {
-		remittanceApplication
-				.setIsDiscountAvailed(Boolean.TRUE.equals(validationResults.getDiscountAvailed()) ? ConstantDocument.Yes
+	public void setCustomerDiscountColumns(RemittanceApplication remittanceApplication,
+			RemittanceTransactionResponsetModel remittanceTransactionResponsetModel) {
+		remittanceApplication.setIsDiscountAvailed(
+				Boolean.TRUE.equals(remittanceTransactionResponsetModel.getDiscountAvailed()) ? ConstantDocument.Yes
 						: ConstantDocument.No);
+		Map<DISCOUNT_TYPE, ExchangeDiscountInfo> customerDiscoutDetails = remittanceTransactionResponsetModel
+				.getCustomerDiscountDetails();
+		remittanceApplication.setCusCatDiscountId(customerDiscoutDetails.get(DISCOUNT_TYPE.CUSTOMER_CATEGORY).getId());
+		remittanceApplication
+				.setCusCatDiscount(customerDiscoutDetails.get(DISCOUNT_TYPE.CUSTOMER_CATEGORY).getDiscountPipsValue());
+		remittanceApplication.setChannelDiscountId(customerDiscoutDetails.get(DISCOUNT_TYPE.CHANNEL).getId());
+		remittanceApplication
+				.setChannelDiscount(customerDiscoutDetails.get(DISCOUNT_TYPE.CHANNEL).getDiscountPipsValue());
+		String pips = customerDiscoutDetails.get(DISCOUNT_TYPE.AMOUNT_SLAB).getDiscountTypeValue();
+		if (!StringUtils.isBlank(pips)) {
+			String[] parts = pips.split("-");
+			remittanceApplication.setPipsFromAmt(parts[0] == null ? new BigDecimal(0) : new BigDecimal(parts[0]));
+			remittanceApplication.setPipsToAmt(parts[1] == null ? new BigDecimal(0) : new BigDecimal(parts[1]));
+		}
+		remittanceApplication
+				.setPipsDiscount(customerDiscoutDetails.get(DISCOUNT_TYPE.AMOUNT_SLAB).getDiscountPipsValue());
 	}
 
 	private BigDecimal getSelectedCurrency(BigDecimal foreignCurrencyId,
