@@ -59,7 +59,11 @@ public class FlatMap {
 		JsonPath jsonPath = getJsonPath(key);
 		return jsonPath.load(this.map, defaultValue);
 	}
-
+	public String getValue(String key, String defaultValue) {
+		JsonPath jsonPath = getJsonPath(key);
+		String s = jsonPath.load(this.map, Constants.BLANK);
+		return s.equals("") ? "" : defaultValue;
+	}
 	/**
 	 * Gets the integer.
 	 *
