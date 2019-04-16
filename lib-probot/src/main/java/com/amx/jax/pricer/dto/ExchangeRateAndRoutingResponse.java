@@ -7,6 +7,7 @@ import java.util.Map;
 
 import com.amx.jax.io.JSONable;
 import com.amx.jax.pricer.var.PricerServiceConstants.CUSTOMER_CATEGORY;
+import com.amx.jax.pricer.var.PricerServiceConstants.PRICE_TYPE;
 
 public class ExchangeRateAndRoutingResponse implements Serializable, JSONable {
 
@@ -24,8 +25,8 @@ public class ExchangeRateAndRoutingResponse implements Serializable, JSONable {
 	private Map<BigDecimal, BankDetailsDTO> bankDetails;
 
 	private Map<String, TrnxRoutingDetails> trnxRoutingPaths;
-
-	private List<String> bestExchangeRatePaths;
+	
+	private Map<PRICE_TYPE, List<String>> bestExchangeRatePaths;
 
 	private String localTimezone;
 
@@ -54,12 +55,12 @@ public class ExchangeRateAndRoutingResponse implements Serializable, JSONable {
 	public void setBankDetails(Map<BigDecimal, BankDetailsDTO> bankDetails) {
 		this.bankDetails = bankDetails;
 	}
-
-	public List<String> getBestExchangeRatePaths() {
+	
+	public Map<PRICE_TYPE, List<String>> getBestExchangeRatePaths() {
 		return bestExchangeRatePaths;
 	}
 
-	public void setBestExchangeRatePaths(List<String> bestExchangeRatePaths) {
+	public void setBestExchangeRatePaths(Map<PRICE_TYPE, List<String>> bestExchangeRatePaths) {
 		this.bestExchangeRatePaths = bestExchangeRatePaths;
 	}
 

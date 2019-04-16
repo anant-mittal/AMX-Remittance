@@ -29,9 +29,11 @@ import com.amx.jax.pricer.dbmodel.TimezoneMasterModel;
 import com.amx.jax.pricer.dbmodel.ViewExRoutingMatrix;
 import com.amx.jax.pricer.dto.EstimatedDeliveryDetails;
 import com.amx.jax.pricer.dto.ExchangeRateAndRoutingRequest;
+import com.amx.jax.pricer.dto.ExchangeRateBreakup;
 import com.amx.jax.pricer.dto.ExchangeRateDetails;
 import com.amx.jax.pricer.exception.PricerServiceError;
 import com.amx.jax.pricer.exception.PricerServiceException;
+import com.amx.jax.pricer.var.PricerServiceConstants;
 import com.amx.utils.DateUtil;
 import com.amx.utils.JsonUtil;
 
@@ -382,7 +384,44 @@ public class RemitRoutingManager {
 
 	public void filterTransactionRoutes() {
 
-		List<TransientRoutingComputeDetails> routingMatrixData = transientDataCache.getRoutingMatrixData();
+		List<TransientRoutingComputeDetails> routeDataList = transientDataCache.getRoutingMatrixData();
+
+		List<TransientRoutingComputeDetails> removeList = new ArrayList<TransientRoutingComputeDetails>();
+
+		for (TransientRoutingComputeDetails routeData : routeDataList) {
+
+			ViewExRoutingMatrix matrix = routeData.getViewExRoutingMatrix();
+
+			ExchangeRateBreakup breakup = routeData.getExchangeRateDetails().getSellRateNet() != null
+					? routeData.getExchangeRateDetails().getSellRateNet()
+					: routeData.getExchangeRateDetails().getSellRateBase();
+
+			if (breakup == null) {
+				removeList.add(routeData);
+				continue;
+			}
+
+			/**
+			 * Check for Transaction Amount Limit
+			 */
+			BigDecimal fromAmt = matrix.getFromAmount() == null ? BigDecimal.ZERO : matrix.getFromAmount();
+			BigDecimal toAmt = matrix.getToAmount() == null ? PricerServiceConstants.MAX_BIGD_12
+					: matrix.getToAmount();
+
+			if (fromAmt.compareTo(breakup.getConvertedFCAmount()) > 0
+					|| toAmt.compareTo(breakup.getConvertedFCAmount()) < 0) {
+
+				System.out.println(" Remove Route Data ==> " + JsonUtil.toJson(matrix));
+
+				removeList.add(routeData);
+				continue;
+			}
+
+		}
+
+		for (TransientRoutingComputeDetails routeData : removeList) {
+			routeDataList.remove(routeData);
+		}
 
 	}
 

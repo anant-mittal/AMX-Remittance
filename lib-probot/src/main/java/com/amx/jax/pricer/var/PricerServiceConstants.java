@@ -3,13 +3,17 @@
  */
 package com.amx.jax.pricer.var;
 
+import java.math.BigDecimal;
+
 /**
  * @author abhijeet
  *
  */
 public final class PricerServiceConstants {
 
-	public static String TTE = "TTE";
+	public static final String TTE = "TTE";
+
+	public static final BigDecimal MAX_BIGD_12 = new BigDecimal(999999999999l);
 
 	private PricerServiceConstants() {
 		// Not Allowed
@@ -45,7 +49,11 @@ public final class PricerServiceConstants {
 		public String getGroupCode() {
 			return this.groupCode;
 		}
-		
+
+	}
+
+	public static enum PRICE_TYPE {
+		BENE_DEDUCT, NO_BENE_DEDUCT;
 	}
 
 }

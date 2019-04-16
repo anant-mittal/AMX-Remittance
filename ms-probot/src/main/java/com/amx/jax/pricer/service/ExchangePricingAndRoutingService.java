@@ -41,6 +41,7 @@ import com.amx.jax.pricer.manager.RemitPriceManager;
 import com.amx.jax.pricer.manager.RemitRoutingManager;
 import com.amx.jax.pricer.var.PricerServiceConstants.CUSTOMER_CATEGORY;
 import com.amx.jax.pricer.var.PricerServiceConstants.PRICE_BY;
+import com.amx.jax.pricer.var.PricerServiceConstants.PRICE_TYPE;
 
 /**
  * @author abhijeet
@@ -194,6 +195,11 @@ public class ExchangePricingAndRoutingService {
 
 		remitRoutingManager.computeTrnxRoutesAndDelivery(exchangeRateAndRoutingRequest);
 
+		remitRoutingManager.filterTransactionRoutes();
+
+		/**
+		 * Prepare the Response Data
+		 */
 		ExchangeRateAndRoutingResponse resp = new ExchangeRateAndRoutingResponse();
 
 		/**
@@ -230,7 +236,10 @@ public class ExchangePricingAndRoutingService {
 
 		Map<String, TrnxRoutingDetails> trnxRoutingPaths = new HashMap<String, TrnxRoutingDetails>();
 
-		List<String> bestExchangeRatePaths = new ArrayList<String>();
+		Map<PRICE_TYPE, List<String>> bestExchangeRatePaths = new HashMap<PRICE_TYPE, List<String>>();
+
+		bestExchangeRatePaths.put(PRICE_TYPE.BENE_DEDUCT, new ArrayList<String>());
+		bestExchangeRatePaths.put(PRICE_TYPE.NO_BENE_DEDUCT, new ArrayList<String>());
 
 		Channel channel = exchangeRateAndRoutingRequest.getChannel();
 		boolean skipServiceMode = false;
@@ -270,7 +279,7 @@ public class ExchangePricingAndRoutingService {
 
 			//// @formatter:on
 
-			bestExchangeRatePaths.add(pathKey);
+			bestExchangeRatePaths.get(PRICE_TYPE.NO_BENE_DEDUCT).add(pathKey);
 			trnxRoutingPaths.put(pathKey, trnxRoutingPath);
 
 			ExchangeRateDetails exchangeRate = routeDetails.getExchangeRateDetails();
