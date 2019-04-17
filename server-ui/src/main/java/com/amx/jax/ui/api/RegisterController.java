@@ -78,10 +78,10 @@ public class RegisterController {
 							.getCustomerCommunicationChannel());
 			throw new UIServerError(amxApiError);
 		} else if (ArgUtil.isEmpty(otp)) {
-			AuthData x = registrationService.validateCustomerInit(identity, contactType).getData();
-			AmxApiError amxApiError = new AmxApiError(OWAStatusStatusCodes.OTP_REQUIRED);
-			amxApiError.setMeta(x);
-			throw new UIServerError(amxApiError);
+			ResponseWrapper<AuthData> x = registrationService.validateCustomerInit(identity, contactType);
+			x.setStatus(OWAStatusStatusCodes.OTP_REQUIRED);
+			x.setMeta(x.getData());
+			return x;
 		} else {
 			return registrationService.validateCustomer(identity, otp, contactType);
 		}
