@@ -42,7 +42,6 @@ public class CustomerFlagManager {
 		} catch (GlobalException ex) {
 			customerFlags.setIdProofStatus(ex.getErrorKey());
 		}
-		// customerIdProofManager.setIdProofFlags(customerId, customerFlags);
 
 		CustomerOnlineRegistration customerOnlineRegistration = custDao.getOnlineCustByCustomerId(customerId);
 		customerFlags.setFingerprintlinked(isFingerprintLinked(customerOnlineRegistration));
