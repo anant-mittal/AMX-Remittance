@@ -49,6 +49,7 @@ import com.amx.jax.ui.model.AuthDataInterface.AuthResponseOTPprefix;
 import com.amx.jax.ui.model.AuthDataInterface.UserUpdateRequest;
 import com.amx.jax.ui.model.AuthDataInterface.UserUpdateResponse;
 import com.amx.jax.ui.model.UserMetaData;
+import com.amx.jax.ui.model.UserUpdateData;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.response.ResponseWrapperM;
 import com.amx.jax.ui.service.GeoHotPoints;
@@ -430,6 +431,11 @@ public class UserController {
 			wrapper.setStatus(OWAStatusStatusCodes.USER_UPDATE_SUCCESS);
 		}
 		return wrapper;
+	}
+
+	@RequestMapping(value = "/api/secques/get/v2", method = { RequestMethod.GET })
+	public ResponseWrapper<UserUpdateData> getSecQues(HttpServletRequest request) {
+		return userService.getSecQues();
 	}
 
 	/**

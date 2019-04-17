@@ -140,6 +140,7 @@ public class UserService {
 				.getCustomerModelResponse(identity);
 		sessionService.getUserSession().getCustomerModel().setFlags(x.getResult().getCustomerFlags());
 		sessionService.getUserSession().getCustomerModel().setPersoninfo(x.getResult().getPersonInfo());
+		sessionService.getUserSession().getCustomerModel().setSecurityquestions(x.getResult().getSecurityquestions());
 	}
 
 	/**
@@ -243,6 +244,16 @@ public class UserService {
 		BoolRespModel model = jaxService.setDefaults().getUserclient().updatePassword(password, mOtp, eOtp).getResult();
 		if (model.isSuccess()) {
 			wrapper.setMessage(OWAStatusStatusCodes.USER_UPDATE_SUCCESS, "Password Updated Succesfully");
+		}
+		return wrapper;
+	}
+
+	public ResponseWrapper<UserUpdateData> getSecQues() {
+		List<QuestModelDTO> questModel = jaxService.setDefaults().getMetaClient().getSequrityQuestion().getResults();
+		ResponseWrapper<UserUpdateData> wrapper = new ResponseWrapper<UserUpdateData>(new UserUpdateData());
+		wrapper.getData().setSecQuesMeta(questModel);
+		if (sessionService.getUserSession().getCustomerModel() != null) {
+			wrapper.getData().setSecQuesAns(sessionService.getUserSession().getCustomerModel().getSecurityquestions());
 		}
 		return wrapper;
 	}
