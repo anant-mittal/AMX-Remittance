@@ -32,11 +32,9 @@ public class AuthPermUtil {
 		}
 	}
 
-	public static void checkSQA(AuthState authState, CustomerFlags customerFlags, Object meta) {
+	public static void checkSQA(AuthState authState, CustomerFlags customerFlags) {
 		if (!authState.isValidSecQues()) {
-			GlobalException globalException = new GlobalException(JaxError.SQA_REQUIRED, "Sec QA setup is required");
-			globalException.setMeta(meta);
-			throw globalException;
+			throw new GlobalException(JaxError.SQA_REQUIRED, "Sec QA setup is required");
 		}
 	}
 

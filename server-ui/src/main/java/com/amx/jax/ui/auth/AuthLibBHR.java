@@ -9,7 +9,6 @@ import com.amx.jax.model.response.customer.CustomerFlags;
 import com.amx.jax.scope.TenantSpecific;
 import com.amx.jax.ui.UIConstants.Features;
 import com.amx.jax.ui.auth.AuthLibContext.AuthLib;
-import com.amx.jax.ui.model.AuthData;
 import com.amx.jax.ui.service.LoginService;
 import com.amx.jax.ui.service.SessionService;
 
@@ -174,9 +173,7 @@ public class AuthLibBHR implements AuthLib {
 		case FXORDER:
 			AuthPermUtil.checkIdProofExpiry(authState, customerFlags);
 			AuthPermUtil.checkSQASetup(authState, customerFlags);
-			AuthData authData = loginService
-					.getRandomSecurityQuestion(sessionService.getUserSession().getCustomerModel());
-			AuthPermUtil.checkSQA(authState, customerFlags, authData);
+			AuthPermUtil.checkSQA(authState, customerFlags);
 			break;
 		case SQA_UPDATE:
 			AuthPermUtil.checkSQASetup(authState, customerFlags);

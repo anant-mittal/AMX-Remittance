@@ -43,7 +43,6 @@ import com.amx.amxlib.model.UserVerificationCheckListDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
-import com.amx.jax.JaxAuthCache;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.async.ExecutorConfig;
@@ -192,9 +191,6 @@ public class UserService extends AbstractUserService {
 	AuditService auditService;
 	@Autowired
 	CustomerIdProofDao customerIdProofDao;
-
-	@Autowired
-	JaxAuthCache jaxAuthCache;
 
 	@Autowired
 	UserService userService;

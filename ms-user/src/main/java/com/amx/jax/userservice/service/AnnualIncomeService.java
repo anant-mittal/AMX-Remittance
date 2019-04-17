@@ -26,7 +26,6 @@ import org.springframework.web.context.WebApplicationContext;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.AnnualIncomeRangeDTO;
 import com.amx.amxlib.meta.model.IncomeDto;
-import com.amx.jax.JaxAuthCache;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.dal.ArticleDao;
 import com.amx.jax.dal.ImageCheckDao;
@@ -115,9 +114,6 @@ public class AnnualIncomeService {
 	AuditService auditService;
 	@Autowired
 	CustomerIdProofDao customerIdProofDao;
-
-	@Autowired
-	JaxAuthCache jaxAuthCache;
 
 	@Autowired
 	IncomeDao incomeDao;

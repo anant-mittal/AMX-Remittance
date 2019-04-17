@@ -247,9 +247,7 @@ public class UserController {
 
 	@RequestMapping(value = "/api/user/perms/{feature}", method = { RequestMethod.GET })
 	public AmxApiResponse<CustomerFlags, Object> perms(@PathVariable Features feature) {
-		return ResponseWrapper.buildData(authLibContext.get()
-				.checkModule(sessionService.getGuestSession().getState(),
-						sessionService.getUserSession().getCustomerModel().getFlags(), feature));
+		return userService.checkModule(feature);
 	}
 
 	/**
@@ -548,6 +546,7 @@ public class UserController {
 		return ResponseWrapper.build(jaxService.getUserclient().resetFingerprint(authData.getLockId()));
 	}
 
+	@Deprecated
 	@RequestMapping(value = { "/pub/user/otpflags" }, method = { RequestMethod.GET })
 	public AmxApiResponse<CustomerModelSignupResponse, Object> getOtpFlags(@RequestParam String identity) {
 		return ResponseWrapper.build(jaxService.setDefaults().getUserclient().getCustomerModelSignupResponse(identity));

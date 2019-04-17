@@ -176,9 +176,7 @@ public class AuthLibKWT implements AuthLib {
 		case FXORDER:
 			AuthPermUtil.checkIdProofExpiry(authState, customerFlags);
 			AuthPermUtil.checkSQASetup(authState, customerFlags);
-			AuthData authData = loginService
-					.getRandomSecurityQuestion(sessionService.getUserSession().getCustomerModel());
-			AuthPermUtil.checkSQA(authState, customerFlags, authData);
+			AuthPermUtil.checkSQA(authState, customerFlags);
 			break;
 		case SQA_UPDATE:
 			AuthPermUtil.checkSQASetup(authState, customerFlags);

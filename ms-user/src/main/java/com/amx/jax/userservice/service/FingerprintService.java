@@ -22,7 +22,6 @@ import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.UserFingerprintResponseModel;
-import com.amx.jax.JaxAuthCache;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.async.ExecutorConfig;
 import com.amx.jax.constant.ConstantDocument;
@@ -115,9 +114,6 @@ public class FingerprintService {
 	@Autowired
 	CustomerIdProofDao customerIdProofDao;
 
-	@Autowired
-	JaxAuthCache jaxAuthCache;
-	
 	@Autowired
 	UserService userService;
 	

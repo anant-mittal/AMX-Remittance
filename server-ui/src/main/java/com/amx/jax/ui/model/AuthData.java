@@ -4,6 +4,7 @@ import javax.validation.constraints.Pattern;
 
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.jax.AppConstants;
+import com.amx.jax.JaxAuthMetaResp;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.model.AbstractModel;
 import com.amx.jax.model.AuthState;
@@ -426,6 +427,16 @@ public class AuthData extends AbstractModel implements AuthResponse, AuthRequest
 	@Override
 	public void setwOtpPrefix(String wOtpPrefix) {
 		this.wOtpPrefix = wOtpPrefix;
+	}
+
+	public JaxAuthMetaResp toJaxAuthMetaResp() {
+		JaxAuthMetaResp meta = new JaxAuthMetaResp();
+		meta.seteOtpPrefix(eOtpPrefix);
+		meta.setmOtpPrefix(mOtpPrefix);
+		meta.setwOtpPrefix(wOtpPrefix);
+		meta.setOtpPrefix(otpPrefix);
+		meta.setQues(ques);
+		return meta;
 	}
 
 }

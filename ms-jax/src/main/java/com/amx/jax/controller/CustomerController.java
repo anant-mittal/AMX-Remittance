@@ -234,18 +234,6 @@ public class CustomerController implements ICustomerService {
 		return response;
 	}
 
-	// -- Email and Mobile update New API
-	@RequestMapping(value = "/saveEmailOrMobile", method = RequestMethod.POST)
-	public ApiResponse saveMobile(@RequestBody CustomerModel customerModel) {
-		logger.info("New API for Save updated Email or Mobile Request : " + customerModel.toString());
-		List<ContactType> channel = new ArrayList<>();
-		channel.add(ContactType.SMS);
-		channel.add(ContactType.EMAIL);
-		userValidationService.validateEmailMobileUpdateFlow(customerModel, channel);
-		ApiResponse response = userService.saveCustomer(customerModel);
-		return response;
-	}
-
 	@RequestMapping(value = Path.CUSTOMER_MODEL_RESPONSE_BY_IDENTITYINT, method = RequestMethod.GET)
 	@Override
 	public AmxApiResponse<CustomerModelResponse, Object> getCustomerModelResponse(

@@ -60,34 +60,6 @@ public class LoginService {
 	private UserService userService;
 
 	/**
-	 * Gets the random security question.
-	 *
-	 * @param customerModel the customer model
-	 * @return the random security question
-	 */
-	public AuthData getRandomSecurityQuestion(CustomerModel customerModel) {
-		AuthData loginData = new AuthData();
-		ListManager<SecurityQuestionModel> listmgr = new ListManager<SecurityQuestionModel>(
-				customerModel.getSecurityquestions());
-
-		SecurityQuestionModel answer = listmgr.pickRandom();
-		sessionService.getGuestSession().setQuesIndex(listmgr.getIndex());
-
-		List<QuestModelDTO> questModel = jaxService.getMetaClient().getSequrityQuestion().getResults();
-
-		for (QuestModelDTO questModelDTO : questModel) {
-			if (questModelDTO.getQuestNumber().equals(answer.getQuestionSrNo())) {
-				loginData.setQuestion(questModelDTO.getDescription()); // TODO:- TO be removed
-				loginData.setQues(questModelDTO);
-			}
-		}
-
-		loginData.setImageId(customerModel.getImageUrl());
-		loginData.setImageCaption(customerModel.getCaption());
-		return loginData;
-	}
-
-	/**
 	 * Login.
 	 * 
 	 * @deprecated use {@link #loginUserPass(String, String)}
@@ -108,7 +80,7 @@ public class LoginService {
 			throw new JaxSystemError();
 		}
 		sessionService.getGuestSession().setCustomerModel(customerModel);
-		wrapper.setData(getRandomSecurityQuestion(customerModel));
+		wrapper.setData(userService.getRandomSecurityQuestion(customerModel));
 		wrapper.setMessage(OWAStatusStatusCodes.AUTH_OK, "Password is Correct");
 		sessionService.getGuestSession().endStep(AuthStep.USERPASS);
 		wrapper.getData().setState(sessionService.getGuestSession().getState());
@@ -298,7 +270,7 @@ public class LoginService {
 			throw new JaxSystemError();
 		}
 		sessionService.getGuestSession().setCustomerModel(model);
-		wrapper.setData(getRandomSecurityQuestion(model));
+		wrapper.setData(userService.getRandomSecurityQuestion(model));
 
 		wrapper.setMessage(OWAStatusStatusCodes.VERIFY_SUCCESS, ResponseMessage.AUTH_SUCCESS);
 		sessionService.getGuestSession().endStep(AuthStep.MOTPVFY);

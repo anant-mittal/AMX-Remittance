@@ -249,36 +249,6 @@ public class UserClientTest extends AbstractTestClient {
 	}
 
 	// @Test
-	public void saveEmailNew() throws IOException, ResourceNotFoundException, InvalidInputException,
-			RemittanceTransactionValidationException, LimitExeededException {
-		jaxMetaInfo.setCountryId(new BigDecimal(91));
-		jaxMetaInfo.setCompanyId(new BigDecimal(1));
-		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
-		jaxMetaInfo.setCustomerId(new BigDecimal(931428));
-		ApiResponse<CustomerModel> response = null;
-		String email = "viki.sangani@almullagroup.com";
-
-		response = client.saveEmailNew(email);
-		assertNotNull("Response is null", response);
-		assertNotNull(response.getResult());
-	}
-
-	// @Test
-	public void saveMobileNew() throws IOException, ResourceNotFoundException, InvalidInputException,
-			RemittanceTransactionValidationException, LimitExeededException {
-		jaxMetaInfo.setCountryId(new BigDecimal(91));
-		jaxMetaInfo.setCompanyId(new BigDecimal(1));
-		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
-		jaxMetaInfo.setCustomerId(new BigDecimal(931428));
-		ApiResponse<CustomerModel> response = null;
-		String mobile = "5456421";
-
-		response = client.saveEmailNew(mobile);
-		assertNotNull("Response is null", response);
-		assertNotNull(response.getResult());
-	}
-
-	// @Test
 	public void positivetestLinkDeviceId() throws IOException, ResourceNotFoundException, InvalidInputException,
 			RemittanceTransactionValidationException, LimitExeededException {
 		jaxMetaInfo.setDeviceId("301019967");

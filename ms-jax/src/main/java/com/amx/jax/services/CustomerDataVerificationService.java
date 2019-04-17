@@ -19,7 +19,6 @@ import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
-import com.amx.jax.JaxAuthCache;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.ContactDetail;
 import com.amx.jax.dbmodel.Customer;
@@ -65,9 +64,6 @@ public class CustomerDataVerificationService extends AbstractService {
 
 	@Autowired
 	JaxNotificationService jaxNotificationService;
-	
-	@Autowired
-	JaxAuthCache jaxAuthCache;
 	
 	@Autowired
 	IContactDetailDao contactDetailDao;
