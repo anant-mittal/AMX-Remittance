@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import com.amx.jax.dict.PayGCodes;
+import com.amx.jax.dict.PayGCodes.CodeCategory;
 import com.amx.jax.dict.PayGServiceCode;
 import com.amx.jax.dict.ResponseCode;
 import com.amx.jax.dict.ResponseCodeBHR;
@@ -186,22 +187,27 @@ public class BenefitClient implements PayGClient {
 		}
 
 		//BenefitCodes statusCode;
+		CodeCategory codeCat;
 
 		if ("CAPTURED".equalsIgnoreCase(resultCode)) {
 			/*statusCode = (BenefitCodes) PayGCodes.getPayGCode(resultCode, BenefitCodes.UNKNOWN);
 			gatewayResponse.setErrorCategory(statusCode.getCategory());*/
-			gatewayResponse.setErrorCategory(ResponseCodeBHR.getCodeCategoryByResponseCode(resultResponse));
+			codeCat = ResponseCodeBHR.getCodeCategoryByResponseCode(gatewayResponse.getError());
+			gatewayResponse.setErrorCategory(codeCat);
 		} else if (resultResponse == null) {
 			/*statusCode = (BenefitCodes) PayGCodes.getPayGCode(responseCode, BenefitCodes.UNKNOWN);
 			gatewayResponse.setErrorCategory(statusCode.getCategory());*/
-			gatewayResponse.setErrorCategory(ResponseCodeBHR.getCodeCategoryByResponseCode(resultResponse));
+			codeCat = ResponseCodeBHR.getCodeCategoryByResponseCode(gatewayResponse.getError());
+			gatewayResponse.setErrorCategory(codeCat);
+			LOGGER.info("resultResponse else if ---> " + codeCat);
 			gatewayResponse.setError(responseCode);
 		} else {
 			LOGGER.info("resultResponse ---> " + resultResponse);
 			/*statusCode = (BenefitCodes) PayGCodes.getPayGCode(resultResponse, BenefitCodes.UNKNOWN);
 			gatewayResponse.setErrorCategory(statusCode.getCategory());*/
-			gatewayResponse.setErrorCategory(ResponseCodeBHR.getCodeCategoryByResponseCode(resultResponse));
-			LOGGER.info("Result from response Values ---> " + gatewayResponse.getErrorCategory());
+			codeCat = ResponseCodeBHR.getCodeCategoryByResponseCode(gatewayResponse.getError());
+			gatewayResponse.setErrorCategory(codeCat);
+			LOGGER.info("Result from response Values ---> " + codeCat);
 			gatewayResponse.setError(resultResponse);
 		}
 		
