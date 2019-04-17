@@ -254,6 +254,8 @@ public class UserService {
 		wrapper.getData().setSecQuesMeta(questModel);
 		if (sessionService.getUserSession().getCustomerModel() != null) {
 			wrapper.getData().setSecQuesAns(sessionService.getUserSession().getCustomerModel().getSecurityquestions());
+		} else if (sessionService.getGuestSession().getCustomerModel() != null) {
+			wrapper.getData().setSecQuesAns(sessionService.getGuestSession().getCustomerModel().getSecurityquestions());
 		}
 		return wrapper;
 	}
