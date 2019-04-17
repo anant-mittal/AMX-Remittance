@@ -518,11 +518,10 @@ public class UserService extends AbstractUserService {
 		if (org.apache.commons.collections.CollectionUtils.isEmpty(channels)) {
 			jaxNotificationService.sendOtpSms(personinfo, model);
 		} else {
-			if (channels.contains(ContactType.EMAIL)
-					|| channels.contains(ContactType.SMS_EMAIL)) {
+			if (channels.contains(ContactType.EMAIL) || channels.contains(ContactType.SMS_EMAIL)) {
 				jaxNotificationService.sendOtpEmail(personinfo, model);
 			}
-			if (channels.contains(ContactType.SMS)) {
+			if (channels.contains(ContactType.SMS) || channels.contains(ContactType.SMS_EMAIL)) {
 				jaxNotificationService.sendOtpSms(personinfo, model);
 			}
 			if (channels.contains(ContactType.WHATSAPP)) {
@@ -541,12 +540,12 @@ public class UserService extends AbstractUserService {
 			model.setmOtp(randmOtp);
 			model.setmOtpPrefix(Random.randomAlpha(3));
 		} else {
-			if (channels.contains(ContactType.SMS)) {
+			if (channels.contains(ContactType.SMS) || channels.contains(ContactType.SMS_EMAIL)) {
 				model.setHashedmOtp(hashedmOtp);
 				model.setmOtp(randmOtp);
 				model.setmOtpPrefix(Random.randomAlpha(3));
 			}
-			if (channels.contains(ContactType.EMAIL)) {
+			if (channels.contains(ContactType.EMAIL) || channels.contains(ContactType.SMS_EMAIL)) {
 				model.setHashedeOtp(hashedeOtp);
 				model.seteOtp(randeOtp);
 				model.seteOtpPrefix(Random.randomAlpha(3));
@@ -556,14 +555,6 @@ public class UserService extends AbstractUserService {
 				String hashedwOtp = cryptoUtil.getHash(userId, randwOtp);
 				model.setwHashedOtp(hashedwOtp);
 				model.setwOtpPrefix(Random.randomAlpha(3));
-			}
-
-			// set e-otp same as m-otp
-			if (channels.contains(ContactType.SMS_EMAIL)) {
-				model.setHashedeOtp(hashedmOtp);
-				model.seteOtp(randmOtp);
-				model.seteOtpPrefix(model.getmOtpPrefix());
-				logger.info("Generated otp for civilid email- " + userId + " is " + randmOtp);
 			}
 		}
 
