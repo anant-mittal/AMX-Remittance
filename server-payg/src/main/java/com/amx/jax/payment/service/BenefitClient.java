@@ -202,7 +202,7 @@ public class BenefitClient implements PayGClient {
 			/*statusCode = (BenefitCodes) PayGCodes.getPayGCode(resultResponse, BenefitCodes.UNKNOWN);
 			gatewayResponse.setErrorCategory(statusCode.getCategory());*/
 			ResponseCodeBHR responseCodeEnum = ResponseCodeBHR.getResponseCodeEnumByCode(gatewayResponse.getError());
-			gatewayResponse.setErrorCategory(responseCodeEnum.name());
+			gatewayResponse.setErrorCategory(responseCodeEnum.name().toString());
 			LOGGER.info("Result from response Values ---> " + responseCodeEnum);
 			gatewayResponse.setError(resultResponse);
 		}

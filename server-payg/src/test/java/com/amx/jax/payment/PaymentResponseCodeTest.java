@@ -13,7 +13,9 @@ public class PaymentResponseCodeTest {
 	public void codeCategoryByRespCode() {
 		String responseCode = "PY20006";
 		CodeCategory output = ResponseCodeBHR.getCodeCategoryByResponseCode(responseCode);
+		ResponseCodeBHR outputEnum = ResponseCodeBHR.getResponseCodeEnumByCode(responseCode);
 		assertNotNull(output);
+		assertNotNull(outputEnum);
 	}
 }
 
