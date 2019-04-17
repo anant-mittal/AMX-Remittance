@@ -39,6 +39,7 @@ import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.PromotionDto;
 import com.amx.amxlib.model.request.RemittanceTransactionStatusRequestModel;
+import com.amx.amxlib.model.response.ExchangeRateResponseModel;
 import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
 import com.amx.jax.config.JaxTenantProperties;
@@ -670,8 +671,13 @@ public class RemittanceTransactionManager {
 		BigDecimal beneCountryId = (BigDecimal) remitApplParametersMap.get("P_BENEFICIARY_COUNTRY_ID");
 
 		if (jaxTenantProperties.getIsDynamicPricingEnabled() && !remittanceParameterMapManager.isCashChannel()) {
-			exchangeRateBreakup = newExchangeRateService.getExchangeRateBreakUpUsingDynamicPricing(fCurrencyId,
-					lcAmount, fcAmount, beneCountryId, routingBankId);
+			ExchangeRateResponseModel exchangeRateResponseModel = newExchangeRateService
+					.getExchangeRateResponseModelUsingDynamicPricing(fCurrencyId, lcAmount, fcAmount, beneCountryId,
+							routingBankId);
+			responseModel.setDiscountAvailed(exchangeRateResponseModel.getDiscountAvailed());
+			responseModel.setCustomerDiscountDetails(exchangeRateResponseModel.getCustomerDiscountDetails());
+			responseModel.setCostRateLimitReached(exchangeRateResponseModel.getCostRateLimitReached());
+			exchangeRateBreakup = exchangeRateResponseModel.getExRateBreakup();
 		} else if (jaxTenantProperties.getExrateBestRateLogicEnable()) {
 			exchangeRateBreakup = newExchangeRateService.getExchangeRateBreakUpUsingBestRate(fCurrencyId, lcAmount,
 					fcAmount, routingBankId);
@@ -694,6 +700,8 @@ public class RemittanceTransactionManager {
 		if (!JaxUtil.isNullZeroBigDecimalCheck(comission)) {
 			responseModel.setCanRedeemLoyalityPoints(false);
 			responseModel.setLoyalityPointState(LoyalityPointState.CAN_NOT_AVAIL);
+			responseModel.setDiscountOnComission(BigDecimal.ZERO);
+		}else {
 			responseModel.setDiscountOnComission(corporateDiscountManager.corporateDiscount());
 		}
 		if (remitAppManager.loyalityPointsAvailed(model, responseModel)) {

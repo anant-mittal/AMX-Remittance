@@ -220,6 +220,23 @@ public class NewExchangeRateService extends ExchangeRateService {
 				meta.getDefaultCurrencyId(), toCurrency, lcAmount, fcAmount, countryId, routingBankId, null);
 		return exchangeRateResponseModel.getExRateBreakup();
 	}
+	
+	/**
+	 * fetch exchange rates from dynamic pricing api
+	 * 
+	 * @param toCurrency
+	 * @param lcAmount
+	 * @param fcAmount
+	 * @param countryId
+	 * @param routingBankId
+	 * @return
+	 */
+	public ExchangeRateResponseModel getExchangeRateResponseModelUsingDynamicPricing(BigDecimal toCurrency,
+			BigDecimal lcAmount, BigDecimal fcAmount, BigDecimal countryId, BigDecimal routingBankId) {
+		ExchangeRateResponseModel exchangeRateResponseModel = jaxDynamicPriceService.getExchangeRatesWithDiscount(
+				meta.getDefaultCurrencyId(), toCurrency, lcAmount, fcAmount, countryId, routingBankId, null);
+		return exchangeRateResponseModel;
+	}
 
 	/**
 	 * return bank wise exchange rates

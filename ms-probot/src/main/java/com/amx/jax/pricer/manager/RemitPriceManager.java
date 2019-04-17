@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 import javax.annotation.Resource;
 
 import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +19,7 @@ import org.springframework.stereotype.Component;
 
 import com.amx.jax.dict.UserClient.Channel;
 import com.amx.jax.pricer.dao.CountryBranchDao;
+import com.amx.jax.pricer.dao.CurrencyMasterDao;
 import com.amx.jax.pricer.dao.ExchangeRateDao;
 import com.amx.jax.pricer.dao.ExchangeRateProcedureDao;
 import com.amx.jax.pricer.dao.MarginMarkupDao;
@@ -28,6 +28,7 @@ import com.amx.jax.pricer.dao.RoutingDao;
 import com.amx.jax.pricer.dao.ViewExGLCBALDao;
 import com.amx.jax.pricer.dbmodel.BankMasterModel;
 import com.amx.jax.pricer.dbmodel.CountryBranch;
+import com.amx.jax.pricer.dbmodel.CurrencyMasterModel;
 import com.amx.jax.pricer.dbmodel.ExchangeRateAPRDET;
 import com.amx.jax.pricer.dbmodel.ExchangeRateApprovalDetModel;
 import com.amx.jax.pricer.dbmodel.OnlineMarginMarkup;
@@ -66,6 +67,9 @@ public class RemitPriceManager {
 
 	@Autowired
 	CountryBranchDao countryBranchDao;
+
+	@Autowired
+	CurrencyMasterDao currencyMasterDao;
 
 	@Autowired
 	RoutingDao routingDao;
@@ -408,7 +412,18 @@ public class RemitPriceManager {
 	 */
 	private Map<BigDecimal, List<ViewExGLCBAL>> getGLCBALRates(BigDecimal currencyId, List<BigDecimal> routingBankIds) {
 
-		String curCode = StringUtils.leftPad(String.valueOf(currencyId.intValue()), 3, "0");
+		// String curCode = StringUtils.leftPad(String.valueOf(currencyId.intValue()),
+		// 3, "0");
+
+		CurrencyMasterModel curMaster = currencyMasterDao.getByCurrencyId(currencyId);
+
+		if (null == curMaster) {
+			LOGGER.info("Invalid Currency Id: " + currencyId);
+			throw new PricerServiceException(PricerServiceError.INVALID_CURRENCY,
+					"Invalid Currency : None Found for Id: " + currencyId);
+		}
+
+		String curCode = curMaster.getCurrencyCode();
 
 		Map<BigDecimal, List<ViewExGLCBAL>> bankGlcBalMap = new HashMap<BigDecimal, List<ViewExGLCBAL>>();
 
