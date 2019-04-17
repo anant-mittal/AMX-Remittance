@@ -1,8 +1,5 @@
 package com.amx.jax.branchremittance.manager;
 
-import static com.amx.jax.error.JaxError.COMISSION_NOT_DEFINED_FOR_ROUTING_BANK;
-import static com.amx.jax.error.JaxError.TOO_MANY_COMISSION_NOT_DEFINED_FOR_ROUTING_BANK;
-
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -77,7 +74,6 @@ import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
 import com.amx.jax.model.response.remittance.RoutingResponseDto;
 import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeRateResponse;
-import com.amx.jax.pricer.var.PricerServiceConstants.DISCOUNT_TYPE;
 import com.amx.jax.repository.DeviceStateRepository;
 import com.amx.jax.repository.IApplicationCountryRepository;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
@@ -487,28 +483,10 @@ public class BranchRemittanceApplManager {
 				remittanceApplication.setDiscountOnCommission(corporateDiscountManager.corporateDiscount());
 			}
 			
-			if(branchExchangeRate.getDiscountAvailed()!=null) {
-				remittanceApplication.setIsDiscountAvailed(branchExchangeRate.getDiscountAvailed()==false?"N":"Y");
-			}
-			
 			if(branchExchangeRate.getCostRateLimitReached()!=null) {
 				remittanceApplication.setReachedCostRateLimit(branchExchangeRate.getCostRateLimitReached()==false?"N":"Y");
 			}
-			
-			
-			if(branchExchangeRate.getCustomerDiscountDetails()!=null && !branchExchangeRate.getCustomerDiscountDetails().isEmpty()) {
-				remittanceApplication.setCusCatDiscountId(branchExchangeRate.getCustomerDiscountDetails().get(DISCOUNT_TYPE.CUSTOMER_CATEGORY).getId());
-				remittanceApplication.setCusCatDiscount(branchExchangeRate.getCustomerDiscountDetails().get(DISCOUNT_TYPE.CUSTOMER_CATEGORY).getDiscountPipsValue());
-				remittanceApplication.setChannelDiscountId(branchExchangeRate.getCustomerDiscountDetails().get(DISCOUNT_TYPE.CHANNEL).getId());
-				remittanceApplication.setChannelDiscount(branchExchangeRate.getCustomerDiscountDetails().get(DISCOUNT_TYPE.CHANNEL).getDiscountPipsValue());
-				String pips = branchExchangeRate.getCustomerDiscountDetails().get(DISCOUNT_TYPE.AMOUNT_SLAB).getDiscountTypeValue();
-				if(!StringUtils.isBlank(pips)) {
-					String[] parts = pips.split("-");
-					remittanceApplication.setPipsFromAmt(parts[0]==null?new BigDecimal(0):new BigDecimal(parts[0]));
-					remittanceApplication.setPipsToAmt(parts[1]==null?new BigDecimal(0):new BigDecimal(parts[1]));
-				}
-				remittanceApplication.setPipsDiscount(branchExchangeRate.getCustomerDiscountDetails().get(DISCOUNT_TYPE.AMOUNT_SLAB).getDiscountPipsValue());
-			}
+			remitApplManager.setCustomerDiscountColumns(remittanceApplication, branchExchangeRate);
 		
 			BigDecimal documentNo = branchRemitManager.generateDocumentNumber(applSetup.getApplicationCountryId(), applSetup.getCompanyId(), ConstantDocument.DOCUMENT_CODE_FOR_REMITTANCE_APPLICATION, userFinancialYear.getFinancialYear(), ConstantDocument.A, countryBranch.getBranchId());
 			if(JaxUtil.isNullZeroBigDecimalCheck(documentNo)) {
