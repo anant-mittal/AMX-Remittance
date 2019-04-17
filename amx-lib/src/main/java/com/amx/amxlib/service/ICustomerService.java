@@ -2,9 +2,9 @@ package com.amx.amxlib.service;
 
 import java.util.List;
 
-import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
+import com.amx.jax.model.customer.SecurityQuestionModel;
 import com.amx.jax.model.response.customer.CustomerModelResponse;
 import com.amx.jax.model.response.customer.CustomerModelSignupResponse;
 

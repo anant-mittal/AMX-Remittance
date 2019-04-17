@@ -1,12 +1,17 @@
 package com.amx.jax.model.response.customer;
 
 import java.math.BigDecimal;
+import java.util.List;
+
+import com.amx.jax.model.customer.SecurityQuestionModel;
+
 
 public class CustomerModelResponse {
 
 	BigDecimal customerId;
 	PersonInfo personInfo;
 	CustomerFlags customerFlags;
+	List<SecurityQuestionModel> securityquestions;
 
 	public CustomerModelResponse() {
 		super();

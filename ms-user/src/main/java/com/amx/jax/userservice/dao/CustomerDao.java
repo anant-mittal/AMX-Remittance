@@ -22,7 +22,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import com.amx.amxlib.model.CustomerModel;
-import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.placeorder.PlaceOrderCustomer;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dal.ApplicationCoreProcedureDao;
@@ -32,6 +31,7 @@ import com.amx.jax.dbmodel.UserVerificationCheckListModel;
 import com.amx.jax.dbmodel.ViewCompanyDetails;
 import com.amx.jax.dbmodel.ViewOnlineCustomerCheck;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.customer.SecurityQuestionModel;
 import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.service.CompanyService;
 import com.amx.jax.userservice.repository.LoyaltyPointRepository;

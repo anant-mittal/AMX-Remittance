@@ -32,7 +32,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.constant.PrefixEnum;
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.CustomerCredential;
 import com.amx.jax.ICustRegService;
@@ -75,6 +74,7 @@ import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.CardDetail;
 import com.amx.jax.model.OtpData;
 import com.amx.jax.model.ResourceDTO;
+import com.amx.jax.model.customer.SecurityQuestionModel;
 import com.amx.jax.model.dto.SendOtpModel;
 import com.amx.jax.model.request.CustomerEmploymentDetails;
 import com.amx.jax.model.request.CustomerInfoRequest;

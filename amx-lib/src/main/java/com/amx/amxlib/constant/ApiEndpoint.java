@@ -3,7 +3,7 @@ package com.amx.amxlib.constant;
 import java.util.Date;
 import java.util.List;
 
-import com.amx.amxlib.model.SecurityQuestionModel;
+import com.amx.jax.model.customer.SecurityQuestionModel;
 
 public class ApiEndpoint {
 
