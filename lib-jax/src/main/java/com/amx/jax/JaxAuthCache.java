@@ -19,21 +19,19 @@ public class JaxAuthCache extends CacheBox<JaxAuthMeta> {
 
 		private static final long serialVersionUID = 4710795819445446940L;
 
+		public JaxAuthMeta() {
+			this.otp = "";
+			this.mOtp = "";
+			this.eOtp = "";
+			this.wOtp = "";
+			this.secAns = "";
+		}
+
 		public JaxAuthMeta(String mOtp, String eOtp, String secAns) {
-			super();
+			this();
 			this.mOtp = mOtp;
 			this.eOtp = eOtp;
 			this.secAns = secAns;
-		}
-
-		public JaxAuthMeta(String mOtp, String eOtp) {
-			super();
-			this.mOtp = mOtp;
-			this.eOtp = eOtp;
-		}
-
-		public JaxAuthMeta() {
-			// TODO Auto-generated constructor stub
 		}
 
 		@ApiMockModelProperty(example = "123456")

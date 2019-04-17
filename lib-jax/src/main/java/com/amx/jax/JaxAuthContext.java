@@ -16,6 +16,10 @@ public class JaxAuthContext {
 		return ArgUtil.parseAsString(AppContextUtil.getParams().get("eOtp"));
 	}
 
+	public static String getWotp() {
+		return ArgUtil.parseAsString(AppContextUtil.getParams().get("wOtp"));
+	}
+
 	public static String getSecAns() {
 		return ArgUtil.parseAsString(AppContextUtil.getParams().get("secAns"));
 	}
@@ -26,6 +30,14 @@ public class JaxAuthContext {
 		}
 		AppContextUtil.getParams().put("otp", otp);
 		return otp;
+	}
+
+	public static String wOtp(String wOtp) {
+		if (ArgUtil.isEmpty(wOtp)) {
+			return getWotp();
+		}
+		AppContextUtil.getParams().put("wOtp", wOtp);
+		return wOtp;
 	}
 
 	public static String mOtp(String mOtp) {
