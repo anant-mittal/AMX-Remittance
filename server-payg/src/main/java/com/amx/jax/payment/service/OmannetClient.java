@@ -189,7 +189,7 @@ public class OmannetClient implements PayGClient {
 
 			LOGGER.info("resultResponse ---> " + resultResponse);
 			OmanNetCodes statusCode = (OmanNetCodes) PayGCodes.getPayGCode(resultResponse, OmanNetCodes.UNKNOWN);
-			gatewayResponse.setErrorCategory(statusCode.getCategory());
+			gatewayResponse.setErrorCategory(statusCode.getCategory().name());
 
 			LOGGER.info("Result from response Values ---> " + gatewayResponse.getErrorCategory());
 			gatewayResponse.setError(resultResponse);

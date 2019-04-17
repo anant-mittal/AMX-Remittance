@@ -79,7 +79,7 @@ public class RemittanceApplicationService {
 					remittanceApplication.setPgErrorText(paymentResponse.getErrorText());
 					remittanceApplication.setPgReceiptDate(paymentResponse.getPostDate());
 					if(paymentResponse.getErrorCategory() != null)
-					remittanceApplication.setErrorCategory(paymentResponse.getErrorCategory().name());
+					remittanceApplication.setErrorCategory(paymentResponse.getErrorCategory());
 					remittanceApplication.setApplicaitonStatus("S");
 				}
 				remittanceApplicationRepository.save(remittanceApplication);
@@ -119,7 +119,7 @@ public void updatePayTokenNull(List<RemittanceApplication> lstPayIdDetails,Payme
 			appl.setPaymentId(paymentResponse.getPaymentId());
 			appl.setPgReferenceId(paymentResponse.getReferenceId());
 			appl.setPgTransactionId(paymentResponse.getTransactionId());
-			appl.setErrorCategory(paymentResponse.getErrorCategory().name());
+			appl.setErrorCategory(paymentResponse.getErrorCategory());
 			appl.setPayToken(null);
 			appl.setApplicaitonStatus(null);
 			appl.setIsactive("D");

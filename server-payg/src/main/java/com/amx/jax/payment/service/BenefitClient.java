@@ -186,43 +186,27 @@ public class BenefitClient implements PayGClient {
 			gatewayResponse.setTrackId(params.getTrackId());
 		}
 
-		//BenefitCodes statusCode;
-		CodeCategory codeCat;
+		BenefitCodes statusCode;
 
 		if ("CAPTURED".equalsIgnoreCase(resultCode)) {
-			/*statusCode = (BenefitCodes) PayGCodes.getPayGCode(resultCode, BenefitCodes.UNKNOWN);
-			gatewayResponse.setErrorCategory(statusCode.getCategory());*/
-			codeCat = ResponseCodeBHR.getCodeCategoryByResponseCode(gatewayResponse.getError());
-			gatewayResponse.setErrorCategory(codeCat);
+			statusCode = (BenefitCodes) PayGCodes.getPayGCode(resultCode, BenefitCodes.UNKNOWN);
+			gatewayResponse.setErrorCategory(statusCode.getCategory().name());
+			LOGGER.info("CAPTURED ---> " + gatewayResponse.getErrorCategory());
 		} else if (resultResponse == null) {
-			/*statusCode = (BenefitCodes) PayGCodes.getPayGCode(responseCode, BenefitCodes.UNKNOWN);
-			gatewayResponse.setErrorCategory(statusCode.getCategory());*/
-			codeCat = ResponseCodeBHR.getCodeCategoryByResponseCode(gatewayResponse.getError());
-			gatewayResponse.setErrorCategory(codeCat);
-			LOGGER.info("resultResponse else if ---> " + codeCat);
+			statusCode = (BenefitCodes) PayGCodes.getPayGCode(responseCode, BenefitCodes.UNKNOWN);
+			gatewayResponse.setErrorCategory(statusCode.getCategory().name());
+			LOGGER.info("resultResponse else if ---> " + gatewayResponse.getErrorCategory());
 			gatewayResponse.setError(responseCode);
 		} else {
 			LOGGER.info("resultResponse ---> " + resultResponse);
 			/*statusCode = (BenefitCodes) PayGCodes.getPayGCode(resultResponse, BenefitCodes.UNKNOWN);
 			gatewayResponse.setErrorCategory(statusCode.getCategory());*/
-			codeCat = ResponseCodeBHR.getCodeCategoryByResponseCode(gatewayResponse.getError());
-			gatewayResponse.setErrorCategory(codeCat);
-			LOGGER.info("Result from response Values ---> " + codeCat);
+			ResponseCodeBHR responseCodeEnum = ResponseCodeBHR.getResponseCodeEnumByCode(gatewayResponse.getError());
+			gatewayResponse.setErrorCategory(responseCodeEnum.name());
+			LOGGER.info("Result from response Values ---> " + responseCodeEnum);
 			gatewayResponse.setError(resultResponse);
 		}
 		
-		//-- get errorText by error
-		/*if(gatewayResponse.getError() != null && gatewayResponse.getErrorText() == null) {
-			ResponseCode errorMessage = ResponseCode.getRespCodebyCode(gatewayResponse.getError());
-			if(errorMessage != null) {
-				gatewayResponse.setErrorText(errorMessage.getResponseDesc());
-				LOGGER.info("Error Code --> "+ errorMessage.getResponseCode()+ "Error Message --> " + errorMessage.getResponseDesc());
-			}
-			else {
-				gatewayResponse.setErrorText("Payment Failed");
-			}
-		}*/
-
 		LOGGER.info("Params Captured From BENEFIT : " + JsonUtil.toJson(gatewayResponse));
 
 		paymentService.capturePayment(params, gatewayResponse);

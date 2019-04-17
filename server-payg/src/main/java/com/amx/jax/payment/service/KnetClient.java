@@ -178,7 +178,7 @@ public class KnetClient implements PayGClient {
 		KnetCodes knetCodes = (KnetCodes) PayGCodes.getPayGCode(resultResponse, KnetCodes.UNKNOWN);
 
 		LOGGER.info("resultResponse ---> " + resultResponse);
-		gatewayResponse.setErrorCategory(knetCodes.getCategory());
+		gatewayResponse.setErrorCategory(knetCodes.getCategory().name());
 
 		LOGGER.info("Result from response Values ---> " + gatewayResponse.getErrorCategory());
 		/* gatewayResponse.setError(resultResponse); */
