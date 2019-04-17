@@ -47,10 +47,14 @@ public class CustomerModelService {
 		List<Customer> customers = userService.getCustomerByIdentityInt(identityInt);
 		Customer customer = userValidationService.validateCustomerForDuplicateRecords(customers);
 		BigDecimal customerId = customer.getCustomerId();
+		return getCustomerModelResponse(customerId);
+	}
+
+	public CustomerModelResponse getCustomerModelResponse(BigDecimal customerId) {
 		PersonInfo personInfo = userService.getPersonInfo(customerId);
 		CustomerFlags customerFlags = customerFlagManager.getCustomerFlags(customerId);
 		CustomerModelResponse response = new CustomerModelResponse(personInfo, customerFlags);
-		response.setCustomerId(customer.getCustomerId());
+		response.setCustomerId(customerId);
 		return response;
 	}
 
@@ -59,11 +63,7 @@ public class CustomerModelService {
 			throw new GlobalException("Null customer id in header");
 		}
 		BigDecimal customerId = metaData.getCustomerId();
-		PersonInfo personInfo = userService.getPersonInfo(customerId);
-		CustomerFlags customerFlags = customerFlagManager.getCustomerFlags(customerId);
-		CustomerModelResponse response = new CustomerModelResponse(personInfo, customerFlags);
-		response.setCustomerId(customerId);
-		return response;
+		return getCustomerModelResponse(customerId);
 	}
 
 	public CustomerModelSignupResponse getCustomerModelSignupResponse(String identityInt) {

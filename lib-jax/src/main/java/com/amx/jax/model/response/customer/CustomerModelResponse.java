@@ -46,4 +46,12 @@ public class CustomerModelResponse {
 	public void setCustomerId(BigDecimal customerId) {
 		this.customerId = customerId;
 	}
+
+	public List<SecurityQuestionModel> getSecurityquestions() {
+		return securityquestions;
+	}
+
+	public void setSecurityquestions(List<SecurityQuestionModel> securityquestions) {
+		this.securityquestions = securityquestions;
+	}
 }
