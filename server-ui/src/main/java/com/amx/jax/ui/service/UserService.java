@@ -13,7 +13,6 @@ import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.jax.AppContextUtil;
-import com.amx.jax.JaxAuthMetaResp;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.model.auth.QuestModelDTO;
