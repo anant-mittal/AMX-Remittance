@@ -4,8 +4,11 @@ import java.util.Arrays;
 import java.util.Map;
 
 import com.amx.jax.dict.PayGCodes.CodeCategory;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 import com.google.common.collect.Maps;
 
+@JsonFormat(shape=Shape.OBJECT)
 public enum ResponseCodeBHR  {
 
 	// @formatter:off

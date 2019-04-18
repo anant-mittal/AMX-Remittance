@@ -71,6 +71,8 @@ import com.amx.jax.dbmodel.remittance.RemittanceAppBenificiary;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.dbmodel.remittance.ViewTransfer;
+import com.amx.jax.dict.ResponseCodeBHR;
+import com.amx.jax.dict.PayGRespCodeJSONConverter;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.exrateservice.dao.ExchangeRateDao;
 import com.amx.jax.exrateservice.dao.PipsMasterDao;
@@ -83,6 +85,7 @@ import com.amx.jax.manager.remittance.RemittanceAdditionalFieldManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.VTransferRepository;
+import com.amx.jax.scope.TenantContextHolder;
 import com.amx.jax.service.CountryService;
 import com.amx.jax.service.CurrencyMasterService;
 import com.amx.jax.service.LoyalityPointService;
@@ -98,6 +101,7 @@ import com.amx.jax.util.DateUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.RoundUtil;
 import com.amx.jax.validation.RemittanceTransactionRequestValidator;
+import com.amx.utils.JsonUtil;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -852,6 +856,12 @@ public class RemittanceTransactionManager {
 		model.setStatus(status);
 		model.setErrorCategory(application.getErrorCategory());
 		model.setErrorMessage(application.getErrorMessage());
+		
+		if(application.getErrorCategory() != null) {
+			String responseCodeDetail = PayGRespCodeJSONConverter.getResponseCodeDetail(application.getErrorCategory());
+			model.setResponseCodeDetail(responseCodeDetail);
+		}
+		
 		return model;
 	}
 

@@ -21,6 +21,7 @@ public class RemittanceTransactionStatusResponseModel extends AbstractModel {
 	String errorMessage;
 	String errorCategory;
 	PromotionDto promotionDto; 
+	String responseCodeDetail;
 
 	public JaxTransactionStatus getStatus() {
 		return status;
@@ -81,6 +82,20 @@ public class RemittanceTransactionStatusResponseModel extends AbstractModel {
 
 	public void setPromotionDto(PromotionDto promotionDto) {
 		this.promotionDto = promotionDto;
+	}
+
+	/**
+	 * @return the responseCodeDetail
+	 */
+	public String getResponseCodeDetail() {
+		return responseCodeDetail;
+	}
+
+	/**
+	 * @param responseCodeDetail the responseCodeDetail to set
+	 */
+	public void setResponseCodeDetail(String responseCodeDetail) {
+		this.responseCodeDetail = responseCodeDetail;
 	}
 
 }
