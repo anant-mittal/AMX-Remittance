@@ -228,10 +228,12 @@ public class HomeController {
 			method = { RequestMethod.GET, RequestMethod.POST })
 	public String verification(Model model,
 			@PathVariable ContactType contactType, @PathVariable BigDecimal verId, @PathVariable String verCode,
-			@RequestParam(required = false) String identity, @RequestParam(required = false) String resend, @RequestParam(required = false) String submit,
+			@RequestParam(required = false) String identity, @RequestParam(required = false) String resend,
+			@RequestParam(required = false) String submit,
 			@RequestParam(required = false) String customerId) {
 		String errorCode = null;
 		String errorMessage = null;
+		contactType = contactType.contactType();
 		try {
 			if (!ArgUtil.isEmpty(resend)) {
 				customerProfileClient.createVerificationLink(null, contactType, identity);
