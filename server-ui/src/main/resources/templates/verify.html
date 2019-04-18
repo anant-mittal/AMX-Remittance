@@ -6,7 +6,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport"
 	content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<title>Terms and Condition</title>
+<title>[[${contactType}]] Verification</title>
 <style type="text/css">
 body, html {
 	font-family: arial;
@@ -182,15 +182,7 @@ body, html {
 				alt="logo">
 		</div>
 	</div>
-	<div id=" ">
-		<span th:text="${errorCode}"></span> | <span th:text="${errorMessage}"></span>
-		| <span th:text="${contactType}"></span> | <span th:text="${verId}"></span>
-		| <span th:text="${verCode}"></span> |
-		<!-- <form action="" method="post">
-			Enter Civil ID <input name="identity" value="" />
-			<button type="submit">Verify</button>
-		</form>
- -->	</div>
+	
 	 <div th:if="${resend != '1'}" th:switch="${errorCode}">
 	 
 		<div th:case="'ENTITY_INVALID'">

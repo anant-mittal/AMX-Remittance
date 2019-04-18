@@ -46,7 +46,7 @@ public class WebSessionListener implements HttpSessionListener {
 		SessionEvent evt = new SessionEvent();
 		evt.setComponent(appConfig.getAppName());
 		evt.setType(SessionEvent.Type.SESSION_CREATED);
-		evt.setSessionId(AppContextUtil.getSessionId());
+		evt.setSessionId(AppContextUtil.getSessionId(false));
 		AuditServiceClient.logStatic(evt);
 	}
 
@@ -65,8 +65,8 @@ public class WebSessionListener implements HttpSessionListener {
 
 		HttpSession session = se.getSession();
 		if (session != null) {
-			String sessionID = ArgUtil.parseAsString(session.getAttribute(AppConstants.SESSION_ID_XKEY),
-					UniqueID.generateString());
+			String sessionID = AppContextUtil.getSessionId(
+					ArgUtil.parseAsString(session.getAttribute(AppConstants.SESSION_ID_XKEY)));
 			evt.setSessionId(sessionID);
 			AppContextUtil.setSessionId(sessionID);
 			String traceId = ContextUtil.getTraceId(true, sessionID);
