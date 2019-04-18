@@ -16,8 +16,11 @@ import com.amx.jax.dao.FcSaleBranchDao;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.Employee;
 import com.amx.jax.dbmodel.fx.FxOrderTransactionModel;
+import com.amx.jax.dbmodel.fx.predicate.FxOrderTransactionModelPredicateCreator;
+import com.amx.jax.model.request.fx.FcDeliveryBranchOrderSearchRequest;
 import com.amx.jax.model.response.fx.FxOrderTransactionHistroyDto;
 import com.amx.jax.repository.ICustomerRepository;
+import com.querydsl.core.types.Predicate;
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Component
@@ -25,16 +28,14 @@ public class FcDeliveryOrdersearchManager {
 	
 	@Autowired
 	FcSaleBranchDao fcSaleBranchDao;
-	
 	@Autowired
 	EmployeeValidationService employeeValidationService;
-	
 	@Autowired
 	ICustomerRepository customerRepository;
-	
 	@Autowired
 	CustomerService customerService;
-	
+	@Autowired
+	FxOrderTransactionModelPredicateCreator fxOrderTransactionModelPredicateCreator;
 	
 	
 	public List<FxOrderTransactionModel> searchOrderDetailsByTranxRefNo(String trnxno, String orderStatus) {
@@ -54,6 +55,12 @@ public class FcDeliveryOrdersearchManager {
 		List<FxOrderTransactionModel> fxOrderTransactionModel = searchOrderDetailsByAll(orderId,branchName,customerId,orderStatus);
 		return convert(fxOrderTransactionModel);
 		
+	}
+	
+	public List<FxOrderTransactionHistroyDto> searchOrder(FcDeliveryBranchOrderSearchRequest fcDeliveryBranchOrderSearchRequest){
+		Predicate predicate = fxOrderTransactionModelPredicateCreator.createFxOrderTransactionSearchPredicate(fcDeliveryBranchOrderSearchRequest);
+		List<FxOrderTransactionModel> fxOrderList =  fcSaleBranchDao.searchOrder(predicate);
+		return convert(fxOrderList);
 	}
 	
 	public List<FxOrderTransactionModel> searchOrderDetailsByBranchDescNdCustomerID(String branchName,BigDecimal customerId,String orderStatus) {

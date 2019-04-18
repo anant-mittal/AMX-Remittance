@@ -2,12 +2,17 @@ package com.amx.jax.model.request.fx;
 
 import java.math.BigDecimal;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class FcDeliveryBranchOrderSearchRequest {
 
 	private String orderId;
 	private BigDecimal countryBranchId;
 	private String civilId;
 	private String orderStatus;
+	
+	@JsonIgnore
+	private BigDecimal customerId;
 	
 	public String getOrderId() {
 		return orderId;
@@ -37,6 +42,12 @@ public class FcDeliveryBranchOrderSearchRequest {
 	public String toString() {
 		return "FcDeliveryBranchOrderSearchRequest [orderId=" + orderId + ", countryBranchId=" + countryBranchId
 				+ ", civilId=" + civilId + ", orderStatus=" + orderStatus + "]";
+	}
+	public BigDecimal getCustomerId() {
+		return customerId;
+	}
+	public void setCustomerId(BigDecimal customerId) {
+		this.customerId = customerId;
 	}
 	
 	

@@ -5,12 +5,12 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
 import com.amx.jax.dbmodel.fx.FxOrderTransactionModel;
+import com.amx.jax.repository.DaoRepository;
 
-public interface FxOrderTransactionRespository extends CrudRepository<FxOrderTransactionModel, Serializable>{
+public interface FxOrderTransactionRespository extends DaoRepository<FxOrderTransactionModel, Serializable>{
 	
 	@Query("select t from FxOrderTransactionModel t where t.customerId=:customerId")
 	public List<FxOrderTransactionModel> getFxOrderTrnxList(@Param("customerId") BigDecimal customerId);
