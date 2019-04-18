@@ -43,6 +43,39 @@
 			<groupId>com.amx.jax</groupId>
 			<artifactId>lib-jax</artifactId>
 		</dependency>
+		
+			<!-- querydsl -->
+		<dependency>
+			<groupId>com.mysema.querydsl</groupId>
+			<artifactId>querydsl-apt</artifactId>
+			<version>3.7.4</version>
+		</dependency>
+		<dependency>
+			<groupId>com.mysema.querydsl</groupId>
+			<artifactId>querydsl-jpa</artifactId>
+			<!-- <classifier>apt</classifier> -->
+			<version>3.7.4</version>
+		</dependency>
+		<dependency>
+			<groupId>com.querydsl</groupId>
+			<artifactId>querydsl-apt</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.querydsl</groupId>
+			<artifactId>querydsl-jpa</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.querydsl</groupId>
+			<artifactId>querydsl-core</artifactId>
+		</dependency>
+<!-- querydsl -->
 	</dependencies>
 
+	<!-- <build> <plugins> <plugin> <groupId>com.mysema.maven</groupId> <artifactId>apt-maven-plugin</artifactId> 
+		<version>1.0.5</version> <executions> <execution> <id>apt-maven-plugin-remote-module-QuerydslAnnotationProcessor</id> 
+		<goals> <goal>process</goal> </goals> <configuration> <outputDirectory>target/generated-sources/java</outputDirectory> 
+		<processor>com.querydsl.apt.jpa.JPAAnnotationProcessor</processor> </configuration> 
+		</execution> </executions> </plugin> </plugins> </build> -->
 </project>
