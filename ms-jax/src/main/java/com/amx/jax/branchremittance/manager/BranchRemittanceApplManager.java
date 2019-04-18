@@ -277,7 +277,7 @@ public class BranchRemittanceApplManager {
 		mapAllDetailApplSave.put("EX_APPL_BENE", remittanceAppBeneficairy);
 		mapAllDetailApplSave.put("EX_APPL_ADDL", additioalInstructionData);
 		mapAllDetailApplSave.put("EX_APPL_AML", amlData);
-		
+		validateApplDetails(mapAllDetailApplSave);
 		brRemittanceDao.saveAllApplications(mapAllDetailApplSave);
 		auditService.log(new CActivityEvent(Type.APPLICATION_CREATED,String.format("{}/{}", remittanceApplication.getDocumentFinancialyear(),remittanceApplication.getDocumentNo(),remittanceApplication.getFsCustomer().getCustomerId())).field("STATUS").to(JaxTransactionStatus.APPLICATION_CREATED).result(Result.DONE));
 		BranchRemittanceApplResponseDto applResponseDto = branchRemittancePaymentManager.fetchCustomerShoppingCart(customer.getCustomerId(),metaData.getDefaultCurrencyId());
@@ -819,6 +819,23 @@ public class BranchRemittanceApplManager {
 		return loyalityPointsEncashed;
 	}
 	
+public void validateApplDetails(HashMap<String, Object> mapAllDetailApplSave) {
+	RemittanceApplication saveApplTrnx = (RemittanceApplication) mapAllDetailApplSave.get("EX_APPL_TRNX");
+	RemittanceAppBenificiary saveApplBene = (RemittanceAppBenificiary) mapAllDetailApplSave.get("EX_APPL_BENE");
+	List<AdditionalInstructionData> saveApplAddlData = (List<AdditionalInstructionData>)mapAllDetailApplSave.get("EX_APPL_ADDL");
+
+	if(saveApplTrnx==null) {
+		throw new GlobalException(JaxError.APPL_CREATION_ERROR,"Application details not found");
+	}
+	if(saveApplBene==null) {
+		throw new GlobalException(JaxError.APPL_BENE_CREATION_ERROR,"Application bene details not found");
+	}
+
+	if(saveApplAddlData==null || saveApplAddlData.isEmpty()) {
+		throw new GlobalException(JaxError.APPL_ADD_INSTRUCTION_ERROR,"Application additional details is missing ");
+	}
+	
+}
 	
 	
 }

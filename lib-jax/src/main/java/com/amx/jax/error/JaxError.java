@@ -271,7 +271,10 @@ public enum JaxError implements IExceptionEnum {
 	
 	
 	// Default for code symettry
-	JAX_SYSTEM_ERROR;
+	JAX_SYSTEM_ERROR,
+	APPL_CREATION_ERROR,
+	APPL_BENE_CREATION_ERROR,
+	APPL_ADD_INSTRUCTION_ERROR;
 	@Deprecated
 	public String getCode() {
 		return this.toString();
