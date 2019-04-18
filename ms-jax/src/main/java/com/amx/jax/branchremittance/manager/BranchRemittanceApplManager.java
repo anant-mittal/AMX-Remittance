@@ -560,9 +560,9 @@ public class BranchRemittanceApplManager {
 		remittanceAppBenificary.setBeneficiaryFourthName(beneAddDeatisl.get("P_BENEFICIARY_FOURTH_NAME")==null?beneficiaryDT.getFourthName():(String) beneAddDeatisl.get("P_BENEFICIARY_FOURTH_NAME"));
 		remittanceAppBenificary.setBeneficiaryFifthName(beneAddDeatisl.get("P_BENEFICIARY_FIFTH_NAME")==null?beneficiaryDT.getFiftheName():(String) beneAddDeatisl.get("P_BENEFICIARY_FIFTH_NAME"));
 		
-		remittanceAppBenificary.setBeneficiaryBranchStateId(beneAddDeatisl.get("P_BENEFICIARY_STATE_ID")==null?beneficiaryDT.getStateId():(BigDecimal)beneAddDeatisl.get("P_BENEFICIARY_STATE_ID"));
-		remittanceAppBenificary.setBeneficiaryBranchDistrictId(beneAddDeatisl.get("P_BENEFICIARY_DISTRICT_ID")==null?beneficiaryDT.getDistrictId():(BigDecimal)beneAddDeatisl.get("P_BENEFICIARY_DISTRICT_ID"));
-		remittanceAppBenificary.setBeneficiaryBranchCityId(beneAddDeatisl.get("P_BENEFICIARY_CITY_ID")==null?beneficiaryDT.getCityId():(BigDecimal)beneAddDeatisl.get("P_BENEFICIARY_CITY_ID"));
+		remittanceAppBenificary.setBeneficiaryBranchStateId(beneAddDeatisl.get("P_BENEFICIARY_STATE_ID")!=null?(BigDecimal)beneAddDeatisl.get("P_BENEFICIARY_STATE_ID"):null);
+		remittanceAppBenificary.setBeneficiaryBranchDistrictId(beneAddDeatisl.get("P_BENEFICIARY_DISTRICT_ID")!=null?(BigDecimal)beneAddDeatisl.get("P_BENEFICIARY_DISTRICT_ID"):null);
+		remittanceAppBenificary.setBeneficiaryBranchCityId(beneAddDeatisl.get("P_BENEFICIARY_CITY_ID")!=null?(BigDecimal)beneAddDeatisl.get("P_BENEFICIARY_CITY_ID"):null);
 		
 		
 		if(beneficiaryDT.getSwiftBic()!=null) {
