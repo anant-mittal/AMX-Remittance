@@ -1,6 +1,7 @@
 package com.amx.jax.branchremittance.manager;
 
 import java.math.BigDecimal;
+import java.sql.Types;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -21,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.jdbc.core.SqlOutParameter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -558,10 +560,9 @@ public class BranchRemittanceApplManager {
 		remittanceAppBenificary.setBeneficiaryFourthName(beneAddDeatisl.get("P_BENEFICIARY_FOURTH_NAME")==null?beneficiaryDT.getFourthName():(String) beneAddDeatisl.get("P_BENEFICIARY_FOURTH_NAME"));
 		remittanceAppBenificary.setBeneficiaryFifthName(beneAddDeatisl.get("P_BENEFICIARY_FIFTH_NAME")==null?beneficiaryDT.getFiftheName():(String) beneAddDeatisl.get("P_BENEFICIARY_FIFTH_NAME"));
 		
-		remittanceAppBenificary.setBeneficiaryBranchStateId(beneAddDeatisl.get("P_BENE_STATE_ID")==null?beneficiaryDT.getStateId():(BigDecimal)beneAddDeatisl.get("P_BENE_STATE_ID"));
-		remittanceAppBenificary.setBeneficiaryBranchDistrictId(beneAddDeatisl.get("P_BENE_DISTRICT_ID")==null?beneficiaryDT.getDistrictId():(BigDecimal)beneAddDeatisl.get("P_BENE_DISTRICT_ID"));
-		remittanceAppBenificary.setBeneficiaryBranchCityId(beneAddDeatisl.get("P_BENE_CITY_ID")==null?beneficiaryDT.getCityId():(BigDecimal)beneAddDeatisl.get("P_BENE_CITY_ID"));
-		
+		remittanceAppBenificary.setBeneficiaryBranchStateId(beneAddDeatisl.get("P_BENEFICIARY_STATE_ID")==null?beneficiaryDT.getStateId():(BigDecimal)beneAddDeatisl.get("P_BENEFICIARY_STATE_ID"));
+		remittanceAppBenificary.setBeneficiaryBranchDistrictId(beneAddDeatisl.get("P_BENEFICIARY_DISTRICT_ID")==null?beneficiaryDT.getDistrictId():(BigDecimal)beneAddDeatisl.get("P_BENEFICIARY_DISTRICT_ID"));
+		remittanceAppBenificary.setBeneficiaryBranchCityId(beneAddDeatisl.get("P_BENEFICIARY_CITY_ID")==null?beneficiaryDT.getCityId():(BigDecimal)beneAddDeatisl.get("P_BENEFICIARY_CITY_ID"));
 		
 		
 		if(beneficiaryDT.getSwiftBic()!=null) {
