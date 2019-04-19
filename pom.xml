@@ -21,9 +21,9 @@
 		<jax.version>0.0.1-SNAPSHOT</jax.version>
 		<amx.version>0.0.1-SNAPSHOT</amx.version>
 		<java.version>1.8</java.version>
+		<vzn>0.0.1-SNAPSHOT</vzn>
 		<sonar.issuesReport.html.enable>true</sonar.issuesReport.html.enable>
-<!-- 		<sonar.analysis.mode>preview</sonar.analysis.mode>
-		<sonar.host.url>http://10.28.42.5:9000</sonar.host.url> -->
+		<!-- <sonar.analysis.mode>preview</sonar.analysis.mode> <sonar.host.url>http://10.28.42.5:9000</sonar.host.url> -->
 	</properties>
 
 	<dependencyManagement>
