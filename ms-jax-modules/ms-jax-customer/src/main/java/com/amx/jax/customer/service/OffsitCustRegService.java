@@ -32,6 +32,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.constant.PrefixEnum;
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.amxlib.meta.model.AnnualIncomeRangeDTO;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.CustomerCredential;
@@ -63,9 +64,11 @@ import com.amx.jax.dbmodel.Employee;
 import com.amx.jax.dbmodel.EmployeeDetails;
 import com.amx.jax.dbmodel.EmploymentTypeMasterView;
 import com.amx.jax.dbmodel.FieldList;
+import com.amx.jax.dbmodel.IncomeModel;
 import com.amx.jax.dbmodel.ProfessionMasterView;
 import com.amx.jax.dbmodel.StateMaster;
 import com.amx.jax.dbmodel.UserFinancialYear;
+import com.amx.jax.dict.Tenant;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.logger.AuditEvent.Result;
 import com.amx.jax.logger.AuditService;
@@ -106,11 +109,13 @@ import com.amx.jax.repository.IUserFinancialYearRepo;
 import com.amx.jax.repository.JaxConditionalFieldRuleRepository;
 import com.amx.jax.repository.ProfessionRepository;
 import com.amx.jax.scope.TenantContext;
+import com.amx.jax.scope.TenantContextHolder;
 import com.amx.jax.service.PrefixService;
 import com.amx.jax.services.AbstractService;
 import com.amx.jax.services.JaxNotificationService;
 import com.amx.jax.trnx.CustomerRegistrationTrnxModel;
 import com.amx.jax.userservice.dao.CustomerDao;
+import com.amx.jax.userservice.dao.IncomeDao;
 import com.amx.jax.userservice.manager.CustomerRegistrationManager;
 import com.amx.jax.userservice.manager.CustomerRegistrationOtpManager;
 import com.amx.jax.userservice.repository.ContactDetailsRepository;
@@ -248,6 +253,9 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 	
 	@Autowired
 	EmployeeRespository employeeRespository;
+	
+	@Autowired
+	IncomeDao incomeDao;
 
 	public AmxApiResponse<ComponentDataDto, Object> getIdTypes() {
 		List<Map<String, Object>> tempList = bizcomponentDao
@@ -437,16 +445,43 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 	}
 
 	public AmxApiResponse<IncomeRangeDto, Object> getIncomeRangeResponse(EmploymentDetailsRequest model) {
-		BigDecimal countryId = metaData.getCountryId();
-		BigDecimal articleDetailsId = model.getArticleDetailsId();
-		List<Map<String, Object>> incomeRangeList = articleDao.getIncomeRange(countryId, articleDetailsId);
-		if (incomeRangeList == null || incomeRangeList.isEmpty()) {
-			throw new GlobalException(JaxError.EMPTY_INCOME_RANGE, "Income Range List Is Empty ");
+		List<IncomeRangeDto> incomeRangeDataList = null;
+		if(TenantContextHolder.currentSite().equals(Tenant.BHR)) {
+			List<IncomeModel> incomeRangeList = incomeDao.getAnnualIncome(metaData.getCustomerId());
+			
+			
+			if (incomeRangeList.isEmpty()) {
+				throw new GlobalException("Income list is not available");
+			}
+			incomeRangeDataList = convertIncomeRangeForIncomeModel(incomeRangeList);
+			
 		}
-		List<IncomeRangeDto> incomeRangeDataList = convertIncomeRange(incomeRangeList);
+		else {
+			BigDecimal countryId = metaData.getCountryId();
+			BigDecimal articleDetailsId = model.getArticleDetailsId();
+			
+			List<Map<String, Object>> incomeRangeList = articleDao.getIncomeRange(countryId, articleDetailsId);
+			if (incomeRangeList == null || incomeRangeList.isEmpty()) {
+				throw new GlobalException(JaxError.EMPTY_INCOME_RANGE, "Income Range List Is Empty ");
+			}
+			incomeRangeDataList = convertIncomeRange(incomeRangeList);
+			
+		}
+		
 		return AmxApiResponse.buildList(incomeRangeDataList);
+		
 	}
-
+	public List<IncomeRangeDto> convertIncomeRangeForIncomeModel(List<IncomeModel> incomeList) {
+		List<IncomeRangeDto> output = new ArrayList<>();
+		for (IncomeModel incomeModel : incomeList) {
+			IncomeRangeDto dto = new IncomeRangeDto();
+			dto.setIncomeFrom(incomeModel.getIncomeRangeFrom());
+			dto.setIncomeTo(incomeModel.getIncomeRangeTo());
+			dto.setIncomeRangeId(incomeModel.getIncomeRangeMasterId());
+			output.add(dto);
+		}
+		return output;
+	}
 	private List<IncomeRangeDto> convertIncomeRange(List<Map<String, Object>> incomeRangeList) {
 		List<IncomeRangeDto> output = new ArrayList<>();
 		incomeRangeList.forEach(i -> {
@@ -548,6 +583,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		CustomerPersonalDetail customerDetails = new CustomerPersonalDetail();
 		jaxUtil.convert(model.getCustomerPersonalDetail(), customerDetails);
 		Customer customer = commitCustomer(customerDetails, model.getCustomerEmploymentDetails());
+		
 		commitCustomerLocalContact(model.getLocalAddressDetails(), customer, customerDetails);
 		commitCustomerHomeContact(model.getHomeAddressDestails(), customer, customerDetails);
 		offsiteCustomerRegManager.commitOnlineCustomerIdProof(customer);
