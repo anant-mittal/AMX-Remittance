@@ -579,12 +579,15 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 	@Override
 	@Transactional
 	public AmxApiResponse<CustomerInfo, Object> saveCustomerInfo(CustomerInfoRequest model) {
+		validateLocalContact(model.getLocalAddressDetails());
+		validateHomeContact(model.getHomeAddressDestails());
 		LOGGER.debug("in saveCustomerInfo with request model: {}", JsonUtil.toJson(model));
 		CustomerPersonalDetail customerDetails = new CustomerPersonalDetail();
 		jaxUtil.convert(model.getCustomerPersonalDetail(), customerDetails);
 		Customer customer = commitCustomer(customerDetails, model.getCustomerEmploymentDetails());
 		
 		commitCustomerLocalContact(model.getLocalAddressDetails(), customer, customerDetails);
+		
 		commitCustomerHomeContact(model.getHomeAddressDestails(), customer, customerDetails);
 		offsiteCustomerRegManager.commitOnlineCustomerIdProof(customer);
 		commitEmploymentDetails(model.getCustomerEmploymentDetails(), customer, model.getLocalAddressDetails());
@@ -593,7 +596,28 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		info.setCustomerId(customer.getCustomerId());
 		return AmxApiResponse.build(info);
 	}
-
+	private void validateLocalContact(LocalAddressDetails localAddressDetails) {
+		if(StringUtils.isEmpty(localAddressDetails.getHouse())) {
+			throw new GlobalException("House cannot be empty");
+		}
+		if(StringUtils.isEmpty(localAddressDetails.getFlat())) {
+			throw new GlobalException("Flat cannot be empty");
+		}
+		if(StringUtils.isEmpty(localAddressDetails.getBlock())) {
+			throw new GlobalException("Block cannot be empty");
+		}
+		if(StringUtils.isEmpty(localAddressDetails.getStreet())) {
+			throw new GlobalException("Street cannot be empty");
+		}
+		if(localAddressDetails.getCountryId()==null) {
+			throw new GlobalException("Country cannot be empty");
+		}
+	}
+	private void validateHomeContact(HomeAddressDetails homeAddressDetails) {
+		if(homeAddressDetails.getStateId()==null) {
+			throw new GlobalException("State cannot be empty");
+		}
+	}
 	private void commitEmploymentDetails(CustomerEmploymentDetails customerEmploymentDetails, Customer customer,
 			LocalAddressDetails localAddressDetails) {
 		if (customerEmploymentDetails != null) {
@@ -630,13 +654,14 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 
 	private void commitCustomerLocalContact(LocalAddressDetails localAddressDetails, Customer customer,
 			com.amx.jax.model.request.CustomerPersonalDetail customerDetails) {
+		
 		if (localAddressDetails != null) {
 			ContactDetail contactDetail = contactDetailService.getContactsForLocal(customer);
 
 			if (contactDetail == null) {
 				contactDetail = new ContactDetail();
 			}
-
+			
 			contactDetail.setFsCountryMaster(new CountryMaster(localAddressDetails.getCountryId()));
 			contactDetail.setFsDistrictMaster(new DistrictMaster(localAddressDetails.getDistrictId()));
 			contactDetail.setFsStateMaster(new StateMaster(localAddressDetails.getStateId()));
@@ -654,7 +679,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 			contactDetail.setMobile(customerDetails.getMobile());
 			contactDetail.setTelephoneCode(customerDetails.getTelPrefix());
 			contactDetail.setIsWatsApp(customerDetails.getIsWatsApp());
-
+		
 			BizComponentData fsBizComponentDataByContactTypeId = new BizComponentData();
 			// local type contact
 			fsBizComponentDataByContactTypeId.setComponentDataId(new BigDecimal(49));
