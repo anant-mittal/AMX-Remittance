@@ -112,6 +112,11 @@
 						<goals>
 							<goal>build-info</goal>
 						</goals>
+						<configuration>
+							<additionalProperties>
+								<version>${vzn}</version>
+							</additionalProperties>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
