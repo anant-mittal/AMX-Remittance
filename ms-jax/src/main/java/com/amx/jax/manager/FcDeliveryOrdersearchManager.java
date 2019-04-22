@@ -52,8 +52,14 @@ public class FcDeliveryOrdersearchManager {
 		dto.setTransactionReferenceNo(fxOrderTransactionModel.getTransactionReferenceNo());
 		dto.setDeliveryDate(fxOrderTransactionModel.getDeliveryDate());
 		dto.setOrderStatus(fxOrderTransactionModel.getOrderStatus());
+		dto.setOrderStatusCode(fxOrderTransactionModel.getOrderStatusCode());
 		dto.setInventoryId(fxOrderTransactionModel.getInventoryId());
 		dto.setLocalTrnxAmount(fxOrderTransactionModel.getLocalTrnxAmount());
+		dto.setCollectionDocumentNo(fxOrderTransactionModel.getCollectionDocumentNo());
+		dto.setDeliveryDate(fxOrderTransactionModel.getDeliveryDate());
+		dto.setDeliveryTime(fxOrderTransactionModel.getDeliveryTime());
+		dto.setForeignTransactionAmount(fxOrderTransactionModel.getForeignTransactionAmount());
+		dto.setBranchDesc(fxOrderTransactionModel.getBranchDesc());
 	
 		if(fxOrderTransactionModel.getDriverEmployeeId()!=null)
 		{		
