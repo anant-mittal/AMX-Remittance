@@ -1,6 +1,7 @@
 package com.amx.jax.proto.tpc.models;
 
 import java.math.BigDecimal;
+import java.util.Map;
 
 import com.amx.jax.dict.Currency;
 import com.amx.jax.swagger.ApiMockModelProperty;
@@ -15,9 +16,6 @@ public class RemittenceModels {
 		@ApiMockModelProperty(example = "100", required = true)
 		public Float domAmount;
 
-		@ApiMockModelProperty(example = "23500", required = true)
-		public Float forAmount;
-
 		@ApiMockModelProperty(example = "BHD", required = true)
 		public Currency domCur;
 
@@ -26,12 +24,6 @@ public class RemittenceModels {
 
 		@ApiMockModelProperty(example = "SALARY", required = true)
 		public String source;
-
-		@ApiMockModelProperty(example = "INVEST_LOAN", required = true)
-		public String purpose;
-
-		@ApiMockModelProperty(example = "false", required = false)
-		public boolean useLoyalityPoints;
 
 	}
 
@@ -58,35 +50,23 @@ public class RemittenceModels {
 		@ApiMockModelProperty(example = "INVEST_LOANS", required = true)
 		public String purpose;
 
-		@ApiMockModelProperty(example = "1234", required = true)
-		public BigDecimal totalLoyalityPoints;
-
 	}
 
-	public static class RemitInitResponse extends RemitInquiryResponse {
+	public static class RemitConfirmPaymentRequest extends RemitInquiryRequest {
+
+		@ApiMockModelProperty(value = "Flex Fields to be passed")
+		private Map<String, Object> flexFields;
+
+		@ApiMockModelProperty(value = "Additional Fields to be passed")
+		private Map<String, Object> additionalFields;
+	}
+
+	public static class RemitConfirmPaymentResponse {
 
 		@ApiMockModelProperty(value = "This is confirmation of rate customer will get and will have validity of 10 min",
 				example = "67783643403", required = true, position = 0)
 		public BigDecimal applicationId;
 
-		@Deprecated
-		@ApiMockModelProperty(example = "ZXY", value = "Prefix for OTP recieved by customer on his mobile",
-				required = true)
-		private String mOtpPrefix;
-
-	}
-
-	public static class RemitConfirmPaymentRequest {
-		@ApiMockModelProperty(example = "APP67783643403", value = "Application Id recieved in RemitConfirm Response",
-				required = true)
-		public BigDecimal applicationId;
-
-		@Deprecated
-		@ApiMockModelProperty(example = "345678", value = "OTP recieved by Customer on his mobile", required = true)
-		private BigDecimal mOtp;
-	}
-
-	public static class RemitConfirmPaymentResponse {
 		@ApiMockModelProperty(example = "TR232323902323", value = "Transaction Id", required = true)
 		public BigDecimal transactionId;
 

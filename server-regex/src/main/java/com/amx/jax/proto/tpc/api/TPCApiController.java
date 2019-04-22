@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.api.AmxResponseSchemes.ApiDataMetaResponse;
 import com.amx.jax.api.AmxResponseSchemes.ApiDataResponse;
 import com.amx.jax.api.AmxResponseSchemes.ApiMetaResponse;
 import com.amx.jax.api.AmxResponseSchemes.ApiResultsResponse;
@@ -21,11 +22,11 @@ import com.amx.jax.proto.tpc.models.CustomerAuth.CustomerAuthResponse;
 import com.amx.jax.proto.tpc.models.CustomerBeneDTO;
 import com.amx.jax.proto.tpc.models.CustomerDetails;
 import com.amx.jax.proto.tpc.models.PurposeOfTrnxDTO;
+import com.amx.jax.proto.tpc.models.RemittenceModels.RemitConfirmPaymentRequest;
+import com.amx.jax.proto.tpc.models.RemittenceModels.RemitConfirmPaymentResponse;
 import com.amx.jax.proto.tpc.models.RemittenceModels.RemitInitResponse;
 import com.amx.jax.proto.tpc.models.RemittenceModels.RemitInquiryRequest;
 import com.amx.jax.proto.tpc.models.RemittenceModels.RemitInquiryResponse;
-import com.amx.jax.proto.tpc.models.RemittenceModels.RemitConfirmPaymentRequest;
-import com.amx.jax.proto.tpc.models.RemittenceModels.RemitConfirmPaymentResponse;
 import com.amx.jax.proto.tpc.models.SourceOfFundDTO;
 
 import io.swagger.annotations.Api;
@@ -92,12 +93,12 @@ public class TPCApiController {
 	@ApiTPCStatus({ TPCServerCodes.INVALID_CUSTOMER_TOKEN, TPCServerCodes.INVALID_SESSION_TOKEN })
 	@TPCApiCustomerHeaders
 	@RequestMapping(value = { TPCApiConstants.Path.CUSTOMER_REMIT_INQUIRY }, method = { RequestMethod.POST })
-	public ApiDataResponse<RemitInquiryResponse> inquireRemitTranx(
+	public ApiDataMetaResponse<RemitInquiryResponse, Object> inquireRemitTranx(
 			@RequestBody RemitInquiryRequest remitInquiryRequest) {
 		return AmxApiResponse.buildData(new RemitInquiryResponse());
 	}
 
-	@ApiOperation(value = "5: Init Remit Request", notes = "To intiate remittance transaction.")
+	@ApiOperation(value = "5: Remit Init Request", notes = "To intiate remittance transaction.")
 	@ApiTPCStatus({ TPCServerCodes.INVALID_CUSTOMER_TOKEN, TPCServerCodes.INVALID_SESSION_TOKEN })
 	@TPCApiCustomerHeaders
 	@RequestMapping(value = { TPCApiConstants.Path.CUSTOMER_REMIT_APPLICATION }, method = { RequestMethod.POST })
