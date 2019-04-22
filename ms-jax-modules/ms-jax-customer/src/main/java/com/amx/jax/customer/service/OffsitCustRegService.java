@@ -579,8 +579,9 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 	@Override
 	@Transactional
 	public AmxApiResponse<CustomerInfo, Object> saveCustomerInfo(CustomerInfoRequest model) {
-		validateLocalContact(model.getLocalAddressDetails());
-		validateHomeContact(model.getHomeAddressDestails());
+		offsiteCustomerRegValidator.validateLocalContact(model.getLocalAddressDetails());
+		offsiteCustomerRegValidator.validateHomeContact(model.getHomeAddressDestails());
+		LOGGER.debug("hello");
 		LOGGER.debug("in saveCustomerInfo with request model: {}", JsonUtil.toJson(model));
 		CustomerPersonalDetail customerDetails = new CustomerPersonalDetail();
 		jaxUtil.convert(model.getCustomerPersonalDetail(), customerDetails);
@@ -596,28 +597,9 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		info.setCustomerId(customer.getCustomerId());
 		return AmxApiResponse.build(info);
 	}
-	private void validateLocalContact(LocalAddressDetails localAddressDetails) {
-		if(StringUtils.isEmpty(localAddressDetails.getHouse())) {
-			throw new GlobalException("House cannot be empty");
-		}
-		if(StringUtils.isEmpty(localAddressDetails.getFlat())) {
-			throw new GlobalException("Flat cannot be empty");
-		}
-		if(StringUtils.isEmpty(localAddressDetails.getBlock())) {
-			throw new GlobalException("Block cannot be empty");
-		}
-		if(StringUtils.isEmpty(localAddressDetails.getStreet())) {
-			throw new GlobalException("Street cannot be empty");
-		}
-		if(localAddressDetails.getCountryId()==null) {
-			throw new GlobalException("Country cannot be empty");
-		}
-	}
-	private void validateHomeContact(HomeAddressDetails homeAddressDetails) {
-		if(homeAddressDetails.getCountryId()==null) {
-			throw new GlobalException("Country cannot be empty");
-		}
-	}
+	
+	
+	
 	private void commitEmploymentDetails(CustomerEmploymentDetails customerEmploymentDetails, Customer customer,
 			LocalAddressDetails localAddressDetails) {
 		if (customerEmploymentDetails != null) {
@@ -661,11 +643,20 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 			if (contactDetail == null) {
 				contactDetail = new ContactDetail();
 			}
+			if(localAddressDetails.getCountryId() != null) {
+				contactDetail.setFsCountryMaster(new CountryMaster(localAddressDetails.getCountryId()));
+			}
 			
-			contactDetail.setFsCountryMaster(new CountryMaster(localAddressDetails.getCountryId()));
-			contactDetail.setFsDistrictMaster(new DistrictMaster(localAddressDetails.getDistrictId()));
-			contactDetail.setFsStateMaster(new StateMaster(localAddressDetails.getStateId()));
-			contactDetail.setFsCityMaster(new CityMaster(localAddressDetails.getCityId()));
+			if(localAddressDetails.getDistrictId() != null) {
+				contactDetail.setFsDistrictMaster(new DistrictMaster(localAddressDetails.getDistrictId()));
+			}
+			if(localAddressDetails.getStateId() != null) {
+				contactDetail.setFsStateMaster(new StateMaster(localAddressDetails.getStateId()));
+			}
+			
+			if(localAddressDetails.getCityId() != null) {
+				contactDetail.setFsCityMaster(new CityMaster(localAddressDetails.getCityId()));
+			}
 			contactDetail.setBuildingNo(localAddressDetails.getHouse());
 			contactDetail.setFlat(localAddressDetails.getFlat());
 			contactDetail.setBlock(localAddressDetails.getBlock());
@@ -696,10 +687,16 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 			if (contactDetail == null) {
 				contactDetail = new ContactDetail();
 			}
-
+			
 			contactDetail.setFsCountryMaster(new CountryMaster(homeAddressDestails.getCountryId()));
-			contactDetail.setFsDistrictMaster(new DistrictMaster(homeAddressDestails.getDistrictId()));
-			contactDetail.setFsStateMaster(new StateMaster(homeAddressDestails.getStateId()));
+			if(null != homeAddressDestails.getDistrictId()) {
+				contactDetail.setFsDistrictMaster(new DistrictMaster(homeAddressDestails.getDistrictId()));
+			}
+			if(null != homeAddressDestails.getStateId()) {
+				contactDetail.setFsStateMaster(new StateMaster(homeAddressDestails.getStateId()));
+			}
+			
+			
 			if(null != homeAddressDestails.getCityId()) {
 				contactDetail.setFsCityMaster(new CityMaster(homeAddressDestails.getCityId()));
 			}
