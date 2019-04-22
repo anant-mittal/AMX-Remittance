@@ -63,11 +63,15 @@ public class RemittenceModels {
 
 	public static class RemitConfirmPaymentResponse {
 
-		@ApiMockModelProperty(value = "This is confirmation of rate customer will get and will have validity of 10 min",
+		@ApiMockModelProperty(
+				value = "Application Id",
+				notes = "This is confirmation of rate customer will get and will have validity of 10 min",
 				example = "67783643403", required = true, position = 0)
 		public BigDecimal applicationId;
 
-		@ApiMockModelProperty(example = "TR232323902323", value = "Transaction Id", required = true)
+		@ApiMockModelProperty(value = "Transaction Id",
+				notes = "Transaction Id : will be present only if, payment is done and application has been converted into transaction",
+				example = "TR232323902323", required = true)
 		public BigDecimal transactionId;
 
 		@ApiMockModelProperty(example = "PAIDC", value = "Transaction Status", required = true)
