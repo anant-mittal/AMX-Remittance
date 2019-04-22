@@ -1,9 +1,14 @@
 package com.amx.jax.device;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -36,6 +41,7 @@ import com.amx.jax.rbaac.dto.request.DeviceRegistrationRequest;
 import com.amx.jax.sso.SSOAuditEvent;
 import com.amx.jax.sso.SSOTranx;
 import com.amx.jax.sso.SSOTranx.SSOModel;
+import com.amx.jax.sso.SSOUser;
 import com.amx.jax.sso.server.ApiHeaderAnnotations.ApiDeviceHeaders;
 import com.amx.jax.swagger.IStatusCodeListPlugin.ApiStatusService;
 import com.amx.utils.ArgUtil;
@@ -67,6 +73,9 @@ public class DeviceController {
 
 	@Autowired
 	private AuditService auditService;
+
+	@Autowired(required = false)
+	private SSOUser ssoUser;
 
 	@RequestMapping(value = { DeviceConstants.Path.DEVICE_TERMINALS }, method = { RequestMethod.GET })
 	public AmxApiResponse<BranchSystemDetailDto, Object> getTerminals() {
@@ -183,7 +192,31 @@ public class DeviceController {
 		auditService.log(new SSOAuditEvent(SSOAuditEvent.Type.DEVICE_SESSION_PAIR)
 				.terminalId(resp.getResult().getTermialId())
 				.deviceRegId(resp.getResult().getDeviceRegId()));
+
 		return resp;
+	}
+
+	@RequestMapping(value = DeviceConstants.Path.SESSION_PAIR_DEVICE, method = RequestMethod.POST)
+	public AmxApiResponse<DevicePairOtpResponse, BoolRespModel> validateOtpForPairingDevice(
+			@PathVariable(value = "deviceType") ClientType deviceType, @RequestParam(required = false) String mOtp) {
+
+		AmxApiResponse<DevicePairOtpResponse, BoolRespModel> resp = rbaacServiceClient.pairDeviceSession(deviceType,
+				ssoUser.getUserClient().getTerminalId().intValueExact(), mOtp);
+		deviceRequestValidator.updateStamp(resp.getResult().getDeviceRegId());
+		// Audit
+		AppContextUtil.getUserClient().setClientType(resp.getResult().getDeviceType());
+		auditService.log(new SSOAuditEvent(SSOAuditEvent.Type.DEVICE_SESSION_PAIR)
+				.terminalId(resp.getResult().getTermialId()).deviceRegId(resp.getResult().getDeviceRegId()));
+
+		return resp;
+	}
+
+	@RequestMapping(value = DeviceConstants.Path.DEVICE_TYPE, method = RequestMethod.GET)
+	public AmxApiResponse<ClientType, Object> deviceList() {
+
+		List<ClientType> deviceTypeList = new ArrayList<ClientType>(Arrays.asList(ClientType.values()));
+		return AmxApiResponse.buildList(deviceTypeList);
+
 	}
 
 	@RequestMapping(value = { DeviceConstants.Path.SESSION_TERMINAL }, method = { RequestMethod.GET })
@@ -203,16 +236,15 @@ public class DeviceController {
 		// Audit
 		AppContextUtil.getUserClient().setClientType(ClientType.BRANCH_ADAPTER);
 		auditService.log(new SSOAuditEvent(SSOAuditEvent.Type.SESSION_TERMINAL_MAP)
-				.terminalId(sSOTranx.get().getTerminalId())
-				.deviceRegId(sSOTranx.get().getBranchAdapterId()));
+				.terminalId(sSOTranx.get().getTerminalId()).deviceRegId(sSOTranx.get().getBranchAdapterId()));
 
 		return AmxApiResponse.build(terminalId, deviceRequestValidator.getDeviceRegId());
 	}
 
 	@ApiOffisteStatus({ OffsiteServerCodes.CLIENT_UNKNOWN })
 	@RequestMapping(value = { DeviceConstants.Path.DEVICE_DELETE }, method = { RequestMethod.POST })
-	public AmxApiResponse<BoolRespModel, Object> deleteDevice(
-			@RequestParam Integer deviceRegId, @RequestParam ClientType deviceType) {
+	public AmxApiResponse<BoolRespModel, Object> deleteDevice(@RequestParam Integer deviceRegId,
+			@RequestParam ClientType deviceType) {
 		deviceRequestValidator.updateStamp(deviceRegId);
 		return rbaacServiceClient.deleteDevice(deviceRegId);
 	}
