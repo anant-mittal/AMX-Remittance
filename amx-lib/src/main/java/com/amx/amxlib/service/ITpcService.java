@@ -20,6 +20,6 @@ public interface ITpcService {
 		public static final String CLIENT_ID = "client-id";
 	}
 
-	AmxApiResponse<BoolRespModel, Object> generatePassword(String clientId, String actualPassword);
+	AmxApiResponse<BoolRespModel, Object> generateSecret(String clientId, String actualSecret);
 
 }
