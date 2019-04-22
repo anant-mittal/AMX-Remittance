@@ -14,4 +14,7 @@ public interface IViewStatus extends CrudRepository<StatusMaster, Serializable>{
 	@Query("select s from StatusMaster s where s.statusDescription =?1")
 	public List<StatusMaster> getOrderStatusList(String statusDescription);
 	
+	@Query("select s from StatusMaster s where s.statusDescription =?1")
+	public StatusMaster getOrderStatus(String statusDescription);
+	
 }

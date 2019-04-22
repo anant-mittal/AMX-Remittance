@@ -54,4 +54,8 @@ public class StatusMasterManager {
 				return statusDto;
 	}
 		
+		public StatusMaster getOrderStatusValue(String statusDescription) {
+			return statusDao.getOrderStatus(statusDescription);
+		}
+		
 }

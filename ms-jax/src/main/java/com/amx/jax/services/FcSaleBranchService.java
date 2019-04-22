@@ -23,10 +23,12 @@ import com.amx.jax.dbmodel.CountryBranch;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.fx.FxOrderTransactionModel;
 import com.amx.jax.dbmodel.fx.OrderManagementView;
+import com.amx.jax.dbmodel.fx.StatusMaster;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.manager.FcDeliveryOrdersearchManager;
 import com.amx.jax.manager.FcSaleApplicationTransactionManager;
 import com.amx.jax.manager.FcSaleBranchOrderManager;
+import com.amx.jax.manager.StatusMasterManager;
 import com.amx.jax.model.request.fx.FcDeliveryBranchOrderSearchRequest;
 import com.amx.jax.model.request.fx.FcSaleBranchDispatchRequest;
 import com.amx.jax.model.response.fx.FcEmployeeDetailsDto;
@@ -83,6 +85,10 @@ public class FcSaleBranchService extends AbstractService{
 	
 	@Autowired
 	FxDeliveryDetailsRepository fxDeliveryDetailsRepository;
+	
+	@Autowired
+	StatusMasterManager statusMasterManager;
+
 
 	/* 
 	 * @param   :fetch List of Pending Orders
@@ -735,79 +741,30 @@ public class FcSaleBranchService extends AbstractService{
 		List<FxOrderTransactionHistroyDto> fxOrderTransactionHistroyDto = new ArrayList<>();
 		logger.debug("FcDeliveryBranchOrderSearchRequest:"+fcDeliveryBranchOrderSearchRequest.toString());
 		AmxApiResponse<FxOrderTransactionHistroyDto, Object> result = null;
-		fcDeliveryBranchOrderSearchRequestValidation.validatingAll(fcDeliveryBranchOrderSearchRequest);
-		fcDeliveryBranchOrderSearchRequestValidation.validatingOrderStatusAndAll(fcDeliveryBranchOrderSearchRequest);
+		
+		//fcDeliveryBranchOrderSearchRequestValidation.validatingAll(fcDeliveryBranchOrderSearchRequest);
 		fcDeliveryBranchOrderSearchRequestValidation.validatingAllValues(fcDeliveryBranchOrderSearchRequest);
-		if (fcDeliveryBranchOrderSearchRequest.getOrderStatus() != null
-				&& fcDeliveryBranchOrderSearchRequest.getOrderId() != null
-				&& fcDeliveryBranchOrderSearchRequest.getCountryBranchId() != null
-				&& fcDeliveryBranchOrderSearchRequest.getCivilId() != null) {
-			CountryBranch countryBranch = countryBranchService
-					.getCountryBranchByCountryBranchId(fcDeliveryBranchOrderSearchRequest.getCountryBranchId());
+		if(fcDeliveryBranchOrderSearchRequest.getCivilId() != null) {
+			
 			Customer customerDetails = userService.getCustomerCustIdByCivilId(
 					fcDeliveryBranchOrderSearchRequest.getCivilId(), ConstantDocument.BIZ_COMPONENT_ID_CIVIL_ID);
-			logger.info("searchOrderDetails..");
-			fxOrderTransactionHistroyDto = fcDeliveryOrdersearchManager.searchOrderDetails(
-					fcDeliveryBranchOrderSearchRequest.getOrderId(), countryBranch.getBranchName(),
-					customerDetails.getCustomerId(), fcDeliveryBranchOrderSearchRequest.getOrderStatus());
-			result = AmxApiResponse.buildList(fxOrderTransactionHistroyDto);
-		} else if (fcDeliveryBranchOrderSearchRequest.getOrderStatus() != null
-				&& fcDeliveryBranchOrderSearchRequest.getOrderId() != null
-				&& fcDeliveryBranchOrderSearchRequest.getCountryBranchId() != null
-				&& fcDeliveryBranchOrderSearchRequest.getCivilId() == null) {
-			CountryBranch countryBranch = countryBranchService
-					.getCountryBranchByCountryBranchId(fcDeliveryBranchOrderSearchRequest.getCountryBranchId());
-			logger.info("searchOrderDetailsbyTxnIdNdBranchDesc..");
-			fxOrderTransactionHistroyDto = fcDeliveryOrdersearchManager.searchOrderDetailsbyTxnIdNdBranchDesc(
-					fcDeliveryBranchOrderSearchRequest.getOrderId(), countryBranch.getBranchName(),
-					fcDeliveryBranchOrderSearchRequest.getOrderStatus());
-			result = AmxApiResponse.buildList(fxOrderTransactionHistroyDto);
-		} else if (fcDeliveryBranchOrderSearchRequest.getOrderStatus() != null
-				&& fcDeliveryBranchOrderSearchRequest.getOrderId() != null
-				&& fcDeliveryBranchOrderSearchRequest.getCountryBranchId() == null
-				&& fcDeliveryBranchOrderSearchRequest.getCivilId() != null) {
-			Customer customerDetails = userService.getCustomerCustIdByCivilId(
-					fcDeliveryBranchOrderSearchRequest.getCivilId(), ConstantDocument.BIZ_COMPONENT_ID_CIVIL_ID);
-			logger.debug("searchOrderDetailsbyOrderIdNdCustId..");
-			fxOrderTransactionHistroyDto = fcDeliveryOrdersearchManager.searchOrderDetailsbyOrderIdNdCustId(
-					fcDeliveryBranchOrderSearchRequest.getOrderId(), customerDetails.getCustomerId(),
-					fcDeliveryBranchOrderSearchRequest.getOrderStatus());
-			result = AmxApiResponse.buildList(fxOrderTransactionHistroyDto);
-		} else if (fcDeliveryBranchOrderSearchRequest.getOrderStatus() != null
-				&& fcDeliveryBranchOrderSearchRequest.getOrderId() == null
-				&& fcDeliveryBranchOrderSearchRequest.getCountryBranchId() != null
-				&& fcDeliveryBranchOrderSearchRequest.getCivilId() != null) {
-			CountryBranch countryBranch = countryBranchService
-					.getCountryBranchByCountryBranchId(fcDeliveryBranchOrderSearchRequest.getCountryBranchId());
-			Customer customerDetails = userService.getCustomerCustIdByCivilId(
-					fcDeliveryBranchOrderSearchRequest.getCivilId(), ConstantDocument.BIZ_COMPONENT_ID_CIVIL_ID);
-			logger.debug("searchOrderDetailsByBranchDescNdCustID..");
-			fxOrderTransactionHistroyDto = fcDeliveryOrdersearchManager.searchOrderDetailsByBranchDescNdCustID(
-					countryBranch.getBranchName(), customerDetails.getCustomerId(),
-					fcDeliveryBranchOrderSearchRequest.getOrderStatus());
-			result = AmxApiResponse.buildList(fxOrderTransactionHistroyDto);
-		} else if (fcDeliveryBranchOrderSearchRequest.getOrderStatus() != null
-				&& fcDeliveryBranchOrderSearchRequest.getOrderId() != null) {
-			logger.debug("searchOrderDetailsByOrderId..");
-			fxOrderTransactionHistroyDto = fcDeliveryOrdersearchManager.searchOrderDetailsByOrderId(
-					fcDeliveryBranchOrderSearchRequest.getOrderId(),
-					fcDeliveryBranchOrderSearchRequest.getOrderStatus());
-			result = AmxApiResponse.buildList(fxOrderTransactionHistroyDto);
-		} else if (fcDeliveryBranchOrderSearchRequest.getOrderStatus() != null
-				&& fcDeliveryBranchOrderSearchRequest.getCountryBranchId() != null) {
-			CountryBranch countryBranch = countryBranchService
-					.getCountryBranchByCountryBranchId(fcDeliveryBranchOrderSearchRequest.getCountryBranchId());
-			logger.debug("searchOrderByBranchDesc..");
-			fxOrderTransactionHistroyDto = fcDeliveryOrdersearchManager.searchOrderByBranchDesc(
-					countryBranch.getBranchName(), fcDeliveryBranchOrderSearchRequest.getOrderStatus());
-		} else if (fcDeliveryBranchOrderSearchRequest.getOrderStatus() != null
-				&& fcDeliveryBranchOrderSearchRequest.getCivilId() != null) {
-			Customer customerDetails = userService.getCustomerCustIdByCivilId(
-					fcDeliveryBranchOrderSearchRequest.getCivilId(), ConstantDocument.BIZ_COMPONENT_ID_CIVIL_ID);
-			logger.debug("searchOrderDetailsByCustId..");
-			fxOrderTransactionHistroyDto = fcDeliveryOrdersearchManager.searchOrderDetailsByCustId(
-					customerDetails.getCustomerId(), fcDeliveryBranchOrderSearchRequest.getOrderStatus());
+			fcDeliveryBranchOrderSearchRequest.setCustomerId(customerDetails.getCustomerId());
+		
 		}
+		if(fcDeliveryBranchOrderSearchRequest.getCountryBranchId() != null) {
+			CountryBranch countryBranch = countryBranchService
+					.getCountryBranchByCountryBranchId(fcDeliveryBranchOrderSearchRequest.getCountryBranchId());
+			fcDeliveryBranchOrderSearchRequest.setCountryBranchName(countryBranch.getBranchName());
+					
+		}
+		if(fcDeliveryBranchOrderSearchRequest.getOrderStatus() != null) {
+			
+			StatusMaster orderStatusDetails = statusMasterManager
+					.getOrderStatusValue(fcDeliveryBranchOrderSearchRequest.getOrderStatus());
+			fcDeliveryBranchOrderSearchRequest.setOrderStatusCode(orderStatusDetails.getStatusCode());	
+		}
+		fxOrderTransactionHistroyDto =fcDeliveryOrdersearchManager.searchOrder(fcDeliveryBranchOrderSearchRequest);
+	
 		result = AmxApiResponse.buildList(fxOrderTransactionHistroyDto);
 		return result;
 	}

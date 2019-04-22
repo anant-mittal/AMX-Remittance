@@ -13,6 +13,10 @@ public class FcDeliveryBranchOrderSearchRequest {
 	
 	@JsonIgnore
 	private BigDecimal customerId;
+	@JsonIgnore
+	private String countryBranchName;
+	@JsonIgnore
+	private String orderStatusCode;
 	
 	public String getOrderId() {
 		return orderId;
@@ -49,6 +53,20 @@ public class FcDeliveryBranchOrderSearchRequest {
 	public void setCustomerId(BigDecimal customerId) {
 		this.customerId = customerId;
 	}
+	public String getCountryBranchName() {
+		return countryBranchName;
+	}
+	public void setCountryBranchName(String countryBranchName) {
+		this.countryBranchName = countryBranchName;
+	}
+	public String getOrderStatusCode() {
+		return orderStatusCode;
+	}
+	public void setOrderStatusCode(String orderStatusCode) {
+		this.orderStatusCode = orderStatusCode;
+	}
+	
+	
 	
 	
 	

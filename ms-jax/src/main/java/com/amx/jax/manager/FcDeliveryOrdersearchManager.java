@@ -58,10 +58,12 @@ public class FcDeliveryOrdersearchManager {
 	}
 	
 	public List<FxOrderTransactionHistroyDto> searchOrder(FcDeliveryBranchOrderSearchRequest fcDeliveryBranchOrderSearchRequest){
-		Predicate predicate = fxOrderTransactionModelPredicateCreator.createFxOrderTransactionSearchPredicate(fcDeliveryBranchOrderSearchRequest);
+		Predicate predicate = fxOrderTransactionModelPredicateCreator.searchOrderPredicate(fcDeliveryBranchOrderSearchRequest);
 		List<FxOrderTransactionModel> fxOrderList =  fcSaleBranchDao.searchOrder(predicate);
 		return convert(fxOrderList);
 	}
+	
+	
 	
 	public List<FxOrderTransactionModel> searchOrderDetailsByBranchDescNdCustomerID(String branchName,BigDecimal customerId,String orderStatus) {
 		return fcSaleBranchDao.searchOrderDetailsByBranchDescNdCustomerID(branchName,customerId,orderStatus);
