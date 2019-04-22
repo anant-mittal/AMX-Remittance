@@ -915,10 +915,12 @@ public class UserValidationService {
 	}
 	
 	
-	public void validateIdentityInt(String identityInt, String identityType) {
-		BigDecimal identyType = new BigDecimal(identityType);
+	public void validateIdentityInt(String identityInt, String identityTypeStr) {
+		BigDecimal identyType = ConstantDocument.BIZ_COMPONENT_ID_CIVIL_ID;
+		if (identityTypeStr != null) {
+			identyType = new BigDecimal(identityTypeStr);
+		}
 		tenantContext.get().validateIdentityInt(identityInt, identyType);
-
 	}
 	
 	public void validateFingerprintDeviceId(CustomerOnlineRegistration customer, String fingerprintDeviceId) {
