@@ -49,6 +49,8 @@ public class RemittanceAdditionalInstructionData implements Serializable {
 	private String flexFieldValue;
 	private String amiecCode;
 	private BigDecimal companyCode;
+	
+
 
 	public RemittanceAdditionalInstructionData() {
 	}
@@ -239,6 +241,8 @@ public class RemittanceAdditionalInstructionData implements Serializable {
 	public RemittanceTransaction getExRemittanceTransaction() {
 		return exRemittanceTransaction;
 	}
+
+	
 	
 	
 }
