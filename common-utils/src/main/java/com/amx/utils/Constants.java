@@ -71,6 +71,8 @@ public class Constants {
 
 	/** The Constant IDENTITY_TYPE_ID. */
 	public static final String IDENTITY_TYPE_CIVIL_ID_STR = "198";
+	
+	public static final String IDENTITY_TYPE_CIVIL_ID_STRING = "2000";
 
 	public static final Long IDENTITY_TYPE_CIVIL_ID = Long.parseLong(IDENTITY_TYPE_CIVIL_ID_STR);
 

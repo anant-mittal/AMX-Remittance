@@ -98,6 +98,7 @@ import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.DateUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.RoundUtil;
+import com.amx.utils.JsonUtil;
 
 @Component
 public class BranchRemittanceSaveManager {
@@ -218,10 +219,9 @@ public class BranchRemittanceSaveManager {
 	
 
 	public RemittanceResponseDto saveRemittanceTrnx(BranchRemittanceRequestModel remittanceRequestModel) {
-		
+		logger.debug("saveRemittanceTrnx request model : {}", JsonUtil.toJson(remittanceRequestModel));
 		List<BranchApplicationDto> shoppingCartList = new ArrayList<>();
 		shoppingCartList = remittanceRequestModel.getRemittanceApplicationId();
-		//updateApplicationStatus(shoppingCartList);
 		RemittanceResponseDto responseDto = saveRemittance(remittanceRequestModel);
 		
 		if(responseDto!=null && JaxUtil.isNullZeroBigDecimalCheck(responseDto.getCollectionDocumentNo())) {
@@ -262,6 +262,7 @@ public class BranchRemittanceSaveManager {
 			mapAllDetailRemitSave.put("EX_REMIT_ADDL", addInstList);
 			mapAllDetailRemitSave.put("EX_REMIT_AML", amlList);
 			mapAllDetailRemitSave.put("LOYALTY_POINTS", loyaltyPoints);
+			validateSaveTrnxDetails(mapAllDetailRemitSave);
 			responseDto = brRemittanceDao.saveRemittanceTransaction(mapAllDetailRemitSave);
 			auditService.log(new CActivityEvent(Type.TRANSACTION_CREATED,String.format("{}/{}", responseDto.getCollectionDocumentFYear(),responseDto.getCollectionDocumentNo())).field("STATUS").to(JaxTransactionStatus.PAYMENT_SUCCESS_APPLICATION_SUCCESS).result(Result.DONE));
 	}catch (GlobalException e) {
@@ -768,7 +769,7 @@ public class BranchRemittanceSaveManager {
 			}
 			
 		}else {
-			throw new GlobalException(JaxError.NO_RECORD_FOUND,"Record found to save in remittance");
+			throw new GlobalException(JaxError.NO_RECORD_FOUND,"Record not found to save in remittance");
 		}
 		
 		return remitTrnxList;
@@ -821,10 +822,10 @@ public   List<RemittanceBenificiary>  saveBeneTrnx(RemittanceApplication applica
 			remitBeneList.add(remitBene);
 
 		}else {
-			throw new GlobalException(JaxError.NO_RECORD_FOUND,"Record found in appl bene for remittacne :"+remitTrnx.getApplicationDocumentNo());
+			throw new GlobalException(JaxError.NO_RECORD_FOUND,"Record not found in appl bene for remittance : "+remitTrnx.getApplicationDocumentNo());
 		}
 	}else {
-		throw new GlobalException(JaxError.NO_RECORD_FOUND,"Record found in appl bene for remittacne :"+remitTrnx.getApplicationDocumentNo());
+		throw new GlobalException(JaxError.NO_RECORD_FOUND,"Record not found in appl bene for remittance : "+remitTrnx.getApplicationDocumentNo());
 	}
 	
 	return remitBeneList;
@@ -854,13 +855,11 @@ public   List<RemittanceAdditionalInstructionData>   saveRemitnaceinstructionDat
 			remitAddData.setCompanyCode(applInstrucData.getFsCompanyMaster().getCompanyCode());
 			remitAddData.setDocumentFinanceYear(remitTrnx.getDocumentFinanceYear());
 			remitAddData.setIsactive(ConstantDocument.Yes);
-			
-		
 			addInstList.add(remitAddData);
 			
 		}
 			}else {
-			throw new GlobalException(JaxError.NO_RECORD_FOUND,"Record found in appl additional instruction  :"+remitTrnx.getApplicationDocumentNo());
+			throw new GlobalException(JaxError.NO_RECORD_FOUND,"Record not found in appl additional instruction  :"+remitTrnx.getApplicationDocumentNo());
 		}
 	  
 	 }
@@ -1216,5 +1215,29 @@ public BigDecimal generateDocumentNumber(BigDecimal appCountryId,BigDecimal comp
 		}
 		return validStatus;
 	}
- 
- }
+@SuppressWarnings("unchecked")
+public void validateSaveTrnxDetails(HashMap<String, Object> mapAllDetailRemitSave ) {
+	CollectionModel collectModel = (CollectionModel) mapAllDetailRemitSave.get("EX_COLLECT");
+	List<CollectDetailModel> collectDetailsModel = (List<CollectDetailModel>) mapAllDetailRemitSave.get("EX_COLLECT_DET");
+	List<RemittanceTransaction> remitTrnxList = (List<RemittanceTransaction>) mapAllDetailRemitSave.get("EX_REMIT_TRNX");
+	List<RemittanceBenificiary> remitBeneList = (List<RemittanceBenificiary>) mapAllDetailRemitSave.get("EX_REMIT_BENE");
+	List<RemittanceAdditionalInstructionData> addlTrnxList = (List<RemittanceAdditionalInstructionData>) mapAllDetailRemitSave.get("EX_REMIT_ADDL");
+	
+	if(collectModel==null) {
+		throw new GlobalException(JaxError.NO_RECORD_FOUND, "Collection data not found");
+	}	
+	if(collectDetailsModel==null || collectDetailsModel.isEmpty() ) {
+		throw new GlobalException(JaxError.NO_RECORD_FOUND, "Collection details data not found");
+	}
+	if(remitTrnxList.isEmpty()) {
+		throw new GlobalException(JaxError.NO_RECORD_FOUND, "Remittance trnx details not found");
+	}
+	if(remitBeneList.isEmpty()) {
+		throw new GlobalException(JaxError.NO_RECORD_FOUND, "Remittance bene  details not found");
+	}
+	if(addlTrnxList.isEmpty()) {
+		throw new GlobalException(JaxError.NO_RECORD_FOUND, "Remittance additional instruction details not found");
+	}
+	
+	}
+}

@@ -119,6 +119,15 @@ public class AppRequestFilter implements Filter {
 			}
 			Tenant tnt = TenantContextHolder.currentSite();
 
+			// ***** SESSION ID Tracking ********
+			String sessionId = req.getHeader(AppConstants.SESSION_ID_XKEY);
+			if (StringUtils.isEmpty(sessionId)) {
+				sessionId = ArgUtil.parseAsString(req.getParameter(AppConstants.SESSION_ID_XKEY));
+			}
+			if (!StringUtils.isEmpty(sessionId)) {
+				AppContextUtil.setSessionId(sessionId);
+			}
+
 			// Tranx Id Tracking
 			String tranxId = req.getHeader(AppConstants.TRANX_ID_XKEY);
 			if (StringUtils.isEmpty(tranxId)) {
@@ -173,22 +182,22 @@ public class AppRequestFilter implements Filter {
 				traceId = ArgUtil.parseAsString(req.getParameter(AppConstants.TRACE_ID_XKEY));
 			}
 			if (StringUtils.isEmpty(traceId)) {
-				String sessionID = null;
 				HttpSession session = req.getSession(false);
-				if (session == null) {
-					sessionID = UniqueID.generateString();
-				} else {
-					sessionID = ArgUtil.parseAsString(
-							session.getAttribute(AppConstants.SESSION_ID_XKEY),
-							UniqueID.generateString());
+				if (ArgUtil.isEmpty(sessionId)) {
+					if (session == null) {
+						sessionId = AppContextUtil.getSessionId(true);
+					} else {
+						sessionId = AppContextUtil.getSessionId(ArgUtil.parseAsString(
+								session.getAttribute(AppConstants.SESSION_ID_XKEY)));
+					}
 				}
 
-				AppContextUtil.setSessionId(sessionID);
+				AppContextUtil.setSessionId(sessionId);
 				traceId = AppContextUtil.getTraceId();
 				AppContextUtil.init();
 
 				if (session != null) {
-					req.getSession().setAttribute(AppConstants.SESSION_ID_XKEY, sessionID);
+					req.getSession().setAttribute(AppConstants.SESSION_ID_XKEY, sessionId);
 					req.getSession().setAttribute(TenantContextHolder.TENANT, tnt);
 				}
 			} else {

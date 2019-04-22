@@ -1,6 +1,7 @@
 package com.amx.utils;
 
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Pattern;
 
 //TODO: Auto-generated Javadoc
 /**
@@ -13,6 +14,7 @@ public final class UniqueID {
 
 	/** The Constant PREF. */
 	public static final String PREF = Random.randomAlpha(3);
+	public static final Pattern SYSTEM_STRING_PATTERN = Pattern.compile("^([A-Z]{3})-([\\w]+)-([\\w]+)-(\\w+)$");
 
 	/** The atom. */
 	private static AtomicInteger atom = new AtomicInteger();
@@ -40,6 +42,19 @@ public final class UniqueID {
 	 */
 	public static String generateString() {
 		return Long.toString(generate(), 36);
+	}
+
+	/**
+	 * Unique Session String across Systems
+	 * 
+	 * @return
+	 */
+	public static String generateSessionId() {
+		return PREF + "-" + generateString();
+	}
+
+	public static String generateRequestId(String sessionId, String requestPrefix) {
+		return sessionId + "-" + requestPrefix + "-" + Long.toString(generate(), 36);
 	}
 
 	/**

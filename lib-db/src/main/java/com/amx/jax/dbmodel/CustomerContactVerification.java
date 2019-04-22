@@ -20,7 +20,6 @@ import com.amx.jax.util.AmxDBConstants.Status;
 
 @Entity
 @Table(name = "EX_CONTACT_VERIFICATION")
-@Proxy(lazy = false)
 public class CustomerContactVerification implements java.io.Serializable {
 
 	private static final long serialVersionUID = 1L;

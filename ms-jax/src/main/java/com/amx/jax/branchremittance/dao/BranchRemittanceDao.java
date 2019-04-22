@@ -152,10 +152,6 @@ public class BranchRemittanceDao {
 		LoyaltyClaimRequest lylClaim = (LoyaltyClaimRequest) mapAllDetailRemitSave.get("LYL_CLAIM");
 		List<LoyaltyPointsModel> loyaltyPoitns = (List<LoyaltyPointsModel> )mapAllDetailRemitSave.get("LOYALTY_POINTS");
 		
-		
-		
-		
-		
 
 		if (collectModel != null) {
 			BigDecimal documentNo =generateDocumentNumber(collectModel.getApplicationCountryId(),collectModel.getFsCompanyMaster().getCompanyId(),collectModel.getDocumentId(),collectModel.getDocumentFinanceYear(),collectModel.getExBankBranch().getBranchId());
@@ -171,8 +167,6 @@ public class BranchRemittanceDao {
 			if(!StringUtils.isBlank(collectModel.getCashDeclarationIndicator()) && collectModel.getCashDeclarationIndicator().equalsIgnoreCase(ConstantDocument.Yes)) {
 				responseDto.setDeclarationReport(true);
 			}
-			
-			
 		}else {
 			throw new GlobalException(JaxError.INVALID_COLLECTION_DOCUMENT_NO, "Collection details not found.");
 		}
@@ -202,8 +196,12 @@ public class BranchRemittanceDao {
 				
 				if (remitBeneList != null && !remitBeneList.isEmpty()) {
 					RemittanceBenificiary remitBene = remitBeneList.get(i);
-					remitBene.setDocumentNo(documentNo);
-					remitBeneRepository.save(remitBene);
+					if(remitBene!=null) {
+						remitBene.setDocumentNo(documentNo);
+						remitBeneRepository.save(remitBene);
+					}else {
+						throw new GlobalException(JaxError.NO_RECORD_FOUND, "Remittance bene  details not found");
+					}
 				}
 				
 				if (addlTrnxList != null && !addlTrnxList.isEmpty()) {
@@ -219,7 +217,6 @@ public class BranchRemittanceDao {
 					remitAmlRepository.save(remitaml);
 				}
 				i++;
-				//updateApplication(remitTrnx);
 		}
 			
 			if(loyaltyPoitns!=null && !loyaltyPoitns.isEmpty()) {

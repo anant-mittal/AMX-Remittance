@@ -163,4 +163,13 @@ public class TunnelService implements ITunnelService {
 		this.shout(SampleTunnelEventsDict.Names.TEST_TOPIC, "Hey There");
 	}
 
+	@Override
+	public <T> TunnelQueue<T> getQueue(String queueName) {
+		if (redisson == null) {
+			LOGGER.error("No Redissson Client Instance Available");
+			return null;
+		}
+		return new TunnelQueueImpl<T>(redisson.getQueue(queueName));
+	}
+
 }

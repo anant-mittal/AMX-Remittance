@@ -48,6 +48,8 @@ public class CustomerContactVerificationManager {
 
 	public CustomerContactVerification create(Customer c, ContactType contactType) {
 
+		contactType = contactType.contactType();
+
 		CustomerContactVerification link = new CustomerContactVerification();
 		link.setCustomerId(c.getCustomerId());
 		link.setContactType(contactType);
