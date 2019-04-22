@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.amxlib.service.ITpcService;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
+import com.amx.jax.model.response.tpc.TpcGenerateClientSecretResponse;
 
 @RestController
 @RequestMapping(ITpcService.Path.SERVICE_PREFIX)
@@ -18,9 +19,9 @@ public class TpcController implements ITpcService {
 
 	@Override
 	@RequestMapping(path = Path.GENERATE_SECRET)
-	public AmxApiResponse<BoolRespModel, Object> generateSecret(@RequestParam String clientId,
+	public AmxApiResponse<TpcGenerateClientSecretResponse, Object> generateSecret(@RequestParam String clientId,
 			@RequestParam String actualSecret) {
-		tpcService.generateSecret(clientId, actualSecret);
-		return AmxApiResponse.build();
+		TpcGenerateClientSecretResponse response = tpcService.generateSecret(clientId, actualSecret);
+		return AmxApiResponse.build(response);
 	}
 }

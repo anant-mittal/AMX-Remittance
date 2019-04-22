@@ -5,6 +5,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.amx.jax.model.response.tpc.TpcGenerateClientSecretResponse;
+
 @Service
 public class TpcService {
 
@@ -15,9 +17,16 @@ public class TpcService {
 	@Autowired
 	TpcManager tpcManager;
 
-	public void generateSecret(String clientId, String actualSecret) {
+	public TpcGenerateClientSecretResponse generateSecret(String clientId, String actualClientSecret) {
 		LOGGER.info("TPC: generating client secret : {}", clientId);
-		tpcValidationService.validateGenerateSecretRequeset(clientId, actualSecret);
-		tpcManager.generateSecret(clientId, actualSecret);
+
+		tpcValidationService.validateGenerateSecretRequeset(clientId, actualClientSecret);
+		LOGGER.debug("TPC: hashing : {}", clientId);
+		String clientSecretHash = tpcManager.generateClientSecretHash(clientId, actualClientSecret);
+		LOGGER.debug("TPC: encyrpt : {}", clientId);
+		String clientSecret = tpcManager.encryptClientSecret(clientSecretHash);
+		TpcGenerateClientSecretResponse response = new TpcGenerateClientSecretResponse();
+		response.setClientSecret(clientSecret);
+		return response;
 	}
 }
