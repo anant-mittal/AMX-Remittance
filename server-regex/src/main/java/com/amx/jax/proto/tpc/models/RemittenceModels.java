@@ -12,7 +12,7 @@ public class RemittenceModels {
 
 	private static interface TPCPaymentReference {
 		@ApiMockModelProperty(example = "CAPTURED", value = "Payment Status", required = true)
-		public PaymentStatus getStatus();
+		public PaymentStatus getPaymentStatus();
 
 		@ApiMockModelProperty(
 				value = "TPC Transaction/Payment Reference",
@@ -20,6 +20,33 @@ public class RemittenceModels {
 				example = "ABCF67783643403", required = true, position = 0)
 		public String getPaymntReference();
 	}
+
+	private static interface RemitApplicationDetails {
+
+		@ApiMockModelProperty(
+				value = "Application Id",
+				notes = "This is confirmation of rate customer will get and will have validity of 10 min",
+				example = "67783643403", required = true, position = 0)
+		public BigDecimal getApplicationId();
+	}
+
+	private static interface RemitTranxStatus extends RemitApplicationDetails {
+
+		@ApiMockModelProperty(value = "Transaction Id",
+				notes = "Transaction Id : will be present only if, payment is done and application has been converted into transaction",
+				example = "TR232323902323", required = true)
+		public BigDecimal getTransactionId();
+
+		@ApiMockModelProperty(example = "PAIDC", value = "Transaction Status", required = true)
+		public TranxStatus getTranxStatus();
+
+	}
+
+	/**********************
+	 * 
+	 * Remittance Models
+	 * 
+	 ***********************/
 
 	public static class RemitInquiryRequest {
 
@@ -40,71 +67,41 @@ public class RemittenceModels {
 
 	}
 
-	public static class RemitInquiryResponse {
-
-		@ApiMockModelProperty(example = "1234", required = true)
-		public BigDecimal beneId;
-
-		@ApiMockModelProperty(example = "100", required = true)
-		public Float domAmount;
+	public static class RemitInquiryResponse extends RemitInquiryRequest {
 
 		@ApiMockModelProperty(example = "23500", required = true)
 		public Float forAmount;
 
-		@ApiMockModelProperty(example = "BHD", required = true)
-		public Currency domCur;
-
-		@ApiMockModelProperty(example = "INR", required = true)
-		public Currency forCur;
-
-		@ApiMockModelProperty(example = "SALARY", required = true)
-		public String source;
-
-		@ApiMockModelProperty(example = "INVEST_LOANS", required = true)
-		public String purpose;
+		@ApiMockModelProperty(example = "0.0054", required = true)
+		public Float rate;
 
 	}
 
-	public static class RemitConfirmPaymentRequest extends RemitInquiryRequest {
+	public static class RemitConfirmPaymentRequest extends RemitInquiryResponse {
 
 		@ApiMockModelProperty(value = "Flex Fields to be passed")
 		private Map<String, Object> flexFields;
 
 		@ApiMockModelProperty(value = "Additional Fields to be passed")
 		private Map<String, Object> additionalFields;
+
+		@ApiMockModelProperty(example = "INVEST_LOANS", required = true)
+		public String purpose;
 	}
 
-	public static class RemitConfirmPaymentResponse {
-
-		@ApiMockModelProperty(
-				value = "Application Id",
-				notes = "This is confirmation of rate customer will get and will have validity of 10 min",
-				example = "67783643403", required = true, position = 0)
-		public BigDecimal applicationId;
-
-		@ApiMockModelProperty(value = "Transaction Id",
-				notes = "Transaction Id : will be present only if, payment is done and application has been converted into transaction",
-				example = "TR232323902323", required = true)
-		public BigDecimal transactionId;
-
-		@ApiMockModelProperty(example = "PAIDC", value = "Transaction Status", required = true)
-		public TranxStatus status;
+	@JsonDeserialize(as = RemittenceDTO.class)
+	@JsonIgnoreProperties(ignoreUnknown = true)
+	public static interface RemitConfirmPaymentResponse extends RemitTranxStatus {
 	}
 
-	public static class RemitVerifyRequest {
-		@ApiMockModelProperty(example = "APP67783643403", value = "Application Id", required = true)
-		public BigDecimal applicationId;
+	@JsonDeserialize(as = RemittenceDTO.class)
+	@JsonIgnoreProperties(ignoreUnknown = true)
+	public static interface RemitVerifyRequest extends RemitApplicationDetails {
 	}
 
 	@JsonDeserialize(as = RemittenceDTO.class)
 	@JsonIgnoreProperties(ignoreUnknown = true)
 	public static interface RemitVerifyResponse extends TPCPaymentReference {
-
-		@ApiMockModelProperty(
-				value = "Application Id",
-				notes = "This is confirmation of rate customer will get and will have validity of 10 min",
-				example = "67783643403", required = true, position = 0)
-		public BigDecimal getApplicationId();
 
 	}
 
@@ -130,10 +127,25 @@ public class RemittenceModels {
 
 	}
 
-	public static class RemittenceDTO implements RemitVerifyResponse {
+	public static class RemittenceDTO implements RemitVerifyResponse, RemitVerifyRequest, RemitConfirmPaymentResponse {
 
 		@Override
-		public PaymentStatus getStatus() {
+		public BigDecimal getApplicationId() {
+			return null;
+		}
+
+		@Override
+		public BigDecimal getTransactionId() {
+			return null;
+		}
+
+		@Override
+		public TranxStatus getTranxStatus() {
+			return null;
+		}
+
+		@Override
+		public PaymentStatus getPaymentStatus() {
 			return null;
 		}
 
@@ -141,12 +153,6 @@ public class RemittenceModels {
 		public String getPaymntReference() {
 			return null;
 		}
-
-		@Override
-		public BigDecimal getApplicationId() {
-			return null;
-		}
-
 	}
 
 }

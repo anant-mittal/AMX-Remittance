@@ -30,6 +30,8 @@ import com.amx.jax.proto.tpc.models.RemittenceModels.RemitConfirmPaymentRequest;
 import com.amx.jax.proto.tpc.models.RemittenceModels.RemitConfirmPaymentResponse;
 import com.amx.jax.proto.tpc.models.RemittenceModels.RemitInquiryRequest;
 import com.amx.jax.proto.tpc.models.RemittenceModels.RemitInquiryResponse;
+import com.amx.jax.proto.tpc.models.RemittenceModels.RemitVerifyResponse;
+import com.amx.jax.proto.tpc.models.RemittenceModels.RemittenceDTO;
 import com.amx.jax.proto.tpc.models.SourceOfFundDTO;
 import com.amx.utils.CollectionUtil;
 
@@ -110,7 +112,7 @@ public class TPCApiController {
 	@RequestMapping(value = { TPCApiConstants.Path.CUSTOMER_REMIT_PAYMENT }, method = { RequestMethod.POST })
 	public ApiDataMetaResponse<RemitConfirmPaymentResponse, List<JaxConditionalFieldDto>> confirmPaymentRemitTranx(
 			@RequestBody RemitConfirmPaymentRequest remitVerifyRequest) {
-		return AmxApiResponse.buildData(new RemitConfirmPaymentResponse(),
+		return AmxApiResponse.buildData(new RemittenceDTO(),
 				CollectionUtil.getList(new JaxConditionalFieldDto()));
 	}
 
@@ -119,9 +121,9 @@ public class TPCApiController {
 	@ApiTPCStatus({ TPCServerCodes.INVALID_CUSTOMER_TOKEN, TPCServerCodes.INVALID_SESSION_TOKEN })
 	@TPCApiCustomerHeaders
 	@RequestMapping(value = { TPCApiConstants.Path.CUSTOMER_REMIT_VERIFY }, method = { RequestMethod.POST })
-	public ApiDataResponse<RemitConfirmPaymentResponse> verifyRemitTranx(
+	public ApiDataResponse<RemitVerifyResponse> verifyRemitTranx(
 			@RequestBody RemitConfirmPaymentRequest remitVerifyRequest) {
-		return AmxApiResponse.buildData(new RemitConfirmPaymentResponse());
+		return AmxApiResponse.buildData(new RemittenceDTO());
 	}
 
 	@ApiOperation(value = "7: Transaction Status",
@@ -131,7 +133,7 @@ public class TPCApiController {
 	@RequestMapping(value = { TPCApiConstants.Path.CUSTOMER_REMIT_STATUS }, method = { RequestMethod.POST })
 	public ApiDataResponse<RemitConfirmPaymentResponse> statusRemitTranx(
 			@RequestParam String applicationId) {
-		return AmxApiResponse.buildData(new RemitConfirmPaymentResponse(),
+		return AmxApiResponse.buildData(new RemittenceDTO(),
 				CollectionUtil.getList(new JaxConditionalFieldDto()));
 	}
 
