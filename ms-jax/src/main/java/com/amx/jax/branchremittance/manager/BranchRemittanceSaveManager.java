@@ -98,6 +98,7 @@ import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.DateUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.RoundUtil;
+import com.amx.utils.JsonUtil;
 
 @Component
 public class BranchRemittanceSaveManager {
@@ -218,10 +219,9 @@ public class BranchRemittanceSaveManager {
 	
 
 	public RemittanceResponseDto saveRemittanceTrnx(BranchRemittanceRequestModel remittanceRequestModel) {
-		
+		logger.debug("saveRemittanceTrnx request model : {}", JsonUtil.toJson(remittanceRequestModel));
 		List<BranchApplicationDto> shoppingCartList = new ArrayList<>();
 		shoppingCartList = remittanceRequestModel.getRemittanceApplicationId();
-		//updateApplicationStatus(shoppingCartList);
 		RemittanceResponseDto responseDto = saveRemittance(remittanceRequestModel);
 		
 		if(responseDto!=null && JaxUtil.isNullZeroBigDecimalCheck(responseDto.getCollectionDocumentNo())) {
@@ -769,7 +769,7 @@ public class BranchRemittanceSaveManager {
 			}
 			
 		}else {
-			throw new GlobalException(JaxError.NO_RECORD_FOUND,"Record found to save in remittance");
+			throw new GlobalException(JaxError.NO_RECORD_FOUND,"Record not found to save in remittance");
 		}
 		
 		return remitTrnxList;
@@ -855,13 +855,11 @@ public   List<RemittanceAdditionalInstructionData>   saveRemitnaceinstructionDat
 			remitAddData.setCompanyCode(applInstrucData.getFsCompanyMaster().getCompanyCode());
 			remitAddData.setDocumentFinanceYear(remitTrnx.getDocumentFinanceYear());
 			remitAddData.setIsactive(ConstantDocument.Yes);
-			
-		
 			addInstList.add(remitAddData);
 			
 		}
 			}else {
-			throw new GlobalException(JaxError.NO_RECORD_FOUND,"Record found in appl additional instruction  :"+remitTrnx.getApplicationDocumentNo());
+			throw new GlobalException(JaxError.NO_RECORD_FOUND,"Record not found in appl additional instruction  :"+remitTrnx.getApplicationDocumentNo());
 		}
 	  
 	 }
@@ -1228,7 +1226,7 @@ public void validateSaveTrnxDetails(HashMap<String, Object> mapAllDetailRemitSav
 	if(collectModel==null) {
 		throw new GlobalException(JaxError.NO_RECORD_FOUND, "Collection data not found");
 	}	
-	if(collectDetailsModel==null) {
+	if(collectDetailsModel==null || collectDetailsModel.isEmpty() ) {
 		throw new GlobalException(JaxError.NO_RECORD_FOUND, "Collection details data not found");
 	}
 	if(remitTrnxList.isEmpty()) {

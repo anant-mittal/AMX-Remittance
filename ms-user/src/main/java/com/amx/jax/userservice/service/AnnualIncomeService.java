@@ -215,9 +215,10 @@ public class AnnualIncomeService {
 		}
 		
 		CustomerEmploymentInfo customerEmploymentInfo = incomeDao.getCustById(metaData.getCustomerId());
+		List<CustomerEmploymentInfo> custEmploymentInfo = incomeDao.getAllCustById(metaData.getCustomerId());
 		logger.info("set customerEmpInfo : " +customerEmploymentInfo);
 		if (customerEmploymentInfo == null) {
-			customerEmploymentInfo = createCustomerEmploymentInfo(incomeDto);
+			customerEmploymentInfo = createCustomerEmploymentInfo(incomeDto,custEmploymentInfo.get(0));
 			
 		}
 		else {
@@ -289,7 +290,7 @@ public class AnnualIncomeService {
 
 	}
 
-	private CustomerEmploymentInfo createCustomerEmploymentInfo(IncomeDto incomeDto) {
+	private CustomerEmploymentInfo createCustomerEmploymentInfo(IncomeDto incomeDto, CustomerEmploymentInfo customerEmploymentInfo) {
 		// TODO Auto-generated method stub
 		CustomerEmploymentInfo custEmploymentInfo = new CustomerEmploymentInfo();
 		custEmploymentInfo.setEmployerName(incomeDto.getCompanyName());
@@ -302,7 +303,9 @@ public class AnnualIncomeService {
 		custEmploymentInfo.setFsCustomer(new Customer(metaData.getCustomerId()));
 		custEmploymentInfo.setCreatedBy(metaData.getCustomerId().toString());
 		custEmploymentInfo.setCreationDate(new Date());
-		
+		custEmploymentInfo.setFsBizComponentDataByEmploymentTypeId(customerEmploymentInfo.getFsBizComponentDataByEmploymentTypeId());
+		custEmploymentInfo.setFsStateMaster(customerEmploymentInfo.getFsStateMaster());
+		custEmploymentInfo.setFsDistrictMaster(customerEmploymentInfo.getFsDistrictMaster());
 		
 		return custEmploymentInfo;
 	}
