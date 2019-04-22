@@ -60,6 +60,7 @@ public class FcDeliveryOrdersearchManager {
 		dto.setDeliveryTime(fxOrderTransactionModel.getDeliveryTime());
 		dto.setForeignTransactionAmount(fxOrderTransactionModel.getForeignTransactionAmount());
 		dto.setBranchDesc(fxOrderTransactionModel.getBranchDesc());
+		dto.setDocumentFinanceYear(fxOrderTransactionModel.getDocumentFinanceYear());
 	
 		if(fxOrderTransactionModel.getDriverEmployeeId()!=null)
 		{		
