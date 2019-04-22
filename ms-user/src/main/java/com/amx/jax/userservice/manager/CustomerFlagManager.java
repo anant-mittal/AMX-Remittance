@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.model.CustomerModel;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.error.JaxError;
@@ -34,7 +33,6 @@ public class CustomerFlagManager {
 	@Autowired
 	CustomerDao custDao;
 
-	public CustomerFlags getCustomerFlags(BigDecimal customerId) {
 
 	public CustomerFlags getCustomerFlags(BigDecimal customerId) {
 		CustomerFlags customerFlags = new CustomerFlags();
@@ -128,6 +126,5 @@ public class CustomerFlagManager {
 				return false;
 			}
 		}
-		return customerFlags;
 	}
 }
