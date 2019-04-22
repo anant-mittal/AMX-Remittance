@@ -614,8 +614,8 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		}
 	}
 	private void validateHomeContact(HomeAddressDetails homeAddressDetails) {
-		if(homeAddressDetails.getStateId()==null) {
-			throw new GlobalException("State cannot be empty");
+		if(homeAddressDetails.getCountryId()==null) {
+			throw new GlobalException("Country cannot be empty");
 		}
 	}
 	private void commitEmploymentDetails(CustomerEmploymentDetails customerEmploymentDetails, Customer customer,
