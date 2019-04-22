@@ -33,6 +33,11 @@ public class IncomeDao {
 		return customerEmploymentInfo;
 	}
 	
+	public List<CustomerEmploymentInfo> getAllCustById(BigDecimal customerId) {
+		List<CustomerEmploymentInfo> customerEmploymentInfo = customerEmploymentInfoRepository.getAllCustById(new Customer(customerId));
+		return customerEmploymentInfo;
+	}
+	
 	public void saveCustomerEmploymentInfo(CustomerEmploymentInfo c) {
 		customerEmploymentInfoRepository.save(c);
 	}

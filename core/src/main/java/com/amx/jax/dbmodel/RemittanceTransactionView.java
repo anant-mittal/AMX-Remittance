@@ -313,10 +313,13 @@ public class RemittanceTransactionView implements Serializable{
 	@Column(name ="PIN_NO")
 	private  String pinNo;
 	
-
-
-
+	@Column(name = "ORIGINAL_EXCHANGE_RATE")
+	private BigDecimal originalExchangeRate;
 	
+	@Column(name = "IS_DISCOUNT_AVAILED")
+	private String isDiscAvail;
+
+
 	public BigDecimal getPhoneNumber() {
 		return phoneNumber;
 	}
@@ -1070,7 +1073,21 @@ public class RemittanceTransactionView implements Serializable{
 	public void setPinNo(String pinNo) {
 		this.pinNo = pinNo;
 	}
-	
-	
+
+	public BigDecimal getOriginalExchangeRate() {
+		return originalExchangeRate;
+	}
+
+	public void setOriginalExchangeRate(BigDecimal originalExchangeRate) {
+		this.originalExchangeRate = originalExchangeRate;
+	}
+
+	public String getIsDiscAvail() {
+		return isDiscAvail;
+	}
+
+	public void setIsDiscAvail(String isDiscAvail) {
+		this.isDiscAvail = isDiscAvail;
+	}
 
 }

@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import com.amx.jax.dbmodel.CountryMaster;
 import com.amx.jax.dbmodel.CurrencyMasterModel;
 import com.amx.jax.repository.routing.RoutingDetailRepository;
 
@@ -23,7 +24,8 @@ public class RoutingTest {
 
 	@Test
 	public void testRoutingDetailRepository() {
-		List<BigDecimal> list = repo.getCashRoutingBanks(new CurrencyMasterModel(new BigDecimal(4)));
+		List<BigDecimal> list = repo.getCashRoutingBanks(new CurrencyMasterModel(new BigDecimal(4)),
+				new CountryMaster(new BigDecimal(94)));
 		assertNotNull(list);
 	}
 }

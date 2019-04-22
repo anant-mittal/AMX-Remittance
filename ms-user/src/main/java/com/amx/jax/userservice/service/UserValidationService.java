@@ -13,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.time.DateUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -21,11 +22,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.constant.CommunicationChannel;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.exception.jax.InvalidCivilIdException;
 import com.amx.amxlib.exception.jax.InvalidOtpException;
 import com.amx.amxlib.exception.jax.UserNotFoundException;
+import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
+import com.amx.amxlib.model.SecurityQuestionModel;
+import com.amx.jax.JaxAuthCache;
+import com.amx.jax.JaxAuthCache.JaxAuthMeta;
+import com.amx.jax.JaxAuthContext;
 import com.amx.jax.amxlib.config.OtpSettings;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.CustomerVerificationType;
@@ -49,6 +56,7 @@ import com.amx.jax.model.customer.SecurityQuestionModel;
 import com.amx.jax.repository.IContactDetailDao;
 import com.amx.jax.repository.remittance.IBlackListDetailRepository;
 import com.amx.jax.scope.TenantContext;
+import com.amx.jax.userservice.constant.CustomerDataVerificationQuestion;
 import com.amx.jax.userservice.dao.CusmosDao;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.dao.CustomerIdProofDao;
@@ -127,7 +135,7 @@ public class UserValidationService {
 
 	@Autowired
 	IContactDetailDao contactDetailDao;
-
+	
 	@Autowired
 	IBlackListDetailRepository blackListDtRepo;
 
@@ -205,7 +213,7 @@ public class UserValidationService {
 			throw new GlobalException(errorExpression, "Incorrect/wrong password");
 		}
 	}
-
+	
 	protected void validateDevicePassword(CustomerOnlineRegistration customer, String password) {
 		String dbPassword = customer.getDevicePassword();
 		String passwordHashed = null;
@@ -248,7 +256,7 @@ public class UserValidationService {
 		if (idProof.getIdentityExpiryDate() != null && idProof.getIdentityExpiryDate().compareTo(new Date()) < 0) {
 			throw new GlobalException(JaxError.ID_PROOF_EXPIRED, "Identity proof are expired");
 		}
-		if ("A".equals(scanSystem)) {
+		if ("A".equals(scanSystem) || "E".equals(scanSystem)) {
 			List<CustomerIdProof> validIds = idproofDao
 					.getCustomerImageValidation(idProof.getFsCustomer().getCustomerId(), idProof.getIdentityTypeId());
 			if (validIds == null || validIds.isEmpty()) {
@@ -485,33 +493,36 @@ public class UserValidationService {
 	protected CustomerOnlineRegistration validateOnlineCustomerByIdentityId(String identityInt,
 			BigDecimal identityType) {
 		Customer customer = custDao.getActiveCustomerByIndentityIntAndType(identityInt, identityType);
-
+		
 		if (customer == null) {
 			throw new GlobalException(JaxError.CUSTOMER_NOT_FOUND.getStatusKey(), "Online Customer id not found");
 		}
-
+		
 		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(customer.getCustomerId());
 		if (onlineCustomer == null) {
 			throw new GlobalException(JaxError.CUSTOMER_NOT_FOUND.getStatusKey(), "Online Customer id not found");
 		}
 		return onlineCustomer;
 	}
-
+	
 	public CustomerOnlineRegistration validateOnlineCustomerByIdentityId(BigDecimal customerId) {
 		Customer customer = custDao.getCustById(customerId);
 		if (customer == null) {
 			throw new GlobalException(JaxError.CUSTOMER_NOT_FOUND.getStatusKey(), "Online Customer id not found");
 		}
-		if (!customer.getIdentityTypeId().toString().equals(Constants.IDENTITY_TYPE_CIVIL_ID_STR)) {
-			throw new GlobalException("Invalid Identity Type for fingerprint establish");
+		if(!customer.getIdentityTypeId().toString().equals(Constants.IDENTITY_TYPE_CIVIL_ID_STR) && !customer.getIdentityTypeId().toString().equals(Constants.IDENTITY_TYPE_CIVIL_ID_STRING)) {
+			throw new GlobalException("The ID you have entered is not a Civil ID. Please enter the Civil ID to set up fingerprint login.");
 		}
-
+			
+			
 		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(customer.getCustomerId());
 		if (onlineCustomer == null) {
 			throw new GlobalException(JaxError.CUSTOMER_NOT_FOUND.getStatusKey(), "Online Customer id not found");
 		}
 		return onlineCustomer;
 	}
+	
+	
 
 	public void validateOtpFlow(CustomerModel model) {
 		if (model.isRegistrationFlow()) {
@@ -589,6 +600,26 @@ public class UserValidationService {
 		return required;
 	}
 
+	private boolean isSecurityQuestionRequired(CustomerModel model) {
+
+		boolean required = false;
+		if (model.getSecurityquestions() != null) {
+			required = true;
+		}
+
+		return required;
+	}
+
+	private boolean isVerificationAnswerRequired(CustomerModel model) {
+
+		boolean required = false;
+		if (model.getVerificationAnswers() != null) {
+			required = true;
+		}
+
+		return required;
+	}
+
 	public void validateTokenSentCount(CustomerOnlineRegistration onlineCust) {
 
 		Integer limit = otpSettings.getMaxSendOtpAttempts();
@@ -660,15 +691,14 @@ public class UserValidationService {
 		}
 		onlineCustomer.setTokenSentCount(BigDecimal.ZERO);
 	}
-
+	
 	public List<Customer> validateNonActiveOrNonRegisteredCustomerStatus(String identityInt, JaxApiFlow apiFlow) {
 		return validateNonActiveOrNonRegisteredCustomerStatus(identityInt, null, apiFlow);
 	}
 
 	/**
 	 * validates inactive or not registered customers status
-	 * 
-	 * @return
+	 * @return 
 	 */
 	@SuppressWarnings("unused")
 	public List<Customer> validateNonActiveOrNonRegisteredCustomerStatus(String identityInt, BigDecimal identityType,
@@ -717,7 +747,7 @@ public class UserValidationService {
 	}
 
 	private void validateCustomerForOffisteReg(List<Customer> customer) {
-
+		
 	}
 
 	private void validateCustomerDefault(Customer customer) {
@@ -779,12 +809,14 @@ public class UserValidationService {
 		// validateBlockedCustomerForOnlineReg(customer);
 	}
 
-	public void validateIdentityInt(String identityInt, String identityType) {
-		BigDecimal identyType = new BigDecimal(identityType);
+	public void validateIdentityInt(String identityInt, String identityTypeStr) {
+		BigDecimal identyType = ConstantDocument.BIZ_COMPONENT_ID_CIVIL_ID;
+		if (identityTypeStr != null) {
+			identyType = new BigDecimal(identityTypeStr);
+		}
 		tenantContext.get().validateIdentityInt(identityInt, identyType);
-
 	}
-
+	
 	public void validateFingerprintDeviceId(CustomerOnlineRegistration customer, String fingerprintDeviceId) {
 		String dbFingerprintDeviceId = customer.getFingerprintDeviceId();
 		if (!fingerprintDeviceId.equals(dbFingerprintDeviceId) || fingerprintDeviceId == null) {

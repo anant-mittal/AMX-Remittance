@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.log4j.MDC;
 import org.slf4j.Logger;
@@ -26,6 +25,27 @@ public class AppContextUtil {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AppContextUtil.class);
 
+	public static void setSessionId(Object sessionId) {
+		ContextUtil.map().put(AppConstants.SESSION_ID_XKEY, sessionId);
+	}
+
+	public static String getSessionId(boolean generate, String defautSessionId) {
+		String sessionId = ArgUtil.parseAsString(ContextUtil.map().get(AppConstants.SESSION_ID_XKEY), defautSessionId);
+		if (generate && ArgUtil.isEmptyString(sessionId)) {
+			sessionId = UniqueID.generateSessionId();
+			setSessionId(sessionId);
+		}
+		return sessionId;
+	}
+
+	public static String getSessionId(boolean generate) {
+		return getSessionId(generate, null);
+	}
+
+	public static String getSessionId(String defautSessionId) {
+		return getSessionId(true, defautSessionId);
+	}
+
 	/**
 	 * 
 	 * @param generate - create new token if not present
@@ -33,10 +53,10 @@ public class AppContextUtil {
 	 * @return -returns current token
 	 */
 	public static String getTraceId(boolean generate, boolean override) {
-		String sessionId = getSessionId();
+		String sessionId = getSessionId(false);
 		if (override) {
 			if (ArgUtil.isEmpty(sessionId)) {
-				sessionId = UniqueID.generateString();
+				sessionId = getSessionId(true);
 			}
 			return ContextUtil.generateTraceId(sessionId);
 		}
@@ -76,10 +96,6 @@ public class AppContextUtil {
 		return ArgUtil.parseAsString(ContextUtil.map().get(AppConstants.ACTOR_ID_XKEY));
 	}
 
-	public static String getSessionId() {
-		return ArgUtil.parseAsString(ContextUtil.map().get(AppConstants.SESSION_ID_XKEY));
-	}
-
 	public static UserDeviceClient getUserClient() {
 		Object userDeviceClientObject = ContextUtil.map().get(AppConstants.USER_CLIENT_XKEY);
 		UserDeviceClient userDeviceClient = null;
@@ -110,17 +126,15 @@ public class AppContextUtil {
 				RequestType.DEFAULT);
 	}
 
-	public static final Pattern pattern = Pattern.compile("^([A-Z]{3})-([\\w]+)-(\\w+)$");
-
 	public static String getSessionIdFromTraceId() {
 		String traceId = getTraceId();
-		if (ArgUtil.isEmptyString(traceId)) {
-			Matcher matcher = pattern.matcher(traceId);
+		if (!ArgUtil.isEmptyString(traceId)) {
+			Matcher matcher = UniqueID.SYSTEM_STRING_PATTERN.matcher(traceId);
 			if (matcher.find()) {
 				setSessionId(matcher.group(1) + "-" + matcher.group(2));
 			}
 		}
-		return getSessionId();
+		return getSessionId(true);
 	}
 
 	public static Tenant getTenant() {
@@ -149,10 +163,6 @@ public class AppContextUtil {
 
 	public static void setActorId(Object actorId) {
 		ContextUtil.map().put(AppConstants.ACTOR_ID_XKEY, actorId);
-	}
-
-	public static void setSessionId(Object sessionId) {
-		ContextUtil.map().put(AppConstants.SESSION_ID_XKEY, sessionId);
 	}
 
 	public static void setRequestType(RequestType reqType) {
@@ -256,12 +266,17 @@ public class AppContextUtil {
 	 */
 	public static void exportAppContextTo(HttpHeaders httpHeaders) {
 
+		String sessionId = getSessionId(true);
 		String traceId = getTraceId();
 		String tranxId = getTranxId();
 		String userId = getActorId();
 		UserDeviceClient userClient = getUserClient();
 		Map<String, Object> params = getParams();
 		httpHeaders.add(TenantContextHolder.TENANT, getTenant().toString());
+
+		if (!ArgUtil.isEmpty(sessionId)) {
+			httpHeaders.add(AppConstants.SESSION_ID_XKEY, sessionId);
+		}
 		if (!ArgUtil.isEmpty(traceId)) {
 			httpHeaders.add(AppConstants.TRACE_ID_XKEY, traceId);
 		}

@@ -221,8 +221,8 @@ public class RoutingProcedureDao {
 	public List<Map<String, Object>> getRoutingCountryId(Map<String, Object> inputValues) {
 		LOGGER.info("in getRoutingBankBranchIdFromDb,input values: {}", inputValues);
 		
-		String sql = "SELECT ROUTING_COUNTRY_ID ,COUNTRY_NAME "
-				+ "FROM ( " + " SELECT DISTINCT F.ROUTING_COUNTRY_ID,F.COUNTRY_NAME   "
+		String sql = "SELECT ROUTING_COUNTRY_ID ,COUNTRY_NAME,COUNTRY_CODE "
+				+ "FROM ( " + " SELECT DISTINCT F.ROUTING_COUNTRY_ID,F.COUNTRY_NAME ,F.COUNTRY_CODE  "
 				+ " FROM   V_EX_ROUTING_DETAILS F " + " "
 				+ " WHERE  F.APPLICATION_COUNTRY_ID= ?" 
 				+ " AND    F.BENE_BANK_ID =  ? "
@@ -489,10 +489,25 @@ public class RoutingProcedureDao {
 		
 		BigDecimal customerId = inputValues.get("P_CUSTOMER_ID")==null?BigDecimal.ZERO:(BigDecimal)inputValues.get("P_CUSTOMER_ID");
 		String actMyear = inputValues.get("P_ACMMYY")==null?"":(String)inputValues.get("P_ACMMYY");
-		 Map<String, Object> output = new HashMap<>(); 
+		BigDecimal idtype =inputValues.get("ID_TYPE")==null?BigDecimal.ZERO:(BigDecimal)inputValues.get("ID_TYPE");
+		 Map<String, Object> output = new HashMap<>();
+		 String sql  =null;
 		
 		if(JaxUtil.isNullZeroBigDecimalCheck(customerId)) {
-			 String sql =" select sum(c.COLLAMT) today_remit_amt "+
+			
+			if(JaxUtil.isNullZeroBigDecimalCheck(idtype) && (idtype.compareTo(ConstantDocument.BIZ_COMPONENT_ID_PASSPORT)==0) || idtype.compareTo(ConstantDocument.BIZ_COMPONENT_ID_GCC_ID)==0) {
+			
+				sql =" select sum(c.COLLAMT) today_remit_amt "+
+					 	" from ex_remit_trnx a ,EX_COLLECT_DETAIL c "+
+					 	" where  a.customer_id =c.CUSTOMER_ID "+
+					 	" and a.COLLECTION_DOC_CODE = c.DOCUMENT_CODE "+
+					 	" and a.COLLECTION_DOCUMENT_NO =c.DOCUMENT_NO "+
+					 	" and trunc(c.CREATED_DATE)=trunc(sysdate) "+
+					 	" and NVL(TRANSACTION_STATUS,' ')<>'C' "+
+					 	" and a.customer_id ="+customerId;
+			
+			}else { //For CVIL ID and BED ID
+			  sql =" select sum(c.COLLAMT) today_remit_amt "+
 					 	" from ex_remit_trnx a ,EX_COLLECT_DETAIL c "+
 					 	" where  a.customer_id =c.CUSTOMER_ID "+
 					 	" and a.COLLECTION_DOC_CODE = c.DOCUMENT_CODE "+
@@ -501,6 +516,7 @@ public class RoutingProcedureDao {
 					 	" and trunc(c.CREATED_DATE)=trunc(sysdate) "+
 					 	" and NVL(TRANSACTION_STATUS,' ')<>'C' "+
 					 	" and a.customer_id ="+customerId;
+			}
 			 List<BigDecimal> inputList = new ArrayList<>();
 			
 			 try {
@@ -520,17 +536,35 @@ public class RoutingProcedureDao {
 		BigDecimal customerId = inputValues.get("P_CUSTOMER_ID")==null?BigDecimal.ZERO:(BigDecimal)inputValues.get("P_CUSTOMER_ID");
 		String actMyear = inputValues.get("P_ACMMYY")==null?"":(String)inputValues.get("P_ACMMYY");
 		 Map<String, Object> output = new HashMap<>(); 
-		
+			BigDecimal idtype =inputValues.get("ID_TYPE")==null?BigDecimal.ZERO:(BigDecimal)inputValues.get("ID_TYPE");
+		 
+		 String sql  = null;
 		if(JaxUtil.isNullZeroBigDecimalCheck(customerId)) {
-			 String sql ="  select sum(c.COLLAMT) today_remit_amt "+
-					 " from EX_RECEIPT_PAYMENT p ,EX_COLLECT_DETAIL c "+
-				  " where  p.customer_id =c.CUSTOMER_ID "+
-				  " and p.COLLECTION_DOC_CODE = c.DOCUMENT_CODE "+
-				  " and p.COLLECTION_DOCUMENT_NO =c.DOCUMENT_NO "+
-				  " and c.COLLECTION_MODE ='C' "+
-				  " and trunc(c.CREATED_DATE)=trunc(sysdate) "+
-				  " and p.DOCUMENT_CODE =74 "+
-				  " and p.customer_id ="+customerId; 
+			
+			if(JaxUtil.isNullZeroBigDecimalCheck(idtype) && (idtype.compareTo(ConstantDocument.BIZ_COMPONENT_ID_PASSPORT)==0) || idtype.compareTo(ConstantDocument.BIZ_COMPONENT_ID_GCC_ID)==0) {
+				sql ="  select sum(c.COLLAMT) today_remit_amt "+
+						 " from EX_RECEIPT_PAYMENT p ,EX_COLLECT_DETAIL c "+
+					  " where  p.customer_id =c.CUSTOMER_ID "+
+					  " and p.COLLECTION_DOC_CODE = c.DOCUMENT_CODE "+
+					  " and p.COLLECTION_DOCUMENT_NO =c.DOCUMENT_NO "+
+					  " and trunc(c.CREATED_DATE)=trunc(sysdate) "+
+					  " and p.DOCUMENT_CODE =74 "+
+					  " and p.customer_id ="+customerId; 
+			
+			}else {
+				 sql ="  select sum(c.COLLAMT) today_remit_amt "+
+						 " from EX_RECEIPT_PAYMENT p ,EX_COLLECT_DETAIL c "+
+					  " where  p.customer_id =c.CUSTOMER_ID "+
+					  " and p.COLLECTION_DOC_CODE = c.DOCUMENT_CODE "+
+					  " and p.COLLECTION_DOCUMENT_NO =c.DOCUMENT_NO "+
+					  " and c.COLLECTION_MODE ='C' "+
+					  " and trunc(c.CREATED_DATE)=trunc(sysdate) "+
+					  " and p.DOCUMENT_CODE =74 "+
+					  " and p.customer_id ="+customerId; 
+			}
+			
+			
+			 
 			 List<BigDecimal> inputList = new ArrayList<>();
 			
 			 try {

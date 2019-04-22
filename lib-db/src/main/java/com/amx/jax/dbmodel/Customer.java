@@ -143,8 +143,16 @@ public class Customer implements java.io.Serializable {
 	private BigDecimal annualIncomeTo;
 	private String annualIncomeUpdatedBy;
 	private Date annualIncomeUpdatedDate;
+	private String isBusinessCardVerified;
 	
-	
+	public String getIsBusinessCardVerified() {
+		return isBusinessCardVerified;
+	}
+
+	public void setIsBusinessCardVerified(String isBusinessCardVerified) {
+		this.isBusinessCardVerified = isBusinessCardVerified;
+	}
+
 	public BigDecimal getAnnualIncomeFrom() {
 		return annualIncomeFrom;
 	}

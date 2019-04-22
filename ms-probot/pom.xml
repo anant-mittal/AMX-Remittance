@@ -70,11 +70,8 @@
 			<scope>test</scope>
 		</dependency>
 
-		<!-- dependency>
-			<groupId>com.zaxxer</groupId>
-			<artifactId>HikariCP</artifactId>
-			<version>3.2.0</version>
-		</dependency-->
+		<!-- dependency> <groupId>com.zaxxer</groupId> <artifactId>HikariCP</artifactId> 
+			<version>3.2.0</version> </dependency -->
 
 
 		<!-- dependency> <groupId>com.amx.jax</groupId> <artifactId>ms-exchangerate</artifactId> 
@@ -89,6 +86,18 @@
 				<configuration>
 					<executable>true</executable>
 				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>build-info</goal>
+						</goals>
+						<configuration>
+							<additionalProperties>
+								<version>${vzn}</version>
+							</additionalProperties>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

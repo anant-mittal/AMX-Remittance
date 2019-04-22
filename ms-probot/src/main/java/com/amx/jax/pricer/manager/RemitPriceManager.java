@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 import javax.annotation.Resource;
 
 import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +19,7 @@ import org.springframework.stereotype.Component;
 
 import com.amx.jax.dict.UserClient.Channel;
 import com.amx.jax.pricer.dao.CountryBranchDao;
+import com.amx.jax.pricer.dao.CurrencyMasterDao;
 import com.amx.jax.pricer.dao.ExchangeRateDao;
 import com.amx.jax.pricer.dao.ExchangeRateProcedureDao;
 import com.amx.jax.pricer.dao.MarginMarkupDao;
@@ -28,6 +28,7 @@ import com.amx.jax.pricer.dao.RoutingDao;
 import com.amx.jax.pricer.dao.ViewExGLCBALDao;
 import com.amx.jax.pricer.dbmodel.BankMasterModel;
 import com.amx.jax.pricer.dbmodel.CountryBranch;
+import com.amx.jax.pricer.dbmodel.CurrencyMasterModel;
 import com.amx.jax.pricer.dbmodel.ExchangeRateAPRDET;
 import com.amx.jax.pricer.dbmodel.ExchangeRateApprovalDetModel;
 import com.amx.jax.pricer.dbmodel.OnlineMarginMarkup;
@@ -66,6 +67,9 @@ public class RemitPriceManager {
 
 	@Autowired
 	CountryBranchDao countryBranchDao;
+
+	@Autowired
+	CurrencyMasterDao currencyMasterDao;
 
 	@Autowired
 	RoutingDao routingDao;
@@ -123,7 +127,7 @@ public class RemitPriceManager {
 
 			Map<BigDecimal, ExchangeRateAPRDET> exchangeRateMap = computeBestRateForOnline(
 					requestDto.getForeignCurrencyId(), requestDto.getForeignCountryId(), requestDto.getLocalCountryId(),
-					validBankIds);
+					validBankIds, requestDto.getChannel());
 
 			if (exchangeRateMap == null || exchangeRateMap.isEmpty()) {
 				throw new PricerServiceException(PricerServiceError.MISSING_VALID_EXCHANGE_RATES,
@@ -144,6 +148,7 @@ public class RemitPriceManager {
 				ExchangeRateDetails exRateDetails = new ExchangeRateDetails();
 				exRateDetails.setBankId(bankDetailsDto.getBankId());
 				exRateDetails.setServiceIndicatorId(exchangeRate.getServiceId());
+				exRateDetails.setCostRateLimitReached(exchangeRate.isGLCRate());
 
 				if (requestDto.getLocalAmount() != null) {
 
@@ -183,6 +188,23 @@ public class RemitPriceManager {
 						"Invalid Routing Bank Ids : None Found : " + requestDto.getRoutingBankIds());
 			}
 
+			/************* Set All the Base Rates And Margin ***********/
+
+			/**
+			 * For Further computations
+			 */
+			pricingRateDetailsDTO.setBankGlcBalMap(getGLCBALRates(requestDto.getForeignCurrencyId(), validBankIds));
+
+			/**
+			 * Get margin for the Rate
+			 */
+			OnlineMarginMarkup margin = getOnlineMarginMarkup(requestDto.getLocalCountryId(),
+					requestDto.getForeignCountryId(), requestDto.getForeignCurrencyId(), requestDto.getChannel());
+
+			pricingRateDetailsDTO.setMargin(margin);
+
+			/************* Process Bank Exchange Rates ***********/
+
 			List<ExchangeRateApprovalDetModel> bankExchangeRates;
 
 			// Filter Bank Exchange rates for Required Service Indicator Ids
@@ -193,7 +215,7 @@ public class RemitPriceManager {
 
 				bankExchangeRates = exchangeRateDao.getBranchExchangeRatesForRoutingBanksAndServiceIds(
 						requestDto.getForeignCurrencyId(), requestDto.getCountryBranchId(),
-						 requestDto.getLocalCountryId(), validBankIds, serviceIdsList);
+						requestDto.getLocalCountryId(), validBankIds, serviceIdsList);
 			} else {
 
 				bankExchangeRates = exchangeRateDao.getBranchExchangeRatesForRoutingBanks(
@@ -208,6 +230,16 @@ public class RemitPriceManager {
 			}
 
 			for (ExchangeRateApprovalDetModel exchangeRate : bankExchangeRates) {
+
+				BigDecimal avgBankGLCBALRate = pricingRateDetailsDTO
+						.getAvgRateGLCForBank(exchangeRate.getBankMaster().getBankId());
+
+				// Update GLCBAL Rate to Markup Adjusted Rates
+				BigDecimal adjustedSellRate = new BigDecimal(0);
+
+				if (avgBankGLCBALRate != null) {
+					adjustedSellRate = avgBankGLCBALRate.add(margin.getMarginMarkup());
+				}
 
 				BankDetailsDTO bankDetailsDTO;
 
@@ -232,27 +264,21 @@ public class RemitPriceManager {
 							createBreakUpForFcCur(exchangeRate.getSellRateMin(), requestDto.getForeignAmount()));
 				}
 
+				if (exRateDetails.getSellRateBase().getInverseRate().compareTo(adjustedSellRate) <= 0) {
+					exRateDetails.setCostRateLimitReached(true);
+				}
+
 				bankWiseRates.add(exRateDetails);
 
 			} // for
-
-			/**
-			 * For Further computations
-			 */
-			pricingRateDetailsDTO.setBankGlcBalMap(getGLCBALRates(requestDto.getForeignCurrencyId(), validBankIds));
-
-			/**
-			 * Get margin for the Rate
-			 */
-			pricingRateDetailsDTO.setMargin(getOnlineMarginMarkup(requestDto.getLocalCountryId(),
-					requestDto.getForeignCountryId(), requestDto.getForeignCurrencyId()));
 
 		} // else
 
 	}
 
 	private Map<BigDecimal, ExchangeRateAPRDET> computeBestRateForOnline(BigDecimal currencyId,
-			BigDecimal foreignCountryId, BigDecimal applicationCountryId, List<BigDecimal> routingBankIds) {
+			BigDecimal foreignCountryId, BigDecimal applicationCountryId, List<BigDecimal> routingBankIds,
+			Channel channel) {
 
 		/**
 		 * Get All Cost rates from GLCBAL
@@ -262,7 +288,6 @@ public class RemitPriceManager {
 		if (bankGlcBalMap == null || bankGlcBalMap.isEmpty()) {
 			throw new PricerServiceException(PricerServiceError.MISSING_GLCBAL_ENTRIES,
 					"GLCBAL Inventory is Missing for Given Input : ");
-
 		}
 
 		/**
@@ -273,7 +298,7 @@ public class RemitPriceManager {
 		/**
 		 * Get margin for the Rate
 		 */
-		OnlineMarginMarkup margin = getOnlineMarginMarkup(applicationCountryId, foreignCountryId, currencyId);
+		OnlineMarginMarkup margin = getOnlineMarginMarkup(applicationCountryId, foreignCountryId, currencyId, channel);
 
 		/**
 		 * For Further computations
@@ -296,7 +321,10 @@ public class RemitPriceManager {
 			if (null != avgBankGLCBALRate) {
 
 				// Update GLCBAL Rate to Markup Adjusted Rates
-				BigDecimal adjustedSellRate = avgBankGLCBALRate.add(margin.getMarginMarkup());
+				BigDecimal adjustedSellRate = new BigDecimal(0);
+				if (null != avgBankGLCBALRate) {
+					adjustedSellRate = avgBankGLCBALRate.add(margin.getMarginMarkup());
+				}
 
 				if (bankExchangeRateMap.containsKey(bankId)) {
 
@@ -307,15 +335,20 @@ public class RemitPriceManager {
 					// Higher than GLCBAL Rate
 					if (ratePrev.getSellRateMax().compareTo(rate.getSellRateMax()) > 0
 							&& rate.getSellRateMax().compareTo(adjustedSellRate) > 0) {
+
+						// Set to Amx Branch Rate
+						rate.setGLCRate(false);
 						bankExchangeRateMap.put(rate.getBankMaster().getBankId(), rate);
 					}
 
 				} else {
 
-					if (rate.getSellRateMax().compareTo(adjustedSellRate) < 0) {
+					if (rate.getSellRateMax().compareTo(adjustedSellRate) <= 0) {
 
 						rate.setSellRateMin(adjustedSellRate);
 						rate.setSellRateMax(adjustedSellRate);
+
+						rate.setGLCRate(true);
 					}
 
 					bankExchangeRateMap.put(rate.getBankMaster().getBankId(), rate);
@@ -347,12 +380,19 @@ public class RemitPriceManager {
 	}
 
 	private OnlineMarginMarkup getOnlineMarginMarkup(BigDecimal applicationCountryId, BigDecimal foreignCountryId,
-			BigDecimal currencyId) {
+			BigDecimal currencyId, Channel channel) {
 		/**
 		 * Get margin for the Rate
+		 * 
+		 * 1. Margin Markup is only Applicable for Online and mobile world. 2. For
+		 * Branches it is ZERO 3. For Kiosk it is ZERO
 		 */
-		OnlineMarginMarkup margin = marginMarkupDao.getMarkupForCountryAndCurrency(applicationCountryId,
-				foreignCountryId, currencyId);
+
+		OnlineMarginMarkup margin = null;
+
+		if (Channel.ONLINE.equals(channel) || Channel.MOBILE.equals(channel)) {
+			margin = marginMarkupDao.getMarkupForCountryAndCurrency(applicationCountryId, foreignCountryId, currencyId);
+		}
 
 		if (null == margin) {
 			margin = new OnlineMarginMarkup();
@@ -372,7 +412,18 @@ public class RemitPriceManager {
 	 */
 	private Map<BigDecimal, List<ViewExGLCBAL>> getGLCBALRates(BigDecimal currencyId, List<BigDecimal> routingBankIds) {
 
-		String curCode = StringUtils.leftPad(String.valueOf(currencyId.intValue()), 3, "0");
+		// String curCode = StringUtils.leftPad(String.valueOf(currencyId.intValue()),
+		// 3, "0");
+
+		CurrencyMasterModel curMaster = currencyMasterDao.getByCurrencyId(currencyId);
+
+		if (null == curMaster) {
+			LOGGER.info("Invalid Currency Id: " + currencyId);
+			throw new PricerServiceException(PricerServiceError.INVALID_CURRENCY,
+					"Invalid Currency : None Found for Id: " + currencyId);
+		}
+
+		String curCode = curMaster.getCurrencyCode();
 
 		Map<BigDecimal, List<ViewExGLCBAL>> bankGlcBalMap = new HashMap<BigDecimal, List<ViewExGLCBAL>>();
 

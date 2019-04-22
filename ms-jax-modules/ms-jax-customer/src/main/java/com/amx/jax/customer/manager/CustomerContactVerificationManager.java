@@ -48,6 +48,8 @@ public class CustomerContactVerificationManager {
 
 	public CustomerContactVerification create(Customer c, ContactType contactType) {
 
+		contactType = contactType.contactType();
+
 		CustomerContactVerification link = new CustomerContactVerification();
 		link.setCustomerId(c.getCustomerId());
 		link.setContactType(contactType);
@@ -57,10 +59,19 @@ public class CustomerContactVerificationManager {
 		link.setIsActive(Status.Y);
 
 		if (ContactType.EMAIL.equals(contactType)) {
+			if (ArgUtil.isEmpty(c.getEmail())) {
+				throw new GlobalException(JaxError.MISSING_CONTACT, "Email is missing for customer");
+			}
 			link.setContactValue(c.getEmail());
 		} else if (ContactType.SMS.equals(contactType)) {
+			if (ArgUtil.isEmpty(c.getMobile()) || ArgUtil.isEmpty(c.getPrefixCodeMobile())) {
+				throw new GlobalException(JaxError.MISSING_CONTACT, "Mobile is missing for customer");
+			}
 			link.setContactValue(c.getPrefixCodeMobile() + c.getMobile());
 		} else if (ContactType.WHATSAPP.equals(contactType)) {
+			if (ArgUtil.isEmpty(c.getWhatsapp()) || ArgUtil.isEmpty(c.getWhatsappPrefix())) {
+				throw new GlobalException(JaxError.MISSING_CONTACT, "WhatsApp is missing for customer");
+			}
 			link.setContactValue(c.getWhatsappPrefix() + c.getWhatsapp());
 		}
 

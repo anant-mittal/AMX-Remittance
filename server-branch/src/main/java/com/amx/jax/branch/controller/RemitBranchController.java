@@ -233,7 +233,7 @@ public class RemitBranchController {
 		AmxApiResponse<RemittanceReceiptSubreport, Object> wrapper = AmxApiResponse.buildData(rspt);
 		if (File.Type.PDF.equals(ext)) {
 			File file = postManService.processTemplate(
-					new File(duplicate ? TemplatesMX.REMIT_RECEIPT_COPY_JASPER : TemplatesMX.REMIT_RECEIPT_JASPER,
+					new File(duplicate ? TemplatesMX.REMIT_RECEIPT_COPY_JASPER : TemplatesMX.REMIT_RECEIPT_JASPER_NO_HEADER,
 							wrapper, File.Type.PDF))
 					.getResult();
 			return PostManUtil.download(file);
@@ -241,7 +241,7 @@ public class RemitBranchController {
 			// return null;
 		} else if (File.Type.HTML.equals(ext)) {
 			File file = postManService.processTemplate(
-					new File(duplicate ? TemplatesMX.REMIT_RECEIPT_COPY_JASPER : TemplatesMX.REMIT_RECEIPT_JASPER,
+					new File(duplicate ? TemplatesMX.REMIT_RECEIPT_COPY_JASPER : TemplatesMX.REMIT_RECEIPT_JASPER_NO_HEADER,
 							wrapper, null))
 					.getResult();
 			// return file.getContent();

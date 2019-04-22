@@ -220,6 +220,23 @@ public class NewExchangeRateService extends ExchangeRateService {
 				meta.getDefaultCurrencyId(), toCurrency, lcAmount, fcAmount, countryId, routingBankId, null);
 		return exchangeRateResponseModel.getExRateBreakup();
 	}
+	
+	/**
+	 * fetch exchange rates from dynamic pricing api
+	 * 
+	 * @param toCurrency
+	 * @param lcAmount
+	 * @param fcAmount
+	 * @param countryId
+	 * @param routingBankId
+	 * @return
+	 */
+	public ExchangeRateResponseModel getExchangeRateResponseModelUsingDynamicPricing(BigDecimal toCurrency,
+			BigDecimal lcAmount, BigDecimal fcAmount, BigDecimal countryId, BigDecimal routingBankId) {
+		ExchangeRateResponseModel exchangeRateResponseModel = jaxDynamicPriceService.getExchangeRatesWithDiscount(
+				meta.getDefaultCurrencyId(), toCurrency, lcAmount, fcAmount, countryId, routingBankId, null);
+		return exchangeRateResponseModel;
+	}
 
 	/**
 	 * return bank wise exchange rates
@@ -300,7 +317,7 @@ public class NewExchangeRateService extends ExchangeRateService {
 		ApiResponse<ExchangeRateResponseModel> exchangeRateResponse = getExchangeRateFromBestRateLogic(fromCurrency,
 				toCurrency, lcAmount, routingBankId, beneBankCountryId);
 		List<BankMasterDTO> allExchangeRates = exchangeRateResponse.getResult().getBankWiseRates();
-		List<BigDecimal> cashRoutingBanks = routingDetailService.getCashRoutingBanks(toCurrency);
+		List<BigDecimal> cashRoutingBanks = routingDetailService.getCashRoutingBanks(toCurrency, beneBankCountryId);
 		List<BankMasterDTO> allCashRates = allExchangeRates.stream().filter(i -> {
 			return cashRoutingBanks.contains(i.getBankId());
 		}).map(i -> {

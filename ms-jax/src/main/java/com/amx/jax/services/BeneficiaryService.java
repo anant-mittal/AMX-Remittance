@@ -498,6 +498,10 @@ public class BeneficiaryService extends AbstractService {
 			logger.error("bene list display", e);
 		}
 		beneCheck.setCanTransact(dto);
+		if (isCashBene(beneModel)) {
+			dto.setBankName(dto.getBankName() + " CASH PAYOUT");
+			dto.setBankShortNames(dto.getBankShortNames() + " CASH PAYOUT");
+		}
 		return dto;
 	}
 

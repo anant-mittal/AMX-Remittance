@@ -122,6 +122,8 @@ public class AmxDBConstants {
 	public static final BigDecimal BIZ_COMPONENT_ID_GCC_ID = new BigDecimal(201);
 	public static final BigDecimal BIZ_COMPONENT_ID_BEDOUIN_ID = new BigDecimal(197);
 	public static final BigDecimal MURQAB_FOREIGNCURRENCY = new BigDecimal(89);
+	public static final BigDecimal BIZ_COMPONENT_ID_PASSPORT = new BigDecimal(204);
+	
 
 	public static final String ARTICLE_20_CODE = "20";
 	public static final BigDecimal BIZ_COMPONENT_ID_NEW_CIVIL_ID = new BigDecimal(2000);
@@ -146,4 +148,7 @@ public class AmxDBConstants {
 	public static final String A = "A";
 	public static final String CLAIM = "CLAIM";
 	public static final String VOUCHER = "V";
+	public static final String IMPS_CODE = "13";
+	public static final String IND_COUNTRY_CODE = "004";
+	
 }

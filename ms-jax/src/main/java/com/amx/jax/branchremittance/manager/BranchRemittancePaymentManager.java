@@ -512,6 +512,10 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 		Map<String, Object> inputValues = new HashMap<>();
 		inputValues.put("P_CUSTOMER_ID", metaData.getCustomerId());
 		inputValues.put("P_ACMMYY", accMonthYear);
+		Customer customer = customerRepos.getCustomerByCountryAndCompAndCustoemrId(metaData.getCountryId(),metaData.getCompanyId(),metaData.getCustomerId());
+		BigDecimal idType =customer.getIdentityTypeId()==null?BigDecimal.ZERO:customer.getIdentityTypeId();
+		inputValues.put("ID_TYPE", idType);
+		
 		Map<String,Object> map =routingProDao.limitCheck(inputValues);
 		Map<String,Object> mapRemit=routingProDao.todayRemitAmount(inputValues);
 		Map<String,Object> mapReceipt=routingProDao.todayReceiptAmount(inputValues);

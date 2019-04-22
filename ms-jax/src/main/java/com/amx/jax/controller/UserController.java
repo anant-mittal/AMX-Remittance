@@ -76,7 +76,7 @@ public class UserController {
 
 	@RequestMapping(value = UserApi.LOGIN_CUSTOMER_BY_FINGERPRINT, method = RequestMethod.POST)
 	public AmxApiResponse<CustomerModel, Object> loginCustomerByFingerprint(@RequestParam(value = UserApi.IDENTITYINT) String identityInt,
-			@RequestParam(defaultValue = Constants.IDENTITY_TYPE_CIVIL_ID_STR) String identityType,
+			@RequestParam(required=false) String identityType,
 			@RequestParam(value = UserApi.PASSWORD) String password) {
 		logger.debug(MessageFormat.format("IdentityInt value is {0} :", identityInt));
 		logger.debug(MessageFormat.format("IdentityType value is {0} :", identityType));

@@ -22,6 +22,7 @@ public class CustomerFlags {
 	/* new login */
 
 	public Boolean annualIncomeExpired;
+	
 
 	public Boolean getFingerprintlinked() {
 		return fingerprintlinked;

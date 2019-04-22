@@ -29,15 +29,18 @@ import com.amx.amxlib.meta.model.IncomeDto;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.dal.ArticleDao;
 import com.amx.jax.dal.ImageCheckDao;
+import com.amx.jax.dbmodel.BizComponentData;
 import com.amx.jax.dbmodel.CompanyMaster;
 import com.amx.jax.dbmodel.CountryMaster;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerEmploymentInfo;
+import com.amx.jax.dbmodel.DistrictMaster;
 import com.amx.jax.dbmodel.DmsApplMapping;
 import com.amx.jax.dbmodel.DocBlobUpload;
 import com.amx.jax.dbmodel.IncomeModel;
 import com.amx.jax.dbmodel.IncomeRangeMaster;
 import com.amx.jax.dbmodel.LanguageType;
+import com.amx.jax.dbmodel.StateMaster;
 import com.amx.jax.dbmodel.UserFinancialYear;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.meta.MetaData;
@@ -197,10 +200,30 @@ public class AnnualIncomeService {
 
 		customer.setFsArticleDetails(articleDao.getArticleDetailsByArticleDetailId(incomeDto.getArticleDetailId()));
 		logger.info("set designation id : ");
+		logger.info("Annual income from is "+incomeDto.getIncomeRangeFrom().longValue());
+		logger.info("Constant is "+Constants.ANNUALINCOME_VERIFIED_LIMIT);
+		if(incomeDto.getIncomeRangeFrom().longValue()>=Constants.ANNUALINCOME_VERIFIED_LIMIT) {
+			
+			customer.setIsBusinessCardVerified("N");
+		}
+		if(customer.getAnnualIncomeUpdatedDate()!=null && "N".equals(customer.getIsBusinessCardVerified()) && incomeDto.getIncomeRangeFrom().longValue()<Constants.ANNUALINCOME_VERIFIED_LIMIT) {
+			customer.setIsBusinessCardVerified(null);
+		}
+		
 		CustomerEmploymentInfo customerEmploymentInfo = incomeDao.getCustById(metaData.getCustomerId());
+		List<CustomerEmploymentInfo> custEmploymentInfo = incomeDao.getAllCustById(metaData.getCustomerId());
+		
+		if(custEmploymentInfo.isEmpty()) {
+			CustomerEmploymentInfo custEmplInfo = new CustomerEmploymentInfo();
+			custEmplInfo.setFsBizComponentDataByEmploymentTypeId(new BizComponentData(new BigDecimal(187)));
+			custEmplInfo.setFsDistrictMaster(new DistrictMaster(new BigDecimal(4165)));
+			custEmplInfo.setFsStateMaster(new StateMaster(new BigDecimal(584)));
+			custEmploymentInfo.add(custEmplInfo);
+		}
 		logger.info("set customerEmpInfo : " +customerEmploymentInfo);
 		if (customerEmploymentInfo == null) {
-			customerEmploymentInfo = createCustomerEmploymentInfo(incomeDto);
+			customerEmploymentInfo = createCustomerEmploymentInfo(incomeDto,custEmploymentInfo.get(0));
+			
 		}
 		else {
 			customerEmploymentInfo.setUpdatedBy(metaData.getCustomerId().toString());
@@ -271,7 +294,7 @@ public class AnnualIncomeService {
 
 	}
 
-	private CustomerEmploymentInfo createCustomerEmploymentInfo(IncomeDto incomeDto) {
+	private CustomerEmploymentInfo createCustomerEmploymentInfo(IncomeDto incomeDto, CustomerEmploymentInfo customerEmploymentInfo) {
 		// TODO Auto-generated method stub
 		CustomerEmploymentInfo custEmploymentInfo = new CustomerEmploymentInfo();
 		custEmploymentInfo.setEmployerName(incomeDto.getCompanyName());
@@ -284,6 +307,10 @@ public class AnnualIncomeService {
 		custEmploymentInfo.setFsCustomer(new Customer(metaData.getCustomerId()));
 		custEmploymentInfo.setCreatedBy(metaData.getCustomerId().toString());
 		custEmploymentInfo.setCreationDate(new Date());
+		custEmploymentInfo.setFsBizComponentDataByEmploymentTypeId(customerEmploymentInfo.getFsBizComponentDataByEmploymentTypeId());
+		custEmploymentInfo.setFsStateMaster(customerEmploymentInfo.getFsStateMaster());
+		custEmploymentInfo.setFsDistrictMaster(customerEmploymentInfo.getFsDistrictMaster());
+		
 		return custEmploymentInfo;
 	}
 
