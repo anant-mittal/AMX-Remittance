@@ -1,11 +1,16 @@
 package com.amx.amxlib.model;
 
+import com.amx.jax.swagger.ApiMockModelProperty;
+
 public class ValidationRegexDto {
 
+	@ApiMockModelProperty(example = "ADDRESS")
 	String key;
 
+	@ApiMockModelProperty(example = "[a-zA-Z ,.'-:\\\"\\\"]+")
 	String value;
 
+	@ApiMockModelProperty(example = "Alphanumeric and ,.'-:\\\"\\\"")
 	String description;
 
 	public String getKey() {
