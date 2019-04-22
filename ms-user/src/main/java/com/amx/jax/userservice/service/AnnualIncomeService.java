@@ -35,6 +35,7 @@ import com.amx.jax.dbmodel.CompanyMaster;
 import com.amx.jax.dbmodel.CountryMaster;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerEmploymentInfo;
+import com.amx.jax.dbmodel.DistrictMaster;
 import com.amx.jax.dbmodel.DmsApplMapping;
 import com.amx.jax.dbmodel.DocBlobUpload;
 import com.amx.jax.dbmodel.IncomeModel;
@@ -216,6 +217,14 @@ public class AnnualIncomeService {
 		
 		CustomerEmploymentInfo customerEmploymentInfo = incomeDao.getCustById(metaData.getCustomerId());
 		List<CustomerEmploymentInfo> custEmploymentInfo = incomeDao.getAllCustById(metaData.getCustomerId());
+		
+		if(custEmploymentInfo.isEmpty()) {
+			CustomerEmploymentInfo custEmplInfo = new CustomerEmploymentInfo();
+			custEmplInfo.setFsBizComponentDataByEmploymentTypeId(new BizComponentData(new BigDecimal(187)));
+			custEmplInfo.setFsDistrictMaster(new DistrictMaster(new BigDecimal(4165)));
+			custEmplInfo.setFsStateMaster(new StateMaster(new BigDecimal(584)));
+			custEmploymentInfo.add(custEmplInfo);
+		}
 		logger.info("set customerEmpInfo : " +customerEmploymentInfo);
 		if (customerEmploymentInfo == null) {
 			customerEmploymentInfo = createCustomerEmploymentInfo(incomeDto,custEmploymentInfo.get(0));

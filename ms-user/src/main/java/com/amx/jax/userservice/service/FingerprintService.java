@@ -240,20 +240,32 @@ public class FingerprintService {
 
 	public CustomerModel loginCustomerByFingerprint(String civilId, String identityTypeStr, String password, String fingerprintDeviceId) {
 		userValidationService.validateIdentityInt(civilId, identityTypeStr);
-		if(metaData.getDeviceId()==null) {
+		if (metaData.getDeviceId() == null) {
 			logger.error("device id null exception");
 			throw new GlobalException("Device id cannot be null");
 		}
-		BigDecimal identityType = new BigDecimal(identityTypeStr);
-		CustomerOnlineRegistration customerOnlineRegistration = userValidationService
-				.validateOnlineCustomerByIdentityId(civilId, identityType);
+		CustomerOnlineRegistration customerOnlineRegistration = null;
+		if (identityTypeStr == null) {
+			try {
+			customerOnlineRegistration = userValidationService.validateOnlineCustomerByIdentityId(civilId,
+					new BigDecimal(198));
+			}catch(GlobalException e) {}
+			if (customerOnlineRegistration == null) {
+				customerOnlineRegistration = userValidationService.validateOnlineCustomerByIdentityId(civilId,
+						new BigDecimal(2000));
+			}
+		} else {
+			BigDecimal identityType = new BigDecimal(identityTypeStr);
+			customerOnlineRegistration = userValidationService.validateOnlineCustomerByIdentityId(civilId,
+					identityType);
+		}
 		Customer customer = custDao.getCustById(customerOnlineRegistration.getCustomerId());
-		logger.info("Customer id is "+metaData.getCustomerId());
+		logger.info("Customer id is " + metaData.getCustomerId());
 		userValidationService.validateCustomerLockCount(customerOnlineRegistration);
 		userValidationService.validateCustIdProofs(customerOnlineRegistration.getCustomerId());
 		userValidationService.validateCustomerData(customerOnlineRegistration, customer);
 		userValidationService.validateBlackListedCustomerForLogin(customer);
-		userValidationService.validateFingerprintDeviceId(customerOnlineRegistration,fingerprintDeviceId);
+		userValidationService.validateFingerprintDeviceId(customerOnlineRegistration, fingerprintDeviceId);
 		userValidationService.validateDevicePassword(customerOnlineRegistration, password);
 		CustomerModel customerModel = convert(customerOnlineRegistration);
 		return customerModel;
