@@ -28,7 +28,6 @@ import com.amx.jax.dbmodel.fx.FxOrderTransactionModel;
 import com.amx.jax.dbmodel.fx.OrderManagementView;
 import com.amx.jax.dbmodel.fx.UserStockView;
 import com.amx.jax.error.JaxError;
-import com.amx.jax.model.response.fx.FxOrderTransactionHistroyDto;
 import com.amx.jax.repository.CurrencyWiseDenominationRepository;
 import com.amx.jax.repository.EmployeeRespository;
 import com.amx.jax.repository.ForeignCurrencyAdjustOldRepository;
@@ -202,35 +201,6 @@ public class FcSaleBranchDao {
 	
 	public List<CollectionModel> fetchCollectionData(BigDecimal collectDocNo,BigDecimal collectDocYear){
 		return collectionRepository.findByDocumentNoAndDocumentFinanceYear(collectDocNo, collectDocYear);
-	}
-	
-	public List<FxOrderTransactionModel> searchOrdeDetailsByCustomerId(BigDecimal customerID,String orderStatus){
-		return fxDeliveryDetailsRepository.searchOrdeDetailsByCustomerId(customerID,orderStatus);
-	}
-	
-	public List<FxOrderTransactionModel> searchOrderByBranchDesc(String branchName,String orderStatus){
-		return fxDeliveryDetailsRepository.searchOrderDetailsByBranchDesc(branchName,orderStatus);
-	}
-	
-	public List<FxOrderTransactionModel> searchOrderDetailsByTrnxRefNo(String trnxNo,String orderStatus) {
-		return fxDeliveryDetailsRepository.searchOrderDetailsByTrnxRefNo(trnxNo,orderStatus);
-	}
-	
-	public List<FxOrderTransactionModel> searchOrderDetailsbyOrderIdNdBranchDesc(String trnxNo, String branchDesc,String orderStatus) {
-		return fxDeliveryDetailsRepository.searchOrderDetailsbyOrderIdNdBranchDesc(trnxNo,branchDesc,orderStatus);
-	}
-	
-	
-	public List<FxOrderTransactionModel> searchOrderDetailsByAll(String trnxNo,String branchName,BigDecimal custId,String orderStatus){
-		return fxDeliveryDetailsRepository.searchOrderDetailsByAll(trnxNo,branchName,custId,orderStatus);
-	}
-	
-	public List<FxOrderTransactionModel> searchOrderDetailsByBranchDescNdCustomerID(String branchName,BigDecimal civilId,String orderStatus){
-		return fxDeliveryDetailsRepository.searchOrderDetailsByBranchDescNdCustomerID(branchName,civilId,orderStatus);
-	}
-	
-	public List<FxOrderTransactionModel> searchEmployeeDetailsbyOrderIdNdCustId(String trnxNo,BigDecimal civilId,String orderStatus){
-		return fxDeliveryDetailsRepository.searchEmployeeDetailsByOrderIdNdCustomerId(trnxNo,civilId,orderStatus);
 	}
 	
 	

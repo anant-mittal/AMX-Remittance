@@ -22,5 +22,8 @@ public interface FxOrderTransactionRespository extends DaoRepository<FxOrderTran
 	@Query("select t from FxOrderTransactionModel t where t.customerId=:customerId and t.pagDetSeqId=:pagDetSeqId")
 	public List<FxOrderTransactionModel> getFxOrderTrnxDetailsByPagSeqId(@Param("customerId") BigDecimal customerId,@Param("pagDetSeqId") BigDecimal pagDetSeqId);
 	
+	@Query(value = "select sd from FxOrderTransactionModel sd where sd.transactionReferenceNo= ?1 ")
+	public List<FxOrderTransactionModel> searchTransactionRefNo(String transactionReferenceNo);
+	
 }
 

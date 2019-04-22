@@ -3,8 +3,7 @@ package com.amx.jax.dbmodel.fx;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-
-
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -146,6 +145,9 @@ public class FxOrderTransactionModel implements Serializable {
 	@Column(name="EMPLOYEE_ID")
 	private BigDecimal employeeId;
 
+	@Column(name="CREATED_DATE_ALT")
+	private Date createdDateAlt;
+	
 	public BigDecimal getIdno() {
 		return idno;
 	}
@@ -467,12 +469,13 @@ public class FxOrderTransactionModel implements Serializable {
 	public void setEmployeeId(BigDecimal employeeId) {
 		this.employeeId = employeeId;
 	}
-	
-	
-		
+
+	public Date getCreatedDateAlt() {
+		return createdDateAlt;
+	}
+
+	public void setCreatedDateAlt(Date createdDateAlt) {
+		this.createdDateAlt = createdDateAlt;
+	}
+
 }
-
-
-
-
-

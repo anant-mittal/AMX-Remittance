@@ -39,6 +39,7 @@ import com.amx.jax.model.response.fx.FxOrderTransactionHistroyDto;
 import com.amx.jax.model.response.fx.UserStockDto;
 import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.repository.fx.FxDeliveryDetailsRepository;
+import com.amx.jax.repository.fx.FxOrderTransactionRespository;
 import com.amx.jax.repository.fx.VwFxDeliveryDetailsRepository;
 import com.amx.jax.service.CountryBranchService;
 import com.amx.jax.userservice.service.UserService;
@@ -88,6 +89,9 @@ public class FcSaleBranchService extends AbstractService{
 	
 	@Autowired
 	StatusMasterManager statusMasterManager;
+	
+	@Autowired
+	FxOrderTransactionRespository fxOrderTransactionRespository;
 
 
 	/* 
@@ -726,7 +730,7 @@ public class FcSaleBranchService extends AbstractService{
 	public void validateOrderId(FcDeliveryBranchOrderSearchRequest fcDeliveryBranchOrderSearchRequest) {
 		List<FxOrderTransactionModel> countryBranch = new ArrayList<>();
 		if(fcDeliveryBranchOrderSearchRequest.getOrderId().indexOf("/") > -1) {
-			countryBranch=	fxDeliveryDetailsRepository.searchTransactionRefNo(fcDeliveryBranchOrderSearchRequest.getOrderId());
+			countryBranch=	fxOrderTransactionRespository.searchTransactionRefNo(fcDeliveryBranchOrderSearchRequest.getOrderId());
 			if(countryBranch.isEmpty()) {
 				throw new GlobalException("Order Id is not found!");
 		}
@@ -742,7 +746,6 @@ public class FcSaleBranchService extends AbstractService{
 		logger.debug("FcDeliveryBranchOrderSearchRequest:"+fcDeliveryBranchOrderSearchRequest.toString());
 		AmxApiResponse<FxOrderTransactionHistroyDto, Object> result = null;
 		
-		//fcDeliveryBranchOrderSearchRequestValidation.validatingAll(fcDeliveryBranchOrderSearchRequest);
 		fcDeliveryBranchOrderSearchRequestValidation.validatingAllValues(fcDeliveryBranchOrderSearchRequest);
 		if(fcDeliveryBranchOrderSearchRequest.getCivilId() != null) {
 			
