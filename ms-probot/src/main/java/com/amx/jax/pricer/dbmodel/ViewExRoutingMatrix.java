@@ -138,8 +138,8 @@ public class ViewExRoutingMatrix implements Serializable {
 	@Column(name = "COST_AMOUNT")
 	private BigDecimal costAmount;
 
-	@Column(name = "NO_BENE_DEDUCT_CHARGE_AMOUNT")
-	private BigDecimal noBeneDeductChargeAmount;
+	@Column(name = "BENE_DEDUCT_CHARGE_AMOUNT")
+	private BigDecimal beneDeductChargeAmount;
 
 	public String getUuid() {
 		return uuid;
@@ -461,12 +461,12 @@ public class ViewExRoutingMatrix implements Serializable {
 		this.costAmount = costAmount;
 	}
 
-	public BigDecimal getNoBeneDeductChargeAmount() {
-		return noBeneDeductChargeAmount;
+	public BigDecimal getBeneDeductChargeAmount() {
+		return beneDeductChargeAmount;
 	}
 
-	public void setNoBeneDeductChargeAmount(BigDecimal noBeneDeductChargeAmount) {
-		this.noBeneDeductChargeAmount = noBeneDeductChargeAmount;
+	public void setBeneDeductChargeAmount(BigDecimal noBeneDeductChargeAmount) {
+		this.beneDeductChargeAmount = noBeneDeductChargeAmount;
 	}
 
 }
