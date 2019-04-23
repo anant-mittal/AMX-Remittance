@@ -145,21 +145,9 @@ public class BranchRemittanceDao {
 			CollectionModel collectModel = (CollectionModel) mapAllDetailRemitSave.get("EX_COLLECT");
 			List<CollectDetailModel> collectDetailsModel = (List<CollectDetailModel>) mapAllDetailRemitSave.get("EX_COLLECT_DET");
 			List<ForeignCurrencyAdjust> foreignCurrencyAdjust = (List<ForeignCurrencyAdjust>) mapAllDetailRemitSave.get("EX_CURR_ADJUST");
-			/*
-			 * List<RemittanceTransaction> remitTrnxList = (List<RemittanceTransaction>)
-			 * mapAllDetailRemitSave.get("EX_REMIT_TRNX"); List<RemittanceBenificiary>
-			 * remitBeneList = (List<RemittanceBenificiary>)
-			 * mapAllDetailRemitSave.get("EX_REMIT_BENE");
-			 * List<RemittanceAdditionalInstructionData> addlTrnxList =
-			 * (List<RemittanceAdditionalInstructionData>)
-			 * mapAllDetailRemitSave.get("EX_REMIT_ADDL"); List<RemittanceAml> amlTrnxList =
-			 * (List<RemittanceAml>) mapAllDetailRemitSave.get("EX_REMIT_AML");
-			 */
-
 			Map<BigDecimal, RemittanceTransaction> remitTrnxList = (Map<BigDecimal, RemittanceTransaction>) mapAllDetailRemitSave.get("EX_REMIT_TRNX");
 			Map<BigDecimal, RemittanceBenificiary> remitBeneList = (Map<BigDecimal, RemittanceBenificiary>) mapAllDetailRemitSave.get("EX_REMIT_BENE");
-			Map<BigDecimal, List<RemittanceAdditionalInstructionData>> addlTrnxList = (Map<BigDecimal, List<RemittanceAdditionalInstructionData>>) mapAllDetailRemitSave
-					.get("EX_REMIT_ADDL");
+			Map<BigDecimal, List<RemittanceAdditionalInstructionData>> addlTrnxList = (Map<BigDecimal, List<RemittanceAdditionalInstructionData>>) mapAllDetailRemitSave.get("EX_REMIT_ADDL");
 			Map<BigDecimal, List<RemittanceAml>> amlTrnxList = (Map<BigDecimal, List<RemittanceAml>>) mapAllDetailRemitSave.get("EX_REMIT_AML");
 
 			LoyaltyClaimRequest lylClaim = (LoyaltyClaimRequest) mapAllDetailRemitSave.get("LYL_CLAIM");
