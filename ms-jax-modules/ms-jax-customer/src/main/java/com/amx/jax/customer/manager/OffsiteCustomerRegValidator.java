@@ -78,11 +78,18 @@ public class OffsiteCustomerRegValidator {
 		if (localAddressDetails.getCountryId() == null) {
 			throw new GlobalException("Country cannot be empty");
 		}
+		if (localAddressDetails.getStateId() == null) {
+			throw new GlobalException("State cannot be empty");
+		}
 	}
 
 	public void validateHomeContact(HomeAddressDetails homeAddressDetails) {
 		if (homeAddressDetails.getCountryId() == null) {
 			throw new GlobalException("Country cannot be empty");
+		}
+		if (homeAddressDetails.getStateId() == null) {
+			throw new GlobalException("State cannot be empty");
+			
 		}
 	}
 }
