@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.cache.BankGLCData;
 import com.amx.jax.cache.ExchRateAndRoutingTransientDataCache;
 import com.amx.jax.dict.UserClient;
 import com.amx.jax.dict.UserClient.Channel;
@@ -204,16 +205,13 @@ public class RemitPriceManager {
 			/**
 			 * For Further computations
 			 */
-			exchRateAndRoutingTransientDataCache
-					.setBankGlcBalMap(getGLCBALRates(requestDto.getForeignCurrencyId(), validBankIds));
+			getGLCBALRates(requestDto.getForeignCurrencyId(), validBankIds);
 
 			/**
 			 * Get margin for the Rate
 			 */
 			OnlineMarginMarkup margin = getOnlineMarginMarkup(requestDto.getLocalCountryId(),
 					requestDto.getForeignCountryId(), requestDto.getForeignCurrencyId(), requestDto.getChannel());
-
-			exchRateAndRoutingTransientDataCache.setMargin(margin);
 
 			/************* Process Bank Exchange Rates ***********/
 
@@ -295,18 +293,7 @@ public class RemitPriceManager {
 		/**
 		 * Get All Cost rates from GLCBAL
 		 */
-		Map<BigDecimal, List<ViewExGLCBAL>> bankGlcBalMap = getGLCBALRates(currencyId, routingBankIds);
-
-		if (bankGlcBalMap == null || bankGlcBalMap.isEmpty()) {
-			throw new PricerServiceException(PricerServiceError.MISSING_GLCBAL_ENTRIES,
-					"GLCBAL Inventory is Missing for Given Input : ");
-
-		}
-
-		/**
-		 * For Further computations
-		 */
-		exchRateAndRoutingTransientDataCache.setBankGlcBalMap(bankGlcBalMap);
+		getGLCBALRates(currencyId, routingBankIds);
 
 		/**
 		 * Get margin for the Rate
@@ -379,24 +366,6 @@ public class RemitPriceManager {
 			}
 		}
 
-		/*
-		 * System.out.
-		 * println(" ===================== ALL GLC BAL Rates ===================== ");
-		 * 
-		 * for (Entry<BigDecimal, ViewExGLCBAL> entry : bankGlcBalMap.entrySet()) {
-		 * System.out.println(" GLCBAL Rate ==> " + entry.getValue().toString()); }
-		 */
-
-		/*
-		 * System.out.
-		 * println(" ===================== ALL Exchange Rate  Master Rates ===================== "
-		 * );
-		 * 
-		 * for (Entry<BigDecimal, ExchangeRateAPRDET> exchangeRate :
-		 * bankExchangeRateMap.entrySet()) { System.out.println(" Exchange Rate ==> " +
-		 * exchangeRate.toString()); }
-		 */
-
 		return bankExchangeRateMap;
 	}
 
@@ -417,6 +386,8 @@ public class RemitPriceManager {
 			margin.setMarginMarkup(new BigDecimal(0));
 		}
 
+		exchRateAndRoutingTransientDataCache.setMargin(margin);
+
 		return margin;
 	}
 
@@ -428,10 +399,12 @@ public class RemitPriceManager {
 	 * @param routingBankIds
 	 * @return
 	 */
-	private Map<BigDecimal, List<ViewExGLCBAL>> getGLCBALRates(BigDecimal currencyId, List<BigDecimal> routingBankIds) {
+	private Map<BigDecimal, BankGLCData> getGLCBALRates(BigDecimal currencyId, List<BigDecimal> routingBankIds) {
 
-		// String curCode = StringUtils.leftPad(String.valueOf(currencyId.intValue()),
-		// 3, "0");
+		if (exchRateAndRoutingTransientDataCache.getBankGlcBalMap() != null
+				&& !exchRateAndRoutingTransientDataCache.getBankGlcBalMap().isEmpty()) {
+			return exchRateAndRoutingTransientDataCache.getBankGlcBalMap();
+		}
 
 		CurrencyMasterModel curMaster = currencyMasterDao.getByCurrencyId(currencyId);
 
@@ -443,34 +416,48 @@ public class RemitPriceManager {
 
 		String curCode = curMaster.getCurrencyCode();
 
-		Map<BigDecimal, List<ViewExGLCBAL>> bankGlcBalMap = new HashMap<BigDecimal, List<ViewExGLCBAL>>();
-
 		List<ViewExGLCBAL> glcbalRatesForBanks = viewExGLCBALDao.getGLCBALforCurrencyAndBank(curCode, routingBankIds);
 
+		if (glcbalRatesForBanks == null || glcbalRatesForBanks.isEmpty()) {
+			throw new PricerServiceException(PricerServiceError.MISSING_GLCBAL_ENTRIES,
+					"GLCBAL Inventory is Missing for Given Input : ");
+		}
+		
+		Map<BigDecimal, BankGLCData> bankGlcBalDataMap = new HashMap<BigDecimal, BankGLCData>();
+		
 		for (ViewExGLCBAL viewExGLCBAL : glcbalRatesForBanks) {
 
-			if (bankGlcBalMap.containsKey(viewExGLCBAL.getBankId())) {
+			if (bankGlcBalDataMap.containsKey(viewExGLCBAL.getBankId())) {
 
-				bankGlcBalMap.get(viewExGLCBAL.getBankId()).add(viewExGLCBAL);
+				BankGLCData glData = bankGlcBalDataMap.get(viewExGLCBAL.getBankId());
 
-				/**
-				 * This Logic is DISABLED // Considering only the rates with Max GLCBAL if
-				 * (viewExGLCBALPrev.getRateFcCurBal().compareTo(viewExGLCBAL.getRateCurBal()) <
-				 * 0) { bankGlcBalMap.put(viewExGLCBAL.getBankId(), viewExGLCBAL); }
-				 */
+				if (glData.getGlAccountsDetails() == null) {
+					glData.setGlAccountsDetails(new ArrayList<ViewExGLCBAL>());
+				}
+
+				bankGlcBalDataMap.get(viewExGLCBAL.getBankId()).getGlAccountsDetails().add(viewExGLCBAL);
 
 			} else {
+
+				BankGLCData glData = new BankGLCData();
 
 				List<ViewExGLCBAL> glcBalList = new ArrayList<ViewExGLCBAL>();
 
 				glcBalList.add(viewExGLCBAL);
 
-				bankGlcBalMap.put(viewExGLCBAL.getBankId(), glcBalList);
+				glData.setGlAccountsDetails(glcBalList);
+
+				bankGlcBalDataMap.put(viewExGLCBAL.getBankId(), glData);
 			}
 
 		}
 
-		return bankGlcBalMap;
+		/**
+		 * Cache the data
+		 */
+		exchRateAndRoutingTransientDataCache.setBankGlcBalMap(bankGlcBalDataMap);
+
+		return bankGlcBalDataMap;
 
 	}
 

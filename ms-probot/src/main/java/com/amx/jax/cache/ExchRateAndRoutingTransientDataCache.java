@@ -37,15 +37,13 @@ public class ExchRateAndRoutingTransientDataCache {
 
 	private List<ExchangeRateDetails> sellRateDetails = new ArrayList<>();
 
-	private Map<BigDecimal, BankDetailsDTO> bankDetails = new HashMap<>();
+	private Map<BigDecimal, BankDetailsDTO> bankDetails = new HashMap<BigDecimal, BankDetailsDTO>();
 
-	private Map<BigDecimal, List<ViewExGLCBAL>> bankGlcBalMap = new HashMap<>();
-
-	private Map<BigDecimal, BigDecimal> bankGLCBALAvgRateMap = new HashMap<BigDecimal, BigDecimal>();
-
+	private Map<BigDecimal, BankGLCData> bankGlcBalMap;
+	
 	private List<TransientRoutingComputeDetails> routingMatrixData;
 
-	private Map<BigDecimal, Map<String, HolidayListMasterModel>> countryHolidays = new HashMap<BigDecimal, Map<String, HolidayListMasterModel>>();
+	private final Map<BigDecimal, Map<String, HolidayListMasterModel>> countryHolidays = new HashMap<BigDecimal, Map<String, HolidayListMasterModel>>();
 
 	private OnlineMarginMarkup margin = null;
 
@@ -65,11 +63,11 @@ public class ExchRateAndRoutingTransientDataCache {
 		this.serviceGroup = serviceGroup;
 	}
 
-	public Map<BigDecimal, List<ViewExGLCBAL>> getBankGlcBalMap() {
+	public Map<BigDecimal, BankGLCData> getBankGlcBalMap() {
 		return bankGlcBalMap;
 	}
 
-	public void setBankGlcBalMap(Map<BigDecimal, List<ViewExGLCBAL>> bankGlcBalMap) {
+	public void setBankGlcBalMap(Map<BigDecimal, BankGLCData> bankGlcBalMap) {
 		this.bankGlcBalMap = bankGlcBalMap;
 	}
 
@@ -172,14 +170,17 @@ public class ExchRateAndRoutingTransientDataCache {
 	 */
 	public BigDecimal getAvgRateGLCForBank(BigDecimal bankId) {
 
-		if (!this.bankGLCBALAvgRateMap.containsKey(bankId)) {
+		BankGLCData bankGLCData = this.bankGlcBalMap.get(bankId);
+
+		if (null == bankGLCData || null == bankGLCData.getGlAccountsDetails()
+				|| bankGLCData.getGlAccountsDetails().isEmpty()) {
+			return null;
+		}
+
+		if (bankGLCData.getAvgLcRate() == null) {
 			// Compute and Save Avg Rate
 
-			if (!this.bankGlcBalMap.containsKey(bankId)) {
-				return null;
-			}
-
-			List<ViewExGLCBAL> glcBalList = this.bankGlcBalMap.get(bankId);
+			List<ViewExGLCBAL> glcBalList = bankGLCData.getGlAccountsDetails();
 
 			BigDecimal sumRateCurBal = new BigDecimal(0);
 			BigDecimal sumRateFcCurBal = new BigDecimal(0);
@@ -201,31 +202,75 @@ public class ExchRateAndRoutingTransientDataCache {
 					}
 
 				} else {
-					for (ViewExGLCBAL glcbal : glcBalList) {
-						avgRate = glcbal.getRateAvgRate();
-					}
+					avgRate = glcBalList.get(0).getRateAvgRate();
 				}
 
 			}
 
-			/** original code **/
-			/*
-			 * for (ViewExGLCBAL glcbal : glcBalList) { sumRateCurBal = sumRateCurBal
-			 * .add(null == glcbal.getRateCurBal() ? new BigDecimal(0) :
-			 * glcbal.getRateCurBal()); sumRateFcCurBal = sumRateFcCurBal .add(null ==
-			 * glcbal.getRateFcCurBal() ? new BigDecimal(0) : glcbal.getRateFcCurBal()); }
-			 * 
-			 * 
-			 * if (sumRateCurBal.doubleValue() != 0 || sumRateFcCurBal.doubleValue() != 0) {
-			 * avgRate = sumRateCurBal.divide(sumRateFcCurBal, 10, RoundingMode.HALF_UP); }
-			 */
-
-			this.bankGLCBALAvgRateMap.put(bankId, avgRate);
-
+			// this.bankGLCBALAvgRateMap.put(bankId, avgRate);
+			bankGLCData.setAvgLcRate(avgRate);
+			if (avgRate.compareTo(BigDecimal.ZERO) == 0) {
+				bankGLCData.setAvgFcRate(BigDecimal.ZERO);
+			} else {
+				bankGLCData.setAvgFcRate(BigDecimal.ONE.divide(avgRate, 10, RoundingMode.HALF_DOWN));
+			}
 			return avgRate;
 
 		} else {
-			return this.bankGLCBALAvgRateMap.get(bankId);
+			return bankGLCData.getAvgLcRate();
+		}
+
+	}
+
+	public BigDecimal getMaxGLLcBalForBank(BigDecimal bankId, boolean isFc) {
+
+		BankGLCData bankGLCData = this.bankGlcBalMap.get(bankId);
+
+		if (null == bankGLCData || null == bankGLCData.getGlAccountsDetails()
+				|| bankGLCData.getGlAccountsDetails().isEmpty()) {
+			return null;
+		}
+
+		if (bankGLCData.getMaxLcCurBalAmount() == null || bankGLCData.getMaxFcCurBalAmount() == null) {
+
+			List<ViewExGLCBAL> glcBalList = bankGLCData.getGlAccountsDetails();
+
+			BigDecimal rateLcCurBal = new BigDecimal(0);
+			BigDecimal rateFcCurBal = new BigDecimal(0);
+
+			if (glcBalList != null && !glcBalList.isEmpty()) {
+				if (glcBalList.size() > 1) {
+					for (ViewExGLCBAL glcbal : glcBalList) {
+						BigDecimal lcBal = (null == glcbal.getRateCurBal() ? new BigDecimal(0)
+								: glcbal.getRateCurBal());
+						if (lcBal.compareTo(rateLcCurBal) > 0) {
+							rateLcCurBal = lcBal;
+						}
+
+						BigDecimal fcBal = (null == glcbal.getRateFcCurBal() ? new BigDecimal(0)
+								: glcbal.getRateFcCurBal());
+						if (fcBal.compareTo(rateFcCurBal) > 0) {
+							rateFcCurBal = fcBal;
+						}
+
+					}
+
+				} else {
+					rateLcCurBal = glcBalList.get(0).getRateCurBal();
+					rateFcCurBal = glcBalList.get(0).getRateFcCurBal();
+				}
+
+			}
+
+			bankGLCData.setMaxLcCurBalAmount(rateLcCurBal);
+			bankGLCData.setMaxFcCurBalAmount(rateFcCurBal);
+
+		}
+
+		if (isFc) {
+			return bankGLCData.getMaxFcCurBalAmount();
+		} else {
+			return bankGLCData.getMaxLcCurBalAmount();
 		}
 
 	}
