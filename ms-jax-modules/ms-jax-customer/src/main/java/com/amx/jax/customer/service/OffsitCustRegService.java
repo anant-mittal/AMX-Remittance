@@ -896,6 +896,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 				idmsAppMappingRepository.save(mappingData);
 				DocBlobUpload documentDetails = new DocBlobUpload();
 				documentDetails = getDocumentUploadDetails(image, mappingData);
+				LOGGER.debug("document details are "+documentDetails.toString());
 				docblobRepository.save(documentDetails);
 			}
 		} else {
