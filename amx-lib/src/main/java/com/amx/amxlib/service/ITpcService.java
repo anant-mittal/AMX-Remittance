@@ -13,8 +13,8 @@ import com.amx.jax.model.response.tpc.TpcGenerateClientSecretResponse;
 public interface ITpcService {
 
 	public static class Path {
-		public static final String GENERATE_SECRET = "/generate-client-secret";
-		public static final String VALIDATE_SECRET = "/validate-client-secret";
+		public static final String GENERATE_SECRET = "/generate-tpc-client-secret";
+		public static final String VALIDATE_SECRET = "/validate-tpc-client-secret";
 		public static final String SERVICE_PREFIX = "/tpc";
 	}
 
@@ -23,5 +23,7 @@ public interface ITpcService {
 	}
 
 	AmxApiResponse<TpcGenerateClientSecretResponse, Object> generateSecret(String clientId, String actualSecret);
+
+	AmxApiResponse<BoolRespModel, Object> validateSecret(String clientId, String clientSecret);
 
 }

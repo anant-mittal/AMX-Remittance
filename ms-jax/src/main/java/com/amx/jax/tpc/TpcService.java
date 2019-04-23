@@ -22,11 +22,18 @@ public class TpcService {
 
 		tpcValidationService.validateGenerateSecretRequeset(clientId, actualClientSecret);
 		LOGGER.debug("TPC: hashing : {}", clientId);
-		String clientSecretHash = tpcManager.generateClientSecretHash(clientId, actualClientSecret);
+		tpcManager.generateClientSecretHash(clientId, actualClientSecret);
 		LOGGER.debug("TPC: encyrpt : {}", clientId);
-		String clientSecret = tpcManager.encryptClientSecret(clientSecretHash);
+		String clientSecret = tpcManager.encryptClientSecret(actualClientSecret);
 		TpcGenerateClientSecretResponse response = new TpcGenerateClientSecretResponse();
 		response.setClientSecret(clientSecret);
 		return response;
+	}
+
+	public void validateSecret(String clientId, String clientSecret) {
+		LOGGER.debug("TPC: validate client secret : {}", clientId);
+		tpcValidationService.validateGenerateSecretRequeset(clientId, clientSecret);
+		String actualClientSecret = tpcManager.decryptClientSecret(clientSecret);
+		tpcManager.validateClientSecret(clientId, actualClientSecret);
 	}
 }
