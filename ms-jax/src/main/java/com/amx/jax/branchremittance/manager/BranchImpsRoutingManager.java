@@ -4,9 +4,11 @@ import static com.amx.amxlib.constant.ApplicationProcedureParam.P_DELIVERY_MODE_
 import static com.amx.amxlib.constant.ApplicationProcedureParam.P_REMITTANCE_MODE_ID;
 import static com.amx.amxlib.constant.ApplicationProcedureParam.P_ROUTING_BANK_BRANCH_ID;
 import static com.amx.amxlib.constant.ApplicationProcedureParam.P_ROUTING_BANK_ID;
-import static com.amx.amxlib.constant.ApplicationProcedureParam.P_SERVICE_MASTER_ID;
 import static com.amx.amxlib.constant.ApplicationProcedureParam.P_ROUTING_COUNTRY_ID;
+import static com.amx.amxlib.constant.ApplicationProcedureParam.P_SERVICE_MASTER_ID;
 
+import static com.amx.jax.error.JaxError.COMISSION_NOT_DEFINED_FOR_ROUTING_BANK;
+import static com.amx.jax.error.JaxError.TOO_MANY_COMISSION_NOT_DEFINED_FOR_ROUTING_BANK;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -22,7 +24,10 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.branchremittance.service.BranchRemittanceExchangeRateService;
+import com.amx.jax.dal.BizcomponentDao;
+import com.amx.jax.dal.ExchangeRateProcedureDao;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.model.request.remittance.IRemittanceApplicationParams;
@@ -52,6 +57,12 @@ public class BranchImpsRoutingManager {
 	@Autowired
 	MetaData metaData;
 
+	@Autowired
+	private ExchangeRateProcedureDao exchangeRateProcedureDao;
+
+	@Autowired
+	private BizcomponentDao bizcomponentDao;
+
 	/**
 	 * modifies routingResponseDto passed in method argument if IMPS routing is
 	 * applicable for given remittance Application Parameter
@@ -68,7 +79,8 @@ public class BranchImpsRoutingManager {
 		impsRoutingLogic.apply(remitApplParametersMap, impsOutputParams);
 		BigDecimal routingBankIdImps = P_ROUTING_BANK_ID.getValue(impsOutputParams);
 		if (routingBankIdImps != null) {
-			LOGGER.debug("IMPS logic applicable for remittanceApplicationParams: {}", remittanceApplicationParams.toString());
+			LOGGER.debug("IMPS logic applicable for remittanceApplicationParams: {}",
+					remittanceApplicationParams.toString());
 			remitApplParametersMap.putAll(impsOutputParams);
 			routingResponseDto.getRoutingBankDto().clear();
 			routingResponseDto.getRoutingBankBranchDto().clear();
@@ -82,11 +94,13 @@ public class BranchImpsRoutingManager {
 			BigDecimal routingCountryId = P_ROUTING_COUNTRY_ID.getValue(impsOutputParams);
 			RoutingBankDto routingBankDto = branchRoutingManager.getRoutingBankDto(routingBankIdImps);
 			RoutingBranchDto routingBankBranchIdDto = branchRoutingManager.getRoutingBranchDto(routingBankBranchIdImps);
-			RemittanceModeDto remittanceModeIdDto = branchRoutingManager.getRemittanceModeDto(remittanceModeId, metaData.getLanguageId());
-			DeliveryModeDto deliveryModeIdDto = branchRoutingManager.getDeliveryModeDto(deliveryModeId, metaData.getLanguageId());
+			RemittanceModeDto remittanceModeIdDto = branchRoutingManager.getRemittanceModeDto(remittanceModeId,
+					metaData.getLanguageId());
+			DeliveryModeDto deliveryModeIdDto = branchRoutingManager.getDeliveryModeDto(deliveryModeId,
+					metaData.getLanguageId());
 			RoutingServiceDto serviceDto = branchRoutingManager.getServiceDto(serviceId);
-			ResourceDTO  routingCountryDTO = branchRoutingManager.getRoutingCountryDto(routingCountryId);			
-			
+			ResourceDTO routingCountryDTO = branchRoutingManager.getRoutingCountryDto(routingCountryId);
+
 			routingResponseDto.getRoutingBankDto().add(routingBankDto);
 			routingResponseDto.getRoutingBankBranchDto().add(routingBankBranchIdDto);
 			routingResponseDto.getRemittanceModeList().add(remittanceModeIdDto);
@@ -97,26 +111,27 @@ public class BranchImpsRoutingManager {
 		}
 		return impsApplicable;
 	}
-	
-	
-public Map<String, Object> recalculateDeliveryAndRemittanceModeId(BranchRemittanceGetExchangeRateResponse result,RoutingResponseDto branchRoutingDto) {
-		
-		Map<String, Object> outputMap  = null;
-		if (result.getExRateBreakup()!= null && result.getExRateBreakup().getConvertedFCAmount()!=null) {
-			
+
+	public Map<String, Object> recalculateDeliveryAndRemittanceModeId(BranchRemittanceGetExchangeRateResponse result,
+			RoutingResponseDto branchRoutingDto) {
+
+		Map<String, Object> outputMap = null;
+		if (result.getExRateBreakup() != null && result.getExRateBreakup().getConvertedFCAmount() != null) {
+
 			BigDecimal custtype = bizcomponentDao.findCustomerTypeId("I");
 			remitApplParametersMap.put("P_CUSTYPE_ID", custtype);
-			remitApplParametersMap.put("P_ROUTING_BANK_BRANCH_ID", branchRoutingDto.getRoutingBankBranchDto().get(0).getBankBranchId());
-			remitApplParametersMap.put("P_SERVICE_MASTER_ID", branchRoutingDto.getServiceList().get(0).getServiceMasterId());
-			
-			 outputMap = exchangeRateProcedureDao.findRemittanceAndDevlieryModeId(remitApplParametersMap);
+			remitApplParametersMap.put("P_ROUTING_BANK_BRANCH_ID",
+					branchRoutingDto.getRoutingBankBranchDto().get(0).getBankBranchId());
+			remitApplParametersMap.put("P_SERVICE_MASTER_ID",
+					branchRoutingDto.getServiceList().get(0).getServiceMasterId());
+
+			outputMap = exchangeRateProcedureDao.findRemittanceAndDevlieryModeId(remitApplParametersMap);
 			if (outputMap.size() == 0) {
 				remitApplParametersMap.put("P_CUSTYPE_ID", new BigDecimal(777));
 				outputMap = exchangeRateProcedureDao.findRemittanceAndDevlieryModeId(remitApplParametersMap);
 			}
 			if (outputMap.size() > 2) {
-				throw new GlobalException(
-						TOO_MANY_COMISSION_NOT_DEFINED_FOR_ROUTING_BANK,
+				throw new GlobalException(TOO_MANY_COMISSION_NOT_DEFINED_FOR_ROUTING_BANK,
 						"TOO MANY COMMISSION DEFINED for rounting bankid: "
 								+ remitApplParametersMap.get("P_ROUTING_BANK_ID"));
 			}
@@ -130,5 +145,4 @@ public Map<String, Object> recalculateDeliveryAndRemittanceModeId(BranchRemittan
 		return outputMap;
 	}
 
-	
 }
