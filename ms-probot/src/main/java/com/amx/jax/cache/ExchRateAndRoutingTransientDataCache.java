@@ -37,7 +37,7 @@ public class ExchRateAndRoutingTransientDataCache {
 
 	private List<ExchangeRateDetails> sellRateDetails = new ArrayList<>();
 
-	private Map<BigDecimal, BankDetailsDTO> bankDetails = new HashMap<BigDecimal, BankDetailsDTO>();
+	private Map<BigDecimal, BankDetailsDTO> bankDetails;
 
 	private Map<BigDecimal, BankGLCData> bankGlcBalMap;
 	
