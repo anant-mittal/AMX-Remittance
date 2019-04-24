@@ -73,6 +73,9 @@ public class BenefitClient implements PayGClient {
 	@Autowired
 	PayGSession payGSession;
 	
+	@Autowired
+	ResponseCodeBHR responseCodeBHR;
+	
 	@Override
 	public PayGServiceCode getClientCode() {
 		return PayGServiceCode.BENEFIT;
@@ -201,9 +204,12 @@ public class BenefitClient implements PayGClient {
 			LOGGER.info("resultResponse ---> " + resultResponse);
 			/*statusCode = (BenefitCodes) PayGCodes.getPayGCode(resultResponse, BenefitCodes.UNKNOWN);
 			gatewayResponse.setErrorCategory(statusCode.getCategory());*/
-			ResponseCodeBHR responseCodeEnum = ResponseCodeBHR.getResponseCodeEnumByCode(gatewayResponse.getError());
-			gatewayResponse.setErrorCategory(responseCodeEnum.name().toString());
-			LOGGER.info("Result from response Values ---> " + responseCodeEnum);
+			ResponseCodeBHR responseCodeEnum = responseCodeBHR.getResponseCodeEnumByCode(gatewayResponse.getError());
+			if(responseCodeEnum != null) {
+				gatewayResponse.setErrorCategory(responseCodeEnum.name());
+				LOGGER.info("Result from response Values ---> " + responseCodeEnum);
+			}
+			
 			gatewayResponse.setError(resultResponse);
 		}
 		

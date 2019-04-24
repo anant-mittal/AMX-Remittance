@@ -4,9 +4,12 @@ import java.util.Arrays;
 import java.util.Map;
 
 import com.amx.jax.dict.PayGCodes.CodeCategory;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 import com.google.common.collect.Maps;
 
-public enum ResponseCodeOMN implements IResponseCode<ResponseCodeOMN> {
+@JsonFormat(shape=Shape.OBJECT)
+public enum ResponseCodeOMN implements IResponseCode<Enum<ResponseCodeOMN>> {
     //-- CONN_FAILURE
 	HOST_TIMEOUT("IPAY0100158","Host SWITCH timeout", "100180", CodeCategory.CONN_FAILURE),
 	EXT_MSG_SYS_ERR("IPAY0100159","External message system error","100181",CodeCategory.CONN_FAILURE),
@@ -322,13 +325,10 @@ public enum ResponseCodeOMN implements IResponseCode<ResponseCodeOMN> {
     //OTHERS
     //VALIDATE_ORG_TRANX("IPAY0100142","Problem occurred while validating original transaction"),
 	//TRANX_DENIED_INVALID_UDF3("IPAY0100066","Transaction denied due to invalid UDF3"),
-	 
-     
-    //UNABLE_TO_TRANX("IPAY0100160","Unable to process the transaction"), 
+	//UNABLE_TO_TRANX("IPAY0100160","Unable to process the transaction"), 
     //CARD_HOLDER_NOT_PRESENT("IPAY0100081","Card holder name is not present"),
      
-    
-	private String responseCode;
+    private String responseCode;
 	private String responseDesc;
 	private String almullaErrorCode;
 	CodeCategory category;
@@ -372,9 +372,10 @@ public enum ResponseCodeOMN implements IResponseCode<ResponseCodeOMN> {
 		this.category = category;
 	}
 	
-	@Override
 	public CodeCategory getCodeCategoryByResponseCode(String responseCode) {
+
 		ResponseCodeOMN respCode = getResponseCodeEnumByCode(responseCode);
+
 		if (null == respCode) {
 			return null;
 		}
@@ -382,7 +383,6 @@ public enum ResponseCodeOMN implements IResponseCode<ResponseCodeOMN> {
 		return respCode.getCategory();
 	}
 
-	@Override
 	public ResponseCodeOMN getResponseCodeEnumByCode(String responseCode) {
 		return LOOKUP.get(responseCode);
 	}

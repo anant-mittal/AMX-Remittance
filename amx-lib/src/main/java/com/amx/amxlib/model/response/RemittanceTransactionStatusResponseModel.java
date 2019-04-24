@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.PromotionDto;
+import com.amx.jax.api.ResponseCodeDetailDTO;
 import com.amx.jax.constants.JaxTransactionStatus;
 import com.amx.jax.model.AbstractModel;
 
@@ -20,8 +21,8 @@ public class RemittanceTransactionStatusResponseModel extends AbstractModel {
 	String transactionReference;
 	String errorMessage;
 	String errorCategory;
-	PromotionDto promotionDto; 
-	String responseCodeDetail;
+	PromotionDto promotionDto;
+	ResponseCodeDetailDTO responseCodeDetail;
 
 	public JaxTransactionStatus getStatus() {
 		return status;
@@ -75,7 +76,7 @@ public class RemittanceTransactionStatusResponseModel extends AbstractModel {
 	public void setErrorCategory(String errorCategory) {
 		this.errorCategory = errorCategory;
 	}
-	
+
 	public PromotionDto getPromotionDto() {
 		return promotionDto;
 	}
@@ -84,17 +85,11 @@ public class RemittanceTransactionStatusResponseModel extends AbstractModel {
 		this.promotionDto = promotionDto;
 	}
 
-	/**
-	 * @return the responseCodeDetail
-	 */
-	public String getResponseCodeDetail() {
+	public ResponseCodeDetailDTO getResponseCodeDetail() {
 		return responseCodeDetail;
 	}
 
-	/**
-	 * @param responseCodeDetail the responseCodeDetail to set
-	 */
-	public void setResponseCodeDetail(String responseCodeDetail) {
+	public void setResponseCodeDetail(ResponseCodeDetailDTO responseCodeDetail) {
 		this.responseCodeDetail = responseCodeDetail;
 	}
 

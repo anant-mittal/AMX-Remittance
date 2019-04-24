@@ -9,8 +9,9 @@ import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 import com.google.common.collect.Maps;
 
 @JsonFormat(shape=Shape.OBJECT)
-public enum ResponseCodeBHR  {
+public enum ResponseCodeBHR implements IResponseCode<Enum<ResponseCodeBHR>> {
 
+	//public enum ResponseCodeBHR implements IResponseCode<ResponseCodeBHR>
 	// @formatter:off
 
 	CUSTOMER_CARD_EXPIRED("54","The customer card is expired", "100002", CodeCategory.TXN_CARD_VLDT),
@@ -91,7 +92,7 @@ public enum ResponseCodeBHR  {
 	}
 
 	
-	public static CodeCategory getCodeCategoryByResponseCode(String responseCode) {
+	public CodeCategory getCodeCategoryByResponseCode(String responseCode) {
 
 		ResponseCodeBHR respCode = getResponseCodeEnumByCode(responseCode);
 
@@ -102,7 +103,7 @@ public enum ResponseCodeBHR  {
 		return respCode.getCategory();
 	}
 
-	public static ResponseCodeBHR getResponseCodeEnumByCode(String responseCode) {
+	public ResponseCodeBHR getResponseCodeEnumByCode(String responseCode) {
 		return LOOKUP.get(responseCode);
 	}
 }

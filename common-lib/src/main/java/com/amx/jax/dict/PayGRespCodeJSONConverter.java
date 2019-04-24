@@ -2,21 +2,43 @@ package com.amx.jax.dict;
 
 import org.apache.log4j.Logger;
 
+import com.amx.jax.api.ResponseCodeDetailDTO;
 import com.amx.jax.scope.TenantContextHolder;
-import com.amx.utils.JsonUtil;
 
 public class PayGRespCodeJSONConverter {
 	
 	private static final Logger LOGGER = Logger.getLogger(PayGRespCodeJSONConverter.class);
 
-	public static String getResponseCodeDetail(String errorCategory) {
-		String responseCodeDetail = null;
+	@SuppressWarnings("null")
+	public static ResponseCodeDetailDTO getResponseCodeDetail(String errorCategory) {
+		ResponseCodeDetailDTO responseCodeDetail = null;
 		if (errorCategory != null) {
 			switch (TenantContextHolder.currentSite()) {
 			case BHR:
-				responseCodeDetail = JsonUtil.toJson(ResponseCodeBHR.valueOf(errorCategory));
-				LOGGER.info("Response Code Details JSON : " +responseCodeDetail.toString());
+				ResponseCodeBHR enumBHR = ResponseCodeBHR.valueOf(errorCategory);
+				if(enumBHR != null) {
+					responseCodeDetail.setResponseCode(enumBHR.getResponseCode());
+					responseCodeDetail.setResponseDesc(enumBHR.getResponseDesc());
+					responseCodeDetail.setAlmullaErrorCode(enumBHR.getAlmullaErrorCode());
+					responseCodeDetail.setCategory(enumBHR.getCategory());
+					
+					LOGGER.info("Response Code Details BHR JSON : " +responseCodeDetail.toString());
+				}
+				
 				break;
+			case OMN:
+				ResponseCodeOMN enumOMN = ResponseCodeOMN.valueOf(errorCategory);
+				if(enumOMN != null) {
+					responseCodeDetail.setResponseCode(enumOMN.getResponseCode());
+					responseCodeDetail.setResponseDesc(enumOMN.getResponseDesc());
+					responseCodeDetail.setAlmullaErrorCode(enumOMN.getAlmullaErrorCode());
+					responseCodeDetail.setCategory(enumOMN.getCategory());
+					
+					LOGGER.info("Response Code Details OMN JSON : " +responseCodeDetail.toString());
+				}
+				
+				break;
+			
 			default:
 				break;
 			}
