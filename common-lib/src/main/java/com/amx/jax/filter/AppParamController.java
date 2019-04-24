@@ -96,7 +96,7 @@ public class AppParamController {
 	@RequestMapping(value = "/pub/amx/hmac", method = RequestMethod.GET)
 	public Map<String, String> hmac(@RequestParam Long interval, @RequestParam String secret,
 			@RequestParam String message, @RequestParam Integer length,
-			@RequestParam(required = false) Long currentTime) {
+			@RequestParam(required = false) Long currentTime, @RequestParam(required = false) String complexHash) {
 		Map<String, String> map = new HashMap<String, String>();
 		HashBuilder builder = new HashBuilder().interval(interval).secret(secret).message(message);
 		if (!ArgUtil.isEmpty(currentTime)) {
@@ -105,6 +105,10 @@ public class AppParamController {
 		map.put("hmac", builder.toHMAC().output());
 		map.put("numeric", builder.toNumeric(length).output());
 		map.put("complex", builder.toComplex(length).output());
+		if(!ArgUtil.isEmpty(complexHash)) {
+			map.put("valid", "" + builder.validateComplexHMAC(complexHash));			
+		}
+
 		return map;
 	}
 

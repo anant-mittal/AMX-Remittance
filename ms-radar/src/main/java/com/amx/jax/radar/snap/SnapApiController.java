@@ -91,9 +91,13 @@ public class SnapApiController implements ISnapService {
 			params.put("gte", "now-1M");
 			params.put("interval", "1d");
 			break;
+		case WEEK1:
+			params.put("gte", "now-1w");
+			params.put("interval", "1h");
+			break;
 		default:
 			params.put("gte", "now-1w");
-			params.put("interval", "1d");
+			params.put("interval", "1h");
 			break;
 		}
 		params.put("xrate_src", RateSource.AMX.toString());
