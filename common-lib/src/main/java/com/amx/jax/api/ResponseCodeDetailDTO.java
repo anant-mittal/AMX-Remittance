@@ -1,6 +1,7 @@
 package com.amx.jax.api;
 
 import java.io.Serializable;
+import java.util.Map;
 
 import com.amx.jax.dict.PayGCodes.CodeCategory;
 
@@ -12,15 +13,13 @@ public class ResponseCodeDetailDTO implements Serializable {
 	private String responseDesc; // client
 	private String almullaErrorCode;
 	private CodeCategory category;
+	// Type
 	private String type;
-	private String status;
-	
-	// Type ?
 	// Status
-
+	private String status;
 	// Map <String, String> clientResp
+	private Map<String, String> clientResponse;
 
-	
 	public String getResponseCode() {
 		return responseCode;
 	}
@@ -67,6 +66,14 @@ public class ResponseCodeDetailDTO implements Serializable {
 
 	public void setStatus(String status) {
 		this.status = status;
+	}
+
+	public Map<String, String> getClientResponse() {
+		return clientResponse;
+	}
+
+	public void setClientResponse(Map<String, String> clientResponse) {
+		this.clientResponse = clientResponse;
 	}
 
 }
