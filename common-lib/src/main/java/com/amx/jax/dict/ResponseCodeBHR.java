@@ -42,7 +42,9 @@ public enum  ResponseCodeBHR {
 	
 	RESTRICT_CARD("62","Restricted card", "100035", CodeCategory.TXN_AUTH),
 	
-	EXCEEDS_WITHDRAW_FREQUENCY_LIMIT("65","Exceeds withdrawal frequency limit", "100102", CodeCategory.TXN_DATA);
+	EXCEEDS_WITHDRAW_FREQUENCY_LIMIT("65","Exceeds withdrawal frequency limit", "100102", CodeCategory.TXN_DATA),
+	
+	UNKNOWN("UNKNOWN","Error code may not be mapped","UNKNOWN",CodeCategory.UNKNOWN);
 
 	// @formatter:on
 	

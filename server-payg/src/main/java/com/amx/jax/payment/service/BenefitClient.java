@@ -202,7 +202,10 @@ public class BenefitClient implements PayGClient {
 			ResponseCodeBHR responseCodeEnum = ResponseCodeBHR.getResponseCodeEnumByCode(gatewayResponse.getError());
 			if(responseCodeEnum != null) {
 				gatewayResponse.setErrorCategory(responseCodeEnum.name());
-				LOGGER.info("Result from response Values ---> " + responseCodeEnum);
+				LOGGER.info("Result from response Values IF---> " + responseCodeEnum);
+			}else {
+				gatewayResponse.setErrorCategory(ResponseCodeBHR.UNKNOWN.name());
+				LOGGER.info("Result from response Values ELSE---> " + responseCodeEnum);
 			}
 			
 			gatewayResponse.setError(resultResponse);
