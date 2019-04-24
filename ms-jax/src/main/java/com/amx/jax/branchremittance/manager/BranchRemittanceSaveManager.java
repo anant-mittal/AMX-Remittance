@@ -203,10 +203,15 @@ public class BranchRemittanceSaveManager {
 	private CustomerDao customerDao;
 	
 	
-	List<RemittanceAml>			amlList	 = new ArrayList<>();
-	List<RemittanceBenificiary> remitBeneList   = new ArrayList<>();
-	List<RemittanceAdditionalInstructionData> addInstList = new ArrayList<>();
+	//List<RemittanceAml>			amlList	 = new ArrayList<>();
+	//List<RemittanceBenificiary> remitBeneList   = new ArrayList<>();
+	//List<RemittanceAdditionalInstructionData> addInstList = new ArrayList<>();
+	
 	List<LoyaltyPointsModel> loyaltyPoints 	 = new ArrayList<>();
+	Map<BigDecimal,RemittanceBenificiary> remitBeneList = new HashMap<>();
+	Map<BigDecimal,List<RemittanceAdditionalInstructionData>> addInstList = new HashMap<>();
+	Map<BigDecimal,List<RemittanceAml>>			amlList	 = new HashMap<>();
+	
 	
 	@Autowired
     AuditService auditService;
@@ -249,7 +254,7 @@ public class BranchRemittanceSaveManager {
 			CollectionModel 			collectionModel 	    =saveCollect(remittanceRequestModel);
 			List<CollectDetailModel> 	collectionDetails		=saveCollectionDetail(remittanceRequestModel,collectionModel);
 			List<ForeignCurrencyAdjust> currencyAdjustList 		=saveForeignCurrencyAdjust(remittanceRequestModel,collectionModel);
-			List<RemittanceTransaction> remitTrnxList      		=saveRemittanceTrnx(remittanceRequestModel,collectionModel);
+			Map<BigDecimal,RemittanceTransaction>   remitTrnxList=saveRemittanceTrnx(remittanceRequestModel,collectionModel);
 			LoyaltyClaimRequest loyaltyClaim          			=saveLoyalTyClaimRequest(collectionDetails);
 					
 			collectedAmountValidation(collectionModel,collectionDetails,currencyAdjustList);
@@ -269,11 +274,10 @@ public class BranchRemittanceSaveManager {
 			logger.error("routing  procedure", e.getErrorMessage() + "" + e.getErrorKey());
 			throw new GlobalException(e.getErrorKey(), e.getErrorMessage());
 		}finally {
-			amlList	 = new ArrayList<>();
-			remitBeneList   = new ArrayList<>();
-			addInstList = new ArrayList<>();
+			amlList	 = new HashMap<>();
+			remitBeneList   = new HashMap<>();
+			addInstList = new HashMap<>();
 			loyaltyPoints 	 = new ArrayList<>();
-			
 		}
 		
 		return responseDto;
@@ -634,9 +638,11 @@ public class BranchRemittanceSaveManager {
 	
 	
 	
-	public List<RemittanceTransaction> saveRemittanceTrnx(BranchRemittanceRequestModel remittanceRequestModel,CollectionModel  collect)
+	public Map<BigDecimal,RemittanceTransaction> saveRemittanceTrnx(BranchRemittanceRequestModel remittanceRequestModel,CollectionModel  collect)
 	{
-		List<RemittanceTransaction> remitTrnxList      =new ArrayList<>();
+		//List<RemittanceTransaction> remitTrnxList      =new ArrayList<>();
+		
+		Map<BigDecimal,RemittanceTransaction> remitTrnxList      =new HashMap<>();
 		
 		List<BranchApplicationDto> shoppingCartList = remittanceRequestModel.getRemittanceApplicationId();
 		
@@ -758,9 +764,8 @@ public class BranchRemittanceSaveManager {
 				    }else{
 				    	throw new GlobalException(JaxError.INVALID_REMITTANCE_DOCUMENT_NO, "Document Seriality  setup  not defined for Remittance.");
 				    }
-					
-					remitTrnxList.add(remitTrnx);
-					
+					//remitTrnxList.add(remitTrnx);
+					remitTrnxList.put(appl.getRemittanceApplicationId(),remitTrnx);
 					saveBeneTrnx(appl, remitTrnx);
 					saveRemitnaceinstructionData(appl,remitTrnx);
 					saveRemittanceAml(appl, remitTrnx);
@@ -775,8 +780,8 @@ public class BranchRemittanceSaveManager {
 		return remitTrnxList;
 	}
 	
-public   List<RemittanceBenificiary>  saveBeneTrnx(RemittanceApplication applicationNo,RemittanceTransaction remitTrnx){
-	
+//public   List<RemittanceBenificiary>  saveBeneTrnx(RemittanceApplication applicationNo,RemittanceTransaction remitTrnx){
+	public  Map<BigDecimal,RemittanceBenificiary>  saveBeneTrnx(RemittanceApplication applicationNo,RemittanceTransaction remitTrnx){
 	if(applicationNo!=null) {
 		RemittanceAppBenificiary applBene = applBeneRepository.findByExRemittanceAppfromBenfi(applicationNo);
 		if(applBene!=null) {
@@ -819,8 +824,8 @@ public   List<RemittanceBenificiary>  saveBeneTrnx(RemittanceApplication applica
 			remitBene.setExRemittancefromBenfi(remitTrnx);
 			remitBene.setExUserFinancialYear(getFinancialYearObj(remitTrnx.getDocumentFinanceYear()));
 			remitBene.setIsactive(ConstantDocument.Yes);
-			remitBeneList.add(remitBene);
-
+			remitBeneList.put(applBene.getExRemittanceAppfromBenfi().getRemittanceApplicationId(), remitBene);
+			//remitBeneList.add(remitBene);
 		}else {
 			throw new GlobalException(JaxError.NO_RECORD_FOUND,"Record not found in appl bene for remittance : "+remitTrnx.getApplicationDocumentNo());
 		}
@@ -831,8 +836,11 @@ public   List<RemittanceBenificiary>  saveBeneTrnx(RemittanceApplication applica
 	return remitBeneList;
 }
 	
-public   List<RemittanceAdditionalInstructionData>   saveRemitnaceinstructionData(RemittanceApplication applicationNo,RemittanceTransaction remitTrnx){
+//public   List<RemittanceAdditionalInstructionData>   saveRemitnaceinstructionData(RemittanceApplication applicationNo,RemittanceTransaction remitTrnx){
 	
+	public   Map<BigDecimal,List<RemittanceAdditionalInstructionData>>   saveRemitnaceinstructionData(RemittanceApplication applicationNo,RemittanceTransaction remitTrnx){
+		
+		List<RemittanceAdditionalInstructionData> remitAddList = new ArrayList<>();
 	 if(applicationNo!=null) {
 			List<AdditionalInstructionData> applInstrucDataList = addInstrDataRepository.findByExRemittanceApplication(applicationNo);
 		
@@ -855,11 +863,18 @@ public   List<RemittanceAdditionalInstructionData>   saveRemitnaceinstructionDat
 			remitAddData.setCompanyCode(applInstrucData.getFsCompanyMaster().getCompanyCode());
 			remitAddData.setDocumentFinanceYear(remitTrnx.getDocumentFinanceYear());
 			remitAddData.setIsactive(ConstantDocument.Yes);
+<<<<<<< HEAD
 			
 		
 			addInstList.add(remitAddData);
 			
+=======
+			remitAddList.add(remitAddData);
+			//addInstList.add(remitAddData);
+>>>>>>> staging
 		}
+			addInstList.put(applicationNo.getRemittanceApplicationId(), remitAddList);
+			
 			}else {
 			throw new GlobalException(JaxError.NO_RECORD_FOUND,"Record not found in appl additional instruction  :"+remitTrnx.getApplicationDocumentNo());
 		}
@@ -874,8 +889,9 @@ public   List<RemittanceAdditionalInstructionData>   saveRemitnaceinstructionDat
 
 
 
-public List<RemittanceAml>	saveRemittanceAml(RemittanceApplication applicationNo,RemittanceTransaction remitTrnx){
-	
+public Map<BigDecimal,List<RemittanceAml>>	saveRemittanceAml(RemittanceApplication applicationNo,RemittanceTransaction remitTrnx){
+		
+	List<RemittanceAml> amlLst = new ArrayList<>();
 	if(applicationNo!=null) {
 		List<RemitApplAmlModel> applAmlList = applAmlRepository.findByExRemittanceAppfromAml(applicationNo);
 		if(applAmlList!=null && !applAmlList.isEmpty()) {
@@ -893,8 +909,10 @@ public List<RemittanceAml>	saveRemittanceAml(RemittanceApplication applicationNo
 			remitAml.setBlackListUser(applAml.getBlackListUser());
 			remitAml.setIsactive(ConstantDocument.Yes);
 			remitAml.setExRemittancefromAml(remitTrnx);
-			amlList.add(remitAml);
+			//amlList.add(remitAml);
+			amlLst.add(remitAml);
 			}
+			amlList.put(applicationNo.getRemittanceApplicationId(),amlLst);
 		}
 	}
 
@@ -1221,9 +1239,13 @@ public BigDecimal generateDocumentNumber(BigDecimal appCountryId,BigDecimal comp
 public void validateSaveTrnxDetails(HashMap<String, Object> mapAllDetailRemitSave ) {
 	CollectionModel collectModel = (CollectionModel) mapAllDetailRemitSave.get("EX_COLLECT");
 	List<CollectDetailModel> collectDetailsModel = (List<CollectDetailModel>) mapAllDetailRemitSave.get("EX_COLLECT_DET");
-	List<RemittanceTransaction> remitTrnxList = (List<RemittanceTransaction>) mapAllDetailRemitSave.get("EX_REMIT_TRNX");
-	List<RemittanceBenificiary> remitBeneList = (List<RemittanceBenificiary>) mapAllDetailRemitSave.get("EX_REMIT_BENE");
-	List<RemittanceAdditionalInstructionData> addlTrnxList = (List<RemittanceAdditionalInstructionData>) mapAllDetailRemitSave.get("EX_REMIT_ADDL");
+
+	Map<BigDecimal,RemittanceTransaction> remitTrnxList = (Map<BigDecimal,RemittanceTransaction>) mapAllDetailRemitSave.get("EX_REMIT_TRNX");
+	Map<BigDecimal,RemittanceBenificiary> remitBeneList = (Map<BigDecimal,RemittanceBenificiary>) mapAllDetailRemitSave.get("EX_REMIT_BENE");
+	Map<BigDecimal,List<RemittanceAdditionalInstructionData>> addlTrnxList = (Map<BigDecimal,List<RemittanceAdditionalInstructionData>>) mapAllDetailRemitSave.get("EX_REMIT_ADDL");
+	//List<RemittanceTransaction> remitTrnxList = (List<RemittanceTransaction>) mapAllDetailRemitSave.get("EX_REMIT_TRNX");
+	//List<RemittanceBenificiary> remitBeneList = (List<RemittanceBenificiary>) mapAllDetailRemitSave.get("EX_REMIT_BENE");
+	//List<RemittanceAdditionalInstructionData> addlTrnxList = (List<RemittanceAdditionalInstructionData>) mapAllDetailRemitSave.get("EX_REMIT_ADDL");
 	
 	if(collectModel==null) {
 		throw new GlobalException(JaxError.NO_RECORD_FOUND, "Collection data not found");
