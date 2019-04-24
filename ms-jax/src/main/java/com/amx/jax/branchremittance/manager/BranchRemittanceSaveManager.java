@@ -863,15 +863,7 @@ public class BranchRemittanceSaveManager {
 			remitAddData.setCompanyCode(applInstrucData.getFsCompanyMaster().getCompanyCode());
 			remitAddData.setDocumentFinanceYear(remitTrnx.getDocumentFinanceYear());
 			remitAddData.setIsactive(ConstantDocument.Yes);
-<<<<<<< HEAD
-			
-		
-			addInstList.add(remitAddData);
-			
-=======
 			remitAddList.add(remitAddData);
-			//addInstList.add(remitAddData);
->>>>>>> staging
 		}
 			addInstList.put(applicationNo.getRemittanceApplicationId(), remitAddList);
 			
