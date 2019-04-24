@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 import com.google.common.collect.Maps;
 
 @JsonFormat(shape=Shape.OBJECT)
-public enum ResponseCodeOMN implements IResponseCode<Enum<ResponseCodeOMN>> {
+public enum ResponseCodeOMN {
     //-- CONN_FAILURE
 	HOST_TIMEOUT("IPAY0100158","Host SWITCH timeout", "100180", CodeCategory.CONN_FAILURE),
 	EXT_MSG_SYS_ERR("IPAY0100159","External message system error","100181",CodeCategory.CONN_FAILURE),
@@ -372,7 +372,7 @@ public enum ResponseCodeOMN implements IResponseCode<Enum<ResponseCodeOMN>> {
 		this.category = category;
 	}
 	
-	public CodeCategory getCodeCategoryByResponseCode(String responseCode) {
+	public static CodeCategory getCodeCategoryByResponseCode(String responseCode) {
 
 		ResponseCodeOMN respCode = getResponseCodeEnumByCode(responseCode);
 
@@ -383,7 +383,7 @@ public enum ResponseCodeOMN implements IResponseCode<Enum<ResponseCodeOMN>> {
 		return respCode.getCategory();
 	}
 
-	public ResponseCodeOMN getResponseCodeEnumByCode(String responseCode) {
+	public static ResponseCodeOMN getResponseCodeEnumByCode(String responseCode) {
 		return LOOKUP.get(responseCode);
 	}
 	

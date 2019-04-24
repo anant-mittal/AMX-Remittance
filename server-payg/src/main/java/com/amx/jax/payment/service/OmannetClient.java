@@ -11,12 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import com.amx.jax.dict.Channel;
-import com.amx.jax.dict.PayGCodes;
 import com.amx.jax.dict.PayGServiceCode;
-import com.amx.jax.dict.ResponseCodeBHR;
 import com.amx.jax.dict.ResponseCodeOMN;
 import com.amx.jax.payg.PayGParams;
-import com.amx.jax.payg.codes.OmanNetCodes;
 import com.amx.jax.payment.PaymentConstant;
 import com.amx.jax.payment.gateway.PayGClient;
 import com.amx.jax.payment.gateway.PayGConfig;
@@ -61,9 +58,6 @@ public class OmannetClient implements PayGClient {
 
 	@Autowired
 	private PaymentService paymentService;
-	
-	@Autowired
-	ResponseCodeOMN responseCodeOMN;
 
 	@Override
 	public PayGServiceCode getClientCode() {
@@ -195,7 +189,7 @@ public class OmannetClient implements PayGClient {
 			LOGGER.info("resultResponse ---> " + resultResponse);
 			/*OmanNetCodes statusCode = (OmanNetCodes) PayGCodes.getPayGCode(resultResponse, OmanNetCodes.UNKNOWN);
 			gatewayResponse.setErrorCategory(statusCode.getCategory().name());*/
-			ResponseCodeOMN responseCodeEnum = responseCodeOMN.getResponseCodeEnumByCode(pipe.getResult());
+			ResponseCodeOMN responseCodeEnum = ResponseCodeOMN.getResponseCodeEnumByCode(pipe.getResult());
 			if(responseCodeEnum != null) {
 				gatewayResponse.setErrorCategory(responseCodeEnum.name());
 				LOGGER.info("Result from response Values ---> " + gatewayResponse.getErrorCategory());

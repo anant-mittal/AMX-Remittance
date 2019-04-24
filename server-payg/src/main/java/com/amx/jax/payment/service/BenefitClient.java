@@ -11,9 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import com.amx.jax.dict.PayGCodes;
-import com.amx.jax.dict.PayGCodes.CodeCategory;
 import com.amx.jax.dict.PayGServiceCode;
-import com.amx.jax.dict.ResponseCode;
 import com.amx.jax.dict.ResponseCodeBHR;
 import com.amx.jax.payg.PayGParams;
 import com.amx.jax.payg.codes.BenefitCodes;
@@ -72,9 +70,6 @@ public class BenefitClient implements PayGClient {
 
 	@Autowired
 	PayGSession payGSession;
-	
-	@Autowired
-	ResponseCodeBHR responseCodeBHR;
 	
 	@Override
 	public PayGServiceCode getClientCode() {
@@ -204,7 +199,7 @@ public class BenefitClient implements PayGClient {
 			LOGGER.info("resultResponse ---> " + resultResponse);
 			/*statusCode = (BenefitCodes) PayGCodes.getPayGCode(resultResponse, BenefitCodes.UNKNOWN);
 			gatewayResponse.setErrorCategory(statusCode.getCategory());*/
-			ResponseCodeBHR responseCodeEnum = responseCodeBHR.getResponseCodeEnumByCode(gatewayResponse.getError());
+			ResponseCodeBHR responseCodeEnum = ResponseCodeBHR.getResponseCodeEnumByCode(gatewayResponse.getError());
 			if(responseCodeEnum != null) {
 				gatewayResponse.setErrorCategory(responseCodeEnum.name());
 				LOGGER.info("Result from response Values ---> " + responseCodeEnum);

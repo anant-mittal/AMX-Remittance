@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 import com.google.common.collect.Maps;
 
 @JsonFormat(shape=Shape.OBJECT)
-public enum ResponseCodeBHR implements IResponseCode<Enum<ResponseCodeBHR>> {
+public enum  ResponseCodeBHR {
 
 	//public enum ResponseCodeBHR implements IResponseCode<ResponseCodeBHR>
 	// @formatter:off
@@ -92,7 +92,7 @@ public enum ResponseCodeBHR implements IResponseCode<Enum<ResponseCodeBHR>> {
 	}
 
 	
-	public CodeCategory getCodeCategoryByResponseCode(String responseCode) {
+	public static CodeCategory getCodeCategoryByResponseCode(String responseCode) {
 
 		ResponseCodeBHR respCode = getResponseCodeEnumByCode(responseCode);
 
@@ -103,7 +103,7 @@ public enum ResponseCodeBHR implements IResponseCode<Enum<ResponseCodeBHR>> {
 		return respCode.getCategory();
 	}
 
-	public ResponseCodeBHR getResponseCodeEnumByCode(String responseCode) {
+	public static ResponseCodeBHR getResponseCodeEnumByCode(String responseCode) {
 		return LOOKUP.get(responseCode);
 	}
 }
