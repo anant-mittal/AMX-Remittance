@@ -176,6 +176,17 @@ public class RemitPriceManager {
 
 				}
 
+				// Check if the GL Account is running low
+				BigDecimal maxFcCurBal = exchRateAndRoutingTransientDataCache
+						.getMaxGLLcBalForBank(exchangeRate.getBankMaster().getBankId(), Boolean.TRUE);
+
+				System.out.println(" Required Amt ==> " + exRateDetails.getSellRateBase().getConvertedFCAmount()
+						+ " Current Amt ==>" + maxFcCurBal);
+				if (maxFcCurBal.compareTo(exRateDetails.getSellRateBase().getConvertedFCAmount()) < 0) {
+
+					exRateDetails.setLowGLBalance(true);
+				}
+
 				bankWiseRates.add(exRateDetails);
 
 			}
@@ -183,7 +194,6 @@ public class RemitPriceManager {
 			/**
 			 * Compute and Compare Pips Master Rates
 			 */
-			// bankWiseRates.addAll(pipsBankWiseRates);
 
 		} else {
 
@@ -241,16 +251,6 @@ public class RemitPriceManager {
 
 			for (ExchangeRateApprovalDetModel exchangeRate : bankExchangeRates) {
 
-				BigDecimal avgBankGLCBALRate = exchRateAndRoutingTransientDataCache
-						.getAvgRateGLCForBank(exchangeRate.getBankMaster().getBankId());
-
-				// Update GLCBAL Rate to Markup Adjusted Rates
-				BigDecimal adjustedSellRate = new BigDecimal(0);
-
-				if (avgBankGLCBALRate != null) {
-					adjustedSellRate = avgBankGLCBALRate.add(margin.getMarginMarkup());
-				}
-
 				BankDetailsDTO bankDetailsDTO;
 
 				if (bankIdDetailsMap.containsKey(exchangeRate.getBankMaster().getBankId())) {
@@ -274,8 +274,25 @@ public class RemitPriceManager {
 							createBreakUpForFcCur(exchangeRate.getSellRateMin(), requestDto.getForeignAmount()));
 				}
 
+				BigDecimal avgBankGLCBALRate = exchRateAndRoutingTransientDataCache
+						.getAvgRateGLCForBank(exchangeRate.getBankMaster().getBankId());
+
+				BigDecimal maxFcCurBal = exchRateAndRoutingTransientDataCache
+						.getMaxGLLcBalForBank(exchangeRate.getBankMaster().getBankId(), Boolean.TRUE);
+
+				// Update GLCBAL Rate to Markup Adjusted Rates
+				BigDecimal adjustedSellRate = new BigDecimal(0);
+
+				if (avgBankGLCBALRate != null) {
+					adjustedSellRate = avgBankGLCBALRate.add(margin.getMarginMarkup());
+				}
+
 				if (exRateDetails.getSellRateBase().getInverseRate().compareTo(adjustedSellRate) <= 0) {
 					exRateDetails.setCostRateLimitReached(true);
+				}
+
+				if (maxFcCurBal.compareTo(exRateDetails.getSellRateBase().getConvertedFCAmount()) < 0) {
+					exRateDetails.setLowGLBalance(true);
 				}
 
 				bankWiseRates.add(exRateDetails);
@@ -422,9 +439,9 @@ public class RemitPriceManager {
 			throw new PricerServiceException(PricerServiceError.MISSING_GLCBAL_ENTRIES,
 					"GLCBAL Inventory is Missing for Given Input : ");
 		}
-		
+
 		Map<BigDecimal, BankGLCData> bankGlcBalDataMap = new HashMap<BigDecimal, BankGLCData>();
-		
+
 		for (ViewExGLCBAL viewExGLCBAL : glcbalRatesForBanks) {
 
 			if (bankGlcBalDataMap.containsKey(viewExGLCBAL.getBankId())) {
