@@ -6,7 +6,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport"
 	content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<title>Terms and Condition</title>
+<title>[[${contactType}]] Verification</title>
 <style type="text/css">
 body, html {
 	font-family: arial;
@@ -182,15 +182,7 @@ body, html {
 				alt="logo">
 		</div>
 	</div>
-	<div id=" ">
-		<span th:text="${errorCode}"></span> | <span th:text="${errorMessage}"></span>
-		| <span th:text="${contactType}"></span> | <span th:text="${verId}"></span>
-		| <span th:text="${verCode}"></span> |
-		<!-- <form action="" method="post">
-			Enter Civil ID <input name="identity" value="" />
-			<button type="submit">Verify</button>
-		</form>
- -->	</div>
+	
 	 <div th:if="${resend != '1'}" th:switch="${errorCode}">
 	 
 		<div th:case="'ENTITY_INVALID'">
@@ -217,7 +209,7 @@ body, html {
 							<div class="floating-label-input  ">
 								<input type="text" error="false" required="" active="true" value="" name="identity" autofocus="autofocus">
 								<label for="civil-id" class="ff-label">Civil ID</label>
-								<span class="error-msg" th:if="${errorCode == 'INVALID_CIVIL_ID'}">Invalid Civil ID</span>
+								<span class="error-msg" th:if="${errorCode == 'INVALID_CIVIL_ID'}">The Civil ID you have entered is incorrect. Please enter the Civil ID associated with your account.</span>
 								<span class="line"></span>
 							</div>
 						</div>

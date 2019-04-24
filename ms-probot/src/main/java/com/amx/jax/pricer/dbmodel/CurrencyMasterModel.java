@@ -87,7 +87,7 @@ public class CurrencyMasterModel implements java.io.Serializable {
 		this.fsCountryMaster = fsCountryMaster;
 	}*/
 
-	@Column(name = "CURRENCY_CODE", length = 3)
+	@Column(name = "CURRENCY_CODE", length = 3, unique = true)
 	public String getCurrencyCode() {
 		return this.currencyCode;
 	}

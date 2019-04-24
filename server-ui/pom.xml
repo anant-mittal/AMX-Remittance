@@ -113,12 +113,8 @@
 			<artifactId>lib-monitor</artifactId>
 		</dependency>
 
-<!-- 		<dependency>
-			<groupId>net.rossillo.mvc.cache</groupId>
-			<artifactId>spring-mvc-cache-control</artifactId>
-			<version>1.1.1-RELEASE</version>
-			<scope>compile</scope>
-		</dependency> -->
+		<!-- <dependency> <groupId>net.rossillo.mvc.cache</groupId> <artifactId>spring-mvc-cache-control</artifactId> 
+			<version>1.1.1-RELEASE</version> <scope>compile</scope> </dependency> -->
 
 	</dependencies>
 
@@ -130,6 +126,18 @@
 				<configuration>
 					<executable>true</executable>
 				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>build-info</goal>
+						</goals>
+						<configuration>
+							<additionalProperties>
+								<version>${vzn}</version>
+							</additionalProperties>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

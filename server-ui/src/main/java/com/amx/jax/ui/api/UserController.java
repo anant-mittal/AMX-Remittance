@@ -6,6 +6,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import org.jolokia.restrictor.policy.MBeanAccessChecker.Arg;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -148,7 +149,7 @@ public class UserController {
 			CustomerFlags customerFlags = sessionService.getUserSession().getCustomerModel().getFlags();
 			wrapper.getData().setFlags(customerFlags);
 
-			if (customerFlags.getAnnualIncomeExpired()) {
+			if (!ArgUtil.isEmpty(customerFlags) && customerFlags.getAnnualIncomeExpired()) {
 				wrapper.setStatus(OWAStatusStatusCodes.INCOME_UPDATE_REQUIRED);
 			}
 
