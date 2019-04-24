@@ -11,7 +11,6 @@ import com.google.common.collect.Maps;
 @JsonFormat(shape=Shape.OBJECT)
 public enum  ResponseCodeBHR {
 
-	//public enum ResponseCodeBHR implements IResponseCode<ResponseCodeBHR>
 	// @formatter:off
 
 	CUSTOMER_CARD_EXPIRED("54","The customer card is expired", "100002", CodeCategory.TXN_CARD_VLDT),
@@ -91,7 +90,6 @@ public enum  ResponseCodeBHR {
 		this.category = category;
 	}
 
-	
 	public static CodeCategory getCodeCategoryByResponseCode(String responseCode) {
 
 		ResponseCodeBHR respCode = getResponseCodeEnumByCode(responseCode);
@@ -106,4 +104,5 @@ public enum  ResponseCodeBHR {
 	public static ResponseCodeBHR getResponseCodeEnumByCode(String responseCode) {
 		return LOOKUP.get(responseCode);
 	}
+
 }

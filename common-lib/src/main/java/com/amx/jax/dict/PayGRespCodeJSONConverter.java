@@ -9,9 +9,8 @@ public class PayGRespCodeJSONConverter {
 	
 	private static final Logger LOGGER = Logger.getLogger(PayGRespCodeJSONConverter.class);
 
-	@SuppressWarnings("null")
 	public static ResponseCodeDetailDTO getResponseCodeDetail(String errorCategory) {
-		ResponseCodeDetailDTO responseCodeDetail = null;
+		ResponseCodeDetailDTO responseCodeDetail = new ResponseCodeDetailDTO();
 		if (errorCategory != null) {
 			switch (TenantContextHolder.currentSite()) {
 			case BHR:
