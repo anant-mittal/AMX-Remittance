@@ -8,6 +8,7 @@ import com.amx.jax.ui.UIConstants;
 import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.ContextUtil;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * The Class ResponseWrapperM.
@@ -118,11 +119,13 @@ public class ResponseWrapperM<T, M> extends AmxApiResponse<T, M> {
 	 *
 	 * @param status the new status
 	 */
+	@JsonIgnore
 	public void setStatus(OWAStatusStatusCodes status) {
 		this.statusKey = status.name();
 		this.status = status.getCode();
 	}
 
+	@JsonIgnore
 	public void setStatus(IExceptionEnum status) {
 		this.statusKey = status.getStatusKey();
 		this.status = ArgUtil.parseAsString(status.getStatusCode());
