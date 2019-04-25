@@ -132,6 +132,7 @@ public class RemittanceTransaction implements Serializable {
 	private List<RemittanceAml> exRemitAmls = new ArrayList<RemittanceAml>(0);
 	private List<RemittanceBenificiary> exRemittanceBenificiary = new ArrayList<RemittanceBenificiary>(0);
 
+
 	
 	/** added by rabil on 10 apr 2019 for customer category dis analysis**/
 	private String isDiscountAvailed;
@@ -143,6 +144,10 @@ public class RemittanceTransaction implements Serializable {
 	private BigDecimal pipsToAmt;
 	private BigDecimal pipsDiscount;	
 	private String  reachedCostRateLimit;
+	
+
+	
+	
 	
 	public RemittanceTransaction() {
 	}
@@ -1098,6 +1103,7 @@ public class RemittanceTransaction implements Serializable {
 	public void setReachedCostRateLimit(String reachedCostRateLimit) {
 		this.reachedCostRateLimit = reachedCostRateLimit;
 	}
+
 
 
 }
