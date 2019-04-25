@@ -293,11 +293,14 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 		beneficaryContact.setCreatedDate(new Date());
 		beneficaryContact.setIsActive(ConstantDocument.Yes);
 		beneficaryContact.setMobileNumber(beneDetails.getMobileNumber());
+		String beneMobileNo = null;
+		if(beneDetails.getMobileNumber()!=null) {
+			beneMobileNo = beneDetails.getMobileNumber().toString();
+		}
 		beneficaryContact.setTelephoneNumber(
-				(beneDetails.getTelephoneNumber() == null) ? beneDetails.getMobileNumber().toString()
+				(beneDetails.getTelephoneNumber() == null) ? beneMobileNo
 						: beneDetails.getTelephoneNumber());
 		beneficaryContactRepository.save(beneficaryContact);
-
 	}
 
 	/**
