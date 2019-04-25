@@ -46,7 +46,7 @@
                             <datasetParameterExpression><![CDATA[$P{model}]]></datasetParameterExpression>
                         </datasetParameter>
                         <dataSourceExpression>
-                            <![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{model}.getList("/data/shoppingCartDetails"))]]></dataSourceExpression>
+                            <![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{model}.getList("/results/[0]/shoppingCartDetails"))]]></dataSourceExpression>
                     </datasetRun>
                     <c:listContents height="822">
 
@@ -128,7 +128,7 @@
                                 <text><![CDATA[]]></text>
                             </staticText>
                             <staticText>
-                                <reportElement x="0" y="3" width="485" height="30" isPrintWhenDetailOverflows="true"/>
+                                <reportElement x="0" y="3" width="300" height="30" isPrintWhenDetailOverflows="true"/>
                                 <textElement>
                                     <font fontName="Arial" size="10" isItalic="true"
                                           pdfFontName="fonts/all/arial.ttf"/>
