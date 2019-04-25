@@ -81,10 +81,23 @@ public interface ITransactionHistroyDAO extends JpaRepository<CustomerRemittance
 	public Long getCountByBenerelationshipSeqId(List<BigDecimal> idNo);
 	
 	
-	//@Query("select th from  CustomerRemittanceTransactionView th  where th.createdBy=:username and th.documentDate=(select max(f.documentDate) from CustomerRemittanceTransactionView f where f.createdBy=:username and trunc(f.documentDate)=trunc(sysdate)")
-	@Query(value="select * from JAX_VW_EX_TRANSACTION_INQUIRY t  \r\n" + 
+	/*@Query(value="select * from JAX_VW_EX_TRANSACTION_INQUIRY t  \r\n" + 
 			"where  CREATED_BY=:username "+ 
 			"and t.DOCUMENT_DATE = (select max(f.DOCUMENT_DATE) from JAX_VW_EX_TRANSACTION_INQUIRY f where f.CREATED_BY=:username " + 
 			"and trunc(document_date)=trunc(sysdate))",nativeQuery=true)
 	public List<CustomerRemittanceTransactionView> getLastTrnxAmountFortheCustomer(@Param("username") String username);
+	*/
+	
+	
+	@Query(value= "select last_trnx_amt from ( "
+					+" select COLLECTION_DOCUMENT_NO,sum(LOCAL_NET_TRANX_AMOUNT) last_trnx_amt "
+					+" from ex_remit_trnx                                                      "
+					+" where ACCOUNT_MMYYYY =to_date(:accMyear,'dd/MM/yyyy') and     "
+					+" country_branch_id =:countrybranchId and                              "
+					+" CREATED_BY=:username                                                 "
+					+" and trunc(sysdate)=trunc(created_Date)                                  "
+					+" group by COLLECTION_DOCUMENT_NO                                         "
+					+" order by COLLECTION_DOCUMENT_NO  desc ) where rownum = 1" , nativeQuery=true)
+	public BigDecimal  getLastTrnxAmountFortheUser(@Param("username") String username,@Param("accMyear") String accMyear,@Param("countrybranchId") BigDecimal countrybranchId);
+	
 }
