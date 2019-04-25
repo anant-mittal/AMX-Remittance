@@ -7,7 +7,7 @@
 	"message": "",
 	"messageKey": "",
 	"data": {
- 	"totalLocalAmount": 500,
+ 	  "totalLocalAmount": 500,
       "totalNetAmount": 508.75,
       "totalTrnxFees": 8.75,
       "totalLyltyPointAmt": 0,
@@ -22,7 +22,7 @@
           "documentId": 1,
           "beneficiaryId": 5999752,
           "beneficiaryName": "???? ???? ??? ????? ???",
-          "beneficiaryBank": "NATIONAL BANK OF EGYPT",
+          "beneficiaryBank": "NATIONAL BANK OF TEST",
           "beneficiaryBranch": "TOUSON BRANCH",
           "beneficiaryAccountNo": null,
           "beneficiaryInterBankOne": null,

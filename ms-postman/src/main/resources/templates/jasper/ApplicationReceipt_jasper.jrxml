@@ -6,6 +6,7 @@
               topMargin="0" bottomMargin="0">
     <subDataset name="tranxs">
         <parameter name="TU" class="com.amx.jax.postman.service.TemplateUtils"/>
+        <parameter name="model" class="com.amx.utils.FlatMap"/>
         <field name="tranx" class="com.amx.utils.FlatMap">
             <fieldDescription><![CDATA[_THIS]]></fieldDescription>
         </field>
@@ -14,6 +15,7 @@
 
     <subDataset name="tranxtypes">
         <parameter name="TU" class="com.amx.jax.postman.service.TemplateUtils"/>
+        <parameter name="model" class="com.amx.utils.FlatMap"/>
         <field name="tranxtype" class="com.amx.utils.FlatMap">
             <fieldDescription><![CDATA[_THIS]]></fieldDescription>
         </field>
@@ -40,6 +42,9 @@
                         <datasetParameter name="TU">
                             <datasetParameterExpression><![CDATA[$P{TU}]]></datasetParameterExpression>
                         </datasetParameter>
+                         <datasetParameter name="model">
+                            <datasetParameterExpression><![CDATA[$P{model}]]></datasetParameterExpression>
+                        </datasetParameter>
                         <dataSourceExpression>
                             <![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{model}.getList("/data/shoppingCartDetails"))]]></dataSourceExpression>
                     </datasetRun>
@@ -56,7 +61,7 @@
                                 <text><![CDATA[]]></text>
                             </staticText>
                             <staticText>
-                                <reportElement x="132" y="3" width="250" height="45" isPrintWhenDetailOverflows="true"/>
+                                <reportElement x="200" y="3" width="250" height="45" isPrintWhenDetailOverflows="true"/>
                                 <textElement>
                                     <font fontName="Arial" size="16" isItalic="true"
                                           pdfFontName="fonts/all/arialbd.ttf"/>
@@ -66,7 +71,7 @@
 
 
                             <textField isStretchWithOverflow="true">
-                                <reportElement x="230" y="4" width="100" height="15"
+                                <reportElement x="250" y="4" width="100" height="15"
                                                forecolor="#000000"
                                                isPrintWhenDetailOverflows="true"/>
                                 <textElement textAlignment="Right">
@@ -74,7 +79,7 @@
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$R{label.senderdetails}]]>
+                                    <![CDATA[$R{label.application}]]>
                                 </textFieldExpression>
                             </textField>
                         </frame>
@@ -100,7 +105,7 @@
 
 
                             <textField isStretchWithOverflow="true">
-                                <reportElement x="220" y="4" width="100" height="15"
+                                <reportElement x="170" y="4" width="300" height="15"
                                                forecolor="#000000"
                                                isPrintWhenDetailOverflows="true"/>
                                 <textElement textAlignment="Right">
@@ -108,7 +113,7 @@
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$R{label.senderdetails}]]>
+                                    <![CDATA[$R{label.confirmDetails}]]>
                                 </textFieldExpression>
                             </textField>
                         </frame>
@@ -123,28 +128,14 @@
                                 <text><![CDATA[]]></text>
                             </staticText>
                             <staticText>
-                                <reportElement x="0" y="3" width="450" height="30" isPrintWhenDetailOverflows="true"/>
+                                <reportElement x="0" y="3" width="485" height="30" isPrintWhenDetailOverflows="true"/>
                                 <textElement>
                                     <font fontName="Arial" size="10" isItalic="true"
                                           pdfFontName="fonts/all/arial.ttf"/>
                                 </textElement>
                                 <text><![CDATA[THIS IS NOT A RECEIPT. PLEASE INSIST ON A SEPARATE RECEIPT AFTER YOU PAY CASH.]]></text>
                             </staticText>
-                         
-                            <textField isStretchWithOverflow="true">
-                                <reportElement x="400" y="4" width="100" height="15"
-                                               forecolor="#000000"
-                                               isPrintWhenDetailOverflows="true"/>
-                                <textElement textAlignment="Right">
-                                    <font fontName="Arial" size="12" isItalic="true"
-                                          pdfFontName="fonts/all/arialbd.ttf"/>
-                                </textElement>
-                                <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$R{label.senderdetails}]]>
-                                </textFieldExpression>
-                            </textField>
-
-                          
+    
                         </frame>
                         <!--##################Separate receipt END####################-->
 
@@ -168,7 +159,7 @@
                             </staticText>
 
                             <textField isStretchWithOverflow="true">
-                                <reportElement x="100" y="4" width="485" height="15"
+                                <reportElement x="130" y="4" width="100" height="15"
                                                forecolor="#000000"
                                                isPrintWhenDetailOverflows="true"/>
                                 <textElement textAlignment="Left">
@@ -216,7 +207,7 @@
                             </staticText>
 
                             <textField isStretchWithOverflow="true">
-                                <reportElement x="100" y="4" width="485" height="15"
+                                <reportElement x="130" y="4" width="300" height="15"
                                                forecolor="#000000"
                                                isPrintWhenDetailOverflows="true"/>
                                 <textElement textAlignment="Left">
@@ -264,7 +255,7 @@
                             </staticText>
 
                             <textField isStretchWithOverflow="true">
-                                <reportElement x="100" y="4" width="485" height="15"
+                                <reportElement x="130" y="4" width="100" height="15"
                                                forecolor="#000000"
                                                isPrintWhenDetailOverflows="true"/>
                                 <textElement textAlignment="Left">
@@ -285,7 +276,7 @@
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$R{label.beneficiaryBranch}]]>
+                                    <![CDATA[$R{label.benefeciaryBranchName}]]>
                                 </textFieldExpression>
                             </textField>
 
@@ -312,7 +303,7 @@
                             </staticText>
 
                             <textField isStretchWithOverflow="true">
-                                <reportElement x="100" y="4" width="485" height="15"
+                                <reportElement x="130" y="4" width="100" height="15"
                                                forecolor="#000000"
                                                isPrintWhenDetailOverflows="true"/>
                                 <textElement textAlignment="Left">
@@ -361,7 +352,7 @@
                             </staticText>
 
                             <textField isStretchWithOverflow="true">
-                                <reportElement x="130" y="4" width="100" height="15"
+                                <reportElement x="130" y="4" width="300" height="15"
                                                forecolor="#000000"
                                                isPrintWhenDetailOverflows="true"/>
                                 <textElement textAlignment="Left">
@@ -369,7 +360,8 @@
                                           pdfFontName="fonts/all/arial.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$F{tranx}.get("foreignCurrencyDesc")]]>
+                                    <![CDATA[$F{tranx}.get("foreignCurrencyDesc")+ "     "+ $F{tranx}.get("foreignTranxAmount")]]>
+                                    
                                 </textFieldExpression>
                             </textField>
 
@@ -382,7 +374,7 @@
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$R{label.currencyAndAmount}]]>
+                                    <![CDATA[$R{label.proposedCurAmt}]]>
                                 </textFieldExpression>
                             </textField>
 
@@ -431,7 +423,7 @@
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$R{label.exchangeRate}]]>
+                                    <![CDATA[$R{label.proposedExchangeRate}]]>
                                 </textFieldExpression>
                             </textField>
 
@@ -457,7 +449,7 @@
                             </staticText>
 
                             <textField isStretchWithOverflow="true">
-                                <reportElement x="130" y="4" width="485" height="15"
+                                <reportElement x="130" y="4" width="100" height="15"
                                                forecolor="#000000"
                                                isPrintWhenDetailOverflows="true"/>
                                 <textElement textAlignment="Left">
@@ -478,7 +470,7 @@
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$R{label.currencyAndAmount}]]>
+                                    <![CDATA[$R{label.proposedAmount}]]>
                                 </textFieldExpression>
                             </textField>
 
@@ -504,7 +496,7 @@
                             </staticText>
 
                             <textField isStretchWithOverflow="true">
-                                <reportElement x="130" y="4" width="485" height="15"
+                                <reportElement x="130" y="4" width="100" height="15"
                                                forecolor="#000000"
                                                isPrintWhenDetailOverflows="true"/>
                                 <textElement textAlignment="Left">
@@ -525,7 +517,7 @@
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$R{label.currencyAndAmount}]]>
+                                    <![CDATA[$R{label.proposedCommission}]]>
                                 </textFieldExpression>
                             </textField>
 
@@ -573,7 +565,7 @@
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$R{label.otherCharges}]]>
+                                    <![CDATA[$R{label.proposedOtherCharges}]]>
                                 </textFieldExpression>
                             </textField>
 
@@ -599,8 +591,9 @@
                                 <text><![CDATA[Total Amount]]></text>
                             </staticText>
 
-                            <textField isStretchWithOverflow="true">
-                                <reportElement x="100" y="4" width="485" height="15"
+
+                           <textField isStretchWithOverflow="true">
+                                <reportElement x="130" y="4" width="100" height="15"
                                                forecolor="#000000"
                                                isPrintWhenDetailOverflows="true"/>
                                 <textElement textAlignment="Left">
@@ -608,11 +601,11 @@
                                           pdfFontName="fonts/all/arial.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$F{tranx}.get("totalNetCollectionAmount")]]>
+                                    <![CDATA[$P{model}.get("/data/totalNetCollectionAmount","NO")]]>
                                 </textFieldExpression>
                             </textField>
-
-                            <textField isStretchWithOverflow="true">
+							
+							<textField isStretchWithOverflow="true">
                                 <reportElement x="485" y="4" width="100" height="15"
                                                forecolor="#000000"
                                                isPrintWhenDetailOverflows="true"/>
@@ -624,6 +617,8 @@
                                     <![CDATA[$R{label.totalAmount}]]>
                                 </textFieldExpression>
                             </textField>
+
+
 
                         </frame>
                         <!--##################Total Amount END####################-->
@@ -655,7 +650,7 @@
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$R{label.totalAmount}]]>
+                                    <![CDATA[$R{label.signatureOfRemitter}]]>
                                 </textFieldExpression>
                             </textField>
 
