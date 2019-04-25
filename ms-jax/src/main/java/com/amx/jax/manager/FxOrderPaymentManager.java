@@ -363,7 +363,7 @@ public class FxOrderPaymentManager {
 						documentDao.getDocumnetByCode(ConstantDocument.DOCUMENT_CODE_FOR_COLLECT_TRANSACTION).get(0)
 								.getDocumentID());
 				BigDecimal documentNo = generateDocumentNumber(countryBranch, appl.getCountryId(),
-						companyDetails.getCompanyId(), ConstantDocument.Update, appl.getDocumentFinanceYear(),
+						companyDetails.getCompanyId(), ConstantDocument.A, appl.getDocumentFinanceYear(),
 						ConstantDocument.DOCUMENT_CODE_FOR_COLLECT_TRANSACTION);
 				if (documentNo != null && documentNo.compareTo(BigDecimal.ZERO) != 0) {
 					collection.setDocumentNo(documentNo);

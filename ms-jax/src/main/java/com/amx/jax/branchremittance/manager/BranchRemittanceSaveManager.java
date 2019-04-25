@@ -764,7 +764,7 @@ public class BranchRemittanceSaveManager {
 				    }else{
 				    	throw new GlobalException(JaxError.INVALID_REMITTANCE_DOCUMENT_NO, "Document Seriality  setup  not defined for Remittance.");
 				    }
-					//remitTrnxList.add(remitTrnx);
+				
 					remitTrnxList.put(appl.getRemittanceApplicationId(),remitTrnx);
 					saveBeneTrnx(appl, remitTrnx);
 					saveRemitnaceinstructionData(appl,remitTrnx);
@@ -780,7 +780,7 @@ public class BranchRemittanceSaveManager {
 		return remitTrnxList;
 	}
 	
-//public   List<RemittanceBenificiary>  saveBeneTrnx(RemittanceApplication applicationNo,RemittanceTransaction remitTrnx){
+
 	public  Map<BigDecimal,RemittanceBenificiary>  saveBeneTrnx(RemittanceApplication applicationNo,RemittanceTransaction remitTrnx){
 	if(applicationNo!=null) {
 		RemittanceAppBenificiary applBene = applBeneRepository.findByExRemittanceAppfromBenfi(applicationNo);
@@ -825,7 +825,6 @@ public class BranchRemittanceSaveManager {
 			remitBene.setExUserFinancialYear(getFinancialYearObj(remitTrnx.getDocumentFinanceYear()));
 			remitBene.setIsactive(ConstantDocument.Yes);
 			remitBeneList.put(applBene.getExRemittanceAppfromBenfi().getRemittanceApplicationId(), remitBene);
-			//remitBeneList.add(remitBene);
 		}else {
 			throw new GlobalException(JaxError.NO_RECORD_FOUND,"Record not found in appl bene for remittance : "+remitTrnx.getApplicationDocumentNo());
 		}
@@ -835,8 +834,6 @@ public class BranchRemittanceSaveManager {
 	
 	return remitBeneList;
 }
-	
-//public   List<RemittanceAdditionalInstructionData>   saveRemitnaceinstructionData(RemittanceApplication applicationNo,RemittanceTransaction remitTrnx){
 	
 	public   Map<BigDecimal,List<RemittanceAdditionalInstructionData>>   saveRemitnaceinstructionData(RemittanceApplication applicationNo,RemittanceTransaction remitTrnx){
 		
@@ -876,11 +873,6 @@ public class BranchRemittanceSaveManager {
 }
 
 
-	
-
-
-
-
 public Map<BigDecimal,List<RemittanceAml>>	saveRemittanceAml(RemittanceApplication applicationNo,RemittanceTransaction remitTrnx){
 		
 	List<RemittanceAml> amlLst = new ArrayList<>();
@@ -901,7 +893,6 @@ public Map<BigDecimal,List<RemittanceAml>>	saveRemittanceAml(RemittanceApplicati
 			remitAml.setBlackListUser(applAml.getBlackListUser());
 			remitAml.setIsactive(ConstantDocument.Yes);
 			remitAml.setExRemittancefromAml(remitTrnx);
-			//amlList.add(remitAml);
 			amlLst.add(remitAml);
 			}
 			amlList.put(applicationNo.getRemittanceApplicationId(),amlLst);
@@ -912,12 +903,8 @@ return amlList;
 	
 }
 
-
-
-
 private LoyaltyClaimRequest saveLoyalTyClaimRequest(List<CollectDetailModel> collectDetailModelList) {
 	LoyaltyClaimRequest Lclaim = new LoyaltyClaimRequest();
-	
 	if(collectDetailModelList!=null && !collectDetailModelList.isEmpty()) {
 		for(CollectDetailModel collectDetail : collectDetailModelList) {
 			if(collectDetail.getCollectionMode().equalsIgnoreCase(ConstantDocument.VOCHERCODE)) {

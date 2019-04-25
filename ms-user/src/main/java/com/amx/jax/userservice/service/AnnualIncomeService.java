@@ -211,6 +211,7 @@ public class AnnualIncomeService {
 		}
 		
 		CustomerEmploymentInfo customerEmploymentInfo = incomeDao.getCustById(metaData.getCustomerId());
+		
 		List<CustomerEmploymentInfo> custEmploymentInfo = incomeDao.getAllCustById(metaData.getCustomerId());
 		
 		if(custEmploymentInfo.isEmpty()) {
@@ -220,12 +221,34 @@ public class AnnualIncomeService {
 			custEmplInfo.setFsStateMaster(new StateMaster(new BigDecimal(584)));
 			custEmploymentInfo.add(custEmplInfo);
 		}
+		else {
+			CustomerEmploymentInfo custEmplInfo = custEmploymentInfo.get(0);
+			if(custEmplInfo.getFsBizComponentDataByEmploymentTypeId()==null) {
+				custEmplInfo.setFsBizComponentDataByEmploymentTypeId(new BizComponentData(new BigDecimal(187)));
+			}
+			if(custEmplInfo.getFsDistrictMaster()==null) {
+				custEmplInfo.setFsDistrictMaster(new DistrictMaster(new BigDecimal(4165)));
+			}
+			if(custEmplInfo.getFsStateMaster()==null) {
+				custEmplInfo.setFsStateMaster(new StateMaster(new BigDecimal(584)));
+			}
+		}
+		
 		logger.info("set customerEmpInfo : " +customerEmploymentInfo);
 		if (customerEmploymentInfo == null) {
 			customerEmploymentInfo = createCustomerEmploymentInfo(incomeDto,custEmploymentInfo.get(0));
 			
 		}
 		else {
+			if(customerEmploymentInfo.getFsBizComponentDataByEmploymentTypeId()==null) {
+				customerEmploymentInfo.setFsBizComponentDataByEmploymentTypeId(new BizComponentData(new BigDecimal(187)));
+			}
+			if(customerEmploymentInfo.getFsDistrictMaster()==null) {
+				customerEmploymentInfo.setFsDistrictMaster(new DistrictMaster(new BigDecimal(4165)));
+			}
+			if(customerEmploymentInfo.getFsStateMaster()==null) {
+				customerEmploymentInfo.setFsStateMaster(new StateMaster(new BigDecimal(584)));
+			}
 			customerEmploymentInfo.setUpdatedBy(metaData.getCustomerId().toString());
 			customerEmploymentInfo.setLastUpdated(new Date());
 		}
