@@ -21,7 +21,7 @@ public interface ITransactionHistroyDAO extends JpaRepository<CustomerRemittance
 
 	
 	@Query("select th from CustomerRemittanceTransactionView th where th.customerId=:customerId  "
-			+ "and trunc(th.documentDate) between  trunc(sysdate-6*30) and  trunc(sysdate) and th.beneficaryCorespondingBankName NOT IN('WU',' ')"  )
+			+ "and trunc(th.documentDate) between  trunc(sysdate-6*30) and  trunc(sysdate) and th.beneficaryCorespondingBankName NOT IN('WU',' ') order by th.documentDate desc")
 	public List<CustomerRemittanceTransactionView> getTransactionHistroy(@Param("customerId") BigDecimal customerId);
 
 	@Query("select th from CustomerRemittanceTransactionView th where th.customerId=:customerId  and th.documentFinanceYear=:docfyr and th.documentNumber=:docNumber  ")
