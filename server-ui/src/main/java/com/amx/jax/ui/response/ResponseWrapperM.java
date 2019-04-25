@@ -8,6 +8,7 @@ import com.amx.jax.ui.UIConstants;
 import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.ContextUtil;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * The Class ResponseWrapperM.

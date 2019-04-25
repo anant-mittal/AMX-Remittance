@@ -78,7 +78,7 @@ public class RegisterController {
 			throw new UIServerError(amxApiError);
 		} else if (ArgUtil.isEmpty(otp)) {
 			ResponseWrapper<AuthData> x = registrationService.validateCustomerInit(identity, contactType);
-			x.setStatus(OWAStatusStatusCodes.OTP_REQUIRED);
+			x.setStatusEnum(OWAStatusStatusCodes.OTP_REQUIRED);
 			x.setMeta(x.getData());
 			return x;
 		} else {

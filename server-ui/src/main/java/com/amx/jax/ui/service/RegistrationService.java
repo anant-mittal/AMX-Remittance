@@ -43,6 +43,9 @@ public class RegistrationService {
 	@Autowired
 	private JaxService jaxClient;
 
+	@Autowired
+	private UserService userService;
+
 	/**
 	 * Validate customer.
 	 *
@@ -346,6 +349,8 @@ public class RegistrationService {
 			sessionService.authorize(sessionService.getGuestSession().getCustomerModel(), true);
 			jaxClient.getUserclient().customerLoggedIn(sessionService.getAppDevice().getUserDevice());
 		}
+
+		userService.updateCustoemrModel();
 
 		wrapper.setMessage(OWAStatusStatusCodes.USER_UPDATE_SUCCESS, "LoginId and Password updated");
 		sessionService.getGuestSession().endStep(AuthStep.CREDS_SET);
