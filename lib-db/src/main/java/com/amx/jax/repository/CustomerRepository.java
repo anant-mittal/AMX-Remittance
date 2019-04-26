@@ -40,11 +40,23 @@ public interface CustomerRepository extends CrudRepository<Customer, BigDecimal>
 
 	public Customer getCustomerByCustomerIdAndIsActive(BigDecimal customerId, String isActive);
 
+	/// GET CUSTOMER BY CONTACT -- START
 	@Query("select c from Customer c where mobile=?1 ")
 	public List<Customer> getCustomerByMobileCheck(String mobile);
 
 	@Query("select c from Customer c where whatsappPrefix=?1 and whatsapp=?2")
 	public Customer getCustomerByWhatsApp(String whatsappPrefix, String whatsapp);
+
+	@Query("select c from Customer c where whatsappPrefix=?1 and whatsapp=?2")
+	public List<Customer> getCustomersByWhatsApp(String whatsappPrefix, String whatsapp);
+
+	@Query("select c from Customer c where mobilePrefix=?1 and mobile=?2")
+	public List<Customer> getCustomersByMobile(String mobilePrefix, String mobile);
+
+	@Query("select c from Customer c where email=?1")
+	public List<Customer> getCustomersByEmail(String email);
+
+	/// GET CUSTOMER BY CONTACT -- ENDS
 
 	@Query("select c from Customer c where identityInt=?1 and isActive='N'")
 	public Customer getCustomerDetails(String loginId);
@@ -64,9 +76,9 @@ public interface CustomerRepository extends CrudRepository<Customer, BigDecimal>
 
 	@Query("select c from Customer c where identityInt=?1 and identityTypeId = ?2 and countryId =?3")
 	public Customer getCustomerDetails(String identityInt, BigDecimal identityTypeId, BigDecimal countryId);
-	
+
 	@Query("select c from Customer c where identityInt=?1  and countryId =?2")
-	public Customer getCustomerDetails(String identityInt,BigDecimal countryId);
+	public Customer getCustomerDetails(String identityInt, BigDecimal countryId);
 
 	
 	@Query("select  c from Customer c where identityInt=?1 and isActive='Y' and identityTypeId= ?2 ")	
@@ -78,7 +90,7 @@ public interface CustomerRepository extends CrudRepository<Customer, BigDecimal>
 	@Query("select c from Customer c where identityInt=?1 and identityTypeId = ?2 and isActive in ?3 order by lastUpdated desc")
 	public List<Customer> getCustomerByIndentityIntAndTypeAndIsactive(String identityInt, BigDecimal identityTypeId,
 			List<String> status);
-	
+
 	@Query("select c from Customer c where identityInt =?1 and isActive in ?2 order by lastUpdated desc")
 	public List<Customer> getCustomerByIdentityIntAndIsActive(String identityInt, List<String> isActive);
 

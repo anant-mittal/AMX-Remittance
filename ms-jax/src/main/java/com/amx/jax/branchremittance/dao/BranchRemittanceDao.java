@@ -149,7 +149,7 @@ public class BranchRemittanceDao {
 			Map<BigDecimal, RemittanceBenificiary> remitBeneList = (Map<BigDecimal, RemittanceBenificiary>) mapAllDetailRemitSave.get("EX_REMIT_BENE");
 			Map<BigDecimal, List<RemittanceAdditionalInstructionData>> addlTrnxList = (Map<BigDecimal, List<RemittanceAdditionalInstructionData>>) mapAllDetailRemitSave.get("EX_REMIT_ADDL");
 			Map<BigDecimal, List<RemittanceAml>> amlTrnxList = (Map<BigDecimal, List<RemittanceAml>>) mapAllDetailRemitSave.get("EX_REMIT_AML");
-
+			
 			LoyaltyClaimRequest lylClaim = (LoyaltyClaimRequest) mapAllDetailRemitSave.get("LYL_CLAIM");
 			List<LoyaltyPointsModel> loyaltyPoitns = (List<LoyaltyPointsModel>) mapAllDetailRemitSave.get("LOYALTY_POINTS");
 
@@ -173,7 +173,10 @@ public class BranchRemittanceDao {
 			}
 
 			if (collectDetailsModel != null && !collectDetailsModel.isEmpty() && JaxUtil.isNullZeroBigDecimalCheck(collectModel.getDocumentNo())) {
-				collectDetailRepository.save(collectDetailsModel);
+				for(CollectDetailModel collectDetModel : collectDetailsModel) {
+					collectDetModel.setDocumentNo(collectModel.getDocumentNo());
+					collectDetailRepository.save(collectDetModel);
+				}
 			}
 
 			if (lylClaim != null && JaxUtil.isNullZeroBigDecimalCheck(lylClaim.getVoucherNo())) {
@@ -181,7 +184,10 @@ public class BranchRemittanceDao {
 			}
 
 			if (foreignCurrencyAdjust != null && !foreignCurrencyAdjust.isEmpty()) {
-				foreignCurrAdjustRepository.save(foreignCurrencyAdjust);
+				for(ForeignCurrencyAdjust foreignCurrAdju:foreignCurrencyAdjust) {
+					foreignCurrAdju.setDocumentNo(collectModel.getDocumentNo());
+					foreignCurrAdjustRepository.save(foreignCurrAdju);
+				}
 			}
 
 			if (remitTrnxList != null && !remitTrnxList.isEmpty()) {
@@ -225,11 +231,9 @@ public class BranchRemittanceDao {
 							remitAmlRepository.save(remitaml);
 						}
 					}
-
 				}
 
 				if (loyaltyPoitns != null && !loyaltyPoitns.isEmpty()) {
-
 					loyalPointsRepository.save(loyaltyPoitns);
 				}
 
@@ -238,11 +242,13 @@ public class BranchRemittanceDao {
 			}
 
 			return responseDto;
-		} catch (Exception e) {
-			throw new GlobalException(JaxError.UNKNOWN_JAX_ERROR, e.getMessage());
+		} catch (GlobalException e){
+			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}
 
 	}
+	
+	
 
 	public BigDecimal generateDocumentNumber(BigDecimal appCountryId, BigDecimal companyId, BigDecimal documentId, BigDecimal finYear, BigDecimal branchId) {
 		Map<String, Object> output = applicationProcedureDao.getDocumentSeriality(appCountryId, companyId, documentId, finYear, ConstantDocument.Update, branchId);

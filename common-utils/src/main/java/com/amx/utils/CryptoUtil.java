@@ -163,11 +163,31 @@ public final class CryptoUtil {
 
 	// private static final String COMPLEX_CHARS =
 	// "!@#$%^&*?0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-	public static final String COMPLEX_CHARS = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	public static final String COMPLEX_CHARS = "0123456789abcdefghijkLmnopqrstuvwxyzABCDEFGHiJKLMNOPQRSTUVWXYZ";
 
 	private static final int COMPLEX_CHARS_LEN = COMPLEX_CHARS.length();
 
-	public static String toComplex(int length, String hash) {
+	public static class ComplexString {
+		private String str;
+
+		public ComplexString(String str) {
+			this.str = str;
+		}
+
+		public String toString() {
+			return this.str;
+		}
+
+		public boolean equals(String str) {
+			if (this.str.equals(str)) {
+				return true;
+			}
+			str = str.replace("l", "L").replace("I", "i");
+			return this.str.equals(str);
+		}
+	}
+
+	public static ComplexString toComplex(int length, String hash) {
 		char[] hashChars = hash.toCharArray();
 		int totalInt = 0;
 		for (int i = 0; i < hashChars.length; i++) {
@@ -186,7 +206,7 @@ public final class CryptoUtil {
 			thisIndex = thisIndex % COMPLEX_CHARS_LEN;
 			complexHash.append(COMPLEX_CHARS.charAt((int) thisIndex));
 		}
-		return complexHash.toString();
+		return new ComplexString(complexHash.toString());
 	}
 
 	public static String toHex(int length, String hash) {
@@ -401,7 +421,7 @@ public final class CryptoUtil {
 		}
 
 		public HashBuilder toComplex(int length) {
-			this.output = CryptoUtil.toComplex(length, this.hash);
+			this.output = CryptoUtil.toComplex(length, this.hash).toString();
 			return this;
 		}
 

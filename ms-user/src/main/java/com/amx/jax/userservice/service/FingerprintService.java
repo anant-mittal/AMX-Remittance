@@ -27,6 +27,7 @@ import com.amx.jax.JaxAuthCache;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.async.ExecutorConfig;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.constant.JaxApiFlow;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.LoginLogoutHistory;
@@ -247,12 +248,13 @@ public class FingerprintService {
 		CustomerOnlineRegistration customerOnlineRegistration = null;
 		if (identityTypeStr == null) {
 			try {
-			customerOnlineRegistration = userValidationService.validateOnlineCustomerByIdentityId(civilId,
-					new BigDecimal(198));
-			}catch(GlobalException e) {}
+				customerOnlineRegistration = userValidationService.validateOnlineCustomerByIdentityId(civilId,
+						ConstantDocument.BIZ_COMPONENT_ID_CIVIL_ID);
+			} catch (GlobalException e) {
+			}
 			if (customerOnlineRegistration == null) {
 				customerOnlineRegistration = userValidationService.validateOnlineCustomerByIdentityId(civilId,
-						new BigDecimal(2000));
+						ConstantDocument.BIZ_COMPONENT_ID_NEW_CIVIL_ID);
 			}
 		} else {
 			BigDecimal identityType = new BigDecimal(identityTypeStr);
@@ -261,6 +263,7 @@ public class FingerprintService {
 		}
 		Customer customer = custDao.getCustById(customerOnlineRegistration.getCustomerId());
 		logger.info("Customer id is " + metaData.getCustomerId());
+		userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(civilId, JaxApiFlow.LOGIN);
 		userValidationService.validateCustomerLockCount(customerOnlineRegistration);
 		userValidationService.validateCustIdProofs(customerOnlineRegistration.getCustomerId());
 		userValidationService.validateCustomerData(customerOnlineRegistration, customer);
