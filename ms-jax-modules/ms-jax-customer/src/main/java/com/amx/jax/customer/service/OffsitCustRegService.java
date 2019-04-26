@@ -810,7 +810,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		customer.setCustomerRegistrationType(CustomerRegistrationType.OFF_CUSTOMER);
 		if (customerEmploymentDetails != null) {
 			customer.setFsArticleDetails(
-					articleDao.getArticleDetailsByArticleDetailId(customerEmploymentDetails.getArticleDetailsId()));
+					articleDao.getArticleDetailsByArticleDetailId(ConstantDocument.ARTICLE_DETAIL_ID_OTHERS));
 			customer.setFsIncomeRangeMaster(
 					articleDao.getIncomeRangeMasterByIncomeRangeId(customerEmploymentDetails.getIncomeRangeId()));
 		}

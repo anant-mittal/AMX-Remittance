@@ -150,4 +150,9 @@ public class AmxDBConstants {
 	public static final String IMPS_CODE = "13";
 	public static final String IND_COUNTRY_CODE = "004";
 	
+	// Constant for Article detail id "Others"
+	
+	public static final BigDecimal ARTICLE_DETAIL_ID_OTHERS = new BigDecimal(16);
+	
+	
 }
