@@ -22,6 +22,8 @@ import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.branch.common.OffsiteStatus.OffsiteServerCodes;
 import com.amx.jax.branch.common.OffsiteStatus.OffsiteServerError;
 import com.amx.jax.client.IDeviceStateService;
+import com.amx.jax.http.ApiRequest;
+import com.amx.jax.http.RequestType;
 import com.amx.jax.model.request.device.SignaturePadCustomerRegStateMetaInfo;
 import com.amx.jax.model.request.device.SignaturePadFCPurchaseSaleInfo;
 import com.amx.jax.model.request.device.SignaturePadRemittanceInfo;
@@ -111,6 +113,7 @@ public class TerminalController {
 		return map;
 	}
 
+	@ApiRequest(type = RequestType.POLL)
 	@ResponseBody
 	@RequestMapping(value = { Path.TERMINAL_STATUS_PING }, method = { RequestMethod.POST })
 	public AmxApiResponse<PingStatus, Object> postPing(@RequestParam String state,
@@ -123,6 +126,7 @@ public class TerminalController {
 		return AmxApiResponse.build(map);
 	}
 
+	@ApiRequest(type = RequestType.POLL)
 	@RequestMapping(value = { Path.TERMINAL_STATUS_PING }, method = { RequestMethod.GET })
 	public String getPing(@RequestParam String state, @RequestParam String terminalId,
 			@RequestParam(required = false) String status, @RequestParam(required = false) Long pageStamp,
