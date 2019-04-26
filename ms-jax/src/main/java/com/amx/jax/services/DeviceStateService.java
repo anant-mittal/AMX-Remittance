@@ -28,7 +28,6 @@ import com.amx.jax.model.response.DeviceStatusInfoDto;
 import com.amx.jax.model.response.IDeviceStateData;
 import com.amx.jax.model.response.customer.CustomerIdProofDto;
 import com.amx.jax.rbaac.RbaacServiceClient;
-import com.amx.jax.rbaac.exception.AuthServiceException;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.validation.DeviceStateDetailsValidation;
 import com.amx.utils.JsonUtil;;
@@ -148,12 +147,9 @@ public class DeviceStateService extends AbstractService {
 	}
 
 	public BoolRespModel updateSignatureStateData(Integer deviceRegId, String imageUrlStr) {
-		
-      devicestateValidation.validateDeviceRegIdndImageURL(deviceRegId, imageUrlStr);
-		
-		if((rbaacServiceClient.getDeviceByDeviceRegId(new BigDecimal(deviceRegId))) == null) {
-			throw new GlobalException("Invalid Device Registration Id");
-		}
+		//
+		//validateDeviceRegId(deviceRegId);
+		devicestateValidation.validateDeviceRegIdndImageURL(deviceRegId, imageUrlStr);
 		DeviceStateInfo deviceStateInfo = deviceDao.getDeviceStateInfo(new BigDecimal(deviceRegId));
 		deviceStateInfo.setSignature(imageUrlStr);
 		deviceDao.saveDeviceInfo(deviceStateInfo);

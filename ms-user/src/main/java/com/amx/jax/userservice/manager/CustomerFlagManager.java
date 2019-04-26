@@ -17,63 +17,114 @@ import com.amx.jax.error.JaxError;
 import com.amx.jax.model.response.customer.CustomerFlags;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.service.UserValidationService;
-import com.amx.utils.Constants;
+import com.amx.jax.util.AmxDBConstants;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class CustomerFlagManager {
-	Logger logger = Logger.getLogger(CustomerFlags.class);
+
+	private static final Logger logger = Logger.getLogger(CustomerFlags.class);
+
 	@Autowired
 	UserValidationService userValidationService;
 	
 	@Autowired
-	private CustomerDao custDao;
+	CustomerIdProofManager customerIdProofManager;
+	@Autowired
+	CustomerDao custDao;
 
 
 	public CustomerFlags getCustomerFlags(BigDecimal customerId) {
 		CustomerFlags customerFlags = new CustomerFlags();
+		Customer customer = custDao.getCustById(customerId);
+
 		try {
 			userValidationService.validateCustIdProofs(customerId);
 		} catch (GlobalException ex) {
 			customerFlags.setIdProofStatus(ex.getErrorKey());
 		}
-		
-		CustomerOnlineRegistration customerOnlineRegistration = userValidationService
-				.validateOnlineCustomerByIdentityId(customerId);
-		if(customerOnlineRegistration == null) {
-			throw new GlobalException(JaxError.CUSTOMER_NOT_FOUND.getStatusKey(), "Online Customer id not found");
+
+		CustomerOnlineRegistration customerOnlineRegistration = custDao.getOnlineCustByCustomerId(customerId);
+		customerFlags.setFingerprintlinked(isFingerprintLinked(customerOnlineRegistration));
+		customerFlags.setSecurityQuestionDone(!isSecurityQuestionRequired(customerOnlineRegistration));
+
+		customerFlags.setAnnualIncomeExpired(isAnnualIncomeExpired(customer));
+		setCustomerCommunicationChannelFlags(customer, customerFlags);
+
+		return customerFlags;
+	}
+
+	private static boolean isSecurityQuestionRequired(CustomerOnlineRegistration customerOnlineRegistration) {
+		if (customerOnlineRegistration == null) {
+			return true;
 		}
-		if(customerOnlineRegistration.getDeviceId()== null || customerOnlineRegistration.getDevicePassword()==null) {
-			customerFlags.setFingerprintlinked(Boolean.FALSE);
+		if (customerOnlineRegistration.getSecurityQuestion1() == null) {
+			return true;
 		}
-		else {	
-		customerFlags.setFingerprintlinked(Boolean.TRUE);
+		if (customerOnlineRegistration.getSecurityQuestion2() == null) {
+			return true;
 		}
-		Customer customer = custDao.getCustById(customerOnlineRegistration.getCustomerId());
+		if (customerOnlineRegistration.getSecurityQuestion3() == null) {
+			return true;
+		}
+		if (customerOnlineRegistration.getSecurityQuestion4() == null) {
+			return true;
+		}
+		if (customerOnlineRegistration.getSecurityQuestion5() == null) {
+			return true;
+		}
+		return false;
+	}
+
+	private void setCustomerCommunicationChannelFlags(Customer customer, CustomerFlags customerFlags) {
+		if (AmxDBConstants.Status.Y.equals(customer.getMobileVerified())) {
+			customerFlags.setMobileVerified(Boolean.TRUE);
+		} else {
+			customerFlags.setMobileVerified(Boolean.FALSE);
+		}
+		if (AmxDBConstants.Status.Y.equals(customer.getWhatsAppVerified())) {
+			customerFlags.setWhatsAppVerified(Boolean.TRUE);
+		} else {
+			customerFlags.setWhatsAppVerified(Boolean.FALSE);
+		}
+		if (AmxDBConstants.Status.Y.equals(customer.getEmailVerified())) {
+			customerFlags.setEmailVerified(Boolean.TRUE);
+		} else {
+			customerFlags.setEmailVerified(Boolean.FALSE);
+		}
+	}
+
+	public void validateInformationOnlyCustomer(BigDecimal customerId) {
+		CustomerFlags customerFlags = getCustomerFlags(customerId);
+		if (!Boolean.TRUE.equals(customerFlags.getSecurityQuestionDone())) {
+			throw new GlobalException(JaxError.SQA_SETUP_REQUIRED, "Security question required");
+		}
+	}
+
+	public static Boolean isFingerprintLinked(CustomerOnlineRegistration customerOnlineRegistration) {
+		if (customerOnlineRegistration != null && customerOnlineRegistration.getDeviceId() != null
+				&& customerOnlineRegistration.getDevicePassword() != null) {
+			return true;
+		} else {
+			return false;
+		}
+
+	}
+
+	public static Boolean isAnnualIncomeExpired(Customer customer) {
 		Date annualIncomeUpdateDate = customer.getAnnualIncomeUpdatedDate();
 		if (annualIncomeUpdateDate == null) {
-			customerFlags.setAnnualIncomeExpired(Boolean.TRUE);
-			logger.debug("Flag value is " + customerFlags.getAnnualIncomeExpired());
-			
-		}
-		else {
+			return true;
+		} else {
 			Date currentDate = new Date();
 			long millisec = currentDate.getTime() - annualIncomeUpdateDate.getTime();
 			long milliSecInYear = 31540000000L;
 
 			if (millisec >= milliSecInYear) {
-				customerFlags.setAnnualIncomeExpired(Boolean.TRUE);
-				logger.debug("Flag value isss " + customerFlags.getAnnualIncomeExpired());
+				return true;
 			} else {
-				customerFlags.setAnnualIncomeExpired(Boolean.FALSE);
-				logger.debug("Flag value isssss " + customerFlags.getAnnualIncomeExpired());
+				return false;
 			}
 		}
-		
-		
-		
-		return customerFlags;
 	}
-	
-	
 }

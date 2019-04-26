@@ -1,19 +1,25 @@
 package com.amx.jax.model.response.customer;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CustomerFlags {
 
 	Boolean fingerprintlinked;
 
+	/* eKYC */
 	String idProofStatus;
-	Boolean idProofExpired;
-	Boolean idProofUnavailable;
-	Boolean idProofPendingVerification;
+	Boolean idProofRequired;
+	Boolean idProofVerificationPending;
+	/* eKYC */
 
+	/* new login */
 	Boolean whatsAppVerified;
 	Boolean emailVerified;
 	Boolean mobileVerified;
 
-	Boolean securityQuestionSet;
+	Boolean securityQuestionDone;
+	/* new login */
 
 	public Boolean annualIncomeExpired;
 	
@@ -34,44 +40,20 @@ public class CustomerFlags {
 		this.idProofStatus = idProofStatus;
 	}
 
-	public Boolean getIdProofExpired() {
-		return idProofExpired;
-	}
-
-	public void setIdProofExpired(Boolean idProofExpired) {
-		this.idProofExpired = idProofExpired;
-	}
-
-	public Boolean getIdProofUnavailable() {
-		return idProofUnavailable;
-	}
-
-	public void setIdProofUnavailable(Boolean idProofUnavailable) {
-		this.idProofUnavailable = idProofUnavailable;
-	}
-
-	public Boolean getIdProofPendingVerification() {
-		return idProofPendingVerification;
-	}
-
-	public void setIdProofPendingVerification(Boolean idProofPendingVerification) {
-		this.idProofPendingVerification = idProofPendingVerification;
-	}
-
 	public Boolean getWhatsAppVerified() {
 		return whatsAppVerified;
 	}
 
-	public void setWhatsAppVerified(Boolean whatsAppVerified) {
-		this.whatsAppVerified = whatsAppVerified;
+	public void setWhatsAppVerified(Boolean status) {
+		this.whatsAppVerified = status;
 	}
 
 	public Boolean getEmailVerified() {
 		return emailVerified;
 	}
 
-	public void setEmailVerified(Boolean emailVerified) {
-		this.emailVerified = emailVerified;
+	public void setEmailVerified(Boolean status) {
+		this.emailVerified = status;
 	}
 
 	public Boolean getMobileVerified() {
@@ -82,12 +64,28 @@ public class CustomerFlags {
 		this.mobileVerified = mobileVerified;
 	}
 
-	public Boolean getSecurityQuestionSet() {
-		return securityQuestionSet;
+	public Boolean getIdProofRequired() {
+		return idProofRequired;
 	}
 
-	public void setSecurityQuestionSet(Boolean securityQuestionSet) {
-		this.securityQuestionSet = securityQuestionSet;
+	public void setIdProofRequired(Boolean idProofRequired) {
+		this.idProofRequired = idProofRequired;
+	}
+
+	public Boolean getIdProofVerificationPending() {
+		return idProofVerificationPending;
+	}
+
+	public void setIdProofVerificationPending(Boolean idProofVerificationPending) {
+		this.idProofVerificationPending = idProofVerificationPending;
+	}
+
+	public Boolean getSecurityQuestionDone() {
+		return securityQuestionDone;
+	}
+
+	public void setSecurityQuestionDone(Boolean securityQuestionDone) {
+		this.securityQuestionDone = securityQuestionDone;
 	}
 
 	public Boolean getAnnualIncomeExpired() {

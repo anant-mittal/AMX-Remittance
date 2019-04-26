@@ -1,6 +1,5 @@
 package com.amx.jax.ui.service;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,15 +12,13 @@ import com.amx.amxlib.exception.JaxSystemError;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
-import com.amx.amxlib.model.SecurityQuestionModel;
-import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.model.AuthState;
 import com.amx.jax.model.AuthState.AuthStep;
 import com.amx.jax.model.auth.QuestModelDTO;
-import com.amx.jax.model.response.customer.CustomerModelResponse;
+import com.amx.jax.model.customer.SecurityQuestionModel;
 import com.amx.jax.ui.audit.CAuthEvent;
 import com.amx.jax.ui.config.HttpUnauthorizedException;
 import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
@@ -59,41 +56,19 @@ public class LoginService {
 	@Autowired
 	private AuditService auditService;
 
-	/**
-	 * Gets the random security question.
-	 *
-	 * @param customerModel the customer model
-	 * @return the random security question
-	 */
-	private AuthData getRandomSecurityQuestion(CustomerModel customerModel) {
-		AuthData loginData = new AuthData();
-		ListManager<SecurityQuestionModel> listmgr = new ListManager<SecurityQuestionModel>(
-				customerModel.getSecurityquestions());
-
-		SecurityQuestionModel answer = listmgr.pickRandom();
-		sessionService.getGuestSession().setQuesIndex(listmgr.getIndex());
-
-		List<QuestModelDTO> questModel = jaxService.getMetaClient().getSequrityQuestion().getResults();
-
-		for (QuestModelDTO questModelDTO : questModel) {
-			if (questModelDTO.getQuestNumber().equals(answer.getQuestionSrNo())) {
-				loginData.setQuestion(questModelDTO.getDescription()); // TODO:- TO be removed
-				loginData.setQues(questModelDTO);
-			}
-		}
-
-		loginData.setImageId(customerModel.getImageUrl());
-		loginData.setImageCaption(customerModel.getCaption());
-		return loginData;
-	}
+	@Autowired
+	private UserService userService;
 
 	/**
 	 * Login.
+	 * 
+	 * @deprecated use {@link #loginUserPass(String, String)}
 	 *
 	 * @param identity the identity
 	 * @param password the password
 	 * @return the response wrapper
 	 */
+	@Deprecated
 	public ResponseWrapper<AuthResponse> login(String identity, String password) {
 		ResponseWrapper<AuthResponse> wrapper = new ResponseWrapper<AuthResponse>(null);
 		sessionService.clear();
@@ -105,9 +80,28 @@ public class LoginService {
 			throw new JaxSystemError();
 		}
 		sessionService.getGuestSession().setCustomerModel(customerModel);
-		wrapper.setData(getRandomSecurityQuestion(customerModel));
+		wrapper.setData(userService.getRandomSecurityQuestion(customerModel));
 		wrapper.setMessage(OWAStatusStatusCodes.AUTH_OK, "Password is Correct");
 		sessionService.getGuestSession().endStep(AuthStep.USERPASS);
+		wrapper.getData().setState(sessionService.getGuestSession().getState());
+		return wrapper;
+	}
+
+	public ResponseWrapper<AuthResponse> loginUserPass(String identity, String password) {
+		ResponseWrapper<AuthResponse> wrapper = new ResponseWrapper<AuthResponse>(null);
+		sessionService.clear();
+		sessionService.getGuestSession().initFlow(AuthState.AuthFlow.LOGIN);
+		CustomerModel customerModel;
+		sessionService.getGuestSession().setIdentity(identity);
+		customerModel = jaxService.setDefaults().getUserclient().login(identity, password).getResult();
+		if (customerModel == null) {
+			throw new JaxSystemError();
+		}
+		sessionService.getGuestSession().setCustomerModel(customerModel);
+		AuthData loginData = new AuthData();
+		wrapper.setData(loginData);
+		wrapper.setMessage(OWAStatusStatusCodes.AUTH_OK, "Password is Correct");
+		loginSuccess(wrapper, AuthStep.USERPASS, customerModel);
 		wrapper.getData().setState(sessionService.getGuestSession().getState());
 		return wrapper;
 	}
@@ -155,6 +149,8 @@ public class LoginService {
 			if (customerModel == null) {
 				throw new JaxSystemError();
 			}
+
+			sessionService.getGuestSession().getState().setValidSecQues(true);
 
 			loginSuccess(wrapper, AuthStep.SECQUES, customerModel);
 
@@ -204,20 +200,12 @@ public class LoginService {
 			sessionService.getGuestSession().setReturnUrl(null);
 		}
 
-		updateCustoemrModel();
+		userService.updateCustoemrModel();
 
 		wrapper.setMessage(OWAStatusStatusCodes.AUTH_DONE, ResponseMessage.AUTH_SUCCESS);
 		sessionService.getGuestSession().endStep(secques);
 		wrapper.getData().setState(sessionService.getGuestSession().getState());
 		return wrapper;
-	}
-
-	public void updateCustoemrModel() {
-		String identity = sessionService.getUserSession().getCustomerModel().getIdentityId();
-		AmxApiResponse<CustomerModelResponse, Object> x = jaxService.setDefaults().getUserclient()
-				.getCustomerModelResponse(identity);
-		sessionService.getUserSession().getCustomerModel().setFlags(x.getResult().getCustomerFlags());
-		sessionService.getUserSession().getCustomerModel().setPersoninfo(x.getResult().getPersonInfo());
 	}
 
 	/**
@@ -282,7 +270,7 @@ public class LoginService {
 			throw new JaxSystemError();
 		}
 		sessionService.getGuestSession().setCustomerModel(model);
-		wrapper.setData(getRandomSecurityQuestion(model));
+		wrapper.setData(userService.getRandomSecurityQuestion(model));
 
 		wrapper.setMessage(OWAStatusStatusCodes.VERIFY_SUCCESS, ResponseMessage.AUTH_SUCCESS);
 		sessionService.getGuestSession().endStep(AuthStep.MOTPVFY);

@@ -18,10 +18,15 @@ public class CivilIdOtpModel extends AbstractModel {
 
 	@JsonIgnore
 	private String eHashedOtp;
+	
+	@JsonIgnore
+	private String wHashedOtp;
 
 	private String mOtpPrefix = null;
 
 	private String eOtpPrefix = null;
+	
+	private String wOtpPrefix = null;
 
 	private String email;
 
@@ -159,5 +164,21 @@ public class CivilIdOtpModel extends AbstractModel {
                 + ", mobile=" + mobile + ", isActiveCustomer=" + isActiveCustomer + ", firstName=" + firstName
                 + ", middleName=" + middleName + ", customerId=" + customerId + ", lastName=" + lastName + "]";
     }
+
+	public String getwOtpPrefix() {
+		return wOtpPrefix;
+	}
+
+	public void setwOtpPrefix(String wOtpPrefix) {
+		this.wOtpPrefix = wOtpPrefix;
+	}
+
+	public String getwHashedOtp() {
+		return wHashedOtp;
+	}
+
+	public void setwHashedOtp(String wHashedOtp) {
+		this.wHashedOtp = wHashedOtp;
+	}
 
 }

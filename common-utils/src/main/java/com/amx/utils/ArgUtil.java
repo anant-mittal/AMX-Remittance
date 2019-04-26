@@ -671,4 +671,12 @@ public final class ArgUtil {
 		return null;
 	}
 
+	public static boolean nullAsFalse(Boolean a) {
+		return !ArgUtil.isEmpty(a) && a;
+	}
+
+	public static boolean nullAsTrue(Boolean a) {
+		return ArgUtil.isEmpty(a) || a;
+	}
+
 }

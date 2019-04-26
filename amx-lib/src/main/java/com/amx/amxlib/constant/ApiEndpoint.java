@@ -1,6 +1,9 @@
 package com.amx.amxlib.constant;
 
 import java.util.Date;
+import java.util.List;
+
+import com.amx.jax.model.customer.SecurityQuestionModel;
 
 public class ApiEndpoint {
 
@@ -144,9 +147,10 @@ public class ApiEndpoint {
 		public static final String GET_ANNUAL_INCOME_RANGE = "/getAnnualIncome/";
 		public static final String SAVE_ANNUAL_INCOME = "/saveAnnualIncome/";
 		public static final String GET_ANNUAL_INCOME_DETAILS = "/getAnnualIncomeDetails/";
-		
+		public static final String SAVE_SECURITY_QUESTIONS = "/save-security-questions/";
 		//params
 		public static final String PARAM_INCOMEDTO = "incomeDto";
+		
 	}
 
 	public static final String LINK_DEVICEID = "/link-deviceid/";
@@ -184,14 +188,10 @@ public class ApiEndpoint {
 		
 		public static final String PREFIX = EKYC_ENDPOINT;
 		
-		// Params
-		public static final String IMAGE = "image";
-		
-		public static final String EXPIRYDATE = "expiryDate";
-		
+
 		// Paths
 		public static final String EKYC_SAVE_CUSTOMER = "/ekyc-save-customer/";
-		public static final String EKYC_GET_DETAILS = "/ekyc-get-details/";
+		
 	}
 
 }
