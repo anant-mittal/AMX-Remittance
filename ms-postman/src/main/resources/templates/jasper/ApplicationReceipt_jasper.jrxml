@@ -42,15 +42,14 @@
                         <datasetParameter name="TU">
                             <datasetParameterExpression><![CDATA[$P{TU}]]></datasetParameterExpression>
                         </datasetParameter>
-                         <datasetParameter name="model">
+                          <datasetParameter name="model">
                             <datasetParameterExpression><![CDATA[$P{model}]]></datasetParameterExpression>
                         </datasetParameter>
+                        
                         <dataSourceExpression>
                             <![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{model}.getList("/results/[0]/shoppingCartDetails"))]]></dataSourceExpression>
                     </datasetRun>
                     <c:listContents height="822">
-
-                       
 
                         <!--##################Application START####################-->
                         <frame>
@@ -61,7 +60,7 @@
                                 <text><![CDATA[]]></text>
                             </staticText>
                             <staticText>
-                                <reportElement x="150" y="3" width="250" height="45" isPrintWhenDetailOverflows="true"/>
+                                <reportElement x="150" y="3" width="250" height="30" isPrintWhenDetailOverflows="true"/>
                                 <textElement>
                                     <font fontName="Arial" size="16" isItalic="true"
                                           pdfFontName="fonts/all/arialbd.ttf" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
@@ -69,22 +68,16 @@
                                 <text><![CDATA[APPLICATION/ ‫نموذج‬ ]]></text>
                             </staticText>
                              <staticText>
-                                <reportElement x="300" y="3" width="150" height="65" isPrintWhenDetailOverflows="true"/>
+                                <reportElement x="300" y="3" width="150" height="30" isPrintWhenDetailOverflows="true"/>
                                 <textElement>
                                     <font fontName="Arial Unicode MS" size="16" isItalic="true"
                                           pdfFontName="fonts/all/arialuni.ttf" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
                                 </textElement>
                                 <text><![CDATA[/আবেদন/आवेदन]]></text>
                             </staticText>
-                            
-                            
-                         
-
-                        </frame>
+                           </frame>
                         <!--##################Application END####################-->
-                        
-                        
-                        <!--##################Confirm Details START####################-->
+                         <!--##################Confirm Details START####################-->
                         <frame>
                             <reportElement x="5" y="105" width="585" height="30"/>
                             <staticText>
@@ -117,8 +110,7 @@
                             
                         </frame>
                         <!--##################Confirm Details END####################-->
-                        
-                           <!--##################receipt text1 START####################-->
+                         <!--##################receipt text1 START####################-->
                         <frame>
                             <reportElement x="5" y="130" width="585" height="30"/>
                             <staticText>
@@ -136,7 +128,7 @@
                                 <text><![CDATA[THIS IS NOT A RECEIPT. ]]></text>
                             </staticText>
                              <textField isStretchWithOverflow="true">
-                                <reportElement x="446" y="4" width="100" height="15"
+                                <reportElement x="330" y="4" width="100" height="15"
                                                forecolor="#000000"
                                                isPrintWhenDetailOverflows="true"/>
                                 <textElement textAlignment="Right">
@@ -147,6 +139,7 @@
                                     <![CDATA[$R{label.receiptText1}]]>
                                 </textFieldExpression>
                             </textField>
+                            
 
                              </frame>
                         <!--##################receipt text 1 END####################-->
@@ -159,36 +152,27 @@
                                 <text><![CDATA[]]></text>
                             </staticText>
                             <staticText>
-                                <reportElement x="0" y="3" width="445" height="30" isPrintWhenDetailOverflows="true"/>
+                                <reportElement x="0" y="3" width="335" height="15" isPrintWhenDetailOverflows="true" />
                                 <textElement>
-                                    <font fontName="Arial" size="10" isItalic="true"
+                                    <font fontName="Arial" size="10" isItalic="true" 
                                           pdfFontName="fonts/all/arial.ttf"/>
                                 </textElement>
                                 <text><![CDATA[PLEASE INSIST ON A SEPARATE RECEIPT AFTER YOU PAY CASH.]]></text>
                             </staticText>
-                             <textField isStretchWithOverflow="true">
-                                <reportElement x="446" y="4" width="100" height="50"
-                                               forecolor="#000000"
-                                               isPrintWhenDetailOverflows="true"/>
-                                <textElement textAlignment="Right">
-                                    <font fontName="Arial" size="12" isItalic="true"
+                             <staticText>
+                                <reportElement x="336" y="3" width="200" height="15" isPrintWhenDetailOverflows="true" />
+                                <textElement>
+                                    <font fontName="Arial" size="10" isItalic="true"
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
-                                <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$R{label.receiptText2}]]>
-                                </textFieldExpression>
-                            </textField>
-
+                                <text><![CDATA[الرجاء المساعدة في الحصول على إيصال منفصل بعد أن تدفع نقدًا. ‬]]></text>
+                            </staticText>
                             
                             
-    
+                              
                         </frame>
                         <!--##################receipt text 2 END####################-->
-                        
-                        
-
-                       
-                       <!--##################Name START####################-->
+                        <!--##################Name START####################-->
                         <frame>
                             <reportElement x="5" y="185" width="585" height="15"/>
                             <staticText>
@@ -282,8 +266,6 @@
 
                         </frame>
                         <!--##################Bank Name END####################-->
-
-
                         <!--##################Branch Name START####################-->
                         <frame>
                             <reportElement x="5" y="215" width="585" height="15"/>
@@ -378,10 +360,7 @@
 
                         </frame>
                         <!--##################Account No END####################-->
-
-                       
-
-                        <!--################## Proposed Currency &amp; Amount START####################-->
+                         <!--################## Proposed Currency &amp; Amount START####################-->
                         <frame>
                             <reportElement x="5" y="245" width="585" height="15"/>
                             <staticText>
@@ -571,9 +550,8 @@
 
                         </frame>
                         <!--##################Proposed Commission END####################-->
-
-
-                 	 <!--################## Proposed Other Charges START####################-->
+                        
+                        <!--################## Proposed Other Charges START####################-->
                         <frame>
                             <reportElement x="5" y="305" width="585" height="15"/>
                             <staticText>
@@ -649,7 +627,7 @@
                                           pdfFontName="fonts/all/arial.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$P{model}.get("/data/totalNetCollectionAmount")]]>
+                                    <![CDATA[$P{model}.get("/results/[0]/totalNetCollectionAmount")]]>
                                 </textFieldExpression>
                             </textField>
 							
@@ -705,8 +683,36 @@
                         </frame>
                         <!--##################Signature of Remitter END####################-->
                         
+                        
+                        
+                       
 
-              	 </c:listContents>
+                      
+
+                       
+                        
+                       
+                       
+                        
+                        
+
+
+                        
+
+                      
+
+                 
+
+                      
+                         
+                       
+
+                    
+			
+
+                    <!--##################FOOTER START####################-->
+                    <!--##################FOOTER END####################-->
+                    </c:listContents>
                 </c:list>
             </componentElement>
 
