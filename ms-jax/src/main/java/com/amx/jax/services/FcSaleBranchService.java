@@ -18,6 +18,7 @@ import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.constant.JaxApiFlow;
 import com.amx.jax.dao.FcSaleBranchDao;
 import com.amx.jax.dbmodel.CountryBranch;
 import com.amx.jax.dbmodel.Customer;
@@ -65,9 +66,6 @@ public class FcSaleBranchService extends AbstractService{
 	
 	@Autowired
 	CustomerRepository customerRepo;
-	
-	@Autowired
-	UserService userService;
 	
 	@Autowired
 	CountryBranchService countryBranchService;
@@ -747,12 +745,11 @@ public class FcSaleBranchService extends AbstractService{
 		AmxApiResponse<FxOrderTransactionHistroyDto, Object> result = null;
 		
 		fcDeliveryBranchOrderSearchRequestValidation.validatingAllValues(fcDeliveryBranchOrderSearchRequest);
-		if(fcDeliveryBranchOrderSearchRequest.getCivilId() != null) {
-			
-			Customer customerDetails = userService.getCustomerCustIdByCivilId(
-					fcDeliveryBranchOrderSearchRequest.getCivilId(), ConstantDocument.BIZ_COMPONENT_ID_CIVIL_ID);
+		if (fcDeliveryBranchOrderSearchRequest.getCivilId() != null) {
+			Customer customerDetails = userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(
+					fcDeliveryBranchOrderSearchRequest.getCivilId(), JaxApiFlow.SIGNUP_ONLINE).get(0);
 			fcDeliveryBranchOrderSearchRequest.setCustomerId(customerDetails.getCustomerId());
-		
+
 		}
 		if(fcDeliveryBranchOrderSearchRequest.getCountryBranchId() != null) {
 			CountryBranch countryBranch = countryBranchService

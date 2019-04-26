@@ -36,9 +36,9 @@ public class FxOrderTransactionModelPredicateCreator {
 		Date toDate = Calendar.getInstance().getTime();  
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DATE, -7);
-        Date fromdate = cal.getTime();    
+        Date fromDate = cal.getTime();    
          
-        booleanBuilder.and(qFxOrderTransactionModel.createdDateAlt.between(fromdate, toDate));
+        booleanBuilder.and(qFxOrderTransactionModel.createdDateAlt.between(fromDate, toDate));
 
 		return booleanBuilder.getValue();
 	}
