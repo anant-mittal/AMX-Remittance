@@ -685,7 +685,7 @@ public class UserValidationService {
 	}
 	
 	public List<Customer> validateNonActiveOrNonRegisteredCustomerStatus(String identityInt, JaxApiFlow apiFlow) {
-		return validateNonActiveOrNonRegisteredCustomerStatus(identityInt, null, JaxApiFlow.SIGNUP_ONLINE);
+		return validateNonActiveOrNonRegisteredCustomerStatus(identityInt, null, apiFlow);
 	}
 
 	/**
