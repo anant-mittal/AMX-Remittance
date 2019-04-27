@@ -51,10 +51,12 @@ import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
 import com.amx.jax.model.response.remittance.PaymentModeDto;
 import com.amx.jax.model.response.remittance.PaymentModeOfPaymentDto;
 import com.amx.jax.repository.IBankMasterFromViewDao;
+import com.amx.jax.repository.ICurrencyDao;
 import com.amx.jax.repository.ICustomerRepository;
 import com.amx.jax.repository.RemittanceApplicationRepository;
 import com.amx.jax.service.CurrencyMasterService;
 import com.amx.jax.util.DateUtil;
+import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.RoundUtil;
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -87,6 +89,9 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 	
 	@Autowired
 	RoutingProcedureDao routingProDao;
+	
+  	@Autowired
+	ICurrencyDao currDao;
 	
 	
 
@@ -233,7 +238,16 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 		shoppingCartDataTableBean.setDomXRate(RoundUtil.roundBigDecimal(BigDecimal.ONE.divide(shoppingCartDetails.getExchangeRateApplied(),10,RoundingMode.HALF_UP),breakup.getFcDecimalNumber().intValue()));
 		shoppingCartDataTableBean.setCustomerSignatureString(shoppingCartDetails.getCustomerSignatureClob());
 	
-		
+		if(JaxUtil.isNullZeroBigDecimalCheck(shoppingCartDetails.getLocalCurrency())){
+			CurrencyMasterModel localCurr = currDao.getOne(shoppingCartDetails.getLocalCurrency());
+				shoppingCartDataTableBean.setLocalCurrencyCode(localCurr.getQuoteName()==null?"":localCurr.getQuoteName());
+			}
+			
+			if(JaxUtil.isNullZeroBigDecimalCheck(shoppingCartDetails.getForeignCurrency())){
+				CurrencyMasterModel fcCurr = currDao.getOne(shoppingCartDetails.getForeignCurrency());
+					shoppingCartDataTableBean.setForeignCurrencyCode(fcCurr.getQuoteName()==null?"":fcCurr.getQuoteName());
+			}
+			
 		
 		return shoppingCartDataTableBean;
 	}
