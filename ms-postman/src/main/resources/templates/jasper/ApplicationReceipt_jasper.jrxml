@@ -293,7 +293,7 @@
                                           pdfFontName="fonts/all/arial.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$F{tranx}.get("benefeciaryBranchName")]]>
+                                    <![CDATA[$F{tranx}.get("beneficiaryBranch")]]>
                                 </textFieldExpression>
                             </textField>
 
@@ -387,7 +387,7 @@
                                           pdfFontName="fonts/all/arial.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$F{tranx}.get("foreignCurrencyDesc")+ "     "+ $F{tranx}.get("foreignTranxAmount")]]>
+                                    <![CDATA[$F{tranx}.get("foreignCurrencyCode")+ "     "+ $F{tranx}.get("foreignTranxAmount")]]>
                                     
                                 </textFieldExpression>
                             </textField>
@@ -437,7 +437,7 @@
                                           pdfFontName="fonts/all/arial.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$F{tranx}.get("exchangeRateApplied")]]>
+                                    <![CDATA[$F{tranx}.get("foreignCurrencyCode")+ "/"+$F{tranx}.get("localCurrencyCode")+"   "+$F{tranx}.get("exchangeRateApplied")]]>
                                 </textFieldExpression>
                             </textField>
 
@@ -484,7 +484,7 @@
                                           pdfFontName="fonts/all/arial.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$F{tranx}.get("localTranxAmount")]]>
+                                    <![CDATA[$F{tranx}.get("localCurrencyCode")+"   "+$F{tranx}.get("localTranxAmount")]]>
                                 </textFieldExpression>
                             </textField>
 
@@ -531,7 +531,7 @@
                                           pdfFontName="fonts/all/arial.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$F{tranx}.get("localCommisionAmount")]]>
+                                    <![CDATA[$F{tranx}.get("localCurrencyCode")+"   "+$F{tranx}.get("localCommisionAmount")]]>
                                 </textFieldExpression>
                             </textField>
 
@@ -578,7 +578,7 @@
                                           pdfFontName="fonts/all/arial.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$F{tranx}.get("localChargeAmount")]]>
+                                    <![CDATA[$F{tranx}.get("localCurrencyCode")+"   "+$F{tranx}.get("localChargeAmount")]]>
                                 </textFieldExpression>
                             </textField>
 
@@ -627,7 +627,7 @@
                                           pdfFontName="fonts/all/arial.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$P{model}.get("/results/[0]/totalNetCollectionAmount")]]>
+                                    <![CDATA[$F{tranx}.get("localCurrencyCode")+"   "+$P{model}.get("/results/[0]/totalNetCollectionAmount")]]>
                                 </textFieldExpression>
                             </textField>
 							
