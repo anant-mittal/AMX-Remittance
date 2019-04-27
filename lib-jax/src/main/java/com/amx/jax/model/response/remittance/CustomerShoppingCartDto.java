@@ -59,6 +59,22 @@ public class CustomerShoppingCartDto implements Serializable{
 	private BigDecimal purposeOfTrnxId;
 	private BigDecimal domXRate;
 	private String customerSignatureString;
+	private String localCurrencyCode;
+	private String foreignCurrencyCode;
+	
+	public String getLocalCurrencyCode() {
+		return localCurrencyCode;
+	}
+	public void setLocalCurrencyCode(String localCurrencyCode) {
+		this.localCurrencyCode = localCurrencyCode;
+	}
+	public String getForeignCurrencyCode() {
+		return foreignCurrencyCode;
+	}
+	public void setForeignCurrencyCode(String foreignCurrencyCode) {
+		this.foreignCurrencyCode = foreignCurrencyCode;
+	}
+
 	
 	public BigDecimal getDocumentNo() {
 		return documentNo;
