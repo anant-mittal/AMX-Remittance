@@ -128,6 +128,7 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 			List<ShoppingCartDetails> lstCustomerShopping = branchRemittancePaymentDao.fetchCustomerShoppingCart(customerId);
 			if(lstCustomerShopping != null && !lstCustomerShopping.isEmpty() && lstCustomerShopping.size() != 0) {
 				for (ShoppingCartDetails customerApplDto : lstCustomerShopping) {
+					if(customerApplDto.getApplicationType()!=null && !customerApplDto.getApplicationType().equalsIgnoreCase("FS")) {
 					BigDecimal fcCurrencyId = customerApplDto.getForeignCurrency();
 					totalLocalAmount = totalLocalAmount.add(customerApplDto.getLocalTranxAmount()==null?BigDecimal.ZERO:customerApplDto.getLocalTranxAmount());
 					totalNetAmount   =totalNetAmount.add(customerApplDto.getLocalNextTranxAmount()==null?BigDecimal.ZERO:customerApplDto.getLocalNextTranxAmount());
@@ -157,6 +158,7 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 					}else {
 						throw new GlobalException(JaxError.INVALID_CURRENCY_ID, "Invalid foreign currency id passed");
 					}
+				}
 				}
 			}else {
 				cartList.setTotalLoyaltyPointAvaliable(totalCustomerLoyaltyPoits);
