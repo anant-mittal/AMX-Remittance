@@ -509,6 +509,7 @@ public class BranchRemittanceApplManager {
 		
 	}
 	
+	@SuppressWarnings("unchecked")
 	private RemittanceAppBenificiary createRemittanceAppBeneficiary(RemittanceApplication remittanceApplication,Map<String, Object> hashMap) {
 
 		logger.info(" Enter into saveRemittanceAppBenificary :");
@@ -701,10 +702,10 @@ public class BranchRemittanceApplManager {
 	}
 	
 	public BenificiaryListView getBeneDetails(BranchRemittanceApplRequestModel requestApplModel) { 
-		BenificiaryListView beneficaryDetails =beneficiaryRepository.findBybeneficiaryRelationShipSeqId(requestApplModel.getBeneId());
+		//BenificiaryListView beneficaryDetails =beneficiaryRepository.findBybeneficiaryRelationShipSeqId(requestApplModel.getBeneId());
+		BenificiaryListView beneficaryDetails =beneficiaryRepository.findByCustomerIdAndBeneficiaryRelationShipSeqId(metaData.getCustomerId(),requestApplModel.getBeneId());
 		if(beneficaryDetails==null) {
-			throw new GlobalException(JaxError.BENEFICIARY_LIST_NOT_FOUND,"Beneficairy not found "+requestApplModel.getBeneId());
-			
+			throw new GlobalException(JaxError.BENEFICIARY_LIST_NOT_FOUND,"Beneficairy not found "+metaData.getCustomerId()+"/"+requestApplModel.getBeneId());
 		}
 		return beneficaryDetails;
 	}
