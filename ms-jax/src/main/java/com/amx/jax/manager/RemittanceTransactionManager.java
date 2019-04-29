@@ -993,7 +993,6 @@ public class RemittanceTransactionManager {
 
 			List<ContactType> channel = new ArrayList<>();
 			channel.add(ContactType.SMS_EMAIL);
-			channel.add(ContactType.SMS);
 			otpMmodel = (CivilIdOtpModel) userService.sendOtpForCivilId(null, channel, null, null).getData().getValues()
 					.get(0);
 		}

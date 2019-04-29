@@ -535,6 +535,13 @@ public class UserService extends AbstractUserService {
 		String hashedmOtp = cryptoUtil.getHash(userId, randmOtp);
 		String randeOtp = util.createRandomPassword(6);
 		String hashedeOtp = cryptoUtil.getHash(userId, randeOtp);
+		String mOtpPrefix = Random.randomAlpha(3);
+		String eOtpPrefix = Random.randomAlpha(3);
+		if(channels.contains(ContactType.SMS_EMAIL)) {
+			randeOtp = randmOtp;
+			hashedeOtp = hashedmOtp;
+			eOtpPrefix = mOtpPrefix;
+		}
 		if (org.apache.commons.collections.CollectionUtils.isEmpty(channels)) {
 			model.setHashedmOtp(hashedmOtp);
 			model.setmOtp(randmOtp);
@@ -543,12 +550,12 @@ public class UserService extends AbstractUserService {
 			if (channels.contains(ContactType.SMS) || channels.contains(ContactType.SMS_EMAIL)) {
 				model.setHashedmOtp(hashedmOtp);
 				model.setmOtp(randmOtp);
-				model.setmOtpPrefix(Random.randomAlpha(3));
+				model.setmOtpPrefix(mOtpPrefix);
 			}
 			if (channels.contains(ContactType.EMAIL) || channels.contains(ContactType.SMS_EMAIL)) {
 				model.setHashedeOtp(hashedeOtp);
 				model.seteOtp(randeOtp);
-				model.seteOtpPrefix(Random.randomAlpha(3));
+				model.seteOtpPrefix(eOtpPrefix);
 			}
 			if (channels.contains(ContactType.WHATSAPP)) {
 				String randwOtp = Random.randomNumeric(6);
