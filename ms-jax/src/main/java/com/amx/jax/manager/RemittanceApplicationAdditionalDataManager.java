@@ -187,13 +187,21 @@ public class RemittanceApplicationAdditionalDataManager {
 		
 		
 		requestFlexFields.forEach((k, v) -> {
-			BigDecimal bankId =remittanceTransactionRequestModel.getRoutingBankId();//(BigDecimal) routingSetupDetails.get("P_ROUTING_BANK_ID");
+			BigDecimal bankId =remittanceTransactionRequestModel.getRoutingBankId();
 			BigDecimal remittanceModeId = remittanceTransactionRequestModel.getRemittanceModeId();
 			BigDecimal deliveryModeId = remittanceTransactionRequestModel.getDeliveryModeId();
 			BigDecimal foreignCurrencyId = beneDetails.getCurrencyId();
-			if (v.getSrlId() != null) {
+			if (v.getSrlId() != null ) {
+				if(k.equalsIgnoreCase(ConstantDocument.INDIC1)){
 				AdditionalInstructionData additionalInsDataTmp = createAdditionalIndicatorsData(remittanceApplication,applicationCountryId, k, amicAndBankMapping.getAmiecCode(),amicAndBankMapping.getAmiecDescription(), amiecDetails.getAdditionalBankFieldId().getAdditionalBankRuleId());	
 				lstAddInstrData.add(additionalInsDataTmp);
+				}else {
+					//AdditionalInstructionData additionalInsDataTmp = createAdditionalIndicatorsData(remittanceApplication,applicationCountryId, k, amicAndBankMapping.getAmiecCode(),v.getAmieceDescription(), v.getAdditionalBankRuleFiledId());
+					AdditionalBankDetailsViewx additionaBnankDetail = bankService.getAdditionalBankDetail(v.getSrlId(),foreignCurrencyId, bankId, remittanceModeId, deliveryModeId);
+					AdditionalInstructionData additionalInsDataTmp = createAdditionalIndicatorsData(remittanceApplication,applicationCountryId, k, additionaBnankDetail.getAmiecCode(),additionaBnankDetail.getAmieceDescription(), v.getAdditionalBankRuleFiledId());
+					
+					lstAddInstrData.add(additionalInsDataTmp);
+				}
 			} else {
 				AdditionalInstructionData additionalInsDataTmp = createAdditionalIndicatorsData(remittanceApplication,applicationCountryId, k, ConstantDocument.AMIEC_CODE, v.getAmieceDescription(),v.getAdditionalBankRuleFiledId());
 				lstAddInstrData.add(additionalInsDataTmp);

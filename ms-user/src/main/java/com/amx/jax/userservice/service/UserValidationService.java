@@ -512,8 +512,8 @@ public class UserValidationService {
 		if (customer == null) {
 			throw new GlobalException(JaxError.CUSTOMER_NOT_FOUND.getStatusKey(), "Online Customer id not found");
 		}
-		if(!customer.getIdentityTypeId().toString().equals(Constants.IDENTITY_TYPE_CIVIL_ID_STR)) {
-			throw new GlobalException("Invalid Identity Type for fingerprint establish");
+		if(!customer.getIdentityTypeId().toString().equals(Constants.IDENTITY_TYPE_CIVIL_ID_STR) && !customer.getIdentityTypeId().toString().equals(Constants.IDENTITY_TYPE_CIVIL_ID_STRING)) {
+			throw new GlobalException("The ID you have entered is not a Civil ID. Please enter the Civil ID to set up fingerprint login.");
 		}
 			
 			
@@ -915,10 +915,12 @@ public class UserValidationService {
 	}
 	
 	
-	public void validateIdentityInt(String identityInt, String identityType) {
-		BigDecimal identyType = new BigDecimal(identityType);
+	public void validateIdentityInt(String identityInt, String identityTypeStr) {
+		BigDecimal identyType = ConstantDocument.BIZ_COMPONENT_ID_CIVIL_ID;
+		if (identityTypeStr != null) {
+			identyType = new BigDecimal(identityTypeStr);
+		}
 		tenantContext.get().validateIdentityInt(identityInt, identyType);
-
 	}
 	
 	public void validateFingerprintDeviceId(CustomerOnlineRegistration customer, String fingerprintDeviceId) {

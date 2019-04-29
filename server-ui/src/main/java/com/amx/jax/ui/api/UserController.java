@@ -6,6 +6,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import org.jolokia.restrictor.policy.MBeanAccessChecker.Arg;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -148,8 +149,8 @@ public class UserController {
 			CustomerFlags customerFlags = sessionService.getUserSession().getCustomerModel().getFlags();
 			wrapper.getData().setFlags(customerFlags);
 
-			if (customerFlags.getAnnualIncomeExpired()) {
-				wrapper.setStatus(OWAStatusStatusCodes.INCOME_UPDATE_REQUIRED);
+			if (!ArgUtil.isEmpty(customerFlags) && customerFlags.getAnnualIncomeExpired()) {
+				wrapper.setStatusEnum(OWAStatusStatusCodes.INCOME_UPDATE_REQUIRED);
 			}
 
 			wrapper.getData().setDomCurrency(tenantContext.getDomCurrency());
@@ -275,10 +276,10 @@ public class UserController {
 		if (mOtp == null) {
 			wrapper.setMeta(new AuthData());
 			wrapper.getMeta().setmOtpPrefix(loginService.sendOTP(null, null).getData().getmOtpPrefix());
-			wrapper.setStatus(OWAStatusStatusCodes.MOTP_REQUIRED);
+			wrapper.setStatusEnum(OWAStatusStatusCodes.MOTP_REQUIRED);
 		} else {
 			wrapper.setData(userService.updatepwd(userUpdateRequest.getPassword(), mOtp, null));
-			wrapper.setStatus(OWAStatusStatusCodes.USER_UPDATE_SUCCESS);
+			wrapper.setStatusEnum(OWAStatusStatusCodes.USER_UPDATE_SUCCESS);
 		}
 		return wrapper;
 //		return userService.updatepwd(userUpdateRequest.getPassword(), userUpdateRequest.getmOtp(),
@@ -331,13 +332,13 @@ public class UserController {
 			wrapper.setMeta(new AuthData());
 			wrapper.getMeta().setmOtpPrefix(model.getmOtpPrefix());
 			wrapper.getMeta().seteOtpPrefix(model.geteOtpPrefix());
-			wrapper.setStatus(OWAStatusStatusCodes.DOTP_REQUIRED);
+			wrapper.setStatusEnum(OWAStatusStatusCodes.DOTP_REQUIRED);
 		} else {
 			CustomerModel model = jaxService.setDefaults().getUserclient()
 					.saveEmail(userUpdateRequest.getEmail(), mOtp, eOtp).getResult();
 			sessionService.getUserSession().getCustomerModel().setEmail(model.getEmail());
 			sessionService.getUserSession().getCustomerModel().getPersoninfo().setEmail(model.getEmail());
-			wrapper.setStatus(OWAStatusStatusCodes.USER_UPDATE_SUCCESS);
+			wrapper.setStatusEnum(OWAStatusStatusCodes.USER_UPDATE_SUCCESS);
 		}
 		return wrapper;
 	}
@@ -392,13 +393,13 @@ public class UserController {
 			wrapper.setMeta(new AuthData());
 			wrapper.getMeta().setmOtpPrefix(model.getmOtpPrefix());
 			wrapper.getMeta().seteOtpPrefix(model.geteOtpPrefix());
-			wrapper.setStatus(OWAStatusStatusCodes.DOTP_REQUIRED);
+			wrapper.setStatusEnum(OWAStatusStatusCodes.DOTP_REQUIRED);
 		} else {
 			CustomerModel model = jaxService.setDefaults().getUserclient()
 					.saveMobile(userUpdateRequest.getPhone(), mOtp, eOtp).getResult();
 			sessionService.getUserSession().getCustomerModel().setMobile(model.getMobile());
 			sessionService.getUserSession().getCustomerModel().getPersoninfo().setMobile(model.getMobile());
-			wrapper.setStatus(OWAStatusStatusCodes.USER_UPDATE_SUCCESS);
+			wrapper.setStatusEnum(OWAStatusStatusCodes.USER_UPDATE_SUCCESS);
 		}
 		return wrapper;
 	}
@@ -420,10 +421,10 @@ public class UserController {
 		if (mOtp == null) {
 			wrapper.setMeta(new AuthData());
 			wrapper.getMeta().setmOtpPrefix(loginService.sendOTP(null, null).getData().getmOtpPrefix());
-			wrapper.setStatus(OWAStatusStatusCodes.MOTP_REQUIRED);
+			wrapper.setStatusEnum(OWAStatusStatusCodes.MOTP_REQUIRED);
 		} else {
 			wrapper.setData(userService.updateSecQues(userUpdateData.getSecQuesAns(), mOtp, null));
-			wrapper.setStatus(OWAStatusStatusCodes.USER_UPDATE_SUCCESS);
+			wrapper.setStatusEnum(OWAStatusStatusCodes.USER_UPDATE_SUCCESS);
 		}
 		return wrapper;
 	}
@@ -446,11 +447,11 @@ public class UserController {
 		if (mOtp == null) {
 			wrapper.setMeta(new AuthData());
 			wrapper.getMeta().setmOtpPrefix(loginService.sendOTP(null, null).getData().getmOtpPrefix());
-			wrapper.setStatus(OWAStatusStatusCodes.MOTP_REQUIRED);
+			wrapper.setStatusEnum(OWAStatusStatusCodes.MOTP_REQUIRED);
 		} else {
 			wrapper.setData(userService.updatePhising(userUpdateData.getImageUrl(), userUpdateData.getCaption(),
 					mOtp, null));
-			wrapper.setStatus(OWAStatusStatusCodes.USER_UPDATE_SUCCESS);
+			wrapper.setStatusEnum(OWAStatusStatusCodes.USER_UPDATE_SUCCESS);
 		}
 		return wrapper;
 	}

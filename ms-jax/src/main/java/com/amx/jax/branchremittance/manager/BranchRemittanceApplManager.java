@@ -1,9 +1,7 @@
 package com.amx.jax.branchremittance.manager;
 
-import static com.amx.jax.error.JaxError.COMISSION_NOT_DEFINED_FOR_ROUTING_BANK;
-import static com.amx.jax.error.JaxError.TOO_MANY_COMISSION_NOT_DEFINED_FOR_ROUTING_BANK;
-
 import java.math.BigDecimal;
+import java.sql.Types;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -24,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.jdbc.core.SqlOutParameter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -77,7 +76,6 @@ import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
 import com.amx.jax.model.response.remittance.RoutingResponseDto;
 import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeRateResponse;
-import com.amx.jax.pricer.var.PricerServiceConstants.DISCOUNT_TYPE;
 import com.amx.jax.repository.DeviceStateRepository;
 import com.amx.jax.repository.IApplicationCountryRepository;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
@@ -279,7 +277,7 @@ public class BranchRemittanceApplManager {
 		mapAllDetailApplSave.put("EX_APPL_BENE", remittanceAppBeneficairy);
 		mapAllDetailApplSave.put("EX_APPL_ADDL", additioalInstructionData);
 		mapAllDetailApplSave.put("EX_APPL_AML", amlData);
-		
+		validateApplDetails(mapAllDetailApplSave);
 		brRemittanceDao.saveAllApplications(mapAllDetailApplSave);
 		auditService.log(new CActivityEvent(Type.APPLICATION_CREATED,String.format("{}/{}", remittanceApplication.getDocumentFinancialyear(),remittanceApplication.getDocumentNo(),remittanceApplication.getFsCustomer().getCustomerId())).field("STATUS").to(JaxTransactionStatus.APPLICATION_CREATED).result(Result.DONE));
 		BranchRemittanceApplResponseDto applResponseDto = branchRemittancePaymentManager.fetchCustomerShoppingCart(customer.getCustomerId(),metaData.getDefaultCurrencyId());
@@ -487,28 +485,10 @@ public class BranchRemittanceApplManager {
 				remittanceApplication.setDiscountOnCommission(corporateDiscountManager.corporateDiscount());
 			}
 			
-			if(branchExchangeRate.getDiscountAvailed()!=null) {
-				remittanceApplication.setIsDiscountAvailed(branchExchangeRate.getDiscountAvailed()==false?"N":"Y");
-			}
-			
 			if(branchExchangeRate.getCostRateLimitReached()!=null) {
 				remittanceApplication.setReachedCostRateLimit(branchExchangeRate.getCostRateLimitReached()==false?"N":"Y");
 			}
-			
-			
-			if(branchExchangeRate.getCustomerDiscountDetails()!=null && !branchExchangeRate.getCustomerDiscountDetails().isEmpty()) {
-				remittanceApplication.setCusCatDiscountId(branchExchangeRate.getCustomerDiscountDetails().get(DISCOUNT_TYPE.CUSTOMER_CATEGORY).getId());
-				remittanceApplication.setCusCatDiscount(branchExchangeRate.getCustomerDiscountDetails().get(DISCOUNT_TYPE.CUSTOMER_CATEGORY).getDiscountPipsValue());
-				remittanceApplication.setChannelDiscountId(branchExchangeRate.getCustomerDiscountDetails().get(DISCOUNT_TYPE.CHANNEL).getId());
-				remittanceApplication.setChannelDiscount(branchExchangeRate.getCustomerDiscountDetails().get(DISCOUNT_TYPE.CHANNEL).getDiscountPipsValue());
-				String pips = branchExchangeRate.getCustomerDiscountDetails().get(DISCOUNT_TYPE.AMOUNT_SLAB).getDiscountTypeValue();
-				if(!StringUtils.isBlank(pips)) {
-					String[] parts = pips.split("-");
-					remittanceApplication.setPipsFromAmt(parts[0]==null?new BigDecimal(0):new BigDecimal(parts[0]));
-					remittanceApplication.setPipsToAmt(parts[1]==null?new BigDecimal(0):new BigDecimal(parts[1]));
-				}
-				remittanceApplication.setPipsDiscount(branchExchangeRate.getCustomerDiscountDetails().get(DISCOUNT_TYPE.AMOUNT_SLAB).getDiscountPipsValue());
-			}
+			remitApplManager.setCustomerDiscountColumns(remittanceApplication, branchExchangeRate);
 		
 			BigDecimal documentNo = branchRemitManager.generateDocumentNumber(applSetup.getApplicationCountryId(), applSetup.getCompanyId(), ConstantDocument.DOCUMENT_CODE_FOR_REMITTANCE_APPLICATION, userFinancialYear.getFinancialYear(), ConstantDocument.A, countryBranch.getBranchId());
 			if(JaxUtil.isNullZeroBigDecimalCheck(documentNo)) {
@@ -529,6 +509,7 @@ public class BranchRemittanceApplManager {
 		
 	}
 	
+	@SuppressWarnings("unchecked")
 	private RemittanceAppBenificiary createRemittanceAppBeneficiary(RemittanceApplication remittanceApplication,Map<String, Object> hashMap) {
 
 		logger.info(" Enter into saveRemittanceAppBenificary :");
@@ -580,10 +561,9 @@ public class BranchRemittanceApplManager {
 		remittanceAppBenificary.setBeneficiaryFourthName(beneAddDeatisl.get("P_BENEFICIARY_FOURTH_NAME")==null?beneficiaryDT.getFourthName():(String) beneAddDeatisl.get("P_BENEFICIARY_FOURTH_NAME"));
 		remittanceAppBenificary.setBeneficiaryFifthName(beneAddDeatisl.get("P_BENEFICIARY_FIFTH_NAME")==null?beneficiaryDT.getFiftheName():(String) beneAddDeatisl.get("P_BENEFICIARY_FIFTH_NAME"));
 		
-		remittanceAppBenificary.setBeneficiaryBranchStateId(beneAddDeatisl.get("P_BENE_STATE_ID")==null?beneficiaryDT.getStateId():(BigDecimal)beneAddDeatisl.get("P_BENE_STATE_ID"));
-		remittanceAppBenificary.setBeneficiaryBranchDistrictId(beneAddDeatisl.get("P_BENE_DISTRICT_ID")==null?beneficiaryDT.getDistrictId():(BigDecimal)beneAddDeatisl.get("P_BENE_DISTRICT_ID"));
-		remittanceAppBenificary.setBeneficiaryBranchCityId(beneAddDeatisl.get("P_BENE_CITY_ID")==null?beneficiaryDT.getCityId():(BigDecimal)beneAddDeatisl.get("P_BENE_CITY_ID"));
-		
+		remittanceAppBenificary.setBeneficiaryBranchStateId(beneAddDeatisl.get("P_BENEFICIARY_STATE_ID")!=null?(BigDecimal)beneAddDeatisl.get("P_BENEFICIARY_STATE_ID"):null);
+		remittanceAppBenificary.setBeneficiaryBranchDistrictId(beneAddDeatisl.get("P_BENEFICIARY_DISTRICT_ID")!=null?(BigDecimal)beneAddDeatisl.get("P_BENEFICIARY_DISTRICT_ID"):null);
+		remittanceAppBenificary.setBeneficiaryBranchCityId(beneAddDeatisl.get("P_BENEFICIARY_CITY_ID")!=null?(BigDecimal)beneAddDeatisl.get("P_BENEFICIARY_CITY_ID"):null);
 		
 		
 		if(beneficiaryDT.getSwiftBic()!=null) {
@@ -722,10 +702,10 @@ public class BranchRemittanceApplManager {
 	}
 	
 	public BenificiaryListView getBeneDetails(BranchRemittanceApplRequestModel requestApplModel) { 
-		BenificiaryListView beneficaryDetails =beneficiaryRepository.findBybeneficiaryRelationShipSeqId(requestApplModel.getBeneId());
+		//BenificiaryListView beneficaryDetails =beneficiaryRepository.findBybeneficiaryRelationShipSeqId(requestApplModel.getBeneId());
+		BenificiaryListView beneficaryDetails =beneficiaryRepository.findByCustomerIdAndBeneficiaryRelationShipSeqId(metaData.getCustomerId(),requestApplModel.getBeneId());
 		if(beneficaryDetails==null) {
-			throw new GlobalException(JaxError.BENEFICIARY_LIST_NOT_FOUND,"Beneficairy not found "+requestApplModel.getBeneId());
-			
+			throw new GlobalException(JaxError.BENEFICIARY_LIST_NOT_FOUND,"Beneficairy not found "+metaData.getCustomerId()+"/"+requestApplModel.getBeneId());
 		}
 		return beneficaryDetails;
 	}
@@ -840,6 +820,23 @@ public class BranchRemittanceApplManager {
 		return loyalityPointsEncashed;
 	}
 	
+public void validateApplDetails(HashMap<String, Object> mapAllDetailApplSave) {
+	RemittanceApplication saveApplTrnx = (RemittanceApplication) mapAllDetailApplSave.get("EX_APPL_TRNX");
+	RemittanceAppBenificiary saveApplBene = (RemittanceAppBenificiary) mapAllDetailApplSave.get("EX_APPL_BENE");
+	List<AdditionalInstructionData> saveApplAddlData = (List<AdditionalInstructionData>)mapAllDetailApplSave.get("EX_APPL_ADDL");
+
+	if(saveApplTrnx==null) {
+		throw new GlobalException(JaxError.APPL_CREATION_ERROR,"Application details not found");
+	}
+	if(saveApplBene==null) {
+		throw new GlobalException(JaxError.APPL_BENE_CREATION_ERROR,"Application bene details not found");
+	}
+
+	if(saveApplAddlData==null || saveApplAddlData.isEmpty()) {
+		throw new GlobalException(JaxError.APPL_ADD_INSTRUCTION_ERROR,"Application additional details is missing ");
+	}
+	
+}
 	
 	
 }

@@ -24,6 +24,7 @@ import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.CollectDetailModel;
 import com.amx.jax.dbmodel.CollectionModel;
+import com.amx.jax.dbmodel.CountryBranch;
 import com.amx.jax.dbmodel.PaygDetailsModel;
 import com.amx.jax.dbmodel.ReceiptPayment;
 import com.amx.jax.dbmodel.ReceiptPaymentApp;
@@ -88,6 +89,9 @@ public class FcSaleApplicationDao {
 	
 	@Autowired
 	StatusMasterRepository statusMasterRepository;
+	
+	@Autowired
+	ApplicationProcedureDao applicationProcedureDao;
 	
 	
 	@Transactional
@@ -213,6 +217,8 @@ public class FcSaleApplicationDao {
 		
 	}
 	
+	
+	@SuppressWarnings("unchecked")
 	@Transactional
 	public Map<String, Object> finalSaveAll(HashMap<String,Object> hashMapToSaveAllInput){
 		Map<String, Object> output = new HashMap<>();
@@ -227,12 +233,18 @@ public class FcSaleApplicationDao {
 			 PayGModel	pgResponse =(PayGModel)hashMapToSaveAllInput.get("PG_RESP_DETAILS");
 			 
 			 if(collection!=null){
+				 BigDecimal documentNo = generateDocumentNumber(collection.getExBankBranch(), collection.getApplicationCountryId(), collection.getFsCompanyMaster().getCompanyId(), ConstantDocument.Update, collection.getDocumentFinanceYear(), ConstantDocument.DOCUMENT_CODE_FOR_COLLECT_TRANSACTION);
+				 if (documentNo != null && documentNo.compareTo(BigDecimal.ZERO) != 0) {
+						collection.setDocumentNo(documentNo);
+					} else {
+						throw new GlobalException(JaxError.INVALID_COLLECTION_DOCUMENT_NO,"Collection document should not be blank.");
+					}
 				 collectionRepository.save(collection);
 			 } else{
 				 output.put("P_ERROR_MESG", "ERROR_WHILE_SAVING_COLLECTION");
 			 }
 			 if(collection!= null && collection.getCollectionId()!=null)
-			 {
+			 {	 collectDetail.setDocumentNo(collection.getDocumentNo());
 				 collectionDetailRepository.save(collectDetail);
 			 }else{
 				 output.put("P_ERROR_MESG", "ERROR_WHILE_SAVING_COLLECTION_DETAILS");
@@ -366,5 +378,15 @@ public class FcSaleApplicationDao {
 		return vwFxDeliveryDetailsRepository.findHistoricalDriverOrders(driverEmployeeId,  noOfDays);
 	}
 
+	
+	
+	public BigDecimal generateDocumentNumber(CountryBranch countryBranch, BigDecimal appCountryId, BigDecimal companyId,
+			String processInd, BigDecimal finYear, BigDecimal documentId) {
+		BigDecimal branchId = countryBranch.getBranchId() == null ? ConstantDocument.ONLINE_BRANCH_LOC_CODE
+				: countryBranch.getBranchId();
+		Map<String, Object> output = applicationProcedureDao.getDocumentSeriality(appCountryId, companyId, documentId,
+				finYear, processInd, branchId);
+		return (BigDecimal) output.get("P_DOC_NO");
+	}
 	
 }

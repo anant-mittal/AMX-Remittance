@@ -28,6 +28,7 @@
 		<jax.version>0.0.1-SNAPSHOT</jax.version>
 		<amx.version>0.0.1-SNAPSHOT</amx.version>
 		<java.version>1.8</java.version>
+		<vzn>0.0.1-SNAPSHOT</vzn>
 	</properties>
 
 	<dependencyManagement>

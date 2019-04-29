@@ -54,14 +54,14 @@ public class BrokerController {
 	@ApiRequest(type = RequestType.POLL)
 	@RequestMapping(value = "/pub/events/pong", method = { RequestMethod.POST })
 	public AmxApiResponse<Object, Object> pollEvents(BigDecimal eventId) {
-		brokerService.pushNewEventNotifications(AppContextUtil.getTenant(), AppContextUtil.getSessionId());
+		brokerService.pushNewEventNotifications(AppContextUtil.getTenant(), AppContextUtil.getSessionId(false));
 		return AmxApiResponse.build();
 	}
 
 	@ApiRequest(type = RequestType.POLL)
 	@RequestMapping(value = "/pub/amx/broker", method = { RequestMethod.POST })
 	public AmxApiResponse<Object, Object> brokerPing() {
-		brokerService.pushNewEventNotifications(AppContextUtil.getTenant(), AppContextUtil.getSessionId());
+		brokerService.pushNewEventNotifications(AppContextUtil.getTenant(), AppContextUtil.getSessionId(false));
 		return AmxApiResponse.build();
 	}
 

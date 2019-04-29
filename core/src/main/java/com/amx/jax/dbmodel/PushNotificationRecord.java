@@ -16,6 +16,7 @@ import javax.persistence.Table;
 @Table(name = "JAX_PUSH_NOTIFICATION")
 public class PushNotificationRecord implements Serializable {
 
+	private static final long serialVersionUID = 1L;
 	private BigDecimal notificationId;
 	private BigDecimal customerId;
 	private BigDecimal nationalityId;

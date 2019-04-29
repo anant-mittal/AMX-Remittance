@@ -72,6 +72,9 @@ public class RemittanceBenificiary implements Serializable {
 	private BigDecimal documentNo;
 	private String beneficiaryTelephoneNumber;
 	
+
+	
+	
 	public RemittanceBenificiary() {
 	}
 	
@@ -466,7 +469,8 @@ public class RemittanceBenificiary implements Serializable {
 	public void setBeneficiaryTelephoneNumber(String beneficiaryTelephoneNumber) {
 		this.beneficiaryTelephoneNumber = beneficiaryTelephoneNumber;
 	}
-	
+
+
 	
 	
 	

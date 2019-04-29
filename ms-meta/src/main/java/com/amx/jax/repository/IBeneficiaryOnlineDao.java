@@ -65,4 +65,6 @@ public interface IBeneficiaryOnlineDao extends JpaRepository<BenificiaryListView
 	
 	public List<BenificiaryListView> findByIsActiveAndCurrencyIdAndBankIdNotIn(String isActive, BigDecimal currencyId,List<BigDecimal> bankIds, Pageable pageable);
 
+	
+	public BenificiaryListView findByCustomerIdAndBeneficiaryRelationShipSeqId(BigDecimal customerId,BigDecimal beneficiaryRelationShipSeqId);
 }
