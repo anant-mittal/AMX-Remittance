@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.amx.jax.AppParam;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.scope.TenantContextHolder;
 
@@ -59,27 +60,32 @@ public class PushMessage extends Message {
 	}
 
 	public void addToTenant(Tenant tenant) {
-		this.addTopic(String.format(PushMessage.FORMAT_TO_ALL, tenant.toString().toLowerCase()));
+		this.addTopic(
+				String.format(PushMessage.FORMAT_TO_ALL, AppParam.APP_ENV.getValue(), tenant.toString()).toLowerCase());
 	}
 
 	public void addToUser(BigDecimal userid) {
-		this.addTo(
-				TOPICS_PREFIX + String.format(FORMAT_TO_USER, TenantContextHolder.currentSite(), userid).toLowerCase()
-						.replaceAll("\\s+", ""));
+		this.addTo(TOPICS_PREFIX
+				+ String.format(FORMAT_TO_USER, AppParam.APP_ENV.getValue(), TenantContextHolder.currentSite(), userid)
+						.toLowerCase().replaceAll("\\s+", ""));
 	}
 
 	public void addToCountry(Tenant tenant, Object nationalityId) {
-		this.addTo(TOPICS_PREFIX + String.format(PushMessage.FORMAT_TO_NATIONALITY, tenant.toString(),
-				nationalityId).toLowerCase());
+		this.addTo(TOPICS_PREFIX
+				+ String.format(PushMessage.FORMAT_TO_NATIONALITY, AppParam.APP_ENV.getValue(), tenant.toString(),
+						nationalityId).toLowerCase());
 	}
 
 	public void addToCountry(Object nationalityId) {
 		this.addTo(TOPICS_PREFIX
-				+ String.format(FORMAT_TO_NATIONALITY, TenantContextHolder.currentSite(), nationalityId).toLowerCase());
+				+ String.format(FORMAT_TO_NATIONALITY, AppParam.APP_ENV.getValue(), TenantContextHolder.currentSite(),
+						nationalityId).toLowerCase());
 	}
 
 	public void addToEveryone() {
-		this.addTo(TOPICS_PREFIX + String.format(FORMAT_TO_ALL, TenantContextHolder.currentSite()).toLowerCase());
+		this.addTo(TOPICS_PREFIX
+				+ String.format(FORMAT_TO_ALL, AppParam.APP_ENV.getValue(), TenantContextHolder.currentSite())
+						.toLowerCase());
 	}
 
 	public boolean isCondition() {
