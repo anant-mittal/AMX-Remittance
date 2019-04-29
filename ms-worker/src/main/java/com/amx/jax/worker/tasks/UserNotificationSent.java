@@ -15,6 +15,7 @@ import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.dict.Language;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.postman.events.UserMessageEvent;
+import com.amx.jax.postman.model.Contact;
 import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.jax.tunnel.ITunnelSubscriber;
@@ -49,20 +50,19 @@ public class UserNotificationSent implements ITunnelSubscriber<UserMessageEvent>
 
 		for (String to : tos) {
 			CustomerNotificationDTO customerNotification = new CustomerNotificationDTO();
-			Matcher m = PushMessage.FORMAT_TO_USER_PATTERN.matcher(to);
+
+			Contact c = PushMessage.toContact(to);
 			boolean foundTo = false;
-			if (m.find()) {
-				customerNotification.setCustomerId(ArgUtil.parseAsBigDecimal(m.group(2)));
+			if (!ArgUtil.isEmpty(c.getUserid())) {
+				customerNotification.setCustomerId(ArgUtil.parseAsBigDecimal(c.getUserid()));
 				foundTo = true;
 			} else {
-				m = PushMessage.FORMAT_TO_NATIONALITY_PATTERN.matcher(to);
-				if (m.find()) {
-					customerNotification.setNationalityId(ArgUtil.parseAsBigDecimal(m.group(2)));
+				if (!ArgUtil.isEmpty(c.getCountry())) {
+					customerNotification.setNationalityId(ArgUtil.parseAsBigDecimal(c.getCountry()));
 					foundTo = true;
 				} else {
-					m = PushMessage.FORMAT_TO_ALL_PATTERN.matcher(to);
-					if (m.find()) {
-						customerNotification.setCountryId(tnt.getBDCode());
+					if (!ArgUtil.isEmpty(c.getTenant())) {
+						customerNotification.setCountryId(c.getTenant().getBDCode());
 						foundTo = true;
 					}
 				}

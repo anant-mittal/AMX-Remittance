@@ -100,15 +100,11 @@ public class UserService {
 	 */
 	public List<String> getNotifyTopics(String prefix) {
 		CustomerModel customerModel = sessionService.getUserSession().getCustomerModel();
-		List<String> topics = new ArrayList<String>();
-		topics.add((prefix + String.format(PushMessage.FORMAT_TO_ALL, AppContextUtil.getTenant(),
-				customerModel.getPersoninfo().getNationalityId())).toLowerCase());
-		topics.add((prefix + String.format(PushMessage.FORMAT_TO_NATIONALITY, AppContextUtil.getTenant(),
-				customerModel.getPersoninfo().getNationalityId())).toLowerCase());
-		topics.add((prefix + String.format(PushMessage.FORMAT_TO_USER, AppContextUtil.getTenant(),
-				ArgUtil.parseAsString(customerModel.getCustomerId(), Constants.BLANK).replaceAll("\\s+", "")))
-						.toLowerCase());
-		return topics;
+		PushMessage msg = new PushMessage();
+		msg.addToTenant(AppContextUtil.getTenant());
+		msg.addToCountry(customerModel.getPersoninfo().getNationalityId());
+		msg.addToUser(customerModel.getCustomerId());
+		return msg.getTo();
 	}
 
 	public AmxApiResponse<CustomerFlags, Object> checkModule(Features feature) {
