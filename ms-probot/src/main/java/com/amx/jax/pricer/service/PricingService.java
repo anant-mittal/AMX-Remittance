@@ -81,26 +81,6 @@ public class PricingService {
 
 		pricingResponseDTO.setInfo(pricingRateDetailsDTO.getInfo());
 
-		/*
-		 * LOGGER.info("=========== Start Probot LOG Trace for Customer Id : " +
-		 * pricingRequestDTO.getCustomerId() + "===========");
-		 * 
-		 * LOGGER.info( "Base And Discounted Price Computed : " +
-		 * JsonUtil.toJson(pricingRateDetailsDTO.getSellRateDetails()));
-		 * 
-		 * LOGGER.info("GLCBAL Rate Details : " +
-		 * JsonUtil.toJson(pricingRateDetailsDTO.getBankGlcBalMap()));
-		 * 
-		 * LOGGER.info("GLCBAL Average Rate Computation Details : " +
-		 * JsonUtil.toJson(pricingRateDetailsDTO.getBankGlcBalMap()));
-		 * 
-		 * LOGGER.info("Margin Markup Details : " +
-		 * JsonUtil.toJson(pricingRateDetailsDTO.getMargin()));
-		 * 
-		 * LOGGER.info("=========== End Probot LOG Trace for Customer Id : " +
-		 * pricingRequestDTO.getCustomerId() + "===========\n");
-		 */
-
 		return pricingResponseDTO;
 	}
 
@@ -124,11 +104,16 @@ public class PricingService {
 	public List<PricingResponseDTO> fetchDiscountedRatesAcrossCustCategories(PricingRequestDTO pricingRequestDTO) {
 		validatePricingRequest(pricingRequestDTO, Boolean.FALSE);
 
-		remitPriceManager.computeBaseSellRatesPrices(pricingRequestDTO);
+		// TODO: Temporarily removed. Need to optimize
+
+		// remitPriceManager.computeBaseSellRatesPrices(pricingRequestDTO);
 
 		List<PricingResponseDTO> allDiscountedRates = new ArrayList<PricingResponseDTO>();
 
 		for (CUSTOMER_CATEGORY cc : CUSTOMER_CATEGORY.values()) {
+
+			// TODO: Temporarily added. Need to optimize
+			remitPriceManager.computeBaseSellRatesPrices(pricingRequestDTO);
 
 			customerDiscountManager.getDiscountedRates(pricingRequestDTO, null, cc);
 			PricingResponseDTO pricingResponseDTO = new PricingResponseDTO();
