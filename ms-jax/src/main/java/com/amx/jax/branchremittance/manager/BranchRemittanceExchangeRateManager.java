@@ -167,8 +167,6 @@ public class BranchRemittanceExchangeRateManager {
 		BigDecimal newCommission = remittanceTransactionManager.reCalculateComission();
 		if (newCommission != null) {
 			commission = newCommission;
-		}else {
-			throw new GlobalException(JaxError.EXCHANGE_RATE_NOT_FOUND, "COMMISSION NOT DEFINED FOR Country "+rountingCountryId+" currencyId :"+currencyId+" remittanceMode :"+remittanceMode);
 		}
 		
 		BigDecimal corpDiscount = corporateDiscountManager.corporateDiscount();
