@@ -660,6 +660,16 @@
                                     stretchType="NoStretch" />
    						   <imageExpression class="java.io.InputStream"><![CDATA[new java.io.ByteArrayInputStream(org.apache.commons.codec.binary.Base64.decodeBase64($F{tranx}.get("customerSignatureString").getBytes()))]]></imageExpression>
 							</image>
+							<image evaluationTime="Now" onErrorType="Blank">
+                            <reportElement
+                                    x="350"
+                                    y="0"
+                                    width="200"
+                                    height="80"
+                                    key="image-1"
+                                    stretchType="NoStretch" />
+   						   <imageExpression class="java.io.InputStream"><![CDATA[new java.io.ByteArrayInputStream(org.apache.commons.codec.binary.Base64.decodeBase64($F{tranx}.get("customerSignatureString").getBytes()))]]></imageExpression>
+							</image>
                          </frame>
                          <!--#################Customer Signature end####################-->
                          <!--##################Signature of Remitter START####################-->
@@ -681,7 +691,7 @@
                         
  						
                             <textField isStretchWithOverflow="true">
-                                <reportElement x="440" y="4" width="100" height="15"
+                                <reportElement x="310" y="4" width="100" height="15"
                                                forecolor="#000000"
                                                isPrintWhenDetailOverflows="true"/>
                                 <textElement textAlignment="Right">
