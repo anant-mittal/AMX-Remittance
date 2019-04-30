@@ -1,6 +1,7 @@
 package com.amx.jax.pricer.manager;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,7 +80,7 @@ public class DiscountManager {
 
 			list.add(custCategoryDetail);
 		}
-
+		Collections.sort(list);
 		return list;
 	}
 

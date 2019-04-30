@@ -1,6 +1,7 @@
 package com.amx.jax.pricer.service;
 
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,7 @@ import com.amx.jax.pricer.dto.RoutBanksAndServiceRespDTO;
 import com.amx.jax.pricer.exception.PricerServiceException;
 import com.amx.jax.pricer.manager.DiscountManager;
 import com.amx.jax.pricer.var.PricerServiceConstants.DISCOUNT_TYPE;
+import com.amx.utils.JsonUtil;
 
 @Service
 public class ExchangeDataService {
@@ -104,8 +106,9 @@ public class ExchangeDataService {
 		if(null != discountdetailsRequestDTO.getChannelDetails()) {
 			discountManager.commitChannelDiscountModel(discountdetailsRequestDTO.getChannelDetails());
 		}
+		
 		if(null != discountdetailsRequestDTO.getCustomerCategoryDetails()) {
-			discountManager.commitCustomerDiscountModel(discountdetailsRequestDTO.getCustomerCategoryDetails());
+						discountManager.commitCustomerDiscountModel(discountdetailsRequestDTO.getCustomerCategoryDetails());
 		}
 		if(null != discountdetailsRequestDTO.getAmountSlabDetails()) {
 			discountManager.commitPipsDiscount(discountdetailsRequestDTO.getAmountSlabDetails());
