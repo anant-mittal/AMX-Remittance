@@ -51,6 +51,23 @@ public class PayGRespCodeJSONConverter {
 				}
 
 				break;
+			case KWT:
+				ResponseCodeKWT enumKWT = ResponseCodeKWT.valueOf(errorCategory);
+				if (enumKWT != null) {
+					responseCodeDetail.setResponseCode(enumKWT.getResponseCode());
+					responseCodeDetail.setResponseDesc(enumKWT.getResponseDesc());
+					responseCodeDetail.setAlmullaErrorCode(enumKWT.getAlmullaErrorCode());
+					responseCodeDetail.setCategory(enumKWT.getCategory());
+					responseCodeDetail.setType(enumKWT.getCategory().getType().toString());
+					responseCodeDetail.setStatus(enumKWT.getCategory().getStatus().toString());
+
+					map.put(enumKWT.getResponseCode(), enumKWT.getResponseDesc());
+					responseCodeDetail.setClientResponse(map);
+
+					LOGGER.info("Response Code Details KWT JSON : " + responseCodeDetail.toString());
+				}
+
+				break;	
 
 			default:
 				break;
