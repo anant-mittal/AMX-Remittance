@@ -1,7 +1,6 @@
 package com.amx.jax.pricer.service;
 
 import java.math.BigDecimal;
-import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,13 +22,12 @@ import com.amx.jax.pricer.dbmodel.RoutingHeader;
 import com.amx.jax.pricer.dto.AmountSlabDetails;
 import com.amx.jax.pricer.dto.ChannelDetails;
 import com.amx.jax.pricer.dto.CustomerCategoryDetails;
-import com.amx.jax.pricer.dto.DiscountMgmtReqDTO;
 import com.amx.jax.pricer.dto.DiscountDetailsReqRespDTO;
+import com.amx.jax.pricer.dto.DiscountMgmtReqDTO;
 import com.amx.jax.pricer.dto.RoutBanksAndServiceRespDTO;
 import com.amx.jax.pricer.exception.PricerServiceException;
 import com.amx.jax.pricer.manager.DiscountManager;
 import com.amx.jax.pricer.var.PricerServiceConstants.DISCOUNT_TYPE;
-import com.amx.utils.JsonUtil;
 
 @Service
 public class ExchangeDataService {
