@@ -30,6 +30,7 @@ import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dal.LoyaltyInsuranceProDao;
 import com.amx.jax.dbmodel.CollectionDetailViewModel;
 import com.amx.jax.dbmodel.CollectionPaymentDetailsViewModel;
+import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.PurposeOfRemittanceViewModel;
 import com.amx.jax.dbmodel.RemittanceTransactionView;
 import com.amx.jax.dbmodel.ViewCompanyDetails;
@@ -41,6 +42,7 @@ import com.amx.jax.repository.ICompanyDAO;
 import com.amx.jax.repository.ICurrencyDao;
 import com.amx.jax.repository.IPurposeOfRemittance;
 import com.amx.jax.repository.IRemittanceTransactionDao;
+import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.RoundUtil;
 
 @Component
@@ -76,7 +78,9 @@ public class ReportManagerService extends AbstractService{
 	
 	private List<RemittanceReceiptSubreport> remittanceReceiptSubreportList;
 	@Autowired
-	PromotionManager promotionManager; 
+	PromotionManager promotionManager;
+	@Autowired
+	UserService userService;
 
 	
 	
@@ -134,7 +138,7 @@ public class ReportManagerService extends AbstractService{
 		
 		logger.info("Document Number=="+collectionDocNo+"\t docCode :"+collectionDocumentCode+"\t docYear :"+financeYear);
 	
-		
+		Customer customer = userService.getCustById(customerId);
 		
 		 
 		remittanceReceiptSubreportList = new ArrayList<RemittanceReceiptSubreport>();
@@ -153,7 +157,9 @@ public class ReportManagerService extends AbstractService{
 	
 		String currencyQuoteName = currencyDao.getCurrencyList(currencyId).get(0).getQuoteName();
 		
-		List<RemittanceTransactionView> remittanceViewlist = remittanceTransactionDao.getRemittanceTransaction(collectionDocNo, financeYear, collectionDocumentCode);
+			List<RemittanceTransactionView> remittanceViewlist = remittanceTransactionDao
+					.getRemittanceTransactionForReport(collectionDocNo, financeYear, collectionDocumentCode,
+							customer.getIdentityTypeId());
 				
 				
 		logger.info("Remittance View List Size is======"+remittanceViewlist.size());

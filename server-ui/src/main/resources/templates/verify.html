@@ -200,6 +200,14 @@ body, html {
 			</form>
 		</div>
 		
+		<div th:case="'JAX_SYSTEM_ERROR'">
+			<form action="" method="post">
+				<div class="login-container">
+					<h4>Sorry, some technical error has occurred.</h4>
+				</div>
+			</form>
+		</div>
+		
 		 <div th:case="*" th:if="${submit != 'verify' || errorCode == 'INVALID_CIVIL_ID'}">
 			<form action="?submit=verify" method="post">
 				<div class="login-container">
@@ -251,6 +259,7 @@ body, html {
 				<h4>Verification link Re-Send successfully!</h4>
 			</div>
 	</div>
+	
 	
 </body>
 </html>

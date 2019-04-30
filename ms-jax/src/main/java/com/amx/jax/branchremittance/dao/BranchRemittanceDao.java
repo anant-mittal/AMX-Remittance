@@ -190,7 +190,7 @@ public class BranchRemittanceDao {
 				}
 			}
 
-			if (remitTrnxList != null && !remitTrnxList.isEmpty()) {
+			if (remitTrnxList != null && !remitTrnxList.isEmpty() && collectModel != null) {
 				for (BigDecimal applicationId : remitTrnxList.keySet()) {
 
 					RemittanceTransaction remitTrnx = remitTrnxList.get(applicationId);
@@ -201,6 +201,7 @@ public class BranchRemittanceDao {
 						throw new GlobalException(JaxError.INVALID_REMITTANCE_DOCUMENT_NO, "Document Seriality  setup  not defined for Remittance.");
 					}
 					remitTrnx.setDocumentNo(documentNo);
+					remitTrnx.setCollectionDocumentNo(collectModel.getDocumentNo());
 					RemittanceTransaction remitTrnx1 = remitTrnxRepository.save(remitTrnx);
 
 					if (remitBeneList != null && !remitBeneList.isEmpty()) {
@@ -256,11 +257,9 @@ public class BranchRemittanceDao {
 		return (BigDecimal) output.get("P_DOC_NO");
 	}
 
-	// public void updateApplication(List<RemittanceTransaction> remitTrnxList) {
-	public void updateApplication(RemittanceTransaction remitTrnx) {
-		// for (RemittanceTransaction remitTrnx : remitTrnxList) {
 
-		logger.info("remitTrnx.getApplicationDocumentNo() :" + remitTrnx.getApplicationDocumentNo() + "\t docfyr :" + remitTrnx.getApplicationFinanceYear());
+	public void updateApplication(RemittanceTransaction remitTrnx) {
+			logger.info("remitTrnx.getApplicationDocumentNo() :" + remitTrnx.getApplicationDocumentNo() + "\t docfyr :" + remitTrnx.getApplicationFinanceYear());
 		RemittanceApplication appl = appRepo.fetchRemitApplTrnx(remitTrnx.getApplicationDocumentNo(), remitTrnx.getApplicationFinanceYear());
 		if (appl != null) {
 			appl = appRepo.findOne(appl.getRemittanceApplicationId());
@@ -272,10 +271,7 @@ public class BranchRemittanceDao {
 			appRepo.save(appl);
 		}
 
-		// }
 	}
-
-	// public void deleteFromCart(RemittanceApplication appl,String status) {
 
 	@Transactional
 	public void deleteFromCart(BigDecimal applNo, String status) {

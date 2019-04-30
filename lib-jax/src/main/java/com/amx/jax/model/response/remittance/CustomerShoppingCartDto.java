@@ -62,19 +62,6 @@ public class CustomerShoppingCartDto implements Serializable{
 	private String localCurrencyCode;
 	private String foreignCurrencyCode;
 	
-	public String getLocalCurrencyCode() {
-		return localCurrencyCode;
-	}
-	public void setLocalCurrencyCode(String localCurrencyCode) {
-		this.localCurrencyCode = localCurrencyCode;
-	}
-	public String getForeignCurrencyCode() {
-		return foreignCurrencyCode;
-	}
-	public void setForeignCurrencyCode(String foreignCurrencyCode) {
-		this.foreignCurrencyCode = foreignCurrencyCode;
-	}
-
 	
 	public BigDecimal getDocumentNo() {
 		return documentNo;
@@ -422,6 +409,18 @@ public class CustomerShoppingCartDto implements Serializable{
 	}
 	public void setCustomerSignatureString(String customerSignatureString) {
 		this.customerSignatureString = customerSignatureString;
+	}
+	public String getLocalCurrencyCode() {
+		return localCurrencyCode;
+	}
+	public void setLocalCurrencyCode(String localCurrencyCode) {
+		this.localCurrencyCode = localCurrencyCode;
+	}
+	public String getForeignCurrencyCode() {
+		return foreignCurrencyCode;
+	}
+	public void setForeignCurrencyCode(String foreignCurrencyCode) {
+		this.foreignCurrencyCode = foreignCurrencyCode;
 	}
 	
 }

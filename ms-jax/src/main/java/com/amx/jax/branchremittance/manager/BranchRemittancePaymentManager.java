@@ -90,7 +90,7 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 	@Autowired
 	RoutingProcedureDao routingProDao;
 	
-  	@Autowired
+	@Autowired
 	ICurrencyDao currDao;
 	
 	
@@ -128,6 +128,7 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 			List<ShoppingCartDetails> lstCustomerShopping = branchRemittancePaymentDao.fetchCustomerShoppingCart(customerId);
 			if(lstCustomerShopping != null && !lstCustomerShopping.isEmpty() && lstCustomerShopping.size() != 0) {
 				for (ShoppingCartDetails customerApplDto : lstCustomerShopping) {
+					if(customerApplDto.getApplicationType()!=null && !customerApplDto.getApplicationType().equalsIgnoreCase("FS")) {
 					BigDecimal fcCurrencyId = customerApplDto.getForeignCurrency();
 					totalLocalAmount = totalLocalAmount.add(customerApplDto.getLocalTranxAmount()==null?BigDecimal.ZERO:customerApplDto.getLocalTranxAmount());
 					totalNetAmount   =totalNetAmount.add(customerApplDto.getLocalNextTranxAmount()==null?BigDecimal.ZERO:customerApplDto.getLocalNextTranxAmount());
@@ -157,6 +158,7 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 					}else {
 						throw new GlobalException(JaxError.INVALID_CURRENCY_ID, "Invalid foreign currency id passed");
 					}
+				}
 				}
 			}else {
 				cartList.setTotalLoyaltyPointAvaliable(totalCustomerLoyaltyPoits);
@@ -237,17 +239,16 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 		shoppingCartDataTableBean.setSourceOfIncomeId(shoppingCartDetails.getSourceofincome()==null?BigDecimal.ZERO:new BigDecimal(shoppingCartDetails.getSourceofincome()));
 		shoppingCartDataTableBean.setDomXRate(RoundUtil.roundBigDecimal(BigDecimal.ONE.divide(shoppingCartDetails.getExchangeRateApplied(),10,RoundingMode.HALF_UP),breakup.getFcDecimalNumber().intValue()));
 		shoppingCartDataTableBean.setCustomerSignatureString(shoppingCartDetails.getCustomerSignatureClob());
-	
 		if(JaxUtil.isNullZeroBigDecimalCheck(shoppingCartDetails.getLocalCurrency())){
-			CurrencyMasterModel localCurr = currDao.getOne(shoppingCartDetails.getLocalCurrency());
-				shoppingCartDataTableBean.setLocalCurrencyCode(localCurr.getQuoteName()==null?"":localCurr.getQuoteName());
+		CurrencyMasterModel localCurr = currDao.getOne(shoppingCartDetails.getLocalCurrency());
+			shoppingCartDataTableBean.setLocalCurrencyCode(localCurr.getQuoteName()==null?"":localCurr.getQuoteName());
+		}
+		
+		if(JaxUtil.isNullZeroBigDecimalCheck(shoppingCartDetails.getForeignCurrency())){
+			CurrencyMasterModel fcCurr = currDao.getOne(shoppingCartDetails.getForeignCurrency());
+				shoppingCartDataTableBean.setForeignCurrencyCode(fcCurr.getQuoteName()==null?"":fcCurr.getQuoteName());
 			}
-			
-			if(JaxUtil.isNullZeroBigDecimalCheck(shoppingCartDetails.getForeignCurrency())){
-				CurrencyMasterModel fcCurr = currDao.getOne(shoppingCartDetails.getForeignCurrency());
-					shoppingCartDataTableBean.setForeignCurrencyCode(fcCurr.getQuoteName()==null?"":fcCurr.getQuoteName());
-			}
-			
+		
 		
 		return shoppingCartDataTableBean;
 	}
