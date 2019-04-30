@@ -193,6 +193,8 @@ public class OmannetClient implements PayGClient {
 			if(responseCodeEnum != null) {
 				gatewayResponse.setErrorCategory(responseCodeEnum.name());
 				LOGGER.info("Result from response Values ---> " + gatewayResponse.getErrorCategory());
+			}else {
+				gatewayResponse.setErrorCategory(ResponseCodeOMN.UNKNOWN.name());
 			}
 			gatewayResponse.setError(resultResponse);
 		}

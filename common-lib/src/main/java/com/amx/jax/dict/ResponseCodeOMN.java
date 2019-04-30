@@ -320,7 +320,9 @@ public enum ResponseCodeOMN {
     MISSING_ERROR_URL("IPAY0100001","Missing error URL", "100046", CodeCategory.TXN_URL),
     INVLD_ERR_URL("IPAY0100002","Invalid error URL","100047", CodeCategory.TXN_URL),
     MISSING_RES_URL("IPAY0100003","Missing response URL", "100048", CodeCategory.TXN_URL), 
-    INVLD_RES_URL("IPAY0100004","Invalid response URL", "100049", CodeCategory.TXN_URL);
+    INVLD_RES_URL("IPAY0100004","Invalid response URL", "100049", CodeCategory.TXN_URL),
+    
+    UNKNOWN("UNKNOWN","Error code may not be mapped","UNKNOWN",CodeCategory.UNKNOWN);
     
     //OTHERS
     //VALIDATE_ORG_TRANX("IPAY0100142","Problem occurred while validating original transaction"),
