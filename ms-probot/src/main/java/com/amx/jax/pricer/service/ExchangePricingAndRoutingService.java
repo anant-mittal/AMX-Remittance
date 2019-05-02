@@ -126,29 +126,21 @@ public class ExchangePricingAndRoutingService {
 
 		remitPriceManager.computeBaseSellRatesPrices(pricingRequestDTO);
 
-		List<ExchangeRateDetails> baseRateDetails = getClonnedExchangeRates(
+		List<ExchangeRateDetails> baseRateDetails = getClonedExchangeRates(
 				exchRateAndRoutingTransientDataCache.getSellRateDetails());
 
 		List<PricingResponseDTO> allDiscountedRates = new ArrayList<PricingResponseDTO>();
 
 		for (CUSTOMER_CATEGORY cc : CUSTOMER_CATEGORY.values()) {
 
-			exchRateAndRoutingTransientDataCache.setSellRateDetails(getClonnedExchangeRates(baseRateDetails));
+			exchRateAndRoutingTransientDataCache.setSellRateDetails(getClonedExchangeRates(baseRateDetails));
 
 			customerDiscountManager.getDiscountedRates(pricingRequestDTO, null, cc);
 			PricingResponseDTO pricingResponseDTO = new PricingResponseDTO();
 
 			pricingResponseDTO.setBankDetails(exchRateAndRoutingTransientDataCache.getBankDetails());
 
-			List<ExchangeRateDetails> exRateDetails = new ArrayList<ExchangeRateDetails>();
-
-			for (ExchangeRateDetails exRateDetail : exchRateAndRoutingTransientDataCache.getSellRateDetails()) {
-
-				exRateDetails.add(exRateDetail.clone());
-
-			}
-
-			pricingResponseDTO.setSellRateDetails(exRateDetails);
+			pricingResponseDTO.setSellRateDetails(exchRateAndRoutingTransientDataCache.getSellRateDetails());
 
 			pricingResponseDTO.setCustomerCategory(cc);
 
@@ -318,19 +310,19 @@ public class ExchangePricingAndRoutingService {
 
 	}
 
-	private List<ExchangeRateDetails> getClonnedExchangeRates(List<ExchangeRateDetails> exRateDetailsOrig) {
+	private List<ExchangeRateDetails> getClonedExchangeRates(List<ExchangeRateDetails> exRateDetailsOrig) {
 
 		if (exRateDetailsOrig == null) {
 			return null;
 		}
 
-		List<ExchangeRateDetails> exRateDetailsClonned = new ArrayList<ExchangeRateDetails>();
+		List<ExchangeRateDetails> exRateDetailsCloned = new ArrayList<ExchangeRateDetails>();
 
 		for (ExchangeRateDetails exRateDetail : exRateDetailsOrig) {
-			exRateDetailsClonned.add(exRateDetail.clone());
+			exRateDetailsCloned.add(exRateDetail.clone());
 		}
 
-		return exRateDetailsClonned;
+		return exRateDetailsCloned;
 	}
 
 	private boolean validatePricingRequest(PricingRequestDTO pricingRequestDTO, boolean isCustomer) {
