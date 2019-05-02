@@ -100,7 +100,7 @@ public class CustomerModelService {
 			if (mobileNo.length() <= 4) {
 				maskLength = 0;
 			}
-			String maskedMobile =personInfo.getPrefixCodeMobile()+ MaskUtil.leftMask(personInfo.getMobile(), maskLength, "*");
+			String maskedMobile =personInfo.getPrefixCodeMobile()+" "+ MaskUtil.leftMask(personInfo.getMobile(), maskLength, "*");
 			
 			customerCommunicationChannels.add(new CustomerCommunicationChannel(ContactType.SMS, maskedMobile));
 
