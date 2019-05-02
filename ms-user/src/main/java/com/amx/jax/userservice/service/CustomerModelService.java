@@ -111,7 +111,7 @@ public class CustomerModelService {
 			if (whatsappNo.length() <= 4) {
 				maskLength = 0;
 			}
-			String maskedMobile =personInfo.getPrefixCodeMobile()+" "+ MaskUtil.leftMask(personInfo.getWhatsAppNumber(), maskLength, "*");
+			String maskedMobile =personInfo.getWhatsappPrefixCode()+" "+ MaskUtil.leftMask(personInfo.getWhatsAppNumber(), maskLength, "*");
 			customerCommunicationChannels.add(new CustomerCommunicationChannel(ContactType.WHATSAPP, maskedMobile));
 
 		}

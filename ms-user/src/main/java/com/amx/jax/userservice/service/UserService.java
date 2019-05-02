@@ -1043,6 +1043,7 @@ public class UserService extends AbstractUserService {
 			personInfo.setMobile(customer.getMobile());
 			personInfo.setWhatsAppNumber(customer.getWhatsapp());
 			personInfo.setPrefixCodeMobile("+"+customer.getPrefixCodeMobile());
+			personInfo.setWhatsappPrefixCode("+"+customer.getWhatsappPrefix());
 			
 		} catch (Exception e) {
 		}
