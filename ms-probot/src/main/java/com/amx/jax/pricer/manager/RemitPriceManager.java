@@ -543,9 +543,14 @@ public class RemitPriceManager {
 		if (exrate != null) {
 			breakup = new ExchangeRateBreakup();
 			breakup.setInverseRate(exrate.round(DEF_CONTEXT));
-			breakup.setRate(new BigDecimal(1).divide(exrate, DEF_DECIMAL_SCALE, RoundingMode.HALF_UP));
 			breakup.setConvertedFCAmount(breakup.getRate().multiply(lcAmount).round(DEF_CONTEXT));
 			breakup.setConvertedLCAmount(lcAmount.round(DEF_CONTEXT));
+
+			if (BigDecimal.ZERO.compareTo(exrate) == 0) {
+				breakup.setRate(BigDecimal.ZERO);
+			} else {
+				breakup.setRate(BigDecimal.ONE.divide(exrate, DEF_DECIMAL_SCALE, RoundingMode.HALF_UP));
+			}
 		}
 		return breakup;
 	}
@@ -557,7 +562,15 @@ public class RemitPriceManager {
 			breakup.setConvertedLCAmount(fcAmount.multiply(exrate).round(DEF_CONTEXT));
 			breakup.setConvertedFCAmount(fcAmount.round(DEF_CONTEXT));
 			breakup.setInverseRate(exrate.round(DEF_CONTEXT));
-			breakup.setRate(new BigDecimal(1).divide(exrate, DEF_DECIMAL_SCALE, RoundingMode.HALF_UP));
+			// breakup.setRate(new BigDecimal(1).divide(exrate, DEF_DECIMAL_SCALE,
+			// RoundingMode.HALF_UP));
+
+			if (BigDecimal.ZERO.compareTo(exrate) == 0) {
+				breakup.setRate(BigDecimal.ZERO);
+			} else {
+				breakup.setRate(BigDecimal.ONE.divide(exrate, DEF_DECIMAL_SCALE, RoundingMode.HALF_UP));
+			}
+
 		}
 		return breakup;
 	}
