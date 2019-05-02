@@ -494,16 +494,6 @@ public class RemitPriceManager {
 		List<BigDecimal> availableBankIds = routingHeaders.stream().map(rh -> rh.getRoutingBankId()).distinct().sorted()
 				.collect(Collectors.toList());
 
-		// String routingHeaderIds =
-		// rhList.stream().map(Object::toString).collect(Collectors.joining("# "));
-
-		// String trateIds =
-		// validBankIds.stream().distinct().sorted().map(Object::toString)
-		// .collect(Collectors.joining("# "));
-
-		// pricingRateDetailsDTO.getInfo().put("TRATE_IDS", trateIds);
-		// pricingRateDetailsDTO.getInfo().put("RH_IDS", routingHeaderIds);
-
 		/** End: Routing Bank Find **/
 
 		List<BigDecimal> validBankIds;

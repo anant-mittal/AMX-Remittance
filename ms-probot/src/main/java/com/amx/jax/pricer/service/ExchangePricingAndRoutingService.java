@@ -95,8 +95,7 @@ public class ExchangePricingAndRoutingService {
 
 		pricingResponseDTO.setSellRateDetails(exchRateAndRoutingTransientDataCache.getSellRateDetails());
 
-		// TODO: Dirty Code -- Do via Transient Data cache.
-		pricingResponseDTO.setCustomerCategory(CUSTOMER_CATEGORY.valueOf(customer.getRemarks()));
+		pricingResponseDTO.setCustomerCategory(exchRateAndRoutingTransientDataCache.getCustomerCategory());
 
 		Collections.sort(pricingResponseDTO.getSellRateDetails(), Collections.reverseOrder());
 

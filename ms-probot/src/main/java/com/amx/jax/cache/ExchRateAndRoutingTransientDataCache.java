@@ -15,6 +15,7 @@ import com.amx.jax.pricer.dbmodel.TimezoneMasterModel;
 import com.amx.jax.pricer.dbmodel.ViewExGLCBAL;
 import com.amx.jax.pricer.dto.BankDetailsDTO;
 import com.amx.jax.pricer.dto.ExchangeRateDetails;
+import com.amx.jax.pricer.var.PricerServiceConstants.CUSTOMER_CATEGORY;
 import com.amx.jax.pricer.var.PricerServiceConstants.SERVICE_GROUP;
 import com.amx.utils.DateUtil;
 
@@ -35,12 +36,14 @@ public class ExchRateAndRoutingTransientDataCache {
 
 	private SERVICE_GROUP serviceGroup = SERVICE_GROUP.BANK;
 
+	private CUSTOMER_CATEGORY customerCategory;
+
 	private List<ExchangeRateDetails> sellRateDetails = new ArrayList<>();
 
 	private Map<BigDecimal, BankDetailsDTO> bankDetails;
 
 	private Map<BigDecimal, BankGLCData> bankGlcBalMap;
-	
+
 	private List<TransientRoutingComputeDetails> routingMatrixData;
 
 	private final Map<BigDecimal, Map<String, HolidayListMasterModel>> countryHolidays = new HashMap<BigDecimal, Map<String, HolidayListMasterModel>>();
@@ -61,6 +64,14 @@ public class ExchRateAndRoutingTransientDataCache {
 
 	public void setServiceGroup(SERVICE_GROUP serviceGroup) {
 		this.serviceGroup = serviceGroup;
+	}
+
+	public CUSTOMER_CATEGORY getCustomerCategory() {
+		return customerCategory;
+	}
+
+	public void setCustomerCategory(CUSTOMER_CATEGORY customerCategory) {
+		this.customerCategory = customerCategory;
 	}
 
 	public Map<BigDecimal, BankGLCData> getBankGlcBalMap() {

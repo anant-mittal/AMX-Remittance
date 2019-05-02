@@ -2,7 +2,6 @@ package com.amx.jax.pricer.manager;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.cache.ExchRateAndRoutingTransientDataCache;
-import com.amx.jax.dict.UserClient.Channel;
 import com.amx.jax.pricer.dao.ChannelDiscountDao;
 import com.amx.jax.pricer.dao.CustCatDiscountDao;
 import com.amx.jax.pricer.dao.CustomerExtendedDao;
@@ -85,8 +83,8 @@ public class CustomerDiscountManager {
 			custCategoryInfo.setDiscountTypeValue(ccDiscount.getCustomerCategory().toString());
 			custCategoryInfo.setDiscountPipsValue(ccDiscountPips);
 
-			// TODO: Dirty Code --- REMOVE ---
-			customer.setRemarks(ccDiscount.getCustomerCategory().toString());
+			// Updated Customer Category
+			exchRateAndRoutingTransientDataCache.setCustomerCategory(ccDiscount.getCustomerCategory());
 
 		} else {
 			CustomerCategoryDiscount ccDiscount = custCatDiscountDao.getDiscountByCustomerCategory(customerCategory);
@@ -228,6 +226,5 @@ public class CustomerDiscountManager {
 
 		// return discountedRatesNPrices;
 	}
-
 
 }
