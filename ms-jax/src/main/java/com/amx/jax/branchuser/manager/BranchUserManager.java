@@ -155,6 +155,11 @@ public class BranchUserManager  extends AbstractModel {
 			lastTrnx = transactionHistroyDao.getLastTrnxAmountFortheUser(empDetails.getUserName(), accMonthYear, empDetails.getCountryBranchId());
 		}
 		
+		if(lastTrnx==null) {
+			lastTrnx =BigDecimal.ZERO;
+		}
+		
+		
 		dto.setCash(currencyQuoteName+" "+totalCash);
 		dto.setOthers(currencyQuoteName+" "+totalOther);
 		dto.setkNet(currencyQuoteName+" "+totalKnet);
