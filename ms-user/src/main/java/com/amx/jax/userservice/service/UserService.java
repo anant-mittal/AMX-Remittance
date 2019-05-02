@@ -1042,6 +1042,8 @@ public class UserService extends AbstractUserService {
 			personInfo.setEmail(customer.getEmail());
 			personInfo.setMobile(customer.getMobile());
 			personInfo.setWhatsAppNumber(customer.getWhatsapp());
+			personInfo.setPrefixCodeMobile("+"+customer.getPrefixCodeMobile());
+			
 		} catch (Exception e) {
 		}
 		return personInfo;

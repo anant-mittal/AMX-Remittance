@@ -100,7 +100,8 @@ public class CustomerModelService {
 			if (mobileNo.length() <= 4) {
 				maskLength = 0;
 			}
-			String maskedMobile = MaskUtil.leftMask(personInfo.getMobile(), maskLength, "*");
+			String maskedMobile =personInfo.getPrefixCodeMobile()+ MaskUtil.leftMask(personInfo.getMobile(), maskLength, "*");
+			
 			customerCommunicationChannels.add(new CustomerCommunicationChannel(ContactType.SMS, maskedMobile));
 
 		}
@@ -110,7 +111,7 @@ public class CustomerModelService {
 			if (whatsappNo.length() <= 4) {
 				maskLength = 0;
 			}
-			String maskedMobile = MaskUtil.leftMask(personInfo.getWhatsAppNumber(), maskLength, "*");
+			String maskedMobile =personInfo.getPrefixCodeMobile()+ MaskUtil.leftMask(personInfo.getWhatsAppNumber(), maskLength, "*");
 			customerCommunicationChannels.add(new CustomerCommunicationChannel(ContactType.WHATSAPP, maskedMobile));
 
 		}

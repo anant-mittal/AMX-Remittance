@@ -26,8 +26,16 @@ public class PersonInfo extends AbstractModel implements Cloneable {
 	private Timestamp lastLoginTime;
 	private String identityInt;
 	private String whatsAppNumber;
+	private String prefixCodeMobile;
 	
-	
+	public String getPrefixCodeMobile() {
+		return prefixCodeMobile;
+	}
+
+	public void setPrefixCodeMobile(String prefixCodeMobile) {
+		this.prefixCodeMobile = prefixCodeMobile;
+	}
+
 	/**
 	 * 
 	 */
