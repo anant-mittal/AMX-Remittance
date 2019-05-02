@@ -189,7 +189,14 @@ public class OmannetClient implements PayGClient {
 			LOGGER.info("resultResponse ---> " + resultResponse);
 			/*OmanNetCodes statusCode = (OmanNetCodes) PayGCodes.getPayGCode(resultResponse, OmanNetCodes.UNKNOWN);
 			gatewayResponse.setErrorCategory(statusCode.getCategory().name());*/
-			ResponseCodeOMN responseCodeEnum = ResponseCodeOMN.getResponseCodeEnumByCode(pipe.getResult());
+			
+			String trimError = pipe.getResult();
+			if(trimError.contains(" ")){
+				trimError = trimError.substring(0, trimError.indexOf(" "));
+				LOGGER.info("TrimError Value ---> " + trimError);
+			}
+			
+			ResponseCodeOMN responseCodeEnum = ResponseCodeOMN.getResponseCodeEnumByCode(trimError);
 			if(responseCodeEnum != null) {
 				gatewayResponse.setErrorCategory(responseCodeEnum.name());
 				LOGGER.info("Result from response Values ---> " + gatewayResponse.getErrorCategory());
