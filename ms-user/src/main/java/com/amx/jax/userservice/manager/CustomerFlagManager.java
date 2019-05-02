@@ -37,8 +37,8 @@ public class CustomerFlagManager {
 		} catch (GlobalException ex) {
 			customerFlags.setIdProofStatus(ex.getErrorKey());
 		}
-		
-		CustomerOnlineRegistration customerOnlineRegistration = userValidationService
+		CustomerOnlineRegistration customerOnlineRegistration = custDao.getOnlineCustByCustomerId(customerId);
+		/*CustomerOnlineRegistration customerOnlineRegistration = userValidationService
 				.validateOnlineCustomerByIdentityId(customerId);
 		if(customerOnlineRegistration == null) {
 			throw new GlobalException(JaxError.CUSTOMER_NOT_FOUND.getStatusKey(), "Online Customer id not found");
@@ -48,7 +48,7 @@ public class CustomerFlagManager {
 		}
 		else {	
 		customerFlags.setFingerprintlinked(Boolean.TRUE);
-		}
+		}*/
 		Customer customer = custDao.getCustById(customerOnlineRegistration.getCustomerId());
 		Date annualIncomeUpdateDate = customer.getAnnualIncomeUpdatedDate();
 		if (annualIncomeUpdateDate == null) {
