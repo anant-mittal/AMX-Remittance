@@ -126,9 +126,14 @@ public class ExchangePricingAndRoutingService {
 
 		remitPriceManager.computeBaseSellRatesPrices(pricingRequestDTO);
 
+		List<ExchangeRateDetails> baseRateDetails = getClonnedExchangeRates(
+				exchRateAndRoutingTransientDataCache.getSellRateDetails());
+
 		List<PricingResponseDTO> allDiscountedRates = new ArrayList<PricingResponseDTO>();
 
 		for (CUSTOMER_CATEGORY cc : CUSTOMER_CATEGORY.values()) {
+
+			exchRateAndRoutingTransientDataCache.setSellRateDetails(getClonnedExchangeRates(baseRateDetails));
 
 			customerDiscountManager.getDiscountedRates(pricingRequestDTO, null, cc);
 			PricingResponseDTO pricingResponseDTO = new PricingResponseDTO();
@@ -311,6 +316,21 @@ public class ExchangePricingAndRoutingService {
 
 		return resp;
 
+	}
+
+	private List<ExchangeRateDetails> getClonnedExchangeRates(List<ExchangeRateDetails> exRateDetailsOrig) {
+
+		if (exRateDetailsOrig == null) {
+			return null;
+		}
+
+		List<ExchangeRateDetails> exRateDetailsClonned = new ArrayList<ExchangeRateDetails>();
+
+		for (ExchangeRateDetails exRateDetail : exRateDetailsOrig) {
+			exRateDetailsClonned.add(exRateDetail.clone());
+		}
+
+		return exRateDetailsClonned;
 	}
 
 	private boolean validatePricingRequest(PricingRequestDTO pricingRequestDTO, boolean isCustomer) {
