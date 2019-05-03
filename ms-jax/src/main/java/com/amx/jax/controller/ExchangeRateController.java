@@ -27,10 +27,12 @@ public class ExchangeRateController {
 
 	@RequestMapping(value = "/online/", method = RequestMethod.GET)
 	public ApiResponse getOnlineExchangeRates(BigDecimal fromCurrency, BigDecimal toCurrency, BigDecimal amount,
-			@RequestParam(required = false) BigDecimal bankId) {
+			@RequestParam(required = false) BigDecimal bankId,
+			@RequestParam(required = false) BigDecimal beneBankCountryId) {
 		logger.info("getExchangeRates Request: fromCurrency" + fromCurrency + " toCurrency " + toCurrency + " amount: "
 				+ amount);
-		ApiResponse response = service.getExchangeRatesForOnline(fromCurrency, toCurrency, amount, bankId);
+		ApiResponse response = service.getExchangeRatesForOnline(fromCurrency, toCurrency, amount, bankId,
+				beneBankCountryId);
 		return response;
 	}
 

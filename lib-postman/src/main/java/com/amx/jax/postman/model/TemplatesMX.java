@@ -10,11 +10,19 @@ public enum TemplatesMX implements ITemplate {
 	RESET_OTP("reset-otp", Channel.NOTIPY),
 	RESET_OTP_SMS("reset-otp-sms", Channel.NOTIPY),
 
+	// Contact Verification
+	CONTACT_VERIFICATION_SMS("contact-verifiy-sms", Channel.NOTIPY),
+	CONTACT_VERIFICATION_EMAIL("contact-verifiy-email", Channel.NOTIPY),
+
 	SERVER_UP("health-server-up"),
 
 	REMIT_RECEIPT("TransactionReceipt"), REMIT_RECEIPT2("TransactionReceipt2"),
 	REMIT_RECEIPT_JASPER("TransactionReceipt_jasper", PDFConverter.JASPER, "TransactionReceipt.json"),
 	REMIT_RECEIPT_COPY_JASPER("TransactionReceiptCopy_jasper", PDFConverter.JASPER, "TransactionReceipt.json"),
+	REMIT_RECEIPT_JASPER_NO_HEADER("TransactionReceiptNoHeader_jasper", PDFConverter.JASPER, "TransactionReceipt.json"),
+	REMIT_APPLICATION_RECEIPT_JASPER("ApplicationReceipt_jasper", PDFConverter.JASPER, "ApplicationReceipt.json"),
+
+
 
 	REMIT_RECEIPT_COPY("TransactionReceiptCopy"), REMIT_STATMENT("TransactionList"),
 	REMIT_STATMENT_EMAIL("RemittanceStatmentEmail"),
@@ -49,7 +57,13 @@ public enum TemplatesMX implements ITemplate {
 	FXO_RECEIPT_BRANCH("FXO_RECEIPT_BRANCH", PDFConverter.JASPER, "fxo-receipt.json"),
 	FXO_STATMENT("FxoTransactionList"),
 	SUSPICIOUS_USER("suspicious-user"), PROFILE_CHANGE_SMS("profile-change-sms", Channel.ALERTY),
-	EMAIL_CHANGE_OLD_EMAIL("EmailChangeOldEmail");
+	EMAIL_CHANGE_OLD_EMAIL("EmailChangeOldEmail"),
+	FINGERPRINT_LINKED_SUCCESS("FingerprintLinkedSuccess"),
+	FINGERPRINT_DELINKED_SUCCESS("FingerprintDelinkedSuccess"),
+	FINGERPRINT_DELINKED_ATTEMP_SUCCESS("FingerprintDelinkInCorrectAttem"),
+
+	// Default add enums above this
+	DEFAULT("default");
 
 	String fileName;
 	PDFConverter converter;

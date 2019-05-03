@@ -2,8 +2,12 @@ package com.amx.jax.device;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class DeviceData implements Serializable {
 	private static final long serialVersionUID = 2981932845270868040L;
+	private String regId;
 	private String terminalId;
 	private String empId;
 	private String globalIp;
@@ -78,5 +82,13 @@ public class DeviceData implements Serializable {
 
 	public void setCheckstamp(long checkstamp) {
 		this.checkstamp = checkstamp;
+	}
+
+	public String getRegId() {
+		return regId;
+	}
+
+	public void setRegId(String regId) {
+		this.regId = regId;
 	}
 }

@@ -1,9 +1,12 @@
 package com.amx.jax.dal;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -23,6 +26,8 @@ import com.amx.utils.Constants;
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class ArticleDao {
 
+	public static final Logger LOGGER = LoggerFactory.getLogger(ArticleDao.class);
+	
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
@@ -53,6 +58,18 @@ public class ArticleDao {
 				+ "		WHERE FAD.ARTICLE_ID = ? AND FAD.ISACTIVE= ? AND FADD.LANGUAGE_ID = ?";
 		List<Map<String, Object>> designationList = jdbcTemplate.queryForList(sql,
 				new Object[] { articleId, Constants.CUST_ACTIVE_INDICATOR, languageId });
+		return designationList;
+	}
+	
+	public List<Map<String, Object>> getDesignationsByCustomer(BigDecimal languageId, BigDecimal customerId) {
+
+		String sql = "SELECT C.ARTICLE_DETAIL_ID,D.ARTICLE_DETAIL_DESC"
+				
+				+ " FROM FS_ARTICLE_DETAILS C, FS_ARTICLE_DETAILS_DESC D"
+				
+				+ "	WHERE C.ARTICLE_DETAIL_ID = D.ARTICLE_DETAILS_ID AND D.LANGUAGE_ID = ? AND C.ISACTIVE = 'Y' AND C.ARTICLE_ID = (SELECT B.ARTICLE_ID FROM FS_ARTICLE_DETAILS B   WHERE B.ARTICLE_DETAIL_ID = (SELECT A.ARTICLE_DETAIL_ID FROM FS_CUSTOMER A WHERE A.CUSTOMER_ID = ?)) ORDER BY C.ARTICLE_DETAIL_ID ";
+		List<Map<String, Object>> designationList = jdbcTemplate.queryForList(sql,
+				new Object[] {languageId, customerId });
 		return designationList;
 	}
 
@@ -91,5 +108,51 @@ public class ArticleDao {
 						customer.getFsArticleDetails().getArticleDetailId(),
 						customer.getFsIncomeRangeMaster().getIncomeRangeId() });
 		return incomeRangeList;
+	}
+	
+	public String getAricleDetailDesc(Customer customer) {
+		String articleDetailDesc = null;
+		try {
+			String sql = "select ARTICLE_DETAIL_DESC from FS_ARTICLE_DETAILS_desc where ARTICLE_DETAILS_ID = ? and LANGUAGE_ID= ?";
+			articleDetailDesc = jdbcTemplate.queryForObject(sql,
+					new Object[] { customer.getFsArticleDetails().getArticleDetailId(), metaData.getLanguageId() },
+					String.class);
+		} catch (Exception e) {
+			LOGGER.debug("Error occured in getAricleDetailDesc", e);
+		}
+		return articleDetailDesc;
+	}
+	
+	public List<Map<String, Object>> getArticleDescriptionByArticleDetailId(BigDecimal articleDetailId , BigDecimal languageId , BigDecimal customerId){
+			LOGGER.info("article detailed id set is "+articleDetailId+languageId+customerId);
+			String sql = "SELECT D.ARTICLE_DETAIL_DESC FROM FS_ARTICLE_DETAILS C,FS_ARTICLE_DETAILS_DESC D"+
+						" WHERE C.ARTICLE_DETAIL_ID = D.ARTICLE_DETAILS_ID AND D.ARTICLE_DETAILS_ID = ? AND D.LANGUAGE_ID = ? AND C.ARTICLE_ID = (SELECT B.ARTICLE_ID FROM FS_ARTICLE_DETAILS B WHERE B.ARTICLE_DETAIL_ID = (SELECT A.ARTICLE_DETAIL_ID FROM FS_CUSTOMER A WHERE A.CUSTOMER_ID = ?)) AND C.ISACTIVE = 'Y'";
+			
+			List<Map<String, Object>> articleDetailDesc = jdbcTemplate.queryForList(sql,
+					new Object[] { articleDetailId, metaData.getLanguageId(), metaData.getCustomerId() });
+			
+			return articleDetailDesc;
+	}
+	
+	public String getMonthlyIncomeRange(Customer customer) {
+		String articleDetailDesc = null;
+		try {
+			String sql = "select MONTHLY_INCOME from FS_INCOME_RANGE_MASTER where INCOME_RANGE_ID = ?";
+			articleDetailDesc = jdbcTemplate.queryForObject(sql,
+					new Object[] { customer.getFsIncomeRangeMaster().getIncomeRangeId() }, String.class);
+		} catch (Exception e) {
+			LOGGER.debug("Error occured in getMonthlyIncomeRange", e);
+		}
+		return articleDetailDesc;
+	}
+
+	public String getArticleDesc(Customer customer) {
+		String articleDesc;
+		String sql = "select ARTICLE_DESC from FS_ARTICLE_MASTER_DESC where ARTICLE_ID = "
+				+ "(select ARTICLE_ID from FS_ARTICLE_DETAILS where ARTICLE_DETAIL_ID = ?) and language_id = ?";
+		articleDesc = jdbcTemplate.queryForObject(sql,
+				new Object[] { customer.getFsArticleDetails().getArticleDetailId(), metaData.getLanguageId() },
+				String.class);
+		return articleDesc;
 	}
 }

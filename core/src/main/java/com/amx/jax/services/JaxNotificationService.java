@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -19,11 +20,12 @@ import com.amx.amxlib.model.BranchSearchNotificationModel;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.EmployeeInfo;
-import com.amx.amxlib.model.PersonInfo;
 import com.amx.amxlib.model.notification.RemittanceTransactionFailureAlertModel;
+import com.amx.jax.async.ExecutorConfig;
 import com.amx.jax.dbmodel.ApplicationSetup;
 import com.amx.jax.dbmodel.ExEmailNotification;
 import com.amx.jax.dict.Tenant;
+import com.amx.jax.model.response.customer.PersonInfo;
 import com.amx.jax.model.response.fx.FxDeliveryDetailNotificationDto;
 import com.amx.jax.model.response.fx.FxOrderDetailNotificationDto;
 import com.amx.jax.model.response.fx.FxOrderReportResponseDto;
@@ -44,12 +46,13 @@ public class JaxNotificationService {
 
 	@Autowired
 	private PostManService postManService;
+	
+	@Autowired
+	JaxNotificationService jaxNotificationService;
 
 	Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	private final String SUBJECT_ACCOUNT_UPDATE = "Account Update";
-	private final String SUBJECT_EMAIL_CHANGE = "Al Mulla Exchange Account - Email ID Change";
-	private final String SUBJECT_PHONE_CHANGE = "Al Mulla Exchange Account - Phone Number Change";
 
 	public void sendTransactionNotification(RemittanceReceiptSubreport remittanceReceiptSubreport, PersonInfo pinfo) {
 
@@ -123,15 +126,15 @@ public class JaxNotificationService {
 			email.getModel().put("change_type", ChangeType.IMAGE_CHANGE);
 
 		} else if (customerModel.getMobile() != null) {
-			email.setSubject(SUBJECT_PHONE_CHANGE);
+			
 			email.getModel().put("change_type", ChangeType.MOBILE_CHANGE);
 
-		} else if (customerModel.getEmail() != null) {
-			email.setSubject(SUBJECT_EMAIL_CHANGE);
+		}  else if (customerModel.getEmail() != null) {
+			
 			email.getModel().put("change_type", ChangeType.EMAIL_CHANGE);
 
 			emailToOld = new Email();
-			emailToOld.setSubject(SUBJECT_EMAIL_CHANGE);
+			
 			emailToOld.getModel().put("change_type", ChangeType.EMAIL_CHANGE);
 			emailToOld.addTo(customerModel.getEmail());
 			emailToOld.setITemplate(TemplatesMX.EMAIL_CHANGE_OLD_EMAIL);
@@ -247,7 +250,8 @@ public class JaxNotificationService {
 		logger.info("Email to - " + pinfo.getEmail() + " first name : " + pinfo.getFirstName());
 		sendEmail(email);
 	}
-
+	
+	@Async
 	public void sendEmail(Email email) {
 		try {
 			postManService.sendEmailAsync(email);
@@ -320,5 +324,30 @@ public class JaxNotificationService {
 			logger.error("error in sendOtpSms", e);
 		}
 	} // end of sendOtpSms
+	
+	
+	public String sendEmailChangeSubject() {
+
+		if (TenantContextHolder.currentSite().equals(Tenant.KWT)) {
+			return "Almulla Exchange Account - Email ID Change";
+		} else if (TenantContextHolder.currentSite().equals(Tenant.BHR)) {
+			return "Modern Exchange Account - Email ID Change";
+		} else if (TenantContextHolder.currentSite().equals(Tenant.OMN)) {
+			return "Almulla Exchange Account - Email ID Change";
+		}
+		return "Almulla Exchange Account - Email ID Change";
+	}
+
+	public String sendMobileNumberChangeSubject() {
+
+		if (TenantContextHolder.currentSite().equals(Tenant.KWT)) {
+			return "Almulla Exchange Account - Phone number Change";
+		} else if (TenantContextHolder.currentSite().equals(Tenant.BHR)) {
+			return "Modern Exchange Account - Phone number Change";
+		} else if (TenantContextHolder.currentSite().equals(Tenant.OMN)) {
+			return "Almulla Exchange Account - Phone number Change";
+		}
+		return "Almulla Exchange Account - Phone number Change";
+	}
 
 }

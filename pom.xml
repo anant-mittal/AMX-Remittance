@@ -21,6 +21,9 @@
 		<jax.version>0.0.1-SNAPSHOT</jax.version>
 		<amx.version>0.0.1-SNAPSHOT</amx.version>
 		<java.version>1.8</java.version>
+		<vzn>0.0.1-SNAPSHOT</vzn>
+		<sonar.issuesReport.html.enable>true</sonar.issuesReport.html.enable>
+		<!-- <sonar.analysis.mode>preview</sonar.analysis.mode> <sonar.host.url>http://10.28.42.5:9000</sonar.host.url> -->
 	</properties>
 
 	<dependencyManagement>
@@ -53,6 +56,12 @@
 			<dependency>
 				<groupId>com.amx.jax</groupId>
 				<artifactId>jax-client</artifactId>
+				<version>${amx.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.amx.jax</groupId>
+				<artifactId>lib-probot</artifactId>
 				<version>${amx.version}</version>
 			</dependency>
 
@@ -105,6 +114,7 @@
 		<module>core</module>
 		<module>jax-client</module>
 		<module>lib-adapter</module>
+		<module>lib-probot</module>
 
 		<!-- Exchange Services -->
 		<module>ms-meta</module>
@@ -116,17 +126,20 @@
 		<module>ms-rbaac</module>
 		<module>ms-worker</module>
 		<module>ms-radar</module>
+		<module>ms-probot</module>
+
 
 		<module>server-ui</module>
-		
+
 		<module>server-common/server-common-branch</module>
 		<module>server-branch</module>
 		<module>server-offsite</module>
 		<!-- <module>server-stomp</module> -->
 
 		<module>sw-adapter</module>
-		<module>test-size</module>
+		<module>server-regex</module>
 		<!-- <module>server-kiosk</module> -->
 		<!-- <module>server-sample</module> -->
 	</modules>
 </project>
+

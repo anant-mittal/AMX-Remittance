@@ -20,10 +20,10 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.constant.NotificationConstants;
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.model.PersonInfo;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.JaxStompClient;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.constant.JaxDbConfig;
 import com.amx.jax.dao.FcSaleApplicationDao;
 import com.amx.jax.dbmodel.ShippingAddressDetail;
 import com.amx.jax.dbmodel.fx.FxDeliveryDetailsModel;
@@ -40,6 +40,7 @@ import com.amx.jax.model.request.fx.FcSaleDeliveryDetailUpdateReceiptRequest;
 import com.amx.jax.model.request.fx.FcSaleDeliveryMarkDeliveredRequest;
 import com.amx.jax.model.request.fx.FcSaleDeliveryMarkNotDeliveredRequest;
 import com.amx.jax.model.response.OtpPrefixDto;
+import com.amx.jax.model.response.customer.PersonInfo;
 import com.amx.jax.model.response.fx.FxDeliveryDetailDto;
 import com.amx.jax.model.response.fx.FxDeliveryDetailNotificationDto;
 import com.amx.jax.model.response.fx.ShippingAddressDto;
@@ -77,6 +78,8 @@ public class FcSaleDeliveryService {
 	FcSaleEventManager fcSaleEventManager;
 	@Autowired
 	FcSaleBranchOrderManager fcSaleBranchOrderManager;
+	@Autowired
+	JaxConfigService jaxConfigService; 
 
 
 	/**
@@ -352,5 +355,18 @@ public class FcSaleDeliveryService {
 
 	private void logStatusChangeAuditEvent(BigDecimal deliveryDetailSeqId, String oldOrderStatus) {
 		fcSaleEventManager.logStatusChangeAuditEvent(deliveryDetailSeqId, oldOrderStatus);
+	}
+
+	public List<FxDeliveryDetailDto> listHistoricalOrders() {
+		if (metaData.getEmployeeId() == null) {
+			throw new GlobalException("Missing driver id");
+		}
+		List<FxDeliveryDetailDto> results = new ArrayList<>();
+		Integer noOfDays = jaxConfigService.getIntegerConfigValue(JaxDbConfig.FX_DELIVERY_HISTORICAL_LIST_RANGE_DAYS);
+		List<VwFxDeliveryDetailsModel> deliveryDetails = fcSaleApplicationDao.listHistoricalOrders(metaData.getEmployeeId(), noOfDays);
+		for (VwFxDeliveryDetailsModel model : deliveryDetails) {
+			results.add(createFxDeliveryDetailDto(model));
+		}
+		return results;
 	}
 }

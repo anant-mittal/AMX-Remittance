@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import com.amx.jax.AppConfig;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.http.CommonHttpRequest;
+import com.amx.jax.rbaac.dto.UserClientDto;
 import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Random;
@@ -31,16 +32,28 @@ public class SSOUser implements Serializable {
 	@Autowired
 	SSOConfig ssoConfig;
 
+	private String terminalId;
+
 	private boolean authDone = false;
 	private String tranxId;
 	private Long loginTime;
 	private EmployeeDetailsDTO userDetails = null;
+
+	private UserClientDto userClient;
 
 	public String getUserId() {
 		if (userDetails == null) {
 			return null;
 		}
 		return ArgUtil.parseAsString(userDetails.getEmployeeId());
+	}
+
+	public UserClientDto getUserClient() {
+		return userClient;
+	}
+
+	public void setUserClient(UserClientDto userClient) {
+		this.userClient = userClient;
 	}
 
 	private String selfSAC;
@@ -131,6 +144,14 @@ public class SSOUser implements Serializable {
 
 	public void setLoginTime(Long loginTime) {
 		this.loginTime = loginTime;
+	}
+
+	public String getTerminalId() {
+		return terminalId;
+	}
+
+	public void setTerminalId(String terminalId) {
+		this.terminalId = terminalId;
 	}
 
 }

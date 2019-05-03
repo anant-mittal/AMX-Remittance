@@ -12,12 +12,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.amxlib.model.request.RemittanceTransactionStatusRequestModel;
 import com.amx.amxlib.model.response.ApiResponse;
-import com.amx.amxlib.model.response.ExchangeRateBreakup;
 import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
-import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.dao.RemittanceApplicationDao;
@@ -29,7 +26,10 @@ import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.exrateservice.service.NewExchangeRateService;
 import com.amx.jax.manager.RemittanceTransactionManager;
+import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
+import com.amx.jax.model.response.ExchangeRateBreakup;
 import com.amx.jax.model.response.SourceOfIncomeDto;
+import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
 import com.amx.jax.payg.PayGModel;
 import com.amx.jax.repository.IRemittanceTransactionDao;
 import com.amx.jax.repository.ISourceOfIncomeDao;
@@ -167,8 +167,7 @@ public class RemittanceTransactionService extends AbstractService {
 		if (model.getDomXRate() == null) {
 			model.setDomXRate(respModel.getExRateBreakup().getRate());
 		}
-		ExchangeRateBreakup exRateBreakup = newExchangeRateService.calcEquivalentAmount(model,
-				fcDecimalNumber.intValue());
+		ExchangeRateBreakup exRateBreakup = newExchangeRateService.calcEquivalentAmount(model,fcDecimalNumber.intValue());
 		exRateBreakup.setFcDecimalNumber(respModel.getExRateBreakup().getFcDecimalNumber());
 		exRateBreakup.setLcDecimalNumber(respModel.getExRateBreakup().getLcDecimalNumber());
 		respModel.setExRateBreakup(exRateBreakup);

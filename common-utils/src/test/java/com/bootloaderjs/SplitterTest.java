@@ -1,14 +1,14 @@
 package com.bootloaderjs;
 
-import java.util.Map;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import com.amx.utils.StringUtils;
-import com.amx.utils.TimeUtils;
 
 public class SplitterTest { // Noncompliant
 
 	public static final Pattern pattern = Pattern.compile("^com.amx.jax.logger.client.AuditFilter<(.*)>$");
+	public static final Pattern LINK_CIVIL_ID = Pattern.compile("^LINK (.*)$");
+	public static final Pattern LINKD_CIVIL_ID = Pattern.compile("^LINKD <(.*)>$");
+	public static final Pattern ENCRYPTED_PROPERTIES = Pattern.compile("^ENC\\((.*)\\)$");
 
 	public static final String SPLITTER_CHAR = ";";
 	public static final String KEY_VALUE_SEPARATOR_CHAR = ":";
@@ -19,25 +19,24 @@ public class SplitterTest { // Noncompliant
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		linCivilIdCheck();
+	}
 
-		String testString = "EMAIL:dssds;MOBILE:sdsdsdsdsds;CUST_NAME:dsdsdsdsds;TRNXAMT:wewewewewe;"
-				+ "LOYALTY:wedrererr;TRNREF:wewewewewe;TRNDATE:wewewewew;LANG_ID:wxfgtrtrtrt;TNT:rtrtrtr";
-
-		int num = 1000000;
-		long timeout = System.currentTimeMillis();
-		for (int i = 0; i < num; i++) {
-			Map<String, String> event_data_map = StringUtils.getMapFromString(
-					SPLITTER_CHAR,
-					KEY_VALUE_SEPARATOR_CHAR, testString);
+	public static void linCivilIdCheck() {
+		String testString = "ENC(uTSqb9grs1+vUv3iN8lItC0kl65lMG+8)";
+		Matcher x = ENCRYPTED_PROPERTIES.matcher(testString);
+		if(x.find()) {
+			System.out.println(x.group(1));
+		} else {
+			System.out.println("No");
 		}
-		System.out.println("Guava" + TimeUtils.timeSince(timeout));
-		timeout = System.currentTimeMillis();
-//		for (int i = 0; i < num; i++) {
-//			Map<String, String> event_data_map = StringUtils.getMapFromStringCommon(
-//					SPLITTER_CHAR,
-//					KEY_VALUE_SEPARATOR_CHAR, testString);
-//		}
-		System.out.println("Norm" + TimeUtils.timeSince(timeout));
+		
+		
+	}
+
+	public static void classNameCheck() {
+		String testString = "com.amx.jax.mcq.SampleTask2$$EnhancerBySpringCGLIB$$82858f05";
+		System.out.println(testString.split("\\$\\$")[0]);
 	}
 
 }

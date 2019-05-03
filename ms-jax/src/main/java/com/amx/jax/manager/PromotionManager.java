@@ -15,7 +15,6 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.amx.amxlib.model.PersonInfo;
 import com.amx.amxlib.model.PromotionDto;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.PromotionDao;
@@ -26,6 +25,7 @@ import com.amx.jax.dbmodel.promotion.PromotionHeader;
 import com.amx.jax.dbmodel.promotion.PromotionLocationModel;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.response.customer.PersonInfo;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.TemplatesMX;
@@ -95,7 +95,7 @@ public class PromotionManager {
 				}
 			}
 			if (dto != null && remittanceTransaction.getDocumentNo() != null) {
-				dto.setTransactionReference(remittanceTransaction.getDocumentFinancialyear().toString() + " / "
+				dto.setTransactionReference(remittanceTransaction.getDocumentFinanceYear().toString() + " / "
 						+ remittanceTransaction.getDocumentNo().toString());
 			}
 			return dto;
@@ -127,7 +127,7 @@ public class PromotionManager {
 				try {
 					RemittanceTransaction remittanceApplication = remittanceApplicationDao
 							.getRemittanceTransactionByRemitDocNo(documentNoRemit, documentFinYearRemit);
-					PersonInfo personInfo = userService.getPersonInfo(remittanceApplication.getCustomerId());
+					PersonInfo personInfo = userService.getPersonInfo(remittanceApplication.getCustomerId().getCustomerId());
 					Email email = new Email();
 					email.setSubject(
 							"Today's winner " + DateUtil.todaysDateWithDDMMYY(Calendar.getInstance().getTime(), ""));

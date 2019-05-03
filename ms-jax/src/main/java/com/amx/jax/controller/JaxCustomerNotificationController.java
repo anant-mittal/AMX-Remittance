@@ -49,7 +49,7 @@ public class JaxCustomerNotificationController {
 	@RequestMapping(value = ApiEndpoint.JAX_CUSTOMER_NOTIFICATION, method = RequestMethod.POST)
 	public AmxApiResponse<Object, Object> saveJaxPushNotification(
 			@RequestBody List<PushNotificationRecord> jaxPushNotifications) {
-		logger.debug("In SAVE Push Notification Controller ------ ");
+		logger.info("In SAVE Push Notification Controller ------ " +jaxPushNotifications.toString());
 		return jaxPushNotificationService.save(jaxPushNotifications);
 	}
 

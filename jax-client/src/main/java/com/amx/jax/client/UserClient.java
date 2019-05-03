@@ -15,6 +15,10 @@ import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.amx.amxlib.constant.ApiEndpoint;
+import com.amx.amxlib.constant.ApiEndpoint.CustomerApi;
+import com.amx.amxlib.constant.ApiEndpoint.MetaApi;
+import com.amx.amxlib.constant.ApiEndpoint.UserApi;
 import com.amx.amxlib.exception.AbstractJaxException;
 import com.amx.amxlib.exception.AlreadyExistsException;
 import com.amx.amxlib.exception.CustomerValidationException;
@@ -23,22 +27,31 @@ import com.amx.amxlib.exception.InvalidInputException;
 import com.amx.amxlib.exception.JaxSystemError;
 import com.amx.amxlib.exception.LimitExeededException;
 import com.amx.amxlib.exception.UnknownJaxError;
+import com.amx.amxlib.meta.model.AnnualIncomeRangeDTO;
 import com.amx.amxlib.meta.model.CustomerDto;
+import com.amx.amxlib.meta.model.DeclarationDTO;
+import com.amx.amxlib.meta.model.IncomeDto;
+import com.amx.amxlib.meta.model.ViewGovernateAreaDto;
 import com.amx.amxlib.model.AbstractUserModel;
+import com.amx.amxlib.model.BeneAccountModel;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
+import com.amx.amxlib.model.UserFingerprintResponseModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
+import com.amx.amxlib.model.response.JaxTransactionResponse;
+import com.amx.amxlib.service.ICustomerService;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.model.UserDevice;
 import com.amx.jax.model.auth.QuestModelDTO;
+import com.amx.jax.model.response.customer.CustomerModelResponse;
 import com.amx.jax.rest.RestService;
 
 @Component
-public class UserClient extends AbstractJaxServiceClient {
+public class UserClient extends AbstractJaxServiceClient implements ICustomerService {
 
 	private static final Logger LOGGER = Logger.getLogger(UserClient.class);
 
@@ -581,10 +594,9 @@ public class UserClient extends AbstractJaxServiceClient {
 			CustomerModel custModel = new CustomerModel();
 			custModel.setCustomerId(jaxMetaInfo.getCustomerId());
 
-			HttpEntity<CustomerModel> requestEntity = new HttpEntity<CustomerModel>(custModel, getHeader());
 			String sendOtpUrl = this.getBaseUrl() + CUSTOMER_ENDPOINT + "/logged/in/";
 			LOGGER.info("calling customer logged in api: " + sendOtpUrl);
-			return restService.ajax(sendOtpUrl).post(requestEntity)
+			return restService.ajax(sendOtpUrl).meta(new JaxMetaInfo()).post(custModel)
 					.as(new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
 					});
 		} catch (AbstractJaxException ae) {
@@ -594,7 +606,7 @@ public class UserClient extends AbstractJaxServiceClient {
 			throw new JaxSystemError();
 		} // end of try-catch
 	} // end of customerLoggedIn
-	
+
 	public ApiResponse<CustomerModel> saveEmailNew(String email) {
 		try {
 			CustomerModel custModel = new CustomerModel();
@@ -614,7 +626,7 @@ public class UserClient extends AbstractJaxServiceClient {
 		} // end of try-catch
 
 	}
-	
+
 	public ApiResponse<CustomerModel> saveMobileNew(String mobile) {
 		try {
 			CustomerModel custModel = new CustomerModel();
@@ -633,4 +645,138 @@ public class UserClient extends AbstractJaxServiceClient {
 			throw new JaxSystemError();
 		} // end of try-catch
 	}
+
+	public AmxApiResponse<UserFingerprintResponseModel, Object> linkDeviceId(String identityInt) {
+		try {
+			String url = this.getBaseUrl() + USER_API_ENDPOINT + "/link-deviceid/";
+			return restService.ajax(url).queryParam("identityInt", identityInt).meta(new JaxMetaInfo())
+					.post()
+					.as(new ParameterizedTypeReference<AmxApiResponse<UserFingerprintResponseModel, Object>>() {
+					});
+
+		} catch (AbstractJaxException ae) {
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in linkDeviceId : ", e);
+			throw new JaxSystemError(e);
+		} // end of try-catch
+	}
+
+	public AmxApiResponse<UserFingerprintResponseModel, Object> linkDeviceIdLoggedinUser() {
+		try {
+
+			return restService.ajax(appConfig.getJaxURL()).path(UserApi.PREFIX + UserApi.LINK_DEVICE_LOGGEDIN_USER)
+					.meta(new JaxMetaInfo()).post()
+
+					.as(new ParameterizedTypeReference<AmxApiResponse<UserFingerprintResponseModel, Object>>() {
+					});
+		} catch (Exception ae) {
+			LOGGER.error("exception in linkDeviceloggedinUser : ", ae);
+			return JaxSystemError.evaluate(ae);
+		}
+	}
+
+	public AmxApiResponse<CustomerModel, Object> loginUserByFingerprint(String civilId, String password) {
+		try {
+
+			return restService.ajax(appConfig.getJaxURL())
+					.path(UserApi.PREFIX + UserApi.LOGIN_CUSTOMER_BY_FINGERPRINT).meta(new JaxMetaInfo()).post()
+					.queryParam(UserApi.IDENTITYINT, civilId).queryParam(UserApi.PASSWORD, password).post()
+					.as(new ParameterizedTypeReference<AmxApiResponse<CustomerModel, Object>>() {
+					});
+		} catch (Exception ae) {
+
+			LOGGER.error("exception in loginUserByFingerprint : ", ae);
+			return JaxSystemError.evaluate(ae);
+		}
+	}
+
+	public BoolRespModel delinkFingerprint() {
+		try {
+
+			return restService.ajax(appConfig.getJaxURL())
+					.path(UserApi.PREFIX + UserApi.DELINK_FINGERPRINT).meta(new JaxMetaInfo())
+					.post()
+					.as(new ParameterizedTypeReference<BoolRespModel>() {
+					});
+		} catch (Exception ae) {
+
+			LOGGER.error("exception in delink fingerprint : ", ae);
+			return JaxSystemError.evaluate(ae);
+		}
+	}
+
+	public AmxApiResponse<AnnualIncomeRangeDTO, Object> getIncome() {
+		try {
+
+			return restService.ajax(appConfig.getJaxURL())
+					.path(CustomerApi.PREFIX + CustomerApi.GET_ANNUAL_INCOME_RANGE)
+					.meta(new JaxMetaInfo()).post()
+					.as(new ParameterizedTypeReference<AmxApiResponse<AnnualIncomeRangeDTO, Object>>() {
+					});
+		} catch (Exception ae) {
+			LOGGER.error("exception in Annual Income : ", ae);
+			return JaxSystemError.evaluate(ae);
+		}
+	}
+
+	public AmxApiResponse<IncomeDto, Object> saveAnnualIncome(IncomeDto incomeDto) {
+		try {
+			String url = this.getBaseUrl() + CustomerApi.PREFIX + CustomerApi.SAVE_ANNUAL_INCOME;
+			return restService.ajax(url).meta(new JaxMetaInfo()).post(incomeDto)
+					.as(new ParameterizedTypeReference<AmxApiResponse<IncomeDto, Object>>() {
+					});
+		} catch (Exception ae) {
+			LOGGER.error("exception in saveAnnualIncome: ", ae);
+			return JaxSystemError.evaluate(ae);
+		} // end of try-catch
+
+	}
+
+	public AmxApiResponse<IncomeDto, Object> getAnnualIncomeDetais() {
+		try {
+			return restService.ajax(appConfig.getJaxURL())
+					.path(CustomerApi.PREFIX + CustomerApi.GET_ANNUAL_INCOME_DETAILS)
+					.meta(new JaxMetaInfo()).post()
+					.as(new ParameterizedTypeReference<AmxApiResponse<IncomeDto, Object>>() {
+					});
+		} catch (Exception ae) {
+			LOGGER.error("exception in Annual Income details : ", ae);
+			return JaxSystemError.evaluate(ae);
+		}
+	}
+
+	public BoolRespModel resetFingerprint(String identity) {
+		try {
+
+			return restService.ajax(appConfig.getJaxURL())
+					.path(UserApi.PREFIX + UserApi.RESET_FINGERPRINT).meta(new JaxMetaInfo())
+					.queryParam(UserApi.IDENTITYINT, identity)
+					.post()
+					.as(new ParameterizedTypeReference<BoolRespModel>() {
+					});
+		} catch (Exception ae) {
+
+			LOGGER.error("exception in reset fingerprint : ", ae);
+			return JaxSystemError.evaluate(ae);
+		}
+	}
+
+	@Override
+	public AmxApiResponse<CustomerModelResponse, Object> getCustomerModelResponse(String identityInt) {
+		try {
+
+			return restService.ajax(appConfig.getJaxURL())
+					.path(ApiEndpoint.CUSTOMER_ENDPOINT + Path.CUSTOMER_MODEL_RESPONSE_GET).meta(new JaxMetaInfo())
+					.queryParam(Params.IDENTITY_INT, identityInt)
+					.get()
+					.as(new ParameterizedTypeReference<AmxApiResponse<CustomerModelResponse, Object>>() {
+					});
+		} catch (Exception ae) {
+
+			LOGGER.error("exception in get customer response : ", ae);
+			return JaxSystemError.evaluate(ae);
+		}
+	}
+
 }

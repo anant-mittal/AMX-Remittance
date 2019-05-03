@@ -1,5 +1,6 @@
 package com.amx.jax.ui.service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,21 +14,23 @@ import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
+import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.model.AuthState;
 import com.amx.jax.model.AuthState.AuthStep;
 import com.amx.jax.model.auth.QuestModelDTO;
+import com.amx.jax.model.response.customer.CustomerModelResponse;
 import com.amx.jax.ui.audit.CAuthEvent;
 import com.amx.jax.ui.config.HttpUnauthorizedException;
+import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
 import com.amx.jax.ui.config.UIServerError;
 import com.amx.jax.ui.model.AuthData;
 import com.amx.jax.ui.model.AuthDataInterface.AuthResponse;
 import com.amx.jax.ui.model.UserUpdateData;
 import com.amx.jax.ui.response.ResponseMessage;
 import com.amx.jax.ui.response.ResponseWrapper;
-import com.amx.jax.ui.response.WebResponseStatus;
 import com.amx.jax.ui.session.UserSession;
 import com.amx.utils.ListManager;
 
@@ -103,10 +106,28 @@ public class LoginService {
 		}
 		sessionService.getGuestSession().setCustomerModel(customerModel);
 		wrapper.setData(getRandomSecurityQuestion(customerModel));
-		wrapper.setMessage(WebResponseStatus.AUTH_OK, "Password is Correct");
+		wrapper.setMessage(OWAStatusStatusCodes.AUTH_OK, "Password is Correct");
 		sessionService.getGuestSession().endStep(AuthStep.USERPASS);
 		wrapper.getData().setState(sessionService.getGuestSession().getState());
 		return wrapper;
+	}
+
+	public ResponseWrapper<AuthResponse> loginByDevice(String identity, String deviceToken) {
+		ResponseWrapper<AuthResponse> wrapper = new ResponseWrapper<AuthResponse>(new AuthData());
+		sessionService.clear();
+		sessionService.getGuestSession().initFlow(AuthState.AuthFlow.LOGIN, AuthStep.DEVICEPASS);
+		CustomerModel customerModel;
+		sessionService.getGuestSession().setIdentity(identity);
+
+		customerModel = jaxService.setDefaults().getUserclient().loginUserByFingerprint(identity, deviceToken)
+				.getResult();
+		if (customerModel == null) {
+			throw new JaxSystemError();
+		}
+
+		sessionService.getGuestSession().setCustomerModel(customerModel);
+
+		return loginSuccess(wrapper, AuthStep.DEVICEPASS, customerModel);
 	}
 
 	/**
@@ -135,23 +156,7 @@ public class LoginService {
 				throw new JaxSystemError();
 			}
 
-			/*
-			 * TODO:- need to evaluate this condition it has some backward compatibility
-			 * consideration
-			 */
-			sessionService.authorize(customerModel,
-					sessionService.getGuestSession().getState().isFlow(AuthState.AuthFlow.LOGIN));
-
-			if (sessionService.getGuestSession().getState().isFlow(AuthState.AuthFlow.LOGIN)) {
-				jaxService.getUserclient().customerLoggedIn(sessionService.getAppDevice().getUserDevice());
-
-				wrapper.setRedirectUrl(sessionService.getGuestSession().getReturnUrl());
-				sessionService.getGuestSession().setReturnUrl(null);
-			}
-
-			wrapper.setMessage(WebResponseStatus.AUTH_DONE, ResponseMessage.AUTH_SUCCESS);
-			sessionService.getGuestSession().endStep(AuthStep.SECQUES);
-			wrapper.getData().setState(sessionService.getGuestSession().getState());
+			loginSuccess(wrapper, AuthStep.SECQUES, customerModel);
 
 		} catch (GlobalException e) {
 			if (e.getError() == JaxError.INCORRECT_SECURITY_QUESTION_ANSWER) {
@@ -171,7 +176,7 @@ public class LoginService {
 						wrapper.getData().setQues(questModelDTO);
 					}
 				}
-				wrapper.setMessage(WebResponseStatus.AUTH_FAILED, e);
+				wrapper.setMessage(OWAStatusStatusCodes.AUTH_FAILED, e);
 				auditService.log(new CAuthEvent(sessionService.getGuestSession().getState(), CAuthEvent.Result.FAIL,
 						e.getError()));
 			} else {
@@ -182,6 +187,37 @@ public class LoginService {
 			UIServerError.evaluate(e);
 		}
 		return wrapper;
+	}
+
+	public ResponseWrapper<AuthResponse> loginSuccess(ResponseWrapper<AuthResponse> wrapper, AuthStep secques,
+			CustomerModel customerModel) {
+		/*
+		 * TODO:- need to evaluate this condition it has some backward compatibility
+		 * consideration
+		 */
+		sessionService.authorize(customerModel,
+				sessionService.getGuestSession().getState().isFlow(AuthState.AuthFlow.LOGIN));
+
+		if (sessionService.getGuestSession().getState().isFlow(AuthState.AuthFlow.LOGIN)) {
+			jaxService.setDefaults().getUserclient().customerLoggedIn(sessionService.getAppDevice().getUserDevice());
+			wrapper.setRedirectUrl(sessionService.getGuestSession().getReturnUrl());
+			sessionService.getGuestSession().setReturnUrl(null);
+		}
+
+		updateCustoemrModel();
+
+		wrapper.setMessage(OWAStatusStatusCodes.AUTH_DONE, ResponseMessage.AUTH_SUCCESS);
+		sessionService.getGuestSession().endStep(secques);
+		wrapper.getData().setState(sessionService.getGuestSession().getState());
+		return wrapper;
+	}
+
+	public void updateCustoemrModel() {
+		String identity = sessionService.getUserSession().getCustomerModel().getIdentityId();
+		AmxApiResponse<CustomerModelResponse, Object> x = jaxService.setDefaults().getUserclient()
+				.getCustomerModelResponse(identity);
+		sessionService.getUserSession().getCustomerModel().setFlags(x.getResult().getCustomerFlags());
+		sessionService.getUserSession().getCustomerModel().setPersoninfo(x.getResult().getPersonInfo());
 	}
 
 	/**
@@ -203,7 +239,7 @@ public class LoginService {
 		// append info in response data
 		wrapper.getData().setmOtpPrefix(model.getmOtpPrefix());
 		wrapper.getData().seteOtpPrefix(model.geteOtpPrefix());
-		wrapper.setMessage(WebResponseStatus.OTP_SENT, "OTP generated and sent");
+		wrapper.setMessage(OWAStatusStatusCodes.OTP_SENT, "OTP generated and sent");
 		return wrapper;
 	}
 
@@ -223,7 +259,7 @@ public class LoginService {
 		CivilIdOtpModel model = jaxService.setDefaults().getUserclient().sendResetOtpForCivilId(identity).getResult();
 		wrapper.getData().setmOtpPrefix(model.getmOtpPrefix());
 		wrapper.getData().seteOtpPrefix(model.geteOtpPrefix());
-		wrapper.setMessage(WebResponseStatus.OTP_SENT, "OTP generated and sent");
+		wrapper.setMessage(OWAStatusStatusCodes.OTP_SENT, "OTP generated and sent");
 		sessionService.getGuestSession().endStep(AuthStep.IDVALID);
 		wrapper.getData().setState(sessionService.getGuestSession().getState());
 		return wrapper;
@@ -248,7 +284,7 @@ public class LoginService {
 		sessionService.getGuestSession().setCustomerModel(model);
 		wrapper.setData(getRandomSecurityQuestion(model));
 
-		wrapper.setMessage(WebResponseStatus.VERIFY_SUCCESS, ResponseMessage.AUTH_SUCCESS);
+		wrapper.setMessage(OWAStatusStatusCodes.VERIFY_SUCCESS, ResponseMessage.AUTH_SUCCESS);
 		sessionService.getGuestSession().endStep(AuthStep.MOTPVFY);
 		wrapper.getData().setState(sessionService.getGuestSession().getState());
 		return wrapper;
@@ -274,7 +310,7 @@ public class LoginService {
 		}
 		BoolRespModel model = jaxService.setDefaults().getUserclient().updatePassword(password, mOtp, eOtp).getResult();
 		if (model.isSuccess()) {
-			wrapper.setMessage(WebResponseStatus.USER_UPDATE_SUCCESS, "Password Updated Succesfully");
+			wrapper.setMessage(OWAStatusStatusCodes.USER_UPDATE_SUCCESS, "Password Updated Succesfully");
 			sessionService.getGuestSession().endStep(AuthStep.CREDS_SET);
 			wrapper.getData().setState(sessionService.getGuestSession().getState());
 		}

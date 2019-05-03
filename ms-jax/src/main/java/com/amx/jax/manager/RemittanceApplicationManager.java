@@ -18,9 +18,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
-import com.amx.amxlib.model.response.ExchangeRateBreakup;
-import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.ApplicationProcedureDao;
 import com.amx.jax.dbmodel.BankMasterModel;
@@ -40,14 +37,20 @@ import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.RemittanceModeMaster;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.request.remittance.AbstractRemittanceApplicationRequestModel;
+import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
+import com.amx.jax.model.response.ExchangeRateBreakup;
+import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
+import com.amx.jax.pricer.dto.ExchangeDiscountInfo;
+import com.amx.jax.pricer.var.PricerServiceConstants.DISCOUNT_TYPE;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.IDocumentDao;
 import com.amx.jax.service.BankMetaService;
 import com.amx.jax.service.CompanyService;
 import com.amx.jax.service.FinancialService;
-import com.amx.jax.service.LoyalityPointService;
 import com.amx.jax.services.BankService;
 import com.amx.jax.services.BeneficiaryService;
+import com.amx.jax.services.LoyalityPointService;
 import com.amx.jax.util.DateUtil;
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -100,9 +103,7 @@ public class RemittanceApplicationManager {
 	 *            exchange rate, net amount etc
 	 * @return
 	 **/
-	public RemittanceApplication createRemittanceApplication(RemittanceTransactionRequestModel requestModel,
-			Map<String, Object> validatedObjects, RemittanceTransactionResponsetModel validationResults,
-			Map<String, Object> remitApplParametersMap) {
+	public RemittanceApplication createRemittanceApplication(RemittanceTransactionRequestModel requestModel,Map<String, Object> validatedObjects, RemittanceTransactionResponsetModel validationResults,Map<String, Object> remitApplParametersMap) {
 		RemittanceApplication remittanceApplication = new RemittanceApplication();
 
 		BigDecimal localCurrencyId = metaData.getDefaultCurrencyId();
@@ -220,7 +221,34 @@ public class RemittanceApplicationManager {
 		validateBannedBank();
 		validateDailyBeneficiaryTransactionLimit(beneDetails);
 		remittanceApplication.setInstruction("URGENT");
+		setCustomerDiscountColumns(remittanceApplication, validationResults);
 		return remittanceApplication;
+	}
+
+	public void setCustomerDiscountColumns(RemittanceApplication remittanceApplication,
+			RemittanceTransactionResponsetModel remittanceTransactionResponsetModel) {
+		remittanceApplication.setIsDiscountAvailed(
+				Boolean.TRUE.equals(remittanceTransactionResponsetModel.getDiscountAvailed()) ? ConstantDocument.Yes
+						: ConstantDocument.No);
+		Map<DISCOUNT_TYPE, ExchangeDiscountInfo> customerDiscoutDetails = remittanceTransactionResponsetModel
+				.getCustomerDiscountDetails();
+		if (customerDiscoutDetails != null) {
+			remittanceApplication
+					.setCusCatDiscountId(customerDiscoutDetails.get(DISCOUNT_TYPE.CUSTOMER_CATEGORY).getId());
+			remittanceApplication.setCusCatDiscount(
+					customerDiscoutDetails.get(DISCOUNT_TYPE.CUSTOMER_CATEGORY).getDiscountPipsValue());
+			remittanceApplication.setChannelDiscountId(customerDiscoutDetails.get(DISCOUNT_TYPE.CHANNEL).getId());
+			remittanceApplication
+					.setChannelDiscount(customerDiscoutDetails.get(DISCOUNT_TYPE.CHANNEL).getDiscountPipsValue());
+			String pips = customerDiscoutDetails.get(DISCOUNT_TYPE.AMOUNT_SLAB).getDiscountTypeValue();
+			if (!StringUtils.isBlank(pips)) {
+				String[] parts = pips.split("-");
+				remittanceApplication.setPipsFromAmt(parts[0] == null ? new BigDecimal(0) : new BigDecimal(parts[0]));
+				remittanceApplication.setPipsToAmt(parts[1] == null ? new BigDecimal(0) : new BigDecimal(parts[1]));
+			}
+			remittanceApplication
+					.setPipsDiscount(customerDiscoutDetails.get(DISCOUNT_TYPE.AMOUNT_SLAB).getDiscountPipsValue());
+		}
 	}
 
 	private BigDecimal getSelectedCurrency(BigDecimal foreignCurrencyId,
@@ -251,31 +279,25 @@ public class RemittanceApplicationManager {
 		}
 	}
 
-	private void validateAdditionalErrorMessages(RemittanceTransactionRequestModel requestModel) {
+	public void validateAdditionalErrorMessages(RemittanceTransactionRequestModel requestModel) {
 		remitApplParametersMap.put("P_FURTHER_INSTR", "URGENT");
-		Map<String, Object> errorResponse = applicationProcedureDao
-				.toFetchPurtherInstractionErrorMessaage(remitApplParametersMap);
+		Map<String, Object> errorResponse = applicationProcedureDao.toFetchPurtherInstractionErrorMessaage(remitApplParametersMap);
 		String errorMessage = (String) errorResponse.get("P_ERRMSG");
-		Map<String, Object> furtherSwiftAdditionalDetails = applicationProcedureDao
-				.fetchAdditionalBankRuleIndicators(remitApplParametersMap);
+		Map<String, Object> furtherSwiftAdditionalDetails = applicationProcedureDao.fetchAdditionalBankRuleIndicators(remitApplParametersMap);
 		remitApplParametersMap.putAll(furtherSwiftAdditionalDetails);
 		remitApplParametersMap.put("P_ADDITIONAL_BANK_RULE_ID_1", requestModel.getAdditionalBankRuleFiledId());
 		if (requestModel.getSrlId() != null) {
 			BigDecimal srlId = requestModel.getSrlId();
 			logger.info("Srl Id received: " + srlId);
 			BigDecimal bankId = (BigDecimal) remitApplParametersMap.get("P_ROUTING_BANK_ID");
-			// BigDecimal countryId = (BigDecimal)
-			// remitApplParametersMap.get("P_ROUTING_COUNTRY_ID");
 			BigDecimal remittanceModeId = (BigDecimal) remitApplParametersMap.get("P_REMITTANCE_MODE_ID");
 			BigDecimal deliveryModeId = (BigDecimal) remitApplParametersMap.get("P_DELIVERY_MODE_ID");
 			BigDecimal foreignCurrencyId = (BigDecimal) remitApplParametersMap.get("P_FOREIGN_CURRENCY_ID");
 			logger.info("bankId: " + bankId + "remittanceModeId: " + remittanceModeId + "deliveryModeId "
 					+ deliveryModeId + " foreignCurrencyId: " + foreignCurrencyId);
-			AdditionalBankDetailsViewx additionaBnankDetail = bankService.getAdditionalBankDetail(srlId,
-					foreignCurrencyId, bankId, remittanceModeId, deliveryModeId);
+			AdditionalBankDetailsViewx additionaBnankDetail = bankService.getAdditionalBankDetail(srlId,foreignCurrencyId, bankId, remittanceModeId, deliveryModeId);
 			if (additionaBnankDetail != null) {
-				logger.info("additionaBnankDetail getServiceApplicabilityRuleId: "
-						+ additionaBnankDetail.getServiceApplicabilityRuleId());
+				logger.info("additionaBnankDetail getServiceApplicabilityRuleId: "+ additionaBnankDetail.getServiceApplicabilityRuleId());
 				remitApplParametersMap.put("P_AMIEC_CODE_1", additionaBnankDetail.getAmiecCode());
 				remitApplParametersMap.put("P_FLEX_FIELD_VALUE_1", additionaBnankDetail.getAmieceDescription());
 				remitApplParametersMap.put("P_FLEX_FIELD_CODE_1", additionaBnankDetail.getFlexField());
@@ -306,12 +328,13 @@ public class RemittanceApplicationManager {
 
 		BigDecimal loyalityPointsEncashed = BigDecimal.ZERO;
 		if (loyalityPointsAvailed(requestModel, validationResults)) {
-			loyalityPointsEncashed = loyalityPointService.getVwLoyalityEncash().getEquivalentAmount();
+			loyalityPointsEncashed = validationResults.getLoyalityAmountAvailableForTxn();
 		}
 		remittanceApplication.setForeignTranxAmount(breakup.getConvertedFCAmount());
 		remittanceApplication.setLocalTranxAmount(breakup.getConvertedLCAmount());
 		remittanceApplication.setExchangeRateApplied(breakup.getInverseRate());
 		remittanceApplication.setLocalCommisionAmount(validationResults.getTxnFee());
+		remittanceApplication.setDiscountOnCommission(validationResults.getDiscountOnComission());
 		remittanceApplication.setLocalChargeAmount(BigDecimal.ZERO);
 		remittanceApplication.setLocalDeliveryAmount(BigDecimal.ZERO);
 		remittanceApplication.setLocalNetTranxAmount(breakup.getNetAmountWithoutLoyality());
@@ -327,7 +350,7 @@ public class RemittanceApplicationManager {
 	 * @return
 	 * 
 	 */
-	public Boolean loyalityPointsAvailed(RemittanceTransactionRequestModel requestModel,
+	public Boolean loyalityPointsAvailed(AbstractRemittanceApplicationRequestModel requestModel,
 			RemittanceTransactionResponsetModel responseModel) {
 		if (requestModel.isAvailLoyalityPoints() && responseModel.getCanRedeemLoyalityPoints()) {
 			return true;

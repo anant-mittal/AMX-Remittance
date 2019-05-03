@@ -18,10 +18,16 @@ import com.amx.jax.dbmodel.RemittanceTransactionView;
  */
 
 public interface IRemittanceTransactionDao extends JpaRepository<RemittanceTransactionView, Serializable>{
-	//(BigDecimal documentNo, BigDecimal fYear,BigDecimal documentCode);
+
 	
 	@Query("select rtv from RemittanceTransactionView rtv where rtv.collectionDocumentNo=:documentNo and rtv.applicationFinancialYear=:fYear and rtv.collectionDocCode=:documentCode")
 	public List<RemittanceTransactionView> getRemittanceTransaction(@Param("documentNo") BigDecimal documentNo,@Param("fYear") BigDecimal fYear,@Param("documentCode") BigDecimal documentCode);
 
 	public RemittanceTransactionView findByRemittanceTransactionId(BigDecimal remittanceTransactionId);
+	
+	@Query("select rtv from RemittanceTransactionView rtv where rtv.collectionDocumentNo=:documentNo and rtv.applicationFinancialYear=:fYear and rtv.collectionDocCode=:documentCode and "
+			+ " rtv.idProofTypeId=:idProofTypeId")
+	public List<RemittanceTransactionView> getRemittanceTransactionForReport(@Param("documentNo") BigDecimal documentNo,
+			@Param("fYear") BigDecimal fYear, @Param("documentCode") BigDecimal documentCode,
+			@Param("idProofTypeId") BigDecimal idProofTypeId);
 }

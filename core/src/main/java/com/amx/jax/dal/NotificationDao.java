@@ -29,7 +29,6 @@ import com.amx.jax.util.CountryUtil;
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class NotificationDao {
 
-	
 	private Logger logger = Logger.getLogger(NotificationDao.class);
 
 	@Autowired
@@ -86,9 +85,9 @@ public class NotificationDao {
 	}
 
 	private String getSenderId() {
-		boolean isKw = cutil.isKuwait(meta.getCountry().getCountryCode());
-		boolean isBh = cutil.isBahrain((meta.getCountry().getCountryCode()));
-		boolean isOm = cutil.isOman((meta.getCountry().getCountryCode()));
+		boolean isKw = cutil.isKuwait(meta.getCountry().getISO2Code());
+		boolean isBh = cutil.isBahrain((meta.getCountry().getISO2Code()));
+		boolean isOm = cutil.isOman((meta.getCountry().getISO2Code()));
 		if (isKw) {
 			return "AlMulla EXC";
 		}

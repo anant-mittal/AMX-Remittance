@@ -2,7 +2,6 @@ package com.amx.jax.services;
 
 import java.math.BigDecimal;
 import java.util.Date;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +9,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
-
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.constant.ConstantDocument;
@@ -28,8 +26,10 @@ import com.amx.jax.model.request.device.SignaturePadFCPurchaseSaleInfo;
 import com.amx.jax.model.request.device.SignaturePadRemittanceInfo;
 import com.amx.jax.model.response.DeviceStatusInfoDto;
 import com.amx.jax.model.response.IDeviceStateData;
+import com.amx.jax.model.response.customer.CustomerIdProofDto;
 import com.amx.jax.rbaac.RbaacServiceClient;
 import com.amx.jax.userservice.service.UserService;
+import com.amx.jax.validation.DeviceStateDetailsValidation;
 import com.amx.utils.JsonUtil;;
 
 @Service
@@ -52,6 +52,8 @@ public class DeviceStateService extends AbstractService {
 	UserService userService;
 	@Autowired
 	RbaacServiceClient rbaacServiceClient;
+	@Autowired
+	DeviceStateDetailsValidation devicestateValidation;
 
 	/**
 	 * @param registrationId
@@ -65,7 +67,7 @@ public class DeviceStateService extends AbstractService {
 		if (registrationId == null) {
 			throw new GlobalException("Device registration id can not be blank");
 		}
-		DeviceStateInfo deviceStateInfo = deviceDao.getDeviceStateInfo(new BigDecimal(registrationId));
+		DeviceStateInfo deviceStateInfo = deviceDao.getOrCreateDeviceStateInfo(new BigDecimal(registrationId));
 		DeviceStatusInfoDto dto = new DeviceStatusInfoDto();
 		dto.setStateDataType(deviceStateInfo.getStateDataType());
 		if (deviceStateInfo.getStateDataType() != null) {
@@ -111,14 +113,18 @@ public class DeviceStateService extends AbstractService {
 		}
 	}
 
-	private SignaturePadCustomerRegStateInfo getCustomerRegData(Integer customerId) {
-
+	public SignaturePadCustomerRegStateInfo getCustomerRegData(Integer customerId) {
 		SignaturePadCustomerRegStateInfo info = new SignaturePadCustomerRegStateInfo();
 		BigDecimal customerIdBd = new BigDecimal(customerId);
 		info.setCustomerContactDto(customerService.getCustomerContactDto(customerIdBd));
 		info.setCustomerDto(customerService.getCustomerDto(customerIdBd));
-		info.setCustomerIdProofDto(
-				customerService.getCustomerIdProofDto(customerIdBd, ConstantDocument.BIZ_COMPONENT_ID_CIVIL_ID));
+		CustomerIdProofDto customerIdProofDto = customerService.getCustomerIdProofDto(customerIdBd,
+				ConstantDocument.BIZ_COMPONENT_ID_CIVIL_ID);
+		if (customerIdProofDto == null) {
+			customerIdProofDto = customerService.getCustomerIdProofDto(customerIdBd,
+					ConstantDocument.BIZ_COMPONENT_ID_NEW_CIVIL_ID);
+		}
+		info.setCustomerIdProofDto(customerIdProofDto);
 		info.setCustomerIncomeRangeDto(customerService.getCustomerIncomeRangeDto(customerIdBd));
 		return info;
 	}
@@ -141,11 +147,20 @@ public class DeviceStateService extends AbstractService {
 	}
 
 	public BoolRespModel updateSignatureStateData(Integer deviceRegId, String imageUrlStr) {
+		//
+		validateDeviceRegId(deviceRegId);
+		devicestateValidation.validateDeviceRegIdndImageURL(deviceRegId, imageUrlStr);
 		DeviceStateInfo deviceStateInfo = deviceDao.getDeviceStateInfo(new BigDecimal(deviceRegId));
 		deviceStateInfo.setSignature(imageUrlStr);
 		deviceDao.saveDeviceInfo(deviceStateInfo);
 
 		return new BoolRespModel(Boolean.TRUE);
+	}
+
+	public void validateDeviceRegId(Integer deviceRegId) {
+		if((rbaacServiceClient.getDeviceByDeviceRegId(new BigDecimal(deviceRegId))) == null) {
+			throw new GlobalException("Invalid Device Registration Id");
+		}
 	}
 
 	public BoolRespModel clearDeviceState(Integer registrationId, String paireToken, String sessionToken) {

@@ -21,6 +21,7 @@ import com.amx.jax.customer.service.OffsitCustRegService;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.CardDetail;
+import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.model.dto.SendOtpModel;
 import com.amx.jax.model.request.CustomerInfoRequest;
 import com.amx.jax.model.request.CustomerPersonalDetail;
@@ -28,6 +29,7 @@ import com.amx.jax.model.request.DynamicFieldRequest;
 import com.amx.jax.model.request.EmploymentDetailsRequest;
 import com.amx.jax.model.request.ImageSubmissionRequest;
 import com.amx.jax.model.request.OffsiteCustomerRegistrationRequest;
+import com.amx.jax.model.request.customer.GetOffsiteCustomerDetailRequest;
 import com.amx.jax.model.response.ArticleDetailsDescDto;
 import com.amx.jax.model.response.ArticleMasterDescDto;
 import com.amx.jax.model.response.ComponentDataDto;
@@ -74,7 +76,8 @@ public class CustRegController implements ICustRegService {
 
 	@Override
 	@RequestMapping(value = CustRegApiEndPoints.GET_CUSTOMER_OTP, method = RequestMethod.POST)
-	public AmxApiResponse<SendOtpModel, Object> sendOtp(@RequestBody @Valid CustomerPersonalDetail customerPersonalDetail) {
+	public AmxApiResponse<SendOtpModel, Object> sendOtp(
+			@RequestBody @Valid CustomerPersonalDetail customerPersonalDetail) {
 		return offsiteCustRegService.sendOtp(customerPersonalDetail);
 
 	}
@@ -124,7 +127,7 @@ public class CustRegController implements ICustRegService {
 	@RequestMapping(value = CustRegApiEndPoints.SAVE_KYC_DOC, method = RequestMethod.POST)
 	public AmxApiResponse<String, Object> saveCustomeKycDocument(@RequestBody ImageSubmissionRequest model)
 			throws ParseException {
-		return offsiteCustRegService.saveCustomeKycDocument(model);
+		return offsiteCustRegService.saveCustomeKycDocumentAndPopulateCusmas(model);
 	}
 
 	@RequestMapping(value = CustRegApiEndPoints.SAVE_SIGNATURE, method = RequestMethod.POST)
@@ -138,13 +141,37 @@ public class CustRegController implements ICustRegService {
 	}	
 	
 	@RequestMapping(value = CustRegApiEndPoints.SAVE_OFFSITE_LOGIN, method = RequestMethod.POST)
-	public AmxApiResponse<CustomerCredential, Object> saveLoginDetailOffsite(@RequestBody CustomerCredential customerCredential) {
+	public AmxApiResponse<CustomerCredential, Object> saveLoginDetailOffsite(
+			@RequestBody CustomerCredential customerCredential) {
 		return offsiteCustRegService.saveLoginDetailOffsite(customerCredential);
 	}
 	
 	@RequestMapping(value = CustRegApiEndPoints.GET_OFFSITE_CUSTOMER_DATA, method = RequestMethod.GET)
-	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerData(@RequestParam(value = "identityInt", required = true) String identityInt,
+	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerData(
+			@RequestParam(value = "identityInt", required = true) String identityInt,
 			@RequestParam(value = "identityType", required = true) BigDecimal identityType) {
 		return offsiteCustRegService.getOffsiteCustomerData(identityInt, identityType);
 	}
+
+	
+	@RequestMapping(value = CustRegApiEndPoints.DESIGNATION_LIST, method = RequestMethod.GET)
+	public AmxApiResponse<ResourceDTO, Object> getDesignationList() {
+		return offsiteCustRegService.getDesignationList();
+	}
+	
+	@RequestMapping(value = CustRegApiEndPoints.GET_CUSTOMER_DEATILS, method = RequestMethod.GET)
+	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerDetails(
+			@RequestParam(value = "identityInt", required = true) String identityInt,
+			@RequestParam(value = "identityType", required = true) BigDecimal identityType) {
+		return offsiteCustRegService.getOffsiteCustomerDetails(identityInt, identityType);
+	}
+	
+	@RequestMapping(value = CustRegApiEndPoints.GET_OFFSITE_CUSTOMER_DATA_V1, method = RequestMethod.GET)
+	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerDataV1(
+			@RequestBody @Valid GetOffsiteCustomerDetailRequest request) {
+		return offsiteCustRegService.getOffsiteCustomerData(request);
+	}
+	
+	
+	
 }

@@ -51,6 +51,7 @@ import com.amx.jax.model.response.fx.ShoppingCartDetailsDto;
 import com.amx.jax.payg.PayGModel;
 import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.repository.CountryBranchRepository;
+import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.repository.IDocumentDao;
 import com.amx.jax.repository.PaymentModeRepository;
 import com.amx.jax.repository.ReceiptPaymentAppRepository;
@@ -58,7 +59,6 @@ import com.amx.jax.repository.fx.FxDeliveryDetailsRepository;
 import com.amx.jax.service.CompanyService;
 import com.amx.jax.service.FinancialService;
 import com.amx.jax.userservice.dao.CustomerDao;
-import com.amx.jax.userservice.repository.CustomerRepository;
 import com.amx.jax.util.JaxUtil;
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -108,10 +108,13 @@ public class FxOrderPaymentManager {
 
 	@Autowired
 	PaymentModeRepository payModeRepositoy;
+	
 
 	@Autowired
 	AuditService auditService;
+	
 
+	
 	public PaymentResponseDto paymentCapture(PaymentResponseDto paymentResponse) {
 		logger.debug("paymment capture :" + paymentResponse.toString());
 		logger.debug("Customer Id :" + paymentResponse.getCustomerId());
@@ -360,7 +363,7 @@ public class FxOrderPaymentManager {
 						documentDao.getDocumnetByCode(ConstantDocument.DOCUMENT_CODE_FOR_COLLECT_TRANSACTION).get(0)
 								.getDocumentID());
 				BigDecimal documentNo = generateDocumentNumber(countryBranch, appl.getCountryId(),
-						companyDetails.getCompanyId(), ConstantDocument.Update, appl.getDocumentFinanceYear(),
+						companyDetails.getCompanyId(), ConstantDocument.A, appl.getDocumentFinanceYear(),
 						ConstantDocument.DOCUMENT_CODE_FOR_COLLECT_TRANSACTION);
 				if (documentNo != null && documentNo.compareTo(BigDecimal.ZERO) != 0) {
 					collection.setDocumentNo(documentNo);

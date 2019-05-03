@@ -8,6 +8,7 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.error.ApiJaxStatusBuilder.ApiJaxStatus;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.model.CardDetail;
+import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.model.dto.SendOtpModel;
 import com.amx.jax.model.request.CustomerInfoRequest;
 import com.amx.jax.model.request.CustomerPersonalDetail;
@@ -43,6 +44,10 @@ public interface ICustRegService extends IJaxService {
 		public static final String SCAN_CARD = PREFIX + "/scan_card";
 		public static final String SAVE_OFFSITE_LOGIN = PREFIX + "/offsite-save-login-detail";
 		public static final String GET_OFFSITE_CUSTOMER_DATA = PREFIX + "/getOffsiteCustomerData";
+		public static final String GET_CUSTOMER_DEATILS = PREFIX + "/customer-details";
+		public static final String GET_OFFSITE_CUSTOMER_DATA_V1 = PREFIX + "/getOffsiteCustomerData/v1";
+		
+		public static final String DESIGNATION_LIST = PREFIX + "/getDesignationList";
 	}
 	
 	public static class Params {
@@ -95,8 +100,14 @@ public interface ICustRegService extends IJaxService {
 	@ApiJaxStatus({ JaxError.ALREADY_EXIST_EMAIL, JaxError.INVALID_MOBILE_NUMBER })
 	AmxApiResponse<SendOtpModel, Object> sendOtp(CustomerPersonalDetail customerPersonalDetail);
 	
+	@ApiJaxStatus({ JaxError.EMPTY_DESIGNATION_LIST })
+	AmxApiResponse<ResourceDTO, Object> getDesignationList();
+	
 	AmxApiResponse<CustomerCredential, Object> saveLoginDetailOffsite(CustomerCredential customerCredential);
 	
 	AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerData(String identityInt, BigDecimal identityType);
+	
+	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND})
+	AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerDetails(String identityInt, BigDecimal identityType);
 
 }

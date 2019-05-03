@@ -46,6 +46,17 @@ public class MetaData implements IMetaData {
     private String deviceType;
     private String appType;
     private BigDecimal employeeId;
+	private BigDecimal terminalId;
+    
+    private Boolean annualIncomeForceUpdate;
+	public Boolean getAnnualIncomeForceUpdate() {
+		return annualIncomeForceUpdate;
+	}
+
+	public void setAnnualIncomeForceUpdate(Boolean annualIncomeForceUpdate) {
+		this.annualIncomeForceUpdate = annualIncomeForceUpdate;
+	}
+
 	/**
 	 * This returns service factory object depending on site country
 	 */
@@ -55,9 +66,8 @@ public class MetaData implements IMetaData {
 		return null;
 	}
 
-	public Country getCountry() {
-		Country country = Country.countryIdToCountryMap.get(countryId.intValue());
-		return country;
+	public Tenant getCountry() {
+		return Tenant.fromCountryId(countryId.intValue());
 	}
 
 	public BigDecimal getCompanyId() {
@@ -182,6 +192,12 @@ public class MetaData implements IMetaData {
 		this.employeeId = employeeId;
 	}
 
-	
+	public BigDecimal getTerminalId() {
+		return terminalId;
+	}
+
+	public void setTerminalId(BigDecimal terminalId) {
+		this.terminalId = terminalId;
+	}
 
 }

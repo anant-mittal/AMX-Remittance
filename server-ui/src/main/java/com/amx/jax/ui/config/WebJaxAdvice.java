@@ -31,8 +31,8 @@ import com.amx.jax.logger.AuditService;
 import com.amx.jax.model.AuthState;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.ui.audit.CAuthEvent;
+import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
 import com.amx.jax.ui.response.ResponseWrapper;
-import com.amx.jax.ui.response.WebResponseStatus;
 import com.amx.jax.ui.service.SessionService;
 import com.amx.jax.ui.session.GuestSession;
 import com.amx.utils.ArgUtil;
@@ -76,9 +76,9 @@ public class WebJaxAdvice {
 			HttpServletResponse response) {
 		ResponseWrapper<Object> wrapper = new ResponseWrapper<Object>();
 
-		wrapper.setMessage(WebResponseStatus.UNKNOWN_JAX_ERROR, exc);
+		wrapper.setMessage(OWAStatusStatusCodes.UNKNOWN_JAX_ERROR, exc);
 
-		String errorKey = ArgUtil.parseAsString(exc.getErrorKey(), WebResponseStatus.UNKNOWN_JAX_ERROR.toString());
+		String errorKey = ArgUtil.parseAsString(exc.getErrorKey(), OWAStatusStatusCodes.UNKNOWN_JAX_ERROR.toString());
 		if (exc.isReportable()) {
 			LOG.error(errorKey, exc);
 			postManService.notifyException(errorKey, exc);
@@ -119,7 +119,7 @@ public class WebJaxAdvice {
 			errors.add(newError);
 		}
 		wrapper.setErrors(errors);
-		wrapper.setStatus(WebResponseStatus.BAD_INPUT);
+		wrapper.setStatusEnum(OWAStatusStatusCodes.BAD_INPUT);
 		wrapper.setException(exception.getClass().getName());
 		return new ResponseEntity<ResponseWrapper<Object>>(wrapper, HttpStatus.BAD_REQUEST);
 	}
@@ -140,7 +140,7 @@ public class WebJaxAdvice {
 		newError.setDescription(HttpUtils.sanitze(exception.getMessage()));
 		errors.add(newError);
 		wrapper.setErrors(errors);
-		wrapper.setStatus(WebResponseStatus.BAD_INPUT);
+		wrapper.setStatusEnum(OWAStatusStatusCodes.BAD_INPUT);
 		wrapper.setException(exception.getClass().getName());
 		return new ResponseEntity<ResponseWrapper<Object>>(wrapper, HttpStatus.BAD_REQUEST);
 	}
@@ -207,7 +207,7 @@ public class WebJaxAdvice {
 	protected ResponseEntity<ResponseWrapper<Object>> notValidArgument(Exception ex, List<AmxFieldError> errors,
 			HttpServletRequest request, HttpServletResponse response) {
 		ResponseWrapper<Object> wrapper = new ResponseWrapper<Object>();
-		wrapper.setStatus(WebResponseStatus.BAD_INPUT);
+		wrapper.setStatusEnum(OWAStatusStatusCodes.BAD_INPUT);
 		wrapper.setErrors(errors);
 		wrapper.setException(ex.getClass().getName());
 		return new ResponseEntity<ResponseWrapper<Object>>(wrapper, HttpStatus.BAD_REQUEST);

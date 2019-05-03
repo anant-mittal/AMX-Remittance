@@ -37,16 +37,13 @@ import com.amx.amxlib.meta.model.RemittancePageDto;
 import com.amx.amxlib.meta.model.RoutingBankMasterDTO;
 import com.amx.amxlib.meta.model.ServiceGroupMasterDescDto;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
-import com.amx.amxlib.model.BeneAccountModel;
 import com.amx.amxlib.model.BeneRelationsDescriptionDto;
 import com.amx.amxlib.model.CivilIdOtpModel;
-import com.amx.amxlib.model.PersonInfo;
 import com.amx.amxlib.model.PlaceOrderDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.amxlib.model.RoutingBankMasterParam;
-import com.amx.jax.config.JaxProperties;
 import com.amx.jax.config.JaxTenantProperties;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxDbConfig;
@@ -75,6 +72,7 @@ import com.amx.jax.logger.events.CActivityEvent;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.auth.QuestModelDTO;
 import com.amx.jax.model.response.CurrencyMasterDTO;
+import com.amx.jax.model.response.customer.PersonInfo;
 import com.amx.jax.repository.BeneficaryAccountRepository;
 import com.amx.jax.repository.CountryRepository;
 import com.amx.jax.repository.IBeneficaryContactDao;
@@ -426,6 +424,7 @@ public class BeneficiaryService extends AbstractService {
 			}
 
 			remitPageDto.setBeneficiaryDto(beneDto);
+			remitPageDto.setForCur(getCurrencyDTO(beneDto.getCurrencyId()));
 			if (trnxView != null) {
 				remitPageDto.setTrnxHistDto(convertTranHistDto(trnxView));
 			}
@@ -499,6 +498,10 @@ public class BeneficiaryService extends AbstractService {
 			logger.error("bene list display", e);
 		}
 		beneCheck.setCanTransact(dto);
+		if (isCashBene(beneModel)) {
+			dto.setBankName(dto.getBankName() + " CASH PAYOUT");
+			dto.setBankShortNames(dto.getBankShortNames() + " CASH PAYOUT");
+		}
 		return dto;
 	}
 
@@ -1068,12 +1071,7 @@ public class BeneficiaryService extends AbstractService {
 		return beneficaryMasterRepository.findOne(beneficaryMasterSeqId);
 	}	
 
-	/**
-	 * whether bene is suspicous based on past transactions
-	 * 
-	 * @param beneRelationshipId
-	 */
-	public void isSuspiciousBeneficiary(BigDecimal beneRelationshipId) {
-
+	public boolean isCashBene(BenificiaryListView benificiaryListView) {
+		return BigDecimal.ONE.equals(benificiaryListView.getServiceGroupId());
 	}
 }

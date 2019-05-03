@@ -11,6 +11,7 @@ import com.amx.jax.grid.GridConstants;
 import com.amx.jax.grid.views.CustomerDetailViewRecord;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.radar.ESDocumentParser;
+import com.amx.jax.radar.jobs.customer.CustomerViewTask;
 import com.amx.jax.rates.AmxCurConstants;
 import com.amx.utils.JsonUtil;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
@@ -32,8 +33,8 @@ public class DateTest { // Noncompliant
 	 */
 	public static void main(String[] args) throws URISyntaxException, IOException {
 
-		Long lastUpdateDateNow = 1537312560000L;
-		Long lastUpdateDateNowLimit = lastUpdateDateNow - (10 * AmxCurConstants.INTERVAL_DAYS);
+		Long lastUpdateDateNow = 978287400000L;
+		Long lastUpdateDateNowLimit = lastUpdateDateNow + CustomerViewTask.TIME_PAGE_DELTA;
 
 		String dateString = GridConstants.GRID_TIME_FORMATTER_JAVA.format(new Date(lastUpdateDateNow));
 		String dateStringLimit = GridConstants.GRID_TIME_FORMATTER_JAVA

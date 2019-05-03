@@ -54,6 +54,9 @@ public class AdditionalInstructionData implements Serializable {
 	private String approvedBy;
 	private String amiecCode;
 
+	
+	
+
 	public AdditionalInstructionData() {
 	}
 

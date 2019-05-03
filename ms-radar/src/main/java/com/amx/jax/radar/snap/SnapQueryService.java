@@ -11,6 +11,12 @@ import org.springframework.stereotype.Component;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring4.SpringTemplateEngine;
 
+import com.amx.jax.client.snap.SnapConstants.SnapQueryTemplate;
+import com.amx.jax.client.snap.SnapModels.SnapModelWrapper;
+import com.amx.jax.client.snap.SnapQueryException;
+import com.amx.jax.radar.AESDocument;
+import com.amx.jax.radar.AESRepository.BulkRequestBuilder;
+import com.amx.jax.radar.ESRepository;
 import com.amx.jax.radar.EsConfig;
 import com.amx.jax.rest.RestService;
 import com.amx.utils.JsonUtil;
@@ -33,6 +39,9 @@ public class SnapQueryService {
 	@Autowired
 	EsConfig ssConfig;
 
+	@Autowired
+	public ESRepository esRepository;
+
 	public String processJson(SnapQueryTemplate template, Context context) {
 		return templateEngine.process("json/" + template.getFile(), context);
 	}
@@ -40,6 +49,9 @@ public class SnapQueryService {
 	public String buildQueryString(SnapQueryTemplate template, Map<String, Object> map) {
 		Locale locale = new Locale("en");
 		Context context = new Context(locale);
+		if (!map.containsKey("_type")) {
+			map.put("_type", template.getIndexName());
+		}
 		context.setVariables(map);
 		return this.processJson(template, context);
 	}
@@ -48,20 +60,47 @@ public class SnapQueryService {
 		return JsonUtil.getMapFromJsonString(this.buildQueryString(template, params));
 	}
 
-	public Map<String, Object> executeQuery(Map<String, Object> query, String index) throws IOException {
-		Map<String, Object> x = restService.ajax(ssConfig.getClusterUrl()).path(index + "/_search").post(query)
+	public SnapModelWrapper executeQuery(Map<String, Object> query, String index) {
+		Map<String, Object> x = restService.ajax(ssConfig.getClusterUrl())
+				.header(ssConfig.getBasicAuthHeader()).path(
+						EsConfig.indexName(index) + "/_search")
+				.post(query)
 				.asMap();
-		x.put("aggs", query.get("aggs"));
-		return x;
+		// x.put("aggs", query.get("aggs"));
+		// System.out.println(JsonUtil.toJson(query));
+		return new SnapModelWrapper(x);
 	}
 
-	public Map<String, Object> executeQuery(Map<String, Object> query) throws IOException {
+	public SnapModelWrapper executeQuery(Map<String, Object> query) throws IOException {
 		return executeQuery(query, "oracle-v3-*-v4");
 	}
 
-	public Map<String, Object> execute(SnapQueryTemplate template, Map<String, Object> params) throws IOException {
-		Map<String, Object> query = getQuery(template, params);
-		return executeQuery(query, template.getIndex());
+	public SnapModelWrapper execute(SnapQueryTemplate template, String index, Map<String, Object> params) {
+		Map<String, Object> query = null;
+		try {
+			query = getQuery(template, params);
+		} catch (IOException e) {
+			throw new SnapQueryException(SnapQueryException.SnapServiceCodes.INVALID_QUERY);
+		}
+		return executeQuery(query, index);
 	}
 
+	public SnapModelWrapper execute(SnapQueryTemplate template, Map<String, Object> params) {
+		return this.execute(template, template.getIndex(), params);
+	}
+
+	public static class BulkRequestSnapBuilder extends BulkRequestBuilder {
+		@Override
+		public BulkRequestBuilder updateById(String index, String type, String id, AESDocument vote) {
+			return super.updateById(EsConfig.indexName(index), type, id, vote);
+		}
+	}
+
+	public Map<String, Object> save(BulkRequestSnapBuilder builder) {
+		return esRepository.bulk(builder.build());
+	}
+
+	public Map<String, Object> save(String index, AESDocument vote) {
+		return esRepository.update(EsConfig.indexName(index), vote.getType(), vote);
+	}
 }

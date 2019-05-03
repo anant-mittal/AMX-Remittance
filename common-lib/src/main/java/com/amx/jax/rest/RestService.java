@@ -237,7 +237,9 @@ public class RestService {
 		}
 
 		public Ajax header(HttpHeaders header) {
-			this.headers = header;
+			if (!ArgUtil.isEmpty(header)) {
+				this.headers = header;
+			}
 			return this;
 		}
 
@@ -383,8 +385,8 @@ public class RestService {
 
 	}
 
-	public static <T extends RequestMetaInfo> void exportMetaToStatic(
-			IMetaRequestOutFilter<T> restMetaFilter, HttpHeaders httpHeaders) {
+	public static <T extends RequestMetaInfo> void exportMetaToStatic(IMetaRequestOutFilter<T> restMetaFilter,
+			HttpHeaders httpHeaders) {
 		if (restMetaFilter != null) {
 			T meta = restMetaFilter.exportMeta();
 			httpHeaders.add(AppConstants.META_XKEY, JsonUtil.toJson(meta));
@@ -407,13 +409,15 @@ public class RestService {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void importMetaFromStatic(HttpServletRequest req) {
+	public void importMetaFromStatic(HttpServletRequest req) throws InstantiationException, IllegalAccessException {
 		this.getInFilters();
 		if (inFilter != null) {
 			String metaValueString = req.getHeader(AppConstants.META_XKEY);
 			RequestMetaInfo x = inFilter.export(metaValueString);
 			if (x != null) {
 				inFilter.importMeta(x, req);
+			} else {
+				inFilter.importMeta((RequestMetaInfo) inFilter.getMetaClass().newInstance(), req);
 			}
 		}
 

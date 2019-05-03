@@ -30,11 +30,11 @@ public class JaxMetaInfo extends RequestMetaInfo {
 	private JaxChannel channel = JaxChannel.ONLINE; // default is online channel
 	private String referrer = null;
 	private String deviceId;
+	private BigDecimal terminalId;
 
 	private BigDecimal employeeId;
 
-	public JaxMetaInfo copy() {
-		JaxMetaInfo info = new JaxMetaInfo();
+	public JaxMetaInfo copyTo(JaxMetaInfo info) {
 		info.setCountryId(this.getCountryId());
 		info.setChannel(this.getChannel());
 		info.setCompanyId(this.getCompanyId());
@@ -48,7 +48,20 @@ public class JaxMetaInfo extends RequestMetaInfo {
 		info.setDeviceType(this.getDeviceType());
 		info.setAppType(this.getAppType());
 		info.setEmployeeId(this.getEmployeeId());
+		info.setTerminalId(this.terminalId);
 		return info;
+	}
+	public JaxMetaInfo copy() {
+		return this.copyTo(new JaxMetaInfo());
+	}
+
+
+	public BigDecimal getTerminalId() {
+		return terminalId;
+	}
+
+	public void setTerminalId(BigDecimal terminalId) {
+		this.terminalId = terminalId;
 	}
 
 	public String getDeviceId() {

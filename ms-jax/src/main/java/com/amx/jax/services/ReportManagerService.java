@@ -7,7 +7,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
+
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.PurposeOfRemittanceReportBean;
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
@@ -27,6 +30,7 @@ import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dal.LoyaltyInsuranceProDao;
 import com.amx.jax.dbmodel.CollectionDetailViewModel;
 import com.amx.jax.dbmodel.CollectionPaymentDetailsViewModel;
+import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.PurposeOfRemittanceViewModel;
 import com.amx.jax.dbmodel.RemittanceTransactionView;
 import com.amx.jax.dbmodel.ViewCompanyDetails;
@@ -38,6 +42,7 @@ import com.amx.jax.repository.ICompanyDAO;
 import com.amx.jax.repository.ICurrencyDao;
 import com.amx.jax.repository.IPurposeOfRemittance;
 import com.amx.jax.repository.IRemittanceTransactionDao;
+import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.RoundUtil;
 
 @Component
@@ -73,7 +78,9 @@ public class ReportManagerService extends AbstractService{
 	
 	private List<RemittanceReceiptSubreport> remittanceReceiptSubreportList;
 	@Autowired
-	PromotionManager promotionManager; 
+	PromotionManager promotionManager;
+	@Autowired
+	UserService userService;
 
 	
 	
@@ -131,7 +138,7 @@ public class ReportManagerService extends AbstractService{
 		
 		logger.info("Document Number=="+collectionDocNo+"\t docCode :"+collectionDocumentCode+"\t docYear :"+financeYear);
 	
-		
+		Customer customer = userService.getCustById(customerId);
 		
 		 
 		remittanceReceiptSubreportList = new ArrayList<RemittanceReceiptSubreport>();
@@ -150,7 +157,9 @@ public class ReportManagerService extends AbstractService{
 	
 		String currencyQuoteName = currencyDao.getCurrencyList(currencyId).get(0).getQuoteName();
 		
-		List<RemittanceTransactionView> remittanceViewlist = remittanceTransactionDao.getRemittanceTransaction(collectionDocNo, financeYear, collectionDocumentCode);
+			List<RemittanceTransactionView> remittanceViewlist = remittanceTransactionDao
+					.getRemittanceTransactionForReport(collectionDocNo, financeYear, collectionDocumentCode,
+							customer.getIdentityTypeId());
 				
 				
 		logger.info("Remittance View List Size is======"+remittanceViewlist.size());
@@ -343,6 +352,8 @@ public class ReportManagerService extends AbstractService{
 					obj.setTotalAmount(currencyQuoteName+"     "+netAmount.toString()); 
 				}
 
+				getSpecialRateData(view, obj, currencyQuoteName, decimalPerCurrency);
+				
 				obj.setFutherInstructions(view.getInstructions());
 				obj.setSourceOfIncome(view.getSourceOfIncomeDesc());
 				obj.setIntermediataryBank(view.getBenefeciaryInterBank1());
@@ -505,6 +516,61 @@ public class ReportManagerService extends AbstractService{
 	
 	}
 		
+	// ----------------- SPECIAL RATE RECEIPT DATA -------------------
+	private void getSpecialRateData(RemittanceTransactionView view, RemittanceReportBean obj, String currencyQuoteName,
+			int decimalPerCurrency) {
+		// Special Exchange Rate
+		if (view.getCurrencyQuoteName() != null && currencyQuoteName != null && view.getExchangeRateApplied() != null) {
+			obj.setSpecialExchangeRate(view.getCurrencyQuoteName() + " / " + currencyQuoteName + "     "
+					+ view.getExchangeRateApplied().toString());
+		}
+
+		// Equivalent kwd Amount
+		if (view.getLocalTransactionAmount() != null && view.getLocalTransactionCurrencyId() != null) {
+			BigDecimal transationAmount = RoundUtil.roundBigDecimal((view.getLocalTransactionAmount()),
+					decimalPerCurrency);
+			obj.setSpecialKwdAmount(currencyQuoteName + "     " + transationAmount.toString());
+		}
+
+		// Branch Exchange Rate and kwd Amount
+		if (null != view.getIsDiscAvail() && view.getIsDiscAvail().equals("Y")) {
+			if (view.getCurrencyQuoteName() != null && currencyQuoteName != null
+					&& view.getOriginalExchangeRate() != null) {
+				if (view.getOriginalExchangeRate().compareTo(view.getExchangeRateApplied()) != 1) {
+					obj.setBranchExchangeRate(view.getCurrencyQuoteName() + " / " + currencyQuoteName + "     "
+							+ view.getExchangeRateApplied().toString());
+					if (view.getLocalTransactionAmount() != null && view.getLocalTransactionCurrencyId() != null) {
+						BigDecimal transationAmount = RoundUtil.roundBigDecimal((view.getLocalTransactionAmount()),
+								decimalPerCurrency);
+						obj.setKwdAmount(currencyQuoteName + "     " + transationAmount.toString());
+					}
+				} else {
+					obj.setBranchExchangeRate(view.getCurrencyQuoteName() + " / " + currencyQuoteName + "     "
+							+ view.getOriginalExchangeRate().toString());
+					if (view.getOriginalExchangeRate() != null && view.getForeignTransactionAmount() != null
+							&& view.getLocalTransactionCurrencyId() != null) {
+						BigDecimal calKwtAmt = view.getOriginalExchangeRate().multiply(view.getForeignTransactionAmount());
+						BigDecimal transationAmount = RoundUtil.roundBigDecimal((calKwtAmt), decimalPerCurrency);
+						obj.setKwdAmount(currencyQuoteName + "     " + transationAmount.toString());
+					}
+				}
+
+			}
+			
+		} else {
+			if (view.getCurrencyQuoteName() != null && currencyQuoteName != null
+					&& view.getExchangeRateApplied() != null) {
+				obj.setBranchExchangeRate(view.getCurrencyQuoteName() + " / " + currencyQuoteName + "     "
+						+ view.getExchangeRateApplied().toString());
+			}
+			if (view.getLocalTransactionAmount() != null && view.getLocalTransactionCurrencyId() != null) {
+				BigDecimal transationAmount = RoundUtil.roundBigDecimal((view.getLocalTransactionAmount()),
+						decimalPerCurrency);
+				obj.setKwdAmount(currencyQuoteName + "     " + transationAmount.toString());
+			}
+		}
+	}
+
 public List<RemittanceReportBean> calculateCollectionMode(RemittanceTransactionView viewCollectionObj){	
 			List<RemittanceReportBean> collectionDetailList = new ArrayList<RemittanceReportBean>();
 			List<CollectionPaymentDetailsViewModel> collectionPaymentDetailList= collectionPaymentDetailsViewDao.getCollectedPaymentDetails(viewCollectionObj.getCompanyId(),viewCollectionObj.getCollectionDocumentNo(),viewCollectionObj.getCollectionDocFinanceYear(),viewCollectionObj.getCollectionDocCode());

@@ -279,7 +279,9 @@ public class CommonHttpRequest {
 
 		if (appType == null) {
 			appType = null;
-			if (userDevice.getPlatform() == DevicePlatform.ANDROID
+			if (userDevice.getUserAgent().getBrowser() != Browser.UNKNOWN) {
+				appType = AppType.WEB;
+			} else if (userDevice.getPlatform() == DevicePlatform.ANDROID
 					&& userDevice.getUserAgent().getBrowser() == Browser.UNKNOWN) {
 				appType = AppType.ANDROID;
 			} else if (userDevice.getPlatform() == DevicePlatform.IOS
@@ -358,6 +360,51 @@ public class CommonHttpRequest {
 			e.printStackTrace();
 		}
 		return false;
+	}
+
+	public static class ApiRequestDetail {
+		RequestType type;
+		boolean useAuthToken;
+		boolean useAuthKey;
+
+		public RequestType getType() {
+			return type;
+		}
+
+		public void setType(RequestType type) {
+			this.type = type;
+		}
+
+		public boolean isUseAuthToken() {
+			return useAuthToken;
+		}
+
+		public void setUseAuthToken(boolean useAuthToken) {
+			this.useAuthToken = useAuthToken;
+		}
+
+		public boolean isUseAuthKey() {
+			return useAuthKey || type.isAuth();
+		}
+
+		public void setUseAuthKey(boolean useAuthKey) {
+			this.useAuthKey = useAuthKey;
+		}
+	}
+
+	public ApiRequestDetail getApiRequest(HttpServletRequest req) {
+		ApiRequestDetail detail = new ApiRequestDetail();
+		ApiRequest x = getApiRequestModel(req);
+		if(!ArgUtil.isEmpty(x)) {
+			detail.setType(x.type());
+			detail.setUseAuthKey(x.useAuthKey());
+			detail.setUseAuthToken(x.useAuthToken());	
+		}
+
+		if (ArgUtil.isEmpty(detail.getType()) || RequestType.DEFAULT.equals(detail.getType())) {
+			detail.setType(RequestType.from(req));
+		}
+		return detail;
 	}
 
 	public RequestType getApiRequestType(HttpServletRequest req) {

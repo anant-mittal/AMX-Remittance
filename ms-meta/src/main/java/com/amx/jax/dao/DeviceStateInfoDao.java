@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.config.JaxProperties;
 import com.amx.jax.dbmodel.DeviceStateInfo;
 import com.amx.jax.repository.DeviceStateRepository;
@@ -31,6 +32,15 @@ public class DeviceStateInfoDao {
 
 	public DeviceStateInfo getDeviceStateInfo(BigDecimal registrationId) {
 		DeviceStateInfo deviceStateInfo = deviceStateRepository.findOne(registrationId);
+		if(deviceStateInfo==null) {
+			throw new GlobalException("DeviceStateInfo is not found for the given DeviceRegId");
+		}
+		return deviceStateInfo;
+	}
+
+
+	public DeviceStateInfo getOrCreateDeviceStateInfo(BigDecimal registrationId) {
+		DeviceStateInfo deviceStateInfo = deviceStateRepository.findOne(registrationId);
 		if (deviceStateInfo == null) {
 			logger.debug("init device state info D id {} ", registrationId);
 			deviceStateInfo = new DeviceStateInfo(registrationId);
@@ -38,5 +48,4 @@ public class DeviceStateInfoDao {
 		}
 		return deviceStateInfo;
 	}
-
 }

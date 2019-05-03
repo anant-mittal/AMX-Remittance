@@ -22,6 +22,7 @@ import com.amx.amxlib.meta.model.BankBranchDto;
 import com.amx.amxlib.meta.model.BankMasterDTO;
 import com.amx.amxlib.meta.model.BranchDetailDTO;
 import com.amx.amxlib.meta.model.CountryMasterDTO;
+import com.amx.amxlib.meta.model.DeclarationDTO;
 import com.amx.amxlib.meta.model.JaxMetaParameter;
 import com.amx.amxlib.meta.model.MultiCountryDTO;
 import com.amx.amxlib.meta.model.PrefixDTO;
@@ -617,6 +618,19 @@ public class MetaClient extends AbstractJaxServiceClient {
 		}
 	}
 	
+	
+	public AmxApiResponse<DeclarationDTO, Object> getDeclaration() {
+		try {
+
+			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.API_DECLARATION)
+					.meta(new JaxMetaInfo()).post()
+					.as(new ParameterizedTypeReference<AmxApiResponse<DeclarationDTO, Object>>() {
+					});
+		} catch (Exception ae) {
+			LOGGER.error("exception in Declaration : ", ae);
+			return JaxSystemError.evaluate(ae);
+		}
+	}
 	
 	
 }

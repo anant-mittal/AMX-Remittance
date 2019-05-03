@@ -21,7 +21,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.model.response.ExchangeRateBreakup;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dal.BizcomponentDao;
 import com.amx.jax.dao.BankDao;
@@ -32,6 +31,7 @@ import com.amx.jax.dbmodel.remittance.ImpsMaster;
 import com.amx.jax.dbmodel.treasury.BankApplicability;
 import com.amx.jax.dbmodel.treasury.BankIndicator;
 import com.amx.jax.exrateservice.service.NewExchangeRateService;
+import com.amx.jax.model.response.ExchangeRateBreakup;
 import com.amx.jax.service.BankMetaService;
 import com.amx.jax.service.ImpsMasterService;
 import com.amx.jax.services.RoutingService;
@@ -94,6 +94,7 @@ public class ImpsRoutingLogic implements IRoutingLogic {
 					}
 					if (result) {
 						output.put("P_SERVICE_MASTER_ID", inputTemp.get("P_SERVICE_MASTER_ID"));
+						output.put("P_ROUTING_COUNTRY_ID", impsMasters.get(0).getFsCountryMaster().getCountryId());
 					}
 				}
 			}
@@ -111,8 +112,9 @@ public class ImpsRoutingLogic implements IRoutingLogic {
 		BigDecimal localAmount = (BigDecimal) inputTemp.get("P_LOCAL_AMT");
 		BigDecimal toCurrencyId = (BigDecimal) inputTemp.get("P_CURRENCY_ID");
 		BigDecimal routingBankId = (BigDecimal) inputTemp.get("P_ROUTING_BANK_ID");
+		BigDecimal beneBankCountryId = (BigDecimal) inputTemp.get("P_BENEFICIARY_COUNTRY_ID");
 		ExchangeRateBreakup exRateBreakup = newExchangeRateService.getExchangeRateBreakup(toCurrencyId, localAmount,
-				routingBankId);
+				routingBankId, beneBankCountryId);
 		return exRateBreakup.getConvertedFCAmount();
 
 	}

@@ -142,8 +142,12 @@ public class UserAuthService {
 
 		OtpData selfOtpData = userOtpManager.generateOtpTokens(selfOtpSecret, userAuthInitReqDTO.getSelfSAC());
 
-		userOtpManager.sendOtpSms(selfEmployee, selfOtpData, "Self OTP Details");
+		if (("Y").equalsIgnoreCase(selfEmployee.getOtpNotifySms())) {
 
+			userOtpManager.sendOtpSms(selfEmployee, selfOtpData, "Self OTP Details");
+
+		}
+		
 		String transactionId = AppContextUtil.getTranxId();
 
 		UserOtpData userOtpData = new UserOtpData();
@@ -182,9 +186,12 @@ public class UserAuthService {
 			 * if (!ArgUtil.isEmpty(partnerOTPDevice)) { partnerOTPDeviceSecret =
 			 * partnerOTPDevice.getClientSecreteKey(); }
 			 */
+			
 			OtpData partnerOtpData = userOtpManager.generateOtpTokens(partnerOTPSecret,
 					userAuthInitReqDTO.getPartnerSAC());
-			userOtpManager.sendOtpSms(partnerEmployee, partnerOtpData, "Partner OTP Details");
+			if (("Y").equalsIgnoreCase(partnerEmployee.getOtpNotifySms())) {
+				userOtpManager.sendOtpSms(partnerEmployee, partnerOtpData, "Partner OTP Details");
+			}
 			userOtpData.setPartnerOtpData(partnerOtpData);
 		}
 
@@ -220,10 +227,12 @@ public class UserAuthService {
 				HashBuilder builder = new HashBuilder().currentTime(System.currentTimeMillis())
 						.interval(AmxConstants.OFFLINE_OTP_TTL).tolerance(AmxConstants.OFFLINE_OTP_TOLERANCE)
 						.secret(otpDevice.getClientSecreteKey()).message(selfOtpData.getmOtpPrefix());
+				
 
+			
 				userOtpManager.sendToSlack("Offline OTP for Emp: " + employeeNo, " Self ", selfOtpData.getmOtpPrefix(),
-						builder.toHMAC().toNumeric(AmxConstants.OTP_LENGTH).output());
-
+						builder.toHMAC().toComplex(AmxConstants.OTP_LENGTH).output());
+				
 			}
 
 			if (isAssisted) {
@@ -237,10 +246,11 @@ public class UserAuthService {
 							.interval(AmxConstants.OFFLINE_OTP_TTL).tolerance(AmxConstants.OFFLINE_OTP_TOLERANCE)
 							.secret(partnerOtpDevice.getClientSecreteKey())
 							.message(userOtpData.getPartnerOtpData().getmOtpPrefix());
-
+					
+					
 					userOtpManager.sendToSlack("Offline OTP for Emp: " + employeeNo, " Partner ",
 							userOtpData.getPartnerOtpData().getmOtpPrefix(),
-							builderP.toHMAC().toNumeric(AmxConstants.OTP_LENGTH).output());
+							builderP.toHMAC().toComplex(AmxConstants.OTP_LENGTH).output());
 
 				}
 
@@ -427,11 +437,12 @@ public class UserAuthService {
 				.interval(AmxConstants.OFFLINE_OTP_TTL).tolerance(AmxConstants.OFFLINE_OTP_TOLERANCE)
 				.secret(otpDevice.getClientSecreteKey()).message(sac);
 
-		if (!builder.validateNumHMAC(otp)) {
-			return Boolean.FALSE;
+		// Added Complex Password
+		if (builder.validateComplexHMAC(otp) || builder.validateNumHMAC(otp)) {
+			return Boolean.TRUE;
 		}
 
-		return Boolean.TRUE;
+		return Boolean.FALSE;
 
 	}
 
@@ -490,7 +501,7 @@ public class UserAuthService {
 
 		if (StringUtils.isEmpty(validEmployee.getTelephoneNumber())) {
 			throw new AuthServiceException(RbaacServiceError.INVALID_PHONE_NUMBER,
-					"Phone Number is Invalid or Missing for : " + userType);
+					"The mobile number is invalid for the user");
 		}
 
 		return validEmployee;

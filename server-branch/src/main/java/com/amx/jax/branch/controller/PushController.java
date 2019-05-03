@@ -6,7 +6,6 @@ import java.util.concurrent.ExecutionException;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.amqp.RabbitProperties.Template;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -51,7 +50,7 @@ public class PushController {
 
 	@RequestMapping(value = "/pub/list/branches", method = RequestMethod.POST)
 	public List<?> listOfNations(
-			@ApiParam(required = true, allowableValues = "KWT,BHR",
+			@ApiParam(required = true, allowableValues = "KWT,BHR,OMN", defaultValue = "KWT",
 					value = "Select Tenant") @RequestParam Tenant tenant)
 			throws PostManException, InterruptedException, ExecutionException {
 		if (tenant == Tenant.BHR) {
@@ -64,8 +63,11 @@ public class PushController {
 
 	@RequestMapping(value = "/api/notify/all", method = RequestMethod.POST)
 	public AmxApiResponse<PromoNotifyTask, Object> notifyAll(
-			@ApiParam(required = true, allowableValues = "KWT,BHR",
-					value = "Select Tenant") @RequestParam Tenant tenant,
+
+			@ApiParam(required = true, allowableValues = "KWT,BHR,OMN", defaultValue = "KWT",
+					value = "Select Tenant") @RequestParam(name = TenantContextHolder.TENANT,
+							defaultValue = "KWT") Tenant tenant,
+
 			@RequestParam String message, @RequestParam String title) throws PostManException {
 
 		PromoNotifyTask task = new PromoNotifyTask();
@@ -78,8 +80,11 @@ public class PushController {
 
 	@RequestMapping(value = "/api/notify/nationality", method = RequestMethod.POST)
 	public AmxApiResponse<PromoNotifyTask, Object> notifyNational(
-			@ApiParam(required = true, allowableValues = "KWT,BHR",
-					value = "Select Tenant") @RequestParam Tenant tenant,
+
+			@ApiParam(required = true, allowableValues = "KWT,BHR,OMN", defaultValue = "KWT",
+					value = "Select Tenant") @RequestParam(name = TenantContextHolder.TENANT,
+							defaultValue = "KWT") Tenant tenant,
+
 			@RequestParam Nations nationality, @RequestParam String message, @RequestParam String title)
 			throws PostManException {
 		PromoNotifyTask task = new PromoNotifyTask();

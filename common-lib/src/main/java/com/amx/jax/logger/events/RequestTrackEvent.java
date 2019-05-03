@@ -15,9 +15,11 @@ import com.amx.jax.AppContext;
 import com.amx.jax.logger.AuditEvent;
 import com.amx.jax.tunnel.TunnelEventXchange;
 import com.amx.jax.tunnel.TunnelMessage;
+import com.amx.utils.ArgUtil;
 import com.amx.utils.HttpUtils;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @JsonInclude(Include.NON_NULL)
@@ -37,6 +39,7 @@ public class RequestTrackEvent extends AuditEvent {
 	}
 
 	private AppContext context;
+	@JsonProperty("rspTym")
 	private long responseTime;
 	private String ip;
 
@@ -92,12 +95,14 @@ public class RequestTrackEvent extends AuditEvent {
 	}
 
 	public RequestTrackEvent track(ClientHttpResponse response, URI uri) {
+		String statusCode = "000";
 		try {
-			this.description = String.format("%s %s=%s", this.type, response.getStatusCode(), uri);
+			statusCode = ArgUtil.parseAsString(response.getStatusCode());
 		} catch (IOException e) {
 			LOGGER.error("RequestTrackEvent.track while logging response in", e);
 			this.description = String.format("%s %s=%s", this.type, "EXCEPTION", uri);
 		}
+		this.description = String.format("%s %s=%s", this.type, statusCode, uri);
 		return this;
 	}
 

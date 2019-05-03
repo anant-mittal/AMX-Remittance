@@ -6,19 +6,24 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
+import java.util.Date;
 
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextArea;
 
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.adapter.ACardReaderService.CardStatus;
 import com.amx.jax.adapter.ACardReaderService.DataStatus;
 import com.amx.jax.adapter.ACardReaderService.DeviceStatus;
 import com.amx.utils.Constants;
+import com.amx.utils.StringUtils;
 
 @Component
 public class SWAdapterGUI extends JFrame {
@@ -48,13 +53,23 @@ public class SWAdapterGUI extends JFrame {
 	JLabel labelDescriptionDetail = new JLabel("....");
 	public static SWAdapterGUI CONTEXT = null;
 	public static String LOG = "";
+	public static String WIN_TITLE = "Al Mulla Exchange - BranchAdapter";
+
+	private JTextArea textArea = null;
+
+	private JScrollPane pane = null;
+
+	private JScrollPane about = null;
+	JTextArea aboutTextArea = null;
 
 	private void initUI() {
 
-		setTitle("Al Mulla Exchange - Branch Desktop Client");
+		setTitle(WIN_TITLE);
 		setSize(400, 400);
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
+
+		JTabbedPane tabs = new JTabbedPane();
 
 		// create a new panel with GridBagLayout manager
 		JPanel newPanel = new JPanel();
@@ -117,6 +132,8 @@ public class SWAdapterGUI extends JFrame {
 		constraints.anchor = GridBagConstraints.CENTER;
 		JButton refreshButton = new JButton("Refresh");
 		refreshButton.addActionListener((ActionEvent event) -> {
+			AppContextUtil.getTraceId();
+			AppContextUtil.init();
 			ACardReaderService.CONTEXT.reset();
 		});
 		newPanel.add(refreshButton, constraints);
@@ -144,8 +161,24 @@ public class SWAdapterGUI extends JFrame {
 		statusData.setBackground(Color.LIGHT_GRAY);
 		statusData.setFont(font);
 
-		newPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Card Reader Status"));
-		add(newPanel);
+		// newPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
+		// "Card Reader Status"));
+
+		textArea = new JTextArea();
+		textArea.setFont(new Font("monospaced", Font.PLAIN, 8));
+		textArea.setEditable(false);
+		pane = new JScrollPane(textArea);
+
+		aboutTextArea = new JTextArea();
+		aboutTextArea.setFont(new Font("monospaced", Font.PLAIN, 8));
+		aboutTextArea.setEditable(false);
+
+		about = new JScrollPane(aboutTextArea);
+
+		tabs.addTab("Adapter", newPanel);
+		tabs.addTab("Logs", pane);
+		tabs.addTab("About", about);
+		add(tabs);
 
 	}
 
@@ -212,16 +245,60 @@ public class SWAdapterGUI extends JFrame {
 		statusReader.setText(String.format(STAT_FORMAT_READER, name));
 	}
 
+	private int logCount = 0;
+	private static int MAX_LOG_COUNT = 2000;
+
+	public void logWindow(String message) {
+		if (textArea != null) {
+			try {
+				if (logCount >= MAX_LOG_COUNT) {
+					logCount = MAX_LOG_COUNT;
+					int end;
+
+					end = textArea.getLineEndOffset(0);
+
+					textArea.replaceRange("", 0, end);
+					// textArea.remove(logCount - MAX_LOG_COUNT);
+				}
+				textArea.append(new Date().toString() + " : " + message + "\n");
+				logCount++;
+			} catch (Exception e) {
+				textArea.append(logCount + " : " + message + " | " + e.getMessage() + "\n");
+				logCount++;
+			}
+		}
+
+	}
+
 	public void log(String message) {
 		LOG = message;
-		labelDescription.setText(message);
+		logWindow(message);
+		labelDescription.setText(StringUtils.substring(message, 42));
 		labelDescriptionDetail.setText("");
 	}
 
 	public void log(String message, String detail) {
 		LOG = message;
-		labelDescription.setText(message);
-		labelDescriptionDetail.setText(detail);
+		logWindow(message + " - " + detail);
+		labelDescription.setText(StringUtils.substring(message, 60));
+		labelDescriptionDetail.setText(StringUtils.substring(detail, 100));
+	}
+
+	public static void updateTitle(String title) {
+		WIN_TITLE = title;
+		if (CONTEXT != null) {
+			CONTEXT.setTitle(WIN_TITLE);
+		}
+	}
+
+	public static void updateAbout(String text) {
+		if (CONTEXT != null) {
+			CONTEXT.getAboutTextArea().setText(text);
+		}
+	}
+
+	public JTextArea getAboutTextArea() {
+		return aboutTextArea;
 	}
 
 }

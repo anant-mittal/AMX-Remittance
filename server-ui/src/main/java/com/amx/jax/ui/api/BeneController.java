@@ -21,12 +21,12 @@ import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.response.JaxTransactionResponse;
 import com.amx.amxlib.model.trnx.BeneficiaryTrnxModel;
 import com.amx.jax.JaxAuthContext;
+import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
 import com.amx.jax.ui.model.AuthData;
 import com.amx.jax.ui.model.AuthDataInterface.AuthRequestOTP;
 import com.amx.jax.ui.model.AuthDataInterface.AuthResponseOTPprefix;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.response.ResponseWrapperM;
-import com.amx.jax.ui.response.WebResponseStatus;
 import com.amx.jax.ui.service.JaxService;
 import com.amx.jax.ui.session.Transactions;
 import com.amx.utils.ArgUtil;
@@ -118,11 +118,11 @@ public class BeneController {
 			CivilIdOtpModel model = jaxService.setDefaults().getBeneClient().sendOtp().getResult();
 			wrapper.getMeta().setmOtpPrefix(model.getmOtpPrefix());
 			wrapper.getMeta().seteOtpPrefix(model.geteOtpPrefix());
-			wrapper.setStatus(WebResponseStatus.DOTP_REQUIRED);
+			wrapper.setStatusEnum(OWAStatusStatusCodes.DOTP_REQUIRED);
 		} else {
 			wrapper.setData(jaxService.setDefaults().getBeneClient()
 					.updateStatus(beneficaryMasterSeqId, remarks, status, mOtp, eOtp).getResult());
-			wrapper.setStatus(WebResponseStatus.VERIFY_SUCCESS);
+			wrapper.setStatusEnum(OWAStatusStatusCodes.VERIFY_SUCCESS);
 		}
 
 		return wrapper;

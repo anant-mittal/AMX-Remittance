@@ -26,10 +26,10 @@ import com.amx.jax.AppContextUtil;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.dict.UserClient.UserDeviceClient;
 import com.amx.jax.http.CommonHttpRequest;
+import com.amx.jax.http.CommonHttpRequest.ApiRequestDetail;
 import com.amx.jax.http.RequestType;
 import com.amx.jax.logger.client.AuditServiceClient;
 import com.amx.jax.logger.events.RequestTrackEvent;
-import com.amx.jax.model.UserDevice;
 import com.amx.jax.rest.AppRequestContextInFilter;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.utils.ArgUtil;
@@ -62,19 +62,32 @@ public class AppRequestFilter implements Filter {
 	@Autowired(required = false)
 	AppRequestContextInFilter appContextInFilter;
 
-	private boolean doesTokenMatch(HttpServletRequest req, HttpServletResponse resp, String traceId) {
-		String authToken = req.getHeader(AppConstants.AUTH_KEY_XKEY);
-		if (StringUtils.isEmpty(authToken)
-				|| (CryptoUtil.validateHMAC(appConfig.getAppAuthKey(), traceId, authToken) == false)) {
-			return false;
+	private boolean doesTokenMatch(HttpServletRequest req, HttpServletResponse resp, String traceId,
+			boolean checkHMAC) {
+		String authToken = commonHttpRequest.get(AppConstants.AUTH_TOKEN_XKEY);
+		if (checkHMAC) {
+			if (StringUtils.isEmpty(authToken)
+					|| (CryptoUtil.validateHMAC(appConfig.getAppAuthKey(), traceId, authToken) == false)) {
+				return false;
+			}
+			return true;
+		} else {
+			if (StringUtils.isEmpty(authToken)
+					|| !authToken.equalsIgnoreCase(appConfig.getAppAuthToken())) {
+				return false;
+			}
+			return true;
 		}
-		return true;
 	}
 
 	private boolean isRequestValid(
-			RequestType reqType, HttpServletRequest req, HttpServletResponse resp,
+			ApiRequestDetail apiRequest, HttpServletRequest req, HttpServletResponse resp,
 			String traceId) {
-		if (reqType.isAuth() && appConfig.isAppAuthEnabled() && !doesTokenMatch(req, resp, traceId)) {
+		if (apiRequest.isUseAuthKey() && appConfig.isAppAuthEnabled()
+				&& !doesTokenMatch(req, resp, traceId, true)) {
+			return false;
+		} else if (!appConfig.isAppAuthEnabled() && apiRequest.isUseAuthToken()
+				&& !doesTokenMatch(req, resp, traceId, false)) {
 			return false;
 		} else {
 			return true;
@@ -88,7 +101,9 @@ public class AppRequestFilter implements Filter {
 		HttpServletRequest req = ((HttpServletRequest) request);
 		HttpServletResponse resp = ((HttpServletResponse) response);
 		try {
-			RequestType reqType = commonHttpRequest.getApiRequestType(req);
+			ApiRequestDetail apiRequest = commonHttpRequest.getApiRequest(req);
+			RequestType reqType = apiRequest.getType();
+
 			AppContextUtil.setRequestType(reqType);
 
 			// Tenant Tracking
@@ -103,6 +118,15 @@ public class AppRequestFilter implements Filter {
 				TenantContextHolder.setCurrent(siteId, null);
 			}
 			Tenant tnt = TenantContextHolder.currentSite();
+
+			// ***** SESSION ID Tracking ********
+			String sessionId = req.getHeader(AppConstants.SESSION_ID_XKEY);
+			if (StringUtils.isEmpty(sessionId)) {
+				sessionId = ArgUtil.parseAsString(req.getParameter(AppConstants.SESSION_ID_XKEY));
+			}
+			if (!StringUtils.isEmpty(sessionId)) {
+				AppContextUtil.setSessionId(sessionId);
+			}
 
 			// Tranx Id Tracking
 			String tranxId = req.getHeader(AppConstants.TRANX_ID_XKEY);
@@ -129,12 +153,10 @@ public class AppRequestFilter implements Filter {
 			if (!StringUtils.isEmpty(userClientJson)) {
 				AppContextUtil.setUserClient(JsonUtil.fromJson(userClientJson, UserDeviceClient.class));
 			} else {
-				UserDevice userDevice = commonHttpRequest.instance(req, resp, appConfig).getUserDevice();
+				UserDeviceClient userDevice = commonHttpRequest.instance(req, resp, appConfig).getUserDevice()
+						.toUserDeviceClient();
 				UserDeviceClient userClient = AppContextUtil.getUserClient();
-				userClient.setDeviceType(userDevice.getType());
-				userClient.setAppType(userDevice.getAppType());
-				userClient.setIp(userDevice.getIp());
-				userClient.setFingerprint(userDevice.getFingerprint());
+				userClient.importFrom(userDevice);
 				AppContextUtil.setUserClient(userClient);
 			}
 
@@ -160,22 +182,22 @@ public class AppRequestFilter implements Filter {
 				traceId = ArgUtil.parseAsString(req.getParameter(AppConstants.TRACE_ID_XKEY));
 			}
 			if (StringUtils.isEmpty(traceId)) {
-				String sessionID = null;
 				HttpSession session = req.getSession(false);
-				if (session == null) {
-					sessionID = UniqueID.generateString();
-				} else {
-					sessionID = ArgUtil.parseAsString(
-							session.getAttribute(AppConstants.SESSION_ID_XKEY),
-							UniqueID.generateString());
+				if (ArgUtil.isEmpty(sessionId)) {
+					if (session == null) {
+						sessionId = AppContextUtil.getSessionId(true);
+					} else {
+						sessionId = AppContextUtil.getSessionId(ArgUtil.parseAsString(
+								session.getAttribute(AppConstants.SESSION_ID_XKEY)));
+					}
 				}
 
-				AppContextUtil.setSessionId(sessionID);
+				AppContextUtil.setSessionId(sessionId);
 				traceId = AppContextUtil.getTraceId();
 				AppContextUtil.init();
 
 				if (session != null) {
-					req.getSession().setAttribute(AppConstants.SESSION_ID_XKEY, sessionID);
+					req.getSession().setAttribute(AppConstants.SESSION_ID_XKEY, sessionId);
 					req.getSession().setAttribute(TenantContextHolder.TENANT, tnt);
 				}
 			} else {
@@ -190,7 +212,7 @@ public class AppRequestFilter implements Filter {
 				AppRequestUtil.printIfDebug(req);
 			}
 			try {
-				if (isRequestValid(reqType, req, resp, traceId)) {
+				if (isRequestValid(apiRequest, req, resp, traceId)) {
 					chain.doFilter(request, new AppResponseWrapper(resp));
 				} else {
 					resp.setStatus(HttpServletResponse.SC_FORBIDDEN);

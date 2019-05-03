@@ -5,15 +5,17 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.RemittanceTransactionView;
+import com.amx.jax.dbmodel.UserFinancialYear;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 
-@Transactional
+
 public interface RemittanceApplicationRepository extends CrudRepository<RemittanceApplication, BigDecimal> {
 
 	@Query("select ra from RemittanceApplication ra where ra.paymentId=:paymentId")
@@ -36,4 +38,25 @@ public interface RemittanceApplicationRepository extends CrudRepository<Remittan
 	@Query(value = "select count(*) from EX_appl_trnx where customer_id = ?1 and CREATED_DATE between sysdate - interval '30' minute and sysdate "
 			+ "and RESULT_CODE != 'CAPTURED'", nativeQuery = true)
 	public Long getFailedTransactionAttemptCount(BigDecimal customerId);
+	
+	
+	@Query("select ra from RemittanceApplication ra where ra.fsCustomer=:customerid and ra.remittanceApplicationId=:remittanceApplicationId and ra.isactive='Y' and  trunc(sysdate)=trunc(createdDate)")
+	public RemittanceApplication getApplicationForRemittance(@Param("customerid") Customer customerid,@Param("remittanceApplicationId") BigDecimal remittanceApplicationId);
+	
+	
+	 @Query("update RemittanceApplication a set a.transactionDocumentNo = :docNo,a.transactionFinancialyear=:docFyr ,a.exUserFinancialYearByTransactionFinanceYearID =:docFyrId , "
+	 		+ " a.applicaitonStatus ='T' WHERE a.fsCustomer=:customerId and a.remittanceApplicationId =:remittanceApplicationId")
+	 public void updateApplicationDetails(@Param("customerId") Customer customerId,@Param("remittanceApplicationId") BigDecimal remittanceApplicationId,
+			 @Param("docFyr") BigDecimal docFyr,@Param("docNo") BigDecimal docNo,@Param("docFyrId") UserFinancialYear docFyrId);
+
+	
+	 @Query("select ra from RemittanceApplication ra where ra.fsCustomer=:customerid and ra.remittanceApplicationId=:remittanceApplicationId")
+		public RemittanceApplication getApplicationForDelete(@Param("customerid") Customer customerid,@Param("remittanceApplicationId") BigDecimal remittanceApplicationId);
+		
+	 
+	 @Query("select ra from RemittanceApplication ra where ra.fsCustomer=:customerid and ra.documentNo=:applicationDocumentNo and ra.documentFinancialyear = :docFinYear")
+		public RemittanceApplication getApplicationDetailsForUpdate(@Param("customerid") Customer customerid,
+				@Param("applicationDocumentNo") BigDecimal applicationDocumentNo, @Param("docFinYear") BigDecimal docFinYear);
+	
+	 
 }

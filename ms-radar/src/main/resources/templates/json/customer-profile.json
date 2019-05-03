@@ -1,0 +1,44 @@
+{
+  "size": 1,
+  "_source": {
+    "excludes": []
+  },
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "match_all": {}
+        },
+        {
+          "match_all": {}
+        },
+        {
+          "match_phrase": {
+            "[[${searchKey}]].keyword": {
+              "query": "[[${searchValue}]]"
+            }
+          }
+        },
+        {
+          "range": {
+            "@timestamp": {
+              "gte": "[[${gte}]]",
+              "lte": "[[${lte}]]",
+              "format": "epoch_millis"
+            }
+          }
+        },
+        {
+          "match_phrase": {
+            "_type": {
+              "query": "customer"
+            }
+          }
+        }
+      ],
+      "filter": [],
+      "should": [],
+      "must_not": []
+    }
+  }
+}

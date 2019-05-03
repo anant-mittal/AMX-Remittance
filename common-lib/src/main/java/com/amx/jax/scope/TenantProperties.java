@@ -10,9 +10,12 @@ import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang.text.StrLookup;
 import org.apache.commons.lang.text.StrSubstitutor;
+import org.jasypt.util.text.BasicTextEncryptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.framework.AopProxyUtils;
@@ -33,6 +36,10 @@ public class TenantProperties {
 	private static final Logger LOGGER = LoggerFactory.getLogger(TenantProperties.class);
 	private static TenantProperties obj = new TenantProperties();
 	private static Environment ENV;
+	private static Properties APP_ENV;
+	private static String APP_ENV_VALUE;
+	public static final Pattern ENCRYPTED_PROPERTIES = Pattern.compile("^ENC\\((.*)\\)$");
+	public static BasicTextEncryptor textEncryptor = new BasicTextEncryptor();
 
 	private Properties properties = null;
 
@@ -42,63 +49,60 @@ public class TenantProperties {
 	@Autowired
 	public TenantProperties(Environment env) {
 		if (ENV == null) {
-			ENV = env;
+			setEnviroment(env);
 		}
 	}
 
 	public static void setEnviroment(Environment env) {
 		ENV = env;
+		String privateKey = ENV.getProperty("jasypt.encryptor.password");
+		if (!ArgUtil.isEmpty(env) && !ArgUtil.isEmpty(privateKey)) {
+			textEncryptor.setPasswordCharArray(privateKey.toCharArray());
+		}
+	}
+
+	public static String decryptProp(Object propertyValue) {
+		// return ArgUtil.parseAsString(propertyValue);
+		String propertyValueStr = ArgUtil.parseAsString(propertyValue);
+		Matcher x = ENCRYPTED_PROPERTIES.matcher(propertyValueStr);
+		if (x.find()) {
+			try {
+				return textEncryptor.decrypt(x.group(1));
+			} catch (Exception e) {
+				return propertyValueStr;
+			}
+
+		}
+		return propertyValueStr;
 	}
 
 	public static Environment getEnviroment() {
 		return ENV;
 	}
 
-	public Properties getProperties() {
-		if (properties == null) {
-			properties = getProperties(TenantContextHolder.currentSite().toString().toLowerCase(), obj);
+	public static String getEnvProperties(String key) {
+		String value = null;
+		if (getEnviroment() != null) {
+			value = getEnviroment().getProperty(key);
 		}
-		return properties;
+		if (ArgUtil.isEmpty(value)) {
+			value = System.getProperty(key);
+		}
+		return value;
 	}
 
-	public static Properties getProperties(String tenant, Object object) {
-		Properties tenantProperties = new Properties();
-		String propertyFile = "application." + tenant + ".properties";
-		InputStream inSideInputStream = null;
-		InputStream outSideInputStream = null;
-
-		try {
-
-			URL ufile = FileUtil.getResource(propertyFile, object.getClass());
-			if (ufile != null) {
-				inSideInputStream = ufile.openStream();
-				// tenantProperties.load(inSideInputStream);
-				tenantProperties.putAll(loadPropertiesMap(inSideInputStream));
-				LOGGER.info("Loaded Properties from classpath: {}", ufile.getPath());
+	public static String getAppEnvProperties(String key) {
+		String value = getEnvProperties(key);
+		if (ArgUtil.isEmpty(value) && !ArgUtil.isEmpty(APP_ENV)) {
+			if (ArgUtil.isEmpty(APP_ENV_VALUE)) {
+				APP_ENV_VALUE = getEnvProperties("app.env").toLowerCase();
 			}
-
-			outSideInputStream = FileUtil.getExternalResourceAsStream(propertyFile, object.getClass());
-			if (outSideInputStream != null) {
-				// tenantProperties.load(outSideInputStream);
-				tenantProperties.putAll(loadPropertiesMap(outSideInputStream));
-				LOGGER.info("Loaded Properties from jarpath: {}", propertyFile);
-			}
-
-		} catch (IllegalArgumentException | IOException e) {
-			LOGGER.error("readPropertyFileException", e);
-		} finally {
-			try {
-				if (outSideInputStream != null) {
-					outSideInputStream.close();
-				}
-				if (inSideInputStream != null) {
-					inSideInputStream.close();
-				}
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
+			value = APP_ENV.getProperty(key.replace("@env", APP_ENV_VALUE));
+			if (ArgUtil.isEmpty(value)) {
+				value = APP_ENV.getProperty(key.replace("@env", "default"));
 			}
 		}
-		return tenantProperties;
+		return value;
 	}
 
 	@SuppressWarnings("serial")
@@ -120,12 +124,7 @@ public class TenantProperties {
 				String value = resolved.get(key);
 
 				if (ArgUtil.isEmpty(value)) {
-					if (getEnviroment() != null) {
-						value = getEnviroment().getProperty(key);
-					}
-					if (ArgUtil.isEmpty(value)) {
-						value = System.getProperty(key);
-					}
+					value = getAppEnvProperties(key);
 				}
 				return value;
 			}
@@ -137,8 +136,73 @@ public class TenantProperties {
 		return resolved;
 	}
 
+	private static Properties getPropertiesInternal(String tenant, Object object) {
+		Properties tenantProperties = new Properties();
+		String propertyFile = "application." + tenant + ".properties";
+		InputStream inSideInputStream = null;
+		InputStream outSideInputStream = null;
+
+		try {
+
+			URL ufile = FileUtil.getResource(propertyFile, object.getClass());
+			if (ufile != null) {
+				inSideInputStream = ufile.openStream();
+				// tenantProperties.load(inSideInputStream);
+				tenantProperties.putAll(loadPropertiesMap(inSideInputStream));
+				LOGGER.info("Loaded Properties from classpath: {}", ufile.getPath());
+			}
+
+		} catch (IllegalArgumentException | IOException e) {
+			LOGGER.error("Fail:inSideInputStream:getResource", e);
+		} finally {
+			try {
+				if (inSideInputStream != null) {
+					inSideInputStream.close();
+				}
+			} catch (IOException e) {
+				LOGGER.debug("Silent_Fail_of_File_Closing_InSideInputStream");
+			}
+		}
+
+		try {
+			outSideInputStream = FileUtil.getExternalResourceAsStream(propertyFile, object.getClass());
+			if (outSideInputStream != null) {
+				// tenantProperties.load(outSideInputStream);
+				tenantProperties.putAll(loadPropertiesMap(outSideInputStream));
+				LOGGER.info("Loaded Properties from jarpath: {}", propertyFile);
+			}
+
+		} catch (IllegalArgumentException | IOException e) {
+			LOGGER.error("Fail:outSideInputStream:getExternalResourceAsStream", e);
+		} finally {
+			try {
+				if (outSideInputStream != null) {
+					outSideInputStream.close();
+				}
+			} catch (IOException e) {
+				LOGGER.debug("Silent_Fail_of_File_Closing_OutSideInputStream");
+			}
+		}
+		return tenantProperties;
+	}
+
+	public static Properties getProperties(String tenant, Object object) {
+		if (APP_ENV == null) {
+			APP_ENV = getPropertiesInternal("env", obj);
+		}
+		return getPropertiesInternal(tenant, object);
+	}
+
+	public Properties getProperties() {
+		if (properties == null) {
+			properties = getProperties(TenantContextHolder.currentSite().toString().toLowerCase(), obj);
+		}
+		return properties;
+	}
+
 	public static Object assignValues(String tenant, Object object) {
 		Properties tenantProperties = getProperties(tenant, object);
+		String currentPropertyName = null;
 		try {
 			Class<?> clazz = AopProxyUtils.ultimateTargetClass(object);
 
@@ -146,6 +210,7 @@ public class TenantProperties {
 				if (field.isAnnotationPresent(TenantValue.class)) {
 					TenantValue annotation = field.getAnnotation(TenantValue.class);
 					String propertyName = annotation.value().replace("${", "").replace("}", "");
+					currentPropertyName = propertyName;
 					Object propertyValue = tenantProperties.getProperty(propertyName);
 					if (propertyValue != null) {
 						// ArgUtil.parseAsT(propertyValue, defaultValue, required)
@@ -154,7 +219,7 @@ public class TenantProperties {
 						field.setAccessible(true);
 
 						if ("java.lang.String".equals(typeName)) {
-							field.set(object, propertyValue);
+							field.set(object, decryptProp(propertyValue));
 						} else if ("int".equals(typeName) || "java.lang.Integer".equals(typeName)) {
 							field.set(object, ArgUtil.parseAsInteger(propertyValue));
 						} else if ("boolean".equals(typeName) || "java.lang.Boolean".equals(typeName)) {
@@ -182,7 +247,8 @@ public class TenantProperties {
 							try {
 								field.set(object, ArgUtil.parseAsObject((Class<?>) type, propertyValue, true));
 							} catch (IllegalArgumentException e) {
-								LOGGER.warn("********** Property Type Undefined *****  {} {}", typeName, propertyValue);
+								LOGGER.warn("********** Property Type Undefined *****  {} {} = {}", typeName,
+										propertyName, propertyValue);
 							}
 						}
 					}
@@ -190,7 +256,7 @@ public class TenantProperties {
 			}
 		} catch (IllegalArgumentException | IllegalAccessException | ClassCastException | ClassNotFoundException
 				| NoSuchMethodException | SecurityException | InstantiationException | InvocationTargetException e) {
-			LOGGER.error("readPropertyException", e);
+			LOGGER.error("readPropertyException {}", currentPropertyName, e);
 		}
 		return object;
 	}
