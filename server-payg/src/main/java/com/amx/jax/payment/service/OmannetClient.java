@@ -191,7 +191,7 @@ public class OmannetClient implements PayGClient {
 			gatewayResponse.setErrorCategory(statusCode.getCategory().name());*/
 			
 			String trimError = pipe.getResult();
-			if(trimError.contains(" ")){
+			if(trimError.contains(" ") && !trimError.contains("NOT CAPTURED") && !trimError.contains("Invalid card number.")){
 				trimError = trimError.substring(0, trimError.indexOf(" "));
 				LOGGER.info("TrimError Value ---> " + trimError);
 			}

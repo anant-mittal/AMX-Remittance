@@ -140,7 +140,7 @@ public enum ResponseCodeOMN {
     
     //TXN_CARD
     CARD_NOT_REGISTERED_FOR_OTP("IPAY0200085","CARD_NOT_REGISTERED_FOR_OTP", "100033", CodeCategory.TXN_CARD),
-    INVALID_CARD_NUMBER_01("Invalid card number","Invalid card number", "100007", CodeCategory.TXN_CARD),
+    INVALID_CARD_NUMBER_01("Invalid card number.","Invalid card number", "100007", CodeCategory.TXN_CARD),
 	CARD_HOLDERNAME_NOT_PRESENT("IPAY0100081","Card holder name is not present", "100009", CodeCategory.TXN_CARD),
 	// 100010 duplicate of 100009
 	CARD_ADDR_NOT_PRESENT("IPAY0100082","Card address is not present", "100011", CodeCategory.TXN_CARD),
