@@ -1,8 +1,11 @@
 package com.amx.jax.dict;
 
 public enum ContactType {
-	SMS, EMAIL, WHATSAPP, SMS_EMAIL;
-	
+	SMS, EMAIL, WHATSAPP, SMS_EMAIL,
+
+	// Deprecated
+	MOBILE(SMS);
+
 	ContactType contactType;
 
 	ContactType() {
