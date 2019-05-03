@@ -4,6 +4,24 @@ import java.math.BigDecimal;
 
 import javax.servlet.http.HttpServletResponse;
 
+import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.api.BoolRespModel;
+import com.amx.jax.client.fx.FxOrderBranchClient;
+import com.amx.jax.http.CommonHttpRequest.CommonMediaType;
+import com.amx.jax.model.request.fx.FcDeliveryBranchOrderSearchRequest;
+import com.amx.jax.model.request.fx.FcSaleBranchDispatchRequest;
+import com.amx.jax.model.response.fx.FcEmployeeDetailsDto;
+import com.amx.jax.model.response.fx.FcSaleOrderManagementDTO;
+import com.amx.jax.model.response.fx.FxOrderReportResponseDto;
+import com.amx.jax.model.response.fx.FxOrderTransactionHistroyDto;
+import com.amx.jax.model.response.fx.UserStockDto;
+import com.amx.jax.postman.PostManService;
+import com.amx.jax.postman.model.File;
+import com.amx.jax.postman.model.TemplatesMX;
+import com.amx.jax.utils.PostManUtil;
+import com.amx.utils.ArgUtil;
+import com.amx.utils.JsonUtil;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -13,22 +31,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.amx.jax.api.AmxApiResponse;
-import com.amx.jax.api.BoolRespModel;
-import com.amx.jax.client.fx.FxOrderBranchClient;
-import com.amx.jax.http.CommonHttpRequest.CommonMediaType;
-import com.amx.jax.model.request.fx.FcSaleBranchDispatchRequest;
-import com.amx.jax.model.response.fx.FcEmployeeDetailsDto;
-import com.amx.jax.model.response.fx.FcSaleOrderManagementDTO;
-import com.amx.jax.model.response.fx.FxOrderReportResponseDto;
-import com.amx.jax.model.response.fx.UserStockDto;
-import com.amx.jax.postman.PostManService;
-import com.amx.jax.postman.model.File;
-import com.amx.jax.postman.model.TemplatesMX;
-import com.amx.jax.utils.PostManUtil;
-import com.amx.utils.ArgUtil;
-import com.amx.utils.JsonUtil;
 
 import io.swagger.annotations.Api;
 
@@ -168,4 +170,8 @@ public class FxOrderBranchController {
 		return fxOrderBranchClient.acceptCancellation(orderNumber, orderYear);
 	}
 	
+	@RequestMapping(value = "/api/fxo/order/inquiry", method = { RequestMethod.POST })
+	public AmxApiResponse<FxOrderTransactionHistroyDto,Object> getPastOrdersList(@RequestBody FcDeliveryBranchOrderSearchRequest fcDeliveryBranchOrderSearchRequest){
+		return fxOrderBranchClient.searchOrder(fcDeliveryBranchOrderSearchRequest);
+	}
 }

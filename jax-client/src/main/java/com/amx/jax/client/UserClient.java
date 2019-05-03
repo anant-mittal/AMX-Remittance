@@ -17,7 +17,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.amx.amxlib.constant.ApiEndpoint;
 import com.amx.amxlib.constant.ApiEndpoint.CustomerApi;
-import com.amx.amxlib.constant.ApiEndpoint.MetaApi;
 import com.amx.amxlib.constant.ApiEndpoint.UserApi;
 import com.amx.amxlib.exception.AbstractJaxException;
 import com.amx.amxlib.exception.AlreadyExistsException;
@@ -29,25 +28,23 @@ import com.amx.amxlib.exception.LimitExeededException;
 import com.amx.amxlib.exception.UnknownJaxError;
 import com.amx.amxlib.meta.model.AnnualIncomeRangeDTO;
 import com.amx.amxlib.meta.model.CustomerDto;
-import com.amx.amxlib.meta.model.DeclarationDTO;
 import com.amx.amxlib.meta.model.IncomeDto;
-import com.amx.amxlib.meta.model.ViewGovernateAreaDto;
 import com.amx.amxlib.model.AbstractUserModel;
-import com.amx.amxlib.model.BeneAccountModel;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
-import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.UserFingerprintResponseModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
-import com.amx.amxlib.model.response.JaxTransactionResponse;
 import com.amx.amxlib.service.ICustomerService;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.configs.JaxMetaInfo;
+import com.amx.jax.dict.ContactType;
 import com.amx.jax.model.UserDevice;
 import com.amx.jax.model.auth.QuestModelDTO;
+import com.amx.jax.model.customer.SecurityQuestionModel;
 import com.amx.jax.model.response.customer.CustomerModelResponse;
+import com.amx.jax.model.response.customer.CustomerModelSignupResponse;
 import com.amx.jax.rest.RestService;
 
 @Component
@@ -72,6 +69,28 @@ public class UserClient extends AbstractJaxServiceClient implements ICustomerSer
 			String validateOtpUrl = this.getBaseUrl() + CUSTOMER_ENDPOINT + "/" + identityId + "/validate-otp/";
 			UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(validateOtpUrl).queryParam("mOtp", mOtp)
 					.queryParam("eOtp", eOtp);
+			return restService.ajax(builder.build().encode().toUri()).get(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
+					});
+		} catch (AbstractJaxException ae) {
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in validateOtp : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
+	}
+
+	public ApiResponse<CustomerModel> validateOtp(String identityId, String mOtp, String eOtp, String wOtp)
+			throws IncorrectInputException, CustomerValidationException, LimitExeededException, UnknownJaxError {
+		try {
+			if (StringUtils.isBlank(identityId) || "null".equalsIgnoreCase(identityId)) {
+				return validateOtp(mOtp, eOtp);
+			}
+			LOGGER.info("calling validateOtp api: ");
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
+			String validateOtpUrl = this.getBaseUrl() + CUSTOMER_ENDPOINT + "/" + identityId + "/validate-otp/";
+			UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(validateOtpUrl).queryParam("mOtp", mOtp)
+					.queryParam("eOtp", eOtp).queryParam("wOtp", wOtp);
 			return restService.ajax(builder.build().encode().toUri()).get(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
 					});
@@ -532,7 +551,7 @@ public class UserClient extends AbstractJaxServiceClient implements ICustomerSer
 
 	}
 
-	public ApiResponse<CivilIdOtpModel> initRegistration(String identityId)
+	public ApiResponse<CivilIdOtpModel> initRegistration(String identityId, ContactType contactType)
 			throws InvalidInputException, CustomerValidationException, LimitExeededException {
 		try {
 			Boolean initRegistration = new Boolean(true);
@@ -541,6 +560,7 @@ public class UserClient extends AbstractJaxServiceClient implements ICustomerSer
 					+ "/send-otp/";
 			LOGGER.info("calling sendOtpForCivilId api: " + sendOtpUrl);
 			return restService.ajax(sendOtpUrl).get(requestEntity)
+					.queryParam("contactType", contactType)
 					.as(new ParameterizedTypeReference<ApiResponse<CivilIdOtpModel>>() {
 					});
 		} catch (AbstractJaxException ae) {
@@ -606,45 +626,6 @@ public class UserClient extends AbstractJaxServiceClient implements ICustomerSer
 			throw new JaxSystemError();
 		} // end of try-catch
 	} // end of customerLoggedIn
-
-	public ApiResponse<CustomerModel> saveEmailNew(String email) {
-		try {
-			CustomerModel custModel = new CustomerModel();
-			custModel.setEmail(email);
-			custModel.setCustomerId(jaxMetaInfo.getCustomerId());
-			HttpEntity<CustomerModel> requestEntity = new HttpEntity<CustomerModel>(custModel, getHeader());
-			String sendOtpUrl = this.getBaseUrl() + CUSTOMER_ENDPOINT + "/saveEmailOrMobile";
-			LOGGER.info("Calling saveEmailNew API : " + sendOtpUrl);
-			return restService.ajax(sendOtpUrl).post(requestEntity)
-					.as(new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
-					});
-		} catch (AbstractJaxException ae) {
-			throw ae;
-		} catch (Exception e) {
-			LOGGER.error("Exception in saveEmailNew API : ", e);
-			throw new JaxSystemError();
-		} // end of try-catch
-
-	}
-
-	public ApiResponse<CustomerModel> saveMobileNew(String mobile) {
-		try {
-			CustomerModel custModel = new CustomerModel();
-			custModel.setMobile(mobile);
-			custModel.setCustomerId(jaxMetaInfo.getCustomerId());
-			HttpEntity<CustomerModel> requestEntity = new HttpEntity<CustomerModel>(custModel, getHeader());
-			String sendOtpUrl = this.getBaseUrl() + CUSTOMER_ENDPOINT + "/saveEmailOrMobile";
-			LOGGER.info("Calling saveMobileNew API : " + sendOtpUrl);
-			return restService.ajax(sendOtpUrl).post(requestEntity)
-					.as(new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
-					});
-		} catch (AbstractJaxException ae) {
-			throw ae;
-		} catch (Exception e) {
-			LOGGER.error("Exception in saveMobileNew API : ", e);
-			throw new JaxSystemError();
-		} // end of try-catch
-	}
 
 	public AmxApiResponse<UserFingerprintResponseModel, Object> linkDeviceId(String identityInt) {
 		try {
@@ -767,7 +748,8 @@ public class UserClient extends AbstractJaxServiceClient implements ICustomerSer
 		try {
 
 			return restService.ajax(appConfig.getJaxURL())
-					.path(ApiEndpoint.CUSTOMER_ENDPOINT + Path.CUSTOMER_MODEL_RESPONSE_GET).meta(new JaxMetaInfo())
+					.path(ApiEndpoint.CUSTOMER_ENDPOINT + Path.CUSTOMER_MODEL_RESPONSE_BY_IDENTITYINT)
+					.meta(new JaxMetaInfo())
 					.queryParam(Params.IDENTITY_INT, identityInt)
 					.get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<CustomerModelResponse, Object>>() {
@@ -779,4 +761,50 @@ public class UserClient extends AbstractJaxServiceClient implements ICustomerSer
 		}
 	}
 
+	@Override
+	public AmxApiResponse<BoolRespModel, Object> saveCustomerSecQuestions(
+			List<SecurityQuestionModel> securityQuestion) {
+		try {
+			return restService.ajax(appConfig.getJaxURL()).meta(new JaxMetaInfo())
+					.path(CustomerApi.PREFIX + CustomerApi.SAVE_SECURITY_QUESTIONS).post(securityQuestion)
+					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in saveSecurityQuestions : ", e);
+			return JaxSystemError.evaluate(e);
+		}
+	}
+
+	@Override
+	public AmxApiResponse<CustomerModelResponse, Object> getCustomerModelResponse() {
+		try {
+
+			return restService.ajax(appConfig.getJaxURL())
+					.path(ApiEndpoint.CUSTOMER_ENDPOINT + Path.CUSTOMER_MODEL_RESPONSE_GET).meta(new JaxMetaInfo())
+					.get().as(new ParameterizedTypeReference<AmxApiResponse<CustomerModelResponse, Object>>() {
+					});
+		} catch (Exception ae) {
+
+			LOGGER.error("exception in get customer response : ", ae);
+			return JaxSystemError.evaluate(ae);
+		}
+	}
+
+	@Override
+	public AmxApiResponse<CustomerModelSignupResponse, Object> getCustomerModelSignupResponse(String identityInt) {
+		try {
+
+			return restService.ajax(appConfig.getJaxURL())
+					.path(ApiEndpoint.CUSTOMER_ENDPOINT + Path.CUSTOMER_MODEL_SIGNUP_RESPONSE_GET)
+					.meta(new JaxMetaInfo())
+					.queryParam(Params.IDENTITY_INT, identityInt)
+					.get()
+					.as(new ParameterizedTypeReference<AmxApiResponse<CustomerModelSignupResponse, Object>>() {
+					});
+		} catch (Exception ae) {
+
+			LOGGER.error("exception in get customer signup response : ", ae);
+			return JaxSystemError.evaluate(ae);
+		}
+	}
 }

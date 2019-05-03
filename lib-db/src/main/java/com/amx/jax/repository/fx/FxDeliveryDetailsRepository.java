@@ -5,7 +5,6 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.transaction.Transactional;
-
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -28,6 +27,7 @@ public interface FxDeliveryDetailsRepository extends CrudRepository<FxDeliveryDe
 	@Modifying
 	@Query("update FxDeliveryDetailsModel sd set sd.updatedBy = ?2 , sd.uopdateDate = ?3 , sd.orderStatus = ?4 where sd.deleviryDelSeqId = ?1 ")
 	public void updateStatusDeliveryDetails(BigDecimal deleviryDelSeqId,String userName,Date currenctDate,String orderStatus);
+	
 	
 	
 }

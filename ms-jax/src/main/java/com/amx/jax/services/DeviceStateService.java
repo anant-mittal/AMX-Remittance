@@ -148,7 +148,7 @@ public class DeviceStateService extends AbstractService {
 
 	public BoolRespModel updateSignatureStateData(Integer deviceRegId, String imageUrlStr) {
 		//
-		validateDeviceRegId(deviceRegId);
+		//validateDeviceRegId(deviceRegId);
 		devicestateValidation.validateDeviceRegIdndImageURL(deviceRegId, imageUrlStr);
 		DeviceStateInfo deviceStateInfo = deviceDao.getDeviceStateInfo(new BigDecimal(deviceRegId));
 		deviceStateInfo.setSignature(imageUrlStr);

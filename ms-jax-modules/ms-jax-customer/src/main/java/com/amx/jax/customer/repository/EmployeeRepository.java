@@ -18,5 +18,9 @@ public interface EmployeeRepository extends CrudRepository<Employee, BigDecimal>
 	Employee getEmployeeByCivilId(String civilId);
 
 	Employee findByEmployeeId(BigDecimal empoloyeeId);
+	
+	@Query("select e from Employee e where employeeId=?1 and isActive ='Y' ")
+	Employee getEmployeeName(BigDecimal employeeId);
+	
 
 }

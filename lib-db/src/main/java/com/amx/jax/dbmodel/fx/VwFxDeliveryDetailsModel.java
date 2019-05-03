@@ -63,6 +63,16 @@ public class VwFxDeliveryDetailsModel implements Serializable {
 
 	@Column(name = "OTP_TOKEN_PREFIX")
 	String otpTokenPrefix;
+	
+	//Added By Radhika
+	@Column(name = "TO_BRANCH_ID")
+	BigDecimal toBranchId;
+	
+	@Column(name = "FROM_BRANCH_ID")
+	BigDecimal fromBranchId;
+	
+	@Column(name = "ISACTIVE")
+	String isActive;
 
 	public String getOtpTokenPrefix() {
 		return otpTokenPrefix;
@@ -167,5 +177,33 @@ public class VwFxDeliveryDetailsModel implements Serializable {
 	public void setCustomerId(BigDecimal customerId) {
 		this.customerId = customerId;
 	}
+
+	public BigDecimal getToBranchId() {
+		return toBranchId;
+	}
+
+	public void setToBranchId(BigDecimal toBranchId) {
+		this.toBranchId = toBranchId;
+	}
+
+	public BigDecimal getFromBranchId() {
+		return fromBranchId;
+	}
+
+	public void setFromBranchId(BigDecimal fromBranchId) {
+		this.fromBranchId = fromBranchId;
+	}
+
+	public String getIsActive() {
+		return isActive;
+	}
+
+	public void setIsActive(String isActive) {
+		this.isActive = isActive;
+	}
+
+	
+	
+	
 
 }

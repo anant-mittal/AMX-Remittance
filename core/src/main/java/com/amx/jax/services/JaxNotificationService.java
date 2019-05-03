@@ -192,6 +192,10 @@ public class JaxNotificationService {
 	public void sendOtpSms(PersonInfo pinfo, CivilIdOtpModel model) {
 		sendOtpSms(pinfo, model, TemplatesMX.RESET_OTP_SMS);
 	}
+	
+	public void sendOtpWhatsApp(PersonInfo pinfo, CivilIdOtpModel model) {
+		//sendOtpSms(pinfo, model, TemplatesMX.RESET_OTP_SMS);
+	}
 
 	public void sendOtpSms(PersonInfo pinfo, CivilIdOtpModel model, TemplatesMX templateMX) {
 

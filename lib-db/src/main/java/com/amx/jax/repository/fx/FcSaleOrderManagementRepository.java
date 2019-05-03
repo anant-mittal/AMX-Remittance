@@ -24,5 +24,5 @@ public interface FcSaleOrderManagementRepository extends CrudRepository<OrderMan
 	public List<OrderManagementView> checkPendingOrders(BigDecimal applicationCountryId,BigDecimal orderNumber,BigDecimal orderYear);
 	
 	public List<OrderManagementView> findByDeliveryDetailsId(BigDecimal deliveryDetailSeqId);
-
+	
 }

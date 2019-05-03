@@ -1,12 +1,17 @@
 package com.amx.jax.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertNotNull;
 
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import com.amx.jax.dict.ContactType;
 
 @RunWith(SpringRunner.class)
 public class DateUtilTest {
@@ -23,5 +28,12 @@ public class DateUtilTest {
 	public void formatDateTest() {
 		String date = dateUtil.format(LocalDate.now(), "MM/d/YYYY");
 		assertThat(date != null);
+	}
+	
+	@Test
+	public void testArrayUtils() {
+		ContactType c = null;
+		List<ContactType> channel = Arrays.asList(c);
+		assertNotNull(channel);
 	}
 }

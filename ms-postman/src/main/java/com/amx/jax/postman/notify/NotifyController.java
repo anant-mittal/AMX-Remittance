@@ -42,12 +42,9 @@ public class NotifyController {
 	 * List of tenants.
 	 *
 	 * @return the list
-	 * @throws PostManException
-	 *             the post man exception
-	 * @throws InterruptedException
-	 *             the interrupted exception
-	 * @throws ExecutionException
-	 *             the execution exception
+	 * @throws PostManException     the post man exception
+	 * @throws InterruptedException the interrupted exception
+	 * @throws ExecutionException   the execution exception
 	 */
 	@RequestMapping(value = PostManUrls.LIST_TENANT, method = RequestMethod.POST)
 	public List<Tenant> listOfTenants() throws PostManException, InterruptedException, ExecutionException {
@@ -58,12 +55,9 @@ public class NotifyController {
 	 * List of nations.
 	 *
 	 * @return the list
-	 * @throws PostManException
-	 *             the post man exception
-	 * @throws InterruptedException
-	 *             the interrupted exception
-	 * @throws ExecutionException
-	 *             the execution exception
+	 * @throws PostManException     the post man exception
+	 * @throws InterruptedException the interrupted exception
+	 * @throws ExecutionException   the execution exception
 	 */
 	@RequestMapping(value = PostManUrls.LIST_NATIONS, method = RequestMethod.POST)
 	public List<Nations> listOfNations() throws PostManException, InterruptedException, ExecutionException {
@@ -73,19 +67,16 @@ public class NotifyController {
 	/**
 	 * List of nations.
 	 *
-	 * @param tenant
-	 *            the tenant
+	 * @param tenant the tenant
 	 * @return the list
-	 * @throws PostManException
-	 *             the post man exception
-	 * @throws InterruptedException
-	 *             the interrupted exception
-	 * @throws ExecutionException
-	 *             the execution exception
+	 * @throws PostManException     the post man exception
+	 * @throws InterruptedException the interrupted exception
+	 * @throws ExecutionException   the execution exception
 	 */
 	@RequestMapping(value = PostManUrls.LIST_BRANCHES, method = RequestMethod.POST)
 	public List<?> listOfNations(
-			@ApiParam(required = true, allowableValues = "KWT,BHR", value = "Select Tenant") @RequestParam Tenant tenant)
+			@ApiParam(required = true, allowableValues = "KWT,BHR",
+					value = "Select Tenant") @RequestParam Tenant tenant)
 			throws PostManException, InterruptedException, ExecutionException {
 		if (tenant == Tenant.BHR) {
 			return Arrays.asList(BranchesBHR.values());
@@ -98,45 +89,38 @@ public class NotifyController {
 	/**
 	 * Notify all.
 	 *
-	 * @param tenant
-	 *            the tenant
-	 * @param message
-	 *            the message
-	 * @param title
-	 *            the title
+	 * @param tenant  the tenant
+	 * @param message the message
+	 * @param title   the title
 	 * @return the push message
-	 * @throws PostManException
-	 *             the post man exception
+	 * @throws PostManException the post man exception
 	 */
 	@RequestMapping(value = "/postman/notify/all", method = RequestMethod.POST)
 	public AmxApiResponse<PushMessage, Object> notifyAll(
-			@ApiParam(required = true, allowableValues = "KWT,BHR", value = "Select Tenant") @RequestParam Tenant tenant,
+			@ApiParam(required = true, allowableValues = "KWT,BHR",
+					value = "Select Tenant") @RequestParam Tenant tenant,
 			@RequestParam String message, @RequestParam String title) throws PostManException {
 		PushMessage msg = new PushMessage();
 		msg.setMessage(message);
 		msg.setSubject(title);
-		msg.addTopic(String.format(PushMessage.FORMAT_TO_ALL, tenant.toString().toLowerCase()));
+		msg.addToTenant(tenant);
 		return pushNotifyClient.sendDirect(msg);
 	}
 
 	/**
 	 * Notify national.
 	 *
-	 * @param tenant
-	 *            the tenant
-	 * @param nationality
-	 *            the nationality
-	 * @param message
-	 *            the message
-	 * @param title
-	 *            the title
+	 * @param tenant      the tenant
+	 * @param nationality the nationality
+	 * @param message     the message
+	 * @param title       the title
 	 * @return the push message
-	 * @throws PostManException
-	 *             the post man exception
+	 * @throws PostManException the post man exception
 	 */
 	@RequestMapping(value = "/postman/notify/nationality", method = RequestMethod.POST)
 	public AmxApiResponse<PushMessage, Object> notifyNational(
-			@ApiParam(required = true, allowableValues = "KWT,BHR", value = "Select Tenant") @RequestParam Tenant tenant,
+			@ApiParam(required = true, allowableValues = "KWT,BHR",
+					value = "Select Tenant") @RequestParam Tenant tenant,
 			@RequestParam Nations nationality, @RequestParam String message, @RequestParam String title)
 			throws PostManException {
 		PushMessage msg = new PushMessage();
@@ -144,10 +128,9 @@ public class NotifyController {
 		msg.setSubject(title);
 
 		if (nationality == Nations.ALL) {
-			msg.addTopic(String.format(PushMessage.FORMAT_TO_ALL, tenant.toString().toLowerCase()));
+			msg.addToTenant(tenant);
 		} else {
-			msg.addTopic(String.format(PushMessage.FORMAT_TO_NATIONALITY, tenant.toString().toLowerCase(),
-					nationality.getCode()));
+			msg.addToCountry(tenant, nationality.getCode());
 		}
 		return pushNotifyClient.sendDirect(msg);
 	}

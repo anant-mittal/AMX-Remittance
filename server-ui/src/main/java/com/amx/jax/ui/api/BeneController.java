@@ -111,7 +111,7 @@ public class BeneController {
 		ResponseWrapperM<Object, AuthResponseOTPprefix> wrapper = new ResponseWrapperM<>();
 		// Disable Beneficiary
 		mOtp = JaxAuthContext.mOtp(ArgUtil.ifNotEmpty(mOtp, mOtpHeader));
-		eOtp = JaxAuthContext.mOtp(ArgUtil.ifNotEmpty(eOtp, eOtpHeader));
+		eOtp = JaxAuthContext.eOtp(ArgUtil.ifNotEmpty(eOtp, eOtpHeader));
 
 		if (mOtp == null && eOtp == null) {
 			wrapper.setMeta(new AuthData());

@@ -28,7 +28,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.constant.BeneficiaryConstant.BeneStatus;
-import com.amx.amxlib.constant.CommunicationChannel;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.BeneCountryDTO;
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
@@ -65,6 +64,7 @@ import com.amx.jax.dbmodel.bene.BeneficaryContact;
 import com.amx.jax.dbmodel.bene.BeneficaryMaster;
 import com.amx.jax.dbmodel.bene.BeneficaryRelationship;
 import com.amx.jax.dbmodel.bene.RelationsDescription;
+import com.amx.jax.dict.ContactType;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.logger.AuditEvent.Result;
 import com.amx.jax.logger.AuditService;
@@ -619,7 +619,7 @@ public class BeneficiaryService extends AbstractService {
 	 * @return apiresponse
 	 * 
 	 */
-	public ApiResponse sendOtp(List<CommunicationChannel> channels) {
+	public ApiResponse sendOtp(List<ContactType> channels) {
 
 		Customer customer = null;
 		String civilId = null;
@@ -684,7 +684,7 @@ public class BeneficiaryService extends AbstractService {
 
 		jaxNotificationService.sendOtpSms(personinfo, model);
 
-		if (channels != null && channels.contains(CommunicationChannel.EMAIL)) {
+		if (channels != null && channels.contains(ContactType.EMAIL)) {
 			jaxNotificationService.sendOtpEmail(personinfo, model);
 		}
 		return response;

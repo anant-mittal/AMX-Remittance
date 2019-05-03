@@ -10,9 +10,10 @@ public class AmxDBConstants {
 	public static final String Deleted = "D";
 	public static final String Update = "U";
 	public static final String Black = "B";
+	public static final String Compliance = "C";
 
 	public static enum Status {
-		Y, N, D, U, B
+		Y, N, D, U, B, C
 	}
 
 	// document id

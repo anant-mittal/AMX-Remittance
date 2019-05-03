@@ -3,7 +3,6 @@ package com.amx.jax;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
-import com.amx.jax.JaxAuthCache.JaxAuthMeta;
 import com.amx.jax.scope.TenantScoped;
 import com.amx.jax.scope.TenantValue;
 import com.amx.jax.swagger.MockParamBuilder;
