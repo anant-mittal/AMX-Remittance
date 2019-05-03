@@ -50,8 +50,8 @@ public interface CustomerRepository extends CrudRepository<Customer, BigDecimal>
 	@Query("select c from Customer c where whatsappPrefix=?1 and whatsapp=?2")
 	public List<Customer> getCustomersByWhatsApp(String whatsappPrefix, String whatsapp);
 
-	@Query("select c from Customer c where mobilePrefix=?1 and mobile=?2")
-	public List<Customer> getCustomersByMobile(String mobilePrefix, String mobile);
+	@Query("select c from Customer c where prefixCodeMobile=?1 and mobile=?2")
+	public List<Customer> getCustomersByMobile(String prefixCodeMobile, String mobile);
 
 	@Query("select c from Customer c where email=?1")
 	public List<Customer> getCustomersByEmail(String email);

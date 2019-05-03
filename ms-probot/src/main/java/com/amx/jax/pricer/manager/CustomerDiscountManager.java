@@ -2,7 +2,6 @@ package com.amx.jax.pricer.manager;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,7 +13,6 @@ import javax.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.amx.jax.dict.UserClient.Channel;
 import com.amx.jax.pricer.dao.ChannelDiscountDao;
 import com.amx.jax.pricer.dao.CustCatDiscountDao;
 import com.amx.jax.pricer.dao.CustomerExtendedDao;
@@ -82,20 +80,19 @@ public class CustomerDiscountManager {
 			// Customer Category Info
 			custCategoryInfo.setId(ccDiscount.getId());
 			custCategoryInfo.setDiscountType(DISCOUNT_TYPE.CUSTOMER_CATEGORY);
-			custCategoryInfo.setDiscountTypeValue(ccDiscount.getCustomerCategory());
+			custCategoryInfo.setDiscountTypeValue(ccDiscount.getCustomerCategory().toString());
 			custCategoryInfo.setDiscountPipsValue(ccDiscountPips);
 
 			// TODO: Dirty Code --- REMOVE ---
-			customer.setRemarks(ccDiscount.getCustomerCategory());
+			customer.setRemarks(ccDiscount.getCustomerCategory().toString());
 
 		} else {
-			CustomerCategoryDiscount ccDiscount = custCatDiscountDao
-					.getDiscountByCustomerCategory(customerCategory.name());
+			CustomerCategoryDiscount ccDiscount = custCatDiscountDao.getDiscountByCustomerCategory(customerCategory);
 			ccDiscountPips = (null != ccDiscount ? ccDiscount.getDiscountPips() : BIGD_ZERO);
 
 			custCategoryInfo.setId(ccDiscount.getId());
 			custCategoryInfo.setDiscountType(DISCOUNT_TYPE.CUSTOMER_CATEGORY);
-			custCategoryInfo.setDiscountTypeValue(ccDiscount.getCustomerCategory());
+			custCategoryInfo.setDiscountTypeValue(ccDiscount.getCustomerCategory().toString());
 			custCategoryInfo.setDiscountPipsValue(ccDiscountPips);
 
 		}
@@ -227,49 +224,6 @@ public class CustomerDiscountManager {
 		} // for (Bank...
 
 		// return discountedRatesNPrices;
-	}
-
-	@SuppressWarnings("unused")
-	private void saveNewDiscountType() {
-
-		ChannelDiscount channelDiscountPipsNew = new ChannelDiscount();
-
-		channelDiscountPipsNew.setChannel(Channel.BRANCH);
-		channelDiscountPipsNew.setDiscountPips(new BigDecimal(0.000005));
-		channelDiscountPipsNew.setIsActive("Y");
-		channelDiscountPipsNew.setInfo("{}");
-		channelDiscountPipsNew.setFlags(new BigDecimal(0));
-
-		channelDiscountPipsNew.setCreatedBy("Kanmani");
-		channelDiscountPipsNew.setCreatedDate(new Date());
-
-		channelDiscountPipsNew.setModifiedBy("Kanmani");
-		channelDiscountPipsNew.setModifiedDate(new Date());
-
-		channelDiscountPipsNew.setApprovedBy("Kanmani");
-		channelDiscountPipsNew.setApprovedDate(new Date());
-
-		CustomerCategoryDiscount ccDiscountNew = new CustomerCategoryDiscount();
-
-		ccDiscountNew.setCustomerCategory("PLATINUM");
-		ccDiscountNew.setDiscountPips(new BigDecimal(0.000005));
-		ccDiscountNew.setIsActive("Y");
-		ccDiscountNew.setInfo("{}");
-		ccDiscountNew.setFlags(new BigDecimal(0));
-
-		ccDiscountNew.setCreatedBy("Kanmani");
-		ccDiscountNew.setCreatedDate(new Date());
-
-		ccDiscountNew.setModifiedBy("Kanmani");
-		ccDiscountNew.setModifiedDate(new Date());
-
-		ccDiscountNew.setApprovedBy("Kanmani");
-		ccDiscountNew.setApprovedDate(new Date());
-
-		channelDiscountDao.saveDiscountForChannel(channelDiscountPipsNew);
-
-		custCatDiscountDao.saveDiscountForCustomerCategory(ccDiscountNew);
-
 	}
 
 }

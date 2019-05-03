@@ -45,7 +45,7 @@ public class CustomerModelService {
 	OnlineCustomerManager onlineCustomerManager;
 
 	public CustomerModelResponse getCustomerModelResponse(String identityInt) {
-		userValidationService.validateIdentityInt(identityInt, ConstantDocument.BIZ_COMPONENT_ID_CIVIL_ID);
+		//userValidationService.validateIdentityInt(identityInt, ConstantDocument.BIZ_COMPONENT_ID_CIVIL_ID);
 		List<Customer> customers = userService.getCustomerByIdentityInt(identityInt);
 		Customer customer = userValidationService.validateCustomerForDuplicateRecords(customers);
 		BigDecimal customerId = customer.getCustomerId();

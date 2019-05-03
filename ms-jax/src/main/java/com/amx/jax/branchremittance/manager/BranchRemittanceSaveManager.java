@@ -329,7 +329,6 @@ public class BranchRemittanceSaveManager {
 				collection.setRefoundAmount(collection.getPaidAmount().subtract(remittanceRequestModel.getTotalTrnxAmount()));
 				collection.setAccountMMYYYY(appl.getAccountMmyyyy());
 				collection.setCompanyCode(appl.getCompanyCode());
-				collection.setLocCode(appl.getLoccod());
 				collection.setDocumentFinanceYear(appl.getDocumentFinancialyear());
 				collection.setDocumentId(documentDao.getDocumnetByCode(ConstantDocument.DOCUMENT_CODE_FOR_COLLECT_TRANSACTION).get(0).getDocumentID());
 				collection.setDocumentCode(ConstantDocument.DOCUMENT_CODE_FOR_COLLECT_TRANSACTION);
@@ -344,6 +343,7 @@ public class BranchRemittanceSaveManager {
 				collection.setCreatedDate(new Date());
 				EmployeeDetailsView employee =branchRemittanceApplManager.getEmployeeDetails();
 				collection.setCreatedBy(employee.getUserName());
+				collection.setLocCode(employee.getBranchId());
 				BigDecimal declarationTotalamount = getDeclarationReportAmount(ConstantDocument.DECL_REPORT_FOR_TOT_AMOUNT);
 				if(collection.getNetAmount().compareTo(declarationTotalamount)>=1) {
 					collection.setCashDeclarationIndicator(ConstantDocument.Yes);
@@ -650,11 +650,9 @@ public class BranchRemittanceSaveManager {
 			
 			for(BranchApplicationDto applDto : shoppingCartList) {
 				RemittanceTransaction remitTrnx = new RemittanceTransaction();
-					
 				Customer customerid = new Customer();
 				customerid.setCustomerId(metaData.getCustomerId());
 				RemittanceApplication appl =  remittanceApplicationRepository.getApplicationForRemittance(customerid,applDto.getApplicationId());
-				
 				
 				if(appl!=null && appl.getIsactive().equalsIgnoreCase(ConstantDocument.Yes)) {
 					logger.debug("appl :"+appl.getDocumentNo());
@@ -680,6 +678,7 @@ public class BranchRemittanceSaveManager {
 					remitTrnx.setCompanyId(appl.getFsCompanyMaster());
 					remitTrnx.setCompanyCode(appl.getCompanyCode());
 					remitTrnx.setCreatedBy(collect.getCreatedBy());
+					remitTrnx.setLoccod(collect.getLocCode());
 					remitTrnx.setCreatedDate(new Date());
 					remitTrnx.setCustomerId(appl.getFsCustomer());
 					remitTrnx.setCustomerName(appl.getCustomerName());
@@ -702,13 +701,8 @@ public class BranchRemittanceSaveManager {
 						throw new GlobalException(JaxError.INVALID_REMITTANCE_DOCUMENT_CODE,"Document ID could not be updated in our records.");
 					}
 					
-					
-					 
-					
 					//remitTrnx.setDwFlag(dwFlag); //NC
-					//
-					
-					
+				
 					remitTrnx.setEmployeeId(metaData.getEmployeeId());
 					remitTrnx.setExchangeRateApplied(appl.getExchangeRateApplied());
 					
@@ -732,7 +726,6 @@ public class BranchRemittanceSaveManager {
 					remitTrnx.setLocalTranxAmount(appl.getLocalTranxAmount());
 					remitTrnx.setLoyaltyPointsEncashed(appl.getLoyaltyPointsEncashed());
 					remitTrnx.setLoyaltyPointsInd(appl.getLoyaltyPointInd());
-					remitTrnx.setLoccod(appl.getLoccod());
 					remitTrnx.setOriginalExchangeRate(appl.getOriginalExchangeRate());
 					remitTrnx.setRemittanceModeId(appl.getExRemittanceMode());
 					remitTrnx.setSourceofincome(appl.getSourceofincome());
