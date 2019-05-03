@@ -591,7 +591,7 @@ public class RemitPriceManager {
 
 	}
 
-	@SuppressWarnings("unused")
+	//@SuppressWarnings("unused")
 	private List<ExchangeRateDetails> computeBankPricesForLcCurOnline(BigDecimal toCurrency, BigDecimal lcAmount,
 			BigDecimal countryBranchId, BigDecimal foreignCountryId, List<BigDecimal> validBankIds) {
 		List<ExchangeRateDetails> exchangeRateDetailList = new ArrayList<ExchangeRateDetails>();
@@ -619,7 +619,7 @@ public class RemitPriceManager {
 		return exchangeRateDetailList;
 	}
 
-	@SuppressWarnings("unused")
+	//@SuppressWarnings("unused")
 	private List<ExchangeRateDetails> computeBankPricesForFcCurOnline(BigDecimal toCurrency, BigDecimal fcAmount,
 			BigDecimal countryBranchId, BigDecimal foreignCountryId, List<BigDecimal> validBankIds) {
 		List<ExchangeRateDetails> exchangeRateDetailList = new ArrayList<ExchangeRateDetails>();
