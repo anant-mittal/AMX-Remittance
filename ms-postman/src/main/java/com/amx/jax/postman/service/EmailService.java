@@ -191,7 +191,8 @@ public class EmailService {
 		}
 
 		if (!ArgUtil.isEmpty(emailClone) && !Status.SENT.equals(email.getStatus())
-				&& !Status.NOT_SENT.equals(email.getStatus())) {
+				&& !Status.NOT_SENT.equals(email.getStatus())
+				&& !Status.BLOCKED.equals(email.getStatus())) {
 			AppContext context = AppContextUtil.getContext();
 			TunnelMessage<Email> tunnelMessage = new TunnelMessage<Email>(emailClone, context);
 			RQueue<TunnelMessage<Email>> emailQueue = redisson

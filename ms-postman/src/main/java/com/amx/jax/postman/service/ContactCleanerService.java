@@ -64,6 +64,8 @@ public class ContactCleanerService {
 				totaltWhatsApp++;
 			}
 		}
+		
+		readEmails();
 	}
 
 	public String getMobile(String mobile) {
