@@ -27,10 +27,13 @@ import com.amx.jax.dbmodel.CountryMasterView;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.request.remittance.IRemittanceApplicationParams;
+import com.amx.jax.model.request.remittance.RoutingPricingRequest;
 import com.amx.jax.model.response.remittance.DeliveryModeDto;
+import com.amx.jax.model.response.remittance.FlexFieldReponseDto;
 import com.amx.jax.model.response.remittance.RemittanceModeDto;
 import com.amx.jax.model.response.remittance.RoutingResponseDto;
 import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeRateResponse;
+import com.amx.jax.model.response.remittance.branch.DynamicRoutingPricingResponse;
 import com.amx.jax.repository.CountryRepository;
 import com.amx.jax.repository.remittance.IViewRemittanceMode;
 import com.amx.jax.util.JaxUtil;
@@ -125,5 +128,19 @@ public class BranchRemittanceExchangeRateService {
 		return AmxApiResponse.build(result, flexFields);
 	}
 
+	
+	public AmxApiResponse<DynamicRoutingPricingResponse, Object> getDynamicRoutingAndPricingResponse(RoutingPricingRequest routingPricingRequest){
+		DynamicRoutingPricingResponse result = branchRemittanceExchangeRateManager.getDynamicRoutingAndPricingResponse(routingPricingRequest);
+		AmxApiResponse resopnse = AmxApiResponse.build(result);
+		return resopnse;
+	}
+	
+	
+	public AmxApiResponse<FlexFieldReponseDto, Object> getFlexField(IRemittanceApplicationParams request){
+		Object obj = branchRemittanceExchangeRateManager.fetchFlexFields(request);
+		AmxApiResponse resopnse = AmxApiResponse.build(obj,obj);
+		return resopnse;
+	}
+	
 	
 }

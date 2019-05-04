@@ -352,7 +352,7 @@ public class RemittanceApplicationManager {
 	 */
 	public Boolean loyalityPointsAvailed(AbstractRemittanceApplicationRequestModel requestModel,
 			RemittanceTransactionResponsetModel responseModel) {
-		if (requestModel.isAvailLoyalityPoints() && responseModel.getCanRedeemLoyalityPoints()) {
+		if (requestModel.isAvailLoyalityPoints() &&  responseModel.getCanRedeemLoyalityPoints() !=null && responseModel.getCanRedeemLoyalityPoints()) {
 			return true;
 		}
 		return false;
