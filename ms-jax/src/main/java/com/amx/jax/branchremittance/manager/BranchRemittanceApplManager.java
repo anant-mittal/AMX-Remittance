@@ -27,6 +27,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.amxlib.util.JaxValidationUtil;
 import com.amx.jax.branchremittance.dao.BranchRemittanceDao;
 import com.amx.jax.branchremittance.service.BranchRemittanceExchangeRateService;
 import com.amx.jax.constant.ConstantDocument;
@@ -69,6 +70,7 @@ import com.amx.jax.manager.remittance.CorporateDiscountManager;
 import com.amx.jax.manager.remittance.RemittanceAdditionalFieldManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
+import com.amx.jax.model.request.remittance.IRemittanceApplicationParams;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.model.response.remittance.AmlCheckResponseDto;
 import com.amx.jax.model.response.remittance.BranchExchangeRateBreakup;
@@ -204,6 +206,7 @@ public class BranchRemittanceApplManager {
 	public BranchRemittanceApplResponseDto saveBranchRemittanceApplication(BranchRemittanceApplRequestModel requestApplModel) {
 		Map<String,Object> hashMap = new HashMap<>();
 		
+		validateSaveApplRequest(requestApplModel);
 		/*To fetch customer details **/
 		 Customer customer = custDao.getCustById(metaData.getCustomerId());
 		/** To fetch bene details **/
@@ -220,18 +223,14 @@ public class BranchRemittanceApplManager {
 		// String warningMsg = branchRemitManager.bannedBankCheck(requestApplModel.getBeneId());
 		 /* validate blck list bene **/
 		 branchRemitManager.validateBlackListedBene(beneficaryDetails);
-		 /* get Routing setup details **/
-		 //Map<String, Object> branchRoutingDetails =branchRemitManager.getRoutingSetupDeatils(beneficaryDetails);
-		// RoutingResponseDto branchRoutingDto= branchRoutingManager.getRoutingSetup(requestApplModel);
-		 
-		 
+
 		 if(JaxUtil.isNullZeroBigDecimalCheck(requestApplModel.getRoutingBankId())) {
 			 requestApplModel.setRoutingBankId(requestApplModel.getRoutingBankId());
 		 }
 		 
 		 //Priccing API
 		 BranchRemittanceGetExchangeRateResponse exchangeRateResposne = branchExchRateService.getExchaneRate(requestApplModel).getResult();
-		 RoutingResponseDto branchRoutingDto = exchangeRateResposne.getRoutingResponseDto();
+		// RoutingResponseDto branchRoutingDto = exchangeRateResposne.getRoutingResponseDto();
 		 
 		 remittanceTransactionRequestValidator.validateExchangeRate(requestApplModel, exchangeRateResposne);
 		 remittanceTransactionRequestValidator.validateFlexFields(requestApplModel, remitApplParametersMap);
@@ -245,14 +244,14 @@ public class BranchRemittanceApplManager {
 		 logger.info("amlList :"+amlList.toString());
 		 /* additional check **/ 
 		
-		 branchRemitManager.validateAdditionalCheck(branchRoutingDto,customer,beneficaryDetails,exchangeRateResposne.getExRateBreakup().getNetAmount(),requestApplModel);
+		 branchRemitManager.validateAdditionalCheck(customer,beneficaryDetails,exchangeRateResposne.getExRateBreakup().getNetAmount(),requestApplModel);
 		 
 		/** bene additional check **/
-		 Map<String, Object> addBeneDetails =branchRemitManager.validateAdditionalBeneDetails(branchRoutingDto,exchangeRateResposne,beneficaryDetails,requestApplModel);
+		 Map<String, Object> addBeneDetails =branchRemitManager.validateAdditionalBeneDetails(exchangeRateResposne,beneficaryDetails,requestApplModel);
 		 
 		
 		 
-		hashMap.put("ROUTING_DETAILS_DTO", branchRoutingDto);
+		//hashMap.put("ROUTING_DETAILS_DTO", branchRoutingDto);
 		hashMap.put("EXCH_RATE_MAP", exchangeRateResposne);
 		hashMap.put("APPL_REQ_MODEL", requestApplModel);
 		hashMap.put("BENEFICIARY_DETAILS", beneficaryDetails);
@@ -292,7 +291,7 @@ public class BranchRemittanceApplManager {
 			
 			String signature =null;
 			BranchRemittanceApplRequestModel applRequestModel = (BranchRemittanceApplRequestModel)hashMap.get("APPL_REQ_MODEL");
-			RoutingResponseDto branchRoutingDto = (RoutingResponseDto)hashMap.get("ROUTING_DETAILS_DTO");
+			//RoutingResponseDto branchRoutingDto = (RoutingResponseDto)hashMap.get("ROUTING_DETAILS_DTO");
 			BranchRemittanceGetExchangeRateResponse branchExchangeRate =(BranchRemittanceGetExchangeRateResponse)hashMap.get("EXCH_RATE_MAP");
 			BenificiaryListView beneDetails  =(BenificiaryListView) hashMap.get("BENEFICIARY_DETAILS");
 			
@@ -317,12 +316,12 @@ public class BranchRemittanceApplManager {
 			
 			remitTrnxManager.reCalculateComission();
 			
-			BigDecimal routingCountryId = branchRoutingDto.getRoutingCountrydto().get(0).getResourceId();
+			BigDecimal routingCountryId = applRequestModel.getRoutingCountryId();
 			Customer customer = (Customer) hashMap.get("CUSTOMER");
 			BigDecimal routingBankId = applRequestModel.getRoutingBankId();
-			BigDecimal routingBankBranchId = (BigDecimal) branchRoutingDto.getRoutingBankBranchDto().get(0).getBankBranchId();
+			BigDecimal routingBankBranchId =applRequestModel.getRoutingBankBranchId();
 			BigDecimal foreignCurrencyId = beneDetails.getCurrencyId();
-			BigDecimal deliveryId =branchRoutingDto.getDeliveryModeList().get(0).getDeliveryModeId(); 
+			BigDecimal deliveryId =applRequestModel.getDeliveryModeId();
 			BigDecimal remittanceId = applRequestModel.getRemittanceModeId();
 			
 			BigDecimal selectedCurrencyId = branchRemitManager.getSelectedCurrency(foreignCurrencyId, applRequestModel);
@@ -838,5 +837,20 @@ public void validateApplDetails(HashMap<String, Object> mapAllDetailApplSave) {
 	
 }
 	
+
+private void validateSaveApplRequest(BranchRemittanceApplRequestModel request) {
+	if (request.getForeignAmount() == null && request.getLocalAmount() == null) {
+		throw new GlobalException(JaxError.INVALID_AMOUNT, "Either local or foreign amount must be present");
+	}
+	JaxValidationUtil.validatePositiveNumber(request.getForeignAmount(), "Foreign Amount should be positive",JaxError.INVALID_AMOUNT);
+	JaxValidationUtil.validatePositiveNumber(request.getLocalAmount(), "Local Amount should be positive", JaxError.INVALID_AMOUNT);
+	JaxValidationUtil.validatePositiveNumber(request.getRoutingBankId(), "Routing bank must be positive number");
+	JaxValidationUtil.validatePositiveNumber(request.getRoutingBankBranchId(), "Routing bank branch must be positive number");
+	JaxValidationUtil.validatePositiveNumber(request.getBeneficiaryRelationshipSeqIdBD(), "bene seq id bank must be positive number");
+	JaxValidationUtil.validatePositiveNumber(request.getServiceMasterId(), "service indic id bank must be positive number");
+	JaxValidationUtil.validatePositiveNumber(request.getRemittanceModeId(),"Remittance mode id must be positive number");
+	JaxValidationUtil.validatePositiveNumber(request.getDeliveryModeId(),"Delivery mode id must be positive number");
+}
+
 	
 }

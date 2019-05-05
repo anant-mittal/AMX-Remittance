@@ -27,6 +27,7 @@ import org.springframework.web.context.WebApplicationContext;
 import com.amx.amxlib.exception.AdditionalFlexRequiredException;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.JaxConditionalFieldDto;
+import com.amx.amxlib.model.JaxFieldDto;
 import com.amx.amxlib.model.response.ExchangeRateResponseModel;
 import com.amx.amxlib.util.JaxValidationUtil;
 import com.amx.jax.AppContextUtil;
@@ -34,9 +35,11 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.config.JaxTenantProperties;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.BenificiaryListView;
+import com.amx.jax.dbmodel.CountryMaster;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerCoreDetailsView;
 import com.amx.jax.dbmodel.CustomerEmploymentInfo;
+import com.amx.jax.dbmodel.remittance.AdditionalBankRuleAmiec;
 import com.amx.jax.dbmodel.remittance.CorporateMasterModel;
 import com.amx.jax.dict.UserClient.Channel;
 import com.amx.jax.error.JaxError;
@@ -52,6 +55,7 @@ import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.request.remittance.IRemittanceApplicationParams;
 import com.amx.jax.model.request.remittance.RoutingPricingRequest;
+import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.BranchExchangeRateBreakup;
 import com.amx.jax.model.response.remittance.DynamicRoutingPricingDto;
 import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeRateResponse;
@@ -62,6 +66,7 @@ import com.amx.jax.pricer.dto.TrnxRoutingDetails;
 import com.amx.jax.pricer.var.PricerServiceConstants.PRICE_TYPE;
 import com.amx.jax.remittance.manager.RemittanceParameterMapManager;
 import com.amx.jax.repository.CustomerCoreDetailsRepository;
+import com.amx.jax.repository.IAdditionalBankRuleAmiecRepository;
 import com.amx.jax.repository.ICustomerEmploymentInfoRepository;
 import com.amx.jax.repository.remittance.ICorporateMasterRepository;
 import com.amx.jax.services.BeneficiaryService;
@@ -113,8 +118,14 @@ public class BranchRemittanceExchangeRateManager {
 	
 	@Autowired
 	ExchangeRateService exchangeRateService;
+	
+	@Autowired
+	IAdditionalBankRuleAmiecRepository amiecBankRuleRepo;
+	
+	@Autowired
+	BranchRemittanceManager branchRemittanceManager;
 
-	public void validateGetExchangRateRequest(IRemittanceApplicationParams request) {
+public void validateGetExchangRateRequest(IRemittanceApplicationParams request) {
 
 		if (request.getForeignAmountBD() == null && request.getLocalAmountBD() == null) {
 			throw new GlobalException(JaxError.INVALID_AMOUNT, "Either local or foreign amount must be present");
@@ -176,22 +187,6 @@ public class BranchRemittanceExchangeRateManager {
 		return model;
 	}
 	
-	
-/*	
-	private BranchRemittanceApplRequestModel buildRemittanceTransactionModel(IRemittanceApplicationParams request) {
-
-		BranchRemittanceApplRequestModel model = new BranchRemittanceApplRequestModel();
-		model.setBeneId(request.getBeneficiaryRelationshipSeqIdBD());
-		model.setAvailLoyalityPoints(request.getAvailLoyalityPoints());
-		model.setLocalAmount(request.getLocalAmountBD());
-		model.setForeignAmount(request.getForeignAmountBD());
-
-		return model;
-	}
-	*/
-	
-	
-	
 
 	private BigDecimal getComission() {
 		BigDecimal routingBankId = P_ROUTING_BANK_ID.getValue(remitApplParametersMap);
@@ -214,31 +209,6 @@ public class BranchRemittanceExchangeRateManager {
 		return commission;
 	}
 
-	public Object fetchFlexFields(IRemittanceApplicationParams exchangeRateRequest) {
-		BranchRemittanceApplRequestModel branchRemittanceApplRequestModel = new BranchRemittanceApplRequestModel(exchangeRateRequest);
-		List<JaxConditionalFieldDto> flexFields = new ArrayList<>();
-		try {
-			remittanceAdditionalFieldManager.validateAdditionalFields(branchRemittanceApplRequestModel, remitApplParametersMap);
-
-		} catch (GlobalException ex) {
-			if (ex.getMeta() != null) {
-				flexFields.addAll((Collection<? extends JaxConditionalFieldDto>) ex.getMeta());
-			}
-		}
-		try {
-			remittanceTransactionRequestValidator.validateFlexFields(branchRemittanceApplRequestModel, remitApplParametersMap);
-		} catch (GlobalException | AdditionalFlexRequiredException ex) {
-			if (ex.getMeta() != null) {
-				flexFields.addAll((Collection<? extends JaxConditionalFieldDto>) ex.getMeta());
-			}
-		}
-
-		List<JaxConditionalFieldDto> amlFlexFields = remittanceAdditionalFieldManager.validateAmlCheck(branchRemittanceApplRequestModel);
-		if (CollectionUtils.isNotEmpty(amlFlexFields)) {
-			flexFields.addAll(amlFlexFields);
-		}
-		return flexFields;
-	}
 	
 	
 	
@@ -348,6 +318,62 @@ public class BranchRemittanceExchangeRateManager {
 		}
 		return result;
 	}
+	
+	
+	
+	public Object fetchFlexFields(IRemittanceApplicationParams request) {
+		
+		
+		BenificiaryListView beneficiaryView = beneValidationService.validateBeneficiary(request.getBeneficiaryRelationshipSeqIdBD());
+		remittanceApplicationParamManager.populateRemittanceApplicationParamMap(request, beneficiaryView,null);
+		BranchRemittanceApplRequestModel branchRemittanceApplRequestModel = new BranchRemittanceApplRequestModel(request);
+		
+		CountryMaster cntMaster = new CountryMaster();
+		List<AdditionalBankRuleAmiec> amiecRuleMap  = null;
+		
+		List<AdditionalExchAmiecDto> addExchDto = null;
+		
+		List<JaxConditionalFieldDto> flexFields = new ArrayList<>();
+		try {
+			remittanceAdditionalFieldManager.validateAdditionalFields(branchRemittanceApplRequestModel, remitApplParametersMap);
+		} catch (GlobalException ex) {
+			if (ex.getMeta() != null) {
+				flexFields.addAll((Collection<? extends JaxConditionalFieldDto>) ex.getMeta());
+			}
+		}
+		try {
+			remittanceTransactionRequestValidator.validateFlexFields(branchRemittanceApplRequestModel, remitApplParametersMap);
+		} catch (GlobalException | AdditionalFlexRequiredException ex) {
+			if (ex.getMeta() != null) {
+				flexFields.addAll((Collection<? extends JaxConditionalFieldDto>) ex.getMeta());
+			}
+		}
+
+		List<JaxConditionalFieldDto> amlFlexFields = remittanceAdditionalFieldManager.validateAmlCheck(branchRemittanceApplRequestModel);
+		if (CollectionUtils.isNotEmpty(amlFlexFields)) {
+			flexFields.addAll(amlFlexFields);
+		}
+		
+		/** purpose of trnx **/		
+		if(request!=null && JaxUtil.isNullZeroBigDecimalCheck(request.getRoutingCountryIdBD())){
+			cntMaster.setCountryId(request.getRoutingCountryIdBD());
+		}
+		if(cntMaster!=null && JaxUtil.isNullZeroBigDecimalCheck(cntMaster.getCountryId())) { 
+			amiecRuleMap = amiecBankRuleRepo.getPurposeOfTrnxByCountryId(cntMaster);
+		}
+		  
+		  if(amiecRuleMap != null && amiecRuleMap.size() != 0) {
+			  addExchDto = branchRemittanceManager.convertPurposeOfTrnxDto(amiecRuleMap);
+		  }
+	
+		  //purposeOfTrnxList
+		
+		return flexFields;
+	}
+	
+	
+	
+	
 	
 	
 }

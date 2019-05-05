@@ -528,7 +528,7 @@ public class BranchRemittanceManager extends AbstractModel {
 	
 	
 	
-	 public void validateAdditionalCheck(RoutingResponseDto branchRoutingDto,Customer customer,BenificiaryListView beneficaryDetails,BigDecimal localNetAmount,BranchRemittanceApplRequestModel requestApplModel){
+	 public void validateAdditionalCheck(Customer customer,BenificiaryListView beneficaryDetails,BigDecimal localNetAmount,BranchRemittanceApplRequestModel requestApplModel){
 		 // EX_APPL_ADDL_CHECKS
 		 BigDecimal customerId = BigDecimal.ZERO;
 		 String allowNoBank = null;
@@ -584,7 +584,7 @@ public class BranchRemittanceManager extends AbstractModel {
 	 }
 	
 	
-	 public Map<String, Object> validateAdditionalBeneDetails(RoutingResponseDto branchRoutingDto,BranchRemittanceGetExchangeRateResponse exchangeRateResposne ,BenificiaryListView beneficaryDetails,BranchRemittanceApplRequestModel requestApplModel) {
+	 public Map<String, Object> validateAdditionalBeneDetails(BranchRemittanceGetExchangeRateResponse exchangeRateResposne ,BenificiaryListView beneficaryDetails,BranchRemittanceApplRequestModel requestApplModel) {
 		 
 		    BigDecimal beneficaryMasterId = beneficaryDetails.getBeneficaryMasterSeqId();
 			BigDecimal beneficaryBankId = beneficaryDetails.getBankId();
@@ -594,7 +594,7 @@ public class BranchRemittanceManager extends AbstractModel {
 			
 			BigDecimal routingCountry =requestApplModel.getRoutingCountryId();
 			BigDecimal routingBank = requestApplModel.getRoutingBankId();
-			BigDecimal routingBranch = branchRoutingDto.getRoutingBankBranchDto().get(0).getBankBranchId();
+			BigDecimal routingBranch = requestApplModel.getRoutingBankBranchId();
 			BigDecimal serviceMasterId = requestApplModel.getServiceMasterId();
 			
 			
@@ -743,7 +743,6 @@ public class BranchRemittanceManager extends AbstractModel {
 	  CountryMaster cntMaster = new CountryMaster();
 		if(beneficaryDetails==null) {
 			throw new GlobalException(JaxError.BENEFICIARY_LIST_NOT_FOUND,"Beneficairy not found "+beneRelId);
-			
 		}	
 	List<AdditionalExchAmiecDto> purposeofTrnx = new ArrayList<>();
 	
@@ -755,25 +754,6 @@ public class BranchRemittanceManager extends AbstractModel {
 		cntMaster.setCountryId(routingCountry.get(0).getResourceId());
 	}
 	
-	
-	/*
-	Map<String, Object> inputValues = branchRoutingManager.getBeneMapSet(beneRelId);
-	CountryMaster cntMaster = new CountryMaster();
-	List<Map<String, Object>> listofService = routingPro.getServiceList(inputValues);
-	
-	if()
-	
-	List<Map<String, Object>> listofRoutingCnty = routingPro.getRoutingCountryId(inputValues);
-	
-	
-	if (listofRoutingCnty != null && !listofRoutingCnty.isEmpty()) {
-		 List<ResourceDTO> listOfRouCountry = branchRoutingManager.convertRoutingCountry(listofRoutingCnty);
-		 cntMaster.setCountryId(listOfRouCountry.get(0).getResourceId());
-	}
-	*/
-	
-	//cntMaster.setCountryId(beneficaryDetails.getBenificaryCountry());
-	  
 	if(cntMaster!=null && JaxUtil.isNullZeroBigDecimalCheck(cntMaster.getCountryId())) { 
 		amiecRuleMap = amiecBankRuleRepo.getPurposeOfTrnxByCountryId(cntMaster);
 	}
@@ -784,6 +764,9 @@ public class BranchRemittanceManager extends AbstractModel {
 			throw new GlobalException(JaxError.NO_RECORD_FOUND, "No records found");
 		}
   }
+  
+  
+  
   
   public List<AdditionalExchAmiecDto> convertPurposeOfTrnxDto(List<AdditionalBankRuleAmiec> amiecRuleMap ) {
 	  List<AdditionalExchAmiecDto>  dto = new ArrayList<>();

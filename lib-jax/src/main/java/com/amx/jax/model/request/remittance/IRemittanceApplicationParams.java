@@ -26,5 +26,7 @@ public interface IRemittanceApplicationParams {
 	BigDecimal getRemitModeIdBD();
 
 	Boolean getAvailLoyalityPoints();
-
+	
+	BigDecimal getRoutingCountryIdBD();
+	
 }

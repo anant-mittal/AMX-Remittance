@@ -17,6 +17,7 @@ public class BranchRemittanceApplRequestModel extends RemittanceAdditionalBeneFi
 	private String amlRemarks;
 	private BigDecimal serviceMasterId;
 	private BigDecimal routingBankId;
+	private BigDecimal routingBankBranchId;
 	private BigDecimal routingCountryId;
 	private BigDecimal remittanceModeId;
 	
@@ -169,7 +170,23 @@ public class BranchRemittanceApplRequestModel extends RemittanceAdditionalBeneFi
 		model.setLocalAmount(request.getLocalAmountBD());
 		model.setRemittanceModeId(request.getRemitModeIdBD());
 		model.setServiceMasterId(request.getServiceIndicatorIdBD());
+		model.setRoutingCountryId(request.getRoutingCountryIdBD());
 		return model;
+	}
+
+	public BigDecimal getRoutingBankBranchId() {
+		return routingBankBranchId;
+	}
+
+	public void setRoutingBankBranchId(BigDecimal routingBankBranchId) {
+		this.routingBankBranchId = routingBankBranchId;
+	}
+
+	
+	@Override
+	@JsonIgnore
+	public BigDecimal getRoutingCountryIdBD() {
+		return this.routingCountryId;
 	}
 
 }

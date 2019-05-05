@@ -24,10 +24,12 @@ import com.amx.jax.branchremittance.manager.BranchRemittanceExchangeRateManager;
 import com.amx.jax.branchremittance.manager.BranchRoutingManager;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.CountryMasterView;
+import com.amx.jax.manager.remittance.RemittanceApplicationParamManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.request.remittance.IRemittanceApplicationParams;
 import com.amx.jax.model.request.remittance.RoutingPricingRequest;
+import com.amx.jax.model.response.remittance.BranchExchangeRateBreakup;
 import com.amx.jax.model.response.remittance.DeliveryModeDto;
 import com.amx.jax.model.response.remittance.FlexFieldReponseDto;
 import com.amx.jax.model.response.remittance.RemittanceModeDto;
@@ -67,7 +69,7 @@ public class BranchRemittanceExchangeRateService {
 	CountryRepository countryRepository;
 	
 
-
+	
 	public AmxApiResponse<BranchRemittanceGetExchangeRateResponse, Object> getExchaneRate(IRemittanceApplicationParams request) {
 		branchRemittanceExchangeRateManager.validateGetExchangRateRequest(request);
 		BranchRemittanceGetExchangeRateResponse result = branchRemittanceExchangeRateManager.getExchangeRateResponse(request);
@@ -137,8 +139,9 @@ public class BranchRemittanceExchangeRateService {
 	
 	
 	public AmxApiResponse<FlexFieldReponseDto, Object> getFlexField(IRemittanceApplicationParams request){
+		branchRemittanceExchangeRateManager.validateGetExchangRateRequest(request);
 		Object obj = branchRemittanceExchangeRateManager.fetchFlexFields(request);
-		AmxApiResponse resopnse = AmxApiResponse.build(obj,obj);
+		AmxApiResponse resopnse = AmxApiResponse.build(obj,null);
 		return resopnse;
 	}
 	

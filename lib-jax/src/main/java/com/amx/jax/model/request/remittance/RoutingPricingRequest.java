@@ -94,4 +94,9 @@ public class RoutingPricingRequest implements IRemittanceApplicationParams {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	@Override
+	public BigDecimal getRoutingCountryIdBD() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
