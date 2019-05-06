@@ -46,6 +46,7 @@ public class CustomerModelService {
 			}
 		}
 		
+		
  		CustomerFlags customerFlags = customerFlagManager.getCustomerFlags(customerId);
 		CustomerModelResponse response = new CustomerModelResponse(personInfo, customerFlags);
 		response.setCustomerId(customer.getCustomerId());
