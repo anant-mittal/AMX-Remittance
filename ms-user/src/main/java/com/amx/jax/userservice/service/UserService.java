@@ -537,7 +537,7 @@ public class UserService extends AbstractUserService {
 		String hashedeOtp = cryptoUtil.getHash(userId, randeOtp);
 		String mOtpPrefix = Random.randomAlpha(3);
 		String eOtpPrefix = Random.randomAlpha(3);
-		if(channels.contains(ContactType.SMS_EMAIL)) {
+		if(!org.apache.commons.collections.CollectionUtils.isEmpty(channels)&&channels.contains(ContactType.SMS_EMAIL)) {
 			randeOtp = randmOtp;
 			hashedeOtp = hashedmOtp;
 			eOtpPrefix = mOtpPrefix;
