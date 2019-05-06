@@ -49,7 +49,7 @@ public class BHRCardReaderService extends ACardReaderService {
 			CardData data = new CardData();
 
 			data.setTitle("MR");
-			data.setIdentity("000007");
+			data.setIdentity("");
 
 			// Arabic Details
 			data.setLocalFullName("Amar Akbar Anthony");
