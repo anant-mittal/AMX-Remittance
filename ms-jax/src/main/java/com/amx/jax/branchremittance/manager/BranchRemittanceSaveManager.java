@@ -31,6 +31,7 @@ import com.amx.jax.dbmodel.AuthenticationLimitCheckView;
 import com.amx.jax.dbmodel.BankMasterModel;
 import com.amx.jax.dbmodel.CollectDetailModel;
 import com.amx.jax.dbmodel.CollectionModel;
+import com.amx.jax.dbmodel.CountryBranch;
 import com.amx.jax.dbmodel.CountryMaster;
 import com.amx.jax.dbmodel.CurrencyMasterModel;
 import com.amx.jax.dbmodel.CurrencyWiseDenomination;
@@ -349,7 +350,14 @@ public class BranchRemittanceSaveManager {
 					collection.setCashDeclarationIndicator(ConstantDocument.Yes);
 				}
 				collection.setIsActive(ConstantDocument.Yes);
-				collection.setExBankBranch(appl.getExCountryBranch());
+				
+				CountryBranch countryBranch = new CountryBranch();
+				if(employee!=null && JaxUtil.isNullZeroBigDecimalCheck(employee.getCountryBranchId())) {
+					countryBranch.setCountryBranchId(employee.getCountryBranchId());
+				}else {
+					countryBranch.setCountryBranchId(metaData.getCountryBranchId());
+				}
+				collection.setExBankBranch(countryBranch);
 				collection.setFsCompanyMaster(appl.getFsCompanyMaster());
 				collection.setTotalAmountDeclarationIndicator(null); //ned to check
 				}else {
@@ -670,7 +678,7 @@ public class BranchRemittanceSaveManager {
 					remitTrnx.setBankId(appl.getExBankMaster());
 					//remitTrnx.setBankReference(appl.getBa); nC
 					remitTrnx.setBlackListIndicator(checkBlackListIndicator(appl.getFsCustomer().getCustomerId(),appl.getRemittanceApplicationId()));
-					remitTrnx.setBranchId(appl.getExCountryBranch());
+					remitTrnx.setBranchId(collect.getExBankBranch());
 					remitTrnx.setCollectionDocCode(collect.getDocumentCode());
 					remitTrnx.setCollectionDocFinanceYear(collect.getDocumentFinanceYear());
 					remitTrnx.setCollectionDocId(collect.getDocumentId());
