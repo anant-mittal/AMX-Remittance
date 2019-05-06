@@ -34,7 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.Api;
 
-@PreAuthorize("hasPermission('CUSTOMER_MGMT.FXORDER', 'VIEW')")
+@PreAuthorize("hasPermission('ORDER_MGMT.FXORDER', 'VIEW')")
 @RestController
 @Api(value = "Order Management APIs")
 public class FxOrderBranchController {
@@ -63,6 +63,7 @@ public class FxOrderBranchController {
 		return fxOrderBranchClient.releaseOrderLock(orderNumber, orderYear);
 	}
 	
+	@PreAuthorize("hasPermission('ORDER_MGMT.FCINQUIRY', 'VIEW') or hasPermission('ORDER_MGMT.FXORDER', 'VIEW')")
 	@RequestMapping(value = "/api/fxo/order/details",  method = { RequestMethod.POST })
 	public AmxApiResponse<FcSaleOrderManagementDTO,Object> getOrderDetails(
 			@RequestParam(value = "orderNumber", required = true) BigDecimal orderNumber,
@@ -70,11 +71,13 @@ public class FxOrderBranchController {
 		return fxOrderBranchClient.fetchBranchOrderDetails(orderNumber,orderYear);
 	}
 	
+	@PreAuthorize("hasPermission('ORDER_MGMT.FCINQUIRY', 'VIEW') or hasPermission('ORDER_MGMT.FXORDER', 'VIEW')")
 	@RequestMapping(value = "/api/fxo/currency/stock",  method = { RequestMethod.POST })
 	public AmxApiResponse<UserStockDto,Object> fetchBranchStockDetailsByCurrency(@RequestParam(value = "currencyId", required = true) BigDecimal foreignCurrencyId){
 		return fxOrderBranchClient.fetchBranchStockDetailsByCurrency(foreignCurrencyId);
 	}
 	
+	@PreAuthorize("hasPermission('ORDER_MGMT.FCINQUIRY', 'VIEW') or hasPermission('ORDER_MGMT.FXORDER', 'VIEW')")
 	@RequestMapping(value = "/api/fxo/currency/stock",  method = { RequestMethod.GET })
 	public AmxApiResponse<UserStockDto,Object> fetchBranchStockDetails(){
 		return fxOrderBranchClient.fetchBranchStockDetails();
@@ -170,6 +173,7 @@ public class FxOrderBranchController {
 		return fxOrderBranchClient.acceptCancellation(orderNumber, orderYear);
 	}
 	
+	@PreAuthorize("hasPermission('ORDER_MGMT.FCINQUIRY', 'VIEW')")
 	@RequestMapping(value = "/api/fxo/order/inquiry", method = { RequestMethod.POST })
 	public AmxApiResponse<FxOrderTransactionHistroyDto,Object> getPastOrdersList(@RequestBody FcDeliveryBranchOrderSearchRequest fcDeliveryBranchOrderSearchRequest){
 		return fxOrderBranchClient.searchOrder(fcDeliveryBranchOrderSearchRequest);
