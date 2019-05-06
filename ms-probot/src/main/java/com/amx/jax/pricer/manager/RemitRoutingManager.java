@@ -212,11 +212,23 @@ public class RemitRoutingManager {
 				noHolidayLag = true;
 			}
 
+			long preDelay = 0;
+
+			// Add a delay of One day in Case Running low GL Balance
+			if (routingDetails.getExchangeRateDetails() == null ? false
+					: routingDetails.getExchangeRateDetails().isLowGLBalance()) {
+				preDelay += 1;
+			}
+
+			System.out.println("Pre Pre Delay ==> " + preDelay);
+
 			EstimatedDeliveryDetails estmdCBDeliveryDetails = this.getEstimatedBlockDelivery(
 					transientDataCache.getTrnxBeginTime(), timezone, oneMatrix.getWeekFrom(), oneMatrix.getWeekTo(),
 					oneMatrix.getWeekHoursFrom(), oneMatrix.getWeekHoursTo(), oneMatrix.getWeekendFrom(),
 					oneMatrix.getWeekendTo(), oneMatrix.getWeekendHoursFrom(), oneMatrix.getWeekendHoursTo(),
-					oneMatrix.getDelievryMinutes(), noHolidayLag, routingCountryId);
+					oneMatrix.getDelievryMinutes(), noHolidayLag, routingCountryId, preDelay);
+
+			System.out.println("Post Pre Delay ==> " + preDelay);
 
 			routingDetails.setRoutingBankDeliveryDetails(estmdCBDeliveryDetails);
 
@@ -254,7 +266,7 @@ public class RemitRoutingManager {
 				estmdProcessingDeliveryDetails = this.getEstimatedBlockDelivery(processingStartTT, pTimezone,
 						new BigDecimal(1), new BigDecimal(7), new BigDecimal(defStartTime), new BigDecimal(defStopTime),
 						new BigDecimal(0), new BigDecimal(0), new BigDecimal(0), new BigDecimal(0), new BigDecimal(0),
-						Boolean.FALSE, processingCountryId);
+						Boolean.FALSE, processingCountryId, 0);
 
 				routingDetails.setProcessingDeliveryDetails(estmdProcessingDeliveryDetails);
 
@@ -305,7 +317,7 @@ public class RemitRoutingManager {
 				estmdBeneDeliveryDetails = this.getEstimatedBlockDelivery(beneStartTT, beneTimezone, new BigDecimal(1),
 						new BigDecimal(7), new BigDecimal(defStartTime), new BigDecimal(defStopTime), new BigDecimal(0),
 						new BigDecimal(0), new BigDecimal(0), new BigDecimal(0), new BigDecimal(0), Boolean.FALSE,
-						beneCountryId);
+						beneCountryId, 0);
 
 				routingDetails.setBeneBankDeliveryDetails(estmdBeneDeliveryDetails);
 
@@ -405,8 +417,7 @@ public class RemitRoutingManager {
 			 * Check for Transaction Amount Limit
 			 */
 			BigDecimal fromAmt = matrix.getFromAmount() == null ? BigDecimal.ZERO : matrix.getFromAmount();
-			BigDecimal toAmt = matrix.getToAmount() == null ? PricerServiceConstants.MAX_BIGD_12
-					: matrix.getToAmount();
+			BigDecimal toAmt = matrix.getToAmount() == null ? PricerServiceConstants.MAX_BIGD_12 : matrix.getToAmount();
 
 			if (fromAmt.compareTo(breakup.getConvertedFCAmount()) > 0
 					|| toAmt.compareTo(breakup.getConvertedFCAmount()) < 0) {
@@ -425,7 +436,7 @@ public class RemitRoutingManager {
 	private EstimatedDeliveryDetails getEstimatedBlockDelivery(long startTT, String timezone, BigDecimal weekFrom,
 			BigDecimal weekTo, BigDecimal weekHrsFrom, BigDecimal weekHrsTo, BigDecimal weekEndFrom,
 			BigDecimal weekEndTo, BigDecimal weekEndHrsFrom, BigDecimal weekEndHrsTo, BigDecimal processTimeInHrs,
-			boolean noHolidayLag, BigDecimal countryId) {
+			boolean noHolidayLag, BigDecimal countryId, long preDelay) {
 
 		// Get An instantaneous point on the time-line for EPOCH TT
 		Instant epochInstant = Instant.ofEpochMilli(startTT);
@@ -449,7 +460,7 @@ public class RemitRoutingManager {
 				weekEndFrom, weekEndTo, weekEndHrsFrom, weekEndHrsTo, processTimeInHrs);
 
 		EstimatedDeliveryDetails goodBusinessDeliveryDT = this.getGoodBusinessDateTime(beginZonedDT, workingHoursData,
-				countryId, noHolidayLag);
+				countryId, noHolidayLag, preDelay);
 
 		/**
 		 * Add Delivery Processing Time to Arrive at the Block Completion Time.
@@ -529,7 +540,7 @@ public class RemitRoutingManager {
 	 * @return
 	 */
 	private EstimatedDeliveryDetails getGoodBusinessDateTime(ZonedDateTime beginZonedDT, WorkingHoursData workHrsData,
-			BigDecimal countryId, boolean noHolidayLag) {
+			BigDecimal countryId, boolean noHolidayLag, long preDelay) {
 
 		EstimatedDeliveryDetails estimatedDeliveryDetails = new EstimatedDeliveryDetails();
 
@@ -546,7 +557,15 @@ public class RemitRoutingManager {
 			// Default Working Status
 			boolean isWorking = true;
 
-			if (noHolidayLag || !(isHoliday = transientDataCache.isHolidayOn(countryId, estimatedGoodBusinessDay))) {
+			System.out.println(" Processing Pre Delay ==> " + preDelay);
+			
+			if (preDelay > 0) {
+
+				isWorking = false;
+				preDelay--;
+
+			} else if (noHolidayLag
+					|| !(isHoliday = transientDataCache.isHolidayOn(countryId, estimatedGoodBusinessDay))) {
 
 				int dayOfWeek = estimatedGoodBusinessDay.getDayOfWeek().getValue();
 				int hourOfDay = estimatedGoodBusinessDay.getHour();
