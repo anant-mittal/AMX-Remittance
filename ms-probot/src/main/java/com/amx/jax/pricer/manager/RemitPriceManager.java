@@ -180,8 +180,8 @@ public class RemitPriceManager {
 				BigDecimal maxFcCurBal = exchRateAndRoutingTransientDataCache
 						.getMaxGLLcBalForBank(exchangeRate.getBankMaster().getBankId(), Boolean.TRUE);
 
-				System.out.println(" Required Amt ==> " + exRateDetails.getSellRateBase().getConvertedFCAmount()
-						+ " Current Amt ==>" + maxFcCurBal);
+				//System.out.println(" Required Amt ==> " + exRateDetails.getSellRateBase().getConvertedFCAmount().toPlainString()
+				//		+ " Current Amt ==>" + maxFcCurBal.toPlainString());
 				if (maxFcCurBal.compareTo(exRateDetails.getSellRateBase().getConvertedFCAmount()) < 0) {
 
 					exRateDetails.setLowGLBalance(true);
@@ -533,14 +533,16 @@ public class RemitPriceManager {
 		if (exrate != null) {
 			breakup = new ExchangeRateBreakup();
 			breakup.setInverseRate(exrate.round(DEF_CONTEXT));
-			breakup.setConvertedFCAmount(breakup.getRate().multiply(lcAmount).round(DEF_CONTEXT));
-			breakup.setConvertedLCAmount(lcAmount.round(DEF_CONTEXT));
 
 			if (BigDecimal.ZERO.compareTo(exrate) == 0) {
 				breakup.setRate(BigDecimal.ZERO);
 			} else {
 				breakup.setRate(BigDecimal.ONE.divide(exrate, DEF_DECIMAL_SCALE, RoundingMode.HALF_UP));
 			}
+
+			breakup.setConvertedFCAmount(breakup.getRate().multiply(lcAmount).round(DEF_CONTEXT));
+			breakup.setConvertedLCAmount(lcAmount.round(DEF_CONTEXT));
+
 		}
 		return breakup;
 	}
@@ -549,17 +551,17 @@ public class RemitPriceManager {
 		ExchangeRateBreakup breakup = null;
 		if (exrate != null) {
 			breakup = new ExchangeRateBreakup();
-			breakup.setConvertedLCAmount(fcAmount.multiply(exrate).round(DEF_CONTEXT));
-			breakup.setConvertedFCAmount(fcAmount.round(DEF_CONTEXT));
+
 			breakup.setInverseRate(exrate.round(DEF_CONTEXT));
-			// breakup.setRate(new BigDecimal(1).divide(exrate, DEF_DECIMAL_SCALE,
-			// RoundingMode.HALF_UP));
 
 			if (BigDecimal.ZERO.compareTo(exrate) == 0) {
 				breakup.setRate(BigDecimal.ZERO);
 			} else {
 				breakup.setRate(BigDecimal.ONE.divide(exrate, DEF_DECIMAL_SCALE, RoundingMode.HALF_UP));
 			}
+
+			breakup.setConvertedLCAmount(fcAmount.multiply(exrate).round(DEF_CONTEXT));
+			breakup.setConvertedFCAmount(fcAmount.round(DEF_CONTEXT));
 
 		}
 		return breakup;
@@ -591,7 +593,7 @@ public class RemitPriceManager {
 
 	}
 
-	//@SuppressWarnings("unused")
+	// @SuppressWarnings("unused")
 	private List<ExchangeRateDetails> computeBankPricesForLcCurOnline(BigDecimal toCurrency, BigDecimal lcAmount,
 			BigDecimal countryBranchId, BigDecimal foreignCountryId, List<BigDecimal> validBankIds) {
 		List<ExchangeRateDetails> exchangeRateDetailList = new ArrayList<ExchangeRateDetails>();
@@ -619,7 +621,7 @@ public class RemitPriceManager {
 		return exchangeRateDetailList;
 	}
 
-	//@SuppressWarnings("unused")
+	// @SuppressWarnings("unused")
 	private List<ExchangeRateDetails> computeBankPricesForFcCurOnline(BigDecimal toCurrency, BigDecimal fcAmount,
 			BigDecimal countryBranchId, BigDecimal foreignCountryId, List<BigDecimal> validBankIds) {
 		List<ExchangeRateDetails> exchangeRateDetailList = new ArrayList<ExchangeRateDetails>();

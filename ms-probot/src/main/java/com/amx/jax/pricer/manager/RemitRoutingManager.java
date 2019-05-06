@@ -410,9 +410,6 @@ public class RemitRoutingManager {
 
 			if (fromAmt.compareTo(breakup.getConvertedFCAmount()) > 0
 					|| toAmt.compareTo(breakup.getConvertedFCAmount()) < 0) {
-
-				System.out.println(" Remove Route Data ==> " + JsonUtil.toJson(matrix));
-
 				removeList.add(routeData);
 				continue;
 			}
