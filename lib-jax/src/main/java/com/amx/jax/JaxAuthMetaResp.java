@@ -3,11 +3,15 @@ package com.amx.jax;
 import java.io.Serializable;
 
 import com.amx.jax.model.auth.QuestModelDTO;
+import com.amx.jax.swagger.ApiMockModelProperty;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class JaxAuthMetaResp implements Serializable {
 	private static final long serialVersionUID = 2852813652747499129L;
+
+	@ApiMockModelProperty(example = "anx-sdff-dfdfdfd")
+	String id;
 	String otpPrefix;
 	String mOtpPrefix;
 	String eOtpPrefix;
@@ -74,5 +78,13 @@ public class JaxAuthMetaResp implements Serializable {
 
 	public void setwOtpPrefix(String wOtpPrefix) {
 		this.wOtpPrefix = wOtpPrefix;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
 	}
 }
