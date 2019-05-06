@@ -53,6 +53,10 @@ public class DiscountMgmtClient extends AbstractJaxServiceClient implements IDis
 			return JaxSystemError.evaluate(ae);
 		}
 	}
+
+	public AmxApiResponse<PricingResponseDTO, Object> fetchCustomerRates(PricingRequestDTO pricingRequestDTO) {
+		return pricerServiceClient.fetchPriceForCustomer(pricingRequestDTO);
+	}
 	
 	public AmxApiResponse<DiscountDetailsReqRespDTO, Object> getDiscountManagemetDetails(DiscountMgmtReqDTO discountMgmtReqDTO) {
 		return pricerServiceClient.getDiscountManagemet(discountMgmtReqDTO);
