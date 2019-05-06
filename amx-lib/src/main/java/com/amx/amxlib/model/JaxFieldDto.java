@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
+
 public class JaxFieldDto {
 
 	String name;
@@ -18,6 +20,10 @@ public class JaxFieldDto {
 	List<JaxFieldValueDto> possibleValues;
 	String dtoPath;
 	Map<String, Object> additionalValidations = new HashMap<>();
+	
+	
+
+	
 
 	public String getName() {
 		return name;

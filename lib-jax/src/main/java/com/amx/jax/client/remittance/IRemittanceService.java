@@ -72,6 +72,7 @@ public interface IRemittanceService extends  IJaxService {
 		public static final String COLLECTION_DOC_CODE = "collectionDocCode";
 		public static final String LOCAL_AMOUNT = "localAmount";
 		public static final String FOREIGN_AMOUNT = "foreignAmount";
+		public static final String ROUTING_COUNTRY_ID="routingcountryId"; 
 		
 	}
 	
@@ -122,7 +123,7 @@ public interface IRemittanceService extends  IJaxService {
 	
 	
 	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND})
-	AmxApiResponse<AdditionalExchAmiecDto,Object> getPurposeOfTrnx(BigDecimal beneRelaId);
+	AmxApiResponse<AdditionalExchAmiecDto,Object> getPurposeOfTrnx(BigDecimal beneRelaId,BigDecimal routingcountryId);
 	
 	@ApiJaxStatus({ JaxError.INVALID_AMOUNT , JaxError.EXCHANGE_RATE_NOT_FOUND, JaxError.DATA_NOT_FOUND})
 	AmxApiResponse<BranchRemittanceGetExchangeRateResponse, Object> getExchaneRate(BranchRemittanceGetExchangeRateRequest request);

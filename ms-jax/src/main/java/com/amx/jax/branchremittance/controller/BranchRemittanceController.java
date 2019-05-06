@@ -198,9 +198,9 @@ public class BranchRemittanceController implements IRemittanceService {
 	@RequestMapping(value = Path.BR_REMITTANCE_PURPOSE_OF_TRNX, method = RequestMethod.GET)
 	@Override
 	public AmxApiResponse<AdditionalExchAmiecDto, Object> getPurposeOfTrnx(
-			@RequestParam(value = Params.BENE_RELATION_SHIP_ID) BigDecimal beneRelaId) {
+			@RequestParam(value = Params.BENE_RELATION_SHIP_ID,required=true) BigDecimal beneRelaId,@RequestParam(value = Params.ROUTING_COUNTRY_ID,required=true) BigDecimal routingCountryId) {
 		logger.debug("getPurposeOfTrnx :" + beneRelaId);
-		return branchRemitService.getPurposeOfTrnx(beneRelaId);
+		return branchRemitService.getPurposeOfTrnx(beneRelaId,routingCountryId);
 	}
 
 	@RequestMapping(value = Path.BR_REMITTANCE_GET_EXCHANGE_RATE, method = RequestMethod.POST)

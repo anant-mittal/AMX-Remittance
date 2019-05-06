@@ -284,11 +284,12 @@ public class RemittanceClient  implements IRemittanceService{
 
 
 	@Override
-	public AmxApiResponse<AdditionalExchAmiecDto, Object> getPurposeOfTrnx(BigDecimal beneRelaId) {
+	public AmxApiResponse<AdditionalExchAmiecDto, Object> getPurposeOfTrnx(BigDecimal beneRelaId,BigDecimal routingCountryId) {
 		try {
 			LOGGER.debug("in getRoutingSetupDeatils :"+beneRelaId );
 			return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_PURPOSE_OF_TRNX).meta(new JaxMetaInfo())
 					.queryParam(Params.BENE_RELATION_SHIP_ID, beneRelaId).meta(new JaxMetaInfo())
+					.queryParam(Params.ROUTING_COUNTRY_ID, routingCountryId)
 					.get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<AdditionalExchAmiecDto, Object>>() {
 					});

@@ -29,9 +29,9 @@ public class BranchRemittanceGetExchangeRateRequest implements IRemittanceApplic
 	Long deliveryModeId;
 	@NotNull(message = "availLoyalityPoints can not be null")
 	Boolean availLoyalityPoints;
-	@NotNull(message = "routingCountryId can not be null")
+	/*@NotNull(message = "routingCountryId can not be null")
 	private BigDecimal routingCountryId;
-
+*/
 	public Long getBeneficiaryRelationshipSeqId() {
 		return beneficiaryRelationshipSeqId;
 	}
@@ -150,10 +150,10 @@ public class BranchRemittanceGetExchangeRateRequest implements IRemittanceApplic
 		this.availLoyalityPoints = availLoyalityPoints;
 	}
 
-	@Override
+	/*@Override
 	@JsonIgnore
 	public BigDecimal getRoutingCountryIdBD() {
 		return this.routingCountryId;
-	}
+	}*/
 
 }

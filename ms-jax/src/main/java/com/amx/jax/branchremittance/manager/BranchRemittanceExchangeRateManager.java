@@ -27,20 +27,15 @@ import org.springframework.web.context.WebApplicationContext;
 import com.amx.amxlib.exception.AdditionalFlexRequiredException;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.JaxConditionalFieldDto;
-import com.amx.amxlib.model.JaxFieldDto;
 import com.amx.amxlib.model.response.ExchangeRateResponseModel;
 import com.amx.amxlib.util.JaxValidationUtil;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.config.JaxTenantProperties;
-import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.CountryMaster;
 import com.amx.jax.dbmodel.Customer;
-import com.amx.jax.dbmodel.CustomerCoreDetailsView;
-import com.amx.jax.dbmodel.CustomerEmploymentInfo;
 import com.amx.jax.dbmodel.remittance.AdditionalBankRuleAmiec;
-import com.amx.jax.dbmodel.remittance.CorporateMasterModel;
 import com.amx.jax.dict.UserClient.Channel;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.exrateservice.service.ExchangeRateService;
@@ -65,9 +60,7 @@ import com.amx.jax.pricer.dto.ExchangeRateDetails;
 import com.amx.jax.pricer.dto.TrnxRoutingDetails;
 import com.amx.jax.pricer.var.PricerServiceConstants.PRICE_TYPE;
 import com.amx.jax.remittance.manager.RemittanceParameterMapManager;
-import com.amx.jax.repository.CustomerCoreDetailsRepository;
 import com.amx.jax.repository.IAdditionalBankRuleAmiecRepository;
-import com.amx.jax.repository.ICustomerEmploymentInfoRepository;
 import com.amx.jax.repository.remittance.ICorporateMasterRepository;
 import com.amx.jax.services.BeneficiaryService;
 import com.amx.jax.services.BeneficiaryValidationService;
@@ -353,21 +346,6 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 		if (CollectionUtils.isNotEmpty(amlFlexFields)) {
 			flexFields.addAll(amlFlexFields);
 		}
-		
-		/** purpose of trnx **/		
-		if(request!=null && JaxUtil.isNullZeroBigDecimalCheck(request.getRoutingCountryIdBD())){
-			cntMaster.setCountryId(request.getRoutingCountryIdBD());
-		}
-		if(cntMaster!=null && JaxUtil.isNullZeroBigDecimalCheck(cntMaster.getCountryId())) { 
-			amiecRuleMap = amiecBankRuleRepo.getPurposeOfTrnxByCountryId(cntMaster);
-		}
-		  
-		  if(amiecRuleMap != null && amiecRuleMap.size() != 0) {
-			  addExchDto = branchRemittanceManager.convertPurposeOfTrnxDto(amiecRuleMap);
-		  }
-	
-		  //purposeOfTrnxList
-		
 		return flexFields;
 	}
 	

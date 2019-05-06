@@ -737,7 +737,7 @@ public class BranchRemittanceManager extends AbstractModel {
 	}
 	
   
-  public List<AdditionalExchAmiecDto> getPurposeOfTrnx(BigDecimal beneRelId){
+  public List<AdditionalExchAmiecDto> getPurposeOfTrnx(BigDecimal beneRelId,BigDecimal routingCountryId){
 	  BenificiaryListView beneficaryDetails =beneficiaryRepository.findBybeneficiaryRelationShipSeqId(beneRelId);
 	  List<AdditionalBankRuleAmiec> amiecRuleMap  = null;
 	  CountryMaster cntMaster = new CountryMaster();
@@ -746,12 +746,16 @@ public class BranchRemittanceManager extends AbstractModel {
 		}	
 	List<AdditionalExchAmiecDto> purposeofTrnx = new ArrayList<>();
 	
-	
+	/*
 	RoutingResponseDto routingResponseDto = branchRoutingManager.getRoutingSetupDeatils(beneRelId);
 	
 	if(routingResponseDto!=null) {
 		List<ResourceDTO> routingCountry = routingResponseDto.getRoutingCountrydto();
 		cntMaster.setCountryId(routingCountry.get(0).getResourceId());
+	}*/
+	
+	if(JaxUtil.isNullZeroBigDecimalCheck(routingCountryId)) {
+		cntMaster.setCountryId(routingCountryId);
 	}
 	
 	if(cntMaster!=null && JaxUtil.isNullZeroBigDecimalCheck(cntMaster.getCountryId())) { 
@@ -759,7 +763,7 @@ public class BranchRemittanceManager extends AbstractModel {
 	}
 	  
 	  if(amiecRuleMap != null && amiecRuleMap.size() != 0) {
-		 return convertPurposeOfTrnxDto(amiecRuleMap);//Collections.sort(amiecRuleMap));
+		 return convertPurposeOfTrnxDto(amiecRuleMap);
 		}else {
 			throw new GlobalException(JaxError.NO_RECORD_FOUND, "No records found");
 		}

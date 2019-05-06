@@ -170,7 +170,7 @@ public class BranchRemittanceApplRequestModel extends RemittanceAdditionalBeneFi
 		model.setLocalAmount(request.getLocalAmountBD());
 		model.setRemittanceModeId(request.getRemitModeIdBD());
 		model.setServiceMasterId(request.getServiceIndicatorIdBD());
-		model.setRoutingCountryId(request.getRoutingCountryIdBD());
+		//model.setRoutingCountryId(request.getRoutingCountryIdBD());
 		return model;
 	}
 
@@ -183,10 +183,10 @@ public class BranchRemittanceApplRequestModel extends RemittanceAdditionalBeneFi
 	}
 
 	
-	@Override
+	/*@Override
 	@JsonIgnore
 	public BigDecimal getRoutingCountryIdBD() {
 		return this.routingCountryId;
-	}
+	}*/
 
 }
