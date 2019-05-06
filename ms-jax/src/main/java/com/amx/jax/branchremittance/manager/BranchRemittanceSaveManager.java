@@ -31,6 +31,7 @@ import com.amx.jax.dbmodel.AuthenticationLimitCheckView;
 import com.amx.jax.dbmodel.BankMasterModel;
 import com.amx.jax.dbmodel.CollectDetailModel;
 import com.amx.jax.dbmodel.CollectionModel;
+import com.amx.jax.dbmodel.CountryBranch;
 import com.amx.jax.dbmodel.CountryMaster;
 import com.amx.jax.dbmodel.CurrencyMasterModel;
 import com.amx.jax.dbmodel.CurrencyWiseDenomination;
@@ -332,13 +333,6 @@ public class BranchRemittanceSaveManager {
 				collection.setDocumentFinanceYear(appl.getDocumentFinancialyear());
 				collection.setDocumentId(documentDao.getDocumnetByCode(ConstantDocument.DOCUMENT_CODE_FOR_COLLECT_TRANSACTION).get(0).getDocumentID());
 				collection.setDocumentCode(ConstantDocument.DOCUMENT_CODE_FOR_COLLECT_TRANSACTION);
-				 BigDecimal documentNo =generateDocumentNumber(appl.getFsCountryMasterByApplicationCountryId().getCountryId(),appl.getFsCompanyMaster().getCompanyId(),collection.getDocumentId(),collection.getDocumentFinanceYear(),appl.getExCountryBranch().getBranchId(),ConstantDocument.A);
-				
-				if(documentNo!=null && documentNo.compareTo(BigDecimal.ZERO)!=0){
-			    	collection.setDocumentNo(documentNo);
-			    }else{
-			    	throw new GlobalException(JaxError.INVALID_COLLECTION_DOCUMENT_NO, "Collection document should not be blank.");
-			    }
 				collection.setReceiptType(ConstantDocument.COLLECTION_RECEIPT_TYPE);
 				collection.setCreatedDate(new Date());
 				EmployeeDetailsView employee =branchRemittanceApplManager.getEmployeeDetails();
@@ -349,9 +343,26 @@ public class BranchRemittanceSaveManager {
 					collection.setCashDeclarationIndicator(ConstantDocument.Yes);
 				}
 				collection.setIsActive(ConstantDocument.Yes);
-				collection.setExBankBranch(appl.getExCountryBranch());
+				
+				CountryBranch countryBranch = new CountryBranch();
+				if(employee!=null && JaxUtil.isNullZeroBigDecimalCheck(employee.getCountryBranchId())) {
+					countryBranch.setCountryBranchId(employee.getCountryBranchId());
+				}else {
+					countryBranch.setCountryBranchId(metaData.getCountryBranchId());
+				}
+				collection.setExBankBranch(countryBranch);
 				collection.setFsCompanyMaster(appl.getFsCompanyMaster());
 				collection.setTotalAmountDeclarationIndicator(null); //ned to check
+				
+				 BigDecimal documentNo =generateDocumentNumber(appl.getFsCountryMasterByApplicationCountryId().getCountryId(),appl.getFsCompanyMaster().getCompanyId(),collection.getDocumentId(),collection.getDocumentFinanceYear(),collection.getLocCode(),ConstantDocument.A);
+					
+					if(documentNo!=null && documentNo.compareTo(BigDecimal.ZERO)!=0){
+				    	collection.setDocumentNo(documentNo);
+				    }else{
+				    	throw new GlobalException(JaxError.INVALID_COLLECTION_DOCUMENT_NO, "Collection document should not be blank.");
+				    }
+				
+				
 				}else {
 					throw new GlobalException(JaxError.NO_RECORD_FOUND,"Record found to save in collection"+customerid+"\t appl No :"+shoppingCartList.get(0).getApplicationId());
 				}
@@ -670,7 +681,7 @@ public class BranchRemittanceSaveManager {
 					remitTrnx.setBankId(appl.getExBankMaster());
 					//remitTrnx.setBankReference(appl.getBa); nC
 					remitTrnx.setBlackListIndicator(checkBlackListIndicator(appl.getFsCustomer().getCustomerId(),appl.getRemittanceApplicationId()));
-					remitTrnx.setBranchId(appl.getExCountryBranch());
+					remitTrnx.setBranchId(collect.getExBankBranch());
 					remitTrnx.setCollectionDocCode(collect.getDocumentCode());
 					remitTrnx.setCollectionDocFinanceYear(collect.getDocumentFinanceYear());
 					remitTrnx.setCollectionDocId(collect.getDocumentId());
@@ -750,7 +761,7 @@ public class BranchRemittanceSaveManager {
 					remitTrnx.setReachedCostRateLimit(appl.getReachedCostRateLimit());
 					
 					
-					BigDecimal documentNo =generateDocumentNumber(appl.getFsCountryMasterByApplicationCountryId().getCountryId(),appl.getFsCompanyMaster().getCompanyId(),remitTrnx.getDocumentId().getDocumentCode(),remitTrnx.getDocumentFinanceYear(),remitTrnx.getBranchId().getBranchId(),ConstantDocument.A);
+					BigDecimal documentNo =generateDocumentNumber(appl.getFsCountryMasterByApplicationCountryId().getCountryId(),appl.getFsCompanyMaster().getCompanyId(),remitTrnx.getDocumentId().getDocumentCode(),remitTrnx.getDocumentFinanceYear(),remitTrnx.getLoccod(),ConstantDocument.A);
 					
 					if(documentNo!=null && documentNo.compareTo(BigDecimal.ZERO)!=0){
 						remitTrnx.setDocumentNo(documentNo);
