@@ -220,15 +220,11 @@ public class RemitRoutingManager {
 				preDelay += 1;
 			}
 
-			System.out.println("Pre Pre Delay ==> " + preDelay);
-
 			EstimatedDeliveryDetails estmdCBDeliveryDetails = this.getEstimatedBlockDelivery(
 					transientDataCache.getTrnxBeginTime(), timezone, oneMatrix.getWeekFrom(), oneMatrix.getWeekTo(),
 					oneMatrix.getWeekHoursFrom(), oneMatrix.getWeekHoursTo(), oneMatrix.getWeekendFrom(),
 					oneMatrix.getWeekendTo(), oneMatrix.getWeekendHoursFrom(), oneMatrix.getWeekendHoursTo(),
 					oneMatrix.getDelievryMinutes(), noHolidayLag, routingCountryId, preDelay);
-
-			System.out.println("Post Pre Delay ==> " + preDelay);
 
 			routingDetails.setRoutingBankDeliveryDetails(estmdCBDeliveryDetails);
 
@@ -557,10 +553,7 @@ public class RemitRoutingManager {
 			// Default Working Status
 			boolean isWorking = true;
 
-			System.out.println(" Processing Pre Delay ==> " + preDelay);
-			
 			if (preDelay > 0) {
-
 				isWorking = false;
 				preDelay--;
 
