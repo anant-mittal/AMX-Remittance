@@ -1,0 +1,32 @@
+multitenancy:
+    dataSourcesProps:
+      -
+        tenantId: 1
+        url: jdbc:h2:file:~/test
+        username: sa
+        password: 
+        driverClassName: org.h2.Driver
+      -
+        tenantId: KWT
+        url: jdbc:oracle:thin:@172.17.1.99:1522:TEMOS
+        username: TEMOS
+        password: TEMOS
+        driverClassName: oracle.jdbc.OracleDriver
+      -
+        tenantId: KWT2
+        url: jdbc:oracle:thin:@192.170.161.99:1521:QEMOS
+        username: QEMOS
+        password: QEMOS
+        driverClassName: oracle.jdbc.OracleDriver
+      -
+        tenantId: BHR
+        url: jdbc:oracle:thin:@10.1.41.9:1545:QBHEMOS
+        username: QBHEMOS
+        password: QBHEMOS
+        driverClassName: oracle.jdbc.OracleDriver
+      -
+        tenantId: OMN
+        url: jdbc:oracle:thin:@10.28.42.10:1521:TMEX
+        username: tmexchdba
+        password: tmexchdba
+        driverClassName: oracle.jdbc.OracleDriver
