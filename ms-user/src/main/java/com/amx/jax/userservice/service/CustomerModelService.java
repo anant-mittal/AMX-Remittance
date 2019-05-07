@@ -15,6 +15,7 @@ import com.amx.amxlib.model.CustomerModel;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
+import com.amx.jax.dbmodel.LoginLogoutHistory;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.response.customer.CustomerCommunicationChannel;
@@ -57,11 +58,14 @@ public class CustomerModelService {
 		CustomerFlags customerFlags = customerFlagManager.getCustomerFlags(customerId);
 		CustomerModelResponse response = new CustomerModelResponse(personInfo, customerFlags);
 		response.setCustomerId(customerId);
-
 		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(customerId);
 		if (onlineCustomer != null) {
 			CustomerModel customerModel = userService.convert(onlineCustomer);
 			response.setSecurityquestions(customerModel.getSecurityquestions());
+			LoginLogoutHistory history = userService.getLoginLogoutHistoryByUserName(onlineCustomer.getUserName());
+			if (history != null) {
+				personInfo.setLastLoginTime(history.getLoginTime());
+			}
 		}
 		return response;
 	}

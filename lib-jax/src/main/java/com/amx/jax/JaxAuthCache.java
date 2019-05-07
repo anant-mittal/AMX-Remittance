@@ -12,4 +12,23 @@ public class JaxAuthCache extends CacheBox<JaxAuthMeta> {
 	public JaxAuthMeta getAuthMeta(BigDecimal customerId) {
 		return this.get(ArgUtil.parseAsString(customerId));
 	}
+
+	public JaxAuthMeta getJaxAuthMeta() {
+		String contxtId = AppContextUtil.getContextId();
+		if (ArgUtil.isEmpty(contxtId)) {
+			contxtId = AppContextUtil.getTraceId();
+			AppContextUtil.setContextId(contxtId);
+		}
+
+		JaxAuthMeta x = this.getOrDefault(contxtId, null);
+		if (ArgUtil.isEmpty(x)) {
+			x = new JaxAuthMeta();
+			x.setId(contxtId);
+		}
+		return x;
+	}
+
+	public void saveJaxAuthMeta(JaxAuthMeta meta) {
+		this.put(meta.getId(), meta);
+	}
 }

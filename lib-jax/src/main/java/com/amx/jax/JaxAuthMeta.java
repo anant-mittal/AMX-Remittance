@@ -12,6 +12,7 @@ public class JaxAuthMeta implements Serializable {
 	private static final long serialVersionUID = 4710795819445446940L;
 
 	public JaxAuthMeta() {
+		this.id = null;
 		this.otp = "";
 		this.mOtp = "";
 		this.eOtp = "";
@@ -25,6 +26,9 @@ public class JaxAuthMeta implements Serializable {
 		this.eOtp = eOtp;
 		this.secAns = secAns;
 	}
+
+	@ApiMockModelProperty(example = "anx-sdff-dfdfdfd")
+	String id;
 
 	@ApiMockModelProperty(example = "123456")
 	String otp;
@@ -92,5 +96,13 @@ public class JaxAuthMeta implements Serializable {
 
 	public void setwOtp(String wOtp) {
 		this.wOtp = wOtp;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
 	}
 }
