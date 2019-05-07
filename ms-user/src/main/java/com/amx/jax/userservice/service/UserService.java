@@ -310,6 +310,11 @@ public class UserService extends AbstractUserService {
 
 		simplifyAnswers(model.getSecurityquestions());
 		onlineCust = custDao.saveOrUpdateOnlineCustomer(onlineCust, model);
+		
+		/** Calling stored procedure  to move updated details of customer to old emos **/
+		if (metaData.getCustomerId() != null && (model.getEmail()!=null ||model.getMobile()!=null )) {
+			custDao.callProcedurePopulateCusmas(metaData.getCustomerId());
+		}
 		updateCustomerVerification(onlineCust, model, cust);
 		setCustomerStatus(onlineCust, model, cust);
 		checkListManager.updateCustomerChecks(onlineCust, model);
