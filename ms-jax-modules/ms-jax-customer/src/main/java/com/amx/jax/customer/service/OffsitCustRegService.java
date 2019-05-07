@@ -48,6 +48,7 @@ import com.amx.jax.dal.BizcomponentDao;
 import com.amx.jax.dal.FieldListDao;
 import com.amx.jax.dal.ImageCheckDao;
 import com.amx.jax.dao.BlackListDao;
+import com.amx.jax.dbmodel.AddressProofModel;
 import com.amx.jax.dbmodel.ApplicationSetup;
 import com.amx.jax.dbmodel.BizComponentData;
 import com.amx.jax.dbmodel.BlackListModel;
@@ -114,6 +115,7 @@ import com.amx.jax.service.PrefixService;
 import com.amx.jax.services.AbstractService;
 import com.amx.jax.services.JaxNotificationService;
 import com.amx.jax.trnx.CustomerRegistrationTrnxModel;
+import com.amx.jax.userservice.dao.AddressProofDao;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.dao.IncomeDao;
 import com.amx.jax.userservice.manager.CustomerRegistrationManager;
@@ -256,6 +258,9 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 	
 	@Autowired
 	IncomeDao incomeDao;
+	
+	@Autowired
+	AddressProofDao addressProofDao;
 
 	public AmxApiResponse<ComponentDataDto, Object> getIdTypes() {
 		List<Map<String, Object>> tempList = bizcomponentDao
@@ -1244,6 +1249,12 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		return getOffsiteCustomerData(request.getIdentityInt(), request.getIdentityType());
 	}
 	
+	public AmxApiResponse<ResourceDTO, Object> getAddressProof(){
+		List<AddressProofModel> addressProofModel = addressProofDao.getAddressProof();
+		
+		List<ResourceDTO> listResourceDTO=ResourceDTO.createList(addressProofModel);
+		return AmxApiResponse.buildList(listResourceDTO);
+	}
 	
 	
 	

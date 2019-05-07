@@ -48,6 +48,7 @@ public interface ICustRegService extends IJaxService {
 		public static final String GET_OFFSITE_CUSTOMER_DATA_V1 = PREFIX + "/getOffsiteCustomerData/v1";
 		
 		public static final String DESIGNATION_LIST = PREFIX + "/getDesignationList";
+		public static final String ADDRESS_PROOF = PREFIX + "/getAddressProof";
 	}
 	
 	public static class Params {
@@ -109,5 +110,8 @@ public interface ICustRegService extends IJaxService {
 	
 	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND})
 	AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerDetails(String identityInt, BigDecimal identityType);
+	
+	@ApiJaxStatus({JaxError.EMPTY_ADDRESS_PROOF_LIST})
+	AmxApiResponse<ResourceDTO, Object> getAddressProof();
 
 }

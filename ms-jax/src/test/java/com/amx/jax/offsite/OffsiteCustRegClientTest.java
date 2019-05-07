@@ -31,7 +31,7 @@ public class OffsiteCustRegClientTest  {
 	protected JaxMetaInfo jaxMetaInfo;
 
 	
-	@Test
+	//@Test
 	public void testForDesignationList() {
 		setDefaults();
 		AmxApiResponse<ResourceDTO, Object> response = null;
@@ -49,8 +49,18 @@ public class OffsiteCustRegClientTest  {
 		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
 		jaxMetaInfo.setCustomerId(new BigDecimal(589));
 		jaxMetaInfo.setEmployeeId(new BigDecimal(421));
-		jaxMetaInfo.setTenant(Tenant.KWT);
-		TenantContextHolder.setCurrent(Tenant.KWT);
+		jaxMetaInfo.setTenant(Tenant.BHR);
+		TenantContextHolder.setCurrent(Tenant.BHR);
 		jaxMetaInfo.setReferrer("DEV-TESTING");
+	}
+	@Test
+	public void testForAddressProof() {
+		setDefaults();
+		AmxApiResponse<ResourceDTO, Object> response = null;
+		LOGGER.debug("Response not set");
+		response = offsiteClient.getAddressProof();
+		LOGGER.debug("Response is set");
+		assertNotNull("Response is null", response);
+		assertNotNull(response.getResult());
 	}
 }

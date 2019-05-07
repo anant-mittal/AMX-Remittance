@@ -292,5 +292,16 @@ public class OffsiteCustRegClient implements ICustRegService {
 			return JaxSystemError.evaluate(e);
 		} // end of try-c
 	}
-
+	@Override
+	public AmxApiResponse<ResourceDTO, Object> getAddressProof(){
+		try {
+			return restService.ajax(appConfig.getJaxURL()).meta(new JaxMetaInfo())
+					.path(CustRegApiEndPoints.ADDRESS_PROOF).get()
+					.as(new ParameterizedTypeReference<AmxApiResponse<ResourceDTO, Object>>() {
+					});
+		}catch(Exception e) {
+			LOGGER.error("exception in get address proof");
+			return JaxSystemError.evaluate(e);
+		}
+	}
 }
