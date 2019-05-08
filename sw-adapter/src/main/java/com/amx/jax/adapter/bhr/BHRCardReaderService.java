@@ -17,6 +17,7 @@ import com.amx.jax.device.CardData;
 import com.amx.jax.rest.RestService;
 import com.amx.utils.Constants;
 import com.amx.utils.JsonPath;
+import com.amx.utils.JsonUtil;
 
 @Configuration
 @EnableScheduling
@@ -80,6 +81,8 @@ public class BHRCardReaderService extends ACardReaderService {
 
 			Map<String, Object> resp = restService.ajax("http://localhost:5050/api/operation/ReadCard").post(options)
 					.asMap();
+
+			LOGGER.info("=========" + JsonUtil.toJson(resp));
 
 			String cpridTemp = PATH_CPRNO.load(resp, Constants.BLANK);
 			if (cpridTemp.equals(cprid)) {
