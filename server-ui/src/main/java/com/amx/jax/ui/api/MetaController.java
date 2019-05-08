@@ -349,7 +349,7 @@ public class MetaController {
 	 *
 	 * @return the response wrapper
 	 */
-	@RequestMapping(value = "/pub/meta/helpdtime", method = { RequestMethod.POST })
+	@RequestMapping(value = "/pub/meta/helpdtime", method = { RequestMethod.GET })
 	public ResponseWrapper<List<AuthenticationLimitCheckDTO>> helpDeskTimes() {
 		return new ResponseWrapper<List<AuthenticationLimitCheckDTO>>(
 				jaxService.setDefaults().getMetaClient().getContactUsTime().getResults());

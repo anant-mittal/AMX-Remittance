@@ -354,7 +354,7 @@ public class BranchRemittanceSaveManager {
 				collection.setFsCompanyMaster(appl.getFsCompanyMaster());
 				collection.setTotalAmountDeclarationIndicator(null); //ned to check
 				
-				 BigDecimal documentNo =generateDocumentNumber(appl.getFsCountryMasterByApplicationCountryId().getCountryId(),appl.getFsCompanyMaster().getCompanyId(),collection.getDocumentId(),collection.getDocumentFinanceYear(),collection.getExBankBranch().getBranchId(),ConstantDocument.A);
+				 BigDecimal documentNo =generateDocumentNumber(appl.getFsCountryMasterByApplicationCountryId().getCountryId(),appl.getFsCompanyMaster().getCompanyId(),collection.getDocumentId(),collection.getDocumentFinanceYear(),collection.getLocCode(),ConstantDocument.A);
 					
 					if(documentNo!=null && documentNo.compareTo(BigDecimal.ZERO)!=0){
 				    	collection.setDocumentNo(documentNo);
@@ -761,7 +761,7 @@ public class BranchRemittanceSaveManager {
 					remitTrnx.setReachedCostRateLimit(appl.getReachedCostRateLimit());
 					
 					
-					BigDecimal documentNo =generateDocumentNumber(appl.getFsCountryMasterByApplicationCountryId().getCountryId(),appl.getFsCompanyMaster().getCompanyId(),remitTrnx.getDocumentId().getDocumentCode(),remitTrnx.getDocumentFinanceYear(),remitTrnx.getBranchId().getBranchId(),ConstantDocument.A);
+					BigDecimal documentNo =generateDocumentNumber(appl.getFsCountryMasterByApplicationCountryId().getCountryId(),appl.getFsCompanyMaster().getCompanyId(),remitTrnx.getDocumentId().getDocumentCode(),remitTrnx.getDocumentFinanceYear(),remitTrnx.getLoccod(),ConstantDocument.A);
 					
 					if(documentNo!=null && documentNo.compareTo(BigDecimal.ZERO)!=0){
 						remitTrnx.setDocumentNo(documentNo);
