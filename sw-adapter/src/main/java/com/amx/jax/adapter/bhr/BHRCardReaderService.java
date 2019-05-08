@@ -37,7 +37,7 @@ public class BHRCardReaderService extends ACardReaderService {
 		return DeviceStatus.CONNECTED;
 	}
 
-	@Scheduled(fixedDelay = 1000, initialDelay = 4000)
+	@Scheduled(fixedDelay = 60000, initialDelay = 4000)
 	public void readCard() {
 		if (CONTEXT == null) {
 			return;
@@ -49,7 +49,7 @@ public class BHRCardReaderService extends ACardReaderService {
 			CardData data = new CardData();
 
 			data.setTitle("MR");
-			data.setIdentity("000007");
+			data.setIdentity("");
 
 			// Arabic Details
 			data.setLocalFullName("Amar Akbar Anthony");
