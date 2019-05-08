@@ -13,5 +13,29 @@ public enum Currency {
 	STD,
 	SAR, SCR, SLL, SGD, SKK, SIT, SBD, SOS, LKR, SDP, SRG, SZL, SEK, SYP, TWD, TJR, TZS, THB, TOP, TTD, TRY,
 	TND, TRL, TMM, UGX, UAH, AED, GBP, USS, USN, UYU, UZS, VUV, VEB, VND, YER,
-	YUN, ZRN, ZMK, ZWD, UNKNOWN;
+	YUN, ZRN, ZMK, ZWD,
+
+	// Proxies
+	EURO(EUR), ISRAL(ILS),
+
+	UNKNOWN;
+
+	Currency iso3;
+
+	Currency() {
+		iso3 = this;
+	}
+
+	Currency(Currency iso3Ref) {
+		iso3 = iso3Ref;
+	}
+
+	public Currency toISO3() {
+		return iso3;
+	}
+
+	public String toString() {
+		return this.iso3.name();
+	}
+
 }
