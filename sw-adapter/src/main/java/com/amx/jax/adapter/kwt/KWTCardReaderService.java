@@ -60,7 +60,6 @@ public class KWTCardReaderService extends ACardReaderService {
 				} else {
 					return DeviceStatus.CONNECTED;
 				}
-
 			}
 		}
 		return deviceStatus;

@@ -13,11 +13,17 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.adapter.ACardReaderService;
+import com.amx.jax.adapter.ACardReaderService.CardStatus;
+import com.amx.jax.adapter.kwt.KWTCardReaderService;
 import com.amx.jax.device.CardData;
 import com.amx.jax.rest.RestService;
+import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
 import com.amx.utils.JsonPath;
 import com.amx.utils.JsonUtil;
+import com.amx.utils.TimeUtils;
+
+import ch.qos.logback.core.util.TimeUtil;
 
 @Configuration
 @EnableScheduling
@@ -50,9 +56,14 @@ public class BHRCardReaderService extends ACardReaderService {
 
 	private String cprid;
 
+	long touchtime = 0L;
+
 	@Override
 	public DeviceStatus ping(boolean checkCard) {
 		LOGGER.debug("BHRCardReaderService");
+		if (TimeUtils.isExpired(touchtime, 2000)) {
+			return DeviceStatus.DISCONNECTED;
+		}
 		return DeviceStatus.CONNECTED;
 	}
 
@@ -82,13 +93,20 @@ public class BHRCardReaderService extends ACardReaderService {
 			Map<String, Object> resp = restService.ajax("http://localhost:5050/api/operation/ReadCard").post(options)
 					.asMap();
 
+			touchtime = System.currentTimeMillis();
+
 			String cpridTemp = PATH_CPRNO.load(resp, Constants.BLANK);
-			LOGGER.info("=========" + cpridTemp + "   "  + cprid);
+
 			if (cpridTemp.equals(cprid)) {
 				return;
 			}
 
 			cprid = cpridTemp;
+
+			if (ArgUtil.isEmpty(cprid)) {
+				BHRCardReaderService.CONTEXT.status(CardStatus.REMOVED);
+				return;
+			}
 
 			BHRCardReaderService.CONTEXT.status(CardStatus.READING);
 
@@ -97,7 +115,7 @@ public class BHRCardReaderService extends ACardReaderService {
 
 			// data.setTitle("MR");
 			data.setIdentity(cprid);
-			
+
 			// Arabic Details
 			// data.setLocalFullName("Amar Akbar Anthony");
 			// data.setLocalGender("M");
