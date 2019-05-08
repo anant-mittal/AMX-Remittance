@@ -235,10 +235,12 @@ public class FingerprintService {
 
 	public CustomerModel loginCustomerByFingerprint(String civilId, String identityTypeStr, String password, String fingerprintDeviceId) {
 		userValidationService.validateIdentityInt(civilId, identityTypeStr);
+		userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(civilId, JaxApiFlow.LOGIN);
 		if (metaData.getDeviceId() == null) {
 			logger.error("device id null exception");
 			throw new GlobalException("Device id cannot be null");
 		}
+		
 		CustomerOnlineRegistration customerOnlineRegistration = null;
 		if (identityTypeStr == null) {
 			try {
@@ -257,7 +259,7 @@ public class FingerprintService {
 		}
 		Customer customer = custDao.getCustById(customerOnlineRegistration.getCustomerId());
 		logger.info("Customer id is " + metaData.getCustomerId());
-		userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(civilId, JaxApiFlow.LOGIN);
+		
 		userValidationService.validateCustomerLockCount(customerOnlineRegistration);
 		userValidationService.validateCustIdProofs(customerOnlineRegistration.getCustomerId());
 		userValidationService.validateCustomerData(customerOnlineRegistration, customer);
