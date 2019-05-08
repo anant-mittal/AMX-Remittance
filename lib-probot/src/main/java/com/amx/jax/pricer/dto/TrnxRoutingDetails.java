@@ -12,7 +12,7 @@ public class TrnxRoutingDetails implements Serializable, Comparable<TrnxRoutingD
 
 	private BigDecimal routingBankId;
 	private BigDecimal serviceMasterId;
-	
+
 	private String serviceGroupCode;
 	private String bankIndicator;
 	private String bankCode;
@@ -26,13 +26,13 @@ public class TrnxRoutingDetails implements Serializable, Comparable<TrnxRoutingD
 	private BigDecimal deliveryModeId;
 	private String deliveryDescription;
 	private BigDecimal ProcessingCountryId;
-	
+
 	private String chargesType;
 	private BigDecimal chargesFor;
 	private BigDecimal chargeAmount;
 	private BigDecimal costCurrencyId;
 	private BigDecimal costAmount;
-	private BigDecimal noBeneDeductChargeAmount;
+	private BigDecimal beneDeductChargeAmount;
 
 	private EstimatedDeliveryDetails estimatedDeliveryDetails;
 
@@ -156,7 +156,6 @@ public class TrnxRoutingDetails implements Serializable, Comparable<TrnxRoutingD
 		ProcessingCountryId = processingCountryId;
 	}
 
-	
 	public String getChargesType() {
 		return chargesType;
 	}
@@ -197,12 +196,12 @@ public class TrnxRoutingDetails implements Serializable, Comparable<TrnxRoutingD
 		this.costAmount = costAmount;
 	}
 
-	public BigDecimal getNoBeneDeductChargeAmount() {
-		return noBeneDeductChargeAmount;
+	public BigDecimal getBeneDeductChargeAmount() {
+		return beneDeductChargeAmount;
 	}
 
-	public void setNoBeneDeductChargeAmount(BigDecimal noBeneDeductChargeAmount) {
-		this.noBeneDeductChargeAmount = noBeneDeductChargeAmount;
+	public void setBeneDeductChargeAmount(BigDecimal beneDeductChargeAmount) {
+		this.beneDeductChargeAmount = beneDeductChargeAmount;
 	}
 
 	public EstimatedDeliveryDetails getEstimatedDeliveryDetails() {

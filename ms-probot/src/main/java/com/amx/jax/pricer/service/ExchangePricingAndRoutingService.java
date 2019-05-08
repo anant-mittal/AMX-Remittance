@@ -68,7 +68,7 @@ public class ExchangePricingAndRoutingService {
 	@Resource
 	ExchRateAndRoutingTransientDataCache exchRateAndRoutingTransientDataCache;
 
-	private BigDecimal BIGD_ZERO = new BigDecimal(0);
+	// private BigDecimal BIGD_ZERO = new BigDecimal(0);
 
 	public PricingResponseDTO fetchRemitPricesForCustomer(PricingRequestDTO pricingRequestDTO) {
 
@@ -275,8 +275,15 @@ public class ExchangePricingAndRoutingService {
 
 			//// @formatter:on
 
-			bestExchangeRatePaths.get(PRICE_TYPE.NO_BENE_DEDUCT).add(pathKey);
 			trnxRoutingPaths.put(pathKey, trnxRoutingPath);
+
+			// Each Path - By-Default is a ** Non-Bene Deduct ** Path
+			bestExchangeRatePaths.get(PRICE_TYPE.NO_BENE_DEDUCT).add(pathKey);
+
+			if (null != trnxRoutingPath.getBeneDeductChargeAmount()
+					&& trnxRoutingPath.getBeneDeductChargeAmount().compareTo(BigDecimal.ZERO) != 0) {
+				bestExchangeRatePaths.get(PRICE_TYPE.BENE_DEDUCT).add(pathKey);
+			}
 
 			ExchangeRateDetails exchangeRate = routeDetails.getExchangeRateDetails();
 
@@ -285,8 +292,8 @@ public class ExchangePricingAndRoutingService {
 			}
 
 			if (skipServiceMode) {
-				if (!bankServiceModeSellRates.get(exchangeRate.getBankId()).containsKey(BIGD_ZERO)) {
-					bankServiceModeSellRates.get(exchangeRate.getBankId()).put(BIGD_ZERO, exchangeRate);
+				if (!bankServiceModeSellRates.get(exchangeRate.getBankId()).containsKey(BigDecimal.ZERO)) {
+					bankServiceModeSellRates.get(exchangeRate.getBankId()).put(BigDecimal.ZERO, exchangeRate);
 				}
 			} else {
 				bankServiceModeSellRates.get(exchangeRate.getBankId()).put(exchangeRate.getServiceIndicatorId(),
