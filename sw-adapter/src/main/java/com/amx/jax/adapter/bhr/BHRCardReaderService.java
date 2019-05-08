@@ -55,7 +55,7 @@ public class BHRCardReaderService extends ACardReaderService {
 		return DeviceStatus.CONNECTED;
 	}
 
-	@Scheduled(fixedDelay = 60000, initialDelay = 4000)
+	@Scheduled(fixedDelay = 1000, initialDelay = 4000)
 	public void readCard() {
 		if (CONTEXT == null) {
 			return;
