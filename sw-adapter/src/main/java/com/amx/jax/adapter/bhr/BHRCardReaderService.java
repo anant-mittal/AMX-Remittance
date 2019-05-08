@@ -1,7 +1,11 @@
 package com.amx.jax.adapter.bhr;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -10,6 +14,9 @@ import org.springframework.stereotype.Component;
 
 import com.amx.jax.adapter.ACardReaderService;
 import com.amx.jax.device.CardData;
+import com.amx.jax.rest.RestService;
+import com.amx.utils.Constants;
+import com.amx.utils.JsonPath;
 
 @Configuration
 @EnableScheduling
@@ -18,6 +25,12 @@ import com.amx.jax.device.CardData;
 public class BHRCardReaderService extends ACardReaderService {
 
 	public static Logger LOGGER = LoggerFactory.getLogger(BHRCardReaderService.class);
+
+	private static final JsonPath PATH_CARDSERIALNUMBER = new JsonPath("/CardData/CardSerialNumber");
+	private static final JsonPath PATH_CPRNO = new JsonPath("/CardData/CPRNO");
+	private static final JsonPath PATH_EMAIL = new JsonPath("/CardData/Email");
+	private static final JsonPath PATH_ENGLISHFULLNAME = new JsonPath("/CardData/EnglishFullName");
+	private static final JsonPath PATH_BIRTHDATE = new JsonPath("/CardData/BirthDate");
 
 	@Override
 	public boolean start() {
@@ -30,6 +43,11 @@ public class BHRCardReaderService extends ACardReaderService {
 			return false;
 		}
 	}
+
+	@Autowired
+	RestService restService;
+
+	private String cprid;
 
 	@Override
 	public DeviceStatus ping(boolean checkCard) {
@@ -44,21 +62,50 @@ public class BHRCardReaderService extends ACardReaderService {
 		}
 		BHRCardReaderService.CONTEXT.status(CardStatus.FOUND);
 		try {
+
+			Map<String, Object> options = new HashMap<String, Object>();
+
+			options.put("ReadCardInfo", true);
+			options.put("ReadPersonalInfo", true);
+			options.put("ReadAddressDetails", true);
+			options.put("ReadBiometrics", true);
+			options.put("ReadEmploymentInfo", true);
+			options.put("ReadImmigrationDetails", true);
+			options.put("ReadTrafficDetails", true);
+			options.put("SilentReading", true);
+			options.put("ReaderIndex", -1);
+			options.put("ReaderName", "");
+			options.put("OutputFormat", "JSON");
+			options.put("ValidateCard", true);
+
+			Map<String, Object> resp = restService.ajax("http://localhost:5050/api/operation/ReadCard").post(options)
+					.asMap();
+
+			String cpridTemp = PATH_CPRNO.load(resp, Constants.BLANK);
+			if (cpridTemp.equals(cprid)) {
+				return;
+			}
+
+			cprid = cpridTemp;
+
 			BHRCardReaderService.CONTEXT.status(CardStatus.READING);
-			LOGGER.debug("KWTCardReaderServiceListner:CardConnectionEvent");
+
+			LOGGER.debug("BHRCardReaderServiceListner:CardConnectionEvent");
 			CardData data = new CardData();
 
-			data.setTitle("MR");
-			data.setIdentity("");
+			// data.setTitle("MR");
+			data.setIdentity(cprid);
 
 			// Arabic Details
-			data.setLocalFullName("Amar Akbar Anthony");
-			data.setLocalGender("M");
+			// data.setLocalFullName("Amar Akbar Anthony");
+			// data.setLocalGender("M");
 
 			// English Details
-			data.setFullName("Amar Akbar Anthony");
+			data.setFullName(PATH_ENGLISHFULLNAME.load(resp, Constants.BLANK));
 
-			data.setDob("15/11/1987");
+			data.setDob(PATH_BIRTHDATE.load(resp, Constants.BLANK));
+
+			data.setEmail(PATH_EMAIL.load(resp, Constants.BLANK));
 
 			BHRCardReaderService.CONTEXT.status(CardStatus.SCANNED);
 
@@ -78,7 +125,7 @@ public class BHRCardReaderService extends ACardReaderService {
 			BHRCardReaderService.CONTEXT.push(data);
 
 		} catch (Exception e2) {
-			LOGGER.error("KwCardReaderListner:CardConnectionEvent:Exception {}", e2);
+			LOGGER.error("BHRCardReaderListner:CardConnectionEvent:Exception {}", e2);
 			BHRCardReaderService.CONTEXT.status(DataStatus.READ_ERROR);
 		}
 
