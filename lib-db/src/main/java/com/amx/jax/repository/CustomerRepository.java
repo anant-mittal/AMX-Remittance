@@ -80,6 +80,10 @@ public interface CustomerRepository extends CrudRepository<Customer, BigDecimal>
 	@Query("select c from Customer c where identityInt=?1  and countryId =?2")
 	public Customer getCustomerDetails(String identityInt, BigDecimal countryId);
 
+	
+	@Query("select  c from Customer c where identityInt=?1 and isActive='Y' and identityTypeId= ?2 ")	
+	public Customer getCustomerCustIdByCivilId(String civilId,BigDecimal typeId);
+
 	@Query("select c from Customer c where identityInt =?1 and isActive ='Y' and identityTypeId = ?2")
 	public List<Customer> findActiveCustomers(String identityInt, BigDecimal identityType);
 

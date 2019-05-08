@@ -38,6 +38,10 @@ public class DeviceConstants {
 		public static final String DEVICE_STATUS_NOTIPY = "/pub/notipy/status";
 		public static final String DEVICE_SEND_NOTIPY = "/pub/notipy/send";
 		public static final String DEVICE_VERIFY_NOTIPY = "/pub/notipy/verify";
+		public static final String SESSION_PAIR_DEVICE = SESSION_PAIR+ "/{deviceType}";
+		public static final String DEVICE_TYPE = "/pub/deviceType/list";
+
+
 
 		@Deprecated
 		public static final String DEVICE_STATUS_ACTIVITY = "/pub/device/status/activity";

@@ -11,7 +11,6 @@ import org.springframework.web.context.WebApplicationContext;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.logger.AuditActor;
-import com.amx.jax.model.response.customer.CustomerModelResponse;
 
 /**
  * The Class UserSession.

@@ -18,7 +18,6 @@ import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.scope.TenantSpecific;
 import com.amx.jax.userservice.dao.CustomerIdProofDao;
 import com.amx.jax.userservice.service.CustomerValidationContext.CustomerValidation;
-import com.amx.utils.Constants;
 
 @Component
 @TenantSpecific(value = { Tenant.OMN, Tenant.OMNDEV })

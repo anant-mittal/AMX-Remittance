@@ -1,18 +1,30 @@
 package com.amx.jax.ui.auth;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.model.AuthState;
+import com.amx.jax.model.response.customer.CustomerFlags;
 import com.amx.jax.scope.TenantSpecific;
+import com.amx.jax.ui.UIConstants.Features;
 import com.amx.jax.ui.auth.AuthLibContext.AuthLib;
+import com.amx.jax.ui.model.AuthData;
+import com.amx.jax.ui.service.LoginService;
+import com.amx.jax.ui.service.SessionService;
 
 /**
  * The Class AuthLibKWT.
  */
 @Component
-@TenantSpecific({ Tenant.KWT, Tenant.BHR, Tenant.OMN })
+@TenantSpecific({ Tenant.KWT })
 public class AuthLibKWT implements AuthLib {
+
+	@Autowired
+	private SessionService sessionService;
+
+	@Autowired
+	private LoginService loginService;
 
 	/*
 	 * (non-Javadoc)
@@ -41,7 +53,8 @@ public class AuthLibKWT implements AuthLib {
 		case DEVICEPASS:
 			return AuthState.AuthStep.COMPLETED;
 		case USERPASS:
-			return AuthState.AuthStep.SECQUES;
+			return AuthState.AuthStep.COMPLETED;
+		// return AuthState.AuthStep.SECQUES;
 		case SECQUES:
 			return AuthState.AuthStep.COMPLETED;
 		default:
@@ -111,7 +124,7 @@ public class AuthLibKWT implements AuthLib {
 		case SAVE_HOME:
 			return AuthState.AuthStep.SECQ_SET;
 		case SECQ_SET:
-			return AuthState.AuthStep.CAPTION_SET;
+			return AuthState.AuthStep.CREDS_SET;
 		case CAPTION_SET:
 			return AuthState.AuthStep.CREDS_SET;
 		case CREDS_SET:
@@ -135,11 +148,7 @@ public class AuthLibKWT implements AuthLib {
 		case IDVALID:
 			return AuthState.AuthStep.MOTPVFY;
 		case MOTPVFY:
-			if (authState.isPresentEmail()) {
-				return AuthState.AuthStep.SECQ_SET;
-			} else {
-				return AuthState.AuthStep.DATA_VERIFY;
-			}
+			return AuthState.AuthStep.CREDS_SET;
 		case DATA_VERIFY:
 			return AuthState.AuthStep.SECQ_SET;
 		case SECQ_SET:
@@ -151,6 +160,32 @@ public class AuthLibKWT implements AuthLib {
 		default:
 			return authState.cStep;
 		}
+	}
+
+	@Override
+	public CustomerFlags checkUserMeta(AuthState authState, CustomerFlags customerFlags) {
+		AuthPermUtil.checkAnnualIncomeExpiry(authState, customerFlags);
+		return customerFlags;
+	}
+
+	@Override
+	public CustomerFlags checkModule(AuthState authState, CustomerFlags customerFlags, Features feature) {
+		switch (feature) {
+		case REMIT:
+		case BENE_UPDATE:
+		case FXORDER:
+			AuthPermUtil.checkIdProofExpiry(authState, customerFlags);
+			AuthPermUtil.checkSQASetup(authState, customerFlags);
+			AuthPermUtil.checkSQA(authState, customerFlags);
+			break;
+		case SQA_UPDATE:
+			AuthPermUtil.checkSQASetup(authState, customerFlags);
+			break;
+		default:
+			break;
+		}
+
+		return customerFlags;
 	}
 
 }

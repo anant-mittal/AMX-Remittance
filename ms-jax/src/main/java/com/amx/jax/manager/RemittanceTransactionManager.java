@@ -32,7 +32,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.constant.AuthType;
-import com.amx.amxlib.constant.CommunicationChannel;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
@@ -71,6 +70,7 @@ import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.dbmodel.remittance.ViewTransfer;
 import com.amx.jax.dict.PayGRespCodeJSONConverter;
+import com.amx.jax.dict.ContactType;
 import com.amx.jax.dict.UserClient;
 import com.amx.jax.dict.UserClient.Channel;
 import com.amx.jax.error.JaxError;
@@ -233,9 +233,7 @@ public class RemittanceTransactionManager {
 		remitApplParametersMap.put("P_BENEFICIARY_MASTER_ID", beneficiary.getBeneficaryMasterSeqId());
 		addBeneficiaryParameters(beneficiary);
 		validateBlackListedBene(beneficiary);
-		// validateRiskyBene(beneficiary, customer); //it is not required at the time of
-		// trnx ,the procedure will take care for existing bene with different
-		// nationality
+		//validateRiskyBene(beneficiary, customer);  //it is not required at the time of trnx ,the procedure will take care for existing bene with different nationality
 		validatedObjects.put("BENEFICIARY", beneficiary);
 		HashMap<String, Object> beneBankDetails = getBeneBankDetails(beneficiary);
 		remitApplParametersMap.putAll(beneBankDetails);
@@ -268,7 +266,8 @@ public class RemittanceTransactionManager {
 		BigDecimal deliveryMode = new BigDecimal(remitApplParametersMap.get("P_DELIVERY_MODE_ID").toString());
 		BigDecimal currencyId = beneficiary.getCurrencyId();
 		BigDecimal applicationCountryId = meta.getCountryId();
-
+		
+		
 		logger.info("currencyId :" + currencyId + "\t rountingCountryId :" + rountingCountryId + "\t routingBankId :"
 				+ routingBankId + "\t serviceMasterId :" + serviceMasterId);
 		List<ExchangeRateApprovalDetModel> exchangeRates = exchangeRateDao.getExchangeRatesForRoutingBank(currencyId,
@@ -722,6 +721,7 @@ public class RemittanceTransactionManager {
 		}
 	}
 
+
 	public BankCharges getApplicableCharge(List<BankCharges> charges) {
 
 		BankCharges output = null;
@@ -999,9 +999,8 @@ public class RemittanceTransactionManager {
 
 				(ANDROID.equals(meta.getAppType()) && localAmount.compareTo(androidLimit) >= 0)) {
 
-			List<CommunicationChannel> channel = new ArrayList<>();
-			channel.add(CommunicationChannel.EMAIL_AS_MOBILE);
-			channel.add(CommunicationChannel.MOBILE);
+			List<ContactType> channel = new ArrayList<>();
+			channel.add(ContactType.SMS_EMAIL);
 			otpMmodel = (CivilIdOtpModel) userService.sendOtpForCivilId(null, channel, null, null).getData().getValues()
 					.get(0);
 		}

@@ -1,4 +1,4 @@
-package com.amx.amxlib.model;
+package com.amx.jax.model.customer;
 
 import java.math.BigDecimal;
 

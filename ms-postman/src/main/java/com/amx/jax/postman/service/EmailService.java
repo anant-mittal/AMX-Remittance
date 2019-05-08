@@ -152,34 +152,37 @@ public class EmailService {
 
 			to = email.getTo() != null ? email.getTo().get(0) : null;
 
-			if (email.getTemplate() != null) {
-				File file = new File();
-				file.setTemplate(email.getTemplate());
-				file.setModel(email.getModel());
-				file.setLang(email.getLang());
+			if (ArgUtil.isEmpty(to)) {
+				email.setStatus(Status.NOT_SENT);
+				auditService.log(pMGaugeEvent.set(AuditEvent.Result.REJECTED).set(email));
+			} else if (contactService.isEmailBlackListed(to)) {
+				email.setStatus(Status.BLOCKED);
+				auditService.log(pMGaugeEvent.set(AuditEvent.Result.REJECTED).set(email));
+			} else {
+				if (email.getTemplate() != null) {
+					File file = new File();
+					file.setTemplate(email.getTemplate());
+					file.setModel(email.getModel());
+					file.setLang(email.getLang());
 
-				email.setMessage(fileService.create(file).getContent());
+					email.setMessage(fileService.create(file).getContent());
 
-				if (ArgUtil.isEmptyString(email.getSubject())) {
-					email.setSubject(file.getTitle());
-				}
-			}
-
-			if (email.getFiles() != null && email.getFiles().size() > 0) {
-				for (File file : email.getFiles()) {
-					if (file.getLang() == null) {
-						file.setLang(email.getLang());
+					if (ArgUtil.isEmptyString(email.getSubject())) {
+						email.setSubject(file.getTitle());
 					}
-					fileService.create(file);
 				}
-			}
-			if (!ArgUtil.isEmpty(to)) {
+
+				if (email.getFiles() != null && email.getFiles().size() > 0) {
+					for (File file : email.getFiles()) {
+						if (file.getLang() == null) {
+							file.setLang(email.getLang());
+						}
+						fileService.create(file);
+					}
+				}
 				this.send(email);
 				email.setStatus(Status.SENT);
 				auditService.log(pMGaugeEvent.set(AuditEvent.Result.DONE).set(email));
-			} else {
-				email.setStatus(Status.NOT_SENT);
-				auditService.log(pMGaugeEvent.set(AuditEvent.Result.REJECTED).set(email));
 			}
 
 		} catch (Exception e) {
@@ -188,7 +191,8 @@ public class EmailService {
 		}
 
 		if (!ArgUtil.isEmpty(emailClone) && !Status.SENT.equals(email.getStatus())
-				&& !Status.NOT_SENT.equals(email.getStatus())) {
+				&& !Status.NOT_SENT.equals(email.getStatus())
+				&& !Status.BLOCKED.equals(email.getStatus())) {
 			AppContext context = AppContextUtil.getContext();
 			TunnelMessage<Email> tunnelMessage = new TunnelMessage<Email>(emailClone, context);
 			RQueue<TunnelMessage<Email>> emailQueue = redisson
@@ -265,6 +269,10 @@ public class EmailService {
 
 		String[] tos = contactService.getEmail(eParams.getTo());
 
+		if (ArgUtil.isEmpty(tos) || tos.length == 0) {
+			return tos;
+		}
+
 		helper.setTo(tos);
 		// helper.setTo(emailsTo.toArray(new String[emailsTo.size()]));
 		// helper.setReplyTo(eParams.getFrom());
@@ -329,6 +337,10 @@ public class EmailService {
 
 		String[] tos = contactService.getEmail(eParams.getTo());
 		// InternetAddress fromInternetAddress = getInternetAddress(eParams.getFrom());
+
+		if (ArgUtil.isEmpty(tos) || tos.length == 0) {
+			return tos;
+		}
 
 		// eParams.getTo().toArray(new String[eParams.getTo().size()]);
 		mailMessage.setTo(tos);

@@ -3,8 +3,7 @@ package com.amx.jax.dbmodel.fx;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-
-
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -44,9 +43,7 @@ public class FxOrderTransactionModel implements Serializable {
 	
 	@Column(name = "QUOTE_NAME")
 	private String currencyQuoteName;
-	
-
-	
+		
 	@Column(name = "TRANSACTION_TYPE_DESC")
 	private String transactionTypeDesc;
 	
@@ -137,7 +134,20 @@ public class FxOrderTransactionModel implements Serializable {
 	
 	@Column(name="OTP_TOKEN_CUSTOMER")
 	private String otpTokenCustomer;
+	
+	//Added By Radhika
+	@Column(name="ISACTIVE")
+	private String isActive;
+	
+	@Column(name="DRIVER_EMPLOYEE_ID")
+	private BigDecimal driverEmployeeId;
+	
+	@Column(name="EMPLOYEE_ID")
+	private BigDecimal employeeId;
 
+	@Column(name="CREATED_DATE_ALT")
+	private Date createdDateAlt;
+	
 	public BigDecimal getIdno() {
 		return idno;
 	}
@@ -435,10 +445,37 @@ public class FxOrderTransactionModel implements Serializable {
 	public void setOtpTokenCustomer(String otpTokenCustomer) {
 		this.otpTokenCustomer = otpTokenCustomer;
 	}
-	
+
+	public String getIsActive() {
+		return isActive;
+	}
+
+	public void setIsActive(String isActive) {
+		this.isActive = isActive;
+	}
+
+	public BigDecimal getDriverEmployeeId() {
+		return driverEmployeeId;
+	}
+
+	public void setDriverEmployeeId(BigDecimal driverEmployeeId) {
+		this.driverEmployeeId = driverEmployeeId;
+	}
+
+	public BigDecimal getEmployeeId() {
+		return employeeId;
+	}
+
+	public void setEmployeeId(BigDecimal employeeId) {
+		this.employeeId = employeeId;
+	}
+
+	public Date getCreatedDateAlt() {
+		return createdDateAlt;
+	}
+
+	public void setCreatedDateAlt(Date createdDateAlt) {
+		this.createdDateAlt = createdDateAlt;
+	}
+
 }
-
-
-
-
-

@@ -18,6 +18,7 @@ public class AppContext implements Serializable {
 
 	Tenant tenant = null;
 	String traceId = null;
+	String contextId = null;
 	String tranxId = null;
 	String actorId = null;
 	UserDeviceClient client;
@@ -88,6 +89,14 @@ public class AppContext implements Serializable {
 
 	public void setParams(Map<String, Object> params) {
 		this.params = params;
+	}
+
+	public String getContextId() {
+		return contextId;
+	}
+
+	public void setContextId(String contextId) {
+		this.contextId = contextId;
 	}
 
 }
