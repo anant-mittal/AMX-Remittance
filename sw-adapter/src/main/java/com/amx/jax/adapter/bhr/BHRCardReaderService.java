@@ -82,9 +82,8 @@ public class BHRCardReaderService extends ACardReaderService {
 			Map<String, Object> resp = restService.ajax("http://localhost:5050/api/operation/ReadCard").post(options)
 					.asMap();
 
-			LOGGER.info("=========" + JsonUtil.toJson(resp));
-
 			String cpridTemp = PATH_CPRNO.load(resp, Constants.BLANK);
+			LOGGER.info("=========" + cpridTemp + "   "  + cprid);
 			if (cpridTemp.equals(cprid)) {
 				return;
 			}
