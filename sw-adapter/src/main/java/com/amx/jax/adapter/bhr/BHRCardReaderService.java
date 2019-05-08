@@ -27,7 +27,7 @@ public class BHRCardReaderService extends ACardReaderService {
 	public static Logger LOGGER = LoggerFactory.getLogger(BHRCardReaderService.class);
 
 	private static final JsonPath PATH_CARDSERIALNUMBER = new JsonPath("/CardData/CardSerialNumber");
-	private static final JsonPath PATH_CPRNO = new JsonPath("/CardData/CPRNO");
+	private static final JsonPath PATH_CPRNO = new JsonPath("/CardData/IdNumber");
 	private static final JsonPath PATH_EMAIL = new JsonPath("/CardData/Email");
 	private static final JsonPath PATH_ENGLISHFULLNAME = new JsonPath("/CardData/EnglishFullName");
 	private static final JsonPath PATH_BIRTHDATE = new JsonPath("/CardData/BirthDate");
