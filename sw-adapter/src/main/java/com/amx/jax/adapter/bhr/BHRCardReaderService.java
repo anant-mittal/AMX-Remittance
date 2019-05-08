@@ -27,11 +27,11 @@ public class BHRCardReaderService extends ACardReaderService {
 
 	public static Logger LOGGER = LoggerFactory.getLogger(BHRCardReaderService.class);
 
-	private static final JsonPath PATH_CARDSERIALNUMBER = new JsonPath("/CardData/CardSerialNumber");
-	private static final JsonPath PATH_CPRNO = new JsonPath("/CardData/IdNumber");
-	private static final JsonPath PATH_EMAIL = new JsonPath("/CardData/Email");
-	private static final JsonPath PATH_ENGLISHFULLNAME = new JsonPath("/CardData/EnglishFullName");
-	private static final JsonPath PATH_BIRTHDATE = new JsonPath("/CardData/BirthDate");
+	private static final JsonPath PATH_CARDSERIALNUMBER = new JsonPath("/CardSerialNumber");
+	private static final JsonPath PATH_CPRNO = new JsonPath("/IdNumber");
+	private static final JsonPath PATH_EMAIL = new JsonPath("/Email");
+	private static final JsonPath PATH_ENGLISHFULLNAME = new JsonPath("/EnglishFullName");
+	private static final JsonPath PATH_BIRTHDATE = new JsonPath("/BirthDate");
 
 	@Override
 	public boolean start() {
@@ -97,7 +97,7 @@ public class BHRCardReaderService extends ACardReaderService {
 
 			// data.setTitle("MR");
 			data.setIdentity(cprid);
-
+			
 			// Arabic Details
 			// data.setLocalFullName("Amar Akbar Anthony");
 			// data.setLocalGender("M");
