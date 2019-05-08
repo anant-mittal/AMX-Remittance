@@ -72,7 +72,6 @@ public class BHRCardReaderService extends ACardReaderService {
 		if (CONTEXT == null) {
 			return;
 		}
-		BHRCardReaderService.CONTEXT.status(CardStatus.FOUND);
 		try {
 
 			Map<String, Object> options = new HashMap<String, Object>();
@@ -107,6 +106,7 @@ public class BHRCardReaderService extends ACardReaderService {
 				BHRCardReaderService.CONTEXT.status(CardStatus.REMOVED);
 				return;
 			}
+			BHRCardReaderService.CONTEXT.status(CardStatus.FOUND);
 
 			BHRCardReaderService.CONTEXT.status(CardStatus.READING);
 
