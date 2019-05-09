@@ -760,7 +760,7 @@ public class UserValidationService {
 		userValidationService.validateCustomerVerification(onlineCustomer.getCustomerId());
 
 		if (!ConstantDocument.Yes.equals(onlineCustomer.getStatus())) {
-			throw new GlobalException(JaxError.CUSTOMER_NOT_ACTIVE_ONLINE, "Customer not active in online");
+			throw new GlobalException(JaxError.CUSTOMER_NOT_ACTIVE_ONLINE, "You are not registered online. Please click Sign Up for registration");
 		}
 	}
 
@@ -783,7 +783,7 @@ public class UserValidationService {
 		userValidationService.validateCustomerVerification(onlineCustomer.getCustomerId());
 
 		if (!ConstantDocument.Yes.equals(onlineCustomer.getStatus())) {
-			throw new GlobalException(JaxError.CUSTOMER_NOT_ACTIVE_ONLINE, "Customer not active in online");
+			throw new GlobalException(JaxError.CUSTOMER_NOT_ACTIVE_ONLINE, "You are not registered online. Please click Sign Up for registration");
 		}
 		if (ConstantDocument.Yes.equals(customer.getIsActive())) {
 			throw new GlobalException(JaxError.CUSTOMER_ACTIVE_BRANCH, "Customer active in branch");
