@@ -63,7 +63,7 @@ public class AmxCurRate {
 	}
 
 	public Currency getrForCur() {
-		return rForCur;
+		return rForCur.toISO3();
 	}
 
 	public void setrForCur(Currency rForCur) {
@@ -71,7 +71,7 @@ public class AmxCurRate {
 	}
 
 	public Currency getrDomCur() {
-		return rDomCur;
+		return rDomCur.toISO3();
 	}
 
 	public void setrDomCur(Currency rDomCur) {
