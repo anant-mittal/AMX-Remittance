@@ -457,6 +457,9 @@ public class ReportManagerService extends AbstractService{
 							arabicCompanyInfo = arabicCompanyInfo.append(ConstantDocument.Share_Capital + " " + companyMaster.get(0).getCapitalAmount());
 						}
 						obj.setArabicCompanyInfo(arabicCompanyInfo.toString());
+						
+						obj.setVatNumber(companyMaster.get(0).getVatNumber()==null?"":companyMaster.get(0).getVatNumber());
+						obj.setVatDate(companyMaster.get(0).getVatRegistrationDate()==null?"":companyMaster.get(0).getVatRegistrationDate());
 					}
 					// 
 					

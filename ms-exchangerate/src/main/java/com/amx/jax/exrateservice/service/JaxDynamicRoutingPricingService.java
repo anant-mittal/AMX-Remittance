@@ -64,7 +64,6 @@ public class JaxDynamicRoutingPricingService {
 		try {
 			LOGGER.debug("userDeviceClient : {}", JsonUtil.toJson(AppContextUtil.getUserClient()));
 			LOGGER.debug("Dyanamic Routing Pricing request json : {}", JsonUtil.toJson(routingPricingRequestDTO));
-		
 			apiResponse = pricerServiceClient.fetchRemitRoutesAndPrices(routingPricingRequestDTO);
 		} catch (Exception e) {
 			LOGGER.debug("No exchange data found from pricer, error is: ", e);
@@ -73,10 +72,7 @@ public class JaxDynamicRoutingPricingService {
 		
 		
 		if (apiResponse != null) {
-		//	Map<BigDecimal, Map<BigDecimal, ExchangeRateDetails>> bankServiceModeSellRates = apiResponse.getResult().getBankServiceModeSellRates();
 			Map<PRICE_TYPE, List<String>> bestExchangeRatePaths =apiResponse.getResult().getBestExchangeRatePaths();
-		//	Map<String, TrnxRoutingDetails> trnxRoutingPathList = apiResponse.getResult().getTrnxRoutingPaths();
-		
 			List<Map<String,List<DynamicRoutingPricingDto>>> dynamicRoutingPricingList = new ArrayList<>();
 			
 			if(bestExchangeRatePaths!=null && !bestExchangeRatePaths.isEmpty()) {
@@ -112,7 +108,6 @@ public class JaxDynamicRoutingPricingService {
 			dynamicRoutingPricingResponse.setDynamicRoutingPricingList(dynamicRoutingPricingList);
 	}
 		
-	//return dynamicRoutingPricingResponse;
 		return	apiResponse;
 	}
 	
@@ -141,7 +136,7 @@ public class JaxDynamicRoutingPricingService {
 			} else {
 				dto.setExRateBreakup(exchangeRateService.createBreakUp(sellRateDetail.getSellRateNet().getInverseRate(), lcAmount));
 			}
-			//exchangeRateService.applyChannelAmountRouding(dto.getExRateBreakup(),channel,isRoundUp);
+			
 			
 		}
 		return dto;

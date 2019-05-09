@@ -149,5 +149,8 @@ public class AmxDBConstants {
 	public static final String VOUCHER = "V";
 	public static final String IMPS_CODE = "13";
 	public static final String IND_COUNTRY_CODE = "004";
+	public static final String  VAT_ACCOUNT_TYPE_COMM = "COMMISSION";
+	public static final String  VAT_CALCULATION_TYPE_INCLUDE= "I";
 	
+
 }

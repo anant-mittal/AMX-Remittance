@@ -27,6 +27,6 @@ public interface IRemittanceApplicationParams {
 
 	Boolean getAvailLoyalityPoints();
 	
-	//BigDecimal getRoutingCountryIdBD();
+	
 	
 }

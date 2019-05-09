@@ -339,8 +339,7 @@ public class RemittanceTransactionManager {
 		} else {
 			responseModel.setTotalLoyalityPoints(BigDecimal.ZERO);
 		}
-		responseModel
-				.setMaxLoyalityPointsAvailableForTxn(loyalityPointService.getVwLoyalityEncash().getLoyalityPoint());
+		responseModel.setMaxLoyalityPointsAvailableForTxn(loyalityPointService.getVwLoyalityEncash().getLoyalityPoint());
 	}
 
 	public void applyCurrencyRoudingLogic(ExchangeRateBreakup exRatebreakUp) {
@@ -375,7 +374,6 @@ public class RemittanceTransactionManager {
 			UserClient.Channel channel, boolean isRoundUp) {
 
 		if (channel == null || exchangeRateBreakup == null || exchangeRateBreakup.getConvertedLCAmount() == null) {
-
 			return exchangeRateBreakup;
 		}
 

@@ -5,14 +5,13 @@ import java.math.BigDecimal;
 import javax.validation.constraints.NotNull;
 
 import com.amx.jax.model.response.ExchangeRateBreakup;
-import com.amx.jax.model.response.remittance.BranchExchangeRateBreakup;
+import com.amx.jax.model.response.remittance.DynamicRoutingPricingDto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 
 public class BranchRemittanceApplRequestModel extends RemittanceAdditionalBeneFieldModel implements IRemittanceApplicationParams {
 	
-	@NotNull
-	private BranchExchangeRateBreakup branchExRateBreakup;
+	
 	private String signature;
 	private String amlRemarks;
 	private BigDecimal serviceMasterId;
@@ -20,6 +19,8 @@ public class BranchRemittanceApplRequestModel extends RemittanceAdditionalBeneFi
 	private BigDecimal routingBankBranchId;
 	private BigDecimal routingCountryId;
 	private BigDecimal remittanceModeId;
+	@NotNull
+	DynamicRoutingPricingDto dynamicRroutingPricingBreakup;
 	
 
 	private BigDecimal deliveryModeId;
@@ -63,12 +64,12 @@ public class BranchRemittanceApplRequestModel extends RemittanceAdditionalBeneFi
 		this.availLoyalityPoints = availLoyalityPoints;
 	}
 
-	public BranchExchangeRateBreakup getBranchExRateBreakup() {
+	/*public BranchExchangeRateBreakup getBranchExRateBreakup() {
 		return branchExRateBreakup;
 	}
 	public void setBranchExRateBreakup(BranchExchangeRateBreakup branchExRateBreakup) {
 		this.branchExRateBreakup = branchExRateBreakup;
-	}
+	}*/
 	public String getSignature() {
 		return signature;
 	}
@@ -157,7 +158,8 @@ public class BranchRemittanceApplRequestModel extends RemittanceAdditionalBeneFi
 	}
 	@Override
 	public ExchangeRateBreakup getExchangeRateBreakup() {
-		return this.branchExRateBreakup;
+		//return this.branchExRateBreakup;
+		return this.dynamicRroutingPricingBreakup.getExRateBreakup();
 	}
 
 	public static BranchRemittanceApplRequestModel getInstance(IRemittanceApplicationParams request) {
@@ -182,11 +184,15 @@ public class BranchRemittanceApplRequestModel extends RemittanceAdditionalBeneFi
 		this.routingBankBranchId = routingBankBranchId;
 	}
 
+	public DynamicRoutingPricingDto getDynamicRroutingPricingBreakup() {
+		return dynamicRroutingPricingBreakup;
+	}
+
+	public void setDynamicRroutingPricingBreakup(DynamicRoutingPricingDto dynamicRroutingPricingBreakup) {
+		this.dynamicRroutingPricingBreakup = dynamicRroutingPricingBreakup;
+	}
+
 	
-	/*@Override
-	@JsonIgnore
-	public BigDecimal getRoutingCountryIdBD() {
-		return this.routingCountryId;
-	}*/
+	
 
 }

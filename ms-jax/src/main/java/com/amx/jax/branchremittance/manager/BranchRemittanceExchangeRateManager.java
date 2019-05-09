@@ -16,6 +16,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,16 +27,23 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.AdditionalFlexRequiredException;
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.amxlib.meta.model.BankMasterDTO;
 import com.amx.amxlib.model.JaxConditionalFieldDto;
+import com.amx.amxlib.model.JaxFieldDto;
 import com.amx.amxlib.model.response.ExchangeRateResponseModel;
 import com.amx.amxlib.util.JaxValidationUtil;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.config.JaxTenantProperties;
+import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.CountryMaster;
 import com.amx.jax.dbmodel.Customer;
+import com.amx.jax.dbmodel.CustomerCoreDetailsView;
+import com.amx.jax.dbmodel.CustomerEmploymentInfo;
 import com.amx.jax.dbmodel.remittance.AdditionalBankRuleAmiec;
+import com.amx.jax.dbmodel.remittance.CorporateMasterModel;
+import com.amx.jax.dbmodel.remittance.ViewVatDetails;
 import com.amx.jax.dict.UserClient.Channel;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.exrateservice.service.ExchangeRateService;
@@ -53,19 +61,28 @@ import com.amx.jax.model.request.remittance.RoutingPricingRequest;
 import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.BranchExchangeRateBreakup;
 import com.amx.jax.model.response.remittance.DynamicRoutingPricingDto;
+import com.amx.jax.model.response.remittance.VatDetailsDto;
 import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeRateResponse;
 import com.amx.jax.model.response.remittance.branch.DynamicRoutingPricingResponse;
+import com.amx.jax.pricer.dto.ExchangeDiscountInfo;
 import com.amx.jax.pricer.dto.ExchangeRateAndRoutingResponse;
 import com.amx.jax.pricer.dto.ExchangeRateDetails;
+import com.amx.jax.pricer.dto.PricingResponseDTO;
 import com.amx.jax.pricer.dto.TrnxRoutingDetails;
+import com.amx.jax.pricer.var.PricerServiceConstants.DISCOUNT_TYPE;
 import com.amx.jax.pricer.var.PricerServiceConstants.PRICE_TYPE;
 import com.amx.jax.remittance.manager.RemittanceParameterMapManager;
+import com.amx.jax.repository.CustomerCoreDetailsRepository;
 import com.amx.jax.repository.IAdditionalBankRuleAmiecRepository;
+import com.amx.jax.repository.ICustomerEmploymentInfoRepository;
 import com.amx.jax.repository.remittance.ICorporateMasterRepository;
+import com.amx.jax.repository.remittance.IViewVatDetailsRespository;
+import com.amx.jax.service.BankMetaService;
 import com.amx.jax.services.BeneficiaryService;
 import com.amx.jax.services.BeneficiaryValidationService;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.JaxUtil;
+import com.amx.jax.util.RoundUtil;
 import com.amx.jax.validation.RemittanceTransactionRequestValidator;
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -117,6 +134,12 @@ public class BranchRemittanceExchangeRateManager {
 	
 	@Autowired
 	BranchRemittanceManager branchRemittanceManager;
+	
+	@Autowired
+	BankMetaService bankMetaService;
+	
+	@Autowired
+	IViewVatDetailsRespository vatDetailsRepository;
 
 public void validateGetExchangRateRequest(IRemittanceApplicationParams request) {
 
@@ -191,9 +214,7 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 		BigDecimal newCommission = remittanceTransactionManager.reCalculateComission();
 		if (newCommission != null) {
 			commission = newCommission;
-		}/*else {
-			throw new GlobalException(JaxError.EXCHANGE_RATE_NOT_FOUND, "COMMISSION NOT DEFINED FOR Country "+rountingCountryId+" currencyId :"+currencyId+" remittanceMode :"+remittanceMode);
-		}*/
+		}
 		
 		BigDecimal corpDiscount = corporateDiscountManager.corporateDiscount();
 		if(JaxUtil.isNullZeroBigDecimalCheck(commission) && commission.compareTo(corpDiscount)>=0) {
@@ -289,6 +310,16 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 			if(JaxUtil.isNullZeroBigDecimalCheck(commission) && commission.compareTo(corpDiscount)>=0) {
 				commission =commission.subtract(corpDiscount);
 			}
+			
+			VatDetailsDto vatDetails = getVatAmount(commission);
+			if(vatDetails!=null && !StringUtils.isBlank(vatDetails.getVatApplicable()) && vatDetails.getVatApplicable().equalsIgnoreCase(ConstantDocument.Yes)) {
+				result.setVatAmount(vatDetails.getVatAmount()==null?BigDecimal.ZERO:vatDetails.getVatAmount());
+				result.setVatPercentage(vatDetails.getVatPercentage()==null?BigDecimal.ZERO:vatDetails.getVatPercentage());
+				result.setVatType(vatDetails.getVatType()==null?"":vatDetails.getVatType());
+				if(JaxUtil.isNullZeroBigDecimalCheck(vatDetails.getCommission())) {
+					commission =vatDetails.getCommission();
+				}
+			}
 			result.setTxnFee(commission);
 			result.setDiscountOnComission(corpDiscount);
 			if (routingPricingRequest.getForeignAmount() != null) {
@@ -296,14 +327,9 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 			} else {
 				result.setExRateBreakup(exchangeRateService.createBreakUp(sellRateDetail.getSellRateNet().getInverseRate(), routingPricingRequest.getLocalAmount()));
 			}
-			
-		
 			remittanceApplicationParamManager.populateRemittanceApplicationParamMap(null, beneficiaryView,result.getExRateBreakup());
-			
 			remittanceTransactionManager.setLoyalityPointFlags(customer, result);
 			remittanceTransactionManager.setLoyalityPointIndicaters(result);
-			
-			BranchExchangeRateBreakup branchExchangeRate = new BranchExchangeRateBreakup(result.getExRateBreakup());
 			BranchRemittanceApplRequestModel remittanceApplRequestModel = buildRemittanceTransactionModel(routingPricingRequest);
 			remittanceTransactionManager.applyChannelAmountRouding(result.getExRateBreakup(),metaData.getChannel().getClientChannel(), true);
 			remittanceTransactionManager.setNetAmountAndLoyalityState(result.getExRateBreakup(), remittanceApplRequestModel, result, commission);
@@ -312,6 +338,44 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 		return result;
 	}
 	
+	private VatDetailsDto getVatAmount(BigDecimal commission) {
+		VatDetailsDto vatDetails = new VatDetailsDto();
+		
+		List<ViewVatDetails> vatList = vatDetailsRepository.getVatDetails(ConstantDocument.VAT_ACCOUNT_TYPE_COMM);
+		String vatAppliable = null;
+		if(vatList.isEmpty()) {
+			vatAppliable ="N";
+		}else if(vatList!=null && !vatList.isEmpty() && vatList.size()>1) {
+			vatAppliable ="N";
+			throw new GlobalException(JaxError.MUTIPLE_RECORD_FOUND, "More than one record available for VAT on Commission");
+		}else if(vatList!=null && !vatList.isEmpty() && vatList.size()==1) {
+			vatAppliable ="Y";
+			vatDetails.setVatPercentage(vatList.get(0).getVatPercentage());
+			vatDetails.setVatType(vatList.get(0).getVatType());
+			vatDetails.setCalculatuonType(vatList.get(0).getCalculationType());
+			vatDetails.setRoudingOff(vatList.get(0).getRoundOff()==null?BigDecimal.ZERO:vatList.get(0).getRoundOff());
+		}
+		if(JaxUtil.isNullZeroBigDecimalCheck(commission) && commission.compareTo(BigDecimal.ZERO)>0) {
+		if(!StringUtils.isBlank(vatAppliable) && vatAppliable.equalsIgnoreCase(ConstantDocument.Yes) ) {
+			vatDetails.setVatApplicable(vatAppliable);
+			if(JaxUtil.isNullZeroBigDecimalCheck(vatDetails.getVatPercentage())) {
+				BigDecimal vatAmount = BigDecimal.ZERO;
+				if(!StringUtils.isBlank(vatDetails.getCalculatuonType()) && vatDetails.getCalculatuonType().equalsIgnoreCase(ConstantDocument.VAT_CALCULATION_TYPE_INCLUDE)) {
+					vatAmount = commission.multiply(RoundUtil.roundBigDecimal(vatDetails.getVatPercentage().divide(BigDecimal.ZERO),vatDetails.getRoudingOff().intValue()));
+					vatDetails.setVatAmount(vatAmount);
+					vatDetails.setCommission(commission.subtract(vatAmount));
+				}else {
+					vatAmount = commission.multiply(RoundUtil.roundBigDecimal(vatDetails.getVatPercentage().divide(BigDecimal.ZERO),vatDetails.getRoudingOff().intValue()));
+					vatDetails.setCommission(commission.add(vatAmount));
+				}
+			}
+		}
+	}else {
+		vatDetails.setVatApplicable(vatAppliable);
+	}
+
+		return  vatDetails;
+	}
 	
 	
 	public Object fetchFlexFields(IRemittanceApplicationParams request) {
@@ -352,6 +416,66 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 	
 	
 	
+	public BranchRemittanceGetExchangeRateResponse getDynamicRoutingAndPricingExchangeRateResponseCompare(IRemittanceApplicationParams request) {
+		BenificiaryListView beneficiaryView = beneValidationService.validateBeneficiary(request.getBeneficiaryRelationshipSeqIdBD());
+		Customer customer = userService.getCustById(metaData.getCustomerId());
+		ExchangeRateResponseModel exchangeRateResponseModel = null;
+		
+		AmxApiResponse<ExchangeRateAndRoutingResponse,Object> apiResposne = jaxDynamicRoutingPriceService.getDynamicRoutingAndPrice(metaData.getDefaultCurrencyId(), beneficiaryView.getCurrencyId(), request.getLocalAmountBD(),
+				request.getForeignAmountBD(), beneficiaryView.getBenificaryCountry(),
+				request.getCorrespondanceBankIdBD(), beneficiaryView.getServiceGroupId(),beneficiaryView.getBankId(),beneficiaryView.getBranchId(),beneficiaryView.getServiceGroupCode(),beneficiaryView.getBeneficiaryRelationShipSeqId());
+		 exchangeRateResponseModel  = createExchangeRateResponseModel(apiResposne,request.getLocalAmountBD(),request.getForeignAmountBD(),request.getCorrespondanceBankIdBD(),request.getServiceIndicatorIdBD());
+		
+		 if (exchangeRateResponseModel.getExRateBreakup() == null) {
+				throw new GlobalException(JaxError.EXCHANGE_RATE_NOT_FOUND, "No exchange data found");
+			}
+	    remittanceApplicationParamManager.populateRemittanceApplicationParamMap(request, beneficiaryView,exchangeRateResponseModel.getExRateBreakup());
+		BranchRemittanceGetExchangeRateResponse result = new BranchRemittanceGetExchangeRateResponse();
+		BranchExchangeRateBreakup branchExchangeRate = new BranchExchangeRateBreakup(exchangeRateResponseModel.getExRateBreakup());
+		result.setExRateBreakup(branchExchangeRate);
+		return result;
+		 
+	}
 	
 	
+	
+	private ExchangeRateResponseModel createExchangeRateResponseModel(AmxApiResponse<ExchangeRateAndRoutingResponse,Object> apiResponse, BigDecimal lcAmount, BigDecimal foreignAmount,BigDecimal routingBankId,BigDecimal serviceIndicatorId) {
+		ExchangeRateResponseModel exchangeRateResponseModel = new ExchangeRateResponseModel();
+		List<BankMasterDTO> bankWiseRates = new ArrayList<>();
+		Map<DISCOUNT_TYPE, ExchangeDiscountInfo> customerDiscountDetails = new HashMap<>();
+		Boolean discountAvailed=false;
+		Boolean costRateLimitReached=false;
+		exchangeRateResponseModel.setBankWiseRates(bankWiseRates);
+		if (apiResponse != null) {
+			Map<BigDecimal, Map<BigDecimal, ExchangeRateDetails>> bankServiceModeSellRates=apiResponse.getResult().getBankServiceModeSellRates();
+			Map<BigDecimal, ExchangeRateDetails> exchangeRateDetails = bankServiceModeSellRates.get(routingBankId);
+				if(JaxUtil.isNullZeroBigDecimalCheck(routingBankId) && JaxUtil.isNullZeroBigDecimalCheck(serviceIndicatorId)){
+				ExchangeRateDetails sellRateDetail= bankServiceModeSellRates.get(routingBankId).get(serviceIndicatorId);
+		
+				if (serviceIndicatorId != null && serviceIndicatorId.equals(sellRateDetail.getServiceIndicatorId())) {
+					BankMasterDTO dto = bankMetaService.convert(bankMetaService.getBankMasterbyId(sellRateDetail.getBankId()));
+					if (foreignAmount != null) {
+						dto.setExRateBreakup(exchangeRateService.createBreakUpFromForeignCurrency(sellRateDetail.getSellRateNet().getInverseRate(), foreignAmount));
+					} else {
+						dto.setExRateBreakup(exchangeRateService.createBreakUp(sellRateDetail.getSellRateNet().getInverseRate(), lcAmount));
+					}
+					bankWiseRates.add(dto);
+					customerDiscountDetails =sellRateDetail.getCustomerDiscountDetails();
+					discountAvailed=sellRateDetail.isDiscountAvailed();
+					costRateLimitReached = sellRateDetail.isCostRateLimitReached();
+				exchangeRateResponseModel.setBankWiseRates(bankWiseRates);
+				if (CollectionUtils.isNotEmpty(bankWiseRates)) {
+					exchangeRateResponseModel.setExRateBreakup(bankWiseRates.get(0).getExRateBreakup());
+					exchangeRateResponseModel.setCustomerDiscountDetails(customerDiscountDetails);
+					exchangeRateResponseModel.setDiscountAvailed(discountAvailed);
+					exchangeRateResponseModel.setCostRateLimitReached(costRateLimitReached);
+				}
+			}
+			}else {
+				throw new GlobalException(JaxError.EXCHANGE_RATE_NOT_FOUND, "No exchange data found");
+			}	
+			}
+		return exchangeRateResponseModel;
+	}
+
 }

@@ -136,11 +136,14 @@ public class RemittanceApplication implements Serializable {
 	private BigDecimal pipsDiscount;
 	private String reachedCostRateLimit;
 	
+	private String vatType;
+	private BigDecimal vatPercentage;
+	private BigDecimal vatAmount;
 	
 	
 
 
-
+	
 	
 
 	private List<RemittanceAppBenificiary> exRemittanceAppBenificiary = new ArrayList<RemittanceAppBenificiary>(0);
@@ -930,6 +933,35 @@ public class RemittanceApplication implements Serializable {
 
 	public void setReachedCostRateLimit(String reachedCostRateLimit) {
 		this.reachedCostRateLimit = reachedCostRateLimit;
+	}
+
+
+	
+	@Column(name="VAT_TYPE")
+	public String getVatType() {
+		return vatType;
+	}
+
+	public void setVatType(String vatType) {
+		this.vatType = vatType;
+	}
+
+	@Column(name="VAT_PERCENGATE")
+	public BigDecimal getVatPercentage() {
+		return vatPercentage;
+	}
+
+	public void setVatPercentage(BigDecimal vatPercentage) {
+		this.vatPercentage = vatPercentage;
+	}
+
+	@Column(name="VAT_AMOUNT")
+	public BigDecimal getVatAmount() {
+		return vatAmount;
+	}
+
+	public void setVatAmount(BigDecimal vatAmount) {
+		this.vatAmount = vatAmount;
 	}
 
 	

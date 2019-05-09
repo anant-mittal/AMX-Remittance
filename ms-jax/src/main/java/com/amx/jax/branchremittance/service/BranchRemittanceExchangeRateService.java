@@ -138,6 +138,9 @@ public class BranchRemittanceExchangeRateService {
 	}
 	
 	
+	
+	
+	
 	public AmxApiResponse<FlexFieldReponseDto, Object> getFlexField(IRemittanceApplicationParams request){
 		branchRemittanceExchangeRateManager.validateGetExchangRateRequest(request);
 		Object obj = branchRemittanceExchangeRateManager.fetchFlexFields(request);

@@ -107,6 +107,8 @@ public class RemittanceReportBean {
 	private String kwdAmount;
 	private String specialExchangeRate;
 	private String specialKwdAmount;
+	private String vatNumber;
+	private String vatDate;
 	
 	public Boolean getDrawLine() {
 		return drawLine;
@@ -782,6 +784,22 @@ public class RemittanceReportBean {
 
 	public void setSpecialKwdAmount(String specialKwdAmount) {
 		this.specialKwdAmount = specialKwdAmount;
+	}
+
+	public String getVatNumber() {
+		return vatNumber;
+	}
+
+	public void setVatNumber(String vatNumber) {
+		this.vatNumber = vatNumber;
+	}
+
+	public String getVatDate() {
+		return vatDate;
+	}
+
+	public void setVatDate(String vatDate) {
+		this.vatDate = vatDate;
 	}	
 
 }

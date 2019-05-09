@@ -251,6 +251,15 @@ public class RemittanceApplicationManager {
 		}
 	}
 
+	
+	
+	public void setVatDetails(RemittanceApplication remittanceApplication,
+			RemittanceTransactionResponsetModel remittanceTransactionResponsetModel) {
+		remittanceApplication.setVatType(remittanceTransactionResponsetModel.getVatType());
+		remittanceApplication.setVatPercentage(remittanceTransactionResponsetModel.getVatPercentage());
+		remittanceApplication.setVatAmount(remittanceTransactionResponsetModel.getVatAmount());
+	}
+	
 	private BigDecimal getSelectedCurrency(BigDecimal foreignCurrencyId,
 			RemittanceTransactionRequestModel requestModel) {
 		if (requestModel.getForeignAmount() != null) {

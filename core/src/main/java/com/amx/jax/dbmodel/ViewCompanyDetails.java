@@ -65,9 +65,9 @@ public class ViewCompanyDetails implements Serializable {
 	private String arabicAddress3;
 	private String registrationNumber;
 	
+	private String vatNumber;
+	private String vatRegistrationDate;
 	
-	
-
 	private BigDecimal idNo;
 	
 	@Id
@@ -186,13 +186,7 @@ public class ViewCompanyDetails implements Serializable {
 	public void setCompanyName(String companyName) {
 		this.companyName = companyName;
 	}
-	/*@Column(name = "LOGO_IMG1", nullable = true,  length = 10485760 )
-	public Blob getCompanyLogoImg1() {
-		return companyLogoImg1;
-	}
-	public void setCompanyLogoImg1(Blob companyLogoImg1) {
-		this.companyLogoImg1 = companyLogoImg1;
-	}*/
+	
 	@Column(name="APPLICATION_COUNTRY_ID")
 	public BigDecimal getApplicationCountryId() {
 		return applicationCountryId;
@@ -300,6 +294,27 @@ public class ViewCompanyDetails implements Serializable {
 
 	public void setRegistrationNumber(String registrationNumber) {
 		this.registrationNumber = registrationNumber;
+	}
+
+	
+	 
+
+	@Column(name="VAT_NUMBER")
+	public String getVatNumber() {
+		return vatNumber;
+	}
+
+	public void setVatNumber(String vatNumber) {
+		this.vatNumber = vatNumber;
+	}
+
+	@Column(name="VAT_REGISTRATION_DATE")
+	public String getVatRegistrationDate() {
+		return vatRegistrationDate;
+	}
+
+	public void setVatRegistrationDate(String vatRegistrationDate) {
+		this.vatRegistrationDate = vatRegistrationDate;
 	}
 
 	
