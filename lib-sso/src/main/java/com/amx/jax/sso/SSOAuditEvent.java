@@ -1,6 +1,9 @@
 package com.amx.jax.sso;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.dict.UserClient.ClientType;
@@ -15,7 +18,7 @@ public class SSOAuditEvent extends AuditEvent {
 
 	public static enum Type implements EventType {
 		DEVICE_PAIR, DEVICE_SESSION_CREATED, DEVICE_SESSION_PAIR, SESSION_TERMINAL_MAP, CARD_SCANNED,
-		LOGIN_INIT, LOGIN_OTP
+		LOGIN_INIT, LOGIN_OTP, ACTIVE
 
 		;
 		@Override
@@ -27,6 +30,7 @@ public class SSOAuditEvent extends AuditEvent {
 	@JsonIgnoreProperties(ignoreUnknown = true)
 	public static class SSOAuditData implements Serializable {
 		private static final long serialVersionUID = -1765231313729431488L;
+
 		String terminalId;
 		String terminalIp;
 		String deviceRegId;
@@ -75,15 +79,18 @@ public class SSOAuditEvent extends AuditEvent {
 	}
 
 	private SSOAuditData auth;
+	Map<String, Object> branch;
 
 	public SSOAuditEvent(Type eventType) {
 		super(eventType);
 		this.auth = new SSOAuditData();
+		this.branch = new HashMap<String, Object>();
 	}
 
 	public SSOAuditEvent(Type eventType, Result result) {
 		super(eventType, result);
 		this.auth = new SSOAuditData();
+		this.branch = new HashMap<String, Object>();
 	}
 
 	public SSOAuditEvent identity(Object identity) {
@@ -113,6 +120,26 @@ public class SSOAuditEvent extends AuditEvent {
 
 	public SSOAuditEvent clientType(ClientType clientType) {
 		AppContextUtil.getUserClient().setClientType(clientType);
+		return this;
+	}
+
+	public SSOAuditEvent branchId(BigDecimal branchId) {
+		this.branch.put("id", branchId);
+		return this;
+	}
+
+	public SSOAuditEvent branchUser(String branchUser) {
+		this.branch.put("user", branchUser);
+		return this;
+	}
+
+	public SSOAuditEvent branchName(String branchName) {
+		this.branch.put("name", branchName);
+		return this;
+	}
+
+	public SSOAuditEvent branchArea(String branchArea) {
+		this.branch.put("area", branchArea);
 		return this;
 	}
 
