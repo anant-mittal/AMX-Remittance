@@ -30,15 +30,18 @@ import com.amx.jax.JaxAuthCache;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.dal.ArticleDao;
 import com.amx.jax.dal.ImageCheckDao;
+import com.amx.jax.dbmodel.BizComponentData;
 import com.amx.jax.dbmodel.CompanyMaster;
 import com.amx.jax.dbmodel.CountryMaster;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerEmploymentInfo;
+import com.amx.jax.dbmodel.DistrictMaster;
 import com.amx.jax.dbmodel.DmsApplMapping;
 import com.amx.jax.dbmodel.DocBlobUpload;
 import com.amx.jax.dbmodel.IncomeModel;
 import com.amx.jax.dbmodel.IncomeRangeMaster;
 import com.amx.jax.dbmodel.LanguageType;
+import com.amx.jax.dbmodel.StateMaster;
 import com.amx.jax.dbmodel.UserFinancialYear;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.meta.MetaData;
@@ -213,11 +216,44 @@ public class AnnualIncomeService {
 		}
 		
 		CustomerEmploymentInfo customerEmploymentInfo = incomeDao.getCustById(metaData.getCustomerId());
-		logger.info("set customerEmpInfo : " +customerEmploymentInfo);
-		if (customerEmploymentInfo == null) {
-			customerEmploymentInfo = createCustomerEmploymentInfo(incomeDto);
+		
+		List<CustomerEmploymentInfo> custEmploymentInfo = incomeDao.getAllCustById(metaData.getCustomerId());
+		
+		if(custEmploymentInfo.isEmpty()) {
+			CustomerEmploymentInfo custEmplInfo = new CustomerEmploymentInfo();
+			custEmplInfo.setFsBizComponentDataByEmploymentTypeId(new BizComponentData(new BigDecimal(187)));
+			custEmplInfo.setFsDistrictMaster(new DistrictMaster(new BigDecimal(4165)));
+			custEmplInfo.setFsStateMaster(new StateMaster(new BigDecimal(584)));
+			custEmploymentInfo.add(custEmplInfo);
 		}
 		else {
+			CustomerEmploymentInfo custEmplInfo = custEmploymentInfo.get(0);
+			if(custEmplInfo.getFsBizComponentDataByEmploymentTypeId()==null) {
+				custEmplInfo.setFsBizComponentDataByEmploymentTypeId(new BizComponentData(new BigDecimal(187)));
+			}
+			if(custEmplInfo.getFsDistrictMaster()==null) {
+				custEmplInfo.setFsDistrictMaster(new DistrictMaster(new BigDecimal(4165)));
+			}
+			if(custEmplInfo.getFsStateMaster()==null) {
+				custEmplInfo.setFsStateMaster(new StateMaster(new BigDecimal(584)));
+			}
+		}
+		
+		logger.info("set customerEmpInfo : " +customerEmploymentInfo);
+		if (customerEmploymentInfo == null) {
+			customerEmploymentInfo = createCustomerEmploymentInfo(incomeDto,custEmploymentInfo.get(0));
+			
+		}
+		else {
+			if(customerEmploymentInfo.getFsBizComponentDataByEmploymentTypeId()==null) {
+				customerEmploymentInfo.setFsBizComponentDataByEmploymentTypeId(new BizComponentData(new BigDecimal(187)));
+			}
+			if(customerEmploymentInfo.getFsDistrictMaster()==null) {
+				customerEmploymentInfo.setFsDistrictMaster(new DistrictMaster(new BigDecimal(4165)));
+			}
+			if(customerEmploymentInfo.getFsStateMaster()==null) {
+				customerEmploymentInfo.setFsStateMaster(new StateMaster(new BigDecimal(584)));
+			}
 			customerEmploymentInfo.setUpdatedBy(metaData.getCustomerId().toString());
 			customerEmploymentInfo.setLastUpdated(new Date());
 		}
@@ -286,7 +322,7 @@ public class AnnualIncomeService {
 
 	}
 
-	private CustomerEmploymentInfo createCustomerEmploymentInfo(IncomeDto incomeDto) {
+	private CustomerEmploymentInfo createCustomerEmploymentInfo(IncomeDto incomeDto, CustomerEmploymentInfo customerEmploymentInfo) {
 		// TODO Auto-generated method stub
 		CustomerEmploymentInfo custEmploymentInfo = new CustomerEmploymentInfo();
 		custEmploymentInfo.setEmployerName(incomeDto.getCompanyName());
@@ -299,6 +335,10 @@ public class AnnualIncomeService {
 		custEmploymentInfo.setFsCustomer(new Customer(metaData.getCustomerId()));
 		custEmploymentInfo.setCreatedBy(metaData.getCustomerId().toString());
 		custEmploymentInfo.setCreationDate(new Date());
+		custEmploymentInfo.setFsBizComponentDataByEmploymentTypeId(customerEmploymentInfo.getFsBizComponentDataByEmploymentTypeId());
+		custEmploymentInfo.setFsStateMaster(customerEmploymentInfo.getFsStateMaster());
+		custEmploymentInfo.setFsDistrictMaster(customerEmploymentInfo.getFsDistrictMaster());
+		
 		return custEmploymentInfo;
 	}
 

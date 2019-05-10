@@ -256,6 +256,41 @@ public class RemitBranchController {
 		// }
 	}
 
+
+	@RequestMapping(value = "/api/remitt/cart/report", method = { RequestMethod.GET }, produces = {
+		CommonMediaType.APPLICATION_JSON_VALUE, CommonMediaType.APPLICATION_V0_JSON_VALUE,
+		CommonMediaType.APPLICATION_PDF_VALUE, CommonMediaType.TEXT_HTML_VALUE })
+	public ResponseEntity<byte[]> report(
+			 @RequestParam("ext") File.Type ext) throws PostManException, IOException {
+
+		// duplicate = (duplicate == null || duplicate.booleanValue() == false) ? false
+		AmxApiResponse<BranchRemittanceApplResponseDto, Object> wrapper = branchRemittanceClient.fetchCustomerShoppingCart();
+		if (File.Type.PDF.equals(ext)) {
+			File file = postManService.processTemplate(
+					new File(TemplatesMX.REMIT_APPLICATION_RECEIPT_JASPER,
+							wrapper, File.Type.PDF))
+					.getResult();
+			return PostManUtil.download(file);
+			// file.create(response, false);
+			// return null;
+		} else if (File.Type.HTML.equals(ext)) {
+			File file = postManService.processTemplate(
+					new File(TemplatesMX.REMIT_APPLICATION_RECEIPT_JASPER,
+							wrapper, null))
+					.getResult();
+			// return file.getContent();
+			return PostManUtil.download(file);
+		} else {
+			String json = JsonUtil.toJson(AmxApiResponse.build(wrapper));
+			return ResponseEntity.ok().contentLength(json.length())
+					.contentType(MediaType.valueOf(File.Type.JSON.getContentType())).body(json.getBytes());
+		}
+		// else {
+		// return JsonUtil.toJson(wrapper);
+		// }
+	}
+
+
 	@RequestMapping(value = "/api/remitt/tranx/email", method = { RequestMethod.GET })
 	public AmxApiResponse<BoolRespModel, Object> sendEmail(
 			@RequestParam(required = false) BigDecimal collectionDocumentNo,

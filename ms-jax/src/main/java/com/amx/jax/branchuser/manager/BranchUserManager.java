@@ -15,6 +15,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.dal.RoutingProcedureDao;
 import com.amx.jax.dbmodel.CollectDetailModel;
 import com.amx.jax.dbmodel.CustomerRemittanceTransactionView;
 import com.amx.jax.dbmodel.fx.EmployeeDetailsView;
@@ -66,12 +67,14 @@ public class BranchUserManager  extends AbstractModel {
 	@Autowired
 	FxOrderValidation validateHeaderInfo;
 	
+	@Autowired
+	RoutingProcedureDao routingProDao;
+	
 
 	@Autowired
 	ICustomerRepository customerDao;
 	
 	public UserwiseTransactionDto getTotalTrnxUserWise(String transactionDate){
-		//validateHeaderInfo.validateHeaderInfo();
 		transactionDate = DateUtil.todaysDateWithDDMMYY(transactionDate==null?new Date():DateUtil.convertStringToDate(transactionDate),"0");
 		String accMonthYear =DateUtil.getAccountingMonthYearNew(transactionDate);
 		BigDecimal employeeId =metaData.getEmployeeId();
@@ -89,12 +92,12 @@ public class BranchUserManager  extends AbstractModel {
 		
 		
 		List<BranchDayTransactionView> totalTrnx =branchTrnxRepository.getTotalTrnxCount(accMonthYear, empDetails.getCountryBranchId(), employeeId, transactionDate);
-		UserwiseTransactionDto dto = getTotalTrnxCount(totalTrnx);
+		UserwiseTransactionDto dto = getTotalTrnxCount(totalTrnx,accMonthYear);
 		return dto;
 	}
 	
 	
-	public UserwiseTransactionDto getTotalTrnxCount(List<BranchDayTransactionView> totalTrnxList) {
+	public UserwiseTransactionDto getTotalTrnxCount(List<BranchDayTransactionView> totalTrnxList,String accMonthYear) {
 		
 
 		BigDecimal totalCash =new BigDecimal(0);
@@ -110,14 +113,20 @@ public class BranchUserManager  extends AbstractModel {
 		String currencyQuoteName ="";
 		EmployeeDetailsView empDetails = null;
 		List<CustomerRemittanceTransactionView> lastTrnxDetailsList  = null;
-		
-		
 		UserwiseTransactionDto dto = new UserwiseTransactionDto();
+		
+		if(JaxUtil.isNullZeroBigDecimalCheck(employeeId)) {
+			empDetails = employeeDetailsRepository.findByEmployeeId(employeeId);
+		}else {
+			throw new GlobalException(JaxError.NULL_EMPLOYEE_ID,"Employee Id should not be blank");
+		}
 		
 		if (totalTrnxList != null && !totalTrnxList.isEmpty()) {
 			dto.setTotaltrnx(new BigDecimal(totalTrnxList.size()));
 			for (BranchDayTransactionView branchDayTransactionView : totalTrnxList) {
-				List<CollectDetailModel> branchDayCoolectionDetailList = collecDetailRepository.findByDocumentNoAndDocumentCodeAndDocumentFinanceYear(branchDayTransactionView.getCollectionDocNumber(), branchDayTransactionView.getCollectionDocCode(), branchDayTransactionView.getCollectionDocFinanceYear());
+				totalRefund = totalRefund.add(branchDayTransactionView.getRefundAmount());
+			}
+				List<CollectDetailModel> branchDayCoolectionDetailList = collecDetailRepository.getCollectionDetailsForUser(empDetails.getUserName(), accMonthYear,empDetails.getCountryBranchId());
 				if (branchDayCoolectionDetailList != null && !branchDayCoolectionDetailList.isEmpty()) {
 					for (CollectDetailModel collectDetail : branchDayCoolectionDetailList) {
 						if (collectDetail.getCollectionMode() != null) {
@@ -138,33 +147,18 @@ public class BranchUserManager  extends AbstractModel {
 						
 					}
 				}
-				totalRefund = totalRefund.add(totalRefund);
-				
-			
-		}
-		
 	}	
 		if(JaxUtil.isNullZeroBigDecimalCheck(localCurrencyId)){
 		 currencyQuoteName = currencyDao.getCurrencyList(localCurrencyId).get(0).getQuoteName();
 		}
-		if(JaxUtil.isNullZeroBigDecimalCheck(employeeId)) {
-			empDetails = employeeDetailsRepository.findByEmployeeId(employeeId);
-		}else {
-			throw new GlobalException(JaxError.NULL_EMPLOYEE_ID,"Employee Id should not be blank");
+		if(empDetails!=null) {
+			lastTrnx = transactionHistroyDao.getLastTrnxAmountFortheUser(empDetails.getUserName(), accMonthYear, empDetails.getCountryBranchId());
 		}
 		
-		if(empDetails!=null) {
-			lastTrnxDetailsList = transactionHistroyDao.getLastTrnxAmountFortheCustomer(empDetails.getUserName());
+		if(lastTrnx==null) {
+			lastTrnx =BigDecimal.ZERO;
 		}
-		 
-		if(lastTrnxDetailsList!=null && !lastTrnxDetailsList.isEmpty()) {
-			for(CustomerRemittanceTransactionView lastTrn :lastTrnxDetailsList) {
-				lastTrnx =lastTrnx.add(lastTrn.getLocalTrnxAmount()==null?BigDecimal.ZERO:lastTrn.getLocalTrnxAmount());
-			}
-			dto.setLastTrnx(currencyQuoteName+" "+lastTrnx);
-		}else {
-			dto.setLastTrnx(currencyQuoteName+" "+lastTrnx);
-		}
+		
 		
 		dto.setCash(currencyQuoteName+" "+totalCash);
 		dto.setOthers(currencyQuoteName+" "+totalOther);
@@ -172,6 +166,7 @@ public class BranchUserManager  extends AbstractModel {
 		dto.setBankTransfer(currencyQuoteName+" "+totalBankTransfer);
 		dto.setCheque(currencyQuoteName+" "+totalCheque);
 		dto.setRefundAmount(currencyQuoteName+" "+totalRefund);
+		dto.setLastTrnx(currencyQuoteName+" "+lastTrnx);
 		dto.setEmployeeId(metaData.getEmployeeId());
 	return dto;	
 	}

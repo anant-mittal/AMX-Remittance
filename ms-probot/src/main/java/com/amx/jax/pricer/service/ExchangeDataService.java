@@ -22,8 +22,8 @@ import com.amx.jax.pricer.dbmodel.RoutingHeader;
 import com.amx.jax.pricer.dto.AmountSlabDetails;
 import com.amx.jax.pricer.dto.ChannelDetails;
 import com.amx.jax.pricer.dto.CustomerCategoryDetails;
-import com.amx.jax.pricer.dto.DiscountMgmtReqDTO;
 import com.amx.jax.pricer.dto.DiscountDetailsReqRespDTO;
+import com.amx.jax.pricer.dto.DiscountMgmtReqDTO;
 import com.amx.jax.pricer.dto.RoutBanksAndServiceRespDTO;
 import com.amx.jax.pricer.exception.PricerServiceException;
 import com.amx.jax.pricer.manager.DiscountManager;
@@ -104,8 +104,9 @@ public class ExchangeDataService {
 		if(null != discountdetailsRequestDTO.getChannelDetails()) {
 			discountManager.commitChannelDiscountModel(discountdetailsRequestDTO.getChannelDetails());
 		}
+		
 		if(null != discountdetailsRequestDTO.getCustomerCategoryDetails()) {
-			discountManager.commitCustomerDiscountModel(discountdetailsRequestDTO.getCustomerCategoryDetails());
+						discountManager.commitCustomerDiscountModel(discountdetailsRequestDTO.getCustomerCategoryDetails());
 		}
 		if(null != discountdetailsRequestDTO.getAmountSlabDetails()) {
 			discountManager.commitPipsDiscount(discountdetailsRequestDTO.getAmountSlabDetails());

@@ -31,6 +31,7 @@ import com.amx.jax.dbmodel.AuthenticationLimitCheckView;
 import com.amx.jax.dbmodel.BankMasterModel;
 import com.amx.jax.dbmodel.CollectDetailModel;
 import com.amx.jax.dbmodel.CollectionModel;
+import com.amx.jax.dbmodel.CountryBranch;
 import com.amx.jax.dbmodel.CountryMaster;
 import com.amx.jax.dbmodel.CurrencyMasterModel;
 import com.amx.jax.dbmodel.CurrencyWiseDenomination;
@@ -98,6 +99,7 @@ import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.DateUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.RoundUtil;
+import com.amx.utils.JsonUtil;
 
 @Component
 public class BranchRemittanceSaveManager {
@@ -202,10 +204,15 @@ public class BranchRemittanceSaveManager {
 	private CustomerDao customerDao;
 	
 	
-	List<RemittanceAml>			amlList	 = new ArrayList<>();
-	List<RemittanceBenificiary> remitBeneList   = new ArrayList<>();
-	List<RemittanceAdditionalInstructionData> addInstList = new ArrayList<>();
+	//List<RemittanceAml>			amlList	 = new ArrayList<>();
+	//List<RemittanceBenificiary> remitBeneList   = new ArrayList<>();
+	//List<RemittanceAdditionalInstructionData> addInstList = new ArrayList<>();
+	
 	List<LoyaltyPointsModel> loyaltyPoints 	 = new ArrayList<>();
+	Map<BigDecimal,RemittanceBenificiary> remitBeneList = new HashMap<>();
+	Map<BigDecimal,List<RemittanceAdditionalInstructionData>> addInstList = new HashMap<>();
+	Map<BigDecimal,List<RemittanceAml>>			amlList	 = new HashMap<>();
+	
 	
 	@Autowired
     AuditService auditService;
@@ -218,10 +225,9 @@ public class BranchRemittanceSaveManager {
 	
 
 	public RemittanceResponseDto saveRemittanceTrnx(BranchRemittanceRequestModel remittanceRequestModel) {
-		
+		logger.debug("saveRemittanceTrnx request model : {}", JsonUtil.toJson(remittanceRequestModel));
 		List<BranchApplicationDto> shoppingCartList = new ArrayList<>();
 		shoppingCartList = remittanceRequestModel.getRemittanceApplicationId();
-		//updateApplicationStatus(shoppingCartList);
 		RemittanceResponseDto responseDto = saveRemittance(remittanceRequestModel);
 		
 		if(responseDto!=null && JaxUtil.isNullZeroBigDecimalCheck(responseDto.getCollectionDocumentNo())) {
@@ -248,7 +254,7 @@ public class BranchRemittanceSaveManager {
 			CollectionModel 			collectionModel 	    =saveCollect(remittanceRequestModel);
 			List<CollectDetailModel> 	collectionDetails		=saveCollectionDetail(remittanceRequestModel,collectionModel);
 			List<ForeignCurrencyAdjust> currencyAdjustList 		=saveForeignCurrencyAdjust(remittanceRequestModel,collectionModel);
-			List<RemittanceTransaction> remitTrnxList      		=saveRemittanceTrnx(remittanceRequestModel,collectionModel);
+			Map<BigDecimal,RemittanceTransaction>   remitTrnxList=saveRemittanceTrnx(remittanceRequestModel,collectionModel);
 			LoyaltyClaimRequest loyaltyClaim          			=saveLoyalTyClaimRequest(collectionDetails);
 					
 			collectedAmountValidation(collectionModel,collectionDetails,currencyAdjustList);
@@ -262,17 +268,17 @@ public class BranchRemittanceSaveManager {
 			mapAllDetailRemitSave.put("EX_REMIT_ADDL", addInstList);
 			mapAllDetailRemitSave.put("EX_REMIT_AML", amlList);
 			mapAllDetailRemitSave.put("LOYALTY_POINTS", loyaltyPoints);
+			validateSaveTrnxDetails(mapAllDetailRemitSave);
 			responseDto = brRemittanceDao.saveRemittanceTransaction(mapAllDetailRemitSave);
 			auditService.log(new CActivityEvent(Type.TRANSACTION_CREATED,String.format("{}/{}", responseDto.getCollectionDocumentFYear(),responseDto.getCollectionDocumentNo())).field("STATUS").to(JaxTransactionStatus.PAYMENT_SUCCESS_APPLICATION_SUCCESS).result(Result.DONE));
 	}catch (GlobalException e) {
 			logger.error("routing  procedure", e.getErrorMessage() + "" + e.getErrorKey());
 			throw new GlobalException(e.getErrorKey(), e.getErrorMessage());
 		}finally {
-			amlList	 = new ArrayList<>();
-			remitBeneList   = new ArrayList<>();
-			addInstList = new ArrayList<>();
+			amlList	 = new HashMap<>();
+			remitBeneList   = new HashMap<>();
+			addInstList = new HashMap<>();
 			loyaltyPoints 	 = new ArrayList<>();
-			
 		}
 		
 		return responseDto;
@@ -324,7 +330,6 @@ public class BranchRemittanceSaveManager {
 				collection.setRefoundAmount(collection.getPaidAmount().subtract(remittanceRequestModel.getTotalTrnxAmount()));
 				collection.setAccountMMYYYY(appl.getAccountMmyyyy());
 				collection.setCompanyCode(appl.getCompanyCode());
-				collection.setLocCode(appl.getLoccod());
 				collection.setDocumentFinanceYear(appl.getDocumentFinancialyear());
 				collection.setDocumentId(documentDao.getDocumnetByCode(ConstantDocument.DOCUMENT_CODE_FOR_COLLECT_TRANSACTION).get(0).getDocumentID());
 				collection.setDocumentCode(ConstantDocument.DOCUMENT_CODE_FOR_COLLECT_TRANSACTION);
@@ -339,12 +344,20 @@ public class BranchRemittanceSaveManager {
 				collection.setCreatedDate(new Date());
 				EmployeeDetailsView employee =branchRemittanceApplManager.getEmployeeDetails();
 				collection.setCreatedBy(employee.getUserName());
+				collection.setLocCode(employee.getBranchId());
 				BigDecimal declarationTotalamount = getDeclarationReportAmount(ConstantDocument.DECL_REPORT_FOR_TOT_AMOUNT);
 				if(collection.getNetAmount().compareTo(declarationTotalamount)>=1) {
 					collection.setCashDeclarationIndicator(ConstantDocument.Yes);
 				}
 				collection.setIsActive(ConstantDocument.Yes);
-				collection.setExBankBranch(appl.getExCountryBranch());
+				
+				CountryBranch countryBranch = new CountryBranch();
+				if(employee!=null && JaxUtil.isNullZeroBigDecimalCheck(employee.getCountryBranchId())) {
+					countryBranch.setCountryBranchId(employee.getCountryBranchId());
+				}else {
+					countryBranch.setCountryBranchId(metaData.getCountryBranchId());
+				}
+				collection.setExBankBranch(countryBranch);
 				collection.setFsCompanyMaster(appl.getFsCompanyMaster());
 				collection.setTotalAmountDeclarationIndicator(null); //ned to check
 				}else {
@@ -633,9 +646,11 @@ public class BranchRemittanceSaveManager {
 	
 	
 	
-	public List<RemittanceTransaction> saveRemittanceTrnx(BranchRemittanceRequestModel remittanceRequestModel,CollectionModel  collect)
+	public Map<BigDecimal,RemittanceTransaction> saveRemittanceTrnx(BranchRemittanceRequestModel remittanceRequestModel,CollectionModel  collect)
 	{
-		List<RemittanceTransaction> remitTrnxList      =new ArrayList<>();
+		//List<RemittanceTransaction> remitTrnxList      =new ArrayList<>();
+		
+		Map<BigDecimal,RemittanceTransaction> remitTrnxList      =new HashMap<>();
 		
 		List<BranchApplicationDto> shoppingCartList = remittanceRequestModel.getRemittanceApplicationId();
 		
@@ -643,11 +658,9 @@ public class BranchRemittanceSaveManager {
 			
 			for(BranchApplicationDto applDto : shoppingCartList) {
 				RemittanceTransaction remitTrnx = new RemittanceTransaction();
-					
 				Customer customerid = new Customer();
 				customerid.setCustomerId(metaData.getCustomerId());
 				RemittanceApplication appl =  remittanceApplicationRepository.getApplicationForRemittance(customerid,applDto.getApplicationId());
-				
 				
 				if(appl!=null && appl.getIsactive().equalsIgnoreCase(ConstantDocument.Yes)) {
 					logger.debug("appl :"+appl.getDocumentNo());
@@ -665,7 +678,7 @@ public class BranchRemittanceSaveManager {
 					remitTrnx.setBankId(appl.getExBankMaster());
 					//remitTrnx.setBankReference(appl.getBa); nC
 					remitTrnx.setBlackListIndicator(checkBlackListIndicator(appl.getFsCustomer().getCustomerId(),appl.getRemittanceApplicationId()));
-					remitTrnx.setBranchId(appl.getExCountryBranch());
+					remitTrnx.setBranchId(collect.getExBankBranch());
 					remitTrnx.setCollectionDocCode(collect.getDocumentCode());
 					remitTrnx.setCollectionDocFinanceYear(collect.getDocumentFinanceYear());
 					remitTrnx.setCollectionDocId(collect.getDocumentId());
@@ -673,6 +686,7 @@ public class BranchRemittanceSaveManager {
 					remitTrnx.setCompanyId(appl.getFsCompanyMaster());
 					remitTrnx.setCompanyCode(appl.getCompanyCode());
 					remitTrnx.setCreatedBy(collect.getCreatedBy());
+					remitTrnx.setLoccod(collect.getLocCode());
 					remitTrnx.setCreatedDate(new Date());
 					remitTrnx.setCustomerId(appl.getFsCustomer());
 					remitTrnx.setCustomerName(appl.getCustomerName());
@@ -695,13 +709,8 @@ public class BranchRemittanceSaveManager {
 						throw new GlobalException(JaxError.INVALID_REMITTANCE_DOCUMENT_CODE,"Document ID could not be updated in our records.");
 					}
 					
-					
-					 
-					
 					//remitTrnx.setDwFlag(dwFlag); //NC
-					//
-					
-					
+				
 					remitTrnx.setEmployeeId(metaData.getEmployeeId());
 					remitTrnx.setExchangeRateApplied(appl.getExchangeRateApplied());
 					
@@ -725,7 +734,6 @@ public class BranchRemittanceSaveManager {
 					remitTrnx.setLocalTranxAmount(appl.getLocalTranxAmount());
 					remitTrnx.setLoyaltyPointsEncashed(appl.getLoyaltyPointsEncashed());
 					remitTrnx.setLoyaltyPointsInd(appl.getLoyaltyPointInd());
-					remitTrnx.setLoccod(appl.getLoccod());
 					remitTrnx.setOriginalExchangeRate(appl.getOriginalExchangeRate());
 					remitTrnx.setRemittanceModeId(appl.getExRemittanceMode());
 					remitTrnx.setSourceofincome(appl.getSourceofincome());
@@ -757,9 +765,8 @@ public class BranchRemittanceSaveManager {
 				    }else{
 				    	throw new GlobalException(JaxError.INVALID_REMITTANCE_DOCUMENT_NO, "Document Seriality  setup  not defined for Remittance.");
 				    }
-					
-					remitTrnxList.add(remitTrnx);
-					
+				
+					remitTrnxList.put(appl.getRemittanceApplicationId(),remitTrnx);
 					saveBeneTrnx(appl, remitTrnx);
 					saveRemitnaceinstructionData(appl,remitTrnx);
 					saveRemittanceAml(appl, remitTrnx);
@@ -768,14 +775,14 @@ public class BranchRemittanceSaveManager {
 			}
 			
 		}else {
-			throw new GlobalException(JaxError.NO_RECORD_FOUND,"Record found to save in remittance");
+			throw new GlobalException(JaxError.NO_RECORD_FOUND,"Record not found to save in remittance");
 		}
 		
 		return remitTrnxList;
 	}
 	
-public   List<RemittanceBenificiary>  saveBeneTrnx(RemittanceApplication applicationNo,RemittanceTransaction remitTrnx){
-	
+
+	public  Map<BigDecimal,RemittanceBenificiary>  saveBeneTrnx(RemittanceApplication applicationNo,RemittanceTransaction remitTrnx){
 	if(applicationNo!=null) {
 		RemittanceAppBenificiary applBene = applBeneRepository.findByExRemittanceAppfromBenfi(applicationNo);
 		if(applBene!=null) {
@@ -818,20 +825,20 @@ public   List<RemittanceBenificiary>  saveBeneTrnx(RemittanceApplication applica
 			remitBene.setExRemittancefromBenfi(remitTrnx);
 			remitBene.setExUserFinancialYear(getFinancialYearObj(remitTrnx.getDocumentFinanceYear()));
 			remitBene.setIsactive(ConstantDocument.Yes);
-			remitBeneList.add(remitBene);
-
+			remitBeneList.put(applBene.getExRemittanceAppfromBenfi().getRemittanceApplicationId(), remitBene);
 		}else {
-			throw new GlobalException(JaxError.NO_RECORD_FOUND,"Record found in appl bene for remittacne :"+remitTrnx.getApplicationDocumentNo());
+			throw new GlobalException(JaxError.NO_RECORD_FOUND,"Record not found in appl bene for remittance : "+remitTrnx.getApplicationDocumentNo());
 		}
 	}else {
-		throw new GlobalException(JaxError.NO_RECORD_FOUND,"Record found in appl bene for remittacne :"+remitTrnx.getApplicationDocumentNo());
+		throw new GlobalException(JaxError.NO_RECORD_FOUND,"Record not found in appl bene for remittance : "+remitTrnx.getApplicationDocumentNo());
 	}
 	
 	return remitBeneList;
 }
 	
-public   List<RemittanceAdditionalInstructionData>   saveRemitnaceinstructionData(RemittanceApplication applicationNo,RemittanceTransaction remitTrnx){
-	
+	public   Map<BigDecimal,List<RemittanceAdditionalInstructionData>>   saveRemitnaceinstructionData(RemittanceApplication applicationNo,RemittanceTransaction remitTrnx){
+		
+		List<RemittanceAdditionalInstructionData> remitAddList = new ArrayList<>();
 	 if(applicationNo!=null) {
 			List<AdditionalInstructionData> applInstrucDataList = addInstrDataRepository.findByExRemittanceApplication(applicationNo);
 		
@@ -854,13 +861,13 @@ public   List<RemittanceAdditionalInstructionData>   saveRemitnaceinstructionDat
 			remitAddData.setCompanyCode(applInstrucData.getFsCompanyMaster().getCompanyCode());
 			remitAddData.setDocumentFinanceYear(remitTrnx.getDocumentFinanceYear());
 			remitAddData.setIsactive(ConstantDocument.Yes);
-			
-		
-			addInstList.add(remitAddData);
-			
+			remitAddList.add(remitAddData);
+			//addInstList.add(remitAddData);
 		}
+			addInstList.put(applicationNo.getRemittanceApplicationId(), remitAddList);
+			
 			}else {
-			throw new GlobalException(JaxError.NO_RECORD_FOUND,"Record found in appl additional instruction  :"+remitTrnx.getApplicationDocumentNo());
+			throw new GlobalException(JaxError.NO_RECORD_FOUND,"Record not found in appl additional instruction  :"+remitTrnx.getApplicationDocumentNo());
 		}
 	  
 	 }
@@ -868,13 +875,9 @@ public   List<RemittanceAdditionalInstructionData>   saveRemitnaceinstructionDat
 }
 
 
-	
-
-
-
-
-public List<RemittanceAml>	saveRemittanceAml(RemittanceApplication applicationNo,RemittanceTransaction remitTrnx){
-	
+public Map<BigDecimal,List<RemittanceAml>>	saveRemittanceAml(RemittanceApplication applicationNo,RemittanceTransaction remitTrnx){
+		
+	List<RemittanceAml> amlLst = new ArrayList<>();
 	if(applicationNo!=null) {
 		List<RemitApplAmlModel> applAmlList = applAmlRepository.findByExRemittanceAppfromAml(applicationNo);
 		if(applAmlList!=null && !applAmlList.isEmpty()) {
@@ -892,8 +895,9 @@ public List<RemittanceAml>	saveRemittanceAml(RemittanceApplication applicationNo
 			remitAml.setBlackListUser(applAml.getBlackListUser());
 			remitAml.setIsactive(ConstantDocument.Yes);
 			remitAml.setExRemittancefromAml(remitTrnx);
-			amlList.add(remitAml);
+			amlLst.add(remitAml);
 			}
+			amlList.put(applicationNo.getRemittanceApplicationId(),amlLst);
 		}
 	}
 
@@ -901,12 +905,8 @@ return amlList;
 	
 }
 
-
-
-
 private LoyaltyClaimRequest saveLoyalTyClaimRequest(List<CollectDetailModel> collectDetailModelList) {
 	LoyaltyClaimRequest Lclaim = new LoyaltyClaimRequest();
-	
 	if(collectDetailModelList!=null && !collectDetailModelList.isEmpty()) {
 		for(CollectDetailModel collectDetail : collectDetailModelList) {
 			if(collectDetail.getCollectionMode().equalsIgnoreCase(ConstantDocument.VOCHERCODE)) {
@@ -1216,5 +1216,33 @@ public BigDecimal generateDocumentNumber(BigDecimal appCountryId,BigDecimal comp
 		}
 		return validStatus;
 	}
- 
- }
+@SuppressWarnings("unchecked")
+public void validateSaveTrnxDetails(HashMap<String, Object> mapAllDetailRemitSave ) {
+	CollectionModel collectModel = (CollectionModel) mapAllDetailRemitSave.get("EX_COLLECT");
+	List<CollectDetailModel> collectDetailsModel = (List<CollectDetailModel>) mapAllDetailRemitSave.get("EX_COLLECT_DET");
+
+	Map<BigDecimal,RemittanceTransaction> remitTrnxList = (Map<BigDecimal,RemittanceTransaction>) mapAllDetailRemitSave.get("EX_REMIT_TRNX");
+	Map<BigDecimal,RemittanceBenificiary> remitBeneList = (Map<BigDecimal,RemittanceBenificiary>) mapAllDetailRemitSave.get("EX_REMIT_BENE");
+	Map<BigDecimal,List<RemittanceAdditionalInstructionData>> addlTrnxList = (Map<BigDecimal,List<RemittanceAdditionalInstructionData>>) mapAllDetailRemitSave.get("EX_REMIT_ADDL");
+	//List<RemittanceTransaction> remitTrnxList = (List<RemittanceTransaction>) mapAllDetailRemitSave.get("EX_REMIT_TRNX");
+	//List<RemittanceBenificiary> remitBeneList = (List<RemittanceBenificiary>) mapAllDetailRemitSave.get("EX_REMIT_BENE");
+	//List<RemittanceAdditionalInstructionData> addlTrnxList = (List<RemittanceAdditionalInstructionData>) mapAllDetailRemitSave.get("EX_REMIT_ADDL");
+	
+	if(collectModel==null) {
+		throw new GlobalException(JaxError.NO_RECORD_FOUND, "Collection data not found");
+	}	
+	if(collectDetailsModel==null || collectDetailsModel.isEmpty() ) {
+		throw new GlobalException(JaxError.NO_RECORD_FOUND, "Collection details data not found");
+	}
+	if(remitTrnxList.isEmpty()) {
+		throw new GlobalException(JaxError.NO_RECORD_FOUND, "Remittance trnx details not found");
+	}
+	if(remitBeneList.isEmpty()) {
+		throw new GlobalException(JaxError.NO_RECORD_FOUND, "Remittance bene  details not found");
+	}
+	if(addlTrnxList.isEmpty()) {
+		throw new GlobalException(JaxError.NO_RECORD_FOUND, "Remittance additional instruction details not found");
+	}
+	
+	}
+}

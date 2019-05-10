@@ -178,6 +178,7 @@ public class SignPadController {
 				file.getData());
 	}
 
+	@ApiRequest(type = RequestType.POLL)
 	@ApiDeviceHeaders
 	@RequestMapping(value = Path.SIGNPAD_STATUS_SIGNATURE, method = { RequestMethod.GET },
 			produces = MediaType.IMAGE_PNG_VALUE)

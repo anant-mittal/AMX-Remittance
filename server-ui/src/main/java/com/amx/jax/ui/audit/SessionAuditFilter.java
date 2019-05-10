@@ -29,7 +29,7 @@ public class SessionAuditFilter implements AuditFilter<SessionEvent> {
 	 */
 	@Override
 	public void doFilter(SessionEvent event) {
-		event.setSessionId(AppContextUtil.getSessionId());
+		event.setSessionId(AppContextUtil.getSessionId(false));
 		RequestAttributes attribs = RequestContextHolder.getRequestAttributes();
 		if (attribs instanceof NativeWebRequest) {
 			if (userDevice != null) {

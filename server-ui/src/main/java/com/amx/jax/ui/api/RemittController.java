@@ -386,7 +386,7 @@ public class RemittController {
 			if (respTxMdl.getCivilIdOtpModel() != null && respTxMdl.getCivilIdOtpModel().getmOtpPrefix() != null) {
 				wrapper.setMeta(new AuthData());
 				wrapper.getMeta().setmOtpPrefix(respTxMdl.getCivilIdOtpModel().getmOtpPrefix());
-				wrapper.setStatus(OWAStatusStatusCodes.MOTP_REQUIRED);
+				wrapper.setStatusEnum(OWAStatusStatusCodes.MOTP_REQUIRED);
 			} else {
 				PayGParams payment = new PayGParams();
 				payment.setDocFy(respTxMdl.getDocumentFinancialYear());

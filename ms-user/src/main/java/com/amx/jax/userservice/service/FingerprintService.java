@@ -27,6 +27,7 @@ import com.amx.jax.JaxAuthCache;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.async.ExecutorConfig;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.constant.JaxApiFlow;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.LoginLogoutHistory;
@@ -240,20 +241,34 @@ public class FingerprintService {
 
 	public CustomerModel loginCustomerByFingerprint(String civilId, String identityTypeStr, String password, String fingerprintDeviceId) {
 		userValidationService.validateIdentityInt(civilId, identityTypeStr);
-		if(metaData.getDeviceId()==null) {
+		if (metaData.getDeviceId() == null) {
 			logger.error("device id null exception");
 			throw new GlobalException("Device id cannot be null");
 		}
-		BigDecimal identityType = new BigDecimal(identityTypeStr);
-		CustomerOnlineRegistration customerOnlineRegistration = userValidationService
-				.validateOnlineCustomerByIdentityId(civilId, identityType);
+		CustomerOnlineRegistration customerOnlineRegistration = null;
+		if (identityTypeStr == null) {
+			try {
+				customerOnlineRegistration = userValidationService.validateOnlineCustomerByIdentityId(civilId,
+						ConstantDocument.BIZ_COMPONENT_ID_CIVIL_ID);
+			} catch (GlobalException e) {
+			}
+			if (customerOnlineRegistration == null) {
+				customerOnlineRegistration = userValidationService.validateOnlineCustomerByIdentityId(civilId,
+						ConstantDocument.BIZ_COMPONENT_ID_NEW_CIVIL_ID);
+			}
+		} else {
+			BigDecimal identityType = new BigDecimal(identityTypeStr);
+			customerOnlineRegistration = userValidationService.validateOnlineCustomerByIdentityId(civilId,
+					identityType);
+		}
 		Customer customer = custDao.getCustById(customerOnlineRegistration.getCustomerId());
-		logger.info("Customer id is "+metaData.getCustomerId());
+		logger.info("Customer id is " + metaData.getCustomerId());
+		userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(civilId, JaxApiFlow.LOGIN);
 		userValidationService.validateCustomerLockCount(customerOnlineRegistration);
 		userValidationService.validateCustIdProofs(customerOnlineRegistration.getCustomerId());
 		userValidationService.validateCustomerData(customerOnlineRegistration, customer);
 		userValidationService.validateBlackListedCustomerForLogin(customer);
-		userValidationService.validateFingerprintDeviceId(customerOnlineRegistration,fingerprintDeviceId);
+		userValidationService.validateFingerprintDeviceId(customerOnlineRegistration, fingerprintDeviceId);
 		userValidationService.validateDevicePassword(customerOnlineRegistration, password);
 		CustomerModel customerModel = convert(customerOnlineRegistration);
 		return customerModel;
