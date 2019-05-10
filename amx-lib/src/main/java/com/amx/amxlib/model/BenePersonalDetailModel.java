@@ -5,6 +5,8 @@ import java.math.BigDecimal;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import org.springframework.format.annotation.NumberFormat;
+
 import com.amx.jax.model.AbstractModel;
 
 public class BenePersonalDetailModel extends AbstractModel {
@@ -47,7 +49,8 @@ public class BenePersonalDetailModel extends AbstractModel {
 	// bene contact
 	private String telephoneNumber;
 	
-	private BigDecimal mobileNumber;
+	@NumberFormat
+	private String mobileNumber;
 	@NotNull
 	private String countryTelCode;
 	// bene relationship
@@ -156,13 +159,6 @@ public class BenePersonalDetailModel extends AbstractModel {
 		this.telephoneNumber = telephoneNumber;
 	}
 
-	public BigDecimal getMobileNumber() {
-		return mobileNumber;
-	}
-
-	public void setMobileNumber(BigDecimal mobileNumber) {
-		this.mobileNumber = mobileNumber;
-	}
 
 	public String getCountryTelCode() {
 		return countryTelCode;
@@ -218,6 +214,14 @@ public class BenePersonalDetailModel extends AbstractModel {
 
 	public void setDistrictId(BigDecimal districtId) {
 		this.districtId = districtId;
+	}
+	
+	public String getMobileNumber() {
+		return mobileNumber;
+	}
+
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
 	}
 
 	@Override
