@@ -333,13 +333,6 @@ public class BranchRemittanceSaveManager {
 				collection.setDocumentFinanceYear(appl.getDocumentFinancialyear());
 				collection.setDocumentId(documentDao.getDocumnetByCode(ConstantDocument.DOCUMENT_CODE_FOR_COLLECT_TRANSACTION).get(0).getDocumentID());
 				collection.setDocumentCode(ConstantDocument.DOCUMENT_CODE_FOR_COLLECT_TRANSACTION);
-				 BigDecimal documentNo =generateDocumentNumber(appl.getFsCountryMasterByApplicationCountryId().getCountryId(),appl.getFsCompanyMaster().getCompanyId(),collection.getDocumentId(),collection.getDocumentFinanceYear(),appl.getExCountryBranch().getBranchId(),ConstantDocument.A);
-				
-				if(documentNo!=null && documentNo.compareTo(BigDecimal.ZERO)!=0){
-			    	collection.setDocumentNo(documentNo);
-			    }else{
-			    	throw new GlobalException(JaxError.INVALID_COLLECTION_DOCUMENT_NO, "Collection document should not be blank.");
-			    }
 				collection.setReceiptType(ConstantDocument.COLLECTION_RECEIPT_TYPE);
 				collection.setCreatedDate(new Date());
 				EmployeeDetailsView employee =branchRemittanceApplManager.getEmployeeDetails();
@@ -360,6 +353,16 @@ public class BranchRemittanceSaveManager {
 				collection.setExBankBranch(countryBranch);
 				collection.setFsCompanyMaster(appl.getFsCompanyMaster());
 				collection.setTotalAmountDeclarationIndicator(null); //ned to check
+				
+				 BigDecimal documentNo =generateDocumentNumber(appl.getFsCountryMasterByApplicationCountryId().getCountryId(),appl.getFsCompanyMaster().getCompanyId(),collection.getDocumentId(),collection.getDocumentFinanceYear(),collection.getLocCode(),ConstantDocument.A);
+					
+					if(documentNo!=null && documentNo.compareTo(BigDecimal.ZERO)!=0){
+				    	collection.setDocumentNo(documentNo);
+				    }else{
+				    	throw new GlobalException(JaxError.INVALID_COLLECTION_DOCUMENT_NO, "Collection document should not be blank.");
+				    }
+				
+				
 				}else {
 					throw new GlobalException(JaxError.NO_RECORD_FOUND,"Record found to save in collection"+customerid+"\t appl No :"+shoppingCartList.get(0).getApplicationId());
 				}
@@ -758,7 +761,7 @@ public class BranchRemittanceSaveManager {
 					remitTrnx.setReachedCostRateLimit(appl.getReachedCostRateLimit());
 					
 					
-					BigDecimal documentNo =generateDocumentNumber(appl.getFsCountryMasterByApplicationCountryId().getCountryId(),appl.getFsCompanyMaster().getCompanyId(),remitTrnx.getDocumentId().getDocumentCode(),remitTrnx.getDocumentFinanceYear(),remitTrnx.getBranchId().getBranchId(),ConstantDocument.A);
+					BigDecimal documentNo =generateDocumentNumber(appl.getFsCountryMasterByApplicationCountryId().getCountryId(),appl.getFsCompanyMaster().getCompanyId(),remitTrnx.getDocumentId().getDocumentCode(),remitTrnx.getDocumentFinanceYear(),remitTrnx.getLoccod(),ConstantDocument.A);
 					
 					if(documentNo!=null && documentNo.compareTo(BigDecimal.ZERO)!=0){
 						remitTrnx.setDocumentNo(documentNo);
