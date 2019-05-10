@@ -1,5 +1,6 @@
 package com.amx.jax.userservice.manager;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxApiFlow;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
+import com.amx.jax.dict.ContactType;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.customer.SecurityQuestionModel;
@@ -30,9 +32,11 @@ public class OnlineCustomerManager {
 	UserService userService;
 	@Autowired
 	UserValidationService userValidationService;
+	@Autowired
+	CustomerAuthManager customerAuthManager;
 
 	public void saveCustomerSecQuestions(List<SecurityQuestionModel> securityQuestions) {
-
+		customerAuthManager.validateAndSendOtp(Arrays.asList(ContactType.SMS));
 		CustomerOnlineRegistration customerOnlineRegistration = custDao
 				.getOnlineCustByCustomerId(metaData.getCustomerId());
 		if (customerOnlineRegistration == null) {

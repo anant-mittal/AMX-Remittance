@@ -13,36 +13,45 @@ public class JaxAuthMeta implements Serializable {
 
 	public JaxAuthMeta() {
 		this.id = null;
-		this.otp = "";
-		this.mOtp = "";
-		this.eOtp = "";
-		this.wOtp = "";
-		this.secAns = "";
+		this.otpHash = "";
+		this.mOtpHash = "";
+		this.eOtpHash = "";
+		this.wOtpHash = "";
+		this.secAnsHash = "";
+	}
+	
+	public JaxAuthMeta(String id) {
+		this.id = id;
+		this.otpHash = "";
+		this.mOtpHash = "";
+		this.eOtpHash = "";
+		this.wOtpHash = "";
+		this.secAnsHash = "";
 	}
 
 	public JaxAuthMeta(String mOtp, String eOtp, String secAns) {
 		this();
-		this.mOtp = mOtp;
-		this.eOtp = eOtp;
-		this.secAns = secAns;
+		this.mOtpHash = mOtp;
+		this.eOtpHash = eOtp;
+		this.secAnsHash = secAns;
 	}
 
 	@ApiMockModelProperty(example = "anx-sdff-dfdfdfd")
 	String id;
 
 	@ApiMockModelProperty(example = "123456")
-	String otp;
+	String otpHash;
 
 	@ApiMockModelProperty(example = "123456")
-	String mOtp;
+	String mOtpHash;
 	@ApiMockModelProperty(example = "234567")
-	String eOtp;
+	String eOtpHash;
 	@ApiMockModelProperty(example = "123456")
-	String wOtp;
+	String wOtpHash;
 	@ApiMockModelProperty(example = "Q1")
 	BigDecimal questId;
 	@ApiMockModelProperty(example = "black")
-	String secAns;
+	String secAnsHash;
 
 	/**
 	 * @return the questId
@@ -58,51 +67,52 @@ public class JaxAuthMeta implements Serializable {
 		this.questId = questId;
 	}
 
-	public String getSecAns() {
-		return secAns;
-	}
-
-	public void setSecAns(String secAns) {
-		this.secAns = secAns;
-	}
-
-	public String getmOtp() {
-		return mOtp;
-	}
-
-	public void setmOtp(String mOtp) {
-		this.mOtp = mOtp;
-	}
-
-	public String geteOtp() {
-		return eOtp;
-	}
-
-	public void seteOtp(String eOtp) {
-		this.eOtp = eOtp;
-	}
-
-	public String getOtp() {
-		return otp;
-	}
-
-	public void setOtp(String otp) {
-		this.otp = otp;
-	}
-
-	public String getwOtp() {
-		return wOtp;
-	}
-
-	public void setwOtp(String wOtp) {
-		this.wOtp = wOtp;
-	}
-
+	
 	public String getId() {
 		return id;
 	}
 
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	public String getOtpHash() {
+		return otpHash;
+	}
+
+	public void setOtpHash(String otpHash) {
+		this.otpHash = otpHash;
+	}
+
+	public String getmOtpHash() {
+		return mOtpHash;
+	}
+
+	public void setmOtpHash(String mOtpHash) {
+		this.mOtpHash = mOtpHash;
+	}
+
+	public String geteOtpHash() {
+		return eOtpHash;
+	}
+
+	public void seteOtpHash(String eOtpHash) {
+		this.eOtpHash = eOtpHash;
+	}
+
+	public String getwOtpHash() {
+		return wOtpHash;
+	}
+
+	public void setwOtpHash(String wOtpHash) {
+		this.wOtpHash = wOtpHash;
+	}
+
+	public String getSecAnsHash() {
+		return secAnsHash;
+	}
+
+	public void setSecAnsHash(String secAnsHash) {
+		this.secAnsHash = secAnsHash;
 	}
 }

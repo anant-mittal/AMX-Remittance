@@ -31,4 +31,11 @@ public class JaxAuthCache extends CacheBox<JaxAuthMeta> {
 	public void saveJaxAuthMeta(JaxAuthMeta meta) {
 		this.put(meta.getId(), meta);
 	}
+
+	@Override
+	public JaxAuthMeta getDefault() {
+		return new JaxAuthMeta(AppContextUtil.getContextId());
+	}
+	
+	
 }
