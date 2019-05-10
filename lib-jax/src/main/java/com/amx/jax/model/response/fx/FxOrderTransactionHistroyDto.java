@@ -1,6 +1,7 @@
 package com.amx.jax.model.response.fx;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 public class FxOrderTransactionHistroyDto {
 	private BigDecimal idno;
@@ -66,6 +67,17 @@ public class FxOrderTransactionHistroyDto {
 	private String driverName;
 	private String employeeName;
 	private String phoneNumber;
+	public String getMutipleInventoryId() {
+		return mutipleInventoryId;
+	}
+
+	public void setMutipleInventoryId(String mutipleInventoryId) {
+		this.mutipleInventoryId = mutipleInventoryId;
+	}
+
+	String mutipleInventoryId;
+	
+	List<FcSaleCurrencyAmountModel> mutipleFcAmount;
 
 	public BigDecimal getIdno() {
 		return idno;
@@ -418,6 +430,14 @@ public class FxOrderTransactionHistroyDto {
 
 	public void setLocalCurrencyAmout(BigDecimal localCurrencyAmout) {
 		this.localCurrencyAmout = localCurrencyAmout;
+	}
+
+	public List<FcSaleCurrencyAmountModel> getMutipleFcAmount() {
+		return mutipleFcAmount;
+	}
+
+	public void setMutipleFcAmount(List<FcSaleCurrencyAmountModel> mutipleFcAmount) {
+		this.mutipleFcAmount = mutipleFcAmount;
 	}
 	
 	
