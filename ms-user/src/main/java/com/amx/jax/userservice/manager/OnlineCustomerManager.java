@@ -36,11 +36,15 @@ public class OnlineCustomerManager {
 	CustomerAuthManager customerAuthManager;
 
 	public void saveCustomerSecQuestions(List<SecurityQuestionModel> securityQuestions) {
-		customerAuthManager.validateAndSendOtp(Arrays.asList(ContactType.SMS));
 		CustomerOnlineRegistration customerOnlineRegistration = custDao
 				.getOnlineCustByCustomerId(metaData.getCustomerId());
 		if (customerOnlineRegistration == null) {
 			throw new GlobalException("Online customer not found");
+		}
+		// send otp when update is needed
+		if (customerOnlineRegistration.getSecurityQuestion1() != null
+				&& customerOnlineRegistration.getSecurityAnswer1() != null) {
+			customerAuthManager.validateAndSendOtp(Arrays.asList(ContactType.SMS));
 		}
 		userService.simplifyAnswers(securityQuestions);
 		custDao.setSecurityQuestions(securityQuestions, customerOnlineRegistration);
