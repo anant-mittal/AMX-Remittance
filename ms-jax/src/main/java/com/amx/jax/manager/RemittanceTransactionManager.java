@@ -858,7 +858,7 @@ public class RemittanceTransactionManager {
 		logger.info("Application saved successfully, response: " + remiteAppModel.toString());
 
 		auditService.log(new CActivityEvent(Type.APPLICATION_CREATED,
-				String.format("{}/{}", remiteAppModel.getDocumentFinancialYear(),
+				String.format("%s/%s", remiteAppModel.getDocumentFinancialYear(),
 						remiteAppModel.getDocumentIdForPayment())).field("STATUS")
 								.to(JaxTransactionStatus.APPLICATION_CREATED).result(Result.DONE));
 		return remiteAppModel;
