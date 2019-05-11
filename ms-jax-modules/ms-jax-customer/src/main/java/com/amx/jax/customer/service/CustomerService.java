@@ -114,14 +114,21 @@ public class CustomerService extends AbstractService {
 		ContactDetail customerContact = customerContacts.get(0);
 		customerContactDto.setBlock(customerContact.getBlock());
 		customerContactDto.setBuildingNo(customerContact.getBuildingNo());
-		customerContactDto.setCityName(customerContact.getFsCityMaster().getFsCityMasterDescs().get(0).getCityName());
+		if (customerContact.getFsCityMaster() != null) {
+			customerContactDto
+					.setCityName(customerContact.getFsCityMaster().getFsCityMasterDescs().get(0).getCityName());
+		}
 		customerContactDto
 				.setCountryName(customerContact.getFsCountryMaster().getFsCountryMasterDescs().get(0).getCountryName());
-		customerContactDto
-				.setDistrict(customerContact.getFsDistrictMaster().getFsDistrictMasterDescs().get(0).getDistrict());
+		if (customerContact.getFsDistrictMaster() != null) {
+			customerContactDto
+					.setDistrict(customerContact.getFsDistrictMaster().getFsDistrictMasterDescs().get(0).getDistrict());
+		}
 		customerContactDto.setFlat(customerContact.getFlat());
-		customerContactDto
-				.setStateName(customerContact.getFsStateMaster().getFsStateMasterDescs().get(0).getStateName());
+		if (customerContact.getFsStateMaster() != null) {
+			customerContactDto
+					.setStateName(customerContact.getFsStateMaster().getFsStateMasterDescs().get(0).getStateName());
+		}
 		customerContactDto.setStreet(customerContact.getStreet());
 		return customerContactDto;
 	}
