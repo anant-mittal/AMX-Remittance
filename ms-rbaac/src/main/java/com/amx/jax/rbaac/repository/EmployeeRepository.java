@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import com.amx.jax.rbaac.dbmodel.CountryBranch;
 import com.amx.jax.rbaac.dbmodel.Employee;
 
 public interface EmployeeRepository extends JpaRepository<Employee, Serializable> {
@@ -14,7 +15,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, Serializable
 
 	//public List<Employee> findByEmployeeNumberAndCivilIdAndDeviceId(String empcode, String identity, String deviceId);
 	
-	public List<Employee> findByFsCountryBranch(BigDecimal countryBranchId);
+	public List<Employee> findByCountryBranch(CountryBranch countryBranch);
 	
 	public Employee findByUserNameAndPassword(String user, String pass);
 
