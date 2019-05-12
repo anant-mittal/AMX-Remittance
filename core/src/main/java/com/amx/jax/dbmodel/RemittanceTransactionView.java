@@ -320,6 +320,11 @@ public class RemittanceTransactionView implements Serializable{
 	private String isDiscAvail;
 
 
+	
+	@Column(name = "KD_SAVED")
+	private BigDecimal amountSaved;
+	
+	
 	public BigDecimal getPhoneNumber() {
 		return phoneNumber;
 	}
@@ -1088,6 +1093,14 @@ public class RemittanceTransactionView implements Serializable{
 
 	public void setIsDiscAvail(String isDiscAvail) {
 		this.isDiscAvail = isDiscAvail;
+	}
+
+	public BigDecimal getAmountSaved() {
+		return amountSaved;
+	}
+
+	public void setAmountSaved(BigDecimal amountSaved) {
+		this.amountSaved = amountSaved;
 	}
 
 }

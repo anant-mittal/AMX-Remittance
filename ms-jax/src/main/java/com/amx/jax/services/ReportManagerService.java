@@ -272,10 +272,7 @@ public class ReportManagerService extends AbstractService{
 					obj.setInsurence2(prInsStrAr2);
 				}
 
-
-
-
-
+			
 				if (view.getBeneCityName() != null && view.getBeneDistrictName() != null && view.getBeneStateName() != null) {
 					obj.setAddress(view.getBeneCityName() + ", " + view.getBeneDistrictName() + ", " + view.getBeneStateName());
 				} else if (view.getBeneCityName() == null && view.getBeneDistrictName() != null && view.getBeneStateName() != null) {
@@ -460,7 +457,12 @@ public class ReportManagerService extends AbstractService{
 					}
 					// 
 					
-					
+					/** added by rabil  It should be print conditionally.if IS_DISCOUNT_AVAILED = 'Y' and KD_SAVED > 0 **/
+					 if(!StringUtils.isBlank(view.getIsDiscAvail()) && view.getIsDiscAvail().equalsIgnoreCase(ConstantDocument.Yes) && view.getAmountSaved().compareTo(BigDecimal.ZERO)>0) {
+						 obj.setAmountSaved(view.getAmountSaved());
+					 }
+					/** end **/
+
 					
 				} catch (Exception e) {
 					logger.info( "Exception Occured While Report2 "+e.getMessage());
