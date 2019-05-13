@@ -29,7 +29,6 @@ public class JaxAuditFilter implements AuditFilter<CActivityEvent> {
 				&& ArgUtil.isEmpty(event.getCustomerId())) {
 			event.setCustomerId(metaData.getCustomerId());
 		}
-		log.info("Here Ia am ");
 		if (CActivityEvent.Type.TRANSACTION_CREATED.equals(event.getType())
 				|| CActivityEvent.Type.APPLICATION_CREATED.equals(event.getType())) {
 			AuditActorInfo x = sessionContextService.getContext(AuditActorInfo.class);
