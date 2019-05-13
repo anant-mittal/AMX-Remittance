@@ -1000,6 +1000,7 @@ public class UserService extends AbstractUserService {
 		if (onlineCustomer != null) {
 			auditEvent.from(onlineCustomer.getStatus());
 			onlineCustomer.setStatus(ConstantDocument.No);
+			resetSecurityQuestion(onlineCustomer);
 			custDao.saveOnlineCustomer(onlineCustomer);
 			auditEvent.to(onlineCustomer.getStatus());
 		} else {
@@ -1015,6 +1016,19 @@ public class UserService extends AbstractUserService {
 		auditService.log(auditEvent.result(Result.DONE)); // Audit
 		return response;
 
+	}
+	
+	private void resetSecurityQuestion(CustomerOnlineRegistration customerOnlineRegistration) {
+		customerOnlineRegistration.setSecurityQuestion1(null);
+		customerOnlineRegistration.setSecurityQuestion2(null);
+		customerOnlineRegistration.setSecurityQuestion3(null);
+		customerOnlineRegistration.setSecurityQuestion4(null);
+		customerOnlineRegistration.setSecurityQuestion5(null);
+		customerOnlineRegistration.setSecurityAnswer1(null);
+		customerOnlineRegistration.setSecurityAnswer2(null);
+		customerOnlineRegistration.setSecurityAnswer3(null);
+		customerOnlineRegistration.setSecurityAnswer4(null);
+		customerOnlineRegistration.setSecurityAnswer5(null);
 	}
 
 	/**
