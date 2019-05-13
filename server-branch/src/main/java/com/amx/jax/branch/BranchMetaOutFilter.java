@@ -1,5 +1,7 @@
 package com.amx.jax.branch;
 
+import java.math.BigDecimal;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
@@ -7,6 +9,8 @@ import org.springframework.stereotype.Component;
 import com.amx.jax.branch.beans.BranchSession;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.constants.JaxChannel;
+import com.amx.jax.logger.AuditActor;
+import com.amx.jax.logger.AuditDetailProvider;
 import com.amx.jax.rest.IMetaRequestOutFilter;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.jax.sso.SSOUser;
@@ -15,12 +19,12 @@ import com.amx.utils.ContextUtil;
 
 @Primary
 @Component
-public class BranchMetaOutFilter implements IMetaRequestOutFilter<JaxMetaInfo> {
+public class BranchMetaOutFilter implements IMetaRequestOutFilter<JaxMetaInfo>, AuditDetailProvider {
 
 	@Autowired
 	private SSOUser ssoUser;
 
-	@Autowired
+	@Autowired(required = false)
 	private BranchSession branchSession;
 
 	@Override
@@ -46,9 +50,18 @@ public class BranchMetaOutFilter implements IMetaRequestOutFilter<JaxMetaInfo> {
 			requestMeta.setTerminalId(ssoUser.getUserClient().getTerminalId());
 		}
 
-		if (!ArgUtil.isEmpty(branchSession.getCustomerId())) {
+		if (!ArgUtil.isEmpty(branchSession) && !ArgUtil.isEmpty(branchSession.getCustomerId())) {
 			requestMeta.setCustomerId(branchSession.getCustomerId());
 		}
+	}
+
+	private BigDecimal getCustomerId() {
+		return ArgUtil.isEmpty(branchSession) ? null : branchSession.getCustomerId();
+	}
+
+	@Override
+	public AuditActor getActor() {
+		return new AuditActor(AuditActor.ActorType.EMPLOYEE, getCustomerId());
 	}
 
 }

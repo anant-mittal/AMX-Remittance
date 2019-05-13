@@ -6,9 +6,12 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -29,7 +32,7 @@ public class Employee implements java.io.Serializable {
 	private String telephoneNumber;
 	private BigDecimal countryId;
 	private BigDecimal fsRoleMaster;
-	private BigDecimal fsCountryBranch;
+	private CountryBranch countryBranch;
 	private BigDecimal fsCompanyMaster;
 	private String status;
 	private String sesionStatus;
@@ -49,8 +52,8 @@ public class Employee implements java.io.Serializable {
 
 	private BigDecimal lockCount;
 	private Date lockDate;
-	
-	//OTP RELATED 
+
+	// OTP RELATED
 	private String otpNotifySms;
 	private String otpNotifyApp;
 	private String otpNotifyWhatsapp;
@@ -135,13 +138,14 @@ public class Employee implements java.io.Serializable {
 		this.fsRoleMaster = fsRoleMaster;
 	}
 
-	@Column(name = "COUNTRY_BRANCH_ID")
-	public BigDecimal getFsCountryBranch() {
-		return fsCountryBranch;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "COUNTRY_BRANCH_ID")
+	public CountryBranch getCountryBranch() {
+		return countryBranch;
 	}
 
-	public void setFsCountryBranch(BigDecimal fsCountryBranch) {
-		this.fsCountryBranch = fsCountryBranch;
+	public void setCountryBranch(CountryBranch countryBranch) {
+		this.countryBranch = countryBranch;
 	}
 
 	@Column(name = "Employee_Number")
@@ -323,6 +327,7 @@ public class Employee implements java.io.Serializable {
 	public void setLastLogin(Date lastLogin) {
 		this.lastLogin = lastLogin;
 	}
+
 	@Column(name = "OTP_NOTIFY_SMS")
 	public String getOtpNotifySms() {
 		return otpNotifySms;
@@ -349,7 +354,5 @@ public class Employee implements java.io.Serializable {
 	public void setOtpNotifyWhatsapp(String otpNotifyWhatsapp) {
 		this.otpNotifyWhatsapp = otpNotifyWhatsapp;
 	}
-	
-	
 
 }

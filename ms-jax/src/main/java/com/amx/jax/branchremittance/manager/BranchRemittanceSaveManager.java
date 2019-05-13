@@ -270,7 +270,7 @@ public class BranchRemittanceSaveManager {
 			mapAllDetailRemitSave.put("EX_REMIT_AML", amlList);
 			mapAllDetailRemitSave.put("LOYALTY_POINTS", loyaltyPoints);
 			responseDto = brRemittanceDao.saveRemittanceTransaction(mapAllDetailRemitSave);
-			auditService.log(new CActivityEvent(Type.TRANSACTION_CREATED,String.format("{}/{}", responseDto.getCollectionDocumentFYear(),responseDto.getCollectionDocumentNo())).field("STATUS").to(JaxTransactionStatus.PAYMENT_SUCCESS_APPLICATION_SUCCESS).result(Result.DONE));
+			auditService.log(new CActivityEvent(Type.TRANSACTION_CREATED,String.format("%s/%s", responseDto.getCollectionDocumentFYear(),responseDto.getCollectionDocumentNo())).field("STATUS").to(JaxTransactionStatus.PAYMENT_SUCCESS_APPLICATION_SUCCESS).result(Result.DONE));
 	}catch (GlobalException e) {
 			logger.error("routing  procedure", e.getErrorMessage() + "" + e.getErrorKey());
 			throw new GlobalException(e.getErrorKey(), e.getErrorMessage());
