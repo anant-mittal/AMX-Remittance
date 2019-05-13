@@ -1,5 +1,7 @@
 package com.amx.jax.auditlog;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -13,6 +15,8 @@ import com.amx.utils.ArgUtil;
 @Component
 public class JaxAuditFilter implements AuditFilter<CActivityEvent> {
 
+	private Logger log = LoggerFactory.getLogger(getClass());
+
 	@Autowired
 	MetaData metaData;
 
@@ -25,10 +29,11 @@ public class JaxAuditFilter implements AuditFilter<CActivityEvent> {
 				&& ArgUtil.isEmpty(event.getCustomerId())) {
 			event.setCustomerId(metaData.getCustomerId());
 		}
-
+		log.info("Here Ia am ");
 		if (CActivityEvent.Type.TRANSACTION_CREATED.equals(event.getType())) {
 			// MapModel x = sessionContextService.getContext();
 		} else if (CActivityEvent.Type.APPLICATION_CREATED.equals(event.getType())) {
+			log.info("Here Ia am 2");
 			AuditActorInfo x = sessionContextService.getContext(AuditActorInfo.class);
 			event.setActor(x);
 		}
