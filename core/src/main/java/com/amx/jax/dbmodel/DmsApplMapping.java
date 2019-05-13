@@ -11,6 +11,8 @@ import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import org.apache.tomcat.util.http.fileupload.UploadContext;
+
 @Entity
 @Table(name = "EX_DMS_APPL_MAP")
 public class DmsApplMapping {
@@ -25,6 +27,15 @@ public class DmsApplMapping {
 	private String docFormat;
 	private Date createdOn;
 	private String createdBy;
+	private String uploadType;
+
+	public String getUploadType() {
+		return uploadType;
+	}
+
+	public void setUploadType(String uploadType) {
+		this.uploadType = uploadType;
+	}
 
 	@Id	
 	@GeneratedValue(generator="ex_dms_appl_map_seq",strategy=GenerationType.SEQUENCE)

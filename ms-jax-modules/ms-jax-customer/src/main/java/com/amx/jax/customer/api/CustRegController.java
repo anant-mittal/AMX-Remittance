@@ -14,9 +14,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+
 import com.amx.jax.CustomerCredential;
 import com.amx.jax.ICustRegService;
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.api.BoolRespModel;
+import com.amx.jax.customer.manager.OffsiteAddressProofManager;
 import com.amx.jax.customer.service.OffsitCustRegService;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.meta.MetaData;
@@ -36,6 +39,7 @@ import com.amx.jax.model.response.ComponentDataDto;
 import com.amx.jax.model.response.CustomerInfo;
 import com.amx.jax.model.response.FieldListDto;
 import com.amx.jax.model.response.IncomeRangeDto;
+import com.amx.jax.model.response.customer.AddressProofDTO;
 import com.amx.jax.model.response.customer.OffsiteCustomerDataDTO;
 import com.amx.jax.service.CountryService;
 import com.amx.jax.service.MetaService;
@@ -68,6 +72,9 @@ public class CustRegController implements ICustRegService {
 
 	@Autowired
 	MetaService metaService;
+	
+	@Autowired
+	OffsiteAddressProofManager offsiteAddressProofManager;
 
 	@RequestMapping(value = CustRegApiEndPoints.GET_ID_TYPES, method = RequestMethod.POST)
 	public AmxApiResponse<ComponentDataDto, Object> getIdTypes() {
@@ -173,9 +180,13 @@ public class CustRegController implements ICustRegService {
 	}
 	
 	@RequestMapping(value = CustRegApiEndPoints.ADDRESS_PROOF, method = RequestMethod.GET)
-	public AmxApiResponse<ResourceDTO, Object> getAddressProof() {
-		return offsiteCustRegService.getAddressProof();
+	public AmxApiResponse<AddressProofDTO, Object> getAddressProof() {
+		return offsiteAddressProofManager.getAddressProof();
 	}
 	
+	@RequestMapping(value = CustRegApiEndPoints.DOCUMENT_UPLOAD_REFERENCE, method = RequestMethod.POST)
+	public BoolRespModel saveDocumentUploadReference(@RequestBody ImageSubmissionRequest imageSubmissionRequest) throws Exception {
+		return offsiteAddressProofManager.saveDocumentUploadReference(imageSubmissionRequest);
+	}
 	
 }

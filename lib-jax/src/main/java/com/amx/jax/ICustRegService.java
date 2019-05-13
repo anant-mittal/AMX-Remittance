@@ -4,7 +4,9 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Map;
 
+
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.error.ApiJaxStatusBuilder.ApiJaxStatus;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.model.CardDetail;
@@ -22,6 +24,7 @@ import com.amx.jax.model.response.ComponentDataDto;
 import com.amx.jax.model.response.CustomerInfo;
 import com.amx.jax.model.response.FieldListDto;
 import com.amx.jax.model.response.IncomeRangeDto;
+import com.amx.jax.model.response.customer.AddressProofDTO;
 import com.amx.jax.model.response.customer.OffsiteCustomerDataDTO;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
@@ -49,6 +52,7 @@ public interface ICustRegService extends IJaxService {
 		
 		public static final String DESIGNATION_LIST = PREFIX + "/getDesignationList";
 		public static final String ADDRESS_PROOF = PREFIX + "/getAddressProof";
+		public static final String DOCUMENT_UPLOAD_REFERENCE = PREFIX + "/documentUploadReference";
 	}
 	
 	public static class Params {
@@ -112,6 +116,8 @@ public interface ICustRegService extends IJaxService {
 	AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerDetails(String identityInt, BigDecimal identityType);
 	
 	@ApiJaxStatus({JaxError.EMPTY_ADDRESS_PROOF_LIST})
-	AmxApiResponse<ResourceDTO, Object> getAddressProof();
+	AmxApiResponse<AddressProofDTO, Object> getAddressProof();
+
+	BoolRespModel saveDocumentUploadReference(ImageSubmissionRequest imageSubmissionRequest) throws ParseException, Exception;
 
 }

@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 
 import javax.sql.rowset.serial.SerialException;
 
+import org.apache.catalina.mapper.MappingData;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
@@ -32,6 +33,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.constant.PrefixEnum;
 import com.amx.amxlib.exception.jax.GlobalException;
+
 import com.amx.amxlib.meta.model.AnnualIncomeRangeDTO;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.response.ResponseStatus;
@@ -39,6 +41,7 @@ import com.amx.jax.CustomerCredential;
 import com.amx.jax.ICustRegService;
 import com.amx.jax.amxlib.config.OtpSettings;
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constants.CustomerRegistrationType;
 import com.amx.jax.customer.manager.OffsiteCustomerRegManager;
@@ -61,6 +64,7 @@ import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.DistrictMaster;
 import com.amx.jax.dbmodel.DmsApplMapping;
 import com.amx.jax.dbmodel.DocBlobUpload;
+import com.amx.jax.dbmodel.DocumentUploadReference;
 import com.amx.jax.dbmodel.Employee;
 import com.amx.jax.dbmodel.EmployeeDetails;
 import com.amx.jax.dbmodel.EmploymentTypeMasterView;
@@ -96,6 +100,7 @@ import com.amx.jax.model.response.ComponentDataDto;
 import com.amx.jax.model.response.CustomerInfo;
 import com.amx.jax.model.response.FieldListDto;
 import com.amx.jax.model.response.IncomeRangeDto;
+import com.amx.jax.model.response.customer.AddressProofDTO;
 import com.amx.jax.model.response.customer.OffsiteCustomerDataDTO;
 import com.amx.jax.model.response.customer.PersonInfo;
 import com.amx.jax.repository.CountryMasterRepository;
@@ -106,6 +111,7 @@ import com.amx.jax.repository.EmployeeRespository;
 import com.amx.jax.repository.EmploymentTypeRepository;
 import com.amx.jax.repository.IApplicationCountryRepository;
 import com.amx.jax.repository.IDMSAppMappingRepository;
+import com.amx.jax.repository.IDocumentUploadMapRepository;
 import com.amx.jax.repository.IUserFinancialYearRepo;
 import com.amx.jax.repository.JaxConditionalFieldRuleRepository;
 import com.amx.jax.repository.ProfessionRepository;
@@ -261,6 +267,9 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 	
 	@Autowired
 	AddressProofDao addressProofDao;
+	
+	@Autowired
+	IDocumentUploadMapRepository iDocumentUploadMapRepository;
 
 	public AmxApiResponse<ComponentDataDto, Object> getIdTypes() {
 		List<Map<String, Object>> tempList = bizcomponentDao
@@ -895,6 +904,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 			if (model.getIdentityExpiredDate() != null) {
 				offsiteCustomerRegManager.createIdProofForExpiredCivilId(model, customer);
 			}
+			
 			for (String image : model.getImage()) {
 				DmsApplMapping mappingData = new DmsApplMapping();
 				mappingData = getDmsApplMappingData(customer, model);
@@ -903,7 +913,9 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 				documentDetails = getDocumentUploadDetails(image, mappingData);
 				LOGGER.debug("document details are "+documentDetails.toString());
 				docblobRepository.save(documentDetails);
+				
 			}
+			
 		} else {
 			auditService.log(auditEvent.result(Result.FAIL).message(JaxError.IMAGE_NOT_AVAILABLE));
 			throw new GlobalException(JaxError.IMAGE_NOT_AVAILABLE, "Image data is not available");
@@ -960,6 +972,8 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		mappingData.setCreatedOn(new Date());
 		return mappingData;
 	}
+	
+	
 
 	public BigDecimal getDealYearbyDate() throws ParseException {
 		DateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
@@ -1248,14 +1262,19 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		offsiteCustomerRegValidator.validateGetOffsiteCustomerDetailRequest(request);
 		return getOffsiteCustomerData(request.getIdentityInt(), request.getIdentityType());
 	}
-	
-	public AmxApiResponse<ResourceDTO, Object> getAddressProof(){
-		List<AddressProofModel> addressProofModel = addressProofDao.getAddressProof();
-		
-		List<ResourceDTO> listResourceDTO=ResourceDTO.createList(addressProofModel);
-		return AmxApiResponse.buildList(listResourceDTO);
+
+	@Override
+	public AmxApiResponse<AddressProofDTO, Object> getAddressProof() {
+		// TODO Auto-generated method stub
+		return null;
 	}
-	
+
+	@Override
+	public BoolRespModel saveDocumentUploadReference(ImageSubmissionRequest imageSubmissionRequest)
+			throws ParseException, Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 	
 	
