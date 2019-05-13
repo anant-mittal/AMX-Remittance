@@ -1,15 +1,16 @@
 package com.amx.service_provider.controller;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.serviceprovider.IServiceProviderService;
-import com.amx.jax.model.request.serviceprovider.Benificiary;
-import com.amx.jax.model.request.serviceprovider.Customer;
-import com.amx.jax.model.request.serviceprovider.TransactionData;
+import com.amx.jax.model.request.serviceprovider.ServiceProviderCallRequestDto;
 import com.amx.jax.model.response.serviceprovider.ServiceProviderResponse;
 import com.amx.service_provider.service.ServiceProviderService;
 
@@ -20,17 +21,15 @@ public class ServiceProviderController implements IServiceProviderService
 	@Autowired
 	ServiceProviderService serviceProviderGateService;
 
-	@RequestMapping(value = IServiceProviderService.Path.GET_QUATATION, method = RequestMethod.GET)
-	public AmxApiResponse<ServiceProviderResponse, Object> getQuatation(TransactionData txn_data,
-			Customer customer_data, Benificiary bene_data)
+	@RequestMapping(value = IServiceProviderService.Path.GET_QUATATION, method = RequestMethod.POST)
+	public AmxApiResponse<ServiceProviderResponse, Object> getQuatation(@Valid @RequestBody ServiceProviderCallRequestDto quatationRequestDto)
 	{
-		return AmxApiResponse.build(serviceProviderGateService.getQutation(txn_data, customer_data, bene_data));
+		return AmxApiResponse.build(serviceProviderGateService.getQutation(quatationRequestDto));
 	}
 
-	@RequestMapping(value = IServiceProviderService.Path.SEND_REMITTANCE, method = RequestMethod.GET)
-	public AmxApiResponse<ServiceProviderResponse, Object> sendRemittance(TransactionData txn_data,
-			Customer customer_data, Benificiary bene_data)
+	@RequestMapping(value = IServiceProviderService.Path.SEND_REMITTANCE, method = RequestMethod.POST)
+	public AmxApiResponse<ServiceProviderResponse, Object> sendRemittance(@Valid @RequestBody ServiceProviderCallRequestDto sendRemittanceRequestDto)
 	{
-		return AmxApiResponse.build(serviceProviderGateService.sendRemittance(txn_data, customer_data, bene_data));
+		return AmxApiResponse.build(serviceProviderGateService.sendRemittance(sendRemittanceRequestDto));
 	}
 }

@@ -4,8 +4,16 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Import;
 
-@SpringBootApplication
-@Import({MsServiceProviderConfig.class })
+
+@SpringBootApplication 
+ @Import({MsServiceProviderConfig.class })
+ 
+
+
+//@SpringBootApplication
+//@ComponentScan(basePackages = { "com.amx.jax" })
+//@EnableAsync(proxyTargetClass = true)
+//@EnableCaching
 public class MsServiceProviderApplication
 {
 

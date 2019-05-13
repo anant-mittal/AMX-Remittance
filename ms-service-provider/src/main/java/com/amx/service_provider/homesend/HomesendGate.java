@@ -1,13 +1,18 @@
 package com.amx.service_provider.homesend;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
 import org.apache.axis.types.UnsignedInt;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.stereotype.Component;
+import org.springframework.web.context.WebApplicationContext;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
 import com.amg.vcHomeSend.ows.AdviceOfChargeRequest;
 import com.amg.vcHomeSend.ows.AdviceOfChargeResponse;
 import com.amg.vcHomeSend.ows.AmountInformation;
@@ -23,17 +28,15 @@ import com.amg.vcHomeSend.ows.Security;
 import com.amg.vcHomeSend.ows.StatusRequest;
 import com.amg.vcHomeSend.ows.StatusResponse;
 import com.amg.vcHomeSend.ows.VendorSpecificField;
-import com.amx.jax.dbmodel.webservice.OwsParamRespcode;
-import com.amx.jax.dbmodel.webservice.OwsParamRespcodeKey;
 import com.amx.jax.model.request.serviceprovider.Benificiary;
 import com.amx.jax.model.request.serviceprovider.Customer;
 import com.amx.jax.model.request.serviceprovider.TransactionData;
 import com.amx.jax.model.response.serviceprovider.Quotation_Call_Response;
 import com.amx.jax.model.response.serviceprovider.Remittance_Call_Response;
-import com.amx.jax.model.response.serviceprovider.ServiceProviderResponse;
 import com.amx.jax.model.response.serviceprovider.Status_Call_Response;
-import com.amx.jax.repository.webservice.OwsParamRespcodeRepository;
-import com.amx.service_provider.manger.ServiceProviderManger;
+import com.amx.service_provider.dbmodel.webservice.OwsParamRespcode;
+import com.amx.service_provider.dbmodel.webservice.OwsParamRespcodeKey;
+import com.amx.service_provider.repository.webservice.OwsParamRespcodeRepository;
 
 /*
  * This class is created consume the API services exposed by HomeSend Main
@@ -53,13 +56,14 @@ import com.amx.service_provider.manger.ServiceProviderManger;
  * stored in the table EX_OWS_SRV_PROV_LOG This application is created by Ahmad
  * Salman 3rd April 2018
  */
+
 public class HomesendGate
 {
+	private OwsParamRespcodeRepository owsParamRespcodeRepository;
+	
 	// initialize BindingStub
 	HWSBinding_2_3Stub HomeSend_BindingStub = null;
 	
-	
-
 	final String SERVICE_PROVIDER = new String("HOME");
 	final String SERVICE_PROVIDER_DESC = new String("HOME_SEND");
 	private final String GET_QUOTATION_METHOD_IND = new String("6"), SEND_TXN_METHOD_IND = new String("2"),
@@ -85,9 +89,8 @@ public class HomesendGate
 	// private final String TRUST_STORE_PASSWORD = "changeit";
 
 	Logger logger = Logger.getLogger("WService.class");
-	private OwsParamRespcodeRepository owsParamRespcodeRepository;
 
-	public HomesendGate(String api_login, String api_password, String vendor_id, String api_url)
+	public HomesendGate(String api_login, String api_password, String vendor_id, String api_url, OwsParamRespcodeRepository owsParamRespcodeRepository)
 	{
 		try
 		{
@@ -101,6 +104,7 @@ public class HomesendGate
 			API_LOGIN = api_login;
 			API_PASSWORD = api_password;
 			new UnsignedInt(vendor_id);
+			this.owsParamRespcodeRepository = owsParamRespcodeRepository;
 
 			System.setProperty("javax.net.ssl.trustStore", TRUST_STORE_LOCATION);
 			System.setProperty("javax.net.ssl.trustStorePassword", TRUST_STORE_PASSWORD); // changeit

@@ -7,26 +7,33 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.amx.jax.dbmodel.webservice.ExOwsLoginCredentials;
 import com.amx.jax.model.request.serviceprovider.Benificiary;
 import com.amx.jax.model.request.serviceprovider.Customer;
+import com.amx.jax.model.request.serviceprovider.ServiceProviderCallRequestDto;
 import com.amx.jax.model.request.serviceprovider.TransactionData;
 import com.amx.jax.model.response.serviceprovider.ServiceProviderResponse;
-import com.amx.jax.repository.webservice.ExOwsLoginCredentialsRepository;
+import com.amx.service_provider.dbmodel.webservice.ExOwsLoginCredentials;
 import com.amx.service_provider.homesend.HomesendGate;
+import com.amx.service_provider.repository.webservice.ExOwsLoginCredentialsRepository;
+import com.amx.service_provider.repository.webservice.OwsParamRespcodeRepository;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
+// @EntityScan("com.amx.jax.dbmodel.webservice")
+// @EnableJpaRepositories("com.amx.jax.dbmodel.webservice")
+// @ComponentScan(basePackages = { "com.amx.jax.dbmodel.webservice" })
 public class ServiceProviderManger implements IServiceProvider
 {
 	// Fetching access details
 	@Autowired
-	ExOwsLoginCredentialsRepository exOwsLoginCredentialsRepository;
+	com.amx.service_provider.repository.webservice.ExOwsLoginCredentialsRepository exOwsLoginCredentialsRepository;
+	
+	@Autowired
+	private OwsParamRespcodeRepository owsParamRespcodeRepository;
 
-	public ServiceProviderResponse getQutation(TransactionData txn_data, Customer customer_data, Benificiary bene_data)
+	public ServiceProviderResponse getQutation(ServiceProviderCallRequestDto quatationRequestDto)
 	{
 		ServiceProviderResponse response = new ServiceProviderResponse();
 
@@ -39,6 +46,11 @@ public class ServiceProviderManger implements IServiceProvider
 
 		// Initial validation to validate the key fields require to identify the other
 		// validation rules
+
+		TransactionData txn_data = quatationRequestDto.getTransactionDto();
+		Customer customer_data = quatationRequestDto.getCustomerDto();
+		Benificiary bene_data = quatationRequestDto.getBeneficiaryDto();
+
 		HashMap<String, String> validate_inputs_result = validate_initial_inputs(
 				txn_data.getApplication_country_3_digit_ISO(),
 				txn_data.getDestination_country_3_digit_ISO(),
@@ -55,7 +67,7 @@ public class ServiceProviderManger implements IServiceProvider
 
 			if (validate_inputs_result.isEmpty() == true) // No validation issues in getQutation inputs
 			{
-				ExOwsLoginCredentials owsLoginCredentialsObject = exOwsLoginCredentialsRepository
+				com.amx.service_provider.dbmodel.webservice.ExOwsLoginCredentials owsLoginCredentialsObject = exOwsLoginCredentialsRepository
 						.findByApplicationCountryAndBankCode(txn_data.getApplication_country_3_digit_ISO(),
 								txn_data.getRoutting_bank_code());
 
@@ -67,7 +79,8 @@ public class ServiceProviderManger implements IServiceProvider
 							owsLoginCredentialsObject.getWsUserName()/* api_login */,
 							owsLoginCredentialsObject.getWsPassword()/* api_password */,
 							owsLoginCredentialsObject.getWsAgentId()/* vendor_id */,
-							owsLoginCredentialsObject.getFlexiField1()/* api_url */);
+							owsLoginCredentialsObject.getFlexiField1()/* api_url */,
+							owsParamRespcodeRepository);
 
 					// Calling the quotation service
 					response = homesend_service.getQuotation(txn_data.getSettlement_amount(),
@@ -91,8 +104,7 @@ public class ServiceProviderManger implements IServiceProvider
 							txn_data.getRequest_sequence_id(),
 							txn_data.getRemittance_mode(),
 							txn_data.getDelivery_mode());
-					
-					
+
 				}
 				else if (txn_data.getRoutting_bank_code().equals("WU")) // Western Union
 				{
@@ -113,11 +125,14 @@ public class ServiceProviderManger implements IServiceProvider
 		return response;
 	}
 
-	public ServiceProviderResponse sendRemittance(TransactionData txn_data, Customer customer_data,
-			Benificiary bene_data)
+	public ServiceProviderResponse sendRemittance(ServiceProviderCallRequestDto sendRemittanceRequestDto)
 	{
 		ServiceProviderResponse response = new ServiceProviderResponse();
 		// TODO: Validate the input for before calling the service
+
+		TransactionData txn_data = sendRemittanceRequestDto.getTransactionDto();
+		Customer customer_data = sendRemittanceRequestDto.getCustomerDto();
+		Benificiary bene_data = sendRemittanceRequestDto.getBeneficiaryDto();
 
 		// Initial validation to validate the key fields require to identify the other
 		// validation rules
@@ -149,7 +164,8 @@ public class ServiceProviderManger implements IServiceProvider
 							owsLoginCredentialsObject.getWsUserName()/* api_login */,
 							owsLoginCredentialsObject.getWsPassword()/* api_password */,
 							owsLoginCredentialsObject.getWsAgentId()/* vendor_id */,
-							owsLoginCredentialsObject.getFlexiField1()/* api_url */);
+							owsLoginCredentialsObject.getFlexiField1()/* api_url */,
+							owsParamRespcodeRepository);
 
 					// Calling the send remittance service
 					response = homesend_service.send_remittance(txn_data, customer_data, bene_data);

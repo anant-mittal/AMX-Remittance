@@ -424,7 +424,7 @@ public class HomesendUtils
 	public static ArrayList<VendorSpecificField> form_remittance_vsf_list(TransactionData txn_data,
 			Customer customer_data, Benificiary bene_data, String api_login)
 	{
-		final String props_PATH = "com.amg.model.config.HomeSend_filed_code_mapping";
+		final String props_PATH = "com.amx.service_provider.config.Homesend_fileds_code_mapping";
 		UnsignedInt VENDOR_ID;
 		ResourceBundle props = ResourceBundle.getBundle(props_PATH);
 		ArrayList<VendorSpecificField> vsf_list = new ArrayList<VendorSpecificField>();

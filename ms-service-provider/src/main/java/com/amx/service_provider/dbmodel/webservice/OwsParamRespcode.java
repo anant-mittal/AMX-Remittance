@@ -1,4 +1,4 @@
-package com.amx.jax.dbmodel.webservice;
+package com.amx.service_provider.dbmodel.webservice;
 
 import java.io.Serializable;
 

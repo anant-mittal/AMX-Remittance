@@ -8,9 +8,7 @@ import org.springframework.stereotype.Component;
 import com.amx.jax.AppConfig;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.exception.JaxSystemError;
-import com.amx.jax.model.request.serviceprovider.Benificiary;
-import com.amx.jax.model.request.serviceprovider.Customer;
-import com.amx.jax.model.request.serviceprovider.TransactionData;
+import com.amx.jax.model.request.serviceprovider.ServiceProviderCallRequestDto;
 import com.amx.jax.model.response.serviceprovider.ServiceProviderResponse;
 import com.amx.jax.rest.RestService;
 
@@ -27,13 +25,12 @@ public class ServiceProviderClient implements IServiceProviderService
 	AppConfig appConfig;
 
 	@Override
-	public AmxApiResponse<ServiceProviderResponse, Object> getQuatation(TransactionData txn_data,
-			Customer customer_data, Benificiary bene_data)
+	public AmxApiResponse<ServiceProviderResponse, Object> getQuatation(ServiceProviderCallRequestDto quatationRequestDto)
 	{
 		try
 		{
 			LOGGER.debug("in get quataion :");
-			return restService.ajax(appConfig.getJaxURL() + Path.GET_QUATATION).get()
+			return restService.ajax(appConfig.getJaxURL() + Path.GET_QUATATION).post()
 					.as(new ParameterizedTypeReference<AmxApiResponse<ServiceProviderResponse, Object>>()
 					{
 					});
@@ -46,8 +43,7 @@ public class ServiceProviderClient implements IServiceProviderService
 	}
 
 	@Override
-	public AmxApiResponse<ServiceProviderResponse, Object> sendRemittance(TransactionData txn_data,
-			Customer customer_data, Benificiary bene_data)
+	public AmxApiResponse<ServiceProviderResponse, Object> sendRemittance(ServiceProviderCallRequestDto sendRemittanceRequestDto)
 	{
 		try
 		{
