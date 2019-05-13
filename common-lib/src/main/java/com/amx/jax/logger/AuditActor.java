@@ -1,7 +1,13 @@
 package com.amx.jax.logger;
 
 import com.amx.utils.ArgUtil;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+@JsonInclude(Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class AuditActor {
 
 	public static enum ActorType {
@@ -19,7 +25,10 @@ public class AuditActor {
 		}
 	}
 
+	@JsonProperty("type")
 	ActorType actorType;
+
+	@JsonProperty("id")
 	String actorId;
 
 	public AuditActor(ActorType actorType, Object actorId) {

@@ -22,7 +22,7 @@ public class CActivityEvent extends AuditEvent {
 
 		APPLICATION_CREATED, APPLICATION_UPDATE,
 
-		FC_UPDATE,TRANSACTION_CREATED
+		FC_UPDATE, TRANSACTION_CREATED
 //
 		;
 
@@ -57,9 +57,9 @@ public class CActivityEvent extends AuditEvent {
 	private String field = null;
 	private String fromValue = null;
 	private String toValue = null;
-	private String actor = null;
 	private BigDecimal customerId = null;
 	private String customer = null;
+	private AuditActorInfo actor;
 
 	@Override
 	public String getDescription() {
@@ -82,11 +82,11 @@ public class CActivityEvent extends AuditEvent {
 		this.toValue = toValue;
 	}
 
-	public String getActor() {
+	public AuditActorInfo getActor() {
 		return actor;
 	}
 
-	public void setActor(String actor) {
+	public void setActor(AuditActorInfo actor) {
 		this.actor = actor;
 	}
 

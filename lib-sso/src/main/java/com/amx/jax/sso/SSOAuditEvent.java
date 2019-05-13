@@ -2,12 +2,11 @@ package com.amx.jax.sso;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.Map;
 
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.logger.AuditEvent;
+import com.amx.jax.logger.events.AuditActorInfo;
 import com.amx.utils.ArgUtil;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -79,42 +78,47 @@ public class SSOAuditEvent extends AuditEvent {
 	}
 
 	private SSOAuditData auth;
-	Map<String, Object> branch;
+	private AuditActorInfo actor;
 
 	public SSOAuditEvent(Type eventType) {
 		super(eventType);
 		this.auth = new SSOAuditData();
-		this.branch = new HashMap<String, Object>();
+		this.actor = new AuditActorInfo();
 	}
 
 	public SSOAuditEvent(Type eventType, Result result) {
 		super(eventType, result);
 		this.auth = new SSOAuditData();
-		this.branch = new HashMap<String, Object>();
+		this.actor = new AuditActorInfo();
 	}
 
 	public SSOAuditEvent identity(Object identity) {
 		this.auth.setIdentity(ArgUtil.parseAsString(identity));
+		this.actor.setIdentity(ArgUtil.parseAsString(identity));
 		return this;
 	}
 
 	public SSOAuditEvent empno(Object empno) {
 		this.auth.setEmpno(ArgUtil.parseAsString(empno));
+		this.actor.setEmpno(ArgUtil.parseAsString(empno));
 		return this;
 	}
 
 	public SSOAuditEvent terminalId(Object terminalId) {
 		this.auth.setTerminalId(ArgUtil.parseAsString(terminalId));
+		this.actor.setTerminalId(ArgUtil.parseAsString(terminalId));
 		return this;
 	}
 
 	public SSOAuditEvent terminalIp(Object terminalIp) {
 		this.auth.setTerminalIp(ArgUtil.parseAsString(terminalIp));
+		this.actor.setTerminalIp(ArgUtil.parseAsString(terminalIp));
 		return this;
 	}
 
 	public SSOAuditEvent deviceRegId(Object deviceRegId) {
 		this.auth.setDeviceRegId(ArgUtil.parseAsString(deviceRegId));
+		this.actor.setDeviceRegId(ArgUtil.parseAsString(deviceRegId));
 		return this;
 	}
 
@@ -124,22 +128,22 @@ public class SSOAuditEvent extends AuditEvent {
 	}
 
 	public SSOAuditEvent branchId(BigDecimal branchId) {
-		this.branch.put("id", branchId);
+		this.actor.setBranchId(branchId);
 		return this;
 	}
 
-	public SSOAuditEvent branchUser(String branchUser) {
-		this.branch.put("user", branchUser);
+	public SSOAuditEvent branchUser(String username) {
+		this.actor.setUsername(username);
 		return this;
 	}
 
 	public SSOAuditEvent branchName(String branchName) {
-		this.branch.put("name", branchName);
+		this.actor.setBranchName(branchName);
 		return this;
 	}
 
 	public SSOAuditEvent branchArea(String branchArea) {
-		this.branch.put("area", branchArea);
+		this.actor.setAreaName(branchArea);
 		return this;
 	}
 
