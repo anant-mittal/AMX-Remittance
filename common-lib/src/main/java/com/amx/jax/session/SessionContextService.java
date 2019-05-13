@@ -3,6 +3,8 @@ package com.amx.jax.session;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -11,6 +13,8 @@ import com.amx.utils.JsonUtil;
 
 @Component
 public class SessionContextService {
+
+	private Logger log = LoggerFactory.getLogger(getClass());
 
 	@Autowired(required = false)
 	private SessionContextCache sessionContextCache;
@@ -31,7 +35,11 @@ public class SessionContextService {
 
 	public <T> T getContext(Class<T> toValueType) {
 		if (sessionContextCache != null) {
-			return JsonUtil.toObject(sessionContextCache.getContext(), toValueType);
+			try {
+				return JsonUtil.toObject(sessionContextCache.getContext(), toValueType);
+			} catch (Exception e) {
+				log.error("Unable to fetch from Redis Session Context");
+			}
 		}
 		return JsonUtil.toObject(new HashMap<String, Object>(), toValueType);
 	}
