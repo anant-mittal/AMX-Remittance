@@ -44,7 +44,15 @@ public class OnlineCustomerManager {
 		// send otp when update is needed
 		if (customerOnlineRegistration.getSecurityQuestion1() != null
 				&& customerOnlineRegistration.getSecurityAnswer1() != null) {
-			customerAuthManager.validateAndSendOtp(Arrays.asList(ContactType.SMS));
+			userValidationService.validateCustomerLockCount(customerOnlineRegistration);
+			try {
+				customerAuthManager.validateAndSendOtp(Arrays.asList(ContactType.SMS));
+			} catch (GlobalException ex) {
+				if (JaxError.INVALID_OTP.equals(ex.getError())) {
+					userValidationService.incrementLockCount(customerOnlineRegistration);
+				}
+				throw ex;
+			}
 		}
 		userService.simplifyAnswers(securityQuestions);
 		custDao.setSecurityQuestions(securityQuestions, customerOnlineRegistration);
