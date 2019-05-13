@@ -242,7 +242,7 @@ public class JaxService implements IMetaRequestOutFilter<JaxMetaInfo>, AppReques
 
 	@Override
 	public AuditActor getActor() {
-		return new AuditActor(sessionService.getUserSession().isValid() ? AuditActor.ActorType.CUSTOMER
+		return new AuditActor(sessionService.getUserSession().isValid() ? AuditActor.ActorType.CSTMR
 				: AuditActor.ActorType.GUEST, sessionService.getUserSession().getUserid());
 	}
 

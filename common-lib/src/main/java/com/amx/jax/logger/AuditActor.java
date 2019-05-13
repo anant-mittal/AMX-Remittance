@@ -12,7 +12,7 @@ public class AuditActor {
 
 	public static enum ActorType {
 
-		GUEST("G"), CUSTOMER("C"), EMPLOYEE("E");
+		GUEST("G"), CSTMR("C"), EMP("E");
 		String shortName;
 
 		ActorType(String shortName) {

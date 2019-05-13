@@ -61,6 +61,6 @@ public class OffsiteMetaOutFilter implements IMetaRequestOutFilter<JaxMetaInfo>,
 
 	@Override
 	public AuditActor getActor() {
-		return new AuditActor(AuditActor.ActorType.EMPLOYEE, getCustomerId());
+		return new AuditActor(AuditActor.ActorType.EMP, getCustomerId());
 	}
 }
