@@ -60,6 +60,7 @@ public class CActivityEvent extends AuditEvent {
 	private BigDecimal customerId = null;
 	private String customer = null;
 	private AuditActorInfo actor;
+	private RemitInfo trxn = null;
 
 	@Override
 	public String getDescription() {
@@ -136,6 +137,11 @@ public class CActivityEvent extends AuditEvent {
 		return this;
 	}
 
+	public CActivityEvent set(RemitInfo remit) {
+		this.trxn = remit;
+		return this;
+	}
+
 	public String getTarget() {
 		return target;
 	}
@@ -166,6 +172,14 @@ public class CActivityEvent extends AuditEvent {
 					: String.format("%s;%s", oldStr, newStr);
 		}
 		return oldStr;
+	}
+
+	public RemitInfo getTrxn() {
+		return trxn;
+	}
+
+	public void setTrxn(RemitInfo trxn) {
+		this.trxn = trxn;
 	}
 
 }
