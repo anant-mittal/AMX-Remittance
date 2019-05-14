@@ -467,7 +467,7 @@ public class ReportManagerService extends AbstractService{
 
 					
 				} catch (Exception e) {
-					logger.info( "Exception Occured While Report2 "+e.printStackTrace());
+					logger.info( "Exception Occured While Report2 "+e.getMessage());
 					throw new GlobalException(ResponseStatus.NOT_FOUND.toString());
 				
 				}
