@@ -201,7 +201,7 @@ public class LoginService {
 				sessionService.getGuestSession().getState().isFlow(AuthState.AuthFlow.LOGIN)
 						|| sessionService.getUserSession().isValid());
 
-		AuditActorInfo actor = new AuditActorInfo(AuditActor.ActorType.CSTMR, customerModel.getCustomerId());
+		AuditActorInfo actor = new AuditActorInfo(AuditActor.ActorType.CUSTOMER, customerModel.getCustomerId());
 		sessionContextService.setContext(actor);
 
 		if (sessionService.getGuestSession().getState().isFlow(AuthState.AuthFlow.LOGIN)) {
