@@ -16,10 +16,9 @@ public class SSOAuditEvent extends AuditEvent {
 	private static final long serialVersionUID = 3330563732707068857L;
 
 	public static enum Type implements EventType {
-		DEVICE_PAIR, DEVICE_SESSION_CREATED, DEVICE_SESSION_PAIR, SESSION_TERMINAL_MAP, CARD_SCANNED,
-		LOGIN_INIT, LOGIN_OTP, ACTIVE
-
-		;
+		DEVICE_PAIR, DEVICE_SESSION_CREATED, DEVICE_SESSION_PAIR, SESSION_TERMINAL_MAP,
+		CARD_SCANNED,
+		LOGIN_INIT, LOGIN_OTP, ACTIVE;
 		@Override
 		public EventMarker marker() {
 			return EventMarker.NOTICE;
