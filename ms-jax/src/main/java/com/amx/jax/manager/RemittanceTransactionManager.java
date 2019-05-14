@@ -78,6 +78,7 @@ import com.amx.jax.exrateservice.service.NewExchangeRateService;
 import com.amx.jax.logger.AuditEvent.Result;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.events.CActivityEvent;
+import com.amx.jax.logger.events.RemitInfo;
 import com.amx.jax.logger.events.CActivityEvent.Type;
 import com.amx.jax.manager.remittance.CorporateDiscountManager;
 import com.amx.jax.manager.remittance.RemittanceAdditionalFieldManager;
@@ -859,8 +860,11 @@ public class RemittanceTransactionManager {
 
 		auditService.log(new CActivityEvent(Type.APPLICATION_CREATED,
 				String.format("%s/%s", remiteAppModel.getDocumentFinancialYear(),
-						remiteAppModel.getDocumentIdForPayment())).field("STATUS")
-								.to(JaxTransactionStatus.APPLICATION_CREATED).result(Result.DONE));
+						remiteAppModel.getDocumentIdForPayment()))
+				.field("STATUS").to(JaxTransactionStatus.APPLICATION_CREATED)
+				.set(new RemitInfo(remittanceApplication.getRemittanceApplicationId(), remittanceApplication.getLocalTranxAmount()))
+				.result(Result.DONE));
+		
 		return remiteAppModel;
 
 	}

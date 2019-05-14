@@ -14,11 +14,14 @@ import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.logger.AuditActor;
 import com.amx.jax.logger.AuditService;
+import com.amx.jax.logger.events.AuditActorInfo;
 import com.amx.jax.model.AuthState;
 import com.amx.jax.model.AuthState.AuthStep;
 import com.amx.jax.model.auth.QuestModelDTO;
 import com.amx.jax.model.customer.SecurityQuestionModel;
+import com.amx.jax.session.SessionContextService;
 import com.amx.jax.ui.audit.CAuthEvent;
 import com.amx.jax.ui.config.HttpUnauthorizedException;
 import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
@@ -58,6 +61,9 @@ public class LoginService {
 
 	@Autowired
 	private UserService userService;
+
+	@Autowired
+	SessionContextService sessionContextService;
 
 	/**
 	 * Login.
@@ -192,14 +198,17 @@ public class LoginService {
 		 * consideration
 		 */
 		sessionService.authorize(customerModel,
-				sessionService.getGuestSession().getState().isFlow(AuthState.AuthFlow.LOGIN));
+				sessionService.getGuestSession().getState().isFlow(AuthState.AuthFlow.LOGIN)
+						|| sessionService.getUserSession().isValid());
+
+		AuditActorInfo actor = new AuditActorInfo(AuditActor.ActorType.CSTMR, customerModel.getCustomerId());
+		sessionContextService.setContext(actor);
 
 		if (sessionService.getGuestSession().getState().isFlow(AuthState.AuthFlow.LOGIN)) {
 			jaxService.setDefaults().getUserclient().customerLoggedIn(sessionService.getAppDevice().getUserDevice());
 			wrapper.setRedirectUrl(sessionService.getGuestSession().getReturnUrl());
 			sessionService.getGuestSession().setReturnUrl(null);
 		}
-
 		userService.updateCustoemrModel();
 
 		wrapper.setMessage(OWAStatusStatusCodes.AUTH_DONE, ResponseMessage.AUTH_SUCCESS);

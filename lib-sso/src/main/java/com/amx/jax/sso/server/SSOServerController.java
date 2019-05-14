@@ -36,9 +36,11 @@ import com.amx.jax.http.ApiRequest;
 import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.http.CommonHttpRequest.CommonMediaType;
 import com.amx.jax.http.RequestType;
+import com.amx.jax.logger.AuditActor;
 import com.amx.jax.logger.AuditEvent.Result;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.LoggerService;
+import com.amx.jax.logger.events.AuditActorInfo;
 import com.amx.jax.rbaac.RbaacServiceClient;
 import com.amx.jax.rbaac.constants.RbaacServiceConstants.LOGIN_TYPE;
 import com.amx.jax.rbaac.dto.UserClientDto;
@@ -46,6 +48,7 @@ import com.amx.jax.rbaac.dto.request.UserAuthInitReqDTO;
 import com.amx.jax.rbaac.dto.request.UserAuthorisationReqDTO;
 import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
 import com.amx.jax.rbaac.dto.response.UserAuthInitResponseDTO;
+import com.amx.jax.session.SessionContextService;
 import com.amx.jax.sso.SSOAuditEvent;
 import com.amx.jax.sso.SSOConfig;
 import com.amx.jax.sso.SSOConstants;
@@ -93,6 +96,9 @@ public class SSOServerController {
 
 	@Autowired
 	private AuditService auditService;
+
+	@Autowired
+	private SessionContextService sessionContextService;
 
 	private Map<String, Object> getModelMap() {
 		ssoUser.ssoTranxId();
@@ -277,6 +283,18 @@ public class SSOServerController {
 
 					EmployeeDetailsDTO empDto = rbaacServiceClient.authoriseUser(auth).getResult();
 					sSOTranx.setUserDetails(empDto);
+
+					/** <Save Session Info on Shared Context across microservices */
+					AuditActorInfo actor = new AuditActorInfo(AuditActor.ActorType.EMP,
+							empDto.getEmployeeId());
+					actor.setBranchId(empDto.getCountryBranchId());
+					actor.setBranchName(empDto.getBranchName());
+					actor.setAreaName(empDto.getArea());
+					actor.setAreaId(empDto.getAreaCode());
+					actor.setUsername(empDto.getUserName());
+					actor.setEmpno(empDto.getEmployeeNumber());
+					sessionContextService.setContext(actor);
+					/*** ends> */
 
 					String redirectUrl = Urly.parse(
 							ArgUtil.ifNotEmpty(sSOTranx.get().getAppUrl(),
