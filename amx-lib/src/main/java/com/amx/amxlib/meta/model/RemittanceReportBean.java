@@ -3,6 +3,8 @@ package com.amx.amxlib.meta.model;
 import java.math.BigDecimal;
 import java.util.List;
 
+
+
 import com.amx.amxlib.model.PromotionDto;
 
 
@@ -109,6 +111,13 @@ public class RemittanceReportBean {
 	private String specialKwdAmount;
 	private String vatNumber;
 	private String vatDate;
+	
+
+	private String vatType;
+	private BigDecimal vatPercentage;
+	private BigDecimal vatAmount;
+	
+	private String customerVatNumber;
 	
 	public Boolean getDrawLine() {
 		return drawLine;
@@ -800,6 +809,38 @@ public class RemittanceReportBean {
 
 	public void setVatDate(String vatDate) {
 		this.vatDate = vatDate;
+	}
+
+	public String getVatType() {
+		return vatType;
+	}
+
+	public void setVatType(String vatType) {
+		this.vatType = vatType;
+	}
+
+	public BigDecimal getVatPercentage() {
+		return vatPercentage;
+	}
+
+	public void setVatPercentage(BigDecimal vatPercentage) {
+		this.vatPercentage = vatPercentage;
+	}
+
+	public BigDecimal getVatAmount() {
+		return vatAmount;
+	}
+
+	public void setVatAmount(BigDecimal vatAmount) {
+		this.vatAmount = vatAmount;
+	}
+
+	public String getCustomerVatNumber() {
+		return customerVatNumber;
+	}
+
+	public void setCustomerVatNumber(String customerVatNumber) {
+		this.customerVatNumber = customerVatNumber;
 	}	
 
 }

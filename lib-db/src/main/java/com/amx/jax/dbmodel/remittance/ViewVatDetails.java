@@ -25,7 +25,7 @@ public class ViewVatDetails implements Serializable{
 	private static final long serialVersionUID = -7426933595030820956L;
 
 
-
+	
 	@Column(name="VAT_MASTER_ID")
 	private BigDecimal vatmasterId;
 	
@@ -33,7 +33,7 @@ public class ViewVatDetails implements Serializable{
 	@Column(name="VAT_MASTER_DETAIL_ID")
 	private BigDecimal vatmasterDetailId;
 	
-	@Column(name="VAT_PERCENTAG")
+	@Column(name="VAT_PERCENTAGE")
 	private BigDecimal vatPercentage;
 	
 	@Column(name="ROUND_OFF")

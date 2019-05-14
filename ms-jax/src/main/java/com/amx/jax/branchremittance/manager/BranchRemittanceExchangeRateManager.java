@@ -7,6 +7,7 @@ import static com.amx.amxlib.constant.ApplicationProcedureParam.P_ROUTING_BANK_I
 import static com.amx.amxlib.constant.ApplicationProcedureParam.P_ROUTING_COUNTRY_ID;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -358,14 +359,16 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 		if(JaxUtil.isNullZeroBigDecimalCheck(commission) && commission.compareTo(BigDecimal.ZERO)>0) {
 		if(!StringUtils.isBlank(vatAppliable) && vatAppliable.equalsIgnoreCase(ConstantDocument.Yes) ) {
 			vatDetails.setVatApplicable(vatAppliable);
-			if(JaxUtil.isNullZeroBigDecimalCheck(vatDetails.getVatPercentage())) {
-				BigDecimal vatAmount = BigDecimal.ZERO;
+			if(JaxUtil.isNullZeroBigDecimalCheck(vatDetails.getVatPercentage()) && vatDetails.getVatPercentage().compareTo(BigDecimal.ZERO)>0) {
+				BigDecimal BIG_HUNDRED = new BigDecimal(100);
+				BigDecimal vatAmount =BigDecimal.ZERO;
 				if(!StringUtils.isBlank(vatDetails.getCalculatuonType()) && vatDetails.getCalculatuonType().equalsIgnoreCase(ConstantDocument.VAT_CALCULATION_TYPE_INCLUDE)) {
-					vatAmount = commission.multiply(RoundUtil.roundBigDecimal(vatDetails.getVatPercentage().divide(BigDecimal.ZERO),vatDetails.getRoudingOff().intValue()));
-					vatDetails.setVatAmount(vatAmount);
-					vatDetails.setCommission(commission.subtract(vatAmount));
+					vatAmount = RoundUtil.roundBigDecimal(((new BigDecimal(commission.doubleValue()/((vatDetails.getVatPercentage().add(BIG_HUNDRED)).doubleValue())).multiply(BIG_HUNDRED))), vatDetails.getRoudingOff().intValue());
+					vatDetails.setVatAmount(commission.subtract(vatAmount));
+					vatDetails.setCommission(commission);
 				}else {
-					vatAmount = commission.multiply(RoundUtil.roundBigDecimal(vatDetails.getVatPercentage().divide(BigDecimal.ZERO),vatDetails.getRoudingOff().intValue()));
+					vatAmount = commission.multiply(RoundUtil.roundBigDecimal(vatDetails.getVatPercentage().divide(BIG_HUNDRED),vatDetails.getRoudingOff().intValue()));
+					vatDetails.setVatAmount(vatAmount);
 					vatDetails.setCommission(commission.add(vatAmount));
 				}
 			}
