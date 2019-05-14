@@ -179,12 +179,16 @@ public class FBPushServiceImpl implements IPushNotifyService {
 					this.send(PMGaugeEvent.Type.NOTIFCATION_ANDROID, androidTopic.toString(), msg, msg.getMessage());
 					this.send(PMGaugeEvent.Type.NOTIFCATION_IOS, iosTopic.toString(), msg, msg.getMessage());
 					this.send(PMGaugeEvent.Type.NOTIFCATION_WEB, webTopic.toString(), msg, msg.getMessage());
+					userMessageEvent.setMessage(msg.getMessage());
+					tunnelService.task(userMessageEvent);
 				}
 				if (msg.getLines() != null) {
 					for (String message : msg.getLines()) {
 						this.send(PMGaugeEvent.Type.NOTIFCATION_ANDROID, androidTopic.toString(), msg, message);
 						this.send(PMGaugeEvent.Type.NOTIFCATION_IOS, iosTopic.toString(), msg, message);
 						this.send(PMGaugeEvent.Type.NOTIFCATION_WEB, webTopic.toString(), msg, message);
+						userMessageEvent.setMessage(message);
+						tunnelService.task(userMessageEvent);
 					}
 				}
 			}
