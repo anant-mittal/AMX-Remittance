@@ -49,7 +49,7 @@ public class AppParamController {
 	@Autowired
 	AppTenantConfig appTenantConfig;
 
-	@ApiRequest(type = RequestType.PING)
+	@ApiRequest(type = RequestType.NO_TRACK_PING)
 	@RequestMapping(value = PARAM_URL, method = RequestMethod.GET)
 	public AppParam[] geoLocation(@RequestParam(required = false) AppParam id) {
 		if (id != null) {
@@ -105,8 +105,8 @@ public class AppParamController {
 		map.put("hmac", builder.toHMAC().output());
 		map.put("numeric", builder.toNumeric(length).output());
 		map.put("complex", builder.toComplex(length).output());
-		if(!ArgUtil.isEmpty(complexHash)) {
-			map.put("valid", "" + builder.validateComplexHMAC(complexHash));			
+		if (!ArgUtil.isEmpty(complexHash)) {
+			map.put("valid", "" + builder.validateComplexHMAC(complexHash));
 		}
 
 		return map;
