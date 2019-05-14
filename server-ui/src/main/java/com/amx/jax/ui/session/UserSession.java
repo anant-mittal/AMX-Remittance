@@ -82,7 +82,7 @@ public class UserSession implements Serializable {
 	public void setCustomerModel(CustomerModel customerModel) {
 		this.customerModel = customerModel;
 		if (customerModel != null) {
-			AppContextUtil.setActorId(new AuditActor(AuditActor.ActorType.CUSTOMER, customerModel.getCustomerId()));
+			AppContextUtil.setActorId(new AuditActor(AuditActor.ActorType.CSTMR, customerModel.getCustomerId()));
 		}
 	}
 

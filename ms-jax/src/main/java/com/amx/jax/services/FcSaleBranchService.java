@@ -764,6 +764,9 @@ public class FcSaleBranchService extends AbstractService{
 			fcDeliveryBranchOrderSearchRequest.setOrderStatusCode(orderStatusDetails.getStatusCode());	
 		}if(fcDeliveryBranchOrderSearchRequest.getCivilId()==null && fcDeliveryBranchOrderSearchRequest.getCountryBranchName()==null && fcDeliveryBranchOrderSearchRequest.getOrderId()==null && fcDeliveryBranchOrderSearchRequest.getOrderStatus()==null) {
 			fxOrderTransactionHistroyDto=fcDeliveryOrdersearchManager.searchOrderWithOutParams();
+			if(fxOrderTransactionHistroyDto==null) {
+				throw new GlobalException(JaxError.NO_RECORDS_FOUND,"No Records found");
+			}
 		}else {
 		
 		fxOrderTransactionHistroyDto =fcDeliveryOrdersearchManager.searchOrder(fcDeliveryBranchOrderSearchRequest);
