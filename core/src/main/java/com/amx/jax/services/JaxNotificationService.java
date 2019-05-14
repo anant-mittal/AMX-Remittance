@@ -31,12 +31,14 @@ import com.amx.jax.model.response.fx.FxOrderDetailNotificationDto;
 import com.amx.jax.model.response.fx.FxOrderReportResponseDto;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
+import com.amx.jax.postman.client.WhatsAppClient;
 import com.amx.jax.postman.model.ChangeType;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.Message;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.TemplatesMX;
+import com.amx.jax.postman.model.WAMessage;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.utils.CollectionUtil;
 
@@ -46,7 +48,10 @@ public class JaxNotificationService {
 
 	@Autowired
 	private PostManService postManService;
-	
+
+	@Autowired
+	private WhatsAppClient whatsAppClient;
+
 	@Autowired
 	JaxNotificationService jaxNotificationService;
 
@@ -63,8 +68,8 @@ public class JaxNotificationService {
 			email.setSubject("Your transaction on AMX is successful");
 		} else if (TenantContextHolder.currentSite().equals(Tenant.BHR)) {
 			email.setSubject("Your transaction on MEC is successful");
-		}else if (TenantContextHolder.currentSite().equals(Tenant.OMN)) {
-		    email.setSubject("Your transaction on Modern Exchange - Oman is successful");
+		} else if (TenantContextHolder.currentSite().equals(Tenant.OMN)) {
+			email.setSubject("Your transaction on Modern Exchange - Oman is successful");
 		}
 
 		email.addTo(pinfo.getEmail());
@@ -126,15 +131,15 @@ public class JaxNotificationService {
 			email.getModel().put("change_type", ChangeType.IMAGE_CHANGE);
 
 		} else if (customerModel.getMobile() != null) {
-			
+
 			email.getModel().put("change_type", ChangeType.MOBILE_CHANGE);
 
-		}  else if (customerModel.getEmail() != null) {
-			
+		} else if (customerModel.getEmail() != null) {
+
 			email.getModel().put("change_type", ChangeType.EMAIL_CHANGE);
 
 			emailToOld = new Email();
-			
+
 			emailToOld.getModel().put("change_type", ChangeType.EMAIL_CHANGE);
 			emailToOld.addTo(customerModel.getEmail());
 			emailToOld.setITemplate(TemplatesMX.EMAIL_CHANGE_OLD_EMAIL);
@@ -160,8 +165,9 @@ public class JaxNotificationService {
 		logger.info("Email to - " + pinfo.getEmail() + " first name : " + pinfo.getFirstName());
 		sendEmail(email);
 	} // end of sendProfileChangeNotificationEmail
-	
-	public void sendProfileChangeNotificationMobile(CustomerModel customerModel, PersonInfo personinfo, String oldMobile) {
+
+	public void sendProfileChangeNotificationMobile(CustomerModel customerModel, PersonInfo personinfo,
+			String oldMobile) {
 		if (customerModel.getMobile() != null) {
 			SMS smsOld = new SMS();
 			// to new and old
@@ -192,10 +198,27 @@ public class JaxNotificationService {
 	public void sendOtpSms(PersonInfo pinfo, CivilIdOtpModel model) {
 		sendOtpSms(pinfo, model, TemplatesMX.RESET_OTP_SMS);
 	}
-	
+
 	public void sendOtpWhatsApp(PersonInfo pinfo, CivilIdOtpModel model) {
-		//sendOtpSms(pinfo, model, TemplatesMX.RESET_OTP_SMS);
+		// sendOtpSms(pinfo, model, TemplatesMX.RESET_OTP_SMS);
 	}
+
+	public void sendOtpWhatsApp(PersonInfo pinfo, CivilIdOtpModel model, TemplatesMX templateMX) {
+
+		logger.info(String.format("Sending OTP SMS to customer :%s on mobile_no :%s  ", pinfo.getFirstName(),
+				pinfo.getMobile()));
+
+		WAMessage sms = new WAMessage();
+		sms.addTo(pinfo.getMobile());
+		sms.getModel().put(RESP_DATA_KEY, model);
+		sms.setITemplate(templateMX);
+
+		try {
+			whatsAppClient.send(sms);
+		} catch (PostManException e) {
+			logger.error("error in sendOtpSms", e);
+		}
+	} // end of sendOtpSms
 
 	public void sendOtpSms(PersonInfo pinfo, CivilIdOtpModel model, TemplatesMX templateMX) {
 
@@ -254,7 +277,7 @@ public class JaxNotificationService {
 		logger.info("Email to - " + pinfo.getEmail() + " first name : " + pinfo.getFirstName());
 		sendEmail(email);
 	}
-	
+
 	@Async
 	public void sendEmail(Email email) {
 		try {
@@ -328,8 +351,7 @@ public class JaxNotificationService {
 			logger.error("error in sendOtpSms", e);
 		}
 	} // end of sendOtpSms
-	
-	
+
 	public String sendEmailChangeSubject() {
 
 		if (TenantContextHolder.currentSite().equals(Tenant.KWT)) {
