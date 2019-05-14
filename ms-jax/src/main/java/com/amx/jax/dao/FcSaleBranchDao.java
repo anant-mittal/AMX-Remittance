@@ -466,5 +466,10 @@ public class FcSaleBranchDao {
 		Iterable<FxOrderTransactionModel> fxOrdersItr = fxOrderTransactionRespository.findAll(predicate);
 		return Lists.newArrayList(fxOrdersItr);
 	}
+	
+	public List<FxOrderTransactionModel>searchOrderWithoutParams(){
+		return fxOrderTransactionRespository.searchOrderWithoutParams();
+	}
 
+	
 }

@@ -739,7 +739,7 @@ public class FcSaleBranchService extends AbstractService{
 	}
 	
 	public AmxApiResponse<FxOrderTransactionHistroyDto, Object> searchOrder(
-			FcDeliveryBranchOrderSearchRequest fcDeliveryBranchOrderSearchRequest) {
+			FcDeliveryBranchOrderSearchRequest fcDeliveryBranchOrderSearchRequest){
 		List<FxOrderTransactionHistroyDto> fxOrderTransactionHistroyDto = new ArrayList<>();
 		logger.debug("FcDeliveryBranchOrderSearchRequest:"+fcDeliveryBranchOrderSearchRequest.toString());
 		AmxApiResponse<FxOrderTransactionHistroyDto, Object> result = null;
@@ -762,9 +762,13 @@ public class FcSaleBranchService extends AbstractService{
 			StatusMaster orderStatusDetails = statusMasterManager
 					.getOrderStatusValue(fcDeliveryBranchOrderSearchRequest.getOrderStatus());
 			fcDeliveryBranchOrderSearchRequest.setOrderStatusCode(orderStatusDetails.getStatusCode());	
-		}
+		}if(fcDeliveryBranchOrderSearchRequest.getCivilId()==null && fcDeliveryBranchOrderSearchRequest.getCountryBranchName()==null && fcDeliveryBranchOrderSearchRequest.getOrderId()==null && fcDeliveryBranchOrderSearchRequest.getOrderStatus()==null) {
+			fxOrderTransactionHistroyDto=fcDeliveryOrdersearchManager.searchOrderWithOutParams();
+		}else {
+		
 		fxOrderTransactionHistroyDto =fcDeliveryOrdersearchManager.searchOrder(fcDeliveryBranchOrderSearchRequest);
 	
+		}
 		result = AmxApiResponse.buildList(fxOrderTransactionHistroyDto);
 		return result;
 	}
