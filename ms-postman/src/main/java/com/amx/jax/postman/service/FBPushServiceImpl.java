@@ -192,7 +192,7 @@ public class FBPushServiceImpl implements IPushNotifyService {
 					}
 				}
 			}
-			tunnelService.task(userMessageEvent);
+			//tunnelService.task(userMessageEvent);
 			if (!ArgUtil.isEmpty(msg.getITemplate())
 					&& !ArgUtil.isEmpty(msg.getITemplate().getChannel())) {
 				Notipy noti = new Notipy();
@@ -200,6 +200,7 @@ public class FBPushServiceImpl implements IPushNotifyService {
 				noti.setAuthor(String.format("Topic = %s", msg.getTo().get(0)));
 				noti.setMessage(msg.getMessage());
 				noti.setChannel(msg.getITemplate().getChannel());
+				
 				noti.addField("TEMPLATE", msg.getITemplate().toString());
 				noti.setColor("#" + CryptoUtil.toHex(6, msg.getITemplate().toString()));
 				slackService.sendNotification(noti);
