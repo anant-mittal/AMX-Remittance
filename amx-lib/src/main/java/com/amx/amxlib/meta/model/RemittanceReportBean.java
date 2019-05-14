@@ -118,6 +118,8 @@ public class RemittanceReportBean {
 	private BigDecimal vatAmount;
 	
 	private String customerVatNumber;
+
+	private BigDecimal amountSaved;
 	
 	public Boolean getDrawLine() {
 		return drawLine;
@@ -841,6 +843,14 @@ public class RemittanceReportBean {
 
 	public void setCustomerVatNumber(String customerVatNumber) {
 		this.customerVatNumber = customerVatNumber;
+	}
+
+	public BigDecimal getAmountSaved() {
+		return amountSaved;
+	}
+
+	public void setAmountSaved(BigDecimal amountSaved) {
+		this.amountSaved = amountSaved;
 	}	
 
 }

@@ -329,6 +329,8 @@ public class RemittanceTransactionView implements Serializable{
 	@Column(name = "CUSTOMER_VAT_NUMBER")
 	private String customerVatNumber;
 	
+	@Column(name = "KD_SAVED")
+	private BigDecimal amountSaved;
 
 	public BigDecimal getPhoneNumber() {
 		return phoneNumber;
@@ -1130,6 +1132,14 @@ public class RemittanceTransactionView implements Serializable{
 
 	public void setCustomerVatNumber(String customerVatNumber) {
 		this.customerVatNumber = customerVatNumber;
+	}
+
+	public BigDecimal getAmountSaved() {
+		return amountSaved;
+	}
+
+	public void setAmountSaved(BigDecimal amountSaved) {
+		this.amountSaved = amountSaved;
 	}
 
 }
