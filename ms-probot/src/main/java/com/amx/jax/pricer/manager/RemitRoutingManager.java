@@ -9,10 +9,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.time.DurationFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -380,6 +382,8 @@ public class RemitRoutingManager {
 			finalDeliveryDetails.setStartDateForeign(startDateForeign);
 			finalDeliveryDetails.setCompletionDateForeign(completionDateForeign);
 
+			finalDeliveryDetails.setDeliveryDuration(getDeliveryDuration(processTimeTotal));
+
 			finalDeliveryDetails.setCrossedMaxDeliveryDays(crossedMaxDeliveryDays);
 
 			routingDetails.setFinalDeliveryDetails(finalDeliveryDetails);
@@ -639,6 +643,36 @@ public class RemitRoutingManager {
 		estimatedDeliveryDetails.setStartDateForeign(estimatedGoodBusinessDay);
 		estimatedDeliveryDetails.setCrossedMaxDeliveryDays(true);
 		return estimatedDeliveryDetails;
+
+	}
+
+	private String getDeliveryDuration(long durationInSecs) {
+
+		TimeUnit tu = TimeUnit.SECONDS;
+		long days = tu.toDays(durationInSecs);
+		long hrs = tu.toHours(durationInSecs);
+		long mins = tu.toMinutes(durationInSecs);
+
+		String duration;
+
+		if (days > 0) {
+			duration = days == 1 ? days + " day" : days + " days";
+			hrs = hrs % 24;
+			if (hrs > 0) {
+				duration += " " + (hrs == 1 ? hrs + " hour" : hrs + " hours");
+			}
+		} else if (hrs > 0) {
+			duration = hrs == 1 ? hrs + " hour" : hrs + " hours";
+			mins = mins % 60;
+			if (mins > 0) {
+				duration += " " + (mins == 1 ? mins + " minute" : mins + " minutes");
+			}
+		} else {
+			duration = DurationFormatUtils.formatDurationWords(durationInSecs * 1000, true, true);
+		}
+
+		// Simple Duration Converter
+		return duration;
 
 	}
 

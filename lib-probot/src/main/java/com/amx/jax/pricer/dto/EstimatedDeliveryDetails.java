@@ -26,6 +26,8 @@ public class EstimatedDeliveryDetails implements Serializable, Comparable<Estima
 
 	private long startTT = 0;
 
+	private String deliveryDuration;
+
 	// @JsonFormat(shape = JsonFormat.Shape.STRING, pattern =
 	// "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
 	@JsonIgnore
@@ -72,6 +74,14 @@ public class EstimatedDeliveryDetails implements Serializable, Comparable<Estima
 
 	public void setCompletionTT(long completionTT) {
 		this.completionTT = completionTT;
+	}
+
+	public String getDeliveryDuration() {
+		return deliveryDuration;
+	}
+
+	public void setDeliveryDuration(String deliveryDuration) {
+		this.deliveryDuration = deliveryDuration;
 	}
 
 	public ZonedDateTime getStartDateForeign() {
