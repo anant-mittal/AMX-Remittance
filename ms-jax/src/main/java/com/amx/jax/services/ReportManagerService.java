@@ -43,6 +43,7 @@ import com.amx.jax.repository.ICurrencyDao;
 import com.amx.jax.repository.IPurposeOfRemittance;
 import com.amx.jax.repository.IRemittanceTransactionDao;
 import com.amx.jax.userservice.service.UserService;
+import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.RoundUtil;
 
 @Component
@@ -458,14 +459,15 @@ public class ReportManagerService extends AbstractService{
 					// 
 					
 					/** added by rabil  It should be print conditionally.if IS_DISCOUNT_AVAILED = 'Y' and KD_SAVED > 0 **/
-					 if(!StringUtils.isBlank(view.getIsDiscAvail()) && view.getIsDiscAvail().equalsIgnoreCase(ConstantDocument.Yes) && view.getAmountSaved().compareTo(BigDecimal.ZERO)>0) {
-						 obj.setAmountSaved(view.getAmountSaved());
+					 if(!StringUtils.isBlank(view.getIsDiscAvail()) && view.getIsDiscAvail().equalsIgnoreCase(ConstantDocument.Yes) && JaxUtil.isNullZeroBigDecimalCheck(view.getAmountSaved()) && view.getAmountSaved().compareTo(BigDecimal.ZERO)>0) {
+						 BigDecimal KdSaved=RoundUtil.roundBigDecimal((view.getAmountSaved()),decimalPerCurrency);
+						 obj.setAmountSaved(currencyQuoteName +" "+KdSaved.toString());
 					 }
 					/** end **/
 
 					
 				} catch (Exception e) {
-					logger.info( "Exception Occured While Report2 "+e.getMessage());
+					logger.info( "Exception Occured While Report2 "+e.printStackTrace());
 					throw new GlobalException(ResponseStatus.NOT_FOUND.toString());
 				
 				}
