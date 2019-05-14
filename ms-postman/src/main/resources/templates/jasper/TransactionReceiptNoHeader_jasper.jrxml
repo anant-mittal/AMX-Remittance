@@ -1078,7 +1078,7 @@
                             </staticText>
                             </frame>
                         <!--##################KWD Amount at Special Rate END####################-->
-  <!--##################You saved START####################-->
+  						<!--##################You saved START####################-->
                         <frame>
                             <reportElement x="5" y="455" width="585" height="15"/>
                             <staticText>
@@ -1093,7 +1093,7 @@
                                     <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
-                                <text><![CDATA[You saved]]></text>
+                                <text><![CDATA[You Saved]]></text>
                             </staticText>
 
                             <textField isStretchWithOverflow="true">

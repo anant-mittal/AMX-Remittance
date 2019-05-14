@@ -1139,7 +1139,7 @@
                                     <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
-                                <text><![CDATA[You saved]]></text>
+                                <text><![CDATA[You Saved]]></text>
                             </staticText>
 
                             <textField isStretchWithOverflow="true">
