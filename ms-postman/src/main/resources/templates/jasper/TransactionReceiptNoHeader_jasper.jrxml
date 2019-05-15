@@ -1102,7 +1102,7 @@
                                                isPrintWhenDetailOverflows="true"/>
                                 <textElement textAlignment="Left">
                                     <font fontName="Arial" size="8" isItalic="true"
-                                          pdfFontName="fonts/all/arial.ttf"/>
+                                          pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
                                     <![CDATA[$F{tranx}.get("amountSaved")]]>
