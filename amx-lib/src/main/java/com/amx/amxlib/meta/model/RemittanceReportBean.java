@@ -108,6 +108,10 @@ public class RemittanceReportBean {
 	private String specialExchangeRate;
 	private String specialKwdAmount;
 	
+	
+	
+	private String amountSaved;
+	
 	public Boolean getDrawLine() {
 		return drawLine;
 	}
@@ -782,6 +786,14 @@ public class RemittanceReportBean {
 
 	public void setSpecialKwdAmount(String specialKwdAmount) {
 		this.specialKwdAmount = specialKwdAmount;
+	}
+
+	public String getAmountSaved() {
+		return amountSaved;
+	}
+
+	public void setAmountSaved(String amountSaved) {
+		this.amountSaved = amountSaved;
 	}	
 
 }
