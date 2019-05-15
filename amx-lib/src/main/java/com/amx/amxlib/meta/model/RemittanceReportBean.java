@@ -119,7 +119,7 @@ public class RemittanceReportBean {
 	
 	private String customerVatNumber;
 
-	private BigDecimal amountSaved;
+	private String amountSaved;
 	
 	public Boolean getDrawLine() {
 		return drawLine;
@@ -845,11 +845,11 @@ public class RemittanceReportBean {
 		this.customerVatNumber = customerVatNumber;
 	}
 
-	public BigDecimal getAmountSaved() {
+	public String getAmountSaved() {
 		return amountSaved;
 	}
 
-	public void setAmountSaved(BigDecimal amountSaved) {
+	public void setAmountSaved(String amountSaved) {
 		this.amountSaved = amountSaved;
 	}	
 
