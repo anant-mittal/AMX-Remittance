@@ -28,7 +28,8 @@ public class DmsApplMapping {
 	private Date createdOn;
 	private String createdBy;
 	private String uploadType;
-
+	
+	@Column(name = "UPLOAD_TYPE")
 	public String getUploadType() {
 		return uploadType;
 	}
