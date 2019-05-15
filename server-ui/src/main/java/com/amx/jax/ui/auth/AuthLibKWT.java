@@ -53,8 +53,9 @@ public class AuthLibKWT implements AuthLib {
 		case DEVICEPASS:
 			return AuthState.AuthStep.COMPLETED;
 		case USERPASS:
+			return AuthState.AuthStep.SECQUES;
+		case USERPASS_SINGLE:
 			return AuthState.AuthStep.COMPLETED;
-		// return AuthState.AuthStep.SECQUES;
 		case SECQUES:
 			return AuthState.AuthStep.COMPLETED;
 		default:

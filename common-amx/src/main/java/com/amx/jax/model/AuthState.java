@@ -50,6 +50,8 @@ public class AuthState implements Serializable {
 		DEVICEPASS,
 		/** The userpass. */
 		USERPASS,
+		/** Single Step Login */
+		USERPASS_SINGLE,
 		/** The secques. */
 		SECQUES,
 		/** The idvalid. */
@@ -132,8 +134,7 @@ public class AuthState implements Serializable {
 	/**
 	 * Sets the present email.
 	 *
-	 * @param presentEmail
-	 *            the new present email
+	 * @param presentEmail the new present email
 	 */
 	public void setPresentEmail(boolean presentEmail) {
 		this.presentEmail = presentEmail;
@@ -151,8 +152,7 @@ public class AuthState implements Serializable {
 	/**
 	 * Sets the valid id.
 	 *
-	 * @param validId
-	 *            the new valid id
+	 * @param validId the new valid id
 	 */
 	public void setValidId(boolean validId) {
 		this.validId = validId;
@@ -170,8 +170,7 @@ public class AuthState implements Serializable {
 	/**
 	 * Sets the valid sec ques.
 	 *
-	 * @param validSecQues
-	 *            the new valid sec ques
+	 * @param validSecQues the new valid sec ques
 	 */
 	public void setValidSecQues(boolean validSecQues) {
 		this.validSecQues = validSecQues;
@@ -189,8 +188,7 @@ public class AuthState implements Serializable {
 	/**
 	 * Sets the valid motp.
 	 *
-	 * @param validMotp
-	 *            the new valid motp
+	 * @param validMotp the new valid motp
 	 */
 	public void setValidMotp(boolean validMotp) {
 		this.validMotp = validMotp;
@@ -208,8 +206,7 @@ public class AuthState implements Serializable {
 	/**
 	 * Sets the valid eotp.
 	 *
-	 * @param validEotp
-	 *            the new valid eotp
+	 * @param validEotp the new valid eotp
 	 */
 	public void setValidEotp(boolean validEotp) {
 		this.validEotp = validEotp;
@@ -227,8 +224,7 @@ public class AuthState implements Serializable {
 	/**
 	 * Sets the valid data ver.
 	 *
-	 * @param validDataVer
-	 *            the new valid data ver
+	 * @param validDataVer the new valid data ver
 	 */
 	public void setValidDataVer(boolean validDataVer) {
 		this.validDataVer = validDataVer;
@@ -246,8 +242,7 @@ public class AuthState implements Serializable {
 	/**
 	 * Sets the valid pswd.
 	 *
-	 * @param validPswd
-	 *            the new valid pswd
+	 * @param validPswd the new valid pswd
 	 */
 	public void setValidPswd(boolean validPswd) {
 		this.validPswd = validPswd;
@@ -256,8 +251,7 @@ public class AuthState implements Serializable {
 	/**
 	 * Checks if is flow.
 	 *
-	 * @param flow
-	 *            the flow
+	 * @param flow the flow
 	 * @return true, if is flow
 	 */
 	public boolean isFlow(AuthFlow flow) {
@@ -267,8 +261,7 @@ public class AuthState implements Serializable {
 	/**
 	 * Checks if is step.
 	 *
-	 * @param authStep
-	 *            the auth step
+	 * @param authStep the auth step
 	 * @return true, if is step
 	 */
 	public boolean isStep(AuthStep authStep) {
@@ -287,8 +280,7 @@ public class AuthState implements Serializable {
 	/**
 	 * Sets the flow.
 	 *
-	 * @param flow
-	 *            the new flow
+	 * @param flow the new flow
 	 */
 	public void setFlow(AuthFlow flow) {
 		this.flow = flow;
@@ -306,8 +298,7 @@ public class AuthState implements Serializable {
 	/**
 	 * Sets the c step.
 	 *
-	 * @param cStep
-	 *            the new c step
+	 * @param cStep the new c step
 	 */
 	public void setcStep(AuthStep cStep) {
 		this.cStep = cStep;
@@ -325,8 +316,7 @@ public class AuthState implements Serializable {
 	/**
 	 * Sets the n step.
 	 *
-	 * @param nStep
-	 *            the new n step
+	 * @param nStep the new n step
 	 */
 	public void setnStep(AuthStep nStep) {
 		this.nStep = nStep;
