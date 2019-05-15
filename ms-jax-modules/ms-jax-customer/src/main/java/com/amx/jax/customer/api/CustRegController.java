@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-
 import com.amx.jax.CustomerCredential;
 import com.amx.jax.ICustRegService;
 import com.amx.jax.api.AmxApiResponse;
@@ -72,7 +71,7 @@ public class CustRegController implements ICustRegService {
 
 	@Autowired
 	MetaService metaService;
-	
+
 	@Autowired
 	OffsiteAddressProofManager offsiteAddressProofManager;
 
@@ -145,14 +144,14 @@ public class CustRegController implements ICustRegService {
 	@RequestMapping(value = CustRegApiEndPoints.SCAN_CARD, method = RequestMethod.POST)
 	public AmxApiResponse<CardDetail, Object> cardScan(CardDetail cardDetail) {
 		return offsiteCustRegService.cardScan(cardDetail);
-	}	
-	
+	}
+
 	@RequestMapping(value = CustRegApiEndPoints.SAVE_OFFSITE_LOGIN, method = RequestMethod.POST)
 	public AmxApiResponse<CustomerCredential, Object> saveLoginDetailOffsite(
 			@RequestBody CustomerCredential customerCredential) {
 		return offsiteCustRegService.saveLoginDetailOffsite(customerCredential);
 	}
-	
+
 	@RequestMapping(value = CustRegApiEndPoints.GET_OFFSITE_CUSTOMER_DATA, method = RequestMethod.GET)
 	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerData(
 			@RequestParam(value = "identityInt", required = true) String identityInt,
@@ -160,33 +159,33 @@ public class CustRegController implements ICustRegService {
 		return offsiteCustRegService.getOffsiteCustomerData(identityInt, identityType);
 	}
 
-	
 	@RequestMapping(value = CustRegApiEndPoints.DESIGNATION_LIST, method = RequestMethod.GET)
 	public AmxApiResponse<ResourceDTO, Object> getDesignationList() {
 		return offsiteCustRegService.getDesignationList();
 	}
-	
+
 	@RequestMapping(value = CustRegApiEndPoints.GET_CUSTOMER_DEATILS, method = RequestMethod.GET)
 	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerDetails(
 			@RequestParam(value = "identityInt", required = true) String identityInt,
 			@RequestParam(value = "identityType", required = true) BigDecimal identityType) {
 		return offsiteCustRegService.getOffsiteCustomerDetails(identityInt, identityType);
 	}
-	
+
 	@RequestMapping(value = CustRegApiEndPoints.GET_OFFSITE_CUSTOMER_DATA_V1, method = RequestMethod.GET)
 	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerDataV1(
 			@RequestBody @Valid GetOffsiteCustomerDetailRequest request) {
 		return offsiteCustRegService.getOffsiteCustomerData(request);
 	}
-	
+
 	@RequestMapping(value = CustRegApiEndPoints.ADDRESS_PROOF, method = RequestMethod.GET)
 	public AmxApiResponse<AddressProofDTO, Object> getAddressProof() {
 		return offsiteAddressProofManager.getAddressProof();
 	}
-	
+
 	@RequestMapping(value = CustRegApiEndPoints.DOCUMENT_UPLOAD_REFERENCE, method = RequestMethod.POST)
-	public BoolRespModel saveDocumentUploadReference(@RequestBody ImageSubmissionRequest imageSubmissionRequest) throws Exception {
-		return offsiteAddressProofManager.saveDocumentUploadReference(imageSubmissionRequest);
+	public AmxApiResponse<BoolRespModel, Object> saveDocumentUploadReference(
+			@RequestBody ImageSubmissionRequest imageSubmissionRequest) throws Exception {
+		return AmxApiResponse.build(offsiteAddressProofManager.saveDocumentUploadReference(imageSubmissionRequest));
 	}
-	
+
 }
