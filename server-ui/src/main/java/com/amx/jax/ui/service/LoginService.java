@@ -107,7 +107,7 @@ public class LoginService {
 		AuthData loginData = new AuthData();
 		wrapper.setData(loginData);
 		wrapper.setMessage(OWAStatusStatusCodes.AUTH_OK, "Password is Correct");
-		loginSuccess(wrapper, AuthStep.USERPASS, customerModel);
+		loginSuccess(wrapper, AuthStep.USERPASS_SINGLE, customerModel);
 		wrapper.getData().setState(sessionService.getGuestSession().getState());
 		return wrapper;
 	}
@@ -191,7 +191,7 @@ public class LoginService {
 		return wrapper;
 	}
 
-	public ResponseWrapper<AuthResponse> loginSuccess(ResponseWrapper<AuthResponse> wrapper, AuthStep secques,
+	public ResponseWrapper<AuthResponse> loginSuccess(ResponseWrapper<AuthResponse> wrapper, AuthStep authStep,
 			CustomerModel customerModel) {
 		/*
 		 * TODO:- need to evaluate this condition it has some backward compatibility
@@ -212,7 +212,7 @@ public class LoginService {
 		userService.updateCustoemrModel();
 
 		wrapper.setMessage(OWAStatusStatusCodes.AUTH_DONE, ResponseMessage.AUTH_SUCCESS);
-		sessionService.getGuestSession().endStep(secques);
+		sessionService.getGuestSession().endStep(authStep);
 		wrapper.getData().setState(sessionService.getGuestSession().getState());
 		return wrapper;
 	}
