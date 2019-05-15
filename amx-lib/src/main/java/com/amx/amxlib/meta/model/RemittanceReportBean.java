@@ -107,6 +107,7 @@ public class RemittanceReportBean {
 	private String kwdAmount;
 	private String specialExchangeRate;
 	private String specialKwdAmount;
+	private Boolean isArabic;
 	
 	public Boolean getDrawLine() {
 		return drawLine;
@@ -782,7 +783,16 @@ public class RemittanceReportBean {
 
 	public void setSpecialKwdAmount(String specialKwdAmount) {
 		this.specialKwdAmount = specialKwdAmount;
+	}
+
+	public Boolean getIsArabic() {
+		return isArabic;
+	}
+
+	public void setIsArabic(Boolean isArabic) {
+		this.isArabic = isArabic;
 	}	
 
+	
 }
 
