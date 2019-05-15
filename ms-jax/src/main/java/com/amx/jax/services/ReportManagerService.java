@@ -472,7 +472,7 @@ public class ReportManagerService extends AbstractService{
 					/** added by rabil  It should be print conditionally.if IS_DISCOUNT_AVAILED = 'Y' and KD_SAVED > 0 **/
 					 if(!StringUtils.isBlank(view.getIsDiscAvail()) && view.getIsDiscAvail().equalsIgnoreCase(ConstantDocument.Yes) && JaxUtil.isNullZeroBigDecimalCheck(view.getAmountSaved()) &&  view.getAmountSaved().compareTo(BigDecimal.ZERO)>0) {
 						 BigDecimal kdAmountSaved=RoundUtil.roundBigDecimal((view.getAmountSaved()),decimalPerCurrency);
-						 obj.setAmountSaved(currencyQuoteName+" "+kdAmountSaved.toString());
+						 obj.setAmountSaved(currencyQuoteName+"     "+kdAmountSaved.toString());
 					 }
 					 /** end **/
 					
