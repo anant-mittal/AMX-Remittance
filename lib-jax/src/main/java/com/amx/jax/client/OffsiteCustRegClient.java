@@ -265,8 +265,7 @@ public class OffsiteCustRegClient implements ICustRegService {
 			return JaxSystemError.evaluate(e);
 		} // end of try-catch}
 	}
-	
-	
+
 	@Override
 	public AmxApiResponse<ResourceDTO, Object> getDesignationList() {
 		try {
@@ -294,30 +293,33 @@ public class OffsiteCustRegClient implements ICustRegService {
 			return JaxSystemError.evaluate(e);
 		} // end of try-c
 	}
+
 	@Override
-	public AmxApiResponse<AddressProofDTO, Object> getAddressProof(){
+	public AmxApiResponse<AddressProofDTO, Object> getAddressProof() {
 		try {
 			return restService.ajax(appConfig.getJaxURL()).meta(new JaxMetaInfo())
 					.path(CustRegApiEndPoints.ADDRESS_PROOF).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<AddressProofDTO, Object>>() {
 					});
-		}catch(Exception e) {
+		} catch (Exception e) {
 			LOGGER.error("exception in get address proof");
 			return JaxSystemError.evaluate(e);
 		}
 	}
+
 	@Override
-	public BoolRespModel saveDocumentUploadReference(ImageSubmissionRequest imageSubmissionRequest) {
+	public AmxApiResponse<BoolRespModel, Object> saveDocumentUploadReference(
+			ImageSubmissionRequest imageSubmissionRequest) {
 		try {
 			return restService.ajax(appConfig.getJaxURL()).meta(new JaxMetaInfo())
 					.path(CustRegApiEndPoints.DOCUMENT_UPLOAD_REFERENCE)
 					.post(imageSubmissionRequest)
-					.as(new ParameterizedTypeReference<BoolRespModel>() {
+					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
 					});
 		} catch (Exception e) {
 			LOGGER.error("exception in saveDocumentUploadReference : ", e);
 			return JaxSystemError.evaluate(e);
 		} // end of try-catch}
 	}
-	
+
 }

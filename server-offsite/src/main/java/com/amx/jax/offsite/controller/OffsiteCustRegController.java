@@ -41,6 +41,7 @@ import com.amx.jax.model.response.ComponentDataDto;
 import com.amx.jax.model.response.CustomerInfo;
 import com.amx.jax.model.response.FieldListDto;
 import com.amx.jax.model.response.IncomeRangeDto;
+import com.amx.jax.model.response.customer.AddressProofDTO;
 import com.amx.jax.model.response.customer.OffsiteCustomerDataDTO;
 import com.amx.jax.offsite.service.CustomerSession;
 import com.amx.jax.swagger.IStatusCodeListPlugin.ApiStatusService;
@@ -106,6 +107,11 @@ public class OffsiteCustRegController {
 	@RequestMapping(value = "/employment_type/list", method = { RequestMethod.POST })
 	public AmxApiResponse<ComponentDataDto, Object> sendEmploymentTypeList() {
 		return offsiteCustRegClient.sendEmploymentTypeList();
+	}
+
+	@RequestMapping(value = "/document_type/lis/address_prooft", method = { RequestMethod.GET })
+	public AmxApiResponse<AddressProofDTO, Object> getAddressProof() {
+		return offsiteCustRegClient.getAddressProof();
 	}
 
 	@RequestMapping(value = "/card/read", method = { RequestMethod.POST })
@@ -198,6 +204,12 @@ public class OffsiteCustRegController {
 			offsiteCustRegClient.validateOtpForEmailAndMobile(offsiteCustRegModel);
 		}
 		return resp;
+	}
+
+	@RequestMapping(value = "/document/upload", method = { RequestMethod.POST })
+	public AmxApiResponse<BoolRespModel, Object> saveDocumentUploadReference(
+			@RequestBody ImageSubmissionRequest imageSubmissionRequest) throws ParseException, Exception {
+		return offsiteCustRegClient.saveDocumentUploadReference(imageSubmissionRequest);
 	}
 
 }

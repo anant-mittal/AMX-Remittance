@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Map;
 
-
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.error.ApiJaxStatusBuilder.ApiJaxStatus;
@@ -49,12 +48,12 @@ public interface ICustRegService extends IJaxService {
 		public static final String GET_OFFSITE_CUSTOMER_DATA = PREFIX + "/getOffsiteCustomerData";
 		public static final String GET_CUSTOMER_DEATILS = PREFIX + "/customer-details";
 		public static final String GET_OFFSITE_CUSTOMER_DATA_V1 = PREFIX + "/getOffsiteCustomerData/v1";
-		
+
 		public static final String DESIGNATION_LIST = PREFIX + "/getDesignationList";
 		public static final String ADDRESS_PROOF = PREFIX + "/getAddressProof";
 		public static final String DOCUMENT_UPLOAD_REFERENCE = PREFIX + "/documentUploadReference";
 	}
-	
+
 	public static class Params {
 		public static final String IDENTITY_INT = "identityInt";
 		public static final String IDENTITY_TYPE = "identityType";
@@ -93,7 +92,8 @@ public interface ICustRegService extends IJaxService {
 
 	AmxApiResponse<CardDetail, Object> cardScan(CardDetail cardDetail);
 
-	@ApiJaxStatus({ JaxError.EXISTING_CIVIL_ID, JaxError.EXISTING_BEDOUIN_ID, JaxError.EXISTING_GCC_ID,JaxError.EXISTING_PASSPORT, JaxError.INVALID_CIVIL_ID })
+	@ApiJaxStatus({ JaxError.EXISTING_CIVIL_ID, JaxError.EXISTING_BEDOUIN_ID, JaxError.EXISTING_GCC_ID,
+			JaxError.EXISTING_PASSPORT, JaxError.INVALID_CIVIL_ID })
 	AmxApiResponse<CustomerInfo, Object> saveCustomerInfo(CustomerInfoRequest model);
 
 	@ApiJaxStatus({ JaxError.IMAGE_NOT_AVAILABLE, JaxError.NULL_CUSTOMER_ID, JaxError.INVALID_CUSTOMER })
@@ -104,20 +104,22 @@ public interface ICustRegService extends IJaxService {
 
 	@ApiJaxStatus({ JaxError.ALREADY_EXIST_EMAIL, JaxError.INVALID_MOBILE_NUMBER })
 	AmxApiResponse<SendOtpModel, Object> sendOtp(CustomerPersonalDetail customerPersonalDetail);
-	
+
 	@ApiJaxStatus({ JaxError.EMPTY_DESIGNATION_LIST })
 	AmxApiResponse<ResourceDTO, Object> getDesignationList();
-	
+
 	AmxApiResponse<CustomerCredential, Object> saveLoginDetailOffsite(CustomerCredential customerCredential);
-	
+
 	AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerData(String identityInt, BigDecimal identityType);
-	
-	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND})
-	AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerDetails(String identityInt, BigDecimal identityType);
-	
-	@ApiJaxStatus({JaxError.EMPTY_ADDRESS_PROOF_LIST})
+
+	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND })
+	AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerDetails(String identityInt,
+			BigDecimal identityType);
+
+	@ApiJaxStatus({ JaxError.EMPTY_ADDRESS_PROOF_LIST })
 	AmxApiResponse<AddressProofDTO, Object> getAddressProof();
 
-	BoolRespModel saveDocumentUploadReference(ImageSubmissionRequest imageSubmissionRequest) throws ParseException, Exception;
+	AmxApiResponse<BoolRespModel, Object> saveDocumentUploadReference(ImageSubmissionRequest imageSubmissionRequest)
+			throws ParseException, Exception;
 
 }
