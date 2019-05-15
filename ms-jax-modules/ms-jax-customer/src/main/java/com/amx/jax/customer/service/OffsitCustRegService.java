@@ -1270,7 +1270,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 	}
 
 	@Override
-	public BoolRespModel saveDocumentUploadReference(ImageSubmissionRequest imageSubmissionRequest)
+	public AmxApiResponse<BoolRespModel, Object> saveDocumentUploadReference(ImageSubmissionRequest imageSubmissionRequest)
 			throws ParseException, Exception {
 		// TODO Auto-generated method stub
 		return null;

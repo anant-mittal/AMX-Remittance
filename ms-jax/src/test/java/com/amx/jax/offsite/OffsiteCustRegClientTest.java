@@ -82,7 +82,7 @@ public class OffsiteCustRegClientTest {
 		jaxMetaInfo.setTenant(Tenant.BHR);
 		TenantContextHolder.setCurrent(Tenant.BHR);
 		jaxMetaInfo.setReferrer("DEV-TESTING");
-		BoolRespModel response = null;
+		AmxApiResponse<BoolRespModel, Object> response = null;
 		LOGGER.debug("Response not set");
 		ImageSubmissionRequest imageSubmissionRequest = new ImageSubmissionRequest();
 		List<String> image = new ArrayList<String>();
