@@ -164,6 +164,7 @@ public class FcSaleBranchService extends AbstractService{
 						fcSaleOrder.setRecPayBranchId(orderManagement.getRecPayBranchId());
 						fcSaleOrder.setRecPayCountryBranchId(orderManagement.getRecPayCountryBranchId());
 						fcSaleOrder.setGovernateId(orderManagement.getGovernateId());
+						fcSaleOrder.setCustomerName(orderManagement.getCustomerName());
 
 						HashMap<BigDecimal, BigDecimal> foreignCurrencyAmt = new HashMap<>();
 						List<FcSaleCurrencyAmountModel> lstCurrencyAmt = new ArrayList<>();
