@@ -28,6 +28,14 @@ public class DocumentUploadReference {
 	private Date modifiedDate;
 	
 	
+	@Override
+	public String toString() {
+		return "DocumentUploadReference [applicationCountryId=" + applicationCountryId + ", customerId=" + customerId
+				+ ", uploadId=" + uploadId + ", uploadType=" + uploadType + ", uploadDoctypeId=" + uploadDoctypeId
+				+ ", docBlobId=" + docBlobId + ", uploadedFilename=" + uploadedFilename + ", isActive=" + isActive
+				+ ", createdBy=" + createdBy + ", createdDate=" + createdDate + ", modifiedBy=" + modifiedBy
+				+ ", modifiedDate=" + modifiedDate + "]";
+	}
 	@Column(name="APPLICATION_COUNTRY_ID")
 	public BigDecimal getApplicationCountryId() {
 		return applicationCountryId;

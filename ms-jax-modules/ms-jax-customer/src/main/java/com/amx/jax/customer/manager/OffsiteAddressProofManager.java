@@ -74,7 +74,7 @@ import com.amx.jax.validation.CountryMetaValidation;
 @Component
 public class OffsiteAddressProofManager {
 	
-	private static final Logger LOGGER = LoggerService.getLogger(OffsitCustRegService.class);
+	private static final Logger LOGGER = LoggerService.getLogger(OffsiteAddressProofManager.class);
 
 	@Autowired
 	JaxConditionalFieldRuleRepository jaxConditionalFieldRuleRepository;
@@ -262,7 +262,7 @@ public class OffsiteAddressProofManager {
 
 					documentUploadReferenceDetails.setModifiedBy(metaData.getCustomerId().toString());
 					documentUploadReferenceDetails.setModifiedDate(new Date());
-
+					LOGGER.info("Document details for old record are "+documentUploadReferenceDetails.toString());
 					iDocumentUploadMapRepository.save(documentUploadReferenceDetails);
 					boolRespModel.setSuccess(Boolean.TRUE);
 				}
@@ -281,6 +281,7 @@ public class OffsiteAddressProofManager {
 
 					DocumentUploadReference documentUploadReference = new DocumentUploadReference();
 					documentUploadReference = getDocumentUploadReference(mappingData, model);
+					LOGGER.info("Document details for new record are "+documentUploadReference.toString());
 
 					if (documentUploadReference != null) {
 						iDocumentUploadMapRepository.save(documentUploadReference);
