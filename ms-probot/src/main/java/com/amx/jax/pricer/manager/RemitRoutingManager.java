@@ -44,8 +44,10 @@ public class RemitRoutingManager {
 
 	private static final int MAX_DELIVERY_ATTEMPT_DAYS = 60;
 
-	private final int defStartTime = 8;
-	private final int defStopTime = 18;
+	private static final int DEF_START_TIME = 8;
+	private static final int DEF_STOP_TIME = 18;
+	
+	private static final int KWT_TREASURY_FUNDING_TIME = 12;
 
 	/** The Constant LOGGER. */
 	private static final Logger LOGGER = LoggerFactory.getLogger(RemitRoutingManager.class);
@@ -262,7 +264,7 @@ public class RemitRoutingManager {
 				}
 
 				estmdProcessingDeliveryDetails = this.getEstimatedBlockDelivery(processingStartTT, pTimezone,
-						new BigDecimal(1), new BigDecimal(7), new BigDecimal(defStartTime), new BigDecimal(defStopTime),
+						new BigDecimal(1), new BigDecimal(7), new BigDecimal(DEF_START_TIME), new BigDecimal(DEF_STOP_TIME),
 						new BigDecimal(0), new BigDecimal(0), new BigDecimal(0), new BigDecimal(0), new BigDecimal(0),
 						Boolean.FALSE, processingCountryId, 0);
 
@@ -313,7 +315,7 @@ public class RemitRoutingManager {
 				}
 
 				estmdBeneDeliveryDetails = this.getEstimatedBlockDelivery(beneStartTT, beneTimezone, new BigDecimal(1),
-						new BigDecimal(7), new BigDecimal(defStartTime), new BigDecimal(defStopTime), new BigDecimal(0),
+						new BigDecimal(7), new BigDecimal(DEF_START_TIME), new BigDecimal(DEF_STOP_TIME), new BigDecimal(0),
 						new BigDecimal(0), new BigDecimal(0), new BigDecimal(0), new BigDecimal(0), Boolean.FALSE,
 						beneCountryId, 0);
 
