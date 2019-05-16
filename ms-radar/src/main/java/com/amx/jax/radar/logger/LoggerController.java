@@ -1,4 +1,4 @@
-package com.amx.jax.worker.logger;
+package com.amx.jax.radar.logger;
 
 import java.util.Map;
 
