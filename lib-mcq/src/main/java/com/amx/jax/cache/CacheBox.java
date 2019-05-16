@@ -10,14 +10,20 @@ import org.redisson.api.LocalCachedMapOptions.ReconnectionStrategy;
 import org.redisson.api.LocalCachedMapOptions.SyncStrategy;
 import org.redisson.api.RLocalCachedMap;
 import org.redisson.api.RedissonClient;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.thavam.util.concurrent.blockingMap.BlockingHashMap;
 
+import com.amx.jax.cache.MCQStatus.MCQStatusCodes;
+import com.amx.jax.cache.MCQStatus.MCQStatusError;
 import com.amx.jax.def.ICacheBox;
+import com.amx.jax.logger.LoggerService;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.ClazzUtil;
 
 public class CacheBox<T> implements ICacheBox<T> {
+
+	private Logger LOGGER = LoggerService.getLogger(CacheBox.class);
 
 	LocalCachedMapOptions<String, T> localCacheOptions = LocalCachedMapOptions.<String, T>defaults()
 			.evictionPolicy(EvictionPolicy.NONE).cacheSize(1000).reconnectionStrategy(ReconnectionStrategy.NONE)
@@ -79,17 +85,32 @@ public class CacheBox<T> implements ICacheBox<T> {
 
 	@Override
 	public T put(String key, T value) {
-		return this.map().put(key, value);
+		try {
+			return this.map().put(key, value);
+		} catch (Exception e) {
+			LOGGER.error("REDIS_SAVE_EXCEPTION KEY:" + key, e);
+			throw new MCQStatusError(MCQStatusCodes.DATA_SAVE_ERROR, "REDIS_SAVE_EXCEPTION KEY:" + key);
+		}
 	}
 
 	@Override
 	public T get(String key) {
-		return this.map().get(key);
+		try {
+			return this.map().get(key);
+		} catch (Exception e) {
+			LOGGER.error("REDIS_READ_EXCEPTION KEY:" + key, e);
+			throw new MCQStatusError(MCQStatusCodes.DATA_READ_ERROR, "REDIS_READ_EXCEPTION KEY:" + key);
+		}
 	}
 
 	@Override
 	public T putIfAbsent(String key, T value) {
-		return this.map().putIfAbsent(key, value);
+		try {
+			return this.map().putIfAbsent(key, value);
+		} catch (Exception e) {
+			LOGGER.error("REDIS_SAVE_EXCEPTION KEY:" + key, e);
+			throw new MCQStatusError(MCQStatusCodes.DATA_SAVE_ERROR, "REDIS_SAVE_EXCEPTION KEY:" + key);
+		}
 	}
 
 	@Override
