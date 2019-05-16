@@ -9,7 +9,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -30,6 +30,7 @@ import com.amx.jax.api.AResponse.Target;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.http.CommonHttpRequest.CommonMediaType;
+import com.amx.jax.logger.LoggerService;
 import com.amx.jax.sso.SSOConstants;
 import com.amx.jax.sso.SSOConstants.SSOAuthStep;
 import com.amx.jax.sso.SSOStatus.ApiSSOStatus;
@@ -49,7 +50,7 @@ import springfox.documentation.annotations.ApiIgnore;
 @Controller
 public class SSOAppController {
 
-	private Logger LOGGER = Logger.getLogger(SSOAppController.class);
+	private Logger LOGGER = LoggerService.getLogger(SSOAppController.class);
 
 	@Autowired
 	private SSOTranx sSOTranx;
