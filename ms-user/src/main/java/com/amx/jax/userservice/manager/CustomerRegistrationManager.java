@@ -362,8 +362,19 @@ public class CustomerRegistrationManager extends TransactionModel<CustomerRegist
 			throw new GlobalException(JaxError.ID_TYPE_LENGTH_NOT_DEFINED,"Id length setup is missing  in paramter :"+identityInt +" identityTypeId :"+identityTypeId);
 		}
 		
-		Customer customer = customerRepository.getCustomerDetails(identityInt,jaxMetaInfo.getCountryId());
-		if(customer!=null) {
+		List<Customer> customerList = customerRepository.getCustomerDetails(identityInt,jaxMetaInfo.getCountryId());
+		if(!customerList.isEmpty()) {
+			Customer customer  = null;
+			int custSize=0;
+			for(Customer cust :customerList) {
+				if(cust!=null && cust.getIsActive().equalsIgnoreCase(ConstantDocument.Yes)) {
+					custSize++;
+					customer =cust;
+				}
+			}
+			if(custSize>1) {
+				throw new GlobalException(JaxError.CUSTOMER_INACTIVE,"Duplicate record found"); 
+			}
 			
 			if(StringUtils.isBlank(customer.getIsActive()) && customer.getIsActive().equalsIgnoreCase(ConstantDocument.No)) {
 				throw new GlobalException(JaxError.CUSTOMER_INACTIVE,"Customer is partialy registed :"+identityInt +"\t identityTypeId :"+identityTypeId);
