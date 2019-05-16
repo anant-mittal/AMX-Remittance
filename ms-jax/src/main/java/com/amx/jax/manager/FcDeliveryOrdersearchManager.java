@@ -41,16 +41,6 @@ public class FcDeliveryOrdersearchManager {
 		return convert(fxOrderList);
 	}
 	
-	public List<FxOrderTransactionHistroyDto> searchOrderWithOutParams(){
-		
-		List<FxOrderTransactionModel> fxOrderList =  fcSaleBranchDao.searchOrderWithoutParams();
-		return convert(fxOrderList);
-		
-		
-	}
-
-	
-	
 	public List<FxOrderTransactionHistroyDto> convert(List<FxOrderTransactionModel> fxOrderTransactionModelValue) {
 		List<FxOrderTransactionHistroyDto> fxOrderTransactionHistroyDto = new ArrayList<>();
 		
