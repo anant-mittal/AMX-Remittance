@@ -3,6 +3,7 @@ package com.amx.jax.radar.logger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
 import com.amx.jax.logger.AuditService;
@@ -21,6 +22,9 @@ public class LoggerSubscriber implements ITunnelSubscriber<Object> {
 	@Autowired
 	MongoTemplate mongoTemplate;
 
+	@Value("${jax.jobs.audit}")
+	private boolean jobAudit;
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -30,7 +34,9 @@ public class LoggerSubscriber implements ITunnelSubscriber<Object> {
 	@Override
 	public void onMessage(String channel, Object event) {
 		// LOGGER.debug("onMessage {}", channel);
-		mongoTemplate.save(event, "AuditEvent");
+		if (jobAudit) {
+			mongoTemplate.save(event, "AuditEvent");
+		}
 	}
 
 }
