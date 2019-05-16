@@ -374,7 +374,11 @@ public class CustomerRegistrationManager extends TransactionModel<CustomerRegist
 			}
 			if(custSize>1) {
 				throw new GlobalException(JaxError.CUSTOMER_INACTIVE,"Duplicate record found"); 
+			}else if(customer==null){
+				throw new GlobalException(JaxError.NO_RECORD_FOUND,"The customer does not exist in the system or inactive:"+identityInt);
 			}
+			
+		
 			
 			if(StringUtils.isBlank(customer.getIsActive()) && customer.getIsActive().equalsIgnoreCase(ConstantDocument.No)) {
 				throw new GlobalException(JaxError.CUSTOMER_INACTIVE,"Customer is partialy registed :"+identityInt +"\t identityTypeId :"+identityTypeId);
