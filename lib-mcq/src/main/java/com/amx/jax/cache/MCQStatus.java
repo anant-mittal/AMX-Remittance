@@ -9,7 +9,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.cache.MCQStatus.ApiMCQStatus;
-import com.amx.jax.cache.MCQStatus.MCQSCodes;
+import com.amx.jax.cache.MCQStatus.MCQStatusCodes;
 import com.amx.jax.exception.AmxApiError;
 import com.amx.jax.exception.AmxApiException;
 import com.amx.jax.exception.IExceptionEnum;
@@ -19,7 +19,7 @@ import springfox.documentation.swagger.common.SwaggerPluginSupport;
 
 @Component
 @Order(SwaggerPluginSupport.SWAGGER_PLUGIN_ORDER + 1000)
-public class MCQStatus extends IStatusCodeListPlugin<MCQSCodes, ApiMCQStatus> {
+public class MCQStatus extends IStatusCodeListPlugin<MCQStatusCodes, ApiMCQStatus> {
 
 	/**
 	 * Error Enum Codes for MCQ Server
@@ -27,7 +27,7 @@ public class MCQStatus extends IStatusCodeListPlugin<MCQSCodes, ApiMCQStatus> {
 	 * @author lalittanwar
 	 *
 	 */
-	public static enum MCQSCodes implements IExceptionEnum {
+	public static enum MCQStatusCodes implements IExceptionEnum {
 		DATA_ERROR, DATA_READ_ERROR, DATA_SAVE_ERROR;
 		@Override
 		public String getStatusKey() {
@@ -51,7 +51,7 @@ public class MCQStatus extends IStatusCodeListPlugin<MCQSCodes, ApiMCQStatus> {
 	@Target(ElementType.METHOD)
 	@Retention(RetentionPolicy.RUNTIME)
 	public @interface ApiMCQStatus {
-		MCQSCodes[] value() default { MCQSCodes.DATA_ERROR };
+		MCQStatusCodes[] value() default { MCQStatusCodes.DATA_ERROR };
 	}
 
 	/**
@@ -69,20 +69,20 @@ public class MCQStatus extends IStatusCodeListPlugin<MCQSCodes, ApiMCQStatus> {
 
 		public MCQStatusError() {
 			super("MCQ Server error occured");
-			this.setError(MCQSCodes.DATA_ERROR);
+			this.setError(MCQStatusCodes.DATA_ERROR);
 		}
 
-		public MCQStatusError(MCQSCodes statusCode) {
+		public MCQStatusError(MCQStatusCodes statusCode) {
 			super(statusCode);
 		}
 
-		public MCQStatusError(MCQSCodes statusCode, String message) {
+		public MCQStatusError(MCQStatusCodes statusCode, String message) {
 			super(statusCode, message);
 		}
 
 		public MCQStatusError(Exception e) {
 			super(e);
-			this.setError(MCQSCodes.DATA_ERROR);
+			this.setError(MCQStatusCodes.DATA_ERROR);
 		}
 
 		@Override
@@ -92,7 +92,7 @@ public class MCQStatus extends IStatusCodeListPlugin<MCQSCodes, ApiMCQStatus> {
 
 		@Override
 		public IExceptionEnum getErrorIdEnum(String errorId) {
-			return MCQSCodes.DATA_ERROR;
+			return MCQStatusCodes.DATA_ERROR;
 		}
 
 		public static <T> T evaluate(Exception e) {
@@ -118,7 +118,7 @@ public class MCQStatus extends IStatusCodeListPlugin<MCQSCodes, ApiMCQStatus> {
 	}
 
 	@Override
-	public MCQSCodes[] getValues(ApiMCQStatus annotation) {
+	public MCQStatusCodes[] getValues(ApiMCQStatus annotation) {
 		return annotation.value();
 	}
 
