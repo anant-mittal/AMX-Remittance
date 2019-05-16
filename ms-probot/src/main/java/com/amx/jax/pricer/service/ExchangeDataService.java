@@ -7,11 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.pricer.dao.BankMasterDao;
 import com.amx.jax.pricer.dao.ChannelDiscountDao;
 import com.amx.jax.pricer.dao.CountryBranchDao;
 import com.amx.jax.pricer.dao.CustCatDiscountDao;
 import com.amx.jax.pricer.dao.PipsMasterDao;
 import com.amx.jax.pricer.dao.RoutingDao;
+import com.amx.jax.pricer.dao.ServiceMasterDescDao;
 import com.amx.jax.pricer.dbmodel.ChannelDiscount;
 import com.amx.jax.pricer.dbmodel.CountryBranch;
 import com.amx.jax.pricer.dbmodel.CustomerCategoryDiscount;
@@ -22,6 +24,7 @@ import com.amx.jax.pricer.dto.ChannelDetails;
 import com.amx.jax.pricer.dto.CustomerCategoryDetails;
 import com.amx.jax.pricer.dto.DiscountDetailsReqRespDTO;
 import com.amx.jax.pricer.dto.DiscountMgmtReqDTO;
+import com.amx.jax.pricer.dto.DiscountDetailsReqRespDTO;
 import com.amx.jax.pricer.dto.RoutBanksAndServiceRespDTO;
 import com.amx.jax.pricer.exception.PricerServiceError;
 import com.amx.jax.pricer.exception.PricerServiceException;
@@ -39,7 +42,7 @@ public class ExchangeDataService {
 
 	@Autowired
 	PipsMasterDao pipsMasterDao;
-
+	
 	@Autowired
 	RoutingDao routingDao;
 
@@ -97,21 +100,19 @@ public class ExchangeDataService {
 		return routBanksAndServiceRespDTO;
 	}
 
-	public AmxApiResponse<DiscountDetailsReqRespDTO, Object> saveDiscountDetails(
-			DiscountDetailsReqRespDTO discountdetailsRequestDTO) {
-		// DiscountDetailsReqRespDTO discountDetailsResponseDTO = new
-		// DiscountDetailsReqRespDTO();
-
-		if (null != discountdetailsRequestDTO.getChannelDetails()) {
+	public AmxApiResponse<DiscountDetailsReqRespDTO, Object> saveDiscountDetails(DiscountDetailsReqRespDTO discountdetailsRequestDTO) {
+		//DiscountDetailsReqRespDTO discountDetailsResponseDTO = new DiscountDetailsReqRespDTO();
+		
+		if(null != discountdetailsRequestDTO.getChannelDetails()) {
 			discountManager.commitChannelDiscountModel(discountdetailsRequestDTO.getChannelDetails());
 		}
-		if (null != discountdetailsRequestDTO.getCustomerCategoryDetails()) {
+		if(null != discountdetailsRequestDTO.getCustomerCategoryDetails()) {
 			discountManager.commitCustomerDiscountModel(discountdetailsRequestDTO.getCustomerCategoryDetails());
 		}
-		if (null != discountdetailsRequestDTO.getAmountSlabDetails()) {
+		if(null != discountdetailsRequestDTO.getAmountSlabDetails()) {
 			discountManager.commitPipsDiscount(discountdetailsRequestDTO.getAmountSlabDetails());
 		}
-
+		
 		return AmxApiResponse.build();
 	}
 

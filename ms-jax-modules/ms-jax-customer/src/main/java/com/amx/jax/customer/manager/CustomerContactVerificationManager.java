@@ -1,3 +1,4 @@
+
 package com.amx.jax.customer.manager;
 
 import java.math.BigDecimal;
@@ -98,18 +99,20 @@ public class CustomerContactVerificationManager {
 		return link;
 	}
 
-	public CustomerContactVerification verify(Customer c, CustomerContactVerification link, String identity) {
+	/**
+	 * This method can be used to mark customer contact verifed without
+	 * verificationLink Check.
+	 * 
+	 * @param c
+	 * @param type
+	 * @param contact
+	 */
+	public void markCustomerContactVerified(Customer c, ContactType type, String contact) {
 
-		link = validate(link);
-
-		if (ArgUtil.isEmpty(identity) || !identity.equals(c.getIdentityInt())) {
-			throw new GlobalException(JaxError.INVALID_CIVIL_ID,
-					"Invalid civil id, does not match with Verification link");
-		}
 		List<Customer> otherCustomers = null;
 
-		if (ContactType.EMAIL.equals(link.getContactType())) {
-			if (!link.getContactValue().equals(c.getEmail())) {
+		if (ContactType.EMAIL.equals(type)) {
+			if (!contact.equals(c.getEmail())) {
 				throw new GlobalException(JaxError.ENTITY_INVALID,
 						"EmailId in customer records does not match with verification link");
 			}
@@ -118,9 +121,9 @@ public class CustomerContactVerificationManager {
 				customer.setEmailVerified(Status.N);
 			}
 			c.setEmailVerified(Status.Y);
-		} else if (ContactType.SMS.equals(link.getContactType())) {
+		} else if (ContactType.SMS.equals(type)) {
 			String mobile = c.getPrefixCodeMobile() + c.getMobile();
-			if (!link.getContactValue().equals(mobile)) {
+			if (!contact.equals(mobile)) {
 				throw new GlobalException(JaxError.ENTITY_INVALID,
 						"MOBILE No in customer records does not match with verification link");
 			}
@@ -129,9 +132,9 @@ public class CustomerContactVerificationManager {
 				customer.setMobileVerified(Status.N);
 			}
 			c.setMobileVerified(Status.Y);
-		} else if (ContactType.WHATSAPP.equals(link.getContactType())) {
+		} else if (ContactType.WHATSAPP.equals(type)) {
 			String whatsAppNo = c.getWhatsappPrefix() + c.getWhatsapp();
-			if (!link.getContactValue().equals(whatsAppNo)) {
+			if (!contact.equals(whatsAppNo)) {
 				throw new GlobalException(JaxError.ENTITY_INVALID,
 						"WhatsApp No in customer records does not match with verification link");
 			}
@@ -142,7 +145,7 @@ public class CustomerContactVerificationManager {
 			c.setWhatsAppVerified(Status.Y);
 		} else {
 			throw new GlobalException(JaxError.ENTITY_INVALID,
-					"Verification linkType is Invalid : " + link.getContactType());
+					"Verification linkType is Invalid : " + type);
 		}
 
 		if (!ArgUtil.isEmpty(otherCustomers)) {
@@ -150,6 +153,18 @@ public class CustomerContactVerificationManager {
 		}
 
 		customerRepository.save(c);
+
+	}
+
+	public CustomerContactVerification verify(Customer c, CustomerContactVerification link, String identity) {
+
+		link = validate(link);
+
+		if (ArgUtil.isEmpty(identity) || !identity.equals(c.getIdentityInt())) {
+			throw new GlobalException(JaxError.INVALID_CIVIL_ID,
+					"Invalid civil id, does not match with Verification link");
+		}
+		markCustomerContactVerified(c, link.getContactType(), link.getContactValue());
 
 		link.setIsActive(Status.D);
 		customerContactVerificationRepository.save(link);
@@ -169,6 +184,15 @@ public class CustomerContactVerificationManager {
 		return link;
 	}
 
+	/**
+	 * Mark the customer contact verfified, only if verification link has been
+	 * initiated and is still valid
+	 * 
+	 * @param identity
+	 * @param type
+	 * @param contact
+	 * @return
+	 */
 	public CustomerContactVerification verifyByContact(String identity, ContactType type, String contact) {
 
 		Customer c = customerRepository.getCustomerOneByIdentityInt(identity);

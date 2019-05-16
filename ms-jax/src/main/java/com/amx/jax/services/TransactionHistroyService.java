@@ -16,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -104,11 +106,12 @@ public class TransactionHistroyService extends AbstractService {
 	public ApiResponse getTransactionHistroyDateWise(BigDecimal cutomerReference, BigDecimal docfyr, String fromDate,
 			String toDate) {
 		List<CustomerRemittanceTransactionView> trnxHisList;
+		Sort sort = new Sort(Direction.DESC, "documentDate");
 		if (docfyr != null) {
 			trnxHisList = transactionHistroyDao.getTransactionHistroyDateWise(cutomerReference, docfyr, fromDate,
-					toDate);
+					toDate,sort);
 		} else {
-			trnxHisList = transactionHistroyDao.getTransactionHistroyDateWise(cutomerReference, fromDate, toDate);
+			trnxHisList = transactionHistroyDao.getTransactionHistroyDateWise(cutomerReference, fromDate, toDate, sort);
 		}
 		ApiResponse response = getBlackApiResponse();
 		if (trnxHisList.isEmpty()) {

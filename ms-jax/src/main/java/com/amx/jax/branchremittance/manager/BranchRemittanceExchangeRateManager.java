@@ -203,7 +203,6 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 
 		return model;
 	}
-	
 
 	private BigDecimal getComission() {
 		BigDecimal routingBankId = P_ROUTING_BANK_ID.getValue(remitApplParametersMap);
@@ -215,6 +214,8 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 		BigDecimal newCommission = remittanceTransactionManager.reCalculateComission();
 		if (newCommission != null) {
 			commission = newCommission;
+		}else {
+			throw new GlobalException(JaxError.EXCHANGE_RATE_NOT_FOUND, "COMMISSION NOT DEFINED FOR Country "+rountingCountryId+" currencyId :"+currencyId+" remittanceMode :"+remittanceMode);
 		}
 		
 		BigDecimal corpDiscount = corporateDiscountManager.corporateDiscount();
@@ -396,6 +397,7 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 		List<JaxConditionalFieldDto> flexFields = new ArrayList<>();
 		try {
 			remittanceAdditionalFieldManager.validateAdditionalFields(branchRemittanceApplRequestModel, remitApplParametersMap);
+
 		} catch (GlobalException ex) {
 			if (ex.getMeta() != null) {
 				flexFields.addAll((Collection<? extends JaxConditionalFieldDto>) ex.getMeta());

@@ -1,17 +1,29 @@
 package com.amx.jax.postman.service;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.amx.utils.ArgUtil;
+import com.amx.utils.FileUtil;
 import com.amx.utils.StringUtils;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.MappingIterator;
+import com.fasterxml.jackson.dataformat.csv.CsvMapper;
+import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 
 @Component
 public class ContactCleanerService {
+
+	/** The Constant LOGGER. */
+	private static final Logger LOGGER = LoggerFactory.getLogger(ContactCleanerService.class);
 
 	int totaltEmails = 0;
 	int totaltMobiles = 0;
@@ -19,6 +31,8 @@ public class ContactCleanerService {
 	Map<String, String> mapEmails = new HashMap<String, String>();
 	Map<String, String> mapMobiles = new HashMap<String, String>();
 	Map<String, String> mapWhatsApp = new HashMap<String, String>();
+
+	Map<String, Boolean> blacklistedEmails = new HashMap<String, Boolean>();
 
 	public ContactCleanerService(@Value("${app.test.email}") String[] appTestEmails,
 			@Value("${app.test.mobile}") String[] appTestMobile,
@@ -50,6 +64,8 @@ public class ContactCleanerService {
 				totaltWhatsApp++;
 			}
 		}
+		
+		readEmails();
 	}
 
 	public String getMobile(String mobile) {
@@ -87,11 +103,39 @@ public class ContactCleanerService {
 
 	public String[] getEmail(List<String> tos) {
 		int length = tos.size();
-		String[] array = new String[length];
+		List<String> list = new ArrayList<String>();
+
 		for (int i = 0; i < length; i++) {
-			array[i] = getEmail(tos.get(i));
+			String x = getEmail(tos.get(i));
+			if (!ArgUtil.isEmpty(x) && isEmailBlackListed(x)) {
+				list.add(x);
+			}
 		}
-		return array;
+		return list.toArray(new String[list.size()]);
+	}
+
+	public void readEmails() {
+		try {
+			CsvSchema bootstrapSchema = CsvSchema.emptySchema().withHeader();
+			CsvMapper mapper = new CsvMapper();
+			File file = FileUtil.getExternalFile("ext-resources/blacklisted_emails.csv");
+			MappingIterator<Map<String, String>> readValues = mapper.readerFor(
+					new TypeReference<Map<String, String>>() {
+					}).with(bootstrapSchema)
+					.readValues(file);
+			List<Map<String, String>> x = readValues.readAll();
+
+			for (Map<String, String> row : x) {
+				blacklistedEmails.put(row.get("email"), true);
+			}
+		} catch (Exception e) {
+			LOGGER.warn("File : ext-resources/blacklisted_emails.csv is missing put it relative to jar {}",
+					e.getMessage());
+		}
+	}
+
+	public boolean isEmailBlackListed(String email) {
+		return blacklistedEmails.getOrDefault(email, false);
 	}
 
 }

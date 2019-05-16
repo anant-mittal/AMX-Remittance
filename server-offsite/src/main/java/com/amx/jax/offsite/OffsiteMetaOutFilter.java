@@ -1,10 +1,14 @@
 package com.amx.jax.offsite;
 
+import java.math.BigDecimal;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.client.configs.JaxMetaInfo;
+import com.amx.jax.logger.AuditActor;
+import com.amx.jax.logger.AuditDetailProvider;
 import com.amx.jax.offsite.service.CustomerSession;
 import com.amx.jax.rest.IMetaRequestOutFilter;
 import com.amx.jax.scope.TenantContextHolder;
@@ -13,7 +17,7 @@ import com.amx.utils.ArgUtil;
 import com.amx.utils.ContextUtil;
 
 @Component
-public class OffsiteMetaOutFilter implements IMetaRequestOutFilter<JaxMetaInfo> {
+public class OffsiteMetaOutFilter implements IMetaRequestOutFilter<JaxMetaInfo>, AuditDetailProvider {
 
 	@Autowired
 	OffsiteAppConfig offsiteAppConfig;
@@ -51,4 +55,12 @@ public class OffsiteMetaOutFilter implements IMetaRequestOutFilter<JaxMetaInfo> 
 
 	}
 
+	private BigDecimal getCustomerId() {
+		return ArgUtil.isEmpty(customerSession) ? null : customerSession.getCustomerId();
+	}
+
+	@Override
+	public AuditActor getActor() {
+		return new AuditActor(AuditActor.ActorType.EMP, getCustomerId());
+	}
 }

@@ -76,9 +76,12 @@ public class UserAuthService {
 	/**
 	 * Verify user details.
 	 * 
-	 * @param employeeNo the emp code
-	 * @param identity   the identity
-	 * @param ipAddress  the ip address
+	 * @param employeeNo
+	 *            the emp code
+	 * @param identity
+	 *            the identity
+	 * @param ipAddress
+	 *            the ip address
 	 * @return the user auth init response DTO
 	 * 
 	 * @flow: -> Get Employee ||->-> Multiple Employees -> Error ||->-> Employee Not
@@ -147,7 +150,7 @@ public class UserAuthService {
 			userOtpManager.sendOtpSms(selfEmployee, selfOtpData, "Self OTP Details");
 
 		}
-		
+
 		String transactionId = AppContextUtil.getTranxId();
 
 		UserOtpData userOtpData = new UserOtpData();
@@ -186,7 +189,7 @@ public class UserAuthService {
 			 * if (!ArgUtil.isEmpty(partnerOTPDevice)) { partnerOTPDeviceSecret =
 			 * partnerOTPDevice.getClientSecreteKey(); }
 			 */
-			
+
 			OtpData partnerOtpData = userOtpManager.generateOtpTokens(partnerOTPSecret,
 					userAuthInitReqDTO.getPartnerSAC());
 			if (("Y").equalsIgnoreCase(partnerEmployee.getOtpNotifySms())) {
@@ -227,12 +230,10 @@ public class UserAuthService {
 				HashBuilder builder = new HashBuilder().currentTime(System.currentTimeMillis())
 						.interval(AmxConstants.OFFLINE_OTP_TTL).tolerance(AmxConstants.OFFLINE_OTP_TOLERANCE)
 						.secret(otpDevice.getClientSecreteKey()).message(selfOtpData.getmOtpPrefix());
-				
 
-			
 				userOtpManager.sendToSlack("Offline OTP for Emp: " + employeeNo, " Self ", selfOtpData.getmOtpPrefix(),
 						builder.toHMAC().toComplex(AmxConstants.OTP_LENGTH).output());
-				
+
 			}
 
 			if (isAssisted) {
@@ -246,8 +247,7 @@ public class UserAuthService {
 							.interval(AmxConstants.OFFLINE_OTP_TTL).tolerance(AmxConstants.OFFLINE_OTP_TOLERANCE)
 							.secret(partnerOtpDevice.getClientSecreteKey())
 							.message(userOtpData.getPartnerOtpData().getmOtpPrefix());
-					
-					
+
 					userOtpManager.sendToSlack("Offline OTP for Emp: " + employeeNo, " Partner ",
 							userOtpData.getPartnerOtpData().getmOtpPrefix(),
 							builderP.toHMAC().toComplex(AmxConstants.OTP_LENGTH).output());
@@ -313,7 +313,10 @@ public class UserAuthService {
 			throw new AuthServiceException(RbaacServiceError.OTP_TIMED_OUT, "Invalid OTP: OTP is timedOut");
 		}
 
-		Employee employee = userOtpData.getEmployee();
+		Employee cachedEmployee = userOtpData.getEmployee();
+
+		// Get Fresh Employee
+		Employee employee = rbaacDao.getEmployeeByEmployeeId(cachedEmployee.getEmployeeId());
 
 		String mOtpHash = UserOtpManager.getOtpHash(mOtp);
 		String partnerOtpHash = "";
@@ -521,27 +524,29 @@ public class UserAuthService {
 		if (DeviceType.COMPUTER.isParentOf(deviceType)) {
 
 			if (null == userClientDto.getTerminalId()) {
-
 				throw new AuthServiceException(RbaacServiceError.INVALID_OR_MISSING_TERMINAL_ID,
 						"Terminal Id is Mandatory for Computer Terminals");
 			}
 
 			List<ViewExEmpBranchSysDetails> empBranchSysDetails = rbaacDao
-					.getEmpBranchSysDetailsByEmpIdAndBranchSysInventoryId(employee.getEmployeeId(),
-							userAuthInitReqDTO.getUserClientDto().getTerminalId());
+					.getEmpBranchSysByEmpIdAndBranchSysInvIdAndBranchId(employee.getEmployeeId(),
+							userAuthInitReqDTO.getUserClientDto().getTerminalId(),
+							employee.getCountryBranch().getCountryBranchId());
+
+			/**
+			 * An Employee is Allowed to login only from One System at a time - only from
+			 * one branch. Employee Branch System and Branch System in SysInventory should
+			 * match.
+			 */
 
 			if (null == empBranchSysDetails || empBranchSysDetails.isEmpty()) {
-
 				throw new AuthServiceException(RbaacServiceError.BRANCH_SYSTEM_NOT_FOUND,
-						"Branch System/Terminal is Invalid, NONE found to be assigned.");
-
+						"Employee - Branch System/TerminalId and BranchId Assignment is Invalid or NONE found to be assigned.");
 			}
 			if (empBranchSysDetails.size() > 1) {
-
 				LOGGER.warn("Multiple Active Terminals with Same Terminal Id: "
 						+ userAuthInitReqDTO.getUserClientDto().getTerminalId() + " exist for Employee Id : "
 						+ employee.getEmployeeId());
-
 			}
 
 			return Boolean.TRUE;

@@ -1,7 +1,5 @@
 package com.amx.jax;
 
-import static org.junit.Assert.assertNotNull;
-
 import java.math.BigDecimal;
 
 import org.junit.Test;
@@ -10,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.amx.amxlib.model.response.ExchangeRateResponseModel;
 import com.amx.jax.constants.JaxChannel;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.exrateservice.service.JaxDynamicPriceService;

@@ -23,6 +23,7 @@ import com.amx.jax.dbmodel.fx.EmployeeDetailsView;
 import com.amx.jax.dbmodel.fx.ForeignCurrencyOldModel;
 import com.amx.jax.dbmodel.fx.ForeignCurrencyStockTransfer;
 import com.amx.jax.dbmodel.fx.FxDeliveryDetailsModel;
+import com.amx.jax.dbmodel.fx.FxOrderTransactionModel;
 import com.amx.jax.dbmodel.fx.OrderManagementView;
 import com.amx.jax.dbmodel.fx.UserStockView;
 import com.amx.jax.error.JaxError;
@@ -37,13 +38,20 @@ import com.amx.jax.repository.ReceiptPaymentRespository;
 import com.amx.jax.repository.fx.EmployeeDetailsRepository;
 import com.amx.jax.repository.fx.FcSaleOrderManagementRepository;
 import com.amx.jax.repository.fx.FxDeliveryDetailsRepository;
+import com.amx.jax.repository.fx.FxOrderTransactionRespository;
 import com.amx.jax.repository.fx.UserStockRepository;
+import com.amx.jax.repository.fx.VwFxDeliveryDetailsRepository;
+import com.google.common.collect.Lists;
+import com.querydsl.core.types.Predicate;
 
 @Component
 public class FcSaleBranchDao {
 	
 	@Autowired
 	FcSaleOrderManagementRepository fcSaleOrderManagementRepository;
+	
+	@Autowired
+	VwFxDeliveryDetailsRepository vwFxDeliveryDetailsRepository;
 	
 	@Autowired
 	UserStockRepository userStockRepository;
@@ -80,6 +88,9 @@ public class FcSaleBranchDao {
 	
 	@Autowired
 	ReceiptPaymentAppRepository receiptPaymentAppRepository;
+	
+	@Autowired
+	FxOrderTransactionRespository fxOrderTransactionRespository;
 	
 	public List<OrderManagementView> fetchFcSaleOrderManagement(BigDecimal applicationcountryId,BigDecimal areaCode){
 		return fcSaleOrderManagementRepository.findByApplicationCountryIdAndAreaCode(applicationcountryId,areaCode);
@@ -190,6 +201,7 @@ public class FcSaleBranchDao {
 	public List<CollectionModel> fetchCollectionData(BigDecimal collectDocNo,BigDecimal collectDocYear){
 		return collectionRepository.findByDocumentNoAndDocumentFinanceYear(collectDocNo, collectDocYear);
 	}
+	
 	
 	@Transactional
 	public void printOrderSave(List<ForeignCurrencyAdjust> foreignCurrencyAdjusts,List<ReceiptPayment> updateRecPay,String userName,Date currenctDate,BigDecimal deliveryDetailsId,String orderStatus){
@@ -447,9 +459,17 @@ public class FcSaleBranchDao {
 		if(recordCount != 0 && recordCount == count) {
 			status = Boolean.FALSE;
 		}
-		
 		return status;
 	}
+
+	public List<FxOrderTransactionModel> searchOrder(Predicate predicate) {
+		Iterable<FxOrderTransactionModel> fxOrdersItr = fxOrderTransactionRespository.findAll(predicate);
+		return Lists.newArrayList(fxOrdersItr);
+	}
 	
+	public List<FxOrderTransactionModel>searchOrderWithoutParams(){
+		return fxOrderTransactionRespository.searchOrderWithoutParams();
+	}
+
 	
 }

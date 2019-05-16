@@ -2,10 +2,7 @@ package com.amx.jax.branchremittance.manager;
 
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
-import java.text.Collator;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,7 +52,6 @@ import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeR
 import com.amx.jax.repository.BankMasterRepository;
 import com.amx.jax.repository.IAccountTypeFromViewDao;
 import com.amx.jax.repository.IAdditionalBankRuleAmiecRepository;
-import com.amx.jax.repository.IBankMasterFromViewDao;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.ICollectionDetailRepository;
 import com.amx.jax.repository.ICurrencyDao;

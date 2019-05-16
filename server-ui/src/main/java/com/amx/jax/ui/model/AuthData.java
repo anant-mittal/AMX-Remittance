@@ -2,17 +2,22 @@ package com.amx.jax.ui.model;
 
 import javax.validation.constraints.Pattern;
 
-import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.jax.AppConstants;
+import com.amx.jax.AppContextUtil;
+import com.amx.jax.JaxAuthMetaResp;
+import com.amx.jax.dict.ContactType;
 import com.amx.jax.model.AbstractModel;
 import com.amx.jax.model.AuthState;
 import com.amx.jax.model.auth.QuestModelDTO;
+import com.amx.jax.model.customer.SecurityQuestionModel;
 import com.amx.jax.ui.model.AuthDataInterface.AuthRequest;
 import com.amx.jax.ui.model.AuthDataInterface.AuthResponse;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
  * The Class AuthData.
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class AuthData extends AbstractModel implements AuthResponse, AuthRequest {
 
 	/** The Constant serialVersionUID. */
@@ -25,14 +30,14 @@ public class AuthData extends AbstractModel implements AuthResponse, AuthRequest
 	@Pattern(regexp = AppConstants.Validator.IDENTITY)
 	private String identity = null;
 
-	private String identityLock = null;
-
 	/** The password. */
 	private String password = null;
 
 	private String deviceToken = null;
 
 	private String lockId = null;
+
+	private ContactType contactType;
 
 	/*
 	 * (non-Javadoc)
@@ -91,6 +96,8 @@ public class AuthData extends AbstractModel implements AuthResponse, AuthRequest
 
 	/** The e otp prefix. */
 	private String eOtpPrefix = null;
+
+	private String wOtpPrefix = null;
 
 	/** The otp. */
 	@Pattern(regexp = AppConstants.Validator.OTP)
@@ -401,6 +408,37 @@ public class AuthData extends AbstractModel implements AuthResponse, AuthRequest
 	@Override
 	public void setLockId(String lockId) {
 		this.lockId = lockId;
+	}
+
+	@Override
+	public ContactType getContactType() {
+		return this.contactType;
+	}
+
+	@Override
+	public void setContactType(ContactType contactType) {
+		this.contactType = contactType;
+	}
+
+	@Override
+	public String getwOtpPrefix() {
+		return wOtpPrefix;
+	}
+
+	@Override
+	public void setwOtpPrefix(String wOtpPrefix) {
+		this.wOtpPrefix = wOtpPrefix;
+	}
+
+	public JaxAuthMetaResp toJaxAuthMetaResp() {
+		JaxAuthMetaResp meta = new JaxAuthMetaResp();
+		meta.setId(AppContextUtil.getContextId());
+		meta.seteOtpPrefix(eOtpPrefix);
+		meta.setmOtpPrefix(mOtpPrefix);
+		meta.setwOtpPrefix(wOtpPrefix);
+		meta.setOtpPrefix(otpPrefix);
+		meta.setQues(ques);
+		return meta;
 	}
 
 }

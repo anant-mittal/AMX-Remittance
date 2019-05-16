@@ -1,6 +1,7 @@
 package com.amx.jax.model.response.fx;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 public class FxOrderTransactionHistroyDto {
 	private BigDecimal idno;
@@ -17,6 +18,7 @@ public class FxOrderTransactionHistroyDto {
 	private String transactionStatusDesc;
 	private String transactionTypeDesc;
 	private BigDecimal collectionDocumentNo;
+	private BigDecimal localCurrencyAmout;
 
 	private BigDecimal collectionDocumentCode;
 
@@ -61,6 +63,21 @@ public class FxOrderTransactionHistroyDto {
 	
 	private String otpTokenPrefix;
 	private String otpTokenCustomer;
+	
+	private String driverName;
+	private String employeeName;
+	private String phoneNumber;
+	public String getMutipleInventoryId() {
+		return mutipleInventoryId;
+	}
+
+	public void setMutipleInventoryId(String mutipleInventoryId) {
+		this.mutipleInventoryId = mutipleInventoryId;
+	}
+
+	String mutipleInventoryId;
+	
+	List<FcSaleCurrencyAmountModel> mutipleFcAmount;
 
 	public BigDecimal getIdno() {
 		return idno;
@@ -382,6 +399,50 @@ public class FxOrderTransactionHistroyDto {
 	public void setOtpTokenCustomer(String otpTokenCustomer) {
 		this.otpTokenCustomer = otpTokenCustomer;
 	}
+
+	public String getDriverName() {
+		return driverName;
+	}
+
+	public void setDriverName(String driverName) {
+		this.driverName = driverName;
+	}
+
+	public String getEmployeeName() {
+		return employeeName;
+	}
+
+	public void setEmployeeName(String employeeName) {
+		this.employeeName = employeeName;
+	}
+
+	public String getPhoneNumber() {
+		return phoneNumber;
+	}
+
+	public void setPhoneNumber(String phoneNumber) {
+		this.phoneNumber = phoneNumber;
+	}
+
+	public BigDecimal getLocalCurrencyAmout() {
+		return localCurrencyAmout;
+	}
+
+	public void setLocalCurrencyAmout(BigDecimal localCurrencyAmout) {
+		this.localCurrencyAmout = localCurrencyAmout;
+	}
+
+	public List<FcSaleCurrencyAmountModel> getMutipleFcAmount() {
+		return mutipleFcAmount;
+	}
+
+	public void setMutipleFcAmount(List<FcSaleCurrencyAmountModel> mutipleFcAmount) {
+		this.mutipleFcAmount = mutipleFcAmount;
+	}
+	
+	
+	
+	
 
 	
 }

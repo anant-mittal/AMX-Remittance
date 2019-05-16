@@ -130,6 +130,11 @@ public class RequestTrackEvent extends AuditEvent {
 		this.ip = ip;
 	}
 
+	public RequestTrackEvent debug(boolean isDebugOnly) {
+		this.debugEvent = isDebugOnly;
+		return this;
+	}
+
 	public void clean() {
 	}
 

@@ -13,7 +13,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.time.DateUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -22,17 +21,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.amx.amxlib.constant.CommunicationChannel;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.exception.jax.InvalidCivilIdException;
 import com.amx.amxlib.exception.jax.InvalidOtpException;
 import com.amx.amxlib.exception.jax.UserNotFoundException;
-import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
-import com.amx.amxlib.model.SecurityQuestionModel;
-import com.amx.jax.JaxAuthCache;
-import com.amx.jax.JaxAuthCache.JaxAuthMeta;
-import com.amx.jax.JaxAuthContext;
 import com.amx.jax.amxlib.config.OtpSettings;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.CustomerVerificationType;
@@ -52,12 +45,10 @@ import com.amx.jax.dbmodel.remittance.BlackListDetailModel;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.exception.ExceptionMessageKey;
 import com.amx.jax.meta.MetaData;
-import com.amx.jax.model.auth.CustomerRequestAuthMeta;
-import com.amx.jax.model.auth.QuestModelDTO;
+import com.amx.jax.model.customer.SecurityQuestionModel;
 import com.amx.jax.repository.IContactDetailDao;
 import com.amx.jax.repository.remittance.IBlackListDetailRepository;
 import com.amx.jax.scope.TenantContext;
-import com.amx.jax.userservice.constant.CustomerDataVerificationQuestion;
 import com.amx.jax.userservice.dao.CusmosDao;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.dao.CustomerIdProofDao;
@@ -132,9 +123,6 @@ public class UserValidationService {
 	SecurityQuestionsManager securityQuestionsManager;
 
 	@Autowired
-	JaxAuthCache jaxAuthCache;
-
-	@Autowired
 	MetaData metaData;
 
 	@Autowired
@@ -189,7 +177,7 @@ public class UserValidationService {
 		return customerVerification;
 	}
 
-	protected void validateCivilId(String civilId) {
+	public void validateCivilId(String civilId) {
 		boolean isValid = custValidation.validateCivilId(civilId, meta.getCountry().getISO2Code());
 		if (!isValid) {
 			throw new InvalidCivilIdException("Civil Id " + civilId + " is not valid!");
@@ -239,7 +227,9 @@ public class UserValidationService {
 	}
 
 	public void validateCustIdProofs(BigDecimal custId) {
+
 		if (tenantContext.get() != null) {
+			logger.info("Tenent is not bahrain" + tenantContext.get());
 			tenantContext.get().validateCustIdProofs(custId);
 			return;
 		}
@@ -770,7 +760,7 @@ public class UserValidationService {
 		userValidationService.validateCustomerVerification(onlineCustomer.getCustomerId());
 
 		if (!ConstantDocument.Yes.equals(onlineCustomer.getStatus())) {
-			throw new GlobalException(JaxError.CUSTOMER_NOT_ACTIVE_ONLINE, "Customer not active in online");
+			throw new GlobalException(JaxError.CUSTOMER_NOT_ACTIVE_ONLINE, "You are not registered online. Please click Sign Up for registration");
 		}
 	}
 
@@ -793,7 +783,7 @@ public class UserValidationService {
 		userValidationService.validateCustomerVerification(onlineCustomer.getCustomerId());
 
 		if (!ConstantDocument.Yes.equals(onlineCustomer.getStatus())) {
-			throw new GlobalException(JaxError.CUSTOMER_NOT_ACTIVE_ONLINE, "Customer not active in online");
+			throw new GlobalException(JaxError.CUSTOMER_NOT_ACTIVE_ONLINE, "You are not registered online. Please click Sign Up for registration");
 		}
 		if (ConstantDocument.Yes.equals(customer.getIsActive())) {
 			throw new GlobalException(JaxError.CUSTOMER_ACTIVE_BRANCH, "Customer active in branch");
@@ -811,110 +801,6 @@ public class UserValidationService {
 		// validateBlockedCustomerForOnlineReg(customer);
 	}
 
-	private void validateBlockedCustomerForOnlineReg(Customer customer) {
-		// article 20
-		if (customer.getFsArticleDetails() != null) {
-			String articleCode = customer.getFsArticleDetails().getFsArticleMaster().getArticleCode();
-			if (ConstantDocument.ARTICLE_20_CODE.equals(articleCode)) {
-				throw new GlobalException(JaxError.ONLINE_REG_NOT_ALLOWED_ARTICLE_20,
-						"Your online account is not activated. Please visit the branch for assistance.");
-			}
-		}
-	}
-
-	public void validateEmailMobileUpdateFlow(CustomerModel customerModel, List<CommunicationChannel> channels) {
-		GlobalException ex = null;
-		JaxAuthMeta jaxAuthMeta = jaxAuthCache.getOrDefault(metaData.getCustomerId().toString(), new JaxAuthMeta());
-
-		if (null == JaxAuthContext.getMotp() && null == JaxAuthContext.getEotp()
-				&& null == JaxAuthContext.getSecAns()) {
-			ex = new GlobalException(JaxError.OTP_AND_SEC_ANSWER_REQUIRED.getStatusKey(),
-					"motp, eOtp and Security Answer required");
-			CivilIdOtpModel civilIdOtpModel = (CivilIdOtpModel) userService
-					.sendOtpForCivilId(customerModel.getIdentityId(), channels, null, null).getResult();
-			QuestModelDTO secQuestion = securityQuestionsManager.getDataVerificationRandomQuestions(1).get(0);
-			ex.setMeta(new CustomerRequestAuthMeta(civilIdOtpModel.getmOtpPrefix(), civilIdOtpModel.geteOtpPrefix(),
-					secQuestion));
-			jaxAuthMeta.setQuestId(secQuestion.getQuestId());
-			jaxAuthCache.fastPut(metaData.getCustomerId().toString(), jaxAuthMeta);
-		}
-
-		if (null == JaxAuthContext.getMotp() && null == JaxAuthContext.getEotp()
-				&& JaxAuthContext.getSecAns() != null) {
-			ex = new GlobalException(JaxError.BOTH_OTP_REQUIRED.getStatusKey(), "motp and eOtp required");
-			CivilIdOtpModel civilIdOtpModel = (CivilIdOtpModel) userService
-					.sendOtpForCivilId(customerModel.getIdentityId(), channels, null, null).getResult();
-			ex.setMeta(new CustomerRequestAuthMeta(civilIdOtpModel.getmOtpPrefix(), civilIdOtpModel.geteOtpPrefix()));
-
-			jaxAuthCache.fastPut(metaData.getCustomerId().toString(), jaxAuthMeta);
-		}
-
-		if (isSecurityAnsRequired(jaxAuthMeta)) {
-			ex = new GlobalException(JaxError.SEC_ANS_REQUIRED.getStatusKey(), "Security Answer required");
-			QuestModelDTO secQuestion = securityQuestionsManager.getDataVerificationRandomQuestions(1).get(0);
-			ex.setMeta(new CustomerRequestAuthMeta(secQuestion));
-			jaxAuthMeta.setQuestId(secQuestion.getQuestId());
-			jaxAuthCache.fastPut(metaData.getCustomerId().toString(), jaxAuthMeta);
-		}
-
-		if (ex != null) {
-			throw ex;
-		}
-		customerModel.setMotp(JaxAuthContext.getMotp());
-		customerModel.setEotp(JaxAuthContext.getEotp());
-		validateSecurityAnswer();
-
-	}
-
-	private boolean isSecurityAnsRequired(JaxAuthMeta jaxAuthMeta) {
-		if (JaxAuthContext.getMotp() != null && JaxAuthContext.getEotp() != null
-				&& null == JaxAuthContext.getSecAns()) {
-			return true;
-		}
-		if (jaxAuthMeta != null && jaxAuthMeta.getQuestId() == null) {
-			return true;
-		}
-		return false;
-	}
-
-	private void validateSecurityAnswer() {
-		JaxAuthMeta jaxAuthMeta = jaxAuthCache.getOrDefault(metaData.getCustomerId().toString(), new JaxAuthMeta());
-
-		// get question from cache
-		CustomerDataVerificationQuestion question = CustomerDataVerificationQuestion
-				.getCustomerDataVerificationQuestionById(jaxAuthMeta.getQuestId());
-
-		// get answer from JaxAuthContext.getSecAns()
-		String answer = JaxAuthContext.getSecAns();
-
-		Customer customerInfo = custDao.getCustById(metaData.getCustomerId());
-		ContactDetail contactDetailsLocal = contactDetailDao.getContactDetailForLocal(metaData.getCustomerId());
-
-		switch (question) {
-		case Q1: {
-			String correctState = contactDetailsLocal.getFsStateMaster().getFsStateMasterDescs().get(0).getStateName();
-			if (!correctState.equalsIgnoreCase(answer)) {
-				throw new GlobalException(JaxError.INVALIDATE_ANSWER, "Given Answer is Invalid");
-			}
-			break;
-		}
-
-		case Q2: {
-			Date identityExpiry = customerInfo.getIdentityExpiredDate();
-			Date givenDate = com.amx.jax.util.DateUtil.convertStringToDate(answer);
-			if (!DateUtils.isSameDay(identityExpiry, givenDate)) {
-				throw new GlobalException(JaxError.INVALIDATE_ANSWER, "Given Answer is Invalid");
-			}
-			break;
-		}
-
-		default:
-			break;
-
-		}
-	}
-	
-	
 	public void validateIdentityInt(String identityInt, String identityTypeStr) {
 		BigDecimal identyType = ConstantDocument.BIZ_COMPONENT_ID_CIVIL_ID;
 		if (identityTypeStr != null) {
@@ -929,16 +815,17 @@ public class UserValidationService {
 			throw new GlobalException(JaxError.FINGERPRINT_EXPIRED, "Fingerprint expired");
 		}
 	}
-	
+
 	public void validateBlackListedCustomer(Customer customer) {
-		
-		String idType ="C"; 
-		List<BlackListDetailModel> blist = blackListDtRepo.findByIdNumberAndIdType(customer.getIdentityInt(),idType);
+
+		String idType = "C";
+		List<BlackListDetailModel> blist = blackListDtRepo.findByIdNumberAndIdType(customer.getIdentityInt(), idType);
 		if (blist != null && !blist.isEmpty()) {
-			throw new GlobalException(JaxError.BLACK_LISTED_EXISTING_CIVIL_ID.getStatusKey(),"Your account is locked as we have found that your name has been black-listed by CBK.");
+			throw new GlobalException(JaxError.BLACK_LISTED_EXISTING_CIVIL_ID.getStatusKey(),
+					"Your account is locked as we have found that your name has been black-listed by CBK.");
 		}
 	}
-	
+
 	public Customer validateCustomerForDuplicateRecords(List<Customer> customers) {
 		List<Customer> activeCustomers = customers.stream().filter(i -> ConstantDocument.Yes.equals(i.getIsActive()))
 				.collect(Collectors.toList());

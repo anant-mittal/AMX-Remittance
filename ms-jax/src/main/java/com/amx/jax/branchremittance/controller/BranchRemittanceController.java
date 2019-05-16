@@ -37,7 +37,6 @@ import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
 import com.amx.jax.model.response.remittance.FlexFieldReponseDto;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
 import com.amx.jax.model.response.remittance.PaymentModeDto;
-import com.amx.jax.model.response.remittance.PaymentModeOfPaymentDto;
 import com.amx.jax.model.response.remittance.RemittanceDeclarationReportDto;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.model.response.remittance.RoutingResponseDto;

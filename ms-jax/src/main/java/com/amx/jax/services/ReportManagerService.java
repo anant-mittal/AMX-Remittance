@@ -462,6 +462,7 @@ public class ReportManagerService extends AbstractService{
 						obj.setVatNumber(companyMaster.get(0).getVatNumber()==null?"":companyMaster.get(0).getVatNumber());
 						obj.setVatDate(companyMaster.get(0).getVatRegistrationDate()==null?"":companyMaster.get(0).getVatRegistrationDate());
 					}
+					// 
 					
 					obj.setVatAmount(view.getVatAmount()==null?BigDecimal.ZERO:view.getVatAmount());
 					obj.setVatPercentage(view.getVatPercentage()==null?BigDecimal.ZERO:view.getVatPercentage());
@@ -470,11 +471,11 @@ public class ReportManagerService extends AbstractService{
 					/** end **/
 					
 					/** added by rabil  It should be print conditionally.if IS_DISCOUNT_AVAILED = 'Y' and KD_SAVED > 0 **/
-					 if(!StringUtils.isBlank(view.getIsDiscAvail()) && view.getIsDiscAvail().equalsIgnoreCase(ConstantDocument.Yes) && JaxUtil.isNullZeroBigDecimalCheck(view.getAmountSaved()) &&  view.getAmountSaved().compareTo(BigDecimal.ZERO)>0) {
-						 BigDecimal kdAmountSaved=RoundUtil.roundBigDecimal((view.getAmountSaved()),decimalPerCurrency);
-						 obj.setAmountSaved(currencyQuoteName+"     "+kdAmountSaved.toString());
+					 if(!StringUtils.isBlank(view.getIsDiscAvail()) && view.getIsDiscAvail().equalsIgnoreCase(ConstantDocument.Yes) && JaxUtil.isNullZeroBigDecimalCheck(view.getAmountSaved()) && view.getAmountSaved().compareTo(BigDecimal.ZERO)>0) {
+						 BigDecimal KdSaved=RoundUtil.roundBigDecimal((view.getAmountSaved()),decimalPerCurrency);
+						 obj.setAmountSaved(currencyQuoteName +"     "+KdSaved.toString());
 					 }
-					 /** end **/
+					/** end **/
 					
 				} catch (Exception e) {
 					logger.info( "Exception Occured While Report2 "+e.getMessage());

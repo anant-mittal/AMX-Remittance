@@ -34,6 +34,7 @@ import com.amx.amxlib.model.response.ExchangeRateResponseModel;
 import com.amx.amxlib.model.response.PurposeOfTransactionModel;
 import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
+import com.amx.jax.JaxAuthContext;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.remittance.RemittanceClient;
 import com.amx.jax.dict.Language;
@@ -401,7 +402,7 @@ public class RemittController {
 
 		// Noncompliant - exception is lost
 		try {
-			mOtp = ArgUtil.ifNotEmpty(mOtp, mOtpHeader);
+			mOtp = JaxAuthContext.mOtp(ArgUtil.ifNotEmpty(mOtp, mOtpHeader));
 			transactionRequestModel.setmOtp(mOtp);
 
 			RemittanceApplicationResponseModel respTxMdl = jaxService.setDefaults().getRemitClient()

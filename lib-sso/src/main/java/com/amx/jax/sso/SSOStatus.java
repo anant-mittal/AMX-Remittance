@@ -30,7 +30,7 @@ public class SSOStatus extends IStatusCodeListPlugin<SSOServerCodes, ApiSSOStatu
 	public static enum SSOServerCodes implements IExceptionEnum {
 		AUTH_REQUIRED, OTP_REQUIRED, DOTP_REQUIRED, MOTP_REQUIRED, EOTP_REQUIRED, AUTH_DONE,
 
-		NO_TERMINAL_SESSION, NO_TERMINAL_CARD;
+		NO_TERMINAL_SESSION, NO_TERMINAL_CARD, ERROR_TERMINAL_CARD_DATA;
 
 		@Override
 		public String getStatusKey() {
@@ -78,6 +78,10 @@ public class SSOStatus extends IStatusCodeListPlugin<SSOServerCodes, ApiSSOStatu
 		public SSOServerError(Exception e) {
 			super(e);
 			this.setError(SSOServerCodes.AUTH_REQUIRED);
+		}
+
+		public SSOServerError(SSOServerCodes error, String errorMessage) {
+			super(error, errorMessage);
 		}
 
 		@Override

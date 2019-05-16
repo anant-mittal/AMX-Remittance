@@ -3,8 +3,6 @@ package com.amx.amxlib.meta.model;
 import java.math.BigDecimal;
 import java.util.List;
 
-
-
 import com.amx.amxlib.model.PromotionDto;
 
 
