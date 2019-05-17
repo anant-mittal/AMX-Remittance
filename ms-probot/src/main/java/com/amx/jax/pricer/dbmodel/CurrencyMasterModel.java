@@ -15,12 +15,6 @@ import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-
-
-/**
-* @author :Rabil
-*/
-
 @Entity
 @Table(name = "EX_CURRENCY_MASTER")
 public class CurrencyMasterModel implements java.io.Serializable {
@@ -29,12 +23,13 @@ public class CurrencyMasterModel implements java.io.Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 3842382778044486312L;
+	
 	private BigDecimal currencyId;
-	//private CountryMaster fsCountryMaster;
+	// private CountryMaster fsCountryMaster;
 	private String currencyCode;
 	private String currencyName;
 	private String quoteName;
-	//private Byte currencyDesc;
+	// private Byte currencyDesc;
 	private String decimalName;
 	private String fimsCurrencyCode;
 	private String isactive;
@@ -42,9 +37,9 @@ public class CurrencyMasterModel implements java.io.Serializable {
 	private String arabicDecimalName;
 	private String arabicQuoteName;
 	private String swiftCurrency;
-	 
+
 	private String isoCurrencyCode;
-	 
+
 	private BigDecimal decinalNumber;
 	private String createdBy;
 
@@ -56,7 +51,8 @@ public class CurrencyMasterModel implements java.io.Serializable {
 	private String remarks;
 	private BigDecimal countryId;
 
-	
+	private BigDecimal currGroupId;
+
 	public CurrencyMasterModel() {
 	}
 
@@ -64,7 +60,6 @@ public class CurrencyMasterModel implements java.io.Serializable {
 		this.currencyId = currencyId;
 	}
 
-	
 	@Id
 	@GeneratedValue(generator = "ex_currency_master_seq", strategy = GenerationType.SEQUENCE)
 	@SequenceGenerator(name = "ex_currency_master_seq", sequenceName = "EX_CURRENCY_MASTER_SEQ", allocationSize = 1)
@@ -77,15 +72,15 @@ public class CurrencyMasterModel implements java.io.Serializable {
 		this.currencyId = currencyId;
 	}
 
-/*	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "COUNTRY_ID")
-	public CountryMaster getFsCountryMaster() {
-		return this.fsCountryMaster;
-	}
-
-	public void setFsCountryMaster(CountryMaster fsCountryMaster) {
-		this.fsCountryMaster = fsCountryMaster;
-	}*/
+	/*
+	 * @ManyToOne(fetch = FetchType.LAZY)
+	 * 
+	 * @JoinColumn(name = "COUNTRY_ID") public CountryMaster getFsCountryMaster() {
+	 * return this.fsCountryMaster; }
+	 * 
+	 * public void setFsCountryMaster(CountryMaster fsCountryMaster) {
+	 * this.fsCountryMaster = fsCountryMaster; }
+	 */
 
 	@Column(name = "CURRENCY_CODE", length = 3, unique = true)
 	public String getCurrencyCode() {
@@ -114,14 +109,13 @@ public class CurrencyMasterModel implements java.io.Serializable {
 		this.quoteName = quoteName;
 	}
 
-	/*@Column(name = "CURRENCY_DESC", precision = 2, scale = 0)
-	public Byte getCurrencyDesc() {
-		return this.currencyDesc;
-	}
-
-	public void setCurrencyDesc(Byte currencyDesc) {
-		this.currencyDesc = currencyDesc;
-	}*/
+	/*
+	 * @Column(name = "CURRENCY_DESC", precision = 2, scale = 0) public Byte
+	 * getCurrencyDesc() { return this.currencyDesc; }
+	 * 
+	 * public void setCurrencyDesc(Byte currencyDesc) { this.currencyDesc =
+	 * currencyDesc; }
+	 */
 
 	@Column(name = "DECIMAL_NAME", length = 10)
 	public String getDecimalName() {
@@ -204,7 +198,6 @@ public class CurrencyMasterModel implements java.io.Serializable {
 		this.decinalNumber = decinalNumber;
 	}
 
-	
 	@Column(name = "CREATED_BY")
 	public String getCreatedBy() {
 		return createdBy;
@@ -268,13 +261,22 @@ public class CurrencyMasterModel implements java.io.Serializable {
 		this.remarks = remarks;
 	}
 
-	@Column(name="COUNTRY_ID")
+	@Column(name = "COUNTRY_ID")
 	public BigDecimal getCountryId() {
 		return countryId;
 	}
 
 	public void setCountryId(BigDecimal countryId) {
 		this.countryId = countryId;
+	}
+
+	@Column(name = "CURR_GROUPID")
+	public BigDecimal getCurrGroupId() {
+		return currGroupId;
+	}
+
+	public void setCurrGroupId(BigDecimal currGroupId) {
+		this.currGroupId = currGroupId;
 	}
 
 }

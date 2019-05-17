@@ -14,13 +14,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.pricer.dao.ChannelDiscountDao;
+import com.amx.jax.pricer.dao.CurrencyMasterDao;
 import com.amx.jax.pricer.dao.CustCatDiscountDao;
 import com.amx.jax.pricer.dao.CustomerExtendedDao;
+import com.amx.jax.pricer.dao.DiscountMasterDao;
+import com.amx.jax.pricer.dao.GroupingMasterDao;
 import com.amx.jax.pricer.dao.PipsMasterDao;
 import com.amx.jax.pricer.dbmodel.ChannelDiscount;
+import com.amx.jax.pricer.dbmodel.CurrencyMasterModel;
 import com.amx.jax.pricer.dbmodel.Customer;
 import com.amx.jax.pricer.dbmodel.CustomerCategoryDiscount;
 import com.amx.jax.pricer.dbmodel.CustomerExtended;
+import com.amx.jax.pricer.dbmodel.DiscountMaster;
+import com.amx.jax.pricer.dbmodel.GroupingMaster;
 import com.amx.jax.pricer.dbmodel.PipsMaster;
 import com.amx.jax.pricer.dto.ExchangeDiscountInfo;
 import com.amx.jax.pricer.dto.ExchangeRateDetails;
@@ -44,6 +50,15 @@ public class CustomerDiscountManager {
 	@Autowired
 	CustomerExtendedDao customerExtendedDao;
 
+	@Autowired
+	CurrencyMasterDao currencyMasterDao;
+
+	@Autowired
+	GroupingMasterDao groupingMasterDao;
+
+	@Autowired
+	DiscountMasterDao discountMasterDao;
+
 	@Resource
 	PricingRateDetailsDTO pricingRateDetailsDTO;
 
@@ -54,9 +69,29 @@ public class CustomerDiscountManager {
 	public void getDiscountedRates(PricingRequestDTO pricingRequestDTO, Customer customer,
 			CUSTOMER_CATEGORY customerCategory) {
 
+		// Find the Currency Group to which the currency belongs
+		// TODO: Optimize this to Save it in the Cache and retrieve it from thr
+		CurrencyMasterModel currencyMasterModel = currencyMasterDao
+				.getByCurrencyId(pricingRequestDTO.getForeignCurrencyId());
+
+		if (currencyMasterModel.getCurrGroupId() == null) {
+			// TODO Throw Error
+		}
+
+		GroupingMaster curGroup = groupingMasterDao.getGroupById(currencyMasterModel.getCurrGroupId());
+
+		if (curGroup == null) {
+			// TODO : throw error
+		}
+
 		// Compute Channel Discount
 		ChannelDiscount channelDiscount = channelDiscountDao.getDiscountByChannel(pricingRequestDTO.getChannel());
-		BigDecimal channelDiscountPips = (null != channelDiscount ? channelDiscount.getDiscountPips() : BIGD_ZERO);
+
+		DiscountMaster channelDiscountMaster = discountMasterDao.getByDiscountTypeAndDiscountTypeIdAndGroupId(
+				DISCOUNT_TYPE.CHANNEL.getTypeKey(), channelDiscount.getId(), curGroup.getId());
+
+		BigDecimal channelDiscountPips = (null != channelDiscount ? channelDiscountMaster.getDiscountPips()
+				: BIGD_ZERO);
 
 		// Channel Info
 		ExchangeDiscountInfo channelInfo = new ExchangeDiscountInfo();
@@ -75,7 +110,10 @@ public class CustomerDiscountManager {
 
 			CustomerCategoryDiscount ccDiscount = customerExtended.getCustomerCategoryDiscount();
 
-			ccDiscountPips = (null != ccDiscount ? ccDiscount.getDiscountPips() : BIGD_ZERO);
+			DiscountMaster ccDiscountMaster = discountMasterDao.getByDiscountTypeAndDiscountTypeIdAndGroupId(
+					DISCOUNT_TYPE.CUSTOMER_CATEGORY.getTypeKey(), ccDiscount.getId(), curGroup.getId());
+
+			ccDiscountPips = (null != ccDiscount ? ccDiscountMaster.getDiscountPips() : BIGD_ZERO);
 
 			// Customer Category Info
 			custCategoryInfo.setId(ccDiscount.getId());
@@ -88,7 +126,11 @@ public class CustomerDiscountManager {
 
 		} else {
 			CustomerCategoryDiscount ccDiscount = custCatDiscountDao.getDiscountByCustomerCategory(customerCategory);
-			ccDiscountPips = (null != ccDiscount ? ccDiscount.getDiscountPips() : BIGD_ZERO);
+
+			DiscountMaster ccDiscountMaster = discountMasterDao.getByDiscountTypeAndDiscountTypeIdAndGroupId(
+					DISCOUNT_TYPE.CUSTOMER_CATEGORY.getTypeKey(), ccDiscount.getId(), curGroup.getId());
+
+			ccDiscountPips = (null != ccDiscount ? ccDiscountMaster.getDiscountPips() : BIGD_ZERO);
 
 			custCategoryInfo.setId(ccDiscount.getId());
 			custCategoryInfo.setDiscountType(DISCOUNT_TYPE.CUSTOMER_CATEGORY);
