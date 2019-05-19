@@ -464,7 +464,10 @@ public class ReportManagerService extends AbstractService{
 						 obj.setAmountSaved(currencyQuoteName +"     "+KdSaved.toString());
 					 }
 					/** end **/
-
+					 
+					 String promotionMessage = promotionManager.getPromotionMessage(view.getDocumentNo(),view.getDocumentFinancialYear(),view.getCountryBranchId());
+					 
+					 obj.setPromotionMessage(promotionMessage==null?"":promotionMessage);
 					
 				} catch (Exception e) {
 					logger.info( "Exception Occured While Report2 "+e.getMessage());
