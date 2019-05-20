@@ -11,6 +11,10 @@ public final class PricerServiceConstants {
 
 	public static String TTE = "TTE";
 
+	public static String BIG_Y = "Y";
+
+	public static String BIG_YES = "YES";
+
 	private PricerServiceConstants() {
 		// Not Allowed
 		super();
@@ -25,7 +29,7 @@ public final class PricerServiceConstants {
 	}
 
 	public static enum DISCOUNT_TYPE {
-		
+
 		CHANNEL("CHANNEL"), CUSTOMER_CATEGORY("CSTMRCAT"), AMOUNT_SLAB("PIPS");
 
 		private String typeKey;

@@ -1,5 +1,8 @@
 package com.amx.jax.pricer.manager;
 
+import static com.amx.jax.pricer.var.PricerServiceConstants.BIG_Y;
+import static com.amx.jax.pricer.var.PricerServiceConstants.BIG_YES;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
+import java.util.stream.Stream;
 
 import javax.annotation.Resource;
 
@@ -31,6 +35,7 @@ import com.amx.jax.pricer.dbmodel.PipsMaster;
 import com.amx.jax.pricer.dto.ExchangeDiscountInfo;
 import com.amx.jax.pricer.dto.ExchangeRateDetails;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
+import com.amx.jax.pricer.util.DbValueUtil;
 import com.amx.jax.pricer.util.PricingRateDetailsDTO;
 import com.amx.jax.pricer.var.PricerServiceConstants.CUSTOMER_CATEGORY;
 import com.amx.jax.pricer.var.PricerServiceConstants.DISCOUNT_TYPE;
@@ -64,7 +69,7 @@ public class CustomerDiscountManager {
 
 	private static BigDecimal PIPS_BANK_ID = new BigDecimal(78);
 
-	private static BigDecimal BIGD_ZERO = new BigDecimal(0);
+	// private static BigDecimal BIGD_ZERO = new BigDecimal(0);
 
 	public void getDiscountedRates(PricingRequestDTO pricingRequestDTO, Customer customer,
 			CUSTOMER_CATEGORY customerCategory) {
@@ -85,13 +90,18 @@ public class CustomerDiscountManager {
 		}
 
 		// Compute Channel Discount
+		BigDecimal channelDiscountPips = BigDecimal.ZERO;
 		ChannelDiscount channelDiscount = channelDiscountDao.getDiscountByChannel(pricingRequestDTO.getChannel());
 
-		DiscountMaster channelDiscountMaster = discountMasterDao.getByDiscountTypeAndDiscountTypeIdAndGroupId(
-				DISCOUNT_TYPE.CHANNEL.getTypeKey(), channelDiscount.getId(), curGroup.getId());
+		if (channelDiscount != null && DbValueUtil.isActive(channelDiscount.getIsActive())) {
+			DiscountMaster channelDiscountMaster = discountMasterDao.getByDiscountTypeAndDiscountTypeIdAndGroupId(
+					DISCOUNT_TYPE.CHANNEL.getTypeKey(), channelDiscount.getId(), curGroup.getId());
 
-		BigDecimal channelDiscountPips = (null != channelDiscount ? channelDiscountMaster.getDiscountPips()
-				: BIGD_ZERO);
+			channelDiscountPips = ((null != channelDiscountMaster
+					&& DbValueUtil.isActive(channelDiscountMaster.getIsActive()))
+							? channelDiscountMaster.getDiscountPips()
+							: BigDecimal.ZERO);
+		}
 
 		// Channel Info
 		ExchangeDiscountInfo channelInfo = new ExchangeDiscountInfo();
@@ -113,7 +123,7 @@ public class CustomerDiscountManager {
 			DiscountMaster ccDiscountMaster = discountMasterDao.getByDiscountTypeAndDiscountTypeIdAndGroupId(
 					DISCOUNT_TYPE.CUSTOMER_CATEGORY.getTypeKey(), ccDiscount.getId(), curGroup.getId());
 
-			ccDiscountPips = (null != ccDiscount ? ccDiscountMaster.getDiscountPips() : BIGD_ZERO);
+			ccDiscountPips = (null != ccDiscount ? ccDiscountMaster.getDiscountPips() : BigDecimal.ZERO);
 
 			// Customer Category Info
 			custCategoryInfo.setId(ccDiscount.getId());
@@ -130,7 +140,7 @@ public class CustomerDiscountManager {
 			DiscountMaster ccDiscountMaster = discountMasterDao.getByDiscountTypeAndDiscountTypeIdAndGroupId(
 					DISCOUNT_TYPE.CUSTOMER_CATEGORY.getTypeKey(), ccDiscount.getId(), curGroup.getId());
 
-			ccDiscountPips = (null != ccDiscount ? ccDiscountMaster.getDiscountPips() : BIGD_ZERO);
+			ccDiscountPips = (null != ccDiscount ? ccDiscountMaster.getDiscountPips() : BigDecimal.ZERO);
 
 			custCategoryInfo.setId(ccDiscount.getId());
 			custCategoryInfo.setDiscountType(DISCOUNT_TYPE.CUSTOMER_CATEGORY);
@@ -172,11 +182,11 @@ public class CustomerDiscountManager {
 
 		BigDecimal margin = pricingRateDetailsDTO.getMargin() != null
 				? pricingRateDetailsDTO.getMargin().getMarginMarkup()
-				: BIGD_ZERO;
+				: BigDecimal.ZERO;
 
 		for (ExchangeRateDetails bankExRateDetail : pricingRateDetailsDTO.getSellRateDetails()) {
 
-			BigDecimal amountSlabPips = BIGD_ZERO;
+			BigDecimal amountSlabPips = BigDecimal.ZERO;
 			ExchangeDiscountInfo amountSlabPipsInfo = new ExchangeDiscountInfo();
 
 			if (bankAmountSlabDiscounts.containsKey(bankExRateDetail.getBankId().longValue())) {
@@ -218,7 +228,7 @@ public class CustomerDiscountManager {
 				/**
 				 * Compute Base Sell rate : Cost + Margin
 				 */
-				BigDecimal adjustedBaseSellRate = BIGD_ZERO;
+				BigDecimal adjustedBaseSellRate = BigDecimal.ZERO;
 
 				if (pricingRateDetailsDTO.getAvgRateGLCForBank(bankExRateDetail.getBankId()) != null) {
 
