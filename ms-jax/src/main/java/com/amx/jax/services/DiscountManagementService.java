@@ -19,6 +19,7 @@ import com.amx.jax.pricer.dto.ExchangeRateBreakup;
 import com.amx.jax.pricer.dto.ExchangeRateDetails;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.dto.PricingResponseDTO;
+import com.amx.jax.pricer.exception.PricerServiceException;
 import com.amx.jax.repository.DiscountManagementRepository;
 import com.amx.jax.util.RoundUtil;
 
@@ -79,7 +80,14 @@ public class DiscountManagementService {
 		pricingRequestDTO.setLocalCountryId(amxConfig.getDefaultCountryId());
 		pricingRequestDTO.setLocalCurrencyId(amxConfig.getDefaultCurrencyId());
 		
-		AmxApiResponse<PricingResponseDTO, Object> response = pricerServiceClient.fetchDiscountedRates(pricingRequestDTO);
+		AmxApiResponse<PricingResponseDTO, Object> response = null;
+		try {
+			response = pricerServiceClient.fetchDiscountedRates(pricingRequestDTO);
+		} catch (PricerServiceException e) {
+			LOGGER.info("ErrorKey : - " +e.getErrorKey()+ " ErrorMessage : - " +e.getErrorMessage());
+			throw new GlobalException(e.getErrorKey(), e.getErrorMessage());
+		}
+		
 		response.getResult().getSellRateDetails().forEach(i -> applyRoundingLogic(i));
 		return response;
 	}
