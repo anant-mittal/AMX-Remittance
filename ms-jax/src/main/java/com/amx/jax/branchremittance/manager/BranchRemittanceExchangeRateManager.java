@@ -342,8 +342,7 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 	
 	private VatDetailsDto getVatAmount(BigDecimal commission) {
 		VatDetailsDto vatDetails = new VatDetailsDto();
-		
-		List<ViewVatDetails> vatList = vatDetailsRepository.getVatDetails(ConstantDocument.VAT_ACCOUNT_TYPE_COMM);
+		List<ViewVatDetails> vatList = vatDetailsRepository.getVatDetails(metaData.getCountryId(),ConstantDocument.VAT_CATEGORY,ConstantDocument.VAT_ACCOUNT_TYPE_COMM);
 		String vatAppliable = null;
 		if(vatList.isEmpty()) {
 			vatAppliable ="N";

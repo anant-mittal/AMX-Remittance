@@ -4,6 +4,7 @@ package com.amx.jax.repository.remittance;
  * @author rabil
  */
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.data.repository.CrudRepository;
@@ -15,16 +16,10 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface IViewVatDetailsRespository extends CrudRepository<ViewVatDetails, Serializable>{
 	
-	@Query(value="select * from  V_EX_VAT_DETAILS where ACCOUNT_TYPE=?1 and trunc(sysdate) between from_dt and to_dt", nativeQuery = true)
-	public List<ViewVatDetails> getVatDetails(String accountType);
+	@Query(value="select * from  V_EX_VAT_DETAILS where APPLICATION_COUNTRY_ID =?1 and VAT_CATEGORY =?2 and ACCOUNT_TYPE=?3 and trunc(sysdate) between from_dt and to_dt", nativeQuery = true)
+	public List<ViewVatDetails> getVatDetails(BigDecimal applicationCountryId,String vatCategory,String accountType);
 	
 	
-	
-/*	
-	select VAT_TYPE   , VAT_PERCENTAGE,  CALCULATION_TYPE,    ROUND_OFF, 'Y'
-    INTO   W_VAT_TYPE,  W_VAT_PERCENGATE, W_CALCULATION_TYPE,   W_ROUND_OFF , W_VAT_APPLICABLE
-    from V_EX_VAT_DETAILS A
-    where A.ACCOUNT_TYPE = 'COMMISSION'
-    AND  TRUNC(SYSDATE) BETWEEN A.FROM_DT AND A.TO_DT;*/
+
 
 }
