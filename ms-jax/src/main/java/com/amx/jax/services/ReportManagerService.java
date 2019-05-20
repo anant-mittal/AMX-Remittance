@@ -48,6 +48,7 @@ import com.amx.jax.repository.ICompanyDAO;
 import com.amx.jax.repository.ICurrencyDao;
 import com.amx.jax.repository.IPurposeOfRemittance;
 import com.amx.jax.repository.IRemittanceTransactionDao;
+import com.amx.jax.service.CountryService;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.RoundUtil;
@@ -95,6 +96,9 @@ public class ReportManagerService extends AbstractService{
 	@Autowired
 	CountryMasterRepository countryMasterRepository;
 	
+	@Autowired
+	CountryService countryService;
+	
 	
 
 	
@@ -122,6 +126,7 @@ public class ReportManagerService extends AbstractService{
 			Boolean promotion){
 		
 		ApiResponse response = null;
+		Boolean isArabic = false;
 		try {
 		remittanceReceiptSubreportList = new ArrayList<RemittanceReceiptSubreport>();
 		 response = getBlackApiResponse();
@@ -245,20 +250,9 @@ public class ReportManagerService extends AbstractService{
 				obj.setPhoneNumber(view.getPhoneNumber()); 
 				obj.setUserName(view.getCreatedBy());
 				obj.setPinNo(view.getPinNo() );
-				MetaData meta = new MetaData();
-				Customer customerNationalityDetails = customerRepository.getNationalityValue(meta.getCustomerId());
-				if(customerNationalityDetails!=null) {
-										
-					CountryMaster countryMaster = countryMasterRepository.getCountryCodeValue(customerNationalityDetails.getNationalityId());
-					
-					String countrycode = countryMaster.getCountryCode();
-					
-					String [] codes = {"G22", "K13", "I30", "S20"};
-					if(Arrays.asList(codes).contains(countrycode)) {
-						obj.setIsArabic(true);
-					}
-					obj.setIsArabic(false);
-				}
+				
+				isArabic = countryService.getIsArabicValue();
+				obj.setIsArabic(isArabic);
 					
 				Map<String, Object> loyaltiPoints = loyaltyInsuranceProDao.loyaltyInsuranceProcedure(view.getCustomerReference(), obj.getDate());
 				
