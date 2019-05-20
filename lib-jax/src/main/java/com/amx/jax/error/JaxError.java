@@ -251,6 +251,7 @@ public enum JaxError implements IExceptionEnum {
 	// for validate new Question
 	INVALIDATE_ANSWER,
 	SECURITY_QUE_ANS,
+	SEC_ANS_REQUIRED,
 	BOTH_OTP_REQUIRED,
 	OTP_AND_SEC_ANSWER_REQUIRED,
 	INVALID_REMITTANCE_DOCUMENT_CODE,
@@ -292,9 +293,8 @@ public enum JaxError implements IExceptionEnum {
 	
 	MOTP_REQUIRED,
 	DOTP_REQUIRED,
-	EOTP_REQUIRED;
-	
-	
+	EOTP_REQUIRED,
+	MIN_DENOMINATION_ERROR;
 	@Deprecated
 	public String getCode() {
 		return this.toString();

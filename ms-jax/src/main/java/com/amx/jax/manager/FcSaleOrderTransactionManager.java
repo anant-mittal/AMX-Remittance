@@ -21,6 +21,7 @@ import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.FcSaleExchangeRateDao;
 import com.amx.jax.dbmodel.AuthenticationLimitCheckView;
 import com.amx.jax.dbmodel.CurrencyMasterModel;
+import com.amx.jax.dbmodel.CurrencyWiseDenomination;
 import com.amx.jax.dbmodel.ParameterDetails;
 import com.amx.jax.dbmodel.fx.FxExchangeRateView;
 import com.amx.jax.dbmodel.fx.FxOrderTranxLimitView;
@@ -30,6 +31,7 @@ import com.amx.jax.model.AbstractModel;
 import com.amx.jax.model.response.fx.FcSaleOrderApplicationResponseModel;
 import com.amx.jax.model.response.fx.FxExchangeRateBreakup;
 import com.amx.jax.repository.AuthenticationLimitCheckDAO;
+import com.amx.jax.repository.CurrencyWiseDenominationRepository;
 import com.amx.jax.repository.ICurrencyDao;
 import com.amx.jax.repository.fx.FxOrderTranxLimitRespository;
 import com.amx.jax.service.CurrencyMasterService;
@@ -60,6 +62,9 @@ public class FcSaleOrderTransactionManager extends AbstractModel{
 	
 	@Autowired
 	FxOrderTranxLimitRespository trnxLimitRepos;
+	
+	@Autowired
+	CurrencyWiseDenominationRepository currenDenominationRepository;
 
 	
 	/**
@@ -82,6 +87,9 @@ public class FcSaleOrderTransactionManager extends AbstractModel{
 		if(curr !=null && curr.isEmpty()){
 			throw new GlobalException(JaxError.INVALID_CURRENCY_ID, "Currency is not  available/invalid currency id");
 		}
+		
+		checkMinDenomination(fcCurrencyId,curr.get(0).getMinDenominationId(),fcAmount);
+		
 		FxExchangeRateBreakup breakup = new FxExchangeRateBreakup();
 		List<FxExchangeRateView> fxSaleRateList = fcSaleExchangeRateDao.getFcSaleExchangeRate(countryId, countryBracnhId, fcCurrencyId);
 		
@@ -181,6 +189,22 @@ public class FcSaleOrderTransactionManager extends AbstractModel{
 		
 	}
 	
+	public void checkMinDenomination(BigDecimal fcCurrencyId,BigDecimal denominationId,BigDecimal fcAmount) {
+		if(JaxUtil.isNullZeroBigDecimalCheck(denominationId)) {
+			CurrencyWiseDenomination currDenomination = currenDenominationRepository.getMinimumCurrencyDenominationValue(meta.getCountryId(),fcCurrencyId,denominationId, ConstantDocument.Yes);
+		  if(currDenomination!=null && JaxUtil.isNullZeroBigDecimalCheck(currDenomination.getDenominationAmount())) {
+			double minDenoAmount = currDenomination.getDenominationAmount().doubleValue();
+			double fcAmountDouble  =fcAmount.doubleValue(); 
+			double result = fcAmountDouble%minDenoAmount;
+			if(result!=0) {
+				throw new GlobalException(JaxError.MIN_DENOMINATION_ERROR,"The foreign amount ("+fcAmountDouble+") should be mutiple of "+minDenoAmount);
+			}
+		  }
+		}else {
+			  throw new GlobalException(JaxError.MIN_DENOMINATION_ERROR,"Minimum denomination is not defined");
+		  }
+		
+	}
 	
 
 }
