@@ -196,6 +196,9 @@ public class TunnelSubscriberFactory {
 		topicQueue.addListener(new MessageListener<String>() {
 			@Override
 			public void onMessage(String channel, String msgId) {
+				if (ArgUtil.isEmpty(msgId)) {
+					LOGGER.warn("NULL msgId Rcvd for EVENT " + channel + " : ");
+				}
 				RQueue<TunnelMessage<M>> topicMessageQueue = redisson
 						.getQueue(TunnelEventXchange.TASK_WORKER.getQueue(topic));
 				onMessage(channel, topicMessageQueue);
@@ -213,7 +216,11 @@ public class TunnelSubscriberFactory {
 					AuditServiceClient.trackStatic(
 							new RequestTrackEvent(RequestTrackEvent.Type.SUB_IN, TunnelEventXchange.TASK_WORKER, msg));
 					try {
-						listener.onMessage(channel, msg.getData());
+						if (!ArgUtil.isEmpty(msg.getData())) {
+							LOGGER.warn("NULL Event Rcvd for EVENT " + channel + " : ");
+						} else {
+							listener.onMessage(channel, msg.getData());
+						}
 					} catch (Exception e) {
 						LOGGER.error("EXCEPTION EVENT " + channel + " : " + msg.getId(), e);
 					}
@@ -230,6 +237,9 @@ public class TunnelSubscriberFactory {
 		topicQueue.addListener(new MessageListener<String>() {
 			@Override
 			public void onMessage(String channel, String msgId) {
+				if (ArgUtil.isEmpty(msgId)) {
+					LOGGER.warn("NULL msgId Rcvd for EVENT " + channel + " : ");
+				}
 				RQueue<TunnelMessage<M>> topicMessageQueue = redisson
 						.getQueue(TunnelEventXchange.AUDIT.getQueue(topic));
 				onMessage(channel, topicMessageQueue);
@@ -242,7 +252,11 @@ public class TunnelSubscriberFactory {
 					AppContextUtil.setContext(context);
 					AppContextUtil.init();
 					try {
-						listener.onMessage(channel, msg.getData());
+						if (!ArgUtil.isEmpty(msg.getData())) {
+							LOGGER.warn("NULL Event Rcvd for EVENT " + channel + " : ");
+						} else {
+							listener.onMessage(channel, msg.getData());
+						}
 					} catch (Exception e) {
 						LOGGER.error("EXCEPTION EVENT " + channel + " : " + msg.getId(), e);
 					}
