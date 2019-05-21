@@ -251,6 +251,7 @@ public class ReportManagerService extends AbstractService{
 				obj.setUserName(view.getCreatedBy());
 				obj.setPinNo(view.getPinNo() );
 				MetaData meta = new MetaData();
+				logger.debug("metaDetails:"+meta.getCustomerId());
 				
 				Customer customerNationalityDetails = customerRepository.getNationalityValue(meta.getCustomerId());
 				
