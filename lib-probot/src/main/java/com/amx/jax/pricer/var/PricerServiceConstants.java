@@ -11,10 +11,6 @@ public final class PricerServiceConstants {
 
 	public static String TTE = "TTE";
 
-	public static String BIG_Y = "Y";
-
-	public static String BIG_YES = "YES";
-
 	private PricerServiceConstants() {
 		// Not Allowed
 		super();

@@ -1,8 +1,5 @@
 package com.amx.jax.pricer.manager;
 
-import static com.amx.jax.pricer.var.PricerServiceConstants.BIG_Y;
-import static com.amx.jax.pricer.var.PricerServiceConstants.BIG_YES;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,10 +7,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
-import java.util.stream.Stream;
 
 import javax.annotation.Resource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -39,9 +37,12 @@ import com.amx.jax.pricer.util.DbValueUtil;
 import com.amx.jax.pricer.util.PricingRateDetailsDTO;
 import com.amx.jax.pricer.var.PricerServiceConstants.CUSTOMER_CATEGORY;
 import com.amx.jax.pricer.var.PricerServiceConstants.DISCOUNT_TYPE;
+import com.amx.utils.JsonUtil;
 
 @Component
 public class CustomerDiscountManager {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(CustomerDiscountManager.class);
 
 	@Autowired
 	PipsMasterDao pipsMasterDao;
@@ -79,23 +80,30 @@ public class CustomerDiscountManager {
 		CurrencyMasterModel currencyMasterModel = currencyMasterDao
 				.getByCurrencyId(pricingRequestDTO.getForeignCurrencyId());
 
-		if (currencyMasterModel.getCurrGroupId() == null) {
-			// TODO Throw Error
-		}
+		GroupingMaster curGroup = null;
 
-		GroupingMaster curGroup = groupingMasterDao.getGroupById(currencyMasterModel.getCurrGroupId());
+		if (currencyMasterModel.getCurrGroupId() != null) {
+			curGroup = groupingMasterDao.getGroupById(currencyMasterModel.getCurrGroupId());
 
-		if (curGroup == null) {
-			// TODO : throw error
+			if (curGroup == null) {
+				LOGGER.warn(" ****** MAJOR : Currency Group is Null for Currency Group Id : "
+						+ currencyMasterModel.getCurrGroupId() + " and Currency Id :"
+						+ currencyMasterModel.getCurrencyId());
+			}
+		} else {
+			LOGGER.warn(
+					" ****** MAJOR : Currency Group is Null for Currency Id : " + currencyMasterModel.getCurrencyId());
 		}
 
 		// Compute Channel Discount
 		BigDecimal channelDiscountPips = BigDecimal.ZERO;
 		ChannelDiscount channelDiscount = channelDiscountDao.getDiscountByChannel(pricingRequestDTO.getChannel());
 
-		if (channelDiscount != null && DbValueUtil.isActive(channelDiscount.getIsActive())) {
+		if (channelDiscount != null && curGroup != null && DbValueUtil.isActive(channelDiscount.getIsActive())) {
 			DiscountMaster channelDiscountMaster = discountMasterDao.getByDiscountTypeAndDiscountTypeIdAndGroupId(
 					DISCOUNT_TYPE.CHANNEL.getTypeKey(), channelDiscount.getId(), curGroup.getId());
+
+			System.out.println(" Channel Discount Master ==> " + JsonUtil.toJson(channelDiscountMaster));
 
 			channelDiscountPips = ((null != channelDiscountMaster
 					&& DbValueUtil.isActive(channelDiscountMaster.getIsActive()))
@@ -111,19 +119,27 @@ public class CustomerDiscountManager {
 		channelInfo.setDiscountPipsValue(channelDiscountPips);
 
 		// Compute Customer category Discount
-		BigDecimal ccDiscountPips;
+		BigDecimal ccDiscountPips = BigDecimal.ZERO;
 		ExchangeDiscountInfo custCategoryInfo = new ExchangeDiscountInfo();
 
 		if (customer != null) {
 			CustomerExtended customerExtended = customerExtendedDao
 					.getCustomerExtendedByCustomerId(customer.getCustomerId());
 
-			CustomerCategoryDiscount ccDiscount = customerExtended.getCustomerCategoryDiscount();
+			CustomerCategoryDiscount ccDiscount = customerExtended != null
+					? customerExtended.getCustomerCategoryDiscount()
+					: null;
 
-			DiscountMaster ccDiscountMaster = discountMasterDao.getByDiscountTypeAndDiscountTypeIdAndGroupId(
-					DISCOUNT_TYPE.CUSTOMER_CATEGORY.getTypeKey(), ccDiscount.getId(), curGroup.getId());
+			if (ccDiscount != null && curGroup != null && DbValueUtil.isActive(ccDiscount.getIsActive())) {
 
-			ccDiscountPips = (null != ccDiscount ? ccDiscountMaster.getDiscountPips() : BigDecimal.ZERO);
+				DiscountMaster ccDiscountMaster = discountMasterDao.getByDiscountTypeAndDiscountTypeIdAndGroupId(
+						DISCOUNT_TYPE.CUSTOMER_CATEGORY.getTypeKey(), ccDiscount.getId(), curGroup.getId());
+
+				ccDiscountPips = ((null != ccDiscount && DbValueUtil.isActive(ccDiscountMaster.getIsActive()))
+						? ccDiscountMaster.getDiscountPips()
+						: BigDecimal.ZERO);
+
+			}
 
 			// Customer Category Info
 			custCategoryInfo.setId(ccDiscount.getId());
@@ -137,10 +153,14 @@ public class CustomerDiscountManager {
 		} else {
 			CustomerCategoryDiscount ccDiscount = custCatDiscountDao.getDiscountByCustomerCategory(customerCategory);
 
-			DiscountMaster ccDiscountMaster = discountMasterDao.getByDiscountTypeAndDiscountTypeIdAndGroupId(
-					DISCOUNT_TYPE.CUSTOMER_CATEGORY.getTypeKey(), ccDiscount.getId(), curGroup.getId());
+			if (ccDiscount != null && curGroup != null && DbValueUtil.isActive(ccDiscount.getIsActive())) {
+				DiscountMaster ccDiscountMaster = discountMasterDao.getByDiscountTypeAndDiscountTypeIdAndGroupId(
+						DISCOUNT_TYPE.CUSTOMER_CATEGORY.getTypeKey(), ccDiscount.getId(), curGroup.getId());
 
-			ccDiscountPips = (null != ccDiscount ? ccDiscountMaster.getDiscountPips() : BigDecimal.ZERO);
+				ccDiscountPips = ((null != ccDiscount && DbValueUtil.isActive(ccDiscountMaster.getIsActive()))
+						? ccDiscountMaster.getDiscountPips()
+						: BigDecimal.ZERO);
+			}
 
 			custCategoryInfo.setId(ccDiscount.getId());
 			custCategoryInfo.setDiscountType(DISCOUNT_TYPE.CUSTOMER_CATEGORY);
@@ -170,15 +190,8 @@ public class CustomerDiscountManager {
 					bankAmountSlabDiscounts.put(pipsMaster.getBankMaster().getBankId().longValue(), slabPipsMap);
 				}
 
-				// System.out.println(" Pips Master Discount ==> "
-				// +
-				// bankAmountSlabDiscounts.get(pipsMaster.getBankMaster().getBankId().longValue()));
-
 			}
 		}
-
-		// List<BankRateDetailsDTO> discountedRatesNPrices = new
-		// ArrayList<BankRateDetailsDTO>();
 
 		BigDecimal margin = pricingRateDetailsDTO.getMargin() != null
 				? pricingRateDetailsDTO.getMargin().getMarginMarkup()
