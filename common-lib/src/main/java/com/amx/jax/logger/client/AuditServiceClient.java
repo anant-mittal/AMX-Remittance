@@ -1,6 +1,7 @@
 package com.amx.jax.logger.client;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -23,6 +24,7 @@ import com.amx.jax.logger.AuditEvent;
 import com.amx.jax.logger.AuditLoggerResponse;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.tunnel.ITunnelService;
+import com.amx.utils.ContextUtil;
 import com.amx.utils.JsonUtil;
 import com.amx.utils.TimeUtils;
 
@@ -281,6 +283,26 @@ public class AuditServiceClient implements AuditService {
 
 	public static boolean isDebugEnabled() {
 		return LOGGER.isDebugEnabled();
+	}
+
+	@Override
+	public List<AuditEvent> queue(AuditEvent event) {
+		@SuppressWarnings("unchecked")
+		List<AuditEvent> list = (List<AuditEvent>) ContextUtil.map().getOrDefault("auditq",
+				new LinkedList<AuditEvent>());
+		list.add(event);
+		return list;
+	}
+
+	@Override
+	public List<AuditEvent> commit() {
+		@SuppressWarnings("unchecked")
+		LinkedList<AuditEvent> list = (LinkedList<AuditEvent>) ContextUtil.map().getOrDefault("auditq",
+				new LinkedList<AuditEvent>());
+		for (AuditEvent auditEvent : list) {
+			this.log(auditEvent);
+		}
+		return list;
 	}
 
 }
