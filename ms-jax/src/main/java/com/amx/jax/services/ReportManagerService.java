@@ -250,8 +250,10 @@ public class ReportManagerService extends AbstractService{
 				obj.setPhoneNumber(view.getPhoneNumber()); 
 				obj.setUserName(view.getCreatedBy());
 				obj.setPinNo(view.getPinNo() );
+				MetaData meta = new MetaData();
 				
-				isArabic = countryService.getIsArabicValue();
+				Customer customerNationalityDetails = customerRepository.getNationalityValue(meta.getCustomerId());
+				isArabic = countryService.getIsArabicCountry(customerNationalityDetails.getNationalityId());
 				obj.setIsArabic(isArabic);
 					
 				Map<String, Object> loyaltiPoints = loyaltyInsuranceProDao.loyaltyInsuranceProcedure(view.getCustomerReference(), obj.getDate());

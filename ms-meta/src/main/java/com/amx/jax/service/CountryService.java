@@ -162,12 +162,10 @@ public class CountryService extends AbstractService {
 		return countryMasterDesc;
 	}
 	
-	public Boolean getIsArabicValue() {
+	public Boolean getIsArabicCountry(BigDecimal countryId) {
 		Boolean isArabic = false;
-		MetaData meta = new MetaData();
 		
-		Customer customerNationalityDetails = customerRepository.getNationalityValue(meta.getCustomerId());
-		CountryMaster countryMaster = countryMasterRepository.getCountryCodeValue(customerNationalityDetails.getNationalityId());
+		CountryMaster countryMaster = countryMasterRepository.getCountryCodeValue(countryId);
 		String countrycode = countryMaster.getCountryCode();
 		String [] codes = {"005", "051", "009", "001", "010", "022"};
 		
