@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.serviceprovider.ServiceProviderClient;
-import com.amx.jax.dbmodel.ParameterDetails;
 import com.amx.jax.model.request.serviceprovider.Benificiary;
 import com.amx.jax.model.request.serviceprovider.Customer;
 import com.amx.jax.model.request.serviceprovider.ServiceProviderCallRequestDto;
@@ -37,6 +36,7 @@ import com.amx.jax.pricer.partner.dbmodel.BankCharges;
 import com.amx.jax.pricer.partner.dbmodel.BankServiceRule;
 import com.amx.jax.pricer.partner.dbmodel.BenificiaryListView;
 import com.amx.jax.pricer.partner.dbmodel.CustomerDetailsView;
+import com.amx.jax.pricer.partner.dbmodel.ParameterDetailsModel;
 import com.amx.jax.pricer.partner.dbmodel.ServiceProviderRateView;
 import com.amx.jax.pricer.var.PricerServiceConstants;
 import com.amx.utils.JsonUtil;
@@ -503,7 +503,7 @@ public class PartnerDataManager {
 		HashMap<String, String> mapParam = new HashMap<String, String>();
 		mapParam.put("BIC_CODE", null);
 		mapParam.put("BANK_BRANCH", null);
-		ParameterDetails parameterDetails = partnerServiceDao.fetchServPrvBankCode("HSBS",beneCountryCode);
+		ParameterDetailsModel parameterDetails = partnerServiceDao.fetchServPrvBankCode("HSBS",beneCountryCode);
 		if(parameterDetails != null) {
 			mapParam.put("BIC_CODE", parameterDetails.getCharField3());
 			mapParam.put("BANK_BRANCH", parameterDetails.getCharField4());

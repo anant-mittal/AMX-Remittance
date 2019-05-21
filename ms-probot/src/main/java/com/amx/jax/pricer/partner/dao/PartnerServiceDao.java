@@ -6,19 +6,20 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.amx.jax.dbmodel.ParameterDetails;
 import com.amx.jax.pricer.dbmodel.CountryMasterDT;
 import com.amx.jax.pricer.dbmodel.CurrencyMasterModel;
 import com.amx.jax.pricer.partner.dbmodel.BankCharges;
 import com.amx.jax.pricer.partner.dbmodel.BankServiceRule;
 import com.amx.jax.pricer.partner.dbmodel.BenificiaryListView;
 import com.amx.jax.pricer.partner.dbmodel.CustomerDetailsView;
+import com.amx.jax.pricer.partner.dbmodel.ParameterDetailsModel;
 import com.amx.jax.pricer.partner.dbmodel.ServiceProviderRateView;
 import com.amx.jax.pricer.partner.repository.IBankChargesRepository;
 import com.amx.jax.pricer.partner.repository.IBankServiceRuleRepository;
 import com.amx.jax.pricer.partner.repository.IBeneficiaryViewRepository;
 import com.amx.jax.pricer.partner.repository.ICountryMasterRepository;
 import com.amx.jax.pricer.partner.repository.ICustomerViewRepository;
+import com.amx.jax.pricer.partner.repository.IParameterDetailsRespository;
 import com.amx.jax.pricer.partner.repository.IServiceProviderMarginRepository;
 import com.amx.jax.pricer.partner.repository.IUsdExchangeRateRepository;
 import com.amx.jax.pricer.repository.CurrencyMasterRepository;
@@ -47,8 +48,8 @@ public class PartnerServiceDao {
 	@Autowired
 	IBankChargesRepository bankChargesRepository;
 	
-	/*@Autowired
-	ParameterDetailsRespository parameterDetailsRespository;*/
+	@Autowired
+	IParameterDetailsRespository parameterDetailsRespository;
 	
 	@Autowired
 	ICountryMasterRepository countryMasterRepository;
@@ -81,8 +82,8 @@ public class PartnerServiceDao {
 		return bankChargesRepository.fetchBankCharges(bankServiceRuleId, fcAmount, chargesFor, chargesType);
 	}
 	
-	public ParameterDetails fetchServPrvBankCode(String recordId,String beneCountryCode){
-		return null;//parameterDetailsRespository.fetchServPrvBankCode(recordId, beneCountryCode);
+	public ParameterDetailsModel fetchServPrvBankCode(String recordId,String beneCountryCode){
+		return parameterDetailsRespository.fetchServPrvBankCode(recordId, beneCountryCode);
 	}
 	
 	public CountryMasterDT fetchCountryMasterDetails(BigDecimal countryId) {
