@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -42,6 +43,8 @@ public class CountryService extends AbstractService {
 	
 	@Autowired
 	MetaData meta;
+	
+	private Logger logger = Logger.getLogger(CountryService.class);
 	
 	
 	public AmxApiResponse<CountryMasterView, Object> getCountryListResponse(){
@@ -166,6 +169,7 @@ public class CountryService extends AbstractService {
 		Boolean isArabic = false;
 		
 		CountryMaster countryMaster = countryMasterRepository.getCountryCodeValue(countryId);
+		logger.debug("countrycode:"+countryMaster.getCountryCode());
 		String countrycode = countryMaster.getCountryCode();
 		String [] codes = {"005", "051", "009", "001", "010", "022"};
 		
@@ -174,6 +178,7 @@ public class CountryService extends AbstractService {
 		}else {
 		isArabic = false;
 		}
+		logger.debug("isarabicValue" +isArabic);
 		return isArabic;
 		
 	}

@@ -253,7 +253,11 @@ public class ReportManagerService extends AbstractService{
 				MetaData meta = new MetaData();
 				
 				Customer customerNationalityDetails = customerRepository.getNationalityValue(meta.getCustomerId());
+				
+				logger.debug("countryId:"+customerNationalityDetails.getNationalityId());
 				isArabic = countryService.getIsArabicCountry(customerNationalityDetails.getNationalityId());
+				logger.debug("isArabicValue:"+isArabic);
+				
 				obj.setIsArabic(isArabic);
 					
 				Map<String, Object> loyaltiPoints = loyaltyInsuranceProDao.loyaltyInsuranceProcedure(view.getCustomerReference(), obj.getDate());
