@@ -222,7 +222,7 @@ public class TunnelSubscriberFactory {
 							listener.onMessage(channel, msg.getData());
 						}
 					} catch (Exception e) {
-						LOGGER.error("EXCEPTION EVENT " + channel + " : " + msg.getId(), e);
+						LOGGER.error("EXCEPTION in EVENT " + channel + " : " + msg.getId(), e);
 					}
 				}
 				onMessage(channel, topicMessageQueue);
@@ -258,7 +258,7 @@ public class TunnelSubscriberFactory {
 							listener.onMessage(channel, msg.getData());
 						}
 					} catch (Exception e) {
-						LOGGER.error("EXCEPTION EVENT " + channel + " : " + msg.getId(), e);
+						LOGGER.error("EXCEPTION in EVENT " + channel + " : " + msg.getId(), e);
 					}
 					onMessage(channel, topicMessageQueue);
 				}
