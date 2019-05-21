@@ -291,6 +291,7 @@ public class AuditServiceClient implements AuditService {
 		List<AuditEvent> list = (List<AuditEvent>) ContextUtil.map().getOrDefault("auditq",
 				new LinkedList<AuditEvent>());
 		list.add(event);
+		ContextUtil.map().put("auditq", list);
 		return list;
 	}
 
@@ -302,6 +303,7 @@ public class AuditServiceClient implements AuditService {
 		for (AuditEvent auditEvent : list) {
 			this.log(auditEvent);
 		}
+		ContextUtil.map().remove("auditq");
 		return list;
 	}
 
