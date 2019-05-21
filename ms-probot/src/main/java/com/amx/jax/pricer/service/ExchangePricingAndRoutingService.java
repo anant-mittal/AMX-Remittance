@@ -3,6 +3,8 @@
  */
 package com.amx.jax.pricer.service;
 
+import static com.amx.jax.pricer.var.PricerServiceConstants.DEFAULT_ONLINE_SERVICE_ID;
+
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -292,8 +294,8 @@ public class ExchangePricingAndRoutingService {
 			}
 
 			if (skipServiceMode) {
-				if (!bankServiceModeSellRates.get(exchangeRate.getBankId()).containsKey(BigDecimal.ZERO)) {
-					bankServiceModeSellRates.get(exchangeRate.getBankId()).put(BigDecimal.ZERO, exchangeRate);
+				if (!bankServiceModeSellRates.get(exchangeRate.getBankId()).containsKey(DEFAULT_ONLINE_SERVICE_ID)) {
+					bankServiceModeSellRates.get(exchangeRate.getBankId()).put(DEFAULT_ONLINE_SERVICE_ID, exchangeRate);
 				}
 			} else {
 				bankServiceModeSellRates.get(exchangeRate.getBankId()).put(exchangeRate.getServiceIndicatorId(),

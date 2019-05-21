@@ -1,5 +1,7 @@
 package com.amx.jax.pricer.manager;
 
+import static com.amx.jax.pricer.var.PricerServiceConstants.DEFAULT_ONLINE_SERVICE_ID;
+
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -46,7 +48,7 @@ public class RemitRoutingManager {
 
 	private static final int DEF_START_TIME = 8;
 	private static final int DEF_STOP_TIME = 18;
-	
+
 	private static final int KWT_TREASURY_FUNDING_TIME = 12;
 
 	/** The Constant LOGGER. */
@@ -136,6 +138,7 @@ public class RemitRoutingManager {
 
 			if (isOnlyBankRate) {
 				combinedId = "" + exchRate.getBankId().longValue();
+				exchRate.setServiceIndicatorId(null);
 			} else {
 				combinedId = exchRate.getBankId().longValue() + idSeparator
 						+ exchRate.getServiceIndicatorId().longValue();
@@ -264,9 +267,9 @@ public class RemitRoutingManager {
 				}
 
 				estmdProcessingDeliveryDetails = this.getEstimatedBlockDelivery(processingStartTT, pTimezone,
-						new BigDecimal(1), new BigDecimal(7), new BigDecimal(DEF_START_TIME), new BigDecimal(DEF_STOP_TIME),
-						new BigDecimal(0), new BigDecimal(0), new BigDecimal(0), new BigDecimal(0), new BigDecimal(0),
-						Boolean.FALSE, processingCountryId, 0);
+						new BigDecimal(1), new BigDecimal(7), new BigDecimal(DEF_START_TIME),
+						new BigDecimal(DEF_STOP_TIME), new BigDecimal(0), new BigDecimal(0), new BigDecimal(0),
+						new BigDecimal(0), new BigDecimal(0), Boolean.FALSE, processingCountryId, 0);
 
 				routingDetails.setProcessingDeliveryDetails(estmdProcessingDeliveryDetails);
 
@@ -315,9 +318,9 @@ public class RemitRoutingManager {
 				}
 
 				estmdBeneDeliveryDetails = this.getEstimatedBlockDelivery(beneStartTT, beneTimezone, new BigDecimal(1),
-						new BigDecimal(7), new BigDecimal(DEF_START_TIME), new BigDecimal(DEF_STOP_TIME), new BigDecimal(0),
-						new BigDecimal(0), new BigDecimal(0), new BigDecimal(0), new BigDecimal(0), Boolean.FALSE,
-						beneCountryId, 0);
+						new BigDecimal(7), new BigDecimal(DEF_START_TIME), new BigDecimal(DEF_STOP_TIME),
+						new BigDecimal(0), new BigDecimal(0), new BigDecimal(0), new BigDecimal(0), new BigDecimal(0),
+						Boolean.FALSE, beneCountryId, 0);
 
 				routingDetails.setBeneBankDeliveryDetails(estmdBeneDeliveryDetails);
 
