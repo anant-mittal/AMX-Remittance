@@ -33,7 +33,7 @@ public class LoggerSubscriber implements ITunnelSubscriber<Object> {
 	 */
 	@Override
 	public void onMessage(String channel, Object event) {
-		// LOGGER.debug("onMessage {}", channel);
+		LOGGER.debug("onMessage {}", channel);
 		if (jobAudit) {
 			mongoTemplate.save(event, "AuditEvent");
 		}
