@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.jax.JaxAuthContext;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxApiFlow;
 import com.amx.jax.dbmodel.Customer;
@@ -46,7 +47,17 @@ public class OnlineCustomerManager {
 				&& customerOnlineRegistration.getSecurityAnswer1() != null) {
 			userValidationService.validateCustomerLockCount(customerOnlineRegistration);
 			try {
+				// signifies that it is send otp flow
+				if (JaxAuthContext.getMotp() == null) {
+					userService.validateTokenExpiryTime(customerOnlineRegistration);
+					userValidationService.validateTokenSentCount(customerOnlineRegistration);
+					userService.incrementTokenSentCount(customerOnlineRegistration);
+				}
 				customerAuthManager.validateAndSendOtp(Arrays.asList(ContactType.SMS));
+				// signifies that it is validate otp flow
+				if (JaxAuthContext.getMotp() != null) {
+					userService.unlockCustomer(customerOnlineRegistration);
+				}
 			} catch (GlobalException ex) {
 				if (JaxError.INVALID_OTP.equals(ex.getError())) {
 					userValidationService.incrementLockCount(customerOnlineRegistration);

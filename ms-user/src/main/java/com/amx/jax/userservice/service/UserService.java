@@ -787,7 +787,7 @@ public class UserService extends AbstractUserService {
 	/**
 	 * reset lock
 	 */
-	protected void unlockCustomer(CustomerOnlineRegistration onlineCustomer) {
+	public void unlockCustomer(CustomerOnlineRegistration onlineCustomer) {
 		if (onlineCustomer.getLockCnt() != null || onlineCustomer.getLockDt() != null) {
 			onlineCustomer.setLockCnt(null);
 			onlineCustomer.setLockDt(null);
@@ -1280,4 +1280,21 @@ public class UserService extends AbstractUserService {
 		}
 	}
 
+	public void incrementTokenSentCount(CustomerOnlineRegistration customerOnlineRegistration) {
+		customerOnlineRegistration.setTokenDate(new Date());
+		BigDecimal tokenSentCount = (customerOnlineRegistration.getTokenSentCount() == null) ? BigDecimal.ZERO
+				: customerOnlineRegistration.getTokenSentCount().add(new BigDecimal(1));
+		customerOnlineRegistration.setTokenSentCount(tokenSentCount);
+		custDao.saveOnlineCustomer(customerOnlineRegistration);
+	}
+	
+	public void validateTokenExpiryTime(CustomerOnlineRegistration customerOnlineRegistration) {
+		try {
+			userValidationService.validateTokenDate(customerOnlineRegistration);
+		} catch (GlobalException e) {
+			// reset sent token count
+			customerOnlineRegistration.setTokenSentCount(BigDecimal.ZERO);
+		}
+		custDao.saveOnlineCustomer(customerOnlineRegistration);
+	}
 }

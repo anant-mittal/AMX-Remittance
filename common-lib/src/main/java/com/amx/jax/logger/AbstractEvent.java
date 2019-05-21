@@ -2,6 +2,7 @@ package com.amx.jax.logger;
 
 import java.io.Serializable;
 
+import com.amx.utils.ArgUtil;
 import com.amx.utils.EnumType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -114,6 +115,11 @@ public abstract class AbstractEvent implements Serializable {
 
 	public void setType(EventType type) {
 		this.type = type;
+	}
+
+	@JsonIgnore
+	public EventMarker getTypeMarker() {
+		return ArgUtil.isEmpty(this.type) ? null : this.type.marker();
 	}
 
 	public long getTimestamp() {
