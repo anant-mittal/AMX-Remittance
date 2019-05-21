@@ -22,6 +22,8 @@ public class HomeSendInfoDTO {
 	String technical_details;
 	String request_XML;
 	String response_XML;
+	
+	boolean isBeneficiaryDeduct;
 
 	BigDecimal credited_amount_in_destination_currency;
 	BigDecimal initial_amount_in_settlement_currency;
@@ -141,6 +143,13 @@ public class HomeSendInfoDTO {
 	}
 	public void setWhole_sale_fx_rate(BigDecimal whole_sale_fx_rate) {
 		this.whole_sale_fx_rate = whole_sale_fx_rate;
+	}
+	
+	public boolean isBeneficiaryDeduct() {
+		return isBeneficiaryDeduct;
+	}
+	public void setBeneficiaryDeduct(boolean isBeneficiaryDeduct) {
+		this.isBeneficiaryDeduct = isBeneficiaryDeduct;
 	}
 	
 }

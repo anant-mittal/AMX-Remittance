@@ -166,6 +166,7 @@ public class PartnerDataManager {
 										homeSendInfoDTO.setTotal_charged_amount_in_settlement_currency(quotationCall.getTotal_charged_amount_in_settlement_currency());
 										homeSendInfoDTO.setVariable_charged_amount_in_settlement_currency(quotationCall.getVariable_charged_amount_in_settlement_currency());
 										homeSendInfoDTO.setWhole_sale_fx_rate(quotationCall.getWhole_sale_fx_rate());
+										homeSendInfoDTO.setBeneficiaryDeduct(Boolean.FALSE);
 
 										srvPrvFeeInqResDTO.setHomeSendInfoDTO(homeSendInfoDTO);
 									}
@@ -308,6 +309,7 @@ public class PartnerDataManager {
 										homeSendInfoDTO.setTotal_charged_amount_in_settlement_currency(quotationCall.getTotal_charged_amount_in_settlement_currency());
 										homeSendInfoDTO.setVariable_charged_amount_in_settlement_currency(quotationCall.getVariable_charged_amount_in_settlement_currency());
 										homeSendInfoDTO.setWhole_sale_fx_rate(quotationCall.getWhole_sale_fx_rate());
+										homeSendInfoDTO.setBeneficiaryDeduct(Boolean.FALSE);
 
 										srvPrvFeeInqResDTO.setHomeSendInfoDTO(homeSendInfoDTO);
 									}
