@@ -99,6 +99,9 @@ public class ReportManagerService extends AbstractService{
 	@Autowired
 	CountryService countryService;
 	
+	@Autowired
+	MetaData meta;
+	
 	
 
 	
@@ -250,7 +253,7 @@ public class ReportManagerService extends AbstractService{
 				obj.setPhoneNumber(view.getPhoneNumber()); 
 				obj.setUserName(view.getCreatedBy());
 				obj.setPinNo(view.getPinNo() );
-				MetaData meta = new MetaData();
+			
 				logger.debug("metaDetails:"+meta.getCustomerId());
 				
 				Customer customerNationalityDetails = customerRepository.getNationalityValue(meta.getCustomerId());
