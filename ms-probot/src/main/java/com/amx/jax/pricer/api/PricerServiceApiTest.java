@@ -31,6 +31,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.dict.UserClient.Channel;
+import com.amx.jax.partner.dto.SrvPrvFeeInqReqDTO;
+import com.amx.jax.partner.dto.SrvPrvFeeInqResDTO;
 import com.amx.jax.pricer.PricerServiceClient;
 import com.amx.jax.pricer.ProbotDataService;
 import com.amx.jax.pricer.ProbotExchangeRateService;
@@ -467,6 +469,12 @@ public class PricerServiceApiTest implements ProbotExchangeRateService, ProbotDa
 		AmxApiResponse<Map<String, String>, Object> amxApiResponse = AmxApiResponse.build(testResp);
 
 		return amxApiResponse;
+	}
+
+	@Override
+	public AmxApiResponse<SrvPrvFeeInqResDTO, Object> serviceProviderQuotation(SrvPrvFeeInqReqDTO srvPrvFeeInqReqDTO) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

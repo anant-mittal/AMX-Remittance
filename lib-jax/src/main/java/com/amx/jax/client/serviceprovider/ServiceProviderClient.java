@@ -8,10 +8,9 @@ import org.springframework.stereotype.Component;
 import com.amx.jax.AppConfig;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.configs.JaxMetaInfo;
-import com.amx.jax.client.fx.IFxOrderService.Path;
 import com.amx.jax.exception.JaxSystemError;
-import com.amx.jax.model.request.CustomerShippingAddressRequestModel;
 import com.amx.jax.model.request.serviceprovider.ServiceProviderCallRequestDto;
+import com.amx.jax.model.response.serviceprovider.Quotation_Call_Response;
 import com.amx.jax.model.response.serviceprovider.ServiceProviderResponse;
 import com.amx.jax.rest.RestService;
 
@@ -28,20 +27,19 @@ public class ServiceProviderClient implements IServiceProviderService
 	AppConfig appConfig;
 
 	@Override
-	public AmxApiResponse<ServiceProviderResponse, Object> getQuatation(ServiceProviderCallRequestDto quatationRequestDto)
+	public AmxApiResponse<Quotation_Call_Response, Object> getQuatation(ServiceProviderCallRequestDto quatationRequestDto)
 	{
 		try
 		{
-		
-			LOGGER.debug("in get quataion :");
-			return restService.ajax(appConfig.getJaxURL() + Path.GET_QUATATION).meta(new JaxMetaInfo()).post(quatationRequestDto)
-					.as(new ParameterizedTypeReference<AmxApiResponse<ServiceProviderResponse, Object>>()
+			LOGGER.debug("in get quotaion :");
+			return restService.ajax(appConfig.getServiceProviderURL() + Path.GET_QUATATION).meta(new JaxMetaInfo()).post(quatationRequestDto)
+					.as(new ParameterizedTypeReference<AmxApiResponse<Quotation_Call_Response, Object>>()
 					{
 					});
 		}
 		catch (Exception e)
 		{
-			LOGGER.error("exception in getCurrencyByCountryId : ", e);
+			LOGGER.error("exception in quotaion : ", e);
 			return JaxSystemError.evaluate(e);
 		} // end of try-catch
 	}

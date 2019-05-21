@@ -14,6 +14,8 @@ import com.amx.jax.AppConfig;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.logger.LoggerService;
+import com.amx.jax.partner.dto.SrvPrvFeeInqReqDTO;
+import com.amx.jax.partner.dto.SrvPrvFeeInqResDTO;
 import com.amx.jax.pricer.dto.DiscountDetailsReqRespDTO;
 import com.amx.jax.pricer.dto.DiscountMgmtReqDTO;
 import com.amx.jax.pricer.dto.ExchangeRateAndRoutingRequest;
@@ -137,6 +139,17 @@ public class PricerServiceClient implements ProbotExchangeRateService, ProbotDat
 		return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.SAVE_DISCOUNT_DETAILS)
 				.post(discountMgmtReqDTO)
 				.as(new ParameterizedTypeReference<AmxApiResponse<DiscountDetailsReqRespDTO, Object>>() {
+				});
+	}
+	
+	@Override
+	public AmxApiResponse<SrvPrvFeeInqResDTO, Object> serviceProviderQuotation(SrvPrvFeeInqReqDTO srvPrvFeeInqReqDTO) {
+		LOGGER.info("fetch Service Provider Exchange Details : transaction Id: {}, with TraceId: {}",
+				AppContextUtil.getTranxId(), AppContextUtil.getTraceId());
+
+		return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.Partner_Fee_Inquiry)
+				.post(srvPrvFeeInqReqDTO)
+				.as(new ParameterizedTypeReference<AmxApiResponse<SrvPrvFeeInqResDTO, Object>>() {
 				});
 	}
 

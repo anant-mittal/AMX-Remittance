@@ -13,10 +13,10 @@ import com.amx.jax.model.request.serviceprovider.Benificiary;
 import com.amx.jax.model.request.serviceprovider.Customer;
 import com.amx.jax.model.request.serviceprovider.ServiceProviderCallRequestDto;
 import com.amx.jax.model.request.serviceprovider.TransactionData;
+import com.amx.jax.model.response.serviceprovider.Quotation_Call_Response;
 import com.amx.jax.model.response.serviceprovider.ServiceProviderResponse;
 import com.amx.service_provider.dbmodel.webservice.ExOwsLoginCredentials;
 import com.amx.service_provider.homesend.HomesendGate;
-import com.amx.service_provider.repository.webservice.ExOwsLoginCredentialsRepository;
 import com.amx.service_provider.repository.webservice.OwsParamRespcodeRepository;
 
 @Component
@@ -33,9 +33,9 @@ public class ServiceProviderManger implements IServiceProvider
 	@Autowired
 	private OwsParamRespcodeRepository owsParamRespcodeRepository;
 
-	public ServiceProviderResponse getQutation(ServiceProviderCallRequestDto quatationRequestDto)
+	public Quotation_Call_Response getQutation(ServiceProviderCallRequestDto quatationRequestDto)
 	{
-		ServiceProviderResponse response = new ServiceProviderResponse();
+		Quotation_Call_Response response = new Quotation_Call_Response();
 
 		// TODO: Form the input object from the given IDs
 		// As advise by the team, no need to set all the data in each one of the three

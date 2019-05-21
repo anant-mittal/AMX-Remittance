@@ -32,7 +32,7 @@ public class CountryBranch implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	private BigDecimal countryBranchId;
-	private CountryMaster countryMaster;
+	private CountryMasterDT countryMaster;
 	private String branchName;
 
 	private BigDecimal accountCode;
@@ -91,11 +91,11 @@ public class CountryBranch implements Serializable {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "COUNTRY_ID")
-	public CountryMaster getCountryMaster() {
+	public CountryMasterDT getCountryMaster() {
 		return countryMaster;
 	}
 
-	public void setCountryMaster(CountryMaster countryMaster) {
+	public void setCountryMaster(CountryMasterDT countryMaster) {
 		this.countryMaster = countryMaster;
 	}
 

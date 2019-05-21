@@ -12,6 +12,16 @@ import java.math.BigDecimal;
 public final class PricerServiceConstants {
 
 	public static final String TTE = "TTE";
+	
+	public static final String CHARGES_TYPE = "C";
+	
+	public static final String SETTLEMENT_CURRENCY_CODE = "USD";
+	
+	public static final String Yes = "Y";
+	
+	public static final String ACTION_IND_I = "I";
+	
+	public static final BigDecimal BOTH_BANK_SERVICE_COMPONENT = new BigDecimal(777);
 
 	public static final BigDecimal MAX_BIGD_12 = new BigDecimal(999999999999l);
 

@@ -42,12 +42,9 @@ public class CurrencyMasterModel implements java.io.Serializable {
 	private String arabicDecimalName;
 	private String arabicQuoteName;
 	private String swiftCurrency;
-	 
 	private String isoCurrencyCode;
-	 
 	private BigDecimal decinalNumber;
 	private String createdBy;
-
 	private Date createdDate;
 	private String modifiedBy;
 	private Date modifiedDate;
@@ -55,6 +52,8 @@ public class CurrencyMasterModel implements java.io.Serializable {
 	private Date approvedDate;
 	private String remarks;
 	private BigDecimal countryId;
+	private BigDecimal fundMinRate;
+	private BigDecimal fundMaxRate;
 
 	
 	public CurrencyMasterModel() {
@@ -277,4 +276,22 @@ public class CurrencyMasterModel implements java.io.Serializable {
 		this.countryId = countryId;
 	}
 
+	@Column(name="Fund_Min_Rate")
+	public BigDecimal getFundMinRate() {
+		return fundMinRate;
+	}
+
+	public void setFundMinRate(BigDecimal fundMinRate) {
+		this.fundMinRate = fundMinRate;
+	}
+
+	@Column(name="Fund_Max_Rate")
+	public BigDecimal getFundMaxRate() {
+		return fundMaxRate;
+	}
+
+	public void setFundMaxRate(BigDecimal fundMaxRate) {
+		this.fundMaxRate = fundMaxRate;
+	}
+	
 }

@@ -1,16 +1,16 @@
 package com.amx.jax.pricer.repository;
 
-import java.math.BigDecimal;
-
-import javax.transaction.Transactional;
+import java.io.Serializable;
+import java.util.List;
 
 import org.springframework.data.repository.CrudRepository;
 
 import com.amx.jax.pricer.dbmodel.CurrencyMasterModel;
 
-@Transactional
-public interface CurrencyMasterRepository extends CrudRepository<CurrencyMasterModel, BigDecimal> {
+public interface CurrencyMasterRepository extends CrudRepository<CurrencyMasterModel, Serializable> {
 
-	CurrencyMasterModel findByCurrencyCode(String currencyCode);
+	public List<CurrencyMasterModel> findByIsoCurrencyCodeAndIsactive(String currencyCode,String isActive);
+	
+	public CurrencyMasterModel findByCurrencyCode(String currencyCode);
 
 }
