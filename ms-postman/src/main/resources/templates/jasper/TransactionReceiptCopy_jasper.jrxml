@@ -1799,12 +1799,11 @@
                                     stretchType="NoStretch" />
                             <graphicElement/>
                             <imageExpression class="java.lang.String">
-                                <![CDATA[$P{TU}.prop("company.promotion.img")]]>
-                            </imageExpression>
+                       		<![CDATA[$F{tranx}.get("isArabic")!= "true" ? $P{TU}.prop("company.promotion.img") : $P{TU}.prop("company.arPromotion.img")]]>
+                           </imageExpression>
                         </image>
                     </frame>
                     <!--##################FOOTER END####################-->
-
                     <!--##################FOOTER START####################-->
                     <!--##################FOOTER END####################-->
                     </c:listContents>
