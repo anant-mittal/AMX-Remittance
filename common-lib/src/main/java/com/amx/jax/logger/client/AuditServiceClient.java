@@ -66,7 +66,7 @@ public class AuditServiceClient implements AuditService {
 
 		if (!FILTER_MAP_DONE) {
 			APP_NAME = appConfig.getAppName();
-			AUDIT_LOGGER_ENABLED = appConfig.isLogger();
+			AUDIT_LOGGER_ENABLED = appConfig.isAudit();
 			for (AuditFilter filter : filters) {
 				Matcher matcher = pattern.matcher(filter.getClass().getGenericInterfaces()[0].getTypeName());
 				if (matcher.find()) {
