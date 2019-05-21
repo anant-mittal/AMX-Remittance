@@ -18,8 +18,7 @@ public class FcDeliveryBranchOrderSearchRequest {
 	private String countryBranchName;
 	@JsonIgnore
 	private String orderStatusCode;
-	@JsonIgnore
-	private String createdDate;
+	
 	
 	public String getOrderId() {
 		return orderId;
@@ -44,14 +43,6 @@ public class FcDeliveryBranchOrderSearchRequest {
 	}
 	public void setOrderStatus(String orderStatus) {
 		this.orderStatus = orderStatus;
-	}
-	
-	
-	public String getCreatedDate() {
-		return createdDate;
-	}
-	public void setCreatedDate(String toDate) {
-		this.createdDate = toDate;
 	}
 	@Override
 	public String toString() {
