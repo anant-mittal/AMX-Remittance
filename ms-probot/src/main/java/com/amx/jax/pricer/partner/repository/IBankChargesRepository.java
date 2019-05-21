@@ -1,4 +1,4 @@
-package com.amx.jax.partner.repository;
+package com.amx.jax.pricer.partner.repository;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -7,7 +7,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
-import com.amx.jax.partner.dbmodel.BankCharges;
+import com.amx.jax.pricer.partner.dbmodel.BankCharges;
 
 public interface IBankChargesRepository extends CrudRepository<BankCharges, Serializable> {
 	

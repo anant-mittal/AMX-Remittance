@@ -1,4 +1,4 @@
-package com.amx.jax.partner.repository;
+package com.amx.jax.pricer.partner.repository;
 
 import java.io.Serializable;
 import java.math.BigDecimal;

@@ -1,4 +1,4 @@
-package com.amx.jax.partner.dao;
+package com.amx.jax.pricer.partner.dao;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -7,20 +7,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.dbmodel.ParameterDetails;
-import com.amx.jax.partner.dbmodel.BankCharges;
-import com.amx.jax.partner.dbmodel.BankServiceRule;
-import com.amx.jax.partner.dbmodel.BenificiaryListView;
-import com.amx.jax.partner.dbmodel.CustomerDetailsView;
-import com.amx.jax.partner.dbmodel.ServiceProviderRateView;
-import com.amx.jax.partner.repository.IBankChargesRepository;
-import com.amx.jax.partner.repository.IBankServiceRuleRepository;
-import com.amx.jax.partner.repository.IBeneficiaryViewRepository;
-import com.amx.jax.partner.repository.ICountryMasterRepository;
-import com.amx.jax.partner.repository.ICustomerViewRepository;
-import com.amx.jax.partner.repository.IServiceProviderMarginRepository;
-import com.amx.jax.partner.repository.IUsdExchangeRateRepository;
 import com.amx.jax.pricer.dbmodel.CountryMasterDT;
 import com.amx.jax.pricer.dbmodel.CurrencyMasterModel;
+import com.amx.jax.pricer.partner.dbmodel.BankCharges;
+import com.amx.jax.pricer.partner.dbmodel.BankServiceRule;
+import com.amx.jax.pricer.partner.dbmodel.BenificiaryListView;
+import com.amx.jax.pricer.partner.dbmodel.CustomerDetailsView;
+import com.amx.jax.pricer.partner.dbmodel.ServiceProviderRateView;
+import com.amx.jax.pricer.partner.repository.IBankChargesRepository;
+import com.amx.jax.pricer.partner.repository.IBankServiceRuleRepository;
+import com.amx.jax.pricer.partner.repository.IBeneficiaryViewRepository;
+import com.amx.jax.pricer.partner.repository.ICountryMasterRepository;
+import com.amx.jax.pricer.partner.repository.ICustomerViewRepository;
+import com.amx.jax.pricer.partner.repository.IServiceProviderMarginRepository;
+import com.amx.jax.pricer.partner.repository.IUsdExchangeRateRepository;
 import com.amx.jax.pricer.repository.CurrencyMasterRepository;
 
 @Component	
