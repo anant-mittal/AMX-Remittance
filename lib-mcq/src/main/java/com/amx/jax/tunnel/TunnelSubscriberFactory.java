@@ -154,7 +154,9 @@ public class TunnelSubscriberFactory {
 				tryMessage(channel, msg);
 				RQueue<TunnelMessage<M>> eventAltQueue = redisson
 						.getQueue(TunnelEventXchange.SEND_LISTNER.getQueue(topicName));
-				TunnelMessage<M> msg2 = eventAltQueue.poll();
+
+				TunnelMessage<M> msg2 = pollSafely(channel, eventAltQueue);
+
 				if (msg2 != null && !TimeUtils.isDead(msg2.getTimestamp(), TIME_TO_EXPIRE_MILLIS)) {
 					tryMessage(channel, msg2);
 				}
@@ -205,7 +207,7 @@ public class TunnelSubscriberFactory {
 			}
 
 			private void onMessage(String channel, RQueue<TunnelMessage<M>> topicMessageQueue) {
-				TunnelMessage<M> msg = topicMessageQueue.poll();
+				TunnelMessage<M> msg = pollSafely(channel, topicMessageQueue);
 				if (msg == null) {
 					return;
 				}
@@ -216,7 +218,7 @@ public class TunnelSubscriberFactory {
 					AuditServiceClient.trackStatic(
 							new RequestTrackEvent(RequestTrackEvent.Type.SUB_IN, TunnelEventXchange.TASK_WORKER, msg));
 					try {
-						if (!ArgUtil.isEmpty(msg.getData())) {
+						if (ArgUtil.isEmpty(msg.getData())) {
 							LOGGER.warn("NULL Event Rcvd for EVENT " + channel + " : ");
 						} else {
 							listener.onMessage(channel, msg.getData());
@@ -246,13 +248,14 @@ public class TunnelSubscriberFactory {
 			}
 
 			private void onMessage(String channel, RQueue<TunnelMessage<M>> topicMessageQueue) {
-				TunnelMessage<M> msg = topicMessageQueue.poll();
+				TunnelMessage<M> msg = pollSafely(channel, topicMessageQueue);
+
 				if (msg != null) {
 					AppContext context = msg.getContext();
 					AppContextUtil.setContext(context);
 					AppContextUtil.init();
 					try {
-						if (!ArgUtil.isEmpty(msg.getData())) {
+						if (ArgUtil.isEmpty(msg.getData())) {
 							LOGGER.warn("NULL Event Rcvd for EVENT " + channel + " : ");
 						} else {
 							listener.onMessage(channel, msg.getData());
@@ -263,7 +266,18 @@ public class TunnelSubscriberFactory {
 					onMessage(channel, topicMessageQueue);
 				}
 			}
+
 		});
+	}
+
+	private <M> TunnelMessage<M> pollSafely(String channel, RQueue<TunnelMessage<M>> topicMessageQueue) {
+		TunnelMessage<M> msg = null;
+		try {
+			msg = topicMessageQueue.poll();
+		} catch (Exception e) {
+			LOGGER.error("EXCEPTION in EVENT_POLL " + channel, e);
+		}
+		return msg;
 	}
 
 }
