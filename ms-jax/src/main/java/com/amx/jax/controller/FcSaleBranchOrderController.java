@@ -225,7 +225,6 @@ public class FcSaleBranchOrderController implements IFxBranchOrderService {
 	/**
 	 * To get the FC-delivery Enquiry order search 
 	* @author : Radhika
-	 * @throws Exception 
     * @date : 12/03/2019
 	*/
 	@RequestMapping(value = Path.FC_SEARCH_ORDER, method = RequestMethod.POST)
