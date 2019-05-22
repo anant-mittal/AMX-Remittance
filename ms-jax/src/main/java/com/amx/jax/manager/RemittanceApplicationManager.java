@@ -224,6 +224,13 @@ public class RemittanceApplicationManager {
 		setCustomerDiscountColumns(remittanceApplication, validationResults);
 		return remittanceApplication;
 	}
+	
+	public void setVatDetails(RemittanceApplication remittanceApplication,
+						RemittanceTransactionResponsetModel remittanceTransactionResponsetModel) {
+					remittanceApplication.setVatType(remittanceTransactionResponsetModel.getVatType());
+					remittanceApplication.setVatPercentage(remittanceTransactionResponsetModel.getVatPercentage());
+					remittanceApplication.setVatAmount(remittanceTransactionResponsetModel.getVatAmount());
+			}
 
 	public void setCustomerDiscountColumns(RemittanceApplication remittanceApplication,
 			RemittanceTransactionResponsetModel remittanceTransactionResponsetModel) {

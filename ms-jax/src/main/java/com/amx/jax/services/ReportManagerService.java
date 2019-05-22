@@ -43,6 +43,7 @@ import com.amx.jax.repository.ICurrencyDao;
 import com.amx.jax.repository.IPurposeOfRemittance;
 import com.amx.jax.repository.IRemittanceTransactionDao;
 import com.amx.jax.userservice.service.UserService;
+import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.RoundUtil;
 
 @Component
@@ -457,9 +458,23 @@ public class ReportManagerService extends AbstractService{
 							arabicCompanyInfo = arabicCompanyInfo.append(ConstantDocument.Share_Capital + " " + companyMaster.get(0).getCapitalAmount());
 						}
 						obj.setArabicCompanyInfo(arabicCompanyInfo.toString());
+						/** added by Radhika on 21May 2019**/
+						obj.setVatNumber(companyMaster.get(0).getVatNumber()==null?"":companyMaster.get(0).getVatNumber());
+						obj.setVatDate(companyMaster.get(0).getVatRegistrationDate()==null?"":companyMaster.get(0).getVatRegistrationDate());
+
 					}
 					// 
+					obj.setVatAmount(view.getVatAmount()==null?BigDecimal.ZERO:view.getVatAmount());
+					obj.setVatPercentage(view.getVatPercentage()==null?BigDecimal.ZERO:view.getVatPercentage());
+					obj.setVatType(view.getVatType()==null?"":view.getVatType());
+					obj.setCustomerVatNumber(view.getCustomerVatNumber()==null?"":view.getCustomerVatNumber());
+					/** end **/
 					
+					if(!StringUtils.isBlank(view.getIsDiscAvail()) && view.getIsDiscAvail().equalsIgnoreCase(ConstantDocument.Yes) && JaxUtil.isNullZeroBigDecimalCheck(view.getAmountSaved()) && view.getAmountSaved().compareTo(BigDecimal.ZERO)>0) {
+						BigDecimal KdSaved=RoundUtil.roundBigDecimal((view.getAmountSaved()),decimalPerCurrency);
+						 obj.setAmountSaved(currencyQuoteName +"     "+KdSaved.toString());
+						 }
+										
 					
 					
 				} catch (Exception e) {

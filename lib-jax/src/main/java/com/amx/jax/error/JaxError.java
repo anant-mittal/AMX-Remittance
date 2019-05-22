@@ -275,7 +275,12 @@ public enum JaxError implements IExceptionEnum {
 	JAX_SYSTEM_ERROR,
 	APPL_CREATION_ERROR,
 	APPL_BENE_CREATION_ERROR,
-	APPL_ADD_INSTRUCTION_ERROR;
+	APPL_ADD_INSTRUCTION_ERROR,
+	
+	//Vat
+	MUTIPLE_RECORD_FOUND;
+	
+	
 	@Deprecated
 	public String getCode() {
 		return this.toString();
