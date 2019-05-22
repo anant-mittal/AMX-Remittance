@@ -576,6 +576,7 @@ public class UserService extends AbstractUserService {
 				String randwOtp = Random.randomNumeric(6);
 				String hashedwOtp = cryptoUtil.getHash(userId, randwOtp);
 				model.setwHashedOtp(hashedwOtp);
+				model.setwOtp(randwOtp);
 				model.setwOtpPrefix(Random.randomAlpha(3));
 			}
 		}

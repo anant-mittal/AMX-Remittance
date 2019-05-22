@@ -12,6 +12,8 @@ public class CivilIdOtpModel extends AbstractModel {
 	private String mOtp;
 
 	private String eOtp;
+	
+	private String wOtp;
 
 	@JsonIgnore
 	private String mHashedOtp;
@@ -179,6 +181,14 @@ public class CivilIdOtpModel extends AbstractModel {
 
 	public void setwHashedOtp(String wHashedOtp) {
 		this.wHashedOtp = wHashedOtp;
+	}
+
+	public String getwOtp() {
+		return wOtp;
+	}
+
+	public void setwOtp(String wOtp) {
+		this.wOtp = wOtp;
 	}
 
 }
