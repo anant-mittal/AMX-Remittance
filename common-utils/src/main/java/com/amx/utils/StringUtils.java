@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 public final class StringUtils {
 
@@ -34,10 +35,12 @@ public final class StringUtils {
 		return !ArgUtil.isEmptyString(str);
 	}
 
-//	public static Map<String, String> getMapFromString(String splitter_char, String key_value_separator_char,
-//			String data) {
-//		return Splitter.on(splitter_char).withKeyValueSeparator(key_value_separator_char).split(data);
-//	}
+	// public static Map<String, String> getMapFromString(String splitter_char,
+	// String key_value_separator_char,
+	// String data) {
+	// return
+	// Splitter.on(splitter_char).withKeyValueSeparator(key_value_separator_char).split(data);
+	// }
 
 	public static Map<String, String> getMapFromString(String splitter_char, String key_value_separator_char,
 			String data) {
@@ -90,4 +93,14 @@ public final class StringUtils {
 			return str.substring(0, length);
 		}
 	}
+
+	public static boolean anyMatch(String val, String... matchers) {
+
+		if (val == null)
+			return false;
+
+		return Stream.of(matchers).anyMatch(val::equalsIgnoreCase);
+
+	}
+
 }

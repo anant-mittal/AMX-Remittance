@@ -32,8 +32,8 @@ public class ChannelDiscount implements Serializable {
 	@Enumerated(value = EnumType.STRING)
 	private Channel channel;
 
-	@Column(name = "DISCOUNT_PIPS")
-	private BigDecimal discountPips;
+	//@Column(name = "DISCOUNT_PIPS")
+	//private BigDecimal discountPips;
 
 	@Column(name = "ISACTIVE")
 	private String isActive;
@@ -62,11 +62,11 @@ public class ChannelDiscount implements Serializable {
 	@Column(name = "APPROVED_DATE")
 	private Date approvedDate;
 
-	@Column(name = "MIN_DISCOUNT_PIPS")
-	private BigDecimal minDiscountPips;
+	//@Column(name = "MIN_DISCOUNT_PIPS")
+	//private BigDecimal minDiscountPips;
 
-	@Column(name = "MAX_DISCOUNT_PIPS")
-	private BigDecimal maxDiscountPips;
+	//@Column(name = "MAX_DISCOUNT_PIPS")
+	//private BigDecimal maxDiscountPips;
 
 	public BigDecimal getId() {
 		return id;
@@ -84,13 +84,13 @@ public class ChannelDiscount implements Serializable {
 		this.channel = channel;
 	}
 
-	public BigDecimal getDiscountPips() {
+	/*public BigDecimal getDiscountPips() {
 		return discountPips;
 	}
 
 	public void setDiscountPips(BigDecimal discountPips) {
 		this.discountPips = discountPips;
-	}
+	}*/
 
 	public String getIsActive() {
 		return isActive;
@@ -164,7 +164,7 @@ public class ChannelDiscount implements Serializable {
 		this.approvedDate = approvedDate;
 	}
 
-	public BigDecimal getMinDiscountPips() {
+	/*public BigDecimal getMinDiscountPips() {
 		return minDiscountPips;
 	}
 
@@ -178,6 +178,6 @@ public class ChannelDiscount implements Serializable {
 
 	public void setMaxDiscountPips(BigDecimal maxDiscountPips) {
 		this.maxDiscountPips = maxDiscountPips;
-	}
+	}*/
 
 }
