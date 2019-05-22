@@ -122,6 +122,13 @@ public final class AuthDataInterface {
 		 */
 		@Deprecated
 		void seteOtp(String eOtp);
+
+		@Deprecated
+		@ApiMockModelProperty(example = "654321")
+		String getwOtp();
+
+		@Deprecated
+		void setwOtp(String wOtp);
 	}
 
 	/**

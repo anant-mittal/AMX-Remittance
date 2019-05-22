@@ -66,7 +66,8 @@ public class RegisterController {
 	}
 
 	@ApiOperation(value = "Verify KYC and sneds OTP to registered Mobile")
-	@RequestMapping(value = "/pub/register/verifyid/v2", method = { RequestMethod.POST })
+	@RequestMapping(value = "/pub/register/verifyid/v2", method = { RequestMethod.POST },
+			consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 	public ResponseWrapper<AuthData> verifyID(@RequestParam String identity,
 			@RequestParam(required = false) ContactType contactType,
 			@RequestParam(required = false) String otp) {
@@ -86,6 +87,13 @@ public class RegisterController {
 		} else {
 			return registrationService.validateCustomer(identity, otp, contactType);
 		}
+	}
+
+	@ApiOperation(value = "Verify KYC and sneds OTP to registered Mobile")
+	@RequestMapping(value = "/pub/register/verifyid/v2/**", method = { RequestMethod.POST })
+	public ResponseWrapper<AuthData> verifyIDJson(@RequestBody AuthData authData) {
+		return this.verifyID(authData.getIdentity(), authData.getContactType(),
+				ArgUtil.ifNotEmpty(authData.getOtp(), authData.getmOtp(), authData.geteOtp(), authData.getwOtp()));
 	}
 
 	/**
