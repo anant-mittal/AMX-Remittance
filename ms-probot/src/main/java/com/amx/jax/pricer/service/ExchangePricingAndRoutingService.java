@@ -294,9 +294,20 @@ public class ExchangePricingAndRoutingService {
 			}
 
 			if (skipServiceMode) {
-				if (!bankServiceModeSellRates.get(exchangeRate.getBankId()).containsKey(DEFAULT_ONLINE_SERVICE_ID)) {
-					bankServiceModeSellRates.get(exchangeRate.getBankId()).put(DEFAULT_ONLINE_SERVICE_ID, exchangeRate);
-				}
+
+				ExchangeRateDetails clonnedRate = exchangeRate.clone();
+				clonnedRate.setServiceIndicatorId(routeDetails.getViewExRoutingMatrix().getServiceMasterId());
+
+				bankServiceModeSellRates.get(exchangeRate.getBankId()).put(clonnedRate.getServiceIndicatorId(),
+						clonnedRate);
+
+				/*
+				 * if (!bankServiceModeSellRates.get(exchangeRate.getBankId()).containsKey(
+				 * DEFAULT_ONLINE_SERVICE_ID)) {
+				 * bankServiceModeSellRates.get(exchangeRate.getBankId()).put(
+				 * DEFAULT_ONLINE_SERVICE_ID, exchangeRate); }
+				 */
+
 			} else {
 				bankServiceModeSellRates.get(exchangeRate.getBankId()).put(exchangeRate.getServiceIndicatorId(),
 						exchangeRate);

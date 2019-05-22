@@ -1,7 +1,5 @@
 package com.amx.jax.pricer.manager;
 
-import static com.amx.jax.pricer.var.PricerServiceConstants.DEFAULT_ONLINE_SERVICE_ID;
-
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -133,6 +131,8 @@ public class RemitRoutingManager {
 		Map<String, ExchangeRateDetails> bankRateMap = new HashMap<String, ExchangeRateDetails>();
 
 		for (ExchangeRateDetails exchRate : rateList) {
+
+			// System.out.println("#### Exchange Rate ==> " + JsonUtil.toJson(exchRate));
 
 			String combinedId;
 

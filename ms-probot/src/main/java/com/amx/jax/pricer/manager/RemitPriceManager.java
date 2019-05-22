@@ -47,6 +47,7 @@ import com.amx.jax.pricer.exception.PricerServiceError;
 import com.amx.jax.pricer.exception.PricerServiceException;
 import com.amx.jax.pricer.var.PricerServiceConstants.PRICE_BY;
 import com.amx.jax.pricer.var.PricerServiceConstants.SERVICE_GROUP;
+import com.amx.utils.JsonUtil;
 
 @Component
 public class RemitPriceManager {
@@ -180,8 +181,9 @@ public class RemitPriceManager {
 				BigDecimal maxFcCurBal = exchRateAndRoutingTransientDataCache
 						.getMaxGLLcBalForBank(exchangeRate.getBankMaster().getBankId(), Boolean.TRUE);
 
-				//System.out.println(" Required Amt ==> " + exRateDetails.getSellRateBase().getConvertedFCAmount().toPlainString()
-				//		+ " Current Amt ==>" + maxFcCurBal.toPlainString());
+				// System.out.println(" Required Amt ==> " +
+				// exRateDetails.getSellRateBase().getConvertedFCAmount().toPlainString()
+				// + " Current Amt ==>" + maxFcCurBal.toPlainString());
 				if (maxFcCurBal.compareTo(exRateDetails.getSellRateBase().getConvertedFCAmount()) < 0) {
 
 					exRateDetails.setLowGLBalance(true);
@@ -339,6 +341,8 @@ public class RemitPriceManager {
 		Map<BigDecimal, ExchangeRateAPRDET> bankExchangeRateMap = new HashMap<BigDecimal, ExchangeRateAPRDET>();
 
 		for (ExchangeRateAPRDET rate : exchangeRates) {
+
+			// System.out.println(" @@ Unique APRDET ==> " + JsonUtil.toJson(rate));
 
 			BigDecimal bankId = rate.getBankMaster().getBankId();
 
