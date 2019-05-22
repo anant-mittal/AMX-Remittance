@@ -515,11 +515,11 @@ public class UserService extends AbstractUserService {
 				personinfo.setPrefixCodeMobile(customer.getPrefixCodeMobile());
 				personinfo.setMobile(customerModel.getMobile());
 			}
+		}
 
-			if (!ArgUtil.isEmpty(customer) && !ArgUtil.isEmpty(customer.getWhatsapp())) {
-				personinfo.setWhatsappPrefixCode(customer.getWhatsappPrefix());
-				personinfo.setWhatsAppNumber(customer.getWhatsapp());
-			}
+		if (!ArgUtil.isEmpty(customer) && !ArgUtil.isEmpty(customer.getWhatsapp())) {
+			personinfo.setWhatsappPrefixCode(customer.getWhatsappPrefix());
+			personinfo.setWhatsAppNumber(customer.getWhatsapp());
 		}
 
 		sendOtpFromPostMan(personinfo, model, channels);
