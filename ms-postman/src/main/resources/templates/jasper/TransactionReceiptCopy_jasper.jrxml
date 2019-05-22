@@ -1855,7 +1855,7 @@
                     
                          <!--##################FOOTER START####################-->
                     <frame>
-                        <reportElement x="0" y="726" width="595" height="70"
+                        <reportElement x="0" y="711" width="595" height="70"
                                        forecolor="blue"/>
 
                         <image evaluationTime="Now" hyperlinkType="None" hyperlinkTarget="Self" isLazy="true" onErrorType="Blank">
