@@ -109,7 +109,7 @@ public class RemittanceApplicationManager {
 		BigDecimal localCurrencyId = metaData.getDefaultCurrencyId();
 		BigDecimal routingCountryId = (BigDecimal) remitApplParametersMap.get("P_ROUTING_COUNTRY_ID");
 		Customer customer = (Customer) validatedObjects.get("CUSTOMER");
-		BigDecimal routingBankId = (BigDecimal) remitApplParametersMap.get("P_ROUTING_BANK_ID");
+		BigDecimal routingBankId = (BigDecimal)remitApplParametersMap.get("P_ROUTING_BANK_ID");
 		BigDecimal routingBankBranchId = (BigDecimal) remitApplParametersMap.get("P_ROUTING_BANK_BRANCH_ID");
 		BenificiaryListView beneDetails = (BenificiaryListView) validatedObjects.get("BENEFICIARY");
 		BigDecimal foreignCurrencyId = beneDetails.getCurrencyId();
@@ -140,8 +140,7 @@ public class RemittanceApplicationManager {
 		// net amt currency
 		remittanceApplication.setExCurrencyMasterByLocalNetCurrencyId(localCurrency);
 		remittanceApplication.setSpotRateInd(ConstantDocument.No);
-		remittanceApplication.setLoyaltyPointInd(
-				loyalityPointsAvailed(requestModel, validationResults) ? ConstantDocument.Yes : ConstantDocument.No);
+		remittanceApplication.setLoyaltyPointInd(loyalityPointsAvailed(requestModel, validationResults) ? ConstantDocument.Yes : ConstantDocument.No);
 		// company Id and code
 		CompanyMaster companymaster = new CompanyMaster();
 		companymaster.setCompanyId(metaData.getCompanyId());
@@ -194,7 +193,6 @@ public class RemittanceApplicationManager {
 		setApplicableRates(remittanceApplication, requestModel, validationResults);
 		remittanceApplication.setDocumentFinancialyear(userFinancialYear.getFinancialYear());
 		remittanceApplication.setSelectedCurrencyId(foreignCurrencyId);
-
 		try {
 			remittanceApplication.setAccountMmyyyy(new SimpleDateFormat("dd/MM/yyyy").parse(DateUtil.getCurrentAccMMYear()));
 		} catch (ParseException e) {
@@ -222,6 +220,7 @@ public class RemittanceApplicationManager {
 		validateDailyBeneficiaryTransactionLimit(beneDetails);
 		remittanceApplication.setInstruction("URGENT");
 		setCustomerDiscountColumns(remittanceApplication, validationResults);
+		setVatDetails(remittanceApplication, validationResults);
 		return remittanceApplication;
 	}
 
@@ -253,8 +252,7 @@ public class RemittanceApplicationManager {
 
 	
 	
-	public void setVatDetails(RemittanceApplication remittanceApplication,
-			RemittanceTransactionResponsetModel remittanceTransactionResponsetModel) {
+	public void setVatDetails(RemittanceApplication remittanceApplication,RemittanceTransactionResponsetModel remittanceTransactionResponsetModel) {
 		remittanceApplication.setVatType(remittanceTransactionResponsetModel.getVatType());
 		remittanceApplication.setVatPercentage(remittanceTransactionResponsetModel.getVatPercentage());
 		remittanceApplication.setVatAmount(remittanceTransactionResponsetModel.getVatAmount());

@@ -663,14 +663,6 @@ public class BranchRemittanceManager extends AbstractModel {
 		}	
 	List<AdditionalExchAmiecDto> purposeofTrnx = new ArrayList<>();
 	
-	/*
-	RoutingResponseDto routingResponseDto = branchRoutingManager.getRoutingSetupDeatils(beneRelId);
-	
-	if(routingResponseDto!=null) {
-		List<ResourceDTO> routingCountry = routingResponseDto.getRoutingCountrydto();
-		cntMaster.setCountryId(routingCountry.get(0).getResourceId());
-	}*/
-	
 	if(JaxUtil.isNullZeroBigDecimalCheck(routingCountryId)) {
 		cntMaster.setCountryId(routingCountryId);
 	}
