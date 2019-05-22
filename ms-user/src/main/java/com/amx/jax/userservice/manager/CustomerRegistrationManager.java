@@ -390,7 +390,7 @@ public class CustomerRegistrationManager extends TransactionModel<CustomerRegist
 			}
 			
 			if(customer.getSignatureSpecimenClob()==null){
-				throw new GlobalException(JaxError.CUSTOMER__SIGNATURE_UNAVAILABLE,"Customer signature not available.");
+				throw new GlobalException(JaxError.CUSTOMER_SIGNATURE_UNAVAILABLE,"Customer signature not available.");
 			}
 			
 			boolean insuranceCheck = ("Y".equals(customer.getMedicalInsuranceInd())|| "N".equals(customer.getMedicalInsuranceInd()));

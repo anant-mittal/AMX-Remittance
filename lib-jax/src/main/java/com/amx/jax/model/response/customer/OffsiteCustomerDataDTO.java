@@ -21,6 +21,7 @@ public class OffsiteCustomerDataDTO {
 
 	CustomerEmploymentDetails customerEmploymentDetails;
 	CustomerFlags customerFlags;
+	String statusKey;
 
 	public String getIdentityInt() {
 		return identityInt;

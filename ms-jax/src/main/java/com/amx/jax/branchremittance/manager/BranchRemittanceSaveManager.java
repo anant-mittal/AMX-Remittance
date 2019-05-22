@@ -1134,7 +1134,7 @@ public BigDecimal generateDocumentNumber(BigDecimal appCountryId,BigDecimal comp
 	 }catch(Exception e){
 		 e.printStackTrace();
 		logger.debug("convertClobToStringVs "+e.getMessage());
-		 throw new GlobalException(JaxError.CUSTOMER__SIGNATURE_UNAVAILABLE, e.getMessage());
+		 throw new GlobalException(JaxError.CUSTOMER_SIGNATURE_UNAVAILABLE, e.getMessage());
 	 }
 	 return signatureStr;
  }
