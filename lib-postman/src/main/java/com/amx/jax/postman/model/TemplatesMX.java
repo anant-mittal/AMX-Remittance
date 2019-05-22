@@ -43,7 +43,7 @@ public enum TemplatesMX implements ITemplate {
 
 	PARTIAL_REGISTRATION_EMAIL("PartialRegistrationCompletionEMail"), TRANSACTION_FAILURE("TransactionFailure"),
 
-	PROMOTION_WINNER("PromotionWinner"), PROMOTION_COUPON("PromotionCoupon"),
+	PROMOTION_WINNER("PromotionWinner"), PROMOTION_COUPON("PromotionCoupon"),WANTIT_BUYIT_PROMOTION("WantITBuyItPromotionCoupon"),
 
 	SERVER_PING("server-ping"),
 
