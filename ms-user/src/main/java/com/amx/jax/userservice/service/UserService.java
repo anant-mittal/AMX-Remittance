@@ -561,7 +561,8 @@ public class UserService extends AbstractUserService {
 			model.setmOtp(randmOtp);
 			model.setmOtpPrefix(Random.randomAlpha(3));
 		} else {
-			if (channels.contains(ContactType.SMS) || channels.contains(ContactType.SMS_EMAIL)) {
+			if (channels.contains(ContactType.SMS) || channels.contains(ContactType.SMS_EMAIL)
+					|| channels.contains(ContactType.MOBILE)) {
 				model.setHashedmOtp(hashedmOtp);
 				model.setmOtp(randmOtp);
 				model.setmOtpPrefix(mOtpPrefix);
