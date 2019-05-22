@@ -6,6 +6,7 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
@@ -14,6 +15,7 @@ public class DailyPromotion implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
+	@Id
 	@Column(name = "PROMO_CODE")
 	private String promoCode;
 

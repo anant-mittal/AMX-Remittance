@@ -33,20 +33,20 @@ public class RemittanceClientTest extends AbstractTest {
 	public void testsaveRemittance()
 			throws IOException, ResourceNotFoundException, InvalidInputException, RemittanceTransactionValidationException, LimitExeededException {
 		setDefaults();
-		TenantContextHolder.setCurrent(Tenant.KWT2);
+		TenantContextHolder.setCurrent(Tenant.KWT);
 		ApiResponse<PaymentResponseDto> response = null;
 		PaymentResponseDto request = new PaymentResponseDto();
 		request.setAuth_appNo("471599");
-		request.setPaymentId("3082792411163298");
+		request.setPaymentId("27000583");
 		// app docno
-		request.setUdf3("27002498");
+		request.setUdf3("27000583");
 		request.setResultCode("CAPTURED");
 		// cusref
 		request.setTrackId("90277");
-		request.setReferenceId("801813658796");
-		request.setTransactionId("9272568121380181");
+		request.setReferenceId("8018136587969");
+		request.setTransactionId("92725681213801819");
 		request.setPostDate("0199");
-		request.setCustomerId(new BigDecimal(595));
+		request.setCustomerId(new BigDecimal(5218));
 		request.setApplicationCountryId(new BigDecimal(91));
 		response = client.saveRemittanceTransaction(request);
 		assertNotNull("Response is null", response);
