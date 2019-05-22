@@ -200,12 +200,12 @@ public class JaxNotificationService {
 	}
 
 	public void sendOtpWhatsApp(PersonInfo pinfo, CivilIdOtpModel model) {
-		// sendOtpSms(pinfo, model, TemplatesMX.RESET_OTP_SMS);
+		sendOtpSms(pinfo, model, TemplatesMX.RESET_OTP_SMS);
 	}
 
 	public void sendOtpWhatsApp(PersonInfo pinfo, CivilIdOtpModel model, TemplatesMX templateMX) {
 
-		logger.info(String.format("Sending OTP SMS to customer :%s on mobile_no :%s  ", pinfo.getFirstName(),
+		logger.info(String.format("Sending wOTP to customer :%s on mobile_no :%s  ", pinfo.getFirstName(),
 				pinfo.getMobile()));
 
 		WAMessage sms = new WAMessage();
@@ -222,7 +222,7 @@ public class JaxNotificationService {
 
 	public void sendOtpSms(PersonInfo pinfo, CivilIdOtpModel model, TemplatesMX templateMX) {
 
-		logger.info(String.format("Sending OTP SMS to customer :%s on mobile_no :%s  ", pinfo.getFirstName(),
+		logger.info(String.format("Sending mOTP SMS to customer :%s on mobile_no :%s  ", pinfo.getFirstName(),
 				pinfo.getMobile()));
 
 		SMS sms = new SMS();
