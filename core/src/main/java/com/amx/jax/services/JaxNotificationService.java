@@ -205,7 +205,7 @@ public class JaxNotificationService {
 
 	public void sendOtpWhatsApp(PersonInfo pinfo, CivilIdOtpModel model, TemplatesMX templateMX) {
 
-		logger.info(String.format("Sending wOTP to customer :%s on mobile_no :%s  ", pinfo.getFirstName(),
+		logger.info(String.format("Sending wOTP to customer :%s on whatsapp_no :%s  ", pinfo.getFirstName(),
 				pinfo.getWhatsappPrefixCode() + pinfo.getWhatsAppNumber()));
 
 		WAMessage sms = new WAMessage();
