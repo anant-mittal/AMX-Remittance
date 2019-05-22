@@ -3,7 +3,7 @@
  */
 package com.amx.jax.pricer.service;
 
-import static com.amx.jax.pricer.var.PricerServiceConstants.DEFAULT_ONLINE_SERVICE_ID;
+//import static com.amx.jax.pricer.var.PricerServiceConstants.DEFAULT_ONLINE_SERVICE_ID;
 
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;

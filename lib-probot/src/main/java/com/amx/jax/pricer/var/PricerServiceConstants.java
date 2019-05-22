@@ -13,7 +13,7 @@ public final class PricerServiceConstants {
 
 	public static final String TTE = "TTE";
 
-	public static final BigDecimal DEFAULT_ONLINE_SERVICE_ID = BigDecimal.ZERO;
+	//public static final BigDecimal DEFAULT_ONLINE_SERVICE_ID = BigDecimal.ZERO;
 
 	public static final BigDecimal MAX_BIGD_12 = new BigDecimal(999999999999l);
 
