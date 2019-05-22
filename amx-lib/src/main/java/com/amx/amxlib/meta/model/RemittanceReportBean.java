@@ -789,6 +789,7 @@ public class RemittanceReportBean {
 
 	public String getAmountSaved() {
 		return amountSaved;
+	}
 	public Boolean getIsArabic() {
 		return isArabic;
 	}
@@ -803,6 +804,7 @@ public class RemittanceReportBean {
 
 	public void setPromotionMessage(String promotionMessage) {
 		this.promotionMessage = promotionMessage;
+	}
 	public void setIsArabic(Boolean isArabic) {
 		this.isArabic = isArabic;
 	}	
