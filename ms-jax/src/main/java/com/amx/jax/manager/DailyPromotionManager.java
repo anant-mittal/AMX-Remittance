@@ -110,7 +110,7 @@ public class DailyPromotionManager {
 			} else {
 				wantITbuyITEmail.addTo("bhoir_subodh24@yahoo.co.in");
 			}
-			wantITbuyITEmail.setITemplate(TemplatesMX.PROMOTION_COUPON);
+			wantITbuyITEmail.setITemplate(TemplatesMX.WANTIT_BUYIT_PROMOTION);
 			wantITbuyITEmail.setHtml(true);
 			wantITbuyITEmail.getModel().put(NotificationConstants.RESP_DATA_KEY, dailyPromotionDTO);
 			postManService.sendEmailAsync(wantITbuyITEmail);
