@@ -143,6 +143,8 @@ public class BranchRemittanceExchangeRateManager {
 		// trnx fee
 		BigDecimal commission = getComission();
 		
+		LOGGER.debug("commisionValue:" +commission);
+		
 		VatDetailsDto vatDetails = getVatAmount(commission);
 		if(vatDetails!=null && !StringUtils.isBlank(vatDetails.getVatApplicable()) && vatDetails.getVatApplicable().equalsIgnoreCase(ConstantDocument.Yes)) {
 			result.setVatAmount(vatDetails.getVatAmount()==null?BigDecimal.ZERO:vatDetails.getVatAmount());
@@ -184,6 +186,9 @@ public class BranchRemittanceExchangeRateManager {
 		BigDecimal deliveryMode = P_DELIVERY_MODE_ID.getValue(remitApplParametersMap);
 		BigDecimal commission = remittanceTransactionManager.getCommissionAmount(routingBankId, rountingCountryId, currencyId,remittanceMode, deliveryMode);
 		BigDecimal newCommission = remittanceTransactionManager.reCalculateComission();
+		LOGGER.debug("routingBankId:"+routingBankId+ "rountingCountryId" +rountingCountryId+ "currencyId" +currencyId+ "remittanceMode" +remittanceMode+ "deliveryMode"+deliveryMode+
+				"commission" +commission+ "newCommission" +newCommission);
+		
 		if (newCommission != null) {
 			commission = newCommission;
 		}
@@ -191,6 +196,7 @@ public class BranchRemittanceExchangeRateManager {
 		BigDecimal corpDiscount = corporateDiscountManager.corporateDiscount();
 		if(JaxUtil.isNullZeroBigDecimalCheck(commission) && commission.compareTo(corpDiscount)>=0) {
 			commission =commission.subtract(corpDiscount);
+			LOGGER.debug("commission1"+commission);
 		}
 		return commission;
 	}
