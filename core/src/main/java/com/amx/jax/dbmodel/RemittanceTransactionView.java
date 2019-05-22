@@ -1135,10 +1135,10 @@ public class RemittanceTransactionView implements Serializable{
 		
 	public String getIsDiscAvail() {
 		return isDiscAvail;
-		}
-		
+	}
+
 	public void setIsDiscAvail(String isDiscAvail) {
 		this.isDiscAvail = isDiscAvail;
-		}
-	
+	}
+
 }

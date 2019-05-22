@@ -78,6 +78,7 @@ public class ParameterService extends AbstractService {
 			model.setAuthMessage(appl.getAuthMessage());
 			model.setAuthorizationType(appl.getAuthorizationType());
 			model.setAuthPercentage(appl.getAuthPercentage());
+			model.setAuthDesc(appl.getAuthDesc().trim());
 			list.add(model);
 		}
 		return list;

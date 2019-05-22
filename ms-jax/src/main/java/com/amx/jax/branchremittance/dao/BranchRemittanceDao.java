@@ -155,7 +155,7 @@ public class BranchRemittanceDao {
 
 			if (collectModel != null) {
 				BigDecimal documentNo = generateDocumentNumber(collectModel.getApplicationCountryId(), collectModel.getFsCompanyMaster().getCompanyId(),
-						collectModel.getDocumentId(), collectModel.getDocumentFinanceYear(), collectModel.getExBankBranch().getBranchId());
+						collectModel.getDocumentId(), collectModel.getDocumentFinanceYear(), collectModel.getLocCode());
 				if (!JaxUtil.isNullZeroBigDecimalCheck(documentNo)) {
 					throw new GlobalException(JaxError.INVALID_COLLECTION_DOCUMENT_NO, "Collection document should not be blank.");
 				}
