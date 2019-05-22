@@ -97,6 +97,7 @@ import com.amx.jax.userservice.service.CustomerValidationContext.CustomerValidat
 import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.StringUtil;
+import com.amx.utils.ArgUtil;
 import com.amx.utils.Random;
 
 @Service
@@ -194,12 +195,11 @@ public class UserService extends AbstractUserService {
 
 	@Autowired
 	UserService userService;
-	
+
 	@Autowired
 	PostManService postManService;
 	@Autowired
 	CustomerFlagManager customerFlagManager;
-	
 
 	@Override
 	public ApiResponse registerUser(AbstractUserModel userModel) {
@@ -310,9 +310,9 @@ public class UserService extends AbstractUserService {
 
 		simplifyAnswers(model.getSecurityquestions());
 		onlineCust = custDao.saveOrUpdateOnlineCustomer(onlineCust, model);
-		
-		/** Calling stored procedure  to move updated details of customer to old emos **/
-		if (metaData.getCustomerId() != null && (model.getEmail()!=null ||model.getMobile()!=null )) {
+
+		/** Calling stored procedure to move updated details of customer to old emos **/
+		if (metaData.getCustomerId() != null && (model.getEmail() != null || model.getMobile() != null)) {
 			custDao.callProcedurePopulateCusmas(metaData.getCustomerId());
 		}
 		updateCustomerVerification(onlineCust, model, cust);
@@ -444,13 +444,13 @@ public class UserService extends AbstractUserService {
 		}
 		logger.info("customerId is --> " + customerId);
 		userValidationService.validateCustomerVerification(customerId);
-		//userValidationService.validateCivilId(civilId);
-		
-		// --- Validate IdentityInt 
+		// userValidationService.validateCivilId(civilId);
+
+		// --- Validate IdentityInt
 		Customer customerType = custDao.getCustomerByCivilId(civilId);
 		if (null != customerType) {
 			BigDecimal indentityType = customerType.getIdentityTypeId();
-		userValidationService.validateIdentityInt(civilId, indentityType);
+			userValidationService.validateIdentityInt(civilId, indentityType);
 		}
 
 		CivilIdOtpModel model = new CivilIdOtpModel();
@@ -507,11 +507,19 @@ public class UserService extends AbstractUserService {
 		} catch (Exception e) {
 		}
 
-		if (customerModel != null && customerModel.getEmail() != null) {
-			personinfo.setEmail(customerModel.getEmail());
-		}
-		if (customerModel != null && customerModel.getMobile() != null) {
-			personinfo.setMobile(customerModel.getMobile());
+		if (customerModel != null) {
+			if (customerModel.getEmail() != null) {
+				personinfo.setEmail(customerModel.getEmail());
+			}
+			if (customerModel.getMobile() != null) {
+				personinfo.setPrefixCodeMobile(customer.getPrefixCodeMobile());
+				personinfo.setMobile(customerModel.getMobile());
+			}
+
+			if (!ArgUtil.isEmpty(customer) && !ArgUtil.isEmpty(customer.getWhatsapp())) {
+				personinfo.setWhatsappPrefixCode(customer.getWhatsappPrefix());
+				personinfo.setWhatsAppNumber(customer.getWhatsapp());
+			}
 		}
 
 		sendOtpFromPostMan(personinfo, model, channels);
@@ -542,7 +550,8 @@ public class UserService extends AbstractUserService {
 		String hashedeOtp = cryptoUtil.getHash(userId, randeOtp);
 		String mOtpPrefix = Random.randomAlpha(3);
 		String eOtpPrefix = Random.randomAlpha(3);
-		if(!org.apache.commons.collections.CollectionUtils.isEmpty(channels)&&channels.contains(ContactType.SMS_EMAIL)) {
+		if (!org.apache.commons.collections.CollectionUtils.isEmpty(channels)
+				&& channels.contains(ContactType.SMS_EMAIL)) {
 			randeOtp = randmOtp;
 			hashedeOtp = hashedmOtp;
 			eOtpPrefix = mOtpPrefix;
@@ -1017,7 +1026,7 @@ public class UserService extends AbstractUserService {
 		return response;
 
 	}
-	
+
 	private void resetSecurityQuestion(CustomerOnlineRegistration customerOnlineRegistration) {
 		customerOnlineRegistration.setSecurityQuestion1(null);
 		customerOnlineRegistration.setSecurityQuestion2(null);
@@ -1061,9 +1070,9 @@ public class UserService extends AbstractUserService {
 			personInfo.setEmail(customer.getEmail());
 			personInfo.setMobile(customer.getMobile());
 			personInfo.setWhatsAppNumber(customer.getWhatsapp());
-			personInfo.setPrefixCodeMobile("+"+customer.getPrefixCodeMobile());
-			personInfo.setWhatsappPrefixCode("+"+customer.getWhatsappPrefix());
-			
+			personInfo.setPrefixCodeMobile("+" + customer.getPrefixCodeMobile());
+			personInfo.setWhatsappPrefixCode("+" + customer.getWhatsappPrefix());
+
 		} catch (Exception e) {
 		}
 		return personInfo;
@@ -1287,7 +1296,7 @@ public class UserService extends AbstractUserService {
 		customerOnlineRegistration.setTokenSentCount(tokenSentCount);
 		custDao.saveOnlineCustomer(customerOnlineRegistration);
 	}
-	
+
 	public void validateTokenExpiryTime(CustomerOnlineRegistration customerOnlineRegistration) {
 		try {
 			userValidationService.validateTokenDate(customerOnlineRegistration);
