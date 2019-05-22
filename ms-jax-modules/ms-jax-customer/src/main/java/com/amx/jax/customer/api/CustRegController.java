@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.jax.CustomerCredential;
 import com.amx.jax.ICustRegService;
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.customer.service.CustomerManagementService;
 import com.amx.jax.customer.service.OffsitCustRegService;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.meta.MetaData;
@@ -41,7 +42,6 @@ import com.amx.jax.service.CountryService;
 import com.amx.jax.service.MetaService;
 import com.amx.jax.service.ViewDistrictService;
 import com.amx.jax.service.ViewStateService;
-import com.amx.jax.userservice.service.CustomerRegistrationService;
 
 @RestController
 public class CustRegController implements ICustRegService {
@@ -61,7 +61,7 @@ public class CustRegController implements ICustRegService {
 	ViewStateService stateService;
 
 	@Autowired
-	private CustomerRegistrationService customerRegistrationService;
+	CustomerManagementService customerManagementService;
 
 	@Autowired
 	ViewDistrictService districtService;
@@ -163,7 +163,7 @@ public class CustRegController implements ICustRegService {
 	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerDetails(
 			@RequestParam(value = "identityInt", required = true) String identityInt,
 			@RequestParam(value = "identityType", required = true) BigDecimal identityType) {
-		return offsiteCustRegService.getOffsiteCustomerDetails(identityInt, identityType);
+		return customerManagementService.getCustomerDetail(identityInt, identityType);
 	}
 	
 	@RequestMapping(value = CustRegApiEndPoints.GET_OFFSITE_CUSTOMER_DATA_V1, method = RequestMethod.GET)

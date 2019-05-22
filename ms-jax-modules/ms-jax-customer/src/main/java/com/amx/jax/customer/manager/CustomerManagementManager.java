@@ -26,6 +26,7 @@ import com.amx.jax.model.response.customer.OffsiteCustomerDataDTO;
 import com.amx.jax.repository.ICustomerCategoryDiscountRepo;
 import com.amx.jax.repository.ICustomerExtendedRepository;
 import com.amx.jax.repository.remittance.IIdNumberLengthCheckRepository;
+import com.amx.jax.userservice.manager.CustomerFlagManager;
 import com.amx.jax.userservice.service.ContactDetailService;
 import com.amx.jax.userservice.service.UserValidationService;
 
@@ -46,6 +47,8 @@ public class CustomerManagementManager {
 	ICustomerCategoryDiscountRepo customerCategoryRepository;
 	@Autowired
 	ContactDetailService contactDetailService;
+	@Autowired
+	CustomerFlagManager customerFlagManager;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CustomerManagementManager.class);
 
@@ -70,11 +73,14 @@ public class CustomerManagementManager {
 			offsiteCustomer.setCustomerPersonalDetail(createCustomerPersonalDetail(customer));
 			offsiteCustomer.setLocalAddressDetails(createLocalAddressDetails(customer));
 			offsiteCustomer.setHomeAddressDestails(createHomeAddressDetails(customer));
+			offsiteCustomer.setCustomerFlags(customerFlagManager.getCustomerFlags(customer.getCustomerId()));
 
 		} else {
 			jaxError = JaxError.CUSTOMER_NOT_FOUND;
 		}
-
+		if (jaxError != null) {
+			offsiteCustomer.setStatusKey(jaxError.toString());
+		}
 		return offsiteCustomer;
 	}
 

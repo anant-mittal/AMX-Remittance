@@ -78,5 +78,13 @@ public class OffsiteCustomerDataDTO {
 	public void setCustomerFlags(CustomerFlags customerFlags) {
 		this.customerFlags = customerFlags;
 	}
+
+	public String getStatusKey() {
+		return statusKey;
+	}
+
+	public void setStatusKey(String statusKey) {
+		this.statusKey = statusKey;
+	}
 	
 }
