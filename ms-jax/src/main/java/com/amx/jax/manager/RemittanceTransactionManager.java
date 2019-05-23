@@ -290,11 +290,16 @@ public class RemittanceTransactionManager {
 		setLoyalityPointIndicaters(responseModel);
 		BigDecimal commission = getCommissionAmount(routingBankId, rountingCountryId, currencyId, remittanceMode,
 				deliveryMode);
+		
+		logger.info("commission: " +commission);
+		
 		if (newCommission != null) {
 			commission = newCommission;
 		}
 		if (commission.longValue() > 0) {
 			commission = commission.subtract(corporateDiscountManager.corporateDiscount());
+			logger.info("commissioncorporate: " +commission);
+			
 		}
 		ExchangeRateBreakup breakup = getExchangeRateBreakup(exchangeRates, model, responseModel, commission);
 		remitApplParametersMap.put("P_CALCULATED_FC_AMOUNT", breakup.getConvertedFCAmount());
@@ -312,12 +317,15 @@ public class RemittanceTransactionManager {
 		logger.debug("breakup :" +breakup);
 		validateTransactionAmount(breakup, newCommission, currencyId);
 		
-		logger.debug("newCommission :" +newCommission);
+		logger.debug("newCommissioncompare :" +newCommission);
+		logger.info("commissioncompare: " +commission);
 		
 		logger.debug("currencyId :" +currencyId);
 		
 		
 		//radhika
+		
+		
 				if(JaxUtil.isNullZeroBigDecimalCheck(commission) && commission.compareTo(newCommission)>=0) {
 					commission =commission.subtract(newCommission);
 					
