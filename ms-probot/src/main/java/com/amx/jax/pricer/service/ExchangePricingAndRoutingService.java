@@ -99,7 +99,12 @@ public class ExchangePricingAndRoutingService {
 
 		pricingResponseDTO.setCustomerCategory(exchRateAndRoutingTransientDataCache.getCustomerCategory());
 
-		Collections.sort(pricingResponseDTO.getSellRateDetails(), Collections.reverseOrder());
+		// 1 : Old
+		// Collections.sort(pricingResponseDTO.getSellRateDetails(),
+		// Collections.reverseOrder());
+
+		// Sort Order Modified : Sorting on the basis of InverseRate Now.
+		Collections.sort(pricingResponseDTO.getSellRateDetails());
 
 		pricingResponseDTO.setInfo(exchRateAndRoutingTransientDataCache.getInfo());
 
@@ -118,7 +123,12 @@ public class ExchangePricingAndRoutingService {
 
 		pricingResponseDTO.setSellRateDetails(exchRateAndRoutingTransientDataCache.getSellRateDetails());
 
-		Collections.sort(pricingResponseDTO.getSellRateDetails(), Collections.reverseOrder());
+		// 2
+		// Collections.sort(pricingResponseDTO.getSellRateDetails(),
+		// Collections.reverseOrder());
+
+		// Sort Order Modified : Sorting on the basis of InverseRate Now.
+		Collections.sort(pricingResponseDTO.getSellRateDetails());
 
 		return pricingResponseDTO;
 	}
@@ -146,7 +156,12 @@ public class ExchangePricingAndRoutingService {
 
 			pricingResponseDTO.setCustomerCategory(cc);
 
-			Collections.sort(pricingResponseDTO.getSellRateDetails(), Collections.reverseOrder());
+			// 3
+			// Collections.sort(pricingResponseDTO.getSellRateDetails(),
+			// Collections.reverseOrder());
+
+			// Sort Order Modified : Sorting on the basis of InverseRate Now.
+			Collections.sort(pricingResponseDTO.getSellRateDetails());
 
 			pricingResponseDTO.setInfo(exchRateAndRoutingTransientDataCache.getInfo());
 
@@ -230,7 +245,11 @@ public class ExchangePricingAndRoutingService {
 		List<TransientRoutingComputeDetails> routingMatrixData = exchRateAndRoutingTransientDataCache
 				.getRoutingMatrixData();
 
-		Collections.sort(routingMatrixData, Collections.reverseOrder());
+		// 4
+		// Collections.sort(routingMatrixData, Collections.reverseOrder());
+
+		// Sort Order Modified : Sorting on the basis of InverseRate Now.
+		Collections.sort(routingMatrixData);
 
 		Map<String, TrnxRoutingDetails> trnxRoutingPaths = new HashMap<String, TrnxRoutingDetails>();
 
@@ -321,10 +340,6 @@ public class ExchangePricingAndRoutingService {
 		resp.setBankServiceModeSellRates(bankServiceModeSellRates);
 
 		// resp.setInfo(exchRateAndRoutingTransientDataCache.getInfo());
-
-		// resp.setSellRateDetails(exchRateAndRoutingTransientDataCache.getSellRateDetails());
-
-		// Collections.sort(resp.getSellRateDetails(), Collections.reverseOrder());
 
 		return resp;
 

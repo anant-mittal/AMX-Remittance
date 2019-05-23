@@ -76,7 +76,6 @@ public class TransientRoutingComputeDetails implements Serializable, Comparable<
 	@Override
 	public int compareTo(TransientRoutingComputeDetails that) {
 		int rateComparator = this.compareRateTo(that);
-
 		if (rateComparator == 0) {
 			rateComparator = this.compareDeliveryTimeTo(that);
 		}
@@ -102,9 +101,9 @@ public class TransientRoutingComputeDetails implements Serializable, Comparable<
 			if (that == null || that.finalDeliveryDetails == null)
 				return 0; // equal
 			else
-				return -1; // null is before other strings
+				return 1; // null is More than any other value
 		else if (that.finalDeliveryDetails == null)
-			return 1; // all other strings are after null
+			return -1; // all other strings are before null
 		else
 			return this.finalDeliveryDetails.compareTo(that.finalDeliveryDetails);
 	}
