@@ -308,10 +308,20 @@ public class RemittanceTransactionManager {
 
 		applyCurrencyRoudingLogic(breakup);
 		breakup = getExchangeRateBreakup(exchangeRates, model, responseModel, commission);
+		
+		logger.debug("breakup :" +breakup);
 		validateTransactionAmount(breakup, newCommission, currencyId);
+		
+		logger.debug("newCommission :" +newCommission);
+		
+		logger.debug("currencyId :" +currencyId);
+		
+		
 		//radhika
 				if(JaxUtil.isNullZeroBigDecimalCheck(commission) && commission.compareTo(newCommission)>=0) {
 					commission =commission.subtract(newCommission);
+					
+					logger.debug("commission inside :" +commission);
 				}
 				
 				VatDetailsDto vatDetails = getVatAmount(commission);
@@ -321,6 +331,12 @@ public class RemittanceTransactionManager {
 					responseModel.setVatType(vatDetails.getVatType()==null?"":vatDetails.getVatType());
 					if(JaxUtil.isNullZeroBigDecimalCheck(vatDetails.getCommission())) {
 					commission =vatDetails.getCommission();
+					logger.debug("commission inside inside :" +commission);
+					logger.debug("commission inside :" +vatDetails.getVatAmount());
+					logger.debug("commission inside :" +commission);
+					logger.debug("commission inside :" +commission);
+					logger.debug("commission inside :" +commission);
+					
 					}
 				}
 		
@@ -350,6 +366,8 @@ public class RemittanceTransactionManager {
 		VatDetailsDto vatDetails = new VatDetailsDto();
 		
 		List<ViewVatDetails> vatList = vatDetailsRepository.getVatDetails(metaData.getCountryId(),ConstantDocument.VAT_CATEGORY,ConstantDocument.VAT_ACCOUNT_TYPE_COMM);
+		
+		logger.debug("vatList :" +vatList);
 
 		String vatAppliable = null;
 		if(vatList.isEmpty()) {
@@ -363,10 +381,14 @@ public class RemittanceTransactionManager {
 			vatDetails.setVatType(vatList.get(0).getVatType());
 			vatDetails.setCalculatuonType(vatList.get(0).getCalculationType());
 			vatDetails.setRoudingOff(vatList.get(0).getRoundOff()==null?BigDecimal.ZERO:vatList.get(0).getRoundOff());
+			
+			logger.debug("vatList.get(0).getCalculationType() :" +vatList.get(0).getCalculationType());
 		}
 		if(JaxUtil.isNullZeroBigDecimalCheck(commission) && commission.compareTo(BigDecimal.ZERO)>0) {
 		if(!StringUtils.isBlank(vatAppliable) && vatAppliable.equalsIgnoreCase(ConstantDocument.Yes) ) {
 			vatDetails.setVatApplicable(vatAppliable);
+			
+			logger.debug("vatAppliable :" +vatAppliable);
 			if(JaxUtil.isNullZeroBigDecimalCheck(vatDetails.getVatPercentage()) && vatDetails.getVatPercentage().compareTo(BigDecimal.ZERO)>0) {
 				BigDecimal BIG_HUNDRED = new BigDecimal(100);
 				BigDecimal vatAmount =BigDecimal.ZERO;
@@ -374,17 +396,24 @@ public class RemittanceTransactionManager {
 					vatAmount = RoundUtil.roundBigDecimal(((new BigDecimal(commission.doubleValue()/((vatDetails.getVatPercentage().add(BIG_HUNDRED)).doubleValue())).multiply(BIG_HUNDRED))), vatDetails.getRoudingOff().intValue());
 					vatDetails.setVatAmount(commission.subtract(vatAmount));
 					vatDetails.setCommission(commission);
+					
+					logger.debug("commission.subtract(vatAmount) :" +commission.subtract(vatAmount));
+					
 				}else {
 					vatAmount = commission.multiply(RoundUtil.roundBigDecimal(vatDetails.getVatPercentage().divide(BIG_HUNDRED),vatDetails.getRoudingOff().intValue()));
 					vatDetails.setVatAmount(vatAmount);
 					vatDetails.setCommission(commission.add(vatAmount));
+					
+					logger.debug("vatAmount :" +vatAmount);
 				}
 			}
 		}
 	}else {
 		vatDetails.setVatApplicable(vatAppliable);
+		
+		logger.debug("vatAppliable :" +vatAppliable);
 	}
-
+		logger.debug("vatDetails :" +vatDetails);
 		return  vatDetails;
 	}
 

@@ -66,7 +66,7 @@ import com.amx.jax.validation.RemittanceTransactionRequestValidator;
 @Component
 public class BranchRemittanceExchangeRateManager {
 
-	static final Logger LOGGER = LoggerFactory.getLogger(BranchRemittanceExchangeRateManager.class);
+	static final Logger logger = LoggerFactory.getLogger(BranchRemittanceExchangeRateManager.class);
 
 	@Autowired
 	JaxDynamicPriceService jaxDynamicPriceService;
@@ -143,7 +143,7 @@ public class BranchRemittanceExchangeRateManager {
 		// trnx fee
 		BigDecimal commission = getComission();
 		
-		LOGGER.debug("commisionValue:" +commission);
+		logger.debug("commisionValue:" +commission);
 		
 		VatDetailsDto vatDetails = getVatAmount(commission);
 		if(vatDetails!=null && !StringUtils.isBlank(vatDetails.getVatApplicable()) && vatDetails.getVatApplicable().equalsIgnoreCase(ConstantDocument.Yes)) {
@@ -186,7 +186,7 @@ public class BranchRemittanceExchangeRateManager {
 		BigDecimal deliveryMode = P_DELIVERY_MODE_ID.getValue(remitApplParametersMap);
 		BigDecimal commission = remittanceTransactionManager.getCommissionAmount(routingBankId, rountingCountryId, currencyId,remittanceMode, deliveryMode);
 		BigDecimal newCommission = remittanceTransactionManager.reCalculateComission();
-		LOGGER.debug("routingBankId:"+routingBankId+ "rountingCountryId" +rountingCountryId+ "currencyId" +currencyId+ "remittanceMode" +remittanceMode+ "deliveryMode"+deliveryMode+
+		logger.debug("routingBankId:"+routingBankId+ "rountingCountryId" +rountingCountryId+ "currencyId" +currencyId+ "remittanceMode" +remittanceMode+ "deliveryMode"+deliveryMode+
 				"commission" +commission+ "newCommission" +newCommission);
 		
 		if (newCommission != null) {
@@ -196,7 +196,7 @@ public class BranchRemittanceExchangeRateManager {
 		BigDecimal corpDiscount = corporateDiscountManager.corporateDiscount();
 		if(JaxUtil.isNullZeroBigDecimalCheck(commission) && commission.compareTo(corpDiscount)>=0) {
 			commission =commission.subtract(corpDiscount);
-			LOGGER.debug("commission1"+commission);
+			logger.debug("commission1"+commission);
 		}
 		return commission;
 	}
@@ -247,17 +247,17 @@ public class BranchRemittanceExchangeRateManager {
 		if(JaxUtil.isNullZeroBigDecimalCheck(commission) && commission.compareTo(BigDecimal.ZERO)>0) {
 		if(!StringUtils.isBlank(vatAppliable) && vatAppliable.equalsIgnoreCase(ConstantDocument.Yes) ) {
 			vatDetails.setVatApplicable(vatAppliable);
-			LOGGER.debug("vatAppliable:" +vatAppliable);
-			LOGGER.debug("commission....:" +commission);
+			logger.debug("vatAppliable:" +vatAppliable);
+			logger.debug("commission....:" +commission);
 			
 			if(JaxUtil.isNullZeroBigDecimalCheck(vatDetails.getVatPercentage()) && vatDetails.getVatPercentage().compareTo(BigDecimal.ZERO)>0) {
 				BigDecimal BIG_HUNDRED = new BigDecimal(100);
 				BigDecimal vatAmount =BigDecimal.ZERO;
 				if(!StringUtils.isBlank(vatDetails.getCalculatuonType()) && vatDetails.getCalculatuonType().equalsIgnoreCase(ConstantDocument.VAT_CALCULATION_TYPE_INCLUDE)) {
 					vatAmount = RoundUtil.roundBigDecimal(((new BigDecimal(commission.doubleValue()/((vatDetails.getVatPercentage().add(BIG_HUNDRED)).doubleValue())).multiply(BIG_HUNDRED))), vatDetails.getRoudingOff().intValue());
-					LOGGER.debug("vatamount:" +vatAmount);
+					logger.debug("vatamount:" +vatAmount);
 					vatDetails.setVatAmount(commission.subtract(vatAmount));
-					LOGGER.debug("commission.SUBTRA TED AMOUNT...:" +commission.subtract(vatAmount));
+					logger.debug("commission.SUBTRA TED AMOUNT...:" +commission.subtract(vatAmount));
 					
 					
 					vatDetails.setCommission(commission);
