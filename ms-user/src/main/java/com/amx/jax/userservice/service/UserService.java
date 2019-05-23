@@ -478,6 +478,7 @@ public class UserService extends AbstractUserService {
 		generateToken(civilId, model, channels);
 		onlineCust.setEmailToken(model.getHashedeOtp());
 		onlineCust.setSmsToken(model.getHashedmOtp());
+		onlineCust.setWhatsAppToken(model.getwHashedOtp());
 		onlineCust.setTokenDate(new Date());
 		BigDecimal tokenSentCount = (onlineCust.getTokenSentCount() == null) ? BigDecimal.ZERO
 				: onlineCust.getTokenSentCount().add(new BigDecimal(1));
@@ -1276,19 +1277,28 @@ public class UserService extends AbstractUserService {
 		return customers;
 	}
 
-	public void validateWOtp(String civilId, String wOtp) {
+	public ApiResponse validateWOtp(String civilId, String wOtp) {
 
 		Customer customer = custDao.getCustomerByCivilId(civilId);
 		if (customer == null) {
 			throw new InvalidCivilIdException("Civil Id " + civilId + " not registered.");
 		}
 		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(customer.getCustomerId());
+		userValidationService.validateCustomerLockCount(onlineCustomer);
+		userValidationService.validateTokenDate(onlineCustomer);
 		String wDBToken = onlineCustomer.getWhatsAppToken();
 		String wOtpHash = cryptoUtil.getHash(civilId, wOtp);
 
 		if (wOtpHash != null && !wOtpHash.equals(wDBToken)) {
+			userValidationService.incrementLockCount(onlineCustomer);
 			throw new InvalidOtpException("whatsapp Otp is incorrect for civil-id: " + civilId);
 		}
+		ApiResponse response = getBlackApiResponse();
+		CustomerModel customerModel = convert(onlineCustomer);
+		response.getData().getValues().add(customerModel);
+		response.getData().setType(customerModel.getModelType());
+		response.setResponseStatus(ResponseStatus.OK);
+		return response;
 	}
 
 	public void incrementTokenSentCount(CustomerOnlineRegistration customerOnlineRegistration) {
