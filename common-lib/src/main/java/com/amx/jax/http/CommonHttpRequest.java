@@ -137,10 +137,9 @@ public class CommonHttpRequest {
 		return deviceId;
 	}
 
-	public String get(String contextKey) {
-		String value = AppContextUtil.get(contextKey);
-		if (request != null) {
-			value = request.getParameter(contextKey);
+	public String getRequestParam(String... contextKeys) {
+		for (String contextKey : contextKeys) {
+			String value = request.getParameter(contextKey);
 			if (ArgUtil.isEmpty(value)) {
 				value = request.getHeader(contextKey);
 				if (ArgUtil.isEmpty(value)) {
@@ -150,6 +149,17 @@ public class CommonHttpRequest {
 					}
 				}
 			}
+			if (!ArgUtil.isEmpty(value)) {
+				return value;
+			}
+		}
+		return null;
+	}
+
+	public String get(String contextKey) {
+		String value = AppContextUtil.get(contextKey);
+		if (request != null) {
+			value = getRequestParam(contextKey);
 			AppContextUtil.set(contextKey, value);
 		}
 		return value;
@@ -395,10 +405,10 @@ public class CommonHttpRequest {
 	public ApiRequestDetail getApiRequest(HttpServletRequest req) {
 		ApiRequestDetail detail = new ApiRequestDetail();
 		ApiRequest x = getApiRequestModel(req);
-		if(!ArgUtil.isEmpty(x)) {
+		if (!ArgUtil.isEmpty(x)) {
 			detail.setType(x.type());
 			detail.setUseAuthKey(x.useAuthKey());
-			detail.setUseAuthToken(x.useAuthToken());	
+			detail.setUseAuthToken(x.useAuthToken());
 		}
 
 		if (ArgUtil.isEmpty(detail.getType()) || RequestType.DEFAULT.equals(detail.getType())) {
