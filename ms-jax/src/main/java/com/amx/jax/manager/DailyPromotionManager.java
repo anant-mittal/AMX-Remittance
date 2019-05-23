@@ -13,7 +13,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.constant.NotificationConstants;
 import com.amx.amxlib.model.DailyPromotionDTO;
-import com.amx.jax.AmxConstants;
 import com.amx.jax.config.JaxTenantProperties;
 import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dbmodel.promotion.DailyPromotion;
@@ -76,7 +75,10 @@ public class DailyPromotionManager {
 
 			dto = new DailyPromotionDTO();
 			dto.setPromotionCode(firstPromoCode.getPromoCode());
-			dto.setCustomerName(personInfo.getFirstName() + " " + personInfo.getLastName());
+			if(personInfo.getFirstName() != null && personInfo.getLastName() != null) {
+				dto.setCustomerName(personInfo.getFirstName() + " " + personInfo.getLastName());
+			}
+			dto.setIdentityInt(personInfo.getIdentityInt());
 
 			RemittanceTransaction remittanceData = remittanceApplicationDao
 					.getRemittanceTransactionById(remittanceTransactionId);
