@@ -207,8 +207,8 @@ public class AppRequestFilter implements Filter {
 
 			// Actual Request Handling
 			AppContextUtil.setTraceTime(startTime);
-			if (reqType.isTrack()) {
-				AuditServiceClient.trackStatic(new RequestTrackEvent(req));
+			if (reqType.isTrack() || AuditServiceClient.isDebugEnabled()) {
+				AuditServiceClient.trackStatic(new RequestTrackEvent(req).debug(reqType.isDebugOnly()));
 				AppRequestUtil.printIfDebug(req);
 			}
 			try {
@@ -218,9 +218,10 @@ public class AppRequestFilter implements Filter {
 					resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
 				}
 			} finally {
-				if (reqType.isTrack()) {
+				if (reqType.isTrack() || AuditServiceClient.isDebugEnabled()) {
 					AuditServiceClient
-							.trackStatic(new RequestTrackEvent(resp, req, System.currentTimeMillis() - startTime));
+							.trackStatic(new RequestTrackEvent(resp, req, System.currentTimeMillis() - startTime)
+									.debug(reqType.isDebugOnly()));
 					AppRequestUtil.printIfDebug(resp);
 				}
 			}

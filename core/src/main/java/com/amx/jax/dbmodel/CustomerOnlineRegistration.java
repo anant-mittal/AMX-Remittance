@@ -67,6 +67,7 @@ public class CustomerOnlineRegistration {
 	/**Added  by Rabil*/
 	private String emailToken;
 	private String smsToken;
+	private String whatsAppToken;
 	private BigDecimal tokenSentCount;
 	private String mobileNumber;
 	private Date tokenDate;
@@ -554,5 +555,14 @@ public class CustomerOnlineRegistration {
 
 	public void setTokenSentCount(BigDecimal tokenSentCount) {
 		this.tokenSentCount = tokenSentCount;
+	}
+
+	@Column(name="WHATSAPP_TOKEN")
+	public String getWhatsAppToken() {
+		return whatsAppToken;
+	}
+
+	public void setWhatsAppToken(String whatsAppToken) {
+		this.whatsAppToken = whatsAppToken;
 	}
 }

@@ -96,7 +96,7 @@ public class AMXKWTRatesService extends AbstractDBSyncTask {
 						AmxCurRate trnsfrRate = new AmxCurRate();
 						trnsfrRate.setrSrc(RateSource.AMX);
 						trnsfrRate.setrDomCur(Currency.KWD);
-						trnsfrRate.setrForCur(cur);
+						trnsfrRate.setrForCur(cur.toISO3());
 						trnsfrRate.setrType(RateType.SELL_TRNSFR);
 						trnsfrRate.setrRate(rate);
 						trnsfrRate.setTimestamp(ArgUtil.parseAsSimpleDate(xrate.getProcessDate()));

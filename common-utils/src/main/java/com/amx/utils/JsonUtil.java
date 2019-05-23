@@ -127,6 +127,10 @@ public final class JsonUtil {
 			return getMapper().convertValue(object, toValueTypeRef);
 		}
 
+		public <T> T toType(Object object, Class<T> toValueType) {
+			return getMapper().convertValue(object, toValueType);
+		}
+
 		/**
 		 * To json.
 		 *
@@ -210,6 +214,10 @@ public final class JsonUtil {
 	 */
 	public static Map<String, Object> toMap(Object object) {
 		return instance.toMap(object);
+	}
+
+	public static <T> T toObject(Map<String, Object> map, Class<T> toValueType) {
+		return instance.toType(map, toValueType);
 	}
 
 	public static Map<String, String> toStringMap(Object object) {

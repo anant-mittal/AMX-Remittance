@@ -6,8 +6,8 @@ import java.math.BigDecimal;
 import org.springframework.boot.jackson.JsonComponent;
 
 import com.amx.utils.ArgUtil;
-import com.amx.utils.EnumType;
 import com.amx.utils.ArgUtil.EnumById;
+import com.amx.utils.EnumType;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
@@ -30,7 +30,9 @@ public class CommonSerilizers {
 		@Override
 		public void serialize(EnumType value, JsonGenerator gen, SerializerProvider serializers)
 				throws IOException, JsonProcessingException {
-			gen.writeString(value.name());
+			if (!ArgUtil.isEmpty(value)) {
+				gen.writeString(value.enumValue().name());
+			}
 		}
 	}
 

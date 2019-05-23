@@ -11,11 +11,14 @@ import com.amx.jax.AppConfig;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.configs.JaxMetaInfo;
+
 import com.amx.jax.exception.JaxSystemError;
+import com.amx.jax.model.request.fx.FcDeliveryBranchOrderSearchRequest;
 import com.amx.jax.model.request.fx.FcSaleBranchDispatchRequest;
 import com.amx.jax.model.response.fx.FcEmployeeDetailsDto;
 import com.amx.jax.model.response.fx.FcSaleOrderManagementDTO;
 import com.amx.jax.model.response.fx.FxOrderReportResponseDto;
+import com.amx.jax.model.response.fx.FxOrderTransactionHistroyDto;
 import com.amx.jax.model.response.fx.UserStockDto;
 import com.amx.jax.rest.RestService;
 
@@ -297,6 +300,20 @@ public class FxOrderBranchClient implements IFxBranchOrderService {
 			LOGGER.error("exception in reprintOrder : ", e);
 			return JaxSystemError.evaluate(e);
 		} // end of try-catch
+	}
+
+	@Override
+	public AmxApiResponse<FxOrderTransactionHistroyDto, Object> searchOrder(FcDeliveryBranchOrderSearchRequest fcDeliveryBranchOrderSearchRequest) {
+		try {
+			LOGGER.debug("in searchOrder :"+fcDeliveryBranchOrderSearchRequest);
+			return restService.ajax(appConfig.getJaxURL() + Path.FC_SEARCH_ORDER).meta(new JaxMetaInfo())
+					.post(fcDeliveryBranchOrderSearchRequest)
+					.as(new ParameterizedTypeReference<AmxApiResponse<FxOrderTransactionHistroyDto,Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in SearchOrder : ", e);
+			return JaxSystemError.evaluate(e);
+		}
 	}
 
 }

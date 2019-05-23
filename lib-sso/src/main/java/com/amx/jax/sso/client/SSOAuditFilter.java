@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.logger.client.AuditFilter;
+import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
 import com.amx.jax.sso.SSOAuditEvent;
 import com.amx.jax.sso.SSOUser;
 import com.amx.utils.ArgUtil;
@@ -32,6 +33,14 @@ public class SSOAuditFilter implements AuditFilter<SSOAuditEvent> {
 			// Do SOmthing
 		} else {
 			event.clientType(AppContextUtil.getUserClient().getClientType());
+		}
+
+		if (!ArgUtil.isEmpty(ssoUser) && !ArgUtil.isEmpty(ssoUser.getUserDetails())) {
+			EmployeeDetailsDTO x = ssoUser.getUserDetails();
+			event.branchId(x.getCountryBranchId());
+			event.branchUser(x.getUserName());
+			event.branchName("ID : " + x.getCountryBranchId());
+			event.branchArea("NoArea");
 		}
 
 	}

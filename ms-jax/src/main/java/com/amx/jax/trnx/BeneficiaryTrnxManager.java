@@ -292,7 +292,6 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 		beneficaryContact.setCreatedBy(getCreatedBy());
 		beneficaryContact.setCreatedDate(new Date());
 		beneficaryContact.setIsActive(ConstantDocument.Yes);
-		beneficaryContact.setMobileNumber(beneDetails.getMobileNumber());
 		String beneMobileNo = null;
 		if(beneDetails.getMobileNumber()!=null) {
 			beneMobileNo = beneDetails.getMobileNumber().toString();

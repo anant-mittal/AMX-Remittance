@@ -1,14 +1,9 @@
 package com.amx.jax.remittance;
 
-import java.math.BigDecimal;
-
-import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.amx.jax.AbstractTest;
 import com.amx.jax.branchremittance.dao.BranchRemittanceDao;
-import com.amx.jax.constant.ConstantDocument;
-import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.repository.RemittanceApplicationRepository;
 import com.amx.jax.repository.RemittanceTransactionRepository;
 

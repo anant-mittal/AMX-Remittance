@@ -16,6 +16,7 @@ import com.amx.jax.exception.IExceptionEnum;
 import com.amx.jax.swagger.IStatusCodeListPlugin;
 import com.amx.jax.ui.config.OWAStatus.ApiOWAStatus;
 import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
+import com.amx.utils.ArgUtil;
 
 import springfox.documentation.swagger.common.SwaggerPluginSupport;
 
@@ -31,7 +32,7 @@ public class OWAStatus extends IStatusCodeListPlugin<OWAStatusStatusCodes, ApiOW
 	 */
 	public enum OWAStatusStatusCodes implements IExceptionEnum {
 
-		UI_SERVER_ERROR("000"),
+		UI_SERVER_ERROR(500),
 		/** The already active. */
 		// Registration - CIVIL ID validation
 		ALREADY_ACTIVE("302"),
@@ -79,9 +80,10 @@ public class OWAStatus extends IStatusCodeListPlugin<OWAStatusStatusCodes, ApiOW
 		// Info Required
 		DOTP_REQUIRED("300"),
 		MOTP_REQUIRED("300"),
-		OTP_REQUIRED("300"),
+		OTP_REQUIRED(200),
 
-		INCOME_UPDATE_REQUIRED("200"),
+		INCOME_UPDATE_REQUIRED(200),
+		CONTACT_TYPE_REQUIRED(200),
 
 		/** The unknown jax error. */
 		UNKNOWN_JAX_ERROR("500"),
@@ -95,14 +97,15 @@ public class OWAStatus extends IStatusCodeListPlugin<OWAStatusStatusCodes, ApiOW
 		ERROR("500"),
 
 		/** The redirection. */
-		REDIRECTION("3xx"),
+		REDIRECTION("3xx", 300),
 		/** The server error. */
-		SERVER_ERROR("4xx"),
+		SERVER_ERROR("4xx", 400),
 		/** The client error. */
-		CLIENT_ERROR("5xx");
+		CLIENT_ERROR("5xx", 500);
 
 		/** The code. */
 		private final String code;
+		private final int statusCode;
 
 		/**
 		 * Gets the code.
@@ -113,17 +116,22 @@ public class OWAStatus extends IStatusCodeListPlugin<OWAStatusStatusCodes, ApiOW
 			return code;
 		}
 
+		OWAStatusStatusCodes(String code, int statusCode) {
+			this.code = code;
+			this.statusCode = statusCode;
+		}
+
 		/**
 		 * Instantiates a new web response status.
 		 *
 		 * @param code the code
 		 */
 		OWAStatusStatusCodes(String code) {
-			this.code = code;
+			this(code, 500);
 		}
 
-		OWAStatusStatusCodes() {
-			this.code = "300";
+		OWAStatusStatusCodes(int statusCode) {
+			this(ArgUtil.parseAsString(statusCode), statusCode);
 		}
 
 		@Override
@@ -133,7 +141,7 @@ public class OWAStatus extends IStatusCodeListPlugin<OWAStatusStatusCodes, ApiOW
 
 		@Override
 		public int getStatusCode() {
-			return this.ordinal();
+			return this.statusCode;
 		}
 
 	}

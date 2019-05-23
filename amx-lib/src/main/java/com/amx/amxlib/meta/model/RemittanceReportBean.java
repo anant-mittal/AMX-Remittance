@@ -107,6 +107,17 @@ public class RemittanceReportBean {
 	private String kwdAmount;
 	private String specialExchangeRate;
 	private String specialKwdAmount;
+	private String vatNumber;
+	private String vatDate;
+	
+
+	private String vatType;
+	private BigDecimal vatPercentage;
+	private BigDecimal vatAmount;
+	
+	private String customerVatNumber;
+
+	private String amountSaved;
 	
 	public Boolean getDrawLine() {
 		return drawLine;
@@ -782,6 +793,62 @@ public class RemittanceReportBean {
 
 	public void setSpecialKwdAmount(String specialKwdAmount) {
 		this.specialKwdAmount = specialKwdAmount;
+	}
+
+	public String getVatNumber() {
+		return vatNumber;
+	}
+
+	public void setVatNumber(String vatNumber) {
+		this.vatNumber = vatNumber;
+	}
+
+	public String getVatDate() {
+		return vatDate;
+	}
+
+	public void setVatDate(String vatDate) {
+		this.vatDate = vatDate;
+	}
+
+	public String getVatType() {
+		return vatType;
+	}
+
+	public void setVatType(String vatType) {
+		this.vatType = vatType;
+	}
+
+	public BigDecimal getVatPercentage() {
+		return vatPercentage;
+	}
+
+	public void setVatPercentage(BigDecimal vatPercentage) {
+		this.vatPercentage = vatPercentage;
+	}
+
+	public BigDecimal getVatAmount() {
+		return vatAmount;
+	}
+
+	public void setVatAmount(BigDecimal vatAmount) {
+		this.vatAmount = vatAmount;
+	}
+
+	public String getCustomerVatNumber() {
+		return customerVatNumber;
+	}
+
+	public void setCustomerVatNumber(String customerVatNumber) {
+		this.customerVatNumber = customerVatNumber;
+	}
+
+	public String getAmountSaved() {
+		return amountSaved;
+	}
+
+	public void setAmountSaved(String amountSaved) {
+		this.amountSaved = amountSaved;
 	}	
 
 }

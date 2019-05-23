@@ -3,6 +3,8 @@
  */
 package com.amx.jax.pricer.service;
 
+//import static com.amx.jax.pricer.var.PricerServiceConstants.DEFAULT_ONLINE_SERVICE_ID;
+
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -68,7 +70,7 @@ public class ExchangePricingAndRoutingService {
 	@Resource
 	ExchRateAndRoutingTransientDataCache exchRateAndRoutingTransientDataCache;
 
-	private BigDecimal BIGD_ZERO = new BigDecimal(0);
+	// private BigDecimal BIGD_ZERO = new BigDecimal(0);
 
 	public PricingResponseDTO fetchRemitPricesForCustomer(PricingRequestDTO pricingRequestDTO) {
 
@@ -275,8 +277,15 @@ public class ExchangePricingAndRoutingService {
 
 			//// @formatter:on
 
-			bestExchangeRatePaths.get(PRICE_TYPE.NO_BENE_DEDUCT).add(pathKey);
 			trnxRoutingPaths.put(pathKey, trnxRoutingPath);
+
+			// Each Path - By-Default is a ** Non-Bene Deduct ** Path
+			bestExchangeRatePaths.get(PRICE_TYPE.NO_BENE_DEDUCT).add(pathKey);
+
+			if (null != trnxRoutingPath.getBeneDeductChargeAmount()
+					&& trnxRoutingPath.getBeneDeductChargeAmount().compareTo(BigDecimal.ZERO) != 0) {
+				bestExchangeRatePaths.get(PRICE_TYPE.BENE_DEDUCT).add(pathKey);
+			}
 
 			ExchangeRateDetails exchangeRate = routeDetails.getExchangeRateDetails();
 
@@ -285,9 +294,20 @@ public class ExchangePricingAndRoutingService {
 			}
 
 			if (skipServiceMode) {
-				if (!bankServiceModeSellRates.get(exchangeRate.getBankId()).containsKey(BIGD_ZERO)) {
-					bankServiceModeSellRates.get(exchangeRate.getBankId()).put(BIGD_ZERO, exchangeRate);
-				}
+
+				ExchangeRateDetails clonnedRate = exchangeRate.clone();
+				clonnedRate.setServiceIndicatorId(routeDetails.getViewExRoutingMatrix().getServiceMasterId());
+
+				bankServiceModeSellRates.get(exchangeRate.getBankId()).put(clonnedRate.getServiceIndicatorId(),
+						clonnedRate);
+
+				/*
+				 * if (!bankServiceModeSellRates.get(exchangeRate.getBankId()).containsKey(
+				 * DEFAULT_ONLINE_SERVICE_ID)) {
+				 * bankServiceModeSellRates.get(exchangeRate.getBankId()).put(
+				 * DEFAULT_ONLINE_SERVICE_ID, exchangeRate); }
+				 */
+
 			} else {
 				bankServiceModeSellRates.get(exchangeRate.getBankId()).put(exchangeRate.getServiceIndicatorId(),
 						exchangeRate);

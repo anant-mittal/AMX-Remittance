@@ -32,7 +32,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.constant.PrefixEnum;
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.CustomerCredential;
 import com.amx.jax.ICustRegService;
@@ -75,6 +74,7 @@ import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.CardDetail;
 import com.amx.jax.model.OtpData;
 import com.amx.jax.model.ResourceDTO;
+import com.amx.jax.model.customer.SecurityQuestionModel;
 import com.amx.jax.model.dto.SendOtpModel;
 import com.amx.jax.model.request.CustomerEmploymentDetails;
 import com.amx.jax.model.request.CustomerInfoRequest;
@@ -111,6 +111,7 @@ import com.amx.jax.services.AbstractService;
 import com.amx.jax.services.JaxNotificationService;
 import com.amx.jax.trnx.CustomerRegistrationTrnxModel;
 import com.amx.jax.userservice.dao.CustomerDao;
+import com.amx.jax.userservice.manager.CustomerIdProofManager;
 import com.amx.jax.userservice.manager.CustomerRegistrationManager;
 import com.amx.jax.userservice.manager.CustomerRegistrationOtpManager;
 import com.amx.jax.userservice.repository.ContactDetailsRepository;
@@ -245,6 +246,8 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 	OffsiteCustomerRegValidator offsiteCustomerRegValidator;
 	@Autowired
 	OffsiteCustomerRegManager offsiteCustomerRegManager;
+	@Autowired
+	CustomerIdProofManager customerIdProofManager;
 	
 	@Autowired
 	EmployeeRespository employeeRespository;
@@ -362,9 +365,6 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 
 	public AmxApiResponse<ArticleDetailsDescDto, Object> getDesignationListResponse(EmploymentDetailsRequest model) {
 		BigDecimal articleId = model.getArticleId();
-		LOGGER.debug("aricle id is "+model.getArticleId());
-		LOGGER.debug("Aricle details id is "+model.getArticleDetailsId());
-		LOGGER.debug("Country id is "+model.getCountryId());
 		List<Map<String, Object>> designationList = articleDao.getDesignationData(articleId, metaData.getLanguageId());
 		if (designationList == null || designationList.isEmpty()) {
 			throw new GlobalException(JaxError.EMPTY_DESIGNATION_LIST, "Designation List Is Empty ");
@@ -550,7 +550,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		Customer customer = commitCustomer(customerDetails, model.getCustomerEmploymentDetails());
 		commitCustomerLocalContact(model.getLocalAddressDetails(), customer, customerDetails);
 		commitCustomerHomeContact(model.getHomeAddressDestails(), customer, customerDetails);
-		offsiteCustomerRegManager.commitOnlineCustomerIdProof(customer);
+		customerIdProofManager.commitOnlineCustomerIdProof(customer);
 		commitEmploymentDetails(model.getCustomerEmploymentDetails(), customer, model.getLocalAddressDetails());
 		auditService.log(new CActivityEvent(CActivityEvent.Type.PROFILE_UPDATE).result(Result.DONE));
 		CustomerInfo info = new CustomerInfo();
@@ -830,7 +830,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 				throw new GlobalException(JaxError.IMAGE_NOT_AVAILABLE, "Image is not available");
 			}
 			if (model.getIdentityExpiredDate() != null) {
-				offsiteCustomerRegManager.createIdProofForExpiredCivilId(model, customer);
+				customerIdProofManager.createIdProofForExpiredCivilId(model, customer);
 			}
 			for (String image : model.getImage()) {
 				DmsApplMapping mappingData = new DmsApplMapping();

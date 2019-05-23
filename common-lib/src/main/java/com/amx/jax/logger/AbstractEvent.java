@@ -3,6 +3,7 @@ package com.amx.jax.logger;
 import java.io.Serializable;
 
 import com.amx.utils.EnumType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public abstract class AbstractEvent implements Serializable {
@@ -140,4 +141,18 @@ public abstract class AbstractEvent implements Serializable {
 	public void setTranxId(String tranxId) {
 		this.tranxId = tranxId;
 	}
+
+	@JsonIgnore
+	protected boolean debugEvent;
+
+	@JsonIgnore
+	public boolean isDebugEvent() {
+		return debugEvent;
+	}
+
+	@JsonIgnore
+	public void setDebugEvent(boolean debugEvent) {
+		this.debugEvent = debugEvent;
+	}
+
 }

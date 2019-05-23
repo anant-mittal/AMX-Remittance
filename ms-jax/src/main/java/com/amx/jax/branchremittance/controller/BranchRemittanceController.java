@@ -29,17 +29,19 @@ import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.request.remittance.BranchRemittanceGetExchangeRateRequest;
 import com.amx.jax.model.request.remittance.BranchRemittanceRequestModel;
 import com.amx.jax.model.request.remittance.CustomerBankRequest;
+import com.amx.jax.model.request.remittance.RoutingPricingRequest;
 import com.amx.jax.model.response.fx.UserStockDto;
 import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
+import com.amx.jax.model.response.remittance.FlexFieldReponseDto;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
 import com.amx.jax.model.response.remittance.PaymentModeDto;
-import com.amx.jax.model.response.remittance.PaymentModeOfPaymentDto;
 import com.amx.jax.model.response.remittance.RemittanceDeclarationReportDto;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.model.response.remittance.RoutingResponseDto;
 import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeRateResponse;
+import com.amx.jax.model.response.remittance.branch.DynamicRoutingPricingResponse;
 
 @RestController
 public class BranchRemittanceController implements IRemittanceService {
@@ -195,9 +197,9 @@ public class BranchRemittanceController implements IRemittanceService {
 	@RequestMapping(value = Path.BR_REMITTANCE_PURPOSE_OF_TRNX, method = RequestMethod.GET)
 	@Override
 	public AmxApiResponse<AdditionalExchAmiecDto, Object> getPurposeOfTrnx(
-			@RequestParam(value = Params.BENE_RELATION_SHIP_ID) BigDecimal beneRelaId) {
+			@RequestParam(value = Params.BENE_RELATION_SHIP_ID,required=true) BigDecimal beneRelaId,@RequestParam(value = Params.ROUTING_COUNTRY_ID,required=true) BigDecimal routingCountryId) {
 		logger.debug("getPurposeOfTrnx :" + beneRelaId);
-		return branchRemitService.getPurposeOfTrnx(beneRelaId);
+		return branchRemitService.getPurposeOfTrnx(beneRelaId,routingCountryId);
 	}
 
 	@RequestMapping(value = Path.BR_REMITTANCE_GET_EXCHANGE_RATE, method = RequestMethod.POST)
@@ -234,6 +236,20 @@ public class BranchRemittanceController implements IRemittanceService {
 	public AmxApiResponse<BoolRespModel, Object> sendReceiptOnEmail(BigDecimal collectionDocNo, BigDecimal collectionDocYear, BigDecimal collectionDocCode) {
 		BoolRespModel result =  branchRemitService.sendReceiptOnEmail(collectionDocNo,collectionDocYear,collectionDocCode);
 		return AmxApiResponse.build(result);
+	}
+
+	@RequestMapping(value=Path.BR_REMITTANCE_GET_ROUTING_PRICING_RATE,method=RequestMethod.POST)
+	@Override
+	public AmxApiResponse<DynamicRoutingPricingResponse, Object> getDynamicRoutingPricing(@RequestBody @Valid RoutingPricingRequest routingPricingRequest) {
+		// TODO Auto-generated method stub
+		return branchRemittanceExchangeRateService.getDynamicRoutingAndPricingResponse(routingPricingRequest);
+	}
+
+	@RequestMapping(value=Path.BR_REMITTANCE_GET_FLEX_FIELDS,method=RequestMethod.POST)
+	@Override
+	public AmxApiResponse<FlexFieldReponseDto, Object> getFlexField(@Valid @RequestBody BranchRemittanceGetExchangeRateRequest request) {
+	logger.debug("getExchaneRate : " + request);
+	return branchRemittanceExchangeRateService.getFlexField(request);
 	}
 
 

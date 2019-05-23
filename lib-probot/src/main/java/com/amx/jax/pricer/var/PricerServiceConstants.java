@@ -23,6 +23,8 @@ public final class PricerServiceConstants {
 	
 	public static final BigDecimal BOTH_BANK_SERVICE_COMPONENT = new BigDecimal(777);
 
+	//public static final BigDecimal DEFAULT_ONLINE_SERVICE_ID = BigDecimal.ZERO;
+
 	public static final BigDecimal MAX_BIGD_12 = new BigDecimal(999999999999l);
 
 	private PricerServiceConstants() {
@@ -39,7 +41,23 @@ public final class PricerServiceConstants {
 	}
 
 	public static enum DISCOUNT_TYPE {
-		CHANNEL, CUSTOMER_CATEGORY, AMOUNT_SLAB;
+
+		CHANNEL("CHANNEL"), CUSTOMER_CATEGORY("CSTMRCAT"), AMOUNT_SLAB("PIPS");
+
+		private String typeKey;
+
+		DISCOUNT_TYPE(String typeKey) {
+			this.typeKey = typeKey;
+		}
+
+		public String getTypeKey() {
+			return typeKey;
+		}
+
+		public void setTypeKey(String typeKey) {
+			this.typeKey = typeKey;
+		}
+
 	}
 
 	public static enum CUSTOMER_CATEGORY {

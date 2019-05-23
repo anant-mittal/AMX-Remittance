@@ -111,10 +111,10 @@ public class PushController {
 		msg.setITemplate(TemplatesMX.MARKETING_PUSH);
 
 		if (task.getNationality() == Nations.ALL) {
-			msg.addTopic(String.format(PushMessage.FORMAT_TO_ALL, tnt.toString().toLowerCase()));
+			msg.addToTenant(tnt);
 		} else {
-			msg.addTopic(String.format(PushMessage.FORMAT_TO_NATIONALITY, tnt.toString().toLowerCase(),
-					task.getNationality().getCode()));
+			msg.addToCountry(tnt, task.getNationality().getCode());
+			;
 		}
 		pushNotifyClient.sendDirect(msg);
 

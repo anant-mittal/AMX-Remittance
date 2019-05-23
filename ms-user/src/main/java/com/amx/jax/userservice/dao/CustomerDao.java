@@ -3,11 +3,9 @@ package com.amx.jax.userservice.dao;
 import java.math.BigDecimal;
 import java.sql.CallableStatement;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -16,7 +14,6 @@ import javax.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.CallableStatementCreator;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.SqlOutParameter;
@@ -25,17 +22,16 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import com.amx.amxlib.model.CustomerModel;
-import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.placeorder.PlaceOrderCustomer;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dal.ApplicationCoreProcedureDao;
 import com.amx.jax.dbmodel.Customer;
-import com.amx.jax.dbmodel.CustomerIdProof;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.UserVerificationCheckListModel;
 import com.amx.jax.dbmodel.ViewCompanyDetails;
 import com.amx.jax.dbmodel.ViewOnlineCustomerCheck;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.customer.SecurityQuestionModel;
 import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.service.CompanyService;
 import com.amx.jax.userservice.repository.LoyaltyPointRepository;
@@ -44,7 +40,6 @@ import com.amx.jax.userservice.repository.UserVerificationCheckListModelReposito
 import com.amx.jax.userservice.repository.ViewOnlineCustomerCheckRepository;
 import com.amx.jax.util.AmxDBConstants;
 import com.amx.jax.util.CryptoUtil;
-import com.amx.jax.util.DBUtil;
 import com.google.common.collect.Lists;
 
 @Component

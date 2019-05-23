@@ -29,6 +29,8 @@ public class QFxOrderTransactionModel extends EntityPathBase<FxOrderTransactionM
 
     public final StringPath createdDate = createString("createdDate");
 
+    public final DateTimePath<java.util.Date> createdDateAlt = createDateTime("createdDateAlt", java.util.Date.class);
+
     public final StringPath currencyQuoteName = createString("currencyQuoteName");
 
     public final NumberPath<java.math.BigDecimal> customerId = createNumber("customerId", java.math.BigDecimal.class);
@@ -53,6 +55,10 @@ public class QFxOrderTransactionModel extends EntityPathBase<FxOrderTransactionM
 
     public final NumberPath<java.math.BigDecimal> documentNumber = createNumber("documentNumber", java.math.BigDecimal.class);
 
+    public final NumberPath<java.math.BigDecimal> driverEmployeeId = createNumber("driverEmployeeId", java.math.BigDecimal.class);
+
+    public final NumberPath<java.math.BigDecimal> employeeId = createNumber("employeeId", java.math.BigDecimal.class);
+
     public final NumberPath<java.math.BigDecimal> exchangeRate = createNumber("exchangeRate", java.math.BigDecimal.class);
 
     public final StringPath foreignCurrencyCode = createString("foreignCurrencyCode");
@@ -62,6 +68,8 @@ public class QFxOrderTransactionModel extends EntityPathBase<FxOrderTransactionM
     public final NumberPath<java.math.BigDecimal> idno = createNumber("idno", java.math.BigDecimal.class);
 
     public final StringPath inventoryId = createString("inventoryId");
+
+    public final StringPath isActive = createString("isActive");
 
     public final NumberPath<java.math.BigDecimal> localCurrencyId = createNumber("localCurrencyId", java.math.BigDecimal.class);
 

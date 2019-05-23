@@ -125,6 +125,8 @@ public class RemittancePaymentManager extends AbstractService{
 			{
 				
 				lstPayIdDetails = applicationDao.fetchRemitApplTrnxRecordsByCustomerPayId(paymentResponse.getUdf3(),new Customer(paymentResponse.getCustomerId()));
+				lstPayIdDetails.get(0).setIsactive(ConstantDocument.Yes);
+				applicationDao.save(lstPayIdDetails.get(0));
 				paymentResponse.setCompanyId(lstPayIdDetails.get(0).getFsCompanyMaster().getCompanyId());
 				if (lstPayIdDetails.get(0).getResultCode() != null) {
 					logger.info("Existing payment id found: {}", lstPayIdDetails.get(0).getPaymentId());

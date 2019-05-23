@@ -20,3 +20,5 @@ public class BranchRemittanceGetExchangeRateResponse extends RemittanceTransacti
 		this.routingResponseDto = routingResponseDto;
 	}
 }
+
+

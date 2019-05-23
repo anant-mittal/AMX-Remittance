@@ -1,11 +1,11 @@
 package com.amx.jax.routing;
 
-import static com.amx.jax.constant.ConstantDocument.BANK_INDICATOR_BENEFICIARY_BANK;
-import static com.amx.jax.constant.ConstantDocument.BANK_INDICATOR_CORRESPONDING_BANK;
-import static com.amx.jax.constant.ConstantDocument.DELIVERY_MODE_BANKING_CHANNEL;
-import static com.amx.jax.constant.ConstantDocument.REMITTANCE_MODE_EFT;
-import static com.amx.jax.constant.ConstantDocument.REMITTANCE_MODE_RTGS;
-import static com.amx.jax.constant.ConstantDocument.Yes;
+import static com.amx.jax.util.AmxDBConstants.BANK_INDICATOR_BENEFICIARY_BANK;
+import static com.amx.jax.util.AmxDBConstants.BANK_INDICATOR_CORRESPONDING_BANK;
+import static com.amx.jax.util.AmxDBConstants.DELIVERY_MODE_BANKING_CHANNEL;
+import static com.amx.jax.util.AmxDBConstants.REMITTANCE_MODE_EFT;
+import static com.amx.jax.util.AmxDBConstants.REMITTANCE_MODE_RTGS;
+import static com.amx.jax.util.AmxDBConstants.Yes;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;

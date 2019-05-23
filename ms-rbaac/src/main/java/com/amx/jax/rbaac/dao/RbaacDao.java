@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.jax.rbaac.dbmodel.AccessType;
+import com.amx.jax.rbaac.dbmodel.CountryBranch;
 import com.amx.jax.rbaac.dbmodel.Employee;
 import com.amx.jax.rbaac.dbmodel.FunctionalityTypeMaster;
 import com.amx.jax.rbaac.dbmodel.ModuleMaster;
@@ -169,9 +170,10 @@ public class RbaacDao {
 		return vwEmpBranchSysDetailsRepository.findByEmployeeIdAndIpAddress(empId, ipAddress);
 	}
 
-	public List<ViewExEmpBranchSysDetails> getEmpBranchSysDetailsByEmpIdAndBranchSysInventoryId(BigDecimal empId,
-			BigDecimal sysInventoryId) {
-		return vwEmpBranchSysDetailsRepository.findByEmployeeIdAndBranchSysInventoryId(empId, sysInventoryId);
+	public List<ViewExEmpBranchSysDetails> getEmpBranchSysByEmpIdAndBranchSysInvIdAndBranchId(BigDecimal empId,
+			BigDecimal sysInventoryId, BigDecimal branchId) {
+		return vwEmpBranchSysDetailsRepository.findByEmployeeIdAndBranchSysInventoryIdAndBranchId(empId, sysInventoryId,
+				branchId);
 	}
 
 	public Employee fetchEmpDetails(String empcode, String identity, String ipAddress) {
@@ -201,7 +203,9 @@ public class RbaacDao {
 	}
 
 	public List<Employee> getEmployeesByCountryBranchId(BigDecimal countryBranchId) {
-		return employeeRepository.findByFsCountryBranch(countryBranchId);
+		CountryBranch countryBranch = new CountryBranch();
+		countryBranch.setCountryBranchId(countryBranchId);
+		return employeeRepository.findByCountryBranch(countryBranch);
 	}
 
 	public Employee getEmployeeByEmployeeId(BigDecimal empId) {

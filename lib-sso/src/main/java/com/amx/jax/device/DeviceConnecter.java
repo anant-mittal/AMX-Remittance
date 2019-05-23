@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.adapter.IDeviceConnecter;
+import com.amx.jax.sso.SSOStatus.SSOServerCodes;
+import com.amx.jax.sso.SSOStatus.SSOServerError;
 import com.amx.utils.ArgUtil;
 
 @Component
@@ -16,10 +18,14 @@ public class DeviceConnecter implements IDeviceConnecter {
 
 	@Override
 	public void saveCardDetailsByTerminal(String terminalId, CardData data) {
-		if (ArgUtil.isEmpty(data) || data.isEmpty()) {
-			cardBox.fastRemove(terminalId);
-		} else {
-			cardBox.put(terminalId, data);
+		try {
+			if (ArgUtil.isEmpty(data) || data.isEmpty()) {
+				cardBox.fastRemove(terminalId);
+			} else {
+				cardBox.put(terminalId, data);
+			}
+		} catch (Exception e) {
+			throw new SSOServerError(SSOServerCodes.ERROR_TERMINAL_CARD_DATA, "Cannot Save Card Data for Terminal");
 		}
 	}
 
@@ -27,14 +33,17 @@ public class DeviceConnecter implements IDeviceConnecter {
 	public CardData getCardDetailsByTerminal(String terminalId, Boolean wait, Boolean flush)
 			throws InterruptedException {
 		CardData data = null;
-		if (wait) {
-			data = cardBox.take(terminalId, 15, TimeUnit.SECONDS);
-		} else {
-			data = cardBox.get(terminalId);
-		}
-
-		if (flush) {
-			cardBox.fastRemove(terminalId);
+		try {
+			if (wait) {
+				data = cardBox.take(terminalId, 15, TimeUnit.SECONDS);
+			} else {
+				data = cardBox.get(terminalId);
+			}
+			if (flush) {
+				cardBox.fastRemove(terminalId);
+			}
+		} catch (Exception e) {
+			throw new SSOServerError(SSOServerCodes.ERROR_TERMINAL_CARD_DATA, "Cannot Read Card Data for Terminal");
 		}
 		return data;
 	}

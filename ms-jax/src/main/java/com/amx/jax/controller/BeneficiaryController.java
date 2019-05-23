@@ -25,13 +25,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.constant.BeneficiaryConstant.BeneStatus;
-import com.amx.amxlib.constant.CommunicationChannel;
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.amxlib.model.BeneAccountModel;
 import com.amx.amxlib.model.BenePersonalDetailModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.amxlib.model.RoutingBankMasterParam;
 import com.amx.jax.constants.JaxChannel;
+import com.amx.jax.dict.ContactType;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.service.AccountTypeService;
 import com.amx.jax.services.BeneficiaryService;
@@ -75,8 +75,11 @@ public class BeneficiaryController {
 		BigDecimal customerId = metaData.getCustomerId();
 		BigDecimal applicationCountryId = metaData.getCountryId();
 		JaxChannel channel = metaData.getChannel();
-		/*LOGGER.debug("userType :" + channel.name() + "\t customerId :" + customerId + "\t applicationCountryId :"
-				+ applicationCountryId + "\t beneCountryId :" + beneCountryId);*/
+		/*
+		 * LOGGER.debug("userType :" + channel.name() + "\t customerId :" + customerId +
+		 * "\t applicationCountryId :" + applicationCountryId + "\t beneCountryId :" +
+		 * beneCountryId);
+		 */
 
 		if (channel != null && channel.equals(JaxChannel.BRANCH)) {
 			return beneService.getBeneficiaryListForBranch(customerId, applicationCountryId, beneCountryId);
@@ -248,9 +251,9 @@ public class BeneficiaryController {
 	 */
 	@RequestMapping(value = SEND_OTP_ENDPOINT, method = RequestMethod.GET)
 	public ApiResponse sendOtp() {
-		List<CommunicationChannel> channel = new ArrayList<>();
-		channel.add(CommunicationChannel.EMAIL);
-		channel.add(CommunicationChannel.MOBILE);
+		List<ContactType> channel = new ArrayList<>();
+		channel.add(ContactType.EMAIL);
+		channel.add(ContactType.SMS);
 		ApiResponse response = beneService.sendOtp(channel);
 		return response;
 	}

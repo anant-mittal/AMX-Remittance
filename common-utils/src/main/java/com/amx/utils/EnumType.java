@@ -19,4 +19,13 @@ public interface EnumType {
 	public default String note() {
 		return this.name();
 	};
+
+	public default String stringValue() {
+		return this.name();
+	};
+
+	public default EnumType enumValue() {
+		return this;
+	};
+
 }

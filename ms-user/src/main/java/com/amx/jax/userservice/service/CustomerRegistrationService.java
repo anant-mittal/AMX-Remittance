@@ -13,12 +13,12 @@ import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.model.CustomerHomeAddress;
-import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.CustomerCredential;
 import com.amx.jax.dbmodel.ApplicationSetup;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
+import com.amx.jax.model.customer.SecurityQuestionModel;
 import com.amx.jax.model.dto.SendOtpModel;
 import com.amx.jax.model.request.CustomerPersonalDetail;
 import com.amx.jax.model.response.customer.PersonInfo;

@@ -9,10 +9,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.time.DurationFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,8 +44,10 @@ public class RemitRoutingManager {
 
 	private static final int MAX_DELIVERY_ATTEMPT_DAYS = 60;
 
-	private final int defStartTime = 8;
-	private final int defStopTime = 18;
+	private static final int DEF_START_TIME = 8;
+	private static final int DEF_STOP_TIME = 18;
+
+	private static final int KWT_TREASURY_FUNDING_TIME = 12;
 
 	/** The Constant LOGGER. */
 	private static final Logger LOGGER = LoggerFactory.getLogger(RemitRoutingManager.class);
@@ -128,10 +132,13 @@ public class RemitRoutingManager {
 
 		for (ExchangeRateDetails exchRate : rateList) {
 
+			// System.out.println("#### Exchange Rate ==> " + JsonUtil.toJson(exchRate));
+
 			String combinedId;
 
 			if (isOnlyBankRate) {
 				combinedId = "" + exchRate.getBankId().longValue();
+				exchRate.setServiceIndicatorId(null);
 			} else {
 				combinedId = exchRate.getBankId().longValue() + idSeparator
 						+ exchRate.getServiceIndicatorId().longValue();
@@ -212,11 +219,19 @@ public class RemitRoutingManager {
 				noHolidayLag = true;
 			}
 
+			long preDelay = 0;
+
+			// Add a delay of One day in Case Running low GL Balance
+			if (routingDetails.getExchangeRateDetails() == null ? false
+					: routingDetails.getExchangeRateDetails().isLowGLBalance()) {
+				preDelay += 1;
+			}
+
 			EstimatedDeliveryDetails estmdCBDeliveryDetails = this.getEstimatedBlockDelivery(
 					transientDataCache.getTrnxBeginTime(), timezone, oneMatrix.getWeekFrom(), oneMatrix.getWeekTo(),
 					oneMatrix.getWeekHoursFrom(), oneMatrix.getWeekHoursTo(), oneMatrix.getWeekendFrom(),
 					oneMatrix.getWeekendTo(), oneMatrix.getWeekendHoursFrom(), oneMatrix.getWeekendHoursTo(),
-					oneMatrix.getDelievryMinutes(), noHolidayLag, routingCountryId);
+					oneMatrix.getDelievryMinutes(), noHolidayLag, routingCountryId, preDelay);
 
 			routingDetails.setRoutingBankDeliveryDetails(estmdCBDeliveryDetails);
 
@@ -252,9 +267,9 @@ public class RemitRoutingManager {
 				}
 
 				estmdProcessingDeliveryDetails = this.getEstimatedBlockDelivery(processingStartTT, pTimezone,
-						new BigDecimal(1), new BigDecimal(7), new BigDecimal(defStartTime), new BigDecimal(defStopTime),
-						new BigDecimal(0), new BigDecimal(0), new BigDecimal(0), new BigDecimal(0), new BigDecimal(0),
-						Boolean.FALSE, processingCountryId);
+						new BigDecimal(1), new BigDecimal(7), new BigDecimal(DEF_START_TIME),
+						new BigDecimal(DEF_STOP_TIME), new BigDecimal(0), new BigDecimal(0), new BigDecimal(0),
+						new BigDecimal(0), new BigDecimal(0), Boolean.FALSE, processingCountryId, 0);
 
 				routingDetails.setProcessingDeliveryDetails(estmdProcessingDeliveryDetails);
 
@@ -303,9 +318,9 @@ public class RemitRoutingManager {
 				}
 
 				estmdBeneDeliveryDetails = this.getEstimatedBlockDelivery(beneStartTT, beneTimezone, new BigDecimal(1),
-						new BigDecimal(7), new BigDecimal(defStartTime), new BigDecimal(defStopTime), new BigDecimal(0),
-						new BigDecimal(0), new BigDecimal(0), new BigDecimal(0), new BigDecimal(0), Boolean.FALSE,
-						beneCountryId);
+						new BigDecimal(7), new BigDecimal(DEF_START_TIME), new BigDecimal(DEF_STOP_TIME),
+						new BigDecimal(0), new BigDecimal(0), new BigDecimal(0), new BigDecimal(0), new BigDecimal(0),
+						Boolean.FALSE, beneCountryId, 0);
 
 				routingDetails.setBeneBankDeliveryDetails(estmdBeneDeliveryDetails);
 
@@ -372,6 +387,8 @@ public class RemitRoutingManager {
 			finalDeliveryDetails.setStartDateForeign(startDateForeign);
 			finalDeliveryDetails.setCompletionDateForeign(completionDateForeign);
 
+			finalDeliveryDetails.setDeliveryDuration(getDeliveryDuration(processTimeTotal));
+
 			finalDeliveryDetails.setCrossedMaxDeliveryDays(crossedMaxDeliveryDays);
 
 			routingDetails.setFinalDeliveryDetails(finalDeliveryDetails);
@@ -405,14 +422,10 @@ public class RemitRoutingManager {
 			 * Check for Transaction Amount Limit
 			 */
 			BigDecimal fromAmt = matrix.getFromAmount() == null ? BigDecimal.ZERO : matrix.getFromAmount();
-			BigDecimal toAmt = matrix.getToAmount() == null ? PricerServiceConstants.MAX_BIGD_12
-					: matrix.getToAmount();
+			BigDecimal toAmt = matrix.getToAmount() == null ? PricerServiceConstants.MAX_BIGD_12 : matrix.getToAmount();
 
 			if (fromAmt.compareTo(breakup.getConvertedFCAmount()) > 0
 					|| toAmt.compareTo(breakup.getConvertedFCAmount()) < 0) {
-
-				System.out.println(" Remove Route Data ==> " + JsonUtil.toJson(matrix));
-
 				removeList.add(routeData);
 				continue;
 			}
@@ -428,7 +441,7 @@ public class RemitRoutingManager {
 	private EstimatedDeliveryDetails getEstimatedBlockDelivery(long startTT, String timezone, BigDecimal weekFrom,
 			BigDecimal weekTo, BigDecimal weekHrsFrom, BigDecimal weekHrsTo, BigDecimal weekEndFrom,
 			BigDecimal weekEndTo, BigDecimal weekEndHrsFrom, BigDecimal weekEndHrsTo, BigDecimal processTimeInHrs,
-			boolean noHolidayLag, BigDecimal countryId) {
+			boolean noHolidayLag, BigDecimal countryId, long preDelay) {
 
 		// Get An instantaneous point on the time-line for EPOCH TT
 		Instant epochInstant = Instant.ofEpochMilli(startTT);
@@ -452,7 +465,7 @@ public class RemitRoutingManager {
 				weekEndFrom, weekEndTo, weekEndHrsFrom, weekEndHrsTo, processTimeInHrs);
 
 		EstimatedDeliveryDetails goodBusinessDeliveryDT = this.getGoodBusinessDateTime(beginZonedDT, workingHoursData,
-				countryId, noHolidayLag);
+				countryId, noHolidayLag, preDelay);
 
 		/**
 		 * Add Delivery Processing Time to Arrive at the Block Completion Time.
@@ -532,7 +545,7 @@ public class RemitRoutingManager {
 	 * @return
 	 */
 	private EstimatedDeliveryDetails getGoodBusinessDateTime(ZonedDateTime beginZonedDT, WorkingHoursData workHrsData,
-			BigDecimal countryId, boolean noHolidayLag) {
+			BigDecimal countryId, boolean noHolidayLag, long preDelay) {
 
 		EstimatedDeliveryDetails estimatedDeliveryDetails = new EstimatedDeliveryDetails();
 
@@ -549,7 +562,12 @@ public class RemitRoutingManager {
 			// Default Working Status
 			boolean isWorking = true;
 
-			if (noHolidayLag || !(isHoliday = transientDataCache.isHolidayOn(countryId, estimatedGoodBusinessDay))) {
+			if (preDelay > 0) {
+				isWorking = false;
+				preDelay--;
+
+			} else if (noHolidayLag
+					|| !(isHoliday = transientDataCache.isHolidayOn(countryId, estimatedGoodBusinessDay))) {
 
 				int dayOfWeek = estimatedGoodBusinessDay.getDayOfWeek().getValue();
 				int hourOfDay = estimatedGoodBusinessDay.getHour();
@@ -630,6 +648,36 @@ public class RemitRoutingManager {
 		estimatedDeliveryDetails.setStartDateForeign(estimatedGoodBusinessDay);
 		estimatedDeliveryDetails.setCrossedMaxDeliveryDays(true);
 		return estimatedDeliveryDetails;
+
+	}
+
+	private String getDeliveryDuration(long durationInSecs) {
+
+		TimeUnit tu = TimeUnit.SECONDS;
+		long days = tu.toDays(durationInSecs);
+		long hrs = tu.toHours(durationInSecs);
+		long mins = tu.toMinutes(durationInSecs);
+
+		String duration;
+
+		if (days > 0) {
+			duration = days == 1 ? days + " day" : days + " days";
+			hrs = hrs % 24;
+			if (hrs > 0) {
+				duration += " " + (hrs == 1 ? hrs + " hour" : hrs + " hours");
+			}
+		} else if (hrs > 0) {
+			duration = hrs == 1 ? hrs + " hour" : hrs + " hours";
+			mins = mins % 60;
+			if (mins > 0) {
+				duration += " " + (mins == 1 ? mins + " minute" : mins + " minutes");
+			}
+		} else {
+			duration = DurationFormatUtils.formatDurationWords(durationInSecs * 1000, true, true);
+		}
+
+		// Simple Duration Converter
+		return duration;
 
 	}
 
