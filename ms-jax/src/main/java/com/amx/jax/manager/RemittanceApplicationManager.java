@@ -222,6 +222,7 @@ public class RemittanceApplicationManager {
 		validateDailyBeneficiaryTransactionLimit(beneDetails);
 		remittanceApplication.setInstruction("URGENT");
 		setCustomerDiscountColumns(remittanceApplication, validationResults);
+		setVatDetails(remittanceApplication, validationResults);
 		return remittanceApplication;
 	}
 	
