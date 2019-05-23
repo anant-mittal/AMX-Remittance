@@ -152,9 +152,6 @@ public class UserValidationService {
 		if (cust == null) {
 			throw new UserNotFoundException("Civil id is not registered at branch, civil id no,: " + civilId);
 		}
-		if (cust.getMobile() == null) {
-			throw new GlobalException("Mobile number is empty. Contact branch to update the same.");
-		}
 
 		if (cust.getEmail() == null) {
 			createEmailVerification(cust);
