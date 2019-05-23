@@ -248,7 +248,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 	OffsiteCustomerRegManager offsiteCustomerRegManager;
 	@Autowired
 	CustomerIdProofManager customerIdProofManager;
-	
+
 	@Autowired
 	EmployeeRespository employeeRespository;
 
@@ -411,7 +411,6 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		LOGGER.debug("The list is ", designationDataList);
 		return AmxApiResponse.buildList(designationDataList);
 	}
-	
 
 	private List<ResourceDTO> convertDesignationIncome(List<Map<String, Object>> designationList) {
 		List<ResourceDTO> output = new ArrayList<>();
@@ -639,7 +638,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 			contactDetail.setFsCountryMaster(new CountryMaster(homeAddressDestails.getCountryId()));
 			contactDetail.setFsDistrictMaster(new DistrictMaster(homeAddressDestails.getDistrictId()));
 			contactDetail.setFsStateMaster(new StateMaster(homeAddressDestails.getStateId()));
-			if(null != homeAddressDestails.getCityId()) {
+			if (null != homeAddressDestails.getCityId()) {
 				contactDetail.setFsCityMaster(new CityMaster(homeAddressDestails.getCityId()));
 			}
 			contactDetail.setBuildingNo(homeAddressDestails.getHouse());
@@ -670,10 +669,10 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 			CustomerEmploymentDetails customerEmploymentDetails) {
 		Customer customer = offsiteCustomerRegManager.getCustomerForRegistration(customerDetails.getIdentityInt(),
 				customerDetails.getIdentityTypeId());
-		
+
 		BigDecimal employeeId = metaData.getEmployeeId();
 		Employee employeeDetails = employeeRespository.findEmployeeById(employeeId);
-		
+
 		if (customer == null) {
 			LOGGER.info("creating new customer for offiste registration. idint {} idtype {}",
 					customerDetails.getIdentityInt(), customerDetails.getIdentityTypeId());
@@ -705,7 +704,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		countryMetaValidation.validateMobileNumber(customerDetails.getCountryId(), customerDetails.getMobile());
 		countryMetaValidation.validateMobileNumberLength(customerDetails.getCountryId(), customerDetails.getMobile());
 		jaxUtil.convertNotNull(customerDetails, customer);
-		if(customer.getCustomerReference() == null) {
+		if (customer.getCustomerReference() == null) {
 			BigDecimal customerReference = customerDao.generateCustomerReference();
 			customer.setCustomerReference(customerReference);
 			LOGGER.info("generated customer ref: {}", customerReference);
@@ -713,8 +712,10 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		PrefixEnum prefixEnum = PrefixEnum.getPrefixEnum(customerDetails.getTitle());
 		customer.setIsActive(ConstantDocument.No);
 		customer.setCountryId(customerDetails.getCountryId());
-		//customer.setCreatedBy(metaData.getAppType() != null ? metaData.getAppType() : customerDetails.getIdentityInt());
-		customer.setCreatedBy(employeeDetails.getUserName() != null ? employeeDetails.getUserName() : customerDetails.getIdentityInt());
+		// customer.setCreatedBy(metaData.getAppType() != null ? metaData.getAppType() :
+		// customerDetails.getIdentityInt());
+		customer.setCreatedBy(employeeDetails.getUserName() != null ? employeeDetails.getUserName()
+				: customerDetails.getIdentityInt());
 		customer.setCreationDate(new Date());
 		customer.setIsOnlineUser(ConstantDocument.Yes);
 		customer.setGender(prefixEnum.getGender());
@@ -747,7 +748,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 			customer.setIdentityExpiredDate(customerDetails.getExpiryDate());
 		}
 		customer.setIdentityInt(customerDetails.getIdentityInt());
-		customer.setShortName(customerDetails.getFirstName()+customerDetails.getLastName());
+		customer.setShortName(customerDetails.getFirstName() + customerDetails.getLastName());
 
 		customer.setCustomerRegistrationType(CustomerRegistrationType.OFF_CUSTOMER);
 		if (customerEmploymentDetails != null) {
@@ -766,11 +767,13 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		return bizcomponentDao.getBizComponentDataDescByComponmentId(titleLocal).getDataDesc();
 	}
 
-	public AmxApiResponse<String, Object> saveCustomeKycDocumentAndPopulateCusmas(ImageSubmissionRequest model) throws ParseException {
+	public AmxApiResponse<String, Object> saveCustomeKycDocumentAndPopulateCusmas(ImageSubmissionRequest model)
+			throws ParseException {
 		AmxApiResponse<String, Object> result = saveCustomeKycDocument(model);
-		/*if (metaData.getCustomerId() != null) {
-			customerDao.callProcedurePopulateCusmas(metaData.getCustomerId());
-		}*/
+		/*
+		 * if (metaData.getCustomerId() != null) {
+		 * customerDao.callProcedurePopulateCusmas(metaData.getCustomerId()); }
+		 */
 		return result;
 	}
 
@@ -875,7 +878,8 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		// return null;
 	}
 
-	private DmsApplMapping getDmsApplMappingData(Customer model, ImageSubmissionRequest imageSubmissionRequest) throws ParseException {
+	private DmsApplMapping getDmsApplMappingData(Customer model, ImageSubmissionRequest imageSubmissionRequest)
+			throws ParseException {
 		DmsApplMapping mappingData = new DmsApplMapping();
 		BigDecimal financialYear = getDealYearbyDate();
 		BigDecimal applCountryId = metaData.getCountryId();
@@ -936,7 +940,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 
 	@Override
 	public AmxApiResponse<SendOtpModel, Object> sendOtp(CustomerPersonalDetail customerPersonalDetail) {
-		LOGGER.debug("in sendOtp customerPersonalDetail:{} ",customerPersonalDetail);
+		LOGGER.debug("in sendOtp customerPersonalDetail:{} ", customerPersonalDetail);
 		BeanPropertyBindingResult errors = new BeanPropertyBindingResult(customerPersonalDetail,
 				"customerPersonalDetail");
 		customerRegistrationManager.setIdentityInt(customerPersonalDetail.getIdentityInt());
@@ -1064,8 +1068,9 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 			BigDecimal identityTypeId) {
 		LOGGER.debug("in getOffsiteCustomerData: identityInt {}, identityTypeId {}", identityInt, identityTypeId);
 		Customer customer = offsiteCustomerRegManager.getCustomerForRegistration(identityInt, identityTypeId);
-		offsiteCustomerRegValidator.validateGetOffsiteCustomerDetailRequest(new GetOffsiteCustomerDetailRequest(identityInt, identityTypeId));
-		
+		offsiteCustomerRegValidator.validateGetOffsiteCustomerDetailRequest(
+				new GetOffsiteCustomerDetailRequest(identityInt, identityTypeId));
+
 		OffsiteCustomerDataDTO offsiteCustomer = new OffsiteCustomerDataDTO();
 		offsiteCustomer.setIdentityInt(identityInt);
 		offsiteCustomer.setIdentityTypeId(identityTypeId);
@@ -1165,18 +1170,18 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		offsiteCustomer.setCustomerFlags(userService.getCustomerFlags(customer.getCustomerId()));
 		return AmxApiResponse.build(offsiteCustomer);
 	}
-	
+
 	/**
-	 * To fetch customer details
-	 * auth    : MRU
-	 * purpose : to fethc custoemr deatails 
+	 * To fetch customer details auth : MRU purpose : to fethc custoemr deatails
 	 */
-	
+
 	@Override
-	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerDetails(String identityInt,BigDecimal identityTypeId) {
+	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerDetails(String identityInt,
+			BigDecimal identityTypeId) {
 		LOGGER.debug("in getOffsiteCustomerData: identityInt {}, identityTypeId {}", identityInt, identityTypeId);
-		OffsiteCustomerDataDTO offsiteCustomer =customerRegistrationManager.getCustomerDeatils(identityInt, identityTypeId);
-		return AmxApiResponse.build(offsiteCustomer); 
+		OffsiteCustomerDataDTO offsiteCustomer = customerRegistrationManager.getCustomerDeatils(identityInt,
+				identityTypeId);
+		return AmxApiResponse.build(offsiteCustomer);
 	}
 
 	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerData(
@@ -1184,9 +1189,5 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		offsiteCustomerRegValidator.validateGetOffsiteCustomerDetailRequest(request);
 		return getOffsiteCustomerData(request.getIdentityInt(), request.getIdentityType());
 	}
-	
-	
-	
-	
-	
+
 }
