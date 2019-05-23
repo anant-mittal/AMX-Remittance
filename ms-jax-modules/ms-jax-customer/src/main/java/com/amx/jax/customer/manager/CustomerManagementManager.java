@@ -11,18 +11,22 @@ import org.springframework.stereotype.Component;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxApiFlow;
+import com.amx.jax.customer.service.OffsitCustRegService;
 import com.amx.jax.customer.validation.CustomerManagementValidation;
 import com.amx.jax.dbmodel.ContactDetail;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerCategoryDiscountModel;
 import com.amx.jax.dbmodel.CustomerExtendedModel;
+import com.amx.jax.dbmodel.EmployeeDetails;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.ResourceDTO;
+import com.amx.jax.model.request.CustomerEmploymentDetails;
 import com.amx.jax.model.request.CustomerPersonalDetail;
 import com.amx.jax.model.request.HomeAddressDetails;
 import com.amx.jax.model.request.LocalAddressDetails;
 import com.amx.jax.model.response.customer.OffsiteCustomerDataDTO;
+import com.amx.jax.repository.CustomerEmployeeDetailsRepository;
 import com.amx.jax.repository.ICustomerCategoryDiscountRepo;
 import com.amx.jax.repository.ICustomerExtendedRepository;
 import com.amx.jax.repository.remittance.IIdNumberLengthCheckRepository;
@@ -49,6 +53,10 @@ public class CustomerManagementManager {
 	ContactDetailService contactDetailService;
 	@Autowired
 	CustomerFlagManager customerFlagManager;
+	@Autowired
+	OffsitCustRegService offsitCustRegService;
+	@Autowired
+	CustomerEmployeeDetailsRepository customerEmployeeDetailsRepository;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CustomerManagementManager.class);
 
@@ -74,7 +82,7 @@ public class CustomerManagementManager {
 			offsiteCustomer.setLocalAddressDetails(createLocalAddressDetails(customer));
 			offsiteCustomer.setHomeAddressDestails(createHomeAddressDetails(customer));
 			offsiteCustomer.setCustomerFlags(customerFlagManager.getCustomerFlags(customer.getCustomerId()));
-
+			offsiteCustomer.setCustomerEmploymentDetails(createCustomerEmploymentDetail(customer));
 		} else {
 			jaxError = JaxError.CUSTOMER_NOT_FOUND;
 		}
@@ -197,5 +205,27 @@ public class CustomerManagementManager {
 			dto.setResourceName(categorydiscountModel.getCustomerCatagory());
 		}
 		return dto;
+	}
+
+	public CustomerEmploymentDetails createCustomerEmploymentDetail(Customer customer) {
+		// --- Customer Employment Data
+		CustomerEmploymentDetails employmentDetails = new CustomerEmploymentDetails();
+		EmployeeDetails employmentData = customerEmployeeDetailsRepository.getCustomerEmploymentData(customer);
+		if (employmentData != null) {
+			employmentDetails.setEmployer(employmentData.getEmployerName());
+			employmentDetails
+					.setEmploymentTypeId(employmentData.getFsBizComponentDataByEmploymentTypeId().getComponentDataId());
+			if (employmentData.getFsBizComponentDataByOccupationId() != null) {
+				employmentDetails
+						.setProfessionId(employmentData.getFsBizComponentDataByOccupationId().getComponentDataId());
+			}
+			employmentDetails.setStateId(employmentData.getFsStateMaster());
+			employmentDetails.setDistrictId(employmentData.getFsDistrictMaster());
+			employmentDetails.setCountryId(employmentData.getFsCountryMaster().getCountryId());
+			employmentDetails.setArticleDetailsId(customer.getFsArticleDetails().getArticleDetailId());
+			employmentDetails.setArticleId(customer.getFsArticleDetails().getFsArticleMaster().getArticleId());
+			employmentDetails.setIncomeRangeId(customer.getFsIncomeRangeMaster().getIncomeRangeId());
+		}
+		return employmentDetails;
 	}
 }

@@ -39,6 +39,7 @@ import com.amx.jax.amxlib.config.OtpSettings;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constants.CustomerRegistrationType;
+import com.amx.jax.customer.manager.CustomerManagementManager;
 import com.amx.jax.customer.manager.OffsiteCustomerRegManager;
 import com.amx.jax.customer.manager.OffsiteCustomerRegValidator;
 import com.amx.jax.dal.ArticleDao;
@@ -248,9 +249,10 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 	OffsiteCustomerRegManager offsiteCustomerRegManager;
 	@Autowired
 	CustomerIdProofManager customerIdProofManager;
-	
 	@Autowired
 	EmployeeRespository employeeRespository;
+	@Autowired
+	CustomerManagementManager customerManagementManager;
 
 	public AmxApiResponse<ComponentDataDto, Object> getIdTypes() {
 		List<Map<String, Object>> tempList = bizcomponentDao
@@ -1140,25 +1142,10 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 					homeAddress.setCityId(homeData.getFsCityMaster().getCityId());
 				}
 				offsiteCustomer.setHomeAddressDestails(homeAddress);
+				offsiteCustomer.setCustomerEmploymentDetails(
+						customerManagementManager.createCustomerEmploymentDetail(customer));
 			}
-			// --- Customer Employment Data
-			CustomerEmploymentDetails employmentDetails = new CustomerEmploymentDetails();
-			EmployeeDetails employmentData = customerEmployeeDetailsRepository.getCustomerEmploymentData(customer);
-			if (employmentData != null) {
-				employmentDetails.setEmployer(employmentData.getEmployerName());
-				employmentDetails.setEmploymentTypeId(
-						employmentData.getFsBizComponentDataByEmploymentTypeId().getComponentDataId());
-				employmentDetails
-						.setProfessionId(employmentData.getFsBizComponentDataByOccupationId().getComponentDataId());
-				employmentDetails.setStateId(employmentData.getFsStateMaster());
-				employmentDetails.setDistrictId(employmentData.getFsDistrictMaster());
-				employmentDetails.setCountryId(employmentData.getFsCountryMaster().getCountryId());
-				employmentDetails.setArticleDetailsId(customer.getFsArticleDetails().getArticleDetailId());
-				employmentDetails.setArticleId(customer.getFsArticleDetails().getFsArticleMaster().getArticleId());
-				employmentDetails.setIncomeRangeId(customer.getFsIncomeRangeMaster().getIncomeRangeId());
-
-				offsiteCustomer.setCustomerEmploymentDetails(employmentDetails);
-			}
+			
 		} else {
 			throw new GlobalException(ResponseStatus.NOT_FOUND.toString());
 		}
@@ -1184,9 +1171,5 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		offsiteCustomerRegValidator.validateGetOffsiteCustomerDetailRequest(request);
 		return getOffsiteCustomerData(request.getIdentityInt(), request.getIdentityType());
 	}
-	
-	
-	
-	
 	
 }
