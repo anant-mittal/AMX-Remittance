@@ -120,7 +120,7 @@ public class CustomerController implements ICustomerService {
 			@RequestParam(name = "wOtp", required = false) String wOtp) {
 		logger.info("validateOtp Request : civilId - " + civilId + " mOtp: " + mOtp + " eOtp: " + eOtp);
 		if (StringUtils.isNotBlank(wOtp)) {
-			userService.validateWOtp(civilId, wOtp);
+			return userService.validateWOtp(civilId, wOtp);
 		}
 		ApiResponse response = userService.validateOtp(civilId, mOtp, eOtp);
 		return response;
