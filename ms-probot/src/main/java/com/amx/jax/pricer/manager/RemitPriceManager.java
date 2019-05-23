@@ -47,7 +47,6 @@ import com.amx.jax.pricer.exception.PricerServiceError;
 import com.amx.jax.pricer.exception.PricerServiceException;
 import com.amx.jax.pricer.var.PricerServiceConstants.PRICE_BY;
 import com.amx.jax.pricer.var.PricerServiceConstants.SERVICE_GROUP;
-import com.amx.utils.JsonUtil;
 
 @Component
 public class RemitPriceManager {
