@@ -324,10 +324,10 @@ public class RemittanceTransactionManager {
 		
 		
 		//radhika
+		BigDecimal corpDiscount = corporateDiscountManager.corporateDiscount();
 		
-		
-				if(JaxUtil.isNullZeroBigDecimalCheck(commission) && commission.compareTo(newCommission)>=0) {
-					commission =commission.subtract(newCommission);
+				if(JaxUtil.isNullZeroBigDecimalCheck(commission) && commission.compareTo(corpDiscount)>=0) {
+					commission =commission.subtract(corpDiscount);
 					
 					logger.debug("commission inside :" +commission);
 				}
