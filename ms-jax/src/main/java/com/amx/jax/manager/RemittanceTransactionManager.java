@@ -314,22 +314,14 @@ public class RemittanceTransactionManager {
 		applyCurrencyRoudingLogic(breakup);
 		breakup = getExchangeRateBreakup(exchangeRates, model, responseModel, commission);
 		
-		logger.debug("breakup :" +breakup);
-		validateTransactionAmount(breakup, newCommission, currencyId);
-		
-		logger.debug("newCommissioncompare :" +newCommission);
-		logger.info("commissioncompare: " +commission);
-		
-		logger.debug("currencyId :" +currencyId);
-		
+		validateTransactionAmount(breakup, newCommission, currencyId);		
 		
 		//radhika
 		BigDecimal corpDiscount = corporateDiscountManager.corporateDiscount();
 		
 				if(JaxUtil.isNullZeroBigDecimalCheck(commission) && commission.compareTo(corpDiscount)>=0) {
 					commission =commission.subtract(corpDiscount);
-					
-					logger.debug("commission inside :" +commission);
+					logger.info("commission: " +commission);
 				}
 				
 				VatDetailsDto vatDetails = getVatAmount(commission);
@@ -339,11 +331,6 @@ public class RemittanceTransactionManager {
 					responseModel.setVatType(vatDetails.getVatType()==null?"":vatDetails.getVatType());
 					if(JaxUtil.isNullZeroBigDecimalCheck(vatDetails.getCommission())) {
 					commission =vatDetails.getCommission();
-					logger.debug("commission inside inside :" +commission);
-					logger.debug("commission inside :" +vatDetails.getVatAmount());
-					logger.debug("commission inside :" +commission);
-					logger.debug("commission inside :" +commission);
-					logger.debug("commission inside :" +commission);
 					
 					}
 				}
@@ -390,7 +377,6 @@ public class RemittanceTransactionManager {
 			vatDetails.setCalculatuonType(vatList.get(0).getCalculationType());
 			vatDetails.setRoudingOff(vatList.get(0).getRoundOff()==null?BigDecimal.ZERO:vatList.get(0).getRoundOff());
 			
-			logger.debug("vatList.get(0).getCalculationType() :" +vatList.get(0).getCalculationType());
 		}
 		if(JaxUtil.isNullZeroBigDecimalCheck(commission) && commission.compareTo(BigDecimal.ZERO)>0) {
 		if(!StringUtils.isBlank(vatAppliable) && vatAppliable.equalsIgnoreCase(ConstantDocument.Yes) ) {
@@ -405,8 +391,6 @@ public class RemittanceTransactionManager {
 					vatDetails.setVatAmount(commission.subtract(vatAmount));
 					vatDetails.setCommission(commission);
 					
-					logger.debug("commission.subtract(vatAmount) :" +commission.subtract(vatAmount));
-					
 				}else {
 					vatAmount = commission.multiply(RoundUtil.roundBigDecimal(vatDetails.getVatPercentage().divide(BIG_HUNDRED),vatDetails.getRoudingOff().intValue()));
 					vatDetails.setVatAmount(vatAmount);
@@ -419,9 +403,7 @@ public class RemittanceTransactionManager {
 	}else {
 		vatDetails.setVatApplicable(vatAppliable);
 		
-		logger.debug("vatAppliable :" +vatAppliable);
 	}
-		logger.debug("vatDetails :" +vatDetails);
 		return  vatDetails;
 	}
 

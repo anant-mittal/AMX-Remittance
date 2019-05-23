@@ -143,8 +143,6 @@ public class BranchRemittanceExchangeRateManager {
 		// trnx fee
 		BigDecimal commission = getComission();
 		
-		logger.debug("commisionValue:" +commission);
-		
 		VatDetailsDto vatDetails = getVatAmount(commission);
 		if(vatDetails!=null && !StringUtils.isBlank(vatDetails.getVatApplicable()) && vatDetails.getVatApplicable().equalsIgnoreCase(ConstantDocument.Yes)) {
 			result.setVatAmount(vatDetails.getVatAmount()==null?BigDecimal.ZERO:vatDetails.getVatAmount());
@@ -186,8 +184,6 @@ public class BranchRemittanceExchangeRateManager {
 		BigDecimal deliveryMode = P_DELIVERY_MODE_ID.getValue(remitApplParametersMap);
 		BigDecimal commission = remittanceTransactionManager.getCommissionAmount(routingBankId, rountingCountryId, currencyId,remittanceMode, deliveryMode);
 		BigDecimal newCommission = remittanceTransactionManager.reCalculateComission();
-		logger.debug("routingBankId:"+routingBankId+ "rountingCountryId" +rountingCountryId+ "currencyId" +currencyId+ "remittanceMode" +remittanceMode+ "deliveryMode"+deliveryMode+
-				"commission" +commission+ "newCommission" +newCommission);
 		
 		if (newCommission != null) {
 			commission = newCommission;
@@ -196,7 +192,6 @@ public class BranchRemittanceExchangeRateManager {
 		BigDecimal corpDiscount = corporateDiscountManager.corporateDiscount();
 		if(JaxUtil.isNullZeroBigDecimalCheck(commission) && commission.compareTo(corpDiscount)>=0) {
 			commission =commission.subtract(corpDiscount);
-			logger.debug("commission1"+commission);
 		}
 		return commission;
 	}
@@ -247,18 +242,13 @@ public class BranchRemittanceExchangeRateManager {
 		if(JaxUtil.isNullZeroBigDecimalCheck(commission) && commission.compareTo(BigDecimal.ZERO)>0) {
 		if(!StringUtils.isBlank(vatAppliable) && vatAppliable.equalsIgnoreCase(ConstantDocument.Yes) ) {
 			vatDetails.setVatApplicable(vatAppliable);
-			logger.debug("vatAppliable:" +vatAppliable);
-			logger.debug("commission....:" +commission);
 			
 			if(JaxUtil.isNullZeroBigDecimalCheck(vatDetails.getVatPercentage()) && vatDetails.getVatPercentage().compareTo(BigDecimal.ZERO)>0) {
 				BigDecimal BIG_HUNDRED = new BigDecimal(100);
 				BigDecimal vatAmount =BigDecimal.ZERO;
 				if(!StringUtils.isBlank(vatDetails.getCalculatuonType()) && vatDetails.getCalculatuonType().equalsIgnoreCase(ConstantDocument.VAT_CALCULATION_TYPE_INCLUDE)) {
 					vatAmount = RoundUtil.roundBigDecimal(((new BigDecimal(commission.doubleValue()/((vatDetails.getVatPercentage().add(BIG_HUNDRED)).doubleValue())).multiply(BIG_HUNDRED))), vatDetails.getRoudingOff().intValue());
-					logger.debug("vatamount:" +vatAmount);
 					vatDetails.setVatAmount(commission.subtract(vatAmount));
-					logger.debug("commission.SUBTRA TED AMOUNT...:" +commission.subtract(vatAmount));
-					
 					
 					vatDetails.setCommission(commission);
 				}else {
