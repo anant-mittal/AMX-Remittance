@@ -37,7 +37,6 @@ import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.util.DbValueUtil;
 import com.amx.jax.pricer.var.PricerServiceConstants.CUSTOMER_CATEGORY;
 import com.amx.jax.pricer.var.PricerServiceConstants.DISCOUNT_TYPE;
-import com.amx.utils.JsonUtil;
 
 @Component
 public class CustomerDiscountManager {
@@ -102,8 +101,6 @@ public class CustomerDiscountManager {
 		if (channelDiscount != null && curGroup != null && DbValueUtil.isActive(channelDiscount.getIsActive())) {
 			DiscountMaster channelDiscountMaster = discountMasterDao.getByDiscountTypeAndDiscountTypeIdAndGroupId(
 					DISCOUNT_TYPE.CHANNEL.getTypeKey(), channelDiscount.getId(), curGroup.getId());
-
-			System.out.println(" Channel Discount Master ==> " + JsonUtil.toJson(channelDiscountMaster));
 
 			channelDiscountPips = ((null != channelDiscountMaster
 					&& DbValueUtil.isActive(channelDiscountMaster.getIsActive()))
