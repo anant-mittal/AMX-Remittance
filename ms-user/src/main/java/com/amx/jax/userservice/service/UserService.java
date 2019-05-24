@@ -466,7 +466,7 @@ public class UserService extends AbstractUserService {
 
 		CustomerOnlineRegistration onlineCust = verifyCivilId(civilId, model);
 		userValidationService.validateActiveCustomer(onlineCustReg, initRegistration);
-
+		Customer customer = custDao.getCustById(onlineCust.getCustomerId());
 		try {
 			userValidationService.validateTokenDate(onlineCust);
 		} catch (GlobalException e) {
@@ -475,6 +475,7 @@ public class UserService extends AbstractUserService {
 		}
 		// userValidationService.validateCustomerLockCount(onlineCust);
 		userValidationService.validateTokenSentCount(onlineCust);
+		userValidationService.validateCustomerContactForSendOtp(channels, customer);
 		generateToken(civilId, model, channels);
 		onlineCust.setEmailToken(model.getHashedeOtp());
 		onlineCust.setSmsToken(model.getHashedmOtp());
@@ -484,7 +485,6 @@ public class UserService extends AbstractUserService {
 				: onlineCust.getTokenSentCount().add(new BigDecimal(1));
 		onlineCust.setTokenSentCount(tokenSentCount);
 		custDao.saveOnlineCustomer(onlineCust);
-		Customer customer = custDao.getCustById(onlineCust.getCustomerId());
 		model.setFirstName(customer.getFirstName());
 		model.setLastName(customer.getLastName());
 		model.setCustomerId(onlineCust.getCustomerId());
@@ -1317,5 +1317,10 @@ public class UserService extends AbstractUserService {
 			customerOnlineRegistration.setTokenSentCount(BigDecimal.ZERO);
 		}
 		custDao.saveOnlineCustomer(customerOnlineRegistration);
+	}
+	
+	public void validateCustomerContactForSendOtp(List<ContactType> contactTypes, BigDecimal customerId) {
+		Customer customer = getCustById(customerId);
+		userValidationService.validateCustomerContactForSendOtp(contactTypes, customer);
 	}
 }
