@@ -129,18 +129,6 @@ public class CustomerDataVerificationService extends AbstractService {
 			// sendTpinTocustomer(cv);
 		}
 	}
-	
-
-	private void sendTpinTocustomer(CustomerVerification cv) {
-		String tpin = Random.randomNumeric(6);
-		logger.info("generated tpin/otp for customer data verification is: " + tpin);
-		PersonInfo pinfo = userService.getPersonInfo(metaData.getCustomerId());
-		CivilIdOtpModel model = new CivilIdOtpModel();
-		model.setmOtp(tpin);
-		model.setmOtpPrefix("");
-		jaxNotificationService.sendOtpSms(pinfo, model);
-		customerVerificationRepository.save(cv);
-	}
 
 	private void updateCustomerVerification(CustomerVerification cv) {
 		cv.setVerificationBy("JOMAX_USER");

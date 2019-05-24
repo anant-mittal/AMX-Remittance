@@ -292,7 +292,7 @@ public enum JaxError implements IExceptionEnum {
 	
 	MOTP_REQUIRED,
 	DOTP_REQUIRED,
-	EOTP_REQUIRED;
+	EOTP_REQUIRED, CUSTOMER_MOBILE_EMPTY, CUSTOMER_EMAIL_EMPTY;
 	
 	
 	@Deprecated

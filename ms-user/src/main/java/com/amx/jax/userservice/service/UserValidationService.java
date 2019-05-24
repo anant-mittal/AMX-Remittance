@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.security.NoSuchAlgorithmException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -838,16 +839,18 @@ public class UserValidationService {
 	}
 
 	public void validateCustomerContactForSendOtp(List<ContactType> channels, Customer customer) {
-
+		if(channels == null) {
+			channels = Arrays.asList(ContactType.MOBILE);
+		}
 		channels.stream().forEach(i -> {
 			boolean ismOtp = (i == ContactType.SMS || i == ContactType.MOBILE || i == ContactType.SMS_EMAIL);
 			if (ismOtp && StringUtils.isEmpty(customer.getMobile())) {
-				throw new GlobalException(
+				throw new GlobalException(JaxError.CUSTOMER_MOBILE_EMPTY,
 						"You mobile number is not registered at branch. To proceed further, please register the mobile number at branch.");
 			}
 			boolean iseOtp = (i == ContactType.EMAIL || i == ContactType.SMS_EMAIL);
 			if (iseOtp && StringUtils.isEmpty(customer.getEmail())) {
-				throw new GlobalException(
+				throw new GlobalException(JaxError.CUSTOMER_EMAIL_EMPTY,
 						"You email ID is not registered at branch. To proceed further, please register the email address at branch.");
 			}
 		});
