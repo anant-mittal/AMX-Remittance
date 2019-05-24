@@ -1,9 +1,12 @@
-package com.amx.jax;
+package com.amx.jax.customer;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Map;
 
+import com.amx.jax.CustRegRequestModel;
+import com.amx.jax.CustomerCredential;
+import com.amx.jax.IJaxService;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.error.ApiJaxStatusBuilder.ApiJaxStatus;
 import com.amx.jax.error.JaxError;
