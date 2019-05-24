@@ -269,6 +269,9 @@ public class ExchangePricingAndRoutingService {
 		 */
 		Map<BigDecimal, Map<BigDecimal, ExchangeRateDetails>> bankServiceModeSellRates = new HashMap<BigDecimal, Map<BigDecimal, ExchangeRateDetails>>();
 
+		TransientRoutingComputeDetails lastNoBeneRoute = null;
+		TransientRoutingComputeDetails lastBeneDedRoute = null;
+
 		for (TransientRoutingComputeDetails routeDetails : routingMatrixData) {
 
 			TrnxRoutingDetails trnxRoutingPath = new TrnxRoutingDetails();
@@ -299,11 +302,77 @@ public class ExchangePricingAndRoutingService {
 			trnxRoutingPaths.put(pathKey, trnxRoutingPath);
 
 			// Each Path - By-Default is a ** Non-Bene Deduct ** Path
-			bestExchangeRatePaths.get(PRICE_TYPE.NO_BENE_DEDUCT).add(pathKey);
+			// Paths are sorted -
+			// 1. Ascending order of rate
+			// 2. Ascending order of delivery time
 
+			if (lastNoBeneRoute == null) {
+				bestExchangeRatePaths.get(PRICE_TYPE.NO_BENE_DEDUCT).add(pathKey);
+				lastNoBeneRoute = routeDetails;
+			} else {
+
+				if (lastNoBeneRoute.compareTo(routeDetails) == 0) {
+
+					// Ignore if the rate is from the same Bank
+					if (lastNoBeneRoute.getExchangeRateDetails().getBankId().longValue() != routeDetails
+							.getExchangeRateDetails().getBankId().longValue()) {
+
+						// GLC Comparison goes here.
+						BigDecimal lastGlcBalFc = exchRateAndRoutingTransientDataCache
+								.getMaxGLLcBalForBank(lastNoBeneRoute.getExchangeRateDetails().getBankId(), true);
+
+						BigDecimal curGLCBalFc = exchRateAndRoutingTransientDataCache
+								.getMaxGLLcBalForBank(routeDetails.getExchangeRateDetails().getBankId(), true);
+
+						if (curGLCBalFc.compareTo(lastGlcBalFc) > 0) {
+							// Replace only if the Current GLC BAL is More than the prev GLC BAL
+							int replaceIndex = bestExchangeRatePaths.get(PRICE_TYPE.NO_BENE_DEDUCT).size() - 1;
+							bestExchangeRatePaths.get(PRICE_TYPE.NO_BENE_DEDUCT).set(replaceIndex, pathKey);
+
+						}
+					}
+
+				} else if (lastNoBeneRoute.getFinalDeliveryDetails().getCompletionTT() > routeDetails
+						.getFinalDeliveryDetails().getCompletionTT()) {
+					// Add the new path only if its making faster delivery with Lower Exchange Rate.
+					bestExchangeRatePaths.get(PRICE_TYPE.NO_BENE_DEDUCT).add(pathKey);
+					lastNoBeneRoute = routeDetails;
+				}
+			}
+
+			// Best Rates of Bene Deduct
 			if (null != trnxRoutingPath.getBeneDeductChargeAmount()
 					&& trnxRoutingPath.getBeneDeductChargeAmount().compareTo(BigDecimal.ZERO) != 0) {
-				bestExchangeRatePaths.get(PRICE_TYPE.BENE_DEDUCT).add(pathKey);
+
+				if (lastBeneDedRoute == null) {
+					bestExchangeRatePaths.get(PRICE_TYPE.BENE_DEDUCT).add(pathKey);
+					lastBeneDedRoute = routeDetails;
+				} else {
+
+					if (lastBeneDedRoute.compareTo(routeDetails) == 0) {
+
+						// GLC Comparison goes here.
+						BigDecimal lastGlcBalFc = exchRateAndRoutingTransientDataCache
+								.getMaxGLLcBalForBank(lastNoBeneRoute.getExchangeRateDetails().getBankId(), true);
+
+						BigDecimal curGLCBalFc = exchRateAndRoutingTransientDataCache
+								.getMaxGLLcBalForBank(routeDetails.getExchangeRateDetails().getBankId(), true);
+
+						if (curGLCBalFc.compareTo(lastGlcBalFc) > 0) {
+							// Replace only if the Current GLC BAL is More than the prev GLC BAL
+							int replaceIndex = bestExchangeRatePaths.get(PRICE_TYPE.BENE_DEDUCT).size() - 1;
+							bestExchangeRatePaths.get(PRICE_TYPE.BENE_DEDUCT).set(replaceIndex, pathKey);
+
+						}
+
+					} else if (lastBeneDedRoute.getFinalDeliveryDetails().getCompletionTT() > routeDetails
+							.getFinalDeliveryDetails().getCompletionTT()) {
+						// Add the new path only if its making faster delivery with Lower Exchange Rate.
+						bestExchangeRatePaths.get(PRICE_TYPE.BENE_DEDUCT).add(pathKey);
+						lastBeneDedRoute = routeDetails;
+					}
+				}
+
 			}
 
 			ExchangeRateDetails exchangeRate = routeDetails.getExchangeRateDetails();
