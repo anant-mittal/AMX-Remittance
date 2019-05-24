@@ -42,6 +42,7 @@ import com.amx.jax.dbmodel.CustomerVerification;
 import com.amx.jax.dbmodel.DmsDocumentModel;
 import com.amx.jax.dbmodel.ViewOnlineCustomerCheck;
 import com.amx.jax.dbmodel.remittance.BlackListDetailModel;
+import com.amx.jax.dict.ContactType;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.exception.ExceptionMessageKey;
 import com.amx.jax.meta.MetaData;
@@ -836,4 +837,19 @@ public class UserValidationService {
 		return customers.get(0);
 	}
 
+	public void validateCustomerContactForSendOtp(List<ContactType> channels, Customer customer) {
+
+		channels.stream().forEach(i -> {
+			boolean ismOtp = (i == ContactType.SMS || i == ContactType.MOBILE || i == ContactType.SMS_EMAIL);
+			if (ismOtp && StringUtils.isEmpty(customer.getMobile())) {
+				throw new GlobalException(
+						"You mobile number is not registered at branch. To proceed further, please register the mobile number at branch.");
+			}
+			boolean iseOtp = (i == ContactType.EMAIL || i == ContactType.SMS_EMAIL);
+			if (iseOtp && StringUtils.isEmpty(customer.getEmail())) {
+				throw new GlobalException(
+						"You email ID is not registered at branch. To proceed further, please register the email address at branch.");
+			}
+		});
+	}
 }
