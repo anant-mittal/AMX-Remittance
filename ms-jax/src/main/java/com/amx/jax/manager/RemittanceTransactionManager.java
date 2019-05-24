@@ -92,6 +92,7 @@ import com.amx.jax.model.response.remittance.VatDetailsDto;
 import com.amx.jax.remittance.manager.RemittanceParameterMapManager;
 import com.amx.jax.repository.AuthenticationViewRepository;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
+import com.amx.jax.repository.ICurrencyDao;
 import com.amx.jax.repository.VTransferRepository;
 import com.amx.jax.repository.remittance.IViewVatDetailsRespository;
 import com.amx.jax.service.CountryService;
@@ -222,6 +223,9 @@ public class RemittanceTransactionManager {
 	
 	@Autowired
 	MetaData metaData;
+	
+	@Autowired
+	ICurrencyDao currencyDao;
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -318,6 +322,8 @@ public class RemittanceTransactionManager {
 		
 		//radhika
 		BigDecimal corpDiscount = corporateDiscountManager.corporateDiscount();
+		String currencyQuoteName = currencyDao.getCurrencyList(currencyId).get(0).getQuoteName();
+		logger.debug("currencyQuote:" +currencyQuoteName);
 		
 				if(JaxUtil.isNullZeroBigDecimalCheck(commission) && commission.compareTo(corpDiscount)>=0) {
 					commission =commission.subtract(corpDiscount);
@@ -326,7 +332,7 @@ public class RemittanceTransactionManager {
 				
 				VatDetailsDto vatDetails = getVatAmount(commission);
 				if(vatDetails!=null && !StringUtils.isBlank(vatDetails.getVatApplicable()) && vatDetails.getVatApplicable().equalsIgnoreCase(ConstantDocument.Yes)) {
-					responseModel.setVatAmount(vatDetails.getVatAmount()==null?BigDecimal.ZERO:vatDetails.getVatAmount());
+					responseModel.setVatAmount(currencyQuoteName+ "     " +vatDetails.getVatAmount()==null?BigDecimal.ZERO:vatDetails.getVatAmount());
 					responseModel.setVatPercentage(vatDetails.getVatPercentage()==null?BigDecimal.ZERO:vatDetails.getVatPercentage());
 					responseModel.setVatType(vatDetails.getVatType()==null?"":vatDetails.getVatType());
 					if(JaxUtil.isNullZeroBigDecimalCheck(vatDetails.getCommission())) {
