@@ -253,6 +253,7 @@ public class FcSaleDeliveryService {
 		logger.debug("sendOtp request: deliveryDetailSeqId {} validateDriverEmployee {}", deliveryDetailSeqId,
 				validateDriverEmployee);
 		VwFxDeliveryDetailsModel vwFxDeliveryDetailsModel = validatetDeliveryDetailView(deliveryDetailSeqId);
+		userService.validateCustomerContactForSendOtp(Arrays.asList(ContactType.MOBILE), vwFxDeliveryDetailsModel.getCustomerId());
 		FxDeliveryDetailsModel fxDeliveryDetailsModel = validateFxDeliveryModel(deliveryDetailSeqId,
 				validateDriverEmployee);
 		PersonInfo pinfo = userService.getPersonInfo(vwFxDeliveryDetailsModel.getCustomerId());
@@ -272,7 +273,6 @@ public class FcSaleDeliveryService {
 		FxDeliveryDetailNotificationDto notificationModel = new FxDeliveryDetailNotificationDto(mOtp, mOtpPrefix,
 				ddDto);
 		logger.debug("sending otp for fcsale delivery");
-		userService.validateCustomerContactForSendOtp(Arrays.asList(ContactType.MOBILE), vwFxDeliveryDetailsModel.getCustomerId());
 		jaxNotificationService.sendOtpSms(pinfo.getMobile(), notificationModel);
 		// send email otp
 		Email email = new Email();
