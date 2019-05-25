@@ -1320,7 +1320,9 @@ public class UserService extends AbstractUserService {
 	}
 	
 	public void validateCustomerContactForSendOtp(List<ContactType> contactTypes, BigDecimal customerId) {
-		Customer customer = getCustById(customerId);
-		userValidationService.validateCustomerContactForSendOtp(contactTypes, customer);
+		if (customerId != null) {
+			Customer customer = getCustById(customerId);
+			userValidationService.validateCustomerContactForSendOtp(contactTypes, customer);
+		}
 	}
 }

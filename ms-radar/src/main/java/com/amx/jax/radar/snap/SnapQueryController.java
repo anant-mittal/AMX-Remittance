@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,8 +41,20 @@ public class SnapQueryController {
 	@ResponseBody
 	@RequestMapping(value = "/snap/view/{snapView}", method = RequestMethod.POST)
 	public SnapModelWrapper snapView(@PathVariable(value = "snapView") SnapQueryTemplate snapView,
-			@RequestBody Map<String, Object> params) throws IOException {
+			@RequestBody Map<String, Object> params,
+			@RequestParam(defaultValue = "now-1m") String gte, @RequestParam(defaultValue = "now") String lte)
+			throws IOException {
+		// params.put("gte", gte);
+		// params.put("lte", lte);
 		return snapQueryTemplateService.execute(snapView, params);
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/snap/execute/query/{snapView}", method = RequestMethod.POST)
+	public SnapModelWrapper executeQuery(@PathVariable(value = "snapView") SnapQueryTemplate snapView,
+			@RequestBody Map<String, Object> query)
+			throws IOException {
+		return snapQueryTemplateService.executeQuery(snapView, query);
 	}
 
 	@ResponseBody
@@ -60,8 +73,12 @@ public class SnapQueryController {
 
 	@RequestMapping(value = "/snap/table/{snapView}", method = RequestMethod.GET)
 	public String table(@PathVariable(value = "snapView") SnapQueryTemplate snapView,
-			@RequestParam String gte, @RequestParam String lte) throws IOException {
-		
+			@RequestParam(defaultValue = "now-1m") String gte, @RequestParam(defaultValue = "now") String lte,
+			Model model) throws IOException {
+		model.addAttribute("gte", gte);
+		model.addAttribute("lte", lte);
+		model.addAttribute("snapView", snapView.toString());
+		model.addAttribute("snapViews", SnapQueryTemplate.values());
 		return "table";
 	}
 

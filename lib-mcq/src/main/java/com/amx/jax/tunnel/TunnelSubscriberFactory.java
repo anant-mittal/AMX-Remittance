@@ -155,7 +155,7 @@ public class TunnelSubscriberFactory {
 				RQueue<TunnelMessage<M>> eventAltQueue = redisson
 						.getQueue(TunnelEventXchange.SEND_LISTNER.getQueue(topicName));
 
-				TunnelMessage<M> msg2 = pollSafely(channel, eventAltQueue);
+				TunnelMessage<M> msg2 = pollSafely(channel, eventAltQueue, null);
 
 				if (msg2 != null && !TimeUtils.isDead(msg2.getTimestamp(), TIME_TO_EXPIRE_MILLIS)) {
 					tryMessage(channel, msg2);
@@ -203,11 +203,11 @@ public class TunnelSubscriberFactory {
 				}
 				RQueue<TunnelMessage<M>> topicMessageQueue = redisson
 						.getQueue(TunnelEventXchange.TASK_WORKER.getQueue(topic));
-				onMessage(channel, topicMessageQueue);
+				onMessage(channel, topicMessageQueue, msgId);
 			}
 
-			private void onMessage(String channel, RQueue<TunnelMessage<M>> topicMessageQueue) {
-				TunnelMessage<M> msg = pollSafely(channel, topicMessageQueue);
+			private void onMessage(String channel, RQueue<TunnelMessage<M>> topicMessageQueue, String msgId) {
+				TunnelMessage<M> msg = pollSafely(channel, topicMessageQueue, msgId);
 				if (msg == null) {
 					return;
 				}
@@ -227,7 +227,7 @@ public class TunnelSubscriberFactory {
 						LOGGER.error("EXCEPTION in EVENT " + channel + " : " + msg.getId(), e);
 					}
 				}
-				onMessage(channel, topicMessageQueue);
+				onMessage(channel, topicMessageQueue, msgId);
 			}
 
 		});
@@ -244,11 +244,11 @@ public class TunnelSubscriberFactory {
 				}
 				RQueue<TunnelMessage<M>> topicMessageQueue = redisson
 						.getQueue(TunnelEventXchange.AUDIT.getQueue(topic));
-				onMessage(channel, topicMessageQueue);
+				onMessage(channel, topicMessageQueue, msgId);
 			}
 
-			private void onMessage(String channel, RQueue<TunnelMessage<M>> topicMessageQueue) {
-				TunnelMessage<M> msg = pollSafely(channel, topicMessageQueue);
+			private void onMessage(String channel, RQueue<TunnelMessage<M>> topicMessageQueue, String msgId) {
+				TunnelMessage<M> msg = pollSafely(channel, topicMessageQueue, msgId);
 
 				if (msg != null) {
 					AppContext context = msg.getContext();
@@ -263,19 +263,19 @@ public class TunnelSubscriberFactory {
 					} catch (Exception e) {
 						LOGGER.error("EXCEPTION in EVENT " + channel + " : " + msg.getId(), e);
 					}
-					onMessage(channel, topicMessageQueue);
+					onMessage(channel, topicMessageQueue, msgId);
 				}
 			}
 
 		});
 	}
 
-	private <M> TunnelMessage<M> pollSafely(String channel, RQueue<TunnelMessage<M>> topicMessageQueue) {
+	private <M> TunnelMessage<M> pollSafely(String channel, RQueue<TunnelMessage<M>> topicMessageQueue, String msgId) {
 		TunnelMessage<M> msg = null;
 		try {
 			msg = topicMessageQueue.poll();
 		} catch (Exception e) {
-			LOGGER.error("EXCEPTION in EVENT_POLL " + channel, e);
+			LOGGER.error("EXCEPTION in EVENT_POLL " + channel + " msg id : " + msgId, e);
 		}
 		return msg;
 	}
