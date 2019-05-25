@@ -846,12 +846,12 @@ public class UserValidationService {
 			boolean ismOtp = (i == ContactType.SMS || i == ContactType.MOBILE || i == ContactType.SMS_EMAIL);
 			if (ismOtp && StringUtils.isEmpty(customer.getMobile())) {
 				throw new GlobalException(JaxError.CUSTOMER_MOBILE_EMPTY,
-						"You mobile number is not registered at branch. To proceed further, please register the mobile number at branch.");
+						"Your mobile number is not registered at branch. To proceed further, please register the mobile number at branch.");
 			}
 			boolean iseOtp = (i == ContactType.EMAIL || i == ContactType.SMS_EMAIL);
 			if (iseOtp && StringUtils.isEmpty(customer.getEmail())) {
 				throw new GlobalException(JaxError.CUSTOMER_EMAIL_EMPTY,
-						"You email ID is not registered at branch. To proceed further, please register the email address at branch.");
+						"Your email ID is not registered at branch. To proceed further, please register the email address at branch.");
 			}
 		});
 	}
