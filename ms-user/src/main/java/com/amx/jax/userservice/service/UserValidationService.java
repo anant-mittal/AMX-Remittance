@@ -31,6 +31,7 @@ import com.amx.jax.amxlib.config.OtpSettings;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.CustomerVerificationType;
 import com.amx.jax.constant.JaxApiFlow;
+import com.amx.jax.constants.JaxChannel;
 import com.amx.jax.dal.ImageCheckDao;
 import com.amx.jax.dao.BlackListDao;
 import com.amx.jax.dbmodel.BlackListModel;
@@ -838,21 +839,25 @@ public class UserValidationService {
 		return customers.get(0);
 	}
 
-	public void validateCustomerContactForSendOtp(List<ContactType> channels, Customer customer) {
-		if(channels == null) {
-			channels = Arrays.asList(ContactType.MOBILE);
+	public void validateCustomerContactForSendOtp(List<ContactType> contactTypes, Customer customer) {
+		if (contactTypes == null) {
+			contactTypes = Arrays.asList(ContactType.MOBILE);
 		}
-		channels.stream().forEach(i -> {
+		String mobileErrorMessage = "Your mobile number is not registered at branch. To proceed further, please register the mobile number at branch.";
+		String emailErrorMessage = "Your email ID is not registered at branch. To proceed further, please register the email address at branch.";
+		if (JaxChannel.BRANCH == meta.getChannel()) {
+			mobileErrorMessage = "Customer's mobile number is not registered. To proceed further, please register the mobile number.";
+			emailErrorMessage = "Customer's email is not registered. To proceed further, please register the email.";
+		}
+		for (ContactType i : contactTypes) {
 			boolean ismOtp = (i == ContactType.SMS || i == ContactType.MOBILE || i == ContactType.SMS_EMAIL);
 			if (ismOtp && StringUtils.isEmpty(customer.getMobile())) {
-				throw new GlobalException(JaxError.CUSTOMER_MOBILE_EMPTY,
-						"Your mobile number is not registered at branch. To proceed further, please register the mobile number at branch.");
+				throw new GlobalException(JaxError.CUSTOMER_MOBILE_EMPTY, mobileErrorMessage);
 			}
 			boolean iseOtp = (i == ContactType.EMAIL || i == ContactType.SMS_EMAIL);
 			if (iseOtp && StringUtils.isEmpty(customer.getEmail())) {
-				throw new GlobalException(JaxError.CUSTOMER_EMAIL_EMPTY,
-						"Your email ID is not registered at branch. To proceed further, please register the email address at branch.");
+				throw new GlobalException(JaxError.CUSTOMER_EMAIL_EMPTY, emailErrorMessage);
 			}
-		});
+		}
 	}
 }

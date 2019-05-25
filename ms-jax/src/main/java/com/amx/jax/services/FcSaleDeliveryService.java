@@ -272,7 +272,7 @@ public class FcSaleDeliveryService {
 		FxDeliveryDetailNotificationDto notificationModel = new FxDeliveryDetailNotificationDto(mOtp, mOtpPrefix,
 				ddDto);
 		logger.debug("sending otp for fcsale delivery");
-		userService.validateCustomerContactForSendOtp(Arrays.asList(ContactType.MOBILE), metaData.getCustomerId());
+		userService.validateCustomerContactForSendOtp(Arrays.asList(ContactType.MOBILE), vwFxDeliveryDetailsModel.getCustomerId());
 		jaxNotificationService.sendOtpSms(pinfo.getMobile(), notificationModel);
 		// send email otp
 		Email email = new Email();
