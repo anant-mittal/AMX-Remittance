@@ -1,8 +1,11 @@
 package com.amx.jax.pricer.manager;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -10,18 +13,22 @@ import org.springframework.stereotype.Component;
 import com.amx.jax.pricer.dao.BankMasterDao;
 import com.amx.jax.pricer.dao.ChannelDiscountDao;
 import com.amx.jax.pricer.dao.CustCatDiscountDao;
+import com.amx.jax.pricer.dao.DiscountMasterDao;
 import com.amx.jax.pricer.dao.PipsMasterDao;
 import com.amx.jax.pricer.dao.RoutingDao;
 import com.amx.jax.pricer.dao.ServiceMasterDescDao;
 import com.amx.jax.pricer.dbmodel.BankMasterModel;
 import com.amx.jax.pricer.dbmodel.ChannelDiscount;
 import com.amx.jax.pricer.dbmodel.CustomerCategoryDiscount;
+import com.amx.jax.pricer.dbmodel.DiscountMaster;
+import com.amx.jax.pricer.dbmodel.GroupingMaster;
 import com.amx.jax.pricer.dbmodel.PipsMaster;
 import com.amx.jax.pricer.dbmodel.RoutingHeader;
 import com.amx.jax.pricer.dbmodel.ServiceMasterDesc;
 import com.amx.jax.pricer.dto.AmountSlabDetails;
 import com.amx.jax.pricer.dto.ChannelDetails;
 import com.amx.jax.pricer.dto.CustomerCategoryDetails;
+import com.amx.jax.pricer.dto.GroupDetails;
 import com.amx.jax.pricer.dto.RoutBanksAndServiceRespDTO;
 import com.amx.jax.pricer.exception.PricerServiceError;
 import com.amx.jax.pricer.exception.PricerServiceException;
@@ -46,14 +53,17 @@ public class DiscountManager {
 
 	@Autowired
 	ServiceMasterDescDao serviceMasterDescDao;
+	
+	@Autowired
+	DiscountMasterDao discountMasterDao;
 
 	// ------ To get Discount details Start here ------
-	public List<ChannelDetails> convertChannelData(List<ChannelDiscount> channelDiscount) {
+	public List<ChannelDetails> convertChannelData(List<ChannelDiscount> channelDiscount, BigDecimal groupId) {
 		List<ChannelDetails> list = new ArrayList<>();
-
+		
 		for (ChannelDiscount discList : channelDiscount) {
 			ChannelDetails channelDetail = new ChannelDetails();
-			channelDetail.setId(discList.getId());
+			channelDetail.setChannelId(discList.getId());
 			channelDetail.setChannel(discList.getChannel());
 			channelDetail.setIsActive(discList.getIsActive());
 
@@ -68,7 +78,7 @@ public class DiscountManager {
 
 		for (CustomerCategoryDiscount custDiscList : custCatDiscount) {
 			CustomerCategoryDetails custCategoryDetail = new CustomerCategoryDetails();
-			custCategoryDetail.setId(custDiscList.getId());
+			custCategoryDetail.setCustCatId(custDiscList.getId());
 			custCategoryDetail.setCustomerCategory(custDiscList.getCustomerCategory());
 			custCategoryDetail.setIsActive(custDiscList.getIsActive());
 
@@ -140,7 +150,7 @@ public class DiscountManager {
 		List<ChannelDetails> channelData = convertchannelRequest(channelDetails);
 		List<ChannelDiscount> list = new ArrayList<>();
 		for (ChannelDetails channelUpdate : channelData) {
-			ChannelDiscount channelById = channelDiscountDao.getDiscountById(channelUpdate.getId());
+			ChannelDiscount channelById = channelDiscountDao.getDiscountById(channelUpdate.getChannelId());
 
 			/*if (null != channelUpdate.getDiscountPips()) {
 				if (channelUpdate.getDiscountPips().doubleValue() >= channelById.getMinDiscountPips().doubleValue()
@@ -170,7 +180,7 @@ public class DiscountManager {
 			ChannelDetails channelData = new ChannelDetails();
 			channelData.setDiscountPips(dto.getDiscountPips());
 			channelData.setIsActive(dto.getIsActive());
-			channelData.setId(dto.getId());
+			channelData.setChannelId(dto.getChannelId());
 
 			list.add(channelData);
 		}
@@ -181,7 +191,7 @@ public class DiscountManager {
 		List<CustomerCategoryDetails> customerDiscountData = convertCustomerDiscountRequest(customerCategoryDetails);
 		List<CustomerCategoryDiscount> list = new ArrayList<>();
 		for (CustomerCategoryDetails custCatUpdate : customerDiscountData) {
-			CustomerCategoryDiscount custCatById = custCatDiscountDao.getCustCatDiscountById(custCatUpdate.getId());
+			CustomerCategoryDiscount custCatById = custCatDiscountDao.getCustCatDiscountById(custCatUpdate.getCustCatId());
 			/*if (null != custCatUpdate.getDiscountPips()) {
 				if (custCatUpdate.getDiscountPips().doubleValue() >= custCatById.getMinDiscountPips().doubleValue()
 						&& custCatUpdate.getDiscountPips().doubleValue() <= custCatById.getMaxDiscountPips()
@@ -208,7 +218,7 @@ public class DiscountManager {
 			CustomerCategoryDetails customerCategoryData = new CustomerCategoryDetails();
 			customerCategoryData.setDiscountPips(dto.getDiscountPips());
 			customerCategoryData.setIsActive(dto.getIsActive());
-			customerCategoryData.setId(dto.getId());
+			customerCategoryData.setCustCatId(dto.getCustCatId());
 
 			list.add(customerCategoryData);
 		}
@@ -243,6 +253,86 @@ public class DiscountManager {
 			pipsData.setPipsMasterId(dto.getPipsMasterId());
 
 			list.add(pipsData);
+		}
+		return list;
+	}
+
+	// ------ Currency Grouping changes ------
+	public List<ChannelDetails> convertChannelGroupingData(List<DiscountMaster> chDiscMaster, BigDecimal groupId) {
+		List<ChannelDetails> list = new ArrayList<>();
+		
+		for (DiscountMaster discChannelList : chDiscMaster) {
+			
+			ChannelDiscount channelData = channelDiscountDao.getDiscountById(discChannelList.getDiscountTypeId());
+						
+			ChannelDetails channelDetail = new ChannelDetails();
+			channelDetail.setChannelId(channelData.getId());
+			channelDetail.setChannel(channelData.getChannel());
+			channelDetail.setDisountId(discChannelList.getId());
+			channelDetail.setGroupId(discChannelList.getGroupId());
+			channelDetail.setDiscountTypeId(discChannelList.getDiscountTypeId());
+			channelDetail.setDiscountPips(discChannelList.getDiscountPips());
+			channelDetail.setMinDiscountPips(discChannelList.getMinDiscountPips());
+			channelDetail.setMaxDiscountPips(discChannelList.getMaxDiscountPips());
+			channelDetail.setIsActive(discChannelList.getIsActive());
+
+			list.add(channelDetail);
+		}
+
+		return list;
+	}
+	
+	public List<CustomerCategoryDetails> convertCustCatGroupingData(List<DiscountMaster> custCatDiscMaster, BigDecimal groupId) {
+		List <CustomerCategoryDetails> list = new ArrayList<>();
+		
+		for(DiscountMaster discCustCatList : custCatDiscMaster) {
+			CustomerCategoryDiscount custCatData = custCatDiscountDao.getCustCatDiscountById(discCustCatList.getDiscountTypeId());
+			
+			CustomerCategoryDetails customerCategoryDetails = new CustomerCategoryDetails();
+			customerCategoryDetails.setCustCatId(custCatData.getId());
+			customerCategoryDetails.setCustomerCategory(custCatData.getCustomerCategory());
+			customerCategoryDetails.setDisountId(discCustCatList.getId());
+			customerCategoryDetails.setGroupId(discCustCatList.getGroupId());
+			customerCategoryDetails.setDiscountTypeId(discCustCatList.getDiscountTypeId());
+			customerCategoryDetails.setDiscountPips(discCustCatList.getDiscountPips());
+			customerCategoryDetails.setMinDiscountPips(discCustCatList.getMinDiscountPips());
+			customerCategoryDetails.setMaxDiscountPips(discCustCatList.getMaxDiscountPips());
+			customerCategoryDetails.setIsActive(discCustCatList.getIsActive());
+			
+			list.add(customerCategoryDetails);
+		}
+		
+		return list;
+	}
+
+	public Map<BigDecimal, List<ChannelDetails>> convertGrpChannel(BigDecimal groupId,
+			List<ChannelDetails> channelData) {
+		
+		Map<BigDecimal, List<ChannelDetails>> grpChannelData = new HashMap<BigDecimal, List<ChannelDetails>>();
+		grpChannelData.put(groupId, channelData);
+		
+		return grpChannelData;
+	}
+	
+	public Map<BigDecimal, List<CustomerCategoryDetails>> convertGrpCustCat(BigDecimal groupId,
+			List<CustomerCategoryDetails> custCatData) {
+		
+		Map<BigDecimal, List<CustomerCategoryDetails>> grpCustCatData = new HashMap<BigDecimal, List<CustomerCategoryDetails>>();
+		grpCustCatData.put(groupId, custCatData);
+		
+		return grpCustCatData;
+	}
+
+	public List<GroupDetails> convertGroupInfo(List<GroupingMaster> groupingMaster) {
+		List<GroupDetails> list = new ArrayList<>();
+		
+		for (GroupingMaster groupList : groupingMaster) {
+			GroupDetails groupDetails = new GroupDetails();
+			groupDetails.setGroupId(groupList.getId());
+			groupDetails.setGroupName(groupList.getGroupName());
+			groupDetails.setGroupType(groupList.getGroupType());
+			
+			list.add(groupDetails);
 		}
 		return list;
 	}

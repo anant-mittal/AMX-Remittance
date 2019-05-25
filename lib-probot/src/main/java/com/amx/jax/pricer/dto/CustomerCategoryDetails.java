@@ -9,27 +9,32 @@ public class CustomerCategoryDetails implements Serializable,Comparable<Customer
 
 	private static final long serialVersionUID = 1L;
 
-	private BigDecimal id;
-
 	private CUSTOMER_CATEGORY customerCategory;
+	
+	private BigDecimal custCatId;
+	
+	private BigDecimal disountId;
 
-	private BigDecimal discountPips;
+	private BigDecimal groupId;
+
+	private BigDecimal discountTypeId;
 
 	private String isActive;
+	
+	private BigDecimal discountPips;
 
 	private BigDecimal minDiscountPips;
 
 	private BigDecimal maxDiscountPips;
-
-	public BigDecimal getId() {
-		return id;
-	}
-
-	public void setId(BigDecimal id) {
-		this.id = id;
-	}
-
 	
+	public BigDecimal getCustCatId() {
+		return custCatId;
+	}
+
+	public void setCustCatId(BigDecimal custCatId) {
+		this.custCatId = custCatId;
+	}
+
 	public CUSTOMER_CATEGORY getCustomerCategory() {
 		return customerCategory;
 	}
@@ -86,6 +91,30 @@ public class CustomerCategoryDetails implements Serializable,Comparable<Customer
 	public int compareTo(CustomerCategoryDetails o) {
 			
 		return this.customerCategory.compareTo(o.customerCategory);
+	}
+
+	public BigDecimal getDisountId() {
+		return disountId;
+	}
+
+	public void setDisountId(BigDecimal disountId) {
+		this.disountId = disountId;
+	}
+
+	public BigDecimal getGroupId() {
+		return groupId;
+	}
+
+	public void setGroupId(BigDecimal groupId) {
+		this.groupId = groupId;
+	}
+
+	public BigDecimal getDiscountTypeId() {
+		return discountTypeId;
+	}
+
+	public void setDiscountTypeId(BigDecimal discountTypeId) {
+		this.discountTypeId = discountTypeId;
 	}
 	
 }
