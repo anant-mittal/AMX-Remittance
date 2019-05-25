@@ -1116,7 +1116,7 @@ public class RemittanceTransaction implements Serializable {
 		this.vatType = vatType;
 	}
 
-	@Column(name="VAT_PERCENGATE")
+	@Column(name="VAT_PERCENTAGE")
 	public BigDecimal getVatPercentage() {
 		return vatPercentage;
 	}
