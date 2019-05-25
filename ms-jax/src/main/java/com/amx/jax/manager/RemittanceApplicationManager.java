@@ -44,6 +44,7 @@ import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel
 import com.amx.jax.pricer.dto.ExchangeDiscountInfo;
 import com.amx.jax.pricer.var.PricerServiceConstants.DISCOUNT_TYPE;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
+import com.amx.jax.repository.ICurrencyDao;
 import com.amx.jax.repository.IDocumentDao;
 import com.amx.jax.service.BankMetaService;
 import com.amx.jax.service.CompanyService;
@@ -94,6 +95,9 @@ public class RemittanceApplicationManager {
 
 	@Autowired
 	private BankMetaService bankMetaService;
+	
+	@Autowired
+	ICurrencyDao currencyDao;
 	
 	/**
 	 * @param remitApplParametersMap2
@@ -228,9 +232,11 @@ public class RemittanceApplicationManager {
 	
 	public void setVatDetails(RemittanceApplication remittanceApplication,
 						RemittanceTransactionResponsetModel remittanceTransactionResponsetModel) {
+		
 					remittanceApplication.setVatType(remittanceTransactionResponsetModel.getVatType());
 					remittanceApplication.setVatPercentage(remittanceTransactionResponsetModel.getVatPercentage());
 					remittanceApplication.setVatAmount(remittanceTransactionResponsetModel.getVatAmount());
+					
 			}
 
 	public void setCustomerDiscountColumns(RemittanceApplication remittanceApplication,

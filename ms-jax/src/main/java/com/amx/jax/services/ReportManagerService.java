@@ -464,7 +464,7 @@ public class ReportManagerService extends AbstractService{
 
 					}
 					// 
-					obj.setVatAmount(view.getVatAmount()==null?BigDecimal.ZERO:view.getVatAmount());
+					obj.setVatAmount(currencyQuoteName+ "     " +view.getVatAmount()==null?BigDecimal.ZERO:view.getVatAmount());
 					obj.setVatPercentage(view.getVatPercentage()==null?BigDecimal.ZERO:view.getVatPercentage());
 					obj.setVatType(view.getVatType()==null?"":view.getVatType());
 					obj.setCustomerVatNumber(view.getCustomerVatNumber()==null?"":view.getCustomerVatNumber());
