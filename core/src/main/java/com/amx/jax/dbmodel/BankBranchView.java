@@ -45,6 +45,8 @@ public class BankBranchView implements Serializable {
 	private String ifscCode;
 	@Column(name="COUNTRY_ID")
 	private BigDecimal countryId;
+	@Column(name = "BRANCH_FULL_NAME_AR")
+	private String branchFullNameArabic;
 	
 	
 	public BigDecimal getCountryId() {
@@ -275,6 +277,12 @@ public class BankBranchView implements Serializable {
 		} else if (!zipcode.equals(other.zipcode))
 			return false;
 		return true;
+	}
+	public String getBranchFullNameArabic() {
+		return branchFullNameArabic;
+	}
+	public void setBranchFullNameArabic(String branchFullNameArabic) {
+		this.branchFullNameArabic = branchFullNameArabic;
 	}
 	
 	

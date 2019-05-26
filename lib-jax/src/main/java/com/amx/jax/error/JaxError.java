@@ -294,9 +294,10 @@ public enum JaxError implements IExceptionEnum {
 	MOTP_REQUIRED,
 	DOTP_REQUIRED,
 	EOTP_REQUIRED,
-	
-	
-	MUTIPLE_RECORD_FOUND;
+	MUTIPLE_RECORD_FOUND,
+	INVALID_ROUTING_BANK,
+	BENE_ENGLISH_NAME_REQUIRED,
+	BENE_ARABIC_NAME_REQUIRED;
 	@Deprecated
 	public String getCode() {
 		return this.toString();

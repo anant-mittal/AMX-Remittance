@@ -67,6 +67,7 @@ public class AmxDBConstants {
 
 	public static final BigDecimal SERVICE_MASTER_ID_TT = new BigDecimal(102);
 	public static final BigDecimal SERVICE_MASTER_ID_DD = new BigDecimal(104);
+	public static final BigDecimal SERVICE_MASTER_ID_CASH = new BigDecimal(103);
 
 	public static final String VOUCHER_ONLINE_PROMOTION_STR = "CHICKEN KING SAGAR VOUCHER";
 	public static final BigDecimal IDENTITY_FOR_ID_PROOF = new BigDecimal(48);
@@ -153,7 +154,13 @@ public class AmxDBConstants {
 	public static final String  VAT_ACCOUNT_TYPE_COMM = "COMMISSION";
 	public static final String  VAT_CALCULATION_TYPE_INCLUDE= "I";
 	public static final String  VAT_CATEGORY= "OUTPUT_TAX";
+	/** E-Eng,A-Arabic **/
+	public static final String L_ENG = "E";
+	public static final String L_ARAB = "A";
+	public static final String BNFBANK = "BNFBANK";
+	public static final String BNFBRCH = "BNFBRCH";
+	public static final String BNFBANK_SWIFT = "BNFBANK_SWIFT";
 	
-	
+
 
 }
