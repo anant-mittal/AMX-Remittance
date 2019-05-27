@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 
 import com.amx.jax.cache.ExchRateAndRoutingTransientDataCache;
 import com.amx.jax.pricer.dao.ChannelDiscountDao;
+import com.amx.jax.pricer.dao.CountryBranchDao;
 import com.amx.jax.pricer.dao.CurrencyMasterDao;
 import com.amx.jax.pricer.dao.CustCatDiscountDao;
 import com.amx.jax.pricer.dao.CustomerExtendedDao;
@@ -24,6 +25,7 @@ import com.amx.jax.pricer.dao.DiscountMasterDao;
 import com.amx.jax.pricer.dao.GroupingMasterDao;
 import com.amx.jax.pricer.dao.PipsMasterDao;
 import com.amx.jax.pricer.dbmodel.ChannelDiscount;
+import com.amx.jax.pricer.dbmodel.CountryBranch;
 import com.amx.jax.pricer.dbmodel.CurrencyMasterModel;
 import com.amx.jax.pricer.dbmodel.Customer;
 import com.amx.jax.pricer.dbmodel.CustomerCategoryDiscount;
@@ -56,6 +58,9 @@ public class CustomerDiscountManager {
 	CustomerExtendedDao customerExtendedDao;
 
 	@Autowired
+	CountryBranchDao countryBranchDao;
+
+	@Autowired
 	CurrencyMasterDao currencyMasterDao;
 
 	@Autowired
@@ -67,7 +72,8 @@ public class CustomerDiscountManager {
 	@Resource
 	ExchRateAndRoutingTransientDataCache exchRateAndRoutingTransientDataCache;
 
-	private static BigDecimal PIPS_BANK_ID = new BigDecimal(78);
+	// private static BigDecimal PIPS_BANK_ID = new BigDecimal(78);
+	private static BigDecimal OnlineCountryBranchId;
 
 	private static BigDecimal BIGD_ZERO = new BigDecimal(0);
 
@@ -169,8 +175,13 @@ public class CustomerDiscountManager {
 		List<BigDecimal> validBankIds = new ArrayList<BigDecimal>(
 				exchRateAndRoutingTransientDataCache.getBankDetails().keySet());
 
+		if (OnlineCountryBranchId == null) {
+			CountryBranch cb = countryBranchDao.getOnlineCountryBranch();
+			OnlineCountryBranchId = cb.getCountryBranchId();
+		}
+
 		List<PipsMaster> pipsList = pipsMasterDao.getPipsForFcCurAndBank(pricingRequestDTO.getForeignCurrencyId(),
-				PIPS_BANK_ID, pricingRequestDTO.getForeignCountryId(), validBankIds);
+				OnlineCountryBranchId, pricingRequestDTO.getForeignCountryId(), validBankIds);
 
 		Map<Long, TreeMap<BigDecimal, PipsMaster>> bankAmountSlabDiscounts = new HashMap<Long, TreeMap<BigDecimal, PipsMaster>>();
 
