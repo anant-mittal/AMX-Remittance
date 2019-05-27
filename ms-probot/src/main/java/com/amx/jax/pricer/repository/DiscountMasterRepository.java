@@ -22,4 +22,7 @@ public interface DiscountMasterRepository extends CrudRepository<DiscountMaster,
 	@Query("select d from DiscountMaster d where discountType=?1 and  groupId =?2")
 	public List<DiscountMaster> getByDiscountTypeAndGroupId(String discountType, BigDecimal groupId);
 
+	@Query("select d from DiscountMaster d where id=?1 and groupId=?2 and discountType=?3")
+	public DiscountMaster getByDiscountIdAndGroupId(BigDecimal id, BigDecimal groupId, String discountType);
+
 }

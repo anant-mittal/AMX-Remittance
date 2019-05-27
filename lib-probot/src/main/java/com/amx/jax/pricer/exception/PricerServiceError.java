@@ -34,6 +34,8 @@ public enum PricerServiceError implements IExceptionEnum {
 	INVALID_CUST_CAT_DISC_PIPS,
 	
 	INVALID_AMT_SLAB_DISC_PIPS,
+	
+	MISSING_DISCOUNT_OR_GROUP_ID,
 	/** The unknown exception. */
 	// MISC
 	UNKNOWN_EXCEPTION;

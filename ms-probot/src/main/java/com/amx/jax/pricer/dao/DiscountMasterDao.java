@@ -30,4 +30,17 @@ public class DiscountMasterDao {
 		return repository.getByDiscountTypeAndGroupId(discType, groupId);
 	}
 
+	public DiscountMaster getByDiscountIdAndGroupId(BigDecimal disountId, BigDecimal groupId, String discountType) {
+		// TODO Auto-generated method stub
+		return repository.getByDiscountIdAndGroupId(disountId, groupId, discountType);
+	}
+
+	public void saveDiscountForChannel(List<DiscountMaster> channelGroupingDiscounts) {
+		repository.save(channelGroupingDiscounts);
+	}
+
+	public void saveDiscountForCustomerCategory(List<DiscountMaster> custCatGroupingDiscounts) {
+		repository.save(custCatGroupingDiscounts);
+	}
+
 }

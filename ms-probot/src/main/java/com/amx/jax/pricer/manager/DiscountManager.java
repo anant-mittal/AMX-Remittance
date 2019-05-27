@@ -32,6 +32,7 @@ import com.amx.jax.pricer.dto.GroupDetails;
 import com.amx.jax.pricer.dto.RoutBanksAndServiceRespDTO;
 import com.amx.jax.pricer.exception.PricerServiceError;
 import com.amx.jax.pricer.exception.PricerServiceException;
+import com.amx.jax.pricer.var.PricerServiceConstants.DISCOUNT_TYPE;
 
 @Component
 public class DiscountManager {
@@ -148,29 +149,36 @@ public class DiscountManager {
 	public void commitChannelDiscountModel(List<ChannelDetails> channelDetails) {
 
 		List<ChannelDetails> channelData = convertchannelRequest(channelDetails);
-		List<ChannelDiscount> list = new ArrayList<>();
+		List<DiscountMaster> list = new ArrayList<>();
 		for (ChannelDetails channelUpdate : channelData) {
-			ChannelDiscount channelById = channelDiscountDao.getDiscountById(channelUpdate.getChannelId());
+			if(null != channelUpdate.getDisountId() && null != channelUpdate.getGroupId()) {
+				DiscountMaster discChannelByIdAndGroupId = 
+						discountMasterDao.getByDiscountIdAndGroupId(channelUpdate.getDisountId(), channelUpdate.getGroupId(), DISCOUNT_TYPE.CHANNEL.getTypeKey());
 
-			/*if (null != channelUpdate.getDiscountPips()) {
-				if (channelUpdate.getDiscountPips().doubleValue() >= channelById.getMinDiscountPips().doubleValue()
-						&& channelUpdate.getDiscountPips().doubleValue() <= channelById.getMaxDiscountPips()
-								.doubleValue()) {
-					channelById.setDiscountPips(channelUpdate.getDiscountPips());
-				} else {
-					throw new PricerServiceException(PricerServiceError.INVALID_CHANNEL_DISC_PIPS,
-							"Channel Discount Pips must be In between Min-Max Discount Pips");
+				if(null != discChannelByIdAndGroupId) {
+					if (null != channelUpdate.getDiscountPips()) {
+						if (channelUpdate.getDiscountPips().doubleValue() >= discChannelByIdAndGroupId.getMinDiscountPips().doubleValue()
+								&& channelUpdate.getDiscountPips().doubleValue() <= discChannelByIdAndGroupId.getMaxDiscountPips()
+										.doubleValue()) {
+							discChannelByIdAndGroupId.setDiscountPips(channelUpdate.getDiscountPips());
+						} else {
+							throw new PricerServiceException(PricerServiceError.INVALID_CHANNEL_DISC_PIPS,
+									"Channel Discount Pips must be In between Min-Max Discount Pips");
+						}
+					}
+
+					if (null != channelUpdate.getIsActive()) {
+						discChannelByIdAndGroupId.setIsActive(channelUpdate.getIsActive());
+					}
+
+					list.add(discChannelByIdAndGroupId);
 				}
-			}*/
-
-			if (null != channelUpdate.getIsActive()) {
-				channelById.setIsActive(channelUpdate.getIsActive());
+			}else {
+				throw new PricerServiceException(PricerServiceError.MISSING_DISCOUNT_OR_GROUP_ID,
+						"Either DiscountId or GroupId is missing for Channel");
 			}
-
-			list.add(channelById);
 		}
-		channelDiscountDao.saveDiscountForChannel(list);
-
+		discountMasterDao.saveDiscountForChannel(list);
 	}
 
 	private List<ChannelDetails> convertchannelRequest(List<ChannelDetails> channelDetails) {
@@ -178,6 +186,8 @@ public class DiscountManager {
 
 		for (ChannelDetails dto : channelDetails) {
 			ChannelDetails channelData = new ChannelDetails();
+			channelData.setGroupId(dto.getGroupId());
+			channelData.setDisountId(dto.getDisountId());
 			channelData.setDiscountPips(dto.getDiscountPips());
 			channelData.setIsActive(dto.getIsActive());
 			channelData.setChannelId(dto.getChannelId());
@@ -189,33 +199,43 @@ public class DiscountManager {
 
 	public void commitCustomerDiscountModel(List<CustomerCategoryDetails> customerCategoryDetails) {
 		List<CustomerCategoryDetails> customerDiscountData = convertCustomerDiscountRequest(customerCategoryDetails);
-		List<CustomerCategoryDiscount> list = new ArrayList<>();
+		List<DiscountMaster> list = new ArrayList<>();
 		for (CustomerCategoryDetails custCatUpdate : customerDiscountData) {
-			CustomerCategoryDiscount custCatById = custCatDiscountDao.getCustCatDiscountById(custCatUpdate.getCustCatId());
-			/*if (null != custCatUpdate.getDiscountPips()) {
-				if (custCatUpdate.getDiscountPips().doubleValue() >= custCatById.getMinDiscountPips().doubleValue()
-						&& custCatUpdate.getDiscountPips().doubleValue() <= custCatById.getMaxDiscountPips()
-								.doubleValue()) {
-					custCatById.setDiscountPips(custCatUpdate.getDiscountPips());
-				} else {
-					throw new PricerServiceException(PricerServiceError.INVALID_CUST_CAT_DISC_PIPS,
-							"Customer Category Discount Pips must be In between Min-Max Discount Pips");
-				}
-			}*/
-			if (null != custCatUpdate.getIsActive()) {
-				custCatById.setIsActive(custCatUpdate.getIsActive());
-			}
+			if(null != custCatUpdate.getDisountId() && null != custCatUpdate.getGroupId()) {
+				DiscountMaster discCustCatByIdAndGroupId = 
+						discountMasterDao.getByDiscountIdAndGroupId(custCatUpdate.getDisountId(), custCatUpdate.getGroupId(), DISCOUNT_TYPE.CUSTOMER_CATEGORY.getTypeKey()); 
+				if(null != discCustCatByIdAndGroupId) {
+					if (null != custCatUpdate.getDiscountPips()) {
+						if (custCatUpdate.getDiscountPips().doubleValue() >= discCustCatByIdAndGroupId.getMinDiscountPips().doubleValue()
+								&& custCatUpdate.getDiscountPips().doubleValue() <= discCustCatByIdAndGroupId.getMaxDiscountPips()
+										.doubleValue()) {
+							discCustCatByIdAndGroupId.setDiscountPips(custCatUpdate.getDiscountPips());
+						} else {
+							throw new PricerServiceException(PricerServiceError.INVALID_CUST_CAT_DISC_PIPS,
+									"Customer Category Discount Pips must be In between Min-Max Discount Pips");
+						}
+					}
+					if (null != custCatUpdate.getIsActive()) {
+						discCustCatByIdAndGroupId.setIsActive(custCatUpdate.getIsActive());
+					}
 
-			list.add(custCatById);
+					list.add(discCustCatByIdAndGroupId);
+				}
+			
+			}else {
+				throw new PricerServiceException(PricerServiceError.MISSING_DISCOUNT_OR_GROUP_ID,
+						"Either DiscountId or GroupId is missing for Customer Category");
+			}
 		}
-		custCatDiscountDao.saveDiscountForCustomer(list);
+		discountMasterDao.saveDiscountForCustomerCategory(list);
 	}
 
-	private List<CustomerCategoryDetails> convertCustomerDiscountRequest(
-			List<CustomerCategoryDetails> customerCategoryDetails) {
+	private List<CustomerCategoryDetails> convertCustomerDiscountRequest(List<CustomerCategoryDetails> customerCategoryDetails) {
 		List<CustomerCategoryDetails> list = new ArrayList<>();
 		for (CustomerCategoryDetails dto : customerCategoryDetails) {
 			CustomerCategoryDetails customerCategoryData = new CustomerCategoryDetails();
+			customerCategoryData.setGroupId(dto.getGroupId());
+			customerCategoryData.setDisountId(dto.getDisountId());
 			customerCategoryData.setDiscountPips(dto.getDiscountPips());
 			customerCategoryData.setIsActive(dto.getIsActive());
 			customerCategoryData.setCustCatId(dto.getCustCatId());

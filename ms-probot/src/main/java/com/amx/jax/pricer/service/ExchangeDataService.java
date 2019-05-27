@@ -91,7 +91,6 @@ public class ExchangeDataService {
 						
 						discountMgmtRespDTO.setCurGrpChannelDetails(curGrpChannelDetails);
 					}
-					
 				}
 			}
 		}
@@ -140,8 +139,6 @@ public class ExchangeDataService {
 	}
 
 	public AmxApiResponse<DiscountDetailsReqRespDTO, Object> saveDiscountDetails(DiscountDetailsReqRespDTO discountdetailsRequestDTO) {
-		//DiscountDetailsReqRespDTO discountDetailsResponseDTO = new DiscountDetailsReqRespDTO();
-		
 		if(null != discountdetailsRequestDTO.getChannelDetails()) {
 			discountManager.commitChannelDiscountModel(discountdetailsRequestDTO.getChannelDetails());
 		}
@@ -149,6 +146,7 @@ public class ExchangeDataService {
 		if(null != discountdetailsRequestDTO.getCustomerCategoryDetails()) {
 						discountManager.commitCustomerDiscountModel(discountdetailsRequestDTO.getCustomerCategoryDetails());
 		}
+		
 		if(null != discountdetailsRequestDTO.getAmountSlabDetails()) {
 			discountManager.commitPipsDiscount(discountdetailsRequestDTO.getAmountSlabDetails());
 		}
