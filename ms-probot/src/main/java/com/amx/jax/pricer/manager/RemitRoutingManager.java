@@ -36,6 +36,7 @@ import com.amx.jax.pricer.dto.ExchangeRateDetails;
 import com.amx.jax.pricer.exception.PricerServiceError;
 import com.amx.jax.pricer.exception.PricerServiceException;
 import com.amx.jax.pricer.var.PricerServiceConstants;
+import com.amx.jax.pricer.var.PricerServiceConstants.SERVICE_GROUP;
 import com.amx.utils.DateUtil;
 import com.amx.utils.JsonUtil;
 
@@ -79,14 +80,34 @@ public class RemitRoutingManager {
 	public List<ViewExRoutingMatrix> getRoutingMatrixForRemittance(
 			ExchangeRateAndRoutingRequest exchangeRateAndRoutingRequest) {
 
-		List<ViewExRoutingMatrix> routingMatrix = viewExRoutingMatrixDao.getRoutingMatrix(
-				exchangeRateAndRoutingRequest.getLocalCountryId(), exchangeRateAndRoutingRequest.getForeignCountryId(),
-				exchangeRateAndRoutingRequest.getBeneficiaryBankId(),
-				exchangeRateAndRoutingRequest.getBeneficiaryBranchId(),
-				exchangeRateAndRoutingRequest.getForeignCurrencyId(),
-				exchangeRateAndRoutingRequest.getServiceGroup().getGroupCode());
+		List<ViewExRoutingMatrix> routingMatrix;
 
-		// System.out.println(" Routing matrix ==> " + JsonUtil.toJson(routingMatrix));
+		if (SERVICE_GROUP.CASH.equals(exchangeRateAndRoutingRequest.getServiceGroup())) {
+
+			/**
+			 * Hard Condition : RoutingBankId = BeneBankId And RoutingBankBranchId =
+			 * BeneBankBranchId
+			 */
+			routingMatrix = viewExRoutingMatrixDao.getRoutingMatrixForCashService(
+					exchangeRateAndRoutingRequest.getLocalCountryId(),
+					exchangeRateAndRoutingRequest.getForeignCountryId(),
+					exchangeRateAndRoutingRequest.getBeneficiaryBankId(),
+					exchangeRateAndRoutingRequest.getBeneficiaryBranchId(),
+					exchangeRateAndRoutingRequest.getForeignCurrencyId(),
+					exchangeRateAndRoutingRequest.getServiceGroup().getGroupCode(),
+					exchangeRateAndRoutingRequest.getBeneficiaryBankId(), // RoutingBankId = BeneBankId
+					exchangeRateAndRoutingRequest.getBeneficiaryBranchId()); // RoutingBankBranchId = BeneBankBranchId
+
+		} else {
+			// Else Bank
+			routingMatrix = viewExRoutingMatrixDao.getRoutingMatrixForBankService(
+					exchangeRateAndRoutingRequest.getLocalCountryId(),
+					exchangeRateAndRoutingRequest.getForeignCountryId(),
+					exchangeRateAndRoutingRequest.getBeneficiaryBankId(),
+					exchangeRateAndRoutingRequest.getBeneficiaryBranchId(),
+					exchangeRateAndRoutingRequest.getForeignCurrencyId(),
+					exchangeRateAndRoutingRequest.getServiceGroup().getGroupCode());
+		}
 
 		if (null == routingMatrix || routingMatrix.isEmpty()) {
 
