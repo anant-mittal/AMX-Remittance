@@ -45,6 +45,7 @@ public class App { // Noncompliant
 		context.setTranxId("TST-1d59nub55kbgg-1d59nub5827sx");
 		
 
+		DBEven
 		
 		TunnelMessage<Map<String, String>> message = new TunnelMessage<Map<String, String>>(
 				new HashMap<String, String>(), context);
