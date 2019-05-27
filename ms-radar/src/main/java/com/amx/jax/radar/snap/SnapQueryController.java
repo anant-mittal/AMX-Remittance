@@ -13,11 +13,16 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.snap.SnapConstants.SnapQueryTemplate;
 import com.amx.jax.client.snap.SnapModels.SnapModelWrapper;
 import com.amx.jax.radar.jobs.customer.OracleVarsCache;
 import com.amx.jax.radar.jobs.customer.OracleVarsCache.DBSyncJobs;
 import com.amx.jax.rest.RestService;
+import com.amx.jax.tunnel.DBEvent;
+import com.amx.jax.tunnel.TunnelEvent;
+import com.amx.jax.tunnel.TunnelEventXchange;
+import com.amx.jax.tunnel.TunnelService;
 
 @Controller
 public class SnapQueryController {
@@ -30,6 +35,46 @@ public class SnapQueryController {
 
 	@Autowired
 	OracleVarsCache oracleVarsCache;
+
+	@Autowired
+	private TunnelService tunnelService;
+
+	/**
+	 * List of place orders.
+	 *
+	 * @return the response wrapper
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/pub/task/{scheme}/{topic}", method = { RequestMethod.POST })
+	public AmxApiResponse<TunnelEvent, ?> initTask(@RequestBody TunnelEvent event,
+			@PathVariable String topic,
+			@PathVariable TunnelEventXchange scheme) {
+		event.setEventCode(topic);
+		if (scheme == TunnelEventXchange.SEND_LISTNER) {
+			tunnelService.send(topic, event);
+		} else if (scheme == TunnelEventXchange.TASK_WORKER) {
+			tunnelService.task(topic, event);
+		} else {
+			tunnelService.shout(topic, event);
+		}
+		return AmxApiResponse.build(event);
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/pub/DBEvent/{scheme}/{topic}", method = { RequestMethod.POST })
+	public AmxApiResponse<TunnelEvent, ?> initTask(@RequestBody DBEvent event,
+			@PathVariable String topic,
+			@PathVariable(required = true) TunnelEventXchange scheme) {
+		event.setEventCode(topic);
+		if (scheme == TunnelEventXchange.SEND_LISTNER) {
+			tunnelService.send(topic, event);
+		} else if (scheme == TunnelEventXchange.TASK_WORKER) {
+			tunnelService.task(topic, event);
+		} else {
+			tunnelService.shout(topic, event);
+		}
+		return AmxApiResponse.build(event);
+	}
 
 	@ResponseBody
 	@RequestMapping(value = "/snap/query/{snapView}", method = RequestMethod.POST)
