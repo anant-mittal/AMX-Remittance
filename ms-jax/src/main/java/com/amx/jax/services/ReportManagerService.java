@@ -464,7 +464,10 @@ public class ReportManagerService extends AbstractService{
 					}
 					// 
 					
-					obj.setVatAmount(view.getVatAmount()==null?BigDecimal.ZERO:view.getVatAmount());
+					if(JaxUtil.isNullZeroBigDecimalCheck(view.getVatAmount())) {
+					BigDecimal vatAmount=RoundUtil.roundBigDecimal((view.getVatAmount()),decimalPerCurrency);
+					 obj.setVatAmount(currencyQuoteName+"     "+vatAmount.toString());
+					}
 					obj.setVatPercentage(view.getVatPercentage()==null?BigDecimal.ZERO:view.getVatPercentage());
 					obj.setVatType(view.getVatType()==null?"":view.getVatType());
 					obj.setCustomerVatNumber(view.getCustomerVatNumber()==null?"":view.getCustomerVatNumber());
