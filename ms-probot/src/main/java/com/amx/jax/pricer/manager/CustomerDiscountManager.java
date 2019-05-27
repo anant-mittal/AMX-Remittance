@@ -14,10 +14,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.pricer.dao.ChannelDiscountDao;
+import com.amx.jax.pricer.dao.CountryBranchDao;
 import com.amx.jax.pricer.dao.CustCatDiscountDao;
 import com.amx.jax.pricer.dao.CustomerExtendedDao;
 import com.amx.jax.pricer.dao.PipsMasterDao;
 import com.amx.jax.pricer.dbmodel.ChannelDiscount;
+import com.amx.jax.pricer.dbmodel.CountryBranch;
 import com.amx.jax.pricer.dbmodel.Customer;
 import com.amx.jax.pricer.dbmodel.CustomerCategoryDiscount;
 import com.amx.jax.pricer.dbmodel.CustomerExtended;
@@ -44,10 +46,14 @@ public class CustomerDiscountManager {
 	@Autowired
 	CustomerExtendedDao customerExtendedDao;
 
+	@Autowired
+	CountryBranchDao countryBranchDao;
+
 	@Resource
 	PricingRateDetailsDTO pricingRateDetailsDTO;
 
-	private static BigDecimal PIPS_BANK_ID = new BigDecimal(78);
+	// private static BigDecimal PIPS_BANK_ID = new BigDecimal(78);
+	private static BigDecimal OnlineCountryBranchId;
 
 	private static BigDecimal BIGD_ZERO = new BigDecimal(0);
 
@@ -99,8 +105,13 @@ public class CustomerDiscountManager {
 
 		List<BigDecimal> validBankIds = new ArrayList<BigDecimal>(pricingRateDetailsDTO.getBankDetails().keySet());
 
+		if (OnlineCountryBranchId == null) {
+			CountryBranch cb = countryBranchDao.getOnlineCountryBranch();
+			OnlineCountryBranchId = cb.getCountryBranchId();
+		}
+
 		List<PipsMaster> pipsList = pipsMasterDao.getPipsForFcCurAndBank(pricingRequestDTO.getForeignCurrencyId(),
-				PIPS_BANK_ID, pricingRequestDTO.getForeignCountryId(), validBankIds);
+				OnlineCountryBranchId, pricingRequestDTO.getForeignCountryId(), validBankIds);
 
 		Map<Long, TreeMap<BigDecimal, PipsMaster>> bankAmountSlabDiscounts = new HashMap<Long, TreeMap<BigDecimal, PipsMaster>>();
 
