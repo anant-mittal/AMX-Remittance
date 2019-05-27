@@ -3,6 +3,7 @@ package com.amx.jax.userservice.manager;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,12 +17,17 @@ import com.amx.jax.dal.BizcomponentDao;
 import com.amx.jax.dbmodel.BizComponentData;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerIdProof;
+import com.amx.jax.dbmodel.DmsApplMapping;
+import com.amx.jax.dbmodel.IdentityTypeMaster;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.ImageSubmissionRequest;
 import com.amx.jax.model.response.customer.CustomerFlags;
+import com.amx.jax.repository.customer.DmsApplMappingRepository;
+import com.amx.jax.repository.customer.IdentityTypeMasterRepository;
 import com.amx.jax.services.JaxDBService;
 import com.amx.jax.userservice.dao.CusmosDao;
 import com.amx.jax.userservice.dao.CustomerDao;
+import com.amx.jax.userservice.dao.CustomerIdProofDao;
 import com.amx.jax.userservice.repository.CustomerIdProofRepository;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.AmxDBConstants;
@@ -45,6 +51,12 @@ public class CustomerIdProofManager {
 	UserService userService;
 	@Autowired
 	JaxDBService jaxDBService;
+	@Autowired
+	CustomerIdProofDao customerIdProofDao;
+	@Autowired
+	IdentityTypeMasterRepository identityTypeMasterRepository;
+	@Autowired
+	DmsApplMappingRepository dmsApplMappingRepository;
 
 	/**
 	 * deletes previous active id proof and activate new one
@@ -100,7 +112,7 @@ public class CustomerIdProofManager {
 	public void commitOnlineCustomerIdProof(Customer customer) {
 		commitOnlineCustomerIdProof(customer, null);
 	}
-	
+
 	public void setIdProofFlags(BigDecimal customerId, CustomerFlags customerFlags) {
 		String[] statusIn = { AmxDBConstants.Yes, AmxDBConstants.Compliance };
 		List<CustomerIdProof> customerIdProofs = customerIdProofRepository.getCustomerIdProofs(customerId, statusIn);
@@ -112,5 +124,28 @@ public class CustomerIdProofManager {
 		if (identityStatus.equals(AmxDBConstants.Compliance)) {
 			customerFlags.setIdProofVerificationPending(true);
 		}
+	}
+
+	public CustomerIdProof getCustomerIdProofByCustomerId(BigDecimal customerId) {
+		List<CustomerIdProof> activeIdProofs = customerIdProofDao.getCustomerIdProofs(customerId);
+		Optional<CustomerIdProof> lastestRecordByExpiry = activeIdProofs.stream().sorted((o1, o2) -> {
+			return o1.getIdentityExpiryDate().compareTo(o2.getIdentityExpiryDate());
+		}).findFirst();
+		return lastestRecordByExpiry.get();
+	}
+	
+	public IdentityTypeMaster getIdentityTypeMaster(BigDecimal identityTypeId, String isActive) {
+		return identityTypeMasterRepository.findBybusinessComponentIdAndIsActive(identityTypeId, isActive);
+	}
+
+	public DmsApplMapping getDmsMapping(CustomerIdProof customerIdProof) {
+		DmsApplMapping mapping = null;
+		List<DmsApplMapping> dmsApplMapping = dmsApplMappingRepository.getDmsApplMapping(
+				customerIdProof.getFsCustomer().getCustomerId(), customerIdProof.getIdentityInt(),
+				customerIdProof.getIdentityTypeId(), customerIdProof.getIdentityExpiryDate());
+		if (CollectionUtils.isNotEmpty(dmsApplMapping)) {
+			mapping = dmsApplMapping.get(0);
+		}
+		return mapping;
 	}
 }

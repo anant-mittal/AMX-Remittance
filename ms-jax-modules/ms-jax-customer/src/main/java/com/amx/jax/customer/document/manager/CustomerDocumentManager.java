@@ -1,9 +1,66 @@
 package com.amx.jax.customer.document.manager;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.dbmodel.CustomerIdProof;
+import com.amx.jax.dbmodel.IdentityTypeMaster;
+import com.amx.jax.model.customer.CustomerDocumentInfo;
+import com.amx.jax.userservice.manager.CustomerIdProofManager;
 
 @Component
 public class CustomerDocumentManager {
 
-	
+	@Autowired
+	DatabaseScanManager databaseImageScanManager;
+	@Autowired
+	CustomerIdProofManager customerIdProofManager;
+
+	public List<CustomerDocumentInfo> getCustomerImages(BigDecimal customerId) {
+
+		CustomerDocumentInfo kycImage = fetchKycCustomerImage(customerId);
+		List<CustomerDocumentInfo> customerOtherDocumentImages = fetchCustomerOtherDocuments(customerId);
+		List<CustomerDocumentInfo> allDocuments = new ArrayList<>();
+		if (kycImage != null) {
+			allDocuments.add(kycImage);
+		}
+		if (CollectionUtils.isNotEmpty(customerOtherDocumentImages)) {
+			allDocuments.addAll(customerOtherDocumentImages);
+		}
+		return allDocuments;
+	}
+
+	private List<CustomerDocumentInfo> fetchCustomerOtherDocuments(BigDecimal customerId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	private CustomerDocumentInfo fetchKycCustomerImage(BigDecimal customerId) {
+		CustomerIdProof customerIdProof = customerIdProofManager.getCustomerIdProofByCustomerId(customerId);
+		CustomerDocumentInfo customerDocumentImage = null;
+		if (customerIdProof != null) {
+			switch (customerIdProof.getScanSystem()) {
+			case "D":
+				customerDocumentImage = databaseImageScanManager.fetchKycImageInfo(customerIdProof);
+			default:
+			}
+			addDataFromCustomerIdProof(customerDocumentImage, customerIdProof);
+		}
+		return customerDocumentImage;
+	}
+
+	private void addDataFromCustomerIdProof(CustomerDocumentInfo customerDocumentImage,
+			CustomerIdProof customerIdProof) {
+		IdentityTypeMaster identityMaster = customerIdProofManager
+				.getIdentityTypeMaster(customerIdProof.getIdentityTypeId(), ConstantDocument.Yes);
+		customerDocumentImage.setDocumentType(identityMaster.getIdentityType());
+		customerDocumentImage.setUploadedDate(customerIdProof.getCreationDate());
+	}
+
 }
