@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.customer.ICustomerManagementController;
-import com.amx.jax.model.request.CustomerInfoRequest;
+import com.amx.jax.model.request.CreateCustomerInfoRequest;
 import com.amx.jax.model.request.customer.UpdateCustomerInfoRequest;
 import com.amx.utils.JsonUtil;
 
@@ -27,7 +27,7 @@ public class CustomerManagementController implements ICustomerManagementControll
 	@RequestMapping(path = CREATE_CUSTOMER, method = { RequestMethod.POST })
 	@Override
 	public AmxApiResponse<BoolRespModel, Object> createCustomer(
-			@RequestBody @Valid CustomerInfoRequest createCustomerRequest) {
+			@RequestBody @Valid CreateCustomerInfoRequest createCustomerRequest) {
 		log.debug("request createCustomer  {}", JsonUtil.toJson(createCustomerRequest));
 		return AmxApiResponse.build();
 

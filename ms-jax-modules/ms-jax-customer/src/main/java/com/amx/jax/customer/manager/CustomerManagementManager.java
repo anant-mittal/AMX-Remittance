@@ -11,27 +11,26 @@ import org.springframework.stereotype.Component;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxApiFlow;
+import com.amx.jax.customer.document.manager.CustomerDocumentManager;
 import com.amx.jax.customer.service.OffsitCustRegService;
 import com.amx.jax.customer.validation.CustomerManagementValidation;
-import com.amx.jax.dbmodel.ContactDetail;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerCategoryDiscountModel;
 import com.amx.jax.dbmodel.CustomerExtendedModel;
-import com.amx.jax.dbmodel.EmployeeDetails;
+import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.ResourceDTO;
-import com.amx.jax.model.request.CustomerEmploymentDetails;
+import com.amx.jax.model.customer.CustomerStatusModel;
 import com.amx.jax.model.request.CustomerPersonalDetail;
-import com.amx.jax.model.request.HomeAddressDetails;
-import com.amx.jax.model.request.LocalAddressDetails;
 import com.amx.jax.model.response.customer.OffsiteCustomerDataDTO;
-import com.amx.jax.repository.CustomerEmployeeDetailsRepository;
 import com.amx.jax.repository.ICustomerCategoryDiscountRepo;
 import com.amx.jax.repository.ICustomerExtendedRepository;
 import com.amx.jax.repository.remittance.IIdNumberLengthCheckRepository;
 import com.amx.jax.userservice.manager.CustomerFlagManager;
+import com.amx.jax.userservice.manager.OnlineCustomerManager;
 import com.amx.jax.userservice.service.ContactDetailService;
+import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.userservice.service.UserValidationService;
 
 @Component
@@ -56,7 +55,13 @@ public class CustomerManagementManager {
 	@Autowired
 	OffsitCustRegService offsitCustRegService;
 	@Autowired
-	CustomerEmployeeDetailsRepository customerEmployeeDetailsRepository;
+	CustomerDocumentManager customerDocumentManager;
+	@Autowired
+	CustomerEmployementManager customerEmployementManager;
+	@Autowired
+	UserService userService;
+	@Autowired
+	OnlineCustomerManager onlineCustomerManager;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CustomerManagementManager.class);
 
@@ -79,10 +84,12 @@ public class CustomerManagementManager {
 			offsiteCustomer.setIdentityInt(customer.getIdentityInt());
 			offsiteCustomer.setIdentityTypeId(customer.getIdentityTypeId());
 			offsiteCustomer.setCustomerPersonalDetail(createCustomerPersonalDetail(customer));
-			offsiteCustomer.setLocalAddressDetails(createLocalAddressDetails(customer));
-			offsiteCustomer.setHomeAddressDestails(createHomeAddressDetails(customer));
+			offsiteCustomer.setLocalAddressDetails(contactDetailService.createLocalAddressDetails(customer));
+			offsiteCustomer.setHomeAddressDestails(contactDetailService.createHomeAddressDetails(customer));
 			offsiteCustomer.setCustomerFlags(customerFlagManager.getCustomerFlags(customer.getCustomerId()));
-			offsiteCustomer.setCustomerEmploymentDetails(createCustomerEmploymentDetail(customer));
+			offsiteCustomer
+					.setCustomerEmploymentDetails(customerEmployementManager.createCustomerEmploymentDetail(customer));
+			offsiteCustomer.setCustomerDocuments(customerDocumentManager.getCustomerImages(customer.getCustomerId()));
 		} else {
 			jaxError = JaxError.CUSTOMER_NOT_FOUND;
 		}
@@ -90,58 +97,6 @@ public class CustomerManagementManager {
 			offsiteCustomer.setStatusKey(jaxError.toString());
 		}
 		return offsiteCustomer;
-	}
-
-	private HomeAddressDetails createHomeAddressDetails(Customer customer) {
-		// --- Home Address Data
-		HomeAddressDetails homeAddress = new HomeAddressDetails();
-		ContactDetail homeData = contactDetailService.getContactsForHome(customer);
-		if (homeData != null) {
-			homeAddress.setContactTypeId(homeData.getFsBizComponentDataByContactTypeId().getComponentDataId());
-			homeAddress.setBlock(homeData.getBlock());
-			homeAddress.setStreet(homeData.getStreet());
-			homeAddress.setHouse(homeData.getBuildingNo());
-			homeAddress.setFlat(homeData.getFlat());
-			if (null != homeData.getFsCountryMaster()) {
-				homeAddress.setCountryId(homeData.getFsCountryMaster().getCountryId());
-			}
-			if (null != homeData.getFsStateMaster()) {
-				homeAddress.setStateId(homeData.getFsStateMaster().getStateId());
-			}
-			if (null != homeData.getFsDistrictMaster()) {
-				homeAddress.setDistrictId(homeData.getFsDistrictMaster().getDistrictId());
-			}
-			if (null != homeData.getFsCityMaster()) {
-				homeAddress.setCityId(homeData.getFsCityMaster().getCityId());
-			}
-		}
-		return homeAddress;
-	}
-
-	private LocalAddressDetails createLocalAddressDetails(Customer customer) {
-		// --- Local Address Data
-		LocalAddressDetails localAddress = new LocalAddressDetails();
-		ContactDetail localData = contactDetailService.getContactsForLocal(customer);
-		if (localData != null) {
-			localAddress.setContactTypeId(localData.getFsBizComponentDataByContactTypeId().getComponentDataId());
-			localAddress.setBlock(localData.getBlock());
-			localAddress.setStreet(localData.getStreet());
-			localAddress.setHouse(localData.getBuildingNo());
-			localAddress.setFlat(localData.getFlat());
-			if (null != localData.getFsCountryMaster()) {
-				localAddress.setCountryId(localData.getFsCountryMaster().getCountryId());
-			}
-			if (null != localData.getFsStateMaster()) {
-				localAddress.setStateId(localData.getFsStateMaster().getStateId());
-			}
-			if (null != localData.getFsDistrictMaster()) {
-				localAddress.setDistrictId(localData.getFsDistrictMaster().getDistrictId());
-			}
-			if (null != localData.getFsCityMaster()) {
-				localAddress.setCityId(localData.getFsCityMaster().getCityId());
-			}
-		}
-		return localAddress;
 	}
 
 	private CustomerPersonalDetail createCustomerPersonalDetail(Customer customer) {
@@ -207,25 +162,19 @@ public class CustomerManagementManager {
 		return dto;
 	}
 
-	public CustomerEmploymentDetails createCustomerEmploymentDetail(Customer customer) {
-		// --- Customer Employment Data
-		CustomerEmploymentDetails employmentDetails = new CustomerEmploymentDetails();
-		EmployeeDetails employmentData = customerEmployeeDetailsRepository.getCustomerEmploymentData(customer);
-		if (employmentData != null) {
-			employmentDetails.setEmployer(employmentData.getEmployerName());
-			employmentDetails
-					.setEmploymentTypeId(employmentData.getFsBizComponentDataByEmploymentTypeId().getComponentDataId());
-			if (employmentData.getFsBizComponentDataByOccupationId() != null) {
-				employmentDetails
-						.setProfessionId(employmentData.getFsBizComponentDataByOccupationId().getComponentDataId());
-			}
-			employmentDetails.setStateId(employmentData.getFsStateMaster());
-			employmentDetails.setDistrictId(employmentData.getFsDistrictMaster());
-			employmentDetails.setCountryId(employmentData.getFsCountryMaster().getCountryId());
-			employmentDetails.setArticleDetailsId(customer.getFsArticleDetails().getArticleDetailId());
-			employmentDetails.setArticleId(customer.getFsArticleDetails().getFsArticleMaster().getArticleId());
-			employmentDetails.setIncomeRangeId(customer.getFsIncomeRangeMaster().getIncomeRangeId());
+	public CustomerStatusModel getCustomerStatusModel(Customer customer) {
+		CustomerStatusModel customerStatusModel = new CustomerStatusModel();
+		if (ConstantDocument.Yes.equals(customer.getIsActive())) {
+			customerStatusModel.setActiveBranch(true);
 		}
-		return employmentDetails;
+		CustomerOnlineRegistration onlineCustomer = onlineCustomerManager
+				.getOnlineCustomerByCustomerId(customer.getCustomerId());
+		if (onlineCustomer != null && ConstantDocument.Yes.equals(onlineCustomer.getStatus())) {
+			customerStatusModel.setActiveOnline(true);
+		}
+		if (onlineCustomer != null && onlineCustomer.getLockDt() != null) {
+			customerStatusModel.setLockedOnline(true);
+		}
+		return customerStatusModel;
 	}
 }

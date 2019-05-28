@@ -39,7 +39,7 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constants.CustomerRegistrationType;
 import com.amx.jax.customer.ICustRegService;
-import com.amx.jax.customer.manager.CustomerManagementManager;
+import com.amx.jax.customer.manager.CustomerEmployementManager;
 import com.amx.jax.customer.manager.OffsiteCustomerRegManager;
 import com.amx.jax.customer.manager.OffsiteCustomerRegValidator;
 import com.amx.jax.dal.ArticleDao;
@@ -252,7 +252,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 	@Autowired
 	EmployeeRespository employeeRespository;
 	@Autowired
-	CustomerManagementManager customerManagementManager;
+	CustomerEmployementManager customerEmployementManager;
 
 	public AmxApiResponse<ComponentDataDto, Object> getIdTypes() {
 		List<Map<String, Object>> tempList = bizcomponentDao
@@ -1143,7 +1143,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 				}
 				offsiteCustomer.setHomeAddressDestails(homeAddress);
 				offsiteCustomer.setCustomerEmploymentDetails(
-						customerManagementManager.createCustomerEmploymentDetail(customer));
+						customerEmployementManager.createCustomerEmploymentDetail(customer));
 			}
 			
 		} else {

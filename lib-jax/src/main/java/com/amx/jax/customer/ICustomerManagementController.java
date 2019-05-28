@@ -2,7 +2,7 @@ package com.amx.jax.customer;
 
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
-import com.amx.jax.model.request.CustomerInfoRequest;
+import com.amx.jax.model.request.CreateCustomerInfoRequest;
 import com.amx.jax.model.request.customer.UpdateCustomerInfoRequest;
 
 public interface ICustomerManagementController {
@@ -21,7 +21,7 @@ public interface ICustomerManagementController {
 		public static final String CONTACT = "contact";
 	}
 
-	AmxApiResponse<BoolRespModel, Object> createCustomer(CustomerInfoRequest createCustomerRequest);
+	AmxApiResponse<BoolRespModel, Object> createCustomer(CreateCustomerInfoRequest createCustomerRequest);
 
 	AmxApiResponse<BoolRespModel, Object> updateCustomer(UpdateCustomerInfoRequest createCustomerRequest);
 

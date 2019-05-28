@@ -1,5 +1,6 @@
 package com.amx.jax.userservice.manager;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 
@@ -82,5 +83,9 @@ public class OnlineCustomerManager {
 		userValidationService.validateCustIdProofs(customer.getCustomerId());
 		userValidationService.validateBlackListedCustomerForLogin(customer);
 		userValidationService.validateCustomerVerification(customer.getCustomerId());
+	}
+
+	public CustomerOnlineRegistration getOnlineCustomerByCustomerId(BigDecimal customerId) {
+		return custDao.getOnlineCustByCustomerId(customerId);
 	}
 }

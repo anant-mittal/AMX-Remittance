@@ -1,7 +1,10 @@
 package com.amx.jax.model.response.customer;
 
 import java.math.BigDecimal;
+import java.util.List;
 
+import com.amx.jax.model.customer.CustomerDocumentInfo;
+import com.amx.jax.model.customer.CustomerStatusModel;
 import com.amx.jax.model.request.CustomerEmploymentDetails;
 import com.amx.jax.model.request.CustomerPersonalDetail;
 import com.amx.jax.model.request.HomeAddressDetails;
@@ -21,6 +24,8 @@ public class OffsiteCustomerDataDTO {
 
 	CustomerEmploymentDetails customerEmploymentDetails;
 	CustomerFlags customerFlags;
+	List<CustomerDocumentInfo>  customerDocuments;
+	CustomerStatusModel customerStatusModel;
 	String statusKey;
 
 	public String getIdentityInt() {
@@ -85,6 +90,22 @@ public class OffsiteCustomerDataDTO {
 
 	public void setStatusKey(String statusKey) {
 		this.statusKey = statusKey;
+	}
+
+	public List<CustomerDocumentInfo> getCustomerDocuments() {
+		return customerDocuments;
+	}
+
+	public void setCustomerDocuments(List<CustomerDocumentInfo> customerDocuments) {
+		this.customerDocuments = customerDocuments;
+	}
+
+	public CustomerStatusModel getCustomerStatusModel() {
+		return customerStatusModel;
+	}
+
+	public void setCustomerStatusModel(CustomerStatusModel customerStatusModel) {
+		this.customerStatusModel = customerStatusModel;
 	}
 	
 }
