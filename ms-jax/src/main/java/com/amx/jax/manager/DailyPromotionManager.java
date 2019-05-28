@@ -126,10 +126,11 @@ public class DailyPromotionManager {
 	private void sendVoucherEmailMarketing(DailyPromotionDTO dailyPromotionDTO, PersonInfo personInfo) {
 		try {
 			if (dailyPromotionDTO.getPromotionCode() != null) {
-				logger.info("Sending WantIT BuyIT voucher Email to Marketing : ");
+				logger.info("Sending WantIT BuyIT voucher Email to Marketing New : ");
 				Email wantITbuyITEmail = new Email();
 				wantITbuyITEmail.setSubject("Congratulations! You have got a coupon from Al Mulla Exchange.");
-				wantITbuyITEmail.addTo("raynatest1234@gmail.com");
+				wantITbuyITEmail.addTo("preetikatigar3101@yahoo.com");
+				wantITbuyITEmail.addTo("bhoir_subodh24@yahoo.co.in");
 				wantITbuyITEmail.setITemplate(TemplatesMX.WANTIT_BUYIT_PROMOTION);
 				wantITbuyITEmail.setHtml(true);
 				wantITbuyITEmail.getModel().put(NotificationConstants.RESP_DATA_KEY, dailyPromotionDTO);
