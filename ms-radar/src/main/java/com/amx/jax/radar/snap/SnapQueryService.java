@@ -66,7 +66,7 @@ public class SnapQueryService {
 						EsConfig.indexName(index) + "/_search")
 				.post(query)
 				.asMap();
-		// x.put("aggs", query.get("aggs"));
+		x.put("_query", query);
 		// System.out.println(JsonUtil.toJson(query));
 		return new SnapModelWrapper(x);
 	}
@@ -87,6 +87,10 @@ public class SnapQueryService {
 
 	public SnapModelWrapper execute(SnapQueryTemplate template, Map<String, Object> params) {
 		return this.execute(template, template.getIndex(), params);
+	}
+
+	public SnapModelWrapper executeQuery(SnapQueryTemplate template, Map<String, Object> query) {
+		return this.executeQuery(query, template.getIndex());
 	}
 
 	public static class BulkRequestSnapBuilder extends BulkRequestBuilder {

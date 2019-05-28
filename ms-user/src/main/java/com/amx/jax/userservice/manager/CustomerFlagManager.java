@@ -3,6 +3,7 @@ package com.amx.jax.userservice.manager;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -73,7 +74,7 @@ public class CustomerFlagManager {
 	}
 
 	private void setCustomerCommunicationChannelFlags(Customer customer, CustomerFlags customerFlags) {
-		if (AmxDBConstants.Status.Y.equals(customer.getMobileVerified())) {
+		if (StringUtils.isNotBlank(customer.getMobile())) {
 			customerFlags.setMobileVerified(Boolean.TRUE);
 		} else {
 			customerFlags.setMobileVerified(Boolean.FALSE);
@@ -83,7 +84,7 @@ public class CustomerFlagManager {
 		} else {
 			customerFlags.setWhatsAppVerified(Boolean.FALSE);
 		}
-		if (AmxDBConstants.Status.Y.equals(customer.getEmailVerified())) {
+		if (StringUtils.isNotBlank(customer.getEmail())) {
 			customerFlags.setEmailVerified(Boolean.TRUE);
 		} else {
 			customerFlags.setEmailVerified(Boolean.FALSE);

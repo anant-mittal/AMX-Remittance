@@ -25,6 +25,7 @@ public class UserUpdateData implements UserUpdateRequest, UserUpdateResponse {
 	@Pattern(regexp = AppConstants.Validator.OTP)
 	private String eOtp = null;
 
+	/** The e otp. */
 	@Pattern(regexp = AppConstants.Validator.OTP)
 	private String wOtp = null;
 

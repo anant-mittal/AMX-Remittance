@@ -283,7 +283,7 @@ public enum JaxError implements IExceptionEnum {
 	ENTITY_INVALID,
 	USER_ALREADY_ACTIVE,
 	MISSING_CONTACT,
-	
+	MISSING_OTP_CONTACT,
 	
 	// Default for code symettry
 	JAX_SYSTEM_ERROR,
@@ -293,8 +293,10 @@ public enum JaxError implements IExceptionEnum {
 	
 	MOTP_REQUIRED,
 	DOTP_REQUIRED,
-	EOTP_REQUIRED,
+	EOTP_REQUIRED, CUSTOMER_MOBILE_EMPTY, CUSTOMER_EMAIL_EMPTY,
 	MIN_DENOMINATION_ERROR;
+	
+	
 	@Deprecated
 	public String getCode() {
 		return this.toString();

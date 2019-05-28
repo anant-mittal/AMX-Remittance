@@ -19,9 +19,7 @@ import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
 import com.amx.amxlib.model.BranchSearchNotificationModel;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
-import com.amx.amxlib.model.EmployeeInfo;
 import com.amx.amxlib.model.notification.RemittanceTransactionFailureAlertModel;
-import com.amx.jax.async.ExecutorConfig;
 import com.amx.jax.dbmodel.ApplicationSetup;
 import com.amx.jax.dbmodel.ExEmailNotification;
 import com.amx.jax.dict.Tenant;
@@ -333,24 +331,6 @@ public class JaxNotificationService {
 		}
 
 	}
-
-	// employee otp to login
-	public void sendOtpSms(EmployeeInfo einfo, CivilIdOtpModel model) {
-
-		logger.info(String.format("Sending OTP SMS to customer :%s on mobile_no :%s  ", einfo.getEmployeeName(),
-				einfo.getTelephoneNumber()));
-
-		SMS sms = new SMS();
-		sms.addTo(einfo.getTelephoneNumber());
-		sms.getModel().put(RESP_DATA_KEY, model);
-		sms.setITemplate(TemplatesMX.RESET_OTP_SMS);
-
-		try {
-			postManService.sendSMSAsync(sms);
-		} catch (PostManException e) {
-			logger.error("error in sendOtpSms", e);
-		}
-	} // end of sendOtpSms
 
 	public String sendEmailChangeSubject() {
 

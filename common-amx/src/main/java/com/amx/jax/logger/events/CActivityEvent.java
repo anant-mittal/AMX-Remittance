@@ -138,7 +138,6 @@ public class CActivityEvent extends AuditEvent {
 
 	public CActivityEvent customer(String customer) {
 		this.setCustomer(customer);
-		this.cust().setIdentity(customer);
 		return this;
 	}
 
@@ -179,6 +178,7 @@ public class CActivityEvent extends AuditEvent {
 
 	public void setCustomer(String customer) {
 		this.customer = customer;
+		this.cust().setIdentity(customer);
 	}
 
 	public static String getMergedString(String oldStr, String newStr) {

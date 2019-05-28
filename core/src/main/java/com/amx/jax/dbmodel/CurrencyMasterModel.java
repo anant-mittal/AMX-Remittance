@@ -289,14 +289,15 @@ public class CurrencyMasterModel implements java.io.Serializable {
 	public void setIsAllowFcSale(String isAllowFcSale) {
 		this.isAllowFcSale = isAllowFcSale;
 	}
-
+	
 	@Column(name="MIN_DENOMINATION_ID")
-	public BigDecimal getMinDenominationId() {
-		return minDenominationId;
-	}
+		public BigDecimal getMinDenominationId() {
+			return minDenominationId;
+		}
+	
+		public void setMinDenominationId(BigDecimal minDenominationId) {
+			this.minDenominationId = minDenominationId;
+	 	}
 
-	public void setMinDenominationId(BigDecimal minDenominationId) {
-		this.minDenominationId = minDenominationId;
-	}
 
 }

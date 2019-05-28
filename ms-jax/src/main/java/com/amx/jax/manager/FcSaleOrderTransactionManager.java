@@ -62,10 +62,9 @@ public class FcSaleOrderTransactionManager extends AbstractModel{
 	
 	@Autowired
 	FxOrderTranxLimitRespository trnxLimitRepos;
-	
+
 	@Autowired
 	CurrencyWiseDenominationRepository currenDenominationRepository;
-
 	
 	/**
 	 * 
@@ -89,7 +88,6 @@ public class FcSaleOrderTransactionManager extends AbstractModel{
 		}
 		
 		checkMinDenomination(fcCurrencyId,curr.get(0).getMinDenominationId(),fcAmount);
-		
 		FxExchangeRateBreakup breakup = new FxExchangeRateBreakup();
 		List<FxExchangeRateView> fxSaleRateList = fcSaleExchangeRateDao.getFcSaleExchangeRate(countryId, countryBracnhId, fcCurrencyId);
 		
@@ -189,6 +187,8 @@ public class FcSaleOrderTransactionManager extends AbstractModel{
 		
 	}
 	
+	
+
 	public void checkMinDenomination(BigDecimal fcCurrencyId,BigDecimal denominationId,BigDecimal fcAmount) {
 		if(JaxUtil.isNullZeroBigDecimalCheck(denominationId)) {
 			CurrencyWiseDenomination currDenomination = currenDenominationRepository.getMinimumCurrencyDenominationValue(meta.getCountryId(),fcCurrencyId,denominationId, ConstantDocument.Yes);
@@ -205,6 +205,4 @@ public class FcSaleOrderTransactionManager extends AbstractModel{
 		  }
 		
 	}
-	
-
 }
