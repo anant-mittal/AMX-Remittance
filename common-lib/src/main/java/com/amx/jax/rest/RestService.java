@@ -28,6 +28,7 @@ import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.amx.jax.AppConfig;
 import com.amx.jax.AppConstants;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.filter.AppClientInterceptor;
@@ -67,6 +68,9 @@ public class RestService {
 
 	@Autowired
 	AppClientInterceptor appClientInterceptor;
+
+	@Autowired
+	AppConfig appConfig;
 
 	public void setErrorHandler(ResponseErrorHandler errorHandler) {
 		Assert.notNull(errorHandler, "ResponseErrorHandler must not be null");
@@ -125,12 +129,12 @@ public class RestService {
 
 	public Ajax ajax(String url) {
 		this.getOutFilters();
-		return new Ajax(getRestTemplate(), url);
+		return new Ajax(getRestTemplate(), url).header("x-app-version", appConfig.getAppVersion());
 	}
 
 	public Ajax ajax(URI uri) {
 		this.getOutFilters();
-		return new Ajax(getRestTemplate(), uri);
+		return new Ajax(getRestTemplate(), uri).header("x-app-version", appConfig.getAppVersion());
 	}
 
 	public static class Ajax {
