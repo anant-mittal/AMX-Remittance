@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.h2.util.New;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -30,18 +32,24 @@ import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dal.LoyaltyInsuranceProDao;
 import com.amx.jax.dbmodel.CollectionDetailViewModel;
 import com.amx.jax.dbmodel.CollectionPaymentDetailsViewModel;
+import com.amx.jax.dbmodel.CountryMaster;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.PurposeOfRemittanceViewModel;
 import com.amx.jax.dbmodel.RemittanceTransactionView;
 import com.amx.jax.dbmodel.ViewCompanyDetails;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.manager.PromotionManager;
+import com.amx.jax.meta.MetaData;
+import com.amx.jax.repository.CountryMasterRepository;
+import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.repository.ICollectionDetailViewDao;
 import com.amx.jax.repository.ICollectionPaymentDetailsViewDao;
 import com.amx.jax.repository.ICompanyDAO;
 import com.amx.jax.repository.ICurrencyDao;
 import com.amx.jax.repository.IPurposeOfRemittance;
 import com.amx.jax.repository.IRemittanceTransactionDao;
+import com.amx.jax.service.CountryService;
+import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.RoundUtil;
@@ -76,12 +84,26 @@ public class ReportManagerService extends AbstractService{
 	@Autowired
 	ICurrencyDao currencyDao;
 	
+	@Autowired
+	CustomerRepository customerRepository;
+	
 	
 	private List<RemittanceReceiptSubreport> remittanceReceiptSubreportList;
 	@Autowired
 	PromotionManager promotionManager;
 	@Autowired
 	UserService userService;
+	
+	@Autowired
+	CountryMasterRepository countryMasterRepository;
+	
+	@Autowired
+	CountryService countryService;
+	
+	@Autowired
+	MetaData meta;
+	
+	
 
 	
 	
@@ -108,6 +130,7 @@ public class ReportManagerService extends AbstractService{
 			Boolean promotion){
 		
 		ApiResponse response = null;
+		Boolean isArabic = false;
 		try {
 		remittanceReceiptSubreportList = new ArrayList<RemittanceReceiptSubreport>();
 		 response = getBlackApiResponse();
@@ -230,10 +253,17 @@ public class ReportManagerService extends AbstractService{
 				obj.setPhoneNumber(view.getPhoneNumber()); 
 				obj.setUserName(view.getCreatedBy());
 				obj.setPinNo(view.getPinNo() );
+			
+				logger.debug("metaDetails:"+meta.getCustomerId());
 				
+				Customer customerNationalityDetails = customerRepository.getNationalityValue(meta.getCustomerId());
 				
-
-	
+				logger.debug("countryId:"+customerNationalityDetails.getNationalityId());
+				isArabic = countryService.getIsArabicCountry(customerNationalityDetails.getNationalityId());
+				logger.debug("isArabicValue:"+isArabic);
+				
+				obj.setIsArabic(isArabic);
+					
 				Map<String, Object> loyaltiPoints = loyaltyInsuranceProDao.loyaltyInsuranceProcedure(view.getCustomerReference(), obj.getDate());
 				
 				String prLtyStr1 =loyaltiPoints.get("P_LTY_STR1")==null?"":loyaltiPoints.get("P_LTY_STR1").toString();
@@ -273,7 +303,10 @@ public class ReportManagerService extends AbstractService{
 					obj.setInsurence2(prInsStrAr2);
 				}
 
-			
+
+
+
+
 				if (view.getBeneCityName() != null && view.getBeneDistrictName() != null && view.getBeneStateName() != null) {
 					obj.setAddress(view.getBeneCityName() + ", " + view.getBeneDistrictName() + ", " + view.getBeneStateName());
 				} else if (view.getBeneCityName() == null && view.getBeneDistrictName() != null && view.getBeneStateName() != null) {
@@ -464,7 +497,10 @@ public class ReportManagerService extends AbstractService{
 						 obj.setAmountSaved(currencyQuoteName +"     "+KdSaved.toString());
 					 }
 					/** end **/
-
+					 
+					 String promotionMessage = promotionManager.getPromotionMessage(view.getDocumentNo(),view.getDocumentFinancialYear(),view.getCountryBranchId());
+					 
+					 obj.setPromotionMessage(promotionMessage==null?"":promotionMessage);
 					
 				} catch (Exception e) {
 					logger.info( "Exception Occured While Report2 "+e.getMessage());

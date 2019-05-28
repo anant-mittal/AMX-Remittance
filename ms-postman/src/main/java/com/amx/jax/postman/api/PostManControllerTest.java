@@ -245,12 +245,10 @@ public class PostManControllerTest {
 					Map<String, Object> map2 = readJsonWithObjectMapper(
 							"templates/dummy/" + attachment.getSampleJSON());
 					file2.setModel(map2);
+					file2.setType(File.Type.PDF);
+					file2.setConverter(lib);
+					eml.addFile(file2);
 				}
-
-				file2.setType(File.Type.PDF);
-				file2.setConverter(lib);
-
-				eml.addFile(file2);
 
 				postManClient.sendEmailAsync(eml);
 			}

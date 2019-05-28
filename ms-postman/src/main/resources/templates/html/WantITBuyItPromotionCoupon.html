@@ -1,0 +1,387 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org" lang="ar">
+<head>
+<meta name="viewport" content="width=device-width" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Congratulations! You have got a coupon from Al Mulla Exchange.</title>
+<style>
+* {	
+	margin: 0;
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	box-sizing: border-box;
+	font-size: 14px;
+}
+
+img {
+	max-width: 100%;
+}
+
+body {
+	-webkit-font-smoothing: antialiased;
+	-webkit-text-size-adjust: none;
+	width: 100% !important;
+	height: 100%;
+	line-height: 1.6em;
+	/* 1.6em * 14px = 22.4px, use px to get airier line-height also in Thunderbird, and Yahoo!, Outlook.com, AOL webmail clients */
+	/*line-height: 22px;*/
+}
+
+table td {
+	vertical-align: top;
+}
+
+body {
+	background-color: #f6f6f6;
+}
+
+.body-wrap {
+	background-color: #f6f6f6;
+	width: 100%;
+}
+
+.container {
+	display: block !important;
+	max-width: 600px !important;
+	margin: 0 auto !important;
+	/* makes it centered */
+	clear: both !important;
+}
+
+.content {
+	max-width: 600px;
+	margin: 0 auto;
+	display: block;
+	padding: 20px;
+}
+
+.main {
+	background-color: #fff;
+	border: 1px solid #e9e9e9;
+	border-radius: 3px;
+}
+
+.content-wrap {
+	padding: 20px;
+}
+
+.content-block {
+	padding: 0 0 20px;
+}
+
+.header {
+	width: 100%;
+	margin-bottom: 20px;
+}
+
+.footer {
+	width: 100%;
+	clear: both;
+	color: #999;
+	padding: 20px;
+}
+
+.footer p, .footer a, .footer td {
+	color: #999;
+	font-size: 12px;
+}
+
+h1, h2, h3 {
+	font-family: "Helvetica Neue", Helvetica, Arial, "Lucida Grande",
+		sans-serif;
+	color: #000;
+	margin: 40px 0 0;
+	line-height: 1.2em;
+	font-weight: 400;
+}
+
+h1 {
+	font-size: 32px;
+	font-weight: 500;
+	/* 1.2em * 32px = 38.4px, use px to get airier line-height also in Thunderbird, and Yahoo!, Outlook.com, AOL webmail clients */
+	/*line-height: 38px;*/
+}
+
+h2 {
+	font-size: 24px;
+	/* 1.2em * 24px = 28.8px, use px to get airier line-height also in Thunderbird, and Yahoo!, Outlook.com, AOL webmail clients */
+	/*line-height: 29px;*/
+}
+
+h3 {
+	font-size: 18px;
+	/* 1.2em * 18px = 21.6px, use px to get airier line-height also in Thunderbird, and Yahoo!, Outlook.com, AOL webmail clients */
+	/*line-height: 22px;*/
+}
+
+h4 {
+	font-size: 14px;
+	font-weight: 600;
+}
+
+p, ul, ol {
+	margin-bottom: 10px;
+	font-weight: normal;
+}
+
+p li, ul li, ol li {
+	margin-left: 5px;
+	list-style-position: inside;
+}
+
+a {
+	color: #348eda;
+	text-decoration: underline;
+}
+.table{border:0 none;  border-collapse: collapse;}
+.table td{ border: 1px solid #e6e6e6; }
+
+.btn-primary {
+	text-decoration: none;
+	color: #FFF;
+	background-color: #348eda;
+	border: solid #348eda;
+	border-width: 10px 20px;
+	line-height: 2em;
+	/* 2em * 14px = 28px, use px to get airier line-height also in Thunderbird, and Yahoo!, Outlook.com, AOL webmail clients */
+	/*line-height: 28px;*/
+	font-weight: bold;
+	text-align: center;
+	cursor: pointer;
+	display: inline-block;
+	border-radius: 5px;
+	text-transform: capitalize;
+}
+
+.last {
+	margin-bottom: 0;
+}
+
+.first {
+	margin-top: 0;
+}
+
+.aligncenter {
+	text-align: center;
+}
+
+.alignright {
+	text-align: right;
+}
+
+.alignleft {
+	text-align: left;
+}
+
+.clear {
+	clear: both;
+}
+
+.alert {
+	font-size: 16px;
+	color: #fff;
+	font-weight: 500;
+	text-align: center;
+	border-radius: 3px 3px 0 0;
+}
+
+.alert a {
+	color: #fff;
+	text-decoration: none;
+	font-weight: 500;
+	font-size: 16px;
+}
+
+.alert.alert-warning {
+	background-color: #000000;
+}
+
+.alert.alert-bad {
+	background-color: #D0021B;
+}
+
+.alert.alert-good {
+	background-color: #68B90F;
+}
+
+.invoice {
+	margin: 40px auto;
+	text-align: left;
+	width: 80%;
+}
+
+.invoice td {
+	padding: 5px 0;
+}
+
+.invoice .invoice-items {
+	width: 100%;
+}
+
+.invoice .invoice-items td {
+	border-top: #eee 1px solid;
+}
+
+.invoice .invoice-items .total td {
+	border-top: 2px solid #333;
+	border-bottom: 2px solid #333;
+	font-weight: 700;
+}
+
+.promo {
+	text-decoration: none;
+	line-height: 3.5em;
+	/* 2em * 14px = 28px, use px to get airier line-height also in Thunderbird, and Yahoo!, Outlook.com, AOL webmail clients */
+	/*line-height: 28px;*/
+	text-align: center;
+	cursor: pointer;
+	display: inline-block;
+	border-radius: 5px;
+	text-transform: capitalize;
+	border-width: 2px;
+	background:#013a6b;
+	
+}
+hr {
+    display: block;
+    height: 1px;
+    border: 0;
+    border-top: 1px solid #a2c25a;
+    padding: 0;
+    margin-left: 23px;
+    margin-right: 31px;
+   
+}
+
+
+@media only screen and (max-width: 640px) {
+	body {
+		padding: 0 !important;
+	}
+	h1, h2, h3, h4 {
+		font-weight: 800 !important;
+		margin: 20px 0 5px !important;
+	}
+	h1 {
+		font-size: 22px !important;
+	}
+	h2 {
+		font-size: 18px !important;
+	}
+	h3 {
+		font-size: 16px !important;
+	}
+	.container {
+		padding: 0 !important;
+		width: 100% !important;
+	}
+	.content {
+		padding: 0 !important;
+	}
+	.content-wrap {
+		padding: 10px !important;
+	}
+	.invoice {
+		width: 100% !important;
+	}
+}
+</style>
+</head>
+<body itemtype="http://schema.org/EmailMessage">
+
+
+	<table class="body-wrap">
+		<tr>
+			<td></td>
+			<td class="container" width="600">
+				<div class="content">
+					<table class="main" width="100%" cellpadding="0" cellspacing="0">
+						<tr>
+							<td class="alert alert-warning" align="center" bgcolor="#000000"><img th:attr="src=${'cid:' + _tu.prop('company.logo.path')}" /></td>
+						</tr>
+				
+						<tr>
+							<td class="content-wrap">
+								<table width="100%" cellpadding="0" cellspacing="0">
+									<tr>
+										<td class="content-block">Dear <span  th:text="${data.customerName}"></span>,</td>
+									</tr>
+									<tr>
+										<td class="content-block">Thank you for transacting Online.</td>
+									</tr>
+									<tr>
+										<td class="content-block"><h4>Congratulations! Below is a coupon which you can redeem at <a style="color: #a2c25a;" th:href="${_tu.prop('company.app.url')+'/pub/redirect?identity='+ data.identityInt+'&ref=WIBI&linkd=d3d3LndhbnRJVGJ1eUlULmNvbQ=='}"><span>www.wantITbuyIT.com</span></a></h4></td>
+									</tr>
+									<tr>
+										<td  align="center"><h4>USE PROMO CODE</h4></td>
+									</tr>
+									<tr>
+										<td class="content-block" align="center" >
+											<span style="width:200px" class="promo" target="_blank"><span style="color:#f4e824 ; font-size:23px; font-weight:bold"  th:text="${data.promotionCode}"></span></span>
+										</td> 
+									</tr>
+									<tr>
+										<td class="alert" align="center" bgcolor="#013a6b"><img th:attr="src=${'cid:' + _tu.prop('company.coupon.img')}" width="100%" /></td>
+									</tr>
+									<tr>
+										<td class="content-block" style="background-color:#013a6b">
+											<br/><h4 style="color:#a2c25a; padding-left:21px">WantitBuyit.com Address</h4>
+											<p style="color:#FFFFFF; margin-left:21px">2nd Floor, Al Hussa Commercial Complex, Ibn Khaldoun Street,Behind McDonalds. Hawally, Kuwait. Contact : 1800053 , 94175810 , 98947670</p>
+											<hr/>
+											
+										</td>
+									</tr>
+										<tr>
+										<td class="content-block" style="background-color:#013a6b">
+											<h4 style="color:#a2c25a; padding-left:21px">Store Timings for Item Collection</h4>
+											<p style="color:#FFFFFF; margin-left:21px">Sunday to Thursday 8.00am to 8.00pm</p>
+											<p style="color:#FFFFFF; margin-left:21px">Saturday 9.00am to 1.00pm & 5.00pm to 8.00pm</p>
+											<p style="color:#FFFFFF; margin-left:21px">Friday Closed</p>
+											<hr/>
+											
+										</td>
+									</tr>
+									<tr>
+										<td class="content-block" style="background-color:#013a6b">
+											<h4 style="color:#a2c25a;padding-left:21px">Terms and Conditions</h4>
+											<p style="color:#FFFFFF; font-size:11px;margin-left:21px">1. Visit <a style="color: #a2c25a;" th:href="${_tu.prop('company.app.url')+'/pub/redirect?identity='+ data.identityInt+'&ref=WIBI&linkd=d3d3LndhbnRJVGJ1eUlULmNvbQ=='}">www.wantITbuyIT.com</a> to choose the desired product.</p>
+											<p style="color:#FFFFFF; font-size:11px;margin-left:21px">2. Use Coupon Code at checkout page to get instant KD 5 purchase or KD 5 discount from purchase.</p>
+											<p style="color:#FFFFFF; font-size:11px;margin-left:21px">3. There can be only one code valid per order or per purchase.</p>
+											<p style="color:#FFFFFF; font-size:11px;margin-left:21px">4. Vouchers are non-refundable and cannot be exchanged for cash.</p>
+											<p style="color:#FFFFFF; font-size:11px;margin-left:21px">5. Items can be picked up from the above address.</p>
+											<p style="color:#FFFFFF; font-size:11px;margin-left:21px">6. Delivery & Handling charges will be extra.</p>
+											<p style="color:#FFFFFF; font-size:11px;margin-left:21px">7. Coupon is valid for 15 days from the date of issuance.</p>
+											<p style="color:#FFFFFF; font-size:11px;margin-left:21px">8. Items to be picked up within 1 week from placing the order.</p>
+											<p style="color:#FFFFFF; font-size:11px;margin-left:21px">9. wantITbuyIT, Al Mulla Exchange reserves the right to withdraw, modify or amend this offer at its own discretion.</p>
+											<p style="color:#FFFFFF; font-size:11px;margin-left:21px">10. For any concerns related to voucher, customers can write to the customer support department at <a style="color: #a2c25a" th:href="${_tu.prop('company.app.url')+'/pub/redirect?identity='+ data.identityInt+'&ref=WIBI&linkd=d3d3LndhbnRJVGJ1eUlULmNvbQ=='}">support@wantitbuyit.com</a> or Call Hotline @ 1800053.</p>
+											<p style="color:#FFFFFF; font-size:11px;margin-left:21px">11. Procedure on how to redeem voucher will be mentioned on <a style="color: #a2c25a;" th:href="${_tu.prop('company.app.url')+'/pub/redirect?identity='+ data.identityInt+'&ref=WIBI&linkd=d3d3LndhbnRJVGJ1eUlULmNvbQ=='}">wantITbuyIT.com</a>.</p>
+											<p style="color:#FFFFFF; font-size:11px;margin-left:21px">12. Items once ordered cannot be replaced or refunded.</p>
+											<p style="color:#FFFFFF; font-size:11px;margin-left:21px">13. This promotion is not valid for HP Consumables including Ink Cartridges & Toners.</p>
+											
+										</td>
+									</tr>
+									<tr>
+									<td><hr style="border-top: 17px solid #a2c25a;margin:0px"/></td>
+									</tr>
+								
+									<tr>
+										<td class="content-block"><br/>Thanks and Regards,<br/>
+											<strong><span th:text="${_tu.prop('company.fullname')}" th:remove="tag"></span>,</strong><br/>
+											<span th:text="${_tu.prop('company.country')}" th:remove="tag"></span><br/>
+											<span th:text="${_tu.prop('support.contact.from')}" th:remove="tag"></span><br/>
+											</td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+					</table>
+					<div class="footer">
+					</div>
+				</div>
+			</td>
+			<td></td>
+		</tr>
+	</table>
+
+</body>
+</html>
