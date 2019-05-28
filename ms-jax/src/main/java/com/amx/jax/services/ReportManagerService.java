@@ -497,10 +497,12 @@ public class ReportManagerService extends AbstractService{
 						 obj.setAmountSaved(currencyQuoteName +"     "+KdSaved.toString());
 					 }
 					/** end **/
-					 
-					 String promotionMessage = promotionManager.getPromotionMessage(view.getDocumentNo(),view.getDocumentFinancialYear(),view.getCountryBranchId());
-					 
-					 obj.setPromotionMessage(promotionMessage==null?"":promotionMessage);
+					
+					 PromotionDto prmoDto  = promotionManager.getPromotionMessage(view.getDocumentNo(),view.getDocumentFinancialYear(),view.getCountryBranchId(),currencyQuoteName);
+					 if(prmoDto!=null && !StringUtils.isBlank(prmoDto.getPrizeMessage())) {
+						 obj.setPromotionMessage(prmoDto.getPrizeMessage());
+					 }
+					
 					
 				} catch (Exception e) {
 					logger.info( "Exception Occured While Report2 "+e.getMessage());
