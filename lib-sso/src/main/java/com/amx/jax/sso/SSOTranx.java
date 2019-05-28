@@ -31,11 +31,13 @@ public class SSOTranx extends TxCacheBox<SSOModel> {
 
 		private ClientType clientType;
 		private BigDecimal terminalId;
+		private Long createdStamp;
 
 		private EmployeeDetailsDTO userDetails = null;
 
 		public SSOModel() {
 			this.userClient = new UserClientDto();
+			this.createdStamp = System.currentTimeMillis();
 		}
 
 		public String getReturnUrl() {
@@ -110,6 +112,14 @@ public class SSOTranx extends TxCacheBox<SSOModel> {
 
 		public void setTerminalId(BigDecimal terminalId) {
 			this.terminalId = terminalId;
+		}
+
+		public Long getCreatedStamp() {
+			return createdStamp;
+		}
+
+		public void setCreatedStamp(Long createdStamp) {
+			this.createdStamp = createdStamp;
 		}
 
 	}

@@ -131,13 +131,18 @@ public class SSOServerController {
 			@RequestParam(required = false) Long refresh, HttpServletResponse resp,
 			@RequestParam(required = false, value = AppConstants.TRANX_ID_XKEY) String trnxId)
 			throws MalformedURLException, URISyntaxException {
-		if (!ArgUtil.isEmpty(trnxId) && (ArgUtil.isEmpty(refresh) || TimeUtils.isExpired(refresh, 5 * 60 * 1000))) {
-			URLBuilder builder = new URLBuilder();
-			builder.path(appConfig.getAppPrefix() + SSOConstants.SSO_LOGIN_URL_REQUIRED)
-					.queryParam(AppConstants.TRANX_ID_XKEY, AppContextUtil.getTraceId())
-					.queryParam("refresh", System.currentTimeMillis());
-			resp.setHeader("Location", builder.getRelativeURL());
-			resp.setStatus(302);
+		if (sSOTranx.get() != null) {
+			SSOModel x = sSOTranx.get();
+			refresh = x.getCreatedStamp();
+			if ((ArgUtil.isEmpty(refresh) || TimeUtils.isExpired(refresh, 60 * 1000))) {
+				URLBuilder builder = new URLBuilder();
+				builder.path(appConfig.getAppPrefix() + SSOConstants.SSO_LOGIN_URL_REQUIRED)
+						.queryParam(AppConstants.TRANX_ID_XKEY, AppContextUtil.getTraceId())
+						.queryParam("refresh", System.currentTimeMillis());
+				resp.setHeader("Location", builder.getRelativeURL());
+				resp.setStatus(302);
+			}
+			sSOTranx.put(x);
 		}
 		ssoUser.generateSAC();
 		model.addAllAttributes(getModelMap());
