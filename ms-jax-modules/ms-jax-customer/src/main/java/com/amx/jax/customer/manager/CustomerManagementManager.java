@@ -89,7 +89,7 @@ public class CustomerManagementManager {
 			offsiteCustomer.setCustomerFlags(customerFlagManager.getCustomerFlags(customer.getCustomerId()));
 			offsiteCustomer
 					.setCustomerEmploymentDetails(customerEmployementManager.createCustomerEmploymentDetail(customer));
-			offsiteCustomer.setCustomerDocuments(customerDocumentManager.getCustomerImages(customer.getCustomerId()));
+			offsiteCustomer.setCustomerDocuments(customerDocumentManager.getCustomerUploadDocuments(customer.getCustomerId()));
 		} else {
 			jaxError = JaxError.CUSTOMER_NOT_FOUND;
 		}

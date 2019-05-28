@@ -22,7 +22,7 @@ public class CustomerDocumentManager {
 	@Autowired
 	CustomerIdProofManager customerIdProofManager;
 
-	public List<CustomerDocumentInfo> getCustomerImages(BigDecimal customerId) {
+	public List<CustomerDocumentInfo> getCustomerUploadDocuments(BigDecimal customerId) {
 
 		CustomerDocumentInfo kycImage = fetchKycCustomerImage(customerId);
 		List<CustomerDocumentInfo> customerOtherDocumentImages = fetchCustomerOtherDocuments(customerId);
