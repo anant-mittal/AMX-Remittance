@@ -54,6 +54,7 @@ public class DailyPromotionManager {
 				if (date.after(startDate) && date.before(endDate)) {
 					DailyPromotionDTO dailyPromotionDTO = getDailyPromotions(remittanceTransactionId, personInfo);
 					sendVoucherEmail(dailyPromotionDTO, personInfo);
+					sendVoucherEmailMarketing(dailyPromotionDTO, personInfo);
 				}
 			}
 			else {
@@ -101,24 +102,42 @@ public class DailyPromotionManager {
 	}
 
 	public void sendVoucherEmail(DailyPromotionDTO dailyPromotionDTO, PersonInfo personInfo) {
-
 		try {
-			if (dailyPromotionDTO.getPromotionCode() != null)
+			if (dailyPromotionDTO.getPromotionCode() != null) {
 				logger.info("Sending WantIT BuyIT voucher Email to customer : ");
-			Email wantITbuyITEmail = new Email();
-			wantITbuyITEmail.setSubject("Congratulations! You have got a coupon from Al Mulla Exchange.");
-			if (personInfo.getEmail() != null) {
-				wantITbuyITEmail.addTo(personInfo.getEmail());
-				wantITbuyITEmail.addTo("raynatest1234@gmail.com");
-			} else {
-				wantITbuyITEmail.addTo("raynatest1234@gmail.com");
+				Email wantITbuyITEmail = new Email();
+				wantITbuyITEmail.setSubject("Congratulations! You have got a coupon from Al Mulla Exchange.");
+				if (personInfo.getEmail() != null) {
+					wantITbuyITEmail.addTo(personInfo.getEmail());
+				} else {
+					wantITbuyITEmail.addTo("raynatest1234@gmail.com");
+				}
+				wantITbuyITEmail.setITemplate(TemplatesMX.WANTIT_BUYIT_PROMOTION);
+				wantITbuyITEmail.setHtml(true);
+				wantITbuyITEmail.getModel().put(NotificationConstants.RESP_DATA_KEY, dailyPromotionDTO);
+				postManService.sendEmailAsync(wantITbuyITEmail);
 			}
-			wantITbuyITEmail.setITemplate(TemplatesMX.WANTIT_BUYIT_PROMOTION);
-			wantITbuyITEmail.setHtml(true);
-			wantITbuyITEmail.getModel().put(NotificationConstants.RESP_DATA_KEY, dailyPromotionDTO);
-			postManService.sendEmailAsync(wantITbuyITEmail);
+			
 		} catch (Exception e) {
 			logger.error("Error while sending mail WantIT BuyIT : " + e.getMessage());
+		}
+	}
+	
+	private void sendVoucherEmailMarketing(DailyPromotionDTO dailyPromotionDTO, PersonInfo personInfo) {
+		try {
+			if (dailyPromotionDTO.getPromotionCode() != null) {
+				logger.info("Sending WantIT BuyIT voucher Email to Marketing New : ");
+				Email wantITbuyITEmail = new Email();
+				wantITbuyITEmail.setSubject("Congratulations! You have got a coupon from Al Mulla Exchange.");
+				wantITbuyITEmail.addTo("preetikatigar3101@yahoo.com");
+				wantITbuyITEmail.addTo("bhoir_subodh24@yahoo.co.in");
+				wantITbuyITEmail.setITemplate(TemplatesMX.WANTIT_BUYIT_PROMOTION);
+				wantITbuyITEmail.setHtml(true);
+				wantITbuyITEmail.getModel().put(NotificationConstants.RESP_DATA_KEY, dailyPromotionDTO);
+				postManService.sendEmailAsync(wantITbuyITEmail);
+			}
+		} catch (Exception e) {
+			logger.error("Error while sending mail WantIT BuyIT to Marketing : " + e.getMessage());
 		}
 	}
 
