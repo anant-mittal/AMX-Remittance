@@ -24,6 +24,7 @@ import com.amx.jax.pricer.dbmodel.PipsMaster;
 import com.amx.jax.pricer.dbmodel.RoutingHeader;
 import com.amx.jax.pricer.dto.AmountSlabDetails;
 import com.amx.jax.pricer.dto.ChannelDetails;
+import com.amx.jax.pricer.dto.CurrencyMasterDTO;
 import com.amx.jax.pricer.dto.CustomerCategoryDetails;
 import com.amx.jax.pricer.dto.DiscountDetailsReqRespDTO;
 import com.amx.jax.pricer.dto.DiscountMgmtReqDTO;
@@ -144,12 +145,26 @@ public class ExchangeDataService {
 		}
 		
 		if(null != discountdetailsRequestDTO.getCustomerCategoryDetails()) {
-						discountManager.commitCustomerDiscountModel(discountdetailsRequestDTO.getCustomerCategoryDetails());
+			discountManager.commitCustomerDiscountModel(discountdetailsRequestDTO.getCustomerCategoryDetails());
 		}
 		
 		if(null != discountdetailsRequestDTO.getAmountSlabDetails()) {
 			discountManager.commitPipsDiscount(discountdetailsRequestDTO.getAmountSlabDetails());
 		}
+		
+		return AmxApiResponse.build();
+	}
+
+	public List<GroupDetails> getGroupInfoForCurrency() {
+		
+		List<GroupingMaster> groupingMaster = groupingMasterDao.getGroupForCurrency();
+		List<GroupDetails> groupInfo = discountManager.convertGroupInfo(groupingMaster);
+		
+		return groupInfo;
+	}
+
+	public AmxApiResponse<CurrencyMasterDTO, Object> updateCurrencyGroupId(BigDecimal groupId, BigDecimal currencyId) {
+		discountManager.commitCurrencyGroupId(groupId, currencyId);
 		
 		return AmxApiResponse.build();
 	}

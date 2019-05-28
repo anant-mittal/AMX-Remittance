@@ -25,4 +25,8 @@ public class CurrencyMasterDao {
 		return repo.findOne(currencyId);
 	}
 
+	public void updateCurrencyGroupId(CurrencyMasterModel currencyById) {
+		repo.save(currencyById);
+	}
+
 }

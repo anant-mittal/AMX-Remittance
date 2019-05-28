@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import com.amx.jax.pricer.dao.BankMasterDao;
 import com.amx.jax.pricer.dao.ChannelDiscountDao;
+import com.amx.jax.pricer.dao.CurrencyMasterDao;
 import com.amx.jax.pricer.dao.CustCatDiscountDao;
 import com.amx.jax.pricer.dao.DiscountMasterDao;
 import com.amx.jax.pricer.dao.PipsMasterDao;
@@ -19,6 +20,7 @@ import com.amx.jax.pricer.dao.RoutingDao;
 import com.amx.jax.pricer.dao.ServiceMasterDescDao;
 import com.amx.jax.pricer.dbmodel.BankMasterModel;
 import com.amx.jax.pricer.dbmodel.ChannelDiscount;
+import com.amx.jax.pricer.dbmodel.CurrencyMasterModel;
 import com.amx.jax.pricer.dbmodel.CustomerCategoryDiscount;
 import com.amx.jax.pricer.dbmodel.DiscountMaster;
 import com.amx.jax.pricer.dbmodel.GroupingMaster;
@@ -57,6 +59,9 @@ public class DiscountManager {
 	
 	@Autowired
 	DiscountMasterDao discountMasterDao;
+	
+	@Autowired
+	CurrencyMasterDao currencyMasterDao;
 
 	// ------ To get Discount details Start here ------
 	public List<ChannelDetails> convertChannelData(List<ChannelDiscount> channelDiscount, BigDecimal groupId) {
@@ -351,9 +356,17 @@ public class DiscountManager {
 			groupDetails.setGroupId(groupList.getId());
 			groupDetails.setGroupName(groupList.getGroupName());
 			groupDetails.setGroupType(groupList.getGroupType());
+			groupDetails.setIsActive(groupList.getIsActive());
 			
 			list.add(groupDetails);
 		}
 		return list;
+	}
+
+	public void commitCurrencyGroupId(BigDecimal groupId, BigDecimal currencyId) {
+		CurrencyMasterModel currencyById = currencyMasterDao.getByCurrencyId(currencyId);
+		
+		currencyById.setCurrGroupId(groupId);
+		currencyMasterDao.updateCurrencyGroupId(currencyById);
 	}
 }

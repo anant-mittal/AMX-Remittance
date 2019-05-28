@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.pricer.ProbotDataService;
 import com.amx.jax.pricer.dto.DiscountMgmtReqDTO;
+import com.amx.jax.pricer.dto.GroupDetails;
+import com.amx.jax.pricer.dto.CurrencyMasterDTO;
 import com.amx.jax.pricer.dto.DiscountDetailsReqRespDTO;
 import com.amx.jax.pricer.dto.RoutBanksAndServiceRespDTO;
 import com.amx.jax.pricer.service.ExchangeDataService;
@@ -57,5 +59,21 @@ public class ProbotDataServiceApiController implements ProbotDataService{
 		LOGGER.info("In Save API of Discount Details");
 				
 		return dataService.saveDiscountDetails(discountdetailsRequestDTO);
+	}
+
+	@Override
+	@RequestMapping(value = ApiEndPoints.GET_CUR_GROUPING_DATA, method = RequestMethod.POST)
+	public AmxApiResponse<GroupDetails, Object> getCurrencyGroupingData() {
+		List<GroupDetails> groupInfoForCurrency = dataService.getGroupInfoForCurrency();
+		
+		return AmxApiResponse.buildList(groupInfoForCurrency);
+	}
+
+	@Override
+	@RequestMapping(value = ApiEndPoints.UPDATE_CUR_GROUP_ID, method = RequestMethod.POST)
+	public AmxApiResponse<CurrencyMasterDTO, Object> updateCurrencyGroupId(
+			@RequestParam(required = true) BigDecimal groupId, @RequestParam(required = true) BigDecimal currencyId) {
+		
+		return dataService.updateCurrencyGroupId(groupId, currencyId);
 	}
 }

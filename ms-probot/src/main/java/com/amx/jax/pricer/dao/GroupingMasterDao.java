@@ -23,4 +23,8 @@ public class GroupingMasterDao {
 		return (List<GroupingMaster>) repository.findAll();
 	}
 
+	public List<GroupingMaster> getGroupForCurrency() {
+		return repository.getGroupForCurrency();
+	}
+
 }

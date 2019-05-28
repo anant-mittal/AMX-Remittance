@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.pricer.dto.DiscountMgmtReqDTO;
+import com.amx.jax.pricer.dto.GroupDetails;
+import com.amx.jax.pricer.dto.CurrencyMasterDTO;
 import com.amx.jax.pricer.dto.DiscountDetailsReqRespDTO;
 import com.amx.jax.pricer.dto.RoutBanksAndServiceRespDTO;
 import com.amx.jax.pricer.exception.PricerServiceError;
@@ -18,5 +20,9 @@ public interface ProbotDataService extends AbstractProbotInterface{
 	@PricerApiStatus({ PricerServiceError.INVALID_CHANNEL_DISC_PIPS, PricerServiceError.INVALID_CUST_CAT_DISC_PIPS,
 		PricerServiceError.INVALID_AMT_SLAB_DISC_PIPS })
 	public AmxApiResponse<DiscountDetailsReqRespDTO, Object> saveDiscountDetails(DiscountDetailsReqRespDTO discountMgmtReqDTO);
+	
+	public AmxApiResponse<GroupDetails, Object> getCurrencyGroupingData();
+	
+	public AmxApiResponse<CurrencyMasterDTO, Object> updateCurrencyGroupId(BigDecimal groupId, BigDecimal currencyId);
 	
 }
