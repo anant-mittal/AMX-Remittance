@@ -23,6 +23,7 @@ import com.amx.amxlib.model.PromotionDto;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.async.ExecutorConfig;
+import com.amx.jax.config.JaxTenantProperties;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.JaxEmployeeDao;
 import com.amx.jax.dao.RemittanceApplicationDao;
@@ -99,6 +100,9 @@ public class RemittancePaymentManager extends AbstractService{
 	RemittanceManager remittanceManager;
 	@Autowired
 	JaxEmailNotificationService jaxEmailNotificationService;
+	
+	@Autowired
+	DailyPromotionManager dailyPromotionManager;
 	
 	public ApiResponse<PaymentResponseDto> paymentCapture(PaymentResponseDto paymentResponse) {
 		ApiResponse response = null;
@@ -188,6 +192,10 @@ public class RemittancePaymentManager extends AbstractService{
 								remittanceTransaction.getDocumentFinanceYear());
 						PersonInfo personInfo = userService.getPersonInfo(customer.getCustomerId());
 						promotionManager.sendVoucherEmail(promotDto, personInfo);
+						
+						// --- WantIT BuyIT Coupons Promotions
+						dailyPromotionManager.applyWantITbuyITCoupans(remittanceTransaction.getRemittanceTransactionId(), personInfo);
+						
 						reportManagerService.generatePersonalRemittanceReceiptReportDetails(trxnDto, Boolean.TRUE);
 						List<RemittanceReceiptSubreport> rrsrl = reportManagerService
 								.getRemittanceReceiptSubreportList();
