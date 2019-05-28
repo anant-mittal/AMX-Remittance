@@ -2,7 +2,8 @@ package com.amx.jax.customer;
 
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
-import com.amx.jax.model.request.CreateCustomerInfoRequest;
+import com.amx.jax.model.customer.CreateCustomerInfoRequest;
+import com.amx.jax.model.customer.UploadCustomerKycRequest;
 import com.amx.jax.model.request.customer.UpdateCustomerInfoRequest;
 
 public interface ICustomerManagementController {
@@ -10,6 +11,8 @@ public interface ICustomerManagementController {
 		public static final String PREFIX = "/customer-management";
 		public static final String CREATE_CUSTOMER = PREFIX + "/create-customer";
 		public static final String UPDATE_CUSTOMER = PREFIX + "/update-customer";
+		public static final String UPLOAD_CUSTOMER_KYC = PREFIX + "	/upload-customer-kyc";
+		public static final String UPLOAD_CUSTOMER_DOCUMENT = PREFIX + "/upload-customer-document";
 	}
 
 	public static class ApiParams {
@@ -24,5 +27,7 @@ public interface ICustomerManagementController {
 	AmxApiResponse<BoolRespModel, Object> createCustomer(CreateCustomerInfoRequest createCustomerRequest);
 
 	AmxApiResponse<BoolRespModel, Object> updateCustomer(UpdateCustomerInfoRequest createCustomerRequest);
+
+	AmxApiResponse<BoolRespModel, Object> uploadCustomerKyc(UploadCustomerKycRequest uploadCustomerKycRequest);
 
 }
