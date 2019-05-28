@@ -129,12 +129,12 @@ public class RestService {
 
 	public Ajax ajax(String url) {
 		this.getOutFilters();
-		return new Ajax(getRestTemplate(), url).header("x-app-version", appConfig.getAppVersion());
+		return new Ajax(getRestTemplate(), url).header(AppConstants.APP_VERSION_XKEY, appConfig.getAppVersion());
 	}
 
 	public Ajax ajax(URI uri) {
 		this.getOutFilters();
-		return new Ajax(getRestTemplate(), uri).header("x-app-version", appConfig.getAppVersion());
+		return new Ajax(getRestTemplate(), uri).header(AppConstants.APP_VERSION_XKEY, appConfig.getAppVersion());
 	}
 
 	public static class Ajax {

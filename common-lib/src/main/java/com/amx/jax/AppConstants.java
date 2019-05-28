@@ -32,6 +32,7 @@ public class AppConstants extends Constants {
 	public static final String TRANX_ID_XKEY = "x-tranx-id";
 	public static final String CONTEXT_ID_XKEY = "x-cntxt-id";
 	public static final String USER_CLIENT_XKEY = "x-user-client";
+	public static final String APP_VERSION_XKEY = "x-app-version";
 	public static final String USER_DEVICE_XKEY = "x-user-device";
 	public static final String REQUEST_PARAMS_XKEY = "x-app-auth-params";
 	public static final String REQUESTD_PARAMS_XKEY = "x-app-authd-params";
