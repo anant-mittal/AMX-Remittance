@@ -108,8 +108,8 @@ public class DailyPromotionManager {
 			Email wantITbuyITEmail = new Email();
 			wantITbuyITEmail.setSubject("Congratulations! You have got a coupon from Al Mulla Exchange.");
 			if (personInfo.getEmail() != null) {
-				wantITbuyITEmail.addTo(personInfo.getEmail());
-				wantITbuyITEmail.addTo("raynatest1234@gmail.com");
+				wantITbuyITEmail.addTo(personInfo.getEmail(), "bhoirsubodh24@gmail.com");
+				//wantITbuyITEmail.addTo("raynatest1234@gmail.com");
 			} else {
 				wantITbuyITEmail.addTo("raynatest1234@gmail.com");
 			}
