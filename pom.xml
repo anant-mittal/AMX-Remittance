@@ -146,6 +146,7 @@
 		<!-- <module>server-stomp</module> -->
 
 		<module>sw-adapter</module>
+		<module>sw-updater</module>
 		<module>server-regex</module>
 		<!-- <module>server-kiosk</module> -->
 		<!-- <module>server-sample</module> -->

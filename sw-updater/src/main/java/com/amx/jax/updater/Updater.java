@@ -1,5 +1,5 @@
 
-package update;
+package com.amx.jax.updater;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
@@ -7,19 +7,23 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -31,7 +35,13 @@ import javax.swing.JTextArea;
  *
  * @author Thomas Otero (H3R3T1C)
  */
-public class Main_Gui extends JFrame {
+public class Updater extends JFrame {
+
+	private static final long serialVersionUID = 7655016354046052027L;
+	private static File adapterFolder = null;
+	private static String sourceServer = "https://docs.amxremit.com/dist-sw-adapter/";
+	private static String adapterFile = "sw-adapter-appd-kwt-java8.jar";
+	private static String adapterFileMd5 = adapterFile + ".md5";
 
 	private Thread worker;
 	private final String root = "update/";
@@ -43,7 +53,7 @@ public class Main_Gui extends JFrame {
 	private JPanel pan1;
 	private JPanel pan2;
 
-	public Main_Gui() {
+	public Updater() {
 		initComponents();
 		outText.setText("Contacting Download Server...");
 		download();
@@ -94,12 +104,19 @@ public class Main_Gui extends JFrame {
 				new Runnable() {
 					public void run() {
 						try {
-							downloadFile(getDownloadLinkFromHost());
-							unzip();
-							copyFiles(new File(root), new File("").getAbsolutePath());
-							cleanup();
-							launch.setEnabled(true);
-							outText.setText(outText.getText() + "\nUpdate Finished!");
+
+							String fileLink = getDownloadLinkFromHost();
+							if (fileLink != null) {
+								downloadFile(adapterFile, adapterFile);
+								downloadFile(adapterFileMd5, adapterFileMd5);
+								// unzip();
+								// copyFiles(new File(root), new File("").getAbsolutePath());
+								// cleanup();
+								launch.setEnabled(true);
+								outText.setText(outText.getText() + "\nUpdate Finished!");
+							} else {
+								outText.setText(outText.getText() + "\nNo Update Required!");
+							}
 						} catch (Exception ex) {
 							ex.printStackTrace();
 							JOptionPane.showMessageDialog(null, "An error occured while preforming update!");
@@ -201,13 +218,14 @@ public class Main_Gui extends JFrame {
 
 	}
 
-	private void downloadFile(String link) throws MalformedURLException, IOException {
-		URL url = new URL(link);
+	private void downloadFile(String source, String target) throws MalformedURLException, IOException {
+		URL url = new URL(sourceServer + source);
 		URLConnection conn = url.openConnection();
 		InputStream is = conn.getInputStream();
 		long max = conn.getContentLength();
 		outText.setText(outText.getText() + "\n" + "Downloding file...\nUpdate Size(compressed): " + max + " Bytes");
-		BufferedOutputStream fOut = new BufferedOutputStream(new FileOutputStream(new File("update.zip")));
+		BufferedOutputStream fOut = new BufferedOutputStream(
+				new FileOutputStream(new File(adapterFolder + "/" + target)));
 		byte[] buffer = new byte[32 * 1024];
 		int bytesRead = 0;
 		int in = 0;
@@ -223,33 +241,67 @@ public class Main_Gui extends JFrame {
 	}
 
 	private String getDownloadLinkFromHost() throws MalformedURLException, IOException {
-		String path = "https://docs.amxremit.com/dist-sw-adapter/";
-		URL url = new URL(path);
+		String currentMD5String = null;
+		BufferedReader brG = null;
+		try (BufferedReader br = new BufferedReader(new FileReader(adapterFolder + "/" + adapterFileMd5))) {
+			StringBuilder sb = new StringBuilder();
+			String line = br.readLine();
 
-		InputStream html = null;
-
-		html = url.openStream();
-
-		int c = 0;
-		StringBuilder buffer = new StringBuilder("");
-
-		while (c != -1) {
-			c = html.read();
-			buffer.append((char) c);
-
+			while (line != null) {
+				sb.append(line);
+				sb.append(System.lineSeparator());
+				line = br.readLine();
+			}
+			currentMD5String = sb.toString().replaceAll("[^0-9a-zA-z.]", "");
+			brG = br;
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (brG != null) {
+				brG.close();
+			}
 		}
-		return buffer.substring(buffer.indexOf("[url]") + 5, buffer.indexOf("[/url]"));
+
+		String newMD5String = null;
+		try {
+			URL url = new URL(sourceServer + "/" + adapterFileMd5);
+			InputStream html = null;
+			html = url.openStream();
+			int c = 0;
+			StringBuilder buffer = new StringBuilder("");
+
+			while (c != -1) {
+				c = html.read();
+				buffer.append((char) c);
+			}
+			newMD5String = buffer.toString().replaceAll("[^0-9a-zA-z.]", "");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		System.out.println(currentMD5String + "=" + newMD5String);
+
+		if (newMD5String == null || newMD5String.equals(currentMD5String)) {
+			return null;
+		}
+		return sourceServer + "/" + adapterFile;
+
 	}
 
-	private static String sourceServer = "https://docs.amxremit.com/dist-sw-adapter/";
-	private static String adapterFile = "sw-adapter-appd-kwt-java8.jar";
-
 	public static void main(String args[]) {
-		final Class<?> referenceClass = Main_Gui.class;
+		final Class<?> referenceClass = Updater.class;
 		final URL url = referenceClass.getProtectionDomain().getCodeSource().getLocation();
 		try {
-			final File jarPath = new File(url.toURI()).getParentFile();
-			System.out.println(jarPath); // this is the path you want
+			adapterFolder = new File(url.toURI()).getParentFile();
+			// this is the path you want
+			String[] filenames = adapterFolder.list();
+
+			for (String file : filenames) {
+				if (file.endsWith(".jar")) {
+					adapterFile = file;
+				}
+			}
+			adapterFileMd5 = adapterFile + ".md5";
+
 		} catch (final URISyntaxException e) {
 			// etc.
 		}
@@ -265,7 +317,7 @@ public class Main_Gui extends JFrame {
 
 		java.awt.EventQueue.invokeLater(new Runnable() {
 			public void run() {
-				new Main_Gui().setVisible(true);
+				new Updater().setVisible(true);
 			}
 		});
 	}
