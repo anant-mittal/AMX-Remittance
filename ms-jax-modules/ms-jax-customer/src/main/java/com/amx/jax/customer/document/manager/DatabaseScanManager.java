@@ -49,7 +49,7 @@ public class DatabaseScanManager implements DocumentScanManager {
 				BigDecimal docFinYear = dmsMapping.getFinancialYear();
 				customerDocumentDao.copyBlobDataIntoJava(docBlobId, docFinYear);
 				DocBlobUpload docBlobUpload = dOCBLOBRepository.findByDocBlobIDAndDocFinYear(docBlobId, docFinYear);
-				customerDocumentImage.setDocumentRenderType(DocumentImageRenderType.STRING);
+				customerDocumentImage.setDocumentRenderType(DocumentImageRenderType.TEXT);
 				String kycImage = IoUtils.inputStreamToString(docBlobUpload.getDocContent().getBinaryStream());
 				kycImage = Base64.encodeBase64String(kycImage.getBytes());
 				customerDocumentImage.setDocumentString(kycImage);
