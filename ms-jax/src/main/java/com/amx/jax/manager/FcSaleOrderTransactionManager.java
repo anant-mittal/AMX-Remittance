@@ -200,9 +200,9 @@ public class FcSaleOrderTransactionManager extends AbstractModel{
 				throw new GlobalException(JaxError.MIN_DENOMINATION_ERROR,"The foreign amount ("+fcAmountDouble+") should be mutiple of "+minDenoAmount);
 			}
 		  }
-		}else {
-			  throw new GlobalException(JaxError.MIN_DENOMINATION_ERROR,"Minimum denomination is not defined");
-		  }
-		
+		} /*
+			 * else { throw new GlobalException(JaxError.
+			 * MIN_DENOMINATION_ERROR,"Minimum denomination is not defined"); }
+			 */
 	}
 }
