@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.customer.document.validate.KycScanValidator;
 import com.amx.jax.dbmodel.CustomerIdProof;
 import com.amx.jax.dbmodel.IdentityTypeMaster;
 import com.amx.jax.model.customer.CustomerDocumentInfo;
@@ -23,6 +24,8 @@ public class CustomerDocumentManager {
 	DatabaseScanManager databaseImageScanManager;
 	@Autowired
 	CustomerIdProofManager customerIdProofManager;
+	@Autowired
+	KycScanValidator kycScanValidator;
 
 	public List<CustomerDocumentInfo> getCustomerUploadDocuments(BigDecimal customerId) {
 
@@ -66,6 +69,7 @@ public class CustomerDocumentManager {
 	}
 
 	public UploadCustomerKycResponse uploadKycDocument(UploadCustomerKycRequest uploadCustomerKycRequest) {
+		kycScanValidator.validateUploadKycDocumentRequest(uploadCustomerKycRequest);
 		BigDecimal uploadReference = databaseImageScanManager.uploadKycDocument(uploadCustomerKycRequest);
 		UploadCustomerKycResponse uploadCustomerKycResponse = new UploadCustomerKycResponse();
 		uploadCustomerKycResponse.setUploadReference(uploadReference);

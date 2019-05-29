@@ -6,12 +6,16 @@ import java.sql.SQLException;
 import java.util.List;
 
 import javax.sql.rowset.serial.SerialBlob;
+import javax.transaction.Transactional;
 
 import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.jax.constants.DocumentScanIndic;
 import com.amx.jax.dal.CustomerDocumentDao;
@@ -20,6 +24,7 @@ import com.amx.jax.dbmodel.CustomerIdProof;
 import com.amx.jax.dbmodel.DmsApplMapping;
 import com.amx.jax.dbmodel.DocBlobUpload;
 import com.amx.jax.dbmodel.customer.CustomerDocumentUploadReferenceTemp;
+import com.amx.jax.model.customer.CustomerDocUploadType;
 import com.amx.jax.model.customer.CustomerDocumentInfo;
 import com.amx.jax.model.customer.DocumentImageRenderType;
 import com.amx.jax.model.customer.UploadCustomerKycRequest;
@@ -28,6 +33,7 @@ import com.amx.jax.repository.customer.CustomerDocumentUploadReferenceTempRepo;
 import com.amx.jax.userservice.manager.CustomerIdProofManager;
 import com.amx.utils.IoUtils;
 
+@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Component
 public class DatabaseScanManager implements DocumentScanManager {
 
@@ -42,7 +48,7 @@ public class DatabaseScanManager implements DocumentScanManager {
 	@Autowired
 	CustomerDocumentDao customerDocumentDao;
 	@Autowired
-	CustomerDocumentUploadReferenceTempRepo customerDocumentUploadReferenceTempRepo;
+	CustomerDocumentUploadManager customerDocumentUploadManager;
 
 	@Override
 	public CustomerDocumentInfo fetchKycImageInfo(CustomerIdProof customerIdProof) {
@@ -78,16 +84,22 @@ public class DatabaseScanManager implements DocumentScanManager {
 	 * @param uploadCustomerKycRequest
 	 * @return db identifier as reference of upload
 	 */
+	@Transactional
 	public BigDecimal uploadKycDocument(UploadCustomerKycRequest uploadCustomerKycRequest) {
+		customerDocumentUploadManager.findAndDeleteExistingRecord(uploadCustomerKycRequest.getIdentityInt(),
+				uploadCustomerKycRequest.getIdentityTypeId(), CustomerDocUploadType.KYC_PROOF);
 		CustomerDocumentUploadReferenceTemp docUploadRef = new CustomerDocumentUploadReferenceTemp();
 		docUploadRef.setScanIndic(DocumentScanIndic.DB_SCAN);
+		docUploadRef.setCustomerDocUploadType(CustomerDocUploadType.KYC_PROOF);
 		byte[] documentByteArray = Base64.decodeBase64(uploadCustomerKycRequest.getDocument());
 		try {
 			docUploadRef.setDbScanDocumentBlob(new SerialBlob(documentByteArray));
+			docUploadRef.setIdentityInt(uploadCustomerKycRequest.getIdentityInt());
+			docUploadRef.setIdentityTypeId(uploadCustomerKycRequest.getIdentityTypeId());
 		} catch (SQLException e) {
 			log.error("error in uploadKycDocument ", e);
 		}
-		customerDocumentUploadReferenceTempRepo.save(docUploadRef);
+		customerDocumentUploadManager.save(docUploadRef);
 		return docUploadRef.getId();
 	}
 }

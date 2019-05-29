@@ -14,14 +14,15 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import com.amx.jax.constants.DocumentScanIndic;
+import com.amx.jax.model.customer.CustomerDocUploadType;
 
 @Entity
 @Table(name = "JAX_CUST_DOC_UPLOAD_REF_TMP")
 public class CustomerDocumentUploadReferenceTemp {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE)
-	@SequenceGenerator(name = "JAX_CUST_DOC_UPLOAD_REF_TMP_S")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator="JAX_CUST_DOC_UPLOAD_REF_TMP_S")
+	@SequenceGenerator(sequenceName = "JAX_CUST_DOC_UPLOAD_REF_TMP_S", name = "JAX_CUST_DOC_UPLOAD_REF_TMP_S")
 	@Column(name = "ID")
 	BigDecimal id;
 
@@ -34,6 +35,16 @@ public class CustomerDocumentUploadReferenceTemp {
 
 	@Column(name = "DB_SCAN_DOCUMENT_BLOB")
 	Blob dbScanDocumentBlob;
+
+	@Column(name = "IDENTITY_INT")
+	String identityInt;
+
+	@Column(name = "IDENTITY_TYPE_ID")
+	BigDecimal identityTypeId;
+
+	@Column(name = "UPLOAD_DOC_TYPE")
+	@Enumerated(EnumType.STRING)
+	CustomerDocUploadType customerDocUploadType;
 
 	public BigDecimal getId() {
 		return id;
@@ -66,5 +77,37 @@ public class CustomerDocumentUploadReferenceTemp {
 	public void setDbScanDocumentBlob(Blob dbScanDocumentBlob) {
 		this.dbScanDocumentBlob = dbScanDocumentBlob;
 	}
+
+	public String getIdentityInt() {
+		return identityInt;
+	}
+
+	public void setIdentityInt(String identityInt) {
+		this.identityInt = identityInt;
+	}
+
+	public BigDecimal getIdentityTypeId() {
+		return identityTypeId;
+	}
+
+	public void setIdentityTypeId(BigDecimal identityTypeId) {
+		this.identityTypeId = identityTypeId;
+	}
+
+	public CustomerDocUploadType getCustomerDocUploadType() {
+		return customerDocUploadType;
+	}
+
+	public void setCustomerDocUploadType(CustomerDocUploadType customerDocUploadType) {
+		this.customerDocUploadType = customerDocUploadType;
+	}
+
+	@Override
+	public String toString() {
+		return "CustomerDocumentUploadReferenceTemp [id=" + id + ", scanIndic=" + scanIndic + ", identityInt="
+				+ identityInt + ", identityTypeId=" + identityTypeId + ", customerDocUploadType="
+				+ customerDocUploadType + "]";
+	}
+
 
 }

@@ -12,7 +12,7 @@ public interface ICustomerManagementController {
 		public static final String PREFIX = "/customer-management";
 		public static final String CREATE_CUSTOMER = PREFIX + "/create-customer";
 		public static final String UPDATE_CUSTOMER = PREFIX + "/update-customer";
-		public static final String UPLOAD_CUSTOMER_KYC = PREFIX + "	/upload-customer-kyc";
+		public static final String UPLOAD_CUSTOMER_KYC = PREFIX + "/upload-customer-kyc";
 		public static final String UPLOAD_CUSTOMER_DOCUMENT = PREFIX + "/upload-customer-document";
 	}
 
