@@ -1259,7 +1259,7 @@
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$R{label.otherCharges}]]>
+                                    <![CDATA[$R{label.vatRate}]]>
                                 </textFieldExpression>
                             </textField>
 
@@ -1306,7 +1306,7 @@
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$R{label.otherCharges}]]>
+                                    <![CDATA[$R{label.vatAmount}]]>
                                 </textFieldExpression>
                             </textField>
 
