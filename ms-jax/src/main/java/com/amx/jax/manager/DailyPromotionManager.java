@@ -53,7 +53,7 @@ public class DailyPromotionManager {
 				Date endDate = DateUtil.parseDate(endDateStr);
 				if (date.after(startDate) && date.before(endDate)) {
 					DailyPromotionDTO dailyPromotionDTO = getDailyPromotions(remittanceTransactionId, personInfo);
-					sendVoucherEmail(dailyPromotionDTO, personInfo);
+					//sendVoucherEmail(dailyPromotionDTO, personInfo);
 					sendVoucherEmailMarketing(dailyPromotionDTO, personInfo);
 				}
 			}
