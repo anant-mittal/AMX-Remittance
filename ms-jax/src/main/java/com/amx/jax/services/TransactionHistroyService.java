@@ -63,19 +63,21 @@ public class TransactionHistroyService extends AbstractService {
 	Logger logger = LoggerFactory.getLogger(TransactionHistroyDTO.class);
 
 	public ApiResponse getTransactionHistroy(BigDecimal cutomerReference, BigDecimal docfyr) {
+		
+		List<CustomerRemittanceTransactionHistoryView> trnxHistoryList = new ArrayList<CustomerRemittanceTransactionHistoryView>();
 		List<CustomerRemittanceTransactionView> trnxList = transactionHistroyDao
 				.getTransactionHistroy(cutomerReference);
 		ApiResponse response = getBlackApiResponse();
 		if (trnxList.isEmpty()) {
-			List<CustomerRemittanceTransactionHistoryView> trnxHistList = transactionHistroyDAO
+			trnxHistoryList = transactionHistroyDAO
 					.getTransactionHistroy(cutomerReference);
-			Set<BigDecimal> beneRelSeqSet = trnxHistList.stream().map(emp -> emp.getBeneficiaryRelationSeqId())
+			Set<BigDecimal> beneRelSeqSet = trnxHistoryList.stream().map(emp -> emp.getBeneficiaryRelationSeqId())
 					.collect(Collectors.toSet());
 			List<BenificiaryListView> beneList = beneficiaryOnlineDao.getBeneficiaryRelationShipSeqIds(
 					metaData.getCustomerId(), new ArrayList<BigDecimal>(beneRelSeqSet));
 			Map<BigDecimal, BenificiaryListView> beneMap = beneList.stream()
 					.collect(Collectors.toMap(BenificiaryListView::getBeneficiaryRelationShipSeqId, x -> x));
-			response.getData().getValues().addAll(convert_v2(trnxHistList,beneMap));
+			response.getData().getValues().addAll(convert_v2(trnxHistoryList,beneMap));
 			response.setResponseStatus(ResponseStatus.OK);
 		
 		} else {
@@ -90,8 +92,12 @@ public class TransactionHistroyService extends AbstractService {
 		    response.getData().getValues().addAll(convert(trnxList,beneMap));
 			response.setResponseStatus(ResponseStatus.OK);
 		}
+		if (trnxList.isEmpty() && trnxHistoryList.isEmpty()) {
+			throw new GlobalException(JaxError.TRANSACTION_HISTORY_NOT_FOUND, "Transaction histroy not found");
+		}else {
 		response.getData().setType("trnxHist");
 		return response;
+	}
 	}
 	
 
@@ -140,7 +146,7 @@ public class TransactionHistroyService extends AbstractService {
 	public ApiResponse getTransactionHistroyDateWise(BigDecimal cutomerReference, BigDecimal docfyr, String fromDate,
 			String toDate) {
 		List<CustomerRemittanceTransactionView> trnxList;
-		List<CustomerRemittanceTransactionHistoryView> trnxHistoryList = null;
+		List<CustomerRemittanceTransactionHistoryView> trnxHistoryList = new ArrayList<CustomerRemittanceTransactionHistoryView>();
 		ApiResponse response = getBlackApiResponse();
 		if (docfyr != null) {
 			trnxList = transactionHistroyDao.getTransactionHistroyDocfyrDateWise(cutomerReference, docfyr, fromDate,
