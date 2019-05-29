@@ -37,6 +37,7 @@ import com.amx.jax.pricer.exception.PricerServiceError;
 import com.amx.jax.pricer.exception.PricerServiceException;
 import com.amx.jax.pricer.var.PricerServiceConstants;
 import com.amx.jax.pricer.var.PricerServiceConstants.SERVICE_GROUP;
+import com.amx.utils.ArgUtil;
 import com.amx.utils.DateUtil;
 import com.amx.utils.JsonUtil;
 
@@ -48,7 +49,8 @@ public class RemitRoutingManager {
 	private static final int DEF_START_TIME = 8;
 	private static final int DEF_STOP_TIME = 18;
 
-	private static final int KWT_TREASURY_FUNDING_TIME = 12;
+	// TODO : Treasury Funding Time.
+	// private static final int KWT_TREASURY_FUNDING_TIME = 12;
 
 	/** The Constant LOGGER. */
 	private static final Logger LOGGER = LoggerFactory.getLogger(RemitRoutingManager.class);
@@ -85,6 +87,7 @@ public class RemitRoutingManager {
 		if (SERVICE_GROUP.CASH.equals(exchangeRateAndRoutingRequest.getServiceGroup())) {
 
 			/**
+			 * Only For Cash : <br>
 			 * Hard Condition : RoutingBankId = BeneBankId And RoutingBankBranchId =
 			 * BeneBankBranchId
 			 */
@@ -111,11 +114,12 @@ public class RemitRoutingManager {
 
 		if (null == routingMatrix || routingMatrix.isEmpty()) {
 
-			LOGGER.info("Routing Matrix is Data is Empty or Null for the Pricing/Routing Request");
+			LOGGER.error("Routing Matrix is Data is Empty or Null for the Pricing/Routing Request");
 
 			throw new PricerServiceException(PricerServiceError.INVALID_ROUTING_BANK_IDS,
 					"Invalid Routing Bank Ids : None Found matching with the Requested Ids: "
-							+ exchangeRateAndRoutingRequest.getRoutingBankIds());
+							+ exchangeRateAndRoutingRequest.getRoutingBankIds() + " Service Group: "
+							+ exchangeRateAndRoutingRequest.getServiceGroup());
 		}
 
 		List<TransientRoutingComputeDetails> routingComputationObjects = new ArrayList<TransientRoutingComputeDetails>();
@@ -288,9 +292,9 @@ public class RemitRoutingManager {
 				}
 
 				estmdProcessingDeliveryDetails = this.getEstimatedBlockDelivery(processingStartTT, pTimezone,
-						new BigDecimal(1), new BigDecimal(7), new BigDecimal(DEF_START_TIME),
-						new BigDecimal(DEF_STOP_TIME), new BigDecimal(0), new BigDecimal(0), new BigDecimal(0),
-						new BigDecimal(0), new BigDecimal(0), Boolean.FALSE, processingCountryId, 0);
+						BigDecimal.ONE, new BigDecimal(7), new BigDecimal(DEF_START_TIME),
+						new BigDecimal(DEF_STOP_TIME), BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
+						BigDecimal.ZERO, BigDecimal.ZERO, Boolean.FALSE, processingCountryId, 0);
 
 				routingDetails.setProcessingDeliveryDetails(estmdProcessingDeliveryDetails);
 
@@ -338,9 +342,9 @@ public class RemitRoutingManager {
 									+ exchangeRateAndRoutingRequest.toJSON());
 				}
 
-				estmdBeneDeliveryDetails = this.getEstimatedBlockDelivery(beneStartTT, beneTimezone, new BigDecimal(1),
+				estmdBeneDeliveryDetails = this.getEstimatedBlockDelivery(beneStartTT, beneTimezone, BigDecimal.ONE,
 						new BigDecimal(7), new BigDecimal(DEF_START_TIME), new BigDecimal(DEF_STOP_TIME),
-						new BigDecimal(0), new BigDecimal(0), new BigDecimal(0), new BigDecimal(0), new BigDecimal(0),
+						BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
 						Boolean.FALSE, beneCountryId, 0);
 
 				routingDetails.setBeneBankDeliveryDetails(estmdBeneDeliveryDetails);
@@ -528,6 +532,21 @@ public class RemitRoutingManager {
 	private WorkingHoursData computeWorkMatrix(BigDecimal weekFrom, BigDecimal weekTo, BigDecimal weekHrsFrom,
 			BigDecimal weekHrsTo, BigDecimal weekEndFrom, BigDecimal weekEndTo, BigDecimal weekEndHrsFrom,
 			BigDecimal weekEndHrsTo, BigDecimal processTimeInHrs) {
+
+		// Sanitize the data
+		weekFrom = ArgUtil.assignDefaultIfNull(weekFrom, BigDecimal.ZERO);
+		weekTo = ArgUtil.assignDefaultIfNull(weekTo, BigDecimal.ZERO);
+
+		weekHrsFrom = ArgUtil.assignDefaultIfNull(weekHrsFrom, BigDecimal.ZERO);
+		weekHrsTo = ArgUtil.assignDefaultIfNull(weekHrsTo, BigDecimal.ZERO);
+
+		weekEndFrom = ArgUtil.assignDefaultIfNull(weekEndFrom, BigDecimal.ZERO);
+		weekEndTo = ArgUtil.assignDefaultIfNull(weekEndTo, BigDecimal.ZERO);
+
+		weekEndHrsFrom = ArgUtil.assignDefaultIfNull(weekEndHrsFrom, BigDecimal.ZERO);
+		weekEndHrsTo = ArgUtil.assignDefaultIfNull(weekEndHrsTo, BigDecimal.ZERO);
+
+		processTimeInHrs = ArgUtil.assignDefaultIfNull(processTimeInHrs, BigDecimal.ZERO);
 
 		WorkingHoursData workingHoursData = new WorkingHoursData();
 

@@ -16,7 +16,7 @@ public class PricerServiceException extends AmxApiException {
 
 	/** The Constant LOGGER. */
 	private static final Logger LOGGER = LoggerService.getLogger(PricerServiceException.class);
-	
+
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 1L;
 
@@ -24,16 +24,11 @@ public class PricerServiceException extends AmxApiException {
 		super(errorMessage);
 	}
 
-	public PricerServiceException(String errorMessage, String errorCode) {
-		super(errorMessage, errorCode);
-	}
-
 	public PricerServiceException(PricerServiceError error, String errorMessage) {
-		//super(errorMessage, error.getStatusKey());
+		// super(errorMessage, error.getStatusKey());
 		super(error, errorMessage);
 	}
 
-	
 	public PricerServiceException(AmxApiError error) {
 		super(error);
 	}
@@ -57,7 +52,8 @@ public class PricerServiceException extends AmxApiException {
 	@Override
 	public AmxApiException getInstance(AmxApiError apiError) {
 		try {
-			Constructor<? extends PricerServiceException> constructor = this.getClass().getConstructor(AmxApiError.class);
+			Constructor<? extends PricerServiceException> constructor = this.getClass()
+					.getConstructor(AmxApiError.class);
 			return constructor.newInstance(apiError);
 
 		} catch (Exception e) {
