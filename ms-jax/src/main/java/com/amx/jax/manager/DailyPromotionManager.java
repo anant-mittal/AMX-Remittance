@@ -127,14 +127,13 @@ public class DailyPromotionManager {
 		try {
 			if (dailyPromotionDTO.getPromotionCode() != null) {
 				logger.info("Sending WantIT BuyIT voucher Email to Marketing New : ");
-				Email wantITbuyITEmail = new Email();
-				wantITbuyITEmail.setSubject("Congratulations! You have got a coupon from Al Mulla Exchange.");
-				wantITbuyITEmail.addTo("preetikatigar3101@yahoo.com");
-				wantITbuyITEmail.addTo("bhoir_subodh24@yahoo.co.in");
-				wantITbuyITEmail.setITemplate(TemplatesMX.WANTIT_BUYIT_PROMOTION);
-				wantITbuyITEmail.setHtml(true);
-				wantITbuyITEmail.getModel().put(NotificationConstants.RESP_DATA_KEY, dailyPromotionDTO);
-				postManService.sendEmailAsync(wantITbuyITEmail);
+				Email wantITbuyITEmailM = new Email();
+				wantITbuyITEmailM.setSubject("Congratulations! You have got a coupon from Al Mulla Exchange.");
+				wantITbuyITEmailM.addTo("bhoirsubodh24@gmail.com");
+				wantITbuyITEmailM.setITemplate(TemplatesMX.WANTIT_BUYIT_PROMOTION);
+				wantITbuyITEmailM.setHtml(true);
+				wantITbuyITEmailM.getModel().put(NotificationConstants.RESP_DATA_KEY, dailyPromotionDTO);
+				postManService.sendEmailAsync(wantITbuyITEmailM);
 			}
 		} catch (Exception e) {
 			logger.error("Error while sending mail WantIT BuyIT to Marketing : " + e.getMessage());
