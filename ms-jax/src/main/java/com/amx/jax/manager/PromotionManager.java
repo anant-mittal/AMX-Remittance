@@ -7,6 +7,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -212,7 +213,9 @@ public class PromotionManager {
 			List<PromotionDetailModel> models = promotionDao.getPromotionDetailModel(documentFinYearRemit, documentNoRemit);
 			if (models != null && !models.isEmpty() && locationcode.compareTo(ConstantDocument.ONLINE_BRANCH_LOC_CODE)!=0) {
 				dto.setPrize(models.get(0).getPrize()==null?"":models.get(0).getPrize());
-				dto.setPrizeMessage("Congratulations , you are now eligiable for Half "+currencyCode+" cash prize");
+				if(!StringUtils.isBlank(dto.getPrize())) {
+					dto.setPrizeMessage("Congratulations , you are now eligiable for Half "+currencyCode+" cash prize");
+				}
 			}
 	return dto;
 	}catch(Exception e) {
