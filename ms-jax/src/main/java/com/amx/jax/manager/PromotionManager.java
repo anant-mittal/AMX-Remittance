@@ -19,6 +19,7 @@ import com.amx.amxlib.model.PromotionDto;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.PromotionDao;
 import com.amx.jax.dao.RemittanceApplicationDao;
+import com.amx.jax.dbmodel.CountryBranch;
 import com.amx.jax.dbmodel.UserFinancialYear;
 import com.amx.jax.dbmodel.promotion.PromotionDetailModel;
 import com.amx.jax.dbmodel.promotion.PromotionHeader;
@@ -30,6 +31,7 @@ import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.TemplatesMX;
+import com.amx.jax.repository.CountryBranchRepository;
 import com.amx.jax.repository.IRemittanceTransactionRepository;
 import com.amx.jax.repository.employee.AmgEmployeeRepository;
 import com.amx.jax.service.CountryBranchService;
@@ -64,6 +66,11 @@ public class PromotionManager {
 	
 	@Autowired
 	IRemittanceTransactionRepository remitTrnxRepository;
+	
+	@Autowired
+	CountryBranchRepository countryBranchRepository;
+	
+
 
 	/**
 	 * @return gives the latest promotion header applicable for current branch
@@ -193,12 +200,21 @@ public class PromotionManager {
 		return null;
 	}
 	}
-	
-	public String getPromotionMessage(BigDecimal documentNoRemit,BigDecimal documentFinYearRemit,BigDecimal branchId) {
+	/** added by rabil **/
+	public PromotionDto getPromotionMessage(BigDecimal documentNoRemit,BigDecimal documentFinYearRemit,BigDecimal branchId,String currencyCode) {
 		try {
 			String promotionMessage = null;	
-			promotionMessage = promotionDao.callGetPromotionMessage(documentNoRemit, documentFinYearRemit, branchId);
-	return promotionMessage;
+			//promotionMessage = promotionDao.callGetPromotionMessage(documentNoRemit, documentFinYearRemit, branchId);
+			PromotionDto dto = new PromotionDto();
+			CountryBranch countryBranch = countryBranchRepository.findByCountryBranchId(branchId);
+			BigDecimal locationcode = countryBranch.getBranchId();
+			//RemittanceTransaction remittanceTransaction = remittanceApplicationDao.getRemittanceTransactionByRemitDocNo(documentNoRemit, documentFinYearRemit);
+			List<PromotionDetailModel> models = promotionDao.getPromotionDetailModel(documentFinYearRemit, documentNoRemit);
+			if (models != null && !models.isEmpty() && locationcode.compareTo(ConstantDocument.ONLINE_BRANCH_LOC_CODE)!=0) {
+				dto.setPrize(models.get(0).getPrize()==null?"":models.get(0).getPrize());
+				dto.setPrizeMessage("Congratulations , you are now eligiable for Half "+currencyCode+" cash prize");
+			}
+	return dto;
 	}catch(Exception e) {
 		e.printStackTrace();
 		return null;
