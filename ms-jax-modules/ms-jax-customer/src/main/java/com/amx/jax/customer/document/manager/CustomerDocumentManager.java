@@ -12,6 +12,8 @@ import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.CustomerIdProof;
 import com.amx.jax.dbmodel.IdentityTypeMaster;
 import com.amx.jax.model.customer.CustomerDocumentInfo;
+import com.amx.jax.model.customer.UploadCustomerKycRequest;
+import com.amx.jax.model.customer.UploadCustomerKycResponse;
 import com.amx.jax.userservice.manager.CustomerIdProofManager;
 
 @Component
@@ -63,4 +65,10 @@ public class CustomerDocumentManager {
 		customerDocumentImage.setUploadedDate(customerIdProof.getCreationDate());
 	}
 
+	public UploadCustomerKycResponse uploadKycDocument(UploadCustomerKycRequest uploadCustomerKycRequest) {
+		BigDecimal uploadReference = databaseImageScanManager.uploadKycDocument(uploadCustomerKycRequest);
+		UploadCustomerKycResponse uploadCustomerKycResponse = new UploadCustomerKycResponse();
+		uploadCustomerKycResponse.setUploadReference(uploadReference);
+		return uploadCustomerKycResponse;
+	}
 }

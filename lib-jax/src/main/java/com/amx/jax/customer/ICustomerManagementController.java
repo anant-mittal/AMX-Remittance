@@ -4,6 +4,7 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.model.customer.CreateCustomerInfoRequest;
 import com.amx.jax.model.customer.UploadCustomerKycRequest;
+import com.amx.jax.model.customer.UploadCustomerKycResponse;
 import com.amx.jax.model.request.customer.UpdateCustomerInfoRequest;
 
 public interface ICustomerManagementController {
@@ -28,6 +29,6 @@ public interface ICustomerManagementController {
 
 	AmxApiResponse<BoolRespModel, Object> updateCustomer(UpdateCustomerInfoRequest createCustomerRequest);
 
-	AmxApiResponse<BoolRespModel, Object> uploadCustomerKyc(UploadCustomerKycRequest uploadCustomerKycRequest);
+	AmxApiResponse<UploadCustomerKycResponse, Object> uploadCustomerKyc(UploadCustomerKycRequest uploadCustomerKycRequest);
 
 }

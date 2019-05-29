@@ -6,6 +6,7 @@ import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -14,13 +15,18 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.customer.ICustomerManagementController;
+import com.amx.jax.customer.document.manager.CustomerDocumentManager;
 import com.amx.jax.model.customer.CreateCustomerInfoRequest;
 import com.amx.jax.model.customer.UploadCustomerKycRequest;
+import com.amx.jax.model.customer.UploadCustomerKycResponse;
 import com.amx.jax.model.request.customer.UpdateCustomerInfoRequest;
 import com.amx.utils.JsonUtil;
 
 @RestController
 public class CustomerManagementController implements ICustomerManagementController {
+
+	@Autowired
+	CustomerDocumentManager customerDocumentManager;
 
 	private static final Logger log = LoggerFactory.getLogger(CustomerManagementController.class);
 
@@ -41,13 +47,14 @@ public class CustomerManagementController implements ICustomerManagementControll
 		return AmxApiResponse.build();
 
 	}
-	
+
 	@RequestMapping(path = UPLOAD_CUSTOMER_KYC, method = { RequestMethod.POST })
 	@Override
-	public AmxApiResponse<BoolRespModel, Object> uploadCustomerKyc(
+	public AmxApiResponse<UploadCustomerKycResponse, Object> uploadCustomerKyc(
 			@RequestBody @Valid UploadCustomerKycRequest uploadCustomerKycRequest) {
-		log.debug("request uploadCustomerKycRequest {}", uploadCustomerKycRequest);
-		return AmxApiResponse.build();
+		log.info("request uploadCustomerKycRequest {}", uploadCustomerKycRequest);
+		UploadCustomerKycResponse uploadReference = customerDocumentManager.uploadKycDocument(uploadCustomerKycRequest);
+		return AmxApiResponse.build(uploadReference);
 
 	}
 }
