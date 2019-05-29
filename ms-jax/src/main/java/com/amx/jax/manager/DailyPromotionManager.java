@@ -53,7 +53,7 @@ public class DailyPromotionManager {
 				Date endDate = DateUtil.parseDate(endDateStr);
 				if (date.after(startDate) && date.before(endDate)) {
 					DailyPromotionDTO dailyPromotionDTO = getDailyPromotions(remittanceTransactionId, personInfo);
-					//sendVoucherEmail(dailyPromotionDTO, personInfo);
+					sendVoucherEmail(dailyPromotionDTO, personInfo);
 					sendVoucherEmailMarketing(dailyPromotionDTO, personInfo);
 				}
 			}
@@ -110,7 +110,7 @@ public class DailyPromotionManager {
 				if (personInfo.getEmail() != null) {
 					wantITbuyITEmail.addTo(personInfo.getEmail());
 				} else {
-					wantITbuyITEmail.addTo("raynatest1234@gmail.com");
+					wantITbuyITEmail.addTo("almullatest@gmail.com");
 				}
 				wantITbuyITEmail.setITemplate(TemplatesMX.WANTIT_BUYIT_PROMOTION);
 				wantITbuyITEmail.setHtml(true);
@@ -129,7 +129,6 @@ public class DailyPromotionManager {
 				logger.info("Sending WantIT BuyIT voucher Email to Marketing New : ");
 				Email wantITbuyITEmailM = new Email();
 				wantITbuyITEmailM.setSubject("Congratulations! You have got a coupon from Al Mulla Exchange.");
-				wantITbuyITEmailM.addTo("preeti.pawar@almullaexchange.com");
 				wantITbuyITEmailM.addTo("almullatest@gmail.com");
 				wantITbuyITEmailM.setITemplate(TemplatesMX.WANTIT_BUYIT_PROMOTION);
 				wantITbuyITEmailM.setHtml(true);
