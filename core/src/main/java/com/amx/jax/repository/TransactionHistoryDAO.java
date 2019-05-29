@@ -29,12 +29,12 @@ public interface TransactionHistoryDAO extends JpaRepository<CustomerRemittanceT
 			@Param("docNumber") BigDecimal remittancedocNumber);
 	
 	@Query(value = " select * from HIS_JAX_VW_EX_TRANSACTION_INQ  where CUSTOMER_ID=?1 and DOCUMENT_FINANCE_YEAR=?2 "
-			+ "and trunc(DOCUMENT_DATE) between ?3 and ?4 ORDER BY DOCUMENT_DATE DESC ", nativeQuery = true)
+			+ "and trunc(DOCUMENT_DATE) between to_date(?3,'dd/mm/yyyy') and to_date(?4,'dd/mm/yyyy') ORDER BY DOCUMENT_DATE DESC ", nativeQuery = true)
 	public List<CustomerRemittanceTransactionHistoryView> getTransactionHistroyDocfyrAndDateWise(BigDecimal customerId,
 			BigDecimal docfyr, String fromDate, String toDate);
 	
 	@Query(value = " select * from HIS_JAX_VW_EX_TRANSACTION_INQ where CUSTOMER_ID=?1 "
-			+ "and trunc(DOCUMENT_DATE) between ?2 and ?3 ORDER BY DOCUMENT_DATE DESC ", nativeQuery = true)
+			+ "and trunc(DOCUMENT_DATE) between to_date(?2,'dd/mm/yyyy') and to_date(?3,'dd/mm/yyyy') ORDER BY DOCUMENT_DATE DESC ", nativeQuery = true)
 	public List<CustomerRemittanceTransactionHistoryView> getTransactionHistoryDateWise(BigDecimal customerId, String fromDate, String toDate);
 
 }
