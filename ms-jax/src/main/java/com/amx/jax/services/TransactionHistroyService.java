@@ -94,10 +94,10 @@ public class TransactionHistroyService extends AbstractService {
 		}
 		if (trnxList.isEmpty() && trnxHistoryList.isEmpty()) {
 			throw new GlobalException(JaxError.TRANSACTION_HISTORY_NOT_FOUND, "Transaction histroy not found");
-		}else {
+		}
 		response.getData().setType("trnxHist");
 		return response;
-	}
+	
 	}
 	
 
