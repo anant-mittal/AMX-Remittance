@@ -84,6 +84,7 @@ public class PaymentService {
 			metaInfo.setCountryId(paymentResponseDto.getApplicationCountryId());
 			metaInfo.setCustomerId(paymentResponseDto.getCustomerId());
 			headers.add(AppConstants.META_XKEY, new ObjectMapper().writeValueAsString(metaInfo));
+			paymentResponseDto.setAmount(params.getAmount());
 
 			if (ArgUtil.isEmpty(params.getProduct())) {
 				return restService.ajax(appConfig.getJaxURL() + "/remit/save-remittance/")
