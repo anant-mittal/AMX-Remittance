@@ -29,6 +29,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
 import com.amx.jax.AppConstants;
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AResponse;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.AmxFieldError;
@@ -210,7 +211,9 @@ public abstract class AmxAdvice implements ResponseBodyAdvice<AmxApiResponse<?, 
 	public AmxApiResponse<?, ?> beforeBodyWrite(AmxApiResponse<?, ?> body, MethodParameter returnType,
 			MediaType selectedContentType, Class<? extends HttpMessageConverter<?>> selectedConverterType,
 			ServerHttpRequest request, ServerHttpResponse response) {
-
+		for (AmxFieldError warning : AppContextUtil.getWarnings()) {
+			body.addWarning(warning);
+		}
 		return body;
 	}
 }
