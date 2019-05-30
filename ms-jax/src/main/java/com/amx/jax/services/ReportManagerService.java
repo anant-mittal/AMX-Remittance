@@ -461,22 +461,26 @@ public class ReportManagerService extends AbstractService{
 						/** added by Radhika on 21May 2019**/
 						obj.setVatNumber(companyMaster.get(0).getVatNumber()==null?"":companyMaster.get(0).getVatNumber());
 						obj.setVatDate(companyMaster.get(0).getVatRegistrationDate()==null?"":companyMaster.get(0).getVatRegistrationDate());
-						
-						obj.setVatAmount(currencyQuoteName+ "     " +view.getVatAmount()==null?BigDecimal.ZERO:view.getVatAmount());
-						obj.setVatPercentage(view.getVatPercentage()==null?BigDecimal.ZERO:view.getVatPercentage());
-						obj.setVatType(view.getVatType()==null?"":view.getVatType());
-						obj.setCustomerVatNumber(view.getCustomerVatNumber()==null?"":view.getCustomerVatNumber());
+					}
+					if(JaxUtil.isNullZeroBigDecimalCheck(view.getVatAmount())) {
+						BigDecimal vatAmount=RoundUtil.roundBigDecimal((view.getVatAmount()),decimalPerCurrency);
+						 obj.setVatAmount(currencyQuoteName+"     "+vatAmount.toString());
+						}
+					
+					obj.setVatPercentage(view.getVatPercentage()==null?BigDecimal.ZERO:view.getVatPercentage());
+					obj.setVatType(view.getVatType()==null?"":view.getVatType());
+					obj.setCustomerVatNumber(view.getCustomerVatNumber()==null?"":view.getCustomerVatNumber());
 						
 						logger.info("vat amount======"+currencyQuoteName+ "     " +view.getVatAmount()==null?BigDecimal.ZERO:view.getVatAmount());
 						logger.info("VatPercentage======"+view.getVatPercentage()==null?BigDecimal.ZERO:view.getVatPercentage());
 						logger.info("Vattype======"+view.getVatType()==null?"":view.getVatType());
 
-					}
 					
 					
-					if(!StringUtils.isBlank(view.getIsDiscAvail()) && view.getIsDiscAvail().equalsIgnoreCase(ConstantDocument.Yes) && JaxUtil.isNullZeroBigDecimalCheck(view.getAmountSaved()) && view.getAmountSaved().compareTo(BigDecimal.ZERO)>0) {
-						BigDecimal KdSaved=RoundUtil.roundBigDecimal((view.getAmountSaved()),decimalPerCurrency);
-						 obj.setAmountSaved(currencyQuoteName +"     "+KdSaved.toString());
+					
+						if(!StringUtils.isBlank(view.getIsDiscAvail()) && view.getIsDiscAvail().equalsIgnoreCase(ConstantDocument.Yes) && JaxUtil.isNullZeroBigDecimalCheck(view.getAmountSaved()) && view.getAmountSaved().compareTo(BigDecimal.ZERO)>0) {
+							 BigDecimal KdSaved=RoundUtil.roundBigDecimal((view.getAmountSaved()),decimalPerCurrency);
+							 obj.setAmountSaved(currencyQuoteName +"     "+KdSaved.toString());
 						 }
 										
 					
