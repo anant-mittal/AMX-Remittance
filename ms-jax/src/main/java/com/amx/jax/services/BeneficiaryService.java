@@ -523,7 +523,7 @@ public class BeneficiaryService extends AbstractService {
 		if (beneContact != null) {
 			if (beneContact.getTelephoneNumber() != null) {
 				contactNumber = beneContact.getTelephoneNumber();
-			} else {
+			} else if (beneContact.getMobileNumber() != null) {
 				contactNumber = beneContact.getMobileNumber().toString();
 			}
 		}
