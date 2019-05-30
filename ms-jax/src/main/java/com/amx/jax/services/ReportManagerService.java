@@ -468,6 +468,11 @@ public class ReportManagerService extends AbstractService{
 					obj.setVatPercentage(view.getVatPercentage()==null?BigDecimal.ZERO:view.getVatPercentage());
 					obj.setVatType(view.getVatType()==null?"":view.getVatType());
 					obj.setCustomerVatNumber(view.getCustomerVatNumber()==null?"":view.getCustomerVatNumber());
+					
+					logger.info("vat amount======"+currencyQuoteName+ "     " +view.getVatAmount()==null?BigDecimal.ZERO:view.getVatAmount());
+					logger.info("VatPercentage======"+view.getVatPercentage()==null?BigDecimal.ZERO:view.getVatPercentage());
+					logger.info("Vattype======"+view.getVatType()==null?"":view.getVatType());
+					
 					/** end **/
 					
 					if(!StringUtils.isBlank(view.getIsDiscAvail()) && view.getIsDiscAvail().equalsIgnoreCase(ConstantDocument.Yes) && JaxUtil.isNullZeroBigDecimalCheck(view.getAmountSaved()) && view.getAmountSaved().compareTo(BigDecimal.ZERO)>0) {
