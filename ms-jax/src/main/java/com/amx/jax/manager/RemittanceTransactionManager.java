@@ -337,6 +337,8 @@ public class RemittanceTransactionManager {
 					responseModel.setVatType(vatDetails.getVatType()==null?"":vatDetails.getVatType());
 					if(JaxUtil.isNullZeroBigDecimalCheck(vatDetails.getCommission())) {
 					commission =vatDetails.getCommission();
+					logger.info("VatAmount: " +currencyQuoteName+ "     " +vatDetails.getVatAmount());
+					logger.info("VatPercentage: "  +vatDetails.getVatPercentage());
 					
 					}
 				}
