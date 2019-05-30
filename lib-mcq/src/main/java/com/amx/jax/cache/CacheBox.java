@@ -99,7 +99,9 @@ public class CacheBox<T> implements ICacheBox<T> {
 			return this.map().get(key);
 		} catch (Exception e) {
 			LOGGER.error("REDIS_READ_EXCEPTION KEY:" + key, e);
-			throw new MCQStatusError(MCQStatusCodes.DATA_READ_ERROR, "REDIS_READ_EXCEPTION KEY:" + key);
+			// throw new MCQStatusError(MCQStatusCodes.DATA_READ_ERROR,
+			// "REDIS_READ_EXCEPTION KEY:" + key);
+			return null;
 		}
 	}
 
