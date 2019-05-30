@@ -21,6 +21,8 @@ public class PaymentResponseDto extends PayGModel {
 	String userName;
 	String product;
 
+	String amount;
+
 	public String getResultCode() {
 		return resultCode;
 	}
@@ -107,6 +109,14 @@ public class PaymentResponseDto extends PayGModel {
 				+ resultCode + ", transactionId=" + transactionId + ", tranData=" + tranData + ", auth_appNo="
 				+ auth_appNo + ", referenceId=" + referenceId + ", postDate=" + postDate + ", userName=" + userName
 				+ ", product=" + product + "]";
+	}
+
+	public String getAmount() {
+		return amount;
+	}
+
+	public void setAmount(String amount) {
+		this.amount = amount;
 	}
 
 }
