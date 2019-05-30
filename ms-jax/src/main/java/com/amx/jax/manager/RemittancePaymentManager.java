@@ -40,10 +40,9 @@ import com.amx.jax.postman.model.Email;
 import com.amx.jax.repository.IPlaceOrderDao;
 import com.amx.jax.repository.IShoppingCartDetailsDao;
 import com.amx.jax.repository.RemittanceApplicationRepository;
-import com.amx.jax.service.CurrencyMasterService;
 import com.amx.jax.service.FinancialService;
-import com.amx.jax.service.JaxEmailNotificationService;
 import com.amx.jax.services.AbstractService;
+import com.amx.jax.services.JaxEmailNotificationService;
 import com.amx.jax.services.JaxNotificationService;
 import com.amx.jax.services.RemittanceApplicationService;
 import com.amx.jax.services.ReportManagerService;
@@ -101,6 +100,8 @@ public class RemittancePaymentManager extends AbstractService{
 	RemittanceManager remittanceManager;
 	@Autowired
 	JaxEmailNotificationService jaxEmailNotificationService;
+	@Autowired
+	JaxNotificationService jaxNotificationService;
 	
 	public ApiResponse<PaymentResponseDto> paymentCapture(PaymentResponseDto paymentResponse) {
 		ApiResponse response = null;
@@ -128,7 +129,7 @@ public class RemittancePaymentManager extends AbstractService{
 				
 				lstPayIdDetails = applicationDao.fetchRemitApplTrnxRecordsByCustomerPayId(paymentResponse.getUdf3(),new Customer(paymentResponse.getCustomerId()));
 				RemittanceApplication remittanceApplication = lstPayIdDetails.get(0);
-				validateAmountMismatch(remittanceApplication, paymentResponse.getAmount());
+				validateAmountMismatch(remittanceApplication, paymentResponse);
 				remittanceApplication.setIsactive(ConstantDocument.Yes);
 				applicationDao.save(remittanceApplication);
 				paymentResponse.setCompanyId(remittanceApplication.getFsCompanyMaster().getCompanyId());
@@ -310,17 +311,22 @@ public class RemittancePaymentManager extends AbstractService{
        
     }
 
-	public void validateAmountMismatch(RemittanceApplication remittanceApplication, String paidAmountStr) {
+	private void validateAmountMismatch(RemittanceApplication remittanceApplication, PaymentResponseDto paymentResponse) {
 		BigDecimal localNetTraxAmount = remittanceApplication.getLocalNetTranxAmount();
 		BigDecimal loyalityPointEncashed = remittanceApplication.getLoyaltyPointsEncashed();
 		BigDecimal localCurrencyDecimalNumber = remittanceApplication.getExCurrencyMasterByLocalChargeCurrencyId().getDecinalNumber();
 		BigDecimal payableAmount = localNetTraxAmount.subtract(loyalityPointEncashed);
-		BigDecimal paidAmount = new BigDecimal(paidAmountStr);
+		if (paymentResponse.getAmount() == null) {
+			logger.info("amount null in paymentResponse");
+		}
+		BigDecimal paidAmount = new BigDecimal(paymentResponse.getAmount());
 		payableAmount = RoundUtil.roundBigDecimal(payableAmount, localCurrencyDecimalNumber.intValue());
 		paidAmount = RoundUtil.roundBigDecimal(paidAmount, localCurrencyDecimalNumber.intValue());
 		if (!paidAmount.equals(payableAmount)) {
-			logger.info("paidAmount: {} and payableAmount: {} mismatch for remittanceApplicationId: {}", paidAmount, payableAmount,
-					remittanceApplication.getRemittanceApplicationId());
+			String errorMessage = String.format("paidAmount: %s and payableAmount: %s mismatch for remittanceApplicationId: %s", paidAmount,
+					payableAmount, remittanceApplication.getRemittanceApplicationId());
+			logger.info(errorMessage);
+			jaxNotificationService.sendTransactionErrorAlertEmail(errorMessage, "Remittance Amount mistmatch", paymentResponse);
 			throw new GlobalException("paid and payable amount mismatch");
 		}
 	}
