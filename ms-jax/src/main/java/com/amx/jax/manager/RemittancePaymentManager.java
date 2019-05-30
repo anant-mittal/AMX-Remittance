@@ -40,6 +40,7 @@ import com.amx.jax.postman.model.Email;
 import com.amx.jax.repository.IPlaceOrderDao;
 import com.amx.jax.repository.IShoppingCartDetailsDao;
 import com.amx.jax.repository.RemittanceApplicationRepository;
+import com.amx.jax.service.CurrencyMasterService;
 import com.amx.jax.service.FinancialService;
 import com.amx.jax.service.JaxEmailNotificationService;
 import com.amx.jax.services.AbstractService;
@@ -50,6 +51,7 @@ import com.amx.jax.services.TransactionHistroyService;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.JaxUtil;
+import com.amx.jax.util.RoundUtil;
 
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -125,11 +127,13 @@ public class RemittancePaymentManager extends AbstractService{
 			{
 				
 				lstPayIdDetails = applicationDao.fetchRemitApplTrnxRecordsByCustomerPayId(paymentResponse.getUdf3(),new Customer(paymentResponse.getCustomerId()));
-				lstPayIdDetails.get(0).setIsactive(ConstantDocument.Yes);
-				applicationDao.save(lstPayIdDetails.get(0));
-				paymentResponse.setCompanyId(lstPayIdDetails.get(0).getFsCompanyMaster().getCompanyId());
-				if (lstPayIdDetails.get(0).getResultCode() != null) {
-					logger.info("Existing payment id found: {}", lstPayIdDetails.get(0).getPaymentId());
+				RemittanceApplication remittanceApplication = lstPayIdDetails.get(0);
+				validateAmountMismatch(remittanceApplication, paymentResponse.getAmount());
+				remittanceApplication.setIsactive(ConstantDocument.Yes);
+				applicationDao.save(remittanceApplication);
+				paymentResponse.setCompanyId(remittanceApplication.getFsCompanyMaster().getCompanyId());
+				if (remittanceApplication.getResultCode() != null) {
+					logger.info("Existing payment id found: {}", remittanceApplication.getPaymentId());
 					return response;
 				}
 				remittanceApplicationService.updatePaymentDetails(lstPayIdDetails, paymentResponse);
@@ -306,4 +310,18 @@ public class RemittancePaymentManager extends AbstractService{
        
     }
 
+	public void validateAmountMismatch(RemittanceApplication remittanceApplication, String paidAmountStr) {
+		BigDecimal localNetTraxAmount = remittanceApplication.getLocalNetTranxAmount();
+		BigDecimal loyalityPointEncashed = remittanceApplication.getLoyaltyPointsEncashed();
+		BigDecimal localCurrencyDecimalNumber = remittanceApplication.getExCurrencyMasterByLocalChargeCurrencyId().getDecinalNumber();
+		BigDecimal payableAmount = localNetTraxAmount.subtract(loyalityPointEncashed);
+		BigDecimal paidAmount = new BigDecimal(paidAmountStr);
+		payableAmount = RoundUtil.roundBigDecimal(payableAmount, localCurrencyDecimalNumber.intValue());
+		paidAmount = RoundUtil.roundBigDecimal(paidAmount, localCurrencyDecimalNumber.intValue());
+		if (!paidAmount.equals(payableAmount)) {
+			logger.info("paidAmount: {} and payableAmount: {} mismatch for remittanceApplicationId: {}", paidAmount, payableAmount,
+					remittanceApplication.getRemittanceApplicationId());
+			throw new GlobalException("paid and payable amount mismatch");
+		}
+	}
 }
