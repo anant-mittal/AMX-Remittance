@@ -1,5 +1,8 @@
 package com.amx.jax.services;
 
+/**
+ * @author rabil
+ */
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -496,6 +499,14 @@ public class ReportManagerService extends AbstractService{
 						 BigDecimal KdSaved=RoundUtil.roundBigDecimal((view.getAmountSaved()),decimalPerCurrency);
 						 obj.setAmountSaved(currencyQuoteName +"     "+KdSaved.toString());
 					 }
+					 
+					 
+					 if(JaxUtil.isNullZeroBigDecimalCheck(view.getTotalAmountSaved())) {
+						 BigDecimal totalKdSavedAmount=RoundUtil.roundBigDecimal((view.getTotalAmountSaved()),decimalPerCurrency);
+						 obj.setTotalAmountSavedStr(currencyQuoteName+"     "+totalKdSavedAmount.toString());
+					 }
+				
+					 
 					/** end **/
 					
 					 PromotionDto prmoDto  = promotionManager.getPromotionMessage(view.getDocumentNo(),view.getDocumentFinancialYear(),view.getCountryBranchId(),currencyQuoteName);
