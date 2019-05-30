@@ -29,9 +29,9 @@ import com.amx.jax.model.customer.CustomerDocumentInfo;
 import com.amx.jax.model.customer.DocumentImageRenderType;
 import com.amx.jax.model.customer.UploadCustomerKycRequest;
 import com.amx.jax.repository.DOCBLOBRepository;
-import com.amx.jax.repository.customer.CustomerDocumentUploadReferenceTempRepo;
 import com.amx.jax.userservice.manager.CustomerIdProofManager;
 import com.amx.utils.IoUtils;
+import com.amx.utils.JsonUtil;
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Component
@@ -96,6 +96,7 @@ public class DatabaseScanManager implements DocumentScanManager {
 			docUploadRef.setDbScanDocumentBlob(new SerialBlob(documentByteArray));
 			docUploadRef.setIdentityInt(uploadCustomerKycRequest.getIdentityInt());
 			docUploadRef.setIdentityTypeId(uploadCustomerKycRequest.getIdentityTypeId());
+			docUploadRef.setUploadData(JsonUtil.toJson(uploadCustomerKycRequest.getCustomerKycData()));
 		} catch (SQLException e) {
 			log.error("error in uploadKycDocument ", e);
 		}

@@ -21,7 +21,7 @@ import com.amx.jax.model.customer.CustomerDocUploadType;
 public class CustomerDocumentUploadReferenceTemp {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator="JAX_CUST_DOC_UPLOAD_REF_TMP_S")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "JAX_CUST_DOC_UPLOAD_REF_TMP_S")
 	@SequenceGenerator(sequenceName = "JAX_CUST_DOC_UPLOAD_REF_TMP_S", name = "JAX_CUST_DOC_UPLOAD_REF_TMP_S")
 	@Column(name = "ID")
 	BigDecimal id;
@@ -45,6 +45,9 @@ public class CustomerDocumentUploadReferenceTemp {
 	@Column(name = "UPLOAD_DOC_TYPE")
 	@Enumerated(EnumType.STRING)
 	CustomerDocUploadType customerDocUploadType;
+
+	@Column(name = "UPLOAD_DATA")
+	String uploadData;
 
 	public BigDecimal getId() {
 		return id;
@@ -109,5 +112,12 @@ public class CustomerDocumentUploadReferenceTemp {
 				+ customerDocUploadType + "]";
 	}
 
+	public String getUploadData() {
+		return uploadData;
+	}
+
+	public void setUploadData(String uploadData) {
+		this.uploadData = uploadData;
+	}
 
 }

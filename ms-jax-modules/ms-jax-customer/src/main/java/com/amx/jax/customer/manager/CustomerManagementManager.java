@@ -3,12 +3,15 @@ package com.amx.jax.customer.manager;
 import java.math.BigDecimal;
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxApiFlow;
 import com.amx.jax.customer.document.manager.CustomerDocumentManager;
@@ -21,8 +24,10 @@ import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.ResourceDTO;
+import com.amx.jax.model.customer.CreateCustomerInfoRequest;
 import com.amx.jax.model.customer.CustomerStatusModel;
 import com.amx.jax.model.request.CustomerPersonalDetail;
+import com.amx.jax.model.response.CustomerInfo;
 import com.amx.jax.model.response.customer.OffsiteCustomerDataDTO;
 import com.amx.jax.repository.ICustomerCategoryDiscountRepo;
 import com.amx.jax.repository.ICustomerExtendedRepository;
@@ -176,5 +181,11 @@ public class CustomerManagementManager {
 			customerStatusModel.setLockedOnline(true);
 		}
 		return customerStatusModel;
+	}
+	
+	@Transactional
+	public void createCustomer(CreateCustomerInfoRequest createCustomerInfoRequest) {
+		AmxApiResponse<CustomerInfo, Object> response = offsitCustRegService.saveCustomerInfo(createCustomerInfoRequest);
+		customerDocumentManager.addCustomerDocument(response.getResult(), createCustomerInfoRequest);
 	}
 }

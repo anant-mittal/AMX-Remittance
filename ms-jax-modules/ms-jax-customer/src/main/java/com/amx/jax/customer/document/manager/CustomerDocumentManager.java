@@ -10,12 +10,15 @@ import org.springframework.stereotype.Component;
 
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.customer.document.validate.KycScanValidator;
+import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerIdProof;
 import com.amx.jax.dbmodel.IdentityTypeMaster;
+import com.amx.jax.dbmodel.customer.CustomerDocumentUploadReferenceTemp;
 import com.amx.jax.model.customer.CustomerDocumentInfo;
 import com.amx.jax.model.customer.UploadCustomerKycRequest;
 import com.amx.jax.model.customer.UploadCustomerKycResponse;
 import com.amx.jax.userservice.manager.CustomerIdProofManager;
+import com.amx.jax.userservice.service.UserService;
 
 @Component
 public class CustomerDocumentManager {
@@ -26,6 +29,12 @@ public class CustomerDocumentManager {
 	CustomerIdProofManager customerIdProofManager;
 	@Autowired
 	KycScanValidator kycScanValidator;
+	@Autowired
+	UserService userService;
+	@Autowired
+	CustomerDocumentUploadManager customerDocumentUploadManager;
+	@Autowired
+	CustomerKycManager customerKycManager;
 
 	public List<CustomerDocumentInfo> getCustomerUploadDocuments(BigDecimal customerId) {
 
@@ -60,10 +69,8 @@ public class CustomerDocumentManager {
 		return customerDocumentImage;
 	}
 
-	private void addDataFromCustomerIdProof(CustomerDocumentInfo customerDocumentImage,
-			CustomerIdProof customerIdProof) {
-		IdentityTypeMaster identityMaster = customerIdProofManager
-				.getIdentityTypeMaster(customerIdProof.getIdentityTypeId(), ConstantDocument.Yes);
+	private void addDataFromCustomerIdProof(CustomerDocumentInfo customerDocumentImage, CustomerIdProof customerIdProof) {
+		IdentityTypeMaster identityMaster = customerIdProofManager.getIdentityTypeMaster(customerIdProof.getIdentityTypeId(), ConstantDocument.Yes);
 		customerDocumentImage.setDocumentType(identityMaster.getIdentityType());
 		customerDocumentImage.setUploadedDate(customerIdProof.getCreationDate());
 	}
@@ -74,5 +81,21 @@ public class CustomerDocumentManager {
 		UploadCustomerKycResponse uploadCustomerKycResponse = new UploadCustomerKycResponse();
 		uploadCustomerKycResponse.setUploadReference(uploadReference);
 		return uploadCustomerKycResponse;
+	}
+
+	public void addCustomerDocument(BigDecimal customerId) {
+		Customer customer = userService.getCustById(customerId);
+		List<CustomerDocumentUploadReferenceTemp> uploads = customerDocumentUploadManager.getCustomerUploads(customer.getIdentityInt(),
+				customer.getIdentityTypeId());
+		for (CustomerDocumentUploadReferenceTemp upload : uploads) {
+			switch (upload.getCustomerDocUploadType()) {
+			case KYC_PROOF:
+				customerKycManager.uploadAndCreateKyc(customer, upload);
+				break;
+
+			default:
+				break;
+			}
+		}
 	}
 }

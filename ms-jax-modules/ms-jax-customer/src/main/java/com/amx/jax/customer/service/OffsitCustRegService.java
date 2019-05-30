@@ -39,6 +39,7 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constants.CustomerRegistrationType;
 import com.amx.jax.customer.ICustRegService;
+import com.amx.jax.customer.document.manager.CustomerKycManager;
 import com.amx.jax.customer.manager.CustomerEmployementManager;
 import com.amx.jax.customer.manager.OffsiteCustomerRegManager;
 import com.amx.jax.customer.manager.OffsiteCustomerRegValidator;
@@ -200,12 +201,6 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 	DOCBLOBRepository docblobRepository;
 
 	@Autowired
-	IUserFinancialYearRepo userFinancialYearRepo;
-
-	@Autowired
-	ImageCheckDao imageCheckDao;
-
-	@Autowired
 	IDMSAppMappingRepository idmsAppMappingRepository;
 
 	@Autowired
@@ -253,6 +248,8 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 	EmployeeRespository employeeRespository;
 	@Autowired
 	CustomerEmployementManager customerEmployementManager;
+	@Autowired
+	CustomerKycManager customerKycManager;
 
 	public AmxApiResponse<ComponentDataDto, Object> getIdTypes() {
 		List<Map<String, Object>> tempList = bizcomponentDao
@@ -836,7 +833,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 			}
 			for (String image : model.getImage()) {
 				DmsApplMapping mappingData = new DmsApplMapping();
-				mappingData = getDmsApplMappingData(customer, model);
+				mappingData = customerKycManager.getDmsApplMappingData(customer, model);
 				idmsAppMappingRepository.save(mappingData);
 				DocBlobUpload documentDetails = new DocBlobUpload();
 				documentDetails = getDocumentUploadDetails(image, mappingData);
@@ -875,37 +872,6 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 	public static byte[] decodeImage(String imageDataString) {
 		return Base64.decodeBase64(imageDataString);
 		// return null;
-	}
-
-	private DmsApplMapping getDmsApplMappingData(Customer model, ImageSubmissionRequest imageSubmissionRequest) throws ParseException {
-		DmsApplMapping mappingData = new DmsApplMapping();
-		BigDecimal financialYear = getDealYearbyDate();
-		BigDecimal applCountryId = metaData.getCountryId();
-		BigDecimal docBlobId = imageCheckDao.callTogenerateBlobID(financialYear);
-		mappingData.setApplicationCountryId(applCountryId);
-		mappingData.setCustomerId(metaData.getCustomerId());
-		mappingData.setDocBlobId(docBlobId); // need to change value
-		mappingData.setDocFormat("JPG");
-		mappingData.setFinancialYear(financialYear);
-		if (imageSubmissionRequest != null && imageSubmissionRequest.getIdentityExpiredDate() != null) {
-			mappingData.setIdentityExpiryDate(imageSubmissionRequest.getIdentityExpiredDate());
-		} else {
-			mappingData.setIdentityExpiryDate(model.getIdentityExpiredDate());
-		}
-		mappingData.setIdentityInt(model.getIdentityInt());
-		mappingData.setIdentityIntId(model.getIdentityTypeId());
-		mappingData.setCreatedBy(metaData.getEmployeeId().toString());
-		mappingData.setCreatedOn(new Date());
-		return mappingData;
-	}
-
-	public BigDecimal getDealYearbyDate() throws ParseException {
-		DateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
-		Date today = Calendar.getInstance().getTime();
-		String date = formatter.format(today);
-		UserFinancialYear list = userFinancialYearRepo.findAllByFinancialYearBegin(date, date);
-		BigDecimal financialYear = list.getFinancialYear();
-		return financialYear;
 	}
 
 	public AmxApiResponse<String, Object> saveCustomerSignature(ImageSubmissionRequest model) {

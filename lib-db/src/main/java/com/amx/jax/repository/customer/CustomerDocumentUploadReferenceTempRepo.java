@@ -2,6 +2,7 @@ package com.amx.jax.repository.customer;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.List;
 
 import org.springframework.data.repository.CrudRepository;
 
@@ -13,4 +14,7 @@ public interface CustomerDocumentUploadReferenceTempRepo
 
 	CustomerDocumentUploadReferenceTemp findByidentityIntAndIdentityTypeIdAndCustomerDocUploadType(String identityInt,
 			BigDecimal identityType, CustomerDocUploadType uploadType);
+
+	List<CustomerDocumentUploadReferenceTemp> findByidentityIntAndIdentityTypeId(String identityInt,
+			BigDecimal identityType);
 }
