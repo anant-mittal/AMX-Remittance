@@ -1246,7 +1246,7 @@
                                           pdfFontName="fonts/all/arial.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$F{tranx}.get("vatPercentage")]]>
+                                    <![CDATA[$F{tranx}.getValue("vatPercentage")]]>
                                 </textFieldExpression>
                             </textField>
 
@@ -1293,7 +1293,7 @@
                                           pdfFontName="fonts/all/arial.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$F{tranx}.get("vatAmount")]]>
+                                    <![CDATA[$F{tranx}.getValue("vatAmount")]]>
                                 </textFieldExpression>
                             </textField>
 
