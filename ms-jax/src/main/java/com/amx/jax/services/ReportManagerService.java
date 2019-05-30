@@ -137,7 +137,7 @@ public class ReportManagerService extends AbstractService{
 		try {
 		remittanceReceiptSubreportList = new ArrayList<RemittanceReceiptSubreport>();
 		 response = getBlackApiResponse();
-		customerId = transactionHistroyDTO.getCustomerId();
+		customerId = transactionHistroyDTO.getCustomerId()==null?meta.getCustomerId():transactionHistroyDTO.getCustomerId();
 		companyId = transactionHistroyDTO.getCompanyId();
 		languageId = transactionHistroyDTO.getLanguageId();
 		applicationCountryId = transactionHistroyDTO.getApplicationCountryId();
@@ -245,7 +245,8 @@ public class ReportManagerService extends AbstractService{
 
 				Date docDate = view.getDocumentDate();
 				if(docDate != null){
-					obj.setDate(new SimpleDateFormat("dd/MM/yyy HH:mm").format(docDate));
+					//obj.setDate(new SimpleDateFormat("dd/MM/yyy HH:mm").format(docDate));
+					obj.setDate(new SimpleDateFormat("dd MMM yyyy HH:mm:ss").format(docDate));
 				}
 				
 				obj.setBeneficiaryName(view.getBeneficiaryName());
@@ -259,10 +260,12 @@ public class ReportManagerService extends AbstractService{
 			
 				logger.debug("metaDetails:"+meta.getCustomerId());
 				
-				Customer customerNationalityDetails = customerRepository.getNationalityValue(meta.getCustomerId());
+				Customer customerNationalityDetails = customerRepository.getNationalityValue(customerId);
 				
 				logger.debug("countryId:"+customerNationalityDetails.getNationalityId());
-				isArabic = countryService.getIsArabicCountry(customerNationalityDetails.getNationalityId());
+				if(customerNationalityDetails!=null) {
+					isArabic = countryService.getIsArabicCountry(customerNationalityDetails.getNationalityId());
+				}
 				logger.debug("isArabicValue:"+isArabic);
 				
 				obj.setIsArabic(isArabic);

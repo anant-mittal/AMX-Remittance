@@ -110,7 +110,16 @@ public class RemittanceReportBean {
 	private String amountSaved;
 	private String promotionMessage;
 	private Boolean isArabic;
+	private String totalAmountSavedStr;
 	
+	public String getTotalAmountSavedStr() {
+		return totalAmountSavedStr;
+	}
+
+	public void setTotalAmountSavedStr(String totalAmountSavedStr) {
+		this.totalAmountSavedStr = totalAmountSavedStr;
+	}
+
 	public Boolean getDrawLine() {
 		return drawLine;
 	}
