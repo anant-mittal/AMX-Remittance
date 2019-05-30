@@ -34,6 +34,7 @@ import com.amx.jax.dbmodel.CountryBranch;
 import com.amx.jax.dbmodel.CountryMaster;
 import com.amx.jax.dbmodel.CurrencyMasterModel;
 import com.amx.jax.dbmodel.Customer;
+import com.amx.jax.dbmodel.ForeignCurrencyAdjust;
 import com.amx.jax.dbmodel.PaymentModeModel;
 import com.amx.jax.dbmodel.PurposeOfTransaction;
 import com.amx.jax.dbmodel.ReceiptPayment;
@@ -113,7 +114,9 @@ public class FxOrderPaymentManager {
 	@Autowired
 	AuditService auditService;
 	
-
+	@Autowired
+	FcSaleApplicationTransactionManager fcSaleApplicationTransactionManager;
+	
 	
 	public PaymentResponseDto paymentCapture(PaymentResponseDto paymentResponse) {
 		logger.debug("paymment capture :" + paymentResponse.toString());
@@ -144,9 +147,11 @@ public class FxOrderPaymentManager {
 					customerId = customerId;
 				}
 
-				listOfRecAppl = receiptAppRepository.fetchreceiptPaymentAppl(customerId,
-						new BigDecimal(paymentResponse.getUdf3()));
-
+				listOfRecAppl = receiptAppRepository.fetchreceiptPaymentAppl(customerId,new BigDecimal(paymentResponse.getUdf3()));
+				/** aded new code for appl amount and knet amount cehck  on 30 may 2019 by rabil**/
+				validateAmountMismatch(listOfRecAppl,paymentResponse.getAmount());
+				/** end **/		
+				 
 				List<ReceiptPayment> receiptPayment = saveReceiptPayment(listOfRecAppl, paymentResponse);
 				CollectionModel collection = saveCollection(listOfRecAppl, paymentResponse);
 				CollectDetailModel collectDetail = saveCollectDetail(listOfRecAppl, paymentResponse, collection);
@@ -484,4 +489,17 @@ public class FxOrderPaymentManager {
 		auditService.log(audit);
 	}
 
+	private void validateAmountMismatch(List<ReceiptPaymentApp> listOfRecAppl, String paidAmountStr) {
+		BigDecimal totalApplAmount = listOfRecAppl.stream().map(ReceiptPaymentApp::getLocalNetAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+		BigDecimal delCharges = fcSaleApplicationTransactionManager.getDeliveryChargesFromParameter();
+		BigDecimal totalAmountWithCharges =totalApplAmount.add(delCharges); 
+		BigDecimal paidAmount = new BigDecimal(paidAmountStr);
+		if(JaxUtil.isNullZeroBigDecimalCheck(totalAmountWithCharges) && JaxUtil.isNullZeroBigDecimalCheck(paidAmount)) {
+			if (!totalAmountWithCharges.equals(paidAmount)) {
+				logger.info("paidAmount: {} and payableAmount: {} mismatch for remittanceApplicationId: {}", paidAmount, totalAmountWithCharges,metaData.getCustomerId());
+				throw new GlobalException("paid and payable amount mismatch");
+			}
+		}
+	}
+	
 }
