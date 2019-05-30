@@ -85,7 +85,7 @@ public class PayGController {
 
 	private PayGParams getVerifyHash(String amount) throws NoSuchAlgorithmException {
 		PayGParams payGParams = new PayGParams();
-		payGParams.setVerification(CryptoUtil.getMD5Hash(textEncryptor.encrypt(JsonUtil.toJson(payGParams))));
+		payGParams.setVerification(CryptoUtil.getMD5Hash((JsonUtil.toJson(payGParams))));
 		return payGParams;
 	}
 
