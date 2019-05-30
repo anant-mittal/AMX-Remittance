@@ -1,5 +1,6 @@
 package com.amx.jax.api;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -40,6 +41,7 @@ public abstract class AResponse<M> implements ApiMetaResponse<M> {
 	// Amx Specs
 	protected M meta;
 	protected List<AmxFieldError> errors = null;
+	protected List<AmxFieldError> warnings = null;
 
 	public AResponse() {
 		this.timestamp = System.currentTimeMillis();
@@ -204,7 +206,6 @@ public abstract class AResponse<M> implements ApiMetaResponse<M> {
 		this.message = message;
 	}
 
-
 	public String getWarningKey() {
 		return this.warningKey;
 	}
@@ -267,6 +268,31 @@ public abstract class AResponse<M> implements ApiMetaResponse<M> {
 	@Override
 	public void setMessageKey(String messageKey) {
 		this.messageKey = messageKey;
+	}
+
+	public List<AmxFieldError> getWarnings() {
+		return warnings;
+	}
+
+	public void setWarnings(List<AmxFieldError> warnings) {
+		this.warnings = warnings;
+	}
+
+	protected AResponse<M> warnings() {
+		if (this.warnings == null) {
+			this.warnings = new ArrayList<AmxFieldError>();
+		}
+		return this;
+	}
+
+	public void addWarning(AmxFieldError warning) {
+		this.warnings().getWarnings().add(warning);
+	}
+
+	public void addWarning(String warning) {
+		AmxFieldError w = new AmxFieldError();
+		w.setDescription(warning);
+		this.warnings().getWarnings().add(w);
 	}
 
 }
