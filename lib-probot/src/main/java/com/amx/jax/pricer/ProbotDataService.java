@@ -25,4 +25,6 @@ public interface ProbotDataService extends AbstractProbotInterface{
 	
 	public AmxApiResponse<CurrencyMasterDTO, Object> updateCurrencyGroupId(BigDecimal groupId, BigDecimal currencyId);
 	
+	public AmxApiResponse<CurrencyMasterDTO, Object> getCurrencyByGroupId(BigDecimal groupId);
+	
 }

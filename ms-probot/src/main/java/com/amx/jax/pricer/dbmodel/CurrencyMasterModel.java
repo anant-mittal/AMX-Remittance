@@ -278,5 +278,4 @@ public class CurrencyMasterModel implements java.io.Serializable {
 	public void setCurrGroupId(BigDecimal currGroupId) {
 		this.currGroupId = currGroupId;
 	}
-
 }

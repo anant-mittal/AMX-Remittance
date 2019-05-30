@@ -11,6 +11,7 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.pricer.dao.BankMasterDao;
 import com.amx.jax.pricer.dao.ChannelDiscountDao;
 import com.amx.jax.pricer.dao.CountryBranchDao;
+import com.amx.jax.pricer.dao.CurrencyMasterDao;
 import com.amx.jax.pricer.dao.CustCatDiscountDao;
 import com.amx.jax.pricer.dao.DiscountMasterDao;
 import com.amx.jax.pricer.dao.GroupingMasterDao;
@@ -18,6 +19,7 @@ import com.amx.jax.pricer.dao.PipsMasterDao;
 import com.amx.jax.pricer.dao.RoutingDao;
 import com.amx.jax.pricer.dao.ServiceMasterDescDao;
 import com.amx.jax.pricer.dbmodel.CountryBranch;
+import com.amx.jax.pricer.dbmodel.CurrencyMasterModel;
 import com.amx.jax.pricer.dbmodel.DiscountMaster;
 import com.amx.jax.pricer.dbmodel.GroupingMaster;
 import com.amx.jax.pricer.dbmodel.PipsMaster;
@@ -66,6 +68,9 @@ public class ExchangeDataService {
 	
 	@Autowired
 	DiscountMasterDao discountMasterDao;
+	
+	@Autowired
+	CurrencyMasterDao currencyMasterDao;
 	
 	private static BigDecimal OnlineCountryBranchId;
 
@@ -167,6 +172,12 @@ public class ExchangeDataService {
 		discountManager.commitCurrencyGroupId(groupId, currencyId);
 		
 		return AmxApiResponse.build();
+	}
+
+	public List<CurrencyMasterDTO> getCurrencyByGroupId(BigDecimal groupId) {
+		List<CurrencyMasterModel> currencyByGrId = currencyMasterDao.getCurrencyByGroupId(groupId);
+		List<CurrencyMasterDTO> currencyData = discountManager.convertCurrencyData(currencyByGrId);
+		return currencyData;
 	}
 
 }

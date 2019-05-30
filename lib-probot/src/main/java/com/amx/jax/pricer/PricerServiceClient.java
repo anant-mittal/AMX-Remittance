@@ -137,4 +137,15 @@ public class PricerServiceClient implements ProbotExchangeRateService, ProbotDat
 				});
 	}
 
+	@Override
+	public AmxApiResponse<CurrencyMasterDTO, Object> getCurrencyByGroupId(BigDecimal groupId) {
+		LOGGER.info("Get Currency By Group Id : transaction Id: {}, with TraceId: {}",
+				AppContextUtil.getTranxId(), AppContextUtil.getTraceId());
+		return restService.ajax(appConfig.getPricerURL())
+				.path(ApiEndPoints.GET_CUR_BY_GROUP_ID)
+				.queryParam("groupId", groupId).post()
+				.as(new ParameterizedTypeReference<AmxApiResponse<CurrencyMasterDTO, Object>>() {
+				});
+	}
+
 }

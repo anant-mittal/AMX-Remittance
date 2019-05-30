@@ -76,4 +76,12 @@ public class ProbotDataServiceApiController implements ProbotDataService{
 		
 		return dataService.updateCurrencyGroupId(groupId, currencyId);
 	}
+
+	@Override
+	@RequestMapping(value = ApiEndPoints.GET_CUR_BY_GROUP_ID, method = RequestMethod.POST)
+	public AmxApiResponse<CurrencyMasterDTO, Object> getCurrencyByGroupId(@RequestParam(required = true) BigDecimal groupId) {
+		List<CurrencyMasterDTO> groupInfoForCurrency = dataService.getCurrencyByGroupId(groupId);
+		
+		return AmxApiResponse.buildList(groupInfoForCurrency);
+	}
 }

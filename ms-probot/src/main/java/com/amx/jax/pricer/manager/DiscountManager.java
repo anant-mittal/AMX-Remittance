@@ -29,6 +29,7 @@ import com.amx.jax.pricer.dbmodel.RoutingHeader;
 import com.amx.jax.pricer.dbmodel.ServiceMasterDesc;
 import com.amx.jax.pricer.dto.AmountSlabDetails;
 import com.amx.jax.pricer.dto.ChannelDetails;
+import com.amx.jax.pricer.dto.CurrencyMasterDTO;
 import com.amx.jax.pricer.dto.CustomerCategoryDetails;
 import com.amx.jax.pricer.dto.GroupDetails;
 import com.amx.jax.pricer.dto.RoutBanksAndServiceRespDTO;
@@ -368,5 +369,21 @@ public class DiscountManager {
 		
 		currencyById.setCurrGroupId(groupId);
 		currencyMasterDao.updateCurrencyGroupId(currencyById);
+	}
+
+	public List<CurrencyMasterDTO> convertCurrencyData(List<CurrencyMasterModel> currencyByGrId) {
+		List<CurrencyMasterDTO> list = new ArrayList<>();
+		
+		for(CurrencyMasterModel currencyList : currencyByGrId) {
+			CurrencyMasterDTO currencyMasterDTO = new CurrencyMasterDTO();
+			currencyMasterDTO.setCurrencyId(currencyList.getCurrencyId());
+			currencyMasterDTO.setCurrencyCode(currencyList.getCurrencyCode());
+			currencyMasterDTO.setQuoteName(currencyList.getQuoteName());
+			currencyMasterDTO.setCurrencyName(currencyList.getCurrencyName());
+			currencyMasterDTO.setCurrGroupId(currencyList.getCurrGroupId());
+			
+			list.add(currencyMasterDTO);
+		}
+		return list;
 	}
 }
