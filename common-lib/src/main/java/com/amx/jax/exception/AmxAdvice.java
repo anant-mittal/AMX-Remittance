@@ -11,9 +11,14 @@ import javax.validation.ConstraintViolationException;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.http.server.ServerHttpRequest;
+import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -21,8 +26,11 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
 import com.amx.jax.AppConstants;
+import com.amx.jax.api.AResponse;
+import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.AmxFieldError;
 import com.amx.jax.exception.ApiHttpExceptions.ApiHttpArgException;
 import com.amx.jax.exception.ApiHttpExceptions.ApiStatusCodes;
@@ -31,11 +39,10 @@ import com.amx.jax.logger.LoggerService;
 import com.amx.jax.logger.events.ApiAuditEvent;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.HttpUtils;
-import com.amx.utils.Utils;
 import com.fasterxml.jackson.databind.JsonMappingException.Reference;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 
-public abstract class AmxAdvice {
+public abstract class AmxAdvice implements ResponseBodyAdvice<AmxApiResponse<?, ?>> {
 
 	private Logger logger = LoggerService.getLogger(AmxAdvice.class);
 
@@ -192,5 +199,18 @@ public abstract class AmxAdvice {
 			errors.add(newError);
 		}
 		return badRequest(exception, errors, request, response, ApiStatusCodes.PARAM_ILLEGAL);
+	}
+
+	@Override
+	public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
+		return AResponse.class.isAssignableFrom(returnType.getParameterType());
+	}
+
+	@Override
+	public AmxApiResponse<?, ?> beforeBodyWrite(AmxApiResponse<?, ?> body, MethodParameter returnType,
+			MediaType selectedContentType, Class<? extends HttpMessageConverter<?>> selectedConverterType,
+			ServerHttpRequest request, ServerHttpResponse response) {
+
+		return body;
 	}
 }

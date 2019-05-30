@@ -134,15 +134,18 @@ public class SSOServerController {
 		if (sSOTranx.get() != null) {
 			SSOModel x = sSOTranx.get();
 			refresh = x.getCreatedStamp();
+			// System.out.println("=="+refresh+"===="+System.currentTimeMillis()+"trnx
+			// "+AppContextUtil.getTranxId());
 			if ((ArgUtil.isEmpty(refresh) || TimeUtils.isExpired(refresh, 60 * 1000))) {
 				URLBuilder builder = new URLBuilder();
 				builder.path(appConfig.getAppPrefix() + SSOConstants.SSO_LOGIN_URL_REQUIRED)
-						.queryParam(AppConstants.TRANX_ID_XKEY, AppContextUtil.getTraceId())
+						.queryParam(AppConstants.TRANX_ID_XKEY, AppContextUtil.getTraceId(true, true))
 						.queryParam("refresh", System.currentTimeMillis());
 				resp.setHeader("Location", builder.getRelativeURL());
 				resp.setStatus(302);
+			} else {
+				sSOTranx.put(x);
 			}
-			sSOTranx.put(x);
 		}
 		ssoUser.generateSAC();
 		model.addAllAttributes(getModelMap());

@@ -120,18 +120,18 @@ public class AppRequestFilter implements Filter {
 			Tenant tnt = TenantContextHolder.currentSite();
 
 			// ***** SESSION ID Tracking ********
-			String sessionId = req.getHeader(AppConstants.SESSION_ID_XKEY);
+			String sessionId = ArgUtil.parseAsString(req.getParameter(AppConstants.SESSION_ID_XKEY));
 			if (StringUtils.isEmpty(sessionId)) {
-				sessionId = ArgUtil.parseAsString(req.getParameter(AppConstants.SESSION_ID_XKEY));
+				sessionId = req.getHeader(AppConstants.SESSION_ID_XKEY);
 			}
 			if (!StringUtils.isEmpty(sessionId)) {
 				AppContextUtil.setSessionId(sessionId);
 			}
 
 			// Tranx Id Tracking
-			String tranxId = req.getHeader(AppConstants.TRANX_ID_XKEY);
+			String tranxId = ArgUtil.parseAsString(req.getParameter(AppConstants.TRANX_ID_XKEY));
 			if (StringUtils.isEmpty(tranxId)) {
-				tranxId = ArgUtil.parseAsString(req.getParameter(AppConstants.TRANX_ID_XKEY));
+				tranxId = req.getHeader(AppConstants.TRANX_ID_XKEY);
 			}
 
 			if (!StringUtils.isEmpty(tranxId)) {
@@ -139,9 +139,9 @@ public class AppRequestFilter implements Filter {
 			}
 
 			// User Id Tracking
-			String actorId = req.getHeader(AppConstants.ACTOR_ID_XKEY);
+			String actorId = ArgUtil.parseAsString(req.getParameter(AppConstants.ACTOR_ID_XKEY));
 			if (StringUtils.isEmpty(actorId)) {
-				actorId = ArgUtil.parseAsString(req.getParameter(AppConstants.ACTOR_ID_XKEY));
+				actorId = req.getHeader(AppConstants.ACTOR_ID_XKEY);
 			}
 
 			if (!StringUtils.isEmpty(actorId)) {
@@ -160,16 +160,14 @@ public class AppRequestFilter implements Filter {
 				AppContextUtil.setUserClient(userClient);
 			}
 
-			String requestParamsJson = req.getHeader(AppConstants.REQUEST_PARAMS_XKEY);
-			if (!ArgUtil.isEmpty(requestParamsJson)) {
-				AppContextUtil.setParams(requestParamsJson, null);
+			String requestdParamsJson = ArgUtil.ifNotEmpty(req.getParameter(AppConstants.REQUESTD_PARAMS_XKEY),
+					req.getHeader(AppConstants.REQUESTD_PARAMS_XKEY));
+			if (!ArgUtil.isEmpty(requestdParamsJson)) {
+				AppContextUtil.setParams(null, requestdParamsJson);
 			} else {
-				requestParamsJson = req.getParameter(AppConstants.REQUEST_PARAMS_XKEY);
-				if (!ArgUtil.isEmpty(requestParamsJson)) {
-					AppContextUtil.setParams(requestParamsJson, null);
-				} else {
-					AppContextUtil.setParams(requestParamsJson, req.getParameter(AppConstants.REQUESTD_PARAMS_XKEY));
-				}
+				AppContextUtil.setParams(ArgUtil.ifNotEmpty(
+						req.getParameter(AppConstants.REQUEST_PARAMS_XKEY),
+						req.getHeader(AppConstants.REQUEST_PARAMS_XKEY)), requestdParamsJson);
 			}
 
 			if (appContextInFilter != null) {
