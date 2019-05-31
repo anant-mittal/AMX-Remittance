@@ -1228,17 +1228,20 @@
                                 <textElement />
                                 <text><![CDATA[]]></text>
                             </staticText>
-                            <staticText>
+                           
+                            <textField isStretchWithOverflow="true">
                                 <reportElement x="0" y="3" width="185" height="15" isPrintWhenDetailOverflows="true"/>
-                                <textElement>
+                                <textElement textAlignment="Left">
                                     <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
-                                <text><![CDATA[VAT Rate(%)]]></text>
-                            </staticText>
-
-                            <textField isStretchWithOverflow="true">
-                                <reportElement x="100" y="4" width="485" height="15"
+                                <textFieldExpression class="java.lang.String">
+                                    <![CDATA[$F{tranx}.getValue("vatPercentage","VAT Rate(%)")]]>
+                                </textFieldExpression>
+                            </textField>
+                            
+                             <textField isStretchWithOverflow="true">
+                                <reportElement x="100" y="4" width="400" height="15"
                                                forecolor="#000000"
                                                isPrintWhenDetailOverflows="true"/>
                                 <textElement textAlignment="Left">
@@ -1246,10 +1249,11 @@
                                           pdfFontName="fonts/all/arial.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$F{tranx}.get("vatPercentage")]]>
+                                    <![CDATA[$F{tranx}.get("vatPercentage","")]]>
                                 </textFieldExpression>
                             </textField>
-
+                            
+                            
                             <textField isStretchWithOverflow="true">
                                 <reportElement x="485" y="4" width="100" height="15"
                                                forecolor="#000000"
@@ -1259,11 +1263,12 @@
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$R{label.vatRate}]]>
-                                </textFieldExpression>
+                                <![CDATA[$F{tranx}.getValue("vatPercentage", $R{label.vatRate})]]>                               
+                                 </textFieldExpression>
                             </textField>
-
-                        </frame>
+                            
+                            
+                           </frame>
                         <!--##################VAT Rate END####################-->
                         
                            <!--##################VAT Amount START####################-->
@@ -1275,17 +1280,21 @@
                                 <textElement />
                                 <text><![CDATA[]]></text>
                             </staticText>
-                            <staticText>
+                         
+                            
+                           	<textField isStretchWithOverflow="true">
                                 <reportElement x="0" y="3" width="185" height="15" isPrintWhenDetailOverflows="true"/>
-                                <textElement>
+                                <textElement textAlignment="Left">
                                     <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
-                                <text><![CDATA[VAT Amount]]></text>
-                            </staticText>
-
+                                <textFieldExpression class="java.lang.String">
+                                    <![CDATA[$F{tranx}.getValue("vatAmount","VAT Amount")]]>
+                                </textFieldExpression>
+                            </textField>
+                            
                             <textField isStretchWithOverflow="true">
-                                <reportElement x="100" y="4" width="485" height="15"
+                                <reportElement x="100" y="4" width="400" height="15"
                                                forecolor="#000000"
                                                isPrintWhenDetailOverflows="true"/>
                                 <textElement textAlignment="Left">
@@ -1293,10 +1302,10 @@
                                           pdfFontName="fonts/all/arial.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$F{tranx}.get("vatAmount")]]>
+                                    <![CDATA[$F{tranx}.get("vatAmount","")]]>
                                 </textFieldExpression>
                             </textField>
-
+                            
                             <textField isStretchWithOverflow="true">
                                 <reportElement x="485" y="4" width="100" height="15"
                                                forecolor="#000000"
@@ -1306,10 +1315,10 @@
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$R{label.vatAmount}]]>
+                                <![CDATA[$F{tranx}.getValue("vatAmount", $R{label.vatAmount})]]>
                                 </textFieldExpression>
                             </textField>
-
+                            
                         </frame>
                         <!--##################VAT Amount END####################-->
                         
