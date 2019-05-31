@@ -17,11 +17,15 @@ public final class StringUtils {
 
 		public boolean match(Pattern pattern) {
 			this.m = pattern.matcher(str);
-			return this.m != null && this.m.find();
+			return this.m != null;
 		}
 
 		public boolean find() {
 			return this.m != null && this.m.find();
+		}
+
+		public boolean isMatch(Pattern pattern) {
+			return this.match(pattern) && find();
 		}
 
 		public String group(int index) {

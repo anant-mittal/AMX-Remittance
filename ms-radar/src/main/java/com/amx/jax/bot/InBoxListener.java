@@ -90,9 +90,9 @@ public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 
 			StringMatcher matcher = new StringMatcher(event.getMessage().toUpperCase());
 
-			if (matcher.match(PING)) {
+			if (matcher.isMatch(PING)) {
 				replyMessage = "PING";
-			} else if (matcher.match(LINK_CIVIL_ID)) {
+			} else if (matcher.isMatch(LINK_CIVIL_ID)) {
 				String civilId = matcher.group(1);
 
 				Customer customer = customerRepository.getCustomerOneByIdentityInt(civilId);
