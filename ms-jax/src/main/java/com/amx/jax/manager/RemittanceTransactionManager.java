@@ -383,7 +383,7 @@ public class RemittanceTransactionManager {
 			vatDetails.setVatPercentage(vatList.get(0).getVatPercentage());
 			vatDetails.setVatType(vatList.get(0).getVatType());
 			vatDetails.setCalculatuonType(vatList.get(0).getCalculationType());
-			vatDetails.setRoudingOff(vatList.get(0).getRoundOff()==null?BigDecimal.ZERO:vatList.get(0).getRoundOff());
+			vatDetails.setRoudingOff(vatList.get(0).getRoundOff()==null?BigDecimal.ZERO:vatList.get(0).getRoundOff()); 
 			
 		}
 		if(JaxUtil.isNullZeroBigDecimalCheck(commission) && commission.compareTo(BigDecimal.ZERO)>0) {
