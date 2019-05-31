@@ -872,18 +872,21 @@ public class ReceiptPayment implements Serializable {
 	public void setOnlineDocumentNumber(BigDecimal onlineDocumentNumber) {
 		this.onlineDocumentNumber = onlineDocumentNumber;
 	}
+	@Column(name="VAT_TYPE")
 	public String getVatType() {
 		return vatType;
 	}
 	public void setVatType(String vatType) {
 		this.vatType = vatType;
 	}
+	@Column(name="VAT_PERCENTAGE")
 	public BigDecimal getVatPercentage() {
 		return vatPercentage;
 	}
 	public void setVatPercentage(BigDecimal vatPercentage) {
 		this.vatPercentage = vatPercentage;
 	}
+	@Column(name="VAT_AMOUNT")
 	public BigDecimal getVatAmount() {
 		return vatAmount;
 	}
