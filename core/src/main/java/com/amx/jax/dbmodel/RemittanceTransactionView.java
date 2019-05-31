@@ -333,18 +333,6 @@ public class RemittanceTransactionView implements Serializable{
 	@Column(name = "KD_SAVED")
 	private BigDecimal amountSaved;
 	
-	@Column(name="TOTAL_AMOUNT_SAVED")
-	private BigDecimal totalAmountSaved;
-	
-	
-	public BigDecimal getTotalAmountSaved() {
-		return totalAmountSaved;
-	}
-
-	public void setTotalAmountSaved(BigDecimal totalAmountSaved) {
-		this.totalAmountSaved = totalAmountSaved;
-	}
-
 	public BigDecimal getPhoneNumber() {
 		return phoneNumber;
 	}
