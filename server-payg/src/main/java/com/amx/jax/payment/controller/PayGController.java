@@ -5,12 +5,14 @@ package com.amx.jax.payment.controller;
 
 import static com.amx.jax.payment.PaymentConstant.PAYMENT_API_ENDPOINT;
 
+import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.Base64;
 import java.util.Calendar;
 import java.util.Date;
 
 import org.apache.log4j.Logger;
+import org.jasypt.util.text.BasicTextEncryptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.amx.jax.dict.Channel;
@@ -36,6 +39,8 @@ import com.amx.jax.payment.gateway.PaymentGateWayResponse;
 import com.amx.jax.payment.gateway.PaymentGateWayResponse.PayGStatus;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.CryptoUtil;
+import com.amx.utils.JsonUtil;
 
 import io.swagger.annotations.Api;
 
@@ -73,9 +78,20 @@ public class PayGController {
 	@Autowired
 	PayGConfig payGConfig;
 
-	@RequestMapping(value = { "/payment/*", "/payment" }, method = RequestMethod.GET)
+	private static BasicTextEncryptor textEncryptor = new BasicTextEncryptor();
+	{
+		textEncryptor.setPasswordCharArray("payg".toCharArray());
+	}
 
-	public String handleUrlPaymentRemit(
+	private PayGParams getVerifyHash(String amount) throws NoSuchAlgorithmException {
+		PayGParams payGParams = new PayGParams();
+		payGParams.setVerification(CryptoUtil.getMD5Hash((JsonUtil.toJson(payGParams))));
+		return payGParams;
+	}
+
+	@ResponseBody
+	@RequestMapping(value = { "/init_tranx/*" }, method = RequestMethod.GET)
+	public PayGParams initTransaction(
 			@RequestParam String trckid,
 			@RequestParam(required = false) String docId, @RequestParam(required = false) String docNo,
 			@RequestParam(required = false) String docFy,
@@ -85,7 +101,26 @@ public class PayGController {
 			@RequestParam(required = false) String prod,
 
 			@RequestParam(required = false) String callbackd,
-			Model model) {
+			Model model) throws NoSuchAlgorithmException {
+		return getVerifyHash(amount);
+	}
+
+	@RequestMapping(value = { "/payment/*", "/payment" }, method = RequestMethod.GET)
+	public String handleUrlPaymentRemit(
+			@RequestParam String trckid,
+			@RequestParam(required = false) String docId, @RequestParam(required = false) String docNo,
+			@RequestParam(required = false) String docFy,
+			@RequestParam String amount,
+
+			@RequestParam Tenant tnt, @RequestParam String pg, @RequestParam(required = false) Channel channel,
+			@RequestParam(required = false) String prod,
+			@RequestParam(required = false) String callbackd,
+			@RequestParam(required = false) String verify,
+			Model model) throws NoSuchAlgorithmException {
+
+		if (!ArgUtil.isEmpty(verify) && !verify.equals(getVerifyHash(amount).getVerification())) {
+			return "thymeleaf/pg_security";
+		}
 
 		TenantContextHolder.setCurrent(tnt);
 		String uuid = payGSession.uuid(true);

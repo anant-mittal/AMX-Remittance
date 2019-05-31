@@ -89,7 +89,7 @@ import com.amx.jax.repository.RemittanceApplicationRepository;
 import com.amx.jax.repository.remittance.LocalBankDetailsRepository;
 import com.amx.jax.service.CompanyService;
 import com.amx.jax.service.FinancialService;
-import com.amx.jax.service.JaxEmailNotificationService;
+import com.amx.jax.services.JaxEmailNotificationService;
 import com.amx.jax.services.JaxNotificationService;
 import com.amx.jax.services.RemittanceApplicationService;
 import com.amx.jax.services.ReportManagerService;
