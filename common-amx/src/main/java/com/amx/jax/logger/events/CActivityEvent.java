@@ -5,7 +5,12 @@ import java.math.BigDecimal;
 import com.amx.jax.logger.AuditEvent;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+@JsonInclude(Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CActivityEvent extends AuditEvent {
 
 	private static final long serialVersionUID = -3189696554945071766L;
@@ -22,9 +27,9 @@ public class CActivityEvent extends AuditEvent {
 
 		APPLICATION_CREATED, APPLICATION_UPDATE,
 
-		FC_UPDATE,TRANSACTION_CREATED
-//
-		;
+		FC_UPDATE, TRANSACTION_CREATED,
+
+		TP_REDIRECT;
 
 		@Override
 		public EventMarker marker() {
@@ -60,7 +65,16 @@ public class CActivityEvent extends AuditEvent {
 	private String actor = null;
 	private BigDecimal customerId = null;
 	private String customer = null;
+	private AuditActorInfo actor;
 	private RemitInfo trxn = null;
+	private CustInfo cust = null;
+
+	private CustInfo cust() {
+		if (this.cust == null) {
+			this.cust = new CustInfo();
+		}
+		return this.cust;
+	}
 
 	@Override
 	public String getDescription() {
@@ -83,11 +97,11 @@ public class CActivityEvent extends AuditEvent {
 		this.toValue = toValue;
 	}
 
-	public String getActor() {
+	public AuditActorInfo getActor() {
 		return actor;
 	}
 
-	public void setActor(String actor) {
+	public void setActor(AuditActorInfo actor) {
 		this.actor = actor;
 	}
 
@@ -97,6 +111,7 @@ public class CActivityEvent extends AuditEvent {
 
 	public void setCustomerId(BigDecimal customerId) {
 		this.customerId = customerId;
+		this.cust().setId(customerId);
 	}
 
 	public String getField() {
@@ -136,11 +151,11 @@ public class CActivityEvent extends AuditEvent {
 		this.target = getMergedString(this.target, ArgUtil.parseAsString(field, Constants.BLANK));
 		return this;
 	}
-	
+
 	public CActivityEvent set(RemitInfo remit) {
-				this.trxn = remit;
-				return this;
-		 }
+		this.trxn = remit;
+		return this;
+	}
 
 	public String getTarget() {
 		return target;
@@ -164,6 +179,7 @@ public class CActivityEvent extends AuditEvent {
 
 	public void setCustomer(String customer) {
 		this.customer = customer;
+		this.cust().setIdentity(customer);
 	}
 
 	public static String getMergedString(String oldStr, String newStr) {
@@ -173,6 +189,7 @@ public class CActivityEvent extends AuditEvent {
 		}
 		return oldStr;
 	}
+
 	public RemitInfo getTrxn() {
 		return trxn;
 	}
@@ -181,5 +198,12 @@ public class CActivityEvent extends AuditEvent {
 		this.trxn = trxn;
 	}
 
+	public CustInfo getCust() {
+		return cust;
+	}
+
+	public void setCust(CustInfo cust) {
+		this.cust = cust;
+	}
 
 }

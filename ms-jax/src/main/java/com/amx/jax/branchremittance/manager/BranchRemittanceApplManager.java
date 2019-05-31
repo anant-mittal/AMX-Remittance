@@ -62,6 +62,7 @@ import com.amx.jax.logger.AuditEvent.Result;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.events.CActivityEvent;
 import com.amx.jax.logger.events.CActivityEvent.Type;
+import com.amx.jax.logger.events.RemitInfo;
 import com.amx.jax.manager.RemittanceApplicationAdditionalDataManager;
 import com.amx.jax.manager.RemittanceApplicationManager;
 import com.amx.jax.manager.RemittanceTransactionManager;
@@ -279,7 +280,10 @@ public class BranchRemittanceApplManager {
 		mapAllDetailApplSave.put("EX_APPL_AML", amlData);
 		validateApplDetails(mapAllDetailApplSave);
 		brRemittanceDao.saveAllApplications(mapAllDetailApplSave);
-		auditService.log(new CActivityEvent(Type.APPLICATION_CREATED,String.format("{}/{}", remittanceApplication.getDocumentFinancialyear(),remittanceApplication.getDocumentNo(),remittanceApplication.getFsCustomer().getCustomerId())).field("STATUS").to(JaxTransactionStatus.APPLICATION_CREATED).result(Result.DONE));
+		auditService.log(new CActivityEvent(Type.APPLICATION_CREATED,String.format("%s/%s", remittanceApplication.getDocumentFinancialyear(),remittanceApplication.getDocumentNo()))
+				.field("STATUS").to(JaxTransactionStatus.APPLICATION_CREATED)
+				.set(new RemitInfo(remittanceApplication.getRemittanceApplicationId(), remittanceApplication.getLocalTranxAmount()))
+				.result(Result.DONE));
 		BranchRemittanceApplResponseDto applResponseDto = branchRemittancePaymentManager.fetchCustomerShoppingCart(customer.getCustomerId(),metaData.getDefaultCurrencyId());
 		return applResponseDto;
 	}

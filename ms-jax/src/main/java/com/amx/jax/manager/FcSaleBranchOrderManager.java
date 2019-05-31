@@ -24,6 +24,9 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.customer.repository.EmployeeRepository;
+import com.amx.jax.customer.service.CustomerService;
+import com.amx.jax.customer.service.EmployeeValidationService;
 import com.amx.jax.dao.ApplicationProcedureDao;
 import com.amx.jax.dao.CurrencyMasterDao;
 import com.amx.jax.dao.FcSaleApplicationDao;
@@ -59,8 +62,10 @@ import com.amx.jax.model.response.fx.FxOrderReportResponseDto;
 import com.amx.jax.model.response.fx.UserStockDto;
 import com.amx.jax.notification.fx.FcSaleEventManager;
 import com.amx.jax.repository.ICompanyDAO;
+import com.amx.jax.repository.ICustomerRepository;
 import com.amx.jax.repository.IDocumentDao;
 import com.amx.jax.repository.JaxConfigRepository;
+import com.amx.jax.repository.fx.FxDeliveryDetailsRepository;
 import com.amx.jax.service.CompanyService;
 import com.amx.jax.services.FcSaleDeliveryService;
 import com.amx.jax.util.ConverterUtil;
@@ -116,6 +121,21 @@ public class FcSaleBranchOrderManager {
 	
 	@Autowired
 	ApplicationProcedureDao applicationProcedureDao;
+	
+	@Autowired
+	EmployeeRepository employeeRepository;
+	
+	@Autowired
+	FxDeliveryDetailsRepository fxDeliveryDetailsRepository;
+	
+	@Autowired
+	ICustomerRepository customerRepository;
+	
+	@Autowired
+	EmployeeValidationService employeeValidationService;
+	
+	@Autowired
+	CustomerService customerService;
 
 	public HashMap<String, Object> fetchFcSaleOrderManagement(BigDecimal applicationCountryId,BigDecimal employeeId){
 		HashMap<String, Object> fetchOrder = new HashMap<>();
@@ -175,6 +195,8 @@ public class FcSaleBranchOrderManager {
 		}
 		return ordermanage;
 	}
+	
+
 
 	public List<UserStockDto> fetchUserStockViewByCurrency(BigDecimal countryId,BigDecimal employeeId,BigDecimal foreignCurrencyId){
 		List<UserStockDto> userStock = new ArrayList<>();
@@ -1315,7 +1337,7 @@ public class FcSaleBranchOrderManager {
 	private void logStatusChangeAuditEvent(BigDecimal deliveryDetailSeqId, String oldOrderStatus) {
 		fcSaleEventManager.logStatusChangeAuditEvent(deliveryDetailSeqId, oldOrderStatus);
 	}
-
+	
 	// stock move from branch staff to driver and vice versa
 	public Boolean currentStockMigration(BigDecimal deliveryDetailSeqId,BigDecimal driverEmployeeId,BigDecimal reqEmployeeId) {
 		Boolean status = Boolean.FALSE;

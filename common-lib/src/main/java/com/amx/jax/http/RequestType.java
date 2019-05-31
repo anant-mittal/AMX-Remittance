@@ -6,6 +6,7 @@ import org.springframework.util.StringUtils;
 
 import com.amx.jax.AppConstants;
 import com.amx.jax.filter.AppParamController;
+import com.amx.jax.logger.client.AuditServiceClient;
 import com.amx.utils.ArgUtil;
 
 public enum RequestType {
@@ -22,7 +23,11 @@ public enum RequestType {
 	}
 
 	public boolean isTrack() {
-		return track;
+		return track || AuditServiceClient.isDebugEnabled();
+	}
+
+	public boolean isDebugOnly() {
+		return !track;
 	}
 
 	public boolean isAuth() {

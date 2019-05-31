@@ -38,6 +38,7 @@ public class AuditServiceClient implements AuditService {
 	private static final Marker excepmarker = MarkerFactory.getMarker(EventMarker.EXCEP.toString());
 	private static final Marker noticemarker = MarkerFactory.getMarker(EventMarker.NOTICE.toString());
 	private static final Marker alertmarker = MarkerFactory.getMarker(EventMarker.ALERT.toString());
+	private static final Marker debugmarker = MarkerFactory.getMarker("DEBUG");
 	private static final Map<String, Boolean> allowedMarkersMap = new HashMap<String, Boolean>();
 	private final Map<String, AuditFilter<AuditEvent>> filtersMap = new HashMap<>();
 	private static boolean FILTER_MAP_DONE = false;
@@ -65,7 +66,7 @@ public class AuditServiceClient implements AuditService {
 
 		if (!FILTER_MAP_DONE) {
 			APP_NAME = appConfig.getAppName();
-			AUDIT_LOGGER_ENABLED = appConfig.isLogger();
+			AUDIT_LOGGER_ENABLED = appConfig.isAudit();
 			for (AuditFilter filter : filters) {
 				Matcher matcher = pattern.matcher(filter.getClass().getGenericInterfaces()[0].getTypeName());
 				if (matcher.find()) {
@@ -127,7 +128,11 @@ public class AuditServiceClient implements AuditService {
 
 		String marketName = marker.getName();
 		if (allowedMarkersMap.getOrDefault(marketName, Boolean.FALSE).booleanValue()) {
-			LOGGER.info(marker, json);
+			if (event.isDebugEvent()) {
+				LOGGER.debug(debugmarker, json);
+			} else {
+				LOGGER.info(marker, json);
+			}
 		}
 		if (capture && ITUNNEL_SERVICE != null && AUDIT_LOGGER_ENABLED) {
 			@SuppressWarnings("unchecked")
@@ -198,7 +203,7 @@ public class AuditServiceClient implements AuditService {
 			LOGGER2.error("Exception while logStatic {}", JsonUtil.toJson(event));
 			return null;
 		}
-		EventMarker eventMarker = eventType.marker();
+		EventMarker eventMarker = event.getTypeMarker();
 		if (eventMarker == null) {
 			eventMarker = EventMarker.AUDIT;
 		}
@@ -272,6 +277,10 @@ public class AuditServiceClient implements AuditService {
 	public AuditLoggerResponse excep(AuditEvent event, Logger logger, Exception e) {
 		logger.error(event.getType().toString(), e);
 		return this.excep(event, e);
+	}
+
+	public static boolean isDebugEnabled() {
+		return LOGGER.isDebugEnabled();
 	}
 
 }

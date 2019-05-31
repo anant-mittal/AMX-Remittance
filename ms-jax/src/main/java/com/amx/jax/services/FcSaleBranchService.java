@@ -18,30 +18,79 @@ import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.constant.JaxApiFlow;
+import com.amx.jax.dao.FcSaleBranchDao;
+import com.amx.jax.dbmodel.CountryBranch;
+import com.amx.jax.dbmodel.Customer;
+import com.amx.jax.dbmodel.fx.FxOrderTransactionModel;
 import com.amx.jax.dbmodel.fx.OrderManagementView;
+import com.amx.jax.dbmodel.fx.StatusMaster;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.manager.FcDeliveryOrdersearchManager;
 import com.amx.jax.manager.FcSaleApplicationTransactionManager;
 import com.amx.jax.manager.FcSaleBranchOrderManager;
+import com.amx.jax.manager.StatusMasterManager;
+import com.amx.jax.model.request.fx.FcDeliveryBranchOrderSearchRequest;
 import com.amx.jax.model.request.fx.FcSaleBranchDispatchRequest;
 import com.amx.jax.model.response.fx.FcEmployeeDetailsDto;
 import com.amx.jax.model.response.fx.FcSaleCurrencyAmountModel;
 import com.amx.jax.model.response.fx.FcSaleOrderManagementDTO;
 import com.amx.jax.model.response.fx.FxOrderReportResponseDto;
+import com.amx.jax.model.response.fx.FxOrderTransactionHistroyDto;
 import com.amx.jax.model.response.fx.UserStockDto;
+import com.amx.jax.repository.CustomerRepository;
+import com.amx.jax.repository.fx.FxDeliveryDetailsRepository;
+import com.amx.jax.repository.fx.FxOrderTransactionRespository;
+import com.amx.jax.repository.fx.VwFxDeliveryDetailsRepository;
+import com.amx.jax.service.CountryBranchService;
+import com.amx.jax.userservice.service.UserService;
+import com.amx.jax.userservice.service.UserValidationService;
 import com.amx.jax.util.RoundUtil;
+import com.amx.jax.validation.FcDeliveryBranchOrderSearchRequestValidation;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 @SuppressWarnings("rawtypes")
 public class FcSaleBranchService extends AbstractService{
 
-	Logger logger = LoggerFactory.getLogger(getClass());
+	public static final Logger logger = LoggerFactory.getLogger(FcSaleBranchService.class);
 
 	@Autowired
 	FcSaleBranchOrderManager branchOrderManager;
 
 	@Autowired
 	FcSaleApplicationTransactionManager fcSaleApplicationTransactionManager;
+	
+	@Autowired
+	VwFxDeliveryDetailsRepository vwFxDeliveryDetailsRepository;
+	
+	@Autowired
+	CustomerRepository customerRepo;
+	
+	@Autowired
+	CountryBranchService countryBranchService;
+	
+	@Autowired
+	FcSaleBranchDao fcSaleBranchDao;
+	
+	@Autowired
+	FcDeliveryOrdersearchManager fcDeliveryOrdersearchManager;
+	
+	@Autowired
+	UserValidationService userValidationService;
+	
+	@Autowired
+	FcDeliveryBranchOrderSearchRequestValidation fcDeliveryBranchOrderSearchRequestValidation;
+	
+	@Autowired
+	FxDeliveryDetailsRepository fxDeliveryDetailsRepository;
+	
+	@Autowired
+	StatusMasterManager statusMasterManager;
+	
+	@Autowired
+	FxOrderTransactionRespository fxOrderTransactionRespository;
+
 
 	/* 
 	 * @param   :fetch List of Pending Orders
@@ -115,6 +164,7 @@ public class FcSaleBranchService extends AbstractService{
 						fcSaleOrder.setRecPayBranchId(orderManagement.getRecPayBranchId());
 						fcSaleOrder.setRecPayCountryBranchId(orderManagement.getRecPayCountryBranchId());
 						fcSaleOrder.setGovernateId(orderManagement.getGovernateId());
+						fcSaleOrder.setCustomerName(orderManagement.getCustomerName());
 
 						HashMap<BigDecimal, BigDecimal> foreignCurrencyAmt = new HashMap<>();
 						List<FcSaleCurrencyAmountModel> lstCurrencyAmt = new ArrayList<>();
@@ -674,6 +724,51 @@ public class FcSaleBranchService extends AbstractService{
 
 		return new BoolRespModel(status);
 	}
+	
+	//Validation for OrderId
+	public void validateOrderId(FcDeliveryBranchOrderSearchRequest fcDeliveryBranchOrderSearchRequest) {
+		List<FxOrderTransactionModel> countryBranch = new ArrayList<>();
+		if(fcDeliveryBranchOrderSearchRequest.getOrderId().indexOf("/") > -1) {
+			countryBranch=	fxOrderTransactionRespository.searchTransactionRefNo(fcDeliveryBranchOrderSearchRequest.getOrderId());
+			if(countryBranch.isEmpty()) {
+				throw new GlobalException("Order Id is not found!");
+		}
+		}else {
+			throw new GlobalException("Invalid OrderId");
+	
+		}
+	}
+	
+	public AmxApiResponse<FxOrderTransactionHistroyDto, Object> searchOrder(
+			FcDeliveryBranchOrderSearchRequest fcDeliveryBranchOrderSearchRequest){
+		List<FxOrderTransactionHistroyDto> fxOrderTransactionHistroyDto = new ArrayList<>();
+		logger.debug("FcDeliveryBranchOrderSearchRequest:"+fcDeliveryBranchOrderSearchRequest.toString());
+		AmxApiResponse<FxOrderTransactionHistroyDto, Object> result = null;
+		
+		fcDeliveryBranchOrderSearchRequestValidation.validatingAllValues(fcDeliveryBranchOrderSearchRequest);
+		if (fcDeliveryBranchOrderSearchRequest.getCivilId() != null) {
+			Customer customerDetails = userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(
+					fcDeliveryBranchOrderSearchRequest.getCivilId(), JaxApiFlow.SIGNUP_ONLINE).get(0);
+			fcDeliveryBranchOrderSearchRequest.setCustomerId(customerDetails.getCustomerId());
+
+		}
+		if(fcDeliveryBranchOrderSearchRequest.getCountryBranchId() != null) {
+			CountryBranch countryBranch = countryBranchService
+					.getCountryBranchByCountryBranchId(fcDeliveryBranchOrderSearchRequest.getCountryBranchId());
+			fcDeliveryBranchOrderSearchRequest.setCountryBranchName(countryBranch.getBranchName());
+					
+		}
+		if(fcDeliveryBranchOrderSearchRequest.getOrderStatus() != null) {
+			
+			StatusMaster orderStatusDetails = statusMasterManager
+					.getOrderStatusValue(fcDeliveryBranchOrderSearchRequest.getOrderStatus());
+			fcDeliveryBranchOrderSearchRequest.setOrderStatusCode(orderStatusDetails.getStatusCode());	
+		}
+		fxOrderTransactionHistroyDto =fcDeliveryOrdersearchManager.searchOrder(fcDeliveryBranchOrderSearchRequest);
+	
+		result = AmxApiResponse.buildList(fxOrderTransactionHistroyDto);
+		return result;
+	}
 
 	public AmxApiResponse<FxOrderReportResponseDto,Object> reprintOrder(BigDecimal applicationCountryId,BigDecimal orderNumber,BigDecimal orderYear,BigDecimal employeeId) {
 		FxOrderReportResponseDto fxOrderReportResponseDto = null;
@@ -706,4 +801,8 @@ public class FcSaleBranchService extends AbstractService{
 
 		return AmxApiResponse.build(fxOrderReportResponseDto);
 	}
+	
+	
+	
+	
 }

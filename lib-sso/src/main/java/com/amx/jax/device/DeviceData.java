@@ -2,6 +2,7 @@ package com.amx.jax.device;
 
 import java.io.Serializable;
 
+import com.amx.jax.dict.UserClient.ClientType;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -12,6 +13,7 @@ public class DeviceData implements Serializable {
 	private String empId;
 	private String globalIp;
 	private String localIp;
+	private ClientType clientType;
 
 	private long updatestamp;
 
@@ -90,5 +92,13 @@ public class DeviceData implements Serializable {
 
 	public void setRegId(String regId) {
 		this.regId = regId;
+	}
+
+	public ClientType getClientType() {
+		return clientType;
+	}
+
+	public void setClientType(ClientType clientType) {
+		this.clientType = clientType;
 	}
 }

@@ -2,6 +2,8 @@ package com.amx.jax.logger.events;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -17,10 +19,11 @@ import com.amx.jax.tunnel.TunnelEventXchange;
 import com.amx.jax.tunnel.TunnelMessage;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.HttpUtils;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonInclude(Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -38,10 +41,15 @@ public class RequestTrackEvent extends AuditEvent {
 		}
 	}
 
+	@JsonIgnore
 	private AppContext context;
+
 	@JsonProperty("rspTym")
 	private long responseTime;
+
 	private String ip;
+
+	private Map<String, String> topic;
 
 	public RequestTrackEvent(Type type) {
 		super(type);
@@ -49,7 +57,10 @@ public class RequestTrackEvent extends AuditEvent {
 
 	public <T> RequestTrackEvent(Type type, TunnelEventXchange xchange, TunnelMessage<T> message) {
 		super(type);
+		this.topic = new HashMap<String, String>();
 		this.description = String.format("%s %s=%s", this.type, xchange, message.getTopic());
+		topic.put("id", message.getId());
+		topic.put("name", message.getTopic());
 		this.context = message.getContext();
 	}
 
@@ -130,7 +141,20 @@ public class RequestTrackEvent extends AuditEvent {
 		this.ip = ip;
 	}
 
+	public RequestTrackEvent debug(boolean isDebugOnly) {
+		this.debugEvent = isDebugOnly;
+		return this;
+	}
+
 	public void clean() {
+	}
+
+	public Map<String, String> getTopic() {
+		return topic;
+	}
+
+	public void setTopic(Map<String, String> topic) {
+		this.topic = topic;
 	}
 
 }

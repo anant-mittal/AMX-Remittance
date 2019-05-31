@@ -6,8 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.amx.jax.json.JsonSerializerType;
-import com.amx.utils.ArgUtil;
+import com.amx.jax.model.MapModel;
 import com.amx.utils.JsonPath;
 import com.amx.utils.JsonUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -25,51 +24,6 @@ public class SnapModels {
 	private static final JsonPath SOURCE = new JsonPath(SOURCE_KEY);
 	private static final String SUMMARY_KEY = "summary";
 	private static final JsonPath SUMMARY = new JsonPath(SUMMARY_KEY);
-
-	@JsonIgnoreProperties(ignoreUnknown = true)
-	public static class MapModel implements JsonSerializerType<Object> {
-		protected Map<String, Object> map;
-
-		@SuppressWarnings("unchecked")
-		public MapModel(String json) {
-			this.map = JsonUtil.fromJson(json, Map.class);
-		}
-
-		public Object get(String key) {
-			return this.map.get(key);
-		}
-
-		public String getString(String key) {
-			return ArgUtil.parseAsString(this.get(key));
-		}
-
-		public Long getLong(String key) {
-			return ArgUtil.parseAsLong(this.get(key));
-		}
-
-		public BigDecimal getBigDecimal(String key) {
-			return ArgUtil.parseAsBigDecimal(this.get(key));
-		}
-
-		@SuppressWarnings("unchecked")
-		public MapModel getMap(String key) {
-			return new MapModel((Map<String, Object>) this.get(key));
-		}
-
-		public MapModel(Map<String, Object> map) {
-			this.map = map;
-		}
-
-		@Override
-		public Object toObject() {
-			return this.map;
-		}
-
-		public <T> T as(Class<T> clazz) {
-			return JsonUtil.getMapper().convertValue(this.map, clazz);
-		}
-
-	}
 
 	@JsonIgnoreProperties(ignoreUnknown = true)
 	public static class SnapModelWrapper extends MapModel {
@@ -137,7 +91,7 @@ public class SnapModels {
 		}
 
 		public Long getTotal() {
-			return this.getLong("total");
+			return this.getLong("total", 0L);
 		}
 
 	}

@@ -10,11 +10,15 @@ import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.thymeleaf.context.Context;
 
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.ListRequestModel;
 import com.amx.jax.async.ExecutorConfig;
+import com.amx.jax.dict.ContactType;
+import com.amx.jax.postman.PostManConfig;
 import com.amx.jax.postman.events.UserInboxEvent;
+import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.WAMessage;
 import com.amx.jax.tunnel.TunnelService;
 import com.amx.utils.ArgUtil;
@@ -35,6 +39,12 @@ public class WhatsAppService {
 	@Autowired
 	private TunnelService tunnelService;
 
+	@Autowired
+	private PostManConfig postManConfig;
+
+	@Autowired
+	private FileService fileService;
+
 	private RBlockingQueue<WAMessage> getQueue(BigDecimal queueId) {
 		if (ArgUtil.isEmpty(queueId) || queueId.equals(BigDecimal.ZERO)) {
 			return redisson.getBlockingQueue(WHATS_MESSAGES);
@@ -42,9 +52,26 @@ public class WhatsAppService {
 		return redisson.getBlockingQueue(WHATS_MESSAGES + "_" + queueId);
 	}
 
+	public WAMessage resolveTemplate(WAMessage waMessage) {
+		if (ArgUtil.isEmpty(waMessage.getMessage()) && waMessage.getTemplate() != null) {
+			Context context = new Context(postManConfig.getLocal(waMessage));
+			context.setVariables(waMessage.getModel());
+
+			File file = new File();
+			file.setTemplate(waMessage.getTemplate());
+			file.setModel(waMessage.getModel());
+			file.setLang(waMessage.getLang());
+
+			waMessage.setMessage(fileService.create(file,ContactType.WHATSAPP).getContent());
+		}
+		return waMessage;
+	}
+
 	@Async(ExecutorConfig.EXECUTER_DIAMOND)
 	public WAMessage send(WAMessage message) {
 		message.setId(AppContextUtil.getTraceId());
+		message = resolveTemplate(message);
+
 		if (WAMessage.Channel.APIWHA == message.getChannel()) {
 			apiWhaService.sendWAMessage(message);
 		} else {
@@ -57,6 +84,7 @@ public class WhatsAppService {
 	@Async(ExecutorConfig.EXECUTER_DIAMOND)
 	public WAMessage send(WAMessage message, BigDecimal queueId) {
 		RBlockingQueue<WAMessage> queue = getQueue(queueId);
+		message = resolveTemplate(message);
 		queue.add(message);
 		return message;
 	}

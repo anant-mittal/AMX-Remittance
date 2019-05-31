@@ -4,6 +4,10 @@ import com.amx.utils.ArgUtil;
 
 public class JaxAuthContext {
 
+	public static String getOtp() {
+		return ArgUtil.parseAsString(AppContextUtil.getParams().get("otp"));
+	}
+
 	public static String getMotp() {
 		return ArgUtil.parseAsString(AppContextUtil.getParams().get("mOtp"));
 	}
@@ -12,8 +16,42 @@ public class JaxAuthContext {
 		return ArgUtil.parseAsString(AppContextUtil.getParams().get("eOtp"));
 	}
 
+	public static String getWotp() {
+		return ArgUtil.parseAsString(AppContextUtil.getParams().get("wOtp"));
+	}
+
+	public static String getAnyOtp() {
+		String otp = getOtp();
+		if (ArgUtil.isEmpty(otp)) {
+			otp = getMotp();
+		}
+		if (ArgUtil.isEmpty(otp)) {
+			otp = getEotp();
+		}
+		if (ArgUtil.isEmpty(otp)) {
+			otp = getWotp();
+		}
+		return otp;
+	}
+
 	public static String getSecAns() {
 		return ArgUtil.parseAsString(AppContextUtil.getParams().get("secAns"));
+	}
+
+	public static String otp(String otp) {
+		if (ArgUtil.isEmpty(otp)) {
+			return getOtp();
+		}
+		AppContextUtil.getParams().put("otp", otp);
+		return otp;
+	}
+
+	public static String wOtp(String wOtp) {
+		if (ArgUtil.isEmpty(wOtp)) {
+			return getWotp();
+		}
+		AppContextUtil.getParams().put("wOtp", wOtp);
+		return wOtp;
 	}
 
 	public static String mOtp(String mOtp) {

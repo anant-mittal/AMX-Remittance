@@ -34,6 +34,7 @@ import com.amx.amxlib.model.response.ExchangeRateResponseModel;
 import com.amx.amxlib.model.response.PurposeOfTransactionModel;
 import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
+import com.amx.jax.JaxAuthContext;
 import com.amx.jax.dict.Language;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
@@ -266,7 +267,8 @@ public class RemittController {
 	 */
 	@RequestMapping(value = "/api/remitt/xrate", method = { RequestMethod.POST })
 	public ResponseWrapper<XRateData> xrate(@RequestParam(required = false) BigDecimal forCur,
-			@RequestParam(required = false) BigDecimal domAmount, @RequestParam(required = false) BigDecimal beneBankCountryId) {
+			@RequestParam(required = false) BigDecimal domAmount,
+			@RequestParam(required = false) BigDecimal beneBankCountryId) {
 		ResponseWrapper<XRateData> wrapper = new ResponseWrapper<XRateData>(new XRateData());
 
 		CurrencyMasterDTO domCur = tenantContext.getDomCurrency();
@@ -279,7 +281,9 @@ public class RemittController {
 			ExchangeRateResponseModel resp;
 			try {
 				resp = jaxService.setDefaults().getxRateClient()
-						.getExchangeRate(domCur.getCurrencyId(), forCurcy.getCurrencyId(), domAmount, null, beneBankCountryId).getResult();
+						.getExchangeRate(domCur.getCurrencyId(), forCurcy.getCurrencyId(), domAmount, null,
+								beneBankCountryId)
+						.getResult();
 				wrapper.getData().setForXRate(resp.getExRateBreakup().getInverseRate());
 				wrapper.getData().setDomXRate(resp.getExRateBreakup().getRate());
 				wrapper.getData().setForAmount(resp.getExRateBreakup().getConvertedFCAmount());
@@ -377,7 +381,7 @@ public class RemittController {
 
 		// Noncompliant - exception is lost
 		try {
-			mOtp = ArgUtil.ifNotEmpty(mOtp, mOtpHeader);
+			mOtp = JaxAuthContext.mOtp(ArgUtil.ifNotEmpty(mOtp, mOtpHeader));
 			transactionRequestModel.setmOtp(mOtp);
 
 			RemittanceApplicationResponseModel respTxMdl = jaxService.setDefaults().getRemitClient()

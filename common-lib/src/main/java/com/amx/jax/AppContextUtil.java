@@ -1,5 +1,6 @@
 package com.amx.jax;
 
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
@@ -11,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 
+import com.amx.jax.api.AmxFieldError;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.dict.UserClient.UserDeviceClient;
 import com.amx.jax.http.RequestType;
@@ -73,6 +75,10 @@ public class AppContextUtil {
 
 	public static String getTraceId() {
 		return getTraceId(true, false);
+	}
+
+	public static String getContextId() {
+		return ArgUtil.parseAsString(ContextUtil.map().get(AppConstants.CONTEXT_ID_XKEY));
 	}
 
 	public static String getTranxId() {
@@ -149,6 +155,10 @@ public class AppContextUtil {
 		ContextUtil.setTraceId(traceId);
 	}
 
+	public static void setContextId(String contextId) {
+		ContextUtil.map().put(AppConstants.CONTEXT_ID_XKEY, contextId);
+	}
+
 	public static void setTranxId(String tranxId) {
 		ContextUtil.map().put(AppConstants.TRANX_ID_XKEY, tranxId);
 	}
@@ -171,6 +181,29 @@ public class AppContextUtil {
 
 	public static void setUserClient(UserDeviceClient userClient) {
 		ContextUtil.map().put(AppConstants.USER_CLIENT_XKEY, userClient);
+	}
+
+	@SuppressWarnings("unchecked")
+	public static List<AmxFieldError> getWarnings() {
+		Object userDeviceClientObject = ContextUtil.map().get(AppConstants.REQUEST_WARNING_XKEY);
+		List<AmxFieldError> warnings = null;
+		if (userDeviceClientObject == null) {
+			warnings = new ArrayList<AmxFieldError>();
+			ContextUtil.map().put(AppConstants.REQUEST_WARNING_XKEY, warnings);
+		} else {
+			warnings = (List<AmxFieldError>) userDeviceClientObject;
+		}
+		return warnings;
+	}
+
+	public static void addWarning(AmxFieldError warning) {
+		getWarnings().add(warning);
+	}
+
+	public static void addWarning(String warning) {
+		AmxFieldError w = new AmxFieldError();
+		w.setDescription(warning);
+		addWarning(w);
 	}
 
 	public static void setParams(String requestParamsJson, String requestdParamsJson) {
@@ -213,6 +246,7 @@ public class AppContextUtil {
 		AppContext appContext = new AppContext();
 		appContext.setTenant(getTenant());
 		appContext.setTraceId(getTraceId());
+		appContext.setContextId(getContextId());
 		appContext.setTranxId(getTranxId());
 		appContext.setActorId(getActorId());
 		appContext.setTraceTime(getTraceTime());
@@ -230,6 +264,9 @@ public class AppContextUtil {
 		}
 		if (context.getTranxId() != null) {
 			setTranxId(context.getTranxId());
+		}
+		if (context.getContextId() != null) {
+			setContextId(context.getContextId());
 		}
 		if (context.getActorId() != null) {
 			setActorId(context.getActorId());
@@ -252,6 +289,7 @@ public class AppContextUtil {
 		AppContext context = getContext();
 		map.put(TenantContextHolder.TENANT, context.getTenant().toString());
 		map.put(AppConstants.TRACE_ID_XKEY, context.getTraceId());
+		map.put(AppConstants.CONTEXT_ID_XKEY, context.getContextId());
 		map.put(AppConstants.TRANX_ID_XKEY, context.getTranxId());
 		map.put(AppConstants.ACTOR_ID_XKEY, context.getActorId());
 		map.put(AppConstants.USER_CLIENT_XKEY, JsonUtil.toJson(context.getClient()));
@@ -268,6 +306,7 @@ public class AppContextUtil {
 
 		String sessionId = getSessionId(true);
 		String traceId = getTraceId();
+		String contextId = getContextId();
 		String tranxId = getTranxId();
 		String userId = getActorId();
 		UserDeviceClient userClient = getUserClient();
@@ -279,6 +318,9 @@ public class AppContextUtil {
 		}
 		if (!ArgUtil.isEmpty(traceId)) {
 			httpHeaders.add(AppConstants.TRACE_ID_XKEY, traceId);
+		}
+		if (!ArgUtil.isEmpty(contextId)) {
+			httpHeaders.add(AppConstants.CONTEXT_ID_XKEY, contextId);
 		}
 		if (!ArgUtil.isEmpty(tranxId)) {
 			httpHeaders.add(AppConstants.TRANX_ID_XKEY, tranxId);
@@ -306,6 +348,14 @@ public class AppContextUtil {
 				setTranxId(tranxids.get(0));
 			}
 		}
+
+		if (httpHeaders.containsKey(AppConstants.CONTEXT_ID_XKEY)) {
+			List<String> cntxtxids = httpHeaders.get(AppConstants.CONTEXT_ID_XKEY);
+			if (cntxtxids.size() >= 0) {
+				setContextId(cntxtxids.get(0));
+			}
+		}
+
 		String traceId = getTraceId(false);
 		if (ArgUtil.isEmpty(traceId)) {
 			if (httpHeaders.containsKey(AppConstants.TRACE_ID_XKEY)) {

@@ -89,7 +89,7 @@ import com.amx.jax.repository.RemittanceApplicationRepository;
 import com.amx.jax.repository.remittance.LocalBankDetailsRepository;
 import com.amx.jax.service.CompanyService;
 import com.amx.jax.service.FinancialService;
-import com.amx.jax.service.JaxEmailNotificationService;
+import com.amx.jax.services.JaxEmailNotificationService;
 import com.amx.jax.services.JaxNotificationService;
 import com.amx.jax.services.RemittanceApplicationService;
 import com.amx.jax.services.ReportManagerService;
@@ -204,10 +204,6 @@ public class BranchRemittanceSaveManager {
 	private CustomerDao customerDao;
 	
 	
-	//List<RemittanceAml>			amlList	 = new ArrayList<>();
-	//List<RemittanceBenificiary> remitBeneList   = new ArrayList<>();
-	//List<RemittanceAdditionalInstructionData> addInstList = new ArrayList<>();
-	
 	List<LoyaltyPointsModel> loyaltyPoints 	 = new ArrayList<>();
 	Map<BigDecimal,RemittanceBenificiary> remitBeneList = new HashMap<>();
 	Map<BigDecimal,List<RemittanceAdditionalInstructionData>> addInstList = new HashMap<>();
@@ -228,6 +224,7 @@ public class BranchRemittanceSaveManager {
 		logger.debug("saveRemittanceTrnx request model : {}", JsonUtil.toJson(remittanceRequestModel));
 		List<BranchApplicationDto> shoppingCartList = new ArrayList<>();
 		shoppingCartList = remittanceRequestModel.getRemittanceApplicationId();
+		//updateApplicationStatus(shoppingCartList);
 		RemittanceResponseDto responseDto = saveRemittance(remittanceRequestModel);
 		
 		if(responseDto!=null && JaxUtil.isNullZeroBigDecimalCheck(responseDto.getCollectionDocumentNo())) {
@@ -240,6 +237,8 @@ public class BranchRemittanceSaveManager {
 			paymentResponse.setApplicationCountryId(metaData.getCountryId());
 			paymentResponse.setCustomerId(metaData.getCustomerId());
 			remittanceApplicationService.saveRemittancetoOldEmos(paymentResponse);
+			String promotionMsg = promotionManager.getPromotionPrizeForBranch(responseDto);
+			responseDto.setPromotionMessage(promotionMsg);
 		}else {
 			logger.error("NOT moved to old emos ", responseDto.getCollectionDocumentNo() + "" +responseDto.getCollectionDocumentCode()+" "+responseDto.getCollectionDocumentFYear());
 		}
@@ -268,9 +267,8 @@ public class BranchRemittanceSaveManager {
 			mapAllDetailRemitSave.put("EX_REMIT_ADDL", addInstList);
 			mapAllDetailRemitSave.put("EX_REMIT_AML", amlList);
 			mapAllDetailRemitSave.put("LOYALTY_POINTS", loyaltyPoints);
-			validateSaveTrnxDetails(mapAllDetailRemitSave);
 			responseDto = brRemittanceDao.saveRemittanceTransaction(mapAllDetailRemitSave);
-			auditService.log(new CActivityEvent(Type.TRANSACTION_CREATED,String.format("{}/{}", responseDto.getCollectionDocumentFYear(),responseDto.getCollectionDocumentNo())).field("STATUS").to(JaxTransactionStatus.PAYMENT_SUCCESS_APPLICATION_SUCCESS).result(Result.DONE));
+			auditService.log(new CActivityEvent(Type.TRANSACTION_CREATED,String.format("%s/%s", responseDto.getCollectionDocumentFYear(),responseDto.getCollectionDocumentNo())).field("STATUS").to(JaxTransactionStatus.PAYMENT_SUCCESS_APPLICATION_SUCCESS).result(Result.DONE));
 	}catch (GlobalException e) {
 			logger.error("routing  procedure", e.getErrorMessage() + "" + e.getErrorKey());
 			throw new GlobalException(e.getErrorKey(), e.getErrorMessage());
@@ -865,7 +863,6 @@ public class BranchRemittanceSaveManager {
 			remitAddData.setDocumentFinanceYear(remitTrnx.getDocumentFinanceYear());
 			remitAddData.setIsactive(ConstantDocument.Yes);
 			remitAddList.add(remitAddData);
-			//addInstList.add(remitAddData);
 		}
 			addInstList.put(applicationNo.getRemittanceApplicationId(), remitAddList);
 			
@@ -1227,9 +1224,6 @@ public void validateSaveTrnxDetails(HashMap<String, Object> mapAllDetailRemitSav
 	Map<BigDecimal,RemittanceTransaction> remitTrnxList = (Map<BigDecimal,RemittanceTransaction>) mapAllDetailRemitSave.get("EX_REMIT_TRNX");
 	Map<BigDecimal,RemittanceBenificiary> remitBeneList = (Map<BigDecimal,RemittanceBenificiary>) mapAllDetailRemitSave.get("EX_REMIT_BENE");
 	Map<BigDecimal,List<RemittanceAdditionalInstructionData>> addlTrnxList = (Map<BigDecimal,List<RemittanceAdditionalInstructionData>>) mapAllDetailRemitSave.get("EX_REMIT_ADDL");
-	//List<RemittanceTransaction> remitTrnxList = (List<RemittanceTransaction>) mapAllDetailRemitSave.get("EX_REMIT_TRNX");
-	//List<RemittanceBenificiary> remitBeneList = (List<RemittanceBenificiary>) mapAllDetailRemitSave.get("EX_REMIT_BENE");
-	//List<RemittanceAdditionalInstructionData> addlTrnxList = (List<RemittanceAdditionalInstructionData>) mapAllDetailRemitSave.get("EX_REMIT_ADDL");
 	
 	if(collectModel==null) {
 		throw new GlobalException(JaxError.NO_RECORD_FOUND, "Collection data not found");
@@ -1246,6 +1240,6 @@ public void validateSaveTrnxDetails(HashMap<String, Object> mapAllDetailRemitSav
 	if(addlTrnxList.isEmpty()) {
 		throw new GlobalException(JaxError.NO_RECORD_FOUND, "Remittance additional instruction details not found");
 	}
-	
 	}
+
 }

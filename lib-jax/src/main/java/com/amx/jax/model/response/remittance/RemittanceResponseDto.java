@@ -9,6 +9,7 @@ public class RemittanceResponseDto {
 	private BigDecimal collectionDocumentFYear;
 	private BigDecimal collectionDocumentCode;
 	private boolean declarationReport=false;
+	private String promotionMessage;
 	public String getReceiptNo() {
 		return receiptNo;
 	}
@@ -38,6 +39,12 @@ public class RemittanceResponseDto {
 	}
 	public void setDeclarationReport(boolean declarationReport) {
 		this.declarationReport = declarationReport;
+	}
+	public String getPromotionMessage() {
+		return promotionMessage;
+	}
+	public void setPromotionMessage(String promotionMessage) {
+		this.promotionMessage = promotionMessage;
 	}
 	
 }

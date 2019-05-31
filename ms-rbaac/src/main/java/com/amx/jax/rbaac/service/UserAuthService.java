@@ -313,7 +313,10 @@ public class UserAuthService {
 			throw new AuthServiceException(RbaacServiceError.OTP_TIMED_OUT, "Invalid OTP: OTP is timedOut");
 		}
 
-		Employee employee = userOtpData.getEmployee();
+		Employee cachedEmployee = userOtpData.getEmployee();
+
+		// Get Fresh Employee
+		Employee employee = rbaacDao.getEmployeeByEmployeeId(cachedEmployee.getEmployeeId());
 
 		String mOtpHash = UserOtpManager.getOtpHash(mOtp);
 		String partnerOtpHash = "";
@@ -527,7 +530,8 @@ public class UserAuthService {
 
 			List<ViewExEmpBranchSysDetails> empBranchSysDetails = rbaacDao
 					.getEmpBranchSysByEmpIdAndBranchSysInvIdAndBranchId(employee.getEmployeeId(),
-							userAuthInitReqDTO.getUserClientDto().getTerminalId(), employee.getFsCountryBranch());
+							userAuthInitReqDTO.getUserClientDto().getTerminalId(),
+							employee.getCountryBranch().getCountryBranchId());
 
 			/**
 			 * An Employee is Allowed to login only from One System at a time - only from

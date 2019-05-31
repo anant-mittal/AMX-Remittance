@@ -179,7 +179,7 @@ public class FBPushServiceImpl implements IPushNotifyService {
 					this.send(PMGaugeEvent.Type.NOTIFCATION_ANDROID, androidTopic.toString(), msg, msg.getMessage());
 					this.send(PMGaugeEvent.Type.NOTIFCATION_IOS, iosTopic.toString(), msg, msg.getMessage());
 					this.send(PMGaugeEvent.Type.NOTIFCATION_WEB, webTopic.toString(), msg, msg.getMessage());
-					userMessageEvent.setMessage( msg.getMessage());
+					userMessageEvent.setMessage(msg.getMessage());
 					tunnelService.task(userMessageEvent);
 				}
 				if (msg.getLines() != null) {
@@ -192,13 +192,14 @@ public class FBPushServiceImpl implements IPushNotifyService {
 					}
 				}
 			}
-			//tunnelService.task(userMessageEvent);
+			// tunnelService.task(userMessageEvent);
 			if (!ArgUtil.isEmpty(msg.getITemplate())
 					&& !ArgUtil.isEmpty(msg.getITemplate().getChannel())) {
 				Notipy noti = new Notipy();
 				noti.setSubject(msg.getSubject());
 				noti.setAuthor(String.format("Topic = %s", msg.getTo().get(0)));
 				noti.setMessage(msg.getMessage());
+				noti.setLines(msg.getLines()); 
 				noti.setChannel(msg.getITemplate().getChannel());
 				noti.addField("TEMPLATE", msg.getITemplate().toString());
 				noti.setColor("#" + CryptoUtil.toHex(6, msg.getITemplate().toString()));

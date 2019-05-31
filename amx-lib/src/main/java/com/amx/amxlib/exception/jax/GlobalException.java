@@ -4,6 +4,7 @@ import com.amx.amxlib.exception.AbstractJaxException;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.exception.AmxApiError;
 import com.amx.jax.exception.ExceptionMessageKey;
+import com.amx.jax.exception.IExceptionEnum;
 import com.amx.jax.exception.IMessageKey;
 
 public class GlobalException extends AbstractJaxException {
@@ -50,4 +51,7 @@ public class GlobalException extends AbstractJaxException {
 		this.errorMessage = errorMessage;
 	}
 
+	public GlobalException(IExceptionEnum errorCode, String message) {
+		super(errorCode, message);
+	}
 }

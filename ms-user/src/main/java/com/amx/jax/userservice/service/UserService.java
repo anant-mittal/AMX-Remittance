@@ -26,7 +26,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.amx.amxlib.constant.CommunicationChannel;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.exception.jax.InvalidCivilIdException;
 import com.amx.amxlib.exception.jax.InvalidJsonInputException;
@@ -37,14 +36,12 @@ import com.amx.amxlib.meta.model.CustomerDto;
 import com.amx.amxlib.model.AbstractUserModel;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
-import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.UserFingerprintResponseModel;
 import com.amx.amxlib.model.UserModel;
 import com.amx.amxlib.model.UserVerificationCheckListDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
-import com.amx.jax.JaxAuthCache;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.async.ExecutorConfig;
@@ -64,6 +61,7 @@ import com.amx.jax.dbmodel.LoginLogoutHistory;
 import com.amx.jax.dbmodel.ViewCity;
 import com.amx.jax.dbmodel.ViewDistrict;
 import com.amx.jax.dbmodel.ViewState;
+import com.amx.jax.dict.ContactType;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.logger.AuditEvent.Result;
 import com.amx.jax.logger.AuditService;
@@ -71,6 +69,7 @@ import com.amx.jax.logger.events.CActivityEvent;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.AbstractModel;
 import com.amx.jax.model.auth.QuestModelDTO;
+import com.amx.jax.model.customer.SecurityQuestionModel;
 import com.amx.jax.model.response.customer.CustomerFlags;
 import com.amx.jax.model.response.customer.PersonInfo;
 import com.amx.jax.postman.PostManException;
@@ -98,6 +97,7 @@ import com.amx.jax.userservice.service.CustomerValidationContext.CustomerValidat
 import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.StringUtil;
+import com.amx.utils.ArgUtil;
 import com.amx.utils.Random;
 
 @Service
@@ -194,16 +194,12 @@ public class UserService extends AbstractUserService {
 	CustomerIdProofDao customerIdProofDao;
 
 	@Autowired
-	JaxAuthCache jaxAuthCache;
-	
-	@Autowired
 	UserService userService;
-	
+
 	@Autowired
 	PostManService postManService;
 	@Autowired
 	CustomerFlagManager customerFlagManager;
-	
 
 	@Override
 	public ApiResponse registerUser(AbstractUserModel userModel) {
@@ -314,6 +310,11 @@ public class UserService extends AbstractUserService {
 
 		simplifyAnswers(model.getSecurityquestions());
 		onlineCust = custDao.saveOrUpdateOnlineCustomer(onlineCust, model);
+
+		/** Calling stored procedure to move updated details of customer to old emos **/
+		if (metaData.getCustomerId() != null && (model.getEmail() != null || model.getMobile() != null)) {
+			custDao.callProcedurePopulateCusmas(metaData.getCustomerId());
+		}
 		updateCustomerVerification(onlineCust, model, cust);
 		setCustomerStatus(onlineCust, model, cust);
 		checkListManager.updateCustomerChecks(onlineCust, model);
@@ -417,10 +418,10 @@ public class UserService extends AbstractUserService {
 		return sendOtpForCivilId(civilId, null, null, null);
 	}
 
-	public ApiResponse sendOtpForCivilId(String civilId, List<CommunicationChannel> channels,
+	public ApiResponse sendOtpForCivilId(String civilId, List<ContactType> channels,
 			CustomerModel customerModel, Boolean initRegistration) {
 		if (StringUtils.isNotBlank(civilId)) {
-			if(tenantContext.getKey().equals("OMN")) {
+			if (tenantContext.getKey().equals("OMN")) {
 				tenantContext.get().validateCivilId(civilId);
 			}
 		}
@@ -443,13 +444,13 @@ public class UserService extends AbstractUserService {
 		}
 		logger.info("customerId is --> " + customerId);
 		userValidationService.validateCustomerVerification(customerId);
-		//userValidationService.validateCivilId(civilId);
-		
-		// --- Validate IdentityInt 
+		// userValidationService.validateCivilId(civilId);
+
+		// --- Validate IdentityInt
 		Customer customerType = custDao.getCustomerByCivilId(civilId);
 		if (null != customerType) {
 			BigDecimal indentityType = customerType.getIdentityTypeId();
-		userValidationService.validateIdentityInt(civilId, indentityType);
+			userValidationService.validateIdentityInt(civilId, indentityType);
 		}
 
 		CivilIdOtpModel model = new CivilIdOtpModel();
@@ -465,7 +466,7 @@ public class UserService extends AbstractUserService {
 
 		CustomerOnlineRegistration onlineCust = verifyCivilId(civilId, model);
 		userValidationService.validateActiveCustomer(onlineCustReg, initRegistration);
-
+		Customer customer = custDao.getCustById(onlineCust.getCustomerId());
 		try {
 			userValidationService.validateTokenDate(onlineCust);
 		} catch (GlobalException e) {
@@ -474,15 +475,16 @@ public class UserService extends AbstractUserService {
 		}
 		// userValidationService.validateCustomerLockCount(onlineCust);
 		userValidationService.validateTokenSentCount(onlineCust);
+		userValidationService.validateCustomerContactForSendOtp(channels, customer);
 		generateToken(civilId, model, channels);
 		onlineCust.setEmailToken(model.getHashedeOtp());
 		onlineCust.setSmsToken(model.getHashedmOtp());
+		onlineCust.setWhatsAppToken(model.getwHashedOtp());
 		onlineCust.setTokenDate(new Date());
 		BigDecimal tokenSentCount = (onlineCust.getTokenSentCount() == null) ? BigDecimal.ZERO
 				: onlineCust.getTokenSentCount().add(new BigDecimal(1));
 		onlineCust.setTokenSentCount(tokenSentCount);
 		custDao.saveOnlineCustomer(onlineCust);
-		Customer customer = custDao.getCustById(onlineCust.getCustomerId());
 		model.setFirstName(customer.getFirstName());
 		model.setLastName(customer.getLastName());
 		model.setCustomerId(onlineCust.getCustomerId());
@@ -506,49 +508,79 @@ public class UserService extends AbstractUserService {
 		} catch (Exception e) {
 		}
 
-		if (customerModel != null && customerModel.getEmail() != null) {
-			personinfo.setEmail(customerModel.getEmail());
-		}
-		if (customerModel != null && customerModel.getMobile() != null) {
-			personinfo.setMobile(customerModel.getMobile());
+		if (customerModel != null) {
+			if (customerModel.getEmail() != null) {
+				personinfo.setEmail(customerModel.getEmail());
+			}
+			if (customerModel.getMobile() != null) {
+				personinfo.setPrefixCodeMobile(customer.getPrefixCodeMobile());
+				personinfo.setMobile(customerModel.getMobile());
+			}
 		}
 
-		jaxNotificationService.sendOtpSms(personinfo, model);
-
-		if (channels != null && (channels.contains(CommunicationChannel.EMAIL)
-				|| channels.contains(CommunicationChannel.EMAIL_AS_MOBILE))) {
-			jaxNotificationService.sendOtpEmail(personinfo, model);
+		if (!ArgUtil.isEmpty(customer) && !ArgUtil.isEmpty(customer.getWhatsapp())) {
+			personinfo.setWhatsappPrefixCode(customer.getWhatsappPrefix());
+			personinfo.setWhatsAppNumber(customer.getWhatsapp());
 		}
+
+		sendOtpFromPostMan(personinfo, model, channels);
+
 		return response;
 	}
 
-	public void generateToken(String userId, CivilIdOtpModel model, List<CommunicationChannel> channels) {
+	private void sendOtpFromPostMan(PersonInfo personinfo, CivilIdOtpModel model, List<ContactType> channels) {
+		if (org.apache.commons.collections.CollectionUtils.isEmpty(channels)) {
+			jaxNotificationService.sendOtpSms(personinfo, model);
+		} else {
+			if (channels.contains(ContactType.EMAIL) || channels.contains(ContactType.SMS_EMAIL)) {
+				jaxNotificationService.sendOtpEmail(personinfo, model);
+			}
+			if (channels.contains(ContactType.SMS) || channels.contains(ContactType.SMS_EMAIL)) {
+				jaxNotificationService.sendOtpSms(personinfo, model);
+			}
+			if (channels.contains(ContactType.WHATSAPP)) {
+				jaxNotificationService.sendOtpWhatsApp(personinfo, model);
+			}
+		}
+	}
+
+	public void generateToken(String userId, CivilIdOtpModel model, List<ContactType> channels) {
 		String randmOtp = util.createRandomPassword(6);
 		String hashedmOtp = cryptoUtil.getHash(userId, randmOtp);
 		String randeOtp = util.createRandomPassword(6);
 		String hashedeOtp = cryptoUtil.getHash(userId, randeOtp);
-		model.setHashedmOtp(hashedmOtp);
-		model.setmOtp(randmOtp);
-		model.setmOtpPrefix(Random.randomAlpha(3));
-		if (channels != null && channels.contains(CommunicationChannel.EMAIL)) {
-			model.setHashedeOtp(hashedeOtp);
-			model.seteOtp(randeOtp);
-			model.seteOtpPrefix(Random.randomAlpha(3));
-			logger.info("Generated otp for civilid email- " + userId + " is " + randeOtp);
+		String mOtpPrefix = Random.randomAlpha(3);
+		String eOtpPrefix = Random.randomAlpha(3);
+		if (!org.apache.commons.collections.CollectionUtils.isEmpty(channels)
+				&& channels.contains(ContactType.SMS_EMAIL)) {
+			randeOtp = randmOtp;
+			hashedeOtp = hashedmOtp;
+			eOtpPrefix = mOtpPrefix;
 		}
-
-		// set e-otp same as m-otp
-		if (channels != null && channels.contains(CommunicationChannel.EMAIL_AS_MOBILE)) {
-			model.setHashedeOtp(hashedmOtp);
-			model.seteOtp(randmOtp);
-			model.seteOtpPrefix(model.getmOtpPrefix());
-			logger.info("Generated otp for civilid email- " + userId + " is " + randmOtp);
+		if (org.apache.commons.collections.CollectionUtils.isEmpty(channels)) {
+			model.setHashedmOtp(hashedmOtp);
+			model.setmOtp(randmOtp);
+			model.setmOtpPrefix(Random.randomAlpha(3));
+		} else {
+			if (channels.contains(ContactType.SMS) || channels.contains(ContactType.SMS_EMAIL)
+					|| channels.contains(ContactType.MOBILE)) {
+				model.setHashedmOtp(hashedmOtp);
+				model.setmOtp(randmOtp);
+				model.setmOtpPrefix(mOtpPrefix);
+			}
+			if (channels.contains(ContactType.EMAIL) || channels.contains(ContactType.SMS_EMAIL)) {
+				model.setHashedeOtp(hashedeOtp);
+				model.seteOtp(randeOtp);
+				model.seteOtpPrefix(eOtpPrefix);
+			}
+			if (channels.contains(ContactType.WHATSAPP)) {
+				String randwOtp = Random.randomNumeric(6);
+				String hashedwOtp = cryptoUtil.getHash(userId, randwOtp);
+				model.setwHashedOtp(hashedwOtp);
+				model.setwOtp(randwOtp);
+				model.setwOtpPrefix(Random.randomAlpha(3));
+			}
 		}
-
-		/*JaxAuthMeta jaxAuthMeta = jaxAuthCache.getOrDefault(metaData.getCustomerId().toString(), new JaxAuthMeta());
-		jaxAuthMeta.seteOtp(randeOtp);
-		jaxAuthMeta.setmOtp(randmOtp);
-		jaxAuthCache.fastPut(metaData.getCustomerId().toString(), jaxAuthMeta);*/
 
 		logger.info("Generated otp for civilid mobile- " + userId + " is " + randmOtp);
 	}
@@ -582,7 +614,7 @@ public class UserService extends AbstractUserService {
 		if (onlineCust == null) {
 			throw new InvalidCivilIdException("Civil Id " + civilId + " not registered.");
 		}
-		if (StringUtils.isEmpty(mOtp)) {
+		if (StringUtils.isEmpty(mOtp) && StringUtils.isEmpty(eOtp)) {
 			throw new InvalidJsonInputException("Otp is empty for civil-id: " + civilId);
 		}
 		userValidationService.validateCustomerLockCount(onlineCust);
@@ -594,11 +626,11 @@ public class UserService extends AbstractUserService {
 		if (StringUtils.isNotBlank(eOtp)) {
 			eOtpHash = cryptoUtil.getHash(civilId, eOtp);
 		}
-		if (!mOtpHash.equals(mtokenHash)) {
+		if (mOtpHash != null && mtokenHash != null && !mOtpHash.equals(mtokenHash)) {
 			userValidationService.incrementLockCount(onlineCust);
 			throw new InvalidOtpException("Sms Otp is incorrect for civil-id: " + civilId);
 		}
-		if (eOtpHash != null && !eOtpHash.equals(etokenHash)) {
+		if (eOtpHash != null && etokenHash != null && !eOtpHash.equals(etokenHash)) {
 			userValidationService.incrementLockCount(onlineCust);
 			throw new InvalidOtpException("Email Otp is incorrect for civil-id: " + civilId);
 		}
@@ -615,9 +647,9 @@ public class UserService extends AbstractUserService {
 	}
 
 	public ApiResponse loginUser(String userId, String password) {
-		if(tenantContext.getKey().equals("OMN")) {
+		if (tenantContext.getKey().equals("OMN")) {
 			tenantContext.get().validateCivilId(userId);
-		}	
+		}
 		List<Customer> validCustomer = userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(userId,
 				JaxApiFlow.LOGIN);
 		CustomerOnlineRegistration onlineCustomer = custDao
@@ -640,6 +672,7 @@ public class UserService extends AbstractUserService {
 		userValidationService.validateBlackListedCustomerForLogin(customer);
 		ApiResponse response = getBlackApiResponse();
 		CustomerModel customerModel = convert(onlineCustomer);
+
 		// afterLoginSteps(onlineCustomer);
 		response.getData().getValues().add(customerModel);
 		response.getData().setType(customerModel.getModelType());
@@ -741,13 +774,13 @@ public class UserService extends AbstractUserService {
 		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(custId);
 		onlineCustomer.setPassword(cryptoUtil.getHash(onlineCustomer.getUserName(), model.getPassword()));
 		custDao.saveOnlineCustomer(onlineCustomer);
-		
+
 		CustomerModel outputModel = convert(onlineCustomer);
 		if (outputModel.getEmail() != null) {
 			jaxNotificationService.sendProfileChangeNotificationEmail(model, outputModel.getPersoninfo());
 			logger.info("The update password mail notification success");
 		}
-		
+
 		BoolRespModel responseModel = new BoolRespModel(true);
 		auditService.log(auditEvent.result(Result.DONE));
 		return AmxApiResponse.build(responseModel);
@@ -766,7 +799,7 @@ public class UserService extends AbstractUserService {
 	/**
 	 * reset lock
 	 */
-	protected void unlockCustomer(CustomerOnlineRegistration onlineCustomer) {
+	public void unlockCustomer(CustomerOnlineRegistration onlineCustomer) {
 		if (onlineCustomer.getLockCnt() != null || onlineCustomer.getLockDt() != null) {
 			onlineCustomer.setLockCnt(null);
 			onlineCustomer.setLockDt(null);
@@ -787,7 +820,7 @@ public class UserService extends AbstractUserService {
 		}
 		return output;
 	}
-	
+
 	public LoginLogoutHistory getLastLogoutHistoryByUserName(String userName) {
 
 		Sort sort = new Sort(Direction.DESC, "logoutTime");
@@ -979,6 +1012,7 @@ public class UserService extends AbstractUserService {
 		if (onlineCustomer != null) {
 			auditEvent.from(onlineCustomer.getStatus());
 			onlineCustomer.setStatus(ConstantDocument.No);
+			resetSecurityQuestion(onlineCustomer);
 			custDao.saveOnlineCustomer(onlineCustomer);
 			auditEvent.to(onlineCustomer.getStatus());
 		} else {
@@ -994,6 +1028,19 @@ public class UserService extends AbstractUserService {
 		auditService.log(auditEvent.result(Result.DONE)); // Audit
 		return response;
 
+	}
+
+	private void resetSecurityQuestion(CustomerOnlineRegistration customerOnlineRegistration) {
+		customerOnlineRegistration.setSecurityQuestion1(null);
+		customerOnlineRegistration.setSecurityQuestion2(null);
+		customerOnlineRegistration.setSecurityQuestion3(null);
+		customerOnlineRegistration.setSecurityQuestion4(null);
+		customerOnlineRegistration.setSecurityQuestion5(null);
+		customerOnlineRegistration.setSecurityAnswer1(null);
+		customerOnlineRegistration.setSecurityAnswer2(null);
+		customerOnlineRegistration.setSecurityAnswer3(null);
+		customerOnlineRegistration.setSecurityAnswer4(null);
+		customerOnlineRegistration.setSecurityAnswer5(null);
 	}
 
 	/**
@@ -1025,6 +1072,10 @@ public class UserService extends AbstractUserService {
 			BeanUtils.copyProperties(personInfo, customer);
 			personInfo.setEmail(customer.getEmail());
 			personInfo.setMobile(customer.getMobile());
+			personInfo.setWhatsAppNumber(customer.getWhatsapp());
+			personInfo.setPrefixCodeMobile("+" + customer.getPrefixCodeMobile());
+			personInfo.setWhatsappPrefixCode("+" + customer.getWhatsappPrefix());
+
 		} catch (Exception e) {
 		}
 		return personInfo;
@@ -1072,15 +1123,15 @@ public class UserService extends AbstractUserService {
 	public Customer getCustById(BigDecimal id) {
 		return repo.findOne(id);
 	}
-	
+
 	public Customer getCustomerDetails(String loginId) {
 		return repo.getCustomerDetails(loginId);
 	}
-	
+
 	public Customer getCustomerDetailsByCustomerId(BigDecimal custId) {
 		return repo.getCustomerDetailsByCustomerId(custId);
 	}
-	
+
 	@Transactional
 	public void deActivateFsCustomer(BigDecimal customerId) {
 		Customer customer = repo.findOne(customerId);
@@ -1095,14 +1146,12 @@ public class UserService extends AbstractUserService {
 		}
 		repo.save(customer);
 	}
-	
-	
-	
+
 	public UserFingerprintResponseModel linkDeviceId(BigDecimal customerId) {
 
 		CustomerOnlineRegistration customerOnlineRegistration = userValidationService
 				.validateOnlineCustomerByIdentityId(customerId);
-		
+
 		String password = Random.randomPassword(6);
 		String hashPassword = userService.generateFingerPrintPassword(password);
 		UserFingerprintResponseModel userFingerprintResponsemodel = new UserFingerprintResponseModel();
@@ -1110,14 +1159,14 @@ public class UserService extends AbstractUserService {
 		customerOnlineRegistration.setFingerprintDeviceId(metaData.getDeviceId());
 		customerOnlineRegistration.setDevicePassword(hashPassword);
 		custDao.saveOnlineCustomer(customerOnlineRegistration);
-		
+
 		Customer customer = custDao.getCustById(customerOnlineRegistration.getCustomerId());
 		PersonInfo personinfo = new PersonInfo();
 		personinfo.setFirstName(customer.getFirstName());
 		personinfo.setMiddleName(customer.getMiddleName());
 		personinfo.setLastName(customer.getLastName());
 		Email email = new Email();
-		
+
 		email.addTo(customerOnlineRegistration.getEmail());
 		email.setITemplate(TemplatesMX.FINGERPRINT_LINKED_SUCCESS);
 		email.setHtml(true);
@@ -1127,6 +1176,7 @@ public class UserService extends AbstractUserService {
 		sendEmail(email);
 		return userFingerprintResponsemodel;
 	}
+
 	@Async(ExecutorConfig.DEFAULT)
 	public void sendEmail(Email email) {
 		try {
@@ -1137,7 +1187,7 @@ public class UserService extends AbstractUserService {
 	}
 
 	public String generateFingerPrintPassword(String password) {
-		
+
 		logger.debug("The password is " + password);
 		String hashpassword = null;
 		try {
@@ -1183,7 +1233,7 @@ public class UserService extends AbstractUserService {
 		sendEmail(email);
 		return boolRespModel;
 	}
-	
+
 	public CustomerFlags getCustomerFlags(BigDecimal customerId) {
 		CustomerFlags customerFlags = null;
 		if (customerId != null) {
@@ -1194,6 +1244,7 @@ public class UserService extends AbstractUserService {
 
 	/**
 	 * deactivates id proof of customer
+	 * 
 	 * @param customerId
 	 */
 	public void deActivateCustomerIdProof(BigDecimal customerId) {
@@ -1207,7 +1258,7 @@ public class UserService extends AbstractUserService {
 			customerIdProofDao.save(activeIdProofs);
 		}
 	}
-	
+
 	public void deactiveteCustomerIdProofPendingCompliance(BigDecimal customerId) {
 		Customer customer = repo.findOne(customerId);
 		List<CustomerIdProof> deActiveIdProofs = customerIdProofDao.getCompliancePendingCustomerIdProof(customerId,
@@ -1219,11 +1270,59 @@ public class UserService extends AbstractUserService {
 			customerIdProofDao.save(deActiveIdProofs);
 		}
 	}
-	
+
 	public List<Customer> getCustomerByIdentityInt(String identityInt) {
 		String[] isActiveFlags = new String[] { ConstantDocument.Yes, ConstantDocument.No };
 		List<Customer> customers = repo.getCustomerByIdentityIntAndIsActive(identityInt, Arrays.asList(isActiveFlags));
 		return customers;
 	}
-	 
+
+	public ApiResponse validateWOtp(String civilId, String wOtp) {
+
+		Customer customer = custDao.getCustomerByCivilId(civilId);
+		if (customer == null) {
+			throw new InvalidCivilIdException("Civil Id " + civilId + " not registered.");
+		}
+		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(customer.getCustomerId());
+		userValidationService.validateCustomerLockCount(onlineCustomer);
+		userValidationService.validateTokenDate(onlineCustomer);
+		String wDBToken = onlineCustomer.getWhatsAppToken();
+		String wOtpHash = cryptoUtil.getHash(civilId, wOtp);
+
+		if (wOtpHash != null && !wOtpHash.equals(wDBToken)) {
+			userValidationService.incrementLockCount(onlineCustomer);
+			throw new InvalidOtpException("whatsapp Otp is incorrect for civil-id: " + civilId);
+		}
+		ApiResponse response = getBlackApiResponse();
+		CustomerModel customerModel = convert(onlineCustomer);
+		response.getData().getValues().add(customerModel);
+		response.getData().setType(customerModel.getModelType());
+		response.setResponseStatus(ResponseStatus.OK);
+		return response;
+	}
+
+	public void incrementTokenSentCount(CustomerOnlineRegistration customerOnlineRegistration) {
+		customerOnlineRegistration.setTokenDate(new Date());
+		BigDecimal tokenSentCount = (customerOnlineRegistration.getTokenSentCount() == null) ? BigDecimal.ZERO
+				: customerOnlineRegistration.getTokenSentCount().add(new BigDecimal(1));
+		customerOnlineRegistration.setTokenSentCount(tokenSentCount);
+		custDao.saveOnlineCustomer(customerOnlineRegistration);
+	}
+
+	public void validateTokenExpiryTime(CustomerOnlineRegistration customerOnlineRegistration) {
+		try {
+			userValidationService.validateTokenDate(customerOnlineRegistration);
+		} catch (GlobalException e) {
+			// reset sent token count
+			customerOnlineRegistration.setTokenSentCount(BigDecimal.ZERO);
+		}
+		custDao.saveOnlineCustomer(customerOnlineRegistration);
+	}
+	
+	public void validateCustomerContactForSendOtp(List<ContactType> contactTypes, BigDecimal customerId) {
+		if (customerId != null) {
+			Customer customer = getCustById(customerId);
+			userValidationService.validateCustomerContactForSendOtp(contactTypes, customer);
+		}
+	}
 }

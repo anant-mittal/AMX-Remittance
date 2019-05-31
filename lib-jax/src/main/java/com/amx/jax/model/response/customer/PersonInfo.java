@@ -25,9 +25,25 @@ public class PersonInfo extends AbstractModel implements Cloneable {
 	private BigDecimal nationalityId;
 	private Timestamp lastLoginTime;
 	private String identityInt;
+	private String whatsAppNumber;
+	private String prefixCodeMobile;
+	private String whatsappPrefixCode;
+	public String getWhatsappPrefixCode() {
+		return whatsappPrefixCode;
+	}
 
-	
-	
+	public void setWhatsappPrefixCode(String whatsappPrefixCode) {
+		this.whatsappPrefixCode = whatsappPrefixCode;
+	}
+
+	public String getPrefixCodeMobile() {
+		return prefixCodeMobile;
+	}
+
+	public void setPrefixCodeMobile(String prefixCodeMobile) {
+		this.prefixCodeMobile = prefixCodeMobile;
+	}
+
 	/**
 	 * 
 	 */
@@ -181,5 +197,13 @@ public class PersonInfo extends AbstractModel implements Cloneable {
     public Object clone() throws CloneNotSupportedException {
         return super.clone();
     }
+
+	public String getWhatsAppNumber() {
+		return whatsAppNumber;
+	}
+
+	public void setWhatsAppNumber(String whatsAppNumber) {
+		this.whatsAppNumber = whatsAppNumber;
+	}
 
 }

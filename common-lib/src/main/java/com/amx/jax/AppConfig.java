@@ -46,7 +46,7 @@ public class AppConfig {
 	public static final String APP_SWAGGER = "${app.swagger}";
 	public static final String APP_DEBUG = "${app.debug}";
 	public static final String APP_CACHE = "${app.cache}";
-	public static final String APP_LOGGER = "${app.logger}";
+	public static final String APP_LOGGER = "${app.audit}";
 	public static final String APP_MONITOR = "${app.monitor}";
 
 	public static final String APP_CONTEXT_PREFIX = "${server.contextPath}";
@@ -193,6 +193,9 @@ public class AppConfig {
 	@Value(APP_CONTEXT_PREFIX)
 	@AppParamKey(AppParam.APP_CONTEXT_PREFIX)
 	private String appPrefix;
+
+	@Value("${app.response.ok}")
+	private boolean appResponseOK;
 
 	@Value("${server.session.cookie.http-only}")
 	private boolean cookieHttpOnly;
@@ -373,7 +376,7 @@ public class AppConfig {
 		return skipAuditMarkers;
 	}
 
-	public boolean isLogger() {
+	public boolean isAudit() {
 		return logger;
 	}
 
@@ -422,6 +425,10 @@ public class AppConfig {
 
 	public void setAppVersion(String appVersion) {
 		this.appVersion = appVersion;
+	}
+
+	public boolean isAppResponseOK() {
+		return appResponseOK;
 	}
 
 }
