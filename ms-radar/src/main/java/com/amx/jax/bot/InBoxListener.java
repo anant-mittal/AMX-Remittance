@@ -92,7 +92,7 @@ public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 
 			if (matcher.match(PING)) {
 				replyMessage = "PING";
-			} else if (matcher.match(LINK_CIVIL_ID) && matcher.find()) {
+			} else if (matcher.match(LINK_CIVIL_ID)) {
 				String civilId = matcher.group(1);
 
 				Customer customer = customerRepository.getCustomerOneByIdentityInt(civilId);

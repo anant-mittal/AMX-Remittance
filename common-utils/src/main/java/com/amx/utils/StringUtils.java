@@ -17,7 +17,7 @@ public final class StringUtils {
 
 		public boolean match(Pattern pattern) {
 			this.m = pattern.matcher(str);
-			return this.m != null;
+			return this.m != null && this.m.find();
 		}
 
 		public boolean find() {
