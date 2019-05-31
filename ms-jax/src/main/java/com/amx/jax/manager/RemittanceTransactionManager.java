@@ -320,7 +320,7 @@ public class RemittanceTransactionManager {
 		
 		validateTransactionAmount(breakup, newCommission, currencyId);		
 		
-		//radhika
+		/*//radhika
 		BigDecimal corpDiscount = corporateDiscountManager.corporateDiscount();
 		String currencyQuoteName = currencyDao.getCurrencyList(currencyId).get(0).getQuoteName();
 		logger.debug("currencyQuote:" +currencyQuoteName);
@@ -341,7 +341,7 @@ public class RemittanceTransactionManager {
 					logger.info("VatPercentage: "  +vatDetails.getVatPercentage());
 					
 					}
-				}
+				}*/
 		
 		// commission
 		responseModel.setTxnFee(commission);
