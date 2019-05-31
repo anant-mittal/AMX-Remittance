@@ -58,6 +58,7 @@ import com.amx.jax.service.PrefixService;
 import com.amx.jax.services.JaxNotificationService;
 import com.amx.jax.userservice.dao.AddressProofDao;
 import com.amx.jax.userservice.dao.IncomeDao;
+import com.amx.jax.userservice.manager.CustomerIdProofManager;
 import com.amx.jax.userservice.manager.CustomerRegistrationManager;
 import com.amx.jax.userservice.manager.CustomerRegistrationOtpManager;
 import com.amx.jax.userservice.repository.CustomerIdProofRepository;
@@ -194,6 +195,8 @@ public class OffsiteAddressProofManager {
 	
 	@Autowired
 	IDocumentUploadMapRepository iDocumentUploadMapRepository;
+	@Autowired
+	CustomerIdProofManager customerIdProofManager;
 	
 	public AmxApiResponse<AddressProofDTO, Object> getAddressProof(){
 		List<AddressProofModel> addressProofModel = addressProofDao.getAddressProof();
@@ -232,7 +235,7 @@ public class OffsiteAddressProofManager {
 				throw new GlobalException(JaxError.IMAGE_NOT_AVAILABLE, "Image is not available");
 			}
 			if (model.getIdentityExpiredDate() != null) {
-				offsiteCustomerRegManager.createIdProofForExpiredCivilId(model, customer);
+				customerIdProofManager.createIdProofForExpiredCivilId(model, customer);
 			}
 
 			if (model.getDocumentUploadReferenceId() == null) {

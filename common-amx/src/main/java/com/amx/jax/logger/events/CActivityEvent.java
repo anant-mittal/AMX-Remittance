@@ -62,7 +62,6 @@ public class CActivityEvent extends AuditEvent {
 	private String field = null;
 	private String fromValue = null;
 	private String toValue = null;
-	private String actor = null;
 	private BigDecimal customerId = null;
 	private String customer = null;
 	private AuditActorInfo actor;

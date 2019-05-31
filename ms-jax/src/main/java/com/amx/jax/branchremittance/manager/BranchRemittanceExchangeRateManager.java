@@ -66,7 +66,7 @@ import com.amx.jax.validation.RemittanceTransactionRequestValidator;
 @Component
 public class BranchRemittanceExchangeRateManager {
 
-	static final Logger LOGGER = LoggerFactory.getLogger(BranchRemittanceExchangeRateManager.class);
+	static final Logger logger = LoggerFactory.getLogger(BranchRemittanceExchangeRateManager.class);
 
 	@Autowired
 	JaxDynamicPriceService jaxDynamicPriceService;
