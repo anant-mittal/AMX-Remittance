@@ -32,6 +32,7 @@ public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 	private static final PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
 
 	public static final Pattern LINK_CIVIL_ID = Pattern.compile("^LINK (.*)$");
+	public static final Pattern PING = Pattern.compile("^PING$");
 
 	@Autowired
 	private WhatsAppClient whatsAppClient;
@@ -89,7 +90,9 @@ public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 
 			StringMatcher matcher = new StringMatcher(event.getMessage().toUpperCase());
 
-			if (matcher.match(LINK_CIVIL_ID) && matcher.find()) {
+			if (matcher.match(PING)) {
+				replyMessage = "PING";
+			} else if (matcher.match(LINK_CIVIL_ID) && matcher.find()) {
 				String civilId = matcher.group(1);
 
 				Customer customer = customerRepository.getCustomerOneByIdentityInt(civilId);
