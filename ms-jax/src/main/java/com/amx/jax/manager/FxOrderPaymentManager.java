@@ -34,7 +34,6 @@ import com.amx.jax.dbmodel.CountryBranch;
 import com.amx.jax.dbmodel.CountryMaster;
 import com.amx.jax.dbmodel.CurrencyMasterModel;
 import com.amx.jax.dbmodel.Customer;
-import com.amx.jax.dbmodel.ForeignCurrencyAdjust;
 import com.amx.jax.dbmodel.PaymentModeModel;
 import com.amx.jax.dbmodel.PurposeOfTransaction;
 import com.amx.jax.dbmodel.ReceiptPayment;
@@ -51,7 +50,6 @@ import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.response.fx.ShoppingCartDetailsDto;
 import com.amx.jax.payg.PayGModel;
 import com.amx.jax.payg.PaymentResponseDto;
-import com.amx.jax.postman.model.Email;
 import com.amx.jax.repository.CountryBranchRepository;
 import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.repository.IDocumentDao;
@@ -59,11 +57,12 @@ import com.amx.jax.repository.PaymentModeRepository;
 import com.amx.jax.repository.ReceiptPaymentAppRepository;
 import com.amx.jax.repository.fx.FxDeliveryDetailsRepository;
 import com.amx.jax.service.CompanyService;
+import com.amx.jax.service.CurrencyMasterService;
 import com.amx.jax.service.FinancialService;
-import com.amx.jax.services.JaxEmailNotificationService;
 import com.amx.jax.services.JaxNotificationService;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.util.JaxUtil;
+import com.amx.jax.util.RoundUtil;
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Component
@@ -121,6 +120,8 @@ public class FxOrderPaymentManager {
 	FcSaleApplicationTransactionManager fcSaleApplicationTransactionManager;
 	@Autowired
 	JaxNotificationService notificationService;
+	@Autowired
+	CurrencyMasterService currencyMasterService;
 	
 	
 	public PaymentResponseDto paymentCapture(PaymentResponseDto paymentResponse) {
@@ -495,10 +496,14 @@ public class FxOrderPaymentManager {
 	}
 
 	private void validateAmountMismatch(List<ReceiptPaymentApp> listOfRecAppl, PaymentResponseDto paymentResponse) {
+		BigDecimal localCurrencyId = listOfRecAppl.get(0).getLocalCurrencyId();
+		BigDecimal decimalNumber = currencyMasterService.getCurrencyMasterById(localCurrencyId).getDecinalNumber();
 		BigDecimal totalApplAmount = listOfRecAppl.stream().map(ReceiptPaymentApp::getLocalNetAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
 		BigDecimal delCharges = fcSaleApplicationTransactionManager.getDeliveryChargesFromParameter();
 		BigDecimal totalAmountWithCharges =totalApplAmount.add(delCharges); 
 		BigDecimal paidAmount = new BigDecimal(paymentResponse.getAmount());
+		totalAmountWithCharges = RoundUtil.roundBigDecimal(totalAmountWithCharges, decimalNumber.intValue());
+		paidAmount = RoundUtil.roundBigDecimal(paidAmount, decimalNumber.intValue());
 		if(JaxUtil.isNullZeroBigDecimalCheck(totalAmountWithCharges) && JaxUtil.isNullZeroBigDecimalCheck(paidAmount)) {
 			if (!totalAmountWithCharges.equals(paidAmount)) {
 				String errorMessage = String.format("paidAmount: %s and payableAmount: %s mismatch for customerId: %s", paidAmount,
