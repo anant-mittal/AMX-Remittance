@@ -318,12 +318,13 @@ public class RemittanceTransactionManager {
 		applyCurrencyRoudingLogic(breakup);
 		breakup = getExchangeRateBreakup(exchangeRates, model, responseModel, commission);
 		
-		validateTransactionAmount(breakup, newCommission, currencyId);		
+		validateTransactionAmount(breakup, newCommission, currencyId);	
+		
+		logger.debug("newCommissioncompare :" +newCommission);
+		logger.info("commissioncompare: " +commission);
 		
 		//radhika
 		BigDecimal corpDiscount = corporateDiscountManager.corporateDiscount();
-		String currencyQuoteName = currencyDao.getCurrencyList(currencyId).get(0).getQuoteName();
-		logger.debug("currencyQuote:" +currencyQuoteName);
 		
 				if(JaxUtil.isNullZeroBigDecimalCheck(commission) && commission.compareTo(corpDiscount)>=0) {
 					commission =commission.subtract(corpDiscount);
@@ -332,12 +333,12 @@ public class RemittanceTransactionManager {
 				
 				VatDetailsDto vatDetails = getVatAmount(commission);
 				if(vatDetails!=null && !StringUtils.isBlank(vatDetails.getVatApplicable()) && vatDetails.getVatApplicable().equalsIgnoreCase(ConstantDocument.Yes)) {
-					responseModel.setVatAmount(currencyQuoteName+ "     " +vatDetails.getVatAmount()==null?BigDecimal.ZERO:vatDetails.getVatAmount());
+					responseModel.setVatAmount(vatDetails.getVatAmount()==null?BigDecimal.ZERO:vatDetails.getVatAmount());
 					responseModel.setVatPercentage(vatDetails.getVatPercentage()==null?BigDecimal.ZERO:vatDetails.getVatPercentage());
 					responseModel.setVatType(vatDetails.getVatType()==null?"":vatDetails.getVatType());
 					if(JaxUtil.isNullZeroBigDecimalCheck(vatDetails.getCommission())) {
 					commission =vatDetails.getCommission();
-					logger.info("VatAmount: " +currencyQuoteName+ "     " +vatDetails.getVatAmount());
+					logger.info("VatAmount: " +vatDetails.getVatAmount());
 					logger.info("VatPercentage: "  +vatDetails.getVatPercentage());
 					
 					}
