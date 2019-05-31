@@ -9,14 +9,24 @@ import com.amx.jax.util.AmxDBConstants.Status;
 public class UserContactVerificationManager {
 
 	public void setContactVerified(Customer customer, String mOtp, String eOtp, String wOtp) {
-		if (mOtp != null) {
+		if(mOtp != null && eOtp != null && !mOtp.equals(eOtp)) {
+			if (mOtp != null) {
+				customer.setMobileVerified(Status.Y);
+			}
+
+			if (eOtp != null) {
+				customer.setEmailVerified(Status.Y);
+			}
+		}
+		
+		if(mOtp != null && eOtp == null) {
 			customer.setMobileVerified(Status.Y);
 		}
-
-		if (eOtp != null) {
+		
+		if(eOtp != null && mOtp == null) {
 			customer.setEmailVerified(Status.Y);
 		}
-
+		
 		if (wOtp != null) {
 			customer.setWhatsAppVerified(Status.Y);
 		}
