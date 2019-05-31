@@ -110,7 +110,7 @@ public class DailyPromotionManager {
 				if (personInfo.getEmail() != null) {
 					wantITbuyITEmail.addTo(personInfo.getEmail());
 				} else {
-					wantITbuyITEmail.addTo("almullatest@gmail.com");
+					wantITbuyITEmail.addTo("huzefa.abbasi@almullaexchange.com");
 				}
 				wantITbuyITEmail.setITemplate(TemplatesMX.WANTIT_BUYIT_PROMOTION);
 				wantITbuyITEmail.setHtml(true);
@@ -129,7 +129,7 @@ public class DailyPromotionManager {
 				logger.info("Sending WantIT BuyIT voucher Email to Marketing New : ");
 				Email wantITbuyITEmailM = new Email();
 				wantITbuyITEmailM.setSubject("Congratulations! You have got a coupon from Al Mulla Exchange.");
-				wantITbuyITEmailM.addTo("almullatest@gmail.com");
+				wantITbuyITEmailM.addTo("huzefa.abbasi@almullaexchange.com");
 				wantITbuyITEmailM.setITemplate(TemplatesMX.WANTIT_BUYIT_PROMOTION);
 				wantITbuyITEmailM.setHtml(true);
 				wantITbuyITEmailM.getModel().put(NotificationConstants.RESP_DATA_KEY, dailyPromotionDTO);

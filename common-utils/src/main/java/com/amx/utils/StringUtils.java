@@ -24,6 +24,10 @@ public final class StringUtils {
 			return this.m != null && this.m.find();
 		}
 
+		public boolean isMatch(Pattern pattern) {
+			return this.match(pattern) && find();
+		}
+
 		public String group(int index) {
 			return this.m.group(index);
 		}
