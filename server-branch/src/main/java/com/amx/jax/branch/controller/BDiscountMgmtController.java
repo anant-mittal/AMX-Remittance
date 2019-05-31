@@ -18,10 +18,12 @@ import com.amx.jax.client.MetaClient;
 import com.amx.jax.model.response.CurrencyMasterDTO;
 import com.amx.jax.pricer.dto.DiscountDetailsReqRespDTO;
 import com.amx.jax.pricer.dto.DiscountMgmtReqDTO;
+import com.amx.jax.pricer.dto.GroupDetails;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.dto.PricingResponseDTO;
 import com.amx.jax.pricer.dto.RoutBanksAndServiceRespDTO;
 import com.amx.jax.swagger.IStatusCodeListPlugin.ApiStatusService;
+
 
 import io.swagger.annotations.Api;
 
@@ -86,6 +88,15 @@ public class BDiscountMgmtController {
 
 		return metaClient.getAllExchangeRateCurrencyList();
 	}
-
-
+	
+	@RequestMapping(value = "/api/discount/groups/list", method = { RequestMethod.GET })
+	public AmxApiResponse<GroupDetails, Object> getCurrencyGroupingData() {
+			return discountMgmtClient.getCurrencyGroupingData();
+	}
+	
+	@RequestMapping(value = "/api/discount/currencyGroup/list", method = { RequestMethod.POST })
+	public AmxApiResponse<com.amx.jax.pricer.dto.CurrencyMasterDTO, Object> getCurrencyByGroupId(@RequestParam(value = "groupId", required = true)BigDecimal groupId) {
+			return discountMgmtClient.getCurrencyByGroupId(groupId);
+	}
+	
 }
