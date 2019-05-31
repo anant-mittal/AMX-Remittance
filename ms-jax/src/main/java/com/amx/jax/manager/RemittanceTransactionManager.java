@@ -347,6 +347,8 @@ public class RemittanceTransactionManager {
 		responseModel.setTxnFee(commission);
 		// exrate
 		responseModel.setExRateBreakup(breakup);
+		
+		responseModel.setDiscountOnComission(corpDiscount);
 
 		addExchangeRateParameters(responseModel);
 		applyCurrencyRoudingLogic(responseModel.getExRateBreakup());
