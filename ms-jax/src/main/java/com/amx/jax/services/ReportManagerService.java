@@ -504,8 +504,8 @@ public class ReportManagerService extends AbstractService{
 					 }
 					 
 					 
-					 if(JaxUtil.isNullZeroBigDecimalCheck(view.getAmountSaved())) {
-						 BigDecimal totalKdSavedAmount=RoundUtil.roundBigDecimal((view.getAmountSaved()),decimalPerCurrency);
+					 if(JaxUtil.isNullZeroBigDecimalCheck(view.getTotalAmountSaved())) {
+						 BigDecimal totalKdSavedAmount=RoundUtil.roundBigDecimal((view.getTotalAmountSaved()),decimalPerCurrency);
 						 obj.setTotalAmountSavedStr(currencyQuoteName+"     "+totalKdSavedAmount.toString());
 					 }
 				
