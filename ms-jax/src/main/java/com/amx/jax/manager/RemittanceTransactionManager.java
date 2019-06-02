@@ -459,6 +459,8 @@ public class RemittanceTransactionManager {
 
 		exRatebreakUp.setNetAmount(
 				RoundUtil.roundBigDecimal(exRatebreakUp.getNetAmount(), exRatebreakUp.getLcDecimalNumber().intValue()));
+		
+		logger.info("amount in ex:" +exRatebreakUp.getNetAmount());
 		exRatebreakUp.setNetAmountWithoutLoyality(RoundUtil.roundBigDecimal(exRatebreakUp.getNetAmountWithoutLoyality(),
 				exRatebreakUp.getLcDecimalNumber().intValue()));
 		exRatebreakUp.setInverseRate((RoundUtil.roundBigDecimal(exRatebreakUp.getInverseRate(), 6)));
@@ -805,11 +807,15 @@ public class RemittanceTransactionManager {
 			if (JaxUtil.isNullZeroBigDecimalCheck(comission) && comission.compareTo(loyaltyAmount) > 0) {
 				exchangeRateBreakup.setNetAmount(
 						netAmount.subtract(loyalityPointService.getVwLoyalityEncash().getEquivalentAmount()));
+				
+				logger.info("net maount in ex1:"+exchangeRateBreakup.getNetAmount());
 			} else {
 				exchangeRateBreakup.setNetAmount(netAmount.subtract(comission));
+				logger.info("net maount in ex2:"+exchangeRateBreakup.getNetAmount());
 			}
 		} else {
 			exchangeRateBreakup.setNetAmount(netAmount);
+			logger.info("net maount in ex3:"+exchangeRateBreakup.getNetAmount());
 		}
 	}
 
@@ -911,6 +917,8 @@ public class RemittanceTransactionManager {
 		}
 		// validate routing bank requirements
 		ExchangeRateBreakup breakup = validationResults.getExRateBreakup();
+		
+		logger.info("amount in exchnagerate break up"+breakup.getNetAmount());
 		BigDecimal netAmountPayable = breakup.getNetAmount();
 		RemittanceApplicationResponseModel remiteAppModel = new RemittanceApplicationResponseModel();
 		deactivatePreviousApplications();
