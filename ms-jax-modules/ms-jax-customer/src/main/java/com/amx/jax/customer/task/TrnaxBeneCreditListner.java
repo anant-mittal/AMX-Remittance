@@ -1,4 +1,4 @@
-package com.amx.jax.worker.tasks;
+package com.amx.jax.customer.task;
 
 import java.math.BigDecimal;
 import java.text.NumberFormat;
@@ -9,6 +9,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.amx.jax.customer.manager.CustomerContactVerificationManager;
+import com.amx.jax.dbmodel.Customer;
+import com.amx.jax.dbmodel.CustomerContactVerification;
+import com.amx.jax.dict.ContactType;
 import com.amx.jax.dict.Language;
 import com.amx.jax.event.AmxTunnelEvents;
 import com.amx.jax.postman.client.PostManClient;
@@ -16,6 +20,7 @@ import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.postman.model.TemplatesMX;
+import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.tunnel.DBEvent;
 import com.amx.jax.tunnel.ITunnelSubscriber;
 import com.amx.jax.tunnel.TunnelEventMapping;
@@ -24,13 +29,19 @@ import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;
 
 @TunnelEventMapping(topic = AmxTunnelEvents.Names.TRNX_BENE_CREDIT, scheme = TunnelEventXchange.TASK_WORKER)
-public class TrnaxBeneCredit implements ITunnelSubscriber<DBEvent> {
+public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 
 	@Autowired
 	PostManClient postManClient;
 
 	@Autowired
 	private PushNotifyClient pushNotifyClient;
+
+	@Autowired
+	private CustomerContactVerificationManager customerContactVerificationManager;
+
+	@Autowired
+	private CustomerRepository customerRepository;
 
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
@@ -50,7 +61,7 @@ public class TrnaxBeneCredit implements ITunnelSubscriber<DBEvent> {
 
 	@Override
 	public void onMessage(String channel, DBEvent event) {
-		LOGGER.info("======onMessage1==={} ====  {}", channel, JsonUtil.toJson(event));
+		LOGGER.debug("======onMessage1==={} ====  {}", channel, JsonUtil.toJson(event));
 		String emailId = ArgUtil.parseAsString(event.getData().get(EMAIL));
 		String smsNo = ArgUtil.parseAsString(event.getData().get(MOBILE));
 		String custNname = ArgUtil.parseAsString(event.getData().get(CUST_NAME));
@@ -62,7 +73,6 @@ public class TrnaxBeneCredit implements ITunnelSubscriber<DBEvent> {
 		String langId = ArgUtil.parseAsString(event.getData().get(LANG_ID));
 		String curName = ArgUtil.parseAsString(event.getData().get(CURNAME));
 		String type = ArgUtil.parseAsString(event.getData().get(TYPE));
-
 
 		NumberFormat myFormat = NumberFormat.getInstance();
 		myFormat.setGroupingUsed(true);
@@ -79,7 +89,11 @@ public class TrnaxBeneCredit implements ITunnelSubscriber<DBEvent> {
 		modeldata.put("currency", curName);
 		wrapper.put("data", modeldata);
 
+		Customer c = customerRepository.findOne(custId);
+
 		if (!ArgUtil.isEmpty(emailId)) {
+
+			CustomerContactVerification v = customerContactVerificationManager.create(c, ContactType.EMAIL);
 
 			Email email = new Email();
 
@@ -116,7 +130,7 @@ public class TrnaxBeneCredit implements ITunnelSubscriber<DBEvent> {
 
 		if (!ArgUtil.isEmpty(custId)) {
 			PushMessage pushMessage = new PushMessage();
-			
+
 			switch (type) {
 			case "CASH":
 				pushMessage.setITemplate(TemplatesMX.CASH);
@@ -130,7 +144,7 @@ public class TrnaxBeneCredit implements ITunnelSubscriber<DBEvent> {
 			default:
 				break;
 			}
-		
+
 			pushMessage.addToUser(custId);
 			pushMessage.setModel(wrapper);
 			pushNotifyClient.send(pushMessage);
