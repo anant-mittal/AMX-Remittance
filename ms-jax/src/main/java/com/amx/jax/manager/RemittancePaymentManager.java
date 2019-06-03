@@ -196,7 +196,9 @@ public class RemittancePaymentManager extends AbstractService{
 						PromotionDto promotDto = promotionManager.getPromotionDto(remittanceTransaction.getDocumentNo(),
 								remittanceTransaction.getDocumentFinanceYear());
 						PersonInfo personInfo = userService.getPersonInfo(customer.getCustomerId());
-						promotionManager.sendVoucherEmail(promotDto, personInfo);
+						if(personInfo!=null && !StringUtils.isBlank(personInfo.getEmail())) {
+							promotionManager.sendVoucherEmail(promotDto, personInfo);
+						}
 						
 						// --- WantIT BuyIT Coupons Promotions
 						dailyPromotionManager.applyWantITbuyITCoupans(remittanceTransaction.getRemittanceTransactionId(), personInfo);
@@ -209,7 +211,9 @@ public class RemittancePaymentManager extends AbstractService{
 							BeanUtils.copyProperties(personinfo, customer);
 						} catch (Exception e) {
 						}
-						notificationService.sendTransactionNotification(rrsrl.get(0), personinfo);
+						if(personInfo!=null && !StringUtils.isBlank(personInfo.getEmail())) {
+							notificationService.sendTransactionNotification(rrsrl.get(0), personinfo);
+						}
 					} catch (Exception e) {
 						logger.error("error while sending transaction notification", e);
 					}

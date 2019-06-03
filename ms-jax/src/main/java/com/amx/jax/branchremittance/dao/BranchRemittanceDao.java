@@ -208,7 +208,7 @@ public class BranchRemittanceDao {
 					RemittanceTransaction remitTrnx1 = remitTrnxRepository.save(remitTrnx);
 
 					if (remitBeneList != null && !remitBeneList.isEmpty()) {
-						logger.info("remitBeneRepository.save ApplicationId :"+applicationId);
+						logger.debug("remitBeneRepository.save ApplicationId :"+applicationId);
 						RemittanceBenificiary remitBene = remitBeneList.get(applicationId);
 						if (remitBene != null) {
 							remitBene.setExRemittancefromBenfi(remitTrnx1);
