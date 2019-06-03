@@ -9,10 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.amx.jax.customer.manager.CustomerContactVerificationManager;
-import com.amx.jax.dbmodel.Customer;
-import com.amx.jax.dbmodel.CustomerContactVerification;
-import com.amx.jax.dict.ContactType;
 import com.amx.jax.dict.Language;
 import com.amx.jax.event.AmxTunnelEvents;
 import com.amx.jax.postman.client.PostManClient;
@@ -20,7 +16,6 @@ import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.postman.model.TemplatesMX;
-import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.tunnel.DBEvent;
 import com.amx.jax.tunnel.ITunnelSubscriber;
 import com.amx.jax.tunnel.TunnelEventMapping;
@@ -36,12 +31,6 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 
 	@Autowired
 	private PushNotifyClient pushNotifyClient;
-
-	@Autowired
-	private CustomerContactVerificationManager customerContactVerificationManager;
-
-	@Autowired
-	private CustomerRepository customerRepository;
 
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
@@ -89,11 +78,7 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 		modeldata.put("currency", curName);
 		wrapper.put("data", modeldata);
 
-		Customer c = customerRepository.findOne(custId);
-
 		if (!ArgUtil.isEmpty(emailId)) {
-
-			CustomerContactVerification v = customerContactVerificationManager.create(c, ContactType.EMAIL);
 
 			Email email = new Email();
 
