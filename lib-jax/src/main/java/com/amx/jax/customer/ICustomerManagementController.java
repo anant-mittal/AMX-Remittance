@@ -1,5 +1,7 @@
 package com.amx.jax.customer;
 
+import java.text.ParseException;
+
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.model.customer.CreateCustomerInfoRequest;
@@ -25,7 +27,7 @@ public interface ICustomerManagementController {
 		public static final String CONTACT = "contact";
 	}
 
-	AmxApiResponse<BoolRespModel, Object> createCustomer(CreateCustomerInfoRequest createCustomerRequest);
+	AmxApiResponse<BoolRespModel, Object> createCustomer(CreateCustomerInfoRequest createCustomerRequest) throws ParseException;
 
 	AmxApiResponse<BoolRespModel, Object> updateCustomer(UpdateCustomerInfoRequest createCustomerRequest);
 

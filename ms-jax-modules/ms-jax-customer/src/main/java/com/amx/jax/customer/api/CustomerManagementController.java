@@ -2,6 +2,8 @@ package com.amx.jax.customer.api;
 
 import static com.amx.jax.customer.ICustomerManagementController.ApiPath.*;
 
+import java.text.ParseException;
+
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
@@ -16,6 +18,7 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.customer.ICustomerManagementController;
 import com.amx.jax.customer.document.manager.CustomerDocumentManager;
+import com.amx.jax.customer.manager.CustomerManagementManager;
 import com.amx.jax.model.customer.CreateCustomerInfoRequest;
 import com.amx.jax.model.customer.UploadCustomerKycRequest;
 import com.amx.jax.model.customer.UploadCustomerKycResponse;
@@ -27,14 +30,17 @@ public class CustomerManagementController implements ICustomerManagementControll
 
 	@Autowired
 	CustomerDocumentManager customerDocumentManager;
+	@Autowired
+	CustomerManagementManager customerManagementManager;
 
 	private static final Logger log = LoggerFactory.getLogger(CustomerManagementController.class);
 
 	@RequestMapping(path = CREATE_CUSTOMER, method = { RequestMethod.POST })
 	@Override
 	public AmxApiResponse<BoolRespModel, Object> createCustomer(
-			@RequestBody @Valid CreateCustomerInfoRequest createCustomerRequest) {
+			@RequestBody @Valid CreateCustomerInfoRequest createCustomerRequest) throws ParseException {
 		log.debug("request createCustomer  {}", JsonUtil.toJson(createCustomerRequest));
+		customerManagementManager.createCustomer(createCustomerRequest);
 		return AmxApiResponse.build();
 
 	}

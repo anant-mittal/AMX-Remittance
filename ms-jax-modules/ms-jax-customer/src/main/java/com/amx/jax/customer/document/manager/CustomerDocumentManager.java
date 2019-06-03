@@ -1,6 +1,7 @@
 package com.amx.jax.customer.document.manager;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +20,7 @@ import com.amx.jax.model.customer.UploadCustomerKycRequest;
 import com.amx.jax.model.customer.UploadCustomerKycResponse;
 import com.amx.jax.userservice.manager.CustomerIdProofManager;
 import com.amx.jax.userservice.service.UserService;
+import com.jax.amxlib.exception.jax.GlobaLException;
 
 @Component
 public class CustomerDocumentManager {
@@ -83,10 +85,13 @@ public class CustomerDocumentManager {
 		return uploadCustomerKycResponse;
 	}
 
-	public void addCustomerDocument(BigDecimal customerId) {
+	public void addCustomerDocument(BigDecimal customerId) throws ParseException {
 		Customer customer = userService.getCustById(customerId);
 		List<CustomerDocumentUploadReferenceTemp> uploads = customerDocumentUploadManager.getCustomerUploads(customer.getIdentityInt(),
 				customer.getIdentityTypeId());
+		if(CollectionUtils.isEmpty(uploads)) {
+			throw new GlobaLException("Customer documents not uploaded");
+		}
 		for (CustomerDocumentUploadReferenceTemp upload : uploads) {
 			switch (upload.getCustomerDocUploadType()) {
 			case KYC_PROOF:

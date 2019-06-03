@@ -1,6 +1,7 @@
 package com.amx.jax.customer.manager;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -72,8 +73,7 @@ public class CustomerManagementManager {
 
 	public OffsiteCustomerDataDTO getCustomerDeatils(String identityInt, BigDecimal identityTypeId) {
 		OffsiteCustomerDataDTO offsiteCustomer = new OffsiteCustomerDataDTO();
-		LOGGER.debug("identityInt :" + identityInt + "\t identityTypeId :" + identityTypeId + "\t country id "
-				+ metaData.getCountryId());
+		LOGGER.debug("identityInt :" + identityInt + "\t identityTypeId :" + identityTypeId + "\t country id " + metaData.getCountryId());
 		customerManagementValidation.validateIdentityIntLength(identityInt, identityTypeId);
 		List<Customer> customerList = userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(identityInt,
 				JaxApiFlow.OFFSITE_REGISTRATION);
@@ -92,8 +92,7 @@ public class CustomerManagementManager {
 			offsiteCustomer.setLocalAddressDetails(contactDetailService.createLocalAddressDetails(customer));
 			offsiteCustomer.setHomeAddressDestails(contactDetailService.createHomeAddressDetails(customer));
 			offsiteCustomer.setCustomerFlags(customerFlagManager.getCustomerFlags(customer.getCustomerId()));
-			offsiteCustomer
-					.setCustomerEmploymentDetails(customerEmployementManager.createCustomerEmploymentDetail(customer));
+			offsiteCustomer.setCustomerEmploymentDetails(customerEmployementManager.createCustomerEmploymentDetail(customer));
 			offsiteCustomer.setCustomerDocuments(customerDocumentManager.getCustomerUploadDocuments(customer.getCustomerId()));
 		} else {
 			jaxError = JaxError.CUSTOMER_NOT_FOUND;
@@ -172,8 +171,7 @@ public class CustomerManagementManager {
 		if (ConstantDocument.Yes.equals(customer.getIsActive())) {
 			customerStatusModel.setActiveBranch(true);
 		}
-		CustomerOnlineRegistration onlineCustomer = onlineCustomerManager
-				.getOnlineCustomerByCustomerId(customer.getCustomerId());
+		CustomerOnlineRegistration onlineCustomer = onlineCustomerManager.getOnlineCustomerByCustomerId(customer.getCustomerId());
 		if (onlineCustomer != null && ConstantDocument.Yes.equals(onlineCustomer.getStatus())) {
 			customerStatusModel.setActiveOnline(true);
 		}
@@ -182,10 +180,11 @@ public class CustomerManagementManager {
 		}
 		return customerStatusModel;
 	}
-	
+
 	@Transactional
-	public void createCustomer(CreateCustomerInfoRequest createCustomerInfoRequest) {
+	public void createCustomer(CreateCustomerInfoRequest createCustomerInfoRequest) throws ParseException {
 		AmxApiResponse<CustomerInfo, Object> response = offsitCustRegService.saveCustomerInfo(createCustomerInfoRequest);
-		customerDocumentManager.addCustomerDocument(response.getResult(), createCustomerInfoRequest);
+		customerDocumentManager.addCustomerDocument(response.getResult().getCustomerId());
 	}
+
 }

@@ -757,7 +757,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		}
 		userValidationService.validateBlackListedCustomerForLogin(customer);
 		LOGGER.info("Createing new customer record, civil id- {}", customerDetails.getIdentityInt());
-		customerRepository.save(customer);
+		customer = customerRepository.save(customer);
 		return customer;
 	}
 

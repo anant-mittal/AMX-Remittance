@@ -4,13 +4,13 @@ import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.dal.CustomerDocumentDao;
 import com.amx.jax.dal.ImageCheckDao;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.DmsApplMapping;
@@ -20,9 +20,11 @@ import com.amx.jax.dbmodel.customer.DmsDocumentBlobTemparory;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.customer.CustomerKycData;
 import com.amx.jax.model.request.ImageSubmissionRequest;
+import com.amx.jax.repository.IDMSAppMappingRepository;
 import com.amx.jax.repository.IUserFinancialYearRepo;
 import com.amx.jax.repository.customer.DmsDocumentBlobTemparoryRepository;
 import com.amx.jax.services.JaxDBService;
+import com.amx.jax.userservice.manager.CustomerIdProofManager;
 import com.amx.utils.JsonUtil;
 
 @Component
@@ -38,8 +40,14 @@ public class CustomerKycManager {
 	ImageCheckDao imageCheckDao;
 	@Autowired
 	MetaData metaData;
+	@Autowired
+	CustomerDocumentDao customerDocumentDao;
+	@Autowired
+	CustomerIdProofManager idProofManager;
+	@Autowired
+	IDMSAppMappingRepository idmsAppMappingRepository;
 
-	public void uploadAndCreateKyc(Customer customer, CustomerDocumentUploadReferenceTemp upload) {
+	public void uploadAndCreateKyc(Customer customer, CustomerDocumentUploadReferenceTemp upload) throws ParseException {
 
 		switch (upload.getScanIndic()) {
 		case DB_SCAN:
@@ -50,16 +58,24 @@ public class CustomerKycManager {
 
 	}
 
-	private void uploadDbScan(Customer customer, CustomerDocumentUploadReferenceTemp upload) {
+	private void uploadDbScan(Customer customer, CustomerDocumentUploadReferenceTemp upload) throws ParseException {
 		DmsDocumentBlobTemparory dmsDocumentBlobTemparory = new DmsDocumentBlobTemparory();
 		dmsDocumentBlobTemparory.setCreatedBy(jaxDBService.getCreatedOrUpdatedBy());
 		dmsDocumentBlobTemparory.setCreatedDate(new Date());
 		CustomerKycData data = JsonUtil.fromJson(upload.getUploadData(), CustomerKycData.class);
 		ImageSubmissionRequest imageSubmissionRequest = new ImageSubmissionRequest();
 		imageSubmissionRequest.setIdentityExpiredDate(data.getExpiryDate());
-		//dmsDocumentBlobTemparory.setDocBlobId(docBlobId);
-		//dmsDocumentBlobTemparory.setDocFinYear(docFinYear);
+		DmsApplMapping dmsApplMapping = getDmsApplMappingData(customer, imageSubmissionRequest);
+		BigDecimal docBlobId = dmsApplMapping.getDocBlobId();
+		BigDecimal docFinYear = dmsApplMapping.getFinancialYear();
+		dmsDocumentBlobTemparory.setDocBlobId(docBlobId);
+		dmsDocumentBlobTemparory.setDocFinYear(dmsApplMapping.getFinancialYear());
 		dmsDocumentBlobTemparory.setDocumentContent(upload.getDbScanDocumentBlob());
+		dmsDocumentBlobTemparory.setCountryCode(dmsApplMapping.getApplicationCountryId());
+		dmsDocumentBlobTemparory.setSeqNo(BigDecimal.ONE);
+		dmsDocumentBlobTemparoryRepository.save(dmsDocumentBlobTemparory);
+		idmsAppMappingRepository.save(dmsApplMapping);
+		idProofManager.commitOnlineCustomerIdProof(customer, imageSubmissionRequest);
 	}
 
 	public DmsApplMapping getDmsApplMappingData(Customer model, ImageSubmissionRequest imageSubmissionRequest) throws ParseException {
