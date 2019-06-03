@@ -788,7 +788,7 @@ public class BranchRemittanceSaveManager {
 
 	public  Map<BigDecimal,RemittanceBenificiary>  saveBeneTrnx(RemittanceApplication applicationNo,RemittanceTransaction remitTrnx){
 	if(applicationNo!=null) {
-		logger.info("saveBeneTrnx :"+applicationNo.getRemittanceApplicationId() +"\t Customer Id :"+metaData.getCustomerId());
+		logger.debug("saveBeneTrnx :"+applicationNo.getRemittanceApplicationId() +"\t Customer Id :"+metaData.getCustomerId());
 		RemittanceAppBenificiary applBene = applBeneRepository.findByExRemittanceAppfromBenfi(applicationNo);
 		if(applBene!=null) {
 			RemittanceBenificiary remitBene = new RemittanceBenificiary();
@@ -830,7 +830,7 @@ public class BranchRemittanceSaveManager {
 			remitBene.setExRemittancefromBenfi(remitTrnx);
 			remitBene.setExUserFinancialYear(getFinancialYearObj(remitTrnx.getDocumentFinanceYear()));
 			remitBene.setIsactive(ConstantDocument.Yes);
-			logger.info("saveBeneTrnx remitBeneList.put :"+applBene.getExRemittanceAppfromBenfi().getRemittanceApplicationId() +"\t Customer Id :"+metaData.getCustomerId());
+			logger.debug("saveBeneTrnx remitBeneList.put :"+applBene.getExRemittanceAppfromBenfi().getRemittanceApplicationId() +"\t Customer Id :"+metaData.getCustomerId());
 			remitBeneList.put(applBene.getExRemittanceAppfromBenfi().getRemittanceApplicationId(), remitBene);
 		}else {
 			throw new GlobalException(JaxError.NO_RECORD_FOUND,"Record not found in appl bene for remittance : "+remitTrnx.getApplicationDocumentNo());

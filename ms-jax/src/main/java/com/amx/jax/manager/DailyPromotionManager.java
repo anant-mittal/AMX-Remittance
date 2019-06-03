@@ -3,6 +3,7 @@ package com.amx.jax.manager;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -107,7 +108,7 @@ public class DailyPromotionManager {
 				logger.info("Sending WantIT BuyIT voucher Email to customer : ");
 				Email wantITbuyITEmail = new Email();
 				wantITbuyITEmail.setSubject("Congratulations! You have got a coupon from Al Mulla Exchange.");
-				if (personInfo.getEmail() != null) {
+				if (personInfo.getEmail() != null && !StringUtils.isBlank(personInfo.getEmail())) {
 					wantITbuyITEmail.addTo(personInfo.getEmail());
 				} else {
 					wantITbuyITEmail.addTo("huzefa.abbasi@almullaexchange.com");
