@@ -1,5 +1,8 @@
 package com.amx.jax.branchremittance.dao;
 
+/** 
+ * @author rabil
+ */
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
@@ -205,6 +208,7 @@ public class BranchRemittanceDao {
 					RemittanceTransaction remitTrnx1 = remitTrnxRepository.save(remitTrnx);
 
 					if (remitBeneList != null && !remitBeneList.isEmpty()) {
+						logger.info("remitBeneRepository.save ApplicationId :"+applicationId);
 						RemittanceBenificiary remitBene = remitBeneList.get(applicationId);
 						if (remitBene != null) {
 							remitBene.setExRemittancefromBenfi(remitTrnx1);
@@ -215,6 +219,7 @@ public class BranchRemittanceDao {
 						}
 					}
 					if (addlTrnxList != null && !addlTrnxList.isEmpty()) {
+						
 						List<RemittanceAdditionalInstructionData> lstAddIns = addlTrnxList.get(applicationId);
 						for (RemittanceAdditionalInstructionData remitAdd : lstAddIns) {
 							remitAdd.setExRemittanceTransaction(remitTrnx1);
