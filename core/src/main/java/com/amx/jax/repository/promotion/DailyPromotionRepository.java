@@ -1,6 +1,7 @@
 package com.amx.jax.repository.promotion;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.Query;
@@ -15,4 +16,6 @@ public interface DailyPromotionRepository extends CrudRepository<DailyPromotion,
 
 	DailyPromotion findFirstByUtilizeIsNull();
 
+	@Query(value = "select d from DailyPromotion d where remitTrnxId=?1 and utilize='Y'")
+	DailyPromotion getWantitByTrnxId(BigDecimal remitTrnxId);
 }
