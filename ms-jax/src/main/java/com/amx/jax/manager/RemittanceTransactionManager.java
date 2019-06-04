@@ -195,6 +195,9 @@ public class RemittanceTransactionManager {
 
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+	DailyPromotionManager dailyPromotionManager;
 
 	protected Map<String, Object> validatedObjects = new HashMap<>();
 
@@ -1029,6 +1032,10 @@ public class RemittanceTransactionManager {
 		}
 		JaxTransactionStatus status = getJaxTransactionStatus(application);
 		model.setStatus(status);
+		PromotionDto obj = dailyPromotionManager.getWanitBuyitMsg(remittanceTransaction);
+		if(obj != null) {
+			model.setPromotionDto(obj);
+		}
 		model.setErrorCategory(application.getErrorCategory());
 		model.setErrorMessage(application.getErrorMessage());
 		return model;
