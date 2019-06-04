@@ -116,9 +116,11 @@ public class RemitRoutingManager {
 
 			LOGGER.error("Routing Matrix is Data is Empty or Null for the Pricing/Routing Request");
 
-			throw new PricerServiceException(PricerServiceError.INVALID_ROUTING_BANK_IDS,
-					"Invalid Routing Bank Ids : None Found matching with the Requested Ids: "
-							+ exchangeRateAndRoutingRequest.getRoutingBankIds() + " Service Group: "
+			throw new PricerServiceException(PricerServiceError.INVALID_OR_MISSING_ROUTE,
+					"Invalid or Missing Routing Banks to the Beneficiary, Check Routing Setup for:" + " BeneBankId: "
+							+ exchangeRateAndRoutingRequest.getBeneficiaryBankId() + ", BeneBranchId: "
+							+ exchangeRateAndRoutingRequest.getBeneficiaryBranchId() + ", CurrencyId: "
+							+ exchangeRateAndRoutingRequest.getForeignCurrencyId() + ", ServiceGroupCode: "
 							+ exchangeRateAndRoutingRequest.getServiceGroup());
 		}
 

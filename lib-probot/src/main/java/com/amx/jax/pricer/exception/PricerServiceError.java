@@ -25,6 +25,8 @@ public enum PricerServiceError implements IExceptionEnum {
 
 	INVALID_ROUTING_BANK_IDS,
 
+	INVALID_OR_MISSING_ROUTE,
+
 	MISSING_GLCBAL_ENTRIES,
 
 	MISSING_VALID_EXCHANGE_RATES,
