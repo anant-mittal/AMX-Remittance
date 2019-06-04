@@ -13,7 +13,7 @@ public class CustomerCategoryDetails implements Serializable,Comparable<Customer
 	
 	private BigDecimal custCatId;
 	
-	private BigDecimal disountId;
+	private BigDecimal discountId;
 
 	private BigDecimal groupId;
 
@@ -93,12 +93,12 @@ public class CustomerCategoryDetails implements Serializable,Comparable<Customer
 		return this.customerCategory.compareTo(o.customerCategory);
 	}
 
-	public BigDecimal getDisountId() {
-		return disountId;
+	public BigDecimal getDiscountId() {
+		return discountId;
 	}
 
-	public void setDisountId(BigDecimal disountId) {
-		this.disountId = disountId;
+	public void setDiscountId(BigDecimal discountId) {
+		this.discountId = discountId;
 	}
 
 	public BigDecimal getGroupId() {

@@ -157,9 +157,9 @@ public class DiscountManager {
 		List<ChannelDetails> channelData = convertchannelRequest(channelDetails);
 		List<DiscountMaster> list = new ArrayList<>();
 		for (ChannelDetails channelUpdate : channelData) {
-			if(null != channelUpdate.getDisountId() && null != channelUpdate.getGroupId()) {
+			if(null != channelUpdate.getDiscountId() && null != channelUpdate.getGroupId()) {
 				DiscountMaster discChannelByIdAndGroupId = 
-						discountMasterDao.getByDiscountIdAndGroupId(channelUpdate.getDisountId(), channelUpdate.getGroupId(), DISCOUNT_TYPE.CHANNEL.getTypeKey());
+						discountMasterDao.getByDiscountIdAndGroupId(channelUpdate.getDiscountId(), channelUpdate.getGroupId(), DISCOUNT_TYPE.CHANNEL.getTypeKey());
 
 				if(null != discChannelByIdAndGroupId) {
 					if (null != channelUpdate.getDiscountPips()) {
@@ -193,7 +193,7 @@ public class DiscountManager {
 		for (ChannelDetails dto : channelDetails) {
 			ChannelDetails channelData = new ChannelDetails();
 			channelData.setGroupId(dto.getGroupId());
-			channelData.setDisountId(dto.getDisountId());
+			channelData.setDiscountId(dto.getDiscountId());
 			channelData.setDiscountPips(dto.getDiscountPips());
 			channelData.setIsActive(dto.getIsActive());
 			channelData.setChannelId(dto.getChannelId());
@@ -207,9 +207,9 @@ public class DiscountManager {
 		List<CustomerCategoryDetails> customerDiscountData = convertCustomerDiscountRequest(customerCategoryDetails);
 		List<DiscountMaster> list = new ArrayList<>();
 		for (CustomerCategoryDetails custCatUpdate : customerDiscountData) {
-			if(null != custCatUpdate.getDisountId() && null != custCatUpdate.getGroupId()) {
+			if(null != custCatUpdate.getDiscountId() && null != custCatUpdate.getGroupId()) {
 				DiscountMaster discCustCatByIdAndGroupId = 
-						discountMasterDao.getByDiscountIdAndGroupId(custCatUpdate.getDisountId(), custCatUpdate.getGroupId(), DISCOUNT_TYPE.CUSTOMER_CATEGORY.getTypeKey()); 
+						discountMasterDao.getByDiscountIdAndGroupId(custCatUpdate.getDiscountId(), custCatUpdate.getGroupId(), DISCOUNT_TYPE.CUSTOMER_CATEGORY.getTypeKey()); 
 				if(null != discCustCatByIdAndGroupId) {
 					if (null != custCatUpdate.getDiscountPips()) {
 						if (custCatUpdate.getDiscountPips().doubleValue() >= discCustCatByIdAndGroupId.getMinDiscountPips().doubleValue()
@@ -241,7 +241,7 @@ public class DiscountManager {
 		for (CustomerCategoryDetails dto : customerCategoryDetails) {
 			CustomerCategoryDetails customerCategoryData = new CustomerCategoryDetails();
 			customerCategoryData.setGroupId(dto.getGroupId());
-			customerCategoryData.setDisountId(dto.getDisountId());
+			customerCategoryData.setDiscountId(dto.getDiscountId());
 			customerCategoryData.setDiscountPips(dto.getDiscountPips());
 			customerCategoryData.setIsActive(dto.getIsActive());
 			customerCategoryData.setCustCatId(dto.getCustCatId());
@@ -294,7 +294,7 @@ public class DiscountManager {
 			ChannelDetails channelDetail = new ChannelDetails();
 			channelDetail.setChannelId(channelData.getId());
 			channelDetail.setChannel(channelData.getChannel());
-			channelDetail.setDisountId(discChannelList.getId());
+			channelDetail.setDiscountId(discChannelList.getId());
 			channelDetail.setGroupId(discChannelList.getGroupId());
 			channelDetail.setDiscountTypeId(discChannelList.getDiscountTypeId());
 			channelDetail.setDiscountPips(discChannelList.getDiscountPips());
@@ -317,7 +317,7 @@ public class DiscountManager {
 			CustomerCategoryDetails customerCategoryDetails = new CustomerCategoryDetails();
 			customerCategoryDetails.setCustCatId(custCatData.getId());
 			customerCategoryDetails.setCustomerCategory(custCatData.getCustomerCategory());
-			customerCategoryDetails.setDisountId(discCustCatList.getId());
+			customerCategoryDetails.setDiscountId(discCustCatList.getId());
 			customerCategoryDetails.setGroupId(discCustCatList.getGroupId());
 			customerCategoryDetails.setDiscountTypeId(discCustCatList.getDiscountTypeId());
 			customerCategoryDetails.setDiscountPips(discCustCatList.getDiscountPips());

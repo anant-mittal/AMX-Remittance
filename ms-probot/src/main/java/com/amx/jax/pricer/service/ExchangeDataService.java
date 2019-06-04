@@ -1,6 +1,7 @@
 package com.amx.jax.pricer.service;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -82,6 +83,9 @@ public class ExchangeDataService {
 		List<GroupDetails> groupInfo = discountManager.convertGroupInfo(groupingMaster);
 		discountMgmtRespDTO.setCurGroupDetails(groupInfo);
 		
+		Map<BigDecimal, List<ChannelDetails>> curGrpChannelDetails = new HashMap<BigDecimal, List<ChannelDetails>>();
+		Map<BigDecimal, List<CustomerCategoryDetails>> curGrpCustCatDetails = new HashMap<BigDecimal, List<CustomerCategoryDetails>>();
+		
 		if (discountMgmtReqDTO.getDiscountType().contains(DISCOUNT_TYPE.CHANNEL)) {
 			for (GroupingMaster groupList : groupingMaster) {
 				GroupDetails groupDetails = new GroupDetails();
@@ -92,8 +96,7 @@ public class ExchangeDataService {
 				if(null != chDiscMaster) {
 					List<ChannelDetails> channelGroupingData = discountManager.convertChannelGroupingData(chDiscMaster, groupList.getId());
 					if(null != channelGroupingData) {
-						Map<BigDecimal, List<ChannelDetails>> curGrpChannelDetails = 
-								discountManager.convertGrpChannel(groupList.getId(), channelGroupingData);
+						curGrpChannelDetails.put(groupList.getId(), channelGroupingData);
 						
 						discountMgmtRespDTO.setCurGrpChannelDetails(curGrpChannelDetails);
 					}
@@ -111,8 +114,7 @@ public class ExchangeDataService {
 				if(null != custCatDiscMaster) {
 					List<CustomerCategoryDetails> custCatGroupingData = discountManager.convertCustCatGroupingData(custCatDiscMaster, groupList.getId());
 					if(null != custCatGroupingData) {
-						Map<BigDecimal, List<CustomerCategoryDetails>> curGrpCustCatDetails = 
-								discountManager.convertGrpCustCat(groupList.getId(), custCatGroupingData);
+						curGrpCustCatDetails.put(groupList.getId(), custCatGroupingData);
 						
 						discountMgmtRespDTO.setCurGrpCustCatDetails(curGrpCustCatDetails);
 					}

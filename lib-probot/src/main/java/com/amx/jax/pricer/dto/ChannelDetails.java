@@ -13,7 +13,7 @@ public class ChannelDetails implements Serializable {
 	
 	private BigDecimal channelId;
 
-	private BigDecimal disountId;
+	private BigDecimal discountId;
 
 	private BigDecimal groupId;
 
@@ -87,12 +87,12 @@ public class ChannelDetails implements Serializable {
 		this.maxDiscountPips = maxDiscountPips;
 	}
 
-	public BigDecimal getDisountId() {
-		return disountId;
+	public BigDecimal getDiscountId() {
+		return discountId;
 	}
 
-	public void setDisountId(BigDecimal disountId) {
-		this.disountId = disountId;
+	public void setDiscountId(BigDecimal discountId) {
+		this.discountId = discountId;
 	}
 
 	public BigDecimal getGroupId() {
