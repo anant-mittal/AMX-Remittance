@@ -154,7 +154,9 @@ public class TunnelSubscriberFactory {
 				tryMessage(channel, msg);
 				RQueue<TunnelMessage<M>> eventAltQueue = redisson
 						.getQueue(TunnelEventXchange.SEND_LISTNER.getQueue(topicName));
-				TunnelMessage<M> msg2 = eventAltQueue.poll();
+
+				TunnelMessage<M> msg2 = pollSafely(channel, eventAltQueue, null);
+
 				if (msg2 != null && !TimeUtils.isDead(msg2.getTimestamp(), TIME_TO_EXPIRE_MILLIS)) {
 					tryMessage(channel, msg2);
 				}
@@ -196,13 +198,16 @@ public class TunnelSubscriberFactory {
 		topicQueue.addListener(new MessageListener<String>() {
 			@Override
 			public void onMessage(String channel, String msgId) {
+				if (ArgUtil.isEmpty(msgId)) {
+					LOGGER.warn("NULL msgId Rcvd for EVENT " + channel + " : ");
+				}
 				RQueue<TunnelMessage<M>> topicMessageQueue = redisson
 						.getQueue(TunnelEventXchange.TASK_WORKER.getQueue(topic));
-				onMessage(channel, topicMessageQueue);
+				onMessage(channel, topicMessageQueue, msgId);
 			}
 
-			private void onMessage(String channel, RQueue<TunnelMessage<M>> topicMessageQueue) {
-				TunnelMessage<M> msg = topicMessageQueue.poll();
+			private void onMessage(String channel, RQueue<TunnelMessage<M>> topicMessageQueue, String msgId) {
+				TunnelMessage<M> msg = pollSafely(channel, topicMessageQueue, msgId);
 				if (msg == null) {
 					return;
 				}
@@ -213,12 +218,16 @@ public class TunnelSubscriberFactory {
 					AuditServiceClient.trackStatic(
 							new RequestTrackEvent(RequestTrackEvent.Type.SUB_IN, TunnelEventXchange.TASK_WORKER, msg));
 					try {
-						listener.onMessage(channel, msg.getData());
+						if (ArgUtil.isEmpty(msg.getData())) {
+							LOGGER.warn("NULL Event Rcvd for EVENT " + channel + " : ");
+						} else {
+							listener.onMessage(channel, msg.getData());
+						}
 					} catch (Exception e) {
-						LOGGER.error("EXCEPTION EVENT " + channel + " : " + msg.getId(), e);
+						LOGGER.error("EXCEPTION in EVENT " + channel + " : " + msg.getId(), e);
 					}
 				}
-				onMessage(channel, topicMessageQueue);
+				onMessage(channel, topicMessageQueue, msgId);
 			}
 
 		});
@@ -230,26 +239,45 @@ public class TunnelSubscriberFactory {
 		topicQueue.addListener(new MessageListener<String>() {
 			@Override
 			public void onMessage(String channel, String msgId) {
+				if (ArgUtil.isEmpty(msgId)) {
+					LOGGER.warn("NULL msgId Rcvd for EVENT " + channel + " : ");
+				}
 				RQueue<TunnelMessage<M>> topicMessageQueue = redisson
 						.getQueue(TunnelEventXchange.AUDIT.getQueue(topic));
-				onMessage(channel, topicMessageQueue);
+				onMessage(channel, topicMessageQueue, msgId);
 			}
 
-			private void onMessage(String channel, RQueue<TunnelMessage<M>> topicMessageQueue) {
-				TunnelMessage<M> msg = topicMessageQueue.poll();
+			private void onMessage(String channel, RQueue<TunnelMessage<M>> topicMessageQueue, String msgId) {
+				TunnelMessage<M> msg = pollSafely(channel, topicMessageQueue, msgId);
+
 				if (msg != null) {
 					AppContext context = msg.getContext();
 					AppContextUtil.setContext(context);
 					AppContextUtil.init();
 					try {
-						listener.onMessage(channel, msg.getData());
+						if (ArgUtil.isEmpty(msg.getData())) {
+							LOGGER.warn("NULL Event Rcvd for EVENT " + channel + " : ");
+						} else {
+							listener.onMessage(channel, msg.getData());
+						}
 					} catch (Exception e) {
-						LOGGER.error("EXCEPTION EVENT " + channel + " : " + msg.getId(), e);
+						LOGGER.error("EXCEPTION in EVENT " + channel + " : " + msg.getId(), e);
 					}
-					onMessage(channel, topicMessageQueue);
+					onMessage(channel, topicMessageQueue, msgId);
 				}
 			}
+
 		});
+	}
+
+	private <M> TunnelMessage<M> pollSafely(String channel, RQueue<TunnelMessage<M>> topicMessageQueue, String msgId) {
+		TunnelMessage<M> msg = null;
+		try {
+			msg = topicMessageQueue.poll();
+		} catch (Exception e) {
+			LOGGER.error("EXCEPTION in EVENT_POLL " + channel + " msg id : " + msgId, e);
+		}
+		return msg;
 	}
 
 }

@@ -89,7 +89,7 @@ public class RemitClient extends AbstractJaxServiceClient {
 
 			LOGGER.debug("Remit Client :" + countryId + "\t companyId :" + companyId + "\t customerId :" + customerId);
 			HttpEntity<String> requestEntity = new HttpEntity<String>(util.marshall(transactionHistroyDTO),
-					getHeader());
+					getHeader(jaxMetaInfo));
 			String sendOtpUrl = this.getBaseUrl() + REMIT_API_ENDPOINT + "/remitReport/";
 			return restService.ajax(sendOtpUrl).queryParam("promotion", promotion).meta(new JaxMetaInfo())
 					.post(requestEntity).as(new ParameterizedTypeReference<ApiResponse<RemittanceReceiptSubreport>>() {

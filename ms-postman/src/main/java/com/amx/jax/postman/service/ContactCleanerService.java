@@ -107,7 +107,7 @@ public class ContactCleanerService {
 
 		for (int i = 0; i < length; i++) {
 			String x = getEmail(tos.get(i));
-			if (!ArgUtil.isEmpty(x) && isEmailBlackListed(x)) {
+			if (!ArgUtil.isEmpty(x) && !isEmailBlackListed(x)) {
 				list.add(x);
 			}
 		}

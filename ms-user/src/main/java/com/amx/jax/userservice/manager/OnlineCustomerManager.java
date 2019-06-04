@@ -43,6 +43,7 @@ public class OnlineCustomerManager {
 		if (customerOnlineRegistration == null) {
 			throw new GlobalException("Online customer not found");
 		}
+		Customer customer = custDao.getCustById(metaData.getCustomerId());
 		// send otp when update is needed
 		if (customerOnlineRegistration.getSecurityQuestion1() != null
 				&& customerOnlineRegistration.getSecurityAnswer1() != null) {
@@ -50,6 +51,7 @@ public class OnlineCustomerManager {
 			try {
 				// signifies that it is send otp flow
 				if (JaxAuthContext.getMotp() == null) {
+					userValidationService.validateCustomerContactForSendOtp(Arrays.asList(ContactType.SMS), customer);
 					userService.validateTokenExpiryTime(customerOnlineRegistration);
 					userValidationService.validateTokenSentCount(customerOnlineRegistration);
 					userService.incrementTokenSentCount(customerOnlineRegistration);

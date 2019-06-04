@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.AppConfig;
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.AppParam;
 import com.amx.jax.AppTenantConfig;
 import com.amx.jax.api.AmxApiResponse;
@@ -87,6 +88,7 @@ public class AppParamController {
 			map.put(key, prop(key));
 		}
 
+		AppContextUtil.addWarning("THis is a warning for no reason");
 		AmxApiResponse<UserDevice, Map<String, Object>> resp = new AmxApiResponse<UserDevice, Map<String, Object>>();
 		resp.setMeta(map);
 		resp.setData(commonHttpRequest.getUserDevice());

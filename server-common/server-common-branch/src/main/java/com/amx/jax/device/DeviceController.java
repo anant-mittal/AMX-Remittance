@@ -162,7 +162,7 @@ public class DeviceController {
 				.createDeviceSession(ArgUtil.parseAsInteger(deviceRegId), deviceRegToken)
 				.getResult();
 		SessionPairingCreds creds = deviceRequestValidator.createSession(resp.getSessionPairToken(), resp.getOtp(),
-				resp.getTermialId(), resp.getEmpId());
+				resp.getTermialId(), resp.getEmpId(), resp.getDeviceType());
 		creds.setOtpTtl(AmxConstants.OFFLINE_OTP_TTL);
 		creds.setRequestTtl(DeviceConstants.Config.REQUEST_TOKEN_VALIDITY);
 		creds.setOtpChars(CryptoUtil.COMPLEX_CHARS);

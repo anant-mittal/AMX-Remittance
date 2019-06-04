@@ -253,6 +253,7 @@ public enum JaxError implements IExceptionEnum {
 	// for validate new Question
 	INVALIDATE_ANSWER,
 	SECURITY_QUE_ANS,
+	SEC_ANS_REQUIRED,
 	BOTH_OTP_REQUIRED,
 	OTP_AND_SEC_ANSWER_REQUIRED,
 	INVALID_REMITTANCE_DOCUMENT_CODE,
@@ -284,7 +285,7 @@ public enum JaxError implements IExceptionEnum {
 	ENTITY_INVALID,
 	USER_ALREADY_ACTIVE,
 	MISSING_CONTACT,
-	
+	MISSING_OTP_CONTACT,
 	
 	// Default for code symettry
 	JAX_SYSTEM_ERROR,
@@ -294,7 +295,8 @@ public enum JaxError implements IExceptionEnum {
 	
 	MOTP_REQUIRED,
 	DOTP_REQUIRED,
-	EOTP_REQUIRED;
+	EOTP_REQUIRED, CUSTOMER_MOBILE_EMPTY, CUSTOMER_EMAIL_EMPTY,
+	MIN_DENOMINATION_ERROR;
 	
 	
 	@Deprecated

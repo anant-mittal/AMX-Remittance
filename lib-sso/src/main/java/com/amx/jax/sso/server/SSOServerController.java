@@ -1,6 +1,7 @@
 package com.amx.jax.sso.server;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -13,6 +14,7 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -60,7 +62,10 @@ import com.amx.jax.sso.SSOTranx.SSOModel;
 import com.amx.jax.sso.SSOUser;
 import com.amx.jax.sso.server.ApiHeaderAnnotations.ApiDeviceHeaders;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.HttpUtils;
 import com.amx.utils.JsonUtil;
+import com.amx.utils.TimeUtils;
+import com.amx.utils.URLBuilder;
 import com.amx.utils.Urly;
 
 import io.swagger.annotations.ApiParam;
@@ -122,7 +127,36 @@ public class SSOServerController {
 	@ApiSSOStatus({ SSOServerCodes.AUTH_REQUIRED, SSOServerCodes.AUTH_DONE })
 	@RequestMapping(value = SSOConstants.SSO_LOGIN_URL_HTML, method = RequestMethod.GET)
 	public String authLoginView(Model model,
-			@PathVariable(required = false, value = "htmlstep") @ApiParam(defaultValue = "REQUIRED") SSOAuthStep html) {
+			@PathVariable(required = false, value = "htmlstep") @ApiParam(defaultValue = "REQUIRED") SSOAuthStep html,
+			@RequestParam(required = false) Long refresh, HttpServletResponse resp,
+			@RequestParam(required = false, value = AppConstants.TRANX_ID_XKEY) String trnxId)
+			throws MalformedURLException, URISyntaxException {
+		if (sSOTranx.get() != null) {
+			SSOModel x = sSOTranx.get();
+			refresh = x.getCreatedStamp();
+			// System.out.println("=="+refresh+"===="+System.currentTimeMillis()+"trnx
+			// "+AppContextUtil.getTranxId());
+			if ((ArgUtil.isEmpty(refresh) || TimeUtils.isExpired(refresh, 10 * 1000))) {
+				String newTranxId = AppContextUtil.getTraceId(true, true);
+				ssoUser.setTranxId(newTranxId);
+				
+				URLBuilder builder = Urly.parse(
+							ArgUtil.ifNotEmpty(sSOTranx.get().getAppUrl(),
+									appConfig.getAppPrefix() + SSOConstants.APP_LOGIN_URL_DONE))
+							.queryParam(AppConstants.TRANX_ID_XKEY, newTranxId)
+							.queryParam(SSOConstants.PARAM_STEP, SSOAuthStep.DONE)
+							.queryParam(SSOConstants.PARAM_SOTP, sSOTranx.get().getAppToken())
+							;
+				
+				///builder.path(appConfig.getAppPrefix() + SSOConstants.SSO_LOGIN_URL)
+						//.queryParam("refresh", System.currentTimeMillis())
+						;
+				resp.setHeader("Location", builder.getURL());
+				resp.setStatus(302);
+			} else {
+				sSOTranx.put(x);
+			}
+		}
 		ssoUser.generateSAC();
 		model.addAllAttributes(getModelMap());
 		return SSOConstants.SSO_INDEX_PAGE;

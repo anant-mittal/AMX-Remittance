@@ -194,6 +194,9 @@ public class AppConfig {
 	@AppParamKey(AppParam.APP_CONTEXT_PREFIX)
 	private String appPrefix;
 
+	@Value("${app.response.ok}")
+	private boolean appResponseOK;
+
 	@Value("${server.session.cookie.http-only}")
 	private boolean cookieHttpOnly;
 
@@ -422,6 +425,10 @@ public class AppConfig {
 
 	public void setAppVersion(String appVersion) {
 		this.appVersion = appVersion;
+	}
+
+	public boolean isAppResponseOK() {
+		return appResponseOK;
 	}
 
 }

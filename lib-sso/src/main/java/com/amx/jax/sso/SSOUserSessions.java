@@ -16,6 +16,11 @@ public class SSOUserSessions extends CacheBox<Long> {
 	@Autowired
 	SSOUser sSOUser;
 
+	/**
+	 * To make sure user is not loggedin from other system
+	 * 
+	 * @return
+	 */
 	public boolean isValidUnique() {
 		String userid = ArgUtil.parseAsString(sSOUser.getUserId());
 		if (ArgUtil.isEmpty(userid)) {

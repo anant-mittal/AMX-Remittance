@@ -378,6 +378,8 @@ public class CustomerRegistrationManager extends TransactionModel<CustomerRegist
 				throw new GlobalException(JaxError.NO_RECORD_FOUND,"The customer does not exist in the system or inactive : "+identityInt);
 			}
 			
+		
+			
 			if(StringUtils.isBlank(customer.getIsActive()) && customer.getIsActive().equalsIgnoreCase(ConstantDocument.No)) {
 				throw new GlobalException(JaxError.CUSTOMER_INACTIVE,"Customer is partialy registed :"+identityInt +"\t identityTypeId :"+identityTypeId);
 			}else if(StringUtils.isBlank(customer.getIsActive()) && customer.getIsActive().equalsIgnoreCase(ConstantDocument.Deleted)) {
@@ -479,7 +481,6 @@ public class CustomerRegistrationManager extends TransactionModel<CustomerRegist
 				}
 				offsiteCustomer.setHomeAddressDestails(homeAddress);
 			}
-			
 		}else {
 			throw new GlobalException(JaxError.NO_RECORD_FOUND,"The customer does not exist in the system :"+identityInt);
 		}

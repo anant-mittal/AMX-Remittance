@@ -25,6 +25,10 @@ public class UserUpdateData implements UserUpdateRequest, UserUpdateResponse {
 	@Pattern(regexp = AppConstants.Validator.OTP)
 	private String eOtp = null;
 
+	/** The e otp. */
+	@Pattern(regexp = AppConstants.Validator.OTP)
+	private String wOtp = null;
+
 	/** The password. */
 	private String password = null;
 
@@ -325,6 +329,16 @@ public class UserUpdateData implements UserUpdateRequest, UserUpdateResponse {
 	@Override
 	public void setwOtpPrefix(String wOtpPrefix) {
 		this.wOtpPrefix = wOtpPrefix;
+	}
+
+	@Override
+	public String getwOtp() {
+		return this.wOtp;
+	}
+
+	@Override
+	public void setwOtp(String wOtp) {
+		this.wOtp = wOtp;
 	}
 
 }

@@ -34,6 +34,7 @@ import com.amx.amxlib.constant.PrefixEnum;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.CustomerCredential;
+import com.amx.jax.ICustRegService;
 import com.amx.jax.amxlib.config.OtpSettings;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.constant.ConstantDocument;
@@ -201,6 +202,12 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 	DOCBLOBRepository docblobRepository;
 
 	@Autowired
+	IUserFinancialYearRepo userFinancialYearRepo;
+
+	@Autowired
+	ImageCheckDao imageCheckDao;
+
+	@Autowired
 	IDMSAppMappingRepository idmsAppMappingRepository;
 
 	@Autowired
@@ -244,6 +251,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 	OffsiteCustomerRegManager offsiteCustomerRegManager;
 	@Autowired
 	CustomerIdProofManager customerIdProofManager;
+	
 	@Autowired
 	EmployeeRespository employeeRespository;
 	@Autowired
@@ -1137,5 +1145,9 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		offsiteCustomerRegValidator.validateGetOffsiteCustomerDetailRequest(request);
 		return getOffsiteCustomerData(request.getIdentityInt(), request.getIdentityType());
 	}
+	
+	
+	
+	
 	
 }

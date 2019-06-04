@@ -15,6 +15,7 @@ import org.thymeleaf.context.Context;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.ListRequestModel;
 import com.amx.jax.async.ExecutorConfig;
+import com.amx.jax.dict.ContactType;
 import com.amx.jax.postman.PostManConfig;
 import com.amx.jax.postman.events.UserInboxEvent;
 import com.amx.jax.postman.model.File;
@@ -61,7 +62,7 @@ public class WhatsAppService {
 			file.setModel(waMessage.getModel());
 			file.setLang(waMessage.getLang());
 
-			waMessage.setMessage(fileService.create(file).getContent());
+			waMessage.setMessage(fileService.create(file,ContactType.WHATSAPP).getContent());
 		}
 		return waMessage;
 	}

@@ -1,5 +1,7 @@
 package com.amx.jax.config;
 
+import java.util.Date;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -44,6 +46,12 @@ public class JaxTenantProperties {
 
 	@TenantValue("${jax.properties.device.autoactivate}")
 	Boolean deviceAutoActivate;
+	
+	@TenantValue("${wantit.buyit.startdate}")
+	private String startDate;
+	
+	@TenantValue("${wantit.buyit.enddate}")
+	private String endDate;
 
 	public Boolean getCashDisable() {
 		return cashDisable;
@@ -100,4 +108,23 @@ public class JaxTenantProperties {
 	public void setComplianceEmail(String complianceEmail) {
 		this.complianceEmail = complianceEmail;
 	}
+
+	public String getStartDate() {
+		return startDate;
+	}
+
+	public void setStartDate(String startDate) {
+		this.startDate = startDate;
+	}
+
+	public String getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(String endDate) {
+		this.endDate = endDate;
+	}
+
+
+
 }
