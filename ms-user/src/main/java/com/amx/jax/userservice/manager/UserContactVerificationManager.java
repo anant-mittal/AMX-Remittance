@@ -1,5 +1,6 @@
 package com.amx.jax.userservice.manager;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.dbmodel.Customer;
@@ -14,7 +15,7 @@ public class UserContactVerificationManager {
 				customer.setMobileVerified(Status.Y);
 			}
 
-			if (eOtp != null) {
+			if (eOtp != null && !StringUtils.isBlank(eOtp)) {
 				customer.setEmailVerified(Status.Y);
 			}
 		}
