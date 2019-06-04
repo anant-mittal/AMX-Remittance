@@ -12,6 +12,6 @@ import com.amx.jax.pricer.dbmodel.ViewExGLCBAL;
 @Transactional
 public interface VwExGLCBALRepository extends CrudRepository<ViewExGLCBAL, BigDecimal> {
 
-	List<ViewExGLCBAL> findByCurrencyCodeAndBankIdIn(String currencyCode, List<BigDecimal> bankIds);
+	public List<ViewExGLCBAL> findByCurrencyCodeAndBankIdIn(String currencyCode, List<BigDecimal> bankIds);
 
 }

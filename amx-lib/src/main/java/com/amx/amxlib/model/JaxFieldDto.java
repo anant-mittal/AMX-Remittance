@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.amx.jax.swagger.ApiMockModelProperty;
+import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 
 public class JaxFieldDto {
 
@@ -38,6 +39,10 @@ public class JaxFieldDto {
 	String dtoPath;
 
 	Map<String, Object> additionalValidations = new HashMap<>();
+	
+	
+
+	
 
 	public String getName() {
 		return name;

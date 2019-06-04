@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import com.amx.jax.pricer.dbmodel.CustomerCategoryDiscount;
 import com.amx.jax.pricer.repository.CustCatDiscountRepository;
+import com.amx.jax.pricer.var.PricerServiceConstants.CUSTOMER_CATEGORY;
 
 @Component
 public class CustCatDiscountDao {
@@ -15,7 +16,7 @@ public class CustCatDiscountDao {
 	@Autowired
 	CustCatDiscountRepository custCatDiscountRepository;
 
-	public CustomerCategoryDiscount getDiscountByCustomerCategory(String category) {
+	public CustomerCategoryDiscount getDiscountByCustomerCategory(CUSTOMER_CATEGORY category) {
 		return custCatDiscountRepository.findByCustomerCategory(category);
 	}
 
@@ -24,7 +25,6 @@ public class CustCatDiscountDao {
 	}
 
 	public List<CustomerCategoryDiscount> getDiscountForAllCustCategory() {
-		// TODO Auto-generated method stub
 		return (List<CustomerCategoryDiscount>) custCatDiscountRepository.findAll();
 	}
 

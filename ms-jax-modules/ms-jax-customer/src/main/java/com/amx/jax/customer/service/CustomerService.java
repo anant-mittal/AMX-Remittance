@@ -12,12 +12,15 @@ import org.springframework.stereotype.Service;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.dal.ArticleDao;
 import com.amx.jax.dal.BizcomponentDao;
 import com.amx.jax.dbmodel.ContactDetail;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerIdProof;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.customer.SecurityQuestionModel;
 import com.amx.jax.model.response.customer.CustomerContactDto;
 import com.amx.jax.model.response.customer.CustomerDto;
 import com.amx.jax.model.response.customer.CustomerIdProofDto;
@@ -27,6 +30,7 @@ import com.amx.jax.repository.ICustomerRepository;
 import com.amx.jax.service.CountryService;
 import com.amx.jax.services.AbstractService;
 import com.amx.jax.userservice.dao.CustomerIdProofDao;
+import com.amx.jax.userservice.manager.OnlineCustomerManager;
 import com.amx.jax.userservice.service.UserService;
 
 @Service
@@ -48,6 +52,8 @@ public class CustomerService extends AbstractService {
 	CountryService countryService;
 	@Autowired
 	MetaData metaData;
+	@Autowired
+	OnlineCustomerManager onlineCustomerManager;
 	
 	static final Logger LOGGER = LoggerFactory.getLogger(CustomerService.class);
 
@@ -95,6 +101,12 @@ public class CustomerService extends AbstractService {
 		return userService.getCustomerDetails(loginId);
 	}
 
+	public Customer getCustomerDetailsByCustomerId(BigDecimal customerId){
+		
+		Customer customerDetails = customerRepository.getCustomerDetailsByCustomerId(customerId);
+
+		return customerDetails;
+	}
 	public CustomerContactDto getCustomerContactDto(BigDecimal customerId) {
 		CustomerContactDto customerContactDto = new CustomerContactDto();
 		List<ContactDetail> customerContacts = contactDetailRepository
@@ -102,14 +114,21 @@ public class CustomerService extends AbstractService {
 		ContactDetail customerContact = customerContacts.get(0);
 		customerContactDto.setBlock(customerContact.getBlock());
 		customerContactDto.setBuildingNo(customerContact.getBuildingNo());
-		customerContactDto.setCityName(customerContact.getFsCityMaster().getFsCityMasterDescs().get(0).getCityName());
+		if (customerContact.getFsCityMaster() != null) {
+			customerContactDto
+					.setCityName(customerContact.getFsCityMaster().getFsCityMasterDescs().get(0).getCityName());
+		}
 		customerContactDto
 				.setCountryName(customerContact.getFsCountryMaster().getFsCountryMasterDescs().get(0).getCountryName());
-		customerContactDto
-				.setDistrict(customerContact.getFsDistrictMaster().getFsDistrictMasterDescs().get(0).getDistrict());
+		if (customerContact.getFsDistrictMaster() != null) {
+			customerContactDto
+					.setDistrict(customerContact.getFsDistrictMaster().getFsDistrictMasterDescs().get(0).getDistrict());
+		}
 		customerContactDto.setFlat(customerContact.getFlat());
-		customerContactDto
-				.setStateName(customerContact.getFsStateMaster().getFsStateMasterDescs().get(0).getStateName());
+		if (customerContact.getFsStateMaster() != null) {
+			customerContactDto
+					.setStateName(customerContact.getFsStateMaster().getFsStateMasterDescs().get(0).getStateName());
+		}
 		customerContactDto.setStreet(customerContact.getStreet());
 		return customerContactDto;
 	}
@@ -150,6 +169,7 @@ public class CustomerService extends AbstractService {
 		dto.setMonthlyIncome(articleDao.getMonthlyIncomeRange(customer));
 		return dto;
 	}
+	
 
 	private String getTitleDescription(String titleBizComponentId) {
 		String titleDescription = null;
@@ -162,5 +182,12 @@ public class CustomerService extends AbstractService {
 			}
 		}
 		return titleDescription;
+	}
+	
+	public AmxApiResponse<BoolRespModel, Object> saveCustomerSecQuestions(List<SecurityQuestionModel> securityQuestions) {
+		onlineCustomerManager.saveCustomerSecQuestions(securityQuestions);
+		BoolRespModel boolRespModel = new BoolRespModel();
+		boolRespModel.setSuccess(Boolean.TRUE);
+		return AmxApiResponse.build(boolRespModel);
 	}
 }

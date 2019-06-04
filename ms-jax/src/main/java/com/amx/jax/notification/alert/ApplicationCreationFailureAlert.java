@@ -12,12 +12,12 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.amx.amxlib.constant.CommunicationChannel;
 import com.amx.amxlib.exception.AbstractJaxException;
 import com.amx.amxlib.model.notification.RemittanceTransactionFailureAlertModel;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.ExEmailNotification;
+import com.amx.jax.dict.ContactType;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
@@ -49,7 +49,7 @@ public class ApplicationCreationFailureAlert implements IAlert {
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
 	@Override
-	public List<String> getAlertContacts(CommunicationChannel notificationType) {
+	public List<String> getAlertContacts(ContactType notificationType) {
 		// TODO fetch alert contacts
 		return null;
 	}
@@ -118,9 +118,9 @@ public class ApplicationCreationFailureAlert implements IAlert {
 	}
 
 	@Override
-	public List<CommunicationChannel> getCommucationChannels() {
-		List<CommunicationChannel> channels = new ArrayList<>();
-		channels.add(CommunicationChannel.EMAIL);
+	public List<ContactType> getCommucationChannels() {
+		List<ContactType> channels = new ArrayList<>();
+		channels.add(ContactType.EMAIL);
 		return channels;
 	}
 

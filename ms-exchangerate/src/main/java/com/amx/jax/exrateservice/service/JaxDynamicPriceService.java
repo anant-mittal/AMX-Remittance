@@ -17,19 +17,28 @@ import com.amx.amxlib.meta.model.BankMasterDTO;
 import com.amx.amxlib.model.response.ExchangeRateResponseModel;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dict.UserClient.Channel;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
+import com.amx.jax.model.response.remittance.DynamicRoutingPricingDto;
+import com.amx.jax.model.response.remittance.branch.DynamicRoutingPricingResponse;
 import com.amx.jax.pricer.PricerServiceClient;
 import com.amx.jax.pricer.dto.CustomerCategoryDetails;
 import com.amx.jax.pricer.dto.ExchangeDiscountInfo;
+import com.amx.jax.pricer.dto.ExchangeRateAndRoutingRequest;
+import com.amx.jax.pricer.dto.ExchangeRateAndRoutingResponse;
 import com.amx.jax.pricer.dto.ExchangeRateDetails;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.dto.PricingResponseDTO;
+import com.amx.jax.pricer.dto.TrnxRoutingDetails;
 import com.amx.jax.pricer.var.PricerServiceConstants.CUSTOMER_CATEGORY;
 import com.amx.jax.pricer.var.PricerServiceConstants.DISCOUNT_TYPE;
 import com.amx.jax.pricer.var.PricerServiceConstants.PRICE_BY;
+import com.amx.jax.pricer.var.PricerServiceConstants.PRICE_TYPE;
+import com.amx.jax.pricer.var.PricerServiceConstants.SERVICE_GROUP;
 import com.amx.jax.service.BankMetaService;
 import com.amx.utils.JsonUtil;
 
@@ -65,6 +74,7 @@ public class JaxDynamicPriceService {
 		return exchangeRateResponseModel;
 	}
 
+	
 	public ExchangeRateResponseModel getBaseExchangeRates(BigDecimal fromCurrency, BigDecimal toCurrency,
 			BigDecimal lcAmount, BigDecimal foreignAmount, BigDecimal countryId, BigDecimal routingBankId,
 			BigDecimal serviceIndicatorId) {
@@ -99,7 +109,6 @@ public class JaxDynamicPriceService {
 				BankMasterDTO dto = bankMetaService.convert(bankMetaService.getBankMasterbyId(sellRateDetail.getBankId()));
 				if (foreignAmount != null) {
 					dto.setExRateBreakup(exchangeRateService.createBreakUpFromForeignCurrency(sellRateDetail.getSellRateNet().getInverseRate(), foreignAmount));
-					
 				} else {
 					dto.setExRateBreakup(exchangeRateService.createBreakUp(sellRateDetail.getSellRateNet().getInverseRate(), lcAmount));
 				}
@@ -115,9 +124,6 @@ public class JaxDynamicPriceService {
 				exchangeRateResponseModel.setDiscountAvailed(discountAvailed);
 				exchangeRateResponseModel.setCostRateLimitReached(costRateLimitReached);
 			}
-			
-			
-			
 		}
 		return exchangeRateResponseModel;
 	}
@@ -146,5 +152,6 @@ public class JaxDynamicPriceService {
 		pricingRequestDTO.setForeignCountryId(beneBankCountryId);
 		return pricingRequestDTO;
 	}
+
 
 }

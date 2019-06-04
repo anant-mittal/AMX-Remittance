@@ -77,18 +77,22 @@ public class SnapApiController implements ISnapService {
 		switch (graph) {
 		case YEAR5:
 			params.put("gte", "now-5y");
-			params.put("interval", "1M");
+			params.put("interval", "1d");
 			break;
 		case YEAR2:
 			params.put("gte", "now-2y");
-			params.put("interval", "1M");
+			params.put("interval", "1d");
 			break;
 		case YEAR1:
 			params.put("gte", "now-1y");
-			params.put("interval", "1M");
+			params.put("interval", "1d");
 			break;
 		case MONTH1:
 			params.put("gte", "now-1M");
+			params.put("interval", "1d");
+			break;
+		case WEEK1:
+			params.put("gte", "now-1w");
 			params.put("interval", "1d");
 			break;
 		default:

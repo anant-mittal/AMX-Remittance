@@ -9,7 +9,13 @@ public class ChannelDetails implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private BigDecimal id;
+	private BigDecimal channelId;
+
+	private BigDecimal disountId;
+
+	private BigDecimal groupId;
+
+	private BigDecimal discountTypeId;
 
 	private Channel channel;
 
@@ -22,11 +28,11 @@ public class ChannelDetails implements Serializable {
 	private BigDecimal maxDiscountPips;
 
 	public BigDecimal getId() {
-		return id;
+		return channelId;
 	}
 
 	public void setId(BigDecimal id) {
-		this.id = id;
+		this.channelId = id;
 	}
 
 	public Channel getChannel() {

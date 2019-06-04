@@ -2,9 +2,9 @@ package com.amx.jax.constant;
 
 import com.amx.jax.notification.alert.ApplicationCreationFailureAlert;
 import com.amx.jax.notification.alert.BankBranchSearchFailureAlert;
+import com.amx.jax.notification.alert.FingerPrintLoginIncorrectAttempt;
 import com.amx.jax.notification.alert.IAlert;
 import com.amx.jax.notification.alert.RemittanceCreationFailureAlert;
-import com.amx.jax.notification.alert.FingerPrintLoginIncorrectAttempt;
 
 /**
  * @author Prashant - Represents api flow defination

@@ -16,6 +16,7 @@ public class AuthenticationLimitCheckDTO {
 	private BigDecimal authLimit;
 	private String authMessage;
 	private BigDecimal authPercentage;
+	private String authDesc;
 	
 
 	public BigDecimal getAuthId() {
@@ -64,6 +65,16 @@ public class AuthenticationLimitCheckDTO {
 	public void setAuthPercentage(BigDecimal authPercentage) {
 		this.authPercentage = authPercentage;
 	}
+	
+	
+	public String getAuthDesc() {
+		return authDesc;
+	}
+	public void setAuthDesc(String authDesc) {
+		this.authDesc = authDesc;
+	}
+	
+	
 	
 	
 

@@ -20,19 +20,17 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.CustomerModel;
-
-import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.UserFingerprintResponseModel;
-import com.amx.jax.JaxAuthCache;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.async.ExecutorConfig;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.constant.JaxApiFlow;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.LoginLogoutHistory;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.meta.MetaData;
-import com.amx.jax.model.response.customer.CustomerFlags;
+import com.amx.jax.model.customer.SecurityQuestionModel;
 import com.amx.jax.model.response.customer.PersonInfo;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
@@ -117,9 +115,6 @@ public class FingerprintService {
 	@Autowired
 	CustomerIdProofDao customerIdProofDao;
 
-	@Autowired
-	JaxAuthCache jaxAuthCache;
-	
 	@Autowired
 	UserService userService;
 	
@@ -240,19 +235,22 @@ public class FingerprintService {
 
 	public CustomerModel loginCustomerByFingerprint(String civilId, String identityTypeStr, String password, String fingerprintDeviceId) {
 		userValidationService.validateIdentityInt(civilId, identityTypeStr);
+		userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(civilId, JaxApiFlow.LOGIN);
 		if (metaData.getDeviceId() == null) {
 			logger.error("device id null exception");
 			throw new GlobalException("Device id cannot be null");
 		}
+		
 		CustomerOnlineRegistration customerOnlineRegistration = null;
 		if (identityTypeStr == null) {
 			try {
-			customerOnlineRegistration = userValidationService.validateOnlineCustomerByIdentityId(civilId,
-					new BigDecimal(198));
-			}catch(GlobalException e) {}
+				customerOnlineRegistration = userValidationService.validateOnlineCustomerByIdentityId(civilId,
+						ConstantDocument.BIZ_COMPONENT_ID_CIVIL_ID);
+			} catch (GlobalException e) {
+			}
 			if (customerOnlineRegistration == null) {
 				customerOnlineRegistration = userValidationService.validateOnlineCustomerByIdentityId(civilId,
-						new BigDecimal(2000));
+						ConstantDocument.BIZ_COMPONENT_ID_NEW_CIVIL_ID);
 			}
 		} else {
 			BigDecimal identityType = new BigDecimal(identityTypeStr);
@@ -261,6 +259,7 @@ public class FingerprintService {
 		}
 		Customer customer = custDao.getCustById(customerOnlineRegistration.getCustomerId());
 		logger.info("Customer id is " + metaData.getCustomerId());
+		
 		userValidationService.validateCustomerLockCount(customerOnlineRegistration);
 		userValidationService.validateCustIdProofs(customerOnlineRegistration.getCustomerId());
 		userValidationService.validateCustomerData(customerOnlineRegistration, customer);

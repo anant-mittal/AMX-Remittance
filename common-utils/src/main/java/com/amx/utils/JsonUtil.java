@@ -21,6 +21,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 /**
  * The Class JsonUtil.
@@ -126,6 +127,10 @@ public final class JsonUtil {
 			return getMapper().convertValue(object, toValueTypeRef);
 		}
 
+		public <T> T toType(Object object, Class<T> toValueType) {
+			return getMapper().convertValue(object, toValueType);
+		}
+
 		/**
 		 * To json.
 		 *
@@ -147,13 +152,16 @@ public final class JsonUtil {
 	public static ObjectMapper createNewMapper(String modeulName) {
 		ObjectMapper mapper = new ObjectMapper();
 		SimpleModule module = new SimpleModule(modeulName, new Version(1, 0, 0, null, null, null));
+		
 		module.addSerializer(EnumById.class, new EnumByIdSerializer());
 		module.addSerializer(EnumType.class, new EnumTypeSerializer());
 		module.addSerializer(BigDecimal.class, new BigDecimalSerializer());
 		module.addSerializer(JsonSerializerType.class, new JsonSerializerTypeSerializer());
+		
 		mapper.setSerializationInclusion(Include.NON_NULL);
 		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		mapper.registerModule(module);
+		mapper.registerModule(new JavaTimeModule());
 		return mapper;
 	}
 
@@ -206,6 +214,10 @@ public final class JsonUtil {
 	 */
 	public static Map<String, Object> toMap(Object object) {
 		return instance.toMap(object);
+	}
+
+	public static <T> T toObject(Map<String, Object> map, Class<T> toValueType) {
+		return instance.toType(map, toValueType);
 	}
 
 	public static Map<String, String> toStringMap(Object object) {

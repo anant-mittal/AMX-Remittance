@@ -47,6 +47,7 @@ public class AuthController {
 	 * @param authData the auth data
 	 * @return the response wrapper
 	 */
+	@Deprecated
 	@ApiOWAStatus({ OWAStatusStatusCodes.DEVICE_LOCKED, OWAStatusStatusCodes.AUTH_DONE,
 			OWAStatusStatusCodes.AUTH_FAILED, OWAStatusStatusCodes.AUTH_OK })
 	@RequestMapping(value = "/pub/auth/login", method = { RequestMethod.POST })
@@ -60,6 +61,29 @@ public class AuthController {
 			return loginService.loginByDevice(authData.getIdentity(), authData.getDeviceToken());
 		} else if (!ArgUtil.isEmpty(authData.getPassword())) {
 			return loginService.login(authData.getIdentity(), authData.getPassword());
+		} else {
+			throw new UIServerError(OWAStatusStatusCodes.MISSING_CREDENTIALS);
+		}
+	}
+
+	/**
+	 * Asks for user login and password.
+	 *
+	 * @param authData the auth data
+	 * @return the response wrapper
+	 */
+	@ApiOWAStatus({ OWAStatusStatusCodes.DEVICE_LOCKED, OWAStatusStatusCodes.AUTH_DONE,
+		OWAStatusStatusCodes.AUTH_FAILED, OWAStatusStatusCodes.AUTH_OK })
+	@RequestMapping(value = "/pub/auth/login/v2", method = { RequestMethod.POST })
+	public ResponseWrapper<AuthResponse> loginUserPass(@Valid @RequestBody AuthRequest authData) {
+
+		if (!ArgUtil.isEmpty(authData.getLockId()) && !authData.getLockId().equalsIgnoreCase(authData.getIdentity())) {
+			throw new UIServerError(OWAStatusStatusCodes.DEVICE_LOCKED);
+		}
+		if (!ArgUtil.isEmpty(authData.getDeviceToken())) {
+			return loginService.loginByDevice(authData.getIdentity(), authData.getDeviceToken());
+		} else if (!ArgUtil.isEmpty(authData.getPassword())) {
+			return loginService.loginUserPass(authData.getIdentity(), authData.getPassword());
 		} else {
 			throw new UIServerError(OWAStatusStatusCodes.MISSING_CREDENTIALS);
 		}

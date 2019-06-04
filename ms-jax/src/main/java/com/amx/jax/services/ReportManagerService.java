@@ -30,6 +30,7 @@ import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dal.LoyaltyInsuranceProDao;
 import com.amx.jax.dbmodel.CollectionDetailViewModel;
 import com.amx.jax.dbmodel.CollectionPaymentDetailsViewModel;
+import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.PurposeOfRemittanceViewModel;
 import com.amx.jax.dbmodel.RemittanceTransactionView;
 import com.amx.jax.dbmodel.ViewCompanyDetails;
@@ -41,6 +42,8 @@ import com.amx.jax.repository.ICompanyDAO;
 import com.amx.jax.repository.ICurrencyDao;
 import com.amx.jax.repository.IPurposeOfRemittance;
 import com.amx.jax.repository.IRemittanceTransactionDao;
+import com.amx.jax.userservice.service.UserService;
+import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.RoundUtil;
 
 @Component
@@ -76,7 +79,9 @@ public class ReportManagerService extends AbstractService{
 	
 	private List<RemittanceReceiptSubreport> remittanceReceiptSubreportList;
 	@Autowired
-	PromotionManager promotionManager; 
+	PromotionManager promotionManager;
+	@Autowired
+	UserService userService;
 
 	
 	
@@ -134,7 +139,7 @@ public class ReportManagerService extends AbstractService{
 		
 		logger.info("Document Number=="+collectionDocNo+"\t docCode :"+collectionDocumentCode+"\t docYear :"+financeYear);
 	
-		
+		Customer customer = userService.getCustById(customerId);
 		
 		 
 		remittanceReceiptSubreportList = new ArrayList<RemittanceReceiptSubreport>();
@@ -153,7 +158,9 @@ public class ReportManagerService extends AbstractService{
 	
 		String currencyQuoteName = currencyDao.getCurrencyList(currencyId).get(0).getQuoteName();
 		
-		List<RemittanceTransactionView> remittanceViewlist = remittanceTransactionDao.getRemittanceTransaction(collectionDocNo, financeYear, collectionDocumentCode);
+			List<RemittanceTransactionView> remittanceViewlist = remittanceTransactionDao
+					.getRemittanceTransactionForReport(collectionDocNo, financeYear, collectionDocumentCode,
+							customer.getIdentityTypeId());
 				
 				
 		logger.info("Remittance View List Size is======"+remittanceViewlist.size());
@@ -451,10 +458,27 @@ public class ReportManagerService extends AbstractService{
 							arabicCompanyInfo = arabicCompanyInfo.append(ConstantDocument.Share_Capital + " " + companyMaster.get(0).getCapitalAmount());
 						}
 						obj.setArabicCompanyInfo(arabicCompanyInfo.toString());
+						/** added by rabil on 13May 2019**/
+						obj.setVatNumber(companyMaster.get(0).getVatNumber()==null?"":companyMaster.get(0).getVatNumber());
+						obj.setVatDate(companyMaster.get(0).getVatRegistrationDate()==null?"":companyMaster.get(0).getVatRegistrationDate());
 					}
 					// 
 					
+					if(JaxUtil.isNullZeroBigDecimalCheck(view.getVatAmount())) {
+					BigDecimal vatAmount=RoundUtil.roundBigDecimal((view.getVatAmount()),decimalPerCurrency);
+					 obj.setVatAmount(currencyQuoteName+"     "+vatAmount.toString());
+					}
+					obj.setVatPercentage(view.getVatPercentage()==null?BigDecimal.ZERO:view.getVatPercentage());
+					obj.setVatType(view.getVatType()==null?"":view.getVatType());
+					obj.setCustomerVatNumber(view.getCustomerVatNumber()==null?"":view.getCustomerVatNumber());
+					/** end **/
 					
+					/** added by rabil  It should be print conditionally.if IS_DISCOUNT_AVAILED = 'Y' and KD_SAVED > 0 **/
+					 if(!StringUtils.isBlank(view.getIsDiscAvail()) && view.getIsDiscAvail().equalsIgnoreCase(ConstantDocument.Yes) && JaxUtil.isNullZeroBigDecimalCheck(view.getAmountSaved()) && view.getAmountSaved().compareTo(BigDecimal.ZERO)>0) {
+						 BigDecimal KdSaved=RoundUtil.roundBigDecimal((view.getAmountSaved()),decimalPerCurrency);
+						 obj.setAmountSaved(currencyQuoteName +"     "+KdSaved.toString());
+					 }
+					/** end **/
 					
 				} catch (Exception e) {
 					logger.info( "Exception Occured While Report2 "+e.getMessage());

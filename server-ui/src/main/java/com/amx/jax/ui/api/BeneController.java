@@ -111,18 +111,18 @@ public class BeneController {
 		ResponseWrapperM<Object, AuthResponseOTPprefix> wrapper = new ResponseWrapperM<>();
 		// Disable Beneficiary
 		mOtp = JaxAuthContext.mOtp(ArgUtil.ifNotEmpty(mOtp, mOtpHeader));
-		eOtp = JaxAuthContext.mOtp(ArgUtil.ifNotEmpty(eOtp, eOtpHeader));
+		eOtp = JaxAuthContext.eOtp(ArgUtil.ifNotEmpty(eOtp, eOtpHeader));
 
 		if (mOtp == null && eOtp == null) {
 			wrapper.setMeta(new AuthData());
 			CivilIdOtpModel model = jaxService.setDefaults().getBeneClient().sendOtp().getResult();
 			wrapper.getMeta().setmOtpPrefix(model.getmOtpPrefix());
 			wrapper.getMeta().seteOtpPrefix(model.geteOtpPrefix());
-			wrapper.setStatus(OWAStatusStatusCodes.DOTP_REQUIRED);
+			wrapper.setStatusEnum(OWAStatusStatusCodes.DOTP_REQUIRED);
 		} else {
 			wrapper.setData(jaxService.setDefaults().getBeneClient()
 					.updateStatus(beneficaryMasterSeqId, remarks, status, mOtp, eOtp).getResult());
-			wrapper.setStatus(OWAStatusStatusCodes.VERIFY_SUCCESS);
+			wrapper.setStatusEnum(OWAStatusStatusCodes.VERIFY_SUCCESS);
 		}
 
 		return wrapper;

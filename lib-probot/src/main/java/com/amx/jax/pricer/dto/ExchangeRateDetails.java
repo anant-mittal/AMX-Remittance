@@ -29,6 +29,8 @@ public class ExchangeRateDetails implements Serializable, Cloneable, Comparable<
 
 	private boolean isCostRateLimitReached = false;
 
+	private boolean isLowGLBalance = false;
+
 	public BigDecimal getBankId() {
 		return bankId;
 	}
@@ -83,6 +85,14 @@ public class ExchangeRateDetails implements Serializable, Cloneable, Comparable<
 
 	public void setCostRateLimitReached(boolean isCostRateLimitReached) {
 		this.isCostRateLimitReached = isCostRateLimitReached;
+	}
+
+	public boolean isLowGLBalance() {
+		return isLowGLBalance;
+	}
+
+	public void setLowGLBalance(boolean isLowGLBalance) {
+		this.isLowGLBalance = isLowGLBalance;
 	}
 
 	@Override

@@ -1,6 +1,7 @@
 package com.amx.jax.pricer.manager;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,10 +55,7 @@ public class DiscountManager {
 			ChannelDetails channelDetail = new ChannelDetails();
 			channelDetail.setId(discList.getId());
 			channelDetail.setChannel(discList.getChannel());
-			channelDetail.setDiscountPips(discList.getDiscountPips());
 			channelDetail.setIsActive(discList.getIsActive());
-			channelDetail.setMinDiscountPips(discList.getMinDiscountPips());
-			channelDetail.setMaxDiscountPips(discList.getMaxDiscountPips());
 
 			list.add(channelDetail);
 		}
@@ -72,14 +70,11 @@ public class DiscountManager {
 			CustomerCategoryDetails custCategoryDetail = new CustomerCategoryDetails();
 			custCategoryDetail.setId(custDiscList.getId());
 			custCategoryDetail.setCustomerCategory(custDiscList.getCustomerCategory());
-			custCategoryDetail.setDiscountPips(custDiscList.getDiscountPips());
 			custCategoryDetail.setIsActive(custDiscList.getIsActive());
-			custCategoryDetail.setMinDiscountPips(custDiscList.getMinDiscountPips());
-			custCategoryDetail.setMaxDiscountPips(custDiscList.getMaxDiscountPips());
 
 			list.add(custCategoryDetail);
 		}
-
+		Collections.sort(list);
 		return list;
 	}
 
@@ -147,7 +142,7 @@ public class DiscountManager {
 		for (ChannelDetails channelUpdate : channelData) {
 			ChannelDiscount channelById = channelDiscountDao.getDiscountById(channelUpdate.getId());
 
-			if (null != channelUpdate.getDiscountPips()) {
+			/*if (null != channelUpdate.getDiscountPips()) {
 				if (channelUpdate.getDiscountPips().doubleValue() >= channelById.getMinDiscountPips().doubleValue()
 						&& channelUpdate.getDiscountPips().doubleValue() <= channelById.getMaxDiscountPips()
 								.doubleValue()) {
@@ -156,7 +151,7 @@ public class DiscountManager {
 					throw new PricerServiceException(PricerServiceError.INVALID_CHANNEL_DISC_PIPS,
 							"Channel Discount Pips must be In between Min-Max Discount Pips");
 				}
-			}
+			}*/
 
 			if (null != channelUpdate.getIsActive()) {
 				channelById.setIsActive(channelUpdate.getIsActive());
@@ -187,7 +182,7 @@ public class DiscountManager {
 		List<CustomerCategoryDiscount> list = new ArrayList<>();
 		for (CustomerCategoryDetails custCatUpdate : customerDiscountData) {
 			CustomerCategoryDiscount custCatById = custCatDiscountDao.getCustCatDiscountById(custCatUpdate.getId());
-			if (null != custCatUpdate.getDiscountPips()) {
+			/*if (null != custCatUpdate.getDiscountPips()) {
 				if (custCatUpdate.getDiscountPips().doubleValue() >= custCatById.getMinDiscountPips().doubleValue()
 						&& custCatUpdate.getDiscountPips().doubleValue() <= custCatById.getMaxDiscountPips()
 								.doubleValue()) {
@@ -196,7 +191,7 @@ public class DiscountManager {
 					throw new PricerServiceException(PricerServiceError.INVALID_CUST_CAT_DISC_PIPS,
 							"Customer Category Discount Pips must be In between Min-Max Discount Pips");
 				}
-			}
+			}*/
 			if (null != custCatUpdate.getIsActive()) {
 				custCatById.setIsActive(custCatUpdate.getIsActive());
 			}

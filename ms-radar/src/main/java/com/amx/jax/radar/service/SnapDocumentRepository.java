@@ -12,13 +12,12 @@ import org.springframework.stereotype.Component;
 
 import com.amx.jax.client.snap.SnapConstants.SnapIndexName;
 import com.amx.jax.client.snap.SnapConstants.SnapQueryTemplate;
-import com.amx.jax.client.snap.SnapModels.MapModel;
 import com.amx.jax.client.snap.SnapModels.SnapModelWrapper;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.grid.views.ContactVerificationRecord;
+import com.amx.jax.model.MapModel;
 import com.amx.jax.radar.jobs.customer.OracleViewDocument;
 import com.amx.jax.radar.snap.SnapQueryService;
-import com.amx.utils.JsonUtil;
 
 @Component
 public class SnapDocumentRepository {

@@ -13,8 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.amx.jax.AppContextUtil;
-import com.amx.jax.logger.AuditActor;
 import com.amx.jax.ui.UIConstants;
 import com.amx.jax.ui.service.SessionService;
 

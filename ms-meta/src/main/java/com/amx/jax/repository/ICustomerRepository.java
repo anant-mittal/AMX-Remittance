@@ -20,6 +20,10 @@ public interface ICustomerRepository extends JpaRepository<Customer, Serializabl
 	@Query("select c from Customer c where countryId=?1 and  companyId =?2 and customerId =?3 and isActive='Y'")	
 	public Customer getCustomerByCountryAndCompAndCustoemrId(BigDecimal countryId,BigDecimal companyId,BigDecimal customerId);
 	
+	@Query("select c from Customer c where customerId=?1 and isActive='Y'")	
+	public Customer getCustomerDetailsByCustomerId(BigDecimal customerId);
+	
+	
 	
 
 }

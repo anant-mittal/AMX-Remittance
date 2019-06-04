@@ -119,7 +119,7 @@ public class WebJaxAdvice {
 			errors.add(newError);
 		}
 		wrapper.setErrors(errors);
-		wrapper.setStatus(OWAStatusStatusCodes.BAD_INPUT);
+		wrapper.setStatusEnum(OWAStatusStatusCodes.BAD_INPUT);
 		wrapper.setException(exception.getClass().getName());
 		return new ResponseEntity<ResponseWrapper<Object>>(wrapper, HttpStatus.BAD_REQUEST);
 	}
@@ -140,7 +140,7 @@ public class WebJaxAdvice {
 		newError.setDescription(HttpUtils.sanitze(exception.getMessage()));
 		errors.add(newError);
 		wrapper.setErrors(errors);
-		wrapper.setStatus(OWAStatusStatusCodes.BAD_INPUT);
+		wrapper.setStatusEnum(OWAStatusStatusCodes.BAD_INPUT);
 		wrapper.setException(exception.getClass().getName());
 		return new ResponseEntity<ResponseWrapper<Object>>(wrapper, HttpStatus.BAD_REQUEST);
 	}
@@ -207,7 +207,7 @@ public class WebJaxAdvice {
 	protected ResponseEntity<ResponseWrapper<Object>> notValidArgument(Exception ex, List<AmxFieldError> errors,
 			HttpServletRequest request, HttpServletResponse response) {
 		ResponseWrapper<Object> wrapper = new ResponseWrapper<Object>();
-		wrapper.setStatus(OWAStatusStatusCodes.BAD_INPUT);
+		wrapper.setStatusEnum(OWAStatusStatusCodes.BAD_INPUT);
 		wrapper.setErrors(errors);
 		wrapper.setException(ex.getClass().getName());
 		return new ResponseEntity<ResponseWrapper<Object>>(wrapper, HttpStatus.BAD_REQUEST);

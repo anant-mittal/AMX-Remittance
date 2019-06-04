@@ -26,6 +26,11 @@ public interface AbstractProbotInterface {
 		
 		public static final String PRICE_TEST = SERVICE_PREFIX + API_VERSION_V1 + "/price-test";
 		
+		public static final String GET_HOLIDAYS_DATE_RANGE = SERVICE_PREFIX + API_VERSION_V1 + "/get-holidays-for-date-range";
+
+		// Service Controllers for Dynamic Routing and Pricing
+		public static final String FETCH_REMIT_ROUTES_PRICES = SERVICE_PREFIX + API_VERSION_V1 + "/fetch-remit-routes-prices";
+		
 		// Service Controllers for Discount Management Data
 		public static final String GET_DISCOUNT_DETAILS = SERVICE_PREFIX + API_VERSION_V1 + "/get-discount-details";
 		

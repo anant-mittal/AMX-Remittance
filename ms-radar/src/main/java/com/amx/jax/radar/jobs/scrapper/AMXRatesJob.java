@@ -80,15 +80,15 @@ public class AMXRatesJob extends ARadarTask {
 
 		for (MinMaxExRateDTO minMaxExRateDTO : rates) {
 
-			Currency cur = (Currency) ArgUtil.parseAsEnum(minMaxExRateDTO.getToCurrency().getQuoteName(),
-					Currency.UNKNOWN);
+			Currency cur = ((Currency) ArgUtil.parseAsEnum(minMaxExRateDTO.getToCurrency().getQuoteName(),
+					Currency.UNKNOWN));
 			if (!Currency.UNKNOWN.equals(cur)) {
 				BigDecimal rate = ArgUtil.parseAsBigDecimal(minMaxExRateDTO.getMaxExrate());
 				if (!ArgUtil.isEmpty(rate)) {
 					AmxCurRate trnsfrRate = new AmxCurRate();
 					trnsfrRate.setrSrc(RateSource.AMX);
 					trnsfrRate.setrDomCur(Currency.KWD);
-					trnsfrRate.setrForCur(cur);
+					trnsfrRate.setrForCur(cur.toISO3());
 					trnsfrRate.setrType(type);
 					trnsfrRate.setrRate(rate);
 					trnsfrRate.setrRate(BigDecimal.ONE.divide(rate, 12, RoundingMode.CEILING));

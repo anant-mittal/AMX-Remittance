@@ -22,9 +22,11 @@ import com.amx.jax.pricer.dbmodel.RoutingHeader;
 import com.amx.jax.pricer.dto.AmountSlabDetails;
 import com.amx.jax.pricer.dto.ChannelDetails;
 import com.amx.jax.pricer.dto.CustomerCategoryDetails;
+import com.amx.jax.pricer.dto.DiscountDetailsReqRespDTO;
 import com.amx.jax.pricer.dto.DiscountMgmtReqDTO;
 import com.amx.jax.pricer.dto.DiscountDetailsReqRespDTO;
 import com.amx.jax.pricer.dto.RoutBanksAndServiceRespDTO;
+import com.amx.jax.pricer.exception.PricerServiceError;
 import com.amx.jax.pricer.exception.PricerServiceException;
 import com.amx.jax.pricer.manager.DiscountManager;
 import com.amx.jax.pricer.var.PricerServiceConstants.DISCOUNT_TYPE;
@@ -43,13 +45,7 @@ public class ExchangeDataService {
 	
 	@Autowired
 	RoutingDao routingDao;
-	
-	@Autowired
-	BankMasterDao bankMasterDao;
-	
-	@Autowired
-	ServiceMasterDescDao serviceMasterDescDao;
-	
+
 	@Autowired
 	DiscountManager discountManager;
 	
@@ -90,11 +86,17 @@ public class ExchangeDataService {
 	}
 
 	public List<RoutBanksAndServiceRespDTO> getRoutBanksAndServices(BigDecimal countryId, BigDecimal currencyId) {
-		List<RoutingHeader> rountingHeaderData = routingDao.getRoutHeadersByCountryIdAndCurrenyId(countryId, currencyId);
+		List<RoutingHeader> rountingHeaderData = routingDao.getRoutHeadersByCountryIdAndCurrenyId(countryId,
+				currencyId);
 		if (rountingHeaderData.isEmpty()) {
-			throw new PricerServiceException("Routing details not avaliable");
+			// throw new PricerServiceException("Routing details not avaliable");
+
+			throw new PricerServiceException(PricerServiceError.INVALID_ROUTING_BANK_IDS,
+					"Routing details not avaliable");
+
 		}
-		List<RoutBanksAndServiceRespDTO> routBanksAndServiceRespDTO = discountManager.convertRoutBankAndService(rountingHeaderData);
+		List<RoutBanksAndServiceRespDTO> routBanksAndServiceRespDTO = discountManager
+				.convertRoutBankAndService(rountingHeaderData);
 		return routBanksAndServiceRespDTO;
 	}
 

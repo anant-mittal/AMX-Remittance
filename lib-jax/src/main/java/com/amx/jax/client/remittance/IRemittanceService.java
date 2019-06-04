@@ -13,16 +13,19 @@ import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.request.remittance.BranchRemittanceGetExchangeRateRequest;
 import com.amx.jax.model.request.remittance.BranchRemittanceRequestModel;
 import com.amx.jax.model.request.remittance.CustomerBankRequest;
+import com.amx.jax.model.request.remittance.RoutingPricingRequest;
 import com.amx.jax.model.response.fx.UserStockDto;
 import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
+import com.amx.jax.model.response.remittance.FlexFieldReponseDto;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
 import com.amx.jax.model.response.remittance.PaymentModeDto;
 import com.amx.jax.model.response.remittance.RemittanceDeclarationReportDto;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.model.response.remittance.RoutingResponseDto;
 import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeRateResponse;
+import com.amx.jax.model.response.remittance.branch.DynamicRoutingPricingResponse;
 
 public interface IRemittanceService extends  IJaxService {
 
@@ -49,6 +52,10 @@ public interface IRemittanceService extends  IJaxService {
 		public static final String BR_REMITTANCE_DELETE_APPLICATION = PREFIX + "/delete-application/";
 		public static final String BR_DECLARATION_REPORT			=PREFIX + "/get-declartion-report/";
 		public static final String BR_RECEIPT_ON_EMAIL				=PREFIX + "/send-receipt-on-email/";
+		public static final String BR_REMITTANCE_GET_ROUTING_PRICING_RATE = PREFIX + "/get-routing-pricing-exchrate/";
+		public static final String BR_REMITTANCE_GET_FLEX_FIELDS = PREFIX + "/get-flex-field/";
+		
+		
 		
 	}
 
@@ -63,6 +70,10 @@ public interface IRemittanceService extends  IJaxService {
 		public static final String COLLECTION_DOC_NO = "collectionDocNo";
 		public static final String COLLECTION_DOC_FY = "collectionDocYear";
 		public static final String COLLECTION_DOC_CODE = "collectionDocCode";
+		public static final String LOCAL_AMOUNT = "localAmount";
+		public static final String FOREIGN_AMOUNT = "foreignAmount";
+		public static final String ROUTING_COUNTRY_ID="routingcountryId"; 
+		
 	}
 	
 	
@@ -112,7 +123,7 @@ public interface IRemittanceService extends  IJaxService {
 	
 	
 	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND})
-	AmxApiResponse<AdditionalExchAmiecDto,Object> getPurposeOfTrnx(BigDecimal beneRelaId);
+	AmxApiResponse<AdditionalExchAmiecDto,Object> getPurposeOfTrnx(BigDecimal beneRelaId,BigDecimal routingcountryId);
 	
 	@ApiJaxStatus({ JaxError.INVALID_AMOUNT , JaxError.EXCHANGE_RATE_NOT_FOUND, JaxError.DATA_NOT_FOUND})
 	AmxApiResponse<BranchRemittanceGetExchangeRateResponse, Object> getExchaneRate(BranchRemittanceGetExchangeRateRequest request);
@@ -129,6 +140,13 @@ public interface IRemittanceService extends  IJaxService {
 	
 	AmxApiResponse<BoolRespModel, Object> sendReceiptOnEmail(BigDecimal collectionDocNo,BigDecimal collectionDocYear ,BigDecimal collectionDocCode);
 
+	
+	@ApiJaxStatus({ JaxError.INVALID_AMOUNT , JaxError.EXCHANGE_RATE_NOT_FOUND, JaxError.DATA_NOT_FOUND})
+	AmxApiResponse<DynamicRoutingPricingResponse, Object> getDynamicRoutingPricing(RoutingPricingRequest routingPricingRequest);
+	
+	@ApiJaxStatus({JaxError.DATA_NOT_FOUND})
+	AmxApiResponse<FlexFieldReponseDto,Object> getFlexField(BranchRemittanceGetExchangeRateRequest request);
+	
 }
 
 

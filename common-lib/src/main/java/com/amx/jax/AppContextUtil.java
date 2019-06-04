@@ -75,6 +75,10 @@ public class AppContextUtil {
 		return getTraceId(true, false);
 	}
 
+	public static String getContextId() {
+		return ArgUtil.parseAsString(ContextUtil.map().get(AppConstants.CONTEXT_ID_XKEY));
+	}
+
 	public static String getTranxId() {
 		return ArgUtil.parseAsString(ContextUtil.map().get(AppConstants.TRANX_ID_XKEY));
 	}
@@ -149,6 +153,10 @@ public class AppContextUtil {
 		ContextUtil.setTraceId(traceId);
 	}
 
+	public static void setContextId(String contextId) {
+		ContextUtil.map().put(AppConstants.CONTEXT_ID_XKEY, contextId);
+	}
+
 	public static void setTranxId(String tranxId) {
 		ContextUtil.map().put(AppConstants.TRANX_ID_XKEY, tranxId);
 	}
@@ -213,6 +221,7 @@ public class AppContextUtil {
 		AppContext appContext = new AppContext();
 		appContext.setTenant(getTenant());
 		appContext.setTraceId(getTraceId());
+		appContext.setContextId(getContextId());
 		appContext.setTranxId(getTranxId());
 		appContext.setActorId(getActorId());
 		appContext.setTraceTime(getTraceTime());
@@ -230,6 +239,9 @@ public class AppContextUtil {
 		}
 		if (context.getTranxId() != null) {
 			setTranxId(context.getTranxId());
+		}
+		if (context.getContextId() != null) {
+			setContextId(context.getContextId());
 		}
 		if (context.getActorId() != null) {
 			setActorId(context.getActorId());
@@ -252,6 +264,7 @@ public class AppContextUtil {
 		AppContext context = getContext();
 		map.put(TenantContextHolder.TENANT, context.getTenant().toString());
 		map.put(AppConstants.TRACE_ID_XKEY, context.getTraceId());
+		map.put(AppConstants.CONTEXT_ID_XKEY, context.getContextId());
 		map.put(AppConstants.TRANX_ID_XKEY, context.getTranxId());
 		map.put(AppConstants.ACTOR_ID_XKEY, context.getActorId());
 		map.put(AppConstants.USER_CLIENT_XKEY, JsonUtil.toJson(context.getClient()));
@@ -268,6 +281,7 @@ public class AppContextUtil {
 
 		String sessionId = getSessionId(true);
 		String traceId = getTraceId();
+		String contextId = getContextId();
 		String tranxId = getTranxId();
 		String userId = getActorId();
 		UserDeviceClient userClient = getUserClient();
@@ -279,6 +293,9 @@ public class AppContextUtil {
 		}
 		if (!ArgUtil.isEmpty(traceId)) {
 			httpHeaders.add(AppConstants.TRACE_ID_XKEY, traceId);
+		}
+		if (!ArgUtil.isEmpty(contextId)) {
+			httpHeaders.add(AppConstants.CONTEXT_ID_XKEY, contextId);
 		}
 		if (!ArgUtil.isEmpty(tranxId)) {
 			httpHeaders.add(AppConstants.TRANX_ID_XKEY, tranxId);
@@ -306,6 +323,14 @@ public class AppContextUtil {
 				setTranxId(tranxids.get(0));
 			}
 		}
+
+		if (httpHeaders.containsKey(AppConstants.CONTEXT_ID_XKEY)) {
+			List<String> cntxtxids = httpHeaders.get(AppConstants.CONTEXT_ID_XKEY);
+			if (cntxtxids.size() >= 0) {
+				setContextId(cntxtxids.get(0));
+			}
+		}
+
 		String traceId = getTraceId(false);
 		if (ArgUtil.isEmpty(traceId)) {
 			if (httpHeaders.containsKey(AppConstants.TRACE_ID_XKEY)) {

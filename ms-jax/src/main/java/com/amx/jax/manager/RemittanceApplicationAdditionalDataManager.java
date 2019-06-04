@@ -192,7 +192,6 @@ public class RemittanceApplicationAdditionalDataManager {
 			BigDecimal deliveryModeId = remittanceTransactionRequestModel.getDeliveryModeId();
 			BigDecimal foreignCurrencyId = beneDetails.getCurrencyId();
 			if (v.getSrlId() != null ) {
-				System.out.println("Key :"+k);
 				if(k.equalsIgnoreCase(ConstantDocument.INDIC1)){
 				AdditionalInstructionData additionalInsDataTmp = createAdditionalIndicatorsData(remittanceApplication,applicationCountryId, k, amicAndBankMapping.getAmiecCode(),amicAndBankMapping.getAmiecDescription(), amiecDetails.getAdditionalBankFieldId().getAdditionalBankRuleId());	
 				lstAddInstrData.add(additionalInsDataTmp);

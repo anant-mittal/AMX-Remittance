@@ -11,7 +11,6 @@ import org.springframework.web.context.WebApplicationContext;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.logger.AuditActor;
-import com.amx.jax.model.response.customer.CustomerModelResponse;
 
 /**
  * The Class UserSession.
@@ -83,7 +82,7 @@ public class UserSession implements Serializable {
 	public void setCustomerModel(CustomerModel customerModel) {
 		this.customerModel = customerModel;
 		if (customerModel != null) {
-			AppContextUtil.setActorId(new AuditActor(AuditActor.ActorType.CUSTOMER, customerModel.getCustomerId()));
+			AppContextUtil.setActorId(new AuditActor(AuditActor.ActorType.C, customerModel.getCustomerId()));
 		}
 	}
 

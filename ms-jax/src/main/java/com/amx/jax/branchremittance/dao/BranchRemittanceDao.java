@@ -149,13 +149,13 @@ public class BranchRemittanceDao {
 			Map<BigDecimal, RemittanceBenificiary> remitBeneList = (Map<BigDecimal, RemittanceBenificiary>) mapAllDetailRemitSave.get("EX_REMIT_BENE");
 			Map<BigDecimal, List<RemittanceAdditionalInstructionData>> addlTrnxList = (Map<BigDecimal, List<RemittanceAdditionalInstructionData>>) mapAllDetailRemitSave.get("EX_REMIT_ADDL");
 			Map<BigDecimal, List<RemittanceAml>> amlTrnxList = (Map<BigDecimal, List<RemittanceAml>>) mapAllDetailRemitSave.get("EX_REMIT_AML");
-
+			
 			LoyaltyClaimRequest lylClaim = (LoyaltyClaimRequest) mapAllDetailRemitSave.get("LYL_CLAIM");
 			List<LoyaltyPointsModel> loyaltyPoitns = (List<LoyaltyPointsModel>) mapAllDetailRemitSave.get("LOYALTY_POINTS");
 
 			if (collectModel != null) {
 				BigDecimal documentNo = generateDocumentNumber(collectModel.getApplicationCountryId(), collectModel.getFsCompanyMaster().getCompanyId(),
-						collectModel.getDocumentId(), collectModel.getDocumentFinanceYear(), collectModel.getExBankBranch().getBranchId());
+						collectModel.getDocumentId(), collectModel.getDocumentFinanceYear(), collectModel.getLocCode());
 				if (!JaxUtil.isNullZeroBigDecimalCheck(documentNo)) {
 					throw new GlobalException(JaxError.INVALID_COLLECTION_DOCUMENT_NO, "Collection document should not be blank.");
 				}
@@ -173,7 +173,10 @@ public class BranchRemittanceDao {
 			}
 
 			if (collectDetailsModel != null && !collectDetailsModel.isEmpty() && JaxUtil.isNullZeroBigDecimalCheck(collectModel.getDocumentNo())) {
-				collectDetailRepository.save(collectDetailsModel);
+				for(CollectDetailModel collectDetModel : collectDetailsModel) {
+					collectDetModel.setDocumentNo(collectModel.getDocumentNo());
+					collectDetailRepository.save(collectDetModel);
+				}
 			}
 
 			if (lylClaim != null && JaxUtil.isNullZeroBigDecimalCheck(lylClaim.getVoucherNo())) {
@@ -181,10 +184,13 @@ public class BranchRemittanceDao {
 			}
 
 			if (foreignCurrencyAdjust != null && !foreignCurrencyAdjust.isEmpty()) {
-				foreignCurrAdjustRepository.save(foreignCurrencyAdjust);
+				for(ForeignCurrencyAdjust foreignCurrAdju:foreignCurrencyAdjust) {
+					foreignCurrAdju.setDocumentNo(collectModel.getDocumentNo());
+					foreignCurrAdjustRepository.save(foreignCurrAdju);
+				}
 			}
 
-			if (remitTrnxList != null && !remitTrnxList.isEmpty()) {
+			if (remitTrnxList != null && !remitTrnxList.isEmpty() && collectModel != null) {
 				for (BigDecimal applicationId : remitTrnxList.keySet()) {
 
 					RemittanceTransaction remitTrnx = remitTrnxList.get(applicationId);
@@ -195,6 +201,7 @@ public class BranchRemittanceDao {
 						throw new GlobalException(JaxError.INVALID_REMITTANCE_DOCUMENT_NO, "Document Seriality  setup  not defined for Remittance.");
 					}
 					remitTrnx.setDocumentNo(documentNo);
+					remitTrnx.setCollectionDocumentNo(collectModel.getDocumentNo());
 					RemittanceTransaction remitTrnx1 = remitTrnxRepository.save(remitTrnx);
 
 					if (remitBeneList != null && !remitBeneList.isEmpty()) {
@@ -225,11 +232,9 @@ public class BranchRemittanceDao {
 							remitAmlRepository.save(remitaml);
 						}
 					}
-
 				}
 
 				if (loyaltyPoitns != null && !loyaltyPoitns.isEmpty()) {
-
 					loyalPointsRepository.save(loyaltyPoitns);
 				}
 
@@ -238,11 +243,13 @@ public class BranchRemittanceDao {
 			}
 
 			return responseDto;
-		} catch (Exception e) {
-			throw new GlobalException(JaxError.UNKNOWN_JAX_ERROR, e.getMessage());
+		} catch (GlobalException e){
+			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}
 
 	}
+	
+	
 
 	public BigDecimal generateDocumentNumber(BigDecimal appCountryId, BigDecimal companyId, BigDecimal documentId, BigDecimal finYear, BigDecimal branchId) {
 		Map<String, Object> output = applicationProcedureDao.getDocumentSeriality(appCountryId, companyId, documentId, finYear, ConstantDocument.Update, branchId);
@@ -250,11 +257,9 @@ public class BranchRemittanceDao {
 		return (BigDecimal) output.get("P_DOC_NO");
 	}
 
-	// public void updateApplication(List<RemittanceTransaction> remitTrnxList) {
-	public void updateApplication(RemittanceTransaction remitTrnx) {
-		// for (RemittanceTransaction remitTrnx : remitTrnxList) {
 
-		logger.info("remitTrnx.getApplicationDocumentNo() :" + remitTrnx.getApplicationDocumentNo() + "\t docfyr :" + remitTrnx.getApplicationFinanceYear());
+	public void updateApplication(RemittanceTransaction remitTrnx) {
+			logger.info("remitTrnx.getApplicationDocumentNo() :" + remitTrnx.getApplicationDocumentNo() + "\t docfyr :" + remitTrnx.getApplicationFinanceYear());
 		RemittanceApplication appl = appRepo.fetchRemitApplTrnx(remitTrnx.getApplicationDocumentNo(), remitTrnx.getApplicationFinanceYear());
 		if (appl != null) {
 			appl = appRepo.findOne(appl.getRemittanceApplicationId());
@@ -266,10 +271,7 @@ public class BranchRemittanceDao {
 			appRepo.save(appl);
 		}
 
-		// }
 	}
-
-	// public void deleteFromCart(RemittanceApplication appl,String status) {
 
 	@Transactional
 	public void deleteFromCart(BigDecimal applNo, String status) {

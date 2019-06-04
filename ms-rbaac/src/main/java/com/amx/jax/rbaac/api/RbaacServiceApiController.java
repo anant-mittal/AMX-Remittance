@@ -4,7 +4,6 @@
 package com.amx.jax.rbaac.api;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -24,7 +23,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
-import com.amx.jax.dbmodel.Device;
 import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.rbaac.IRbaacService;
 import com.amx.jax.rbaac.dto.DeviceDto;
@@ -48,7 +46,6 @@ import com.amx.jax.rbaac.service.RespTestService;
 import com.amx.jax.rbaac.service.UserAccountService;
 import com.amx.jax.rbaac.service.UserAuthService;
 import com.amx.jax.rbaac.service.UserRoleService;
-
 
 /**
  * The Class RbaacServiceApiController.
@@ -86,7 +83,8 @@ public class RbaacServiceApiController implements IRbaacService {
 	/**
 	 * Init User Authentication.
 	 *
-	 * @param userAuthInitReqDTO the user auth init req DTO
+	 * @param userAuthInitReqDTO
+	 *            the user auth init req DTO
 	 * @return the amx api response
 	 */
 	@Override
@@ -390,7 +388,7 @@ public class RbaacServiceApiController implements IRbaacService {
 				countryBranchSystemInventoryId);
 		return AmxApiResponse.build(response);
 	}
-	
+
 	@Override
 	@RequestMapping(value = ApiEndPoints.DEVICE_GET_DEVICE_BY_DEVICE_REG_ID, method = RequestMethod.POST)
 	public AmxApiResponse<DeviceDto, Object> getDeviceByDeviceRegId(
@@ -398,7 +396,7 @@ public class RbaacServiceApiController implements IRbaacService {
 		DeviceDto device = deviceService.getDeviceByDeviceRegId(deviceRegId);
 		return AmxApiResponse.build(device);
 	}
-	
+
 	@Override
 	@RequestMapping(value = ApiEndPoints.GET_ROLE_MAPPING_FOR_EMPLOYEE, method = RequestMethod.POST)
 	public AmxApiResponse<RoleMappingForEmployee, Object> getRoleMappingsForEmployee(

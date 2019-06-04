@@ -3,13 +3,15 @@ package com.amx.jax.pricer.dto;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
-public class CustomerCategoryDetails implements Serializable {
+import com.amx.jax.pricer.var.PricerServiceConstants.CUSTOMER_CATEGORY;
+
+public class CustomerCategoryDetails implements Serializable,Comparable<CustomerCategoryDetails>{
 
 	private static final long serialVersionUID = 1L;
 
 	private BigDecimal id;
 
-	private String customerCategory;
+	private CUSTOMER_CATEGORY customerCategory;
 
 	private BigDecimal discountPips;
 
@@ -27,11 +29,12 @@ public class CustomerCategoryDetails implements Serializable {
 		this.id = id;
 	}
 
-	public String getCustomerCategory() {
+	
+	public CUSTOMER_CATEGORY getCustomerCategory() {
 		return customerCategory;
 	}
 
-	public void setCustomerCategory(String customerCategory) {
+	public void setCustomerCategory(CUSTOMER_CATEGORY customerCategory) {
 		this.customerCategory = customerCategory;
 	}
 
@@ -79,4 +82,10 @@ public class CustomerCategoryDetails implements Serializable {
 		this.maxDiscountPips = maxDiscountPips;
 	}
 
+	@Override
+	public int compareTo(CustomerCategoryDetails o) {
+			
+		return this.customerCategory.compareTo(o.customerCategory);
+	}
+	
 }
