@@ -28,12 +28,10 @@ public interface ICustomerManagementController {
 		public static final String CONTACT = "contact";
 	}
 
-	AmxApiResponse<CustomerInfo, Object> createCustomer(CreateCustomerInfoRequest createCustomerRequest)
-			throws ParseException;
+	AmxApiResponse<CustomerInfo, Object> createCustomer(CreateCustomerInfoRequest createCustomerRequest) throws ParseException;
 
 	AmxApiResponse<BoolRespModel, Object> updateCustomer(UpdateCustomerInfoRequest createCustomerRequest);
 
-	AmxApiResponse<UploadCustomerKycResponse, Object> uploadCustomerKyc(
-			UploadCustomerKycRequest uploadCustomerKycRequest);
+	AmxApiResponse<UploadCustomerKycResponse, Object> uploadCustomerKyc(UploadCustomerKycRequest uploadCustomerKycRequest);
 
 }
