@@ -15,6 +15,7 @@ import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxApiFlow;
+import com.amx.jax.constants.CustomerRegistrationType;
 import com.amx.jax.customer.document.manager.CustomerDocumentManager;
 import com.amx.jax.customer.service.OffsitCustRegService;
 import com.amx.jax.customer.validation.CustomerManagementValidation;
@@ -187,8 +188,17 @@ public class CustomerManagementManager {
 	@Transactional
 	public AmxApiResponse<CustomerInfo, Object> createCustomer(CreateCustomerInfoRequest createCustomerInfoRequest) throws ParseException {
 		AmxApiResponse<CustomerInfo, Object> response = offsitCustRegService.saveCustomerInfo(createCustomerInfoRequest);
-		customerDocumentManager.addCustomerDocument(response.getResult().getCustomerId());
+		BigDecimal customerId = response.getResult().getCustomerId();
+		setAdditionalDataForCreateCustomer(customerId);
+		customerDocumentManager.addCustomerDocument(customerId);
 		return response;
+	}
+
+	private void setAdditionalDataForCreateCustomer(BigDecimal customerId) {
+		Customer customer = custDao.getCustById(customerId);
+		customer.setCustomerRegistrationType(CustomerRegistrationType.NEW_BRANCH);
+		custDao.saveCustomer(customer);
+
 	}
 
 	public void moveCustomerDataUsingProcedures(AmxApiResponse<CustomerInfo, Object> createCustomerResponse) {
