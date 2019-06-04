@@ -66,16 +66,19 @@ public class CustomerKycManager {
 		ImageSubmissionRequest imageSubmissionRequest = new ImageSubmissionRequest();
 		imageSubmissionRequest.setIdentityExpiredDate(data.getExpiryDate());
 		DmsApplMapping dmsApplMapping = getDmsApplMappingData(customer, imageSubmissionRequest);
+		dmsApplMapping.setCustomerId(customer.getCustomerId());
 		BigDecimal docBlobId = dmsApplMapping.getDocBlobId();
 		BigDecimal docFinYear = dmsApplMapping.getFinancialYear();
 		dmsDocumentBlobTemparory.setDocBlobId(docBlobId);
-		dmsDocumentBlobTemparory.setDocFinYear(dmsApplMapping.getFinancialYear());
+		dmsDocumentBlobTemparory.setDocFinYear(docFinYear);
 		dmsDocumentBlobTemparory.setDocumentContent(upload.getDbScanDocumentBlob());
 		dmsDocumentBlobTemparory.setCountryCode(dmsApplMapping.getApplicationCountryId());
 		dmsDocumentBlobTemparory.setSeqNo(BigDecimal.ONE);
 		dmsDocumentBlobTemparoryRepository.save(dmsDocumentBlobTemparory);
+		dmsDocumentBlobTemparoryRepository.copyBlobDataFromJava(docBlobId, docFinYear);
 		idmsAppMappingRepository.save(dmsApplMapping);
 		idProofManager.commitOnlineCustomerIdProof(customer, imageSubmissionRequest);
+		
 	}
 
 	public DmsApplMapping getDmsApplMappingData(Customer model, ImageSubmissionRequest imageSubmissionRequest) throws ParseException {
