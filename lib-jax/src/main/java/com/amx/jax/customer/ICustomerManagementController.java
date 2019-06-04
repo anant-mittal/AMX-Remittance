@@ -8,6 +8,7 @@ import com.amx.jax.model.customer.CreateCustomerInfoRequest;
 import com.amx.jax.model.customer.UploadCustomerKycRequest;
 import com.amx.jax.model.customer.UploadCustomerKycResponse;
 import com.amx.jax.model.request.customer.UpdateCustomerInfoRequest;
+import com.amx.jax.model.response.CustomerInfo;
 
 public interface ICustomerManagementController {
 	public static class ApiPath {
@@ -27,10 +28,12 @@ public interface ICustomerManagementController {
 		public static final String CONTACT = "contact";
 	}
 
-	AmxApiResponse<BoolRespModel, Object> createCustomer(CreateCustomerInfoRequest createCustomerRequest) throws ParseException;
+	AmxApiResponse<CustomerInfo, Object> createCustomer(CreateCustomerInfoRequest createCustomerRequest)
+			throws ParseException;
 
 	AmxApiResponse<BoolRespModel, Object> updateCustomer(UpdateCustomerInfoRequest createCustomerRequest);
 
-	AmxApiResponse<UploadCustomerKycResponse, Object> uploadCustomerKyc(UploadCustomerKycRequest uploadCustomerKycRequest);
+	AmxApiResponse<UploadCustomerKycResponse, Object> uploadCustomerKyc(
+			UploadCustomerKycRequest uploadCustomerKycRequest);
 
 }

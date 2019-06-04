@@ -33,7 +33,6 @@ public class CustomerDocumentDao {
 				CallableStatement cs = con.prepareCall(proc);
 				cs.setBigDecimal(1, blobId);
 				cs.setBigDecimal(2, docFinYear);
-				cs.execute();
 				return cs;
 			}
 
@@ -53,7 +52,6 @@ public class CustomerDocumentDao {
 				CallableStatement cs = con.prepareCall(proc);
 				cs.setBigDecimal(1, blobId);
 				cs.setBigDecimal(2, docFinYear);
-				cs.execute();
 				return cs;
 			}
 

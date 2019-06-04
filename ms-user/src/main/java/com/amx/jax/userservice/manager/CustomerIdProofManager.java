@@ -1,6 +1,7 @@
 package com.amx.jax.userservice.manager;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -133,7 +134,7 @@ public class CustomerIdProofManager {
 		}).findFirst();
 		return lastestRecordByExpiry.get();
 	}
-	
+
 	public IdentityTypeMaster getIdentityTypeMaster(BigDecimal identityTypeId, String isActive) {
 		return identityTypeMasterRepository.findBybusinessComponentIdAndIsActive(identityTypeId, isActive);
 	}
@@ -147,5 +148,30 @@ public class CustomerIdProofManager {
 			mapping = dmsApplMapping.get(0);
 		}
 		return mapping;
+	}
+
+	public DmsApplMapping getDmsMapping(Customer customer) {
+		DmsApplMapping mapping = null;
+		List<DmsApplMapping> dmsApplMapping = dmsApplMappingRepository.getDmsApplMapping(customer.getCustomerId(),
+				customer.getIdentityInt(), customer.getIdentityTypeId(), customer.getIdentityExpiredDate());
+		if (CollectionUtils.isNotEmpty(dmsApplMapping)) {
+			mapping = dmsApplMapping.get(0);
+		}
+		return mapping;
+	}
+
+	public void activateCustomerPendingCompliance(Customer customer, Date identityExpiryDate) {
+		List<CustomerIdProof> compliancePendingRecords = customerIdProofDao
+				.getCompliancePendingCustomerIdProof(customer.getCustomerId(), customer.getIdentityTypeId());
+		if (CollectionUtils.isNotEmpty(compliancePendingRecords)) {
+			CustomerIdProof customerIdProof = compliancePendingRecords.get(0);
+			customerIdProof.setIdentityStatus(ConstantDocument.Yes);
+			customerIdProof.setIdentityExpiryDate(identityExpiryDate);
+			customerIdProofDao.save(Arrays.asList(customerIdProof));
+			customer.setIdentityExpiredDate(identityExpiryDate);
+			customer.setIsActive(ConstantDocument.Yes);
+			customerDao.saveCustomer(customer);
+		}
+
 	}
 }

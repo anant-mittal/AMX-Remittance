@@ -9,15 +9,18 @@ import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.customer.document.validate.KycScanValidator;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerIdProof;
+import com.amx.jax.dbmodel.DmsApplMapping;
 import com.amx.jax.dbmodel.IdentityTypeMaster;
 import com.amx.jax.dbmodel.customer.CustomerDocumentUploadReferenceTemp;
 import com.amx.jax.model.customer.CustomerDocumentInfo;
 import com.amx.jax.model.customer.UploadCustomerKycRequest;
 import com.amx.jax.model.customer.UploadCustomerKycResponse;
+import com.amx.jax.model.response.CustomerInfo;
 import com.amx.jax.userservice.manager.CustomerIdProofManager;
 import com.amx.jax.userservice.service.UserService;
 import com.jax.amxlib.exception.jax.GlobaLException;
@@ -89,7 +92,7 @@ public class CustomerDocumentManager {
 		Customer customer = userService.getCustById(customerId);
 		List<CustomerDocumentUploadReferenceTemp> uploads = customerDocumentUploadManager.getCustomerUploads(customer.getIdentityInt(),
 				customer.getIdentityTypeId());
-		if(CollectionUtils.isEmpty(uploads)) {
+		if (CollectionUtils.isEmpty(uploads)) {
 			throw new GlobaLException("Customer documents not uploaded");
 		}
 		for (CustomerDocumentUploadReferenceTemp upload : uploads) {
@@ -101,6 +104,18 @@ public class CustomerDocumentManager {
 			default:
 				break;
 			}
+		}
+	}
+
+	public void moveCustomerDBDocuments(AmxApiResponse<CustomerInfo, Object> createCustomerResponse) {
+		Customer customer = userService.getCustById(createCustomerResponse.getResult().getCustomerId());
+		moveCustomerDBKycDocuments(customer);
+	}
+
+	public void moveCustomerDBKycDocuments(Customer customer) {
+		DmsApplMapping dmsMapping = customerIdProofManager.getDmsMapping(customer);
+		if (dmsMapping != null) {
+			databaseImageScanManager.copyBlobDataFromJava(dmsMapping.getDocBlobId(), dmsMapping.getFinancialYear());
 		}
 	}
 }

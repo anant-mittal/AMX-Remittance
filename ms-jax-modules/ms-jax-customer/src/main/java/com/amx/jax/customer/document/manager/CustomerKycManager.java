@@ -67,6 +67,7 @@ public class CustomerKycManager {
 		imageSubmissionRequest.setIdentityExpiredDate(data.getExpiryDate());
 		DmsApplMapping dmsApplMapping = getDmsApplMappingData(customer, imageSubmissionRequest);
 		dmsApplMapping.setCustomerId(customer.getCustomerId());
+		dmsApplMapping.setIdentityExpiryDate(data.getExpiryDate());
 		BigDecimal docBlobId = dmsApplMapping.getDocBlobId();
 		BigDecimal docFinYear = dmsApplMapping.getFinancialYear();
 		dmsDocumentBlobTemparory.setDocBlobId(docBlobId);
@@ -77,7 +78,7 @@ public class CustomerKycManager {
 		dmsDocumentBlobTemparoryRepository.save(dmsDocumentBlobTemparory);
 		dmsDocumentBlobTemparoryRepository.copyBlobDataFromJava(docBlobId, docFinYear);
 		idmsAppMappingRepository.save(dmsApplMapping);
-		idProofManager.commitOnlineCustomerIdProof(customer, imageSubmissionRequest);
+		idProofManager.activateCustomerPendingCompliance(customer, data.getExpiryDate());
 		
 	}
 

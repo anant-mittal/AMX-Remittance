@@ -33,6 +33,7 @@ import com.amx.jax.model.response.customer.OffsiteCustomerDataDTO;
 import com.amx.jax.repository.ICustomerCategoryDiscountRepo;
 import com.amx.jax.repository.ICustomerExtendedRepository;
 import com.amx.jax.repository.remittance.IIdNumberLengthCheckRepository;
+import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.manager.CustomerFlagManager;
 import com.amx.jax.userservice.manager.OnlineCustomerManager;
 import com.amx.jax.userservice.service.ContactDetailService;
@@ -68,6 +69,8 @@ public class CustomerManagementManager {
 	UserService userService;
 	@Autowired
 	OnlineCustomerManager onlineCustomerManager;
+	@Autowired
+	CustomerDao custDao;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CustomerManagementManager.class);
 
@@ -182,9 +185,15 @@ public class CustomerManagementManager {
 	}
 
 	@Transactional
-	public void createCustomer(CreateCustomerInfoRequest createCustomerInfoRequest) throws ParseException {
+	public AmxApiResponse<CustomerInfo, Object> createCustomer(CreateCustomerInfoRequest createCustomerInfoRequest) throws ParseException {
 		AmxApiResponse<CustomerInfo, Object> response = offsitCustRegService.saveCustomerInfo(createCustomerInfoRequest);
 		customerDocumentManager.addCustomerDocument(response.getResult().getCustomerId());
+		return response;
+	}
+
+	public void moveCustomerDataUsingProcedures(AmxApiResponse<CustomerInfo, Object> createCustomerResponse) {
+		customerDocumentManager.moveCustomerDBDocuments(createCustomerResponse);
+		custDao.callProcedurePopulateCusmas(createCustomerResponse.getResult().getCustomerId());
 	}
 
 }

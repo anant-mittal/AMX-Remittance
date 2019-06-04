@@ -23,6 +23,7 @@ import com.amx.jax.model.customer.CreateCustomerInfoRequest;
 import com.amx.jax.model.customer.UploadCustomerKycRequest;
 import com.amx.jax.model.customer.UploadCustomerKycResponse;
 import com.amx.jax.model.request.customer.UpdateCustomerInfoRequest;
+import com.amx.jax.model.response.CustomerInfo;
 import com.amx.utils.JsonUtil;
 
 @RestController
@@ -37,21 +38,19 @@ public class CustomerManagementController implements ICustomerManagementControll
 
 	@RequestMapping(path = CREATE_CUSTOMER, method = { RequestMethod.POST })
 	@Override
-	public AmxApiResponse<BoolRespModel, Object> createCustomer(
-			@RequestBody @Valid CreateCustomerInfoRequest createCustomerRequest) throws ParseException {
+	public AmxApiResponse<CustomerInfo, Object> createCustomer(@RequestBody @Valid CreateCustomerInfoRequest createCustomerRequest)
+			throws ParseException {
 		log.debug("request createCustomer  {}", JsonUtil.toJson(createCustomerRequest));
-		customerManagementManager.createCustomer(createCustomerRequest);
-		return AmxApiResponse.build();
-
+		AmxApiResponse<CustomerInfo, Object> createCustomerResponse = customerManagementManager.createCustomer(createCustomerRequest);
+		customerManagementManager.moveCustomerDataUsingProcedures(createCustomerResponse);
+		return createCustomerResponse;
 	}
 
 	@RequestMapping(path = UPDATE_CUSTOMER, method = { RequestMethod.POST })
 	@Override
-	public AmxApiResponse<BoolRespModel, Object> updateCustomer(
-			@RequestBody @Valid UpdateCustomerInfoRequest updateCustomerInfoRequest) {
+	public AmxApiResponse<BoolRespModel, Object> updateCustomer(@RequestBody @Valid UpdateCustomerInfoRequest updateCustomerInfoRequest) {
 		log.debug("request updateCustomer {}", updateCustomerInfoRequest);
 		return AmxApiResponse.build();
-
 	}
 
 	@RequestMapping(path = UPLOAD_CUSTOMER_KYC, method = { RequestMethod.POST })

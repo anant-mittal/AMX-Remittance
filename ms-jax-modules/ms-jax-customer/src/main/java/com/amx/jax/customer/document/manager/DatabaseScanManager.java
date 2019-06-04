@@ -103,4 +103,13 @@ public class DatabaseScanManager implements DocumentScanManager {
 		customerDocumentUploadManager.save(docUploadRef);
 		return docUploadRef.getId();
 	}
+
+	public void copyBlobDataFromJava(BigDecimal blobId, BigDecimal docFinYear) {
+		log.info("calling  copyBlobDataFromJava with params blobId {}, docFinYear {}", blobId, docFinYear);
+		customerDocumentDao.copyBlobDataFromJava(blobId, docFinYear);
+	}
+
+	public void copyBlobDataIntoJava(BigDecimal blobId, BigDecimal docFinYear) {
+		customerDocumentDao.copyBlobDataIntoJava(blobId, docFinYear);
+	}
 }
