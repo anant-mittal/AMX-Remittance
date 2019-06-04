@@ -434,7 +434,14 @@ public class RemitRoutingManager {
 
 			ViewExRoutingMatrix matrix = routeData.getViewExRoutingMatrix();
 
-			ExchangeRateBreakup breakup = routeData.getExchangeRateDetails().getSellRateNet() != null
+			ExchangeRateDetails exchRateDetails = routeData.getExchangeRateDetails();
+
+			if (exchRateDetails == null) {
+				removeList.add(routeData);
+				continue;
+			}
+
+			ExchangeRateBreakup breakup = exchRateDetails.getSellRateNet() != null
 					? routeData.getExchangeRateDetails().getSellRateNet()
 					: routeData.getExchangeRateDetails().getSellRateBase();
 
