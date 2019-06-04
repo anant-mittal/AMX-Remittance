@@ -1116,9 +1116,8 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 					homeAddress.setCityId(homeData.getFsCityMaster().getCityId());
 				}
 				offsiteCustomer.setHomeAddressDestails(homeAddress);
-				offsiteCustomer.setCustomerEmploymentDetails(
-						customerEmployementManager.createCustomerEmploymentDetail(customer));
 			}
+			offsiteCustomer.setCustomerEmploymentDetails(customerEmployementManager.createCustomerEmploymentDetail(customer));
 			
 		} else {
 			throw new GlobalException(ResponseStatus.NOT_FOUND.toString());
