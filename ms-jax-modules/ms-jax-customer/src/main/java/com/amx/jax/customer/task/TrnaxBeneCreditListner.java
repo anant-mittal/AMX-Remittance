@@ -9,17 +9,26 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.amx.jax.customer.manager.CustomerContactVerificationManager;
+import com.amx.jax.db.utils.EntityDtoUtil;
+import com.amx.jax.dbmodel.Customer;
+import com.amx.jax.dbmodel.CustomerContactVerification;
+import com.amx.jax.dict.ContactType;
 import com.amx.jax.dict.Language;
 import com.amx.jax.event.AmxTunnelEvents;
+import com.amx.jax.model.response.customer.CustomerDto;
 import com.amx.jax.postman.client.PostManClient;
 import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.PushMessage;
+import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.TemplatesMX;
+import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.tunnel.DBEvent;
 import com.amx.jax.tunnel.ITunnelSubscriber;
 import com.amx.jax.tunnel.TunnelEventMapping;
 import com.amx.jax.tunnel.TunnelEventXchange;
+import com.amx.jax.util.AmxDBConstants;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;
 
@@ -31,6 +40,13 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 
 	@Autowired
 	private PushNotifyClient pushNotifyClient;
+	
+	@Autowired
+	private CustomerContactVerificationManager customerContactVerificationManager;
+	
+	@Autowired
+	CustomerRepository customerRepository;
+
 
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
@@ -62,10 +78,12 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 		String langId = ArgUtil.parseAsString(event.getData().get(LANG_ID));
 		String curName = ArgUtil.parseAsString(event.getData().get(CURNAME));
 		String type = ArgUtil.parseAsString(event.getData().get(TYPE));
-
+		
 		NumberFormat myFormat = NumberFormat.getInstance();
 		myFormat.setGroupingUsed(true);
 		String trnxAmountval = myFormat.format(trnxAmount);
+		
+		Customer c = customerRepository.getCustomerByCustomerIdAndIsActive(custId,"Y");
 
 		Map<String, Object> wrapper = new HashMap<String, Object>();
 		Map<String, Object> modeldata = new HashMap<String, Object>();
@@ -76,12 +94,22 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 		modeldata.put("refno", trnxRef);
 		modeldata.put("date", trnxDate);
 		modeldata.put("currency", curName);
+		
 		wrapper.put("data", modeldata);
+		
 
 		if (!ArgUtil.isEmpty(emailId)) {
+			
+			if (c.getEmailVerified() != AmxDBConstants.Status.Y) {
+				CustomerContactVerification x = customerContactVerificationManager.create(c, ContactType.EMAIL);
+				modeldata.put("customer", c);
+				modeldata.put("verifylink", x);
+				LOGGER.info("Model data is ", modeldata.get("verifylink"));
+				LOGGER.info("Customer value is ", modeldata.get("customer"));
+
+			}
 
 			Email email = new Email();
-
 			if ("2".equals(langId)) {
 				email.setLang(Language.AR);
 				modeldata.put("languageid", Language.AR);
@@ -89,6 +117,7 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 				email.setLang(Language.EN);
 				modeldata.put("languageid", Language.EN);
 			}
+			LOGGER.info("Wrapper data is  ", wrapper.get("data"));
 			email.setModel(wrapper);
 			email.addTo(emailId);
 			email.setHtml(true);
@@ -110,7 +139,36 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 		}
 
 		if (!ArgUtil.isEmpty(smsNo)) {
+			if (c.getMobileVerified() != AmxDBConstants.Status.Y) {
+				CustomerContactVerification x = customerContactVerificationManager.create(c, ContactType.SMS);
+				modeldata.put("customer", c);
+				modeldata.put("verifylink", x);
+				SMS sms = new SMS();
+				if ("2".equals(langId)) {
+					sms.setLang(Language.AR);
+					modeldata.put("languageid", Language.AR);
+				} else {
+					sms.setLang(Language.EN);
+					modeldata.put("languageid", Language.EN);
+				}
+				sms.addTo(c.getMobile());
+				sms.setModel(wrapper);
+				sms.setSubject("Transaction Credit Notification");
+				switch (type) {
+				case "CASH":
+					sms.setITemplate(TemplatesMX.CASH);
+					break;
+				case "TT":
+					sms.setITemplate(TemplatesMX.TT);
+					break;
+				case "EFT":
+					sms.setITemplate(TemplatesMX.EFT);
+					break;
+				default:
+					break;
+				}
 
+			}
 		}
 
 		if (!ArgUtil.isEmpty(custId)) {
