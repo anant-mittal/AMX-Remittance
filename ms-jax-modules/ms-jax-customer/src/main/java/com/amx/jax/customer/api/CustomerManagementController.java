@@ -3,6 +3,7 @@ package com.amx.jax.customer.api;
 import static com.amx.jax.customer.ICustomerManagementController.ApiPath.*;
 
 import java.text.ParseException;
+import java.util.List;
 
 import javax.validation.Valid;
 
@@ -19,9 +20,12 @@ import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.customer.ICustomerManagementController;
 import com.amx.jax.customer.document.manager.CustomerDocumentManager;
 import com.amx.jax.customer.manager.CustomerManagementManager;
+import com.amx.jax.customer.service.CustomerService;
 import com.amx.jax.model.customer.CreateCustomerInfoRequest;
+import com.amx.jax.model.customer.DuplicateCustomerDto;
 import com.amx.jax.model.customer.UploadCustomerKycRequest;
 import com.amx.jax.model.customer.UploadCustomerKycResponse;
+import com.amx.jax.model.request.CustomerPersonalDetail;
 import com.amx.jax.model.request.customer.UpdateCustomerInfoRequest;
 import com.amx.jax.model.response.CustomerInfo;
 import com.amx.utils.JsonUtil;
@@ -33,6 +37,8 @@ public class CustomerManagementController implements ICustomerManagementControll
 	CustomerDocumentManager customerDocumentManager;
 	@Autowired
 	CustomerManagementManager customerManagementManager;
+	@Autowired
+	CustomerService customerService;
 
 	private static final Logger log = LoggerFactory.getLogger(CustomerManagementController.class);
 
@@ -60,6 +66,14 @@ public class CustomerManagementController implements ICustomerManagementControll
 		log.info("request uploadCustomerKycRequest {}", uploadCustomerKycRequest);
 		UploadCustomerKycResponse uploadReference = customerDocumentManager.uploadKycDocument(uploadCustomerKycRequest);
 		return AmxApiResponse.build(uploadReference);
-
 	}
+
+	@Override
+	@RequestMapping(path = DUPLICATE_CUSTOMER_CHECK, method = { RequestMethod.POST })
+	public AmxApiResponse<DuplicateCustomerDto, Object> checkForDuplicateCustomer(@RequestBody @Valid CustomerPersonalDetail customerPersonalDetail) {
+		log.debug("request checkForDuplicateCustomer {}", customerPersonalDetail);
+		List<DuplicateCustomerDto> duplicateCustomerDtoList = customerService.checkForDuplicateCustomer(customerPersonalDetail);
+		return AmxApiResponse.buildList(duplicateCustomerDtoList);
+	}
+
 }

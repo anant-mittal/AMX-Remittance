@@ -18,8 +18,10 @@ import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.customer.ICustomerManagementController;
 import com.amx.jax.exception.JaxSystemError;
 import com.amx.jax.model.customer.CreateCustomerInfoRequest;
+import com.amx.jax.model.customer.DuplicateCustomerDto;
 import com.amx.jax.model.customer.UploadCustomerKycRequest;
 import com.amx.jax.model.customer.UploadCustomerKycResponse;
+import com.amx.jax.model.request.CustomerPersonalDetail;
 import com.amx.jax.model.request.customer.UpdateCustomerInfoRequest;
 import com.amx.jax.model.response.CustomerInfo;
 import com.amx.jax.rest.RestService;
@@ -93,6 +95,12 @@ public class CustomerManagementClient implements ICustomerManagementController {
 			LOGGER.error("exception in uploadCustomerKyc : ", ae);
 			return JaxSystemError.evaluate(ae);
 		}
+	}
+
+	@Override
+	public AmxApiResponse<DuplicateCustomerDto, Object> checkForDuplicateCustomer(CustomerPersonalDetail customerPersonalDetail) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

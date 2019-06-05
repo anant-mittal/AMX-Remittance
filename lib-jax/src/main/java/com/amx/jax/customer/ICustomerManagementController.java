@@ -5,8 +5,10 @@ import java.text.ParseException;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.model.customer.CreateCustomerInfoRequest;
+import com.amx.jax.model.customer.DuplicateCustomerDto;
 import com.amx.jax.model.customer.UploadCustomerKycRequest;
 import com.amx.jax.model.customer.UploadCustomerKycResponse;
+import com.amx.jax.model.request.CustomerPersonalDetail;
 import com.amx.jax.model.request.customer.UpdateCustomerInfoRequest;
 import com.amx.jax.model.response.CustomerInfo;
 
@@ -17,6 +19,7 @@ public interface ICustomerManagementController {
 		public static final String UPDATE_CUSTOMER = PREFIX + "/update-customer";
 		public static final String UPLOAD_CUSTOMER_KYC = PREFIX + "/upload-customer-kyc";
 		public static final String UPLOAD_CUSTOMER_DOCUMENT = PREFIX + "/upload-customer-document";
+		public static final String DUPLICATE_CUSTOMER_CHECK = PREFIX + "/duplicate-cusotmer-check";
 	}
 
 	public static class ApiParams {
@@ -33,5 +36,7 @@ public interface ICustomerManagementController {
 	AmxApiResponse<BoolRespModel, Object> updateCustomer(UpdateCustomerInfoRequest createCustomerRequest);
 
 	AmxApiResponse<UploadCustomerKycResponse, Object> uploadCustomerKyc(UploadCustomerKycRequest uploadCustomerKycRequest);
+
+	AmxApiResponse<DuplicateCustomerDto, Object> checkForDuplicateCustomer(CustomerPersonalDetail customerPersonalDetail);
 
 }

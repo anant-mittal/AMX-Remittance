@@ -6,6 +6,7 @@ import java.sql.Connection;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -337,5 +338,9 @@ public class CustomerDao {
 		}
 		return output;
 	}
-	
+
+	public List<Customer> findDuplicateCustomerRecords(BigDecimal nationality, Date dateOfBirth, String firstName,
+			String lastName) {
+		return repo.getCustomerForDuplicateCheck(nationality, dateOfBirth, firstName, lastName);
+	}
 }
